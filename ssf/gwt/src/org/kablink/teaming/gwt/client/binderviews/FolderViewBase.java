@@ -36,7 +36,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.kablink.teaming.gwt.client.GwtConstants;
-import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.binderviews.accessories.AccessoriesPanel;
 import org.kablink.teaming.gwt.client.binderviews.BreadCrumbPanel;
 import org.kablink.teaming.gwt.client.binderviews.DescriptionPanel;
@@ -47,44 +46,17 @@ import org.kablink.teaming.gwt.client.binderviews.ToolPanelBase;
 import org.kablink.teaming.gwt.client.binderviews.ToolPanelBase.ToolPanelClient;
 import org.kablink.teaming.gwt.client.binderviews.ViewBase;
 import org.kablink.teaming.gwt.client.binderviews.ViewReady;
-import org.kablink.teaming.gwt.client.event.FullUIReloadEvent;
-import org.kablink.teaming.gwt.client.event.VibeEventBase;
-import org.kablink.teaming.gwt.client.rpc.shared.CanAddEntitiesRpcResponseData;
-import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData.ErrorInfo;
 import org.kablink.teaming.gwt.client.rpc.shared.FolderDisplayDataRpcResponseData;
-import org.kablink.teaming.gwt.client.rpc.shared.GetCanAddEntitiesCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetFolderDisplayDataCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.GetMyFilesContainerInfoCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
-import org.kablink.teaming.gwt.client.util.CollectionType;
 import org.kablink.teaming.gwt.client.util.FolderType;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
-import org.kablink.teaming.gwt.client.util.Html5UploadHelper;
-import org.kablink.teaming.gwt.client.util.Html5UploadCallback;
-import org.kablink.teaming.gwt.client.util.Html5UploadHost;
-import org.kablink.teaming.gwt.client.util.Html5UploadState;
-import org.kablink.teaming.gwt.client.widgets.Html5UploadPopup;
 import org.kablink.teaming.gwt.client.widgets.SpinnerPopup;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 
-import org.vectomatic.dnd.DataTransferExt;
-import org.vectomatic.dnd.DropPanel;
-import org.vectomatic.file.File;
-import org.vectomatic.file.FileList;
-
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
-import com.google.gwt.event.dom.client.DragEnterEvent;
-import com.google.gwt.event.dom.client.DragEnterHandler;
-import com.google.gwt.event.dom.client.DragLeaveEvent;
-import com.google.gwt.event.dom.client.DragLeaveHandler;
-import com.google.gwt.event.dom.client.DragOverEvent;
-import com.google.gwt.event.dom.client.DragOverHandler;
-import com.google.gwt.event.dom.client.DropEvent;
-import com.google.gwt.event.dom.client.DropHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.RequiresResize;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
@@ -101,34 +73,19 @@ import com.google.gwt.user.client.ui.Widget;
  * 
  * @author drfoster@novell.com
  */
-public abstract class FolderViewBase extends ViewBase
-	implements
-		DragEnterHandler,
-		DragLeaveHandler,
-		DragOverHandler,
-		DropHandler,
-		Html5UploadCallback,
-		Html5UploadHost,
-		ToolPanelReady
-{
+public abstract class FolderViewBase extends ViewBase implements ToolPanelReady {
 	private BinderInfo							m_folderInfo;					// A BinderInfo object that describes the folder being viewed.
 	private boolean								m_allowColumnSizing;			// true -> Add the column sizing entry menu item.  false -> Don't.
 	private boolean								m_viewReady;					// Set true once the view and all its components are ready.
-	private boolean								m_pinning;						// true -> We're showing pinned items.              false -> We're not.
-	private boolean								m_sharedFiles;					// true -> We're showing shared only shared files.  false -> We're not.
+	private boolean								m_pinning;						//
+	private boolean								m_sharedFiles;					//
 	private CalendarDisplayDataProvider			m_calendarDisplayDataProvider;	// A CalendarDisplayDataProvider to use to obtain a CalendarDisplayDataRpcResponseData object.
-	private CanAddEntitiesRpcResponseData		m_canAddEntities;				// Contains information about the user's rights to add entities to the current folder.
-	private DropPanel							m_dndPanel;						// A DropPanel used for HTML5 based file uploads.
-	private FolderDisplayDataRpcResponseData	m_folderDisplayData;			// Various pieces of display information about the folder (sorting, page size, column widths, ...)
-	private Html5UploadHelper					m_uploadHelper;					// The HTML5 upload APIs.
-	private Html5UploadPopup					m_uploadPopup;					// A popup that's shown while a HTML5 file upload is active.
+	private FolderDisplayDataRpcResponseData	m_folderDisplayData;			// Various pieces of display information about the folder (sorting, page size, column widths, ...) 
 	private int									m_readyComponents;				// Tracks items as they become ready.
-	private Label								m_dndHint;						// A hint displayed while the user is dragging files over the view.
 	private List<Widget>						m_verticalPanels;				// Tracks the widgets added as vertical panels.
-	private SpinnerPopup						m_busySpinner;					// A spinner shown while something is going on that may take a while.
+	private SpinnerPopup						m_busySpinner;					//
 	private String								m_styleBase;					// Base name for the view specific styles to use for this view.
 	private VibeFlowPanel						m_flowPanel;					// The flow panel used to hold the view specific content of the view.
-	private VibeFlowPanel						m_rootPanel;					// The root panel containing the view.
 	private VibeFlowPanel						m_verticalFlowPanel;			// The flow panel that holds all the components of the view, both common and view specific, that flow vertically down the view.
 
 	// Control whether a FilterPanel can ever be instantiated.  true
@@ -153,18 +110,16 @@ public abstract class FolderViewBase extends ViewBase
 	
 	// The following define the indexes into a VibeVerticalPanel of the
 	// various panels that make up a folder view.
-	public final static int DOWNLOAD_PANEL_INDEX			=  0;
-	public final static int MAILTO_PANEL_INDEX				=  1;
-	public final static int BREADCRUMB_PANEL_INDEX			=  2;
-	public final static int ACCESSORY_PANEL_INDEX			=  3;
-	public final static int DESCRIPTION_PANEL_INDEX			=  4;
-	public final static int TASK_GRAPHS_PANEL_INDEX			=  5;
-	public final static int FILTER_PANEL_INDEX				=  6;
-	public final static int BINDER_OWNER_AVATAR_PANEL_INDEX	=  7;
-	public final static int ENTRY_MENU_PANEL_INDEX			=  8;
-	public final static int CALENDAR_NAVIGATION_PANEL_INDEX	=  9;
-	public final static int VIEW_CONTENT_PANEL_INDEX		= 10;
-	public final static int FOOTER_PANEL_INDEX				= 12;
+	public final static int BREADCRUMB_PANEL_INDEX			= 0;
+	public final static int ACCESSORY_PANEL_INDEX			= 1;
+	public final static int DESCRIPTION_PANEL_INDEX			= 2;
+	public final static int TASK_GRAPHS_PANEL_INDEX			= 3;
+	public final static int FILTER_PANEL_INDEX				= 4;
+	public final static int BINDER_OWNER_AVATAR_PANEL_INDEX	= 5;
+	public final static int ENTRY_MENU_PANEL_INDEX			= 6;
+	public final static int CALENDAR_NAVIGATION_PANEL_INDEX	= 7;
+	public final static int VIEW_CONTENT_PANEL_INDEX		= 8;
+	public final static int FOOTER_PANEL_INDEX				= 9;
 
 	private final static int MINIMUM_CONTENT_HEIGHT		= 150;	// The minimum height (in pixels) of a the data table widget.
 	private final static int NO_VSCROLL_ADJUST			=  20;	// Height adjustment required so there's no vertical scroll bar by default.
@@ -174,8 +129,6 @@ public abstract class FolderViewBase extends ViewBase
 	 * make up a folder view.
 	 */
 	protected enum FolderPanels {
-		DOWNLOAD,
-		MAILTO,
 		BREADCRUMB,
 		ACCESSORIES,
 		DESCRIPTION,
@@ -185,49 +138,6 @@ public abstract class FolderViewBase extends ViewBase
 		ENTRY_MENU,
 		CALENDAR_NAVIGATION,
 		FOOTER,
-	}
-
-	/*
-	 * Inner class used to provide a DropPanel that reacts to sizing
-	 * events.
-	 */
-	private class ResizingDropPanel extends DropPanel implements RequiresResize {
-		/**
-		 * Constructor method.
-		 */
-		public ResizingDropPanel() {
-			// Initialize the super class.
-			super();
-		}
-		
-		/**
-		 */
-		@Override
-		public void onResize() {
-			onResizeAsync();
-		}
-
-		/*
-		 * Asynchronously resizes the panel.
-		 */
-		private void onResizeAsync() {
-			GwtClientHelper.deferCommand(new ScheduledCommand() {
-				@Override
-				public void execute() {
-					onResizeNow();
-				}
-			});
-		}
-		
-		/*
-		 * Synchronously resizes the panel.
-		 */
-		private void onResizeNow() {
-			setHeight(getNonNegativeInt(m_rootPanel.getOffsetHeight() + getContentHeightAdjust()) + "px");
-			setWidth( getNonNegativeInt(m_rootPanel.getOffsetWidth()  + getContentWidthAdjust())  + "px");
-			
-			m_verticalFlowPanel.onResize();
-		}
 	}
 	
 	/**
@@ -324,8 +234,8 @@ public abstract class FolderViewBase extends ViewBase
 		initDataMembers();
 		
 		// ...create the main panel for the content...
-		m_rootPanel = new VibeFlowPanel();
-		m_rootPanel.addStyleName("vibe-folderViewBase " + m_styleBase + " vibe-verticalScroll");
+		VibeFlowPanel mainPanel = new VibeFlowPanel();
+		mainPanel.addStyleName("vibe-folderViewBase " + m_styleBase + " vibe-verticalScroll");
 
 		// ...set the sizing adjustments the account for the padding in
 		// ...the vibe-folderViewBase style...
@@ -341,16 +251,12 @@ public abstract class FolderViewBase extends ViewBase
 		// ...create a flow panel to put the main content...
 		m_flowPanel = new VibeFlowPanel();
 		m_flowPanel.addStyleName(m_styleBase + "FlowPanel");
-
-		// ...create the panel we'll show while HTML5 uploads are
-		// ...active...
-		m_uploadPopup = new Html5UploadPopup();
 		
 		// ...and finally, tie everything together.
 		trackVerticalPanel(VIEW_CONTENT_PANEL_INDEX, m_flowPanel);
-		m_rootPanel.add(m_verticalFlowPanel);
+		mainPanel.add(m_verticalFlowPanel);
 		
-		return m_rootPanel;
+		return mainPanel;
 	}
 
 	/**
@@ -374,35 +280,7 @@ public abstract class FolderViewBase extends ViewBase
 			}
 		}
 
-		// Is this folder a drop target?
-		if (supportsDragAndDrop()) {
-			// Yes!  Then we need to make it a drop target.  Create a
-			// drag and drop panel for dropping into...
-			m_dndPanel = new ResizingDropPanel();
-			m_dndPanel.addStyleName("vibe-folderViewBase-dndPanel");
-			
-			// ...connect the various drag and drop handlers to it...
-			m_dndPanel.addDragEnterHandler(this);
-			m_dndPanel.addDragLeaveHandler(this);
-			m_dndPanel.addDragOverHandler( this);
-			m_dndPanel.addDropHandler(     this);
-
-			// ...and add it to the flow panel.
-			m_rootPanel.remove(m_verticalFlowPanel);
-			m_rootPanel.add(m_dndPanel);
-			m_dndPanel.add(m_verticalFlowPanel);
-		}
-		
-		// Create a hint we'll show at the top of the window while
-		// dragging over it.  We always add this because although the
-		// view itself may not be a drop target, one of its nested
-		// folders might be, in which case, it will show it.
-		m_dndHint = new Label(m_messages.addFilesHtml5PopupDnDHint());
-		m_dndHint.addStyleName("vibe-folderViewBase-dndHint");
-		m_dndHint.setVisible(false);
-		m_rootPanel.add(m_dndHint);
-
-		// Finally, asynchronously complete the view construction.
+		// ...and asynchronously complete the view construction.
 		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
@@ -411,53 +289,6 @@ public abstract class FolderViewBase extends ViewBase
 		});
 	}
 
-	/**
-	 * Some folders were in the files requested to be uploaded and
-	 * were skipped.
-	 * 
-	 * @param count
-	 * @param folderNames
-	 * 
-	 * Implements the Html5UploadCallback.foldersSkipped() method.
-	 */
-	@Override
-	public void foldersSkipped(int count, String folderNames) {
-		GwtClientHelper.deferredAlert(
-			m_messages.addFilesHtml5PopupFoldersSkipped(
-				folderNames));
-	}
-
-	/**
-	 * Returns the drag and drop hint Label for the view.
-	 * 
-	 * Implements the Html5UploadHost.getDndHintLabel() method.
-	 */
-	@Override
-	public Label getDnDHintLabel() {
-		return m_dndHint;
-	}
-	
-	/**
-	 * Scan the defined tool panels for a download panel and returns
-	 * it.
-	 * 
-	 * @return
-	 */
-	public DownloadPanel getDownloadPanel() {
-		// Scan the vertical panels...
-		for (Widget w:  m_verticalPanels) {
-			// ...and if we find a download panel...
-			if ((null != w) && (w instanceof DownloadPanel)) {
-				// ...return it.
-				return ((DownloadPanel) w);
-			}
-		}
-		
-		// If we get here, a download panel isn't defined.  Return
-		// null.
-		return null;
-	}
-	
 	/**
 	 * Scan the defined tool panels for an entry menu panel and returns
 	 * it.
@@ -499,46 +330,6 @@ public abstract class FolderViewBase extends ViewBase
 	}
 	
 	/**
-	 * Returns the HTML5 upload helper for the view.
-	 * 
-	 * Implements the Html5UploadHost.getHtml5UploadHelper() method.
-	 */
-	@Override
-	public Html5UploadHelper getHtml5UploadHelper() {
-		return m_uploadHelper;
-	}
-	
-	/**
-	 * Returns the HTML5 upload popup for the view.
-	 * 
-	 * Implements the Html5UploadHost.getHtml5UploadPopup() method.
-	 */
-	@Override
-	public Html5UploadPopup getHtml5UploadPopup() {
-		return m_uploadPopup;
-	}
-	
-	/**
-	 * Scan the defined tool panels for a mail to panel and returns
-	 * it.
-	 * 
-	 * @return
-	 */
-	public MailToPanel getMailToPanel() {
-		// Scan the vertical panels...
-		for (Widget w:  m_verticalPanels) {
-			// ...and if we find a mail to panel...
-			if ((null != w) && (w instanceof MailToPanel)) {
-				// ...return it.
-				return ((MailToPanel) w);
-			}
-		}
-		
-		// If we get here, a mail to panel isn't defined.  Return null.
-		return null;
-	}
-	
-	/**
 	 * Returns the minimum height to used for a folder view's content.
 	 * 
 	 * Classes that extend this can override as needed.
@@ -549,16 +340,6 @@ public abstract class FolderViewBase extends ViewBase
 		return MINIMUM_CONTENT_HEIGHT;
 	}
 
-	/*
-	 * Ensures an integer value is >= 0.
-	 */
-	private static int getNonNegativeInt(int value) {
-		if (0 > value) {
-			value = 0;
-		}
-		return value;
-	}
-	
 	/**
 	 * Returns the adjustment to used for a folder view's content so
 	 * that it doesn't get a vertical scroll bar.
@@ -604,19 +385,6 @@ public abstract class FolderViewBase extends ViewBase
 	}
 
 	/**
-	 * Advance the progress indicator.
-	 * 
-	 * @param amount
-	 * 
-	 * Implements the Html5UploadCallback.incrProgress() method.
-	 */
-	@Override
-	public void incrProgress(long amount) {
-		m_uploadPopup.incrPerItemProgress(amount);
-		m_uploadPopup.incrTotalProgress(  amount);
-	}
-
-	/**
 	 * Returns true if a panel should be loaded and false otherwise.
 	 *
 	 * Classes that extend this class can override this method to
@@ -627,12 +395,11 @@ public abstract class FolderViewBase extends ViewBase
 	 * @return
 	 */
 	protected boolean includePanel(FolderPanels folderPanel) {
-		// Unless overridden, all panels except the mail to panel,
-		// binder owner avatar panel, task graphs panel and calendar
-		// navigation panel are included.
+		// Unless overridden, all panels except the binder owner avatar
+		// panel, task graphs panel and calendar navigation panel are
+		// included.
 		boolean reply;
 		switch (folderPanel) {
-		case MAILTO:
 		case BINDER_OWNER_AVATAR:
 		case CALENDAR_NAVIGATION:
 		case TASK_GRAPHS:  reply = false; break;
@@ -673,8 +440,7 @@ public abstract class FolderViewBase extends ViewBase
 	/*
 	 * Asynchronously loads the next part of the view.
 	 * 
-	 * Loads whether the user has rights to add entities to this
-	 * folder.
+	 * Loads the display data information for the folder.
 	 */
 	private void loadPart1Async() {
 		GwtClientHelper.deferCommand(new ScheduledCommand() {
@@ -688,83 +454,14 @@ public abstract class FolderViewBase extends ViewBase
 	/*
 	 * Synchronously loads the next part of the view.
 	 * 
-	 * Loads whether the user has rights to add entities to this
-	 * folder.
+	 * Loads the display data information for the folder.
 	 */
 	private void loadPart1Now() {
-		GwtClientHelper.executeCommand(
-				new GetCanAddEntitiesCmd(m_folderInfo),
-				new AsyncCallback<VibeRpcResponse>() {
-			@Override
-			public void onFailure(Throwable t) {
-				GwtClientHelper.handleGwtRPCFailure(
-					t,
-					m_messages.rpcFailure_GetCanAddEntities(),
-					m_folderInfo.getBinderIdAsLong());
-			}
-			
-			@Override
-			public void onSuccess(VibeRpcResponse response) {
-				// Store the information about what rights the user has
-				// to add things to the current folder.
-				m_canAddEntities = ((CanAddEntitiesRpcResponseData) response.getResponseData());
-				loadPart2Async();
-			}
-		});
-	}
-
-	/*
-	 * Asynchronously loads the next part of the view.
-	 */
-	private void loadPart2Async() {
-		// Note that we always load the HTML5 helper, even if the
-		// folder itself can't be a drop target.  The reason is that it
-		// may contain nested folders that can be drop targets and this
-		// HTML5 helper will be used for those, with this folder's
-		// listing.
-		GwtClientHelper.deferCommand(new ScheduledCommand() {
-			@Override
-			public void execute() {
-				loadPart2Now();
-			}
-		});
-	}
-
-	/*
-	 * Synchronously loads the next part of the view.
-	 */
-	private void loadPart2Now() {
-		// Note that the implementation of 
-		// Html5UploadCallback.onSuccess() invokes part 3 of the load
-		// process.
-		Html5UploadHelper.createAsync(this);
-	}
-
-	/*
-	 * Asynchronously loads the next part of the view.
-	 * 
-	 * Loads the display data information for the folder.
-	 */
-	private void loadPart3Async() {
-		GwtClientHelper.deferCommand(new ScheduledCommand() {
-			@Override
-			public void execute() {
-				loadPart3Now();
-			}
-		});
-	}
-
-	/*
-	 * Synchronously loads the next part of the view.
-	 * 
-	 * Loads the display data information for the folder.
-	 */
-	private void loadPart3Now() {
 		// Are we loading a calendar folder?
 		if (FolderType.CALENDAR == m_folderInfo.getFolderType()) {
 			// Yes!  Then we don't need the folder display data as
 			// pertains to data table based views.
-			loadPart4Async();
+			loadPart2Async();
 		}
 		
 		else {
@@ -788,7 +485,7 @@ public abstract class FolderViewBase extends ViewBase
 					m_folderDisplayData = ((FolderDisplayDataRpcResponseData) response.getResponseData());
 					m_pinning           = m_folderDisplayData.getViewPinnedEntries();
 					m_sharedFiles       = m_folderDisplayData.getViewSharedFiles();
-					loadPart4Async();
+					loadPart2Async();
 				}
 			});
 		}
@@ -797,13 +494,99 @@ public abstract class FolderViewBase extends ViewBase
 	/*
 	 * Asynchronously loads the next part of the view.
 	 * 
-	 * Loads the DownloadPanel.
+	 * Loads the BreadCrumbPanel.
+	 */
+	private void loadPart2Async() {
+		// For classes that don't want it...
+		if (!(includePanel(FolderPanels.BREADCRUMB))) {
+			// ...we don't show the bread crumbs.
+			insertToolPanelPlaceholder(BREADCRUMB_PANEL_INDEX);
+			loadPart3Async();
+			return;
+		}
+		
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
+			@Override
+			public void execute() {
+				loadPart2Now();
+			}
+		});
+	}
+	
+	/*
+	 * Synchronously loads the next part of the view.
+	 * 
+	 * Loads the BreadCrumbPanel.
+	 */
+	private void loadPart2Now() {
+		BreadCrumbPanel.createAsync(this, m_folderInfo, this, new ToolPanelClient() {			
+			@Override
+			public void onUnavailable() {
+				// Nothing to do.  Error handled in asynchronous
+				// provider.
+			}
+			
+			@Override
+			public void onSuccess(ToolPanelBase tpb) {
+				insertToolPanel(tpb, BREADCRUMB_PANEL_INDEX);
+				loadPart3Async();
+			}
+		});
+	}
+	
+	/*
+	 * Asynchronously loads the next part of the view.
+	 * 
+	 * Loads the AccessoriesPanel.
+	 */
+	private void loadPart3Async() {
+		// If we're in Filr mode or a super class doesn't want it...
+		if (GwtClientHelper.isLicenseFilr() || (!(includePanel(FolderPanels.ACCESSORIES)))) {
+			// ...we don't show the accessories.
+			insertToolPanelPlaceholder(ACCESSORY_PANEL_INDEX);
+			loadPart4Async();
+			return;
+		}
+		
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
+			@Override
+			public void execute() {
+				loadPart3Now();
+			}
+		});
+	}
+	
+	/*
+	 * Synchronously loads the next part of the view.
+	 * 
+	 * Loads the AccessoriesPanel.
+	 */
+	private void loadPart3Now() {
+		AccessoriesPanel.createAsync(this, m_folderInfo, this, new ToolPanelClient() {			
+			@Override
+			public void onUnavailable() {
+				// Nothing to do.  Error handled in asynchronous
+				// provider.
+			}
+			
+			@Override
+			public void onSuccess(ToolPanelBase tpb) {
+				insertToolPanel(tpb, ACCESSORY_PANEL_INDEX);
+				loadPart4Async();
+			}
+		});
+	}
+	
+	/*
+	 * Asynchronously loads the next part of the view.
+	 * 
+	 * Loads the DescriptionPanel.
 	 */
 	private void loadPart4Async() {
 		// For classes that don't want it...
-		if (!(includePanel(FolderPanels.DOWNLOAD))) {
-			// ...we don't show the submit panel.
-			insertToolPanelPlaceholder(DOWNLOAD_PANEL_INDEX);
+		if (!(includePanel(FolderPanels.DESCRIPTION))) {
+			// ...we don't show the description.
+			insertToolPanelPlaceholder(DESCRIPTION_PANEL_INDEX);
 			loadPart5Async();
 			return;
 		}
@@ -815,14 +598,14 @@ public abstract class FolderViewBase extends ViewBase
 			}
 		});
 	}
-	
+
 	/*
-	 * Synchronously loads the next part of the view.
+	 * Asynchronously loads the next part of the view.
 	 * 
-	 * Loads the DownloadPanel.
+	 * Loads the DescriptionPanel.
 	 */
 	private void loadPart4Now() {
-		DownloadPanel.createAsync(this, m_folderInfo, this, new ToolPanelClient() {			
+		DescriptionPanel.createAsync(this, m_folderInfo, this, new ToolPanelClient() {			
 			@Override
 			public void onUnavailable() {
 				// Nothing to do.  Error handled in asynchronous
@@ -831,22 +614,22 @@ public abstract class FolderViewBase extends ViewBase
 			
 			@Override
 			public void onSuccess(ToolPanelBase tpb) {
-				insertToolPanel(tpb, DOWNLOAD_PANEL_INDEX);
+				insertToolPanel(tpb, DESCRIPTION_PANEL_INDEX);
 				loadPart5Async();
 			}
 		});
 	}
-	
+
 	/*
 	 * Asynchronously loads the next part of the view.
 	 * 
-	 * Loads the MailToPanel.
+	 * Loads the DescriptionPanel.
 	 */
 	private void loadPart5Async() {
 		// For classes that don't want it...
-		if (!(includePanel(FolderPanels.MAILTO))) {
-			// ...we don't show the submit panel.
-			insertToolPanelPlaceholder(MAILTO_PANEL_INDEX);
+		if (!(includePanel(FolderPanels.TASK_GRAPHS))) {
+			// ...we don't show the task graphs panel.
+			insertToolPanelPlaceholder(TASK_GRAPHS_PANEL_INDEX);
 			loadPart6Async();
 			return;
 		}
@@ -858,14 +641,14 @@ public abstract class FolderViewBase extends ViewBase
 			}
 		});
 	}
-	
+
 	/*
-	 * Synchronously loads the next part of the view.
+	 * Asynchronously loads the next part of the view.
 	 * 
-	 * Loads the MailToPanel.
+	 * Loads the DescriptionPanel.
 	 */
 	private void loadPart5Now() {
-		MailToPanel.createAsync(this, m_folderInfo, this, new ToolPanelClient() {			
+		TaskGraphsPanel.createAsync(this, m_folderInfo, this, new ToolPanelClient() {			
 			@Override
 			public void onUnavailable() {
 				// Nothing to do.  Error handled in asynchronous
@@ -874,22 +657,23 @@ public abstract class FolderViewBase extends ViewBase
 			
 			@Override
 			public void onSuccess(ToolPanelBase tpb) {
-				insertToolPanel(tpb, MAILTO_PANEL_INDEX);
+				insertToolPanel(tpb, TASK_GRAPHS_PANEL_INDEX);
 				loadPart6Async();
 			}
 		});
 	}
-	
+
 	/*
 	 * Asynchronously loads the next part of the view.
 	 * 
-	 * Loads the BreadCrumbPanel.
+	 * Loads the FilterPanel.
 	 */
+	@SuppressWarnings("unused")
 	private void loadPart6Async() {
 		// For classes that don't want it...
-		if (!(includePanel(FolderPanels.BREADCRUMB))) {
-			// ...we don't show the bread crumbs.
-			insertToolPanelPlaceholder(BREADCRUMB_PANEL_INDEX);
+		if ((!SHOW_LEGACY_FILTERS) || (!(includePanel(FolderPanels.FILTER)))) {
+			// ...we don't show the filter.
+			insertToolPanelPlaceholder(FILTER_PANEL_INDEX);
 			loadPart7Async();
 			return;
 		}
@@ -903,12 +687,12 @@ public abstract class FolderViewBase extends ViewBase
 	}
 	
 	/*
-	 * Synchronously loads the next part of the view.
+	 * Asynchronously loads the next part of the view.
 	 * 
-	 * Loads the BreadCrumbPanel.
+	 * Loads the FilterPanel.
 	 */
 	private void loadPart6Now() {
-		BreadCrumbPanel.createAsync(this, m_folderInfo, this, new ToolPanelClient() {			
+		FilterPanel.createAsync(this, m_folderInfo, this, new ToolPanelClient() {			
 			@Override
 			public void onUnavailable() {
 				// Nothing to do.  Error handled in asynchronous
@@ -917,22 +701,22 @@ public abstract class FolderViewBase extends ViewBase
 			
 			@Override
 			public void onSuccess(ToolPanelBase tpb) {
-				insertToolPanel(tpb, BREADCRUMB_PANEL_INDEX);
+				insertToolPanel(tpb, FILTER_PANEL_INDEX);
 				loadPart7Async();
 			}
 		});
 	}
-	
+
 	/*
 	 * Asynchronously loads the next part of the view.
 	 * 
-	 * Loads the AccessoriesPanel.
+	 * Loads the EntryMenuPanel.
 	 */
 	private void loadPart7Async() {
-		// If we're in Filr mode or a super class doesn't want it...
-		if (GwtClientHelper.isLicenseFilr() || (!(includePanel(FolderPanels.ACCESSORIES)))) {
-			// ...we don't show the accessories.
-			insertToolPanelPlaceholder(ACCESSORY_PANEL_INDEX);
+		// For classes that don't want it...
+		if (!(includePanel(FolderPanels.ENTRY_MENU))) {
+			// ...we don't show the entry menu.
+			insertToolPanelPlaceholder(ENTRY_MENU_PANEL_INDEX);
 			loadPart8Async();
 			return;
 		}
@@ -944,186 +728,13 @@ public abstract class FolderViewBase extends ViewBase
 			}
 		});
 	}
-	
+
 	/*
-	 * Synchronously loads the next part of the view.
+	 * Asynchronously loads the next part of the view.
 	 * 
-	 * Loads the AccessoriesPanel.
+	 * Loads the EntryMenuPanel.
 	 */
 	private void loadPart7Now() {
-		AccessoriesPanel.createAsync(this, m_folderInfo, this, new ToolPanelClient() {			
-			@Override
-			public void onUnavailable() {
-				// Nothing to do.  Error handled in asynchronous
-				// provider.
-			}
-			
-			@Override
-			public void onSuccess(ToolPanelBase tpb) {
-				insertToolPanel(tpb, ACCESSORY_PANEL_INDEX);
-				loadPart8Async();
-			}
-		});
-	}
-	
-	/*
-	 * Asynchronously loads the next part of the view.
-	 * 
-	 * Loads the DescriptionPanel.
-	 */
-	private void loadPart8Async() {
-		// For classes that don't want it...
-		if (!(includePanel(FolderPanels.DESCRIPTION))) {
-			// ...we don't show the description.
-			insertToolPanelPlaceholder(DESCRIPTION_PANEL_INDEX);
-			loadPart9Async();
-			return;
-		}
-		
-		GwtClientHelper.deferCommand(new ScheduledCommand() {
-			@Override
-			public void execute() {
-				loadPart8Now();
-			}
-		});
-	}
-
-	/*
-	 * Asynchronously loads the next part of the view.
-	 * 
-	 * Loads the DescriptionPanel.
-	 */
-	private void loadPart8Now() {
-		DescriptionPanel.createAsync(this, m_folderInfo, this, new ToolPanelClient() {			
-			@Override
-			public void onUnavailable() {
-				// Nothing to do.  Error handled in asynchronous
-				// provider.
-			}
-			
-			@Override
-			public void onSuccess(ToolPanelBase tpb) {
-				insertToolPanel(tpb, DESCRIPTION_PANEL_INDEX);
-				loadPart9Async();
-			}
-		});
-	}
-
-	/*
-	 * Asynchronously loads the next part of the view.
-	 * 
-	 * Loads the DescriptionPanel.
-	 */
-	private void loadPart9Async() {
-		// For classes that don't want it...
-		if (!(includePanel(FolderPanels.TASK_GRAPHS))) {
-			// ...we don't show the task graphs panel.
-			insertToolPanelPlaceholder(TASK_GRAPHS_PANEL_INDEX);
-			loadPart10Async();
-			return;
-		}
-		
-		GwtClientHelper.deferCommand(new ScheduledCommand() {
-			@Override
-			public void execute() {
-				loadPart9Now();
-			}
-		});
-	}
-
-	/*
-	 * Asynchronously loads the next part of the view.
-	 * 
-	 * Loads the DescriptionPanel.
-	 */
-	private void loadPart9Now() {
-		TaskGraphsPanel.createAsync(this, m_folderInfo, this, new ToolPanelClient() {			
-			@Override
-			public void onUnavailable() {
-				// Nothing to do.  Error handled in asynchronous
-				// provider.
-			}
-			
-			@Override
-			public void onSuccess(ToolPanelBase tpb) {
-				insertToolPanel(tpb, TASK_GRAPHS_PANEL_INDEX);
-				loadPart10Async();
-			}
-		});
-	}
-
-	/*
-	 * Asynchronously loads the next part of the view.
-	 * 
-	 * Loads the FilterPanel.
-	 */
-	@SuppressWarnings("unused")
-	private void loadPart10Async() {
-		// For classes that don't want it...
-		if ((!SHOW_LEGACY_FILTERS) || (!(includePanel(FolderPanels.FILTER)))) {
-			// ...we don't show the filter.
-			insertToolPanelPlaceholder(FILTER_PANEL_INDEX);
-			loadPart11Async();
-			return;
-		}
-		
-		GwtClientHelper.deferCommand(new ScheduledCommand() {
-			@Override
-			public void execute() {
-				loadPart10Now();
-			}
-		});
-	}
-	
-	/*
-	 * Asynchronously loads the next part of the view.
-	 * 
-	 * Loads the FilterPanel.
-	 */
-	private void loadPart10Now() {
-		FilterPanel.createAsync(this, m_folderInfo, this, new ToolPanelClient() {			
-			@Override
-			public void onUnavailable() {
-				// Nothing to do.  Error handled in asynchronous
-				// provider.
-			}
-			
-			@Override
-			public void onSuccess(ToolPanelBase tpb) {
-				insertToolPanel(tpb, FILTER_PANEL_INDEX);
-				loadPart11Async();
-			}
-		});
-	}
-
-	/*
-	 * Asynchronously loads the next part of the view.
-	 * 
-	 * Loads the EntryMenuPanel.
-	 */
-	private void loadPart11Async() {
-		// For classes that don't want it...
-		if (!(includePanel(FolderPanels.ENTRY_MENU))) {
-			// ...we don't show the entry menu.
-			insertToolPanelPlaceholder(ENTRY_MENU_PANEL_INDEX);
-			loadPart12Async();
-			return;
-		}
-		
-		GwtClientHelper.deferCommand(new ScheduledCommand() {
-			@Override
-			public void execute() {
-				loadPart11Now();
-			}
-		});
-	}
-
-	/*
-	 * Asynchronously loads the next part of the view.
-	 * 
-	 * Loads the EntryMenuPanel.
-	 */
-	private void loadPart11Now() {
 		EntryMenuPanel.createAsync(this, m_folderInfo, isPinning(), isSharedFiles(), m_allowColumnSizing, this, new ToolPanelClient() {			
 			@Override
 			public void onUnavailable() {
@@ -1134,7 +745,7 @@ public abstract class FolderViewBase extends ViewBase
 			@Override
 			public void onSuccess(ToolPanelBase tpb) {
 				insertToolPanel(tpb, ENTRY_MENU_PANEL_INDEX);
-				loadPart12Async();
+				loadPart8Async();
 			}
 		});
 	}
@@ -1144,7 +755,7 @@ public abstract class FolderViewBase extends ViewBase
 	 * 
 	 * Loads the FooterPanel.
 	 */
-	private void loadPart12Async() {
+	private void loadPart8Async() {
 		// If we need to show the footer panel...
 		boolean showFooter = includePanel(FolderPanels.FOOTER);
 		if (showFooter) {
@@ -1158,7 +769,7 @@ public abstract class FolderViewBase extends ViewBase
 			GwtClientHelper.deferCommand(new ScheduledCommand() {
 				@Override
 				public void execute() {
-					loadPart12Now();
+					loadPart8Now();
 				}
 			});
 		}
@@ -1166,7 +777,7 @@ public abstract class FolderViewBase extends ViewBase
 		else {
 			// ...otherwise, insert a place holder for it.
 			insertToolPanelPlaceholder(FOOTER_PANEL_INDEX);
-			loadPart13Async();
+			loadPart9Async();
 		}
 	}
 
@@ -1175,7 +786,7 @@ public abstract class FolderViewBase extends ViewBase
 	 * 
 	 * Loads the FooterPanel.
 	 */
-	private void loadPart12Now() {
+	private void loadPart8Now() {
 		FooterPanel.createAsync(this, m_folderInfo, this, new ToolPanelClient() {			
 			@Override
 			public void onUnavailable() {
@@ -1186,7 +797,7 @@ public abstract class FolderViewBase extends ViewBase
 			@Override
 			public void onSuccess(ToolPanelBase tpb) {
 				insertToolPanel(tpb, FOOTER_PANEL_INDEX);
-				loadPart13Async();
+				loadPart9Async();
 			}
 		});
 	}
@@ -1194,19 +805,19 @@ public abstract class FolderViewBase extends ViewBase
 	/*
 	 * Asynchronously loads the next part of the view.
 	 */
-	private void loadPart13Async() {
+	private void loadPart9Async() {
 		// For classes that don't want it...
 		if (!(includePanel(FolderPanels.BINDER_OWNER_AVATAR))) {
 			// ...we don't show the binder owner avatar.
 			insertToolPanelPlaceholder(BINDER_OWNER_AVATAR_PANEL_INDEX);
-			loadPart14Async();
+			loadPart10Async();
 			return;
 		}
 		
 		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
-				loadPart13Now();
+				loadPart9Now();
 			}
 		});
 	}
@@ -1214,7 +825,7 @@ public abstract class FolderViewBase extends ViewBase
 	/*
 	 * Synchronously loads the next part of the view.
 	 */
-	private void loadPart13Now() {
+	private void loadPart9Now() {
 		BinderOwnerAvatarPanel.createAsync(this, getFolderInfo(), this, new ToolPanelClient() {			
 			@Override
 			public void onUnavailable() {
@@ -1225,7 +836,7 @@ public abstract class FolderViewBase extends ViewBase
 			@Override
 			public void onSuccess(ToolPanelBase tpb) {
 				insertToolPanel(tpb, FolderViewBase.BINDER_OWNER_AVATAR_PANEL_INDEX);
-				loadPart14Async();
+				loadPart10Async();
 			}
 		});
 	}
@@ -1233,7 +844,7 @@ public abstract class FolderViewBase extends ViewBase
 	/*
 	 * Asynchronously loads the next part of the view.
 	 */
-	private void loadPart14Async() {
+	private void loadPart10Async() {
 		// For classes that don't want it...
 		if (!(includePanel(FolderPanels.CALENDAR_NAVIGATION))) {
 			// ...we don't show the calendar navigation panel.
@@ -1245,7 +856,7 @@ public abstract class FolderViewBase extends ViewBase
 		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
-				loadPart14Now();
+				loadPart10Now();
 			}
 		});
 	}
@@ -1253,7 +864,7 @@ public abstract class FolderViewBase extends ViewBase
 	/*
 	 * Synchronously loads the next part of the view.
 	 */
-	private void loadPart14Now() {
+	private void loadPart10Now() {
 		CalendarNavigationPanel.createAsync(this, m_calendarDisplayDataProvider, getFolderInfo(), this, new ToolPanelClient() {			
 			@Override
 			public void onUnavailable() {
@@ -1292,86 +903,6 @@ public abstract class FolderViewBase extends ViewBase
 	}
 	
 	/**
-	 * Called when a something is dragged into the drag and drop popup.
-	 * 
-	 * Implements the DragEnterHandler.onDragEnter() method.
-	 * 
-	 * @param event
-	 */
-	@Override
-	public void onDragEnter(DragEnterEvent event) {
-		if (!(m_uploadHelper.uploadsPending())) {
-			setDnDHighlight(true);
-		}
-		event.stopPropagation();
-		event.preventDefault();
-	}
-	
-	/**
-	 * Called when a something is dragged out of the drag and drop
-	 * popup.
-	 * 
-	 * Implements the DragEnterHandler.onDragLeave() method.
-	 * 
-	 * @param event
-	 */
-	@Override
-	public void onDragLeave(DragLeaveEvent event) {
-		if (!(m_uploadHelper.uploadsPending())) {
-			setDnDHighlight(false);
-		}
-		event.stopPropagation();
-		event.preventDefault();
-	}
-
-	/**
-	 * Called when a something is being dragged over the drag and drop
-	 * popup.
-	 * 
-	 * Implements the DragEnterHandler.onDragOver() method.
-	 * 
-	 * @param event
-	 */
-	@Override
-	public void onDragOver(DragOverEvent event) {
-		// Mandatory handler, otherwise the default behavior will kick
-		// in and onDrop will never be called.
-		if (!(m_uploadHelper.uploadsPending())) {
-			setDnDHighlight(true);
-		}
-		event.stopPropagation();
-		event.preventDefault();
-	}
-
-	/**
-	 * Called when a something is dropped on the drag and drop popup.
-	 * 
-	 * Implements the DragEnterHandler.onDrop() method.
-	 * 
-	 * @param event
-	 */
-	@Override
-	public void onDrop(DropEvent event) {
-		if (!(m_uploadHelper.uploadsPending())) {
-			setDnDHighlight(false);
-			
-			// If the drop data doesn't contain any files...
-			FileList fileList = event.getDataTransfer().<DataTransferExt>cast().getFiles();
-			int files = ((null == fileList) ? 0 : fileList.getLength());
-			if (0 == files) {
-				// ...tell the user about the problem...
-				GwtClientHelper.deferredAlert(m_messages.html5Uploader_Warning_NoFiles());
-			}
-			else {
-				// ...otherwise, process the files that were dropped...
-				processFiles(fileList);
-			}
-		}
-		event.stopPropagation();
-		event.preventDefault();
-	}
-
-	/**
 	 * Synchronously sets the size of the view.
 	 * 
 	 * Overrides the ViewBase.onResize() method.
@@ -1382,110 +913,6 @@ public abstract class FolderViewBase extends ViewBase
 		// do to resize the view.
 		super.onResize();
 		resizeViewAsync();
-	}
-	
-	/**
-	 * The helper was successfully loaded and is available for
-	 * uploading files.
-	 * 
-	 * @param uploadHelper
-	 * 
-	 * Implements the Html5UploadCallback.onSuccess() method.
-	 */
-	@Override
-	public void onSuccess(Html5UploadHelper uploadHelper) {
-		// Store the helper and continue with the load process.
-		m_uploadHelper = uploadHelper;
-		loadPart3Async();
-	}
-
-	/**
-	 * The helper failed to load.
-	 * 
-	 * Note that the user will have been told about the failure.
-	 * 
-	 * Implements the Html5UploadCallback.onUnavailable() method.
-	 */
-	@Override
-	public void onUnavailable() {
-		// Nothing to do.  The user will have been told about the
-		// error.
-	}
-
-	/*
-	 * Called when some files are dropped on the panel.
-	 */
-	private void processFiles(final FileList fileList) {
-		// Are we uploading into the 'My Files' view?
-		final List<File> files = Html5UploadHelper.getListFromFileList(fileList);
-		if (m_folderInfo.isBinderCollection() && (CollectionType.MY_FILES.equals(m_folderInfo.getCollectionType()))) {
-			// Yes!  Then we need to upload into the 'My Files Storage'
-			// folder instead.
-			final GetMyFilesContainerInfoCmd cmd = new GetMyFilesContainerInfoCmd();
-			GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
-				@Override
-				public void onFailure(Throwable caught) {
-					GwtClientHelper.handleGwtRPCFailure(
-						caught,
-						GwtTeaming.getMessages().rpcFailure_GetMyFilesContainerInfo());
-				}
-
-				@Override
-				public void onSuccess(final VibeRpcResponse result) {
-					// Perform the upload to the 'My Files Storage'
-					// folder.
-					processFilesAsync((BinderInfo) result.getResponseData(), files);
-				}
-			});
-		}
-		
-		else {
-			// No, we aren't we uploading into the 'My Files' view!
-			// Perform the upload to the folder directly.
-			processFilesAsync(m_folderInfo, files);
-		}
-	}
-	
-	/*
-	 * Asynchronously process files dropped on the panel.
-	 */
-	private void processFilesAsync(final BinderInfo fi, final List<File> files) {
-		GwtClientHelper.deferCommand(new ScheduledCommand() {
-			@Override
-			public void execute() {
-				processFilesNow(fi, files);
-			}
-		});
-	}
-	
-	/*
-	 * Synchronously process files dropped on the panel.
-	 */
-	private void processFilesNow(BinderInfo fi, List<File> files) {
-		// Show the upload popup and start the upload.
-		m_uploadPopup.setHtml5UploadHelper(m_uploadHelper);
-		m_uploadPopup.setActive(           true          );
-		Html5UploadHelper.uploadFiles(
-			m_uploadHelper,
-			fi,
-			files,
-			new FullUIReloadEvent());
-	}
-
-	/**
-	 * An error occurred uploading a file.
-	 * 
-	 * @param fileName
-	 * @param errorDescription
-	 * 
-	 * Implements the Html5UploadCallback.readError() method.
-	 */
-	@Override
-	public void readError(String fileName, String errorDescription) {
-		GwtClientHelper.deferredAlert(
-			m_messages.addFilesHtml5PopupReadError(
-				fileName,
-				errorDescription));
 	}
 
 	/**
@@ -1537,36 +964,6 @@ public abstract class FolderViewBase extends ViewBase
 		m_calendarDisplayDataProvider = calendarDisplayDataProvider;
 	}
 
-	/*
-	 * Sets or clears the drag and drop highlighting on the view.
-	 */
-	private void setDnDHighlight(boolean highlight) {
-		if (highlight) {
-			m_rootPanel.addStyleName("vibe-folderViewBase-hover"        );
-			m_dndPanel.addStyleName( "vibe-folderViewBase-dndPanelHover");
-			m_dndHint.setVisible(     true                              );
-		}
-		
-		else {
-			m_rootPanel.removeStyleName("vibe-folderViewBase-hover"        );
-			m_dndPanel.removeStyleName( "vibe-folderViewBase-dndPanelHover");
-			m_dndHint.setVisible(        false                             );
-		}
-	}
-	
-	/**
-	 * Sets the current files progress indicator.
-	 * 
-	 * @param min
-	 * @param max
-	 * 
-	 * Implements the Html5UploadCallback.setPerItemProgress() method.
-	 */
-	@Override
-	public void setPerItemProgress(long min, long max) {
-		m_uploadPopup.setPerItemProgress(0, min, max);
-	}
-
 	/**
 	 * Sets the current pinning state.
 	 * 
@@ -1586,70 +983,6 @@ public abstract class FolderViewBase extends ViewBase
 	}
 	
 	/**
-	 * Update the total progress to the specified value.
-	 * 
-	 * @param amount
-	 * 
-	 * Implements the Html5UploadCallback.setTotalCurrentProgress() method.
-	 */
-	@Override
-	public void setTotalCurrentProgress(double amount) {
-		m_uploadPopup.setTotalCurrentProgress(amount);
-	}
-
-	/**
-	 * Set the total maximum progress value. 
-	 * 
-	 * @param max
-	 * 
-	 * Implements the Html5UploadCallback.setTotalMaxProgress() method.
-	 */
-	@Override
-	public void setTotalMaxProgress(double max) {
-		m_uploadPopup.setTotalProgress(0, 0, max);
-	}
-
-	/**
-	 * Sets the current state of the upload.
-	 * 
-	 * @param previousState
-	 * @param newState
-	 * 
-	 * Implements the Html5UploadCallback.setUploadState() method.
-	 */
-	@Override
-	public void setUploadState(Html5UploadState previousState, Html5UploadState newState) {
-		switch (newState) {
-		case UPLOADING:
-			// We're uploading a file!  If we weren't previously
-			// performing an upload...
-			if (!(previousState.equals(Html5UploadState.UPLOADING))) {
-				// ...update the upload popup to show that we are now.
-				m_uploadPopup.setAbortVisible(           true                             );
-				m_uploadPopup.setProgressBarsVisible(    true                             );
-				m_uploadPopup.setTotalProgressBarVisible(1 < m_uploadHelper.getReadTotal());
-			}
-			break;
-			
-		case INACTIVE:
-			// We're waiting for user input!  Restore the upload popup
-			// to its initial state.
-			m_uploadPopup.setAbortVisible(       true                               );
-			m_uploadPopup.setHintText(           m_messages.addFilesHtml5PopupHint());
-			m_uploadPopup.setProgressBarsVisible(false                              );
-			m_uploadPopup.setActive(             false                              );
-			break;
-			
-		case VALIDATING:
-			// We're validating the user's selections before uploading
-			// them!
-			m_uploadPopup.setAbortVisible(false                                    );
-			m_uploadPopup.setHintText(    m_messages.addFilesHtml5PopupValidating());
-			break;
-		}
-	}
-
-	/**
 	 * Shows a busy spinner animation while an operation is going on.
 	 */
 	final public void showBusySpinner() {
@@ -1661,19 +994,6 @@ public abstract class FolderViewBase extends ViewBase
 
 		// ...and show it.
 		m_busySpinner.center();
-	}
-	
-	/**
-	 * Returns true if we should support this folder view as being a
-	 * drop target and false otherwise.
-	 * 
-	 * @return
-	 */
-	final public boolean supportsDragAndDrop() {
-		return (
-			GwtClientHelper.jsBrowserSupportsHtml5FileAPIs() &&
-			(null != m_canAddEntities)                       &&
-			m_canAddEntities.canAddEntries());
 	}
 	
 	/**
@@ -1704,58 +1024,6 @@ public abstract class FolderViewBase extends ViewBase
 		
 		// ...and store the widget.
 		m_verticalPanels.set(index, w);
-	}
-	
-	/**
-	 * The upload has completed.
-	 * 
-	 * @param aborted
-	 * 
-	 * Implements the Html5UploadCallback.uploadComplete() method.
-	 */
-	@Override
-	public void uploadComplete(boolean aborted, VibeEventBase<?> completeEvent) {
-		// Hide the upload popup...
-		m_uploadPopup.setActive(false);
-
-		// ...and if we were given an event to fire upon completion...
-		if (null != completeEvent) {
-			// ...fire it.
-			GwtTeaming.fireEventAsync(completeEvent);
-		}
-	}
-
-	/**
-	 * We're now uploading the next file.
-	 * 
-	 * @param fileName
-	 * @param thisFile
-	 * @param totalFiles
-	 * 
-	 * Implements the Html5UploadCallback.uploadingNextFile() method.
-	 */
-	@Override
-	public void uploadingNextFile(String fileName, int thisFile, int totalFiles) {
-		// Simply update the upload popup's hint.
-		m_uploadPopup.setHintText(
-			m_messages.addFilesHtml5PopupBusy(
-				fileName,
-				thisFile,
-				totalFiles));
-	}
-
-	/**
-	 * Errors occurred while validating the upload request.
-	 * 
-	 * @param errors
-	 * 
-	 * Implements the Html5UploadCallback.validationErrors() method.
-	 */
-	@Override
-	public void validationErrors(List<ErrorInfo> errors) {
-		GwtClientHelper.displayMultipleErrors(
-			m_messages.addFilesHtml5PopupUploadValidationError(),
-			errors);
 	}
 	
 	/**

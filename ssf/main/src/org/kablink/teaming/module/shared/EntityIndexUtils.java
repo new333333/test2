@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -80,7 +80,6 @@ import org.kablink.teaming.domain.WorkflowSupport;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.fi.connection.ResourceDriver;
-import org.kablink.teaming.fi.connection.ResourceDriverManager;
 import org.kablink.teaming.module.definition.DefinitionUtils;
 import org.kablink.teaming.module.workflow.WorkflowUtils;
 import org.kablink.teaming.search.BasicIndexUtils;
@@ -92,7 +91,6 @@ import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.TagUtil;
 import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.util.BinderHelper;
-import org.kablink.teaming.web.util.CloudFolderHelper;
 import org.kablink.teaming.web.util.DefinitionHelper;
 import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.util.StringUtil;
@@ -339,20 +337,6 @@ public class EntityIndexUtils {
     	String fileName = fAtts.iterator().next().getFileItem().getName();
 		Field sortPath = FieldFactory.createFieldNotStoredNotAnalyzed(SORT_ENTITY_PATH, parent.getPathName().toLowerCase() + "/" + fileName.toLowerCase());
 		doc.add(sortPath);
-    }
-
-    public static void addHiddenSearchField(Document doc, DefinableEntity entry, boolean hidden) {
-    	if (hidden) {
-	      	Field eField = FieldFactory.createFieldStoredNotAnalyzed(HIDDEN_FROM_SEARCH_FIELD, "true");
-	       	doc.add(eField);
-    	}
-    }
-
-    public static void addHiddenFindUserField(Document doc, DefinableEntity entry, boolean hidden) {
-    	if (hidden) {
-	      	Field eField = FieldFactory.createFieldStoredNotAnalyzed(HIDDEN_FROM_FIND_USER_FIELD, "true");
-	       	doc.add(eField);
-    	}
     }
 
     public static void addCreation(Document doc, HistoryStamp stamp, boolean fieldsOnly) {
@@ -781,14 +765,6 @@ public class EntityIndexUtils {
 	     		doc.add(FieldFactory.createFieldNotStoredNotAnalyzed(Constants.SHARED_TEAM_IDS, String.valueOf(id)));
 	     	}
      	}
-     	//Add in the original sharer id
-     	entityIdentifiers = new HashSet<EntityIdentifier>();
-     	entityIdentifiers.add(entity.getEntityIdentifier());
-     	Set<Long> sharerIds = profileDao.getSharerIdsToSharedEntities(entityIdentifiers);
-     	for (Long id : sharerIds) {
-     		//Indicate that this entity has been shared by someone
-     		doc.add(FieldFactory.createFieldNotStoredNotAnalyzed(Constants.SHARE_CREATOR, String.valueOf(id)));
-     	}
     }
     
     //Routine to add the sharing ids into the index doc
@@ -876,11 +852,7 @@ public class EntityIndexUtils {
 
     private static void markEntryAsInheritingAcls(Document doc, Binder binder, Entry entry) {
     	if(entry instanceof FolderEntry) {
-    		long value = binder.getId().longValue(); // parent folder id
-    		// Currently only the FAMT resource driver exposes files whose ACLs are not stored in Filr.
-    		if(binder.noAclDredgedWithEntries())
-    			value *= -1; // make it negative number
-    		doc.add(new NumericField(Constants.ENTRY_ACL_PARENT_ID_FIELD, Field.Store.YES, true).setLongValue(value));
+    		doc.add(new NumericField(Constants.ENTRY_ACL_PARENT_ID_FIELD).setLongValue(binder.getId().longValue()));
     	}
     }
     
@@ -1244,14 +1216,6 @@ public class EntityIndexUtils {
     }
     //Used to index info about a file with its owner
 	public static void addAttachedFileIds(Document doc, DefinableEntity entry, boolean fieldsOnly) {
-		// Can we determine a primary file attachment for this entry?
-		FileAttachment pfa = MiscUtil.getPrimaryFileAttachment(entry);
-		if (null != pfa) {
-			// Yes!  Add it to the index.
-        	Field primaryFileIDField = FieldFactory.createFieldStoredNotAnalyzed(PRIMARY_FILE_ID_FIELD, pfa.getId());
-        	doc.add(primaryFileIDField); 
-		}
-		
 		Collection<FileAttachment> atts = entry.getFileAttachments();
         for (FileAttachment fa : atts) {
         	Field fileIDField = FieldFactory.createFieldStoredNotAnalyzed(FILE_ID_FIELD, fa.getId());
@@ -1395,7 +1359,7 @@ public class EntityIndexUtils {
     }
 
     public static void addBinderIsMyFilesDir(Document doc, Binder binder, boolean fieldsOnly) {
-    	boolean isMyFilesDir = BinderHelper.isBinderMyFilesStorage(binder, false);	// false -> Don't update the My Files Storage binder markers.
+    	boolean isMyFilesDir = BinderHelper.isBinderMyFilesStorage(binder);
 		Field path = FieldFactory.createFieldStoredNotAnalyzed(IS_MYFILES_DIR_FIELD, (isMyFilesDir ? Constants.TRUE : Constants.FALSE));
 		doc.add(path);
     }
@@ -1434,20 +1398,14 @@ public class EntityIndexUtils {
 	        				{
 		        				// Is everything configured?
 		        				rootPath = rdConfig.getRootPath();
-		        				if ( rootPath != null && rootPath.length() > 0 ) {
-			        				proxyName = rdConfig.getAccountName();
-			        				proxyPwd = rdConfig.getPassword();
-		        					if (proxyName != null && proxyName.length() > 0 &&
-		        					    proxyPwd != null && proxyPwd.length() > 0 )
-			        				{
-			        					// Yes
-			        					hasResourceDriver = true;
-			        				}
-		        					else if ( CloudFolderHelper.isCloudFolder( binder ) )
-		        					{
-			        					// Yes
-			        					hasResourceDriver = true;
-		        					}
+		        				proxyName = rdConfig.getAccountName();
+		        				proxyPwd = rdConfig.getPassword();
+		        				if ( rootPath != null && rootPath.length() > 0 &&
+		        					 proxyName != null && proxyName.length() > 0 &&
+		        					 proxyPwd != null && proxyPwd.length() > 0 )
+		        				{
+		        					// Yes
+		        					hasResourceDriver = true;
 		        				}
 	        				}
     					}
@@ -1480,92 +1438,15 @@ public class EntityIndexUtils {
     /**
      * 
      */
-    public static void addResourceDriverName( Document doc, DefinableEntity entity, boolean fieldsOnly )
+    public static void addBinderResourceDriverName( Document doc, Binder binder, boolean fieldsOnly )
     {
-    	if(entity instanceof Folder) {
-    		Folder folder = (Folder) entity;
-    		if(folder.isMirrored() && folder.getResourceDriverName() != null) {
-        		Field path = FieldFactory.createFieldStoredNotAnalyzed( RESOURCE_DRIVER_NAME_FIELD, folder.getResourceDriverName() );
-        		doc.add( path );    			
-    		}
-    	}
-    	else if(entity instanceof FolderEntry) {
-    		Folder parentFolder = ((FolderEntry)entity).getParentFolder();
-    		if(parentFolder.isMirrored() && parentFolder.getResourceDriverName() != null) {
-        		Field path = FieldFactory.createFieldStoredNotAnalyzed( RESOURCE_DRIVER_NAME_FIELD, parentFolder.getResourceDriverName() );
-        		doc.add( path );    			
-    		}
+    	if ( (binder instanceof Folder) && binder.isMirrored() && binder.getResourceDriverName() != null )
+    	{
+    		Field path;
+    		
+    		path = FieldFactory.createFieldStoredNotAnalyzed( RESOURCE_DRIVER_NAME_FIELD, binder.getResourceDriverName() );
+    		doc.add( path );
     	}
     }
-    
-    public static void addNetFolderResourcePath( Document doc, DefinableEntity entity, boolean fieldsOnly )
-    {
-    	if(entity instanceof Folder) {
-    		Folder folder = (Folder) entity;
-    		if(folder.isMirrored() && folder.getResourceDriver() != null) {
-    			ResourceDriver driver = getResourceDriverManager().getDriver(folder.getResourceDriverName());
-    			ResourceDriverConfig config = driver.getConfig();
-    			if(ResourceDriverConfig.DriverType.famt == config.getDriverType()) {
-            		Field path = FieldFactory.createFieldStoredNotIndexed(RESOURCE_PATH_FIELD, folder.getResourcePath());
-            		doc.add( path );    			
-    			}
-    		}
-    	}
-    	if(entity instanceof FolderEntry) {
-    		FolderEntry folderEntry = (FolderEntry) entity;
-    		Folder parentFolder = folderEntry.getParentFolder();
-    		if(parentFolder.isMirrored() && parentFolder.getResourceDriverName() != null) {
-    			ResourceDriver driver = getResourceDriverManager().getDriver(parentFolder.getResourceDriverName());
-    			ResourceDriverConfig config = driver.getConfig();
-    			if(ResourceDriverConfig.DriverType.famt == config.getDriverType()) {
-            		Field path = FieldFactory.createFieldStoredNotIndexed(RESOURCE_PATH_FIELD, 
-            				driver.normalizedResourcePath(parentFolder.getResourcePath(), folderEntry.getTitle()));
-            		doc.add( path );    			
-    			}
-     		}
-    	}
-    }
-    
-    /**
-     * Adds whether a binder is a Cloud Folder to the index.  If a
-     * binder is a Cloud Folder, adds the name if it Cloud Folder root
-     * to the index.
-     */
-    public static void addBinderCloudFolderInfo(Document doc, Binder binder, boolean fieldsOnly) {
-		String cfRoot = CloudFolderHelper.getCloudFolderRoot(binder);
-		boolean isCloudFolder = MiscUtil.hasString(cfRoot);
-		if (isCloudFolder) {
-			Field path = FieldFactory.createFieldStoredNotAnalyzed(RESOURCE_DRIVER_NAME_FIELD, cfRoot);
-			doc.add(path);
-		}
-		
-		Field path = FieldFactory.createFieldStoredNotAnalyzed(IS_CLOUD_FOLDER_FIELD, (isCloudFolder ? Constants.TRUE : Constants.FALSE));
-		doc.add(path);
-    }
-    
-    /**
-     * Adds a file time to the index for file folders.
-     */
-    public static void addFolderFileTime(Document doc, Folder folder, boolean fieldsOnly) {
-    	// Is the folder a file folder?
-    	org.dom4j.Document def = folder.getEntryDefDoc();
-    	String family = DefinitionUtils.getFamily(def);
-    	if (Validator.isNotNull(family) && family.equals(Definition.FAMILY_FILE)) {
-    		// Yes!  Does it have a modification timestamp?
-    		HistoryStamp stamp = folder.getModification();
-    		if (null != stamp) {
-    			// Yes!  Does that timestamp contain a date?
-    	    	Date modDate = stamp.getDate();
-    	     	if (null != modDate) {
-    	     		// Yes!  Use it to add a _fileTime field.
-    				Field path = FieldFactory.createFieldStoredNotAnalyzed(FILE_TIME_FIELD, String.valueOf(modDate.getTime()));
-    				doc.add(path);
-    	     	}
-    		}
-    	}
-    }
-    
-    private static ResourceDriverManager getResourceDriverManager() {
-    	return (ResourceDriverManager) SpringContextUtil.getBean("resourceDriverManager");
-    }
+
 }

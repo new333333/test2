@@ -1,10 +1,19 @@
-//>>built
-define("dojox/collections/SortedList",["dojo/_base/kernel","dojo/_base/array","./_base"],function(_1,_2,_3){
-_3.SortedList=function(_4){
-var _5=this;
-var _6={};
+/*
+	Copyright (c) 2004-2009, The Dojo Foundation All Rights Reserved.
+	Available via Academic Free License >= 2.1 OR the modified BSD license.
+	see: http://dojotoolkit.org/license for details
+*/
+
+
+if(!dojo._hasResource["dojox.collections.SortedList"]){
+dojo._hasResource["dojox.collections.SortedList"]=true;
+dojo.provide("dojox.collections.SortedList");
+dojo.require("dojox.collections._base");
+dojox.collections.SortedList=function(_1){
+var _2=this;
+var _3={};
 var q=[];
-var _7=function(a,b){
+var _4=function(a,b){
 if(a.key>b.key){
 return 1;
 }
@@ -13,85 +22,85 @@ return -1;
 }
 return 0;
 };
-var _8=function(){
+var _5=function(){
 q=[];
-var e=_5.getIterator();
+var e=_2.getIterator();
 while(!e.atEnd()){
 q.push(e.get());
 }
-q.sort(_7);
+q.sort(_4);
 };
-var _9={};
+var _6={};
 this.count=q.length;
 this.add=function(k,v){
-if(!_6[k]){
-_6[k]=new _3.DictionaryEntry(k,v);
-this.count=q.push(_6[k]);
-q.sort(_7);
+if(!_3[k]){
+_3[k]=new dojox.collections.DictionaryEntry(k,v);
+this.count=q.push(_3[k]);
+q.sort(_4);
 }
 };
 this.clear=function(){
-_6={};
+_3={};
 q=[];
 this.count=q.length;
 };
 this.clone=function(){
-return new _3.SortedList(this);
+return new dojox.collections.SortedList(this);
 };
 this.contains=this.containsKey=function(k){
-if(_9[k]){
+if(_6[k]){
 return false;
 }
-return (_6[k]!=null);
+return (_3[k]!=null);
 };
 this.containsValue=function(o){
 var e=this.getIterator();
 while(!e.atEnd()){
-var _a=e.get();
-if(_a.value==o){
+var _7=e.get();
+if(_7.value==o){
 return true;
 }
 }
 return false;
 };
-this.copyTo=function(_b,i){
+this.copyTo=function(_8,i){
 var e=this.getIterator();
-var _c=i;
+var _9=i;
 while(!e.atEnd()){
-_b.splice(_c,0,e.get());
-_c++;
+_8.splice(_9,0,e.get());
+_9++;
 }
 };
 this.entry=function(k){
-return _6[k];
+return _3[k];
 };
-this.forEach=function(fn,_d){
-_1.forEach(q,fn,_d);
+this.forEach=function(fn,_a){
+dojo.forEach(q,fn,_a);
 };
 this.getByIndex=function(i){
 return q[i].valueOf();
 };
 this.getIterator=function(){
-return new _3.DictionaryIterator(_6);
+return new dojox.collections.DictionaryIterator(_3);
 };
 this.getKey=function(i){
 return q[i].key;
 };
 this.getKeyList=function(){
-var _e=[];
+var _b=[];
 var e=this.getIterator();
 while(!e.atEnd()){
-_e.push(e.get().key);
+_b.push(e.get().key);
 }
-return _e;
+return _b;
 };
 this.getValueList=function(){
-var _f=[];
+var _c=[];
 var e=this.getIterator();
 while(!e.atEnd()){
-_f.push(e.get().value);
+_c.push(e.get().value);
 }
-return _f;
+return _c;
 };
 this.indexOfKey=function(k){
 for(var i=0;i<q.length;i++){
@@ -110,44 +119,43 @@ return i;
 return -1;
 };
 this.item=function(k){
-if(k in _6&&!_9[k]){
-return _6[k].valueOf();
+if(k in _3&&!_6[k]){
+return _3[k].valueOf();
 }
 return undefined;
 };
 this.remove=function(k){
-delete _6[k];
-_8();
+delete _3[k];
+_5();
 this.count=q.length;
 };
 this.removeAt=function(i){
-delete _6[q[i].key];
-_8();
+delete _3[q[i].key];
+_5();
 this.count=q.length;
 };
 this.replace=function(k,v){
-if(!_6[k]){
+if(!_3[k]){
 this.add(k,v);
 return false;
 }else{
-_6[k]=new _3.DictionaryEntry(k,v);
-_8();
+_3[k]=new dojox.collections.DictionaryEntry(k,v);
+_5();
 return true;
 }
 };
 this.setByIndex=function(i,o){
-_6[q[i].key].value=o;
-_8();
+_3[q[i].key].value=o;
+_5();
 this.count=q.length;
 };
-if(_4){
-var e=_4.getIterator();
+if(_1){
+var e=_1.getIterator();
 while(!e.atEnd()){
-var _10=e.get();
-q[q.length]=_6[_10.key]=new _3.DictionaryEntry(_10.key,_10.value);
+var _d=e.get();
+q[q.length]=_3[_d.key]=new dojox.collections.DictionaryEntry(_d.key,_d.value);
 }
-q.sort(_7);
+q.sort(_4);
 }
 };
-return _3.SortedList;
-});
+}

@@ -49,7 +49,6 @@ import org.kablink.teaming.UncheckedIOException;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.FileAttachment;
-import org.kablink.teaming.domain.ShareItem;
 import org.kablink.teaming.repository.RepositoryServiceException;
 import org.kablink.teaming.repository.RepositoryUtil;
 import org.kablink.teaming.util.FilePathUtil;
@@ -63,7 +62,6 @@ import org.springframework.util.FileCopyUtils;
 public abstract class HtmlConverter extends Converter<String>
 {
 	protected static final String HTML_SUBDIR = "html";
-	protected static final String HTML_PUBLIC_SUBDIR = "html_public_";
 	protected static final String HTML_FILE_SUFFIX = ".html";
 	
 	public HtmlConverter() {
@@ -247,40 +245,14 @@ public abstract class HtmlConverter extends Converter<String>
 		}
 	}
 	
-	public InputStream convert(String url, ShareItem shareItem, Binder binder, DefinableEntity entry, FileAttachment fa)
-		throws IOException
-	{
-		if (fa.isEncrypted()) {
-			throw new DocConverterException(NLT.get("html.converterError.encrypted"));
-		} else {
-			String subDir = HTML_PUBLIC_SUBDIR + String.valueOf(shareItem.getId());
-			return super.convert(binder, entry, fa, url, subDir, HTML_FILE_SUFFIX);
-		}
-	}
-
-
 	public void deleteCacheHtmlFile(Binder binder, DefinableEntity entity, FileAttachment fa) 
 			throws UncheckedIOException, RepositoryServiceException {
 		super.deleteConvertedFile(binder, entity, fa, HTML_SUBDIR, HTML_FILE_SUFFIX);
 	}
-	
-	public void deleteCacheHtmlFile(ShareItem shareItem, Binder binder, DefinableEntity entity, FileAttachment fa) 
-			throws UncheckedIOException, RepositoryServiceException {
-		String subDir = HTML_PUBLIC_SUBDIR + String.valueOf(shareItem.getId());
-		super.deleteConvertedFile(binder, entity, fa, subDir, HTML_FILE_SUFFIX);
-	}
-
 	public InputStream getCachedFile(Binder binder, DefinableEntity entry, FileAttachment fa, String fileName)
 	throws IOException
 	{
 		return getCachedFile(binder, entry, fa, fileName, HTML_SUBDIR);
-	}
-	
-	public InputStream getCachedFile(ShareItem shareItem, Binder binder, DefinableEntity entry, FileAttachment fa, String fileName)
-	throws IOException
-	{
-		String subDir = HTML_PUBLIC_SUBDIR + String.valueOf(shareItem.getId());
-		return getCachedFile(binder, entry, fa, fileName, subDir);
 	}
 	
 	protected void createConvertedFileWithDefaultContent(File convertedFile) throws IOException {

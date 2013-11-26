@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -32,8 +32,6 @@
  */
 package org.kablink.teaming.gwt.client.util;
 
-import org.kablink.teaming.gwt.client.rpc.shared.CanAddEntitiesRpcResponseData;
-
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
@@ -43,18 +41,16 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * @author drfoster
  */
 public class EntryTitleInfo implements IsSerializable {
-	private boolean							m_descriptionIsHtml;	//
-	private boolean							m_file;					//
-	private boolean     					m_hidden;				//
-	private boolean							m_seen;					//
-	private boolean 						m_trash;				//
-	private CanAddEntitiesRpcResponseData	m_folderAddRights;		// If m_entityId refers to a folder, contains the user's rights to add to that folder.
-	private EntityId						m_entityId;				//
-	private String							m_description;			//
-	private String							m_fileDownloadUrl;		//
-	private String							m_fileViewAsHtmlUrl;	//
-	private String							m_fileIcon;				//
-	private String  						m_title;				//
+	private boolean		m_descriptionIsHtml;	//
+	private boolean		m_file;					//
+	private boolean     m_hidden;				//
+	private boolean		m_seen;					//
+	private boolean 	m_trash;				//
+	private EntityId	m_entityId;				//
+	private String		m_description;			//
+	private String		m_fileDownloadUrl;		//
+	private String		m_fileIcon;				//
+	private String  	m_title;				//
 	
 	// The following is only used on the client side to push an Image
 	// through to the data table for items.
@@ -74,68 +70,32 @@ public class EntryTitleInfo implements IsSerializable {
 	 * 
 	 * @return
 	 */
-	public boolean                       isDescriptionHtml()       {return m_descriptionIsHtml;}
-	public boolean                       isFile()                  {return m_file;             }
-	public boolean                       isHidden()                {return m_hidden;           }
-	public boolean                       isSeen()                  {return m_seen;             }
-	public boolean                       isTrash()                 {return m_trash;            }
-	public CanAddEntitiesRpcResponseData getCanAddFolderEntities() {return m_folderAddRights;  }
-	public EntityId                      getEntityId()             {return m_entityId;         }
-	public String                        getFileDownloadUrl()      {return m_fileDownloadUrl;  }
-	public String                        getFileViewAsHtmlUrl()    {return m_fileViewAsHtmlUrl;}
-	public String                        getFileIcon()             {return m_fileIcon;         }
-	public String                        getDescription()          {return m_description;      }
-	public String                        getTitle()                {return m_title;            }
-	public Object                        getClientItemImage()      {return m_clientItemImage;  }
+	public boolean  isDescriptionHtml()  {return m_descriptionIsHtml;}
+	public boolean  isFile()             {return m_file;             }
+	public boolean  isHidden()           {return m_hidden;           }
+	public boolean  isSeen()             {return m_seen;             }
+	public boolean  isTrash()            {return m_trash;            }
+	public EntityId getEntityId()        {return m_entityId;         }
+	public String   getFileDownloadUrl() {return m_fileDownloadUrl;  }
+	public String   getFileIcon()        {return m_fileIcon;         }
+	public String   getDescription()     {return m_description;      }
+	public String   getTitle()           {return m_title;            }
+	public Object   getClientItemImage() {return m_clientItemImage;  }
 	
 	/**
 	 * Set'er methods.
 	 * 
 	 * @param
 	 */
-	public void setFile(                boolean                       file)              {m_file              = file;             }
-	public void setHidden(              boolean                       hidden)            {m_hidden            = hidden;           }
-	public void setSeen(                boolean                       seen)              {m_seen              = seen;             }
-	public void setTrash(               boolean                       trash)             {m_trash             = trash;            }
-	public void setCanAddFolderEntities(CanAddEntitiesRpcResponseData folderAddRights)   {m_folderAddRights   = folderAddRights;  }
-	public void setEntityId(            EntityId                      entityId)          {m_entityId          = entityId;         }
-	public void setFileDownloadUrl(     String                        fileDownloadUrl)   {m_fileDownloadUrl   = fileDownloadUrl;  }
-	public void setFileViewAsHtmlUrl(   String                        fileViewAsHtmlUrl) {m_fileViewAsHtmlUrl = fileViewAsHtmlUrl;}
-	public void setFileIcon(            String                        fileIcon)          {m_fileIcon          = fileIcon;         }
-	public void setDescription(         String                        description)       {m_description       = description;      }
-	public void setDescriptionIsHtml(   boolean                       descriptionIsHtml) {m_descriptionIsHtml = descriptionIsHtml;}
-	public void setTitle(               String                        title)             {m_title             = title;            }
-	public void setClientItemImage(     Object                        clientItemImage)   {m_clientItemImage   = clientItemImage;  }
-
-
-	/**
-	 * Returns true if this EntryTitleInfo refers to a folder that the
-	 * use has rights to add entries or nested folders to and false
-	 * otherwise.
-	 * 
-	 * @return
-	 */
-	public boolean canAddFolderEntities() {
-		return ((null != m_folderAddRights) && m_folderAddRights.canAddEntities());
-	}
-	
-	/**
-	 * Returns true if this EntryTitleInfo refers to a folder that the
-	 * use has rights to add entries to and false otherwise.
-	 * 
-	 * @return
-	 */
-	public boolean canAddFolderEntries() {
-		return ((null != m_folderAddRights) && m_folderAddRights.canAddEntries());
-	}
-
-	/**
-	 * Returns true if this EntryTitleInfo refers to a folder that the
-	 * use has rights to add nested folders to and false otherwise.
-	 * 
-	 * @return
-	 */
-	public boolean canAddFolderFolders() {
-		return ((null != m_folderAddRights) && m_folderAddRights.canAddFolders());
-	}
+	public void setFile(             boolean  file)              {m_file              = file;             }
+	public void setHidden(           boolean  hidden)            {m_hidden            = hidden;           }
+	public void setSeen(             boolean  seen)              {m_seen              = seen;             }
+	public void setTrash(            boolean  trash)             {m_trash             = trash;            }
+	public void setEntityId(         EntityId entityId)          {m_entityId          = entityId;         }
+	public void setFileDownloadUrl(  String   fileDownloadUrl)   {m_fileDownloadUrl   = fileDownloadUrl;  }
+	public void setFileIcon(         String   fileIcon)          {m_fileIcon          = fileIcon;         }
+	public void setDescription(      String   description)       {m_description       = description;      }
+	public void setDescriptionIsHtml(boolean  descriptionIsHtml) {m_descriptionIsHtml = descriptionIsHtml;}
+	public void setTitle(            String   title)             {m_title             = title;            }
+	public void setClientItemImage(  Object   clientItemImage)   {m_clientItemImage   = clientItemImage;  }
 }

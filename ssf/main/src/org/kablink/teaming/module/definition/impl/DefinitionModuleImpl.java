@@ -53,10 +53,6 @@ import java.util.TreeMap;
 import java.util.Locale;
 
 import javax.mail.internet.InternetAddress;
-import javax.portlet.ActionRequest;
-import javax.portlet.PortletSession;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 
 import org.dom4j.Attribute;
 import org.dom4j.Document;
@@ -71,12 +67,8 @@ import org.kablink.teaming.DefinitionExistsException;
 import org.kablink.teaming.NotSupportedException;
 import org.kablink.teaming.ObjectExistsException;
 import org.kablink.teaming.ObjectKeys;
-import org.kablink.teaming.TextVerificationException;
 import org.kablink.teaming.calendar.TimeZoneHelper;
-import org.kablink.teaming.context.request.PortletSessionContext;
 import org.kablink.teaming.context.request.RequestContextHolder;
-import org.kablink.teaming.context.request.SessionContext;
-import org.kablink.teaming.dao.ProfileDao;
 import org.kablink.teaming.dao.util.FilterControls;
 import org.kablink.teaming.dao.util.Restrictions;
 import org.kablink.teaming.domain.Application;
@@ -98,11 +90,9 @@ import org.kablink.teaming.domain.NoDefinitionByTheIdException;
 import org.kablink.teaming.domain.NoPrincipalByTheNameException;
 import org.kablink.teaming.domain.PackedValue;
 import org.kablink.teaming.domain.Principal;
-import org.kablink.teaming.domain.ProfileBinder;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.WorkflowState;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
-import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.binder.impl.EntryDataErrors;
 import org.kablink.teaming.module.binder.impl.EntryDataErrors.Problem;
@@ -111,14 +101,11 @@ import org.kablink.teaming.module.definition.DefinitionModule;
 import org.kablink.teaming.module.definition.DefinitionUtils;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.impl.CommonDependencyInjection;
-import org.kablink.teaming.module.profile.ProfileModule;
-import org.kablink.teaming.module.profile.ProfileModule.ProfileOperation;
 import org.kablink.teaming.module.shared.InputDataAccessor;
 import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.module.workflow.WorkflowModule;
 import org.kablink.teaming.module.workflow.WorkflowProcessUtils;
 import org.kablink.teaming.module.workflow.impl.WorkflowFactory;
-import org.kablink.teaming.portletadapter.portlet.HttpServletRequestReachable;
 import org.kablink.teaming.repository.RepositoryUtil;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.security.function.WorkAreaOperation;
@@ -136,11 +123,9 @@ import org.kablink.teaming.util.LocaleUtils;
 import org.kablink.teaming.util.cache.DefinitionCache;
 import org.kablink.teaming.util.stringcheck.StringCheckUtil;
 import org.kablink.teaming.web.WebKeys;
-import org.kablink.teaming.web.portlet.ParamsWrappedActionRequest;
 import org.kablink.teaming.web.tree.TreeHelper;
 import org.kablink.teaming.web.util.DefinitionHelper;
 import org.kablink.teaming.web.util.MarkupUtil;
-import org.kablink.teaming.web.util.WebHelper;
 import org.kablink.util.GetterUtil;
 import org.kablink.util.Html;
 import org.kablink.util.StringUtil;
@@ -171,17 +156,6 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
    	protected BinderModule getBinderModule() {
 		return binderModule;
 	}
-	protected ProfileModule profileModule;
-	public void setProfileModule(ProfileModule profileModule) {
-		this.profileModule = profileModule;
-	}
-   	protected ProfileModule getProfileModule() {
-   		if (profileModule == null) {
-   			profileModule = (ProfileModule) SpringContextUtil.getBean("profileModule");
-   		}
-		return profileModule;
-	}
-
    	protected WorkflowModule workflowModule;
 
 	public void setWorkflowModule(WorkflowModule workflowModule) {
@@ -2521,26 +2495,6 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 				if (!inputData.isFieldsOnly() || fieldModificationAllowed) 
 					entryData.put(nameValue, StringCheckUtil.check(inputData.getValues(nameValue)));
 			}
-		} else if (itemName.equals("captcha")) {
-	    	boolean guestOnly = true;
-	    	if (nextItem != null) guestOnly = DefinitionUtils.getPropertyBooleanValue(nextItem, "guestOnly");
-			if ( !guestOnly || user.isShared() ) {
-				String kaptchaResponse = inputData.getSingleValue("_captcha");
-				String kaptchaExpected = null;
-				SessionContext ctx = RequestContextHolder.getRequestContext().getSessionContext();
-				Object session = ctx.getSessionObject();
-				if (session != null && session instanceof HttpSession) {
-					kaptchaExpected = (String)((HttpSession)session).getAttribute(com.google.code.kaptcha.Constants.KAPTCHA_SESSION_KEY);
-				} else if (session != null && session instanceof PortletSession) {
-					kaptchaExpected = (String)((PortletSession)session).getAttribute(com.google.code.kaptcha.Constants.KAPTCHA_SESSION_KEY, javax.portlet.PortletSession.APPLICATION_SCOPE);
-				}
-	    		if ( kaptchaExpected == null || 
-	    				kaptchaResponse == null || 
-	    				!kaptchaExpected.equalsIgnoreCase( kaptchaResponse  ) ) {
-					// The text entered by the user did not match the text used to create the kaptcha image.
-					entryDataErrors.addProblem(new Problem(Problem.INVALID_CAPTCHA_RESPONSE, null));
-				}
-			}
 		} else if (itemName.equals("selectbox")) {
 	    	String multiple = "";
 	    	if (nextItem != null) multiple = DefinitionUtils.getPropertyValue(nextItem, "multipleAllowed");
@@ -2821,8 +2775,6 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 					}
 				}
 			}
-		} else if (itemName.equals("profileManageGroups")) {
-			//Ignore this item. It gets handled after the Add or Modify is finished.
 		} else {
 			if (inputData.exists(nameValue)) {
 				if (!inputData.isFieldsOnly() || fieldModificationAllowed) {
@@ -2955,8 +2907,6 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
         	return Utils.validateDefinitions(defs, binder);
     	}
     	Binder binder = getCoreDao().loadBinder(binderId, RequestContextHolder.getRequestContext().getZoneId());
-    	List<Definition> defaultEntryDefinitions = binder.getEntryDefinitions();
-    	List<Definition> defs = new ArrayList<Definition>();
    	 	if (includeAncestors.equals(Boolean.TRUE)) {
   	       	Map params = new HashMap();
   	    	params.put("type", type);
@@ -2965,18 +2915,15 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
   	    	params.put("binderId", ids);
    	 		params.put("zoneId", RequestContextHolder.getRequestContext().getZoneId());
 
-   	 		defs = filterDefinitions(coreDao.loadObjects("from org.kablink.teaming.domain.Definition where binderId in (:binderId) and zoneId=:zoneId  and type=:type", params));
+   	 		List<Definition> defs = filterDefinitions(coreDao.loadObjects("from org.kablink.teaming.domain.Definition where binderId in (:binderId) and zoneId=:zoneId  and type=:type", params));
+   	 		return Utils.validateDefinitions(defs, binder);
   	 	} else {
   	      	FilterControls filter = new FilterControls()
   	      		.add(Restrictions.eq("type", type))
   	      		.add(Restrictions.eq("binderId", binder.getId()));
-  	      	defs = coreDao.loadDefinitions(filter, RequestContextHolder.getRequestContext().getZoneId());
+  	      	List<Definition> defs = coreDao.loadDefinitions(filter, RequestContextHolder.getRequestContext().getZoneId());
+  	      	return Utils.validateDefinitions(defs, binder);
   	 	}
-   	 	for (Definition def : defaultEntryDefinitions) {
-   	 		//Make sure to include the default defs in use by this binder
-   	 		if (def.getType() == type && !defs.contains(def)) defs.add(def);
-   	 	}
- 		return Utils.validateDefinitions(defs, binder);
 
     }
     private List<Long> getAncestorIds(Binder binder) {

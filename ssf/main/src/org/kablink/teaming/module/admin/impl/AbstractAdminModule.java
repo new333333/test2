@@ -32,14 +32,9 @@
  */
 package org.kablink.teaming.module.admin.impl;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
-import java.text.DateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -58,9 +53,7 @@ import javax.mail.internet.InternetAddress;
 
 import org.apache.velocity.VelocityContext;
 import org.dom4j.Document;
-import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
-import org.dom4j.io.OutputFormat;
 import org.dom4j.io.SAXReader;
 
 import org.kablink.teaming.ConfigurationException;
@@ -72,7 +65,6 @@ import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.util.FilterControls;
 import org.kablink.teaming.dao.util.OrderBy;
 import org.kablink.teaming.domain.Application;
-import org.kablink.teaming.domain.AuditTrail;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.BinderQuota;
 import org.kablink.teaming.domain.ChangeLog;
@@ -85,9 +77,7 @@ import org.kablink.teaming.domain.ExtensionInfo;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.HistoryStamp;
 import org.kablink.teaming.domain.HomePageConfig;
-import org.kablink.teaming.domain.IndexNode;
 import org.kablink.teaming.domain.MailConfig;
-import org.kablink.teaming.domain.NameCompletionSettings;
 import org.kablink.teaming.domain.NoDefinitionByTheIdException;
 import org.kablink.teaming.domain.PostingDef;
 import org.kablink.teaming.domain.ProfileBinder;
@@ -135,7 +125,6 @@ import org.kablink.teaming.module.shared.ObjectBuilder;
 import org.kablink.teaming.module.workspace.WorkspaceModule;
 import org.kablink.teaming.search.IndexErrors;
 import org.kablink.teaming.search.LuceneWriteSession;
-import org.kablink.teaming.search.SearchUtils;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.security.accesstoken.AccessToken;
 import org.kablink.teaming.security.function.Condition;
@@ -147,9 +136,7 @@ import org.kablink.teaming.security.function.WorkArea;
 import org.kablink.teaming.security.function.WorkAreaFunctionMembership;
 import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.util.AllModulesInjected;
-import org.kablink.teaming.util.FileStore;
 import org.kablink.teaming.util.NLT;
-import org.kablink.teaming.util.NetworkUtil;
 import org.kablink.teaming.util.ReflectHelper;
 import org.kablink.teaming.util.RuntimeStatistics;
 import org.kablink.teaming.util.SPropsUtil;
@@ -157,7 +144,6 @@ import org.kablink.teaming.util.SZoneConfig;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.StatusTicket;
 import org.kablink.teaming.util.Utils;
-import org.kablink.teaming.util.XmlFileUtil;
 import org.kablink.teaming.web.util.DefinitionHelper;
 import org.kablink.teaming.web.util.EmailHelper;
 import org.kablink.teaming.web.util.MiscUtil;
@@ -166,7 +152,6 @@ import org.kablink.util.Html;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
 
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.mail.MailAuthenticationException;
 import org.springframework.mail.MailSendException;
@@ -180,7 +165,7 @@ import org.springframework.transaction.support.TransactionTemplate;
  * @author Janet McCann
  */
 @SuppressWarnings("unchecked")
-public abstract class AbstractAdminModule extends CommonDependencyInjection implements AdminModule, InitializingBean {
+public abstract class AbstractAdminModule extends CommonDependencyInjection implements AdminModule {
 	
 	protected static String INDEX_OPTIMIZATION_JOB = "index.optimization.job"; // properties in xml file need a unique name
 	protected static String FILE_VERSION_AGING_JOB = "file.version.aging.job"; // properties in xml file need a unique name
@@ -277,28 +262,6 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 	}
 
 	@Override
-	public void afterPropertiesSet() throws Exception {
-		cleanupReindexingStatus();
-	}
-	
-	private void cleanupReindexingStatus() {
-		FilterControls filter = new FilterControls();
-		filter.addNotNull("reindexingStartDate");
-		filter.add("reindexingIpv4Address", NetworkUtil.getLocalHostIPv4Address());
-		filter.setZoneCheck(false);
-		final List<IndexNode> nodes = getCoreDao().loadObjects(IndexNode.class, filter, null);
-		if(nodes.size() > 0) {
-			for(IndexNode node:nodes) {
-				logger.info("Clearing reindexing status on index node with id '" + node.getId() + "' from node '"  + node.getReindexingIpv4Address() + "' at startup");
-				node.setReindexingStartDate(null);
-				node.setReindexingIpv4Address(null);
-				node.setReindexingEndDate(null);
-    			getCoreDao().updateNewSessionWithoutUpdate(node);
-			}
-		}
-	}
-	
-	@Override
 	public void deleteExtension(String id){
 		checkAccess(AdminOperation.manageExtensions);
 		
@@ -381,29 +344,22 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 		return (EntryProcessor)getProcessorManager().getProcessor(entry.getParentBinder(), entry.getParentBinder().getProcessorKey(EntryProcessor.PROCESSOR_KEY));
 	}
 
-    public boolean testAccess(AdminOperation operation) {
-        return testUserAccess(RequestContextHolder.getRequestContext().getUser(), operation);
-    }
-
-    public void checkAccess(AdminOperation operation) {
-        checkUserAccess(RequestContextHolder.getRequestContext().getUser(), operation);
-    }
-
    	/**
 	 * Use operation so we can keep the logic out of application
 	 * and easily change the required rights
    	 * 
    	 */
-	public boolean testUserAccess(User user, AdminOperation operation) {
+  	@Override
+	public boolean testAccess(AdminOperation operation) {
    		try {
-   			checkUserAccess(user, operation);
+   			checkAccess(operation);
    			return true;
    		} catch (AccessControlException ac) {
    			return false;
    		}
    	}
-
-	public void checkUserAccess(User user, AdminOperation operation) {
+  	@Override
+	public void checkAccess(AdminOperation operation) {
    		Binder top = RequestContextHolder.getRequestContext().getZone();
 		switch (operation) {
 			case manageFunction:
@@ -421,14 +377,14 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
   			case manageOpenID:
   			case manageExternalUser:
   			case manageMobileApps:
-  				getAccessControlManager().checkOperation(user, getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId()), WorkAreaOperation.ZONE_ADMINISTRATION);
+  				getAccessControlManager().checkOperation(getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId()), WorkAreaOperation.ZONE_ADMINISTRATION);
    				break;
 			case report:
-   				if (getAccessControlManager().testOperation(user, top, WorkAreaOperation.GENERATE_REPORTS)) break;
- 				getAccessControlManager().checkOperation(user, getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId()), WorkAreaOperation.ZONE_ADMINISTRATION);
+   				if (getAccessControlManager().testOperation(top, WorkAreaOperation.GENERATE_REPORTS)) break;
+ 				getAccessControlManager().checkOperation(getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId()), WorkAreaOperation.ZONE_ADMINISTRATION);
    				break;
 			case manageExtensions:
-  				getAccessControlManager().checkOperation(user, getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId()), WorkAreaOperation.ZONE_ADMINISTRATION);
+  				getAccessControlManager().checkOperation(getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId()), WorkAreaOperation.ZONE_ADMINISTRATION);
 
   				//is this featured disabled
     			if( !SPropsUtil.getBoolean("extensions.manage.enabled", true) ) {
@@ -439,7 +395,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
   			case manageIndex: 
   				// Or should we allow only 'admin' to be able to manage index since we display
   				// the UI only for admin??
-  				getAccessControlManager().checkOperation(user, getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId()), WorkAreaOperation.ZONE_ADMINISTRATION);
+  				getAccessControlManager().checkOperation(getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId()), WorkAreaOperation.ZONE_ADMINISTRATION);
    				break;
 			default:
    				throw new NotSupportedException(operation.toString(), "checkAccess");
@@ -572,54 +528,6 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
   		zoneConfig.setAdHocFoldersEnabled( enabled );
   	}
 
-  	/**
-  	 * 
-  	 */
-  	@Override
-	public boolean isDownloadEnabled()
-  	{
-  		ZoneConfig zoneConfig;
-
-  		zoneConfig = getCoreDao().loadZoneConfig( RequestContextHolder.getRequestContext().getZoneId() );
-  		return zoneConfig.isDownloadEnabled(); 		
-  	}
-  	
-  	/**
-  	 * 
-  	 */
-  	@Override
-	public void setDownloadEnabled( boolean enabled ) 
-  	{
-  		ZoneConfig zoneConfig;
-
-  		zoneConfig = getCoreDao().loadZoneConfig( RequestContextHolder.getRequestContext().getZoneId() );
-  		zoneConfig.setDownloadEnabled( enabled );
-  	}
-
-  	/**
-  	 * 
-  	 */
-  	@Override
-	public boolean isWebAccessEnabled()
-  	{
-  		ZoneConfig zoneConfig;
-
-  		zoneConfig = getCoreDao().loadZoneConfig( RequestContextHolder.getRequestContext().getZoneId() );
-  		return zoneConfig.isWebAccessEnabled(); 		
-  	}
-  	
-  	/**
-  	 * 
-  	 */
-  	@Override
-	public void setWebAccessEnabled( boolean enabled ) 
-  	{
-  		ZoneConfig zoneConfig;
-
-  		zoneConfig = getCoreDao().loadZoneConfig( RequestContextHolder.getRequestContext().getZoneId() );
-  		zoneConfig.setWebAccessEnabled( enabled );
-  	}
-
   	@Override
 	public boolean isMobileAccessEnabled() {
   		if (Utils.checkIfFilr()) {
@@ -726,32 +634,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
  			getPostingObject().enable(false, zoneConfig.getZoneId());
  		}
   	}
-
-  	/**
-  	 * 
-  	 */
-  	@Override
-	public NameCompletionSettings getNameCompletionSettings()
-  	{
-  		ZoneConfig zoneConfig;
-  		
-  		zoneConfig = getCoreDao().loadZoneConfig( RequestContextHolder.getRequestContext().getZoneId() );
-  		return new NameCompletionSettings( zoneConfig.getNameCompletionSettings() );
-  	}
-  	
-  	/**
-  	 * 
-  	 */
-  	@Override
-	public void setNameCompletionSettings( NameCompletionSettings settings )
-  	{
-  		ZoneConfig zoneConfig;
-
-  		zoneConfig = getCoreDao().loadZoneConfig( RequestContextHolder.getRequestContext().getZoneId() );
-  		zoneConfig.setNameCompletionSettings( settings ); 		
-  	}
-
-  	@Override
+	@Override
 	public List<PostingDef> getPostings() {
     	return coreDao.loadPostings(RequestContextHolder.getRequestContext().getZoneId());
     }
@@ -797,31 +680,6 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
        	String className = SPropsUtil.getString("job.email.posting.class", "org.kablink.teaming.jobs.DefaultEmailPosting");
        	return (EmailPosting)ReflectHelper.getInstance(className);
      }
-
-   	/**
-   	 * 
-   	 */
-   	@Override
- 	public boolean isSharingWithLdapGroupsEnabled()
-   	{
-   		ZoneConfig zoneConfig;
-
-   		zoneConfig = getCoreDao().loadZoneConfig( RequestContextHolder.getRequestContext().getZoneId() );
-   		return zoneConfig.isSharingWithLdapGroupsEnabled(); 		
-   	}
-   	
-   	/**
-   	 * 
-   	 */
-   	@Override
- 	public void setAllowShareWithLdapGroups( boolean allow ) 
-   	{
-   		ZoneConfig zoneConfig;
-
-   		zoneConfig = getCoreDao().loadZoneConfig( RequestContextHolder.getRequestContext().getZoneId() );
-   		zoneConfig.setAllowShareWithLdapGroups( allow );
-   	}
-
 
 	/**
      * Do actual work to either enable or disable digest notification.
@@ -1062,27 +920,6 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
     	// let anyone read it
     	return functionManager.getFunction(RequestContextHolder.getRequestContext().getZoneId(), functionId);
     }
-
-    @Override
-    public Function getFunctionByInternalId(String internalId) {
-        List<Function> listOfFunctions = getFunctions();
-        Function function = null;
-        // For the given internal function id, get the function's real id.
-        for ( Function nextFunction : listOfFunctions )
-        {
-            String nextInternalId;
-
-            nextInternalId = nextFunction.getInternalId();
-            if ( internalId.equalsIgnoreCase(nextInternalId) )
-            {
-                function = nextFunction;
-                break;
-            }
-        }
-
-        return function;
-    }
-
     @Override
 	public List<Function> getFunctions() {
 		//let anyone read them			
@@ -2181,172 +2018,6 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
     }
 
     /**
-	 * Send a public link notification mail message to a collection of
-	 * email addresses.
-     * 
-     * @param share
-     * @param sharedEntity
-     * @param emailAddresses
-     * @param bccIds
-     * @param viewUrl
-     * @param downloadUrl
-     * 
-     * @return
-     * 
-     * @throws Exception
-     */
-	@Override
-    public Map<String, Object> sendPublicLinkMail(ShareItem share, DefinableEntity sharedEntity, Collection<String> emailAddresses,
-    		Collection<String> bccIds, String viewUrl, String downloadUrl) throws Exception {
-    	// If sending email is not enabled in the system...
-		if (!(getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId()).getMailConfig().isSendMailEnabled())) {
-			// ...throw an appropriate exception.
-			throw new ConfigurationException(NLT.get("errorcode.sendmail.disabled"));
-		}
-		
-		// Allocate the error tracking/reply objects.
-		List<SendMailErrorWrapper>	errors = new ArrayList<SendMailErrorWrapper>();
-		Map							result = new HashMap();
-		result.put(ObjectKeys.SENDMAIL_ERRORS, errors);
-		
-		// Allocate the maps of email addresses to locales we'll
-		// use for sending the notifications in the appropriate
-		// locale(s).
-		Map<Locale, List<InternetAddress>>	toIAsMap  = new HashMap<Locale, List<InternetAddress>>();
-		Map<Locale, List<InternetAddress>>	bccIAsMap = new HashMap<Locale, List<InternetAddress>>();
-		List<TimeZone>						targetTZs = new ArrayList<TimeZone>();
-
-		// Process the recipient collections we received into the
-		// appropriate email address to locale map.
-		EmailHelper.addEMAsToLocaleMap(MailModule.TO,  toIAsMap,  targetTZs, MiscUtil.validateCS(emailAddresses));
-		EmailHelper.addEMAsToLocaleMap(MailModule.BCC, bccIAsMap, targetTZs, MiscUtil.validateCS(bccIds        ));
-
-		// What timezone should we use for date conversions?  If
-		// there's only 1 from all the recipients, use that.
-		// Otherwise, use the senders. 
-		User		sendingUser = RequestContextHolder.getRequestContext().getUser();
-		TimeZone	targetTZ;
-		if (1 == targetTZs.size())
-		     targetTZ = targetTZs.get(0);
-		else targetTZ = sendingUser.getTimeZone();
-
-		// - - - - - - - - - - - - - - - - - - - - - - - - - - //
-		// Once we get here, we have maps containing the valid //
-		// email addresses we need to send notifications to    //
-		// mapped with the locale to use to send them.         //
-		// - - - - - - - - - - - - - - - - - - - - - - - - - - //
-
-		// Get what we need from the zone for sending email.
-		Workspace		zone       = RequestContextHolder.getRequestContext().getZone();
-		MailModule		mm         = getMailModule();
-		String			mailSender = mm.getNotificationMailSenderName(zone);
-		String			defaultEMA = mm.getNotificationDefaultFrom(   zone); 
-
-		// Get what we need about the sending user for sending email.
-		Date			now         = new Date();
-		InternetAddress	sendingIA   = new InternetAddress();
-		String			sendersEMA  = sendingUser.getEmailAddress();
-		sendingIA.setAddress(MiscUtil.hasString(sendersEMA) ? sendersEMA : defaultEMA);
-
-		// What Velocity template should we use for this share?
-		String template = "publicLinkNotification.vm";
-		
-		// Scan the unique Locale's we need to localize the share
-		// notification email into.
-		boolean			notifyAsBCC   = SPropsUtil.getBoolean("mail.notifyAsBCC", true);
-		List<Locale>	targetLocales = MiscUtil.validateLL(EmailHelper.getTargetLocales(toIAsMap, bccIAsMap));
-		for (Locale locale:  targetLocales) {
-			// Extract the TO:, CC: and BCC: lists for this Locale.
-			List<InternetAddress> toIAs  = MiscUtil.validateIAL(toIAsMap.get( locale));
-			List<InternetAddress> bccIAs = MiscUtil.validateIAL(bccIAsMap.get(locale));
-			
-			// If we we're supposed to send notifications as BCC:s...
-			if (notifyAsBCC && (!(toIAs.isEmpty()))) {
-				// ...move the TO:s to the BCC:s.
-				bccIAs.addAll(toIAs);
-				toIAs.clear();
-			}
-
-			// Allocate a Map to hold the email components for building
-			// the mime...
-			Map mailMap = new HashMap();
-			
-			// ...add the from...
-			mailMap.put(MailModule.FROM, sendingIA);
-
-			// ...add the recipients...
-			mailMap.put(MailModule.TO,  toIAs );
-			mailMap.put(MailModule.BCC, bccIAs);
-
-			// ...add the subject...
-			String shareTitle = sharedEntity.getTitle();
-			if (!(MiscUtil.hasString(shareTitle))) {
-				shareTitle = ("--" + NLT.get("entry.noTitle", locale) + "--");
-			}
-			String subject = NLT.get("relevance.mailPublicLink", new Object[]{Utils.getUserTitle(sendingUser), shareTitle}, locale);
-			mailMap.put(MailModule.SUBJECT, subject);
-			
-			// ...generate and add the HTML variant...
-			StringWriter	writer  = new StringWriter();
-			Notify			notify  = new Notify(NotifyType.summary, locale, targetTZ, now);
-           	NotifyVisitor	visitor = new NotifyVisitor(sharedEntity, notify, null, writer, NotifyVisitor.WriterType.HTML, null);
-		    VelocityContext	ctx     = getPublicLinkVelocityContext(visitor, share, sharedEntity, viewUrl, downloadUrl);
-			visitor.processTemplate(template, ctx);
-			EmailUtil.putHTML(mailMap, MailModule.HTML_MSG, writer.toString());
-			
-			// ...generate and add the TEXT variant...
-			writer  = new StringWriter();
-			notify  = new Notify(NotifyType.summary, locale, targetTZ, now);
-           	visitor = new NotifyVisitor(sharedEntity, notify, null, writer, NotifyVisitor.WriterType.TEXT, null);
-		    ctx     = getPublicLinkVelocityContext(visitor, share, sharedEntity, viewUrl, downloadUrl);
-			visitor.processTemplate(template, ctx);
-			EmailUtil.putText(mailMap, MailModule.TEXT_MSG, writer.toString());
-
-			// ...create the mime helper... 
-			MimeSharePreparator helper = new MimeSharePreparator(mailMap, logger);
-			helper.setDefaultFrom(sendingUser.getEmailAddress());
-			
-			try {
-				// ...and send the email.
-				mm.sendMail(mailSender, helper);
-			}
-			
-	 		catch (MailSendException ex) {
-	 			// The send failed!  Log the exception...
-	 			String exMsg = EmailHelper.getMailExceptionMessage(ex);
-	 			logger.error("EXCEPTION:  Error sending share notification:" + exMsg);
-				logger.debug("EXCEPTION", ex);
-				errors.add(new SendMailErrorWrapper(ex, exMsg));
-
-				// ...and if there were any send failed
-				// ...sub-exceptions...
-				Exception[] exceptions = ex.getMessageExceptions();
-				int exCount = ((null == exceptions) ? 0 : exceptions.length);
-	 			if ((0 < exCount) && exceptions[0] instanceof SendFailedException) {
-	 				// ...return them in the error list too.
-	 				SendFailedException sf = ((SendFailedException) exceptions[0]);
-	 				EmailHelper.addMailFailures(errors, sf.getInvalidAddresses(),     "share.notify.invalidAddresses"    );
-	 				EmailHelper.addMailFailures(errors, sf.getValidUnsentAddresses(), "share.notify.validUnsentAddresses");
-	 				
-	 			}
-	 	   	}
-	 		
-	 		catch (MailAuthenticationException ex) {
-	 			// The send failed because we couldn't authenticate to
-	 			// the email server!  Log the exception.
-	 			String exMsg = EmailHelper.getMailExceptionMessage(ex);
-	       		logger.error("EXCEPTION:  Authentication Exception:" + exMsg);				
-				logger.debug("EXCEPTION", ex);
-				errors.add(new SendMailErrorWrapper(ex, exMsg));
-	 		} 
-		}
-
-		// If we get here, result refers to a map of any errors, ...
-		// Return it.
-    	return result;
-    }
-
-    /**
 	 * Sends a URL notification mail message to a collection of users
 	 * and/or explicit email addresses.
 	 * 
@@ -2866,37 +2537,6 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 	}
 	
 	/*
-	 * Returns a VelocityContext to use for public link notification
-	 * emails. 
-	 */
-	private static VelocityContext getPublicLinkVelocityContext(NotifyVisitor visitor, ShareItem share, DefinableEntity sharedEntity, String viewUrl, String downloadUrl) {
-		// Create the context...
-	    VelocityContext	reply = NotifyBuilderUtil.getVelocityContext();
-	    
-	    // ...initialize it...
-	    Notify notify = visitor.getNotifyDef();
-	    User user = RequestContextHolder.getRequestContext().getUser();
-		reply.put("ssVisitor",   	 	visitor                                                                                                     );
-		reply.put("ssShare",        	share                                                                                                       );
-		reply.put("ssSharedEntity",		sharedEntity                                                                                                );
-		reply.put("ssShareExpiration",	EmailHelper.getShareExpiration(notify.getLocale(), notify.getTimeZone(), share)                             );
-		reply.put("ssSharer",        	NLT.get("share.notify.sharer", new String[]{visitor.getUserTitle(user)}, visitor.getNotifyDef().getLocale()));
-		reply.put("ssProduct",       	(Utils.checkIfFilr() ? "Filr" : "Vibe")                                                                     );
-		reply.put("user",           	user                                                                                                        );
-		
-		reply.put("ssPublicLinkDownloadHeader", NLT.get("share.publicLink.downloadHeader", visitor.getNotifyDef().getLocale()));
-		reply.put("ssPublicLinkDownloadUrl",    downloadUrl                                                                   );
-		
-		if (MiscUtil.hasString(viewUrl)) {
-			reply.put("ssPublicLinkViewHeader", NLT.get("share.publicLink.viewHeader", visitor.getNotifyDef().getLocale()));
-			reply.put("ssPublicLinkViewUrl",    viewUrl                                                                   );
-		}
-		
-		// ...and return it.
-		return reply;
-	}
-	
-	/*
 	 * Returns a VelocityContext to use for share notification emails. 
 	 */
 	private static VelocityContext getShareVelocityContext(NotifyVisitor visitor, ShareItem share, DefinableEntity sharedEntity, String encodedExternalUserId) {
@@ -3398,49 +3038,15 @@ public List<ChangeLog> getWorkflowChanges(EntityIdentifier entityIdentifier, Str
 		return (justThisScope && ObjectKeys.ROLE_TYPE_FILR.equals(scope));
 	}
 	
-	@Override
-	public void setFileArchivingEnabled(boolean fileArchivingEnabled) {
-		checkAccess(AdminOperation.manageLogTablePurge);
-  		ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
-  		zoneConfig.setFileArchivingEnabled(fileArchivingEnabled);
-	}
-  	@Override
-	public boolean isFileArchivingEnabled() {
-  		ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
-  		return zoneConfig.isFileArchivingEnabled(); 		
-  	}
-	
-	@Override
-	public void setAuditTrailEnabled(boolean auditTrailEnabled) {
-		checkAccess(AdminOperation.manageLogTablePurge);
-  		ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
-  		zoneConfig.setAuditTrailEnabled(auditTrailEnabled);
-	}
   	@Override
 	public int getAuditTrailKeepDays() {
   		ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
   		return zoneConfig.getAuditTrailKeepDays(); 		
   	}
   	@Override
-	public boolean isAuditTrailEnabled() {
-  		ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
-  		return zoneConfig.isAuditTrailEnabled(); 		
-  	}
-	@Override
-	public void setChangeLogEnabled(boolean changeLogEnabled) {
-		checkAccess(AdminOperation.manageLogTablePurge);
-  		ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
-  		zoneConfig.setChangeLogEnabled(changeLogEnabled);
-	}
-  	@Override
 	public int getChangeLogsKeepDays() {
   		ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
   		return zoneConfig.getChangeLogsKeepDays(); 		
-  	}
-  	@Override
-	public boolean isChangeLogEnabled() {
-  		ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
-  		return zoneConfig.isChangeLogEnabled(); 		
   	}
   	@Override
 	public void setLogTableKeepDays(int auditTrailKeepDays, int changeLogsKeepDays) {
@@ -3452,62 +3058,7 @@ public List<ChangeLog> getWorkflowChanges(EntityIdentifier entityIdentifier, Str
 
     @Override
 	public ScheduleInfo getLogTablePurgeSchedule() {
-    	ScheduleInfo info =  getLogTablePurgeObject().getScheduleInfo(RequestContextHolder.getRequestContext().getZoneId());
-		User user = RequestContextHolder.getRequestContext().getUser();
-		Date now = new Date();
-		int offsetHour = user.getTimeZone().getOffset(now.getTime()) / (60 * 60 * 1000);
-		String hours = SPropsUtil.getString("log.table.purge.schedule.hours", "0");
-		String minutes = SPropsUtil.getString("log.table.purge.schedule.minutes", "40");
-		try {
-			int iHours = Integer.valueOf(hours);
-			iHours -= offsetHour;
-			hours = String.valueOf((iHours + 24) % 24);
-		} catch(Exception e) {
-			//This must be trying to set "*" or some other fancy value, so just leave "hours" as it was
-		}
-		info.getSchedule().setDaily(true);
-		info.getSchedule().setHours(hours);
-		info.getSchedule().setMinutes(minutes);
-    	return info;
-    }
-    
-    @Override
-	public void purgeLogTablesImmediate() {
-		Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
-  		ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(zoneId);
-  		Date now = new Date();
-  		
-  		if (zoneConfig.getAuditTrailKeepDays() > 0) {
-  			Date purgeBeforeDate = new Date(now.getTime() - zoneConfig.getAuditTrailKeepDays()*1000*60*60*24);
-  			if (SPropsUtil.getBoolean("table.purge.writeDeletedItemsToFile.auditTrail", false)) {
-	  			List<AuditTrail> entriesToBeDeleted = getCoreDao().getAuditTrailEntries(zoneId, purgeBeforeDate);
-	  			if (writeAuditTrailLogFile(entriesToBeDeleted)) {
-	  				//The entries to be purged were safely logged to disk, so we can delete them from the database
-			  		int auditTrailPurgeCount = getCoreDao().purgeAuditTrail(zoneId, purgeBeforeDate);
-			  		logger.debug("Purged " + auditTrailPurgeCount + " records from the SS_AuditTrail table");
-	  			}
-  			} else {
-  				//Entries are not being captured to disk first, so just delete the older entries
-		  		int auditTrailPurgeCount = getCoreDao().purgeAuditTrail(zoneId, purgeBeforeDate);
-		  		logger.debug("Purged " + auditTrailPurgeCount + " records from the SS_AuditTrail table");
-  			}
-  		}
-  		
-  		if (zoneConfig.getChangeLogsKeepDays() > 0) {
-  			Date purgeBeforeDate = new Date(now.getTime() - zoneConfig.getChangeLogsKeepDays()*1000*60*60*24);
-  			if (SPropsUtil.getBoolean("table.purge.writeDeletedItemsToFile.changeLog", false)) {
-	  			List<ChangeLog> entriesToBeDeleted = getCoreDao().getChangeLogEntries(zoneId, purgeBeforeDate);
-	  			if (writeChangeLogLogFile(entriesToBeDeleted)) {
-	  				//The entries to be purged were safely logged to disk, so we can delete them from the database
-			  		int changeLogPurgeCount = getCoreDao().purgeChangeLogs(zoneId, purgeBeforeDate);
-			  		logger.debug("Purged " + changeLogPurgeCount + " records from the SS_ChangeLog table");
-	  			}
-  			} else {
-  				//Entries are not being captured to disk first, so just delete the older entries
-		  		int changeLogPurgeCount = getCoreDao().purgeChangeLogs(zoneId, purgeBeforeDate);
-		  		logger.debug("Purged " + changeLogPurgeCount + " records from the SS_ChangeLog table");
-  			}
-  		}
+    	return getLogTablePurgeObject().getScheduleInfo(RequestContextHolder.getRequestContext().getZoneId());
     }
     
     @Override
@@ -3536,153 +3087,12 @@ public List<ChangeLog> getWorkflowChanges(EntityIdentifier entityIdentifier, Str
     protected String getLogTablePurgeProperty(String zoneName, String name) {
 		return SZoneConfig.getString(zoneName, "logTablePurgeConfiguration/property[@name='" + name + "']");
 	}
-
-    //Routine to append AuditTrail entries to a log file before they get deleted
-    @Override
-	public boolean writeAuditTrailLogFile(List<AuditTrail> entriesToBeDeleted) {
-    	if (!SPropsUtil.getBoolean("table.purge.writeDeletedItemsToFile.auditTrail", false)) {
-    		//We are not saving the deleted records
-    		return true;
-    	}
-    	if (entriesToBeDeleted.isEmpty()) return true;
-    	Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
-	    User user = RequestContextHolder.getRequestContext().getUser();
-		String month = String.valueOf(Calendar.MONTH);
-		String year = String.valueOf(Calendar.YEAR);
-
-    	FileStore logFileStore = new FileStore(SPropsUtil.getString("data.databaselogs.dir"), "");
-		File logDir = new File(logFileStore.getRootPath() + File.separator + Utils.getZoneKey());
-		if (!logDir.exists() && !logDir.mkdirs()) {
-			logger.error("Cannot create " + logDir.getAbsolutePath());
-			return false;
-		}
-    	FileWriter fw = null;
-	    String filename= logDir + File.separator + "AuditTrailPruning-" + month + "-" + year + ".log";
-    	try {
-    	    fw = new FileWriter(filename, true); 		//the true will append the new data
-    	    
-			Document doc = DocumentHelper.createDocument();
-			Element root = doc.addElement(ObjectKeys.AUDIT_TRAIL_HEADER);
-			DateFormat df = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, 
-	        		DateFormat.SHORT, user.getLocale());
-			for (AuditTrail auditTrail : entriesToBeDeleted) {
-				Element entry = root.addElement(ObjectKeys.AUDIT_TRAIL_ENTRY);
-				entry.addAttribute(ObjectKeys.AUDIT_TRAIL_ZONE_ID, String.valueOf(zoneId));
-				entry.addAttribute(ObjectKeys.AUDIT_TRAIL_ID, auditTrail.getId());
-				entry.addAttribute(ObjectKeys.AUDIT_TRAIL_TRANSACTION_TYPE, auditTrail.getAuditType().name());
-				if (auditTrail.getStartDate() != null) {
-					entry.addAttribute(ObjectKeys.AUDIT_TRAIL_START_DATE, df.format(auditTrail.getStartDate()));
-				}
-				if (auditTrail.getEndDate() != null) {
-					entry.addAttribute(ObjectKeys.AUDIT_TRAIL_END_DATE, df.format(auditTrail.getEndDate()));
-				}
-				entry.addAttribute(ObjectKeys.AUDIT_TRAIL_START_BY, String.valueOf(auditTrail.getStartBy()));
-				entry.addAttribute(ObjectKeys.AUDIT_TRAIL_END_BY, String.valueOf(auditTrail.getEndBy()));
-				entry.addAttribute(ObjectKeys.AUDIT_TRAIL_ENTITY_ID, String.valueOf(auditTrail.getEntityId()));
-				entry.addAttribute(ObjectKeys.AUDIT_TRAIL_ENTITY_TYPE, auditTrail.getEntityType());
-				entry.addAttribute(ObjectKeys.AUDIT_TRAIL_OWNING_BINDER_ID, String.valueOf(auditTrail.getOwningBinderId()));
-				entry.addAttribute(ObjectKeys.AUDIT_TRAIL_FILE_ID, auditTrail.getFileId());
-				entry.addAttribute(ObjectKeys.AUDIT_TRAIL_DELETED_FOLDER_ENTRY_FAMILY, auditTrail.getDeletedFolderEntryFamily());
-				entry.addAttribute(ObjectKeys.AUDIT_TRAIL_APPLICATION_ID, String.valueOf(auditTrail.getApplicationId()));
-				if (auditTrail.getDescription() != null) {
-					Element description = entry.addElement(ObjectKeys.AUDIT_TRAIL_DESCRIPTION);
-					description.setText(auditTrail.getDescription());
-				}
-				fw.write(entry.asXML() + "\n");
-				root.remove(entry);
-			}
-			fw.close();
-			fw = null;
-    	} catch(Exception e) {
-    	    logger.error("Could not append to AuditTrail log file: " + e.getMessage());
-    	    return false;
-    	} finally {
-    		if (fw != null) {
-    			try {
-					fw.close();
-				} catch (IOException e) {
-					logger.error("Failed to close file " + filename + " - " + e.getMessage());
-					return false;
-				}
-    		}
-    	}
-    	return true;
-    }
-
-    //Routine to append ChangeLog entries to a log file before they get deleted
-    @Override
-	public boolean writeChangeLogLogFile(List<ChangeLog> entriesToBeDeleted) {
-    	if (!SPropsUtil.getBoolean("table.purge.writeDeletedItemsToFile.changeLog", false)) {
-    		//We are not saving the deleted records
-    		return true;
-    	}
-    	if (entriesToBeDeleted.isEmpty()) return true;
-    	Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
-		String month = String.valueOf(Calendar.MONTH);
-		String year = String.valueOf(Calendar.YEAR);
-    	FileStore logFileStore = new FileStore(SPropsUtil.getString("data.databaselogs.dir"), "");
-		File logDir = new File(logFileStore.getRootPath() + File.separator + Utils.getZoneKey());
-		if (!logDir.exists() && !logDir.mkdirs()) {
-			logger.error("Cannot create " + logDir.getAbsolutePath());
-			return false;
-		}
-    	FileWriter fw = null;
-	    String filename= logDir + File.separator + "ChangeLogPruning-" + month + "-" + year + ".log";
-    	try {
-    	    fw = new FileWriter(filename, true); 		//the true will append the new data
-    	    
-	    	User user = RequestContextHolder.getRequestContext().getUser();
-			Document doc = DocumentHelper.createDocument();
-			Element root = doc.addElement(ObjectKeys.CHANGE_LOG_HEADER);
-			DateFormat df = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, 
-	        		DateFormat.SHORT, user.getLocale());
-			for (ChangeLog changeLog : entriesToBeDeleted) {
-				Element entry = root.addElement(ObjectKeys.CHANGE_LOG_ENTRY);
-				entry.addAttribute(ObjectKeys.CHANGE_LOG_ZONE_ID, String.valueOf(zoneId));
-				entry.addAttribute(ObjectKeys.CHANGE_LOG_ID, changeLog.getId());
-				entry.addAttribute(ObjectKeys.CHANGE_LOG_OPERATION, changeLog.getOperation());
-				entry.addAttribute(ObjectKeys.CHANGE_LOG_ENTITY_ID, String.valueOf(changeLog.getEntityId()));
-				entry.addAttribute(ObjectKeys.CHANGE_LOG_ENTITY_TYPE, changeLog.getEntityType());
-				if (changeLog.getOperationDate() != null) {
-					entry.addAttribute(ObjectKeys.CHANGE_LOG_OPERATION_DATE, df.format(changeLog.getOperationDate()));
-				}
-				entry.addAttribute(ObjectKeys.CHANGE_LOG_DOC_NUMBER, changeLog.getDocNumber());
-				entry.addAttribute(ObjectKeys.CHANGE_LOG_USER_ID, String.valueOf(changeLog.getUserId()));
-				entry.addAttribute(ObjectKeys.CHANGE_LOG_USER_NAME, changeLog.getUserName());
-				if (changeLog.getDocument() != null) {
-	    			String xmlStr = XmlFileUtil.writeString(changeLog.getDocument(), OutputFormat.createCompactFormat());
-	    			Element xmlStrEle = entry.addElement(ObjectKeys.CHANGE_LOG_XML_STR);
-	    			xmlStrEle.setText(xmlStr);
-				}
-				fw.write(entry.asXML() + "\n");
-				root.remove(entry);
-			}
-			fw.close();
-			fw = null;
-    	} catch(Exception e) {
-    	    logger.error("Could not append to ChangeLog log file: " + e.getMessage());
-    	    return false;
-    	} finally {
-    		if (fw != null) {
-    			try {
-					fw.close();
-				} catch (IOException e) {
-					logger.error("Failed to close file " + filename + " - " + e.getMessage());
-					return false;
-				}
-    		}
-    	}
-    	return true;
-    }
     
-    @Override
     public void reindexDestructive(Collection<Long> binderIds, StatusTicket statusTicket, String[] nodeNames, IndexErrors errors, boolean includeUsersAndGroups) throws AccessControlException {
-    	setStateReindexStart(nodeNames);
+    	logger.info("Reindexing started on binders " + binderIds + ((includeUsersAndGroups)? " and users and groups" : ""));
     	
     	try {
-        	logger.info("Reindexing started on binders " + binderIds + ((includeUsersAndGroups)? " and users and groups" : ""));
-        	
-	    	Collection<Long> idsIndexed = getBinderModule().indexTree(binderIds, statusTicket, nodeNames, errors, true);
+	    	Collection<Long> idsIndexed = getBinderModule().indexTree(binderIds, statusTicket, nodeNames, errors);
 			//if people selected and not yet index; index content only, not the whole ws tree
 	    	if(includeUsersAndGroups) {				
 				ProfileBinder pf = getProfileModule().getProfileBinder();
@@ -3692,117 +3102,14 @@ public List<ChangeLog> getWorkflowChanges(EntityIdentifier entityIdentifier, Str
 	    	}
     	}
     	catch(Exception e) {
-    		getCoreDao().clear(); // without this, we seem to get the notorious NonUniqueObjectException on Definition object when running with helpers.
     		logger.error("Error reindexing binders " + binderIds + ((includeUsersAndGroups)? " and users and groups" : ""), e);
-    		errors.addError(NLT.get("error.indexing.string", new String[] {e.getMessage()}));
     	}
     	finally {
-    		setStateReindexEnd(nodeNames);
         	logger.info("Reindexing completed on binders " + binderIds + ((includeUsersAndGroups)? " and users and groups" : ""));
     	}
     }
     
-    @Override
-    public void clearReindexState(String[] nodeNames) {
-		final IndexNode indexNode = loadNonHAIndexNode();
-		if(indexNode == null) {
-			if(logger.isDebugEnabled())
-				logger.debug("No reindexing state to clear because no-name index node is not found");
-		}
-		else {
-			getTransactionTemplate().execute(new TransactionCallback<Object>() {
-				@Override
-				public Object doInTransaction(TransactionStatus status) {
-					indexNode.setReindexingStartDate(null);
-					indexNode.setReindexingEndDate(null);
-					return null;
-				}
-			});
-			if(logger.isDebugEnabled())
-				logger.debug("Cleared reindexing state on the no-name index node");
-		}
-
-    }
-
-    protected void setStateReindexStart(String[] nodeNames) {
-		IndexNode indexNode = loadNonHAIndexNode();
-		if(indexNode == null) {
-			final IndexNode indexNodeRef = new IndexNode(null, SearchUtils.getIndexName(), IndexNode.USER_MODE_ACCESS_READ_WRITE);
-			Date now = new Date();
-			indexNodeRef.setReindexingStartDateAndAddress(now);
-			indexNodeRef.setReindexingEndDate(null);
-			getTransactionTemplate().execute(new TransactionCallback<Object>() {
-				@Override
-				public Object doInTransaction(TransactionStatus status) {
-					getCoreDao().save(indexNodeRef);
-					return null;
-				}
-			});
-			if(logger.isDebugEnabled())
-				logger.debug("Saved new no-name index node with reindexing start date of " + now);
-		}
-		else {
-			if(indexNode.isReindexingInProgress()) {
-				if(logger.isDebugEnabled())
-					logger.debug("Can not start another reindexing because one already started at " + indexNode.getReindexingStartDate());
-				throw new ManageIndexException("errorcode.reindexing.in.progress.cannot.start");
-			}
-			else {
-				final IndexNode indexNodeRef = indexNode;
-				final Date now = new Date();
-				getTransactionTemplate().execute(new TransactionCallback<Object>() {
-					@Override
-					public Object doInTransaction(TransactionStatus status) {
-						indexNodeRef.setReindexingStartDateAndAddress(now);
-						indexNodeRef.setReindexingEndDate(null);
-						return null;
-					}
-				});
-				if(logger.isDebugEnabled())
-					logger.debug("Updated no-name index node with reindexing start date of " + now);
-			}
-		}
-    }
-    
-    protected void setStateReindexEnd(String[] nodeNames) {
-		final IndexNode indexNode = loadNonHAIndexNode();
-		if(indexNode == null) {
-			logger.error("Can not mark reindexing end because no-name index node is not found");
-		}
-		else {
-			final Date now = new Date();
-			getTransactionTemplate().execute(new TransactionCallback<Object>() {
-				@Override
-				public Object doInTransaction(TransactionStatus status) {
-					indexNode.setReindexingEndDate(now);
-					return null;
-				}
-			});
-			if(logger.isDebugEnabled())
-				logger.debug("Updated no-name index node with reindexing end date of " + now);
-		}
-    }
-
-    @Override
-	public IndexNode loadNonHAIndexNode() {
-    	FilterControls filter = new FilterControls();
-    	filter.addIsNull("name.nodeName");
-    	List<IndexNode> nodes = getCoreDao().loadObjects(IndexNode.class, filter, RequestContextHolder.getRequestContext().getZoneId());
-    	if(nodes.size() > 0)
-    		return nodes.get(0);
-    	else
-    		return null;
-    }
-    
     protected ProfileModule getProfileModule() {
     	return (ProfileModule) SpringContextUtil.getBean("profileModule");
-    }
-
-    @Override
-	public boolean isUnsafeReindexingInProgress() {
-		final IndexNode indexNode = loadNonHAIndexNode();
-		if(indexNode == null)
-			return false;
-		return indexNode.isReindexingInProgress();
     }
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -30,6 +30,7 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
+
 package org.kablink.teaming.gwt.client.widgets;
 
 import java.text.DateFormat;
@@ -55,11 +56,11 @@ import org.kablink.teaming.gwt.client.GwtSendShareNotificationEmailResults;
 import org.kablink.teaming.gwt.client.GwtShareEntryResults;
 import org.kablink.teaming.gwt.client.GwtShareItemResult;
 import org.kablink.teaming.gwt.client.GwtTeaming;
-import org.kablink.teaming.gwt.client.GwtTeamingDataTableImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingItem;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.GwtUser;
 import org.kablink.teaming.gwt.client.mainmenu.TeamInfo;
+import org.kablink.teaming.gwt.client.rpc.shared.BooleanRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.FindUserByEmailAddressCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetDateStrCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetEntryCmd;
@@ -70,11 +71,9 @@ import org.kablink.teaming.gwt.client.rpc.shared.GetSharingInfoCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SendShareNotificationEmailCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ValidateEmailAddressCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.ValidateEmailRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.rpc.shared.ShareEntryCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ShareEntryResultsRpcResponseData;
-import org.kablink.teaming.gwt.client.rpc.shared.ValidateEmailRpcResponseData.EmailAddressStatus;
 import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.GwtPublicShareItem;
@@ -86,7 +85,6 @@ import org.kablink.teaming.gwt.client.util.ShareExpirationValue;
 import org.kablink.teaming.gwt.client.util.ShareExpirationValue.ShareExpirationType;
 import org.kablink.teaming.gwt.client.util.ShareRights;
 import org.kablink.teaming.gwt.client.util.ShareRights.AccessRights;
-import org.kablink.teaming.gwt.client.util.UserType;
 import org.kablink.teaming.gwt.client.widgets.EditShareNoteDlg.EditShareNoteDlgClient;
 import org.kablink.teaming.gwt.client.widgets.EditShareRightsDlg.EditShareRightsDlgClient;
 import org.kablink.teaming.gwt.client.widgets.FindCtrl;
@@ -134,6 +132,7 @@ import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.UIObject;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.web.bindery.event.shared.HandlerRegistration;
+
 
 /**
  * This class is used to present a UI the user can use to share an item with
@@ -188,7 +187,6 @@ public class ShareThisDlg extends DlgBox
 	private EditShareRightsDlg m_editShareRightsDlg = null;
 	private EditSuccessfulHandler m_editShareWithTeamsHandler;
 	private EditSuccessfulHandler m_editShareRightsHandler;
-	private GwtTeamingDataTableImageBundle m_dtImages;
 	
 	private static final String FIND_SHARES_BY_USER = "by-user";
 	private static final String FIND_SHARES_BY_FILE = "by-file";
@@ -331,7 +329,7 @@ public class ShareThisDlg extends DlgBox
 		implements ClickHandler
 	{
 		private GwtShareItem m_shareItem;
-		private Image m_typeImage;
+		private InlineLabel m_typeLabel;
 		
 		/**
 		 * 
@@ -343,41 +341,22 @@ public class ShareThisDlg extends DlgBox
 			m_shareItem = shareItem;
 			
 			panel = new FlowPanel();
-			panel.addStyleName( "shareThisDlg_RecipientTypeImagePanel" );
 			
-			m_typeImage = buildRecipientImage( shareItem );
-			m_typeImage.setTitle( shareItem.getRecipientTypeAsString() );
-			m_typeImage.addStyleName( "shareThisDlg_RecipientTypeImage" );
-			panel.add( m_typeImage );
+			m_typeLabel = new InlineLabel( shareItem.getRecipientTypeAsString() );
+			m_typeLabel.setTitle( shareItem.getRecipientTypeAsString() );
+			m_typeLabel.addStyleName( "shareThisDlg_RecipientTypeLabel" );
+			panel.add( m_typeLabel );
 			
 			// If we are dealing with a share with public, let the user click on the group.
 			if ( shareItem.getRecipientType() == GwtRecipientType.PUBLIC_TYPE )
 			{
-				m_typeImage.addStyleName( "shareThisDlg_PublicRecipientTypeImage" );
-				m_typeImage.setTitle( GwtTeaming.getMessages().shareDlg_sharePublicTitle() );
-				m_typeImage.addClickHandler( this );
+				m_typeLabel.addStyleName( "shareThisDlg_PublicRecipientTypeLabel" );
+				m_typeLabel.setTitle( GwtTeaming.getMessages().shareDlg_sharePublicTitle() );
+				m_typeLabel.addClickHandler( this );
 			}
 			
 			// All composites must call initWidget() in their constructors.
 			initWidget( panel );
-		}
-		
-		/*
-		 * 
-		 */
-		private Image buildRecipientImage( GwtShareItem shareItem )
-		{
-			ImageResource ir;
-			switch ( shareItem.getRecipientType() )
-			{
-			case USER:
-			case EXTERNAL_USER:  ir = shareItem.getRecipientUserTypeImage(); break;
-			case GROUP:          ir = m_dtImages.groupType_Local();          break;
-			case TEAM:           ir = m_dtImages.team();                     break;
-			case PUBLIC_TYPE:    ir = m_dtImages.publicSharee();             break;
-			default:             ir = m_dtImages.userPhoto();                break;
-			}
-			return GwtClientHelper.buildImage(ir);
 		}
 		
 		/**
@@ -426,7 +405,7 @@ public class ShareThisDlg extends DlgBox
 			else
 			{
 				m_shareWithPublicInfoDlg.init( m_shareItem.getEntityId() );
-				m_shareWithPublicInfoDlg.showRelativeToTarget( m_typeImage );
+				m_shareWithPublicInfoDlg.showRelativeToTarget( m_typeLabel );
 			}
 		}
 	}
@@ -866,9 +845,6 @@ public class ShareThisDlg extends DlgBox
 		// Initialize the superclass.
 		super( autoHide, modal );
 
-		// Initialize other data members that need it.
-		m_dtImages = GwtTeaming.getDataTableImageBundle();
-		
 		// Create the dialog's content
 		createAllDlgContent(
 			"",		// // No caption yet.  It's set appropriately when the dialog runs.
@@ -951,7 +927,6 @@ public class ShareThisDlg extends DlgBox
 					shareItem.setRecipientType( GwtRecipientType.EXTERNAL_USER );
 				else
 					shareItem.setRecipientType( GwtRecipientType.USER );
-				shareItem.setRecipientUserType( user.getUserType() );
 				
 				recipientId = user.getUserId();
 				if ( recipientId != null && recipientId.length() > 0 )
@@ -993,7 +968,6 @@ public class ShareThisDlg extends DlgBox
 				shareItem = new GwtShareItem();
 				shareItem.setRecipientName( group.getShortDisplayName() );
 				shareItem.setRecipientType( GwtRecipientType.GROUP );
-				shareItem.setRecipientUserType( UserType.UNKNOWN );
 				shareItem.setRecipientId( Long.valueOf( group.getId() ) );
 			}
 			// Are we dealing with the "Public" entity?
@@ -1015,7 +989,6 @@ public class ShareThisDlg extends DlgBox
 				shareItem = new GwtPublicShareItem();
 				shareItem.setRecipientName( publicEntity.getName() );
 				shareItem.setRecipientType( GwtRecipientType.PUBLIC_TYPE );
-				shareItem.setRecipientUserType( UserType.UNKNOWN );
 				shareItem.setRecipientId( publicEntity.getIdLong() );
 			}
 
@@ -2008,7 +1981,6 @@ public class ShareThisDlg extends DlgBox
 								// Update the name of the entity in the header.
 								m_headerNameLabel.setText( gwtFolderEntry.getEntryName() );
 								m_headerPathLabel.setText( gwtFolderEntry.getParentBinderName() );
-								m_headerPathLabel.setTitle( gwtFolderEntry.getParentBinderName() );
 								
 								// Do we have a url for the file image?
 								imgUrl = gwtFolderEntry.getFileImgUrl();
@@ -2192,7 +2164,6 @@ public class ShareThisDlg extends DlgBox
 
 			shareItem = new GwtShareItem();
 			shareItem.setRecipientType( GwtRecipientType.TEAM );
-			shareItem.setRecipientUserType( UserType.UNKNOWN );
 
 			// Yes
 			// Go through each team and see if the entities have already been shared with that team.
@@ -2385,7 +2356,7 @@ public class ShareThisDlg extends DlgBox
 
 			// Issue an ajax request to see if the email address that was entered is associated
 			// with an internal user.
-			FindUserByEmailAddressCmd cmd = new FindUserByEmailAddressCmd( emailAddress, true );
+			FindUserByEmailAddressCmd cmd = new FindUserByEmailAddressCmd( emailAddress );
 			GwtClientHelper.executeCommand( cmd, findUserCallback );
 		}
 	}
@@ -2697,13 +2668,7 @@ public class ShareThisDlg extends DlgBox
 				// Is the recipient of the share an external user?
 				if ( recipientIsExternal )
 				{
-					AccessRights accessRights;
-					
-					accessRights = highestRightsPossible.getAccessRights();
-					
 					// Yes, don't let the external user do any re-share
-					highestRightsPossible = new ShareRights();
-					highestRightsPossible.setAccessRights( accessRights );
 					highestRightsPossible.setCanShareForward( false );
 					highestRightsPossible.setCanShareWithExternalUsers( false );
 					highestRightsPossible.setCanShareWithInternalUsers( false );
@@ -2773,7 +2738,6 @@ public class ShareThisDlg extends DlgBox
 										shareItem.setRecipientId( Long.valueOf( nextTeamInfo.getBinderId() ) );
 										shareItem.setRecipientName( nextTeamInfo.getTitle() );
 										shareItem.setRecipientType( GwtRecipientType.TEAM );
-										shareItem.setRecipientUserType( UserType.UNKNOWN );
 										shareItem.setShareRights( getDefaultShareRights() );
 										shareItem.setShareExpirationValue( m_defaultShareExpirationValue );
 										
@@ -3113,7 +3077,7 @@ public class ShareThisDlg extends DlgBox
 		}
 		else
 		{
-			// We are sharing multiple items.  Use the entry image.
+			// We are sharing mulitiple items.  Use the entry image.
 			imgResource = GwtTeaming.getFilrImageBundle().entry_large();
 			
 			if ( m_mode == ShareThisDlgMode.NORMAL )
@@ -3121,10 +3085,7 @@ public class ShareThisDlg extends DlgBox
 			else
 				m_headerNameLabel.setText( GwtTeaming.getMessages().shareDlg_manageMultipleItems( numItems ) );
 			
-			// Put a non-breaking space in the path so that it gets a
-			// height.  This fixes the layout so that the header
-			// doesn't overlap a make public button.
-			m_headerPathLabel.getElement().setInnerHTML("&nbsp;");
+			m_headerPathLabel.setText( "" );
 		}
 
 		m_headerImg.setVisible( true );
@@ -3768,45 +3729,24 @@ public class ShareThisDlg extends DlgBox
 						
 						if ( vibeResult.getResponseData() != null )
 						{
-							EmailAddressStatus emaStatus;
-							ValidateEmailRpcResponseData responseData;
+							BooleanRpcResponseData responseData;
 							
 							// Is the email valid?
-							responseData = (ValidateEmailRpcResponseData) vibeResult.getResponseData();
-							emaStatus = responseData.getEmailAddressStatus();
-							if ( emaStatus.isValid() )
+							responseData = (BooleanRpcResponseData) vibeResult.getResponseData();
+							if ( responseData.getBooleanValue() == true )
 							{
 								// Yes
 								addToRecipientList = true;
 							}
 							else
 							{
-								GwtTeamingMessages messages = GwtTeaming.getMessages();
-								switch ( emaStatus )
+								// No, ask the user if they still want to share with this email address.
+								if ( Window.confirm( GwtTeaming.getMessages().shareDlg_emailAddressInvalidPrompt() ) == true )
+									addToRecipientList = true;
+								else
 								{
-								case failsBlacklistDomain:
-								case failsBlacklistEMA:
-								case failsWhitelist:
-									String msg = null;
-									switch ( emaStatus )
-									{
-									case failsBlacklistDomain:  messages.shareDlg_emailAddressInvalid_blDomain(); break;
-									case failsBlacklistEMA:     messages.shareDlg_emailAddressInvalid_blEMA();    break;
-									case failsWhitelist:        messages.shareDlg_emailAddressInvalid_wl();       break;
-									}
-									// Tell the user about the problem...
-									GwtClientHelper.deferredAlert( msg );
-									
-									// ...and put the email address back in the find control
+									// Put the email address back in the find control
 									m_findCtrl.setInitialSearchString( emailAddress );
-									break;
-									
-								default:
-								case failsFormat:
-									// No, ask the user if they still want to share with this email address.
-									if ( Window.confirm( messages.shareDlg_emailAddressInvalidPrompt() ) == true )
-										addToRecipientList = true;
-									break;
 								}
 							}
 						}
@@ -3821,7 +3761,6 @@ public class ShareThisDlg extends DlgBox
 							// Yes
 							gwtUser = new GwtUser();
 							gwtUser.setInternal( false );
-							gwtUser.setUserType( UserType.EXTERNAL_OTHERS );
 							gwtUser.setName( emailAddress );
 							gwtUser.setUserId( userId );
 							
@@ -3845,7 +3784,6 @@ public class ShareThisDlg extends DlgBox
 		// Issue an ajax request to validate the email address.
 		ValidateEmailAddressCmd cmd = new ValidateEmailAddressCmd(
 															emailAddress,
-															true,	// true -> Validate as an external email address.
 															ValidateEmailAddressCmd.AddressField.MAIL_TO );
 		GwtClientHelper.executeCommand( cmd, validationCallback );
 	}

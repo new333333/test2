@@ -41,7 +41,6 @@ import java.util.Set;
 
 import org.kablink.teaming.domain.AuditTrail;
 import org.kablink.teaming.domain.Binder;
-import org.kablink.teaming.domain.ChangeLog;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.EmailLog;
 import org.kablink.teaming.domain.FileAttachment;
@@ -270,26 +269,6 @@ public class NullReportModule implements ReportModule {
 	}
 
 	public List<Long> getMovedFolderEntryIds(Date startDate, Date endDate) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public List<ChangeLog> getDeletedEntryLogs(Set<Long> entryIds) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public List<ChangeLog> getDeletedBinderLogs(Set<Long> binderIds) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public List<Map<String, Object>> generateActivityReportByUser(
-			Set<Long> userIds, Set<Long> userIdsToSkip, Date startDate,
-			Date endDate, String reportType) {
 		// TODO Auto-generated method stub
 		return null;
 	}

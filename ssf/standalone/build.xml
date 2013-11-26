@@ -10,7 +10,6 @@
 	
 	<property name="tomcat.common.lib.ext" value="${app.server.dir}/lib/ext" />
 	<property name="tomcat.shared.lib.ext" value="${app.server.dir}/lib/ext" />
-	<property name="tomcat.conf" value="${app.server.dir}/conf" />
 	
 	<target name="clean" depends="build-common.clean">
 		<delete dir="temp" />
@@ -177,16 +176,6 @@
 
 		<copy todir="${tomcat.common.lib.ext}" >
 			<fileset dir="${project.dir}/classes" includes="*.*" />
-		</copy>
-
-		<copy todir="${tomcat.conf}" >
-			<fileset dir="${project.dir}/conf" includes="*.*" />
-		</copy>
-	</target>
-		
-	<target name="deploy-log4j">
-		<copy todir="${tomcat.conf}" >
-			<fileset dir="${project.dir}/conf" includes="*.*" />
 		</copy>
 	</target>
 		

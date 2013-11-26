@@ -63,19 +63,6 @@ public class AclInheritingAccessibleEntriesFilter extends Filter {
 	 */
 	@Override
 	public DocIdSet getDocIdSet(IndexReader reader) throws IOException {
-		/*
-		 * This numeric field - Constants.ENTRY_ACL_PARENT_ID_FIELD - is only used for two specific purposes:
-		 *  
-		 * Case 1: If the value is positive number, it means that this entry/file inherits its ACL from
-		 *         the parent folder and the value represents the ID of the parent folder.
-		 *         
-		 * Case 2: If the value is negative number, it means that the system does not store the ACL of the
-		 *         particular entry/file in the search index, and consequently the search engine is unable 
-		 *         to make final determination as to whether the user has access to this entry/file or not.
-		 *         It is the caller's responsibility to perform access check and filter out those entries/files
-		 *         that the user doesn't have access to after the search result is returned to the caller. 
-		 *         The negative value represents the ID of the parent folder multiplied by -1.
-		 */
 		final long[] entryAclParentIds = FieldCache.DEFAULT.getLongs(reader, Constants.ENTRY_ACL_PARENT_ID_FIELD);
 		
 		final DocIdSet innerSet = aclInheritingEntriesFilter.getDocIdSet(reader);
@@ -92,22 +79,9 @@ public class AclInheritingAccessibleEntriesFilter extends Filter {
 					else
 						return false; // The user has no access to parent folder. Deny access to this entry/attachment.
 				}
-				else if(entryAclParentId < 0) {
-					// This doc represents an entry (or an attachment within an entry) whose ACL information
-					// is not stored with the search index, which means that the search index does not know
-					// whether the user has access to this entry or not. We include this entry in the result
-					// AS LONG AS it is in a folder that the user has access to.
-					if(accessibleFolderIds.contains(entryAclParentId * -1))
-						return true; // The user has access to parent folder. Include this entry/attachment in the result for now.
-					else
-						return false; // The user has no access to parent folder. Include this entry/attachment in the result for now.
-				}
 				else {
 					// In the current usage, this can not occur, because previous filter in the chain
 					// (aclInheritingEntriesFilter) will have already excluded this possibility.
-					// That is, the filter would have already filtered out all documents that do not
-					// contain Constants.ENTRY_ACL_PARENT_ID_FIELD field, and this field can only
-					// have non-zero values.
 					return false;
 				}
 			}			

@@ -1,10 +1,12 @@
 
-.tundra .dojoDndItemOver {
-	background-image: url(images/treeHover.png);
+.tundra .dojoDndItemBefore {
+	border-top: 2px solid #369;
 }
-.tundra .dojoDndItemAnchor,
-.tundra .dojoDndItemSelected {
-	background-color: #E2EBFE;
+.tundra .dojoDndItemAfter {
+	border-bottom: 2px solid #369;
+}
+.tundra .dojoDndItemOver {
+	cursor:pointer;
 }
 .tundra table.dojoDndAvatar { -moz-border-radius: 0; border: 1px solid #ccc; border-collapse: collapse; background-color: #fff; font-size: 75%; color: black;}
 .tundra .dojoDndAvatar td	{ border: none; }
@@ -15,13 +17,11 @@
 .tundra.dojoDndCopy .dojoDndAvatarHeader	{background-color: #f58383; background-image: url(images/dndNoCopy.png); background-repeat: no-repeat; background-position: 2px center;}
 .tundra.dojoDndMove .dojoDndAvatarCanDrop .dojoDndAvatarHeader	{background-color: #97e68d; background-image: url(images/dndMove.png); background-repeat: no-repeat; background-position: 2px center;}
 .tundra.dojoDndCopy .dojoDndAvatarCanDrop .dojoDndAvatarHeader	{background-color: #97e68d; background-image: url(images/dndCopy.png); background-repeat: no-repeat; background-position: 2px center;}
-.tundra .dijitIconLoading {
+.tundra .dijitContentPaneLoading {
 	background:url('images/loading.gif') no-repeat left center;
-	width: 24px;
-	height: 24px;
+	padding-left:25px;
 }
-.tundra .dijitIconError {
+.tundra .dijitContentPaneError {
 	background:url('images/warning.png') no-repeat left center;
-	width: 16px;
-	height: 16px;
+	padding-left:25px;
 }

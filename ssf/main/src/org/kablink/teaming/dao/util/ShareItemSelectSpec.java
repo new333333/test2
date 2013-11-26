@@ -42,7 +42,6 @@ import java.util.Set;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.ProfileDao;
 import org.kablink.teaming.domain.EntityIdentifier;
-import org.kablink.teaming.domain.ShareItem;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.security.function.WorkAreaOperation;
@@ -99,10 +98,8 @@ public class ShareItemSelectSpec {
 	public boolean accountForInheritance = false;
 
     public Boolean deleted = Boolean.FALSE;
-
-    public ShareItem.RecipientType recipientType;
-
-    /**
+	
+	/**
 	 * Defines selection criterion with a specific value of "latest" attribute.
 	 * 
 	 * @return

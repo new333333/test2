@@ -107,16 +107,6 @@
 								<ssf:nlt tag="search.scope.sharedWithMe"/>
 							  </td>
 							</tr>
-						    <tr>
-						      <td width="20">
-								<input type="radio" name="scope" value="sharedByMe" 
-								<c:if test="${ss_searchScope == 'sharedByMe'}"> checked="checked" </c:if>
-								style="width:20px;">
-							  </td>
-							  <td>
-								<ssf:nlt tag="search.scope.sharedByMe"/>
-							  </td>
-							</tr>
 						    <c:if test="${ss_searchContext == 'binder' || scope == 'current'}">
 						     <tr>
 						      <td width="20" valign="top">
@@ -126,16 +116,14 @@
 								>
 							  </td>
 							  <td>
-							    <c:if test="${!empty ss_searchContextBinder}">
-									<ssf:nlt tag="search.scope.current"/>&nbsp;
-									<a href="<ssf:url action="view_folder_listing" 
-										binderId="${ss_searchContextBinderId}" />"
-										title="${ss_searchContextBinder.pathName}"
-										onClick="ss_openUrlInWorkarea(this.href, '${ss_searchContextBinderId}', 'view_folder_listing');return false;"
-									>
-									  <span>${ss_searchContextBinder.title}</span>
-									</a>
-								</c:if>
+								<ssf:nlt tag="search.scope.current"/>&nbsp;
+								<a href="<ssf:url action="view_folder_listing" 
+									binderId="${ss_searchContextBinderId}" />"
+									title="${ss_searchContextBinder.pathName}"
+									onClick="ss_openUrlInWorkarea(this.href, '${ss_searchContextBinderId}', 'view_folder_listing');return false;"
+								>
+								  <span>${ss_searchContextBinder.title}</span>
+								</a>
 							  </td>
 							 </tr>
 							 <tr>
@@ -166,19 +154,11 @@
 									[<ssf:nlt tag="search.NoResults" />]
 								  </c:when>
 								  <c:otherwise>
-								    <c:if test="${searchCountTotalApproximate}">
-									  <ssf:nlt tag="search.resultsApproximate">
-									    <ssf:param name="value" value="${ssPageStartIndex}"/>
-									    <ssf:param name="value" value="${ssPageEndIndex}"/>
-									  </ssf:nlt>
-									</c:if>
-								    <c:if test="${!searchCountTotalApproximate}">
-									  <ssf:nlt tag="search.results">
-									    <ssf:param name="value" value="${ssPageStartIndex}"/>
-									    <ssf:param name="value" value="${ssPageEndIndex}"/>
-									    <ssf:param name="value" value="${ssTotalRecords}"/>
-									  </ssf:nlt>
-									</c:if>
+									<ssf:nlt tag="search.results">
+									<ssf:param name="value" value="${ssPageStartIndex}"/>
+									<ssf:param name="value" value="${ssPageEndIndex}"/>
+									<ssf:param name="value" value="${ssTotalRecords}"/>
+									</ssf:nlt>
 								  </c:otherwise>
 								</c:choose>
 							</div>

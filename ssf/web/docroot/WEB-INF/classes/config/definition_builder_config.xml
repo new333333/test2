@@ -1461,20 +1461,7 @@
 		<webService apply="true" elementBuilder="org.kablink.teaming.module.definition.ws.ElementBuilderProfileElement" />
 		<export apply="true" elementBuilder="org.kablink.teaming.module.definition.export.ElementBuilderProfileElement" />
 	</item>
-<!--
-	<item name="profileManageGroups" caption="__userGroupsListForm" type="data" dataType="groupList" 
-		canBeDeleted="true" multipleAllowed="false" category="profileEntryData"  display="form">
-		<properties>
-			<property name="caption" caption="__caption" type="text" value="__userGroupsListForm"/>
-			<property name="name" caption="__data_name" type="text" value="_user_groups_list" 
-			  readonly="true" unique="//item[@type='data']"/>
-		</properties>
-		<jsps>
-			<jsp name="default" value="/WEB-INF/jsp/definition_elements/profile_groups_form.jsp" />
-		</jsps>
-	</item>
--->
-		<item name="profilePhone" caption="__phone" type="data" dataType="phone" 
+	<item name="profilePhone" caption="__phone" type="data" dataType="phone" 
 		canBeDeleted="true" multipleAllowed="false" category="profileEntryData" display="form">
 		<properties>
 			<property name="caption" caption="__caption" type="text" value="__phone"/>
@@ -2670,9 +2657,6 @@
 			<property name="userVersionAllowed" caption="__userVersionAllowed" type="boolean" default="false">
 				<help>ihelp.designers.user_version</help>
 			</property>
-			<property name="excludeFromSearchIndex" caption="__excludeFromSearchIndex" type="boolean" default="false">
-				<help>ihelp.designers.excludeFromSearchIndex</help>
-			</property>
 		</properties>
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/text_form.jsp" />
@@ -2704,9 +2688,6 @@
 			<property name="fieldModificationAllowed" caption="__fieldModificationAllowed" type="boolean" default="false">
 				<help>ihelp.designers.field_modification</help>
 			</property>
-			<property name="excludeFromSearchIndex" caption="__excludeFromSearchIndex" type="boolean" default="false">
-				<help>ihelp.designers.excludeFromSearchIndex</help>
-			</property>
 		</properties>
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/html_editor_textarea_form.jsp" />
@@ -2729,9 +2710,6 @@
 			<property name="height" caption="__height_px" type="text"/>
 			<property name="required" caption="__required" type="boolean" default="false">
 				<help>ihelp.designers.required</help>
-			</property>
-			<property name="excludeFromSearchIndex" caption="__excludeFromSearchIndex" type="boolean" default="false">
-				<help>ihelp.designers.excludeFromSearchIndex</help>
 			</property>
 		</properties>
 		<jsps>
@@ -2761,9 +2739,6 @@
 			<property name="userVersionAllowed" caption="__userVersionAllowed" type="boolean" default="false">
 				<help>ihelp.designers.user_version</help>
 			</property>
-			<property name="excludeFromSearchIndex" caption="__excludeFromSearchIndex" type="boolean" default="false">
-				<help>ihelp.designers.excludeFromSearchIndex</help>
-			</property>
 		</properties>
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/number_form.jsp" />
@@ -2786,9 +2761,6 @@
 			<property name="width" caption="__textboxWidth" type="text" default="60"/>
 			<property name="required" caption="__required" type="boolean" default="false">
 				<help>ihelp.designers.required</help>
-			</property>
-			<property name="excludeFromSearchIndex" caption="__excludeFromSearchIndex" type="boolean" default="false">
-				<help>ihelp.designers.excludeFromSearchIndex</help>
 			</property>
 		</properties>
 		<jsps>
@@ -2817,9 +2789,6 @@
 			</property>
 			<property name="userVersionAllowed" caption="__userVersionAllowed" type="boolean" default="false">
 				<help>ihelp.designers.user_version</help>
-			</property>
-			<property name="excludeFromSearchIndex" caption="__excludeFromSearchIndex" type="boolean" default="false">
-				<help>ihelp.designers.excludeFromSearchIndex</help>
 			</property>
 		</properties>
 		<options>
@@ -2934,9 +2903,6 @@
 			<property name="userVersionAllowed" caption="__userVersionAllowed" type="boolean" default="false">
 				<help>ihelp.designers.user_version</help>
 			</property>
-			<property name="excludeFromSearchIndex" caption="__excludeFromSearchIndex" type="boolean" default="false">
-				<help>ihelp.designers.excludeFromSearchIndex</help>
-			</property>
 		</properties>
 		<options>
 			<option name="radioSelection" caption="__radio_button_option" />
@@ -3006,9 +2972,6 @@
 			<property name="userVersionAllowed" caption="__userVersionAllowed" type="boolean" default="false">
 				<help>ihelp.designers.user_version</help>
 			</property>
-			<property name="excludeFromSearchIndex" caption="__excludeFromSearchIndex" type="boolean" default="false">
-				<help>ihelp.designers.excludeFromSearchIndex</help>
-			</property>
 		</properties>
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/checkbox_form.jsp" />
@@ -3027,9 +2990,6 @@
 				<help>ihelp.designers.data_name</help>
 			</property>
 			<property name="value" caption="__value" type="text"/>
-			<property name="excludeFromSearchIndex" caption="__excludeFromSearchIndex" type="boolean" default="false">
-				<help>ihelp.designers.excludeFromSearchIndex</help>
-			</property>
 		</properties>
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/hidden_form.jsp" />
@@ -3037,19 +2997,6 @@
 		<index apply="true" fieldBuilder="org.kablink.teaming.module.definition.index.FieldBuilderText" />
 	</item>
 	
-	<item name="captcha" caption="__captcha" multipleAllowed="false" type="data" dataType="text" 
-	    category="commonEntryData" display="form">
-		<properties>
-			<property name="caption" caption="__caption" type="text" value="__captcha" />
-			<property name="name" caption="__name" type="text" value="_captcha" readonly="true" />
-			<property name="guestOnly" caption="__guestOnlyCaptcha" type="boolean" default="true"></property>
-		</properties>
-		<jsps>
-			<jsp name="default" value="/WEB-INF/jsp/definition_elements/captcha.jsp" />
-			<jsp name="mobile" value="/WEB-INF/jsp/definition_elements/mobile/captcha.jsp" />
-		</jsps>
-	</item>
-		
 	<item name="graphic" caption="__graphic" type="data" dataType="graphic" category="commonEntryData" display="form">
 		<properties>
 			<property name="caption" caption="__caption" type="text"/>
@@ -3321,9 +3268,6 @@
 			<property name="height" caption="__height_px" type="text"/>
 			<property name="required" caption="__required" type="boolean" default="false">
 				<help>ihelp.designers.required</help>
-			</property>
-			<property name="excludeFromSearchIndex" caption="__excludeFromSearchIndex" type="boolean" default="false">
-				<help>ihelp.designers.excludeFromSearchIndex</help>
 			</property>
 		</properties>
 		<jsps>
@@ -3985,7 +3929,7 @@
 
 	<item name="mashupCanvas" caption="__mashup_canvas" category="generalLayout" 
 		type="data" dataType="mashupLayout" canBeDeleted="true" multipleAllowed="false" display="form"
-		license="com.novell.teaming.Vibe kablink">
+		notLicense="com.novell.teaming.Filr">
 		<properties>
 			<property name="caption" caption="__caption" type="text" value="__mashup_canvas"/>
 			<property name="name" caption="__name" type="text"/>

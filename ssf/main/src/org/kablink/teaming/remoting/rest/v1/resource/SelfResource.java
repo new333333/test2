@@ -65,7 +65,6 @@ import org.kablink.teaming.rest.v1.model.User;
 import org.kablink.teaming.rest.v1.model.ZoneConfig;
 import org.kablink.teaming.search.SearchUtils;
 import org.kablink.teaming.security.AccessControlException;
-import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.PermaLinkUtil;
 import org.kablink.util.api.ApiErrorCode;
 import org.kablink.util.search.Constants;
@@ -76,11 +75,9 @@ import org.kablink.util.search.Restrictions;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
-import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
@@ -122,9 +119,6 @@ public class SelfResource extends AbstractFileResource {
         user.addAdditionalLink("net_folders", "/self/net_folders");
         user.addAdditionalLink("shared_with_me", "/self/shared_with_me");
         user.addAdditionalLink("shared_by_me", "/self/shared_by_me");
-        if (getEffectivePublicCollectionSetting((org.kablink.teaming.domain.User) entry)) {
-            user.addAdditionalLink("public_shares", "/self/public_shares");
-        }
         user.addAdditionalPermaLink("my_files", PermaLinkUtil.getUserPermalink(null, entry.getId().toString(), PermaLinkUtil.COLLECTION_MY_FILES));
         user.addAdditionalPermaLink("net_folders", PermaLinkUtil.getUserPermalink(null, entry.getId().toString(), PermaLinkUtil.COLLECTION_NET_FOLDERS));
         user.addAdditionalPermaLink("shared_with_me", PermaLinkUtil.getUserPermalink(null, entry.getId().toString(), PermaLinkUtil.COLLECTION_SHARED_WITH_ME));
@@ -137,8 +131,7 @@ public class SelfResource extends AbstractFileResource {
         ZoneConfig zoneConfig = ResourceUtil.buildZoneConfig(
                 getZoneModule().getZoneConfig(RequestContextHolder.getRequestContext().getZoneId()),
                 null,
-                getProfileModule().getPrincipalMobileAppsConfig(getLoggedInUserId()),
-                getProfileModule().getPrincipalDesktopAppsConfig(getLoggedInUserId()));
+                getProfileModule().getUserProperties(getLoggedInUserId()));
 
         user.setDesktopAppConfig(zoneConfig.getDesktopAppConfig());
         user.setMobileAppConfig(zoneConfig.getMobileAppConfig());
@@ -205,13 +198,6 @@ public class SelfResource extends AbstractFileResource {
     }
 
     @GET
-    @Path("/public_shares")
-   	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
-    public BinderBrief getPublicShares() {
-        return getFakePublicShares();
-    }
-
-    @GET
     @Path("/shared_with_me")
    	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
     public BinderBrief getSharedWithMe(@QueryParam("library_info") @DefaultValue("false") boolean libraryModTime) {
@@ -275,33 +261,6 @@ public class SelfResource extends AbstractFileResource {
         } else {
             return Response.ok(results).build();
         }
-    }
-
-    @POST
-    @Path("/my_files/library_folders")
-    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    public org.kablink.teaming.rest.v1.model.Folder copyFolder(@QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr,
-                                                               @FormParam("title") String title,
-                                                               @FormParam("source_id") Long sourceId) {
-        if (!SearchUtils.userCanAccessMyFiles(this, getLoggedInUser())) {
-            throw new AccessControlException("Personal storage is not allowed.", null);
-        }
-        if (title==null) {
-            throw new BadRequestException(ApiErrorCode.BAD_INPUT, "No title parameter was supplied in the POST data.");
-        }
-        if (sourceId==null) {
-            throw new BadRequestException(ApiErrorCode.BAD_INPUT, "No source_id parameter was supplied in the POST data.");
-        }
-        org.kablink.teaming.domain.Binder parent = getMyFilesFolderParent();
-        org.kablink.teaming.domain.Folder source = _getFolder(sourceId);
-        if (BinderHelper.isBinderHomeFolder(source)) {
-            throw new BadRequestException(ApiErrorCode.BAD_INPUT, "Copying a home folder is not supported");
-        }
-        Map options = new HashMap();
-        options.put(ObjectKeys.INPUT_OPTION_REQUIRED_TITLE, title);
-        org.kablink.teaming.domain.Binder binder = getBinderModule().copyBinder(sourceId, parent.getId(), true, options);
-        return (org.kablink.teaming.rest.v1.model.Folder) ResourceUtil.buildBinder(binder, true, toDomainFormat(descriptionFormatStr));
     }
 
     @POST
@@ -430,38 +389,6 @@ public class SelfResource extends AbstractFileResource {
 
     @POST
     @Path("/my_files/library_files")
-    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    public FileProperties copyFile(@FormParam("file_name") String fileName,
-                                   @FormParam("source_id") String sourceId,
-                                   @Context HttpServletRequest request) throws WriteFilesException, WriteEntryDataException {
-        if (!SearchUtils.userCanAccessMyFiles(this, getLoggedInUser())) {
-            throw new AccessControlException("Personal storage is not allowed.", null);
-        }
-        if (fileName==null) {
-            throw new BadRequestException(ApiErrorCode.BAD_INPUT, "No file_name parameter was supplied in the POST data.");
-        }
-        if (sourceId==null) {
-            throw new BadRequestException(ApiErrorCode.BAD_INPUT, "No source_id parameter was supplied in the POST data.");
-        }
-        Folder folder = getMyFilesFileParent();
-        FileAttachment existing = findFileAttachment(sourceId);
-        org.kablink.teaming.domain.DefinableEntity origEntry = existing.getOwner().getEntity();
-        org.kablink.teaming.domain.FolderEntry newEntry = getFolderModule().copyEntry(origEntry.getParentBinder().getId(),
-                origEntry.getId(), folder.getId(), new String[] {fileName}, null);
-        Set<Attachment> attachments = newEntry.getAttachments();
-        for (Attachment attachment : attachments) {
-            if (attachment instanceof FileAttachment) {
-                FileProperties file = ResourceUtil.buildFileProperties((FileAttachment) attachment);
-                file.setBinder(new ParentBinder(ObjectKeys.MY_FILES_ID, "/self/my_files"));
-                return file;
-            }
-        }
-        return null;
-    }
-
-    @POST
-    @Path("/my_files/library_files")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public FileProperties addLibraryFileFromMultipart(@QueryParam("file_name") String fileName,
@@ -553,20 +480,6 @@ public class SelfResource extends AbstractFileResource {
         }
         Criteria crit = SearchUtils.getMyFilesSearchCriteria(this, getLoggedInUser().getWorkspaceId(), true, false, false, false);
         SearchResultList<BinderBrief> results = lookUpBinders(crit, descriptionFormat, offset, maxCount, "/self/my_files/library_folders", nextParams, parentModTime);
-        setMyFilesParents(results);
-        return results;
-    }
-
-    private SearchResultList<SearchableObject> _getMyFilesLibraryChildren(boolean folders, boolean entries, boolean files,
-                                                                          int descriptionFormat, Integer offset, Integer maxCount, Date parentModTime) {
-        Map<String, Object> nextParams = new HashMap<String, Object>();
-        if (descriptionFormat==Description.FORMAT_HTML) {
-            nextParams.put("description_format", "html");
-        } else {
-            nextParams.put("description_format", "text");
-        }
-        Criteria crit = SearchUtils.getMyFilesSearchCriteria(this, getLoggedInUser().getWorkspaceId(), folders, entries, false, true);
-        SearchResultList<SearchableObject> results = lookUpChildren(crit, descriptionFormat, offset, maxCount, "/self/my_files/library_folders", nextParams, parentModTime);
         setMyFilesParents(results);
         return results;
     }

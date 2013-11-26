@@ -59,19 +59,17 @@ public class AssignmentInfo extends PrincipalInfo implements IsSerializable {
 		INDIVIDUAL,
 		GROUP,
 		TEAM,
-		PUBLIC,
-		PUBLIC_LINK;
+		PUBLIC;
 		
 		/**
 		 * Get'er methods.
 		 * 
 		 * @return
 		 */
-		public boolean isIndividual() {return INDIVIDUAL.equals( this);}
-		public boolean isGroup()      {return GROUP.equals(      this);}
-		public boolean isTeam()       {return TEAM.equals(       this);}
-		public boolean isPublic()     {return PUBLIC.equals(     this);}
-		public boolean isPublicLink() {return PUBLIC_LINK.equals(this);}
+		public boolean isIndividual() {return INDIVIDUAL.equals(this);}
+		public boolean isGroup()      {return GROUP.equals(     this);}
+		public boolean isTeam()       {return TEAM.equals(      this);}
+		public boolean isPublic()     {return PUBLIC.equals(    this);}
 	}
 	
 	/**

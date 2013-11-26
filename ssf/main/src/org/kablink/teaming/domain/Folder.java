@@ -36,9 +36,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.kablink.teaming.domain.ResourceDriverConfig.DriverType;
-import org.kablink.teaming.fi.connection.ResourceDriverManagerUtil;
-
 /**
  * @hibernate.subclass discriminator-value="folder" dynamic-update="true"
  * 
@@ -259,5 +256,4 @@ public class Folder extends Binder {
 	public void setPreDeletedBy(Long preDeletedBy) {
 		this.preDeletedBy = preDeletedBy;
 	}
-	
 }

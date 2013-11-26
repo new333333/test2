@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -44,7 +44,6 @@ public enum WorkspaceType implements IsSerializable {
 	DISCUSSIONS,
 	GLOBAL_ROOT,
 	LANDING_PAGE,
-	MOBILE_DEVICES,
 	NET_FOLDERS_ROOT,
 	PROFILE_ROOT,				// When used anywhere except the administration console.
 	PROFILE_ROOT_MANAGEMENT,	// When used within          the administration console.
@@ -67,17 +66,6 @@ public enum WorkspaceType implements IsSerializable {
 	 */
 	public boolean isProfileRoot() {
 		return (this.equals(PROFILE_ROOT) || this.equals(PROFILE_ROOT_MANAGEMENT));
-	}
-
-	/**
-	 * Returns true if this WorkspaceType value represents a mobile
-	 * devices view, as used by the administration console and false
-	 * otherwise.
-	 * 
-	 * @return
-	 */
-	public boolean isMobileDevices() {
-		return this.equals(MOBILE_DEVICES);
 	}
 	
 	/**

@@ -133,24 +133,19 @@
 	/* ...End:  Footer panel styles. */
 	
 	/* ...Start:  Generic folder view styles. */
-		.vibe-folderViewBase               {border: 8px solid transparent;}
-		.vibe-folderViewBase-dndHint       {position: absolute !important; top: 8px; left: 25%; right: 25%; color: black; font-size: 1em; font-weight: bold; text-align: center; padding: 10px; -moz-border-radius: 5px; border-radius: 5px; -webkit-border-radius: 5px; background: #09f;}
-		.vibe-folderViewBase-dndPanel      {position: relative;}
-		.vibe-folderViewBase-dndPanelHover {}
-		.vibe-folderViewBase-hover         {border: 8px solid #09f !important;}
+		.vibe-folderViewBase {padding: 8px;}
 	/* ...End:  Generic folder view styles. */
 	
 	/* ...Start:  Generic data table folder view styles. */
-		.vibe-dataTableFolderColumn               {}
-		.vibe-dataTableFolderColumn-headerCenter  {text-align: center !important;}
-		.vibe-dataTableFolderColumn-mobileDevices {height: 25px; width: 25px;}
-		.vibe-dataTableFolderColumn-select        {}
-		.vibe-dataTableFolderDataTableBase        {}
-		.vibe-dataTableFolderFlowPanelBase        {}
-		.vibe-dataTableFolderRow                  {}
-		.vibe-dataTableFolderRow-select           {}
-		.vibe-dataTableFolderViewBase             {}
-		.vibe-dataTableFolderVerticalPanelBase    {}
+		.vibe-dataTableFolderColumn              {}
+		.vibe-dataTableFolderColumn-headerCenter {text-align: center !important;}
+		.vibe-dataTableFolderColumn-select       {}
+		.vibe-dataTableFolderDataTableBase       {}
+		.vibe-dataTableFolderFlowPanelBase       {}
+		.vibe-dataTableFolderRow                 {}
+		.vibe-dataTableFolderRow-select          {}
+		.vibe-dataTableFolderViewBase            {}
+		.vibe-dataTableFolderVerticalPanelBase   {}
 	/* ...End:  Generic data table folder view styles. */
 	
 	/* ...Start:  Data table cell styles. */
@@ -189,7 +184,6 @@
 		.vibe-dataTableEntity-Marker              {display: inline; cursor: pointer;}
 		.vibe-dataTableEntry-download             {border: 0px solid #666666; padding-left: 0px; padding-right: 0px; line-height: 11px;}
 		.vibe-dataTableEntry-panel                {}
-		.vibe-dataTableEntry-panelDropTarget      {background-color: #09f !important; color: black !important;}
 		.vibe-dataTableEntry-title                {cursor: pointer; color: #135c8f !important; padding: 2px;}
 		.vibe-dataTableEntry-titleHidden          {cursor: pointer; color: #c4c4c4 !important; padding: 2px;}
 		.vibe-dataTableEntry-titleLinkPanel       {display: inline; text-decoration: none;}
@@ -210,14 +204,6 @@
 		.vibe-dataTableItem-Img                   {vertical-align: middle; margin-right: 2px;}
 		.vibe-dataTableLink-hover                 {color: #135c8f !important; cursor: pointer; background: url(images/blends/teal_slice.png) repeat-x; background-position:center; -moz-border-radius: 3px; border-radius: 3px; -webkit-border-radius: 3px; padding: 2px;}
 		.vibe-dataTableLink-hoverNoLPad           {padding-left: 0px !important;}
-		.vibe-dataTableMobileDevices-bubble       {color: #135c8f; font-size: 12px; font-weight: bold; padding-top: 4px; padding-bottom: 5px; padding-left: 8px; padding-right: 8px; text-align: center; display: inline;}
-		.vibe-dataTableMobileDevices-bubbleBig    {background: url(images/devices_25_wide.png) no-repeat scroll center center transparent;}
-		.vibe-dataTableMobileDevices-bubbleSmall  {background: url(images/devices_25.png)      no-repeat scroll center center transparent;}
-		.vibe-dataTableMobileDevices-headerBubble {color: #135c8f; font-size: 12px; font-weight: bold; padding-top: 4px; padding-bottom: 5px; padding-left: 4px; padding-right: 4px; text-align: center; display: inline; background: url(images/devices_sm.png) no-repeat scroll center center transparent;}
-		.vibe-dataTableMobileDevices-panel        {text-align: center; display: block;}
-		.vibe-dataTableMobileDevices-panel0       {}
-		.vibe-dataTableMobileDeviceWipe-panel     {text-align: center; display: block;}
-		.vibe-dataTableMobileDeviceWipe-text      {display: inline; text-decoration: none;}
 		.vibe-dataTablePresence-control           {vertical-align: text-bottom;}
 		.vibe-dataTablePresence-label             {display: inline; font-weight: bold; padding-left: 2px !important;}
 		.vibe-dataTablePresence-disabled          {color: #c4c4c4;}
@@ -279,11 +265,6 @@
 		.vibe-mirroredFileFolderFlowPanel     {}
 		.vibe-mirroredFileFolderNotConfigured {color: red; font-weight: bold; font-size: 1.2em;}
 	/* ...End:  Mirrored file folder view styles. */
-	
-	/* ...Start:  Mobile Devices view styles. */
-		.vibe-mobileDevicesDataTable {}
-		.vibe-mobileDevicesFlowPanel {}
-	/* ...End:  Mobile Devices view styles. */
 
 	/* ...Start:  Personal Workspaces view styles. */
 		.vibe-personalWorkspacesDataTable {}
@@ -384,7 +365,7 @@
 /* End:  Add files dialog styles. */
 
 /* Start:  Add files via HTML5 styles. */
-	.vibe-addFilesHtml5Popup                             {z-index: 1001; border: 3px solid #09f !important; -moz-border-radius: 15px !important; border-radius: 15px !important; -webkit-border-radius: 15px !important; background: url("images/trans_blue_stripes.png") repeat !important;}
+	.vibe-addFilesHtml5Popup                             {z-index: 1001; border: 3px solid #09f !important; -moz-border-radius !important: 15px; border-radius: 15px !important; -webkit-border-radius !important: 15px; background: url("images/trans_blue_stripes.png") repeat !important;}
 	.vibe-addFilesHtml5Popup-closePanel                  {color: #FFFFFF; background-color: transparent !important; opacity: 1.0 !important; filter: alpha(opacity=100) !important; font-size: 0.8em; position: absolute; right: -12px; top: -12px; z-index: 1002;}
 	.vibe-addFilesHtml5Popup-closePanel:hover            {cursor: pointer;}
 	.vibe-addFilesHtml5Popup-glass                       {background-color: #000; filter: alpha(opacity=15); opacity: 0.15; overflow: hidden; z-index: 1000;}
@@ -393,9 +374,6 @@
 	.vibe-addFilesHtml5Popup-dndPanelHover               {}
 	.vibe-addFilesHtml5Popup-dupsList                    {}
 	.vibe-addFilesHtml5Popup-dupsName                    {}
-	.vibe-addFilesHtml5Popup-html5UploadPopup-glass      {background-color: #09f; filter: alpha(opacity=30); opacity: 0.3; overflow: hidden;}
-	.vibe-addFilesHtml5Popup-html5UploadPopup-panel      {color: white; font-size: 1.2em; text-align: center; padding: 15px; -moz-border-radius: 10px; border-radius: 10px; -webkit-border-radius: 10px; background: url("images/trans50_black.png") repeat;}
-	.vibe-addFilesHtml5Popup-html5UploadPopup-root       {}
 	.vibe-addFilesHtml5Popup-innerHintBrowseButton       {font-size: 14px !important;}
 	.vibe-addFilesHtml5Popup-innerHintBrowseButton:hover {}
 	.vibe-addFilesHtml5Popup-innerHintBrowsePanel        {display: block; margin-top: 1em;}
@@ -412,15 +390,6 @@
 	.vibe-addFilesHtml5Popup-progressBar-total-bar       {margin-bottom: 3px; width: 250px !important;}
 	.vibe-addFilesHtml5Popup-progressBar-total-label     {padding-right: 5px;}
 /* Start:  Add files via HTML5 styles. */
-
-/* Start:  Cloud Folder authentication dialog styles. */
-	.vibe-cloudFolderAuthenticationDlgBox .popupContent {background-color: white !important;}
-	.vibe-cloudFolderAuthenticationDlg_Logo             {margin-left: 10px;}
-	.vibe-cloudFolderAuthenticationDlg_Message          {padding: 10px; white-space: normal; display: block !important;}
-	.vibe-cloudFolderAuthenticationDlg_MessageAbove     {margin-bottom: 10px;}
-	.vibe-cloudFolderAuthenticationDlg_MessageBelow     {margin-top: 10px;}
-	.vibe-cloudFolderAuthenticationDlg_Panel            {width: 500px; height: 280px;}
-/* End:  Cloud Folder authentication dialog styles. */
 
 /* Start:  File conflicts dialog styles. */
 	.vibe-fileConflictsDlg                 {}
@@ -502,18 +471,7 @@
 		font-size: 13px;
 	}
 	.vibe-manageCommentsDlg-panel         {}
-	.vibe-manageCommentsDlg-headerCaption {display: inline-block; overflow: hidden; text-overflow: ellipsis; max-width: 420px;}
 /* End:  Manage comments dialog styles. */
-
-/* Start:  Manage devices dialog styles. */
-	.vibe-manageMobileDevicesDlg                    {}
-	.vibe-manageMobileDevicesDlg .popupContent      {background-color: white !important;}
-	.vibe-manageMobileDevicesDlg-captionCount       {position: absolute; top: 8px; right: 0px; padding-left: 10px; padding-right: 20px; font-size: 13px;}
-	.vibe-manageMobileDevicesDlg-headerCaption-user {display: inline-block; overflow: hidden; text-overflow: ellipsis; max-width: 600px;}
-	.vibe-manageMobileDevicesDlg-panel              {}
-	.vibe-manageMobileDevicesDlg-system             {}
-	.vibe-manageMobileDevicesDlg-user               {width: 800px; height: 600px;}
-/* End:  Manage devices dialog styles. */
 
 /* Start:  Size columns dialog styles. */
 	.vibe-sizeColumnsDlg-colCaptionImg {}
@@ -646,42 +604,3 @@
 	.vibe-emptyWidget-info      {font-size: 16px; color: #505354; margin-top: 10px; line-height: 24px;}	
 	.vibe-emptyWidget-rootPanel {position:relative; background-color: #fafafa; margin: 20px 40px; border: 1px solid #ccc; padding: 20px; border-radius: 10px; width: 450px; font-size: 1.15em;}
 /* End:  Empty widget styles. */
-
-/* Start:  Delete selections dialog styles. */
-	.vibe-deleteSelectionsDlg                    {min-width: 220px;}
-	.vibe-deleteSelectionsDlg-indent             {padding-left: 20px;}
-	.vibe-deleteSelectionsDlg-purgeNote          {font-size: 14px;}
-	.vibe-deleteSelectionsDlg-purgeRadio label   {font-size: 14px; padding-top: 5px; padding-left: 2px; display: inline-block;} 
-	.vibe-deleteSelectionsDlg-radio              {} 
-	.vibe-deleteSelectionsDlg-trashRadio label   {font-size: 14px; padding-top: 5px; padding-left: 2px; display: inline-block;} 
-	.vibe-deleteSelectionsDlg-rootPanel          {padding: 8px;}
-	.vibe-deleteSelectionsDlg-warning            {padding-top: 8px;}
-	.vibe-deleteSelectionsDlg-warningImg         {margin-right: 3px;}
-	.vibe-deleteSelectionsDlg-warningPanel       {display: none; visibility: hidden;}
-	.vibe-deleteSelectionsDlg-warningPanelActive {display: inline !important; visibility: visible !important;}
-	.vibe-deleteSelectionsDlg-warningTxt         {font-size: 14px; font-weight: bold;}
-	.vibe-deleteSelectionsDlg-warningSituation1  {}
-	.vibe-deleteSelectionsDlg-warningSituation2  {}
-	.vibe-deleteSelectionsDlg-warningSituation3  {padding-left: 3px;}
-/* End:  Delete selections dialog styles. */
-
-
-/* Start:  Delete selected users dialog styles. */
-	.vibe-deleteSelectedUsersDlg                       {min-width: 220px;}
-	.vibe-deleteSelectedUsersDlg-indent                {padding-left: 20px;}
-	.vibe-deleteSelectedUsersDlg-purgeCheckBoxCell     {} 
-	.vibe-deleteSelectedUsersDlg-purgeCheckBoxWS label {font-size: 14px !important; padding-top: 5px; padding-left: 2px; display: inline-block;} 
-	.vibe-deleteSelectedUsersDlg-purgeNote             {font-size: 14px; padding-bottom: 2px;}
-	.vibe-deleteSelectedUsersDlg-purgeRadio label      {font-size: 14px; padding-top: 5px; padding-left: 2px; display: inline-block;}
-	.vibe-deleteSelectedUsersDlg-radio                 {} 
-	.vibe-deleteSelectedUsersDlg-trashRadio label      {font-size: 14px; padding-top: 5px; padding-left: 2px; display: inline-block;} 
-	.vibe-deleteSelectedUsersDlg-rootPanel             {padding: 8px;}
-	.vibe-deleteSelectedUsersDlg-warning               {padding-top: 8px;}
-	.vibe-deleteSelectedUsersDlg-warningImg            {margin-right: 3px;}
-	.vibe-deleteSelectedUsersDlg-warningPanel          {display: none; visibility: hidden;}
-	.vibe-deleteSelectedUsersDlg-warningPanelActive    {display: inline !important; visibility: visible !important;}
-	.vibe-deleteSelectedUsersDlg-warningTxt            {font-size: 14px; font-weight: bold;}
-	.vibe-deleteSelectedUsersDlg-warningSituation1     {}
-	.vibe-deleteSelectedUsersDlg-warningSituation2     {}
-	.vibe-deleteSelectedUsersDlg-warningSituation3     {padding-left: 3px;}
-/* End:  Delete selected users dialog styles. */

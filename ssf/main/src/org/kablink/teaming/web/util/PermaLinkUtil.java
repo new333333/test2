@@ -65,7 +65,6 @@ public class PermaLinkUtil {
     public static final int COLLECTION_NET_FOLDERS = 1;
     public static final int COLLECTION_SHARED_BY_ME = 2;
     public static final int COLLECTION_SHARED_WITH_ME = 3;
-    public static final int COLLECTION_SHARED_PUBLIC = 4;
 
 	private static final Log m_logger = LogFactory.getLog(PermaLinkUtil.class);
 
@@ -195,14 +194,6 @@ public class PermaLinkUtil {
 			adapterUrl.setParameter(WebKeys.URL_CAPTIVE, captive.toString());
 		return adapterUrl.toString();
 	}
-
-    public static String getSharedPublicFileDownloadPermalink(Long shareItemId, String passKey, String fileName) {
-        return WebUrlUtil.getSharedPublicFileUrl((HttpServletRequest)null, shareItemId, passKey, WebKeys.URL_SHARE_PUBLIC_LINK, fileName);
-    }
-
-    public static String getSharedPublicFileViewPermalink(Long shareItemId, String passKey, String fileName) {
-        return WebUrlUtil.getSharedPublicFileUrl((HttpServletRequest)null, shareItemId, passKey, WebKeys.URL_SHARE_PUBLIC_LINK_HTML, fileName);
-    }
 
 	protected static void getPermalinkURL(AdaptedPortletURL adapterUrl, Long entityId, EntityIdentifier.EntityType entityType) {
 		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PERMALINK);

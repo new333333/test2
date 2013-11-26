@@ -45,13 +45,13 @@ import com.google.web.bindery.event.shared.SimpleEventBus;
  * folder setting on the currently selected users in the personal
  * workspace binder.  This reverts these users to the zone setting.
  * 
- * See the definition of the SelectedEntitiesEventBase class for how and
+ * See the definition of the SelectedEntriesEventBase class for how and
  * when an EntityId (or List<EntityId>) should be passed into the
  * construction of this class.
  * 
  * @author drfoster@novell.com
  */
-public class ClearSelectedUsersAdHocFoldersEvent extends SelectedEntitiesEventBase<ClearSelectedUsersAdHocFoldersEvent.Handler> {
+public class ClearSelectedUsersAdHocFoldersEvent extends SelectedEntriesEventBase<ClearSelectedUsersAdHocFoldersEvent.Handler> {
     public static Type<Handler> TYPE = new Type<Handler>();
     
     public Long m_workspaceId;	// The ID of the personal workspaces binder.

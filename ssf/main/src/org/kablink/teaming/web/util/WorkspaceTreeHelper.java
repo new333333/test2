@@ -597,7 +597,7 @@ public class WorkspaceTreeHelper {
 		if (showTrash) {
 			TrashHelper.buildTrashViewToolbar(model);
 			Map options = TrashHelper.buildTrashBeans(bs, req, response, wsId, model);
-			Map trashEntries = TrashHelper.getTrashEntities(bs, model, ws, options);
+			Map trashEntries = TrashHelper.getTrashEntries(bs, model, ws, options);
 			model.putAll(ListFolderHelper.getSearchAndPagingModels(trashEntries, options, showTrash));
 			if (trashEntries != null) {
 				List trashEntriesList = (List) trashEntries.get(ObjectKeys.SEARCH_ENTRIES);
@@ -1318,16 +1318,23 @@ public class WorkspaceTreeHelper {
 		return WebKeys.VIEW_WORKSPACE;
 	}
 	
+	
 	protected static void getShowModifyProfileAdapter(AllModulesInjected bs, RenderRequest request, 
 			RenderResponse response, Map model, Workspace workspace){
+		
 		@SuppressWarnings("unused")
 		User user = RequestContextHolder.getRequestContext().getUser();
+
+		
+
+		
+		
 	}
 
     /**
-     * Helper class to return folder unseen counts as an objects
-     * 
+     * Helper classs to return folder unseen counts as an objects
      * @author Janet McCann
+     *
      */
      public static class Counter {
     	private long count=0;
@@ -1340,4 +1347,5 @@ public class WorkspaceTreeHelper {
     		return count;
     	}    	
     }
+    
 }

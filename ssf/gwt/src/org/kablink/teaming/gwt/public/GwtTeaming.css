@@ -26,7 +26,6 @@
 .padding5b  {padding:        5px !important;}
 .padding5R  {padding-right:  5px;           }
 .padding15R {padding-right: 15px;           }
-.padding2L  {padding-left:   2px;           }
 
 .vibe-fullScroll       {overflow:   auto;}
 .vibe-horizontalScroll {overflow-x: auto; overflow-y: hidden;}
@@ -465,7 +464,6 @@
 
 .activityStreamTopEntryTitle
 {
-	text-decoration: none;
 	color: #135c8f;
 	font-size: 14px;
 	line-height: 15px;
@@ -634,14 +632,6 @@
 	font-style: italic;
 }
 
-.shareThisDlg_EditSharePanel
-{
-	background-color: #EDEDED;
-	height: 360px;
-	margin-left: 6px;
-	width: 400px;
-}
-
 .shareThisDlg_ExpiresLabel, .shareThisDlg_DefaultExpiresLabel
 {
 	color: #135c8f;
@@ -679,7 +669,6 @@
 	color: #505354;
 	font-size: 13px;
 	line-height: 16px;
-	overflow: hidden;
 }
 
 .shareThisDlg_NoteLabel
@@ -697,11 +686,7 @@
 {
 }
 
-.shareThisDlg_RecipientTypeImage
-{
-}
-
-.shareThisDlg_RecipientTypeImagePanel
+.shareThisDlg_RecipientTypeLabel
 {
 }
 
@@ -736,13 +721,13 @@
 	margin-left: 4px;
 }
 
-.shareThisDlg_RightsLabel, .shareThisDlg_PublicRecipientTypeImage
+.shareThisDlg_RightsLabel, .shareThisDlg_PublicRecipientTypeLabel
 {
 	color: #135c8f;
 	padding-left: 4px;
 }
 
-.shareThisDlg_RightsLabel:hover, .shareThisDlg_ExpiresLabel:hover, .shareThisDlg_DefaultExpiresLabel:hover, .shareThisDlg_shareWithTeamsLink:hover, .shareThisDlg_NoteLabel:hover, .shareThisDlg_PublicRecipientTypeImage:hover
+.shareThisDlg_RightsLabel:hover, .shareThisDlg_ExpiresLabel:hover, .shareThisDlg_DefaultExpiresLabel:hover, .shareThisDlg_shareWithTeamsLink:hover, .shareThisDlg_NoteLabel:hover, .shareThisDlg_PublicRecipientTypeLabel:hover
 {
 	cursor: pointer;
 	background: url(images/blends/teal_slice.png) repeat-x;
@@ -828,62 +813,8 @@
 	margin-top: 12px;
 }
 
-.shareThisDlg_ListOfSharesPanel
-{
-	overflow-x: hidden;
-	overflow-y: auto;
-}
-
-.shareItem_InfoPanel
-{
-	cursor: pointer;
-}
-
-.shareItem_mainPanel
-{
-	margin-left: 4px;
-}
-
-.shareItem_RecipientAvatar
-{
-	height: 40px;
-	width: 40px;
-}
-
-.shareItem_RecipientName
-{
-	color: #135C8F;
-	font-weight: bold;
-}
-
-.shareItem_Expiration, .shareItem_AccessRights, .shareItem_ReshareRights, .shareItem_PublicUrl, .shareItem_SharedByName
-{
-	color: #666666;
-	font-size: 11px;
-	letter-spacing: .25px;
-}
-.shareItem_Note
-{
-	color: #353838;
-	font-size: 12px;
-	line-height: 18px;
-}
-
-.shareItem_PublicUrl:hover
-{
-	cursor: pointer;
-}
-
 /* End of styles used with the Share dialog */
 
-
-/**
- * Styles used with the Edit Share dialog
- */
-.editShareDlg_expirationPanel
-{
-	margin-top: 8px;
-}
 
 
 .groupMembershipGroupNameLabel
@@ -1177,7 +1108,6 @@ body, table td, select
 .margintop4      {margin-top:    1.5em;}
 .margintop5      {margin-top:    2em;}
 .margintop3px    {margin-top:    3px;}
-.margintop3pxb   {margin-top:    3px !important;}
 .marginTop5px	 {margin-top: 	 5px;}
 .marginTop10px	 {margin-top: 10px;}
 
@@ -1193,7 +1123,6 @@ body, table td, select
 .marginbottom1   		{margin-bottom: 0.3em;}
 .marginbottom2   		{margin-bottom: 0.5em;}
 .marginbottom3   		{margin-bottom: 1em;}
-.marginbottom4px   		{margin-bottom: 4px;}
 .marginBottom15em		{margin-bottom: .15em;}
 .marginBottomPoint25em	{margin-bottom: .25em;}
 
@@ -1340,26 +1269,6 @@ body, table td, select
 	-moz-border-radius: 5px;
 	border-radius: 5px;
 	-webkit-border-radius: 5px;
-}
-
-.dlgErrorPanelWrapper
-{
-	position: relative;
-}
-
-.dlgBox_closeErrorPanel
-{
-	color: #FFFFFF;
-	font-size: 0.8em;
-	position: absolute;
-	right: 0px;
-	top: 0px;
-	z-index: 1001;
-}
-
-.dlgBox_closeErrorPanel:hover
-{
-	cursor: pointer;
 }
 
 .dlgErrorLabel
@@ -1531,7 +1440,7 @@ body, table td, select
 .findSearchResultsContent
 {
 	background-color: white;
-	height: 250px;
+	height: 220px;
 	overflow: auto;
 	width: 200px;	/* Even though this isn't the real width, we need to specify it or IE won't honor the overflow: auto. */
 }
@@ -1558,11 +1467,9 @@ body, table td, select
 /* Style used for an item in a search result list. */
 .findSearchResultItemWidget
 {
-	border-bottom: 1px solid #BABDB6;
 	margin-bottom: .25em;
 	margin-left: .5em;
 	margin-right: .5em;
-	padding-bottom: 6px;
 	white-space: nowrap;
 }
 .findSearchResultItemWidget a
@@ -1573,12 +1480,6 @@ body, table td, select
 {
 	color: #505354;
 }
-
-.findSearchResultItemWidget_HighlightOn
-{
-	background: none repeat scroll 0 0 #CCE9EE;
-}
-
 .findCtrlScopePanel
 {
 }
@@ -2783,6 +2684,8 @@ body, table td, select
 	position: absolute;
 	left: 10px;
 	bottom: 0px;
+	background-image: url(images/trans15_black.png);
+	background-repeat: repeat;
 	border-top-left-radius: 5px;
 	border-top-right-radius: 5px;
 	-moz-border-radius-topleft: 5px;
@@ -2797,6 +2700,8 @@ body, table td, select
 	position: absolute;
 	left: 60px;
 	bottom: 0px;
+	background-image: url(images/trans15_black.png);
+	background-repeat: repeat;
 	border-top-left-radius: 5px;
 	border-top-right-radius: 5px;
 	-moz-border-radius-topleft: 5px;
@@ -2811,6 +2716,8 @@ body, table td, select
 	position: absolute;
 	left: 110px;
 	bottom: 0px;
+	background-image: url(images/trans15_black.png);
+	background-repeat: repeat;
 	border-top-left-radius: 5px;
 	border-top-right-radius: 5px;
 	-moz-border-radius-topleft: 5px;
@@ -3007,11 +2914,6 @@ body, table td, select
 }
 
 /* Styles for buttons */
-.teamingSmallButton
-{
-	font-size: 8px;
-}
-
 .teamingButton
 {
 	margin-left: 0.5em;
@@ -3096,8 +2998,8 @@ body, table td, select
 
 .gwt-RadioButton {white-space: nowrap;}
 .gwt-RadioButton label {
-	font-size: 13px;
-	padding-top: 4px;
+	font-size: 14px;
+	padding-top: 5px;
 	padding-left: 2px;
 	padding-right: 8px;
 	display: inline-block;
@@ -3105,19 +3007,18 @@ body, table td, select
 
 .gwt-CheckBox label {
 	font-size: 13px !important;
-	padding-top: 4px;
+	padding-top: 2px;
 	padding-left: 2px;
-	padding-right: 8px;
+	padding-right: 4px;
 	display: inline-block;
 	}
 
-.gwt-TextBox, .gwt-PasswordTextBox, .gwt-DateBox, .gwt-FileUpload, .gwt-TextArea {
+.gwt-TextBox, .gwt-PasswordTextBox, .gwt-DateBox, .gwt-FileUpload {
 	border: 1px solid #949494;
 	border-radius: 3px;
 	font-size: 13px;
 	padding: 5px;
 	background-color: #fff;
-	border-radius: 3px;
 	-moz-border-radius: 3px;
 	-webkit-border-radius: 3px;
 }
@@ -3732,7 +3633,8 @@ top:100px;
 .gwtTaskListing
 {
 	font-size: 1.35em; 
-	overflow: auto;
+	overflow-y: auto;
+	overflow-x: hidden;
 	border: 1px solid #cccccc;
 }
 .gwtTaskListing_IE
@@ -3778,10 +3680,6 @@ top:100px;
 .gwtTaskList_calculatedDate
 {
 	font-style: italic;
-}
-.gwtTaskList_parentDurationError
-{
-	border: 1px solid red !important;
 }
 .gwtTaskList_loading
 {
@@ -4186,13 +4084,11 @@ td.datePickerMonth {
 .vibe-aboutBox {z-index: 1001;}
 
 /* Start:  Add new folder dialog styles. */
-	.vibe-addNewFolderDlg_Grid       {}
-	.vibe-addNewFolderDlg_Label      {}
-	.vibe-addNewFolderDlg_NameInput  {width: 250px;}
-	.vibe-addNewFolderDlg_NameLabel  {color: #414648; line-height: 1.1em; margin-right: 8px; white-space: nowrap;}
-	.vibe-addNewFolderDlg_Panel      {padding: 10px;}
-	.vibe-addNewFolderDlg_TypeLabel  {color: #414648; line-height: 1.1em; margin-right: 8px; white-space: nowrap;}
-	.vibe-addNewFolderDlg_TypeSelect {width: 250px;}
+	.vibe-addNewFolderDlg_Label     {}
+	.vibe-addNewFolderDlg_NameInput {width: 250px;}
+	.vibe-addNewFolderDlg_NameLabel {color: #414648; line-height: 1.1em; margin-right: 8px; white-space: nowrap;}
+	.vibe-addNewFolderDlg_NamePanel {}
+	.vibe-addNewFolderDlg_Panel     {padding: 10px;}
 /* End:  Add new folder dialog styles. */
 
 /* Start:  Calendar settings dialog styles. */
@@ -4439,13 +4335,12 @@ td.datePickerMonth {
 /* End:  Progress bar styles. */
 
 /* Start:  Multi-error alert dialog styles. */
-	.vibe-multiErrorAlertDlg-baseError     {font-size: 1.1em;}
-	.vibe-multiErrorAlertDlg-baseErrorCell {padding-bottom: 10px;}
-	.vibe-multiErrorAlertDlg-eachError     {font-size: 1.1em; font-weight: bold;}
-	.vibe-multiErrorAlertDlg-grid          {}
-	.vibe-multiErrorAlertDlg-rootPanel     {padding: 8px;}
-	.vibe-multiErrorAlertDlg-spacer        {}
-	.vibe-multiErrorAlertDlg-warnImg       {padding-bottom:  10px;}
+	.vibe-multiErrorAlertDlg-baseError {padding-bottom: 10px; font-size: 1.2em;}
+	.vibe-multiErrorAlertDlg-eachError {font-size: 1.1em; font-weight: bold;}
+	.vibe-multiErrorAlertDlg-grid      {}
+	.vibe-multiErrorAlertDlg-rootPanel {padding: 8px;}
+	.vibe-multiErrorAlertDlg-spacer    {}
+	.vibe-multiErrorAlertDlg-warnImg   {padding-bottom:  10px;}
 /* End:  Multi-error alert dialog styles. */
 
 /* Start:  Conformation dialog styles. */
@@ -4480,7 +4375,7 @@ td.datePickerMonth {
 
 /* The following styles are used with the group management dialogs. */
 
-.groupManagementBtn, .manageNetFolderRootsDlg_Btn, .manageNetFoldersDlg_Btn, .shareDlg_Btn, .editLdapConfigDlg_Btn
+.groupManagementBtn, .manageNetFolderRootsDlg_Btn, .manageNetFoldersDlg_Btn
 {
 	cursor: pointer;
     text-decoration: none;    
@@ -4504,11 +4399,6 @@ td.datePickerMonth {
     
 }
 
-.groupManagementDropDown         {}
-.groupManagementDropDownText     {font-size: 12px; vertical-align: middle;}
-.groupManagementDropDownImg      {vertical-align: middle;}
-.groupManagementDropDownImgNonIE {margin-left: 1px;}
-
 .groupManagementBtn:hover, .manageNetFolderRootsDlg_Btn:hover, .manageNetFoldersDlg_Btn:hover
 {
 	color: #135c8f;
@@ -4522,7 +4412,7 @@ td.datePickerMonth {
 
 }
 
-.groupManagementMenuPanel, .modifyStaticMembershipMenuPanel, .manageNetFolderRootsDlg_MenuPanel, .manageNetFoldersDlg_MenuPanel, .shareDlg_MenuPanel, .editLdapConfigDlg_MenuPanel, .editLdapServerConfigDlg_MenuPanel, .ldapSyncResultsDlg_MenuPanel
+.groupManagementMenuPanel, .modifyStaticMembershipMenuPanel, .manageNetFolderRootsDlg_MenuPanel, .manageNetFoldersDlg_MenuPanel
 {
     background-color: #ededed;
     border-top-left-radius: 5px;
@@ -4535,20 +4425,20 @@ td.datePickerMonth {
     white-space: nowrap;
 }
 
-.groupTitlePanel, .netFolderRoot_NamePanel, .netFolder_NamePanel, .ldapSource_ServerUrlPanel, .ldapSearch_BaseDnPanel
+.groupTitlePanel, .netFolderRoot_NamePanel, .netFolder_NamePanel
 {
 	font-size: 14px;
 	vertical-align: middle;
 }
 
-.groupTitle, .netFolderRoot_Name, .netFolder_Name, .ldapSource_ServerUrl, .ldapSearch_BaseDn
+.groupTitle, .netFolderRoot_Name, .netFolder_Name
 {
 	color: #135C8F;
 	cursor: pointer;
 	padding-right: 10px;
 }
 
-.groupStatus, .ldapSyncStatus, .netFolderStatus
+.groupStatus
 {
 	color: #949494;
 	font-family: Arial,sans-serif;
@@ -4569,53 +4459,6 @@ td.datePickerMonth {
 	background: white;
 }
 
-.manageGroups_QuickFilterPanel
-{
-	background-color: #fff;
-	border: 1px solid #b8b8b8;
-	border-left: none;
-	border-radius: 15px;
-	height: 19px;
-	margin-top: 1px;
-	padding: 0 0 0 5px;
-	position: absolute;
-	right: 10px;
-	top: 2px;
-	vertical-align: top;
-	white-space: nowrap;
-	-moz-border-radius: 15px;
-	-webkit-border-radius: 15px;	
-}
-
-.manageNetFoldersDlg_QuickFilterPanel
-{
-	background-color: #fff;
-	border: 1px solid #b8b8b8;
-	border-left: none;
-	border-radius: 15px;
-	height: 19px;
-	margin-right: 4px;
-	margin-top: 1px;
-	padding: 0 0 0 5px;
-	vertical-align: top;
-	white-space: nowrap;
-	-moz-border-radius: 15px;
-	-webkit-border-radius: 15px;	
-}
-
-.manageNetFoldersDlg_MainFilterPanel
-{
-	position: absolute;
-	right: 10px;
-	top: 2px;
-}
-
-.manageNetFoldersDlg_ListOfNetFoldersPanel
-{
-	overflow-x: hidden;
-	overflow-y: auto;
-}
-
 /* End of styles used with the group management dialogs */
 
 
@@ -4632,7 +4475,7 @@ td.datePickerMonth {
 	border-style: none;
 	border-width: 3px 2px 2px;
 	overflow: visible !important;
-	padding: 10px;
+	padding: 6px;
 	background-color: #EDEDED;
 	border-radius: 0px 3px 3px 3px;
 	-moz-border-radius: 0px 3px 3px 3px;
@@ -4644,7 +4487,7 @@ td.datePickerMonth {
 	border-bottom: 1px solid #c4c4c4;
 }
 
-.vibe-tabPanel .gwt-TabBarItem-wrapper
+.vibt-tabPanel .gwt-TabBarItem-wrapper
 {
 	padding-bottom: 3px;
 }
@@ -4770,7 +4613,7 @@ td.datePickerMonth {
 	padding-bottom: 12px;
 }
 
-.vibe-hoverHint      {font-family: Arial, Helvetica, sans-serif; position:absolute; border:1px solid #d2d5d1; margin:2px; padding: 10px; background-color: #fafad5; width: auto; -moz-border-radius: 6px; border-radius: 6px; -webkit-border-radius: 6px;}
+.vibe-hoverHint      {font-family: Arial, Helvetica, sans-serif; position:absolute; border:1px solid #d2d5d1; margin:2px; padding: 10px; background-color: #fafad5; width: auto; -moz-border-radius: 6px; border-radius: 6px; -webkit-border-radius: 6px; }
 .vibe-hoverHintLabel {font-family: Arial, Helvetica, sans-serif; font-weight: inherit; font-size: 12px; background-color: transparent; color: #1f1f1f; line-height: 1.4em;}
 
 /* End */
@@ -4952,7 +4795,7 @@ td.datePickerMonth {
  * Styles used in the "Modify Net Folder Root" dialog
  */
 
-.modifyNetFolderRootDlg_SelectPrivelegedUsersHint, .modifyNetFolderDlg_SelectPrincipalsHint, .editLdapServerConfigDlg_ServerUrlHint
+.modifyNetFolderRootDlg_SelectPrivelegedUsersHint, .modifyNetFolderDlg_SelectPrincipalsHint
 {
 	color: #4D6D8B;
 	font-size: 1em;
@@ -4973,14 +4816,8 @@ td.datePickerMonth {
 {
 }
 
-.modifyNetFolderServerDlg_ScheduleWidget
+.modifyNetFolderDlg_ScheduleWidget, .modifyNetFolderServerDlg_ScheduleWidget
 {
-}
-
-.modifyNetFolderDlg_ScheduleWidget
-{
-	margin-left: 30px;
-	margin-top: 4px;
 }
 
 .modifyNetFolderServerDlg_ServerPathHint
@@ -4989,22 +4826,6 @@ td.datePickerMonth {
 	font-size: 1em;
 	margin-bottom: 0.5em;
 }
-
-.modifyNetFolderServerDlg_BrowseProxyDN
-{
-	margin-bottom: 3px;
-	margin-left: 3px;
-}
-
-
-.modifyNetFolderServerDlg_ProxyNameHint
-{
-	color: #4D6D8B;
-	font-size: 1em;
-	margin-bottom: 0.5em;
-	width: 80%;
-}
-
 
 
 /**
@@ -5160,7 +4981,7 @@ td.datePickerMonth {
  */
 .userActionsPopup
 {
-	z-index: 5000;
+	z-index: 1100;
 }
 
 .userActionsPopup_OutermostPanel
@@ -5364,7 +5185,7 @@ td.datePickerMonth {
 	.vibe-userPropertiesDlg-delete           {}
 	.vibe-userPropertiesDlg-grid             {border-spacing: 0; padding: 10px;}
 
-	.vibe-userPropertiesDlg-nfHoverHint      {z-index: 1004;}
+	.vibe-userPropertiesDlg-nfHoverHint      {z-index: 1002;}
 	.vibe-userPropertiesDlg-rootPanel        {}
 	.vibe-userPropertiesDlg-title            {font-size: 20px; font-weight: 200; font-family: Arial, Helvetica, sans-serif; color:#5691A6!important; display: inline-block; padding-left: 35px; padding-top: 5px;}
 	.vibe-userPropertiesDlg-nfRow td         {vertical-align: top;}
@@ -5522,7 +5343,7 @@ td.datePickerMonth {
 	-webkit-border-radius: 5px;
 }
 
-.AdminConsoleInfoWidget_tasksToDo_td, .fontSize16px
+.AdminConsoleInfoWidget_tasksToDo_td
 {
 	font-size: 16px !important;
 }
@@ -5531,32 +5352,19 @@ td.datePickerMonth {
 
 
 /**
- * Styles used in the "Edit Zone Share" dialogs
+ * Styles used in the "Edit Zone Share Rights" dialog
  */
 
 .editZoneShareRightsDlg_Instructions 	{color: 353838; font-size: 14px; padding-bottom: 10px;}
 .editZoneShareRightsDlg_RightsCkbox		{display: inline-block; padding-top: 3px;}
 
-.editZoneShareRightsTab_Content              {padding: 5px;}
-.editZoneShareRightsTab_SelectPrincipalsHint {display: inline-block; color: #505354; font-size: 14px; margin-bottom: 15px;}
-
-.editZoneShareListsTab_CleanupPanel      {display: block; padding-top: 10px;}
-.editZoneShareListsTab_CleanupCB label   {font-size: 14px !important; padding-top: 5px; padding-left: 2px; display: inline-block;} 
-.editZoneShareListsTab_Content           {padding: 5px; display: block;}
-.editZoneShareListsTab_DomainPanel       {display: block; padding-top: 10px;}
-.editZoneShareListsTab_EmailAddressPanel {display: block; padding-top: 10px;}
-.editZoneShareListsTab_Header            {font-size: 14px; color: #505354;}
-.editZoneShareListsTab_HeaderPanel       {display: block; width: 400px; white-space: normal;}
-.editZoneShareListsTab_List              {width: 250px;}
-.editZoneShareListsTab_ListButton        {min-width: 60px;}
-.editZoneShareListsTab_ListButtons       {margin-left: 5px;}
-.editZoneShareListsTab_ListHeader        {}
-.editZoneShareListsTab_ListPanel         {padding-top: 3px;}
-.editZoneShareListsTab_ModeHeader        {}
-.editZoneShareListsTab_ModePanel         {display: block; padding-top: 10px;}
-.editZoneShareListsTab_ModeRadio         {margin-left: 10px;}
-.editZoneShareListsTab_ModeRadio label   {font-size: 14px; padding-top: 5px; padding-left: 2px; display: inline-block;} 
-.editZoneShareListsTab_SectionHeader     {font-size: 1.1em; font-weight: bold;}
+.editZoneShareRightsDlg_SelectPrincipalsHint
+{
+	display: inline-block;
+	color: #505354;
+	font-size: 14px;
+	margin-bottom: 15px;
+}
 
 .zoneShareRightsSelectPrincipalsWidget_PrincipalsTablePanelHeight
 {
@@ -5654,7 +5462,6 @@ td.datePickerMonth {
 		background-color: #f6f6f6;
 		margin: 0px;
 		padding-right: 5px;
-		min-height: 348px;
 		border-top: 1px solid #808384;
 		-moz-border-radius-bottomleft: 3px;
 		-moz-border-radius-bottomright: 3px;
@@ -5713,316 +5520,4 @@ td.datePickerMonth {
 	overflow: auto;
 }
 
-/**
- * Styles used in the Manage Net Folders dialog
- */
-.netFolder_syncStatusImg:hover
-{
-	cursor: pointer;
-}
-
-/**
- * Styles used in the Net Folder Synchronization Statistics dialog
- */
- .netFolderSyncStatisticsDlg_StatisticsHeading
- {
- 	font-weight: bold;
- }
- 
- .netFolderSyncStatisticsDlg_MiscStatisticsLabel, .netFolderSyncStatisticsDlg_FileStatisticsLabel, .netFolderSyncStatisticsDlg_FolderStatisticsLabel
- {
- 	margin-left: 16px;
- }
- 
- .netFolderSyncStatisticsDlg_StatisticsValue
- {
- 	margin-right: 12px;
- }
- 
 /* End */
-
-
-/**
- * Styles used in ConfigureFileSyncAppDlg.java
- */
-.filrSyncAppDlg_Radio
-{
-}
-
-/**
- * Styles used in the Edit Ldap Server Config dialog
- */
-.editLdapServerConfigDlg_Hint, .editLdapSearchDlg_Hint
-{
-	color: #4D6D8B;
-	font-size: .9em;
-}
-
-.editLdapServerConfigDlg_BrowseDN
-{
-	margin-bottom: 3px;
-	margin-left: 3px;
-}
-
-/* End */
-
-/**
- * Styles used in the Ldap Sync Results dialog
- */
-.ldapSyncResultsDlg_MainFilterPanel
-{
-}
-
-.ldapSyncResultsDlg_QuickFilterPanel
-{
-	background-color: #fff;
-	border: 1px solid #b8b8b8;
-	border-left: none;
-	border-radius: 15px;
-	height: 19px;
-	margin-right: 4px;
-	margin-top: 1px;
-	padding: 0 0 0 5px;
-	vertical-align: top;
-	white-space: nowrap;
-	-moz-border-radius: 15px;
-	-webkit-border-radius: 15px;	
-}
-
-.ldapSyncResultsDlg_FilterPopup
-{
-	font-size: 14px;
-	background-color: #fafad5;
-	border-color: #BABDB6;
-	border-style: solid solid solid;
-	border-width: 1px;
-	padding: 5px 10px;
-	-moz-border-radius: 5px;
-	border-radius: 5px;
-	-webkit-border-radius: 5px;
-	z-index: 1100;
-}
-
-.ldapSyncResultsDlg_closeFilterPopupImg
-{
-	cursor: pointer;
-	position: absolute;
-	right: 10px;
-	top: 5px;
-}
-
-.ldapSyncResultsDlg_PreviewHint
-{
-	color: #4D6D8B;
-	font-size: .9em;
-	width: 500px;
-}
-
-/* End */
- 
-/* Start:  Alert dialog styles. */
-	.vibe-alertDlg_Grid      {max-width: 500px;}
-	.vibe-alertDlg_NameLabel {color: #414648; line-height: 1.1em; margin-right: 8px; white-space: normal;}
-	.vibe-alertDlg_Panel     {padding: 10px;}
-/* End:  Alert dialog styles. */
-
-/* Start:  Prompt dialog styles. */
-	.vibe-promptDlg_Grid       {}
-	.vibe-promptDlg_NameInput  {width: 250px;}
-	.vibe-promptDlg_NameLabel  {color: #414648; line-height: 1.1em; margin-right: 8px; white-space: nowrap;}
-	.vibe-promptDlg_Panel      {padding: 10px;}
-/* End:  Prompt dialog styles. */
-
-/* Start:  Copy Public Link dialog styles. */
-	.vibe-copyPublicLinkDlg-contentPanel         {margin-top: 10px;}
-	.vibe-copyPublicLinkDlg-createButton         {}
-	.vibe-copyPublicLinkDlg-headerPanel          {position: relative; margin-bottom: 15px;}
-	.vibe-copyPublicLinkDlg-headerPanel img      {position: absolute; top: 0px; left: 1px;}
-	.vibe-copyPublicLinkDlg-headerNamePanel      {margin-left: 55px; width: 550px;}
-	.vibe-copyPublicLinkDlg-headerNameLabel      {font-size: 1.2em; line-height: 1.4em; color: #1f1f1f;}
-	.vibe-copyPublicLinkDlg-headerPathLabel      {color: #505354; font-size: 13px; line-height: 16px; overflow: hidden;}
-	.vibe-copyPublicLinkDlg-hintPanel            {display: block; width: 600px; white-space: normal; margin-top: 10px;}
-	.vibe-copyPublicLinkDlg-hintStart            {display: inline; font-weight: bold; font-size: .95em; padding-right: 4px;}
-	.vibe-copyPublicLinkDlg-hintTail             {display: inline; font-weight: normal; font-size: .9em;}
-	.vibe-copyPublicLinkDlg-linksHeaderPanel     {position: relative; margin-bottom: 5px; margin-left: 8px; margin-top: 10px;}
-	.vibe-copyPublicLinkDlg-linksHeaderPanel img {position: absolute; top: 2px; left: 0px;}
-	.vibe-copyPublicLinkDlg-linksHeaderNamePanel {margin-left: 30px; width: 540px;}
-	.vibe-copyPublicLinkDlg-linksHeaderNameLabel {font-size: 1.2em; line-height: 1.4em; color: #1f1f1f;}
-	.vibe-copyPublicLinkDlg-linksHeaderPathLabel {color: #505354; font-size: 13px; line-height: 16px; overflow: hidden;}
-	.vibe-copyPublicLinkDlg-linksLabel           {display: block; position: relative; margin-left: 10px;}
-	.vibe-copyPublicLinkDlg-linksLabel2          {margin-top: 10px;}
-	.vibe-copyPublicLinkDlg-linksInput           {width: 95%; background-color: #fafafa; color: #505354; overflow: hidden; padding: 0px !important; border: 1px solid lightgray; margin-left: 10px;}
-	.vibe-copyPublicLinkDlg-linksPanel           {color: #505354; font-size: 12px;}
-	.vibe-copyPublicLinkDlg-mainPanel            {margin: 10px 10px 10px 13px;}
-	.vibe-copyPublicLinkDlg-readingImage         {display: inline; padding-right: 5px;}
-	.vibe-copyPublicLinkDlg-readingLabel         {display: inline; font-size: 1.1em; color: #505354;}
-	.vibe-copyPublicLinkDlg-readingPanel         {display: block;}
-	.vibe-copyPublicLinkDlg-scrollPanel          {overflow: auto !important; border: 1px solid #C4C4C4;}
-	.vibe-copyPublicLinkDlg-scrollLimit          {height: 175px;}
-/* End:  Copy Public Link dialog styles. */
-
-
-/* Start:  Email Public Link dialog styles. */
-	.vibe-emailPublicLinkDlg-content {margin: 10px 13px;}
-	
-.emailPublicLinkDlg_HeaderPanel
-{
-	position: relative;
-	margin-bottom: 15px;
-}
-
-.emailPublicLinkDlg_HeaderPanel img
-{
-	position: absolute;
-	top: 0px;
-	left: 1px;
-}
-
-.emailPublicLinkDlg_HeaderNamePanel
-{
-	margin-left: 55px;
-	width: 550px;
-}
-
-.emailPublicLinkDlg_HeaderNameLabel
-{
-	font-size: 1.2em;
-	line-height: 1.4em;
-	color: #1f1f1f;
-}
-
-.emailPublicLinkDlg_HeaderPathLabel
-{
-	color: #505354;
-	font-size: 13px;
-	line-height: 16px;
-	overflow: hidden;
-}
-
-.emailPublicLinkDlg_expirationPanel
-{
-	margin-top: 10px;
-}
-
-.emailPublicLinkDlg_Hint
-{
-	color: #4D6D8B;
-	font-size: 13px;
-}
-
-.emailPublicLinkDlg_FloatingHint
-{
-	color: #949494;
-	font-size: 13px;
-	position: absolute;
-	left: 0;
-	top: 0;
-	z-index: 1000;
-}
-
-.emailPublicLinkDlg_MessageBox
-{
-	padding: 10px !important;
-	font-size: 15px;
-	font-family: Arial, Helvetica, sans-serif;
-	line-height: 18px;
-}
-
-/* End:  Email Public Link dialog styles. */
-
-
-/* Start: Share Expiration widget styles. */
-.shareExpirationWidget_expirationPanel
-{
-}
-
-.shareExpirationWidget_expiresOnImg:hover
-{
-	cursor: pointer;
-}
-
-/* End: Share Expiration widget styles. */
-
-/* Start:  LDAP browser dialog styles. */
-	.gwNameCell                  {font-size: 13px;}
-	.gwNameCell-empty            {font-size: 13px; font-style: italic;}
-	.gwNameCell-root             {font-size: 14px; border: 0 none !important;}
-	.gwNameCellImg               {padding-right: 3px;}
-	.gwNameCellImg-empty         {padding-right: 3px; width: 16px; height: 16px;}
-	.gwNameCellImg-root          {padding-right: 3px;}
-	.ldapBrowser-browsePanel     {}
-	.ldapBrowser-mainPanel       {margin: 10px 10px 10px 13px;}
-	.ldapBrowser-scroller        {overflow: auto; height: 250px; width: 600px;}
-	.ldapBrowser-treesPanel      {white-space: nowrap; padding-bottom: 5px;}
-	.ldapBrowser-treeSelect      {}
-	.ldapBrowser-treeSelectLabel {font-size: 13px; color: #000000;}
-/* End:  LDAP browser dialog styles. */
-
-/* Start: Name Completion Settings dialog */
-
-.nameCompletionSettingsDlg_Hint
-{
-	color: #4D6D8B;
-	font-size: .9em;
-	margin-bottom: 6px;
-}
-
-/* End: Name Completion Settings dialog */
-
-/* Start:  Styles used in the "Edit Share" widget. */
-	.configMobileAppsDlg_AndroidPanel {padding-top: 5px; padding-left: 20px;}  
-	.configMobileAppsDlg_IosPanel     {padding-top: 5px; padding-left: 20px;}  
-	.configMobileAppsDlg_List         {width: 250px;}
-	.configMobileAppsDlg_ListButton   {min-width: 60px;}
-	.configMobileAppsDlg_ListButtons  {margin-left: 5px;}
-	.configMobileAppsDlg_ListHeader   {font-size: 13px;}
-	.configMobileAppsDlg_ListPanel    {padding-top: 5px;}
-	.configMobileAppsDlg_OpenInLabel  {font-size: 16px;}
-	.configMobileAppsDlg_OpenInSelect {font-size: 13px;}
-/* End:  Styles used in the "Configure Mobile Applications" dialog. */
-
-
-/* Start:  Styles used in the "Configure Mobile Applications" dialog. */
-
-.editShareWidget_contentPanel
-{
-	background-color: white;
-    padding: 6px 10px;
-}
-
-.editShareWidget_footerPanel
-{
-	background-color: white;
-	text-align: left;
-	padding-bottom: 10px;
-	padding-left: 6px;
-}
-
-.editShareWidget_headerPanel
-{
-	color: #fff;
-	font-size: 14px;
-	font-weight: bold;
-	padding: 5px;
-	white-space: nowrap;
-	vertical-align: middle;
-	
-	background-color: #81b2bd;
-	background-image: -webkit-linear-gradient(top, #abced1, #81b2bd) !important; 
-	background-image:    -moz-linear-gradient(top, #abced1, #81b2bd) !important; 
-	background-image:     -ms-linear-gradient(top, #abced1, #81b2bd) !important; 
-	background-image:      -o-linear-gradient(top, #abced1, #81b2bd) !important; 
-	background-image:         linear-gradient(top, #abced1, #81b2bd) !important; /* standard, but currently unimplemented */
-}
-
-.editShareWidget_mainPanel
-{
-    border-color: #BABDB6;
-    border-radius: 5px;
-    border-style: solid;
-    border-width: 1px;
-}
-
-/* End:  Styles used in the "Edit Share" widget. */
-
-/* End Of File */

@@ -1,6 +1,6 @@
 <%
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -16,10 +16,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -928,9 +928,6 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
   
 <c:if test="${columnName == 'state' && !empty ssFolderColumns['state']}">
   <ssf:slidingTableColumn  style="${slidingTableColStyle}">
-    <c:if test="${empty entry1._workflowStateCaption}">
-    <span id="ss_workflowState${ssBinder.id}_${entry1._docId}" <%= seenStyle %>></span>
-    </c:if>
     <c:if test="${!empty entry1._workflowStateCaption}">
     <a href="<ssf:url     
     adapter="<%= useAdaptor %>" 
@@ -946,7 +943,7 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 <c:if test="${slidingTableStyle == 'fixed_view_style_removed'}">
     onClick="ss_loadEntryInPlace(this,'<c:out value="${entry1._docId}"/>', '${ssBinder.id}', '${entry1._entityType}', '${renderResponse.namespace}', '${ss_entryViewStyle2}', 'no');return false;" 
 </c:if>
-    ><span id="ss_workflowState${ssBinder.id}_${entry1._docId}" <%= seenStyle %>><ssf:nlt tag="${entry1._workflowStateCaption}" checkIfTag="true"/></span></a>
+    ><span <%= seenStyle %>><ssf:nlt tag="${entry1._workflowStateCaption}" checkIfTag="true"/></span></a>
     </c:if>
   </ssf:slidingTableColumn>
  </c:if>
@@ -962,19 +959,8 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 		<ssf:alt tag="entry.reservedBy"/><ssf:title tag="entry.reservedBy"/>
 	  />
 	</c:if>
-    <%
-		Date displayDate = (Date) entry1.get("_lastActivity");
-    %>
-    <c:if test="${hasFile2 && oneFile2 && !empty entry1._fileTime && !empty entry1._family && entry1._family == 'file'}">
-      <%
-      	String fileTime = (String) entry1.get("_fileTime");
-        if (null != fileTime) {
-        	displayDate = new Date(Long.parseLong(fileTime));
-        }
-      %>
-    </c:if>
     <span class="ss_nowrap" <%= seenStyle %>><fmt:formatDate timeZone="${ssUser.timeZone.ID}"
-     value="<%= displayDate %>" type="both" 
+     value="${entry1._lastActivity}" type="both" 
 	 timeStyle="short" dateStyle="short" /></span>
   </ssf:slidingTableColumn>
  </c:if>

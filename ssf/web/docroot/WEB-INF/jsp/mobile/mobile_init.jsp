@@ -36,7 +36,6 @@
 --%><%
 	boolean isWap = BrowserSniffer.is_wap_xhtml(request);
 	boolean isIPhone = BrowserSniffer.is_iphone(request);
-	boolean isIPad = BrowserSniffer.is_ipad(request);
 %><%--
 --%><%@ include file="/WEB-INF/jsp/common/common.jsp" %><%--
 --%><c:set var="ssf_snippet" value="1" scope="request"/><%--

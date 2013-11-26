@@ -32,11 +32,8 @@
  */
 
 
-var ss_optionsArray;
-if (typeof ss_optionsArray == "undefined") {
-	ss_optionsArray = new Array();
-}
-var ss_userOptionsCounter = ss_optionsArray.length
+var ss_userOptionsCounter = 0;
+var ss_optionsArray = new Array();
 var ss_searchMoreInitialized = false;
 function ss_addOption(type) {
 	ss_optionsArray[ss_userOptionsCounter]=type;
@@ -74,20 +71,19 @@ function ss_callRemoveSearchOption(orderNo) {
 }
 
 
-function ss_addInitializedWorkflow(wfIdValue, wfTitle, stepsValue, stepTitles) {
+function ss_addInitializedWorkflow(wfIdValue, stepsValue, stepTitles) {
 	ss_optionsArray[ss_userOptionsCounter]='workflow';
-	var wfWidget = ss_addWorkflow(ss_userOptionsCounter, wfIdValue, wfTitle, stepsValue, stepTitles);
+	var wfWidget = ss_addWorkflow(ss_userOptionsCounter, wfIdValue, stepsValue, stepTitles);
 	ss_userOptionsCounter++;
 }
 
-function ss_addInitializedEntry(entryId, fieldName, value, valueLabel, valueType, fieldNameTitle, entryType, entryTypeTitle) {
-	ss_debug("ss_addInitializedEntry: " + entryType + ", " + entryTypeTitle)
+function ss_addInitializedEntry(entryId, fieldName, value, valueLabel, valueType, fieldNameTitle) {
 	if (typeof fieldNameTitle == "undefined") {
 		fieldNameTitle = fieldName;
 	}
 	ss_optionsArray[ss_userOptionsCounter]='entry';
-	ss_debug("fieldName: "+fieldName+", value: "+value+", valueLabel: "+valueLabel+", valueType: "+valueType+", fieldNameTitle: "+fieldNameTitle)
-	ss_addEntry(ss_userOptionsCounter, entryId, fieldName, value, valueLabel, valueType, fieldNameTitle, entryType, entryTypeTitle);
+	//alert("fieldName: "+fieldName+", value: "+value+", valueLabel: "+valueLabel+", valueType: "+valueType+", fieldNameTitle: "+fieldNameTitle)
+	ss_addEntry(ss_userOptionsCounter, entryId, fieldName, value, valueLabel, valueType, fieldNameTitle);
 	ss_userOptionsCounter++;
 }
 
@@ -118,7 +114,7 @@ function ss_addInitializedAuthor(userId, userName) {
 	ss_userOptionsCounter++;
 }
 
-function ss_addWorkflow(orderNo, wfIdValue, wfTitle, stepsValue, stepTitles) {
+function ss_addWorkflow(orderNo, wfIdValue, stepsValue, stepTitles) {
 	var div = document.createElement('div');
 	div.id = "block"+ss_userOptionsCounter;
 	
@@ -173,20 +169,9 @@ function ss_addWorkflow(orderNo, wfIdValue, wfTitle, stepsValue, stepTitles) {
     textAreaWorkflowsObj.name = "searchWorkflow" + orderNo;
     textAreaWorkflowsObj.id = "searchWorkflow" + orderNo;
     textAreaWorkflowsObj.style.width = "200px";
-    if (typeof wfTitle != "undefined") {
-    	textAreaWorkflowsObj.innerHTML = wfTitle;
-    }
 	
 	wDiv.appendChild(textAreaWorkflowsObj);
-
-    if (typeof wfIdValue != "undefined") {
-    	var hiddenTypeObj = document.createElement('input');
-    	hiddenTypeObj.type = "hidden";
-    	hiddenTypeObj.name = "searchWorkflow" + orderNo + "_initialized";
-    	hiddenTypeObj.value = wfIdValue;
-    	wDiv.appendChild(hiddenTypeObj);
-    }
-
+	
 	var findWorkflows = ssFind.configSingle({
 				inputId: "searchWorkflow" + orderNo,
 				prefix: "searchWorkflow" + orderNo, 
@@ -234,7 +219,7 @@ function ss_addWorkflow(orderNo, wfIdValue, wfTitle, stepsValue, stepTitles) {
 				displayArrow: true
 		});
 	
-	if (wfIdValue!=null && wfIdValue!="" && typeof ss_searchWorkflows != "undefined"){
+	if (wfIdValue!=null && wfIdValue!=""){
 		findWorkflows.setValue(wfIdValue, ss_searchWorkflows[wfIdValue]);
 		findWorkflows.selectItem({id: wfIdValue});
 	}	
@@ -266,29 +251,11 @@ function ss_addWorkflow(orderNo, wfIdValue, wfTitle, stepsValue, stepTitles) {
 
 function ss_getSelectedBinders(url) {
 	var value = "";
-	var contextBinderId = "";
-	var binderIdObj = document.getElementById('contextBinderId');
-	if (binderIdObj !== undefined && binderIdObj != null) {
-		contextBinderId = binderIdObj.value;
-	}
-	var searchScopeCurrent = "";
-	var searchScopeCurrentObj = document.getElementById('search_scope_current');
-	if (searchScopeCurrentObj !== undefined && searchScopeCurrentObj != null) {
-		if (searchScopeCurrentObj.checked) {
-			searchScopeCurrent = "&scope=current";
-		}	
-	} else {
-		searchScopeCurrentObj = document.getElementById('search_scope_current_filter');
-		if (searchScopeCurrentObj !== undefined && searchScopeCurrentObj != null) {
-			//This is a filter form, so set the scope to be current
-			searchScopeCurrent = "&scope=current";
-		}
-	}
 	var obj = document.getElementById('search_currentFolder');
 	if (obj !== undefined && obj != null && obj.checked) {
 		//get current folder
 		obj = document.getElementById('search_dashboardFolders');
-		return url += "&idChoices=" + encodeURIComponent(" searchFolders_" + obj.value) + "&contextBinderId=" + encodeURIComponent(contextBinderId) + searchScopeCurrent;
+		return url += "&idChoices=" + encodeURIComponent(" searchFolders_" + obj.value);
 	}
 	obj = document.getElementById('t_searchForm_wsTreesearchFolders_idChoices');				
 	if (obj !== undefined && obj != null) value = obj.value;
@@ -302,11 +269,10 @@ function ss_getSelectedBinders(url) {
 		value = value.replace(re, "");
 		value += id;
 	}
-	return url += "&idChoices=" + encodeURIComponent(value) + "&contextBinderId=" + encodeURIComponent(contextBinderId) + searchScopeCurrent;
+	return url += "&idChoices=" + encodeURIComponent(value);
  
 }
-function ss_addEntry(orderNo, entryId, fieldName, value, valueLabel, valueType, fieldNameTitle, entryType, entryTypeTitle) {
-	ss_debug("ss_addEntry: " + fieldName + ", " + value + ", " + valueLabel + ", " + valueType + ", " + fieldNameTitle + ", " + entryType + ", " + entryTypeTitle)
+function ss_addEntry(orderNo, entryId, fieldName, value, valueLabel, valueType, fieldNameTitle) {
 	if (typeof fieldNameTitle == "undefined") {
 		fieldNameTitle = fieldName;
 	}
@@ -374,11 +340,7 @@ function ss_addEntry(orderNo, entryId, fieldName, value, valueLabel, valueType, 
 			var optionObj = document.createElement("option");
 			optionObj.value = valueOptionValue;
 			optionObj.selected = true;
-			if (typeof valueLabel != "undefined" && valueLabel != "") {
-				optionObj.innerHTML = valueLabel;
-			} else {
-				optionObj.innerHTML = valueOptionValue;
-			}
+			optionObj.innerHTML = valueLabel;
 			selectObj.appendChild(optionObj);
 			fieldValue3Div.appendChild(selectObj);
 		}
@@ -392,17 +354,8 @@ function ss_addEntry(orderNo, entryId, fieldName, value, valueLabel, valueType, 
     textAreaEntriesObj.name = entryInputId;
     textAreaEntriesObj.id = entryInputId;
     textAreaEntriesObj.style.width = "200px";
-    if (typeof entryTypeTitle != "undefined") {
-    	textAreaEntriesObj.innerHTML = entryTypeTitle;
-    }
+	
 	entryTypeDiv.appendChild(textAreaEntriesObj);
-    if (typeof entryType != "undefined") {
-    	var hiddenTypeObj = document.createElement('input');
-    	hiddenTypeObj.type = "hidden";
-    	hiddenTypeObj.name = entryInputId + "_initialized";
-    	hiddenTypeObj.value = entryType;
-    	entryTypeDiv.appendChild(hiddenTypeObj);
-    }
 	
 	var findEntries = ssFind.configSingle({
 		inputId: entryInputId,
@@ -655,7 +608,7 @@ function ss_addEntry(orderNo, entryId, fieldName, value, valueLabel, valueType, 
 		}		
 	});
 	
-	if (entryId && typeof ss_searchEntries != "undefined") {
+	if (entryId) {
 		findEntries.setValue(entryId, ss_searchEntries[entryId]);
 		findEntries.selectItem({id: entryId});
 		// , fieldName, ss_searchFields[entryId+"-"+fieldName], 
@@ -1071,14 +1024,12 @@ function ss_goToSearchResultPageByInputValue(inputId) {
 }
 
 function ss_prepareAdditionalSearchOptions(formObj) {
-	ss_debug("ss_prepareAdditionalSearchOptions ss_userOptionsCounter = " + ss_userOptionsCounter)
 	var numbers = new Array();
 	var types = new Array();
 	for (var i=0; i<ss_userOptionsCounter; i++) {
 		if (ss_optionsArray[i] != "") {
 			numbers[numbers.length] = i;
 			types[types.length] = ss_optionsArray[i];
-			ss_debug("types: " +ss_optionsArray[i])
 		}
 	}
 	document.getElementById("searchNumbers").value = numbers.join(" ");

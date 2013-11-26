@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -92,7 +92,7 @@ public class UserAccessReportComposite extends ReportCompositeBase
 	 * Constructor method.
 	 */
 	public UserAccessReportComposite() {
-		// Simply initialize the super class.
+		// Simple initialize the super class.
 		super();
 	}
 
@@ -104,10 +104,9 @@ public class UserAccessReportComposite extends ReportCompositeBase
 		// Can the ACLs be modified on this entity?
 		final String entityType = uai.getEntityType();
 		boolean canModifyACLs =
-			((!m_isFilr)                              &&
 			(entityType.equalsIgnoreCase("workspace") ||
-			 entityType.equalsIgnoreCase("folder"   ) ||
-			 entityType.equalsIgnoreCase("profiles" )));
+			 entityType.equalsIgnoreCase("folder")    ||
+			 entityType.equalsIgnoreCase("profiles"));
 		
 		Widget w;
 		String entityPath = uai.getEntityPath();
@@ -212,12 +211,9 @@ public class UserAccessReportComposite extends ReportCompositeBase
 		m_reportPanel.setVisible(false);	// Initially hidden, shown once a report is created.
 		m_rootContent.add(m_reportPanel);
 
-		// ...if we're not running as Filr...
-		if (!m_isFilr) {
-			// ...add a hind for what's in the report table...
-			il = buildInlineLabel(m_messages.userAccessReportObjectsHint(), "vibe-userAccessReportComposite-label");
-			m_reportPanel.add(il);
-		}
+		// ...add a hind for what's in the report table...
+		il = buildInlineLabel(m_messages.userAccessReportObjectsHint(), "vibe-userAccessReportComposite-label");
+		m_reportPanel.add(il);
 
 		// ...and create the table to hold its report.
 		m_reportTable = new VibeFlexTable();

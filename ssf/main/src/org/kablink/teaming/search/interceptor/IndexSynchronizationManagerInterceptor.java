@@ -48,18 +48,13 @@ import org.kablink.teaming.search.IndexSynchronizationManager;
  */
 public class IndexSynchronizationManagerInterceptor implements MethodInterceptor, Serializable {
 
-	private static final long serialVersionUID = 1L;
+    protected static final Log logger = LogFactory.getLog(IndexSynchronizationManagerInterceptor.class);
 
-	protected static final Log logger = LogFactory.getLog(IndexSynchronizationManagerInterceptor.class);
-
-	private static final ThreadLocal<Integer> depth = new ThreadLocal<Integer>();
-	
-	private static final ThreadLocal<Integer> threshold = new ThreadLocal<Integer>();
+	private static final ThreadLocal depth = new ThreadLocal();
     
 	public Object invoke(MethodInvocation invocation) throws Throwable {
 		if(getDepth() == 0) {
-			if(logger.isTraceEnabled())
-				logger.trace("Begin index-synchronization session for the thread");
+			logger.debug("Begin index-synchronization session for the thread");
 			
 			IndexSynchronizationManager.begin();
 		}
@@ -89,14 +84,12 @@ public class IndexSynchronizationManagerInterceptor implements MethodInterceptor
 			
 			if(getDepth() == 0) {
 				if(successful) {
-					if(logger.isTraceEnabled())
-						logger.trace("Commit index-synchronization session for the thread");
+					logger.debug("Commit index-synchronization session for the thread");
 			
-					IndexSynchronizationManager.applyChanges(getThreshold());
+					IndexSynchronizationManager.applyChanges();
 				}
 				else {
-					if(logger.isTraceEnabled())
-						logger.trace("Discard index-synchronization session for the thread");
+					logger.debug("Discard index-synchronization session for the thread");
 					
 					IndexSynchronizationManager.discardChanges();					
 				}
@@ -129,24 +122,5 @@ public class IndexSynchronizationManagerInterceptor implements MethodInterceptor
 		else
 			depth.set(new Integer(d.intValue() - 1));
 	}	
-	
-	/*
-	 * Disable auto-apply for the current thread only
-	 */
-	public static int getThreshold() {
-		Integer t = threshold.get();
-		if(t == null)
-			return 1;
-		else
-			return t.intValue();
-	}
-	
-	public static void setThreshold(int t) {
-		threshold.set(Integer.valueOf(t));
-	}
-	
-	public static void clearThreshold() {
-		threshold.set(null);
-	}
 }
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -41,21 +41,21 @@ import org.kablink.teaming.gwt.client.event.MarkEntryReadEvent;
 import org.kablink.teaming.gwt.client.event.ViewForumEntryEvent;
 import org.kablink.teaming.gwt.client.presence.PresenceControl;
 import org.kablink.teaming.gwt.client.rpc.shared.ActivityStreamEntryRpcResponseData;
-import org.kablink.teaming.gwt.client.rpc.shared.ClickOnTitleActionRpcResponseData;
-import org.kablink.teaming.gwt.client.rpc.shared.DeleteSelectionsCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.GetClickOnTitleActionCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.DeleteFolderEntriesCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetDownloadFileUrlCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetViewFolderEntryUrlCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ReplyToEntryCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SetSeenCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SetUnseenCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.ActivityStreamEntry;
-import org.kablink.teaming.gwt.client.util.DeleteSelectionsMode;
 import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.SimpleProfileParams;
 import org.kablink.teaming.gwt.client.whatsnew.ActivityStreamCtrl.DescViewFormat;
 
-import com.google.gwt.core.client.Scheduler.ScheduledCommand;
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.MouseOutEvent;
@@ -63,9 +63,11 @@ import com.google.gwt.event.dom.client.MouseOutHandler;
 import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.resources.client.ImageResource;
+import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.client.Element;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -74,8 +76,6 @@ import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.UIObject;
 import com.google.gwt.user.client.ui.Widget;
-import com.google.gwt.resources.client.ImageResource;
-import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 
 /**
  * This class is the base class for the entries that are displayed in
@@ -89,28 +89,12 @@ public abstract class ActivityStreamUIEntry extends Composite
     public static final int FORMAT_HTML = 1;
     public static final int FORMAT_NONE = 2;
 
-    // The following controls how the activating a title's <a> is
-    // handled.  If true, the <a> will be set with the appropriate
-    // URL (when possible) so that when clicked, the <a> will be
-    // used directly.  When false, the click handler on the <a>
-    // will always launch the URL in a new window.
-    //
-    // The difference between these is where the link is opened.  When
-    // an <a> is clicked by the user, it will typically be opened in a
-    // tab.  The other method will open in it a new windows.
-    //
-    // Note that there is no way I know of to simulate a true
-    // click on an <a> in code.  When activated programatically, the
-    // <a> always results in a new window.  This happens the first
-    // time it's clicked and when its avatar is clicked.
-    private static final boolean USE_TITLE_ANCHOR_CLICKS	= false;	// Leaving false so that the links always work the same.
-    
     private ActivityStreamCtrl m_activityStreamCtrl;
 	private Image m_avatarImg;
 	private Image m_actionsImg1;
 	private Image m_actionsImg2;
 	private Image m_unreadImg;
-	private Anchor m_title;
+	private InlineLabel m_title;
 	private InlineLabel m_actionsLabel;
 	private FlowPanel m_mainPanel;
 	private FlowPanel m_presencePanel;
@@ -118,7 +102,6 @@ public abstract class ActivityStreamUIEntry extends Composite
 	private ClickHandler m_presenceClickHandler;
 	private ClickHandler m_descClickHandler;
 	private HandlerRegistration m_descClickHandlerReg;
-	private HandlerRegistration m_titleClickHandlerReg;
 	private Label m_author;
 	private Label m_date;
 	private FlowPanel m_descPanel;
@@ -126,10 +109,11 @@ public abstract class ActivityStreamUIEntry extends Composite
 	private String m_authorWSId;	// Id of the author's workspace.
 	private String m_entryId;
 	private String m_binderId;
+	private String m_viewEntryUrl;
 	private ActivityStreamReply m_replyWidget;
 	private DescViewFormat m_descViewFormat;
 	private boolean m_showTitle;
-	private ClickOnTitleActionRpcResponseData m_titleClickAction;
+	
 	
 	/**
 	 * 
@@ -211,18 +195,20 @@ public abstract class ActivityStreamUIEntry extends Composite
 			@Override
 			public void onClick( ClickEvent event )
 			{
+				Scheduler.ScheduledCommand cmd;
 				final Object src;
 				
 				src = event.getSource();
 
-				GwtClientHelper.deferCommand( new ScheduledCommand()
+				cmd = new Scheduler.ScheduledCommand()
 				{
 					@Override
 					public void execute()
 					{
 						handleClickOnAuthor( ((Widget)src).getElement());
 					}
-				} );
+				};
+				Scheduler.get().scheduleDeferred( cmd );
 			}
 		};
 		
@@ -289,7 +275,9 @@ public abstract class ActivityStreamUIEntry extends Composite
 			@Override
 			public void onClick( ClickEvent clickEvent )
 			{
-				GwtClientHelper.deferCommand( new ScheduledCommand()
+				Scheduler.ScheduledCommand cmd;
+				
+				cmd = new Scheduler.ScheduledCommand()
 				{
 					/**
 					 * 
@@ -306,7 +294,8 @@ public abstract class ActivityStreamUIEntry extends Composite
 						// Invoke the Actions menu.
 						invokeActionsMenu( m_actionsImg1 );
 					}
-				} );
+				};
+				Scheduler.get().scheduleDeferred( cmd );
 			}
 		};
 		m_actionsImg1.addClickHandler( clickHandler );
@@ -337,7 +326,7 @@ public abstract class ActivityStreamUIEntry extends Composite
 		m_authorWSId = null;
 		m_entryId = null;
 		m_binderId = null;
-		m_titleClickAction = null;
+		m_viewEntryUrl = null;
 		
 		// Remove the presence control from the presence panel.
 		m_presencePanel.clear();
@@ -404,7 +393,9 @@ public abstract class ActivityStreamUIEntry extends Composite
 				@Override
 				public void onClick( ClickEvent event )
 				{
-					GwtClientHelper.deferCommand( new ScheduledCommand()
+					Scheduler.ScheduledCommand cmd;
+					
+					cmd = new Scheduler.ScheduledCommand()
 					{
 						@Override
 						public void execute() 
@@ -414,7 +405,8 @@ public abstract class ActivityStreamUIEntry extends Composite
 							else
 								setDescViewFormat( DescViewFormat.FULL );
 						}
-					} );
+					};
+					Scheduler.get().scheduleDeferred( cmd );
 				}
 				
 			};
@@ -466,7 +458,9 @@ public abstract class ActivityStreamUIEntry extends Composite
 					@Override
 					public void onClick( ClickEvent clickEvent )
 					{
-						GwtClientHelper.deferCommand( new ScheduledCommand()
+						Scheduler.ScheduledCommand cmd;
+						
+						cmd = new Scheduler.ScheduledCommand()
 						{
 							/**
 							 * 
@@ -477,16 +471,15 @@ public abstract class ActivityStreamUIEntry extends Composite
 								// Mark this entry as read.
 								GwtTeaming.fireEvent(new MarkEntryReadEvent( getThis() ));
 							}
-						} );
+						};
+						Scheduler.get().scheduleDeferred( cmd );
 					}
 				};
 				m_unreadImg.addClickHandler( clickHandler );
 			}
 			
-			m_title = new Anchor();
+			m_title = new InlineLabel();
 			m_title.addStyleName( getTitleStyleName() );
-			m_title.setHref( "javascript:;" );
-			m_title.setTarget( "_blank" );
 			titlePanel.add( m_title );
 			
 			// Add a mouse-over handler for the title.
@@ -496,7 +489,7 @@ public abstract class ActivityStreamUIEntry extends Composite
 			m_title.addMouseOutHandler( this );
 			
 			// Add a click handler for the activity stream source name
-			m_titleClickHandlerReg = m_title.addClickHandler( this );
+			m_title.addClickHandler( this );
 			
 			// Add any additional ui to the header.  This gives classes that extend this
 			// class an opportunity to put additional data in the header.
@@ -512,13 +505,13 @@ public abstract class ActivityStreamUIEntry extends Composite
 	 */
 	public void deleteEntry()
 	{
-		DeleteSelectionsCmd cmd;
+		DeleteFolderEntriesCmd cmd;
 		EntityId entityId;
 		
 		entityId = getEntryEntityId();
 		
 		// Issue an ajax request to delete this entry
-		cmd = new DeleteSelectionsCmd( entityId, DeleteSelectionsMode.TRASH_ALL );
+		cmd = new DeleteFolderEntriesCmd( entityId );
 		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
 		{
 			@Override
@@ -526,14 +519,16 @@ public abstract class ActivityStreamUIEntry extends Composite
 			{
 				GwtClientHelper.handleGwtRPCFailure(
 					caught,
-					GwtTeaming.getMessages().rpcFailure_DeleteSelections(),
+					GwtTeaming.getMessages().rpcFailure_DeleteFolderEntries(),
 					m_entryId );
 			}
 
 			@Override
 			public void onSuccess( VibeRpcResponse result )
 			{
-				GwtClientHelper.deferCommand( new ScheduledCommand()
+				Scheduler.ScheduledCommand cmd;
+				
+				cmd = new Scheduler.ScheduledCommand()
 				{
 					@Override
 					public void execute()
@@ -541,7 +536,8 @@ public abstract class ActivityStreamUIEntry extends Composite
 						// Hide this entry
 						setVisible( false );
 					}
-				} );
+				};
+				Scheduler.get().scheduleDeferred( cmd );
 			}			
 		} );
 	}
@@ -848,7 +844,69 @@ public abstract class ActivityStreamUIEntry extends Composite
 	 */
 	public void handleClickOnTitle()
 	{
-		connectTitleClickAsync();
+		// Are we running Filr?
+		if ( GwtTeaming.m_requestInfo.isLicenseFilr() )
+		{
+			// Yes, open the file
+			openFile();
+		}
+		else
+		{
+			// No, view the entry
+			// Do we have a url that we can use to view the entry?
+			if ( m_viewEntryUrl == null )
+			{
+				GetViewFolderEntryUrlCmd cmd;
+				AsyncCallback<VibeRpcResponse> callback;
+				Long entryId;
+				
+				// No, issue an ajax request to get it.
+				callback = new AsyncCallback<VibeRpcResponse>()
+				{
+					/**
+					 * 
+					 */
+					@Override
+					public void onFailure(Throwable t)
+					{
+						GwtClientHelper.handleGwtRPCFailure(
+							t,
+							GwtTeaming.getMessages().rpcFailure_GetViewFolderEntryUrl(),
+							m_entryId );
+					}
+					
+					/**
+					 * 
+					 */
+					@Override
+					public void onSuccess( VibeRpcResponse response )
+					{
+						Scheduler.ScheduledCommand cmd;
+						
+						m_viewEntryUrl = ((StringRpcResponseData) response.getResponseData()).getStringValue();
+						
+						cmd = new Scheduler.ScheduledCommand()
+						{
+							@Override
+							public void execute()
+							{
+								
+								// Open the entry using the view entry url.
+								viewEntry();
+							}
+						};
+						Scheduler.get().scheduleDeferred( cmd );
+					}
+				};
+				
+				// Issue an ajax request to get the url needed to view this entry.
+				entryId = Long.parseLong( m_entryId );
+				cmd = new GetViewFolderEntryUrlCmd( null, entryId );
+				GwtClientHelper.executeCommand( cmd, callback );
+			}
+			else
+				viewEntry();
+		}
 	}
 
 	/**
@@ -1007,7 +1065,9 @@ public abstract class ActivityStreamUIEntry extends Composite
 			@Override
 			public void onSuccess( VibeRpcResponse result )
 			{
-				GwtClientHelper.deferCommand( new ScheduledCommand()
+				Scheduler.ScheduledCommand cmd;
+				
+				cmd = new Scheduler.ScheduledCommand()
 				{
 					@Override
 					public void execute()
@@ -1019,7 +1079,8 @@ public abstract class ActivityStreamUIEntry extends Composite
 						if ( hideEntry )
 							setVisible( false );
 					}
-				} );
+				};
+				Scheduler.get().scheduleDeferred( cmd );
 			}// end onSuccess()			
 		} );
 	}
@@ -1049,7 +1110,9 @@ public abstract class ActivityStreamUIEntry extends Composite
 			@Override
 			public void onSuccess( VibeRpcResponse result )
 			{
-				GwtClientHelper.deferCommand( new ScheduledCommand()
+				Scheduler.ScheduledCommand cmd;
+				
+				cmd = new Scheduler.ScheduledCommand()
 				{
 					@Override
 					public void execute()
@@ -1057,7 +1120,8 @@ public abstract class ActivityStreamUIEntry extends Composite
 						// Update the ui to reflect the fact that this entry is now read.
 						updateReadUnreadUI( false );
 					}
-				} );
+				};
+				Scheduler.get().scheduleDeferred( cmd );
 			}// end onSuccess()			
 		} );
 	}
@@ -1067,14 +1131,16 @@ public abstract class ActivityStreamUIEntry extends Composite
 	 * 
 	 */
 	@Override
-	public void onClick( final ClickEvent event )
+	public void onClick( ClickEvent event )
 	{
 		final Object src;
 		
 		src = event.getSource();
 		if ( src == m_title || src == m_author || src == m_avatarImg )
 		{
-			GwtClientHelper.deferCommand( new ScheduledCommand()
+			Scheduler.ScheduledCommand cmd;
+
+			cmd = new Scheduler.ScheduledCommand()
 			{
 				@Override
 				public void execute()
@@ -1086,7 +1152,8 @@ public abstract class ActivityStreamUIEntry extends Composite
 					else if ( src == m_avatarImg )
 						handleClickOnAvatar( ((Widget)src).getElement() );
 				}
-			} );
+			};
+			Scheduler.get().scheduleDeferred( cmd );
 		}
 	}
 
@@ -1139,6 +1206,36 @@ public abstract class ActivityStreamUIEntry extends Composite
 	}
 
 	
+	/*
+	 * Invokes a file download on an entry's file.
+	 */
+	private void openFile()
+	{
+		GetDownloadFileUrlCmd cmd;
+	
+		cmd = new GetDownloadFileUrlCmd( Long.valueOf( m_binderId ), Long.valueOf( m_entryId ) );
+		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() 
+		{
+			@Override
+			public void onFailure( Throwable t) 
+			{
+				GwtClientHelper.handleGwtRPCFailure(
+					t,
+					GwtTeaming.getMessages().rpcFailure_GetDownloadFileUrl(),
+					m_entryId );
+			}
+			
+			@Override
+			public void onSuccess( VibeRpcResponse response )
+			{
+				String downloadFileUrl;
+
+				downloadFileUrl = ((StringRpcResponseData) response.getResponseData()).getStringValue();
+				GwtClientHelper.jsLaunchUrlInWindow( downloadFileUrl, "_blank" );
+			}
+		});
+	}
+	
 	/**
 	 * Reply to this entry with the given text
 	 */
@@ -1160,8 +1257,9 @@ public abstract class ActivityStreamUIEntry extends Composite
 			public void onSuccess( VibeRpcResponse result )
 			{
 				final ActivityStreamEntry asEntry = ((ActivityStreamEntryRpcResponseData) result.getResponseData()).getActivityStreamEntry();
+				Scheduler.ScheduledCommand cmd;
 				
-				GwtClientHelper.deferCommand( new ScheduledCommand()
+				cmd = new Scheduler.ScheduledCommand()
 				{
 					@Override
 					public void execute()
@@ -1169,7 +1267,8 @@ public abstract class ActivityStreamUIEntry extends Composite
 						// Add the reply to the top entry.
 						insertReply( asEntry );
 					}
-				} );
+				};
+				Scheduler.get().scheduleDeferred( cmd );
 			}// end onSuccess()
 		} );
 	}
@@ -1213,11 +1312,13 @@ public abstract class ActivityStreamUIEntry extends Composite
 			// Do we have a description?
 			if ( desc != null && desc.length() > 0 )
 			{
+				Scheduler.ScheduledCommand cmd;
+				
 				// Yes
 				makeDescClickable();
 				
 				// Schedule a command that will determine if the description is totally visible.
-				GwtClientHelper.deferCommand( new ScheduledCommand()
+				cmd = new Scheduler.ScheduledCommand()
 				{
 					@Override
 					public void execute()
@@ -1230,7 +1331,8 @@ public abstract class ActivityStreamUIEntry extends Composite
 							makeDescNotClickable();
 						}
 					}
-				} );
+				};
+				Scheduler.get().scheduleDeferred( cmd );
 			}
 			else
 			{
@@ -1257,7 +1359,7 @@ public abstract class ActivityStreamUIEntry extends Composite
 			m_presencePanel.add( presenceCtrl );
 		}
 		
-		m_titleClickAction = null;
+		m_viewEntryUrl = null;
 		
 		// Set the format of how to view the description back to the default.
 		setDescViewFormat( m_activityStreamCtrl.getDefaultDescViewFormat() );
@@ -1304,101 +1406,18 @@ public abstract class ActivityStreamUIEntry extends Composite
 		}
 	}
 	
-	/*
-	 * Asynchronously connects the title <a> so that it performs an
-	 * appropriate action and performs that action.
+	/**
+	 * Tell the action handler to open the given entry.
 	 */
-	private void connectTitleClickAsync()
+	public void viewEntry()
 	{
-		GwtClientHelper.deferCommand( new ScheduledCommand()
+		if ( GwtClientHelper.hasString( m_viewEntryUrl ) )
 		{
-			@Override
-			public void execute()
-			{
-				connectTitleClickNow();
-			}
-		} );
-	}
-	
-	/*
-	 * Synchronously connects the title <a> so that it performs an
-	 * appropriate action and performs that action.
-	 */
-	private void connectTitleClickNow()
-	{
-		// If we've already connected the anchor...
-		if ( null != m_titleClickAction )
-		{
-			// ...simply perform its action.
-			processTitleClickNow();
-			return;
+			// Tell the activity stream to mark this entry as read.
+			GwtTeaming.fireEvent(new MarkEntryReadEvent( this            ) );			
+			GwtTeaming.fireEvent(new ViewForumEntryEvent( m_viewEntryUrl ) );
 		}
-		
-		GetClickOnTitleActionCmd cmd = new GetClickOnTitleActionCmd( getEntryEntityId() );
-		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
-		{
-			@Override
-			public void onFailure(Throwable t)
-			{
-				GwtClientHelper.handleGwtRPCFailure(
-					t,
-					GwtTeaming.getMessages().rpcFailure_GetClickOnTitleAction() );
-			}
-			
-			@Override
-			public void onSuccess( VibeRpcResponse response )
-			{
-				m_titleClickAction = ((ClickOnTitleActionRpcResponseData) response.getResponseData());
-				switch ( m_titleClickAction.getClickAction() )
-				{
-				case DOWNLOAD_FILE:
-				case VIEW_AS_HTML:
-					if ( USE_TITLE_ANCHOR_CLICKS )
-					{
-						m_title.setHref( m_titleClickAction.getUrl() );
-						m_titleClickHandlerReg.removeHandler();
-					}
-					break;
-					
-				case VIEW_DETAILS:
-					break;
-				}
-				processTitleClickAsync();
-			}
-		} );
-	}
-
-	/*
-	 * Asynchronously processes a click on a title. 
-	 */
-	private void processTitleClickAsync() {
-		GwtClientHelper.deferCommand( new ScheduledCommand()
-		{
-			@Override
-			public void execute()
-			{
-				processTitleClickNow();
-			}
-		} );
-	}
-	
-	/*
-	 * Synchronously processes a click on a title. 
-	 */
-	private void processTitleClickNow() {
-		GwtTeaming.fireEvent( new MarkEntryReadEvent( this ) );			
-		switch ( m_titleClickAction.getClickAction() )
-		{
-		case DOWNLOAD_FILE:
-		case VIEW_AS_HTML:
-			if ( USE_TITLE_ANCHOR_CLICKS )
-			     GwtClientHelper.jsClickWidget( m_title );
-			else GwtClientHelper.jsLaunchUrlInWindow( m_titleClickAction.getUrl(), "_blank" );
-			break;
-			
-		case VIEW_DETAILS:
-			GwtTeaming.fireEvent( new ViewForumEntryEvent( m_titleClickAction.getUrl() ) );
-			break;
-		}
+		else
+			Window.alert( GwtTeaming.getMessages().cantAccessEntry() );
 	}
 }

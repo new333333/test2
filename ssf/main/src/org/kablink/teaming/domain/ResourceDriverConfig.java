@@ -36,6 +36,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
+import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.security.function.WorkArea;
 import org.kablink.teaming.security.function.WorkAreaOperation;
 
@@ -51,7 +52,6 @@ public class ResourceDriverConfig extends ZonedObject implements WorkArea {
 	private Boolean synchTopDelete;
 	private Boolean putRequiresContentLength;
 	private Boolean allowSelfSignedCertificate;
-	private Boolean fullSyncDirOnly;
 	private String hostUrl;
 	private String rootPath;
 	private String accountName;
@@ -61,21 +61,14 @@ public class ResourceDriverConfig extends ZonedObject implements WorkArea {
 	private String serverIP;
 	private String volume;
 	private Date modifiedOn;
-	private ChangeDetectionMechanism changeDetectionMechanism;
-	private Short authenticationType;
-	private Boolean useDirectoryRights;
-	private Integer cachedRightsRefreshInterval;
 		
 	public enum DriverType {
 		filesystem (0),
 		webdav (1),
-		windows_server (2),
-		netware (3),
-		oes (4),
-		famt (5),
-		cloud_folders (6),
-		share_point_2010 (7),
-		share_point_2013 (8);
+		cifs (2),
+		ncp_netware (3),
+		ncp_oes (4),
+		famt (5);
 		int dtValue;
 		DriverType(int dtValue) {
 			this.dtValue = dtValue;
@@ -85,88 +78,14 @@ public class ResourceDriverConfig extends ZonedObject implements WorkArea {
 			switch (type) {
 			case 0: return DriverType.filesystem;
 			case 1: return DriverType.webdav;
-			case 2: return DriverType.windows_server;
-			case 3: return DriverType.netware;
-			case 4: return DriverType.oes;
+			case 2: return DriverType.cifs;
+			case 3: return DriverType.ncp_netware;
+			case 4: return DriverType.ncp_oes;
 			case 5: return DriverType.famt;
-			case 6: return DriverType.cloud_folders;
-			case 7: return DriverType.share_point_2010;
-			case 8: return DriverType.share_point_2013;
 			default: return DriverType.filesystem;
 			}
 		}
 	};
-	
-	public enum ChangeDetectionMechanism {
-		/**
-		 * Change list can not be obtained. Only brute-force scanning will do.
-		 */
-		none,
-		/**
-		 * Change list can be obtained via an agent installed on the file server.
-		 */
-		agent,
-		/**
-		 * Change list can be obtained via log/journal information available from the file system.
-		 */
-		log
-	}
-
-	/**
-	 * 
-	 */
-	public enum AuthenticationType
-	{
-		kerberos( (short)1 ),
-		
-		ntlm( (short)2 ),
-		
-		kerberos_then_ntlm( (short)3 ),
-		
-		nmas( (short) 4 );
-		
-		private short m_value;
-
-		/**
-		 * 
-		 */
-		AuthenticationType( short value )
-		{
-			m_value = value;
-		}
-		
-		/**
-		 * 
-		 */
-		public short getValue()
-		{
-			return m_value;
-		}
-		
-		/**
-		 * 
-		 */
-		public static AuthenticationType valueOf( short value )
-		{
-			switch(value)
-			{
-			case 1:
-				return AuthenticationType.kerberos;
-				
-			case 2:
-				return AuthenticationType.ntlm;
-				
-			case 3:
-				return AuthenticationType.kerberos_then_ntlm;
-
-			case 4:
-				return AuthenticationType.nmas;
-				
-			default:
-				throw new IllegalArgumentException( "Invalid db value " + value + " for enum AuthenticationType" );
-			}
-		}
-	}
 
     public boolean equals(Object obj) {
     	if(!(obj instanceof ResourceDriverConfig))
@@ -188,8 +107,6 @@ public class ResourceDriverConfig extends ZonedObject implements WorkArea {
     		return false;
     	if(!objectEquals(allowSelfSignedCertificate, config.allowSelfSignedCertificate))
     		return false;
-    	if ( !objectEquals( fullSyncDirOnly, config.fullSyncDirOnly ) )
-    		return false;
     	if(!objectEquals(hostUrl, config.hostUrl))
     		return false;
     	if(!objectEquals(rootPath, config.rootPath))
@@ -208,18 +125,6 @@ public class ResourceDriverConfig extends ZonedObject implements WorkArea {
     		return false;
     	if(!objectEquals(modifiedOn, config.getModifiedOn()))
     		return false;
-    	if(!objectEquals(getChangeDetectionMechanism(), config.getChangeDetectionMechanism()))
-    		return false;
-    	
-    	if ( !objectEquals( getAuthenticationType(), config.getAuthenticationType() ) )
-    		return false;
-
-    	if ( !objectEquals( getUseDirectoryRights(), config.getUseDirectoryRights() ) )
-    		return false;
-    	
-    	if ( !objectEquals( getCachedRightsRefreshInterval(), config.getCachedRightsRefreshInterval() ) )
-    		return false;
-
     	return true;
     }
     
@@ -305,22 +210,6 @@ public class ResourceDriverConfig extends ZonedObject implements WorkArea {
 
 	public void setAllowSelfSignedCertificate(boolean allowSelfSignedCertificate) {
 		this.allowSelfSignedCertificate = allowSelfSignedCertificate;
-	}
-
-	/**
-	 * 
-	 */
-	public Boolean getFullSyncDirOnly()
-	{
-		return fullSyncDirOnly;
-	}
-
-	/**
-	 * 
-	 */
-	public void setFullSyncDirOnly( Boolean fullSyncDirOnly )
-	{
-		this.fullSyncDirOnly = fullSyncDirOnly;
 	}
 
 	public String getHostUrl() {
@@ -481,91 +370,6 @@ public class ResourceDriverConfig extends ZonedObject implements WorkArea {
 		this.modifiedOn = modifiedOn;
 	}
 	
-	/**
-	 * 
-	 */
-	public AuthenticationType getAuthenticationType()
-	{
-		if ( authenticationType == null )
-			return null;
-		
-		return AuthenticationType.valueOf( authenticationType.shortValue() );
-	}
-	
-	/**
-	 * 
-	 */
-	public void setAuthenticationType( AuthenticationType type )
-	{
-		if ( type == null )
-			authenticationType = null;
-		else
-			authenticationType = type.getValue();
-	}
-
-	/**
-	 * 
-	 */
-	public Boolean getUseDirectoryRights()
-	{
-		return useDirectoryRights;
-	}
-
-	/**
-	 * 
-	 */
-	public void setUseDirectoryRights( Boolean value )
-	{
-		useDirectoryRights = value;
-	}
-	
-	/**
-	 * 
-	 */
-	public Integer getCachedRightsRefreshInterval()
-	{
-		return cachedRightsRefreshInterval;
-	}
-	
-	/**
-	 * 
-	 */
-	public void setCachedRightsRefreshInterval( Integer value )
-	{
-		cachedRightsRefreshInterval = value;
-	}
-
-
-	// Used by application
-	public ChangeDetectionMechanism getChangeDetectionMechanism() {
-		if(changeDetectionMechanism == null)
-			return ChangeDetectionMechanism.none; // Default to none for backward compatibility
-		else
-			return changeDetectionMechanism;
-	}
-
-	public void setChangeDetectionMechanism(
-			ChangeDetectionMechanism changeDetectionMechanism) {
-		this.changeDetectionMechanism = changeDetectionMechanism;
-	}
-	
-	// Used by Hibernate only
-	private String getChangeDetectionMechanismStr() {
-		if(changeDetectionMechanism == null)
-			return null;
-		else
-			return changeDetectionMechanism.name();
-	}
-	
-	private void setChangeDetectionMechanism(String changeDetectionMechanismStr) {
-		if(changeDetectionMechanismStr == null) {
-			changeDetectionMechanism = null;
-		}
-		else {
-			changeDetectionMechanism = ChangeDetectionMechanism.valueOf(changeDetectionMechanismStr);
-		}
-	}
-
 	private boolean objectEquals(Object first, Object second) {
 		if(first != null) {
 			if(second != null) {

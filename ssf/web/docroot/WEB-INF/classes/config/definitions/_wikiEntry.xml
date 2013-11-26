@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<definition name="_wikiEntry" caption="__definition_default_wiki_entry" type="1" nextId="36" definitionType="1" databaseId="402883c6115753d80111578d0fea0011"> 
+<definition name="_wikiEntry" caption="__definition_default_wiki_entry" type="1" nextId="35" definitionType="1" databaseId="402883c6115753d80111578d0fea0011"> 
   <item name="entryForm" caption="__entry_form_definition" type="form" id="1" display="form"> 
     <properties/>  
     <item name="entryFormForm" caption="__form" id="2"> 
@@ -25,13 +25,6 @@
           <property name="width" value=""/>  
           <property name="required" value="false"/> 
         </properties> 
-      </item>
-      <item name="captcha" caption="__captcha" multipleAllowed="false" type="data" dataType="text" category="commonEntryData" display="form" id="35">
-        <properties>
-          <property name="caption" value="__captcha"/>
-          <property name="name" value="_captcha"/>
-          <property name="guestOnly" value="true"/>
-        </properties>
       </item>  
       <item name="description" caption="__description" type="data" id="4"> 
         <properties> 
@@ -139,12 +132,12 @@
       </properties> 
     </item> 
   </item>  
-  <properties> 
-    <property name="caption" value="__definition_default_wiki_entry"/>  
-    <property name="name" value="_wikiEntry"/>  
-    <property name="family" value="wiki"/>  
-    <property name="replyStyle" value="402883c6115753d801115777f284000b"/> 
-  </properties>  
+  <properties>
+    <property name="caption" value="__definition_default_wiki_entry"/>
+    <property name="name" value="_wikiEntry"/>
+    <property name="family" value="wiki"/>
+    <property name="replyStyle" value="402883c6115753d801115777f284000b"/>
+  </properties>
   <export-mappings>
     <export definitionId="402883c6115753d801115777f284000b">_comment</export>
   </export-mappings>

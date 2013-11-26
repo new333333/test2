@@ -45,7 +45,6 @@ import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
-import org.kablink.teaming.InvalidEmailAddressException;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.UncheckedIOException;
 import org.kablink.teaming.context.request.RequestContextHolder;
@@ -60,7 +59,6 @@ import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.Workspace;
-import org.kablink.teaming.fi.AccessDeniedException;
 import org.kablink.teaming.module.shared.AccessUtils;
 import org.kablink.teaming.module.sharing.SharingModule;
 import org.kablink.teaming.remoting.rest.v1.exc.BadRequestException;
@@ -77,11 +75,9 @@ import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.security.AccessControlManager;
 import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.util.AbstractAllModulesInjected;
-import org.kablink.teaming.util.InvokeException;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.util.stringcheck.StringCheckUtil;
-import org.kablink.teaming.web.util.AdminHelper;
 import org.kablink.teaming.web.util.EmailHelper;
 import org.kablink.teaming.web.util.PermaLinkUtil;
 import org.kablink.util.HttpHeaders;
@@ -92,13 +88,9 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
-import javax.xml.bind.annotation.XmlElement;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.net.URLEncoder;
 import java.util.*;
 
@@ -232,34 +224,6 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         if(!(entry instanceof org.kablink.teaming.domain.Group))
             throw new NoGroupByTheIdException(groupId);
         return (org.kablink.teaming.domain.Group) entry;
-    }
-
-    protected org.kablink.teaming.domain.DefinableEntity findDefinableEntity(EntityIdentifier ei) {
-        if (ei==null) {
-            return null;
-        }
-        return findDefinableEntity(ei.getEntityType(), ei.getEntityId());
-    }
-
-    protected org.kablink.teaming.domain.DefinableEntity findDefinableEntity(EntityIdentifier.EntityType et, long entityId)
-            throws BadRequestException, NotFoundException {
-        org.kablink.teaming.domain.DefinableEntity entity;
-        if (et == EntityIdentifier.EntityType.folderEntry) {
-            entity = getFolderModule().getEntry(null, entityId);
-        } else if (et == EntityIdentifier.EntityType.user) {
-            entity = getProfileModule().getEntry(entityId);
-            if (!(entity instanceof User))
-                throw new BadRequestException(ApiErrorCode.NOT_USER, "Entity ID '" + entityId + "' does not represent a user");
-        } else if (et == EntityIdentifier.EntityType.group) {
-            entity = getProfileModule().getEntry(entityId);
-            if (!(entity instanceof Group))
-                throw new BadRequestException(ApiErrorCode.NOT_GROUP, "Entity ID '" + entityId + "' does not represent a group");
-        } else if (et == EntityIdentifier.EntityType.workspace || et == EntityIdentifier.EntityType.folder || et == EntityIdentifier.EntityType.profiles) {
-            entity = getBinderModule().getBinder(entityId, false, true);
-        } else {
-            throw new BadRequestException(ApiErrorCode.INVALID_ENTITY_TYPE, "Entity type '" + et.name() + "' is unknown or not supported by this method");
-        }
-        return entity;
     }
 
     protected SearchResultList<SearchableObject> searchForLibraryEntities(String keyword, Criterion searchContext,
@@ -516,9 +480,6 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
                                 + recipient.getEmailAddress());
                     }
                 } else {
-                    if (!getSharingModule().isExternalAddressValid(share.getRecipient().getEmailAddress())) {
-                        throw new InvalidEmailAddressException(share.getRecipient().getEmailAddress());
-                    }
                     user = getProfileModule().findOrAddExternalUser(share.getRecipient().getEmailAddress());
                 }
             }
@@ -532,7 +493,7 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         for (ShareItem item : shareItems) {
             ShareItem existing = findExistingShare(getLoggedInUserId(), entity.getEntityIdentifier(), item.getRecipientId(), item.getRecipientType());
             if (existing!=null) {
-                shareItem = getSharingModule().modifyShareItem(item, existing.getId());
+                getSharingModule().modifyShareItem(item, existing.getId());
             } else {
                 getSharingModule().addShareItem(item);
             }
@@ -544,7 +505,7 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
                 logger.warn("Failed to send share notification email", e);
             }
         }
-        return ResourceUtil.buildShare(shareItem, entity, buildShareRecipient(shareItem));
+        return ResourceUtil.buildShare(shareItem, buildShareRecipient(shareItem));
     }
 
     protected ShareItem findExistingShare(Long sharer, EntityIdentifier sharedEntity, Long recipientId, ShareItem.RecipientType recipientType) {
@@ -554,48 +515,39 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
             spec.setRecipients(recipientId, null, null);
         } else if (recipientType== ShareItem.RecipientType.group) {
             spec.setRecipients(null, recipientId, null);
-        } else if (recipientType == ShareItem.RecipientType.team) {
+        } else {
             spec.setRecipients(null, null, recipientId);
-        } else if (recipientType == ShareItem.RecipientType.publicLink) {
-            spec.recipientType = ShareItem.RecipientType.publicLink;
         }
 
-        List<ShareItem> shares = getShareItems(spec, true, true, true);
+        List<ShareItem> shares = getShareItems(spec, true);
         if (shares.size()==0) {
             return null;
         }
         return shares.get(0);
     }
 
-    protected List<ShareItem> getShareItems(ShareItemSelectSpec spec, boolean includeExpired, boolean includePublic, boolean includeNonPublic) {
-        return getShareItems(spec, null, includeExpired, includePublic, includeNonPublic, true);
+    protected List<ShareItem> getShareItems(ShareItemSelectSpec spec, boolean includeExpired) {
+        return getShareItems(spec, null, includeExpired, false);
     }
 
-    protected List<ShareItem> getShareItems(ShareItemSelectSpec spec, Long excludedSharer, boolean includeExpired,
-                                            boolean includePublic, boolean includeNonPublic) {
-        return getShareItems(spec, excludedSharer, includeExpired, includePublic, includeNonPublic, true);
+    protected List<ShareItem> getShareItems(ShareItemSelectSpec spec, Long excludedSharer, boolean includeExpired) {
+        return getShareItems(spec, excludedSharer, includeExpired, false);
     }
 
-    protected List<ShareItem> getShareItems(ShareItemSelectSpec spec, Long excludedSharer, boolean includeExpired,
-                                            boolean includePublic, boolean includeNonPublic, boolean mergePublicParts) {
+    protected List<ShareItem> getShareItems(ShareItemSelectSpec spec, Long excludedSharer, boolean includeExpired, boolean includeAllPublic) {
         List<ShareItem> shareItems = getSharingModule().getShareItems(spec);
         List<ShareItem> filteredItems = new ArrayList<ShareItem>(shareItems.size());
         Map<String, Boolean> publicIncludedMap = new HashMap<String, Boolean>();
         for (ShareItem item : shareItems) {
             if ((!item.isExpired() || includeExpired) && item.isLatest() &&
                     (excludedSharer==null || !excludedSharer.equals(item.getSharerId()))) {
-                boolean partOfPublicShare = item.getIsPartOfPublicShare();
-                if (includePublic && partOfPublicShare){
-                    if (mergePublicParts) {
-                        Boolean publicIncluded = publicIncludedMap.get(item.getSharedEntityIdentifier().toString());
-                        if (publicIncluded==null || !publicIncluded) {
-                            filteredItems.add(item);
-                            publicIncludedMap.put(item.getSharedEntityIdentifier().toString(), Boolean.TRUE);
-                        }
-                    } else {
+                if (!includeAllPublic && item.getIsPartOfPublicShare()) {
+                    Boolean publicIncluded = publicIncludedMap.get(item.getSharedEntityIdentifier().toString());
+                    if (publicIncluded==null || !publicIncluded) {
                         filteredItems.add(item);
+                        publicIncludedMap.put(item.getSharedEntityIdentifier().toString(), Boolean.TRUE);
                     }
-                } else if (includeNonPublic && !partOfPublicShare) {
+                } else {
                     filteredItems.add(item);
                 }
             }
@@ -607,10 +559,7 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         Long id = shareItem.getRecipientId();
         String type = null;
         String email = null;
-        if (shareItem.getRecipientType()== ShareItem.RecipientType.publicLink) {
-            type = ShareRecipient.PUBLIC_LINK;
-            id = null;
-        } else if (shareItem.getIsPartOfPublicShare()) {
+        if (shareItem.getIsPartOfPublicShare()) {
             type = ShareRecipient.PUBLIC;
             id = null;
         } else {
@@ -661,7 +610,7 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         Junction types = Restrictions.disjunction();
         // Include a restriction that will always evaluate to false.  That way if all of the include* parameters are false
         // no results will be returned (instead of all results being returned)
-        types.add(getFalseCriterion());
+        types.add(Restrictions.eq(Constants.DOC_TYPE_FIELD, "_fake_"));
         if (includeBinders) {
             types.add(buildBindersCriterion());
         }
@@ -675,10 +624,6 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
             types.add(buildRepliesCriterion());
         }
         return types;
-    }
-
-    protected Criterion getFalseCriterion() {
-        return Restrictions.eq(Constants.DOC_TYPE_FIELD, "_fake_");
     }
 
     protected Criterion buildEntryCriterion(Long id) {
@@ -744,17 +689,6 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
                 .add(Restrictions.eq(Constants.ENTRY_TYPE_FIELD, Constants.ENTRY_TYPE_USER));
         if (!allowExternal) {
             crit.add(Restrictions.eq(Constants.IDENTITY_INTERNAL_FIELD, Boolean.TRUE.toString()));
-        }
-        return crit;
-    }
-
-    protected Criterion buildGroupsCriterion(Boolean fromLdap, boolean includeAllUsersGroup) {
-        Junction crit = Restrictions.conjunction()
-                .add(Restrictions.eq(Constants.DOC_TYPE_FIELD, Constants.DOC_TYPE_ENTRY))
-                .add(Restrictions.eq(Constants.ENTRY_TYPE_FIELD, Constants.ENTRY_TYPE_GROUP))
-                .add(SearchUtils.buildExcludeUniversalAndContainerGroupCriterion(includeAllUsersGroup));
-        if (fromLdap!=null) {
-            crit.add(Restrictions.eq(Constants.IS_GROUP_FROM_LDAP_FIELD, fromLdap.toString()));
         }
         return crit;
     }
@@ -839,23 +773,15 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         }
         if (!type.equals(ShareRecipient.EXTERNAL_USER) && !type.equals(ShareRecipient.INTERNAL_USER) &&
                 !type.equals(ShareRecipient.EXTERNAL_USER) && !type.equals(ShareRecipient.GROUP) &&
-                !type.equals(ShareRecipient.PUBLIC) && !type.equals(ShareRecipient.TEAM) &&
-                !type.equals(ShareRecipient.PUBLIC_LINK)) {
-            throw new BadRequestException(ApiErrorCode.BAD_INPUT, "'recipient.type' value must be one of the following: user, external_user, group, team, public, public_link.");
+                !type.equals(ShareRecipient.PUBLIC) && !type.equals(ShareRecipient.TEAM)) {
+            throw new BadRequestException(ApiErrorCode.BAD_INPUT, "'recipient.type' value must be one of the following: user, external_user, group, team, public.");
         }
         if (type.equals(ShareRecipient.PUBLIC)) {
             if (recipient.getId()!=null) {
                 throw new BadRequestException(ApiErrorCode.BAD_INPUT, "'recipient.id' cannot be supplied with 'recipient.type'=='public'.");
             }
             if (recipient.getEmailAddress()!=null) {
-                throw new BadRequestException(ApiErrorCode.BAD_INPUT, "'recipient.email' can be supplied with 'recipient.type'=='public'.");
-            }
-        } else if (type.equals(ShareRecipient.PUBLIC_LINK)) {
-            if (recipient.getId()!=null) {
-                throw new BadRequestException(ApiErrorCode.BAD_INPUT, "'recipient.id' cannot be supplied with 'recipient.type'=='public_link'.");
-            }
-            if (recipient.getEmailAddress()!=null) {
-                throw new BadRequestException(ApiErrorCode.BAD_INPUT, "'recipient.email' can be supplied with 'recipient.type'=='public_link'.");
+                throw new BadRequestException(ApiErrorCode.BAD_INPUT, "'recipient.email' can be supplied with 'recipient.type'=='external_user'.");
             }
         } else if (type.equals(ShareRecipient.EXTERNAL_USER)){
             if (recipient.getId()==null && recipient.getEmailAddress()==null) {
@@ -870,29 +796,11 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
             }
         }
         Access access = share.getAccess();
-        if (type.equals(ShareRecipient.PUBLIC_LINK)) {
-            if (access!=null && access.getRole()!=null && !access.getRole().equals(ShareItem.Role.VIEWER.name())) {
-                throw new BadRequestException(ApiErrorCode.BAD_INPUT, "'access.role' can only be 'VIEWER' for public link shares.");
-            }
-            access = new Access();
-            access.setRole(ShareItem.Role.VIEWER.name());
-            share.setAccess(access);
-        } else {
-            if (access==null) {
-                throw new BadRequestException(ApiErrorCode.BAD_INPUT, "Missing 'access' value.");
-            }
-            if (access.getRole()==null) {
-                throw new BadRequestException(ApiErrorCode.BAD_INPUT, "Missing 'access.role' value.");
-            }
+        if (access==null) {
+            throw new BadRequestException(ApiErrorCode.BAD_INPUT, "Missing 'access' value.");
         }
-        if (type.equals(ShareRecipient.PUBLIC_LINK) || type.equals(ShareRecipient.PUBLIC)) {
-            SharingPermission sharePerms = access.getSharing();
-            if (sharePerms!=null) {
-                if (Boolean.TRUE.equals(sharePerms.getExternal()) || Boolean.TRUE.equals(sharePerms.getGrantReshare()) ||
-                        Boolean.TRUE.equals(sharePerms.getPublic()) || Boolean.TRUE.equals(sharePerms.getInternal())) {
-                    throw new BadRequestException(ApiErrorCode.BAD_INPUT, "Cannot specify 'access.sharing' permissions for public shares.");
-                }
-            }
+        if (access.getRole()==null) {
+            throw new BadRequestException(ApiErrorCode.BAD_INPUT, "Missing 'access.role' value.");
         }
 
         EntityIdentifier.EntityType entityType;
@@ -918,13 +826,6 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         } else if (type.equals(ShareRecipient.PUBLIC)) {
             recType = ShareItem.RecipientType.group;
             recipient.setId(Utils.getAllUsersGroupId());
-        } else if (type.equals(ShareRecipient.PUBLIC_LINK)) {
-            recType = ShareItem.RecipientType.publicLink;
-            recipient.setId(0L);
-
-            if (entity.getEntityType() != EntityIdentifier.EntityType.folderEntry) {
-                throw new BadRequestException(ApiErrorCode.BAD_INPUT, "'recipient'.'type' of 'public_link' is only valid for 'folderEntry' recipients.");
-            }
         }
         ShareItem.Role role;
         try {
@@ -1034,20 +935,6 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
             fillPathMap(binderPaths, searchForBinders(idCriterion));
         }
         return binderPaths;
-    }
-
-    protected SearchResultList<SearchableObject> lookUpChildren(Criteria crit, int descriptionFormat, Integer offset, Integer maxCount, String nextUrl, Map<String, Object> nextParams, Date lastModified) {
-        if (offset==null) {
-            offset = 0;
-        }
-        if (maxCount==null) {
-            maxCount = -1;
-        }
-        Map resultMap = getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, offset, maxCount);
-        SearchResultList<SearchableObject> results = new SearchResultList<SearchableObject>(offset);
-        results.setLastModified(lastModified);
-        SearchResultBuilderUtil.buildSearchResults(results, new UniversalBuilder(descriptionFormat), resultMap, nextUrl, nextParams, offset);
-        return results;
     }
 
     protected SearchResultList<BinderBrief> lookUpBinders(Criteria crit, int descriptionFormat, Integer offset, Integer maxCount, String nextUrl, Map<String, Object> nextParams, Date lastModified) {
@@ -1175,7 +1062,7 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         ShareItemSelectSpec spec = getSharedWithSpec(userId);
         // Include deleted entries as well.
         spec.deleted = null;
-        List<ShareItem> shareItems = getShareItems(spec, userId, true, false, true);
+        List<ShareItem> shareItems = getShareItems(spec, userId, true);
         Date libraryModifiedDateForShareItems = getLibraryModifiedDateForShareItems(recursive, shareItems);
         Date hideDate = getSharingModule().getHiddenShareModTimeForCurrentUser(true);
         return max(hideDate, libraryModifiedDateForShareItems);
@@ -1217,7 +1104,7 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         ShareItemSelectSpec spec = getSharedWithSpec(userId);
         // Include deleted entries as well.
         spec.deleted = null;
-        List<ShareItem> shareItems = getShareItems(spec, userId, true, false, true);
+        List<ShareItem> shareItems = getShareItems(spec, userId, true);
         LibraryInfo info = getLibraryInfoForShareItems(shareItems);
         Date hideDate = getSharingModule().getHiddenShareModTimeForCurrentUser(true);
         info.setModifiedDate(max(hideDate, info.getModifiedDate()));
@@ -1396,13 +1283,12 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
             ids = new Long[] {getMyFilesFolderParent().getId()};
         } else if (SearchUtils.useHomeAsMyFiles(this)) {
             List<Long> homeFolderIds = SearchUtils.getHomeFolderIds(this, getLoggedInUser());
-            for (Long id : homeFolderIds) {
-            	try {
+            try {
+                for (Long id : homeFolderIds) {
                     Folder folder = getFolderModule().getFolder(id);
                     getFolderModule().jitSynchronize(folder);
-            	}
-            	catch (Exception e) {
-            	}
+                }
+            } catch (Exception e) {
             }
             ids = homeFolderIds.toArray(new Long[homeFolderIds.size()]);
         } else {
@@ -1452,10 +1338,6 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         } else {
             return _getUserWorkspace();
         }
-    }
-
-    protected Boolean getEffectivePublicCollectionSetting(org.kablink.teaming.domain.User user) {
-        return AdminHelper.getEffectivePublicCollectionSetting(this, user);
     }
 
     protected BinderBrief getFakeMyFileFolders() {
@@ -1548,29 +1430,6 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         return binder;
     }
 
-    protected BinderBrief getFakePublicShares() {
-        BinderBrief binder = new BinderBrief();
-
-        Binder netFoldersBinder = SearchUtils.getNetFoldersRootBinder();
-        //TODO: localize
-        binder.setId(ObjectKeys.PUBLIC_SHARES_ID);
-        binder.setTitle("Public");
-        binder.setIcon(LinkUriUtil.buildIconLinkUri("/icons/workspace.png"));
-        Long userId = getLoggedInUserId();
-        binder.setLink("/self/public_shares");
-        binder.setPermaLink(PermaLinkUtil.getUserPermalink(null, userId.toString(), PermaLinkUtil.COLLECTION_SHARED_PUBLIC));
-        String baseUri = "/shares/public";
-        binder.addAdditionalLink("child_binders", baseUri + "/binders");
-        binder.addAdditionalLink("child_binder_tree", baseUri + "/binder_tree");
-        binder.addAdditionalLink("child_files", baseUri + "/files");
-        binder.addAdditionalLink("child_library_entities", baseUri + "/library_entities");
-        binder.addAdditionalLink("child_library_files", baseUri + "/library_files");
-        binder.addAdditionalLink("child_library_folders", baseUri + "/library_folders");
-        binder.addAdditionalLink("child_library_tree", baseUri + "/library_tree");
-        binder.addAdditionalLink("recent_activity", baseUri + "/recent_activity");
-        return binder;
-    }
-
     protected Access getAccessRole(org.kablink.teaming.domain.FolderEntry entry) {
         AccessControlManager accessControlManager = getAccessControlManager();
         User loggedInUser = getLoggedInUser();
@@ -1654,110 +1513,6 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         }
     }
 
-    protected void validateMandatoryField(Object obj, String... methodNames) {
-        validateField(obj, true, false, null, methodNames);
-    }
-
-    protected void validateDisallowedField(Object obj, String reason, String... methodNames) {
-        validateField(obj, false, true, reason, methodNames);
-    }
-
-    protected boolean isDefined(Object obj, String... methodNames) {
-        Object currObj = obj;
-        for (String methodName : methodNames) {
-            try {
-                Method method = currObj.getClass().getMethod(methodName);
-                Object value = method.invoke(obj);
-                if (value==null || (value instanceof String && ((String)value).length()==0)) {
-                    return false;
-                }
-                currObj = value;
-            } catch (NoSuchMethodException e) {
-                throw new InvokeException("Error executing method " + methodName + " in class " + obj.getClass().getName(), e);
-            } catch (InvocationTargetException e) {
-                throw new InvokeException("Error executing method " + methodName + " in class " + obj.getClass().getName(), e);
-            } catch (IllegalAccessException e) {
-                throw new InvokeException("Error executing method " + methodName + " in class " + obj.getClass().getName(), e);
-            }
-        }
-        return true;
-    }
-
-    protected void validateField(Object obj, boolean failIfMissing, boolean failIfExists, String disallowedReason, String... methodNames) {
-        Object currObj = obj;
-        String fieldName = null;
-        for (String methodName : methodNames) {
-            try {
-                Method method = currObj.getClass().getMethod(methodName);
-                String currFieldName = getFieldName(method, methodName);
-                if (fieldName!=null) {
-                    fieldName = fieldName + ".'" + currFieldName + "'";
-                } else {
-                    fieldName = "'" + currFieldName + "'";
-                }
-                Object value = method.invoke(currObj);
-                if (failIfMissing) {
-                    if (value==null || (value instanceof String && ((String)value).length()==0)) {
-                        throw new BadRequestException(ApiErrorCode.BAD_INPUT, "Missing mandatory field: " + fieldName );
-                    }
-                }
-                if (failIfExists) {
-                    if (value!=null && (value instanceof String && ((String)value).length()>0)) {
-                        throw new BadRequestException(ApiErrorCode.BAD_INPUT, "Field is not allowed: " + fieldName + ".  Reason: " + disallowedReason);
-                    }
-                }
-                currObj = value;
-            } catch (NoSuchMethodException e) {
-                throw new InvokeException("Error executing method " + methodName + " in class " + obj.getClass().getName(), e);
-            } catch (InvocationTargetException e) {
-                throw new InvokeException("Error executing method " + methodName + " in class " + obj.getClass().getName(), e);
-            } catch (IllegalAccessException e) {
-                throw new InvokeException("Error executing method " + methodName + " in class " + obj.getClass().getName(), e);
-            }
-        }
-    }
-
-    private String getFieldName(Method method, String methodName) {
-        String field = null;
-        Annotation[] annotations = method.getAnnotations();
-        for (Annotation annotation : annotations) {
-            if (annotation instanceof XmlElement) {
-                field = ((XmlElement)annotation).name();
-            }
-        }
-        if (field==null) {
-            if (methodName.startsWith("get")) {
-                field = Character.toLowerCase(methodName.charAt(3)) + methodName.substring(4);
-            } else if (methodName.startsWith("get")) {
-                field = Character.toLowerCase(methodName.charAt(2)) + methodName.substring(3);
-            } else {
-                field = methodName;
-            }
-        }
-        return field;
-    }
-
-    protected <T extends Enum<T>> T toEnum(Class<T> enumType, String fieldName, String value) {
-        try {
-            if (value==null) {
-                return null;
-            }
-            return Enum.valueOf(enumType, value);
-        } catch (Exception e) {
-            StringBuilder builder = new StringBuilder('\'').append(fieldName).append(" must be one of: ");
-            T[] vals = enumType.getEnumConstants();
-            boolean first = true;
-            for (T val : vals) {
-                if (first) {
-                    first = false;
-                } else {
-                    builder.append(',');
-                }
-                builder.append(val.name());
-            }
-            throw new BadRequestException(ApiErrorCode.BAD_INPUT, builder.toString());
-        }
-    }
 
     protected static CoreDao getCoreDao() {
         return (CoreDao) SpringContextUtil.getBean("coreDao");

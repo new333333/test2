@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -54,12 +54,10 @@ public class VibeDataGrid<T> extends DataGrid<T> {
 	 */ 
 	public interface VibeDataGridResources extends DataGrid.Resources {
 		// Define the images...
-		@Override
 		@ImageOptions(repeatStyle = RepeatStyle.Both)
 		@Source("org/kablink/teaming/gwt/public/images/sortAZ.gif")
 		ImageResource dataGridSortAscending();
 
-		@Override
 		@ImageOptions(repeatStyle = RepeatStyle.Both)
 		@Source("org/kablink/teaming/gwt/public/images/sortZA.gif")
 		ImageResource dataGridSortDescending();
@@ -69,7 +67,6 @@ public class VibeDataGrid<T> extends DataGrid<T> {
 		ImageResource headerBackground();
 
 		// ...and style sheets.
-		@Override
 		@Source({DataGrid.Style.DEFAULT_CSS, "org/kablink/teaming/gwt/public/VibeDataGrid.css"})
 		DataGrid.Style dataGridStyle();
 	}

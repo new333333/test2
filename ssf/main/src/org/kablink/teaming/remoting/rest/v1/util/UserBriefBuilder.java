@@ -45,7 +45,7 @@ import java.util.Map;
  * Date: 5/18/12
  * Time: 1:07 PM
  */
-public class UserBriefBuilder extends BasePrincipalBriefBuilder implements SearchResultBuilder<UserBrief> {
+public class UserBriefBuilder extends PrincipalBriefBuilder implements SearchResultBuilder<UserBrief> {
     public UserBriefBuilder() {
     }
 

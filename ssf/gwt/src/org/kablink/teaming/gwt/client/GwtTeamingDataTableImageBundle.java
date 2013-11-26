@@ -184,22 +184,6 @@ public interface GwtTeamingDataTableImageBundle extends ClientBundle {
 	public ImageResource previousTeal();
 	
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/public25.png")
-	public ImageResource publicAssignee();
-	
-	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/public16.png")
-	public ImageResource publicSharee();
-	
-	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/publicLink25.png")
-	public ImageResource publicLinkAssignee();
-	
-	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/publicLink16.png")
-	public ImageResource publicLinkSharee();
-	
-	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/DataTable/slide_down_btn.png")
 	public ImageResource slideDown();
 	
@@ -212,10 +196,6 @@ public interface GwtTeamingDataTableImageBundle extends ClientBundle {
 	public ImageResource spacer1px();
 
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/DataTable/touch_slide.png")
-	public ImageResource touchSlide();
-	
-	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/DataTable/unknown_128.png")
 	public ImageResource unknown();
 	
@@ -226,10 +206,6 @@ public interface GwtTeamingDataTableImageBundle extends ClientBundle {
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/sunburst.png")
 	public ImageResource unread();
-	
-	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/TaskListing/team_16.png")
-	public ImageResource team();
 	
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/UserPhoto.png")

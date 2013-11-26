@@ -520,7 +520,7 @@ public class LoginFilter  implements Filter {
 		else
 			return false;
 	}
-
+	
 	/*
 	 * Returns an indicator of whether the request URL is a readFile
 	 * URL and if it is, whether Guest has access to the entry.
@@ -542,10 +542,7 @@ public class LoginFilter  implements Filter {
 		
 		// Are we looking at a readFile URL?
 		Boolean reply;
-		if (path.startsWith("/" + WebKeys.SERVLET_READ_FILE + "/" + WebKeys.URL_ENTITY_TYPE_SHARE)) {
-			//This is probably a share with public link. Let it go through. It will get checked by the readFile controller
-			reply = true;
-		} else if (path.startsWith("/" + WebKeys.SERVLET_READ_FILE + "/")) {
+		if (path.startsWith("/" + WebKeys.SERVLET_READ_FILE + "/")) {
 			// Yes!  Can we find the folderEntry marker within it?
 			String feIdMarker = (WebKeys.URL_FOLDER_ENTRY + "/");
 			int    feIdPos    = path.indexOf(feIdMarker);
@@ -674,7 +671,6 @@ public class LoginFilter  implements Filter {
 	 * "view_ws_listing" or "view_folder_listing" or "view_profile_listing" or "view_folder_entry" or "view_profile_entry"
 	 * and the url does NOT have the GWT URL parameter marking.
 	 */
-	@SuppressWarnings("deprecation")
 	private boolean shouldUrlBeConvertedToAPermalink( HttpServletRequest req )
 	{
 		// Does the URL have the GWT URL parameter.
@@ -700,3 +696,4 @@ public class LoginFilter  implements Filter {
 		return false;
 	}
 }
+

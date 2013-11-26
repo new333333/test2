@@ -35,17 +35,17 @@ package org.kablink.teaming.gwt.client.mainmenu;
 import java.util.List;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
-import org.kablink.teaming.gwt.client.event.CopySelectedEntitiesEvent;
-import org.kablink.teaming.gwt.client.event.DeleteSelectedEntitiesEvent;
+import org.kablink.teaming.gwt.client.event.CopySelectedEntriesEvent;
+import org.kablink.teaming.gwt.client.event.DeleteSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.GotoContentUrlEvent;
 import org.kablink.teaming.gwt.client.event.GotoPermalinkUrlEvent;
 import org.kablink.teaming.gwt.client.event.InvokeSendEmailToTeamEvent;
 import org.kablink.teaming.gwt.client.event.InvokeShareBinderEvent;
-import org.kablink.teaming.gwt.client.event.MoveSelectedEntitiesEvent;
+import org.kablink.teaming.gwt.client.event.MoveSelectedEntriesEvent;
+import org.kablink.teaming.gwt.client.event.PurgeSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.event.VibeEventBase;
-import org.kablink.teaming.gwt.client.event.ZipAndDownloadFolderEvent;
 import org.kablink.teaming.gwt.client.mainmenu.ToolbarItem.NameValuePair;
 import org.kablink.teaming.gwt.client.util.ClientEventParameter;
 import org.kablink.teaming.gwt.client.util.EntityId;
@@ -227,19 +227,21 @@ public class ContextMenuItem extends VibeMenuItem {
 				
 			case TEAMING_EVENT:
 				switch (m_teamingEvent) {
-				case COPY_SELECTED_ENTITIES:
-				case DELETE_SELECTED_ENTITIES:
-				case MOVE_SELECTED_ENTITIES:
+				case COPY_SELECTED_ENTRIES:
+				case DELETE_SELECTED_ENTRIES:
+				case MOVE_SELECTED_ENTRIES:
+				case PURGE_SELECTED_ENTRIES:
 					// Create the appropriate selected entries event...
 					Long				binderId       = Long.parseLong(ToolbarItem.getQualifierValueFromList("binderId",       m_eventQualifiers));
 					Long				binderParentId = Long.parseLong(ToolbarItem.getQualifierValueFromList("binderParentId", m_eventQualifiers));
 					String				binderType     =                ToolbarItem.getQualifierValueFromList("binderType",     m_eventQualifiers );
-					EntityId			eid            = new EntityId(binderParentId, binderId, binderType);
+					EntityId			eid            = new EntityId(binderParentId, binderId, EntityId.FOLDER);
 					VibeEventBase<?>	selEvent = null;
 					switch (m_teamingEvent) {
-					case COPY_SELECTED_ENTITIES:    selEvent = new CopySelectedEntitiesEvent(  binderId, eid); break;
-					case DELETE_SELECTED_ENTITIES:  selEvent = new DeleteSelectedEntitiesEvent(binderId, eid); break;
-					case MOVE_SELECTED_ENTITIES:    selEvent = new MoveSelectedEntitiesEvent(  binderId, eid); break;
+					case COPY_SELECTED_ENTRIES:    selEvent = new CopySelectedEntriesEvent(  binderId, eid); break;
+					case DELETE_SELECTED_ENTRIES:  selEvent = new DeleteSelectedEntriesEvent(binderId, eid); break;
+					case MOVE_SELECTED_ENTRIES:    selEvent = new MoveSelectedEntriesEvent(  binderId, eid); break;
+					case PURGE_SELECTED_ENTRIES:   selEvent = new PurgeSelectedEntriesEvent( binderId, eid); break;
 					}
 					
 					// ...and fire it.
@@ -275,13 +277,6 @@ public class ContextMenuItem extends VibeMenuItem {
 				case VIEW_WHATS_NEW_IN_BINDER:
 				case VIEW_WHATS_UNSEEN_IN_BINDER:
 					EventHelper.fireSimpleEvent(m_teamingEvent);
-					break;
-					
-				case ZIP_AND_DOWNLOAD_FOLDER:
-					// Fire the appropriate event.
-					GwtTeaming.fireEvent(new ZipAndDownloadFolderEvent(
-						Long.parseLong(      ToolbarItem.getQualifierValueFromList("binderId",  m_eventQualifiers)),
-						Boolean.parseBoolean(ToolbarItem.getQualifierValueFromList("recursive", m_eventQualifiers))));
 					break;
 					
 				default:

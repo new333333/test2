@@ -34,51 +34,50 @@ package org.kablink.teaming.search.local;
 
 import java.util.ArrayList;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.index.Term;
 import org.kablink.teaming.lucene.LuceneException;
 import org.kablink.teaming.lucene.LuceneProvider;
-import org.kablink.teaming.search.AbstractLuceneWriteSession;
 import org.kablink.teaming.search.LuceneWriteSession;
+import org.kablink.teaming.util.SimpleProfiler;
 
-public class LocalLuceneWriteSession extends AbstractLuceneWriteSession implements LuceneWriteSession {
-
-	private static Log logger = LogFactory.getLog(LocalLuceneReadSession.class);
+public class LocalLuceneWriteSession implements LuceneWriteSession {
 
 	private LuceneProvider luceneProvider;
 
 	public LocalLuceneWriteSession(LuceneProvider luceneProvider) {
-		super(logger);
 		this.luceneProvider = luceneProvider;
 	}
 
-	@Override
-	protected void invokeAddDocuments(ArrayList docs) {
+	public void addDocuments(ArrayList docs) {
+		SimpleProfiler.start("LocalLuceneWriteSession.addDocuments()");
 		luceneProvider.addDocuments(docs);
+		SimpleProfiler.stop("LocalLuceneWriteSession.addDocuments()");
 	}
 
-	@Override
-	protected void invokeDeleteDocuments(Term term) {
+	public void deleteDocuments(Term term) {
+		SimpleProfiler.start("LocalLuceneWriteSession.deleteDocuments()");
 		luceneProvider.deleteDocuments(term);
+		SimpleProfiler.stop("LocalLuceneWriteSession.deleteDocuments()");
 	}
 
-	@Override
-	protected void invokeAddDeleteDocuments(ArrayList docsToAddOrDelete) throws LuceneException {
+	public void addDeleteDocuments(ArrayList docsToAddOrDelete) throws LuceneException {
+		SimpleProfiler.start("LocalLuceneWriteSession.addDeleteDocuments()");
 		luceneProvider.addDeleteDocuments(docsToAddOrDelete);
+		SimpleProfiler.stop("LocalLuceneWriteSession.addDeleteDocuments()");
 	}
 
-	@Override
-	protected void invokeOptimize() {
+	public void optimize() {
+		SimpleProfiler.start("LocalLuceneWriteSession.optimize()");
 		luceneProvider.optimize();
+		SimpleProfiler.stop("LocalLuceneWriteSession.optimize()");
 	}
 		
-	@Override
-	protected void invokeClearIndex() {
+	public void clearIndex() {
+		SimpleProfiler.start("LocalLuceneWriteSession.clearIndex()");
 		luceneProvider.clearIndex();
+		SimpleProfiler.stop("LocalLuceneWriteSession.clearIndex()");
 	}
 	
-	@Override
 	public void close() {
 		// luceneProvider automatically takes care of flush/commit, and there is no resource to release here.
 	}

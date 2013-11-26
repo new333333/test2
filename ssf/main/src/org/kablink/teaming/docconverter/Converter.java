@@ -44,7 +44,6 @@ import org.kablink.teaming.UncheckedIOException;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.FileAttachment;
-import org.kablink.teaming.domain.ShareItem;
 import org.kablink.teaming.module.file.FileModule;
 import org.kablink.teaming.module.file.impl.CryptoFileEncryption;
 import org.kablink.teaming.repository.RepositoryServiceException;
@@ -96,9 +95,6 @@ public abstract class Converter<T>
 		throws Exception;
 
 	public abstract void deleteConvertedFile(Binder binder, DefinableEntity entry, FileAttachment fa)
-	throws UncheckedIOException, RepositoryServiceException;
-	
-	public abstract void deleteConvertedFile(ShareItem shareItem, Binder binder, DefinableEntity entry, FileAttachment fa)
 	throws UncheckedIOException, RepositoryServiceException;
 	
 	protected void deleteConvertedFile(Binder binder, DefinableEntity entry, FileAttachment fa, String subdir, String suffix)

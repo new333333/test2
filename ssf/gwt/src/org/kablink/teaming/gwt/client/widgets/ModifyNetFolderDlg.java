@@ -38,9 +38,8 @@ import java.util.List;
 
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtJitsNetFolderConfig;
-import org.kablink.teaming.gwt.client.GwtNetFolderSyncScheduleConfig;
-import org.kablink.teaming.gwt.client.GwtNetFolderSyncScheduleConfig.NetFolderSyncScheduleOption;
 import org.kablink.teaming.gwt.client.GwtRole;
+import org.kablink.teaming.gwt.client.GwtSchedule;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingException;
 import org.kablink.teaming.gwt.client.GwtTeamingException.ExceptionType;
@@ -62,9 +61,6 @@ import org.kablink.teaming.gwt.client.rpc.shared.TestNetFolderConnectionResponse
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HelpData;
-import org.kablink.teaming.gwt.client.util.runasync.ModifyNetFolderDlgInitAndShowParams;
-import org.kablink.teaming.gwt.client.util.runasync.RunAsyncCmd;
-import org.kablink.teaming.gwt.client.util.runasync.RunAsyncCreateDlgParams;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import org.kablink.teaming.gwt.client.widgets.ModifyNetFolderRootDlg.ModifyNetFolderRootDlgClient;
 import org.kablink.teaming.gwt.client.widgets.NetFolderSelectPrincipalsWidget.NetFolderSelectPrincipalsWidgetClient;
@@ -73,9 +69,9 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
-import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.google.gwt.resources.client.ImageResource;
@@ -83,6 +79,7 @@ import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.CaptionPanel;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -94,7 +91,6 @@ import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.Panel;
-import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.TabPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.FlexTable.FlexCellFormatter;
@@ -122,16 +118,11 @@ public class ModifyNetFolderDlg extends DlgBox
 	private TextBox m_jitsResultsMaxAge;
 	private TextBox m_jitsAclMaxAge;
 	private InlineLabel m_noNetFolderRootsLabel;
-	private RadioButton m_useNFServerScheduleRB;
-	private RadioButton m_useNFScheduleRB;
 	private ScheduleWidget m_scheduleWidget;
 	private NetFolderSelectPrincipalsWidget m_selectPrincipalsWidget;
 	private FlowPanel m_inProgressPanel;
 	private CheckBox m_allowDesktopAppToSync;
 	private CheckBox m_allowMobileAppsToSync;
-	private RadioButton m_useNFServerSyncOptionRB;
-	private RadioButton m_useNFSyncOptionRB;
-	private CheckBox m_fullSyncDirOnlyCB;
 	private Panel m_rightsPanel;
 	private ModifyNetFolderRootDlg m_modifyNetFolderRootDlg;
 	private List<NetFolderRoot> m_listOfNetFolderRoots;
@@ -529,28 +520,6 @@ public class ModifyNetFolderDlg extends DlgBox
 		
 		// Hidden as per bug#816823.
 		m_allowMobileAppsToSync.setVisible(false);
-		
-		// Add the radio buttons for selecting which sync option to use.
-		{
-			FlowPanel panel;
-			
-			m_useNFServerSyncOptionRB = new RadioButton( "syncOption", messages.modifyNetFolderDlg_UseNetFolderServerSyncOptionRbLabel() );
-			panel = new FlowPanel();
-			panel.addStyleName( "margintop3" );
-			panel.add( m_useNFServerSyncOptionRB );
-			mainPanel.add( panel );
-		
-			m_useNFSyncOptionRB = new RadioButton( "syncOption", messages.modifyNetFolderDlg_UseNetFolderSyncOptionRbLabel() );
-			panel = new FlowPanel();
-			panel.add( m_useNFSyncOptionRB );
-			mainPanel.add( panel );
-			
-			m_fullSyncDirOnlyCB = new CheckBox( messages.modifyNetFolderDlg_FullSyncDirOnlyCB() );
-			panel = new FlowPanel();
-			panel.getElement().getStyle().setMarginLeft( 30, Unit.PX );
-			panel.add( m_fullSyncDirOnlyCB );
-			mainPanel.add( panel );
-		}
 
 		return mainPanel;
 	}
@@ -612,39 +581,24 @@ public class ModifyNetFolderDlg extends DlgBox
 	{
 		GwtTeamingMessages messages;
 		FlowPanel mainPanel;
+		FlowPanel captionPanelMainPanel;
+		CaptionPanel captionPanel;
 		
 		messages = GwtTeaming.getMessages();
 		
 		mainPanel = new FlowPanel();
 		
-		// Add some space at the top
-		{
-			FlowPanel tmpPanel;
-			
-			tmpPanel = new FlowPanel();
-			tmpPanel.addStyleName( "marginTop5px" );
-			mainPanel.add( tmpPanel );
-		}
+		captionPanel = new CaptionPanel( messages.modifyNetFolderDlg_SyncScheduleCaption() );
+		captionPanel.addStyleName( "modifyNetFolderDlg_SyncScheduleCaptionPanel" );
 		
-		// Add the radio buttons for selecting which sync schedule to use.
-		{
-			FlowPanel rbPanel;
-			
-			m_useNFServerScheduleRB = new RadioButton( "scheduledSyncOption", messages.modifyNetFolderDlg_UseNetFolderServerScheduleRbLabel() );
-			rbPanel = new FlowPanel();
-			rbPanel.add( m_useNFServerScheduleRB );
-			mainPanel.add( rbPanel );
-		
-			m_useNFScheduleRB = new RadioButton( "scheduledSyncOption", messages.modifyNetFolderDlg_UseNetFolderScheduleRbLabel() );
-			rbPanel = new FlowPanel();
-			rbPanel.add( m_useNFScheduleRB );
-			mainPanel.add( rbPanel );
-		}
+		captionPanelMainPanel = new FlowPanel();
+		captionPanel.add( captionPanelMainPanel );
 
 		m_scheduleWidget = new ScheduleWidget( messages.modifyNetFolderDlg_EnableSyncScheduleLabel());
 		m_scheduleWidget.addStyleName( "modifyNetFolderDlg_ScheduleWidget" );
+		captionPanelMainPanel.add( m_scheduleWidget );
 
-		mainPanel.add( m_scheduleWidget );
+		mainPanel.add( captionPanel );
 		
 		return mainPanel;
 	}
@@ -706,24 +660,14 @@ public class ModifyNetFolderDlg extends DlgBox
 			@Override
 			public void onSuccess( VibeRpcResponse result )
 			{
-				ScheduledCommand cmd;
-				final NetFolder netFolder;
+				NetFolderCreatedEvent event;
+				NetFolder netFolder;
 				
 				netFolder = (NetFolder) result.getResponseData();
 				
-				cmd = new Scheduler.ScheduledCommand()
-				{
-					@Override
-					public void execute()
-					{
-						NetFolderCreatedEvent event;
-
-						// Fire an event that lets everyone know a net folder was created.
-						event = new NetFolderCreatedEvent( netFolder );
-						GwtTeaming.fireEvent( event );
-					}
-				};
-				Scheduler.get().scheduleDeferred( cmd );
+				// Fire an event that lets everyone know a net folder was created.
+				event = new NetFolderCreatedEvent( netFolder );
+				GwtTeaming.fireEvent( event );
 
 				hideStatusMsg();
 				setOkEnabled( true );
@@ -842,17 +786,6 @@ public class ModifyNetFolderDlg extends DlgBox
 			return m_nameTxtBox;
 		
 		return m_relativePathTxtBox;
-	}
-	
-	/**
-	 * 
-	 */
-	private Boolean getFullSyncDirOnly()
-	{
-		if ( m_useNFServerSyncOptionRB.getValue() == true )
-			return null;
-		
-		return m_fullSyncDirOnlyCB.getValue();
 	}
 	
 	/**
@@ -1024,14 +957,12 @@ public class ModifyNetFolderDlg extends DlgBox
 		
 		netFolder = new NetFolder();
 		netFolder.setName( getName() );
-		netFolder.setDisplayName( getName() );
 		netFolder.setRelativePath( getRelativePath() );
 		netFolder.setNetFolderRootName( getNetFolderRootName() );
 		netFolder.setIndexContent( getIndexContent() );
-		netFolder.setSyncScheduleConfig( getSyncScheduleConfig() );
+		netFolder.setSyncSchedule( getSyncSchedule() );
 		netFolder.setDataSyncSettings( getDataSyncSettings() );
 		netFolder.setJitsConfig( getJitsSettings() );
-		netFolder.setFullSyncDirOnly( getFullSyncDirOnly() );
 		
 		if ( m_netFolder != null )
 		{
@@ -1114,20 +1045,9 @@ public class ModifyNetFolderDlg extends DlgBox
 	/**
 	 * Return the sync schedule
 	 */
-	private GwtNetFolderSyncScheduleConfig getSyncScheduleConfig()
+	private GwtSchedule getSyncSchedule()
 	{
-		GwtNetFolderSyncScheduleConfig config;
-		
-		config = new GwtNetFolderSyncScheduleConfig();
-
-		config.setSyncSchedule( m_scheduleWidget.getSchedule() );
-		
-		if ( m_useNFServerScheduleRB.getValue() == true )
-			config.setSyncScheduleOption( NetFolderSyncScheduleOption.USE_NET_FOLDER_SERVER_SCHEDULE );
-		else
-			config.setSyncScheduleOption( NetFolderSyncScheduleOption.USE_NET_FOLDER_SCHEDULE );
-		
-		return config;
+		return m_scheduleWidget.getSchedule( );
 	}
 	
 	/**
@@ -1222,30 +1142,15 @@ public class ModifyNetFolderDlg extends DlgBox
 		m_allowDesktopAppToSync.setValue( true );
 		m_allowMobileAppsToSync.setValue( true );
 		
-		m_useNFServerSyncOptionRB.setValue( true );
-		m_useNFSyncOptionRB.setValue( false );
-		m_fullSyncDirOnlyCB.setValue( false );
-		
 		if ( m_netFolder != null )
 		{
 			NetFolderDataSyncSettings settings;
-			Boolean dirOnly;
 			
 			settings = m_netFolder.getDataSyncSettings();
 			if ( settings != null )
 			{
 				m_allowDesktopAppToSync.setValue( settings.getAllowDesktopAppToSyncData() );
 				m_allowMobileAppsToSync.setValue( settings.getAllowMobileAppsToSyncData() );
-			}
-			
-			dirOnly = m_netFolder.getFullSyncDirOnly(); 
-			if ( dirOnly == null )
-				m_useNFServerSyncOptionRB.setValue( true );
-			else
-			{
-				m_useNFServerSyncOptionRB.setValue( false );
-				m_useNFSyncOptionRB.setValue( true );
-				m_fullSyncDirOnlyCB.setValue( dirOnly );
 			}
 		}
 	}
@@ -1329,28 +1234,10 @@ public class ModifyNetFolderDlg extends DlgBox
 	{
 		if ( m_scheduleWidget != null )
 		{
-			m_scheduleWidget.init( null );
-			m_useNFServerScheduleRB.setValue( false );
-			m_useNFScheduleRB.setValue( true );
-			
 			if ( m_netFolder != null )
-			{
-				GwtNetFolderSyncScheduleConfig config;
-				
-				config = m_netFolder.getSyncScheduleConfig();
-				if ( config != null )
-				{
-					m_scheduleWidget.init( config.getSyncSchedule() );
-					
-					m_useNFServerScheduleRB.setValue( false );
-					m_useNFScheduleRB.setValue( false );
-					
-					if ( config.getSyncScheduleOption() == NetFolderSyncScheduleOption.USE_NET_FOLDER_SERVER_SCHEDULE )
-						m_useNFServerScheduleRB.setValue( true );
-					else
-						m_useNFScheduleRB.setValue( true );
-				}
-			}
+				m_scheduleWidget.init( m_netFolder.getSyncSchedule() );
+			else
+				m_scheduleWidget.init( null );
 		}
 		else
 		{
@@ -1585,7 +1472,10 @@ public class ModifyNetFolderDlg extends DlgBox
         // Get the key the user pressed
         keyCode = event.getNativeEvent().getKeyCode();
         
-        if ( GwtClientHelper.isKeyValidForNumericField( event.getCharCode(), keyCode ) == false )
+        if ( (!Character.isDigit(event.getCharCode())) && (keyCode != KeyCodes.KEY_TAB) && (keyCode != KeyCodes.KEY_BACKSPACE)
+            && (keyCode != KeyCodes.KEY_DELETE) && (keyCode != KeyCodes.KEY_ENTER) && (keyCode != KeyCodes.KEY_HOME)
+            && (keyCode != KeyCodes.KEY_END) && (keyCode != KeyCodes.KEY_LEFT) && (keyCode != KeyCodes.KEY_UP)
+            && (keyCode != KeyCodes.KEY_RIGHT) && (keyCode != KeyCodes.KEY_DOWN))
         {
         	TextBox txtBox;
         	Object source;
@@ -1727,15 +1617,21 @@ public class ModifyNetFolderDlg extends DlgBox
 	}
 
 	/**
-	 * Executes code through the GWT.runAsync() method to ensure that all of the
-	 * executing code is in this split point.
+	 * Loads the ModifyNetFolderDlg split point and returns an instance
+	 * of it via the callback.
+	 * 
 	 */
-	public static void runAsyncCmd( final RunAsyncCmd cmd, final ModifyNetFolderDlgClient mnfDlgClient )
+	public static void createAsync(
+							final boolean autoHide,
+							final boolean modal,
+							final int left,
+							final int top,
+							final ModifyNetFolderDlgClient mnfDlgClient )
 	{
 		GWT.runAsync( ModifyNetFolderDlg.class, new RunAsyncCallback()
 		{
 			@Override
-			public void onFailure( Throwable reason )
+			public void onFailure(Throwable reason)
 			{
 				Window.alert( GwtTeaming.getMessages().codeSplitFailure_ModifyNetFolderDlg() );
 				if ( mnfDlgClient != null )
@@ -1747,51 +1643,15 @@ public class ModifyNetFolderDlg extends DlgBox
 			@Override
 			public void onSuccess()
 			{
-				switch ( cmd.getCmdType() )
-				{
-				case CREATE:
-				{
-					ModifyNetFolderDlg mnfDlg;
-					RunAsyncCreateDlgParams params;
-					
-					params = (RunAsyncCreateDlgParams) cmd.getParams();
-					mnfDlg = new ModifyNetFolderDlg(
-												params.getAutoHide(),
-												params.getModal(),
-												params.getLeft(),
-												params.getTop() );
-					
-					if ( mnfDlgClient != null )
-						mnfDlgClient.onSuccess( mnfDlg );
-					
-					break;
-				}
-					
-				case INIT_AND_SHOW:
-				{
-					ModifyNetFolderDlgInitAndShowParams params;
-					ModifyNetFolderDlg dlg;
-					
-					params = (ModifyNetFolderDlgInitAndShowParams) cmd.getParams();
-					dlg = params.getUIObj();
-
-					dlg.init( params.getNetFolder() );
-					if ( params.getShowRelativeTo() != null )
-						dlg.showRelativeTo( params.getShowRelativeTo() );
-					else
-					{
-						dlg.setPopupPosition( params.getLeft(), params.getTop() );
-						dlg.show();
-					}
-
-					break;
-				}
-					
-				case UNKNOWN:
-				default:
-					break;
-				}
+				ModifyNetFolderDlg mnfDlg;
+				
+				mnfDlg = new ModifyNetFolderDlg(
+											autoHide,
+											modal,
+											left,
+											top );
+				mnfDlgClient.onSuccess( mnfDlg );
 			}
-		} );
+		});
 	}
 }

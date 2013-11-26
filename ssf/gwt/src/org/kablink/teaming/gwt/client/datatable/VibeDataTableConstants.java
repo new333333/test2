@@ -32,8 +32,6 @@
  */
 package org.kablink.teaming.gwt.client.datatable;
 
-import com.google.gwt.dom.client.BrowserEvents;
-
 /**
  * Constants used by the various Vibe data table implementations (i.e.,
  * VibeDataGrid's, VibeCellTable's, ...
@@ -43,14 +41,10 @@ import com.google.gwt.dom.client.BrowserEvents;
 public class VibeDataTableConstants {
 	// The following are used as event names that are captured by the
 	// various cell handlers. 
-	public final static String CELL_EVENT_CLICK		= BrowserEvents.CLICK;
-	public final static String CELL_EVENT_DRAGENTER	= BrowserEvents.DRAGENTER;
-	public final static String CELL_EVENT_DRAGLEAVE	= BrowserEvents.DRAGLEAVE;
-	public final static String CELL_EVENT_DRAGOVER	= BrowserEvents.DRAGOVER;
-	public final static String CELL_EVENT_DROP		= BrowserEvents.DROP;
-	public final static String CELL_EVENT_KEYDOWN	= BrowserEvents.KEYDOWN;
-	public final static String CELL_EVENT_MOUSEOUT	= BrowserEvents.MOUSEOUT;
-	public final static String CELL_EVENT_MOUSEOVER	= BrowserEvents.MOUSEOVER;
+	public final static String CELL_EVENT_CLICK		= "click";
+	public final static String CELL_EVENT_KEYDOWN	= "keydown";
+	public final static String CELL_EVENT_MOUSEOUT	= "mouseout";
+	public final static String CELL_EVENT_MOUSEOVER	= "mouseover";
 	
 	// The following are used to name widgets stored in various cells.
 	public final static String CELL_WIDGET_ATTRIBUTE					= "n-cellWidget";
@@ -67,16 +61,9 @@ public class VibeDataTableConstants {
 	public final static String CELL_WIDGET_ENTRY_UNSEEN_IMAGE			= "entryUnseenImg";
 	public final static String CELL_WIDGET_ENTRY_VIEW_ANCHOR			= "entryViewAnchor";
 	public final static String CELL_WIDGET_ENTRY_VIEW_LABEL				= "entryViewLabel";
-	public final static String CELL_WIDGET_GROUP_ID						= "n-groupId";
 	public final static String CELL_WIDGET_INDEX						= "n-cellWidgetIndex";
 	public final static String CELL_WIDGET_GUEST_AVATAR					= "guestAvatar";
-	public final static String CELL_WIDGET_MOBILE_DEVICES_PANEL			= "mobileDevicesPanel";
-	public final static String CELL_WIDGET_MOBILE_WIPE_SCHEDULED		= "mobileWipeScheduled";
 	public final static String CELL_WIDGET_PRESENCE						= "presenceControl";
 	public final static String CELL_WIDGET_PRESENCE_LABEL				= "presenceLabel";
 	public final static String CELL_WIDGET_TASK_FOLDER					= "taskFolder";
-	
-	// Width, in pixels for the action menu shown in conjunction with a
-	// title column.
-	public final static int ACTION_MENU_WIDTH_PX	= 30;
 }

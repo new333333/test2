@@ -1,15 +1,27 @@
-//>>built
-define("dojox/sketch/Annotation",["dojo/_base/kernel","dojo/_base/lang","dojo/_base/declare","dojo/_base/json","./Anchor","./_Plugin"],function(_1){
-_1.declare("dojox.sketch.AnnotationTool",dojox.sketch._Plugin,{onMouseDown:function(e){
+/*
+	Copyright (c) 2004-2009, The Dojo Foundation All Rights Reserved.
+	Available via Academic Free License >= 2.1 OR the modified BSD license.
+	see: http://dojotoolkit.org/license for details
+*/
+
+
+if(!dojo._hasResource["dojox.sketch.Annotation"]){
+dojo._hasResource["dojox.sketch.Annotation"]=true;
+dojo.provide("dojox.sketch.Annotation");
+dojo.require("dojox.sketch.Anchor");
+dojo.require("dojox.sketch._Plugin");
+(function(){
+var ta=dojox.sketch;
+dojo.declare("dojox.sketch.AnnotationTool",ta._Plugin,{onMouseDown:function(e){
 this._omd=true;
-},onMouseMove:function(e,_2){
+},onMouseMove:function(e,_1){
 if(!this._omd){
 return;
 }
 if(this._cshape){
-this._cshape.setShape(_2);
+this._cshape.setShape(_1);
 }else{
-this._cshape=this.figure.surface.createRect(_2).setStroke({color:"#999",width:1,style:"ShortDot"}).setFill([255,255,255,0.7]);
+this._cshape=this.figure.surface.createRect(_1).setStroke({color:"#999",width:1,style:"ShortDot"}).setFill([255,255,255,0.7]);
 this._cshape.getEventSource().setAttribute("shape-rendering","crispEdges");
 }
 },onMouseUp:function(e){
@@ -23,30 +35,30 @@ f.surface.remove(this._cshape);
 delete this._cshape;
 }
 if(!(f._startPoint.x==e.pageX&&f._startPoint.y==e.pageY)){
-var _3=10;
-if(Math.max(_3,Math.abs(f._absEnd.x-f._start.x),Math.abs(f._absEnd.y-f._start.y))>_3){
+var _2=10;
+if(Math.max(_2,Math.abs(f._absEnd.x-f._start.x),Math.abs(f._absEnd.y-f._start.y))>_2){
 this._create(f._start,f._end);
 }
 }
-},_create:function(_4,_5){
+},_create:function(_3,_4){
 var f=this.figure;
-var _6=f.nextKey();
-var a=new (this.annotation)(f,_6);
-a.transform={dx:f._calCol(_4.x/f.zoomFactor),dy:f._calCol(_4.y/f.zoomFactor)};
-a.end={x:f._calCol(_5.x/f.zoomFactor),y:f._calCol(_5.y/f.zoomFactor)};
+var _5=f.nextKey();
+var a=new (this.annotation)(f,_5);
+a.transform={dx:f._calCol(_3.x/f.zoomFactor),dy:f._calCol(_3.y/f.zoomFactor)};
+a.end={x:f._calCol(_4.x/f.zoomFactor),y:f._calCol(_4.y/f.zoomFactor)};
 if(a.control){
-a.control={x:f._calCol((_5.x/2)/f.zoomFactor),y:f._calCol((_5.y/2)/f.zoomFactor)};
+a.control={x:f._calCol((_4.x/2)/f.zoomFactor),y:f._calCol((_4.y/2)/f.zoomFactor)};
 }
 f.onBeforeCreateShape(a);
 a.initialize();
 f.select(a);
 f.onCreateShape(a);
-f.history.add(dojox.sketch.CommandTypes.Create,a);
+f.history.add(ta.CommandTypes.Create,a);
 }});
-dojox.sketch.Annotation=function(_7,id){
+ta.Annotation=function(_6,id){
 this.id=this._key=id;
-this.figure=_7;
-this.mode=dojox.sketch.Annotation.Modes.View;
+this.figure=_6;
+this.mode=ta.Annotation.Modes.View;
 this.shape=null;
 this.boundingBox=null;
 this.hasAnchors=true;
@@ -56,40 +68,40 @@ if(this.figure){
 this.figure.add(this);
 }
 };
-var p=dojox.sketch.Annotation.prototype;
-p.constructor=dojox.sketch.Annotation;
+var p=ta.Annotation.prototype;
+p.constructor=ta.Annotation;
 p.type=function(){
 return "";
 };
 p.getType=function(){
-return dojox.sketch.Annotation;
+return ta.Annotation;
 };
-p.onRemove=function(_8){
-this.figure.history.add(dojox.sketch.CommandTypes.Delete,this,this.serialize());
+p.onRemove=function(_7){
+this.figure.history.add(ta.CommandTypes.Delete,this,this.serialize());
 };
-p.property=function(_9,_a){
+p.property=function(_8,_9){
 var r;
-_9=_9.toLowerCase();
-if(this._properties[_9]!==undefined){
-r=this._properties[_9];
+_8=_8.toLowerCase();
+if(this._properties[_8]!==undefined){
+r=this._properties[_8];
 }
 if(arguments.length>1){
-this._properties[_9]=_a;
-if(r!=_a){
-this.onPropertyChange(_9,r);
+this._properties[_8]=_9;
+if(r!=_9){
+this.onPropertyChange(_8,r);
 }
 }
 return r;
 };
-p.onPropertyChange=function(_b,_c){
+p.onPropertyChange=function(_a,_b){
 };
 p.onCreate=function(){
-this.figure.history.add(dojox.sketch.CommandTypes.Create,this);
+this.figure.history.add(ta.CommandTypes.Create,this);
 };
 p.onDblClick=function(e){
 var l=prompt("Set new text:",this.property("label"));
 if(l!==false){
-this.beginEdit(dojox.sketch.CommandTypes.Modify);
+this.beginEdit(ta.CommandTypes.Modify);
 this.property("label",l);
 this.draw();
 this.endEdit();
@@ -101,15 +113,15 @@ p.destroy=function(){
 };
 p.draw=function(){
 };
-p.apply=function(_d){
+p.apply=function(_c){
 };
 p.serialize=function(){
 };
 p.getBBox=function(){
 };
-p.beginEdit=function(_e){
+p.beginEdit=function(_d){
 if(!this._type){
-this._type=_e||dojox.sketch.CommandTypes.Move;
+this._type=_d||ta.CommandTypes.Move;
 this._prevState=this.serialize();
 }
 };
@@ -149,11 +161,11 @@ this.transform.dx+=pt.dx;
 this.transform.dy+=pt.dy;
 this.draw();
 };
-p.getTextBox=function(_f){
+p.getTextBox=function(_e){
 var fp=this.property("font");
 var f={fontFamily:fp.family,fontSize:fp.size,fontWeight:fp.weight};
-if(_f){
-f.fontSize=Math.floor(f.fontSize/_f);
+if(_e){
+f.fontSize=Math.floor(f.fontSize/_e);
 }
 return dojox.gfx._base._getTextBox(this.property("label"),f);
 };
@@ -162,11 +174,11 @@ if(this.mode==m){
 return;
 }
 this.mode=m;
-var _10="disable";
-if(m==dojox.sketch.Annotation.Modes.Edit){
-_10="enable";
+var _f="disable";
+if(m==ta.Annotation.Modes.Edit){
+_f="enable";
 }
-if(_10=="enable"){
+if(_f=="enable"){
 this.drawBBox();
 this.figure._add(this);
 }else{
@@ -178,13 +190,13 @@ this.boundingBox=null;
 }
 }
 for(var p in this.anchors){
-this.anchors[p][_10]();
+this.anchors[p][_f]();
 }
 };
 p.zoom=function(pct){
 pct=pct||this.figure.zoomFactor;
 if(this.labelShape){
-var f=_1.clone(this.property("font"));
+var f=dojo.clone(this.property("font"));
 f.size=Math.ceil(f.size/pct)+"px";
 this.labelShape.setFont(f);
 }
@@ -195,23 +207,23 @@ if(dojox.gfx.renderer=="vml"){
 pct=1;
 }
 if(this.pathShape){
-var s=_1.clone(this.property("stroke"));
+var s=dojo.clone(this.property("stroke"));
 s.width=pct>1?s.width:Math.ceil(s.width/pct)+"px";
 this.pathShape.setStroke(s);
 }
 };
 p.writeCommonAttrs=function(){
-return "id=\""+this.id+"\" dojoxsketch:type=\""+this.type()+"\""+" transform=\"translate("+this.transform.dx+","+this.transform.dy+")\""+(this.data?(" ><![CDATA[data:"+_1.toJson(this.data)+"]]"):"");
+return "id=\""+this.id+"\" dojoxsketch:type=\""+this.type()+"\""+" transform=\"translate("+this.transform.dx+","+this.transform.dy+")\""+(this.data?(" ><![CDATA[data:"+dojo.toJson(this.data)+"]]"):"");
 };
 p.readCommonAttrs=function(obj){
 var i=0,cs=obj.childNodes,c;
 while((c=cs[i++])){
 if(c.nodeType==4){
 if(c.nodeValue.substr(0,11)=="properties:"){
-this._properties=_1.fromJson(c.nodeValue.substr(11));
+this._properties=dojo.fromJson(c.nodeValue.substr(11));
 }else{
 if(c.nodeValue.substr(0,5)=="data:"){
-this.data=_1.fromJson(c.nodeValue.substr(5));
+this.data=dojo.fromJson(c.nodeValue.substr(5));
 }else{
 console.error("unknown CDATA node in node ",obj);
 }
@@ -225,13 +237,13 @@ this.transform.dx=parseFloat(pt[0],10);
 this.transform.dy=parseFloat(pt[1],10);
 }
 };
-dojox.sketch.Annotation.Modes={View:0,Edit:1};
-dojox.sketch.Annotation.register=function(_11,_12){
-var cls=dojox.sketch[_11+"Annotation"];
-dojox.sketch.registerTool(_11,function(p){
-_1.mixin(p,{shape:_11,annotation:cls});
-return new (_12||dojox.sketch.AnnotationTool)(p);
+ta.Annotation.Modes={View:0,Edit:1};
+ta.Annotation.register=function(_10,_11){
+var cls=ta[_10+"Annotation"];
+ta.registerTool(_10,function(p){
+dojo.mixin(p,{shape:_10,annotation:cls});
+return new (_11||ta.AnnotationTool)(p);
 });
 };
-return dojox.sketch.Annotation;
-});
+})();
+}

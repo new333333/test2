@@ -38,7 +38,6 @@ import org.kablink.teaming.UncheckedIOException;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.fi.connection.ResourceDriverManager;
-import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.repository.archive.ArchiveStore;
 import org.kablink.teaming.repository.fi.FIRepositorySessionFactoryAdapter;
 import org.kablink.teaming.security.function.WorkAreaOperation;
@@ -46,7 +45,6 @@ import org.kablink.teaming.util.SpringContextUtil;
 
 
 public class RepositorySessionFactoryUtil {
-	private static AdminModule adminModule = (AdminModule) SpringContextUtil.getBean("adminModule");
 
 	public static RepositorySessionFactory getRepositorySessionFactory
 		(String repositoryName) throws RepositoryServiceException {
@@ -78,9 +76,10 @@ public class RepositorySessionFactoryUtil {
 	}
 	
 	public static ArchiveStore getArchiveStore(String repositoryName) {
-		if (ObjectKeys.FI_ADAPTER.equals(repositoryName) || !adminModule.isFileArchivingEnabled()) {
+		if(ObjectKeys.FI_ADAPTER.equals(repositoryName)) {
 			return null;
-		} else {
+		}
+		else {
 			return getRepositorySessionFactory(repositoryName).getArchiveStore();
 		}
 	}

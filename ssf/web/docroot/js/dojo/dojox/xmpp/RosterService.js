@@ -1,66 +1,73 @@
-//>>built
-define("dojox/xmpp/RosterService",["dijit","dojo","dojox"],function(_1,_2,_3){
-_2.provide("dojox.xmpp.RosterService");
-_3.xmpp.roster={ADDED:101,CHANGED:102,REMOVED:103};
-_2.declare("dojox.xmpp.RosterService",null,{constructor:function(_4){
-this.session=_4;
-},addRosterItem:function(_5,_6,_7){
-if(!_5){
+/*
+	Copyright (c) 2004-2009, The Dojo Foundation All Rights Reserved.
+	Available via Academic Free License >= 2.1 OR the modified BSD license.
+	see: http://dojotoolkit.org/license for details
+*/
+
+
+if(!dojo._hasResource["dojox.xmpp.RosterService"]){
+dojo._hasResource["dojox.xmpp.RosterService"]=true;
+dojo.provide("dojox.xmpp.RosterService");
+dojox.xmpp.roster={ADDED:101,CHANGED:102,REMOVED:103};
+dojo.declare("dojox.xmpp.RosterService",null,{constructor:function(_1){
+this.session=_1;
+},addRosterItem:function(_2,_3,_4){
+if(!_2){
 throw new Error("Roster::addRosterItem() - User ID is null");
 }
-var _8=this.session.getNextIqId();
-var _9={id:_8,from:this.session.jid+"/"+this.session.resource,type:"set"};
-var _a=new _3.string.Builder(_3.xmpp.util.createElement("iq",_9,false));
-_a.append(_3.xmpp.util.createElement("query",{xmlns:"jabber:iq:roster"},false));
-_5=_3.xmpp.util.encodeJid(_5);
-if(_5.indexOf("@")==-1){
-_5=_5+"@"+this.session.domain;
+var _5=this.session.getNextIqId();
+var _6={id:_5,from:this.session.jid+"/"+this.session.resource,type:"set"};
+var _7=new dojox.string.Builder(dojox.xmpp.util.createElement("iq",_6,false));
+_7.append(dojox.xmpp.util.createElement("query",{xmlns:"jabber:iq:roster"},false));
+_2=dojox.xmpp.util.encodeJid(_2);
+if(_2.indexOf("@")==-1){
+_2=_2+"@"+this.session.domain;
 }
-_a.append(_3.xmpp.util.createElement("item",{jid:_5,name:_3.xmpp.util.xmlEncode(_6)},false));
-if(_7){
-for(var i=0;i<_7.length;i++){
-_a.append("<group>");
-_a.append(_7[i]);
-_a.append("</group>");
+_7.append(dojox.xmpp.util.createElement("item",{jid:_2,name:dojox.xmpp.util.xmlEncode(_3)},false));
+if(_4){
+for(var i=0;i<_4.length;i++){
+_7.append("<group>");
+_7.append(_4[i]);
+_7.append("</group>");
 }
 }
-_a.append("</item></query></iq>");
-var _b=this.session.dispatchPacket(_a.toString(),"iq",_9.id);
-_b.addCallback(this,"verifyRoster");
-return _b;
-},updateRosterItem:function(_c,_d,_e){
-if(_c.indexOf("@")==-1){
-_c+=_c+"@"+this.session.domain;
+_7.append("</item></query></iq>");
+var _8=this.session.dispatchPacket(_7.toString(),"iq",_6.id);
+_8.addCallback(this,"verifyRoster");
+return _8;
+},updateRosterItem:function(_9,_a,_b){
+if(_9.indexOf("@")==-1){
+_9+=_9+"@"+this.session.domain;
 }
-var _f={id:this.session.getNextIqId(),from:this.session.jid+"/"+this.session.resource,type:"set"};
-var _10=new _3.string.Builder(_3.xmpp.util.createElement("iq",_f,false));
-_10.append(_3.xmpp.util.createElement("query",{xmlns:"jabber:iq:roster"},false));
-var i=this.session.getRosterIndex(_c);
+var _c={id:this.session.getNextIqId(),from:this.session.jid+"/"+this.session.resource,type:"set"};
+var _d=new dojox.string.Builder(dojox.xmpp.util.createElement("iq",_c,false));
+_d.append(dojox.xmpp.util.createElement("query",{xmlns:"jabber:iq:roster"},false));
+var i=this.session.getRosterIndex(_9);
 if(i==-1){
 return;
 }
-var _11={jid:_c};
-if(_d){
-_11.name=_d;
+var _e={jid:_9};
+if(_a){
+_e.name=_a;
 }else{
 if(this.session.roster[i].name){
-_11.name=this.session.roster[i].name;
+_e.name=this.session.roster[i].name;
 }
 }
-if(_11.name){
-_11.name=_3.xmpp.util.xmlEncode(_11.name);
+if(_e.name){
+_e.name=dojox.xmpp.util.xmlEncode(_e.name);
 }
-_10.append(_3.xmpp.util.createElement("item",_11,false));
-var _12=_e?_e:this.session.roster[i].groups;
-if(_12){
-for(var x=0;x<_12.length;x++){
-_10.append("<group>");
-_10.append(_12[x]);
-_10.append("</group>");
+_d.append(dojox.xmpp.util.createElement("item",_e,false));
+var _f=_b?_b:this.session.roster[i].groups;
+if(_f){
+for(var x=0;x<_f.length;x++){
+_d.append("<group>");
+_d.append(_f[x]);
+_d.append("</group>");
 }
 }
-_10.append("</item></query></iq>");
-var def=this.session.dispatchPacket(_10.toString(),"iq",_f.id);
+_d.append("</item></query></iq>");
+var def=this.session.dispatchPacket(_d.toString(),"iq",_c.id);
 def.addCallback(this,"verifyRoster");
 return def;
 },verifyRoster:function(res){
@@ -70,134 +77,134 @@ var err=this.session.processXmppError(res);
 this.onAddRosterItemFailed(err);
 }
 return res;
-},addRosterItemToGroup:function(jid,_13){
+},addRosterItemToGroup:function(jid,_10){
 if(!jid){
 throw new Error("Roster::addRosterItemToGroup() JID is null or undefined");
 }
-if(!_13){
+if(!_10){
 throw new Error("Roster::addRosterItemToGroup() group is null or undefined");
 }
-var _14=this.session.getRosterIndex(jid);
-if(_14==-1){
+var _11=this.session.getRosterIndex(jid);
+if(_11==-1){
 return;
 }
-var _15=this.session.roster[_14];
-var _16=[];
-var _17=false;
-for(var i=0;((_15<_15.groups.length)&&(!_17));i++){
-if(_15.groups[i]!=_13){
+var _12=this.session.roster[_11];
+var _13=[];
+var _14=false;
+for(var i=0;((_12<_12.groups.length)&&(!_14));i++){
+if(_12.groups[i]!=_10){
 continue;
 }
-_17=true;
+_14=true;
 }
-if(!_17){
-return this.updateRosterItem(jid,_15.name,_15.groups.concat(_13),_14);
+if(!_14){
+return this.updateRosterItem(jid,_12.name,_12.groups.concat(_10),_11);
 }
-return _3.xmpp.xmpp.INVALID_ID;
-},removeRosterGroup:function(_18){
-var _19=this.session.roster;
-for(var i=0;i<_19.length;i++){
-var _1a=_19[i];
-if(_1a.groups.length>0){
-for(var j=0;j<_1a.groups.length;j++){
-if(_1a.groups[j]==_18){
-_1a.groups.splice(j,1);
-this.updateRosterItem(_1a.jid,_1a.name,_1a.groups);
-}
-}
-}
-}
-},renameRosterGroup:function(_1b,_1c){
-var _1d=this.session.roster;
-for(var i=0;i<_1d.length;i++){
-var _1e=_1d[i];
-if(_1e.groups.length>0){
-for(var j=0;j<_1e.groups.length;j++){
-if(_1e.groups[j]==_1b){
-_1e.groups[j]=_1c;
-this.updateRosterItem(_1e.jid,_1e.name,_1e.groups);
+return dojox.xmpp.xmpp.INVALID_ID;
+},removeRosterGroup:function(_15){
+var _16=this.session.roster;
+for(var i=0;i<_16.length;i++){
+var _17=_16[i];
+if(_17.groups.length>0){
+for(var j=0;j<_17.groups.length;j++){
+if(_17.groups[j]==_15){
+_17.groups.splice(j,1);
+this.updateRosterItem(_17.jid,_17.name,_17.groups);
 }
 }
 }
 }
-},removeRosterItemFromGroup:function(jid,_1f){
+},renameRosterGroup:function(_18,_19){
+var _1a=this.session.roster;
+for(var i=0;i<_1a.length;i++){
+var _1b=_1a[i];
+if(_1b.groups.length>0){
+for(var j=0;j<_1b.groups.length;j++){
+if(_1b.groups[j]==_18){
+_1b.groups[j]=_19;
+this.updateRosterItem(_1b.jid,_1b.name,_1b.groups);
+}
+}
+}
+}
+},removeRosterItemFromGroup:function(jid,_1c){
 if(!jid){
 throw new Error("Roster::addRosterItemToGroup() JID is null or undefined");
 }
-if(!_1f){
+if(!_1c){
 throw new Error("Roster::addRosterItemToGroup() group is null or undefined");
 }
-var _20=this.session.getRosterIndex(jid);
-if(_20==-1){
+var _1d=this.session.getRosterIndex(jid);
+if(_1d==-1){
 return;
 }
-var _21=this.session.roster[_20];
-var _22=false;
-for(var i=0;((i<_21.groups.length)&&(!_22));i++){
-if(_21.groups[i]!=_1f){
+var _1e=this.session.roster[_1d];
+var _1f=false;
+for(var i=0;((i<_1e.groups.length)&&(!_1f));i++){
+if(_1e.groups[i]!=_1c){
 continue;
 }
-_22=true;
-_20=i;
+_1f=true;
+_1d=i;
 }
-if(_22==true){
-_21.groups.splice(_20,1);
-return this.updateRosterItem(jid,_21.name,_21.groups);
+if(_1f==true){
+_1e.groups.splice(_1d,1);
+return this.updateRosterItem(jid,_1e.name,_1e.groups);
 }
-return _3.xmpp.xmpp.INVALID_ID;
-},rosterItemRenameGroup:function(jid,_23,_24){
+return dojox.xmpp.xmpp.INVALID_ID;
+},rosterItemRenameGroup:function(jid,_20,_21){
 if(!jid){
 throw new Error("Roster::rosterItemRenameGroup() JID is null or undefined");
 }
-if(!_24){
+if(!_21){
 throw new Error("Roster::rosterItemRenameGroup() group is null or undefined");
 }
-var _25=this.session.getRosterIndex(jid);
-if(_25==-1){
+var _22=this.session.getRosterIndex(jid);
+if(_22==-1){
 return;
 }
-var _26=this.session.roster[_25];
-var _27=false;
-for(var i=0;((i<_26.groups.length)&&(!_27));i++){
-if(_26.groups[i]==_23){
-_26.groups[i]=_24;
-_27=true;
+var _23=this.session.roster[_22];
+var _24=false;
+for(var i=0;((i<_23.groups.length)&&(!_24));i++){
+if(_23.groups[i]==_20){
+_23.groups[i]=_21;
+_24=true;
 }
 }
-if(_27==true){
-return this.updateRosterItem(jid,_26.name,_26.groups);
+if(_24==true){
+return this.updateRosterItem(jid,_23.name,_23.groups);
 }
-return _3.xmpp.xmpp.INVALID_ID;
-},renameRosterItem:function(jid,_28){
+return dojox.xmpp.xmpp.INVALID_ID;
+},renameRosterItem:function(jid,_25){
 if(!jid){
 throw new Error("Roster::addRosterItemToGroup() JID is null or undefined");
 }
-if(!_28){
+if(!_25){
 throw new Error("Roster::addRosterItemToGroup() New Name is null or undefined");
 }
-var _29=this.session.getRosterIndex(jid);
-if(_29==-1){
+var _26=this.session.getRosterIndex(jid);
+if(_26==-1){
 return;
 }
-return this.updateRosterItem(jid,_28,this.session.roster.groups,_29);
+return this.updateRosterItem(jid,_25,this.session.roster.groups,_26);
 },removeRosterItem:function(jid){
 if(!jid){
 throw new Error("Roster::addRosterItemToGroup() JID is null or undefined");
 }
 var req={id:this.session.getNextIqId(),from:this.session.jid+"/"+this.session.resource,type:"set"};
-var _2a=new _3.string.Builder(_3.xmpp.util.createElement("iq",req,false));
-_2a.append(_3.xmpp.util.createElement("query",{xmlns:"jabber:iq:roster"},false));
+var _27=new dojox.string.Builder(dojox.xmpp.util.createElement("iq",req,false));
+_27.append(dojox.xmpp.util.createElement("query",{xmlns:"jabber:iq:roster"},false));
 if(jid.indexOf("@")==-1){
 jid+=jid+"@"+this.session.domain;
 }
-_2a.append(_3.xmpp.util.createElement("item",{jid:jid,subscription:"remove"},true));
-_2a.append("</query></iq>");
-var def=this.session.dispatchPacket(_2a.toString(),"iq",req.id);
+_27.append(dojox.xmpp.util.createElement("item",{jid:jid,subscription:"remove"},true));
+_27.append("</query></iq>");
+var def=this.session.dispatchPacket(_27.toString(),"iq",req.id);
 def.addCallback(this,"verifyRoster");
 return def;
 },getAvatar:function(jid){
-},publishAvatar:function(_2b,_2c){
+},publishAvatar:function(_28,_29){
 },onVerifyRoster:function(id){
 },onVerifyRosterFailed:function(err){
 }});
-});
+}

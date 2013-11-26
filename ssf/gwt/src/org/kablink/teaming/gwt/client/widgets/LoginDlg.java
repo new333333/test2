@@ -33,12 +33,7 @@
 package org.kablink.teaming.gwt.client.widgets;
 
 import java.util.ArrayList;
-import java.util.List;
 
-import org.kablink.teaming.gwt.client.event.DeleteSelectedEntitiesEvent;
-import org.kablink.teaming.gwt.client.event.EventHelper;
-import org.kablink.teaming.gwt.client.event.TeamingEvents;
-import org.kablink.teaming.gwt.client.event.WindowTitleSetEvent;
 import org.kablink.teaming.gwt.client.GwtBrandingData;
 import org.kablink.teaming.gwt.client.GwtLoginInfo;
 import org.kablink.teaming.gwt.client.GwtMainPage;
@@ -46,10 +41,8 @@ import org.kablink.teaming.gwt.client.GwtOpenIDAuthenticationProvider;
 import org.kablink.teaming.gwt.client.GwtSelfRegistrationInfo;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
-import org.kablink.teaming.gwt.client.RequestInfo;
 import org.kablink.teaming.gwt.client.RequestResetPwdRpcResponseData;
 import org.kablink.teaming.gwt.client.SendForgottenPwdEmailRpcResponseData;
-import org.kablink.teaming.gwt.client.datatable.ApplyColumnWidths;
 import org.kablink.teaming.gwt.client.rpc.shared.BooleanRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.CompleteExternalUserSelfRegistrationCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetLoginInfoCmd;
@@ -104,16 +97,14 @@ import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.client.ui.FlexTable.FlexCellFormatter;
 import com.google.gwt.user.client.ui.FormPanel.SubmitEvent;
-import com.google.web.bindery.event.shared.HandlerRegistration;
 
 /**
  * ?
- * 
+ *
  * @author jwootton@novell.com
  */
 @SuppressWarnings("unused")
 public class LoginDlg extends DlgBox
-	implements WindowTitleSetEvent.Handler
 {
 	private FlowPanel m_mainPanel = null;
 	private FormPanel m_formPanel = null;
@@ -153,9 +144,7 @@ public class LoginDlg extends DlgBox
 	private boolean m_useOpenIdAuth = false;
 	private boolean m_initialized = false;
 	private int m_numAttempts = 0;
-	private List<HandlerRegistration> m_registeredEventHandlers;	// Event handlers that are currently registered.
-	private String m_preLoginTitle;
-	
+
 	/**
 	 * 
 	 */
@@ -166,16 +155,7 @@ public class LoginDlg extends DlgBox
 		PromptForLogin,
 		PromptForPwdReset,
 		PwdResetVerified,
-		WebAccessRestricted,
 	}
-	
-	// The following defines the TeamingEvents that are handled by
-	// this class.  See EventHelper.registerEventHandlers() for how
-	// this array is used.
-	private final static TeamingEvents[] REGISTERED_EVENTS = new TeamingEvents[]
-	{
-		TeamingEvents.WINDOW_TITLE_SET,
-	};
 	
 	/**
 	 * 
@@ -397,7 +377,7 @@ public class LoginDlg extends DlgBox
 					m_formPanel.setAction( "/ssf/j_spring_openid_security_check" );		
 					m_formPanel.getElement().setAttribute( "name", "oidf" );
 				}
-
+				
 				// If we're redirecting the login to a readFile URL...
 				if ( m_redirectIsReadFile )
 				{
@@ -719,7 +699,7 @@ public class LoginDlg extends DlgBox
 	/**
 	 * Hide/show controls on the dialog based on the given login info
 	 */
-	private void danceDlg( GwtLoginInfo loginInfo, LoginStatus loginStatus )
+	private void danceDlg( GwtLoginInfo loginInfo, LoginStatus loginStatus  )
 	{
 		debugAlert( "in danceDlg" );
 		m_selfRegInfo = loginInfo.getSelfRegistrationInfo();
@@ -729,7 +709,6 @@ public class LoginDlg extends DlgBox
 		case AuthenticationFailed:
 		case PromptForLogin:
 		case PwdResetVerified:
-		case WebAccessRestricted:
 			// Hide or show the self registration controls.
 			updateSelfRegistrationControls( m_selfRegInfo );
 
@@ -1273,10 +1252,9 @@ public class LoginDlg extends DlgBox
 
 		switch ( loginStatus )
 		{
-		case WebAccessRestricted:
 		case AuthenticationFailed:
 			showRegularLoginUI();
-		    showLoginFailedMsg( loginStatus );
+		    showLoginFailedMsg();
 		    break;
 			
 		case RegistrationRequired:
@@ -1519,10 +1497,9 @@ public class LoginDlg extends DlgBox
 			Image providerImg;
 
 			// Yes
-
 			m_externalUserSelfRegOpenIdPanel = new FlowPanel();
 			m_externalUserSelfRegOpenIdPanel.setVisible( false );
-			
+
 			// Add the word "Or"
 			{
 				Label orLabel;
@@ -1566,10 +1543,10 @@ public class LoginDlg extends DlgBox
 					}
 				} );
 			}
-
+			
 			// Add some space
 			m_externalUserSelfRegOpenIdPanel.add( new FlowPanel() );
-			
+
 			table = new FlexTable();
 			m_externalUserSelfRegOpenIdPanel.add( table );
 			
@@ -1983,15 +1960,8 @@ public class LoginDlg extends DlgBox
 	/**
 	 * 
 	 */
-	private void showLoginFailedMsg( LoginStatus loginStatus )
+	private void showLoginFailedMsg()
 	{
-		String msg;
-		switch ( loginStatus )
-		{
-		case WebAccessRestricted:  msg = GwtTeaming.getMessages().loginDlgLoginWebAccessRestricted(); break;
-		default:                   msg = GwtTeaming.getMessages().loginDlgLoginFailed();              break;
-		}
-		m_loginFailedMsg.setText(    msg  );
 		m_loginFailedMsg.setVisible( true );
 	}// end hideLoginFailedMsg()
 	
@@ -2077,136 +2047,6 @@ public class LoginDlg extends DlgBox
 			m_forgottenPwdDlg.showRelativeTo( m_forgotPwdLink );
 		}
 	}
-	
-	/**
-	 * Handles WindowTitleSetEvent's received by this class.
-	 * 
-	 * Implements the WindowTitleSetEvent.Handler.onWindowTitleSet() method.
-	 * 
-	 * @param event
-	 */
-	@Override
-	public void onWindowTitleSet(WindowTitleSetEvent event) {
-		final String  productTitle  = GwtClientHelper.getRequestInfo().getProductName(); 
-		final String  eventTitle    = event.getWindowTitle();
-		final boolean hasEventTitle = GwtClientHelper.hasString( eventTitle );
-		if ( ( ! hasEventTitle ) || ( ! eventTitle.equals( productTitle ) ) )
-		{
-			m_preLoginTitle =
-				( hasEventTitle ?
-					eventTitle  :
-					GwtClientHelper.jsGetMainTitle() );
-			
-			setWindowTitleAsync( productTitle );
-		}
-	}
-	
-	/*
-	 * Registers any global event handlers that need to be registered.
-	 */
-	private void registerEvents()
-	{
-		// If we having allocated a list to track events we've
-		// registered yet...
-		if ( null == m_registeredEventHandlers )
-		{
-			// ...allocate one now.
-			m_registeredEventHandlers = new ArrayList<HandlerRegistration>();
-		}
-
-		// If the list of registered events is empty...
-		if ( m_registeredEventHandlers.isEmpty() )
-		{
-			// ...register the events.
-			EventHelper.registerEventHandlers(
-				GwtTeaming.getEventBus(),
-				REGISTERED_EVENTS,
-				this,
-				m_registeredEventHandlers );
-		}
-	}
-
-	/*
-	 * Unregisters any global event handlers that may be registered.
-	 */
-	private void unregisterEvents() {
-		// If we have a non-empty list of registered events...
-		if ( GwtClientHelper.hasItems( m_registeredEventHandlers ) )
-		{
-			// ...unregister them.  (Note that this will also empty the
-			// ...list.)
-			EventHelper.unregisterEventHandlers( m_registeredEventHandlers );
-		}
-	}
-
-	/*
-	 * Asynchronously sets the window title.
-	 */
-	private void setWindowTitleAsync( final String windowTitle )
-	{
-		GwtClientHelper.deferCommand( new ScheduledCommand()
-		{
-			@Override
-			public void execute()
-			{
-				setWindowTitleNow( windowTitle );
-			}
-		});
-	}
-	
-	/*
-	 * Synchronously sets the window title.
-	 */
-	private void setWindowTitleNow( final String windowTitle )
-	{
-		GwtClientHelper.jsSetMainTitle( windowTitle );
-	}
-	
-	/**
-	 * Called when the login dialog is attached.
-	 * 
-	 * Overrides the Widget.onAttach() method.
-	 */
-	@Override
-	public void onAttach()
-	{
-		// Let the widget attach and then register our event
-		// handlers...
-		super.onAttach();
-		registerEvents();
-		
-		// ...and set the window title to reflect the login
-		// ...dialog.
-		setWindowTitleAsync( GwtClientHelper.getRequestInfo().getProductName() );
-	}
-	
-	/**
-	 * Called when the login dialog is detached.
-	 * 
-	 * Overrides the Widget.onDetach() method.
-	 */
-	@Override
-	public void onDetach()
-	{
-		// Let the widget detach and then unregister our event
-		// handlers.
-		super.onDetach();
-		unregisterEvents();
-		
-		// ...and restore the window title to what it was before the
-		// ...login dialog ran.
-		if ( null != m_preLoginTitle )
-		{
-			setWindowTitleNow( m_preLoginTitle );
-			m_preLoginTitle = null;
-		}
-	}
-	
-	
-	/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
-	/* The following code is used to load the split point containing */
-	/* the login dialog and perform some operation on it.            */
-	/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 	
 	/**
 	 * Callback interface to interact with the dialog asynchronously

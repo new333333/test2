@@ -68,11 +68,9 @@ import org.kablink.teaming.license.LicenseManager;
 import org.kablink.teaming.module.authentication.AuthenticationModule;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.profile.ProfileModule;
-import org.kablink.teaming.module.shared.AccessUtils;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.security.AccessControlManager;
 import org.kablink.teaming.security.accesstoken.AccessToken;
-import org.kablink.teaming.security.function.Function;
 import org.kablink.teaming.security.function.FunctionManager;
 import org.kablink.teaming.security.function.OperationAccessControlException;
 import org.kablink.teaming.security.function.OperationAccessControlExceptionNoName;
@@ -300,15 +298,9 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
 			}
 		}
 		boolean isExternalAclControlledOperation = isExternalAclControlledOperation(workArea, workAreaOperation);
-		if ((!isExternalAclControlledOperation && 
-					(workArea.isFunctionMembershipInherited() || 
-					(workArea instanceof FolderEntry && !((FolderEntry)workArea).hasEntryAcl()))) || 
+		if ((!isExternalAclControlledOperation && workArea.isFunctionMembershipInherited()) || 
 				(isExternalAclControlledOperation && workArea.isExtFunctionMembershipInherited())) {
 			WorkArea parentWorkArea = workArea.getParentWorkArea();
-			if (workArea instanceof FolderEntry) {
-				//For folder entries, get the parent folder instead of the top entry
-				parentWorkArea = ((FolderEntry)workArea).getParentBinder();
-			}
 			if (parentWorkArea == null) {
 				throw new InternalException(
 						"Cannot inherit function membership when it has no parent");
@@ -398,26 +390,17 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
 			// Take container groups into consideration
 			List<Long> containerGroupsToLookup = getProfileDao().getMemberOfLdapContainerGroupIds(user.getId(), zoneId);
 			Set<Long> userAllMembersToLookup = null;
-			if (containerGroupsToLookup.isEmpty()) {
+			if(containerGroupsToLookup.isEmpty()) {
 				userAllMembersToLookup = userApplicationLevelMembersToLookup;
-			} else {	
+			}
+			else {	
 				userAllMembersToLookup = new HashSet<Long>(userApplicationLevelMembersToLookup);
 				userAllMembersToLookup.addAll(containerGroupsToLookup);
 			}
 			// Regular ACL checking must take container groups into consideration. 
 			// However, sharing-granted ACL checking must not because sharing can never take
 			// place against a container group.
-			if (workArea.isAclExternallyControlled() && 
-					workArea instanceof FolderEntry && 
-					((FolderEntry)workArea).noAclDredged()) {
-				//See if this is an operation controlled externally
-				if (isExternalAclControlledOperation) {
-					//This entry has no ACL set up, so it has to get it from the file system 
-					if (testRightGrantedByDredgedAcl(user, (FolderEntry)workArea, workAreaOperation)) {
-						return true;
-					}
-				}
-			} else if (checkWorkAreaFunctionMembership(user.getZoneId(),
+			if(checkWorkAreaFunctionMembership(user.getZoneId(),
 							workArea, workAreaOperation, userAllMembersToLookup)) {
 				if (checkRootFolderAccess(user, workAreaStart, workAreaOperation)) {
 					//OK, this is accessible by this user
@@ -427,9 +410,9 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
 					return testRightGrantedBySharing(user, workAreaStart, workArea, workAreaOperation, userApplicationLevelMembersToLookup);
 				}
 			}
-			
-			//It isn't available by normal ACLs, so check if shared
-			return testRightGrantedBySharing(user, workAreaStart, workArea, workAreaOperation, userApplicationLevelMembersToLookup);
+			else {
+				return testRightGrantedBySharing(user, workAreaStart, workArea, workAreaOperation, userApplicationLevelMembersToLookup);
+			}
 		}
 	}
 	
@@ -560,50 +543,9 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
 			return testRightGrantedBySharing(user, workAreaStart, topEntry, workAreaOperation, userMembers);
     	}
     	
-    	if (testRightGrantedBySharing(user, workArea, workAreaOperation, userMembers)) {
-    		return true;
-    	} else {
-    		//Is this the guest user? If so, we are done.
-    		if (ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
-    			return false;
-    		}
-    		if (WorkAreaOperation.ONLY_SEE_GROUP_MEMBERS.equals(workAreaOperation) || 
-    				WorkAreaOperation.OVERRIDE_ONLY_SEE_GROUP_MEMBERS.equals(workAreaOperation)) {
-    			//Don't try to check further on these rights. It will loop. These operations can't be shared.
-    			return false;
-    		}
-    		//The user doesn't have direct access, see if guest has access (if guest is allowed in at all)
-    		Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
-			AuthenticationConfig config = getAuthenticationModule().getAuthenticationConfigForZone(zoneId);
-			if (!config.isAllowAnonymousAccess()) {
-				//Guest access is not enabled, disallow access to everything
-				return false;
-			} else {
-				User guest = getProfileDao().getReservedUser(ObjectKeys.GUEST_USER_INTERNALID, zoneId);
-				return testOperation(guest, workArea, workAreaOperation);
-			}
-    	}
+    	return testRightGrantedBySharing(user, workArea, workAreaOperation, userMembers);
     }
     
-    private boolean testRightGrantedByDredgedAcl(User user, FolderEntry workArea, WorkAreaOperation workAreaOperation) {
-    	// This entry has to get its ACL role from the file system
-    	if (user.equals(RequestContextHolder.getRequestContext().getUser())) {
-    		//We can only do this for the current user
-	    	Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
-	    	Long roleId = AccessUtils.askExternalSystemForRoleId(workArea);
-	    	if (roleId != null) {
-		    	Function f = getFunctionManager().getFunction(zoneId, roleId);
-		    	for (WorkAreaOperation wao : (Set<WorkAreaOperation>)f.getOperations()) {
-		    		if (wao.equals(workAreaOperation)) {
-		    			//This function includes the desired operation.
-		    			return true;
-		    		}
-		    	}
-	    	}
-    	}
-    	return false;
-    }
-
     private boolean isExternalAclControlledOperation(WorkArea workArea, WorkAreaOperation workAreaOperation) {
 		boolean isExternalAclControlledOperation = false;
 		if (workArea.isAclExternallyControlled()) {

@@ -41,22 +41,31 @@ import javax.xml.bind.annotation.XmlRootElement;
  * Time: 4:29 PM
  */
 @XmlRootElement(name = "share_recipient")
-public class ShareRecipient extends Recipient {
+public class ShareRecipient extends LongIdLinkPair {
     public static String GROUP = "group";
     public static String TEAM = "team";
     public static String INTERNAL_USER = "user";
     public static String EXTERNAL_USER = "external_user";
     public static String PUBLIC = "public";
-    public static String PUBLIC_LINK = "public_link";
 
+    private String type;
     private String emailAddress;
 
     public ShareRecipient() {
     }
 
     public ShareRecipient(Long id, String type, String email) {
-        super(id, type);
+        super(id, null);
+        this.type = type;
         this.emailAddress = email;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 
     @XmlElement(name="email")

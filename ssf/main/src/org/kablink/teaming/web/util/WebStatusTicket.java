@@ -35,6 +35,7 @@ package org.kablink.teaming.web.util;
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletSession;
 
+import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.StatusTicket;
 
 
@@ -92,24 +93,24 @@ public class WebStatusTicket implements StatusTicket {
 		this.id = id;
 	}
 	
-	public synchronized void done() {
+	public void done() {
 		session.removeAttribute(id);
 		doneFlag = true;
 	}
 	
-	public synchronized boolean isDone() {
+	public boolean isDone() {
 		return doneFlag;
 	}
 
-	public synchronized String getId() {
+	public String getId() {
 		return id;
 	}
 
-	public synchronized void setStatus(String status) {
+	public void setStatus(String status) {
 		this.status = status;
 	}
 
-	public synchronized String getStatus() {
+	public String getStatus() {
 		return status;
 	}
 	

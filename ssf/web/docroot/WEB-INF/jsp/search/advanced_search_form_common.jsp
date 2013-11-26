@@ -80,14 +80,7 @@
 
 				<table>
 					<tr>
-						<th class="ss_nowrap ss_size_15px ss_bold" style="vertical-align: middle;">
-						  <c:if test="${filterDefinition }">
-						    <ssf:nlt tag="filter.searchText"/>
-						  </c:if>
-						  <c:if test="${!filterDefinition }">
-						    <ssf:nlt tag="searchForm.advanced.Title"/>
-						  </c:if>
-						</th>
+						<th class="ss_nowrap ss_size_15px ss_bold" style="vertical-align: middle;"><ssf:nlt tag="searchForm.advanced.Title"/></th>
 						<td class="ss_nowrap" colspan="2" width="100%">
 						  <input type="text" name="searchText" 
 						    id="searchText_adv" 
@@ -98,7 +91,6 @@
 						</td>
 					</tr>
 					
-					<c:if test="${!filterDefinition }">
 					<tr>
 						<td></td>
 						<td colspan="2">
@@ -106,7 +98,7 @@
 						  <table cellspacing="0" cellpadding="0" style="padding-bottom:16px;" width="100%">
 						    <tr>
 						      <td width="20">
-								<input type="radio" name="scope" value="all" 
+								<input type="radio" name="scope" value="all"
 								<c:if test="${ss_searchScope == 'all'}"> checked="checked" </c:if>
 								style="width:20px;">
 							  </td>
@@ -144,36 +136,24 @@
 								<ssf:nlt tag="search.scope.sharedWithMe"/>
 							  </td>
 							</tr>
-						    <tr>
-						      <td width="20">
-								<input type="radio" name="scope" value="sharedByMe" 
-								<c:if test="${ss_searchScope == 'sharedByMe'}"> checked="checked" </c:if>
-								style="width:20px;">
-							  </td>
-							  <td>
-								<ssf:nlt tag="search.scope.sharedByMe"/>
-							  </td>
-							</tr>
 						    <c:if test="${ss_searchContext == 'binder' || scope == 'current'}">
 						     <tr>
 						      <td width="20" valign="top">
-								<input type="radio" name="scope" value="current" id="search_scope_current"
+								<input type="radio" name="scope" value="current" 
 								  <c:if test="${ss_searchScope == 'current'}"> checked="checked" </c:if>
 								  style="width:20px;"
 								>
-								<input type="hidden" name="contextBinderId" id="contextBinderId" value="${ss_searchContextBinderId}" />
+								<input type="hidden" name="contextBinderId" value="${ss_searchContextBinderId}" />
 							  </td>
 							  <td>
-							    <c:if test="${!empty ss_searchContextBinder}">
-									<ssf:nlt tag="search.scope.current"/>&nbsp;
-									<a href="<ssf:url action="view_folder_listing" 
-										binderId="${ss_searchContextBinderId}" />"
-										title="${ss_searchContextBinder.pathName}"
-										onClick="ss_openUrlInWorkarea(this.href, '${ss_searchContextBinderId}', 'view_folder_listing');return false;"
-									>
-									  <span>${ss_searchContextBinder.title}</span>
-									</a>
-								</c:if>
+								<ssf:nlt tag="search.scope.current"/>&nbsp;
+								<a href="<ssf:url action="view_folder_listing" 
+									binderId="${ss_searchContextBinderId}" />"
+									title="${ss_searchContextBinder.pathName}"
+									onClick="ss_openUrlInWorkarea(this.href, '${ss_searchContextBinderId}', 'view_folder_listing');return false;"
+								>
+								  <span>${ss_searchContextBinder.title}</span>
+								</a>
 							  </td>
 							 </tr>
 							 <tr>
@@ -194,9 +174,7 @@
 						  </table>
 						</td>
 					</tr>
-					</c:if>
 
-					<c:if test="${!filterDefinition}">
 					<tr>
 						<td class="ss_nowrap" style="vertical-align: top; padding-top: 5px; text-align: right;" >
 							<c:if test="${!filterDefinition}"><ssf:nlt tag="searchForm.searchFolders"/>:</c:if>
@@ -228,6 +206,7 @@
 											/> <label for="search_selectedFolders"><ssf:nlt tag="searchForm.searchSelectedFolders"/></label>
 									</div>
 								
+									<div id="ss_foldersTree_${ssNamespace}" style="padding-left: 24px; padding-top: 6px; ">
 								<input type="hidden" name="search_dashboardFolders" id="search_dashboardFolders" value="${ssBinder.id}"/>
 								</c:if>
 								
@@ -260,20 +239,17 @@
 									</c:otherwise>
 								</c:choose>
 	
-								<div 
-									<c:if test="${activateDashboardFolder}">
-										id="ss_foldersTree_${ssNamespace}" style="padding-left: 24px; padding-top: 6px; "
-									</c:if>
-								>
-								    <ssf:tree 
+								<ssf:tree 
 									  treeName="t_searchForm_wsTree"
 									  treeDocument="${ssDomTree}"  
 									  rootOpen="false" 
 									  multiSelect="${folderIds}" 
 									  multiSelectPrefix="searchFolders"
-									  showIdRoutine="t_advSearchForm_wsTree_showId"/>
+									 showIdRoutine="t_advSearchForm_wsTree_showId"/>
 								
-								</div>
+								<c:if test="${activateDashboardFolder}">
+									</div>
+								</c:if>
 	
 								<div class="ss_additionals">
 								 	<input type="checkbox" name="search_subfolders" id="search_subfolders" value="true" style="width: 19px; margin: 0; padding: 0; " 
@@ -361,7 +337,6 @@
 							</table>		
 						</td>
 					</tr>
-					</c:if>
 					
 					<c:if test="${!filterDefinition}">
 						<tr>
@@ -430,9 +405,6 @@
 							<a href="javascript: ;" onClick="ss_addOption('entry');" class="ss_tinyButton" title="<ssf:nlt tag="searchForm.filterButton.addField"/>"><ssf:nlt tag="searchForm.filterButton.add"/></a>				
 						</div>
 					</div>				  
-					<c:if test="${filterDefinition }">
-					    <input type="hidden" id="search_scope_current_filter" name="search_scope_current_filter" value="current" />
-					</c:if>
 				  </td>
 				</tr>
 			  </ssf:ifNotFilr>

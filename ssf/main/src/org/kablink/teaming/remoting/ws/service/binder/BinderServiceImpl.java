@@ -96,7 +96,7 @@ import org.kablink.teaming.util.SimpleProfiler;
 import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.util.PermaLinkUtil;
 import org.kablink.teaming.web.util.TrashHelper;
-import org.kablink.teaming.web.util.TrashHelper.TrashEntity;
+import org.kablink.teaming.web.util.TrashHelper.TrashEntry;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
 import org.kablink.util.search.Criteria;
@@ -129,7 +129,6 @@ public class BinderServiceImpl extends BaseService implements BinderService, Bin
 		this.accessControlManager = accessControlManager;
 	}
 	
-	@Override
 	@SuppressWarnings("unchecked")
 	public long binder_addBinderWithXML(String accessToken, long parentId, String definitionId, String inputDataAsXML)
 	{
@@ -146,7 +145,6 @@ public class BinderServiceImpl extends BaseService implements BinderService, Bin
 			throw new RemotingException(e);
 		}
 	}
-	@Override
 	public org.kablink.teaming.remoting.ws.model.Subscription binder_getSubscription(String accessToken, long binderId) {
 		Binder binder = getBinderModule().getBinder(binderId);
 		Subscription sub = getBinderModule().getSubscription(binder);
@@ -154,7 +152,6 @@ public class BinderServiceImpl extends BaseService implements BinderService, Bin
 		return toSubscriptionModel(sub);
 		
 	}
-	@Override
 	@SuppressWarnings("unchecked")
 	public void binder_setSubscription(String accessToken, long binderId, org.kablink.teaming.remoting.ws.model.Subscription subscription) {
 		if (subscription == null || subscription.getStyles().length == 0) {
@@ -169,7 +166,6 @@ public class BinderServiceImpl extends BaseService implements BinderService, Bin
 		getBinderModule().setSubscription(binderId, subMap);
 	}
 	
-	@Override
 	@SuppressWarnings("unchecked")
 	public void binder_setDefinitions(String accessToken, long binderId, String[] definitionIds, String[] workflowAssociations) {
 		HashMap wfs = new HashMap();
@@ -179,7 +175,6 @@ public class BinderServiceImpl extends BaseService implements BinderService, Bin
 		}
 		getBinderModule().setDefinitions(binderId, Arrays.asList(definitionIds), wfs);
 	}
-	@Override
 	public String binder_getTeamMembersAsXML(String accessToken, long binderId)
 	{
 		Binder binder = getBinderModule().getBinder(new Long(binderId));
@@ -193,7 +188,6 @@ public class BinderServiceImpl extends BaseService implements BinderService, Bin
 		
 		return doc.getRootElement().asXML();
 	}
-	@Override
 	@SuppressWarnings("unchecked")
 	public void binder_setTeamMembers(String accessToken, long binderId, String []memberNames) {
 		Collection<Principal> principals = getProfileModule().getPrincipalsByName(Arrays.asList(memberNames));
@@ -204,7 +198,6 @@ public class BinderServiceImpl extends BaseService implements BinderService, Bin
 		
 		getBinderModule().setTeamMembers(binderId, ids);
 	}
-	@Override
 	@SuppressWarnings("unchecked")
 	public void binder_setFunctionMembershipWithXML(String accessToken, long binderId, String inputDataAsXml) {
 		Binder binder = getBinderModule().getBinder(binderId);
@@ -242,28 +235,23 @@ public class BinderServiceImpl extends BaseService implements BinderService, Bin
 		}
 		getAdminModule().setWorkAreaFunctionMemberships(binder, wfms);
 	}
-	@Override
 	public void binder_setFunctionMembershipInherited(String accessToken, long binderId, boolean inherit) {
 		Binder binder = getBinderModule().getBinder(binderId);
 		getAdminModule().setWorkAreaFunctionMembershipInherited(binder, inherit); 		
 	}
-	@Override
 	public void binder_setOwner(String accessToken, long binderId, long userId) {
 		Binder binder = getBinderModule().getBinder(binderId);
 		getAdminModule().setWorkAreaOwner(binder, userId, false); 		
 	}
-	@Override
 	public void binder_indexBinder(String accessToken, long binderId) {
 		getBinderModule().indexBinder(binderId, true);
 	}
 	
-	@Override
 	public Long[] binder_indexTree(String accessToken, long binderId) {
 		Set<Long> binderIds = getBinderModule().indexTree(binderId);
 		Long[] array = new Long[binderIds.size()];
 		return binderIds.toArray(array);
 	}
-	@Override
 	@SuppressWarnings("unchecked")
 	public TeamMemberCollection binder_getTeamMembers(String accessToken, long binderId, boolean explodeGroups, int firstRecord, int maxRecords) {
 		Binder binder = getBinderModule().getBinder(new Long(binderId));
@@ -290,7 +278,6 @@ public class BinderServiceImpl extends BaseService implements BinderService, Bin
 				principalList.toArray(array));
 	}
 	
-	@Override
 	@SuppressWarnings("unchecked")
 	public long binder_addBinder(String accessToken, org.kablink.teaming.remoting.ws.model.Binder binder) {
 		SimpleProfiler.start("binderService_addBinder");
@@ -310,15 +297,12 @@ public class BinderServiceImpl extends BaseService implements BinderService, Bin
 		}
 	}
 	
-	@Override
 	public long binder_copyBinder(String accessToken, long sourceId, long destinationId, boolean cascade) {
 		return getBinderModule().copyBinder(sourceId, destinationId, cascade, null).getId().longValue();
 	}
-	@Override
 	public void binder_deleteBinder(String accessToken, long binderId, boolean deleteMirroredSource) {
 		getBinderModule().deleteBinder(binderId, deleteMirroredSource, null);
 	}
-	@Override
 	public void binder_preDeleteBinder(String accessToken, long binderId) {
 		try {
 			TrashHelper.preDeleteBinder(this, binderId);
@@ -327,7 +311,6 @@ public class BinderServiceImpl extends BaseService implements BinderService, Bin
 			throw new RemotingException(e);
 		}
 	}
-	@Override
 	@SuppressWarnings("unchecked")
 	public void binder_restoreBinder(String accessToken, long binderId) {
 		Binder binder = getBinderModule().getBinder(binderId);
@@ -336,15 +319,13 @@ public class BinderServiceImpl extends BaseService implements BinderService, Bin
 		hm.put("_docId", String.valueOf(binderId));
 		hm.put("_docType", "binder");
 		hm.put("_binderParentId", String.valueOf(binderParentId));
-		TrashHelper.restoreEntities(
+		TrashHelper.restoreEntries(
 			this,
-			new TrashHelper.TrashEntity(hm));
+			new TrashHelper.TrashEntry(hm));
 	}
-	@Override
 	public void binder_moveBinder(String accessToken, long binderId, long destinationId) {
 		getBinderModule().moveBinder(binderId, destinationId, null);
 	}
-	@Override
 	public org.kablink.teaming.remoting.ws.model.Binder binder_getBinder(String accessToken, long binderId, boolean includeAttachments) {
 
 		// Retrieve the raw binder.
@@ -357,7 +338,6 @@ public class BinderServiceImpl extends BaseService implements BinderService, Bin
 		
 		return binderModel;
 	}
-	@Override
 	public org.kablink.teaming.remoting.ws.model.Binder binder_getBinderByPathName(String accessToken, String pathName, boolean includeAttachments) {
 		Binder binder = getBinderModule().getBinderByPathName(pathName);
 		if (binder == null) throw new NoBinderByTheNameException(pathName);
@@ -368,7 +348,6 @@ public class BinderServiceImpl extends BaseService implements BinderService, Bin
 		
 		return binderModel;
 	}
-	@Override
 	public void binder_modifyBinder(String accessToken, org.kablink.teaming.remoting.ws.model.Binder binder) {
 		try {
 			getBinderModule().modifyBinder(binder.getId(), 
@@ -382,11 +361,9 @@ public class BinderServiceImpl extends BaseService implements BinderService, Bin
 			throw new RemotingException(e);
 		}			
 	}
-	@Override
 	public void binder_uploadFile(String accessToken, long binderId, String fileUploadDataItemName, String fileName) {
 		throw new UnsupportedOperationException();
 	}
-	@Override
 	@SuppressWarnings("unchecked")
 	public void binder_removeFile(String accessToken, long binderId, String fileName) {
 		try {
@@ -407,7 +384,6 @@ public class BinderServiceImpl extends BaseService implements BinderService, Bin
 
 	}
 
-	@Override
 	public FunctionMembership[] binder_getFunctionMembership(String accessToken, long binderId) {
 		Binder binder = getBinderModule().getBinder(binderId);
 		List<WorkAreaFunctionMembership> wafml = getAdminModule().getWorkAreaFunctionMemberships(binder);
@@ -431,7 +407,6 @@ public class BinderServiceImpl extends BaseService implements BinderService, Bin
 		return fml.toArray(new FunctionMembership[fml.size()]);
 	}
 	
-	@Override
 	@SuppressWarnings("unchecked")
 	public void binder_setFunctionMembership(String accessToken, long binderId, FunctionMembership[] functionMemberships) {
 		if(functionMemberships == null) return;
@@ -468,14 +443,12 @@ public class BinderServiceImpl extends BaseService implements BinderService, Bin
 		getAdminModule().setWorkAreaFunctionMemberships(binder, wfms);
 	}
 	
-	@Override
 	@SuppressWarnings("unchecked")
 	public FolderCollection binder_getFolders(String accessToken, final long binderId, final int firstRecord, final int maxRecords) {
         // Probably sorting by title isn't as important in web services as in browser UI, 
         // but it wouldn't hurt either.
 
 		FolderSearcher folderSearcher = new FolderSearcher() {
-			@Override
 			public Map searchFolders() {
 				Binder binder = getBinderModule().getBinder(binderId);		
 		    	Map options = new HashMap();
@@ -509,11 +482,8 @@ public class BinderServiceImpl extends BaseService implements BinderService, Bin
 		return principalIds2;
 	}
 	
-	@Override
-	@SuppressWarnings("unchecked")
 	public FolderCollection binder_getAllFoldersOfMatchingFamily(String accessToken, final long[] startingBinderIds, final String[] families, final boolean restrictByTeamMembership, final int firstRecord, final int maxRecords) {
 		FolderSearcher folderSearcher = new FolderSearcher() {
-			@Override
 			public Map searchFolders() {	
 		    	Criteria crit = new Criteria()
 				.add(eq(Constants.ENTITY_FIELD, "folder"));
@@ -549,7 +519,6 @@ public class BinderServiceImpl extends BaseService implements BinderService, Bin
 		return getFolders(folderSearcher, firstRecord);
 	}
 	
-	@SuppressWarnings("unchecked")
 	private FolderCollection getFolders(FolderSearcher folderSearcher, int firstRecord) {
 		Map searchResults = folderSearcher.searchFolders();
 		
@@ -643,7 +612,6 @@ public class BinderServiceImpl extends BaseService implements BinderService, Bin
 				folderList.toArray(array));
 	}
 	
-	@Override
 	@SuppressWarnings("unchecked")
 	public TrashCollection binder_getTrashEntries(String accessToken, long binderId, int firstRecord, int maxRecords) {
 		// Read the requested trash entries...
@@ -652,18 +620,18 @@ public class BinderServiceImpl extends BaseService implements BinderService, Bin
 		options.put(ObjectKeys.SEARCH_OFFSET,    Integer.valueOf(firstRecord));
 		options.put(ObjectKeys.SEARCH_MAX_HITS,  Integer.valueOf(maxRecords));
 		options.put(ObjectKeys.SEARCH_SORT_NONE, Boolean.TRUE);
-		Map trashSearchMap = TrashHelper.getTrashEntities(this, binder, options);
+		Map trashSearchMap = TrashHelper.getTrashEntries(this, binder, options);
 		ArrayList trashSearchAL = ((ArrayList) trashSearchMap.get(ObjectKeys.SEARCH_ENTRIES));
-		ArrayList<TrashEntity> trashEntriesAL = new ArrayList<TrashEntity>();
+		ArrayList<TrashEntry> trashEntriesAL = new ArrayList<TrashEntry>();
         for (Iterator trashEntriesIT=trashSearchAL.iterator(); trashEntriesIT.hasNext();) {
-			trashEntriesAL.add(new TrashEntity((Map) trashEntriesIT.next()));
+			trashEntriesAL.add(new TrashEntry((Map) trashEntriesIT.next()));
 		}
 
         // ...convert them to TrashBrief's...
         int count = trashEntriesAL.size();
         TrashBrief[] trashBriefs = new TrashBrief[count];
         for (int i = 0; i < count; i += 1) {
-        	TrashEntity te = ((TrashEntity) trashEntriesAL.get(i));
+        	TrashEntry te = ((TrashEntry) trashEntriesAL.get(i));
         	trashBriefs[i] = new TrashBrief(this, getCoreDao(), te);
         }
         
@@ -671,15 +639,12 @@ public class BinderServiceImpl extends BaseService implements BinderService, Bin
         return new TrashCollection(firstRecord, count, trashBriefs);
 	}
 
-	@Override
 	public void binder_deleteTag(String accessToken, long binderId, String tagId) {
 		getBinderModule().deleteTag(binderId, tagId);
 	}
-	@Override
 	public void binder_setTag(String accessToken, org.kablink.teaming.remoting.ws.model.Tag tag) {
 		getBinderModule().setTag(tag.getEntityId(), tag.getName(), tag.isPublic());
 	}
-	@Override
 	public org.kablink.teaming.remoting.ws.model.Tag[] binder_getTags(String accessToken, long binderId) {
 		Collection<Tag>tags = getBinderModule().getTags(getBinderModule().getBinder(binderId));
 		org.kablink.teaming.remoting.ws.model.Tag[] results = new org.kablink.teaming.remoting.ws.model.Tag[tags.size()];
@@ -690,7 +655,6 @@ public class BinderServiceImpl extends BaseService implements BinderService, Bin
 		return results;
 	}
 	
-	@Override
 	public FileVersions binder_getFileVersions(String accessToken, long binderId, String fileName) {
 		Binder binder = getBinderModule().getBinder(binderId);
 		FileAttachment att = binder.getFileAttachment(fileName);
@@ -700,13 +664,11 @@ public class BinderServiceImpl extends BaseService implements BinderService, Bin
 			throw new NoFileByTheNameException(fileName);
 	}
 	
-	@Override
 	public byte[] binder_getAttachmentAsByteArray(String accessToken, long binderId, String attachmentId) {
 		Binder binder = getBinderModule().getBinder(binderId);
 		return getFileAttachmentAsByteArray(binder, binder, attachmentId);
 	}
 	
-	@Override
 	@SuppressWarnings("unchecked")
 	public void binder_uploadFileAsByteArray(String accessToken, long binderId,
 			String fileUploadDataItemName, String fileName, byte[] fileContent) {
@@ -730,7 +692,6 @@ public class BinderServiceImpl extends BaseService implements BinderService, Bin
 		}
 	}
 
-	@Override
 	public boolean[] binder_testAccess(String accessToken, String workAreaOperationName, long[] binderIds) {
 		WorkAreaOperation workAreaOperation = WorkAreaOperation.getInstance(workAreaOperationName);
 		boolean[] result = new boolean[binderIds.length];
@@ -808,7 +769,6 @@ public class BinderServiceImpl extends BaseService implements BinderService, Bin
 		return result;
 	}
 	
-	@SuppressWarnings("unchecked")
 	interface FolderSearcher {
 		Map searchFolders();
 	}
@@ -818,8 +778,7 @@ public class BinderServiceImpl extends BaseService implements BinderService, Bin
 		return getWorkspaceModule().getTopWorkspaceId();
 	}
 	
-    @Override
-	public void binder_setDefinitionsInherited(String accessToken, long binderId, boolean inheritFromParent) {
+    public void binder_setDefinitionsInherited(String accessToken, long binderId, boolean inheritFromParent) {
     	getBinderModule().setDefinitionsInherited(binderId, inheritFromParent);
     }
     

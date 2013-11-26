@@ -66,7 +66,7 @@ abstract public class AbstractFileResource extends AbstractResource {
             // An entry containing a file with this name exists.
             if(logger.isDebugEnabled())
                 logger.debug("createNew: updating existing file '" + fileName + "' + owned by " + entry.getEntityIdentifier().toString() + " in folder " + folder.getId());
-            FolderUtils.modifyLibraryEntry(entry, fileName, is, null, dateFromISO8601(modDateISO8601), expectedMd5, true, null, null);
+            FolderUtils.modifyLibraryEntry(entry, fileName, is, null, dateFromISO8601(modDateISO8601), expectedMd5, true, null);
         }
         else {
             // We need to create a new entry
@@ -89,7 +89,7 @@ abstract public class AbstractFileResource extends AbstractResource {
             throw new BadRequestException(ApiErrorCode.INVALID_ENTITY_TYPE, "The file_name query parameter must be specified.");
         }
         Date modDate = dateFromISO8601(modDateISO8601);
-        DefinableEntity entity = findDefinableEntity(entityType, entityId);
+        DefinableEntity entity = findDefinableEntity(entityType.name(), entityId);
         FileAttachment fa = entity.getFileAttachment(filename);
         if (fa!=null) {
             throw new ConflictException(ApiErrorCode.FILE_EXISTS, "A file named " + filename + " already exists in the " + entityType + ".");
@@ -127,7 +127,7 @@ abstract public class AbstractFileResource extends AbstractResource {
     }
 
     protected FileProperties writeFileContentByName(
-            EntityIdentifier.EntityType entityType,
+            String entityType,
             long entityId,
             String filename,
             String dataName,
@@ -144,7 +144,7 @@ abstract public class AbstractFileResource extends AbstractResource {
         FileAttachment fa = entity.getFileAttachment(filename);
         if (fa != null) {
             if (update!=null && !update) {
-                throw new ConflictException(ApiErrorCode.FILE_EXISTS, "A file named " + filename + " already exists in the " + entityType.name() + ".");
+                throw new ConflictException(ApiErrorCode.FILE_EXISTS, "A file named " + filename + " already exists in the " + entityType + ".");
             }
             if (FileUtils.matchesTopMostVersion(fa, lastVersionNumber, lastMajorVersionNumber, lastMinorVersionNumber)) {
                 modifyDefinableEntityWithFile(entity, dataName, filename, is, modDate, expectedMd5);
@@ -265,8 +265,9 @@ abstract public class AbstractFileResource extends AbstractResource {
         return Response.ok(is, mt).lastModified(lastModDate).build();
     }
 
-    protected void deleteFile(EntityIdentifier.EntityType entityType, long entityId, String filename)
+    protected void deleteFile(String entityType, long entityId, String filename)
             throws WriteFilesException, WriteEntryDataException, BadRequestException {
+        EntityIdentifier.EntityType et = entityTypeFromString(entityType);
         DefinableEntity entity = findDefinableEntity(entityType, entityId);
         FileAttachment fa = entity.getFileAttachment(filename);
         if (fa==null) {
@@ -285,6 +286,28 @@ abstract public class AbstractFileResource extends AbstractResource {
         } else {
             throw new BadRequestException(ApiErrorCode.INVALID_ENTITY_TYPE, "Entity type '" + entity.getClass().getName() + "' is unknown or not supported by this method");
         }
+    }
+
+    protected DefinableEntity findDefinableEntity(String entityType, long entityId)
+            throws BadRequestException, NotFoundException {
+        EntityIdentifier.EntityType et = entityTypeFromString(entityType);
+        DefinableEntity entity;
+        if (et == EntityIdentifier.EntityType.folderEntry) {
+            entity = getFolderModule().getEntry(null, entityId);
+        } else if (et == EntityIdentifier.EntityType.user) {
+            entity = getProfileModule().getEntry(entityId);
+            if (!(entity instanceof User))
+                throw new BadRequestException(ApiErrorCode.NOT_USER, "Entity ID '" + entityId + "' does not represent a user");
+        } else if (et == EntityIdentifier.EntityType.group) {
+            entity = getProfileModule().getEntry(entityId);
+            if (!(entity instanceof Group))
+                throw new BadRequestException(ApiErrorCode.NOT_GROUP, "Entity ID '" + entityId + "' does not represent a group");
+        } else if (et == EntityIdentifier.EntityType.workspace || et == EntityIdentifier.EntityType.folder || et == EntityIdentifier.EntityType.profiles) {
+            entity = getBinderModule().getBinder(entityId, false, true);
+        } else {
+            throw new BadRequestException(ApiErrorCode.INVALID_ENTITY_TYPE, "Entity type '" + entityType + "' is unknown or not supported by this method");
+        }
+        return entity;
     }
 
     protected void modifyDefinableEntityWithFile(DefinableEntity entity, String dataName, String filename, InputStream is, Date modDate, String expectedMd5) throws WriteFilesException, WriteEntryDataException {

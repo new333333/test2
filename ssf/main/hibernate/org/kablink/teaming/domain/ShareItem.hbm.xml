@@ -27,7 +27,6 @@
     <property name="recipientId" column="recipient_id" index="recipient_shareitem"/>
     <property name="expirationHandled" access="field"/> 
     <property name="partOfPublicShare" access="field"/> 
-    <property name="passKey" access="field" length="32"/> 
     <component name="rightSet" class="org.kablink.teaming.security.function.WorkAreaOperation$RightSet">
     	<property name="createEntries" column="right_createEntries" access="field"/>
     	<property name="modifyEntries" column="right_modifyEntries" access="field"/>
@@ -46,7 +45,6 @@
     	<property name="manageWorkflowDefinitions" column="right_manageWorkflowDefs" access="field"/>
     	<property name="creatorReadEntries" column="right_creatorReadEntries" access="field"/>
     	<property name="creatorModifyEntries" column="right_creatorModifyEntries" access="field"/>
-    	<property name="creatorRenameEntries" column="right_creatorRenameEntries" access="field"/>
     	<property name="creatorDeleteEntries" column="right_creatorDeleteEntries" access="field"/>
     	<property name="ownerCreateEntryAcls" column="right_ownerCreateEntryAcls" access="field"/>
     	<property name="addTags" column="right_addTags" access="field"/>

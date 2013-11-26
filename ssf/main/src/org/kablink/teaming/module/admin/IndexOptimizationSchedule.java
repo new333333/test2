@@ -76,7 +76,7 @@ public class IndexOptimizationSchedule {
 	
 	public Map<String, Boolean> getNodeSelectionMap() {
 		Map<String, Boolean> result = new HashMap<String, Boolean>();
-		List<IndexNode> nodes = getAdminModule().retrieveIndexNodesHA();
+		List<IndexNode> nodes = getAdminModule().retrieveIndexNodes();
 		if(nodes != null) {
 			for(IndexNode node:nodes) {
 				if(!node.getUserModeAccess().equals(IndexNode.USER_MODE_ACCESS_NO_ACCESS) &&

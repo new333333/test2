@@ -81,10 +81,6 @@ public interface GwtTeamingImageBundle extends ClientBundle
 	public ImageResource browseHierarchy();
 
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/browse_ldap.png")
-	public ImageResource browseLdap();
-
-	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/cal_menu.png")
 	public ImageResource calDatePicker();
 
@@ -405,34 +401,6 @@ public interface GwtTeamingImageBundle extends ClientBundle
 	public ImageResource myWorkspace1();
 
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/NetFolders/sync_canceled.png")
-	public ImageResource netFolderSyncStatusCanceled();
-
-	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/NetFolders/sync_completed.png")
-	public ImageResource netFolderSyncStatusCompleted();
-
-	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/NetFolders/sync_in_progress.gif")
-	public ImageResource netFolderSyncStatusInProgress();
-
-	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/NetFolders/sync_never_run.png")
-	public ImageResource netFolderSyncStatusNeverRun();
-
-	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/NetFolders/sync_stopped.png")
-	public ImageResource netFolderSyncStatusStopped();
-
-	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/NetFolders/sync_status_unknown.png")
-	public ImageResource netFolderSyncStatusUnknown();
-
-	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/NetFolders/waiting_to_be_syncd.png")
-	public ImageResource netFolderSyncStatusWaitingToBeSyncd();
-
-	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/my_workspace2.png")
 	public ImageResource myWorkspace2();
 
@@ -511,54 +479,6 @@ public interface GwtTeamingImageBundle extends ClientBundle
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/public16.png")
 	public ImageResource public16();
-
-	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/public25.png")
-	public ImageResource public25();
-
-	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/public36.png")
-	public ImageResource public36();
-
-	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/public48.png")
-	public ImageResource public48();
-
-	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/public50.png")
-	public ImageResource public50();
-
-	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/public72.png")
-	public ImageResource public72();
-
-	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/public96.png")
-	public ImageResource public96();
-
-	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/publicLink16.png")
-	public ImageResource publicLink16();
-
-	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/publicLink25.png")
-	public ImageResource publicLink25();
-
-	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/publicLink36.png")
-	public ImageResource publicLink36();
-
-	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/publicLink48.png")
-	public ImageResource publicLink48();
-
-	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/publicLink72.png")
-	public ImageResource publicLink72();
-
-	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/publicLink48.png")
-	public ImageResource publicLink96();
 
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/refresh.png")
@@ -807,10 +727,6 @@ public interface GwtTeamingImageBundle extends ClientBundle
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/admin_system_72.png")
 	public ImageResource adminSystem72();
-	
-	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/UserPhoto.png")
-	public ImageResource userAvatar();
 	
 
 }// end GwtTeamingImageBundle

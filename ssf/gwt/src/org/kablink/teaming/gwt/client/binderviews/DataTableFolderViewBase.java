@@ -36,7 +36,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingDataTableImageBundle;
@@ -48,16 +47,12 @@ import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderColumn;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderRow;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.GuestInfo;
 import org.kablink.teaming.gwt.client.binderviews.util.BinderViewsHelper;
-import org.kablink.teaming.gwt.client.binderviews.util.DeleteEntitiesHelper.DeleteEntitiesCallback;
-import org.kablink.teaming.gwt.client.binderviews.util.DeleteUsersHelper.DeleteUsersCallback;
+import org.kablink.teaming.gwt.client.binderviews.util.DeletePurgeEntriesHelper.DeletePurgeEntriesCallback;
 import org.kablink.teaming.gwt.client.binderviews.FooterPanel;
 import org.kablink.teaming.gwt.client.binderviews.ViewReady;
 import org.kablink.teaming.gwt.client.datatable.ActionMenuColumn;
 import org.kablink.teaming.gwt.client.datatable.ApplyColumnWidths;
 import org.kablink.teaming.gwt.client.datatable.AssignmentColumn;
-import org.kablink.teaming.gwt.client.datatable.CloudFolderAuthenticationDlg;
-import org.kablink.teaming.gwt.client.datatable.CloudFolderAuthenticationDlg.CloudFolderAuthenticationCallback;
-import org.kablink.teaming.gwt.client.datatable.CloudFolderAuthenticationDlg.CloudFolderAuthenticationDlgClient;
 import org.kablink.teaming.gwt.client.datatable.CommentsColumn;
 import org.kablink.teaming.gwt.client.datatable.CustomColumn;
 import org.kablink.teaming.gwt.client.datatable.DescriptionHtmlColumn;
@@ -66,10 +61,6 @@ import org.kablink.teaming.gwt.client.datatable.EmailAddressColumn;
 import org.kablink.teaming.gwt.client.datatable.EntryPinColumn;
 import org.kablink.teaming.gwt.client.datatable.EntryTitleColumn;
 import org.kablink.teaming.gwt.client.datatable.GuestColumn;
-import org.kablink.teaming.gwt.client.datatable.MobileDeviceWipeScheduleInfo;
-import org.kablink.teaming.gwt.client.datatable.MobileDevicesColumn;
-import org.kablink.teaming.gwt.client.datatable.MobileDeviceWipeScheduledColumn;
-import org.kablink.teaming.gwt.client.datatable.PresenceCell.PresenceClickAction;
 import org.kablink.teaming.gwt.client.datatable.PresenceColumn;
 import org.kablink.teaming.gwt.client.datatable.RatingColumn;
 import org.kablink.teaming.gwt.client.datatable.ShareStringValueColumn;
@@ -81,65 +72,51 @@ import org.kablink.teaming.gwt.client.datatable.UserTypeColumn;
 import org.kablink.teaming.gwt.client.datatable.VibeCheckboxCell;
 import org.kablink.teaming.gwt.client.datatable.VibeDataGrid;
 import org.kablink.teaming.gwt.client.datatable.VibeColumn;
-import org.kablink.teaming.gwt.client.datatable.VibeDataTableConstants;
 import org.kablink.teaming.gwt.client.datatable.ViewColumn;
-import org.kablink.teaming.gwt.client.event.ChangeEntryTypeSelectedEntitiesEvent;
+import org.kablink.teaming.gwt.client.event.ChangeEntryTypeSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.ClearSelectedUsersAdHocFoldersEvent;
-import org.kablink.teaming.gwt.client.event.ClearSelectedUsersDownloadEvent;
-import org.kablink.teaming.gwt.client.event.ClearSelectedUsersWebAccessEvent;
 import org.kablink.teaming.gwt.client.event.ContentChangedEvent;
 import org.kablink.teaming.gwt.client.event.ContentChangedEvent.Change;
 import org.kablink.teaming.gwt.client.event.ContributorIdsReplyEvent;
 import org.kablink.teaming.gwt.client.event.ContributorIdsRequestEvent;
-import org.kablink.teaming.gwt.client.event.CopyPublicLinkSelectedEntitiesEvent;
-import org.kablink.teaming.gwt.client.event.CopySelectedEntitiesEvent;
-import org.kablink.teaming.gwt.client.event.DeleteSelectedEntitiesEvent;
-import org.kablink.teaming.gwt.client.event.DeleteSelectedUsersEvent;
+import org.kablink.teaming.gwt.client.event.CopySelectedEntriesEvent;
+import org.kablink.teaming.gwt.client.event.DeleteSelectedEntriesEvent;
+import org.kablink.teaming.gwt.client.event.DeleteSelectedUserWorkspacesEvent;
 import org.kablink.teaming.gwt.client.event.DisableSelectedUsersEvent;
 import org.kablink.teaming.gwt.client.event.DisableSelectedUsersAdHocFoldersEvent;
-import org.kablink.teaming.gwt.client.event.DisableSelectedUsersDownloadEvent;
-import org.kablink.teaming.gwt.client.event.DisableSelectedUsersWebAccessEvent;
-import org.kablink.teaming.gwt.client.event.EmailPublicLinkSelectedEntitiesEvent;
 import org.kablink.teaming.gwt.client.event.EnableSelectedUsersEvent;
 import org.kablink.teaming.gwt.client.event.EnableSelectedUsersAdHocFoldersEvent;
-import org.kablink.teaming.gwt.client.event.EnableSelectedUsersDownloadEvent;
-import org.kablink.teaming.gwt.client.event.EnableSelectedUsersWebAccessEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.FullUIReloadEvent;
 import org.kablink.teaming.gwt.client.event.HideSelectedSharesEvent;
 import org.kablink.teaming.gwt.client.event.InvokeColumnResizerEvent;
 import org.kablink.teaming.gwt.client.event.InvokeDropBoxEvent;
 import org.kablink.teaming.gwt.client.event.InvokeSignGuestbookEvent;
-import org.kablink.teaming.gwt.client.event.LockSelectedEntitiesEvent;
-import org.kablink.teaming.gwt.client.event.MailToPublicLinkEntityEvent;
-import org.kablink.teaming.gwt.client.event.ManageSharesSelectedEntitiesEvent;
-import org.kablink.teaming.gwt.client.event.MarkReadSelectedEntitiesEvent;
-import org.kablink.teaming.gwt.client.event.MarkUnreadSelectedEntitiesEvent;
-import org.kablink.teaming.gwt.client.event.MoveSelectedEntitiesEvent;
+import org.kablink.teaming.gwt.client.event.LockSelectedEntriesEvent;
+import org.kablink.teaming.gwt.client.event.ManageSharesSelectedEntriesEvent;
+import org.kablink.teaming.gwt.client.event.MarkReadSelectedEntriesEvent;
+import org.kablink.teaming.gwt.client.event.MarkUnreadSelectedEntriesEvent;
+import org.kablink.teaming.gwt.client.event.MoveSelectedEntriesEvent;
+import org.kablink.teaming.gwt.client.event.PurgeSelectedEntriesEvent;
+import org.kablink.teaming.gwt.client.event.PurgeSelectedUserWorkspacesEvent;
+import org.kablink.teaming.gwt.client.event.PurgeSelectedUsersEvent;
 import org.kablink.teaming.gwt.client.event.QuickFilterEvent;
 import org.kablink.teaming.gwt.client.event.SharedViewFilterEvent;
-import org.kablink.teaming.gwt.client.event.ShareSelectedEntitiesEvent;
+import org.kablink.teaming.gwt.client.event.ShareSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.ShowSelectedSharesEvent;
-import org.kablink.teaming.gwt.client.event.SubscribeSelectedEntitiesEvent;
+import org.kablink.teaming.gwt.client.event.SubscribeSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.event.ToggleSharedViewEvent;
 import org.kablink.teaming.gwt.client.event.TrashPurgeAllEvent;
-import org.kablink.teaming.gwt.client.event.TrashPurgeSelectedEntitiesEvent;
+import org.kablink.teaming.gwt.client.event.TrashPurgeSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.TrashRestoreAllEvent;
-import org.kablink.teaming.gwt.client.event.TrashRestoreSelectedEntitiesEvent;
-import org.kablink.teaming.gwt.client.event.UnlockSelectedEntitiesEvent;
+import org.kablink.teaming.gwt.client.event.TrashRestoreSelectedEntriesEvent;
+import org.kablink.teaming.gwt.client.event.UnlockSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.ViewPinnedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.ViewSelectedEntryEvent;
 import org.kablink.teaming.gwt.client.event.ViewWhoHasAccessEvent;
-import org.kablink.teaming.gwt.client.event.ZipAndDownloadFolderEvent;
-import org.kablink.teaming.gwt.client.event.ZipAndDownloadSelectedFilesEvent;
-import org.kablink.teaming.gwt.client.rpc.shared.CanAddEntitiesRpcResponseData;
-import org.kablink.teaming.gwt.client.rpc.shared.CanAddEntitiesToBindersRpcResponseData;
-import org.kablink.teaming.gwt.client.rpc.shared.EntityRightsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.FolderColumnsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.FolderRowsRpcResponseData;
-import org.kablink.teaming.gwt.client.rpc.shared.GetCanAddEntitiesToBindersCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.GetEntityRightsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetFolderColumnsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetFolderRowsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetMyFilesContainerInfoCmd;
@@ -152,16 +129,13 @@ import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.AssignmentInfo;
 import org.kablink.teaming.gwt.client.util.BinderIconSize;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
-import org.kablink.teaming.gwt.client.util.CloudFolderAuthentication;
 import org.kablink.teaming.gwt.client.util.CollectionType;
 import org.kablink.teaming.gwt.client.util.CommentsInfo;
 import org.kablink.teaming.gwt.client.util.EmailAddressInfo;
 import org.kablink.teaming.gwt.client.util.EntityId;
-import org.kablink.teaming.gwt.client.util.EntityRights;
 import org.kablink.teaming.gwt.client.util.EntryPinInfo;
 import org.kablink.teaming.gwt.client.util.EntryTitleInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
-import org.kablink.teaming.gwt.client.util.MobileDevicesInfo;
 import org.kablink.teaming.gwt.client.util.PrincipalInfo;
 import org.kablink.teaming.gwt.client.util.ShareStringValue;
 import org.kablink.teaming.gwt.client.util.SharedViewState;
@@ -219,69 +193,60 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
  */
 public abstract class DataTableFolderViewBase extends FolderViewBase
 	implements ApplyColumnWidths,
-		// Event handlers implemented by this class.
-		ChangeEntryTypeSelectedEntitiesEvent.Handler,
+	// Event handlers implemented by this class.
+		ChangeEntryTypeSelectedEntriesEvent.Handler,
 		ClearSelectedUsersAdHocFoldersEvent.Handler,
-		ClearSelectedUsersDownloadEvent.Handler,
-		ClearSelectedUsersWebAccessEvent.Handler,
 		ContentChangedEvent.Handler,
 		ContributorIdsRequestEvent.Handler,
-		CopyPublicLinkSelectedEntitiesEvent.Handler,
-		CopySelectedEntitiesEvent.Handler,
-		DeleteSelectedEntitiesEvent.Handler,
-		DeleteSelectedUsersEvent.Handler,
+		CopySelectedEntriesEvent.Handler,
+		DeleteSelectedEntriesEvent.Handler,
+		DeleteSelectedUserWorkspacesEvent.Handler,
 		DisableSelectedUsersEvent.Handler,
 		DisableSelectedUsersAdHocFoldersEvent.Handler,
-		DisableSelectedUsersDownloadEvent.Handler,
-		DisableSelectedUsersWebAccessEvent.Handler,
-		EmailPublicLinkSelectedEntitiesEvent.Handler,
 		EnableSelectedUsersEvent.Handler,
 		EnableSelectedUsersAdHocFoldersEvent.Handler,
-		EnableSelectedUsersDownloadEvent.Handler,
-		EnableSelectedUsersWebAccessEvent.Handler,
 		HideSelectedSharesEvent.Handler,
 		InvokeColumnResizerEvent.Handler,
 		InvokeDropBoxEvent.Handler,
 		InvokeSignGuestbookEvent.Handler,
-		LockSelectedEntitiesEvent.Handler,
-		MailToPublicLinkEntityEvent.Handler,
-		ManageSharesSelectedEntitiesEvent.Handler,
-		MarkReadSelectedEntitiesEvent.Handler,
-		MarkUnreadSelectedEntitiesEvent.Handler,
-		MoveSelectedEntitiesEvent.Handler,
+		LockSelectedEntriesEvent.Handler,
+		ManageSharesSelectedEntriesEvent.Handler,
+		MarkReadSelectedEntriesEvent.Handler,
+		MarkUnreadSelectedEntriesEvent.Handler,
+		MoveSelectedEntriesEvent.Handler,
+		PurgeSelectedEntriesEvent.Handler,
+		PurgeSelectedUserWorkspacesEvent.Handler,
+		PurgeSelectedUsersEvent.Handler,
 		QuickFilterEvent.Handler,
 		SharedViewFilterEvent.Handler,
-		ShareSelectedEntitiesEvent.Handler,
+		ShareSelectedEntriesEvent.Handler,
 		ShowSelectedSharesEvent.Handler,
-		SubscribeSelectedEntitiesEvent.Handler,
+		SubscribeSelectedEntriesEvent.Handler,
 		ToggleSharedViewEvent.Handler,
 		TrashPurgeAllEvent.Handler,
-		TrashPurgeSelectedEntitiesEvent.Handler,
+		TrashPurgeSelectedEntriesEvent.Handler,
 		TrashRestoreAllEvent.Handler,
-		TrashRestoreSelectedEntitiesEvent.Handler,
-		UnlockSelectedEntitiesEvent.Handler,
+		TrashRestoreSelectedEntriesEvent.Handler,
+		UnlockSelectedEntriesEvent.Handler,
 		ViewPinnedEntriesEvent.Handler,
 		ViewSelectedEntryEvent.Handler,
-		ViewWhoHasAccessEvent.Handler,
-		ZipAndDownloadFolderEvent.Handler,
-		ZipAndDownloadSelectedFilesEvent.Handler
+		ViewWhoHasAccessEvent.Handler
 {
-	private boolean							m_fixedLayout;				//
-	private CloudFolderAuthenticationDlg	m_cfaDlg;					//
-	private Column<FolderRow, Boolean>		m_selectColumn;				//
-	private ColumnWidth						m_actionMenuColumnWidth;	//
-	private ColumnWidth						m_100PctColumnWidth;		//
-	private ColumnWidth						m_defaultColumnWidth;		//
-	private List<FolderColumn>				m_folderColumnsList;		// The List<FolderColumn>' of the columns to be displayed.
-	private List<HandlerRegistration>		m_registeredEventHandlers;	// Event handlers that are currently registered.
-	private List<Long>						m_contributorIds;			//
-	private Map<String, ColumnWidth>		m_defaultColumnWidths;		// Map of column names -> Default ColumnWidth objects.
-	private Map<String, ColumnWidth>		m_columnWidths;				// Map of column names -> Current ColumnWidth objects.
-	private SizeColumnsDlg					m_sizeColumnsDlg;			//
-	private String							m_folderStyles;				// Specific style(s) for the for the folders that extend this.
-	private String							m_quickFilter;				// Any quick filter that's active.
-	private VibeDataGrid<FolderRow>			m_dataTable;				// The actual data table holding the view's information.
-	private VibeSimplePager 				m_dataTablePager;			// Pager widgets at the bottom of the data table.
+	private boolean						m_fixedLayout;				//
+	private Column<FolderRow, Boolean>	m_selectColumn;				//
+	private ColumnWidth					m_actionMenuColumnWidth;	//
+	private ColumnWidth					m_100PctColumnWidth;		//
+	private ColumnWidth					m_defaultColumnWidth;		//
+	private List<FolderColumn>			m_folderColumnsList;		// The List<FolderColumn>' of the columns to be displayed.
+	private List<HandlerRegistration>	m_registeredEventHandlers;	// Event handlers that are currently registered.
+	private List<Long>					m_contributorIds;			//
+	private Map<String, ColumnWidth>	m_defaultColumnWidths;		// Map of column names -> Default ColumnWidth objects.
+	private Map<String, ColumnWidth>	m_columnWidths;				// Map of column names -> Current ColumnWidth objects.
+	private SizeColumnsDlg				m_sizeColumnsDlg;			//
+	private String						m_folderStyles;				// Specific style(s) for the for the folders that extend this.
+	private String						m_quickFilter;				// Any quick filter that's active.
+	private VibeDataGrid<FolderRow>		m_dataTable;				// The actual data table holding the view's information.
+	private VibeSimplePager 			m_dataTablePager;			// Pager widgets at the bottom of the data table.
 	
 	protected GwtTeamingDataTableImageBundle	m_images;		//
 	protected GwtTeamingFilrImageBundle			m_filrImages;	//
@@ -302,60 +267,51 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	private final static String STYLE_ROW_EVEN		= "even";
 	private final static String STYLE_ROW_ODD		= "odd";
 
-	// Defines how long we delay, in MS, after loading the rows for the
-	// view before we send the request for the user's rights for adding
-	// to any nested folder's.
-	private final static int NESTED_FOLDER_RIGHTS_QUERY_DELAY	= 0;	// 0 -> No delay, simply asynchronous.
+	// Width, in pixels for the action menu show in conjunction with an
+	// EntryTitleColumn.
+	private final static int ACTION_MENU_WIDTH_PX	= 30;
 	
 	// The following defines the TeamingEvents that are handled by
 	// this class.  See EventHelper.registerEventHandlers() for how
 	// this array is used.
-	private static final TeamingEvents[] REGISTERED_EVENTS = new TeamingEvents[] {
-		TeamingEvents.CHANGE_ENTRY_TYPE_SELECTED_ENTITIES,
+	private TeamingEvents[] m_registeredEvents = new TeamingEvents[] {
+		TeamingEvents.CHANGE_ENTRY_TYPE_SELECTED_ENTRIES,
 		TeamingEvents.CLEAR_SELECTED_USERS_ADHOC_FOLDERS,
-		TeamingEvents.CLEAR_SELECTED_USERS_DOWNLOAD,
-		TeamingEvents.CLEAR_SELECTED_USERS_WEBACCESS,
 		TeamingEvents.CONTENT_CHANGED,
 		TeamingEvents.CONTRIBUTOR_IDS_REQUEST,
-		TeamingEvents.COPY_PUBLIC_LINK_SELECTED_ENTITIES,
-		TeamingEvents.COPY_SELECTED_ENTITIES,
-		TeamingEvents.DELETE_SELECTED_ENTITIES,
-		TeamingEvents.DELETE_SELECTED_USERS,
+		TeamingEvents.COPY_SELECTED_ENTRIES,
+		TeamingEvents.DELETE_SELECTED_ENTRIES,
+		TeamingEvents.DELETE_SELECTED_USER_WORKSPACES,
 		TeamingEvents.DISABLE_SELECTED_USERS,
 		TeamingEvents.DISABLE_SELECTED_USERS_ADHOC_FOLDERS,
-		TeamingEvents.DISABLE_SELECTED_USERS_DOWNLOAD,
-		TeamingEvents.DISABLE_SELECTED_USERS_WEBACCESS,
-		TeamingEvents.EMAIL_PUBLIC_LINK_SELECTED_ENTITIES,
 		TeamingEvents.ENABLE_SELECTED_USERS,
 		TeamingEvents.ENABLE_SELECTED_USERS_ADHOC_FOLDERS,
-		TeamingEvents.ENABLE_SELECTED_USERS_DOWNLOAD,
-		TeamingEvents.ENABLE_SELECTED_USERS_WEBACCESS,
 		TeamingEvents.HIDE_SELECTED_SHARES,
 		TeamingEvents.INVOKE_COLUMN_RESIZER,
 		TeamingEvents.INVOKE_DROPBOX,
 		TeamingEvents.INVOKE_SIGN_GUESTBOOK,
-		TeamingEvents.LOCK_SELECTED_ENTITIES,
-		TeamingEvents.MAILTO_PUBLIC_LINK_ENTITY,
-		TeamingEvents.MANAGE_SHARES_SELECTED_ENTITIES,
-		TeamingEvents.MARK_READ_SELECTED_ENTITIES,
-		TeamingEvents.MARK_UNREAD_SELECTED_ENTITIES,
-		TeamingEvents.MOVE_SELECTED_ENTITIES,
+		TeamingEvents.LOCK_SELECTED_ENTRIES,
+		TeamingEvents.MANAGE_SHARES_SELECTED_ENTRIES,
+		TeamingEvents.MARK_READ_SELECTED_ENTRIES,
+		TeamingEvents.MARK_UNREAD_SELECTED_ENTRIES,
+		TeamingEvents.MOVE_SELECTED_ENTRIES,
+		TeamingEvents.PURGE_SELECTED_ENTRIES,
+		TeamingEvents.PURGE_SELECTED_USER_WORKSPACES,
+		TeamingEvents.PURGE_SELECTED_USERS,
 		TeamingEvents.QUICK_FILTER,
 		TeamingEvents.SHARED_VIEW_FILTER,
-		TeamingEvents.SHARE_SELECTED_ENTITIES,
+		TeamingEvents.SHARE_SELECTED_ENTRIES,
 		TeamingEvents.SHOW_SELECTED_SHARES,
-		TeamingEvents.SUBSCRIBE_SELECTED_ENTITIES,
+		TeamingEvents.SUBSCRIBE_SELECTED_ENTRIES,
 		TeamingEvents.TOGGLE_SHARED_VIEW,
 		TeamingEvents.TRASH_PURGE_ALL,
-		TeamingEvents.TRASH_PURGE_SELECTED_ENTITIES,
+		TeamingEvents.TRASH_PURGE_SELECTED_ENTRIES,
 		TeamingEvents.TRASH_RESTORE_ALL,
-		TeamingEvents.TRASH_RESTORE_SELECTED_ENTITIES,
-		TeamingEvents.UNLOCK_SELECTED_ENTITIES,
+		TeamingEvents.TRASH_RESTORE_SELECTED_ENTRIES,
+		TeamingEvents.UNLOCK_SELECTED_ENTRIES,
 		TeamingEvents.VIEW_PINNED_ENTRIES,
 		TeamingEvents.VIEW_SELECTED_ENTRY,
 		TeamingEvents.VIEW_WHO_HAS_ACCESS,
-		TeamingEvents.ZIP_AND_DOWNLOAD_FOLDER,
-		TeamingEvents.ZIP_AND_DOWNLOAD_SELECTED_FILES,
 	};
 	
 	/*
@@ -386,7 +342,78 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		 */
 		@Override
 		protected void onRangeChanged(HasData<FolderRow> display) {
-			onRangeChangedImpl(m_vdt, getFolderId(), display.getVisibleRange(), null);
+			final Long folderId = getFolderId();
+			final Range range = display.getVisibleRange();
+			final int rowsRequested = range.getLength();
+			GwtClientHelper.executeCommand(
+					new GetFolderRowsCmd(
+						getFolderInfo(),
+						m_folderColumnsList,
+						range.getStart(),
+						rowsRequested,
+						m_quickFilter),
+					new AsyncCallback<VibeRpcResponse>() {
+				@Override
+				public void onFailure(Throwable t) {
+					GwtClientHelper.handleGwtRPCFailure(
+						t,
+						m_messages.rpcFailure_GetFolderRows(),
+						folderId);
+					
+					// If we have an entry menu...
+					EntryMenuPanel emp = getEntryMenuPanel();
+					if (null != emp) {
+						// ...tell it to update the state of its items that
+						// ...require entries be available.
+						EntryMenuPanel.setEntriesAvailable(emp, false);
+					}
+
+					// ...and display a now items message.
+					List<FolderRow> folderRows = new ArrayList<FolderRow>();
+					m_vdt.setRowData( 0, folderRows);
+					m_vdt.setRowCount(0            );
+					postProcessRowDataAsync(folderRows);
+				}
+				
+				@Override
+				public void onSuccess(VibeRpcResponse response) {
+					// Did we read more rows than we asked for?
+					FolderRowsRpcResponseData responseData = ((FolderRowsRpcResponseData) response.getResponseData());
+					m_contributorIds = responseData.getContributorIds();
+					List<FolderRow> folderRows = responseData.getFolderRows();
+					int rowsRead = folderRows.size();
+					if (rowsRead > rowsRequested) {
+						// Yes!  This should only happen with pinned
+						// entries.  Assert that's the case...
+						GwtClientHelper.debugAssert(
+							isPinning(),
+							m_messages.vibeDataTable_InternalError_UnexpectedRowCount(
+								rowsRequested,
+								rowsRead));
+						
+						// ...and use the entries read as the new page
+						// ...size.
+						m_vdt.setPageSize(rowsRead);
+					}
+					
+					// Apply the rows we read.
+					m_vdt.setRowData( responseData.getStartOffset(), folderRows);
+					m_vdt.setRowCount(responseData.getTotalRows()              );
+					
+					// If we have an entry menu...
+					EntryMenuPanel emp = getEntryMenuPanel();
+					if (null != emp) {
+						// ...tell it to update the state of its items that
+						// ...require entries be available.
+						EntryMenuPanel.setEntriesAvailable(emp, (0 < rowsRead));
+					}
+
+					// Allow the view's that extend this do what ever
+					// they need to do once a collection of rows has
+					// been rendered.
+					postProcessRowDataAsync(folderRows);
+				}
+			});
 		}
 	}
 
@@ -518,6 +545,8 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	/*
 	 * Inner class used to represent a select all check box in a data
 	 * table's header.
+	 * 
+	 * @author rvasudevan@novell.com
 	 */
 	private class SelectAllHeader extends Header<Boolean> {
 		private boolean m_checked;	//
@@ -630,7 +659,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 				}
 				else {
 					reply = new EntryPinInfo(
-						fr.isPinned(),
+						fr.getPinned(),
 						getFolderId(),
 						fr.getEntityId().getEntityId());
 				}
@@ -848,20 +877,6 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	}
 	
 	/*
-	 * Constructs a SafeHtml object containing the HTML for the mobile
-	 * devices column's header.
-	 */
-	private SafeHtml buildMobileDevicesHeaderHtml(FolderColumn fc) {
-		VibeFlowPanel deviceBubble = new VibeFlowPanel();
-		deviceBubble.addStyleName("vibe-dataTableMobileDevices-headerBubble");
-		deviceBubble.setTitle(fc.getColumnTitle());
-		deviceBubble.getElement().setInnerHTML("&nbsp;&nbsp;");
-		VibeFlowPanel html = new VibeFlowPanel();
-		html.add(deviceBubble);
-		return SafeHtmlUtils.fromTrustedString(html.getElement().getInnerHTML());
-	}
-	
-	/*
 	 * Returns true if entries can be pinned in the current view and
 	 * false otherwise.
 	 */
@@ -878,44 +893,6 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	}
 
 	/*
-	 * Asynchronously runs the copy public link dialog on the selected
-	 * entities.
-	 */
-	private void copySelectedEntitiesPublicLinkAsync(final List<EntityId> selectedEntities) {
-		GwtClientHelper.deferCommand(new ScheduledCommand() {
-			@Override
-			public void execute() {
-				copySelectedEntitiesPublicLinkNow(selectedEntities);
-			}
-		});
-	}
-	
-	/*
-	 * Synchronously runs the copy public link dialog on the selected
-	 * entities.
-	 */
-	private void copySelectedEntitiesPublicLinkNow(List<EntityId> selectedEntities) {
-		BinderViewsHelper.copyEntitiesPublicLink(selectedEntities);
-	}
-
-	/*
-	 * Returns the number of entry rows in a List<FolderRow> that are
-	 * not file entries.
-	 */
-	private static int countNonFileEntryRows(List<FolderRow> rows) {
-		int reply = 0;
-		if (GwtClientHelper.hasItems(rows)) {
-			boolean isFilr = GwtClientHelper.isLicenseFilr();
-			for (FolderRow row:  rows) {
-				if (row.getEntityId().isEntry() && (!(row.isRowFile(isFilr)))) {
-					reply += 1;
-				}
-			}
-		}
-		return reply;
-	}
-	
-	/*
 	 * Removes the selection from the rows in a List<FolderRows>.
 	 */
 	private void deselectRows(List<FolderRow> rows) {
@@ -930,16 +907,6 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		}
 	}
 
-	/*
-	 * Initializes the data table as being empty.
-	 */
-	private void displayEmptyDataTable(final AbstractCellTable<FolderRow> vdt) {
-		List<FolderRow> folderRows = new ArrayList<FolderRow>();
-		vdt.setRowData( 0, folderRows);
-		vdt.setRowCount(0            );
-		postProcessRowDataAsync(folderRows);
-	}
-	
 	/*
 	 * Asynchronously sets the size of the data table based on its
 	 * position in the view.
@@ -971,27 +938,6 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	}
 	
 	/*
-	 * Asynchronously runs the email public link dialog on the selected
-	 * entities.
-	 */
-	private void emailSelectedEntitiesPublicLinkAsync(final List<EntityId> selectedEntities) {
-		GwtClientHelper.deferCommand(new ScheduledCommand() {
-			@Override
-			public void execute() {
-				emailSelectedEntitiesPublicLinkNow(selectedEntities);
-			}
-		});
-	}
-	
-	/*
-	 * Synchronously runs the email public link dialog on the selected
-	 * entities.
-	 */
-	private void emailSelectedEntitiesPublicLinkNow(List<EntityId> selectedEntities) {
-		BinderViewsHelper.emailEntitiesPublicLink(selectedEntities);
-	}
-	
-	/*
 	 * If all the column widths use pixels, forces the last one to
 	 * 100%.
 	 */
@@ -1020,7 +966,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 				// Is this row an entry that matches the requested
 				// pinned state?
 				EntityId rowEID = fr.getEntityId();
-				if (rowEID.isEntry() && (fr.isPinned() == pinned)) {
+				if (rowEID.isEntry() && (fr.getPinned() == pinned)) {
 					// Yes!  Add its entity ID to the List<EntityId>.
 					reply.add(rowEID);
 				}
@@ -1105,78 +1051,6 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	}
 
 	/*
-	 * Asynchronously process the nested folders in the rows so that
-	 * we can determine whether to make them drop targets.
-	 */
-	private void getNestedFolderRightsAsync(final List<FolderRow> folderRows) {
-		GwtClientHelper.deferCommand(new ScheduledCommand() {
-			@Override
-			public void execute() {
-				getNestedFolderRightsNow(folderRows);
-			}
-		},
-		NESTED_FOLDER_RIGHTS_QUERY_DELAY);
-	}
-	
-	/*
-	 * Synchronously process the nested folders in the rows so that
-	 * we can determine whether to make them drop targets.
-	 */
-	private void getNestedFolderRightsNow(final List<FolderRow> folderRows) {
-		// Scan the rows.
-		final Map<Long, EntryTitleInfo> etiMap = new HashMap<Long, EntryTitleInfo>();
-		final List<Long>                fIds   = new ArrayList<Long>();
-		for (FolderRow fr:  folderRows) {
-			// Is this row a nested folder?
-			EntityId eid = fr.getEntityId();
-			if (eid.isFolder()) {
-				// Yes!  Does it contain an EntryTitleInfo without the
-				// user's add rights?
-				EntryTitleInfo eti = fr.getRowEntryTitlesMap().get(FolderColumn.COLUMN_TITLE);
-				if ((null != eti) && (null == eti.getCanAddFolderEntities())) {
-					// Yes!  Track the folder's ID and its
-					// EntryTitleInfo.
-					Long fid = eid.getEntityId(); 
-					fIds.add(  fid     );
-					etiMap.put(fid, eti);
-				}
-			}
-		}
-
-		// Did we find any nested folders we need to get the user's add
-		// rights for?
-		if (!(fIds.isEmpty())) {
-			// Yes!  Get the user's add rights to them from the server.
-			final GetCanAddEntitiesToBindersCmd cmd = new GetCanAddEntitiesToBindersCmd(fIds);
-			GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
-				@Override
-				public void onFailure(Throwable caught) {
-					GwtClientHelper.handleGwtRPCFailure(
-						caught,
-						GwtTeaming.getMessages().rpcFailure_GetCanAddEntitiesToBinders());
-				}
-
-				@Override
-				public void onSuccess(VibeRpcResponse result) {
-					// Extract the user's add rights from the
-					// response...
-					CanAddEntitiesToBindersRpcResponseData   response = ((CanAddEntitiesToBindersRpcResponseData) result.getResponseData());
-					Map<Long, CanAddEntitiesRpcResponseData> addMap   = response.getCanAddEntitiesMap();
-					
-					// ...scan the folder IDs we got the user's add
-					// ...rights for...
-					Set<Long> fIds = addMap.keySet();
-					for (Long fId:  fIds) {
-						// ...and add the rights to the folder's
-						// ...EntryTitleInfo.
-						etiMap.get(fId).setCanAddFolderEntities(addMap.get(fId));
-					}
-				}
-			});
-		}
-	}
-
-	/*
 	 * Returns the URL to use for a row's image.
 	 */
 	private String getRowImageUrl(FolderRow fr, EntryTitleInfo eti) {
@@ -1186,7 +1060,8 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		String			reply;
 		if (fr.isBinder()) {
 			// Yes!  Is this the user's home folder?
-			if (fr.isHomeDir()) {
+			BinderInfo bi = fr.getBinderInfo();
+			if ((null != bi) && bi.isFolderHome()) {
 				// Yes!
 				switch (bis) {
 				default:
@@ -1281,7 +1156,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	 */
 	public List<EntityId> getSelectedEntityIds() {
 		// Are there any selected rows in the table?
-		List<EntityId>  reply = new ArrayList<EntityId>();
+		List<EntityId>   reply = new ArrayList<EntityId>();
 		List<FolderRow> rows  = m_dataTable.getVisibleItems();
 		if (null != rows) {
 			// Yes!  Scan them
@@ -1318,19 +1193,6 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	}
 
 	/*
-	 * Scans the current columns looking for the full name column.  If
-	 * it is found, it's returned.  Otherwise, null is returned.
-	 */
-	private FolderColumn getFullNameColumn() {
-		for (FolderColumn fc:  m_folderColumnsList) {
-			if (FolderColumn.isColumnFullName(fc.getColumnName())) {
-				return fc;
-			}
-		}
-		return null;
-	}
-	
-	/*
 	 * Scans the current columns looking for the title column.  If it
 	 * is found, it's returned.  Otherwise, null is returned.
 	 */
@@ -1361,8 +1223,8 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		if (m_fixedLayout)
 		     initDataMembersFixed();
 		else initDataMembersFloat();
-		m_actionMenuColumnWidth = new ColumnWidth(VibeDataTableConstants.ACTION_MENU_WIDTH_PX, Unit.PX );
-		m_100PctColumnWidth     = new ColumnWidth(100,                                         Unit.PCT);
+		m_actionMenuColumnWidth = new ColumnWidth(ACTION_MENU_WIDTH_PX, Unit.PX );
+		m_100PctColumnWidth     = new ColumnWidth(100,                  Unit.PCT);
 		
 		// ...and store the initial columns widths as the defaults.
 		m_defaultColumnWidths = ColumnWidth.copyColumnWidths(m_columnWidths);
@@ -1481,14 +1343,9 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 			
 			// No, this column doesn't show a download link!  Does it
 			// show presence?
-			else if (FolderColumn.isColumnPresence(cName) || FolderColumn.isColumnFullName(cName) || FolderColumn.isColumnDeviceUser(cName)) {
+			else if (FolderColumn.isColumnPresence(cName) || FolderColumn.isColumnFullName(cName)) {
 				// Yes!  Create a PresenceColumn for it.
-				boolean userManagementCell = (FolderColumn.isColumnFullName(cName) && getFolderInfo().isBinderProfilesRootWSManagement());
-				PresenceClickAction clickAction;
-				if      (userManagementCell)                    clickAction = PresenceClickAction.SHOW_USER_PROPERTIES;
-				else if (showProfileEntryForPresenceWithNoWS()) clickAction = PresenceClickAction.SHOW_PROFILE_ENTRY_WITH_NO_WS;
-				else                                            clickAction = PresenceClickAction.SHOW_SIMPLE_PROFILE;
-				column = new PresenceColumn<FolderRow>(fc, clickAction) {
+				column = new PresenceColumn<FolderRow>(fc, showProfileEntryForPresenceWithNoWS()) {
 					@Override
 					public PrincipalInfo getValue(FolderRow fr) {
 						return fr.getColumnValueAsPrincipalInfo(fc);
@@ -1498,7 +1355,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 				// Is this the full name column for the personal
 				// workspaces view contained in the Manage Users
 				// dialog? 
-				if (userManagementCell) {
+				if (FolderColumn.isColumnFullName(cName) && getFolderInfo().isBinderProfilesRootWSManagement()) {
 					// Yes!  Create an ActionMenuColumn for it.
 					supportColumn = new ActionMenuColumn<FolderRow>(fc, getFolderInfo()) {
 						@Override
@@ -1543,11 +1400,11 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 			// show an entry title?
 			else if (FolderColumn.isColumnTitle(cName)) {
 				// Yes!  Create a EntryTitleColumn for it.
-				column = new EntryTitleColumn<FolderRow>(fc, getFolderDisplayData().getFileLinkAction(), this) {
+				column = new EntryTitleColumn<FolderRow>(fc) {
 					@Override
 					public EntryTitleInfo getValue(FolderRow fr) {
 						EntryTitleInfo reply = fr.getColumnValueAsEntryTitle(fc);
-						if ((null != reply) && showEntryTitleIcon()) {
+						if (null != reply) {
 							// Create the rows's Image widget...
 							Image rowImg = new Image();
 							rowImg.getElement().setAttribute("align", "absmiddle");
@@ -1635,7 +1492,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 
 			// No, this column isn't a collection of task folders
 			// either!  Is it an HTML description column?
-			else if (FolderColumn.isColumnDescriptionHtml(cName) || FolderColumn.isColumnDeviceDescription(cName)) {
+			else if (FolderColumn.isColumnDescriptionHtml(cName)) {
 				// Yes!  Create a DescriptionHtmlColumn for it.
 				column = new DescriptionHtmlColumn<FolderRow>(fc) {
 					@Override
@@ -1643,29 +1500,6 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 						return fr.getColumnValueAsDescriptionHtml(fc);
 					}
 				};
-
-				// Is this description for a mobile device? 
-				if (FolderColumn.isColumnDeviceDescription(cName)) {
-					// Yes!  Create an ActionMenuColumn for it.
-					supportColumn = new ActionMenuColumn<FolderRow>(fc, getFolderInfo()) {
-						@Override
-						public EntryTitleInfo getValue(FolderRow fr) {
-							// The ActionMenuColumn requires an
-							// EntryTitleInfo.  For the device
-							// description column in the manage mobile
-							// devices dialog, we don't have one.
-							// Construct a dummy one with enough
-							// information for the ActionMenuColumn to
-							// work.
-							EntryTitleInfo dummyETI = new EntryTitleInfo();
-							dummyETI.setEntityId(fr.getEntityId());
-							return dummyETI;
-						}
-					};
-					supportColumn.setSortable(false);
-					supportColumnWidth  = m_actionMenuColumnWidth;
-					supportColumnStyles = (STYLE_COL_BASE + " vibe-dataTableActions-column");
-				}
 			}
 			
 			// No, this column isn't an HTML description column either!
@@ -1744,57 +1578,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 			}
 			
 			// No, this column isn't a comments count either!  Is it a
-			// mobile devices count?
-			else if (FolderColumn.isColumnMobileDevices(cName)) {
-				// Yes!  Create a MobileDevicesColumn for it.
-				column = new MobileDevicesColumn<FolderRow>(fc) {
-					@Override
-					public MobileDevicesInfo getValue(FolderRow fr) {
-						FolderColumn		fullNameFC = getFullNameColumn();
-						PrincipalInfo		pi         = ((null == fullNameFC) ? null : fr.getColumnValueAsPrincipalInfo(fullNameFC));
-						MobileDevicesInfo	reply      = fr.getColumnValueAsMobileDevices(fc);
-						if (null != reply) {
-							// Create an Image widget for the manage
-							// mobile devices dialog...
-							String userUrl = pi.getAvatarUrl();
-							if (!(GwtClientHelper.hasString(userUrl))) {
-								userUrl = m_images.userPhoto().getSafeUri().asString();
-							}
-							Image rowImg = GwtClientHelper.buildImage(userUrl);
-							rowImg.addStyleName("vibe-dataTableFolderColumn-mobileDevices");
-
-							// ...and store the Image and user's title
-							// ...in the reply.
-							reply.setClientItemImage(rowImg);
-							reply.setClientItemTitle(pi.getTitle());
-						}
-						return reply;
-					}
-				};
-				column.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
-				columnHeaderHtml = buildMobileDevicesHeaderHtml(fc);
-				columnHeaderStyle = "vibe-dataTableFolderColumn-headerCenter";
-			}
-			
-			// No, this column isn't a mobile devices count either!  Is
-			// it a mobile devices wipe scheduled?
-			else if (FolderColumn.isColumnDeviceWipeScheduled(cName)) {
-				// Yes!  Create a MobileDeviceWipeScheduledColumn for
-				// it.
-				column = new MobileDeviceWipeScheduledColumn<FolderRow>(fc) {
-					@Override
-					public MobileDeviceWipeScheduleInfo getValue(FolderRow fr) {
-						return
-							new MobileDeviceWipeScheduleInfo(
-								fr.getEntityId(),
-								fr.getColumnWipeScheduled(fc),
-								fr.getColumnValueAsString(fc));
-					}
-				};
-			}
-			
-			// No, this column isn't a mobile device wipe scheduled
-			// either!  Is it a user type?
+			// user type?
 			else if (FolderColumn.isColumnUserType(cName)) {
 				// Yes!  Create a UserTypeColumn for it.
 				column = new UserTypeColumn<FolderRow>(fc) {
@@ -1817,13 +1601,13 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 			}
 
 			// Complete the initialization of the column.
-			fc.setDisplayIndex(colIndex                                    );
-			column.setSortable(fc.isColumnSortable()                       );
+			fc.setDisplayIndex(   colIndex                                    );
+			column.setSortable(   fc.isColumnSortable()                       );
 			if (null == columnHeaderHtml)
-			     m_dataTable.addColumn(column, fc.getColumnTitle()         );
-			else m_dataTable.addColumn(column, columnHeaderHtml            );
-		    setColumnStyles(   column, cName, colIndex++, columnHeaderStyle);
-		    setColumnWidth(            cName, column, pctTotal             );
+			     m_dataTable.addColumn(column, fc.getColumnTitle()            );
+			else m_dataTable.addColumn(column, columnHeaderHtml               );
+		    setColumnStyles(      column, cName, colIndex++, columnHeaderStyle);
+		    setColumnWidth(               cName, column, pctTotal             );
 
 		    // Do we have a support column for the column we just
 		    // added?
@@ -1844,10 +1628,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		    // Is this the column we're sorted on?
 		    if (fc.getColumnSortKey().equalsIgnoreCase(getFolderSortBy())) {
 		    	// Yes!  Tell the data table about it.
-				csl.push(
-					new ColumnSortInfo(
-						column,
-						(!(getFolderSortDescend()))));
+				csl.push(new ColumnSortInfo(column, (!getFolderSortDescend())));
 		    }
 		}
 	}
@@ -1912,27 +1693,6 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		});
 	}
 	
-	/*
-	 * Asynchronously mails the public link of the entity using a
-	 * 'mailto://...' URL.
-	 */
-	private void mailToPublicLinkAsync(final EntityId entityId) {
-		GwtClientHelper.deferCommand(new ScheduledCommand() {
-			@Override
-			public void execute() {
-				mailToPublicLinkNow(entityId);
-			}
-		});
-	}
-	
-	/*
-	 * Synchronously mails the public link of the entity using a
-	 * 'mailto://...' URL.
-	 */
-	private void mailToPublicLinkNow(EntityId entityId) {
-		BinderViewsHelper.mailToPublicLink(entityId);
-	}
-
 	/**
 	 * Called when the data table is attached.
 	 * 
@@ -1946,14 +1706,14 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	}
 	
 	/**
-	 * Handles ChangeEntryTypeSelectedEntitiesEvent's received by this class.
+	 * Handles ChangeEntryTypeSelectedEntriesEvent's received by this class.
 	 * 
-	 * Implements the ChangeEntryTypeSelectedEntitiesEvent.Handler.onChangeEntryTypeSelectedEntities() method.
+	 * Implements the ChangeEntryTypeSelectedEntriesEvent.Handler.onChangeEntryTypeSelectedEntries() method.
 	 * 
 	 * @param event
 	 */
 	@Override
-	public void onChangeEntryTypeSelectedEntities(ChangeEntryTypeSelectedEntitiesEvent event) {
+	public void onChangeEntryTypeSelectedEntries(ChangeEntryTypeSelectedEntriesEvent event) {
 		// Is the event targeted to this folder?
 		Long eventFolderId = event.getFolderId();
 		if (eventFolderId.equals(getFolderId())) {
@@ -1967,9 +1727,9 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	}
 	
 	/**
-	 * Handles ClearSelectedUsersAdHocFoldersEvent's received by this class.
+	 * Handles ClearSelectedUsersAdHocFoldersAdHocFoldersEvent's received by this class.
 	 * 
-	 * Implements the ClearSelectedUsersAdHocFoldersEvent.Handler.onClearSelectedUsersAdHocFolders() method.
+	 * Implements the ClearSelectedUsersAdHocFoldersAdHocFoldersEvent.Handler.onClearSelectedUsersAdHocFolders() method.
 	 * 
 	 * @param event
 	 */
@@ -1984,52 +1744,6 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 				selectedEntityIds = getSelectedEntityIds();
 			}
 			BinderViewsHelper.clearUsersAdHocFolders(
-				EntityId.getLongsFromEntityIds(selectedEntityIds),
-				new FullUIReloadEvent());
-		}
-	}
-	
-	/**
-	 * Handles ClearSelectedUsersDownloadEvent's received by this class.
-	 * 
-	 * Implements the ClearSelectedUsersDownloadEvent.Handler.onClearSelectedUsersDownload() method.
-	 * 
-	 * @param event
-	 */
-	@Override
-	public void onClearSelectedUsersDownload(ClearSelectedUsersDownloadEvent event) {
-		// Is the event targeted to this folder?
-		Long eventWorkspaceId = event.getWorkspaceId();
-		if (eventWorkspaceId.equals(getFolderId())) {
-			// Yes!  Invoke the clear.
-			List<EntityId> selectedEntityIds = event.getSelectedEntities();
-			if (!(GwtClientHelper.hasItems(selectedEntityIds))) {
-				selectedEntityIds = getSelectedEntityIds();
-			}
-			BinderViewsHelper.clearUsersDownload(
-				EntityId.getLongsFromEntityIds(selectedEntityIds),
-				new FullUIReloadEvent());
-		}
-	}
-	
-	/**
-	 * Handles ClearSelectedUsersWebAccessEvent's received by this class.
-	 * 
-	 * Implements the ClearSelectedUsersWebAccessEvent.Handler.onClearSelectedUsersWebAccess() method.
-	 * 
-	 * @param event
-	 */
-	@Override
-	public void onClearSelectedUsersWebAccess(ClearSelectedUsersWebAccessEvent event) {
-		// Is the event targeted to this folder?
-		Long eventWorkspaceId = event.getWorkspaceId();
-		if (eventWorkspaceId.equals(getFolderId())) {
-			// Yes!  Invoke the clear.
-			List<EntityId> selectedEntityIds = event.getSelectedEntities();
-			if (!(GwtClientHelper.hasItems(selectedEntityIds))) {
-				selectedEntityIds = getSelectedEntityIds();
-			}
-			BinderViewsHelper.clearUsersWebAccess(
 				EntityId.getLongsFromEntityIds(selectedEntityIds),
 				new FullUIReloadEvent());
 		}
@@ -2078,159 +1792,14 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	}
 	
 	/**
-	 * Handles CopyPublicLinkSelectedEntitiesEvent's received by this class.
+	 * Handles CopySelectedEntriesEvent's received by this class.
 	 * 
-	 * Implements the CopyPublicLinkSelectedEntitiesEvent.Handler.onCopyPublicLinkSelectedEntities() method.
-	 * 
-	 * @param event
-	 */
-	@Override
-	public void onCopyPublicLinkSelectedEntities(CopyPublicLinkSelectedEntitiesEvent event) {
-		// Is the event targeted to this folder?
-		Long eventFolderId = event.getFolderId();
-		if (eventFolderId.equals(getFolderId())) {
-			// Yes!  Does the user have rights to share everything
-			// they've selected?
-			List<EntityId> seList = event.getSelectedEntities();
-			final boolean validateSelectedRows = (!(GwtClientHelper.hasItems(seList)));
-			if (validateSelectedRows) {
-				seList = getSelectedEntityIds();
-			}
-			
-			final List<EntityId> selectedEntities = seList;
-			GwtClientHelper.executeCommand(
-					new GetEntityRightsCmd(selectedEntities),
-					new AsyncCallback<VibeRpcResponse>() {
-				@Override
-				public void onFailure(Throwable caught) {
-					GwtClientHelper.handleGwtRPCFailure(
-						caught,
-						GwtTeaming.getMessages().rpcFailure_GetEntityRights());
-				}
-
-				@Override
-				public void onSuccess(VibeRpcResponse response) {
-					EntityRightsRpcResponseData responseData = ((EntityRightsRpcResponseData) response.getResponseData());
-					onCopyPublicLinkSelectedEntitiesAsync(selectedEntities, responseData.getEntityRightsMap(), validateSelectedRows);
-				}
-			});
-		}
-	}
-
-	/*
-	 * Asynchronously processes the share request on the selected
-	 * entries, given the current user's rights to them.
-	 */
-	private void onCopyPublicLinkSelectedEntitiesAsync(final List<EntityId> selectedEntities, final Map<String, EntityRights> entityRightsMap, final boolean validateSelectedRows) {
-		GwtClientHelper.deferCommand(new ScheduledCommand() {
-			@Override
-			public void execute() {
-				onCopyPublicLinkSelectedEntitiesNow(selectedEntities, entityRightsMap, validateSelectedRows);
-			}
-		});
-	}
-	
-	/*
-	 * Synchronously processes the share request on the selected
-	 * entries, given the current user's rights to them.
-	 */
-	private void onCopyPublicLinkSelectedEntitiesNow(final List<EntityId> selectedEntities, final Map<String, EntityRights> entityRightsMap, boolean validateSelectedRows) {
-		// Are there any invalid rows?
-		final List<FolderRow> invalidRows = (validateSelectedRows ? validateSelectedRows_PublicLink(entityRightsMap) : null);
-		if (!(GwtClientHelper.hasItems(invalidRows))) {
-			// Yes!  Invoke the share.
-			copySelectedEntitiesPublicLinkAsync(selectedEntities);
-		}
-		
-		else {
-			// No, they don't have rights to share everything!  What
-			// type of share failures are we dealing with?
-			int totalPLFailures    = invalidRows.size();
-			int plFolderFailures   = BinderViewsHelper.getFolderPublicLinkFailureCount(selectedEntities);
-			int plNonFileFailures  = countNonFileEntryRows(invalidRows);
-			int otherShareFailures = (totalPLFailures - (plFolderFailures + plNonFileFailures));
-			if (0 > otherShareFailures) {
-				otherShareFailures = 0;
-			}
-			boolean hasPLFolderFailures  = (0 < plFolderFailures  );
-			boolean hasPLNonFileFailures = (0 < plNonFileFailures );
-			boolean hasOtherPLFailures   = (0 < otherShareFailures);
-			
-			// Can they share any of them?
-			if (selectedEntities.size() == totalPLFailures) {
-				// No!  Tell them about the problem and bail.
-				String shareAlert;
-				if      (hasPLFolderFailures && hasPLNonFileFailures && hasOtherPLFailures) shareAlert = m_messages.vibeDataTable_Warning_CantCopyPublicLink_3();
-				else if (hasPLFolderFailures && hasPLNonFileFailures)                       shareAlert = m_messages.vibeDataTable_Warning_CantCopyPublicLink_2a();
-				else if (                       hasPLNonFileFailures && hasOtherPLFailures) shareAlert = m_messages.vibeDataTable_Warning_CantCopyPublicLink_2b();
-				else if (hasPLFolderFailures &&                         hasOtherPLFailures) shareAlert = m_messages.vibeDataTable_Warning_CantCopyPublicLink_2c();
- 				else if (hasPLFolderFailures)                                               shareAlert = m_messages.vibeDataTable_Warning_CantCopyPublicLink_1a();
-				else if (                       hasPLNonFileFailures)                       shareAlert = m_messages.vibeDataTable_Warning_CantCopyPublicLink_1b();
-				else                                                                        shareAlert = m_messages.vibeDataTable_Warning_CantCopyPublicLink_1c();
-				GwtClientHelper.deferredAlert(shareAlert);
-				return;
-			}
-			
-			// Is the user sure they want to share the selections
-			// they have rights to share?
-			final String confirmPrompt;
-			if      (hasPLFolderFailures && hasPLNonFileFailures && hasOtherPLFailures) confirmPrompt = m_messages.vibeDataTable_Confirm_CantCopyPublicLink_3();
-			else if (hasPLFolderFailures && hasPLNonFileFailures)                       confirmPrompt = m_messages.vibeDataTable_Confirm_CantCopyPublicLink_2a();
-			else if (                       hasPLNonFileFailures && hasOtherPLFailures) confirmPrompt = m_messages.vibeDataTable_Confirm_CantCopyPublicLink_2b();
-			else if (hasPLFolderFailures &&                         hasOtherPLFailures) confirmPrompt = m_messages.vibeDataTable_Confirm_CantCopyPublicLink_2c();
-			else if (hasPLFolderFailures)                                               confirmPrompt = m_messages.vibeDataTable_Confirm_CantCopyPublicLink_1a();
-			else if (                       hasPLNonFileFailures)                       confirmPrompt = m_messages.vibeDataTable_Confirm_CantCopyPublicLink_1b();
-			else                                                                        confirmPrompt = m_messages.vibeDataTable_Confirm_CantCopyPublicLink_1c();
-			ConfirmDlg.createAsync(new ConfirmDlgClient() {
-				@Override
-				public void onUnavailable() {
-					// Nothing to do.  Error handled in
-					// asynchronous provider.
-				}
-				
-				@Override
-				public void onSuccess(ConfirmDlg cDlg) {
-					ConfirmDlg.initAndShow(
-						cDlg,
-						new ConfirmCallback() {
-							@Override
-							public void dialogReady() {
-								// Ignored.  We don't really care when the
-								// dialog is ready.
-							}
-
-							@Override
-							public void accepted() {
-								// Yes, they're sure!  Remove the
-								// selection from the entries they
-								// don't have rights to share and
-								// perform the copy public link on the
-								// rest.
-								removeRowEntities(                  selectedEntities, invalidRows);
-								deselectRows(                                         invalidRows);
-								copySelectedEntitiesPublicLinkAsync(selectedEntities             );
-							}
-
-							@Override
-							public void rejected() {
-								// No, they're not sure!
-							}
-						},
-						confirmPrompt);
-				}
-			});
-		}
-	}
-	
-	/**
-	 * Handles CopySelectedEntitiesEvent's received by this class.
-	 * 
-	 * Implements the CopySelectedEntitiesEvent.Handler.onCopySelectedEntities() method.
+	 * Implements the CopySelectedEntriesEvent.Handler.onCopySelectedEntries() method.
 	 * 
 	 * @param event
 	 */
 	@Override
-	public void onCopySelectedEntities(CopySelectedEntitiesEvent event) {
+	public void onCopySelectedEntries(CopySelectedEntriesEvent event) {
 		// Is the event targeted to this folder?
 		Long eventFolderId = event.getFolderId();
 		if (eventFolderId.equals(getFolderId())) {
@@ -2246,14 +1815,14 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	}
 	
 	/**
-	 * Handles DeleteSelectedEntitiesEvent's received by this class.
+	 * Handles DeleteSelectedEntriesEvent's received by this class.
 	 * 
-	 * Implements the DeleteSelectedEntitiesEvent.Handler.onDeleteSelectedEntities() method.
+	 * Implements the DeleteSelectedEntriesEvent.Handler.onDeleteSelectedEntries() method.
 	 * 
 	 * @param event
 	 */
 	@Override
-	public void onDeleteSelectedEntities(DeleteSelectedEntitiesEvent event) {
+	public void onDeleteSelectedEntries(DeleteSelectedEntriesEvent event) {
 		// Is the event targeted to this folder?
 		Long eventFolderId = event.getFolderId();
 		if (eventFolderId.equals(getFolderId())) {
@@ -2265,9 +1834,9 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 				// entities deleted.
 				selectedEntityIds = getSelectedEntityIds();
 				final boolean deletingBinders = EntityId.areBindersInEntityIds(selectedEntityIds);
-				BinderViewsHelper.deleteSelections(
+				BinderViewsHelper.deleteFolderEntries(
 						selectedEntityIds,
-						new DeleteEntitiesCallback() {
+						new DeletePurgeEntriesCallback() {
 					@Override
 					public void operationCanceled() {
 						if (deletingBinders) {
@@ -2301,42 +1870,21 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	}
 	
 	/**
-	 * Handles DeleteSelectedUsersEvent's received by this class.
+	 * Handles DeleteSelectedUserWorkspacesEvent's received by this class.
 	 * 
-	 * Implements the DeleteSelectedUsersEvent.Handler.onDeleteSelectedUsers() method.
+	 * Implements the DeleteSelectedUserWorkspacesEvent.Handler.onDeleteSelectedUserWorkspaces() method.
 	 * 
 	 * @param event
 	 */
 	@Override
-	public void onDeleteSelectedUsers(DeleteSelectedUsersEvent event) {
+	public void onDeleteSelectedUserWorkspaces(DeleteSelectedUserWorkspacesEvent event) {
 		// Is the event targeted to this folder?
 		Long eventWorkspaceId = event.getWorkspaceId();
 		if (eventWorkspaceId.equals(getFolderId())) {
-			// Yes!  Delete the users selected in the data table and
-			// reset the view to redisplay things with the users
-			// deleted.
-			List<Long> selectedUserIds = EntityId.getLongsFromEntityIds(getSelectedEntityIds());
-			BinderViewsHelper.deleteSelectedUsers(
-					selectedUserIds,
-					new DeleteUsersCallback() {
-				@Override
-				public void operationCanceled() {
-					GwtClientHelper.getRequestInfo().setRefreshSidebarTree();
-					FullUIReloadEvent.fireOne();
-				}
-
-				@Override
-				public void operationComplete() {
-					GwtClientHelper.getRequestInfo().setRefreshSidebarTree();
-					FullUIReloadEvent.fireOne();
-				}
-				
-				@Override
-				public void operationFailed() {
-					// Nothing to do.  The delete call will have told
-					// the user about the failure.
-				}
-			});
+			// Yes!  Invoke the delete.
+			BinderViewsHelper.deleteUserWorkspaces(
+				EntityId.getLongsFromEntityIds(
+					getSelectedEntityIds()));
 		}
 	}
 	
@@ -2373,9 +1921,9 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	}
 	
 	/**
-	 * Handles DisableSelectedUsersAdHocFoldersEvent's received by this class.
+	 * Handles DisableSelectedUsersAdHocFoldersAdHocFoldersEvent's received by this class.
 	 * 
-	 * Implements the DisableSelectedUsersAdHocFoldersEvent.Handler.onDisableSelectedUsersAdHocFolders() method.
+	 * Implements the DisableSelectedUsersAdHocFoldersAdHocFoldersEvent.Handler.onDisableSelectedUsersAdHocFolders() method.
 	 * 
 	 * @param event
 	 */
@@ -2392,197 +1940,6 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 			BinderViewsHelper.disableUsersAdHocFolders(
 				EntityId.getLongsFromEntityIds(selectedEntityIds),
 				new FullUIReloadEvent());
-		}
-	}
-	
-	/**
-	 * Handles DisableSelectedUsersDownloadEvent's received by this class.
-	 * 
-	 * Implements the DisableSelectedUsersDownloadEvent.Handler.onDisableSelectedUsersDownload() method.
-	 * 
-	 * @param event
-	 */
-	@Override
-	public void onDisableSelectedUsersDownload(DisableSelectedUsersDownloadEvent event) {
-		// Is the event targeted to this folder?
-		Long eventWorkspaceId = event.getWorkspaceId();
-		if (eventWorkspaceId.equals(getFolderId())) {
-			// Yes!  Invoke the disable.
-			List<EntityId> selectedEntityIds = event.getSelectedEntities();
-			if (!(GwtClientHelper.hasItems(selectedEntityIds))) {
-				selectedEntityIds = getSelectedEntityIds();
-			}
-			BinderViewsHelper.disableUsersDownload(
-				EntityId.getLongsFromEntityIds(selectedEntityIds),
-				new FullUIReloadEvent());
-		}
-	}
-	
-	/**
-	 * Handles DisableSelectedUsersWebAccessEvent's received by this class.
-	 * 
-	 * Implements the DisableSelectedUsersWebAccessEvent.Handler.onDisableSelectedUsersWebAccess() method.
-	 * 
-	 * @param event
-	 */
-	@Override
-	public void onDisableSelectedUsersWebAccess(DisableSelectedUsersWebAccessEvent event) {
-		// Is the event targeted to this folder?
-		Long eventWorkspaceId = event.getWorkspaceId();
-		if (eventWorkspaceId.equals(getFolderId())) {
-			// Yes!  Invoke the disable.
-			List<EntityId> selectedEntityIds = event.getSelectedEntities();
-			if (!(GwtClientHelper.hasItems(selectedEntityIds))) {
-				selectedEntityIds = getSelectedEntityIds();
-			}
-			BinderViewsHelper.disableUsersWebAccess(
-				EntityId.getLongsFromEntityIds(selectedEntityIds),
-				new FullUIReloadEvent());
-		}
-	}
-	
-	/**
-	 * Handles EmailPublicLinkSelectedEntitiesEvent's received by this class.
-	 * 
-	 * Implements the EmailPublicLinkSelectedEntitiesEvent.Handler.onEmailPublicLinkSelectedEntities() method.
-	 * 
-	 * @param event
-	 */
-	@Override
-	public void onEmailPublicLinkSelectedEntities(EmailPublicLinkSelectedEntitiesEvent event) {
-		// Is the event targeted to this folder?
-		Long eventFolderId = event.getFolderId();
-		if (eventFolderId.equals(getFolderId())) {
-			// Yes!  Does the user have rights to share everything
-			// they've selected?
-			List<EntityId> seList = event.getSelectedEntities();
-			final boolean validateSelectedRows = (!(GwtClientHelper.hasItems(seList)));
-			if (validateSelectedRows) {
-				seList = getSelectedEntityIds();
-			}
-			
-			final List<EntityId> selectedEntities = seList;
-			GwtClientHelper.executeCommand(
-					new GetEntityRightsCmd(selectedEntities),
-					new AsyncCallback<VibeRpcResponse>() {
-				@Override
-				public void onFailure(Throwable caught) {
-					GwtClientHelper.handleGwtRPCFailure(
-						caught,
-						GwtTeaming.getMessages().rpcFailure_GetEntityRights());
-				}
-
-				@Override
-				public void onSuccess(VibeRpcResponse response) {
-					EntityRightsRpcResponseData responseData = ((EntityRightsRpcResponseData) response.getResponseData());
-					onEmailPublicLinkSelectedEntitiesAsync(selectedEntities, responseData.getEntityRightsMap(), validateSelectedRows);
-				}
-			});
-		}
-	}
-
-	/*
-	 * Asynchronously processes the share request on the selected
-	 * entries, given the current user's rights to them.
-	 */
-	private void onEmailPublicLinkSelectedEntitiesAsync(final List<EntityId> selectedEntities, final Map<String, EntityRights> entityRightsMap, final boolean validateSelectedRows) {
-		GwtClientHelper.deferCommand(new ScheduledCommand() {
-			@Override
-			public void execute() {
-				onEmailPublicLinkSelectedEntitiesNow(selectedEntities, entityRightsMap, validateSelectedRows);
-			}
-		});
-	}
-	
-	/*
-	 * Synchronously processes the share request on the selected
-	 * entries, given the current user's rights to them.
-	 */
-	private void onEmailPublicLinkSelectedEntitiesNow(final List<EntityId> selectedEntities, final Map<String, EntityRights> entityRightsMap, boolean validateSelectedRows) {
-		// Are there any invalid rows?
-		final List<FolderRow> invalidRows = (validateSelectedRows ? validateSelectedRows_PublicLink(entityRightsMap) : null);
-		if (!(GwtClientHelper.hasItems(invalidRows))) {
-			// Yes!  Invoke the share.
-			emailSelectedEntitiesPublicLinkAsync(selectedEntities);
-		}
-		
-		else {
-			// No, they don't have rights to share everything!  What
-			// type of share failures are we dealing with?
-			int totalPLFailures    = invalidRows.size();
-			int plFolderFailures   = BinderViewsHelper.getFolderPublicLinkFailureCount(selectedEntities);
-			int plNonFileFailures  = countNonFileEntryRows(invalidRows);
-			int otherShareFailures = (totalPLFailures - (plFolderFailures + plNonFileFailures));
-			if (0 > otherShareFailures) {
-				otherShareFailures = 0;
-			}
-			boolean hasPLFolderFailures  = (0 < plFolderFailures  );
-			boolean hasPLNonFileFailures = (0 < plNonFileFailures );
-			boolean hasOtherPLFailures   = (0 < otherShareFailures);
-			
-			// Can they share any of them?
-			if (selectedEntities.size() == totalPLFailures) {
-				// No!  Tell them about the problem and bail.
-				String shareAlert;
-				if      (hasPLFolderFailures && hasPLNonFileFailures && hasOtherPLFailures) shareAlert = m_messages.vibeDataTable_Warning_CantEmailPublicLink_3();
-				else if (hasPLFolderFailures && hasPLNonFileFailures)                       shareAlert = m_messages.vibeDataTable_Warning_CantEmailPublicLink_2a();
-				else if (                       hasPLNonFileFailures && hasOtherPLFailures) shareAlert = m_messages.vibeDataTable_Warning_CantEmailPublicLink_2b();
-				else if (hasPLFolderFailures &&                         hasOtherPLFailures) shareAlert = m_messages.vibeDataTable_Warning_CantEmailPublicLink_2c();
-				else if (hasPLFolderFailures)                                               shareAlert = m_messages.vibeDataTable_Warning_CantEmailPublicLink_1a();
-				else if (                       hasPLNonFileFailures)                       shareAlert = m_messages.vibeDataTable_Warning_CantEmailPublicLink_1b();
-				else                                                                        shareAlert = m_messages.vibeDataTable_Warning_CantEmailPublicLink_1c();
-				GwtClientHelper.deferredAlert(shareAlert);
-				return;
-			}
-			
-			// Is the user sure they want to share the selections
-			// they have rights to share?
-			final String confirmPrompt;
-			if      (hasPLFolderFailures && hasPLNonFileFailures && hasOtherPLFailures) confirmPrompt = m_messages.vibeDataTable_Confirm_CantEmailPublicLink_3();
-			else if (hasPLFolderFailures && hasPLNonFileFailures)                       confirmPrompt = m_messages.vibeDataTable_Confirm_CantEmailPublicLink_2a();
-			else if (                       hasPLNonFileFailures && hasOtherPLFailures) confirmPrompt = m_messages.vibeDataTable_Confirm_CantEmailPublicLink_2b();
-			else if (hasPLFolderFailures &&                         hasOtherPLFailures) confirmPrompt = m_messages.vibeDataTable_Confirm_CantEmailPublicLink_2c();
-			else if (hasPLFolderFailures)                                               confirmPrompt = m_messages.vibeDataTable_Confirm_CantEmailPublicLink_1a();
-			else if (                       hasPLNonFileFailures)                       confirmPrompt = m_messages.vibeDataTable_Confirm_CantEmailPublicLink_1b();
-			else                                                                        confirmPrompt = m_messages.vibeDataTable_Confirm_CantEmailPublicLink_1c();
-			ConfirmDlg.createAsync(new ConfirmDlgClient() {
-				@Override
-				public void onUnavailable() {
-					// Nothing to do.  Error handled in
-					// asynchronous provider.
-				}
-				
-				@Override
-				public void onSuccess(ConfirmDlg cDlg) {
-					ConfirmDlg.initAndShow(
-						cDlg,
-						new ConfirmCallback() {
-							@Override
-							public void dialogReady() {
-								// Ignored.  We don't really care when the
-								// dialog is ready.
-							}
-
-							@Override
-							public void accepted() {
-								// Yes, they're sure!  Remove the
-								// selection from the entries they
-								// don't have rights to share and
-								// perform the copy public link on the
-								// rest.
-								removeRowEntities(                   selectedEntities, invalidRows);
-								deselectRows(                                          invalidRows);
-								emailSelectedEntitiesPublicLinkAsync(selectedEntities             );
-							}
-
-							@Override
-							public void rejected() {
-								// No, they're not sure!
-							}
-						},
-						confirmPrompt);
-				}
-			});
 		}
 	}
 	
@@ -2629,52 +1986,6 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	}
 	
 	/**
-	 * Handles EnableSelectedUsersDownloadEvent's received by this class.
-	 * 
-	 * Implements the EnableSelectedUsersDownloadEvent.Handler.onEnableSelectedUsersDownload() method.
-	 * 
-	 * @param event
-	 */
-	@Override
-	public void onEnableSelectedUsersDownload(EnableSelectedUsersDownloadEvent event) {
-		// Is the event targeted to this folder?
-		Long eventWorkspaceId = event.getWorkspaceId();
-		if (eventWorkspaceId.equals(getFolderId())) {
-			// Yes!  Invoke the enable.
-			List<EntityId> selectedEntityIds = event.getSelectedEntities();
-			if (!(GwtClientHelper.hasItems(selectedEntityIds))) {
-				selectedEntityIds = getSelectedEntityIds();
-			}
-			BinderViewsHelper.enableUsersDownload(
-				EntityId.getLongsFromEntityIds(selectedEntityIds),
-				new FullUIReloadEvent());
-		}
-	}
-	
-	/**
-	 * Handles EnableSelectedUsersWebAccessEvent's received by this class.
-	 * 
-	 * Implements the EnableSelectedUsersWebAccessEvent.Handler.onEnableSelectedUsersWebAccess() method.
-	 * 
-	 * @param event
-	 */
-	@Override
-	public void onEnableSelectedUsersWebAccess(EnableSelectedUsersWebAccessEvent event) {
-		// Is the event targeted to this folder?
-		Long eventWorkspaceId = event.getWorkspaceId();
-		if (eventWorkspaceId.equals(getFolderId())) {
-			// Yes!  Invoke the enable.
-			List<EntityId> selectedEntityIds = event.getSelectedEntities();
-			if (!(GwtClientHelper.hasItems(selectedEntityIds))) {
-				selectedEntityIds = getSelectedEntityIds();
-			}
-			BinderViewsHelper.enableUsersWebAccess(
-				EntityId.getLongsFromEntityIds(selectedEntityIds),
-				new FullUIReloadEvent());
-		}
-	}
-	
-	/**
 	 * Handles HideSelectedSharesEvent's received by this class.
 	 * 
 	 * Implements the HideSelectedSharesEvent.Handler.onHideSelectedShares() method.
@@ -2707,8 +2018,8 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	@Override
 	public void onInvokeColumnResizer(InvokeColumnResizerEvent event) {
 		// Is the event targeted to this folder?
-		BinderInfo evenBinderInfo = event.getBinderInfo();
-		if (evenBinderInfo.isEqual(getFolderInfo())) {
+		Long evenBinderId = event.getBinderId();
+		if (evenBinderId.equals(getFolderId())) {
 			// Yes!  Invoke the column sizing dialog on the folder.
 			// Have we instantiated a size columns dialog yet?
 			if (null == m_sizeColumnsDlg) {
@@ -2822,14 +2133,14 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	}
 	
 	/**
-	 * Handles LockSelectedEntitiesEvent's received by this class.
+	 * Handles LockSelectedEntriesEvent's received by this class.
 	 * 
-	 * Implements the LockSelectedEntitiesEvent.Handler.onLockSelectedEntities() method.
+	 * Implements the LockSelectedEntriesEvent.Handler.onLockSelectedEntries() method.
 	 * 
 	 * @param event
 	 */
 	@Override
-	public void onLockSelectedEntities(LockSelectedEntitiesEvent event) {
+	public void onLockSelectedEntries(LockSelectedEntriesEvent event) {
 		// Is the event targeted to this folder?
 		Long eventFolderId = event.getFolderId();
 		if (eventFolderId.equals(getFolderId())) {
@@ -2843,31 +2154,14 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	}
 	
 	/**
-	 * Handles MailToPublicLinkEntityEvent's received by this class.
+	 * Handles ManageSharesSelectedEntriesEvent's received by this class.
 	 * 
-	 * Implements the MailToPublicLinkEntityEvent.Handler.onMailToPublicLinkEntity() method.
-	 * 
-	 * @param event
-	 */
-	@Override
-	public void onMailToPublicLinkEntity(MailToPublicLinkEntityEvent event) {
-		// Is the event targeted to this folder?
-		Long eventFolderId = event.getFolderId();
-		if (eventFolderId.equals(getFolderId())) {
-			// Yes!  Mail the public link.
-			mailToPublicLinkAsync(event.getEntityId());
-		}
-	}
-
-	/**
-	 * Handles ManageSharesSelectedEntitiesEvent's received by this class.
-	 * 
-	 * Implements the ManageSharesSelectedEntitiesEvent.Handler.onManageSharesSelectedEntities() method.
+	 * Implements the ManageSharesSelectedEntriesEvent.Handler.onManageSharesSelectedEntries() method.
 	 * 
 	 * @param event
 	 */
 	@Override
-	public void onManageSharesSelectedEntities(ManageSharesSelectedEntitiesEvent event) {
+	public void onManageSharesSelectedEntries(ManageSharesSelectedEntriesEvent event) {
 		// Is the event targeted to this folder?
 		Long eventFolderId = event.getFolderId();
 		if (eventFolderId.equals( getFolderId())) {
@@ -2889,14 +2183,14 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	}
 	
 	/**
-	 * Handles MarkReadSelectedEntitiesEvent's received by this class.
+	 * Handles MarkReadSelectedEntriesEvent's received by this class.
 	 * 
-	 * Implements the MarkReadSelectedEntitiesEvent.Handler.onMarkReadSelectedEntities() method.
+	 * Implements the MarkReadSelectedEntriesEvent.Handler.onMarkReadSelectedEntries() method.
 	 * 
 	 * @param event
 	 */
 	@Override
-	public void onMarkReadSelectedEntities(MarkReadSelectedEntitiesEvent event) {
+	public void onMarkReadSelectedEntries(MarkReadSelectedEntriesEvent event) {
 		// Is the event targeted to this folder?
 		Long eventFolderId = event.getFolderId();
 		if (eventFolderId.equals(getFolderId())) {
@@ -2910,14 +2204,14 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	}
 	
 	/**
-	 * Handles MarkUnreadSelectedEntitiesEvent's received by this class.
+	 * Handles MarkUnreadSelectedEntriesEvent's received by this class.
 	 * 
-	 * Implements the MarkUnreadSelectedEntitiesEvent.Handler.onMarkUnreadSelectedEntities() method.
+	 * Implements the MarkUnreadSelectedEntriesEvent.Handler.onMarkUnreadSelectedEntries() method.
 	 * 
 	 * @param event
 	 */
 	@Override
-	public void onMarkUnreadSelectedEntities(MarkUnreadSelectedEntitiesEvent event) {
+	public void onMarkUnreadSelectedEntries(MarkUnreadSelectedEntriesEvent event) {
 		// Is the event targeted to this folder?
 		Long eventFolderId = event.getFolderId();
 		if (eventFolderId.equals(getFolderId())) {
@@ -2931,14 +2225,14 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	}
 	
 	/**
-	 * Handles MoveSelectedEntitiesEvent's received by this class.
+	 * Handles MoveSelectedEntriesEvent's received by this class.
 	 * 
-	 * Implements the MoveSelectedEntitiesEvent.Handler.onMoveSelectedEntities() method.
+	 * Implements the MoveSelectedEntriesEvent.Handler.onMoveSelectedEntries() method.
 	 * 
 	 * @param event
 	 */
 	@Override
-	public void onMoveSelectedEntities(MoveSelectedEntitiesEvent event) {
+	public void onMoveSelectedEntries(MoveSelectedEntriesEvent event) {
 		// Is the event targeted to this folder?
 		Long eventFolderId = event.getFolderId();
 		if (eventFolderId.equals(getFolderId())) {
@@ -2950,6 +2244,99 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 				selectedEntityIds = getSelectedEntityIds();
 				BinderViewsHelper.moveEntries(selectedEntityIds);
 			}
+		}
+	}
+	
+	/**
+	 * Handles PurgeSelectedEntriesEvent's received by this class.
+	 * 
+	 * Implements the PurgeSelectedEntriesEvent.Handler.onPurgeSelectedEntries() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onPurgeSelectedEntries(PurgeSelectedEntriesEvent event) {
+		// Is the event targeted to this folder?
+		Long eventFolderId = event.getFolderId();
+		if (eventFolderId.equals(getFolderId())) {
+			// Yes!  Does the event contain any entities?
+			List<EntityId> selectedEntityIds = event.getSelectedEntities();
+			if (!(GwtClientHelper.hasItems(selectedEntityIds))) {
+				// No!  Purge the entities selected in the data table
+				// and reset the view to redisplay things with the
+				// entities purged.
+				selectedEntityIds = getSelectedEntityIds();
+				final boolean purgingBinders = EntityId.areBindersInEntityIds(selectedEntityIds);
+				BinderViewsHelper.purgeFolderEntries(
+						selectedEntityIds,
+						new DeletePurgeEntriesCallback() {
+					@Override
+					public void operationCanceled() {
+						if (purgingBinders) {
+							GwtClientHelper.getRequestInfo().setRefreshSidebarTree();
+							FullUIReloadEvent.fireOne();
+						}
+						else {
+							resetViewAsync();
+						}
+					}
+	
+					@Override
+					public void operationComplete() {
+						if (purgingBinders) {
+							GwtClientHelper.getRequestInfo().setRefreshSidebarTree();
+							FullUIReloadEvent.fireOne();
+						}
+						else {
+							resetViewAsync();
+						}
+					}
+					
+					@Override
+					public void operationFailed() {
+						// Nothing to do.  The purge call will have told the
+						// user about the failure.
+					}
+				});
+			}
+		}
+	}
+	
+	/**
+	 * Handles PurgeSelectedUsersEvent's received by this class.
+	 * 
+	 * Implements the PurgeSelectedUsersEvent.Handler.onPurgeSelectedUsers() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onPurgeSelectedUsers(PurgeSelectedUsersEvent event) {
+		// Is the event targeted to this folder?
+		Long eventWorkspaceId = event.getWorkspaceId();
+		if (eventWorkspaceId.equals(getFolderId())) {
+			// Yes!  Invoke the purge.
+			BinderViewsHelper.purgeUsers(
+				EntityId.getLongsFromEntityIds(
+					getSelectedEntityIds()));
+		}
+	}
+	
+	/**
+	 * Handles PurgeSelectedUserWorkspacesEvent's received by this class.
+	 * 
+	 * Implements the PurgeSelectedUserWorkspacesEvent.Handler.onPurgeSelectedUserWorkspaces() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onPurgeSelectedUserWorkspaces(PurgeSelectedUserWorkspacesEvent event) {
+		// Is the event targeted to this folder?
+		Long eventWorkspaceId = event.getWorkspaceId();
+		if (eventWorkspaceId.equals(getFolderId())) {
+			// Yes!  Invoke the purge.
+			BinderViewsHelper.purgeUserWorkspaces(
+				EntityId.getLongsFromEntityIds(
+					getSelectedEntityIds()));
 		}
 	}
 	
@@ -3046,129 +2433,6 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		}
 	}
 
-	/*
-	 * Called to read and process a block of rows.
-	 */
-	private void onRangeChangedImpl(final AbstractCellTable<FolderRow> vdt, final Long folderId, final Range range, final String authenticationGuid) {
-		final int     rowsRequested         = range.getLength();
-		final boolean hasAuthenticationGuid = GwtClientHelper.hasString(authenticationGuid);
-		GwtClientHelper.executeCommand(
-				new GetFolderRowsCmd(
-					getFolderInfo(),
-					m_folderColumnsList,
-					range.getStart(),
-					rowsRequested,
-					m_quickFilter,
-					authenticationGuid),
-				new AsyncCallback<VibeRpcResponse>() {
-			@Override
-			public void onFailure(Throwable t) {
-				// If we have a Cloud Folder authentication dialog
-				// visible...
-				if (hasAuthenticationGuid) {
-					// ...hide it.
-					m_cfaDlg.hide();
-				}
-				
-				GwtClientHelper.handleGwtRPCFailure(
-					t,
-					m_messages.rpcFailure_GetFolderRows(),
-					folderId);
-				
-				// If we have an entry menu...
-				EntryMenuPanel emp = getEntryMenuPanel();
-				if (null != emp) {
-					// ...tell it to update the state of its items that
-					// ...require entries be available.
-					EntryMenuPanel.setEntriesAvailable(emp, false);
-				}
-
-				// ...and display a now items message.
-				displayEmptyDataTable(vdt);
-			}
-			
-			@Override
-			public void onSuccess(VibeRpcResponse response) {
-				// If we have a Cloud Folder authentication dialog
-				// visible...
-				if (hasAuthenticationGuid) {
-					// ...hide it.
-					m_cfaDlg.hide();
-				}
-				
-				// Does querying the folder's rows require the user
-				// to authenticate?
-				FolderRowsRpcResponseData responseData = ((FolderRowsRpcResponseData) response.getResponseData());
-				if (responseData.requiresCloudFolderAuthentication()) {
-					// Yes!  Are we currently processing an authentication request?
-					if (hasAuthenticationGuid) {
-						// Yes!  That should never happen.  Not sure
-						// how we should handle this.  Tell the user
-						// about the problem...
-						GwtClientHelper.deferredAlert(
-							m_messages.vibeDataTable_InternalError_NestedCloudFolderAuthentication());
-						
-						// ...and display an empty data table.
-						displayEmptyDataTable(vdt);
-						return;
-					}
-					
-					// Run the authentication dialog.
-					runCloudFolderAuthenticationDlgAsync(
-						responseData.getCloudFolderAuthentication(),
-						vdt,
-						folderId,
-						range);
-				}
-				
-				else {
-					// Did we read more rows than we asked for?
-					m_contributorIds = responseData.getContributorIds();
-					List<FolderRow> folderRows = responseData.getFolderRows();
-					int rowsRead = folderRows.size();
-					if (rowsRead > rowsRequested) {
-						// Yes!  This should only happen with pinned
-						// entries.  Assert that's the case...
-						GwtClientHelper.debugAssert(
-							isPinning(),
-							m_messages.vibeDataTable_InternalError_UnexpectedRowCount(
-								rowsRequested,
-								rowsRead));
-						
-						// ...and use the entries read as the new page
-						// ...size.
-						vdt.setPageSize(rowsRead);
-					}
-					
-					// Apply the rows we read.
-					vdt.setRowData( responseData.getStartOffset(), folderRows                            );
-					vdt.setRowCount(responseData.getTotalRows(),   (!(responseData.isTotalApproximate())));
-					
-					// If we have an entry menu...
-					EntryMenuPanel emp = getEntryMenuPanel();
-					if (null != emp) {
-						// ...tell it to update the state of its items that
-						// ...require entries be available.
-						EntryMenuPanel.setEntriesAvailable(emp, (0 < rowsRead));
-					}
-
-					// Does the browser support uploads using HTML5?
-					if (GwtClientHelper.jsBrowserSupportsHtml5FileAPIs()) {
-						// Yes!  Then we need to process the nested
-						// folders in the rows so that we can determine
-						// whether to make them drop targets.
-						getNestedFolderRightsAsync(folderRows);
-					}
-
-					// Allow the view's that extend this do what ever
-					// they need to do once a collection of rows has
-					// been rendered.
-					postProcessRowDataAsync(folderRows);
-				}
-			}
-		});
-	}
-	
 	/**
 	 * Handles SharedViewFilterEvent's received by this class.
 	 * 
@@ -3207,136 +2471,79 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	}
 
 	/**
-	 * Handles ShareSelectedEntitiesEvent's received by this class.
+	 * Handles ShareSelectedEntriesEvent's received by this class.
 	 * 
-	 * Implements the ShareSelectedEntitiesEvent.Handler.onShareSelectedEntities() method.
+	 * Implements the ShareSelectedEntriesEvent.Handler.onShareSelectedEntries() method.
 	 * 
 	 * @param event
 	 */
 	@Override
-	public void onShareSelectedEntities(ShareSelectedEntitiesEvent event) {
+	public void onShareSelectedEntries(ShareSelectedEntriesEvent event) {
 		// Is the event targeted to this folder?
 		Long eventFolderId = event.getFolderId();
 		if (eventFolderId.equals(getFolderId())) {
 			// Yes!  Does the user have rights to share everything
 			// they've selected?
 			List<EntityId> seList = event.getSelectedEntities();
-			final boolean validateSelectedRows = (!(GwtClientHelper.hasItems(seList)));
-			if (validateSelectedRows) {
+			if (!(GwtClientHelper.hasItems(seList))) {
 				seList = getSelectedEntityIds();
 			}
-			
-			final List<EntityId> selectedEntities = seList;
-			GwtClientHelper.executeCommand(
-					new GetEntityRightsCmd(selectedEntities),
-					new AsyncCallback<VibeRpcResponse>() {
-				@Override
-				public void onFailure(Throwable caught) {
-					GwtClientHelper.handleGwtRPCFailure(
-						caught,
-						GwtTeaming.getMessages().rpcFailure_GetEntityRights());
-				}
-
-				@Override
-				public void onSuccess(VibeRpcResponse response) {
-					EntityRightsRpcResponseData responseData = ((EntityRightsRpcResponseData) response.getResponseData());
-					onShareSelectedEntitiesAsync(selectedEntities, responseData.getEntityRightsMap(), validateSelectedRows);
-				}
-			});
-		}
-	}
-
-	/*
-	 * Asynchronously processes the share request on the selected
-	 * entries, given the current user's rights to them.
-	 */
-	private void onShareSelectedEntitiesAsync(final List<EntityId> selectedEntities, final Map<String, EntityRights> entityRightsMap, final boolean validateSelectedRows) {
-		GwtClientHelper.deferCommand(new ScheduledCommand() {
-			@Override
-			public void execute() {
-				onShareSelectedEntitiesNow(selectedEntities, entityRightsMap, validateSelectedRows);
-			}
-		});
-	}
-	
-	/*
-	 * Synchronously processes the share request on the selected
-	 * entries, given the current user's rights to them.
-	 */
-	private void onShareSelectedEntitiesNow(final List<EntityId> selectedEntities, final Map<String, EntityRights> entityRightsMap, boolean validateSelectedRows) {
-		// Are there any invalid rows?
-		final List<FolderRow> invalidRows = (validateSelectedRows ? validateSelectedRows_Sharing(entityRightsMap) : null);
-		if (!(GwtClientHelper.hasItems(invalidRows))) {
-			// Yes!  Invoke the share.
-			shareSelectedEntitiesAsync(selectedEntities);
-		}
-		
-		else {
-			// No, they don't have rights to share everything!  What
-			// type of share failures are we dealing with?
-			int totalShareFailures = invalidRows.size();
-			int nfShareFailures    = BinderViewsHelper.getNetFolderShareFailureCount(selectedEntities, entityRightsMap);
-			int otherShareFailures = (totalShareFailures - nfShareFailures);
-			if (0 > otherShareFailures) {
-				otherShareFailures = 0;
-			}
-			boolean hasNFShareFailures    = (0 < nfShareFailures   );
-			boolean hasOtherShareFailures = (0 < otherShareFailures);
-			
-			// Can they share any of them?
-			if (selectedEntities.size() == totalShareFailures) {
-				// No!  Tell them about the problem and bail.
-				String shareAlert;
-				if      (hasNFShareFailures && hasOtherShareFailures) shareAlert = m_messages.vibeDataTable_Warning_ShareNoRightsAndNetFolders();
-				else if (hasNFShareFailures)                          shareAlert = m_messages.vibeDataTable_Warning_ShareNetFolders();
-				else                                                  shareAlert = m_messages.vibeDataTable_Warning_ShareNoRights();
-				GwtClientHelper.deferredAlert(shareAlert);
-				return;
+			final List<EntityId>	selectedEntities = seList;
+			final List<FolderRow>	invalidRows      = validateSelectedRows_Sharing();
+			if (!(GwtClientHelper.hasItems(invalidRows))) {
+				// Yes!  Invoke the share.
+				shareSelectedEntitiesAsync(selectedEntities);
 			}
 			
-			// Is the user sure they want to share the selections
-			// they have rights to share?
-			final String confirmPrompt;
-			if      (hasNFShareFailures && hasOtherShareFailures) confirmPrompt = m_messages.vibeDataTable_Confirm_CantShareNoRightsAndNetFolders();
-			else if (hasNFShareFailures)                          confirmPrompt = m_messages.vibeDataTable_Confirm_CantShareNetFolders();
-			else                                                  confirmPrompt = m_messages.vibeDataTable_Confirm_CantShareNoRights();
-			ConfirmDlg.createAsync(new ConfirmDlgClient() {
-				@Override
-				public void onUnavailable() {
-					// Nothing to do.  Error handled in
-					// asynchronous provider.
+			else {
+				// No, they don't have rights to share everything!  Can
+				// they share any of them?
+				if (selectedEntities.size() == invalidRows.size()) {
+					// No!  Tell them about the problem and bail.
+					GwtClientHelper.deferredAlert(m_messages.vibeDataTable_Warning_ShareNoRights());
+					return;
 				}
 				
-				@Override
-				public void onSuccess(ConfirmDlg cDlg) {
-					ConfirmDlg.initAndShow(
-						cDlg,
-						new ConfirmCallback() {
-							@Override
-							public void dialogReady() {
-								// Ignored.  We don't really care when the
-								// dialog is ready.
-							}
+				// Is the user sure they want to share the selections
+				// they have rights to share?
+				ConfirmDlg.createAsync(new ConfirmDlgClient() {
+					@Override
+					public void onUnavailable() {
+						// Nothing to do.  Error handled in
+						// asynchronous provider.
+					}
+					
+					@Override
+					public void onSuccess(ConfirmDlg cDlg) {
+						ConfirmDlg.initAndShow(
+							cDlg,
+							new ConfirmCallback() {
+								@Override
+								public void dialogReady() {
+									// Ignored.  We don't really care when the
+									// dialog is ready.
+								}
 
-							@Override
-							public void accepted() {
-								// Yes, they're sure!  Remove the
-								// selection from the entries they
-								// don't have rights to share and
-								// perform the share on the rest.
-								removeRowEntities(         selectedEntities, invalidRows);
-								deselectRows(                                invalidRows);
-								shareSelectedEntitiesAsync(selectedEntities             );
-							}
+								@Override
+								public void accepted() {
+									// Yes, they're sure!  Remove the
+									// selection from the entries they
+									// don't have rights to share and
+									// perform the share on the rest.
+									removeRowEntities(         selectedEntities, invalidRows);
+									deselectRows(                                invalidRows);
+									shareSelectedEntitiesAsync(selectedEntities             );
+								}
 
-							@Override
-							public void rejected() {
-								// No, they're not sure!
-							}
-						},
-						confirmPrompt);
-				}
-			});
+								@Override
+								public void rejected() {
+									// No, they're not sure!
+								}
+							},
+							m_messages.vibeDataTable_Confirm_CantShareSomeSelections());
+					}
+				});
+			}
 		}
 	}
 	
@@ -3364,14 +2571,14 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	}
 	
 	/**
-	 * Handles SubscribeSelectedEntitiesEvent's received by this class.
+	 * Handles SubscribeSelectedEntriesEvent's received by this class.
 	 * 
-	 * Implements the SubscribeSelectedEntitiesEvent.Handler.onSubscribeSelectedEntities() method.
+	 * Implements the SubscribeSelectedEntriesEvent.Handler.onSubscribeSelectedEntries() method.
 	 * 
 	 * @param event
 	 */
 	@Override
-	public void onSubscribeSelectedEntities(SubscribeSelectedEntitiesEvent event) {
+	public void onSubscribeSelectedEntries(SubscribeSelectedEntriesEvent event) {
 		// Is the event targeted to this folder?
 		Long eventFolderId = event.getFolderId();
 		if (eventFolderId.equals(getFolderId())) {
@@ -3440,14 +2647,14 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	}
 
 	/**
-	 * Handles TrashPurgeSelectedEntitiesEvent's received by this class.
+	 * Handles TrashPurgeSelectedEntriesEvent's received by this class.
 	 * 
-	 * Implements the TrashPurgeSelectedEntitiesEvent.Handler.onTrashPurgeSelectedEntities() method.
+	 * Implements the TrashPurgeSelectedEntriesEvent.Handler.onTrashPurgeSelectedEntries() method.
 	 * 
 	 * @param event
 	 */
 	@Override
-	public void onTrashPurgeSelectedEntities(TrashPurgeSelectedEntitiesEvent event) {
+	public void onTrashPurgeSelectedEntries(TrashPurgeSelectedEntriesEvent event) {
 		// Is the event targeted to this folder?
 		Long eventFolderId = event.getBinderId();
 		if (eventFolderId.equals(getFolderId())) {
@@ -3456,7 +2663,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 			GwtClientHelper.deferCommand(new ScheduledCommand() {
 				@Override
 				public void execute() {
-					trashPurgeSelectedEntities();
+					trashPurgeSelectedEntries();
 				}
 			});
 		}
@@ -3486,14 +2693,14 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	}
 
 	/**
-	 * Handles TrashRestoreSelectedEntitiesEvent's received by this class.
+	 * Handles TrashRestoreSelectedEntriesEvent's received by this class.
 	 * 
-	 * Implements the TrashRestoreSelectedEntitiesEvent.Handler.onTrashRestoreSelectedEntities() method.
+	 * Implements the TrashRestoreSelectedEntriesEvent.Handler.onTrashRestoreSelectedEntries() method.
 	 * 
 	 * @param event
 	 */
 	@Override
-	public void onTrashRestoreSelectedEntities(TrashRestoreSelectedEntitiesEvent event) {
+	public void onTrashRestoreSelectedEntries(TrashRestoreSelectedEntriesEvent event) {
 		// Is the event targeted to this folder?
 		Long eventFolderId = event.getBinderId();
 		if (eventFolderId.equals(getFolderId())) {
@@ -3502,21 +2709,21 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 			GwtClientHelper.deferCommand(new ScheduledCommand() {
 				@Override
 				public void execute() {
-					trashRestoreSelectedEntities();
+					trashRestoreSelectedEntries();
 				}
 			});
 		}
 	}
 	
 	/**
-	 * Handles UnlockSelectedEntitiesEvent's received by this class.
+	 * Handles UnlockSelectedEntriesEvent's received by this class.
 	 * 
-	 * Implements the UnlockSelectedEntitiesEvent.Handler.onUnlockSelectedEntities() method.
+	 * Implements the UnlockSelectedEntriesEvent.Handler.onUnlockSelectedEntries() method.
 	 * 
 	 * @param event
 	 */
 	@Override
-	public void onUnlockSelectedEntities(UnlockSelectedEntitiesEvent event) {
+	public void onUnlockSelectedEntries(UnlockSelectedEntriesEvent event) {
 		// Is the event targeted to this folder?
 		Long eventFolderId = event.getFolderId();
 		if (eventFolderId.equals(getFolderId())) {
@@ -3611,54 +2818,6 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 					return;
 				}
 			}
-		}
-	}
-	
-	/**
-	 * Handles ZipAndDownloadSelectedFilesEvent's received by this class.
-	 * 
-	 * Implements the ZipAndDownloadSelectedFilesEvent.Handler.onZipAndDownloadSelectedFiles() method.
-	 * 
-	 * @param event
-	 */
-	@Override
-	public void onZipAndDownloadSelectedFiles(ZipAndDownloadSelectedFilesEvent event) {
-		// Is the event targeted to this folder?
-		Long eventFolderId = event.getFolderId();
-		if (eventFolderId.equals(getFolderId())) {
-			// Yes!  Invoke the zip and download.
-			List<EntityId> selectedEntityIds = event.getSelectedEntities();
-			if (!(GwtClientHelper.hasItems(selectedEntityIds))) {
-				selectedEntityIds = getSelectedEntityIds();
-			}
-			BinderViewsHelper.zipAndDownloadFiles(
-				getDownloadPanel().getForm(),
-				selectedEntityIds,
-				event.isRecursive());
-		}
-	}
-	
-	/**
-	 * Handles ZipAndDownloadFolderEvent's received by this class.
-	 * 
-	 * Implements the ZipAndDownloadFolderEvent.Handler.onZipAndDownloadFolder() method.
-	 * 
-	 * @param event
-	 */
-	@Override
-	public void onZipAndDownloadFolder(ZipAndDownloadFolderEvent event) {
-		// Is the event targeted to this folder?
-		Long dlFolderId    = event.getFolderId();
-		Long eventFolderId = event.getHandleByFolderId();
-		if (null == eventFolderId) {
-			eventFolderId = dlFolderId;
-		}
-		if (eventFolderId.equals(getFolderId())) {
-			// Yes!  Invoke the zip and download.
-			BinderViewsHelper.zipAndDownloadFolder(
-				getDownloadPanel().getForm(),
-				dlFolderId,
-				event.isRecursive());
 		}
 	}
 	
@@ -3817,7 +2976,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 			// ...register the events.
 			EventHelper.registerEventHandlers(
 				GwtTeaming.getEventBus(),
-				REGISTERED_EVENTS,
+				m_registeredEvents,
 				this,
 				m_registeredEventHandlers);
 		}
@@ -3890,67 +3049,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 			}
 		});
 	}
-
-	/*
-	 * Asynchronously runs the Cloud Folder authentication dialog.
-	 */
-	private void runCloudFolderAuthenticationDlgAsync(final CloudFolderAuthentication cfAuthentication, final AbstractCellTable<FolderRow> vdt, final Long folderId, final Range range) {
-		GwtClientHelper.deferCommand(new ScheduledCommand() {
-			@Override
-			public void execute() {
-				runCloudFolderAuthenticationDlgNow(
-					cfAuthentication,
-					vdt,
-					folderId,
-					range);
-			}
-		});
-	}
 	
-	/*
-	 * Synchronously runs the Cloud Folder authentication dialog.
-	 */
-	private void runCloudFolderAuthenticationDlgNow(final CloudFolderAuthentication cfAuthentication, final AbstractCellTable<FolderRow> vdt, final Long folderId, final Range range) {
-		// Have we instantiated a Cloud Folder authentication dialog
-		// yet?
-		if (null == m_cfaDlg) {
-			// No!  Instantiate one now.
-			CloudFolderAuthenticationDlg.createAsync(new CloudFolderAuthenticationDlgClient() {			
-				@Override
-				public void onUnavailable() {
-					// Nothing to do.  Error handled in
-					// asynchronous provider.
-				}
-				
-				@Override
-				public void onSuccess(final CloudFolderAuthenticationDlg cfaDlg) {
-					// ...and show it.
-					m_cfaDlg = cfaDlg;
-					GwtClientHelper.deferCommand(new ScheduledCommand() {
-						@Override
-						public void execute() {
-							showCloudFolderAuthenticationDlgNow(
-								cfAuthentication,
-								vdt,
-								folderId,
-								range);
-						}
-					});
-				}
-			});
-		}
-		
-		else {
-			// Yes, we've instantiated a Cloud Folder authentication
-			// dialog already!  Simply show it.
-			showCloudFolderAuthenticationDlgNow(
-				cfAuthentication,
-				vdt,
-				folderId,
-				range);
-		}
-	}
-
 	/*
 	 * Sets the style on a column in the data table based on the
 	 * column's name.
@@ -4059,45 +3158,6 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	}
 	
 	/*
-	 * Synchronously shows the Cloud Folder authentication dialog.
-	 */
-	private void showCloudFolderAuthenticationDlgNow(final CloudFolderAuthentication cfAuthentication, final AbstractCellTable<FolderRow> vdt, final Long folderId, final Range range) {
-		CloudFolderAuthenticationDlg.initAndShow(
-			m_cfaDlg,
-			cfAuthentication,
-			new CloudFolderAuthenticationCallback() {
-				@Override
-				public void dialogReady() {
-					// With the authentication dialog running, we now
-					// need to reissue the request for the folder's
-					// rows, this time with the GUID from the
-					// authentication request. 
-					GwtClientHelper.deferCommand(new ScheduledCommand() {
-						@Override
-						public void execute() {
-							onRangeChangedImpl(
-								vdt,
-								folderId,
-								range,
-								cfAuthentication.getAuthenticationGuid());
-						}
-					});
-				}
-			});
-	}
-
-	/**
-	 * Allows the view's that extend this to decide whether or not they
-	 * want an entry icon on their title cell.
-	 * 
-	 * @return
-	 */
-	protected boolean showEntryTitleIcon() {
-		// By default, we show entry title icons.
-		return true;
-	}
-	
-	/*
 	 * Synchronously shows the column sizing dialog.
 	 */
 	private void showSizeColumnsDlgNow() {
@@ -4156,8 +3216,8 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	 * Stub provided as a convenience method.  Must be overridden by
 	 * those classes that extend this that provide trash handling.
 	 */
-	public void trashPurgeSelectedEntities() {
-		GwtClientHelper.deferredAlert(m_messages.vibeDataTable_TrashInternalErrorOverrideMissing("trashPurgeSelectedEntities()"));
+	public void trashPurgeSelectedEntries() {
+		GwtClientHelper.deferredAlert(m_messages.vibeDataTable_TrashInternalErrorOverrideMissing("trashPurgeSelectedEntries()"));
 	}
 	
 	/**
@@ -4176,15 +3236,15 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	 * Stub provided as a convenience method.  Must be overridden by
 	 * those classes that extend this that provide trash handling.
 	 */
-	public void trashRestoreSelectedEntities() {
-		GwtClientHelper.deferredAlert(m_messages.vibeDataTable_TrashInternalErrorOverrideMissing("trashRestoreSelectedEntities()"));
+	public void trashRestoreSelectedEntries() {
+		GwtClientHelper.deferredAlert(m_messages.vibeDataTable_TrashInternalErrorOverrideMissing("trashRestoreSelectedEntries()"));
 	}
 	
 	/*
 	 * Returns a List<FolderRow> of the selected rows that the user
 	 * can't share.
 	 */
-	private List<FolderRow> validateSelectedRows_Sharing(final Map<String, EntityRights> entityRightsMap) {
+	private List<FolderRow> validateSelectedRows_Sharing() {
 		// Are there any selected rows in the table?
 		List<FolderRow> reply = new ArrayList<FolderRow>();
 		List<FolderRow> rows  = m_dataTable.getVisibleItems();
@@ -4195,49 +3255,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 				// Is this row selected?
 				if (fsm.isSelected(row)) {
 					// Yes!  Is it sharable?
-					EntityRights er = entityRightsMap.get(EntityRights.getEntityRightsKey(row.getEntityId()));
-					if ((null == er) || (!(er.isCanShare()))) {
-						// No!  Track it as invalid.
-						reply.add(row);
-					}
-				}
-			}
-		}
-		
-		// If we get here, reply refers to List<FolderRow> of the rows
-		// the user doesn't have rights to share.  Return it.
-		return reply;
-	}
-
-	/*
-	 * Returns a List<FolderRow> of the selected rows that the user
-	 * can't share the public link from.
-	 */
-	private List<FolderRow> validateSelectedRows_PublicLink(final Map<String, EntityRights> entityRightsMap) {
-		// Are there any selected rows in the table?
-		List<FolderRow> reply = new ArrayList<FolderRow>();
-		List<FolderRow> rows  = m_dataTable.getVisibleItems();
-		if (GwtClientHelper.hasItems(rows)) {
-			// Yes!  Scan them
-			FolderRowSelectionModel fsm = ((FolderRowSelectionModel) m_dataTable.getSelectionModel());
-			for (FolderRow row : rows) {
-				// Is this row selected?
-				if (fsm.isSelected(row)) {
-					// Yes!  Is it sharable?
-					EntityRights er = entityRightsMap.get(EntityRights.getEntityRightsKey(row.getEntityId()));
-					if ((null == er) || (!(er.isCanShare()))) {
-						// No!  Track it as invalid.
-						reply.add(row);
-					}
-					
-					// Yes, it's sharable!  Is it an entry?
-					else if (row.getEntityId().isBinder()) {
-						// No!  Track it as invalid.
-						reply.add(row);
-					}
-					
-					// Yes, it's an entry!  Is it a file entry?
-					else if (!(row.isRowFile(GwtClientHelper.isLicenseFilr()))) {
+					if (!(row.getCanShare())) {
 						// No!  Track it as invalid.
 						reply.add(row);
 					}

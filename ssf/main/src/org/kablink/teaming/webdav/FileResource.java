@@ -36,22 +36,14 @@ package org.kablink.teaming.webdav;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.joda.time.DateTime;
-import org.joda.time.format.ISODateTimeFormat;
-import org.kablink.teaming.ConfigurationException;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
@@ -70,13 +62,10 @@ import org.kablink.teaming.module.shared.InputDataAccessor;
 import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.webdav.util.WebdavUtils;
-import org.kablink.util.Validator;
 
 import com.bradmcevoy.http.Auth;
 import com.bradmcevoy.http.CollectionResource;
 import com.bradmcevoy.http.CopyableResource;
-import com.bradmcevoy.http.CustomProperty;
-import com.bradmcevoy.http.CustomPropertyResource;
 import com.bradmcevoy.http.DeletableResource;
 import com.bradmcevoy.http.GetableResource;
 import com.bradmcevoy.http.LockInfo;
@@ -98,23 +87,9 @@ import com.bradmcevoy.http.exceptions.PreConditionFailedException;
  * @author jong
  *
  */
-public class FileResource extends WebdavResource implements FileAttachmentResource, PropFindableResource, GetableResource, DeletableResource, LockableResource, CopyableResource, MoveableResource, CustomPropertyResource {
+public class FileResource extends WebdavResource implements FileAttachmentResource, PropFindableResource, GetableResource, DeletableResource, LockableResource, CopyableResource, MoveableResource {
 
 	private static final Log logger = LogFactory.getLog(FileResource.class);
-
-	private static final String WIN_LAST_MODIFIED = "Win32LastModifiedTime";
-	
-	private static final String MICROSOFT_NAMESPACE_URI = "urn:schemas-microsoft-com:";
-	
-	private static Set<String> customPropertyNames;
-	
-	private static SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z");
-	
-	static {
-		customPropertyNames = new HashSet<String>();
-		customPropertyNames.add(WIN_LAST_MODIFIED);
-		customPropertyNames = Collections.unmodifiableSet(customPropertyNames);
-	}
 	
 	// The following properties are required
 	private String id; // file database id
@@ -577,113 +552,4 @@ public class FileResource extends WebdavResource implements FileAttachmentResour
 		}							
 	}
 	
-	@Override
-	public Set<String> getAllPropertyNames() {
-		return customPropertyNames;
-	}
-
-	@Override
-	public CustomProperty getProperty(String name) {
-		if(customPropertyNames.contains(name))
-			return new FileCustomProperty(name);
-		else
-			return null;
-	}
-
-	@Override
-	public String getNameSpaceURI() {
-		return MICROSOFT_NAMESPACE_URI;
-	}
-
-    public class FileCustomProperty implements CustomProperty {
-
-        private final String key;
-
-        public FileCustomProperty( String key ) {
-            this.key = key;
-        }
-
-        public Object getTypedValue() {
-        	// We use custom property only for write but not for read.
-        	// So we simply ignore this request and return an empty string.
-            return "";
-        }
-
-        public String getFormattedValue() {
-        	// We use custom property only for write but not for read.
-        	// So we simply ignore this request and return an empty string.
-            return "";
-        }
-
-        public void setFormattedValue( String s ) {
-        	if(WIN_LAST_MODIFIED.equalsIgnoreCase(key)) {
-            	if(Validator.isNull(s)) {
-            		if(logger.isDebugEnabled())
-            			logger.debug("Received null string for last mod time value on file " + FileResource.this.toString());
-            		return;
-            	}
-            	
-            	String dateStr = s;
-        		int index = s.indexOf(">");
-        		if(index >= 0)
-        			dateStr = s.substring(index+1);
-
-    			Date lastModDate = parseDateStr(dateStr);
-    			if(lastModDate != null) {
-        			resolveFileAttachment();
-        			// When copying or moving a file from Windows to Vibe through WebDAV, Microsoft performs the following
-        			// insane sequence of actions:
-        			// 1. Creates an empty file
-        			// 2. Update it with file content
-        			// 3. Set incorrect mod time on the file
-        			// 4. Set correct mod time
-        			// This small bit of hack is to mitigate Microsoft inefficiency, specifically the step 3 above.
-        			if(lastModDate.before(fa.getModification().getDate())) {
-	        			DefinableEntity owningEntity = fa.getOwner().getEntity();
-	        			if(EntityType.folderEntry == owningEntity.getEntityType()) {
-	            			try {
-	            				// Update the file metadata. No changes to the enclosing entry
-	            				getFileModule().correctLastModTime(fa, lastModDate);
-	            				// Reindex the enclosing entry (hence, a bit of inefficiency). We don't have to reindex the
-	            				// file content since it hasn't changed.
-	            				getFolderModule().indexEntry((FolderEntry)owningEntity, false, true);
-							} catch (Exception e) {
-								logger.error("Error updating last mod time on file '" + FileResource.this.toString() + "' owned by " + owningEntity.getEntityIdentifier().toString(), e);
-							}        				
-	        			}
-	        			else {
-	        				if(logger.isDebugEnabled())
-	        					logger.debug("Not correcting last mod time on file '" + FileResource.this.toString() + "' because it is owned by an entity of type '" + owningEntity.getEntityType() + "'");
-	        			}
-        			}
-        			else {
-        				if(logger.isDebugEnabled())
-        					logger.debug("No need to correct last mod time on file '" + FileResource.this.toString() + "' because the new value seems another garbage");
-        			}
-        		}
-        		else {
-        			if(logger.isDebugEnabled())
-        				logger.debug("Unrecognized string value '" + s + "' for last mod time on file " + FileResource.this.toString());
-        		}
-        	}
-        	else {
-        		if(logger.isDebugEnabled())
-        			logger.debug("Received value '" + s + "' for unrecognized key '" + key + " on file " + FileResource.this.toString());
-        	}
-        }
-
-        public Class getValueClass() {
-        	// We currently only use string type custom property
-            return String.class;
-        }
-    }
-
-    Date parseDateStr(String dateStr) {
-    	try {
-			return dateFormat.parse(dateStr);
-		} catch (ParseException e) {
-			logger.warn("Error parsing date string '" + dateStr + "': " + e.toString());
-			return null;
-		}
-    }
 }

@@ -38,6 +38,7 @@ package org.kablink.teaming;
  * @author Jong Kim
  */
 public interface ObjectKeys {
+	
     //Default name for the product
 	public static final String PRODUCT_NAME_DEFAULT="Kablink";
 	public static final String PRODUCT_TITLE_DEFAULT="Kablink";
@@ -116,8 +117,6 @@ public interface ObjectKeys {
 	public static final String DEFAULT_FOLDER_FILR_ROOT_CONFIG="402883b90d0de1f3010d0df5582b0032";
 	public static final String DEFAULT_FOLDER_FILR_HOME_FOLDER_CONFIG="402883b90d0de1f3010d0df5582b0040";
 	public static final String DEFAULT_FOLDER_FILR_NET_FOLDER_CONFIG="402883b90d0de1f3010d0df5582b0048";
-	public static final String DEFAULT_FOLDER_FILR_ROOT_CLOUD_FOLDER_CONFIG="402883b90d0de1f3010d0df5582b0050";
-	public static final String DEFAULT_FOLDER_FILR_CLOUD_FOLDER_CONFIG="402883b90d0de1f3010d0df5582b0058";
 	
 	//reserved internalIds for binders
 	public static final String PROFILE_ROOT_INTERNALID="402883b90d0de1f3010d0df5582b0005";
@@ -210,8 +209,6 @@ public interface ObjectKeys {
 	public static final Long SHARED_BY_ME_ID = Long.valueOf(-102);
     // Reserved id used by the REST API for the "Net Folders" virtual binder
 	public static final Long NET_FOLDERS_ID = Long.valueOf(-103);
-    // Reserved id used by the REST API for the "Public" virtual binder
-	public static final Long PUBLIC_SHARES_ID = Long.valueOf(-104);
 	//Use -1 to reserve binderId field.  Shouldn't be generated as real binderId. Used for global definitions cause mysql won't enforce the namekey unique
 	//constraint if field is null.  Also used for global userProperties, cause null cannot be used in key field.
 	public static final Long RESERVED_BINDER_ID=Long.valueOf(-1);
@@ -239,8 +236,6 @@ public interface ObjectKeys {
     public static final String FOLDER_ENTRY_DESCENDANTS="folderEntryDescendants";
     public static final String FOLDER_ENTRY="folderEntry";
     public static final String SEARCH_COUNT_TOTAL="searchCountTotal";
-    public static final String SEARCH_COUNT_TOTAL_APPROXIMATE="searchCountTotalApproximate";
-    public static final String SEARCH_THERE_IS_MORE="searchThereIsMore";
     public static final String TOTAL_SEARCH_COUNT="totalSearchCount";
     public static final String TOTAL_SEARCH_RECORDS_RETURNED="totalSearchRecordsReturned";
     public static final String FILES_FROM_APPLET_FOR_BINDER="ss_attachFile";
@@ -329,8 +324,7 @@ public interface ObjectKeys {
     public static final String BINDER_PROPERTY_FOLDER_COLUMNS = "folderColumns";
     public static final String BINDER_PROPERTY_FOLDER_COLUMN_SORT_ORDER = "folderColumnSortOrder";
     public static final String BINDER_PROPERTY_FOLDER_COLUMN_TITLES = "folderColumnTitles";
-    @Deprecated
-    public static final String BINDER_PROPERTY_MYFILES_DIR_DEPRECATED = "myFilesDir";
+    public static final String BINDER_PROPERTY_MYFILES_DIR = "myFilesDir";
     public static final String BINDER_PROPERTY_TEAM_MEMBERS = "teamMembers";
     public static final String BINDER_PROPERTY_WIKI_HOMEPAGE = "wikiHomepage";
     public static final String BINDER_PROPERTY_UPGRADE_VERSION = "binderUpgradeVersion";
@@ -340,7 +334,6 @@ public interface ObjectKeys {
     public static final String BINDER_PROPERTY_TASK_ID = "taskId";
     public static final String BINDER_PROPERTY_TASK_MODIFIED = "taskModified";
     public static final String BINDER_PROPERTY_TASK_EXPAND_GRAPHS = "taskExpandGraphs";
-    public static final String BINDER_PROPERTY_CLOUD_FOLDER_ROOT = "cloudFolderRoot";
     
     // Global properties
     public static final String GLOBAL_PROPERTY_DEFAULT_LOCALE = "defaultLocale";
@@ -460,7 +453,6 @@ public interface ObjectKeys {
     public static final String SEARCH_SCOPE_MY_FILES = "myFiles";
     public static final String SEARCH_SCOPE_NET_FOLDERS = "netFolders";
     public static final String SEARCH_SCOPE_SHARED_WITH_ME = "sharedWithMe";
-    public static final String SEARCH_SCOPE_SHARED_BY_ME = "sharedByMe";
     public static final String SEARCH_SCOPE_CURRENT = "current";
     public static final int SEARCH_MAX_HITS_DEFAULT = 10;
     public static final int SEARCH_MAX_HITS_SUB_BINDERS = 1000;
@@ -489,8 +481,6 @@ public interface ObjectKeys {
     public static final String SEARCH_CRITERIA_OR = "searchCriteriaOr";
     public static final String SEARCH_DASHBOARD_CURRENT_BINDER_ID = "searchDashboardBinderId";
     public static final String PAGE_ENTRIES_PER_PAGE = "entriesPerPage";
-    public static final String HIDE_PUBLIC_COLLECTION = "hidePublicCollection";
-    public static final String FILE_LINK_ACTION = "fileLinkAction";
     public static final String SEARCH_PAGE_ENTRIES_PER_PAGE = "entriesPerSearchPage";
     public static final String SEARCH_YEAR_MONTH = "yearMonth";
     public static final String SEARCH_EVENT_DAYS = "eventDays";
@@ -499,8 +489,6 @@ public interface ObjectKeys {
     public static final String SEARCH_ANCESTRY = "ancestry";
     public static final String SEARCH_TITLE = "searchTitle";
     public static final String SEARCH_PRE_DELETED = "__preDeleted";
-    public static final String SEARCH_HIDDEN = "__searchHidden";
-    public static final String SEARCH_FIND_USER_HIDDEN = "__searchFindUserHidden";
     public static final String SEARCH_LASTACTIVITY_DATE_START = "lastActivityDateStart";
     public static final String SEARCH_LASTACTIVITY_DATE_END = "lastActivityDateEnd";
     public static final String SEARCH_CREATION_DATE_START = "creationDateStart";
@@ -519,20 +507,16 @@ public interface ObjectKeys {
 	public static final String PI_SYNCH_TO_SOURCE = "_synchToSource";
 	
 	//Resource Drivers
-	public static final String RESOURCE_DRIVER_AUTHENTICATION_TYPE = "authenticationType";
-	public static final String RESOURCE_DRIVER_CACHED_RIGHTS_REFRESH_INTERVAL = "cachedRightsRefreshInterval";
 	public static final String RESOURCE_DRIVER_READ_ONLY = "readonly";
 	public static final String RESOURCE_DRIVER_SYNCH_TOP_DELETE = "synchTopDelete";
 	public static final String RESOURCE_DRIVER_PUT_REQUIRES_CONTENT_LENGTH = "putRequiresContentLength";
 	public static final String RESOURCE_DRIVER_ALLOW_SELF_SIGNED_CERTIFICATE = "allowSelfSignedCertificate";
-	public static final String RESOURCE_DRIVER_FULL_SYNC_DIR_ONLY = "fullSyncDirOnly";
 	public static final String RESOURCE_DRIVER_HOST_URL = "hostUrl";
 	public static final String RESOURCE_DRIVER_ACCOUNT_NAME = "accountName";
 	public static final String RESOURCE_DRIVER_PASSWORD = "password";
 	public static final String RESOURCE_DRIVER_SHARE_NAME = "shareName";
 	public static final String RESOURCE_DRIVER_SERVER_NAME = "serverName";
 	public static final String RESOURCE_DRIVER_SERVER_IP = "serverIP";
-	public static final String RESOURCE_DRIVER_USE_DIRECTORY_RIGHTS = "useDirectoryRights";
 	public static final String RESOURCE_DRIVER_VOLUME = "volume";
 	public static final String RESOURCE_DRIVER_MODIFIED_ON = "modifiedOn";
 	
@@ -546,7 +530,7 @@ public interface ObjectKeys {
     public static final String USER_DISPLAY_STYLE_NEWPAGE = "newpage";
     public static final String USER_DISPLAY_STYLE_POPUP = "popup";
     public static final String USER_DISPLAY_STYLE_VERTICAL = "vertical";
-    public static final String USER_PROPERTY_ALLOW_ADHOC_FOLDERS_DEPRECATED = "allowAdhocFolders";	// Moved into the database in Filr 1.1.
+    public static final String USER_PROPERTY_ALLOW_ADHOC_FOLDERS = "allowAdhocFolders";
     public static final String USER_PROPERTY_CALENDAR_VIEWMODE = "calendarViewMode";
     public static final String USER_PROPERTY_DASHBOARD_GLOBAL = "dashboard_global";
     public static final String USER_PROPERTY_DASHBOARD_SHOW_ALL = "dashboard_show_all";
@@ -581,12 +565,6 @@ public interface ObjectKeys {
     public static final String USER_PROPERTY_MOBILE_APPS_CACHE_CONTENT = "userMobileApps_CacheContent";
     public static final String USER_PROPERTY_MOBILE_APPS_CACHE_PWD = "userMobileApps_CachePwd";
     public static final String USER_PROPERTY_MOBILE_APPS_PLAY_WITH_OTHER_APPS = "userMobileApps_PlayWithOtherApps";
-    public static final String USER_PROPERTY_MOBILE_APPS_CUT_COPY_ENABLED = "userMobileApps_cutCopyEnabled";
-    public static final String USER_PROPERTY_MOBILE_APPS_ANDROID_SCREEN_CAPTURE_ENABLED = "userMobileApps_androidScreenCaptureEnabled";
-    public static final String USER_PROPERTY_MOBILE_APPS_DISABLE_ON_ROOTED_OR_JAIL_BROKEN_DEVICES = "userMobileApps_disableOnJailBroken";
-    public static final String USER_PROPERTY_MOBILE_APPS_OPEN_IN = "userMobileApps_openIn";
-    public static final String USER_PROPERTY_MOBILE_APPS_ANDROID_APPLICATIONS = "userMobileApps_androidApplications";
-    public static final String USER_PROPERTY_MOBILE_APPS_IOS_APPLICATIONS = "userMobileApps_iosApplications";
     public static final String USER_PROPERTY_MOBILE_BINDER_IDS = "userMobileBinderIds";
     public static final String USER_PROPERTY_PERMALINK_URL = "userPermalinkUrl";
     public static final String USER_PROPERTY_PINNED_ENTRIES = "userPinnedEntries";
@@ -614,8 +592,7 @@ public interface ObjectKeys {
     public static final String USER_PROPERTY_RESET_PWD = "userResetPwd";
     public static final String USER_THEME_DEFAULT="default";
 	public static final String USER_PROPERTY_TABS="userTabs";
-    @Deprecated
-	public static final String USER_PROPERTY_MYFILES_DIR_DEPRECATED = BINDER_PROPERTY_MYFILES_DIR_DEPRECATED;
+	public static final String USER_PROPERTY_MYFILES_DIR = BINDER_PROPERTY_MYFILES_DIR;
     
     //workflow definition names
     public static final String WORKFLOW_START_STATE = "__start_state";
@@ -664,8 +641,6 @@ public interface ObjectKeys {
     public static final String INPUT_OPTION_REQUIRED_TITLE="org.kablink.teaming.options.required.title";
     public static final String INPUT_OPTION_OWNER_ID="org.kablink.teaming.options.entity.owner.id";
     public static final String INPUT_OPTION_SKIP_PARENT_MODTIME_UPDATE="org.kablink.teaming.options.skip.parent.modtime.update";
-    public static final String INPUT_OPTION_SKIP_DB_LOG="org.kablink.teaming.options.skip_db_log";
-    public static final String INPUT_OPTION_SKIP_NOTIFY_STATUS="org.kablink.teaming.options.skip_notify_status";
     
  	//Reserved data field names
     public static final String FIELD_ID="id";
@@ -708,12 +683,7 @@ public interface ObjectKeys {
 	public static final String FIELD_BINDER_RESOURCE_DRIVER_NAME = "resourceDriverName";
 	public static final String FIELD_BINDER_RESOURCE_PATH = "resourcePath"; 
 	public static final String FIELD_BINDER_IS_HOME_DIR = "homeDir";
-	public static final String FIELD_BINDER_IS_MYFILES_DIR = "myFilesDir";
-	public static final String FIELD_BINDER_SYNC_SCHEDULE_OPTION = "syncScheduleOption";
 	public static final String FIELD_WS_SEARCHTITLE="searchTitle";
-	public static final String FIELD_BINDER_FULL_SYNC_DIR_ONLY = "fullSyncDirOnly";
-	
-	public static final String FIELD_RESOURCE_DRIVER_TYPE = "type";
 
     public static final String FIELD_USER_FIRSTNAME="firstName";
     public static final String FIELD_USER_MIDDLENAME="middleName";
@@ -756,7 +726,6 @@ public interface ObjectKeys {
     public static final String TASK_FIELD_EVENT="start_end#LogicalEndDate";
     public static final String FIELD_TEMPLATE_TITLE="templateTitle";
     public static final String FIELD_TEMPLATE_DESCRIPTION="templateDescription";
-    public static final String FIELD_TEMPLATE_ENTRY_SOURCE_BINDER_ID="templateEntrySourceBinderId";
 
     // families of entries
     public static final String FAMILY_TASK = "task";
@@ -910,7 +879,6 @@ public interface ObjectKeys {
     public static final String XTAG_BINDER_INHERITTEAMMEMBERS="inheritTeamMembers";
     public static final String XTAG_BINDER_TEAMMEMBERS="teamMembers";
     public static final String XTAG_BINDER_TEAMMEMBER_NAME="teamMemberName";
-    public static final String XTAG_BINDER_PATH="binderPath";
      
     //value of name= attribute on XTAG_ELEMENT_TYPE_HISTORYSTAMP 
     public static final String XTAG_WF_CHANGE="workflowChange";
@@ -972,38 +940,4 @@ public interface ObjectKeys {
     // Must match values in GWT client's TagInfo class
     public final static String	HIDDEN_SHARED_BY_TAG	= "sharedByHidden";
     public final static String	HIDDEN_SHARED_WITH_TAG	= "sharedWithHidden";
-    
-    //AuditTrail log file XML fields
-    public final static String AUDIT_TRAIL_HEADER = "AuditTrail";
-    public final static String AUDIT_TRAIL_ENTRY = "AuditTrailEntry";
-    public final static String AUDIT_TRAIL_ZONE_ID = "zoneId";
-    public final static String AUDIT_TRAIL_ID = "id";
-    public final static String AUDIT_TRAIL_START_DATE = "startDate";
-    public final static String AUDIT_TRAIL_END_DATE = "endDate";
-    public final static String AUDIT_TRAIL_START_BY = "startBy";
-    public final static String AUDIT_TRAIL_END_BY = "endBy";
-    public final static String AUDIT_TRAIL_ENTITY_ID = "entityId";
-    public final static String AUDIT_TRAIL_ENTITY_TYPE = "entityType";
-    public final static String AUDIT_TRAIL_OWNING_BINDER_ID = "owningBinderId";
-    public final static String AUDIT_TRAIL_DESCRIPTION = "description";
-    public final static String AUDIT_TRAIL_TRANSACTION_TYPE = "transactionType";
-    public final static String AUDIT_TRAIL_FILE_ID = "fileId";
-    public final static String AUDIT_TRAIL_APPLICATION_ID = "applicationId";
-    public final static String AUDIT_TRAIL_DELETED_FOLDER_ENTRY_FAMILY = "deletedFolderEntryFamily";
-
-    //ChangeLog log file XML fields
-    public final static String CHANGE_LOG_HEADER = "ChangeLog";
-    public final static String CHANGE_LOG_ENTRY = "ChangeLogEntry";
-    public final static String CHANGE_LOG_ZONE_ID = "zoneId";
-    public final static String CHANGE_LOG_ID = "id";
-    public final static String CHANGE_LOG_OPERATION = "operation";
-    public final static String CHANGE_LOG_USER_NAME = "userName";
-    public final static String CHANGE_LOG_USER_ID = "userId";
-    public final static String CHANGE_LOG_OPERATION_DATE = "operationDate";
-    public final static String CHANGE_LOG_XML_STR = "xmlStr";
-    public final static String CHANGE_LOG_ENTITY_ID = "entityId";
-    public final static String CHANGE_LOG_ENTITY_TYPE = "entityType";
-    public final static String CHANGE_LOG_OWNING_BINDER_ID = "owningBinderId";
-    public final static String CHANGE_LOG_VERSION = "version";
-    public final static String CHANGE_LOG_DOC_NUMBER = "docNumber";
 }

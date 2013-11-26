@@ -39,25 +39,15 @@ import org.kablink.teaming.gwt.client.GwtConstants;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.event.CalendarShowEvent;
 import org.kablink.teaming.gwt.client.event.ChangeContextEvent;
-import org.kablink.teaming.gwt.client.event.ChangeEntryTypeSelectedEntitiesEvent;
-import org.kablink.teaming.gwt.client.event.ClearScheduledWipeSelectedMobileDevicesEvent;
+import org.kablink.teaming.gwt.client.event.ChangeEntryTypeSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.ClearSelectedUsersAdHocFoldersEvent;
-import org.kablink.teaming.gwt.client.event.ClearSelectedUsersDownloadEvent;
-import org.kablink.teaming.gwt.client.event.ClearSelectedUsersWebAccessEvent;
-import org.kablink.teaming.gwt.client.event.CopyPublicLinkSelectedEntitiesEvent;
-import org.kablink.teaming.gwt.client.event.CopySelectedEntitiesEvent;
-import org.kablink.teaming.gwt.client.event.DeleteSelectedEntitiesEvent;
-import org.kablink.teaming.gwt.client.event.DeleteSelectedMobileDevicesEvent;
-import org.kablink.teaming.gwt.client.event.DeleteSelectedUsersEvent;
+import org.kablink.teaming.gwt.client.event.CopySelectedEntriesEvent;
+import org.kablink.teaming.gwt.client.event.DeleteSelectedEntriesEvent;
+import org.kablink.teaming.gwt.client.event.DeleteSelectedUserWorkspacesEvent;
 import org.kablink.teaming.gwt.client.event.DisableSelectedUsersAdHocFoldersEvent;
-import org.kablink.teaming.gwt.client.event.DisableSelectedUsersDownloadEvent;
 import org.kablink.teaming.gwt.client.event.DisableSelectedUsersEvent;
-import org.kablink.teaming.gwt.client.event.DisableSelectedUsersWebAccessEvent;
-import org.kablink.teaming.gwt.client.event.EmailPublicLinkSelectedEntitiesEvent;
 import org.kablink.teaming.gwt.client.event.EnableSelectedUsersAdHocFoldersEvent;
-import org.kablink.teaming.gwt.client.event.EnableSelectedUsersDownloadEvent;
 import org.kablink.teaming.gwt.client.event.EnableSelectedUsersEvent;
-import org.kablink.teaming.gwt.client.event.EnableSelectedUsersWebAccessEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.GotoContentUrlEvent;
 import org.kablink.teaming.gwt.client.event.HideAccessoriesEvent;
@@ -66,14 +56,16 @@ import org.kablink.teaming.gwt.client.event.InvokeAddNewFolderEvent;
 import org.kablink.teaming.gwt.client.event.InvokeColumnResizerEvent;
 import org.kablink.teaming.gwt.client.event.InvokeDropBoxEvent;
 import org.kablink.teaming.gwt.client.event.InvokeSignGuestbookEvent;
-import org.kablink.teaming.gwt.client.event.LockSelectedEntitiesEvent;
-import org.kablink.teaming.gwt.client.event.ManageSharesSelectedEntitiesEvent;
+import org.kablink.teaming.gwt.client.event.LockSelectedEntriesEvent;
+import org.kablink.teaming.gwt.client.event.ManageSharesSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.ManageUsersFilterEvent;
-import org.kablink.teaming.gwt.client.event.ScheduleWipeSelectedMobileDevicesEvent;
 import org.kablink.teaming.gwt.client.event.ManageUsersFilterEvent.ManageUsersFilter;
-import org.kablink.teaming.gwt.client.event.MarkReadSelectedEntitiesEvent;
-import org.kablink.teaming.gwt.client.event.MarkUnreadSelectedEntitiesEvent;
-import org.kablink.teaming.gwt.client.event.MoveSelectedEntitiesEvent;
+import org.kablink.teaming.gwt.client.event.MarkReadSelectedEntriesEvent;
+import org.kablink.teaming.gwt.client.event.MarkUnreadSelectedEntriesEvent;
+import org.kablink.teaming.gwt.client.event.MoveSelectedEntriesEvent;
+import org.kablink.teaming.gwt.client.event.PurgeSelectedEntriesEvent;
+import org.kablink.teaming.gwt.client.event.PurgeSelectedUserWorkspacesEvent;
+import org.kablink.teaming.gwt.client.event.PurgeSelectedUsersEvent;
 import org.kablink.teaming.gwt.client.event.ResetEntryMenuEvent;
 import org.kablink.teaming.gwt.client.event.SetFolderSortEvent;
 import org.kablink.teaming.gwt.client.event.SetSelectedUserDesktopSettingsEvent;
@@ -82,20 +74,19 @@ import org.kablink.teaming.gwt.client.event.SetSelectedUserShareRightsEvent;
 import org.kablink.teaming.gwt.client.event.SharedViewFilterEvent;
 import org.kablink.teaming.gwt.client.event.SharedViewFilterEvent.SharedViewFilter;
 import org.kablink.teaming.gwt.client.event.ShowAccessoriesEvent;
-import org.kablink.teaming.gwt.client.event.ShareSelectedEntitiesEvent;
+import org.kablink.teaming.gwt.client.event.ShareSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.ShowSelectedSharesEvent;
-import org.kablink.teaming.gwt.client.event.SubscribeSelectedEntitiesEvent;
+import org.kablink.teaming.gwt.client.event.SubscribeSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.event.ToggleSharedViewEvent;
 import org.kablink.teaming.gwt.client.event.TrashPurgeAllEvent;
-import org.kablink.teaming.gwt.client.event.TrashPurgeSelectedEntitiesEvent;
+import org.kablink.teaming.gwt.client.event.TrashPurgeSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.TrashRestoreAllEvent;
-import org.kablink.teaming.gwt.client.event.TrashRestoreSelectedEntitiesEvent;
-import org.kablink.teaming.gwt.client.event.UnlockSelectedEntitiesEvent;
+import org.kablink.teaming.gwt.client.event.TrashRestoreSelectedEntriesEvent;
+import org.kablink.teaming.gwt.client.event.UnlockSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.VibeEventBase;
 import org.kablink.teaming.gwt.client.event.ViewPinnedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.ViewSelectedEntryEvent;
-import org.kablink.teaming.gwt.client.event.ZipAndDownloadSelectedFilesEvent;
 import org.kablink.teaming.gwt.client.mainmenu.ToolbarItem;
 import org.kablink.teaming.gwt.client.mainmenu.VibeMenuBar;
 import org.kablink.teaming.gwt.client.mainmenu.VibeMenuItem;
@@ -122,6 +113,7 @@ import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -151,7 +143,6 @@ public class EntryMenuPanel extends ToolPanelBase
 	private boolean							m_includeColumnResizer;		//
 	private boolean							m_isIE;						//
 	private boolean							m_panelInitialized;			// Set true after the panel has completed initializing.
-	private boolean							m_shareMenuIsDropdown;		//
 	private boolean							m_viewingPinnedEntries;		//
 	private boolean							m_viewingSharedFiles;		//
 	private List<HandlerRegistration>		m_registeredEventHandlers;	// Event handlers that are currently registered.
@@ -176,7 +167,6 @@ public class EntryMenuPanel extends ToolPanelBase
 	private VibeMenuItem					m_trashPurgeSelectedMenu;	//
 	private VibeMenuItem					m_trashRestoreAllMenu;		//
 	private VibeMenuItem					m_trashRestoreSelectedMenu;	//
-	private VibeMenuItem					m_wipeMenu;					//
 
 	/**
 	 * Inner class used to encapsulate the manage users filter items.
@@ -430,12 +420,13 @@ public class EntryMenuPanel extends ToolPanelBase
 	 * Asynchronously construct's the contents of the entry menu panel.
 	 */
 	private void loadPart1Async(final ToolPanelClient tpClient) {
-		GwtClientHelper.deferCommand(new ScheduledCommand() {
+		ScheduledCommand doLoad = new ScheduledCommand() {
 			@Override
 			public void execute() {
 				loadPart1Now(tpClient);
 			}
-		});
+		};
+		Scheduler.get().scheduleDeferred(doLoad);
 	}
 	
 	/*
@@ -486,12 +477,13 @@ public class EntryMenuPanel extends ToolPanelBase
 	 * Asynchronously construct's the contents of the entry menu panel.
 	 */
 	private void loadPart2Async() {
-		GwtClientHelper.deferCommand(new ScheduledCommand() {
+		ScheduledCommand doLoad = new ScheduledCommand() {
 			@Override
 			public void execute() {
 				loadPart2Now();
 			}
-		});
+		};
+		Scheduler.get().scheduleDeferred(doLoad);
 	}
 	
 	/*
@@ -583,12 +575,13 @@ public class EntryMenuPanel extends ToolPanelBase
 	 * Asynchronously construct's the contents of the entry menu panel.
 	 */
 	private void loadPart3Async() {
-		GwtClientHelper.deferCommand(new ScheduledCommand() {
+		ScheduledCommand doLoad = new ScheduledCommand() {
 			@Override
 			public void execute() {
 				loadPart3Now();
 			}
-		});
+		};
+		Scheduler.get().scheduleDeferred(doLoad);
 	}
 	
 	/*
@@ -651,13 +644,14 @@ public class EntryMenuPanel extends ToolPanelBase
 			return;
 		}
 		
-		GwtClientHelper.deferCommand(new ScheduledCommand() {
+		ScheduledCommand doNotify = new ScheduledCommand() {
 			@Override
 			public void execute() {
 				// ...otherwise, notify them.
 				notifiyClientNow(tpClient, onSuccess);
 			}
-		});
+		};
+		Scheduler.get().scheduleDeferred(doNotify);
 	}
 	
 	/*
@@ -1154,52 +1148,43 @@ public class EntryMenuPanel extends ToolPanelBase
 					
 					VibeEventBase<?> event;
 					switch (simpleEvent) {
-					default:                                            event = EventHelper.createSimpleEvent(                   simpleEvent   ); break;
-					case CHANGE_ENTRY_TYPE_SELECTED_ENTITIES:           event = new ChangeEntryTypeSelectedEntitiesEvent(        folderId      ); break;
-					case CLEAR_SCHEDULED_WIPE_SELECTED_MOBILE_DEVICES:  event = new ClearScheduledWipeSelectedMobileDevicesEvent(m_binderInfo  ); break;
-					case CLEAR_SELECTED_USERS_ADHOC_FOLDERS:            event = new ClearSelectedUsersAdHocFoldersEvent(         folderId      ); break;
-					case CLEAR_SELECTED_USERS_DOWNLOAD:                 event = new ClearSelectedUsersDownloadEvent(             folderId      ); break;
-					case CLEAR_SELECTED_USERS_WEBACCESS:                event = new ClearSelectedUsersWebAccessEvent(            folderId      ); break;
-					case COPY_PUBLIC_LINK_SELECTED_ENTITIES:            event = new CopyPublicLinkSelectedEntitiesEvent(         folderId      ); break;
-					case COPY_SELECTED_ENTITIES:                        event = new CopySelectedEntitiesEvent(                   folderId      ); break;
-					case DELETE_SELECTED_ENTITIES:                      event = new DeleteSelectedEntitiesEvent(                 folderId      ); break;
-					case DELETE_SELECTED_MOBILE_DEVICES:                event = new DeleteSelectedMobileDevicesEvent(            m_binderInfo  ); break;
-					case DELETE_SELECTED_USERS:                         event = new DeleteSelectedUsersEvent(                    folderId      ); break;
-					case DISABLE_SELECTED_USERS:                        event = new DisableSelectedUsersEvent(                   folderId      ); break;
-					case DISABLE_SELECTED_USERS_ADHOC_FOLDERS:          event = new DisableSelectedUsersAdHocFoldersEvent(       folderId      ); break;
-					case DISABLE_SELECTED_USERS_DOWNLOAD:               event = new DisableSelectedUsersDownloadEvent(           folderId      ); break;
-					case DISABLE_SELECTED_USERS_WEBACCESS:              event = new DisableSelectedUsersWebAccessEvent(          folderId      ); break;
-					case EMAIL_PUBLIC_LINK_SELECTED_ENTITIES:           event = new EmailPublicLinkSelectedEntitiesEvent(        folderId      ); break;
-					case ENABLE_SELECTED_USERS:                         event = new EnableSelectedUsersEvent(                    folderId      ); break;
-					case ENABLE_SELECTED_USERS_ADHOC_FOLDERS:           event = new EnableSelectedUsersAdHocFoldersEvent(        folderId      ); break;
-					case ENABLE_SELECTED_USERS_DOWNLOAD:                event = new EnableSelectedUsersDownloadEvent(            folderId      ); break;
-					case ENABLE_SELECTED_USERS_WEBACCESS:               event = new EnableSelectedUsersWebAccessEvent(           folderId      ); break;
-					case HIDE_ACCESSORIES:                              event = new HideAccessoriesEvent(                        folderId      ); break;
-					case HIDE_SELECTED_SHARES:                          event = new HideSelectedSharesEvent(                     folderId      ); break;
-					case INVOKE_COLUMN_RESIZER:                         event = new InvokeColumnResizerEvent(                    m_binderInfo  ); break;
-					case INVOKE_DROPBOX:                                event = new InvokeDropBoxEvent(                          folderId      ); break;
-					case INVOKE_SIGN_GUESTBOOK:                         event = new InvokeSignGuestbookEvent(                    folderId      ); break;
-					case LOCK_SELECTED_ENTITIES:                        event = new LockSelectedEntitiesEvent(                   folderId      ); break;
-					case UNLOCK_SELECTED_ENTITIES:                      event = new UnlockSelectedEntitiesEvent(                 folderId      ); break;
-					case MANAGE_SHARES_SELECTED_ENTITIES:               event = new ManageSharesSelectedEntitiesEvent(           folderId      ); break;
-					case MARK_READ_SELECTED_ENTITIES:                   event = new MarkReadSelectedEntitiesEvent(               folderId      ); break;
-					case MARK_UNREAD_SELECTED_ENTITIES:                 event = new MarkUnreadSelectedEntitiesEvent(             folderId      ); break;
-					case MOVE_SELECTED_ENTITIES:                        event = new MoveSelectedEntitiesEvent(                   folderId      ); break;
-					case SCHEDULE_WIPE_SELECTED_MOBILE_DEVICES:         event = new ScheduleWipeSelectedMobileDevicesEvent(      m_binderInfo  ); break;
-					case SET_SELECTED_USER_DESKTOP_SETTINGS:            event = new SetSelectedUserDesktopSettingsEvent(         folderId      ); break;
-					case SET_SELECTED_USER_MOBILE_SETTINGS:             event = new SetSelectedUserMobileSettingsEvent(          folderId      ); break;
-					case SET_SELECTED_USER_SHARE_RIGHTS:                event = new SetSelectedUserShareRightsEvent(             folderId      ); break;
-					case SHOW_ACCESSORIES:                              event = new ShowAccessoriesEvent(                        folderId      ); break;
-					case SHARE_SELECTED_ENTITIES:                       event = new ShareSelectedEntitiesEvent(                  folderId      ); break;
-					case SHOW_SELECTED_SHARES:                          event = new ShowSelectedSharesEvent(                     folderId      ); break;
-					case SUBSCRIBE_SELECTED_ENTITIES:                   event = new SubscribeSelectedEntitiesEvent(              folderId      ); break;
-					case TRASH_PURGE_ALL:                               event = new TrashPurgeAllEvent(                          folderId      ); break;
-					case TRASH_PURGE_SELECTED_ENTITIES:                 event = new TrashPurgeSelectedEntitiesEvent(             folderId      ); break;
-					case TRASH_RESTORE_ALL:                             event = new TrashRestoreAllEvent(                        folderId      ); break;
-					case TRASH_RESTORE_SELECTED_ENTITIES:               event = new TrashRestoreSelectedEntitiesEvent(           folderId      ); break;
-					case VIEW_PINNED_ENTRIES:                           event = new ViewPinnedEntriesEvent(                      folderId      ); break;
-					case VIEW_SELECTED_ENTRY:                           event = new ViewSelectedEntryEvent(                      folderId      ); break;
-					case ZIP_AND_DOWNLOAD_SELECTED_FILES:               event = new ZipAndDownloadSelectedFilesEvent(            folderId, true); break;
+					default:                                    event = EventHelper.createSimpleEvent(            simpleEvent); break;
+					case CHANGE_ENTRY_TYPE_SELECTED_ENTRIES:    event = new ChangeEntryTypeSelectedEntriesEvent(  folderId   ); break;
+					case CLEAR_SELECTED_USERS_ADHOC_FOLDERS:    event = new ClearSelectedUsersAdHocFoldersEvent(  folderId   ); break;
+					case COPY_SELECTED_ENTRIES:                 event = new CopySelectedEntriesEvent(             folderId   ); break;
+					case DELETE_SELECTED_ENTRIES:               event = new DeleteSelectedEntriesEvent(           folderId   ); break;
+					case DELETE_SELECTED_USER_WORKSPACES:       event = new DeleteSelectedUserWorkspacesEvent(    folderId   ); break;
+					case DISABLE_SELECTED_USERS:                event = new DisableSelectedUsersEvent(            folderId   ); break;
+					case DISABLE_SELECTED_USERS_ADHOC_FOLDERS:  event = new DisableSelectedUsersAdHocFoldersEvent(folderId   ); break;
+					case ENABLE_SELECTED_USERS:                 event = new EnableSelectedUsersEvent(             folderId   ); break;
+					case ENABLE_SELECTED_USERS_ADHOC_FOLDERS:   event = new EnableSelectedUsersAdHocFoldersEvent( folderId   ); break;
+					case HIDE_ACCESSORIES:                      event = new HideAccessoriesEvent(                 folderId   ); break;
+					case HIDE_SELECTED_SHARES:                  event = new HideSelectedSharesEvent(              folderId   ); break;
+					case INVOKE_COLUMN_RESIZER:                 event = new InvokeColumnResizerEvent(             folderId   ); break;
+					case INVOKE_DROPBOX:                        event = new InvokeDropBoxEvent(                   folderId   ); break;
+					case INVOKE_SIGN_GUESTBOOK:                 event = new InvokeSignGuestbookEvent(             folderId   ); break;
+					case LOCK_SELECTED_ENTRIES:                 event = new LockSelectedEntriesEvent(             folderId   ); break;
+					case UNLOCK_SELECTED_ENTRIES:               event = new UnlockSelectedEntriesEvent(           folderId   ); break;
+					case MANAGE_SHARES_SELECTED_ENTRIES:        event = new ManageSharesSelectedEntriesEvent(     folderId   ); break;
+					case MARK_READ_SELECTED_ENTRIES:            event = new MarkReadSelectedEntriesEvent(         folderId   ); break;
+					case MARK_UNREAD_SELECTED_ENTRIES:          event = new MarkUnreadSelectedEntriesEvent(       folderId   ); break;
+					case MOVE_SELECTED_ENTRIES:                 event = new MoveSelectedEntriesEvent(             folderId   ); break;
+					case PURGE_SELECTED_ENTRIES:                event = new PurgeSelectedEntriesEvent(            folderId   ); break;
+					case PURGE_SELECTED_USER_WORKSPACES:        event = new PurgeSelectedUserWorkspacesEvent(     folderId   ); break;
+					case PURGE_SELECTED_USERS:                  event = new PurgeSelectedUsersEvent(              folderId   ); break;
+					case SET_SELECTED_USER_DESKTOP_SETTINGS:    event = new SetSelectedUserDesktopSettingsEvent(  folderId   ); break;
+					case SET_SELECTED_USER_MOBILE_SETTINGS:     event = new SetSelectedUserMobileSettingsEvent(   folderId   ); break;
+					case SET_SELECTED_USER_SHARE_RIGHTS:        event = new SetSelectedUserShareRightsEvent(      folderId   ); break;
+					case SHOW_ACCESSORIES:                      event = new ShowAccessoriesEvent(                 folderId   ); break;
+					case SHARE_SELECTED_ENTRIES:                event = new ShareSelectedEntriesEvent(            folderId   ); break;
+					case SHOW_SELECTED_SHARES:                  event = new ShowSelectedSharesEvent(              folderId   ); break;
+					case SUBSCRIBE_SELECTED_ENTRIES:            event = new SubscribeSelectedEntriesEvent(        folderId   ); break;
+					case TRASH_PURGE_ALL:                       event = new TrashPurgeAllEvent(                   folderId   ); break;
+					case TRASH_PURGE_SELECTED_ENTRIES:          event = new TrashPurgeSelectedEntriesEvent(       folderId   ); break;
+					case TRASH_RESTORE_ALL:                     event = new TrashRestoreAllEvent(                 folderId   ); break;
+					case TRASH_RESTORE_SELECTED_ENTRIES:        event = new TrashRestoreSelectedEntriesEvent(     folderId   ); break;
+					case VIEW_PINNED_ENTRIES:                   event = new ViewPinnedEntriesEvent(               folderId   ); break;
+					case VIEW_SELECTED_ENTRY:                   event = new ViewSelectedEntryEvent(               folderId   ); break;
 					
 					case CALENDAR_SHOW:
 						int calendarShow = Integer.parseInt(simpleTBI.getQualifierValue("calendarShow"));
@@ -1213,11 +1198,7 @@ public class EntryMenuPanel extends ToolPanelBase
 						if (GwtClientHelper.hasString(folderTargetIdS))
 						     folderTargetId = Long.parseLong(folderTargetIdS);
 						else folderTargetId = folderId;
-						boolean allowCloudFolder =
-							(GwtClientHelper.isCloudFoldersEnabled() &&
-							 m_binderInfo.isBinderCollection()       &&
-							 m_binderInfo.getCollectionType().isMyFiles());
-						event = new InvokeAddNewFolderEvent(folderTargetId, Long.parseLong(folderTemplateId), allowCloudFolder);
+						event = new InvokeAddNewFolderEvent(folderTargetId, Long.parseLong(folderTemplateId));
 						break;
 						
 					case SET_FOLDER_SORT:
@@ -1243,19 +1224,13 @@ public class EntryMenuPanel extends ToolPanelBase
 		});
 		switch (simpleTBI.getTeamingEvent()) {
 		case INVOKE_DROPBOX:                  m_addFilesMenu             = menuItem; break;
-		case DELETE_SELECTED_ENTITIES:        m_deleteMenu               = menuItem; break;
-		case DELETE_SELECTED_MOBILE_DEVICES:  m_deleteMenu               = menuItem; break;
+		case DELETE_SELECTED_ENTRIES:         m_deleteMenu               = menuItem; break;
+		case SHARE_SELECTED_ENTRIES:          m_shareMenu                = menuItem; break;
 		case TRASH_PURGE_ALL:                 m_trashPurgeAllMenu        = menuItem; break;
-		case TRASH_PURGE_SELECTED_ENTITIES:   m_trashPurgeSelectedMenu   = menuItem; break;
+		case TRASH_PURGE_SELECTED_ENTRIES:    m_trashPurgeSelectedMenu   = menuItem; break;
 		case TRASH_RESTORE_ALL:               m_trashRestoreAllMenu      = menuItem; break;
-		case TRASH_RESTORE_SELECTED_ENTITIES: m_trashRestoreSelectedMenu = menuItem; break;
+		case TRASH_RESTORE_SELECTED_ENTRIES:  m_trashRestoreSelectedMenu = menuItem; break;
 		case VIEW_SELECTED_ENTRY:             m_detailsMenu              = menuItem; break;
-		case SHARE_SELECTED_ENTITIES:
-			if (null == m_shareMenu) {
-				m_shareMenu           = menuItem;
-				m_shareMenuIsDropdown = false;
-			}
-			break;
 		}
 		menuItem.addStyleName((menuBar == m_entryMenu) ? "vibe-entryMenuBarItem" : "vibe-entryMenuPopupItem");
 		if (null != menuBar)
@@ -1297,10 +1272,8 @@ public class EntryMenuPanel extends ToolPanelBase
 		else popupMenu.addMenuItem(structuredMenuItem);
 		
 		String structuredName = structuredTBI.getName();
-		if (GwtClientHelper.hasString(structuredName)) {
-			if      (structuredName.equals("1_more"))   m_moreMenu  = structuredMenuItem;
-			else if (structuredName.equals("1_share")) {m_shareMenu = structuredMenuItem; m_shareMenuIsDropdown = true;}
-			else if (structuredName.equals("1_wipe"))   m_wipeMenu  = structuredMenuItem;
+		if (GwtClientHelper.hasString(structuredName) && structuredName.equals("1_more")) {
+			m_moreMenu = structuredMenuItem;
 		}
 		
 		// ...scan the nested items...
@@ -1367,21 +1340,11 @@ public class EntryMenuPanel extends ToolPanelBase
 	private void setEntriesSelectedImpl(boolean enable) {
 		// If we have a share menu item...
 		if (null != m_shareMenu) {
-			// ...enable disable it...
+			// ...enable disable it.
 			m_shareMenu.setEnabled(enable);
 			if (enable)
 			     m_shareMenu.removeStyleName("vibe-menuDisabled");
 			else m_shareMenu.addStyleName(   "vibe-menuDisabled");
-			
-			if (m_shareMenuIsDropdown) {
-				// ...and update its display to reflect the state of the
-				// ...menu item (in particular, the drop down image on the
-				// ...menu.)
-				m_shareMenu.setHTML(
-					renderStructuredItemHTML(
-						m_shareMenu.getText(),
-						enable));
-			}
 		}
 
 		// If we have a delete menu item...
@@ -1407,23 +1370,6 @@ public class EntryMenuPanel extends ToolPanelBase
 			m_moreMenu.setHTML(
 				renderStructuredItemHTML(
 					m_moreMenu.getText(),
-					enable));
-		}
-		
-		// If we have a wipe menu item...
-		if (null != m_wipeMenu) {
-			// ...enable/disable it...
-			m_wipeMenu.setEnabled(enable);
-			if (enable)
-			     m_wipeMenu.removeStyleName("vibe-menuDisabled");
-			else m_wipeMenu.addStyleName(   "vibe-menuDisabled");
-
-			// ...and update its display to reflect the state of the
-			// ...menu item (in particular, the drop down image on the
-			// ...menu.)
-			m_wipeMenu.setHTML(
-				renderStructuredItemHTML(
-					m_wipeMenu.getText(),
 					enable));
 		}
 		
@@ -1493,14 +1439,9 @@ public class EntryMenuPanel extends ToolPanelBase
 			
 		case WORKSPACE:
 			switch (m_binderInfo.getWorkspaceType()) {
-			case MOBILE_DEVICES:
-				reply = m_binderInfo.getMobileDevicesViewSpec().isSystem();
-				break;
-				
 			case PROFILE_ROOT:
 			case PROFILE_ROOT_MANAGEMENT:
 				reply = true;
-				break;
 			}
 			break;
 		}

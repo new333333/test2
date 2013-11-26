@@ -33,7 +33,6 @@
 package org.kablink.teaming.gwt.client.widgets;
 
 import org.kablink.teaming.gwt.client.event.ActivityStreamEnterEvent;
-import org.kablink.teaming.gwt.client.event.ActivityStreamExitEvent;
 import org.kablink.teaming.gwt.client.event.AdministrationUpgradeCheckEvent;
 import org.kablink.teaming.gwt.client.event.BrowseHierarchyEvent;
 import org.kablink.teaming.gwt.client.event.ChangeContextEvent;
@@ -44,7 +43,6 @@ import org.kablink.teaming.gwt.client.event.MastheadHideEvent;
 import org.kablink.teaming.gwt.client.event.MastheadShowEvent;
 import org.kablink.teaming.gwt.client.event.SizeChangedEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
-import org.kablink.teaming.gwt.client.event.MastheadUnhighlightAllActionsEvent;
 import org.kablink.teaming.gwt.client.GwtBrandingDataExt;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.RequestInfo;
@@ -68,7 +66,6 @@ import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 import org.kablink.teaming.gwt.client.widgets.FilrActionsCtrl.FilrActionType;
 
 import com.google.gwt.core.client.Scheduler;
-import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -92,11 +89,9 @@ import com.google.gwt.user.client.ui.Widget;
 public class MastHead extends Composite
 	implements ClickHandler,
 	// Event handlers implemented by this class.
-		ActivityStreamExitEvent.Handler,
 		ContextChangedEvent.Handler,
 		MastheadHideEvent.Handler,
-		MastheadShowEvent.Handler,
-		MastheadUnhighlightAllActionsEvent.Handler
+		MastheadShowEvent.Handler
 {
 	private BrandingPanel m_siteBrandingPanel = null;
 	private BrandingPanel m_binderBrandingPanel = null;
@@ -128,15 +123,12 @@ public class MastHead extends Composite
 	// this class.  See EventHelper.registerEventHandlers() for how
 	// this array is used.
 	private TeamingEvents[] m_registeredEvents = new TeamingEvents[] {
-		TeamingEvents.ACTIVITY_STREAM_EXIT,
-
 		// Context events.
 		TeamingEvents.CONTEXT_CHANGED,
 		
 		// Masthead events.
 		TeamingEvents.MASTHEAD_HIDE,
 		TeamingEvents.MASTHEAD_SHOW,
-		TeamingEvents.MASTHEAD_UNHIGHLIGHT_ALL_ACTIONS,
 	};
 		
 	
@@ -204,7 +196,6 @@ public class MastHead extends Composite
 				Image img;
 				
 				panel = new FlowPanel();
-				panel.getElement().setId( "mastheadFilr_PeoplePanel" );
 				panel.addStyleName( "mastheadFilr_PeoplePanel" );
 				
 				imgPanel = new FlowPanel();
@@ -243,7 +234,6 @@ public class MastHead extends Composite
 				Image img;
 				
 				panel = new FlowPanel();
-				panel.getElement().setId( "mastheadFilr_WhatsNewPanel" );
 				panel.addStyleName( "mastheadFilr_WhatsNewPanel" );
 				
 				imgPanel = new FlowPanel();
@@ -281,7 +271,6 @@ public class MastHead extends Composite
 				Image img;
 				
 				m_browsePanel = new FlowPanel();
-				m_browsePanel.getElement().setId( "mastheadFilr_BrowseFilrPanel" );
 				m_browsePanel.addStyleName( "mastheadFilr_BrowseFilrPanel" );
 				
 				imgPanel = new FlowPanel();
@@ -817,24 +806,6 @@ public class MastHead extends Composite
 		if ( m_userActionsPopup != null )
 			m_userActionsPopup.hideLogoutLink();
 	}
-	
-	/**
-	 * Highlight the appropriate panel in the masthead 
-	 */
-	private void highlightSelectedAction( String actionId )
-	{
-		Element panel;
-		
-		// Remove the highlighted style from all of the actions
-		MastheadUnhighlightAllActionsEvent.fireOne();
-		
-		// Highlight the selected action
-		panel = Document.get().getElementById( actionId );
-		if ( panel != null )
-			panel.addClassName( "FilrAction_Selected" );
-	}
-	
-
 
 	/**
 	 * 
@@ -954,9 +925,6 @@ public class MastHead extends Composite
 										m_personalWorkspacesUrl,
 										Instigator.GOTO_CONTENT_URL );
 			GwtTeaming.fireEvent( new ChangeContextEvent( osbInfo ) );
-
-			// Highlight the "Show People" panel.
-			highlightSelectedAction( "mastheadFilr_PeoplePanel" );
 		}
 	}
 	
@@ -967,9 +935,6 @@ public class MastHead extends Composite
 	{
 		ActivityStreamInfo asi;
 		ActivityStream as;
-		
-		// Highlight the "Whats new" panel.
-		highlightSelectedAction( "mastheadFilr_WhatsNewPanel" );
 		
 		FilrActionsCtrl.closeAdminConsole();
 
@@ -1002,13 +967,9 @@ public class MastHead extends Composite
 				as = ActivityStream.SHARED_WITH_ME;
 				break;
 			
-			case SHARED_PUBLIC:
-				as = ActivityStream.SHARED_PUBLIC;
-				break;
-			
 			case UNKNOWN:
 			default:
-				as = ( GwtClientHelper.isGuestUser() ? ActivityStream.SHARED_PUBLIC : ActivityStream.SHARED_WITH_ME );
+				as = ActivityStream.SHARED_WITH_ME;
 				break;
 			}
 		}
@@ -1023,19 +984,6 @@ public class MastHead extends Composite
 		GwtTeaming.fireEvent( new ActivityStreamEnterEvent( asi, ActivityStreamDataType.OTHER ) );
 	}
 	
-	/**
-	 * Handles ActivityStreamExitEvent's received by this class.
-	 *
-	 * Implements the ActivityStreamExitEvent.Handler.onActivityStreamExit() method.
-	 * 
-	 * @param event
-	 */
-	@Override
-	public void onActivityStreamExit( ActivityStreamExitEvent event )
-	{
-		unhighlightAllActions();
-	}
-
 	/**
 	 * This method gets called when the user clicks on something in the branding panel.
 	 */
@@ -1277,22 +1225,6 @@ public class MastHead extends Composite
 	}// end showBranding()
 	
 	/**
-	 * Unhighlight all sub-actions
-	 */
-	private void unhighlightAllActions()
-	{
-		Element panel;
-		
-		panel = Document.get().getElementById( "mastheadFilr_PeoplePanel" );
-		if ( panel != null )
-			panel.removeClassName( "FilrAction_Selected" );
-		
-		panel = Document.get().getElementById( "mastheadFilr_WhatsNewPanel" );
-		if ( panel != null )
-			panel.removeClassName( "FilrAction_Selected" );
-	}
-	
-	/**
 	 * Handles ContextChangedEvent's received by this class.
 	 * 
 	 * Implements the ContextChangedEvent.Handler.onContextChanged() method.
@@ -1342,15 +1274,5 @@ public class MastHead extends Composite
 		setVisible( true );
 		
 		SizeChangedEvent.fireOne();
-	}// end onMastheadShow()
-	
-	
-	/**
-	 * Handles the MastheadUnhighlightAllActionsEvent received by this class.
-	 */
-	@Override
-	public void onMastheadUnhighlightAllActions( MastheadUnhighlightAllActionsEvent event )
-	{
-		unhighlightAllActions();
-	}
+	}// end onMastheadShow()	
 }// end MastHead

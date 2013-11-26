@@ -44,10 +44,10 @@ import org.kablink.teaming.gwt.client.event.AdministrationExitEvent;
 import org.kablink.teaming.gwt.client.event.CheckManageUsersActiveEvent;
 import org.kablink.teaming.gwt.client.event.FullUIReloadEvent;
 import org.kablink.teaming.gwt.client.event.InvokeImportProfilesDlgEvent;
-import org.kablink.teaming.gwt.client.event.GetManageTitleEvent;
+import org.kablink.teaming.gwt.client.event.GetManageUsersTitleEvent;
 import org.kablink.teaming.gwt.client.event.InvokeUserPropertiesDlgEvent;
-import org.kablink.teaming.gwt.client.event.InvokePrincipalDesktopSettingsDlgEvent;
-import org.kablink.teaming.gwt.client.event.InvokePrincipalMobileSettingsDlgEvent;
+import org.kablink.teaming.gwt.client.event.InvokeUserDesktopSettingsDlgEvent;
+import org.kablink.teaming.gwt.client.event.InvokeUserMobileSettingsDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeUserShareRightsDlgEvent;
 import org.kablink.teaming.gwt.client.event.ManageUsersFilterEvent;
 import org.kablink.teaming.gwt.client.event.SetSelectedUserDesktopSettingsEvent;
@@ -92,7 +92,7 @@ public class ManageUsersDlg extends DlgBox
 		AdministrationExitEvent.Handler,
 		CheckManageUsersActiveEvent.Handler,
 		FullUIReloadEvent.Handler,
-		GetManageTitleEvent.Handler,
+		GetManageUsersTitleEvent.Handler,
 		ManageUsersFilterEvent.Handler,
 		InvokeImportProfilesDlgEvent.Handler,
 		InvokeUserPropertiesDlgEvent.Handler,
@@ -129,7 +129,7 @@ public class ManageUsersDlg extends DlgBox
 		TeamingEvents.ADMINISTRATION_EXIT,
 		TeamingEvents.CHECK_MANAGE_USERS_ACTIVE,
 		TeamingEvents.FULL_UI_RELOAD,
-		TeamingEvents.GET_MANAGE_TITLE,
+		TeamingEvents.GET_MANAGE_USERS_TITLE,
 		TeamingEvents.MANAGE_USERS_FILTER,
 		TeamingEvents.INVOKE_IMPORT_PROFILES_DLG,
 		TeamingEvents.INVOKE_USER_PROPERTIES_DLG,
@@ -331,19 +331,15 @@ public class ManageUsersDlg extends DlgBox
 	}
 	
 	/**
-	 * Handles GetManageTitleEvent's received by this class.
+	 * Handles GetManageUsersTitleEvent's received by this class.
 	 * 
-	 * Implements the GetManageTitleEvent.Handler.onGetManageTitle() method.
+	 * Implements the GetManageUsersTitleEvent.Handler.onGetManageUsersTitle() method.
 	 * 
 	 * @param event
 	 */
 	@Override
-	public void onGetManageTitle(GetManageTitleEvent event) {
-		// If this event is targeted to this dialog...
-		if (event.getBinderInfo().isEqual(m_manageUsersInfo.getProfilesRootWSInfo())) {
-			// ...respond to it.
-			event.getManageTitleCallback().manageTitle(m_manageUsersInfo.getAdminActionTitle());
-		}
+	public void onGetManageUsersTitle(GetManageUsersTitleEvent event) {
+		event.getManageUsersTitleCallback().manageUsersTitle(m_manageUsersInfo.getAdminActionTitle());
 	}
 
 	/**
@@ -521,9 +517,8 @@ public class ManageUsersDlg extends DlgBox
 
 				// ...and use them to invoke the settings dialog.
 				GwtTeaming.fireEventAsync(
-					new InvokePrincipalDesktopSettingsDlgEvent(
-						selectedUserList,
-						true));	// true -> IDs are users.
+					new InvokeUserDesktopSettingsDlgEvent(
+						selectedUserList));
 			}
 		}
 	}
@@ -556,9 +551,8 @@ public class ManageUsersDlg extends DlgBox
 
 				// ...and use them to invoke the settings dialog.
 				GwtTeaming.fireEventAsync(
-					new InvokePrincipalMobileSettingsDlgEvent(
-						selectedUserList,
-						true));	// true -> IDs are users.
+					new InvokeUserMobileSettingsDlgEvent(
+						selectedUserList));
 			}
 		}
 	}
@@ -789,12 +783,12 @@ public class ManageUsersDlg extends DlgBox
 	 * Asynchronously runs the given instance of the manage users
 	 * dialog.
 	 */
-	private static void runDlgAsync(final ManageUsersDlg muDlg, final int x, final int y, final int width, final int height) {
+	private static void runDlgAsync(final ManageUsersDlg muDlg, final int x, final int y) {
 		GwtClientHelper.deferCommand(
 			new ScheduledCommand() {
 				@Override
 				public void execute() {
-					muDlg.runDlgNow(x, y, width, height);
+					muDlg.runDlgNow(x, y);
 				}
 			});
 	}
@@ -803,12 +797,10 @@ public class ManageUsersDlg extends DlgBox
 	 * Synchronously runs the given instance of the manage users
 	 * dialog.
 	 */
-	private void runDlgNow(int x, int y, int width, int height) {
+	private void runDlgNow(int x, int y) {
 		// Store the parameters...
 		m_showX = x;
 		m_showY = y;
-		m_showCX = width;
-		m_showCY = height;
 		
 		// ...and start populating the dialog.
 		populateDlgAsync();
@@ -882,7 +874,7 @@ public class ManageUsersDlg extends DlgBox
 					// No, it's not a request to create a dialog!  It
 					// must be a request to run an existing one.  Run
 					// it.
-					runDlgAsync(muDlg, initX, initY, createCX, createCY);
+					runDlgAsync(muDlg, initX, initY);
 				}
 			}
 		});
@@ -911,7 +903,7 @@ public class ManageUsersDlg extends DlgBox
 	 * @param x
 	 * @param y
 	 */
-	public static void initAndShow(ManageUsersDlg muDlg, int x, int y, int width, int height) {
-		doAsyncOperation(null, false, false, (-1), (-1), width, height, muDlg, x, y);
+	public static void initAndShow(ManageUsersDlg muDlg, int x, int y) {
+		doAsyncOperation(null, false, false, (-1), (-1), (-1), (-1), muDlg, x, y);
 	}
 }

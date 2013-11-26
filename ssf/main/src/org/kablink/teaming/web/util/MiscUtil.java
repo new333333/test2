@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -38,7 +38,6 @@ import java.security.MessageDigest;
 import java.text.Collator;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -55,9 +54,14 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.ObjectKeys;
-import org.kablink.teaming.comparator.StringComparator;
 import org.kablink.teaming.context.request.RequestContextHolder;
-import org.kablink.teaming.domain.*;
+import org.kablink.teaming.domain.AuthenticationConfig;
+import org.kablink.teaming.domain.Definition;
+import org.kablink.teaming.domain.FolderEntry;
+import org.kablink.teaming.domain.HistoryStamp;
+import org.kablink.teaming.domain.UserPrincipal;
+import org.kablink.teaming.domain.UserProperties;
+import org.kablink.teaming.domain.ZoneInfo;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.zone.ZoneModule;
@@ -79,7 +83,7 @@ import org.springframework.web.multipart.MultipartFile;
  */
 public final class MiscUtil
 {
-	protected static Log m_logger = LogFactory.getLog( MiscUtil.class );
+	protected static Log m_logger = LogFactory.getLog(MiscUtil.class);
 	
 	// The following are used as the return values for the various
 	// comparators.
@@ -956,6 +960,7 @@ public final class MiscUtil
 		return DOC_LANGS[i];
 	}
 	
+	
 	/**
 	 * Returns true if we're to run in HTML standards mode and false
 	 * otherwise.
@@ -963,7 +968,7 @@ public final class MiscUtil
 	 * @return
 	 */
 	public static boolean isHtmlStandardsMode() {
-		return SPropsUtil.getBoolean("html.standards.mode", true);
+		return SPropsUtil.getBoolean("html.standards.mode", false);
 	}
 	
 	public static boolean isHtmlQuirksMode() {
@@ -1020,7 +1025,7 @@ public final class MiscUtil
 	public static List<IdTriple> getIdTriplesFromMultipleEntryIds( String multipleEntityIds )
 	{
 		List<IdTriple> reply = new ArrayList<IdTriple>();
-		if ( hasString( multipleEntityIds ) )
+		if ( MiscUtil.hasString( multipleEntityIds ) )
 		{
 			String[] meIds = multipleEntityIds.split( "," );
 			for ( String meId:  meIds )
@@ -1133,122 +1138,4 @@ public final class MiscUtil
 		// Always use the initial form of the method.
 		return getMD5Hash( data.getBytes() );
 	}// end getMD5Hash()
-
-	/**
-	 * Given a DefinableEntity that's a FolderEntry, returns the
-	 * FileAttachment to use as the entity's primary file attachment,
-	 * if available.  Otherwise, returns null.
-	 * 
-	 * @param de
-	 * 
-	 * @return
-	 */
-	@SuppressWarnings("unchecked")
-	public static FileAttachment getPrimaryFileAttachment( DefinableEntity de )
-	{
-		// Do we have a DefinableEntity that's a FolderEntry?
-		FileAttachment reply = null;
-		if ( ( null != de ) && ( de instanceof FolderEntry ) )
-		{
-			// Yes!  Does that entry have a primary file attribute?
-			FolderEntry fe = ((FolderEntry) de);
-			Map model  = new HashMap();
-			DefinitionHelper.getPrimaryFile( fe, model );
-			String attrName = ((String) model.get( WebKeys.PRIMARY_FILE_ATTRIBUTE ) );
-			if ( hasString( attrName ) )
-			{
-				// Yes!  Can we access the custom attribute values for
-				// that attribute?
-				CustomAttribute ca = fe.getCustomAttribute( attrName );
-				if ( null != ca )
-				{
-					// Yes!  Does it contain any FileAttachment's?
-					Collection values = ca.getValueSet();
-					if ( hasItems( values ) )
-					{
-						// Yes!  Return the first one.
-						reply = ((FileAttachment) values.iterator().next());
-					}
-				}
-			}
-	
-			// Do we have the FileAttachment for the entry yet?
-			if ( null == reply )
-			{
-				// No!  Does it have any attachments?
-				Collection<FileAttachment> atts = fe.getFileAttachments();
-				if ( hasItems( atts ) ) {
-					// Yes!  Return the first one.
-					reply = ((FileAttachment) atts.iterator().next());
-				}
-			}
-		}
-
-		// If we get here, reply refers to the DefinableEntity's
-		//primary file attachment or is null if one can't be
-		//determined.  Return it.
-		return reply;
-	}
-
-    public static String getPrimaryFileName(DefinableEntity de) {
-        String fName = null;
-        FileAttachment fa = MiscUtil.getPrimaryFileAttachment( de );
-        FileItem fi = fa.getFileItem();
-        if ( null != fi ) {
-            fName = fi.getName();
-        }
-        return fName;
-    }
-
-	/**
-	 * Returns the display string for the product name.
-	 * 
-	 * @param user
-	 * 
-	 * @return
-	 */
-	public static String getProductName( User user )
-	{
-		String keyTail;
-		if ( Utils.checkIfFilr() )
-		     keyTail = "filr";
-		else keyTail = "vibe";
-		return NLT.get( ( "productName." + keyTail ), user.getLocale() );
-	}
-	
-	public static String getProductName()
-	{
-		// Always use the initial form of the method.
-		return getProductName( RequestContextHolder.getRequestContext().getUser() );
-	}
-
-	/**
-	 * If there is more than one entry in a List<String>, it is sorted.
-	 * Simply returns the list it was given, sorted or otherwise. 
-	 *  
-	 * @param ls
-	 * 
-	 * @return
-	 */
-	@SuppressWarnings("unchecked")
-	public static List<String> sortStringList( List<String> ls ) {
-		if ( ( null != ls ) && ( 1 < ls.size() ) )
-		{
-			StringComparator sc = new StringComparator( RequestContextHolder.getRequestContext().getUser().getLocale() );
-			Collections.sort( ls, sc );
-		}
-		return ls;
-	}
-
-    public static boolean isPdf(String filename) {
-        boolean isPdf = false;
-        if (hasString(filename)) {
-            int pPos = filename.lastIndexOf('.');
-            if (0 < pPos) {
-                isPdf = filename.substring(pPos).toLowerCase().equals(".pdf");
-            }
-        }
-        return isPdf;
-    }
-
 }// end MiscUtil

@@ -71,8 +71,6 @@ public class SearchObject {
 	
 	private String aclQueryStr;
 	
-	private String netFolderRootAclQueryStr;
-	
 	// QueryParser is not thread-safe, let try thread local variable, it should be fine
 	private static ThreadLocal<QueryParser> queryParser = new ThreadLocal<QueryParser>();
 	private static ThreadLocal<QueryParser> queryParserARABIC = new ThreadLocal<QueryParser>();
@@ -171,14 +169,6 @@ public class SearchObject {
 
 	public void setAclQueryStr(String aclQueryStr) {
 		this.aclQueryStr = aclQueryStr;
-	}
-
-	public String getNetFolderRootAclQueryStr() {
-		return netFolderRootAclQueryStr;
-	}
-
-	public void setNetFolderRootAclQueryStr(String netFolderRootAclQueryStr) {
-		this.netFolderRootAclQueryStr = netFolderRootAclQueryStr;
 	}
 
 	private QueryParser getParserWSA() {

@@ -26,14 +26,6 @@ import java.util.Date;
  */
 @XmlRootElement(name="access")
 public class Access extends BaseRestObject {
-    public enum RoleType {
-        NONE,
-        VIEWER,
-        EDITOR,
-        CONTRIBUTOR,
-        ACCESS
-    }
-
     private String role;
     private SharingPermission sharing;
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -34,8 +34,6 @@ package org.kablink.teaming.gwt.client.rpc.shared;
 
 import java.util.Map;
 
-import org.kablink.teaming.gwt.client.util.GwtFileLinkAction;
-
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
@@ -50,7 +48,6 @@ public class FolderDisplayDataRpcResponseData implements IsSerializable, VibeRpc
 	private boolean				m_folderSupportsPinning;	//
 	private boolean				m_viewPinnedEntries;		//
 	private boolean				m_viewSharedFiles;			//
-	private GwtFileLinkAction	m_fileLinkAction;			//
 	private int					m_folderPageSize;			//
 	private Map<String, String>	m_folderColumnWidths;		//
 	private String				m_folderSortBy;				//
@@ -76,9 +73,8 @@ public class FolderDisplayDataRpcResponseData implements IsSerializable, VibeRpc
 	 * @param viewPinnedEntries
 	 * @param viewSharedFiles
 	 * @param folderOwnedByCurrentUser
-	 * @param fileLinkAction
 	 */
-	public FolderDisplayDataRpcResponseData(String folderSortBy, boolean folderSortDescend, int folderPageSize, Map<String, String> folderColumnWidths, boolean folderSupportsPinning, boolean viewPinnedEntries, boolean viewSharedFiles, boolean folderOwnedByCurrentUser, GwtFileLinkAction fileLinkAction) {
+	public FolderDisplayDataRpcResponseData(String folderSortBy, boolean folderSortDescend, int folderPageSize, Map<String, String> folderColumnWidths, boolean folderSupportsPinning, boolean viewPinnedEntries, boolean viewSharedFiles, boolean folderOwnedByCurrentUser) {
 		// Initialize this object...
 		this();
 		
@@ -91,7 +87,6 @@ public class FolderDisplayDataRpcResponseData implements IsSerializable, VibeRpc
 		setViewPinnedEntries(       viewPinnedEntries       );
 		setViewSharedFiles(         viewSharedFiles         );
 		setFolderOwnedByCurrentUser(folderOwnedByCurrentUser);
-		setFileLinkAction(          fileLinkAction          );
 	}
 	
 	/**
@@ -104,7 +99,6 @@ public class FolderDisplayDataRpcResponseData implements IsSerializable, VibeRpc
 	public boolean             getFolderSupportsPinning()    {return m_folderSupportsPinning;   }
 	public boolean             getViewPinnedEntries()        {return m_viewPinnedEntries;       }
 	public boolean             getViewSharedFiles()          {return m_viewSharedFiles;         }
-	public GwtFileLinkAction   getFileLinkAction()           {return m_fileLinkAction;          }
 	public int                 getFolderPageSize()           {return m_folderPageSize;          }
 	public Map<String, String> getFolderColumnWidths()       {return m_folderColumnWidths;      }
 	public String              getFolderSortBy()             {return m_folderSortBy;            }
@@ -119,7 +113,6 @@ public class FolderDisplayDataRpcResponseData implements IsSerializable, VibeRpc
 	public void setFolderSupportsPinning(   boolean             folderSupportsPinning)    {m_folderSupportsPinning    = folderSupportsPinning;   }
 	public void setViewPinnedEntries(       boolean             viewPinnedEntries)        {m_viewPinnedEntries        = viewPinnedEntries;       }
 	public void setViewSharedFiles(         boolean             viewSharedFiles)          {m_viewSharedFiles          = viewSharedFiles;         }
-	public void setFileLinkAction(          GwtFileLinkAction   fileLinkAction)           {m_fileLinkAction           = fileLinkAction;          }
 	public void setFolderPageSize(          int                 folderPageSize)           {m_folderPageSize           = folderPageSize;          }
 	public void setFolderColumnWidths(      Map<String, String> folderColumnWidths)       {m_folderColumnWidths       = folderColumnWidths;      }
 	public void setFolderSortBy(            String              folderSortBy)             {m_folderSortBy             = folderSortBy;            }

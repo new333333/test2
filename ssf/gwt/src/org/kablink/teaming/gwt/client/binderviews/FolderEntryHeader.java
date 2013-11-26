@@ -271,15 +271,6 @@ public class FolderEntryHeader extends VibeFlowPanel {
 			titleA.getElement().appendChild(titleL.getElement());
 			titleL.addStyleName("displayInline");
 			titlePanel.add(titleA);
-
-			// ...and if there's a file size to display...
-			String fileSize = m_fed.getFileSizeDisplay();
-			if (GwtClientHelper.hasString(fileSize)) {
-				// ...add that to the right of the download URL...
-				Label sizeL = new Label(m_messages.folderEntry_FileSize(fileSize));
-				sizeL.addStyleName("vibe-feView-headerContentTitleFileSize displayInline");
-				titlePanel.add(sizeL);
-			}
 		}
 		
 		else {

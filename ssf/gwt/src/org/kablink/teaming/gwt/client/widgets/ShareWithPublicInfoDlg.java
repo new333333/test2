@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2009 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -31,6 +31,7 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 package org.kablink.teaming.gwt.client.widgets;
+
 
 import org.kablink.teaming.gwt.client.GwtFolder;
 import org.kablink.teaming.gwt.client.GwtFolderEntry;
@@ -61,10 +62,11 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.TextBox;
 
+
 /**
- * ?
- *  
+ * 
  * @author jwootton
+ *
  */
 public class ShareWithPublicInfoDlg extends DlgBox
 {
@@ -157,7 +159,7 @@ public class ShareWithPublicInfoDlg extends DlgBox
 		
 		// Add controls for the view entry permalink
 		{
-			m_instructions1 = new Label( messages.shareWithPublicInfoDlg_InstructionsEntry( "" ) );
+			m_instructions1 = new Label( messages.shareWithPublicInfoDlg_Instructions( "" ) );
 			m_instructions1.addStyleName( "shareWithPublicDlg_instructionsLabel" );
 			mainPanel.add( m_instructions1 );
 			
@@ -285,7 +287,7 @@ public class ShareWithPublicInfoDlg extends DlgBox
 							@Override
 							public void execute()
 							{
-								updateInstructions( gwtFolderEntry.getEntryName(), true );
+								updateInstructions( gwtFolderEntry.getEntryName() );
 								
 								// Update the name of the entity in the header.
 								m_headerNameLabel.setText( gwtFolderEntry.getEntryName() );
@@ -340,7 +342,7 @@ public class ShareWithPublicInfoDlg extends DlgBox
 							public void execute()
 							{
 								// Update the name of the entity in the header
-								updateInstructions( gwtFolder.getFolderName(), false );
+								updateInstructions( gwtFolder.getFolderName() );
 
 								m_headerNameLabel.setText( gwtFolder.getFolderName() );
 								m_headerPathLabel.setText( gwtFolder.getParentBinderName() );
@@ -432,28 +434,13 @@ public class ShareWithPublicInfoDlg extends DlgBox
 		// Update the header with info about the item.
 		updateHeader( entityId );
 		
-		// Are we dealing with a folder?
-		if ( entityId.isBinder() )
-		{
-			// Yes, hide the controls dealing with the url to download the entity.
-			m_instructions2.setVisible( false );
-			m_downloadFilePermalinkTextBox.setVisible( false );
-		}
-		else
-		{
-			m_instructions2.setVisible( true );
-			m_downloadFilePermalinkTextBox.setVisible( true );
-		}
-		
 		cmd = new Scheduler.ScheduledCommand()
 		{
 			@Override
 			public void execute()
 			{
 				getViewEntryPermalink( entityId );
-				
-				if ( entityId.isBinder() == false )
-					getDownloadFilePermalink( entityId );
+				getDownloadFilePermalink( entityId );
 			}
 		};
 		Scheduler.get().scheduleDeferred( cmd );
@@ -507,16 +494,12 @@ public class ShareWithPublicInfoDlg extends DlgBox
 		m_headerImg.setResource( imgResource );
 	}
 	
-	/*
+	/**
 	 * Update the instructions with the name of the item
 	 */
-	private void updateInstructions( String itemName, boolean itemIsEntry )
+	private void updateInstructions( String itemName )
 	{
-		String instructions1;
-		if (itemIsEntry)
-		     instructions1 = GwtTeaming.getMessages().shareWithPublicInfoDlg_InstructionsEntry(  itemName );
-		else instructions1 = GwtTeaming.getMessages().shareWithPublicInfoDlg_InstructionsFolder( itemName );
-		m_instructions1.setText( instructions1 );
+		m_instructions1.setText( GwtTeaming.getMessages().shareWithPublicInfoDlg_Instructions( itemName ) );
 		m_instructions2.setText( GwtTeaming.getMessages().shareWithPublicInfoDlg_Instructions2( itemName ) );
 	}
 	

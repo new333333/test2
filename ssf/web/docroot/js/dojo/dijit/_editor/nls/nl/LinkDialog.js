@@ -1,2 +1,1 @@
-//>>built
-define("dijit/_editor/nls/nl/LinkDialog",({createLinkTitle:"Linkeigenschappen",insertImageTitle:"Afbeeldingseigenschappen",url:"URL:",text:"Beschrijving:",target:"Doel:",set:"Instellen",currentWindow:"Huidig venster",parentWindow:"Hoofdvenster",topWindow:"Bovenste venster",newWindow:"Nieuw venster"}));
+({"set":"Instellen","text":"Beschrijving:","insertImageTitle":"Afbeeldingseigenschappen","url":"URL:","createLinkTitle":"Linkeigenschappen","newWindow":"New Window","topWindow":"Topmost Window","target":"Target:","parentWindow":"Parent Window","currentWindow":"Current Window"})

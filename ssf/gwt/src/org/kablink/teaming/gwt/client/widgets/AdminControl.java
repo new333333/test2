@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -35,8 +35,6 @@ package org.kablink.teaming.gwt.client.widgets;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.kablink.teaming.gwt.client.datatable.ManageMobileDevicesDlg;
-import org.kablink.teaming.gwt.client.datatable.ManageMobileDevicesDlg.ManageMobileDevicesDlgClient;
 import org.kablink.teaming.gwt.client.event.EditSiteBrandingEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.InvokeConfigureAdhocFoldersDlgEvent;
@@ -44,20 +42,16 @@ import org.kablink.teaming.gwt.client.event.InvokeConfigureFileSyncAppDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeConfigureMobileAppsDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeConfigureShareSettingsDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeConfigureUserAccessDlgEvent;
-import org.kablink.teaming.gwt.client.event.InvokeEditLdapConfigDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeEditNetFolderDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeJitsZoneConfigDlgEvent;
-import org.kablink.teaming.gwt.client.event.InvokeManageDatabasePruneDlgEvent;
-import org.kablink.teaming.gwt.client.event.InvokeManageMobileDevicesDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeManageNetFolderRootsDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeManageGroupsDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeManageUsersDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeManageNetFoldersDlgEvent;
-import org.kablink.teaming.gwt.client.event.InvokeNameCompletionSettingsDlgEvent;
-import org.kablink.teaming.gwt.client.event.InvokePrincipalDesktopSettingsDlgEvent;
-import org.kablink.teaming.gwt.client.event.InvokePrincipalMobileSettingsDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeRunAReportDlgEvent;
-import org.kablink.teaming.gwt.client.event.ManageSharesSelectedEntitiesEvent;
+import org.kablink.teaming.gwt.client.event.InvokeUserDesktopSettingsDlgEvent;
+import org.kablink.teaming.gwt.client.event.InvokeUserMobileSettingsDlgEvent;
+import org.kablink.teaming.gwt.client.event.ManageSharesSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.PreLogoutEvent;
 import org.kablink.teaming.gwt.client.event.SidebarHideEvent;
 import org.kablink.teaming.gwt.client.event.SidebarShowEvent;
@@ -66,7 +60,6 @@ import org.kablink.teaming.gwt.client.AdminConsoleInfo;
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtBrandingData;
 import org.kablink.teaming.gwt.client.GwtConstants;
-import org.kablink.teaming.gwt.client.GwtDatabasePruneConfiguration;
 import org.kablink.teaming.gwt.client.GwtFileSyncAppConfiguration;
 import org.kablink.teaming.gwt.client.GwtMainPage;
 import org.kablink.teaming.gwt.client.GwtTeaming;
@@ -76,46 +69,33 @@ import org.kablink.teaming.gwt.client.admin.AdminConsoleHomePage;
 import org.kablink.teaming.gwt.client.admin.GwtAdminAction;
 import org.kablink.teaming.gwt.client.admin.GwtAdminCategory;
 import org.kablink.teaming.gwt.client.admin.GwtUpgradeInfo;
-import org.kablink.teaming.gwt.client.binderviews.MobileDevicesView;
 import org.kablink.teaming.gwt.client.rpc.shared.GetAdminActionsCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.GetDatabasePruneConfigurationCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetFileSyncAppConfigurationCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetNetFolderCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetUpgradeInfoCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveBrandingCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
-import org.kablink.teaming.gwt.client.util.MobileDevicesInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
-import org.kablink.teaming.gwt.client.util.runasync.ConfigureFileSyncAppDlgInitAndShowParams;
-import org.kablink.teaming.gwt.client.util.runasync.EditBrandingDlgInitAndShowParams;
-import org.kablink.teaming.gwt.client.util.runasync.ModifyNetFolderDlgInitAndShowParams;
-import org.kablink.teaming.gwt.client.util.runasync.RunAsyncCmd;
-import org.kablink.teaming.gwt.client.util.runasync.RunAsyncCreateDlgParams;
-import org.kablink.teaming.gwt.client.util.runasync.RunAsyncInitAndShowParams;
-import org.kablink.teaming.gwt.client.util.runasync.RunAsyncCmd.RunAsyncCmdType;
-import org.kablink.teaming.gwt.client.util.runasync.ShareThisDlgInitAndShowParams;
 import org.kablink.teaming.gwt.client.widgets.AdminInfoDlg.AdminInfoDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ConfigureAdhocFoldersDlg.ConfigureAdhocFoldersDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ConfigureFileSyncAppDlg.ConfigureFileSyncAppDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ConfigureMobileAppsDlg.ConfigureMobileAppsDlgClient;
 import org.kablink.teaming.gwt.client.widgets.EditBrandingDlg.EditBrandingDlgClient;
-import org.kablink.teaming.gwt.client.widgets.EditLdapConfigDlg.EditLdapConfigDlgClient;
-import org.kablink.teaming.gwt.client.widgets.EditZoneShareSettingsDlg.EditZoneShareSettingsDlgClient;
+import org.kablink.teaming.gwt.client.widgets.EditZoneShareRightsDlg.EditZoneShareRightsDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ConfigureUserAccessDlg.ConfigureUserAccessDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ConfigureUserFileSyncAppDlg.ConfigureUserFileSyncAppDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ConfigureUserMobileAppsDlg.ConfigureUserMobileAppsDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ContentControl.ContentControlClient;
 import org.kablink.teaming.gwt.client.widgets.JitsZoneConfigDlg.JitsZoneConfigDlgClient;
-import org.kablink.teaming.gwt.client.widgets.ManageDatabasePruneDlg.ManageDatabasePruneDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ManageGroupsDlg.ManageGroupsDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ManageNetFolderRootsDlg.ManageNetFolderRootsDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ManageNetFoldersDlg.ManageNetFoldersDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ManageUsersDlg.ManageUsersDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ModifyNetFolderDlg.ModifyNetFolderDlgClient;
-import org.kablink.teaming.gwt.client.widgets.NameCompletionSettingsDlg.NameCompletionSettingsDlgClient;
 import org.kablink.teaming.gwt.client.widgets.RunAReportDlg.RunAReportDlgClient;
-import org.kablink.teaming.gwt.client.widgets.ShareThisDlg2.ShareThisDlg2Client;
+import org.kablink.teaming.gwt.client.widgets.ShareThisDlg.ShareThisDlgClient;
+import org.kablink.teaming.gwt.client.widgets.ShareThisDlg.ShareThisDlgMode;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
@@ -159,20 +139,16 @@ public class AdminControl extends TeamingPopupPanel
 		InvokeConfigureMobileAppsDlgEvent.Handler,
 		InvokeConfigureShareSettingsDlgEvent.Handler,
 		InvokeConfigureUserAccessDlgEvent.Handler,
-		InvokeEditLdapConfigDlgEvent.Handler,
 		InvokeEditNetFolderDlgEvent.Handler,
 		InvokeJitsZoneConfigDlgEvent.Handler,
-		InvokeManageDatabasePruneDlgEvent.Handler,
 		InvokeManageNetFoldersDlgEvent.Handler,
 		InvokeManageNetFolderRootsDlgEvent.Handler,
 		InvokeManageGroupsDlgEvent.Handler,
-		InvokeManageMobileDevicesDlgEvent.Handler,
 		InvokeManageUsersDlgEvent.Handler,
-		InvokeNameCompletionSettingsDlgEvent.Handler,
-		InvokePrincipalDesktopSettingsDlgEvent.Handler,
-		InvokePrincipalMobileSettingsDlgEvent.Handler,
 		InvokeRunAReportDlgEvent.Handler,
-		ManageSharesSelectedEntitiesEvent.Handler,
+		InvokeUserDesktopSettingsDlgEvent.Handler,
+		InvokeUserMobileSettingsDlgEvent.Handler,
+		ManageSharesSelectedEntriesEvent.Handler,
 		PreLogoutEvent.Handler,
 		SidebarHideEvent.Handler,
 		SidebarShowEvent.Handler
@@ -190,22 +166,18 @@ public class AdminControl extends TeamingPopupPanel
 	private ConfigureMobileAppsDlg m_configureMobileAppsDlg = null;
 	private ConfigureUserMobileAppsDlg m_configureUserMobileAppsDlg = null;
 	private ConfigureUserFileSyncAppDlg m_configureUserFileSyncAppDlg = null;
-	private ManageDatabasePruneDlg m_manageDatabasePruneDlg = null;
 	private ManageGroupsDlg m_manageGroupsDlg = null;
 	private ManageNetFoldersDlg m_manageNetFoldersDlg = null;
 	private ManageNetFolderRootsDlg m_manageNetFolderRootsDlg = null;
-	private ManageMobileDevicesDlg m_manageMobileDevicesDlg = null;
 	private ManageUsersDlg m_manageUsersDlg = null;
 	private RunAReportDlg m_runAReportDlg = null;
 	private ConfigureUserAccessDlg m_configureUserAccessDlg = null;
 	private ConfigureAdhocFoldersDlg m_configureAdhocFoldersDlg = null;
-	private EditZoneShareSettingsDlg m_editZoneShareSettingsDlg = null;
+	private EditZoneShareRightsDlg m_editZoneShareRightsDlg = null;
 	private ModifyNetFolderDlg m_modifyNetFolderDlg = null;
-	private ShareThisDlg2 m_shareDlg = null;
+	private ShareThisDlg m_shareDlg = null;
 	private JitsZoneConfigDlg m_jitsDlg = null;
 	private EditBrandingDlg m_editSiteBrandingDlg = null;
-	private EditLdapConfigDlg m_editLdapConfigDlg = null;
-	private NameCompletionSettingsDlg m_nameCompletionSettingsDlg = null;
 	private EditSuccessfulHandler m_editBrandingSuccessHandler = null;
 	private List<HandlerRegistration> m_registeredEventHandlers;
 
@@ -220,20 +192,16 @@ public class AdminControl extends TeamingPopupPanel
 		TeamingEvents.INVOKE_CONFIGURE_MOBILE_APPS_DLG,
 		TeamingEvents.INVOKE_CONFIGURE_SHARE_SETTINGS_DLG,
 		TeamingEvents.INVOKE_CONFIGURE_USER_ACCESS_DLG,
-		TeamingEvents.INVOKE_EDIT_LDAP_CONFIG_DLG,
 		TeamingEvents.INVOKE_EDIT_NET_FOLDER_DLG,
 		TeamingEvents.INVOKE_JITS_ZONE_CONFIG_DLG,
-		TeamingEvents.INVOKE_MANAGE_DATABASE_PRUNE_DLG,
 		TeamingEvents.INVOKE_MANAGE_NET_FOLDERS_DLG,
 		TeamingEvents.INVOKE_MANAGE_NET_FOLDER_ROOTS_DLG,
 		TeamingEvents.INVOKE_MANAGE_GROUPS_DLG,
-		TeamingEvents.INVOKE_NAME_COMPLETION_SETTINGS_DLG,
-		TeamingEvents.INVOKE_PRINCIPAL_DESKTOP_SETTINGS_DLG,
-		TeamingEvents.INVOKE_PRINCIPAL_MOBILE_SETTINGS_DLG,
-		TeamingEvents.INVOKE_MANAGE_MOBILE_DEVICES_DLG,
+		TeamingEvents.MANAGE_SHARES_SELECTED_ENTRIES,
 		TeamingEvents.INVOKE_MANAGE_USERS_DLG,
 		TeamingEvents.INVOKE_RUN_A_REPORT_DLG,
-		TeamingEvents.MANAGE_SHARES_SELECTED_ENTITIES,
+		TeamingEvents.INVOKE_USER_DESKTOP_SETTINGS_DLG,
+		TeamingEvents.INVOKE_USER_MOBILE_SETTINGS_DLG,
 		
 		// Login/out events.
 		TeamingEvents.PRE_LOGOUT,
@@ -405,14 +373,8 @@ public class AdminControl extends TeamingPopupPanel
 			actions = category.getActions();
 			if ( actions != null )
 			{
-				boolean showManageMobileDevices = MobileDevicesView.SHOW_MOBILE_DEVICES_SYSTEM;
 				for (GwtAdminAction action : actions )
 				{
-					if ( action.getActionType().equals( AdminAction.MANAGE_MOBILE_DEVICES ) && ( ! showManageMobileDevices ) )
-					{
-						continue;
-					}
-					
 					AdminActionControl adminActionControl;
 					
 					// Add a ui widget for this administration action.
@@ -871,29 +833,17 @@ public class AdminControl extends TeamingPopupPanel
 		}
 		else if ( adminAction.getActionType() == AdminAction.MANAGE_SHARE_ITEMS )
 		{
-			ManageSharesSelectedEntitiesEvent event;
+			ManageSharesSelectedEntriesEvent event;
 			
 			// Fire the event to invoke the Manage Shares dialog.
-			event = new ManageSharesSelectedEntitiesEvent();
+			event = new ManageSharesSelectedEntriesEvent();
 			GwtTeaming.fireEvent( event );
 		}
-				
-		else if ( adminAction.getActionType() == AdminAction.MANAGE_DATABASE_PRUNE )
-		{
-			// Fire the event to invoke the "Manage database prune" dialog.
-			InvokeManageDatabasePruneDlgEvent.fireOne();
-		}
-
+		
 		else if ( adminAction.getActionType() == AdminAction.ADD_USER )
 		{
 			// Fire the event to invoke the "Manage users" dialog.
 			InvokeManageUsersDlgEvent.fireOne();
-		}
-		
-		else if ( adminAction.getActionType() == AdminAction.MANAGE_MOBILE_DEVICES )
-		{
-			// Fire the event to invoke the "Manage mobile devices" dialog.
-			InvokeManageMobileDevicesDlgEvent.fireOne();
 		}
 		
 		else if ( adminAction.getActionType() == AdminAction.RUN_A_REPORT )
@@ -906,16 +856,6 @@ public class AdminControl extends TeamingPopupPanel
 		{
 			// Fire the event to invoke the "Configure Jits" dialog.
 			InvokeJitsZoneConfigDlgEvent.fireOne();
-		}
-		else if ( adminAction.getActionType() == AdminAction.LDAP_CONFIG )
-		{
-			// Fire the event to invoke the "Edit ldap configuration" dialog.
-			InvokeEditLdapConfigDlgEvent.fireOne();
-		}
-		else if ( adminAction.getActionType() == AdminAction.CONFIGURE_NAME_COMPLETION )
-		{
-			// Fire the event to invoke the "Name Completion Settings" dialog.
-			InvokeNameCompletionSettingsDlgEvent.fireOne();
 		}
 		else
 		{
@@ -1104,77 +1044,6 @@ public class AdminControl extends TeamingPopupPanel
 	/**
 	 * 
 	 */
-	private void invokeEditLdapConfigDlg()
-	{
-		// Have we created the dialog yet?
-		if ( m_editLdapConfigDlg == null )
-		{
-			RunAsyncCmd createCmd;
-			RunAsyncCreateDlgParams params;
-			
-			// No, create it.
-			params = new RunAsyncCreateDlgParams();
-			params.setAutoHide( new Boolean( true ) );
-			params.setModal( new Boolean( false ) );
-			params.setLeft( new Integer( m_contentControlX ) );
-			params.setTop( new Integer( m_contentControlY ) );
-			params.setHeight( new Integer( m_dlgHeight ) );
-			params.setWidth( new Integer( m_dlgWidth ) );
-
-			createCmd = new RunAsyncCmd( RunAsyncCmdType.CREATE, params );
-			
-			// Run an async cmd to create the dialog.
-			EditLdapConfigDlg.runAsyncCmd(
-									createCmd,
-									new EditLdapConfigDlgClient()
-			{			
-				@Override
-				public void onUnavailable()
-				{
-					// Nothing to do.  Error handled in asynchronous provider.
-				}
-				
-				@Override
-				public void onSuccess( EditLdapConfigDlg elcDlg )
-				{
-					ScheduledCommand cmd;
-					
-					m_editLdapConfigDlg = elcDlg;
-
-					cmd = new ScheduledCommand()
-					{
-						@Override
-						public void execute() 
-						{
-							invokeEditLdapConfigDlg();
-						}
-					};
-					Scheduler.get().scheduleDeferred( cmd );
-				}
-			} );
-		}
-		else
-		{
-			RunAsyncCmd initAndShowCmd;
-			RunAsyncInitAndShowParams params;
-			
-			params = new RunAsyncInitAndShowParams();
-			params.setUIObj( m_editLdapConfigDlg );
-			params.setWidth( new Integer( m_dlgWidth ) );
-			params.setHeight( new Integer( m_dlgHeight ) );
-			params.setLeft( new Integer( m_contentControlX ) );
-			params.setTop( new Integer( m_contentControlY ) );
-			
-			initAndShowCmd = new RunAsyncCmd( RunAsyncCmdType.INIT_AND_SHOW, params );
-
-			// Run an async cmd to show the dialog.
-			EditLdapConfigDlg.runAsyncCmd( initAndShowCmd, null );
-		}
-	}
-	
-	/**
-	 * 
-	 */
 	private void invokeEditNetFolderDlgById( Long id, final UIObject showRelativeTo )
 	{
 		if ( id != null )
@@ -1240,20 +1109,11 @@ public class AdminControl extends TeamingPopupPanel
 		
 		if ( m_modifyNetFolderDlg == null )
 		{
-			RunAsyncCmd createCmd;
-			RunAsyncCreateDlgParams params;
-			
-			// No, create it.
-			params = new RunAsyncCreateDlgParams();
-			params.setAutoHide( new Boolean( true ) );
-			params.setModal( new Boolean( false ) );
-			params.setLeft( new Integer( x ) );
-			params.setTop( new Integer( y ) );
-
-			createCmd = new RunAsyncCmd( RunAsyncCmdType.CREATE, params );
-			
-			ModifyNetFolderDlg.runAsyncCmd(
-										createCmd,
+			ModifyNetFolderDlg.createAsync(
+										true, 
+										false,
+										x, 
+										y,
 										new ModifyNetFolderDlgClient()
 			{			
 				@Override
@@ -1266,15 +1126,19 @@ public class AdminControl extends TeamingPopupPanel
 				public void onSuccess( final ModifyNetFolderDlg mnfDlg )
 				{
 					ScheduledCommand cmd;
-
-					m_modifyNetFolderDlg = mnfDlg;
-
+					
 					cmd = new ScheduledCommand()
 					{
 						@Override
 						public void execute() 
 						{
-							invokeEditNetFolderDlg( netFolder, showRelativeTo );
+							m_modifyNetFolderDlg = mnfDlg;
+							
+							m_modifyNetFolderDlg.init( netFolder );
+							if ( showRelativeTo != null )
+								m_modifyNetFolderDlg.showRelativeTo( showRelativeTo );
+							else
+								m_modifyNetFolderDlg.show();
 						}
 					};
 					Scheduler.get().scheduleDeferred( cmd );
@@ -1283,18 +1147,14 @@ public class AdminControl extends TeamingPopupPanel
 		}
 		else
 		{
-			RunAsyncCmd initAndShowCmd;
-			ModifyNetFolderDlgInitAndShowParams params;
-		
-			params = new ModifyNetFolderDlgInitAndShowParams();
-			params.setUIObj( m_modifyNetFolderDlg );
-			params.setLeft( new Integer( m_contentControlX ) );
-			params.setTop( new Integer( m_contentControlY ) );
-			params.setShowRelativeTo( showRelativeTo );
-			params.setNetFolder( netFolder );
-		
-			initAndShowCmd = new RunAsyncCmd( RunAsyncCmdType.INIT_AND_SHOW, params );
-			ModifyNetFolderDlg.runAsyncCmd( initAndShowCmd, null );
+			m_modifyNetFolderDlg.init( netFolder );
+			if ( showRelativeTo != null )
+				m_modifyNetFolderDlg.showRelativeTo( showRelativeTo );
+			else
+			{
+				m_modifyNetFolderDlg.setPopupPosition( x, y );
+				m_modifyNetFolderDlg.show();
+			}
 		}
 	}
 
@@ -1390,22 +1250,23 @@ public class AdminControl extends TeamingPopupPanel
 		// Have we already created an "Edit branding" dialog?
 		if ( m_editSiteBrandingDlg == null )
 		{
-			RunAsyncCmd createCmd;
-			RunAsyncCreateDlgParams params;
+			Integer width;
+			Integer height;
 			
-			// No, create it.
-			params = new RunAsyncCreateDlgParams();
-			params.setEditSuccessfulHandler( m_editBrandingSuccessHandler );
-			params.setAutoHide( new Boolean( false ) );
-			params.setModal( new Boolean( true ) );
-			params.setLeft( new Integer( x ) );
-			params.setTop( new Integer( y ) );
-			params.setHeight( new Integer( m_dlgHeight ) );
-			params.setWidth( new Integer( m_dlgWidth ) );
+			height = new Integer( m_dlgHeight );
+			width = new Integer( m_dlgWidth );
 
-			createCmd = new RunAsyncCmd( RunAsyncCmdType.CREATE, params );
-
-			EditBrandingDlg.runAsyncCmd( createCmd, new EditBrandingDlgClient()
+			// No, create one.
+			EditBrandingDlg.createAsync(
+									m_editBrandingSuccessHandler,
+									null,
+									false,
+									true,
+									x,
+									y,
+									width,
+									height,
+									new EditBrandingDlgClient()
 			{				
 				@Override
 				public void onUnavailable()
@@ -1416,19 +1277,8 @@ public class AdminControl extends TeamingPopupPanel
 				@Override
 				public void onSuccess( EditBrandingDlg ebDlg )
 				{
-					Scheduler.ScheduledCommand cmd;
-					
 					m_editSiteBrandingDlg = ebDlg;
-					
-					cmd = new Scheduler.ScheduledCommand()
-					{
-						@Override
-						public void execute()
-						{
-							invokeEditSiteBrandingDlgImpl( brandingData, x, y );
-						}
-					};
-					Scheduler.get().scheduleDeferred( cmd );
+					invokeEditSiteBrandingDlgImpl( brandingData, x, y );
 				}
 			} );
 		}
@@ -1444,21 +1294,9 @@ public class AdminControl extends TeamingPopupPanel
 	 */
 	private void invokeEditSiteBrandingDlgImpl( GwtBrandingData brandingData, int x, int y )
 	{
-		RunAsyncCmd initAndShowCmd;
-		EditBrandingDlgInitAndShowParams params;
-	
-		params = new EditBrandingDlgInitAndShowParams();
-		params.setUIObj( m_editSiteBrandingDlg );
-		params.setBrandingData( brandingData );
-		params.setWidth( new Integer( m_dlgWidth ) );
-		params.setHeight( new Integer( m_dlgHeight ) );
-		params.setLeft( new Integer( m_contentControlX ) );
-		params.setTop( new Integer( m_contentControlY ) );
-	
-		initAndShowCmd = new RunAsyncCmd( RunAsyncCmdType.INIT_AND_SHOW, params );
-
-		// Run an async cmd to show the dialog.
-		EditBrandingDlg.runAsyncCmd( initAndShowCmd, null );
+		m_editSiteBrandingDlg.init( brandingData );
+		m_editSiteBrandingDlg.setPopupPosition( x, y );
+		m_editSiteBrandingDlg.show();
 	}
 
 	/**
@@ -1469,22 +1307,10 @@ public class AdminControl extends TeamingPopupPanel
 		// Have we created a share dialog yet?
 		if ( m_shareDlg == null )
 		{
-			ShareThisDlg2Client client;
-			RunAsyncCmd createCmd;
-			RunAsyncCreateDlgParams params;
+			ShareThisDlgClient client;
 			
-			// No, create it.
-			params = new RunAsyncCreateDlgParams();
-			params.setAutoHide( new Boolean( true ) );
-			params.setModal( new Boolean( false ) );
-			params.setLeft( new Integer( m_contentControlX ) );
-			params.setTop( new Integer( m_contentControlY ) );
-			params.setHeight( new Integer( m_dlgHeight ) );
-			params.setWidth( new Integer( m_dlgWidth ) );
-
-			createCmd = new RunAsyncCmd( RunAsyncCmdType.CREATE, params );
-			
-			client = new ShareThisDlg2Client()
+			// No!  Create one now...
+			client = new ShareThisDlgClient()
 			{
 				@Override
 				public void onUnavailable() 
@@ -1493,25 +1319,14 @@ public class AdminControl extends TeamingPopupPanel
 				}
 				
 				@Override
-				public void onSuccess( ShareThisDlg2 stDlg )
+				public void onSuccess( ShareThisDlg stDlg )
 				{
-					Scheduler.ScheduledCommand cmd;
-					
 					// ...and show it with the given entity IDs.
 					m_shareDlg = stDlg;
-					
-					cmd = new Scheduler.ScheduledCommand()
-					{
-						@Override
-						public void execute()
-						{
-							invokeManageSharesDlg();
-						}
-					};
-					Scheduler.get().scheduleDeferred( cmd );
+					invokeManageSharesDlg();
 				}
 			};
-			ShareThisDlg2.runAsyncCmd( createCmd, client );
+			ShareThisDlg.createAsync( client, true, false ); 
 		}
 		else
 		{
@@ -1523,111 +1338,19 @@ public class AdminControl extends TeamingPopupPanel
 				@Override
 				public void execute() 
 				{
-					RunAsyncCmd initAndShowCmd;
-					ShareThisDlgInitAndShowParams params;
-				
-					params = new ShareThisDlgInitAndShowParams();
-					params.setUIObj( m_shareDlg );
-					params.setWidth( new Integer( m_dlgWidth ) );
-					params.setHeight( new Integer( m_dlgHeight ) );
-					params.setCaption( GwtTeaming.getMessages().shareDlg_manageShares() );
-					params.setEntityIds( null );
-					params.setMode( ShareThisDlg2.ShareThisDlgMode.MANAGE_ALL );
-				
-					initAndShowCmd = new RunAsyncCmd( RunAsyncCmdType.INIT_AND_SHOW, params );
-					
-					// Run the async command to show the dialog
-					ShareThisDlg2.runAsyncCmd( initAndShowCmd, null );
+					ShareThisDlg.initAndShow(
+										m_shareDlg,
+										null,
+										GwtTeaming.getMessages().shareDlg_manageShares(),
+										null,
+										null,
+										ShareThisDlgMode.MANAGE_ALL );
 				}
 			};
 			Scheduler.get().scheduleDeferred( cmd );
 		}
 	}
 	
-	/**
-	 * 
-	 */
-	private void invokeNameCompletionSettingsDlg()
-	{
-		int x;
-		int y;
-		
-		// Get the position of the content control.
-		x = m_contentControlX;
-		y = m_contentControlY;
-		
-		if ( m_nameCompletionSettingsDlg == null )
-		{
-			Integer width;
-			Integer height;
-			RunAsyncCmd createCmd;
-			RunAsyncCreateDlgParams params;
-			
-			height = new Integer( m_dlgHeight );
-			width = new Integer( m_dlgWidth );
-
-			params = new RunAsyncCreateDlgParams();
-			params.setAutoHide( new Boolean( true ) );
-			params.setModal( new Boolean( false ) );
-			params.setLeft( new Integer( x ) );
-			params.setTop( new Integer( y ) );
-			params.setHeight( height );
-			params.setWidth( width );
-
-			createCmd = new RunAsyncCmd( RunAsyncCmdType.CREATE, params );
-			
-			// Run an async cmd to create the dialog.
-			NameCompletionSettingsDlg.runAsyncCmd(
-											createCmd,
-											new NameCompletionSettingsDlgClient()
-			{			
-				@Override
-				public void onUnavailable()
-				{
-					// Nothing to do.  Error handled in asynchronous provider.
-				}
-				
-				@Override
-				public void onSuccess( final NameCompletionSettingsDlg ncsDlg )
-				{
-					ScheduledCommand cmd;
-					
-					m_nameCompletionSettingsDlg = ncsDlg;
-					
-					cmd = new ScheduledCommand()
-					{
-						@Override
-						public void execute() 
-						{
-							// Now that we have created the dialog,
-							// fire the event to invoke the "Name Completion Settings" dialog.
-							InvokeNameCompletionSettingsDlgEvent.fireOne();
-						}
-					};
-					Scheduler.get().scheduleDeferred( cmd );
-				}
-			} );
-
-		}
-		else
-		{
-			RunAsyncCmd initAndShowCmd;
-			RunAsyncInitAndShowParams params;
-		
-			params = new RunAsyncInitAndShowParams();
-			params.setUIObj( m_nameCompletionSettingsDlg );
-			params.setWidth( new Integer( m_dlgWidth ) );
-			params.setHeight( new Integer( m_dlgHeight ) );
-			params.setLeft( new Integer( x ) );
-			params.setTop( new Integer( y ) );
-		
-			initAndShowCmd = new RunAsyncCmd( RunAsyncCmdType.INIT_AND_SHOW, params );
-
-			// Run an async cmd to show the dialog.
-			NameCompletionSettingsDlg.runAsyncCmd( initAndShowCmd, null );
-		}
-	}
-
 	/**
 	 * 
 	 */
@@ -1905,8 +1628,8 @@ public class AdminControl extends TeamingPopupPanel
 	@Override
 	public void onInvokeConfigureAdhocFoldersDlg( InvokeConfigureAdhocFoldersDlgEvent event )
 	{
-		final int x;
-		final int y;
+		int x;
+		int y;
 		
 		// Get the position of the content control.
 		x = m_contentControlX;
@@ -1917,28 +1640,18 @@ public class AdminControl extends TeamingPopupPanel
 		{
 			int width;
 			int height;
-			RunAsyncCmd createCmd;
-			RunAsyncCreateDlgParams params;
 			
 			// No, create one.
 			height = m_dlgHeight;
 			width = m_dlgWidth;
-			
-			// No, create it.
-			params = new RunAsyncCreateDlgParams();
-			params.setAutoHide( new Boolean( true ) );
-			params.setModal( new Boolean( false ) );
-			params.setLeft( new Integer( x ) );
-			params.setTop( new Integer( y ) );
-			params.setHeight( new Integer( height ) );
-			params.setWidth( new Integer( width ) );
-
-			createCmd = new RunAsyncCmd( RunAsyncCmdType.CREATE, params );
-			
-			// Run an async cmd to create the dialog.
-			ConfigureAdhocFoldersDlg.runAsyncCmd(
-									createCmd,
-									new ConfigureAdhocFoldersDlgClient()
+			ConfigureAdhocFoldersDlg.createAsync(
+											true, 
+											false,
+											x, 
+											y,
+											width,
+											height,
+											new ConfigureAdhocFoldersDlgClient()
 			{			
 				@Override
 				public void onUnavailable()
@@ -1947,18 +1660,19 @@ public class AdminControl extends TeamingPopupPanel
 				}
 				
 				@Override
-				public void onSuccess( ConfigureAdhocFoldersDlg cafDlg )
+				public void onSuccess( final ConfigureAdhocFoldersDlg cafDlg )
 				{
 					ScheduledCommand cmd;
-					
-					m_configureAdhocFoldersDlg = cafDlg;
 					
 					cmd = new ScheduledCommand()
 					{
 						@Override
 						public void execute() 
 						{
-							invokeConfigureAdhocFoldersDlg( x, y );
+							m_configureAdhocFoldersDlg = cafDlg;
+							
+							m_configureAdhocFoldersDlg.init( null );
+							m_configureAdhocFoldersDlg.show();
 						}
 					};
 					Scheduler.get().scheduleDeferred( cmd );
@@ -1967,31 +1681,9 @@ public class AdminControl extends TeamingPopupPanel
 		}
 		else
 		{
-			invokeConfigureAdhocFoldersDlg( x, y );
-		}
-	}
-	
-	/**
-	 * 
-	 */
-	private void invokeConfigureAdhocFoldersDlg( int x, int y )
-	{
-		if ( m_configureAdhocFoldersDlg != null )
-		{
-			RunAsyncCmd initAndShowCmd;
-			RunAsyncInitAndShowParams params;
-		
-			params = new RunAsyncInitAndShowParams();
-			params.setUIObj( m_configureAdhocFoldersDlg );
-			params.setWidth( new Integer( m_dlgWidth ) );
-			params.setHeight( new Integer( m_dlgHeight ) );
-			params.setLeft( new Integer( x ) );
-			params.setTop( new Integer( y ) );
-		
-			initAndShowCmd = new RunAsyncCmd( RunAsyncCmdType.INIT_AND_SHOW, params );
-
-			// Run an async cmd to show the dialog.
-			ConfigureAdhocFoldersDlg.runAsyncCmd( initAndShowCmd, null );
+			m_configureAdhocFoldersDlg.init( null );
+			m_configureAdhocFoldersDlg.setPopupPosition( x, y );
+			m_configureAdhocFoldersDlg.show();
 		}
 	}
 	
@@ -2028,81 +1720,67 @@ public class AdminControl extends TeamingPopupPanel
 			@Override
 			public void onSuccess( VibeRpcResponse response )
 			{
+				int x;
+				int y;
 				final GwtFileSyncAppConfiguration fileSyncAppConfiguration;
-				ScheduledCommand cmd1;
+
 
 				fileSyncAppConfiguration = (GwtFileSyncAppConfiguration) response.getResponseData();
 				
-				cmd1 = new Scheduler.ScheduledCommand()
+				// Get the position of the content control.
+				x = m_contentControlX;
+				y = m_contentControlY;
+				
+				// Have we already created a "Configure File Sync App" dialog?
+				if ( m_configureFileSyncAppDlg == null )
 				{
-					@Override
-					public void execute()
-					{
-						final int x;
-						final int y;
-
-						// Get the position of the content control.
-						x = m_contentControlX;
-						y = m_contentControlY;
+					int width;
+					int height;
+					
+					// No, create one.
+					height = m_dlgHeight;
+					width = m_dlgWidth;
+					ConfigureFileSyncAppDlg.createAsync(
+							true, 
+							false,
+							x, 
+							y,
+							width,
+							height,
+							new ConfigureFileSyncAppDlgClient()
+					{			
+						@Override
+						public void onUnavailable()
+						{
+							// Nothing to do.  Error handled in asynchronous provider.
+						}
 						
-						// Have we already created a "Configure File Sync App" dialog?
-						if ( m_configureFileSyncAppDlg == null )
+						@Override
+						public void onSuccess( final ConfigureFileSyncAppDlg cfsaDlg )
 						{
-							int width;
-							int height;
-							RunAsyncCmd createCmd;
-							RunAsyncCreateDlgParams params;
+							ScheduledCommand cmd;
 							
-							// No, create it.
-							height = m_dlgHeight;
-							width = m_dlgWidth;
-							params = new RunAsyncCreateDlgParams();
-							params.setAutoHide( new Boolean( true ) );
-							params.setModal( new Boolean( false ) );
-							params.setLeft( new Integer( x ) );
-							params.setTop( new Integer( y ) );
-							params.setWidth( new Integer( width ) );
-							params.setHeight( new Integer( height ) );
-
-							createCmd = new RunAsyncCmd( RunAsyncCmdType.CREATE, params );
-							
-							// Run an async cmd to create the dialog.
-							ConfigureFileSyncAppDlg.runAsyncCmd(
-															createCmd,
-															new ConfigureFileSyncAppDlgClient()
-							{			
+							cmd = new ScheduledCommand()
+							{
 								@Override
-								public void onUnavailable()
+								public void execute() 
 								{
-									// Nothing to do.  Error handled in asynchronous provider.
-								}
-								
-								@Override
-								public void onSuccess( ConfigureFileSyncAppDlg cfsaDlg )
-								{
-									ScheduledCommand cmd;
-									
 									m_configureFileSyncAppDlg = cfsaDlg;
-
-									cmd = new ScheduledCommand()
-									{
-										@Override
-										public void execute() 
-										{
-											invokeConfigureFileSyncAppDlg( x, y, fileSyncAppConfiguration );
-										}
-									};
-									Scheduler.get().scheduleDeferred( cmd );
+									
+									m_configureFileSyncAppDlg.init( fileSyncAppConfiguration );
+									m_configureFileSyncAppDlg.show();
 								}
-							} );
+							};
+							Scheduler.get().scheduleDeferred( cmd );
 						}
-						else
-						{
-							invokeConfigureFileSyncAppDlg( x, y, fileSyncAppConfiguration );
-						}
-					}
-				};
-				Scheduler.get().scheduleDeferred( cmd1 );
+					} );
+				}
+				else
+				{
+					m_configureFileSyncAppDlg.init( fileSyncAppConfiguration );
+					m_configureFileSyncAppDlg.setPopupPosition( x, y );
+					m_configureFileSyncAppDlg.show();
+				}
 			}
 		};
 
@@ -2115,28 +1793,6 @@ public class AdminControl extends TeamingPopupPanel
 			cmd = new GetFileSyncAppConfigurationCmd();
 			GwtClientHelper.executeCommand( cmd, rpcReadCallback );
 		}
-	}
-	
-	/**
-	 * 
-	 */
-	private void invokeConfigureFileSyncAppDlg( int x, int y, GwtFileSyncAppConfiguration fileSyncAppConfig )
-	{
-		RunAsyncCmd initAndShowCmd;
-		ConfigureFileSyncAppDlgInitAndShowParams params;
-	
-		params = new ConfigureFileSyncAppDlgInitAndShowParams();
-		params.setConfig( fileSyncAppConfig );
-		params.setUIObj( m_configureFileSyncAppDlg );
-		params.setWidth( new Integer( m_dlgWidth ) );
-		params.setHeight( new Integer( m_dlgHeight ) );
-		params.setLeft( new Integer( x ) );
-		params.setTop( new Integer( y ) );
-	
-		initAndShowCmd = new RunAsyncCmd( RunAsyncCmdType.INIT_AND_SHOW, params );
-
-		// Run an async cmd to show the dialog.
-		ConfigureFileSyncAppDlg.runAsyncCmd( initAndShowCmd, null );
 	}
 	
 
@@ -2203,7 +1859,6 @@ public class AdminControl extends TeamingPopupPanel
 		}
 		else
 		{
-			m_configureMobileAppsDlg.setPixelSize( m_dlgWidth, m_dlgHeight );
 			m_configureMobileAppsDlg.init();
 			m_configureMobileAppsDlg.setPopupPosition( x, y );
 			m_configureMobileAppsDlg.show();
@@ -2229,7 +1884,7 @@ public class AdminControl extends TeamingPopupPanel
 		y = m_contentControlY;
 		
 		// Have we already created a "Configure Share Settings" dialog?
-		if ( m_editZoneShareSettingsDlg == null )
+		if ( m_editZoneShareRightsDlg == null )
 		{
 			int width;
 			int height;
@@ -2237,14 +1892,14 @@ public class AdminControl extends TeamingPopupPanel
 			// No, create one.
 			height = m_dlgHeight;
 			width = m_dlgWidth;
-			EditZoneShareSettingsDlg.createAsync(
+			EditZoneShareRightsDlg.createAsync(
 											true, 
 											false,
 											x, 
 											y,
 											width,
 											height,
-											new EditZoneShareSettingsDlgClient()
+											new EditZoneShareRightsDlgClient()
 			{			
 				@Override
 				public void onUnavailable()
@@ -2253,7 +1908,7 @@ public class AdminControl extends TeamingPopupPanel
 				}
 				
 				@Override
-				public void onSuccess( final EditZoneShareSettingsDlg ezsrDlg )
+				public void onSuccess( final EditZoneShareRightsDlg ezsrDlg )
 				{
 					ScheduledCommand cmd;
 					
@@ -2262,10 +1917,10 @@ public class AdminControl extends TeamingPopupPanel
 						@Override
 						public void execute() 
 						{
-							m_editZoneShareSettingsDlg = ezsrDlg;
+							m_editZoneShareRightsDlg = ezsrDlg;
 							
-							m_editZoneShareSettingsDlg.init();
-							m_editZoneShareSettingsDlg.show();
+							m_editZoneShareRightsDlg.init();
+							m_editZoneShareRightsDlg.show();
 						}
 					};
 					Scheduler.get().scheduleDeferred( cmd );
@@ -2274,10 +1929,9 @@ public class AdminControl extends TeamingPopupPanel
 		}
 		else
 		{
-			m_editZoneShareSettingsDlg.setPixelSize( m_dlgWidth, m_dlgHeight );
-			m_editZoneShareSettingsDlg.init();
-			m_editZoneShareSettingsDlg.setPopupPosition( x, y );
-			m_editZoneShareSettingsDlg.show();
+			m_editZoneShareRightsDlg.init();
+			m_editZoneShareRightsDlg.setPopupPosition( x, y );
+			m_editZoneShareRightsDlg.show();
 		}
 	}
 	
@@ -2345,37 +1999,12 @@ public class AdminControl extends TeamingPopupPanel
 		}
 		else
 		{
-			m_configureUserAccessDlg.setPixelSize( m_dlgWidth, m_dlgHeight );
 			m_configureUserAccessDlg.init();
 			m_configureUserAccessDlg.setPopupPosition( x, y );
 			m_configureUserAccessDlg.show();
 		}
 	}
 	
-	/**
-	 * Handles InvokeEditLdapConfigDlgEvent received by this class.
-	 * 
-	 * Implements the InvokeEditLdapConfigDlgEvent.Handler.onInvokeEditLdapConfigDlg() method.
-	 * 
-	 * @param event
-	 */
-	@Override
-	public void onInvokeEditLdapConfigDlg( InvokeEditLdapConfigDlgEvent event )
-	{
-		Scheduler.ScheduledCommand cmd;
-		
-		cmd = new Scheduler.ScheduledCommand()
-		{
-			@Override
-			public void execute()
-			{
-				invokeEditLdapConfigDlg();
-			}
-		};
-		Scheduler.get().scheduleDeferred( cmd );
-	}
-	
-
 	/**
 	 * Handle the InvokeEditNetFolderDlgEvent received by this class
 	 * 
@@ -2460,120 +2089,12 @@ public class AdminControl extends TeamingPopupPanel
 		}
 		else
 		{
-			m_jitsDlg.setPixelSize( m_dlgWidth, m_dlgHeight );
 			m_jitsDlg.init();
 			m_jitsDlg.setPopupPosition( x, y );
 			m_jitsDlg.show();
 		}
 	}
 	
-	/**
-	 * Handles InvokeManageDatabasePruneDlgEvent received by this class.
-	 * 
-	 * Implements the InvokeManageDatabasePruneDlgEvent.Handler.onInvokeManageDatabasePruneDlg() method.
-	 * 
-	 * @param event
-	 */
-	@Override
-	public void onInvokeManageDatabasePruneDlg( InvokeManageDatabasePruneDlgEvent event )
-	{
-		AsyncCallback<VibeRpcResponse> rpcReadCallback;
-		
-		// Create a callback that will be called when we get the Database Prune configuration.
-		rpcReadCallback = new AsyncCallback<VibeRpcResponse>()
-		{
-			/**
-			 * 
-			 */
-			@Override
-			public void onFailure( Throwable t )
-			{
-				GwtClientHelper.handleGwtRPCFailure(
-					t,
-					GwtTeaming.getMessages().rpcFailure_GetDatabasePruneDlgConfiguration() );
-			}
-	
-			/**
-			 * We successfully retrieved the Database Prune configuration.  Now invoke the "Database Prune" dialog.
-			 */
-			@Override
-			public void onSuccess( VibeRpcResponse response )
-			{
-				int x;
-				int y;
-				final GwtDatabasePruneConfiguration databasePruneConfiguration;
-
-
-				databasePruneConfiguration = (GwtDatabasePruneConfiguration) response.getResponseData();
-				
-				// Get the position of the content control.
-				x = m_contentControlX;
-				y = m_contentControlY;
-				
-				// Have we already created a "Manage Database Prune" dialog?
-				if ( m_manageDatabasePruneDlg == null )
-				{
-					int width;
-					int height;
-					
-					// No, create one.
-					height = m_dlgHeight;
-					width = m_dlgWidth;
-					ManageDatabasePruneDlg.createAsync(
-							true, 
-							false,
-							x, 
-							y,
-							width,
-							height,
-							new ManageDatabasePruneDlgClient()
-					{			
-						@Override
-						public void onUnavailable()
-						{
-							// Nothing to do.  Error handled in asynchronous provider.
-						}
-						
-						@Override
-						public void onSuccess( final ManageDatabasePruneDlg cfsaDlg )
-						{
-							ScheduledCommand cmd;
-							
-							cmd = new ScheduledCommand()
-							{
-								@Override
-								public void execute() 
-								{
-									m_manageDatabasePruneDlg = cfsaDlg;
-									
-									m_manageDatabasePruneDlg.init( databasePruneConfiguration );
-									m_manageDatabasePruneDlg.show();
-								}
-							};
-							Scheduler.get().scheduleDeferred( cmd );
-						}
-					} );
-				}
-				else
-				{
-					m_manageDatabasePruneDlg.init( databasePruneConfiguration );
-					m_manageDatabasePruneDlg.setPopupPosition( x, y );
-					m_manageDatabasePruneDlg.show();
-				}
-			}
-		};
-
-		// Issue an ajax request to get the Database Prune configuration.  When we get the Database Prune configuration
-		// we will invoke the "Manage database prune" dialog.
-		{
-			GetDatabasePruneConfigurationCmd cmd;
-			
-			// Issue an ajax request to get the Database Prune configuration from the db.
-			cmd = new GetDatabasePruneConfigurationCmd();
-			GwtClientHelper.executeCommand( cmd, rpcReadCallback );
-		}
-	}
-		
 	/**
 	 * Handles InvokeManageNetFoldersDlgEvent received by this class.
 	 * 
@@ -2637,7 +2158,6 @@ public class AdminControl extends TeamingPopupPanel
 		}
 		else
 		{
-			m_manageNetFoldersDlg.setPixelSize( m_dlgWidth, m_dlgHeight );
 			m_manageNetFoldersDlg.init();
 			m_manageNetFoldersDlg.setPopupPosition( x, y );
 			m_manageNetFoldersDlg.show();
@@ -2707,7 +2227,6 @@ public class AdminControl extends TeamingPopupPanel
 		}
 		else
 		{
-			m_manageNetFolderRootsDlg.setPixelSize( m_dlgWidth, m_dlgHeight );
 			m_manageNetFolderRootsDlg.init();
 			m_manageNetFolderRootsDlg.setPopupPosition( x, y );
 			m_manageNetFolderRootsDlg.show();
@@ -2777,68 +2296,9 @@ public class AdminControl extends TeamingPopupPanel
 		}
 		else
 		{
-			m_manageGroupsDlg.setPixelSize( m_dlgWidth, m_dlgHeight );
 			m_manageGroupsDlg.init();
 			m_manageGroupsDlg.setPopupPosition( x, y );
 			m_manageGroupsDlg.show();
-		}
-	}
-	
-	/**
-	 * Handles InvokeManageMobileDevicesDlgEvent received by this class.
-	 * 
-	 * Implements the InvokeManageMobileDevicesDlgEvent.Handler.onInvokeManageMobileDevicesDlg() method.
-	 * 
-	 * @param event
-	 */
-	@Override
-	public void onInvokeManageMobileDevicesDlg( InvokeManageMobileDevicesDlgEvent event )
-	{
-		// Get the position of the content control.
-		final int x = m_contentControlX;
-		final int y = m_contentControlY;
-		
-		// Have we already created a "Manage Mobile Devices" dialog?
-		if ( m_manageMobileDevicesDlg == null )
-		{
-			// No, create one.
-			ManageMobileDevicesDlg.createAsync( new ManageMobileDevicesDlgClient()
-			{			
-				@Override
-				public void onUnavailable()
-				{
-					// Nothing to do.  Error handled in asynchronous provider.
-				}
-				
-				@Override
-				public void onSuccess( final ManageMobileDevicesDlg mmdDlg )
-				{
-					ScheduledCommand cmd;
-					
-					cmd = new ScheduledCommand()
-					{
-						@Override
-						public void execute() 
-						{
-							m_manageMobileDevicesDlg = mmdDlg;
-							ManageMobileDevicesDlg.initAndShow( m_manageMobileDevicesDlg, new MobileDevicesInfo(), x, y, m_dlgWidth, m_dlgHeight );
-						}
-					};
-					Scheduler.get().scheduleDeferred( cmd );
-				}
-			},
-			x, 
-			y,
-			m_dlgWidth,
-			m_dlgHeight );
-		}
-		
-		else
-		{
-			// Yes, we've already created a "Manage Mobile Devices" dialog!
-			// Simply initialize and show it.
-			m_manageMobileDevicesDlg.setPixelSize( m_dlgWidth, m_dlgHeight );
-			ManageMobileDevicesDlg.initAndShow( m_manageMobileDevicesDlg, new MobileDevicesInfo(), x, y, m_dlgWidth, m_dlgHeight );
 		}
 	}
 	
@@ -2879,7 +2339,7 @@ public class AdminControl extends TeamingPopupPanel
 						public void execute() 
 						{
 							m_manageUsersDlg = muDlg;
-							ManageUsersDlg.initAndShow( m_manageUsersDlg, x, y, m_dlgWidth, m_dlgHeight );
+							ManageUsersDlg.initAndShow( m_manageUsersDlg, x, y );
 						}
 					};
 					Scheduler.get().scheduleDeferred( cmd );
@@ -2897,8 +2357,7 @@ public class AdminControl extends TeamingPopupPanel
 		{
 			// Yes, we've already created a "Manage Users" dialog!
 			// Simply initialize and show it.
-			m_manageUsersDlg.setPixelSize( m_dlgWidth, m_dlgHeight );
-			ManageUsersDlg.initAndShow( m_manageUsersDlg, x, y, m_dlgWidth, m_dlgHeight );
+			ManageUsersDlg.initAndShow( m_manageUsersDlg, x, y );
 		}
 	}
 	
@@ -2915,30 +2374,6 @@ public class AdminControl extends TeamingPopupPanel
 		doPreLogoutCleanup();
 	}// end onPreLogout()
 	
-	/**
-	 * Handles InvokeNameCompletionSettingsDlgEvent received by this class.
-	 * 
-	 * Implements the InvokeNameCompletionSettingsDlgEvent.Handler.onInvokeNameCompletionSettingsDlg() method.
-	 * 
-	 * @param event
-	 */
-	@Override
-	public void onInvokeNameCompletionSettingsDlg( InvokeNameCompletionSettingsDlgEvent event )
-	{
-		Scheduler.ScheduledCommand cmd;
-		
-		cmd = new Scheduler.ScheduledCommand()
-		{
-			@Override
-			public void execute()
-			{
-				invokeNameCompletionSettingsDlg();
-			}
-		};
-		Scheduler.get().scheduleDeferred( cmd );
-	}
-	
-
 	/**
 	 * Handles InvokeRunAReportDlgEvent received by this class.
 	 * 
@@ -2994,26 +2429,25 @@ public class AdminControl extends TeamingPopupPanel
 		{
 			// Yes, we've already created a "Run a Report" dialog!
 			// Simply initialize and show it.
-			m_runAReportDlg.setPixelSize( m_dlgWidth, m_dlgHeight );
 			RunAReportDlg.initAndShow( m_runAReportDlg, x, y );
 		}
 	}
 	
 	/**
-	 * Handles the InvokePrincipalDesktopSettingsDlgEvent
+	 * Handles the InvokeUserDesktopSettingsDlgEvent
 	 */
 	@Override
-	public void onInvokePrincipalDesktopSettingsDlg( final InvokePrincipalDesktopSettingsDlgEvent event )
+	public void onInvokeUserDesktopSettingsDlg( InvokeUserDesktopSettingsDlgEvent event )
 	{
 		int x;
 		int y;
-		final List<Long> principalIds;
+		final List<Long> userIds;
 
 		// Get the position of the content control.
 		x = m_contentControlX;
 		y = m_contentControlY;
 		
-		principalIds = event.getPrincipalIds();
+		userIds = event.getUserIds();
 		
 		// Have we already created a "Configure User Desktop App" dialog?
 		if ( m_configureUserFileSyncAppDlg == null )
@@ -3051,7 +2485,7 @@ public class AdminControl extends TeamingPopupPanel
 						{
 							m_configureUserFileSyncAppDlg = cufsaDlg;
 							
-							m_configureUserFileSyncAppDlg.init( principalIds, event.getPrincipalsAreUsers() );
+							m_configureUserFileSyncAppDlg.init( userIds );
 							m_configureUserFileSyncAppDlg.show();
 						}
 					};
@@ -3061,28 +2495,27 @@ public class AdminControl extends TeamingPopupPanel
 		}
 		else
 		{
-			m_configureUserFileSyncAppDlg.setPixelSize( m_dlgWidth, m_dlgHeight );
-			m_configureUserFileSyncAppDlg.init( principalIds, event.getPrincipalsAreUsers() );
+			m_configureUserFileSyncAppDlg.init( userIds );
 			m_configureUserFileSyncAppDlg.setPopupPosition( x, y );
 			m_configureUserFileSyncAppDlg.show();
 		}
 	}
 	
 	/**
-	 * Handles the InvokePrincipalMobileSettingsDlgEvent
+	 * Handles the InvokeUserMobileSettingsDlgEvent
 	 */
 	@Override
-	public void onInvokePrincipalMobileSettingsDlg( final InvokePrincipalMobileSettingsDlgEvent event )
+	public void onInvokeUserMobileSettingsDlg( InvokeUserMobileSettingsDlgEvent event )
 	{
 		int x;
 		int y;
-		final List<Long> principalIds;
+		final List<Long> userIds;
 
 		// Get the position of the content control.
 		x = m_contentControlX;
 		y = m_contentControlY;
 		
-		principalIds = event.getPrincipalIds();
+		userIds = event.getUserIds();
 		
 		// Have we already created a "Configure User Mobile Apps" dialog?
 		if ( m_configureUserMobileAppsDlg == null )
@@ -3120,7 +2553,7 @@ public class AdminControl extends TeamingPopupPanel
 						{
 							m_configureUserMobileAppsDlg = cumaDlg;
 							
-							m_configureUserMobileAppsDlg.init( principalIds, event.getPrincipalsAreUsers() );
+							m_configureUserMobileAppsDlg.init( userIds );
 							m_configureUserMobileAppsDlg.show();
 						}
 					};
@@ -3130,22 +2563,21 @@ public class AdminControl extends TeamingPopupPanel
 		}
 		else
 		{
-			m_configureUserMobileAppsDlg.setPixelSize( m_dlgWidth, m_dlgHeight );
-			m_configureUserMobileAppsDlg.init( principalIds, event.getPrincipalsAreUsers() );
+			m_configureUserMobileAppsDlg.init( userIds );
 			m_configureUserMobileAppsDlg.setPopupPosition( x, y );
 			m_configureUserMobileAppsDlg.show();
 		}
 	}
 	
 	/**
-	 * Handles ManageSharesSelectedEntitiesEvent's received by this class.
+	 * Handles ManageSharesSelectedEntriesEvent's received by this class.
 	 * 
-	 * Implements the ManageSharesSelectedEntitiesEvent.Handler.onManageSharesSelectedEntities() method.
+	 * Implements the ManageSharesSelectedEntriesEvent.Handler.onManageSharesSelectedEntries() method.
 	 * 
 	 * @param event
 	 */
 	@Override
-	public void onManageSharesSelectedEntities( ManageSharesSelectedEntitiesEvent event )
+	public void onManageSharesSelectedEntries( ManageSharesSelectedEntriesEvent event )
 	{
 		Scheduler.ScheduledCommand cmd;
 

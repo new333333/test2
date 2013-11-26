@@ -114,39 +114,6 @@ public class ShareRights implements IsSerializable
 	/**
 	 * 
 	 */
-	public String getReshareRightsAsString()
-	{
-		StringBuffer sb;
-		
-		if ( m_canShareForward == false )
-			return GwtTeaming.getMessages().shareDlg_reshareNo();
-		
-		sb = new StringBuffer();
-		if ( m_canShareWithInternalUsers )
-			sb.append( GwtTeaming.getMessages().shareDlg_reshareInternal() );
-		
-		if ( m_canShareWithExternalUsers )
-		{
-			if ( sb.length() > 0 )
-				sb.append( ", " );
-			
-			sb.append( GwtTeaming.getMessages().shareDlg_reshareExternal() );
-		}
-		
-		if ( m_canShareWithPublic )
-		{
-			if ( sb.length() > 0 )
-				sb.append( ", " );
-			
-			sb.append( GwtTeaming.getMessages().shareDlg_resharePublic() );
-		}
-		
-		return sb.toString();
-	}
-	
-	/**
-	 * 
-	 */
 	public String getShareRightsAsString()
 	{
 		if ( m_accessRights == ShareRights.AccessRights.VIEWER )

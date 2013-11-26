@@ -148,9 +148,6 @@ function ss_treeShowIdConfig${renderResponse.namespace}(id, obj, action) {
 		<c:if test="${ss_simpleUrlNameExistsError}">
 			<span class="ss_bold ss_errorLabel"><ssf:nlt tag="simpleUrl.nameAlreadyExists"/></span><br/><br/>
 		</c:if>
-		<c:if test="${ss_simpleUrlEmailNameExistsError}">
-			<span class="ss_bold ss_errorLabel"><ssf:nlt tag="simpleUrl.emailNameAlreadyExists"/></span><br/><br/>
-		</c:if>
 		<c:if test="${ss_simpleUrlNameNotAllowedError}">
 			<span class="ss_bold ss_errorLabel"><ssf:nlt tag="simpleUrl.nameNotAllowed"/></span><br/><br/>
 		</c:if>

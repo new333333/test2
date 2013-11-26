@@ -42,7 +42,6 @@ import java.util.HashMap;
 import java.util.Collection;
 import org.dom4j.Document;
 import org.kablink.teaming.domain.UserPropertiesPK;
-import org.kablink.util.StringUtil;
 
 
 /**
@@ -126,26 +125,6 @@ public class UserProperties extends ZonedObject {
         Object value = getProperty(key);
         if (value!=null && value instanceof String) {
             return (String) value;
-        }
-        return null;
-    }
-
-    public String [] getStringArrayProperty(String key) {
-        Object value = getProperty(key);
-        if (value!=null && value instanceof String) {
-            return StringUtil.unpack((String) value);
-        }
-        return null;
-    }
-
-    public Integer getIntegerProperty(String key) {
-        Object value = getProperty(key);
-        if (value!=null && value instanceof String) {
-            try {
-                return Integer.parseInt((String) value);
-            } catch (NumberFormatException e) {
-                // Ignore
-            }
         }
         return null;
     }

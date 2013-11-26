@@ -78,7 +78,7 @@ public enum TeamingEvents implements IsSerializable {
 	CONTRIBUTOR_IDS_REPLY,							// Fired with the current set of contributor IDs.
 	CONTRIBUTOR_IDS_REQUEST,						// Requests that the current contributor IDs be posted via a CONTRIBUTOR_IDS_REPLY event.
 	
-	DELETE_ACTIVITY_STREAM_UI_ENTRY,				// Delete the given ActivityStreamUIEntry.
+	DELETE_ENTRY,									// Delete the given entry
 
 	EDIT_CURRENT_BINDER_BRANDING,					// Edits the branding on the current binder.
 	EDIT_LANDING_PAGE_PROPERTIES,					// Edit the landing page properties
@@ -114,27 +114,20 @@ public enum TeamingEvents implements IsSerializable {
 	INVOKE_DOWNLOAD_DESKTOP_APP,					// Invokes the desktop application download page.
 	INVOKE_DROPBOX,									// Invokes the files drop box (i.e., the file drag&drop applet.)
 	INVOKE_EDIT_IN_PLACE,							// Invokes the edit-in-place on the specified file.
-	INVOKE_EDIT_LDAP_CONFIG_DLG,					// Invokes the edit ldap config dialog.
 	INVOKE_EDIT_NET_FOLDER_DLG,						// Invokes the edit net folder dialog
 	INVOKE_EMAIL_NOTIFICATION,						// Invokes the Email Notification dialog.
 	INVOKE_MANAGE_NET_FOLDERS_DLG,					// Invokes the Manage Net Folders dialog
 	INVOKE_MANAGE_NET_FOLDER_ROOTS_DLG,				// Invokes the Manage Net Folder Roots dialog
-	INVOKE_NAME_COMPLETION_SETTINGS_DLG,			// Invokes the Name Completion Settings dialog.
 	INVOKE_HELP,									// Invokes the Vibe online help.
 	INVOKE_IMPORT_ICAL_FILE,						// Invokes the dialog to import an iCal by uploading  a file.
 	INVOKE_IMPORT_ICAL_URL,							// Invokes the dialog to import an iCal by specifying a URL.
 	INVOKE_IMPORT_PROFILES_DLG,						// Invokes the "Import Profiles" dialog.
 	INVOKE_JITS_ZONE_CONFIG_DLG,					// Invokes the "Jits zone configuration" dialog.
-	INVOKE_LDAP_SYNC_RESULTS_DLG,					// Invokes the "Ldap sync results" dialog.
-	INVOKE_MANAGE_DATABASE_PRUNE_DLG,				// Invokes the "Manage database prune" dialog.
 	INVOKE_MANAGE_GROUPS_DLG,						// Invokes the "Manage groups" dialog.
-	INVOKE_MANAGE_MOBILE_DEVICES_DLG,				// Invokes the "Manage mobile devices" dialog.
 	INVOKE_MANAGE_USERS_DLG,						// Invokes the "Manage users" dialog.
 	INVOKE_EDIT_NET_FOLDER_RIGHTS_DLG,				// Invokes the "edit net folder rights" dialog.
 	INVOKE_EDIT_SHARE_RIGHTS_DLG,					// Invokes the "edit share rights" dialog.
 	INVOKE_EDIT_USER_ZONE_SHARE_RIGHTS_DLG,			// Invokes the "edit user zone share rights" dialog.
-	INVOKE_PRINCIPAL_DESKTOP_SETTINGS_DLG,			// Invokes the 'principal desktop application settings' dialog.
-	INVOKE_PRINCIPAL_MOBILE_SETTINGS_DLG,			// Invokes the 'principal mobile  application settings' dialog.
 	INVOKE_RENAME_ENTITY,							// Invokes the Rename an Entity dialog.
 	INVOKE_REPLY,									// Invokes the 'reply to entry' UI.
 	INVOKE_RUN_A_REPORT_DLG,						// Invokes the "Run a Report" dialog.
@@ -146,6 +139,8 @@ public enum TeamingEvents implements IsSerializable {
 	INVOKE_SIMPLE_PROFILE,							// Invokes the simple profile dialog.
 	INVOKE_SUBSCRIBE,								// Invokes the 'subscribe to this entry' UI.
 	INVOKE_TAG,										// Invokes the 'tag this entry' UI.
+	INVOKE_USER_DESKTOP_SETTINGS_DLG,				// Invokes the 'user desktop application settings' dialog.
+	INVOKE_USER_MOBILE_SETTINGS_DLG,				// Invokes the 'user mobile  application settings' dialog.
 	INVOKE_USER_PROPERTIES_DLG,						// Invokes the 'user properties'                   dialog.
 	INVOKE_USER_SHARE_RIGHTS_DLG,					// Invokes the 'user share rights'                 dialog.
 	
@@ -162,11 +157,9 @@ public enum TeamingEvents implements IsSerializable {
 	
 	MASTHEAD_HIDE,									// Hides the masthead.
 	MASTHEAD_SHOW,									// Shows the masthead.
-	MASTHEAD_UNHIGHLIGHT_ALL_ACTIONS,				// Signals that all actions in the mast head should be unhighlighted
 	
 	GET_MANAGE_MENU_POPUP,							// Returns the manage menu (Workspace or Folder) currently loaded in the main menu bar.
 	HIDE_MANAGE_MENU,								// Hides the manage menu loaded in the main menu bar.
-	LDAP_SYNC_STATUS,								// Fired when the ldap sync status changes.
 	MANAGE_USERS_FILTER,							// Set or clears a filter in the manage users dialog.
 	MENU_HIDE,										// Hides the main menu
 	MENU_LOADED,									// Fired when each item on the main menu bar has loaded.
@@ -245,9 +238,9 @@ public enum TeamingEvents implements IsSerializable {
 	TASK_VIEW,										// Sets a Task's View.
 
 	TRASH_PURGE_ALL,								// Purges everything in the trash.
-	TRASH_PURGE_SELECTED_ENTITIES,					// Purges the selected entries in the trash.
+	TRASH_PURGE_SELECTED_ENTRIES,					// Purges the selected entries in the trash.
 	TRASH_RESTORE_ALL,								// Restores everything in the trash.
-	TRASH_RESTORE_SELECTED_ENTITIES,				// Restores the selected entries in the trash.
+	TRASH_RESTORE_SELECTED_ENTRIES,					// Restores the selected entries in the trash.
 	
 	TREE_NODE_COLLAPSED,							// Fired when the node in a tree is collapsed.
 	TREE_NODE_EXPANDED,								// Fired when the node in a tree is expanded.
@@ -268,55 +261,42 @@ public enum TeamingEvents implements IsSerializable {
 	VIEW_WHATS_NEW_IN_BINDER,						// Shows the items that are new    in the current binder.
 	VIEW_WHO_HAS_ACCESS,							// Opens the who has access viewer on an item.
 
-	CHANGE_ENTRY_TYPE_SELECTED_ENTITIES,			// Changes the Entry Type of the Selected Entities.
+	CHANGE_ENTRY_TYPE_SELECTED_ENTRIES,				// Changes the Entry Type of the Selected Entries.
 	CHANGE_FAVORITE_STATE,							// Changes the favorites state of a binder.
 	CHECK_MANAGE_USERS_ACTIVE,						// Event to detect if the the manage users facility is active.
-	CLEAR_SCHEDULED_WIPE_SELECTED_MOBILE_DEVICES,	// Clears the scheduled wipe state from the selected mobile devices.
 	CLEAR_SELECTED_USERS_ADHOC_FOLDERS,				// Clears the adHoc folder setting for the Selected Users so they revert to the zone setting.
-	CLEAR_SELECTED_USERS_DOWNLOAD,					// Clears the download   setting for the Selected Users so they revert to the zone setting.
-	CLEAR_SELECTED_USERS_WEBACCESS,					// Clears the web access setting for the Selected Users so they revert to the zone setting.
-	COPY_PUBLIC_LINK_SELECTED_ENTITIES,				// Copies the Public Link of the Selected Entities.
-	COPY_SELECTED_ENTITIES,							// Copies the Selected Entities.
-	DELETE_SELECTED_ENTITIES,						// Deletes the Selected Entities.
-	DELETE_SELECTED_MOBILE_DEVICES,					// Deletes the Selected Mobile Devices.
-	DELETE_SELECTED_USERS,							// Deletes the Selected Users.
+	COPY_SELECTED_ENTRIES,							// Copies the Selected Entries.
+	DELETE_SELECTED_ENTRIES,						// Deletes the Selected Entries.
+	DELETE_SELECTED_USER_WORKSPACES,				// Deletes the Selected User Workspaces.
 	DISABLE_SELECTED_USERS,							// Disables the Selected Users.
 	DISABLE_SELECTED_USERS_ADHOC_FOLDERS,			// Disables adHoc folders for the Selected Users.
-	DISABLE_SELECTED_USERS_DOWNLOAD,				// Disables downloading of files for the Selected Users.
-	DISABLE_SELECTED_USERS_WEBACCESS,				// Disables web access for the Selected Users.
-	EMAIL_PUBLIC_LINK_SELECTED_ENTITIES,			// Emails the Public Link of the Selected Entities.
 	ENABLE_SELECTED_USERS,							// Enables the Selected Users.
 	ENABLE_SELECTED_USERS_ADHOC_FOLDERS,			// Enables adHoc folders for the the Selected Users.
-	ENABLE_SELECTED_USERS_DOWNLOAD,					// Enables downloading of file for the the Selected Users.
-	ENABLE_SELECTED_USERS_WEBACCESS,				// Enables web access for the the Selected Users.
 	FIND_CONTROL_BROWSE,							// Invoke the find control browser.
 	FOLDER_ENTRY_ACTION_COMPLETE,					// An action on a folder entry has completed.
-	GET_MANAGE_TITLE,								// Event to request the management component's title.
+	GET_MANAGE_USERS_TITLE,							// Event to request the manage users title.
 	HIDE_SELECTED_SHARES,							// Marks the selected shares as being hidden.
-	LOCK_SELECTED_ENTITIES,							// Locks the Selected Entities.
-	MAILTO_PUBLIC_LINK_ENTITY,						// Mails the Public Link of the Entity Using a 'mailto://...' URL.
-	MANAGE_SHARES_SELECTED_ENTITIES,				// Invokes the Share dialog in administrative mode.
-	MARK_READ_SELECTED_ENTITIES,					// Marks the Selected Entities as     Having Been Read.
-	MARK_UNREAD_SELECTED_ENTITIES,					// Marks the Selected Entities as Not Having Been Read.
-	MOVE_SELECTED_ENTITIES,							// Moves the Selected Entities.
-	PUBLIC_COLLECTION_STATE_CHANGED,				// The Visibility State of the Public Collection Changed.
+	LOCK_SELECTED_ENTRIES,							// Locks the Selected Entries.
+	MANAGE_SHARES_SELECTED_ENTRIES,					// Invokes the Share dialog in administrative mode.
+	MARK_READ_SELECTED_ENTRIES,						// Marks the Selected Entries as     Having Been Read.
+	MARK_UNREAD_SELECTED_ENTRIES,					// Marks the Selected Entries as Not Having Been Read.
+	MOVE_SELECTED_ENTRIES,							// Moves the Selected Entries.
+	PURGE_SELECTED_ENTRIES,							// Deletes and Immediately Purges the Selected Entries.
+	PURGE_SELECTED_USER_WORKSPACES,					// Purges the Selected User Workspaces.
+	PURGE_SELECTED_USERS,							// Purges the Selected User Workspaces and User Objects.
 	RELOAD_DIALOG_CONTENT,							// Tells a dialog to reload its content.
 	RESET_ENTRY_MENU,								// Resets the Entry Menu on the Given Folder.
-	SCHEDULE_WIPE_SELECTED_MOBILE_DEVICES,			// Schedules the selected mobile devices to be wiped.
 	SET_DESKTOP_DOWNLOAD_APP_CONTROL_VISIBILITY,	// Sets the visibility of the desktop application download control. 
 	SET_FOLDER_SORT,								// Sets a folder sort options.
 	SET_SELECTED_USER_DESKTOP_SETTINGS,				// Sets the desktop application settings for the selected users.
 	SET_SELECTED_USER_MOBILE_SETTINGS,				// Sets the mobile  application settings for the selected users.
 	SET_SELECTED_USER_SHARE_RIGHTS,					// Sets the share               rights   for the selected users.
-	SHARE_SELECTED_ENTITIES,						// Shares the Selected Entities.
+	SHARE_SELECTED_ENTRIES,							// Shares the Selected Entries.
 	SHOW_SELECTED_SHARES,							// Marks the selected shares as no longer being hidden.
-	SUBSCRIBE_SELECTED_ENTITIES,					// Subscribes the Current User to the Selected Entities.
+	SUBSCRIBE_SELECTED_ENTRIES,						// Subscribes the Current User to the Selected Entries.
 	TOGGLE_SHARED_VIEW,								// Toggles the 'Shared by/with Me' Views Between Files and All Entries.
-	UNLOCK_SELECTED_ENTITIES,						// Unlocks the Selected Entities.
-	WINDOW_TITLE_SET,								// Window Title has been Set.
-	ZIP_AND_DOWNLOAD_FOLDER,						// Zips and Downloads all files in a folder.
-	ZIP_AND_DOWNLOAD_SELECTED_FILES,				// Zips and Downloads the currently selected files.
-
+	UNLOCK_SELECTED_ENTRIES,						// Unlocks the Selected Entries.
+		
 	UNDEFINED;										// Undefined event - Should never be fired !!!
 
 	/**

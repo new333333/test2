@@ -862,19 +862,6 @@ public class ManageNetFolderRootsDlg extends DlgBox
 	}
 
 	/**
-	 * 
-	 */
-	@Override
-	public void setPixelSize( int width, int height )
-	{
-		super.setPixelSize( width, height );
-		
-		m_width = width;
-		m_netFolderRootsTable.setWidth( String.valueOf( m_width-20 ) + "px" );
-	}
-	
-
-	/**
 	 * Sync the given net folder roots
 	 */
 	private void syncNetFolderRoots( final Set<NetFolderRoot> selectedRoots )

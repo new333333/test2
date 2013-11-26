@@ -52,7 +52,6 @@ import org.kablink.teaming.docconverter.ImageConverter;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.FileAttachment;
-import org.kablink.teaming.domain.ShareItem;
 import org.kablink.teaming.repository.RepositoryServiceException;
 import org.kablink.teaming.util.DirPath;
 import org.kablink.teaming.util.FileStore;
@@ -209,12 +208,5 @@ public class ImageOpenOfficeConverter
 			FileAttachment fa) throws UncheckedIOException,
 			RepositoryServiceException {
 		super.deleteConvertedFile(binder, entry, fa, THUMB_SUBDIR, IMG_FILE_SUFFIX);
-	}
-	
-	@Override
-	public void deleteConvertedFile(ShareItem shareItem, Binder binder, DefinableEntity entry,
-			FileAttachment fa) throws UncheckedIOException,
-			RepositoryServiceException {
-		// Only used for HTML conversions.
 	}
 }

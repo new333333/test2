@@ -1,50 +1,50 @@
 /*
-	Copyright (c) 2004-2011, The Dojo Foundation All Rights Reserved.
+	Copyright (c) 2004-2009, The Dojo Foundation All Rights Reserved.
 	Available via Academic Free License >= 2.1 OR the modified BSD license.
 	see: http://dojotoolkit.org/license for details
 */
 
-//>>built
-define("dojo/string",["./_base/kernel","./_base/lang"],function(_1,_2){
-var _3={};
-_2.setObject("dojo.string",_3);
-_3.rep=function(_4,_5){
-if(_5<=0||!_4){
+
+if(!dojo._hasResource["dojo.string"]){
+dojo._hasResource["dojo.string"]=true;
+dojo.provide("dojo.string");
+dojo.string.rep=function(_1,_2){
+if(_2<=0||!_1){
 return "";
 }
-var _6=[];
+var _3=[];
 for(;;){
-if(_5&1){
-_6.push(_4);
+if(_2&1){
+_3.push(_1);
 }
-if(!(_5>>=1)){
+if(!(_2>>=1)){
 break;
 }
-_4+=_4;
+_1+=_1;
 }
-return _6.join("");
+return _3.join("");
 };
-_3.pad=function(_7,_8,ch,_9){
+dojo.string.pad=function(_4,_5,ch,_6){
 if(!ch){
 ch="0";
 }
-var _a=String(_7),_b=_3.rep(ch,Math.ceil((_8-_a.length)/ch.length));
-return _9?_a+_b:_b+_a;
+var _7=String(_4),_8=dojo.string.rep(ch,Math.ceil((_5-_7.length)/ch.length));
+return _6?_7+_8:_8+_7;
 };
-_3.substitute=function(_c,_d,_e,_f){
-_f=_f||_1.global;
-_e=_e?_2.hitch(_f,_e):function(v){
+dojo.string.substitute=function(_9,_a,_b,_c){
+_c=_c||dojo.global;
+_b=_b?dojo.hitch(_c,_b):function(v){
 return v;
 };
-return _c.replace(/\$\{([^\s\:\}]+)(?:\:([^\s\:\}]+))?\}/g,function(_10,key,_11){
-var _12=_2.getObject(key,false,_d);
-if(_11){
-_12=_2.getObject(_11,false,_f).call(_f,_12,key);
+return _9.replace(/\$\{([^\s\:\}]+)(?:\:([^\s\:\}]+))?\}/g,function(_d,_e,_f){
+var _10=dojo.getObject(_e,false,_a);
+if(_f){
+_10=dojo.getObject(_f,false,_c).call(_c,_10,_e);
 }
-return _e(_12,key).toString();
+return _b(_10,_e).toString();
 });
 };
-_3.trim=String.prototype.trim?_2.trim:function(str){
+dojo.string.trim=String.prototype.trim?dojo.trim:function(str){
 str=str.replace(/^\s+/,"");
 for(var i=str.length-1;i>=0;i--){
 if(/\S/.test(str.charAt(i))){
@@ -54,5 +54,4 @@ break;
 }
 return str;
 };
-return _3;
-});
+}

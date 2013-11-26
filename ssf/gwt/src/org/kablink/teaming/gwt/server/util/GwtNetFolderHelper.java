@@ -33,14 +33,15 @@
 package org.kablink.teaming.gwt.server.util;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
+
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -48,18 +49,10 @@ import org.kablink.teaming.IllegalCharacterInNameException;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.CoreDao;
-import org.kablink.teaming.dao.util.NetFolderSelectSpec;
 import org.kablink.teaming.domain.Binder;
-import org.kablink.teaming.domain.Binder.SyncScheduleOption;
-import org.kablink.teaming.domain.BinderState;
-import org.kablink.teaming.domain.BinderState.FullSyncStats;
-import org.kablink.teaming.domain.BinderState.FullSyncStatus;
-import org.kablink.teaming.domain.Description;
-import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.ResourceDriverConfig;
-import org.kablink.teaming.domain.ResourceDriverConfig.AuthenticationType;
 import org.kablink.teaming.domain.ResourceDriverConfig.DriverType;
 import org.kablink.teaming.domain.TitleException;
 import org.kablink.teaming.domain.User;
@@ -70,31 +63,26 @@ import org.kablink.teaming.fi.connection.acl.AclResourceDriver;
 import org.kablink.teaming.fi.connection.acl.AclResourceDriver.ConnectionTestStatus;
 import org.kablink.teaming.gwt.client.GwtGroup;
 import org.kablink.teaming.gwt.client.GwtJitsNetFolderConfig;
-import org.kablink.teaming.gwt.client.GwtNetFolderSyncScheduleConfig;
-import org.kablink.teaming.gwt.client.GwtNetFolderSyncScheduleConfig.NetFolderSyncScheduleOption;
 import org.kablink.teaming.gwt.client.GwtRole;
 import org.kablink.teaming.gwt.client.GwtSchedule;
 import org.kablink.teaming.gwt.client.GwtRole.GwtRoleType;
+import org.kablink.teaming.gwt.client.GwtSchedule.DayFrequency;
+import org.kablink.teaming.gwt.client.GwtSchedule.TimeFrequency;
 import org.kablink.teaming.gwt.client.GwtTeamingException;
 import org.kablink.teaming.gwt.client.GwtUser;
 import org.kablink.teaming.gwt.client.NetFolder;
-import org.kablink.teaming.gwt.client.NetFolder.NetFolderSyncStatus;
 import org.kablink.teaming.gwt.client.NetFolderDataSyncSettings;
 import org.kablink.teaming.gwt.client.NetFolderRoot;
-import org.kablink.teaming.gwt.client.NetFolderRoot.GwtAuthenticationType;
+import org.kablink.teaming.gwt.client.NetFolder.NetFolderStatus;
 import org.kablink.teaming.gwt.client.NetFolderRoot.NetFolderRootStatus;
-import org.kablink.teaming.gwt.client.NetFolderSyncStatistics;
-import org.kablink.teaming.gwt.client.rpc.shared.DeleteNetFolderResult;
-import org.kablink.teaming.gwt.client.rpc.shared.DeleteNetFolderResult.DeleteNetFolderStatus;
-import org.kablink.teaming.gwt.client.rpc.shared.DeleteNetFolderRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.DeleteNetFolderServersRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.TestNetFolderConnectionResponse;
 import org.kablink.teaming.gwt.client.rpc.shared.TestNetFolderConnectionResponse.GwtConnectionTestStatusCode;
 import org.kablink.teaming.gwt.client.widgets.ModifyNetFolderRootDlg.NetFolderRootType;
+import org.kablink.teaming.jobs.Schedule;
 import org.kablink.teaming.jobs.ScheduleInfo;
 import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.module.admin.AdminModule.AdminOperation;
-import org.kablink.teaming.module.folder.CannotDeleteSyncingNetFolderException;
 import org.kablink.teaming.module.resourcedriver.RDException;
 import org.kablink.teaming.module.resourcedriver.ResourceDriverModule;
 import org.kablink.teaming.module.shared.MapInputData;
@@ -108,6 +96,7 @@ import org.kablink.teaming.util.StatusTicket;
 import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.NetFolderHelper;
+
 
 /**
  * Helper methods for the GWT UI server code that services requests dealing with
@@ -130,7 +119,24 @@ public class GwtNetFolderHelper
 	{
 		for ( NetFolder nextNetFolder : netFolders )
 		{
-			nextNetFolder.setStatus( getNetFolderSyncStatus( nextNetFolder.getId() ) );
+			String statusTicketId;
+
+			statusTicketId = nextNetFolder.getStatusTicketId();
+			if ( statusTicketId != null )
+			{
+				StatusTicket statusTicket;
+				
+				statusTicket = GwtWebStatusTicket.findStatusTicket( statusTicketId, req );
+				if ( statusTicket != null )
+				{
+					if ( statusTicket.isDone() )
+						nextNetFolder.setStatus( NetFolderStatus.READY );
+				}
+				else
+				{
+					nextNetFolder.setStatus( NetFolderStatus.READY );
+				}
+			}
 		}
 		
 		return netFolders;
@@ -158,12 +164,6 @@ public class GwtNetFolderHelper
 				{
 					if ( statusTicket.isDone() )
 						nextNetFolderServer.setStatus( NetFolderRootStatus.READY );
-					
-					// Currently, when we sync a net folder server, we add all of the net folders
-					// associated with the net folder server to a queue of net folders waiting to
-					// be sync'd.  Given this fact, there isn't really a "status" of on a
-					// net folder server.
-					nextNetFolderServer.setStatus( NetFolderRootStatus.READY );
 				}
 				else
 				{
@@ -189,27 +189,14 @@ public class GwtNetFolderHelper
 		try
 		{
 			Binder binder;
-			ScheduleInfo scheduleInfo = null;
-			SyncScheduleOption syncScheduleOption = null;
+			ScheduleInfo scheduleInfo;
 			
 			// Create the net folder in the global "net folder roots" workspace.
 			parentBinder = getCoreDao().loadReservedBinder(
 													ObjectKeys.NET_FOLDERS_ROOT_INTERNALID, 
 													RequestContextHolder.getRequestContext().getZoneId() );
 
-			// Get the schedule information
-			{
-				GwtNetFolderSyncScheduleConfig config;
-				
-				config = netFolder.getSyncScheduleConfig();
-				if ( config != null )
-				{
-					scheduleInfo = GwtServerHelper.getScheduleInfoFromGwtSchedule( config.getSyncSchedule() );
-					
-					syncScheduleOption = getSyncScheduleOptionFromGwtSyncScheduleOption( config.getSyncScheduleOption() );
-				}
-			}
-			
+			scheduleInfo = getScheduleInfoFromGwtSchedule( netFolder.getSyncSchedule() );
 			binder = NetFolderHelper.createNetFolder(
 												ami.getTemplateModule(),
 												ami.getBinderModule(),
@@ -220,11 +207,9 @@ public class GwtNetFolderHelper
 												netFolder.getNetFolderRootName(),
 												netFolder.getRelativePath(),
 												scheduleInfo,
-												syncScheduleOption,
 												parentBinder.getId(),
 												false,
-												netFolder.getIndexContent(),
-												netFolder.getFullSyncDirOnly() );
+												netFolder.getIndexContent() );
 			
 			// Set the rights on the net folder
 			setNetFolderRights( ami, binder.getId(), netFolder.getRoles() );
@@ -250,22 +235,20 @@ public class GwtNetFolderHelper
 
 			newNetFolder = new NetFolder();
 			newNetFolder.setName( netFolder.getName() );
-			newNetFolder.setDisplayName( netFolder.getName() );
 			newNetFolder.setNetFolderRootName( netFolder.getNetFolderRootName() );
 			newNetFolder.setRelativePath( netFolder.getRelativePath() );
 			newNetFolder.setId( binder.getId() );
-			newNetFolder.setStatus( getNetFolderSyncStatus( newNetFolder.getId() ) );
-			newNetFolder.setSyncScheduleConfig( netFolder.getSyncScheduleConfig() );
+			newNetFolder.setStatus( NetFolderStatus.READY );
+			newNetFolder.setSyncSchedule( netFolder.getSyncSchedule() );
 			newNetFolder.setRoles( netFolder.getRoles() );
 			newNetFolder.setDataSyncSettings( netFolder.getDataSyncSettings() );
 			newNetFolder.setJitsConfig( netFolder.getJitsConfig() );
-			newNetFolder.setFullSyncDirOnly( netFolder.getFullSyncDirOnly() );
 		}
 		catch ( Exception ex )
 		{
 			GwtTeamingException gtEx;
 			
-			gtEx = GwtLogHelper.getGwtClientException();
+			gtEx = GwtServerHelper.getGwtTeamingException();
 			
 			if ( ex instanceof TitleException )
 			{
@@ -276,7 +259,7 @@ public class GwtNetFolderHelper
 			}
 			else if ( ex instanceof IllegalCharacterInNameException )
 			{
-				gtEx = GwtLogHelper.getGwtClientException();
+				gtEx = GwtServerHelper.getGwtTeamingException();
 				gtEx.setAdditionalDetails( NLT.get( "netfolder.name.illegal.characters" ) );
 			}
 			else
@@ -284,7 +267,7 @@ public class GwtNetFolderHelper
 				gtEx.setAdditionalDetails( NLT.get( "netfolder.cant.load.parent.binder" ) );
 			}
 			
-			GwtLogHelper.error( m_logger, "Error creating net folder: " + netFolder.getName(), ex);
+			m_logger.error( "Error creating net folder: " + netFolder.getName(), ex);
 			
 			throw gtEx;				
 		}
@@ -305,13 +288,9 @@ public class GwtNetFolderHelper
 		ScheduleInfo scheduleInfo;
 		
 		driverType = getDriverType( netFolderRoot.getRootType() );
-		scheduleInfo = GwtServerHelper.getScheduleInfoFromGwtSchedule( netFolderRoot.getSyncSchedule() );
+		scheduleInfo = getScheduleInfoFromGwtSchedule( netFolderRoot.getSyncSchedule() );
 		try
 		{
-			AuthenticationType authType = null;
-			
-			authType = getAuthType( netFolderRoot.getAuthType() );
-			
 			rdConfig = NetFolderHelper.createNetFolderRoot(
 													ami.getAdminModule(),
 													ami.getResourceDriverModule(),
@@ -324,24 +303,19 @@ public class GwtNetFolderHelper
 													netFolderRoot.getHostUrl(),
 													netFolderRoot.getAllowSelfSignedCerts(),
 													netFolderRoot.getIsSharePointServer(),
-													netFolderRoot.getFullSyncDirOnly(),
-													authType,
-													netFolderRoot.getUseDirectoryRights(),
-													netFolderRoot.getCachedRightsRefreshInterval(),
 													scheduleInfo );
 		}
 		catch ( RDException ex )
 		{
 			GwtTeamingException gwtEx;
 			
-			gwtEx = GwtLogHelper.getGwtClientException( ex );
+			gwtEx = GwtServerHelper.getGwtTeamingException( ex );
 			throw gwtEx;
 		}
 
 		if ( rdConfig != null )
 		{
 			newRoot = new NetFolderRoot();
-			newRoot.setRootType( getRootTypeFromDriverType( driverType ) );
 			newRoot.setId( rdConfig.getId() );
 			newRoot.setName( rdConfig.getName() );
 			newRoot.setProxyName( rdConfig.getAccountName() );
@@ -351,17 +325,6 @@ public class GwtNetFolderHelper
 			newRoot.setAllowSelfSignedCerts( rdConfig.isAllowSelfSignedCertificate() );
 			newRoot.setIsSharePointServer( rdConfig.isPutRequiresContentLength() );
 			newRoot.setSyncSchedule( netFolderRoot.getSyncSchedule() );
-			newRoot.setFullSyncDirOnly( rdConfig.getFullSyncDirOnly() );
-			newRoot.setUseDirectoryRights( rdConfig.getUseDirectoryRights() );
-			newRoot.setCachedRightsRefreshInterval( rdConfig.getCachedRightsRefreshInterval() );
-			
-			{
-				AuthenticationType authType;
-				
-				authType = rdConfig.getAuthenticationType();
-				if ( authType != null )
-					newRoot.setAuthType( GwtAuthenticationType.getType( authType.getValue() ) );
-			}
 
 			// Get the list of principals that can use the net folder root
 			getListOfPrincipals( ami, rdConfig, newRoot );
@@ -373,41 +336,27 @@ public class GwtNetFolderHelper
 	/**
 	 * Delete the given list of net folders
 	 */
-	public static DeleteNetFolderRpcResponseData deleteNetFolders(
+	public static Boolean deleteNetFolders(
 		AllModulesInjected ami,
 		Set<NetFolder> netFolders )
 	{
-		DeleteNetFolderRpcResponseData results;
+		Boolean result;
 		
-		results = new DeleteNetFolderRpcResponseData();
+		result = Boolean.TRUE;
 		
 		for ( NetFolder nextNetFolder : netFolders )
 		{
-			DeleteNetFolderResult result;
-
-			result = new DeleteNetFolderResult();
-
 			try
 			{
 				NetFolderHelper.deleteNetFolder( ami.getFolderModule(), nextNetFolder.getId(), false );
-				result.setStatus( DeleteNetFolderStatus.SUCCESS, null );
-			}
-			catch ( CannotDeleteSyncingNetFolderException nfEx )
-			{
-				result.setStatus(
-							DeleteNetFolderStatus.DELETE_FAILED_SYNC_IN_PROGRESS,
-							NLT.get( "netfolder.cant.delete.sync.in.progress" ) );
 			}
 			catch ( Exception e )
 			{
-				GwtLogHelper.error( m_logger, "Error deleting next net folder: " + nextNetFolder.getName(), e );
-				result.setStatus( DeleteNetFolderStatus.DELETE_FAILED, e.toString() );
+				m_logger.error( "Error deleting next net folder: " + nextNetFolder.getName(), e );
 			}
-			
-			results.addResult( nextNetFolder, result );
 		}
 		
-		return results;
+		return result;
 	}
 
 	/**
@@ -429,15 +378,10 @@ public class GwtNetFolderHelper
 		{
 			try
 			{
-				NetFolderSelectSpec selectSpec;
 				List<NetFolder> listOfNetFolders;
 				
 				// Get a list of net folders that are referencing this net folder server.
-				selectSpec = new NetFolderSelectSpec();
-				selectSpec.setIncludeHomeDirNetFolders( true );
-				selectSpec.setRootName( nextRoot.getName() );
-				selectSpec.setFilter( null );
-				listOfNetFolders = getAllNetFolders( ami, selectSpec, true );
+				listOfNetFolders = getAllNetFolders( ami, true, nextRoot.getName() );
 				
 				// Is this net folder server being referenced by a net folder?
 				if ( listOfNetFolders == null || listOfNetFolders.size() == 0 )
@@ -454,7 +398,7 @@ public class GwtNetFolderHelper
 			}
 			catch ( Exception ex )
 			{
-				GwtLogHelper.error( m_logger, "Error deleting next folder root: " + nextRoot.getName(), ex );
+				m_logger.error( "Error deleting next folder root: " + nextRoot.getName(), ex );
 				result.addCouldNotBeDeletedNetFolderServer( nextRoot );
 			}
 		}
@@ -469,29 +413,27 @@ public class GwtNetFolderHelper
 	 */
 	public static List<NetFolder> getAllNetFolders(
 		AllModulesInjected ami,
-		NetFolderSelectSpec selectSpec,
-		boolean getMinimalInfo )
+		boolean includeHomeDirNetFolders,
+		String rootName )
 	{
-		List<Folder> listOfFolders;
+		List<Long> listOfNetFolderIds;
 		ArrayList<NetFolder> listOfNetFolders;
 		
 		listOfNetFolders = new ArrayList<NetFolder>();
 		
-		listOfFolders = NetFolderHelper.getAllNetFolders2(
+		listOfNetFolderIds = NetFolderHelper.getAllNetFolders(
 													ami.getBinderModule(),
 													ami.getWorkspaceModule(),
-													selectSpec );
+													rootName,
+													includeHomeDirNetFolders );
 
-		if ( listOfFolders != null )
+		if ( listOfNetFolderIds != null )
 		{
-			for ( Folder nextFolder :  listOfFolders )
+			for ( Long binderId:  listOfNetFolderIds )
 			{
 				NetFolder netFolder;
 				
-				if ( getMinimalInfo )
-					netFolder = GwtNetFolderHelper.getNetFolderWithMinimalInfo( ami, nextFolder );
-				else
-					netFolder = GwtNetFolderHelper.getNetFolder( ami, nextFolder.getId() );
+				netFolder = GwtNetFolderHelper.getNetFolder( ami, binderId );
 				
 				listOfNetFolders.add( netFolder );
 			}
@@ -516,7 +458,7 @@ public class GwtNetFolderHelper
 			List<ResourceDriverConfig> drivers;
 
 			//Get a list of the currently defined Net Folder Roots
-			drivers = ami.getResourceDriverModule().getAllNetFolderResourceDriverConfigs();
+			drivers = ami.getResourceDriverModule().getAllResourceDriverConfigs();
 			for ( ResourceDriverConfig driver : drivers )
 			{
 				NetFolderRoot nfRoot;
@@ -528,7 +470,14 @@ public class GwtNetFolderHelper
 				nfRoot.setName( driver.getName() );
 				
 				driverType = driver.getDriverType();
-				nfRoot.setRootType( getRootTypeFromDriverType( driverType ) );
+				if ( driverType == DriverType.filesystem )
+					nfRoot.setRootType( NetFolderRootType.FILE_SYSTEM );
+				else if ( driverType == DriverType.webdav )
+					nfRoot.setRootType( NetFolderRootType.WEB_DAV );
+				else if ( driverType == DriverType.famt )
+					nfRoot.setRootType( NetFolderRootType.FAMT );
+				else
+					nfRoot.setRootType( NetFolderRootType.UNKNOWN );
 				
 				nfRoot.setRootPath( driver.getRootPath() );
 				nfRoot.setProxyName( driver.getAccountName() );
@@ -536,18 +485,7 @@ public class GwtNetFolderHelper
 				nfRoot.setHostUrl( driver.getHostUrl() );
 				nfRoot.setAllowSelfSignedCerts( driver.isAllowSelfSignedCertificate() );
 				nfRoot.setIsSharePointServer( driver.isPutRequiresContentLength() );
-				nfRoot.setFullSyncDirOnly( driver.getFullSyncDirOnly() );
-				nfRoot.setUseDirectoryRights( driver.getUseDirectoryRights() );
-				nfRoot.setCachedRightsRefreshInterval( driver.getCachedRightsRefreshInterval() );
 				
-				{
-					AuthenticationType authType;
-					
-					authType = driver.getAuthenticationType();
-					if ( authType != null )
-						nfRoot.setAuthType( GwtAuthenticationType.getType( authType.getValue() ) );
-				}
-
 				// Get the list of principals that can use the net folder root
 				getListOfPrincipals( ami, driver, nfRoot );
 
@@ -560,33 +498,6 @@ public class GwtNetFolderHelper
 		}
 		
 		return listOfNetFolderRoots;
-	}
-	
-	/**
-	 * 
-	 */
-	private static AuthenticationType getAuthType( GwtAuthenticationType gwtAuthType )
-	{
-		if ( gwtAuthType == null )
-			return null;
-		
-		switch( gwtAuthType )
-		{
-		case KERBEROS:
-			return AuthenticationType.kerberos;
-		
-		case NTLM:
-			return AuthenticationType.ntlm;
-			
-		case KERBEROS_THEN_NTLM:
-			return AuthenticationType.kerberos_then_ntlm;
-			
-		case NMAS:
-			return AuthenticationType.nmas;
-			
-		default:
-			return AuthenticationType.kerberos;
-		}
 	}
 	
 	/**
@@ -619,39 +530,86 @@ public class GwtNetFolderHelper
 	 */
 	private static DriverType getDriverType( NetFolderRootType type )
 	{
-		switch ( type )
-		{
-		case WINDOWS:
-			return DriverType.windows_server;
-			
-		case CLOUD_FOLDERS:
-			return DriverType.cloud_folders;
-			
-		case FAMT:
-			return DriverType.famt;
-			
-		case FILE_SYSTEM:
+		if ( type == NetFolderRootType.FILE_SYSTEM )
 			return DriverType.filesystem;
-			
-		case NETWARE:
-			return DriverType.netware;
-			
-		case OES:
-			return DriverType.oes;
-			
-		case SHARE_POINT_2010:
-			return DriverType.share_point_2010;
-			
-		case SHARE_POINT_2013:
-			return DriverType.share_point_2013;
-			
-		case WEB_DAV:
+		
+		if ( type == NetFolderRootType.WEB_DAV )
 			return DriverType.webdav;
-			
-		case UNKNOWN:
-		default:
+		
+		if ( type == NetFolderRootType.FAMT )
 			return DriverType.famt;
+		
+		return DriverType.famt;
+	}
+
+	/**
+	 * For the given ScheduleInfo object return a a GwtSchedule object that represents the data in
+	 * the ScheduleInfo object.
+	 */
+	private static GwtSchedule getGwtSyncSchedule( ScheduleInfo scheduleInfo )
+	{
+		GwtSchedule gwtSchedule;
+
+		if ( scheduleInfo == null )
+			return null;
+		
+		gwtSchedule = new GwtSchedule();
+
+		Schedule schedule;
+
+		gwtSchedule.setEnabled( scheduleInfo.isEnabled() );
+		
+		schedule = scheduleInfo.getSchedule();
+		if ( schedule != null )
+		{
+			if ( schedule.isDaily() )
+			{
+				gwtSchedule.setDayFrequency( DayFrequency.EVERY_DAY );
+			}
+			else
+			{
+				gwtSchedule.setDayFrequency( DayFrequency.ON_SELECTED_DAYS );
+				gwtSchedule.setOnMonday( schedule.isOnMonday() );
+				gwtSchedule.setOnTuesday( schedule.isOnTuesday() );
+				gwtSchedule.setOnWednesday( schedule.isOnWednesday() );
+				gwtSchedule.setOnThursday( schedule.isOnThursday() );
+				gwtSchedule.setOnFriday( schedule.isOnFriday() );
+				gwtSchedule.setOnSaturday( schedule.isOnSaturday() );
+				gwtSchedule.setOnSunday( schedule.isOnSunday() );
+			}
+			
+			if ( schedule.isRepeatMinutes() )
+			{
+				int minutes;
+				
+				gwtSchedule.setTimeFrequency( TimeFrequency.REPEAT_EVERY_MINUTE );
+				minutes = Integer.valueOf( schedule.getMinutesRepeat() );
+				gwtSchedule.setRepeatEveryValue( minutes );
+			}
+			else if ( schedule.isRepeatHours() )
+			{
+				int hours;
+				
+				gwtSchedule.setTimeFrequency( TimeFrequency.REPEAT_EVERY_HOUR );
+				hours = Integer.valueOf( schedule.getHoursRepeat() );
+				gwtSchedule.setRepeatEveryValue( hours );
+			}
+			else
+			{
+				int minutes;
+				int hours;
+				
+				gwtSchedule.setTimeFrequency( TimeFrequency.AT_SPECIFIC_TIME );
+				
+				minutes = Integer.valueOf( schedule.getMinutes() );
+				gwtSchedule.setAtMinutes( minutes );
+				
+				hours = Integer.valueOf( schedule.getHours() );
+				gwtSchedule.setAtHours( hours );
+			}
 		}
+
+		return gwtSchedule;
 	}
 
 	/**
@@ -669,9 +627,9 @@ public class GwtNetFolderHelper
 			return null;
 		
 		// Get the ScheduleInfo for the given binder.
-		scheduleInfo = NetFolderHelper.getMirroredFolderSynchronizationSchedule( binder.getId() );
+		scheduleInfo = NetFolderHelper.getMirroredFolderSynchronizationSchedule(binder.getId() );
 		
-		gwtSchedule = GwtServerHelper.getGwtSyncSchedule( scheduleInfo );
+		gwtSchedule = GwtNetFolderHelper.getGwtSyncSchedule( scheduleInfo );
 		
 		return gwtSchedule;
 	}
@@ -693,7 +651,7 @@ public class GwtNetFolderHelper
 		// Get the ScheduleInfo for the given net folder server.
 		scheduleInfo = NetFolderHelper.getNetFolderServerSynchronizationSchedule( rdConfig.getId() );
 
-		gwtSchedule = GwtServerHelper.getGwtSyncSchedule( scheduleInfo );
+		gwtSchedule = GwtNetFolderHelper.getGwtSyncSchedule( scheduleInfo );
 		
 		return gwtSchedule;
 	}
@@ -770,77 +728,22 @@ public class GwtNetFolderHelper
 				gwtUser.setName( p.getName() );
 				gwtUser.setTitle( Utils.getUserTitle( p ) );
 				gwtUser.setWorkspaceTitle( ((User)p).getWSTitle() );
-				gwtUser.setEmail( p.getEmailAddress() );
 				
 				nfRoot.addPrincipal( gwtUser );
 			}
 			else if ( p instanceof Group )
 			{
 				GwtGroup gwtGroup;
-				Description desc;
 				
 				gwtGroup = new GwtGroup();
 				gwtGroup.setInternal( ((Group)p).getIdentityInfo().isInternal() );
 				gwtGroup.setId( p.getId().toString() );
 				gwtGroup.setName( p.getName() );
 				gwtGroup.setTitle( p.getTitle() );
-				gwtGroup.setDn( p.getForeignName() );
-				desc = p.getDescription();
-				if ( desc != null )
-					gwtGroup.setDesc( desc.getText() );
-				gwtGroup.setGroupType( GwtServerHelper.getGroupType( p ) );
 				
 				nfRoot.addPrincipal( gwtGroup );
 			}
 		}
-	}
-	
-	/**
-	 * Return a NetFolder object for the given net folder id.  We won't get all of the information
-	 * about the net folder.  Just a basic set of info.
-	 */
-	public static NetFolder getNetFolderWithMinimalInfo(
-		AllModulesInjected ami,
-		Binder binder )
-	{
-		NetFolder netFolder;
-		String name;
-		String displayName;
-		
-		netFolder = new NetFolder();
-		netFolder.setId( binder.getId() );
-		
-		netFolder.setNetFolderRootName( binder.getResourceDriverName() );
-		netFolder.setRelativePath( binder.getResourcePath() );
-		netFolder.setStatus( getNetFolderSyncStatus( netFolder.getId() ) );
-		netFolder.setIsHomeDir( binder.isHomeDir() );
-		
-		// Is this a home dir net folder?
-		name = binder.getTitle();
-		displayName = name;
-		if ( binder.isHomeDir() )
-		{
-			Principal owner;
-			
-			// Yes
-			owner = binder.getOwner();
-			if ( owner != null )
-			{
-				String title;
-				
-				title = owner.getTitle();
-				if ( title != null && title.length() > 0 )
-					displayName = binder.getTitle() + " (" + title + ")";
-			}
-		}
-		
-		netFolder.setName( name );
-		netFolder.setDisplayName( displayName );
-		
-		netFolder.setIndexContent( binder.getIndexContent() );
-		netFolder.setFullSyncDirOnly( binder.getFullSyncDirOnly() );
-
-		return netFolder;
 	}
 	
 	/**
@@ -852,53 +755,25 @@ public class GwtNetFolderHelper
 	{
 		NetFolder netFolder;
 		Binder binder;
+		GwtSchedule gwtSchedule;
 		ArrayList<GwtRole> listOfRoles;
 		NetFolderDataSyncSettings dataSyncSettings;
 		GwtJitsNetFolderConfig jitsSettings;
 		
-		binder = ami.getBinderModule().getBinder( id );
-
-		netFolder = getNetFolderWithMinimalInfo( ami, binder );
+		netFolder = new NetFolder();
+		netFolder.setId( id );
 		
-		// Get the net folder's sync schedule configuration.
-		{
-			GwtNetFolderSyncScheduleConfig config;
-			GwtSchedule gwtSchedule;
-			NetFolderSyncScheduleOption nfSyncScheduleOption;
-			SyncScheduleOption syncScheduleOption;
-			
-			config = new GwtNetFolderSyncScheduleConfig();
-			
-			gwtSchedule = getGwtSyncSchedule( ami, binder );
-			config.setSyncSchedule( gwtSchedule );
-			
-			// Get the sync schedule option
-			nfSyncScheduleOption = NetFolderSyncScheduleOption.USE_NET_FOLDER_SERVER_SCHEDULE;
-			syncScheduleOption = binder.getSyncScheduleOption();
-			if ( syncScheduleOption != null )
-			{
-				switch ( syncScheduleOption )
-				{
-				case useNetFolderServerSchedule:
-					nfSyncScheduleOption = NetFolderSyncScheduleOption.USE_NET_FOLDER_SERVER_SCHEDULE;
-					break;
-					
-				case useNetFolderSchedule:
-					nfSyncScheduleOption = NetFolderSyncScheduleOption.USE_NET_FOLDER_SCHEDULE;
-					break;
-				}
-			}
-			else
-			{
-				// The binder doesn't have a value for the syncScheduleOption field.
-				// Determine what the value is based on whether or not the net folder has a schedule defined.
-				if ( gwtSchedule != null && gwtSchedule.getEnabled() == true )
-					nfSyncScheduleOption = NetFolderSyncScheduleOption.USE_NET_FOLDER_SCHEDULE;
-			}
-			config.setSyncScheduleOption( nfSyncScheduleOption );
-			
-			netFolder.setSyncScheduleConfig( config );
-		}
+		binder = ami.getBinderModule().getBinder( id );
+		netFolder.setName( binder.getTitle() );
+		netFolder.setNetFolderRootName( binder.getResourceDriverName() );
+		netFolder.setRelativePath( binder.getResourcePath() );
+		netFolder.setStatus( NetFolderStatus.READY );
+		netFolder.setIsHomeDir( binder.isHomeDir() );
+		netFolder.setIndexContent( binder.getIndexContent() );
+
+		// Get the net folder's sync schedule.
+		gwtSchedule = getGwtSyncSchedule( ami, binder );
+		netFolder.setSyncSchedule( gwtSchedule );
 		
 		// Get the rights associated with this net folder.
 		listOfRoles = getNetFolderRights( ami, binder );
@@ -912,9 +787,6 @@ public class GwtNetFolderHelper
 		jitsSettings = getJitsSettings( binder );
 		netFolder.setJitsConfig( jitsSettings );
 
-		// Get the full sync dir only setting
-		netFolder.setFullSyncDirOnly( binder.getFullSyncDirOnly() );
-		
 		return netFolder;
 	}
 	
@@ -963,7 +835,7 @@ public class GwtNetFolderHelper
 			if ( fnId == null )
 			{
 				// No
-				GwtLogHelper.error( m_logger, "In GwtNetFolderHelper.getNetFolderRights(), could not find function for role: " + nextRole.getType() );
+				m_logger.error( "In GwtNetFolderHelper.getNetFolderRights(), could not find function for role: " + nextRole.getType() );
 				continue;
 			}
 
@@ -1001,7 +873,6 @@ public class GwtNetFolderHelper
 					{
 						Group nextGroup;
 						GwtGroup gwtGroup;
-						Description desc;
 						
 						nextGroup = (Group) nextPrincipal;
 						
@@ -1010,11 +881,6 @@ public class GwtNetFolderHelper
 						gwtGroup.setId( nextGroup.getId().toString() );
 						gwtGroup.setName( nextGroup.getName() );
 						gwtGroup.setTitle( nextGroup.getTitle() );
-						gwtGroup.setDn( nextGroup.getForeignName() );
-						desc = nextGroup.getDescription();
-						if ( desc != null )
-							gwtGroup.setDesc( desc.getText() );
-						gwtGroup.setGroupType( GwtServerHelper.getGroupType( nextGroup ) );
 						
 						nextRole.addMember( gwtGroup );
 					}
@@ -1031,7 +897,6 @@ public class GwtNetFolderHelper
 						gwtUser.setName( user.getName() );
 						gwtUser.setTitle( Utils.getUserTitle( user ) );
 						gwtUser.setWorkspaceTitle( user.getWSTitle() );
-						gwtUser.setEmail( user.getEmailAddress() );
 	
 						nextRole.addMember( gwtUser );
 					}
@@ -1042,213 +907,83 @@ public class GwtNetFolderHelper
 		return listOfRoles;
 	}
 	
-	
 	/**
-	 * Get the sync statistics for the given net folder.
+	 * For the given GwtSchedule, return a ScheduleInfo that represents the GwtSchedule.
+	 * This code is patterned after the code in ScheduleHelper.getSchedule()
 	 */
-	public static NetFolderSyncStatistics getNetFolderSyncStatistics( Long binderId )
+	private static ScheduleInfo getScheduleInfoFromGwtSchedule( GwtSchedule gwtSchedule )
 	{
-		NetFolderSyncStatistics syncStatistics;
+		Long zoneId;
+		ScheduleInfo scheduleInfo;
 		
-		syncStatistics = new NetFolderSyncStatistics();
-
-		if ( binderId != null )
+		// Get the ScheduleInfo for this net folder.
+		zoneId = RequestContextHolder.getRequestContext().getZoneId();
+		scheduleInfo = new ScheduleInfo( zoneId );
+		scheduleInfo.setSchedule( new Schedule( "" ) );
+		
+		// Does the net folder have a GwtSchedule that we need to take data from and
+		// update the ScheduleInfo?
+		if ( gwtSchedule != null )
 		{
-			BinderState binderState;
-
-            binderState = (BinderState) getCoreDao().load( BinderState.class, binderId );
-            if ( binderState != null )
-            {
-    			FullSyncStats syncStats;
-            	
-    			syncStats = binderState.getFullSyncStats();
-    			if ( syncStats != null )
-    			{
-    				Date date;
-    				Long value;
-    				
-    				syncStatistics.setCountEntryExpunge( syncStats.getCountEntryExpunge() );
-    				syncStatistics.setCountFailure( syncStats.getCountFailure() );
-    				syncStatistics.setCountFileAdd( syncStats.getCountFileAdd() );
-    				syncStatistics.setCountFileExpunge( syncStats.getCountFileExpunge() );
-    				syncStatistics.setCountFileModify( syncStats.getCountFileModify() );
-    				syncStatistics.setCountFiles( syncStats.getCountFiles() );
-    				syncStatistics.setCountFileSetAcl( syncStats.getCountFileSetAcl() );
-    				syncStatistics.setCountFileSetOwnership( syncStats.getCountFileSetOwnership() );
-    				syncStatistics.setCountFolderAdd( syncStats.getCountFolderAdd() );
-    				syncStatistics.setCountFolderExpunge( syncStats.getCountFolderExpunge() );
-    				syncStatistics.setCountFolderMaxQueue( syncStats.getCountFolderMaxQueue() );
-    				syncStatistics.setCountFolderProcessed( syncStats.getCountFolderProcessed() );
-    				syncStatistics.setCountFolders( syncStats.getCountFolders() );
-    				syncStatistics.setCountFolderSetAcl( syncStats.getCountFolderSetAcl() );
-    				syncStatistics.setCountFolderSetOwnership( syncStats.getCountFolderSetOwnership() );
-    				syncStatistics.setDirOnly( syncStats.getDirOnly() );
-    				syncStatistics.setEnumerationFailed( syncStats.getEnumerationFailed() );
-    				syncStatistics.setStatusIpv4Address( syncStats.getStatusIpv4Address() );
-    				
-    				value = null;
-    				date = syncStats.getEndDate();
-    				if ( date != null )
-    					value = new Long( date.getTime() );
-    				syncStatistics.setEndDate( value );
-    				
-    				value = null;
-    				date = syncStats.getStartDate();
-    				if ( date != null )
-    					value = new Long( date.getTime() );
-    				syncStatistics.setStartDate( value );
-    				
-    				value = null;
-    				date = syncStats.getStatusDate();
-    				if ( date != null )
-    					value = new Long( date.getTime() );
-    				syncStatistics.setStatusDate( value );
-    			}
-            }
-		}
-		
-		return syncStatistics;
-	}
-	
-	/**
-	 * Get the sync status of the given net folder by converting a FullSyncStatus object
-	 * into a NetFolderSyncStatus object.
-	 */
-	public static NetFolderSyncStatus getNetFolderSyncStatus( Long binderId )
-	{
-		NetFolderSyncStatus status = NetFolderSyncStatus.SYNC_NEVER_RUN;
-		
-		if ( binderId != null )
-		{
-			BinderState binderState;
-
-            binderState = (BinderState) getCoreDao().load( BinderState.class, binderId );
-            if ( binderState != null )
-            {
-    			FullSyncStats syncStats;
-            	
-    			syncStats = binderState.getFullSyncStats();
-    			if ( syncStats != null )
-    			{
-    				FullSyncStatus syncStatus;
-    				
-    				syncStatus = syncStats.getStatus();
-    				if ( syncStatus != null )
-    				{
-    					switch ( syncStatus )
-    					{
-    					case canceled:
-    						status = NetFolderSyncStatus.SYNC_CANCELED;
-    						break;
-    						
-    					case finished:
-    						status = NetFolderSyncStatus.SYNC_COMPLETED;
-    						break;
-    						
-    					case ready:
-    					case taken:
-    						status = NetFolderSyncStatus.WAITING_TO_BE_SYNCD;
-    						break;
-    						
-    					case started:
-    						status = NetFolderSyncStatus.SYNC_IN_PROGRESS;
-    						break;
-    						
-    					case stopped:
-    						status = NetFolderSyncStatus.SYNC_STOPPED;
-    						break;
-    						
-    					case deleting:
-    						status = NetFolderSyncStatus.DELETE_IN_PROGRESS;
-    						break;
-
-    					case interrupted:
-    						status = NetFolderSyncStatus.UNKNOWN;
-    						break;
-    					}
-    				}
-    			}
-            }
-		}
-		
-		return status;
-	}
-	
-	/**
-	 * Return the number of net folders that match the given criteria
-	 */
-	public static int getNumberOfNetFolders(
-		AllModulesInjected ami,
-		NetFolderSelectSpec selectSpec )
-	{
-		int numNetFolders;
-		
-		numNetFolders = NetFolderHelper.getNumberOfNetFolders(
-													ami.getBinderModule(),
-													ami.getWorkspaceModule(),
-													selectSpec );
-
-		return numNetFolders;
-	}
-	
-	/**
-	 * 
-	 */
-	public static NetFolderRootType getRootTypeFromDriverType( DriverType driverType )
-	{
-		switch ( driverType )
-		{
-		case windows_server:
-			return NetFolderRootType.WINDOWS;
+			Schedule schedule;
+			DayFrequency dayFrequency;
+			TimeFrequency timeFrequency;
+			Random randomMinutes;
 			
-		case cloud_folders:
-			return NetFolderRootType.CLOUD_FOLDERS;
+			// Yes
+			randomMinutes = new Random();
 			
-		case famt:
-			return NetFolderRootType.FAMT;
-		
-		case filesystem:
-			return NetFolderRootType.FILE_SYSTEM;
-
-		case netware:
-			return NetFolderRootType.NETWARE;
+			scheduleInfo.setEnabled( gwtSchedule.getEnabled() );
 			
-		case oes:
-			return NetFolderRootType.OES;
+			schedule = scheduleInfo.getSchedule();
 			
-		case share_point_2010:
-			return NetFolderRootType.SHARE_POINT_2010;
-
-		case share_point_2013:
-			return NetFolderRootType.SHARE_POINT_2013;
-			
-		case webdav:
-			return NetFolderRootType.WEB_DAV;
-
-		default:
-			return NetFolderRootType.UNKNOWN;
-		}
-	}
-	
-	/**
-	 * For the given NetFolderSyncScheduleOption, return a SyncScheduleOption
-	 */
-	public static SyncScheduleOption getSyncScheduleOptionFromGwtSyncScheduleOption( NetFolderSyncScheduleOption option )
-	{
-		if ( option != null )
-		{
-			switch ( option )
+			dayFrequency = gwtSchedule.getDayFrequency(); 
+			if (  dayFrequency == DayFrequency.EVERY_DAY )
 			{
-			case USE_NET_FOLDER_SERVER_SCHEDULE:
-				return SyncScheduleOption.useNetFolderServerSchedule;
+				schedule.setDaily( true );
+			}
+			else if ( dayFrequency == DayFrequency.ON_SELECTED_DAYS )
+			{
+				schedule.setDaily( false );
+				schedule.setOnMonday( gwtSchedule.getOnMonday() );
+				schedule.setOnTuesday( gwtSchedule.getOnTuesdy() );
+				schedule.setOnWednesday( gwtSchedule.getOnWednesday() );
+				schedule.setOnThursday( gwtSchedule.getOnThursday() );
+				schedule.setOnFriday( gwtSchedule.getOnFriday() );
+				schedule.setOnSaturday( gwtSchedule.getOnSaturday() );
+				schedule.setOnSunday( gwtSchedule.getOnSunday() );
+			}
+			
+			timeFrequency = gwtSchedule.getTimeFrequency(); 
+			if ( timeFrequency == TimeFrequency.AT_SPECIFIC_TIME )
+			{
+				schedule.setHours( gwtSchedule.getAtHoursAsString() );
+				schedule.setMinutes( gwtSchedule.getAtMinutesAsString() );
+			}
+			else if ( timeFrequency == TimeFrequency.REPEAT_EVERY_MINUTE )
+			{
+				int repeatValue;
 				
-			case USE_NET_FOLDER_SCHEDULE:
-			default:
-				return SyncScheduleOption.useNetFolderSchedule;
+				schedule.setHours( "*" );
+				
+				repeatValue = gwtSchedule.getRepeatEveryValue();
+				if ( repeatValue == 15 || repeatValue == 30 )
+				{
+					schedule.setMinutes( randomMinutes.nextInt( repeatValue ) + "/" + repeatValue );
+				}
+				else if ( repeatValue == 45 )
+				{
+					schedule.setMinutes( "0/45" );
+				}
+			}
+			else if ( timeFrequency == TimeFrequency.REPEAT_EVERY_HOUR )
+			{
+				schedule.setMinutes( Integer.toString( randomMinutes.nextInt( 60 ) ) );
+				schedule.setHours( "0/" + gwtSchedule.getRepeatEveryValue() );
 			}
 		}
-		else
-			return null;
+		
+		return scheduleInfo;
 	}
 	
 	/**
@@ -1260,22 +995,10 @@ public class GwtNetFolderHelper
 	{
 		try
 		{
-			ScheduleInfo scheduleInfo = null;
-			SyncScheduleOption syncScheduleOption = null;
+			ScheduleInfo scheduleInfo;
 			
-			// Get the schedule information
-			{
-				GwtNetFolderSyncScheduleConfig config;
-				
-				config = netFolder.getSyncScheduleConfig();
-				if ( config != null )
-				{
-					scheduleInfo = GwtServerHelper.getScheduleInfoFromGwtSchedule( config.getSyncSchedule() );
-					
-					syncScheduleOption = getSyncScheduleOptionFromGwtSyncScheduleOption( config.getSyncScheduleOption() );
-				}
-			}
-			
+			scheduleInfo = getScheduleInfoFromGwtSchedule( netFolder.getSyncSchedule() );
+
 			NetFolderHelper.modifyNetFolder(
 										ami.getBinderModule(),
 										ami.getFolderModule(),
@@ -1284,9 +1007,7 @@ public class GwtNetFolderHelper
 										netFolder.getNetFolderRootName(),
 										netFolder.getRelativePath(),
 										scheduleInfo,
-										syncScheduleOption,
-										netFolder.getIndexContent(),
-										netFolder.getFullSyncDirOnly() );
+										netFolder.getIndexContent() );
 
 			// Set the rights on the net folder
 			if ( netFolder.getIsHomeDir() == false )
@@ -1320,19 +1041,19 @@ public class GwtNetFolderHelper
 				String[] args;
 				
 				args = new String[] { netFolder.getName() };
-				gtEx = GwtLogHelper.getGwtClientException();
+				gtEx = GwtServerHelper.getGwtTeamingException();
 				gtEx.setAdditionalDetails( NLT.get( "netfolder.duplicate.name", args ) );
 			}
 			else if ( ex instanceof IllegalCharacterInNameException )
 			{
-				gtEx = GwtLogHelper.getGwtClientException();
+				gtEx = GwtServerHelper.getGwtTeamingException();
 				gtEx.setAdditionalDetails( NLT.get( "netfolder.name.illegal.characters" ) );
 			}
 			else
 			{
-				gtEx = GwtLogHelper.getGwtClientException( ex );
+				gtEx = GwtServerHelper.getGwtTeamingException( ex );
 			}
-			GwtLogHelper.error( m_logger, "Error modifying net folder: " + netFolder.getName(), ex);
+			m_logger.error( "Error modifying net folder: " + netFolder.getName(), ex);
 			
 			throw gtEx;				
 		}
@@ -1353,14 +1074,10 @@ public class GwtNetFolderHelper
 		try
 		{
 			ScheduleInfo scheduleInfo;
-			AuthenticationType authType;
 			
-			scheduleInfo = GwtServerHelper.getScheduleInfoFromGwtSchedule( netFolderRoot.getSyncSchedule() );
+			scheduleInfo = getScheduleInfoFromGwtSchedule( netFolderRoot.getSyncSchedule() );
 
 			driverType = getDriverType( netFolderRoot.getRootType() );
-			
-			authType = getAuthType( netFolderRoot.getAuthType() );
-			
 			NetFolderHelper.modifyNetFolderRoot(
 											ami.getAdminModule(),
 											ami.getResourceDriverModule(),
@@ -1376,18 +1093,14 @@ public class GwtNetFolderHelper
 											netFolderRoot.getAllowSelfSignedCerts(),
 											netFolderRoot.getIsSharePointServer(),
 											netFolderRoot.getListOfPrincipalIds(),
-											netFolderRoot.getFullSyncDirOnly(),
-											authType,
-											netFolderRoot.getUseDirectoryRights(),
-											netFolderRoot.getCachedRightsRefreshInterval(),
 											scheduleInfo );
 		}
 		catch ( Exception ex )
 		{
 			GwtTeamingException gtEx;
 			
-			gtEx = GwtLogHelper.getGwtClientException( ex );
-			GwtLogHelper.error( m_logger, "Error modifying net folder root: " + netFolderRoot.getName(), ex);
+			gtEx = GwtServerHelper.getGwtTeamingException( ex );
+			m_logger.error( "Error modifying net folder root: " + netFolderRoot.getName(), ex);
 			throw gtEx;				
 		}
 		
@@ -1431,7 +1144,7 @@ public class GwtNetFolderHelper
 			}
 			catch ( Exception ex )
 			{
-				GwtLogHelper.error( m_logger, "In saveDataSyncSettings(), call to modifyBinder() failed. " + ex.toString() );
+				m_logger.error( "In saveDataSyncSettings(), call to modifyBinder() failed. " + ex.toString() );
 			}
 		}
 	}
@@ -1449,7 +1162,7 @@ public class GwtNetFolderHelper
 
 		if ( binderId == null && roles == null )
 		{
-			GwtLogHelper.error( m_logger, "In GwtNetFolderHelper.setNetFolderRights(), invalid parameters" );
+			m_logger.error( "In GwtNetFolderHelper.setNetFolderRights(), invalid parameters" );
 		}
 		
 		adminModule = ami.getAdminModule();
@@ -1468,7 +1181,7 @@ public class GwtNetFolderHelper
 			if ( fnId == null )
 			{
 				// No
-				GwtLogHelper.error( m_logger, "In GwtNetFolderHelper.setNetFolderRights(), could not find function for role: " + nextRole.getType() );
+				m_logger.error( "In GwtNetFolderHelper.setNetFolderRights(), could not find function for role: " + nextRole.getType() );
 				continue;
 			}
 
@@ -1478,36 +1191,6 @@ public class GwtNetFolderHelper
 		
 		// Re-index this binder.
 		// ami.getBinderModule().indexBinder( binderId, false );	// 20130122:  Commented out with the fix for bug#799512 as per Jong.
-	}
-	
-	/**
-	 * Stop the sync of the given list of net folders
-	 */
-	public static Set<NetFolder> stopSyncNetFolders(
-		AllModulesInjected ami,
-		HttpServletRequest req,
-		Set<NetFolder> netFolders )
-	{
-		for ( NetFolder nextNetFolder : netFolders )
-		{
-			try
-			{
-				if ( ami.getFolderModule().requestNetFolderFullSyncStop( nextNetFolder.getId() ) == false )
-				{
-					// The net folder was not in the "started" state.
-					// Make a request to remove the net folder from the "waiting to be sync'd" state.
-					ami.getFolderModule().dequeueFullSynchronize( nextNetFolder.getId() );
-				}
-				
-				nextNetFolder.setStatus( getNetFolderSyncStatus( nextNetFolder.getId() ) );
-			}
-			catch ( Exception e )
-			{
-				GwtLogHelper.error( m_logger, "Error trying to stop the syncing of the net folder: " + nextNetFolder.getName() + ", " + e.toString() );
-			}
-		}
-		
-		return netFolders;
 	}
 	
 	/**
@@ -1522,14 +1205,26 @@ public class GwtNetFolderHelper
 		{
 			try
 			{
-				if( ami.getFolderModule().enqueueFullSynchronize( nextNetFolder.getId() ) )
+				StatusTicket statusTicket = null;
+				String statusTicketId;
+
+				statusTicketId = "sync_net_folder_" + nextNetFolder.getId();
+				statusTicket = GwtWebStatusTicket.newStatusTicket( statusTicketId, req );
+				if( ami.getFolderModule().fullSynchronize( nextNetFolder.getId(), statusTicket ) )
 				{
-					nextNetFolder.setStatus( getNetFolderSyncStatus( nextNetFolder.getId() ) );
+					// The binder was not deleted (typical situation).
+					nextNetFolder.setStatus( NetFolderStatus.SYNC_IN_PROGRESS );
+					nextNetFolder.setStatusTicketId( statusTicketId );
+				}
+				else 
+				{
+					// The binder was indeed deleted.
+					nextNetFolder.setStatus( NetFolderStatus.DELETED_BY_SYNC_PROCESS );
 				}
 			}
 			catch ( Exception e )
 			{
-				GwtLogHelper.error( m_logger, "Error trying to sync the net folder: " + nextNetFolder.getName() + ", " + e.toString() );
+				m_logger.error( "Error syncing next net folder: " + nextNetFolder.getName() + ", " + e.toString() );
 			}
 		}
 		
@@ -1546,13 +1241,12 @@ public class GwtNetFolderHelper
 	{
 		for ( NetFolderRoot nextServer : netFolderServers )
 		{
-			@SuppressWarnings("unused")
 			StatusTicket statusTicket = null;
 			String statusTicketId;
 
 			statusTicketId = "sync_net_folder_server" + nextServer.getName();
 			statusTicket = GwtWebStatusTicket.newStatusTicket( statusTicketId, req );
-			if ( ami.getResourceDriverModule().enqueueSynchronize( nextServer.getName(), false ) )
+			if ( ami.getResourceDriverModule().synchronize( nextServer.getName(), false, statusTicket ) )
 			{
 				// The binder was not deleted (typical situation).
 				nextServer.setStatus( NetFolderRootStatus.SYNC_IN_PROGRESS );
@@ -1612,7 +1306,7 @@ public class GwtNetFolderHelper
 			ConnectionTestStatus status;
    			
    			aclDriver = (AclResourceDriver) resourceDriver;
-   			aclDriver.initialize(null);
+   			aclDriver.initialize();
    			status = aclDriver.testConnection(
 		   								proxyName,
 		   								proxyPwd,

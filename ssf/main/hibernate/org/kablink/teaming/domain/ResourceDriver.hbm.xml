@@ -29,9 +29,5 @@
     <property name="serverIP"/>
     <property name="volume"/>
     <property name="modifiedOn"/>
-    <property name="fullSyncDirOnly" access="field"/>
-    <property name="authenticationType" access="field" type="short" />
-    <property name="useDirectoryRights" access="field" />
-    <property name="cachedRightsRefreshInterval" access="field" />
   </class>
 </hibernate-mapping>

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2009 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -37,14 +37,18 @@ import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtPersonalPreferences;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
-import org.kablink.teaming.gwt.client.util.GwtFileLinkAction;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.event.dom.client.KeyPressHandler;
+import com.google.gwt.event.dom.client.MouseOutEvent;
+import com.google.gwt.event.dom.client.MouseOutHandler;
+import com.google.gwt.event.dom.client.MouseOverEvent;
+import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.CheckBox;
@@ -55,21 +59,20 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.Widget;
+
 
 /**
- * ?
- *  
+ * 
  * @author jwootton
+ *
  */
 public class PersonalPreferencesDlg extends DlgBox
 	implements KeyPressHandler
 {
-	private boolean m_publicSharesActive;
 	private ListBox m_entryDisplayStyleListbox;
-	private ListBox m_fileLinkActionListbox;
 	private TextBox m_numEntriesPerPageTxtBox;
 	private Anchor m_editorOverridesAnchor;
-	private CheckBox m_hidePublicCollectionCkbox;
 	
 
 	/**
@@ -93,7 +96,6 @@ public class PersonalPreferencesDlg extends DlgBox
 	/**
 	 * Create all the controls that make up the dialog box.
 	 */
-	@Override
 	public Panel createContent( Object props )
 	{
 		GwtTeamingMessages messages;
@@ -141,33 +143,11 @@ public class PersonalPreferencesDlg extends DlgBox
 			++nextRow;
 		}
 		
-		// Create the controls for "File Link Action"
-		if ( GwtClientHelper.isLicenseFilr() )
-		{
-			table.setText( nextRow, 0, messages.fileLinkActionLabel() );
-			
-			// Create a select widget the user can select the options from.
-			m_fileLinkActionListbox = new ListBox();
-			m_fileLinkActionListbox.setVisibleItemCount( 1 );
-
-			table.setWidget( nextRow, 1, m_fileLinkActionListbox );
-			++nextRow;
-		}
-		
-		// Create the checkbox for hiding the public collection.
-		if ( ( ! ( GwtClientHelper.isGuestUser() ) ) && ( ! ( GwtClientHelper.isExternalUser() ) ) )
-		{
-			FlowPanel panel = new FlowPanel();
-			m_hidePublicCollectionCkbox = new CheckBox( messages.hidePublicCollectionLabel() );
-			panel.add( m_hidePublicCollectionCkbox );
-			table.getFlexCellFormatter().setColSpan( nextRow, 0, 2 );
-			table.setWidget( nextRow, 0, panel );
-			++nextRow;
-		}
-		
 		// Create a link the user can click on to invoke the "Define editor overrides" dialog.
 		{
 			ClickHandler clickHandler;
+			MouseOverHandler mouseOverHandler;
+			MouseOutHandler mouseOutHandler;
 			Label spacer;
 			
 			// Add an empty row to add some space between the "use advanced branding" radio button and the "background image" listbox.
@@ -189,7 +169,6 @@ public class PersonalPreferencesDlg extends DlgBox
 				/**
 				 * Clear all branding information.
 				 */
-				@Override
 				public void onClick( ClickEvent event )
 				{
 					invokeEditorOverridesDlg();
@@ -246,26 +225,17 @@ public class PersonalPreferencesDlg extends DlgBox
 	/**
 	 * Get the data from the controls in the dialog box and store the data in a GwtPersonalPreferences obj.
 	 */
-	@Override
 	public Object getDataFromDlg()
 	{
 		GwtPersonalPreferences personalPrefs;
 		String displayStyle;
-		GwtFileLinkAction fla;
+		Boolean value;
 		
 		personalPrefs = new GwtPersonalPreferences();
 		
 		// Get the entry display style from the dialog.
 		displayStyle = getEntryDisplayStyleFromDlg();
 		personalPrefs.setDisplayStyle( displayStyle );
-		
-		// Get the file link action from the dialog.
-		fla = getFileLinkActionFromDlg();
-		personalPrefs.setFileLinkAction(fla);
-		
-		// Get the hide public collection from the dialog.
-		personalPrefs.setPublicSharesActive( m_publicSharesActive );
-		personalPrefs.setHidePublicCollection( getHidePublicCollectionFromDlg() );
 		
 		// Get the value of "number of entries per page"
 		{
@@ -329,43 +299,8 @@ public class PersonalPreferencesDlg extends DlgBox
 	
 	
 	/**
-	 * Get the selected value for "file link action"
-	 */
-	private GwtFileLinkAction getFileLinkActionFromDlg()
-	{
-		if ( GwtClientHelper.isLicenseFilr() )
-		{
-			int index;
-			GwtFileLinkAction reply;
-			
-			index = m_fileLinkActionListbox.getSelectedIndex();
-			if ( index == -1 )
-				index = 0;
-			
-			reply = GwtFileLinkAction.getEnum( Integer.parseInt( m_fileLinkActionListbox.getValue( index ) ) );
-			return reply;
-		}
-		
-		return GwtFileLinkAction.VIEW_DETAILS;
-	}// end getEntryDisplayStyleFromDlg()
-
-	/*
-	 * Returns a Boolean indicating the state of the user's public
-	 * collection.
-	 */
-	private Boolean getHidePublicCollectionFromDlg() {
-		Boolean reply;
-		if ( ( null != m_hidePublicCollectionCkbox ) && m_hidePublicCollectionCkbox.isVisible() )
-		     reply = m_hidePublicCollectionCkbox.getValue();
-		else reply = null;
-		return reply;
-	}
-	
-	
-	/**
 	 * Return the widget that should get the focus when the dialog is shown. 
 	 */
-	@Override
 	public FocusWidget getFocusWidget()
 	{
 		return null;
@@ -378,8 +313,6 @@ public class PersonalPreferencesDlg extends DlgBox
 	public void init( GwtPersonalPreferences personalPrefs )
 	{
 		initEntryDisplayStyleControls( personalPrefs );
-		initFileLinkActionControls( personalPrefs );
-		initHidePublicCollectionControls( personalPrefs );
 		
 		m_numEntriesPerPageTxtBox.setValue( String.valueOf( personalPrefs.getNumEntriesPerPage() ) );
 		
@@ -390,7 +323,7 @@ public class PersonalPreferencesDlg extends DlgBox
 	}// end init()
 	
 	
-	/*
+	/**
 	 * Initialize the controls used with "Entry display style"
 	 */
 	private void initEntryDisplayStyleControls( GwtPersonalPreferences personalPrefs )
@@ -411,59 +344,7 @@ public class PersonalPreferencesDlg extends DlgBox
 	}// end initEntryDisplayStyleControls()
 
 
-	/*
-	 * Initialize the controls used with "File Link Action"
-	 */
-	private void initFileLinkActionControls( GwtPersonalPreferences personalPrefs )
-	{
-		if ( GwtClientHelper.isLicenseFilr() )
-		{
-			m_fileLinkActionListbox.clear();
-			GwtTeamingMessages messages = GwtTeaming.getMessages();
-			boolean canDownload = personalPrefs.canDownload();
-			if (canDownload) m_fileLinkActionListbox.addItem( messages.fileLinkActionOption_Download(),             String.valueOf( GwtFileLinkAction.DOWNLOAD.ordinal()                ) );
-			                 m_fileLinkActionListbox.addItem( messages.fileLinkActionOption_ViewDetails(),          String.valueOf( GwtFileLinkAction.VIEW_DETAILS.ordinal()            ) );
-			                 m_fileLinkActionListbox.addItem( messages.fileLinkActionOption_ViewHtmlElseDetails(),  String.valueOf( GwtFileLinkAction.VIEW_HTML_ELSE_DETAILS.ordinal()  ) );
-			if (canDownload) m_fileLinkActionListbox.addItem( messages.fileLinkActionOption_ViewHtmlElseDownload(), String.valueOf( GwtFileLinkAction.VIEW_HTML_ELSE_DOWNLOAD.ordinal() ) );
-			
-			m_fileLinkActionListbox.setSelectedIndex( -1 );
-			
-			// Select the appropriate item in the "file link action" listbox.
-			int index = GwtClientHelper.selectListboxItemByValue( m_fileLinkActionListbox, String.valueOf( personalPrefs.getFileLinkAction().ordinal() ) );
-			
-			// Did we select an item in the listbox?
-			if ( index == -1 )
-			{
-				// No
-				m_fileLinkActionListbox.setSelectedIndex( 0 );
-			}
-		}
-	}// end initFileLinkActionControls()
-	
-	
-	/*
-	 * Initialize the controls used with "Hide Public Collection"
-	 */
-	private void initHidePublicCollectionControls( GwtPersonalPreferences personalPrefs )
-	{
-		m_publicSharesActive = personalPrefs.publicSharesActive();
-		
-		if ( null == m_hidePublicCollectionCkbox )
-		{
-			return;
-		}
-		
-		if ( ! m_publicSharesActive )
-		{
-			m_hidePublicCollectionCkbox.setVisible( false );
-		}
-		
-		Boolean hidePublicCollection = personalPrefs.getHidePublicCollection();
-		m_hidePublicCollectionCkbox.setValue( (null != hidePublicCollection ) && hidePublicCollection );
-	}
-
-
-	/*
+	/**
 	 * Invoke the "Editor Overrides" dialog
 	 */
 	private void invokeEditorOverridesDlg()
@@ -476,7 +357,6 @@ public class PersonalPreferencesDlg extends DlgBox
 	 * This method gets called when the user types in the "number of entries to show" text box.
 	 * We only allow the user to enter numbers.
 	 */
-	@Override
 	public void onKeyPress( KeyPressEvent event )
 	{
         int keyCode;
@@ -484,7 +364,10 @@ public class PersonalPreferencesDlg extends DlgBox
         // Get the key the user pressed
         keyCode = event.getNativeEvent().getKeyCode();
         
-        if ( GwtClientHelper.isKeyValidForNumericField( event.getCharCode(), keyCode ) == false )
+        if ( (!Character.isDigit(event.getCharCode())) && (keyCode != KeyCodes.KEY_TAB) && (keyCode != KeyCodes.KEY_BACKSPACE)
+            && (keyCode != KeyCodes.KEY_DELETE) && (keyCode != KeyCodes.KEY_ENTER) && (keyCode != KeyCodes.KEY_HOME)
+            && (keyCode != KeyCodes.KEY_END) && (keyCode != KeyCodes.KEY_LEFT) && (keyCode != KeyCodes.KEY_UP)
+            && (keyCode != KeyCodes.KEY_RIGHT) && (keyCode != KeyCodes.KEY_DOWN))
         {
         	TextBox txtBox;
         	Object source;
@@ -499,4 +382,5 @@ public class PersonalPreferencesDlg extends DlgBox
         	}
         }
 	}// end onKeyPress()
+
 }// end PersonalPreferencesDlg

@@ -72,7 +72,6 @@ import org.kablink.teaming.context.request.RequestContext;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.util.FilterControls;
 import org.kablink.teaming.dao.util.ObjectControls;
-import org.kablink.teaming.dao.util.ShareItemSelectSpec;
 import org.kablink.teaming.domain.Attachment;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.ChangeLog;
@@ -80,7 +79,6 @@ import org.kablink.teaming.domain.CustomAttribute;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.Description;
-import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.Entry;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.FileItem;
@@ -91,7 +89,6 @@ import org.kablink.teaming.domain.NoUserByTheIdException;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.Reservable;
 import org.kablink.teaming.domain.ReservedByAnotherUserException;
-import org.kablink.teaming.domain.ShareItem;
 import org.kablink.teaming.domain.TitleException;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserPrincipal;
@@ -125,7 +122,6 @@ import org.kablink.teaming.module.profile.ProfileModule.ProfileOperation;
 import org.kablink.teaming.module.shared.ChangeLogUtils;
 import org.kablink.teaming.module.shared.FileUtils;
 import org.kablink.teaming.module.shared.FolderUtils;
-import org.kablink.teaming.module.sharing.SharingModule;
 import org.kablink.teaming.relevance.Relevance;
 import org.kablink.teaming.repository.RepositoryServiceException;
 import org.kablink.teaming.repository.RepositorySession;
@@ -240,11 +236,6 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	protected ProfileModule getProfileModule() {
 		// Can't use IoC due to circular dependency
 		return (ProfileModule) SpringContextUtil.getBean("profileModule");
-	}
-
-	protected SharingModule getSharingModule() {
-		// Can't use IoC due to circular dependency
-		return (SharingModule) SpringContextUtil.getBean("sharingModule");
 	}
 
 	protected ConvertedFileModule getConvertedFileModule() {
@@ -519,17 +510,11 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     public FilesErrors writeFiles(Binder binder, DefinableEntity entry, 
     		List fileUploadItems, FilesErrors errors) 
     	throws ReservedByAnotherUserException {
-		return writeFiles(binder, entry, fileUploadItems, errors, Boolean.TRUE, false);
-    }
-    
-    public FilesErrors writeFiles(Binder binder, DefinableEntity entry, 
-    		List fileUploadItems, FilesErrors errors, boolean skipDbLog) 
-    	throws ReservedByAnotherUserException {
-		return writeFiles(binder, entry, fileUploadItems, errors, Boolean.TRUE, skipDbLog);
+		return writeFiles(binder, entry, fileUploadItems, errors, Boolean.TRUE);
     }
     
 	private FilesErrors writeFiles(Binder binder, DefinableEntity entry, 
-    		List fileUploadItems, FilesErrors errors, Boolean prune, boolean skipDbLog) 
+    		List fileUploadItems, FilesErrors errors, Boolean prune) 
     	throws ReservedByAnotherUserException {
 		if(errors == null)
     		errors = new FilesErrors();
@@ -541,15 +526,12 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     	
     	checkReservation(entry);
     	
-    	//Start by deleting any cached html files. Since the files are changing, these wouldn't be valid after the change.
-    	deleteCachedFiles(binder, entry);
-    	
     	for (int i = 0; i < fileUploadItems.size();) {
     		FileUploadItem fui = (FileUploadItem) fileUploadItems.get(i);
     		try {
     			// Unlike deleteFileInternal, writeFileTransactional is transactional.
     			// See the comment in writeFileMetadataTransactional for reason. 
-    			if (this.writeFileTransactional(binder, entry, fui, errors, skipDbLog)) {
+    			if (this.writeFileTransactional(binder, entry, fui, errors)) {
     				//	only advance on success
     				++i;
     				GangliaMonitoring.incrementFileWrites();
@@ -583,7 +565,30 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		
 		return errors;
     }
-	    
+	
+	// No transaction - The caller will manage transaction demarcation
+	@Override
+    public FileAttachment _addNetFolderFileInSync(Folder folder, FolderEntry entry, FileUploadItem fui) 
+    throws UncheckedIOException {
+    	FileAttachment fAtt = createFileAttachment(entry, fui);
+    	String versionName;
+		try {
+			versionName = createVersionedFile(null, folder, entry, fui);
+		} catch (IOException e) {
+			throw new UncheckedIOException(e);
+		}
+    	long fileSize = fui.getCallerSpecifiedContentLength();
+    	fAtt.getFileItem().setLength(fileSize);
+    	createVersionAttachment(fAtt, versionName);
+    	getCoreDao().save(fAtt);
+    	
+    	writeFileMetadataNonTransactional(folder, entry, fui, fAtt, true, true);
+    	
+    	GangliaMonitoring.incrementFileWrites();
+    	
+    	return fAtt;
+    }
+    
 	public FilesErrors writeFilesValidationOnly(Binder binder, DefinableEntity entry, 
     		List fileUploadItems, FilesErrors errors) 
     	throws ReservedByAnotherUserException {
@@ -643,28 +648,9 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	    	}
     	}
 	}
-
-    protected void executeContentFilters(Binder binder, DefinableEntity entity, FileAttachment fa)
-    		throws IOException, FilterException, UncheckedIOException {
-    	InputStream is;
-    	for(int i = 0; i < contentFilters.length; i++) {
-    		is = readFile(binder, entity, fa);
-    		long begin = System.nanoTime();
-    		try {
-    			contentFilters[i].filter(binder, entity, fa.getFileItem().getName(), is);
-    		}
-    		finally {
-    			endFiltering(begin, fa.getFileItem().getName(), contentFilters[i]);
-    			try {
-    				is.close();
-    			}
-    			catch(IOException ignore) {}
-    		}
-    	}
-    }
     
     protected void executeContentFilters(Binder binder, DefinableEntity entity, String fileName, FileUploadItem fui)
-    		throws IOException, FilterException, UncheckedIOException {
+    throws IOException, FilterException, UncheckedIOException {
     	InputStream is;
     	for(int i = 0; i < contentFilters.length; i++) {
     		is = fui.getInputStream();
@@ -743,31 +729,6 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 
         return errors;
     }
-
-	public FilesErrors filterFile(Binder binder, DefinableEntity entity, FileAttachment fa) 
-			throws FilterException {
-		if(contentFilters == null)
-			return new FilesErrors(); // Nothing to filter with. Return empty error.
-	
-		FilesErrors errors = new FilesErrors();
-		
-		try {
-			SimpleProfiler.start("filterFile_executeContentFilters");
-			executeContentFilters(binder, entity, fa);
-			SimpleProfiler.stop("filterFile_executeContentFilters");
-		}
-		catch(IOException e) {
-			throw new UncheckedIOException(e);
-		}
-		catch(FilterException e) {
-			errors.addProblem(new FilesErrors.Problem
-					(fa.getRepositoryName(),  fa.getFileItem().getName(),
-							FilesErrors.Problem.PROBLEM_FILTERING, e));
-		}
-	
-		return errors;
-	}
-
 
 	public FilesErrors filterFiles(Binder binder, DefinableEntity entity, List fileUploadItems) 
 		throws FilterException {
@@ -1061,12 +1022,12 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     	newTopVa.getParentAttachment().setMinorVersion(newTopVa.getMinorVersion());
 
     	getConvertedFileModule().deleteCacheHtmlFile(binder, entity, fa);
-    	deleteHtmlCacheFilesForFile(fa);
     	getConvertedFileModule().deleteCacheTextFile(binder, entity, fa);
     	getConvertedFileModule().deleteCacheImageFile(binder, entity, fa);
     	setEntityModification(entity);
     	entity.incrLogVersion();
-    	ChangeLog changes = ChangeLogUtils.createAndBuild(entity, changeLogCause, newTopVa.getParentAttachment());
+    	ChangeLog changes = new ChangeLog(entity, changeLogCause);
+		ChangeLogUtils.buildLog(changes, newTopVa.getParentAttachment());
 		saveChangeLogTransactional(changes);
 	}
 
@@ -1080,7 +1041,8 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		}
 		setEntityModification(entity);
 		entity.incrLogVersion();
-		ChangeLog changes = ChangeLogUtils.createAndBuild(entity, ChangeLog.FILEMODIFY_SET_COMMENT, fileAtt);
+		ChangeLog changes = new ChangeLog(entity, ChangeLog.FILEMODIFY_SET_COMMENT);
+		ChangeLogUtils.buildLog(changes, fileAtt);
 		saveChangeLogTransactional(changes);
 	}
 	
@@ -1094,7 +1056,8 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		}
 		setEntityModification(entity);
 		entity.incrLogVersion();
-		ChangeLog changes = ChangeLogUtils.createAndBuild(entity, ChangeLog.FILEMODIFY_SET_STATUS, fileAtt);
+		ChangeLog changes = new ChangeLog(entity, ChangeLog.FILEMODIFY_SET_STATUS);
+		ChangeLogUtils.buildLog(changes, fileAtt);
 		saveChangeLogTransactional(changes);
 	}
 	
@@ -1121,14 +1084,15 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		FileUtils.setFileVersionAging(entity);	//Set the agingEnabled flag appropriately for all file attachments
 		setEntityModification(entity);
 		entity.incrLogVersion();
-		ChangeLog changes = ChangeLogUtils.createAndBuild(entity, ChangeLog.FILEMODIFY_INCR_MAJOR_VERSION, fileAtt);
+		ChangeLog changes = new ChangeLog(entity, ChangeLog.FILEMODIFY_INCR_MAJOR_VERSION);
+		ChangeLogUtils.buildLog(changes, fileAtt);
 		saveChangeLogTransactional(changes);
 	}
 	
 	private void saveChangeLogTransactional(final ChangeLog changeLog) {
         getTransactionTemplate().execute(new TransactionCallback() {
         	public Object doInTransaction(TransactionStatus status) {  
-        		ChangeLogUtils.save(changeLog);
+                getCoreDao().save(changeLog);
             	return null;
         	}
         });	
@@ -1174,8 +1138,9 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 			v.getFileItem().setName(newName);
 		}
 		entity.incrLogVersion();
-		ChangeLog changes = ChangeLogUtils.createAndBuild(entity, ChangeLog.FILERENAME, fa);
-		ChangeLogUtils.save(changes);
+		ChangeLog changes = new ChangeLog(entity, ChangeLog.FILERENAME);
+		ChangeLogUtils.buildLog(changes, fa);
+		getCoreDao().save(changes);
 	}
 	
 	public void moveFiles(Binder binder, DefinableEntity entity, 
@@ -1222,8 +1187,9 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
        		else { // mirrored repository
        			moveMirroredFile(binder, entity, destBinder, destEntity, fa, toFileName);
        		}
-   			ChangeLog changes = ChangeLogUtils.createAndBuild(entity, ChangeLog.FILEMOVE, fa);
-   			ChangeLogUtils.save(changes);
+   			ChangeLog changes = new ChangeLog(entity, ChangeLog.FILEMOVE);
+			ChangeLogUtils.buildLog(changes, fa);
+			getCoreDao().save(changes);
 			// Now that we're done with the existing fa object (hence we don't need access to
 			// the previous name), we can finally change its name to the new name if different.
 			fa.getFileItem().setName(toFileName);
@@ -1406,7 +1372,8 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 
    		// Update the metadata
 		entity.incrLogVersion();
-		ChangeLog changes = ChangeLogUtils.createAndBuild(entity, ChangeLog.FILEVERSIONDELETE, va);
+		ChangeLog changes = new ChangeLog(entity, ChangeLog.FILEVERSIONDELETE);
+		ChangeLogUtils.buildLog(changes, va);
 
 		fa.removeFileVersion(va);
 		
@@ -1423,7 +1390,6 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		fa.setAgingEnabled(highestVa.getAgingEnabled());
 		fa.setFileStatus(highestVa.getFileStatus());
 		getConvertedFileModule().deleteCacheHtmlFile(binder, entity, fa);
-		deleteHtmlCacheFilesForFile(fa);
 		getConvertedFileModule().deleteCacheTextFile(binder, entity, fa);
     	getConvertedFileModule().deleteCacheImageFile(binder, entity, fa);
 		
@@ -1603,10 +1569,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
         	public Object doInTransaction(TransactionStatus status) {
         		if(newObjs != null) {
         			for(Object newObj:newObjs)
-        				if(newObj instanceof ChangeLog)
-        					ChangeLogUtils.save((ChangeLog)newObj);
-        				else
-        					getCoreDao().save(newObj);
+        				getCoreDao().save(newObj);
         		}
                 return null;
         	}
@@ -1743,8 +1706,8 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 				
    		ChangeLog changeLog = null;
    		if(!skipDbLog) {
-	   		changeLog = ChangeLogUtils.createAndBuild(entry, ChangeLog.FILEDELETE, fAtt);
-	   		Element parent = changeLog.getEntityRoot();
+	   		changeLog = new ChangeLog(entry, ChangeLog.FILEDELETE);
+	   		Element parent = ChangeLogUtils.buildLog(changeLog, fAtt);
 	   		if(archiveURIs.size() > 0) {
 	   			Element fileElem = parent.addElement(ObjectKeys.XTAG_ELEMENT_TYPE_FILEARCHIVE);
 	   			if(archiveStoreName != null)
@@ -1815,7 +1778,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	       getTransactionTemplate().execute(new TransactionCallback() {
 	       	public Object doInTransaction(TransactionStatus status) {  
 	       		if(changeLog != null)
-	       			ChangeLogUtils.save(changeLog);
+	       			getCoreDao().save(changeLog);
             	
 				entry.removeAttachment(fAtt);
 				//file names on binders are not registered
@@ -1848,7 +1811,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
         getTransactionTemplate().execute(new TransactionCallback() {
         	public Object doInTransaction(TransactionStatus status) {  
                 for(ChangeLog changeLog : changeLogs) {
-                	ChangeLogUtils.save(changeLog);
+                	getCoreDao().save(changeLog);
                 }
             	return null;
         	}
@@ -1900,17 +1863,17 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	}
 	
 	private void writeFileMetadataTransactional(final Binder binder, final DefinableEntity entry, 
-    		final FileUploadItem fui, final FileAttachment fAtt, final boolean isNew, final boolean versionCreated, final boolean skipDbLog) {	
+    		final FileUploadItem fui, final FileAttachment fAtt, final boolean isNew, final boolean versionCreated) {	
 		getTransactionTemplate().execute(new TransactionCallback() {
         	public Object doInTransaction(TransactionStatus status) {
-        		writeFileMetadataNonTransactional(binder, entry, fui, fAtt, isNew, versionCreated, skipDbLog);
+        		writeFileMetadataNonTransactional(binder, entry, fui, fAtt, isNew, versionCreated);
                 return null;
        	}
        });
 	}
 	
 	private void writeFileMetadataNonTransactional(final Binder binder, final DefinableEntity entry, 
-    		final FileUploadItem fui, final FileAttachment fAtt, final boolean isNew, final boolean versionCreated, boolean skipDbLog) {	
+    		final FileUploadItem fui, final FileAttachment fAtt, final boolean isNew, final boolean versionCreated) {	
 		//Copy the "description" into the file attachment
 		fAtt.getFileItem().setDescription(fui.getDescription());
 		if(isNew) {
@@ -1973,21 +1936,21 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		} 
    		//add file name so not null
     	if (Validator.isNull(entry.getTitle())) entry.setTitle(fAtt.getFileItem().getName());
+		ChangeLog changes = null;
+    	if (isNew)
+    		changes = new ChangeLog(entry, ChangeLog.FILEADD);
+    	else if(versionCreated)
+    		changes = new ChangeLog(entry, ChangeLog.FILEMODIFY);
     	
     	if(versionCreated) {
     		// The content was committed creating a new version. Increment disk usage for the user.
     		incrementDiskSpaceUsed(fAtt);
     	}
     	
-		ChangeLog changes = null;
-		if(!skipDbLog) {
-	    	if (isNew)
-	    		changes = ChangeLogUtils.createAndBuild(entry, ChangeLog.FILEADD, fAtt);
-	    	else if(versionCreated)
-	    		changes = ChangeLogUtils.createAndBuild(entry, ChangeLog.FILEMODIFY, fAtt);
-		}
-    	if(changes != null)
-        	ChangeLogUtils.save(changes);
+    	if(changes != null) {
+        	ChangeLogUtils.buildLog(changes, fAtt);
+    		getCoreDao().save(changes);
+    	}
     }
 
 	/*
@@ -2073,7 +2036,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	 * return false or throw exception if either primary not written or metadata update failed.
 	 */
     private boolean writeFileTransactional(Binder binder, DefinableEntity entry, 
-    		FileUploadItem fui, FilesErrors errors, boolean skipDbLog) {
+    		FileUploadItem fui, FilesErrors errors) {
 		String relativeFilePath = fui.getOriginalFilename();
 		String repositoryName = fui.getRepositoryName();
 		FileAttachment fAtt = entry.getFileAttachment(relativeFilePath);
@@ -2181,7 +2144,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	    	// using JTA. But that's not always available, and this version of
 	    	// the system does not try to address that. 
     		SimpleProfiler.start("writeFile_MetadataTransactional");
-	    	writeFileMetadataTransactional(binder, entry, fui, fAtt, isNew, versionCreated, skipDbLog);
+	    	writeFileMetadataTransactional(binder, entry, fui, fAtt, isNew, versionCreated);
     		SimpleProfiler.stop("writeFile_MetadataTransactional");
 	    	
         	//SimpleProfiler.done(logger);
@@ -3020,7 +2983,8 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 						metadataDirty = true;
 		            	// add the size of the file to the users disk usage
 		            	incrementDiskSpaceUsed(fa);
-		            	ChangeLog changes = ChangeLogUtils.createAndBuild(entity, ChangeLog.FILEMODIFY, fa);
+		            	ChangeLog changes = new ChangeLog(entity, ChangeLog.FILEMODIFY);
+		            	ChangeLogUtils.buildLog(changes, fa);
 		            	newObjs.add(changes);
 					}
 				}  
@@ -3227,46 +3191,4 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		return 0;
 	}
 	
-	@Override
-	public void correctLastModTime(FileAttachment fa, Date correctLastModTime) {
-		// Corret the data
-		if(fa.getModification() != null)
-			fa.getModification().setDate(correctLastModTime);
-		VersionAttachment hv = fa.getHighestVersion();
-		if(hv != null) {
-			if(hv.getModification() != null)
-				hv.getModification().setDate(correctLastModTime);
-		}
-		// Trigger db transaction
-		getTransactionTemplate().execute(new TransactionCallback<Object>() {
-        	public Object doInTransaction(TransactionStatus status) {
-        		return null;
-        	}
-        });	
-	}
-	
-	public void deleteHtmlCacheFilesForFile(FileAttachment fa) {
-		DefinableEntity entity = fa.getOwner().getEntity();
-		ShareItemSelectSpec	spec = new ShareItemSelectSpec();
-		EntityIdentifier ei = entity.getEntityIdentifier();
-		spec.setSharedEntityIdentifier(ei);
-		List<ShareItem> shareItems = getProfileDao().findShareItems(spec);
-		if (shareItems != null) {
-			for (ShareItem shareItem : shareItems) {
-				//See if there are any cached HTML files to be deleted
-				if (shareItem.getRecipientType().equals(ShareItem.RecipientType.publicLink)) {
-					DefinableEntity e = getSharingModule().getSharedEntity(shareItem);
-					Binder binder = e.getParentBinder();
-					if (e instanceof Binder) binder = (Binder) e;
-					Set<FileAttachment> atts = e.getFileAttachments();
-					for (FileAttachment tfa : atts) {
-						if (tfa.equals(fa)) {
-							getConvertedFileModule().deleteCacheHtmlFile(shareItem, binder, entity, fa);
-							break;
-						}
-					}
-				}
-			}
-		}
-	}
 }

@@ -98,7 +98,7 @@ public abstract class AbstractReadFileController extends SAbstractController {
 		FileAttachment fa = null;
 		if (Validator.isNotNull(fileName)) {
 			fa = (FileAttachment)entity.getFileAttachment(fileName);
-			if (fa == null && fileAttachmentId != null) {
+			if (fa == null) {
 				fa = (FileAttachment)entity.getAttachment(fileAttachmentId);
 			}
 			if (fa != null && !fileVersion.equals(WebKeys.READ_FILE_LAST) && 

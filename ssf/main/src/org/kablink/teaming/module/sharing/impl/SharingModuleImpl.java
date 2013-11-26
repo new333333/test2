@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -34,7 +34,6 @@ package org.kablink.teaming.module.sharing.impl;
 
 import java.util.*;
 
-import org.kablink.teaming.InvalidEmailAddressException;
 import org.kablink.teaming.NotSupportedException;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
@@ -44,11 +43,9 @@ import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.domain.ShareItem.RecipientType;
 import org.kablink.teaming.jobs.ExpiredShareHandler;
 import org.kablink.teaming.jobs.ZoneSchedule;
-import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
 import org.kablink.teaming.module.binder.processor.BinderProcessor;
-import org.kablink.teaming.module.file.ConvertedFileModule;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.folder.FolderModule.FolderOperation;
 import org.kablink.teaming.module.folder.processor.FolderCoreProcessor;
@@ -60,16 +57,13 @@ import org.kablink.teaming.runas.RunasCallback;
 import org.kablink.teaming.runas.RunasTemplate;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.security.AccessControlManager;
-import org.kablink.teaming.security.AccessControlNonCodedException;
 import org.kablink.teaming.security.function.WorkArea;
 import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.util.GangliaMonitoring;
 import org.kablink.teaming.util.ReflectHelper;
 import org.kablink.teaming.util.SPropsUtil;
-import org.kablink.teaming.util.ShareLists;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.Utils;
-import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.util.api.ApiErrorCode;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -83,23 +77,11 @@ import org.springframework.transaction.support.TransactionTemplate;
 public class SharingModuleImpl extends CommonDependencyInjection implements SharingModule, ZoneSchedule {
     private static long MILLISEC_IN_A_DAY = 86400000;
 
-	private AdminModule adminModule;
 	private FolderModule folderModule;
 	private BinderModule binderModule;
 	private ProfileModule profileModule;
-	private ConvertedFileModule convertedFileModule;
 	private TransactionTemplate transactionTemplate;
 	
-    protected ConvertedFileModule getConvertedFileModule() {
-    	if (null == convertedFileModule) {
-    		convertedFileModule = ((ConvertedFileModule) SpringContextUtil.getBean("convertedFileModule"));
-    	}
-		return convertedFileModule;
-	}
-	public void setConvertedFileModule(ConvertedFileModule convertedFileModule) {
-		this.convertedFileModule = convertedFileModule;
-	}
-
     protected TransactionTemplate getTransactionTemplate() {
 		return transactionTemplate;
 	}
@@ -115,7 +97,6 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
     }
     
     @Override
-	@SuppressWarnings("unchecked")
 	public void checkAccess(ShareItem shareItem, EntityIdentifier entityIdentifier, SharingOperation operation)
 	    	throws AccessControlException {
     	User user = RequestContextHolder.getRequestContext().getUser();
@@ -274,11 +255,6 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 					}
 				}
 				//Now check that the entry itself allows the requested operation
-				//First test if the user is allowed to do all of the rights in the rights list
-				List<FolderOperation> ops = shareItem.getRightSet().getFolderEntryRights();
-				for (FolderOperation op : ops) {
-					folderModule.checkAccess(fe, op);
-				}
 				if (shareItem.getRecipientType().equals(RecipientType.group) && recipient != null) {
 					if (recipient.getIdentityInfo().isInternal()) {
 						if (folderModule.testAccess(fe, FolderOperation.allowSharing)) {
@@ -307,15 +283,6 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 					//Sharing with team not allowed yet. Teams need to be identified as internal, external, or public
 					throw new AccessControlException();
 				}
-				else if ( shareItem.getRecipientType().equals( RecipientType.publicLink ) )
-				{
-					// Is sharing with the public enabled?
-					if ( folderModule.testAccess( fe, FolderOperation.allowSharingPublic ) )
-					{
-						// Yes
-						return;
-					}
-				}
 			} else if (entityIdentifier.getEntityType().equals(EntityType.folder) ||
 					entityIdentifier.getEntityType().equals(EntityType.workspace)) {
 				Binder binder = getBinderModule().getBinder(entityIdentifier.getEntityId());
@@ -332,20 +299,6 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 					//Test if entry allows sharing forward
 					if (!binderModule.testAccess(binder, BinderOperation.allowSharingForward)) {
 						throw new AccessControlException("errorcode.sharing.forward.notAllowed", new Object[] {});
-					}
-				}
-				//Now check the access to the binder
-				//First test if the user is allowed to do all of the rights in the rights list
-				List<Object> ops = shareItem.getRightSet().getFolderRights();
-				for (Object op : ops) {
-					if (op instanceof WorkAreaOperation) {
-						accessControlManager.checkOperation(binder, (WorkAreaOperation)op);
-					} else if (op instanceof BinderOperation) {
-						binderModule.checkAccess(binder, (BinderOperation)op);
-					} else if (op instanceof FolderOperation && binder instanceof Folder) {
-						folderModule.checkAccess((Folder)binder, (FolderOperation)op);
-					} else {
-						throw new AccessControlException();
 					}
 				}
 				if (shareItem.getRecipientType().equals(RecipientType.group) && recipient != null) {
@@ -391,8 +344,10 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 				}
 			}
 			//Now check if this user is still allowed to add a share of this entity
-			checkAccess(shareItem, SharingOperation.addShareItem);
-			return;
+			if (testAccess(shareItem, SharingOperation.addShareItem)) {
+				return;
+			}
+			break;
 		case deleteShareItem:
 			//The share creator, the entity owner, or the site admin can delete a shareItem
 			if (user.getId().equals(shareItem.getSharerId())) {
@@ -657,10 +612,8 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 
 		// Access check (throws error if not allowed)
 		checkAccess(shareItem, SharingOperation.addShareItem);
-
-        verifyRecipient(shareItem);
-
-        getTransactionTemplate().execute(new TransactionCallback<Object>() {
+		
+		getTransactionTemplate().execute(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				getCoreDao().save(shareItem);
@@ -680,47 +633,10 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 		else if(shareItem.getSharedEntityIdentifier().getEntityType() == EntityIdentifier.EntityType.folder)
 			GangliaMonitoring.incrementFoldersShared();
 	}
-
-    /**
-     * Returns true if there are public shares that are active and
-     * false otherwise.
-     * 
-     * @return
-     */
+	
     //NO transaction
 	@Override
-    public boolean arePublicSharesActive() {
-		// Can we access the Guest user?
-		User guest = getProfileModule().getGuestUser();
-		if (null != guest) {
-			// Yes!  Read the shares that have been made with Guest.
-			ShareItemSelectSpec	spec = new ShareItemSelectSpec();
-			spec.setRecipients(guest.getId(), null, null);
-			List<ShareItem> shareItems = getShareItems(spec);
-			
-			// Did we find any?
-			if (MiscUtil.hasItems(shareItems)) {
-				// Yes!  Scan them.
-				for (ShareItem si:  shareItems) {
-					// Is this an active share that's part of a public
-					// share?
-					if ((!(si.isDeleted())) && (!(si.isExpired())) && si.isLatest() && si.getIsPartOfPublicShare()) {
-						// Yes!  Return true.
-						return true;
-					}
-				}
-			}
-		}
-		
-		// If we get here, we didn't find any active public shares.
-		// Return false.
-    	return false;
-    }
-    
-
-    //NO transaction
-	@Override
-	public ShareItem modifyShareItem(final ShareItem latestShareItem, final Long previousShareItemId) {
+	public void modifyShareItem(final ShareItem latestShareItem, final Long previousShareItemId) {
 		if(latestShareItem == null)
 			throw new IllegalArgumentException("Latest share item must be specified");
 		if(previousShareItemId == null)
@@ -732,99 +648,36 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 		
 		// Access check (throws error if not allowed)
 		checkAccess(latestShareItem, SharingOperation.modifyShareItem);
-
-        ShareItem retItem = getTransactionTemplate().execute(new TransactionCallback<ShareItem>() {
+		
+		getTransactionTemplate().execute(new TransactionCallback<Object>() {
 			@Override
-			public ShareItem doInTransaction(TransactionStatus status) {
-				// Are we dealing with a "public link" share item?
-				if ( latestShareItem.getRecipientType() != RecipientType.publicLink )
-				{
-					// No
-					// Update previous snapshot
-					try {
-						ShareItem previousShareItem = getProfileDao().loadShareItem(previousShareItemId);
-						
-						previousShareItem.setLatest(false);
-						
-						getCoreDao().update(previousShareItem);
-					}
-					catch(NoShareItemByTheIdException e) {
-						// The previous snapshot isn't found.
-						logger.warn("Previous share item with id '" + previousShareItemId + "' is not found.");
-					}
-
-					// Create a new ShareItem
-					getCoreDao().save(latestShareItem);
-
-					//Log this share action in the change log
-					addShareItemChangeLogEntry(latestShareItem, ChangeLog.SHARE_MODIFY);
+			public Object doInTransaction(TransactionStatus status) {
+				// Update previous snapshot
+				try {
+					ShareItem previousShareItem = getProfileDao().loadShareItem(previousShareItemId);
+					
+					previousShareItem.setLatest(false);
+					
+					getCoreDao().update(previousShareItem);
 				}
-				else
-				{
-					// Yes, we can't delete the old ShareItem.  We need to update it.
-					try
-					{
-						ShareItem previousShareItem;
-						
-						previousShareItem = getProfileDao().loadShareItem( previousShareItemId );
-						
-						// The only things that can be modified are the comments and end date.
-						previousShareItem.setComment( latestShareItem.getComment() );
-						previousShareItem.setDaysToExpire( latestShareItem.getDaysToExpire() );
-						previousShareItem.setEndDate( latestShareItem.getEndDate() );
-						previousShareItem.setStartDate( latestShareItem.getStartDate() );
-						
-						getCoreDao().update( previousShareItem );
-
-						// Log this share action in the change log
-						addShareItemChangeLogEntry( previousShareItem, ChangeLog.SHARE_MODIFY );
-                        return previousShareItem;
-					}
-					catch( NoShareItemByTheIdException e )
-					{
-						// The "public link" share item was not found
-						logger.warn( "Public link share item with id '" + previousShareItemId + "' is not found." );
-					}
+				catch(NoShareItemByTheIdException e) {
+					// The previous snapshot isn't found.
+					logger.warn("Previous share item with id '" + previousShareItemId + "' is not found.");
 				}
 
+				// Save new snapshot
+				getCoreDao().save(latestShareItem);
+
+				//Log this share action in the change log
+				addShareItemChangeLogEntry(latestShareItem, ChangeLog.SHARE_MODIFY);
+				
 				return null;
 			}
 		});
-        if (retItem==null) {
-            retItem = latestShareItem;
-        }
 
 		//Index the entity that is being shared
-		indexSharedEntity(retItem);
-        return retItem;
+		indexSharedEntity(latestShareItem);		
 	}
-
-    private void verifyRecipient(ShareItem shareItem) {
-        if (shareItem.getRecipientType()==RecipientType.user) {
-            Principal recipient = getProfileModule().getEntry(shareItem.getRecipientId());
-            if (!recipient.getEntityType().equals(EntityType.user)) {
-                throw new NoUserByTheIdException(shareItem.getRecipientId());
-            }
-            if (!recipient.getIdentityInfo().isInternal()) {
-                String email = recipient.getEmailAddress();
-                if (!isExternalAddressValid(email)) {
-                    throw new InvalidEmailAddressException(email);
-                }
-            }
-        } else if (shareItem.getRecipientType()==RecipientType.group) {
-            Principal recipient = getProfileModule().getEntry(shareItem.getRecipientId());
-            if (!recipient.getEntityType().equals(EntityType.group)) {
-                throw new NoGroupByTheIdException(shareItem.getRecipientId());
-            }
-            if (recipient.getIdentityInfo().isFromLdap() && !getAdminModule().isSharingWithLdapGroupsEnabled()) {
-                throw new AccessControlNonCodedException("System settings do not allow for sharing with LDAP groups.");
-            }
-        } else if (shareItem.getRecipientType()==RecipientType.publicLink) {
-            if (shareItem.getSharedEntityIdentifier().getEntityType() != EntityType.folderEntry) {
-                throw new IllegalArgumentException("Public links are only allowed for folder entries.");
-            }
-        }
-    }
 
     private void determineExpiration(ShareItem latestShareItem) {
         int daysToExpire = latestShareItem.getDaysToExpire();
@@ -851,7 +704,6 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 		// Access check (throws error if not allowed)
 		checkAccess(shareItem, SharingOperation.deleteShareItem);
 		
-		//Now delete the shareItem
 		getTransactionTemplate().execute(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
@@ -867,17 +719,6 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 
 		//Index the entity that is being shared
 		indexSharedEntity(shareItem);
-		
-		//See if there are any cached HTML files to be deleted
-		if (shareItem.getRecipientType().equals(ShareItem.RecipientType.publicLink)) {
-			DefinableEntity entity = getSharedEntity(shareItem);
-			Binder binder = entity.getParentBinder();
-			if (entity instanceof Binder) binder = (Binder) entity;
-			Set<FileAttachment> atts = entity.getFileAttachments();
-			for (FileAttachment fa : atts) {
-				getConvertedFileModule().deleteCacheHtmlFile(shareItem, binder, entity, fa);
-			}
-		}
 	}
 	/* (non-Javadoc)
 	 * @see org.kablink.teaming.module.profile.ProfileModule#getShareItem(java.lang.Long)
@@ -927,8 +768,7 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 		}
 	}
 
-    @Override
-	public void hideSharedEntitiesForCurrentUser(Collection<EntityIdentifier> ids, boolean recipient) {
+    public void hideSharedEntitiesForCurrentUser(Collection<EntityIdentifier> ids, boolean recipient) {
         String tagName;
         if (recipient) {
             tagName = ObjectKeys.HIDDEN_SHARED_WITH_TAG;
@@ -978,8 +818,7 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
         updateUserHiddenShareModTime(recipient);
     }
 
-    @Override
-	public Date getHiddenShareModTimeForCurrentUser(boolean recipient) {
+    public Date getHiddenShareModTimeForCurrentUser(boolean recipient) {
         String tagName;
         if (recipient) {
             tagName = ObjectKeys.HIDDEN_SHARED_WITH_TAG;
@@ -1061,18 +900,7 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 		}
 	}
 
-    public AdminModule getAdminModule() {
-        if (adminModule == null) {
-            adminModule = (AdminModule) SpringContextUtil.getBean("adminModule");
-        }
-        return adminModule;
-    }
-
-    public void setAdminModule(AdminModule adminModule) {
-        this.adminModule = adminModule;
-    }
-
-    protected FolderModule getFolderModule() {
+	protected FolderModule getFolderModule() {
 		if (folderModule == null) {
 			folderModule = (FolderModule) SpringContextUtil.getBean("folderModule");
 		}
@@ -1213,127 +1041,5 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
             this.folderOperation = folderOperation;
             this.binderOperation = binderOperation;
         }
-    }
-    
-    /**
-     * Returns true if the given email address is valid for sharing
-     * with based on the current sharing blacklist/whitelist.
-     * 
-     * @param ema
-     * 
-     * @return
-     */
-    @Override
-    public boolean isExternalAddressValid(String ema, ShareLists shareLists) {
-    	return getExternalAddressStatus(ema, shareLists).isValid();
-    }
-    
-    @Override
-    public boolean isExternalAddressValid(String ema) {
-    	// Always use the initial form of the method.
-    	return isExternalAddressValid(ema, getShareLists());
-    }
-    
-    /**
-     * Returns an ExternalAddressStatus value for the status of sharing
-     * with the given email address based on the current sharing
-     * blacklist/whitelist.
-     * 
-     * @param ema
-     * 
-     * @return
-     */
-    @Override
-    public ExternalAddressStatus getExternalAddressStatus(String ema, ShareLists shareLists) {
-    	// Do we have a sharing blacklist/whitelist with list
-    	// validation enabled?
-        if ((null == shareLists) || shareLists.isDisable()) {
-        	// No!  Then the address is considered valid.
-        	return ExternalAddressStatus.valid;
-        }
-        
-    	// Do we have any email addresses to validate against?
-    	boolean      isWhitelist = shareLists.isWhitelist();
-    	List<String> list = shareLists.getEmailAddresses();
-    	if (MiscUtil.hasItems(list)) {
-    		// Yes!  Scan them.
-	    	for (String emaScan:  list) {
-        		// Does the email address we were given match this one?
-	    		if (emaScan.equalsIgnoreCase(ema)) {
-	    			// Yes!  If we're validating a whitelist, the email
-	    			// address is valid.  Otherwise, it failed the
-	    			// blacklist check.
-        			if (isWhitelist)
-       			         return ExternalAddressStatus.valid;
-        			else return ExternalAddressStatus.failsBlacklistEMA;
-	    		}
-	    	}
-    	}
-    	
-    	// Do we have any domains to validate against?
-    	list = shareLists.getDomains();
-    	if (MiscUtil.hasItems(list)) {
-    		// Yes!  Extract the domain from the email address we were
-    		// given.
-        	int    atPos  = ema.indexOf('@');
-       		String domain = ema.substring(atPos + 1);
-        	
-        	// Scan the domains.
-        	for (String domainScan:  list) {
-        		// Does the email address contain this domain?
-        		if (domainScan.equalsIgnoreCase(domain)) {
-        			// Yes!  If we're validating a whitelist, the email
-        			// address is valid.  Otherwise, it failed the
-        			// blacklist check.
-        			if (isWhitelist)
-        			     return ExternalAddressStatus.valid;
-        			else return ExternalAddressStatus.failsBlacklistDomain;
-        		}
-        	}
-    	}
-    	
-    	// If we get here and are doing a whitelist validation, the
-    	// email address is invalid because we didn't match it above.
-    	// Otherwise, it's valid because it didn't fail the blacklist
-    	// validation above.
-    	if (isWhitelist)
-             return ExternalAddressStatus.failsWhitelist;
-    	else return ExternalAddressStatus.valid;
-    }
-    
-    @Override
-    public ExternalAddressStatus getExternalAddressStatus(String ema) {
-        // Always use the initial form of the method.
-        return getExternalAddressStatus(ema, getShareLists());
-    }
-    
-    /**
-     * Returns the ShareLists object stored in the ZoneConfig.
-     * 
-     * @return
-     */
-    @Override
-	public ShareLists getShareLists() {
-        Long		zoneId    = RequestContextHolder.getRequestContext().getZoneId();
-        ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(zoneId);
-        ShareLists shareLists = zoneConfig.getShareLists();
-        if (null == shareLists) {
-        	shareLists = new ShareLists();
-        }
-        return shareLists;
-    }
-
-    /**
-     * Stores/updates a ShareLists object in the ZoneConfig.
-     * 
-     * @param shareLists
-     */
-    @Override
-	public void setShareLists(ShareLists shareLists) {
-   		Binder top = RequestContextHolder.getRequestContext().getZone();
-   		getBinderModule().checkAccess(top, BinderOperation.manageConfiguration);
-		
-  		ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
-  		zoneConfig.setShareLists(shareLists);
     }
 }

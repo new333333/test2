@@ -36,7 +36,6 @@ import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -518,14 +517,20 @@ public class ExportHelper {
 		String fileName = filename8BitSingleByteOnly(attachment, SPropsUtil
 				.getBoolean("export.filename.8bitsinglebyte.only", true));
 
+		Set fileVersions = attachment.getFileVersions();
+		Iterator<VersionAttachment> versionIter = fileVersions.iterator();
+
 		String fileExt = EntityIndexUtils.getFileExtension(attachment
 				.getFileItem().getName());
 
 		// latest version
-		InputStream fileStream = null;
 
+		VersionAttachment vAttach = versionIter.next();
+
+		InputStream fileStream = null;
 		try {
-			fileStream = fileModule.readFile(binder, entity, attachment);
+			fileStream = fileModule.readFile(binder, entity,
+					vAttach);
 
 			// We have to use "/" instead of File.separator so the correct directory structure will be created in the zip file.
 			zipOut.putNextEntry(new ZipEntry(pathName + "/" + fileName));
@@ -563,57 +568,53 @@ public class ExportHelper {
 		}
 
 		// older versions, from highest to lowest
-		Set fileVersions = attachment.getFileVersions();
-		if (!fileVersions.isEmpty()) {
-			Iterator<VersionAttachment> versionIter = fileVersions.iterator();
-			VersionAttachment vAttach = versionIter.next();		//Skip the latest file - it was already output above
-			for (int i = 1; i < fileVersions.size(); i++) {
-				vAttach = versionIter.next();
-	
-				int versionNum = fileVersions.size() - i;
-	
-				fileStream = null;
-				try {
-					fileStream = fileModule.readFile(binder, entity,
-							vAttach);
+
+		for (int i = 1; i < fileVersions.size(); i++) {
+			vAttach = versionIter.next();
+
+			int versionNum = fileVersions.size() - i;
+
+			fileStream = null;
+			try {
+				fileStream = fileModule.readFile(binder, entity,
+						vAttach);
+
+				// We have to use "/" instead of File.separator so the correct directory structure will be created in the zip file.
+				zipOut.putNextEntry(new ZipEntry(pathName + "/"
+						+ fileName + ".versions" + "/" + versionNum
+						+ "." + fileExt));
+				FileUtil.copy(fileStream, zipOut);
+				zipOut.closeEntry();
+
+				Integer count = (Integer)reportMap.get(files);
+				reportMap.put(files, ++count);
+			} catch (Exception e) {
+				if (fileStream == null) {
+					//The file must not exist, so just skip it. This really isn't an error condition.
+				} else {
+					logger.error(e);
+					String eMsg = NLT.get("export.error.attachment") + " - " + binder.getPathName().toString() + 
+							", entryId=" + entity.getId().toString() + ", " + fileName;
+					logger.error(eMsg);
+					Integer c = (Integer)reportMap.get(errors);
+					reportMap.put(errors, ++c);
+					((List)reportMap.get(errorList)).add(eMsg);
 	
 					// We have to use "/" instead of File.separator so the correct directory structure will be created in the zip file.
 					zipOut.putNextEntry(new ZipEntry(pathName + "/"
 							+ fileName + ".versions" + "/" + versionNum
-							+ "." + fileExt));
-					FileUtil.copy(fileStream, zipOut);
+							+ "." + fileExt + ".error_message.txt"));
+					zipOut.write(NLT.get("export.error.attachment",
+							"Error processing this attachment").getBytes());
 					zipOut.closeEntry();
-	
-					Integer count = (Integer)reportMap.get(files);
-					reportMap.put(files, ++count);
-				} catch (Exception e) {
-					if (fileStream == null) {
-						//The file must not exist, so just skip it. This really isn't an error condition.
-					} else {
-						logger.error(e);
-						String eMsg = NLT.get("export.error.attachment") + " - " + binder.getPathName().toString() + 
-								", entryId=" + entity.getId().toString() + ", " + fileName;
-						logger.error(eMsg);
-						Integer c = (Integer)reportMap.get(errors);
-						reportMap.put(errors, ++c);
-						((List)reportMap.get(errorList)).add(eMsg);
-		
-						// We have to use "/" instead of File.separator so the correct directory structure will be created in the zip file.
-						zipOut.putNextEntry(new ZipEntry(pathName + "/"
-								+ fileName + ".versions" + "/" + versionNum
-								+ "." + fileExt + ".error_message.txt"));
-						zipOut.write(NLT.get("export.error.attachment",
-								"Error processing this attachment").getBytes());
-						zipOut.closeEntry();
-					}
 				}
-				finally {
-					try {
-						if(fileStream != null)
-							fileStream.close();
-					}
-					catch(IOException ignore) {}
+			}
+			finally {
+				try {
+					if(fileStream != null)
+						fileStream.close();
 				}
+				catch(IOException ignore) {}
 			}
 		}
 
@@ -1238,7 +1239,7 @@ public class ExportHelper {
 		List<String> newDefIds = new ArrayList<String>();
 
 		logger.debug("Unzipping to disk temporarily...");
-		String tempDir = deploy(zIn, reportMap);
+		String tempDir = deploy(zIn);
 		logger.debug("Unzipping completed");
 
 		try {
@@ -2159,32 +2160,24 @@ public class ExportHelper {
 					Integer count = (Integer)reportMap.get(files);
 					reportMap.put(files, ++count);
 				} catch (Exception e) {
+					logger.error(e);
 					Integer c = (Integer)reportMap.get(errors);
 					reportMap.put(errors, ++c);
-					((List)reportMap.get(errorList)).add(NLT.get("export.error.noVersionFile", new String[] {filename}));
+					((List)reportMap.get(errorList)).add(e.getLocalizedMessage() + " (" + filename + ")");
+					throw e;
 				}
 			}
 		}
 
 		try {
 			iStream = new FileInputStream(new File(href));
-			if (iStream != null) {
-				if(logger.isDebugEnabled())
-					logger.debug("Adding file " + filename + " to entry " + entryId + " in binder " + binderId);
-				folderModule.modifyEntry(binderId, entryId, fileDataItemName,
-						filename, iStream, options);
-				iStream.close();
-				Integer count = (Integer)reportMap.get(files);
-				reportMap.put(files, ++count);
-			} else {
-				Integer c = (Integer)reportMap.get(errors);
-				reportMap.put(errors, ++c);
-				((List)reportMap.get(errorList)).add(NLT.get("export.error.noAttachedFile", new String[] {filename}));
-			}
-		} catch (FileNotFoundException fnf) {
-			Integer c = (Integer)reportMap.get(errors);
-			reportMap.put(errors, ++c);
-			((List)reportMap.get(errorList)).add(NLT.get("export.error.noAttachedFile", new String[] {filename}));
+			if(logger.isDebugEnabled())
+				logger.debug("Adding file " + filename + " to entry " + entryId + " in binder " + binderId);
+			folderModule.modifyEntry(binderId, entryId, fileDataItemName,
+					filename, iStream, options);
+			iStream.close();
+			Integer count = (Integer)reportMap.get(files);
+			reportMap.put(files, ++count);
 		} catch (Exception e) {
 			logger.error(e);
 			Integer c = (Integer)reportMap.get(errors);
@@ -2472,7 +2465,7 @@ public class ExportHelper {
 				.randomUUID().toString());
 	}
 
-	private static String deploy(ZipInputStream zipIn, Map reportMap) throws IOException {
+	private static String deploy(ZipInputStream zipIn) throws IOException {
 		File tempDir = getTemporaryDirectory();
 
 		FileUtil.deltree(tempDir);
@@ -2486,31 +2479,20 @@ public class ExportHelper {
 				// extract file to proper temporary directory
 				File inflated;
 				String name = entry.getName();
-				try {
-					inflated = new File(tempDir, name);
-					if (entry.isDirectory()) {
-						inflated.mkdirs();
-						zipIn.closeEntry();
-						continue;
-					} else {
-						inflated.getParentFile().mkdirs();
-						FileOutputStream entryOut = new FileOutputStream(inflated);
-						FileCopyUtils.copy(new ZipEntryStream(zipIn), entryOut);
-						entryOut.close();
-					}
+				inflated = new File(tempDir, name);
+				if (entry.isDirectory()) {
+					inflated.mkdirs();
 					zipIn.closeEntry();
-				} catch(Exception e) {
-					Integer c = (Integer)reportMap.get(errors);
-					reportMap.put(errors, ++c);
-					((List)reportMap.get(errorList)).add(e.getMessage());
-
-					logger.error(e);
+					continue;
+				} else {
+					inflated.getParentFile().mkdirs();
+					FileOutputStream entryOut = new FileOutputStream(inflated);
+					FileCopyUtils.copy(new ZipEntryStream(zipIn), entryOut);
+					entryOut.close();
 				}
+				zipIn.closeEntry();
 			}
 		} catch(Exception e) {
-			Integer c = (Integer)reportMap.get(errors);
-			reportMap.put(errors, ++c);
-			((List)reportMap.get(errorList)).add(e.getMessage());
 			logger.error(e);
 		} finally {
 			zipIn.close();

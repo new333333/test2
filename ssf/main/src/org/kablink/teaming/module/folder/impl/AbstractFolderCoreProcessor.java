@@ -121,7 +121,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     	}
     	super.addEntry_fillIn(folder, entry, inputData, entryData, ctx);
     	fEntry.updateLastActivity(fEntry.getModification().getDate());
-    	if (!folder.isMirrored() && fEntry.isTop()) {
+    	if (fEntry.isTop()) {
     		Statistics statistics = getFolderStatistics(folder);
 	    	statistics.addStatistics(entry.getEntryDefId(), entry.getEntryDefDoc(), entry.getCustomAttributes());
 	    	setFolderStatistics(folder, statistics);
@@ -290,11 +290,9 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
  		super.modifyEntry_postFillIn(binder, entry, inputData, entryData, fileRenamesTo, ctx);
     	FolderEntry fEntry = (FolderEntry)entry;
 		fEntry.updateLastActivity(fEntry.getModification().getDate());
-		if(!binder.isMirrored()) {
-	    	Statistics statistics = getFolderStatistics((Folder)binder);
-		    statistics.addStatistics(entry.getEntryDefId(), entry.getEntryDefDoc(), entry.getCustomAttributes());
-		    setFolderStatistics((Folder)binder, statistics);
-		}
+    	Statistics statistics = getFolderStatistics((Folder)binder);
+	    statistics.addStatistics(entry.getEntryDefId(), entry.getEntryDefDoc(), entry.getCustomAttributes());
+	    setFolderStatistics((Folder)binder, statistics);
   }
     //no transaction
 	@Override
@@ -544,14 +542,10 @@ public Entry copyEntry(Binder binder, Entry source, Binder destination, String[]
  			myTags.add(tCopy);
  		}
     	if (entry.isTop()) {
-    		if (entry.getParentFolder().isUniqueTitles()) 
-    			getCoreDao().updateTitle(entry.getParentBinder(), entry, null, entry.getNormalTitle());
-    		
-    		if(!entry.getParentFolder().isMirrored()) {
-	    		Statistics statistics = getFolderStatistics(entry.getParentFolder());
-	    		statistics.addStatistics(entry.getEntryDefId(), entry.getEntryDefDoc(), entry.getCustomAttributes());
-	    		setFolderStatistics(entry.getParentFolder(), statistics);
-    		}
+    		if (entry.getParentFolder().isUniqueTitles()) getCoreDao().updateTitle(entry.getParentBinder(), entry, null, entry.getNormalTitle());
+    		Statistics statistics = getFolderStatistics(entry.getParentFolder());
+    		statistics.addStatistics(entry.getEntryDefId(), entry.getEntryDefDoc(), entry.getCustomAttributes());
+    		setFolderStatistics(entry.getParentFolder(), statistics);
     		
     		//Check if this entry is being added to a Filr folder
     		if (entry.getParentBinder().isMirrored() && entry.getParentBinder().isAclExternallyControlled()) {
@@ -665,19 +659,18 @@ public Entry copyEntry(Binder binder, Entry source, Binder destination, String[]
         Statistics statistics = getFolderStatistics(from);        
         statistics.deleteStatistics(entry.getEntryDefId(), entry.getEntryDefDoc(), entry.getCustomAttributes());
         setFolderStatistics(from, statistics);
-        if(!destination.isMirrored()) {
-	        statistics = getFolderStatistics((Folder)destination);
-	        statistics.addStatistics(entry.getEntryDefId(), entry.getEntryDefDoc(), entry.getCustomAttributes());
-	        setFolderStatistics((Folder)destination, statistics);
-        }
+        statistics = getFolderStatistics((Folder)destination);
+        statistics.addStatistics(entry.getEntryDefId(), entry.getEntryDefDoc(), entry.getCustomAttributes());
+        setFolderStatistics((Folder)destination, statistics);
 
     	User user = RequestContextHolder.getRequestContext().getUser();
 
         fEntry.setModification(new HistoryStamp(user));
         fEntry.incrLogVersion();
         //just log new location
-    	ChangeLog changes = ChangeLogUtils.create(fEntry, ChangeLog.MOVEENTRY);
-    	ChangeLogUtils.save(changes);
+    	ChangeLog changes = new ChangeLog(fEntry, ChangeLog.MOVEENTRY);
+    	changes.getEntityRoot();
+    	getCoreDao().save(changes);
 
     	List ids = new ArrayList();
     	for (int i=0; i<entries.size(); ++i) {
@@ -690,8 +683,9 @@ public Entry copyEntry(Binder binder, Entry source, Binder destination, String[]
             //just log new location
           	e.setModification(fEntry.getModification());
           	e.incrLogVersion();
-        	changes = ChangeLogUtils.create(e, ChangeLog.MOVEENTRY);
-        	ChangeLogUtils.save(changes);
+        	changes = new ChangeLog(e, ChangeLog.MOVEENTRY);
+        	changes.getEntityRoot();
+        	getCoreDao().save(changes);
          	ids.add(e.getId());
     	}
     	//add top entry to list of entries
@@ -1173,53 +1167,27 @@ protected void deleteBinder_postDelete(Binder binder, Map ctx) {
          
     //***********************************************************************************************************   
 
+
 	@Override
 	public ChangeLog processChangeLog(DefinableEntity entry, String operation) {
-		return processChangeLog(entry, operation, false, false);
-	}
-
-	@Override
-	public ChangeLog processChangeLog(DefinableEntity entry, String operation, boolean skipDbLog, boolean skipNotifyStatus) {
-		// Take care of ChangeLog
-		ChangeLog changes = null;
-		
-		if (entry instanceof Binder) {
-			changes = processChangeLog((Binder)entry, operation, skipDbLog);
-		}
-		else {
-			if(!skipDbLog) {
-				changes = ChangeLogUtils.createAndBuild(entry, operation);
-				Element element = changes.getEntityRoot();
-				//add folderEntry fields
-				if (entry instanceof FolderEntry) {
-					FolderEntry fEntry = (FolderEntry)entry;
-					XmlUtils.addProperty(element, ObjectKeys.XTAG_FOLDERENTRY_DOCNUMBER, fEntry.getDocNumber());
-					if (fEntry.getTopEntry() != null) XmlUtils.addProperty(element, ObjectKeys.XTAG_FOLDERENTRY_TOPENTRY, fEntry.getTopEntry().getId());
-					if (fEntry.getParentEntry() != null) XmlUtils.addProperty(element, ObjectKeys.XTAG_FOLDERENTRY_PARENTENTRY, fEntry.getParentEntry().getId());
-					if (!Validator.isNull(fEntry.getPostedBy())) XmlUtils.addProperty(element, ObjectKeys.XTAG_FOLDERENTRY_POSTEDBY, fEntry.getPostedBy());
-				} else if (entry instanceof Binder) {
-					if (operation.equals(ChangeLog.DELETEBINDER) || operation.equals(ChangeLog.PREDELETEBINDER)) {
-						//Add the path so it can be shown in the activity reports
-						XmlUtils.addProperty(element, ObjectKeys.XTAG_BINDER_PATH, ((Binder)entry).getPathName());
-					}
-				}
-				ChangeLogUtils.save(changes);
+		if (entry instanceof Binder) return processChangeLog((Binder)entry, operation);
+		ChangeLog changes = new ChangeLog(entry, operation);
+		Element element = ChangeLogUtils.buildLog(changes, entry);
+		//add folderEntry fields
+		if (entry instanceof FolderEntry) {
+			FolderEntry fEntry = (FolderEntry)entry;
+			if (!ChangeLog.DELETEENTRY.equals(operation)) {
+				NotifyStatus status = getCoreDao().loadNotifyStatus(fEntry.getParentFolder(), fEntry);
+				status.setLastModified(fEntry.getModification().getDate());
+				logger.debug("AbstractFolderCoreProcessor.processChangeLog( Operation:  " + operation + " ): NotifyStatus modified: "+ ", Entity: " + fEntry.getId() + " (" + fEntry.getTitle() + ")");
+				status.traceStatus(logger);
 			}
+			XmlUtils.addProperty(element, ObjectKeys.XTAG_FOLDERENTRY_DOCNUMBER, fEntry.getDocNumber());
+			if (fEntry.getTopEntry() != null) XmlUtils.addProperty(element, ObjectKeys.XTAG_FOLDERENTRY_TOPENTRY, fEntry.getTopEntry().getId());
+			if (fEntry.getParentEntry() != null) XmlUtils.addProperty(element, ObjectKeys.XTAG_FOLDERENTRY_PARENTENTRY, fEntry.getParentEntry().getId());
+			if (!Validator.isNull(fEntry.getPostedBy())) XmlUtils.addProperty(element, ObjectKeys.XTAG_FOLDERENTRY_POSTEDBY, fEntry.getPostedBy());
 		}
-		
-		// Take care of NotifyStatus
-		if(!skipNotifyStatus) {
-			if (entry instanceof FolderEntry) {
-				FolderEntry fEntry = (FolderEntry)entry;
-				if (!ChangeLog.DELETEENTRY.equals(operation)) {
-					NotifyStatus status = getCoreDao().loadNotifyStatus(fEntry.getParentFolder(), fEntry);
-					status.setLastModified(fEntry.getModification().getDate());
-					logger.debug("AbstractFolderCoreProcessor.processChangeLog( Operation:  " + operation + " ): NotifyStatus modified: "+ ", Entity: " + fEntry.getId() + " (" + fEntry.getTitle() + ")");
-					status.traceStatus(logger);
-				}
-			}
-		}
-
+		getCoreDao().save(changes);
 		return changes;
 	}
 	//***********************************************************************************************************

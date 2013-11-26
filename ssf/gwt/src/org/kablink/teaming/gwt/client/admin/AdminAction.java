@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -53,7 +53,6 @@ public enum AdminAction implements IsSerializable
 	CONFIGURE_HOME_PAGE( "Configure home page" ),
 	CONFIGURE_MOBILE_ACCESS( "Configure mobile access" ),
 	CONFIGURE_MOBILE_APPS( "Configure Mobile Apps" ),
-	CONFIGURE_NAME_COMPLETION( "Configure name completion settings" ),
 	CONFIGURE_ROLE_DEFINITIONS( "Configure role definitions" ),
 	CONFIGURE_SCHEDULE( "Configure weekend and holiday schedule" ),
 	CONFIGURE_SEARCH_INDEX( "Configure search index" ),
@@ -65,14 +64,12 @@ public enum AdminAction implements IsSerializable
 	LDAP_CONFIG( "LDAP configuration" ),
 	MANAGE_APPLICATIONS( "Manage applications" ),
 	MANAGE_APPLICATION_GROUPS( "Manage application groups" ),
-	MANAGE_DATABASE_PRUNE( "Manage database prune" ),
 	MANAGE_EXTENSIONS( "Manage extensions" ),
 	MANAGE_GROUPS( "Manage groups" ),
 	MANAGE_LICENSE( "Manage license" ),
 	MANAGE_NET_FOLDERS( "Manage net folders" ),
 	MANAGE_QUOTAS( "Manage quotas" ),
 	MANAGE_FILE_UPLOAD_LIMITS( "Manage file upload limits" ),
-	MANAGE_MOBILE_DEVICES( "Manage mobile devices" ),
 	MANAGE_RESOURCE_DRIVERS( "Manage resource drivers" ),
 	MANAGE_SHARE_ITEMS( "Manage share items" ),
 	MANAGE_USER_ACCOUNTS( "Manage user accounts" ),

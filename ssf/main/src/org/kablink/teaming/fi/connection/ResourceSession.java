@@ -118,7 +118,6 @@ public interface ResourceSession {
 	 * 
 	 * @param in input stream
 	 * @param size content size in byte
-	 * @param lastModTime last modification time or <code>null</code>
 	 * @throws FIException
 	 * @throws UncheckedIOException
 	 * @throws IllegalStateException
@@ -128,6 +127,7 @@ public interface ResourceSession {
 	/**
 	 * Create a directory. 
 	 * 
+	 * @param lastModTime last modification time or <code>null</code>
 	 * @throws FIException
 	 * @throws UncheckedIOException
 	 * @throws IllegalStateException

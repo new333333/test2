@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -41,11 +41,8 @@ import java.util.Set;
 import java.util.SortedSet;
 
 import org.kablink.teaming.ConfigurationException;
-import org.kablink.teaming.NotSupportedException;
 import org.kablink.teaming.UncheckedIOException;
 import org.kablink.teaming.domain.Binder;
-import org.kablink.teaming.domain.Binder.SyncScheduleOption;
-import org.kablink.teaming.domain.BinderState.FullSyncStats;
 import org.kablink.teaming.domain.Entry;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.Folder;
@@ -58,7 +55,6 @@ import org.kablink.teaming.domain.Subscription;
 import org.kablink.teaming.domain.Tag;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.fi.FIException;
-import org.kablink.teaming.fi.auth.AuthException;
 import org.kablink.teaming.jobs.ScheduleInfo;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.file.WriteFilesException;
@@ -66,6 +62,7 @@ import org.kablink.teaming.module.shared.InputDataAccessor;
 import org.kablink.teaming.search.IndexErrors;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.util.StatusTicket;
+
 
 /**
  * <code>FolderModule</code> provides folder-related operations that the caller
@@ -135,13 +132,7 @@ public interface FolderModule {
            return appliesToEntries;
        }
     }
-   
-   public enum FileSyncStatus {
-	   deleted, // The file has been deleted 
-	   modified, // The file has been modified
-	   nochange // No change
-   }
-   
+ 
    /**
     * Create an <code>FolderEntry</code> from the input data and add it to the specified
     * <code>Folder</code>.  
@@ -237,8 +228,6 @@ public interface FolderModule {
      */
     public FolderEntry copyEntry(Long folderId, Long entryId, Long destinationId, String[] toFileNames, Map options)
     	throws AccessControlException;
-    public void copyFolderEntries(Long sourceId, Long destinationId) throws NotSupportedException;
-    
     /**
      * Restores a <code>FolderEntry</code> and all of its replies.  Deleted mirrored resources also.
      * @param parentFolderId
@@ -700,7 +689,7 @@ public interface FolderModule {
 	 * @throws FIException
 	 * @throws UncheckedIOException
 	 */
-	public boolean fullSynchronize(Long folderId, Boolean dirOnly, StatusTicket statusTicket)
+	public boolean fullSynchronize(Long folderId, StatusTicket statusTicket)
 		throws AccessControlException, FIException, UncheckedIOException, ConfigurationException;
 	
 	public void setSynchronizationSchedule(ScheduleInfo config, Long folderId);
@@ -710,9 +699,7 @@ public interface FolderModule {
 	
 	public Long getZoneEntryId(Long entryId, String zoneUUID);
 	
-    public boolean jitSynchronize(Folder folder) throws AuthException;
-    
-    public FileSyncStatus fileSynchronize(FolderEntry fileEntry) throws FIException, UncheckedIOException, ConfigurationException;
+    public boolean jitSynchronize(Folder folder);
 
     public Date getLastFullSyncCompletionTime(Long folderId);
     /**
@@ -723,90 +710,12 @@ public interface FolderModule {
      */
     public void indexFileContentForNetFolder(Folder netFolderRoot);
 
-	public void modifyNetFolder(Long folderId, String netFolderName, String rootName, String path, Boolean isHomeDir, boolean indexContent, SyncScheduleOption syncScheduleOption, Boolean fullSyncDirOnly )
+	public void modifyNetFolder(Long folderId, String netFolderName, String rootName, String path, Boolean isHomeDir, boolean indexContent)
 			throws AccessControlException, WriteFilesException, WriteEntryDataException;
 
 	public void deleteNetFolder(Long folderId, boolean deleteSource);
 	
     public void syncAclForNetFolderRoot(Folder netFolderRoot);
 
-    public Folder createNetFolder(Long templateId, Long parentBinderId, String name, User owner, String rootName, String path, Boolean isHomeDir, boolean indexContent, SyncScheduleOption syncScheduleOption, Boolean fullSyncDirOnly ) throws AccessControlException, WriteFilesException, WriteEntryDataException;
-    
-    /**
-     * Get an object containing information about the latest full synchronization run on the specified net folder.
-     * If no such object exists, this will return <code>null</code>.
-     * 
-     * @param netFolderId
-     * @return
-     */
-    public FullSyncStats getNetFolderFullSyncStats(Long netFolderId);
-    
-    /**
-     * Request full synchronization currently in progress on the specified net folder to be stopped as soon as possible.
-     * If the specified net folder has no full sync currently running on it, then this call will have no effect.
-     * Note that request to stop existing sync run will NOT affect any future run that has not yet started.
-     * 
-     * @param netFolderId
-     * @return <code>true</code> if full sync is currently in progress on the specified net folder 
-     * and no stop request is already in place, <code>false</code> otherwise.
-     */
-    public boolean requestNetFolderFullSyncStop(Long netFolderId);
-    
-    /**
-     * Indicate that the system must start executing a full synchronization on the specified net folder
-     * as soon as necessary system resources becomes available to do so. 
-     * 
-     * @param netFolderId
-     * @return <code>true</code> if the net folder is currently in neither ready nor started state, 
-     * <code>false</code> otherwise.
-     */
-    public boolean enqueueFullSynchronize(Long netFolderId);
-    
-    /**
-     * If the net folder is currently waiting for necessary system resources to start executing a full
-     * synchronization, then cancel the pending execution.
-     * If the net folder is in any other state including started state, this method has no affect.
-     * 
-     * @param netFolderId
-     * @return <code>true</code> if the net folder was in ready state and has successfully
-     * been dequeued, <code>false</code> otherwise.
-     */
-    public boolean dequeueFullSynchronize(Long netFolderId);
-
-	/**
-	 * Create a cloud folder from the given data.
-	 * 
-	 * @param templateId
-	 * @param parentBinderId
-	 * @param name
-	 * @param rootName
-	 * 
-	 * @return
-	 * 
-	 * @throws AccessControlException
-	 * @throws WriteFilesException
-	 * @throws WriteEntryDataException
-	 */
-    public Folder createCloudFolder(Long templateId, Long parentBinderId, String name, User owner, String rootName) throws AccessControlException, WriteFilesException, WriteEntryDataException;
-    
-	/**
-	 * Delete the given cloud folder.
-	 * 
-	 * @param folderId
-	 * @param deleteSource
-	 */
-	public void deleteCloudFolder(Long folderId, boolean deleteSource);
-	
-	/**
-	 * Modifies a cloud folder.
-	 * 
-	 * @param folderId
-	 * @param cloudFolderName
-	 * @param rootName
-	 * 
-	 * @throws AccessControlException
-	 * @throws WriteFilesException
-	 * @throws WriteEntryDataException
-	 */
-	public void modifyCloudFolder(Long folderId, String cloudFolderName, String rootName) throws AccessControlException, WriteFilesException, WriteEntryDataException;
+    public Folder createNetFolder(Long templateId, Long parentBinderId, String name, User owner, String rootName, String path, Boolean isHomeDir, boolean indexContent) throws AccessControlException, WriteFilesException, WriteEntryDataException;
 }

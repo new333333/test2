@@ -46,12 +46,11 @@ import org.kablink.teaming.gwt.client.util.CommentsInfo;
 import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.whatsnew.ActionsPopupMenu;
-import org.kablink.teaming.gwt.client.whatsnew.ActionsPopupMenu.ActionMenuItem;
 import org.kablink.teaming.gwt.client.whatsnew.ActivityStreamComment;
 import org.kablink.teaming.gwt.client.whatsnew.ActivityStreamCommentsContainer;
 import org.kablink.teaming.gwt.client.whatsnew.ActivityStreamCtrl;
+import org.kablink.teaming.gwt.client.whatsnew.ActionsPopupMenu.ActionMenuItem;
 import org.kablink.teaming.gwt.client.whatsnew.ActivityStreamCtrl.ActivityStreamCtrlClient;
-import org.kablink.teaming.gwt.client.whatsnew.ActivityStreamCtrl.ActivityStreamCtrlUsage;
 import org.kablink.teaming.gwt.client.whatsnew.ActivityStreamCtrl.DescViewFormat;
 
 import com.google.gwt.core.client.Scheduler;
@@ -385,7 +384,7 @@ public class CommentsWidget extends Composite
 			
 			// No, create one.  The only reason we need to create an ActivityStreamCtrl
 			// is because the ActivityStreamComment object needs one.
-			ActivityStreamCtrl.createAsync( ActivityStreamCtrlUsage.COMMENTS, false, actionsMenu, new ActivityStreamCtrlClient()
+			ActivityStreamCtrl.createAsync( false, actionsMenu, new ActivityStreamCtrlClient()
 			{			
 				@Override
 				public void onUnavailable()

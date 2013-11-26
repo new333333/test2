@@ -38,6 +38,8 @@
 			
 			<c:if test="${ss_pageNumber != 1 || ssPageEndIndex != ssTotalRecords}">
 				<span class="ss_go_to_page"><ssf:nlt tag="folder.GoToPage"/></span>
+				<input class="form-text" type="text" size="4" id="ssGoToPageInput${ss_results_navigation_count}${renderResponse.namespace}"/>
+				<a class="ss_tinyButton" onclick="ss_goToSearchResultPageByInputValue('ssGoToPageInput${ss_results_navigation_count}${renderResponse.namespace}'); return false;" href="javascript: ;"><ssf:nlt tag="button.go"/></a>
 			</c:if>
 			<c:if test="${empty isDashboard || isDashboard == 'no'}">
 				<c:if test="${ss_pageNumber > 1}">

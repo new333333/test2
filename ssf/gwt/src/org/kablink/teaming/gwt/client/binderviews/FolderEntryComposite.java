@@ -38,29 +38,26 @@ import java.util.List;
 import org.kablink.teaming.gwt.client.binderviews.FolderEntryCookies.Cookie;
 import org.kablink.teaming.gwt.client.binderviews.ToolPanelBase.ToolPanelClient;
 import org.kablink.teaming.gwt.client.binderviews.util.BinderViewsHelper;
-import org.kablink.teaming.gwt.client.binderviews.util.DeleteEntitiesHelper.DeleteEntitiesCallback;
-import org.kablink.teaming.gwt.client.event.ChangeEntryTypeSelectedEntitiesEvent;
+import org.kablink.teaming.gwt.client.binderviews.util.DeletePurgeEntriesHelper.DeletePurgeEntriesCallback;
+import org.kablink.teaming.gwt.client.event.ChangeEntryTypeSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.ContributorIdsReplyEvent;
 import org.kablink.teaming.gwt.client.event.ContributorIdsRequestEvent;
-import org.kablink.teaming.gwt.client.event.CopyPublicLinkSelectedEntitiesEvent;
-import org.kablink.teaming.gwt.client.event.CopySelectedEntitiesEvent;
-import org.kablink.teaming.gwt.client.event.DeleteSelectedEntitiesEvent;
-import org.kablink.teaming.gwt.client.event.EmailPublicLinkSelectedEntitiesEvent;
+import org.kablink.teaming.gwt.client.event.CopySelectedEntriesEvent;
+import org.kablink.teaming.gwt.client.event.DeleteSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.EventsHandledBySourceMarker;
 import org.kablink.teaming.gwt.client.event.FolderEntryActionCompleteEvent;
 import org.kablink.teaming.gwt.client.event.InvokeEditInPlaceEvent;
-import org.kablink.teaming.gwt.client.event.LockSelectedEntitiesEvent;
-import org.kablink.teaming.gwt.client.event.MailToPublicLinkEntityEvent;
-import org.kablink.teaming.gwt.client.event.MarkReadSelectedEntitiesEvent;
-import org.kablink.teaming.gwt.client.event.MarkUnreadSelectedEntitiesEvent;
-import org.kablink.teaming.gwt.client.event.MoveSelectedEntitiesEvent;
-import org.kablink.teaming.gwt.client.event.ShareSelectedEntitiesEvent;
+import org.kablink.teaming.gwt.client.event.LockSelectedEntriesEvent;
+import org.kablink.teaming.gwt.client.event.MarkReadSelectedEntriesEvent;
+import org.kablink.teaming.gwt.client.event.MarkUnreadSelectedEntriesEvent;
+import org.kablink.teaming.gwt.client.event.MoveSelectedEntriesEvent;
+import org.kablink.teaming.gwt.client.event.PurgeSelectedEntriesEvent;
+import org.kablink.teaming.gwt.client.event.ShareSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.ShowViewPermalinksEvent;
-import org.kablink.teaming.gwt.client.event.SubscribeSelectedEntitiesEvent;
+import org.kablink.teaming.gwt.client.event.SubscribeSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
-import org.kablink.teaming.gwt.client.event.UnlockSelectedEntitiesEvent;
-import org.kablink.teaming.gwt.client.event.ZipAndDownloadSelectedFilesEvent;
+import org.kablink.teaming.gwt.client.event.UnlockSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingDataTableImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
@@ -70,6 +67,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.GetFolderEntryDetailsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetNextPreviousFolderEntryInfoCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.rpc.shared.ViewFolderEntryInfoRpcResponseData;
+import org.kablink.teaming.gwt.client.util.CommentAddedCallback;
 import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.FolderEntryDetails;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
@@ -78,7 +76,6 @@ import org.kablink.teaming.gwt.client.util.ViewFolderEntryInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 import org.kablink.teaming.gwt.client.widgets.ContentControl;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
-import org.kablink.teaming.gwt.client.widgets.VibeFlexTable;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 
 import com.google.gwt.core.client.GWT;
@@ -86,11 +83,11 @@ import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.resources.client.ImageResource;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.FlexTable.FlexCellFormatter;
-import com.google.gwt.user.client.ui.FormPanel;
-import com.google.gwt.user.client.ui.HasVerticalAlignment;
+import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
@@ -106,69 +103,58 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
  * @author drfoster@novell.com
  */
 public class FolderEntryComposite extends ResizeComposite	
-	implements EventsHandledBySourceMarker, FolderEntryCallback, ToolPanelReady,
+	implements CommentAddedCallback, EventsHandledBySourceMarker, FolderEntryCallback, ToolPanelReady,
 		// Event handlers implemented by this class.
-		ChangeEntryTypeSelectedEntitiesEvent.Handler,
+		ChangeEntryTypeSelectedEntriesEvent.Handler,
 		ContributorIdsRequestEvent.Handler,
-		CopyPublicLinkSelectedEntitiesEvent.Handler,
-		CopySelectedEntitiesEvent.Handler,
-		DeleteSelectedEntitiesEvent.Handler,
-		EmailPublicLinkSelectedEntitiesEvent.Handler,
+		CopySelectedEntriesEvent.Handler,
+		DeleteSelectedEntriesEvent.Handler,
 		FolderEntryActionCompleteEvent.Handler,
 		InvokeEditInPlaceEvent.Handler,
-		LockSelectedEntitiesEvent.Handler,
-		MailToPublicLinkEntityEvent.Handler,
-		MarkReadSelectedEntitiesEvent.Handler,
-		MarkUnreadSelectedEntitiesEvent.Handler,
-		MoveSelectedEntitiesEvent.Handler,
-		ShareSelectedEntitiesEvent.Handler,
+		LockSelectedEntriesEvent.Handler,
+		MarkReadSelectedEntriesEvent.Handler,
+		MarkUnreadSelectedEntriesEvent.Handler,
+		MoveSelectedEntriesEvent.Handler,
+		PurgeSelectedEntriesEvent.Handler,
+		ShareSelectedEntriesEvent.Handler,
 		ShowViewPermalinksEvent.Handler,
-		SubscribeSelectedEntitiesEvent.Handler,
-		UnlockSelectedEntitiesEvent.Handler,
-		ZipAndDownloadSelectedFilesEvent.Handler
+		SubscribeSelectedEntriesEvent.Handler,
+		UnlockSelectedEntriesEvent.Handler
 {
+	private boolean							m_commentsVisible;			//
 	private boolean							m_compositeReady;			// Set true once the composite and all its components are ready.
 	private boolean							m_isDialog;					// true -> The composite is hosted in a dialog.  false -> It's hosted in a view.
-	private boolean							m_sidebarVisible;			// true -> The sidebar is visible.  false -> It's not.
-	private FlexCellFormatter				m_contentGridFCF;			// Used to format cells in m_contentGridFCF.
+	private FolderEntryComments				m_commentsArea;				//
 	private FolderEntryDetails				m_fed;						// Details about the folder entry being viewed.
-	private FolderEntryDocument				m_documentArea;				// The document portion of the view.
-	private FolderEntryHeader				m_headerArea;				// The header   portion of the view.
-	private FolderEntryMenu					m_menuArea;					// The menu     portion of the view.
-	private FolderEntrySidebar				m_sidebarArea;				// The sidebar  portion of the view.
+	private FolderEntryDocument				m_documentArea;				//
+	private FolderEntryHeader				m_headerArea;				//
+	private FolderEntryMenu					m_menuArea;					//
 	private FooterPanel						m_footerPanel;				// Footer at the bottom of the view with the permalink, ...
-	private FormPanel						m_downloadForm;				// A <FORM> used for download URLs.
 	private GwtTeamingDataTableImageBundle	m_images;					// Access to Vibe's images.
 	private GwtTeamingMessages				m_messages;					// Access to Vibe's messages.
+	private Image							m_commentsSliderImg;		//
+	private InlineLabel 					m_commentsHeader;			//
 	private int								m_readyComponents;			// Components that are ready, incremented as they callback.
 	private Label							m_caption;					// The text on the left of the caption bar. 
 	private List<HandlerRegistration>		m_registeredEventHandlers;	// Event handlers that are currently registered.
 	private ViewReady						m_viewReady;				// Stores a ViewReady created for the classes that extends it.
-	private VibeFlexTable					m_contentGrid;				// A <TABLE> containing the content portions of the view (everything but the sidebar.)
 	private VibeFlowPanel 					m_captionImagePanel;		// A panel holding an image in the caption, if one is required.
 	private VibeFlowPanel					m_contentPanel;				// The panel containing the composite's main content.
 	private VibeFlowPanel					m_rootPanel;				// The panel containing everything about the composite.
 	private ViewFolderEntryInfo				m_vfei;						// The view information for the folder entry being viewed.
 
-	private final static int MINIMUM_CONTENT_HEIGHT		= 150;	// The minimum height (in pixels) of the composite's content  panel.
-	private final static int MINIMUM_DOCUMENT_HEIGHT	=  50;	// The minimum height (in pixels) of the composite's document area.
-	public  final static int MINIMUM_SHARING_HEIGHT		= 100;	// The minimum height (in pixels) of the sidebar's sharing area.
+	private final static int MINIMUM_CONTENT_HEIGHT		= 150;	// The minimum height (in pixels) of the composite's content panel.
+	private final static int MINIMUM_DOCUMENT_HEIGHT	=  50;
 	private final static int FOOTER_ADJUST_DLG			=  20;	// Height adjustment required for adequate spacing below the footer when hosted in a dialog.
 	private final static int FOOTER_ADJUST_VIEW			=  30;	// Height adjustment required for adequate spacing below the footer when hosted in a view.
 	
-	private final static int CONTENT_ROW	= 0;	// Row    index in m_contentGrid for the content.
-	private final static int CONTENT_CELL	= 0;	// Column index in m_contentGrid for the content.
-	private final static int SIDEBAR_CELL	= 1;	// Column index in m_contentGrid for the sidebar.
-	
-	// Number of components to coordinate during construction:
+	// Number of components to coordinate with during construction:
 	// - Header;
 	// - Menu;
 	// - Document;
-	// - Sidebar;
-	// - Comments Manager (within sidebar);
-	// - Sharing  Manager (within sidebar); and
+	// - Comments; and
 	// - Footer.
-	private final static int FOLDER_ENTRY_COMPONENTS = 7;	//
+	private final static int FOLDER_ENTRY_COMPONENTS = 5;	//
 	
 	// The following is the ID/name of the <IFRAME> used to run the
 	// edit-in-place editor via an applet.
@@ -178,27 +164,23 @@ public class FolderEntryComposite extends ResizeComposite
 	// The following defines the TeamingEvents that are handled by
 	// this class.  See EventHelper.registerEventHandlers() for how
 	// this array is used.
-	private final static TeamingEvents[] REGISTERED_EVENTS = new TeamingEvents[] {
-		TeamingEvents.CHANGE_ENTRY_TYPE_SELECTED_ENTITIES,
+	private TeamingEvents[] m_registeredEvents = new TeamingEvents[] {
+		TeamingEvents.CHANGE_ENTRY_TYPE_SELECTED_ENTRIES,
 		TeamingEvents.CONTRIBUTOR_IDS_REQUEST,
-		TeamingEvents.COPY_PUBLIC_LINK_SELECTED_ENTITIES,
-		TeamingEvents.COPY_SELECTED_ENTITIES,
-		TeamingEvents.DELETE_SELECTED_ENTITIES,
-		TeamingEvents.EMAIL_PUBLIC_LINK_SELECTED_ENTITIES,
+		TeamingEvents.COPY_SELECTED_ENTRIES,
+		TeamingEvents.DELETE_SELECTED_ENTRIES,
 		TeamingEvents.FOLDER_ENTRY_ACTION_COMPLETE,
 		TeamingEvents.INVOKE_EDIT_IN_PLACE,
-		TeamingEvents.LOCK_SELECTED_ENTITIES,
-		TeamingEvents.MAILTO_PUBLIC_LINK_ENTITY,
-		TeamingEvents.MARK_READ_SELECTED_ENTITIES,
-		TeamingEvents.MARK_UNREAD_SELECTED_ENTITIES,
-		TeamingEvents.MOVE_SELECTED_ENTITIES,
-		TeamingEvents.SHARE_SELECTED_ENTITIES,
+		TeamingEvents.LOCK_SELECTED_ENTRIES,
+		TeamingEvents.MARK_READ_SELECTED_ENTRIES,
+		TeamingEvents.MARK_UNREAD_SELECTED_ENTRIES,
+		TeamingEvents.MOVE_SELECTED_ENTRIES,
+		TeamingEvents.PURGE_SELECTED_ENTRIES,
+		TeamingEvents.SHARE_SELECTED_ENTRIES,
 		TeamingEvents.SHOW_VIEW_PERMALINKS,
-		TeamingEvents.SUBSCRIBE_SELECTED_ENTITIES,
-		TeamingEvents.UNLOCK_SELECTED_ENTITIES,
-		TeamingEvents.ZIP_AND_DOWNLOAD_SELECTED_FILES,
+		TeamingEvents.SUBSCRIBE_SELECTED_ENTRIES,
+		TeamingEvents.UNLOCK_SELECTED_ENTRIES,
 	};
-	
 	/*
 	 * Constructor method.
 	 * 
@@ -215,10 +197,9 @@ public class FolderEntryComposite extends ResizeComposite
 		m_viewReady = viewReady;
 		
 		// ...initialize the data members requiring it...
-		m_isDialog       = (null != dialog);
-		m_images         = GwtTeaming.getDataTableImageBundle();
-		m_messages       = GwtTeaming.getMessages();
-		m_sidebarVisible = FolderEntryCookies.getBooleanCookieValue(Cookie.SIDEBAR_VISIBLE, true);	// true -> Defaults to visible.
+		m_isDialog = (null != dialog);
+		m_images   = GwtTeaming.getDataTableImageBundle();
+		m_messages = GwtTeaming.getMessages();
 
 		// ...create the base content panels...
 		m_rootPanel = new VibeFlowPanel();
@@ -227,16 +208,7 @@ public class FolderEntryComposite extends ResizeComposite
 		createCaption(m_rootPanel, ((null == dialog) ? null : dialog.getHeaderPanel()));
 		m_contentPanel = new VibeFlowPanel();
 		m_contentPanel.addStyleName("vibe-feComposite-contentPanel");
-		m_contentGrid = new VibeFlexTable();
-		m_contentGrid.setCellPadding(0);
-		m_contentGrid.setCellSpacing(0);
-		m_contentGridFCF = m_contentGrid.getFlexCellFormatter();
-		m_contentGrid.setWidget(              CONTENT_ROW, CONTENT_CELL, m_contentPanel                );
-		m_contentGridFCF.setWidth(            CONTENT_ROW, CONTENT_CELL, "100%"                        );
-		m_contentGridFCF.setVerticalAlignment(CONTENT_ROW, CONTENT_CELL, HasVerticalAlignment.ALIGN_TOP);
-		m_rootPanel.add(m_contentGrid);
-		m_downloadForm = DownloadPanel.createDownloadForm();
-		m_contentPanel.add(m_downloadForm);
+		m_rootPanel.add(m_contentPanel);
 		initWidget(m_rootPanel);
 
 		// ...and continue building the composite.
@@ -253,7 +225,7 @@ public class FolderEntryComposite extends ResizeComposite
 			// Yes!  Tell the view and resize as appropriate.
 			m_compositeReady = true;
 			m_viewReady.viewReady();
-			onResizeAsync(FolderViewBase.INITIAL_RESIZE_DELAY);
+			onResizeAsync();
 		}
 	}
 
@@ -306,12 +278,32 @@ public class FolderEntryComposite extends ResizeComposite
 		container.add(m_caption);
 
 		// Create the widgets that appear at the right end of the caption.
-		createCaptionRight(container);
+		createCaptionComments(container);
+		createCaptionRight(   container);
 
 		// Finally, add the caption panel to the root panel.
 		rootPanel.add(container);
 	}
 
+	/**
+	 * Called when a comment is added to the entry.
+	 * 
+	 * Implements the CommentAddedCallback.commentAdded() method.
+	 */
+	@Override
+	public void commentAdded(Object callbackData) {
+		// Update the count in the header.
+		int commentsCount = (m_fed.getComments().getCommentsCount() + 1);
+		m_fed.getComments().setCommentsCount(commentsCount);
+		setCommentsCount(commentsCount);
+
+		// If the comments widget is not currently visible...
+		if (!m_commentsVisible) {
+			// ...show it.
+			toggleCommentsVisibility();
+		}
+	}
+	
 	/*
 	 * Creates a close button in the caption for non-dialog hosts.
 	 */
@@ -340,13 +332,58 @@ public class FolderEntryComposite extends ResizeComposite
 			closePanel.add(close);
 			
 			// ...and an 'X' image to close it.
-			Image closeX = GwtClientHelper.buildImage(m_images.closeBorder().getSafeUri().asString());
+			Image closeX = GwtClientHelper.buildImage(m_images.closeX());
 			closeX.addStyleName("vibe-feComposite-closeImg");
 			closeX.addClickHandler(closeClick);
 			closePanel.add(closeX);
 		}
 	}
 	
+	/*
+	 * Creates a panel that contains the comments portion of the caption.
+	 */
+	private void createCaptionComments(Panel container) {
+		// What's the visibility state for comments on this entry?
+		m_commentsVisible = FolderEntryCookies.getBooleanCookieValue(Cookie.COMMENTS_VISIBLE, m_vfei.getEntityId(), false);
+
+		// Create the outer panel for the comment caption...
+		VibeFlowPanel outerPanel = new VibeFlowPanel();
+		outerPanel.addStyleName("vibe-feComposite-commentsHeadOuter");
+		container.add(outerPanel);
+
+		// ...add an anchor to it so that we can make it clickable...
+		Anchor commentsAnchor = new Anchor();
+		commentsAnchor.addStyleName("cursorPointer");
+		commentsAnchor.addClickHandler(new ClickHandler() {
+			@Override
+			public void onClick(ClickEvent event) {
+				toggleCommentsVisibility();
+			}
+		});
+		outerPanel.add(commentsAnchor);
+
+		// ...add the inner panel to the anchor...
+		VibeFlowPanel innerPanel = new VibeFlowPanel();
+		innerPanel.addStyleName("vibe-feComposite-commentsHeadInner blend2-c");
+		commentsAnchor.getElement().appendChild(innerPanel.getElement());
+
+		// ...add the title panel to the inner panel...
+		VibeFlowPanel titlePanel = new VibeFlowPanel();
+		titlePanel.addStyleName("vibe-feComposite-commentsHeadTitle");
+		innerPanel.add(titlePanel);
+
+		// ...add the slider image to the title panel...
+		ImageResource sliderImg = (m_commentsVisible ? m_images.slideUp() : m_images.slideDown());
+		m_commentsSliderImg = GwtClientHelper.buildImage(sliderImg.getSafeUri().asString());
+		m_commentsSliderImg.addStyleName("vibe-feComposite-commentsHeadSlider");
+		titlePanel.add(m_commentsSliderImg);
+
+		// ...and finally, add the label to the title panel.  Note that
+		// ...its content will be set once we're fully initialized.
+		m_commentsHeader = new InlineLabel();
+		titlePanel.add(m_commentsHeader);
+	}
+
 	/*
 	 * Creates the widgets used to navigate between entries being
 	 * viewed. 
@@ -435,14 +472,14 @@ public class FolderEntryComposite extends ResizeComposite
 	 * Navigate the entry viewer to the given ViewFolderEntryInfo.
 	 * 
 	 * Implements the FolderEntryCallback.doNavigate() method.
-	 * 
-	 * @param vfei
 	 */
 	@Override
 	public void doNavigate(ViewFolderEntryInfo vfei) {
 		m_vfei = vfei;
 		m_caption.setText(m_vfei.getTitle());
-		m_sidebarArea.doNavigate(m_vfei.getEntityId());
+		if (m_commentsVisible != FolderEntryCookies.getBooleanCookieValue(Cookie.COMMENTS_VISIBLE, m_vfei.getEntityId(), false)) {
+			toggleCommentsVisibility();
+		}
 		reloadFolderEntryViewer(false);	// false -> Not part of a refresh.
 	}
 	
@@ -494,18 +531,6 @@ public class FolderEntryComposite extends ResizeComposite
 		});
 	}
 
-	/**
-	 * Returns the EntityId of folder entry being viewed.
-	 * 
-	 * Implements the FolderEntryCallback.getEntityId() method.
-	 * 
-	 * @param vfei
-	 */
-	@Override
-	public EntityId getEntityId() {
-		return m_vfei.getEntityId();
-	}
-
 	/*
 	 * Returns the footer adjustment to use for the content panel.
 	 */
@@ -530,15 +555,6 @@ public class FolderEntryComposite extends ResizeComposite
 			GwtClientHelper.hasItems(eidList) &&
 			(1 == eidList.size()) &&
 			isCompositeEntry(eidList.get(0)));
-	}
-	
-	/**
-	 * Implements the FolderEntryCallback.isSidebarVisible()
-	 * method.
-	 */
-	@Override
-	public boolean isSidebarVisible() {
-		return m_sidebarVisible;
 	}
 	
 	/*
@@ -625,18 +641,32 @@ public class FolderEntryComposite extends ResizeComposite
 	 * Synchronously loads the next part of the composite.
 	 */
 	private void loadPart3Now() {
-		// Create and add the various components to the composite.
-		m_headerArea     = new FolderEntryHeader(  this, m_fed                  ); m_contentPanel.add(m_headerArea  );
-		m_menuArea       = new FolderEntryMenu(    this, m_fed.getToolbarItems()); m_contentPanel.add(m_menuArea    );
-		m_documentArea   = new FolderEntryDocument(this, m_fed                  ); m_contentPanel.add(m_documentArea);
-		m_sidebarArea    = new FolderEntrySidebar( this, m_fed                  );
-		m_contentGrid.setWidget(              CONTENT_ROW, SIDEBAR_CELL, m_sidebarArea                 );
-		m_contentGridFCF.setHeight(           CONTENT_ROW, SIDEBAR_CELL, "100%"                        );
-		m_contentGridFCF.setVerticalAlignment(CONTENT_ROW, SIDEBAR_CELL, HasVerticalAlignment.ALIGN_TOP);
+		// Store the current comment count in the comments header...
+		setCommentsCount(m_fed.getComments().getCommentsCount());
+		
+		// ...and create and add the various components to the
+		// ...composite.
+		m_headerArea   = new FolderEntryHeader(  this, m_fed                    ); m_contentPanel.add(m_headerArea  );
+		m_menuArea     = new FolderEntryMenu(    this, m_fed.getToolbarItems()  ); m_contentPanel.add(m_menuArea    );
+		m_documentArea = new FolderEntryDocument(this, m_fed                    ); m_contentPanel.add(m_documentArea);
+		m_commentsArea = new FolderEntryComments(this, m_fed.getComments(), this); m_contentPanel.add(m_commentsArea);
+		if (!m_commentsVisible) {
+			m_commentsArea.setCommentsVisible(false);
+			Timer timer = new Timer() {
+				@Override
+				public void run() {
+					// We do this again 1/2 second later to ensure it
+					// gets hidden after its fully initialized.  On the
+					// first display, sometimes it doesn't stay hidden.
+					m_commentsArea.setCommentsVisible(false);
+				}
+			};
+			timer.schedule(500);
+		}
 	}
 
 	/**
-	 * Called when the composite is attached.
+	 * Called when the data table is attached.
 	 * 
 	 * Overrides the Widget.onAttach() method.
 	 */
@@ -674,30 +704,30 @@ public class FolderEntryComposite extends ResizeComposite
 	}
 	
 	/**
-	 * Handles CopySelectedEntitiesEvent's received by this class.
+	 * Handles CopySelectedEntriesEvent's received by this class.
 	 * 
-	 * Implements the CopySelectedEntitiesEvent.Handler.onCopySelectedEntities() method.
+	 * Implements the CopySelectedEntriesEvent.Handler.onCopySelectedEntries() method.
 	 * 
 	 * @param event
 	 */
 	@Override
-	public void onCopySelectedEntities(CopySelectedEntitiesEvent event) {
+	public void onCopySelectedEntries(CopySelectedEntriesEvent event) {
 		// Is the event targeted to this entry?
 		List<EntityId> copiedEntities = event.getSelectedEntities();
 		if (isCompositeEntry(copiedEntities)) {
 			// Yes!  Run the copy on it.
-			onCopySelectedEntitiesAsync(copiedEntities);
+			onCopySelectedEntriesAsync(copiedEntities);
 		}
 	}
 	
 	/*
 	 * Asynchronously handles copying the folder entry.
 	 */
-	private void onCopySelectedEntitiesAsync(final List<EntityId> copiedEntities) {
+	private void onCopySelectedEntriesAsync(final List<EntityId> copiedEntities) {
 		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
-				onCopySelectedEntitiesNow(copiedEntities);
+				onCopySelectedEntriesNow(copiedEntities);
 			}
 		});
 	}
@@ -705,7 +735,7 @@ public class FolderEntryComposite extends ResizeComposite
 	/*
 	 * Synchronously handles copying the folder entry.
 	 */
-	private void onCopySelectedEntitiesNow(List<EntityId> copiedEntities) {
+	private void onCopySelectedEntriesNow(List<EntityId> copiedEntities) {
 		BinderViewsHelper.copyEntries(
 			copiedEntities,
 			new FolderEntryActionCompleteEvent(
@@ -714,30 +744,30 @@ public class FolderEntryComposite extends ResizeComposite
 	}
 	
 	/**
-	 * Handles ChangeEntryTypeSelectedEntitiesEvent's received by this class.
+	 * Handles ChangeEntryTypeSelectedEntriesEvent's received by this class.
 	 * 
-	 * Implements the ChangeEntryTypeSelectedEntitiesEvent.Handler.onChangeEntryTypeSelectedEntities() method.
+	 * Implements the ChangeEntryTypeSelectedEntriesEvent.Handler.onChangeEntryTypeSelectedEntries() method.
 	 * 
 	 * @param event
 	 */
 	@Override
-	public void onChangeEntryTypeSelectedEntities(ChangeEntryTypeSelectedEntitiesEvent event) {
+	public void onChangeEntryTypeSelectedEntries(ChangeEntryTypeSelectedEntriesEvent event) {
 		// Is the event targeted to this entry?
 		List<EntityId> changedEntities = event.getSelectedEntities();
 		if (isCompositeEntry(changedEntities)) {
 			// Yes!  Run the change on it.
-			onChangeEntryTypeSelectedEntitiesAsync(changedEntities);
+			onChangeEntryTypeSelectedEntriesAsync(changedEntities);
 		}
 	}
 	
 	/*
 	 * Asynchronously handles changing the folder entry type.
 	 */
-	private void onChangeEntryTypeSelectedEntitiesAsync(final List<EntityId> changedEntities) {
+	private void onChangeEntryTypeSelectedEntriesAsync(final List<EntityId> changedEntities) {
 		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
-				onChangeEntryTypeSelectedEntitiesNow(changedEntities);
+				onChangeEntryTypeSelectedEntriesNow(changedEntities);
 			}
 		});
 	}
@@ -745,7 +775,7 @@ public class FolderEntryComposite extends ResizeComposite
 	/*
 	 * Synchronously handles changing the folder entry type.
 	 */
-	private void onChangeEntryTypeSelectedEntitiesNow(List<EntityId> changedEntities) {
+	private void onChangeEntryTypeSelectedEntriesNow(List<EntityId> changedEntities) {
 		BinderViewsHelper.changeEntryTypes(
 			changedEntities,
 			new FolderEntryActionCompleteEvent(
@@ -754,45 +784,7 @@ public class FolderEntryComposite extends ResizeComposite
 	}
 	
 	/**
-	 * Handles CopyPublicLinkSelectedEntitiesEvent's received by this class.
-	 * 
-	 * Implements the CopyPublicLinkSelectedEntitiesEvent.Handler.onCopyPublicLinkSelectedEntities() method.
-	 * 
-	 * @param event
-	 */
-	@Override
-	public void onCopyPublicLinkSelectedEntities(CopyPublicLinkSelectedEntitiesEvent event) {
-		// Is the event targeted to this entry?
-		List<EntityId> sharedEntities = event.getSelectedEntities();
-		if (isCompositeEntry(sharedEntities)) {
-			// Yes!  Run the copy public link on it.
-			onCopyPublicLinkSelectedEntitiesAsync(sharedEntities);
-		}
-	}
-
-	/*
-	 * Asynchronously handles copying the public link of the folder
-	 * entry.
-	 */
-	private void onCopyPublicLinkSelectedEntitiesAsync(final List<EntityId> sharedEntities) {
-		GwtClientHelper.deferCommand(new ScheduledCommand() {
-			@Override
-			public void execute() {
-				onCopyPublicLinkSelectedEntitiesNow(sharedEntities);
-			}
-		});
-	}
-	
-	/*
-	 * Synchronously handles copying the public link of the folder
-	 * entry.
-	 */
-	private void onCopyPublicLinkSelectedEntitiesNow(List<EntityId> sharedEntities) {
-		BinderViewsHelper.copyEntitiesPublicLink(sharedEntities);
-	}
-	
-	/**
-	 * Called when the composite is detached.
+	 * Called when the data table is detached.
 	 * 
 	 * Overrides the Widget.onDetach() method.
 	 */
@@ -805,30 +797,30 @@ public class FolderEntryComposite extends ResizeComposite
 	}
 
 	/**
-	 * Handles DeleteSelectedEntitiesEvent's received by this class.
+	 * Handles DeleteSelectedEntriesEvent's received by this class.
 	 * 
-	 * Implements the DeleteSelectedEntitiesEvent.Handler.onDeleteSelectedEntities() method.
+	 * Implements the DeleteSelectedEntriesEvent.Handler.onDeleteSelectedEntries() method.
 	 * 
 	 * @param event
 	 */
 	@Override
-	public void onDeleteSelectedEntities(DeleteSelectedEntitiesEvent event) {
+	public void onDeleteSelectedEntries(DeleteSelectedEntriesEvent event) {
 		// Is the event targeted to this entry?
 		List<EntityId> deletedEntities = event.getSelectedEntities();
 		if (isCompositeEntry(deletedEntities)) {
 			// Yes!  Run the delete on it.
-			onDeleteSelectedEntitiesAsync(deletedEntities);
+			onDeleteSelectedEntriesAsync(deletedEntities);
 		}
 	}
 	
 	/*
 	 * Asynchronously handles deleting the folder entry.
 	 */
-	private void onDeleteSelectedEntitiesAsync(final List<EntityId> deletedEntities) {
+	private void onDeleteSelectedEntriesAsync(final List<EntityId> deletedEntities) {
 		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
-				onDeleteSelectedEntitiesNow(deletedEntities);
+				onDeleteSelectedEntriesNow(deletedEntities);
 			}
 		});
 	}
@@ -836,8 +828,8 @@ public class FolderEntryComposite extends ResizeComposite
 	/*
 	 * Synchronously handles deleting the folder entry.
 	 */
-	private void onDeleteSelectedEntitiesNow(List<EntityId> deletedEntities) {
-		BinderViewsHelper.deleteSelections(deletedEntities, new DeleteEntitiesCallback() {
+	private void onDeleteSelectedEntriesNow(List<EntityId> deletedEntities) {
+		BinderViewsHelper.deleteFolderEntries(deletedEntities, new DeletePurgeEntriesCallback() {
 			@Override
 			public void operationCanceled() {
 				// Nothing to do.
@@ -857,44 +849,6 @@ public class FolderEntryComposite extends ResizeComposite
 				// user about the failure.
 			}
 		});
-	}
-	
-	/**
-	 * Handles EmailPublicLinkSelectedEntitiesEvent's received by this class.
-	 * 
-	 * Implements the EmailPublicLinkSelectedEntitiesEvent.Handler.onEmailPublicLinkSelectedEntities() method.
-	 * 
-	 * @param event
-	 */
-	@Override
-	public void onEmailPublicLinkSelectedEntities(EmailPublicLinkSelectedEntitiesEvent event) {
-		// Is the event targeted to this entry?
-		List<EntityId> sharedEntities = event.getSelectedEntities();
-		if (isCompositeEntry(sharedEntities)) {
-			// Yes!  Run the copy public link on it.
-			onEmailPublicLinkSelectedEntitiesAsync(sharedEntities);
-		}
-	}
-
-	/*
-	 * Asynchronously handles emailing the public link of the folder
-	 * entry.
-	 */
-	private void onEmailPublicLinkSelectedEntitiesAsync(final List<EntityId> sharedEntities) {
-		GwtClientHelper.deferCommand(new ScheduledCommand() {
-			@Override
-			public void execute() {
-				onEmailPublicLinkSelectedEntitiesNow(sharedEntities);
-			}
-		});
-	}
-	
-	/*
-	 * Synchronously handles emailing the public link of the folder
-	 * entry.
-	 */
-	private void onEmailPublicLinkSelectedEntitiesNow(List<EntityId> sharedEntities) {
-		BinderViewsHelper.emailEntitiesPublicLink(sharedEntities);
 	}
 	
 	/**
@@ -974,30 +928,30 @@ public class FolderEntryComposite extends ResizeComposite
 	}
 
 	/**
-	 * Handles LockSelectedEntitiesEvent's received by this class.
+	 * Handles LockSelectedEntriesEvent's received by this class.
 	 * 
-	 * Implements the LockSelectedEntitiesEvent.Handler.onLockSelectedEntities() method.
+	 * Implements the LockSelectedEntriesEvent.Handler.onLockSelectedEntries() method.
 	 * 
 	 * @param event
 	 */
 	@Override
-	public void onLockSelectedEntities(LockSelectedEntitiesEvent event) {
+	public void onLockSelectedEntries(LockSelectedEntriesEvent event) {
 		// Is the event targeted to this entry?
 		List<EntityId> lockedEntities = event.getSelectedEntities();
 		if (isCompositeEntry(lockedEntities)) {
 			// Yes!  Run the lock on it.
-			onLockSelectedEntitiesAsync(lockedEntities);
+			onLockSelectedEntriesAsync(lockedEntities);
 		}
 	}
 	
 	/*
 	 * Asynchronously handles locking the folder entry.
 	 */
-	private void onLockSelectedEntitiesAsync(final List<EntityId> lockedEntities) {
+	private void onLockSelectedEntriesAsync(final List<EntityId> lockedEntities) {
 		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
-				onLockSelectedEntitiesNow(lockedEntities);
+				onLockSelectedEntriesNow(lockedEntities);
 			}
 		});
 	}
@@ -1005,7 +959,7 @@ public class FolderEntryComposite extends ResizeComposite
 	/*
 	 * Synchronously handles locking the folder entry.
 	 */
-	private void onLockSelectedEntitiesNow(List<EntityId> lockedEntities) {
+	private void onLockSelectedEntriesNow(List<EntityId> lockedEntities) {
 		BinderViewsHelper.lockEntries(
 			lockedEntities,
 			new FolderEntryActionCompleteEvent(
@@ -1014,68 +968,30 @@ public class FolderEntryComposite extends ResizeComposite
 	}
 	
 	/**
-	 * Handles MailToPublicLinkEntityEvent's received by this class.
+	 * Handles MarkReadSelectedEntriesEvent's received by this class.
 	 * 
-	 * Implements the MailToPublicLinkEntityEvent.Handler.onMailToPublicLinkEntity() method.
-	 * 
-	 * @param event
-	 */
-	@Override
-	public void onMailToPublicLinkEntity(MailToPublicLinkEntityEvent event) {
-		// Is the event targeted to this entry?
-		EntityId entityId = event.getEntityId();
-		if (isCompositeEntry(entityId)) {
-			// Yes!  Run the mail public link on it.
-			onMailToPublicLinkEntityAsync(entityId);
-		}
-	}
-
-	/*
-	 * Asynchronously handles mailing the public link of the folder
-	 * entry.
-	 */
-	private void onMailToPublicLinkEntityAsync(final EntityId entityId) {
-		GwtClientHelper.deferCommand(new ScheduledCommand() {
-			@Override
-			public void execute() {
-				onMailToPublicLinkEntityNow(entityId);
-			}
-		});
-	}
-	
-	/*
-	 * Synchronously handles mailing the public link of the folder
-	 * entry.
-	 */
-	private void onMailToPublicLinkEntityNow(EntityId entityId) {
-		BinderViewsHelper.mailToPublicLink(entityId);
-	}
-	
-	/**
-	 * Handles MarkReadSelectedEntitiesEvent's received by this class.
-	 * 
-	 * Implements the MarkReadSelectedEntitiesEvent.Handler.onMarkReadSelectedEntities() method.
+	 * Implements the MarkReadSelectedEntriesEvent.Handler.onMarkReadSelectedEntries() method.
 	 * 
 	 * @param event
 	 */
 	@Override
-	public void onMarkReadSelectedEntities(MarkReadSelectedEntitiesEvent event) {
+	public void onMarkReadSelectedEntries(MarkReadSelectedEntriesEvent event) {
 		// Is the event targeted to this entry?
 		List<EntityId> markedReadEntities = event.getSelectedEntities();
 		if (isCompositeEntry(markedReadEntities)) {
 			// Yes!  Run the mark read on it.
-			onMarkReadSelectedEntitiesAsync(markedReadEntities);
+			onMarkReadSelectedEntriesAsync(markedReadEntities);
 		}
 	}
 	
 	/*
 	 * Asynchronously handles marking the folder entry as being read
 	 */
-	private void onMarkReadSelectedEntitiesAsync(final List<EntityId> markedReadEntities) {
+	private void onMarkReadSelectedEntriesAsync(final List<EntityId> markedReadEntities) {
 		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
-				onMarkReadSelectedEntitiesNow(markedReadEntities);
+				onMarkReadSelectedEntriesNow(markedReadEntities);
 			}
 		});
 	}
@@ -1083,7 +999,7 @@ public class FolderEntryComposite extends ResizeComposite
 	/*
 	 * Synchronously handles marking the folder entry as being read.
 	 */
-	private void onMarkReadSelectedEntitiesNow(List<EntityId> markedReadEntities) {
+	private void onMarkReadSelectedEntriesNow(List<EntityId> markedReadEntities) {
 		BinderViewsHelper.markEntriesRead(
 			markedReadEntities,
 			new FolderEntryActionCompleteEvent(
@@ -1092,30 +1008,30 @@ public class FolderEntryComposite extends ResizeComposite
 	}
 	
 	/**
-	 * Handles MarkUnreadSelectedEntitiesEvent's received by this class.
+	 * Handles MarkUnreadSelectedEntriesEvent's received by this class.
 	 * 
-	 * Implements the MarkUnreadSelectedEntitiesEvent.Handler.onMarkUnreadSelectedEntities() method.
+	 * Implements the MarkUnreadSelectedEntriesEvent.Handler.onMarkUnreadSelectedEntries() method.
 	 * 
 	 * @param event
 	 */
 	@Override
-	public void onMarkUnreadSelectedEntities(MarkUnreadSelectedEntitiesEvent event) {
+	public void onMarkUnreadSelectedEntries(MarkUnreadSelectedEntriesEvent event) {
 		// Is the event targeted to this entry?
 		List<EntityId> markedUnreadEntities = event.getSelectedEntities();
 		if (isCompositeEntry(markedUnreadEntities)) {
 			// Yes!  Run the mark unread on it.
-			onMarkUnreadSelectedEntitiesAsync(markedUnreadEntities);
+			onMarkUnreadSelectedEntriesAsync(markedUnreadEntities);
 		}
 	}
 	
 	/*
 	 * Asynchronously handles marking the folder entry as being read
 	 */
-	private void onMarkUnreadSelectedEntitiesAsync(final List<EntityId> markedUnreadEntities) {
+	private void onMarkUnreadSelectedEntriesAsync(final List<EntityId> markedUnreadEntities) {
 		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
-				onMarkUnreadSelectedEntitiesNow(markedUnreadEntities);
+				onMarkUnreadSelectedEntriesNow(markedUnreadEntities);
 			}
 		});
 	}
@@ -1123,7 +1039,7 @@ public class FolderEntryComposite extends ResizeComposite
 	/*
 	 * Synchronously handles marking the folder entry as being read.
 	 */
-	private void onMarkUnreadSelectedEntitiesNow(List<EntityId> markedUnreadEntities) {
+	private void onMarkUnreadSelectedEntriesNow(List<EntityId> markedUnreadEntities) {
 		BinderViewsHelper.markEntriesUnread(
 			markedUnreadEntities,
 			new FolderEntryActionCompleteEvent(
@@ -1132,30 +1048,30 @@ public class FolderEntryComposite extends ResizeComposite
 	}
 	
 	/**
-	 * Handles MoveSelectedEntitiesEvent's received by this class.
+	 * Handles MoveSelectedEntriesEvent's received by this class.
 	 * 
-	 * Implements the MoveSelectedEntitiesEvent.Handler.onMoveSelectedEntities() method.
+	 * Implements the MoveSelectedEntriesEvent.Handler.onMoveSelectedEntries() method.
 	 * 
 	 * @param event
 	 */
 	@Override
-	public void onMoveSelectedEntities(MoveSelectedEntitiesEvent event) {
+	public void onMoveSelectedEntries(MoveSelectedEntriesEvent event) {
 		// Is the event targeted to this entry?
 		List<EntityId> movedEntities = event.getSelectedEntities();
 		if (isCompositeEntry(movedEntities)) {
 			// Yes!  Run the move on it.
-			onMoveSelectedEntitiesAsync(movedEntities);
+			onMoveSelectedEntriesAsync(movedEntities);
 		}
 	}
 	
 	/*
 	 * Asynchronously handles moving the folder entry.
 	 */
-	private void onMoveSelectedEntitiesAsync(final List<EntityId> movedEntities) {
+	private void onMoveSelectedEntriesAsync(final List<EntityId> movedEntities) {
 		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
-				onMoveSelectedEntitiesNow(movedEntities);
+				onMoveSelectedEntriesNow(movedEntities);
 			}
 		});
 	}
@@ -1163,12 +1079,67 @@ public class FolderEntryComposite extends ResizeComposite
 	/*
 	 * Synchronously handles moving the folder entry.
 	 */
-	private void onMoveSelectedEntitiesNow(List<EntityId> movedEntities) {
+	private void onMoveSelectedEntriesNow(List<EntityId> movedEntities) {
 		BinderViewsHelper.moveEntries(
 			movedEntities,
 			new FolderEntryActionCompleteEvent(
 				m_vfei.getEntityId(),
 				true));
+	}
+	
+	/**
+	 * Handles PurgeSelectedEntriesEvent's received by this class.
+	 * 
+	 * Implements the PurgeSelectedEntriesEvent.Handler.onPurgeSelectedEntries() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onPurgeSelectedEntries(PurgeSelectedEntriesEvent event) {
+		// Is the event targeted to this entry?
+		List<EntityId> purgedEntities = event.getSelectedEntities();
+		if (isCompositeEntry(purgedEntities)) {
+			// Yes!  Run the purge on it.
+			onPurgeSelectedEntriesAsync(purgedEntities);
+		}
+	}
+	
+	/*
+	 * Asynchronously handles purging the folder entry.
+	 */
+	private void onPurgeSelectedEntriesAsync(final List<EntityId> purgedEntities) {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
+			@Override
+			public void execute() {
+				onPurgeSelectedEntriesNow(purgedEntities);
+			}
+		});
+	}
+	
+	/*
+	 * Synchronously handles purging the folder entry.
+	 */
+	private void onPurgeSelectedEntriesNow(List<EntityId> purgedEntities) {
+		BinderViewsHelper.purgeFolderEntries(purgedEntities, new DeletePurgeEntriesCallback() {
+			@Override
+			public void operationCanceled() {
+				// Nothing to do.
+			}
+
+			@Override
+			public void operationComplete() {
+				GwtTeaming.fireEventAsync(
+					new FolderEntryActionCompleteEvent(
+						m_vfei.getEntityId(),
+						true));
+			}
+			
+			@Override
+			public void operationFailed() {
+				// Nothing to do.  The purge call will have told the
+				// user about the failure.
+			}
+		});
 	}
 	
 	/**
@@ -1187,7 +1158,7 @@ public class FolderEntryComposite extends ResizeComposite
 	}
 	
 	/*
-	 * Asynchronously sets the size of the composite based on its
+	 * Asynchronously sets the size of the data table based on its
 	 * position in the view.
 	 */
 	private void onResizeAsync(int delay) {
@@ -1200,6 +1171,14 @@ public class FolderEntryComposite extends ResizeComposite
 		delay);
 	}
 
+	/*
+	 * Asynchronously sets the size of the data table based on its
+	 * position in the view.
+	 */
+	private void onResizeAsync() {
+		onResizeAsync(FolderViewBase.INITIAL_RESIZE_DELAY);
+	}
+	
 	/*
 	 * Re-sizes / re-lays out the widgets in the component.
 	 */
@@ -1238,47 +1217,27 @@ public class FolderEntryComposite extends ResizeComposite
 		else container.removeStyleName("vibe-verticalScroll");
 		
 		// Set the height of the content panel.
-		m_documentArea.setHeight(      docHeight     + "px");
-		m_contentPanel.setHeight(      contentHeight + "px");
-		m_sidebarArea.setSidebarHeight(contentHeight       );
+		m_documentArea.setHeight(docHeight     + "px");
+		m_contentPanel.setHeight(contentHeight + "px");
 	}
 
 	/**
-	 * Handles ShareSelectedEntitiesEvent's received by this class.
+	 * Handles ShareSelectedEntriesEvent's received by this class.
 	 * 
-	 * Implements the ShareSelectedEntitiesEvent.Handler.onShareSelectedEntities() method.
+	 * Implements the ShareSelectedEntriesEvent.Handler.onShareSelectedEntries() method.
 	 * 
 	 * @param event
 	 */
 	@Override
-	public void onShareSelectedEntities(ShareSelectedEntitiesEvent event) {
+	public void onShareSelectedEntries(ShareSelectedEntriesEvent event) {
 		// Is the event targeted to this entry?
 		List<EntityId> sharedEntities = event.getSelectedEntities();
 		if (isCompositeEntry(sharedEntities)) {
 			// Yes!  Run the share on it.
-			onShareSelectedEntitiesAsync(sharedEntities);
+			onShareSelectedEntriesAsync(sharedEntities);
 		}
 	}
 
-	/*
-	 * Asynchronously handles sharing the folder entry.
-	 */
-	private void onShareSelectedEntitiesAsync(final List<EntityId> sharedEntities) {
-		GwtClientHelper.deferCommand(new ScheduledCommand() {
-			@Override
-			public void execute() {
-				onShareSelectedEntitiesNow(sharedEntities);
-			}
-		});
-	}
-	
-	/*
-	 * Synchronously handles sharing the folder entry.
-	 */
-	private void onShareSelectedEntitiesNow(List<EntityId> sharedEntities) {
-		BinderViewsHelper.shareEntities(sharedEntities);
-	}
-	
 	/**
 	 * Handles ShowViewPermalinksEvent's received by this class.
 	 * 
@@ -1291,31 +1250,50 @@ public class FolderEntryComposite extends ResizeComposite
 		FooterPanel.expandFooter(m_footerPanel);
 	}
 
+	/*
+	 * Asynchronously handles sharing the folder entry.
+	 */
+	private void onShareSelectedEntriesAsync(final List<EntityId> sharedEntities) {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
+			@Override
+			public void execute() {
+				onShareSelectedEntriesNow(sharedEntities);
+			}
+		});
+	}
+	
+	/*
+	 * Synchronously handles sharing the folder entry.
+	 */
+	private void onShareSelectedEntriesNow(List<EntityId> sharedEntities) {
+		BinderViewsHelper.shareEntities(sharedEntities);
+	}
+	
 	/**
-	 * Handles SubscribeSelectedEntitiesEvent's received by this class.
+	 * Handles SubscribeSelectedEntriesEvent's received by this class.
 	 * 
-	 * Implements the SubscribeSelectedEntitiesEvent.Handler.onSubscribeSelectedEntities() method.
+	 * Implements the SubscribeSelectedEntriesEvent.Handler.onSubscribeSelectedEntries() method.
 	 * 
 	 * @param event
 	 */
 	@Override
-	public void onSubscribeSelectedEntities(SubscribeSelectedEntitiesEvent event) {
+	public void onSubscribeSelectedEntries(SubscribeSelectedEntriesEvent event) {
 		// Is the event targeted to this entry?
 		List<EntityId> subscribedEntities = event.getSelectedEntities();
 		if (isCompositeEntry(subscribedEntities)) {
 			// Yes!  Run the subscribe on it.
-			onSubscribeSelectedEntitiesAsync(subscribedEntities);
+			onSubscribeSelectedEntriesAsync(subscribedEntities);
 		}
 	}
 
 	/*
 	 * Asynchronously handles subscribing to the folder entry.
 	 */
-	private void onSubscribeSelectedEntitiesAsync(final List<EntityId> subscribedEntities) {
+	private void onSubscribeSelectedEntriesAsync(final List<EntityId> subscribedEntities) {
 		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
-				onSubscribeSelectedEntitiesNow(subscribedEntities);
+				onSubscribeSelectedEntriesNow(subscribedEntities);
 			}
 		});
 	}
@@ -1323,35 +1301,35 @@ public class FolderEntryComposite extends ResizeComposite
 	/*
 	 * Synchronously handles subscribing to the folder entry.
 	 */
-	private void onSubscribeSelectedEntitiesNow(List<EntityId> subscribedEntities) {
+	private void onSubscribeSelectedEntriesNow(List<EntityId> subscribedEntities) {
 		BinderViewsHelper.subscribeToEntries(subscribedEntities);
 	}
 	
 	/**
-	 * Handles UnlockSelectedEntitiesEvent's received by this class.
+	 * Handles UnlockSelectedEntriesEvent's received by this class.
 	 * 
-	 * Implements the UnlockSelectedEntitiesEvent.Handler.onUnlockSelectedEntities() method.
+	 * Implements the UnlockSelectedEntriesEvent.Handler.onUnlockSelectedEntries() method.
 	 * 
 	 * @param event
 	 */
 	@Override
-	public void onUnlockSelectedEntities(UnlockSelectedEntitiesEvent event) {
+	public void onUnlockSelectedEntries(UnlockSelectedEntriesEvent event) {
 		// Is the event targeted to this entry?
 		List<EntityId> unlockedEntities = event.getSelectedEntities();
 		if (isCompositeEntry(unlockedEntities)) {
 			// Yes!  Run the unlock on it.
-			onUnlockSelectedEntitiesAsync(unlockedEntities);
+			onUnlockSelectedEntriesAsync(unlockedEntities);
 		}
 	}
 	
 	/*
 	 * Asynchronously handles unlocking the folder entry.
 	 */
-	private void onUnlockSelectedEntitiesAsync(final List<EntityId> unlockedEntities) {
+	private void onUnlockSelectedEntriesAsync(final List<EntityId> unlockedEntities) {
 		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
-				onUnlockSelectedEntitiesNow(unlockedEntities);
+				onUnlockSelectedEntriesNow(unlockedEntities);
 			}
 		});
 	}
@@ -1359,51 +1337,9 @@ public class FolderEntryComposite extends ResizeComposite
 	/*
 	 * Synchronously handles unlocking the folder entry.
 	 */
-	private void onUnlockSelectedEntitiesNow(List<EntityId> unlockedEntities) {
+	private void onUnlockSelectedEntriesNow(List<EntityId> unlockedEntities) {
 		BinderViewsHelper.unlockEntries(
 			unlockedEntities,
-			new FolderEntryActionCompleteEvent(
-				m_vfei.getEntityId(),
-				false));
-	}
-	
-	/**
-	 * Handles ZipAndDownloadSelectedFilesEvent's received by this class.
-	 * 
-	 * Implements the ZipAndDownloadSelectedFilesEvent.Handler.onZipAndDownloadSelectedFiles() method.
-	 * 
-	 * @param event
-	 */
-	@Override
-	public void onZipAndDownloadSelectedFiles(ZipAndDownloadSelectedFilesEvent event) {
-		// Is the event targeted to this entry?
-		List<EntityId> zipAndDownloadEntities = event.getSelectedEntities();
-		if (isCompositeEntry(zipAndDownloadEntities)) {
-			// Yes!  Run the zip and download on it.
-			onZipAndDownloadSelectedFilesAsync(zipAndDownloadEntities);
-		}
-	}
-	
-	/*
-	 * Asynchronously handles zipping and downloading the file.
-	 */
-	private void onZipAndDownloadSelectedFilesAsync(final List<EntityId> zipAndDownloadEntities) {
-		GwtClientHelper.deferCommand(new ScheduledCommand() {
-			@Override
-			public void execute() {
-				onZipAndDownloadSelectedFilesNow(zipAndDownloadEntities);
-			}
-		});
-	}
-	
-	/*
-	 * Synchronously handles zipping and downloading the file.
-	 */
-	private void onZipAndDownloadSelectedFilesNow(List<EntityId> zipAndDownloadEntities) {
-		BinderViewsHelper.zipAndDownloadFiles(
-			m_downloadForm,
-			zipAndDownloadEntities,
-			true,
 			new FolderEntryActionCompleteEvent(
 				m_vfei.getEntityId(),
 				false));
@@ -1439,7 +1375,7 @@ public class FolderEntryComposite extends ResizeComposite
 			// ...register the events.
 			EventHelper.registerEventHandlers(
 				GwtTeaming.getEventBus(),
-				REGISTERED_EVENTS,
+				m_registeredEvents,
 				this,
 				m_registeredEventHandlers);
 		}
@@ -1484,31 +1420,34 @@ public class FolderEntryComposite extends ResizeComposite
 		}
 	}
 
-	/**
-	 * Implements the FolderEntryCallback.toggleSidebarVisibility()
-	 * method.
+	/*
+	 * Updates the comments count in the header.
 	 */
-	@Override
-	public void toggleSidebarVisibility() {
-		// Toggle the state of the sidebar's visibility...
-		m_sidebarVisible = (!m_sidebarVisible);
-		String sidebarWidth;
-		if (m_sidebarVisible)
-		     sidebarWidth = "";
-		else sidebarWidth = "1px";
-		m_contentGridFCF.setWidth(CONTENT_ROW, SIDEBAR_CELL, sidebarWidth);
-		onResizeAsync(0);
+	private void setCommentsCount(int commentCount) {
+		m_commentsHeader.setText(m_messages.folderEntry_Comments(commentCount));
+	}
+
+	/*
+	/* Toggle the state of the comment widgets visibility.
+	 */
+	private void toggleCommentsVisibility() {
+		// Toggle the state...
+		m_commentsVisible = (!m_commentsVisible);
+		ImageResource sliderRes;
+		if (m_commentsVisible)
+		     sliderRes = m_images.slideUp();
+		else sliderRes = m_images.slideDown();
+		m_commentsSliderImg.setUrl(sliderRes.getSafeUri().asString());
+		m_commentsArea.setCommentsVisible(m_commentsVisible);
 		
 		// ...and store the current state in a cookie.
-		if (m_sidebarVisible)
-		     FolderEntryCookies.removeCookieValue(    Cookie.SIDEBAR_VISIBLE       );
-		else FolderEntryCookies.setBooleanCookieValue(Cookie.SIDEBAR_VISIBLE, false);
+		if (m_commentsVisible)
+		     FolderEntryCookies.setBooleanCookieValue(Cookie.COMMENTS_VISIBLE, m_vfei.getEntityId(), true);
+		else FolderEntryCookies.removeCookieValue(    Cookie.COMMENTS_VISIBLE, m_vfei.getEntityId()      );
 	}
 	
 	/**
 	 * Implements the ToolPanelReady.toolPanelReady() method.
-	 * 
-	 * @param toolPanel
 	 */
 	@Override
 	public void toolPanelReady(ToolPanelBase toolPanel) {

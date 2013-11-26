@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -44,16 +44,10 @@ import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.CoreDao;
-import org.kablink.teaming.dao.FolderDao;
-import org.kablink.teaming.dao.util.NetFolderSelectSpec;
+import org.kablink.teaming.dao.util.FilterControls;
 import org.kablink.teaming.domain.Binder;
-import org.kablink.teaming.domain.Binder.SyncScheduleOption;
-import org.kablink.teaming.domain.Description;
 import org.kablink.teaming.domain.Folder;
-import org.kablink.teaming.domain.Group;
-import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.ResourceDriverConfig;
-import org.kablink.teaming.domain.ResourceDriverConfig.AuthenticationType;
 import org.kablink.teaming.domain.TemplateBinder;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserProperties;
@@ -80,14 +74,11 @@ import org.kablink.teaming.module.template.TemplateModule;
 import org.kablink.teaming.module.workspace.WorkspaceModule;
 import org.kablink.teaming.runas.RunasCallback;
 import org.kablink.teaming.runas.RunasTemplate;
+import org.kablink.teaming.runasync.RunAsyncCallback;
 import org.kablink.teaming.runasync.RunAsyncManager;
 import org.kablink.teaming.security.AccessControlException;
-import org.kablink.teaming.security.function.Function;
-import org.kablink.teaming.security.function.WorkAreaFunctionMembership;
-import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ReflectHelper;
-import org.kablink.teaming.util.ResolveIds;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SZoneConfig;
 import org.kablink.teaming.util.SpringContextUtil;
@@ -95,7 +86,6 @@ import org.kablink.teaming.util.Utils;
 
 /**
  * Helper class dealing with net folders and net folder roots
- * 
  * @author jwootton
  */
 public class NetFolderHelper
@@ -179,10 +169,6 @@ public class NetFolderHelper
 													null,
 													false,
 													false,
-													null,
-													null,
-													null,
-													null,
 													scheduleInfo );
 		
 		// Add a task for the administrator to enter the proxy credentials for this server.
@@ -220,6 +206,7 @@ public class NetFolderHelper
 	/**
 	 * Create a net folder and if needed a net folder root for the given home directory information
 	 */
+	@SuppressWarnings("unchecked")
 	public static void createHomeDirNetFolder(
 		ProfileModule profileModule,
 		TemplateModule templateModule,
@@ -231,43 +218,12 @@ public class NetFolderHelper
 		HomeDirInfo homeDirInfo,
 		User user ) throws WriteFilesException, WriteEntryDataException
 	{
-		createHomeDirNetFolder(
-							profileModule,
-							templateModule,
-							binderModule,
-							folderModule,
-							adminModule,
-							resourceDriverModule,
-							asyncManager,
-							homeDirInfo,
-							user,
-							true );
-	}
-	
-	/**
-	 * Create a net folder and if needed a net folder root for the given home directory information
-	 */
-	@SuppressWarnings("unchecked")
-	public static void createHomeDirNetFolder(
-		ProfileModule profileModule,
-		TemplateModule templateModule,
-		BinderModule binderModule,
-		final FolderModule folderModule,
-		AdminModule adminModule,
-		ResourceDriverModule resourceDriverModule,
-		RunAsyncManager asyncManager,
-		HomeDirInfo homeDirInfo,
-		User user,
-		boolean updateExistingNetFolder ) throws WriteFilesException, WriteEntryDataException
-	{
 		Long workspaceId;
-		String netFolderServerName = null;
 		String serverAddr = null;
 		String volume = null;
 		String path = null;
-		String serverUNC = null;
+		String serverUNC;
 		ResourceDriverConfig rdConfig;
-		boolean notEnoughInfo = false;
 		boolean canSyncNetFolder = false;
 
 		// Are we running Filr?
@@ -279,27 +235,18 @@ public class NetFolderHelper
 		
 		if ( homeDirInfo != null )
 		{
-			netFolderServerName = homeDirInfo.getNetFolderServerName();
 			serverAddr = homeDirInfo.getServerAddr();
 			volume = homeDirInfo.getVolume();
 			path = homeDirInfo.getPath();
 		}
 		
 		// Do we have all the information we need?
-		if ( path == null || path.length() == 0 )
-			notEnoughInfo = true;
-		
-		if ( (netFolderServerName == null || netFolderServerName.length() == 0) &&
-			 (serverAddr == null || serverAddr.length() == 0 ||
-			 volume == null || volume.length() == 0) )
-		{
-			notEnoughInfo = true;
-		}
-		
-		if ( notEnoughInfo )
+		if ( serverAddr == null || serverAddr.length() == 0 ||
+			 volume == null || volume.length() == 0 ||
+			 path == null || path.length() == 0 )
 		{
 			// No
-			m_logger.debug( "In NetFolderHelper.createHomeDirNetFolder(), not enough information to create home dir net folder" );
+			m_logger.error( "In NetFolderHelper.createHomeDirNetFolder(), invalid server information" );
 			return;
 		}
 		
@@ -314,38 +261,25 @@ public class NetFolderHelper
 			workspaceId = workspace.getId();
 		}
 		
-		// Are we looking for a specific net folder server that should already exists
-		if ( netFolderServerName != null && netFolderServerName.length() > 0 )
+		// Does a net folder root exists with a unc path to the given server address / volume?
+		serverUNC = "\\\\" + serverAddr + "\\" + volume;
+		rdConfig = findNetFolderRootByUNC( adminModule, resourceDriverModule, serverUNC );
+		if ( rdConfig == null )
 		{
-			// Yes, find the net folder server being referenced.
-			rdConfig = NetFolderHelper.findNetFolderRootByName(
-															adminModule,
-															resourceDriverModule,
-															netFolderServerName );
-			serverUNC = rdConfig.getRootPath();
+			// No, create one
+			rdConfig = NetFolderHelper.createHomeDirNetFolderServer(
+																profileModule,
+																adminModule,
+																resourceDriverModule,
+																homeDirInfo );
 		}
 		else
 		{
-			// Does a net folder root exists with a unc path to the given server address / volume?
-			serverUNC = "\\\\" + serverAddr + "\\" + volume;
-			rdConfig = findNetFolderRootByUNC( adminModule, resourceDriverModule, serverUNC );
-			if ( rdConfig == null )
+			// A net folder server already exists.  Is it fully configured?
+			if ( isNetFolderServerConfigured( rdConfig ) )
 			{
-				// No, create one
-				rdConfig = NetFolderHelper.createHomeDirNetFolderServer(
-																	profileModule,
-																	adminModule,
-																	resourceDriverModule,
-																	homeDirInfo );
-			}
-			else
-			{
-				// A net folder server already exists.  Is it fully configured?
-				if ( isNetFolderServerConfigured( rdConfig ) )
-				{
-					// Yes, this means we can sync the home directory net folder if we need to.
-					canSyncNetFolder = true;
-				}
+				// Yes, this means we can sync the home directory net folder if we need to.
+				canSyncNetFolder = true;
 			}
 		}
 		
@@ -377,23 +311,10 @@ public class NetFolderHelper
 															rdConfig.getName(),
 															path,
 															null,
-															SyncScheduleOption.useNetFolderServerSchedule,
 															workspaceId,
 															true,
-															false,
-															null );
+															false );
 
-				// As the fix for bug 831849 we must call getCoreDao().clear() before we call
-				// NetFolderHelper.saveJitsSettings().  If we don't, saveJitsSettings() throws
-				// a DuplicateKeyException.
-				{
-					CoreDao coreDao;
-					
-					coreDao = getCoreDao();
-					if ( coreDao != null )
-						coreDao.clear();
-				}
-				
 				// Save the jits settings
 				{
 					NetFolderHelper.saveJitsSettings(
@@ -408,50 +329,46 @@ public class NetFolderHelper
 			}
 			else
 			{
+				String currentServerUNC = null;
+				
 				// A home dir net folder already exists for this user.
-				// Are we supposed to try and update an existing net folder?
-				if ( updateExistingNetFolder )
+				
+				// Get the server unc path that is currently being used by the user's home dir net folder.
 				{
-					String currentServerUNC = null;
+					ResourceDriver driver;
 					
-					// Yes
-					// Get the server unc path that is currently being used by the user's home dir net folder.
+					driver = netFolderBinder.getResourceDriver();
+					if ( driver != null )
 					{
-						ResourceDriver driver;
+						ResourceDriverConfig currentRdConfig;
 						
-						driver = netFolderBinder.getResourceDriver();
-						if ( driver != null )
-						{
-							ResourceDriverConfig currentRdConfig;
-							
-							currentRdConfig = driver.getConfig();
-							if ( currentRdConfig != null )
-								currentServerUNC = currentRdConfig.getRootPath();
-						}
+						currentRdConfig = driver.getConfig();
+						if ( currentRdConfig != null )
+							currentServerUNC = currentRdConfig.getRootPath();
 					}
-							
-					// Did any information about the home directory change?
-					if ( (serverUNC != null && serverUNC.equalsIgnoreCase( currentServerUNC ) == false) ||
-						 homeDirInfo.getPath().equalsIgnoreCase( netFolderBinder.getResourcePath() ) == false )
-					{
-						Set deleteAtts;
-						Map fileMap = null;
-						MapInputData mid;
-		   				Map formData = null;
-	
-						// Yes
-						deleteAtts = new HashSet();
-						fileMap = new HashMap();
-		   				formData = new HashMap();
-				   		formData.put( ObjectKeys.FIELD_BINDER_RESOURCE_DRIVER_NAME, rdConfig.getName() );
-				   		formData.put( ObjectKeys.FIELD_BINDER_RESOURCE_PATH, path );
-		   				mid = new MapInputData( formData );
-	
-		   				// Modify the existing net folder with the home directory information.
-			   			binderModule.modifyBinder( netFolderBinder.getId(), mid, fileMap, deleteAtts, null );
-			   			
-			   			syncNeeded = false;
-					}
+				}
+
+				// Did any information about the home directory change?
+				if ( serverUNC.equalsIgnoreCase( currentServerUNC ) == false ||
+					 homeDirInfo.getPath().equalsIgnoreCase( netFolderBinder.getResourcePath() ) == false )
+				{
+					Set deleteAtts;
+					Map fileMap = null;
+					MapInputData mid;
+	   				Map formData = null;
+
+					// Yes
+					deleteAtts = new HashSet();
+					fileMap = new HashMap();
+	   				formData = new HashMap();
+			   		formData.put( ObjectKeys.FIELD_BINDER_RESOURCE_DRIVER_NAME, rdConfig.getName() );
+			   		formData.put( ObjectKeys.FIELD_BINDER_RESOURCE_PATH, path );
+	   				mid = new MapInputData( formData );
+
+	   				// Modify the existing net folder with the home directory information.
+		   			binderModule.modifyBinder( netFolderBinder.getId(), mid, fileMap, deleteAtts, null );
+		   			
+		   			syncNeeded = false;
 				}
 			}
 			
@@ -468,9 +385,23 @@ public class NetFolderHelper
 						final Long binderId;
 						
 						binderId = netFolderBinder.getId();
+						
+						asyncManager.execute( new RunAsyncCallback()
+						{
+							@Override
+							public Object doAsynchronously() throws Exception 
+							{
+								m_logger.info( "About to sync home directory net folder: " + binderId );
+								folderModule.fullSynchronize( binderId, null );
+						    	return null;
+							}
 
-						m_logger.info( "About to sync home directory net folder: " + binderId );
-						folderModule.enqueueFullSynchronize( binderId );
+							@Override
+							public String toString()
+							{
+								return "folderModule.synchronize()";
+							}
+						}, RunAsyncManager.TaskType.FULL_SYNC);
 					}
 					catch ( Exception e )
 					{
@@ -494,11 +425,9 @@ public class NetFolderHelper
 		String rootName,
 		String path,
 		ScheduleInfo scheduleInfo,
-		SyncScheduleOption syncScheduleOption,
 		Long parentBinderId,
 		boolean isHomeDir,
-		boolean indexContent,
-		Boolean fullSyncDirOnly ) throws WriteFilesException, WriteEntryDataException
+		boolean indexContent ) throws WriteFilesException, WriteEntryDataException
 	{
 		Binder binder = null;
 		Long templateId = null;
@@ -536,26 +465,11 @@ public class NetFolderHelper
 
 		if ( templateId != null )
 		{			
-			binder = folderModule.createNetFolder(
-											templateId,
-											parentBinderId,
-											name,
-											owner,
-											rootName,
-											path,
-											isHomeDir,
-											indexContent,
-											syncScheduleOption,
-											fullSyncDirOnly );
+			binder = folderModule.createNetFolder(templateId, parentBinderId, name, owner, rootName, path, isHomeDir, indexContent);
 			
 			// Set the net folder's sync schedule
 			if ( scheduleInfo != null )
 			{
-				// If the sync schedule option is to use the net folder server's schedule then
-				// disable the schedule on the net folder.
-				if ( syncScheduleOption == SyncScheduleOption.useNetFolderServerSchedule )
-					scheduleInfo.setEnabled( false );
-				
 				scheduleInfo.setFolderId( binder.getId() );
 				folderModule.setSynchronizationSchedule( scheduleInfo, binder.getId() );
 			}
@@ -582,10 +496,6 @@ public class NetFolderHelper
 		String hostUrl,
 		boolean allowSelfSignedCerts,
 		boolean isSharePointServer,
-		Boolean fullSyncDirOnly,
-		AuthenticationType authType,
-		Boolean useDirectoryRights,
-		Integer cachedRightsRefreshInterval,
 		ScheduleInfo scheduleInfo ) throws RDException
 	{
 		Map options;
@@ -606,10 +516,6 @@ public class NetFolderHelper
 		options.put( ObjectKeys.RESOURCE_DRIVER_READ_ONLY, Boolean.FALSE );
 		options.put( ObjectKeys.RESOURCE_DRIVER_ACCOUNT_NAME, proxyName ); 
 		options.put( ObjectKeys.RESOURCE_DRIVER_PASSWORD, proxyPwd );
-		options.put( ObjectKeys.RESOURCE_DRIVER_FULL_SYNC_DIR_ONLY, fullSyncDirOnly );
-		options.put( ObjectKeys.RESOURCE_DRIVER_AUTHENTICATION_TYPE, authType );
-		options.put( ObjectKeys.RESOURCE_DRIVER_USE_DIRECTORY_RIGHTS, useDirectoryRights );
-		options.put( ObjectKeys.RESOURCE_DRIVER_CACHED_RIGHTS_REFRESH_INTERVAL, cachedRightsRefreshInterval );
 		
 		// Is the root type WebDAV?
 		if ( driverType == DriverType.webdav )
@@ -706,24 +612,7 @@ public class NetFolderHelper
 			return null;
 		
 		// Get a list of the currently defined Net Folder Roots
-		drivers = resourceDriverModule.getAllNetFolderResourceDriverConfigs();
-		
-		return findNetFolderRootById( drivers, id );
-	}
-
-	/**
-	 * 
-	 */
-	public static ResourceDriverConfig findNetFolderRootById(
-		List<ResourceDriverConfig> drivers,
-		String id )
-	{
-		if ( id == null )
-			return null;
-		
-		if ( drivers == null )
-			return null;
-		
+		drivers = resourceDriverModule.getAllResourceDriverConfigs();
 		for ( ResourceDriverConfig driver : drivers )
 		{
 			String driverId;
@@ -751,7 +640,7 @@ public class NetFolderHelper
 			return null;
 		
 		// Get a list of the currently defined Net Folder Roots
-		drivers = resourceDriverModule.getAllNetFolderResourceDriverConfigs();
+		drivers = resourceDriverModule.getAllResourceDriverConfigs();
 		for ( ResourceDriverConfig driver : drivers )
 		{
 			if ( serverUNC.equalsIgnoreCase( driver.getRootPath() ) )
@@ -776,7 +665,7 @@ public class NetFolderHelper
 			return null;
 		
 		// Get a list of the currently defined Net Folder Roots
-		drivers = resourceDriverModule.getAllNetFolderResourceDriverConfigs();
+		drivers = resourceDriverModule.getAllResourceDriverConfigs();
 		for ( ResourceDriverConfig driver : drivers )
 		{
 			if ( name.equalsIgnoreCase( driver.getName() ) )
@@ -786,22 +675,13 @@ public class NetFolderHelper
 		// If we get here we did not find a net folder root with the given name.
 		return null;
 	}
-
+	
 	/**
 	 * 
 	 */
 	private static CoreDao getCoreDao()
 	{
 		return (CoreDao) SpringContextUtil.getBean( "coreDao" );
-	}
-	
-
-	/**
-	 * 
-	 */
-	private static FolderDao getFolderDao()
-	{
-		return (FolderDao) SpringContextUtil.getBean( "folderDao" );
 	}
 	
 	/**
@@ -823,24 +703,62 @@ public class NetFolderHelper
 	/**
 	 * Return all the net folders that are associated with the given net folder server
 	 */
+	@SuppressWarnings({ "unchecked" })
 	public static List<Long> getAllNetFolders(
 		BinderModule binderModule,
 		WorkspaceModule workspaceModule,
-		NetFolderSelectSpec selectSpec )
+		String rootName,
+		boolean includeHomeDirNetFolders )
 	{
 		List<Folder> results;
 		List<Long> listOfNetFolderIds;
 		Workspace zone;
 		Long zoneId;
+		FilterControls filterCtrls;
 		
 		zone = RequestContextHolder.getRequestContext().getZone();
 		zoneId = zone.getId();
 		
+		// Add the criteria for finding all top-level net folders.
+		{
+			filterCtrls = new FilterControls();
+
+			filterCtrls.add( ObjectKeys.FIELD_BINDER_MIRRORED, Boolean.TRUE );
+			
+			filterCtrls.addIsNull( "topFolder" );
+			
+			// Are we looking for a net folder that is associated with a specific net folder root?
+			if ( rootName != null && rootName.length() > 0 )
+			{
+				// Yes
+				filterCtrls.add( ObjectKeys.FIELD_BINDER_RESOURCE_DRIVER_NAME, rootName );
+			}
+	
+			// Are we including "home directory" net folders?
+			if ( includeHomeDirNetFolders == false )
+			{
+				Binder parentBinder;
+				
+				// No
+				filterCtrls.add( ObjectKeys.FIELD_BINDER_IS_HOME_DIR, false );
+				
+				// Get the binder where all non home dir net folders live.
+				parentBinder = getCoreDao().loadReservedBinder(
+														ObjectKeys.NET_FOLDERS_ROOT_INTERNALID, 
+														zoneId );
+				if ( parentBinder != null )
+				{
+					filterCtrls.add(
+								ObjectKeys.FIELD_ENTITY_PARENTBINDER,
+								parentBinder );
+				}
+			}
+		}
+
 		listOfNetFolderIds = new ArrayList<Long>();
 		
 		// Get the list of net folders for the given criteria.
-		results = getFolderDao().findNetFolders( selectSpec, zoneId );
-		
+		results = getCoreDao().loadObjects( Folder.class, filterCtrls, zoneId );
 		if ( results != null )
 		{
 			// We only want to return top-level net folders.
@@ -854,50 +772,6 @@ public class NetFolderHelper
 		return listOfNetFolderIds;
 	}
 	
-
-	/**
-	 * Return all the net folders that are associated with the given net folder server
-	 */
-	public static List<Folder> getAllNetFolders2(
-		BinderModule binderModule,
-		WorkspaceModule workspaceModule,
-		NetFolderSelectSpec selectSpec )
-	{
-		List<Folder> results;
-		Workspace zone;
-		Long zoneId;
-		
-		zone = RequestContextHolder.getRequestContext().getZone();
-		zoneId = zone.getId();
-		
-		// Get the list of net folders for the given criteria.
-		results = getFolderDao().findNetFolders( selectSpec, zoneId );
-		
-		return results;
-	}
-	
-	/**
-	 * Return the number of net folders that match the given criteria
-	 */
-	public static int getNumberOfNetFolders(
-		BinderModule binderModule,
-		WorkspaceModule workspaceModule,
-		NetFolderSelectSpec selectSpec )
-	{
-		int count;
-		Workspace zone;
-		Long zoneId;
-		
-		zone = RequestContextHolder.getRequestContext().getZone();
-		zoneId = zone.getId();
-		
-		// Get the number of net folders for the given criteria.
-		count = getFolderDao().getNumberOfNetFolders( selectSpec, zoneId );
-		
-		return count;
-	}
-	
-
 	/**
 	 * Determine if the given net folder server is fully configured
 	 */
@@ -937,21 +811,14 @@ public class NetFolderHelper
 		String netFolderRootName,
 		String relativePath,
 		ScheduleInfo scheduleInfo,
-		SyncScheduleOption syncScheduleOption,
-		boolean indexContent,
-		Boolean fullSyncDirOnly ) throws AccessControlException, WriteFilesException, WriteEntryDataException
+		boolean indexContent ) throws AccessControlException, WriteFilesException, WriteEntryDataException
 	{
 		// Modify the binder with the net folder information.
-		folderModule.modifyNetFolder(id, netFolderName, netFolderRootName, relativePath, null, indexContent, syncScheduleOption, fullSyncDirOnly );
+		folderModule.modifyNetFolder(id, netFolderName, netFolderRootName, relativePath, null, indexContent);
 
 		// Set the net folder's sync schedule
 		if ( scheduleInfo != null )
 		{
-			// If the sync schedule option is to use the net folder server's schedule then
-			// disable the schedule on the net folder.
-			if ( syncScheduleOption == SyncScheduleOption.useNetFolderServerSchedule )
-				scheduleInfo.setEnabled( false );
-			
 			scheduleInfo.setFolderId( id );
 			folderModule.setSynchronizationSchedule( scheduleInfo, id );
 		}
@@ -976,10 +843,6 @@ public class NetFolderHelper
 		boolean allowSelfSignedCerts,
 		boolean isSharePointServer,
 		Set<Long> listOfPrincipals,
-		Boolean fullSyncDirOnly,
-		AuthenticationType authType,
-		Boolean useDirectoryRights,
-		Integer cachedRightsRefreshInterval,
 		ScheduleInfo scheduleInfo )
 	{
 		Map options;
@@ -1004,10 +867,6 @@ public class NetFolderHelper
 		options.put( ObjectKeys.RESOURCE_DRIVER_READ_ONLY, Boolean.FALSE );
 		options.put( ObjectKeys.RESOURCE_DRIVER_ACCOUNT_NAME, proxyName ); 
 		options.put( ObjectKeys.RESOURCE_DRIVER_PASSWORD, proxyPwd );
-		options.put( ObjectKeys.RESOURCE_DRIVER_FULL_SYNC_DIR_ONLY, fullSyncDirOnly );
-		options.put( ObjectKeys.RESOURCE_DRIVER_AUTHENTICATION_TYPE, authType );
-		options.put( ObjectKeys.RESOURCE_DRIVER_USE_DIRECTORY_RIGHTS, useDirectoryRights );
-		options.put( ObjectKeys.RESOURCE_DRIVER_CACHED_RIGHTS_REFRESH_INTERVAL, cachedRightsRefreshInterval );
 
 		// Always prevent the top level folder from being deleted
 		// This is forced so that the folder could not accidentally be deleted if the 
@@ -1109,17 +968,13 @@ public class NetFolderHelper
 		if ( reIndexNeeded )
 		{
 			List<Long> listOfNetFolderIds;
-			NetFolderSelectSpec selectSpec;
 
 			// Find all of the net folders that reference this net folder server.
-			selectSpec = new NetFolderSelectSpec();
-			selectSpec.setRootName( rdConfig.getName() );
-			selectSpec.setIncludeHomeDirNetFolders( true );
-			selectSpec.setFilter( null );
 			listOfNetFolderIds = NetFolderHelper.getAllNetFolders(
 														binderModule,
 														workspaceModule,
-														selectSpec );
+														rdConfig.getName(),
+														true );
 
 			if ( listOfNetFolderIds != null )
 			{
@@ -1204,126 +1059,6 @@ public class NetFolderHelper
 		String className = SPropsUtil.getString("job.net.folder.server.synchronization.class", "org.kablink.teaming.jobs.DefaultNetFolderServerSynchronization");
 
 		return (NetFolderServerSynchronization)ReflectHelper.getInstance(className);
-    }
-	
-	/**
-	 * Return the SyncScheduleOption for the given binder id
-	 */
-	public static SyncScheduleOption getSyncScheduleOption(
-		BinderModule binderModule,
-		Long folderId )
-	{
-		Binder binder;
-		
-		binder = binderModule.getBinder( folderId );
-		if ( binder != null )
-			return binder.getSyncScheduleOption();
-		
-		return null;
-	}
-
-    public static List<NetFolderRole> getNetFolderRights(
-            AllModulesInjected ami,
-            Binder binder )
-    {
-        Map<Long, NetFolderRole> roleMap = new HashMap<Long, NetFolderRole>();
-        List<NetFolderRole.RoleType> listOfRoles;
-        AdminModule adminModule;
-
-        listOfRoles = new ArrayList<NetFolderRole.RoleType>();
-        listOfRoles.add( NetFolderRole.RoleType.AllowAccess );
-        listOfRoles.add(NetFolderRole.RoleType.ShareExternal);
-        listOfRoles.add(NetFolderRole.RoleType.ShareForward);
-        listOfRoles.add(NetFolderRole.RoleType.ShareInternal);
-        listOfRoles.add( NetFolderRole.RoleType.SharePublic );
-
-        adminModule = ami.getAdminModule();
-
-        for ( NetFolderRole.RoleType nextRole : listOfRoles )
-        {
-            WorkAreaFunctionMembership membership;
-            Set<Long> memberIds;
-            List principals = null;
-
-            // Get the Function id for the given role
-            String internalId = nextRole.getInternalId();
-            if (internalId==null) {
-                continue;
-            }
-            Function function = adminModule.getFunctionByInternalId(internalId);
-            // Did we find the function for the given role?
-            if ( function == null ){
-                continue;
-            }
-
-            // Get the role's membership
-            membership = adminModule.getWorkAreaFunctionMembership( binder, function.getId() );
-            if ( membership == null )
-                continue;
-
-            // Get the member ids
-            memberIds = membership.getMemberIds();
-            if ( memberIds == null )
-                continue;
-
-            try {
-                principals = ResolveIds.getPrincipals(memberIds);
-            } catch ( Exception ex ) {
-                // Nothing to do
-            }
-
-            if ( MiscUtil.hasItems( principals ) == false )
-                continue;
-
-            for ( Object nextObj :  principals ) {
-                if ( nextObj instanceof Principal)
-                {
-                    Principal nextPrincipal = (Principal) nextObj;
-                    NetFolderRole role = roleMap.get(nextPrincipal.getId());
-                    if (role==null) {
-                        role = new NetFolderRole(nextPrincipal);
-                        roleMap.put(nextPrincipal.getId(), role);
-                    }
-                    role.addRole(nextRole);
-                }
-            }
-        }// end for
-
-        return new ArrayList(roleMap.values());
-    }
-
-    public static void setNetFolderRights(AllModulesInjected ami, Long binderId, List<NetFolderRole> roles) {
-        AdminModule adminModule;
-        Binder binder;
-
-        adminModule = ami.getAdminModule();
-
-        // Get the binder's work area
-        binder = ami.getBinderModule().getBinder( binderId );
-
-        Map<NetFolderRole.RoleType, List<Long>> memberMap = new HashMap<NetFolderRole.RoleType, List<Long>>();
-
-        for ( NetFolderRole.RoleType role : NetFolderRole.RoleType.values()) {
-            if (role.isApplicableToNetFolders()) {
-                memberMap.put(role, new ArrayList<Long>());
-            }
-        }
-
-        for (NetFolderRole role : roles) {
-            Long id = role.getPrincipal().getId();
-            for (NetFolderRole.RoleType roleType : role.getRoles()) {
-                if (memberMap.containsKey(roleType)) {
-                    memberMap.get(roleType).add(id);
-                }
-            }
-        }
-
-        for (Map.Entry<NetFolderRole.RoleType, List<Long>> entry : memberMap.entrySet()) {
-            Function function = adminModule.getFunctionByInternalId(entry.getKey().getInternalId());
-            if (function!=null) {
-                adminModule.resetWorkAreaFunctionMemberships(binder, function.getId(), entry.getValue());
-            }
-        }
-    }
+    }    
 
 }

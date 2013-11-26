@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -70,7 +70,10 @@ public class EmptyCollectionComposite extends ResizeComposite {
 		// ...initialize the data members requiring it...
 		m_filrImages = GwtTeaming.getFilrImageBundle();
 		m_messages   = GwtTeaming.getMessages();
-		m_product    = GwtClientHelper.getProductName();
+		m_product    =
+			(GwtClientHelper.isLicenseFilr() ?
+				m_messages.productFilr() :
+				m_messages.productVibe());
 		
 		// ...create the content...
 		m_rootPanel = new VibeFlowPanel();
@@ -95,7 +98,6 @@ public class EmptyCollectionComposite extends ResizeComposite {
 		case MY_FILES:        ir = m_filrImages.myFiles_transparent_72();      break;
 		case SHARED_BY_ME:    ir = m_filrImages.sharedByMe_transparent_72();   break;
 		case SHARED_WITH_ME:  ir = m_filrImages.sharedWithMe_transparent_72(); break;
-		case SHARED_PUBLIC:   ir = m_filrImages.sharedPublic_transparent_72(); break;
 		case NET_FOLDERS:     ir = m_filrImages.netFolders_transparent_72();   break;
 		}
 		Image i = GwtClientHelper.buildImage(ir.getSafeUri().asString());
@@ -111,7 +113,6 @@ public class EmptyCollectionComposite extends ResizeComposite {
 		case MY_FILES:        s = m_messages.myFiles();      break;
 		case SHARED_BY_ME:    s = m_messages.sharedByMe();   break;
 		case SHARED_WITH_ME:  s = m_messages.sharedWithMe(); break;
-		case SHARED_PUBLIC:   s = m_messages.sharedPublic(); break;
 		case NET_FOLDERS:     s = m_messages.netFolders();   break;
 		}
 		fp.getElement().setInnerText(s);
@@ -125,7 +126,6 @@ public class EmptyCollectionComposite extends ResizeComposite {
 		case MY_FILES:        s = m_messages.emptyCollection_SubHead_MyFiles();      break;
 		case SHARED_BY_ME:    s = m_messages.emptyCollection_SubHead_SharedByMe();   break;
 		case SHARED_WITH_ME:  s = m_messages.emptyCollection_SubHead_SharedWithMe(); break;
-		case SHARED_PUBLIC:   s = m_messages.emptyCollection_SubHead_SharedPublic(); break;
 		case NET_FOLDERS:     s = m_messages.emptyCollection_SubHead_NetFolders();   break;
 		}
 		fp.getElement().setInnerText(s);
@@ -139,7 +139,6 @@ public class EmptyCollectionComposite extends ResizeComposite {
 		case MY_FILES:        s = m_messages.emptyCollection_Info_MyFiles(     m_product); break;
 		case SHARED_BY_ME:    s = m_messages.emptyCollection_Info_SharedByMe_1(m_product); break;
 		case SHARED_WITH_ME:  s = m_messages.emptyCollection_Info_SharedWithMe(m_product); break;
-		case SHARED_PUBLIC:   s = m_messages.emptyCollection_Info_SharedPublic(m_product); break;
 		case NET_FOLDERS:     s = m_messages.emptyCollection_Info_NetFolders_1(m_product); break;
 		}
 		fp.getElement().setInnerText(s);

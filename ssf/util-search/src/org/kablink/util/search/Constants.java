@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -119,7 +119,6 @@ public class Constants {
 	public static final String ROOT_FOLDER_ACL_FIELD = "_rootAcl";
 	public static final String ROOT_FOLDER_ALL = "all";
 	public static final String SHARED = "_shared";
-	public static final String SHARE_CREATOR = "_shareCreator";
 	public static final String SHARED_IS_SHARED = "true";
 	public static final String SHARED_IDS = "_sharedIds";
 	public static final String SHARED_TEAM_IDS = "_sharedTeamIds";
@@ -236,7 +235,6 @@ public class Constants {
 	public static final String FILE_EXT_FIELD = "_fileExt";
 	public static final String FILE_TYPE_FIELD = "_fileType";
 	public static final String FILE_ID_FIELD = "_fileID";
-	public static final String PRIMARY_FILE_ID_FIELD = "_primaryFileID";
 	public static final String FILE_ONLY_ID_FIELD = "_fileOnlyID";
 	public static final String FILE_CREATOR_ID_FIELD = "_fileCreatorId";
 	public static final String FILE_SIZE_FIELD = "_fileSize";
@@ -290,23 +288,18 @@ public class Constants {
 	public static final String ICON_NAME_FIELD = "_iconName";
 	public static final String TASK_COMPLETED_DATE_FIELD = "_taskCompleted";
 	public static final String IS_GROUP_DYNAMIC_FIELD = "_isGroupDynamic";
-	public static final String ENTRY_ACL_PARENT_ID_FIELD = "_entryAclParentId"; // This field is used to represent ACL relationship with the parent
+	public static final String ENTRY_ACL_PARENT_ID_FIELD = "_entryAclParentId"; // This numeric field is only used for entries that inherit ACLs from parent folders.
 	public static final String FOLDER_ID_FIELD = "_folderId"; // This numeric field contains folder ID. Used only for folders.
 	public static final String GENERAL_TEXT_FIELD = "_generalText"; // This field contains textual representation of all field values except for title and description fields.
 	public static final String IDENTITY_INTERNAL_FIELD = "_iInternal";
 	public static final String IS_HOME_DIR_FIELD = "_isHomeDir";
-	public static final String IS_CLOUD_FOLDER_FIELD = "_isCloud";
 	public static final String IS_MYFILES_DIR_FIELD = "_isMyFilesDir";
-    public static final String RESOURCE_DRIVER_NAME_FIELD = "_resourceDriverName"; // Applicable to all mirrored folders and files (legacy + net + cloud)
-    public static final String CLOUD_FOLDER_ROOT_FIELD = "_cloudFolderRoot";
+    public static final String RESOURCE_DRIVER_NAME_FIELD = "_resourceDriverName";
     public static final String ALLOW_MOBILE_SYNC_FIELD = "_allowMobileSync";
     public static final String ALLOW_DESKTOP_SYNC_FIELD = "_allowDesktopSync";
     public static final String IS_LDAP_CONTAINER_FIELD = "_isLdapContainer";
     public static final String IS_GROUP_FROM_LDAP_FIELD = "_isGroupFromLdap";
     public static final String CONTENT_INDEXED_FIELD = "_contentIndexed";
-    public static final String HIDDEN_FROM_SEARCH_FIELD = "_hiddenSearch";
-    public static final String HIDDEN_FROM_FIND_USER_FIELD = "_hiddenFindUser";
-    public static final String RESOURCE_PATH_FIELD = "_resourcePath"; // Only for net folder (famt) files and folders
 
 	/**
 	 * Constructor method.

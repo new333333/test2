@@ -35,12 +35,9 @@ package org.kablink.teaming.remoting.rest.v1.resource;
 import com.sun.jersey.spi.resource.Singleton;
 import org.dom4j.Document;
 import org.kablink.teaming.ObjectKeys;
-import org.kablink.teaming.domain.Attachment;
 import org.kablink.teaming.domain.Binder;
-import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.EntityIdentifier;
-import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.NoBinderByTheIdException;
 import org.kablink.teaming.domain.TemplateBinder;
@@ -76,7 +73,6 @@ import org.kablink.util.search.Restrictions;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
-import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -218,26 +214,6 @@ public class FolderResource extends AbstractBinderResource {
         return Response.ok(subBinders).lastModified(lastModified).build();
     }
 
-    @GET
-    @Path("{id}/children")
-    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    public Response getChildren(@PathParam("id") long id,
-                                @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr,
-                                @QueryParam("first") @DefaultValue("0") Integer offset,
-                                @QueryParam("count") @DefaultValue("-1") Integer maxCount,
-                                @Context HttpServletRequest request) {
-        Map<String, Object> nextParams = new HashMap<String, Object>();
-        nextParams.put("description_format", descriptionFormatStr);
-        Date lastModified = getLibraryModifiedDate(new Long[]{id}, false);
-        Date ifModifiedSince = getIfModifiedSinceDate(request);
-        if (ifModifiedSince!=null && !ifModifiedSince.before(lastModified)) {
-            throw new NotModifiedException();
-        }
-        SearchResultList<SearchableObject> children = getChildren(id, null, true, false, true, offset, maxCount, "/folders/" + id + "/children",
-                nextParams, toDomainFormat(descriptionFormatStr), ifModifiedSince);
-        return Response.ok(children).lastModified(lastModified).build();
-    }
-
     // Read sub-folders
 	@GET
 	@Path("{id}/folders")
@@ -377,34 +353,6 @@ public class FolderResource extends AbstractBinderResource {
                 includeBinders, includeFolderEntries, includeReplies, includeFiles, includeParentPaths, toDomainFormat(descriptionFormatStr),
                 "/folders/" + id + "/library_entities");
 	}
-
-    @POST
-    @Path("{id}/library_files")
-    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    public FileProperties copyFile(@PathParam("id") long id,
-                                   @FormParam("file_name") String fileName,
-                                   @FormParam("source_id") String sourceId,
-                                   @Context HttpServletRequest request) throws WriteFilesException, WriteEntryDataException {
-        Folder folder = _getFolder(id);
-        if (fileName==null) {
-            throw new BadRequestException(ApiErrorCode.BAD_INPUT, "No file_name parameter was supplied in the POST data.");
-        }
-        if (sourceId==null) {
-            throw new BadRequestException(ApiErrorCode.BAD_INPUT, "No source_id parameter was supplied in the POST data.");
-        }
-        FileAttachment existing = findFileAttachment(sourceId);
-        DefinableEntity origEntry = existing.getOwner().getEntity();
-        org.kablink.teaming.domain.FolderEntry newEntry = getFolderModule().copyEntry(origEntry.getParentBinder().getId(),
-                origEntry.getId(), id, new String[] {fileName}, null);
-        Set<Attachment> attachments = newEntry.getAttachments();
-        for (Attachment attachment : attachments) {
-            if (attachment instanceof FileAttachment) {
-                return ResourceUtil.buildFileProperties((FileAttachment) attachment);
-            }
-        }
-        return null;
-    }
 
     @POST
     @Path("{id}/library_files")

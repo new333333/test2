@@ -1,32 +1,39 @@
-//>>built
-define("dojox/widget/FeedPortlet",["dijit","dojo","dojox","dojo/require!dojox/widget/Portlet,dijit/Tooltip,dijit/form/TextBox,dijit/form/Button,dojox/data/GoogleFeedStore"],function(_1,_2,_3){
-_2.provide("dojox.widget.FeedPortlet");
-_2.require("dojox.widget.Portlet");
-_2.require("dijit.Tooltip");
-_2.require("dijit.form.TextBox");
-_2.require("dijit.form.Button");
-_2.require("dojox.data.GoogleFeedStore");
-_2.declare("dojox.widget.FeedPortlet",_3.widget.Portlet,{local:false,maxResults:5,url:"",openNew:true,showFeedTitle:true,postCreate:function(){
+/*
+	Copyright (c) 2004-2009, The Dojo Foundation All Rights Reserved.
+	Available via Academic Free License >= 2.1 OR the modified BSD license.
+	see: http://dojotoolkit.org/license for details
+*/
+
+
+if(!dojo._hasResource["dojox.widget.FeedPortlet"]){
+dojo._hasResource["dojox.widget.FeedPortlet"]=true;
+dojo.provide("dojox.widget.FeedPortlet");
+dojo.require("dojox.widget.Portlet");
+dojo.require("dijit.Tooltip");
+dojo.require("dijit.form.TextBox");
+dojo.require("dijit.form.Button");
+dojo.require("dojox.data.GoogleFeedStore");
+dojo.declare("dojox.widget.FeedPortlet",dojox.widget.Portlet,{local:false,maxResults:5,url:"",openNew:true,showFeedTitle:true,postCreate:function(){
 this.inherited(arguments);
-if(this.local&&!_3.data.AtomReadStore){
+if(this.local&&!dojox.data.AtomReadStore){
 throw Error(this.declaredClass+": To use local feeds, you must include dojox.data.AtomReadStore on the page.");
 }
 },onFeedError:function(){
 this.containerNode.innerHTML="Error accessing the feed.";
-},addChild:function(_4){
+},addChild:function(_1){
 this.inherited(arguments);
-var _5=_4.attr("feedPortletUrl");
-if(_5){
-this.set("url",_5);
+var _2=_1.attr("feedPortletUrl");
+if(_2){
+this.attr("url",_2);
 }
-},_getTitle:function(_6){
-var t=this.store.getValue(_6,"title");
+},_getTitle:function(_3){
+var t=this.store.getValue(_3,"title");
 return this.local?t.text:t;
-},_getLink:function(_7){
-var l=this.store.getValue(_7,"link");
+},_getLink:function(_4){
+var l=this.store.getValue(_4,"link");
 return this.local?l.href:l;
-},_getContent:function(_8){
-var c=this.store.getValue(_8,"summary");
+},_getContent:function(_5){
+var c=this.store.getValue(_5,"summary");
 if(!c){
 return null;
 }
@@ -36,8 +43,8 @@ c=c.text;
 c=c.split("<script").join("<!--").split("</script>").join("-->");
 c=c.split("<iframe").join("<!--").split("</iframe>").join("-->");
 return c;
-},_setUrlAttr:function(_9){
-this.url=_9;
+},_setUrlAttr:function(_6){
+this.url=_6;
 if(this._started){
 this.load();
 }
@@ -54,137 +61,132 @@ this.load();
 }
 },load:function(){
 if(this._resultList){
-_2.destroy(this._resultList);
+dojo.destroy(this._resultList);
 }
-var _a,_b;
+var _7,_8;
 if(this.local){
-_a=new _3.data.AtomReadStore({url:this.url});
-_b={};
+_7=new dojox.data.AtomReadStore({url:this.url});
+_8={};
 }else{
-_a=new _3.data.GoogleFeedStore();
-_b={url:this.url};
+_7=new dojox.data.GoogleFeedStore();
+_8={url:this.url};
 }
-var _c={query:_b,count:this.maxResults,onComplete:_2.hitch(this,function(_d){
-if(this.showFeedTitle&&_a.getFeedValue){
-var _e=this.store.getFeedValue("title");
+var _9={query:_8,count:this.maxResults,onComplete:dojo.hitch(this,function(_a){
+if(this.showFeedTitle&&_7.getFeedValue){
+var _b=this.store.getFeedValue("title");
+if(_b){
+this.attr("title",_b.text?_b.text:_b);
+}
+}
+this.generateResults(_a);
+}),onError:dojo.hitch(this,"onFeedError")};
+this.store=_7;
+_7.fetch(_9);
+},generateResults:function(_c){
+var _d=this.store;
+var _e;
+var ul=this._resultList=dojo.create("ul",{"class":"dojoxFeedPortletList"},this.containerNode);
+dojo.forEach(_c,dojo.hitch(this,function(_f){
+var li=dojo.create("li",{innerHTML:"<a href=\""+this._getLink(_f)+"\""+(this.openNew?" target=\"_blank\"":"")+">"+this._getTitle(_f)+"</a>"},ul);
+dojo.connect(li,"onmouseover",dojo.hitch(this,function(evt){
 if(_e){
-this.set("title",_e.text?_e.text:_e);
+clearTimeout(_e);
 }
-}
-this.generateResults(_d);
-}),onError:_2.hitch(this,"onFeedError")};
-this.store=_a;
-_a.fetch(_c);
-},generateResults:function(_f){
-var _10=this.store;
-var _11;
-var ul=(this._resultList=_2.create("ul",{"class":"dojoxFeedPortletList"},this.containerNode));
-_2.forEach(_f,_2.hitch(this,function(_12){
-var li=_2.create("li",{innerHTML:"<a href=\""+this._getLink(_12)+"\""+(this.openNew?" target=\"_blank\"":"")+">"+this._getTitle(_12)+"</a>"},ul);
-_2.connect(li,"onmouseover",_2.hitch(this,function(evt){
-if(_11){
-clearTimeout(_11);
-}
-_11=setTimeout(_2.hitch(this,function(){
-_11=null;
-var _13=this._getContent(_12);
-if(!_13){
+_e=setTimeout(dojo.hitch(this,function(){
+_e=null;
+var _10=this._getContent(_f);
+if(!_10){
 return;
 }
-var _14="<div class=\"dojoxFeedPortletPreview\">"+_13+"</div>";
-_2.query("li",ul).forEach(function(_15){
-if(_15!=evt.target){
-_1.hideTooltip(_15);
+var _11="<div class=\"dojoxFeedPortletPreview\">"+_10+"</div>";
+dojo.query("li",ul).forEach(function(_12){
+if(_12!=evt.target){
+dijit.hideTooltip(_12);
 }
 });
-_1.showTooltip(_14,li.firstChild,!this.isLeftToRight());
+dijit.showTooltip(_11,li.firstChild);
 }),500);
 }));
-_2.connect(li,"onmouseout",function(){
-if(_11){
-clearTimeout(_11);
-_11=null;
+dojo.connect(li,"onmouseout",function(){
+if(_e){
+clearTimeout(_e);
+_e=null;
 }
-_1.hideTooltip(li.firstChild);
+dijit.hideTooltip(li.firstChild);
 });
 }));
 this.resize();
 }});
-_2.declare("dojox.widget.ExpandableFeedPortlet",_3.widget.FeedPortlet,{onlyOpenOne:false,generateResults:function(_16){
-var _17=this.store;
-var _18="dojoxPortletToggleIcon";
-var _19="dojoxPortletItemCollapsed";
-var _1a="dojoxPortletItemOpen";
-var _1b;
-var ul=(this._resultList=_2.create("ul",{"class":"dojoxFeedPortletExpandableList"},this.containerNode));
-_2.forEach(_16,_2.hitch(this,_2.hitch(this,function(_1c){
-var li=_2.create("li",{"class":_19},ul);
-var _1d=_2.create("div",{style:"width: 100%;"},li);
-var _1e=_2.create("div",{"class":"dojoxPortletItemSummary",innerHTML:this._getContent(_1c)},li);
-_2.create("span",{"class":_18,innerHTML:"<img src='"+_2.config.baseUrl+"/resources/blank.gif'>"},_1d);
-var a=_2.create("a",{href:this._getLink(_1c),innerHTML:this._getTitle(_1c)},_1d);
+dojo.declare("dojox.widget.ExpandableFeedPortlet",dojox.widget.FeedPortlet,{onlyOpenOne:false,generateResults:function(_13){
+var _14=this.store;
+var _15="dojoxPortletToggleIcon";
+var _16="dojoxPortletItemCollapsed";
+var _17="dojoxPortletItemOpen";
+var _18;
+var ul=this._resultList=dojo.create("ul",{"class":"dojoxFeedPortletExpandableList"},this.containerNode);
+dojo.forEach(_13,dojo.hitch(this,dojo.hitch(this,function(_19){
+var li=dojo.create("li",{"class":_16},ul);
+var _1a=dojo.create("div",{style:"width: 100%;"},li);
+var _1b=dojo.create("div",{"class":"dojoxPortletItemSummary",innerHTML:this._getContent(_19)},li);
+dojo.create("span",{"class":_15,innerHTML:"<img src='"+dojo.config.baseUrl+"/resources/blank.gif'>"},_1a);
+var a=dojo.create("a",{href:this._getLink(_19),innerHTML:this._getTitle(_19)},_1a);
 if(this.openNew){
-_2.attr(a,"target","_blank");
+dojo.attr(a,"target","_blank");
 }
 })));
-_2.connect(ul,"onclick",_2.hitch(this,function(evt){
-if(_2.hasClass(evt.target,_18)||_2.hasClass(evt.target.parentNode,_18)){
-_2.stopEvent(evt);
+dojo.connect(ul,"onclick",dojo.hitch(this,function(evt){
+if(dojo.hasClass(evt.target,_15)||dojo.hasClass(evt.target.parentNode,_15)){
+dojo.stopEvent(evt);
 var li=evt.target.parentNode;
 while(li.tagName!="LI"){
 li=li.parentNode;
 }
 if(this.onlyOpenOne){
-_2.query("li",ul).filter(function(_1f){
-return _1f!=li;
-}).removeClass(_1a).addClass(_19);
+dojo.query("li",ul).filter(function(_1c){
+return _1c!=li;
+}).removeClass(_17).addClass(_16);
 }
-var _20=_2.hasClass(li,_1a);
-_2.toggleClass(li,_1a,!_20);
-_2.toggleClass(li,_19,_20);
+var _1d=dojo.hasClass(li,_17);
+dojo.toggleClass(li,_17,!_1d);
+dojo.toggleClass(li,_16,_1d);
 }
 }));
 }});
-_2.declare("dojox.widget.PortletFeedSettings",_3.widget.PortletSettings,{"class":"dojoxPortletFeedSettings",urls:null,selectedIndex:0,buildRendering:function(){
-var s;
+dojo.declare("dojox.widget.PortletFeedSettings",dojox.widget.PortletSettings,{"class":"dojoxPortletFeedSettings",urls:null,selectedIndex:0,buildRendering:function(){
 if(this.urls&&this.urls.length>0){
-s=_2.create("select");
+var s=dojo.create("select");
 if(this.srcNodeRef){
-_2.place(s,this.srcNodeRef,"before");
-_2.destroy(this.srcNodeRef);
+dojo.place(s,this.srcNodeRef,"before");
+dojo.destroy(this.srcNodeRef);
 }
 this.srcNodeRef=s;
-_2.forEach(this.urls,function(url){
-_2.create("option",{value:url.url||url,innerHTML:url.label||url},s);
+dojo.forEach(this.urls,function(url){
+dojo.create("option",{value:url.url||url,innerHTML:url.label||url},s);
 });
 }
 if(this.srcNodeRef.tagName=="SELECT"){
 this.text=this.srcNodeRef;
-var div=_2.create("div",{},this.srcNodeRef,"before");
+var div=dojo.create("div",{},this.srcNodeRef,"before");
 div.appendChild(this.text);
 this.srcNodeRef=div;
-_2.query("option",this.text).filter("return !item.value;").forEach("item.value = item.innerHTML");
+dojo.query("option",this.text).filter("return !item.value;").forEach("item.value = item.innerHTML");
 if(!this.text.value){
-if(this.content&&this.text.options.length==0){
-this.text.appendChild(this.content);
-}
-_2.attr(s||this.text,"value",this.text.options[this.selectedIndex].value);
+dojo.attr(s||this.text,"value",this.text.options[this.selectedIndex].value);
 }
 }
 this.inherited(arguments);
-},_setContentAttr:function(){
 },postCreate:function(){
 if(!this.text){
-var _21=this.text=new _1.form.TextBox({});
-_2.create("span",{innerHTML:"Choose Url: "},this.domNode);
-this.addChild(_21);
+var _1e=this.text=new dijit.form.TextBox({});
+dojo.create("span",{innerHTML:"Choose Url: "},this.domNode);
+this.addChild(_1e);
 }
-this.addChild(new _1.form.Button({label:"Load",onClick:_2.hitch(this,function(){
+this.addChild(new dijit.form.Button({label:"Load",onClick:dojo.hitch(this,function(){
 this.portlet.attr("url",(this.text.tagName=="SELECT")?this.text.value:this.text.attr("value"));
 if(this.text.tagName=="SELECT"){
-_2.some(this.text.options,_2.hitch(this,function(opt,idx){
+dojo.some(this.text.options,dojo.hitch(this,function(opt,idx){
 if(opt.selected){
-this.set("selectedIndex",idx);
+this.attr("selectedIndex",idx);
 return true;
 }
 return false;
@@ -192,7 +194,7 @@ return false;
 }
 this.toggle();
 })}));
-this.addChild(new _1.form.Button({label:"Cancel",onClick:_2.hitch(this,"toggle")}));
+this.addChild(new dijit.form.Button({label:"Cancel",onClick:dojo.hitch(this,"toggle")}));
 this.inherited(arguments);
 },startup:function(){
 if(this._started){
@@ -203,23 +205,23 @@ if(!this.portlet){
 throw Error(this.declaredClass+": A PortletFeedSettings widget cannot exist without a Portlet.");
 }
 if(this.text.tagName=="SELECT"){
-_2.forEach(this.text.options,_2.hitch(this,function(opt,_22){
-_2.attr(opt,"selected",_22==this.selectedIndex);
+dojo.forEach(this.text.options,dojo.hitch(this,function(opt,_1f){
+dojo.attr(opt,"selected",_1f==this.selectedIndex);
 }));
 }
 var url=this.portlet.attr("url");
 if(url){
 if(this.text.tagName=="SELECT"){
-if(!this.urls&&_2.query("option[value='"+url+"']",this.text).length<1){
-_2.place(_2.create("option",{value:url,innerHTML:url,selected:"true"}),this.text,"first");
+if(!this.urls&&dojo.query("option[value='"+url+"']",this.text).length<1){
+dojo.place(dojo.create("option",{value:url,innerHTML:url,selected:"true"}),this.text,"first");
 }
 }else{
 this.text.attr("value",url);
 }
 }else{
-this.portlet.attr("url",this.get("feedPortletUrl"));
+this.portlet.attr("url",this.attr("feedPortletUrl"));
 }
 },_getFeedPortletUrlAttr:function(){
 return this.text.value;
 }});
-});
+}

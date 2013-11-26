@@ -164,7 +164,7 @@
 	
 	<bean id="scheduler" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
 		<property name="dataSource"><ref bean="dataSource"/></property>
-		<property name="autoStartup"><value>${org.quartz.auto.startup}</value></property>
+		<property name="autoStartup"><value>true</value></property>
 		<!--Need enough time for modules to startup and possibly register jobs -->
 		<property name="startupDelay"><value>60</value></property>
 		<property name="schedulerName"><value>Sitescape</value></property>
@@ -693,10 +693,6 @@
 				<prop key="setLogTableKeepDays">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="setMobileAppsConfig">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="setJitsConfig">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
-				<prop key="setAllowShareWithLdapGroups">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
-				<prop key="setDownloadEnabled">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
-				<prop key="setWebAccessEnabled">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
-				<prop key="setNameCompletionSettings">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 			</props>
 		</property>
 	</bean>
@@ -750,7 +746,6 @@
 				<prop key="set*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="unreserveEntry">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="changeEntryType">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
-				<prop key="fileSynchronize">PROPAGATION_REQUIRES_NEW,ISOLATION_READ_COMMITTED</prop>
 			</props>
 		</property>
 	</bean>
@@ -811,7 +806,6 @@
 				<prop key="setNotification*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="setPosting*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="setTag*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
-				<prop key="setMyFilesDir">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="preDeleteBinder*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="restoreBinder">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="deleteTag">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
@@ -961,7 +955,6 @@
 		<!-- Transaction is managed using transactionTemplate -->
 		<property name="transactionAttributes">
 			<props>
-				<prop key="setShareLists">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 			</props>
 		</property>
 	</bean>			

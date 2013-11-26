@@ -6,6 +6,11 @@
 		<param-name>webAppRootKey</param-name>
 		<param-value>ssr.root</param-value>
 	</context-param>
+
+	<context-param>
+		<param-name>log4jConfigLocation</param-name>
+		<param-value>/WEB-INF/log4j.properties</param-value>
+	</context-param>
     
 	<context-param>
 		<param-name>contextConfigLocation</param-name>
@@ -30,7 +35,11 @@
 		<filter-name>springSecurityFilterChain</filter-name>
 		<url-pattern>/secure/ws/*</url-pattern>
 	</filter-mapping>
-		
+	
+    <listener>
+		<listener-class>org.springframework.web.util.Log4jConfigListener</listener-class>
+	</listener>
+	
 	<listener>
 		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
 	</listener>

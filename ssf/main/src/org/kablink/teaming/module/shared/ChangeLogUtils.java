@@ -48,30 +48,23 @@ import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.ChangeLog;
 import org.kablink.teaming.domain.CustomAttribute;
 import org.kablink.teaming.domain.DefinableEntity;
+import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.ShareItem;
 import org.kablink.teaming.domain.VersionAttachment;
 import org.kablink.teaming.domain.WorkflowResponse;
 import org.kablink.teaming.domain.WorkflowState;
 import org.kablink.teaming.domain.WorkflowSupport;
-import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.module.sharing.SharingModule;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.web.util.DefinitionHelper;
+import org.kablink.util.Validator;
 
 
 public class ChangeLogUtils {
 
 	protected static SharingModule getSharingModule() {
 		return (SharingModule)SpringContextUtil.getBean("sharingModule");
-	}
-
-	protected static CoreDao getCoreDao() {
-		return (CoreDao)SpringContextUtil.getBean("coreDao");
-	}
-
-	protected static AdminModule getAdminModule() {
-		return (AdminModule)SpringContextUtil.getBean("adminModule");
 	}
 
 	public static Element buildLog(ChangeLog changes, DefinableEntity entry) {
@@ -158,34 +151,4 @@ public class ChangeLogUtils {
 		return element;
 	}
 
-	public static ChangeLog create(DefinableEntity entity, String operation) {
-		ChangeLog changes = new ChangeLog(entity, operation);
-		changes.getEntityRoot(); // This causes some base data to be populated in the object
-		return changes;
-	}
-	
-	public static ChangeLog createAndBuild(DefinableEntity entity, String operation) {
-		ChangeLog changes = create(entity, operation);
-		buildLog(changes, entity);
-		return changes;
-	}
-	
-	public static ChangeLog createAndBuild(DefinableEntity entity, String operation, FileAttachment fa) {
-		ChangeLog changes = create(entity, operation);
-		buildLog(changes, fa);
-		return changes;
-	}
-	
-	public static ChangeLog createAndBuild(DefinableEntity entity, String operation, VersionAttachment va) {
-		ChangeLog changes = create(entity, operation);
-		buildLog(changes, va);
-		return changes;
-	}
-	
-	public static void save(ChangeLog changes) {
-		if (getAdminModule().isChangeLogEnabled()) {
-			getCoreDao().save(changes);
-		}
-	}
-	
 }

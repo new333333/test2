@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -58,8 +58,6 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
 
 /**
  * This widget is used to define a schedule of when something happens.
- * 
- * @author jwootton@novell.com
  */
 public class ScheduleWidget extends Composite
 {
@@ -276,19 +274,18 @@ public class ScheduleWidget extends Composite
 				m_repeatEveryRb = new RadioButton( "timeFrequency", messages.scheduleWidget_RepeatEveryLabel() );
 				table.setWidget( 0, 0, m_repeatEveryRb );
 				
-				String ds = GwtClientHelper.getRequestInfo().getDecimalSeparator();
 				m_repeatEveryListbox = new ListBox( false );
 				m_repeatEveryListbox.setVisibleItemCount( 1 );
-				m_repeatEveryListbox.addItem( ("0" + ds + "25"), "15" );
-				m_repeatEveryListbox.addItem( ("0" + ds +  "5"), "30" );
-				m_repeatEveryListbox.addItem( ("0" + ds + "75"), "45" );
-				m_repeatEveryListbox.addItem(  "1",               "1" );
-				m_repeatEveryListbox.addItem(  "2",               "2" );
-				m_repeatEveryListbox.addItem(  "3",               "3" );
-				m_repeatEveryListbox.addItem(  "4",               "4" );
-				m_repeatEveryListbox.addItem(  "6",               "6" );
-				m_repeatEveryListbox.addItem(  "8",               "8" );
-				m_repeatEveryListbox.addItem( "12",              "12" );
+				m_repeatEveryListbox.addItem( "0.25", "15" );
+				m_repeatEveryListbox.addItem( "0.5", "30" );
+				m_repeatEveryListbox.addItem( "0.75", "45" );
+				m_repeatEveryListbox.addItem( "1", "1" );
+				m_repeatEveryListbox.addItem( "2", "2" );
+				m_repeatEveryListbox.addItem( "3", "3" );
+				m_repeatEveryListbox.addItem( "4", "4" );
+				m_repeatEveryListbox.addItem( "6", "6" );
+				m_repeatEveryListbox.addItem( "8", "8" );
+				m_repeatEveryListbox.addItem( "12", "12" );
 				
 				table.setWidget( 0, 1, m_repeatEveryListbox );
 				table.setText( 0, 2, messages.scheduleWidget_HoursLabel() );
@@ -552,3 +549,4 @@ public class ScheduleWidget extends Composite
 		}
 	}
 }
+

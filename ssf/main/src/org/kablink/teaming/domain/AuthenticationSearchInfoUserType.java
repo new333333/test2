@@ -44,29 +44,13 @@ import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Node;
 import org.hibernate.HibernateException;
-import org.kablink.teaming.domain.LdapConnectionConfig.HomeDirCreationOption;
 import org.springframework.jdbc.support.lob.LobCreator;
 import org.springframework.jdbc.support.lob.LobHandler;
 import org.springframework.orm.hibernate3.support.ClobStringType;
 
 public class AuthenticationSearchInfoUserType extends ClobStringType { 
 
-	private final static String CUSTOM_CONFIG_OPTION = "customConfig";
-	private final static String HOME_DIR_ATTRIBUTE_OPTION = "homeDirAttribute";
-	private final static String CUSTOM_ATTRIBUTE_OPTION = "customAttribute";
-	private final static String DONT_CREATE_OPTION = "dontCreate";
-	
-	private final static String HOME_DIR_CONFIG_TAG_NAME = "homeDirConfig";
-	private final static String CUSTOM_CONFIG_TAG_NAME = "customConfig";
-	private final static String CUSTOM_ATTRIBUTE_TAG_NAME = "customAttribute";
-	
-	private final static String CREATION_OPTION_ATTRIBUTE_NAME = "creationOption";
-	private final static String NET_FOLDER_SERVER_NAME_ATTRIBUTE_NAME = "netFolderServerName";
-	private final static String NET_FOLDER_PATH_ATTRIBUTE_NAME = "netFolderPath";
-	private final static String CUSTOM_ATTRIBUTE_ATTRIBUTE_NAME = "attributeName";
-	
-    @Override
-	public Class returnedClass() { 
+    public Class returnedClass() { 
         return List.class; 
     }
  
@@ -78,107 +62,11 @@ public class AuthenticationSearchInfoUserType extends ClobStringType {
     		try {
     			Document doc = DocumentHelper.parseText(searches);
     			for(Object o : doc.selectNodes("//search")) {
-    				LdapConnectionConfig.SearchInfo searchInfo;
-    				Node homeDirConfigNode;
     				Node node = (Node) o;
-    				
     				String baseDn = node.selectSingleNode("baseDn").getText();
     				String filter = node.selectSingleNode("filter").getText();
     				boolean searchSubtree = "true".equals(node.selectSingleNode("@searchSubtree").getText());
-    				searchInfo = new LdapConnectionConfig.SearchInfo(baseDn, filter, searchSubtree);
-
-    				// Is there a <homeDirConfig> node?
-    				homeDirConfigNode = node.selectSingleNode( HOME_DIR_CONFIG_TAG_NAME );
-    				if ( homeDirConfigNode != null )
-    				{
-    					LdapConnectionConfig.HomeDirConfig homeDirConfig;
-    					Node creationOptionNode;
-    					
-    					// Yes
-    					homeDirConfig = new LdapConnectionConfig.HomeDirConfig();
-    					homeDirConfig.setCreationOption( HomeDirCreationOption.USE_HOME_DIRECTORY_ATTRIBUTE );
-    					
-    					// Get the "creationOption" attribute.
-    					creationOptionNode = homeDirConfigNode.selectSingleNode( "@" + CREATION_OPTION_ATTRIBUTE_NAME );
-    					if ( creationOptionNode != null )
-    					{
-    						String value;
-    						
-    						value = creationOptionNode.getText();
-    						if ( value != null )
-    						{
-    							if ( value.equalsIgnoreCase( CUSTOM_CONFIG_OPTION ) )
-    							{
-    								Node customConfigNode;
-
-    								// Get the <customConfig> element
-    								customConfigNode = homeDirConfigNode.selectSingleNode( CUSTOM_CONFIG_TAG_NAME );
-    								if ( customConfigNode != null )
-    								{
-    									String netFolderServerName = null;
-    									String path = null;
-    									Node attribNode;
-    									
-    									// Get the "netFolderServerName" attribute
-    									attribNode = customConfigNode.selectSingleNode( "@" + NET_FOLDER_SERVER_NAME_ATTRIBUTE_NAME );
-    									if ( attribNode != null )
-    										netFolderServerName = attribNode.getText();
-    									
-    									// Get the "netFolderPath" attribute
-    									attribNode = customConfigNode.selectSingleNode( "@" + NET_FOLDER_PATH_ATTRIBUTE_NAME );
-    									if ( attribNode != null )
-    										path = attribNode.getText();
-    									
-    									if ( netFolderServerName != null && path != null )
-    									{
-    	    								homeDirConfig.setCreationOption( HomeDirCreationOption.USE_CUSTOM_CONFIG );
-    										homeDirConfig.setNetFolderServerName( netFolderServerName );
-    										homeDirConfig.setPath( path );
-    									}
-    								}
-    							}
-    							else if ( value.equalsIgnoreCase( HOME_DIR_ATTRIBUTE_OPTION ) )
-    							{
-    								homeDirConfig.setCreationOption( HomeDirCreationOption.USE_HOME_DIRECTORY_ATTRIBUTE );
-    							}
-    							else if ( value.equalsIgnoreCase( CUSTOM_ATTRIBUTE_OPTION ) )
-    							{
-    								Node customAttribNode;
-    								
-    								// Get the <customAttribute> element
-    								customAttribNode = homeDirConfigNode.selectSingleNode( CUSTOM_ATTRIBUTE_TAG_NAME );
-    								if ( customAttribNode != null )
-    								{
-    									String attribName = null;
-    									Node attribNode;
-    									
-    									// Get the "attributeName" attribute
-    									attribNode = customAttribNode.selectSingleNode( "@" + CUSTOM_ATTRIBUTE_ATTRIBUTE_NAME );
-    									if ( attribNode != null )
-    										attribName = attribNode.getText();
-    									
-    									if ( attribName != null )
-    									{
-    										homeDirConfig.setAttributeName( attribName );
-    	    								homeDirConfig.setCreationOption( HomeDirCreationOption.USE_CUSTOM_ATTRIBUTE );
-    									}
-    								}
-    							}
-    							else if ( value.equalsIgnoreCase( DONT_CREATE_OPTION ) )
-    							{
-    								homeDirConfig.setCreationOption( HomeDirCreationOption.DONT_CREATE_HOME_DIR_NET_FOLDER );
-    							}
-    							else
-    							{
-    								homeDirConfig.setCreationOption( HomeDirCreationOption.USE_HOME_DIRECTORY_ATTRIBUTE );
-    							}
-    						}
-    					}
-    					
-    					searchInfo.setHomeDirConfig( homeDirConfig );
-    				}
-    				
-    				result.add( searchInfo );
+    				result.add(new LdapConnectionConfig.SearchInfo(baseDn, filter, searchSubtree));
     			}
     		} catch(Exception e) {
     			logger.warn("Unable to parse searches: " + searches);
@@ -187,8 +75,7 @@ public class AuthenticationSearchInfoUserType extends ClobStringType {
         return result; 
     }
  
-    @Override
-	public void nullSafeSetInternal(PreparedStatement preparedStatement, int index, Object value, LobCreator lobCreator) throws SQLException { 
+    public void nullSafeSetInternal(PreparedStatement preparedStatement, int index, Object value, LobCreator lobCreator) throws SQLException { 
         if (null == value) { 
             preparedStatement.setNull(index, Types.CLOB); 
         } else {
@@ -204,102 +91,6 @@ public class AuthenticationSearchInfoUserType extends ClobStringType {
 				// If the filter has a '&', '<', or '>' in it, the xml will not parse when we read it from the db
 				// and try to create an xml document.  Wrap the filter with <![CDATA[]]>.
     			xml.append( "<filter>" + wrapWithCDATA( us.getFilter() ) + "</filter>");
-    			
-    			// Add the HomeDirConfig info
-    			{
-    				LdapConnectionConfig.HomeDirConfig homeDirConfig;
-    				
-    				homeDirConfig = us.getHomeDirConfig();
-    				if ( homeDirConfig != null )
-    				{
-    					StringBuffer tmpXml;
-    					
-    					tmpXml = new StringBuffer( "" );
-    					
-        				switch ( homeDirConfig.getCreationOption() )
-        				{
-        				case USE_CUSTOM_CONFIG:
-        					String netFolderServerName = null;
-        					String netFolderPath = null;
-
-        					netFolderServerName = homeDirConfig.getNetFolderServerName();
-        					netFolderPath = homeDirConfig.getPath();
-            				if ( netFolderServerName != null && netFolderServerName.length() > 0 &&
-              						 netFolderPath != null && netFolderPath.length() > 0 )
-          					{
-                				// Add "<homeDirConfig"
-                				tmpXml.append( "<" + HOME_DIR_CONFIG_TAG_NAME + " " );
-
-   	        					// Add creationOption="customConfig"
-   	            				tmpXml.append( CREATION_OPTION_ATTRIBUTE_NAME + "=\"" + CUSTOM_CONFIG_OPTION + "\" >" );
-   	            				
-   	            				// Add "<customConfig"
-   	            				tmpXml.append( "<" + CUSTOM_CONFIG_TAG_NAME + " " );
-   	            				
-   	            				// Add netFolderServerName="some value"
-   	            				tmpXml.append( NET_FOLDER_SERVER_NAME_ATTRIBUTE_NAME + "=\"" + netFolderServerName + "\" " );
-   	            				
-   	            				// Add netFolderPath="some value"
-   	            				tmpXml.append( NET_FOLDER_PATH_ATTRIBUTE_NAME + "=\"" + netFolderPath + "\" />" );
-   	            				
-   	            				// Add </homeDirConfig>
-   	            				tmpXml.append( "</" + HOME_DIR_CONFIG_TAG_NAME + ">" );
-   	            				
-   	            				xml.append( tmpXml );
-          					}
-        					break;
-        				
-        				case USE_CUSTOM_ATTRIBUTE:
-        					String customAttribName = null;
-        					
-        					customAttribName = homeDirConfig.getAttributeName();
-        					
-        					if ( customAttribName != null && customAttribName.length() > 0 )
-        					{
-                				// Add "<homeDirConfig"
-        						tmpXml.append( "<" + HOME_DIR_CONFIG_TAG_NAME + " " );
-
-                				// Add creationOption="customAttribute"
-        						tmpXml.append( CREATION_OPTION_ATTRIBUTE_NAME + "=\"" + CUSTOM_ATTRIBUTE_OPTION + "\" >" );
-	            				
-	            				// Add "<customAttribute"
-        						tmpXml.append( "<" + CUSTOM_ATTRIBUTE_TAG_NAME + " ");
-	            				
-	            				// Add customAttributeName="some value"
-        						tmpXml.append( CUSTOM_ATTRIBUTE_ATTRIBUTE_NAME + "=\"" + customAttribName + "\" />" );
-        						
-   	            				// Add </homeDirConfig>
-   	            				tmpXml.append( "</" + HOME_DIR_CONFIG_TAG_NAME + ">" );
-
-   	            				xml.append( tmpXml );
-        					}
-        					break;
-        				
-        				case DONT_CREATE_HOME_DIR_NET_FOLDER:
-            				// Add "<homeDirConfig"
-            				tmpXml.append( "<" + HOME_DIR_CONFIG_TAG_NAME + " " );
-
-        					// Add creationOption="dontCreate"
-            				tmpXml.append( CREATION_OPTION_ATTRIBUTE_NAME + "=\"" + DONT_CREATE_OPTION + "\" />" );
-            				
-            				xml.append( tmpXml );
-        					break;
-
-        				case USE_HOME_DIRECTORY_ATTRIBUTE:
-        				case UNKNOWN:
-        				default:
-            				// Add "<homeDirConfig"
-        					tmpXml.append( "<" + HOME_DIR_CONFIG_TAG_NAME + " " );
-
-            				// Add creationOption="homeDirAttribute"
-        					tmpXml.append( CREATION_OPTION_ATTRIBUTE_NAME + "=\"" + HOME_DIR_ATTRIBUTE_OPTION + "\" />" );
-        					
-        					xml.append( tmpXml );
-        					break;
-        				}
-    				}
-    			}
-
     			xml.append("</search>");
     		}
     		xml.append("</searches>");
@@ -308,28 +99,23 @@ public class AuthenticationSearchInfoUserType extends ClobStringType {
         } 
     } 
  
-    @Override
-	public Object deepCopy(Object value) throws HibernateException{ 
+    public Object deepCopy(Object value) throws HibernateException{ 
         return new LinkedList<LdapConnectionConfig.SearchInfo>((List<LdapConnectionConfig.SearchInfo>) value); 
     } 
  
-    @Override
-	public boolean isMutable() { 
+    public boolean isMutable() { 
         return true; 
     } 
  
-    @Override
-	public Object assemble(Serializable cached, Object owner) throws HibernateException { 
+    public Object assemble(Serializable cached, Object owner) throws HibernateException { 
          return deepCopy(cached);
     } 
 
-    @Override
-	public Serializable disassemble(Object value) throws HibernateException { 
+    public Serializable disassemble(Object value) throws HibernateException { 
         return (Serializable)deepCopy(value); 
     } 
  
-    @Override
-	public Object replace(Object original, Object target, Object owner) throws HibernateException { 
+    public Object replace(Object original, Object target, Object owner) throws HibernateException { 
         return new LinkedList<LdapConnectionConfig.SearchInfo>((List<LdapConnectionConfig.SearchInfo>) original); 
     }
 

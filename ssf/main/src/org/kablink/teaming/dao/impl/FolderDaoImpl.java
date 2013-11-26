@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -35,6 +35,7 @@ package org.kablink.teaming.dao.impl;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -43,11 +44,8 @@ import org.hibernate.Criteria;
 import org.hibernate.FetchMode;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
-import org.hibernate.ScrollableResults;
 import org.hibernate.Session;
-import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Expression;
-import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.ProjectionList;
 import org.hibernate.criterion.Projections;
@@ -58,9 +56,6 @@ import org.kablink.teaming.dao.CoreDao;
 import org.kablink.teaming.dao.FolderDao;
 import org.kablink.teaming.dao.KablinkDao;
 import org.kablink.teaming.dao.util.FilterControls;
-import org.kablink.teaming.dao.util.HomeFolderSelectSpec;
-import org.kablink.teaming.dao.util.MyFilesStorageSelectSpec;
-import org.kablink.teaming.dao.util.NetFolderSelectSpec;
 import org.kablink.teaming.dao.util.OrderBy;
 import org.kablink.teaming.dao.util.SFQuery;
 import org.kablink.teaming.domain.AnyOwner;
@@ -76,15 +71,15 @@ import org.kablink.teaming.domain.Tag;
 import org.kablink.teaming.domain.WorkflowState;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.util.Constants;
+import org.kablink.teaming.util.SPropsUtil;
+import org.kablink.util.dao.hibernate.DynamicDialect;
 import org.springframework.dao.DataAccessException;
 import org.springframework.orm.hibernate3.HibernateCallback;
 
 /**
- * ?
- * 
  * @author Jong Kim
+ *
  */
-@SuppressWarnings({"deprecation", "unchecked"})
 public class FolderDaoImpl extends KablinkDao implements FolderDao {
 	private CoreDao coreDao;
 
@@ -103,7 +98,6 @@ public class FolderDaoImpl extends KablinkDao implements FolderDao {
      * @return
      * @throws DataAccessException
 	 */
-	@Override
 	public FolderEntry loadFolderEntry(Long parentFolderId, Long entryId, Long zoneId) throws DataAccessException,NoFolderEntryByTheIdException {
 		long begin = System.nanoTime();
 		try {
@@ -114,14 +108,12 @@ public class FolderDaoImpl extends KablinkDao implements FolderDao {
     	}	        
     }
       
-	@Override
 	public FolderEntry loadFolderEntry(final String sortKey, final Long zoneId) throws DataAccessException,NoFolderEntryByTheIdException {
 		long begin = System.nanoTime();
 		try {
 	        FolderEntry entry = (FolderEntry)getHibernateTemplate().execute(
 	                new HibernateCallback() {
-	                    @Override
-						public Object doInHibernate(Session session) throws HibernateException {
+	                    public Object doInHibernate(Session session) throws HibernateException {
 	                         Criteria crit = session.createCriteria(FolderEntry.class)
 	                         	.add(Expression.eq("HKey.sortKey", sortKey))  
 	                         	//.setFetchMode("entryDef", FetchMode.SELECT)	
@@ -144,7 +136,6 @@ public class FolderDaoImpl extends KablinkDao implements FolderDao {
     	}	        
 
 	}
-	@Override
 	public FolderEntry loadFolderEntry(Long entryId, Long zoneId) throws DataAccessException,NoFolderEntryByTheIdException {
 		long begin = System.nanoTime();
 		try {
@@ -169,16 +160,14 @@ public class FolderDaoImpl extends KablinkDao implements FolderDao {
      * Query for a collection of FolderEntries.  An iterator is returned.  The entries are 
      * not pre-loaded.
      */
-    @Override
-	public SFQuery queryEntries(final Folder folder, FilterControls filter) throws DataAccessException { 
+    public SFQuery queryEntries(final Folder folder, FilterControls filter) throws DataAccessException { 
 		long begin = System.nanoTime();
 		try {
 	    	final FilterControls myFilter = filter==null?new FilterControls():filter;
 	    	myFilter.add(ObjectKeys.FIELD_ENTITY_PARENTBINDER, folder);
 	    	Query query = (Query)getHibernateTemplate().execute(
 	                new HibernateCallback() {
-	                    @Override
-						public Object doInHibernate(Session session) throws HibernateException {
+	                    public Object doInHibernate(Session session) throws HibernateException {
 	                        //sqlqueries, filters and criteria don't help with frontbase problem
 	                        Query query = session.createQuery("from org.kablink.teaming.domain.FolderEntry d " + myFilter.getFilterString("d"));
 	                        	
@@ -199,16 +188,14 @@ public class FolderDaoImpl extends KablinkDao implements FolderDao {
     /**
      * Load child entries of a folder 
      */
-    @Override
-	public List<FolderEntry> loadEntries(final Folder folder, FilterControls filter) throws DataAccessException { 
+    public List<FolderEntry> loadEntries(final Folder folder, FilterControls filter) throws DataAccessException { 
 		long begin = System.nanoTime();
 		try {
 	    	final FilterControls myFilter = filter==null?new FilterControls():filter;
 	    	myFilter.add(ObjectKeys.FIELD_ENTITY_PARENTBINDER, folder);
 	    	List result = (List)getHibernateTemplate().execute(
 	                new HibernateCallback() {
-	                    @Override
-						public Object doInHibernate(Session session) throws HibernateException {
+	                    public Object doInHibernate(Session session) throws HibernateException {
 	                        //sqlqueries, filters and criteria don't help with frontbase problem
 	                        Query query = session.createQuery("from org.kablink.teaming.domain.FolderEntry d " + myFilter.getFilterString("d"));
 	                        	
@@ -230,8 +217,7 @@ public class FolderDaoImpl extends KablinkDao implements FolderDao {
  	/*
      * Load the ancestors and descendants of an entry.  Entry will be included in List
      */
-    @Override
-	public List loadEntryTree(final FolderEntry entry) throws DataAccessException { 
+    public List loadEntryTree(final FolderEntry entry) throws DataAccessException { 
 		long begin = System.nanoTime();
 		try {
 	        List result;
@@ -244,8 +230,7 @@ public class FolderDaoImpl extends KablinkDao implements FolderDao {
 	    	   //load ancestors and descendants
 	           result = (List)getHibernateTemplate().execute(
 	                   new HibernateCallback() {
-	                       @Override
-						public Object doInHibernate(Session session) throws HibernateException {
+	                       public Object doInHibernate(Session session) throws HibernateException {
 	                   		int nextPos = entry.getHKey().getLastNumber() + 1;
 	               		 	HKey next = new HKey(entry.getParentEntry().getHKey(), nextPos);    
 	                            return session.createCriteria(FolderEntry.class)
@@ -276,14 +261,12 @@ public class FolderDaoImpl extends KablinkDao implements FolderDao {
     /**
      * Given a folder entry, pre-load its chain of FolderEntry ancestors 
      */
-    @Override
-	public List loadEntryAncestors(final FolderEntry entry) throws DataAccessException { 
+    public List loadEntryAncestors(final FolderEntry entry) throws DataAccessException { 
 		long begin = System.nanoTime();
 		try {
 	        List result = (List)getHibernateTemplate().execute(
 	             new HibernateCallback() {
-	                 @Override
-					public Object doInHibernate(Session session) throws HibernateException {
+	                 public Object doInHibernate(Session session) throws HibernateException {
 	                     String[] keys = entry.getHKey().getAncestorKeys();  
 	                     return  session.createCriteria(entry.getClass())
 	                     	.add(Expression.in("HKey.sortKey", keys))
@@ -304,14 +287,12 @@ public class FolderDaoImpl extends KablinkDao implements FolderDao {
     /**
      * Given a FolderEntry, pre-load all descendents of the entry.
      */
-    @Override
-	public List loadEntryDescendants(final FolderEntry entry) throws DataAccessException { 
+    public List loadEntryDescendants(final FolderEntry entry) throws DataAccessException { 
 		long begin = System.nanoTime();
 		try {
 	        List result = (List)getHibernateTemplate().execute(
 	             new HibernateCallback() {
-	                 @Override
-					public Object doInHibernate(Session session) throws HibernateException {
+	                 public Object doInHibernate(Session session) throws HibernateException {
 	                	 Criteria crit;
 	                	 if (entry.getDocLevel() > 1) {
 	                		int nextPos = entry.getHKey().getLastNumber() + 1;
@@ -345,13 +326,11 @@ public class FolderDaoImpl extends KablinkDao implements FolderDao {
     /**
      * Get all of the ids for entries of a specified definitiontype.
      */
-	@Override
 	public List<Long> getFolderEntriesByType(final Long zoneId, final Folder folder, final String defId) {
 		long begin = System.nanoTime();
 		try {
 			List<Long> result = new ArrayList<Long>();
 			result = (List) getHibernateTemplate().execute(new HibernateCallback() {
-				@Override
 				public Object doInHibernate(Session session) throws HibernateException {
 					ProjectionList proj = Projections.projectionList()
 						.add(Projections.groupProperty("id"));
@@ -371,15 +350,13 @@ public class FolderDaoImpl extends KablinkDao implements FolderDao {
 	}
 	
     //Change a set of entries to have a new definition id
-    @Override
-	public void setFolderEntryType(final Folder folder, final List<Long> entryIds, final String newDefId) {
+    public void setFolderEntryType(final Folder folder, final List<Long> entryIds, final String newDefId) {
 		long begin = System.nanoTime();
 		try {
 		   if (entryIds.isEmpty()) return;
 		   getHibernateTemplate().execute(
 	        	   	new HibernateCallback() {
-	        	   		@Override
-						public Object doInHibernate(Session session) throws HibernateException {
+	        	   		public Object doInHibernate(Session session) throws HibernateException {
 	       		   			session.createQuery("Update org.kablink.teaming.domain.FolderEntry set entryDefId=:entryDefId where id in (:pList)")
 	       		   			.setString("entryDefId", newDefId)
 	    	   				.setParameterList("pList", entryIds)
@@ -400,7 +377,6 @@ public class FolderDaoImpl extends KablinkDao implements FolderDao {
     /**
      * Load all entries of a folder and it sub-folders that have been updated with a specified range.
      */
-	@Override
 	public List loadFolderTreeUpdates(Folder folder, Date since, Date before) {
 		long begin = System.nanoTime();
 		try {
@@ -414,14 +390,12 @@ public class FolderDaoImpl extends KablinkDao implements FolderDao {
 	/**
 	 * See <code>loadFolderTreeUpdates</code>. Order results as specified.
 	 */
-	@Override
 	public List loadFolderTreeUpdates(final Folder folder, final Date since, final Date before, final OrderBy order, final int maxResults) {
 		long begin = System.nanoTime();
 		try {
 	        List entries = (List)getHibernateTemplate().execute(
 	                new HibernateCallback() {
-	                    @Override
-						public Object doInHibernate(Session session) throws HibernateException {
+	                    public Object doInHibernate(Session session) throws HibernateException {
 	                    	//only need to check for modification date which is the latest
 	                    	Query q  = session.createQuery("from org.kablink.teaming.domain.FolderEntry x where owningBinderKey like '" + 
 	                    			folder.getBinderKey().getSortKey() + "%' and (x.modification.date > ? and x.modification.date <= ?) order by " + order.getOrderByClause("x"));
@@ -446,8 +420,7 @@ public class FolderDaoImpl extends KablinkDao implements FolderDao {
 	/**
 	 * Load 1 folder
 	 */
-    @Override
-	public Folder loadFolder(Long folderId, Long zoneId) throws NoFolderByTheIdException {
+    public Folder loadFolder(Long folderId, Long zoneId) throws NoFolderByTheIdException {
 		long begin = System.nanoTime();
 		try {
 	        if (folderId == null) {throw new NoFolderByTheIdException(folderId);}
@@ -455,10 +428,8 @@ public class FolderDaoImpl extends KablinkDao implements FolderDao {
 	        try {
 	        	Folder folder = (Folder)getHibernateTemplate().get(Folder.class, folderId);
 	        	if (folder == null) {throw new NoFolderByTheIdException(folderId);}
-	        	if(zoneId != null) {
-		        	if (!folder.getZoneId().equals(zoneId)) {
-		        		throw new NoFolderByTheIdException(folderId);
-		        	}
+	        	if (!folder.getZoneId().equals(zoneId)) {
+	        		throw new NoFolderByTheIdException(folderId);
 	        	}
 	            return folder;
 	        } catch (ClassCastException ce) {
@@ -475,15 +446,13 @@ public class FolderDaoImpl extends KablinkDao implements FolderDao {
 	 * Delete the folder object and its assocations.
 	 * Folder entries and child binders should already have been deleted
 	 */
-   @Override
-public void delete(final Folder folder) {
+   public void delete(final Folder folder) {
 		long begin = System.nanoTime();
 		try {
 		   //cleanup entries - 
 	       	getHibernateTemplate().execute(
 	           	new HibernateCallback() {
-	           		@Override
-					public Object doInHibernate(Session session) throws HibernateException {
+	           		public Object doInHibernate(Session session) throws HibernateException {
 			   			//delete ratings/visits for these entries
 	 		   			session.createQuery("Delete org.kablink.teaming.domain.Rating where entityId in " + 
 	 			   				"(select p.id from org.kablink.teaming.domain.FolderEntry p where " +
@@ -545,15 +514,13 @@ public void delete(final Folder folder) {
     //mark entries deleted - used when deleting entries in bulk and want
     //to exclude some from future queries
     //entries evicted from cache
-    @Override
-	public void markEntriesDeleted(final Folder folder, final Collection<FolderEntry> entries) {
+    public void markEntriesDeleted(final Folder folder, final Collection<FolderEntry> entries) {
 		long begin = System.nanoTime();
 		try {
 		   if (entries.isEmpty()) return;
 		   getHibernateTemplate().execute(
 	        	   	new HibernateCallback() {
-	        	   		@Override
-						public Object doInHibernate(Session session) throws HibernateException {
+	        	   		public Object doInHibernate(Session session) throws HibernateException {
 	               	   	   	Set ids = new HashSet();
 	               			
 	            			for (FolderEntry p:entries) {
@@ -574,16 +541,14 @@ public void delete(final Folder folder) {
     	}	        
              		 
     }
-    @Override
-	public void deleteEntries(final Folder folder, final Collection<FolderEntry> entries) {
+    public void deleteEntries(final Folder folder, final Collection<FolderEntry> entries) {
 		long begin = System.nanoTime();
 		try {
 	    	if (entries.isEmpty()) return;
 	 
 	    	getHibernateTemplate().execute(
 	        	   	new HibernateCallback() {
-	        	   		@Override
-						public Object doInHibernate(Session session) throws HibernateException {
+	        	   		public Object doInHibernate(Session session) throws HibernateException {
 	               	   	   	Set ids = new HashSet();
 	               			StringBuffer inList = new StringBuffer();
 	               			for (FolderEntry p:entries) {
@@ -670,15 +635,13 @@ public void delete(final Folder folder) {
      * but the owningBinderId remains the same.   
      * Sub folder and their entries must be handled separetly
      */
-    @Override
-	public void move(final Folder folder) {
+    public void move(final Folder folder) {
 		long begin = System.nanoTime();
 		try {
 	    	getCoreDao().move(folder);  //handles most generic associations
 		   	getHibernateTemplate().execute(
 		     	new HibernateCallback() {
-		       		@Override
-					public Object doInHibernate(Session session) throws HibernateException {
+		       		public Object doInHibernate(Session session) throws HibernateException {
 		 	   			session.createQuery("update org.kablink.teaming.domain.FolderEntry set owningBinderKey=:sortKey where parentBinder=:id")
 	      	   				.setString("sortKey", folder.getBinderKey().getSortKey())
 	      	   				.setLong("id", folder.getId().longValue())
@@ -699,15 +662,13 @@ public void delete(final Folder folder) {
      * Moving entries to new folder. 
      * 
      */
-    @Override
-	public void moveEntries(final Folder folder, final List<Long> ids) {
+    public void moveEntries(final Folder folder, final List<Long> ids) {
 		long begin = System.nanoTime();
 		try {
 	    	if (ids.isEmpty()) return;
 		   	getHibernateTemplate().execute(
 		     	new HibernateCallback() {
-		       		@Override
-					public Object doInHibernate(Session session) throws HibernateException {
+		       		public Object doInHibernate(Session session) throws HibernateException {
 	        			//need to use ownerId, cause versionattachments/customattributeList sets not indexed by folderentry
 		    	   		session.createQuery("update org.kablink.teaming.domain.Attachment set owningBinderKey=:sortKey,owningBinderId=:id where " +
 		    	   				"ownerId in (:pList) and ownerType=:type")
@@ -791,15 +752,13 @@ public void delete(final Folder folder) {
     }
     //load public and private tags for a list of folder entries
     //order by id and name
-    @Override
-	public List<Tag> loadEntryTags(final EntityIdentifier ownerIdentifier, final Collection<Long> ids) {
+    public List<Tag> loadEntryTags(final EntityIdentifier ownerIdentifier, final Collection<Long> ids) {
 		long begin = System.nanoTime();
 		try {
 	    	if (ids.isEmpty()) return new ArrayList();
 		   	return (List<Tag>)getHibernateTemplate().execute(
 			     	new HibernateCallback() {
-			       		@Override
-						public Object doInHibernate(Session session) throws HibernateException {
+			       		public Object doInHibernate(Session session) throws HibernateException {
 		                 	return session.createCriteria(Tag.class)
 	       					.add(Expression.eq("entityIdentifier.type", EntityIdentifier.EntityType.folderEntry.getValue()))
 	                 		.add(Expression.in("entityIdentifier.entityId", ids))
@@ -823,35 +782,10 @@ public void delete(final Folder folder) {
     	}	        
    	
     }
-    
     //All of this code is dependent on the JBPM data structures.
     private void workflowDelete(Set tokenIds, Session session) {
-    	//now get process instances 
+		//now get process instances 
 		if (tokenIds.isEmpty()) return;
-
-		int start =0;
-		int totalIds = tokenIds.size();
-		
-		List<Long> tokenIdsList = new ArrayList<Long>(tokenIds);
-		if(totalIds > 1000) {
-			logger.debug("Total number of Ids exceeds 1000 ...");
-			while(start < totalIds) {
-				int subCount = ((start+100) < totalIds) ? (start+100) : (totalIds-1);
-				logger.debug("Token list start: "+start+" subCount: "+subCount);
-				List subList = tokenIdsList.subList(start, subCount);
-				workflowDelete(subList, session);
-				start = subCount +1;
-			}
-		} else {
-			workflowDelete(tokenIdsList, session);
-		}
-    }
-    
-    //All of this code is dependent on the JBPM data structures.
-    //TokenIds list must be less then 1000 in size or Oracle will throw exceptions
-    private void workflowDelete(List tokenIds, Session session) {
-
-    	if (tokenIds.isEmpty()) return;
     	Set pIs = new HashSet(session.createQuery("select p.id from org.jbpm.graph.exe.ProcessInstance p where p.rootToken.id in (:pList)")
  				.setParameterList("pList", tokenIds)
 			.list());
@@ -946,15 +880,13 @@ public void delete(final Folder folder) {
      * @param stateValue - State of the workflow
      * @return List of folder entry ids
      */
-    @Override
-	public List<Long> findFolderIdsFromWorkflowState(final String defId, final String stateValue) {
+    public List<Long> findFolderIdsFromWorkflowState(final String defId, final String stateValue) {
 		long begin = System.nanoTime();
 		try {
 	       	final Long thisZoneId = RequestContextHolder.getRequestContext().getZoneId();
 	       	return (List<Long>)getHibernateTemplate().execute(
 	            new HibernateCallback() {
-	                @Override
-					public Object doInHibernate(Session session) throws HibernateException {
+	                public Object doInHibernate(Session session) throws HibernateException {
 	                	List<Long> result = new ArrayList<Long>();
 	                	List readObjs = new ArrayList();
 	                	// "SELECT owner From org.kablink.teaming.domain.WorkflowState WHERE state='" + stateValue + "' AND definition='" + defId + "' AND ownerType='folderEntry' AND zoneId='" + thisZoneId + "'"
@@ -966,6 +898,7 @@ public void delete(final Folder folder) {
 	                	.add(Restrictions.eq("zoneId", thisZoneId));
 	                	List objs = crit.list();
 	                	readObjs.add(objs);
+				      	HashMap tMap;
 				       	for (int i=0; i < objs.size(); ++i) {
 				       		AnyOwner owner = (AnyOwner) objs.get(i);
 				       		result.add(owner.getEntity().getId());
@@ -985,8 +918,7 @@ public void delete(final Folder folder) {
      * @param binder 
      * @return List of folder entry ids
      */
-    @Override
-	public Set<Long> findFolderUnEncryptedEntries(final List<Long> binderIds) {
+    public Set<Long> findFolderUnEncryptedEntries(final List<Long> binderIds) {
 		long begin = System.nanoTime();
 		if (binderIds.isEmpty()) {
 			return new HashSet<Long>();
@@ -995,8 +927,7 @@ public void delete(final Folder folder) {
 	       	final Long thisZoneId = RequestContextHolder.getRequestContext().getZoneId();
 	       	return (Set<Long>)getHibernateTemplate().execute(
 	            new HibernateCallback() {
-	                @Override
-					public Object doInHibernate(Session session) throws HibernateException {
+	                public Object doInHibernate(Session session) throws HibernateException {
 	                	Set<Long> result = new HashSet<Long>();
 	                	List readObjs = new ArrayList();
 	                	Criteria crit = session.createCriteria(FileAttachment.class)
@@ -1022,325 +953,5 @@ public void delete(final Folder folder) {
     		end(begin, "findFolderIdsFromWorkflowState(String,String)");
     	}	        
 	}	
-
-    /**
-     * Returns a List<Folder> of the Home folders that meet the
-     * specifications.
-     * 
-     * @param selectSpec
-     * @param zoneId
-     * 
-     * @return
-     */
- 	@Override
-	public List<Folder> findHomeFolders(final HomeFolderSelectSpec selectSpec, final long zoneId) {
-        List<Folder> result = new ArrayList<Folder>();
-
-        long begin = System.nanoTime();
-		try {
-            result = ((List<Folder>) getHibernateTemplate().execute(
-            		new HibernateCallback() {
-                @Override
-				public Object doInHibernate(Session session) throws HibernateException {
-                   	Criteria crit = session.createCriteria(Folder.class);
-    				crit.add(Restrictions.eq(ObjectKeys.FIELD_BINDER_IS_HOME_DIR, Boolean.TRUE));
-    				
-    				Binder parentBinder = getCoreDao().loadBinder(selectSpec.getUserWorkspaceId(), zoneId);
-           			crit.add( Restrictions.eq(ObjectKeys.FIELD_ENTITY_PARENTBINDER, parentBinder));
-                   	
-                	return crit.list();
-				}
-            }));
-    	}
-		
-		catch (Exception ex) {
-			logger.error("findHomeFolders() caught an exception: " + ex.toString() );
-		}
-		
-    	finally {
-    		end(begin, "findHomeFolders(HomeFolderSelectSpec)");
-    	}	              	
-
-      	return result;   	
-	}
- 
-    /**
-     * Returns a List<Folder> of the My Files Storage folders that meet
-     * the specifications.
-     * 
-     * @param selectSpec
-     * @param zoneId
-     * 
-     * @return
-     */
- 	@Override
-	public List<Folder> findMyFilesStorageFolders(final MyFilesStorageSelectSpec selectSpec, final long zoneId) {
-        List<Folder> result = new ArrayList<Folder>();
-
-        long begin = System.nanoTime();
-		try {
-            result = ((List<Folder>) getHibernateTemplate().execute(
-            		new HibernateCallback() {
-                @Override
-				public Object doInHibernate(Session session) throws HibernateException {
-                   	Criteria crit = session.createCriteria(Folder.class);
-    				crit.add(Restrictions.eq(ObjectKeys.FIELD_BINDER_IS_MYFILES_DIR, Boolean.TRUE));
-    				
-    				Binder parentBinder = getCoreDao().loadBinder(selectSpec.getUserWorkspaceId(), zoneId);
-           			crit.add( Restrictions.eq(ObjectKeys.FIELD_ENTITY_PARENTBINDER, parentBinder));
-                   	
-                	return crit.list();
-				}
-            }));
-    	}
-		
-		catch (Exception ex) {
-			logger.error("findMyFilesStorageFolders() caught an exception: " + ex.toString() );
-		}
-		
-    	finally {
-    		end(begin, "findMyFilesStorageFolders(MyFilesStorageSelectSpec)");
-    	}	              	
-
-      	return result;   	
-	}
- 
-    /**
-     * 
-     */
- 	@Override
-	public List<Folder> findNetFolders( final NetFolderSelectSpec selectSpec, final long zoneId )
-	{
-        List result = null;
-
-        long begin = System.nanoTime();
-		try
-		{
-			HibernateCallback callback;
-			
-			callback = new HibernateCallback() 
-            {
-                @Override
-				public Object doInHibernate( Session session ) throws HibernateException
-				{
-                	Criteria crit;
-                	String filter;
-                	String rootName;
-
-                	crit = session.createCriteria( Folder.class );
-                	
-                	// We only want net folders that have not been deleted
-                	crit.add( Restrictions.eq( ObjectKeys.FIELD_ENTITY_DELETED, Boolean.FALSE ) );
-                	
-                	// We only want mirrored folders
-                	crit.add( Restrictions.eq( ObjectKeys.FIELD_BINDER_MIRRORED, Boolean.TRUE ) );
-                	
-                	// We only want top-level folders
-                	crit.add( Restrictions.isNull( "topFolder" ) );
-                	
-                	// Are we looking for a net folder that is associated with a specific net folder root?
-                	rootName = selectSpec.getRootName();
-                	if ( rootName != null && rootName.length() > 0 )
-                	{
-                		// Yes
-                		crit.add( Restrictions.eq( ObjectKeys.FIELD_BINDER_RESOURCE_DRIVER_NAME, rootName ) );
-                	}
-                	
-        			// Are we including "home directory" net folders?
-        			if ( selectSpec.getIncludeHomeDirNetFolders() == false )
-        			{
-        				Binder parentBinder;
-        				
-        				// No
-        				crit.add( Restrictions.eq( ObjectKeys.FIELD_BINDER_IS_HOME_DIR, Boolean.FALSE ) );
-        				
-        				// Get the binder where all non home dir net folders live.
-        				parentBinder = getCoreDao().loadReservedBinder(
-        														ObjectKeys.NET_FOLDERS_ROOT_INTERNALID, 
-        														zoneId );
-        				if ( parentBinder != null )
-        				{
-        					crit.add( Restrictions.eq( ObjectKeys.FIELD_ENTITY_PARENTBINDER, parentBinder ) );
-        				}
-        			}
-                	
-                	// Do we have a filter?
-                	filter = selectSpec.getFilter();
-                	if ( filter != null && filter.length() > 0 )
-                	{
-                		Criterion title;
-                		Criterion path;
-                		Criterion server;
-                		
-                		// Yes
-                		// See if the filter is in the title or the relative path or the server name.
-                		title = Restrictions.ilike( ObjectKeys.FIELD_ENTITY_TITLE, filter, MatchMode.ANYWHERE );
-                		path = Restrictions.ilike( ObjectKeys.FIELD_BINDER_RESOURCE_PATH, filter, MatchMode.ANYWHERE );
-                		server = Restrictions.ilike( ObjectKeys.FIELD_BINDER_RESOURCE_DRIVER_NAME, filter, MatchMode.ANYWHERE );
-                		crit.add( Restrictions.or( server, Restrictions.or( title, path ) ) );
-                	}
-                	
-                	if ( selectSpec.getStartIndex() != -1 )
-                		crit.setFirstResult( selectSpec.getStartIndex() );
-                	
-                	if ( selectSpec.getPageSize() != -1 )
-                		crit.setMaxResults( selectSpec.getPageSize() );
-
-                	return crit.list();
-                }
-            };
- 
-            result = (List)getHibernateTemplate().execute( callback );
-    	}
-		catch ( Exception ex )
-		{
-			logger.error( "findNetFolders() caught an exception: " + ex.toString() );
-		}
-    	finally 
-    	{
-    		end( begin, "findNetFolders(NetFolderSelectSpec)");
-    	}	              	
-
-      	return result;   	
-	}
-
-    /**
-     * 
-     */
- 	@Override
-	public int getNumberOfNetFolders( final NetFolderSelectSpec selectSpec, final long zoneId )
-	{
-        Integer count = null;
-
-        long begin = System.nanoTime();
-		try
-		{
-			HibernateCallback callback;
-			
-			callback = new HibernateCallback() 
-            {
-                @Override
-				public Object doInHibernate( Session session ) throws HibernateException
-				{
-                	Criteria crit;
-                	String filter;
-                	String rootName;
-                	ScrollableResults results;
-                	Integer count;
-
-                	crit = session.createCriteria( Folder.class );
-                	
-                	// We only want net folders that have not been deleted
-                	crit.add( Restrictions.eq( ObjectKeys.FIELD_ENTITY_DELETED, Boolean.FALSE ) );
-                	
-                	// We only want mirrored folders
-                	crit.add( Restrictions.eq( ObjectKeys.FIELD_BINDER_MIRRORED, Boolean.TRUE ) );
-                	
-                	// We only want top-level folders
-                	crit.add( Restrictions.isNull( "topFolder" ) );
-                	
-                	// Are we looking for a net folder that is associated with a specific net folder root?
-                	rootName = selectSpec.getRootName();
-                	if ( rootName != null && rootName.length() > 0 )
-                	{
-                		// Yes
-                		crit.add( Restrictions.eq( ObjectKeys.FIELD_BINDER_RESOURCE_DRIVER_NAME, rootName ) );
-                	}
-                	
-        			// Are we including "home directory" net folders?
-        			if ( selectSpec.getIncludeHomeDirNetFolders() == false )
-        			{
-        				Binder parentBinder;
-        				
-        				// No
-        				crit.add( Restrictions.eq( ObjectKeys.FIELD_BINDER_IS_HOME_DIR, Boolean.FALSE ) );
-        				
-        				// Get the binder where all non home dir net folders live.
-        				parentBinder = getCoreDao().loadReservedBinder(
-        														ObjectKeys.NET_FOLDERS_ROOT_INTERNALID, 
-        														zoneId );
-        				if ( parentBinder != null )
-        				{
-        					crit.add( Restrictions.eq( ObjectKeys.FIELD_ENTITY_PARENTBINDER, parentBinder ) );
-        				}
-        			}
-                	
-                	// Do we have a filter?
-                	filter = selectSpec.getFilter();
-                	if ( filter != null && filter.length() > 0 )
-                	{
-                		Criterion title;
-                		Criterion path;
-                		Criterion server;
-                		
-                		// Yes
-                		// See if the filter is in the title or the relative path or the server name.
-                		title = Restrictions.ilike( ObjectKeys.FIELD_ENTITY_TITLE, filter, MatchMode.ANYWHERE );
-                		path = Restrictions.ilike( ObjectKeys.FIELD_BINDER_RESOURCE_PATH, filter, MatchMode.ANYWHERE );
-                		server = Restrictions.ilike( ObjectKeys.FIELD_BINDER_RESOURCE_DRIVER_NAME, filter, MatchMode.ANYWHERE );
-                		crit.add( Restrictions.or( server, Restrictions.or( title, path ) ) );
-                	}
-                	
-                	results = crit.scroll();
-                	results.last();
-                	
-                	count = new Integer( results.getRowNumber()+1 );
-                	
-                	return count;
-                }
-            };
- 
-            count = (Integer)getHibernateTemplate().execute( callback );
-    	}
-		catch ( Exception ex )
-		{
-			logger.error( "getNumberOfNetFolders() caught an exception: " + ex.toString() );
-		}
-    	finally 
-    	{
-    		end( begin, "getNumberOfNetFolders(NetFolderSelectSpec)");
-    	}	              	
-
-		if ( count != null )
-			return count.intValue();
-		
-      	return 0;   	
-	}
- 	
-	@Override
-	public Folder loadFolderByResourcePath(final String ancestorSortKey, final String resourcePath, final Long zoneId) {
-		long begin = System.nanoTime();
-		try {
-			List<Folder> folders = (List)getHibernateTemplate().execute(
-				    new HibernateCallback() {
-				        @Override
-						public Object doInHibernate(Session session) throws HibernateException {
-							Criteria crit = session.createCriteria(Folder.class)
-							.add(Restrictions.eq(ObjectKeys.FIELD_ZONE, zoneId))
-							.add(Restrictions.like("binderKey.sortKey", ancestorSortKey + "%"))
-							.add(Restrictions.eq("resourcePath", resourcePath.equals("")? "/" : resourcePath)) // bugzilla 513609 - Also see setResourcePath() method in Binder.java
-							.setCacheable(isBinderQueryCacheable());
-							return crit.list();
-		               }
-		            }
-				);
-			
-			Folder result = null;
-			if(folders != null) {
-				for(Folder folder:folders) {
-					if(resourcePath.equals(folder.getResourcePath())) { // case sensitive equality
-						result = folder;
-						break;
-					}
-				}
-			}
-			
-			return result;
-    	}
-    	finally {
-    		end(begin, "loadFolderByResourcePath()");
-    	}
-	}
-
-
+	
 }

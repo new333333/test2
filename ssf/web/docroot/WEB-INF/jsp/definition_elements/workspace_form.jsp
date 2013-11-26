@@ -58,7 +58,7 @@
 <ssf:form title="${ssBinder.title}">
 <form class="ss_form" method="<%= methodName %>" 
   enctype="<%= enctype %>" name="<%= formName %>" 
-  id="<%= formName %>" onSubmit="return ss_onSubmit(this, true);">
+  id="<%= formName %>" action="" onSubmit="return ss_onSubmit(this, true);">
 
 <ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
   configElement="<%= item %>" 

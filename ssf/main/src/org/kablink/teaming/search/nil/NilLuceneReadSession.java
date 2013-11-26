@@ -33,58 +33,53 @@
 package org.kablink.teaming.search.nil;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.Sort;
 import org.kablink.teaming.lucene.Hits;
 import org.kablink.teaming.lucene.LuceneException;
 import org.kablink.teaming.search.LuceneReadSession;
-import org.kablink.teaming.search.postfilter.PostFilterCallback;
 
 public class NilLuceneReadSession implements LuceneReadSession {
 
-	@Override
 	public ArrayList getSortedTitles(Query query, String sortTitleFieldName, String start, String end,
 			int skipsize) throws LuceneException {
 		return new ArrayList();
 	}
 
-	@Override
 	public ArrayList getTags(String aclQueryStr, String tag, String type)
 			throws LuceneException {
 		return new ArrayList();
 	}
 
-	@Override
 	public ArrayList getTagsWithFrequency(String aclQueryStr, String tag, String type)
 			throws LuceneException {
 		return new ArrayList();
 	}
 
-	@Override
 	public Hits search(Long contextUserId, String aclQueryStr, int mode, Query query) throws LuceneException {
 		return new Hits(0);
 	}
 
-	@Override
+	public Hits search(Long contextUserId, String aclQueryStr, int mode, Query query, int offset, int size)
+			throws LuceneException {
+		return new Hits(0);
+	}
+
+	public Hits search(Long contextUserId, String aclQueryStr, int mode, Query query, Sort sort) throws LuceneException {
+		return new Hits(0);
+	}
+
 	public Hits search(Long contextUserId, String aclQueryStr, int mode, Query query, Sort sort, int offset, int size)
 			throws LuceneException {
 		return new Hits(0);
 	}
 
-	@Override
-	public Hits search(Long contextUserId, String aclQueryStr, int mode, Query query, Sort sort, int offset, int size, PostFilterCallback callbak)
-			throws LuceneException {
-		return new Hits(0);
-	}
-
-	@Override
 	public void close() throws LuceneException {
 	}
 
 	@Override
-	public Hits searchNonNetFolderOneLevelWithInferredAccess(Long contextUserId,
+	public Hits searchFolderOneLevelWithInferredAccess(Long contextUserId,
 			String aclQueryStr, int mode, Query query, Sort sort, int offset,
 			int size, Long parentBinderId, String parentBinderPath)
 			throws LuceneException {
@@ -92,16 +87,9 @@ public class NilLuceneReadSession implements LuceneReadSession {
 	}
 
 	@Override
-	public boolean testInferredAccessToNonNetFolder(Long contextUserId,
+	public boolean testInferredAccessToBinder(Long contextUserId,
 			String aclQueryStr, String binderPath) throws LuceneException {
 		return false;
-	}
-
-	@Override
-	public Hits searchNetFolderOneLevel(Long contextUserId, String aclQueryStr,
-			List<String> titles, Query query, Sort sort, int offset, int size)
-			throws LuceneException {
-		return new Hits(0);
 	}
 
 }

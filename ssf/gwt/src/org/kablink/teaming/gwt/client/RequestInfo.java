@@ -131,27 +131,6 @@ public class RequestInfo extends JavaScriptObject
 	}-*/;
 
 	/**
-	 * Return true if the current user has access to the root workspace
-	 * and false otherwise. 
-	 * 
-	 * @return
-	 */
-	public final native boolean hasRootDirAccess()
-	/*-{
-		return this.getBFromS( this.hasRootDirAccess );
-	}-*/;
-	
-	/**
-	 * Return true if Cloud Folders are enabled and false otherwise. 
-	 * 
-	 * @return
-	 */
-	public final native boolean isCloudFoldersEnabled()
-	/*-{
-		return this.getBFromS( this.cloudFoldersEnabled );
-	}-*/;
-	
-	/**
 	 * Return whether the UI should perform extra debug checking
 	 * on landing pages.
 	 * 
@@ -181,17 +160,6 @@ public class RequestInfo extends JavaScriptObject
 	public final native String getErrMsg()
 	/*-{
 		return this.errMsg;
-	}-*/;
-	
-	/**
-	 * Return the current user's decimal separator character as a
-	 * string.
-	 * 
-	 * @return
-	 */
-	public final native String getDecimalSeparator()
-	/*-{
-		return this.decimalSeparator;
 	}-*/;
 	
 	/**
@@ -566,28 +534,6 @@ public class RequestInfo extends JavaScriptObject
 	}-*/;
 
 	/**
-	 * Return the flag that tells us if the logged in user is the Guest
-	 * user.
-	 * 
-	 * @return
-	 */
-	public final native boolean isGuestUser()
-	/*-{
-		return (this.getBFromS( this.isGuestUser ));
-	}-*/;
-
-	/**
-	 * Return the flag that tells us if the logged in user is an
-	 * external user.
-	 * 
-	 * @return
-	 */
-	public final native boolean isExternalUser()
-	/*-{
-		return (this.getBFromS( this.isExternalUser ));
-	}-*/;
-
-	/**
 	 * Return the id of the "all external users" group
 	 */
 	public final native String getAllExternalUsersGroupId()
@@ -662,17 +608,6 @@ public class RequestInfo extends JavaScriptObject
 		return this.showCollectionOnLogin;
 	}-*/;
 	
-	/**
-	 * Return whether the Public collection should be presented to the
-	 * logged in user.
-	 * 
-	 * @return
-	 */
-	public final native boolean isShowPublicCollection()
-	/*-{
-		return this.getBFromS( this.showPublicCollection );
-	}-*/;
-
 	/**
 	 * Return whether logging in is allowed from our standard login dialog.  This will be
 	 * disallowed if we are running behind a single-sign on product such as NAM.

@@ -33,7 +33,6 @@
 
 package org.kablink.teaming.fi.connection.acl;
 
-import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -56,16 +55,6 @@ public class AclItem {
 	 * @param principalIds
 	 */
 	public AclItem(String permissionName, String principalIdType, Set<String> principalIds) {
-		init(permissionName, principalIdType, principalIds);
-	}
-	
-	public AclItem(String permissionName, String principalIdType, String principalId) {
-		HashSet<String> principalIds = new HashSet<String>();
-		principalIds.add(principalId);
-		init(permissionName, principalIdType, principalIds);
-	}
-
-	private void init(String permissionName, String principalIdType, Set<String> principalIds) {
 		if(permissionName == null)
 			throw new IllegalArgumentException("Permission name must be specified");
 		if(principalIdType == null)

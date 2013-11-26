@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2009 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -69,12 +69,9 @@ import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 
 
-/**
- * ?
- * 
- * @author ?
- */
+
 public class ViewFileController extends SAbstractController {
+	
 	private FileTypeMap mimeTypes;
 
 	protected FileTypeMap getFileTypeMap() {
@@ -84,7 +81,6 @@ public class ViewFileController extends SAbstractController {
 		this.mimeTypes = mimeTypes;
 	}
 	
-	@Override
 	protected ModelAndView handleRequestAfterValidation(HttpServletRequest request,
             HttpServletResponse response) throws Exception {		
 
@@ -101,18 +97,7 @@ public class ViewFileController extends SAbstractController {
 		if (viewType.equals(WebKeys.FILE_VIEW_TYPE_UPLOAD_FILE)) {
 			//This is a request to view a recently uploaded file in the temp area
 			String shortFileName = WebHelper.getFileName(fileId);	
-			String contentType = getFileTypeMap().getContentType(shortFileName);
-			
-			//Protect against XSS attacks if this is an HTML file
-			contentType = FileUtils.validateDownloadContentType(contentType);
-
-			if (!(contentType.toLowerCase().contains("charset"))) {
-				String encoding = SPropsUtil.getString("web.char.encoding", "UTF-8");
-				if (MiscUtil.hasString(encoding)) {
-					contentType += ("; charset=" + encoding);
-				}
-			}
-			response.setContentType(contentType);
+			response.setContentType(mimeTypes.getContentType(shortFileName));
 			response.setHeader("Cache-Control", "private");
 			String attachment = "attachment; ";
 			response.setHeader(
@@ -229,7 +214,7 @@ public class ViewFileController extends SAbstractController {
 					return null;
 				}
 				catch(Exception e) {
-					String url = WebUrlUtil.getServletRootURL(request);
+					String url = WebUrlUtil.getServletRootURL(request, false);
 					url += "errorHandler";
 					String eMsg = e.getLocalizedMessage();
 					if (eMsg == null) eMsg = e.toString();
@@ -276,7 +261,8 @@ public class ViewFileController extends SAbstractController {
 			else
 			if (fa != null) {
 				String shortFileName = FileUtil.getShortFileName(fa.getFileItem().getName());	
-				String contentType = mimeTypes.getContentType(shortFileName);
+				String contentType = getFileTypeMap().getContentType(shortFileName);
+				
 				//Protect against XSS attacks if this is an HTML file
 				contentType = FileUtils.validateDownloadContentType(contentType);
 
@@ -286,7 +272,6 @@ public class ViewFileController extends SAbstractController {
 						contentType += ("; charset=" + encoding);
 					}
 				}
-				
 				response.setContentType(contentType);
 				response.setHeader("Cache-Control", "private");
 				if (fileTime.equals("")) {
@@ -330,7 +315,7 @@ public class ViewFileController extends SAbstractController {
 						getReportModule().addFileInfo(AuditType.download, fa);
 					}
 					catch(Exception e) {
-						response.sendError(HttpServletResponse.SC_BAD_REQUEST, NLT.get("file.error") + ": " + e.getLocalizedMessage());
+						response.getOutputStream().print(NLT.get("file.error") + ": " + e.getLocalizedMessage());
 					}
 				}
 
@@ -417,7 +402,7 @@ public class ViewFileController extends SAbstractController {
 			in = null;
 			
 		} catch(Exception e) {
-			response.sendError(HttpServletResponse.SC_BAD_REQUEST, NLT.get("file.error") + ": " + e.getLocalizedMessage());
+			response.getOutputStream().print(NLT.get("file.error") + ": " + e.getLocalizedMessage());
 		} finally {
 			if (in != null) {
 				try {

@@ -108,22 +108,6 @@ public interface GwtTeamingFilrImageBundle extends ClientBundle {
 	public ImageResource logoWindows();
 	
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/Filr/mobileDevices.png")
-	public ImageResource mobileDevices();
-	
-	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/Filr/mobileDevices_36.png")
-	public ImageResource mobileDevices_medium();
-	
-	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/Filr/mobileDevices_48.png")
-	public ImageResource mobileDevices_large();
-	
-	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/Filr/filr_mobileDevices_transparent_72.png")
-	public ImageResource mobileDevices_transparent_72();
-	
-	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/Filr/filr_multiple_36.png")
 	public ImageResource multipleItems();
 	
@@ -224,67 +208,6 @@ public interface GwtTeamingFilrImageBundle extends ClientBundle {
 	public ImageResource sharedWithMe_transparent_72();
 	
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/Filr/public.png")
-	public ImageResource sharedPublic();
-	
-	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/Filr/public36.png")
-	public ImageResource sharedPublic_medium();
-	
-	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/Filr/public48.png")
-	public ImageResource sharedPublic_large();
-	
-	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/Filr/public_transparent_48.png")
-	public ImageResource sharedPublic_transparent_48();
-	
-	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/Filr/public_transparent_72.png")
-	public ImageResource sharedPublic_transparent_72();
-	
-	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/Filr/whatsnew_transparent_48.png")
 	public ImageResource whatsNew_transparent_48();
-
-	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/Filr/filr_group_25.png")
-	public ImageResource filrGroup25();
-	
-	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/Filr/filr_group_36.png")
-	public ImageResource filrGroup36();
-	
-	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/Filr/filr_group_48.png")
-	public ImageResource filrGroup48();
-	
-	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/Filr/filr_group_72.png")
-	public ImageResource filrGroup72();
-	
-	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/Filr/external_user_16.png")
-	public ImageResource filrExternalUser16();
-	
-	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/Filr/external_user_25.png")
-	public ImageResource filrExternalUser25();
-	
-	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/Filr/external_user_36.png")
-	public ImageResource filrExternalUser36();
-	
-	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/Filr/external_user_48.png")
-	public ImageResource filrExternalUser48();
-	
-	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/Filr/external_user_72.png")
-	public ImageResource filrExternalUser72();
-	
-	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/Filr/external_user_96.png")
-	public ImageResource filrExternalUser96();
-	
 }

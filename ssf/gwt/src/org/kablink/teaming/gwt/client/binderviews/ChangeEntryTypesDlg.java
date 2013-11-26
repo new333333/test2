@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -52,6 +52,7 @@ import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -115,12 +116,13 @@ public class ChangeEntryTypesDlg extends DlgBox implements EditSuccessfulHandler
 	 * Asynchronously performs the change entry types.
 	 */
 	private void changeEntryTypesAsync() {
-		GwtClientHelper.deferCommand(new ScheduledCommand() {
+		ScheduledCommand doChange = new ScheduledCommand() {
 			@Override
 			public void execute() {
 				changeEntryTypesNow();
 			}
-		});
+		};
+		Scheduler.get().scheduleDeferred(doChange);
 	}
 	
 	/*
@@ -239,12 +241,13 @@ public class ChangeEntryTypesDlg extends DlgBox implements EditSuccessfulHandler
 	 * Asynchronously loads the entry types the user can select from.
 	 */
 	private void loadPart1Async() {
-		GwtClientHelper.deferCommand(new ScheduledCommand() {
+		ScheduledCommand doLoad = new ScheduledCommand() {
 			@Override
 			public void execute() {
 				loadPart1Now();
 			}
-		});
+		};
+		Scheduler.get().scheduleDeferred(doLoad);
 	}
 	
 	/*
@@ -287,12 +290,13 @@ public class ChangeEntryTypesDlg extends DlgBox implements EditSuccessfulHandler
 	 * Asynchronously populates the contents of the dialog.
 	 */
 	private void populateDlgAsync() {
-		GwtClientHelper.deferCommand(new ScheduledCommand() {
+		ScheduledCommand doPopulate = new ScheduledCommand() {
 			@Override
 			public void execute() {
 				populateDlgNow();
 			}
-		});
+		};
+		Scheduler.get().scheduleDeferred(doPopulate);
 	}
 	
 	/*
@@ -361,12 +365,13 @@ public class ChangeEntryTypesDlg extends DlgBox implements EditSuccessfulHandler
 	 * dialog.
 	 */
 	private static void runDlgAsync(final ChangeEntryTypesDlg cetDlg, final List<EntityId> entityIds, final VibeEventBase<?> reloadEvent) {
-		GwtClientHelper.deferCommand(new ScheduledCommand() {
+		ScheduledCommand doRun = new ScheduledCommand() {
 			@Override
 			public void execute() {
 				cetDlg.runDlgNow(entityIds, reloadEvent);
 			}
-		});
+		};
+		Scheduler.get().scheduleDeferred(doRun);
 	}
 	
 	/*

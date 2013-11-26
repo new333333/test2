@@ -2515,20 +2515,11 @@
             <column name="name"/>
         </createIndex>
     </changeSet>
-    <!-- Bug 835664 - Commenting out this change set as of Filr 1.1 and Hudson so that new 
-         install of Filr/Vibe would no longer create this particular index with the default 
-         index size induced from the column size which potentially exceeds the max index size
-         supported by MySQL InnoDB storage engine. MySQL 5.6 and onward seems no longer 
-         tolerate this. For new install, another change set that comes later will create an
-         index with more acceptable index prefix length. For upgrades from earlier versions 
-         of systems, change sets that come later will drop old index and create new index with
-         modified length that is acceptable with all versions of MySQL.  
     <changeSet author="jong (generated)" context="schema" id="1325864746197-280">
         <createIndex indexName="address_email" tableName="SS_EmailAddresses" unique="false">
             <column name="address"/>
         </createIndex>
     </changeSet>
-    -->
     <changeSet author="jong (generated)" context="schema" id="1325864746197-281">
         <createIndex indexName="sendDate_emaillog" tableName="SS_EmailLog" unique="false">
             <column name="zoneId"/>
@@ -2616,14 +2607,12 @@
             <column name="lastFullSent"/>
         </createIndex>
     </changeSet>
-    <!-- Bug 835664 - Commenting out this change set as of Filr 1.1
     <changeSet author="jong (generated)" context="schema" id="1325864746197-296">
         <createIndex indexName="email_postings" tableName="SS_Postings" unique="false">
             <column name="zoneId"/>
             <column name="emailAddress"/>
         </createIndex>
     </changeSet>
-    -->
     <changeSet author="jong (generated)" context="schema" id="1325864746197-297">
         <createIndex indexName="entryDef_principal" tableName="SS_Principals" unique="false">
             <column name="entryDef"/>

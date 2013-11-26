@@ -44,7 +44,7 @@
 </c:if>
 <c:if test="${!ss_mobileIsLoggedIn}">
 <%
-	if(isIPhone || isIPad) {
+	if(isIPhone) {
 %>
 	document.location = "NovellVibe:" + "doAppLogin:" + "${operation2}:" + "${ssUrl}:";
 <%

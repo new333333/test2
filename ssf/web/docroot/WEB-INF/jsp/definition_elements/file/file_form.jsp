@@ -60,7 +60,7 @@
 <div id="ss_tab_content">
 		
 	<form method="<%= methodName %>" enctype="<%= enctype %>" name="<%= formName %>" 
-	  id="<%= formName %>" onSubmit="return ss_onSubmit(this, true);">
+	  id="<%= formName %>" action="" onSubmit="return ss_onSubmit(this, true);">
 		<div id="ss_content">
 			<div id="ss_fileForm">
 				<ssf:displayConfiguration 

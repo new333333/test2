@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2009 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -42,13 +42,11 @@ import org.kablink.teaming.gwt.client.rpc.shared.SaveFileSyncAppConfigurationCmd
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HelpData;
-import org.kablink.teaming.gwt.client.util.runasync.ConfigureFileSyncAppDlgInitAndShowParams;
-import org.kablink.teaming.gwt.client.util.runasync.RunAsyncCmd;
-import org.kablink.teaming.gwt.client.util.runasync.RunAsyncCreateDlgParams;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
+import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.google.gwt.user.client.Window;
@@ -62,29 +60,23 @@ import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
-import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.TextBox;
 
+
 /**
- * ?
  * 
- * @author jwootton@novell.com
+ * @author jwootton
+ *
  */
 public class ConfigureFileSyncAppDlg extends DlgBox
 	implements KeyPressHandler, EditSuccessfulHandler
 {
-	private CheckBox	m_enableFileSyncAccessCB;
-	private CheckBox	m_enableDeployCB;
-	private CheckBox	m_allowPwdCacheCB;
-	private FlexTable	m_autoUpdateChoiceTable;
-	private FlexTable	m_autoUpdateUrlOnlyTable;
-	private RadioButton m_useLocalApps;
-	private RadioButton m_useRemoteApps;
-	private TextBox		m_syncIntervalTextBox;
-	private TextBox		m_autoUpdateUrlTextBox_Choice;
-	private TextBox		m_autoUpdateUrlTextBox_UrlOnly;
-	private TextBox		m_autoUpdateUrlTextBox;
-	private TextBox		m_maxFileSizeTextBox;
+	private CheckBox m_enableFileSyncAccessCB;
+	private CheckBox m_enableDeployCB;
+	private CheckBox m_allowPwdCacheCB;
+	private TextBox m_syncIntervalTextBox;
+	private TextBox m_autoUpdateUrlTextBox;
+	private TextBox m_maxFileSizeTextBox;
 	
 	/**
 	 * Callback interface to interact with the "configure file sync app" dialog
@@ -137,7 +129,8 @@ public class ConfigureFileSyncAppDlg extends DlgBox
 		mainPanel.add( label );
 		
 		ckboxPanel = new FlowPanel();
-		ckboxPanel.addStyleName( "marginleft1 margintop2" );
+		ckboxPanel.addStyleName( "marginleft1" );
+		ckboxPanel.addStyleName( "marginbottom2" );
 		mainPanel.add( ckboxPanel );
 		
 		// Add the controls for enable/disable File Sync App
@@ -166,68 +159,12 @@ public class ConfigureFileSyncAppDlg extends DlgBox
 		tmpPanel.add( m_enableDeployCB );
 		ckboxPanel.add( tmpPanel );
 		
-		// Create the controls for auto-update url.
-		{
-			m_autoUpdateChoiceTable = new FlexTable();
-			m_autoUpdateChoiceTable.addStyleName( "marginleft1" );
-			m_autoUpdateChoiceTable.setCellSpacing( 0 );
-			m_autoUpdateChoiceTable.setCellPadding( 0 );
-
-			{
-				m_useLocalApps = new RadioButton( "fileSyncAppLocation" );
-				m_useLocalApps.addStyleName( "filrSyncAppDlg_Radio" );
-				m_useLocalApps.setValue( true );
-				m_autoUpdateChoiceTable.setWidget( 0, 0, m_useLocalApps );
-				label = new InlineLabel( messages.fileSyncAppAutoUpdateUrlLabel_UseLocal() );
-				label.addStyleName("gwtUI_nowrap");
-				m_autoUpdateChoiceTable.setWidget( 0, 1, label );
-
-				m_useRemoteApps = new RadioButton( "fileSyncAppLocation" );
-				m_useRemoteApps.addStyleName( "filrSyncAppDlg_Radio" );
-				m_useRemoteApps.setValue( false );
-				m_autoUpdateChoiceTable.setWidget( 1, 0, m_useRemoteApps );
-				label = new InlineLabel( messages.fileSyncAppAutoUpdateUrlLabel_UseRemote() );
-				label.addStyleName("gwtUI_nowrap");
-				m_autoUpdateChoiceTable.setWidget( 1, 1, label );
-				
-				// Create a textbox for the user to enter the auto-update url.
-				m_autoUpdateUrlTextBox_Choice = new TextBox();
-				m_autoUpdateUrlTextBox_Choice.setVisibleLength( 40 );
-				m_autoUpdateChoiceTable.setWidget( 2, 1, m_autoUpdateUrlTextBox_Choice );
-				
-				mainPanel.add( m_autoUpdateChoiceTable );
-			}
-			
-			{
-				m_autoUpdateUrlOnlyTable = new FlexTable();
-				m_autoUpdateUrlOnlyTable.addStyleName( "marginleft1" );
-				m_autoUpdateUrlOnlyTable.setCellSpacing( 4 );
-				
-				label = new InlineLabel( messages.fileSyncAppAutoUpdateUrlLabel() );
-				label.addStyleName("gwtUI_nowrap");
-				m_autoUpdateUrlOnlyTable.setWidget( 0, 0, label );
-				
-				// Create a textbox for the user to enter the auto-update url.
-				m_autoUpdateUrlTextBox_UrlOnly = new TextBox();
-				m_autoUpdateUrlTextBox_UrlOnly.setVisibleLength( 40 );
-				m_autoUpdateUrlOnlyTable.setWidget( 0, 1, m_autoUpdateUrlTextBox_UrlOnly );
-				
-				mainPanel.add( m_autoUpdateUrlOnlyTable );
-			}
-
-		}
-		
 		// Create the controls for File Sync interval
 		{
-			label = new Label( messages.fileSyncAppHeader3() );
-			label.addStyleName( "margintop3" );
-			mainPanel.add( label );
-
 			HorizontalPanel hPanel;
 			Label intervalLabel;
 			
 			hPanel = new HorizontalPanel();
-			hPanel.addStyleName( "marginleft1" );
 			hPanel.setVerticalAlignment( HasVerticalAlignment.ALIGN_MIDDLE );
 			hPanel.setSpacing( 4 );
 			
@@ -240,10 +177,27 @@ public class ConfigureFileSyncAppDlg extends DlgBox
 			hPanel.add( m_syncIntervalTextBox );
 			
 			intervalLabel = new Label( messages.fileSyncAppMinutesLabel() );
-			intervalLabel.addStyleName( "gray3" );
 			hPanel.add( intervalLabel );
 
 			mainPanel.add( hPanel );
+		}
+		
+		// Create the controls for auto-update url.
+		{
+			FlexTable tmpTable;
+			
+			tmpTable = new FlexTable();
+			tmpTable.setCellSpacing( 4 );
+			
+			label = new InlineLabel( messages.fileSyncAppAutoUpdateUrlLabel() );
+			tmpTable.setWidget( 0, 0, label );
+			
+			// Create a textbox for the user to enter the auto-update url.
+			m_autoUpdateUrlTextBox = new TextBox();
+			m_autoUpdateUrlTextBox.setVisibleLength( 40 );
+			tmpTable.setWidget( 0, 1, m_autoUpdateUrlTextBox );
+
+			mainPanel.add( tmpTable );
 		}
 		
 		// Create the controls for the max file size
@@ -251,7 +205,6 @@ public class ConfigureFileSyncAppDlg extends DlgBox
 			FlexTable tmpTable;
 			
 			tmpTable = new FlexTable();
-			tmpTable.addStyleName( "marginleft1" );
 			tmpTable.setCellSpacing( 4 );
 			
 			label = new InlineLabel( messages.fileSyncAppMaxFileSizeLabel() );
@@ -263,7 +216,6 @@ public class ConfigureFileSyncAppDlg extends DlgBox
 			tmpTable.setWidget( 0, 1, m_maxFileSizeTextBox );
 			
 			label = new InlineLabel( messages.fileSyncAppMBLabel() );
-			label.addStyleName( "gray3" );
 			tmpTable.setWidget( 0, 2, label );
 
 			mainPanel.add( tmpTable );
@@ -364,24 +316,6 @@ public class ConfigureFileSyncAppDlg extends DlgBox
 	}
 	
 	/**
-	 * Returns whether to use the desktop applications that are local
-	 * to the system.
-	 */
-	private boolean getUseLocalApps()
-	{
-		return ( m_autoUpdateChoiceTable.isVisible() ? m_useLocalApps.getValue() : false );
-	}
-	
-	/**
-	 * Returns whether to use desktop applications from a remote
-	 * location.
-	 */
-	private boolean getUseRemoteApps()
-	{
-		return ( m_autoUpdateChoiceTable.isVisible() ? m_useRemoteApps.getValue() : true );
-	}
-	
-	/**
 	 * Get the data from the controls in the dialog box and store the data in a GwtFileSyncAppConfiguration object.
 	 */
 	@Override
@@ -390,13 +324,9 @@ public class ConfigureFileSyncAppDlg extends DlgBox
 		GwtFileSyncAppConfiguration fileSyncAppConfig;
 		String autoUpdateUrl;
 		boolean deployEnabled;
-		boolean useLocalApps;
-		boolean useRemoteApps;
 		
 		fileSyncAppConfig = new GwtFileSyncAppConfiguration();
 
-		useLocalApps  = getUseLocalApps();
-		useRemoteApps = getUseRemoteApps();
 		autoUpdateUrl = getAutoUpdateUrl();
 		deployEnabled = getIsFileSyncAppDeployEnabled();
 
@@ -409,10 +339,6 @@ public class ConfigureFileSyncAppDlg extends DlgBox
 		// Get the auto-update url from the dialog.
 		fileSyncAppConfig.setAutoUpdateUrl( autoUpdateUrl );
 		
-		// Get the location of the desktop applications from the dialog.
-		fileSyncAppConfig.setUseLocalApps(  useLocalApps  );
-		fileSyncAppConfig.setUseRemoteApps( useRemoteApps );
-		
 		// Get whether the file sync app can be deployed
 		fileSyncAppConfig.setIsDeploymentEnabled( deployEnabled );
 		
@@ -423,7 +349,7 @@ public class ConfigureFileSyncAppDlg extends DlgBox
 		fileSyncAppConfig.setMaxFileSize( getMaxFileSize() );
 
 		// If the "allow deployment..." checkbox is checked the user must have an auto-update url
-		if ( deployEnabled && getUseRemoteApps() && ( ! ( GwtClientHelper.hasString( autoUpdateUrl ) ) ) )
+		if ( deployEnabled && (autoUpdateUrl == null || autoUpdateUrl.length() == 0) )
 		{
 			Window.alert( GwtTeaming.getMessages().fileSyncAppAutoUpdateUrlRequiredPrompt() );
 			m_autoUpdateUrlTextBox.setFocus( true );
@@ -519,27 +445,6 @@ public class ConfigureFileSyncAppDlg extends DlgBox
 		int size;
 		String value;
 		
-		// If local desktop applications are available for download...
-		if ( fileSyncAppConfiguration.getLocalAppsExist() )
-		{
-			// ...we give the user the choice to use them...
-			m_autoUpdateChoiceTable.setVisible(  true  );
-			m_autoUpdateUrlOnlyTable.setVisible( false );
-			m_autoUpdateUrlTextBox = m_autoUpdateUrlTextBox_Choice;
-			m_useLocalApps.setValue(  fileSyncAppConfiguration.getUseLocalApps()  );
-			m_useRemoteApps.setValue( fileSyncAppConfiguration.getUseRemoteApps() );
-		}
-		
-		else
-		{
-			// ...otherwise, we only allow a URL to be specified.
-			m_autoUpdateChoiceTable.setVisible(  false );
-			m_autoUpdateUrlOnlyTable.setVisible( true  );
-			m_autoUpdateUrlTextBox = m_autoUpdateUrlTextBox_UrlOnly;
-			m_useLocalApps.setValue(  false );
-			m_useRemoteApps.setValue( true  );
-		}
-		
 		// Initialize the on/off radio buttons.
 		m_enableFileSyncAccessCB.setValue( fileSyncAppConfiguration.getIsFileSyncAppEnabled() );
 			
@@ -580,7 +485,10 @@ public class ConfigureFileSyncAppDlg extends DlgBox
         // Get the key the user pressed
         keyCode = event.getNativeEvent().getKeyCode();
         
-        if ( GwtClientHelper.isKeyValidForNumericField( event.getCharCode(), keyCode ) == false )
+        if ( (!Character.isDigit(event.getCharCode())) && (keyCode != KeyCodes.KEY_TAB) && (keyCode != KeyCodes.KEY_BACKSPACE)
+            && (keyCode != KeyCodes.KEY_DELETE) && (keyCode != KeyCodes.KEY_ENTER) && (keyCode != KeyCodes.KEY_HOME)
+            && (keyCode != KeyCodes.KEY_END) && (keyCode != KeyCodes.KEY_LEFT) && (keyCode != KeyCodes.KEY_UP)
+            && (keyCode != KeyCodes.KEY_RIGHT) && (keyCode != KeyCodes.KEY_DOWN))
         {
         	TextBox txtBox;
         	Object source;
@@ -597,10 +505,18 @@ public class ConfigureFileSyncAppDlg extends DlgBox
 	}
 
 	/**
-	 * Executes code through the GWT.runAsync() method to ensure that all of the
-	 * executing code is in this split point.
+	 * Loads the ConfigureFileSyncAppDlg split point and returns an instance
+	 * of it via the callback.
+	 * 
 	 */
-	public static void runAsyncCmd( final RunAsyncCmd cmd, final ConfigureFileSyncAppDlgClient cfsaDlgClient )
+	public static void createAsync(
+							final boolean autoHide,
+							final boolean modal,
+							final int left,
+							final int top,
+							final int width,
+							final int height,
+							final ConfigureFileSyncAppDlgClient cfsaDlgClient )
 	{
 		GWT.runAsync( ConfigureFileSyncAppDlg.class, new RunAsyncCallback()
 		{
@@ -617,54 +533,17 @@ public class ConfigureFileSyncAppDlg extends DlgBox
 			@Override
 			public void onSuccess()
 			{
-				switch ( cmd.getCmdType() )
-				{
-				case CREATE:
-				{
-					ConfigureFileSyncAppDlg cfsaDlg;
-					RunAsyncCreateDlgParams params;
-					
-					params = (RunAsyncCreateDlgParams) cmd.getParams();
-					cfsaDlg = new ConfigureFileSyncAppDlg(
-												params.getAutoHide(),
-												params.getModal(),
-												params.getLeft(),
-												params.getTop(),
-												params.getWidth(),
-												params.getHeight() );
-					
-					if ( cfsaDlgClient != null )
-						cfsaDlgClient.onSuccess( cfsaDlg );
-					
-					break;
-				}
-					
-				case INIT_AND_SHOW:
-				{
-					ConfigureFileSyncAppDlgInitAndShowParams params;
-					ConfigureFileSyncAppDlg dlg;
-					
-					params = (ConfigureFileSyncAppDlgInitAndShowParams)cmd.getParams();
-					dlg = params.getUIObj();
-
-					if ( params.getWidth() != null && params.getHeight() != null )
-						dlg.setPixelSize( params.getWidth(), params.getHeight() );
-					
-					dlg.init( params.getConfig() );
-					
-					if ( params.getLeft() != null && params.getTop() != null )
-						dlg.setPopupPosition( params.getLeft(), params.getTop() );
-
-					dlg.show();
-
-					break;
-				}
-					
-				case UNKNOWN:
-				default:
-					break;
-				}
+				ConfigureFileSyncAppDlg cfsaDlg;
+				
+				cfsaDlg = new ConfigureFileSyncAppDlg(
+												autoHide,
+												modal,
+												left,
+												top,
+												width,
+												height );
+				cfsaDlgClient.onSuccess( cfsaDlg );
 			}
-		} );
+		});
 	}
 }

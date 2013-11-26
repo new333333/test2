@@ -93,19 +93,11 @@
 					<ssf:nlt tag="search.NoResults" />
 				  </c:when>
 				  <c:otherwise>
-				    <c:if test="${searchCountTotalApproximate}">
-					  <ssf:nlt tag="search.resultsApproximate">
-					    <ssf:param name="value" value="${ssPageStartIndex}"/>
-					    <ssf:param name="value" value="${ssPageEndIndex}"/>
-					  </ssf:nlt>
-					</c:if>
-				    <c:if test="${!searchCountTotalApproximate}">
-					  <ssf:nlt tag="search.results">
-					    <ssf:param name="value" value="${ssPageStartIndex}"/>
-					    <ssf:param name="value" value="${ssPageEndIndex}"/>
-					    <ssf:param name="value" value="${ssResultTotalRecords}"/>
-					  </ssf:nlt>
-					</c:if>
+					<ssf:nlt tag="search.results">
+					<ssf:param name="value" value="${ssPageStartIndex}"/>
+					<ssf:param name="value" value="${ssPageEndIndex}"/>
+					<ssf:param name="value" value="${ssResultTotalRecords}"/>
+					</ssf:nlt>
 				  </c:otherwise>
 				</c:choose>
 			</div>

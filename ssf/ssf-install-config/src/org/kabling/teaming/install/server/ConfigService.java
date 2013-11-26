@@ -40,6 +40,7 @@ import org.kabling.teaming.install.shared.ConfigurationSaveException;
 import org.kabling.teaming.install.shared.Database;
 import org.kabling.teaming.install.shared.DatabaseConfig;
 import org.kabling.teaming.install.shared.EmailSettings;
+import org.kabling.teaming.install.shared.EncodingUtils;
 import org.kabling.teaming.install.shared.Environment;
 import org.kabling.teaming.install.shared.FileConfig;
 import org.kabling.teaming.install.shared.FileSystem;
@@ -80,29 +81,15 @@ public final class ConfigService
 	private static final String FILR_SERVER_URL = "http://localhost:";
 	static final Pattern IPv4_ADDR = Pattern.compile("\\binet addr:\\s*([\\d\\.]+)\\b", Pattern.MULTILINE);
 
-    static final String DEFAULT_INSTALLER_XML = "/filrinstall/installer.xml";
-
-    /**
-     * Get the installation configuration  - installer.xml
-     *
-     * @return
-     */
 	public static InstallerConfig getConfiguration()
 	{
-		return getConfiguration(DEFAULT_INSTALLER_XML);
+		return getConfiguration("/filrinstall/installer.xml");
 	}
 
-    /**
-     * Get configuration - reading from the installer.xml
-     *
-     * @param installerXmlPath
-     * @return
-     */
 	public static InstallerConfig getConfiguration(String installerXmlPath)
 	{
 		InstallerConfig config = null;
 		Document document = null;
-
 		try
 		{
 			document = getDocument(installerXmlPath);
@@ -114,9 +101,6 @@ public final class ConfigService
 		if (document != null)
 			config = getInstallerConfig(document);
 
-        //We also tag a bunch of properties into installer.xml
-
-        //Setting if we are using local postfix - stored in configurationDetails.properties
 		File file = new File("/filrinstall/configurationDetails.properties");
 
 		if (file.exists())
@@ -138,15 +122,12 @@ public final class ConfigService
 			}
 		}
 
-        //Check to see if the upgrade file exists (used during upgrade)
 		File upgradeFile = new File("/vastorage/conf/vaconfig.zip");
 		config.setUpdateMode(upgradeFile.exists());
 
-        //Check to see if memcached file exists
 		File shareFile = new File("/vashare/filr/conf/memcached.properties");
 		config.setShareAvailable(shareFile.exists());
 
-        //Check to see if /vashare exists
 		File vaShareFile = new File("/vashare");
 		config.setVashareAvailable(vaShareFile.exists());
 		return config;
@@ -1068,7 +1049,7 @@ public final class ConfigService
 		// Make a copy of the original installer.xml so that we can revert if we need to
 		try
 		{
-			File srcFile = new File(DEFAULT_INSTALLER_XML);
+			File srcFile = new File("/filrinstall/installer.xml");
 			File destFile = new File("/filrinstall/installer.xml.orig");
 
 			// If the file already exists, user has been making changes before applying the reconfigure action
@@ -1083,7 +1064,7 @@ public final class ConfigService
 		Document document = null;
 		try
 		{
-			document = getDocument(DEFAULT_INSTALLER_XML);
+			document = getDocument("/filrinstall/installer.xml");
 		}
 		catch (IOException e)
 		{
@@ -1092,15 +1073,12 @@ public final class ConfigService
 		ProductInfo productInfo = getProductInfo();
 
 		// Save each sections
-        //We only want to update the section if has been changed
-        //For example, if user is editing web services page and click save, we should not
-        //touch other sections
 		{
 			if (sectionsToUpdate == null || sectionsToUpdate.contains(LeftNavItemType.DATABASE))
 				saveDatabaseConfiguration(config, document);
 
-			// TODO: For lucene configuration, we need to update the changes to the lucene server
-            // TODO: Waiting for James Albright to finish up the API on the lucene applicance side
+			// TODO: For lucene configuration, we need to update the changes to
+			// the lucene server
 			if (sectionsToUpdate == null || sectionsToUpdate.contains(LeftNavItemType.LUCENE))
 				saveLuceneConfiguration(config, document);
 
@@ -1169,10 +1147,16 @@ public final class ConfigService
 				LSOutput lsOutput = impl.createLSOutput();
 				lsOutput.setEncoding("UTF-8");
 
-				lsOutput.setByteStream(new FileOutputStream(DEFAULT_INSTALLER_XML));
+				lsOutput.setByteStream(new FileOutputStream("/filrinstall/installer.xml"));
 				LSSerializer serializer = impl.createLSSerializer();
 
 				serializer.write(document, lsOutput);
+
+				// //TEMP - RAJESH - DELETE
+				// lsOutput.setByteStream(new FileOutputStream("/filrinstall/rajesh.xml"));
+				// serializer = impl.createLSSerializer();
+				//
+				// serializer.write(document, lsOutput);
 			}
 			catch (IOException e)
 			{
@@ -1220,9 +1204,6 @@ public final class ConfigService
 	}
 
 	@SuppressWarnings("rawtypes")
-    /**
-     * Save the properties into a file
-     */
 	public static void store(Properties props, File file) throws FileNotFoundException
 	{
 
@@ -1273,13 +1254,20 @@ public final class ConfigService
 					{
 						Element resourceElement = getElement(configElement, "Resource");
 
-						String dbType = getDbType(config.getType());
+						String dbType = "MySql";
+						if (config.getType().equals(DatabaseType.ORACLE))
+							dbType = "Oracle";
+						else if (config.getType().equals(DatabaseType.SQLSERVER))
+							dbType = "SQLServer";
 						configElement.setAttribute("type", dbType);
 
 						resourceElement.setAttribute("username", config.getResourceUserName());
 
 						if (config.getResourcePassword() != null && !config.getResourcePassword().isEmpty())
+						{
 							resourceElement.setAttribute("password", config.getResourcePassword());
+							updateMySqlLiquiBaseProperties(db);
+						}
 						resourceElement.setAttribute("url", config.getResourceUrl());
 						resourceElement.setAttribute("for", config.getResourceFor());
 						resourceElement.setAttribute("driverClassName", config.getResourceDriverClassName());
@@ -1304,8 +1292,12 @@ public final class ConfigService
 
 					resourceElement.setAttribute("username", config.getResourceUserName());
 					if (config.getResourcePassword() != null && !config.getResourcePassword().isEmpty())
-						resourceElement.setAttribute("password", config.getResourcePassword());
+						{
+							resourceElement.setAttribute("password", config.getResourcePassword());
+							updateMySqlLiquiBaseProperties(db);
+						}
 
+					logger.debug("Adding to dbElement");
 					dbElement.appendChild(newInstallElement);
 				}
 			}
@@ -1320,8 +1312,6 @@ public final class ConfigService
 			return "Oracle";
 		else if (dbType.equals(DatabaseType.SQLSERVER))
 			return "SQLServer";
-
-        //Default is MySql
 		return "MySql";
 	}
 
@@ -1527,18 +1517,16 @@ public final class ConfigService
 		}
 
 		updateMemcachedFile();
-
 		if (clustered.isEnabled())
 		{
 
 			// Update memecached file
 			updateMemcachedFile();
 
-            ApplianceService.enableAndStartMemcache(true);
-
+			executeCommand("chkconfig memcached on", true);
+			executeCommand("rcmemcached start", true);
 
 			// If memcache is enabled, enable port 11211
-            //Right now, we don't have another caching provider
 			if (config.getClustered().getCachingProvider().equals("memcached"))
 			{
 				openFireWallPort(new String[] { "11211", "4446" });
@@ -1546,8 +1534,12 @@ public final class ConfigService
 		}
 		else
 		{
-			ApplianceService.enableAndStartMemcache(false);
 
+			executeCommand("rcmemcached stop", true);
+			executeCommand("chkconfig memcached off", true);
+
+			// executeCommand("sudo SuSEfirewall2 close EXT TCP 11211", true);
+			// executeCommand("sudo SuSEfirewall2 close EXT TCP 4446", true);
 			closeFireWallPort(new String[] { "11211", "4446" });
 		}
 	}
@@ -1578,16 +1570,6 @@ public final class ConfigService
 		return closeFireWallPort(new String[] { portToClose });
 	}
 
-    /**
-     * Close Firewall ports. There is no good way to enable/disable ports in the appliance. The default
-     * commands are not working properly. There are times, we get duplicate entries and the removal of
-     * ports are not working correctly.
-     *
-     * Firewall can be enabled/disabled by directly editing the SuSEfirewall2 file
-     *
-     * @param portsToClose
-     * @return
-     */
 	private static boolean closeFireWallPort(String[] portsToClose)
 	{
 		File file = new File("/etc/sysconfig/SuSEfirewall2");
@@ -1675,13 +1657,9 @@ public final class ConfigService
 				}
 				servicesExtTcp = servicesExtTcp.substring(1, servicesExtTcp.length() - 1);
 
-                //Get the list of ports that are currently open
 				String[] portTokens = servicesExtTcp.split(" ");
-
-
 				for (String portToOpen : portsToOpen)
 				{
-                    //If the port is not already open, add it to the list
 					if (!Arrays.asList(portTokens).contains(portToOpen))
 					{
 						servicesExtTcp = servicesExtTcp + " " + portToOpen;
@@ -1689,7 +1667,6 @@ public final class ConfigService
 				}
 				logger.debug("SuseFirewall ports " + "\"" + servicesExtTcp + "\"");
 
-                //Save the properties file
 				prop.setProperty("FW_SERVICES_EXT_TCP", "\"" + servicesExtTcp + "\"");
 				prop.store(new FileOutputStream(file), null);
 			}
@@ -2033,14 +2010,6 @@ public final class ConfigService
 		return null;
 	}
 
-    /**
-     * For Filr, it is safe to look at the eth0 interface.
-     * There is no other good way to get the ip address. Java API's don't work well
-     * especially on a VM.  Trying to read from other places is not safe as they may not
-     * get updated.
-     *
-     * @return
-     */
 	private static String getLocalIpAddr()
 	{
 
@@ -2176,7 +2145,7 @@ public final class ConfigService
 				resourceName = dbConfig.getResourceUserName();
 
 			if (dbConfig.getResourcePassword() != null)
-				resourcePassword = dbConfig.getResourcePassword();
+				resourcePassword = EncodingUtils.encode(dbConfig.getResourcePassword());
 
 			if (dbConfig.getResourceDatabase() != null)
 				resourceDatabase = dbConfig.getResourceDatabase();
@@ -2323,11 +2292,14 @@ public final class ConfigService
 		}
 	}
 
+	
 	public static void updateDatabase(Database database) throws ConfigurationSaveException
 	{
 		updateMySqlLiquiBaseProperties(database);
 		if (getProductInfo().getType().equals(ProductType.NOVELL_FILR))
 		{
+			// Make sure password is not encrypted
+			decrytpMySqlLiquiBasePropertiesPassword(database);
 			// Update the database
 			int result = executeCommand("cd /filrinstall/db; pwd; sudo sh manage-database.sh mysql updateDatabase", true).getExitValue();
 
@@ -2337,9 +2309,82 @@ public final class ConfigService
 				logger.debug("Error updating database,Error code " + result);
 				throw new ConfigurationSaveException();
 			}
-			
+		
+			//Make sure password is encrypted
+			encrytpMySqlLiquiBasePropertiesPassword(database);
 		}
 	}
+	
+	public static void encrytpMySqlLiquiBasePropertiesPassword(Database database) throws ConfigurationSaveException {
+		if (getProductInfo().getType().equals(ProductType.NOVELL_FILR)) {
+
+			// Encrypt password in the mysql-liquibase.properties filr
+			DatabaseConfig dbConfig = database.getDatabaseConfig("Installed");
+			
+			String resourcePassword = "";
+			String encodedPassword ="";
+			
+			if (dbConfig != null) {
+
+				// Update mysql-liquibase.properties
+				File file = new File("/filrinstall/db/mysql-liquibase.properties");
+				if (file.exists()) {
+					Properties prop = new Properties();
+					try {
+						prop.load(new FileInputStream(file));
+						resourcePassword= prop.getProperty("password");
+						encodedPassword=EncodingUtils.encode(resourcePassword);
+						prop.setProperty("password", encodedPassword);
+						prop.setProperty("referencePassword", encodedPassword);
+						
+						// Java Properties store escapes colon. We need to store
+						// this natively.
+						store(prop, file);
+					} catch (IOException e) {
+						logger.debug("Error saving properties file " + e.getMessage());
+						throw new ConfigurationSaveException();
+					}
+				}
+			}
+		}
+
+	}
+
+	public static void decrytpMySqlLiquiBasePropertiesPassword(Database database) throws ConfigurationSaveException {
+		if (getProductInfo().getType().equals(ProductType.NOVELL_FILR)) {
+
+			// Encrypt password in the mysql-liquibase.properties filr
+			DatabaseConfig dbConfig = database.getDatabaseConfig("Installed");
+			
+			String resourcePassword = "";
+			String decodedPassword ="";
+			
+			if (dbConfig != null) {
+
+				// Update mysql-liquibase.properties
+				File file = new File("/filrinstall/db/mysql-liquibase.properties");
+				if (file.exists()) {
+					Properties prop = new Properties();
+					try {
+						prop.load(new FileInputStream(file));
+						resourcePassword= prop.getProperty("password");
+						decodedPassword=EncodingUtils.decode(resourcePassword);
+						prop.setProperty("password", decodedPassword);
+						prop.setProperty("referencePassword", decodedPassword);
+						
+						// Java Properties store escapes colon. We need to store
+						// this natively.
+						store(prop, file);
+					} catch (IOException e) {
+						logger.debug("Error saving properties file " + e.getMessage());
+						throw new ConfigurationSaveException();
+					}
+				}
+			}
+		}
+
+	}
+	
 
 	
 	public static void updateFsaUpdateUrl()
@@ -2395,7 +2440,25 @@ public final class ConfigService
                 throw new ConfigurationSaveException();
             }
 
-	   
+            // Replace Novell Vibe with Novell Filr on ssf-ext.properties
+            info = executeCommand(
+                    "sudo sed -i \"s/Novell Vibe/Novell Filr/g\" /opt/novell/filr/apache-tomcat/webapps/ssf/WEB-INF/classes/config/ssf-ext.properties",
+                    true);
+            if (info.getExitValue() != 0)
+            {
+                logger.debug("Error setting up Novell Filr string on ssf-ext.properties" + info.getExitValue());
+                throw new ConfigurationSaveException();
+            }
+
+            // Setup luceneindex.root.dir on ssf-ext.properties
+            info = executeCommand(
+                    "sudo sed -i  -e 's|data.luceneindex.root.dir=/vastorage/filr|data.luceneindex.root.dir=/vastorage/search|' /opt/novell/filr/apache-tomcat/webapps/ssf/WEB-INF/classes/config/ssf-ext.properties",
+                    true);
+            if (info.getExitValue() != 0)
+            {
+                logger.debug("Error setting up data.luceneindex.root.dir=/vastorage/search" + info.getExitValue());
+                throw new ConfigurationSaveException();
+            }
         }
 
         // Delete the backup copy
@@ -2433,7 +2496,7 @@ public final class ConfigService
        reconfigure(restartServer,true);
 	}
 
-	public static void saveFilrConfigLocally()
+	private static void saveFilrConfigLocally()
 	{
 		executeCommand("sudo python /opt/novell/base_config/zipVAConfig.py", true);
 	}
@@ -2512,6 +2575,8 @@ public final class ConfigService
 				}
 				tries--;
 			}
+			//Save configuration after every time we restart
+			saveFilrConfigLocally();
 		}
 	}
 
@@ -2592,7 +2657,7 @@ public final class ConfigService
 
 	}
 
-	private static boolean isFilrServerRunning(int port) throws IOException
+	private static boolean isFilrServerRunning(int port) throws MalformedURLException, IOException
 	{
 		logger.debug("Check to see if Filr server is running");
 		try
@@ -2631,15 +2696,6 @@ public final class ConfigService
 		}
 	}
 
-    /**
-     * For large deployment, we can make a call to check to see if the database already exists.
-     *
-     * @param dbName
-     * @param url
-     * @param userName
-     * @param password
-     * @return
-     */
 	public static boolean checkDBExists(String dbName, String url, String userName, String password)
 	{
 
@@ -2650,15 +2706,13 @@ public final class ConfigService
 
 			Connection conn = DriverManager.getConnection(url, userName, password); // Open a connection
 
-            //Get all the catalogs
 			ResultSet resultSet = conn.getMetaData().getCatalogs();
 
 			while (resultSet.next())
 			{
 				String databaseName = resultSet.getString(1);
 				logger.debug("Database found =" + databaseName);
-
-				if (databaseName.equalsIgnoreCase(dbName))
+				if (databaseName.equals(dbName))
 				{
 					return true;
 				}
@@ -2715,24 +2769,16 @@ public final class ConfigService
 		return timeZoneMap;
 	}
 
-    /**
-     * Called during intial wizard to create additional files to know that the wizard
-     * has been run.
-     * @param configType
-     */
 	public static void markConfigurationDone(String configType)
 	{
 		// Wizard configuration is done, put a temp file there
 		File file = new File("/filrinstall/configured");
-
 		// If it exists, ignore
 		if (!System.getProperty("os.name").startsWith("Win") && !file.exists())
 		{
 			try
 			{
 				// Create configured file
-                // Existence of this file tells that the wizard has been run and we should no longer
-                //run the wizard
 				file.createNewFile();
 
 				// Also create configurationDetails.properties file to store if this is small or large deployment
@@ -2805,27 +2851,21 @@ public final class ConfigService
 
 		executeCommand("sudo rcmysql stop", true);
 		executeCommand("sudo chkconfig mysql off", true);
-
+		
 		executeCommand("sudo rcnovell-gmetad stop", true);
 		executeCommand("sudo rcnovell-gmond stop", true);
-        	//Remove the ganglia database becasue it has Mysql entries that we do not want.
-		executeCommand("sudo rm -rf /vastorage/ganglia/rrds/*", true);
-                executeCommand("sudo rcnovell-gmetad start", true);
-		executeCommand("sudo rcnovell-gmond start", true);
 		
+		//Remove the ganglia database becasue it has Mysql entries that we do not want.
+		executeCommand("sudo rm -rf /vastorage/ganglia/rrds/*", true);
+		executeCommand("sudo rcnovell-gmetad start", true);
+		executeCommand("sudo rcnovell-gmond start", true);
 	}
 
-    /**
-     * Revert configuration is simple as copying back the original file to installer.xml
-     *
-     * @throws IOException
-     */
 	public static void reverConfiguration() throws IOException
 	{
 		File srcFile = new File("/filrinstall/installer.xml.orig");
-
 		if (srcFile.exists())
-			FileUtils.copyFile(srcFile, new File(DEFAULT_INSTALLER_XML), true);
+			FileUtils.copyFile(srcFile, new File("/filrinstall/installer.xml"), true);
 
 		srcFile.delete();
 	}

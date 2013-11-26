@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2009 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -30,6 +30,7 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
+
 package org.kablink.teaming.module.authentication.impl;
 
 import java.util.HashMap;
@@ -42,7 +43,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
+import org.kablink.teaming.NoObjectByTheIdException;
 import org.kablink.teaming.asmodule.security.authentication.AuthenticationContextHolder;
 import org.kablink.teaming.asmodule.zonecontext.ZoneContextHolder;
 import org.kablink.teaming.context.request.RequestContext;
@@ -50,14 +51,8 @@ import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.AuthenticationConfig;
 import org.kablink.teaming.domain.LdapConnectionConfig;
 import org.kablink.teaming.domain.LoginInfo;
+import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.ZoneConfig;
-import org.kablink.teaming.module.authentication.AuthenticationServiceProvider;
-import org.kablink.teaming.module.authentication.IdentityInfoObtainable;
-import org.kablink.teaming.module.authentication.LocalAuthentication;
-import org.kablink.teaming.module.authentication.UserAccountNotProvisionedException;
-import org.kablink.teaming.module.authentication.UserIdNotActiveException;
-import org.kablink.teaming.module.authentication.UserIdNotUniqueException;
-import org.kablink.teaming.NoObjectByTheIdException;
 import org.kablink.teaming.security.authentication.AuthenticationManagerUtil;
 import org.kablink.teaming.security.authentication.UserAccountNotActiveException;
 import org.kablink.teaming.security.authentication.UserDoesNotExistException;
@@ -80,7 +75,12 @@ import org.kablink.teaming.util.SimpleProfiler;
 import org.kablink.teaming.util.WindowsUtil;
 import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.util.Validator;
-
+import org.kablink.teaming.module.authentication.AuthenticationServiceProvider;
+import org.kablink.teaming.module.authentication.IdentityInfoObtainable;
+import org.kablink.teaming.module.authentication.LocalAuthentication;
+import org.kablink.teaming.module.authentication.UserAccountNotProvisionedException;
+import org.kablink.teaming.module.authentication.UserIdNotActiveException;
+import org.kablink.teaming.module.authentication.UserIdNotUniqueException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.security.core.Authentication;
@@ -97,12 +97,6 @@ import org.springframework.security.openid.OpenIDAuthenticationToken;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
-/**
- * ? 
- * 
- * @author ?
- */
-@SuppressWarnings({"unchecked", "unused", "deprecation"})
 public abstract class AbstractAuthenticationProviderModule extends BaseAuthenticationModule
 		implements AuthenticationProvider, InitializingBean {
 	protected Log logger = LogFactory.getLog(getClass());
@@ -125,7 +119,6 @@ public abstract class AbstractAuthenticationProviderModule extends BaseAuthentic
 		lastUpdates = new ConcurrentHashMap<Long, Long>();
 	}
 
-	@Override
 	public void afterPropertiesSet() throws Exception {
 		localAuthenticationProviderClass = ReflectHelper.classForName(SPropsUtil.getString("local.authentication.provider.class", "org.kablink.teaming.spring.security.ZoneAwareLocalAuthenticationProviderImpl"));
 		authenticateLdapMatchingUsersUsingLdapOnly = SPropsUtil.getBoolean("authenticate.ldap.matching.users.using.ldap.only", true);
@@ -181,7 +174,6 @@ public abstract class AbstractAuthenticationProviderModule extends BaseAuthentic
 			AuthenticationConfig authConfig = zoneConfig.getAuthenticationConfig();
 			Long lastUpdateInDb = authConfig.getLastUpdate();
 			Long lastUpdateInMem = lastUpdates.get(zoneId);
-			// If the date in the db is different from the in memory date, rebuild the providers.
 			if((lastUpdateInDb != null) &&
 					((lastUpdateInMem == null) || 
 							(lastUpdateInDb.compareTo(lastUpdateInMem) != 0))) {
@@ -370,7 +362,6 @@ public abstract class AbstractAuthenticationProviderModule extends BaseAuthentic
 	 * @throws AuthenticationException
 	 *             if authentication fails.
 	 */
-	@Override
 	public Authentication authenticate(Authentication authentication) throws AuthenticationException
     {
 		long begin = System.nanoTime();
@@ -421,14 +412,8 @@ public abstract class AbstractAuthenticationProviderModule extends BaseAuthentic
 				throw e;
 			}
 			catch(AuthenticationException e) {
-				String exDesc;
-				
 				Long zone = getZoneModule().getZoneIdByVirtualHost(ZoneContextHolder.getServerName());
-				if ( e.getCause() != null )
-					exDesc = e.getCause().toString();
-				else
-					exDesc = e.toString();
-				logger.warn("Authentication failure for [" + authentication.getName() + "] " + exDesc );
+				logger.warn("Authentication failure for [" + authentication.getName() + "] " + e.toString());
 				throw e;
 			}
 			catch(RuntimeException e) {
@@ -581,9 +566,7 @@ public abstract class AbstractAuthenticationProviderModule extends BaseAuthentic
 	    		} catch(AuthenticationException e) {
 	    			exc = e;
 	    		} catch(UserAccountNotActiveException e) {
-	    			UserIdNotActiveException unaEx = new UserIdNotActiveException(e.getMessage());
-	    			unaEx.setApiErrorCode(e.getApiErrorCode());
-	    			exc = unaEx;
+	    			exc = new UserIdNotActiveException(e.getMessage());
 	    		} catch(UserDoesNotExistException e) {
 	    			if(authenticationServiceProvider == AuthenticationServiceProvider.OPENID)
 	    				exc = new UserAccountNotProvisionedException(e.getMessage());
@@ -708,7 +691,6 @@ public abstract class AbstractAuthenticationProviderModule extends BaseAuthentic
 	 * @return <code>true</code> if the implementation can more closely
 	 *         evaluate the <code>Authentication</code> class presented
 	 */
-	@Override
 	public boolean supports(Class authentication) {
 		Long zone = getZoneModule().getZoneIdByVirtualHost(
 				ZoneContextHolder.getServerName());
@@ -776,4 +758,5 @@ public abstract class AbstractAuthenticationProviderModule extends BaseAuthentic
 		if(authentication.getCredentials() == null || authentication.getCredentials().equals(""))
 			throw new BadCredentialsException("Password is required");
 	}
+	
 }

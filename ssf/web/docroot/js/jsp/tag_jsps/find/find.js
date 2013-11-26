@@ -534,6 +534,7 @@ ssFind.Find = function(multiplePrefix, multipleClickRoutineObj, multipleClickRou
 		hrefObj.appendChild(spanObj);
 		liObj.appendChild(hrefObj);
 		that._searchResultsList.appendChild(liObj);
+		eval("type_ss_find_id_" + item.id + " = '" + item.type + "'");
 	}
 	
 	this._clearSearchResultsList = function() {

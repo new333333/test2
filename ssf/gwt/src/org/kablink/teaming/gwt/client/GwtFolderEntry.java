@@ -173,15 +173,6 @@ public class GwtFolderEntry extends GwtTeamingItem
 	/**
 	 * 
 	 */
-	@Override
-	public String getImageUrl()
-	{
-		return getFileImgUrl();
-	}
-	
-	/**
-	 * 
-	 */
 	public String getModificationDate()
 	{
 		return m_modificationDate;

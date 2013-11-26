@@ -42,8 +42,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.kablink.teaming.InternalException;
-import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
-import org.kablink.teaming.module.folder.FolderModule.FolderOperation;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SPropsUtil;
 
@@ -367,72 +365,6 @@ public class WorkAreaOperation {
 			if(this.allowSharingPublic) rights.add(WorkAreaOperation.ALLOW_SHARING_PUBLIC);
 			if(this.allowSharingForward) rights.add(WorkAreaOperation.ALLOW_SHARING_FORWARD);
 			if(this.allowAccessNetFolder) rights.add(WorkAreaOperation.ALLOW_ACCESS_NET_FOLDER);
-			return rights;
-		}
-
-	    //Routine to translate from WorkAreaOperations to the equivalent FolderOperation
-	    public List<FolderOperation> getFolderEntryRights() {
-	    	List<FolderOperation> rights = new ArrayList<FolderOperation>();
-			if(this.createEntries) rights.add(FolderOperation.addEntry);
-			if(this.modifyEntries) rights.add(FolderOperation.modifyEntry);
-			if(this.modifyEntryFields) rights.add(FolderOperation.modifyEntryFields);
-			if(this.renameEntries) rights.add(FolderOperation.renameEntry);
-			if(this.deleteEntries) rights.add(FolderOperation.deleteEntry);
-			if(this.readEntries) rights.add(FolderOperation.readEntry);
-			if(this.addReplies) rights.add(FolderOperation.addReply);
-			if(this.generateReports) rights.add(FolderOperation.report);
-			if(this.binderAdministration) rights.add(FolderOperation.changeACL);
-			if(this.createEntryAcls) rights.add(FolderOperation.changeACL);
-			if(this.changeAccessControl) rights.add(FolderOperation.changeACL);
-			if(this.createWorkspaces) rights.add(null);
-			if(this.createFolders) rights.add(null);
-			if(this.manageEntryDefinitions) rights.add(null);
-			if(this.manageWorkflowDefinitions) rights.add(null);
-			if(this.creatorReadEntries) rights.add(FolderOperation.readEntry);
-			if(this.creatorModifyEntries) rights.add(FolderOperation.modifyEntry);
-			if(this.creatorRenameEntries) rights.add(FolderOperation.renameEntry);
-			if(this.creatorDeleteEntries) rights.add(FolderOperation.deleteEntry);
-			if(this.ownerCreateEntryAcls) rights.add(FolderOperation.setEntryAcl);
-			if(this.addTags) rights.add(FolderOperation.manageTag);
-			if(this.viewBinderTitle) rights.add(FolderOperation.readEntry);
-			if(this.allowSharing) rights.add(FolderOperation.allowSharing);
-			if(this.allowSharingExternal) rights.add(FolderOperation.allowSharingExternal);
-			if(this.allowSharingPublic) rights.add(FolderOperation.allowSharingPublic);
-			if(this.allowSharingForward) rights.add(FolderOperation.allowSharingForward);
-			if(this.allowAccessNetFolder) rights.add(FolderOperation.readEntry);
-			return rights;
-		}
-
-	    //Routine to translate from WorkAreaOperations to the equivalent BinderOperation
-	    public List getFolderRights() {
-	    	List rights = new ArrayList();
-			if(this.createEntries) rights.add(WorkAreaOperation.CREATE_ENTRIES);
-			if(this.modifyEntries) rights.add(WorkAreaOperation.MODIFY_ENTRIES);
-			if(this.modifyEntryFields) rights.add(WorkAreaOperation.MODIFY_ENTRY_FIELDS);
-			if(this.renameEntries) rights.add(WorkAreaOperation.RENAME_ENTRIES);
-			if(this.deleteEntries) rights.add(WorkAreaOperation.DELETE_ENTRIES);
-			if(this.readEntries) rights.add(BinderOperation.readEntries);
-			if(this.addReplies) rights.add(WorkAreaOperation.ADD_REPLIES);
-			if(this.generateReports) rights.add(BinderOperation.report);
-			if(this.binderAdministration) rights.add(WorkAreaOperation.BINDER_ADMINISTRATION);
-			if(this.createEntryAcls) rights.add(BinderOperation.changeACL);
-			if(this.changeAccessControl) rights.add(BinderOperation.changeACL);
-			if(this.createWorkspaces) rights.add(BinderOperation.addWorkspace);
-			if(this.createFolders) rights.add(BinderOperation.addFolder);
-			if(this.manageEntryDefinitions) rights.add(WorkAreaOperation.MANAGE_ENTRY_DEFINITIONS);
-			if(this.manageWorkflowDefinitions) rights.add(WorkAreaOperation.MANAGE_WORKFLOW_DEFINITIONS);
-			if(this.creatorReadEntries) rights.add(WorkAreaOperation.CREATOR_READ);
-			if(this.creatorModifyEntries) rights.add(WorkAreaOperation.CREATOR_MODIFY);
-			if(this.creatorRenameEntries) rights.add(WorkAreaOperation.CREATOR_RENAME);
-			if(this.creatorDeleteEntries) rights.add(WorkAreaOperation.CREATOR_DELETE);
-			if(this.ownerCreateEntryAcls) rights.add(WorkAreaOperation.CREATE_ENTRY_ACLS);
-			if(this.addTags) rights.add(BinderOperation.manageTag);
-			if(this.viewBinderTitle) rights.add(BinderOperation.viewBinderTitle);
-			if(this.allowSharing) rights.add(BinderOperation.allowSharing);
-			if(this.allowSharingExternal) rights.add(BinderOperation.allowSharingExternal);
-			if(this.allowSharingPublic) rights.add(BinderOperation.allowSharingPublic);
-			if(this.allowSharingForward) rights.add(BinderOperation.allowSharingForward);
-			if(this.allowAccessNetFolder) rights.add(BinderOperation.allowAccessNetFolder);
 			return rights;
 		}
 

@@ -829,7 +829,7 @@ update SS_Principals set foreignName=LOWER(foreignName);
             <append value=" collate utf8_bin"/>
         </modifySql>
     </changeSet>
-
+        
     <changeSet author="jay" context="schema" failOnError="true" id="99">
         <comment>Domain name if the user was provisioned from AD</comment>
         <addColumn tableName="SS_Principals">

@@ -1,199 +1,201 @@
 /*
-	Copyright (c) 2004-2011, The Dojo Foundation All Rights Reserved.
+	Copyright (c) 2004-2009, The Dojo Foundation All Rights Reserved.
 	Available via Academic Free License >= 2.1 OR the modified BSD license.
 	see: http://dojotoolkit.org/license for details
 */
 
-//>>built
-define("dojo/NodeList-manipulate",["./query","./_base/lang","./_base/array","./dom-construct","./NodeList-dom"],function(_1,_2,_3,_4){
-var _5=_1.NodeList;
-function _6(_7){
-var _8="",ch=_7.childNodes;
+
+if(!dojo._hasResource["dojo.NodeList-manipulate"]){
+dojo._hasResource["dojo.NodeList-manipulate"]=true;
+dojo.provide("dojo.NodeList-manipulate");
+(function(){
+function _1(_2){
+var _3="",ch=_2.childNodes;
 for(var i=0,n;n=ch[i];i++){
 if(n.nodeType!=8){
 if(n.nodeType==1){
-_8+=_6(n);
+_3+=_1(n);
 }else{
-_8+=n.nodeValue;
+_3+=n.nodeValue;
 }
 }
 }
-return _8;
+return _3;
 };
-function _9(_a){
-while(_a.childNodes[0]&&_a.childNodes[0].nodeType==1){
-_a=_a.childNodes[0];
+function _4(_5){
+while(_5.childNodes[0]&&_5.childNodes[0].nodeType==1){
+_5=_5.childNodes[0];
 }
-return _a;
+return _5;
 };
-function _b(_c,_d){
-if(typeof _c=="string"){
-_c=_4.toDom(_c,(_d&&_d.ownerDocument));
-if(_c.nodeType==11){
-_c=_c.childNodes[0];
+function _6(_7,_8){
+if(typeof _7=="string"){
+_7=dojo._toDom(_7,(_8&&_8.ownerDocument));
+if(_7.nodeType==11){
+_7=_7.childNodes[0];
 }
 }else{
-if(_c.nodeType==1&&_c.parentNode){
-_c=_c.cloneNode(false);
+if(_7.nodeType==1&&_7.parentNode){
+_7=_7.cloneNode(false);
 }
 }
-return _c;
+return _7;
 };
-_2.extend(_5,{_placeMultiple:function(_e,_f){
-var nl2=typeof _e=="string"||_e.nodeType?_1(_e):_e;
-var _10=[];
-for(var i=0;i<nl2.length;i++){
-var _11=nl2[i];
-var _12=this.length;
-for(var j=_12-1,_13;_13=this[j];j--){
+dojo.extend(dojo.NodeList,{_placeMultiple:function(_9,_a){
+var _b=typeof _9=="string"||_9.nodeType?dojo.query(_9):_9;
+var _c=[];
+for(var i=0;i<_b.length;i++){
+var _d=_b[i];
+var _e=this.length;
+for(var j=_e-1,_f;_f=this[j];j--){
 if(i>0){
-_13=this._cloneNode(_13);
-_10.unshift(_13);
+_f=this._cloneNode(_f);
+_c.unshift(_f);
 }
-if(j==_12-1){
-_4.place(_13,_11,_f);
+if(j==_e-1){
+dojo.place(_f,_d,_a);
 }else{
-_11.parentNode.insertBefore(_13,_11);
+_d.parentNode.insertBefore(_f,_d);
 }
-_11=_13;
+_d=_f;
 }
 }
-if(_10.length){
-_10.unshift(0);
-_10.unshift(this.length-1);
-Array.prototype.splice.apply(this,_10);
+if(_c.length){
+_c.unshift(0);
+_c.unshift(this.length-1);
+Array.prototype.splice.apply(this,_c);
 }
 return this;
-},innerHTML:function(_14){
+},innerHTML:function(_10){
 if(arguments.length){
-return this.addContent(_14,"only");
+return this.addContent(_10,"only");
 }else{
 return this[0].innerHTML;
 }
-},text:function(_15){
+},text:function(_11){
 if(arguments.length){
-for(var i=0,_16;_16=this[i];i++){
-if(_16.nodeType==1){
-_4.empty(_16);
-_16.appendChild(_16.ownerDocument.createTextNode(_15));
+for(var i=0,_12;_12=this[i];i++){
+if(_12.nodeType==1){
+dojo.empty(_12);
+_12.appendChild(_12.ownerDocument.createTextNode(_11));
 }
 }
 return this;
 }else{
-var _17="";
-for(i=0;_16=this[i];i++){
-_17+=_6(_16);
+var _13="";
+for(i=0;_12=this[i];i++){
+_13+=_1(_12);
 }
-return _17;
+return _13;
 }
-},val:function(_18){
+},val:function(_14){
 if(arguments.length){
-var _19=_2.isArray(_18);
-for(var _1a=0,_1b;_1b=this[_1a];_1a++){
-var _1c=_1b.nodeName.toUpperCase();
-var _1d=_1b.type;
-var _1e=_19?_18[_1a]:_18;
-if(_1c=="SELECT"){
-var _1f=_1b.options;
-for(var i=0;i<_1f.length;i++){
-var opt=_1f[i];
-if(_1b.multiple){
-opt.selected=(_3.indexOf(_18,opt.value)!=-1);
+var _15=dojo.isArray(_14);
+for(var _16=0,_17;_17=this[_16];_16++){
+var _18=_17.nodeName.toUpperCase();
+var _19=_17.type;
+var _1a=_15?_14[_16]:_14;
+if(_18=="SELECT"){
+var _1b=_17.options;
+for(var i=0;i<_1b.length;i++){
+var opt=_1b[i];
+if(_17.multiple){
+opt.selected=(dojo.indexOf(_14,opt.value)!=-1);
 }else{
-opt.selected=(opt.value==_1e);
+opt.selected=(opt.value==_1a);
 }
 }
 }else{
-if(_1d=="checkbox"||_1d=="radio"){
-_1b.checked=(_1b.value==_1e);
+if(_19=="checkbox"||_19=="radio"){
+_17.checked=(_17.value==_1a);
 }else{
-_1b.value=_1e;
+_17.value=_1a;
 }
 }
 }
 return this;
 }else{
-_1b=this[0];
-if(!_1b||_1b.nodeType!=1){
+_17=this[0];
+if(!_17||_17.nodeType!=1){
 return undefined;
 }
-_18=_1b.value||"";
-if(_1b.nodeName.toUpperCase()=="SELECT"&&_1b.multiple){
-_18=[];
-_1f=_1b.options;
-for(i=0;i<_1f.length;i++){
-opt=_1f[i];
+_14=_17.value||"";
+if(_17.nodeName.toUpperCase()=="SELECT"&&_17.multiple){
+_14=[];
+_1b=_17.options;
+for(i=0;i<_1b.length;i++){
+opt=_1b[i];
 if(opt.selected){
-_18.push(opt.value);
+_14.push(opt.value);
 }
 }
-if(!_18.length){
-_18=null;
+if(!_14.length){
+_14=null;
 }
 }
-return _18;
+return _14;
 }
-},append:function(_20){
-return this.addContent(_20,"last");
-},appendTo:function(_21){
-return this._placeMultiple(_21,"last");
-},prepend:function(_22){
-return this.addContent(_22,"first");
-},prependTo:function(_23){
-return this._placeMultiple(_23,"first");
-},after:function(_24){
-return this.addContent(_24,"after");
-},insertAfter:function(_25){
-return this._placeMultiple(_25,"after");
-},before:function(_26){
-return this.addContent(_26,"before");
-},insertBefore:function(_27){
-return this._placeMultiple(_27,"before");
-},remove:_5.prototype.orphan,wrap:function(_28){
+},append:function(_1c){
+return this.addContent(_1c,"last");
+},appendTo:function(_1d){
+return this._placeMultiple(_1d,"last");
+},prepend:function(_1e){
+return this.addContent(_1e,"first");
+},prependTo:function(_1f){
+return this._placeMultiple(_1f,"first");
+},after:function(_20){
+return this.addContent(_20,"after");
+},insertAfter:function(_21){
+return this._placeMultiple(_21,"after");
+},before:function(_22){
+return this.addContent(_22,"before");
+},insertBefore:function(_23){
+return this._placeMultiple(_23,"before");
+},remove:dojo.NodeList.prototype.orphan,wrap:function(_24){
 if(this[0]){
-_28=_b(_28,this[0]);
-for(var i=0,_29;_29=this[i];i++){
-var _2a=this._cloneNode(_28);
-if(_29.parentNode){
-_29.parentNode.replaceChild(_2a,_29);
+_24=_6(_24,this[0]);
+for(var i=0,_25;_25=this[i];i++){
+var _26=this._cloneNode(_24);
+if(_25.parentNode){
+_25.parentNode.replaceChild(_26,_25);
 }
-var _2b=_9(_2a);
-_2b.appendChild(_29);
+var _27=_4(_26);
+_27.appendChild(_25);
 }
 }
 return this;
-},wrapAll:function(_2c){
+},wrapAll:function(_28){
 if(this[0]){
-_2c=_b(_2c,this[0]);
-this[0].parentNode.replaceChild(_2c,this[0]);
-var _2d=_9(_2c);
-for(var i=0,_2e;_2e=this[i];i++){
-_2d.appendChild(_2e);
+_28=_6(_28,this[0]);
+this[0].parentNode.replaceChild(_28,this[0]);
+var _29=_4(_28);
+for(var i=0,_2a;_2a=this[i];i++){
+_29.appendChild(_2a);
 }
 }
 return this;
-},wrapInner:function(_2f){
+},wrapInner:function(_2b){
 if(this[0]){
-_2f=_b(_2f,this[0]);
+_2b=_6(_2b,this[0]);
 for(var i=0;i<this.length;i++){
-var _30=this._cloneNode(_2f);
-this._wrap(_2._toArray(this[i].childNodes),null,this._NodeListCtor).wrapAll(_30);
+var _2c=this._cloneNode(_2b);
+this._wrap(dojo._toArray(this[i].childNodes),null,this._NodeListCtor).wrapAll(_2c);
 }
 }
 return this;
-},replaceWith:function(_31){
-_31=this._normalize(_31,this[0]);
-for(var i=0,_32;_32=this[i];i++){
-this._place(_31,_32,"before",i>0);
-_32.parentNode.removeChild(_32);
+},replaceWith:function(_2d){
+_2d=this._normalize(_2d,this[0]);
+for(var i=0,_2e;_2e=this[i];i++){
+this._place(_2d,_2e,"before",i>0);
+_2e.parentNode.removeChild(_2e);
 }
 return this;
-},replaceAll:function(_33){
-var nl=_1(_33);
-var _34=this._normalize(this,this[0]);
-for(var i=0,_35;_35=nl[i];i++){
-this._place(_34,_35,"before",i>0);
-_35.parentNode.removeChild(_35);
+},replaceAll:function(_2f){
+var nl=dojo.query(_2f);
+var _30=this._normalize(this,this[0]);
+for(var i=0,_31;_31=nl[i];i++){
+this._place(_30,_31,"before",i>0);
+_31.parentNode.removeChild(_31);
 }
 return this;
 },clone:function(){
@@ -203,8 +205,8 @@ ary.push(this._cloneNode(this[i]));
 }
 return this._wrap(ary,this,this._NodeListCtor);
 }});
-if(!_5.prototype.html){
-_5.prototype.html=_5.prototype.innerHTML;
+if(!dojo.NodeList.prototype.html){
+dojo.NodeList.prototype.html=dojo.NodeList.prototype.innerHTML;
 }
-return _5;
-});
+})();
+}

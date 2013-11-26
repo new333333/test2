@@ -84,7 +84,7 @@ public class GroupResource extends AbstractPrincipalResource {
         }
         nextParams.put("description_format", descriptionFormatStr);
         Map resultMap = getProfileModule().getGroups(options);
-        SearchResultList<GroupBrief> results = new SearchResultList<GroupBrief>(offset);
+        SearchResultList<GroupBrief> results = new SearchResultList<GroupBrief>();
         SearchResultBuilderUtil.buildSearchResults(results, new GroupBriefBuilder(toDomainFormat(descriptionFormatStr)), resultMap, "/groups", nextParams, offset);
 		return results;
 	}

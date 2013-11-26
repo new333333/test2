@@ -47,7 +47,7 @@ public class UncheckedIOException extends UncheckedCodedException {
 	private static final String UncheckedIOException_ErrorCode = "errorcode.io";
 
     public UncheckedIOException(IOException cause) {
-        super(UncheckedIOException_ErrorCode, new Object[]{(cause==null)?  "" : cause.getLocalizedMessage()}, cause);
+        super(UncheckedIOException_ErrorCode, new Object[]{cause.getLocalizedMessage()}, cause);
     }
     
     public int getHttpStatusCode() {

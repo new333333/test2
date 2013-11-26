@@ -16,15 +16,14 @@
 		.vibe-feView-headerContentPersonPanel         {color: #353838; font-size: 0.85em; font-weight: bold; margin-top: 10px; display: block;}
 		.vibe-feView-headerContentPersonAnchor        {cursor: pointer; text-decoration: none;}
 		.vibe-feView-headerContentPersonAvatar        {margin-right: 5px; width: 20px; height: 20px; -moz-border-radius: 2px; border-radius: 2px; -webkit-border-radius: 2px; vertical-align: middle; display: inline-block;}
-		.vibe-feView-headerContentPersonCreated       {font-size: 10px; color: #666666; font-weight: normal; padding-left: 8px;}
-		.vibe-feView-headerContentPersonModified      {padding-left: 10px; font-size: 10px; color: #666666; font-weight: normal;}
+		.vibe-feView-headerContentPersonCreated       {font-size: .8em; color: #505354; font-weight: normal; padding-left: 8px;}
+		.vibe-feView-headerContentPersonModified      {padding-left: 10px; font-size: .8em; color: #505354; font-weight: normal;}
 		.vibe-feView-headerContentPersonModifiedLabel {padding-left: 5px;}
 		.vibe-feView-headerContentPanel               {margin-left: 50px; margin-top: 0.3em; display: block;}
-		.vibe-feView-headerContentPath                {color: #505354; padding-top: 5px; font-size: 13px; line-height: 16px; display: block;}
+		.vibe-feView-headerContentPath                {color: #505354; padding-top: 2px; font-size: 13px; line-height: 16px; display: block;}
 		.vibe-feView-headerContentTitleAsAnchor       {cursor: pointer; text-decoration: none;}
 		.vibe-feView-headerContentTitleAsAnchor:hover {color: #135c8f !important; cursor: pointer; background: url(images/blends/teal_slice.png) repeat-x; background-position:center; -moz-border-radius: 3px; border-radius: 3px; -webkit-border-radius: 3px; padding: 2px;}
 		.vibe-feView-headerContentTitleAsLabel        {font-size: 1.2em;}
-		.vibe-feView-headerContentTitleFileSize       {color: #666666; padding-left: 12px; font-size: 13px;}
 		.vibe-feView-headerContentTitleMarkRead       {cursor: pointer; padding-right: 3px;}
 		.vibe-feView-headerContentTitlePanel          {display: inline-block;}
 		.vibe-feView-headerDescription                {display: block; position: relative; margin-top: 10px;}
@@ -37,11 +36,11 @@
 		.vibe-feView-headerEntryImage                 {position: absolute; left:  5px; top:  0px;}
 		.vibe-feView-headerEntryLockImage             {position: absolute; left: 19px; top: 34px;}
 		.vibe-feView-headerEntryLockLabel             {position: absolute; left: 10px; top: 55px; font-size: 12px; color: #949494;}
-		.vibe-feView-headerRoot                       {position: relative; display: block; padding: 0px 50px 10px 10px;}
+		.vibe-feView-headerRoot                       {position: relative; display: block; padding: 0px 380px 10px 10px;}
 	/* End:  Header styles. */
 	
 	/* Start:  Menu styles. */
-		.vibe-feView-menuPanel    {display: block; padding: 3px 380px 3px 10px; border-top: 1px solid #CCC; border-bottom: 1px solid #CCC; margin-left: -10px; margin-right: -10px;}
+		.vibe-feView-menuPanel    {display: block; padding: 3px 380px 3px 10px; border-top: 1px solid #CCC; border-bottom: 1px solid #CCC; box-shadow: #E0E0E0 0px 2px 3px; margin-left: -10px; margin-right: -10px;}
 		.vibe-feView-menuBar      {padding: 3px; background: transparent;}
 		.vibe-feView-menuBar .gwt-MenuItem-selected {
 			color: #135c8f !important;
@@ -100,11 +99,11 @@
 		.vibe-feView_commentsComposite-addCommentAvatar       {vertical-align: top !important; padding: 5px 10px; width: 30px; height: 30px; border-radius: 2px;}
 		.vibe-feView_commentsComposite-addCommentHint         {color: #949494; font-size: .8em; display: inline-block; width: 150px;}
 		.vibe-feView_commentsComposite-addCommentHintPanel    {padding-top: 5px; padding-right: 5px;}
-		.vibe-feView_commentsComposite-addCommentPanel        {color: #353838; background-color: #fafafa; padding-top: 15px; padding-bottom: 15px;}
+		.vibe-feView_commentsComposite-addCommentPanel        {color: #353838; background-color: #F6F6F6; border-top-color: #cccccc; border-top-style: solid; border-top-width: 1px; padding-top: 15px; padding-bottom: 15px; box-shadow: 0px 2px 3px #e0e0e0 inset;}
 		.vibe-feView_commentsComposite-addCommentPanel-nonIE  {width: 100%; }
 		.vibe-feView_commentsComposite-addCommentTextArea     {background-color: #fff; font-family: Arial, Helvetica, sans-serif; font-size: 14px; width: 280px; height: 45px; padding: 5px; border: 1px solid #c4c4c4; -moz-border-radius: 3px; border-radius: 3px; -webkit-border-radius: 3px;}
 		.vibe-feView_commentsComposite-captionImg             {width: 36px; height: 36px;}
-		.vibe-feView_commentsComposite-commentsWidget         {height: 300px; position: relative; overflow: auto; width: 330px; border-bottom: 1px solid #cccccc;}
+		.vibe-feView_commentsComposite-commentsWidget         {height: 300px; position: relative; overflow-x: hidden; overflow-y: auto; width: 330px;}
 		.vibe-feView_commentsComposite-label                  {}
 		.vibe-feView_commentsComposite-panel                  {}
 		.vibe-feView_commentsComposite-sendButton-nonIE       {float:right;}
@@ -146,63 +145,38 @@
 			-webkit-border-radius: 15px;
 		}
 		
-		.vibe-feView-commentsPanel {display: block; position: relative; background: white; border-bottom: 1px solid #CCC;}
-	/* End:  Comments styles. */
-
-	/* Start:  Sharing styles. */
-		.vibe-feView-sharingPanel    {display: block; position: relative; background: white; border-bottom: 1px solid #CCC; overflow: auto;}
-		.vibe-feView-shareItemAvatar {display: block; position: absolute; top: 2px; left: 2px; width: 30px; border-radius: 2px; -moz-border-radius: 2px; -webkit-border-radius: 2px;}
-		.vibe-feView-shareItemEmpty  {display: block; position: relative; font-size: 14px; color: black; margin-top: 3.5px;}
-		.vibe-feView-shareItemHeader {display: block; position: relative; color: #5691a6; font-size: 14px; padding: 8px 5px 0px 10px;}
-		.vibe-feView-shareItemInfo   {display: block; position: relative; font-size: 10px; color: #505354; font-weight: normal; padding-left: 0px; padding-right: 5px;}
-		.vibe-feView-shareItemName   {display: block; position: relative; font-size: 11px; font-weight: bold; padding-right: 5px; margin-bottom: 2px; color: #000;}
-		.vibe-feView-shareItemNote   {display: block; position: relative; font-size: 13px; color: black; margin-top: 2px;}
-		.vibe-feView-shareItemPanel  {display: block; position: relative; margin-left: 10px; margin-bottom: 10px; margin-right: 20px; margin-top: 10px; padding-left: 43px; color: #000; font-size: 13px;}
-	/* End:  Sharing styles. */
-
-	/* Start:  Sidebar styles. */
-		.vibe-feView-sidebar                          {position: relative; display: block; width: 350px; background-color: #fafafa; border-left: 1px solid #cccccc;}
-		.vibe-feView-sidebar-hidden                   {width: 0px !important;}
-		.vibe-feView-sidebarSectionHeadExpander       {margin-right: 16px !important;}
-		.vibe-feView-sidebarSectionHeadExpander:hover {cursor: pointer;}
-		.vibe-feView-sidebarSectionHeadInner          {}
-		.vibe-feView-sidebarSectionHeadOuter          {position: relative; width: 350px; background-color: #f6f6f6; border-bottom: 1px solid #cccccc; z-index: 1000;}
-		.vibe-feView-sidebarSectionHeadText           {color: #5691a6 !important;}
-		.vibe-feView-sidebarSectionHeadTitle          {position: relative; font-size: 14px; height: 20px; padding: 8px 5px 6px 32px; }
-		.vibe-feView-sidebarSliderImg                 {padding-top: 5px; padding-left: 4px;}
-		.vibe-feView-sidebarSliderDiv-hidden          {right: 0px !important;}
-		.vibe-feView-sidebarSliderDiv:hover           {cursor: pointer;}
-		.vibe-feView-sidebarSliderDiv                 {
-			position: absolute;
+		.vibe-feView-commentsPanel {
 			display: block;
-			background-color: #f6f6f6;
-			border: 1px solid #cccccc;
-			border-right: 0px;
-			width: 25px;
-			height: 25px;
-			top: 34px;
-			right: 351px;
-			z-index: 1000;
-			border-top-left-radius: 5px;
-			border-bottom-left-radius: 5px;
-			-moz-border-radius-topleft: 5px;
-			-moz-border-radius-bottomleft: 5px;
-			-webkit-border-top-left-radius: 5px;
-			-webkit-border-bottom-left-radius: 5px;
+			position: absolute;
+			top: 0px;
+			right: 30px;
+			width: 350px;
+			background: white;
+			box-shadow: #E0E0E0 0px 2px 3px;
+			border-left:   1px solid #CCC;
+			border-right:  1px solid #CCC;
+			border-bottom: 1px solid #CCC;
+			border-bottom-left-radius:         5px; border-bottom-right-radius:         5px;
+			-moz-border-radius-bottomleft:     5px; -moz-border-radius-bottomright:     5px;
+			-webkit-border-bottom-left-radius: 5px; -webkit-border-bottom-right-radius: 5px;
 		}
-/* End:  Sidebar styles. */
+	/* End:  Comments styles. */
 	
 	/* Start:  Folder entry composite styles. */
-		.vibe-feComposite-closeImg     {}
-		.vibe-feComposite-closeLabel   {white-space: nowrap; margin-right: 5px; vertical-align: middle; font-weight: normal; font-size: .9em; }
-		.vibe-feComposite-closePanel   {position: relative; top: -1px; display: inline; white-space: nowrap; cursor: pointer !important;}
-		.vibe-feComposite-contentPanel {position: relative; padding: 10px; overflow-x: hidden; overflow-y: auto;}
-		.vibe-feComposite-footerPanel  {padding-bottom: 10px; border-top: 1px solid #CCC;}
-		.vibe-feComposite-navNextImg   {cursor: pointer;}
-		.vibe-feComposite-navPanel     {position: relative; display: inline; white-space: nowrap;}
-		.vibe-feComposite-navPrevImg   {cursor: pointer; padding-right: 1px;}
-		.vibe-feComposite-rightPanel   {position: absolute; top: 0px; right: 8px; white-space: nowrap;}
-		.vibe-feComposite-rootPanel    {}
+		.vibe-feComposite-closeImg           {}
+		.vibe-feComposite-closeLabel         {white-space: nowrap; margin-right: 5px; vertical-align: middle; font-weight: normal; font-size: .9em; }
+		.vibe-feComposite-closePanel         {position: relative; display: inline; white-space: nowrap; cursor: pointer !important;}
+		.vibe-feComposite-commentsHeadOuter  {position: absolute; color: white; top: -5px; right: 177px; width: 200px; display: block; font-weight: bold; padding: 5px;}
+		.vibe-feComposite-commentsHeadInner  {border-bottom: 1px solit #CCC; display: block;}
+		.vibe-feComposite-commentsHeadTitle  {position: relative; font-size: 13px; height: 16px; padding: 6px 5px 4px 50px; display: block; color: white; font-weight: bold; padding: 5px;}
+		.vibe-feComposite-commentsHeadSlider {margin-right: 8px;}
+		.vibe-feComposite-contentPanel       {position: relative; padding: 10px; overflow-x: hidden; overflow-y: auto;}
+		.vibe-feComposite-footerPanel        {padding-bottom: 10px; border-top: 1px solid #CCC;}
+		.vibe-feComposite-navNextImg         {cursor: pointer;}
+		.vibe-feComposite-navPanel           {position: relative; display: inline; white-space: nowrap;}
+		.vibe-feComposite-navPrevImg         {cursor: pointer; padding-right: 1px;}
+		.vibe-feComposite-rightPanel         {position: absolute; top: 3px; right: 8px; white-space: nowrap;}
+		.vibe-feComposite-rootPanel          {}
 	/* End:  Folder entry composite styles. */
 	
 	/* Start:  Folder entry dialog styles. */

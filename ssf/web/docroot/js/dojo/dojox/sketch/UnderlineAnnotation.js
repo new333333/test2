@@ -1,5 +1,16 @@
-//>>built
-define("dojox/sketch/UnderlineAnnotation",["./Annotation","./Anchor"],function(){
+/*
+	Copyright (c) 2004-2009, The Dojo Foundation All Rights Reserved.
+	Available via Academic Free License >= 2.1 OR the modified BSD license.
+	see: http://dojotoolkit.org/license for details
+*/
+
+
+if(!dojo._hasResource["dojox.sketch.UnderlineAnnotation"]){
+dojo._hasResource["dojox.sketch.UnderlineAnnotation"]=true;
+dojo.provide("dojox.sketch.UnderlineAnnotation");
+dojo.require("dojox.sketch.Annotation");
+dojo.require("dojox.sketch.Anchor");
+(function(){
 var ta=dojox.sketch;
 ta.UnderlineAnnotation=function(_1,id){
 ta.Annotation.call(this,_1,id);
@@ -98,5 +109,5 @@ this._create(f._start,{x:f._start.x+10,y:f._start.y+10});
 },onMouseMove:function(){
 }});
 ta.Annotation.register("Underline",ta.UnderlineAnnotationTool);
-return dojox.sketch.UnderlineAnnotation;
-});
+})();
+}

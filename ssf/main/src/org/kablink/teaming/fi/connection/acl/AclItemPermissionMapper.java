@@ -42,7 +42,7 @@ package org.kablink.teaming.fi.connection.acl;
 public interface AclItemPermissionMapper {
 	
 	/**
-	 * Returns the ID of the Vibe role (aka function) that the specified external
+	 * Returns the IDs of the Vibe roles (aka functions) that the specified external
 	 * permission maps to as it applies to a folder or a file.
 	 * <p>
 	 * A concrete implementation of this method must be thread-safe, that is, safe for
@@ -53,14 +53,5 @@ public interface AclItemPermissionMapper {
 	 * @return
 	 * @throws AclItemPermissionMappingException
 	 */
-	public Long toVibeRoleId(String permissionName) throws AclItemPermissionMappingException;
-	
-	/**
-	 * Returns the name of the external permission that maps to the specified Vibe role name.
-	 * 
-	 * @param vibeRoleName
-	 * @return
-	 * @throws AclItemPermissionMappingException
-	 */
-	public String toPermissionName(String vibeRoleName) throws AclItemPermissionMappingException;
+	public Long[] toVibeRoleIds(String permissionName) throws AclItemPermissionMappingException;
 }

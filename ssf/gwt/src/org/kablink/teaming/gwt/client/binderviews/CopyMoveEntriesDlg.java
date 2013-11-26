@@ -70,6 +70,7 @@ import org.kablink.teaming.gwt.client.widgets.VibeVerticalPanel;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -194,7 +195,7 @@ public class CopyMoveEntriesDlg extends DlgBox
 			final List<EntityId>         sourceEntityIds,
 			final int                    totalEntityCount,
 			final List<ErrorInfo>        collectedErrors) {
-		GwtClientHelper.deferCommand(new ScheduledCommand() {
+		ScheduledCommand doCopyMove = new ScheduledCommand() {
 			@Override
 			public void execute() {
 				copyMoveEntriesNow(
@@ -204,7 +205,8 @@ public class CopyMoveEntriesDlg extends DlgBox
 					totalEntityCount,
 					collectedErrors);
 			}
-		});
+		};
+		Scheduler.get().scheduleDeferred(doCopyMove);
 	}
 	
 	/*
@@ -311,7 +313,7 @@ public class CopyMoveEntriesDlg extends DlgBox
 			public void onSuccess(final VibeRpcResponse response) {
 				// Handle the response in a scheduled command so that
 				// the AJAX request gets released ASAP.
-				GwtClientHelper.deferCommand(new ScheduledCommand() {
+				ScheduledCommand doHandleCopyMove = new ScheduledCommand() {
 					@Override
 					public void execute() {
 						// Did everything we ask to get copied/moved?
@@ -393,7 +395,8 @@ public class CopyMoveEntriesDlg extends DlgBox
 							hide();
 						}
 					}
-				});
+				};
+				Scheduler.get().scheduleDeferred(doHandleCopyMove);
 			}
 		});
 	}
@@ -589,12 +592,13 @@ public class CopyMoveEntriesDlg extends DlgBox
 	 * Asynchronously loads the find control.
 	 */
 	private void loadPart1Async() {
-		GwtClientHelper.deferCommand(new ScheduledCommand() {
+		ScheduledCommand doLoad = new ScheduledCommand() {
 			@Override
 			public void execute() {
 				loadPart1Now();
 			}
-		});
+		};
+		Scheduler.get().scheduleDeferred(doLoad);
 	}
 	
 	/*
@@ -695,12 +699,13 @@ public class CopyMoveEntriesDlg extends DlgBox
 	 * Asynchronously populates the contents of the dialog.
 	 */
 	private void populateDlgAsync() {
-		GwtClientHelper.deferCommand(new ScheduledCommand() {
+		ScheduledCommand doPopulate = new ScheduledCommand() {
 			@Override
 			public void execute() {
 				populateDlgNow();
 			}
-		});
+		};
+		Scheduler.get().scheduleDeferred(doPopulate);
 	}
 	
 	/*
@@ -773,9 +778,6 @@ public class CopyMoveEntriesDlg extends DlgBox
 		m_browseButton.addStyleName("vibe-cmeDlg_BrowseButton");
 		hp.add(m_browseButton);
 		hp.setCellVerticalAlignment(m_browseButton, HasVerticalAlignment.ALIGN_MIDDLE);
-		if (!(GwtClientHelper.getRequestInfo().hasRootDirAccess())) {
-			m_browseButton.setVisible(false);
-		}
 
 		// ...add a progress bar...
 		m_progressBar = new ProgressBar(0, m_entityIds.size());
@@ -827,12 +829,13 @@ public class CopyMoveEntriesDlg extends DlgBox
 	 * dialog.
 	 */
 	private static void runDlgAsync(final CopyMoveEntriesDlg cmeDlg, final boolean doCopy, final List<EntityId> entityIds, final VibeEventBase<?> reloadEvent) {
-		GwtClientHelper.deferCommand(new ScheduledCommand() {
+		ScheduledCommand doRun = new ScheduledCommand() {
 			@Override
 			public void execute() {
 				cmeDlg.runDlgNow(doCopy, entityIds, reloadEvent);
 			}
-		});
+		};
+		Scheduler.get().scheduleDeferred(doRun);
 	}
 	
 	/*

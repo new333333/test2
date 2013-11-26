@@ -44,9 +44,9 @@ import org.kablink.teaming.gwt.client.event.FullUIReloadEvent;
 import org.kablink.teaming.gwt.client.event.RefreshSidebarTreeEvent;
 import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.TrashPurgeAllCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.TrashPurgeSelectedEntitiesCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.TrashPurgeSelectedEntriesCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.TrashRestoreAllCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.TrashRestoreSelectedEntitiesCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.TrashRestoreSelectedEntriesCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.EntityId;
@@ -57,9 +57,11 @@ import org.kablink.teaming.gwt.client.widgets.ConfirmDlg.ConfirmDlgClient;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.user.cellview.client.AbstractCellTable;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.CheckBox;
 
 /**
  * Trash view.
@@ -67,6 +69,8 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
  * @author drfoster@novell.com
  */
 public class TrashView extends DataTableFolderViewBase {
+	private boolean m_isFilr;	//
+	
 	/*
 	 * Class constructor.
 	 * 
@@ -75,8 +79,11 @@ public class TrashView extends DataTableFolderViewBase {
 	 * through its createAsync().
 	 */
 	private TrashView(BinderInfo binderInfo, ViewReady viewReady) {
-		// Initialize the super class.
+		// Initialize the base class...
 		super(binderInfo, viewReady, "vibe-trashDataTable");
+		
+		// ...and initialize anything else requiring it.
+		m_isFilr = GwtClientHelper.isLicenseFilr();
 	}
 	
 	/**
@@ -220,12 +227,13 @@ public class TrashView extends DataTableFolderViewBase {
 	 * sidebar tree.
 	 */
 	private void reloadUIAsync(final boolean reloadSidebar) {
-		GwtClientHelper.deferCommand(new ScheduledCommand() {
+		ScheduledCommand doReload = new ScheduledCommand() {
 			@Override
 			public void execute() {
 				reloadUINow(reloadSidebar);
 			}
-		});
+		};
+		Scheduler.get().scheduleDeferred(doReload);
 	}
 	
 	/*
@@ -281,7 +289,20 @@ public class TrashView extends DataTableFolderViewBase {
 			confirm.append(m_messages.vibeDataTable_TrashConfirmPurgeAllWithSelections());
 		}
 
+    	// If we need to, add a checkbox about purging mirrored sources.
+		final CheckBox cb;
 		final boolean purgeBinders = areBindersInDataTable();
+	    if (purgeBinders) {
+	    	String caption;
+	    	if (m_isFilr)
+	    	     caption = m_messages.vibeDataTable_TrashConfirmPurgeDeleteSourceOnMirroredSubFolders_Filr();
+	    	else caption = m_messages.vibeDataTable_TrashConfirmPurgeDeleteSourceOnMirroredSubFolders_Vibe();
+	    	cb = new CheckBox(caption);
+	    }
+	    else {
+	    	cb = null;
+	    }
+		
 		ConfirmDlg.createAsync(new ConfirmDlgClient() {
 			@Override
 			public void onUnavailable() {
@@ -305,7 +326,7 @@ public class TrashView extends DataTableFolderViewBase {
 							// Perform the purge.
 						    showBusySpinner();
 							Long binderId = getFolderInfo().getBinderIdAsLong();
-							GwtClientHelper.executeCommand(new TrashPurgeAllCmd(binderId, true), new AsyncCallback<VibeRpcResponse>() {
+							GwtClientHelper.executeCommand(new TrashPurgeAllCmd(binderId, ((null == cb) ? false : cb.getValue())), new AsyncCallback<VibeRpcResponse>() {
 								@Override
 								public void onFailure(Throwable t) {
 								    hideBusySpinner();
@@ -333,7 +354,8 @@ public class TrashView extends DataTableFolderViewBase {
 							// No, they're not sure!
 						}
 					},
-					confirm.toString());
+					confirm.toString(),
+					cb);
 			}
 		});
 	}
@@ -341,12 +363,25 @@ public class TrashView extends DataTableFolderViewBase {
 	/**
 	 * Purges the selected entries from the trash.
 	 * 
-	 * Overrides the DataTableFolderViewBase.trashPurgeSelectedEntities()
+	 * Overrides the DataTableFolderViewBase.trashPurgeSelectedEntries()
 	 * method.
 	 */
 	@Override
-	public void trashPurgeSelectedEntities() {
+	public void trashPurgeSelectedEntries() {
+    	// If we need to, add a checkbox about purging mirrored sources.
+		final CheckBox cb;
 		final boolean purgeBinders = areBindersInDataTable();
+	    if (purgeBinders) {
+	    	String caption;
+	    	if (m_isFilr)
+	    	     caption = m_messages.vibeDataTable_TrashConfirmPurgeDeleteSourceOnMirroredSubFolders_Filr();
+	    	else caption = m_messages.vibeDataTable_TrashConfirmPurgeDeleteSourceOnMirroredSubFolders_Vibe();
+	    	cb = new CheckBox(caption);
+	    }
+	    else {
+	    	cb = null;
+	    }
+		
 		ConfirmDlg.createAsync(new ConfirmDlgClient() {
 			@Override
 			public void onUnavailable() {
@@ -371,9 +406,11 @@ public class TrashView extends DataTableFolderViewBase {
 						    showBusySpinner();
 							List<String> trashSelectionData = buildTrashSelectionList();
 							Long binderId = getFolderInfo().getBinderIdAsLong();
-							GwtClientHelper.executeCommand(new TrashPurgeSelectedEntitiesCmd(
+							GwtClientHelper.executeCommand(new TrashPurgeSelectedEntriesCmd(
 									binderId,
-									true,
+									((null == cb) ?
+										false     :
+										cb.getValue()),
 									trashSelectionData),
 									new AsyncCallback<VibeRpcResponse>() {
 								@Override
@@ -381,7 +418,7 @@ public class TrashView extends DataTableFolderViewBase {
 								    hideBusySpinner();
 									GwtClientHelper.handleGwtRPCFailure(
 										t,
-										m_messages.rpcFailure_TrashPurgeSelectedEntities());
+										m_messages.rpcFailure_TrashPurgeSelectedEntries());
 								}
 								
 								@Override
@@ -403,7 +440,8 @@ public class TrashView extends DataTableFolderViewBase {
 							// No, they're not sure!
 						}
 					},
-					m_messages.vibeDataTable_TrashConfirmPurge());
+					m_messages.vibeDataTable_TrashConfirmPurge(),
+					cb);
 			}
 		});
 	}
@@ -493,23 +531,23 @@ public class TrashView extends DataTableFolderViewBase {
 	/**
 	 * Restores the selected entries in the trash.
 	 * 
-	 * Overrides the DataTableFolderViewBase.trashRestoreSelectedEntities()
+	 * Overrides the DataTableFolderViewBase.trashRestoreSelectedEntries()
 	 * method.
 	 */
 	@Override
-	public void trashRestoreSelectedEntities() {
+	public void trashRestoreSelectedEntries() {
 		// Perform the restore.
 	    showBusySpinner();
 		final boolean restoreBinders = areBindersInDataTable();
 		List<String> trashSelectionData = buildTrashSelectionList();
 		Long binderId = getFolderInfo().getBinderIdAsLong();
-		GwtClientHelper.executeCommand(new TrashRestoreSelectedEntitiesCmd(binderId, trashSelectionData), new AsyncCallback<VibeRpcResponse>() {
+		GwtClientHelper.executeCommand(new TrashRestoreSelectedEntriesCmd(binderId, trashSelectionData), new AsyncCallback<VibeRpcResponse>() {
 			@Override
 			public void onFailure(Throwable t) {
 			    hideBusySpinner();
 				GwtClientHelper.handleGwtRPCFailure(
 					t,
-					m_messages.rpcFailure_TrashRestoreSelectedEntities());
+					m_messages.rpcFailure_TrashRestoreSelectedEntries());
 			}
 			
 			@Override

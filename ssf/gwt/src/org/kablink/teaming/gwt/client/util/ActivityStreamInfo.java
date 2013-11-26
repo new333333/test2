@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -92,9 +92,7 @@ public class ActivityStreamInfo
 		SHARED_BY_ME(         17),
 		SHARED_BY_ME_FOLDER(  18),
 		SHARED_WITH_ME(       19),
-		SHARED_WITH_ME_FOLDER(20),
-		SHARED_PUBLIC(        21),
-		SHARED_PUBLIC_FOLDER( 22);
+		SHARED_WITH_ME_FOLDER(20);
 
 		private int m_asValue;
 		
@@ -156,8 +154,6 @@ public class ActivityStreamInfo
 			case 18:  reply = SHARED_BY_ME_FOLDER;   break;
 			case 19:  reply = SHARED_WITH_ME;        break;
 			case 20:  reply = SHARED_WITH_ME_FOLDER; break;
-			case 21:  reply = SHARED_PUBLIC;         break;
-			case 22:  reply = SHARED_PUBLIC_FOLDER;  break;
 			}
 			return reply;
 		}
@@ -338,9 +334,8 @@ public class ActivityStreamInfo
 		case MY_FILES:
 		case NET_FOLDERS:
 		case SHARED_BY_ME:
-		case SHARED_WITH_ME:
-		case SHARED_PUBLIC:  checkBinderIds = false; break;
-		default:             checkBinderIds = true;  break;
+		case SHARED_WITH_ME:  checkBinderIds = false; break;
+		default:              checkBinderIds = true;  break;
 		}
 		if (checkBinderIds) {
 			// Yes!  If they don't contain the same number of binder

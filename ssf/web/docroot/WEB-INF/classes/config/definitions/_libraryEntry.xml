@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<definition name="_libraryEntry" caption="__definition_default_library_entry" type="1" nextId="38" definitionType="1" databaseId="402883c6115753d8011157829367000f" internalId="402883c6115753d8011157829367000f"> 
+<definition name="_libraryEntry" caption="__definition_default_library_entry" type="1" nextId="37" definitionType="1" databaseId="402883c6115753d8011157829367000f" internalId="402883c6115753d8011157829367000f"> 
   <item name="entryForm" caption="__entry_form_definition" type="form" id="1" display="form"> 
     <properties/>  
     <item name="entryFormForm" caption="__form" id="2"> 
@@ -25,13 +25,6 @@
           <property name="width" value=""/>  
           <property name="required" value="false"/> 
         </properties> 
-      </item>
-      <item name="captcha" caption="__captcha" multipleAllowed="false" type="data" dataType="text" category="commonEntryData" display="form" id="37">
-        <properties>
-          <property name="caption" value="__captcha"/>
-          <property name="name" value="_captcha"/>
-          <property name="guestOnly" value="true"/>
-        </properties>
       </item>  
       <item name="file" caption="__file_upload" type="data" id="22" category="commonEntryData" display="form"> 
         <properties> 
@@ -154,12 +147,12 @@
       </properties> 
     </item> 
   </item>  
-  <properties> 
-    <property name="caption" value="__definition_default_library_entry"/>  
-    <property name="name" value="_libraryEntry"/>  
-    <property name="family" value="file"/>  
-    <property name="replyStyle" value="402883c6115753d801115777f284000c"/> 
-  </properties>  
+  <properties>
+    <property name="caption" value="__definition_default_library_entry"/>
+    <property name="name" value="_libraryEntry"/>
+    <property name="family" value="file"/>
+    <property name="replyStyle" value="402883c6115753d801115777f284000c"/>
+  </properties>
   <export-mappings>
     <export definitionId="402883c6115753d801115777f284000c">_libraryEntryComment</export>
   </export-mappings>

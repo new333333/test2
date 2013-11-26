@@ -154,7 +154,7 @@ public interface AclResourceDriver extends ResourceDriver {
 	 * @throws UncheckedIOException
 	 */
 	public AclResourceSession openSessionUserMode(Map<String,String> userId, String password) throws FIException, UncheckedIOException;
-	
+
 	/**
 	 * Tests a connection.
 	 * 

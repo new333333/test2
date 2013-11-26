@@ -127,7 +127,6 @@ import org.kablink.teaming.module.conferencing.MeetingInfo.MeetingType;
 import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.ical.AttendedEntries;
 import org.kablink.teaming.module.ldap.LdapModule;
-import org.kablink.teaming.module.ldap.LdapModule.LdapSyncMode;
 import org.kablink.teaming.module.ldap.LdapSyncResults;
 import org.kablink.teaming.module.ldap.LdapSyncThread;
 import org.kablink.teaming.module.report.ReportModule;
@@ -1151,8 +1150,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 														syncId,
 														ldapModule,
 														syncUsersAndGroups.booleanValue(),
-														listOfLdapConfigsToSyncGuid,
-														LdapSyncMode.PERFORM_SYNC );
+														listOfLdapConfigsToSyncGuid );
 		if ( ldapSyncThread != null )
 		{
 			ldapSyncThread.doLdapSync();

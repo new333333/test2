@@ -81,8 +81,7 @@ public class ConfigureLdapController extends  SAbstractController {
 				
 				schedule.getScheduleInfo().setSchedule(ScheduleHelper.getSchedule(request, null));
 				schedule.getScheduleInfo().setEnabled(PortletRequestUtils.getBooleanParameter(request,  "enabled", false));	
-				schedule.setUserDelete( PortletRequestUtils.getBooleanParameter( request, "notInLdap", false ) );
-				
+				schedule.setUserDelete(PortletRequestUtils.getBooleanParameter(request, "userDelete", false));
 				schedule.setUserWorkspaceDelete(PortletRequestUtils.getBooleanParameter(request, "userWorkspaceDelete", false));
 				schedule.setGroupDelete(PortletRequestUtils.getBooleanParameter(request, "groupDelete", false));
 				schedule.setUserRegister(PortletRequestUtils.getBooleanParameter(request, "userRegister", false));
@@ -108,9 +107,6 @@ public class ConfigureLdapController extends  SAbstractController {
 						String principal = cNode.selectSingleNode("principal").getText();
 						String credentials = cNode.selectSingleNode("credentials").getText();
 						String url = cNode.selectSingleNode("url").getText();
-						// If the protocol is uppercase, users can't log in.  See bug 823936.
-						if ( url != null )
-							url = url.toLowerCase();
 						String userIdAttribute = cNode.selectSingleNode("userIdAttribute").getText();
 						String[] mappings = StringUtil.split(cNode.selectSingleNode("mappings").getText(), "\n");
 						LinkedList<LdapConnectionConfig.SearchInfo> userQueries = new LinkedList<LdapConnectionConfig.SearchInfo>();

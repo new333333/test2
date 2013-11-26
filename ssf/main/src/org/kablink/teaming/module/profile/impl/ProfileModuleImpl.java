@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -30,8 +30,11 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
+/*
+ * Created on Nov 16, 2004
+ *
+ */
 package org.kablink.teaming.module.profile.impl;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -51,7 +54,6 @@ import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
-
 import org.kablink.teaming.ApplicationExistsException;
 import org.kablink.teaming.ApplicationGroupExistsException;
 import org.kablink.teaming.GroupExistsException;
@@ -65,8 +67,6 @@ import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.context.request.RequestContextUtil;
 import org.kablink.teaming.context.request.SessionContext;
 import org.kablink.teaming.dao.ProfileDao;
-import org.kablink.teaming.dao.util.FilterControls;
-import org.kablink.teaming.dao.util.GroupSelectSpec;
 import org.kablink.teaming.domain.Application;
 import org.kablink.teaming.domain.ApplicationGroup;
 import org.kablink.teaming.domain.Attachment;
@@ -85,8 +85,6 @@ import org.kablink.teaming.domain.GroupPrincipal;
 import org.kablink.teaming.domain.HistoryStampBrief;
 import org.kablink.teaming.domain.IdentityInfo;
 import org.kablink.teaming.domain.IndividualPrincipal;
-import org.kablink.teaming.domain.MobileDevices;
-import org.kablink.teaming.domain.MobileAppsConfig.MobileOpenInSetting;
 import org.kablink.teaming.domain.NoApplicationByTheNameException;
 import org.kablink.teaming.domain.NoBinderByTheIdException;
 import org.kablink.teaming.domain.NoDefinitionByTheIdException;
@@ -127,10 +125,7 @@ import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.survey.Survey;
 import org.kablink.teaming.util.NLT;
-import org.kablink.teaming.util.PrincipalDesktopAppsConfig;
-import org.kablink.teaming.util.PrincipalMobileAppsConfig;
 import org.kablink.teaming.util.ReflectHelper;
-import org.kablink.teaming.util.ResolveIds;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SZoneConfig;
 import org.kablink.teaming.util.Utils;
@@ -138,25 +133,15 @@ import org.kablink.teaming.util.encrypt.EncryptUtil;
 import org.kablink.teaming.web.util.DateHelper;
 import org.kablink.teaming.web.util.DefinitionHelper;
 import org.kablink.teaming.web.util.EventHelper;
-import org.kablink.teaming.web.util.ListUtil;
 import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.PermaLinkUtil;
-import org.kablink.util.StringUtil;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
-
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
-/**
- * ?
- * 
- * Created on Nov 16, 2004
- * 
- * @author ?
- */
 @SuppressWarnings("unchecked")
 public class ProfileModuleImpl extends CommonDependencyInjection implements ProfileModule {
 	private static final int DEFAULT_MAX_ENTRIES = ObjectKeys.LISTING_MAX_PAGE_SIZE;
@@ -414,40 +399,17 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 	}// end getGuestUser()
 	
 	
-	private Group getGroup(Long groupId, boolean modify) {
-  		User currentUser = RequestContextHolder.getRequestContext().getUser();
-		Group group = getProfileDao().loadGroup(groupId, currentUser.getZoneId());
-		if (modify) AccessUtils.modifyCheck(group);
-		else AccessUtils.readCheck(group);
-		return group;
-	}
-	
-	private User getUser(Long userId, boolean modify, boolean checkActive) {
+	private User getUser(Long userId, boolean modify) {
   		User currentUser = RequestContextHolder.getRequestContext().getUser();
    		User user;
 		if (userId == null) user = currentUser;
 		else if (userId.equals(currentUser.getId())) user = currentUser;
 		else {
-			if (checkActive)
-			     user = getProfileDao().loadUser(           userId, currentUser.getZoneId());
-			else user = getProfileDao().loadUserDeadOrAlive(userId, currentUser.getZoneId());
+			user = getProfileDao().loadUser(userId, currentUser.getZoneId());
 			if (modify) AccessUtils.modifyCheck(user);
 			else AccessUtils.readCheck(user);
 		}
 		return user;		
-	}
-	private User getUser(Long userId, boolean modify) {
-		return getUser(userId, modify, true);
-	}
-	private UserPrincipal getUserPrincipal(Long prinId, boolean modify, boolean checkActive) {
-   		UserPrincipal up = getProfileDao().loadUserPrincipal(prinId, RequestContextHolder.getRequestContext().getZoneId(), checkActive);
-  		User currentUser = RequestContextHolder.getRequestContext().getUser();
-  		if (!(currentUser.getId().equals(up.getId()))) {
-			if (modify)
-			     AccessUtils.modifyCheck(up);
-			else AccessUtils.readCheck(  up);
-  		}
-		return up;		
 	}
 	private UserProperties getProperties(User user, Long binderId) {
 		UserProperties uProps=null;
@@ -485,15 +447,10 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 				uProps = new GuestProperties(gProps);
 			}
 		} else {
-			uProps = getPrincipalProperties(user.getId());
+			uProps = getProfileDao().loadUserProperties(user.getId());
 		}
 		return uProps;
 	}
-	
-	private UserProperties getPrincipalProperties(Long principalId) {
-		return getProfileDao().loadUserProperties(principalId);
-	}
-	
 	//RO transaction
 	@Override
 	public ProfileBinder getProfileBinder() {
@@ -622,31 +579,6 @@ public UserProperties setUserProperties(Long userId, Map<String, Object> values)
 public UserProperties getUserProperties(Long userId) {
 		User user = getUser(userId, false);
 		return getProperties(user);
-   }
-   
-   //RW transaction
-   @Override
-public UserProperties setGroupProperty(Long groupId, String property, Object value) {
- 		getGroup(groupId, true);	// Validates access controls.
-		UserProperties uProps = getPrincipalProperties(groupId);
-		uProps.setProperty(property, value); 	
-		return uProps;
-    }
-   //RW transaction
-   @Override
-public UserProperties setGroupProperties(Long groupId, Map<String, Object> values) {
-		getGroup(groupId, true);	// Validates access controls.
-		UserProperties uProps = getPrincipalProperties(groupId);
-		for (Map.Entry<String, Object> me: values.entrySet()) {
- 			uProps.setProperty(me.getKey(), me.getValue()); 
- 		}
-		return uProps;
-	  
-   }
-	//RO transaction
-   @Override
-public UserProperties getGroupProperties(Long groupId) {
-		return getPrincipalProperties(groupId);
    }
  	//RO transaction
    @Override
@@ -1084,20 +1016,6 @@ public Map getGroups() {
 	   return getGroups(options);
    }
 
-   /**
-	 * Return a list of groups that meet the given filter
-	*/
-   //RO transaction
-   @Override
-   public List<Group> getGroups( GroupSelectSpec groupSelectSpec )
-   {
-	   List<Group> listOfGroups;
-
-	   listOfGroups = getProfileDao().findGroups( groupSelectSpec );
-	   
-	   return listOfGroups;
-   }
-   
    //RO transaction
    @Override
    public List<Group> getLdapContainerGroups() {
@@ -1589,7 +1507,7 @@ public void deleteEntry(Long principalId, Map options) {
    //RW transaction
    @Override
 public void deleteEntry(Long principalId, Map options, boolean phase1Only) {
-	   boolean delMirroredFolderSource = (!(Utils.checkIfFilr()));	// Only delete mirrored source by default if not Filr.
+	   boolean delMirroredFolderSource = Boolean.TRUE;
 	   
         Principal entry = getProfileDao().loadPrincipal(principalId, RequestContextHolder.getRequestContext().getZoneId(), false);
         checkAccess(entry, ProfileOperation.deleteEntry);
@@ -1719,11 +1637,6 @@ public Map getUsers() {
 	@Override
 	public User findUserByName(String username)  throws NoUserByTheNameException {
 		return getProfileDao().findUserByName(username, RequestContextHolder.getRequestContext().getZoneId());
-	}
-	
-	@Override
-	public User getReservedUser(String internalId) throws NoUserByTheNameException {
-		return getProfileDao().getReservedUser(internalId, RequestContextHolder.getRequestContext().getZoneId());
 	}
 	
 	/**
@@ -1887,8 +1800,7 @@ public Map getUsers() {
 		};
 	}
 
-    @Override
-	public User findOrAddExternalUser(final String emailAddress) {
+    public User findOrAddExternalUser(final String emailAddress) {
         User user;
         try
         {
@@ -2045,38 +1957,6 @@ public Map getUsers() {
            		definition = getDefinitionModule().addDefaultDefinition(Definition.PROFILE_APPLICATION_VIEW);
         }
         try {
-        	String name;
-        	Principal principal;
-        	
-        	// Does a user or group or application or application group already exist with this name?
-        	name = inputData.getSingleValue( "name" );
-        	principal = doesPrincipalExist( name );
-        	if ( principal != null )
-        	{
-        		EntityType entityType;
-        		
-        		// Yes
-        		entityType = principal.getEntityType();
-        		switch ( entityType )
-        		{
-        		case application:
-        			throw new ApplicationExistsException();
-
-        		case applicationGroup:
-        			throw new ApplicationGroupExistsException();
-        		
-        		case group:
-        			throw new GroupExistsException();
-        			
-        		case user:
-        			throw new UserExistsException();
-        			
-        		default:
-        			throw new UserExistsException();
-        		}
-
-        	}
-        	
         	Entry newEntry = loadProcessor(binder).addEntry(binder, definition, clazz, inputData, fileItems, options);
 
             //Added to allow default groups to be defined for users in ssf.properties file
@@ -2550,13 +2430,6 @@ public String[] getUsernameAndDecryptedPassword(String username) {
             else if(Constants.FALSE.equals(homeDirStr))
                 homeDir = Boolean.FALSE;
 
-            Boolean myFilesDir = null;
-            String myFilesDirStr = (String) binder.get(Constants.IS_MYFILES_DIR_FIELD);
-            if(Constants.TRUE.equals(myFilesDirStr))
-                myFilesDir = Boolean.TRUE;
-            else if(Constants.FALSE.equals(myFilesDirStr))
-                myFilesDir = Boolean.FALSE;
-
             UserPrincipal creator = Utils.redactUserPrincipalIfNecessary(Long.valueOf((String) binder.get(Constants.CREATORID_FIELD)));
             UserPrincipal modifier = Utils.redactUserPrincipalIfNecessary(Long.valueOf((String) binder.get(Constants.MODIFICATIONID_FIELD)));
 
@@ -2584,7 +2457,6 @@ public String[] getUsernameAndDecryptedPassword(String username) {
             info.setPermaLink(PermaLinkUtil.getPermalink(binder));
             info.setMirrored(mirrored);
             info.setHomeDir(homeDir);
-            info.setMyFilesDir(myFilesDir);
             info.setParentBinderId(parentBinderId);
             teamList.add(info);
         }
@@ -2611,473 +2483,5 @@ public String[] getUsernameAndDecryptedPassword(String username) {
 		user.setFirstLoginDate(new Date()); // Set it to current date/time.
     }
     
-
-    /**
-     * Returns a User's workspace pre-deleted flag.
-     * 
-     * @param userId
-     */
-    //RO transaction
-    @Override
-    public Boolean getUserWorkspacePreDeleted(Long userId) {
-   		User user = getUser(userId, true, false);
-		return user.isWorkspacePreDeleted();
-    }
-    
-    /**
-     * Sets a User's workspace pre-deleted flag.
-     * 
-     * @param userId
-     * @param userWorkspacePreDeleted
-     */
-    //RW transaction
-    @Override
-    public void setUserWorkspacePreDeleted(Long userId, boolean userWorkspacePreDeleted) {
-   		User user = getUser(userId, true, false);
-		user.setWorkspacePreDeleted(userWorkspacePreDeleted);
-    }
-
-    /**
-     * Returns a user or group's download enabled flag.
-     * 
-     * @param upId
-     */
-    //RO transaction
-    @Override
-    public Boolean getDownloadEnabled(Long upId) {
-   		UserPrincipal up = getUserPrincipal(upId, false, false);
-		return up.isDownloadEnabled();
-    }
-    
-    /**
-     * Sets a user or group's downloadEnabled flag.
-     * 
-     * @param upId
-     * @param downloadEnabled
-     */
-    //RW transaction
-    @Override
-    public void setDownloadEnabled(Long upId, Boolean downloadEnabled) {
-   		UserPrincipal up = getUserPrincipal(upId, true, false);
-		up.setDownloadEnabled(downloadEnabled);
-    }
-
-    /**
-     * Returns a user or group's web access enabled flag.
-     * 
-     * @param upId
-     */
-    //RO transaction
-    @Override
-    public Boolean getWebAccessEnabled(Long upId) {
-   		UserPrincipal up = getUserPrincipal(upId, false, false);
-		return up.isWebAccessEnabled();
-    }
-    
-    /**
-     * Sets a user or group's web access enabled flag.
-     * 
-     * @param upId
-     * @param webAccessEnabled
-     */
-    //RW transaction
-    @Override
-    public void setWebAccessEnabled(Long upId, Boolean webAccessEnabled) {
-   		UserPrincipal up = getUserPrincipal(upId, true, false);
-		up.setWebAccessEnabled(webAccessEnabled);
-    }
-
-    /**
-     * Returns a user or group's adHoc folders flag.
-     * 
-     * @param upId
-     */
-    //RO transaction
-    @Override
-    public Boolean getAdHocFoldersEnabled(Long upId) {
-   		UserPrincipal up = getUserPrincipal(upId, false, false);
-		return up.isAdHocFoldersEnabled();
-    }
-    
-    /**
-     * Sets a user or group's web access enabled flag.
-     * 
-     * @param upId
-     * @param aAdHocFoldersEnabled
-     */
-    //RW transaction
-    @Override
-    public void setAdHocFoldersEnabled(Long upId, Boolean adHocFoldersEnabled) {
-   		UserPrincipal up = getUserPrincipal(upId, true, false);
-		up.setAdHocFoldersEnabled(adHocFoldersEnabled);
-    }
-
-    /**
-     * Returns a Collection<User> of all the external user's the
-     * current user has rights to see.
-     * 
-     * @return
-     */
-    @Override
-    public Collection<User> getAllExternalUsers() {
-    	// Allocate a collection we can return.
-		List<User> reply = new ArrayList<User>();
-
-		// Can we access the ID of the all external users group?
-    	ProfileDao pd            = getProfileDao();
-    	Long       zoneId        = RequestContextHolder.getRequestContext().getZoneId();
-    	Long       allExtUsersId = pd.getReservedGroupId(ObjectKeys.ALL_EXT_USERS_GROUP_INTERNALID, zoneId);
-    	if (null == allExtUsersId) {
-    		// No!  Bail.
-    		return reply;
-    	}
-    	
-		// Can we get the members of the group?
-    	List<Long> allExtUsersIds = new ArrayList<Long>();
-    	allExtUsersIds.add(allExtUsersId);
-    	Set<Long> extIds = pd.explodeGroups(allExtUsersIds, zoneId);
-    	if (!(MiscUtil.hasItems(extIds))) {
-    		// No!  Bail.
-    		return reply;
-    	}
-    	
-		// Resolve the members.  We call ResolveIDs.getPrincipals()
-		// because it handles deleted users and users the logged-in
-    	// user has rights to see.  Does the groups members resolve
-    	// to any users?
-		List<Principal> extUsers = ResolveIds.getPrincipals(extIds);
-		if (!(MiscUtil.hasItems(extUsers))) {
-			// No!  Bail.
-			return reply;
-		}
-
-		// Scan the group members.
-		for (Principal p:  extUsers) {
-			// Is this member a non reserved User?
-			if ((p instanceof UserPrincipal) && (!(p.isReserved()))) {
-				// Yes!  Add it to the reply collection.
-				reply.add((User) p);
-			}
-		}
-
-		// If we get here, reply refers to a Collection<User> of the
-		// external users.  Return it.
-    	return reply;
-    }
-    
-    /**
-     * Returns a Collection<User> of all the users that have mobile
-     * devices.
-     *  
-     * @return
-     */
-    @Override
-    public Collection<User> getAllUsersWithMobileDevices() {
-		Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
-		FilterControls filter = new FilterControls();
-		filter.addNotNull("mobileDevices");
-		List<User> users = getCoreDao().loadObjects(User.class, filter, zoneId);
-		return users;
-    }
-    
-    /**
-     * Get'er methods for the Mobile Application Management (MAM)
-     * settings.
-     * 
-     * Returns a user's MobileDevices, if any are defined.
-     * 
-     * @return
-     */
-    @Override
-    public MobileDevices getMobileDevices(Long userId) {
-   		User user = getUser(userId, false, true);
-   		return ((null == user) ? null : user.getMobileDevices());
-    }
-    
-    /**
-     * Set'er methods for the Mobile Application Management (MAM)
-     * settings.
-     *
-     * Stores a MobileDevices as part of a user.
-     * 
-     * @param
-     */
-    @Override
-    public void setMobileDevices(Long userId, MobileDevices mobileDevices) {
-   		User user = getUser(userId, true, true);
-   		if (null != user) {
-   			user.setMobileDevices(mobileDevices);
-   		}
-    }
-    
-    /**
-     * Returns a PrincipalMobileAppsConfig for the user or group as
-     * read from its UserProperties.
-     * 
-     * @param principalId
-     * 
-     * @return
-     */
-    @Override
-	public PrincipalMobileAppsConfig getPrincipalMobileAppsConfig(Long principalId) {
-    	PrincipalMobileAppsConfig reply = new PrincipalMobileAppsConfig();
-    	reply.setUseDefaultSettings(true);
-    	
-    	UserProperties up = getPrincipalProperties(principalId);
-		if (null != up) {
-			Boolean accessValue = up.getBooleanProperty(ObjectKeys.USER_PROPERTY_MOBILE_APPS_ACCESS_FILR);
-			if (null != accessValue) {
-				reply.setMobileAppsEnabled(accessValue);
-			}
-
-			Boolean pwdValue = up.getBooleanProperty(ObjectKeys.USER_PROPERTY_MOBILE_APPS_CACHE_PWD);
-			if (null != pwdValue) {
-				reply.setAllowCachePwd(pwdValue);
-			}
-			
-			Boolean contentValue = up.getBooleanProperty(ObjectKeys.USER_PROPERTY_MOBILE_APPS_CACHE_CONTENT);
-			if (null != contentValue) {
-				reply.setAllowCacheContent(contentValue);
-			}
-			
-			Boolean playValue = up.getBooleanProperty(ObjectKeys.USER_PROPERTY_MOBILE_APPS_PLAY_WITH_OTHER_APPS);
-			if (null != playValue) {
-				reply.setAllowPlayWithOtherApps(playValue);
-			}
-
-			// Mobile Application Management (MAM) settings.
-			Boolean cutCopyEnabledValue = up.getBooleanProperty(ObjectKeys.USER_PROPERTY_MOBILE_APPS_CUT_COPY_ENABLED);
-			if (null != cutCopyEnabledValue) {
-				reply.setMobileCutCopyEnabled(cutCopyEnabledValue);
-			}
-			
-			Boolean androidScreenCaptureEnabledValue = up.getBooleanProperty(ObjectKeys.USER_PROPERTY_MOBILE_APPS_ANDROID_SCREEN_CAPTURE_ENABLED);
-			if (null != androidScreenCaptureEnabledValue) {
-				reply.setMobileAndroidScreenCaptureEnabled(androidScreenCaptureEnabledValue);
-			}
-			
-			Boolean disableOnJailBrokenValue = up.getBooleanProperty(ObjectKeys.USER_PROPERTY_MOBILE_APPS_DISABLE_ON_ROOTED_OR_JAIL_BROKEN_DEVICES);
-			if (null != disableOnJailBrokenValue) {
-				reply.setMobileDisableOnRootedOrJailBrokenDevices(disableOnJailBrokenValue);
-			}
-			
-			Integer openInValue = up.getIntegerProperty(ObjectKeys.USER_PROPERTY_MOBILE_APPS_OPEN_IN);
-			if (null != openInValue) {
-				reply.setMobileOpenIn(MobileOpenInSetting.valueOf(openInValue));
-			}
-			
-			String [] androidApplicationsValue = up.getStringArrayProperty(ObjectKeys.USER_PROPERTY_MOBILE_APPS_ANDROID_APPLICATIONS);
-			if (null != androidApplicationsValue) {
-				reply.setAndroidApplications(MiscUtil.sortStringList(Arrays.asList(androidApplicationsValue)));
-			}
-			
-			String [] iosApplicationsValue = up.getStringArrayProperty(ObjectKeys.USER_PROPERTY_MOBILE_APPS_IOS_APPLICATIONS);
-			if (null != iosApplicationsValue) {
-				reply.setIosApplications(MiscUtil.sortStringList(Arrays.asList(iosApplicationsValue)));
-			}
-
-			if ((null != accessValue)                          ||
-					(null != pwdValue)                         ||
-					(null != contentValue)                     ||
-					(null != playValue)                        ||
-					(null != cutCopyEnabledValue)              ||
-					(null != androidScreenCaptureEnabledValue) ||
-					(null != disableOnJailBrokenValue)         ||
-					(null != openInValue)                      ||
-					(null != androidApplicationsValue)         ||
-					(null != iosApplicationsValue)) {
-				reply.setUseDefaultSettings(false);
-			}
-		}
-		
-		return reply;
-    }
-    
-    /**
-     * Returns a PrincipalDesktopAppsConfig for the user or group as
-     * read from its UserProperties.
-     * 
-     * @param principalId
-     * 
-     * @return
-     */
-    @Override
-    public PrincipalDesktopAppsConfig getPrincipalDesktopAppsConfig(Long principalId) {
-    	PrincipalDesktopAppsConfig reply = new PrincipalDesktopAppsConfig();
-    	reply.setUseDefaultSettings(true);
-    	
-    	UserProperties up = getPrincipalProperties(principalId);
-		if (null != up)
-		{
-			Boolean accessValue = up.getBooleanProperty(ObjectKeys.USER_PROPERTY_DESKTOP_APP_ACCESS_FILR);
-			if (null != accessValue) {
-				reply.setIsFileSyncAppEnabled(accessValue);
-			}
-
-			Boolean pwdValue = up.getBooleanProperty(ObjectKeys.USER_PROPERTY_DESKTOP_APP_CACHE_PWD);
-			if (null != pwdValue) {
-				reply.setAllowCachePwd(pwdValue);
-			}
-			
-			if ((null != accessValue) || (null != pwdValue)) {
-				reply.setUseDefaultSettings(false);
-			}
-		}
-		
-    	return reply;
-    }
-    
-    /**
-     * Writes the settings from a PrincipalMobileAppsConfig to the
-     * user's or group's UserProperties.
-     * 
-     * @param principalId
-     * @param principalsAreUsers 
-     * 
-     * @param pConfig
-     */
-    @Override
-    public void savePrincipalMobileAppsConfig(List<Long> principalIds, boolean principalsAreUsers, PrincipalMobileAppsConfig config) {
-    	// If we don't have anything to save...
-    	if (((!(MiscUtil.hasItems(principalIds)))) || (null == config)) {
-    		// ...bail.
-    		return;
-    	}
-
-    	// Extract the values from the PrincipalMobileAppsConfig.
-		String accessValue;
-		String pwdValue;
-		String contentValue;
-		String playValue;
-		
-		// Mobile Application Management (MAM) settings.
-		String cutCopyEnabledValue;
-		String androidScreenCaptureEnabledValue;
-		String disableOnJailBrokenValue;
-		String openInValue;
-		String androidApplicationsValue;
-		String iosApplicationsValue;
-		
-		if (config.getUseDefaultSettings()) {
-			accessValue  =
-			contentValue =
-			playValue    =
-			pwdValue     = null;
-			
-			// Mobile Application Management (MAM) settings.
-			cutCopyEnabledValue              =
-			androidScreenCaptureEnabledValue =
-			disableOnJailBrokenValue         =
-			openInValue                      =
-			androidApplicationsValue         =
-			iosApplicationsValue             = null;
-		}
-		
-		else {
-			accessValue  = String.valueOf(config.getMobileAppsEnabled()     );
-			contentValue = String.valueOf(config.getAllowCacheContent()     );
-			playValue    = String.valueOf(config.getAllowPlayWithOtherApps());
-			pwdValue     = String.valueOf(config.getAllowCachePwd()         );
-			
-			// Mobile Application Management (MAM) settings.
-			cutCopyEnabledValue              = String.valueOf(config.getMobileCutCopyEnabled()                    );
-			androidScreenCaptureEnabledValue = String.valueOf(config.getMobileAndroidScreenCaptureEnabled()       );
-			disableOnJailBrokenValue         = String.valueOf(config.getMobileDisableOnRootedOrJailBrokenDevices());
-			openInValue                      = String.valueOf(config.getMobileOpenIn().ordinal()                  );
-			
-			List<String> aaList = MiscUtil.sortStringList(config.getAndroidApplications());
-			String[] aaArray = ((null == aaList) ? new String[0] : aaList.toArray(new String[0]));
-			androidApplicationsValue = StringUtil.pack(aaArray);
-			
-			List<String> iosList = MiscUtil.sortStringList(config.getIosApplications());
-			String[] iosArray = ((null == iosList) ? new String[0] : iosList.toArray(new String[0]));
-			iosApplicationsValue = StringUtil.pack(iosArray);
-		}
-
-    	// Store the properties to save into a Map<String, Object> so
-    	// we can write them out in a single transaction...
-		Map<String, Object> propMap = new HashMap<String, Object>();
-		propMap.put(ObjectKeys.USER_PROPERTY_MOBILE_APPS_ACCESS_FILR,          accessValue );
-		propMap.put(ObjectKeys.USER_PROPERTY_MOBILE_APPS_CACHE_PWD,            pwdValue    );
-		propMap.put(ObjectKeys.USER_PROPERTY_MOBILE_APPS_CACHE_CONTENT,        contentValue);
-		propMap.put(ObjectKeys.USER_PROPERTY_MOBILE_APPS_PLAY_WITH_OTHER_APPS, playValue   );
-		
-		// Mobile Application Management (MAM) settings.
-		propMap.put(ObjectKeys.USER_PROPERTY_MOBILE_APPS_CUT_COPY_ENABLED,                         cutCopyEnabledValue             );
-		propMap.put(ObjectKeys.USER_PROPERTY_MOBILE_APPS_ANDROID_SCREEN_CAPTURE_ENABLED,           androidScreenCaptureEnabledValue);
-		propMap.put(ObjectKeys.USER_PROPERTY_MOBILE_APPS_DISABLE_ON_ROOTED_OR_JAIL_BROKEN_DEVICES, disableOnJailBrokenValue        );
-		propMap.put(ObjectKeys.USER_PROPERTY_MOBILE_APPS_OPEN_IN,                                  openInValue                     );
-		propMap.put(ObjectKeys.USER_PROPERTY_MOBILE_APPS_ANDROID_APPLICATIONS,                     androidApplicationsValue        );
-		propMap.put(ObjectKeys.USER_PROPERTY_MOBILE_APPS_IOS_APPLICATIONS,                         iosApplicationsValue            );
-		
-		// ...and write them out to the appropriate object.
-		for (Long pId : principalIds) {
-			if (principalsAreUsers)
-			     setUserProperties( pId, propMap);
-			else setGroupProperties(pId, propMap);
-		}
-    }
-    
-    @Override
-    public void savePrincipalMobileAppsConfig(Long principalId, boolean principalIsUser, PrincipalMobileAppsConfig config) {
-    	// Always use the initial form of the method.
-    	if ((null != principalId) && (null != config)) {
-    		List<Long> principalIds = new ArrayList<Long>();
-    		principalIds.add(principalId);
-    		savePrincipalMobileAppsConfig(principalIds, principalIsUser, config);
-    	}
-    }
-    
-    /**
-     * Writes the settings from a PrincipalMobileAppsConfig to the
-     * user's or group's UserProperties.
-     * 
-     * @param principalId
-     * @param principalsAreUsers 
-     * 
-     * @param pConfig
-     */
-    @Override
-    public void savePrincipalDesktopAppsConfig(List<Long> principalIds, boolean principalsAreUsers, PrincipalDesktopAppsConfig config) {
-    	// If we don't have anything to save...
-    	if (((!(MiscUtil.hasItems(principalIds)))) || (null == config)) {
-    		// ...bail.
-    		return;
-    	}
-
-    	// Extract the values from the PrincipalDesktopAppsConfig.
-		String accessValue;
-		String pwdValue;
-		if (config.getUseDefaultSettings()) {
-			accessValue =
-			pwdValue    = null;
-		}
-		else {
-			accessValue = String.valueOf(config.getIsFileSyncAppEnabled());
-			pwdValue    = String.valueOf(config.getAllowCachePwd()       );
-		}
-		
-    	// Store the properties to save into a Map<String, Object> so
-    	// we can write them out in a single transaction...
-		Map<String, Object> propMap = new HashMap<String, Object>();
-		propMap.put(ObjectKeys.USER_PROPERTY_DESKTOP_APP_ACCESS_FILR, accessValue);
-		propMap.put(ObjectKeys.USER_PROPERTY_DESKTOP_APP_CACHE_PWD,   pwdValue   );
-
-		// ...and write them out to the appropriate object.
-		for (Long pId : principalIds) {
-			if (principalsAreUsers)
-			     setUserProperties( pId, propMap);
-			else setGroupProperties(pId, propMap);
-		}
-    }
-    
-    @Override
-    public void savePrincipalDesktopAppsConfig(Long principalId, boolean principalIsUser, PrincipalDesktopAppsConfig config) {
-    	// Always use the initial form of the method.
-    	if ((null != principalId) && (null != config)) {
-    		List<Long> principalIds = new ArrayList<Long>();
-    		principalIds.add(principalId);
-    		savePrincipalDesktopAppsConfig(principalIds, principalIsUser, config);
-    	}
-    }
 }
+

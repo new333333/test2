@@ -30,6 +30,7 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
+
 package org.kablink.teaming.gwt.client.whatsnew;
 
 import java.util.Date;
@@ -43,7 +44,7 @@ import java.util.Set;
 import org.kablink.teaming.gwt.client.binderviews.util.BinderViewsHelper;
 import org.kablink.teaming.gwt.client.event.ActivityStreamEvent;
 import org.kablink.teaming.gwt.client.event.ActivityStreamExitEvent;
-import org.kablink.teaming.gwt.client.event.DeleteActivityStreamUIEntryEvent;
+import org.kablink.teaming.gwt.client.event.DeleteEntryEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.InvokeReplyEvent;
 import org.kablink.teaming.gwt.client.event.InvokeSendToFriendEvent;
@@ -112,18 +113,18 @@ import com.google.gwt.user.client.ui.ResizeComposite;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 
+
 /**
- * This widget will display a list of entries that are the results from
- * a search query.
- * 
+ * This widget will display a list of entries that are the results from a search query.
  * @author jwootton
+ *
  */
 public class ActivityStreamCtrl extends ResizeComposite
 	implements ClickHandler,
 	// Event handlers implemented by this class.
 		ActivityStreamEvent.Handler,
 		ActivityStreamExitEvent.Handler,
-		DeleteActivityStreamUIEntryEvent.Handler,
+		DeleteEntryEvent.Handler,
 		InvokeReplyEvent.Handler,
 		InvokeSendToFriendEvent.Handler,
 		InvokeShareEvent.Handler,
@@ -134,17 +135,6 @@ public class ActivityStreamCtrl extends ResizeComposite
 		ViewAllEntriesEvent.Handler,
 		ViewUnreadEntriesEvent.Handler
 {
-	public enum ActivityStreamCtrlUsage
-	{
-		BLOG,
-		COMMENTS,
-		UNREAD_ENTRIES,
-		STANDALONE;
-		
-		public boolean isEmbedded()   { return ( !( STANDALONE.equals( this ) ) ); }
-		public boolean isStandalone() { return      STANDALONE.equals( this );     }
-	}
-	
 	public enum DescViewFormat
 	{
 		FULL,
@@ -196,7 +186,6 @@ public class ActivityStreamCtrl extends ResizeComposite
 	private TagThisDlg m_tagThisDlg = null;
 	private ShareThisDlg m_shareThisDlg = null;
 	private ActivityStreamDataType m_showSetting = ActivityStreamDataType.OTHER;
-	private ActivityStreamCtrlUsage m_usage;	// How this ActivityStreamCtrl is being used.
 	private List<HandlerRegistration>	m_registeredEventHandlers;	// Event handlers that are currently registered.
 
 	// Used to adjust the size and position of things to account for
@@ -212,7 +201,7 @@ public class ActivityStreamCtrl extends ResizeComposite
 		TeamingEvents.ACTIVITY_STREAM_EXIT,
 		
 		// Delete events
-		TeamingEvents.DELETE_ACTIVITY_STREAM_UI_ENTRY,
+		TeamingEvents.DELETE_ENTRY,
 		
 		// Invoke events.
 		TeamingEvents.INVOKE_REPLY,
@@ -264,9 +253,8 @@ public class ActivityStreamCtrl extends ResizeComposite
 	 * splitting.  All instantiations of this object must be done
 	 * through its createAsync().
 	 */
-	private ActivityStreamCtrl( ActivityStreamCtrlUsage usage, boolean createHeader, ActionsPopupMenu actionsMenu )
+	private ActivityStreamCtrl( boolean createHeader, ActionsPopupMenu actionsMenu )
 	{
-		m_usage = usage;
 		m_actionsPopupMenu = actionsMenu;
 		
 		FlowPanel mainPanel = new FlowPanel();
@@ -2196,24 +2184,21 @@ public class ActivityStreamCtrl extends ResizeComposite
 	@Override
 	public void onActivityStreamExit( ActivityStreamExitEvent event )
 	{
-		if (m_usage.isStandalone())
-		{
-			// Unregister all the events we have registered for.
-			unregisterEvents();
-			
-			hide();
-		}
+		// Unregister all the events we have registered for.
+		unregisterEvents();
+		
+		hide();
 	}// end onActivityStreamExit()
 
 	/**
-	 * Handles DeleteActivityStreamUIEntryEvent's received by this class.
+	 * Handles DeleteEntryEvent's received by this class.
 	 * 
-	 * Implements the DeleteActivityStreamUIEntryEvent.Handler.onDeleteActivityStreamUIEntry() method.
+	 * Implements the DeleteEntryEvent.Handler.onDeleteEntry() method.
 	 * 
 	 * @param event
 	 */
 	@Override
-	public void onDeleteActivityStreamUIEntry( DeleteActivityStreamUIEntryEvent event )
+	public void onDeleteEntry( DeleteEntryEvent event )
 	{
 		final ActivityStreamUIEntry uiEntry = event.getUIEntry();
 		if ( null != uiEntry )
@@ -2454,14 +2439,14 @@ public class ActivityStreamCtrl extends ResizeComposite
 	 * @param mainPage
 	 * @param asCtrlClient
 	 */
-	public static void createAsync( final ActivityStreamCtrlUsage usage, final boolean createHeader, final ActionsPopupMenu actionsMenu, final ActivityStreamCtrlClient asCtrlClient )
+	public static void createAsync( final boolean createHeader, final ActionsPopupMenu actionsMenu, final ActivityStreamCtrlClient asCtrlClient )
 	{
 		GWT.runAsync( ActivityStreamCtrl.class, new RunAsyncCallback()
 		{			
 			@Override
 			public void onSuccess()
 			{
-				ActivityStreamCtrl asCtrl = new ActivityStreamCtrl( usage, createHeader, actionsMenu );
+				ActivityStreamCtrl asCtrl = new ActivityStreamCtrl( createHeader, actionsMenu );
 				asCtrlClient.onSuccess( asCtrl );
 			}// end onSuccess()
 			
@@ -2481,14 +2466,14 @@ public class ActivityStreamCtrl extends ResizeComposite
 	 * @param mainPage
 	 * @param asCtrlClient
 	 */
-	public static void createAsync( final ActivityStreamCtrlUsage usage, final ActionsPopupMenu actionsMenu, final ActivityStreamCtrlClient asCtrlClient )
+	public static void createAsync( final ActionsPopupMenu actionsMenu, final ActivityStreamCtrlClient asCtrlClient )
 	{
 		GWT.runAsync( ActivityStreamCtrl.class, new RunAsyncCallback()
 		{			
 			@Override
 			public void onSuccess()
 			{
-				ActivityStreamCtrl asCtrl = new ActivityStreamCtrl( usage, true, actionsMenu );
+				ActivityStreamCtrl asCtrl = new ActivityStreamCtrl( true, actionsMenu );
 				asCtrlClient.onSuccess( asCtrl );
 			}// end onSuccess()
 			

@@ -82,9 +82,8 @@
 		.vibe-runAReportDlg-chooseLabel        {font-weight: bold;}
 		.vibe-runAReportDlg-chooseSelect       {margin-left: 10px; padding-left: 5px;}
 		.vibe-runAReportDlg-reportHtmltPanel   {}
-		.vibe-runAReportDlg-reportMaxSizePanel {margin-top: 6px; font-size: 8px; font-style: italic;}
 		.vibe-runAReportDlg-reportScrollPanel  {border-top: 1px solid #cccccc; margin-top: 10px;}
-.vibe-runAReportDlg-rootPanel          {background-color: white; padding: 10px;}
+		.vibe-runAReportDlg-rootPanel          {background-color: white; padding: 10px;}
 		.vibe-runAReportDlg-systemLogsLink     {}
 	/* End:  Run a report dialog styles. */
 	

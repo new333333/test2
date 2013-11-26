@@ -62,33 +62,23 @@ import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.ProfileDao;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Folder;
+import org.kablink.teaming.domain.NoBinderByTheIdException;
 import org.kablink.teaming.domain.Principal;
-import org.kablink.teaming.domain.ResourceDriverConfig;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserPrincipal;
-import org.kablink.teaming.fi.auth.AuthException;
-import org.kablink.teaming.fi.connection.ResourceDriver;
-import org.kablink.teaming.fi.connection.ResourceDriverManager;
-import org.kablink.teaming.fi.connection.acl.AclItemPrincipalMappingException;
-import org.kablink.teaming.fi.connection.acl.AclResourceDriver;
-import org.kablink.teaming.fi.connection.acl.AclResourceSession;
-import org.kablink.teaming.fi.connection.acl.ResourceItem;
 import org.kablink.teaming.lucene.Hits;
 import org.kablink.teaming.lucene.LuceneException;
 import org.kablink.teaming.lucene.util.LanguageTaster;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.search.LuceneReadSession;
 import org.kablink.teaming.search.SearchFieldResult;
-import org.kablink.teaming.search.SearchObject;
 import org.kablink.teaming.search.filter.SearchFilter;
 import org.kablink.teaming.search.filter.SearchFilterKeys;
 import org.kablink.teaming.search.filter.SearchFilterToSearchBooleanConverter;
-import org.kablink.teaming.search.postfilter.PostFilterCallback;
 import org.kablink.teaming.task.TaskHelper;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.EventHelper;
-import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
 import org.kablink.util.search.Criteria;
 
@@ -389,18 +379,6 @@ public class SearchUtils {
     		Element child = field.addElement(Constants.FIELD_TERMS_ELEMENT);
     		child.setText((String) options.get(ObjectKeys.SEARCH_ANCESTRY));
     	}
-    	if (options.containsKey(ObjectKeys.SEARCH_HIDDEN)) {
-    		Element field = boolElement.addElement(Constants.FIELD_ELEMENT);
-    		field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE, org.kablink.util.search.Constants.HIDDEN_FROM_SEARCH_FIELD);
-    		Element child = field.addElement(Constants.FIELD_TERMS_ELEMENT);
-    		child.setText((String) options.get(ObjectKeys.SEARCH_HIDDEN));
-    	}
-    	if (options.containsKey(ObjectKeys.SEARCH_FIND_USER_HIDDEN)) {
-    		Element field = boolElement.addElement(Constants.FIELD_ELEMENT);
-    		field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE, org.kablink.util.search.Constants.HIDDEN_FROM_FIND_USER_FIELD);
-    		Element child = field.addElement(Constants.FIELD_TERMS_ELEMENT);
-    		child.setText((String) options.get(ObjectKeys.SEARCH_FIND_USER_HIDDEN));
-    	}
 
     	//See if there are event days (modification is also an event)
     	if (options.containsKey(ObjectKeys.SEARCH_EVENT_DAYS)) {
@@ -630,23 +608,15 @@ public class SearchUtils {
 	 */
 	public static Hits searchFolderOneLevelWithInferredAccess(LuceneReadSession luceneSession,
 			Long contextUserId, 
-			SearchObject so,
+			String aclQueryStr, 
 			int mode, 
+			Query query, 
+			Sort sort, 
 			int offset, 
 			int size, 
 			Binder parentBinder)
-					throws LuceneException, AuthException {
-		if(so == null)
-			throw new IllegalArgumentException("Search object must be specifed");
+					throws LuceneException {
 		
-		String aclQueryStr = so.getAclQueryStr();
-		Query query = so.getLuceneQuery();
-		Sort sort = so.getSortBy();
-		
-    	if(logger.isDebugEnabled()) {
-    		logger.debug("Query is: " + query.toString());
-    	}
-
 		try {
 			if(parentBinder.isMirrored() && parentBinder instanceof Folder) {			
 				if(!getFolderModule().jitSynchronize((Folder)parentBinder)) {
@@ -665,147 +635,13 @@ public class SearchUtils {
 				}
 			}	
 		}
-		catch(AuthException e) {
-			throw e; // Propagate this up
-		}
-		catch(Exception ignore) {
-			// Ignore all other exceptions
-		}
+		catch(Exception ignore) {}
 		
-		Binder netFoldersBinder = org.kablink.teaming.search.SearchUtils.getNetFoldersRootBinder();
-		
-		if(netFoldersBinder != null && netFoldersBinder.getId().equals(parentBinder.getId())) {
-			// Getting a list of net folders that the user has access to. This requires special processing and
-			// filtering to ensure that the result only contains those net folders that meet all of the 
-			// following requirements.
-			// 1. The admin has granted the user "access net folder" right on the specific net folder.
-			// 2. The user has file system access to the net folder via either direct access or inferred access.
-			// 3. The user should not see this net folder listed under his "Net Folders" collection view just 
-			//    because some other user shared with him this net folder or anything within that net folder
-			//    (i.e., sub-folder or file within).
-			return luceneSession.search(contextUserId, so.getNetFolderRootAclQueryStr(), mode, query, sort, offset, size,
-					new PostFilterCallback() {
-				public boolean doFilter(Document doc, boolean noIntrinsicAclStoredButAccessibleThroughFilrGrantedAcl) {
-					// This filter implementation ignores the second arg.
-					String resourceDriverName = doc.get(Constants.RESOURCE_DRIVER_NAME_FIELD);
-					if(resourceDriverName == null) 
-						return false; // no resource driver
-					String resourcePath = doc.get(Constants.RESOURCE_PATH_FIELD);
-					if(resourcePath == null)
-						resourcePath = ""; // It is possible to define a net folder without specifying a sub-path.
-					AclResourceSession session = openAclResourceSession(resourceDriverName);				
-					if(session == null)
-						return false; // cannot obtain session for the user
-					try {
-						session.setPath(resourcePath);
-						return session.isVisible();
-					}
-					finally {
-						session.close();
-					}
-				}
-			});
-			
-			//return luceneSession.searchFolderOneLevelWithInferredAccess(contextUserId, aclQueryStr, mode, query, sort, offset, size, parentBinder.getId(), parentBinder.getPathName());
-		}
-		else if(parentBinder.noAclDredgedWithEntries()) {
-			// The parent binder is a net folder which does not store file ACLs in the search index.
-			// We need to consolidate the information in the search index with the dynamic list
-			// obtained from the file system in order to determine which subset of the children
-			// the user has access to.
-			
-			List<String> childrenTitles = null;
-			if(Validator.isNotNull(aclQueryStr)) {
-				// We must apply access check one way or another
-				childrenTitles = getChildrenTitlesFromSourceSystem(parentBinder);
-			}
-			else {
-				// The user is not confined by access check (e.g. admin), which means that 
-				// dynamic filtering against file system is not necessary either.
-			}
-			
-		    return luceneSession.searchNetFolderOneLevel(contextUserId, aclQueryStr, childrenTitles, query, sort, offset, size);
-		}
-		else {
-			// All other cases
-			return luceneSession.searchNonNetFolderOneLevelWithInferredAccess(contextUserId, aclQueryStr, mode, query, sort, offset, size, parentBinder.getId(), parentBinder.getPathName());
-		}
+		return luceneSession.searchFolderOneLevelWithInferredAccess(contextUserId, aclQueryStr, mode, query, sort, offset, size, parentBinder.getId(), parentBinder.getPathName());
 	}
-	
-	private static List<String> getChildrenTitlesFromSourceSystem(Binder parentBinder) {
-		AclResourceSession session = openAclResourceSession((AclResourceDriver) parentBinder.getResourceDriver());
-		
-		if(session == null)
-			return null; // The source system doesn't recognize this user. 
-		
-		try {
-			session.setPath(parentBinder.getResourcePath());
-			List<ResourceItem> children = session.getChildren(false, false, false, false);
-			List<String> titles = null;
-			if(children != null && children.size() > 0) {
-				titles = new ArrayList<String>(children.size());
-				for(ResourceItem child:children) {
-					titles.add(child.getName());
-				}
-			}
-			return titles;
-		}
-		catch(Exception e) {
-			logger.error("Error getting listing for folder [" + parentBinder.getPathName() + "] with resource path [" + 
-					parentBinder.getResourcePath() + "] through net folder server '" + parentBinder.getResourceDriverName() + "'");
-			return null;
-		}
-		finally {
-			session.close();
-		}
-	}
-	
-	public static AclResourceSession openAclResourceSession(String resourceDriverName) {
-		ResourceDriver driver;
-		
-		try {
-			driver = getResourceDriverManager().getDriver(resourceDriverName);
-		}
-		catch(Exception e) {
-			logger.warn("Can not find resource driver by name '" + resourceDriverName + "'", e);
-			return null;
-		}
-		
-		return openAclResourceSession(driver);
-	}
-	
-	public static AclResourceSession openAclResourceSession(ResourceDriver driver) {
-		User user = RequestContextHolder.getRequestContext().getUser();
 
-		if(!(driver instanceof AclResourceDriver)) {
-			logger.warn("Unable to open session on resource driver '" + driver.getName() + "' for user '" + user.getName() + " because the driver is of class '" + driver.getClass().getName() + "'");
-			return null;
-		}
-
-		if(user.getIdentityInfo().isFromLdap()) {
-			if(logger.isDebugEnabled())
-				logger.debug("Opening a session on resource driver '" + driver.getName() + "' for user '" + user.getName() + "' to check access");
-			
-			try {
-				return getResourceDriverManager().openSessionUserMode((AclResourceDriver) driver);
-			} catch (AclItemPrincipalMappingException e) {
-				if(logger.isDebugEnabled())
-					logger.debug("Unable to open session on ACL resource driver '" + driver.getName() + "' for user '" + user.getName() + "'");
-				return null;
-			}
-		}
-		else {
-			if(logger.isTraceEnabled())
-				logger.trace("No need to open a session on resource driver '" + driver.getName() + "' for user '" + user.getName() + "' to check access because the user is not provisioned from LDAP");
-			return null;			
-		}
-	}
 	
 	private static FolderModule getFolderModule() {
 		return (FolderModule) SpringContextUtil.getBean("folderModule");
-	}
-	
-	private static ResourceDriverManager getResourceDriverManager() {
-		return (ResourceDriverManager) SpringContextUtil.getBean("resourceDriverManager");
 	}
 }

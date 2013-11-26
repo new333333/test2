@@ -88,7 +88,6 @@ import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ResolveIds;
 import org.kablink.teaming.util.SPropsUtil;
-import org.kablink.teaming.util.SimpleProfiler;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.WebKeys;
@@ -195,94 +194,49 @@ public class GwtProfileHelper {
 		return profile;
 	}
 	
-	public static ProfileAttribute getProfileAvatars(HttpServletRequest request, AllModulesInjected bs, Long binderId, boolean firstValueOnly) {
+	public static ProfileAttribute getProfileAvatars(HttpServletRequest request, AllModulesInjected bs, Long binderId) {
 		//get the binder
 		Binder binder = bs.getBinderModule().getBinderWithoutAccessCheck((Long.valueOf(binderId)));
 		Principal owner = binder.getCreation().getPrincipal(); //creator is user
-		return getProfileAvatars(request, bs, owner, firstValueOnly);
+		return getProfileAvatars(request, bs, owner);
 	}
 	
-	public static ProfileAttribute getProfileAvatars(HttpServletRequest request, AllModulesInjected bs, Long binderId) {
-		// Always use the initial form of the method.
-		return getProfileAvatars(request, bs, binderId, false);
-	}
-	
-	public static ProfileAttribute getProfileAvatars(HttpServletRequest request, AllModulesInjected bs, Principal principal, boolean firstValueOnly) {
+	public static ProfileAttribute getProfileAvatars(HttpServletRequest request, AllModulesInjected bs, Principal principal) {
 		ProfileAttribute attribute = new ProfileAttribute();
 		principal = Utils.fixProxy(principal);		
 		if (principal != null) {
 			//User u = user;
 			User u = (User) bs.getProfileModule().getEntry(principal.getId());
 			u = (User)Utils.fixProxy(u);
-			attribute = getProfileAvatars(request, u, firstValueOnly);
+			
+			//Get the Elements name - which is the attribute name
+			String attrName = "picture";
+			attribute.setName(attrName);
+			
+			String dataName = "picture";
+			attribute.setDataName(dataName);
+			
+			//Read the custom attribute
+			Document defDoc = ((DefinableEntity)u).getEntryDefDoc();
+			CustomAttribute cAttr = u.getCustomAttribute(attribute.getDataName());
+			
+			if(cAttr == null) {
+				return attribute;
+			}
+			
+			//Get the actual caption
+			String caption = DefinitionHelper.findCaptionForAttribute(cAttr.getName(), defDoc);
+			attribute.setTitle(NLT.getDef(caption));
+			
+			if(attribute.getTitle() == null){
+				attribute.setTitle(NLT.get("profile.element."+dataName, dataName));
+			}
+			
+			//Convert the Custom Attribute to a Profile Attribute for serialization purposes
+			convertCustomAttrToProfileAttr(request, u, cAttr, attribute, attribute.getDataName(), null);
 		}
 		
 		return attribute;
-	}
-	
-	public static ProfileAttribute getProfileAvatars(HttpServletRequest request, AllModulesInjected bs, Principal principal) {
-		// Always use the initial form of the method.
-		return getProfileAvatars(request, bs, principal, false);
-	}
-	
-	public static ProfileAttribute getProfileAvatars(HttpServletRequest request, User u, boolean firstValueOnly) {
-		SimpleProfiler.start("GwtProfileHelper.getProfileAvatars()");
-		try {
-			ProfileAttribute attribute = new ProfileAttribute();
-			String           dataName  = "picture";
-			CustomAttribute  cAttr;
-			
-			SimpleProfiler.start("GwtProfileHelper.getProfileAvatars(Get Custom Attribute)");
-			try {
-				// Get the Elements name - which is the attribute name.
-				attribute.setName(    dataName);
-				attribute.setDataName(dataName);
-				
-				// Read the custom attribute.
-				cAttr = u.getCustomAttribute(attribute.getDataName());
-				if (null == cAttr) {
-					return attribute;
-				}
-			}
-			finally {
-				SimpleProfiler.stop("GwtProfileHelper.getProfileAvatars(Get Custom Attribute)");
-			}
-			
-			SimpleProfiler.start("GwtProfileHelper.getProfileAvatars(Convert Custom to Profile Attribute)");
-			try {
-				// Get the actual caption.
-				Document defDoc  = ((DefinableEntity)u).getEntryDefDoc();
-				String   caption = DefinitionHelper.findCaptionForAttribute(cAttr.getName(), defDoc);
-				attribute.setTitle(NLT.getDef(caption));
-				if (null == attribute.getTitle()) {
-					attribute.setTitle(NLT.get("profile.element." + dataName, dataName));
-				}
-				
-				// Convert the Custom Attribute to a Profile Attribute.
-				convertCustomAttrToProfileAttr(
-					request,
-					u,
-					cAttr,
-					attribute,
-					attribute.getDataName(),
-					null,	// null -> No ProfileInfo to complete.
-					firstValueOnly);
-			}
-			finally {
-				SimpleProfiler.stop("GwtProfileHelper.getProfileAvatars(Convert Custom to Profile Attribute)");
-			}
-			
-			return attribute;
-		}
-		
-		finally {
-			SimpleProfiler.stop("GwtProfileHelper.getProfileAvatars()");
-		}
-	}
-	
-	public static ProfileAttribute getProfileAvatars(HttpServletRequest request, User u) {
-		// Always use the initial form of the method.
-		return getProfileAvatars(request, u, false);
 	}
 	
 	/**
@@ -533,327 +487,287 @@ public class GwtProfileHelper {
 	/**
 	 * Convert the CustomAttribute and its domain object's to the ProfileAttribute class 
 	 *  
-	 * @param request
 	 * @param u
 	 * @param cAttr
 	 * @param pAttr
 	 * @param name
-	 * @param profile
-	 * @param firstValueOnly
 	 */
-	private static void convertCustomAttrToProfileAttr(HttpServletRequest request, User u, CustomAttribute cAttr, ProfileAttribute pAttr, String name, ProfileInfo profile, boolean firstValueOnly) {
-		SimpleProfiler.start("GwtProfileHelper.convertCustomAttrToProfileAttr()");
-		try {
-			User user = RequestContextHolder.getRequestContext().getUser();
-			Document defDoc = ((DefinableEntity)u).getEntryDefDoc();
-			String attrType = DefinitionHelper.findAttributeType(name, defDoc);
-			boolean processed = true;
-			
-			//Process the known attribute types
-			if ("description".equals(attrType) || "htmlEditorTextarea".equals(attrType)) {
-				Description desc = null;
-				Object value = cAttr.getValue();
-				if (value instanceof String) {
-					desc = new Description((String)value);
-				} else if (value instanceof Description) {
-					desc = (Description) cAttr.getValue();
-				}
-				if (desc != null) {
-					String text = MarkupUtil.markupStringReplacement(null, null, request, null, u, desc.getText(), WebKeys.MARKUP_VIEW);
-					if(text != null){
-						//added a length of one to skip over a return characters that are in somehow in the value of the attribute
-						if(text.length() > 1){
-							pAttr.setValue(text);
-						}
+	private static void convertCustomAttrToProfileAttr(HttpServletRequest request, User u, CustomAttribute cAttr, ProfileAttribute pAttr, String name, ProfileInfo profile) {
+		User user = RequestContextHolder.getRequestContext().getUser();
+		Document defDoc = ((DefinableEntity)u).getEntryDefDoc();
+		String attrType = DefinitionHelper.findAttributeType(name, defDoc);
+		boolean processed = true;
+		
+		//Process the known attribute types
+		if ("description".equals(attrType) || "htmlEditorTextarea".equals(attrType)) {
+			Description desc = null;
+			Object value = cAttr.getValue();
+			if (value instanceof String) {
+				desc = new Description((String)value);
+			} else if (value instanceof Description) {
+				desc = (Description) cAttr.getValue();
+			}
+			if (desc != null) {
+				String text = MarkupUtil.markupStringReplacement(null, null, request, null, u, desc.getText(), WebKeys.MARKUP_VIEW);
+				if(text != null){
+					//added a length of one to skip over a return characters that are in somehow in the value of the attribute
+					if(text.length() > 1){
+						pAttr.setValue(text);
 					}
 				}
 			}
-			
-			else if ("selectbox".equals(attrType)) {
-				Map selectionMap = DefinitionHelper.findSelectboxSelectionsAsMap(name, defDoc);
-				if (cAttr.getValueType() == CustomAttribute.SET) {
-					Set<String> v = (Set) cAttr.getValue();
-					String text = "";
-					for (String value : v) {
-					    String caption = "";
-					    if (selectionMap.containsKey(value)) {
-					    	caption = (String)selectionMap.get(value);
-					    }
-					    if (caption == null || caption.equals("")) caption = value;
-					    if (!text.equals("") && !value.equals("")) {
-					    	text = text + ", ";
-					    }
-						text = text + NLT.getDef(caption);
-					}
-					pAttr.setValue(text);
-				}
-				else {
-					String value = (String)cAttr.getValue();
+		} else if ("selectbox".equals(attrType)) {
+			Map selectionMap = DefinitionHelper.findSelectboxSelectionsAsMap(name, defDoc);
+			if (cAttr.getValueType() == CustomAttribute.SET) {
+				Set<String> v = (Set) cAttr.getValue();
+				String text = "";
+				for (String value : v) {
 				    String caption = "";
 				    if (selectionMap.containsKey(value)) {
 				    	caption = (String)selectionMap.get(value);
 				    }
 				    if (caption == null || caption.equals("")) caption = value;
-					pAttr.setValue(NLT.getDef(caption));
+				    if (!text.equals("") && !value.equals("")) {
+				    	text = text + ", ";
+				    }
+					text = text + NLT.getDef(caption);
 				}
-			}
-			
-			else if ("radio".equals(attrType)) {
+				pAttr.setValue(text);
+			} else {
 				String value = (String)cAttr.getValue();
-				Map radioMap = DefinitionHelper.findRadioSelectionsAsMap(name, defDoc);
-				String caption = "";
-				if (radioMap.containsKey(value)) {
-					caption = (String)radioMap.get(value);
-				}
-				if (caption == null || caption.equals("")) caption = value;
+			    String caption = "";
+			    if (selectionMap.containsKey(value)) {
+			    	caption = (String)selectionMap.get(value);
+			    }
+			    if (caption == null || caption.equals("")) caption = value;
 				pAttr.setValue(NLT.getDef(caption));
 			}
-			
-			else if ("url".equals(attrType)) {
-				Element attrEle = DefinitionHelper.findAttribute(name, defDoc);
-				if (attrEle != null) {
-					String value = (String) cAttr.getValue();
-					String linkText = DefinitionHelper.getItemProperty(attrEle, "linkText");
-					if ("".equals(linkText)) linkText = value;
-					String target = DefinitionHelper.getItemProperty(attrEle, "target");
-					String link   = ("<a href=\"" + value + "\" ");
-					if (target.equalsIgnoreCase("true"))
-					     target = "_blank";	// Opens in a   new  window.
-					else target = "_top";	// Opens in the same window.
-					link += ("target=\"" + target + "\"");
-					link += (">" + linkText + "</a>");
-					pAttr.setValue(link);
+		} else if ("radio".equals(attrType)) {
+			String value = (String)cAttr.getValue();
+			Map radioMap = DefinitionHelper.findRadioSelectionsAsMap(name, defDoc);
+			String caption = "";
+			if (radioMap.containsKey(value)) {
+				caption = (String)radioMap.get(value);
+			}
+			if (caption == null || caption.equals("")) caption = value;
+			pAttr.setValue(NLT.getDef(caption));
+		} else if ("url".equals(attrType)) {
+			Element attrEle = DefinitionHelper.findAttribute(name, defDoc);
+			if (attrEle != null) {
+				String value = (String) cAttr.getValue();
+				String linkText = DefinitionHelper.getItemProperty(attrEle, "linkText");
+				if ("".equals(linkText)) linkText = value;
+				String target = DefinitionHelper.getItemProperty(attrEle, "target");
+				String link = "<a href=\""+value+"\" ";
+				if (!target.equals(target)) link = link + "target=\""+target+"\"";
+				link = link + ">" + linkText + "</a>";
+				pAttr.setValue(link);
+			}
+		} else if ("checkbox".equals(attrType)) {
+			if (cAttr == null) {
+				pAttr.setValue(NLT.get("general.No"));
+			} else {
+				pAttr.setValue(NLT.get("general.Yes"));
+			}
+		} else if ("user_list".equals(attrType) || "group_list".equals(attrType) ||
+				"userListSelectbox".equals(attrType)) {
+			if (cAttr.getValueType() == CustomAttribute.COMMASEPARATEDSTRING) {
+				CommaSeparatedValue ids = (CommaSeparatedValue)cAttr.getValue();
+				List<Principal> principals = ResolveIds.getPrincipals(ids.getValueSet(), false);
+				String text = "";
+				for (Principal p : principals) {
+				    String userTitle = Utils.getUserTitle(p);
+				    if (!text.equals("") && !userTitle.equals("")) {
+				    	text = text + ", ";
+				    }
+					text = text + userTitle;
 				}
+				pAttr.setValue(text);
 			}
-			
-			else if ("checkbox".equals(attrType)) {
-				if (cAttr == null)
-				     pAttr.setValue(NLT.get("general.No" ));
-				else pAttr.setValue(NLT.get("general.Yes"));
-			}
-			
-			else if ("user_list".equals(attrType) || "group_list".equals(attrType) || "userListSelectbox".equals(attrType)) {
-				if (cAttr.getValueType() == CustomAttribute.COMMASEPARATEDSTRING) {
-					CommaSeparatedValue ids = (CommaSeparatedValue)cAttr.getValue();
-					List<Principal> principals = ResolveIds.getPrincipals(ids.getValueSet(), false);
-					String text = "";
-					for (Principal p : principals) {
-					    String userTitle = Utils.getUserTitle(p);
-					    if (!text.equals("") && !userTitle.equals("")) {
-					    	text = text + ", ";
-					    }
-						text = text + userTitle;
-					}
-					pAttr.setValue(text);
+		} else if ("team_list".equals(attrType)) {
+			if (cAttr.getValueType() == CustomAttribute.COMMASEPARATEDSTRING) {
+				CommaSeparatedValue ids = (CommaSeparatedValue)cAttr.getValue();
+				Set<Binder> binders = ResolveIds.getBinders(ids.getValueSet());
+				String text = "";
+				for (Binder binder : binders) {
+				    if (!text.equals("")) {
+				    	text = text + ", ";
+				    }
+					text = text + binder.getTitle();
 				}
+				pAttr.setValue(text);
 			}
-			
-			else if ("team_list".equals(attrType)) {
-				if (cAttr.getValueType() == CustomAttribute.COMMASEPARATEDSTRING) {
-					CommaSeparatedValue ids = ((CommaSeparatedValue) cAttr.getValue());
-					Set<Binder> binders = ResolveIds.getBinders(ids.getValueSet());
-					String text = "";
-					for (Binder binder : binders) {
-					    if (!text.equals("")) {
-					    	text = text + ", ";
-					    }
-						text = text + binder.getTitle();
-					}
-					pAttr.setValue(text);
-				}
+		} else if ("date".equals(attrType)) {
+			Date date = (Date)cAttr.getValue();
+			if (date != null) {
+				DateFormat df = DateFormat.getDateInstance(DateFormat.LONG, user.getLocale());
+				pAttr.setValue(df.format(date));
 			}
-			
-			else if ("date".equals(attrType)) {
-				Date date = ((Date) cAttr.getValue());
-				if (null != date) {
-					DateFormat df = DateFormat.getDateInstance(DateFormat.LONG, user.getLocale());
-					pAttr.setValue(df.format(date));
-				}
+		} else if ("date_time".equals(attrType)) {
+			Date date = (Date)cAttr.getValue();
+			if (date != null) {
+				DateFormat df = DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.MEDIUM, user.getLocale());
+				pAttr.setValue(df.format(date));
 			}
-			
-			else if ("date_time".equals(attrType)) {
-				Date date = ((Date) cAttr.getValue());
-				if (null != date) {
-					DateFormat df = DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.MEDIUM, user.getLocale());
-					pAttr.setValue(df.format(date));
-				}
-			}
-			
-			else if ("file".equals(attrType)) {
-				if (cAttr.getValueType() == CustomAttribute.SET || cAttr.getValueType() == CustomAttribute.ORDEREDSET) {
-					Set    v    = ((Set) cAttr.getValue());
-					String html = "";
-					if ((null != v) && (!(v.isEmpty()))) {
-			    		for (Iterator iter = v.iterator(); iter.hasNext();) {
-		    				Attachment attach = ((Attachment) iter.next());
-			    			if (null != attach) {
-								String webPath  = WebUrlUtil.getServletRootURL(request);
-								String fileName = attach.toString();
-								String path     = WebUrlUtil.getFileUrl(webPath, WebKeys.ACTION_READ_FILE, attach.getOwner().getEntity(), fileName);
-								if (SsfsUtil.supportsViewAsHtml(fileName)) {
-									path = WebUrlUtil.getFileHtmlUrl(request, WebKeys.ACTION_VIEW_FILE, attach.getOwner().getEntity(), fileName);
-								}
-								if (!(html.equals(""))) {
-									html = (html + "<br/>");
-								}
-								html = (html + "<a target=\"_blank\" href=\"" + path + "\">" + fileName + "</a>");
-			    			}
+		} else if ("file".equals(attrType)) {
+			if (cAttr.getValueType() == CustomAttribute.SET || cAttr.getValueType() == CustomAttribute.ORDEREDSET) {
+				Set v = (Set) cAttr.getValue();
+				String html = "";
+				if (v != null && !v.isEmpty()) {
+		    		for (Iterator iter=v.iterator(); iter.hasNext();) {
+	    				Attachment attach = (Attachment) iter.next();
+		    			if (attach !=  null) {
+							String webPath;
+							String path;
+							String fileName;
+							
+							webPath = WebUrlUtil.getServletRootURL(request);
+							fileName = attach.toString();
+							path = WebUrlUtil.getFileUrl(webPath, WebKeys.ACTION_READ_FILE, attach.getOwner().getEntity(), fileName);
+							if (SsfsUtil.supportsViewAsHtml(fileName)) {
+								path = WebUrlUtil.getFileHtmlUrl(request, WebKeys.ACTION_VIEW_FILE, attach.getOwner().getEntity(), fileName);
+							}
+							if (!html.equals("")) html = html + "<br/>";
+							html = html + "<a target=\"_blank\" href=\"" + path + "\">" + fileName + "</a>";
 		    			}
-		    		}
-		    		pAttr.setValue(html);
-				}
+	    			}
+	    		}
+	    		pAttr.setValue(html);
 			}
-			
-			else if ("graphic".equals(attrType)) {
-				if (cAttr.getValueType() == CustomAttribute.SET || cAttr.getValueType() == CustomAttribute.ORDEREDSET) {
-					String html = "";
-					Set v = ((Set) cAttr.getValue());
-					if ((null != v) && (!(v.isEmpty()))) {
-			    		for (Iterator iter = v.iterator(); iter.hasNext();) {
-		    				Attachment attach = ((Attachment) iter.next());
-			    			if (null != attach) {
-								String webPath  = WebUrlUtil.getServletRootURL(request);
-								String fileName = attach.toString();
-								String path     = WebUrlUtil.getFileUrl(webPath, WebKeys.ACTION_READ_FILE, attach.getOwner().getEntity(), fileName);
-								html = (html + "<img src=\"" + path + "\"/>");
-			    			}
+		} else if ("graphic".equals(attrType)) {
+			if (cAttr.getValueType() == CustomAttribute.SET || cAttr.getValueType() == CustomAttribute.ORDEREDSET) {
+				String html = "";
+				Set v = (Set) cAttr.getValue();
+				if (v != null && !v.isEmpty()) {
+		    		for (Iterator iter=v.iterator(); iter.hasNext();) {
+	    				Attachment attach = (Attachment) iter.next();
+		    			if (attach !=  null) {
+							String webPath;
+							String path;
+							String fileName;
+							
+							webPath = WebUrlUtil.getServletRootURL(request);
+							fileName = attach.toString();
+							path = WebUrlUtil.getFileUrl(webPath, WebKeys.ACTION_READ_FILE, attach.getOwner().getEntity(), fileName);
+							html = html + "<img src=\"" + path + "\"/>";
 		    			}
-		    		}
-		    		pAttr.setValue(html);
-				}
+	    			}
+	    		}
+	    		pAttr.setValue(html);
 			}
-			
-			else {
-				processed = false;
-			}
-	
-			// If the attribute hasn't been processed yet, do it by
-			// value type.
-			if (!processed) {
-				if (null != cAttr) {
-				    switch(cAttr.getValueType()) {
-		    			case CustomAttribute.STRING:
-		    			case CustomAttribute.BOOLEAN:
-		    			case CustomAttribute.LONG:
-		    				pAttr.setValue(cAttr.getValue());
-			    			break;
-			    			
-		    			case CustomAttribute.DATE:
-		    				Date date = ((Date) cAttr.getValue());
-		    				DateFormat df = DateFormat.getDateInstance(DateFormat.LONG, user.getLocale());
-		    				pAttr.setValue(df.format(date));
-		    				break;
-		    				
-			    		case CustomAttribute.ORDEREDSET:
-			    		case CustomAttribute.SET:	
-			    			Set v = ((Set) cAttr.getValue());
-			    			if ((null != v) && (!(v.isEmpty()))) {
-			    				ArrayList  pvList = new ArrayList<ProfileAttributeListElement>();
-			    	    		for (Iterator iter = v.iterator(); iter.hasNext();) {
-			    	    			Object nextObj = iter.next();
-			    	    			if (null == nextObj) {
-			    	    				continue;
-			    	    			}
-			    	    			
-			    	    			if (nextObj instanceof Attachment) {
-			    	    				Attachment attach = ((Attachment) nextObj);
-		    		    				if (name.equals("picture") && (attach instanceof FileAttachment)) {
-			    							String webPath  = WebUrlUtil.getServletRootURL(request);
-			    							String fileName = attach.toString();
-			    							String path     = WebUrlUtil.getFileUrl(webPath, WebKeys.ACTION_READ_FILE, attach.getOwner().getEntity(), fileName);
+		} else {
+			processed = false;
+		}
+
+		//If the attribute hasn't been processed yet, do it by value type
+		if (!processed) {
+			if (cAttr != null) {
+			    switch(cAttr.getValueType()) {
+	    			case CustomAttribute.STRING:
+	    			case CustomAttribute.BOOLEAN:
+	    			case CustomAttribute.LONG:
+	    				pAttr.setValue(cAttr.getValue());
+		    			break;
+	    			case CustomAttribute.DATE:
+	    				Date date = (Date)cAttr.getValue();
+	    				DateFormat df = DateFormat.getDateInstance(DateFormat.LONG, user.getLocale());
+	    				pAttr.setValue(df.format(date));
+	    				break;
+		    		case CustomAttribute.ORDEREDSET:
+		    		case CustomAttribute.SET:	
+		    			Set v = (Set) cAttr.getValue();
+		    			if(v != null && !v.isEmpty()){
+		    				ArrayList  pvList = new ArrayList<ProfileAttributeListElement>();
+		    	    		for (Iterator iter=v.iterator(); iter.hasNext();) {
+		    	    			
+		    	    			Object nextObj = iter.next();
+		    	    			if(nextObj == null) {
+		    	    				continue;
+		    	    			}
+		    	    			
+		    	    			if(nextObj instanceof Attachment){
+		    	    				Attachment attach = (Attachment) nextObj;
+		    		    			if(attach !=  null){
+		    		    				
+		    		    				ProfileAttributeListElement pAtrLE;
+		    		    				ProfileAttributeAttachment pAttach;
+		    		    				
+		    		    				if(name.equals("picture") && (attach instanceof FileAttachment)){
+			    							String webPath;
+			    							String path;
+			    							String scaledPath;
+			    							String fileName;
 			    							
-			    							// Check if null, this will guarantee we use the
-			    							// first picture we come across.
-			    							if (null != profile) {
-			    								if (Validator.isNull(profile.getPictureUrl())) {
+			    							webPath = WebUrlUtil.getServletRootURL(request);
+			    							fileName = attach.toString();
+			    							path = WebUrlUtil.getFileUrl(webPath, WebKeys.ACTION_READ_FILE, attach.getOwner().getEntity(), fileName);
+			    							scaledPath = WebUrlUtil.getFileUrl(webPath, WebKeys.ACTION_READ_SCALED, attach.getOwner().getEntity(), fileName);
+			    							
+			    							//Check if null, this will guarantee we use the first picture we come across
+			    							if(profile != null) {
+			    								if (Validator.isNull(profile.getPictureUrl())){
 			    									profile.addPictureUrl(path);
 			    								}
-			    								
-			    								if (Validator.isNull(profile.getPictureScaledUrl())) {
-			    									profile.addPictureScaledUrl(
-			    										WebUrlUtil.getFileUrl(
-			    											webPath,
-			    											WebKeys.ACTION_READ_SCALED,
-			    											attach.getOwner().getEntity(),
-			    											fileName));
+			    								if (Validator.isNull(profile.getPictureScaledUrl())){
+			    									profile.addPictureScaledUrl(scaledPath);
 			    								}
 			    							}
 			    							
-			    							// Create a new Profile Attribute to convert the data
-			    							// to...
-			    		    				ProfileAttributeListElement pAtrLE  = new ProfileAttributeListElement(name, pAttr);
-			    		    				ProfileAttributeAttachment  pAttach = new ProfileAttributeAttachment(fileName, attach.getId(), path);
-				    		    				
-			    		    				// ...and add it to the linked list.
-							    			pAtrLE.setValue(pAttach);
-			    		    				pvList.add(pAtrLE);
-			    		    			}
-			    	    			}
-			    	    			
-			    	    			else if (nextObj instanceof CustomAttributeListElement) {
-						    			// Create a new Profile Attribute to convert the data to...
-					    				CustomAttributeListElement cAtrLE = (CustomAttributeListElement) v.iterator().next();
-					    				ProfileAttributeListElement pAtrLE = new ProfileAttributeListElement(name, pAttr);
-					    				
-						    			// ...get this attribute lists elements...
-					    				convertCustomAttrToProfileAttr(request, u, cAtrLE, pAtrLE , name, profile);
-					    				
-				    	    			// ...and add it to the linked list.
-					    				pvList.add(((ProfileAttributeListElement)iter.next()).getValue());
-			    	    			}
-
-			    	    			// If we were only asked for the first value...
-	    		    				if (firstValueOnly) {
-	    		    					// ...break when we've processed it.
-	    		    					break;
-	    		    				}
-			    	    		}
-
-			    	    		// Add the list to the attribute.
-			    	    		pAttr.setValue(pvList);
-			    			}
-			    			break;
-			    			
-			    		case CustomAttribute.ATTACHMENT:
-			    			Attachment attach = ((Attachment) cAttr.getValue());
-			    			if (null != attach) {
-			    				ProfileAttributeAttachment pAttach = new ProfileAttributeAttachment(attach.getName(), attach.getId(), attach.toString());
-			    				pAttr.setValue(pAttach);
-			    			}
-			    			break;
-			    			
-			    		case CustomAttribute.DESCRIPTION:
-			    			Description desc = ((Description) cAttr.getValue());
-			    			String text = MarkupUtil.markupStringReplacement(null, null, request, null, u, desc.getText(), WebKeys.MARKUP_VIEW);
-			    			pAttr.setValue(text);
-			    			break;
-			    			
-			    		default:
-			    			pAttr.setValue(cAttr.getValue());
-			    			break;
-				    }
-			    
-		 	    }
-				
-				else {
-			    	//cAttr is null. There is no value stored for this
-					// attribute. Output the default info for 'no
-					// value'.
+			    							//Create a new Profile Attribute to convert the data to
+						    				pAtrLE = new ProfileAttributeListElement(name, pAttr);
+			    		    				pAttach = new ProfileAttributeAttachment(fileName, attach.getId(), path);
+			    		    				
+		    		    				} else {
+		    		    					//Create a new Profile Attribute to convert the data to
+						    				pAtrLE = new ProfileAttributeListElement(name, pAttr);
+			    		    				pAttach = new ProfileAttributeAttachment(attach.getName(), attach.getId(), attach.toString());
+		    		    				}
+		    		    				
+						    			pAtrLE.setValue(pAttach);
+		    		    				
+		    		    				//then add them to the linked list
+		    		    				pvList.add(pAtrLE);
+		    		    			}
+		    	    			} else if (nextObj instanceof CustomAttributeListElement){
+				    				CustomAttributeListElement cAtrLE = (CustomAttributeListElement) v.iterator().next();
+					    			//Create a new Profile Attribute to convert the data to
+				    				ProfileAttributeListElement pAtrLE = new ProfileAttributeListElement(name, pAttr);
+					    			//then get this attribute lists elements
+				    				convertCustomAttrToProfileAttr(request, u, cAtrLE, pAtrLE , name, profile);
+			    	    			//then add them to the linked list
+				    				pvList.add(((ProfileAttributeListElement)iter.next()).getValue());
+		    	    			}
+		    	    		}
+		    	    		
+		    	    		pAttr.setValue(pvList);
+		    			}
+		    			break;
+		    		case CustomAttribute.ATTACHMENT:
+		    			Attachment attach = (Attachment) cAttr.getValue();
+		    			if(attach !=  null){
+		    				ProfileAttributeAttachment pAttach = new ProfileAttributeAttachment(attach.getName(), attach.getId(), attach.toString());
+		    				pAttr.setValue(pAttach);
+		    			}
+		    			break;
+		    		case CustomAttribute.DESCRIPTION:
+		    			Description desc = (Description) cAttr.getValue();
+		    			String text = MarkupUtil.markupStringReplacement(null, null, request, null, u, desc.getText(), WebKeys.MARKUP_VIEW);
+		    			pAttr.setValue(text);
+		    			break;
+		    		default:
+		    			pAttr.setValue(cAttr.getValue());
+		    			break;
 			    }
-			}
-			
-		    String caption = DefinitionHelper.findCaptionForAttribute(name, defDoc);
-		    pAttr.setTitle(NLT.getDef(caption));
+		    
+	 	    } else {
+		    	//cAttr is null. There is no value stored for this attribute. Output the default info for "no value"
+		    }
 		}
-		
-		finally {
-			SimpleProfiler.stop("GwtProfileHelper.convertCustomAttrToProfileAttr()");
-		}
-	}
-	
-	private static void convertCustomAttrToProfileAttr(HttpServletRequest request, User u, CustomAttribute cAttr, ProfileAttribute pAttr, String name, ProfileInfo profile) {
-		// Always use the initial form of the method.
-		convertCustomAttrToProfileAttr(request, u, cAttr, pAttr, name, profile, false);
+	    String caption = DefinitionHelper.findCaptionForAttribute(name, defDoc);
+	    pAttr.setTitle(NLT.getDef(caption));
+	    
+	    //continue to the next value
+	    return;
 	}
 
 	/**
@@ -1083,7 +997,6 @@ public class GwtProfileHelper {
 					user.setUserId( principal.getId() );
 					user.setName( principal.getName() );
 					user.setTitle( Utils.getUserTitle(principal) );
-					user.setEmail( principal.getEmailAddress() );
 					
 					if ( binder != null )
 					{

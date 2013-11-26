@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -50,7 +50,6 @@ public class FolderEntryCookies {
 	public enum Cookie {
 		COMMENTS_VISIBLE,
 		DESCRIPTION_VISIBLE,
-		SIDEBAR_VISIBLE,
 		
 		UNDEFINED;
 		
@@ -89,32 +88,23 @@ public class FolderEntryCookies {
 	 * Returns the boolean value for a cookie.
 	 * 
 	 * @param cookie
-	 * @param cookieName
+	 * @param eid
 	 * @param defaultValue
 	 * 
 	 * @return
 	 */
-	public static boolean getBooleanCookieValue(Cookie cookie, String cookieName, boolean defaultValue) {
+	public static boolean getBooleanCookieValue(Cookie cookie, EntityId eid, boolean defaultValue) {
 		if (!(isCookiesEnabled())) {
 			return defaultValue;
 		}
 		
+		String cookieName  = cookie.getCookieName(eid);
 		String cookieValue = Cookies.getCookie(cookieName);
 		if (!(GwtClientHelper.hasString(cookieValue))) {
 			return defaultValue;
 		}
 		
 		return Boolean.valueOf(cookieValue);
-	}
-	
-	public static boolean getBooleanCookieValue(Cookie cookie, EntityId eid, boolean defaultValue) {
-		// Always use the initial form of the method.
-		return getBooleanCookieValue(cookie, cookie.getCookieName(eid), defaultValue);
-	}
-
-	public static boolean getBooleanCookieValue(Cookie cookie, boolean defaultValue) {
-		// Always use the initial form of the method.
-		return getBooleanCookieValue(cookie, cookie.name(), defaultValue);
 	}
 
 	/**
@@ -130,48 +120,28 @@ public class FolderEntryCookies {
 	 * Stores a boolean value for a cookie.
 	 * 
 	 * @param cookie
-	 * @param cookieName
+	 * @param eid
 	 * @param cookieValue
 	 */
-	public static void setBooleanCookieValue(Cookie cookie, String cookieName, boolean cookieValue) {
+	public static void setBooleanCookieValue(Cookie cookie, EntityId eid, boolean cookieValue) {
 		// If cookies are enabled...
 		if (isCookiesEnabled()) {
 			// ...store the value for this one.
-			Cookies.setCookie(cookieName, String.valueOf(cookieValue));
+			Cookies.setCookie(cookie.getCookieName(eid), String.valueOf(cookieValue));
 		}
-	}
-	
-	public static void setBooleanCookieValue(Cookie cookie, EntityId eid, boolean cookieValue) {
-		// Always use the initial form of the method.
-		setBooleanCookieValue(cookie, cookie.getCookieName(eid), cookieValue);
-	}
-	
-	public static void setBooleanCookieValue(Cookie cookie, boolean cookieValue) {
-		// Always use the initial form of the method.
-		setBooleanCookieValue(cookie, cookie.name(), cookieValue);
 	}
 	
 	/**
 	 * Removes a cookie value for a cookie.
 	 * 
 	 * @param cookie
-	 * @param cookieName
+	 * @param eid
 	 */
-	public static void removeCookieValue(Cookie cookie, String cookieName) {
+	public static void removeCookieValue(Cookie cookie, EntityId eid) {
 		// If cookies are enabled...
 		if (isCookiesEnabled()) {
 			// ...remove the value for this one.
-			Cookies.removeCookie(cookieName);
+			Cookies.removeCookie(cookie.getCookieName(eid));
 		}
-	}
-	
-	public static void removeCookieValue(Cookie cookie, EntityId eid) {
-		// Always use the initial form of the method.
-		removeCookieValue(cookie, cookie.getCookieName(eid));
-	}
-	
-	public static void removeCookieValue(Cookie cookie) {
-		// Always use the initial form of the method.
-		removeCookieValue(cookie, cookie.name());
 	}
 }

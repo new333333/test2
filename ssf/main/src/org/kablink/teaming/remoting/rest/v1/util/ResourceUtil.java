@@ -56,13 +56,9 @@ import org.kablink.teaming.rest.v1.model.User;
 import org.kablink.teaming.rest.v1.model.Workspace;
 import org.kablink.teaming.rest.v1.model.ZoneConfig;
 import org.kablink.teaming.security.function.WorkAreaOperation;
-import org.kablink.teaming.ssfs.util.SsfsUtil;
 import org.kablink.teaming.util.InvokeUtil;
 import org.kablink.teaming.util.ObjectPropertyNotFoundException;
-import org.kablink.teaming.util.PrincipalDesktopAppsConfig;
-import org.kablink.teaming.util.PrincipalMobileAppsConfig;
 import org.kablink.teaming.util.SpringContextUtil;
-import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.PermaLinkUtil;
 import org.dom4j.Element;
 import org.kablink.util.Validator;
@@ -353,8 +349,7 @@ public class ResourceUtil {
         return model;
     }
 
-    public static ZoneConfig buildZoneConfig(org.kablink.teaming.domain.ZoneConfig config, ZoneInfo zoneInfo,
-                                             PrincipalMobileAppsConfig userMobileAppsConfig, PrincipalDesktopAppsConfig userDesktopAppsConfig) {
+    public static ZoneConfig buildZoneConfig(org.kablink.teaming.domain.ZoneConfig config, ZoneInfo zoneInfo, UserProperties userProperties) {
         ZoneConfig modelConfig = new ZoneConfig();
         modelConfig.setId(config.getZoneId());
         if (zoneInfo!=null) {
@@ -375,101 +370,49 @@ public class ResourceUtil {
         modelConfig.setFileSizeLimitUserDefault(config.getFileSizeLimitUserDefault());
         modelConfig.setFileVersionsMaxAge(config.getFileVersionsMaxAge());
 
-        DesktopAppConfig desktopAppConfig = buildDesktopAppConfig(config);
-        overrideDesktopAppConfig(desktopAppConfig, userDesktopAppsConfig);
-        modelConfig.setDesktopAppConfig(desktopAppConfig);
-
-        MobileAppConfig mobileAppConfig = buildMobileAppConfig(config.getMobileAppsConfig());
-        overrideMobileAppConfig(mobileAppConfig, userMobileAppsConfig);
-        modelConfig.setMobileAppConfig(mobileAppConfig);
-
-        return modelConfig;
-    }
-
-    private static DesktopAppConfig buildDesktopAppConfig(org.kablink.teaming.domain.ZoneConfig config) {
         DesktopAppConfig desktopAppConfig = new DesktopAppConfig();
         desktopAppConfig.setAutoUpdateUrl(config.getFsaAutoUpdateUrl());
         desktopAppConfig.setEnabled(config.getFsaEnabled());
         desktopAppConfig.setSyncInterval(config.getFsaSynchInterval());
         desktopAppConfig.setMaxFileSize(((long)config.getFsaMaxFileSize()) * 1024 * 1024);
         desktopAppConfig.setAllowCachedPassword(config.getFsaAllowCachePwd());
-        return desktopAppConfig;
-    }
+        modelConfig.setDesktopAppConfig(desktopAppConfig);
 
-    private static void overrideDesktopAppConfig(DesktopAppConfig desktopAppConfig, PrincipalDesktopAppsConfig config) {
-        if (config==null || config.getUseDefaultSettings()) {
-            return;
-        }
-        desktopAppConfig.setEnabled(config.getIsFileSyncAppEnabled());
-        desktopAppConfig.setAllowCachedPassword(config.getAllowCachePwd());
-    }
-
-    private static MobileAppConfig buildMobileAppConfig(MobileAppsConfig mac) {
         MobileAppConfig mobileAppConfig = new MobileAppConfig();
+        MobileAppsConfig mac = config.getMobileAppsConfig();
         mobileAppConfig.setAllowCachedContent(mac.getMobileAppsAllowCacheContent());
         mobileAppConfig.setAllowCachedPassword(mac.getMobileAppsAllowCachePwd());
         mobileAppConfig.setAllowPlayWithOtherApps(mac.getMobileAppsAllowPlayWithOtherApps());
         mobileAppConfig.setEnabled(mac.getMobileAppsEnabled());
         mobileAppConfig.setSyncInterval(mac.getMobileAppsSyncInterval());
-        mobileAppConfig.setAllowCutCopy(mac.getMobileCutCopyEnabled());
-        mobileAppConfig.setAllowRootedDevices(mac.getMobileDisableOnRootedOrJailBrokenDevices());
-        mobileAppConfig.setAllowScreenCapture(mac.getMobileAndroidScreenCaptureEnabled());
-        MobileAppConfig.OpenInApps openIn = toModelEnum(mac.getMobileOpenIn());
-        mobileAppConfig.setAllowedOpenInApps(openIn.name());
-        if (openIn == MobileAppConfig.OpenInApps.selected) {
-            MobileOpenInWhiteLists whiteLists = mac.getMobileOpenInWhiteLists();
-            if (whiteLists!=null && whiteLists.getAndroidApplications()!=null) {
-                mobileAppConfig.setAndroidAppWhiteList(new ArrayList<String>(whiteLists.getAndroidApplications()));
-            } else {
-                mobileAppConfig.setAndroidAppWhiteList(new ArrayList<String>(0));
-            }
-            if (whiteLists!=null && whiteLists.getIosApplications()!=null) {
-                mobileAppConfig.setiOSAppWhiteList(new ArrayList<String>(whiteLists.getIosApplications()));
-            } else {
-                mobileAppConfig.setiOSAppWhiteList(new ArrayList<String>(0));
-            }
-        }
-        return mobileAppConfig;
-    }
+        modelConfig.setMobileAppConfig(mobileAppConfig);
 
-    private static void overrideMobileAppConfig(MobileAppConfig mobileAppConfig, PrincipalMobileAppsConfig mac) {
-        if (mac==null || mac.getUseDefaultSettings()) {
-            return;
+        Boolean value = userProperties.getBooleanProperty( ObjectKeys.USER_PROPERTY_MOBILE_APPS_ACCESS_FILR );
+        if (value != null) {
+            modelConfig.getMobileAppConfig().setEnabled(value);
         }
-        mobileAppConfig.setAllowCachedContent(mac.getAllowCacheContent());
-        mobileAppConfig.setAllowCachedPassword(mac.getAllowCachePwd());
-        mobileAppConfig.setAllowPlayWithOtherApps(mac.getAllowPlayWithOtherApps());
-        mobileAppConfig.setEnabled(mac.getMobileAppsEnabled());
-        mobileAppConfig.setAllowCutCopy(mac.getMobileCutCopyEnabled());
-        mobileAppConfig.setAllowRootedDevices(mac.getMobileDisableOnRootedOrJailBrokenDevices());
-        mobileAppConfig.setAllowScreenCapture(mac.getMobileAndroidScreenCaptureEnabled());
-        MobileAppConfig.OpenInApps openIn = toModelEnum(mac.getMobileOpenIn());
-        mobileAppConfig.setAllowedOpenInApps(openIn.name());
-        if (openIn == MobileAppConfig.OpenInApps.selected) {
-            if (mac.getAndroidApplications()!=null) {
-                mobileAppConfig.setAndroidAppWhiteList(new ArrayList<String>(mac.getAndroidApplications()));
-            } else {
-                mobileAppConfig.setAndroidAppWhiteList(new ArrayList<String>(0));
-            }
-            if (mac.getIosApplications()!=null) {
-                mobileAppConfig.setiOSAppWhiteList(new ArrayList<String>(mac.getIosApplications()));
-            } else {
-                mobileAppConfig.setiOSAppWhiteList(new ArrayList<String>(0));
-            }
-        } else {
-            mobileAppConfig.setiOSAppWhiteList(null);
-            mobileAppConfig.setAndroidAppWhiteList(null);
+        value = userProperties.getBooleanProperty( ObjectKeys.USER_PROPERTY_MOBILE_APPS_CACHE_CONTENT);
+        if (value != null) {
+            modelConfig.getMobileAppConfig().setAllowCachedContent(value);
         }
-    }
+        value = userProperties.getBooleanProperty( ObjectKeys.USER_PROPERTY_MOBILE_APPS_CACHE_PWD);
+        if (value != null) {
+            modelConfig.getMobileAppConfig().setAllowCachedPassword(value);
+        }
+        value = userProperties.getBooleanProperty( ObjectKeys.USER_PROPERTY_MOBILE_APPS_PLAY_WITH_OTHER_APPS);
+        if (value != null) {
+            modelConfig.getMobileAppConfig().setAllowPlayWithOtherApps(value);
+        }
 
-    private static MobileAppConfig.OpenInApps toModelEnum(MobileAppsConfig.MobileOpenInSetting openIn) {
-        if (openIn==null || openIn==MobileAppsConfig.MobileOpenInSetting.ALL_APPLICATIONS) {
-            return MobileAppConfig.OpenInApps.all;
+        value = userProperties.getBooleanProperty( ObjectKeys.USER_PROPERTY_DESKTOP_APP_ACCESS_FILR );
+        if (value != null) {
+            modelConfig.getDesktopAppConfig().setEnabled(value);
         }
-        if (openIn==MobileAppsConfig.MobileOpenInSetting.WHITE_LIST) {
-            return MobileAppConfig.OpenInApps.selected;
+        value = userProperties.getBooleanProperty( ObjectKeys.USER_PROPERTY_DESKTOP_APP_CACHE_PWD );
+        if (value != null) {
+            modelConfig.getDesktopAppConfig().setAllowCachedPassword(value);
         }
-        return MobileAppConfig.OpenInApps.none;
+        return modelConfig;
     }
 
 	public static FileVersionProperties fileVersionFromFileAttachment(VersionAttachment va) {
@@ -820,7 +763,7 @@ public class ResourceUtil {
    		return definitionModule;
    	}
 
-    public static Share buildShare(ShareItem shareItem, org.kablink.teaming.domain.DefinableEntity sharedEntity, ShareRecipient recipient) {
+    public static Share buildShare(ShareItem shareItem, ShareRecipient recipient) {
         Share model = new Share();
         model.setComment(shareItem.getComment());
         model.setSharer(new LongIdLinkPair(shareItem.getSharerId(), LinkUriUtil.getUserLinkUri(shareItem.getSharerId())));
@@ -849,15 +792,6 @@ public class ResourceUtil {
         model.setCanShare(sharing.getPublic() || sharing.getExternal() || sharing.getInternal());
 
         model.setLink(LinkUriUtil.getShareLinkUri(model.getId()));
-
-        if (model.getRecipient().getType().equals(ShareRecipient.PUBLIC_LINK)) {
-            String fileName = MiscUtil.getPrimaryFileName(sharedEntity);
-            model.addAdditionalPermaLink("download", PermaLinkUtil.getSharedPublicFileDownloadPermalink(shareItem.getId(), shareItem.getPassKey(), fileName));
-            if (SsfsUtil.supportsViewAsHtml(fileName) || MiscUtil.isPdf(fileName)) {
-                model.addAdditionalPermaLink("view", PermaLinkUtil.getSharedPublicFileViewPermalink(shareItem.getId(), shareItem.getPassKey(), fileName));
-            }
-        }
-
         return model;
     }
 
@@ -878,21 +812,21 @@ public class ResourceUtil {
     public static SharedBinderBrief buildSharedBinderBrief(ShareItem shareItem, ShareRecipient recipient, org.kablink.teaming.domain.Binder binder) {
         SharedBinderBrief model = new SharedBinderBrief();
         populateBinderBrief(model, binder);
-        model.addShare(buildShare(shareItem, binder, recipient));
+        model.addShare(buildShare(shareItem, recipient));
         return model;
     }
 
     public static SharedFileProperties buildSharedFileProperties(ShareItem shareItem, ShareRecipient recipient, FileAttachment attachment) {
         SharedFileProperties model = new SharedFileProperties();
         populateFileProperties(model, attachment);
-        model.addShare(buildShare(shareItem, attachment.getOwner().getEntity(), recipient));
+        model.addShare(buildShare(shareItem, recipient));
         return model;
     }
 
     public static SharedFolderEntryBrief buildSharedFolderEntryBrief(ShareItem shareItem, ShareRecipient recipient, org.kablink.teaming.domain.FolderEntry entry) {
         SharedFolderEntryBrief model = new SharedFolderEntryBrief();
         populateEntryBrief(model, entry);
-        model.addShare(buildShare(shareItem, entry, recipient));
+        model.addShare(buildShare(shareItem, recipient));
         return model;
     }
 

@@ -219,7 +219,7 @@ if (typeof ss_workarea_showId == "undefined")
 								<c:if test="${!empty ss_reloadUrl}">
 									<div style="text-align: right; ">
 									  <a class="ss_linkButton" 
-									    href="<c:out value="${ss_reloadUrl}" />"><ssf:nlt tag="__return_to" />&nbsp;<ssf:nlt tag="__workspace_view" /></a>
+									    href="<c:out value="${ss_reloadUrl}" />"><ssf:nlt tag="__return_to" /> <ssf:nlt tag="__workspace_view" /></a>
 									</div>
 								</c:if>
 
@@ -228,7 +228,7 @@ if (typeof ss_workarea_showId == "undefined")
 								<c:if test="${!empty ss_reloadUrl && ssTeamMembersCount > 10}">
 									<div style="text-align: right; ">
 									  <a class="ss_linkButton" 
-									    href="<c:out value="${ss_reloadUrl}" />"><ssf:nlt tag="__return_to" />&nbsp;<ssf:nlt tag="__workspace_view" /></a>
+									    href="<c:out value="${ss_reloadUrl}" />"><ssf:nlt tag="__return_to" /> <ssf:nlt tag="__workspace_view" /></a>
 									</div>
 								</c:if>
 								

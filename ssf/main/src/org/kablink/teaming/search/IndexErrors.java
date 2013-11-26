@@ -38,6 +38,10 @@ import java.util.List;
 
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Entry;
+import org.kablink.teaming.domain.FolderEntry;
+import org.kablink.teaming.domain.Principal;
+import org.kablink.teaming.util.NLT;
+
 
 public class IndexErrors implements Serializable {
 	
@@ -45,60 +49,48 @@ public class IndexErrors implements Serializable {
 	
 	private List<Binder> binders;
 	private List<Entry> entries;
-	private List<String> generalErrors;
-	private int errorCount;
+	private Integer errorCount;
 	
 	public IndexErrors() {
-		this.binders = new ArrayList<Binder>();
-		this.entries = new ArrayList<Entry>();
-		this.generalErrors = new ArrayList<String>();
-		this.errorCount = 0;
+		this.binders = new ArrayList();
+		this.entries = new ArrayList();
+		this.errorCount = new Integer(0);
 	}
 	
-	public synchronized void addError(Binder binder) {
+	public void addError(Binder binder) {
 		binders.add(binder);
 		errorCount++;
 	}
 	
-	public synchronized void addError(Entry entry) {
+	public void addError(Entry entry) {
 		entries.add(entry);
 		errorCount++;
 	}
 	
-	public synchronized void addError(String msg) {
-		generalErrors.add(msg);
-		errorCount++;
-	}
-	
-	public synchronized List<Binder> getBinders() {
+	public List<Binder> getBinders() {
 		return binders;
 	}
 	
-	public synchronized List<Entry> getEntries() {
+	public List<Entry> getEntries() {
 		return entries;
 	}
 	
-	public synchronized List<String> getGeneralErrors() {
-		return generalErrors;
-	}
-	
-	public synchronized int getErrorCount() {
+	public Integer getErrorCount() {
 		return errorCount;
 	}
 	
-	public synchronized boolean checkIfErrors() {
+	public boolean checkIfErrors() {
 		if (errorCount == 0) return false;
 		else return true;
 	}
 	
-	public synchronized void add(int count) {
+	public void add(Integer count) {
 		errorCount += count;
 	}
 	
-	public synchronized void add(IndexErrors ie) {
+	public void add(IndexErrors ie) {
 		binders.addAll(ie.getBinders());
 		entries.addAll(ie.getEntries());
-		generalErrors.addAll(ie.getGeneralErrors());
 		add(ie.getErrorCount());
 	}
 }

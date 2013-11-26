@@ -93,7 +93,6 @@ import org.kablink.teaming.security.function.WorkAreaFunctionMembership;
 import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SZoneConfig;
-import org.kablink.teaming.util.SimpleProfiler;
 import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.util.DashboardHelper;
 import org.kablink.util.GetterUtil;
@@ -325,11 +324,6 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 				 throw new IllegalArgumentException(NLT.get("general.required.name"));
 			 }
 		}
-		Long entrySourceBinderId = null;
-		if (updates.containsKey(ObjectKeys.FIELD_TEMPLATE_ENTRY_SOURCE_BINDER_ID)) {
-			entrySourceBinderId = (Long)updates.get(ObjectKeys.FIELD_TEMPLATE_ENTRY_SOURCE_BINDER_ID);
-		}
-		template.setTemplateEntrySourceBinderId(entrySourceBinderId);
 		if (localBinderParent != null) {
 			//This is a local template. Store the parent binder id
 			template.setTemplateOwningBinderId(localBinderParent.getId());
@@ -639,11 +633,6 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 		if (updates.containsKey(ObjectKeys.FIELD_TEMPLATE_DESCRIPTION)) {
 			config.setTemplateDescription((Description)updates.get(ObjectKeys.FIELD_TEMPLATE_DESCRIPTION));
 		}
-		if (updates.containsKey(ObjectKeys.FIELD_TEMPLATE_ENTRY_SOURCE_BINDER_ID)) {
-			config.setTemplateEntrySourceBinderId((Long)updates.get(ObjectKeys.FIELD_TEMPLATE_ENTRY_SOURCE_BINDER_ID));
-		} else {
-			config.setTemplateEntrySourceBinderId(null);
-		}
 
 		ObjectBuilder.updateObject(config, updates);
 	}
@@ -798,43 +787,28 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 		//The first add is independent of the others.  In this case the transaction is short 
 		//and managed by processors.  
 		
-		SimpleProfiler.start("TemplateModule.addBinder.load");
 		TemplateBinder cfg = getCoreDao().loadTemplate(configId, RequestContextHolder.getRequestContext().getZoneId());
 		Binder parent = getCoreDao().loadBinder(parentBinderId, RequestContextHolder.getRequestContext().getZoneId());
-		SimpleProfiler.stop("TemplateModule.addBinder.load");
-		
 		Map ctx = new HashMap();
 		if(options != null)
 			ctx.putAll(options);
 		//force a lock so contention on the sortKey is reduced
 		ctx.put(ObjectKeys.INPUT_OPTION_FORCE_LOCK, Boolean.TRUE);
-		
-		SimpleProfiler.start("TemplateModule.addBinder.internal");
 		final Binder top = addBinderInternal(cfg, parent, title, name, overrideInputData, ctx);
-		SimpleProfiler.stop("TemplateModule.addBinder.internal");
-
 		ctx.put(ObjectKeys.INPUT_OPTION_NO_INDEX, Boolean.TRUE); //don't bother indexing, until copyBinderAttributes done
 		if (top != null) {
 			//now that we have registered the sortKey in the parent binder, we use a longer transaction to complete 
 			//it - there shouldn't be any contention here since the binder is new and doesn't need to reference its parent
-			SimpleProfiler.start("TemplateModule.addBinder.trans");
 			getTransactionTemplate().execute(new TransactionCallback() {
 				public Object doInTransaction(TransactionStatus status) {
 			        //need to reload in case addFolder/workspace used retry loop where session cache is flushed by exception
-					SimpleProfiler.start("TemplateModule.addBinder.part2");
 			        TemplateBinder cfg = getCoreDao().loadTemplate(configId, RequestContextHolder.getRequestContext().getZoneId());
 					addBinderPart2(cfg, top);
-					SimpleProfiler.stop("TemplateModule.addBinder.part2");
 					return null;
 				}
 			});
-			SimpleProfiler.stop("TemplateModule.addBinder.trans");
 		}
-		
-		SimpleProfiler.start("TemplateModule.addBinder.indexapply");
 		IndexSynchronizationManager.applyChanges(); //get them committed, binders are
-		SimpleProfiler.stop("TemplateModule.addBinder.indexapply");
-
 		return top;
 
 	}
@@ -866,12 +840,6 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 		   copyBinderAttributes(cfg, binder);
 		   //first flush updates, addBinder might do a refresh which overwrites changes
 		   getCoreDao().flush();
-		   
-		   //Now see if there is content to be added to this new binder
-		   if (cfg.getTemplateEntrySourceBinderId() != null) {
-			   folderModule.copyFolderEntries(cfg.getTemplateEntrySourceBinderId(), binder.getId());
-			   getCoreDao().flush();
-		   }
 		   List<TemplateBinder> children = cfg.getBinders();   
 		   Map ctx = new HashMap();
 		   ctx.put(ObjectKeys.INPUT_OPTION_NO_INDEX, Boolean.TRUE); //don't bother indexing, until copyBinderAttributes done

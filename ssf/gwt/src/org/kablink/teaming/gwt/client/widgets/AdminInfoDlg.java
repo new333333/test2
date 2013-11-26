@@ -39,7 +39,6 @@ import org.kablink.teaming.gwt.client.GwtMainPage;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.admin.GwtEnterProxyCredentialsTask;
 import org.kablink.teaming.gwt.client.admin.GwtFilrAdminTask;
-import org.kablink.teaming.gwt.client.admin.GwtSelectNetFolderServerTypeTask;
 import org.kablink.teaming.gwt.client.admin.GwtUpgradeInfo;
 
 import com.google.gwt.core.client.GWT;
@@ -303,25 +302,6 @@ public class AdminInfoDlg extends DlgBox
 						
 						tmpTask = (GwtEnterProxyCredentialsTask) nextTask;
 						txt = GwtTeaming.getMessages().adminInfoDlgEnterProxyCredentials( tmpTask.getServerName() );
-						label = new InlineLabel( " " + txt );
-						panel.add( label );
-
-						liElement = Document.get().createLIElement();
-						liElement.getStyle().setMarginBottom( 8, Unit.PX );
-						liElement.setInnerHTML( panel.getElement().getInnerHTML() );
-						
-						uList.appendChild( liElement );
-					}
-					else if ( nextTask instanceof GwtSelectNetFolderServerTypeTask )
-					{
-						GwtSelectNetFolderServerTypeTask tmpTask;
-						LIElement liElement;
-						String txt;
-						
-						panel = new FlowPanel();
-						
-						tmpTask = (GwtSelectNetFolderServerTypeTask) nextTask;
-						txt = GwtTeaming.getMessages().adminInfoDlgSelectNetFolderServerType( tmpTask.getServerName() );
 						label = new InlineLabel( " " + txt );
 						panel.add( label );
 

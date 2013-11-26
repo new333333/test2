@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2009 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -35,10 +35,9 @@ package org.kablink.teaming.domain;
 import org.kablink.teaming.util.SPropsUtil;
 
 /**
- * Component of zoneConfig that holds the settings for mobile
- * applications.
- * 
+ * Component of zoneConfig that holds the settings for mobile apps
  * @author jwootton
+ *
  */
 public class MobileAppsConfig
 {
@@ -47,51 +46,12 @@ public class MobileAppsConfig
 	private Boolean mobileAppsAllowCacheContent;
 	private Boolean mobileAppsAllowPlayWithOtherApps;
 	private Integer mobileAppsSyncInterval;
-
-	// The following are the data members for the Mobile Application
-	// Management (MAM) settings.
-    private Boolean					mobileCutCopyEnabled;						//
-    private Boolean					mobileAndroidScreenCaptureEnabled;			//
-    private Boolean					mobileDisableOnRootedOrJailBrokenDevices;	//
-    private Integer					mobileOpenIn;								//
-    private MobileOpenInWhiteLists	mobileOpenInWhiteLists;						//
-
-    /**
-     * Enumeration mapping of the Integer stored for mobileOpenIn. 
-     * 
-     * Note:  The ordinal numbers for these MUST MATCH EXACTLY
-     * those defined in GwtMobileOpenInSetting.
-     */
-    public enum MobileOpenInSetting
-    {
-    	DISABLED,
-    	ALL_APPLICATIONS,
-    	WHITE_LIST;
-
-    	/**
-    	 * Returns a MobileOpenInSetting mapped from an integer.
-    	 * 
-    	 * @param setting
-    	 * 
-    	 * @return
-    	 */
-    	public static MobileOpenInSetting valueOf( int setting )
-    	{
-    		MobileOpenInSetting reply;
-    		if      ( DISABLED.ordinal()   == setting ) reply = MobileOpenInSetting.DISABLED;
-    		else if ( WHITE_LIST.ordinal() == setting ) reply = MobileOpenInSetting.WHITE_LIST;
-    		else                                        reply = MobileOpenInSetting.ALL_APPLICATIONS;
-    		return reply;
-    	}
-    }
 	
 	/**
 	 * 
 	 */
 	public MobileAppsConfig()
 	{
-		super();
-		this.mobileOpenInWhiteLists = new MobileOpenInWhiteLists();
 	}
 
 	/**
@@ -188,67 +148,4 @@ public class MobileAppsConfig
 	{
 		mobileAppsSyncInterval = Integer.valueOf( intervalInMinutes );
 	}
-	
-    /**
-     * Get'er methods for the Mobile Application Management (MAM)
-     * settings.
-     * 
-     * @return
-     */
-    public boolean getMobileCutCopyEnabled()
-    {
-		if ( null == mobileCutCopyEnabled )
-		{
-			return SPropsUtil.getBoolean( "mobile.apps.cut.copy.enabled", true );
-		}
-
-    	return this.mobileCutCopyEnabled;
-    }
-    
-    public boolean getMobileAndroidScreenCaptureEnabled()
-    {
-    	if ( null == mobileAndroidScreenCaptureEnabled )
-    	{
-			return SPropsUtil.getBoolean( "mobile.apps.android.screen.capture.enabled", true );
-    	}
-    	
-    	return this.mobileAndroidScreenCaptureEnabled;
-    }
-    
-    public boolean getMobileDisableOnRootedOrJailBrokenDevices()
-    {
-    	if ( null == mobileDisableOnRootedOrJailBrokenDevices )
-    	{
-			return SPropsUtil.getBoolean( "mobile.apps.disable.on.rooted.or.jail.broken.devices", true );
-    	}
-    	
-    	return this.mobileDisableOnRootedOrJailBrokenDevices;
-    }
-    
-    public MobileOpenInSetting getMobileOpenIn()
-    {
-    	if ( null == this.mobileOpenIn )
-    	{
-    		return null;
-    	}
-    	
-    	return MobileOpenInSetting.valueOf( this.mobileOpenIn );
-    }
-    
-    public MobileOpenInWhiteLists getMobileOpenInWhiteLists()
-    {
-    	return this.mobileOpenInWhiteLists;
-    }
-    
-    /**
-     * Set'er methods for the Mobile Application Management (MAM)
-     * settings.
-     * 
-     * @param
-     */
-    public void setMobileCutCopyEnabled(                     boolean                mobileCutCopyEnabled )                     { this.mobileCutCopyEnabled                     = mobileCutCopyEnabled;                                    }
-    public void setMobileAndroidScreenCaptureEnabled(        boolean                mobileAndroidScreenCaptureEnabled )        { this.mobileAndroidScreenCaptureEnabled        = mobileAndroidScreenCaptureEnabled;                       }
-    public void setMobileDisableOnRootedOrJailBrokenDevices( boolean                mobileDisableOnRootedOrJailBrokenDevices ) { this.mobileDisableOnRootedOrJailBrokenDevices = mobileDisableOnRootedOrJailBrokenDevices;                }
-    public void setMobileOpenIn(                             MobileOpenInSetting    mobileOpenIn )                             { this.mobileOpenIn                             = ((null == mobileOpenIn) ? null : mobileOpenIn.ordinal());}
-    public void setMobileOpenInWhiteLists(                   MobileOpenInWhiteLists mobileOpenInWhiteLists )                   { this.mobileOpenInWhiteLists                   = mobileOpenInWhiteLists;                                  }
 }

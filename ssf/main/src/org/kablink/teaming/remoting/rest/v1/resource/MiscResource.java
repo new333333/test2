@@ -51,7 +51,6 @@ import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.domain.ZoneInfo;
-import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.remoting.rest.v1.util.ResourceUtil;
 import org.kablink.teaming.remoting.rest.v1.util.SearchResultBuilderUtil;
 import org.kablink.teaming.remoting.rest.v1.util.UniversalBuilder;
@@ -86,7 +85,6 @@ public class MiscResource extends AbstractResource {
         obj.addAdditionalLink("groups", "/groups");
         obj.addAdditionalLink("library_entities", "/workspaces/" + getWorkspaceModule().getTopWorkspaceId() + "/library_entities");
         obj.addAdditionalLink("net_folders", "/net_folders");
-        obj.addAdditionalLink("principals", "/principals");
         obj.addAdditionalLink("recent_activity", "/workspaces/" + getWorkspaceModule().getTopWorkspaceId() + "/recent_activity");
         obj.addAdditionalLink("release_info", "/release_info");
         obj.addAdditionalLink("self", "/self");
@@ -94,11 +92,9 @@ public class MiscResource extends AbstractResource {
         obj.addAdditionalLink("templates", "/templates");
         obj.addAdditionalLink("users", "/users");
         obj.addAdditionalLink("zone_config", "/zone_config");
-        if (getAdminModule().testAccess(AdminModule.AdminOperation.manageFunction)) {
-            obj.addAdditionalLink("admin", "/admin");
-        }
    		return obj;
    	}
+
 
 	@GET
 	@Path("release_info")
@@ -130,8 +126,7 @@ public class MiscResource extends AbstractResource {
         org.kablink.teaming.domain.ZoneConfig zoneConfig =
       			getZoneModule().getZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
         ZoneInfo info = getZoneModule().getZoneInfo(zoneConfig.getZoneId());
-        return ResourceUtil.buildZoneConfig(zoneConfig, info, getProfileModule().getPrincipalMobileAppsConfig(getLoggedInUserId()),
-                getProfileModule().getPrincipalDesktopAppsConfig(getLoggedInUserId()));
+        return ResourceUtil.buildZoneConfig(zoneConfig, info, getProfileModule().getUserProperties(getLoggedInUserId()));
 	}
 
     @GET

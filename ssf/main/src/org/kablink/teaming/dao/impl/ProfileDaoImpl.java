@@ -63,7 +63,6 @@ import org.kablink.teaming.dao.CoreDao;
 import org.kablink.teaming.dao.KablinkDao;
 import org.kablink.teaming.dao.ProfileDao;
 import org.kablink.teaming.dao.util.FilterControls;
-import org.kablink.teaming.dao.util.GroupSelectSpec;
 import org.kablink.teaming.dao.util.ObjectControls;
 import org.kablink.teaming.dao.util.SFQuery;
 import org.kablink.teaming.dao.util.ShareItemSelectSpec;
@@ -107,6 +106,7 @@ import org.kablink.teaming.util.Constants;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SpringContextUtil;
+import org.kablink.util.StringUtil;
 import org.kablink.util.Validator;
 import org.springframework.dao.DataAccessException;
 import org.springframework.orm.hibernate3.HibernateCallback;
@@ -473,53 +473,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
     	}	        
        	
     }
-
-    /**
-     * Make the necessary updates to the various db tables needed when a user has been renamed.
-     * At this point the user has already been renamed.
-     */
-    @Override
-	public void renameUser( final User user )
-    {
-		long begin = System.nanoTime();
-	
-		try
-		{
-	    	getHibernateTemplate().execute(
-	        	new HibernateCallback()
-	        	{
-	        		@Override
-					public Object doInHibernate( Session session ) throws HibernateException
-					{
-	        			Long workspaceId;
-						
-						workspaceId = user.getWorkspaceId();
-						if ( workspaceId != null )
-						{
-							Query query;
-							String sql;
-
-							sql = "UPDATE org.kablink.teaming.domain.Binder"
-									+ " set name = :newName"
-									+ " where id = :workspaceId";
-		
-							query = session.createQuery( sql )
-					                   	.setString( "newName", user.getName() )
-					                   	.setLong( "workspaceId", workspaceId );
-					        query.executeUpdate();
-						}
-						
-	        			return null;
-	        		}
-	        	}
-	        );
-    	}
-    	finally
-    	{
-    		end( begin, "renameUser( User, String )" );
-    	}	        
-    }
-
+        
     @Override
 	public void disablePrincipals(final Collection<Long> ids, final Long zoneId) {
 		long begin = System.nanoTime();
@@ -543,61 +497,6 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
     	}	        
 
     }
-
-    /**
-     * 
-     */
- 	@Override
-	public List<Group> findGroups( final GroupSelectSpec groupSelectSpec )
-	{
-		long begin = System.nanoTime();
-		try
-		{
-			HibernateCallback callback;
-			
-			callback = new HibernateCallback() 
-            {
-                @Override
-				public Object doInHibernate( Session session ) throws HibernateException
-				{
-                	Criteria crit;
-                	String filter;
-
-                	crit = session.createCriteria( Group.class );
-                	
-                	// We only want groups that have not been deleted
-                	crit.add( Restrictions.eq( ObjectKeys.FIELD_ENTITY_DELETED, Boolean.FALSE  ) );
-                	
-                	// Should we exclude the "all users" group?
-                	if ( groupSelectSpec.getExcludeAllUsersGroup() )
-                		crit.add( Restrictions.ne( ObjectKeys.FIELD_PRINCIPAL_NAME, "allusers" ) );
-                	
-                	// Should we exclude the "all external users group?
-                	if ( groupSelectSpec.getExcludeAllExternalUsersGroup() )
-                		crit.add( Restrictions.ne( ObjectKeys.FIELD_PRINCIPAL_NAME, "allextusers" ) );
-                	
-                	// Don't include "ldap container" groups.
-                	crit.add( Restrictions.isNull( ObjectKeys.FIELD_GROUP_LDAP_CONTAINER ) );
-                	
-                	// Do we have a filter?
-                	filter = groupSelectSpec.getFilter();
-                	if ( filter != null && filter.length() > 0 )
-                		crit.add( Restrictions.ilike( ObjectKeys.FIELD_ENTITY_TITLE, filter, MatchMode.ANYWHERE ) );
-
-                	return crit.list();
-                }
-            };
- 
-	      	List result = (List)getHibernateTemplate().execute( callback );
-	      	
-	      	return result;   	
-    	}
-    	finally 
-    	{
-    		end( begin, "findGroups(ShareItemSelectSpec)");
-    	}	              	
- 	}
-
     //used for login
     @Override
 	public User findUserByName(final String userName, String zoneName) {
@@ -900,36 +799,6 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 	   }	        
 	}
 
- 	@Override
- 	public Long findPrincipalIdByDomainAndSamaccount(final String domainName, final String samaccountName, final Long zoneId) {
- 	   long begin = System.nanoTime();
- 	   try
- 	   {
- 	       Long id = (Long)getHibernateTemplate().execute(
-                 new HibernateCallback()
-                 {
-                     @Override
- 					public Object doInHibernate(Session session) throws HibernateException
-                     {
-                  	   //only returns active principals
-                        // We store names in lower case in the database.
-                   	   return session.getNamedQuery( "find-Principal-id-By-Domain-Sam" )
-                         		.setString( ParameterNames.DOMAIN_NAME, domainName.toLowerCase() )
-                              	.setString( ParameterNames.SAMACCOUNTNAME, samaccountName.toLowerCase() )
-                              	.setLong( ParameterNames.ZONE_ID, zoneId )
-                              	.setCacheable( isPrincipalQueryCacheable() )
-                              	.uniqueResult();
-                     }
-                 }
-              );		
- 	       return id;
- 	   }
- 	   finally
- 	   {
- 		   end(begin, "findPrincipalIdByDomainAndSamaccount(String,String,Long)");
- 	   }	        
- 	}
- 	
  	@Override
 	public Principal findPrincipalByName(final String name, final Long zoneId) 
  		throws NoPrincipalByTheNameException {
@@ -2693,14 +2562,6 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
        	return result;
 	}
 
-	private Set<Long> sharerResultListToList(List<Long> list) {
-      	Set<Long> result = new TreeSet<Long>();
-       	for(Long sharerId : list) {
-       		result.add(sharerId);
-       	}
-       	return result;
-	}
-
 	@Override
  	public Map<ShareItem.RecipientType, Set<Long>> getRecipientIdsWithGrantedRightToSharedEntities(final Collection<EntityIdentifier> sharedEntityIdentifiers, final String rightName) {
 		return getRecipientIdsWithGrantedRightsToSharedEntities(sharedEntityIdentifiers, new String[]{rightName});
@@ -2752,45 +2613,6 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
     	}	              	
 	}
 
-	@Override
- 	public Set<Long> getSharerIdsToSharedEntities(final Collection<EntityIdentifier> sharedEntityIdentifiers) {
-		if(sharedEntityIdentifiers == null || sharedEntityIdentifiers.isEmpty())
-			throw new IllegalArgumentException("shared entity identifiers must be specified");
-		long begin = System.nanoTime();
-		try {
-	      	List<Long> list = (List<Long>)getHibernateTemplate().execute(
-	                new HibernateCallback() {
-	                    @Override
-						public Object doInHibernate(Session session) throws HibernateException {
-	                    	Criteria crit = session.createCriteria(ShareItem.class);
-	                    	crit.setProjection(Projections.projectionList()
-	                    			.add(Projections.property("sharerId")));
-	                    	crit.add(Restrictions.eq("latest", Boolean.TRUE));
-	                    	crit.add(Restrictions.isNull("deletedDate"));
-                    		org.hibernate.criterion.Disjunction disjunction = Restrictions.disjunction();
-                    		disjunction.add(Restrictions.isNull("endDate"));
-                    		disjunction.add(Restrictions.gt("endDate", new Date()));
-                    		crit.add(disjunction);
-	                    	if(sharedEntityIdentifiers.size() > 0) {
-		                    	disjunction = Restrictions.disjunction();
-		                    	for(EntityIdentifier sharedEntityIdentifier:sharedEntityIdentifiers)
-		                    		disjunction.add(Restrictions.conjunction()
-		                    				.add(Restrictions.eq("sharedEntityIdentifier.type", sharedEntityIdentifier.getEntityType().getValue()))
-		                    				.add(Restrictions.eq("sharedEntityIdentifier.entityId", sharedEntityIdentifier.getEntityId())));
-		                    	crit.add(disjunction);
-	                    	}
-	                    	return crit.list();
-	                    }
-	                }
-	            );
-	      	
-	      	return sharerResultListToList(list);
-    	}
-    	finally {
-    		end(begin, "getSharerIdsToSharedEntities(Collection<EntityIdentifier>)");
-    	}	              	
-	}
-
  	@Override
 	public List<ShareItem> findShareItems(final ShareItemSelectSpec selectSpec) {
  		// This method utilizes sub-criteria which requires relationship to be expressed using
@@ -2838,9 +2660,6 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
                                 } else {
                                     crit.add(Restrictions.isNull("deletedDate"));
                                 }
-                            }
-                            if (selectSpec.recipientType != null) {
-                                crit.add(Restrictions.eq("recipientType", selectSpec.recipientType.getValue()));
                             }
 	                    	if(selectSpec.orderByFieldName != null) {
 	                    		if(selectSpec.orderByDescending)

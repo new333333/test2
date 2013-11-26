@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2009 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -42,49 +42,31 @@ import org.kablink.teaming.fi.FIException;
 import org.kablink.teaming.fi.connection.ResourceDriver;
 import org.kablink.teaming.fi.connection.ResourceDriverManager;
 import org.kablink.teaming.fi.connection.ResourceSession;
-import org.kablink.teaming.fi.connection.acl.AclItemPrincipalMappingException;
-import org.kablink.teaming.fi.connection.acl.AclResourceDriver;
-import org.kablink.teaming.fi.connection.acl.AclResourceSession;
+import org.kablink.teaming.fi.connection.ResourceDriverManager.FileOperation;
+import org.kablink.teaming.security.function.WorkAreaOperation;
 
-/**
- * ?
- * 
- * @author ?
- */
+
 public class NullResourceDriverManager implements ResourceDriverManager {
+
 	public List<ResourceDriver> getResourceDrivers() {
 		return new ArrayList<ResourceDriver>();
 	}
 
-	@Override
 	public List<ResourceDriver> getAllowedResourceDrivers() {
 		return new ArrayList<ResourceDriver>();
 	}
-	@Override
 	public List<ResourceDriver> getAllResourceDrivers() {
 		return new ArrayList<ResourceDriver>();
 	}
-	@Override
 	public List<ResourceDriverConfig> getAllResourceDriverConfigs() {
 		return new ArrayList<ResourceDriverConfig>();
 	}
-	@Override
-	public List<ResourceDriverConfig> getAllNetFolderResourceDriverConfigs() {
-		return new ArrayList<ResourceDriverConfig>();
-	}
-	@Override
-	public List<ResourceDriverConfig> getAllCloudFolderResourceDriverConfigs() {
-		return new ArrayList<ResourceDriverConfig>();
-	}
-	@Override
 	public void resetResourceDriverList() {}
 
-	@Override
 	public String normalizedResourcePath(String driverName, String parentResourcePath, String resourceName) throws FIException {
 		return null;
 	}
 
-	@Override
 	public String normalizedResourcePath(String driverName, String resourcePath) throws FIException {
 		return null;
 	}
@@ -93,31 +75,22 @@ public class NullResourceDriverManager implements ResourceDriverManager {
 		return null;
 	}
 
-	@Override
 	public String getName(String driverName, String resourcePath) throws FIException {
 		return null;
 	}
 	
-	@Override
 	public boolean isReadonly(String driverName) throws FIException {
 		return true; // It doesn't matter what we return
 	}
 
-	@Override
 	public ResourceDriver getDriver(String driverName) throws FIException {
 		return null;
 	}
-	@Override
 	public ResourceDriverConfig getDriverConfig(String driverName) {
 		return null;
 	}
 
-    @Override
-    public ResourceDriverConfig getDriverConfig(Long id) {
-        return null;
-    }
-
-    @Override
+	@Override
 	public ResourceSession getSession(ResourceDriver driver, FileOperation fileOperation, DefinableEntity ... entitiesToCheckPermissionOn)
 			throws FIException, UncheckedIOException {
 		return null;
@@ -128,16 +101,4 @@ public class NullResourceDriverManager implements ResourceDriverManager {
 		return null;
 	}
 
-	@Override
-	public AclResourceSession openSessionWithAuth(
-			AclResourceDriver authSupportingAclResourceDriver,
-			Long netFolderOwnerDbId) {
-		return null;
-	}
-
-	@Override
-	public AclResourceSession openSessionUserMode(AclResourceDriver driver)
-			throws AclItemPrincipalMappingException {
-		return null;
-	}
 }

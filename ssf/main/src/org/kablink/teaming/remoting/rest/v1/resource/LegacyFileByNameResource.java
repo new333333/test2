@@ -47,7 +47,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.PathParam;
 
-import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.remoting.rest.v1.exc.UnsupportedMediaTypeException;
@@ -72,11 +71,10 @@ public class LegacyFileByNameResource extends AbstractFileResource {
 			@QueryParam("lastMajorVersionNumber") Integer lastMajorVersionNumber,
 			@QueryParam("lastMinorVersionNumber") Integer lastMinorVersionNumber,
             @Context HttpServletRequest request) throws WriteFilesException, WriteEntryDataException {
-        EntityIdentifier.EntityType et = entityTypeFromString(entityType);
 		InputStream is = getInputStreamFromMultipartFormdata(request);
 		try {
 			return new LegacyFileProperties(
-                    writeFileContentByName(et, entityId, filename, dataName, modDateISO8601, null, null, lastVersionNumber,
+                    writeFileContentByName(entityType, entityId, filename, dataName, modDateISO8601, null, null, lastVersionNumber,
                             lastMajorVersionNumber, lastMinorVersionNumber, is));
 		}
 		finally {
@@ -98,11 +96,10 @@ public class LegacyFileByNameResource extends AbstractFileResource {
 			@QueryParam("lastMajorVersionNumber") Integer lastMajorVersionNumber,
 			@QueryParam("lastMinorVersionNumber") Integer lastMinorVersionNumber,
             @Context HttpServletRequest request) throws WriteFilesException, WriteEntryDataException {
-        EntityIdentifier.EntityType et = entityTypeFromString(entityType);
 		InputStream is = getRawInputStream(request);
 		try {
 			return new LegacyFileProperties(
-                    writeFileContentByName(et, entityId, filename, dataName, modDateISO8601, null, null, lastVersionNumber,
+                    writeFileContentByName(entityType, entityId, filename, dataName, modDateISO8601, null, null, lastVersionNumber,
                             lastMajorVersionNumber, lastMinorVersionNumber, is));
 		}
 		finally {

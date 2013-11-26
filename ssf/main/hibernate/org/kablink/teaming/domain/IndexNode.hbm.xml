@@ -15,8 +15,5 @@
     <property name="zoneId" access="field"/>
     <property name="accessMode" length="16"/>
     <property name="noDeferredUpdateLogRecords" column="inSynch"/>
-    <property name="reindexingStartDate"/>
-    <property name="reindexingEndDate"/>
-    <property name="reindexingIpv4Address" length="16"/>  
 </class>
 </hibernate-mapping>

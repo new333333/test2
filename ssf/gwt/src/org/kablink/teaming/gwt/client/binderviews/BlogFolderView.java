@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -30,6 +30,7 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
+
 package org.kablink.teaming.gwt.client.binderviews;
 
 import java.util.ArrayList;
@@ -40,7 +41,6 @@ import org.kablink.teaming.gwt.client.BlogArchiveMonth;
 import org.kablink.teaming.gwt.client.BlogPage;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.binderviews.ViewReady;
-import org.kablink.teaming.gwt.client.binderviews.util.BinderViewsHelper;
 import org.kablink.teaming.gwt.client.event.BlogArchiveFolderSelectedEvent;
 import org.kablink.teaming.gwt.client.event.BlogArchiveMonthSelectedEvent;
 import org.kablink.teaming.gwt.client.event.BlogGlobalTagSelectedEvent;
@@ -48,7 +48,6 @@ import org.kablink.teaming.gwt.client.event.BlogPageCreatedEvent;
 import org.kablink.teaming.gwt.client.event.BlogPageSelectedEvent;
 import org.kablink.teaming.gwt.client.event.ContributorIdsReplyEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
-import org.kablink.teaming.gwt.client.event.InvokeDropBoxEvent;
 import org.kablink.teaming.gwt.client.event.QuickFilterEvent;
 import org.kablink.teaming.gwt.client.event.ResetEntryMenuEvent;
 import org.kablink.teaming.gwt.client.event.SetFolderSortEvent;
@@ -68,10 +67,9 @@ import org.kablink.teaming.gwt.client.util.ActivityStreamInfo.ActivityStream;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 import org.kablink.teaming.gwt.client.util.TagInfo;
 import org.kablink.teaming.gwt.client.whatsnew.ActionsPopupMenu;
-import org.kablink.teaming.gwt.client.whatsnew.ActionsPopupMenu.ActionMenuItem;
 import org.kablink.teaming.gwt.client.whatsnew.ActivityStreamCtrl;
+import org.kablink.teaming.gwt.client.whatsnew.ActionsPopupMenu.ActionMenuItem;
 import org.kablink.teaming.gwt.client.whatsnew.ActivityStreamCtrl.ActivityStreamCtrlClient;
-import org.kablink.teaming.gwt.client.whatsnew.ActivityStreamCtrl.ActivityStreamCtrlUsage;
 import org.kablink.teaming.gwt.client.whatsnew.ActivityStreamCtrl.DescViewFormat;
 import org.kablink.teaming.gwt.client.widgets.BlogArchiveCtrl;
 import org.kablink.teaming.gwt.client.widgets.BlogPageCtrl;
@@ -82,6 +80,7 @@ import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 import org.kablink.teaming.gwt.client.event.ContributorIdsRequestEvent;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -104,7 +103,6 @@ public class BlogFolderView extends FolderViewBase
 		BlogPageCreatedEvent.Handler,
 		BlogPageSelectedEvent.Handler,
 		ContributorIdsRequestEvent.Handler,
-		InvokeDropBoxEvent.Handler,
 		QuickFilterEvent.Handler,
 		SetFolderSortEvent.Handler
 {
@@ -129,7 +127,6 @@ public class BlogFolderView extends FolderViewBase
 		TeamingEvents.BLOG_PAGE_CREATED,
 		TeamingEvents.BLOG_PAGE_SELECTED,
 		TeamingEvents.CONTRIBUTOR_IDS_REQUEST,
-		TeamingEvents.INVOKE_DROPBOX,
 		TeamingEvents.QUICK_FILTER,
 		TeamingEvents.SET_FOLDER_SORT
 	};
@@ -188,7 +185,7 @@ public class BlogFolderView extends FolderViewBase
 		actionsMenu = new ActionsPopupMenu( true, true, menuItems );
 		
 		// Create the ActivityStreamCtrl.  It will hold the list of blog entries
-		ActivityStreamCtrl.createAsync( ActivityStreamCtrlUsage.BLOG, false, actionsMenu, new ActivityStreamCtrlClient()
+		ActivityStreamCtrl.createAsync( false, actionsMenu, new ActivityStreamCtrlClient()
 		{			
 			@Override
 			public void onUnavailable()
@@ -291,13 +288,14 @@ public class BlogFolderView extends FolderViewBase
 				@Override
 				public void onSuccess(  VibeRpcResponse response )
 				{
+					Scheduler.ScheduledCommand cmd;
 					StringRpcResponseData responseData;
 					final String binderPermalink;
 
 					responseData = (StringRpcResponseData) response.getResponseData();
 					binderPermalink = responseData.getStringValue();
 					
-					GwtClientHelper.deferCommand(new ScheduledCommand()
+					cmd = new Scheduler.ScheduledCommand()
 					{
 						@Override
 						public void execute()
@@ -315,7 +313,8 @@ public class BlogFolderView extends FolderViewBase
 									Instigator.BLOG_PAGE_SELECT );
 
 						}
-					});
+					};
+					Scheduler.get().scheduleDeferred( cmd );
 				}
 			};
 			
@@ -354,11 +353,12 @@ public class BlogFolderView extends FolderViewBase
 			@Override
 			public void onSuccess( VibeRpcResponse response )
 			{
+				Scheduler.ScheduledCommand cmd;
 				final GetFolderSortSettingRpcResponseData responseData;
 
 				responseData = (GetFolderSortSettingRpcResponseData) response.getResponseData();
 				
-				GwtClientHelper.deferCommand(new ScheduledCommand()
+				cmd = new Scheduler.ScheduledCommand()
 				{
 					@Override
 					public void execute()
@@ -367,7 +367,8 @@ public class BlogFolderView extends FolderViewBase
 						// setting we just read.
 						searchForBlogEntries( responseData.getSortKey(), responseData.getSortDescending() );
 					}
-				});
+				};
+				Scheduler.get().scheduleDeferred( cmd );
 			}
 		};
 		
@@ -444,7 +445,9 @@ public class BlogFolderView extends FolderViewBase
 		folder = event.getFolder();
 		if ( month != null && folder != null )
 		{
-			GwtClientHelper.deferCommand(new ScheduledCommand()
+			Scheduler.ScheduledCommand cmd;
+
+			cmd = new Scheduler.ScheduledCommand()
 			{
 				@Override
 				public void execute() 
@@ -460,7 +463,8 @@ public class BlogFolderView extends FolderViewBase
 					
 					searchForBlogEntries( month.getCreationStartTime(), month.getCreationEndTime() );
 				}
-			});
+			};
+			Scheduler.get().scheduleDeferred( cmd );
 		}
 	}
 	
@@ -480,7 +484,9 @@ public class BlogFolderView extends FolderViewBase
 		
 		if ( month != null )
 		{
-			GwtClientHelper.deferCommand(new ScheduledCommand()
+			Scheduler.ScheduledCommand cmd;
+
+			cmd = new Scheduler.ScheduledCommand()
 			{
 				@Override
 				public void execute() 
@@ -500,7 +506,8 @@ public class BlogFolderView extends FolderViewBase
 					// were created in the given month and year.
 					searchForBlogEntries( month.getCreationStartTime(), month.getCreationEndTime() );
 				}
-			});
+			};
+			Scheduler.get().scheduleDeferred( cmd );
 		}
 	}
 	
@@ -520,7 +527,9 @@ public class BlogFolderView extends FolderViewBase
 		
 		if ( tagInfo != null )
 		{
-			GwtClientHelper.deferCommand(new ScheduledCommand()
+			Scheduler.ScheduledCommand cmd;
+
+			cmd = new Scheduler.ScheduledCommand()
 			{
 				@Override
 				public void execute() 
@@ -529,7 +538,8 @@ public class BlogFolderView extends FolderViewBase
 					// have the selected tag.
 					searchForBlogEntries( tagInfo );
 				}
-			});
+			};
+			Scheduler.get().scheduleDeferred( cmd );
 		}
 	}
 	
@@ -548,7 +558,9 @@ public class BlogFolderView extends FolderViewBase
 		folderId = event.getFolderId();
 		if ( folderId != null )
 		{
-			GwtClientHelper.deferCommand(new ScheduledCommand()
+			Scheduler.ScheduledCommand cmd;
+
+			cmd = new Scheduler.ScheduledCommand()
 			{
 				@Override
 				public void execute() 
@@ -559,7 +571,8 @@ public class BlogFolderView extends FolderViewBase
 					// should be working with the selected blog page.
 					fireContextChangedEvent( true );
 				}
-			});
+			};
+			Scheduler.get().scheduleDeferred( cmd );
 		}
 	}
 	
@@ -578,7 +591,9 @@ public class BlogFolderView extends FolderViewBase
 		blogPage = event.getBlogPage();
 		if ( blogPage != null )
 		{
-			GwtClientHelper.deferCommand(new ScheduledCommand()
+			Scheduler.ScheduledCommand cmd;
+
+			cmd = new Scheduler.ScheduledCommand()
 			{
 				@Override
 				public void execute() 
@@ -597,7 +612,8 @@ public class BlogFolderView extends FolderViewBase
 					if ( m_archiveCtrl != null )
 						m_archiveCtrl.clearAllSelections();
 				}
-			});
+			};
+			Scheduler.get().scheduleDeferred( cmd );
 		}
 	}
 	
@@ -617,8 +633,10 @@ public class BlogFolderView extends FolderViewBase
 		// Is this request for the workspace we are working with?
 		if ( eventBinderId.equals( getFolderInfo().getBinderIdAsLong() ) )
 		{
+			ScheduledCommand cmd;
+				
 			// Yes!  Asynchronously fire the corresponding reply event with the contributor IDs.
-			GwtClientHelper.deferCommand(new ScheduledCommand()
+			cmd = new ScheduledCommand()
 			{
 				@Override
 				public void execute()
@@ -633,7 +651,8 @@ public class BlogFolderView extends FolderViewBase
 														contributorIds ); 
 					GwtTeaming.fireEvent( replyEvent );
 				}
-			});
+			};
+			Scheduler.get().scheduleDeferred( cmd );
 		}
 	}
 	
@@ -649,27 +668,6 @@ public class BlogFolderView extends FolderViewBase
 		// handlers.
 		super.onDetach();
 		unregisterEvents();
-	}
-	
-	/**
-	 * Handles InvokeDropBoxEvent's received by this class.
-	 * 
-	 * Implements the InvokeDropBoxEvent.Handler.onInvokeDropBox() method.
-	 * 
-	 * @param event
-	 */
-	@Override
-	public void onInvokeDropBox( InvokeDropBoxEvent event )
-	{
-		// Is the event targeted to this folder?
-		Long eventFolderId = event.getFolderId();
-		if ( eventFolderId.equals( getFolderInfo().getBinderIdAsLong() ) )
-		{
-			// Yes!  Invoke the files drop box on the folder.
-			BinderViewsHelper.invokeDropBox(
-				getFolderInfo(),
-				getEntryMenuPanel().getAddFilesMenuItem() );
-		}
 	}
 	
 	/**
@@ -747,14 +745,17 @@ public class BlogFolderView extends FolderViewBase
 	 */
 	private void populateViewAsync()
 	{
-		GwtClientHelper.deferCommand(new ScheduledCommand()
+		Scheduler.ScheduledCommand doPopulate;
+
+		doPopulate = new Scheduler.ScheduledCommand()
 		{
 			@Override
 			public void execute()
 			{
 				populateViewNow();
 			}
-		});
+		};
+		Scheduler.get().scheduleDeferred(doPopulate);
 	}
 	
 	/*

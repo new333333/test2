@@ -41,8 +41,6 @@ import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.ViewFileInfo;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 
-import com.google.gwt.core.client.Scheduler.ScheduledCommand;
-import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.Frame;
@@ -137,29 +135,6 @@ public class FolderEntryDocument extends VibeFlowPanel {
 			// Add the appropriate image. 
 			m_contentImage = GwtClientHelper.buildImage(imgUrl);
 			m_contentImage.addStyleName(imgStyle);
-			m_contentImage.setWidth(IMAGE_MINIMUM + "px");	// Will get corrected on the first resize cycle.  See onResize() below.
-			int rotation = m_fed.getContentImageRotation();
-			if (0 != rotation) {
-				Style  styles = m_contentImage.getElement().getStyle();
-				String genericRotateStyleValue = ("rotate(" + rotation + "deg)");
-				styles.setProperty("transform", genericRotateStyleValue);
-				if (GwtClientHelper.jsIsIE()) {
-					switch (rotation) {
-					default:   rotation = 0; break;
-					case  90:  rotation = 1; break;
-					case 180:  rotation = 2; break;
-					case 270:  rotation = 3; break;
-					}
-					if (0 != rotation) {
-						String ieRotateStyleValue = ("progid:DXImageTransform.Microsoft.BasicImage(rotation=" + rotation + ")");
-						styles.setProperty("filter", ieRotateStyleValue);
-					}
-				}
-				else {
-					styles.setProperty("webkitTransform", genericRotateStyleValue);
-					styles.setProperty("mozTransform",    genericRotateStyleValue);
-				}
-			}
 			add(m_contentImage);
 			
 		}
@@ -178,18 +153,13 @@ public class FolderEntryDocument extends VibeFlowPanel {
 	 * Overrides the UIObject.setHeight() method.
 	 */
 	@Override
-	public void setHeight(final String height) {
+	public void setHeight(String height) {
 		// If we've got an <IFRAME> containing HTML...
+		String width  = ((getOffsetWidth() - NO_VSCROLL_ADJUST) + "px");
 		if (null != m_htmlFrame) {
-			// ...set it's size after things stabilize...
-			m_htmlFrame.setWidth("1px");	// We first set it to 1px so that the getOffsetWidth() call below isn't affected by the current width.
-			GwtClientHelper.deferCommand(new ScheduledCommand() {
-				@Override
-				public void execute() {
-					m_htmlFrame.setHeight(height);
-					m_htmlFrame.setWidth((getOffsetWidth() - NO_VSCROLL_ADJUST) + "px");
-				}
-			});
+			// ...set it's size...
+			m_htmlFrame.setHeight(height);
+			m_htmlFrame.setWidth( width );
 		}
 
 		// ...and pass the height to the super class.
@@ -219,7 +189,7 @@ public class FolderEntryDocument extends VibeFlowPanel {
 			}
 			else {
 				// ...otherwise, remove any scaling we may have had.
-			    DOM.setStyleAttribute(m_contentImage.getElement(), "width", "");
+			    DOM.setStyleAttribute(getElement(), "width", "");
 			}
 		}
 	}

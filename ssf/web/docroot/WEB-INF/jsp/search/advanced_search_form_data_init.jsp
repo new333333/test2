@@ -36,6 +36,7 @@
 <%@ page import="java.util.ArrayList" %>
 <%@ page import="org.kablink.teaming.util.CalendarHelper" %>
 
+
 function ss_initSearchOptions() {
 	<c:if test="${! empty ss_filterMap.additionalFilters}">
 	  <ssf:ifNotFilr>
@@ -71,20 +72,18 @@ function ss_initSearchOptions() {
 				<c:set var="wf_blockId" value="${block.searchWorkflow}"/>
 				<c:set var="wf_stepNamesChecked" value=""/>
 				<c:set var="wf_stepNames" value=""/>
-				<c:set var="wf_title" value=""/>
 				<c:set var="wf_stepCaptions" value=""/>
 				<c:forEach var="step" items="${block.filterWorkflowStateName}" varStatus="loopStatus">
 					<c:set var="wf_stepNamesChecked">${wf_stepNamesChecked}<c:if test="${!loopStatus.first}">, </c:if>"<ssf:escapeJavaScript value="${step}"/>"</c:set>
 				</c:forEach>
 				<c:forEach var="wf" items="${ssWorkflowDefinitionMap}">
 				  <c:if test="${wf.id == wf_blockId}">
-				    <c:set var="wf_title" value="${wf.title}"/>
 					<c:forEach var="step2" items="${wf.steps}" varStatus="loopStatus2">
 						<c:set var="wf_stepCaptions">${wf_stepCaptions}<c:if test="${!loopStatus2.first}">, </c:if>"<ssf:escapeJavaScript value="${step2.title}"/>"</c:set>
 					</c:forEach>
 				  </c:if>
 				</c:forEach>
-				ss_addInitializedWorkflow("<ssf:escapeJavaScript value="${block.searchWorkflow}"/>", "<ssf:escapeJavaScript value="${wf_title}"/>", <%--
+				ss_addInitializedWorkflow("<ssf:escapeJavaScript value="${block.searchWorkflow}"/>", <%--
 				--%>[${wf_stepNamesChecked}], [${wf_stepCaptions}]);
 			</c:forEach>
 		</c:if>
@@ -92,14 +91,7 @@ function ss_initSearchOptions() {
 		<ssf:ifNotFilr>
 		<c:if test="${!empty ss_filterMap.additionalFilters.entry}">
 			<c:forEach var="block" items="${ss_filterMap.additionalFilters.entry}">
-				ss_addInitializedEntry("<ssf:escapeJavaScript value="${block.entryType}"/>", 
-						"<ssf:escapeJavaScript value="${block.entryElement}"/>", 
-						"<ssf:escapeJavaScript value="${block.entryValuesNotFormatted}"/>", 
-						"<ssf:escapeJavaScript value="${block.entryValues}"/>", 
-						"<ssf:escapeJavaScript value="${block.valueType}"/>", 
-						"<ssf:escapeJavaScript value="${block.title}"/>",
-						"<ssf:escapeJavaScript value="${block.entryType}"/>",
-						"<ssf:escapeJavaScript value="${block.entryTypeTitle}"/>");
+				ss_addInitializedEntry("<ssf:escapeJavaScript value="${block.entryType}"/>", "<ssf:escapeJavaScript value="${block.entryElement}"/>", "<ssf:escapeJavaScript value="${block.entryValuesNotFormatted}"/>", "<ssf:escapeJavaScript value="${block.entryValues}"/>", "<ssf:escapeJavaScript value="${block.valueType}"/>", "<ssf:escapeJavaScript value="${block.title}"/>");
 			</c:forEach>
 		</c:if>
 		</ssf:ifNotFilr>

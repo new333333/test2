@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -42,7 +42,6 @@ import org.kablink.teaming.gwt.client.rpc.shared.AddNewFolderCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.CreateFolderRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData.ErrorInfo;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
-import org.kablink.teaming.gwt.client.util.CloudFolderType;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 
@@ -55,12 +54,11 @@ import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.FlexTable.FlexCellFormatter;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
+import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.InlineLabel;
-import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.TextBox;
 
@@ -70,10 +68,8 @@ import com.google.gwt.user.client.ui.TextBox;
  * @author drfoster@novell.com
  */
 public class AddNewFolderDlg extends DlgBox implements EditSuccessfulHandler {
-	private boolean				m_allowCloudFolder;	// true -> Provide the option to add a Cloud Folder.  false -> Don't.
 	private FlowPanel			m_dlgPanel;			// The panel holding the dialog's content.
 	private GwtTeamingMessages	m_messages;			// Access to Vibe's messages.
-	private ListBox				m_folderTypeLB;		//
 	private Long				m_binderId;			// The binder the new folder is to be added to.
 	private Long				m_folderTemplateId;	// The ID of the folder template to use to create the folder.
 	private TextBox 			m_folderNameInput;	//
@@ -127,20 +123,8 @@ public class AddNewFolderDlg extends DlgBox implements EditSuccessfulHandler {
 			return;
 		}
 
-		// What type of folder are we creating?
-		CloudFolderType cft;
-		if (null == m_folderTypeLB) {
-			cft = null;	// null -> Not a cloud folder.
-		}
-		else {
-			String ft = m_folderTypeLB.getValue(m_folderTypeLB.getSelectedIndex());
-			if (GwtClientHelper.hasString(ft))
-			     cft = CloudFolderType.valueOf(ft);
-			else cft = null;	// null -> Not a cloud folder.
-		}
-
 		// Can we add the new folder?
-		AddNewFolderCmd cmd = new AddNewFolderCmd(m_binderId, m_folderTemplateId, folderName, cft);
+		AddNewFolderCmd cmd = new AddNewFolderCmd(m_binderId, m_folderTemplateId, folderName);
 		GwtClientHelper.executeCommand(
 				cmd,
 				new AsyncCallback<VibeRpcResponse>() {
@@ -268,16 +252,15 @@ public class AddNewFolderDlg extends DlgBox implements EditSuccessfulHandler {
 		m_dlgPanel.clear();
 
 		// Create a horizontal panel to hold the name input widgets...
-		VibeFlexTable grid = new VibeFlexTable();
-		grid.addStyleName("vibe-addNewFolderDlg_Grid");
-		m_dlgPanel.add(grid);
-		FlexCellFormatter gridCellFmt = grid.getFlexCellFormatter();
+		HorizontalPanel hp = new VibeHorizontalPanel(null, null);
+		hp.addStyleName("vibe-addNewFolderDlg_NamePanel");
+		m_dlgPanel.add(hp);
 
 		// ...add a label...
 		InlineLabel il = new InlineLabel(m_messages.addNewFolderDlgName());
 		il.addStyleName("vibe-addNewFolderDlg_NameLabel");
-		grid.setWidget(0, 0, il);
-		gridCellFmt.setVerticalAlignment(0, 0, HasVerticalAlignment.ALIGN_MIDDLE);
+		hp.add(il);
+		hp.setCellVerticalAlignment(il, HasVerticalAlignment.ALIGN_MIDDLE);
 
 		// ...and add an input widget.
 		m_folderNameInput = new TextBox();
@@ -299,39 +282,9 @@ public class AddNewFolderDlg extends DlgBox implements EditSuccessfulHandler {
 				}
 			}
 		});
-		grid.setWidget(0, 1, m_folderNameInput);
-		gridCellFmt.setVerticalAlignment(0, 1, HasVerticalAlignment.ALIGN_MIDDLE);
+		hp.add(m_folderNameInput);
+		hp.setCellVerticalAlignment(m_folderNameInput, HasVerticalAlignment.ALIGN_MIDDLE);
 		GwtClientHelper.setFocusDelayed(m_folderNameInput);
-		
-		// Do we allow adding a Cloud Folder? 
-		if (m_allowCloudFolder) {
-			// Yes!  Generate the appropriate widgets.
-			il = new InlineLabel(m_messages.addNewFolderDlgType());
-			il.addStyleName("vibe-addNewFolderDlg_TypeLabel");
-			grid.setWidget(1, 0, il);
-			gridCellFmt.setVerticalAlignment(1, 0, HasVerticalAlignment.ALIGN_MIDDLE);
-			
-			m_folderTypeLB = new ListBox();
-			m_folderTypeLB.addStyleName("vibe-addNewFolderDlg_TypeSelect");
-			grid.setWidget(1, 1, m_folderTypeLB);
-			gridCellFmt.setVerticalAlignment(1, 1, HasVerticalAlignment.ALIGN_MIDDLE);
-			
-			m_folderTypeLB.addItem(m_messages.addNewFolderDlg_Type_PersonalStorage(), "");
-			for (CloudFolderType cft:  CloudFolderType.values()) {
-				String display;
-				switch (cft) {
-				case BOXDOTNET:    display = m_messages.addNewFolderDlg_Type_BoxDotNet();   break;
-				case DROPBOX:      display = m_messages.addNewFolderDlg_Type_DropBox();     break;
-				case GOOGLEDRIVE:  display = m_messages.addNewFolderDlg_Type_GoogleDrive(); break;
-				case SKYDRIVE:     display = m_messages.addNewFolderDlg_Type_SkyDrive();    break;
-					
-				default:
-					continue;
-				}
-				m_folderTypeLB.addItem(display, cft.name());
-			}
-			m_folderTypeLB.setSelectedIndex(0);
-		}
 		
 		// Finally, show the dialog centered on the screen.
 		setButtonsEnabled(true);
@@ -341,11 +294,11 @@ public class AddNewFolderDlg extends DlgBox implements EditSuccessfulHandler {
 	/*
 	 * Asynchronously runs the given instance of the add new folder dialog.
 	 */
-	private static void runDlgAsync(final AddNewFolderDlg anfDlg, final Long binderId, final Long folderTemplateId, final boolean allowCloudFolder) {
+	private static void runDlgAsync(final AddNewFolderDlg anfDlg, final Long binderId, final Long folderTemplateId) {
 		ScheduledCommand doRun = new ScheduledCommand() {
 			@Override
 			public void execute() {
-				anfDlg.runDlgNow(binderId, folderTemplateId, allowCloudFolder);
+				anfDlg.runDlgNow(binderId, folderTemplateId);
 			}
 		};
 		Scheduler.get().scheduleDeferred(doRun);
@@ -354,11 +307,10 @@ public class AddNewFolderDlg extends DlgBox implements EditSuccessfulHandler {
 	/*
 	 * Synchronously runs the given instance of the add new folder dialog.
 	 */
-	private void runDlgNow(Long binderId, Long folderTemplateId, boolean allowCloudFolder) {
+	private void runDlgNow(Long binderId, Long folderTemplateId) {
 		// Store the parameters...
 		m_binderId         = binderId;
 		m_folderTemplateId = folderTemplateId;
-		m_allowCloudFolder = allowCloudFolder;
 
 		// ...and start populating the dialog.
 		populateDlgAsync();
@@ -396,10 +348,9 @@ public class AddNewFolderDlg extends DlgBox implements EditSuccessfulHandler {
 			final AddNewFolderDlgClient anfDlgClient,
 			
 			// initAndShow parameters,
-			final AddNewFolderDlg	anfDlg,
-			final Long				binderId,
-			final Long				folderTemplateId,
-			final boolean			allowCloudFolder) {
+			final AddNewFolderDlg anfDlg,
+			final Long binderId,
+			final Long folderTemplateId) {
 		GWT.runAsync(AddNewFolderDlg.class, new RunAsyncCallback() {
 			@Override
 			public void onFailure(Throwable reason) {
@@ -422,7 +373,7 @@ public class AddNewFolderDlg extends DlgBox implements EditSuccessfulHandler {
 					// No, it's not a request to create a dialog!  It
 					// must be a request to run an existing one.  Run
 					// it.
-					runDlgAsync(anfDlg, binderId, folderTemplateId, allowCloudFolder);
+					runDlgAsync(anfDlg, binderId, folderTemplateId);
 				}
 			}
 		});
@@ -435,7 +386,7 @@ public class AddNewFolderDlg extends DlgBox implements EditSuccessfulHandler {
 	 * @param anfDlgClient
 	 */
 	public static void createAsync(AddNewFolderDlgClient anfDlgClient) {
-		doAsyncOperation(anfDlgClient, null, null, null, false);
+		doAsyncOperation(anfDlgClient, null, null, null);
 	}
 	
 	/**
@@ -444,9 +395,8 @@ public class AddNewFolderDlg extends DlgBox implements EditSuccessfulHandler {
 	 * @param anfDlg
 	 * @param binderId
 	 * @param folderTemplateId
-	 * @param allowCloudFolder
 	 */
-	public static void initAndShow(AddNewFolderDlg anfDlg, Long binderId, Long folderTemplateId, boolean allowCloudFolder) {
-		doAsyncOperation(null, anfDlg, binderId, folderTemplateId, allowCloudFolder);
+	public static void initAndShow(AddNewFolderDlg anfDlg, Long binderId, Long folderTemplateId) {
+		doAsyncOperation(null, anfDlg, binderId, folderTemplateId);
 	}
 }

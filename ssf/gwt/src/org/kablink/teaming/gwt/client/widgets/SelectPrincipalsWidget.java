@@ -64,6 +64,7 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTMLTable;
+import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Widget;
@@ -117,20 +118,13 @@ public class SelectPrincipalsWidget extends Composite
 		public PrincipalNameWidget( GwtPrincipal principal )
 		{
 			FlowPanel panel;
-			String name;
 			
 			m_principal = principal;
 			
 			panel = new FlowPanel();
 			
-			name = principal.getName();
-			if ( principal.getType() == PrincipalType.GROUP )
-			{
-				if ( "allusers".equalsIgnoreCase( name ) || "allextusers".equalsIgnoreCase( name ) )
-					name = principal.getTitle();
-			}
-			m_nameLabel = new InlineLabel( name );
-			m_nameLabel.setTitle( principal.getSecondaryDisplayText() );
+			m_nameLabel = new InlineLabel( principal.getName() );
+			m_nameLabel.setTitle( principal.getName() );
 			m_nameLabel.addStyleName( "selectPrincipalsWidget_PrincipalNameLabel" );
 			panel.add( m_nameLabel );
 			
@@ -325,7 +319,10 @@ public class SelectPrincipalsWidget extends Composite
 
 			m_principalsCellFormatter = m_principalsTable.getFlexCellFormatter();
 
-			mainPanel.add( m_principalsTablePanel );
+			rowFormatter.setVerticalAlign( nextRow, HasVerticalAlignment.ALIGN_TOP );
+			table.setWidget( nextRow, 0, m_principalsTablePanel );
+			cellFormatter.setColSpan( nextRow, 0, 2 );
+			++nextRow;
 
 			setColumnHeaders();
 		}

@@ -50,12 +50,9 @@ import javax.activation.FileTypeMap;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.dom4j.Element;
-import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.AuditTrail;
 import org.kablink.teaming.domain.Binder;
-import org.kablink.teaming.domain.ChangeLog;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.Principal;
@@ -65,7 +62,6 @@ import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.module.workflow.WorkflowUtils;
 import org.kablink.teaming.util.LongIdUtil;
 import org.kablink.teaming.util.NLT;
-import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.servlet.SAbstractController;
@@ -283,11 +279,7 @@ public class ReportDownloadController extends  SAbstractController {
 			} else if ("activityByUser".equals(reportType)) {
 				hasUsers = true;
 				String type = ServletRequestUtils.getStringParameter(request, WebKeys.URL_REPORT_FLAVOR, ReportModule.REPORT_TYPE_SUMMARY);
-				//Skip the file sync agent since this could contain millions of entries
-				Set userIdsToSkip = new HashSet();
-				User fsa = getProfileModule().getReservedUser(ObjectKeys.FILE_SYNC_AGENT_INTERNALID);
-				if (fsa != null) userIdsToSkip.add(fsa.getId());
-				report = getReportModule().generateActivityReportByUser(memberIds, userIdsToSkip, startDate, endDate, type);
+				report = getReportModule().generateActivityReportByUser(memberIds, startDate, endDate, type);
 				if (type.equals(ReportModule.REPORT_TYPE_SUMMARY)) {
 					columns = new String[] {ReportModule.USER_ID, 
 							AuditTrail.AuditType.view.name(), 
@@ -324,19 +316,10 @@ public class ReportDownloadController extends  SAbstractController {
 	
 	protected void printReport(OutputStream out, List<Map<String, Object>> report, String[] columns, boolean hasUsers)
 	{
-		//Set a maximum size for reports
-		int maxRows = SPropsUtil.getInt("reports.max.size", 10000);
-		if (report.size() > maxRows) {
-			//Trim the list to show the last entries in the list
-			report = report.subList(report.size()-maxRows, report.size());
-		}
 		HashMap<Long,Principal> userMap = new HashMap<Long,Principal>();
 		HashMap<String,Definition> definitionMap = new HashMap<String, Definition>();
 		HashMap<Long,Binder> binderMap = new HashMap<Long, Binder>();
 		HashMap<Long,FolderEntry> entryMap = new HashMap<Long, FolderEntry>();
-		HashMap<Long,String> deletedBinderTitles = new HashMap<Long,String>();
-		HashMap<Long,String> deletedBinderPaths = new HashMap<Long,String>();
-		HashMap<Long,String> deletedEntryTitles = new HashMap<Long,String>();
         User requestor = RequestContextHolder.getRequestContext().getUser();
         DateFormat dateFormat = DateFormat.getDateTimeInstance(DateFormat.FULL, DateFormat.MEDIUM, requestor.getLocale());
         dateFormat.setTimeZone(requestor.getTimeZone());
@@ -376,89 +359,16 @@ public class ReportDownloadController extends  SAbstractController {
 				userMap.put(p.getId(), p);
 			}
 		}
-		if(entryIds.size() > 0) {
-			HashSet<Long> deletedEntryIds = new HashSet<Long>();
-			deletedEntryIds.addAll(entryIds);
-			SortedSet<FolderEntry> entries = getFolderModule().getEntries(entryIds);
-			for(FolderEntry fe : entries) {
-				entryMap.put(fe.getId(), fe);
-				deletedEntryIds.remove(fe.getId());
-			}
-			//Now get the titles of any deleted entry
-			if (deletedEntryIds.size() > 0) {
-				while (!deletedEntryIds.isEmpty()) {
-					HashSet<Long> nextDeletedEntryIds = new HashSet<Long>();
-					int i = 0;
-					for (Long id : deletedEntryIds) {
-						nextDeletedEntryIds.add(id);
-						i++;
-						if (i >= 1000) break;
-					}
-					deletedEntryIds.removeAll(nextDeletedEntryIds);
-					List<ChangeLog> cLogs = getReportModule().getDeletedEntryLogs(nextDeletedEntryIds);
-					for (ChangeLog cLog : cLogs) {
-						try {
-							Long entityId = cLog.getEntityId();
-							Element root = cLog.getEntityRoot();
-							Element titleEle = (Element)root.selectSingleNode("//attribute[@name='title']");
-							String title = "";
-							if (titleEle != null) title = titleEle.getText();
-							if (!deletedEntryTitles.containsKey(entityId) || !title.equals("")) {
-								deletedEntryTitles.put(entityId, title);
-							}
-							Long owningBinderId = cLog.getOwningBinderId();
-							if (owningBinderId != null && !binderIds.contains(owningBinderId)) {
-								//Make sure to get the parent binders title and path in case it was also deleted
-								binderIds.add(owningBinderId);
-							}
-						} catch(Exception e) {
-							e.getMessage();
-						}
-					}
-				}
-			}
-		}
 		if(binderIds.size() > 0) {
-			HashSet<Long> deletedBinderIds = new HashSet<Long>();
-			deletedBinderIds.addAll(binderIds);
 			SortedSet<Binder> binders = getBinderModule().getBinders(binderIds);
 			for(Binder b : binders) {
 				binderMap.put(b.getId(), b);
-				deletedBinderIds.remove(b.getId());
 			}
-			//Now get the titles of any deleted binder
-			if (deletedBinderIds.size() > 0) {
-				while (!deletedBinderIds.isEmpty()) {
-					HashSet<Long> nextDeletedBinderIds = new HashSet<Long>();
-					int i = 0;
-					for (Long id : deletedBinderIds) {
-						nextDeletedBinderIds.add(id);
-						i++;
-						if (i >= 1000) break;
-					}
-					deletedBinderIds.removeAll(nextDeletedBinderIds);
-					List<ChangeLog> cLogs = getReportModule().getDeletedBinderLogs(nextDeletedBinderIds);
-					for (ChangeLog cLog : cLogs) {
-						try {
-							Long entityId = cLog.getEntityId();
-							Element root = cLog.getEntityRoot();
-							Element titleEle = (Element)root.selectSingleNode("//attribute[@name='title']");
-							String title = "";
-							if (titleEle != null) title = titleEle.getText();
-							if (!deletedBinderTitles.containsKey(entityId) || !title.equals("")) {
-								deletedBinderTitles.put(entityId, title);
-							}
-							Element pathEle = (Element)root.selectSingleNode("//property[@name='binderPath']"); 
-							String path = "";
-							if (pathEle != null) path = pathEle.getText();
-							if (!deletedBinderPaths.containsKey(entityId) || !path.equals("")) {
-								deletedBinderPaths.put(entityId, path);
-							}
-						} catch(Exception e) {
-							e.getMessage();
-						}
-					}
-				}
+		}
+		if(entryIds.size() > 0) {
+			SortedSet<FolderEntry> entries = getFolderModule().getEntries(entryIds);
+			for(FolderEntry fe : entries) {
+				entryMap.put(fe.getId(), fe);
 			}
 		}
 		if(definitionIds.size() > 0) {
@@ -511,17 +421,7 @@ public class ReportDownloadController extends  SAbstractController {
 			if (row.containsKey(ReportModule.BINDER_ID)) {
 				binder = binderMap.get(row.get(ReportModule.BINDER_ID));
 				try {
-					if (binder != null) {
-						row.put(ReportModule.FOLDER, binder.getPathName());
-						row.put(ReportModule.ENTRY_TITLE, binder.getTitle());
-					} else {
-						if (deletedBinderPaths.containsKey(row.get(ReportModule.BINDER_ID))) {
-							row.put(ReportModule.FOLDER, deletedBinderPaths.get(row.get(ReportModule.BINDER_ID)));
-						}
-						if (deletedBinderTitles.containsKey(row.get(ReportModule.BINDER_ID))) {
-							row.put(ReportModule.ENTRY_TITLE, deletedBinderTitles.get(row.get(ReportModule.BINDER_ID)));
-						}
-					}
+					if (binder != null) row.put(ReportModule.FOLDER, binder.getPathName());
 				} catch(Exception e) {}
 			}
 			FolderEntry entry;
@@ -530,11 +430,7 @@ public class ReportDownloadController extends  SAbstractController {
 					row.get(ReportModule.ENTITY).equals("folderEntry")) {
 				entry = entryMap.get(row.get(ReportModule.ENTRY_ID));
 				try {
-					if (entry != null) {
-						row.put(ReportModule.ENTRY_TITLE, entry.getTitle());
-					} else if (deletedEntryTitles.containsKey(row.get(ReportModule.ENTRY_ID))) {
-						row.put(ReportModule.ENTRY_TITLE, deletedEntryTitles.get(row.get(ReportModule.ENTRY_ID)));
-					}
+					if (entry != null) row.put(ReportModule.ENTRY_TITLE, entry.getTitle());
 				} catch(Exception e) {}
 			}
 			for(int i = 0; i < columns.length; i++) {

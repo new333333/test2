@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2009 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -31,7 +31,6 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 package org.kablink.teaming.util;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -44,27 +43,26 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
+import org.kablink.teaming.calendar.EventsViewHelper;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.CoreDao;
 import org.kablink.teaming.dao.ProfileDao;
 import org.kablink.teaming.domain.CustomAttribute;
 import org.kablink.teaming.domain.Binder;
+import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.NoPrincipalByTheNameException;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.search.SearchFieldResult;
 import org.kablink.teaming.search.filter.SearchFilterKeys;
-import org.kablink.teaming.web.util.MiscUtil;
+import org.kablink.teaming.security.AccessControlManager;
+import org.kablink.teaming.security.function.WorkArea;
+import org.kablink.teaming.security.function.WorkAreaOperation;
 
-/**
- * ?
- * 
- * @author ?
- */
-@SuppressWarnings({"unchecked", "unused"})
+
 public class ResolveIds {
+	
 	private static Log logger = LogFactory.getLog(ResolveIds.class);
 	
 	public static List getPrincipals(Object principalIds) {
@@ -160,7 +158,7 @@ public class ResolveIds {
 	
 	public static Set<Long> getPrincipalNamesAsLongIdSet(String []sNames, boolean checkActive) {
 		Set<Long> memberIds = new HashSet<Long>();
-		List<Principal> members = getPrincipalsByName(LongIdUtil.getNamesAsStringSet(sNames), checkActive);
+		List<Principal> members = ResolveIds.getPrincipalsByName(LongIdUtil.getNamesAsStringSet(sNames), checkActive);
 		for (Principal p : members) memberIds.add(p.getId());
 		return memberIds;		
 	}
@@ -364,26 +362,4 @@ public class ResolveIds {
 		return result;
 	}
 
-	/**
-	 * Resolves, if possible, a user ID to a User object.
-	 * 
-	 * @param userId
-	 * @param checkActive
-	 * 
-	 * @return
-	 */
-	public static User getResolvedUser(Long userId, boolean checkActive) {
-		User user = null;
-		String userIdS = String.valueOf(userId);
-		List<String> userIdList = new ArrayList<String>();
-		userIdList.add(userIdS);
-		List resolvedList = getPrincipals(userIdList, checkActive);
-		if (MiscUtil.hasItems(resolvedList)) {
-			Object o = resolvedList.get(0);
-			if (o instanceof User) {
-				user = ((User) o);
-			}
-		}
-		return user;
-	}
 }

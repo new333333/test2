@@ -32,13 +32,10 @@
  */
 package org.kablink.teaming.web.util;
 
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletSession;
@@ -52,14 +49,11 @@ import org.dom4j.Element;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.CoreDao;
-import org.kablink.teaming.dao.ProfileDao;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
-import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.NoBinderByTheIdException;
-import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.module.admin.AdminModule.AdminOperation;
@@ -73,7 +67,6 @@ import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ReleaseInfo;
-import org.kablink.teaming.util.ResolveIds;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.Utils;
@@ -604,16 +597,16 @@ public class GwtUIHelper {
 	}
 
 	/**
-	 * Return the 'AdHoc folder' setting from the given user or group
-	 * (i.e., a UserPrinciapl object.)
+	 * Return the 'AdHoc folder' setting from the given user's
+	 * properties.
 	 * 
-	 * @param bs
-	 * @param upId
+	 * @param ami
+	 * @param userId
 	 * 
 	 * @return
 	 */
-	public static Boolean getAdhocFolderSettingFromUserOrGroup(AllModulesInjected bs, Long upId) {
-		return AdminHelper.getAdhocFolderSettingFromUserOrGroup(bs, upId);
+	public static Boolean getAdhocFolderSettingFromUser(AllModulesInjected ami, Long userId) {
+		return SearchUtils.getAdhocFolderSettingFromUser(ami, userId);
 	}
 
 	/**
@@ -624,7 +617,21 @@ public class GwtUIHelper {
 	 * @return
 	 */
 	public static Boolean getAdhocFolderSettingFromZone(AllModulesInjected ami) {
-		return AdminHelper.getAdhocFolderSettingFromZone(ami);
+		return SearchUtils.getAdhocFolderSettingFromZone(ami);
+	}
+	
+	/**
+	 * Return the effective 'AdHoc folder' setting from the given user.
+	 * We will look in the user's properties first for a value.  If one
+	 * is not found we will get the setting from the zone.
+	 * 
+	 * @param ami
+	 * @param user
+	 * 
+	 * @return
+	 */
+	public static Boolean getEffectiveAdhocFolderSetting(AllModulesInjected ami, User user) {
+		return SearchUtils.getEffectiveAdhocFolderSetting(ami, user);
 	}
 	
 	/**
@@ -694,30 +701,6 @@ public class GwtUIHelper {
 	public static Binder getBinderSafely2(BinderModule bm, String binderId) throws AccessControlException, NoBinderByTheIdException {
 		// Always use the initial form of this method.
 		return getBinderSafely2(bm, Long.parseLong(binderId));
-	}
-	
-	/**
-	 * Return the 'Download' setting from the given user or group
-	 * (i.e., UserPrincipal object.)
-	 * 
-	 * @param bs
-	 * @param upId
-	 * 
-	 * @return
-	 */
-	public static Boolean getDownloadSettingFromUserOrGroup(AllModulesInjected bs, Long upId) {
-		return AdminHelper.getDownloadSettingFromUserOrGroup(bs, upId);
-	}
-
-	/**
-	 * Return the 'Download' setting from the zone.
-	 * 
-	 * @param bs
-	 * 
-	 * @return
-	 */
-	public static Boolean getDownloadSettingFromZone(AllModulesInjected bs) {
-		return AdminHelper.getDownloadSettingFromZone(bs);
 	}
 	
 	/**
@@ -811,37 +794,6 @@ public class GwtUIHelper {
 		return getEntrySafely2(fm, Long.parseLong(binderId), Long.parseLong(entryId));
 	}
 		
-	/**
-	 * Returns information about the groups of a specific user.
-	 * 
-	 * @param bs
-	 * @param userId 
-	 * 
-	 * @return
-	 */
-	public static List<Group> getGroups(Principal p) {
-		ProfileDao profileDao = ((ProfileDao) SpringContextUtil.getBean("profileDao"));
-	    Set<Long> groupIds = profileDao.getApplicationLevelPrincipalIds(p);
-	    groupIds.remove(p.getId());
-		return profileDao.loadGroups(groupIds, RequestContextHolder.getRequestContext().getZoneId());
-	}
-	
-	@SuppressWarnings("unchecked")
-	public static List<Group> getGroups(Long userId) {
-		// Scan the groups the current user is a member of...
-		List<Group> reply;
-		List<Long> userIds = new ArrayList<Long>();
-		userIds.add(userId);
-		List users = ResolveIds.getPrincipals(userIds, true);
-		if (MiscUtil.hasItems(users))
-		     reply = getGroups((Principal) users.get(0));
-		else reply = new ArrayList<Group>();
-		
-		// If we get here, reply refers to the List<Group> of the
-		// groups the user is a member of.  Return it.
-		return reply;
-	}
-	
 	/**
 	 * Returns an Integer based value from an options Map.  If a value
 	 * for key isn't found, defInt is returned.
@@ -1054,41 +1006,6 @@ public class GwtUIHelper {
 		}
 		return reply;
 	}
-
-	/**
-	 * Return the 'WebAccess' setting from the given user or group
-	 * (i.e., UserPrincipal object.)
-	 * 
-	 * @param bs
-	 * @param upId
-	 * 
-	 * @return
-	 */
-	public static Boolean getWebAccessSettingFromUserOrGroup(AllModulesInjected bs, Long upId) {
-		return AdminHelper.getWebAccessSettingFromUserOrGroup(bs, upId);
-	}
-
-	/**
-	 * Return the 'WebAccess' setting from the zone.
-	 * 
-	 * @param bs
-	 * 
-	 * @return
-	 */
-	public static Boolean getWebAccessSettingFromZone(AllModulesInjected bs) {
-		return AdminHelper.getWebAccessSettingFromZone(bs);
-	}
-	
-	/*
-	 * Returns true if the current user has access to the root
-	 * workspace and false otherwise.
-	 */
-	private static boolean hasRootDirAccess(AllModulesInjected bs) {
-		Workspace topWS;
-		try                  {topWS = bs.getWorkspaceModule().getTopWorkspace();}
-		catch (Exception ex) {topWS = null;                                     }
-		return (null != topWS);
-	}
 	
 	/**
 	 * Returns true if we're supposed to start with an activity stream
@@ -1244,7 +1161,6 @@ public class GwtUIHelper {
 	 * Returns true if a request is a Vibe root URL or refers to a Vibe
 	 * root URL and returns false otherwise.
 	 */
-	@SuppressWarnings("deprecation")
 	private static boolean isVibeRootRequest(PortletRequest pRequest) {
 		// Is the base request a Vibe root URL?
 		String urlParam = PortletRequestUtils.getStringParameter(pRequest, WebKeys.URL_NOVL_ROOT_FLAG, "");
@@ -1406,6 +1322,62 @@ public class GwtUIHelper {
 	}
 	
 	/**
+	 * Save the 'AdHoc folder' setting.  If userId is not null saves
+	 * the value in the user's properties.  Otherwise, saves the
+	 * setting in the zone.
+	 * 
+	 * @param ami
+	 * @param userId
+	 * @param allow
+	 * 
+	 * @return
+	 */
+	public static Boolean saveAdhocFolderSetting(AllModulesInjected ami, Long userId, Boolean allow) {
+		// Are we dealing with a user?
+		if (null != userId) {
+			// Yes!  Save the setting to their properties.
+			ami.getProfileModule().setUserProperty(
+				userId,
+				ObjectKeys.USER_PROPERTY_ALLOW_ADHOC_FOLDERS,
+				((null == allow) ?
+					null         :				//     null -> Remove the setting and revert to the zone's setting.
+					String.valueOf(allow)));	// non-null -> Specific value to set.
+		}
+		else {
+			// No, we aren't running with a user!  Save as a zone
+			// setting.
+			ami.getAdminModule().setAdHocFoldersEnabled(
+				((null == allow) ?
+					Boolean.FALSE :	//     null -> Default to false.
+					allow));		// non-null -> Store value directly.
+		}
+		
+		return Boolean.TRUE;
+	}
+	
+	/**
+	 * Saves the 'AdHoc folder' settings for multiple users.
+	 * 
+	 * @param bs
+	 * @param userIds
+	 * @param allow
+	 * 
+	 * @return
+	 */
+	public static Boolean saveMultipleAdHocFolderSettings(AllModulesInjected bs, List<Long> userIds, Boolean allow) {
+		// Do we have any user IDs to save from?
+		if (MiscUtil.hasItems(userIds)) {
+			// Yes!  Scan them...
+			for (Long userId:  userIds) {
+				// ...saving the allow flag for each.
+				saveAdhocFolderSetting(bs, userId, allow);
+			}
+		}
+		
+		return Boolean.TRUE;
+	}
+	
+	/**
 	 * Sets the common GWT RequestInfo parameters required by the
 	 * definition of m_requestInfo in GwtMainPage.jsp.
 	 * 
@@ -1431,8 +1403,6 @@ public class GwtUIHelper {
 	 * @param model
 	 */
 	public static void setCommonRequestInfoData(PortletRequest request, AllModulesInjected bs, Map<String, Object> model) {
-		User currentUser = RequestContextHolder.getRequestContext().getUser();
-		
 		// Put out the flag indicating whether the UI should be in
 		// debug mode (i.e., perform extra checking, display messages,
 		// ...)
@@ -1472,14 +1442,6 @@ public class GwtUIHelper {
 		boolean isSiteAdmin = bs.getAdminModule().testAccess(AdminOperation.manageFunction);
 		model.put("isSiteAdmin", Boolean.toString(isSiteAdmin));
 		
-		// Put out flags indicating if the user is Guest or an external user.
-		model.put("isGuestUser",       currentUser.isShared()                      );
-		model.put("isExternalUser", (!(currentUser.getIdentityInfo().isInternal())));
-		
-		// Put out a flag indicating if the user should see a 'Public'
-		// collection.
-		model.put("showPublicCollection", AdminHelper.getEffectivePublicCollectionSetting(bs, currentUser));
-		
 		// Put out the flag that tells us if the tinyMCE editor will
 		// work on the device we are running on.  Get the list of user
 		// agents that the tinyMCE editor won't run on.
@@ -1507,23 +1469,6 @@ public class GwtUIHelper {
 		// Put out the ID of the top Vibe workspace.
 		String topWSId = getTopWSIdSafely(bs);
 		model.put("topWSId", topWSId);
-		
-		// Put out the flag indicating whether cloud folders are
-		// enabled.
-		model.put(
-			WebKeys.CLOUD_FOLDERS_ENABLED,
-			(Utils.checkIfFilr() && CloudFolderHelper.CLOUD_FOLDERS_ENABLED));
-		
-		// Put out a flag indicating whether the current user has
-		// access to the root workspace.
-		model.put(WebKeys.HAS_ROOT_DIR_ACCESS, hasRootDirAccess(bs));
-
-		// Put out the character the current user uses for a decimal
-		// separator.
-		DecimalFormat df = ((DecimalFormat) DecimalFormat.getInstance(currentUser.getLocale()));
-		DecimalFormatSymbols dfs = df.getDecimalFormatSymbols();
-		char decimalSeparator = dfs.getDecimalSeparator();
-		model.put(WebKeys.DECIMAL_SEPARATOR, new String(new char[]{decimalSeparator}));
 
 		// Is the request to activate an activity stream? 
 		String	showWhatsNewS        = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ACTIVITY_STREAMS_SHOW_SITE_WIDE, "");
@@ -1598,9 +1543,9 @@ public class GwtUIHelper {
 				// ...put that out.
 				int sc = Integer.parseInt(showCollection);
 				if (PermaLinkUtil.COLLECTION_USER_DEFAULT == sc) {
-					if      (SearchUtils.userCanAccessMyFiles(bs, currentUser)) sc = PermaLinkUtil.COLLECTION_MY_FILES;
-					else if (currentUser.isShared() && isLicenseFilr)           sc = PermaLinkUtil.COLLECTION_SHARED_PUBLIC;
-					else                                                        sc = PermaLinkUtil.COLLECTION_SHARED_WITH_ME;
+					if (SearchUtils.userCanAccessMyFiles(bs, RequestContextHolder.getRequestContext().getUser()))
+					     sc = PermaLinkUtil.COLLECTION_MY_FILES;
+					else sc = PermaLinkUtil.COLLECTION_SHARED_WITH_ME;
 					showCollection = String.valueOf(sc);
 				}
 				model.put(WebKeys.URL_SHOW_COLLECTION, showCollection);

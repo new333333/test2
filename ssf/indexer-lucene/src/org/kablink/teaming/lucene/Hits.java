@@ -34,12 +34,9 @@ package org.kablink.teaming.lucene;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.BitSet;
-import java.util.Set;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.search.ScoreDoc;
-import org.kablink.util.search.Constants;
 
 
 /**
@@ -49,59 +46,17 @@ import org.kablink.util.search.Constants;
  */
 public class Hits implements Serializable {
 
-	private static final long serialVersionUID = 1L;
-	
-	// The number of documents in this object. This field is set on the server side.
-	private int size;
-	// This may be exact or approximate depending on whether or not a search involves
-	// client side-driven post filtering for access check. 
-	// This field is set on the server side.
-    private int totalHits = 0;
-    // Indicates whether the totalHits is approximate or exact.
-    // This field is set on the server side.
-    private boolean totalHitsApproximate = true;
-    // Indicates whether or not there is at least one more document in the search index
-    // that matches the search query (including ACL filter) that isn't returned in this
-    // object.
-    // This field is set on the client side.
-    private boolean thereIsMore = false;
-        
-    // Matching documents. This field is set on the server side.
+    private int size;
     private Document[] documents;
+    private float[] scores;
+    private int totalHits = 0;
 
-    // This optional field is for internal use only. Must NOT be used directly by the
-    // application code. If true, the document represents a net folder file/entry/comment
-    // that is accessible to the user via ACL granted through sharing. The value of false
-    // doesn't necessarily mean the opposite, so shouldn't be interpreted in one particular
-    // way. For example it may simply mean that the pertaining information is unknown.
-    // This field is set on the server side.
-    private boolean[] noIntrinsicAclStoredButAccessibleThroughFilrGrantedAcl; // all elements initialized to false
-    
-    
     public Hits(int length) {
         this.size = length;
         documents = new Document[length];
-        noIntrinsicAclStoredButAccessibleThroughFilrGrantedAcl = new boolean[length];
-     }
+        scores = new float[length];
+    }
 
-    // A sort of copy constructor
-    public Hits(Hits hits, BitSet bitSet, int accessibleCount) {
-    	this(accessibleCount);
-    	int index = 0;
-    	for(int i = 0; i < hits.size; i++) {
-    		if(bitSet.get(i)) {
-    			this.setDoc(hits.doc(i), index);
-    			index++;
-    		}
-    	}
-    }
-    
-    public void removeLast() {
-    	documents[size-1] = null;
-    	noIntrinsicAclStoredButAccessibleThroughFilrGrantedAcl[size-1] = false;
-    	size -= 1;
-    }
-    
     public Document doc(int n) {
         return documents[n];
     }
@@ -109,47 +64,27 @@ public class Hits implements Serializable {
     public int length() {
         return this.size;
     }
-    
-    public void setLength(int length) {
-    	this.size = length;
-    }
 
-    public boolean noIntrinsicAclStoredButAccessibleThroughFilrGrantedAcl(int n) {
-    	return noIntrinsicAclStoredButAccessibleThroughFilrGrantedAcl[n];
+    public float score(int n) {
+        return scores[n];
     }
 
     public static Hits transfer(org.apache.lucene.search.IndexSearcher searcher, org.apache.lucene.search.TopDocs topDocs,
-            int offset, int maxSize, Set<String> noIntrinsicAclStoredButAccessibleThroughFilrGrantedAclEntryIds, boolean totalHitsApproximate) throws IOException {
+            int offset, int maxSize) throws IOException {
         if (topDocs == null) return new Hits(0);
-    	int length = (topDocs.scoreDocs == null)? 0: topDocs.scoreDocs.length;
-        length = Math.min(length - offset, maxSize);
+    	int length = topDocs.totalHits;
+        if (maxSize > 0) {
+          length = Math.min(length - offset, maxSize);
+        }
         if (length <= 0) return new Hits(0);
         Hits ss_hits = new Hits(length);
         ScoreDoc[] hits = topDocs.scoreDocs;
-        Document doc;
-        String entityType;
-        String entryId;
+        int docId;
         for(int i = 0; i < length; i++) {
-        	doc = searcher.doc(hits[offset + i].doc);
-        	if(noIntrinsicAclStoredButAccessibleThroughFilrGrantedAclEntryIds != null) {
-	        	entityType = doc.get(Constants.ENTITY_FIELD);
-	        	if(entityType != null && Constants.ENTITY_TYPE_FOLDER_ENTRY.equals(entityType)) {
-	        		entryId = doc.get(Constants.DOCID_FIELD);
-	        		if(entryId != null && noIntrinsicAclStoredButAccessibleThroughFilrGrantedAclEntryIds.contains(entryId)) {
-	        			// This doc represents a folder entry or reply/comment or attachment that doesn't
-	        			// have its intrinsic ACL indexed with it but instead have share-granted ACL
-	        			// that made it pass the caller's regular ACL filter. We want to pass this
-	        			// information to the caller so that the caller wouldn't have to apply 
-	        			// post-filtering on this doc.
-	        			ss_hits.setNoIntrinsicAclStoredButAccessibleThroughFilrGrantedAcl(true, i);
-	        		}
-	        	}
-        	}
-            ss_hits.setDoc(doc, i);
-            //ss_hits.setScore(hits[offset + i].score, i);
+            ss_hits.setDoc(searcher.doc(hits[offset + i].doc), i);
+            ss_hits.setScore(hits[offset + i].score, i);
         }
         ss_hits.setTotalHits(topDocs.totalHits);
-        ss_hits.setTotalHitsApproximate(totalHitsApproximate);
         return ss_hits;
     }
 
@@ -157,10 +92,10 @@ public class Hits implements Serializable {
         documents[n] = doc;
     }
 
-    public void setNoIntrinsicAclStoredButAccessibleThroughFilrGrantedAcl(boolean value, int n) {
-    	noIntrinsicAclStoredButAccessibleThroughFilrGrantedAcl[n] = value;
+    public void setScore(float score, int n) {
+        scores[n] = score;
     }
-    
+
 	/**
 	 * @return Returns the totalHits.
 	 */
@@ -174,21 +109,4 @@ public class Hits implements Serializable {
 	public void setTotalHits(int totalHits) {
 		this.totalHits = totalHits;
 	}
-
-	public boolean getThereIsMore() {
-		return thereIsMore;
-	}
-
-	public void setThereIsMore(boolean thereIsMore) {
-		this.thereIsMore = thereIsMore;
-	}
-
-	public boolean isTotalHitsApproximate() {
-		return totalHitsApproximate;
-	}
-
-	public void setTotalHitsApproximate(boolean totalHitsApproximate) {
-		this.totalHitsApproximate = totalHitsApproximate;
-	}
-
 }

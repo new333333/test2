@@ -495,8 +495,4 @@ public class FolderEntry extends WorkflowControlledEntry implements WorkflowSupp
 		this.folderEntryStats = folderEntryStats;
 	}
     
-	public boolean noAclDredged() {
-		return (ResourceDriverConfig.DriverType.famt == getParentFolder().getResourceDriverType());
-	}
-
 }

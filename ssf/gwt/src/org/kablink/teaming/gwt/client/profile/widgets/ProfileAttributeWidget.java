@@ -159,7 +159,7 @@ public class ProfileAttributeWidget  {
 						if(attr.getValue() != null) {
 							String s = attr.getValue().toString();
 							if(GwtClientHelper.hasString(s)){
-								widget = new HTML(s);
+								widget = new HTML(SafeHtmlUtils.htmlEscape(s));
 							}
 						}
 						break;

@@ -314,8 +314,6 @@ public abstract class Principal extends Entry implements IPrincipal {
 	}
 	public void setDomainName( String domainName )
 	{
-		if(domainName != null)
-			domainName = domainName.toLowerCase();
 		this.domainName = domainName;
 	}
 	

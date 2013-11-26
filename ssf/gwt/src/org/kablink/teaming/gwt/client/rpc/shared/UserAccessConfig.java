@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -31,6 +31,8 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 package org.kablink.teaming.gwt.client.rpc.shared;
+
+import org.kablink.teaming.gwt.client.util.BinderInfo;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
@@ -47,8 +49,6 @@ public class UserAccessConfig
 	private boolean m_allowSelfReg;
 	private boolean m_allowExternalUsers;
 	private boolean m_allowExternalUsersSelfReg;
-	private boolean m_allowDownload;
-	private boolean m_allowWebAccess;
 	
 	/**
 	 * Constructor method. 
@@ -64,8 +64,6 @@ public class UserAccessConfig
 		m_allowExternalUsersSelfReg = false;
 		m_allowGuestAccess = false;
 		m_allowSelfReg = false;
-		m_allowDownload = false;
-		m_allowWebAccess = false;
 	}
 
 	/**
@@ -111,22 +109,6 @@ public class UserAccessConfig
 	/**
 	 * 
 	 */
-	public boolean getAllowDownload()
-	{
-		return m_allowDownload;
-	}
-
-	/**
-	 * 
-	 */
-	public boolean getAllowWebAccess()
-	{
-		return m_allowWebAccess;
-	}
-
-	/**
-	 * 
-	 */
 	public void setAllowExternalUsers( boolean allow )
 	{
 		m_allowExternalUsers = allow;
@@ -162,21 +144,5 @@ public class UserAccessConfig
 	public void setAllowSelfReg( boolean allow )
 	{
 		m_allowSelfReg = allow;
-	}
-	
-	/**
-	 * 
-	 */
-	public void setAllowDownload( boolean allow )
-	{
-		m_allowDownload = allow;
-	}
-	
-	/**
-	 * 
-	 */
-	public void setAllowWebAccess( boolean allow )
-	{
-		m_allowWebAccess = allow;
 	}
 }

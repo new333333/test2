@@ -25,7 +25,7 @@
 
 	<bean id="authenticationProvider" class="org.kablink.teaming.asmodule.spring.security.providers.AuthenticationModuleBridge"/>
 	
-    <security:http realm="Novell" create-session="never" authentication-manager-ref="_authenticationManager">
+    <security:http realm="Vibe" create-session="never" authentication-manager-ref="_authenticationManager">
         <security:custom-filter position="ANONYMOUS_FILTER" ref="optionsProcessingFilter" />
         <security:session-management session-fixation-protection="newSession" />
         <security:intercept-url pattern="/**" access="IS_AUTHENTICATED_FULLY,ROLE_ANONYMOUS" />

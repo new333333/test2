@@ -110,16 +110,12 @@ public class ManageSearchIndexController extends  SAbstractController {
 				boolean includeUsersAndGroups = false;
 				if (idChoices.contains(usersAndGroups))
 					includeUsersAndGroups = true;
-				try {
-					getAdminModule().reindexDestructive(ids, statusTicket, nodeNames, errors, includeUsersAndGroups);
-				} catch(Exception e) {
-					errors.addError(NLT.get("error.indexing.string", new String[] {e.getMessage()}));
-				}
+				getAdminModule().reindexDestructive(ids, statusTicket, nodeNames, errors, includeUsersAndGroups);
 				
 	    		getProfileModule().setUserProperty(user.getId(), ObjectKeys.USER_PROPERTY_UPGRADE_SEARCH_INDEX, "true");
 				//SimpleProfiler.done(logger);
 				response.setRenderParameters(formData);
-				response.setRenderParameter(WebKeys.ERROR_INDEXING_COUNT, String.valueOf(errors.getErrorCount()));
+				response.setRenderParameter(WebKeys.ERROR_INDEXING_COUNT, errors.getErrorCount().toString());
 				if (errors.getErrorCount() > 0) {
 					List binderIds = new ArrayList();
 					for (Binder b : errors.getBinders()) {
@@ -131,16 +127,10 @@ public class ManageSearchIndexController extends  SAbstractController {
 						entryIds.add(e.getId().toString());
 						logger.error(NLT.get("error.indexing.entries", new String[] {e.getId().toString(), e.getTitle()}));
 					}
-					List errorStrings = new ArrayList();
-					for (String s : errors.getGeneralErrors()) {
-						errorStrings.add(s);
-					}
 					if (binderIds.size() > 0)
 						response.setRenderParameter(WebKeys.ERROR_INDEXING_BINDERS, (String[])binderIds.toArray(new String[binderIds.size()]));
 					if (entryIds.size() > 0)
 						response.setRenderParameter(WebKeys.ERROR_INDEXING_ENTRIES, (String[])entryIds.toArray(new String[entryIds.size()]));
-					if (errorStrings.size() > 0)
-						response.setRenderParameter(WebKeys.ERROR_INDEXING_STRINGS, (String[])errorStrings.toArray(new String[errorStrings.size()]));
 				}
 			
 			} else if (operation.equals("optimize")) {
@@ -190,9 +180,8 @@ public class ManageSearchIndexController extends  SAbstractController {
 		if (formData.containsKey("okBtn") || btnClicked.equals("okBtn")) {
 			response.setContentType("text/xml");
 			model.put(WebKeys.ERROR_INDEXING_COUNT, request.getParameter(WebKeys.ERROR_INDEXING_COUNT));
-			model.put(WebKeys.ERROR_INDEXING_BINDERS, formData.get(WebKeys.ERROR_INDEXING_BINDERS));
-			model.put(WebKeys.ERROR_INDEXING_ENTRIES, formData.get(WebKeys.ERROR_INDEXING_ENTRIES));
-			model.put(WebKeys.ERROR_INDEXING_STRINGS, formData.get(WebKeys.ERROR_INDEXING_STRINGS));
+			model.put(WebKeys.ERROR_INDEXING_BINDERS, request.getParameter(WebKeys.ERROR_INDEXING_BINDERS));
+			model.put(WebKeys.ERROR_INDEXING_ENTRIES, request.getParameter(WebKeys.ERROR_INDEXING_ENTRIES));
 			return new ModelAndView("administration/indexing_errors", model);
 		}
 
@@ -220,14 +209,11 @@ public class ManageSearchIndexController extends  SAbstractController {
  		model.put(WebKeys.WORKSPACE_DOM_TREE_BINDER_ID, RequestContextHolder.getRequestContext().getZoneId().toString());
 		model.put(WebKeys.WORKSPACE_DOM_TREE, pTree);		
 		
-		List<IndexNode> nodes = getAdminModule().retrieveIndexNodesHA();
+		List<IndexNode> nodes = getAdminModule().retrieveIndexNodes();
 		
-		if (nodes != null) {
+		if(nodes != null) {
 			model.put(WebKeys.SEARCH_NODES, nodes);
-		} else {
-			model.put(WebKeys.SEARCH_NODE, getAdminModule().loadNonHAIndexNode());
 		}
-		model.put(WebKeys.SEARCH_SAFE_TO_INDEX, !(getAdminModule().isUnsafeReindexingInProgress()));
 			
 		IndexOptimizationSchedule schedule = getAdminModule().getIndexOptimizationSchedule();
 		model.put(WebKeys.SCHEDULE_INFO, schedule);

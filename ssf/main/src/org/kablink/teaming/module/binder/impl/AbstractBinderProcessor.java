@@ -78,7 +78,6 @@ import org.kablink.teaming.domain.EntityDashboard;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.Event;
 import org.kablink.teaming.domain.FileAttachment;
-import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.HistoryStamp;
 import org.kablink.teaming.domain.Principal;
@@ -167,6 +166,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     	fieldsOnlyIndexArgs.put(DefinitionModule.INDEX_FIELDS_ONLY, Boolean.TRUE);
 	}
     
+ 
 	protected DefinitionModule getDefinitionModule() {
 		return definitionModule;
 	}
@@ -578,10 +578,6 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     
    //inside write transaction    
     protected void addBinder_postSave(Binder parent, Binder binder, InputDataAccessor inputData, Map entryData, Map ctx) {
-		boolean skipDbLog = false;
-		if(ctx != null && ctx.containsKey(ObjectKeys.INPUT_OPTION_SKIP_DB_LOG))
-			skipDbLog = ((Boolean)ctx.get(ObjectKeys.INPUT_OPTION_SKIP_DB_LOG)).booleanValue();
-
   		if (inputData.exists(ObjectKeys.INPUT_FIELD_FUNCTIONMEMBERSHIPS)) {
   			List<WorkAreaFunctionMembership> wfms = (List)inputData.getSingleObject(ObjectKeys.INPUT_FIELD_FUNCTIONMEMBERSHIPS);
   			if (wfms != null && !wfms.isEmpty()) { 
@@ -612,12 +608,10 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 			Event event = it.next();
 			event.generateUid(binder);
 		}
-	
+		
  		//create history - using timestamp and version from fillIn
-    	processChangeLog(binder, ChangeLog.ADDBINDER, skipDbLog);
-
-		if(!skipDbLog)
-	    	getReportModule().addAuditTrail(AuditType.add, binder);
+    	processChangeLog(binder, ChangeLog.ADDBINDER);
+    	getReportModule().addAuditTrail(AuditType.add, binder);
     	
     	
     	// Should have a BinderQuota for the newly created binder.
@@ -692,15 +686,6 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
    					entryData.put( ObjectKeys.FIELD_BINDER_IS_HOME_DIR, homeDir );
    			}
 
-   			if ( inputData.exists( ObjectKeys.FIELD_BINDER_IS_MYFILES_DIR ) && !entryData.containsKey( ObjectKeys.FIELD_BINDER_IS_MYFILES_DIR ) )
-   			{
-   				Boolean myFilesDir = null;
-   				
-   				myFilesDir = Boolean.valueOf( inputData.getSingleValue( ObjectKeys.FIELD_BINDER_IS_MYFILES_DIR ) );
-   				if ( myFilesDir != null )
-   					entryData.put( ObjectKeys.FIELD_BINDER_IS_MYFILES_DIR, myFilesDir );
-   			}
-
    			if ( inputData.exists( ObjectKeys.FIELD_BINDER_ALLOW_DESKTOP_APP_TO_SYNC_DATA ) && !entryData.containsKey( ObjectKeys.FIELD_BINDER_ALLOW_DESKTOP_APP_TO_SYNC_DATA ) )
    			{
    				Boolean allow = null;
@@ -756,27 +741,6 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
    				value = Long.valueOf( inputData.getSingleValue( ObjectKeys.FIELD_BINDER_JITS_RESULTS_MAX_AGE ) );
    				if ( value != null )
    					entryData.put( ObjectKeys.FIELD_BINDER_JITS_RESULTS_MAX_AGE, value );
-   			}
-
-   			if ( inputData.exists( ObjectKeys.FIELD_BINDER_SYNC_SCHEDULE_OPTION ) &&
-         		 !entryData.containsKey( ObjectKeys.FIELD_BINDER_SYNC_SCHEDULE_OPTION ) )
-  			{
-  				Object value;
-  				
-  				value = inputData.getSingleObject( ObjectKeys.FIELD_BINDER_SYNC_SCHEDULE_OPTION );
-				entryData.put( ObjectKeys.FIELD_BINDER_SYNC_SCHEDULE_OPTION, value );
-  			}
-
-   			if ( inputData.exists( ObjectKeys.FIELD_BINDER_FULL_SYNC_DIR_ONLY ) && !entryData.containsKey( ObjectKeys.FIELD_BINDER_FULL_SYNC_DIR_ONLY ) )
-   			{
-   				Boolean dirOnly = null;
-   				Object value;
-   				
-   				value = inputData.getSingleObject( ObjectKeys.FIELD_BINDER_FULL_SYNC_DIR_ONLY ); 
-   				if ( value != null )
-   	   				dirOnly = Boolean.valueOf( inputData.getSingleValue( ObjectKeys.FIELD_BINDER_FULL_SYNC_DIR_ONLY ) );
- 
-   				entryData.put( ObjectKeys.FIELD_BINDER_FULL_SYNC_DIR_ONLY, dirOnly );
    			}
    		}
    		Boolean library = null;
@@ -1093,7 +1057,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         SimpleProfiler.start("deleteBinder_postDelete");
         deleteBinder_postDelete(binder, ctx);
         SimpleProfiler.stop("deleteBinder_postDelete");
-        
+     
         SimpleProfiler.start("deleteBinder_deleteRssFeed");
         doRssDelete(binder);
         SimpleProfiler.stop("deleteBinder_deleteRssFeed");
@@ -1110,8 +1074,8 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         User user = RequestContextHolder.getRequestContext().getUser();
         binder.setModification(new HistoryStamp(user));
         binder.incrLogVersion();
-    	processChangeLog(binder, ChangeLog.DELETEBINDER, skipDbLog);
         if(!skipDbLog) {
+        	processChangeLog(binder, ChangeLog.DELETEBINDER);
         	// Make sure that the audit trail's timestamp is identical to the modification time of the binder. 
         	getReportModule().addAuditTrail(AuditType.delete, binder, binder.getModification().getDate());
         }
@@ -1450,8 +1414,9 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     protected void moveBinder_log(Binder binder, HistoryStamp stamp) {
     	binder.setModification(stamp);
  		binder.incrLogVersion();
- 		ChangeLog changes = ChangeLogUtils.create(binder, ChangeLog.MOVEBINDER);
- 		ChangeLogUtils.save(changes);
+ 		ChangeLog changes = new ChangeLog(binder, ChangeLog.MOVEBINDER);
+    	changes.getEntityRoot();
+    	getCoreDao().save(changes);
 
     }
     //inside write transaction    
@@ -1664,8 +1629,8 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
        	org.dom4j.Document queryTree = SearchUtils.getInitalSearchDocument(searchFilter.getFilter(), searchOptions);
       	
       	SearchUtils.getQueryFields(queryTree, searchOptions); 
-    	if(logger.isTraceEnabled()) {
-    		logger.trace("Query is: " + queryTree.asXML());
+    	if(logger.isDebugEnabled()) {
+    		logger.debug("Query is: " + queryTree.asXML());
     	}
        	
        	//Create the Lucene query
@@ -1675,13 +1640,18 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     	//Set the sort order
     	SortField[] fields = SearchUtils.getSortFields(searchOptions); 
     	so.setSortBy(fields);
+    	Query soQuery = so.getLuceneQuery();    //Get the query into a variable to avoid doing this very slow operation twice
+    	
+    	if(logger.isDebugEnabled()) {
+    		logger.debug("Query is: " + soQuery.toString());
+    	}
     	
     	LuceneReadSession luceneSession = getLuceneSessionFactory().openReadSession();
         
     	Hits hits = null;
         try {
         	hits = SearchUtils.searchFolderOneLevelWithInferredAccess(luceneSession, RequestContextHolder.getRequestContext().getUserId(),
-        			so, Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, searchOffset, maxResults,
+        			so.getAclQueryStr(), Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, soQuery, so.getSortBy(), searchOffset, maxResults,
         			binder);
         }
         finally {
@@ -2026,8 +1996,6 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
    	}
    	private Collection loadIndexTree(Binder binder, Collection exclusions, StatusTicket statusTicket, IndexErrors errors) {
    		//get all the ids of child binders. order for statusTicket to make some sense
-   		if(logger.isDebugEnabled())
-   			logger.debug("Fetching IDs of all binders at or below [" + binder.getPathName() + "]");
    		List<Long> ids = getCoreDao().loadObjects("select x.id from org.kablink.teaming.domain.Binder x where x.binderKey.sortKey like '" +
 				binder.getBinderKey().getSortKey() + "%' order by x.binderKey.sortKey", null);
 		int inClauseLimit=SPropsUtil.getInt("db.clause.limit", 1000);
@@ -2037,11 +2005,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 		for (int i=0; i<ids.size(); i+=inClauseLimit) {
 			List subList = ids.subList(i, Math.min(ids.size(), i+inClauseLimit));
 			params.put("pList", subList);
-			if(logger.isDebugEnabled())
-				logger.debug("Loading " + subList.size() + " binder objects");
 			List<Binder> binders = getCoreDao().loadObjects("from org.kablink.teaming.domain.Binder x where x.id in (:pList) order by x.binderKey.sortKey", params);
-			if(logger.isDebugEnabled())
-				logger.debug("Bulk loading collections for " + binders.size() + " binders");
 			getCoreDao().bulkLoadCollections(binders);
 			List<EntityIdentifier> folderIds = new ArrayList();
 			List<EntityIdentifier> workspaceIds = new ArrayList();
@@ -2054,14 +2018,8 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 				else 
 					otherIds.add(e.getEntityIdentifier());
 			}
-			if(logger.isDebugEnabled())
-				logger.debug("Loading tags for " + folderIds.size() + " folders");
 			Map tagMap = getCoreDao().loadAllTagsByEntity(folderIds);
-			if(logger.isDebugEnabled())
-				logger.debug("Loading tags for " + workspaceIds.size() + " workspaces");
 			tagMap.putAll(getCoreDao().loadAllTagsByEntity(workspaceIds));
-			if(logger.isDebugEnabled())
-				logger.debug("Loading tags for " + otherIds.size() + " others");
 			tagMap.putAll(getCoreDao().loadAllTagsByEntity(otherIds));
 
 			for (Binder b:binders) {
@@ -2071,23 +2029,14 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 	   	    	Collection tags = (Collection)tagMap.get(b.getEntityIdentifier());
 	   	    	statusTicket.setStatus(NLT.get("index.indexingBinder", new Object[] {String.valueOf(bindersIndexed), String.valueOf(ids.size())}));
 	   	   		
-				if(logger.isDebugEnabled())
-					logger.debug("Indexing binder [" + b.getPathName() + "]");
 	   	    	IndexErrors binderErrors = processor.indexBinder(b, true, false, tags);
 	   	    	errors.add(binderErrors);
-	   	    	
-				if(logger.isDebugEnabled())
-					logger.debug("Evicting tags and binder");
 	   	    	getCoreDao().evict(tags);
 	   	    	getCoreDao().evict(b);
 	   	    	bindersIndexed++;
 			}
-			if(logger.isDebugEnabled())
-				logger.debug("Applying changes to index");
 	  		IndexSynchronizationManager.applyChanges(SPropsUtil.getInt("lucene.flush.threshold", 100));
 		}
-		if(logger.isDebugEnabled())
-			logger.debug("Processed " + ids.size() + " binders");
    		return ids;
 
    	}
@@ -2584,10 +2533,6 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         // Add ancestry 
         EntityIndexUtils.addAncestry(indexDoc, entity, fieldsOnly);
         
-    	EntityIndexUtils.addResourceDriverName( indexDoc, entity, fieldsOnly );
-
-    	EntityIndexUtils.addNetFolderResourcePath( indexDoc, entity, fieldsOnly );
-
         if (entity instanceof Binder) {
             //Add binder path
         	EntityIndexUtils.addBinderPath(indexDoc, (Binder) entity, fieldsOnly);
@@ -2598,12 +2543,9 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         	EntityIndexUtils.addBinderIsMyFilesDir(indexDoc, (Binder) entity, fieldsOnly);
         	EntityIndexUtils.addBinderHasResourceDriver(indexDoc, (Binder) entity, fieldsOnly);
         	EntityIndexUtils.addBinderIsTopFolder(indexDoc, (Binder) entity, fieldsOnly);
-        	EntityIndexUtils.addBinderCloudFolderInfo( indexDoc, (Binder) entity, fieldsOnly );
-        	if (entity instanceof Folder) {
-               	EntityIndexUtils.addFolderFileTime( indexDoc, (Folder) entity, fieldsOnly );
-        	}
+        	EntityIndexUtils.addBinderResourceDriverName( indexDoc, (Binder) entity, fieldsOnly );
         }
-        
+ 
         // Add data fields driven by the entry's definition object. 
 		DefinitionModule.DefinitionVisitor visitor = new DefinitionModule.DefinitionVisitor() {
 			@Override
@@ -2611,19 +2553,16 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 			{
                 if (flagElement.attributeValue("apply").equals("true")) {
                 	String fieldBuilder = flagElement.attributeValue("fieldBuilder");
-                	String excludeFromSearchIndex = DefinitionUtils.getPropertyValue(entryElement, "excludeFromSearchIndex");
-                	if (excludeFromSearchIndex == null || !excludeFromSearchIndex.equals("true")) {
-						String nameValue = DefinitionUtils.getPropertyValue(entryElement, "name");									
-						if (Validator.isNull(nameValue)) {nameValue = entryElement.attributeValue("name");}
-						args.put(DefinitionModule.DEFINITION_ELEMENT, entryElement);
-	                	Field[] fields = FieldBuilderUtil.buildField(entity,
-	                         nameValue, fieldBuilder, args);
-	                	if (fields != null) {
-	                		for (int i = 0; i < fields.length; i++) {
-	                			indexDoc.add(fields[i]);
-	                		}
-	                    }
-                	}
+					String nameValue = DefinitionUtils.getPropertyValue(entryElement, "name");									
+					if (Validator.isNull(nameValue)) {nameValue = entryElement.attributeValue("name");}
+					args.put(DefinitionModule.DEFINITION_ELEMENT, entryElement);
+                	Field[] fields = FieldBuilderUtil.buildField(entity,
+                         nameValue, fieldBuilder, args);
+                	if (fields != null) {
+                		for (int i = 0; i < fields.length; i++) {
+                			indexDoc.add(fields[i]);
+                		}
+                    }
                 }
 			}
 			@Override
@@ -2772,41 +2711,26 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         }
 		
 	}
-	
 	@Override
 	public ChangeLog processChangeLog(Binder binder, String operation) {
-		return processChangeLog(binder, operation, false);
-	}
-	
-	@Override
-	public ChangeLog processChangeLog(Binder binder, String operation, boolean skipDbLog) {
-		ChangeLog changes = null;
-		
-		if(!skipDbLog) {
-			//any changes here should be considered to template export
-			changes = ChangeLogUtils.createAndBuild(binder, operation);
-			Element element = changes.getEntityRoot();
-			XmlUtils.addCustomAttribute(element, ObjectKeys.XTAG_BINDER_NAME, ObjectKeys.XTAG_TYPE_STRING, binder.getName());
-			XmlUtils.addProperty(element, ObjectKeys.XTAG_BINDER_LIBRARY, binder.isLibrary());
-			XmlUtils.addProperty(element, ObjectKeys.XTAG_BINDER_INHERITFUNCTIONMEMBERSHIP, binder.isFunctionMembershipInherited());
-			XmlUtils.addProperty(element, ObjectKeys.XTAG_BINDER_INHERITDEFINITIONS, binder.isDefinitionsInherited());
-			XmlUtils.addProperty(element, ObjectKeys.XTAG_BINDER_INHERITTEAMMEMBERS, binder.isTeamMembershipInherited());
-			XmlUtils.addProperty(element, ObjectKeys.XTAG_BINDER_UNIQUETITLES, binder.isUniqueTitles());
-			XmlUtils.addProperty(element, ObjectKeys.XTAG_BINDER_TEAMMEMBERS, LongIdUtil.getIdsAsString(binder.getTeamMemberIds()));
-			if (!binder.isFunctionMembershipInherited()) {
-				List<WorkAreaFunctionMembership> wfms = getWorkAreaFunctionMembershipManager().findWorkAreaFunctionMemberships(
-						binder.getZoneId(), binder);
-				for (WorkAreaFunctionMembership wfm: wfms) {
-					wfm.addChangeLog(element);
-				}
+		ChangeLog changes = new ChangeLog(binder, operation);
+		//any changes here should be considered to template export
+		Element element = ChangeLogUtils.buildLog(changes, binder);
+		XmlUtils.addCustomAttribute(element, ObjectKeys.XTAG_BINDER_NAME, ObjectKeys.XTAG_TYPE_STRING, binder.getName());
+		XmlUtils.addProperty(element, ObjectKeys.XTAG_BINDER_LIBRARY, binder.isLibrary());
+		XmlUtils.addProperty(element, ObjectKeys.XTAG_BINDER_INHERITFUNCTIONMEMBERSHIP, binder.isFunctionMembershipInherited());
+		XmlUtils.addProperty(element, ObjectKeys.XTAG_BINDER_INHERITDEFINITIONS, binder.isDefinitionsInherited());
+		XmlUtils.addProperty(element, ObjectKeys.XTAG_BINDER_INHERITTEAMMEMBERS, binder.isTeamMembershipInherited());
+		XmlUtils.addProperty(element, ObjectKeys.XTAG_BINDER_UNIQUETITLES, binder.isUniqueTitles());
+		XmlUtils.addProperty(element, ObjectKeys.XTAG_BINDER_TEAMMEMBERS, LongIdUtil.getIdsAsString(binder.getTeamMemberIds()));
+		if (!binder.isFunctionMembershipInherited()) {
+			List<WorkAreaFunctionMembership> wfms = getWorkAreaFunctionMembershipManager().findWorkAreaFunctionMemberships(
+					binder.getZoneId(), binder);
+			for (WorkAreaFunctionMembership wfm: wfms) {
+				wfm.addChangeLog(element);
 			}
-			if (operation.equals(ChangeLog.DELETEBINDER) || operation.equals(ChangeLog.PREDELETEBINDER)) {
-				//Add the path so it can be shown in the activity reports
-				XmlUtils.addProperty(element, ObjectKeys.XTAG_BINDER_PATH, binder.getPathName());
-			}
-			ChangeLogUtils.save(changes);
 		}
-		
+		getCoreDao().save(changes);
 		return changes;
 	}
 	/*************************************************************************************************/
@@ -2905,8 +2829,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 		entity.setModification(new HistoryStamp(user, date.getTime()));
 	}
 	
-    @Override
-	public void updateParentModTime(final Binder parentBinder, Map options) {
+    public void updateParentModTime(final Binder parentBinder, Map options) {
 		if(parentBinder != null && 
 				parentBinder.getInternalId() == null &&
 				!(options != null && Boolean.TRUE.equals(options.get(ObjectKeys.INPUT_OPTION_SKIP_PARENT_MODTIME_UPDATE)))) {
@@ -2916,4 +2839,5 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 			indexBinder(parentBinder, false);
 		}
 	}
+
 }

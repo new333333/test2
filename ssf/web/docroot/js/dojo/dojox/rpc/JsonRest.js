@@ -1,48 +1,59 @@
-//>>built
-define("dojox/rpc/JsonRest",["dojo","dojox","dojox/json/ref","dojox/rpc/Rest"],function(_1,_2){
-var _3=[];
-var _4=_2.rpc.Rest;
+/*
+	Copyright (c) 2004-2009, The Dojo Foundation All Rights Reserved.
+	Available via Academic Free License >= 2.1 OR the modified BSD license.
+	see: http://dojotoolkit.org/license for details
+*/
+
+
+if(!dojo._hasResource["dojox.rpc.JsonRest"]){
+dojo._hasResource["dojox.rpc.JsonRest"]=true;
+dojo.provide("dojox.rpc.JsonRest");
+dojo.require("dojox.json.ref");
+dojo.require("dojox.rpc.Rest");
+(function(){
+var _1=[];
+var _2=dojox.rpc.Rest;
 var jr;
-function _5(_6,_7,_8,_9){
-var _a=_7.ioArgs&&_7.ioArgs.xhr&&_7.ioArgs.xhr.getResponseHeader("Last-Modified");
-if(_a&&_4._timeStamps){
-_4._timeStamps[_9]=_a;
+function _3(_4,_5,_6,_7){
+var _8=_5.ioArgs&&_5.ioArgs.xhr&&_5.ioArgs.xhr.getResponseHeader("Last-Modified");
+if(_8&&_2._timeStamps){
+_2._timeStamps[_7]=_8;
 }
-var _b=_6._schema&&_6._schema.hrefProperty;
-if(_b){
-_2.json.ref.refAttribute=_b;
+var _9=_4._schema&&_4._schema.hrefProperty;
+if(_9){
+dojox.json.ref.refAttribute=_9;
 }
-_8=_8&&_2.json.ref.resolveJson(_8,{defaultId:_9,index:_4._index,timeStamps:_a&&_4._timeStamps,time:_a,idPrefix:_6._store.allowNoTrailingSlash?_6.servicePath+"/":_6.servicePath.replace(/[^\/]*$/,""),idAttribute:jr.getIdAttribute(_6),schemas:jr.schemas,loader:jr._loader,idAsRef:_6.idAsRef,assignAbsoluteIds:true});
-_2.json.ref.refAttribute="$ref";
-return _8;
+_6=_6&&dojox.json.ref.resolveJson(_6,{defaultId:_7,index:_2._index,timeStamps:_8&&_2._timeStamps,time:_8,idPrefix:_4.servicePath.replace(/[^\/]*$/,""),idAttribute:jr.getIdAttribute(_4),schemas:jr.schemas,loader:jr._loader,idAsRef:_4.idAsRef,assignAbsoluteIds:true});
+dojox.json.ref.refAttribute="$ref";
+return _6;
 };
-jr=_2.rpc.JsonRest={serviceClass:_2.rpc.Rest,conflictDateHeader:"If-Unmodified-Since",commit:function(_c){
-_c=_c||{};
+jr=dojox.rpc.JsonRest={serviceClass:dojox.rpc.Rest,conflictDateHeader:"If-Unmodified-Since",commit:function(_a){
+_a=_a||{};
+var _b=[];
+var _c={};
 var _d=[];
-var _e={};
-var _f=[];
-for(var i=0;i<_3.length;i++){
-var _10=_3[i];
-var _11=_10.object;
-var old=_10.old;
-var _12=false;
-if(!(_c.service&&(_11||old)&&(_11||old).__id.indexOf(_c.service.servicePath))&&_10.save){
-delete _11.__isDirty;
-if(_11){
+for(var i=0;i<_1.length;i++){
+var _e=_1[i];
+var _f=_e.object;
+var old=_e.old;
+var _10=false;
+if(!(_a.service&&(_f||old)&&(_f||old).__id.indexOf(_a.service.servicePath))&&_e.save){
+delete _f.__isDirty;
+if(_f){
 if(old){
-var _13;
-if((_13=_11.__id.match(/(.*)#.*/))){
-_11=_4._index[_13[1]];
+var _11;
+if((_11=_f.__id.match(/(.*)#.*/))){
+_f=_2._index[_11[1]];
 }
-if(!(_11.__id in _e)){
-_e[_11.__id]=_11;
-if(_c.incrementalUpdates&&!_13){
-var _14=(typeof _c.incrementalUpdates=="function"?_c.incrementalUpdates:function(){
-_14={};
-for(var j in _11){
-if(_11.hasOwnProperty(j)){
-if(_11[j]!==old[j]){
-_14[j]=_11[j];
+if(!(_f.__id in _c)){
+_c[_f.__id]=_f;
+if(_a.incrementalUpdates&&!_11){
+var _12=(typeof _a.incrementalUpdates=="function"?_a.incrementalUpdates:function(){
+_12={};
+for(var j in _f){
+if(_f.hasOwnProperty(j)){
+if(_f[j]!==old[j]){
+_12[j]=_f[j];
 }
 }else{
 if(old.hasOwnProperty(j)){
@@ -50,289 +61,282 @@ return null;
 }
 }
 }
-return _14;
-})(_11,old);
+return _12;
+})(_f,old);
 }
-if(_14){
-_d.push({method:"post",target:_11,content:_14});
+if(_12){
+_b.push({method:"post",target:_f,content:_12});
 }else{
-_d.push({method:"put",target:_11,content:_11});
+_b.push({method:"put",target:_f,content:_f});
 }
 }
 }else{
-var _15=jr.getServiceAndId(_11.__id).service;
-var _16=jr.getIdAttribute(_15);
-if((_16 in _11)&&!_c.alwaysPostNewItems){
-_d.push({method:"put",target:_11,content:_11});
+var _13=jr.getServiceAndId(_f.__id).service;
+var _14=jr.getIdAttribute(_13);
+if((_14 in _f)&&!_a.alwaysPostNewItems){
+_b.push({method:"put",target:_f,content:_f});
 }else{
-_d.push({method:"post",target:{__id:_15.servicePath},content:_11});
+_b.push({method:"post",target:{__id:_13.servicePath},content:_f});
 }
 }
 }else{
 if(old){
-_d.push({method:"delete",target:old});
+_b.push({method:"delete",target:old});
 }
 }
-_f.push(_10);
-_3.splice(i--,1);
+_d.push(_e);
+_1.splice(i--,1);
 }
 }
-_1.connect(_c,"onError",function(){
-if(_c.revertOnError!==false){
-var _17=_3;
-_3=_f;
-var _18=0;
+dojo.connect(_a,"onError",function(){
+if(_a.revertOnError!==false){
+var _15=_1;
+_1=_d;
+var _16=0;
 jr.revert();
-_3=_17;
+_1=_15;
 }else{
-_1.forEach(_f,function(obj){
-jr.changing(obj.object,!obj.object);
-});
+_1=dirtyObject.concat(_d);
 }
 });
-jr.sendToServer(_d,_c);
-return _d;
-},sendToServer:function(_19,_1a){
-var _1b;
-var _1c=_1.xhr;
-var _1d=_19.length;
-var i,_1e;
-var _1f;
-var _20=this.conflictDateHeader;
-_1.xhr=function(_21,_22){
-_22.headers=_22.headers||{};
-_22.headers["Transaction"]=_19.length-1==i?"commit":"open";
-if(_20&&_1f){
-_22.headers[_20]=_1f;
+jr.sendToServer(_b,_a);
+return _b;
+},sendToServer:function(_17,_18){
+var _19;
+var _1a=dojo.xhr;
+var _1b=_17.length;
+var i,_1c;
+var _1d;
+var _1e=this.conflictDateHeader;
+dojo.xhr=function(_1f,_20){
+_20.headers=_20.headers||{};
+_20.headers["Transaction"]=_17.length-1==i?"commit":"open";
+if(_1e&&_1d){
+_20.headers[_1e]=_1d;
 }
-if(_1e){
-_22.headers["Content-ID"]="<"+_1e+">";
+if(_1c){
+_20.headers["Content-ID"]="<"+_1c+">";
 }
-return _1c.apply(_1,arguments);
+return _1a.apply(dojo,arguments);
 };
-for(i=0;i<_19.length;i++){
-var _23=_19[i];
-_2.rpc.JsonRest._contentId=_23.content&&_23.content.__id;
-var _24=_23.method=="post";
-_1f=_23.method=="put"&&_4._timeStamps[_23.content.__id];
-if(_1f){
-_4._timeStamps[_23.content.__id]=(new Date())+"";
+for(i=0;i<_17.length;i++){
+var _21=_17[i];
+dojox.rpc.JsonRest._contentId=_21.content&&_21.content.__id;
+var _22=_21.method=="post";
+_1d=_21.method=="put"&&_2._timeStamps[_21.content.__id];
+if(_1d){
+_2._timeStamps[_21.content.__id]=(new Date())+"";
 }
-_1e=_24&&_2.rpc.JsonRest._contentId;
-var _25=jr.getServiceAndId(_23.target.__id);
-var _26=_25.service;
-var dfd=_23.deferred=_26[_23.method](_25.id.replace(/#/,""),_2.json.ref.toJson(_23.content,false,_26.servicePath,true));
-(function(_27,dfd,_28){
-dfd.addCallback(function(_29){
+_1c=_22&&dojox.rpc.JsonRest._contentId;
+var _23=jr.getServiceAndId(_21.target.__id);
+var _24=_23.service;
+var dfd=_21.deferred=_24[_21.method](_23.id.replace(/#/,""),dojox.json.ref.toJson(_21.content,false,_24.servicePath,true));
+(function(_25,dfd,_26){
+dfd.addCallback(function(_27){
 try{
-var _2a=dfd.ioArgs.xhr&&dfd.ioArgs.xhr.getResponseHeader("Location");
-if(_2a){
-var _2b=_2a.match(/(^\w+:\/\/)/)&&_2a.indexOf(_28.servicePath);
-_2a=_2b>0?_2a.substring(_2b):(_28.servicePath+_2a).replace(/^(.*\/)?(\w+:\/\/)|[^\/\.]+\/\.\.\/|^.*\/(\/)/,"$2$3");
-_27.__id=_2a;
-_4._index[_2a]=_27;
+var _28=dfd.ioArgs.xhr&&dfd.ioArgs.xhr.getResponseHeader("Location");
+if(_28){
+var _29=_28.match(/(^\w+:\/\/)/)&&_28.indexOf(_26.servicePath);
+_28=_29>0?_28.substring(_29):(_26.servicePath+_28).replace(/^(.*\/)?(\w+:\/\/)|[^\/\.]+\/\.\.\/|^.*\/(\/)/,"$2$3");
+_25.__id=_28;
+_2._index[_28]=_25;
 }
-_29=_5(_28,dfd,_29,_27&&_27.__id);
+_27=_3(_26,dfd,_27,_25&&_25.__id);
 }
 catch(e){
 }
-if(!(--_1d)){
-if(_1a.onComplete){
-_1a.onComplete.call(_1a.scope,_19);
+if(!(--_1b)){
+if(_18.onComplete){
+_18.onComplete.call(_18.scope,_17);
 }
 }
-return _29;
+return _27;
 });
-})(_23.content,dfd,_26);
-dfd.addErrback(function(_2c){
-_1d=-1;
-_1a.onError.call(_1a.scope,_2c);
+})(_21.content,dfd,_24);
+dfd.addErrback(function(_2a){
+_1b=-1;
+_18.onError.call(_18.scope,_2a);
 });
 }
-_1.xhr=_1c;
+dojo.xhr=_1a;
 },getDirtyObjects:function(){
-return _3;
-},revert:function(_2d){
-for(var i=_3.length;i>0;){
+return _1;
+},revert:function(_2b){
+for(var i=_1.length;i>0;){
 i--;
-var _2e=_3[i];
-var _2f=_2e.object;
-var old=_2e.old;
-var _30=_2.data._getStoreForItem(_2f||old);
-if(!(_2d&&(_2f||old)&&(_2f||old).__id.indexOf(_2d.servicePath))){
-if(_2f&&old){
+var _2c=_1[i];
+var _2d=_2c.object;
+var old=_2c.old;
+var _2e=dojox.data._getStoreForItem(_2d||old);
+if(!(_2b&&(_2d||old)&&(_2d||old).__id.indexOf(_2b.servicePath))){
+if(_2d&&old){
 for(var j in old){
-if(old.hasOwnProperty(j)&&_2f[j]!==old[j]){
-if(_30){
-_30.onSet(_2f,j,_2f[j],old[j]);
+if(old.hasOwnProperty(j)&&_2d[j]!==old[j]){
+if(_2e){
+_2e.onSet(_2d,j,_2d[j],old[j]);
 }
-_2f[j]=old[j];
+_2d[j]=old[j];
 }
 }
-for(j in _2f){
+for(j in _2d){
 if(!old.hasOwnProperty(j)){
-if(_30){
-_30.onSet(_2f,j,_2f[j]);
+if(_2e){
+_2e.onSet(_2d,j,_2d[j]);
 }
-delete _2f[j];
+delete _2d[j];
 }
 }
 }else{
 if(!old){
-if(_30){
-_30.onDelete(_2f);
+if(_2e){
+_2e.onDelete(_2d);
 }
 }else{
-if(_30){
-_30.onNew(old);
+if(_2e){
+_2e.onNew(old);
 }
 }
 }
-delete (_2f||old).__isDirty;
-_3.splice(i,1);
+delete (_2d||old).__isDirty;
+_1.splice(i,1);
 }
 }
-},changing:function(_31,_32){
-if(!_31.__id){
+},changing:function(_2f,_30){
+if(!_2f.__id){
 return;
 }
-_31.__isDirty=true;
-for(var i=0;i<_3.length;i++){
-var _33=_3[i];
-if(_31==_33.object){
-if(_32){
-_33.object=false;
+_2f.__isDirty=true;
+for(var i=0;i<_1.length;i++){
+var _31=_1[i];
+if(_2f==_31.object){
+if(_30){
+_31.object=false;
 if(!this._saveNotNeeded){
-_33.save=true;
+_31.save=true;
 }
 }
 return;
 }
 }
-var old=_31 instanceof Array?[]:{};
-for(i in _31){
-if(_31.hasOwnProperty(i)){
-old[i]=_31[i];
+var old=_2f instanceof Array?[]:{};
+for(i in _2f){
+if(_2f.hasOwnProperty(i)){
+old[i]=_2f[i];
 }
 }
-_3.push({object:!_32&&_31,old:old,save:!this._saveNotNeeded});
-},deleteObject:function(_34){
-this.changing(_34,true);
-},getConstructor:function(_35,_36){
-if(typeof _35=="string"){
-var _37=_35;
-_35=new _2.rpc.Rest(_35,true);
-this.registerService(_35,_37,_36);
+_1.push({object:!_30&&_2f,old:old,save:!this._saveNotNeeded});
+},deleteObject:function(_32){
+this.changing(_32,true);
+},getConstructor:function(_33,_34){
+if(typeof _33=="string"){
+var _35=_33;
+_33=new dojox.rpc.Rest(_33,true);
+this.registerService(_33,_35,_34);
 }
-if(_35._constructor){
-return _35._constructor;
+if(_33._constructor){
+return _33._constructor;
 }
-_35._constructor=function(_38){
-var _39=this;
-var _3a=arguments;
-var _3b;
-var _3c;
-function _3d(_3e){
-if(_3e){
-_3d(_3e["extends"]);
-_3b=_3e.properties;
-for(var i in _3b){
-var _3f=_3b[i];
-if(_3f&&(typeof _3f=="object")&&("default" in _3f)){
-_39[i]=_3f["default"];
+_33._constructor=function(_36){
+var _37=this;
+var _38=arguments;
+var _39;
+var _3a;
+function _3b(_3c){
+if(_3c){
+_3b(_3c["extends"]);
+_39=_3c.properties;
+for(var i in _39){
+var _3d=_39[i];
+if(_3d&&(typeof _3d=="object")&&("default" in _3d)){
+_37[i]=_3d["default"];
 }
 }
 }
-if(_3e&&_3e.prototype&&_3e.prototype.initialize){
-_3c=true;
-_3e.prototype.initialize.apply(_39,_3a);
+if(_3c&&_3c.prototype&&_3c.prototype.initialize){
+_3a=true;
+_3c.prototype.initialize.apply(_37,_38);
 }
 };
-_3d(_35._schema);
-if(!_3c&&_38&&typeof _38=="object"){
-_1.mixin(_39,_38);
+_3b(_33._schema);
+if(!_3a&&_36&&typeof _36=="object"){
+dojo.mixin(_37,_36);
 }
-var _40=jr.getIdAttribute(_35);
-_4._index[this.__id=this.__clientId=_35.servicePath+(this[_40]||Math.random().toString(16).substring(2,14)+"@"+((_2.rpc.Client&&_2.rpc.Client.clientId)||"client"))]=this;
-if(_2.json.schema&&_3b){
-_2.json.schema.mustBeValid(_2.json.schema.validate(this,_35._schema));
+var _3e=jr.getIdAttribute(_33);
+_2._index[this.__id=this.__clientId=_33.servicePath+(this[_3e]||Math.random().toString(16).substring(2,14)+"@"+((dojox.rpc.Client&&dojox.rpc.Client.clientId)||"client"))]=this;
+if(dojox.json.schema&&_39){
+dojox.json.schema.mustBeValid(dojox.json.schema.validate(this,_33._schema));
 }
-_3.push({object:this,save:true});
+_1.push({object:this,save:true});
 };
-return _1.mixin(_35._constructor,_35._schema,{load:_35});
-},fetch:function(_41){
-var _42=jr.getServiceAndId(_41);
-return this.byId(_42.service,_42.id);
-},getIdAttribute:function(_43){
-var _44=_43._schema;
-var _45;
-if(_44){
-if(!(_45=_44._idAttr)){
-for(var i in _44.properties){
-if(_44.properties[i].identity||(_44.properties[i].link=="self")){
-_44._idAttr=_45=i;
+return dojo.mixin(_33._constructor,_33._schema,{load:_33});
+},fetch:function(_3f){
+var _40=jr.getServiceAndId(_3f);
+return this.byId(_40.service,_40.id);
+},getIdAttribute:function(_41){
+var _42=_41._schema;
+var _43;
+if(_42){
+if(!(_43=_42._idAttr)){
+for(var i in _42.properties){
+if(_42.properties[i].identity||(_42.properties[i].link=="self")){
+_42._idAttr=_43=i;
 }
 }
 }
 }
-return _45||"id";
-},getServiceAndId:function(_46){
-var _47="";
-for(var _48 in jr.services){
-if((_46.substring(0,_48.length)==_48)&&(_48.length>=_47.length)){
-_47=_48;
+return _43||"id";
+},getServiceAndId:function(_44){
+var _45="";
+for(var _46 in jr.services){
+if((_44.substring(0,_46.length)==_46)&&(_46.length>=_45.length)){
+_45=_46;
 }
 }
-if(_47){
-return {service:jr.services[_47],id:_46.substring(_47.length)};
+if(_45){
+return {service:jr.services[_45],id:_44.substring(_45.length)};
 }
-var _49=_46.match(/^(.*\/)([^\/]*)$/);
-return {service:new jr.serviceClass(_49[1],true),id:_49[2]};
-},services:{},schemas:{},registerService:function(_4a,_4b,_4c){
-_4b=_4a.servicePath=_4b||_4a.servicePath;
-_4a._schema=jr.schemas[_4b]=_4c||_4a._schema||{};
-jr.services[_4b]=_4a;
-},byId:function(_4d,id){
-var _4e,_4f=_4._index[(_4d.servicePath||"")+id];
-if(_4f&&!_4f._loadObject){
-_4e=new _1.Deferred();
-_4e.callback(_4f);
-return _4e;
+var _47=_44.match(/^(.*\/)([^\/]*)$/);
+return {service:new jr.serviceClass(_47[1],true),id:_47[2]};
+},services:{},schemas:{},registerService:function(_48,_49,_4a){
+_49=_48.servicePath=_49||_48.servicePath;
+_48._schema=jr.schemas[_49]=_4a||_48._schema||{};
+jr.services[_49]=_48;
+},byId:function(_4b,id){
+var _4c,_4d=_2._index[(_4b.servicePath||"")+id];
+if(_4d&&!_4d._loadObject){
+_4c=new dojo.Deferred();
+_4c.callback(_4d);
+return _4c;
 }
-return this.query(_4d,id);
-},query:function(_50,id,_51){
-var _52=_50(id,_51);
-_52.addCallback(function(_53){
-if(_53.nodeType&&_53.cloneNode){
-return _53;
+return this.query(_4b,id);
+},query:function(_4e,id,_4f){
+var _50=_4e(id,_4f);
+_50.addCallback(function(_51){
+if(_51.nodeType&&_51.cloneNode){
+return _51;
 }
-return _5(_50,_52,_53,typeof id!="string"||(_51&&(_51.start||_51.count))?undefined:id);
+return _3(_4e,_50,_51,typeof id!="string"||(_4f&&(_4f.start||_4f.count))?undefined:id);
 });
-return _52;
-},_loader:function(_54){
-var _55=jr.getServiceAndId(this.__id);
-var _56=this;
-jr.query(_55.service,_55.id).addBoth(function(_57){
-if(_57==_56){
-delete _57.$ref;
-delete _57._loadObject;
+return _50;
+},_loader:function(_52){
+var _53=jr.getServiceAndId(this.__id);
+var _54=this;
+jr.query(_53.service,_53.id).addBoth(function(_55){
+if(_55==_54){
+delete _55.$ref;
+delete _55._loadObject;
 }else{
-_56._loadObject=function(_58){
-_58(_57);
+_54._loadObject=function(_56){
+_56(_55);
 };
 }
-_54(_57);
+_52(_55);
 });
-},isDirty:function(_59,_5a){
-if(!_59){
-if(_5a){
-return _1.some(_3,function(_5b){
-return _2.data._getStoreForItem(_5b.object||_5b.old)==_5a;
-});
+},isDirty:function(_57){
+if(!_57){
+return !!_1.length;
 }
-return !!_3.length;
-}
-return _59.__isDirty;
+return _57.__isDirty;
 }};
-return _2.rpc.JsonRest;
-});
+})();
+}

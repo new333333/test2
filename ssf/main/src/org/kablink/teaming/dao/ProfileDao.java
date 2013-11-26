@@ -39,7 +39,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.kablink.teaming.dao.util.FilterControls;
-import org.kablink.teaming.dao.util.GroupSelectSpec;
 import org.kablink.teaming.dao.util.SFQuery;
 import org.kablink.teaming.dao.util.ShareItemSelectSpec;
 import org.kablink.teaming.domain.Application;
@@ -140,8 +139,6 @@ public interface ProfileDao {
  	public Long findPrincipalIdByForeignName(String foreignName, Long zoneId);
  	
  	public Long findPrincipalIdByName(String name, Long zoneId);
-
- 	public Long findPrincipalIdByDomainAndSamaccount(String domainName, String samaccountName, Long zoneId);
 
  	public Principal findPrincipalByName(String name, Long zoneId) 
  		throws NoPrincipalByTheNameException;
@@ -321,13 +318,6 @@ public interface ProfileDao {
  	public Map<ShareItem.RecipientType, Set<Long>> getRecipientIdsWithGrantedRightsToSharedEntities(Collection<EntityIdentifier> sharedEntityIdentifiers, String[] rightNames);
  	
  	/** 
- 	 * Find a list of <code>Group</code> meeting the specified selection criteria.
- 	 * 
- 	 * @return
- 	 */
- 	public List<Group> findGroups( GroupSelectSpec groupSelectSpec );
-
- 	/** 
  	 * Find a list of <code>ShareItem</code> meeting the specified selection criteria.
  	 * 
  	 * @param selectSpec
@@ -371,18 +361,4 @@ public interface ProfileDao {
  	 */
     public List<Group> loadLdapContainerGroups(Long zoneId); 
 
-    /**
-     * Update the various db tables to necessary to support a user being renamed.
-     */
-    public void renameUser( User user );
-    
-    
- 	/**
- 	 * Return IDs of sharers of the specified entities.
- 	 * 
- 	 * @param sharedEntityIdentifier
- 	 * @return
- 	 */
-	public Set<Long> getSharerIdsToSharedEntities(
-			Collection<EntityIdentifier> sharedEntityIdentifiers);
 }

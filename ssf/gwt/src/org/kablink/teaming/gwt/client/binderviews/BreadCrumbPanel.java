@@ -39,8 +39,8 @@ import org.kablink.teaming.gwt.client.event.ActivityStreamEnterEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.GetManageMenuPopupEvent;
 import org.kablink.teaming.gwt.client.event.GetManageMenuPopupEvent.ManageMenuPopupCallback;
-import org.kablink.teaming.gwt.client.event.GetManageTitleEvent;
-import org.kablink.teaming.gwt.client.event.GetManageTitleEvent.ManageTitleCallback;
+import org.kablink.teaming.gwt.client.event.GetManageUsersTitleEvent;
+import org.kablink.teaming.gwt.client.event.GetManageUsersTitleEvent.ManageUsersTitleCallback;
 import org.kablink.teaming.gwt.client.event.MenuLoadedEvent.MenuItem;
 import org.kablink.teaming.gwt.client.event.GotoContentUrlEvent;
 import org.kablink.teaming.gwt.client.event.HideManageMenuEvent;
@@ -180,7 +180,6 @@ public class BreadCrumbPanel extends ToolPanelBase
 	 * 
 	 * @param containerResizer
 	 * @param binderInfo
-	 * @param mvSpec
 	 * @param toolPanelReady
 	 * @param tpClient
 	 */
@@ -356,8 +355,8 @@ public class BreadCrumbPanel extends ToolPanelBase
 		
 		// No, we we aren't displaying a bread crumb panel for a
 		// collection!  Are we displaying it for the profile root
-		// workspace or a mobile devices view?
-		else if (m_binderInfo.isBinderProfilesRootWS() || m_binderInfo.isBinderMobileDevices()) {
+		// workspace?
+		else if (m_binderInfo.isBinderWorkspace() && m_binderInfo.getWorkspaceType().isProfileRoot()) {
 			// Yes!  We don't need a tree, just the image and title.
 			// Create the panel for it...
 			VibeFlowPanel fp = new VibeFlowPanel();
@@ -365,21 +364,11 @@ public class BreadCrumbPanel extends ToolPanelBase
 
 			// ...create the image...
 			ImageResource iRes;
-			if (m_binderInfo.isBinderProfilesRootWS()) {
-				switch (BinderIconSize.getBreadCrumbIconSize()) {
-				default:
-				case SMALL:   iRes = m_filrImages.profileRoot();        break;
-				case MEDIUM:  iRes = m_filrImages.profileRoot_medium(); break;
-				case LARGE:   iRes = m_filrImages.profileRoot_large();  break;
-				}
-			}
-			else {
-				switch (BinderIconSize.getBreadCrumbIconSize()) {
-				default:
-				case SMALL:   iRes = m_filrImages.mobileDevices();        break;
-				case MEDIUM:  iRes = m_filrImages.mobileDevices_medium(); break;
-				case LARGE:   iRes = m_filrImages.mobileDevices_large();  break;
-				}
+			switch (BinderIconSize.getBreadCrumbIconSize()) {
+			default:
+			case SMALL:   iRes = m_filrImages.profileRoot();        break;
+			case MEDIUM:  iRes = m_filrImages.profileRoot_medium(); break;
+			case LARGE:   iRes = m_filrImages.profileRoot_large();  break;
 			}
 			Image i = GwtClientHelper.buildImage(iRes.getSafeUri().asString());
 			i.addStyleName("vibe-breadCrumbProfiles-image");
@@ -394,23 +383,16 @@ public class BreadCrumbPanel extends ToolPanelBase
 			fp.add(i);
 
 			// ...create the title label...
-			String txt;
-			if (m_binderInfo.isBinderProfilesRootWS())
-			     txt = m_messages.vibeDataTable_People();
-			else txt = m_messages.vibeDataTable_MobileDevices();
-			final InlineLabel il = new InlineLabel(txt);
+			final InlineLabel il = new InlineLabel(m_messages.vibeDataTable_People());
 			il.addStyleName("vibe-breadCrumbProfiles-label");
 			fp.add(il);
-			if (m_binderInfo.isBinderProfilesRootWSManagement() || m_binderInfo.isBinderMobileDevices()) {
-				GwtTeaming.fireEvent(
-					new GetManageTitleEvent(
-						m_binderInfo,
-						new ManageTitleCallback() {
-							@Override
-							public void manageTitle(String title) {
-								il.setText(title);
-							}
-						}));
+			if (m_binderInfo.isBinderProfilesRootWS() && m_binderInfo.getWorkspaceType().isProfileRootManagement()) {
+				GwtTeaming.fireEvent(new GetManageUsersTitleEvent(new ManageUsersTitleCallback() {
+					@Override
+					public void manageUsersTitle(String title) {
+						il.setText(title);
+					}
+				}));
 			}
 			
 			addProfileRootConfig(fp);
@@ -455,11 +437,12 @@ public class BreadCrumbPanel extends ToolPanelBase
 	 * configuration menu and false otherwise.
 	 */
 	private boolean needsBinderConfig() {
-		boolean reply = (
-			(!(m_binderInfo.isBinderProfilesRootWSManagement())) &&	// Not on manage users...
-			(!(m_binderInfo.isBinderMobileDevices()))            &&	// ...or the mobile devices view...
-			(!(m_binderInfo.isBinderTrash())));						// ...or the trash view.
-		
+		boolean reply = (!(m_binderInfo.isBinderTrash()));
+		if (reply) {
+			reply = (
+				(!(m_binderInfo.isBinderProfilesRootWS())) ||
+				(!(m_binderInfo.getWorkspaceType().isProfileRootManagement())));
+		}
 		return reply;
 	}
 	
@@ -468,12 +451,7 @@ public class BreadCrumbPanel extends ToolPanelBase
 	 * false otherwise.
 	 */
 	private boolean needsTrashLink() {
-		boolean reply = (
-			(!(m_binderInfo.isBinderProfilesRootWS())) &&	// Not on view of users...
-			(!(m_binderInfo.isBinderMirroredFolder())) &&	// ...or any mirrored/net folder...
-			(!(m_binderInfo.isBinderMobileDevices()))  &&	// ...or the mobile devices view...
-			(!(m_binderInfo.isBinderTrash())));				// ...or the trash view itself.
-		
+		boolean reply = ((!(m_binderInfo.isBinderTrash())) && (!(m_binderInfo.isBinderMirroredFolder())));
 		if (reply) {
 			if (m_binderInfo.isBinderCollection()) {
 				switch (m_binderInfo.getCollectionType()) {
@@ -490,11 +468,10 @@ public class BreadCrumbPanel extends ToolPanelBase
 	 * link and false otherwise.
 	 */
 	private boolean needsWhatsNewLink() {
-		boolean reply = (
-			(!(m_binderInfo.isBinderProfilesRootWS())) &&	// Not on any view of users...
-			(!(m_binderInfo.isBinderMobileDevices()))  &&	// ...or the mobile devices view...
-			(!(m_binderInfo.isBinderTrash())));				// ...or the trash view.
-		
+		boolean reply = (!(m_binderInfo.isBinderTrash()));
+		if (reply) {
+			reply = (!(m_binderInfo.isBinderProfilesRootWS()));
+		}
 		return reply;
 	}
 	
@@ -665,7 +642,6 @@ public class BreadCrumbPanel extends ToolPanelBase
 			case NET_FOLDERS:     as = ActivityStream.NET_FOLDERS;    break;
 			case SHARED_BY_ME:    as = ActivityStream.SHARED_BY_ME;   break;
 			case SHARED_WITH_ME:  as = ActivityStream.SHARED_WITH_ME; break;
-			case SHARED_PUBLIC:   as = ActivityStream.SHARED_PUBLIC;  break;
 			}
 			asi.setActivityStream(as);
 		}

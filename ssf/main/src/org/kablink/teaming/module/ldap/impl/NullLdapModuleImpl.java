@@ -79,7 +79,7 @@ public class NullLdapModuleImpl extends CommonDependencyInjection implements Lda
 	 * 
 	 */
 	@Override
-	public HomeDirInfo getHomeDirInfo( String teamingUserName, String ldapUserName, boolean logErrors ) throws NamingException
+	public HomeDirInfo readHomeDirInfoFromDirectory( String teamingUserName, String ldapUserName ) throws NamingException
 	{
 		return null;
 	}
@@ -95,7 +95,7 @@ public class NullLdapModuleImpl extends CommonDependencyInjection implements Lda
 	}
 
 	@Override
-	public void syncAll( boolean syncUsersAndGroups, String[] listOfLdapConfigsToSyncGuid, LdapSyncMode mode, LdapSyncResults syncResults ) throws LdapSyncException {
+	public void syncAll( boolean syncUsersAndGroups, String[] listOfLdapConfigsToSyncGuid, LdapSyncResults syncResults ) throws LdapSyncException {
 	}
 
 	/**

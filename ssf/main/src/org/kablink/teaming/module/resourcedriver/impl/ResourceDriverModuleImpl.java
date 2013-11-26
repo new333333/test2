@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2009 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -45,14 +45,13 @@ import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.UncheckedIOException;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.CoreDao;
-import org.kablink.teaming.dao.util.NetFolderSelectSpec;
-import org.kablink.teaming.domain.Binder.SyncScheduleOption;
 import org.kablink.teaming.domain.ResourceDriverConfig;
 import org.kablink.teaming.domain.ResourceDriverConfig.DriverType;
 import org.kablink.teaming.domain.ZoneConfig;
 import org.kablink.teaming.fi.FIException;
 import org.kablink.teaming.fi.connection.ResourceDriver;
 import org.kablink.teaming.fi.connection.ResourceDriverManager;
+import org.kablink.teaming.jobs.DefaultNetFolderServerSynchronization;
 import org.kablink.teaming.jobs.NetFolderServerSynchronization;
 import org.kablink.teaming.jobs.ScheduleInfo;
 import org.kablink.teaming.module.binder.BinderModule;
@@ -68,19 +67,18 @@ import org.kablink.teaming.security.function.WorkAreaFunctionMembership;
 import org.kablink.teaming.security.function.WorkAreaFunctionMembershipManager;
 import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.util.NLT;
+import org.kablink.teaming.util.ReflectHelper;
+import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SimpleProfiler;
+import org.kablink.teaming.util.StatusTicket;
 import org.kablink.teaming.web.servlet.listener.ContextListenerPostSpring;
 import org.kablink.teaming.web.util.NetFolderHelper;
+import org.kablink.util.search.Constants;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
-/**
- * ?
- * 
- * @author ?
- */
-@SuppressWarnings("unchecked")
+
 public class ResourceDriverModuleImpl implements ResourceDriverModule {
 	
 	private Log logger = LogFactory.getLog(getClass());
@@ -232,28 +230,11 @@ public class ResourceDriverModuleImpl implements ResourceDriverModule {
 					"checkAccess");
 		}
 	}
-
-    @Override
-    public ResourceDriverConfig getResourceDriverConfig(Long id) {
-        return getResourceDriverManager().getDriverConfig(id);
-    }
-
-    @Override
+	
 	public List<ResourceDriverConfig> getAllResourceDriverConfigs() {
 		return getResourceDriverManager().getAllResourceDriverConfigs();
 	}
 	
-	@Override
-	public List<ResourceDriverConfig> getAllNetFolderResourceDriverConfigs() {
-		return getResourceDriverManager().getAllNetFolderResourceDriverConfigs();
-	}
-	
-	@Override
-	public List<ResourceDriverConfig> getAllCloudFolderResourceDriverConfigs() {
-		return getResourceDriverManager().getAllCloudFolderResourceDriverConfigs();
-	}
-	
-	@Override
 	public ResourceDriverConfig addResourceDriver(final String name, final DriverType type, final String rootPath,
 			final Set<Long> memberIds, final Map options) 
  			throws AccessControlException, RDException {
@@ -261,7 +242,6 @@ public class ResourceDriverModuleImpl implements ResourceDriverModule {
 		checkAccess(ResourceDriverOperation.manageResourceDrivers);
 		
 		//Look to see if there is a driver by this name already
-		@SuppressWarnings("unused")
 		ResourceDriver d = null;
 		try {
 			d = getResourceDriverManager().getDriver(name);
@@ -313,47 +293,6 @@ public class ResourceDriverModuleImpl implements ResourceDriverModule {
 			   	if (options.containsKey(ObjectKeys.RESOURCE_DRIVER_VOLUME)) {
 			   		newResourceDriver.setVolume((String)options.get(ObjectKeys.RESOURCE_DRIVER_VOLUME));
 			   	}
-			   	
-			   	if ( options.containsKey( ObjectKeys.RESOURCE_DRIVER_FULL_SYNC_DIR_ONLY ) )
-			   	{
-			   		Boolean value = null;
-			   		
-			   		if ( options.get( ObjectKeys.RESOURCE_DRIVER_FULL_SYNC_DIR_ONLY ) != null )
-			   			value = (Boolean) options.get( ObjectKeys.RESOURCE_DRIVER_FULL_SYNC_DIR_ONLY );
-			   		
-			   		newResourceDriver.setFullSyncDirOnly( value );
-			   	}
-			   	
-			   	if ( options.containsKey( ObjectKeys.RESOURCE_DRIVER_AUTHENTICATION_TYPE) )
-			   	{
-			   		ResourceDriverConfig.AuthenticationType value = null;
-			   		
-			   		if ( options.get( ObjectKeys.RESOURCE_DRIVER_AUTHENTICATION_TYPE ) != null )
-			   			value = (ResourceDriverConfig.AuthenticationType) options.get( ObjectKeys.RESOURCE_DRIVER_AUTHENTICATION_TYPE );
-			   		
-			   		newResourceDriver.setAuthenticationType( value );
-			   	}
-			   	
-			   	if ( options.containsKey( ObjectKeys.RESOURCE_DRIVER_USE_DIRECTORY_RIGHTS ) )
-			   	{
-			   		Boolean value = null;
-			   		
-			   		if ( options.get( ObjectKeys.RESOURCE_DRIVER_USE_DIRECTORY_RIGHTS ) != null )
-			   			value = (Boolean) options.get( ObjectKeys.RESOURCE_DRIVER_USE_DIRECTORY_RIGHTS );
-			   		
-			   		newResourceDriver.setUseDirectoryRights( value );
-			   	}
-			   	
-			   	if ( options.containsKey( ObjectKeys.RESOURCE_DRIVER_CACHED_RIGHTS_REFRESH_INTERVAL ) )
-			   	{
-			   		Integer value = null;
-			   		
-			   		if ( options.get( ObjectKeys.RESOURCE_DRIVER_CACHED_RIGHTS_REFRESH_INTERVAL ) != null )
-			   			value = (Integer) options.get( ObjectKeys.RESOURCE_DRIVER_CACHED_RIGHTS_REFRESH_INTERVAL );
-			   		
-			   		newResourceDriver.setCachedRightsRefreshInterval( value );
-			   	}
-			   	
 			   	newResourceDriver.setModifiedOn(new Date());	//Set the date of last modification to "now"
 				getCoreDao().save(newResourceDriver);
 				
@@ -391,7 +330,6 @@ public class ResourceDriverModuleImpl implements ResourceDriverModule {
 		return rdc;
 	}
 	
-	@Override
 	public ResourceDriverConfig modifyResourceDriver(final String name, final DriverType type, final String rootPath,
 			final Set<Long> memberIds, final Map options) 
  			throws AccessControlException, RDException {
@@ -445,47 +383,6 @@ public class ResourceDriverModuleImpl implements ResourceDriverModule {
 			   	if (options.containsKey(ObjectKeys.RESOURCE_DRIVER_VOLUME)) {
 			   		rdc.setVolume((String)options.get(ObjectKeys.RESOURCE_DRIVER_VOLUME));
 			   	}
-
-			   	if ( options.containsKey( ObjectKeys.RESOURCE_DRIVER_FULL_SYNC_DIR_ONLY ) )
-			   	{
-			   		Boolean value = null;
-			   		
-			   		if ( options.get( ObjectKeys.RESOURCE_DRIVER_FULL_SYNC_DIR_ONLY ) != null )
-			   			value = (Boolean) options.get( ObjectKeys.RESOURCE_DRIVER_FULL_SYNC_DIR_ONLY );
-			   		
-			   		rdc.setFullSyncDirOnly( value );
-			   	}
-
-			   	if ( options.containsKey( ObjectKeys.RESOURCE_DRIVER_AUTHENTICATION_TYPE) )
-			   	{
-			   		ResourceDriverConfig.AuthenticationType value = null;
-
-			   		if ( options.get( ObjectKeys.RESOURCE_DRIVER_AUTHENTICATION_TYPE ) != null )
-			   			value = (ResourceDriverConfig.AuthenticationType) options.get( ObjectKeys.RESOURCE_DRIVER_AUTHENTICATION_TYPE );
-			   		
-			   		rdc.setAuthenticationType( value );
-			   	}
-			   	
-			   	if ( options.containsKey( ObjectKeys.RESOURCE_DRIVER_USE_DIRECTORY_RIGHTS ) )
-			   	{
-			   		Boolean value = null;
-			   		
-			   		if ( options.get( ObjectKeys.RESOURCE_DRIVER_USE_DIRECTORY_RIGHTS ) != null )
-			   			value = (Boolean) options.get( ObjectKeys.RESOURCE_DRIVER_USE_DIRECTORY_RIGHTS );
-			   		
-			   		rdc.setUseDirectoryRights( value );
-			   	}
-
-			   	if ( options.containsKey( ObjectKeys.RESOURCE_DRIVER_CACHED_RIGHTS_REFRESH_INTERVAL ) )
-			   	{
-			   		Integer value = null;
-			   		
-			   		if ( options.get( ObjectKeys.RESOURCE_DRIVER_CACHED_RIGHTS_REFRESH_INTERVAL ) != null )
-			   			value = (Integer) options.get( ObjectKeys.RESOURCE_DRIVER_CACHED_RIGHTS_REFRESH_INTERVAL );
-			   		
-			   		rdc.setCachedRightsRefreshInterval( value );
-			   	}
-			   	
 			   	rdc.setModifiedOn(new Date());	//Set the date of last modification to "now"
 				getCoreDao().save(rdc);
     			return null;
@@ -546,7 +443,6 @@ public class ResourceDriverModuleImpl implements ResourceDriverModule {
 		return rdc;
 	}
 	
-	@Override
 	public void deleteResourceDriver(final String name) 
 			throws AccessControlException, RDException {
 		//Check that the user has the right to do this operation
@@ -557,48 +453,36 @@ public class ResourceDriverModuleImpl implements ResourceDriverModule {
 		if (rdc == null) {
 			throw new RDException(NLT.get(RDException.NO_SUCH_RESOURCE_DRIVER_NAME, new String[] {name}), name);
 		}
+		
+		Long driverId = rdc.getId();
+		
+	   	//Modify this resource driver config
+    	SimpleProfiler.start("deleteResourceDriverConfig");
+    	// 	The following part requires update database transaction.
+    	getTransactionTemplate().execute(new TransactionCallback() {
+    		@Override
+			public Object doInTransaction(TransactionStatus status) {
+    	     	//remove ACLs to this driver config object
+    	    	getWorkAreaFunctionMembershipManager().deleteWorkAreaFunctionMemberships(
+    	    			RequestContextHolder.getRequestContext().getZoneId(), rdc);
 
-        _deleteResourceDriverConfig(rdc);
+				//Now delete the actual config object
+    	    	getCoreDao().delete(rdc);
+    			return null;
+    		}
+    	});
+    	SimpleProfiler.stop("deleteResourceDriverConfig");
+		
+		//Remove this resource driver from the list of drivers
+		getResourceDriverManager().resetResourceDriverList();
+		
+		// Finally, delete the background job associated with this driver
+		
+		NetFolderServerSynchronization job = NetFolderHelper.getNetFolderServerSynchronizationScheduleObject();
+		job.deleteJob(driverId);
 	}
 
-	@Override
-	public void deleteResourceDriverConfig(final Long id)
-			throws AccessControlException, RDException {
-		//Check that the user has the right to do this operation
-		checkAccess(ResourceDriverOperation.manageResourceDrivers);
-        _deleteResourceDriverConfig(getResourceDriverManager().getDriverConfig(id));
-	}
-
-    private void _deleteResourceDriverConfig(final ResourceDriverConfig rdc) {
-        Long driverId = rdc.getId();
-
-        //Modify this resource driver config
-        SimpleProfiler.start("deleteResourceDriverConfig");
-        // 	The following part requires update database transaction.
-        getTransactionTemplate().execute(new TransactionCallback() {
-            @Override
-            public Object doInTransaction(TransactionStatus status) {
-                 //remove ACLs to this driver config object
-                getWorkAreaFunctionMembershipManager().deleteWorkAreaFunctionMemberships(
-                        RequestContextHolder.getRequestContext().getZoneId(), rdc);
-
-                //Now delete the actual config object
-                getCoreDao().delete(rdc);
-                return null;
-            }
-        });
-        SimpleProfiler.stop("deleteResourceDriverConfig");
-
-        //Remove this resource driver from the list of drivers
-        getResourceDriverManager().resetResourceDriverList();
-
-        // Finally, delete the background job associated with this driver
-
-        NetFolderServerSynchronization job = NetFolderHelper.getNetFolderServerSynchronizationScheduleObject();
-        job.deleteJob(driverId);
-    }
-
-    /**
+	/**
 	 * Set the sync schedule for this driver.
 	 */
 	@Override
@@ -614,12 +498,12 @@ public class ResourceDriverModuleImpl implements ResourceDriverModule {
 	 * Synchronize all of the net folders associated with the given net folder server.
 	 * If a net folder has a sync schedule enabled, that net folder will not be synchronized.
 	 */
-	private boolean doEnqueueSynchronize(
+	@SuppressWarnings("rawtypes")
+	private boolean doSynchronize(
 		ResourceDriverConfig rdConfig,
-		boolean excludeFoldersWithSchedule
-		)
+		boolean excludeFoldersWithSchedule,
+		StatusTicket statusTicket )
 	{
-		NetFolderSelectSpec selectSpec;
 		FolderModule folderModule;
 		List<Long> listOfNetFolderIds;
 		
@@ -629,63 +513,26 @@ public class ResourceDriverModuleImpl implements ResourceDriverModule {
 		folderModule = getFolderModule();
 
 		// Find all of the net folders that reference this net folder server.
-		selectSpec = new NetFolderSelectSpec();
-		selectSpec.setFilter( null );
-		selectSpec.setIncludeHomeDirNetFolders( true );
-		selectSpec.setRootName( rdConfig.getName() );
 		listOfNetFolderIds = NetFolderHelper.getAllNetFolders(
 													getBinderModule(),
 													getWorkspaceModule(),
-													selectSpec );
+													rdConfig.getName(),
+													true );
 
 		if ( listOfNetFolderIds != null )
 		{
 			for ( Long binderId:  listOfNetFolderIds )
 			{
-				boolean syncFolder;
+				ScheduleInfo scheduleInfo;
 				
-				syncFolder = false;
-				
-				if ( excludeFoldersWithSchedule )
-				{
-					SyncScheduleOption syncScheduleOption;
-
-					// Does this net folder have a syncScheduleOption?
-					syncScheduleOption = NetFolderHelper.getSyncScheduleOption( getBinderModule(), binderId );
-					if ( syncScheduleOption != null )
-					{
-						// Yes
-						// Does the syncScheduleOption indicate to use the net folder server's schedule?
-						if ( syncScheduleOption == SyncScheduleOption.useNetFolderServerSchedule )
-						{
-							// Yes
-							syncFolder = true;
-						}
-					}
-					else
-					{
-						ScheduleInfo scheduleInfo;
-
-						// No
-						// Does this net folder have a sync schedule that is enabled?
-						scheduleInfo = NetFolderHelper.getMirroredFolderSynchronizationSchedule( binderId );
-						if ( scheduleInfo == null || scheduleInfo.isEnabled() == false )
-						{
-							// No
-							syncFolder = true;
-						}
-					}
-				}
-				else
-					syncFolder = true;
-					
-				// Should we add this folder to the list of "to-be sync'd folders"?
-				if ( syncFolder )
+				// Does this net folder have a sync schedule that is enabled?
+				scheduleInfo = NetFolderHelper.getMirroredFolderSynchronizationSchedule( binderId );
+				if ( excludeFoldersWithSchedule == false || scheduleInfo == null || scheduleInfo.isEnabled() == false )
 				{
 					try {
-						// Yes, sync this net folder ... only if system shutdown is not in progress
+						// No, sync this net folder ... only if system shutdown is not in progress
 						if(!ContextListenerPostSpring.isShutdownInProgress()) {
-							folderModule.enqueueFullSynchronize( binderId );
+							folderModule.fullSynchronize( binderId, statusTicket );
 						}
 						else {
 							// System shutting down. Abort the remaining work and return.
@@ -709,17 +556,17 @@ public class ResourceDriverModuleImpl implements ResourceDriverModule {
 	 * If a net folder has a sync schedule enabled, that net folder will not be synchronized.
 	 */
 	@Override
-	public boolean enqueueSynchronize(
+	public boolean synchronize(
 		String netFolderServerName,
-		boolean excludeFoldersWithSchedule // Should we exclude net folders that have a schedule defined.
-		) throws FIException, UncheckedIOException, ConfigurationException
+		boolean excludeFoldersWithSchedule, // Should we exclude net folders that have a schedule defined.
+		StatusTicket statusTicket ) throws FIException, UncheckedIOException, ConfigurationException
 	{
 		ResourceDriverConfig rdConfig;
 
 		rdConfig = getResourceDriverManager().getDriverConfig( netFolderServerName );
 		if ( rdConfig != null )
 		{
-			return enqueueSynchronize( rdConfig.getId(), excludeFoldersWithSchedule );
+			return synchronize( rdConfig.getId(), excludeFoldersWithSchedule, statusTicket );
 		}
 		
 		return false;
@@ -730,44 +577,53 @@ public class ResourceDriverModuleImpl implements ResourceDriverModule {
 	 * If a net folder has a sync schedule enabled, that net folder will not be synchronized.
 	 */
 	@Override
-	public boolean enqueueSynchronize(
+	public boolean synchronize(
 		Long netFolderServerId,
-		boolean excludeFoldersWithSchedule // Should we exclude net folders that have a schedule defined.
-		) throws FIException, UncheckedIOException, ConfigurationException
+		boolean excludeFoldersWithSchedule, // Should we exclude net folders that have a schedule defined.
+		StatusTicket statusTicket ) throws FIException, UncheckedIOException, ConfigurationException
 	{
-		ResourceDriverConfig rdConfig = null;
-		String rootPath;
-		String proxyName;
-		String proxyPwd;
-		
 		try
 		{
-			rdConfig = (ResourceDriverConfig) getCoreDao().load( ResourceDriverConfig.class, netFolderServerId );
+			ResourceDriverConfig rdConfig = null;
+			String rootPath;
+			String proxyName;
+			String proxyPwd;
+			
+			try
+			{
+				rdConfig = (ResourceDriverConfig) getCoreDao().load( ResourceDriverConfig.class, netFolderServerId );
+			}
+			catch ( Exception e )
+			{
+				logger.warn( e.toString() );
+				return false;
+			}
+			
+			if ( rdConfig == null )
+				return false;
+			
+			// Is everything configured?
+			rootPath = rdConfig.getRootPath();
+			proxyName = rdConfig.getAccountName();
+			proxyPwd = rdConfig.getPassword();
+			if ( rootPath != null && rootPath.length() > 0 &&
+				 proxyName != null && proxyName.length() > 0 &&
+				 proxyPwd != null && proxyPwd.length() > 0 )
+			{
+				// Yes
+				return doSynchronize( rdConfig, excludeFoldersWithSchedule, statusTicket );
+			}
+			else
+			{
+				logger.warn( "Did not start synchronization of net folder server, " + rdConfig.getName() + ", because it is not configured completely." );
+				return false;
+			}
 		}
-		catch ( Exception e )
+		finally
 		{
-			logger.warn( e.toString() );
-			return false;
-		}
-		
-		if ( rdConfig == null )
-			return false;
-		
-		// Is everything configured?
-		rootPath = rdConfig.getRootPath();
-		proxyName = rdConfig.getAccountName();
-		proxyPwd = rdConfig.getPassword();
-		if ( rootPath != null && rootPath.length() > 0 &&
-			 proxyName != null && proxyName.length() > 0 &&
-			 proxyPwd != null && proxyPwd.length() > 0 )
-		{
-			// Yes
-			return doEnqueueSynchronize( rdConfig, excludeFoldersWithSchedule );
-		}
-		else
-		{
-			logger.warn( "Did not start synchronization of net folder server, " + rdConfig.getName() + ", because it is not configured completely." );
-			return false;
+			// It is important to call this at the end of the processing no matter how it went.
+			if( statusTicket != null )
+				statusTicket.done();
 		}
 	}
 }

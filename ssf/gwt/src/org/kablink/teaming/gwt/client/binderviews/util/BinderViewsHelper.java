@@ -34,7 +34,6 @@ package org.kablink.teaming.gwt.client.binderviews.util;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
@@ -42,8 +41,7 @@ import org.kablink.teaming.gwt.client.binderviews.ChangeEntryTypesDlg;
 import org.kablink.teaming.gwt.client.binderviews.ChangeEntryTypesDlg.ChangeEntryTypesDlgClient;
 import org.kablink.teaming.gwt.client.binderviews.CopyMoveEntriesDlg;
 import org.kablink.teaming.gwt.client.binderviews.CopyMoveEntriesDlg.CopyMoveEntriesDlgClient;
-import org.kablink.teaming.gwt.client.binderviews.util.DeleteEntitiesHelper.DeleteEntitiesCallback;
-import org.kablink.teaming.gwt.client.binderviews.util.DeleteUsersHelper.DeleteUsersCallback;
+import org.kablink.teaming.gwt.client.binderviews.util.DeletePurgeEntriesHelper.DeletePurgeEntriesCallback;
 import org.kablink.teaming.gwt.client.datatable.AddFilesDlg;
 import org.kablink.teaming.gwt.client.datatable.AddFilesDlg.AddFilesDlgClient;
 import org.kablink.teaming.gwt.client.datatable.AddFilesHtml5Popup;
@@ -59,49 +57,31 @@ import org.kablink.teaming.gwt.client.rpc.shared.DisableUsersCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.EnableUsersCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData.ErrorInfo;
-import org.kablink.teaming.gwt.client.rpc.shared.GetMailToPublicLinksCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.MailToPublicLinksRpcResponseData;
-import org.kablink.teaming.gwt.client.rpc.shared.MailToPublicLinksRpcResponseData.MailToPublicLinkInfo;
 import org.kablink.teaming.gwt.client.rpc.shared.GetViewFolderEntryUrlCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.GetZipDownloadFilesUrlCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.GetZipDownloadFolderUrlCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.HideSharesCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.LockEntriesCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveMultipleAdhocFolderSettingsCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.SaveMultipleDownloadSettingsCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.SaveMultipleWebAccessSettingsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SetSeenCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SetUnseenCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ShowSharesCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.UnlockEntriesCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
-import org.kablink.teaming.gwt.client.rpc.shared.ZipDownloadUrlRpcResponseData;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.CollectionType;
 import org.kablink.teaming.gwt.client.util.EntityId;
-import org.kablink.teaming.gwt.client.util.EntityRights;
-import org.kablink.teaming.gwt.client.util.EntityRights.ShareRight;
-import org.kablink.teaming.gwt.client.util.runasync.RunAsyncCmd;
-import org.kablink.teaming.gwt.client.util.runasync.RunAsyncCreateDlgParams;
-import org.kablink.teaming.gwt.client.util.runasync.ShareThisDlgInitAndShowParams;
-import org.kablink.teaming.gwt.client.util.runasync.RunAsyncCmd.RunAsyncCmdType;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
-import org.kablink.teaming.gwt.client.widgets.CopyPublicLinkDlg;
-import org.kablink.teaming.gwt.client.widgets.CopyPublicLinkDlg.CopyPublicLinkDlgClient;
-import org.kablink.teaming.gwt.client.widgets.DeleteSelectedUsersDlg;
-import org.kablink.teaming.gwt.client.widgets.DeleteSelectedUsersDlg.DeleteSelectedUsersDlgClient;
-import org.kablink.teaming.gwt.client.widgets.DeleteSelectionsDlg;
-import org.kablink.teaming.gwt.client.widgets.DeleteSelectionsDlg.DeleteSelectionsDlgClient;
-import org.kablink.teaming.gwt.client.widgets.EmailPublicLinkDlg;
-import org.kablink.teaming.gwt.client.widgets.EmailPublicLinkDlg.EmailPublicLinkDlgClient;
-import org.kablink.teaming.gwt.client.widgets.ShareThisDlg2;
-import org.kablink.teaming.gwt.client.widgets.ShareThisDlg2.ShareThisDlg2Client;
+import org.kablink.teaming.gwt.client.widgets.ConfirmCallback;
+import org.kablink.teaming.gwt.client.widgets.ConfirmDlg;
+import org.kablink.teaming.gwt.client.widgets.ConfirmDlg.ConfirmDlgClient;
+import org.kablink.teaming.gwt.client.widgets.ShareThisDlg;
+import org.kablink.teaming.gwt.client.widgets.ShareThisDlg.ShareThisDlgClient;
+import org.kablink.teaming.gwt.client.widgets.ShareThisDlg.ShareThisDlgMode;
 import org.kablink.teaming.gwt.client.widgets.SpinnerPopup;
 
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.FormPanel;
+import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.UIObject;
 
 /**
@@ -110,19 +90,21 @@ import com.google.gwt.user.client.ui.UIObject;
  * @author drfoster@novell.com
  */
 public class BinderViewsHelper {
-	private static AddFilesDlg				m_addFilesAppletDlg;					// An instance of the add files (via an applet) dialog.
-	private static AddFilesHtml5Popup		m_addFilesHtml5Popup;					// An instance of the add files (via HTML5)     popup.
-	private static ChangeEntryTypesDlg		m_cetDlg;								// An instance of a change entry types dialog. 
-	private static CopyMoveEntriesDlg		m_cmeDlg;								// An instance of a copy/move entries dialog.
-	private static CopyPublicLinkDlg		m_copyPublicLinkDlg;					// An instance of a copy public link dialog.
-	private static DeleteSelectedUsersDlg	m_dsuDlg;								// An instance of a delete selected users dialog.
-	private static DeleteSelectionsDlg		m_dsDlg;								// An instance of a delete selections dialog.
-	private static EmailNotificationDlg		m_enDlg;								// An instance of an email notification dialog used to subscribe to subscribe to the entries in a List<EntityId>. 
-	private static EmailPublicLinkDlg		m_emailPublicLinkDlg;					// An instance of an email public link dialog.
-	private static GwtTeamingMessages		m_messages = GwtTeaming.getMessages();	// Access to the GWT localized strings.
-	private static ShareThisDlg2			m_shareDlg;								// An instance of a share this dialog.
-	private static WhoHasAccessDlg			m_whaDlg;								// An instance of a who has access dialog used to view who has access to an entity. 
+	private static AddFilesDlg			m_addFilesAppletDlg;					// An instance of the add files (via an applet) dialog.
+	private static AddFilesHtml5Popup	m_addFilesHtml5Popup;					// An instance of the add files (via HTML5)     popup.
+	private static ChangeEntryTypesDlg	m_cetDlg;								// An instance of a change entry types dialog. 
+	private static CopyMoveEntriesDlg	m_cmeDlg;								// An instance of a copy/move entries dialog.
+	private static EmailNotificationDlg	m_enDlg;								// An instance of an email notification dialog used to subscribe to subscribe to the entries in a List<EntityId>. 
+	private static GwtTeamingMessages	m_messages = GwtTeaming.getMessages();	// Access to the GWT localized strings.
+	private static ShareThisDlg			m_shareDlg;								// An instance of a share this dialog.
+	private static WhoHasAccessDlg		m_whaDlg;								// An instance of a who has access dialog used to view who has access to an entity. 
 
+	// Controls whether a prompt is included in the purge user
+	// workspace confirmation dialog allowing for the purging of the
+	// source information for net folders.  true -> The prompt is
+	// included.  false -> It's not.
+	private static boolean PROMPT_PURGE_USER_WORKSPACE_NET_FOLDERS	= false;
+	
 	/*
 	 * Constructor method. 
 	 */
@@ -235,19 +217,12 @@ public class BinderViewsHelper {
 				busy.hide();
 				GwtClientHelper.handleGwtRPCFailure(
 					caught,
-					m_messages.rpcFailure_ClearUsersAdHocFolders());
+					m_messages.rpcFailure_DisableUsersAdHocFolders());
 			}
 
 			@Override
 			public void onSuccess(VibeRpcResponse response) {
-				// We're done.  If we had any errors...
-				ErrorListRpcResponseData erList = ((ErrorListRpcResponseData) response.getResponseData());
-				if (erList.hasErrors()) {
-					// ...display them.
-					GwtClientHelper.displayMultipleErrors(m_messages.binderViewsHelper_failureSettingAdHocFolders(), erList.getErrorList());
-				}
-				
-				// ...and hide the busy spinner.
+				// We're done.  Simply hide the busy spinner.
 				busy.hide();
 				if (null != reloadEvent) {
 					GwtTeaming.fireEventAsync(reloadEvent);
@@ -271,183 +246,6 @@ public class BinderViewsHelper {
 	public static void clearUsersAdHocFolders(final Long userId) {
 		// Always use the previous form of the method.
 		clearUsersAdHocFolders(userId, null);
-	}
-
-	/**
-	 * Clears the user's download files setting based on a List<Long>
-	 * of their user IDs.
-	 *
-	 * @param userIds
-	 */
-	public static void clearUsersDownload(final List<Long> userIds, final VibeEventBase<?> reloadEvent) {
-		// If we weren't given any user IDs to be cleared...
-		if (!(GwtClientHelper.hasItems(userIds))) {
-			// ...bail.
-			return;
-		}
-		
-		// Show a busy spinner while we clear the download settings.
-		final SpinnerPopup busy = new SpinnerPopup();
-		busy.center();
-
-		// Send the request to clear the download setting.
-		SaveMultipleDownloadSettingsCmd cmd = new SaveMultipleDownloadSettingsCmd(userIds, null);
-		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
-			@Override
-			public void onFailure(Throwable caught) {
-				busy.hide();
-				GwtClientHelper.handleGwtRPCFailure(
-					caught,
-					m_messages.rpcFailure_ClearUsersDownload());
-			}
-
-			@Override
-			public void onSuccess(VibeRpcResponse response) {
-				// We're done.  If we had any errors...
-				ErrorListRpcResponseData erList = ((ErrorListRpcResponseData) response.getResponseData());
-				if (erList.hasErrors()) {
-					// ...display them.
-					GwtClientHelper.displayMultipleErrors(m_messages.binderViewsHelper_failureSettingDownload(), erList.getErrorList());
-				}
-				
-				// ...and hide the busy spinner.
-				busy.hide();
-				if (null != reloadEvent) {
-					GwtTeaming.fireEventAsync(reloadEvent);
-				}
-			}
-		});
-	}
-	
-	public static void clearUsersDownload(final List<Long> userIds) {
-		// Always use the initial form of the method.
-		clearUsersDownload(userIds, null);
-	}
-	
-	public static void clearUsersDownload(final Long userId, final VibeEventBase<?> reloadEvent) {
-		// Always use the initial form of the method.
-		List<Long> userIds = new ArrayList<Long>();
-		userIds.add(userId);
-		clearUsersDownload(userIds, reloadEvent);
-	}
-
-	public static void clearUsersDownload(final Long userId) {
-		// Always use the previous form of the method.
-		clearUsersDownload(userId, null);
-	}
-
-	/**
-	 * Clears the user's web access setting based on a List<Long>
-	 * of their user IDs.
-	 *
-	 * @param userIds
-	 */
-	public static void clearUsersWebAccess(final List<Long> userIds, final VibeEventBase<?> reloadEvent) {
-		// If we weren't given any user IDs to be cleared...
-		if (!(GwtClientHelper.hasItems(userIds))) {
-			// ...bail.
-			return;
-		}
-		
-		// Show a busy spinner while we clear the web access settings.
-		final SpinnerPopup busy = new SpinnerPopup();
-		busy.center();
-
-		// Send the request to clear the web access setting.
-		SaveMultipleWebAccessSettingsCmd cmd = new SaveMultipleWebAccessSettingsCmd(userIds, null);
-		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
-			@Override
-			public void onFailure(Throwable caught) {
-				busy.hide();
-				GwtClientHelper.handleGwtRPCFailure(
-					caught,
-					m_messages.rpcFailure_ClearUsersWebAccess());
-			}
-
-			@Override
-			public void onSuccess(VibeRpcResponse response) {
-				// We're done.  If we had any errors...
-				ErrorListRpcResponseData erList = ((ErrorListRpcResponseData) response.getResponseData());
-				if (erList.hasErrors()) {
-					// ...display them.
-					GwtClientHelper.displayMultipleErrors(m_messages.binderViewsHelper_failureSettingWebAccess(), erList.getErrorList());
-				}
-				
-				// ...and hide the busy spinner.
-				busy.hide();
-				if (null != reloadEvent) {
-					GwtTeaming.fireEventAsync(reloadEvent);
-				}
-			}
-		});
-	}
-	
-	public static void clearUsersWebAccess(final List<Long> userIds) {
-		// Always use the initial form of the method.
-		clearUsersWebAccess(userIds, null);
-	}
-	
-	public static void clearUsersWebAccess(final Long userId, final VibeEventBase<?> reloadEvent) {
-		// Always use the initial form of the method.
-		List<Long> userIds = new ArrayList<Long>();
-		userIds.add(userId);
-		clearUsersWebAccess(userIds, reloadEvent);
-	}
-
-	public static void clearUsersWebAccess(final Long userId) {
-		// Always use the previous form of the method.
-		clearUsersWebAccess(userId, null);
-	}
-
-	/**
-	 * Invokes the appropriate UI to copy the public link of the
-	 * entities based on a List<EntityId> of the entries.
-	 *
-	 * @param entityIds
-	 */
-	public static void copyEntitiesPublicLink(final List<EntityId> entityIds) {
-		// If we weren't given any entity IDs to be shared...
-		if (!(GwtClientHelper.hasItems(entityIds))) {
-			// ...bail.
-			return;
-		}
-
-		// Have we created a copy public link dialog yet?
-		if (null == m_copyPublicLinkDlg) {
-			// No!  Create one now...
-			CopyPublicLinkDlg.createAsync(new CopyPublicLinkDlgClient() {
-				@Override
-				public void onUnavailable() {
-					// Nothing to do.  Error handled in
-					// asynchronous provider.
-				}
-				
-				@Override
-				public void onSuccess(CopyPublicLinkDlg cplDlg) {
-					// ...and show it with the given entity IDs.
-					m_copyPublicLinkDlg = cplDlg;
-					showCopyPublicLinkDlgAsync(entityIds);
-				}
-			});
-		}
-		
-		else {
-			// Yes, we've already create a copy public link dialog!
-			// Simply show it with the given entry IDs.
-			showCopyPublicLinkDlgAsync(entityIds);
-		}
-	}
-	
-	/**
-	 * Invokes the appropriate UI to copy the public link of an entity
-	 * based on an EntityId.
-	 *
-	 * @param entityId
-	 */
-	public static void copyEntityPublicLink(EntityId entityId) {
-		List<EntityId> entityIds = new ArrayList<EntityId>();
-		entityIds.add(entityId);
-		copyEntitiesPublicLink(entityIds);
 	}
 
 	/**
@@ -495,83 +293,116 @@ public class BinderViewsHelper {
 	}
 
 	/**
-	 * Deletes the users based on a List<Long> of their IDs.
-	 *
-	 * @param userIds
-	 */
-	public static void deleteSelectedUsers(final List<Long> userIds, final DeleteUsersCallback dpuCallback) {
-		// If we weren't given any user IDs to be deleted...
-		if (!(GwtClientHelper.hasItems(userIds))) {
-			// ...bail.
-			return;
-		}
-
-		// Have we created an instance of the delete selection users
-		// dialog yet?
-		if (null == m_dsuDlg) {
-			// No!  Create one now...
-			DeleteSelectedUsersDlg.createAsync(new DeleteSelectedUsersDlgClient() {
-				@Override
-				public void onUnavailable() {
-					// Nothing to do.  Error handled in
-					// asynchronous provider.
-				}
-				
-				@Override
-				public void onSuccess(DeleteSelectedUsersDlg dsuDlg) {
-					// ...and run it.
-					m_dsuDlg = dsuDlg;
-					DeleteSelectedUsersDlg.initAndShow(m_dsuDlg, userIds, dpuCallback);
-				}
-			});
-			
-		}
-		
-		else {
-			// Yes, we already have instance of one!  Simply run
-			// it.
-			DeleteSelectedUsersDlg.initAndShow(m_dsuDlg, userIds, dpuCallback);
-		}
-	}
-	
-	/**
-	 * Deletes the entities based on a List<EntityId> of the entities.
+	 * Deletes the folder entries based on a folder ID and List<Long>
+	 * of their entity IDs.
 	 *
 	 * @param entityIds
 	 */
-	public static void deleteSelections(final List<EntityId> entityIds, final DeleteEntitiesCallback deCallback) {
+	public static void deleteFolderEntries(final List<EntityId> entityIds, final DeletePurgeEntriesCallback dpeCallback) {
 		// If we weren't given any entity IDs to be deleted...
 		if (!(GwtClientHelper.hasItems(entityIds))) {
 			// ...bail.
 			return;
 		}
-
-		// Have we created an instance of the delete selections dialog
-		// yet?
-		if (null == m_dsDlg) {
-			// No!  Create one now...
-			DeleteSelectionsDlg.createAsync(new DeleteSelectionsDlgClient() {
-				@Override
-				public void onUnavailable() {
-					// Nothing to do.  Error handled in
-					// asynchronous provider.
-				}
-				
-				@Override
-				public void onSuccess(DeleteSelectionsDlg dsDlg) {
-					// ...and run it.
-					m_dsDlg = dsDlg;
-					DeleteSelectionsDlg.initAndShow(m_dsDlg, entityIds, deCallback);
-				}
-			});
+		
+		// Is the user sure they want to delete the folder entries?
+		ConfirmDlg.createAsync(new ConfirmDlgClient() {
+			@Override
+			public void onUnavailable() {
+				// Nothing to do.  Error handled in
+				// asynchronous provider.
+			}
 			
+			@Override
+			public void onSuccess(ConfirmDlg cDlg) {
+				String confirmationMsg;
+				switch (entityIds.size()) {
+				case 1:
+					EntityId	eid     = entityIds.get(0);
+					String		eidType = eid.getEntityType();
+					if      (eidType.equals(EntityId.FOLDER))    confirmationMsg = m_messages.binderViewsConfirmDeleteFolder();
+					else if (eidType.equals(EntityId.WORKSPACE)) confirmationMsg = m_messages.binderViewsConfirmDeleteWorkspace();
+					else                                         confirmationMsg = m_messages.binderViewsConfirmDeleteEntry();
+					break;
+					
+				default:
+					confirmationMsg = m_messages.binderViewsConfirmDeleteEntries();
+					break;
+				}
+				ConfirmDlg.initAndShow(
+					cDlg,
+					new ConfirmCallback() {
+						@Override
+						public void dialogReady() {
+							// Ignored.  We don't really care when the
+							// dialog is ready.
+						}
+
+						@Override
+						public void accepted() {
+							// Yes, they're sure!  Perform the delete.
+							DeletePurgeEntriesHelper.deleteSelectedEntriesAsync(
+								entityIds,
+								dpeCallback);
+						}
+
+						@Override
+						public void rejected() {
+							// No, they're not sure!
+						}
+					},
+					confirmationMsg);
+			}
+		});
+	}
+	
+	/**
+	 * Deletes the user workspaces based on a List<Long> of their user
+	 * IDs.
+	 *
+	 * @param userIds
+	 */
+	public static void deleteUserWorkspaces(final List<Long> userIds) {
+		// If we weren't given any user IDs to be deleted...
+		if (!(GwtClientHelper.hasItems(userIds))) {
+			// ...bail.
+			return;
 		}
 		
-		else {
-			// Yes, we already have instance of one!  Simply run
-			// it.
-			DeleteSelectionsDlg.initAndShow(m_dsDlg, entityIds, deCallback);
-		}
+		// Is the user sure they want to delete the selected user
+		// workspaces?
+		ConfirmDlg.createAsync(new ConfirmDlgClient() {
+			@Override
+			public void onUnavailable() {
+				// Nothing to do.  Error handled in
+				// asynchronous provider.
+			}
+			
+			@Override
+			public void onSuccess(ConfirmDlg cDlg) {
+				ConfirmDlg.initAndShow(
+					cDlg,
+					new ConfirmCallback() {
+						@Override
+						public void dialogReady() {
+							// Ignored.  We don't really care when the
+							// dialog is ready.
+						}
+
+						@Override
+						public void accepted() {
+							// Yes, they're sure!  Perform the delete.
+							DeletePurgeUsersHelper.deleteUserWorkspacesAsync(userIds);
+						}
+
+						@Override
+						public void rejected() {
+							// No, they're not sure!
+						}
+					},
+					m_messages.binderViewsConfirmDeleteUserWS());
+			}
+		});
 	}
 	
 	/**
@@ -652,14 +483,7 @@ public class BinderViewsHelper {
 
 			@Override
 			public void onSuccess(VibeRpcResponse response) {
-				// We're done.  If we had any errors...
-				ErrorListRpcResponseData erList = ((ErrorListRpcResponseData) response.getResponseData());
-				if (erList.hasErrors()) {
-					// ...display them.
-					GwtClientHelper.displayMultipleErrors(m_messages.binderViewsHelper_failureSettingAdHocFolders(), erList.getErrorList());
-				}
-				
-				// ...and hide the busy spinner.
+				// We're done.  Simply hide the busy spinner.
 				busy.hide();
 				if (null != reloadEvent) {
 					GwtTeaming.fireEventAsync(reloadEvent);
@@ -683,183 +507,6 @@ public class BinderViewsHelper {
 	public static void disableUsersAdHocFolders(final Long userId) {
 		// Always use the previous form of the method.
 		disableUsersAdHocFolders(userId, null);
-	}
-
-	/**
-	 * Disables the user's download files ability based on a List<Long>
-	 * of their user IDs.
-	 *
-	 * @param userIds
-	 */
-	public static void disableUsersDownload(final List<Long> userIds, final VibeEventBase<?> reloadEvent) {
-		// If we weren't given any user IDs to be disabled...
-		if (!(GwtClientHelper.hasItems(userIds))) {
-			// ...bail.
-			return;
-		}
-		
-		// Show a busy spinner while we disable the download setting.
-		final SpinnerPopup busy = new SpinnerPopup();
-		busy.center();
-
-		// Send the request to disable the download setting.
-		SaveMultipleDownloadSettingsCmd cmd = new SaveMultipleDownloadSettingsCmd(userIds, false);
-		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
-			@Override
-			public void onFailure(Throwable caught) {
-				busy.hide();
-				GwtClientHelper.handleGwtRPCFailure(
-					caught,
-					m_messages.rpcFailure_DisableUsersDownload());
-			}
-
-			@Override
-			public void onSuccess(VibeRpcResponse response) {
-				// We're done.  If we had any errors...
-				ErrorListRpcResponseData erList = ((ErrorListRpcResponseData) response.getResponseData());
-				if (erList.hasErrors()) {
-					// ...display them.
-					GwtClientHelper.displayMultipleErrors(m_messages.binderViewsHelper_failureSettingDownload(), erList.getErrorList());
-				}
-				
-				// ...and hide the busy spinner.
-				busy.hide();
-				if (null != reloadEvent) {
-					GwtTeaming.fireEventAsync(reloadEvent);
-				}
-			}
-		});
-	}
-	
-	public static void disableUsersDownload(final List<Long> userIds) {
-		// Always use the initial form of the method.
-		disableUsersDownload(userIds, null);
-	}
-	
-	public static void disableUsersDownload(final Long userId, final VibeEventBase<?> reloadEvent) {
-		// Always use the initial form of the method.
-		List<Long> userIds = new ArrayList<Long>();
-		userIds.add(userId);
-		disableUsersDownload(userIds, reloadEvent);
-	}
-
-	public static void disableUsersDownload(final Long userId) {
-		// Always use the previous form of the method.
-		disableUsersDownload(userId, null);
-	}
-
-	/**
-	 * Disables the user's web access based on a List<Long>
-	 * of their user IDs.
-	 *
-	 * @param userIds
-	 */
-	public static void disableUsersWebAccess(final List<Long> userIds, final VibeEventBase<?> reloadEvent) {
-		// If we weren't given any user IDs to be disabled...
-		if (!(GwtClientHelper.hasItems(userIds))) {
-			// ...bail.
-			return;
-		}
-		
-		// Show a busy spinner while we disable the web access setting.
-		final SpinnerPopup busy = new SpinnerPopup();
-		busy.center();
-
-		// Send the request to disable the web access setting.
-		SaveMultipleWebAccessSettingsCmd cmd = new SaveMultipleWebAccessSettingsCmd(userIds, false);
-		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
-			@Override
-			public void onFailure(Throwable caught) {
-				busy.hide();
-				GwtClientHelper.handleGwtRPCFailure(
-					caught,
-					m_messages.rpcFailure_DisableUsersWebAccess());
-			}
-
-			@Override
-			public void onSuccess(VibeRpcResponse response) {
-				// We're done.  If we had any errors...
-				ErrorListRpcResponseData erList = ((ErrorListRpcResponseData) response.getResponseData());
-				if (erList.hasErrors()) {
-					// ...display them.
-					GwtClientHelper.displayMultipleErrors(m_messages.binderViewsHelper_failureSettingWebAccess(), erList.getErrorList());
-				}
-				
-				// ...and hide the busy spinner.
-				busy.hide();
-				if (null != reloadEvent) {
-					GwtTeaming.fireEventAsync(reloadEvent);
-				}
-			}
-		});
-	}
-	
-	public static void disableUsersWebAccess(final List<Long> userIds) {
-		// Always use the initial form of the method.
-		disableUsersWebAccess(userIds, null);
-	}
-	
-	public static void disableUsersWebAccess(final Long userId, final VibeEventBase<?> reloadEvent) {
-		// Always use the initial form of the method.
-		List<Long> userIds = new ArrayList<Long>();
-		userIds.add(userId);
-		disableUsersWebAccess(userIds, reloadEvent);
-	}
-
-	public static void disableUsersWebAccess(final Long userId) {
-		// Always use the previous form of the method.
-		disableUsersWebAccess(userId, null);
-	}
-
-	/**
-	 * Invokes the appropriate UI to email the public link of the
-	 * entities based on a List<EntityId> of the entries.
-	 *
-	 * @param entityIds
-	 */
-	public static void emailEntitiesPublicLink(final List<EntityId> entityIds) {
-		// If we weren't given any entity IDs to be shared...
-		if (!(GwtClientHelper.hasItems(entityIds))) {
-			// ...bail.
-			return;
-		}
-
-		// Have we created a email public link dialog yet?
-		if (null == m_emailPublicLinkDlg) {
-			// No!  Create one now...
-			EmailPublicLinkDlg.createAsync( false, true, new EmailPublicLinkDlgClient( ) {
-				@Override
-				public void onUnavailable() {
-					// Nothing to do.  Error handled in
-					// asynchronous provider.
-				}
-				
-				@Override
-				public void onSuccess(EmailPublicLinkDlg eplDlg) {
-					// ...and show it with the given entity IDs.
-					m_emailPublicLinkDlg = eplDlg;
-					showEmailPublicLinkDlgAsync(entityIds);
-				}
-			});
-		}
-		
-		else {
-			// Yes, we've already create a email public link dialog!
-			// Simply show it with the given entry IDs.
-			showEmailPublicLinkDlgAsync(entityIds);
-		}
-	}
-	
-	/**
-	 * Invokes the appropriate UI to email the public link of an entity
-	 * based on an EntityId.
-	 *
-	 * @param entityId
-	 */
-	public static void emailEntityPublicLink(EntityId entityId) {
-		List<EntityId> entityIds = new ArrayList<EntityId>();
-		entityIds.add(entityId);
-		emailEntitiesPublicLink(entityIds);
 	}
 
 	/**
@@ -942,14 +589,7 @@ public class BinderViewsHelper {
 
 			@Override
 			public void onSuccess(VibeRpcResponse response) {
-				// We're done.  If we had any errors...
-				ErrorListRpcResponseData erList = ((ErrorListRpcResponseData) response.getResponseData());
-				if (erList.hasErrors()) {
-					// ...display them.
-					GwtClientHelper.displayMultipleErrors(m_messages.binderViewsHelper_failureSettingAdHocFolders(), erList.getErrorList());
-				}
-				
-				// ...and hide the busy spinner.
+				// We're done.  Simply hide the busy spinner.
 				busy.hide();
 				if (null != reloadEvent) {
 					GwtTeaming.fireEventAsync(reloadEvent);
@@ -975,179 +615,6 @@ public class BinderViewsHelper {
 		enableUsersAdHocFolders(userId, null);
 	}
 
-	/**
-	 * Enables download files for the users based on a List<Long> of
-	 * their user IDs.
-	 *
-	 * @param userIds
-	 */
-	public static void enableUsersDownload(final List<Long> userIds, final VibeEventBase<?> reloadEvent) {
-		// If we weren't given any user IDs to be enable downloads
-		// on...
-		if (!(GwtClientHelper.hasItems(userIds))) {
-			// ...bail.
-			return;
-		}
-		
-		// Show a busy spinner while we enable the download setting.
-		final SpinnerPopup busy = new SpinnerPopup();
-		busy.center();
-
-		// Send the request to enable the download setting.
-		SaveMultipleDownloadSettingsCmd cmd = new SaveMultipleDownloadSettingsCmd(userIds, true);
-		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
-			@Override
-			public void onFailure(Throwable caught) {
-				busy.hide();
-				GwtClientHelper.handleGwtRPCFailure(
-					caught,
-					m_messages.rpcFailure_EnableUsersDownload());
-			}
-
-			@Override
-			public void onSuccess(VibeRpcResponse response) {
-				// We're done.  If we had any errors...
-				ErrorListRpcResponseData erList = ((ErrorListRpcResponseData) response.getResponseData());
-				if (erList.hasErrors()) {
-					// ...display them.
-					GwtClientHelper.displayMultipleErrors(m_messages.binderViewsHelper_failureSettingDownload(), erList.getErrorList());
-				}
-				
-				// ...and hide the busy spinner.
-				busy.hide();
-				if (null != reloadEvent) {
-					GwtTeaming.fireEventAsync(reloadEvent);
-				}
-			}
-		});
-	}
-	
-	public static void enableUsersDownload(final List<Long> userIds) {
-		// Always use the initial form of the method.
-		enableUsersDownload(userIds, null);
-	}
-	
-	public static void enableUsersDownload(final Long userId, final VibeEventBase<?> reloadEvent) {
-		// Always use the initial form of the method.
-		List<Long> userIds = new ArrayList<Long>();
-		userIds.add(userId);
-		enableUsersDownload(userIds, reloadEvent);
-	}
-	
-	public static void enableUsersDownload(final Long userId) {
-		// Always use the previous form of the method.
-		enableUsersDownload(userId, null);
-	}
-
-	/**
-	 * Enables web access for the users based on a List<Long> of
-	 * their user IDs.
-	 *
-	 * @param userIds
-	 */
-	public static void enableUsersWebAccess(final List<Long> userIds, final VibeEventBase<?> reloadEvent) {
-		// If we weren't given any user IDs to be enable web access
-		// on...
-		if (!(GwtClientHelper.hasItems(userIds))) {
-			// ...bail.
-			return;
-		}
-		
-		// Show a busy spinner while we enable the web access setting.
-		final SpinnerPopup busy = new SpinnerPopup();
-		busy.center();
-
-		// Send the request to enable web access setting.
-		SaveMultipleWebAccessSettingsCmd cmd = new SaveMultipleWebAccessSettingsCmd(userIds, true);
-		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
-			@Override
-			public void onFailure(Throwable caught) {
-				busy.hide();
-				GwtClientHelper.handleGwtRPCFailure(
-					caught,
-					m_messages.rpcFailure_EnableUsersWebAccess());
-			}
-
-			@Override
-			public void onSuccess(VibeRpcResponse response) {
-				// We're done.  If we had any errors...
-				ErrorListRpcResponseData erList = ((ErrorListRpcResponseData) response.getResponseData());
-				if (erList.hasErrors()) {
-					// ...display them.
-					GwtClientHelper.displayMultipleErrors(m_messages.binderViewsHelper_failureSettingWebAccess(), erList.getErrorList());
-				}
-				
-				// ...and hide the busy spinner.
-				busy.hide();
-				if (null != reloadEvent) {
-					GwtTeaming.fireEventAsync(reloadEvent);
-				}
-			}
-		});
-	}
-	
-	public static void enableUsersWebAccess(final List<Long> userIds) {
-		// Always use the initial form of the method.
-		enableUsersWebAccess(userIds, null);
-	}
-	
-	public static void enableUsersWebAccess(final Long userId, final VibeEventBase<?> reloadEvent) {
-		// Always use the initial form of the method.
-		List<Long> userIds = new ArrayList<Long>();
-		userIds.add(userId);
-		enableUsersWebAccess(userIds, reloadEvent);
-	}
-	
-	public static void enableUsersWebAccess(final Long userId) {
-		// Always use the previous form of the method.
-		enableUsersWebAccess(userId, null);
-	}
-
-	/**
-	 * Returns a count of the entities that can't be shared because
-	 * they're Net Folders.
-	 * 
-	 * @param entities
-	 * @param entityRightsMap
-	 * 
-	 * @return
-	 */
-	public static int getNetFolderShareFailureCount(final List<EntityId> entities, final Map<String, EntityRights> entityRightsMap) {
-		int reply = 0;
-		if (GwtClientHelper.hasItems(entities) && GwtClientHelper.hasItems(entityRightsMap)) {
-			for (EntityId eid:  entities) {
-				if (eid.isFolder()) {
-					EntityRights er = entityRightsMap.get(EntityRights.getEntityRightsKey(eid));
-					ShareRight   sr = ((null == er) ? null : er.getShareRight());
-					if ((null != sr) && sr.cantShareNetFolder()) {
-						reply += 1;
-					}
-				}
-			}
-		}
-		return reply;
-	}
-	
-	/**
-	 * Returns a count of the entities that can't have their public
-	 * link copied or e-mailed because they're Folders.
-	 * 
-	 * @param entities
-	 * 
-	 * @return
-	 */
-	public static int getFolderPublicLinkFailureCount(final List<EntityId> entities) {
-		int reply = 0;
-		if (GwtClientHelper.hasItems(entities)) {
-			for (EntityId eid:  entities) {
-				if (eid.isFolder()) {
-					reply += 1;
-				}
-			}
-		}
-		return reply;
-	}
-	
 	/**
 	 * Marks the shares hidden based on a List<Long> of their entity
 	 * IDs.
@@ -1211,7 +678,7 @@ public class BinderViewsHelper {
 	public static void invokeDropBox(final BinderInfo folderInfo, final UIObject showRelativeWidget) {
 		// Are we running in a browser that support file uploads using
 		// HTML5 and is the control key not pressed?
-		if (GwtClientHelper.jsBrowserSupportsHtml5FileAPIs() && (!(GwtClientHelper.isControlKeyDown()))) {
+		if (AddFilesHtml5Popup.browserSupportsHtml5() && (!(GwtClientHelper.isControlKeyDown()))) {
 			// Yes!  Have we instantiated an HTML5 add files popup yet?
 			if (null == m_addFilesHtml5Popup) {
 				// No!  Instantiate one now...
@@ -1293,17 +760,8 @@ public class BinderViewsHelper {
 
 		// Have we created a share dialog yet?
 		if (null == m_shareDlg) {
-			RunAsyncCmd createCmd;
-			RunAsyncCreateDlgParams params;
-			
 			// No!  Create one now...
-			params = new RunAsyncCreateDlgParams();
-			params.setAutoHide( new Boolean( false ) );
-			params.setModal( new Boolean( true ) );
-
-			createCmd = new RunAsyncCmd( RunAsyncCmdType.CREATE, params );
-
-			ShareThisDlg2.runAsyncCmd( createCmd, new ShareThisDlg2Client() {
+			ShareThisDlg.createAsync(new ShareThisDlgClient() {
 				@Override
 				public void onUnavailable() {
 					// Nothing to do.  Error handled in asynchronous
@@ -1311,7 +769,7 @@ public class BinderViewsHelper {
 				}
 				
 				@Override
-				public void onSuccess(ShareThisDlg2 stDlg) {
+				public void onSuccess(ShareThisDlg stDlg) {
 					// ...and show it with the given entity IDs.
 					m_shareDlg = stDlg;
 					showManageSharesDlgAsync(entityIds);
@@ -1390,99 +848,6 @@ public class BinderViewsHelper {
 		lockEntries(entityIds, null);
 	}
 
-	/**
-	 * Mails the public link of a folder entry using a 'mailto://...'
-	 * URL.
-	 * 
-	 * @param entityId
-	 */
-	public static void mailToPublicLink(final EntityId entityId) {
-		// ...and request the links.
-		GetMailToPublicLinksCmd cmd = new GetMailToPublicLinksCmd(entityId);
-		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
-			@Override
-			public void onFailure(Throwable t) {
-				GwtClientHelper.handleGwtRPCFailure(
-					t,
-					m_messages.rpcFailure_GetMailToPublicLinks());
-			}
-	
-			@Override
-			public void onSuccess(VibeRpcResponse response) {
-				// Extract the link information from the response.
-				MailToPublicLinksRpcResponseData plData = ((MailToPublicLinksRpcResponseData) response.getResponseData());
-				
-				// Did we get any messages (errors, ...) from the
-				// request?
-				if (plData.hasError()) {
-					// Yes!  Display them.
-					GwtClientHelper.deferredAlert(
-						m_messages.binderViewsHelper_failureMailToPublicLink(
-							plData.getError()));
-				}
-
-				// How many links to we have for the entity?
-				List<MailToPublicLinkInfo> plList = plData.getMailToPublicLinks();
-				switch ((null == plList) ? 0 : plList.size()) {
-				case 0:
-					// None!  Nothing to do.
-					break;
-					
-				case 1:
-					// One!  Simply mail it.
-					mailToPublicLinkAsync(plData.getSubject(), plList.get(0));
-					break;
-					
-				default:
-					// More than one!  We need to ask the user which
-					// one to mail.
-//!					...this needs to be implemented...
-					GwtClientHelper.deferredAlert("BinderViewsHelper.mailToPublicLink( *Multiple Links* ):  ...this needs to be implemented...");
-					break;
-				}
-			}
-		});
-	}
-
-	/*
-	 * Asynchronously mails the public link using a 'mailto://...' URL.
-	 */
-	private static void mailToPublicLinkAsync(final String subject, final MailToPublicLinkInfo plLink) {
-		GwtClientHelper.deferCommand(new ScheduledCommand() {
-			@Override
-			public void execute() {
-				mailToPublicLinkNow(subject, plLink);
-			}
-		});
-	}
-	
-	/*
-	 * Synchronously mails the public link using a 'mailto://...' URL.
-	 */
-	private static void mailToPublicLinkNow(final String subject, final MailToPublicLinkInfo plLink) {
-		// Construct the body text using the public link URLs...
-		StringBuilder body    = new StringBuilder(); 
-		String        url     = plLink.getViewUrl();
-		boolean       hasView = GwtClientHelper.hasString(url);
-		if (hasView) {
-			body.append(m_messages.binderViewsHelper_view());
-			body.append(" ");
-			body.append(url);
-		}
-		url = plLink.getDownloadUrl();
-		if (GwtClientHelper.hasString(url)) {
-			if (hasView) {
-				body.append("\r\n\r\n");
-			}
-			body.append(m_messages.binderViewsHelper_download());
-			body.append(" ");
-			body.append(url);
-		}
-
-		// ...and send the email.
-		sendEmail(subject, body.toString());
-	}
-	
 	/**
 	 * Marks the entries read based on a List<Long> of their entity
 	 * IDs.
@@ -1635,18 +1000,218 @@ public class BinderViewsHelper {
 		moveEntries(entityIds, null);
 	}
 	
-	/*
-	 * Sends an email with the given subject and body.
-	 * 
-	 * See the following for the algorithm implemented:
-	 *		http://shadow2531.com/opera/testcases/mailto/modern_mailto_uri_scheme.html
+	/**
+	 * Purges the folder entries based on a folder ID and List<Long> of
+	 * the entity IDs.
+	 *
+	 * @param entityIds
 	 */
-	private static void sendEmail(String subjectIn, String bodyIn) {
-	    String subject = GwtClientHelper.jsUTF8PercentEncodeWithNewlinesStripped(  subjectIn);
-	    String body    = GwtClientHelper.jsUTF8PercentEncodeWithNormalizedNewlines(bodyIn   );
-	    GwtClientHelper.jsWindowOpen("mailto:?subject=" + subject + "&body=" + body);
+	public static void purgeFolderEntries(final List<EntityId> entityIds, final DeletePurgeEntriesCallback dpeCallback) {
+		// If we weren't given any entity IDs to be purged...
+		if (!(GwtClientHelper.hasItems(entityIds))) {
+			// ...bail.
+			return;
+		}
+		
+    	// If we need to, add a checkbox about purging mirrored sources.
+		final CheckBox cb;
+		final boolean purgeBinders = EntityId.areBindersInEntityIds(entityIds);
+	    if (purgeBinders) {
+	    	String caption;
+	    	if (GwtClientHelper.isLicenseFilr())
+	    	     caption = m_messages.vibeDataTable_TrashConfirmPurgeDeleteSourceOnMirroredSubFolders_Filr();
+	    	else caption = m_messages.vibeDataTable_TrashConfirmPurgeDeleteSourceOnMirroredSubFolders_Vibe();
+	    	cb = new CheckBox(caption);
+	    }
+	    else {
+	    	cb = null;
+	    }
+		
+		// Is the user sure they want to purge the folder entries?
+		ConfirmDlg.createAsync(new ConfirmDlgClient() {
+			@Override
+			public void onUnavailable() {
+				// Nothing to do.  Error handled in
+				// asynchronous provider.
+			}
+			
+			@Override
+			public void onSuccess(ConfirmDlg cDlg) {
+				String confirmationMsg;
+				switch (entityIds.size()) {
+				case 1:
+					EntityId	eid     = entityIds.get(0);
+					String		eidType = eid.getEntityType();
+					if      (eidType.equals(EntityId.FOLDER))    confirmationMsg = m_messages.binderViewsConfirmPurgeFolder();
+					else if (eidType.equals(EntityId.WORKSPACE)) confirmationMsg = m_messages.binderViewsConfirmPurgeWorkspace();
+					else                                         confirmationMsg = m_messages.binderViewsConfirmPurgeEntry();
+					break;
+					
+				default:
+					confirmationMsg = m_messages.binderViewsConfirmPurgeEntries();
+					break;
+				}
+				ConfirmDlg.initAndShow(
+					cDlg,
+					new ConfirmCallback() {
+						@Override
+						public void dialogReady() {
+							// Ignored.  We don't really care when the
+							// dialog is ready.
+						}
+
+						@Override
+						public void accepted() {
+							// Yes, they're sure!  Perform the purge.
+							DeletePurgeEntriesHelper.purgeSelectedEntriesAsync(
+								entityIds,
+								((null == cb) ? false : cb.getValue()),
+								dpeCallback);
+						}
+
+						@Override
+						public void rejected() {
+							// No, they're not sure!
+						}
+					},
+					confirmationMsg,
+					cb);
+			}
+		});
 	}
-	
+
+	/**
+	 * Purges the user workspaces and user objects based on a
+	 * List<Long> of their user IDs.
+	 *
+	 * @param userIds
+	 */
+	public static void purgeUsers(final List<Long> userIds) {
+		// If we weren't given any user IDs to be purged...
+		if (!(GwtClientHelper.hasItems(userIds))) {
+			// ...bail.
+			return;
+		}
+
+		// Is the user sure they want to the selected user workspaces
+		// and user objects?
+		CheckBox cb;
+		if (PROMPT_PURGE_USER_WORKSPACE_NET_FOLDERS) {
+			String caption;
+			if (GwtClientHelper.isLicenseFilr())
+			     caption = m_messages.binderViewsPromptPurgeMirroredFolders_Filr();
+			else caption = m_messages.binderViewsPromptPurgeMirroredFolders_Vibe();
+			cb = new CheckBox(caption);
+		}
+		else {
+			cb = null;
+		}
+		final CheckBox finalCB = cb;
+		ConfirmDlg.createAsync(new ConfirmDlgClient() {
+			@Override
+			public void onUnavailable() {
+				// Nothing to do.  Error handled in
+				// asynchronous provider.
+			}
+			
+			@Override
+			public void onSuccess(ConfirmDlg cDlg) {
+				ConfirmDlg.initAndShow(
+					cDlg,
+					new ConfirmCallback() {
+						@Override
+						public void dialogReady() {
+							// Ignored.  We don't really care when the
+							// dialog is ready.
+						}
+
+						@Override
+						public void accepted() {
+							// Yes, they're sure!  Perform the purge.
+							DeletePurgeUsersHelper.purgeUsersAsync(
+								userIds,
+								((null == finalCB) ?
+									false          :
+									finalCB.getValue()));
+						}
+
+						@Override
+						public void rejected() {
+							// No, they're not sure!
+						}
+					},
+					m_messages.binderViewsConfirmPurgeUsers(),
+					finalCB);
+			}
+		});
+	}
+
+	/**
+	 * Purges the user workspaces based on a List<Long> of their user
+	 * IDs.
+	 *
+	 * @param userIds
+	 */
+	public static void purgeUserWorkspaces(final List<Long> userIds) {
+		// If we weren't given any user IDs to be purged...
+		if (!(GwtClientHelper.hasItems(userIds))) {
+			// ...bail.
+			return;
+		}
+		
+		// Is the user sure they want to purge the selected user
+		// workspaces?
+		CheckBox cb;
+		if (PROMPT_PURGE_USER_WORKSPACE_NET_FOLDERS) {
+			String caption;
+			if (GwtClientHelper.isLicenseFilr())
+			     caption = m_messages.binderViewsPromptPurgeMirroredFolders_Filr();
+			else caption = m_messages.binderViewsPromptPurgeMirroredFolders_Vibe();
+			cb = new CheckBox(caption);
+		}
+		else {
+			cb = null;
+		}
+		final CheckBox finalCB = cb;
+		ConfirmDlg.createAsync(new ConfirmDlgClient() {
+			@Override
+			public void onUnavailable() {
+				// Nothing to do.  Error handled in
+				// asynchronous provider.
+			}
+			
+			@Override
+			public void onSuccess(ConfirmDlg cDlg) {
+				ConfirmDlg.initAndShow(
+					cDlg,
+					new ConfirmCallback() {
+						@Override
+						public void dialogReady() {
+							// Ignored.  We don't really care when the
+							// dialog is ready.
+						}
+
+						@Override
+						public void accepted() {
+							// Yes, they're sure!  Perform the purge.
+							DeletePurgeUsersHelper.purgeUserWorkspacesAsync(
+								userIds,
+								((null == finalCB) ?
+									false          :
+									finalCB.getValue()));
+						}
+
+						@Override
+						public void rejected() {
+							// No, they're not sure!
+						}
+					},
+					m_messages.binderViewsConfirmPurgeUserWS(),
+					finalCB);
+			}
+		});
+	}
+
 	/**
 	 * Invokes the appropriate UI to share the entities based on a
 	 * List<EntityId> of the entries.
@@ -1662,18 +1227,8 @@ public class BinderViewsHelper {
 
 		// Have we created a copy/move entries dialog yet?
 		if (null == m_shareDlg) {
-			RunAsyncCmd createCmd;
-			RunAsyncCreateDlgParams params;
-			
-			// No, create it.
-			params = new RunAsyncCreateDlgParams();
-			params.setAutoHide( new Boolean( false ) );
-			params.setModal( new Boolean( true ) );
-
-			createCmd = new RunAsyncCmd( RunAsyncCmdType.CREATE, params );
-			
 			// No!  Create one now...
-			ShareThisDlg2.runAsyncCmd( createCmd, new ShareThisDlg2Client() {
+			ShareThisDlg.createAsync(new ShareThisDlgClient() {
 				@Override
 				public void onUnavailable() {
 					// Nothing to do.  Error handled in
@@ -1681,7 +1236,7 @@ public class BinderViewsHelper {
 				}
 				
 				@Override
-				public void onSuccess(ShareThisDlg2 stDlg) {
+				public void onSuccess(ShareThisDlg stDlg) {
 					// ...and show it with the given entity IDs.
 					m_shareDlg = stDlg;
 					showShareDlgAsync(entityIds);
@@ -1753,56 +1308,6 @@ public class BinderViewsHelper {
 	}
 	
 	/*
-	 * Asynchronously shows the copy public link dialog.
-	 */
-	private static void showCopyPublicLinkDlgAsync(final List<EntityId> entityIds) {
-		GwtClientHelper.deferCommand(new ScheduledCommand() {
-			@Override
-			public void execute() {
-				showCopyPublicLinkDlgNow(entityIds);
-			}
-		});
-	}
-	
-	/*
-	 * Synchronously shows the copy public link dialog.
-	 */
-	private static void showCopyPublicLinkDlgNow(List<EntityId> entityIds) {
-		String caption = GwtClientHelper.patchMessage(
-			m_messages.copyPublicLinkTheseItems(GwtClientHelper.getProductName()),
-			String.valueOf(entityIds.size()));
-		CopyPublicLinkDlg.initAndShow(m_copyPublicLinkDlg, caption, entityIds);
-	}
-
-	/*
-	 * Asynchronously shows the email public link dialog.
-	 */
-	private static void showEmailPublicLinkDlgAsync(final List<EntityId> entityIds) {
-		GwtClientHelper.deferCommand(new ScheduledCommand() {
-			@Override
-			public void execute() {
-				showEmailPublicLinkDlgNow(entityIds);
-			}
-		});
-	}
-	
-	/*
-	 * Synchronously shows the email public link dialog.
-	 */
-	private static void showEmailPublicLinkDlgNow(List<EntityId> entityIds) {
-		if ( m_emailPublicLinkDlg != null )
-		{
-			String caption;
-
-			caption = GwtClientHelper.patchMessage(
-											m_messages.emailPublicLinkTheseItems(GwtClientHelper.getProductName()),
-											String.valueOf(entityIds.size()));
-			m_emailPublicLinkDlg.init( caption, entityIds );
-			m_emailPublicLinkDlg.show( true );
-		}
-	}
-
-	/*
 	 * Asynchronously shows the share dialog in administrative mode.
 	 */
 	private static void showManageSharesDlgAsync(final List<EntityId> entityIds) {
@@ -1818,22 +1323,8 @@ public class BinderViewsHelper {
 	 * Synchronously shows the share dialog in administrative mode.
 	 */
 	private static void showManageSharesDlgNow(List<EntityId> entityIds) {
-		RunAsyncCmd initAndShowCmd;
-		ShareThisDlgInitAndShowParams params;
-		String caption;
-	
-		params = new ShareThisDlgInitAndShowParams();
-		params.setUIObj( m_shareDlg );
-		caption = GwtClientHelper.patchMessage(m_messages.manageShares(), String.valueOf(entityIds.size()));
-		params.setCaption( caption );
-		params.setEntityIds( entityIds );
-		params.setShowCentered( true );
-		params.setMode( ShareThisDlg2.ShareThisDlgMode.MANAGE_SELECTED );
-	
-		initAndShowCmd = new RunAsyncCmd( RunAsyncCmdType.INIT_AND_SHOW, params );
-		
-		// Run the async command to show the dialog
-		ShareThisDlg2.runAsyncCmd( initAndShowCmd, null );
+		String caption = GwtClientHelper.patchMessage( m_messages.manageShares(), String.valueOf(entityIds.size()));
+		ShareThisDlg.initAndShow(m_shareDlg, null, caption, null, entityIds, ShareThisDlgMode.MANAGE_SELECTED);
 	}
 
 	/*
@@ -1852,22 +1343,8 @@ public class BinderViewsHelper {
 	 * Synchronously shows the share dialog.
 	 */
 	private static void showShareDlgNow(List<EntityId> entityIds) {
-		RunAsyncCmd initAndShowCmd;
-		ShareThisDlgInitAndShowParams params;
-		String caption;
-	
-		params = new ShareThisDlgInitAndShowParams();
-		params.setUIObj( m_shareDlg );
-		caption = GwtClientHelper.patchMessage(m_messages.shareTheseItems(), String.valueOf(entityIds.size()));
-		params.setCaption( caption );
-		params.setEntityIds( entityIds );
-		params.setMode( ShareThisDlg2.ShareThisDlgMode.NORMAL );
-		params.setShowCentered( new Boolean( true ) );
-	
-		initAndShowCmd = new RunAsyncCmd( RunAsyncCmdType.INIT_AND_SHOW, params );
-		
-		// Run the async command to show the dialog
-		ShareThisDlg2.runAsyncCmd( initAndShowCmd, null );
+		String caption = GwtClientHelper.patchMessage(m_messages.shareTheseItems(), String.valueOf(entityIds.size()));
+		ShareThisDlg.initAndShow(m_shareDlg, null, caption, null, entityIds);
 	}
 
 	/**
@@ -2073,15 +1550,12 @@ public class BinderViewsHelper {
 	/*
 	 * Validates a List<EntityId> for containing entry references.
 	 */
-	private static boolean validateEntriesInEntityIds(List<EntityId> entityIds, boolean requiresFiles) {
+	private static boolean validateEntriesInEntityIds(List<EntityId> entityIds) {
 		// If the list contains no entries...
 		boolean hasEntries = EntityId.areEntriesInEntityIds(entityIds);
 		if (!hasEntries) {
 			// ...tell the user about the problem and return false.
-			GwtClientHelper.deferredAlert(
-				(requiresFiles                                           ?
-					m_messages.vibeEntryMenu_Warning_OnlyFolders_Files() :
-					m_messages.vibeEntryMenu_Warning_OnlyFolders_Entries()));
+			GwtClientHelper.deferredAlert(m_messages.vibeEntryMenu_Warning_OnlyFolders());
 			return false;
 		}
 
@@ -2097,11 +1571,6 @@ public class BinderViewsHelper {
 		// If we get here, the list contained entry references.  Return
 		// true.
 		return true;
-	}
-	
-	private static boolean validateEntriesInEntityIds(List<EntityId> entityIds) {
-		// Always use the initial form of the method.
-		return validateEntriesInEntityIds(entityIds, false);
 	}
 
 	/**
@@ -2201,122 +1670,5 @@ public class BinderViewsHelper {
 			// Simply show it.
 			showWhoHasAccessAsync(entityId);
 		}
-	}
-	
-	/**
-	 * Zips and downloads the selected files and folder based on a
-	 * List<EntityId> of their entity IDs.
-	 *
-	 * @param downloadForm
-	 * @param entityIds
-	 * @param recursive
-	 * @param reloadEvent
-	 */
-	public static void zipAndDownloadFiles(final FormPanel downloadForm, List<EntityId> entityIds, boolean recursive, final VibeEventBase<?> reloadEvent) {
-		// If we weren't given any entity IDs to be downloaded...
-		if (!(GwtClientHelper.hasItems(entityIds))) {
-			// ...bail.
-			return;
-		}
-		
-		// Show a busy spinner while we build the information for
-		// downloading the files.
-		final SpinnerPopup busy = new SpinnerPopup();
-		busy.center();
-
-		// Send the request for the zip download URL.
-		GetZipDownloadFilesUrlCmd cmd = new GetZipDownloadFilesUrlCmd(entityIds, recursive);
-		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
-			@Override
-			public void onFailure(Throwable caught) {
-				busy.hide();
-				GwtClientHelper.handleGwtRPCFailure(
-					caught,
-					m_messages.rpcFailure_GetZipDownloadUrl());
-			}
-
-			@Override
-			public void onSuccess(VibeRpcResponse response) {
-				// If we got any errors creating the URL to download
-				// the zip...
-				busy.hide();
-				ZipDownloadUrlRpcResponseData	zipDownloadInfo = ((ZipDownloadUrlRpcResponseData) response.getResponseData());
-				ErrorListRpcResponseData		errorList       = zipDownloadInfo.getErrors();
-				List<ErrorInfo>					errors          = errorList.getErrorList();
-				int count = ((null == errors) ? 0 : errors.size());
-				if (0 < count) {
-					// ...tell the user.
-					GwtClientHelper.displayMultipleErrors(m_messages.zipDownloadUrlError(), errors);
-				}
-
-				// If we get the URL to download the zip...
-				String zipDownloadUrl = zipDownloadInfo.getUrl();
-				if (GwtClientHelper.hasString(zipDownloadUrl)) {
-					// ...start it downloading...
-					downloadForm.setAction(zipDownloadUrl);
-					downloadForm.submit();
-				}
-			}
-		});
-	}
-	
-	public static void zipAndDownloadFiles(FormPanel downloadForm, List<EntityId> entityIds, boolean recursive) {
-		// Always use the initial form of the method.
-		zipAndDownloadFiles(downloadForm, entityIds, recursive, null);
-	}
-	
-	/**
-	 * Zips and downloads the files in a folder.
-	 *
-	 * @param downloadForm
-	 * @param folderId
-	 * @param recursive
-	 * @param reloadEvent
-	 */
-	public static void zipAndDownloadFolder(final FormPanel downloadForm, Long folderId, boolean recursive, final VibeEventBase<?> reloadEvent) {
-		// Show a busy spinner while we build the information for
-		// downloading the files.
-		final SpinnerPopup busy = new SpinnerPopup();
-		busy.center();
-
-		// Send the request for the zip download URL.
-		GetZipDownloadFolderUrlCmd cmd = new GetZipDownloadFolderUrlCmd(folderId, recursive);
-		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
-			@Override
-			public void onFailure(Throwable caught) {
-				busy.hide();
-				GwtClientHelper.handleGwtRPCFailure(
-					caught,
-					m_messages.rpcFailure_GetZipDownloadUrl());
-			}
-
-			@Override
-			public void onSuccess(VibeRpcResponse response) {
-				// If we got any errors creating the URL to download
-				// the zip...
-				busy.hide();
-				ZipDownloadUrlRpcResponseData	zipDownloadInfo = ((ZipDownloadUrlRpcResponseData) response.getResponseData());
-				ErrorListRpcResponseData		errorList       = zipDownloadInfo.getErrors();
-				List<ErrorInfo>					errors          = errorList.getErrorList();
-				int count = ((null == errors) ? 0 : errors.size());
-				if (0 < count) {
-					// ...tell the user.
-					GwtClientHelper.displayMultipleErrors(m_messages.zipDownloadUrlError(), errors);
-				}
-
-				// If we get the URL to download the zip...
-				String zipDownloadUrl = zipDownloadInfo.getUrl();
-				if (GwtClientHelper.hasString(zipDownloadUrl)) {
-					// ...start it downloading...
-					downloadForm.setAction(zipDownloadUrl);
-					downloadForm.submit();
-				}
-			}
-		});
-	}
-	
-	public static void zipAndDownloadFolder(FormPanel downloadForm, Long folderId, boolean recursive) {
-		// Always use the initial form of the method.
-		zipAndDownloadFolder(downloadForm, folderId, recursive, null);
 	}
 }

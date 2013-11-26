@@ -31,7 +31,6 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 package org.kablink.teaming.web.util;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -50,7 +49,6 @@ import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.FileAttachment;
-import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.VersionAttachment;
 import org.kablink.teaming.module.zone.ZoneModule;
@@ -84,32 +82,6 @@ public class WebUrlUtil {
 	public static final int FILE_URL_ZIP_ARG_LENGTH = 5;
 	public static final int FILE_URL_ZIP_SINGLE_ARG_LENGTH = 6;
 	public static final int FILE_URL_ZIP_SINGLE_FILE_ID = 5;
-	
-	// Used the parse the URL returned by getFileListZipUrl().
-	public static final int FILE_URL_ZIPLIST_ARG_LENGTH			= 11;
-	public static final int FILE_URL_ZIPLIST_ZIP				=  8;
-	public static final int FILE_URL_ZIPLIST_FILE_IDS_OPERAND	=  4;
-	public static final int FILE_URL_ZIPLIST_FILE_IDS			=  5;
-	public static final int FILE_URL_ZIPLIST_FOLDER_IDS_OPERAND	=  6;
-	public static final int FILE_URL_ZIPLIST_FOLDER_IDS			=  7;
-	public static final int FILE_URL_ZIPLIST_OPERATION			=  3;
-	public static final int FILE_URL_ZIPLIST_RECURSIVE_OPERAND	=  9;
-	public static final int FILE_URL_ZIPLIST_RECURSIVE			= 10;
-	
-	// Used the parse the URL returned by getFolderZipUrl().
-	public static final int FILE_URL_ZIPFOLDER_ARG_LENGTH			= 9;
-	public static final int FILE_URL_ZIPFOLDER_ZIP					= 6;
-	public static final int FILE_URL_ZIPFOLDER_FOLDER_ID			= 5;
-	public static final int FILE_URL_ZIPFOLDER_OPERATION			= 3;
-	public static final int FILE_URL_ZIPFOLDER_RECURSIVE_OPERAND	= 7;
-	public static final int FILE_URL_ZIPFOLDER_RECURSIVE			= 8;
-	
-	// Used the parse the URL returned by getSharedPublicFileUrl().
-	public static final int FILE_URL_SHARED_PUBLIC_FILE_ARG_LENGTH	= 7;
-	public static final int FILE_URL_SHARED_PUBLIC_FILE_SHARE_ID	= 3;
-	public static final int FILE_URL_SHARED_PUBLIC_FILE_PASSKEY		= 4;
-	public static final int FILE_URL_SHARED_PUBLIC_FILE_OPERATION	= 5;
-	public static final int FILE_URL_SHARED_PUBLIC_FILE_NAME		= 6;
 	
 	private static final Log logger = LogFactory.getLog(WebUrlUtil.class);
 
@@ -188,14 +160,6 @@ public class WebUrlUtil {
 		String ctx = SPropsUtil.getString(SPropsUtil.SIMPLEURL_CTX, "/novl");
 		
 		sb.append(ctx).append("/");
-		
-		return sb.toString();
-	}
-	
-	public static String getSimpleURLContextBaseURL(HttpServletRequest req) {
-		StringBuffer sb = getHostAndPort(WebApp.SIMPLE_URL, req, req.isSecure(), getSimpleURLWebProtocol(), UrlType.simpleurl, false);
-		
-		sb.append("/");
 		
 		return sb.toString();
 	}
@@ -445,12 +409,6 @@ public class WebUrlUtil {
 	public static String getFileZipUrl(HttpServletRequest req, String action, DefinableEntity entity, String fileId) {
 		return getFileZipUrl(WebUrlUtil.getServletRootURL(req), action, entity, fileId);
 	}
-	public static String getFileListZipUrl(HttpServletRequest req, Collection<FolderEntry> fileList, Collection<Folder> folderList, boolean recursive) {
-		return getFileListZipUrl(WebUrlUtil.getServletRootURL(req), fileList, folderList, recursive);
-	}
-	public static String getFolderZipUrl(HttpServletRequest req, Long folderId, boolean recursive) {
-		return getFolderZipUrl(WebUrlUtil.getServletRootURL(req), folderId, recursive);
-	}
 	public static String getFileHtmlUrl(HttpServletRequest req, String action, DefinableEntity entity, String fileName) {
 		if (entity == null) return "";
 		FileAttachment fAtt = null;
@@ -510,8 +468,7 @@ public class WebUrlUtil {
 		EntityIdentifier.EntityType entityType = EntityIdentifier.EntityType.valueOf((String)searchResults.get(org.kablink.util.search.Constants.ENTITY_FIELD));
 		String entityId = (String)searchResults.get(org.kablink.util.search.Constants.DOCID_FIELD);
 		String fileTime=null,fileName=null,fileId=null;
-		Object fileIdResult = searchResults.get(org.kablink.util.search.Constants.PRIMARY_FILE_ID_FIELD);
-		if (fileIdResult == null) fileIdResult = searchResults.get(org.kablink.util.search.Constants.FILE_ID_FIELD);
+		Object fileIdResult = searchResults.get(org.kablink.util.search.Constants.FILE_ID_FIELD);
 		if (fileIdResult == null) return "";
 		//since their may be more than one attachment, we get need a consistent picture of the first one.
 		if (Validator.isNull(file)) {
@@ -637,153 +594,6 @@ public class WebUrlUtil {
 		webUrl.append(Constants.SLASH + "zip"); 
 		if (!fileId.equals("")) webUrl.append(Constants.SLASH + fileId); 
 		return webUrl.toString();
-	}
-
-	/**
-	 * Returns the URL for downloading the primary files from a
-	 * specific collection of entries in a zip.
-	 * 
-	 * Note:  The URL constructed must adhere to the count and indexes
-	 * of the various FILE_URL_ZIPLIST_* definitions. 
-	 * 
-	 * @param webPath
-	 * @param fileList
-	 * @param folderList
-	 * @param recursive
-	 * 
-	 * @return
-	 */
-	public static String getFileListZipUrl(String webPath, Collection<FolderEntry> fileList, Collection<Folder> folderList, boolean recursive) {
-		// Construct a ':' separated list of the entry IDs.
-		StringBuffer entryIdsBuf = new StringBuffer();
-		boolean first = true;
-		for (FolderEntry fe:  fileList) {
-			if (!first) {
-				entryIdsBuf.append(":");
-			}
-			first = false;
-			entryIdsBuf.append(String.valueOf(fe.getId()));
-		}
-		String entryIds;
-		if (first)
-		     entryIds = "-";
-		else entryIds = entryIdsBuf.toString();
-		
-		// Construct a ':' separated list of the folder IDs.
-		StringBuffer folderIdsBuf = new StringBuffer();
-		first = true;
-		for (Folder folder:  folderList) {
-			if (!first) {
-				folderIdsBuf.append(":");
-			}
-			first = false;
-			folderIdsBuf.append(String.valueOf(folder.getId()));
-		}
-		String folderIds;
-		if (first)
-		     folderIds = "-";
-		else folderIds = folderIdsBuf.toString();
-
-		// Construct and return the URL.
-		if (Validator.isNull(webPath)) webPath = WebUrlUtil.getServletRootURL();
-		StringBuffer webUrl = new StringBuffer(webPath + WebKeys.ACTION_READ_FILE);
-		webUrl.append(Constants.SLASH + WebKeys.URL_OPERATION);
-		webUrl.append(Constants.SLASH + WebKeys.OPERATION_READ_FILE_LIST);
-		webUrl.append(Constants.SLASH + WebKeys.URL_FOLDER_ENTRY_LIST);
-		webUrl.append(Constants.SLASH + entryIds);
-		webUrl.append(Constants.SLASH + WebKeys.URL_FOLDER_LIST);
-		webUrl.append(Constants.SLASH + folderIds);
-		webUrl.append(Constants.SLASH + "zip"); 
-		webUrl.append(Constants.SLASH + WebKeys.URL_RECURSIVE);
-		webUrl.append(Constants.SLASH + recursive);
-		return webUrl.toString();
-	}
-
-	/**
-	 * Returns the URL for downloading the primary files from a folder
-	 * in a zip.
-	 * 
-	 * Note:  The URL constructed must adhere to the count and indexes
-	 * of the various FILE_URL_ZIPFOLDER_* definitions. 
-	 * 
-	 * @param webPath
-	 * @param folderId
-	 * @param recursive
-	 * 
-	 * @return
-	 */
-	public static String getFolderZipUrl(String webPath, Long folderId, boolean recursive) {
-		// Construct and return the URL.
-		if (Validator.isNull(webPath)) webPath = WebUrlUtil.getServletRootURL();
-		StringBuffer webUrl = new StringBuffer(webPath + WebKeys.ACTION_READ_FILE);
-		webUrl.append(Constants.SLASH + WebKeys.URL_OPERATION);
-		webUrl.append(Constants.SLASH + WebKeys.OPERATION_READ_FOLDER);
-		webUrl.append(Constants.SLASH + WebKeys.URL_FOLDER_ID);
-		webUrl.append(Constants.SLASH + folderId);
-		webUrl.append(Constants.SLASH + "zip");
-		webUrl.append(Constants.SLASH + WebKeys.URL_RECURSIVE);
-		webUrl.append(Constants.SLASH + recursive);
-		return webUrl.toString();
-	}
-
-	/*
-	 * This routine is used to get Public Link URLs. 
-	 * Public Links result from creating a ShareItem with a recipientType of publicLink
-	 * Those ShareItems contain a pass key that allows the file to be publicaly read
-	 * There are two supported operations: publicLink and publicLinkHtml
-	 * The publicLink operation downloads the file
-	 * The publicLinkHtml operation displays the converted HTML of the file.
-	 */
-	private static String getSharedPublicFileUrlImpl(String webPath, Long shareItemId, String passKey, String operation, String fileName) {
-		StringBuffer webUrl = new StringBuffer(webPath + WebKeys.ACTION_READ_FILE);
-		webUrl.append(Constants.SLASH + WebKeys.URL_ENTITY_TYPE_SHARE);
-		webUrl.append(Constants.SLASH + String.valueOf(shareItemId));
-		webUrl.append(Constants.SLASH + passKey); 
-		webUrl.append(Constants.SLASH + operation); 
-		webUrl.append(Constants.SLASH + urlEncodeFilename(fileName)); 
-		return webUrl.toString();
-	}
-	
-	/**
-	 * This routine is used to get Public Link URLs. 
-	 * Public Links result from creating a ShareItem with a recipientType of publicLink
-	 * Those ShareItems contain a pass key that allows the file to be publicaly read
-	 * There are two supported operations: publicLink and publicLinkHtml
-	 * The publicLink operation downloads the file
-	 * The publicLinkHtml operation displays the converted HTML of the file.
-	 * 
-	 * @param hRequest
-	 * @param shareItemId
-	 * @param passKey
-	 * @param operation
-	 * @param fileName
-	 * 
-	 * @return
-	 */
-	public static String getSharedPublicFileUrl(HttpServletRequest hRequest, Long shareItemId, String passKey, String operation, String fileName) {
-		// Always use the implementation form of the method.
-		return getSharedPublicFileUrlImpl(WebUrlUtil.getServletRootURL(hRequest, null), shareItemId, passKey, operation, fileName);
-	}
-
-	/**
-	 * This routine is used to get Public Link URLs. 
-	 * Public Links result from creating a ShareItem with a recipientType of publicLink
-	 * Those ShareItems contain a pass key that allows the file to be publicaly read
-	 * There are two supported operations: publicLink and publicLinkHtml
-	 * The publicLink operation downloads the file
-	 * The publicLinkHtml operation displays the converted HTML of the file.
-	 * 
-	 * @param hRequest
-	 * @param shareItemId
-	 * @param passKey
-	 * @param operation
-	 * @param fileName
-	 * 
-	 * @return
-	 */
-	public static String getSharedPublicFileUrl(PortletRequest pRequest, Long shareItemId, String passKey, String operation, String fileName) {
-		// Always use the implementation form of the method.
-		return getSharedPublicFileUrlImpl(WebUrlUtil.getServletRootURL(pRequest), shareItemId, passKey, operation, fileName);
 	}
 
 	public static String getSSFContextRootURL(PortletRequest req) {

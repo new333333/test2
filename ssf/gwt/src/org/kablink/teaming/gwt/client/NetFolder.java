@@ -51,32 +51,25 @@ public class NetFolder
 {
 	private Long m_id;
 	private String m_name;
-	private String m_displayName;
 	private String m_relativePath;
 	private String m_netFolderRootName;
-	private NetFolderSyncStatus m_status;
-	private GwtNetFolderSyncScheduleConfig m_syncScheduleConfig;
+	private NetFolderStatus m_status;
+	private String m_statusTicketId;
+	private GwtSchedule m_syncSchedule;
 	private ArrayList<GwtRole> m_roles;
 	private boolean m_isHomeDir;
 	private boolean m_indexContent;
 	private NetFolderDataSyncSettings m_dataSyncSettings;
 	private GwtJitsNetFolderConfig m_jitsConfig;
-	private Boolean m_fullSyncDirOnly;
 	
 	/**
 	 * The different statuses of a net Folder
 	 */
-	public enum NetFolderSyncStatus implements IsSerializable
+	public enum NetFolderStatus implements IsSerializable
 	{
-		WAITING_TO_BE_SYNCD,
+		DELETED_BY_SYNC_PROCESS,
 		SYNC_IN_PROGRESS,
-		SYNC_STOPPED,		// The sync of a net folder was running and then stopped by the admin
-		SYNC_COMPLETED,
-		SYNC_NEVER_RUN,
-		SYNC_CANCELED,		// The net folder was waiting to be sync'd and the admin canceled the sync.
-		DELETE_IN_PROGRESS,
-		DELETE_FAILED,
-		UNKNOWN
+		READY
 	}
 	
 	/**
@@ -89,7 +82,6 @@ public class NetFolder
 		// Nothing to do.
 		m_isHomeDir = false;
 		m_indexContent = false;
-		m_fullSyncDirOnly = null;
 	}	
 	
 	/**
@@ -99,10 +91,10 @@ public class NetFolder
 	{
 		m_id = netFolder.getId();
 		m_name = netFolder.getName();
-		m_displayName = netFolder.getDisplayName();
 		m_relativePath = netFolder.getRelativePath();
 		m_netFolderRootName = netFolder.getNetFolderRootName();
-		m_syncScheduleConfig = netFolder.getSyncScheduleConfig();
+		m_statusTicketId = netFolder.getStatusTicketId();
+		m_syncSchedule = netFolder.getSyncSchedule();
 		m_isHomeDir = netFolder.getIsHomeDir();
 		m_indexContent = netFolder.getIndexContent();
 		
@@ -111,8 +103,6 @@ public class NetFolder
 		
 		m_jitsConfig = new GwtJitsNetFolderConfig();
 		m_jitsConfig.copy( netFolder.getJitsConfig() );
-		
-		m_fullSyncDirOnly = netFolder.getFullSyncDirOnly();
 	}
 	
 	/**
@@ -121,25 +111,6 @@ public class NetFolder
 	public NetFolderDataSyncSettings getDataSyncSettings()
 	{
 		return m_dataSyncSettings;
-	}
-	
-	/**
-	 * 
-	 */
-	public String getDisplayName()
-	{
-		if ( m_displayName == null || m_displayName.length() == 0 )
-			return m_name;
-		
-		return m_displayName;
-	}
-	
-	/**
-	 * 
-	 */
-	public Boolean getFullSyncDirOnly()
-	{
-		return m_fullSyncDirOnly;
 	}
 	
 	/**
@@ -213,17 +184,25 @@ public class NetFolder
 	/**
 	 * 
 	 */
-	public GwtNetFolderSyncScheduleConfig getSyncScheduleConfig()
+	public GwtSchedule getSyncSchedule()
 	{
-		return m_syncScheduleConfig;
+		return m_syncSchedule;
 	}
 	
 	/**
 	 * 
 	 */
-	public NetFolderSyncStatus getStatus()
+	public NetFolderStatus getStatus()
 	{
 		return m_status;
+	}
+	
+	/**
+	 * 
+	 */
+	public String getStatusTicketId()
+	{
+		return m_statusTicketId;
 	}
 	
 	/**
@@ -233,22 +212,6 @@ public class NetFolder
 	{
 		m_dataSyncSettings = new NetFolderDataSyncSettings();
 		m_dataSyncSettings.copy( settings );
-	}
-	
-	/**
-	 * 
-	 */
-	public void setDisplayName( String value )
-	{
-		m_displayName = value;
-	}
-	
-	/**
-	 * 
-	 */
-	public void setFullSyncDirOnly( Boolean fullSyncDirOnly )
-	{
-		m_fullSyncDirOnly = fullSyncDirOnly;
 	}
 	
 	/**
@@ -322,16 +285,24 @@ public class NetFolder
 	/**
 	 * 
 	 */
-	public void setSyncScheduleConfig( GwtNetFolderSyncScheduleConfig config )
+	public void setSyncSchedule( GwtSchedule schedule )
 	{
-		m_syncScheduleConfig = config;
+		m_syncSchedule = schedule;
 	}
 	
 	/**
 	 * 
 	 */
-	public void setStatus( NetFolderSyncStatus status )
+	public void setStatus( NetFolderStatus status )
 	{
 		m_status = status;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setStatusTicketId( String id )
+	{
+		m_statusTicketId = id;
 	}
 }

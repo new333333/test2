@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -46,10 +46,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.domain.Binder;
-import org.kablink.teaming.domain.Description;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
-import org.kablink.teaming.domain.IdentityInfo;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserPrincipal;
@@ -468,41 +466,20 @@ public class GwtSearchHelper
 							{
 								GwtGroup gwtGroup;
 								Principal group;
-								IdentityInfo identityInfo;
 								
 								group = groupPrincipals.first();
 								
-								// Does this group come from ldap?
-								identityInfo = group.getIdentityInfo();
-								if ( identityInfo != null && identityInfo.isFromLdap() )
-								{
-									// Yes
-									// Are we suppose to include groups from ldap?
-									if ( searchCriteria.getSearchForLdapGroups() == true )
-									{
-										Description desc;
-										
-										// Yes
-										// Create a GwtGroup item for this group.
-										gwtGroup = new GwtGroup();
-										
-										if ( group instanceof UserPrincipal )
-											gwtGroup.setInternal( identityInfo.isInternal() );
-										
-										gwtGroup.setId( id );
-										gwtGroup.setName( group.getName() );
-										gwtGroup.setTitle( group.getTitle() );
-										gwtGroup.setDn( group.getForeignName() );
-										desc = group.getDescription();
-										if ( desc != null )
-											gwtGroup.setDesc( desc.getText() );
-										gwtGroup.setGroupType( GwtServerHelper.getGroupType( group ) );
-										
-										results.add( gwtGroup );
-									}
-									else
-										--searchHits;
-								}
+								// Create a GwtGroup item for this group.
+								gwtGroup = new GwtGroup();
+								
+								if ( group instanceof UserPrincipal )
+									gwtGroup.setInternal( ((UserPrincipal)group).getIdentityInfo().isInternal() );
+								
+								gwtGroup.setId( id );
+								gwtGroup.setName( group.getName() );
+								gwtGroup.setTitle( group.getTitle() );
+								
+								results.add( gwtGroup );
 							}
 						}
 			    	}
@@ -741,38 +718,16 @@ public class GwtSearchHelper
 							if ( entityType == EntityType.group )
 							{
 								GwtGroup gwtGroup;
-								IdentityInfo identityInfo;
-								Description desc;
 
-								// Is this group from ldap?
-								identityInfo = principal.getIdentityInfo();
-								if ( identityInfo != null && identityInfo.isFromLdap() )
-								{
-									// Yes
-									// Are we supposed to include groups from ldap?
-									if ( searchCriteria.getSearchForLdapGroups() == false )
-									{
-										// No
-										if ( count != null )
-											--count;
-										continue;
-									}
-								}
-								
 								// Create a GwtGroup item for this group.
 								gwtGroup = new GwtGroup();
 								
-								if ( (principal instanceof UserPrincipal) && identityInfo != null )
-									gwtGroup.setInternal( identityInfo.isInternal() );
+								if ( principal instanceof UserPrincipal )
+									gwtGroup.setInternal( ((UserPrincipal)principal).getIdentityInfo().isInternal() );
 								
 								gwtGroup.setId( principalId );
 								gwtGroup.setName( principal.getName() );
 								gwtGroup.setTitle( principal.getTitle() );
-								gwtGroup.setDn( principal.getForeignName() );
-								desc = principal.getDescription();
-								if ( desc != null )
-									gwtGroup.setDesc( desc.getText() );
-								gwtGroup.setGroupType( GwtServerHelper.getGroupType( principal ));
 								
 								results.add( gwtGroup );
 							}
@@ -887,13 +842,10 @@ public class GwtSearchHelper
 				// Yes!  Construct a GwtUser object for it.
 				reply = new GwtUser();
 				reply.setInternal(user.getIdentityInfo().isInternal());
-				reply.setUserType( GwtViewHelper.getUserType( user ) );
 				reply.setUserId( user.getId() );
 				reply.setName( user.getName() );
 				reply.setTitle( Utils.getUserTitle( user ) );
 				reply.setWorkspaceTitle( user.getWSTitle() );
-				reply.setEmail( user.getEmailAddress() );
-				reply.setAvatarUrl( GwtServerHelper.getUserAvatarUrl( ami, request, user ) );
 				
 				GwtServerHelper.setExtUserProvState( reply, user );
 				
@@ -912,7 +864,7 @@ public class GwtSearchHelper
 		}
 		catch ( Exception e )
 		{
-			throw GwtLogHelper.getGwtClientException( e );
+			throw GwtServerHelper.getGwtTeamingException( e );
 		}
 	
 		return reply;

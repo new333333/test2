@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -62,6 +62,7 @@ import org.dom4j.Element;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Attachment;
+import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.Folder;
@@ -107,22 +108,17 @@ import org.kablink.util.search.Constants;
 import org.kablink.util.search.Criteria;
 import org.kablink.util.search.Order;
 
-/**
- * ?
- * 
- * @author ?
- */
 public class FolderServiceImpl extends BaseService implements FolderService, FolderServiceInternal {
+
 	protected ProcessorManager processorManager;
 	public void setProcessorManager(ProcessorManager processorManager) {
 		this.processorManager = processorManager;
 	}
 
-	@Override
 	public void folder_uploadFile(String accessToken, long binderId, long entryId, String fileUploadDataItemName, String fileName) {
 		throw new UnsupportedOperationException();
 	}
-	@Override
+	@SuppressWarnings("unchecked")
 	public void folder_removeFile(String accessToken, long entryId, String fileName) {
 		try {
 			FolderEntry entry = getFolderModule().getEntry(null, entryId);
@@ -135,7 +131,6 @@ public class FolderServiceImpl extends BaseService implements FolderService, Fol
 		}			
 
 	}
-	@Override
 	@SuppressWarnings("unchecked")
 	public String folder_getEntriesAsXML(String accessToken, long binderId) {
 		org.kablink.teaming.domain.Binder binder = getBinderModule().getBinder(new Long(binderId));
@@ -160,7 +155,6 @@ public class FolderServiceImpl extends BaseService implements FolderService, Fol
 		return doc.getRootElement().asXML();
 	}
 
-	@Override
 	public String folder_getEntryAsXML(String accessToken, long binderId, long entryId, boolean includeAttachments) {
 		Long bId = new Long(binderId);
 		Long eId = new Long(entryId);
@@ -197,7 +191,6 @@ public class FolderServiceImpl extends BaseService implements FolderService, Fol
 		return new HashMap();
 	}
 	
-	@Override
 	public long folder_addEntryWithXML(String accessToken, long binderId, String definitionId, String inputDataAsXML, String attachedFileName) {
 		return addFolderEntry(accessToken, binderId, definitionId, inputDataAsXML, attachedFileName, null);
 	}
@@ -217,7 +210,6 @@ public class FolderServiceImpl extends BaseService implements FolderService, Fol
 		}
 	}
 	
-	@Override
 	public void folder_modifyEntryWithXML(String accessToken, long binderId, long entryId, String inputDataAsXML) {
 		Document doc = getDocument(inputDataAsXML);
 		
@@ -233,7 +225,6 @@ public class FolderServiceImpl extends BaseService implements FolderService, Fol
 		}			
 	}
 
-	@Override
 	public long folder_addReplyWithXML(String accessToken, long binderId, long parentId, String definitionId, String inputDataAsXML, String attachedFileName) {
 		return addReply(accessToken, binderId, parentId, definitionId, inputDataAsXML, attachedFileName, null);
 	}
@@ -254,21 +245,17 @@ public class FolderServiceImpl extends BaseService implements FolderService, Fol
 		}
 	}
 
-	@Override
 	public void folder_addEntryWorkflow(String accessToken, long entryId, String definitionId) {
 		getFolderModule().addEntryWorkflow(null, entryId, definitionId, null);
 	}
-   @Override
-public void folder_deleteEntryWorkflow(String accessToken, long entryId, String definitionId) {
+   public void folder_deleteEntryWorkflow(String accessToken, long entryId, String definitionId) {
     	getFolderModule().deleteEntryWorkflow(null, entryId, definitionId);
     }
-	@Override
 	public void folder_modifyWorkflowState(String accessToken, long entryId, long stateId, String toState) {
 		if (getFolderModule().checkIfManualTransitionAllowed(null, entryId, stateId, toState)) {
 			getFolderModule().modifyWorkflowState(null, entryId, stateId, toState);
 		}
 	}
-	@Override
 	@SuppressWarnings("unchecked")
 	public void folder_setWorkflowResponse(String accessToken, long entryId, long stateId, String question, String response) {
 		Map params = new HashMap();
@@ -277,12 +264,10 @@ public void folder_deleteEntryWorkflow(String accessToken, long entryId, String 
 		params.put(question, response);
 		getFolderModule().setWorkflowResponse(null, entryId, stateId, new MapInputData(params));
 	}
-	@Override
 	public void folder_uploadFile(String accessToken, long entryId, String fileUploadDataItemName, String fileName) {
 		throw new UnsupportedOperationException();
 	}
 
-	@Override
 	public void folder_uploadFileStaged(String accessToken, long entryId, String fileUploadDataItemName, String fileName, String stagedFileRelativePath) {
 		uploadFolderFileStaged(accessToken, null, entryId, fileUploadDataItemName, fileName, 
 				stagedFileRelativePath, null, null, null);
@@ -330,13 +315,10 @@ public void folder_deleteEntryWorkflow(String accessToken, long entryId, String 
 		}
 	}
 
-	@Override
 	public void folder_synchronizeMirroredFolder(String accessToken, long binderId) {
-		// 5/23/2013 JK - Implementation changed to call enqueueFullSynchronize() method instead of fullSynchronize().
-		getFolderModule().enqueueFullSynchronize(binderId);
+		getFolderModule().fullSynchronize(binderId, null);
 	}
 
-	@Override
 	public org.kablink.teaming.remoting.ws.model.FolderEntry folder_getEntryByFileName(String accessToken, long binderId, String fileName, boolean includeAttachments, boolean eventAsIcalString) {
 		// Retrieve the raw entry.
 		FolderEntry entry = 
@@ -352,7 +334,6 @@ public void folder_deleteEntryWorkflow(String accessToken, long entryId, String 
 		return entryModel;
 		
 	}
-	@Override
 	public org.kablink.teaming.remoting.ws.model.FolderEntry folder_getEntry(String accessToken, long entryId, boolean includeAttachments, boolean eventAsIcalString) {
 		// Retrieve the raw entry.
 		FolderEntry entry = 
@@ -368,7 +349,6 @@ public void folder_deleteEntryWorkflow(String accessToken, long entryId, String 
 		return entryModel;
 	}
 	
-	@Override
 	@SuppressWarnings("unchecked")
 	public byte[] folder_getEntryAsMime(String accessToken, long entryId, boolean includeAttachments) {
 		byte[] mimeData = null;
@@ -412,7 +392,6 @@ public void folder_deleteEntryWorkflow(String accessToken, long entryId, String 
 		return mimeData;
 	}
 
-	@Override
 	@SuppressWarnings("unchecked")
 	public FolderEntryCollection folder_getEntries(String accessToken, long binderId, int firstRecord, int maxRecords) {
 		org.kablink.teaming.domain.Binder binder = getBinderModule().getBinder(new Long(binderId));
@@ -437,7 +416,6 @@ public void folder_deleteEntryWorkflow(String accessToken, long entryId, String 
 		return new FolderEntryCollection(firstRecord, total, entries.toArray(array));
 	}
 
-	@Override
 	@SuppressWarnings("unchecked")
 	public long folder_addEntry(String accessToken, org.kablink.teaming.remoting.ws.model.FolderEntry entry, String attachedFileName) {
 		SimpleProfiler.start("folderService_addEntry");
@@ -447,7 +425,6 @@ public void folder_deleteEntryWorkflow(String accessToken, long entryId, String 
 		SimpleProfiler.stop("folderService_addEntry");			
 		return entryId;
 	}
-	@Override
 	@SuppressWarnings("unchecked")
 	public long folder_addEntryAsMime(String accessToken, long binderId, byte[] mimeData) {
 		try {
@@ -500,7 +477,6 @@ public void folder_deleteEntryWorkflow(String accessToken, long entryId, String 
 		}
 	}
 
-	@Override
 	@SuppressWarnings("unchecked")
 	public long folder_addReply(String accessToken, long parentEntryId, org.kablink.teaming.remoting.ws.model.FolderEntry reply, String attachedFileName) {
 		Map options = new HashMap();
@@ -521,7 +497,6 @@ public void folder_deleteEntryWorkflow(String accessToken, long entryId, String 
 		}
 	}
 
-	@Override
 	@SuppressWarnings("unchecked")
 	public Calendar folder_modifyEntry(String accessToken, org.kablink.teaming.remoting.ws.model.FolderEntry entry) {
 		SimpleProfiler.start("folderService_modifyEntry");
@@ -547,11 +522,9 @@ public void folder_deleteEntryWorkflow(String accessToken, long entryId, String 
 		}
 	}
 
-	@Override
 	public void folder_deleteEntry(String accessToken, long entryId) {
 		getFolderModule().deleteEntry(null, entryId);
 	}
-	@Override
 	public void folder_preDeleteEntry(String accessToken, long entryId) {
 		try {
 			FolderEntry fe = getFolderModule().getEntry(null, entryId);
@@ -564,7 +537,6 @@ public void folder_deleteEntryWorkflow(String accessToken, long entryId, String 
 			throw new RemotingException(e);
 		}
 	}
-	@Override
 	@SuppressWarnings("unchecked")
 	public void folder_restoreEntry(String accessToken, long entryId) {
 		FolderEntry fe = getFolderModule().getEntry(null, entryId);
@@ -573,27 +545,22 @@ public void folder_deleteEntryWorkflow(String accessToken, long entryId, String 
 		hm.put("_docId", String.valueOf(entryId));
 		hm.put("_docType", "entry");
 		hm.put("_binderId", String.valueOf(binderId));
-		TrashHelper.restoreEntities(
+		TrashHelper.restoreEntries(
 			this,
-			new TrashHelper.TrashEntity(hm));
+			new TrashHelper.TrashEntry(hm));
 	}
-    @Override
-	public long folder_copyEntry(String accessToken, long entryId, long destinationId) {
+    public long folder_copyEntry(String accessToken, long entryId, long destinationId) {
     	return getFolderModule().copyEntry(null, entryId, destinationId, null, null).getId().longValue();
     }
-    @Override
-	public void folder_moveEntry(String accessToken, long entryId, long destinationId) {
+    public void folder_moveEntry(String accessToken, long entryId, long destinationId) {
     	getFolderModule().moveEntry(null, entryId, destinationId, null, null);
     }
-    @Override
-	public void folder_reserveEntry(String accessToken,  long entryId) {
+    public void folder_reserveEntry(String accessToken,  long entryId) {
     	getFolderModule().reserveEntry(null, entryId);
     }
-    @Override
-	public void folder_unreserveEntry(String accessToken, long entryId) {
+    public void folder_unreserveEntry(String accessToken, long entryId) {
     	getFolderModule().unreserveEntry(null, entryId);
     }
-	@Override
 	public org.kablink.teaming.remoting.ws.model.Subscription folder_getSubscription(String accessToken, long entryId) {
 		FolderEntry entry = getFolderModule().getEntry(null, entryId);
 		Subscription sub = getFolderModule().getSubscription(entry);
@@ -601,7 +568,6 @@ public void folder_deleteEntryWorkflow(String accessToken, long entryId, String 
 		return toSubscriptionModel(sub);
 		
 	}
-	@Override
 	@SuppressWarnings("unchecked")
 	public void folder_setSubscription(String accessToken, long entryId, org.kablink.teaming.remoting.ws.model.Subscription subscription) {
 		if (subscription == null || subscription.getStyles().length == 0) {
@@ -616,15 +582,12 @@ public void folder_deleteEntryWorkflow(String accessToken, long entryId, String 
 		getFolderModule().setSubscription(null, entryId, subMap);
 
 	}
-	@Override
 	public void folder_deleteEntryTag(String accessToken, long entryId, String tagId) {
 		getFolderModule().deleteTag(null, entryId, tagId);
 	}
-	@Override
 	public void folder_setEntryTag(String accessToken, org.kablink.teaming.remoting.ws.model.Tag tag) {
 		getFolderModule().setTag(null, tag.getEntityId(), tag.getName(), tag.isPublic());
 	}
-	@Override
 	public org.kablink.teaming.remoting.ws.model.Tag[] folder_getEntryTags(String accessToken, long entryId) {
 		Collection<Tag>tags = getFolderModule().getTags(getFolderModule().getEntry(null, entryId));
 		org.kablink.teaming.remoting.ws.model.Tag[] results = new org.kablink.teaming.remoting.ws.model.Tag[tags.size()];
@@ -634,12 +597,10 @@ public void folder_deleteEntryWorkflow(String accessToken, long entryId, String 
 		}
 		return results;
 	}
-	@Override
 	public void folder_setRating(String accessToken, long entryId, long value) {
 		getFolderModule().setUserRating(null, entryId, value);
 	}
 	
-	@Override
 	public FileVersions folder_getFileVersions(String accessToken, long entryId, String fileName) {
 		FolderEntry entry = getFolderModule().getEntry(null, entryId);
 		FileAttachment att = entry.getFileAttachment(fileName);
@@ -649,19 +610,16 @@ public void folder_deleteEntryWorkflow(String accessToken, long entryId, String 
 			throw new IllegalArgumentException("No such file [" + fileName + "]");
 	}
 
-	@Override
 	public Long folder_addMicroBlog(String accessToken, String text) {
 		return BinderHelper.addMiniBlogEntry(this, text);
 	}
 	
-	@Override
 	public byte[] folder_getAttachmentAsByteArray(String accessToken,
 			long entryId, String attachmentId) {
 		FolderEntry entry = getFolderModule().getEntry(null, entryId);
 		return getFileAttachmentAsByteArray(entry.getParentBinder(), entry, attachmentId);
 	}
 	
-	@Override
 	public void folder_uploadFileAsByteArray(String accessToken, long entryId,
 			String fileUploadDataItemName, String fileName, byte[] fileContent) {
 		SimpleProfiler.start("folder_uploadFileAsByteArray");
@@ -710,7 +668,6 @@ public void folder_deleteEntryWorkflow(String accessToken, long entryId, String 
 		return result;
 	}
 
-	@Override
 	@SuppressWarnings("unchecked")
 	public long[] folder_getCreatedOrUpdatedEntries(String accessToken,
 			String family, Calendar startTime, Calendar endTime) {
@@ -745,7 +702,6 @@ public void folder_deleteEntryWorkflow(String accessToken, long entryId, String 
 		return result;
 	}
 
-	@Override
 	public long[] folder_getDeletedEntries(String accessToken, String family, Calendar startTime, Calendar endTime) {
 		List<Long> ids = getReportModule().getDeletedFolderEntryIds(family,
 				(startTime != null)? startTime.getTime():null,
@@ -761,7 +717,6 @@ public void folder_deleteEntryWorkflow(String accessToken, long entryId, String 
 		}
 	}
 	
-	@Override
 	public long[] folder_getDeletedEntriesInFolders(String accessToken, long[] folderIds, String family, Calendar startTime, Calendar endTime) {
 		List<Long> ids = getReportModule().getDeletedFolderEntryIds(folderIds, 
 				family, 
@@ -778,7 +733,6 @@ public void folder_deleteEntryWorkflow(String accessToken, long entryId, String 
 		}
 	}
 
-	@Override
 	public long[] folder_getRestoredEntriesInFolders(String accessToken, long[] folderIds, String family, Calendar startTime, Calendar endTime) {
 		List<Long> ids = getReportModule().getRestoredFolderEntryIds(folderIds, 
 				family, 
@@ -795,7 +749,6 @@ public void folder_deleteEntryWorkflow(String accessToken, long entryId, String 
 		}
 	}
 
-	@Override
 	public long[] folder_getMovedEntries(String accessToken, Calendar startTime, Calendar endTime) {
 		List<Long> ids = getReportModule().getMovedFolderEntryIds((startTime != null)? startTime.getTime():null, endTime.getTime());
 		if(ids != null) {
@@ -860,7 +813,6 @@ public void folder_deleteEntryWorkflow(String accessToken, long entryId, String 
 		}
 	}
 
-	@Override
 	public String folder_validateUploadAttachment(String accessToken,
 			long entryId, String attachmentId, long fileSize) {
 		SimpleProfiler.start("folder_validateUploadAttachmentAsByteArray");
@@ -1001,7 +953,6 @@ public void folder_deleteEntryWorkflow(String accessToken, long entryId, String 
 		return result;
 	}
 
-	@Override
 	public boolean[] folder_testEntryOperations(String accessToken, String[] operationNames, long entryId) {
 		boolean[] result = new boolean[operationNames.length];
 		for(int i = 0; i < operationNames.length; i++)
@@ -1092,4 +1043,5 @@ public void folder_deleteEntryWorkflow(String accessToken, long entryId, String 
 		}
 		FileUtils.deleteFileVersion(va);
 	}
+	
 }

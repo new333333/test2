@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2009 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -36,73 +36,50 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
-import org.kablink.teaming.gwt.client.GwtPrincipalMobileAppsConfig;
+import org.kablink.teaming.gwt.client.GwtUserMobileAppsConfig;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
-import org.kablink.teaming.gwt.client.rpc.shared.GetPrincipalMobileAppsConfigCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.SavePrincipalMobileAppsConfigCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.SavePrincipalMobileAppsConfigRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.GetUserMobileAppsConfigCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.SaveUserMobileAppsConfigCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.SaveUserMobileAppsConfigRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponseData;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
-import org.kablink.teaming.gwt.client.util.GwtMobileOpenInSetting;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
-import org.kablink.teaming.gwt.client.widgets.PromptDlg.PromptDlgClient;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
-import com.google.gwt.core.client.Scheduler.ScheduledCommand;
-import com.google.gwt.event.dom.client.ChangeEvent;
-import com.google.gwt.event.dom.client.ChangeHandler;
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusWidget;
-import com.google.gwt.user.client.ui.HasHorizontalAlignment;
-import com.google.gwt.user.client.ui.HasVerticalAlignment;
-import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.RadioButton;
-import com.google.gwt.user.client.ui.VerticalPanel;
+
 
 /**
- * This dialog is used to edit the user's mobile applications settings.
- * 
+ * This dialog is used to edit the user's mobile apps settings.
  * @author jwootton
+ *
  */
 public class ConfigureUserMobileAppsDlg extends DlgBox
 	implements EditSuccessfulHandler
 {
-	private boolean m_principalsAreUsers;
-	private boolean m_initialAllowPlayWithOtherApps;
-	
 	private RadioButton m_useGlobalSettingsRB;
 	private RadioButton m_useUserSettingsRB;
 	private CheckBox m_enableMobileAppsAccessCB;
 	private CheckBox m_allowPwdCacheCB;
 	private CheckBox m_allowOfflineContentCB;
+	private CheckBox m_allowPlayWithOtherAppsCB;
 	
-	// Mobile Application Management (MAM) settings.
-	private CheckBox m_cutCopyEnabledCB;
-	private CheckBox m_screenCaptureEnabledAndroidCB;
-	private CheckBox m_disableJailBrokenCB;
-	private FlowPanel m_androidApplicationsPanel;
-	private FlowPanel m_iosApplicationsPanel;
-	private ListBox m_androidApplicationsLB;
-	private ListBox m_iosApplicationsLB;
-	private ListBox m_openInLB;
-	private PromptDlg m_pDlg;
-	
-	private List<Long> m_principalIds;
-	private ArrayList<Long> m_listOfRemainingPrincipalIds;	// This is the list we draw from when we are saving the config.
-	private ArrayList<Long> m_nextBatchOfPrincipalIds;
+	private List<Long> m_userIds;
+	private ArrayList<Long> m_listOfRemainingUserIds;	// This is the list we draw from when we are saving the config.
+	private ArrayList<Long> m_nextBatchOfUserIds;
 	
 	private static int BATCH_SIZE = 10;
 	
@@ -115,6 +92,8 @@ public class ConfigureUserMobileAppsDlg extends DlgBox
 		void onSuccess( ConfigureUserMobileAppsDlg cumaDlg );
 		void onUnavailable();
 	}
+
+	
 
 	/**
 	 * 
@@ -130,7 +109,7 @@ public class ConfigureUserMobileAppsDlg extends DlgBox
 		super( autoHide, modal, xPos, yPos, new Integer( width ), new Integer( height ), DlgButtonMode.OkCancel );
 
 		// Create the header, content and footer of this dialog box.
-		createAllDlgContent( "", this, null, null );	// Caption filled in during the init().  
+		createAllDlgContent( GwtTeaming.getMessages().configureUserMobileAppsDlgHeader( "1" ), this, null, null ); 
 	}
 	
 
@@ -212,286 +191,14 @@ public class ConfigureUserMobileAppsDlg extends DlgBox
 		tmpPanel.add( m_allowOfflineContentCB );
 		ckboxPanel.add( tmpPanel );
 		
-		// Create the Mobile Application Management (MAM) widgets.
-		
-		// Create the "Cut/Copy enabled"
-		m_cutCopyEnabledCB = new CheckBox( messages.configureMobileAppsDlgCutCopy() );
-		m_cutCopyEnabledCB.addClickHandler( clickHandler );
+		// Create the "Allow mobile applications to interact with other applications"
+		m_allowPlayWithOtherAppsCB = new CheckBox( messages.configureMobileAppsDlgAllowPlayWithOtherApps() );
+		m_allowPlayWithOtherAppsCB.addClickHandler( clickHandler );
 		tmpPanel = new FlowPanel();
-		tmpPanel.add( m_cutCopyEnabledCB );
+		tmpPanel.add( m_allowPlayWithOtherAppsCB );
 		ckboxPanel.add( tmpPanel );
-		
-		// Create the "Screen capture enabled (Android only)"
-		m_screenCaptureEnabledAndroidCB = new CheckBox( messages.configureMobileAppsDlgScreenCaptureAndroid() );
-		m_screenCaptureEnabledAndroidCB.addClickHandler( clickHandler );
-		tmpPanel = new FlowPanel();
-		tmpPanel.add( m_screenCaptureEnabledAndroidCB );
-		ckboxPanel.add( tmpPanel );
-		
-		// Create the "Disable applications on rooted or jail broken devices"
-		m_disableJailBrokenCB = new CheckBox( messages.configureMobileAppsDlgDisableApplicationsOnRootedOrJailBrokenDevices() );
-		m_disableJailBrokenCB.addClickHandler( clickHandler );
-		tmpPanel = new FlowPanel();
-		tmpPanel.add( m_disableJailBrokenCB );
-		ckboxPanel.add( tmpPanel );		
-		
-		// Create the controls for open in
-		{
-			HorizontalPanel hp = new HorizontalPanel();
-			hp.addStyleName( "margintop3" );
-			
-			Label oiLabel = new Label( messages.configureMobileAppsDlgOpenIn() );
-			oiLabel.addStyleName( "configMobileAppsDlg_OpenInLabel" );
-			hp.add( oiLabel );
-			
-			m_openInLB = new ListBox( false );	// false -> Not a multi-select ListBox.
-			m_openInLB.addStyleName( "configMobileAppsDlg_OpenInSelect" );
-			m_openInLB.setVisibleItemCount(1);
-			m_openInLB.addItem( messages.configureMobileAppsDlgOpenIn_Disabled(),  "0" );
-			m_openInLB.addItem( messages.configureMobileAppsDlgOpenIn_AllApps(),   "1" );
-			m_openInLB.addItem( messages.configureMobileAppsDlgOpenIn_WhiteList(), "2" );
-			m_openInLB.addChangeHandler( new ChangeHandler()
-			{
-				@Override
-				public void onChange( ChangeEvent event )
-				{
-					m_useGlobalSettingsRB.setValue( false );
-					m_useUserSettingsRB.setValue( true );
-					
-					danceDlg();
-				}
-			} );
-			hp.add( m_openInLB );
-			
-			ckboxPanel.add( hp );
-			
-			// Create the controls for the open in White Lists
-			m_androidApplicationsPanel = createAndroidWhiteList( messages );
-			ckboxPanel.add( m_androidApplicationsPanel );
-			
-			m_iosApplicationsPanel = createIosWhiteList( messages );
-			ckboxPanel.add( m_iosApplicationsPanel );
-		}
 		
 		return mainPanel;
-	}
-	
-	/*
-	 * Creates the widgets for entering Android applications.
-	 */
-	private FlowPanel createAndroidWhiteList( GwtTeamingMessages messages )
-	{
-		FlowPanel fp = new FlowPanel();
-		fp.addStyleName( "configMobileAppsDlg_AndroidPanel" );
-
-		// Note that the list will be added to the FlowPanel by
-		// createWhiteList().
-		m_androidApplicationsLB = createWhiteList(
-			messages,
-			fp,
-			messages.configureMobileAppsDlgWhiteListAndroid(),
-			messages.configureMobileAppsDlgAddAndroid());
-		
-		return fp;
-	}
-	
-	/*
-	 * Creates the widgets for entering iOS applications.
-	 */
-	private FlowPanel createIosWhiteList( GwtTeamingMessages messages )
-	{
-		FlowPanel fp = new FlowPanel();
-		fp.addStyleName( "configMobileAppsDlg_IosPanel" );
-
-		// Note that the list will be added to the FlowPanel by
-		// createWhiteList().
-		m_iosApplicationsLB = createWhiteList(
-			messages,
-			fp,
-			messages.configureMobileAppsDlgWhiteListIos(),
-			messages.configureMobileAppsDlgAddIos());
-		
-		return fp;
-	}
-	
-	/*
-	 * Creates the widgets for entering Android or iOS application
-	 * white lists.
-	 */
-	private ListBox createWhiteList( final GwtTeamingMessages messages, final FlowPanel contentPanel, final String listLabel, final String addPrompt )
-	{
-		// Add a label for the list widgets.
-		InlineLabel il = new InlineLabel( listLabel );
-		il.addStyleName( "configMobileAppsDlg_ListHeader" );
-		contentPanel.add( il );
-
-		// Create a HorizontalPanel to hold the list widgets.
-		HorizontalPanel horizontalListPanel = new HorizontalPanel();
-		horizontalListPanel.addStyleName( "configMobileAppsDlg_ListPanel" );
-		horizontalListPanel.setVerticalAlignment( HasVerticalAlignment.ALIGN_TOP );
-
-		// Create the ListBox itself.
-		final ListBox listBox = new ListBox( true );	// true -> Multi-select ListBox.
-		listBox.setVisibleItemCount( 5 );
-		listBox.addStyleName( "configMobileAppsDlg_List" );
-
-		// Create a VerticalPanel to hold buttons for adding to and
-		// removing from the list.
-		VerticalPanel verticalButtonPanel = new VerticalPanel();
-		verticalButtonPanel.addStyleName( "configMobileAppsDlg_ListButtons" );
-		verticalButtonPanel.setVerticalAlignment(   HasVerticalAlignment.ALIGN_TOP    );
-		verticalButtonPanel.setHorizontalAlignment( HasHorizontalAlignment.ALIGN_LEFT );
-
-		// Create a button for adding to the list.
-		Button b = new Button( messages.configureMobileAppsDlgButton_Add(), new ClickHandler()
-		{
-			@Override
-			public void onClick( ClickEvent event )
-			{
-				m_useGlobalSettingsRB.setValue( false );
-				m_useUserSettingsRB.setValue( true );
-				
-				promptForDataAsync( listBox, addPrompt );
-			}
-		} );
-		b.addStyleName( "configMobileAppsDlg_ListButton" );
-		verticalButtonPanel.add( b );
-
-		// Create button for removing from the list.
-		b = new Button( messages.configureMobileAppsDlgButton_Delete(), new ClickHandler()
-		{
-			@Override
-			public void onClick( ClickEvent event )
-			{
-				GwtClientHelper.deferCommand( new ScheduledCommand()
-				{
-					@Override
-					public void execute()
-					{
-						// Scan the list...
-						int c = listBox.getItemCount();
-						for ( int i = (c - 1); i >= 0; i -= 1 ) 
-						{
-							if ( listBox.isItemSelected( i ) )
-							{
-								// ...and remove the selected items.
-								listBox.removeItem( i );
-							}
-						}
-					}
-				});
-			}
-		} );
-		b.addStyleName( "margintop3pxb configMobileAppsDlg_ListButton" );
-		verticalButtonPanel.add( b );
-		
-		// Connect the panels together.
-		horizontalListPanel.add( listBox             );
-		horizontalListPanel.add( verticalButtonPanel );
-		contentPanel.add(        horizontalListPanel );
-
-		// If we get here, reply refers to the ListBox widget we
-		// created.  Return it.
-		return listBox;
-	}
-	
-	/*
-	 * Hides/shows the application white lists based on what's selected
-	 * in the open in list box.
-	 */
-	private void danceDlg()
-	{
-		int i = m_openInLB.getSelectedIndex();
-		if ( 0 <= i )
-		{
-			i = Integer.parseInt( m_openInLB.getValue( i ) );
-			boolean show = ( 2 == i );
-			m_androidApplicationsPanel.setVisible( show );
-			m_iosApplicationsPanel.setVisible(     show );
-		}
-	}
-	
-	/*
-	 * Asynchronously prompts for an entry for a ListBox.
-	 */
-	private void promptForDataAsync( final ListBox listBox, final String addPrompt, final String addThis )
-	{
-		GwtClientHelper.deferCommand(new ScheduledCommand()
-		{
-			@Override
-			public void execute() {
-				promptForDataNow( listBox, addPrompt, addThis );
-			}
-		} );
-	}
-	
-	private void promptForDataAsync( final ListBox listBox, final String addPrompt )
-	{
-		// Always use the initial form of the method.
-		promptForDataAsync( listBox, addPrompt, "" );
-	}
-	
-	/*
-	 * Synchronously prompts for an entry for a ListBox.
-	 */
-	private void promptForDataNow( final ListBox listBox, final String addPrompt, final String addThis )
-	{
-		// Prompt the user for something to add.
-		PromptDlg.initAndShow(
-			m_pDlg,
-			new PromptCallback() {
-				@Override
-				public void applied(String addThis) {
-					// Did they enter something?
-					if (!(GwtClientHelper.hasString(addThis))) {
-						// No!  Bail.
-						return;
-					}
-					
-					addThis = addThis.trim();
-					if (0 < addThis.length()) {
-						// If this isn't already in the list...
-						if (!(listContains(listBox, addThis))) {
-							// ...add it...
-							listBox.addItem(addThis);
-						}
-						
-						// ...and bail.  We're done with the add.
-						return;
-					}
-				}
-
-				@Override
-				public void canceled() {
-					// Nothing to do.
-				}
-			},
-			addPrompt,
-			addThis);
-	}
-	
-	/*
-	 * Returns true if a ListBox contains a string and false otherwise.
-	 */
-	private static boolean listContains( ListBox lb, String s )
-	{
-		if ( null != s )
-		{
-			s = s.trim();
-			if ( 0 < s.length() )
-			{
-				s = s.toLowerCase();
-				for ( int i = 0; i < lb.getItemCount(); i += 1 )
-				{
-					String v = lb.getValue( i );
-					if ( v.toLowerCase().equals( s ) )
-					{
-						return true;
-					}
-				}
-			}
-		}
-		return false;
 	}
 	
 	/**
@@ -500,13 +207,14 @@ public class ConfigureUserMobileAppsDlg extends DlgBox
 	@Override
 	public boolean editSuccessful( Object obj )
 	{
-		if ( m_principalIds != null && m_principalIds.size() > 0 )
+		if ( m_userIds != null && m_userIds.size() > 0 )
 		{
-			final GwtPrincipalMobileAppsConfig mobileAppsConfig;
+			final GwtUserMobileAppsConfig mobileAppsConfig;
+			Scheduler.ScheduledCommand cmd;
 	
-			mobileAppsConfig = (GwtPrincipalMobileAppsConfig) obj;
+			mobileAppsConfig = (GwtUserMobileAppsConfig) obj;
 			
-			GwtClientHelper.deferCommand( new ScheduledCommand()
+			cmd = new Scheduler.ScheduledCommand()
 			{
 				@Override
 				public void execute()
@@ -514,15 +222,15 @@ public class ConfigureUserMobileAppsDlg extends DlgBox
 					clearErrorPanel();
 					hideErrorPanel();
 					
-					// We save the config for users in a batch of 10.  m_listOfRemainingPrincipalIds
+					// We save the config for users in a batch of 10.  m_listOfRemainingUserIds
 					// is the list we work from.
-					if ( m_listOfRemainingPrincipalIds == null )
-						m_listOfRemainingPrincipalIds = new ArrayList<Long>();
+					if ( m_listOfRemainingUserIds == null )
+						m_listOfRemainingUserIds = new ArrayList<Long>();
 					else
-						m_listOfRemainingPrincipalIds.clear();
-					for ( Long pId : m_principalIds )
+						m_listOfRemainingUserIds.clear();
+					for ( Long userId : m_userIds )
 					{
-						m_listOfRemainingPrincipalIds.add( pId );
+						m_listOfRemainingUserIds.add( userId );
 					}
 					
 					// Disable the Ok button.
@@ -531,7 +239,8 @@ public class ConfigureUserMobileAppsDlg extends DlgBox
 					// Issue an rpc request to save the config for the first n users.
 					saveConfigForNextBatchOfUsers( mobileAppsConfig );
 				}
-			} );
+			};
+			Scheduler.get().scheduleDeferred( cmd );
 		}
 		
 		// Returning false will prevent the dialog from closing.  We will close the dialog
@@ -560,75 +269,7 @@ public class ConfigureUserMobileAppsDlg extends DlgBox
 	 */
 	private boolean getAllowPlayWithOtherApps()
 	{
-		return m_initialAllowPlayWithOtherApps;
-	}
-	
-	/*
-	 * Return whether cut/copy is enabled.
-	 */
-	private boolean getCutCopyEnabled()
-	{
-		if ( m_cutCopyEnabledCB.getValue() == Boolean.TRUE )
-			return true;
-
-		return false;
-	}
-	
-	/*
-	 * Return whether Android screen capture is enabled.
-	 */
-	private boolean getScreenCaptureAndoridEnabled()
-	{
-		if ( m_screenCaptureEnabledAndroidCB.getValue() == Boolean.TRUE )
-			return true;
-
-		return false;
-	}
-	
-	/*
-	 * Return whether to disable the device if it's jail broken.
-	 */
-	private boolean getDisableJailBroken()
-	{
-		if ( m_disableJailBrokenCB.getValue() == Boolean.TRUE )
-			return true;
-
-		return false;
-	}
-
-	/*
-	 * Returns the open in setting.
-	 */
-	private GwtMobileOpenInSetting getOpenIn()
-	{
-		int moi = Integer.parseInt( m_openInLB.getValue( m_openInLB.getSelectedIndex() ) );
-		return GwtMobileOpenInSetting.valueOf( moi );
-	}
-	
-	/*
-	 * Returns the Android application list.
-	 */
-	private List<String> getAndroidApplicatons()
-	{
-		List<String> reply = new ArrayList<String>();
-		for ( int i = 0; i < m_androidApplicationsLB.getItemCount(); i += 1 )
-		{
-			reply.add( m_androidApplicationsLB.getItemText( i ) );
-		}
-		return reply;
-	}
-	
-	/*
-	 * Returns the iOS application list.
-	 */
-	private List<String> getIosApplicatons()
-	{
-		List<String> reply = new ArrayList<String>();
-		for ( int i = 0; i < m_iosApplicationsLB.getItemCount(); i += 1 )
-		{
-			reply.add( m_iosApplicationsLB.getItemText( i ) );
-		}
-		return reply;
+		return m_allowPlayWithOtherAppsCB.getValue();
 	}
 	
 	/**
@@ -637,9 +278,9 @@ public class ConfigureUserMobileAppsDlg extends DlgBox
 	@Override
 	public Object getDataFromDlg()
 	{
-		GwtPrincipalMobileAppsConfig mobileAppsConfig;
+		GwtUserMobileAppsConfig mobileAppsConfig;
 		
-		mobileAppsConfig = new GwtPrincipalMobileAppsConfig();
+		mobileAppsConfig = new GwtUserMobileAppsConfig();
 
 		// Get whether to use the global settings
 		mobileAppsConfig.setUseGlobalSettings( getUseGlobalSettings() );
@@ -655,15 +296,6 @@ public class ConfigureUserMobileAppsDlg extends DlgBox
 		
 		// Get whether mobile apps can interact with other apps
 		mobileAppsConfig.setAllowPlayWithOtherApps( getAllowPlayWithOtherApps() );
-		
-		// Get the various values for the Mobile Application Management
-		// (MAM) settings.
-		mobileAppsConfig.setMobileCutCopyEnabled(                     getCutCopyEnabled()              );
-		mobileAppsConfig.setMobileAndroidScreenCaptureEnabled(        getScreenCaptureAndoridEnabled() );
-		mobileAppsConfig.setMobileDisableOnRootedOrJailBrokenDevices( getDisableJailBroken()           );
-		mobileAppsConfig.setMobileOpenIn(                             getOpenIn()                      );
-		mobileAppsConfig.setAndroidApplications(                      getAndroidApplicatons()          );
-		mobileAppsConfig.setIosApplications(                          getIosApplicatons()              );
 		
 		return mobileAppsConfig;
 	}
@@ -690,28 +322,28 @@ public class ConfigureUserMobileAppsDlg extends DlgBox
 	}
 	
 	/**
-	 * Get the list of the next n principalIds
+	 * Get the list of the next n userIds
 	 */
-	private ArrayList<Long> getNextBatchOfPrincipalIds()
+	private ArrayList<Long> getNextBatchOfUserIds()
 	{
-		if ( m_listOfRemainingPrincipalIds != null && m_listOfRemainingPrincipalIds.size() > 0 )
+		if ( m_listOfRemainingUserIds != null && m_listOfRemainingUserIds.size() > 0 )
 		{
 			int cnt;
 			
-			if ( m_nextBatchOfPrincipalIds == null )
-				m_nextBatchOfPrincipalIds = new ArrayList<Long>();
+			if ( m_nextBatchOfUserIds == null )
+				m_nextBatchOfUserIds = new ArrayList<Long>();
 			else
-				m_nextBatchOfPrincipalIds.clear();
+				m_nextBatchOfUserIds.clear();
 			
-			for ( cnt = 0; cnt < BATCH_SIZE && m_listOfRemainingPrincipalIds.size() > 0; ++cnt )
+			for ( cnt = 0; cnt < BATCH_SIZE && m_listOfRemainingUserIds.size() > 0; ++cnt )
 			{
-				m_nextBatchOfPrincipalIds.add( m_listOfRemainingPrincipalIds.get( 0 ) );
+				m_nextBatchOfUserIds.add( m_listOfRemainingUserIds.get( 0 ) );
 				
 				// Remove this user id from the working list.
-				m_listOfRemainingPrincipalIds.remove( 0 );
+				m_listOfRemainingUserIds.remove( 0 );
 			}
 			
-			return m_nextBatchOfPrincipalIds;
+			return m_nextBatchOfUserIds;
 		}
 		
 		return null;
@@ -728,11 +360,11 @@ public class ConfigureUserMobileAppsDlg extends DlgBox
 	/**
 	 * 
 	 */
-	public void init( List<Long> principalIds, boolean principalsAreUsers )
+	public void init( List<Long> userIds )
 	{
 		AsyncCallback<VibeRpcResponse> rpcReadCallback;
 		
-		if ( principalIds == null )
+		if ( userIds == null )
 			return;
 
 		clearErrorPanel();
@@ -740,14 +372,9 @@ public class ConfigureUserMobileAppsDlg extends DlgBox
 		hideStatusMsg();
 		setOkEnabled( true );
 
-		m_principalsAreUsers = principalsAreUsers;
-		m_principalIds = principalIds;
+		m_userIds = userIds;
 		
-		String caption;
-		if ( principalsAreUsers )
-		     caption = GwtTeaming.getMessages().configureUserMobileAppsDlgHeaderUsers(  String.valueOf( principalIds.size() ) );
-		else caption = GwtTeaming.getMessages().configureUserMobileAppsDlgHeaderGroups( String.valueOf( principalIds.size() ) );
-		setCaption( caption );
+		setCaption( GwtTeaming.getMessages().configureUserMobileAppsDlgHeader( String.valueOf( userIds.size() ) ) );
 		
 		// Create a callback that will be called when we get the mobile apps configuration.
 		rpcReadCallback = new AsyncCallback<VibeRpcResponse>()
@@ -761,10 +388,6 @@ public class ConfigureUserMobileAppsDlg extends DlgBox
 				GwtClientHelper.handleGwtRPCFailure(
 					t,
 					GwtTeaming.getMessages().rpcFailure_GetUserMobileAppsConfiguration() );
-				
-				// We can't run the dialog without the settings.  Make
-				// sure it's hidden.
-				hide();
 			}
 	
 			/**
@@ -773,82 +396,46 @@ public class ConfigureUserMobileAppsDlg extends DlgBox
 			@Override
 			public void onSuccess( VibeRpcResponse response )
 			{
-				final GwtPrincipalMobileAppsConfig mobileAppsConfig;
+				Scheduler.ScheduledCommand cmd;
+				final GwtUserMobileAppsConfig mobileAppsConfig;
 				
-				mobileAppsConfig = (GwtPrincipalMobileAppsConfig) response.getResponseData();
+				mobileAppsConfig = (GwtUserMobileAppsConfig) response.getResponseData();
 				
-				initPart2Async( mobileAppsConfig );
+				cmd = new Scheduler.ScheduledCommand()
+				{
+					@Override
+					public void execute() 
+					{
+						init( mobileAppsConfig );
+					}
+				};
+				Scheduler.get().scheduleDeferred( cmd );
 			}
 		};
 
 		// If we are only dealing with 1 user, issue an ajax request to get the
 		// User's Mobile Apps configuration.
-		if ( principalIds.size() == 1 )
+		if ( userIds.size() == 1 )
 		{
-			GetPrincipalMobileAppsConfigCmd cmd;
+			GetUserMobileAppsConfigCmd cmd;
 			
 			// Issue an ajax request to get the Mobile Apps configuration from the db.
-			cmd = new GetPrincipalMobileAppsConfigCmd();
-			cmd.setPrincipalId( principalIds.get( 0 ) );
+			cmd = new GetUserMobileAppsConfigCmd();
+			cmd.setUserId( userIds.get( 0 ) );
 			GwtClientHelper.executeCommand( cmd, rpcReadCallback );
 		}
 		else
 		{
-			GwtPrincipalMobileAppsConfig config = null;
+			GwtUserMobileAppsConfig config = null;
 			
-			initUsingConfigData( config );
-		}
-	}
-
-	/*
-	 * Asynchronously performs the next part of the initializations.
-	 */
-	private void initPart2Async( final GwtPrincipalMobileAppsConfig mobileAppsConfig )
-	{
-		GwtClientHelper.deferCommand( new ScheduledCommand()
-		{
-			@Override
-			public void execute()
-			{
-				initPart2Now( mobileAppsConfig );
-			}
-		} );
-	}
-	
-	/*
-	 * Synchronously performs the next part of the initializations.
-	 */
-	private void initPart2Now( final GwtPrincipalMobileAppsConfig mobileAppsConfig )
-	{
-		// Have we created a prompt dialog yet?
-		if ( null == m_pDlg ) {
-			// No!  Create one now...
-			PromptDlg.createAsync(new PromptDlgClient() {
-				@Override
-				public void onSuccess(PromptDlg pDlg) {
-					// ...and continue initializing.
-					m_pDlg = pDlg;
-					initUsingConfigData( mobileAppsConfig );
-				}
-	
-				@Override
-				public void onUnavailable() {
-					// Nothing to do.  Error handled in asynchronous
-					// provider.
-				}
-			});
-		}
-		else {
-			// Yes, we've already created a PromptDlg!  Simply
-			// continue initializing.
-			initUsingConfigData( mobileAppsConfig );
+			init( config );
 		}
 	}
 	
-	/*
+	/**
 	 * Initialize the controls in the dialog with the values from the given values.
 	 */
-	private void initUsingConfigData( GwtPrincipalMobileAppsConfig mobileAppsConfig )
+	private void init( GwtUserMobileAppsConfig mobileAppsConfig )
 	{
 		if ( mobileAppsConfig != null )
 		{
@@ -865,46 +452,7 @@ public class ConfigureUserMobileAppsDlg extends DlgBox
 			m_allowOfflineContentCB.setValue( mobileAppsConfig.getAllowCacheContent() );
 			
 			// Initialize the allow mobile apps to play with others
-			m_initialAllowPlayWithOtherApps = mobileAppsConfig.getAllowPlayWithOtherApps();
-			
-			// Initialize the various widgets for the Mobile Application Management
-			// (MAM) settings.
-			m_cutCopyEnabledCB.setValue( mobileAppsConfig.getMobileCutCopyEnabled() );
-			m_screenCaptureEnabledAndroidCB.setValue( mobileAppsConfig.getMobileAndroidScreenCaptureEnabled() );
-			m_disableJailBrokenCB.setValue( mobileAppsConfig.getMobileDisableOnRootedOrJailBrokenDevices() );
-			GwtMobileOpenInSetting moi = mobileAppsConfig.getMobileOpenIn();
-			if ( null == moi )
-			{
-				moi = GwtMobileOpenInSetting.ALL_APPLICATIONS;
-			}
-			String moiS = String.valueOf( moi.ordinal() );
-			int si = 0;
-			for ( int i = 0; i < m_openInLB.getItemCount(); i += 1 )
-			{
-				if ( m_openInLB.getValue( i ).equals( moiS )) {
-					si = i;
-					break;
-				}
-			}
-			m_openInLB.setSelectedIndex(si);
-			m_androidApplicationsLB.clear();
-			m_iosApplicationsLB.clear();
-			List<String> apps = mobileAppsConfig.getAndroidApplications();
-			if ( null != apps )
-			{
-				for ( String aApp:  apps )
-				{
-					m_androidApplicationsLB.addItem( aApp );
-				}
-			}
-			apps = mobileAppsConfig.getIosApplications();
-			if ( null != apps )
-			{
-				for ( String iApp:  apps )
-				{
-					m_iosApplicationsLB.addItem( iApp );
-				}
-			}
+			m_allowPlayWithOtherAppsCB.setValue( mobileAppsConfig.getAllowPlayWithOtherApps() );
 		}
 		else
 		{
@@ -913,29 +461,8 @@ public class ConfigureUserMobileAppsDlg extends DlgBox
 			m_enableMobileAppsAccessCB.setValue( false );
 			m_allowPwdCacheCB.setValue( false );
 			m_allowOfflineContentCB.setValue( false );
-			m_initialAllowPlayWithOtherApps = false;
-			
-			// Initialize the various widgets for the Mobile Application Management
-			// (MAM) settings.
-			m_cutCopyEnabledCB.setValue( false );
-			m_screenCaptureEnabledAndroidCB.setValue( false );
-			m_disableJailBrokenCB.setValue( false );
-			String moiS = String.valueOf( GwtMobileOpenInSetting.ALL_APPLICATIONS.ordinal() );
-			int si = 0;
-			for ( int i = 0; i < m_openInLB.getItemCount(); i += 1 )
-			{
-				if ( m_openInLB.getValue( i ).equals( moiS )) {
-					si = i;
-					break;
-				}
-			}
-			m_openInLB.setSelectedIndex(si);
-			m_androidApplicationsLB.clear();
-			m_iosApplicationsLB.clear();
+			m_allowPlayWithOtherAppsCB.setValue( false );
 		}
-		
-		// Dance the dialog for the open in setting.
-		danceDlg();
 		
 		hideErrorPanel();
 	}
@@ -943,16 +470,16 @@ public class ConfigureUserMobileAppsDlg extends DlgBox
 	/**
 	 * Issue an rpc request to save the config for the next n users.
 	 */
-	private void saveConfigForNextBatchOfUsers( final GwtPrincipalMobileAppsConfig config )
+	private void saveConfigForNextBatchOfUsers( final GwtUserMobileAppsConfig config )
 	{
-		ArrayList<Long> principalIds;
+		ArrayList<Long> userIds;
 
 		// Get the next batch of user ids
-		principalIds = getNextBatchOfPrincipalIds();
-		if ( principalIds != null && principalIds.size() > 0 )
+		userIds = getNextBatchOfUserIds();
+		if ( userIds != null && userIds.size() > 0 )
 		{
 			AsyncCallback<VibeRpcResponse> rpcSaveCallback = null;
-			SavePrincipalMobileAppsConfigCmd cmd;
+			SaveUserMobileAppsConfigCmd cmd;
 
 			// Update the Saving n of nn message
 			updateStatusMsg();
@@ -995,16 +522,17 @@ public class ConfigureUserMobileAppsDlg extends DlgBox
 				@Override
 				public void onSuccess( VibeRpcResponse response )
 				{
+					Scheduler.ScheduledCommand cmd;
 					VibeRpcResponseData data;
 					
 					data = response.getResponseData();
-					if ( data instanceof SavePrincipalMobileAppsConfigRpcResponseData )
+					if ( data instanceof SaveUserMobileAppsConfigRpcResponseData )
 					{
-						SavePrincipalMobileAppsConfigRpcResponseData responseData;
+						SaveUserMobileAppsConfigRpcResponseData responseData;
 						ArrayList<String> errors;
 						
 						// Get any errors that may have happened
-						responseData = (SavePrincipalMobileAppsConfigRpcResponseData) data;
+						responseData = (SaveUserMobileAppsConfigRpcResponseData) data;
 						errors = responseData.getErrors();
 						if ( errors != null && errors.size() > 0 )
 						{
@@ -1012,7 +540,7 @@ public class ConfigureUserMobileAppsDlg extends DlgBox
 							
 							// Is the error panel already visible?
 							errorPanel = getErrorPanel();
-							if ( isErrorPanelVisible() == false )
+							if ( errorPanel.isVisible() == false )
 							{
 								Label label;
 								
@@ -1035,7 +563,7 @@ public class ConfigureUserMobileAppsDlg extends DlgBox
 						}
 					}
 					
-					GwtClientHelper.deferCommand( new ScheduledCommand() 
+					cmd = new Scheduler.ScheduledCommand() 
 					{
 						@Override
 						public void execute() 
@@ -1044,25 +572,29 @@ public class ConfigureUserMobileAppsDlg extends DlgBox
 							// to save the config for.
 							saveConfigForNextBatchOfUsers( config );
 						}
-					} );
+					};
+					Scheduler.get().scheduleDeferred( cmd );
 				}
 			};
 
 			// Issue an ajax request to save the user's Mobile apps configuration to the db.  rpcSaveCallback will
 			// be called when we get the response back.
-			cmd = new SavePrincipalMobileAppsConfigCmd( config, principalIds, m_principalsAreUsers );
+			cmd = new SaveUserMobileAppsConfigCmd( config, userIds );
 			GwtClientHelper.executeCommand( cmd, rpcSaveCallback );
 		}
 		else
 		{
+			FlowPanel errorPanel;
+			
 			// We have saved the config to all the users.
 
 			// Enable the Ok button.
 			hideStatusMsg();
 			setOkEnabled( true );
 
-			// Are there any errors displayed?
-			if ( isErrorPanelVisible() == false )
+			// Were there any errors displayed?
+			errorPanel = getErrorPanel();
+			if ( errorPanel.isVisible() == false )
 			{
 				// No
 				// Close the dialog.
@@ -1076,14 +608,14 @@ public class ConfigureUserMobileAppsDlg extends DlgBox
 	 */
 	private void updateStatusMsg()
 	{
-		if ( m_principalIds != null && m_listOfRemainingPrincipalIds != null )
+		if ( m_userIds != null && m_listOfRemainingUserIds != null )
 		{
 			String msg;
 			int total;
 			int remaining;
 
-			total = m_principalIds.size();
-			remaining = m_listOfRemainingPrincipalIds.size();
+			total = m_userIds.size();
+			remaining = m_listOfRemainingUserIds.size();
 			msg = GwtTeaming.getMessages().configuerUserMobileAppsDlgSaving(
 																		String.valueOf( total-remaining ),
 																		String.valueOf( total ) );

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -47,8 +47,6 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.dom4j.Document;
-import org.dom4j.Element;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.kablink.teaming.ObjectKeys;
@@ -249,7 +247,7 @@ public class TaskHelper {
 	 * 
 	 * @return
 	 */
-	@SuppressWarnings({"unchecked", "incomplete-switch"})
+	@SuppressWarnings("unchecked")
 	public static SearchFilter buildSearchFilter(FilterType filterType, ListFolderHelper.ModeType modeType, Map model, Binder binder) {
 		SearchFilter searchFilter = new SearchFilter(true);
 		
@@ -458,32 +456,6 @@ public class TaskHelper {
 
 		options.put(ObjectKeys.FOLDER_MODE_TYPE, modeType);
 		options.put(ObjectKeys.SEARCH_SEARCH_DYNAMIC_FILTER, buildSearchFilter(filterType, modeType, model, binder).getFilter());
-       	
-		// Are we finding all assigned tasks?
-		if (modeType.equals(ModeType.VIRTUAL)) {
-			// Yes!  Is there a search filter in effect?
-			Document searchFilter = ((Document) options.get(ObjectKeys.SEARCH_SEARCH_FILTER));
-			if (null != searchFilter) {
-				// Yes!  Does it contain any <filterTerms>'s?
-				List<Element> filterTermsList = ((List<Element>) searchFilter.getRootElement().selectNodes("//filterTerms"));
-				if ((null != filterTermsList) && (0 < filterTermsList.size())) {
-					// Yes!  Scan them.
-					for (Element filterTerms:  filterTermsList) {
-						// Does this <filterTerms> contain any
-						// <filterTerm filterType="foldersList">'s?
-						List<Element> filterTermList = ((List<Element>) filterTerms.selectNodes("//filterTerm[@filterType='foldersList']"));
-						if ((null != filterTermList) && (0 < filterTermsList.size())) {
-							// Yes!  Scan them...
-							for (Element filterTerm:  filterTermList) {
-								// ...removing each from its parent
-								// ...node.
-								filterTerm.getParent().remove(filterTerm);
-							}
-						}
-					}
-				}
-			}
-		}
        	
 		if (binder instanceof Folder) {
 			folderEntries = bs.getFolderModule().getEntries(binderId, options);
@@ -726,42 +698,39 @@ public class TaskHelper {
 	 */
 	@SuppressWarnings("unchecked")
 	public static void processTaskCompletion(Entry task, InputDataAccessor inputData, Map entryData) {
-		Binder parentBinder = task.getParentBinder();
-		if (BinderHelper.isBinderTask(null, parentBinder)) {
-			// Validate the completed value in the input data...
-			String c = inputData.getSingleValue(TaskHelper.COMPLETED_TASK_ENTRY_ATTRIBUTE_NAME);
-			if (null == c) {
-				String s = inputData.getSingleValue(TaskHelper.STATUS_TASK_ENTRY_ATTRIBUTE_NAME);
-				if ((null != s) && s.equals(STATUS_COMPLETED)) {
-					c = COMPLETED_100;
-				}
+		// Validate the completed value in the input data...
+		String c = inputData.getSingleValue(TaskHelper.COMPLETED_TASK_ENTRY_ATTRIBUTE_NAME);
+		if (null == c) {
+			String s = inputData.getSingleValue(TaskHelper.STATUS_TASK_ENTRY_ATTRIBUTE_NAME);
+			if ((null != s) && s.equals(STATUS_COMPLETED)) {
+				c = COMPLETED_100;
 			}
-			String cV = validateCompleted(c);
+		}
+		String cV = validateCompleted(c);
+		if (null != cV) {
+			c = cV;
+		}
+		
+		// ...and use that to update the completion date, as necessary.
+		processTaskCompletionDate(task, c);
+
+		// Does the entry data contain a completed value?
+		Object o = entryData.get(TaskHelper.COMPLETED_TASK_ENTRY_ATTRIBUTE_NAME);
+		boolean asString  = false;
+		boolean asStringA = false;
+		if (null != o) {
+			// Yes!  Validate it...
+			if      (o instanceof String)   {c = ((String)   o);    asString  = true;}
+			else if (o instanceof String[]) {c = ((String[]) o)[0]; asStringA = true;}
+			else                             c = null;
+			cV = validateCompleted(c);
+		
+			// ...and if it needs to be changed...
 			if (null != cV) {
-				c = cV;
-			}
-			
-			// ...and use that to update the completion date, as necessary.
-			processTaskCompletionDate(task, c);
-	
-			// Does the entry data contain a completed value?
-			Object o = entryData.get(TaskHelper.COMPLETED_TASK_ENTRY_ATTRIBUTE_NAME);
-			boolean asString  = false;
-			boolean asStringA = false;
-			if (null != o) {
-				// Yes!  Validate it...
-				if      (o instanceof String)   {c = ((String)   o);    asString  = true;}
-				else if (o instanceof String[]) {c = ((String[]) o)[0]; asStringA = true;}
-				else                             c = null;
-				cV = validateCompleted(c);
-			
-				// ...and if it needs to be changed...
-				if (null != cV) {
-					// ...store the new value.
-					if      (asString)  o = cV;
-					else if (asStringA) o = new String[]{cV};
-					entryData.put(TaskHelper.COMPLETED_TASK_ENTRY_ATTRIBUTE_NAME, o);
-				}
+				// ...store the new value.
+				if      (asString)  o = cV;
+				else if (asStringA) o = new String[]{cV};
+				entryData.put(TaskHelper.COMPLETED_TASK_ENTRY_ATTRIBUTE_NAME, o);
 			}
 		}
 	}

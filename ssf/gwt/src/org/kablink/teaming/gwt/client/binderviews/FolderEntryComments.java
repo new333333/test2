@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -35,6 +35,10 @@ package org.kablink.teaming.gwt.client.binderviews;
 import org.kablink.teaming.gwt.client.datatable.ManageCommentsCallback;
 import org.kablink.teaming.gwt.client.datatable.ManageCommentsComposite;
 import org.kablink.teaming.gwt.client.datatable.ManageCommentsComposite.ManageCommentsCompositeClient;
+import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.GwtTeamingDataTableImageBundle;
+import org.kablink.teaming.gwt.client.GwtTeamingFilrImageBundle;
+import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.util.CommentAddedCallback;
 import org.kablink.teaming.gwt.client.util.CommentsInfo;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
@@ -44,19 +48,16 @@ import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
  * 
  * @author drfoster@novell.com
  */
+@SuppressWarnings("unused")
 public class FolderEntryComments extends VibeFlowPanel implements ManageCommentsCallback {
-	private CommentAddedCallback	m_addedCallback;			// Interface to tell our container when a new comment gets added.
-	private CommentsInfo			m_comments;					// Information about the entry being viewed's comments.
-	private FolderEntryCallback		m_fec;						// Callback to the folder entry composite.
-	private ManageCommentsComposite	m_manageCommentsComposite;	// The composite containing the main content of the comment manager. 
-
-	/**
-	 * Constructor method.
-	 * 
-	 * @param fec
-	 * @param comments
-	 * @param addedCallback
-	 */
+	private CommentAddedCallback			m_addedCallback;			// Interface to tell our container when a new comment gets added.
+	private CommentsInfo					m_comments;					// Information about the entry being viewed's comments.
+	private FolderEntryCallback				m_fec;						// Callback to the folder entry composite.
+	private GwtTeamingDataTableImageBundle	m_images;					// Access to Vibe's images.
+	private GwtTeamingFilrImageBundle		m_filrImages;				// Access to Filr's images.
+	private GwtTeamingMessages				m_messages;					// Access to Vibe's messages.
+	private ManageCommentsComposite			m_manageCommentsComposite;	// The composite containing the main content of the comment manager. 
+	
 	public FolderEntryComments(FolderEntryCallback fec, CommentsInfo comments, CommentAddedCallback addedCallback) {
 		// Initialize the super class...
 		super();
@@ -65,6 +66,11 @@ public class FolderEntryComments extends VibeFlowPanel implements ManageComments
 		m_fec           = fec;
 		m_comments      = comments;
 		m_addedCallback = addedCallback;
+		
+		// ...initialize the data members requiring it...
+		m_filrImages = GwtTeaming.getFilrImageBundle();
+		m_images     = GwtTeaming.getDataTableImageBundle();
+		m_messages   = GwtTeaming.getMessages();
 		
 		// ...and construct the comment manager's content.
 		createContent();
@@ -83,7 +89,7 @@ public class FolderEntryComments extends VibeFlowPanel implements ManageComments
 	}
 
 	/*
-	 * Creates the comment's content.
+	 * Creates the header's content.
 	 */
 	private void createContent() {
 		// Add the panel's style...

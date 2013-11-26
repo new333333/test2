@@ -38,10 +38,4 @@ package org.kablink.teaming.remoting.rest.v1.resource;
  * Time: 1:47 PM
  */
 abstract public class AbstractPrincipalResource extends AbstractDefinableEntityResource {
-    protected enum PrincipalOptions {
-        local,
-        ldap,
-        all,
-        none
-    }
 }

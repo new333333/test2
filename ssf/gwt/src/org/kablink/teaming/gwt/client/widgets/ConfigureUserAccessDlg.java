@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2009 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -31,6 +31,7 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 package org.kablink.teaming.gwt.client.widgets;
+
 
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtTeaming;
@@ -59,10 +60,11 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.Panel;
 
+
 /**
- * ?
  * 
  * @author jwootton
+ *
  */
 public class ConfigureUserAccessDlg extends DlgBox
 	implements EditSuccessfulHandler
@@ -72,8 +74,6 @@ public class ConfigureUserAccessDlg extends DlgBox
 	CheckBox m_allowSelfRegOfInternalUserAccountCkbox;
 	CheckBox m_allowExternalUserAccessCkbox;
 	CheckBox m_allowSelfRegOfExternalUserAccountCkbox;
-	CheckBox m_disableDownloadCkbox;
-	CheckBox m_disableWebAccessCkbox;
 	
 	// The following defines the TeamingEvents that are handled by
 	// this class.  See EventHelper.registerEventHandlers() for how
@@ -168,15 +168,12 @@ public class ConfigureUserAccessDlg extends DlgBox
 		{
 			// External users are only available with a licensed version.
 
-			// For Filr 1.0 we don't support self registration by external users.
-			boolean supportExternalSelfReg = false;
-			
 			// Add the "Allow external user access" checkbox
 			{
 				FlowPanel panel;
 				
 				panel = new FlowPanel();
-				panel.addStyleName( supportExternalSelfReg ? "marginbottom1" : "marginbottom2" );
+				panel.addStyleName( "marginbottom1" );
 				m_allowExternalUserAccessCkbox = new CheckBox( messages.configureUserAccessDlg_AllowExternalUserAccessLabel() );
 				panel.add( m_allowExternalUserAccessCkbox );
 				mainPanel.add( panel );
@@ -186,23 +183,15 @@ public class ConfigureUserAccessDlg extends DlgBox
 					@Override
 					public void onClick( ClickEvent event )
 					{
-						Scheduler.ScheduledCommand cmd;
-						
-						cmd = new Scheduler.ScheduledCommand()
-						{
-							@Override
-							public void execute()
-							{
-								danceDlg();
-							}
-						};
-						Scheduler.get().scheduleDeferred( cmd );
+						danceDlg();
 					}
 				} );
 			}
 			
 			// Add the "Allow external user to self register" checkbox
-			if ( supportExternalSelfReg )
+			// For Filr 1.0 we don't support self registration by external users.
+			boolean doit = false;
+			if ( doit )
 			{
 				FlowPanel panel;
 				
@@ -215,29 +204,6 @@ public class ConfigureUserAccessDlg extends DlgBox
 			}
 		}
 		
-		// Add the "Disable Download" checkbox;
-		if ( GwtClientHelper.isLicenseFilr() )
-		{
-			FlowPanel panel;
-			
-			panel = new FlowPanel();
-			panel.addStyleName( "marginbottom2" );
-			m_disableDownloadCkbox = new CheckBox( messages.configureUserAccessDlg_DisableDownloadLabel() );
-			panel.add( m_disableDownloadCkbox );
-			mainPanel.add( panel );
-		}
-		
-		// Add the "Disable WebAccess" checkbox;
-		{
-			FlowPanel panel;
-			
-			panel = new FlowPanel();
-			panel.addStyleName( "marginbottom2" );
-			m_disableWebAccessCkbox = new CheckBox( messages.configureUserAccessDlg_DisableWebAccessLabel() );
-			panel.add( m_disableWebAccessCkbox );
-			mainPanel.add( panel );
-		}
-		
 		return mainPanel;
 	}
 	
@@ -246,7 +212,7 @@ public class ConfigureUserAccessDlg extends DlgBox
 	 */
 	private void danceDlg()
 	{
-		if ( m_allowExternalUserAccessCkbox != null && m_allowSelfRegOfExternalUserAccountCkbox != null )
+		if ( m_allowExternalUserAccessCkbox != null )
 		{
 			m_allowSelfRegOfExternalUserAccountCkbox.setEnabled( m_allowExternalUserAccessCkbox.getValue() );
 		}
@@ -344,26 +310,6 @@ public class ConfigureUserAccessDlg extends DlgBox
 	}
 	
 	/**
-	 * 
-	 */
-	private boolean getDisableDownload()
-	{
-		boolean reply;
-		if ( GwtClientHelper.isLicenseFilr() )
-		     reply = m_disableDownloadCkbox.getValue();
-		else reply = false;
-		return reply;
-	}
-	
-	/**
-	 * 
-	 */
-	private boolean getDisableWebAccess()
-	{
-		return m_disableWebAccessCkbox.getValue();
-	}
-	
-	/**
 	 * Get the data from the controls in the dialog box.
 	 */
 	@Override
@@ -377,8 +323,6 @@ public class ConfigureUserAccessDlg extends DlgBox
 		config.setAllowGuestAccess( getAllowGuestAccess() );
 		config.setGuestReadOnly( getGuestReadOnly() );
 		config.setAllowSelfReg( getAllowInternalSelfReg() );
-		config.setAllowDownload( !getDisableDownload() );
-		config.setAllowWebAccess( !getDisableWebAccess() );
 		
 		return config;
 	}
@@ -468,15 +412,6 @@ public class ConfigureUserAccessDlg extends DlgBox
 		if ( m_allowSelfRegOfInternalUserAccountCkbox != null )
 			m_allowSelfRegOfInternalUserAccountCkbox.setValue( false );
 		
-		if ( GwtClientHelper.isLicenseFilr() )
-		{
-			if ( m_disableDownloadCkbox != null )
-				m_disableDownloadCkbox.setValue( false );
-		}
-		
-		if ( m_disableWebAccessCkbox != null )
-			m_disableWebAccessCkbox.setValue( false );
-		
 		// Issue an rpc request to get the user access information from the server
 		getUserAccessInfoFromServer();
 	}
@@ -497,15 +432,6 @@ public class ConfigureUserAccessDlg extends DlgBox
 		
 		if ( m_allowSelfRegOfInternalUserAccountCkbox != null )
 			m_allowSelfRegOfInternalUserAccountCkbox.setValue( config.getAllowSelfReg() );
-		
-		if ( GwtClientHelper.isLicenseFilr() )
-		{
-			if ( m_disableDownloadCkbox != null )
-				m_disableDownloadCkbox.setValue( !config.getAllowDownload() );
-		}
-		
-		if ( m_disableWebAccessCkbox != null )
-			m_disableWebAccessCkbox.setValue( !config.getAllowWebAccess() );
 		
 		danceDlg();
 	}

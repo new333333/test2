@@ -1,6 +1,6 @@
 <%
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -16,10 +16,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -36,8 +36,6 @@
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <%@ page import="java.util.TimeZone" %>
 <%@ page import="java.util.Date" %>
-<%@ page import="java.text.DecimalFormat" %>
-<%@ page import="java.text.DecimalFormatSymbols" %>
 <%@ page import="org.kablink.teaming.domain.User" %>
 <%
 	User ssUser = (User) request.getAttribute("ssUser");
@@ -45,10 +43,6 @@
 	TimeZone tz = ssUser.getTimeZone();
 	int offset = tz.getOffset(now.getTime());
 	int offsetHour = offset / (1000*60*60);
-	
-	DecimalFormat df = ((DecimalFormat) DecimalFormat.getInstance(ssUser.getLocale()));
-	DecimalFormatSymbols dfs = df.getDecimalFormatSymbols();
-	char decimalChar = dfs.getDecimalSeparator();
 %>
 <c:set var="offsetHour" value="<%= offsetHour %>"/>
 
@@ -211,9 +205,9 @@ function handleRepeatEveryOnFocus()
 						  <c:if test="${schedule.minutesRepeat && schedule.minutesRepeat == '45'}">value="0.75"</c:if>
 						  <c:if test="${schedule.repeatHours}">value="${schedule.hours}"</c:if>
 						>
-							<option <c:if test="${schedule.minutesRepeat == '15'}">selected="selected"</c:if> value="0.25">0<%= decimalChar %>25
-							<option <c:if test="${schedule.minutesRepeat == '30'}">selected="selected"</c:if> value="0.5">0<%= decimalChar %>5
-							<option <c:if test="${schedule.minutesRepeat == '45'}">selected="selected"</c:if> value="0.75">0<%= decimalChar %>75
+							<option <c:if test="${schedule.minutesRepeat == '15'}">selected="selected"</c:if> value="0.25">0.25
+							<option <c:if test="${schedule.minutesRepeat == '30'}">selected="selected"</c:if> value="0.5">0.5
+							<option <c:if test="${schedule.minutesRepeat == '45'}">selected="selected"</c:if> value="0.75">0.75
 							<option <c:if test="${schedule.hoursRepeat == '1'}">selected="selected"</c:if> value="01">1
 							<option <c:if test="${schedule.hoursRepeat == '2'}">selected="selected"</c:if> value="02">2
 							<option <c:if test="${schedule.hoursRepeat == '3'}">selected="selected"</c:if> value="03">3

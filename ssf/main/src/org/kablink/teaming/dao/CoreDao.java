@@ -99,8 +99,6 @@ public interface CoreDao {
 	public void lock(Object obj);
 	public Object load(Class className, String id);
 	public Object load(Class className, Long id);
-	public Object loadLocked(Class className, String id);
-	public Object loadLocked(Class className, Long id);
 	public List<Tag> loadAllTagsByEntity(EntityIdentifier entityId);
 	public Map<EntityIdentifier, List<Tag>> loadAllTagsByEntity(Collection<EntityIdentifier> entityIds);
 	/**
@@ -153,14 +151,11 @@ public interface CoreDao {
 	public Binder loadReservedBinder(String reservedId, Long zoneId);
 	public Definition loadReservedDefinition(String reservedId, Long zoneId);
 	public List<Subscription> loadSubscriptionByEntity(final EntityIdentifier entityId);
-	public boolean subscriptionExistsOnEntity(final EntityIdentifier entityId);
 	public Tag loadTag(String id, Long zoneId);
 	public TemplateBinder loadTemplate(Long templateId, Long zoneId);
 	public TemplateBinder loadTemplateByName(String name, Long zoneId);
 	public UserDashboard loadUserDashboard(EntityIdentifier ownerId, Long binderId);
 	public List<LdapConnectionConfig> loadLdapConnectionConfigs(Long zoneId);
-	public LdapConnectionConfig loadLdapConnectionConfig(String configId, Long zoneId);
-    public int getMaxLdapConnectionConfigPosition(final Long zoneId);
 	public ZoneConfig loadZoneConfig(Long zoneId);
 	public Object merge(Object obj); 
     public void move(Binder binder);
@@ -219,7 +214,7 @@ public interface CoreDao {
      * @return
      */
     public IndexNode findIndexNode(String nodeName, String indexName);
-	
+    
     /**
      * Purge all index nodes matching the specified index name. 
      * Used when deleting a zone.
@@ -265,15 +260,13 @@ public interface CoreDao {
 	
 	public List<OpenIDProvider> findOpenIDProviders(Long zoneId);
 	
-	public List getAuditTrailEntries(final Long zoneId, final Date purgeBeforeDate);
 	public int purgeAuditTrail(Long zoneId, Date purgeBeforeDate);
 	
-	public List getChangeLogEntries(final Long zoneId, final Date purgeBeforeDate);
 	public int purgeChangeLogs(Long zoneId, Date purgeBeforeDate);
 
 	public boolean contains(Object obj);
 	
-	public void purgeShares(Binder binder, boolean includeEntryShares);
+	public BinderState loadBinderState(Long binderId);
 	
-	public Long peekFullSyncTask();
+	public void purgeShares(Binder binder, boolean includeEntryShares);
 }

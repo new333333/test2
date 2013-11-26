@@ -224,9 +224,9 @@ public class FolderEntryResource extends AbstractFolderEntryResource {
         spec.setLatest(true);
         spec.setSharedEntityIdentifier(new EntityIdentifier(id, EntityIdentifier.EntityType.folderEntry));
         SearchResultList<Share> results = new SearchResultList<Share>();
-        List<ShareItem> shareItems = getShareItems(spec, true, true, true);
+        List<ShareItem> shareItems = getShareItems(spec, true);
         for (ShareItem shareItem : shareItems) {
-            results.append(ResourceUtil.buildShare(shareItem, findDefinableEntity(shareItem.getSharedEntityIdentifier()), buildShareRecipient(shareItem)));
+            results.append(ResourceUtil.buildShare(shareItem, buildShareRecipient(shareItem)));
         }
         return results;
     }

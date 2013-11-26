@@ -60,7 +60,11 @@ public class DefaultMirroredFolderSynchronization extends SSCronTriggerJob
 			if(binderId.longValue() == -1L) {
 				deleteJob(context);
 			} else {
-				folderModule.enqueueFullSynchronize(binderId);
+				boolean result = folderModule.fullSynchronize(binderId,null);
+				if(!result) {
+					// The folder is now gone. Remove the job.
+					deleteJob(context);
+				}
 			}
 		} catch (NoFolderByTheIdException nf) {
 			// Apparently the folder on which this scheduler is defined has been removed.
@@ -100,7 +104,7 @@ public class DefaultMirroredFolderSynchronization extends SSCronTriggerJob
 	public class SyncJobDescription extends CronJobDescription {
 		private Long folderId;
 		public SyncJobDescription(Long zoneId, Long folderId) {
-			super(zoneId, folderId.toString(), SYNCHRONIZATION_GROUP, SYNCHRONIZATION_DESCRIPTION + folderId, true, 
+			super(zoneId, folderId.toString(), SYNCHRONIZATION_GROUP, SYNCHRONIZATION_DESCRIPTION + folderId, false, 
 					SPropsUtil.getInt("job.mirrored.folder.synchronization.priority", 4));
 			this.folderId = folderId;
 		}

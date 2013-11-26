@@ -1,7 +1,14 @@
-//>>built
-define("dojox/math/matrix",["dojo","dojox"],function(_1,_2){
-_1.getObject("math.matrix",true,_2);
-_1.mixin(_2.math.matrix,{iDF:0,ALMOST_ZERO:1e-10,multiply:function(a,b){
+/*
+	Copyright (c) 2004-2009, The Dojo Foundation All Rights Reserved.
+	Available via Academic Free License >= 2.1 OR the modified BSD license.
+	see: http://dojotoolkit.org/license for details
+*/
+
+
+if(!dojo._hasResource["dojox.math.matrix"]){
+dojo._hasResource["dojox.math.matrix"]=true;
+dojo.provide("dojox.math.matrix");
+dojo.mixin(dojox.math.matrix,{iDF:0,ALMOST_ZERO:1e-10,multiply:function(a,b){
 var ay=a.length,ax=a[0].length,by=b.length,bx=b[0].length;
 if(ax!=by){
 console.warn("Can't multiply matricies of sizes "+ax+","+ay+" and "+bx+","+by);
@@ -34,25 +41,25 @@ console.warn("can't sum 0 matrices!");
 return 0;
 }
 var m=this.copy(arguments[0]);
-var _3=m.length;
-if(_3==0){
+var _1=m.length;
+if(_1==0){
 console.warn("can't deal with matrices of 0 rows!");
 return 0;
 }
-var _4=m[0].length;
-if(_4==0){
+var _2=m[0].length;
+if(_2==0){
 console.warn("can't deal with matrices of 0 cols!");
 return 0;
 }
 for(var i=1;i<arguments.length;++i){
-var _5=arguments[i];
-if(_5.length!=_3||_5[0].length!=_4){
-console.warn("can't add matrices of different dimensions: first dimensions were "+_3+"x"+_4+", current dimensions are "+_5.length+"x"+_5[0].length);
+var _3=arguments[i];
+if(_3.length!=_1||_3[0].length!=_2){
+console.warn("can't add matrices of different dimensions: first dimensions were "+_1+"x"+_2+", current dimensions are "+_3.length+"x"+_3[0].length);
 return 0;
 }
-for(var r=0;r<_3;r++){
-for(var c=0;c<_4;c++){
-m[r][c]+=_5[r][c];
+for(var r=0;r<_1;r++){
+for(var c=0;c<_2;c++){
+m[r][c]+=_3[r][c];
 }
 }
 }
@@ -61,15 +68,15 @@ return m;
 if(a.length==1&&a[0].length==1){
 return [[1/a[0][0]]];
 }
-var _6=a.length,m=this.create(_6,_6),mm=this.adjoint(a),_7=this.determinant(a),dd=0;
-if(_7==0){
+var _4=a.length,m=this.create(_4,_4),mm=this.adjoint(a),_5=this.determinant(a),dd=0;
+if(_5==0){
 console.warn("Determinant Equals 0, Not Invertible.");
 return [[0]];
 }else{
-dd=1/_7;
+dd=1/_5;
 }
-for(var i=0;i<_6;i++){
-for(var j=0;j<_6;j++){
+for(var i=0;i<_4;i++){
+for(var j=0;j<_4;j++){
 m[i][j]=dd*mm[i][j];
 }
 }
@@ -79,63 +86,63 @@ if(a.length!=a[0].length){
 console.warn("Can't calculate the determinant of a non-squre matrix!");
 return 0;
 }
-var _8=a.length,_9=1,b=this.upperTriangle(a);
-for(var i=0;i<_8;i++){
-var _a=b[i][i];
-if(Math.abs(_a)<this.ALMOST_ZERO){
+var _6=a.length,_7=1,b=this.upperTriangle(a);
+for(var i=0;i<_6;i++){
+var _8=b[i][i];
+if(Math.abs(_8)<this.ALMOST_ZERO){
 return 0;
 }
-_9*=_a;
+_7*=_8;
 }
-_9*=this.iDF;
-return _9;
+_7*=this.iDF;
+return _7;
 },upperTriangle:function(m){
 m=this.copy(m);
-var f1=0,_b=0,_c=m.length,v=1;
+var f1=0,_9=0,_a=m.length,v=1;
 this.iDF=1;
-for(var _d=0;_d<_c-1;_d++){
-if(typeof m[_d][_d]!="number"){
-console.warn("non-numeric entry found in a numeric matrix: m["+_d+"]["+_d+"]="+m[_d][_d]);
+for(var _b=0;_b<_a-1;_b++){
+if(typeof m[_b][_b]!="number"){
+console.warn("non-numeric entry found in a numeric matrix: m["+_b+"]["+_b+"]="+m[_b][_b]);
 }
 v=1;
-var _e=0;
-while((m[_d][_d]==0)&&!_e){
-if(_d+v>=_c){
+var _c=0;
+while((m[_b][_b]==0)&&!_c){
+if(_b+v>=_a){
 this.iDF=0;
-_e=1;
+_c=1;
 }else{
-for(var r=0;r<_c;r++){
-_b=m[_d][r];
-m[_d][r]=m[_d+v][r];
-m[_d+v][r]=_b;
+for(var r=0;r<_a;r++){
+_9=m[_b][r];
+m[_b][r]=m[_b+v][r];
+m[_b+v][r]=_9;
 }
 v++;
 this.iDF*=-1;
 }
 }
-for(var _f=_d+1;_f<_c;_f++){
-if(typeof m[_f][_d]!="number"){
-console.warn("non-numeric entry found in a numeric matrix: m["+_f+"]["+_d+"]="+m[_f][_d]);
+for(var _d=_b+1;_d<_a;_d++){
+if(typeof m[_d][_b]!="number"){
+console.warn("non-numeric entry found in a numeric matrix: m["+_d+"]["+_b+"]="+m[_d][_b]);
 }
-if(typeof m[_d][_f]!="number"){
-console.warn("non-numeric entry found in a numeric matrix: m["+_d+"]["+_f+"]="+m[_d][_f]);
+if(typeof m[_b][_d]!="number"){
+console.warn("non-numeric entry found in a numeric matrix: m["+_b+"]["+_d+"]="+m[_b][_d]);
 }
-if(m[_d][_d]!=0){
-var f1=(-1)*m[_f][_d]/m[_d][_d];
-for(var i=_d;i<_c;i++){
-m[_f][i]=f1*m[_d][i]+m[_f][i];
+if(m[_b][_b]!=0){
+var f1=(-1)*m[_d][_b]/m[_b][_b];
+for(var i=_b;i<_a;i++){
+m[_d][i]=f1*m[_b][i]+m[_d][i];
 }
 }
 }
 }
 return m;
-},create:function(a,b,_10){
-_10=_10||0;
+},create:function(a,b,_e){
+_e=_e||0;
 var m=[];
 for(var i=0;i<b;i++){
 m[i]=[];
 for(var j=0;j<a;j++){
-m[i][j]=_10;
+m[i][j]=_e;
 }
 }
 return m;
@@ -143,13 +150,13 @@ return m;
 return this.create(a,b,1);
 },zeros:function(a,b){
 return this.create(a,b);
-},identity:function(_11,_12){
-_12=_12||1;
+},identity:function(_f,_10){
+_10=_10||1;
 var m=[];
-for(var i=0;i<_11;i++){
+for(var i=0;i<_f;i++){
 m[i]=[];
-for(var j=0;j<_11;j++){
-m[i][j]=(i==j?_12:0);
+for(var j=0;j<_f;j++){
+m[i][j]=(i==j?_10:0);
 }
 }
 return m;
@@ -195,9 +202,9 @@ m[j][i]=a[i][j];
 }
 }
 return m;
-},format:function(a,_13){
-_13=_13||5;
-function _14(x,dp){
+},format:function(a,_11){
+_11=_11||5;
+function _12(x,dp){
 var fac=Math.pow(10,dp);
 var a=Math.round(x*fac)/fac;
 var b=a.toString();
@@ -214,15 +221,15 @@ return b;
 };
 var ya=a.length;
 var xa=ya>0?a[0].length:0;
-var _15="";
+var _13="";
 for(var y=0;y<ya;y++){
-_15+="| ";
+_13+="| ";
 for(var x=0;x<xa;x++){
-_15+=_14(a[y][x],_13)+" ";
+_13+=_12(a[y][x],_11)+" ";
 }
-_15+="|\n";
+_13+="|\n";
 }
-return _15;
+return _13;
 },copy:function(a){
 var ya=a.length,xa=a[0].length,m=this.create(xa,ya);
 for(var y=0;y<ya;y++){
@@ -231,15 +238,14 @@ m[y][x]=a[y][x];
 }
 }
 return m;
-},scale:function(a,_16){
+},scale:function(a,_14){
 a=this.copy(a);
 var ya=a.length,xa=a[0].length;
 for(var y=0;y<ya;y++){
 for(var x=0;x<xa;x++){
-a[y][x]*=_16;
+a[y][x]*=_14;
 }
 }
 return a;
 }});
-return _2.math.matrix;
-});
+}

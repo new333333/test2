@@ -100,8 +100,8 @@ public class IndexSynchronizationManager {
      * @param uid
      */
     public static void deleteDocument(String uid) {
-    	if(logger.isDebugEnabled())
-    		logger.debug("deleteDocument(" + uid + ")");
+    	if(logger.isTraceEnabled())
+    		logger.trace("deleteDocument(" + uid + ")");
     	
     	deleteDocuments(new Term(Constants.UID_FIELD, uid));
     }

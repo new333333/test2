@@ -1,45 +1,53 @@
-//>>built
-define("dojox/encoding/ascii85",["dojo/_base/lang"],function(_1){
-var _2=_1.getObject("dojox.encoding.ascii85",true);
-var c=function(_3,_4,_5){
+/*
+	Copyright (c) 2004-2009, The Dojo Foundation All Rights Reserved.
+	Available via Academic Free License >= 2.1 OR the modified BSD license.
+	see: http://dojotoolkit.org/license for details
+*/
+
+
+if(!dojo._hasResource["dojox.encoding.ascii85"]){
+dojo._hasResource["dojox.encoding.ascii85"]=true;
+dojo.provide("dojox.encoding.ascii85");
+(function(){
+var c=function(_1,_2,_3){
 var i,j,n,b=[0,0,0,0,0];
-for(i=0;i<_4;i+=4){
-n=((_3[i]*256+_3[i+1])*256+_3[i+2])*256+_3[i+3];
+for(i=0;i<_2;i+=4){
+n=((_1[i]*256+_1[i+1])*256+_1[i+2])*256+_1[i+3];
 if(!n){
-_5.push("z");
+_3.push("z");
 }else{
 for(j=0;j<5;b[j++]=n%85+33,n=Math.floor(n/85)){
 }
 }
-_5.push(String.fromCharCode(b[4],b[3],b[2],b[1],b[0]));
+_3.push(String.fromCharCode(b[4],b[3],b[2],b[1],b[0]));
 }
 };
-_2.encode=function(_6){
-var _7=[],_8=_6.length%4,_9=_6.length-_8;
-c(_6,_9,_7);
-if(_8){
-var t=_6.slice(_9);
+dojox.encoding.ascii85.encode=function(_4){
+var _5=[],_6=_4.length%4,_7=_4.length-_6;
+c(_4,_7,_5);
+if(_6){
+var t=_4.slice(_7);
 while(t.length<4){
 t.push(0);
 }
-c(t,4,_7);
-var x=_7.pop();
+c(t,4,_5);
+var x=_5.pop();
 if(x=="z"){
 x="!!!!!";
 }
-_7.push(x.substr(0,_8+1));
+_5.push(x.substr(0,_6+1));
 }
-return _7.join("");
+return _5.join("");
 };
-_2.decode=function(_a){
-var n=_a.length,r=[],b=[0,0,0,0,0],i,j,t,x,y,d;
+dojox.encoding.ascii85.decode=function(_8){
+var n=_8.length,r=[],b=[0,0,0,0,0],i,j,t,x,y,d;
 for(i=0;i<n;++i){
-if(_a.charAt(i)=="z"){
+if(_8.charAt(i)=="z"){
 r.push(0,0,0,0);
 continue;
 }
 for(j=0;j<5;++j){
-b[j]=_a.charCodeAt(i+j)-33;
+b[j]=_8.charCodeAt(i+j)-33;
 }
 d=n-i;
 if(d<5){
@@ -59,5 +67,5 @@ i+=4;
 }
 return r;
 };
-return _2;
-});
+})();
+}

@@ -33,10 +33,10 @@ Concurrent Library 1.3.4
 CyberNeko HTML Parser 1.9.9 (nekohtml.jar - needed by openid4java)
 DbUnit 2.1
 JSR-330: Dependency Injection for Java (javax.inject.jar, Apache License 2.0, used by OpenID4Java)
-dojo 1.9.0 (Dojo Toolkit:  DoJo + Dijit + DojoX)
+dojo 1.4.0 (Dojo Toolkit:  DoJo + Dijit + DojoX)
 dom4j 1.6.1
 EasyMock 1.2 (Java 1.3)
-Ehcache 2.6.7 (needed by Hibernate)
+Ehcache 2.2.0 (needed by Hibernate)
 ezmorph 1.0.1
 firebug-lite 1.2
 groovy 1.8.5
@@ -62,7 +62,6 @@ JavaMail 1.4.4 (Oracle's reference implementation)
 java_uno.jar (from OpenOffice 2.0)
 java_uno_accessbridge.jar (from OpenOffice 2.0)
 javassist 3.12.0.GA (from Hibernate distribution, needed by Hibernate)
-javaxt-core 1.5.18
 JAXB implementation 2.1.12 (An implementation of JAXB 2.1 specification needed by Jersey)
 Jaxen 1.1-beta-7
 JAXRPC 1.1
@@ -83,7 +82,7 @@ JSR 311 (JAX-RS) API 1.1.1 (from Jersey distribution)
 JSTL 1.0.5
 JSTL Implementation (from Apache) 1.0.6
 JTA 1.0.1b
-JTDS 1.2.8 (SQL Server JDBC Driver)
+JTDS 1.2.5
 JTidy r938
 juh.jar (from OpenOffice 2.0)
 jurt.jar (from OpenOffice 2.0)
@@ -92,7 +91,7 @@ JUnit 4.10
 juniversalchardet  1.0.3
 Jung 1.7.6 visualization library
 kaptcha 2.3 (Used to generate the image used with text verification)
-lib-gwt-file.jar 0.3.3 (GWT W3C File APIs)
+lib-gwt-file.jar 0.3.1 (GWT W3C File APIs)
 Liferay portal-client.jar 4.3.0
 Liferay portal-impl.jar 4.3.0
 Liferay portal-kernel.jar 4.3.0
@@ -103,8 +102,6 @@ Liquibase Hibernate integration 2.0.0
 Liquibase MS SQL Server Extensions 1.2.0
 Liquibase Oracle Extensions 1.2.0
 Log4j 1.2.15 (from spring distribution)
-Log4j Extras 1.1 (http://logging.apache.org/log4j/companions/extras)
-log4jdbc4 1.2 (https://code.google.com/p/log4jdbc)
 Lucene 3.4.0
 Lucene contrib analyzers 3.4.0 (previous Lucene snowball library is removed because it is contained in this new library)
 Lucene contrib queries 3.4.0
@@ -114,17 +111,15 @@ MINA (Apache) mina-core.jar 1.1.6
 MINA (Apache) mina-filter-ssl.jar 1.1.6
 MINA (Apache) mina-integration-jmx.jar 1.1.3
 md5crypt.jar 1.0
-MySQL Connector/J 5.1.26 (mysql-connector-java-5.1.26-bin.jar)
-opencmis 0.8.0 (implementation of cmis standard for accessing content management systems)
-    This set of libraries is used in the Sharepoint resource driver for accessing the sharepoint
-    document libraries as Netfolders.OpenID4Java 0.9.6
+MySQL Connector/J 5.1.18 (mysql-connector-java-5.1.18-bin.jar)
+OpenID4Java 0.9.6
 Oracle Database 11g Release 2 (11.2.0.3) JDBC Driver for use with JDK 6
 opensaml 1.0.1 (SAML implementation; used by WSS4J)
 oro 2.0.8 (needed by velocity)
 POI 2.5-final (for ssfs)
 Portals Bridges 1.0
 Portlet API 2.0 (2.0 refers to specification version, not library version, so we keep in in the file name)
-Quartz 1.8.6 (all)
+Quartz 1.8.5 (all)
 ridl.jar (from OpenOffice 2.0)
 SAAJ 1.2 DO NOT UPGRADE (V1.2 used the ASL1.1, newer versions are from glassfish project which uses cppl and gpl2.0)
 Saxpath 1.0 (for ssfs)
@@ -140,12 +135,12 @@ Slide Stores 2.2-pre1 (for ssfs)
 Springframework 3.1.1.RELEASE 
 Spring Security 3.1.0.RELEASE
 Spring LDAP 1.3.1.RELEASE
-spy memcached 2.9.1 (MIT License; http://code.google.com/p/spymemcached)
+spy memcached 2.7 (MIT License; http://code.google.com/p/spymemcached)
 Struts 1.2.9 (removed META-INF/MANIFEST.MF) - Copied from Liferay 4.1.2
 SubEthaSMTP subethasmtp.jar 3.1.3
 swfobject 2.1 (Javascript library)
 tcllib 1.11.1 (for installer)
-Tomcat 7.0.42 (Also includes catalina.jar and tomcat-dbcp.jar)
+Tomcat 7.0.22 (Also includes catalina.jar and tomcat-dbcp.jar)
 Trove 3.0.1
 unoil.jar (from OpenOffice 2.0)
 Velocity 1.5
@@ -154,7 +149,7 @@ WSDL4J 1.5.1
 WSS4J 1.5.3
 Xalan 2.7.0 (XPath and XSLT implementation; used by WSS4J and others; also includes serializer)
 Xerces 2.7.1
-xmemcached 1.4.2 (Apache License 2.0)
+xmemcached 1.3.3 (Apache License 2.0)
 xml-apis.jar
 xmlrpc 2.0.1
 xmlsec 1.4.6 (required by WSS4j)

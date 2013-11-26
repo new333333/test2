@@ -1,52 +1,66 @@
-//>>built
-define("dojox/date/islamic/locale",["../..","dojo/_base/lang","dojo/_base/array","dojo/date","dojo/i18n","dojo/regexp","dojo/string","./Date","dojo/i18n!dojo/cldr/nls/islamic"],function(_1,_2,_3,dd,_4,_5,_6,_7,_8){
-var _9=_2.getObject("date.islamic.locale",true,_1);
-function _a(_b,_c,_d,_e,_f){
-return _f.replace(/([a-z])\1*/ig,function(_10){
-var s,pad;
-var c=_10.charAt(0);
-var l=_10.length;
-var _11=["abbr","wide","narrow"];
+/*
+	Copyright (c) 2004-2009, The Dojo Foundation All Rights Reserved.
+	Available via Academic Free License >= 2.1 OR the modified BSD license.
+	see: http://dojotoolkit.org/license for details
+*/
+
+
+if(!dojo._hasResource["dojox.date.islamic.locale"]){
+dojo._hasResource["dojox.date.islamic.locale"]=true;
+dojo.provide("dojox.date.islamic.locale");
+dojo.experimental("dojox.date.islamic.locale");
+dojo.require("dojox.date.islamic.Date");
+dojo.require("dojo.regexp");
+dojo.require("dojo.string");
+dojo.require("dojo.i18n");
+dojo.requireLocalization("dojo.cldr","islamic",null,"ROOT,ar,he");
+(function(){
+function _1(_2,_3,_4,_5,_6){
+return _6.replace(/([a-z])\1*/ig,function(_7){
+var s,_8;
+var c=_7.charAt(0);
+var l=_7.length;
+var _9=["abbr","wide","narrow"];
 switch(c){
 case "G":
-s=_c["eraAbbr"][0];
+s=_3["eraAbbr"][0];
 break;
 case "y":
-s=String(_b.getFullYear());
+s=String(_2.getFullYear());
 break;
 case "M":
-var m=_b.getMonth();
+var m=_2.getMonth();
 if(l<3){
 s=m+1;
-pad=true;
+_8=true;
 }else{
-var _12=["months","format",_11[l-3]].join("-");
-s=_c[_12][m];
+var _a=["months","format",_9[l-3]].join("-");
+s=_3[_a][m];
 }
 break;
 case "d":
-s=_b.getDate(true);
-pad=true;
+s=_2.getDate(true);
+_8=true;
 break;
 case "E":
-var d=_b.getDay();
+var d=_2.getDay();
 if(l<3){
 s=d+1;
-pad=true;
+_8=true;
 }else{
-var _13=["days","format",_11[l-3]].join("-");
-s=_c[_13][d];
+var _b=["days","format",_9[l-3]].join("-");
+s=_3[_b][d];
 }
 break;
 case "a":
-var _14=(_b.getHours()<12)?"am":"pm";
-s=_c["dayPeriods-format-wide-"+_14];
+var _c=(_2.getHours()<12)?"am":"pm";
+s=_3[_c];
 break;
 case "h":
 case "H":
 case "K":
 case "k":
-var h=_b.getHours();
+var h=_2.getHours();
 switch(c){
 case "h":
 s=(h%12)||12;
@@ -61,159 +75,144 @@ case "k":
 s=h||24;
 break;
 }
-pad=true;
+_8=true;
 break;
 case "m":
-s=_b.getMinutes();
-pad=true;
+s=_2.getMinutes();
+_8=true;
 break;
 case "s":
-s=_b.getSeconds();
-pad=true;
+s=_2.getSeconds();
+_8=true;
 break;
 case "S":
-s=Math.round(_b.getMilliseconds()*Math.pow(10,l-3));
-pad=true;
-break;
-case "z":
-s=dd.getTimezoneName(_b.toGregorian());
-if(s){
-break;
-}
-l=4;
-case "Z":
-var _15=_b.toGregorian().getTimezoneOffset();
-var tz=[(_15<=0?"+":"-"),_6.pad(Math.floor(Math.abs(_15)/60),2),_6.pad(Math.abs(_15)%60,2)];
-if(l==4){
-tz.splice(0,0,"GMT");
-tz.splice(3,0,":");
-}
-s=tz.join("");
+s=Math.round(_2.getMilliseconds()*Math.pow(10,l-3));
+_8=true;
 break;
 default:
-throw new Error("dojox.date.islamic.locale.formatPattern: invalid pattern char: "+_f);
+throw new Error("dojox.date.islamic.locale.formatPattern: invalid pattern char: "+_6);
 }
-if(pad){
-s=_6.pad(s,l);
+if(_8){
+s=dojo.string.pad(s,l);
 }
 return s;
 });
 };
-_9.format=function(_16,_17){
-_17=_17||{};
-var _18=_4.normalizeLocale(_17.locale);
-var _19=_17.formatLength||"short";
-var _1a=_9._getIslamicBundle(_18);
+dojox.date.islamic.locale.format=function(_d,_e){
+_e=_e||{};
+var _f=dojo.i18n.normalizeLocale(_e.locale);
+var _10=_e.formatLength||"short";
+var _11=dojox.date.islamic.locale._getIslamicBundle(_f);
 var str=[];
-var _1b=_2.hitch(this,_a,_16,_1a,_18,_17.fullYear);
-if(_17.selector=="year"){
-var _1c=_16.getFullYear();
-return _1c;
+var _12=dojo.hitch(this,_1,_d,_11,_f,_e.fullYear);
+if(_e.selector=="year"){
+var _13=_d.getFullYear();
+return _13;
 }
-if(_17.selector!="time"){
-var _1d=_17.datePattern||_1a["dateFormat-"+_19];
-if(_1d){
-str.push(_1e(_1d,_1b));
-}
-}
-if(_17.selector!="date"){
-var _1f=_17.timePattern||_1a["timeFormat-"+_19];
-if(_1f){
-str.push(_1e(_1f,_1b));
+if(_e.selector!="time"){
+var _14=_e.datePattern||_11["dateFormat-"+_10];
+if(_14){
+str.push(_15(_14,_12));
 }
 }
-var _20=str.join(" ");
-return _20;
+if(_e.selector!="date"){
+var _16=_e.timePattern||_11["timeFormat-"+_10];
+if(_16){
+str.push(_15(_16,_12));
+}
+}
+var _17=str.join(" ");
+return _17;
 };
-_9.regexp=function(_21){
-return _9._parseInfo(_21).regexp;
+dojox.date.islamic.locale.regexp=function(_18){
+return dojox.date.islamic.locale._parseInfo(_18).regexp;
 };
-_9._parseInfo=function(_22){
-_22=_22||{};
-var _23=_4.normalizeLocale(_22.locale);
-var _24=_9._getIslamicBundle(_23);
-var _25=_22.formatLength||"short";
-var _26=_22.datePattern||_24["dateFormat-"+_25];
-var _27=_22.timePattern||_24["timeFormat-"+_25];
-var _28;
-if(_22.selector=="date"){
-_28=_26;
+dojox.date.islamic.locale._parseInfo=function(_19){
+_19=_19||{};
+var _1a=dojo.i18n.normalizeLocale(_19.locale);
+var _1b=dojox.date.islamic.locale._getIslamicBundle(_1a);
+var _1c=_19.formatLength||"short";
+var _1d=_19.datePattern||_1b["dateFormat-"+_1c];
+var _1e=_19.timePattern||_1b["timeFormat-"+_1c];
+var _1f;
+if(_19.selector=="date"){
+_1f=_1d;
 }else{
-if(_22.selector=="time"){
-_28=_27;
+if(_19.selector=="time"){
+_1f=_1e;
 }else{
-_28=(typeof (_27)=="undefined")?_26:_26+" "+_27;
+_1f=(typeof (_1e)=="undefined")?_1d:_1d+" "+_1e;
 }
 }
-var _29=[];
-var re=_1e(_28,_2.hitch(this,_2a,_29,_24,_22));
-return {regexp:re,tokens:_29,bundle:_24};
+var _20=[];
+var re=_15(_1f,dojo.hitch(this,_21,_20,_1b,_19));
+return {regexp:re,tokens:_20,bundle:_1b};
 };
-_9.parse=function(_2b,_2c){
-_2b=_2b.replace(/[\u200E\u200F\u202A\u202E]/g,"");
-if(!_2c){
-_2c={};
+dojox.date.islamic.locale.parse=function(_22,_23){
+_22=_22.replace(/[\u200E\u200F\u202A-\u202E]/g,"");
+if(!_23){
+_23={};
 }
-var _2d=_9._parseInfo(_2c);
-var _2e=_2d.tokens,_8=_2d.bundle;
-var _2f=_2d.regexp.replace(/[\u200E\u200F\u202A\u202E]/g,"");
-var re=new RegExp("^"+_2f+"$");
-var _30=re.exec(_2b);
-var _31=_4.normalizeLocale(_2c.locale);
-if(!_30){
+var _24=dojox.date.islamic.locale._parseInfo(_23);
+var _25=_24.tokens,_26=_24.bundle;
+var re=new RegExp("^"+_24.regexp+"$");
+var _27=re.exec(_22);
+var _28=dojo.i18n.normalizeLocale(_23.locale);
+if(!_27){
 return null;
 }
-var _32,_33;
-var _34=[1389,0,1,0,0,0,0];
-var _35="";
-var _36=0;
-var _37=["abbr","wide","narrow"];
-var _38=_3.every(_30,function(v,i){
+var _29,_2a;
+var _2b=[1389,0,1,0,0,0,0];
+var _2c="";
+var _2d=0;
+var _2e=["abbr","wide","narrow"];
+var _2f=dojo.every(_27,function(v,i){
 if(!i){
 return true;
 }
-var _39=_2e[i-1];
-var l=_39.length;
-switch(_39.charAt(0)){
+var _30=_25[i-1];
+var l=_30.length;
+switch(_30.charAt(0)){
 case "y":
-_34[0]=Number(v);
+_2b[0]=Number(v);
 break;
 case "M":
 if(l>2){
-var _3a=_8["months-format-"+_37[l-3]].concat();
-if(!_2c.strict){
+var _31=_26["months-format-"+_2e[l-3]].concat();
+if(!_23.strict){
 v=v.replace(".","").toLowerCase();
-_3a=_3.map(_3a,function(s){
+_31=dojo.map(_31,function(s){
 return s?s.replace(".","").toLowerCase():s;
 });
 }
-v=_3.indexOf(_3a,v);
+v=dojo.indexOf(_31,v);
 if(v==-1){
 return false;
 }
-_36=l;
+_2d=l;
 }else{
 v--;
 }
-_34[1]=Number(v);
+_2b[1]=Number(v);
 break;
 case "D":
-_34[1]=0;
+_2b[1]=0;
 case "d":
-_34[2]=Number(v);
+_2b[2]=Number(v);
 break;
 case "a":
-var am=_2c.am||_8["dayPeriods-format-wide-am"],pm=_2c.pm||_8["dayPeriods-format-wide-pm"];
-if(!_2c.strict){
-var _3b=/\./g;
-v=v.replace(_3b,"").toLowerCase();
-am=am.replace(_3b,"").toLowerCase();
-pm=pm.replace(_3b,"").toLowerCase();
+var am=_23.am||_26.am;
+var pm=_23.pm||_26.pm;
+if(!_23.strict){
+var _32=/\./g;
+v=v.replace(_32,"").toLowerCase();
+am=am.replace(_32,"").toLowerCase();
+pm=pm.replace(_32,"").toLowerCase();
 }
-if(_2c.strict&&v!=am&&v!=pm){
+if(_23.strict&&v!=am&&v!=pm){
 return false;
 }
-_35=(v==pm)?"p":(v==am)?"a":"";
+_2c=(v==pm)?"p":(v==am)?"a":"";
 break;
 case "K":
 if(v==24){
@@ -222,58 +221,58 @@ v=0;
 case "h":
 case "H":
 case "k":
-_34[3]=Number(v);
+_2b[3]=Number(v);
 break;
 case "m":
-_34[4]=Number(v);
+_2b[4]=Number(v);
 break;
 case "s":
-_34[5]=Number(v);
+_2b[5]=Number(v);
 break;
 case "S":
-_34[6]=Number(v);
+_2b[6]=Number(v);
 }
 return true;
 });
-var _3c=+_34[3];
-if(_35==="p"&&_3c<12){
-_34[3]=_3c+12;
+var _33=+_2b[3];
+if(_2c==="p"&&_33<12){
+_2b[3]=_33+12;
 }else{
-if(_35==="a"&&_3c==12){
-_34[3]=0;
+if(_2c==="a"&&_33==12){
+_2b[3]=0;
 }
 }
-var _3d=new _7(_34[0],_34[1],_34[2],_34[3],_34[4],_34[5],_34[6]);
-return _3d;
+var _34=new dojox.date.islamic.Date(_2b[0],_2b[1],_2b[2],_2b[3],_2b[4],_2b[5],_2b[6]);
+return _34;
 };
-function _1e(_3e,_3f,_40,_41){
-var _42=function(x){
+function _15(_35,_36,_37,_38){
+var _39=function(x){
 return x;
 };
-_3f=_3f||_42;
-_40=_40||_42;
-_41=_41||_42;
-var _43=_3e.match(/(''|[^'])+/g);
-var _44=_3e.charAt(0)=="'";
-_3.forEach(_43,function(_45,i){
-if(!_45){
-_43[i]="";
+_36=_36||_39;
+_37=_37||_39;
+_38=_38||_39;
+var _3a=_35.match(/(''|[^'])+/g);
+var _3b=_35.charAt(0)=="'";
+dojo.forEach(_3a,function(_3c,i){
+if(!_3c){
+_3a[i]="";
 }else{
-_43[i]=(_44?_40:_3f)(_45);
-_44=!_44;
+_3a[i]=(_3b?_37:_36)(_3c);
+_3b=!_3b;
 }
 });
-return _41(_43.join(""));
+return _38(_3a.join(""));
 };
-function _2a(_46,_47,_48,_49){
-_49=_5.escapeString(_49);
-var _4a=_4.normalizeLocale(_48.locale);
-return _49.replace(/([a-z])\1*/ig,function(_4b){
+function _21(_3d,_3e,_3f,_40){
+_40=dojo.regexp.escapeString(_40);
+var _41=dojo.i18n.normalizeLocale(_3f.locale);
+return _40.replace(/([a-z])\1*/ig,function(_42){
 var s;
-var c=_4b.charAt(0);
-var l=_4b.length;
+var c=_42.charAt(0);
+var l=_42.length;
 var p2="",p3="";
-if(_48.strict){
+if(_3f.strict){
 if(l>1){
 p2="0"+"{"+(l-1)+"}";
 }
@@ -289,7 +288,7 @@ case "y":
 s="\\d+";
 break;
 case "M":
-s=(l>2)?"\\S+ ?\\S+":p2+"[1-9]|1[0-2]";
+s=(l>2)?"\\S+":p2+"[1-9]|1[0-2]";
 break;
 case "d":
 s="[12]\\d|"+p2+"[1-9]|3[01]";
@@ -317,8 +316,9 @@ case "S":
 s="\\d{"+l+"}";
 break;
 case "a":
-var am=_48.am||_47["dayPeriods-format-wide-am"],pm=_48.pm||_47["dayPeriods-format-wide-pm"];
-if(_48.strict){
+var am=_3f.am||_3e.am||"AM";
+var pm=_3f.pm||_3e.pm||"PM";
+if(_3f.strict){
 s=am+"|"+pm;
 }else{
 s=am+"|"+pm;
@@ -333,40 +333,42 @@ break;
 default:
 s=".*";
 }
-if(_46){
-_46.push(_4b);
+if(_3d){
+_3d.push(_42);
 }
 return "("+s+")";
 }).replace(/[\xa0 ]/g,"[\\s\\xa0]");
 };
-var _4c=[];
-_9.addCustomFormats=function(_4d,_4e){
-_4c.push({pkg:_4d,name:_4e});
+})();
+(function(){
+var _43=[];
+dojox.date.islamic.locale.addCustomFormats=function(_44,_45){
+_43.push({pkg:_44,name:_45});
 };
-_9._getIslamicBundle=function(_4f){
-var _50={};
-_3.forEach(_4c,function(_51){
-var _52=_4.getLocalization(_51.pkg,_51.name,_4f);
-_50=_2.mixin(_50,_52);
+dojox.date.islamic.locale._getIslamicBundle=function(_46){
+var _47={};
+dojo.forEach(_43,function(_48){
+var _49=dojo.i18n.getLocalization(_48.pkg,_48.name,_46);
+_47=dojo.mixin(_47,_49);
 },this);
-return _50;
+return _47;
 };
-_9.addCustomFormats("dojo.cldr","islamic");
-_9.getNames=function(_53,_54,_55,_56,_57){
-var _58;
-var _59=_9._getIslamicBundle(_56);
-var _5a=[_53,_55,_54];
-if(_55=="standAlone"){
-var key=_5a.join("-");
-_58=_59[key];
-if(_58[0]==1){
-_58=undefined;
+})();
+dojox.date.islamic.locale.addCustomFormats("dojo.cldr","islamic");
+dojox.date.islamic.locale.getNames=function(_4a,_4b,_4c,_4d,_4e){
+var _4f;
+var _50=dojox.date.islamic.locale._getIslamicBundle;
+var _51=[_4a,_4c,_4b];
+if(_4c=="standAlone"){
+var key=_51.join("-");
+_4f=_50(_4d)[key];
+if(_4f===_50("ROOT")[key]){
+_4f=undefined;
 }
 }
-_5a[1]="format";
-return (_58||_59[_5a.join("-")]).concat();
+_51[1]="format";
+return (_4f||_50(_4d)[_51.join("-")]).concat();
 };
-_9.weekDays=_9.getNames("days","wide","format");
-_9.months=_9.getNames("months","wide","format");
-return _9;
-});
+dojox.date.islamic.locale.weekDays=dojox.date.islamic.locale.getNames("days","wide","format");
+dojox.date.islamic.locale.months=dojox.date.islamic.locale.getNames("months","wide","format");
+}

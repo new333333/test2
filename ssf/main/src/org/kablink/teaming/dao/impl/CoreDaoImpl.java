@@ -63,7 +63,6 @@ import org.hibernate.criterion.ProjectionList;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.engine.SessionFactoryImplementor;
-import org.hibernate.exception.ConstraintViolationException;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.comparator.LongIdComparator;
 import org.kablink.teaming.context.request.RequestContextHolder;
@@ -75,11 +74,9 @@ import org.kablink.teaming.dao.util.OrderBy;
 import org.kablink.teaming.dao.util.SFQuery;
 import org.kablink.teaming.domain.AnyOwner;
 import org.kablink.teaming.domain.Attachment;
-import org.kablink.teaming.domain.AuditTrail;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.BinderQuota;
 import org.kablink.teaming.domain.BinderState;
-import org.kablink.teaming.domain.ChangeLog;
 import org.kablink.teaming.domain.CustomAttribute;
 import org.kablink.teaming.domain.CustomAttributeListElement;
 import org.kablink.teaming.domain.Dashboard;
@@ -91,7 +88,6 @@ import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.Entry;
 import org.kablink.teaming.domain.Event;
 import org.kablink.teaming.domain.FileAttachment;
-import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.IndexNode;
 import org.kablink.teaming.domain.LdapConnectionConfig;
 import org.kablink.teaming.domain.LibraryEntry;
@@ -101,7 +97,6 @@ import org.kablink.teaming.domain.NoBinderByTheNameException;
 import org.kablink.teaming.domain.NoBinderQuotaByTheIdException;
 import org.kablink.teaming.domain.NoDashboardByTheIdException;
 import org.kablink.teaming.domain.NoDefinitionByTheIdException;
-import org.kablink.teaming.domain.NoLdapConnectionConfigByTheIdException;
 import org.kablink.teaming.domain.NoLibraryEntryByTheIdException;
 import org.kablink.teaming.domain.NoOpenIDProviderByTheIdException;
 import org.kablink.teaming.domain.NoPostingByTheIdException;
@@ -124,7 +119,6 @@ import org.kablink.teaming.domain.WorkflowControlledEntry;
 import org.kablink.teaming.domain.WorkflowState;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.ZoneConfig;
-import org.kablink.teaming.domain.BinderState.FullSyncStatus;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.domain.SimpleName.SimpleNamePK;
 import org.kablink.teaming.util.Constants;
@@ -539,53 +533,9 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
 		    	   			session.createSQLQuery(sql).setParameter("binderId", binder.getId()).executeUpdate();
 		    	   			
 			   				//finally delete the entries
-		    	   			try {		    	   				
-				   				session.createQuery("Delete " + entryClass.getName() + " where parentBinder=:parent")
-				       	   				.setEntity("parent", binder)
-				       	   				.executeUpdate();	
-		    	   			}
-		    	   			catch(ConstraintViolationException e) {
-		    	   				if(entryClass.equals(FolderEntry.class)) {
-			    	   				// This means that there are one or more records in the database that still point to
-			    	   				// one or more folder entries whose parents is the binder being deleted. We will need
-			    	   				// to perform some additional fix-up in order to be able to proceed from this state.
-			    	   				if(logger.isDebugEnabled())
-			    	   					logger.debug("Error deleting folder entries in binder " + binder.getId(), e);
-			    	   				logger.warn("Encountered constraint violation while deleting folder entries in binder " + binder.getId() +
-			    	   						": Will clear references to those entries and give it another try");
-			    	   				List<Long> folderEntryIds = getFolderEntryIds(binder);
-			    	   				StringBuilder inList = new StringBuilder();
-			    	   				int count = 0;
-			    	   				for(Long folderEntryId:folderEntryIds) {
-			    	   					if(inList.length() > 0)
-			    	   						inList.append(",");
-			    	   					inList.append(folderEntryId);
-			    	   					count++;
-			    	   					if(count >= 500) { 
-			    	   						// Clear associations in batch every 500 entries
-			    	             			String entityString = "ownerId in (" + inList.toString() + ") and ownerType='" + EntityType.folderEntry.name() + "'";
-			    		    		   		deleteEntityAssociations(entityString);
-			    		    		   		// Reset variables
-			    		    		   		count = 0;
-			    		    		   		inList = new StringBuilder();
-			    	   					}
-			    	   				}
-			    	   				if(inList.length() > 0) {
-			    	   					// Process the remainder
-		    	             			String entityString = "ownerId in (" + inList.toString() + ") and ownerType='" + EntityType.folderEntry.name() + "'";
-		    		    		   		deleteEntityAssociations(entityString);
-			    	   				}
-			    	   				// Now that we cleared the association, let's try it again.
-					   				session.createQuery("Delete " + entryClass.getName() + " where parentBinder=:parent")
+			   				session.createQuery("Delete " + entryClass.getName() + " where parentBinder=:parent")
 			       	   				.setEntity("parent", binder)
-			       	   				.executeUpdate();	
-					   				logger.info("Successfully re-executed the statement after clearing associations for up to " + folderEntryIds.size() + " child entries");
-		    	   				}
-		    	   				else {
-		    	   					// Don't know how to fix this up. Rethrow.
-		    	   					throw e;
-		    	   				}
-		    	   			}	 		   				
+			       	   				.executeUpdate();		 		   				
 			   			}
 
 			   			//delete customAttributeListElement definitions on this binder
@@ -610,31 +560,10 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
 		   				.setLong("binder", binder.getId())
 		   				.executeUpdate();
 	    	   			
-	    	   			try {
-				   			//do ourselves or hibernate will flsuh
-				   			session.createQuery("Delete org.kablink.teaming.domain.Binder where id=:id")
-				   		    	.setLong("id", binder.getId().longValue())
-				   		    	.executeUpdate();
-	    	   			}
-	    	   			catch(ConstraintViolationException e) {
-	    	   				// This almost surely means that the table still contains one or more child rows that still point to the binder as parent.
-	    	   				// We need to clear the association in order to be able to delete the binder. Also, it doesn't make any sense to
-	    	   				// delete the parent alone while leaving the child as orphan in a tree hierarchy. So we mark the child appropriately
-	    	   				// so that they can also be garbage collected by the system in subsequent cycles.
-	    	   				if(logger.isDebugEnabled())
-	    	   					logger.debug("Error deleting binder " + binder.getId(), e);
-	    	   				logger.warn("Encountered constraint violation while deleting binder " + binder.getId() + ": Will clear references from children and give it another try");
-	    	   				session.createQuery("update org.kablink.teaming.domain.Binder set parentBinder=null, topFolder=null, deleted=:delete where parentBinder=:binder1 or topFolder=:binder2")
-	    	   			    .setBoolean("delete", Boolean.TRUE)
-			   				.setLong("binder1", binder.getId())	   				
-			   				.setLong("binder2", binder.getId())	   				
-	    	   				.executeUpdate();
-	    	   				// Now that we cleared the association, let's try it again.
-				   			session.createQuery("Delete org.kablink.teaming.domain.Binder where id=:id")
+			   			//do ourselves or hibernate will flsuh
+			   			session.createQuery("Delete  org.kablink.teaming.domain.Binder where id=:id")
 			   		    	.setLong("id", binder.getId().longValue())
 			   		    	.executeUpdate();
-				   			logger.info("Successfully re-executed the statement after clearing associations from child binders");
-	    	   			}
 			   			
 			   			if (!binder.isRoot()) {
 			   				session.getSessionFactory().evictCollection("org.kablink.teaming.domain.Binder.binders", binder.getParentBinder().getId());
@@ -744,27 +673,6 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
     	}
     	finally {
     		end(begin, "load(Class,Long)");
-    	}	        
-    }
-    
-    @Override
-	public Object loadLocked(Class clazz, String id) {
-		long begin = System.nanoTime();
-		try {
-			return getHibernateTemplate().get(clazz, id, LockMode.PESSIMISTIC_WRITE);
-    	}
-    	finally {
-    		end(begin, "loadLocked(Class,String)");
-    	}	        
-    }
-    @Override
-	public Object loadLocked(Class clazz, Long id) {
-		long begin = System.nanoTime();
-		try {
-			return getHibernateTemplate().get(clazz, id, LockMode.PESSIMISTIC_WRITE);         
-    	}
-    	finally {
-    		end(begin, "loadLocked(Class,Long)");
     	}	        
     }
 	/**
@@ -2373,32 +2281,6 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
     	}	        
 		
 	}
-	
-	@Override
-	public boolean subscriptionExistsOnEntity(final EntityIdentifier entityId) {
-		long begin = System.nanoTime();
-		try {
-			Subscription subscription = (Subscription)getHibernateTemplate().execute(
-		            new HibernateCallback() {
-		                @Override
-						public Object doInHibernate(Session session) throws HibernateException {
-		                 	return session.createCriteria(Subscription.class)
-	                 		.add(Expression.eq("id.entityId", entityId.getEntityId()))
-	       					.add(Expression.eq("id.entityType", entityId.getEntityType().getValue()))
-	       					.setMaxResults(1)
-	       					.setCacheable(true)
-		                 	.uniqueResult();
-		                }
-		            }
-		        );
-			return subscription != null;
-    	}
-    	finally {
-    		end(begin, "subscriptionExistsOnEntity(EntityIdentifier)");
-    	}	        
-		
-	}
-	
 	private List loadObjects(final ObjectControls objs, FilterControls filter, Long zoneId, final boolean cacheable) {
 	   	final FilterControls myFilter = filter==null?new FilterControls():filter;
 		if (myFilter.isZoneCheck()) myFilter.add(ObjectKeys.FIELD_ZONE, zoneId);
@@ -2803,7 +2685,7 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
     		end(begin, "findIndexNode(String,String)");
     	}	        
 	}
-		
+	
 	@Override
 	public void purgeIndexNodeByIndexName(final String indexName) {
 		long begin = System.nanoTime();
@@ -2845,42 +2727,6 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
     		end(begin, "loadLdapConnectionConfigs(Long)");
     	}	        
 	}
-	@Override
-	public LdapConnectionConfig loadLdapConnectionConfig(final String configId, final Long zoneId) {
-		long begin = System.nanoTime();
-		try {
-            LdapConnectionConfig o =(LdapConnectionConfig)getHibernateTemplate().get(LdapConnectionConfig.class, configId);
-            if (o != null && o.getZoneId().equals(zoneId)) return o;
-            throw new NoLdapConnectionConfigByTheIdException(configId);
-    	}
-    	finally {
-    		end(begin, "loadLdapConnectionConfig(String,Long)");
-    	}
-	}
-    @Override
-    public int getMaxLdapConnectionConfigPosition(final Long zoneId) {
-        long begin = System.nanoTime();
-        try {
-            Integer position = (Integer) getHibernateTemplate().execute(
-                    new HibernateCallback() {
-                        @Override
-                        public Object doInHibernate(Session session) throws HibernateException {
-                            session.createQuery("select max(position) from org.kablink.teaming.domain.LdapConnectionConfig where zoneId=:zoneId")
-                                    .setLong("zoneId", zoneId)
-                                    .uniqueResult();
-                            return null;
-                        }
-                    }
-            );
-            if (position==null) {
-                position = 0;
-            }
-            return position;
-        }
-        finally {
-            end(begin, "purgeIndexNodeByIndexName(String)");
-        }
-    }
 	@Override
 	public ZoneConfig loadZoneConfig(Long zoneId) {
 		long begin = System.nanoTime();
@@ -3140,29 +2986,6 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
 
 	}
 	
-	public List getAuditTrailEntries(final Long zoneId, final Date purgeBeforeDate) {
-		long begin = System.nanoTime();
-		try {
-			List results = (List) getHibernateTemplate().execute(
-		    	new HibernateCallback() {
-		    		public Object doInHibernate(Session session) throws HibernateException {
-                        return session.createCriteria(AuditTrail.class)
-							.add(Restrictions.eq(ObjectKeys.FIELD_ZONE, zoneId))
-							.add(Restrictions.isNotNull("startDate"))
-							.add(Restrictions.lt("startDate", purgeBeforeDate))
-							.setCacheable(false)
-	                    	.addOrder(Order.asc("startDate"))
-	                    	.list();
-		    		}
-		    	}
-		   	);
-			return results;
-		}
-		finally {
-    		end(begin, "getAuditTrailEntries()");
-		}
-	}
-
 	@Override
 	public int purgeAuditTrail(final Long zoneId, final Date purgeBeforeDate) {
 		long begin = System.nanoTime();
@@ -3183,29 +3006,6 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
 		}
 		finally {
     		end(begin, "purgeAuditTrail()");
-		}
-	}
-	
-	public List getChangeLogEntries(final Long zoneId, final Date purgeBeforeDate) {
-		long begin = System.nanoTime();
-		try {
-			List results = (List) getHibernateTemplate().execute(
-		    	new HibernateCallback() {
-		    		public Object doInHibernate(Session session) throws HibernateException {
-                        return session.createCriteria(ChangeLog.class)
-							.add(Restrictions.eq(ObjectKeys.FIELD_ZONE, zoneId))
-							.add(Restrictions.isNotNull("operationDate"))
-							.add(Restrictions.lt("operationDate", purgeBeforeDate))
-							.setCacheable(false)
-	                    	.addOrder(Order.asc("operationDate"))
-	                    	.list();
-		    		}
-		    	}
-		   	);
-			return results;
-		}
-		finally {
-    		end(begin, "getChangeLogEntries()");
 		}
 	}
 	
@@ -3230,6 +3030,29 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
 		finally {
     		end(begin, "purgeChangeLogs()");
 		}
+	}
+
+	@Override
+	public BinderState loadBinderState(Long binderId) {
+		long begin = System.nanoTime();
+		try {
+			BinderState bs =(BinderState)getHibernateTemplate().get(BinderState.class, binderId);
+	   		if (bs == null) {
+	   			bs = new BinderState(binderId);
+	   			//quick write
+	   			try {
+	   				bs = (BinderState)this.saveNewSession(bs);
+	   			} catch (Exception ex) {
+	   				//contension?
+	   				bs =(BinderState)getHibernateTemplate().get(BinderState.class, binderId);
+	   			}
+	   		}
+	   		return bs;
+    	}
+    	finally {
+    		end(begin, "loadBinderState(Long)");
+    	}	        
+
 	}
 
 	@Override
@@ -3273,50 +3096,4 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
 
 	}
 
-	@Override
-	public Long peekFullSyncTask() {
-		long begin = System.nanoTime();
-		try {
-			return getHibernateTemplate().execute(
-		            new HibernateCallback<Long>() {
-		                @Override
-						public Long doInHibernate(Session session) throws HibernateException {
-		                	return (Long) session.createCriteria(BinderState.class)
-		                			.setProjection(Projections.property("binderId"))
-		                			.add(Restrictions.eq("fullSyncStats.statusStr", FullSyncStatus.ready.name()))
-		                			.addOrder(Order.asc("fullSyncStats.statusDate"))
-		                			.setMaxResults(1)
-                					.setCacheable(false)
-                					.uniqueResult();
-		                }
-		            }
-		        );
-    	}
-    	finally {
-    		end(begin, "peekFullSyncTask()");
-    	}	        
-	}
-
-	private List<Long> getFolderEntryIds(final Binder binder) {
-		// Return a list of IDs of folder entries whose parents are the specified folder
-		long begin = System.nanoTime();
-		try {
-	    	List<Long> result = (List<Long>)getHibernateTemplate().execute(
-	                new HibernateCallback() {
-	                    @Override
-						public Object doInHibernate(Session session) throws HibernateException {
-	                    	Criteria crit = session.createCriteria(FolderEntry.class)
-	                    			.setProjection(Projections.property("id"))
-	                    			.add(Restrictions.eq("parentBinder", binder))
-	                    			.setCacheable(false);
-	                    	return crit.list();
-	                    }
-	                }
-	            );  
-	    	return result;
-    	}
-    	finally {
-    		end(begin, "getFolderEntryIds(binder)");
-    	}	        
-	}
  }

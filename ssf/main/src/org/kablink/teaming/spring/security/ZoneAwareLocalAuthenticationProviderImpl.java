@@ -38,7 +38,6 @@ import java.util.HashMap;
 
 import org.kablink.teaming.domain.IdentityInfo;
 import org.kablink.teaming.domain.User;
-import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.module.authentication.AuthenticationServiceProvider;
 import org.kablink.teaming.module.authentication.IdentityInfoObtainable;
 import org.kablink.teaming.module.authentication.LocalAuthentication;
@@ -46,13 +45,11 @@ import org.kablink.teaming.security.authentication.AuthenticationManagerUtil;
 import org.kablink.teaming.security.authentication.PasswordDoesNotMatchException;
 import org.kablink.teaming.security.authentication.UserAccountNotActiveException;
 import org.kablink.teaming.security.authentication.UserDoesNotExistException;
-import org.kablink.teaming.util.SpringContextUtil;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
@@ -99,11 +96,7 @@ public class ZoneAwareLocalAuthenticationProviderImpl implements ZoneAwareLocalA
 
 	protected Authentication outputAuthentication(Authentication authentication, User user, Object extraInfo) {
 		UserDetails details = new SsfContextMapper.SsfUserDetails(user.getName());
-        ArrayList<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
-        if (getAdminModule().testUserAccess(user, AdminModule.AdminOperation.manageFunction)) {
-            authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
-        }
-        UsernamePasswordAuthenticationToken result = newUsernamePasswordAuthenticationToken(user, extraInfo, details, authentication.getCredentials(), authorities);
+		UsernamePasswordAuthenticationToken result = newUsernamePasswordAuthenticationToken(user, extraInfo, details, authentication.getCredentials(), new ArrayList<GrantedAuthority>());
 		result.setDetails(details);
 		return result;	
 	}
@@ -126,8 +119,4 @@ public class ZoneAwareLocalAuthenticationProviderImpl implements ZoneAwareLocalA
 			return user.getIdentityInfo().isInternal();
 		}
 	}
-
-    private AdminModule getAdminModule() {
-        return (AdminModule) SpringContextUtil.getBean("adminModule");
-    }
 }

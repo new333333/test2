@@ -277,7 +277,7 @@ function ss_confirmDeleteConfig(obj) {
 <script type="text/javascript">
 ss_createOnLoadObj('ss_initShowFolderDiv${renderResponse.namespace}', ss_initShowFolderDiv('${renderResponse.namespace}'));
 </script>
-<div class="ss_formBreak" align="left">
+<div class="ss_formBreak" align="left"/>
 <form method="post" action="<ssf:url><ssf:param 
 		name="action" value="configure_configuration"/><ssf:param 
 		name="binderParentId" value="${binderParentId}"/></ssf:url>" >
@@ -300,7 +300,7 @@ ss_createOnLoadObj('ss_initShowFolderDiv${renderResponse.namespace}', ss_initSho
       <input type="radio" name="binderConfigId" value="${config.id}" <c:if test="${status.first}">checked="checked"</c:if>><ssf:nlt tag="${config.templateTitle}" checkIfTag="true"/><br/>
   </c:forEach>
 
-<div class="ss_formBreak"></div>
+<div class="ss_formBreak"/>
 
 <div class="ss_buttonBarLeft">
 <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.add"/>">

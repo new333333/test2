@@ -45,13 +45,13 @@ import com.google.web.bindery.event.shared.SimpleEventBus;
  * folders on the currently selected users in the personal workspace
  * binder.
  * 
- * See the definition of the SelectedEntitiesEventBase class for how and
+ * See the definition of the SelectedEntriesEventBase class for how and
  * when an EntityId (or List<EntityId>) should be passed into the
  * construction of this class.
  * 
  * @author drfoster@novell.com
  */
-public class DisableSelectedUsersAdHocFoldersEvent extends SelectedEntitiesEventBase<DisableSelectedUsersAdHocFoldersEvent.Handler> {
+public class DisableSelectedUsersAdHocFoldersEvent extends SelectedEntriesEventBase<DisableSelectedUsersAdHocFoldersEvent.Handler> {
     public static Type<Handler> TYPE = new Type<Handler>();
     
     public Long m_workspaceId;	// The ID of the personal workspaces binder.

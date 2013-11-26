@@ -88,7 +88,6 @@ public abstract class DlgBox extends TeamingPopupPanel
 	private FlowPanel				m_captionImagePanel;		//
 	private Panel					m_headerPanel;				//
 	private FlowPanel				m_bodyPanel;				//
-	private FlowPanel				m_errorPanelWrapper;
 	private FlowPanel 				m_errorPanel;				//
 	private Panel 					m_contentPanel;				//
 	private FlowPanel				m_footerPanel;				//
@@ -332,40 +331,10 @@ public abstract class DlgBox extends TeamingPopupPanel
 		panel.add( m_bodyPanel );
 		
 		// Create a panel where errors can be displayed.
-		{
-			m_errorPanel = new FlowPanel();
-			m_errorPanel.addStyleName( "dlgErrorPanel" );
-
-			m_errorPanelWrapper = new FlowPanel();
-			m_errorPanel.addStyleName( "dlgErrorPanelWrapper" );
-			m_errorPanelWrapper.setVisible( false );
-			m_errorPanelWrapper.add( m_errorPanel );
-
-			// Add a "close" image so the user can close the error panel
-			{
-				ImageResource imageResource;
-				Image closeImg;
-				FlowPanel closePanel;
-				
-				closePanel = new FlowPanel();
-				closePanel.addStyleName( "dlgBox_closeErrorPanel" );
-				
-				imageResource = GwtTeaming.getImageBundle().closeBorder();
-				closeImg = new Image( imageResource );
-				closeImg.addClickHandler( new ClickHandler()
-				{
-					@Override
-					public void onClick( ClickEvent event )
-					{
-						hideErrorPanel();
-					}
-				} );
-				closePanel.add( closeImg );
-				m_errorPanelWrapper.add( closePanel );
-			}
-
-			m_bodyPanel.add( m_errorPanelWrapper );
-		}
+		m_errorPanel = new FlowPanel();
+		m_errorPanel.addStyleName( "dlgErrorPanel" );
+		m_errorPanel.setVisible( false );
+		m_bodyPanel.add( m_errorPanel );
 
 		// Add the main content of the dialog box.
 		m_contentPanel = createContent( properties );
@@ -591,17 +560,6 @@ public abstract class DlgBox extends TeamingPopupPanel
 	
 	
 	/**
-	 * Returns the dialog's header caption label.
-	 * 
-	 * @return
-	 */
-	public Label getHeaderCaptionLabel()
-	{
-		return m_caption;
-	}
-	
-	
-	/**
 	 * Returns the dialog's footer panel.
 	 * 
 	 * @return
@@ -740,7 +698,7 @@ public abstract class DlgBox extends TeamingPopupPanel
 	 */
 	public void hideErrorPanel()
 	{
-		m_errorPanelWrapper.setVisible( false );
+		m_errorPanel.setVisible( false );
 	}
 	
 	/**
@@ -774,16 +732,6 @@ public abstract class DlgBox extends TeamingPopupPanel
 		{
 			GwtClientHelper.invokeHelp( m_helpData );
 		}
-	}
-	
-	/**
-	 * Returns true if the error panel is visible and false otherwise.
-	 * 
-	 * @return
-	 */
-	public boolean isErrorPanelVisible()
-	{
-		return m_errorPanelWrapper.isVisible();
 	}
 	
 	/*
@@ -1051,41 +999,6 @@ public abstract class DlgBox extends TeamingPopupPanel
 		// Always use the show method.
 		show( true );
 	}// end center()
-
-	/**
-	 * Sets the size state dialog as being fixed or floating.
-	 * 
-	 * @param width
-	 * @param height
-	 */
-	public void setFixedSize( Integer width, Integer height )
-	{
-		m_fixedSize = ( ( null != width ) && ( null != height ) );
-		if ( m_fixedSize )
-		{
-			m_height = height;
-	
-			setWidth(  String.valueOf( width  ) + "px" );
-			setHeight( String.valueOf( height ) + "px" );
-		}
-		else
-		{
-			m_height = null;
-			setPopupPosition( 0, 0 );
-		}
-	}
-
-	/**
-	 * Modifies the dialog's auto hide and modal flags.
-	 * 
-	 * @param autoHide
-	 * @param modal
-	 */
-	public void setAutoHideAndModality(boolean autoHide, boolean modal)
-	{
-		setAutoHideEnabled( ( autoHide && (!modal) ));
-		m_modal = modal;
-	}
 	
 	/**
 	 * 
@@ -1175,7 +1088,7 @@ public abstract class DlgBox extends TeamingPopupPanel
 	 */
 	public void showErrorPanel()
 	{
-		m_errorPanelWrapper.setVisible( true );
+		m_errorPanel.setVisible( true );
 	}
 	
 	/**

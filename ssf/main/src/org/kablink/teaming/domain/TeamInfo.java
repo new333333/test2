@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  *
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -18,7 +18,7 @@
  * (c) 1998-2009 Novell, Inc. All Rights Reserved.
  *
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -50,7 +50,6 @@ public class TeamInfo {
    	private String permaLink;
    	private Boolean mirrored;
    	private Boolean homeDir;
-   	private Boolean myFilesDir;
    	private Long parentBinderId;
 
     public HistoryStampBrief getCreation() {
@@ -115,14 +114,6 @@ public class TeamInfo {
 
 	public void setHomeDir(Boolean homeDir) {
 		this.homeDir = homeDir;
-	}
-
-    public Boolean getMyFilesDir() {
-		return myFilesDir;
-	}
-
-	public void setMyFilesDir(Boolean myFilesDir) {
-		this.myFilesDir = myFilesDir;
 	}
 
 	public HistoryStampBrief getModification() {

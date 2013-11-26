@@ -480,6 +480,7 @@ div.ss_entryContent a:hover {
   	font-size: 10px;
   	padding-right: 5px;
   	color: ${ss_style_metadata_color};
+	white-space: nowrap;
   	}
 .ss_entryDate {
 	color: #666666;
@@ -1259,15 +1260,15 @@ img.ss_sliding_table_column_image {
   background-color: transparent;
 }
 .ss_sliding_table_row0 {
-  height:26px !important;
+  height:26px;
   background-color: ${ss_sliding_table_row0_background_color}; 
-  line-height:18px !important;
+  line-height:18px;
   font-family: ${ss_style_folder_view_font_family} !important;
 }
 .ss_sliding_table_row1 {
-  height:26px !important;
+  height:26px;
   background-color: ${ss_sliding_table_row1_background_color}; 
-  line-height:18px !important;
+  line-height:18px;
   font-family: ${ss_style_folder_view_font_family} !important;
 }
 .ss_highlightEntry {
@@ -1380,7 +1381,7 @@ table.ss_mouseOverInfo {
 	border: 2px solid #72AEB6;
 	border-top: 1px solid #72AEB6;
 	}	
-.ss_tableheader_style, th.ss_sliding_table_row0 {
+.ss_tableheader_style, th.ss_sliding_table_row0, #findThisTable2 tr.ss_sliding_table_row0 td {
 	background: #b8b8b8 url(<html:imagesPath/>pics/blends/gray_blend8_28.png) repeat-x;
 	background-position:bottom;
 	text-decoration: none;
@@ -5003,7 +5004,6 @@ div.ssPageNavi table td {
 .ssPageNavi .ss_go_to_page {
 	font-size: 11px;
 	color: #333333;
-	padding-right: 8px;
 	}
 .ssPageNavi input.form-text {
 	border: 1px solid #333333;
@@ -5239,8 +5239,6 @@ span.ss_infoDivValue {
 }
 .ss_muster_users:hover {
 	color: #135c8f;
-	font-size: 11px !important;
-	font-weight: normal; 
 }
 .ss_tasks_list .ss_muster_users {
 	font-size: 10px !important;

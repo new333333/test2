@@ -41,7 +41,6 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.io.OutputFormat;
 import org.kablink.teaming.ObjectKeys;
-import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.util.XmlFileUtil;
 
 /**
@@ -113,7 +112,7 @@ public class ChangeLog extends ZonedObject {
 		this(entity, operation, (Principal)null);
 	}
 	
-	protected ChangeLog(DefinableEntity entity, String operation, Principal principal) {	
+	public ChangeLog(DefinableEntity entity, String operation, Principal principal) {	
 		Binder binder;
 		if (entity instanceof Binder) {
 			binder = (Binder)entity;
@@ -126,14 +125,7 @@ public class ChangeLog extends ZonedObject {
 		if(binder.getBinderKey() != null) // temporary workaround for issue #515
 			this.owningBinderKey = binder.getBinderKey().getSortKey();
 		this.operation = operation;
-		if (operation.equals("addWorkflowResponse") && entity instanceof WorkflowSupport) {
-			WorkflowSupport wfEntry = (WorkflowSupport)entity;
-			User user = RequestContextHolder.getRequestContext().getUser();
-			this.operationDate = new Date();
-			this.userName = user.getName();
-			this.userId = user.getId();
-			this.zoneId = user.getZoneId();
-		} else if (operation.contains("Workflow") && entity instanceof WorkflowSupport) {
+		if (operation.contains("Workflow") && entity instanceof WorkflowSupport) {
 			WorkflowSupport wfEntry = (WorkflowSupport)entity;
 			this.operationDate = wfEntry.getWorkflowChange().getDate();
 			this.userName = wfEntry.getWorkflowChange().getPrincipal().getName();

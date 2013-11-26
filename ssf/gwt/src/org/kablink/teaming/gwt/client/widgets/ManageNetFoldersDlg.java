@@ -32,57 +32,38 @@
  */
 package org.kablink.teaming.gwt.client.widgets;
 
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map.Entry;
 import java.util.Set;
 
-import org.kablink.teaming.gwt.client.GwtPersonalPreferences;
 import org.kablink.teaming.gwt.client.NetFolder;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
-import org.kablink.teaming.gwt.client.NetFolder.NetFolderSyncStatus;
-import org.kablink.teaming.gwt.client.binderviews.QuickFilter;
+import org.kablink.teaming.gwt.client.NetFolder.NetFolderStatus;
 import org.kablink.teaming.gwt.client.datatable.NetFolderNameCell;
-import org.kablink.teaming.gwt.client.datatable.NetFolderSyncStatusCell;
 import org.kablink.teaming.gwt.client.datatable.VibeCellTable;
-import org.kablink.teaming.gwt.client.datatable.VibeCheckboxCell;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.NetFolderCreatedEvent;
 import org.kablink.teaming.gwt.client.event.NetFolderModifiedEvent;
-import org.kablink.teaming.gwt.client.event.QuickFilterEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
-import org.kablink.teaming.gwt.client.mainmenu.VibeMenuItem;
-import org.kablink.teaming.gwt.client.menu.PopupMenu;
 import org.kablink.teaming.gwt.client.rpc.shared.CheckNetFoldersStatusCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.CheckNetFoldersStatusRpcResponseData;
-import org.kablink.teaming.gwt.client.rpc.shared.DeleteNetFolderResult;
-import org.kablink.teaming.gwt.client.rpc.shared.DeleteNetFolderRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.DeleteNetFoldersCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetNetFolderCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetNetFoldersCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetNetFoldersRpcResponseData;
-import org.kablink.teaming.gwt.client.rpc.shared.GetPersonalPrefsCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.StopSyncNetFoldersCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.StopSyncNetFoldersRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.SyncNetFoldersCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SyncNetFoldersRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HelpData;
-import org.kablink.teaming.gwt.client.util.runasync.ModifyNetFolderDlgInitAndShowParams;
-import org.kablink.teaming.gwt.client.util.runasync.RunAsyncCmd;
-import org.kablink.teaming.gwt.client.util.runasync.RunAsyncCreateDlgParams;
-import org.kablink.teaming.gwt.client.util.runasync.RunAsyncCmd.RunAsyncCmdType;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import org.kablink.teaming.gwt.client.widgets.ModifyNetFolderDlg.ModifyNetFolderDlgClient;
-import org.kablink.teaming.gwt.client.widgets.NetFolderSyncStatisticsDlg.NetFolderSyncStatisticsDlgClient;
+import org.kablink.teaming.gwt.client.widgets.ShareThisDlg.ShareThisDlgMode;
 
 import com.google.gwt.cell.client.CheckboxCell;
 import com.google.gwt.cell.client.FieldUpdater;
-import com.google.gwt.cell.client.ValueUpdater;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
@@ -90,25 +71,21 @@ import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.cellview.client.CellTable;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.TextColumn;
-import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
-import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
-import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.VerticalPanel;
-import com.google.gwt.view.client.AsyncDataProvider;
 import com.google.gwt.view.client.DefaultSelectionEventManager;
-import com.google.gwt.view.client.HasData;
+import com.google.gwt.view.client.ListDataProvider;
 import com.google.gwt.view.client.MultiSelectionModel;
 
 /**
@@ -119,25 +96,15 @@ import com.google.gwt.view.client.MultiSelectionModel;
 public class ManageNetFoldersDlg extends DlgBox
 	implements
 		NetFolderCreatedEvent.Handler,
-		NetFolderModifiedEvent.Handler,
-		QuickFilterEvent.Handler
+		NetFolderModifiedEvent.Handler
 {
 	private CellTable<NetFolder> m_netFoldersTable;
     private MultiSelectionModel<NetFolder> m_selectionModel;
-	private AsyncDataProvider<NetFolder> m_dataProvider;
+	private ListDataProvider<NetFolder> m_dataProvider;
 	private VibeSimplePager m_pager;
-	private QuickFilter m_quickFilter;
-	private PopupMenu m_filterPopupMenu;
-	private VibeMenuItem m_showHomeDirsMenuItem;
-	private Command m_toggleShowHomeDirsCmd;
-	private String m_currentFilterStr = null;
-	private SelectAllHeader m_selectAllHeader;
 	private List<NetFolder> m_listOfNetFolders;
 	private ModifyNetFolderDlg m_modifyNetFolderDlg;
-	private NetFolderSyncStatisticsDlg m_netFolderSyncStatisticsDlg;
-	private int m_width;
-	private Timer m_timer;
-	private boolean m_firstTime = true;
+    private int m_width;
 	
 	// The following defines the TeamingEvents that are handled by
 	// this class.  See EventHelper.registerEventHandlers() for how
@@ -145,13 +112,9 @@ public class ManageNetFoldersDlg extends DlgBox
 	private TeamingEvents[] m_registeredEvents = new TeamingEvents[] 
 	{
 		TeamingEvents.NET_FOLDER_CREATED,
-		TeamingEvents.NET_FOLDER_MODIFIED,
-		TeamingEvents.QUICK_FILTER
+		TeamingEvents.NET_FOLDER_MODIFIED
 	};
 	
-	// MANAGE_NET_FOLDER_ID is used to tell the QuickFilter widget who it is dealing with.
-	private static final long MANAGE_NET_FOLDERS_ID = -201;
-
 
 	/**
 	 * Callback interface to interact with the "manage net folders" dialog
@@ -191,22 +154,53 @@ public class ManageNetFoldersDlg extends DlgBox
 	/**
 	 * Add the given list of Net Folders to the dialog
 	 */
-	private void addNetFolders( int startIndex, List<NetFolder> listOfNetFolders )
+	private void addNetFolders( List<NetFolder> listOfNetFolders )
 	{
 		m_listOfNetFolders = listOfNetFolders;
+		
+		if ( m_dataProvider == null )
+		{
+			m_dataProvider = new ListDataProvider<NetFolder>( m_listOfNetFolders );
+			m_dataProvider.addDataDisplay( m_netFoldersTable );
+		}
+		else
+		{
+			m_dataProvider.setList( m_listOfNetFolders );
+			m_dataProvider.refresh();
+		}
 		
 		// Clear all selections.
 		m_selectionModel.clear();
 		
-		m_dataProvider.updateRowData( startIndex, listOfNetFolders );
+		// Go to the first page
+		m_pager.firstPage();
+		
+		// Tell the table how many net folders we have.
+		m_netFoldersTable.setRowCount( m_listOfNetFolders.size(), true );
 	}
 
 	/**
-	 * 
+	 * Check the sync status of each net folder that has a sync in progress.
 	 */
-	private void checkSyncStatus( HashSet<NetFolder> listOfNetFoldersToCheck )
+	private void checkSyncStatus()
 	{
-		if ( listOfNetFoldersToCheck != null && listOfNetFoldersToCheck.size() > 0 )
+		HashSet<NetFolder> listOfNetFoldersToCheck;
+		
+		listOfNetFoldersToCheck = new HashSet<NetFolder>();
+		
+		if ( m_listOfNetFolders != null )
+		{
+			for ( NetFolder nextFolder : m_listOfNetFolders )
+			{
+				if ( nextFolder.getStatus() == NetFolderStatus.SYNC_IN_PROGRESS &&
+					 nextFolder.getStatusTicketId() != null )
+				{
+					listOfNetFoldersToCheck.add( nextFolder );
+				}
+			}
+		}
+		
+		if ( listOfNetFoldersToCheck.size() > 0 )
 		{
 			CheckNetFoldersStatusCmd cmd;
 			AsyncCallback<VibeRpcResponse> rpcCallback = null;
@@ -259,27 +253,6 @@ public class ManageNetFoldersDlg extends DlgBox
 	}
 	
 	/**
-	 * Check the sync status of each net folder
-	 */
-	private void checkSyncStatus()
-	{
-		HashSet<NetFolder> listOfNetFoldersToCheck;
-		
-		listOfNetFoldersToCheck = new HashSet<NetFolder>();
-		
-		if ( m_listOfNetFolders != null )
-		{
-			for ( NetFolder nextFolder : m_listOfNetFolders )
-			{
-				listOfNetFoldersToCheck.add( nextFolder );
-			}
-		}
-		
-		if ( listOfNetFoldersToCheck.size() > 0 )
-			checkSyncStatus( listOfNetFoldersToCheck );
-	}
-	
-	/**
 	 * Create all the controls that make up the dialog box.
 	 */
 	@Override
@@ -287,6 +260,7 @@ public class ManageNetFoldersDlg extends DlgBox
 	{
 		final GwtTeamingMessages messages;
 		VerticalPanel mainPanel = null;
+		NetFolderNameCell cell;
 		Column<NetFolder,NetFolder> nameCol;
 		TextColumn<NetFolder> rootCol;
 		TextColumn<NetFolder> relativePathCol;
@@ -373,103 +347,6 @@ public class ManageNetFoldersDlg extends DlgBox
 				}
 			} );
 			menuPanel.add( label );
-			
-			// Add a "Stop sync" button
-			label = new InlineLabel( messages.manageNetFoldersDlg_StopSyncLabel() );
-			label.addStyleName( "manageNetFoldersDlg_Btn" );
-			label.addClickHandler( new ClickHandler()
-			{
-				@Override
-				public void onClick( ClickEvent event )
-				{
-					Scheduler.ScheduledCommand cmd;
-					
-					cmd = new Scheduler.ScheduledCommand()
-					{
-						@Override
-						public void execute()
-						{
-							stopSyncSelectedNetFolders();
-						}
-					};
-					Scheduler.get().scheduleDeferred( cmd );
-				}
-			} );
-			menuPanel.add( label );
-
-			// Add filtering controls
-			{
-				FlowPanel mainFilterPanel;
-				FlowPanel qfPanel;
-				
-				mainFilterPanel = new FlowPanel();
-				mainFilterPanel.addStyleName( GwtClientHelper.jsIsIE() ? "displayInline" : "displayInlineBlock" );
-				mainFilterPanel.addStyleName( "manageNetFoldersDlg_MainFilterPanel" );
-				
-				qfPanel = new FlowPanel();
-				qfPanel.addStyleName( "manageNetFoldersDlg_QuickFilterPanel" );
-				qfPanel.addStyleName( GwtClientHelper.jsIsIE() ? "displayInline" : "displayInlineBlock" );
-				
-				mainFilterPanel.add( qfPanel );
-				
-				m_quickFilter = new QuickFilter( MANAGE_NET_FOLDERS_ID );
-				qfPanel.add( m_quickFilter );
-				
-				// Add an image the user can click on to invoke the menu items that allows the
-				// user to select if they want to display home dir net folders.
-				{
-					FlowPanel tmpPanel;
-					final Anchor a;
-					Image filterImg;
-					
-					tmpPanel = new FlowPanel();
-					tmpPanel.addStyleName( GwtClientHelper.jsIsIE() ? "displayInline" : "displayInlineBlock" );
-					
-					a = new Anchor();
-					a.setTitle( messages.manageNetFoldersDlg_FilterOptionsAlt() );
-					filterImg = new Image( GwtTeaming.getImageBundle().menuButton() );
-					filterImg.addStyleName( "vibe-filterMenuImg" );
-					filterImg.getElement().setAttribute( "align", "absmiddle" );
-					a.getElement().appendChild( filterImg.getElement() );
-					
-					// Create the popup menu that will be displayed when the user clicks on the image.
-					{
-						m_filterPopupMenu = new PopupMenu( true, false, true );
-						m_filterPopupMenu.addStyleName( "vibe-filterMenuBarDropDown" );
-						
-						// Add the "Show Home Directories" menu item.
-						{
-							m_toggleShowHomeDirsCmd = new Command()
-							{
-								@Override
-								public void execute()
-								{
-									handleShowHomeDirectoriesMenuItem();
-								}
-							};
-							
-							m_showHomeDirsMenuItem = m_filterPopupMenu.addMenuItem(
-																			m_toggleShowHomeDirsCmd,
-																			null,
-																			messages.manageNetFoldersDlg_ShowHomeDirsLabel() );
-						}
-					}
-					
-					a.addClickHandler( new ClickHandler()
-					{
-						@Override
-						public void onClick( ClickEvent event )
-						{
-							m_filterPopupMenu.showRelativeToTarget( a );
-						}
-					} );
-
-					tmpPanel.add( a );
-					mainFilterPanel.add( tmpPanel );
-				}
-				
-				menuPanel.add( mainFilterPanel );
-			}
 		}
 		
 		// Create the CellTable that will display the list of Net Folders.
@@ -499,35 +376,9 @@ public class ManageNetFoldersDlg extends DlgBox
 		// Add a checkbox in the first column
 		{
 			Column<NetFolder, Boolean> ckboxColumn;
-			VibeCheckboxCell ckboxCell;
+			CheckboxCell ckboxCell;
 			
-			// Create a checkbox that will be in the column header and will be used to select/deselect
-			// net folders
-			{
-				CheckboxCell cbSelectAllCell;
-
-				cbSelectAllCell = new CheckboxCell();
-				m_selectAllHeader = new SelectAllHeader( cbSelectAllCell );
-				m_selectAllHeader.setUpdater( new ValueUpdater<Boolean>()
-				{
-					@Override
-					public void update( Boolean checked )
-					{
-						List<NetFolder> netFolders;
-
-						netFolders = m_netFoldersTable.getVisibleItems();
-						if ( netFolders != null )
-						{
-							for ( NetFolder nextNetFolder : netFolders )
-							{
-								m_selectionModel.setSelected( nextNetFolder, checked );
-							}
-						}
-					}
-				} );
-			}
-			
-            ckboxCell = new VibeCheckboxCell();
+            ckboxCell = new CheckboxCell( true, false );
 		    ckboxColumn = new Column<NetFolder, Boolean>( ckboxCell )
             {
             	@Override
@@ -537,34 +388,13 @@ public class ManageNetFoldersDlg extends DlgBox
 		            return m_selectionModel.isSelected( netFolder );
 		        }
 		    };
-		    
-		    // Add a field updater so when the user checks/unchecks the checkbox next to a
-		    // net folder we will uncheck the "select all" checkbox that is in the header.
-		    {
-		    	ckboxColumn.setFieldUpdater( new FieldUpdater<NetFolder,Boolean>()
-		    	{
-		    		@Override
-		    		public void update( int index, NetFolder netFolder, Boolean checked )
-		    		{
-		    			m_selectionModel.setSelected( netFolder,  checked );
-		    			
-		    			if ( checked == false )
-		    			{
-		    				m_selectAllHeader.setValue( false );
-		    			}
-		    		}
-		    	} );
-		    }
-		    
-	        m_netFoldersTable.addColumn( ckboxColumn, m_selectAllHeader );
+	        m_netFoldersTable.addColumn( ckboxColumn, SafeHtmlUtils.fromSafeConstant( "<br/>" ) );
 		    m_netFoldersTable.setColumnWidth( ckboxColumn, 20, Unit.PX );			
 		}
 		
 		// Add the "Name" column.  The user can click on the text in this column
 		// to edit the Net Folder.
 		{
-			NetFolderNameCell cell;
-
 			cell = new NetFolderNameCell();
 			nameCol = new Column<NetFolder, NetFolder>( cell )
 			{
@@ -584,44 +414,6 @@ public class ManageNetFoldersDlg extends DlgBox
 				}
 			} );
 			m_netFoldersTable.addColumn( nameCol, messages.manageNetFoldersDlg_NameCol() );
-		}
-		  
-		// Add the "Sync status" column.  The user can click on the image in this column
-		// to invoke the "sync details" dialog.
-		{
-			NetFolderSyncStatusCell cell;
-			Column<NetFolder,NetFolder> statusCol;
-
-			cell = new NetFolderSyncStatusCell();
-			statusCol = new Column<NetFolder, NetFolder>( cell )
-			{
-				@Override
-				public NetFolder getValue( NetFolder netFolder )
-				{
-					return netFolder;
-				}
-			};
-		
-			statusCol.setFieldUpdater( new FieldUpdater<NetFolder, NetFolder>()
-			{
-				@Override
-				public void update( int index, NetFolder netFolder, NetFolder value )
-				{
-					invokeNetFolderSyncStatisticsDlg( netFolder );
-
-					// Update the sync status of this net folder
-					{
-						HashSet<NetFolder> listOfNetFoldersToCheck;
-						
-						listOfNetFoldersToCheck = new HashSet<NetFolder>();
-						
-						listOfNetFoldersToCheck.add( netFolder );
-						
-						checkSyncStatus( listOfNetFoldersToCheck );
-					}
-				}
-			} );
-			m_netFoldersTable.addColumn( statusCol, messages.manageNetFoldersDlg_SyncStatusCol() );
 		}
 		  
 		// Add the "Net Folder Root" column
@@ -665,17 +457,7 @@ public class ManageNetFoldersDlg extends DlgBox
 		}
 
 		mainPanel.add( menuPanel );
-		
-		// Put the table that holds the list of net folders into a scrollable div
-		{
-			FlowPanel panel;
-		
-			panel = new FlowPanel();
-			panel.addStyleName( "manageNetFoldersDlg_ListOfNetFoldersPanel" );
-			panel.add( m_netFoldersTable );
-			mainPanel.add( panel );
-		}
-		
+		mainPanel.add( m_netFoldersTable );
 		mainPanel.setHorizontalAlignment( HasHorizontalAlignment.ALIGN_CENTER );
 		mainPanel.add( m_pager );
 		mainPanel.setCellHeight( m_pager, "100%" );
@@ -699,27 +481,19 @@ public class ManageNetFoldersDlg extends DlgBox
 		selectedFolders = getSelectedNetFolders();
 		if ( selectedFolders != null )
 		{
-			if ( selectedFolders.size() < 15 )
+			// Get a list of all the selected net folder names
+			folderIterator = selectedFolders.iterator();
+			while ( folderIterator.hasNext() )
 			{
-				// Get a list of all the selected net folder names
-				folderIterator = selectedFolders.iterator();
-				while ( folderIterator.hasNext() )
-				{
-					NetFolder nextFolder;
-					String text;
-					
-					nextFolder = folderIterator.next();
-					
-					text = nextFolder.getName();
-					folderNames += "\t" + text + "\n";
-					
-					++count;
-				}
-			}
-			else
-			{
-				folderNames = GwtTeaming.getMessages().manageNetFoldersDlg_nNetFoldersToDelete( selectedFolders.size() );
-				count = selectedFolders.size();
+				NetFolder nextFolder;
+				String text;
+				
+				nextFolder = folderIterator.next();
+				
+				text = nextFolder.getName();
+				folderNames += "\t" + text + "\n";
+				
+				++count;
 			}
 		}
 		
@@ -744,19 +518,13 @@ public class ManageNetFoldersDlg extends DlgBox
 	/**
 	 * 
 	 */
-	private void deleteNetFoldersFromServer( Set<NetFolder> listOfNetFoldersToDelete )
+	private void deleteNetFoldersFromServer( final Set<NetFolder> listOfNetFoldersToDelete )
 	{
 		if ( listOfNetFoldersToDelete != null && listOfNetFoldersToDelete.size() > 0 )
 		{
 			DeleteNetFoldersCmd cmd;
 			AsyncCallback<VibeRpcResponse> rpcCallback = null;
 	
-			// Mark each of the selected net folders as "deleting"
-			for ( NetFolder nextNetFolder : listOfNetFoldersToDelete )
-			{
-				nextNetFolder.setStatus( NetFolderSyncStatus.DELETE_IN_PROGRESS );
-			}
-
 			// Create the callback that will be used when we issue an ajax call
 			// to delete the net folders.
 			rpcCallback = new AsyncCallback<VibeRpcResponse>()
@@ -777,6 +545,9 @@ public class ManageNetFoldersDlg extends DlgBox
 
 							// Clear all selections.
 							m_selectionModel.clear();
+							
+							// Update the table to reflect the fact that we deleted a net folder.
+							m_dataProvider.refresh();
 						}
 					};
 					Scheduler.get().scheduleDeferred( cmd );
@@ -792,73 +563,25 @@ public class ManageNetFoldersDlg extends DlgBox
 						@Override
 						public void execute()
 						{
-							if ( response != null &&
-								 response.getResponseData() instanceof DeleteNetFolderRpcResponseData )
+							// Spin through the list of net folders we just deleted and remove
+							// them from the table.
+							for (NetFolder nextFolder : listOfNetFoldersToDelete)
 							{
-								DeleteNetFolderRpcResponseData responseData;
-								HashMap<NetFolder,DeleteNetFolderResult> results;
+								NetFolder netFolder;
 								
-								responseData = (DeleteNetFolderRpcResponseData) response.getResponseData();
-								results = responseData.getResults();
-								if ( results != null )
-								{
-									Set<Entry<NetFolder,DeleteNetFolderResult>> entrySet;
-									
-									entrySet = results.entrySet();
-									if ( entrySet != null )
-									{
-										FlowPanel errorPanel;
-										Label label;
-										boolean showErrorPanel = false;
-										
-										// Get the panel that holds the errors.
-										errorPanel = getErrorPanel();
-										errorPanel.clear();
-										
-										for ( Entry<NetFolder,DeleteNetFolderResult> nextEntry : entrySet )
-										{
-											NetFolder nextNetFolder;
-											NetFolder ourNetFolder;
-											DeleteNetFolderResult result;
-											
-											nextNetFolder = nextEntry.getKey();
-											ourNetFolder = findNetFolderById( nextNetFolder.getId() );
-											result = nextEntry.getValue();
-											
-											switch ( result.getStatus() )
-											{
-											case DELETE_FAILED:
-											case DELETE_FAILED_SYNC_IN_PROGRESS:
-												showErrorPanel = true;
-												label = new Label( GwtTeaming.getMessages().manageNetFoldersDlg_DeleteNetFolderErrorMsg( nextNetFolder.getName(), result.getErrorMsg() ) );
-												label.addStyleName( "dlgErrorLabel" );
-												errorPanel.add( label );
-												
-												if ( ourNetFolder != null )
-													ourNetFolder.setStatus( NetFolderSyncStatus.DELETE_FAILED );
-												
-												break;
-											
-											case SUCCESS:
-												if ( ourNetFolder != null )
-													m_listOfNetFolders.remove( ourNetFolder );
-												
-												break;
-											}
-										}
-										
-										// Show the error panel if we encountered errors deleting the net folders.
-										if ( showErrorPanel )
-											showErrorPanel();
-									}
-								}
+								netFolder = findNetFolderById( nextFolder.getId() );
+								if ( netFolder != null )
+									m_listOfNetFolders.remove( netFolder );
 							}
 							
 							// Clear all selections.
 							m_selectionModel.clear();
 							
 							// Update the table to reflect the fact that we deleted a net folder.
-							refresh();
+							m_dataProvider.refresh();
+
+							// Tell the table how many net folders we have.
+							m_netFoldersTable.setRowCount( m_listOfNetFolders.size(), true );
 						}
 					};
 					Scheduler.get().scheduleDeferred( cmd );
@@ -866,7 +589,7 @@ public class ManageNetFoldersDlg extends DlgBox
 			};
 
 			// Update the table to reflect the fact that net folder deletion is in progress
-			refresh();
+			m_dataProvider.refresh();
 
 			// Issue an ajax request to delete the list of net folders.
 			cmd = new DeleteNetFoldersCmd( listOfNetFoldersToDelete );
@@ -893,18 +616,13 @@ public class ManageNetFoldersDlg extends DlgBox
 	}
 	
 	/**
-	 * Issue an ajax request to get a page of net folders.
+	 * Issue an ajax request to get a list of all the net folders.
 	 */
-	private void getPageOfNetFoldersFromServer(
-		String filter,
-		boolean includeHomeDirectories,
-		final int startIndex )
+	private void getAllNetFoldersFromServer()
 	{
 		GetNetFoldersCmd cmd;
 		AsyncCallback<VibeRpcResponse> rpcCallback = null;
 
-		m_currentFilterStr = filter;
-		
 		// Create the callback that will be used when we issue an ajax call to get all the net folders.
 		rpcCallback = new AsyncCallback<VibeRpcResponse>()
 		{
@@ -928,17 +646,15 @@ public class ManageNetFoldersDlg extends DlgBox
 					{
 						GetNetFoldersRpcResponseData responseData;
 						
-						hideStatusMsg();
-						
 						responseData = (GetNetFoldersRpcResponseData) response.getResponseData();
 						
 						// Add the net folders to the ui
 						if ( responseData != null )
 						{
 							List<NetFolder> listOfNetFolders;
-
+							
 							listOfNetFolders = responseData.getListOfNetFolders();
-							addNetFolders( startIndex, listOfNetFolders );
+							addNetFolders( listOfNetFolders );
 						}
 					}
 				};
@@ -946,14 +662,9 @@ public class ManageNetFoldersDlg extends DlgBox
 			}
 		};
 
-		showStatusMsg( GwtTeaming.getMessages().manageNetFoldersDlg_SearchingForNetFolders() );
-		
 		// Issue an ajax request to get a list of all the net folders.
 		cmd = new GetNetFoldersCmd();
-		cmd.setIncludeHomeDirNetFolders( includeHomeDirectories );
-		cmd.setFilter( filter );
-		cmd.setPageSize( m_pager.getPageSize() );
-		cmd.setStartIndex( startIndex );
+		cmd.setIncludeHomeDirNetFolders( false );
 		GwtClientHelper.executeCommand( cmd, rpcCallback );
 	}
 	
@@ -993,60 +704,6 @@ public class ManageNetFoldersDlg extends DlgBox
 	}
 
 	/**
-	 * Issue an rpc request to get the page size from the user preferences.
-	 */
-	private void getPageSize()
-	{
-		GetPersonalPrefsCmd cmd;
-		AsyncCallback<VibeRpcResponse> rpcCallback;
-		
-		// Create a callback that will be called when we get the personal preferences.
-		rpcCallback = new AsyncCallback<VibeRpcResponse>()
-		{
-			/**
-			 * 
-			 */
-			@Override
-			public void onFailure( Throwable t )
-			{
-				GwtClientHelper.handleGwtRPCFailure(
-					t,
-					GwtTeaming.getMessages().rpcFailure_GetPersonalPreferences() );
-				
-				m_pager.setPageSize( 125 );
-				init2();
-			}// end onFailure()
-	
-			/**
-			 * We successfully retrieved the user's personal preferences.  Now invoke the "edit personal preferences" dialog.
-			 */
-			@Override
-			public void onSuccess( VibeRpcResponse response )
-			{
-				GwtPersonalPreferences personalPrefs;
-				ScheduledCommand cmd;
-
-				personalPrefs = (GwtPersonalPreferences) response.getResponseData();
-				m_pager.setPageSize( personalPrefs.getNumEntriesPerPage() );
-				
-				cmd = new Scheduler.ScheduledCommand()
-				{
-					@Override
-					public void execute()
-					{
-						init2();
-					}
-				};
-				Scheduler.get().scheduleDeferred( cmd );
-			}// end onSuccess()
-		};
-
-		// Issue an ajax request to get the personal preferences from the db.
-		cmd = new GetPersonalPrefsCmd();
-		GwtClientHelper.executeCommand( cmd, rpcCallback );
-	}
-	
-	/**
 	 * Return a list of selected net folders.
 	 */
 	public Set<NetFolder> getSelectedNetFolders()
@@ -1055,121 +712,12 @@ public class ManageNetFoldersDlg extends DlgBox
 	}
 	
 	/**
-	 * Go to the first page and request a page of net folders.
-	 */
-	private void gotoFirstPage()
-	{
-		// Are we already on the first page?
-		if ( m_pager.getPage() == 0 )
-		{
-			// Yes
-			getPageOfNetFoldersFromServer( m_currentFilterStr, m_showHomeDirsMenuItem.isChecked(), 0 );
-		}
-		else
-		{
-			// Calling firstPage() will trigger onRangeChanged() to be called.
-			m_pager.firstPage();
-		}
-	}
-	
-	/**
-	 * This method gets called when the user clicks on the "Show Home Directories" menu item.
-	 * If we are currently showing home directories we will stop showing them.  If we are not
-	 * showing them we will start showing them. 
-	 */
-	private void handleShowHomeDirectoriesMenuItem()
-	{
-		boolean currentState;
-		
-		currentState = m_showHomeDirsMenuItem.isChecked();
-		m_showHomeDirsMenuItem.setCheckedState( !currentState );
-		
-		// Go to the first page and request a page of net folders.
-		gotoFirstPage();
-	}
-	
-	/**
 	 * 
 	 */
 	public void init()
 	{
-		hideErrorPanel();
-		getPageSize();
-	}
-	
-	/**
-	 * 
-	 */
-	private void init2()
-	{
-		if ( m_dataProvider == null )
-		{
-			m_dataProvider = new AsyncDataProvider<NetFolder>()
-			{
-				@Override
-				protected void onRangeChanged( final HasData<NetFolder> display )
-				{
-					ScheduledCommand cmd;
-					
-					cmd = new ScheduledCommand()
-					{
-						@Override
-						public void execute()
-						{
-							// Is this the first time running this dialog?
-							if ( m_firstTime )
-							{
-								m_firstTime = false;
-								getPageOfNetFoldersFromServer( m_currentFilterStr, false, 0 );
-							}
-							else
-							{
-								int start;
-								boolean showHomeDir;
-
-								// No, get the next page.
-								start = display.getVisibleRange().getStart();
-								showHomeDir = m_showHomeDirsMenuItem.isChecked();
-								getPageOfNetFoldersFromServer( m_currentFilterStr, showHomeDir, start );
-							}
-						}
-					};
-					Scheduler.get().scheduleDeferred( cmd );
-				}
-			};
-			m_dataProvider.addDataDisplay( m_netFoldersTable );
-		}
-		else
-		{
-			// Go to the first page and request a page of net folders.
-			gotoFirstPage();
-		}
-		
-		// Check in the sync status every minute.
-		m_timer = new Timer()
-		{
-			@Override
-			public void run()
-			{
-				checkSyncStatus();
-			}
-		};
-		m_timer.scheduleRepeating( 60000 );
-
-		// Set the height of the panel that holds the list of net folders
-		{
-			FlowPanel panel;
-			int height;
-			
-			panel = (FlowPanel)m_netFoldersTable.getParent();
-			
-			// Figure out how tall the panel should be.
-			height = getOffsetHeight();
-			height -= panel.getAbsoluteTop();
-			height -= m_pager.getOffsetHeight();
-			height += 10;
-			panel.getElement().getStyle().setHeight( height, Unit.PX );
-		}
+		// Issue an ajax request to get a list of all the net folders
+		getAllNetFoldersFromServer();
 	}
 	
 	/**
@@ -1249,20 +797,11 @@ public class ManageNetFoldersDlg extends DlgBox
 		
 		if ( m_modifyNetFolderDlg == null )
 		{
-			RunAsyncCmd createCmd;
-			RunAsyncCreateDlgParams params;
-			
-			// No, create it.
-			params = new RunAsyncCreateDlgParams();
-			params.setAutoHide( new Boolean( true ) );
-			params.setModal( new Boolean( false ) );
-			params.setLeft( new Integer( x ) );
-			params.setTop( new Integer( y ) );
-
-			createCmd = new RunAsyncCmd( RunAsyncCmdType.CREATE, params );
-			
-			ModifyNetFolderDlg.runAsyncCmd(
-										createCmd,
+			ModifyNetFolderDlg.createAsync(
+										true, 
+										false,
+										x, 
+										y,
 										new ModifyNetFolderDlgClient()
 			{			
 				@Override
@@ -1275,15 +814,16 @@ public class ManageNetFoldersDlg extends DlgBox
 				public void onSuccess( final ModifyNetFolderDlg mnfDlg )
 				{
 					ScheduledCommand cmd;
-
-					m_modifyNetFolderDlg = mnfDlg;
-
+					
 					cmd = new ScheduledCommand()
 					{
 						@Override
 						public void execute() 
 						{
-							invokeModifyNetFolderDlg( netFolder );
+							m_modifyNetFolderDlg = mnfDlg;
+							
+							m_modifyNetFolderDlg.init( netFolder );
+							m_modifyNetFolderDlg.show();
 						}
 					};
 					Scheduler.get().scheduleDeferred( cmd );
@@ -1292,94 +832,9 @@ public class ManageNetFoldersDlg extends DlgBox
 		}
 		else
 		{
-			RunAsyncCmd initAndShowCmd;
-			ModifyNetFolderDlgInitAndShowParams params;
-		
-			params = new ModifyNetFolderDlgInitAndShowParams();
-			params.setUIObj( m_modifyNetFolderDlg );
-			params.setLeft( new Integer( x ) );
-			params.setTop( new Integer( y ) );
-			params.setNetFolder( netFolder );
-		
-			initAndShowCmd = new RunAsyncCmd( RunAsyncCmdType.INIT_AND_SHOW, params );
-			ModifyNetFolderDlg.runAsyncCmd( initAndShowCmd, null );
-		}
-	}
-
-	/**
-	 * Invoke the dialog that display all of the sync statistics for the given net folder 
-	 */
-	private void invokeNetFolderSyncStatisticsDlg( final NetFolder netFolder)
-	{
-		int x;
-		int y;
-		
-		// Get the position of this dialog.
-		x = getAbsoluteLeft() + 50;
-		y = getAbsoluteTop() + 50;
-		
-		if ( m_netFolderSyncStatisticsDlg == null )
-		{
-			NetFolderSyncStatisticsDlgClient nfssClient;
-			
-			nfssClient = new NetFolderSyncStatisticsDlgClient()
-			{			
-				@Override
-				public void onUnavailable()
-				{
-					// Nothing to do.  Error handled in asynchronous provider.
-				}
-				
-				@Override
-				public void onSuccess( final NetFolderSyncStatisticsDlg nfssDlg )
-				{
-					ScheduledCommand cmd;
-					
-					cmd = new ScheduledCommand()
-					{
-						@Override
-						public void execute() 
-						{
-							m_netFolderSyncStatisticsDlg = nfssDlg;
-							
-							m_netFolderSyncStatisticsDlg.init( netFolder );
-							m_netFolderSyncStatisticsDlg.show();
-						}
-					};
-					Scheduler.get().scheduleDeferred( cmd );
-				}
-			};
-			NetFolderSyncStatisticsDlg.createAsync(
-											true, 
-											false,
-											x, 
-											y,
-											nfssClient );
-		}
-		else
-		{
-			m_netFolderSyncStatisticsDlg.init( netFolder );
-			m_netFolderSyncStatisticsDlg.setPopupPosition( x, y );
-			m_netFolderSyncStatisticsDlg.show();
-		}
-	}
-
-	/**
-	 * Called when the dialog is detached.
-	 * 
-	 * Overrides the Widget.onDetach() method.
-	 */
-	@Override
-	public void onDetach()
-	{
-		// Let the widget detach
-		super.onDetach();
-		
-		// Kill the timer.
-		if ( m_timer != null )
-		{
-			m_timer.cancel();
-			m_timer = null;
+			m_modifyNetFolderDlg.init( netFolder );
+			m_modifyNetFolderDlg.setPopupPosition( x, y );
+			m_modifyNetFolderDlg.show();
 		}
 	}
 
@@ -1406,11 +861,17 @@ public class ManageNetFoldersDlg extends DlgBox
 					// Add the net folder as the first item in the list.
 					m_listOfNetFolders.add( 0, netFolder );
 					
+					// Update the table to reflect the new folder we just created.
+					m_dataProvider.refresh();
+					
+					// Go to the first page.
+					m_pager.firstPage();
+					
 					// Select the newly created folder.
 					m_selectionModel.setSelected( netFolder, true );
 
-					// Update the table to reflect the new folder we just created.
-					refresh();
+					// Tell the table how many folders we have.
+					m_netFoldersTable.setRowCount( m_listOfNetFolders.size(), true );
 					
 					// Ask the user if they want to sync the newly created net folder.
 					if ( Window.confirm( GwtTeaming.getMessages().manageNetFoldersDlg_PromptForSync() ) )
@@ -1454,153 +915,11 @@ public class ManageNetFoldersDlg extends DlgBox
 				existingFolder.copy( netFolder );
 				
 				// Update the table to reflect the fact that this net folder has been modified.
-				refresh();
+				m_dataProvider.refresh();
 			} 
 		}
 	}
 
-	/**
-	 * Handles QuickFilterEvent's received by this class.
-	 * 
-	 * Implements the QuickFilterEvent.Handler.onQuickFilter() method.
-	 * 
-	 * @param event
-	 */
-	@Override
-	public void onQuickFilter( QuickFilterEvent event )
-	{
-		// Is this event meant for us?
-		if ( event.getFolderId().equals( MANAGE_NET_FOLDERS_ID ) )
-		{
-			Scheduler.ScheduledCommand cmd;
-			
-			// Yes.  Search for net folders using the filter entered by the user.
-			m_currentFilterStr = event.getQuickFilter();
-			
-			cmd = new Scheduler.ScheduledCommand()
-			{
-				@Override
-				public void execute()
-				{
-					// Go to the first page and request a page of net folders.
-					gotoFirstPage();
-				}
-			};
-			Scheduler.get().scheduleDeferred( cmd );
-		}
-	}
-	
-	/**
-	 * Refresh the ui for the current list of net folders we are displaying
-	 */
-	private void refresh()
-	{
-		m_dataProvider.updateRowData( 0, m_listOfNetFolders );
-		m_dataProvider.updateRowCount( m_listOfNetFolders.size(), true );
-	}
-
-	/**
-	 * 
-	 */
-	@Override
-	public void setPixelSize( int width, int height )
-	{
-		super.setPixelSize( width, height );
-		
-		m_width = width;
-		m_netFoldersTable.setWidth( String.valueOf( m_width-20 ) + "px" );
-	}
-	
-	/**
-	 * Stop the sync the selected net folders.
-	 */
-	private void stopSyncSelectedNetFolders()
-	{
-		Set<NetFolder> selectedFolders;
-		
-		selectedFolders = getSelectedNetFolders();
-
-		// Are there any selected net folders?
-		if ( selectedFolders == null || selectedFolders.size() == 0 )
-		{
-			// No
-			Window.alert( GwtTeaming.getMessages().manageNetFoldersDlg_SelectFoldersToStopSync() );
-			return;
-		}
-		
-		stopSyncNetFolders( selectedFolders );
-	}
-	
-	/**
-	 * Stop the synchronization of the given net folders
-	 */
-	private void stopSyncNetFolders( final Set<NetFolder> selectedFolders )
-	{
-		StopSyncNetFoldersCmd cmd;
-		AsyncCallback<VibeRpcResponse> rpcCallback = null;
-
-		if ( selectedFolders == null || selectedFolders.size() == 0 )
-			return;
-		
-		// Create the callback that will be used when we issue an ajax call
-		// to stop the sync of the net folders.
-		rpcCallback = new AsyncCallback<VibeRpcResponse>()
-		{
-			@Override
-			public void onFailure( final Throwable t )
-			{
-				Scheduler.ScheduledCommand cmd;
-				
-				cmd = new Scheduler.ScheduledCommand()
-				{
-					@Override
-					public void execute()
-					{
-						GwtClientHelper.handleGwtRPCFailure(
-								t,
-								GwtTeaming.getMessages().rpcFailure_StopSyncNetFolders() );
-
-						refresh();
-					}
-				};
-				Scheduler.get().scheduleDeferred( cmd );
-			}
-	
-			@Override
-			public void onSuccess( final VibeRpcResponse response )
-			{
-				Scheduler.ScheduledCommand cmd;
-				
-				cmd = new Scheduler.ScheduledCommand()
-				{
-					@Override
-					public void execute()
-					{
-						StopSyncNetFoldersRpcResponseData responseData;
-						
-						responseData = (StopSyncNetFoldersRpcResponseData) response.getResponseData();
-						
-						if ( responseData != null )
-						{
-							Set<NetFolder> listOfNetFolders;
-							
-							listOfNetFolders = responseData.getListOfNetFolders();
-							
-							updateFolderStatus( listOfNetFolders );
-							
-							Window.alert( GwtTeaming.getMessages().manageNetFoldersDlg_CancelSyncRequested() );
-						}
-					}
-				};
-				Scheduler.get().scheduleDeferred( cmd );
-			}
-		};
-
-		// Issue an ajax request to stop the sync of the list of net folders.
-		cmd = new StopSyncNetFoldersCmd( selectedFolders );
-		GwtClientHelper.executeCommand( cmd, rpcCallback );
-	}
-	
 	/**
 	 * Sync the given net folders
 	 */
@@ -1612,10 +931,10 @@ public class ManageNetFoldersDlg extends DlgBox
 		if ( selectedFolders == null || selectedFolders.size() == 0 )
 			return;
 		
-		// Mark each of the selected net folders as "waiting to be sync'd"
+		// Mark each of the selected net folders as "sync in progress"
 		for ( NetFolder nextNetFolder : selectedFolders )
 		{
-			nextNetFolder.setStatus( NetFolderSyncStatus.WAITING_TO_BE_SYNCD );
+			nextNetFolder.setStatus( NetFolderStatus.SYNC_IN_PROGRESS );
 		}
 
 		// Create the callback that will be used when we issue an ajax call
@@ -1637,7 +956,7 @@ public class ManageNetFoldersDlg extends DlgBox
 								GwtTeaming.getMessages().rpcFailure_SyncNetFolders() );
 
 						// Update the table to reflect the fact that we sync'd a net folder.
-						refresh();
+						m_dataProvider.refresh();
 					}
 				};
 				Scheduler.get().scheduleDeferred( cmd );
@@ -1664,30 +983,6 @@ public class ManageNetFoldersDlg extends DlgBox
 							listOfNetFolders = responseData.getListOfNetFolders();
 							
 							updateFolderStatus( listOfNetFolders );
-							
-							// The sync has started.  Now issue a request to get the sync status
-							{
-								Timer timer;
-								
-								timer = new Timer()
-								{
-									@Override
-									public void run()
-									{
-										HashSet<NetFolder> listOfNetFoldersToCheck;
-										
-										listOfNetFoldersToCheck = new HashSet<NetFolder>();
-										
-										for ( NetFolder nextFolder : selectedFolders )
-										{
-											listOfNetFoldersToCheck.add( nextFolder );
-										}
-
-										checkSyncStatus( listOfNetFoldersToCheck );
-									}
-								};
-								timer.schedule( 5000 );
-							}
 						}
 					}
 				};
@@ -1696,7 +991,7 @@ public class ManageNetFoldersDlg extends DlgBox
 		};
 
 		// Update the table to reflect the fact that net folder sync is in progress
-		refresh();
+		m_dataProvider.refresh();
 
 		// Issue an ajax request to sync the list of net folders.
 		cmd = new SyncNetFoldersCmd( selectedFolders );
@@ -1731,6 +1026,10 @@ public class ManageNetFoldersDlg extends DlgBox
 	{
 		if ( listOfNetFolders != null )
 		{
+			boolean checkAgain;
+			
+			checkAgain = false;
+			
 			for ( NetFolder nextNetFolder : listOfNetFolders )
 			{
 				NetFolder ourNetFolder;
@@ -1739,15 +1038,49 @@ public class ManageNetFoldersDlg extends DlgBox
 				
 				if ( ourNetFolder != null )
 				{
-					NetFolderSyncStatus status;
+					NetFolderStatus status;
+					String statusTicketId;
 
 					status = nextNetFolder.getStatus();
 					ourNetFolder.setStatus( status );
+					
+					statusTicketId = nextNetFolder.getStatusTicketId();
+					ourNetFolder.setStatusTicketId( statusTicketId );
+					
+					// Was this net folder deleted as a result of the sync process?
+					if ( status == NetFolderStatus.DELETED_BY_SYNC_PROCESS )
+					{
+						// Yes
+						// Find this net folder in our list and remove it.
+						m_listOfNetFolders.remove( ourNetFolder );
+					}
+					else if ( status != NetFolderStatus.READY )
+					{
+						checkAgain = true;
+					}
 				}
 			}
 			
 			// Update the table to reflect the fact that we sync'd a net folder.
-			refresh();
+			m_dataProvider.refresh();
+
+			// Tell the table how many net folders we have.
+			m_netFoldersTable.setRowCount( m_listOfNetFolders.size(), true );
+			
+			if ( checkAgain )
+			{
+				Timer timer;
+				
+				timer = new Timer()
+				{
+					@Override
+					public void run()
+					{
+						checkSyncStatus();
+					}
+				};
+				timer.schedule( 5000 );
+			}
 		}
 	}
 	

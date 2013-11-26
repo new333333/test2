@@ -44,7 +44,7 @@ import java.util.Map;
  * Date: 5/18/12
  * Time: 1:07 PM
  */
-public class GroupBriefBuilder extends BasePrincipalBriefBuilder implements SearchResultBuilder<GroupBrief> {
+public class GroupBriefBuilder extends PrincipalBriefBuilder implements SearchResultBuilder<GroupBrief> {
     public GroupBriefBuilder() {
     }
 
@@ -53,7 +53,12 @@ public class GroupBriefBuilder extends BasePrincipalBriefBuilder implements Sear
     }
 
     public GroupBrief build(Map entry) {
-        return buildGroup(entry);
+        GroupBrief group = new GroupBrief();
+        populatePrincipalBrief(group, entry);
+        group.setName((String) entry.get(Constants.GROUPNAME_FIELD));
+        group.setLink(LinkUriUtil.getGroupLinkUri(group.getId()));
+        LinkUriUtil.populateGroupLinks(group);
+        return group;
     }
 
     public Object getId(GroupBrief obj) {

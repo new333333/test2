@@ -43,16 +43,12 @@ package org.kablink.teaming.gwt.client.rpc.shared;
  */
 public class GetAllGroupsCmd extends VibeRpcCmd
 {
-	private String m_filter;
-	
 	/**
 	 * For GWT serialization, must have a zero param contructor
 	 */
 	public GetAllGroupsCmd()
 	{
 		super();
-		
-		m_filter = null;
 	}
 	
 	/**
@@ -66,21 +62,5 @@ public class GetAllGroupsCmd extends VibeRpcCmd
 	public int getCmdType()
 	{
 		return VibeRpcCmdType.GET_ALL_GROUPS.ordinal();
-	}
-	
-	/**
-	 * Return the filter that will be used to search for groups.
-	 */
-	public String getFilter()
-	{
-		return m_filter;
-	}
-	
-	/**
-	 * Set the filter that will be used to search for groups.
-	 */
-	public void setFilter( String filter )
-	{
-		m_filter = filter;
 	}
 }

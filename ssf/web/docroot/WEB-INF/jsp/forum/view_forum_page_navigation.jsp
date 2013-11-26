@@ -133,6 +133,7 @@ function ss_clickGoToEntry_${renderResponse.namespace}(id) {
 							name="yearMonth" value="${yearMonth}"/></c:if><c:if test="${!empty endDate}"><ssf:param 
 							name="endDate" value="${endDate}"/></c:if></ssf:url>" 
 						  title="<ssf:nlt tag="title.goto.first.page"/>"
+						  onClick="ss_showFolderPageIndex(this.href, '${ssFolder.id}', '0', 'ss_folder_view_common${renderResponse.namespace}', '${cTag}', '${pTag}', '${yearMonth}', '${endDate}');return false;"
 						   <ssf:title tag="title.goto.first.page"
 						  ><ssf:param name="value" value="0" /></ssf:title> 
 						><img src="<html:rootPath/>images/pics/sym_arrow_gotoStart.png" border="0" id="back" <ssf:alt tag="title.goto.first.page"/> align="absmiddle" />
@@ -151,6 +152,7 @@ function ss_clickGoToEntry_${renderResponse.namespace}(id) {
 						name="yearMonth" value="${yearMonth}"/></c:if><c:if test="${!empty endDate}"><ssf:param 
 						name="endDate" value="${endDate}"/></c:if></ssf:url>" 
 						title="<ssf:nlt tag="title.goto.prev.page"/>"
+						onClick="ss_showFolderPageIndex(this.href, '${ssFolder.id}', '${ssPagePrevious.ssPageInternalValue}', 'ss_folder_view_common${renderResponse.namespace}', '${cTag}', '${pTag}', '${yearMonth}', '${endDate}');return false;"
 						><img src="<html:rootPath/>images/pics/sym_arrow_left_.png" border="0" id="previous" align="absmiddle" />
 					</a>
 					</td>
@@ -178,6 +180,7 @@ function ss_clickGoToEntry_${renderResponse.namespace}(id) {
 							name="yearMonth" value="${yearMonth}"/></c:if><c:if test="${!empty endDate}"><ssf:param 
 							name="endDate" value="${endDate}"/></c:if></ssf:url>" 
 							title="<ssf:nlt tag="title.goto.next.page"/>"
+							onClick="ss_showFolderPageIndex(this.href, '${ssFolder.id}', '${ssPageNext.ssPageInternalValue}', 'ss_folder_view_common${renderResponse.namespace}', '${cTag}', '${pTag}', '${yearMonth}', '${endDate}');return false;"
 							><img src="<html:rootPath/>images/pics/sym_arrow_right_.png" border="0" id="next" align="absmiddle" />
 						</a>
 				  		</c:otherwise>
@@ -201,6 +204,7 @@ function ss_clickGoToEntry_${renderResponse.namespace}(id) {
 						name="yearMonth" value="${yearMonth}"/></c:if><c:if test="${!empty endDate}"><ssf:param 
 						name="endDate" value="${endDate}"/></c:if></ssf:url>" 
 						title="<ssf:nlt tag="title.goto.last.page"/>"
+						onClick="ss_showFolderPageIndex(this.href, '${ssFolder.id}', '${ssPageLastStartingIndex}', 'ss_folder_view_common${renderResponse.namespace}', '${cTag}', '${pTag}', '${yearMonth}', '${endDate}');return false;"
 						><img src="<html:rootPath/>images/pics/sym_arrow_gotoEnd.png" border="0" id="last" <ssf:alt tag="title.goto.last.page"/> align="absmiddle" />
 					</a>
 				  		</c:otherwise>

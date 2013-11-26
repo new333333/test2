@@ -1,7 +1,14 @@
-//>>built
-define("dojox/collections/_base",["dojo/_base/kernel","dojo/_base/lang","dojo/_base/array"],function(_1,_2,_3){
-var _4=_2.getObject("dojox.collections",true);
-_4.DictionaryEntry=function(k,v){
+/*
+	Copyright (c) 2004-2009, The Dojo Foundation All Rights Reserved.
+	Available via Academic Free License >= 2.1 OR the modified BSD license.
+	see: http://dojotoolkit.org/license for details
+*/
+
+
+if(!dojo._hasResource["dojox.collections._base"]){
+dojo._hasResource["dojox.collections._base"]=true;
+dojo.provide("dojox.collections._base");
+dojox.collections.DictionaryEntry=function(k,v){
 this.key=k;
 this.value=v;
 this.valueOf=function(){
@@ -11,54 +18,54 @@ this.toString=function(){
 return String(this.value);
 };
 };
-_4.Iterator=function(a){
-var _5=0;
-this.element=a[_5]||null;
+dojox.collections.Iterator=function(_1){
+var a=_1;
+var _2=0;
+this.element=a[_2]||null;
 this.atEnd=function(){
-return (_5>=a.length);
+return (_2>=a.length);
 };
 this.get=function(){
 if(this.atEnd()){
 return null;
 }
-this.element=a[_5++];
+this.element=a[_2++];
 return this.element;
 };
-this.map=function(fn,_6){
-return _3.map(a,fn,_6);
+this.map=function(fn,_3){
+return dojo.map(a,fn,_3);
 };
 this.reset=function(){
-_5=0;
-this.element=a[_5];
+_2=0;
+this.element=a[_2];
 };
 };
-_4.DictionaryIterator=function(_7){
+dojox.collections.DictionaryIterator=function(_4){
 var a=[];
-var _8={};
-for(var p in _7){
-if(!_8[p]){
-a.push(_7[p]);
+var _5={};
+for(var p in _4){
+if(!_5[p]){
+a.push(_4[p]);
 }
 }
-var _9=0;
-this.element=a[_9]||null;
+var _6=0;
+this.element=a[_6]||null;
 this.atEnd=function(){
-return (_9>=a.length);
+return (_6>=a.length);
 };
 this.get=function(){
 if(this.atEnd()){
 return null;
 }
-this.element=a[_9++];
+this.element=a[_6++];
 return this.element;
 };
-this.map=function(fn,_a){
-return _3.map(a,fn,_a);
+this.map=function(fn,_7){
+return dojo.map(a,fn,_7);
 };
 this.reset=function(){
-_9=0;
-this.element=a[_9];
+_6=0;
+this.element=a[_6];
 };
 };
-return _4;
-});
+}

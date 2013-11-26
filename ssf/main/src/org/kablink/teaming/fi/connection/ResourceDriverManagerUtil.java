@@ -34,8 +34,6 @@ package org.kablink.teaming.fi.connection;
 
 import java.util.List;
 
-import org.kablink.teaming.domain.ResourceDriverConfig;
-import org.kablink.teaming.domain.ResourceDriverConfig.DriverType;
 import org.kablink.teaming.util.SpringContextUtil;
 
 
@@ -47,16 +45,6 @@ public class ResourceDriverManagerUtil {
 	
 	public static ResourceDriver findResourceDriver(String driverName) {
 		return getResourceDriverManager().getDriver(driverName);
-	}
-	
-	public static DriverType getResourceDriverType(String driverName) {
-		ResourceDriver driver = findResourceDriver(driverName);
-		if(driver != null) {
-			ResourceDriverConfig config = driver.getConfig();
-			if(config != null)
-				return config.getDriverType();
-		}
-		return null;
 	}
 	
 	public static ResourceDriverManager getResourceDriverManager() {

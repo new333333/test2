@@ -96,6 +96,13 @@ var m_searchCount = 0;
 		
 				<table class="ss_style margintop3" border="0" cellspacing="0" cellpadding="3">
 					<tr>
+						<td><input type="checkbox" id="enabled" name="enabled"
+							<c:if test="${ssLdapConfig.enabled}">checked</c:if> /> <label
+							for="enabled"><span class="ss_labelRight ss_normal"><ssf:nlt
+							tag="ldap.schedule.enable" /></span><br />
+						</label></td>
+					</tr>
+					<tr>
 						<td>
 							<!-- This hidden input is used to store the ids of the configs that need their guid syncd -->
 							<input id="listOfLdapConfigsToSyncGuid" name="listOfLdapConfigsToSyncGuid" type="hidden" value="" />
@@ -103,20 +110,13 @@ var m_searchCount = 0;
 							<input type="checkbox" id="runnow" name="runnow"
 							<c:if test="${runnow}"> checked="checked" </c:if> /> <label
 							for="runnow"><span class="ss_labelRight ss_normal"><ssf:nlt
-							tag="ldap.schedule.now" /></span>
+							tag="ldap.schedule.now" /></span><br />
 
-						</label></td>
-					</tr>
-					<tr>
-						<td><input type="checkbox" id="enabled" name="enabled"
-							<c:if test="${ssLdapConfig.enabled}">checked</c:if> /> <label
-							for="enabled"><span class="ss_labelRight ss_normal"><ssf:nlt
-							tag="ldap.schedule.enable" /></span>
 						</label></td>
 					</tr>
 				</table>
 		
-				<div class="margintop2" style="margin-left: 2.5em;">
+				<div class="margintop2" style="margin-left: 2.5em;"
 					<ssf:expandableArea title='<%= NLT.get("ldap.schedule") %>' initOpen="true">
 						<c:set var="schedule" value="${ssLdapConfig.schedule}" />
 						<%@ include file="/WEB-INF/jsp/administration/schedule.jsp" %>
@@ -139,40 +139,18 @@ var m_searchCount = 0;
 								tag="ldap.schedule.user.register" /></span></label></td>
 						</tr>
 						<tr>
-							<td>
-								<input type="radio" name="notInLdap" id="userDisable" value="false"
-									<c:if test="${ssLdapConfig.userDelete == 'false'}">checked</c:if> />
-								<label for="userDisable">
-									<span class="ss_labelRight ss_normal">
-										<ssf:nlt tag="ldap.schedule.user.disable" />
-									</span>
-								</label>
-							</td>
+							<td><input type="checkbox" name="userDelete" id="userDelete"
+								<c:if test="${ssLdapConfig.userDelete}">checked</c:if> /> <label
+								for="userDelete"><span class="ss_labelRight ss_normal"><ssf:nlt
+								tag="ldap.schedule.user.delete" /></span></label></td>
 						</tr>
 						<tr>
-							<td>
-								<input type="radio" name="notInLdap" id="userDelete" value="true"
-									<c:if test="${ssLdapConfig.userDelete}">checked</c:if> />
-								<label for="userDelete">
-									<span class="ss_labelRight ss_normal">
-										<ssf:nlt tag="ldap.schedule.user.delete" />
-									</span>
-								</label>
-							</td>
-						</tr>
-						<tr>
-							<td>
-								<div style="margin-left: 34px;">
-									<input type="checkbox" name="userWorkspaceDelete"
-										id="userWorkspaceDelete"
-										<c:if test="${ssLdapConfig.userWorkspaceDelete}">checked</c:if> />
-									<label for="userWorkspaceDelete">
-										<span class="ss_labelRight ss_normal">
-											<ssf:nlt tag="ldap.schedule.user.workspace.delete" />
-										</span>
-									</label>
-								</div>
-							</td>
+							<td><input type="checkbox" name="userWorkspaceDelete"
+								id="userWorkspaceDelete"
+								<c:if test="${ssLdapConfig.userWorkspaceDelete}">checked</c:if> /> <label
+								for="userWorkspaceDelete"><span
+								class="ss_labelRight ss_normal"><ssf:nlt
+								tag="ldap.schedule.user.workspace.delete" /></span></label></td>
 						</tr>
 
 						<!-- Create a <select> control to hold the list of time zones. -->
@@ -285,7 +263,7 @@ var m_searchCount = 0;
 					<c:if test="${ssAuthenticationConfig.allowLocalLogin}">checked</c:if> />
 					<label for="allowLocalLogin"><span
 						class="ss_labelRight ss_normal"><ssf:nlt
-						tag="ldap.config.allowLocalLogin" /></span>
+						tag="ldap.config.allowLocalLogin" /></span><br />
 					</label>
 				</fieldset>
 			
@@ -1008,9 +986,7 @@ function updateElementsTextNode(
 
 ssPage = {
 	m_invalidBaseDnMsg : '<ssf:escapeJavaScript><ssf:nlt tag="ldap.error.invalidBaseDn"/></ssf:escapeJavaScript>',
-	m_invalidUserFilterMsg : '<ssf:escapeJavaScript><ssf:nlt tag="ldap.error.invalidUserFilter"/></ssf:escapeJavaScript>',
 	m_isBaseDnValid : true,
-	m_isUserFilterValid : true,
 	m_invalidCtrl : null,
 	m_idOfInvalidConfiguration : null,
 	m_invalidMappingsMsg : null,
@@ -1196,7 +1172,6 @@ ssPage = {
 	validateAllLdapConfigurations : function()
 	{
 		var validateBaseDn;
-		var validateUserFilter;
 		var validateMappings;
 		
 		validateBaseDn = function()
@@ -1231,46 +1206,6 @@ ssPage = {
 		{
 			// No, tell the user the base dn cannot be empty.
 			alert( ssPage.m_invalidBaseDnMsg );
-
-			// Show the configuration that has the error.
-			if ( ssPage.m_idOfInvalidConfiguration != null )
-				setTimeout( ssPage.showInvalidLdapConfig, 50 );
-
-			return false;
-		}
-
-		validateUserFilter = function()
-		{
-			var $this;
-			var $userFilter;
-			var userFilter;
-
-			// If we already found an invalid user filter, there is no need to continue.
-			if ( !ssPage.m_isUserFilterValid )
-				return;
-			
-			$this = jQuery( this );
-			$userFilter = jQuery( '.ldapFilter', $this );
-			userFilter = $userFilter.val();
-
-			if ( userFilter == null || userFilter.length == 0 )
-			{
-				// Get the id of the invalid configuration
-				ssPage.m_idOfInvalidConfiguration = $this.parent().parent().parent().parent().parent().attr( "id" );				
-				ssPage.m_invalidCtrl = $userFilter;
-				ssPage.m_isUserFilterValid = false;
-			}
-		};
-		
-		// Make sure the user has entered something for every user filter.
-		ssPage.m_idOfInvalidConfiguration = null;
-		ssPage.m_isUserFilterValid = true;
-		ssPage.m_invalidCtrl = null;
-		jQuery( '#funkyDiv .ldapUserSearches .ldapSearch' ).each( validateUserFilter );
-		if ( !ssPage.m_isUserFilterValid )
-		{
-			// No, tell the user the user filter cannot be empty.
-			alert( ssPage.m_invalidUserFilterMsg );
 
 			// Show the configuration that has the error.
 			if ( ssPage.m_idOfInvalidConfiguration != null )

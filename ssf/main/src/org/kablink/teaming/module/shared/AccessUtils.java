@@ -36,12 +36,8 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.slide.util.logger.Logger;
 import org.dom4j.Element;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.SingletonViolationException;
@@ -61,11 +57,6 @@ import org.kablink.teaming.domain.WorkflowControlledEntry;
 import org.kablink.teaming.domain.WorkflowState;
 import org.kablink.teaming.domain.WorkflowSupport;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
-import org.kablink.teaming.fi.connection.acl.AclItemPermissionMapper;
-import org.kablink.teaming.fi.connection.acl.AclItemPermissionMappingException;
-import org.kablink.teaming.fi.connection.acl.AclItemPrincipalMappingException;
-import org.kablink.teaming.fi.connection.acl.AclResourceDriver;
-import org.kablink.teaming.fi.connection.acl.AclResourceSession;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
 import org.kablink.teaming.module.folder.FolderModule;
@@ -91,9 +82,6 @@ import org.kablink.util.search.Constants;
 
 
 public class AccessUtils  {
-	
-	private static final Log logger = LogFactory.getLog(AccessUtils.class);
-	
 	private static AccessUtils instance; // A singleton instance
 	protected AccessControlManager accessControlManager;
 	protected FunctionManager functionManager;
@@ -305,7 +293,7 @@ public class AccessUtils  {
 	  
 	    WorkArea workArea = (WorkArea) entity;
 	    if(externallyControlledRight) {
-			while (workArea.isExtFunctionMembershipInherited() && workArea.getParentWorkArea() != null && workArea.getParentWorkArea().isAclExternallyControlled()) {
+			while (workArea.isExtFunctionMembershipInherited() && workArea.getParentWorkArea().isAclExternallyControlled()) {
 				workArea = workArea.getParentWorkArea();
 		    	if (workArea == null) {
 		    		//Not found, just use the original (which will return an empty ACL)
@@ -571,7 +559,7 @@ public class AccessUtils  {
 		}
 	}
 	public static void readCheck(User user, WorkArea binder) throws AccessControlException {
-		getAccessControlManager().checkOperation(user, binder, WorkAreaOperation.READ_ENTRIES);
+		getInstance().getAccessControlManager().checkOperation(user, binder, WorkAreaOperation.READ_ENTRIES);
 	}
 	public static void readCheck(Entry entry) throws AccessControlException {
 		readCheck(RequestContextHolder.getRequestContext().getUser(), entry);
@@ -646,7 +634,7 @@ public class AccessUtils  {
        	//First, check the entry ACL
        	try {
        		if (entry.hasEntryAcl()) {
-       			getAccessControlManager().checkOperation(user, entry, operation);
+       			getInstance().getAccessControlManager().checkOperation(user, entry, operation);
        			if (!widen) {
        				//"Widening" is not allowed, so also check for read access to the folder
        				getInstance().getBinderModule().checkAccess(user, binder, BinderOperation.readEntries);
@@ -664,7 +652,7 @@ public class AccessUtils  {
        			user.getId().equals(entry.getCreation().getPrincipal().getId())) {
   			try {
   				if (entry.hasEntryAcl()) {
-  					getAccessControlManager().checkOperation(user, entry, WorkAreaOperation.CREATOR_READ);
+  					getInstance().getAccessControlManager().checkOperation(user, entry, WorkAreaOperation.CREATOR_READ);
   	       			if (!widen) {
   	       				//"Widening" is not allowed, so also check for read access to the folder
   	       				getInstance().getBinderModule().checkAccess(user, binder, BinderOperation.readEntries);
@@ -676,7 +664,7 @@ public class AccessUtils  {
        			user.getId().equals(entry.getCreation().getPrincipal().getId())) {
   			try {
   				if (entry.hasEntryAcl()) {
-  					getAccessControlManager().checkOperation(user, entry, WorkAreaOperation.CREATOR_MODIFY);
+  					getInstance().getAccessControlManager().checkOperation(user, entry, WorkAreaOperation.CREATOR_MODIFY);
   	       			if (!widen) {
   	       				//"Widening" is not allowed, so also check for read access to the folder
   	       				getInstance().getBinderModule().checkAccess(user, binder, BinderOperation.readEntries);
@@ -688,7 +676,7 @@ public class AccessUtils  {
        			user.getId().equals(entry.getCreation().getPrincipal().getId())) {
   			try {
   				if (entry.hasEntryAcl()) {
-  					getAccessControlManager().checkOperation(user, entry, WorkAreaOperation.CREATOR_RENAME);
+  					getInstance().getAccessControlManager().checkOperation(user, entry, WorkAreaOperation.CREATOR_RENAME);
   	       			if (!widen) {
   	       				//"Widening" is not allowed, so also check for read access to the folder
   	       				getInstance().getBinderModule().checkAccess(user, binder, BinderOperation.readEntries);
@@ -700,7 +688,7 @@ public class AccessUtils  {
        			user.getId().equals(entry.getCreation().getPrincipal().getId())) {
   			try {
   				if (entry.hasEntryAcl()) {
-  					getAccessControlManager().checkOperation(user, entry, WorkAreaOperation.CREATOR_DELETE);
+  					getInstance().getAccessControlManager().checkOperation(user, entry, WorkAreaOperation.CREATOR_DELETE);
   	       			if (!widen) {
   	       				//"Widening" is not allowed, so also check for read access to the folder
   	       				getInstance().getBinderModule().checkAccess(user, binder, BinderOperation.readEntries);
@@ -710,29 +698,15 @@ public class AccessUtils  {
   			} catch(OperationAccessControlException ex2) {}
        	}
        	
-       	//Make sure this entity has an acl
-		if (entry instanceof FolderEntry && entry.isAclExternallyControlled() && ((FolderEntry)entry).noAclDredged()) {
-	       	try {
-       			getAccessControlManager().checkOperation(user, entry, operation);
-       			if (!widen) {
-       				//"Widening" is not allowed, so also check for read access to the folder
-       				getInstance().getBinderModule().checkAccess(user, binder, BinderOperation.readEntries);
-       			}
-       			return;
-	       	} catch (OperationAccessControlException ex) {
-	       		ace = ex;
-	       	} catch (OperationAccessControlExceptionNoName ex2) {
-	       		ace2 = ex2;
-	       	}
-		} else if (!entry.hasEntryAcl() || entry.isIncludeFolderAcl()) {
-			//Next, try if the binder allows access
+       	//Next, try if the binder allows access
+       	if (!entry.hasEntryAcl() || entry.isIncludeFolderAcl()) {
 	       	try {
 	       		if (operation.equals(WorkAreaOperation.READ_ENTRIES)) {
 	       			getInstance().getBinderModule().checkAccess(user, binder, BinderOperation.readEntries);
 	       		} else if (operation.equals(WorkAreaOperation.VIEW_BINDER_TITLE)) {
 	       			getInstance().getBinderModule().checkAccess(user, binder, BinderOperation.viewBinderTitle);
 	       		} else {
-	       			getAccessControlManager().checkOperation(user, binder, operation);
+	       			getInstance().getAccessControlManager().checkOperation(user, binder, operation);
 	       		}
 	       		return;
 	       	} catch (OperationAccessControlException ex3) {
@@ -747,25 +721,25 @@ public class AccessUtils  {
 	       	if (WorkAreaOperation.READ_ENTRIES.equals(operation) && entry.getCreation() != null && 
 	       			user.getId().equals(entry.getCreation().getPrincipal().getId())) {
       			try {
-      				getAccessControlManager().checkOperation(user, binder, WorkAreaOperation.CREATOR_READ);
+      				getInstance().getAccessControlManager().checkOperation(user, binder, WorkAreaOperation.CREATOR_READ);
 	      			return;
      			} catch (AccessControlException ex3) {}
 	      	} else if (WorkAreaOperation.MODIFY_ENTRIES.equals(operation) && entry.getCreation() != null && 
 	      			user.getId().equals(entry.getCreation().getPrincipal().getId())) {
       			try {
-      				getAccessControlManager().checkOperation(user, binder, WorkAreaOperation.CREATOR_MODIFY);
+      				getInstance().getAccessControlManager().checkOperation(user, binder, WorkAreaOperation.CREATOR_MODIFY);
 	      			return;
       			} catch (AccessControlException ex3) {}
 	      	} else if (WorkAreaOperation.RENAME_ENTRIES.equals(operation) && entry.getCreation() != null && 
 	      			user.getId().equals(entry.getCreation().getPrincipal().getId())) {
       			try {
-      				getAccessControlManager().checkOperation(user, binder, WorkAreaOperation.CREATOR_RENAME);
+      				getInstance().getAccessControlManager().checkOperation(user, binder, WorkAreaOperation.CREATOR_RENAME);
 	      			return;
       			} catch (AccessControlException ex3) {}
 	      	} else if (WorkAreaOperation.DELETE_ENTRIES.equals(operation) && entry.getCreation() != null && 
 	      			user.getId().equals(entry.getCreation().getPrincipal().getId())) {
       			try {
-      				getAccessControlManager().checkOperation(user, binder, WorkAreaOperation.CREATOR_DELETE);
+      				getInstance().getAccessControlManager().checkOperation(user, binder, WorkAreaOperation.CREATOR_DELETE);
 	      			return;
       			} catch (AccessControlException ex3) {}
 	      	}
@@ -774,7 +748,7 @@ public class AccessUtils  {
        	//See if the entry was shared 
        	try {
 			//Start by trying to see if the entry allows access
-   			getAccessControlManager().checkOperation(user, entry, operation);
+   			getInstance().getAccessControlManager().checkOperation(user, entry, operation);
        		//It did, but now check if widening is allowed. 
        		//  If widening is not allowed, then sharing cannot go beyond the current folder without the ability to also read the folder
        		//  This is somewhat useless since if you can read the folder, you could have seen this entry already
@@ -859,14 +833,14 @@ public class AccessUtils  {
     }
      private static void modifyFieldCheck(User user, Binder binder, Entry entry) {
         try {
-        	getAccessControlManager().checkOperation(user, binder, WorkAreaOperation.MODIFY_ENTRY_FIELDS);
+        	getInstance().getAccessControlManager().checkOperation(user, binder, WorkAreaOperation.MODIFY_ENTRY_FIELDS);
         } catch (OperationAccessControlException ex) {
         	try {
         		//See if this user has modify right instead
         		operationCheck(user, binder, entry, WorkAreaOperation.MODIFY_ENTRIES);
         	} catch (OperationAccessControlException ex2) {
 	       		if (user.getId().equals(entry.getCreation().getPrincipal().getId())) 
-	       			getAccessControlManager().checkOperation(user, binder, WorkAreaOperation.CREATOR_MODIFY);
+	       			getInstance().getAccessControlManager().checkOperation(user, binder, WorkAreaOperation.CREATOR_MODIFY);
 	       		else throw ex2;
         	}
        	}
@@ -907,7 +881,7 @@ public class AccessUtils  {
 
      public static void overrideReserveEntryCheck(Entry entry) {
      	try {
-     		getAccessControlManager().checkOperation(RequestContextHolder.getRequestContext().getUser(), entry.getParentBinder(), WorkAreaOperation.BINDER_ADMINISTRATION);
+     		getInstance().getAccessControlManager().checkOperation(RequestContextHolder.getRequestContext().getUser(), entry.getParentBinder(), WorkAreaOperation.BINDER_ADMINISTRATION);
      	} catch (OperationAccessControlException ex) {
     		throw ex;
     	}
@@ -915,7 +889,7 @@ public class AccessUtils  {
      
      public static void overrideReserveEntryCheck(Binder binder) {
         try {
-        	getAccessControlManager().checkOperation(RequestContextHolder.getRequestContext().getUser(), binder, WorkAreaOperation.BINDER_ADMINISTRATION);
+        	getInstance().getAccessControlManager().checkOperation(RequestContextHolder.getRequestContext().getUser(), binder, WorkAreaOperation.BINDER_ADMINISTRATION);
         } catch (OperationAccessControlException ex) {
        		throw ex;
        	}
@@ -1027,7 +1001,7 @@ public class AccessUtils  {
 		Iterator itOperations = f.getOperations().iterator();
 		while (itOperations.hasNext()) {
 			WorkAreaOperation o = (WorkAreaOperation) itOperations.next();
-			if (!getAccessControlManager().testOperation((WorkArea) workArea, o)) return false;
+			if (!getInstance().getAccessControlManager().testOperation((WorkArea) workArea, o)) return false;
 		}
 		return true;
 	}
@@ -1045,59 +1019,9 @@ public class AccessUtils  {
     
 	public static boolean testReadAccess(Binder binder) {
 		// Check if the user has "read" access to the binder.
-		return (getAccessControlManager().testOperation(binder, WorkAreaOperation.READ_ENTRIES) || 
-				getAccessControlManager().testOperation(binder, WorkAreaOperation.VIEW_BINDER_TITLE));
+		return (getInstance().getAccessControlManager().testOperation(binder, WorkAreaOperation.READ_ENTRIES) || 
+				getInstance().getAccessControlManager().testOperation(binder, WorkAreaOperation.VIEW_BINDER_TITLE));
 
-	}
-
-	/**
-	 * Ask external system which role the user has on the specified net folder file.
-	 * This method returns the database ID of the Function object corresponding to
-	 * one of the following roles defined in Filr, or null if the user has no access
-	 * on the entry.
-	 * 
-	 * ObjectKeys.ROLE_TITLE_FILR_VIEWER
-	 * ObjectKeys.ROLE_TITLE_FILR_EDITOR
-	 * ObjectKeys.ROLE_TITLE_FILR_CONTRIBUTOR
-	 * 
-	 * @param netFolderFile
-	 * @return
-	 */
-	public static Long askExternalSystemForRoleId(FolderEntry netFolderFile) {
-		User user = RequestContextHolder.getRequestContext().getUser();
-		Folder parentFolder = netFolderFile.getParentFolder();
-		if(!parentFolder.noAclDredgedWithEntries())
-			throw new IllegalArgumentException("Invalid entry '" + netFolderFile.getId() + "' for this method");
-		AclResourceDriver driver = (AclResourceDriver) parentFolder.getResourceDriver();
-		AclResourceSession session = SearchUtils.openAclResourceSession(parentFolder.getResourceDriver());
-		if(session == null)
-			return null; // cannot obtain session for the user
-		try {
-			Map<String, List<String>> groupIds = driver.getAclItemPrincipalMapper().toFileSystemGroupIds(user);
-			session.setPath(parentFolder.getResourcePath(), netFolderFile.getTitle());
-			String permissionName = null;
-			try {
-				permissionName = session.getPermissionName(groupIds);
-			}
-			catch(Exception e) {
-				logger.error("Error getting permission name on file '" + netFolderFile.getTitle() + "' in folder [" + parentFolder.getPathName() + "]", e);
-			}
-			if(permissionName == null)
-				return null;
-			AclItemPermissionMapper permissionMapper = driver.getAclItemPermissionMapper();
-			return permissionMapper.toVibeRoleId(permissionName);
-		}
-		catch (AclItemPrincipalMappingException e) {
-			logger.error("Error mapping principal on file '" + netFolderFile.getTitle() + "' in folder [" + parentFolder.getPathName() + "]", e);
-			return null;
-		}
-		catch (AclItemPermissionMappingException e) {
-			logger.error("Error mapping permission on file '" + netFolderFile.getTitle() + "' in folder [" + parentFolder.getPathName() + "]", e);
-			return null;
-		} 
-		finally {
-			session.close();
-		}
 	}
 
 }

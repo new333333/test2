@@ -172,7 +172,7 @@ public abstract class AbstractDefinableEntityResource extends AbstractFileResour
    	}
 
     protected DefinableEntity getDefinableEntity(Long id) {
-        return findDefinableEntity(_getEntityType(), id);
+        return findDefinableEntity(_getEntityType().name(), id);
     }
 
     abstract EntityIdentifier.EntityType _getEntityType();

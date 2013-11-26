@@ -150,31 +150,12 @@ public class DisplayConfiguration extends BodyTagSupport implements ParamAncesto
 							String license = itemDefinition.attributeValue("license", "");
 							String notLicense = itemDefinition.attributeValue("notLicense", "");
 							//Check if there is a license restriction. If so make sure the right license is in use
-							boolean allowed = true;
-							boolean notAllowed = false;
-							if (!license.equals("")) {
-								allowed = false;
-								String[] licenses = license.split(" ");
-								for (int i = 0; i < licenses.length; i++) {
-									if (LicenseChecker.isAuthorizedByLicense(licenses[i])) {
-										//Running the right license, allow it
-										allowed = true;
-										break;
-									}
-								}
+							if (!license.equals("") && !LicenseChecker.isAuthorizedByLicense(license)) {
+								//Not running the right license, skip this item
+								continue;
 							}
-							if (!notLicense.equals("")) {
-								String[] notLicenses = license.split(" ");
-								for (int i = 0; i < notLicenses.length; i++) {
-									if (LicenseChecker.isAuthorizedByLicense(notLicenses[i])) {
-										//Running a disallowed license, skip it
-										notAllowed = true;
-										break;
-									}
-								}
-							}
-							if (!allowed || notAllowed) {
-								//This item is not allowed with this license, so skip it
+							if (!notLicense.equals("") && LicenseChecker.isAuthorizedByLicense(notLicense)) {
+								//Not allowed under this license, skip this item
 								continue;
 							}
 							String jspName;

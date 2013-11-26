@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -55,10 +55,12 @@ import org.kablink.teaming.gwt.client.rpc.shared.VibeJspHtmlType;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+import org.kablink.teaming.gwt.client.util.WorkspaceType;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -122,12 +124,13 @@ public class AccessoriesPanel extends ToolPanelBase
 	 * Asynchronously loads the next part of the accessories panel.
 	 */
 	private void loadPart1Async() {
-		GwtClientHelper.deferCommand(new ScheduledCommand() {
+		ScheduledCommand doLoad = new ScheduledCommand() {
 			@Override
 			public void execute() {
 				loadPart1Now();
 			}
-		});
+		};
+		Scheduler.get().scheduleDeferred(doLoad);
 	}
 	
 	/*
@@ -191,12 +194,13 @@ public class AccessoriesPanel extends ToolPanelBase
 	 * Asynchronously loads the next part of the accessories panel.
 	 */
 	private void loadPart2Async() {
-		GwtClientHelper.deferCommand(new ScheduledCommand() {
+		ScheduledCommand doLoad = new ScheduledCommand() {
 			@Override
 			public void execute() {
 				loadPart2Now();
 			}
-		});
+		};
+		Scheduler.get().scheduleDeferred(doLoad);
 	}
 	
 	/*
@@ -232,12 +236,13 @@ public class AccessoriesPanel extends ToolPanelBase
 	 * Asynchronously loads the next part of the accessories panel.
 	 */
 	private void loadPart3Async() {
-		GwtClientHelper.deferCommand(new ScheduledCommand() {
+		ScheduledCommand doLoad = new ScheduledCommand() {
 			@Override
 			public void execute() {
 				loadPart3Now();
 			}
-		});
+		};
+		Scheduler.get().scheduleDeferred(doLoad);
 	}
 	
 	/*
@@ -295,12 +300,13 @@ public class AccessoriesPanel extends ToolPanelBase
 	 * Asynchronously executes the JavaScript in the HTML panel.
 	 */
 	private void executeJavaScriptAsync() {
-		GwtClientHelper.deferCommand(new ScheduledCommand() {
+		ScheduledCommand doExecute = new ScheduledCommand() {
 			@Override
 			public void execute() {
 				executeJavaScriptNow();
 			}
-		});
+		};
+		Scheduler.get().scheduleDeferred(doExecute);
 	}
 	
 	/*
@@ -314,12 +320,13 @@ public class AccessoriesPanel extends ToolPanelBase
 	 * Asynchronously causes the the accessories panel to be hidden.
 	 */
 	private void hideAccessoriesAsync() {
-		GwtClientHelper.deferCommand(new ScheduledCommand() {
+		ScheduledCommand doHide = new ScheduledCommand() {
 			@Override
 			public void execute() {
 				hideAccessoriesNow();
 			}
-		});
+		};
+		Scheduler.get().scheduleDeferred(doHide);
 	}
 	
 	/*
@@ -419,12 +426,13 @@ public class AccessoriesPanel extends ToolPanelBase
 	public void onJspLayoutChanged(JspLayoutChangedEvent event) {
 		Long binderId = event.getBinderId();
 		if (binderId.equals(m_binderInfo.getBinderIdAsLong())) {
-			GwtClientHelper.deferCommand(new ScheduledCommand() {
+			ScheduledCommand doResize = new ScheduledCommand() {
 				@Override
 				public void execute() {
 					panelResized();
 				}
-			});
+			};
+			Scheduler.get().scheduleDeferred(doResize);
 		}
 	}
 	
@@ -481,12 +489,13 @@ public class AccessoriesPanel extends ToolPanelBase
 	 * Asynchronously causes the the accessories panel to be shown.
 	 */
 	private void showAccessoriesAsync() {
-		GwtClientHelper.deferCommand(new ScheduledCommand() {
+		ScheduledCommand doShow = new ScheduledCommand() {
 			@Override
 			public void execute() {
 				showAccessoriesNow();
 			}
-		});
+		};
+		Scheduler.get().scheduleDeferred(doShow);
 	}
 	
 	/*

@@ -53,18 +53,14 @@ public class NetFolderRoot
 {
 	private Long m_id;
 	private String m_name;
-	private NetFolderRootType m_rootType = NetFolderRootType.WINDOWS;
+	private NetFolderRootType m_rootType = NetFolderRootType.FAMT;
 	private String m_rootPath;
 	private String m_proxyName = "";
 	private String m_proxyPwd = "";
 	private GwtSchedule m_syncSchedule;
-	private Boolean m_fullSyncDirOnly;
 	private ArrayList<GwtPrincipal> m_principals;
 	private NetFolderRootStatus m_status;
 	private String m_statusTicketId;
-	private GwtAuthenticationType m_authType;
-	private Boolean m_useDirectoryRights;
-	private Integer m_cachedRightsRefreshInterval;
 	
 	// This information is specific to WebDAV
 	private boolean m_allowSelfSignedCerts = false;
@@ -83,84 +79,6 @@ public class NetFolderRoot
 	}
 	
 	/**
-	 * This class should mirror ResourceDriverConfig.AuthenticationType
-	 */
-	public enum GwtAuthenticationType implements IsSerializable
-	{
-		KERBEROS( (short) 1 ),
-		NTLM( (short) 2 ),
-		KERBEROS_THEN_NTLM( (short) 3 ),
-		NMAS( (short) 4 ),
-		UNKNOWN( (short) 10 );
-		
-		private short m_value;
-
-		/**
-		 * 
-		 */
-		GwtAuthenticationType( short value )
-		{
-			m_value = value;
-		}
-		
-		/**
-		 * 
-		 */
-		public short getValue()
-		{
-			return m_value;
-		}
-		
-		/**
-		 * 
-		 */
-		public static GwtAuthenticationType getType( short value )
-		{
-			switch( value )
-			{
-			case 1:
-				return GwtAuthenticationType.KERBEROS;
-				
-			case 2:
-				return GwtAuthenticationType.NTLM;
-				
-			case 3:
-				return GwtAuthenticationType.KERBEROS_THEN_NTLM;
-				
-			case 4:
-				return GwtAuthenticationType.NMAS;
-
-			default:
-				return GwtAuthenticationType.UNKNOWN;
-			}
-		}
-		
-		/**
-		 * 
-		 */
-		public static GwtAuthenticationType getType( String value )
-		{
-			if ( value != null )
-			{
-				if ( value.equalsIgnoreCase( GwtAuthenticationType.KERBEROS.toString() ) )
-					return GwtAuthenticationType.KERBEROS;
-				
-				if ( value.equalsIgnoreCase( GwtAuthenticationType.NTLM.toString() ) )
-					return GwtAuthenticationType.NTLM;
-				
-				if ( value.equalsIgnoreCase( GwtAuthenticationType.KERBEROS_THEN_NTLM.toString() ) )
-					return GwtAuthenticationType.KERBEROS_THEN_NTLM;
-				
-				if ( value.equalsIgnoreCase( GwtAuthenticationType.NMAS.toString() ) )
-					return GwtAuthenticationType.NMAS;
-			}
-			
-			return GwtAuthenticationType.UNKNOWN;
-		}
-		
-	}
-	
-	/**
 	 * Constructor method. 
 	 * 
 	 * No parameters as per GWT serialization requirements.
@@ -168,10 +86,6 @@ public class NetFolderRoot
 	public NetFolderRoot()
 	{
 		m_status = NetFolderRootStatus.READY;
-		m_fullSyncDirOnly = null;
-		m_authType = null;
-		m_useDirectoryRights = null;
-		m_cachedRightsRefreshInterval = null;
 	}	
 	
 	/**
@@ -198,10 +112,6 @@ public class NetFolderRoot
 		m_proxyPwd = root.getProxyPwd();
 		m_principals = root.getListOfPrincipals();
 		m_syncSchedule = root.getSyncSchedule();
-		m_fullSyncDirOnly = root.getFullSyncDirOnly();
-		m_authType = root.getAuthType();
-		m_useDirectoryRights = root.getUseDirectoryRights();
-		m_cachedRightsRefreshInterval = root.getCachedRightsRefreshInterval();
 
 		m_statusTicketId = root.getStatusTicketId();
 
@@ -217,22 +127,6 @@ public class NetFolderRoot
 	public boolean getAllowSelfSignedCerts()
 	{
 		return m_allowSelfSignedCerts;
-	}
-	
-	/**
-	 * 
-	 */
-	public GwtAuthenticationType getAuthType()
-	{
-		return m_authType;
-	}
-	
-	/**
-	 * 
-	 */
-	public Integer getCachedRightsRefreshInterval()
-	{
-		return m_cachedRightsRefreshInterval;
 	}
 	
 	/**
@@ -345,27 +239,11 @@ public class NetFolderRoot
 	/**
 	 * 
 	 */
-	public Boolean getFullSyncDirOnly()
-	{
-		return m_fullSyncDirOnly;
-	}
-	
-	/**
-	 * 
-	 */
 	public GwtSchedule getSyncSchedule()
 	{
 		return m_syncSchedule;
 	}
 
-	/**
-	 * 
-	 */
-	public Boolean getUseDirectoryRights()
-	{
-		return m_useDirectoryRights;
-	}
-	
 	/**
 	 * Is this net folder root fully configured with server path and proxy credentials.
 	 */
@@ -380,34 +258,14 @@ public class NetFolderRoot
 		if ( m_proxyPwd == null || m_proxyPwd.length() == 0 )
 			return false;
 		
-		if ( m_rootType == null || m_rootType == NetFolderRootType.FAMT || m_rootType == NetFolderRootType.UNKNOWN )
-			return false;
-		
 		return true;
 	}
-	
 	/**
 	 * 
 	 */
 	public void setAllowSelfSignedCerts( boolean allow )
 	{
 		m_allowSelfSignedCerts = allow;
-	}
-	
-	/**
-	 * 
-	 */
-	public void setAuthType( GwtAuthenticationType type )
-	{
-		m_authType = type;
-	}
-	
-	/**
-	 * 
-	 */
-	public void setCachedRightsRefreshInterval( Integer value )
-	{
-		m_cachedRightsRefreshInterval = value;
 	}
 	
 	/**
@@ -505,25 +363,8 @@ public class NetFolderRoot
 	/**
 	 * 
 	 */
-	public void setFullSyncDirOnly( Boolean value )
-	{
-		m_fullSyncDirOnly = value;
-	}
-	
-	/**
-	 * 
-	 */
 	public void setSyncSchedule( GwtSchedule schedule )
 	{
 		m_syncSchedule = schedule;
 	}
-
-	/**
-	 * 
-	 */
-	public void setUseDirectoryRights( Boolean value )
-	{
-		m_useDirectoryRights = value;
-	}
-	
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -34,25 +34,20 @@ package org.kablink.teaming.gwt.client.widgets;
 
 import java.util.List;
 
-import org.kablink.teaming.gwt.client.EditCanceledHandler;
-import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData.ErrorInfo;
-import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
-import org.kablink.teaming.gwt.client.widgets.DlgBox.DlgButtonMode;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FocusWidget;
-import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Panel;
@@ -63,14 +58,13 @@ import com.google.gwt.user.client.ui.FlexTable.FlexCellFormatter;
  *  
  * @author drfoster@novell.com
  */
-public class MultiErrorAlertDlg extends DlgBox implements EditCanceledHandler, EditSuccessfulHandler {
-	private boolean					m_dialogReady;		// Set true once the dialog is ready for display.
-	private ConfirmCallback			m_confirmCallback;	// Callback interface to let the caller know what's going on when in confirmation mode.
-	private GwtTeamingImageBundle	m_images;			// Access to Vibe's images.
-	private GwtTeamingMessages		m_messages;			// Access to Vibe's messages.
-	private List<ErrorInfo>			m_errors;			//
-	private String					m_baseError;		//
-	private VibeFlowPanel			m_fp;				// The panel holding the dialog's content.
+public class MultiErrorAlertDlg extends DlgBox {
+	private boolean					m_dialogReady;	// Set true once the dialog is ready for display.
+	private GwtTeamingImageBundle	m_images;		// Access to Vibe's images.
+	private GwtTeamingMessages		m_messages;		// Access to Vibe's messages.
+	private List<ErrorInfo>			m_errors;		//
+	private String					m_baseError;	//
+	private VibeFlowPanel			m_fp;			// The panel holding the dialog's content.
 
 	/*
 	 * Class constructor.
@@ -81,7 +75,7 @@ public class MultiErrorAlertDlg extends DlgBox implements EditCanceledHandler, E
 	 */
 	private MultiErrorAlertDlg() {
 		// Initialize the superclass...
-		super(false, true, DlgButtonMode.OkCancel);
+		super(false, true, DlgButtonMode.Close);
 
 		// ...initialize everything else...
 		m_images   = GwtTeaming.getImageBundle();
@@ -89,10 +83,10 @@ public class MultiErrorAlertDlg extends DlgBox implements EditCanceledHandler, E
 	
 		// ...and create the dialog's content.
 		createAllDlgContent(
-			"",		// The dialog's header is set when the dialog is shown.
-			this,	// The dialog's EditSuccessfulHandler.
-			this,	// The dialog's EditCanceledHandler.
-			null);	// Create callback data.  Unused. 
+			m_messages.multiErrorAlertDlgHeader(),	// The dialog's header.
+			getSimpleSuccessfulHandler(),			// The dialog's EditSuccessfulHandler.
+			getSimpleCanceledHandler(),				// The dialog's EditCanceledHandler.
+			null);									// Create callback data.  Unused. 
 	}
 
 	/**
@@ -112,64 +106,6 @@ public class MultiErrorAlertDlg extends DlgBox implements EditCanceledHandler, E
 		return m_fp;
 	}
 
-	/*
-	 * Marks the dialog as being ready and shows it.
-	 */
-	private void doDialogReady() {
-		m_dialogReady = true;
-		show(true);
-		if (null != m_confirmCallback) {
-			GwtClientHelper.deferCommand(new ScheduledCommand() {
-				@Override
-				public void execute() {
-					m_confirmCallback.dialogReady();
-				}
-			});
-		}
-	}
-	
-	/**
-	 * Called if the user selects the dialog's Cancel button.
-	 */
-	@Override
-	public boolean editCanceled() {
-		// If we're running in confirmation mode...
-		if (null != m_confirmCallback) {
-			// ...tell the caller the confirmation was rejected...
-			GwtClientHelper.deferCommand(new ScheduledCommand() {
-				@Override
-				public void execute() {
-					m_confirmCallback.rejected();
-				}
-			});
-		}
-		
-		// ...and return true to close the dialog.
-		return true;
-	}
-
-	/**
-	 * Called is the user selects the dialog's Ok button.
-	 * 
-	 * @param callbackData
-	 */
-	@Override
-	public boolean editSuccessful(Object callbackData) {
-		// If we're running in confirmation mode...
-		if (null != m_confirmCallback) {
-			// ...tell the caller the confirmation was accepted...
-			GwtClientHelper.deferCommand(new ScheduledCommand() {
-				@Override
-				public void execute() {
-					m_confirmCallback.accepted();
-				}
-			});
-		}
-		
-		// ...and return true to close the dialog.
-		return true;
-	}
-	
 	/**
 	 * Unused.
 	 * 
@@ -199,12 +135,13 @@ public class MultiErrorAlertDlg extends DlgBox implements EditCanceledHandler, E
 	 * Asynchronously populates the contents of the dialog.
 	 */
 	private void populateDlgAsync() {
-		GwtClientHelper.deferCommand(new ScheduledCommand() {
+		ScheduledCommand doPopulate = new ScheduledCommand() {
 			@Override
 			public void execute() {
 				populateDlgNow();
 			}
-		});
+		};
+		Scheduler.get().scheduleDeferred(doPopulate);
 	}
 	
 	/*
@@ -218,21 +155,21 @@ public class MultiErrorAlertDlg extends DlgBox implements EditCanceledHandler, E
 		// ...create a grid for the dialog's contents...
 		FlexTable grid = new FlexTable();
 		grid.addStyleName("vibe-multiErrorAlertDlg-grid");
-		FlexCellFormatter fcf = grid.getFlexCellFormatter();
 		m_fp.add(grid);
+		FlexCellFormatter fcf = grid.getFlexCellFormatter();
 
 		// ...add a warning image...
-		Image warnImg = GwtClientHelper.buildImage(m_images.warningIcon16());
+		Image warnImg = new Image();
 		warnImg.addStyleName("vibe-multiErrorAlertDlg-warnImg");
-		grid.setWidget(          0, 0, warnImg);
-		fcf.setVerticalAlignment(0, 0, HasVerticalAlignment.ALIGN_MIDDLE);
+		warnImg.setUrl(m_images.warning32().getSafeUri());
+		warnImg.getElement().setAttribute("align", "absmiddle");
+		grid.setWidget(0, 0, warnImg);
 
 		// ...add the base error message...
 		InlineLabel il = new InlineLabel(m_baseError);
 		il.addStyleName("vibe-multiErrorAlertDlg-baseError");
-		grid.setWidget(  0, 1, il);
-		fcf.setColSpan(  0, 1, 2 );
-		fcf.addStyleName(0, 1, "vibe-multiErrorAlertDlg-baseErrorCell");
+		grid.setWidget(0, 1, il);
+		fcf.setColSpan(0, 1, 2);
 
 		// ...scan the individual errors...
 		for (ErrorInfo error:  m_errors) {
@@ -250,59 +187,34 @@ public class MultiErrorAlertDlg extends DlgBox implements EditCanceledHandler, E
 			grid.setWidget(row, 2, il);
 		}
 
-		// Finally, mark the dialog as being ready and show it.
-		doDialogReady();
+		// Finally, show the dialog.
+		m_dialogReady = true;
+		show(true);
 	}
 	
 	/*
 	 * Asynchronously runs the given instance of the multi-error alert
 	 * dialog.
 	 */
-	private static void runDlgAsync(final MultiErrorAlertDlg meaDlg, final String baseError, final List<ErrorInfo> errors, final ConfirmCallback confirmCallback, final DlgButtonMode confirmButtons) {
-		GwtClientHelper.deferCommand(new ScheduledCommand() {
+	private static void runDlgAsync(final MultiErrorAlertDlg meaDlg, final String baseError, final List<ErrorInfo> errors) {
+		ScheduledCommand doRun = new ScheduledCommand() {
 			@Override
 			public void execute() {
-				meaDlg.runDlgNow(baseError, errors, confirmCallback, confirmButtons);
+				meaDlg.runDlgNow(baseError, errors);
 			}
-		});
+		};
+		Scheduler.get().scheduleDeferred(doRun);
 	}
 	
 	/*
 	 * Synchronously runs the given instance of the multi-error alert
 	 * dialog.
 	 */
-	private void runDlgNow(String baseError, List<ErrorInfo> errors, ConfirmCallback confirmCallback, DlgButtonMode confirmButtons) {
-		// Store the parameters...
-		m_confirmCallback = confirmCallback;
-		m_baseError 	  = baseError;
-		m_errors          = errors;
-
-		// ...set the DlgBox contents...
-		Button cancelButton = getCancelButton();
-		Button okButton     = getOkButton();
-		if (null == m_confirmCallback) {
-			setCaption(m_messages.multiErrorAlertDlgHeaderError());
-			cancelButton.setText(m_messages.close());
-			okButton.setVisible( false             );
-		}
-		else {
-			if (null == confirmButtons) {
-				confirmButtons = DlgButtonMode.YesNo;
-			}
-			String cancelText;
-			String okText;
-			switch (confirmButtons) {
-			default:
-			case YesNo:    okText = m_messages.yes(); cancelText = m_messages.no();     break;
-			case OkCancel: okText = m_messages.ok();  cancelText = m_messages.cancel(); break;
-			}
-			setCaption(m_messages.multiErrorAlertDlgHeaderConfirm());
-			cancelButton.setText(cancelText);
-			okButton.setText(    okText    );
-			okButton.setVisible( true      );
-		}
+	private void runDlgNow(String baseError, List<ErrorInfo> errors) {
+		// Store the parameter and populate the dialog.
+		m_baseError = baseError;
+		m_errors    = errors;
 		
-		// ...and populate the dialog.
 		populateDlgAsync();
 	}
 
@@ -320,12 +232,12 @@ public class MultiErrorAlertDlg extends DlgBox implements EditCanceledHandler, E
 		}
 	}
 	
-	
 	/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 	/* The following code is used to load the split point containing */
 	/* the multi-error alert dialog and perform some operation on    */
 	/* it.                                                           */
 	/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+	
 	
 	/**
 	 * Callback interface to interact with the multi-error alert dialog
@@ -347,9 +259,7 @@ public class MultiErrorAlertDlg extends DlgBox implements EditCanceledHandler, E
 			// initAndShow parameters,
 			final MultiErrorAlertDlg	meaDlg,
 			final String				baseError,
-			final List<ErrorInfo>		errors,
-			final ConfirmCallback		confirmCallback,
-			final DlgButtonMode			confirmButtons) {
+			final List<ErrorInfo>		errors) {
 		GWT.runAsync(MultiErrorAlertDlg.class, new RunAsyncCallback() {
 			@Override
 			public void onFailure(Throwable reason) {
@@ -372,7 +282,7 @@ public class MultiErrorAlertDlg extends DlgBox implements EditCanceledHandler, E
 					// No, it's not a request to create a dialog!  It
 					// must be a request to run an existing one.  Run
 					// it.
-					runDlgAsync(meaDlg, baseError, errors, confirmCallback, confirmButtons);
+					runDlgAsync(meaDlg, baseError, errors);
 				}
 			}
 		});
@@ -385,7 +295,7 @@ public class MultiErrorAlertDlg extends DlgBox implements EditCanceledHandler, E
 	 * @param meaDlgClient
 	 */
 	public static void createAsync(MultiErrorAlertDlgClient meaDlgClient) {
-		doAsyncOperation(meaDlgClient, null, null, null, null, null);
+		doAsyncOperation(meaDlgClient, null, null, null);
 	}
 	
 	/**
@@ -396,18 +306,6 @@ public class MultiErrorAlertDlg extends DlgBox implements EditCanceledHandler, E
 	 * @param errors
 	 */
 	public static void initAndShow(MultiErrorAlertDlg meaDlg, String baseError, List<ErrorInfo> errors) {
-		doAsyncOperation(null, meaDlg, baseError, errors, null, null);
-	}
-	
-	/**
-	 * Initializes and shows the multi-error alert dialog.
-	 * 
-	 * @param meaDlg
-	 * @param baseError
-	 * @param errors
-	 * @param confirmCallback
-	 */
-	public static void initAndShow(MultiErrorAlertDlg meaDlg, String baseError, List<ErrorInfo> errors, ConfirmCallback confirmCallback, DlgButtonMode confirmButtons) {
-		doAsyncOperation(null, meaDlg, baseError, errors, confirmCallback, confirmButtons);
+		doAsyncOperation(null, meaDlg, baseError, errors);
 	}
 }

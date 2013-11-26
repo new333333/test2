@@ -32,7 +32,6 @@
  */
 package org.kablink.teaming.gwt.client.util;
 
-import org.kablink.teaming.gwt.client.binderviews.MobileDevicesViewSpec;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponseData;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
@@ -44,23 +43,21 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * @author drfoster@novell.com
  */
 public class BinderInfo implements IsSerializable, VibeRpcResponseData {
-	private BinderType    			m_binderType               = BinderType.OTHER;					//
-	private boolean       			m_binderDescExpanded       = true;								//
-	private boolean       			m_binderDescHTML;												//
-	private boolean       			m_folderHome;													//
-	private boolean       			m_library;														//
-	private boolean       			m_mirroredDriverConfigured;										//
-	private CollectionType			m_collectionType           = CollectionType.NOT_A_COLLECTION;	//
-	private FolderType    			m_folderType               = FolderType.NOT_A_FOLDER;			//
-	private Long          			m_numUnread;													// Number of unread entries in this binder and sub binders.
-	private MobileDevicesViewSpec	m_mdvSpec;														//
-	private String        			m_binderId                 = "";								//
-	private String        			m_binderTitle              = "";								//
-	private String		  			m_binderDesc	           = "";								//
-	private String        			m_entityType               = "";								//
-	private WorkspaceType 			m_wsType                   = WorkspaceType.NOT_A_WORKSPACE;		//
-	private String					m_cloudFolderRoot;												//
-	private String        			m_parentBinderId           = "";								//
+	private BinderType    	m_binderType               = BinderType.OTHER;					//
+	private boolean       	m_binderDescExpanded       = true;								//
+	private boolean       	m_binderDescHTML;												//
+	private boolean       	m_folderHome;													//
+	private boolean       	m_library;														//
+	private boolean       	m_mirroredDriverConfigured;										//
+	private CollectionType	m_collectionType           = CollectionType.NOT_A_COLLECTION;	//
+	private FolderType    	m_folderType               = FolderType.NOT_A_FOLDER;			//
+	private Long          	m_numUnread;													// Number of unread entries in this binder and sub binders.
+	private String        	m_binderId                 = "";								//
+	private String        	m_binderTitle              = "";								//
+	private String		  	m_binderDesc	           = "";								//
+	private String        	m_entityType               = "";								//
+	private WorkspaceType 	m_wsType                   = WorkspaceType.NOT_A_WORKSPACE;		//
+	private String        	m_parentBinderId           = "";								//
 	
 	/**
 	 * Constructor method.
@@ -85,7 +82,6 @@ public class BinderInfo implements IsSerializable, VibeRpcResponseData {
 		reply.setBinderDescExpanded(      m_binderDescExpanded      );
 		reply.setBinderDescHTML(          m_binderDescHTML          );
 		reply.setParentBinderId(          m_parentBinderId          );
-		reply.setCloudFolderRoot(         m_cloudFolderRoot         );
 		reply.setNumUnread(               m_numUnread               );
 		reply.setEntityType(              m_entityType              );
 		reply.setBinderType(              m_binderType              );
@@ -95,7 +91,6 @@ public class BinderInfo implements IsSerializable, VibeRpcResponseData {
 		reply.setLibrary(                 m_library                 );
 		reply.setWorkspaceType(           m_wsType                  );
 		reply.setMirroredDriverConfigured(m_mirroredDriverConfigured);
-		reply.setMobileDevicesViewSpec(   m_mdvSpec                 );
 		return reply;
 	}
 	
@@ -104,26 +99,24 @@ public class BinderInfo implements IsSerializable, VibeRpcResponseData {
 	 * 
 	 * @return
 	 */
-	public BinderType            getBinderType()              {return                            m_binderType;              }
-	public boolean               isBinderAccessible()         {return (!(BinderType.OTHER.equals(m_binderType)));           }
-	public boolean               isBinderDescExpanded()       {return                            m_binderDescExpanded;      }
-	public boolean               isBinderDescHTML()           {return                            m_binderDescHTML;          }
-	public boolean               isFolderHome()               {return                            m_folderHome;              }
-	public boolean               isLibrary()                  {return                            m_library;                 }
-	public boolean               isMirroredDriverConfigured() {return                            m_mirroredDriverConfigured;}
-	public CollectionType        getCollectionType()          {return                            m_collectionType;          }
-	public FolderType            getFolderType()              {return                            m_folderType;              }
-	public Long                  getBinderIdAsLong()          {return Long.parseLong(            m_binderId);               }
-	public MobileDevicesViewSpec getMobileDevicesViewSpec()   {return                            m_mdvSpec;                 }
-	public String                getBinderId()                {return                            m_binderId;                }
-	public String                getParentBinderId()          {return                            m_parentBinderId;          }
-	public String                getBinderTitle()             {return                            m_binderTitle;             }
-	public String		         getBinderDesc()              {return                            m_binderDesc;              }
-	public String                getCloudFolderRoot()         {return                            m_cloudFolderRoot;         }
-	public Long                  getNumUnread()               {return                            m_numUnread;               }
-	public String                getEntityType()              {return                            m_entityType;              }
-	public WorkspaceType         getWorkspaceType()           {return                            m_wsType;                  }
-	public Long                  getParentBinderIdAsLong()    {
+	public BinderType     getBinderType()              {return                            m_binderType;              }
+	public boolean        isBinderAccessible()         {return (!(BinderType.OTHER.equals(m_binderType)));           }
+	public boolean        isBinderDescExpanded()       {return                            m_binderDescExpanded;      }
+	public boolean        isBinderDescHTML()           {return                            m_binderDescHTML;          }
+	public boolean        isFolderHome()               {return                            m_folderHome;              }
+	public boolean        isLibrary()                  {return                            m_library;                 }
+	public boolean        isMirroredDriverConfigured() {return                            m_mirroredDriverConfigured;}
+	public CollectionType getCollectionType()          {return                            m_collectionType;          }
+	public FolderType     getFolderType()              {return                            m_folderType;              }
+	public Long           getBinderIdAsLong()          {return Long.parseLong(            m_binderId);               }
+	public String         getBinderId()                {return                            m_binderId;                }
+	public String         getParentBinderId()          {return                            m_parentBinderId;          }
+	public String         getBinderTitle()             {return                            m_binderTitle;             }
+	public String		  getBinderDesc()              {return                            m_binderDesc;              }
+	public Long           getNumUnread()               {return                            m_numUnread;               }
+	public String         getEntityType()              {return                            m_entityType;              }
+	public WorkspaceType  getWorkspaceType()           {return                            m_wsType;                  }
+	public Long           getParentBinderIdAsLong()    {
 		Long reply;
 		if ((null == m_parentBinderId) || (0 == m_parentBinderId.length()))
 		     reply = null;
@@ -161,16 +154,6 @@ public class BinderInfo implements IsSerializable, VibeRpcResponseData {
 		return (isBinderFolder() && FolderType.MIRROREDFILE.equals(getFolderType()));
 	}
 
-	/**
-	 * Returns true if this BinderInfo defines mobile devices view
-	 * and false otherwise.
-	 * 
-	 * @return
-	 */
-	public boolean isBinderMobileDevices() {
-		return (isBinderWorkspace() && m_wsType.isMobileDevices());
-	}
-	
 	/**
 	 * Returns true if this BinderInfo defines the root profiles binder
 	 * and false otherwise.
@@ -218,16 +201,6 @@ public class BinderInfo implements IsSerializable, VibeRpcResponseData {
 	}
 
 	/**
-	 * Returns true if this BinderInfo is a Cloud Folder and false
-	 * otherwise.
-	 * 
-	 * @return
-	 */
-	public boolean isCloudFolder() {
-		return ((null != m_cloudFolderRoot) && (0 < m_cloudFolderRoot.length()));
-	}
-	
-	/**
 	 * Returns true if the given BinderInfo is considered equal to this
 	 * one.
 	 * 
@@ -252,21 +225,8 @@ public class BinderInfo implements IsSerializable, VibeRpcResponseData {
 		if (reply) {
 			// Yes!  Are the binder IDs equal?
 			reply = m_binderId.equals(bi.getBinderId());
-			if (reply) {
-				// Yes!  Are the MobileDevicesViewSpec's equal?
-				MobileDevicesViewSpec mdvSpecIn = bi.getMobileDevicesViewSpec();
-				boolean hasMDVSpec_This = (null != m_mdvSpec  );
-				boolean hasMDVSpec_In   = (null !=   mdvSpecIn);
-				reply = (hasMDVSpec_This == hasMDVSpec_In);
-				if (reply && hasMDVSpec_This) {
-					reply = m_mdvSpec.equals(mdvSpecIn);
-					if (reply && m_mdvSpec.isUser()) {
-						reply = m_mdvSpec.getUserId().equals(mdvSpecIn.getUserId());
-					}
-				}
-			}
 		}
-		
+
 		// If we get here, reply is true if the given BinderInfo
 		// matches this one and false otherwise.  Return it.
 		return reply;
@@ -398,15 +358,6 @@ public class BinderInfo implements IsSerializable, VibeRpcResponseData {
 	public void setBinderDescHTML(boolean binderDescHTML) {
 		m_binderDescHTML = binderDescHTML;
 	}
-
-	/**
-	 * Stores the name of a Cloud Folder root.
-	 * 
-	 * @param cloudFolderRoot
-	 */
-	public void setCloudFolderRoot(String cloudFolderRoot) {
-		m_cloudFolderRoot = cloudFolderRoot;
-	}
 	
 	/**
 	 * Stores whether the given binder is a home folder.
@@ -433,23 +384,6 @@ public class BinderInfo implements IsSerializable, VibeRpcResponseData {
 	 */
 	public void setMirroredDriverConfigured(boolean mirroredDriverConfigured) {
 		m_mirroredDriverConfigured = mirroredDriverConfigured;
-	}
-
-	/**
-	 * Stores a new MobileDevicesViewSpec.
-	 * 
-	 * @param mdvSpec
-	 */
-	public void setMobileDevicesViewSpec(MobileDevicesViewSpec mdvSpec) {
-		m_mdvSpec = mdvSpec;
-		if (null == m_mdvSpec) {
-			if (m_wsType.isMobileDevices()) {
-				m_wsType = WorkspaceType.PROFILE_ROOT_MANAGEMENT;
-			}
-		}
-		else {
-			m_wsType = WorkspaceType.MOBILE_DEVICES;
-		}
 	}
 	
 	/**

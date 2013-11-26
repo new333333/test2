@@ -49,7 +49,7 @@ import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
-import com.google.gwt.core.client.Scheduler.ScheduledCommand;
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -168,18 +168,6 @@ public class GuestbookFolderView extends DataTableFolderViewBase {
 	}
 	
 	/**
-	 * We don't show an icon for the entry title cells in a guest book.
-	 *
-	 * Overrides the DataTableFolderViewBase.showEntryTitleIcon() method.
-	 * 
-	 * @return
-	 */
-	@Override
-	protected boolean showEntryTitleIcon() {
-		return false;
-	}
-	
-	/**
 	 * Invokes the sign the guest book UI. 
 	 * 
 	 * Overrides the DataTableFolderViewBase.signGuestbook()
@@ -229,12 +217,13 @@ public class GuestbookFolderView extends DataTableFolderViewBase {
 	 * Asynchronously launches the UI to sign the guest book.
 	 */
 	private void signGuestbookAsync() {
-		GwtClientHelper.deferCommand(new ScheduledCommand() {
+		Scheduler.ScheduledCommand doSign = new Scheduler.ScheduledCommand() {
 			@Override
 			public void execute() {
 				signGuestbookNow();
 			}
-		});
+		};
+		Scheduler.get().scheduleDeferred(doSign);
 	}
 	
 	/*

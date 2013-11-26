@@ -183,7 +183,7 @@ public abstract class ContainerResource extends WebdavCollectionResource impleme
 							+ entry.getEntityIdentifier().toString()
 							+ " in folder " + folder.getId());
 				FolderUtils.modifyLibraryEntry(entry, newName, inputStream, null,
-						modDate, null, true, null, null);
+						modDate, null, true, null);
 			} else {
 				// We need to create a new entry
 				if (logger.isDebugEnabled())
@@ -230,8 +230,10 @@ public abstract class ContainerResource extends WebdavCollectionResource impleme
         	if(oneLevelWithInferredAccess) {
     			hits = org.kablink.teaming.module.shared.SearchUtils.searchFolderOneLevelWithInferredAccess(luceneSession,
     					RequestContextHolder.getRequestContext().getUserId(),
-    					so, 
+    					so.getAclQueryStr(), 
     					Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, 
+    					soQuery, 
+    					null, 
     					0,
     					Integer.MAX_VALUE, 
     					parentBinder);

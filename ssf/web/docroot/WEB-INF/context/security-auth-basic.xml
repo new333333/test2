@@ -26,7 +26,7 @@
 		<property name="filterProcessesUrl" value="/s/portalLogout"/>
     </bean>
 
-    <security:http realm="Novell" authentication-manager-ref="_authenticationManager">
+    <security:http realm="Vibe" authentication-manager-ref="_authenticationManager">
 		<security:custom-filter position="LOGOUT_FILTER" ref="_logoutFilter"/>
         <security:session-management session-fixation-protection="newSession" />
         <security:intercept-url pattern="/**" access="IS_AUTHENTICATED_FULLY" />

@@ -54,7 +54,6 @@ import org.kablink.teaming.gwt.client.event.ContentChangedEvent;
 import org.kablink.teaming.gwt.client.event.ContentChangedEvent.Change;
 import org.kablink.teaming.gwt.client.event.ContextChangedEvent;
 import org.kablink.teaming.gwt.client.event.ContextChangingEvent;
-import org.kablink.teaming.gwt.client.event.DeleteSelectedEntitiesEvent;
 import org.kablink.teaming.gwt.client.event.EditCurrentBinderBrandingEvent;
 import org.kablink.teaming.gwt.client.event.EditPersonalPreferencesEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
@@ -78,7 +77,6 @@ import org.kablink.teaming.gwt.client.event.MastheadHideEvent;
 import org.kablink.teaming.gwt.client.event.MastheadShowEvent;
 import org.kablink.teaming.gwt.client.event.MenuHideEvent;
 import org.kablink.teaming.gwt.client.event.MenuShowEvent;
-import org.kablink.teaming.gwt.client.event.PublicCollectionStateChangedEvent;
 import org.kablink.teaming.gwt.client.event.SearchAdvancedEvent;
 import org.kablink.teaming.gwt.client.event.SearchRecentPlaceEvent;
 import org.kablink.teaming.gwt.client.event.SearchSavedEvent;
@@ -133,10 +131,6 @@ import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
 import org.kablink.teaming.gwt.client.util.ViewFolderEntryInfo;
 import org.kablink.teaming.gwt.client.util.BinderInfoHelper.BinderInfoCallback;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
-import org.kablink.teaming.gwt.client.util.runasync.EditBrandingDlgInitAndShowParams;
-import org.kablink.teaming.gwt.client.util.runasync.RunAsyncCmd;
-import org.kablink.teaming.gwt.client.util.runasync.RunAsyncCreateDlgParams;
-import org.kablink.teaming.gwt.client.util.runasync.RunAsyncCmd.RunAsyncCmdType;
 import org.kablink.teaming.gwt.client.util.SimpleProfileParams;
 import org.kablink.teaming.gwt.client.util.TagInfo;
 import org.kablink.teaming.gwt.client.util.TreeMode;
@@ -146,7 +140,6 @@ import org.kablink.teaming.gwt.client.whatsnew.ActionsPopupMenu;
 import org.kablink.teaming.gwt.client.whatsnew.ActionsPopupMenu.ActionMenuItem;
 import org.kablink.teaming.gwt.client.whatsnew.ActivityStreamCtrl;
 import org.kablink.teaming.gwt.client.whatsnew.ActivityStreamCtrl.ActivityStreamCtrlClient;
-import org.kablink.teaming.gwt.client.whatsnew.ActivityStreamCtrl.ActivityStreamCtrlUsage;
 import org.kablink.teaming.gwt.client.widgets.AddNewFolderDlg;
 import org.kablink.teaming.gwt.client.widgets.AddNewFolderDlg.AddNewFolderDlgClient;
 import org.kablink.teaming.gwt.client.widgets.AdminControl;
@@ -567,7 +560,7 @@ public class GwtMainPage extends ResizeComposite
 		list.add( ActionMenuItem.MARK_UNREAD );
 		
 		actionsMenu = new ActionsPopupMenu( true, true, list.toArray( new ActionMenuItem[list.size()] ) );
-		ActivityStreamCtrl.createAsync( ActivityStreamCtrlUsage.STANDALONE, actionsMenu, new ActivityStreamCtrlClient()
+		ActivityStreamCtrl.createAsync( actionsMenu, new ActivityStreamCtrlClient()
 		{			
 			@Override
 			public void onUnavailable()
@@ -648,7 +641,6 @@ public class GwtMainPage extends ResizeComposite
 			}
 		});
 	}
-	
 	/*
 	 * Starts the initializations of the main page.
 	 */
@@ -1165,10 +1157,6 @@ public class GwtMainPage extends ResizeComposite
 		
 		// Initialize the JavaScript that runs the entry viewer.
 		initShowForumEntry( this );
-		
-		// Initialize the JavaScript that will delete an entry that can
-		// be invoked from a JSP page.
-		initDeleteForumEntry( this );
 	}
 
 	/*
@@ -1212,24 +1200,12 @@ public class GwtMainPage extends ResizeComposite
 	}-*/;
 	
 	/*
-	 * Called to create a JavaScript method that can be called to show
-	 * an entry viewer.
+	 * Called to create a JavaScript method that can be called to show an entry viewer.
 	 */
 	private native void initShowForumEntry( GwtMainPage gwtMainPage ) /*-{
 		$wnd.ss_showForumEntryGwt = function( url, isDashboard )
 		{
 			gwtMainPage.@org.kablink.teaming.gwt.client.GwtMainPage::viewForumEntry(Ljava/lang/String;Ljava/lang/String;)( url, isDashboard );
-		}
-	}-*/;
-
-	/*
-	 * Called to create a JavaScript method that can be called to
-	 * delete and entry.
-	 */
-	private native void initDeleteForumEntry( GwtMainPage gwtMainPage ) /*-{
-		$wnd.ss_deleteForumEntryGwt = function( folderId, entryId  )
-		{
-			gwtMainPage.@org.kablink.teaming.gwt.client.GwtMainPage::deleteForumEntry(Ljava/lang/String;Ljava/lang/String;)( folderId, entryId );
 		}
 	}-*/;
 
@@ -1564,45 +1540,29 @@ public class GwtMainPage extends ResizeComposite
 		if ( m_editBrandingDlg == null )
 		{
 			// No, create one.
-			RunAsyncCmd createCmd;
-			RunAsyncCreateDlgParams params;
-			
-			// No, create it.
-			params = new RunAsyncCreateDlgParams();
-			params.setEditSuccessfulHandler( m_editBrandingSuccessHandler );
-			params.setEditCanceledHandler( m_editBrandingCancelHandler );
-			params.setAutoHide( new Boolean( false ) );
-			params.setModal( new Boolean( true ) );
-			params.setLeft( new Integer( x ) );
-			params.setTop( new Integer( y ) );
-
-			createCmd = new RunAsyncCmd( RunAsyncCmdType.CREATE, params );
-
-			EditBrandingDlg.runAsyncCmd( createCmd, new EditBrandingDlgClient()
-			{				
+			EditBrandingDlg.createAsync(
+					m_editBrandingSuccessHandler,
+					m_editBrandingCancelHandler,
+					false,
+					true,
+					x,
+					y,
+					null,
+					null,
+					new EditBrandingDlgClient() {				
 				@Override
 				public void onUnavailable()
 				{
-					// Nothing to do.  Error handled in asynchronous provider.
-				}
+					// Nothing to do.  Error handled in
+					// asynchronous provider.
+				}// end onUnavailable()
 				
 				@Override
 				public void onSuccess( EditBrandingDlg ebDlg )
 				{
-					Scheduler.ScheduledCommand cmd;
-					
 					m_editBrandingDlg = ebDlg;
-					
-					cmd = new Scheduler.ScheduledCommand()
-					{
-						@Override
-						public void execute()
-						{
-							editBrandingImpl( brandingData, x, y );
-						}
-					};
-					Scheduler.get().scheduleDeferred( cmd );
-				}
+					editBrandingImpl( brandingData, x, y );
+				}// end onSuccess()
 			} );
 		}
 		
@@ -1618,19 +1578,9 @@ public class GwtMainPage extends ResizeComposite
 	 * 
 	 */
 	private void editBrandingImpl( GwtBrandingData brandingData, int x, int y ) {
-		RunAsyncCmd initAndShowCmd;
-		EditBrandingDlgInitAndShowParams params;
-	
-		params = new EditBrandingDlgInitAndShowParams();
-		params.setUIObj( m_editBrandingDlg );
-		params.setBrandingData( brandingData );
-		params.setLeft( new Integer( x ) );
-		params.setTop( new Integer( y ) );
-	
-		initAndShowCmd = new RunAsyncCmd( RunAsyncCmdType.INIT_AND_SHOW, params );
-
-		// Run an async cmd to show the dialog.
-		EditBrandingDlg.runAsyncCmd( initAndShowCmd, null );
+		m_editBrandingDlg.init( brandingData );
+		m_editBrandingDlg.setPopupPosition( x, y );
+		m_editBrandingDlg.show();
 	}
 
 	/*
@@ -1715,8 +1665,6 @@ public class GwtMainPage extends ResizeComposite
 		{
 			if ( status.equalsIgnoreCase( "authenticationFailed" ) )
 				loginStatus = LoginStatus.AuthenticationFailed;
-			else if ( status.equalsIgnoreCase( "webAccessRestricted" ) )
-				loginStatus = LoginStatus.WebAccessRestricted;
 			else if ( status.equalsIgnoreCase( "registrationRequired" ) )
 				loginStatus = LoginStatus.RegistrationRequired;
 			else if ( status.equalsIgnoreCase( "promptForLogin" ) )
@@ -2168,27 +2116,11 @@ public class GwtMainPage extends ResizeComposite
 
 	
 	/*
-	 * Runs the GWT code to delete an entry.
-	 */
-	private void deleteForumEntry( String folderId, String entryId )
-	{
-		// Fire a DeleteSelectedEntitiesEvent.
-		GwtTeaming.fireEventAsync(
-			new DeleteSelectedEntitiesEvent(
-				m_contentCtrl.getCurrentBinderInfo().getBinderIdAsLong(),
-				new EntityId(
-					Long.parseLong( folderId ),
-					Long.parseLong( entryId  ),
-					EntityId.FOLDER_ENTRY) ) );
-	}
-
-	/*
 	 * Runs the given URL in the entry viewer.
 	 */
 	private void viewForumEntry( String url )
 	{
-		// Fire a ViewForumEntryEvent.
-		GwtTeaming.fireEventAsync( new ViewForumEntryEvent( url ) );
+		GwtTeaming.fireEventAsync(new ViewForumEntryEvent( url ));
 	}
 
 	private void viewForumEntry( String url, String isDashboard )
@@ -2708,20 +2640,6 @@ public class GwtMainPage extends ResizeComposite
 										{
 											GwtClientHelper.jsSetEntryDisplayStyle( personalPrefs.getDisplayStyle() );
 										}
-
-										// If public shares are active,
-										// for non-guest internal
-										// users...
-										if ( personalPrefs.publicSharesActive() && ( ! ( GwtClientHelper.isGuestUser() ) ) && ( ! ( GwtClientHelper.isExternalUser() ) ) )
-										{
-											// ...fire a public
-											// ...collection state
-											// ...changed event.
-											Boolean hidePublicCollection = personalPrefs.getHidePublicCollection();
-											GwtTeaming.fireEventAsync(
-												new PublicCollectionStateChangedEvent(
-													( ( null != hidePublicCollection ) && hidePublicCollection ) ) );
-										}
 									}// end onSuccess()
 								};
 							}
@@ -2888,10 +2806,7 @@ public class GwtMainPage extends ResizeComposite
 						@Override
 						public void execute()
 						{
-							showAddNewFolderDlgNow(
-								event.getBinderId(),
-								event.getFolderTemplateId(),
-								event.isAllowCloudFolder() );
+							showAddNewFolderDlgNow( event.getBinderId(), event.getFolderTemplateId() );
 						}// end execute()
 					} );
 				}// end onSuccess()
@@ -2902,10 +2817,7 @@ public class GwtMainPage extends ResizeComposite
 		{
 			// Yes, we've instantiated a add new file dialog already!
 			// Simply show it.
-			showAddNewFolderDlgNow(
-				event.getBinderId(),
-				event.getFolderTemplateId(),
-				event.isAllowCloudFolder() );
+			showAddNewFolderDlgNow( event.getBinderId(), event.getFolderTemplateId() );
 		}
 	}// end onInvokeAddNewFolder()
 	
@@ -4090,9 +4002,9 @@ public class GwtMainPage extends ResizeComposite
 	/*
 	 * Synchronously shows the add new file dialog.
 	 */
-	private void showAddNewFolderDlgNow(Long binderId, Long folderTemplateId, boolean allowCloudFolder)
+	private void showAddNewFolderDlgNow(Long binderId, Long folderTemplateId)
 	{
-		AddNewFolderDlg.initAndShow( m_addNewFolderDlg, binderId, folderTemplateId, allowCloudFolder );
+		AddNewFolderDlg.initAndShow( m_addNewFolderDlg, binderId, folderTemplateId );
 	}// end showAddNewFolderDlgNow()
 	
 	/**

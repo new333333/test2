@@ -52,7 +52,7 @@ public class ManageSearchNodesController extends  SAbstractController {
 	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) throws Exception {
 		Map formData = request.getParameterMap();
 		if (formData.containsKey("okBtn") && WebHelper.isMethodPost(request)) {
-			List<IndexNode> nodes = getAdminModule().retrieveIndexNodesHA();
+			List<IndexNode> nodes = getAdminModule().retrieveIndexNodes();
 			if(nodes != null) {
 				for(IndexNode node : nodes) {
 					String[] userModeAccess = (String[])formData.get("userModeAccess" + node.getNodeName());
@@ -73,14 +73,14 @@ public class ManageSearchNodesController extends  SAbstractController {
 						newEnableDeferredUpdateLog = null;
 					
 					if(newUserModeAccess != null || newEnableDeferredUpdateLog != null)
-						getAdminModule().updateIndexNodeHA(node.getId(), newUserModeAccess, newEnableDeferredUpdateLog, null);
+						getAdminModule().updateIndexNode(node.getId(), newUserModeAccess, newEnableDeferredUpdateLog, null);
 					
 					String[] synchronize = (String[])formData.get("synchronize" + node.getNodeName());
 					if(synchronize != null && synchronize.length > 0) {
 						if(synchronize[0].equals("apply"))
-							getAdminModule().applyDeferredUpdateLogRecordsHA(node);
+							getAdminModule().applyDeferredUpdateLogRecords(node);
 						else if(synchronize[0].equals("discard"))
-							getAdminModule().discardDeferredUpdateLogRecordsHA(node);
+							getAdminModule().discardDeferredUpdateLogRecords(node);
 					}
 				}
 			}
@@ -94,7 +94,7 @@ public class ManageSearchNodesController extends  SAbstractController {
 			RenderResponse response) throws Exception {
 		Map model = new HashMap();
 		
-		List<IndexNode> nodes = getAdminModule().retrieveIndexNodesHA();
+		List<IndexNode> nodes = getAdminModule().retrieveIndexNodes();
 		
 		if(nodes != null) {
 			model.put(WebKeys.SEARCH_NODES, nodes);

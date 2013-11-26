@@ -39,7 +39,6 @@ import java.util.List;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.binderviews.ViewReady;
 import org.kablink.teaming.gwt.client.binderviews.util.BinderViewsHelper;
-import org.kablink.teaming.gwt.client.binderviews.util.DeleteEntitiesHelper.DeleteEntitiesCallback;
 import org.kablink.teaming.gwt.client.event.CalendarChangedEvent;
 import org.kablink.teaming.gwt.client.event.CalendarGotoDateEvent;
 import org.kablink.teaming.gwt.client.event.CalendarHoursEvent;
@@ -48,33 +47,38 @@ import org.kablink.teaming.gwt.client.event.CalendarPreviousPeriodEvent;
 import org.kablink.teaming.gwt.client.event.CalendarSettingsEvent;
 import org.kablink.teaming.gwt.client.event.CalendarShowEvent;
 import org.kablink.teaming.gwt.client.event.CalendarViewDaysEvent;
-import org.kablink.teaming.gwt.client.event.ChangeEntryTypeSelectedEntitiesEvent;
+import org.kablink.teaming.gwt.client.event.ChangeEntryTypeSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.ContributorIdsReplyEvent;
 import org.kablink.teaming.gwt.client.event.ContributorIdsRequestEvent;
-import org.kablink.teaming.gwt.client.event.CopySelectedEntitiesEvent;
-import org.kablink.teaming.gwt.client.event.DeleteSelectedEntitiesEvent;
+import org.kablink.teaming.gwt.client.event.CopySelectedEntriesEvent;
+import org.kablink.teaming.gwt.client.event.DeleteSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.FullUIReloadEvent;
 import org.kablink.teaming.gwt.client.event.GotoContentUrlEvent;
 import org.kablink.teaming.gwt.client.event.InvokeDropBoxEvent;
-import org.kablink.teaming.gwt.client.event.LockSelectedEntitiesEvent;
-import org.kablink.teaming.gwt.client.event.MarkReadSelectedEntitiesEvent;
-import org.kablink.teaming.gwt.client.event.MarkUnreadSelectedEntitiesEvent;
-import org.kablink.teaming.gwt.client.event.MoveSelectedEntitiesEvent;
+import org.kablink.teaming.gwt.client.event.LockSelectedEntriesEvent;
+import org.kablink.teaming.gwt.client.event.MarkReadSelectedEntriesEvent;
+import org.kablink.teaming.gwt.client.event.MarkUnreadSelectedEntriesEvent;
+import org.kablink.teaming.gwt.client.event.MoveSelectedEntriesEvent;
+import org.kablink.teaming.gwt.client.event.PurgeSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.QuickFilterEvent;
-import org.kablink.teaming.gwt.client.event.ShareSelectedEntitiesEvent;
-import org.kablink.teaming.gwt.client.event.SubscribeSelectedEntitiesEvent;
+import org.kablink.teaming.gwt.client.event.ShareSelectedEntriesEvent;
+import org.kablink.teaming.gwt.client.event.SubscribeSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
-import org.kablink.teaming.gwt.client.event.UnlockSelectedEntitiesEvent;
+import org.kablink.teaming.gwt.client.event.UnlockSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.ViewSelectedEntryEvent;
 import org.kablink.teaming.gwt.client.event.ViewWhoHasAccessEvent;
 import org.kablink.teaming.gwt.client.rpc.shared.CalendarAppointmentsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.CalendarDisplayDataRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.DeleteFolderEntriesCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData.ErrorInfo;
 import org.kablink.teaming.gwt.client.rpc.shared.GetCalendarAppointmentsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetCalendarDisplayDataCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetCalendarDisplayDateCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetCalendarNextPreviousPeriodCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetViewFolderEntryUrlCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.PurgeFolderEntriesCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveCalendarDayViewCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveCalendarHoursCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveCalendarShowCmd;
@@ -88,6 +92,9 @@ import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.CalendarSettingsDlg;
 import org.kablink.teaming.gwt.client.widgets.CalendarSettingsDlg.CalendarSettingsDlgClient;
+import org.kablink.teaming.gwt.client.widgets.ConfirmCallback;
+import org.kablink.teaming.gwt.client.widgets.ConfirmDlg;
+import org.kablink.teaming.gwt.client.widgets.ConfirmDlg.ConfirmDlgClient;
 import org.kablink.teaming.gwt.client.widgets.HoverHintPopup;
 import org.kablink.teaming.gwt.client.widgets.VibeCalendar;
 
@@ -108,12 +115,14 @@ import com.bradrydzewski.gwt.calendar.client.event.UpdateHandler;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.logical.shared.OpenEvent;
 import com.google.gwt.event.logical.shared.OpenHandler;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.web.bindery.event.shared.HandlerRegistration;
@@ -133,19 +142,20 @@ public class CalendarFolderView extends FolderViewBase
 		CalendarSettingsEvent.Handler,
 		CalendarShowEvent.Handler,
 		CalendarViewDaysEvent.Handler,
-		ChangeEntryTypeSelectedEntitiesEvent.Handler,
-		CopySelectedEntitiesEvent.Handler,
+		ChangeEntryTypeSelectedEntriesEvent.Handler,
+		CopySelectedEntriesEvent.Handler,
 		ContributorIdsRequestEvent.Handler,
-		DeleteSelectedEntitiesEvent.Handler,
+		DeleteSelectedEntriesEvent.Handler,
 		InvokeDropBoxEvent.Handler,
-		LockSelectedEntitiesEvent.Handler,
-		MarkReadSelectedEntitiesEvent.Handler,
-		MarkUnreadSelectedEntitiesEvent.Handler,
-		MoveSelectedEntitiesEvent.Handler,
+		LockSelectedEntriesEvent.Handler,
+		MarkReadSelectedEntriesEvent.Handler,
+		MarkUnreadSelectedEntriesEvent.Handler,
+		MoveSelectedEntriesEvent.Handler,
+		PurgeSelectedEntriesEvent.Handler,
 		QuickFilterEvent.Handler,
-		ShareSelectedEntitiesEvent.Handler,
-		SubscribeSelectedEntitiesEvent.Handler,
-		UnlockSelectedEntitiesEvent.Handler,
+		ShareSelectedEntriesEvent.Handler,
+		SubscribeSelectedEntriesEvent.Handler,
+		UnlockSelectedEntriesEvent.Handler,
 		ViewSelectedEntryEvent.Handler,
 		ViewWhoHasAccessEvent.Handler
 {
@@ -171,19 +181,20 @@ public class CalendarFolderView extends FolderViewBase
 		TeamingEvents.CALENDAR_SETTINGS,
 		TeamingEvents.CALENDAR_SHOW,
 		TeamingEvents.CALENDAR_VIEW_DAYS,
-		TeamingEvents.CHANGE_ENTRY_TYPE_SELECTED_ENTITIES,
+		TeamingEvents.CHANGE_ENTRY_TYPE_SELECTED_ENTRIES,
 		TeamingEvents.CONTRIBUTOR_IDS_REQUEST,
-		TeamingEvents.COPY_SELECTED_ENTITIES,
-		TeamingEvents.DELETE_SELECTED_ENTITIES,
+		TeamingEvents.COPY_SELECTED_ENTRIES,
+		TeamingEvents.DELETE_SELECTED_ENTRIES,
 		TeamingEvents.INVOKE_DROPBOX,
-		TeamingEvents.LOCK_SELECTED_ENTITIES,
-		TeamingEvents.MARK_READ_SELECTED_ENTITIES,
-		TeamingEvents.MARK_UNREAD_SELECTED_ENTITIES,
-		TeamingEvents.MOVE_SELECTED_ENTITIES,
+		TeamingEvents.LOCK_SELECTED_ENTRIES,
+		TeamingEvents.MARK_READ_SELECTED_ENTRIES,
+		TeamingEvents.MARK_UNREAD_SELECTED_ENTRIES,
+		TeamingEvents.MOVE_SELECTED_ENTRIES,
+		TeamingEvents.PURGE_SELECTED_ENTRIES,
 		TeamingEvents.QUICK_FILTER,
-		TeamingEvents.SHARE_SELECTED_ENTITIES,
-		TeamingEvents.SUBSCRIBE_SELECTED_ENTITIES,
-		TeamingEvents.UNLOCK_SELECTED_ENTITIES,
+		TeamingEvents.SHARE_SELECTED_ENTRIES,
+		TeamingEvents.SUBSCRIBE_SELECTED_ENTRIES,
+		TeamingEvents.UNLOCK_SELECTED_ENTRIES,
 		TeamingEvents.VIEW_SELECTED_ENTRY,
 		TeamingEvents.VIEW_WHO_HAS_ACCESS,
 	};
@@ -235,7 +246,7 @@ public class CalendarFolderView extends FolderViewBase
 				}
 				
 				// Delete the selected appointment.
-				doDeleteEntityAsync((CalendarAppointment) event.getTarget());
+				doDeleteEntryAsync((CalendarAppointment) event.getTarget());
 				event.setCancelled(true);
 			}
 		});
@@ -445,12 +456,13 @@ public class CalendarFolderView extends FolderViewBase
 	 * folder.
 	 */
 	private void doAddAppointmentAsync(final Date date) {
-		GwtClientHelper.deferCommand(new ScheduledCommand() {
+		Scheduler.ScheduledCommand doAdd = new Scheduler.ScheduledCommand() {
 			@Override
 			public void execute() {
 				doAddAppointmentNow(date);
 			}
-		});
+		};
+		Scheduler.get().scheduleDeferred(doAdd);
 	}
 
 	/*
@@ -476,12 +488,13 @@ public class CalendarFolderView extends FolderViewBase
 	 * period.
 	 */
 	private void doCalendarNextPreviousPeriodAsync(final boolean next) {
-		GwtClientHelper.deferCommand(new ScheduledCommand() {
+		Scheduler.ScheduledCommand doNextPreviousPeriod = new Scheduler.ScheduledCommand() {
 			@Override
 			public void execute() {
 				doCalendarNextPreviousPeriodNow(next);
 			}
-		});
+		};
+		Scheduler.get().scheduleDeferred(doNextPreviousPeriod);
 	}
 	
 	/*
@@ -515,54 +528,97 @@ public class CalendarFolderView extends FolderViewBase
 	/*
 	 * Asynchronously deletes the given appointment.
 	 */
-	private void doDeleteEntityAsync(final CalendarAppointment appointment) {
-		GwtClientHelper.deferCommand(new ScheduledCommand() {
+	private void doDeleteEntryAsync(final CalendarAppointment appointment) {
+		Scheduler.ScheduledCommand doDelete = new Scheduler.ScheduledCommand() {
 			@Override
 			public void execute() {
-				doDeleteEntityNow(appointment);
+				doDeleteEntryNow(appointment);
 			}
-		});
+		};
+		Scheduler.get().scheduleDeferred(doDelete);
 	}
 	
 	/*
 	 * Synchronously deletes the given appointment.
 	 */
-	private void doDeleteEntityNow(final CalendarAppointment appointment) {
+	private void doDeleteEntryNow(final CalendarAppointment appointment) {
 		// Is the user sure they want to delete the appointment?
-		final List<EntityId> entityIds = appointment.getEntityIdAsList();
-		BinderViewsHelper.deleteSelections(entityIds, new DeleteEntitiesCallback() {
+		ConfirmDlg.createAsync(new ConfirmDlgClient() {
 			@Override
-			public void operationCanceled() {
-				// No, they're not sure!
+			public void onUnavailable() {
+				// Nothing to do.  Error handled in
+				// asynchronous provider.
 			}
-
+			
 			@Override
-			public void operationComplete() {
-				// Yes, the user was sure and we've deleted the
-				// appointment!  If the appoint was a recurrent
-				// instance...
-				if (appointment.isClientRecurrentInstance()) {
-					// ...force the calendar to
-					// ...refresh.
-					doFullCalendarRefreshAsync();
-				}
-				else {
-					// ...otherwise, remove the
-					// ...appointment from the
-					// ...calendar.
-					m_calendar.suspendLayout();
-					m_calendar.removeAppointment(appointment);
-					m_calendar.resumeLayout();
-					if (CalendarDayView.ONE_DAY.equals(m_calendarDisplayData.getDayView())) {
-						m_calendar.scrollToHour(m_calendarDisplayData.getWorkDayStart());
-					}
-				}
-			}
+			public void onSuccess(ConfirmDlg cDlg) {
+				ConfirmDlg.initAndShow(
+					cDlg,
+					new ConfirmCallback() {
+						@Override
+						public void dialogReady() {
+							// Ignored.  We don't really care when the
+							// dialog is ready.
+						}
 
-			@Override
-			public void operationFailed() {
-				// Nothing to do.  The delete call will have
-				// told the user about the failure.
+						@Override
+						public void accepted() {
+							// Yes, the user is sure!  Can we delete
+							// the appointment?
+							GwtClientHelper.executeCommand(
+									new DeleteFolderEntriesCmd(appointment.getEntityIdAsList()),
+									new AsyncCallback<VibeRpcResponse>() {
+								@Override
+								public void onFailure(Throwable t) {
+									// No!  Tell the user about the RPC
+									// failure.
+									GwtClientHelper.handleGwtRPCFailure(
+										t,
+										m_messages.rpcFailure_DeleteFolderEntries());
+								}
+
+								@Override
+								public void onSuccess(VibeRpcResponse response) {
+									// Perhaps!  Did we get any errors?
+									ErrorListRpcResponseData responseData = ((ErrorListRpcResponseData) response.getResponseData());
+									List<ErrorInfo> errors = responseData.getErrorList();
+									if ((null != errors) && (!(errors.isEmpty()))) {
+										// Yes!  Display them.
+										GwtClientHelper.displayMultipleErrors(
+											m_messages.deleteFolderEntryError(),
+											errors);
+									}
+									
+									else {
+										// No error!  If this is a
+										// recurrent instance...
+										if (appointment.isClientRecurrentInstance()) {
+											// ...force the calendar to
+											// ...refresh.
+											doFullCalendarRefreshAsync();
+										}
+										else {
+											// ...otherwise, remove the
+											// ...appointment from the
+											// ...calendar.
+											m_calendar.suspendLayout();
+											m_calendar.removeAppointment(appointment);
+											m_calendar.resumeLayout();
+											if (CalendarDayView.ONE_DAY.equals(m_calendarDisplayData.getDayView())) {
+												m_calendar.scrollToHour(m_calendarDisplayData.getWorkDayStart());
+											}
+										}
+									}
+								}
+							});
+						}
+
+						@Override
+						public void rejected() {
+							// No, they're not sure!
+						}
+					},
+					m_messages.calendarView_Confirm_DeleteEntry());
 			}
 		});
 	}
@@ -571,12 +627,13 @@ public class CalendarFolderView extends FolderViewBase
 	 * Asynchronously refreshes the full contents of the calendar.
 	 */
 	private void doFullCalendarRefreshAsync() {
-		GwtClientHelper.deferCommand(new ScheduledCommand() {
+		Scheduler.ScheduledCommand doRefresh = new Scheduler.ScheduledCommand() {
 			@Override
 			public void execute() {
 				doFullCalendarRefreshNow();
 			}
-		});
+		};
+		Scheduler.get().scheduleDeferred(doRefresh);
 	}
 	
 	/*
@@ -589,15 +646,115 @@ public class CalendarFolderView extends FolderViewBase
 	}
 	
 	/*
+	 * Asynchronously purges the given appointment.
+	 */
+	private void doPurgeEntryAsync(final CalendarAppointment appointment) {
+		Scheduler.ScheduledCommand doPurge = new Scheduler.ScheduledCommand() {
+			@Override
+			public void execute() {
+				doPurgeEntryNow(appointment);
+			}
+		};
+		Scheduler.get().scheduleDeferred(doPurge);
+	}
+	
+	/*
+	 * Synchronously purges the given appointment.
+	 */
+	private void doPurgeEntryNow(final CalendarAppointment appointment) {
+		// Is the user sure they want to purge the appointment?
+		ConfirmDlg.createAsync(new ConfirmDlgClient() {
+			@Override
+			public void onUnavailable() {
+				// Nothing to do.  Error handled in
+				// asynchronous provider.
+			}
+			
+			@Override
+			public void onSuccess(ConfirmDlg cDlg) {
+				ConfirmDlg.initAndShow(
+					cDlg,
+					new ConfirmCallback() {
+						@Override
+						public void dialogReady() {
+							// Ignored.  We don't really care when the
+							// dialog is ready.
+						}
+
+						@Override
+						public void accepted() {
+							// Yes, the user is sure!  Can we purge
+							// the appointment?
+							GwtClientHelper.executeCommand(
+									new PurgeFolderEntriesCmd(appointment.getEntityIdAsList(), false),
+									new AsyncCallback<VibeRpcResponse>() {
+								@Override
+								public void onFailure(Throwable t) {
+									// No!  Tell the user about the RPC
+									// failure.
+									GwtClientHelper.handleGwtRPCFailure(
+										t,
+										m_messages.rpcFailure_PurgeFolderEntries());
+								}
+
+								@Override
+								public void onSuccess(VibeRpcResponse response) {
+									// Perhaps!  Did we get any errors?
+									ErrorListRpcResponseData responseData = ((ErrorListRpcResponseData) response.getResponseData());
+									List<ErrorInfo> errors = responseData.getErrorList();
+									if ((null != errors) && (!(errors.isEmpty()))) {
+										// Yes!  Display them.
+										GwtClientHelper.displayMultipleErrors(
+											m_messages.purgeFolderEntryError(),
+											errors);
+									}
+									
+									else {
+										// No error!  If this is a
+										// recurrent instance...
+										if (appointment.isClientRecurrentInstance()) {
+											// ...force the calendar to
+											// ...refresh.
+											doFullCalendarRefreshAsync();
+										}
+										
+										else {
+											// ...otherwise, remove the
+											// ...appointment from the
+											// ...calendar.
+											m_calendar.suspendLayout();
+											m_calendar.removeAppointment(appointment);
+											m_calendar.resumeLayout();
+											if (CalendarDayView.ONE_DAY.equals(m_calendarDisplayData.getDayView())) {
+												m_calendar.scrollToHour(m_calendarDisplayData.getWorkDayStart());
+											}
+										}
+									}
+								}
+							});
+						}
+
+						@Override
+						public void rejected() {
+							// No, they're not sure!
+						}
+					},
+					m_messages.calendarView_Confirm_PurgeEntry());
+			}
+		});
+	}
+	
+	/*
 	 * Asynchronously runs the entry viewer on the given appointment.
 	 */
 	private void doViewEntryAsync(final CalendarAppointment appointment) {
-		GwtClientHelper.deferCommand(new ScheduledCommand() {
+		Scheduler.ScheduledCommand doView = new Scheduler.ScheduledCommand() {
 			@Override
 			public void execute() {
 				doViewEntryNow(appointment);
 			}
-		});
+		};
+		Scheduler.get().scheduleDeferred(doView);
 	}
 	
 	/*
@@ -774,12 +931,13 @@ public class CalendarFolderView extends FolderViewBase
 	 * Asynchronously loads the calendar display data.
 	 */
 	private void loadPart1Async() {
-		GwtClientHelper.deferCommand(new ScheduledCommand() {
+		Scheduler.ScheduledCommand doLoad = new Scheduler.ScheduledCommand() {
 			@Override
 			public void execute() {
 				loadPart1Now();
 			}
-		});
+		};
+		Scheduler.get().scheduleDeferred(doLoad);
 	}
 	
 	/*
@@ -820,12 +978,13 @@ public class CalendarFolderView extends FolderViewBase
 	 * Asynchronously loads the Calendar widget.
 	 */
 	private void loadPart2Async() {
-		GwtClientHelper.deferCommand(new ScheduledCommand() {
+		Scheduler.ScheduledCommand doLoad = new Scheduler.ScheduledCommand() {
 			@Override
 			public void execute() {
 				loadPart2Now();
 			}
-		});
+		};
+		Scheduler.get().scheduleDeferred(doLoad);
 	}
 	
 	/*
@@ -1094,7 +1253,7 @@ public class CalendarFolderView extends FolderViewBase
 				
 				// ...and asynchronously fire the corresponding reply
 				// ...event with the contributor IDs.
-				GwtClientHelper.deferCommand(new ScheduledCommand() {
+				ScheduledCommand doReply = new ScheduledCommand() {
 					@Override
 					public void execute() {
 						GwtTeaming.fireEvent(
@@ -1102,20 +1261,21 @@ public class CalendarFolderView extends FolderViewBase
 								getFolderId(),
 								contributorIds));
 					}
-				});
+				};
+				Scheduler.get().scheduleDeferred(doReply);
 			}
 		}
 	}
 	
 	/**
-	 * Handles ChangeEntryTypeSelectedEntitiesEvent's received by this class.
+	 * Handles ChangeEntryTypeSelectedEntriesEvent's received by this class.
 	 * 
-	 * Implements the ChangeEntryTypeSelectedEntitiesEvent.Handler.onChangeEntryTypeSelectedEntities() method.
+	 * Implements the ChangeEntryTypeSelectedEntriesEvent.Handler.onChangeEntryTypeSelectedEntries() method.
 	 * 
 	 * @param event
 	 */
 	@Override
-	public void onChangeEntryTypeSelectedEntities(ChangeEntryTypeSelectedEntitiesEvent event) {
+	public void onChangeEntryTypeSelectedEntries(ChangeEntryTypeSelectedEntriesEvent event) {
 		// Is the event targeted to this folder?
 		Long eventFolderId = event.getFolderId();
 		if (eventFolderId.equals(getFolderId())) {
@@ -1129,14 +1289,14 @@ public class CalendarFolderView extends FolderViewBase
 	}
 	
 	/**
-	 * Handles CopySelectedEntitiesEvent's received by this class.
+	 * Handles CopySelectedEntriesEvent's received by this class.
 	 * 
-	 * Implements the CopySelectedEntitiesEvent.Handler.onCopySelectedEntities() method.
+	 * Implements the CopySelectedEntriesEvent.Handler.onCopySelectedEntries() method.
 	 * 
 	 * @param event
 	 */
 	@Override
-	public void onCopySelectedEntities(CopySelectedEntitiesEvent event) {
+	public void onCopySelectedEntries(CopySelectedEntriesEvent event) {
 		// Is the event targeted to this folder?
 		Long eventFolderId = event.getFolderId();
 		if (eventFolderId.equals(getFolderId())) {
@@ -1151,14 +1311,14 @@ public class CalendarFolderView extends FolderViewBase
 	}
 	
 	/**
-	 * Handles DeleteSelectedEntitiesEvent's received by this class.
+	 * Handles DeleteSelectedEntriesEvent's received by this class.
 	 * 
-	 * Implements the DeleteSelectedEntitiesEvent.Handler.onDeleteSelectedEntities() method.
+	 * Implements the DeleteSelectedEntriesEvent.Handler.onDeleteSelectedEntries() method.
 	 * 
 	 * @param event
 	 */
 	@Override
-	public void onDeleteSelectedEntities(DeleteSelectedEntitiesEvent event) {
+	public void onDeleteSelectedEntries(DeleteSelectedEntriesEvent event) {
 		// If we don't have an event selected...
 		if (null == m_selectedEvent) {
 			// ...bail.
@@ -1178,7 +1338,7 @@ public class CalendarFolderView extends FolderViewBase
 			}
 			
 			// Delete the selected appointment.
-			doDeleteEntityAsync(m_selectedEvent);
+			doDeleteEntryAsync(m_selectedEvent);
 		}
 	}
 	
@@ -1215,14 +1375,14 @@ public class CalendarFolderView extends FolderViewBase
 	}
 	
 	/**
-	 * Handles LockSelectedEntitiesEvent's received by this class.
+	 * Handles LockSelectedEntriesEvent's received by this class.
 	 * 
-	 * Implements the LockSelectedEntitiesEvent.Handler.onLockSelectedEntities() method.
+	 * Implements the LockSelectedEntriesEvent.Handler.onLockSelectedEntries() method.
 	 * 
 	 * @param event
 	 */
 	@Override
-	public void onLockSelectedEntities(LockSelectedEntitiesEvent event) {
+	public void onLockSelectedEntries(LockSelectedEntriesEvent event) {
 		// Is the event targeted to this folder?
 		Long eventFolderId = event.getFolderId();
 		if (eventFolderId.equals(getFolderId())) {
@@ -1236,14 +1396,14 @@ public class CalendarFolderView extends FolderViewBase
 	}
 	
 	/**
-	 * Handles MarkReadSelectedEntitiesEvent's received by this class.
+	 * Handles MarkReadSelectedEntriesEvent's received by this class.
 	 * 
-	 * Implements the MarkReadSelectedEntitiesEvent.Handler.onMarkReadSelectedEntities() method.
+	 * Implements the MarkReadSelectedEntriesEvent.Handler.onMarkReadSelectedEntries() method.
 	 * 
 	 * @param event
 	 */
 	@Override
-	public void onMarkReadSelectedEntities(MarkReadSelectedEntitiesEvent event) {
+	public void onMarkReadSelectedEntries(MarkReadSelectedEntriesEvent event) {
 		// Is the event targeted to this folder?
 		Long eventFolderId = event.getFolderId();
 		if (eventFolderId.equals(getFolderId())) {
@@ -1257,14 +1417,14 @@ public class CalendarFolderView extends FolderViewBase
 	}
 	
 	/**
-	 * Handles MarkUnreadSelectedEntitiesEvent's received by this class.
+	 * Handles MarkUnreadSelectedEntriesEvent's received by this class.
 	 * 
-	 * Implements the MarkUnreadSelectedEntitiesEvent.Handler.onMarkUnreadSelectedEntities() method.
+	 * Implements the MarkUnreadSelectedEntriesEvent.Handler.onMarkUnreadSelectedEntries() method.
 	 * 
 	 * @param event
 	 */
 	@Override
-	public void onMarkUnreadSelectedEntities(MarkUnreadSelectedEntitiesEvent event) {
+	public void onMarkUnreadSelectedEntries(MarkUnreadSelectedEntriesEvent event) {
 		// Is the event targeted to this folder?
 		Long eventFolderId = event.getFolderId();
 		if (eventFolderId.equals(getFolderId())) {
@@ -1278,14 +1438,14 @@ public class CalendarFolderView extends FolderViewBase
 	}
 	
 	/**
-	 * Handles MoveSelectedEntitiesEvent's received by this class.
+	 * Handles MoveSelectedEntriesEvent's received by this class.
 	 * 
-	 * Implements the MoveSelectedEntitiesEvent.Handler.onMoveSelectedEntities() method.
+	 * Implements the MoveSelectedEntriesEvent.Handler.onMoveSelectedEntries() method.
 	 * 
 	 * @param event
 	 */
 	@Override
-	public void onMoveSelectedEntities(MoveSelectedEntitiesEvent event) {
+	public void onMoveSelectedEntries(MoveSelectedEntriesEvent event) {
 		// Is the event targeted to this folder?
 		Long eventFolderId = event.getFolderId();
 		if (eventFolderId.equals(getFolderId())) {
@@ -1296,6 +1456,38 @@ public class CalendarFolderView extends FolderViewBase
 				selectedEntityIds = getSelectedEntityIds();
 				BinderViewsHelper.moveEntries(selectedEntityIds);
 			}
+		}
+	}
+	
+	/**
+	 * Handles PurgeSelectedEntriesEvent's received by this class.
+	 * 
+	 * Implements the PurgeSelectedEntriesEvent.Handler.onPurgeSelectedEntries() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onPurgeSelectedEntries(PurgeSelectedEntriesEvent event) {
+		// If we don't have an event selected...
+		if (null == m_selectedEvent) {
+			// ...bail.
+			return;
+		}
+		
+		// Is the event targeted to this folder?
+		Long eventFolderId = event.getFolderId();
+		if (eventFolderId.equals(getFolderId())) {
+			// Yes!  Purge the selected event.  Does the user have
+			// rights to purge this event?
+			if (!(m_selectedEvent.canPurge())) {
+				// No!  Tell them about the problem and cancel the
+				// event.
+				GwtClientHelper.deferredAlert(m_messages.calendarView_Error_CantPurge());
+				return;					
+			}
+			
+			// Purge the selected appointment.
+			doPurgeEntryAsync(m_selectedEvent);
 		}
 	}
 	
@@ -1318,14 +1510,14 @@ public class CalendarFolderView extends FolderViewBase
 	}
 
 	/**
-	 * Handles ShareSelectedEntitiesEvent's received by this class.
+	 * Handles ShareSelectedEntriesEvent's received by this class.
 	 * 
-	 * Implements the ShareSelectedEntitiesEvent.Handler.onShareSelectedEntities() method.
+	 * Implements the ShareSelectedEntriesEvent.Handler.onShareSelectedEntries() method.
 	 * 
 	 * @param event
 	 */
 	@Override
-	public void onShareSelectedEntities(ShareSelectedEntitiesEvent event) {
+	public void onShareSelectedEntries(ShareSelectedEntriesEvent event) {
 		// Is the event targeted to this folder?
 		Long eventFolderId = event.getFolderId();
 		if (eventFolderId.equals(getFolderId())) {
@@ -1339,14 +1531,14 @@ public class CalendarFolderView extends FolderViewBase
 	}
 	
 	/**
-	 * Handles SubscribeSelectedEntitiesEvent's received by this class.
+	 * Handles SubscribeSelectedEntriesEvent's received by this class.
 	 * 
-	 * Implements the SubscribeSelectedEntitiesEvent.Handler.onSubscribeSelectedEntities() method.
+	 * Implements the SubscribeSelectedEntriesEvent.Handler.onSubscribeSelectedEntries() method.
 	 * 
 	 * @param event
 	 */
 	@Override
-	public void onSubscribeSelectedEntities(SubscribeSelectedEntitiesEvent event) {
+	public void onSubscribeSelectedEntries(SubscribeSelectedEntriesEvent event) {
 		// Is the event targeted to this folder?
 		Long eventFolderId = event.getFolderId();
 		if (eventFolderId.equals(getFolderId())) {
@@ -1360,14 +1552,14 @@ public class CalendarFolderView extends FolderViewBase
 	}
 	
 	/**
-	 * Handles UnlockSelectedEntitiesEvent's received by this class.
+	 * Handles UnlockSelectedEntriesEvent's received by this class.
 	 * 
-	 * Implements the UnlockSelectedEntitiesEvent.Handler.onUnlockSelectedEntities() method.
+	 * Implements the UnlockSelectedEntriesEvent.Handler.onUnlockSelectedEntries() method.
 	 * 
 	 * @param event
 	 */
 	@Override
-	public void onUnlockSelectedEntities(UnlockSelectedEntitiesEvent event) {
+	public void onUnlockSelectedEntries(UnlockSelectedEntriesEvent event) {
 		// Is the event targeted to this folder?
 		Long eventFolderId = event.getFolderId();
 		if (eventFolderId.equals(getFolderId())) {
@@ -1438,12 +1630,13 @@ public class CalendarFolderView extends FolderViewBase
 	 * Asynchronously populates the the calendar's events.
 	 */
 	private void populateCalendarEventsAsync() {
-		GwtClientHelper.deferCommand(new ScheduledCommand() {
+		Scheduler.ScheduledCommand doPopulate = new Scheduler.ScheduledCommand() {
 			@Override
 			public void execute() {
 				populateCalendarEventsNow();
 			}
-		});
+		};
+		Scheduler.get().scheduleDeferred(doPopulate);
 	}
 	
 	/*
@@ -1481,12 +1674,13 @@ public class CalendarFolderView extends FolderViewBase
 	 * Asynchronously populates the the calendar view.
 	 */
 	private void populateViewAsync() {
-		GwtClientHelper.deferCommand(new ScheduledCommand() {
+		Scheduler.ScheduledCommand doPopulate = new Scheduler.ScheduledCommand() {
 			@Override
 			public void execute() {
 				populateViewNow();
 			}
-		});
+		};
+		Scheduler.get().scheduleDeferred(doPopulate);
 	}
 	
 	/*
@@ -1613,13 +1807,25 @@ public class CalendarFolderView extends FolderViewBase
 	 * position in the view.
 	 */
 	private void resizeViewAsync(int delay) {
-		GwtClientHelper.deferCommand(new ScheduledCommand() {
-			@Override
-			public void execute() {
-				resizeView();
-			}
-		},
-		delay);
+		if (0 == delay) {
+			ScheduledCommand doResize = new ScheduledCommand() {
+				@Override
+				public void execute() {
+					resizeView();
+				}
+			};
+			Scheduler.get().scheduleDeferred(doResize);
+		}
+		
+		else {
+			Timer timer = new Timer() {
+				@Override
+				public void run() {
+					resizeView();
+				}
+			};
+			timer.schedule(delay);
+		}
 	}
 
 	/*
@@ -1627,19 +1833,20 @@ public class CalendarFolderView extends FolderViewBase
 	 * position in the view.
 	 */
 	private void resizeViewAsync() {
-		resizeViewAsync(0);	// DRF (20130726):  Was INITIAL_RESIZE_DELAY (like other views.)  Changed to 0 to fix initial display glitches.
+		resizeViewAsync(INITIAL_RESIZE_DELAY);
 	}
 	
 	/*
 	 * Asynchronously shows the calendar settings dialog.
 	 */
 	private void showCalendarSettingsDlgAsync() {
-		GwtClientHelper.deferCommand(new ScheduledCommand() {
+		ScheduledCommand doShow = new ScheduledCommand() {
 			@Override
 			public void execute() {
 				showCalendarSettingsDlgNow();
 			}
-		});
+		};
+		Scheduler.get().scheduleDeferred(doShow);
 	}
 	
 	/*
@@ -1689,8 +1896,7 @@ public class CalendarFolderView extends FolderViewBase
 		// ...determine how big everything is.
 		resizeViewAsync();
 	}
-
-
+	
 	/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 	/* The following code is used to load the split point containing */
 	/* the calendar folder view and perform some operation on it.    */

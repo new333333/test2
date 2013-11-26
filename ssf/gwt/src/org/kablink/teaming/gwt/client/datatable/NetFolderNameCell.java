@@ -34,6 +34,7 @@ package org.kablink.teaming.gwt.client.datatable;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.NetFolder;
+import org.kablink.teaming.gwt.client.NetFolder.NetFolderStatus;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 
 import com.google.gwt.cell.client.AbstractCell;
@@ -116,15 +117,36 @@ public class NetFolderNameCell extends AbstractCell<NetFolder>
 		
 		{
 			SafeHtml safeValue;
+			NetFolderStatus status;
 
 			// Wrap everything in a <div>
 			sb.appendHtmlConstant( "<div class=\"netFolder_NamePanel\">" );
 			
 			// Add the group's title
 			sb.appendHtmlConstant( "<span class=\"netFolder_Name\">" );
-			safeValue = SafeHtmlUtils.fromString( value.getDisplayName() );
+			safeValue = SafeHtmlUtils.fromString( value.getName() );
 			sb.append( safeValue );
 			sb.appendHtmlConstant( "</span>" );
+			
+			status = value.getStatus();
+			if ( status != NetFolderStatus.READY )
+			{
+				String statusMsg;
+				
+				// Add the spinner
+				sb.appendHtmlConstant( m_imgHtml );
+				
+				// Get the appropriate status message.
+				if ( status == NetFolderStatus.SYNC_IN_PROGRESS )
+					statusMsg = GwtTeaming.getMessages().manageNetFoldersDlg_Syncing();
+				else
+					statusMsg = GwtTeaming.getMessages().manageNetFoldersDlg_UnknownStatus();
+					
+				// Add a status message
+				sb.appendHtmlConstant( "<span class=\"groupStatus\">" );
+				sb.appendEscaped( statusMsg );
+				sb.appendHtmlConstant( "</span>" );
+			}
 			
 			// Close the <div>
 			sb.appendHtmlConstant( "</div>" );

@@ -49,7 +49,6 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 public class ZoneShareRights 
 	implements IsSerializable, VibeRpcResponseData
 {
-	private boolean m_allowShareWithLdapGroups;
 	private ArrayList<GwtRole> m_roles;
 	
 	
@@ -66,25 +65,9 @@ public class ZoneShareRights
 	/**
 	 * 
 	 */
-	public boolean getAllowShareWithLdapGroups()
-	{
-		return m_allowShareWithLdapGroups;
-	}
-	
-	/**
-	 * 
-	 */
 	public ArrayList<GwtRole> getRoles()
 	{
 		return m_roles;
-	}
-
-	/**
-	 * 
-	 */
-	public void setAllowShareWithLdapGroups( boolean allow )
-	{
-		m_allowShareWithLdapGroups = allow;
 	}
 	
 	/**

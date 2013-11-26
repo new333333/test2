@@ -39,7 +39,6 @@ public class TemplateBinder extends Binder {
 	protected Description tDescription;
 	protected String tTitle;
 	protected Long tOwningBinder;
-	protected Long tEntrySourceBinder;
 	protected Boolean tHidden = Boolean.FALSE;
 	
 	public TemplateBinder() {
@@ -116,13 +115,6 @@ public class TemplateBinder extends Binder {
 	}
 	public void setTemplateOwningBinderId(Long tOwningBinder) {
 		this.tOwningBinder = tOwningBinder;
-	}
-
-	public Long getTemplateEntrySourceBinderId() {
-		return tEntrySourceBinder;
-	}
-	public void setTemplateEntrySourceBinderId(Long tEntrySourceBinder) {
-		this.tEntrySourceBinder = tEntrySourceBinder;
 	}
 
 	public boolean isTemplateHidden() {

@@ -89,8 +89,6 @@ import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.GroupPrincipal;
 import org.kablink.teaming.domain.IdentityInfo;
 import org.kablink.teaming.domain.LdapConnectionConfig;
-import org.kablink.teaming.domain.LdapConnectionConfig.HomeDirConfig;
-import org.kablink.teaming.domain.LdapConnectionConfig.HomeDirCreationOption;
 import org.kablink.teaming.domain.LdapSyncException;
 import org.kablink.teaming.domain.Membership;
 import org.kablink.teaming.domain.NoPrincipalByTheNameException;
@@ -181,18 +179,13 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	private static final String HOME_DRIVE_ATTRIBUTE = "homeDrive";
 	private static final String AD_HOME_DIR_ATTRIBUTE = "homeDirectory";
 	private static final String LOGIN_DISABLED_ATTRIBUTE = "loginDisabled";
-	private static final String AD_USER_ACCOUNT_CONTROL_ATTRIBUTE = "userAccountControl";
+	private static final String USER_ACCOUNT_CONTROL_ATTRIBUTE = "userAccountControl";
 	private static final String PASSWORD_EXPIRATION_TIME_ATTRIBUTE = "passwordExpirationTime";
-	private static final String AD_PASSWORD_LAST_SET_ATTRIBUTE = "pwdLastSet";
-	private static final String AD_MAX_PWD_AGE_ATTRIBUTE = "maxPwdAge";
 
 	private static int ADDR_TYPE_TCP = 9;
 	private static int AD_DISABLED_BIT = 0x02;
-	private static int AD_PASSWORD_NEVER_EXPIRES_BIT = 0x00010000;
 
-	private static Pattern m_pattern_uncPath = Pattern.compile( "^\\\\\\\\(.*?)\\\\(.*?)", Pattern.CASE_INSENSITIVE );
-
-	private static Pattern m_pattern_homeDirPath = Pattern.compile( "%[^%]+%", Pattern.CASE_INSENSITIVE );
+	private static Pattern m_pattern_uncPath = Pattern.compile( "^\\\\\\\\(.*?)\\\\(.*?)\\\\", Pattern.CASE_INSENSITIVE );
 
 	protected String [] principalAttrs = new String[]{
 												ObjectKeys.FIELD_PRINCIPAL_NAME,
@@ -254,10 +247,6 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	 * 
 	 */
 	public class HomeDirInfo {
-		// If m_netFolderServerName has a value then we use that value to get the net folder server
-		// that should be used for the home directory net folder.  Otherwise, use m_serverAddr and
-		// m_volume
-		private String m_netFolderServerName;
 		private String m_serverAddr;
 		private String m_volume;
 		private String m_path;
@@ -266,20 +255,11 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		 * 
 		 */
 		public HomeDirInfo() {
-			m_netFolderServerName = null;
 			m_serverAddr = null;
 			m_volume = null;
 			m_path = null;
 		}
 
-		/**
-		 * 
-		 */
-		public String getNetFolderServerName()
-		{
-			return m_netFolderServerName;
-		}
-		
 		/**
 		 * 
 		 */
@@ -301,14 +281,6 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			return m_volume;
 		}
 
-		/**
-		 * 
-		 */
-		public void setNetFolderServerName( String name )
-		{
-			m_netFolderServerName = name;
-		}
-		
 		/**
 		 * 
 		 */
@@ -473,10 +445,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	 * Read the "ndsHomeDirectory" attribute from eDir.  If the "ndsHomeDirectory" attribute does not exist
 	 * or does not contain a value, read the "homeDirectory" attribute.
 	 */
-	private Object readHomeDirectoryAttributeFromEdir(
-		LdapContext ldapContext,
-		String userDn,
-		boolean logErrors )
+	private Object readHomeDirectoryAttributeFromEdir( LdapContext ldapContext, String userDn )
 	{
 		Object value = null;
 		
@@ -532,8 +501,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		}
 		catch ( Exception ex )
 		{
-			if ( logErrors || logger.isDebugEnabled() )
-				logger.error( "Error reading ndsHomeDirectory attribute for user: " + userDn + " " + ex.toString() );
+			logger.error( "Error reading ndsHomeDirectory attribute for user: " + userDn + " " + ex.toString() );
 		}
 		
 		return value;
@@ -543,66 +511,13 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	 * Read all of the information about the given user's home directory; server
 	 * address, volume and path from the ldap directory
 	 */
-	private HomeDirInfo getHomeDirInfoFromConfig(
+	private HomeDirInfo readHomeDirInfoFromLdap(
 		LdapContext ldapContext,
 		LdapDirType dirType,
-		String userDn,
-		HomeDirConfig homeDirConfig,
-		boolean logErrors )
+		String userDn )
 	{
 		HomeDirInfo homeDirInfo = null;
-		HomeDirCreationOption creationOption = HomeDirCreationOption.USE_HOME_DIRECTORY_ATTRIBUTE;
 		
-		// Figure out how we are suppose to get home directory information.
-		if ( homeDirConfig != null )
-			creationOption = homeDirConfig.getCreationOption();
-		
-		switch ( creationOption )
-		{
-		case DONT_CREATE_HOME_DIR_NET_FOLDER:
-			return null;
-			
-		case USE_CUSTOM_ATTRIBUTE:
-			homeDirInfo = getHomeDirInfoFromCustomAttribute(
-														ldapContext,
-														dirType,
-														userDn,
-														homeDirConfig,
-														logErrors );
-			break;
-			
-		case USE_CUSTOM_CONFIG:
-			homeDirInfo = getHomeDirInfoFromCustomConfig(
-														ldapContext,
-														dirType,
-														userDn,
-														homeDirConfig,
-														logErrors );
-			break;
-			
-		case USE_HOME_DIRECTORY_ATTRIBUTE:
-		case UNKNOWN:
-		default:
-			homeDirInfo = getHomeDirInfoFromHomeDirAttribute( ldapContext, dirType, userDn, logErrors );
-			break;
-		}
-		
-		return homeDirInfo;
-	}
-
-	/**
-	 * Read all of the information about the given user's home directory; server
-	 * address, volume and path from the either the ndsHomeDirectory attribute (eDir)
-	 * or homeDirectory attribute (Active Directory) in ldap directory.
-	 */
-	private HomeDirInfo getHomeDirInfoFromHomeDirAttribute(
-		LdapContext ldapContext,
-		LdapDirType dirType,
-		String userDn,
-		boolean logErrors )
-	{
-		HomeDirInfo homeDirInfo = null;
-
 		if ( dirType == LdapDirType.EDIR )
 		{
 			try
@@ -610,7 +525,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				Object value;
 				
 				// Read the "ndsHomeDirectory" attribute
-				value = readHomeDirectoryAttributeFromEdir( ldapContext, userDn, logErrors );
+				value = readHomeDirectoryAttributeFromEdir( ldapContext, userDn );
 				
 				// Does the "ndsHomeDirectory" attribute have a value?
 				if ( value != null && value instanceof byte[] )
@@ -644,7 +559,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 						volumeDn = strBuffer.toString();
 						if ( volumeDn != null && volumeDn.length() > 0 )
 						{
-							readVolumeAndServerInfoFromLdap( ldapContext, dirType, volumeDn, homeDirInfo, logErrors );
+							readVolumeAndServerInfoFromLdap( ldapContext, dirType, volumeDn, homeDirInfo );
 						}
 					}
 					
@@ -692,8 +607,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			}
 			catch ( Exception ex )
 			{
-				if ( logErrors || logger.isDebugEnabled() )
-					logger.error( "Error reading ndsHomeDirectory attribute for user: " + userDn + " " + ex.toString() );
+				logger.error( "Error reading ndsHomeDirectory attribute for user: " + userDn + " " + ex.toString() );
 			}
 		}
 		else if ( dirType == LdapDirType.AD )
@@ -702,7 +616,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			Attributes attrs;
 			Attribute attrib;
 
-			logger.debug( "\t\tin readHomeDirInfoFromLdap() for user: " + userDn );
+			logger.debug( "\t\tin readHomeDirInfo() for user: " + userDn );
 			
 			attributeNames = new String[3];
 			attributeNames[0] = HOME_DRIVE_ATTRIBUTE;
@@ -714,6 +628,9 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				Object value;
 				String homeDrive;
 				String uncPath;
+				String server = null;
+				String volume = null;
+			    Matcher matcher;
 				
 				// Read the "homeDrive" and "homeDirectory" attributes from the given user
 				attrs = ldapContext.getAttributes( userDn, attributeNames );
@@ -752,161 +669,45 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				
 				logger.debug( "\t\t\tfound home directory info for the user, uncPath: " + uncPath );
 				
-				// Parse the unc path into its components, server, volume, path
-				homeDirInfo = parseUncPath( uncPath, logErrors );
+			    matcher = m_pattern_uncPath.matcher( uncPath );
+			    if ( matcher.find() && matcher.groupCount() == 2 )
+			    {
+					String path = null;
+					
+		    		server = matcher.group( 1 );
+		    		volume = matcher.group( 2 );
+		    		path = matcher.replaceFirst( "" );
+		    		if ( path != null && path.length() > 0 )
+		    		{
+		    			if ( path.charAt( 0 ) == '\\' )
+		    				path = path.substring( 1 );
+		    		}
+
+		    		logger.debug( "\t\t\tserver: '" + server + "' volume: '" + volume + "' path: '" + path + "'" );
+		    		
+					if ( server != null && server.length() > 0 && volume != null && volume.length() > 0 && 
+						 path != null && path.length() > 0 )
+					{
+						homeDirInfo = new HomeDirInfo();
+						homeDirInfo.setServerAddr( server );
+						homeDirInfo.setVolume( volume );
+						homeDirInfo.setPath( path );
+					}
+				}
+			    else
+			    {
+			    	logger.error( "\t\t\tCould not parse the home directory unc" );
+			    }
 			}
 			catch ( Exception ex )
 			{
-				if ( logErrors || logger.isDebugEnabled() )
-					logger.error( "Error reading homeDrive and homeDirectory attributes from the user: " + userDn + " " + ex.toString() );
+				logger.error( "Error reading homeDrive and homeDirectory attributes from the user: " + userDn + " " + ex.toString() );
 			}
 		}
 		
 		return homeDirInfo;
 	}
 
-	/**
-	 * Read the value of the custom attribute defined in HomeDirConfig and extract the server,
-	 * volume (or share) and path.
-	 */
-	private HomeDirInfo getHomeDirInfoFromCustomAttribute(
-		LdapContext ldapContext,
-		LdapDirType dirType,
-		String userDn,
-		HomeDirConfig homeDirConfig,
-		boolean logErrors )
-	{
-		String attributeName;
-		String attributeValue;
-		HomeDirInfo homeDirInfo;
-		
-		if ( homeDirConfig == null )
-			return null;
-		
-		attributeName = homeDirConfig.getAttributeName();
-		if ( attributeName == null || attributeName.length() == 0 )
-		{
-			if ( logErrors )
-				logger.error( "In getHomeDirInfoFromCustomAttribute(), attribute name is null" );
-			
-			return null;
-		}
-		
-		// Read the value of the given attribute.
-		attributeValue = readStringAttribute( ldapContext, userDn, attributeName, logErrors );
-		if ( attributeValue == null || attributeValue.length() == 0 )
-		{
-			if ( logErrors )
-				logger.error( "In getHomeDirInfoFromCustomAttribute(), attribute value is null" );
-			
-			return null;
-		}
-		
-		// Parse the unc path into its components, server, volume, path
-		homeDirInfo = parseUncPath( attributeValue, logErrors );
-		
-		return homeDirInfo;
-	}
-	
-	/**
-	 * Construct the information needed to create a user's home dir net folder from
-	 * the information found in HomeDirConfig.
-	 */
-	private HomeDirInfo getHomeDirInfoFromCustomConfig(
-		LdapContext ldapContext,
-		LdapDirType dirType,
-		String userDn,
-		HomeDirConfig homeDirConfig,
-		boolean logErrors )
-	{
-		String netFolderServerName;
-		String path;
-		HomeDirInfo homeDirInfo;
-		
-		if ( homeDirConfig == null )
-			return null;
-		
-		netFolderServerName = homeDirConfig.getNetFolderServerName();
-		path = homeDirConfig.getPath();
-//!!!		netFolderServerName = "net-folder-server-2";
-//!!!		path = "Language\\%Language%\\Cn\\%cn%\\Mail\\%mail%\\Cn\\%cn%";
-		
-		if ( netFolderServerName == null || netFolderServerName.length() == 0 )
-		{
-			if ( logErrors )
-				logger.error( "In getHomeDirInfoFromCustomConfig(), netFolderServerName is null" );
-			
-			return null;
-		}
-
-		if ( path == null || path.length() == 0 )
-		{
-			if ( logErrors )
-				logger.error( "In getHomeDirInfoFromCustomConfig(), path is null" );
-			
-			return null;
-		}
-		
-		homeDirInfo = new HomeDirInfo();
-		
-		// Find the net folder server we are supposed to use.
-		{
-			ResourceDriverConfig netFolderServer;
-			
-			netFolderServer = NetFolderHelper.findNetFolderRootByName(
-																getAdminModule(),
-																getResourceDriverModule(),
-																netFolderServerName );
-			if ( netFolderServer == null )
-			{
-				if ( logErrors )
-					logger.error( "In readHomeDirInfoUsingCustomConfig(), net folder server not found by the name: " + netFolderServerName );
-				
-				return null;
-			}
-			
-			homeDirInfo.setNetFolderServerName( netFolderServerName );
-		}
-		
-		// Generate the path that will be used by the home dir net folder.
-		{
-			Matcher matcher;
-			
-			// The path can contain a construct like, foo/%ldapAttributeName%/bar
-			// We need to read the value of the "ldapAttributeName" and replace "ldapAttributeName"
-			// with the value we read from the directory.
-		    matcher = m_pattern_homeDirPath.matcher( path );
-		    while ( matcher.find() )
-		    {
-	    		String token;
-	    		
-	    		token = matcher.group();
-	    		if ( token != null )
-	    		{
-	    			String attribValue;
-	    			String attribName;
-	    			
-	    			// Remove the % from the token to get the attribute name.
-	    			attribName = token.replaceAll( "%", "" );
-	    			
-	    			// Read the value of the attribute from ldap.
-	    			attribValue = readStringAttribute( ldapContext, userDn, attribName, logErrors );
-
-	    			if ( attribValue == null )
-	    				attribValue = "";
-	    			
-    				path = path.replaceAll( token, attribValue );
-	    			
-	    			matcher = m_pattern_homeDirPath.matcher( path );
-	    		}
-			}
-		    
-		    homeDirInfo.setPath( path );
-		}
-		
-		return homeDirInfo;
-	}
-	
 	/**
 	 * Read the information from the given Server dn
 	 */
@@ -915,8 +716,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		LdapContext ldapContext,
 		LdapDirType dirType,
 		String serverDn,
-		HomeDirInfo homeDirInfo,
-		boolean logErrors )
+		HomeDirInfo homeDirInfo )
 	{
 		String serverAddr = null;
 		
@@ -987,8 +787,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 										}
 										catch ( NumberFormatException ex )
 										{
-											if ( logErrors || logger.isDebugEnabled() )
-												logger.error( "error parsing address type from network address attribute" );
+											logger.info( "error parsing address type from network address attribute" );
 										}
 									}
 								}
@@ -1026,60 +825,12 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			}
 			catch ( Exception ex )
 			{
-				if ( logErrors || logger.isDebugEnabled() )
-					logger.error( "Error reading attributes from the server object: " + serverDn + " " + ex.toString() );
+				logger.error( "Error reading attributes from the server object: " + serverDn + " " + ex.toString() );
 			}
 		}
 		
 		homeDirInfo.setServerAddr( serverAddr );
 	}
-	
-	/**
-	 * Read the value of the given string attribute from the given user 
-	 */
-	private String readStringAttribute(
-		LdapContext ldapContext,
-		String userDn,
-		String attribName,
-		boolean logErrors )
-	{
-		String attribValue = null;
-		
-		try
-		{
-			Object value;
-			String[] attributeNames;
-			Attributes attrs;
-			Attribute attrib;
-
-			attributeNames = new String[1];
-			attributeNames[0] = attribName;
-			
-			// Read the given attribute from the given user
-			attrs = ldapContext.getAttributes( userDn, attributeNames );
-			if ( attrs == null )
-				return null;
-	
-			// Get the attribute.
-			attrib = attrs.get( attribName );
-			if ( attrib == null )
-				return null;
-			
-			value = attrib.get();
-			if ( value == null || (value instanceof String) == false )
-				return null;
-			
-			attribValue = (String) value;
-		}
-		catch ( Exception ex )
-		{
-			if ( logErrors )
-				logger.error( "In readStringAttribute(), exception: " + ex.toString() );
-		}
-		
-		return attribValue;
-	}
-	
 
 	/**
 	 * Read the information from the given Volume object
@@ -1088,8 +839,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		LdapContext ldapContext,
 		LdapDirType dirType,
 		String volumeDn,
-		HomeDirInfo homeDirInfo,
-		boolean logErrors )
+		HomeDirInfo homeDirInfo )
 	{
 		
 		if ( dirType == LdapDirType.EDIR )
@@ -1136,7 +886,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 							serverDn = (String) value;
 							if ( serverDn.length() > 0 )
 							{
-								readServerInfoFromLdap( ldapContext, dirType, serverDn, homeDirInfo, logErrors );
+								readServerInfoFromLdap( ldapContext, dirType, serverDn, homeDirInfo );
 							}
 						}
 					}
@@ -1144,8 +894,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			}
 			catch ( Exception ex )
 			{
-				if ( logErrors || logger.isDebugEnabled() )
-					logger.error( "Error reading attributes from the volume object: " + volumeDn + " " + ex.toString() );
+				logger.error( "Error reading attributes from the volume object: " + volumeDn + " " + ex.toString() );
 			}
 		}
 		
@@ -1502,7 +1251,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
     /**
      * For all users, sync the ldap attribute that holds the guid.  The name of the ldap
      * attribute that holds the guid is found in the ldap configuration data.  You can get the
-     * name of the attribute by calling config.getGuidAttribute().  For eDirectory, the name of
+     * name of the attribute by calling config.getLdapGuidAttribute().  For eDirectory, the name of
      * the attribute is GUID and for Activie Directory, the name of the attribute is objectGUID.
      * This method should be called whenever the user changes the the name of the ldap attribute
      * that holds the guid (in the ldap configuration).
@@ -1644,7 +1393,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 							if ( usersToUpdate.size() > 99 )
 							{
 								logger.info( "about to call updateUsers()" );
-								updateUsers( zoneId, usersToUpdate, null, LdapSyncMode.PERFORM_SYNC, modifiedUsersSyncResults );
+								updateUsers( ldapContext, zoneId, usersToUpdate, null, modifiedUsersSyncResults );
 								logger.info( "back from updateUsers()" );
 								
 								usersToUpdate.clear();
@@ -1661,7 +1410,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 
 		// Update the users with the guid from the ldap directory.
 		logger.info( "about to call updateUsers()" );
-		updateUsers( zoneId, usersToUpdate, null, LdapSyncMode.PERFORM_SYNC, modifiedUsersSyncResults );
+		updateUsers( ldapContext, zoneId, usersToUpdate, null, modifiedUsersSyncResults );
 		logger.info( "back from updateUsers()" );
 		
     }// end syncGuidAttributeForAllUsers()
@@ -1670,7 +1419,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
     /**
      * For all groups, sync the ldap attribute that holds the guid.  The name of the ldap
      * attribute that holds the guid is found in the ldap configuration data.  You can get the
-     * name of the attribute by calling config.getGuidAttribute().  For eDirectory, the name of
+     * name of the attribute by calling config.getLdapGuidAttribute().  For eDirectory, the name of
      * the attribute is GUID and for Activie Directory, the name of the attribute is objectGUID.
      * This method should be called whenever the user changes the the name of the ldap attribute
      * that holds the guid (in the ldap configuration).
@@ -1680,6 +1429,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		Workspace zone;
 		Long zoneId;
 		ProfileDao profileDao;
+		PartialLdapSyncResults modifiedUsersSyncResults;
 		String[] ldapAttributesToRead;
 		String ldapGuidAttribute;
 
@@ -1760,7 +1510,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 							userMods.put( ObjectKeys.FIELD_PRINCIPAL_LDAPGUID, guid );
 
 							// Update this group with the value of the guid attribute from the ldap directory.
-							updateGroup( zoneId, principal.getId(), userMods, LdapSyncMode.PERFORM_SYNC, syncResults );
+							updateGroup( zoneId, principal.getId(), userMods, syncResults );
 						}
 						catch (NoPrincipalByTheNameException ex)
 						{
@@ -1775,150 +1525,6 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			}
 		}// end for()
     }// end syncGuidAttributeForAllGroups()
-    
-    
-    /**
-     * For all users and groups, sync the ldap attribute that holds the guid.  The name of the ldap
-     * attribute that holds the guid is found in the ldap configuration data.  You can get the
-     * name of the attribute by calling config.getGuidAttribute().  For eDirectory, the name of
-     * the attribute is GUID and for Activie Directory, the name of the attribute is objectGUID.
-     * This method should be called whenever the user changes the the name of the ldap attribute
-     * that holds the guid (in the ldap configuration).
-     */
-    public void syncGuidAttributeForAllUsersAndGroups(
-    	String[] listOfLdapConfigsToSyncGuid,
-    	LdapSyncResults syncResults ) throws LdapSyncException
-    {
-		Workspace zone;
-		Long zoneId;
-		List<LdapConnectionConfig> ldapConnectionConfigs;
-		List userList;
-		Map<String, Object[]> userMap;
-		ObjectControls objCtrls;
-		FilterControls filterCtrls;
-		int i;
-		LdapSyncException ldapSyncEx = null;
-		
-		if ( listOfLdapConfigsToSyncGuid == null || listOfLdapConfigsToSyncGuid.length == 0 )
-		{
-			logger.info( "In syncGuidAttributeForAllUsersAndGroups(), listOfLdapConfigsToSyncGuid is empty" );
-			return;
-		}
-		
-		zone = RequestContextHolder.getRequestContext().getZone();
-		zoneId = zone.getId();
-
-		// Get the list of users in this zone that are not deleted
-		objCtrls = new ObjectControls( User.class, principalAttrs );
-		filterCtrls = new FilterControls( ObjectKeys.FIELD_ENTITY_DELETED, Boolean.FALSE );
-		userList = coreDao.loadObjects( objCtrls, filterCtrls, zoneId ); 
-				
-		// userList is a list of arrays where each array holds the values of some
-		// of the user's Teaming attributes.  Create a map where the key is the
-		// user's name and the value is the array of Teaming attributes.
-		userMap = new TreeMap( String.CASE_INSENSITIVE_ORDER );
-		for (i = 0; i < userList.size(); ++i)
-		{
-			Object[] attributeValues;
-
-			attributeValues = (Object[]) userList.get( i );
-			
-			// If this user is not disabled and is not one of the system users, add the
-			// user to the map.
-			if ( ((Boolean)attributeValues[PRINCIPAL_DISABLED] == Boolean.FALSE) && (Validator.isNull( (String)attributeValues[this.PRINCIPAL_INTERNALID])) )
-			{
-				String name;
-
-				// Get the user's name.
-				name = (String)attributeValues[PRINCIPAL_NAME];
-				
-				// Map the name to the array of attribute values.
-				userMap.put( name, attributeValues );
-			}
-		}// end for()			
-
-		// Get the list of ldap configurations.
-		ldapConnectionConfigs = getCoreDao().loadLdapConnectionConfigs( zoneId );
-		
-		// Go through each ldap configuration
-		for( LdapConnectionConfig nextLdapConfig : ldapConnectionConfigs )
-		{
-			boolean syncThis;
-			String url;
-			
-			syncThis = false;
-			url = nextLdapConfig.getUrl();
-			
-			// See if we should sync the guid for this ldap source.
-			for ( String nextUrl : listOfLdapConfigsToSyncGuid )
-			{
-				if ( nextUrl != null && nextUrl.equalsIgnoreCase( url ) )
-				{
-					syncThis = true;
-					break;
-				}
-			}
-			
-			if ( syncThis )
-			{
-		   		LdapContext ldapContext;
-		   		NamingException namingEx;
-
-		   		namingEx = null;
-		   		ldapContext = null;
-		  		try
-		  		{
-					// Get an ldap context for the given ldap configuration
-					ldapContext = getContext( zoneId, nextLdapConfig, false );
-					
-					// Sync the guid attributes for all users.
-					logger.info( "about to call syncGuidAttributeForAllUsers()" );
-					syncGuidAttributeForAllUsers( nextLdapConfig, ldapContext, userMap, syncResults );
-					logger.info( "back from syncGuidAttributeForAllUsers()" );
-					
-					// Sync the guid attribute for all groups.
-					logger.info( "about to call syncGuidAttributeForAllGroups()" );
-					syncGuidAttributeForAllGroups( nextLdapConfig, ldapContext, syncResults );
-					logger.info( "back from syncGuidAttributeForAllGroups()" );
-				}// end try
-		  		catch (NamingException ex)
-		  		{
-		  			namingEx = ex;
-		  		}
-		  		finally
-		  		{
-					if ( ldapContext != null )
-					{
-						try
-						{
-							// Close the ldap context.
-							ldapContext.close();
-						}
-						catch (NamingException ex)
-				  		{
-							namingEx = ex;
-				  		}
-					}
-				}
-		  		
-		  		// Did we encounter a problem?
-		  		if ( namingEx != null )
-		  		{
-		  			// Yes
-		  			logError( NLT.get( "errorcode.ldap.context" ), namingEx );
-		  			
-		  			// Create an LdapSyncException and throw it.  We throw an LdapSyncException so we can return
-		  			// the LdapConnectionConfig object that was being used when the error happened.
-		  			if ( ldapSyncEx == null )
-		  				ldapSyncEx = new LdapSyncException( nextLdapConfig, namingEx );
-		  		}
-			}
-		}// end for()
-		
-		if ( ldapSyncEx != null )
-			throw ldapSyncEx;
-		
-    }// end syncGuidAttributeForAllUsersAndGroups()
     
     
     /**
@@ -2057,15 +1663,156 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		return domainName;
 	}
 	
+    /**
+     * For all users and groups, sync the ldap attribute that holds the guid.  The name of the ldap
+     * attribute that holds the guid is found in the ldap configuration data.  You can get the
+     * name of the attribute by calling config.getLdapGuidAttribute().  For eDirectory, the name of
+     * the attribute is GUID and for Activie Directory, the name of the attribute is objectGUID.
+     * This method should be called whenever the user changes the the name of the ldap attribute
+     * that holds the guid (in the ldap configuration).
+     */
+    public void syncGuidAttributeForAllUsersAndGroups(
+    	String[] listOfLdapConfigsToSyncGuid,
+    	LdapSyncResults syncResults ) throws LdapSyncException
+    {
+		Workspace zone;
+		Long zoneId;
+		List<LdapConnectionConfig> ldapConnectionConfigs;
+		List userList;
+		Map<String, Object[]> userMap;
+		ObjectControls objCtrls;
+		FilterControls filterCtrls;
+		int i;
+		LdapSyncException ldapSyncEx = null;
+		
+		if ( listOfLdapConfigsToSyncGuid == null || listOfLdapConfigsToSyncGuid.length == 0 )
+		{
+			logger.info( "In syncGuidAttributeForAllUsersAndGroups(), listOfLdapConfigsToSyncGuid is empty" );
+			return;
+		}
+		
+		zone = RequestContextHolder.getRequestContext().getZone();
+		zoneId = zone.getId();
+
+		// Get the list of users in this zone that are not deleted
+		objCtrls = new ObjectControls( User.class, principalAttrs );
+		filterCtrls = new FilterControls( ObjectKeys.FIELD_ENTITY_DELETED, Boolean.FALSE );
+		userList = coreDao.loadObjects( objCtrls, filterCtrls, zoneId ); 
+				
+		// userList is a list of arrays where each array holds the values of some
+		// of the user's Teaming attributes.  Create a map where the key is the
+		// user's name and the value is the array of Teaming attributes.
+		userMap = new TreeMap( String.CASE_INSENSITIVE_ORDER );
+		for (i = 0; i < userList.size(); ++i)
+		{
+			Object[] attributeValues;
+
+			attributeValues = (Object[]) userList.get( i );
+			
+			// If this user is not disabled and is not one of the system users, add the
+			// user to the map.
+			if ( ((Boolean)attributeValues[PRINCIPAL_DISABLED] == Boolean.FALSE) && (Validator.isNull( (String)attributeValues[this.PRINCIPAL_INTERNALID])) )
+			{
+				String name;
+
+				// Get the user's name.
+				name = (String)attributeValues[PRINCIPAL_NAME];
+				
+				// Map the name to the array of attribute values.
+				userMap.put( name, attributeValues );
+			}
+		}// end for()			
+
+		// Get the list of ldap configurations.
+		ldapConnectionConfigs = getCoreDao().loadLdapConnectionConfigs( zoneId );
+		
+		// Go through each ldap configuration
+		for( LdapConnectionConfig nextLdapConfig : ldapConnectionConfigs )
+		{
+			boolean syncThis;
+			String url;
+			
+			syncThis = false;
+			url = nextLdapConfig.getUrl();
+			
+			// See if we should sync the guid for this ldap source.
+			for ( String nextUrl : listOfLdapConfigsToSyncGuid )
+			{
+				if ( nextUrl.equalsIgnoreCase( url ) )
+				{
+					syncThis = true;
+					break;
+				}
+			}
+			
+			if ( syncThis )
+			{
+		   		LdapContext ldapContext;
+		   		NamingException namingEx;
+
+		   		namingEx = null;
+		   		ldapContext = null;
+		  		try
+		  		{
+					// Get an ldap context for the given ldap configuration
+					ldapContext = getContext( zoneId, nextLdapConfig, false );
+					
+					// Sync the guid attributes for all users.
+					logger.info( "about to call syncGuidAttributeForAllUsers()" );
+					syncGuidAttributeForAllUsers( nextLdapConfig, ldapContext, userMap, syncResults );
+					logger.info( "back from syncGuidAttributeForAllUsers()" );
+					
+					// Sync the guid attribute for all groups.
+					logger.info( "about to call syncGuidAttributeForAllGroups()" );
+					syncGuidAttributeForAllGroups( nextLdapConfig, ldapContext, syncResults );
+					logger.info( "back from syncGuidAttributeForAllGroups()" );
+				}// end try
+		  		catch (NamingException ex)
+		  		{
+		  			namingEx = ex;
+		  		}
+		  		finally
+		  		{
+					if ( ldapContext != null )
+					{
+						try
+						{
+							// Close the ldap context.
+							ldapContext.close();
+						}
+						catch (NamingException ex)
+				  		{
+							namingEx = ex;
+				  		}
+					}
+				}
+		  		
+		  		// Did we encounter a problem?
+		  		if ( namingEx != null )
+		  		{
+		  			// Yes
+		  			logError( NLT.get( "errorcode.ldap.context" ), namingEx );
+		  			
+		  			// Create an LdapSyncException and throw it.  We throw an LdapSyncException so we can return
+		  			// the LdapConnectionConfig object that was being used when the error happened.
+		  			if ( ldapSyncEx == null )
+		  				ldapSyncEx = new LdapSyncException( nextLdapConfig, namingEx );
+		  		}
+			}
+		}// end for()
+		
+		if ( ldapSyncEx != null )
+			throw ldapSyncEx;
+		
+    }// end syncGuidAttributeForAllUsersAndGroups()
+    
+    
 	/**
-	 * Create a HomeDirInfo object based on the HomeDirConfig defined in the ldap configuration.
+	 * Read the "home directory" attribute from the directory for the given user.
 	 * @throws NamingException 
 	 */
     @Override
-	public HomeDirInfo getHomeDirInfo(
-		String teamingUserName,
-		String ldapUserName,
-		boolean logErrors ) throws NamingException 
+	public HomeDirInfo readHomeDirInfoFromDirectory( String teamingUserName, String ldapUserName ) throws NamingException 
 	{
 		Workspace zone;
 
@@ -2129,12 +1876,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 
 					// Get the home directory info for this user
 					dirType = getLdapDirType( config.getLdapGuidAttribute() );
-					homeDirInfo = getHomeDirInfoFromConfig(
-														ctx,
-														dirType,
-														dn,
-														searchInfo.getHomeDirConfig(),
-														logErrors );
+					homeDirInfo = readHomeDirInfoFromLdap( ctx, dirType, dn );
 				}
 				finally
 				{
@@ -2311,7 +2053,8 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		LdapDirType dirType;
 		
 		dirType = getLdapDirType( ldapConfig.getLdapGuidAttribute() );
-		if ( dirType != LdapDirType.AD && dirType != LdapDirType.EDIR )
+//!!!		if ( dirType != LdapDirType.AD && dirType != LdapDirType.EDIR )
+		if ( dirType != LdapDirType.EDIR )
 			return false;
 
     	expired = false;
@@ -2337,6 +2080,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				NamingEnumeration ctxSearch;
 				Binding bd;
 				String userIdAttributeName[] = { ldapConfig.getUserIdAttribute() };
+				String attributesToRead[] = { PASSWORD_EXPIRATION_TIME_ATTRIBUTE };
 				Attribute attrib;
 
 				scope = (searchInfo.isSearchSubtree() ? SearchControls.SUBTREE_SCOPE : SearchControls.ONELEVEL_SCOPE);
@@ -2357,13 +2101,11 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				
 				bd = (Binding)ctxSearch.next();
 
+				// Read the "passwordExpirationTime" attribute from the directory.
+				lAttrs = ctx.getAttributes( bd.getNameInNamespace(), attributesToRead );
+				
 				if ( dirType == LdapDirType.EDIR )
 				{
-					String attributesToRead[] = { PASSWORD_EXPIRATION_TIME_ATTRIBUTE };
-
-					// Read the "passwordExpirationTime" attribute from the directory.
-					lAttrs = ctx.getAttributes( bd.getNameInNamespace(), attributesToRead );
-					
 					// Get the value of the "passwordExpirationTime" attribute
 					attrib = lAttrs.get( PASSWORD_EXPIRATION_TIME_ATTRIBUTE );
 					if ( attrib != null )
@@ -2421,43 +2163,6 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 						catch ( NamingException ex )
 						{
 							// Nothing to do.
-						}
-					}
-				}
-				else if ( dirType == LdapDirType.AD )
-				{
-					String attributesToRead[] = { AD_USER_ACCOUNT_CONTROL_ATTRIBUTE, AD_PASSWORD_LAST_SET_ATTRIBUTE };
-
-					// Read the "userAccountControl" and "pwdLastSet" attributes from the directory.
-					lAttrs = ctx.getAttributes( bd.getNameInNamespace(), attributesToRead );
-
-					// Is the "password never expires" flag turned on for this user?
-					if ( getPasswordNeverExpires( lAttrs ) == false )
-					{
-						Date pwdLastSetDate;
-						
-						// No
-						// Get the date the password was last set.
-						pwdLastSetDate = getPasswordLastSet( lAttrs );
-						if ( pwdLastSetDate != null )
-						{
-							Integer maxPwdAge;
-							
-							// Read the maximum age of a password.
-							maxPwdAge = getMaxPwdAge( ldapConfig );
-							
-							if ( maxPwdAge != null && maxPwdAge != 0 )
-							{
-								Date now;
-								long sum; 
-								
-								now = new Date();
-								sum = maxPwdAge;
-								sum *= (24 * 60 * 60 * 1000);
-								sum += pwdLastSetDate.getTime();
-								if ( now.getTime() > sum )
-									expired = true;
-							}
 						}
 					}
 				}
@@ -2566,7 +2271,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			String domainName;
 
 			domainName = getDomainName( config );
-			
+
 			for(LdapConnectionConfig.SearchInfo searchInfo : config.getUserSearches()) 
 			{
 				HomeDirInfo homeDirInfo = null;
@@ -2603,9 +2308,10 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					}
 					mods.put(ObjectKeys.FIELD_PRINCIPAL_FOREIGNNAME, dn);
 
-					// Make sure the name gets updated.
-					mods.put( ObjectKeys.FIELD_PRINCIPAL_NAME, ldapUserName );
-					
+					// We never want to change a user's name in Teaming.  Remove the "name" attribute
+					// from the list of attributes to be written to the db.
+					mods.remove( ObjectKeys.FIELD_PRINCIPAL_NAME );
+
 					mods.put( ObjectKeys.FIELD_PRINCIPAL_DOMAIN_NAME, domainName );
 				}
 				finally
@@ -2619,18 +2325,12 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					
 					// Get the home directory info for this user
 					dirType = getLdapDirType( config.getLdapGuidAttribute() );
-					homeDirInfo = getHomeDirInfoFromConfig(
-														ctx,
-														dirType,
-														dn,
-														searchInfo.getHomeDirConfig(),
-														false );
+					homeDirInfo = readHomeDirInfoFromLdap( ctx, dirType, dn );
 
 					m_containerCoordinator.clear();
 					// Read the list of all containers from the db.
 					m_containerCoordinator.getListOfAllContainers();
 					m_containerCoordinator.setLdapDirType( dirType );
-					m_containerCoordinator.setLdapSyncMode( LdapSyncMode.PERFORM_SYNC );
 					m_containerCoordinator.record( dn );
 					m_containerCoordinator.wrapUp( false );
 				}
@@ -2699,7 +2399,6 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	public void syncAll(
 		boolean syncUsersAndGroups,
 		String[] listOfLdapConfigsToSyncGuid,
-		LdapSyncMode syncMode,
 		LdapSyncResults syncResults ) throws LdapSyncException
 	{
 		Workspace zone = RequestContextHolder.getRequestContext().getZone();
@@ -2722,7 +2421,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			boolean errorSyncingGroups;
 			boolean doUserCleanup = false;
 	   		boolean delContainers;
-
+			
 			m_server_vol_map.clear();
 			m_zoneSyncInProgressMap.put( zone.getId(), Boolean.TRUE );
 			
@@ -2746,7 +2445,6 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				return;
 			
 			m_containerCoordinator.clear();
-			m_containerCoordinator.setLdapSyncMode( syncMode );
 			
 			// Read the list of all containers from the db.
 			m_containerCoordinator.getListOfAllContainers();
@@ -2754,14 +2452,8 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			errorSyncingUsers = false;
 			
 			LdapSchedule info = new LdapSchedule(getSyncObject().getScheduleInfo(zone.getId()));
-	    	UserCoordinator userCoordinator = new UserCoordinator(
-	    													zone,
-	    													info.isUserSync(),
-	    													info.isUserRegister(),
-	   														info.isUserDelete(),
-	   														info.isUserWorkspaceDelete(),
-	   														syncMode,
-	   														syncResults );
+	    	UserCoordinator userCoordinator = new UserCoordinator(zone,info.isUserSync(),info.isUserRegister(),
+	   															  info.isUserDelete(), info.isUserWorkspaceDelete(), syncResults );
 			for(LdapConnectionConfig config : getCoreDao().loadLdapConnectionConfigs(zone.getId())) {
 		   		LdapContext ctx=null;
 
@@ -2838,26 +2530,12 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			logger.info( "Starting userCoordinator.wrapUp()" );
 			doUserCleanup = false;
 			if ( errorSyncingUsers == false )
-			{
-				// If "Synchronize User Profiles" and "Register ldap User Profiles Automatically" are
-				// both turned off then don't disable or delete anyone because we never issued an ldap query which
-				// would have caused us to call userCoordinator.record() which would have updated
-				// notInLdap.
-				if ( userCoordinator.sync != false || userCoordinator.create != false )
-					doUserCleanup = true;
-			}
+				doUserCleanup = true;
 			userCoordinator.wrapUp( doUserCleanup );
 			logger.info( "Finished userCoordinator.wrapUp()" );
 
 			errorSyncingGroups = false;
-	   		GroupCoordinator groupCoordinator = new GroupCoordinator(
-	   															zone,
-	   															userCoordinator.dnUsers,
-	   															info.isGroupSync(),
-	   															info.isGroupRegister(),
-	   															info.isGroupDelete(),
-	   															syncMode,
-	   															syncResults );
+	   		GroupCoordinator groupCoordinator = new GroupCoordinator(zone, userCoordinator.dnUsers, info.isGroupSync(), info.isGroupRegister(), info.isGroupDelete(), syncResults );
 	   		for(LdapConnectionConfig config : getCoreDao().loadLdapConnectionConfigs(zone.getId())) {
 		   		LdapContext ctx=null;
 		  		try {
@@ -2931,7 +2609,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	   				// Yes
 	   				for ( Long nextGroupId : listOfDynamicGroups )
 	   				{
-	   					updateDynamicGroupMembership( nextGroupId, syncMode, groupCoordinator.getLdapSyncResults() );
+	   					updateDynamicGroupMembership( nextGroupId, groupCoordinator.getLdapSyncResults() );
 	   				}
 	   			}
 	   			
@@ -3050,10 +2728,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	/**
 	 * 
 	 */
-	private void updateDynamicGroupMembership(
-		Long groupId,
-		LdapSyncMode syncMode,
-		LdapSyncResults ldapSyncResults )
+	private void updateDynamicGroupMembership( Long groupId, LdapSyncResults ldapSyncResults )
 	{
 		Principal principal;
 		
@@ -3181,7 +2856,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					}
 					
 					logger.info( "\t\tAbout to update dynamic group: " + group.getName() );
-					updateMembership( groupId, newMembers, syncMode, syncResults );
+					updateMembership( groupId, newMembers, syncResults );
 				}
 				catch ( LdapSyncException e )
 				{
@@ -3191,56 +2866,6 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		}
 	}
 	
-
-	/**
-	 * 
-	 */
-	private void addPrincipalsToPreviewSyncResults( Map<String,Map> principals, PartialLdapSyncResults syncResults )
-	{
-		StringBuffer result;
-
-		if ( syncResults == null )
-			return;
-		
-		result = new StringBuffer();
-
-		// Record the names of the users we would have created.
-		for (Iterator iter = principals.values().iterator(); iter.hasNext();)
-		{
-			Map attrs;
-			Object value;
-			String name;
-			String dn;
-
-			name = null;
-			dn = null;
-			result.setLength( 0 );
-			
-			attrs = (Map)iter.next();
-			value = attrs.get( ObjectKeys.FIELD_PRINCIPAL_NAME ); 
-			if (  value != null )
-				name = (String) value;
-			
-			value = attrs.get( ObjectKeys.FIELD_PRINCIPAL_FOREIGNNAME );
-			if ( value != null )
-				dn = (String) value;
-			
-			if ( name != null )
-			{
-				result.append( name );
-				
-				if ( dn != null )
-				{
-					result.append( " (" );
-					result.append( dn );
-					result.append( ")" );
-				}
-			}
-			
-			if( result.length() > 0 )
-				syncResults.addResult( result.toString() );
-		}
-	}
 	
 	/**
 	 * This class holds information about a container.
@@ -3310,8 +2935,6 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		
 		// The ldap directory type we are currently working with.
 		private LdapDirType m_dirType;
-		
-		private LdapSyncMode m_syncMode;
 		
 		/**
 		 * 
@@ -3480,13 +3103,6 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		 */
 		private void createNewContainers()
 		{
-			// Are we in "preview" mode?
-			if ( m_syncMode == LdapSyncMode.PREVIEW_ONLY )
-			{
-				// Yes, nothing to do.
-				return;
-			}
-			
 			if ( Utils.checkIfFilr() && m_containersToBeCreated.size() > 0 )
 			{
 				// Go through the list of containers that need to be created and create them.
@@ -3506,13 +3122,6 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		@SuppressWarnings({ "rawtypes", "unchecked" })
 		private void deleteObsoleteContainers()
 		{
-			// Are we in "preview" mode?
-			if ( m_syncMode == LdapSyncMode.PREVIEW_ONLY )
-			{
-				// Yes, nothing to do.
-				return;
-			}
-			
 			if ( Utils.checkIfFilr() )
 			{
 				Map options;
@@ -3629,20 +3238,14 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		}
 		
 		/**
-		 * 
-		 */
-		public void setLdapSyncMode( LdapSyncMode syncMode )
-		{
-			m_syncMode = syncMode;
-		}
-		
-		/**
 		 * Create any new containers and delete any obsolete container.
 		 */
 		public void wrapUp( boolean deleteObsoleteContainers )
 		{
 			if ( Utils.checkIfFilr() )
 			{
+				logger.info( "In ContainerCoordinator.wrapUp()" );
+				
 				// Delete obsolete containers.
 				if ( deleteObsoleteContainers )
 					deleteObsoleteContainers();
@@ -3725,17 +3328,15 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		
 		private LdapSyncResults	m_ldapSyncResults;	// Store the results of the sync here.
 
+		private LdapContext m_ldapCtx;
 		private LdapConnectionConfig m_ldapConfig;
 		
-		private LdapSyncMode m_syncMode;
-
 		public UserCoordinator(
 			Binder zone,
 			boolean sync,
 			boolean create,
 			boolean delete,
 			boolean deleteWorkspace,
-			LdapSyncMode syncMode,
 			LdapSyncResults syncResults )
 		{
 			ObjectControls objCtrls;
@@ -3747,7 +3348,6 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			this.delete = delete;
 			this.deleteWorkspace = deleteWorkspace;
 			m_ldapSyncResults = syncResults;
-			m_syncMode = syncMode;
 			
 			createSyncSize = GetterUtil.getLong(getLdapProperty(zone.getName(), "create.flush.threshhold"), 100);
 			modifySyncSize = GetterUtil.getLong(getLdapProperty(zone.getName(), "modify.flush.threshhold"), 100);
@@ -3810,8 +3410,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			String ssName,
 			Attributes lAttrs,
 			String ldapGuidAttribute,
-			String domainName,
-			HomeDirInfo homeDirInfo ) throws NamingException
+			String domainName ) throws NamingException
 		{
 			boolean foundLdapGuid = false;
 			Object[] row = null; 
@@ -3896,9 +3495,6 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					// Yes
 					// Map the attributes read from the ldap directory to Teaming attributes.
 					getUpdates( userAttributeNames, userAttributes, lAttrs, userMods, ldapGuidAttribute );
-
-					// Make sure the user's name gets updated.
-					userMods.put( ObjectKeys.FIELD_PRINCIPAL_NAME, ssName );
 					
 					// Update the domain name
 					userMods.put( ObjectKeys.FIELD_PRINCIPAL_DOMAIN_NAME, domainName );
@@ -3907,6 +3503,10 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					if ( foundLdapGuid )
 					{
 						// Yes
+						// We never want to change a user's name in Teaming.  Remove the "name" attribute
+						// from the list of attributes to be written to the db.
+						userMods.remove( ObjectKeys.FIELD_PRINCIPAL_NAME );
+
 						// Make sure the dn stored in Teaming is updated for this user.
 						userMods.put( ObjectKeys.FIELD_PRINCIPAL_FOREIGNNAME, dn );
 						row[PRINCIPAL_FOREIGN_NAME] = dn;
@@ -3916,6 +3516,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 						// No, we found the ldap user in Teaming by their dn or their name.
 						
 						//remove this incase a mapping exists that is different than the uid attribute
+						userMods.remove(ObjectKeys.FIELD_PRINCIPAL_NAME);
 						if (row != null && row2 == null) {
 							if (!foundNames.containsKey(ssName)) { //if haven't just added it
 								if (logger.isDebugEnabled())
@@ -3946,6 +3547,11 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					// net folder or update their existing one.
 					if ( Utils.checkIfFilr() )
 					{
+						HomeDirInfo homeDirInfo;
+						LdapDirType dirType;
+						
+						dirType = getLdapDirType( m_ldapConfig.getLdapGuidAttribute() );
+						homeDirInfo = readHomeDirInfoFromLdap( m_ldapCtx, dirType, dn );
 						ldap_existing_homeDirInfo.put( (Long)row[PRINCIPAL_ID], homeDirInfo );
 					}
 				}
@@ -3998,6 +3604,11 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					// Create a HomeDirInfo object for this new user
 					if ( Utils.checkIfFilr() )
 					{
+						HomeDirInfo homeDirInfo;
+						LdapDirType dirType;
+						
+						dirType = getLdapDirType( m_ldapConfig.getLdapGuidAttribute() );
+						homeDirInfo = readHomeDirInfoFromLdap( m_ldapCtx, dirType, dn );
 						ldap_new_homeDirInfo.put( ssName.toLowerCase(), homeDirInfo );
 					}
 				}
@@ -4017,7 +3628,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					// Yes
 					syncResults = m_ldapSyncResults.getModifiedUsers();
 				}
-				updateUsers( zoneId, ldap_existing, ldap_existing_homeDirInfo, m_syncMode, syncResults );
+				updateUsers( m_ldapCtx, zoneId, ldap_existing, ldap_existing_homeDirInfo, syncResults );
 				ldap_existing.clear();
 				ldap_existing_homeDirInfo.clear();
 			}
@@ -4032,7 +3643,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				{
 					syncResults = m_ldapSyncResults.getAddedUsers();
 				}
-				List results = createUsers( zoneId, ldap_new, ldap_new_homeDirInfo, m_syncMode, syncResults );
+				List results = createUsers( zoneId, ldap_new, ldap_new_homeDirInfo, syncResults );
 				ldap_new.clear();
 				ldap_new_homeDirInfo.clear();
 				
@@ -4054,6 +3665,14 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			m_ldapConfig = config;
 		}
 		
+		/**
+		 * 
+		 */
+		public void setLdapContext( LdapContext ldapCtx )
+		{
+			m_ldapCtx = ldapCtx;
+		}
+		
 		public Map wrapUp( boolean doCleanup )
 		{
 			if (!ldap_existing.isEmpty()) {
@@ -4066,7 +3685,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					// Yes
 					syncResults = m_ldapSyncResults.getModifiedUsers();
 				}
-				updateUsers( zoneId, ldap_existing, ldap_existing_homeDirInfo, m_syncMode, syncResults );
+				updateUsers( m_ldapCtx, zoneId, ldap_existing, ldap_existing_homeDirInfo, syncResults );
 			}
 			
 			if (!ldap_new.isEmpty()) {
@@ -4078,7 +3697,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				{
 					syncResults = m_ldapSyncResults.getAddedUsers();
 				}
-				List results = createUsers( zoneId, ldap_new, ldap_new_homeDirInfo, m_syncMode, syncResults );
+				List results = createUsers( zoneId, ldap_new, ldap_new_homeDirInfo, syncResults );
 				for (int i=0; i<results.size(); ++i) {
 					User user = (User)results.get(i);
 					Object[] row = (Object[])dnUsers.get(user.getForeignName());
@@ -4087,98 +3706,64 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				}
 			}
 			
-			// Do the work of disabling or deleting users that were not found in ldap.
-			// We will only disable or delete users that were sync'd from ldap but are no
-			// longer found in the ldap directory.
-			// We will not touch users that were created by the admin or external users.
-			if ( doCleanup )
-			{
-		    	Map users = new HashMap();
+			//if disable is enabled, remove users that were not found in ldap
+			if ( doCleanup && delete && !notInLdap.isEmpty()) {
+				PartialLdapSyncResults	syncResults	= null;
+				
+				if (logger.isInfoEnabled()) {
+					logger.info("Deleting users:");
+					for (String name:notInLdap.values()) {
+						logger.info("'" + name + "'");
+					}
+				}
 
-				for ( Map.Entry<Long, String>me:notInLdap.entrySet() )
+				// Do we have a place to store the sync results?
+				if ( m_ldapSyncResults != null )
 				{
+					// Yes
+					syncResults = m_ldapSyncResults.getDeletedUsers();
+				}
+				deletePrincipals(zoneId, notInLdap.keySet(), deleteWorkspace, syncResults );
+			}
+			
+			//!!! Can we use the ldap guid as a better way of doing the following?
+			//Set foreign names of users to self; needed to recognize synced names and mark attributes read-only
+			if ( doCleanup && !delete && !notInLdap.isEmpty()) {
+		    	Map users = new HashMap();
+				if (logger.isDebugEnabled())
+					logger.debug("Users not found in ldap:");
+				
+				for (Map.Entry<Long, String>me:notInLdap.entrySet()) {
 					Long id = me.getKey();
 					String name = me.getValue();
-					String foreignName;
-					String ldapGuid;
+					if (logger.isDebugEnabled())
+						logger.debug("\t'"+name+"'");
 					
 					Object row[] = (Object[])ssUsers.get(name);
-					ldapGuid = (String) row[PRINCIPAL_LDAP_GUID];
-					foreignName = (String) row[PRINCIPAL_FOREIGN_NAME];
-					
-					// Was this user provisioned from ldap?
-					if ( (ldapGuid != null && ldapGuid.length() > 0 ) || !name.equalsIgnoreCase( foreignName ) )
-					{	
+					if (!name.equalsIgnoreCase((String)row[PRINCIPAL_FOREIGN_NAME])) {//was synched from somewhere else	
 						Map updates = new HashMap();
-
-						// Yes
-						// If we disable the user we want to set the foreignName equal to the name
 				    	updates.put(ObjectKeys.FIELD_PRINCIPAL_FOREIGNNAME, name);
 			    		users.put(id, updates);
 			     	}
 				}
-				
-				// Do we have any users we need to disable or delete?
-				if ( !users.isEmpty() )
+				if (!users.isEmpty())
 				{
-					// Yes
-					// Should we delete the users that are no longer found in ldap?
-					if ( delete )
+					PartialLdapSyncResults	syncResults	= null;
+					
+					// Do we have a place to store the sync results?
+					if ( m_ldapSyncResults != null )
 					{
-						Set userIds;
-						Iterator iter;
-						PartialLdapSyncResults	syncResults	= null;
-						
-						// Yes
-						logger.info( "About to delete the following users:" );
-						userIds = users.keySet();
-						for ( iter = userIds.iterator(); iter.hasNext(); )
-						{
-							String userName;
-							Long userIdL;
-							HashMap values;
-							
-							// Get the id of the user.
-							userIdL = (Long) iter.next();
-							
-							// Get the name of the user.
-							values = (HashMap) users.get( userIdL );
-							userName = (String) values.get(  ObjectKeys.FIELD_PRINCIPAL_FOREIGNNAME );
-							if ( userName != null )
-								logger.info( "\tUser: " + userName );
-						}
-
-						// Do we have a place to store the sync results?
-						if ( m_ldapSyncResults != null )
-						{
-							// Yes
-							syncResults = m_ldapSyncResults.getDeletedUsers();
-						}
-
-						// Delete the users no longer found in ldap that once existed in ldap.
-						deletePrincipals(zoneId, users.keySet(), deleteWorkspace, m_syncMode, syncResults );
+						// Yes, get the list to store the modified users.
+						syncResults = m_ldapSyncResults.getModifiedUsers();
 					}
-					else
-					{
-						PartialLdapSyncResults	disabledUsersSyncResults = null;
-						
-						// Disable the users.
-						// Do we have a place to store the sync results?
-						if ( m_ldapSyncResults != null )
-						{
-							// Yes, get the list to store the disabled users.
-							disabledUsersSyncResults = m_ldapSyncResults.getDisabledUsers();
-						}
-						
-						updateUsers( zoneId, users, null, m_syncMode, null );
-						
-						// Disable the users no longer found in ldap that once existed in ldap.
-						disableUsers( users, m_syncMode, disabledUsersSyncResults );
-					}
+					updateUsers( m_ldapCtx, zoneId, users, null, syncResults );
+					
+					// Disable the accounts that are not in ldap
+					disableUsers( users );
 				}
 			}
-			
 			return dnUsers;
+
 		}
 		
 	}// end UserCoordinator
@@ -4229,115 +3814,46 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 
 		return (cookie == null) ? new byte[0] : cookie;
 	}
-	
-	/**
-	 * Parse the given unc path into a server, volume, path 
-	 */
-	private HomeDirInfo parseUncPath( String uncPath, boolean logErrors )
-	{
-		Matcher matcher;
-		HomeDirInfo homeDirInfo = null;
-		
-	    matcher = m_pattern_uncPath.matcher( uncPath );
-	    if ( matcher.find() && matcher.groupCount() == 2 )
-	    {
-	    	String server;
-	    	String share;
-			String path = null;
-			
-    		server = matcher.group( 1 );
-    		share = matcher.replaceFirst( "" );
-    		
-    		if ( share != null )
-    		{
-				int slashIndex;
-
-	    		// Does the share have a '\' in it.
-				slashIndex = share.indexOf( '\\' );
-	    		if ( slashIndex > 0 )
-	    		{
-	    			// Yes
-	    			path = share.substring( slashIndex+1 );
-	    			share = share.substring( 0, slashIndex );
-	    		}
-    		}
-
-    		if ( path != null && path.length() > 0 )
-    		{
-    			if ( path.charAt( 0 ) == '\\' )
-    				path = path.substring( 1 );
-    		}
-
-    		// There may be a case that the unc is \\server\share with no path.
-    		// In that case set path to \
-    		if ( path == null || path.length() == 0 )
-    			path = "\\";
-
-    		logger.debug( "\t\t\tserver: '" + server + "' volume: '" + share + "' path: '" + path + "'" );
-    		
-			if ( server != null && server.length() > 0 && share != null && share.length() > 0 && 
-				 path != null && path.length() > 0 )
-			{
-				homeDirInfo = new HomeDirInfo();
-				homeDirInfo.setServerAddr( server );
-				homeDirInfo.setVolume( share );
-				homeDirInfo.setPath( path );
-			}
-		}
-	    else
-	    {
-	    	if ( logErrors || logger.isDebugEnabled() )
-	    		logger.error( "\t\t\tCould not parse the home directory unc" );
-	    }
-	    
-	    return homeDirInfo;
-	}
 
 	protected void syncUsers(Binder zone, LdapContext ctx, LdapConnectionConfig config, UserCoordinator userCoordinator) 
-		throws NamingException
-	{
+		throws NamingException {
 		String ssName;
 		String[] attributesToRead;
 		String ldapGuidAttribute;
 		String domainName = null;
-		LdapDirType dirType;
 		int pageSize = 1500;
 
 		logger.info( "Starting to sync users, syncUsers()" );
 
-		// If "sync user profiles" is off and "register ldap user profiles automatically" is off
-		// then there is nothing to do here.
-		if ( userCoordinator.sync == false && userCoordinator.create == false )
-		{
-			logger.info( "In syncUsers(), 'Synchronize User Profiles' and 'Register LDAP User Profiles Automatically' are both off.  Nothing to do." );
-			return;
-		}
-
 		// Get the mapping of ldap attributes to Teaming field names
-		Map attributeMappings = config.getMappings();
+		Map userAttributes = config.getMappings();
 
-		userCoordinator.setAttributes(attributeMappings);
+		userCoordinator.setAttributes(userAttributes);
+		userCoordinator.setLdapContext( ctx );
 		userCoordinator.setLdapConfig( config );
 
 		// Get a list of the names of the attributes we want to read from the ldap directory for each user.
 		attributesToRead = getAttributeNamesToRead( userCoordinator.userAttributeNames, config );
 
+		Set la = new HashSet(userAttributes.keySet());
 		String userIdAttribute = config.getUserIdAttribute();
+		if (Validator.isNull(userIdAttribute)) userIdAttribute = config.getUserIdAttribute();
+		la.add(userIdAttribute);
 
 		// Get the ldap attribute name that we will use for a guid.
 		ldapGuidAttribute = config.getLdapGuidAttribute();
 		
 		// Are we working with AD?
-		dirType = getLdapDirType( ldapGuidAttribute );
-		if ( dirType == LdapDirType.AD )
+		if ( getLdapDirType( ldapGuidAttribute ) == LdapDirType.AD )
 		{
 			// Yes
 			domainName = getDomainName( config );
 		}
 		
-		for(LdapConnectionConfig.SearchInfo searchInfo : config.getUserSearches()) {
+		for(LdapConnectionConfig.SearchInfo searchInfo : config.getUserSearches()) 
+		{
 			String filter;
-
+			
 			filter = searchInfo.getFilterWithoutCRLF();
 			if ( Validator.isNotNull( filter ) )
 			{
@@ -4353,7 +3869,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 													false);
 	
 				logger.info( "\tSearching for users in base dn: " + searchInfo.getBaseDn() );
-				
+
 				// Request the paged results control
 				try
 				{
@@ -4421,47 +3937,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 							continue;
 						}
 						
-						{
-							HomeDirInfo homeDirInfo = null;
-							
-							if ( Utils.checkIfFilr() )
-							{
-								LdapContext tmpLdapContext;
-
-								// Create an ldap context that we can use to read the home dir info
-								// from the user object.  We can't use ctx because MS Windows
-								// has a bug where we can't read additional attributes if we are doing paging.
-								tmpLdapContext = getUserContext( zone.getId(), config );
-								
-								homeDirInfo = getHomeDirInfoFromConfig(
-																	tmpLdapContext,
-																	dirType,
-																	dn,
-																	searchInfo.getHomeDirConfig(),
-																	true );
-
-								try
-								{
-									if ( tmpLdapContext != null )
-									{
-										tmpLdapContext.close();
-										tmpLdapContext = null;
-									}
-								}
-								catch ( NamingException ex )
-						  		{
-									// Nothing to do.
-						  		}
-							}
-
-							userCoordinator.record(
-												dn,
-												ssName,
-												lAttrs,
-												ldapGuidAttribute,
-												domainName,
-												homeDirInfo);
-						}
+						userCoordinator.record( dn, ssName, lAttrs, ldapGuidAttribute, domainName );
 					}
 	     
 					// examine the response controls
@@ -4501,12 +3977,11 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		// Value: array of values read from db.
 		Map ssGroups = new TreeMap(String.CASE_INSENSITIVE_ORDER);
 
-		// m_groupsNotInLdap is initially a list of all groups returned from the call to loadObjects(...)
-		// that were provisioned from ldap.
+		// notInLdap is initially a list of all groups returned from the call to loadObjects(...)
 		// When a group is read from the ldap directory it removed from this list.
 		// Key: Teaming id
 		// Value: group name
-		Map<Long, String> m_groupsNotInLdap = new TreeMap();
+		Map<Long, String> notInLdap = new TreeMap();
 		
 		// dnGroups is a list of all groups returned from the call to loadObjects(...) plus
 		// any groups that we created during the sync process.
@@ -4529,15 +4004,12 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		
 		private LdapSyncResults	m_ldapSyncResults;	// Store the results of the sync here.
 
-		private LdapSyncMode m_syncMode;
-
 		public GroupCoordinator(
 			Binder zone,
 			Map dnUsers,
 			boolean sync,
 			boolean create,
 			boolean delete,
-			LdapSyncMode syncMode,
 			LdapSyncResults syncResults )
 		{
 			ObjectControls objControls;
@@ -4548,8 +4020,6 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			this.sync = sync;
 			this.create = create;
 			this.delete = delete;
-			
-			m_syncMode = syncMode;
 			m_ldapSyncResults = syncResults;	// Store the results of the sync here.
 			
 			createSyncSize = GetterUtil.getLong(getLdapProperty(zone.getName(), "create.flush.threshhold"), 100);
@@ -4595,7 +4065,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				if ( ((Boolean)row[PRINCIPAL_DISABLED] == Boolean.FALSE) &&
 					 (Validator.isNull((String)row[PRINCIPAL_INTERNALID])) )
 				{
-					m_groupsNotInLdap.put((Long)row[PRINCIPAL_ID], ssName);
+					notInLdap.put((Long)row[PRINCIPAL_ID], ssName);
 				}
 			}
 		}
@@ -4631,12 +4101,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		 * @return
 		 * @throws NamingException
 		 */
-		boolean record(
-			String dn,
-			String teamingName,
-			Attributes lAttrs,
-			String ldapGuidAttribute,
-			String domainName ) throws NamingException
+		boolean record(String dn, String teamingName, Attributes lAttrs, String ldapGuidAttribute ) throws NamingException
 		{
 			boolean isSSGroup = false;
 			boolean foundLdapGuid = false;
@@ -4649,9 +4114,6 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			
 			// Add the necessary containers for this group.
 			m_containerCoordinator.record( dn );
-			
-			if ( domainName != null )
-				domainName = domainName.toLowerCase();
 			
 			// Do we have the name of the ldap attribute that holds the guid?
 			if ( ldapGuidAttribute != null && ldapGuidAttribute.length() > 0 )
@@ -4670,7 +4132,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					{
 						// Yes
 						foundLdapGuid = true;
-						m_groupsNotInLdap.remove( row[PRINCIPAL_ID] );
+						notInLdap.remove( row[PRINCIPAL_ID] );
 					}
 				}
 			}
@@ -4688,43 +4150,14 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				// No, should we create the group?
 				if (create)
 				{
-					// Yes
-					// Is there already a group in Filr with this name?
+					// Yes, see if name already exists
 					ssName = teamingName;
 					row = (Object[])ssGroups.get(ssName);
-					if ( row != null )
+					if (row != null)
 					{
-						int i;
-						String originalSsName;
-						
-						logger.debug( "group already exists: '" + ssName + "'" );
-
-						// Yes
-						// Try to create a unique name for the group.  For example, ico-group(2)
-						// We don't want to try forever so we try 1,000 times
-						originalSsName = ssName;
-						ssName = null;
-						for (i = 1; i <= 1000; ++i)
-						{
-							String tmpName;
-							
-							// Does this name exist?
-							tmpName = originalSsName + "(" + i + ")";
-							if ( ssGroups.get( tmpName ) == null )
-							{
-								logger.debug( "Group: '" + originalSsName + "' will be known Filr as: '" + tmpName + "'" );
-
-								// No
-								ssName = tmpName;
-								break;
-							}
-						}
-						
-						if ( ssName == null )
-							logger.error( "Could not generate a unique name for the group: '" + originalSsName + "'" );
+						logger.error(NLT.get("errorcode.ldap.groupexists", new Object[]{dn}));
 					}
-					
-					if ( ssName != null && ssName.length() > 0 )
+					else
 					{
 						Map userMods = new HashMap();
 						
@@ -4734,7 +4167,6 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 						userMods.put(ObjectKeys.FIELD_PRINCIPAL_NAME,ssName);
 						userMods.put(ObjectKeys.FIELD_PRINCIPAL_FOREIGNNAME, dn);
 						userMods.put(ObjectKeys.FIELD_ZONE, zoneId);
-						userMods.put( ObjectKeys.FIELD_PRINCIPAL_DOMAIN_NAME, domainName );
 
 						if (logger.isDebugEnabled())
 							logger.debug("Creating group:" + ssName);
@@ -4742,14 +4174,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 						Group group = createGroup(zoneId, ssName, userMods); 
 						if(group != null)
 						{
-							Object[] groupInfo;
-							
-							groupInfo = new Object[]{ssName, group.getId(), Boolean.FALSE, null, dn, ldapGuid};
-							dnGroups.put(dn, groupInfo );
-							
-							if ( ssGroups.get( ssName ) == null )
-								ssGroups.put( ssName, groupInfo );
-							
+							dnGroups.put(dn, new Object[]{ssName, group.getId(), Boolean.FALSE, null, dn, ldapGuid});
 							isSSGroup = true;
 						}
 					}
@@ -4775,14 +4200,11 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					userMods.put( ObjectKeys.FIELD_PRINCIPAL_FOREIGNNAME, dn );
 					row[PRINCIPAL_FOREIGN_NAME] = dn;
 
-					// Update the domain name
-					userMods.put( ObjectKeys.FIELD_PRINCIPAL_DOMAIN_NAME, domainName );
-
-					updateGroup( zoneId, (Long)row[PRINCIPAL_ID], userMods, m_syncMode, m_ldapSyncResults );
+					updateGroup( zoneId, (Long)row[PRINCIPAL_ID], userMods, m_ldapSyncResults );
 				} 
 				
 				//exists in ldap, remove from missing list
-				m_groupsNotInLdap.remove(row[PRINCIPAL_ID]);
+				notInLdap.remove(row[PRINCIPAL_ID]);
 				isSSGroup = true;
 			}
 			
@@ -4814,26 +4236,11 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				
 		    	ProfileCoreProcessor processor = (ProfileCoreProcessor) getProcessorManager().getProcessor(
 	            	pf, ProfileCoreProcessor.PROCESSOR_KEY);
-		    	
-		    	if ( m_syncMode == LdapSyncMode.PERFORM_SYNC )
-		    	{
-			    	List newGroups = processor.syncNewEntries(pf, groupDef, Group.class, Arrays.asList(new MapInputData[] {groupMods}), null, syncResults, new IdentityInfo(true, true, false, false) );
-			    	IndexSynchronizationManager.applyChanges(); //apply now, syncNewEntries will commit
-			    	//flush from cache
-			    	getCoreDao().evict(newGroups);
-			    	return (Group) newGroups.get(0);
-		    	}
-		    	
-		    	if ( m_syncMode == LdapSyncMode.PREVIEW_ONLY )
-		    	{
-		    		HashMap<String,Map> map;
-		    		
-		    		map = new HashMap<String,Map>();
-		    		map.put( ssName, groupData );
-					addPrincipalsToPreviewSyncResults( map, syncResults );
-					
-					return null;
-				}
+		    	List newGroups = processor.syncNewEntries(pf, groupDef, Group.class, Arrays.asList(new MapInputData[] {groupMods}), null, syncResults, new IdentityInfo(true, true, false, false) );
+		    	IndexSynchronizationManager.applyChanges(); //apply now, syncNewEntries will commit
+		    	//flush from cache
+		    	getCoreDao().evict(newGroups);
+		    	return (Group) newGroups.get(0);		    	
 			} catch (Exception ex) {
 				logError("Error adding group", ex);
 				logger.error("'" + ssName + "':'" + groupData.get(ObjectKeys.FIELD_PRINCIPAL_FOREIGNNAME) + "'");
@@ -4864,67 +4271,35 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			}
 
 			//do inside a transaction
-			updateMembership(groupId, membership, m_syncMode, syncResults );	
+			updateMembership(groupId, membership, syncResults );	
 		}
 
 		public void deleteObsoleteGroups()
 		{
-			// If delete is enabled, remove groups that were originally sync'd from ldap but
-			// are no longer found in ldap.
-			if ( delete && !m_groupsNotInLdap.isEmpty() )
-			{
+			//if disable is enabled, remove groups that were not found in ldap
+			if (delete && !notInLdap.isEmpty()) {
 				PartialLdapSyncResults	syncResults	= null;
-		    	Map groups;
 				
-		    	groups = new HashMap();
-
-		    	// m_groupsNotInLdap contains local groups and groups that were originally sync'd
-				// from ldap.  We only want to delete groups that were originally sync'd from
-				// ldap and are no longer in ldap.
-				
-				// Create a list of groups that were originally sync'd from ldap but are no
-				// longer in ldap.
-				for ( Map.Entry<Long, String> me: m_groupsNotInLdap.entrySet() )
-				{
-					Long id;
-					String name;
-					String foreignName;
-					String ldapGuid;
-					Object row[];
-					
-					id = me.getKey();
-					name = me.getValue();
-					row = (Object[])ssGroups.get( name );
-					ldapGuid = (String) row[PRINCIPAL_LDAP_GUID];
-					foreignName = (String) row[PRINCIPAL_FOREIGN_NAME];
-					
-					// Was this group provisioned from ldap?
-					if ( (ldapGuid != null && ldapGuid.length() > 0 ) || !name.equalsIgnoreCase( foreignName ) )
-					{	
-						// Yes
-			    		groups.put( id, name );
-			     	}
+				if (logger.isInfoEnabled()) {
+					logger.info("Deleting groups:");
+					for (String name:notInLdap.values()) {
+						logger.info("'" + name + "'");
+					}
 				}
-				
 				// Do we have a place to store the sync results?
 				if ( m_ldapSyncResults != null )
 				{
 					// Yes
 					syncResults = m_ldapSyncResults.getDeletedGroups();
 				}
-
-				if ( groups.isEmpty() == false )
-					deletePrincipals( zoneId, groups.keySet(), false, m_syncMode, syncResults );
-			}
-			else if ( !delete && !m_groupsNotInLdap.isEmpty() )
-			{
-				if ( logger.isDebugEnabled() )
-				{
-					logger.debug( "Groups not found in ldap:" );
-					for ( String name: m_groupsNotInLdap.values() )
-					{
+				deletePrincipals(zoneId,notInLdap.keySet(), false, syncResults );
+			} else if (!delete && !notInLdap.isEmpty()) {
+				if (logger.isDebugEnabled()) {
+					logger.debug("Groups not found in ldap:");
+					for (String name:notInLdap.values()) {
 						logger.debug("\t'" + name + "'");
 					}
+					
 				}
 			}
 		}
@@ -4936,16 +4311,14 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 
 	}// end GroupCoordinator
 
-	protected void syncGroups(
-		Binder zone,
-		LdapContext ctx,
-		LdapConnectionConfig config,
-		GroupCoordinator groupCoordinator,
-		boolean syncMembership ) throws NamingException
-	{
+	protected void syncGroups(Binder zone, LdapContext ctx, LdapConnectionConfig config, GroupCoordinator groupCoordinator,
+							  boolean syncMembership) 
+		throws NamingException {
+		//ssname=> forum info
+		String [] sample = new String[0];
+		//ldap dn => forum info
 		boolean workingWithAD = false;
 		String ldapGuidAttribute;
-		int pageSize = 500;
 		
 		// Get the name of the ldap attribute we will use to get a guid from the ldap directory.
 		ldapGuidAttribute = config.getLdapGuidAttribute();
@@ -4955,17 +4328,17 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 
 		logger.info( "Starting to sync groups, syncGroups()" );
 
-		for(LdapConnectionConfig.SearchInfo searchInfo : config.getGroupSearches())
-		{
-			if ( Validator.isNotNull(searchInfo.getFilterWithoutCRLF()))
-			{
+		for(LdapConnectionConfig.SearchInfo searchInfo : config.getGroupSearches()) {
+			if(Validator.isNotNull(searchInfo.getFilterWithoutCRLF())) {
 				String[] attributesToRead;
 				String[] attributeNames;
 				List memberAttributes;
 				int i;
-				byte[] cookie = null;
 				
 				logger.info( "\tSearching for groups in base dn: " + searchInfo.getBaseDn() );
+				
+				// Get the name of the ldap attribute we will use to get a guid from the ldap directory.
+				ldapGuidAttribute = config.getLdapGuidAttribute();
 				
 				// Get the mapping of attributes for a group.
 				Map groupAttributes = (Map) getZoneMap(zone.getName()).get(GROUP_ATTRIBUTES);
@@ -4975,6 +4348,9 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				if ( workingWithAD == false )
 					la.addAll((List) getZoneMap(zone.getName()).get(MEMBER_ATTRIBUTES));
 				
+				int scope = (searchInfo.isSearchSubtree()?SearchControls.SUBTREE_SCOPE:SearchControls.ONELEVEL_SCOPE);
+				SearchControls sch = new SearchControls(scope, 0, 0, (String [])la.toArray(sample), false, false);
+	
 				// Create a String[] of all the attributes we need to read from the directory.
 				{
 					int len;
@@ -5027,153 +4403,93 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					}
 				}
 				
-				// Request the paged results control
-				try
-				{
-					Control[] ctls = new Control[]{ new PagedResultsControl( pageSize, true ) };
-					ctx.setRequestControls( ctls );
-				}
-				catch ( IOException ex )
-				{
-					logger.error( "In syncGroups(), call to new PagedResultsControl() threw an exception: " + ex.toString() );
-				}
-				
-				int scope = (searchInfo.isSearchSubtree()?SearchControls.SUBTREE_SCOPE:SearchControls.ONELEVEL_SCOPE);
-				SearchControls sch = new SearchControls(
-													scope,
-													0,
-													0,
-													attributesToRead,
-													false,
-													false);
-	
-				do
-				{
-					NamingEnumeration results;
+				NamingEnumeration ctxSearch = ctx.search(searchInfo.getBaseDn(), searchInfo.getFilterWithoutCRLF(), sch);
+
+				while (hasMore( ctxSearch )) {
+					String groupName;
+					String fixedUpGroupName;
+					String teamingName;
+					Attribute id;
 					
-					results = ctx.search( searchInfo.getBaseDn(), searchInfo.getFilterWithoutCRLF(), sch );
-
-					while ( hasMore( results ) )
-					{
-						String groupName;
-						String fixedUpGroupName;
-						String teamingName;
-						String domainName;
-						Attribute id;
-						SearchResult sr;
-						
-						sr = (SearchResult) results.next();
-						groupName = sr.getNameInNamespace();
-						
-						// Fixup the  by replacing all "/" with "\/".
-						fixedUpGroupName = fixupName( groupName );
-						fixedUpGroupName = fixedUpGroupName.trim();
-						
-						// Read the given attributes for this group from the directory.
-						Attributes lAttrs = sr.getAttributes();
-						
-						String relativeName = groupName.trim();
-						String dn;
-						if ( sr.isRelative() && !"".equals(ctx.getNameInNamespace())) {
-							if(!"".equals(relativeName)) {
-								dn = relativeName + "," + ctx.getNameInNamespace().trim();
-							} else {
-								dn = ctx.getNameInNamespace().trim();
-							}
+					Binding bd = (Binding)ctxSearch.next();
+					groupName = bd.getNameInNamespace();
+					
+					// Fixup the  by replacing all "/" with "\/".
+					fixedUpGroupName = fixupName( groupName );
+					fixedUpGroupName = fixedUpGroupName.trim();
+					
+					// Read the given attributes for this group from the directory.
+					Attributes lAttrs = ctx.getAttributes( fixedUpGroupName, attributesToRead );
+					
+					String relativeName = groupName.trim();
+					String dn;
+					if (bd.isRelative() && !"".equals(ctx.getNameInNamespace())) {
+						if(!"".equals(relativeName)) {
+							dn = relativeName + "," + ctx.getNameInNamespace().trim();
 						} else {
-							dn = relativeName;
+							dn = ctx.getNameInNamespace().trim();
 						}
-						
-						id = lAttrs.get( "cn" );
-						if ( id != null )
+					} else {
+						dn = relativeName;
+					}
+					
+					id = lAttrs.get( "cn" );
+					if ( id != null )
+					{
+						teamingName = idToName((String)id.get());
+					}
+					else
+						teamingName = dn;
+					
+					if ( teamingName == null )
+						continue;
+
+					//doing this one at a time is going to be slow for lots of groups
+					//not sure why it was changed for v2
+					if(groupCoordinator.record(dn, teamingName, lAttrs, ldapGuidAttribute ) && syncMembership ) { 
+						//Get map indexed by id
+						Object[] gRow = groupCoordinator.getGroup(dn);
+						if (gRow == null) continue; //not created
+						Long groupId = (Long)gRow[PRINCIPAL_ID];
+						if (groupId == null) continue; // never got created
+
+						if ( workingWithAD == false )
 						{
-							teamingName = idToName((String)id.get());
+							Attribute att = null;
+							for (i=0; i<memberAttributes.size(); i++) {
+								att = lAttrs.get((String)memberAttributes.get(i));
+								if(att != null && att.get() != null && att.size() != 0) {
+									break;
+								}
+								att = null;
+							}
+							Enumeration members = null;
+							if(att != null) {
+								members = att.getAll();
+							} else {
+								NamingEnumeration<NameClassPair> e = ctx.list( fixedUpGroupName );
+		
+								LinkedList membersList = new LinkedList();
+								while(e.hasMore()) {
+									NameClassPair pair = e.next();
+									membersList.add(pair.getNameInNamespace());
+								}
+								members = Collections.enumeration(membersList);
+							}
+							if(members != null) {
+								groupCoordinator.syncMembership(groupId, members);
+							}
 						}
 						else
-							teamingName = dn;
-						
-						if ( teamingName == null )
-							continue;
-
-						if ( workingWithAD )
-							domainName = getDomainName( config );
-						else
-							domainName = null;
-						
-						//doing this one at a time is going to be slow for lots of groups
-						//not sure why it was changed for v2
-						if ( groupCoordinator.record( dn, teamingName, lAttrs, ldapGuidAttribute, domainName ) && syncMembership )
-						{ 
-							//Get map indexed by id
-							Object[] gRow = groupCoordinator.getGroup(dn);
-							if (gRow == null) continue; //not created
-							Long groupId = (Long)gRow[PRINCIPAL_ID];
-							if (groupId == null) continue; // never got created
+						{
+							Enumeration members;
 							
-							if ( workingWithAD == false )
-							{
-								Attribute att = null;
-								for (i=0; i<memberAttributes.size(); i++) {
-									att = lAttrs.get((String)memberAttributes.get(i));
-									if(att != null && att.get() != null && att.size() != 0) {
-										break;
-									}
-									att = null;
-								}
-								Enumeration members = null;
-								if(att != null) {
-									members = att.getAll();
-								} else {
-									NamingEnumeration<NameClassPair> e = ctx.list( fixedUpGroupName );
-			
-									LinkedList membersList = new LinkedList();
-									while(e.hasMore()) {
-										NameClassPair pair = e.next();
-										membersList.add(pair.getNameInNamespace());
-									}
-									members = Collections.enumeration(membersList);
-								}
-								if(members != null) {
-									groupCoordinator.syncMembership(groupId, members);
-								}
-							}
-							else
-							{
-								Enumeration members;
-								String guid;
-								String objectSid;
-
-								// Get the ldap guid that was read from the ldap directory for this user.
-								guid = getLdapGuid( lAttrs, ldapGuidAttribute );
-								
-								// Get the group's object sid
-								objectSid = getObjectSid( lAttrs );
-								
-								members = getGroupMembershipFromAD( guid, objectSid, zone, config, searchInfo );
-								if ( members != null )
-									groupCoordinator.syncMembership( groupId, members );
-							}
+							members = getGroupMembershipFromAD( teamingName, zone, config, searchInfo );
+							if ( members != null )
+								groupCoordinator.syncMembership( groupId, members );
 						}
 					}
-
-					// examine the response controls
-					cookie = parseControls( ctx.getResponseControls() );
-
-					try
-					{
-						// pass the cookie back to the server for the next page
-						PagedResultsControl prCtrl;
-						
-						prCtrl = new PagedResultsControl( pageSize, cookie, Control.CRITICAL );
-						ctx.setRequestControls( new Control[]{ prCtrl } );
-					}
-					catch ( IOException ex )
-					{
-						cookie = null;
-						logger.error( "In syncGroups(), call to PagedResultsControl() threw an exception: " + ex.toString() );
-					}
-
-				} while ( (cookie != null) && (cookie.length != 0) );
+				}
 			}
 		}
 	}
@@ -5182,8 +4498,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	 * Read the group membership for the given group in AD
 	 */
 	private Enumeration getGroupMembershipFromAD(
-		String guid,
-		String objectSid,
+		String groupName,
 		Binder zone,
 		LdapConnectionConfig ldapConfig,
 		LdapConnectionConfig.SearchInfo searchInfo )
@@ -5191,7 +4506,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		LdapContext ctx = null;
 		Hashtable listOfMembers;
 
-		if ( guid == null || zone == null || ldapConfig == null || searchInfo == null )
+		if ( groupName == null || zone == null || ldapConfig == null || searchInfo == null )
 			return null;
 
 		listOfMembers = new Hashtable();
@@ -5203,7 +4518,6 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			String search;
 			String filter;
 			NamingEnumeration ctxSearch;
-			StringBuffer ldapFilterGuid;
 			
 			ctx = getGroupContext( zone.getId(), ldapConfig );
 
@@ -5214,19 +4528,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			
 			searchCtls = new SearchControls();
 			searchCtls.setSearchScope( scope );
-			
-			// Convert the guid into a format that can be used with an ldap filter.
-			// ie, \C0\92\B2\A3\E4\E4\FF\4A\8C\50\98\DB\B4\C0\17\64
-			ldapFilterGuid = new StringBuffer();
-			for (int i = 0; i < guid.length(); ++i)
-			{
-				if ( (i % 2) == 0 )
-					ldapFilterGuid.append( '\\' );
-				
-				ldapFilterGuid.append( guid.charAt( i ) );
-			}
-			
-			search = "(" + ldapConfig.getLdapGuidAttribute() + "=" + ldapFilterGuid.toString() + ")";
+			search = "(" + ldapConfig.getUserIdAttribute() + "=" + groupName + ")";
 			filter = searchInfo.getFilterWithoutCRLF();
 			if ( Validator.isNull( filter ) == false )
 			{
@@ -5343,178 +4645,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			}
 		}
 		
-		// Get the members of this group where this group is their primary group
-		getPrimaryGroupMembershipFromAD( listOfMembers, zone.getId(), guid, objectSid, ldapConfig );
-		
 		return listOfMembers.keys();
-	}
-	
-	/**
-	 * 
-	 */
-	private void getPrimaryGroupMembershipFromAD(
-		Hashtable listOfMembers,
-		Long zoneId,
-		String guid,
-		String objectSid,
-		LdapConnectionConfig ldapConfig )
-	{
-		int pageSize = 500;
-		String groupId = null;
-		LdapContext ldapContext = null;
-		boolean syncAll;
-		
-		if ( listOfMembers == null || guid == null || objectSid == null || ldapConfig == null )
-		{
-			logger.error( "in getPrimaryGroupMembershipFromAD(), invalid parameter" );
-			return;
-		}
-		
-		syncAll = SPropsUtil.getBoolean( "ldap.sync.all.primary.group.membership", false );
-
-		// Get the group id of the given group
-		{
-			int index;
-			
-			index = objectSid.lastIndexOf( '-' );
-			if ( index != -1 && (index+1) < objectSid.length() )
-				groupId = objectSid.substring( index + 1 );
-			
-			if ( groupId == null || groupId.length() == 0 )
-			{
-				logger.error( "in getPrimaryGroupMembershipFromAD(), unable to get the group id for group: " + objectSid );
-				return;
-			}
-			
-			// Are we supposed to try and sync the primary group membership for all groups?
-			if ( syncAll == false )
-			{
-				// No
-				// We are only going to retrieve the primary group membership for the "Domain Users" group.
-				if ( groupId.equalsIgnoreCase( "513" ) == false )
-					return;
-			}
-		}
-		
-		logger.info( "Getting primary group membership for group: " + objectSid );
-		
-		try
-		{
-			String[] attributesToRead;
-			
-			attributesToRead = new String[1];
-			attributesToRead[0] = SAM_ACCOUNT_NAME_ATTRIBUTE;
-			
-			ldapContext = getUserContext( zoneId, ldapConfig );
-
-			for ( LdapConnectionConfig.SearchInfo searchInfo : ldapConfig.getUserSearches() )
-			{
-				String userFilter;
-
-				userFilter = searchInfo.getFilterWithoutCRLF();
-				if ( Validator.isNotNull( userFilter ) )
-				{
-					byte[] cookie = null;
-					int scope;
-					String searchFilter;
-
-					searchFilter = "(primaryGroupID=" + groupId + ")";
-					searchFilter = "(&" + searchFilter + userFilter +")";
-
-					if ( searchInfo.isSearchSubtree() )
-						scope = SearchControls.SUBTREE_SCOPE;
-					else
-						scope = SearchControls.ONELEVEL_SCOPE;
-					
-					SearchControls sch = new SearchControls(
-														scope,
-														0,
-														0,
-														attributesToRead,
-														false,
-														false);
-		
-					logger.info( "\tSearching for primary group membership in base dn: " + searchInfo.getBaseDn() );
-					
-					// Request the paged results control
-					try
-					{
-						Control[] ctls = new Control[]{ new PagedResultsControl( pageSize, true ) };
-						ldapContext.setRequestControls( ctls );
-					}
-					catch ( IOException ex )
-					{
-						logger.error( "Call to new PagedResultsControl() threw an exception: " + ex.toString() );
-					}
-
-					do
-					{
-						NamingEnumeration results;
-
-						// Issue an ldap search for users in the given base dn.
-						results = ldapContext.search( searchInfo.getBaseDn(), searchFilter, sch );
-						
-						// loop through the results in each page
-						while ( hasMore( results ) )
-						{
-							String userName;
-							String relativeName;
-							String memberDN;
-							SearchResult sr;
-							
-							sr = (SearchResult)results.next();
-							userName = sr.getNameInNamespace();
-							
-							relativeName = userName.trim();
-							if ( sr.isRelative() && !"".equals( ldapContext.getNameInNamespace() ) )
-							{
-								memberDN = relativeName + "," + ldapContext.getNameInNamespace().trim();
-							}
-							else
-							{
-								memberDN = relativeName;
-							}
-							
-        					listOfMembers.put( memberDN, memberDN );
-						}
-		     
-						// examine the response controls
-						cookie = parseControls( ldapContext.getResponseControls() );
-
-						try
-						{
-							// pass the cookie back to the server for the next page
-							PagedResultsControl prCtrl;
-							
-							prCtrl = new PagedResultsControl( pageSize, cookie, Control.CRITICAL );
-							ldapContext.setRequestControls( new Control[]{ prCtrl } );
-						}
-						catch ( IOException ex )
-						{
-							cookie = null;
-							logger.error( "Call to PagedResultsControl() threw an exception: " + ex.toString() );
-						}
-
-					} while ( (cookie != null) && (cookie.length != 0) );
-				}
-			}
-		}
-		catch ( Exception ex )
-		{
-		}
-		finally
-		{
-			if ( ldapContext != null )
-			{
-				try
-				{
-					ldapContext.close();
-				}
-				catch ( NamingException namingEx )
-		  		{
-		  		}
-			}
-		}
 	}
 	
 	protected void doLog(String caption, Map<String, Map> names) {
@@ -5684,7 +4815,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					++i;
 					
 					// Add the "userAccountControl" attribute
-					attributeNames[i] = AD_USER_ACCOUNT_CONTROL_ATTRIBUTE;
+					attributeNames[i] = USER_ACCOUNT_CONTROL_ATTRIBUTE;
 					++i;
 				}
 				// Is the ldap directory eDir?
@@ -5803,7 +4934,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		Attribute attrib;
 
 		// Get the userAccountControl attribute.
-		attrib = attrs.get( AD_USER_ACCOUNT_CONTROL_ATTRIBUTE );
+		attrib = attrs.get( USER_ACCOUNT_CONTROL_ATTRIBUTE );
 		if ( attrib != null )
 		{
 			try
@@ -5880,204 +5011,6 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 
 		// If we get here, something did not work.
 		return null;
-	}
-
-	/**
-	 * Convert the given Active Directory date to a Java date 
-	 */
-	private static Date convertADDateToJavaDate( String value )
-	{
-		Date javaDate = null;
-		long adTime;
-		long javaTime;
-			
-		if ( value == null || value.length() == 0 )
-			return null;
-		
-		// In Active Directory the value is stored as a large integer that represents
-		// the number of 100 nanosecond intervals since January 1, 1601 (UTC)
-		adTime = Long.parseLong( value );
-		
-		// Active Directory Epoch is January 1, 1601
-		// Java date Epoch is January 1, 1970;
-		// Subtract the Java Epoch
-		javaTime = adTime - 0x19db1ded53e8000L;
-		
-		// Convert from (100 nano-seconds) to milliseconds
-		javaTime /= 10000L;
-		
-		javaDate = new Date( javaTime );
-
-		return javaDate;
-	}
-	
-	/**
-	 * Return the maximum age of a password in Active Directory.
-	 * This value is stored as a large integer that represents the number of 100 nanosecond intervals
-	 * from the time the password was set before the password expires.
-	 */
-	private Integer getMaxPwdAge( LdapConnectionConfig ldapConfig )
-	{
-		Integer maxPwdAge = null;
-		LdapContext ldapCtx = null;
-
-		try
-		{
-			SearchControls sch;
-			String search;
-			String baseDN;
-			String[] attributesToRead = { AD_MAX_PWD_AGE_ATTRIBUTE };
-			NamingEnumeration ctxSearch;
-
-			ldapCtx = getUserContext( RequestContextHolder.getRequestContext().getZone().getId(), ldapConfig );
-			
-			sch = new SearchControls();
-			sch.setSearchScope( SearchControls.OBJECT_SCOPE );
-			sch.setReturningAttributes( attributesToRead );
-
-			search = "(objectClass=domain)";
-			baseDN = readDomainNameFromAD( ldapConfig );
-			
-			// Get the Domain Root Object
-			ctxSearch = ldapCtx.search( baseDN, search, sch );
-			if ( hasMore( ctxSearch ) )
-			{
-				SearchResult searchResult;
-				Attributes attrs;
-				Attribute attrib;
-				
-				searchResult = (SearchResult)ctxSearch.next();
-	
-				// Read the "maxPwdAge" attribute from the directory.
-				attrs = searchResult.getAttributes();
-				attrib = attrs.get( AD_MAX_PWD_AGE_ATTRIBUTE );
-				if ( attrib != null )
-				{
-					String strValue;
-
-					strValue = (String) attrib.get();
-					if ( strValue != null )
-					{
-						long adTime;
-						long milliSeconds;
-						int days;
-		
-						// This value is stored as a large integer that represents the number of
-						// 100 nanosecond intervals from the time the password was set before the
-						// password expires.
-						adTime = Long.parseLong( strValue );
-						
-						// Convert from (100 nano-seconds) to milliseconds
-						milliSeconds = adTime / 10000L;
-						
-						// Convert milli secons into days
-						days = (int) (milliSeconds / (24 * 60 * 60 * 1000));
-						maxPwdAge = new Integer( days * -1 );
-					}
-				}
-			}
-		}
-		catch ( Exception ex )
-		{
-			logger.error( "getMaxPwdAge() caught an exception: " + ex.toString() );
-		}
-		finally
-		{
-			if ( ldapCtx != null )
-			{
-				try
-				{
-					ldapCtx.close();
-					ldapCtx = null;
-				}
-				catch ( NamingException ex )
-				{
-					// Nothing to do
-				}
-			}
-		}
-		
-		return maxPwdAge;
-	}
-	
-	/**
-	 * Get the date the password was last set in Active Directory
-	 */
-	private Date getPasswordLastSet( Attributes attrs )
-	{
-		Date pwdLastSetDate = null;
-		Attribute attrib;
-		
-		// Get the value of the "pwdLastSet" attribute
-		attrib = attrs.get( AD_PASSWORD_LAST_SET_ATTRIBUTE  );
-		if ( attrib != null )
-		{
-			Object value;
-			
-			try
-			{
-				value = attrib.get();
-				if ( value != null && value instanceof String )
-				{
-					String strValue;
-						
-					strValue = (String) value;
-					pwdLastSetDate = convertADDateToJavaDate( strValue );
-				}
-			}
-			catch ( NamingException ex )
-			{
-				// Nothing to do.
-				logger.error( "getPasswordLastSet() caught an exception: " + ex.toString() );
-			}
-		}
-	
-		return pwdLastSetDate;
-	}
-	
-	/**
-	 * Get whether the "password never expires" attribute is turned on for the user in Active Directory.
-	 */
-	private boolean getPasswordNeverExpires( Attributes attrs )
-	{
-		Attribute attrib;
-
-		// Get the userAccountControl attribute.
-		attrib = attrs.get( AD_USER_ACCOUNT_CONTROL_ATTRIBUTE );
-		if ( attrib != null )
-		{
-			try
-			{
-				Object value;
-				
-				value = attrib.get();
-				if ( value != null && value instanceof String )
-				{
-					String strValue;
-					Long lValue;
-						
-					strValue = (String) value;
-					lValue = Long.valueOf( strValue );
-					
-					// Is the "password never expires" bit set?
-					if ( (lValue & AD_PASSWORD_NEVER_EXPIRES_BIT) > 0 )
-					{
-						// Yes
-						return true;
-					}
-						
-					return false;
-				}
-			}
-			catch ( Exception ex )
-			{
-				// Nothing to do.
-				logger.error( "getPasswordExpires() threw an exception: " + ex.toString() );
-			}
-		}
-
-		// If we get here, something did not work.
-		return false;
 	}
 
 	/**
@@ -6342,67 +5275,41 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		Map mods,
 		HomeDirInfo homeDirInfo ) throws NoUserByTheNameException 
 	{
-		String newName;
 
 		User profile = getProfileDao().findUserByName(loginName, zone.getName()); 
  		ProfileCoreProcessor processor = (ProfileCoreProcessor) getProcessorManager().getProcessor(
 	            	profile.getParentBinder(), ProfileCoreProcessor.PROCESSOR_KEY);
 		processor.syncEntry(profile, new MapInputData(StringCheckUtil.check(mods)), null);
-		
-		// Did the user's name change?
-		newName = (String) mods.get( ObjectKeys.FIELD_PRINCIPAL_NAME );
-		if ( loginName != null && newName != null && loginName.equalsIgnoreCase( newName ) == false )
-		{
-   			List<User> listOfRenamedUsers;
-   			User user;
-			
-			// Yes
-   			user = getProfileDao().findUserByName( newName, zone.getName() );
-   			
-			listOfRenamedUsers = new ArrayList<User>();
-			listOfRenamedUsers.add( user );
-			handleRenamedUsers( listOfRenamedUsers );
-		}
 	}	
 	/**
 	 * Update users with their own map of updates
 	 * @param users - Map indexed by user id, value is map of updates for a user
 	 */
 	protected void updateUsers(
+		LdapContext ldapCtx,
 		Long zoneId,
 		final Map users,
     	Map<Long, HomeDirInfo> homeDirInfoMap,
-    	LdapSyncMode syncMode,
 		PartialLdapSyncResults syncResults ) 
 	{
 		ProfileBinder pf;
 		List collections;
 	   	List foundEntries;
 	   	Map entries;
-	   	Map<Long,String> originalUserNamesMap;
    		ProfileCoreProcessor processor;
 
 		if ( users.isEmpty() )
 			return;
-		
-		// Are we in "preview" mode?
-		if ( syncMode == LdapSyncMode.PREVIEW_ONLY )
-		{
-			// Yes, we don't want to do anything
-			return;
-		}
 		
 		pf = getProfileDao().getProfileBinder(zoneId);
 		collections = new ArrayList();
 		collections.add( "customAttributes" );
 	   	foundEntries = getCoreDao().loadObjects( users.keySet(), User.class, zoneId, collections );
 	   	entries = new HashMap();
-	   	originalUserNamesMap = new HashMap<Long,String>();
 	   	for (int i=0; i<foundEntries.size(); ++i)
 	   	{
 	   		User u = (User)foundEntries.get(i);
 	   		entries.put( u, new MapInputData( StringCheckUtil.check( (Map)users.get( u.getId() ) ) ) );
-	   		originalUserNamesMap.put( u.getId(), u.getName() );
 	   	}
 
    		processor = (ProfileCoreProcessor) getProcessorManager().getProcessor(
@@ -6411,14 +5318,9 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	   	try 
 	   	{
 	   		Map changedEntries;
-   			List<User> listOfRenamedUsers;
 	   		
 	   		changedEntries = processor.syncEntries( entries, null, syncResults );
 	   		IndexSynchronizationManager.applyChanges(); //apply now, syncEntries will commit
-
-	   		// Make the necessary changes to the db tables for each user that was renamed.
-	   		listOfRenamedUsers = getListOfRenamedUsers( originalUserNamesMap, changedEntries );
-	   		handleRenamedUsers( listOfRenamedUsers );
 
 	   		//flush from cache
 	   		for (int i=0; i<foundEntries.size(); ++i)
@@ -6437,7 +5339,6 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		   		{
 			   		User user;
 			   		Map changedEntries;
-		   			List<User> listOfRenamedUsers;
 
 			   		entries.clear();
 			   		user = (User)foundEntries.get( i );
@@ -6447,10 +5348,6 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			   		
 			   		changedEntries = processor.syncEntries( entries, null, syncResults );
 			   		IndexSynchronizationManager.applyChanges(); //apply now, syncEntries will commit
-			   		
-			   		// Make the necessary changes to the db tables for renamed user.
-			   		listOfRenamedUsers = getListOfRenamedUsers( originalUserNamesMap, changedEntries );
-			   		handleRenamedUsers( listOfRenamedUsers );
 
 			   		getCoreDao().evict( user );
 		   		}
@@ -6461,90 +5358,11 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		   	}
 	   	}
 	}
-
-	/**
-	 * Make the necessary changes to the db tables for each renamed user.
-	 * For mapOfRenamedUsers, the key is a User object and the value is the original user name
-	 */
-	private void handleRenamedUsers( List<User> listOfRenamedUsers )
-	{
-		ProfileDao profileDao;
-
-		if ( listOfRenamedUsers == null || listOfRenamedUsers.size() == 0 )
-			return;
-
-		profileDao = getProfileDao();
-
-		for ( User nextUser : listOfRenamedUsers )
-		{
-			try
-			{
-				profileDao.renameUser( nextUser );
-				logger.info( "\tRenamed user: " + nextUser.getName() );
-			}
-			catch ( Exception ex )
-			{
-				logger.error( "Error updating db for renamed user: " + nextUser.getName() + " Exception: " + ex.toString() );
-			}
-		}
-	}
-	
-	/**
-	 * Get a list of users that were renamed.
-	 * originalUsersMap:
-	 * 	key: user id
-	 *  value: original user name
-	 *  
-	 * The key of the returned map is the user object and the value is the old user name
-	 */
-	private List<User> getListOfRenamedUsers( Map<Long,String> originalUsersMap, Map modifiedUsersMap )
-	{
-		List<User> listOfRenamedUsers;
-
-		listOfRenamedUsers = new ArrayList<User>();
-
-		// Do we have any modified users?
-   		if ( modifiedUsersMap != null && modifiedUsersMap.size() > 0 && originalUsersMap != null )
-   		{
-   			Set listOfModifiedUsers;
-			Iterator iter;
-			
-   			// Yes
-	   		// Go through the list of modified users and see if their name was changed.
-   			listOfModifiedUsers = modifiedUsersMap.keySet();
-   			iter = listOfModifiedUsers.iterator();
-			while ( iter.hasNext() )
-			{
-				String originalUserName = null;
-				User modifiedUser;
-				
-				// Get the next modified user
-				modifiedUser = (User) iter.next();
-				
-				// Get the original name of the user.
-				originalUserName = originalUsersMap.get( modifiedUser.getId() );
-				if ( originalUserName != null && originalUserName.length() > 0 )
-				{
-					// Did the user name change?
-					if ( originalUserName.equalsIgnoreCase( modifiedUser.getName() ) == false )
-					{
-						// Yes
-						listOfRenamedUsers.add( modifiedUser );
-					}
-				}
-			}
-   		}
-   		
-   		return listOfRenamedUsers;
-	}
 	
 	/**
 	 * Disable the given list of users.
 	 */
-	protected void disableUsers(
-		Map users,
-		LdapSyncMode syncMode,
-		PartialLdapSyncResults syncResults )
+	protected void disableUsers( Map users )
 	{
 		Set userIds;
 		Iterator iter;
@@ -6568,35 +5386,17 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			values = (HashMap) users.get( userIdL );
 			userName = (String) values.get(  ObjectKeys.FIELD_PRINCIPAL_FOREIGNNAME );
 			
-			if ( syncMode == LdapSyncMode.PERFORM_SYNC )
-			{
-				getProfileModule().disableEntry( userIdL, true );
+			getProfileModule().disableEntry( userIdL, true );
 
-				logger.info( "Disabled user: " + userName );
-			}
-
-			if ( syncResults != null )
-				syncResults.addResult( userName );
+			logger.info( "Disabled user: " + userName );
 		}
 	}
 
     /**
      * Update group with their own updates
      */    
-	protected void updateGroup(
-		Long zoneId,
-		final Long groupId,
-		final Map groupMods,
-		LdapSyncMode syncMode,
-		LdapSyncResults ldapSyncResults )
+	protected void updateGroup( Long zoneId, final Long groupId, final Map groupMods, LdapSyncResults ldapSyncResults )
 	{
-		// Are we in "preview" mode?
-		if ( syncMode == LdapSyncMode.PREVIEW_ONLY )
-		{
-			// Yes, nothing to do.
-			return;
-		}
-		
 		ProfileBinder pf = getProfileDao().getProfileBinder(zoneId);
 		List collections = new ArrayList();
 		collections.add("customAttributes");
@@ -6625,19 +5425,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
     }// end updateGroup()
 
 
-    protected void updateMembership(
-    	Long groupId,
-    	Collection newMembers,
-    	LdapSyncMode syncMode,
-    	PartialLdapSyncResults syncResults )
-    {
-    	// Are we in "preview" mode?
-    	if ( syncMode == LdapSyncMode.PREVIEW_ONLY )
-    	{
-    		// Yes, nothing to do.
-    		return;
-    	}
-    	
+    protected void updateMembership(Long groupId, Collection newMembers, PartialLdapSyncResults syncResults ) {
 		//have a list of users, now compare with what exists already
 		List oldMembers = getProfileDao().getMembership(groupId, RequestContextHolder.getRequestContext().getZoneId());
 		final Set newM = CollectionUtil.differences(newMembers, oldMembers);
@@ -6796,16 +5584,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 
 			// Do we have anything to reindex?
 			if ( principalsToIndex.size() > 0 )
-			{
-				try
-				{
-					Utils.reIndexPrincipals( getProfileModule(), principalsToIndex );
-				}
-				catch ( Exception ex )
-				{
-					logError( "In updateMembership(), Utils.reIndexPrincipals() threw an exception: ", ex );
-				}
-			}
+				Utils.reIndexPrincipals( getProfileModule(), principalsToIndex );
         }
     }
 
@@ -6864,18 +5643,9 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
     	List listOfUsers,
     	Map<String, HomeDirInfo> homeDirInfoMap )
     {
-    	boolean createHomeDirNetFolders = false;
-    	boolean createFakeHomeDirNetFolders = false;
-    	
     	if ( listOfUsers == null || homeDirInfoMap == null || Utils.checkIfFilr() == false )
     		return;
     	
-		// See if we should create the home dir net folder.
-		createHomeDirNetFolders = SPropsUtil.getBoolean( "ldap.create.home.dir.net.folders", false );
-		
-		// For testing purposes should we create a fake home dir net folder?
-		createFakeHomeDirNetFolders = SPropsUtil.getBoolean( "ldap.create.fake.home.dir.net.folders", false );
-
 		for ( Object nextObj : listOfUsers )
 		{
 			if ( nextObj instanceof UserPrincipal )
@@ -6894,22 +5664,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					homeDirInfo = homeDirInfoMap.get( userName );
 					
 					if ( homeDirInfo != null )
-					{
 						createHomeDirNetFolderServer( homeDirInfo );
-						
-						if ( createHomeDirNetFolders )
-							createHomeDirNetFolder( homeDirInfo, nextUser );
-					}
-					else if ( createFakeHomeDirNetFolders )
-					{
-						homeDirInfo = new HomeDirInfo();
-						
-						homeDirInfo.setServerAddr( SPropsUtil.getString( "ldap.home.dir.net.folder.server.addr", "fake.server" ) );
-						homeDirInfo.setVolume( SPropsUtil.getString( "ldap.home.dir.net.folder.server.vol", "fakeVol" ) );
-						homeDirInfo.setPath( SPropsUtil.getString( "ldap.home.dir.net.folder.relative.path", "fakeHome" ) + "/" + userName );
-
-						createHomeDirNetFolder( homeDirInfo, nextUser );
-					}
 				} 
 				catch ( AccessControlException acEx )
 				{
@@ -6918,48 +5673,6 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			}
 		}
     }
-    
-	/**
-	 * Create a Net folder and if needed a net folder server that represents the
-	 * user's home directory.
-	 */
-	private void createHomeDirNetFolder(
-		HomeDirInfo homeDirInfo,
-		UserPrincipal userPrincipal ) throws AccessControlException
-	{
-		User user;
-		String userName;
-
-		// Are we running Filr?
-		if ( homeDirInfo == null || userPrincipal == null || Utils.checkIfFilr() == false )
-		{
-			// No,
-			return;
-		}
-
-		userName = userPrincipal.getName();
-		user = profileModule.getUser( userName );
-
-		try
-		{
-			NetFolderHelper.createHomeDirNetFolder(
-											getProfileModule(),
-											getTemplateModule(),
-											getBinderModule(),
-											getFolderModule(),
-											getAdminModule(),
-											getResourceDriverModule(),
-											null,
-											homeDirInfo,
-											user);
-		}
-		catch ( Exception ex )
-		{
-			logger.info( "Unable to create the home directory net folder for user: " + user.getTitle() + " " + ex.toString() );
-		}
-	}
-
-
 
     /**
      * Create users.  
@@ -6971,20 +5684,10 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
     	Long zoneId,
     	Map<String, Map> users,
     	Map<String, HomeDirInfo> homeDirInfoMap,
-    	LdapSyncMode syncMode,
     	PartialLdapSyncResults syncResults ) 
     {
 		//SimpleProfiler.setProfiler(new SimpleProfiler(false));
 		ProfileCoreProcessor processor;
-		
-		// Are we in "preview" mode?
-		if ( syncMode == LdapSyncMode.PREVIEW_ONLY && syncResults != null )
-		{
-			// Yes
-			addPrincipalsToPreviewSyncResults( users, syncResults );
-			
-			return new ArrayList<User>();
-		}
 		
 		ProfileBinder pf = getProfileDao().getProfileBinder(zoneId);
 		List newUsers = new ArrayList();
@@ -7117,13 +5820,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
     	return newGroups;
 	    	
     }
-     public void deletePrincipals(
-    	Long zoneId,
-    	Collection ids,
-    	boolean deleteWS,
-    	LdapSyncMode syncMode,
-    	PartialLdapSyncResults syncResults )
-     {
+     public void deletePrincipals(Long zoneId, Collection ids, boolean deleteWS, PartialLdapSyncResults syncResults ) {
 		Map options = new HashMap();
 		options.put(ObjectKeys.INPUT_OPTION_DELETE_USER_WORKSPACE, Boolean.valueOf(deleteWS));
 		
@@ -7151,19 +5848,13 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
     				}
     			}
 
-    			// Should we actually do the delete?
-    			if ( syncMode == LdapSyncMode.PERFORM_SYNC )
-    			{
-    				// Yes
-        			getProfileModule().deleteEntry(id, options, true);
-        			getCoreDao().clear(); // clear cache to prevent thrashing resulted from prolonged use of a single session
-        			
-        			count++;
-    			}
+    			getProfileModule().deleteEntry(id, options, true);
+    			getCoreDao().clear(); // clear cache to prevent thrashing resulted from prolonged use of a single session
     			
-    			if ( syncResults != null && name != null )
-    				syncResults.addResult( name );
+    			count++;
     			
+    			if(syncResults != null && name != null)
+    				syncResults.addResult(name);
     		} catch (Exception ex) {
     			logError(NLT.get("errorcode.ldap.delete", new Object[]{id.toString()}), ex);
     		}
@@ -7173,4 +5864,32 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		}
 		IndexSynchronizationManager.applyChanges();
     }
+    //have not implement re-enable so only support delete
+/*    protected void disableUsers(final Binder zone, final Collection ids) {
+        getTransactionTemplate().execute(new TransactionCallback() {
+        	public Object doInTransaction(TransactionStatus status) {
+       		getProfileDao().disablePrincipals(ids, zone.getZoneId());
+        		
+        		return null;
+        	}});
+        //remove from index
+   		for (Iterator i=ids.iterator(); i.hasNext();) {
+   	   	    IndexSynchronizationManager.deleteDocument(BasicIndexUtils.makeUid("org.kablink.teaming.domain.User", (Long)i.next()));  			
+   		}
+   		IndexSynchronizationManager.applyChanges();
+   	    
+    }
+    protected void disableGroups(final Binder zone, final Collection ids) {
+        getTransactionTemplate().execute(new TransactionCallback() {
+        	public Object doInTransaction(TransactionStatus status) {
+        		getProfileDao().disablePrincipals(ids, zone.getZoneId());
+        		return null;
+        	}});
+        //remove from index
+   		for (Iterator i=ids.iterator(); i.hasNext();) {
+   	   	    IndexSynchronizationManager.deleteDocument(BasicIndexUtils.makeUid("org.kablink.teaming.domain.Group", (Long)i.next()));  			
+   		}
+   		IndexSynchronizationManager.applyChanges();
+   }
+ */
 }

@@ -30,6 +30,7 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
+
 package org.kablink.teaming.gwt.client.binderviews.folderdata;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
@@ -42,50 +43,29 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  */
 public class FileBlob implements IsSerializable {
 	// The following pertains to a single file being uploaded.
-	private Long		m_uploadId;			//
+	private Long	m_uploadId;				//
 	
 	// The following pertain to blobs from the file as they're uploaded.
-	private boolean		m_blobBase64;		//
-	private byte[]		m_blobDataBytes;	//
-	private long		m_blobSize;			//
-	private long		m_blobStart;		//
-	private ReadType 	m_readType;			//
-	private String		m_blobDataString;	//
-	private String		m_blobMD5Hash;		//
+	private boolean	m_blobBase64Encoded;	//
+	private long	m_blobSize;				//
+	private long	m_blobStart;			//
+	private String	m_blobData;				//
+	private String	m_blobMD5Hash;			//
 	
 	// The following pertain to the file itself.
-	private long		m_fileSize;			//
-	private Long		m_fileUTCMS;		//
-	private String		m_fileName;			//
-	private String		m_fileUTC;			//
+	private long	m_fileSize;				//
+	private Long	m_fileUTCMS;			//
+	private String	m_fileName;				//
+	private String	m_fileUTC;				//
+
+	// The following controls whether file blobs sent to the server
+	// are base64 encoded.
+	private final static boolean BASE64_ENCODE_BLOBS	= true;
 	
-	// The following are used to recognize the base64 marking in a blob
-	// string that was read using a ReadType of DATA_URL.
-	private final static String	DATA_URL_B64_MARKER		= ";base64,";
-	private final static int	DATA_URL_B64_MARKER_LEN	= DATA_URL_B64_MARKER.length();
-
-	/**
-	 * Enumeration used to specify how the files were read files for
-	 * streaming to the server.
-	 */
-	public enum ReadType implements IsSerializable {
-		ARRAY_BUFFER,	// Data in m_blobDataBytes.
-		BINARY_STRING,	// Data in m_blobDataString.
-		DATA_URL,		//   "  "          "
-		TEXT;			//   "  "          "
-
-		/**
-		 * Get'er methods.
-		 * 
-		 * @return
-		 */
-		public boolean isArrayBuffer()  {return this.equals(ARRAY_BUFFER );}
-		public boolean isBinaryString() {return this.equals(BINARY_STRING);}
-		public boolean isDataUrl()      {return this.equals(DATA_URL     );}
-		public boolean isText()         {return this.equals(TEXT         );}
-	}
+	// The following defines the size a blob read and sent to the
+	// server in any one upload cycle.
+	private final static long FILE_BLOB_SIZE	= 16384l;	//
 	
-
 	/**
 	 * Constructor method.
 	 * 
@@ -100,28 +80,26 @@ public class FileBlob implements IsSerializable {
 	/**
 	 * Constructor method.
 	 * 
-	 * @param readType
 	 * @param fileName
 	 * @param fileUTC
 	 * @param fileUTCMS
 	 * @param fileSize
 	 * @param uploadId
-	 * @param base64
-	 * @param blobSize
 	 */
-	public FileBlob(ReadType readType, String fileName, String fileUTC, Long fileUTCMS, long fileSize, Long uploadId, boolean base64, long blobSize) {
+	public FileBlob(String fileName, String fileUTC, Long fileUTCMS, long fileSize, Long uploadId) {
 		// Initialize this object...
 		this();
 
-		// ...and store the parameters.
-		setReadType(  readType );
-		setUploadId(  uploadId );
-		setFileName(  fileName );
-		setFileUTC(   fileUTC  );
-		setFileUTCMS( fileUTCMS);
-		setFileSize(  fileSize );
-		setBlobBase64(base64   );
-		setBlobSize(  blobSize );
+		// ...store the parameters...
+		setUploadId( uploadId );
+		setFileName( fileName );
+		setFileUTC(  fileUTC  );
+		setFileUTCMS(fileUTCMS);
+		setFileSize( fileSize );
+		
+		// ...and initialize everything else.
+		setBlobBase64Encoded(BASE64_ENCODE_BLOBS);
+		setBlobSize(         FILE_BLOB_SIZE     );
 	}
 
 	/**
@@ -129,64 +107,36 @@ public class FileBlob implements IsSerializable {
 	 * 
 	 * @return
 	 */
-	public Long     getUploadId()       {return m_uploadId;      }
+	public Long getUploadId() {return m_uploadId;}
 	
-	public boolean  isBlobBase64()      {return m_blobBase64;    }
-	public byte[]   getBlobDataBytes()  {return m_blobDataBytes; }
-	public long     getBlobSize()       {return m_blobSize;      }
-	public long     getBlobStart()      {return m_blobStart;     }
-	public ReadType getReadType()       {return m_readType;      }
-	public String   getBlobDataString() {return m_blobDataString;}
-	public String   getBlobMD5Hash()    {return m_blobMD5Hash;   }
+	public boolean isBlobBase64Encoded() {return m_blobBase64Encoded;}
+	public long    getBlobSize()         {return m_blobSize;         }
+	public long    getBlobStart()        {return m_blobStart;        }
+	public String  getBlobData()         {return m_blobData;         }
+	public String  getBlobMD5Hash()      {return m_blobMD5Hash;      }
 	
-	public long     getFileSize()       {return m_fileSize;      }
-	public Long     getFileUTCMS()      {return m_fileUTCMS;     }
-	public String   getFileName()       {return m_fileName;      }
-	public String   getFileUTC()        {return m_fileUTC;       }
+	public long   getFileSize()  {return m_fileSize; }
+	public Long   getFileUTCMS() {return m_fileUTCMS;}
+	public String getFileName()  {return m_fileName; }
+	public String getFileUTC()   {return m_fileUTC;  }
 	
 	/**
 	 * Set'er methods.
 	 * 
 	 * @param
 	 */
-	public void setUploadId(      Long     uploadId)       {m_uploadId       = uploadId;      }
+	public void setUploadId(Long uploadId) {m_uploadId = uploadId;}
 	
-	public void setBlobBase64(    boolean  blobBase64)     {m_blobBase64     = blobBase64;    }
-	public void setBlobDataBytes( byte[]   blobDataBytes)  {m_blobDataBytes  = blobDataBytes; }
-	public void setBlobSize(      long     blobSize)       {m_blobSize       = blobSize;      }
-	public void setBlobStart(     long     blobStart)      {m_blobStart      = blobStart;     }
-	public void setReadType(      ReadType readType)       {m_readType       = readType;      }
-	public void setBlobDataString(String   blobDataString) {m_blobDataString = blobDataString;}
-	public void setBlobMD5Hash(   String   blobMD5Hash)    {m_blobMD5Hash    = blobMD5Hash;   }
+	public void setBlobBase64Encoded(boolean blobBase64Encoded) {m_blobBase64Encoded = blobBase64Encoded;}
+	public void setBlobSize(         long    blobSize)          {m_blobSize          = blobSize;         }
+	public void setBlobStart(        long    blobStart)         {m_blobStart         = blobStart;        }
+	public void setBlobData(         String  blobData)          {m_blobData          = blobData;         }
+	public void setBlobMD5Hash(      String  blobMD5Hash)       {m_blobMD5Hash       = blobMD5Hash;      }
 	
-	public void setFileSize(      long     fileSize)       {m_fileSize       = fileSize;      }
-	public void setFileUTCMS(     Long     fileUTCMS)      {m_fileUTCMS      = fileUTCMS;     }
-	public void setFileName(      String   fileName)       {m_fileName       = fileName;      }
-	public void setFileUTC(       String   fileUTC)        {m_fileUTC        = fileUTC;       }
-
-	/**
-	 * Removes the base64 encoding marker from a data URL string.
-	 * 
-	 * @param dataUrl
-	 * 
-	 * @return
-	 */
-	public static String fixDataUrlString(String dataUrl) {
-		String reply;
-		if (null == dataUrl) {
-			reply = null;
-		}
-		else {
-			int b64Marker = dataUrl.indexOf(DATA_URL_B64_MARKER);
-			if (0 < b64Marker) {
-				reply = dataUrl.substring(b64Marker + DATA_URL_B64_MARKER_LEN);
-			}
-			else {
-				reply = dataUrl;
-			}
-		}
-		return reply;
-	}
+	public void setFileSize(         long    fileSize)          {m_fileSize          = fileSize;         }
+	public void setFileUTCMS(        Long    fileUTCMS)         {m_fileUTCMS         = fileUTCMS;        }
+	public void setFileName(         String  fileName)          {m_fileName          = fileName;         }
+	public void setFileUTC(          String  fileUTC)           {m_fileUTC           = fileUTC;          }
 	
 	/**
 	 * Increments the blobs starting point by the given value.

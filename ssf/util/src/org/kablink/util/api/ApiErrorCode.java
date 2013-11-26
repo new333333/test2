@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -30,19 +30,19 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
+
 package org.kablink.util.api;
 
 /**
- * ?
- * 
  * @author jong
+ *
  */
 public enum ApiErrorCode {
+	
 	// Authentication errors
 	USERNAME_NOT_FOUND, // Authentication service cannot locate a user by this username.
 	USERACCOUNT_NOT_ACTIVE, // This account has been disabled or deleted.
 	BAD_CREDENTIALS, // Bad credentials
-	USERACCOUNT_WEBACCESS_BLOCKED,	// This account has been block from using the web access client.
 
 	// Authorization errors
 	ACCESS_DENIED, // Access denied
@@ -52,7 +52,6 @@ public enum ApiErrorCode {
 	
 	// Binder errors
 	BINDER_NOT_FOUND, // No binder found with this name or id
-	BINDER_SIMPLE_NAME_EXISTS, //A simple name already exists
 	
 	// Definition errors
 	INVALID_DEFINITION, // Invalid definition
@@ -93,12 +92,10 @@ public enum ApiErrorCode {
 	UNSUPPORTED_MEDIA_TYPE, // Unsupported media type
 	INVALID_ENTITY_TYPE, // Entity type is unknown or not supported by this method
 	INVALID_HTML, // Input HTML is invalid
-	INVALID_CAPTCHA_RESPONSE, // Captcha response invalid
 	ILLEGAL_CHARACTER, // Illegal character in the input
 	TITLE_EXISTS, // The title already exists
 	BAD_INPUT, // Bad input (catch-all category)
 	NOT_SUPPORTED, // Not supported (catch-all category)
-	ILLEGAL_STATE, // A request has been made at an illegal or inappropriate time 
 	
 	// General server errors
 	SERVER_CONFIG_ERROR, // Server configuration error
@@ -180,13 +177,9 @@ public enum ApiErrorCode {
 
 	// OpenID errors
 	OPENID_PROVIDER_NOT_FOUND, // No OpenID provider object found with this name or id
-
-	// OpenID errors
-    LDAP_CONFIG_NOT_FOUND, // No ldap config object found with this name or id
-	NET_FOLDER_NOT_FOUND, // No net folder found with this name or id
-
+	
 	// ShareItem errors
 	SHAREITEM_NOT_FOUND, // No share found with this name or id
-    INVALID_EMAIL_ADDRESS, // Invalid definition
 
+	
 }

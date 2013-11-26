@@ -40,43 +40,30 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingDataTableImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.event.ChangeContextEvent;
-import org.kablink.teaming.gwt.client.event.ChangeEntryTypeSelectedEntitiesEvent;
+import org.kablink.teaming.gwt.client.event.ChangeEntryTypeSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.ChangeFavoriteStateEvent;
-import org.kablink.teaming.gwt.client.event.ClearScheduledWipeSelectedMobileDevicesEvent;
 import org.kablink.teaming.gwt.client.event.ClearSelectedUsersAdHocFoldersEvent;
-import org.kablink.teaming.gwt.client.event.ClearSelectedUsersDownloadEvent;
-import org.kablink.teaming.gwt.client.event.ClearSelectedUsersWebAccessEvent;
-import org.kablink.teaming.gwt.client.event.CopyPublicLinkSelectedEntitiesEvent;
-import org.kablink.teaming.gwt.client.event.CopySelectedEntitiesEvent;
-import org.kablink.teaming.gwt.client.event.DeleteSelectedEntitiesEvent;
-import org.kablink.teaming.gwt.client.event.DeleteSelectedMobileDevicesEvent;
+import org.kablink.teaming.gwt.client.event.CopySelectedEntriesEvent;
+import org.kablink.teaming.gwt.client.event.DeleteSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.DisableSelectedUsersAdHocFoldersEvent;
-import org.kablink.teaming.gwt.client.event.DisableSelectedUsersDownloadEvent;
-import org.kablink.teaming.gwt.client.event.DisableSelectedUsersWebAccessEvent;
-import org.kablink.teaming.gwt.client.event.EmailPublicLinkSelectedEntitiesEvent;
 import org.kablink.teaming.gwt.client.event.EnableSelectedUsersAdHocFoldersEvent;
-import org.kablink.teaming.gwt.client.event.EnableSelectedUsersDownloadEvent;
-import org.kablink.teaming.gwt.client.event.EnableSelectedUsersWebAccessEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.InvokeRenameEntityEvent;
 import org.kablink.teaming.gwt.client.event.InvokeShareBinderEvent;
 import org.kablink.teaming.gwt.client.event.InvokeUserPropertiesDlgEvent;
-import org.kablink.teaming.gwt.client.event.LockSelectedEntitiesEvent;
-import org.kablink.teaming.gwt.client.event.MailToPublicLinkEntityEvent;
-import org.kablink.teaming.gwt.client.event.ManageSharesSelectedEntitiesEvent;
-import org.kablink.teaming.gwt.client.event.MarkReadSelectedEntitiesEvent;
-import org.kablink.teaming.gwt.client.event.MarkUnreadSelectedEntitiesEvent;
-import org.kablink.teaming.gwt.client.event.MoveSelectedEntitiesEvent;
-import org.kablink.teaming.gwt.client.event.ScheduleWipeSelectedMobileDevicesEvent;
-import org.kablink.teaming.gwt.client.event.ShareSelectedEntitiesEvent;
-import org.kablink.teaming.gwt.client.event.SubscribeSelectedEntitiesEvent;
+import org.kablink.teaming.gwt.client.event.LockSelectedEntriesEvent;
+import org.kablink.teaming.gwt.client.event.ManageSharesSelectedEntriesEvent;
+import org.kablink.teaming.gwt.client.event.MarkReadSelectedEntriesEvent;
+import org.kablink.teaming.gwt.client.event.MarkUnreadSelectedEntriesEvent;
+import org.kablink.teaming.gwt.client.event.MoveSelectedEntriesEvent;
+import org.kablink.teaming.gwt.client.event.PurgeSelectedEntriesEvent;
+import org.kablink.teaming.gwt.client.event.ShareSelectedEntriesEvent;
+import org.kablink.teaming.gwt.client.event.SubscribeSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
-import org.kablink.teaming.gwt.client.event.UnlockSelectedEntitiesEvent;
+import org.kablink.teaming.gwt.client.event.UnlockSelectedEntriesEvent;
 import org.kablink.teaming.gwt.client.event.VibeEventBase;
 import org.kablink.teaming.gwt.client.event.ViewSelectedEntryEvent;
 import org.kablink.teaming.gwt.client.event.ViewWhoHasAccessEvent;
-import org.kablink.teaming.gwt.client.event.ZipAndDownloadFolderEvent;
-import org.kablink.teaming.gwt.client.event.ZipAndDownloadSelectedFilesEvent;
 import org.kablink.teaming.gwt.client.mainmenu.ToolbarItem;
 import org.kablink.teaming.gwt.client.mainmenu.VibeMenuItem;
 import org.kablink.teaming.gwt.client.menu.PopupMenu;
@@ -93,6 +80,7 @@ import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 
 import com.google.gwt.cell.client.AbstractCell;
 import com.google.gwt.cell.client.ValueUpdater;
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.NativeEvent;
@@ -111,10 +99,10 @@ import com.google.gwt.user.client.ui.InlineLabel;
  * @author drfoster@novell.com
  */
 public class ActionMenuCell extends AbstractCell<EntryTitleInfo> {
-	private BinderInfo						m_binderInfo;	// The binder hosting this cell.
-	private GwtTeamingDataTableImageBundle	m_images;		// Access to the Vibe image  resources we need for this cell. 
-	private GwtTeamingMessages				m_messages;		// Access to the Vibe string resources we need for this cell.
-	private Map<String, PopupMenu>			m_menuMap;		// Map of entity ID's to PopupMenu.  Added to as the action menus get created for entities in the current data table.
+	private BinderInfo						m_binderInfo;	// The ID of the binder hosting this cell.
+	private GwtTeamingDataTableImageBundle	m_images;	// Access to the Vibe image  resources we need for this cell. 
+	private GwtTeamingMessages				m_messages;	// Access to the Vibe string resources we need for this cell.
+	private Map<String, PopupMenu>			m_menuMap;	// Map of entity ID's to PopupMenu.  Added to as the action menus get created for entities in the current data table.
 
 	/**
 	 * Constructor method.
@@ -143,12 +131,13 @@ public class ActionMenuCell extends AbstractCell<EntryTitleInfo> {
 	 * entity.
 	 */
 	private void buildAndShowActionMenuAsync(final Element actionMenuImg, final EntityId eid, final String entityTitle, final List<ToolbarItem> tbiList) {
-		GwtClientHelper.deferCommand(new ScheduledCommand() {
+		ScheduledCommand doBuildAndShow = new ScheduledCommand() {
 			@Override
 			public void execute() {
 				buildAndShowActionMenuNow(actionMenuImg, eid, entityTitle, tbiList);
 			}
-		});
+		};
+		Scheduler.get().scheduleDeferred(doBuildAndShow);
 	}
 	
 	/*
@@ -363,36 +352,24 @@ public class ActionMenuCell extends AbstractCell<EntryTitleInfo> {
 						VibeEventBase<?> event;
 						Long binderId = m_binderInfo.getBinderIdAsLong();
 						switch (simpleEvent) {
-						default:                                            event = EventHelper.createSimpleEvent(                   simpleEvent            ); break;
-						case CHANGE_ENTRY_TYPE_SELECTED_ENTITIES:           event = new ChangeEntryTypeSelectedEntitiesEvent(        binderId,     eid      ); break;
-						case CLEAR_SCHEDULED_WIPE_SELECTED_MOBILE_DEVICES:  event = new ClearScheduledWipeSelectedMobileDevicesEvent(m_binderInfo, eid      ); break;
-						case CLEAR_SELECTED_USERS_ADHOC_FOLDERS:            event = new ClearSelectedUsersAdHocFoldersEvent(         binderId,     eid      ); break;
-						case CLEAR_SELECTED_USERS_DOWNLOAD:                 event = new ClearSelectedUsersDownloadEvent(             binderId,     eid      ); break;
-						case CLEAR_SELECTED_USERS_WEBACCESS:                event = new ClearSelectedUsersWebAccessEvent(            binderId,     eid      ); break;
-						case COPY_PUBLIC_LINK_SELECTED_ENTITIES:            event = new CopyPublicLinkSelectedEntitiesEvent(         binderId,     eid      ); break;
-						case COPY_SELECTED_ENTITIES:                        event = new CopySelectedEntitiesEvent(                   binderId,     eid      ); break;
-						case DELETE_SELECTED_ENTITIES:                      event = new DeleteSelectedEntitiesEvent(                 binderId,     eid      ); break;
-						case DELETE_SELECTED_MOBILE_DEVICES:                event = new DeleteSelectedMobileDevicesEvent(            m_binderInfo, eid      ); break;
-						case DISABLE_SELECTED_USERS_ADHOC_FOLDERS:          event = new DisableSelectedUsersAdHocFoldersEvent(       binderId,     eid      ); break;
-						case DISABLE_SELECTED_USERS_DOWNLOAD:               event = new DisableSelectedUsersDownloadEvent(           binderId,     eid      ); break;
-						case DISABLE_SELECTED_USERS_WEBACCESS:              event = new DisableSelectedUsersWebAccessEvent(          binderId,     eid      ); break;
-						case EMAIL_PUBLIC_LINK_SELECTED_ENTITIES:           event = new EmailPublicLinkSelectedEntitiesEvent(        binderId,     eid      ); break;
-						case ENABLE_SELECTED_USERS_ADHOC_FOLDERS:           event = new EnableSelectedUsersAdHocFoldersEvent(        binderId,     eid      ); break;
-						case ENABLE_SELECTED_USERS_DOWNLOAD:                event = new EnableSelectedUsersDownloadEvent(            binderId,     eid      ); break;
-						case ENABLE_SELECTED_USERS_WEBACCESS:               event = new EnableSelectedUsersWebAccessEvent(           binderId,     eid      ); break;
-						case LOCK_SELECTED_ENTITIES:                        event = new LockSelectedEntitiesEvent(                   binderId,     eid      ); break;
-						case UNLOCK_SELECTED_ENTITIES:                      event = new UnlockSelectedEntitiesEvent(                 binderId,     eid      ); break;
-						case MAILTO_PUBLIC_LINK_ENTITY:                     event = new MailToPublicLinkEntityEvent(                 binderId,     eid      ); break;
-						case MANAGE_SHARES_SELECTED_ENTITIES:	            event = new ManageSharesSelectedEntitiesEvent(           binderId,     eid      ); break;
-						case MARK_READ_SELECTED_ENTITIES:                   event = new MarkReadSelectedEntitiesEvent(               binderId,     eid      ); break;
-						case MARK_UNREAD_SELECTED_ENTITIES:                 event = new MarkUnreadSelectedEntitiesEvent(             binderId,     eid      ); break;
-						case MOVE_SELECTED_ENTITIES:                        event = new MoveSelectedEntitiesEvent(                   binderId,     eid      ); break;
-						case SCHEDULE_WIPE_SELECTED_MOBILE_DEVICES:         event = new ScheduleWipeSelectedMobileDevicesEvent(      m_binderInfo, eid      ); break;
-						case SHARE_SELECTED_ENTITIES:                       event = new ShareSelectedEntitiesEvent(                  binderId,     eid      ); break;
-						case SUBSCRIBE_SELECTED_ENTITIES:                   event = new SubscribeSelectedEntitiesEvent(              binderId,     eid      ); break;
-						case VIEW_SELECTED_ENTRY:                           event = new ViewSelectedEntryEvent(                      binderId,     eid      ); break;
-						case VIEW_WHO_HAS_ACCESS:                           event = new ViewWhoHasAccessEvent(                       binderId,     eid      ); break;
-						case ZIP_AND_DOWNLOAD_SELECTED_FILES:               event = new ZipAndDownloadSelectedFilesEvent(            binderId,     eid, true); break;
+						default:                                    event = EventHelper.createSimpleEvent(            simpleEvent  ); break;
+						case CHANGE_ENTRY_TYPE_SELECTED_ENTRIES:    event = new ChangeEntryTypeSelectedEntriesEvent(  binderId, eid); break;
+						case CLEAR_SELECTED_USERS_ADHOC_FOLDERS:    event = new ClearSelectedUsersAdHocFoldersEvent(  binderId, eid); break;
+						case COPY_SELECTED_ENTRIES:                 event = new CopySelectedEntriesEvent(             binderId, eid); break;
+						case DELETE_SELECTED_ENTRIES:               event = new DeleteSelectedEntriesEvent(           binderId, eid); break;
+						case DISABLE_SELECTED_USERS_ADHOC_FOLDERS:  event = new DisableSelectedUsersAdHocFoldersEvent(binderId, eid); break;
+						case ENABLE_SELECTED_USERS_ADHOC_FOLDERS:   event = new EnableSelectedUsersAdHocFoldersEvent( binderId, eid); break;
+						case LOCK_SELECTED_ENTRIES:                 event = new LockSelectedEntriesEvent(             binderId, eid); break;
+						case UNLOCK_SELECTED_ENTRIES:               event = new UnlockSelectedEntriesEvent(           binderId, eid); break;
+						case MANAGE_SHARES_SELECTED_ENTRIES:	    event = new ManageSharesSelectedEntriesEvent(     binderId, eid); break;
+						case MARK_READ_SELECTED_ENTRIES:            event = new MarkReadSelectedEntriesEvent(         binderId, eid); break;
+						case MARK_UNREAD_SELECTED_ENTRIES:          event = new MarkUnreadSelectedEntriesEvent(       binderId, eid); break;
+						case MOVE_SELECTED_ENTRIES:                 event = new MoveSelectedEntriesEvent(             binderId, eid); break;
+						case PURGE_SELECTED_ENTRIES:                event = new PurgeSelectedEntriesEvent(            binderId, eid); break;
+						case SHARE_SELECTED_ENTRIES:                event = new ShareSelectedEntriesEvent(            binderId, eid); break;
+						case SUBSCRIBE_SELECTED_ENTRIES:            event = new SubscribeSelectedEntriesEvent(        binderId, eid); break;
+						case VIEW_SELECTED_ENTRY:                   event = new ViewSelectedEntryEvent(               binderId, eid); break;
+						case VIEW_WHO_HAS_ACCESS:                   event = new ViewWhoHasAccessEvent(                binderId, eid); break;
 						
 						case CHANGE_FAVORITE_STATE:
 							event = new ChangeFavoriteStateEvent(
@@ -410,10 +387,6 @@ public class ActionMenuCell extends AbstractCell<EntryTitleInfo> {
 							
 						case INVOKE_USER_PROPERTIES_DLG:
 							event = new InvokeUserPropertiesDlgEvent(eid.getEntityId());
-							break;
-						
-						case ZIP_AND_DOWNLOAD_FOLDER:
-							event = new ZipAndDownloadFolderEvent(eid.getEntityId(), binderId, true);
 							break;
 						
 						case UNDEFINED:
@@ -480,12 +453,13 @@ public class ActionMenuCell extends AbstractCell<EntryTitleInfo> {
 	 * Asynchronously shows the action menu for this cell's entity.
 	 */
 	private void showActionMenuAsync(final Element actionMenuImg, final PopupMenu actionMenu) {
-		GwtClientHelper.deferCommand(new ScheduledCommand() {
+		ScheduledCommand doShow = new ScheduledCommand() {
 			@Override
 			public void execute() {
 				showActionMenuNow(actionMenuImg, actionMenu);
 			}
-		});
+		};
+		Scheduler.get().scheduleDeferred(doShow);
 	}
 	
 	/*

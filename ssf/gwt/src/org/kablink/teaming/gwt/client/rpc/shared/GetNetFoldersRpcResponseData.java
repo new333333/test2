@@ -49,15 +49,12 @@ public class GetNetFoldersRpcResponseData
 	implements IsSerializable, VibeRpcResponseData
 {
 	private List<NetFolder> m_listOfNetFolders;
-	private int m_totalCount;	// The total number of net folders.  This number may be different
-								// From the number of net folders found in m_listOfNetFolders.
 	
 	/**
 	 * 
 	 */
 	public GetNetFoldersRpcResponseData()
 	{
-		m_totalCount = 0;
 	}
 	
 	/**
@@ -66,7 +63,6 @@ public class GetNetFoldersRpcResponseData
 	public GetNetFoldersRpcResponseData( List<NetFolder> listOfNetFolders )
 	{
 		m_listOfNetFolders = listOfNetFolders;
-		m_totalCount = 0;
 	}
 	
 	/**
@@ -75,21 +71,5 @@ public class GetNetFoldersRpcResponseData
 	public List<NetFolder> getListOfNetFolders()
 	{
 		return m_listOfNetFolders;
-	}
-	
-	/**
-	 * 
-	 */
-	public int getTotalCount()
-	{
-		return m_totalCount;
-	}
-	
-	/**
-	 * 
-	 */
-	public void setTotalCount( int count )
-	{
-		m_totalCount = count;
 	}
 }

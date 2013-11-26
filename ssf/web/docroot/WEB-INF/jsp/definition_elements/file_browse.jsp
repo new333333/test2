@@ -207,8 +207,6 @@ var ${eName}_ok = 1;
 					return false;
 				}
 			}
-			/**
-			//This code was turned off because it causes some browsers to terminate the upload when the progress bar starts
 			if (!window.uploadProgressBar) {// prevents many progress bars on one page
 			
 				// the uid binds upload request with upload status check request
@@ -227,7 +225,6 @@ var ${eName}_ok = 1;
 		  		  	ss_FileUploadProgressBar.reloadProgressStatus(window.uploadProgressBar, url);
 			  	}, 1500);
 			}
-			*/
 			return true;			
 		}
 	

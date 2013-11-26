@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -32,16 +32,12 @@
  */
 package org.kablink.teaming.gwt.server.util;
 
-import java.text.DateFormat;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
-
-import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -61,9 +57,6 @@ import org.kablink.teaming.security.function.WorkAreaOperation.RightSet;
 import org.kablink.teaming.domain.AuthenticationConfig;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.DefinableEntity;
-import org.kablink.teaming.domain.Description;
-import org.kablink.teaming.domain.FileAttachment;
-import org.kablink.teaming.domain.FileItem;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.NoShareItemByTheIdException;
@@ -71,35 +64,23 @@ import org.kablink.teaming.domain.ShareItem;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.ZoneConfig;
 import org.kablink.teaming.domain.User.ExtProvState;
-import org.kablink.teaming.gwt.client.GwtEmailPublicLinkResults;
 import org.kablink.teaming.gwt.client.GwtGroup;
 import org.kablink.teaming.gwt.client.GwtPublic;
 import org.kablink.teaming.gwt.client.GwtRole;
 import org.kablink.teaming.gwt.client.GwtSendShareNotificationEmailResults;
 import org.kablink.teaming.gwt.client.GwtShareEntryResults;
-import org.kablink.teaming.gwt.client.GwtTeamingException;
 import org.kablink.teaming.gwt.client.GwtUser;
 import org.kablink.teaming.gwt.client.ZoneShareRights;
 import org.kablink.teaming.gwt.client.GwtRole.GwtRoleType;
-import org.kablink.teaming.gwt.client.rpc.shared.BooleanRpcResponseData;
-import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData;
-import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData.ErrorInfo;
-import org.kablink.teaming.gwt.client.rpc.shared.MailToPublicLinksRpcResponseData.MailToPublicLinkInfo;
-import org.kablink.teaming.gwt.client.rpc.shared.MailToPublicLinksRpcResponseData;
-import org.kablink.teaming.gwt.client.rpc.shared.PublicLinksRpcResponseData;
-import org.kablink.teaming.gwt.client.rpc.shared.ValidateShareListsRpcResponseData;
 import org.kablink.teaming.gwt.client.util.EntityId;
-import org.kablink.teaming.gwt.client.util.GwtEmailPublicLinkData;
 import org.kablink.teaming.gwt.client.util.GwtPublicShareItem;
 import org.kablink.teaming.gwt.client.util.GwtRecipientType;
 import org.kablink.teaming.gwt.client.util.GwtShareItem;
-import org.kablink.teaming.gwt.client.util.GwtShareLists;
 import org.kablink.teaming.gwt.client.util.GwtSharingInfo;
 import org.kablink.teaming.gwt.client.util.ShareExpirationValue;
 import org.kablink.teaming.gwt.client.util.ShareExpirationValue.ShareExpirationType;
 import org.kablink.teaming.gwt.client.util.ShareRights;
 import org.kablink.teaming.gwt.client.util.ShareRights.AccessRights;
-import org.kablink.teaming.gwt.client.util.UserType;
 import org.kablink.teaming.gwt.client.widgets.ShareSendToWidget.SendToValue;
 import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.module.admin.SendMailErrorWrapper;
@@ -107,22 +88,15 @@ import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.folder.FolderModule.FolderOperation;
-import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.shared.AccessUtils;
 import org.kablink.teaming.module.sharing.SharingModule;
 import org.kablink.teaming.util.AllModulesInjected;
-import org.kablink.teaming.util.FileIconsHelper;
-import org.kablink.teaming.util.IconSize;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ResolveIds;
-import org.kablink.teaming.util.ShareLists;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.Utils;
-import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.EmailHelper;
 import org.kablink.teaming.web.util.MiscUtil;
-import org.kablink.teaming.web.util.WebUrlUtil;
-import org.springframework.mail.MailSendException;
 
 /**
  * Helper methods for the GWT UI server code that services share requests.
@@ -492,7 +466,6 @@ public class GwtShareHelper
 						gwtPublic.setName( NLT.get( "share.recipientType.title.public" ) );
 						publicShareItem.setRecipientName( gwtPublic.getName() );
 						publicShareItem.setRecipientType( GwtRecipientType.PUBLIC_TYPE );
-						publicShareItem.setRecipientUserType( UserType.UNKNOWN );
 						publicShareItem.setRecipientId( gwtPublic.getIdLong() );
 
 						// Remember the 2 share items that make up "share public"
@@ -525,34 +498,6 @@ public class GwtShareHelper
 	}
 	
 	/**
-	 * Create a ShareItem that can be used as a "public link" share.
-	 */
-	private static ShareItem createPublicLinkShareItem(
-		AllModulesInjected ami,
-		Long sharedById,
-		EntityId entityId,
-		ShareExpirationValue expirationValue,
-		String comment )
-	{
-		ShareItem shareItem;
-		
-		shareItem = buildPublicLinkShareItem( ami, sharedById, entityId, expirationValue, comment );
-		if ( shareItem != null )
-		{
-			try
-			{
-				ami.getSharingModule().addShareItem( shareItem );
-			}
-			catch ( Exception ex )
-			{
-				m_logger.error( "In createPublicLinkShareItem(), addShareItem() threw an exception: " + ex.toString() );
-			}
-		}
-		
-		return shareItem;
-	}
-	
-	/**
 	 * Create a ShareItem from the given GwtShareItem object
 	 */
 	private static ShareItem createShareItem(
@@ -563,76 +508,6 @@ public class GwtShareHelper
 		ShareItem shareItem = buildShareItem( ami, sharedById, gwtShareItem );
 		
 		ami.getSharingModule().addShareItem( shareItem );
-		
-		return shareItem;
-	}
-	
-	/**
-	 * Build a ShareItem that can be used as a "public link" share
-	 */
-	private static ShareItem buildPublicLinkShareItem(
-		AllModulesInjected ami,
-		Long sharedById,
-		EntityId entityId,
-		ShareExpirationValue expirationValue,
-		String comment )
-	{
-		ShareItem shareItem;
-		Date endDate = null;
-		RightSet rightSet;
-		EntityIdentifier entityIdentifier;
-		int daysToExpire = -1;
-
-		// Get the entity that is being shared.
-		entityIdentifier = getEntityIdentifierFromEntityId( entityId );		
-
-		// Get the share expiration value
-		{
-			switch ( expirationValue.getExpirationType() )
-			{
-			case AFTER_DAYS:
-			{
-                // Don't calculate the expiration date (endDate) here.  Let the SharingModule do that.
-				daysToExpire = expirationValue.getValue().intValue();
-				break;
-			}
-
-			case NEVER:
-				break;
-
-			case ON_DATE:
-				endDate = new Date( expirationValue.getValue() );
-				break;
-				
-			case UNKNOWN:
-			default:
-				break;
-			}
-		}
-		
-		// Create the appropriate RightSet
-		{
-			rightSet = getViewerRightSet();
-			rightSet.setAllowSharingForward( false );
-			rightSet.setAllowSharing( false );
-			rightSet.setAllowSharingExternal( false );
-			rightSet.setAllowSharingPublic( false );
-		}
-		
-		// Create the new ShareItem in the db
-		{
-			shareItem = new ShareItem(
-									sharedById,
-									entityIdentifier,
-									comment,
-									endDate,
-									RecipientType.publicLink,
-									null,
-									rightSet );
-			
-			shareItem.setDaysToExpire( daysToExpire );
-			shareItem.setLatest( true );
-		}		
 		
 		return shareItem;
 	}
@@ -710,10 +585,6 @@ public class GwtShareHelper
 			recipientType = RecipientType.user;
 			break;
 			
-		case PUBLIC_LINK:
-			recipientType = RecipientType.publicLink;
-			break;
-			
 		case UNKNOWN:
 		default:
 			recipientType = RecipientType.user;
@@ -725,7 +596,7 @@ public class GwtShareHelper
 		// Get the appropriate RightSet
 		rightSet = getRightSetFromShareRights( gwtShareItem );
 		
-		// Create the new ShareItem
+		// Create the new ShareItem in the db
 		{
 			shareItem = new ShareItem(
 								sharedById,
@@ -742,214 +613,6 @@ public class GwtShareHelper
 		}		
 		
 		return shareItem;
-	}
-
-	/*
-	 * Returns a List<ShareItem> of all the public link shares for the
-	 * given entity.
-	 */
-	private static List<ShareItem> getPublicLinkShareItems( AllModulesInjected bs, Long sharerId, EntityId entityId )
-	{
-				
-		// Set up the search criteria to get the shares on this entity.
-		ShareItemSelectSpec spec = new ShareItemSelectSpec();
-		spec.setSharerId( Long.valueOf( sharerId ) );
-		EntityIdentifier entityIdentifier = getEntityIdentifierFromEntityId( entityId );
-		spec.setSharedEntityIdentifier( entityIdentifier );
-		spec.setLatest( true );
-		
-		// Are there shares on it?
-		List<ShareItem> reply = bs.getSharingModule().getShareItems( spec );
-		if ( MiscUtil.hasItems( reply ))
-		{
-			// Yes!  Scan them.
-			for ( ShareItem si:  reply )
-			{
-				// Should we return this as public link share?
-				boolean ignore = (
-					si.isDeleted()          ||							// Not if it's deleted...
-					( ! ( si.isLatest() ) ) ||							// ...or if it's not the latest version of this share...
-					( ! (MiscUtil.hasString(si.getPassKey() ) ) ) );	// ...or if it's not a public link share.
-				
-				if ( ignore )
-				{
-					// No!  Remove it from the list.
-					reply.remove( si );
-				}
-			}
-		}
-
-		// If we get here, reply refers to a List<ShareItem> of the
-		// public link shares against the entity.  Return it. 
-		return reply;
-	}
-	
-	/**
-	 * 
-	 */
-	public static GwtEmailPublicLinkResults emailPublicLink(
-		AllModulesInjected ami,
-		HttpServletRequest request,
-		GwtEmailPublicLinkData data )
-	{
-		GwtEmailPublicLinkResults results;
-		ArrayList<String> listOfEmailAddresses;
-		ArrayList<String> listOfValidEmailAddresses;
-		List<EntityId> listOfEntityIds;
-		List<SendMailErrorWrapper> emailErrors = null;
-		User currentUser;
-		
-		results = new GwtEmailPublicLinkResults();
-
-		currentUser = GwtServerHelper.getCurrentUser();
-
-		emailErrors = new ArrayList<SendMailErrorWrapper>();
-
-		listOfValidEmailAddresses = new ArrayList<String>();
-		
-		// Validate the email addresses against the black list
-		listOfEmailAddresses = data.getListOfEmailAddresses();
-		if ( listOfEmailAddresses != null && listOfEmailAddresses.size() > 0 )
-		{
-			ShareLists shareLists;
-			SharingModule sharingModule;
-
-			sharingModule = ami.getSharingModule();
-			shareLists = sharingModule.getShareLists();
-			if ( shareLists != null )
-			{
-				for ( String nextEmailAddr : listOfEmailAddresses )
-				{
-					// Is this email address valid?
-					if ( sharingModule.isExternalAddressValid( nextEmailAddr, shareLists ) == false )
-					{
-						String msg;
-						String[] args;
-						SendMailErrorWrapper error;
-						MailSendException msEx = null;
-
-						// No
-						args = new String[1];
-						args[0] = nextEmailAddr;
-						msg = NLT.get( "email.public.link.email.address.on.blacklist", args );
-						error = new SendMailErrorWrapper( msEx, msg );
-													
-						emailErrors.add( error );
-					}
-					else
-						listOfValidEmailAddresses.add( nextEmailAddr );
-				}
-			}
-		}
-		
-		listOfEntityIds = data.getListOfEntities();
-		
-		if ( listOfEntityIds != null && listOfEntityIds.size() > 0 &&
-			 listOfValidEmailAddresses != null && listOfValidEmailAddresses.size() > 0 )
-		{
-			for ( EntityId nextEntityId : listOfEntityIds )
-			{
-				String fileName = null;
-				
-				// Get the name of the file.
-				try
-				{
-					FolderEntry entry;
-					FileAttachment fileAttach;
-					FileItem fileItem;
-
-					entry = ami.getFolderModule().getEntry( null, nextEntityId.getEntityId() );
-					fileAttach = MiscUtil.getPrimaryFileAttachment( entry );
-					fileItem = fileAttach.getFileItem();
-					if ( fileItem != null )
-						fileName = fileItem.getName();
-				}
-				catch ( Exception ex )
-				{
-					SendMailErrorWrapper error;
-					MailSendException msEx = null;
-					
-					m_logger.error( "In GwtShareHelper.emailPublicLink(), unable to get file name" );
-					
-					error = new SendMailErrorWrapper( msEx, NLT.get( "email.public.link.cant.get.file.name" ) );
-					emailErrors.add( error );
-				}
-				
-				if ( fileName != null )
-				{
-					ShareItem shareItem;
-
-					// Create a "public link" ShareItem
-					shareItem = createPublicLinkShareItem(
-													ami,
-													currentUser.getId(),
-													nextEntityId,
-													data.getExpirationValue(),
-													data.getMessage() );
-					
-					if ( shareItem != null && shareItem.getId() != null )
-					{
-						List<SendMailErrorWrapper> entityEmailErrors = null;
-						String viewUrl = null;
-						String downloadUrl = null;
-						
-						// Get the download file url
-						downloadUrl = WebUrlUtil.getSharedPublicFileUrl(
-																	request,
-																	shareItem.getId(),
-																	shareItem.getPassKey(),
-																	WebKeys.URL_SHARE_PUBLIC_LINK,
-																	fileName );
-
-						// Can this file be rendered as html?
-						if ( GwtViewHelper.supportsViewAsHtml( fileName ) )
-						{
-							// Yes, get the view file url.
-							viewUrl = WebUrlUtil.getSharedPublicFileUrl(
-																	request,
-																	shareItem.getId(),
-																	shareItem.getPassKey(),
-																	WebKeys.URL_SHARE_PUBLIC_LINK_HTML,
-																	fileName );
-						}
-						
-						// Send an email to each recipient
-						entityEmailErrors = EmailHelper.sendEmailToPublicLinkRecipients(
-																					ami,
-																					shareItem,
-																					currentUser,
-																					listOfValidEmailAddresses,
-																					viewUrl,
-																					downloadUrl);
-						if ( entityEmailErrors != null )
-						{
-							if ( emailErrors == null )
-								emailErrors = entityEmailErrors;
-							else
-								emailErrors.addAll( entityEmailErrors );
-						}
-					}
-					else
-					{
-						SendMailErrorWrapper error;
-						MailSendException msEx = null;
-						
-						m_logger.error( "In GwtShareHelper.emailPublicLink(), unable to create ShareItem" );
-						
-						error = new SendMailErrorWrapper( msEx, NLT.get( "email.public.link.cant.create.shareitem" ) );
-						emailErrors.add( error );
-					}
-				}
-			}
-		}
-
-		// Add any errors that happened to the results.
-		if ( emailErrors != null )
-		{
-			results.addErrors( SendMailErrorWrapper.getErrorMessages( emailErrors ) );
-		}
-
-		return results;
 	}
 	
 	/**
@@ -1524,7 +1187,6 @@ public class GwtShareHelper
 						name = getGroupName( ami, nextShareItem );
 						gwtShareItem.setRecipientName( name );
 						gwtShareItem.setRecipientType( GwtRecipientType.GROUP );
-						gwtShareItem.setRecipientUserType( UserType.UNKNOWN );
 						break;
 						
 					case user:
@@ -1542,8 +1204,6 @@ public class GwtShareHelper
 								gwtShareItem.setRecipientType( GwtRecipientType.EXTERNAL_USER );
 							else
 								gwtShareItem.setRecipientType( GwtRecipientType.USER );
-							
-							gwtShareItem.setRecipientUserType( GwtViewHelper.getUserType( user ) );
 						}
 						else
 							m_logger.error( "could not find the user: " + nextShareItem.getRecipientId().toString() );
@@ -1557,15 +1217,9 @@ public class GwtShareHelper
 						gwtShareItem.setRecipientType( GwtRecipientType.TEAM );
 						break;
 						
-					case publicLink:
-						name = NLT.get( "public.link.name" );
-						gwtShareItem.setRecipientName( name );
-						gwtShareItem.setRecipientType( GwtRecipientType.PUBLIC_LINK );
-						break;
-						
 					default:
 						gwtShareItem.setRecipientType( GwtRecipientType.UNKNOWN );
-						m_logger.error( "unknown recipient type: " + nextShareItem.getRecipientType().toString() );
+						m_logger.error( "unknown recipient type for user: " + nextShareItem.getRecipientId().toString() );
 						break;
 					}
 				}
@@ -1653,6 +1307,7 @@ public class GwtShareHelper
 	 * Return the id of the given user.  If the user is an external user we will see if their
 	 * user account has been created.  If it hasn't we will create it.
 	 */
+	@SuppressWarnings("unchecked")
 	private static Long getRecipientId( AllModulesInjected ami, GwtShareItem gwtShareItem )
 	{
 		Long id;
@@ -1758,16 +1413,6 @@ public class GwtShareHelper
 		AdminModule adminModule;
 		Long zoneId;
 		WorkArea workArea;
-
-		shareSettings = new ZoneShareRights();
-
-		// Get the "allow users to share with ldap groups" setting
-		{
-			ZoneConfig zoneConfig;
-			
-			zoneConfig = ami.getZoneModule().getZoneConfig( RequestContextHolder.getRequestContext().getZoneId() );
-			shareSettings.setAllowShareWithLdapGroups( zoneConfig.isSharingWithLdapGroupsEnabled() );
-		}
 		
 		listOfRoles = new ArrayList<GwtRole>();
 		role = new GwtRole();
@@ -1791,6 +1436,7 @@ public class GwtShareHelper
 		role.setType( GwtRoleType.EnableShareWithAllInternal );
 		listOfRoles.add( role );
 		
+		shareSettings = new ZoneShareRights();
 		shareSettings.setRoles( listOfRoles );
 		
 		adminModule = ami.getAdminModule();
@@ -1849,7 +1495,6 @@ public class GwtShareHelper
 					{
 						Group nextGroup;
 						GwtGroup gwtGroup;
-						Description desc;
 						
 						nextGroup = (Group) nextPrincipal;
 						
@@ -1858,11 +1503,6 @@ public class GwtShareHelper
 						gwtGroup.setId( nextGroup.getId().toString() );
 						gwtGroup.setName( nextGroup.getName() );
 						gwtGroup.setTitle( nextGroup.getTitle() );
-						gwtGroup.setDn( nextGroup.getForeignName() );
-						desc = nextGroup.getDescription();
-						if ( desc != null )
-							gwtGroup.setDesc( desc.getText() );
-						gwtGroup.setGroupType( GwtServerHelper.getGroupType( nextGroup ) );
 						
 						nextRole.addMember( gwtGroup );
 					}
@@ -1879,7 +1519,6 @@ public class GwtShareHelper
 						gwtUser.setName( user.getName() );
 						gwtUser.setTitle( Utils.getUserTitle( user ) );
 						gwtUser.setWorkspaceTitle( user.getWSTitle() );
-						gwtUser.setEmail( user.getEmailAddress() );
 	
 						nextRole.addMember( gwtUser );
 					}
@@ -2014,14 +1653,6 @@ public class GwtShareHelper
 			sharingInfo.setCanShareWithPublic( canShareWithPublic );
 		}
 		
-		// Get the "allow users to share with ldap groups" setting
-		{
-			ZoneConfig zoneConfig;
-			
-			zoneConfig = ami.getZoneModule().getZoneConfig( RequestContextHolder.getRequestContext().getZoneId() );
-			sharingInfo.setCanShareWithLdapGroups( zoneConfig.isSharingWithLdapGroupsEnabled() );
-		}
-
 		return sharingInfo;
 	}
 
@@ -2433,13 +2064,13 @@ public class GwtShareHelper
 				else
 				{
 					// The ShareItem exists.
+					// Build a new ShareItem with the new information.
+					shareItem = buildShareItem( ami, nextGwtShareItem.getSharedById(), nextGwtShareItem );
+					
 					// Was it modified?
 					if ( nextGwtShareItem.isDirty() )
 					{
 						// Yes
-						// Build a new ShareItem with the new information.
-						shareItem = buildShareItem( ami, nextGwtShareItem.getSharedById(), nextGwtShareItem );
-						
 						// Modify the share by marking existing snapshot as not being the latest
 						// and persisting the new snapshot. 
 						sharingModule.modifyShareItem(shareItem, shareItemId);
@@ -2452,6 +2083,7 @@ public class GwtShareHelper
 				// Did we successfully create/modify a share?
 				if ( shareItem != null )
 				{
+					
 					// Yes
 					results.addSuccess( shareItem.getId(), nextGwtShareItem, sendEmail );
 				}
@@ -2522,9 +2154,7 @@ public class GwtShareHelper
 				fnId = GwtServerHelper.getFunctionIdFromRole( ami, nextRole );
 	
 				// Did we find the function for the given role?
-				// It is ok if we didn't find the "EnableShareWithAllExternal" role.  That role used
-				// to exist but doesn't now.
-				if ( fnId == null && nextRole.getType() != GwtRoleType.EnableShareWithAllExternal )
+				if ( fnId == null )
 				{
 					// No
 					m_logger.error( "In GwtShareHelper.saveZoneShareRights(), could not find function for role: " + nextRole.getType() );
@@ -2536,715 +2166,6 @@ public class GwtShareHelper
 			}
 		}
 		
-		// Save the "allow users to share with ldap groups" setting
-		{
-			AdminModule adminModule;
-			
-			adminModule = ami.getAdminModule();
-			adminModule.setAllowShareWithLdapGroups( rights.getAllowShareWithLdapGroups() );
-		}
-		
 		return Boolean.TRUE;
-	}
-
-	/*
-	 * Converts a ShareList to a GwtShareList.
-	 */
-	private static GwtShareLists shareListsToGwtShareLists( ShareLists shareLists )
-	{
-		GwtShareLists reply = new GwtShareLists();
-		
-		switch ( shareLists.getShareListMode() )
-		{
-		case BLACKLIST:  reply.setShareListMode( GwtShareLists.ShareListMode.BLACKLIST ); break;
-		case DISABLED:   reply.setShareListMode( GwtShareLists.ShareListMode.DISABLED  ); break;
-		case WHITELIST:  reply.setShareListMode( GwtShareLists.ShareListMode.WHITELIST ); break;
-		}
-		
-		List<String> list = shareLists.getEmailAddresses();
-		if ( MiscUtil.hasItems( list ) )
-		{
-			for (String ema:  list)
-			{
-				reply.addEmailAddress( ema );
-			}
-		}
-		
-		list = shareLists.getDomains();
-		if ( MiscUtil.hasItems( list ) )
-		{
-			for ( String domain:  list )
-			{
-				reply.addDomain( domain );
-			}
-		}
-		
-		return reply;
-	}
-	
-	/*
-	 * Converts a GwtShareList to a ShareList.
-	 */
-	private static ShareLists gwtShareListsToShareLists( GwtShareLists gwtShareLists )
-	{
-		ShareLists reply = new ShareLists();
-		
-		switch ( gwtShareLists.getShareListMode() )
-		{
-		case BLACKLIST:  reply.setShareListMode( ShareLists.ShareListMode.BLACKLIST ); break;
-		case DISABLED:   reply.setShareListMode( ShareLists.ShareListMode.DISABLED  ); break;
-		case WHITELIST:  reply.setShareListMode( ShareLists.ShareListMode.WHITELIST ); break;
-		}
-		
-		List<String> list = gwtShareLists.getEmailAddresses();
-		if ( MiscUtil.hasItems( list ) )
-		{
-			for ( String ema:  list )
-			{
-				reply.addEmailAddress( ema );
-			}
-		}
-		
-		list = gwtShareLists.getDomains();
-		if ( MiscUtil.hasItems( list ) )
-		{
-			for ( String domain:  list )
-			{
-				reply.addDomain( domain );
-			}
-		}
-		
-		return reply;
-	}
-
-	/**
-	 * Returns a GwtShareLists object that represents the current state
-	 * of the share whitelist/blacklist.
-	 * 
-	 * @param bs
-	 * @param request
-	 * 
-	 * @return
-	 * 
-	 * @throws GwtTeamingException
-	 */
-	public static GwtShareLists getShareLists( AllModulesInjected bs, HttpServletRequest request ) throws GwtTeamingException
-	{
-		GwtServerProfiler gsp = GwtServerProfiler.start( m_logger, "GwtShareHelper.getShareLists()" );
-		try
-		{
-			ShareLists shareLists = bs.getSharingModule().getShareLists();
-			GwtShareLists reply = ( ( null == shareLists ) ? new GwtShareLists() : shareListsToGwtShareLists( shareLists ) );
-			return reply;
-		}
-		
-		catch ( Exception e )
-		{
-			// Convert the exception to a GwtTeamingException and throw
-			// that.
-			throw
-				GwtLogHelper.getGwtClientException(
-					m_logger,
-					e,
-					"GwtShareHelper.getShareLists( SOURCE EXCEPTION ):  " );
-		}
-		
-		finally
-		{
-			gsp.stop();
-		}
-	}
-
-	/**
-	 * Saves the current state of the share whitelist/blacklist.
-	 * 
-	 * @param bs
-	 * @param request
-	 * @param gwtShareLists
-	 * 
-	 * @return
-	 * 
-	 * @throws GwtTeamingException
-	 */
-	public static BooleanRpcResponseData saveShareLists( AllModulesInjected bs, HttpServletRequest request, GwtShareLists gwtShareLists ) throws GwtTeamingException
-	{
-		GwtServerProfiler gsp = GwtServerProfiler.start( m_logger, "GwtShareHelper.saveShareLists()" );
-		try
-		{
-			// Save the ShareLists...
-			ShareLists shareLists = ((null == gwtShareLists) ? new ShareLists() : gwtShareListsToShareLists(gwtShareLists));
-			SharingModule sm = bs.getSharingModule();
-			sm.setShareLists( shareLists );
-			
-			// ...and return a BooleanRpcResponseData containing true.
-			return new BooleanRpcResponseData( true );
-		}
-		
-		catch ( Exception e )
-		{
-			// Convert the exception to a GwtTeamingException and throw
-			// that.
-			throw
-				GwtLogHelper.getGwtClientException(
-					m_logger,
-					e,
-					"GwtShareHelper.saveShareLists( SOURCE EXCEPTION ):  " );
-		}
-		
-		finally
-		{
-			gsp.stop();
-		}
-	}
-	
-	/**
-	 * Saves the current state of the share whitelist/blacklist.
-	 * 
-	 * @param bs
-	 * @param request
-	 * @param gwtShareLists
-	 * 
-	 * @return
-	 * 
-	 * @throws GwtTeamingException
-	 */
-	public static ValidateShareListsRpcResponseData validateShareLists( AllModulesInjected bs, HttpServletRequest request, GwtShareLists gwtShareLists ) throws GwtTeamingException
-	{
-		GwtServerProfiler gsp = GwtServerProfiler.start( m_logger, "GwtShareHelper.validateShareLists()" );
-		try
-		{
-			// Allocate response object we can return.
-			ValidateShareListsRpcResponseData reply = new ValidateShareListsRpcResponseData(new ArrayList<ErrorInfo>());
-
-			// Convert the GwtShareLists to a ShareLists that can be
-			// used outside the GWT code.
-			ShareLists shareLists = (
-				( null == gwtShareLists ) ?
-					new ShareLists()      :
-					gwtShareListsToShareLists( gwtShareLists ) );
-
-			// Can we get find any external users?
-			ProfileModule    pm             = bs.getProfileModule();
-			SharingModule    sm             = bs.getSharingModule();
-			List<Long>       invalidUserIds = new ArrayList<Long>();
-			Collection<User> extUsers       = pm.getAllExternalUsers();
-			if ( MiscUtil.hasItems( extUsers ) )
-			{
-				// Yes!  Scan them.
-				for ( User extUser:  extUsers )
-				{
-					// Is this external user's email address bogus,
-					// given the ShareLists?
-					String ema = extUser.getEmailAddress();
-					if ( MiscUtil.hasString( ema ) && ( ! ( sm.isExternalAddressValid( ema, shareLists ) ) ) )
-					{
-						// Yes!  Track their user ID.
-						invalidUserIds.add( extUser.getId() );
-					}
-				}
-			}
-
-			// Are we tracking the user IDs of external users that
-			// can't be shared with, given the ShareLists?
-			if ( ! ( invalidUserIds.isEmpty() ) )
-			{
-				// Yes!  Can we find any shares with those users?
-				ShareItemSelectSpec	spec = new ShareItemSelectSpec();
-				spec.setRecipients( invalidUserIds, null, null );	// nulls -> No groups or teams.
-				List<ShareItem> shareItems = sm.getShareItems( spec );
-				if ( MiscUtil.hasItems( shareItems ) )
-				{
-					// Yes!  Scan the shares.
-					for ( ShareItem si:  shareItems )
-					{
-						// If this share has already been deleted...
-						if ( si.isDeleted() )
-						{
-							// ...skip it.
-							continue;
-						}
-						
-						// Add the share's ID to the reply's invalid
-						// share IDs list.
-						reply.addInvalidShareId( si.getId() );
-						
-						// We also need to add an indication of the
-						// invalid share to the reply's error list.
-						// This will be used to confirm with the user
-						// that this share will be deleted if the
-						// ShareList is saved.
-						
-						// Get the title for the share...
-						String shareTitle = null;
-						try
-						{
-							DefinableEntity	siEntity = sm.getSharedEntity( si );
-							if ( null != siEntity )
-							{
-								shareTitle = siEntity.getTitle();
-							}
-						}
-						catch (Exception e) {}
-						if ( ! ( MiscUtil.hasString( shareTitle ) ) )
-						{
-							shareTitle = ( "ID:  " + si.getSharedEntityIdentifier().getEntityId() );
-						}
-						
-						// ...get the sharer's title...
-						User sharer = GwtServerHelper.getResolvedUser( si.getSharerId() );
-						String sharerTitle = ( ( null == sharer ) ? "" : Utils.getUserTitle( sharer ) );
-						
-						// ...and generate the error message.
-						String   key;
-						String   keyTail;
-						String[] patches;
-						if ( si.getSharedEntityIdentifier().getEntityType().equals( EntityType.folder ) )
-						{
-							keyTail = "folder";
-						}
-						else
-						{
-							if ( Utils.checkIfFilr() )
-							     keyTail = "entry.filr";	// Wording uses 'file'.
-							else keyTail = "entry.vibe";	// Wording uses 'entry'.
-						}
-						if ( MiscUtil.hasString( sharerTitle ) )
-						{
-							patches = new String[]{ shareTitle, sharerTitle };
-							key     = "shareWillBeDeleted.hasUser";
-						}
-						else
-						{
-							patches = new String[]{ shareTitle };
-							key     = "shareWillBeDeleted.noUser";
-						}
-						reply.addError( NLT.get( ( key + "." + keyTail ), patches ) );
-					}
-				}
-			}
-			
-			// If we get here, reply refers to a
-			// ValidateShareListsRpcResponseData containing the
-			// validation results.  Return it.
-			return reply;
-		}
-		
-		catch ( Exception e )
-		{
-			// Convert the exception to a GwtTeamingException and throw
-			// that.
-			throw
-				GwtLogHelper.getGwtClientException(
-					m_logger,
-					e,
-					"GwtShareHelper.validateShareLists( SOURCE EXCEPTION ):  " );
-		}
-		
-		finally
-		{
-			gsp.stop();
-		}
-	}
-	
-	/**
-	 * Deletes shares with the specified IDs.
-	 * 
-	 * @param bs
-	 * @param shareIds
-	 * 
-	 * @return
-	 * 
-	 * @throws GwtTeamingException
-	 */
-	public static ErrorListRpcResponseData deleteShares( AllModulesInjected bs, HttpServletRequest request, List<Long> shareIds ) throws GwtTeamingException
-	{
-		GwtServerProfiler gsp = GwtServerProfiler.start( m_logger, "GwtShareHelper.deleteShares()" );
-		try
-		{
-			// Allocate response object we can return.
-			ErrorListRpcResponseData reply = new ErrorListRpcResponseData(new ArrayList<ErrorInfo>());
-			
-			// Do we have any the IDs of any shares that have to be
-			// deleted?
-			if ( MiscUtil.hasItems( shareIds ) )
-			{
-				// Yes!  Scan them...
-				SharingModule sm = bs.getSharingModule();
-				for ( Long shareId:  shareIds ) {
-					try
-					{
-						// ...and delete the corresponding share.
-						sm.deleteShareItem( shareId );
-					}
-					catch (Exception e)
-					{
-						addDeleteShareErrorToErrorList( bs, e, reply, shareId );
-						GwtLogHelper.error( m_logger, "GwtShareHelper.deleteShares( EXCEPTION ):  ", e );
-					}
-				}
-			}
-			
-			// If we get here, reply refers to an
-			// ErrorListRpcResponseData containing the results of the
-			// delete.  Return it.
-			return reply;
-		}
-		
-		catch ( Exception e )
-		{
-			// Convert the exception to a GwtTeamingException and throw
-			// that.
-			throw
-				GwtLogHelper.getGwtClientException(
-					m_logger,
-					e,
-					"GwtShareHelper.deleteShares( SOURCE EXCEPTION ):  " );
-		}
-		
-		finally
-		{
-			gsp.stop();
-		}
-	}
-
-	/*
-	 * Given an exception deleting a share, adds information about the
-	 * error to an ErrorListRpcResponseData.
-	 */
-	private static void addDeleteShareErrorToErrorList( AllModulesInjected bs, Exception deleteEx, ErrorListRpcResponseData reply, Long shareId )
-	{
-		// Can we access the share?
-		SharingModule sm = bs.getSharingModule();
-		ShareItem share;
-		try
-		{
-			share = sm.getShareItem( shareId );
-		}
-		catch (Exception e)
-		{
-			share = null;
-		}
-		if ( null == share )
-		{
-			// No!  Generate an error that it couldn't be deleted.
-			reply.addError( NLT.get( "deleteShareError.UnknownShare", new String[]{ String.valueOf( shareId ) } ) );
-		}
-		
-		else
-		{
-			// Yes, we have access to the share!  Get the title for
-			// the share...
-			String shareTitle = null;
-			try
-			{
-				DefinableEntity	siEntity = sm.getSharedEntity( share );
-				if ( null != siEntity )
-				{
-					shareTitle = siEntity.getTitle();
-				}
-			}
-			catch (Exception e) {}
-			if ( ! ( MiscUtil.hasString( shareTitle ) ) )
-			{
-				shareTitle = ( "ID:  " + share.getSharedEntityIdentifier().getEntityId() );
-			}
-			
-			// ...get the sharer's title...
-			User sharer = GwtServerHelper.getResolvedUser( share.getSharerId() );
-			String sharerTitle = ( ( null == sharer ) ? "" : Utils.getUserTitle( sharer ) );
-			if ( ! ( MiscUtil.hasString( sharerTitle )))
-			{
-				shareTitle = NLT.get("deleteShareError.UnknownUser");
-			}
-			
-			// ...and generate the error message.
-			String key;
-			if ( deleteEx instanceof AccessControlException ) key = "deleteShareError.AccssControlException";
-			else                                              key = "deleteShareError.OtherException";
-			reply.addError( NLT.get( key, new String[]{ shareTitle, sharerTitle } ) );
-		}
-	}
-
-	/**
-	 * Returns a PublicLinksRpcResponseData object containing the
-	 * public links for the specified entities.
-	 * 
-	 * @param bs
-	 * @param request
-	 * @param entityIds
-	 * 
-	 * @return
-	 * 
-	 * @throws GwtTeamingException
-	 */
-	public static PublicLinksRpcResponseData getPublicLinks( AllModulesInjected bs, HttpServletRequest request, List<EntityId> entityIds ) throws GwtTeamingException
-	{
-		GwtServerProfiler gsp = GwtServerProfiler.start( m_logger, "GwtShareHelper.getPublicLinks()" );
-		try
-		{
-			PublicLinksRpcResponseData reply = new PublicLinksRpcResponseData();
-
-			// Do we have any entities to get the public links from?
-			if ( MiscUtil.hasItems( entityIds ) )
-			{
-				// Yes!  Prepare the common things we need to build the
-				// public links... 
-				Long userId = GwtServerHelper.getCurrentUserId();
-				ShareExpirationValue expires = new ShareExpirationValue();
-				expires.setType( ShareExpirationType.NEVER );
-				
-				// ...and scan them.
-				for ( EntityId eid:  entityIds )
-				{
-					// We'll default to using the entity's ID in any
-					// error we generate until we have its title.
-					String feTitle = String.valueOf( eid.getEntityId() );
-					
-					// Is this entity an en entry?
-					if ( ! ( eid.isEntry() ) )
-					{
-						// No!  This should never happen.  Generate an
-						// error and skip it.
-						reply.addError( NLT.get( "publicLink.internalError.NotAnEntry", new String[]{ feTitle } ) );
-						continue;
-					}
-
-					try
-					{
-						// Can we get the name of the primary file
-						// attached to this entry?
-						FolderEntry fe      = bs.getFolderModule().getEntry( null, eid.getEntityId() );
-						            feTitle = fe.getTitle();
-						String      fName   = MiscUtil.getPrimaryFileName(fe);
-						if ( ! ( MiscUtil.hasString( fName ) ) )
-						{
-							// No!  Then we can't build links for it.
-							// Generate an error and skip it.
-							reply.addError( NLT.get( "publicLink.error.NoFile", new String[]{ feTitle } ) );
-							continue;
-						}
-						
-						// Generate the public link 'share' on the
-						// entry...
-						ShareItem si = buildPublicLinkShareItem( bs, userId, eid, expires, "" );
-						if ( null == si )
-						{
-							reply.addError( NLT.get( "publicLink.error.CantShare", new String[]{ feTitle } ) );
-							continue;
-						}
-						bs.getSharingModule().addShareItem( si );
-						
-						// ...construct a download link URL for it...
-						Long   siId = si.getId();
-						String siPK = si.getPassKey();
-						String downloadUrl = WebUrlUtil.getSharedPublicFileUrl( request, siId, siPK, WebKeys.URL_SHARE_PUBLIC_LINK, fName );
-
-						// ...and it we support viewing it as HTML,
-						// ...construct a view link URL for it...
-						String viewUrl;
-						if ( GwtViewHelper.supportsViewAsHtml( fName ) )
-						     viewUrl = WebUrlUtil.getSharedPublicFileUrl( request, siId, siPK, WebKeys.URL_SHARE_PUBLIC_LINK_HTML, fName );
-						else viewUrl = null;
-
-						// ...and add the public link information to
-						// ...the reply.
-						reply.addPublicLink(
-							eid,
-							feTitle,
-							fe.getParentBinder().getPathName(),
-							FileIconsHelper.getFileIconFromFileName(
-								fName,
-								IconSize.SMALL ),
-							downloadUrl,
-							viewUrl);
-						
-					}
-					
-					catch ( Exception e )
-					{
-						// No!  Add an error to the error list...
-						String messageKey;
-						if (e instanceof AccessControlException) messageKey = "publicLink.error.AccssControlException";
-						else                                     messageKey = "publicLink.error.OtherException";
-						reply.addError( NLT.get( messageKey, new String[]{ feTitle } ) );
-						
-						// ...and log it.
-						GwtLogHelper.error( m_logger, "GwtShareHelper.getPublicLinks( Entry:  '" + feTitle + "', EXCEPTION ):  ", e );
-					}
-				}
-			}
-			
-			// If we get here, reply refers to a
-			// PublicLinksRpcResponseData containing the results of obtaining
-			// the public links for the entities.  Return it.
-			return reply;
-		}
-		
-		catch ( Exception e )
-		{
-			// Convert the exception to a GwtTeamingException and throw
-			// that.
-			throw
-				GwtLogHelper.getGwtClientException(
-					m_logger,
-					e,
-					"GwtShareHelper.getPublicLinks( SOURCE EXCEPTION ):  " );
-		}
-		
-		finally
-		{
-			gsp.stop();
-		}
-	}
-	
-	/**
-	 * Returns a MailToPublicLinksRpcResponseData object containing the
-	 * public links for the specified entity.
-	 * 
-	 * @param bs
-	 * @param request
-	 * @param eid
-	 * 
-	 * @return
-	 * 
-	 * @throws GwtTeamingException
-	 */
-	public static MailToPublicLinksRpcResponseData getMailToPublicLinks( AllModulesInjected bs, HttpServletRequest request, EntityId eid ) throws GwtTeamingException
-	{
-		GwtServerProfiler gsp = GwtServerProfiler.start( m_logger, "GwtShareHelper.getMailToPublicLinks()" );
-		try
-		{
-			// Create a MailToPublicLinksRpcResponseData we can return.
-			MailToPublicLinksRpcResponseData reply = new MailToPublicLinksRpcResponseData();
-
-			// Prepare the common things we need to build public links. 
-			User user                    = GwtServerHelper.getCurrentUser();
-			Long userId                  = user.getId();
-			ShareExpirationValue expires = new ShareExpirationValue();
-			expires.setType( ShareExpirationType.NEVER );
-			
-			// We'll default to using the entity's ID in any
-			// error we generate until we have its title.
-			String feTitle = String.valueOf( eid.getEntityId() );
-			
-			// Is this entity an en entry?
-			if ( ! ( eid.isEntry() ) )
-			{
-				// No!  This should never happen.  Generate an
-				// error and skip it.
-				reply.setError( NLT.get( "mailtoPublicLink.internalError.NotAnEntry", new String[]{ feTitle } ) );
-				return reply;
-			}
-
-			try
-			{
-				// Can we get the name of the primary file
-				// attached to this entry?
-				FolderEntry fe      = bs.getFolderModule().getEntry( null, eid.getEntityId() );
-				            feTitle = fe.getTitle();
-				String      fName   = MiscUtil.getPrimaryFileName(fe);
-				if ( ! ( MiscUtil.hasString( fName ) ) )
-				{
-					// No!  Then we can't build links for it.
-					// Generate an error and skip it.
-					reply.setError( NLT.get( "mailtoPublicLink.error.NoFile", new String[]{ feTitle } ) );
-					return reply;
-				}
-
-				// Synthesize the subject for the mail.
-				String subject = NLT.get( "mailtoPublicLink.subject", new String[] { user.getTitle(), feTitle } );
-				reply.setSubject(subject);
-
-				// Does the current user have any public shares already
-				// available for this file?
-				List<ShareItem> plShares = getPublicLinkShareItems( bs, userId, eid );
-				if ( ! ( MiscUtil.hasItems( plShares )))
-				{
-					// No!  Generate a public link 'share' on the
-					// entry...
-					ShareItem si = buildPublicLinkShareItem( bs, userId, eid, expires, "" );
-					if ( null == si )
-					{
-						reply.setError( NLT.get( "mailtoPublicLink.error.CantShare", new String[]{ feTitle } ) );
-						return reply;
-					}
-					bs.getSharingModule().addShareItem( si );
-
-					// ...and track it.
-					if ( null == plShares )
-					{
-						plShares = new ArrayList<ShareItem>();
-					}
-					plShares.add( si );
-				}
-
-				// Scan the public shares on this file...
-				for ( ShareItem plShare:  plShares )
-				{
-					// ...construct a download link URL for it...
-					Long   siId = plShare.getId();
-					String siPK = plShare.getPassKey();
-					String downloadUrl = WebUrlUtil.getSharedPublicFileUrl( request, siId, siPK, WebKeys.URL_SHARE_PUBLIC_LINK, fName );
-	
-					// ...and it we support viewing it as HTML,
-					// ...construct a view link URL for it...
-					String viewUrl;
-					if ( GwtViewHelper.supportsViewAsHtml( fName ) )
-					     viewUrl = WebUrlUtil.getSharedPublicFileUrl( request, siId, siPK, WebKeys.URL_SHARE_PUBLIC_LINK_HTML, fName );
-					else viewUrl = null;
-
-					// ...if the share expires, return its expiration
-					// ...date...
-					String expiration;
-					Date expirationDate = plShare.getEndDate();
-					if ( null == expirationDate )
-					     expiration = null;
-					else expiration = GwtServerHelper.getDateTimeString( expirationDate, DateFormat.MEDIUM, DateFormat.SHORT );
-	
-					// ...and add the mail to public link information
-					// ...to the reply.
-					MailToPublicLinkInfo plLink = new MailToPublicLinkInfo(
-						downloadUrl,
-						viewUrl,
-						plShare.getComment(),
-						expiration );
-					reply.addMailToPublicLink( plLink );
-				}
-			}
-			
-			catch ( Exception e )
-			{
-				// No!  Add an error to the error list...
-				String messageKey;
-				if (e instanceof AccessControlException) messageKey = "mailtoPublicLink.error.AccssControlException";
-				else                                     messageKey = "mailtoPublicLink.error.OtherException";
-				reply.setError( NLT.get( messageKey, new String[]{ feTitle } ) );
-				
-				// ...and log it.
-				GwtLogHelper.error( m_logger, "GwtShareHelper.getMailToPublicLinks( Entry:  '" + feTitle + "', EXCEPTION ):  ", e );
-			}
-			
-			// If we get here, reply refers to a
-			// MailToPublicLinksRpcResponseData containing the results
-			// of obtaining the mail to public links for the entity. 
-			// Return it.
-			return reply;
-		}
-		
-		catch ( Exception e )
-		{
-			// Convert the exception to a GwtTeamingException and throw
-			// that.
-			throw
-				GwtLogHelper.getGwtClientException(
-					m_logger,
-					e,
-					"GwtShareHelper.getMailToPublicLinks( SOURCE EXCEPTION ):  " );
-		}
-		
-		finally
-		{
-			gsp.stop();
-		}
 	}
 }

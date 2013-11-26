@@ -354,7 +354,7 @@ public class FileUploadItem {
 		else
 			return null;
 	}
-	
+
 	public String getModifierName() {
 		if(mf instanceof FileExtendedSupport)
 			return ((FileExtendedSupport) mf).getModifierName();

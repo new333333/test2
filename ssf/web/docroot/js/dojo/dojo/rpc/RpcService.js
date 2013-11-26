@@ -1,86 +1,89 @@
 /*
-	Copyright (c) 2004-2011, The Dojo Foundation All Rights Reserved.
+	Copyright (c) 2004-2009, The Dojo Foundation All Rights Reserved.
 	Available via Academic Free License >= 2.1 OR the modified BSD license.
 	see: http://dojotoolkit.org/license for details
 */
 
-//>>built
-define("dojo/rpc/RpcService",["../_base/array","../_base/declare","../_base/Deferred","../_base/kernel","../_base/lang","../_base/url","../_base/xhr"],function(_1,_2,_3,_4,_5,_6,_7){
-return _2("dojo.rpc.RpcService",null,{constructor:function(_8){
-if(_8){
-if((_5.isString(_8))||(_8 instanceof _6)){
-if(_8 instanceof _6){
-var _9=_8+"";
+
+if(!dojo._hasResource["dojo.rpc.RpcService"]){
+dojo._hasResource["dojo.rpc.RpcService"]=true;
+dojo.provide("dojo.rpc.RpcService");
+dojo.declare("dojo.rpc.RpcService",null,{constructor:function(_1){
+if(_1){
+if((dojo.isString(_1))||(_1 instanceof dojo._Url)){
+if(_1 instanceof dojo._Url){
+var _2=_1+"";
 }else{
-_9=_8;
+_2=_1;
 }
-var _a=_7.get({url:_9,handleAs:"json-comment-optional",sync:true});
-_a.addCallback(this,"processSmd");
-_a.addErrback(function(){
-throw new Error("Unable to load SMD from "+_8);
+var _3=dojo.xhrGet({url:_2,handleAs:"json-comment-optional",sync:true});
+_3.addCallback(this,"processSmd");
+_3.addErrback(function(){
+throw new Error("Unable to load SMD from "+_1);
 });
 }else{
-if(_8.smdStr){
-this.processSmd(_4.eval("("+_8.smdStr+")"));
+if(_1.smdStr){
+this.processSmd(dojo.eval("("+_1.smdStr+")"));
 }else{
-if(_8.serviceUrl){
-this.serviceUrl=_8.serviceUrl;
+if(_1.serviceUrl){
+this.serviceUrl=_1.serviceUrl;
 }
-this.timeout=_8.timeout||0;
-if("strictArgChecks" in _8){
-this.strictArgChecks=_8.strictArgChecks;
+this.timeout=_1.timeout||3000;
+if("strictArgChecks" in _1){
+this.strictArgChecks=_1.strictArgChecks;
 }
-this.processSmd(_8);
+this.processSmd(_1);
 }
 }
 }
-},strictArgChecks:true,serviceUrl:"",parseResults:function(_b){
-return _b;
-},errorCallback:function(_c){
-return function(_d){
-_c.errback(_d.message);
+},strictArgChecks:true,serviceUrl:"",parseResults:function(_4){
+return _4;
+},errorCallback:function(_5){
+return function(_6){
+_5.errback(_6.message);
 };
-},resultCallback:function(_e){
-return _5.hitch(this,function(_f){
-if(_f.error!=null){
-var err;
-if(typeof _f.error=="object"){
-err=new Error(_f.error.message);
-err.code=_f.error.code;
-err.error=_f.error.error;
+},resultCallback:function(_7){
+var tf=dojo.hitch(this,function(_8){
+if(_8.error!=null){
+var _9;
+if(typeof _8.error=="object"){
+_9=new Error(_8.error.message);
+_9.code=_8.error.code;
+_9.error=_8.error.error;
 }else{
-err=new Error(_f.error);
+_9=new Error(_8.error);
 }
-err.id=_f.id;
-err.errorObject=_f;
-_e.errback(err);
+_9.id=_8.id;
+_9.errorObject=_8;
+_7.errback(_9);
 }else{
-_e.callback(this.parseResults(_f));
+_7.callback(this.parseResults(_8));
 }
 });
-},generateMethod:function(_10,_11,url){
-return _5.hitch(this,function(){
-var _12=new _3();
-if((this.strictArgChecks)&&(_11!=null)&&(arguments.length!=_11.length)){
+return tf;
+},generateMethod:function(_a,_b,_c){
+return dojo.hitch(this,function(){
+var _d=new dojo.Deferred();
+if((this.strictArgChecks)&&(_b!=null)&&(arguments.length!=_b.length)){
 throw new Error("Invalid number of parameters for remote method.");
 }else{
-this.bind(_10,_5._toArray(arguments),_12,url);
+this.bind(_a,dojo._toArray(arguments),_d,_c);
 }
-return _12;
+return _d;
 });
-},processSmd:function(_13){
-if(_13.methods){
-_1.forEach(_13.methods,function(m){
+},processSmd:function(_e){
+if(_e.methods){
+dojo.forEach(_e.methods,function(m){
 if(m&&m.name){
 this[m.name]=this.generateMethod(m.name,m.parameters,m.url||m.serviceUrl||m.serviceURL);
-if(!_5.isFunction(this[m.name])){
+if(!dojo.isFunction(this[m.name])){
 throw new Error("RpcService: Failed to create"+m.name+"()");
 }
 }
 },this);
 }
-this.serviceUrl=_13.serviceUrl||_13.serviceURL;
-this.required=_13.required;
-this.smd=_13;
+this.serviceUrl=_e.serviceUrl||_e.serviceURL;
+this.required=_e.required;
+this.smd=_e;
 }});
-});
+}

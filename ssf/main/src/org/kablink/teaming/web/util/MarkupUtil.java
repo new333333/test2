@@ -689,11 +689,7 @@ public class MarkupUtil {
 			df3.setTimeZone(user.getTimeZone());
 			if (allDayEvent) {
 				//This is an all day event, just show the start date
-				if (endDate == null || df1GMT.format(startDate.getTime()).equals(df1GMT.format(endDate.getTime()))) {
-					result = df1GMT.format(startDate.getTime()) + " (" + NLT.get("event.allDay") + ")";
-				} else {
-					result = NLT.get("event.fromTo", new String[] {df1GMT.format(startDate.getTime()), df1GMT.format(endDate.getTime())}) + " (" + NLT.get("event.allDay") + ")";
-				}
+				result = df1GMT.format(startDate.getTime()) + " (" + NLT.get("event.allDay") + ")";
 			} else if (startDate.equals(endDate)) {
 				//This is just a date and time
 				result = df2.format(startDate.getTime());
@@ -1183,7 +1179,7 @@ public class MarkupUtil {
 			        	titleLink.append(builder.getImagesRootUrl()).append("pics/media.gif) no-repeat center;\">");
 			        	titleLink.append("&nbsp;</a>");
 			        	titleLink.append("</a>");
-			    	} else if (s_url.startsWith("http://www.youtube.com/") || s_url.startsWith("https://www.youtube.com/")) {
+			    	} else if (s_url.startsWith("http://www.youtube.com/")) {
 			    		if (checkIfMobile(req, httpReq)) {
 				    		titleLink.append("<div>\n");
 				    		titleLink.append("<a href=\"");
@@ -1229,25 +1225,6 @@ public class MarkupUtil {
 				    		titleLink.append("//ss_createSpannedAreaObj(\"ss_videoDiv"+id.toString()+"\");\n");
 				    		titleLink.append("</script>\n");
 			    		}
-			    	} else if (s_url.startsWith("http://youtu.be/") || s_url.startsWith("https://youtu.be/")) {
-			    		Integer id = ++youtubeDivId;
-			    		//Make this into an embed URL
-			    		if (s_url.startsWith("http://youtu.be/")) {
-			    			s_url = s_url.replaceFirst("http://youtu.be/", "http://www.youtube.com/embed/");
-			    		} else {
-			    			s_url = s_url.replaceFirst("https://youtu.be/", "https://www.youtube.com/embed/");
-			    		}
-			    		titleLink.append("<div id=\"youTubeIFrame" + id.toString() + "\"></div>");
-			        	//We have to set the iframe src after the page loads to avoid youtube wiping out following content
-			        	titleLink.append("\n<script type=\"text/javascript\">\n");
-			        	titleLink.append("ss_createOnLoadObj(\"youTubeFixup" + id.toString() + "\", function() {\n");
-			        	titleLink.append("var divObj = document.getElementById(\"youTubeIFrame" + id.toString() + "\");\n");
-			        	titleLink.append("divObj.innerHTML = '");
-			    		titleLink.append("<iframe src=\"" + s_url + "\" width=\"" + s_width + "\" height=\"" + s_height + "\" ");
-			        	titleLink.append(" frameborder=\"0\" allowfullscreen</iframe>");
-			        	titleLink.append("';\n");
-			        	titleLink.append("});\n");
-			        	titleLink.append("</script>\n");
 			    	} else {
 			        	titleLink.append("<a target=\"_blank\" src=\"");
 			        	titleLink.append(s_url);

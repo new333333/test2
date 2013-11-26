@@ -37,7 +37,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.kablink.teaming.domain.AuditTrail;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.BinderQuota;
 import org.kablink.teaming.domain.ChangeLog;
@@ -50,15 +49,12 @@ import org.kablink.teaming.domain.HomePageConfig;
 import org.kablink.teaming.domain.IndexNode;
 import org.kablink.teaming.domain.MailConfig;
 import org.kablink.teaming.domain.MobileAppsConfig;
-import org.kablink.teaming.domain.MobileOpenInWhiteLists;
-import org.kablink.teaming.domain.NameCompletionSettings;
 import org.kablink.teaming.domain.NoApplicationByTheIdException;
 import org.kablink.teaming.domain.NoUserByTheIdException;
 import org.kablink.teaming.domain.OpenIDConfig;
 import org.kablink.teaming.domain.OpenIDProvider;
 import org.kablink.teaming.domain.PostingDef;
 import org.kablink.teaming.domain.ShareItem;
-import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.WeekendsAndHolidaysConfig;
 import org.kablink.teaming.extension.ExtensionManager;
 import org.kablink.teaming.jobs.ScheduleInfo;
@@ -101,14 +97,6 @@ public interface AdminModule {
 		manageExternalUser,
 		manageMobileApps
 	}
-	/**
-	 * The method name to be called is used as the operation.   This
-	 * allows the adminModule to check for multiple rights or change requirments in the future.
-	 * @param operation
-	 * @return
-	 */
-   	public boolean testUserAccess(User user, AdminOperation operation);
-   	public void checkUserAccess(User user, AdminOperation operation) throws AccessControlException;
 	/**
 	 * The method name to be called is used as the operation.   This
 	 * allows the adminModule to check for multiple rights or change requirments in the future.
@@ -197,32 +185,16 @@ public interface AdminModule {
     public List<ChangeLog> getWorkflowChanges(EntityIdentifier entityIdentifier, String operation);
     public boolean isAdHocFoldersEnabled();
     public void setAdHocFoldersEnabled( boolean enabled );
-    public boolean isDownloadEnabled();
-    public void setDownloadEnabled( boolean enabled );
-    public boolean isWebAccessEnabled();
-    public void setWebAccessEnabled( boolean enabled );
-    public boolean isFileArchivingEnabled();
-    public void setFileArchivingEnabled(boolean fileArchivingEnabled);
-    public boolean isSharingWithLdapGroupsEnabled();
-    public void setAllowShareWithLdapGroups( boolean allow );
     public int getAuditTrailKeepDays();
     public int getChangeLogsKeepDays();
-    public boolean isAuditTrailEnabled();
-    public boolean isChangeLogEnabled();
-    public void setAuditTrailEnabled(boolean auditTrailEnabled);
-    public void setChangeLogEnabled(boolean changeLogEnabled);
     public void setLogTableKeepDays(int auditTrailKeepDays, int changeLogsKeepDays);
-
-    public NameCompletionSettings getNameCompletionSettings();
-    public void setNameCompletionSettings( NameCompletionSettings settings );
-
+    
 
     /**
      * Get system functions
      * @return
      */
     public Function getFunction(Long functionId);
-    public Function getFunctionByInternalId(String internalId);
     public List<Function> getFunctions();
     public List<Function> getFunctions(String scope);
     /**
@@ -314,24 +286,6 @@ public interface AdminModule {
     		Collection<String> emailAddresses, Collection<Long> ccIds, Collection<Long> bccIds) throws Exception;
     	 
     /**
-	 * Send a public link notification mail message to a collection of
-	 * email addresses.
-	 * 
-	 * @param share				- Share item.
-	 * @param sharedEntity		- Entity (folder or folder entry) being shared.
-	 * @param emas				- toList,  stand alone email address.
-	 * @param bccEMAs			- bccList
-	 * @param viewUrl			- The public link view URL.
-	 * @param downloadUrl		- The public link download URL.
-	 * 
-	 * @return
-	 * 
-	 * @throws Exception
-     */
-    public Map<String, Object> sendPublicLinkMail(ShareItem share, DefinableEntity sharedEntity, Collection<String> ems,
-    		Collection<String> bccEMAs, String viewUrl, String downloadUrl) throws Exception;
-    	 
-    /**
 	 * Sends a URL notification mail message to a collection of users
 	 * and/or explicit email addresses.
 	 * 
@@ -397,7 +351,7 @@ public interface AdminModule {
 	 * of the corresponding Lucene node in the context of current zone.
 	 * @return
 	 */
-	public List<IndexNode> retrieveIndexNodesHA();
+	public List<IndexNode> retrieveIndexNodes();
 	
 	/**
 	 * Update the index node with the state information.
@@ -406,21 +360,21 @@ public interface AdminModule {
 	 * @param accessMode
 	 * @param noDeferredUpdateLogRecords
 	 */
-	public void updateIndexNodeHA(String indexNodeId, String userModeAccess, Boolean enableDeferredUpdateLog, Boolean noDeferredUpdateLogRecords);
+	public void updateIndexNode(String indexNodeId, String userModeAccess, Boolean enableDeferredUpdateLog, Boolean noDeferredUpdateLogRecords);
 
 	/**
 	 * Apply the deferred update log records to the index node and remove them.
 	 * 
 	 * @param indexNode
 	 */
-	public void applyDeferredUpdateLogRecordsHA(IndexNode indexNode);
+	public void applyDeferredUpdateLogRecords(IndexNode indexNode);
 	
 	/**
 	 * Discard and remove the deferred update log records without applying them.
 	 *  
 	 * @param indexNode
 	 */
-	public void discardDeferredUpdateLogRecordsHA(IndexNode indexNode);
+	public void discardDeferredUpdateLogRecords(IndexNode indexNode);
 	
 	/**
 	 * Obtain an application-scoped token on behalf of the specified user.
@@ -480,7 +434,7 @@ public interface AdminModule {
 	
 	public void disableFileSyncStats();
 	
-	public void setFileSynchAppSettings(Boolean enabled, Integer synchInterval, String autoUpdateUrl, Boolean deployEnabled, Boolean deployLocalApps, Boolean allowCachePwd, Integer maxFileSize );
+	public void setFileSynchAppSettings(Boolean enabled, Integer synchInterval, String autoUpdateUrl, Boolean deployEnabled, Boolean allowCachePwd, Integer maxFileSize );
 	
 	public void addOpenIDProvider(OpenIDProvider openIDProvider);
 	
@@ -500,55 +454,15 @@ public interface AdminModule {
 	
 	public void setOpenIDConfig(OpenIDConfig openIDConfig);
 	
-	public void purgeLogTablesImmediate();
-	
-	public boolean writeAuditTrailLogFile(List<AuditTrail> entriesToBeDeleted);
-	public boolean writeChangeLogLogFile(List<ChangeLog> entriesToBeDeleted);
-	
     public ScheduleInfo getLogTablePurgeSchedule();
     
     public void setLogTablePurgeSchedule(ScheduleInfo info);
     
     public MobileAppsConfig getMobileAppsConfig();
-    public MobileOpenInWhiteLists getMobileOpenInWhiteLists();
     
     public void setMobileAppsConfig( MobileAppsConfig mobileAppsConfig );
     
     public void setJitsConfig( boolean enabled, long maxWait );
     
-    /**
-     * Perform reindexing. This starts by first deleting from the search index the entire 
-     * documents corresponding to the binder and everything in it (as opposed to replacing
-     * one item at a time), hence destructive.
-     * 
-     * @param binderIds
-     * @param statusTicket
-     * @param nodeNames
-     * @param errors
-     * @param includeUsersAndGroups
-     * @throws AccessControlException
-     */
     public void reindexDestructive(Collection<Long> binderIds, StatusTicket statusTicket, String[] nodeNames, IndexErrors errors, boolean includeUsersAndGroups) throws AccessControlException;
-    
-    /**
-     * Clear/reset reindexing states associated with the nodes (H/A if specified, non-H/A if unspecified).
-     * 
-     * @param nodeNames
-     */
-    public void clearReindexState(String[] nodeNames);
-    
-    /**
-     * Return if "unsafe" reindexing is currently in progress. Used specifically by Desktop client.
-     * 
-     * @return
-     */
-    public boolean isUnsafeReindexingInProgress();
-    
-    /**
-     * Load the index node associated with the system configured with non-H/A Lucene service. 
-     * If the system is set up with H/A Lucene service, this method will return null.
-     * 
-     * @return
-     */
-    public IndexNode loadNonHAIndexNode();
  }

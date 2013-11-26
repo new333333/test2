@@ -571,8 +571,9 @@ public class WorkflowProcessUtils extends CommonDependencyInjection {
 	
 	public static void processChangeLog(String toState, String change, WorkflowSupport entry) {
 		if (Validator.isNotNull(toState)) {
-			ChangeLog changes = ChangeLogUtils.createAndBuild((DefinableEntity)entry, change);
-			ChangeLogUtils.save(changes);
+			ChangeLog changes = new ChangeLog((DefinableEntity)entry, change);
+			ChangeLogUtils.buildLog(changes, (DefinableEntity)entry);
+			getInstance().getCoreDao().save(changes);
 		}
 	}
 
@@ -1195,7 +1196,6 @@ public static void resumeTimers(WorkflowSupport entry) {
 	public static WfAcl getStateAcl(Definition wfDef, DefinableEntity entity, String stateName, WfAcl.AccessType type) {
 		Document wfDoc = wfDef.getDefinition();
 		WfAcl acl = null;
-		Boolean aclFound = false;
 		//Find the current state in the definition
 		Element stateEle = DefinitionUtils.getItemByPropertyName(wfDoc.getRootElement(), "state", stateName);
 		if (stateEle != null) {
@@ -1214,27 +1214,16 @@ public static void resumeTimers(WorkflowSupport entry) {
 				nodeString = "item[@name='transitionInAccess']";
 			} 
 			if (nodeString != null) {
-				Element aclEle = (Element)stateEle.selectSingleNode("./item[@name='accessControls']/" + nodeString);
-				if (aclEle != null) aclFound = true;
-				acl = getAcl(aclEle, entity, type);
+				acl = getAcl((Element)stateEle.selectSingleNode("./item[@name='accessControls']/" + nodeString), entity, type);
 			}
-			if (!aclFound && acl == null) {
+			if (acl == null) {
 				//check global settings
-				Element aclEle = (Element)wfDoc.getRootElement().selectSingleNode("./item[@name='workflowProcess']/item[@name='accessControls']/" + nodeString);
-				if (aclEle != null) aclFound = true;
-				acl = getAcl(aclEle, entity, type);
+				acl = getAcl((Element)wfDoc.getRootElement().selectSingleNode("./item[@name='workflowProcess']/item[@name='accessControls']/" + nodeString), entity, type);
 			}
 			if (acl != null) return acl;
 		} 
-		if (!aclFound && WfAcl.AccessType.modifyField.equals(type)) {
-			//If there is no explicit setting for modifyField, then use the modify setting.
-			return getStateAcl(wfDef, entity, stateName, WfAcl.AccessType.modify);
-		}
 		acl = new WfAcl(type);
-		if (!aclFound) {
-			//If there was no specific ACL for this type, then mark that the ACL shoud use the default
-			acl.setUseDefault(true);
-		}
+		acl.setUseDefault(true);
 		return acl;
 	}
 
@@ -1244,10 +1233,6 @@ public static void resumeTimers(WorkflowSupport entry) {
 		String name, value;
 		if ((props == null) || props.isEmpty()) return null;
 		WfAcl result = new WfAcl(type);
-		DefinableEntity topEntry = null;
-		if (entity instanceof FolderEntry && !((FolderEntry)entity).isTop()) {
-			topEntry = ((FolderEntry)entity).getTopEntry();
-		}
 		for (Element prop:props) {
 			name = prop.attributeValue("name","");
 			value = prop.attributeValue("value","");
@@ -1262,11 +1247,6 @@ public static void resumeTimers(WorkflowSupport entry) {
 			        User user = RequestContextHolder.getRequestContext().getUser();
 					List<Element> userLists  = prop.selectNodes("./workflowEntryDataUserList[@definitionId='" +
 							entity.getEntryDefId() + "']");
-					if ((userLists == null || userLists.isEmpty()) && topEntry != null && topEntry.getEntryDefId() != null) {
-						//There are no user lists here, try looking in the top entry
-						userLists  = prop.selectNodes("./workflowEntryDataUserList[@definitionId='" +
-								topEntry.getEntryDefId() + "']");
-					}
 					if (userLists != null && !userLists.isEmpty()) {
 						for (Element element:userLists) {
 							String userListName = element.attributeValue("elementName"); //custom attribute name
@@ -1278,10 +1258,6 @@ public static void resumeTimers(WorkflowSupport entry) {
 	    						userListName = userListName.substring(userListName.indexOf(":")+1);
 	    					}
 							CustomAttribute attr = entity.getCustomAttribute(userListName); 
-							if (attr == null && topEntry != null) {
-								//The current entry is a reply. So also check if the custom attribute is from the top entry
-								attr = topEntry.getCustomAttribute(userListName); 
-							}
 							if (attr != null) {
 								//comma separated value
 								if (listType.equals("user_list") || listType.equals("group_list") || 

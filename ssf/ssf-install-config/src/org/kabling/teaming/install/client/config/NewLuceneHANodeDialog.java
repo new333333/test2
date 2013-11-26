@@ -50,7 +50,7 @@ public class NewLuceneHANodeDialog extends DlgBox
 		}
 		
 		//We need to have the name and host name
-		if (!(nameTextBox.isValid() & hostTextBox.isValid()))
+		if (!(nameTextBox.isValid() & hostTextBox.isValid() ))
 		{
 			errorLabel.setText(RBUNDLE.requiredField());
 			getErrorPanel().setVisible(true);

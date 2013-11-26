@@ -1,6 +1,6 @@
 <%
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -16,10 +16,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -92,7 +92,7 @@
 			accessibility_focus : true,
 			entities :  "39,#39,34,quot,38,amp,60,lt,62,gt",
 			gecko_spellcheck : true,
-			plugins : "pdw,table,preelementfix,ss_addimage,preview,paste,ss_wikilink,ss_youtube", 
+			plugins : "compat2x,pdw,table,preelementfix,ss_addimage,preview,paste,ss_wikilink,ss_youtube", 
 			theme_advanced_toolbar_location : "top",
 			theme_advanced_toolbar_align : "left", 
 			theme_advanced_statusbar_location : "bottom", 
@@ -306,10 +306,6 @@
 		// with the entry viewer about whether it should show the
 		// next/previous buttons.
 		var ss_allowNextPrevOnView = false;
-		
-		// The following is used to store the Window opened to a user
-		// to authenticate to a Cloud Folder service.
-		var ss_cloudFolderAuthenticationPopup = null;
 	</script>
 	
 	<script type="text/javascript" src="<html:rootPath/>js/common/ss_common.js?<%= ReleaseInfo.getContentVersion() %>"></script>
@@ -332,7 +328,7 @@
     
     <!-- This form is used for logging out. -->
     <!-- The value of the action attribute will be filled in at runtime. -->
-	<form name="logoutForm" id="logoutForm" method="post" >
+	<form name="logoutForm" id="logoutForm" method="post" action="" >
 	</form> 
 	
 	<!--  This form is used for logging in. -->

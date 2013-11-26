@@ -376,35 +376,11 @@ public class AssignmentCell extends AbstractCell<List<AssignmentInfo>> {
 				imgPanel.addStyleName("vibe-dataTableAssignment-control displayInline verticalAlignMiddle");
 				Image assigneeImg = new Image();
 				assigneeImg.addStyleName("vibe-dataTableAssignment-image");
-				assigneeImg.setUrl(m_images.publicAssignee().getSafeUri().asString());
+				assigneeImg.setUrl(m_images.groupAssignee().getSafeUri().asString());
 				assigneeImg.getElement().setAttribute("align", "absmiddle");
 				imgPanel.add(assigneeImg);
 				fp.add(imgPanel);
 
-				// ...and add a label.
-				Label assignee = new Label(ai.getTitle());
-				assignee.addStyleName("vibe-dataTableAssignment-label vibe-dataTableAssignment-enabled");
-				if (m_isIE) {
-					assignee.addStyleName("vibe-dataTableAssignment-labelIE");
-				}
-				if (hasHover) {
-					assignee.setTitle(hover);
-				}
-				fp.add(assignee);
-				break;
-			}
-			
-			case PUBLIC_LINK: {
-				// Public link assignee!  Generate an appropriate image...
-				VibeFlowPanel imgPanel = new VibeFlowPanel();
-				imgPanel.addStyleName("vibe-dataTableAssignment-control displayInline verticalAlignMiddle");
-				Image assigneeImg = new Image();
-				assigneeImg.addStyleName("vibe-dataTableAssignment-image");
-				assigneeImg.setUrl(m_images.publicLinkAssignee().getSafeUri().asString());
-				assigneeImg.getElement().setAttribute("align", "absmiddle");
-				imgPanel.add(assigneeImg);
-				fp.add(imgPanel);
-	
 				// ...and add a label.
 				Label assignee = new Label(ai.getTitle());
 				assignee.addStyleName("vibe-dataTableAssignment-label vibe-dataTableAssignment-enabled");

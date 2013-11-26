@@ -54,15 +54,11 @@ import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.CustomAttribute;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
-import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
-import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.HistoryStamp;
-import org.kablink.teaming.domain.IdentityInfo;
-import org.kablink.teaming.domain.MobileDevices.MobileDevice;
 import org.kablink.teaming.domain.ProfileBinder;
 import org.kablink.teaming.domain.SeenMap;
 import org.kablink.teaming.domain.SimpleName;
@@ -74,7 +70,6 @@ import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.gwt.client.GwtTeamingException;
 import org.kablink.teaming.gwt.client.event.InvokeSendEmailToTeamEvent;
-import org.kablink.teaming.gwt.client.event.MailToPublicLinkEntityEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.mainmenu.FavoriteInfo;
 import org.kablink.teaming.gwt.client.mainmenu.RecentPlaceInfo;
@@ -112,12 +107,10 @@ import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ReleaseInfo;
 import org.kablink.teaming.util.SPropsUtil;
-import org.kablink.teaming.util.ShareLists;
 import org.kablink.teaming.util.SimpleProfiler;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.WebKeys;
-import org.kablink.teaming.web.util.AdminHelper;
 import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.DefinitionHelper;
 import org.kablink.teaming.web.util.GwtUIHelper;
@@ -159,18 +152,15 @@ public class GwtMenuHelper {
 	private final static String CONFIGURE_DEFINITIONS	= "configureDefinitions";
 	private final static String CONFIGURE_EMAIL			= "configEmail";
 	private final static String COPY					= "copy";
-	private final static String COPY_PUBLIC_LINK		= "copyPublicLink";
 	private final static String DELETE					= "delete";
 	private final static String DISPLAY_STYLES			= "display_styles";
 	private final static String EDIT_IN_PLACE			= "editInPlace";
 	private final static String EMAIL					= "email";
-	private final static String EMAIL_PUBLIC_LINK		= "emailPublicLink";
 	private final static String	FILE_DOWNLOAD			= "fileDownload";
 	private final static String FOLDER_VIEWS			= "folderViews";
 	private final static String ICALENDAR				= "iCalendar";
 	private final static String IMPORT_EXPORT			= "importExport";
 	private final static String LOCK					= "lock"; 
-	private final static String MAILTO_PUBLIC_LINK		= "mailToPublicLink";
 	private final static String MANAGE_DEFINITIONS		= "manageDefinitions";
 	private final static String MANAGE_TEMPLATES		= "manageTemplates";
 	private final static String MANUAL_SYNC				= "manualSync";
@@ -179,6 +169,7 @@ public class GwtMenuHelper {
 	private final static String MORE					= "more";
 	private final static String MOVE					= "move";
 	private final static String PERMALINK				= "permalink";
+	private final static String PURGE					= "purge";
 	private final static String REPORTS					= "reports";
 	private final static String RENAME					= "rename";
 	private final static String SCHEDULE_SYNC			= "scheduleSync";
@@ -198,7 +189,6 @@ public class GwtMenuHelper {
 	private final static String WHATS_NEW				= "whatsnew";
 	private final static String WHO_HAS_ACCESS			= "whohasaccess";
 	private final static String WORKFLOW_HISTORY_REPORT	= "workflowHistoryReport";
-	private final static String ZIP_AND_DOWNLOAD		= "zipAndDownload";
 	
 	// Controls whether WebDAV information shows up in footers.
 	// DRF (20130225):  Bug 805858:  Disabled these as a per a
@@ -269,17 +259,17 @@ public class GwtMenuHelper {
 			if (EntityIdentifier.EntityType.profiles != binder.getEntityType()) {
 				// Yes!  Add the various binder based
 				// ToolbarItem's.
-				miscTBI.addNestedItem(constructClipboardItem()                           );
-				miscTBI.addNestedItem(constructSendEmailToItem(    request, binder      ));
+				miscTBI.addNestedItem(constructClipboardItem()                     );
+				miscTBI.addNestedItem(constructSendEmailToItem(    request, binder));
 				if (GwtShareHelper.isEntitySharable(bs, binder)) {
-					miscTBI.addNestedItem(constructShareBinderItem(request, binder, null));
+					miscTBI.addNestedItem(constructShareBinderItem(request, binder));
 				}
-				miscTBI.addNestedItem(constructMobileUiItem(       request, binder      ));
+				miscTBI.addNestedItem(constructMobileUiItem(       request, binder));
 				if (!isFilr) {
-					miscTBI.addNestedItems(constructTrackBinderItem(bs,     binder      ));
+					miscTBI.addNestedItems(constructTrackBinderItem(bs,     binder));
 				}
 				if (isBinderTrashEnabled(binder)) {
-					miscTBI.addNestedItem(constructTrashItem(      request, binder      ));
+					miscTBI.addNestedItem(constructTrashItem(      request, binder));
 				}
 			}
 		}
@@ -305,51 +295,6 @@ public class GwtMenuHelper {
 		boolean isFilr = Utils.checkIfFilr();
 		tbiList.add(constructFolderItems(  isFilr, WebKeys.FOLDER_TOOLBAR,    bs, request, ws, EntityType.workspace));
 		tbiList.add(constructWhatsNewItems(isFilr, WebKeys.WHATS_NEW_TOOLBAR, bs, request, ws, EntityType.workspace));
-	}
-	
-	/*
-	 * Returns true of the user has the right to purge the entity and
-	 * false otherwise.
-	 */
-	private static boolean canPurgeEntity(AllModulesInjected bs, DefinableEntity de) {
-		boolean reply;
-		if (de instanceof FolderEntry) {
-			reply = bs.getFolderModule().testAccess(((FolderEntry) de), FolderOperation.deleteEntry );
-		}
-		else if (de instanceof Binder) {
-			Binder binder = ((Binder) de);
-			reply = bs.getBinderModule().testAccess(binder, BinderOperation.deleteBinder);
-			if (reply) {
-				reply = (!(BinderHelper.isBinderDeleteProtected(binder)));
-			}
-		}
-		else {
-			reply = false;
-		}
-		return reply;
-	}
-	
-	/*
-	 * Returns true of the user has the right to move the entity to the
-	 * trash and false otherwise.
-	 */
-	private static boolean canTrashEntity(AllModulesInjected bs, DefinableEntity de) {
-		boolean reply;
-		if (de instanceof FolderEntry) {
-			reply = bs.getFolderModule().testAccess(((FolderEntry) de), FolderOperation.preDeleteEntry );
-		}
-		else if (de instanceof Binder) {
-			reply = bs.getBinderModule().testAccess(((Binder) de), BinderOperation.preDeleteBinder);
-		}
-		else {
-			reply = false;
-		}
-		
-		if (!reply) {
-			reply = canPurgeEntity(bs, de);
-		}
-		
-		return reply;
 	}
 	
 	/*
@@ -448,7 +393,7 @@ public class GwtMenuHelper {
 	}
 	
 	/*
-	 * Constructs a ToolbarItem for e-mail subscription handling.
+	 * Constructs a ToolbarItem for email subscription handling.
 	 */
 	private static ToolbarItem constructEmailSubscriptionItems(boolean isFilr, String tbKey, AllModulesInjected bs, HttpServletRequest request, Folder folder) {
 		// Allocate the base ToolbarItem to return.
@@ -456,7 +401,7 @@ public class GwtMenuHelper {
 
 		// Is the current user the guest user?
 		if (!(GwtServerHelper.getCurrentUser().isShared())) {
-			// No!  Add a ToolbarItem for e-mail notification.
+			// No!  Add a ToolbarItem for email notification.
 			ToolbarItem emailTBI = new ToolbarItem(EMAIL);
 			markTBITitle(emailTBI, "toolbar.menu.subscribeToFolder"       );
 			markTBIHint( emailTBI, "toolbar.menu.title.emailSubscriptions");
@@ -742,9 +687,10 @@ public class GwtMenuHelper {
 	private static void constructEntryDeleteItem(ToolbarItem entryToolbar, AllModulesInjected bs, HttpServletRequest request, String viewType, Folder folder) {
 		// For the view types that support it...
 		if (MiscUtil.hasString(viewType)) {
-			if (folderSupportsDeleteAndPurge(folder, viewType)) {
+			BinderModule bm = bs.getBinderModule();
+			if (folderSupportsDeleteAndPurge(folder, viewType) && (!(folder.isMirrored()))) {
 				// ...and for which the user has rights to do it...
-				if (canTrashEntity(bs, folder)) {
+				if (bm.testAccess(folder, BinderOperation.deleteEntries)) {
 					// ...add a Delete item.
 					constructEntryDeleteItem(entryToolbar);
 				}
@@ -757,7 +703,7 @@ public class GwtMenuHelper {
 	 */
 	private static void constructEntryDeleteItem(ToolbarItem entryToolbar, AllModulesInjected bs, HttpServletRequest request, Workspace ws, boolean isMyFilesCollection) {
 		// If the user has rights to do it...
-		if ((null == ws) || isMyFilesCollection || canTrashEntity(bs, ws)) {
+		if ((null == ws) || isMyFilesCollection || bs.getBinderModule().testAccess(ws, BinderOperation.preDeleteBinder)) {
 			// ...add a Delete item.
 			constructEntryDeleteItem(entryToolbar);
 		}
@@ -770,7 +716,7 @@ public class GwtMenuHelper {
 		// Add a Delete item.
 		ToolbarItem deleteTBI = new ToolbarItem("1_deleteSelected");
 		markTBITitle(deleteTBI, "toolbar.delete");
-		markTBIEvent(deleteTBI, TeamingEvents.DELETE_SELECTED_ENTITIES);
+		markTBIEvent(deleteTBI, TeamingEvents.DELETE_SELECTED_ENTRIES);
 		entryToolbar.addNestedItem(deleteTBI);
 	}
 	
@@ -822,135 +768,49 @@ public class GwtMenuHelper {
 		markTBITitle(manageUserTBI, "toolbar.details.userProperties");
 		markTBIEvent(manageUserTBI, TeamingEvents.INVOKE_USER_PROPERTIES_DLG);
 		entryToolbar.addNestedItem(manageUserTBI);
-
-		// If we're dealing with a non-person user (e.g., E-Mail
-		// Posting Agent, ...)...
-		User user = ((User) bs.getProfileModule().getEntry(userId));
-		if (!(user.isPerson())) {
-			// ...there are no other options.  Bail.
-			return;
-		}
-		IdentityInfo userII     = user.getIdentityInfo();
-		boolean      isAdmin    = user.isSuper();
-		boolean      isInternal =                userII.isInternal();
-		boolean      isLdap     = (isInternal && userII.isFromLdap());
-		boolean      isGuest    = user.isShared();
 		
-		UserPropertiesRpcResponseData	upData;
-		try {
-			// Yes!  Can we determine the user's current adHoc folder
-			// access?
-			upData = GwtViewHelper.getUserProperties(bs, request, userId);
-		}
-		catch (Exception ex) {
-			// If we can't access the user properties information,
-			// we simply don't add options that require it.
-			return;
-		}
-		AccountInfo ai = upData.getAccountInfo();
-		
-		// Are we dealing with an LDAP user in filr mode?
-		if (Utils.checkIfFilr() && isLdap) {
-			// Yes!  Add a separator after the user properties item...
-			entryToolbar.addNestedItem(ToolbarItem.constructSeparatorTBI());
-
-			// ...and if they have adHoc folders...
-			if (ai.hasAdHocFolders()) {
-				// ...add the disable users adHoc folders item...
-				manageUserTBI = new ToolbarItem("1_disableSelectedAdHoc");
-				markTBITitle(manageUserTBI, "toolbar.disable.user.adHoc.perUser");
-				markTBIEvent(manageUserTBI, TeamingEvents.DISABLE_SELECTED_USERS_ADHOC_FOLDERS);
-				entryToolbar.addNestedItem(manageUserTBI);
-			}
-			
-			else {
-				// ...otherwise, if they don't have adHoc folders, add
-				// ...the enable users adHoc folders item...
-				manageUserTBI = new ToolbarItem("1_enableSelectedAdHoc");
-				markTBITitle(manageUserTBI, "toolbar.enable.user.adHoc.perUser");
-				markTBIEvent(manageUserTBI, TeamingEvents.ENABLE_SELECTED_USERS_ADHOC_FOLDERS);
-				entryToolbar.addNestedItem(manageUserTBI);
-			}
-
-			// ...if they currently have a per user adHoc folder
-			// ...setting...
-			if (ai.isPerUserAdHoc()) {
-				// ...and add the clear users adHoc folders item.
-				manageUserTBI = new ToolbarItem("1_clearSelectedAdHoc");
-				markTBITitle(manageUserTBI, "toolbar.clear.user.adHoc");
-				markTBIEvent(manageUserTBI, TeamingEvents.CLEAR_SELECTED_USERS_ADHOC_FOLDERS);
-				entryToolbar.addNestedItem(manageUserTBI);
-			}
-		}
-
-		// Is this other than the built-in admin user?
-		if (!isAdmin) {
-			// Yes!  Is this Filr?
-			if (Utils.checkIfFilr()) {
-				// Yes!  Add a separator after the previous item...
+		// Are we re in filr mode?
+		if (Utils.checkIfFilr()) {
+			try {
+				// Yes!  Can we determine the user's current adHoc folder
+				// access?
+				UserPropertiesRpcResponseData	upData = GwtViewHelper.getUserProperties(bs, request, userId);
+				AccountInfo						ai     = upData.getAccountInfo();
+				
+				// Yes! Add a separator after the user properties item...
 				entryToolbar.addNestedItem(ToolbarItem.constructSeparatorTBI());
-		
-				// ...and if they have download access...
-				if (ai.canDownload()) {
-					// ...add the disable download item...
-					manageUserTBI = new ToolbarItem("1_disableSelectedDownload");
-					markTBITitle(manageUserTBI, "toolbar.disable.user.download.perUser");
-					markTBIEvent(manageUserTBI, TeamingEvents.DISABLE_SELECTED_USERS_DOWNLOAD);
+
+				// ...and if they have adHoc folders...
+				if (ai.hasAdHocFolders()) {
+					// ...add the disable users adHoc folders item...
+					manageUserTBI = new ToolbarItem("1_disableSelectedAdHoc");
+					markTBITitle(manageUserTBI, "toolbar.disable.user.adHoc.perUser");
+					markTBIEvent(manageUserTBI, TeamingEvents.DISABLE_SELECTED_USERS_ADHOC_FOLDERS);
 					entryToolbar.addNestedItem(manageUserTBI);
 				}
 				
 				else {
-					// ...otherwise, if they can't download, add
-					// ...the enable download item...
-					manageUserTBI = new ToolbarItem("1_enableSelectedDownload");
-					markTBITitle(manageUserTBI, "toolbar.enable.user.download.perUser");
-					markTBIEvent(manageUserTBI, TeamingEvents.ENABLE_SELECTED_USERS_DOWNLOAD);
+					// ...otherwise, if they don't have adHoc folders,
+					// ...add the enable users adHoc folders item...
+					manageUserTBI = new ToolbarItem("1_enableSelectedAdHoc");
+					markTBITitle(manageUserTBI, "toolbar.enable.user.adHoc.perUser");
+					markTBIEvent(manageUserTBI, TeamingEvents.ENABLE_SELECTED_USERS_ADHOC_FOLDERS);
 					entryToolbar.addNestedItem(manageUserTBI);
 				}
-		
-				// ...if they currently have a per user download
-				// ...setting...
-				if (ai.isPerUserDownload()) {
-					// ...and add the clear users download item.
-					manageUserTBI = new ToolbarItem("1_clearSelectedDownload");
-					markTBITitle(manageUserTBI, "toolbar.clear.user.download");
-					markTBIEvent(manageUserTBI, TeamingEvents.CLEAR_SELECTED_USERS_DOWNLOAD);
+
+				// ...if they currently have a per user adHoc folder setting...
+				if (ai.isPerUserAdHoc()) {
+					// ...and add the clear users adHoc folders item.
+					manageUserTBI = new ToolbarItem("1_clearSelectedAdHoc");
+					markTBITitle(manageUserTBI, "toolbar.clear.user.adHoc");
+					markTBIEvent(manageUserTBI, TeamingEvents.CLEAR_SELECTED_USERS_ADHOC_FOLDERS);
 					entryToolbar.addNestedItem(manageUserTBI);
 				}
 			}
-
-			// Is this other than the guest user?
-			if (!isGuest) {
-				// Yes!  Add a separator after the previous item...
-				entryToolbar.addNestedItem(ToolbarItem.constructSeparatorTBI());
-		
-				// ...and if they have web access...
-				if (ai.hasWebAccess()) {
-					// ...add the disable web access item...
-					manageUserTBI = new ToolbarItem("1_disableSelectedWebAccess");
-					markTBITitle(manageUserTBI, "toolbar.disable.user.webAccess.perUser");
-					markTBIEvent(manageUserTBI, TeamingEvents.DISABLE_SELECTED_USERS_WEBACCESS);
-					entryToolbar.addNestedItem(manageUserTBI);
-				}
-				
-				else {
-					// ...otherwise, if they can't use web access, add
-					// ...the enable web access item...
-					manageUserTBI = new ToolbarItem("1_enableSelectedWebAccess");
-					markTBITitle(manageUserTBI, "toolbar.enable.user.webAccess.perUser");
-					markTBIEvent(manageUserTBI, TeamingEvents.ENABLE_SELECTED_USERS_WEBACCESS);
-					entryToolbar.addNestedItem(manageUserTBI);
-				}
-		
-				// ...if they currently have a per user web access
-				// ...setting...
-				if (ai.isPerUserWebAccess()) {
-					// ...and add the clear users web access item.
-					manageUserTBI = new ToolbarItem("1_clearSelectedWebAccess");
-					markTBITitle(manageUserTBI, "toolbar.clear.user.webAccess");
-					markTBIEvent(manageUserTBI, TeamingEvents.CLEAR_SELECTED_USERS_WEBACCESS);
-					entryToolbar.addNestedItem(manageUserTBI);
-				}
+			catch (Exception ex) {
+				// If we can't access the user properties information,
+				// we simply don't add options to adjust their adHoc
+				// folder access.
 			}
 		}
 	}
@@ -969,7 +829,7 @@ public class GwtMenuHelper {
 			// Yes!  Add the 'Manage Shares...' menu item.
 			ToolbarItem tbi = new ToolbarItem("1_manageSharesSelected");
 			markTBITitle(tbi, "toolbar.menu.manageSharesSelected");
-			markTBIEvent(tbi, TeamingEvents.MANAGE_SHARES_SELECTED_ENTITIES);
+			markTBIEvent(tbi, TeamingEvents.MANAGE_SHARES_SELECTED_ENTRIES);
 			entryToolbar.addNestedItem(tbi);
 		}
 	}
@@ -980,8 +840,7 @@ public class GwtMenuHelper {
 	 */
 	private static void constructEntryMoreItems(ToolbarItem entryToolbar, AllModulesInjected bs, HttpServletRequest request, Long folderId, String viewType, Folder folder, Workspace ws, CollectionType ct) {
 		boolean isFilr              = Utils.checkIfFilr();
-		User    user                = GwtServerHelper.getCurrentUser();
-		boolean isGuest             = user.isShared();
+		boolean isGuest             = GwtServerHelper.getCurrentUser().isShared();
 		boolean isFolder            = (null != folder);
 		boolean isMyFilesCollection = CollectionType.MY_FILES.equals(ct);
 		boolean isSharedCollection  = ct.isSharedCollection();
@@ -994,7 +853,7 @@ public class GwtMenuHelper {
 		// ...add the copy item...
 		ToolbarItem tbi = new ToolbarItem("1_copySelected");
 		markTBITitle(tbi, "toolbar.copy");
-		markTBIEvent(tbi, TeamingEvents.COPY_SELECTED_ENTITIES);
+		markTBIEvent(tbi, TeamingEvents.COPY_SELECTED_ENTRIES);
 		moreTBI.addNestedItem(tbi);
 
 		// ...for non-shared collections...
@@ -1002,21 +861,31 @@ public class GwtMenuHelper {
 			// ...add the move item....
 			tbi = new ToolbarItem("1_moveSelected");
 			markTBITitle(tbi, "toolbar.move");
-			markTBIEvent(tbi, TeamingEvents.MOVE_SELECTED_ENTITIES);
+			markTBIEvent(tbi, TeamingEvents.MOVE_SELECTED_ENTRIES);
 			moreTBI.addNestedItem(tbi);
 		}
 		
-		// ...for My Files, Shared by/with Me lists and file folders...
-		boolean canDownload = AdminHelper.getEffectiveDownloadSetting(bs, user);
-		if (canDownload && isEntryContainer && (isMyFilesCollection || isSharedCollection || GwtServerHelper.isFamilyFile(GwtServerHelper.getFolderEntityFamily(bs, folder)))) {
-			// ...allow the user to zip and download the selected
-			// ...files...
-			tbi = new ToolbarItem("1_zipAndDownloadSelected");
-			markTBITitle(tbi, "toolbar.zipAndDownload");
-			markTBIEvent(tbi, TeamingEvents.ZIP_AND_DOWNLOAD_SELECTED_FILES);
-			moreTBI.addNestedItem(tbi);
+		BinderModule bm = bs.getBinderModule();
+		if (isFolder) {
+			// ...for the view types that support it...
+			if (MiscUtil.hasString(viewType)) {
+				if (folderSupportsDeleteAndPurge(folder, viewType)) {
+					// ...and for which the user has rights to do it...
+					if (bm.testAccess(folder, BinderOperation.deleteEntries)) {
+						// ...add the Purge item...
+						constructEntryMorePurgeItem(moreTBI);
+					}
+				}
+			}
 		}
-		
+		else {
+			// ...and for which the user has rights to do it...
+			if ((null == ws) || isEntryContainer || bm.testAccess(ws, BinderOperation.deleteBinder)) {
+				// ...add the Purge item...
+				constructEntryMorePurgeItem(moreTBI);
+			}
+		}
+
 		// ...for views that can contain entries...
 		if (isEntryContainer) {
 			// ...if we're not in Filr mode...
@@ -1024,13 +893,13 @@ public class GwtMenuHelper {
 				// ...add the lock item....
 				tbi = new ToolbarItem("1_lockSelected");
 				markTBITitle(tbi, "toolbar.lock");
-				markTBIEvent(tbi, TeamingEvents.LOCK_SELECTED_ENTITIES);
+				markTBIEvent(tbi, TeamingEvents.LOCK_SELECTED_ENTRIES);
 				moreTBI.addNestedItem(tbi);
 				
 				// ...add the unlock item....
 				tbi = new ToolbarItem("1_unlockSelected");
 				markTBITitle(tbi, "toolbar.unlock");
-				markTBIEvent(tbi, TeamingEvents.UNLOCK_SELECTED_ENTITIES);
+				markTBIEvent(tbi, TeamingEvents.UNLOCK_SELECTED_ENTRIES);
 				moreTBI.addNestedItem(tbi);
 			}
 			
@@ -1039,13 +908,13 @@ public class GwtMenuHelper {
 				// ...add the mark read....
 				tbi = new ToolbarItem("1_markReadSelected");
 				markTBITitle(tbi, "toolbar.markRead");
-				markTBIEvent(tbi, TeamingEvents.MARK_READ_SELECTED_ENTITIES);
+				markTBIEvent(tbi, TeamingEvents.MARK_READ_SELECTED_ENTRIES);
 				moreTBI.addNestedItem(tbi);
 				
 				// ...and the mark unread items....
 				tbi = new ToolbarItem("1_markUnreadSelected");
 				markTBITitle(tbi, "toolbar.markUnread");
-				markTBIEvent(tbi, TeamingEvents.MARK_UNREAD_SELECTED_ENTITIES);
+				markTBIEvent(tbi, TeamingEvents.MARK_UNREAD_SELECTED_ENTRIES);
 				moreTBI.addNestedItem(tbi);
 			}
 		}
@@ -1073,7 +942,7 @@ public class GwtMenuHelper {
 			// ...add the change entry type item when not Filr....
 			tbi = new ToolbarItem("1_changeEntryTypeSelected");
 			markTBITitle(tbi, "toolbar.changeEntryType");
-			markTBIEvent(tbi, TeamingEvents.CHANGE_ENTRY_TYPE_SELECTED_ENTITIES);
+			markTBIEvent(tbi, TeamingEvents.CHANGE_ENTRY_TYPE_SELECTED_ENTRIES);
 			moreTBI.addNestedItem(tbi);
 		}
 
@@ -1091,6 +960,16 @@ public class GwtMenuHelper {
 		}
 	}
 
+	/*
+	 * Creates a 'purge' item in the 'more' toolbar.
+	 */
+	private static void constructEntryMorePurgeItem(ToolbarItem moreTBI) {
+		ToolbarItem tbi = new ToolbarItem("1_purgeSelected");
+		markTBITitle(tbi, "toolbar.purge");
+		markTBIEvent(tbi, TeamingEvents.PURGE_SELECTED_ENTRIES);
+		moreTBI.addNestedItem(tbi);
+	}
+	
 	/*
 	 * Constructs a ToolbarItem for viewing pinned vs. non-pinned
 	 * entries.
@@ -1149,24 +1028,15 @@ public class GwtMenuHelper {
 			entryToolbar.addNestedItem(importProfilesTBI);
 		}
 		
-		// If the user can delete binders from the workspace...
-		boolean canManageProfiles = pm.testAccess(((ProfileBinder) ws), ProfileOperation.manageEntries);
-		boolean	canTrash          = canManageProfiles;	// Should we be checking something else?
-		if (canTrash) {
-			// ...and add the delete users item.
-			ToolbarItem deleteTBI = new ToolbarItem("1_deletedSelectedWS");
-			markTBITitle(deleteTBI, "toolbar.delete.users");
-			markTBIEvent(deleteTBI, TeamingEvents.DELETE_SELECTED_USERS);
-			entryToolbar.addNestedItem(deleteTBI);
-		}
-			
-		// Create a 'more' item for the disable/enable items.
+		// Create a 'more' item for the disable/enable and purge/delete
+		// items.
 		ToolbarItem tbi;
 		ToolbarItem moreTBI = new ToolbarItem("1_more");
 		markTBITitle(moreTBI, "toolbar.more");
 		
 		// If the user can manage entries in the workspace...
 		boolean needSeparator     = false;
+		boolean canManageProfiles = pm.testAccess(((ProfileBinder) ws), ProfileOperation.manageEntries);
 		if (canManageProfiles) {
 			// ...add the disable users item...
 			tbi = new ToolbarItem("1_disableSelected");
@@ -1201,53 +1071,48 @@ public class GwtMenuHelper {
 				markTBIEvent(tbi, TeamingEvents.CLEAR_SELECTED_USERS_ADHOC_FOLDERS);
 				moreTBI.addNestedItem(tbi);
 			}
-
-			// ...if this is Filr...
-			if (Utils.checkIfFilr()) {
-				// ...add the disable users download files item...
-				moreTBI.addNestedItem(ToolbarItem.constructSeparatorTBI());
-				tbi = new ToolbarItem("1_disableSelectedDownload");
-				markTBITitle(tbi, "toolbar.disable.user.download");
-				markTBIEvent(tbi, TeamingEvents.DISABLE_SELECTED_USERS_DOWNLOAD);
-				moreTBI.addNestedItem(tbi);
-				
-				// ...add the enable users download files item...
-				tbi = new ToolbarItem("1_enableSelectedDownload");
-				markTBITitle(tbi, "toolbar.enable.user.download");
-				markTBIEvent(tbi, TeamingEvents.ENABLE_SELECTED_USERS_DOWNLOAD);
-				moreTBI.addNestedItem(tbi);
-				
-				// ...and add the clear users download files item.
-				tbi = new ToolbarItem("1_clearSelectedDownload");
-				markTBITitle(tbi, "toolbar.clear.user.download");
-				markTBIEvent(tbi, TeamingEvents.CLEAR_SELECTED_USERS_DOWNLOAD);
-				moreTBI.addNestedItem(tbi);
-			}
-			
-			// ...add the disable users web access item...
-			moreTBI.addNestedItem(ToolbarItem.constructSeparatorTBI());
-			tbi = new ToolbarItem("1_disableSelectedWebAccess");
-			markTBITitle(tbi, "toolbar.disable.user.webAccess");
-			markTBIEvent(tbi, TeamingEvents.DISABLE_SELECTED_USERS_WEBACCESS);
-			moreTBI.addNestedItem(tbi);
-			
-			// ...add the enable users web access item...
-			tbi = new ToolbarItem("1_enableSelectedWebAccess");
-			markTBITitle(tbi, "toolbar.enable.user.webAccess");
-			markTBIEvent(tbi, TeamingEvents.ENABLE_SELECTED_USERS_WEBACCESS);
-			moreTBI.addNestedItem(tbi);
-			
-			// ...and add the clear users web access item.
-			tbi = new ToolbarItem("1_clearSelectedWebAccess");
-			markTBITitle(tbi, "toolbar.clear.user.webAccess");
-			markTBIEvent(tbi, TeamingEvents.CLEAR_SELECTED_USERS_WEBACCESS);
-			moreTBI.addNestedItem(tbi);
 			
 			needSeparator = true;
 		}
 		
+		// If the user can delete binders from the workspace...
+		BinderModule	bm       = bs.getBinderModule();
+		boolean			canTrash = bm.testAccess(ws, BinderOperation.preDeleteBinder);
+		boolean			needSep2 = false;
+		if (canTrash) {
+			// ...if needed add a separator item...
+			needSeparator = addNestedSeparatorIfNeeded(moreTBI, needSeparator);
+			
+			// ...and add the delete workspaces item.
+			tbi = new ToolbarItem("1_deletedSelectedWS");
+			markTBITitle(tbi, "toolbar.delete.workspaces");
+			markTBIEvent(tbi, TeamingEvents.DELETE_SELECTED_USER_WORKSPACES);
+			moreTBI.addNestedItem(tbi);
+			
+			needSep2 = true;
+		}
+			
+		// If the user can purge binders from the workspace...
+		if (bm.testAccess(ws, BinderOperation.deleteBinder)) {
+			// ...if needed add a separator item...
+			needSeparator = addNestedSeparatorIfNeeded(moreTBI, needSeparator);
+			
+			// ...add the purge workspaces item...
+			tbi = new ToolbarItem("1_purgeSelectedWS");
+			markTBITitle(tbi, "toolbar.purge.workspaces");
+			markTBIEvent(tbi, TeamingEvents.PURGE_SELECTED_USER_WORKSPACES);
+			moreTBI.addNestedItem(tbi);
+			
+			// ...add the purge users item...
+			tbi = new ToolbarItem("1_purgeSelectedUsers");
+			markTBITitle(tbi, "toolbar.purge.users");
+			markTBIEvent(tbi, TeamingEvents.PURGE_SELECTED_USERS);
+			moreTBI.addNestedItem(tbi);
+			
+			needSep2 = true;
+		}
+
 		// ...if the user can manage profiles...
-		boolean needSep2 = false;
 		if (canManageProfiles) {
 			// ...if needed add a separator item...
 			addNestedSeparatorIfNeeded(moreTBI, (needSep2 || needSeparator));
@@ -1285,9 +1150,8 @@ public class GwtMenuHelper {
 	 * Constructs a ToolbarItem to rename a folder.
 	 */
 	private static void constructEntryRenameFolder(ToolbarItem entryToolbar, AllModulesInjected bs, HttpServletRequest request, Folder folder) {
-		// Does the user have rights to rename this folder?  Note that
-		// even with rights, they can't rename a 'Home' folder.
-		if (bs.getBinderModule().testAccess(folder, BinderOperation.modifyBinder) && (!(BinderHelper.isBinderHomeFolder(folder)))) {
+		// Does the user have rights to rename this folder?
+		if (bs.getBinderModule().testAccess(folder, BinderOperation.modifyBinder)) {
 			// Yes!  Add a Rename ToolbarItem.
 			ToolbarItem renameTBI = new ToolbarItem(RENAME);
 			markTBITitle(renameTBI, "toolbar.menu.rename_folder"      );
@@ -1321,21 +1185,12 @@ public class GwtMenuHelper {
 	/*
 	 * Constructs a ToolbarItem for sharing the selected entries.
 	 */
-	@SuppressWarnings("unused")
 	private static void constructEntryShareItem(ToolbarItem entryToolbar, AllModulesInjected bs, HttpServletRequest request, String viewType, Folder folder) {
 		// For the view types that support it...
 		if (MiscUtil.hasString(viewType)) {
 			if (folderSupportsShare(bs, folder, viewType)) {
 				// ...construct the share item.
-				constructEntryShareItem(
-					entryToolbar,
-					bs,
-					request,
-					folder.getEntityType(),
-					GwtServerHelper.isFamilyFile(
-						GwtServerHelper.getFolderEntityFamily(
-							bs,
-							folder)));
+				constructEntryShareItem(entryToolbar, bs, request);
 			}
 		}
 	}
@@ -1343,97 +1198,15 @@ public class GwtMenuHelper {
 	/*
 	 * Constructs a ToolbarItem for sharing the selected entries.
 	 */
-	private static void constructEntryShareItem(ToolbarItem entryToolbar, AllModulesInjected bs, HttpServletRequest request, EntityType et, boolean isFileEntity) {
+	private static void constructEntryShareItem(ToolbarItem entryToolbar, AllModulesInjected bs, HttpServletRequest request) {
 		// For non-guest users...
 		boolean isGuest = GwtServerHelper.getCurrentUser().isShared();
 		if (!isGuest) {
-			// ...add the share items.
-			boolean isFilr   = Utils.checkIfFilr();
-			boolean isFolder = et.equals(EntityType.folder);
-			String keyTail;
-			if      (isFolder) keyTail = "folder";
-			else if (isFilr)   keyTail = "file";
-			else               keyTail = "entry";
-			
+			// ...add the share item.
 			ToolbarItem shareTBI = new ToolbarItem("1_shareSelected");
-			markTBITitle(shareTBI, "toolbar.shareSelected." + keyTail);
-			markTBIEvent(shareTBI, TeamingEvents.SHARE_SELECTED_ENTITIES);
+			markTBITitle(shareTBI, "toolbar.shareSelected");
+			markTBIEvent(shareTBI, TeamingEvents.SHARE_SELECTED_ENTRIES);
 			entryToolbar.addNestedItem(shareTBI);
-			
-			if ((!isFolder) && isFileEntity) {
-				if (isFilr)
-				     keyTail = "filr";
-				else keyTail = "vibe";
-				
-				shareTBI = new ToolbarItem("1_emailPublicLinkSelected");
-				markTBITitle(shareTBI, "toolbar.emailPublicLinkSelected." + keyTail);
-				markTBIEvent(shareTBI, TeamingEvents.EMAIL_PUBLIC_LINK_SELECTED_ENTITIES);
-				entryToolbar.addNestedItem(shareTBI);
-				
-				shareTBI = new ToolbarItem("1_copyPublicLinkSelected");
-				markTBITitle(shareTBI, "toolbar.copyPublicLinkSelected." + keyTail);
-				markTBIEvent(shareTBI, TeamingEvents.COPY_PUBLIC_LINK_SELECTED_ENTITIES);
-				entryToolbar.addNestedItem(shareTBI);
-				
-				boolean sMT = MailToPublicLinkEntityEvent.SUPPORT_MAILTO_SHARES;
-				if (sMT && (!(shareListsDefined(bs)))) {
-					shareTBI = new ToolbarItem("1_mailtoPublicLink");
-					markTBITitle(shareTBI, "toolbar.mailtoPublicLink." + keyTail);
-					markTBIEvent(shareTBI, TeamingEvents.MAILTO_PUBLIC_LINK_ENTITY);
-					entryToolbar.addNestedItem(shareTBI);
-				}
-			}
-		}
-	}
-	
-	/*
-	 * Constructs the ToolbarItems for the share menu on a entry menu
-	 * bar.
-	 */
-	private static void constructEntryShareItems(ToolbarItem entryToolbar, AllModulesInjected bs, HttpServletRequest request, boolean isFileEntity) {
-		// Are we logged in as Guest?
-		boolean isGuest = GwtServerHelper.getCurrentUser().isShared();
-		if (!isGuest) {
-			// No!  Are we constructing share items for a file entity?
-			if (isFileEntity) {
-				// Yes!  Create the share toolbar...
-				ToolbarItem shareItemsTBI = new ToolbarItem("1_share");
-				markTBITitle(shareItemsTBI, "toolbar.share");
-	
-				// ...add the share item...
-				ToolbarItem shareTBI = new ToolbarItem(SHARE);
-				markTBITitle(shareTBI, "toolbar.shareSelected");
-				markTBIEvent(shareTBI, TeamingEvents.SHARE_SELECTED_ENTITIES);
-				shareItemsTBI.addNestedItem(shareTBI);
-				
-				// ...add the e-mail public link item...
-				String keyTail;
-				if (Utils.checkIfFilr())
-				     keyTail = "filr";
-				else keyTail = "vibe";
-				shareTBI = new ToolbarItem(EMAIL_PUBLIC_LINK);
-				markTBITitle(shareTBI, "toolbar.emailPublicLinkSelected." + keyTail);
-				markTBIEvent(shareTBI, TeamingEvents.EMAIL_PUBLIC_LINK_SELECTED_ENTITIES);
-				shareItemsTBI.addNestedItem(shareTBI);
-				
-				// ...add the copy public link item...
-				shareTBI = new ToolbarItem(COPY_PUBLIC_LINK);
-				markTBITitle(shareTBI, "toolbar.copyPublicLinkSelected." + keyTail);
-				markTBIEvent(shareTBI, TeamingEvents.COPY_PUBLIC_LINK_SELECTED_ENTITIES);
-				shareItemsTBI.addNestedItem(shareTBI);
-				
-				// ...and the share toolbar to the entry toolbar.
-				entryToolbar.addNestedItem(shareItemsTBI);
-			}
-			
-			else {
-				// No, we aren't constructing share items for a file
-				// entity!  Add a simple share item.
-				ToolbarItem shareTBI = new ToolbarItem(SHARE);
-				markTBITitle(shareTBI, "toolbar.shareSelected");
-				markTBIEvent(shareTBI, TeamingEvents.SHARE_SELECTED_ENTITIES);
-				entryToolbar.addNestedItem(shareTBI);
-			}
 		}
 	}
 	
@@ -1562,12 +1335,12 @@ public class GwtMenuHelper {
 	private static void constructEntryTrashItems(ToolbarItem entryToolbar, AllModulesInjected bs, HttpServletRequest request, Binder binder) {
 		ToolbarItem trashTBI = new ToolbarItem("1_trashRestore");
 		markTBITitle(trashTBI, "toolbar.menu.trash.restore");
-		markTBIEvent(trashTBI, TeamingEvents.TRASH_RESTORE_SELECTED_ENTITIES);
+		markTBIEvent(trashTBI, TeamingEvents.TRASH_RESTORE_SELECTED_ENTRIES);
 		entryToolbar.addNestedItem(trashTBI);
 		
 		trashTBI = new ToolbarItem("2_trashPurge");
 		markTBITitle(trashTBI, "toolbar.menu.trash.purge");
-		markTBIEvent(trashTBI, TeamingEvents.TRASH_PURGE_SELECTED_ENTITIES);
+		markTBIEvent(trashTBI, TeamingEvents.TRASH_PURGE_SELECTED_ENTRIES);
 		entryToolbar.addNestedItem(trashTBI);
 		
 		trashTBI = new ToolbarItem("3_trashRestoreAll");
@@ -1593,7 +1366,7 @@ public class GwtMenuHelper {
 			}
 			ToolbarItem tbi = new ToolbarItem("1_subscribeSelected");
 			markTBITitle(tbi, "toolbar.menu.subscribeToEntrySelected");
-			markTBIEvent(tbi, TeamingEvents.SUBSCRIBE_SELECTED_ENTITIES);
+			markTBIEvent(tbi, TeamingEvents.SUBSCRIBE_SELECTED_ENTRIES);
 			entryToolbar.addNestedItem(tbi);
 		}
 	}
@@ -1633,7 +1406,7 @@ public class GwtMenuHelper {
 
 		// Create the view toolbar item...
 		ToolbarItem viewTBI = new ToolbarItem("1_view");
-		markTBITitle(viewTBI, "calendar.navi.chooseMode.gwt");
+		markTBITitle(viewTBI, "calendar.navi.chooseMode");
 		markTBIContentsSelectable(viewTBI);
 
 		// ...if the calendar folder is directly contained by a user...
@@ -1725,44 +1498,11 @@ public class GwtMenuHelper {
 	 * on the selected entity.
 	 */
 	private static void constructEntryViewWhoHasAccess(ToolbarItem entryToolbar, AllModulesInjected bs, HttpServletRequest request) {
-		// Is other than guest or an external user logged in?
-		User user = GwtServerHelper.getCurrentUser();
-		if ((!(user.isShared())) && user.getIdentityInfo().isInternal()) {
-			// Yes!  Add the who has access item.
-			ToolbarItem whoHasAccessTBI = new ToolbarItem("1_whoHasAccess");
-			markTBITitle(whoHasAccessTBI, "toolbar.menu.who_has_access");
-			markTBIEvent(whoHasAccessTBI, TeamingEvents.VIEW_WHO_HAS_ACCESS);
-			entryToolbar.addNestedItem(whoHasAccessTBI);
-		}
-	}
-	
-	/*
-	 * Constructs a ToolbarItem for zipping and downloading a file.
-	 */
-	private static void constructEntryZipAndDownload(ToolbarItem entryToolbar, AllModulesInjected bs, HttpServletRequest request, FolderEntry fe) {
-		boolean canDownload = AdminHelper.getEffectiveDownloadSetting(bs, GwtServerHelper.getCurrentUser());
-		if (canDownload && (null != GwtServerHelper.getFileEntrysFileAttachment(bs, fe, true))) {
-			ToolbarItem zipAndDownloadTBI = new ToolbarItem("1_zipAndDownload"              );
-			markTBITitle(   zipAndDownloadTBI, "toolbar.zipAndDownload"                     );
-			markTBIEvent(   zipAndDownloadTBI, TeamingEvents.ZIP_AND_DOWNLOAD_SELECTED_FILES);
-			markTBIEntryIds(zipAndDownloadTBI, fe                                           );
-			entryToolbar.addNestedItem(zipAndDownloadTBI);
-		}
-	}
-	
-	/*
-	 * Constructs a ToolbarItem for zipping and downloading a folder.
-	 */
-	private static void constructEntryZipAndDownload(ToolbarItem entryToolbar, AllModulesInjected bs, HttpServletRequest request, Folder folder) {
-		boolean canDownload = AdminHelper.getEffectiveDownloadSetting(bs, GwtServerHelper.getCurrentUser());
-		if (canDownload && bs.getBinderModule().testAccess(folder, BinderOperation.readEntries) && GwtServerHelper.isFamilyFile(GwtServerHelper.getFolderEntityFamily(bs, folder))) {
-			ToolbarItem zipAndDownloadTBI = new ToolbarItem("1_zipAndDownload");
-			markTBITitle(         zipAndDownloadTBI, "toolbar.menu.zipAndDownloadFolder"  );
-			markTBIEvent(         zipAndDownloadTBI, TeamingEvents.ZIP_AND_DOWNLOAD_FOLDER);
-			markTBIRecursive(     zipAndDownloadTBI, true                                 );
-			markTBISelectedBinder(zipAndDownloadTBI, folder                               );
-			entryToolbar.addNestedItem(zipAndDownloadTBI);
-		}
+		// Add a who has access item.
+		ToolbarItem whoHasAccessTBI = new ToolbarItem("1_whoHasAccess");
+		markTBITitle(whoHasAccessTBI, "toolbar.menu.who_has_access");
+		markTBIEvent(whoHasAccessTBI, TeamingEvents.VIEW_WHO_HAS_ACCESS);
+		entryToolbar.addNestedItem(whoHasAccessTBI);
 	}
 	
 	/*
@@ -1822,9 +1562,8 @@ public class GwtMenuHelper {
 			}
 
 			// Does the user have rights to add a new workspace to this
-			// binder?  (Note we don't support adding workspaces
-			// anywhere in Filr.)
-			if ((!isFilr) && isWorkspace && bm.testAccess(binder, BinderOperation.addWorkspace)) {
+			// binder?
+			if (isWorkspace && bm.testAccess(binder, BinderOperation.addWorkspace)) {
 				// Yes!  Add a ToolbarItem for it.
 				addMenuCreated   =
 				adminMenuCreated = true;
@@ -1845,7 +1584,6 @@ public class GwtMenuHelper {
 		
 		// Is the binder a folder or workspace other than a reserved
 		// workspace?
-		User user = GwtServerHelper.getCurrentUser();
 		if ((isFolder || isWorkspace) && (!isWorkspaceReserved)) {			
 			// Yes!  Can the user potentially copy or move this binder?
 			boolean allowCopyMove;
@@ -1868,7 +1606,7 @@ public class GwtMenuHelper {
 					// ...add the move item....
 					actionTBI = new ToolbarItem(MOVE);
 					markTBITitle(         actionTBI, (isFolder ? "toolbar.menu.move_folder" : "toolbar.menu.move_workspace"));
-					markTBIEvent(         actionTBI, TeamingEvents.MOVE_SELECTED_ENTITIES                                   );
+					markTBIEvent(         actionTBI, TeamingEvents.MOVE_SELECTED_ENTRIES                                    );
 					markTBISelectedBinder(actionTBI, binder                                                                 );
 					
 					configTBI.addNestedItem(actionTBI);
@@ -1882,28 +1620,11 @@ public class GwtMenuHelper {
 					
 					actionTBI = new ToolbarItem(COPY);
 					markTBITitle(         actionTBI, (isFolder ? "toolbar.menu.copy_folder" : "toolbar.menu.copy_workspace"));
-					markTBIEvent(         actionTBI, TeamingEvents.COPY_SELECTED_ENTITIES                                   );
+					markTBIEvent(         actionTBI, TeamingEvents.COPY_SELECTED_ENTRIES                                    );
 					markTBISelectedBinder(actionTBI, binder                                                                 );
 					
 					configTBI.addNestedItem(actionTBI);
 				}
-			}
-			
-			// Is this a folder whose entries can be read by the user?
-			boolean canDownload = AdminHelper.getEffectiveDownloadSetting(bs, user);
-			if (canDownload && isFolder && bm.testAccess(binder, BinderOperation.readEntries) && GwtServerHelper.isFamilyFile(GwtServerHelper.getFolderEntityFamily(bs, binder))) {
-				// Yes!  Add a ToolbarItem for for zipping and
-				// downloading its files.
-				adminMenuCreated  =
-				configMenuCreated = true;
-				
-				actionTBI = new ToolbarItem(ZIP_AND_DOWNLOAD);
-				markTBITitle(         actionTBI, "toolbar.menu.zipAndDownloadFolder"  );
-				markTBIEvent(         actionTBI, TeamingEvents.ZIP_AND_DOWNLOAD_FOLDER);
-				markTBIRecursive(     actionTBI, true                                 );
-				markTBISelectedBinder(actionTBI, binder                               );
-				
-				configTBI.addNestedItem(actionTBI);
 			}
 		}
 		
@@ -2017,20 +1738,36 @@ public class GwtMenuHelper {
 		
 		// Is this a binder we can possibly delete or purge?
 		if ((isFolder || isWorkspace) && (!isWorkspaceReserved)) {
-			// Yes!  Is the binder one the user can't delete, even if
-			// they have rights?
-			if (!(BinderHelper.isBinderDeleteProtected( binder))) {
+			// Yes!  Is the binder other than a system user's or the
+			// current user's workspace or a Home folder?
+			if ((!(BinderHelper.isBinderSystemUserWS(  binder))) &&
+				(!(BinderHelper.isBinderCurrentUsersWS(binder))) &&
+				(!(BinderHelper.isBinderHomeFolder(    binder)))) {
 				// Yes!  Is this a binder the user can move to the
 				// trash?
-				if (canTrashEntity(bs, binder) && isBinderTrashEnabled(binder)) {
+				if (bm.testAccess(binder, BinderOperation.preDeleteBinder) && isBinderTrashEnabled(binder)) {
 					// Yes!  Add the ToolbarItem for it.
 					adminMenuCreated  =
 					configMenuCreated = true;
 		
 					actionTBI = new ToolbarItem(DELETE);
 					markTBITitle(         actionTBI, (isFolder ? "toolbar.menu.delete_folder" : "toolbar.menu.delete_workspace"));
-					markTBIEvent(         actionTBI, TeamingEvents.DELETE_SELECTED_ENTITIES                                     );
+					markTBIEvent(         actionTBI, TeamingEvents.DELETE_SELECTED_ENTRIES                                      );
 					markTBISelectedBinder(actionTBI, binder                                                                     );
+					
+					configTBI.addNestedItem(actionTBI);
+				}
+
+				// Is this a binder the user can purge?
+				if (bm.testAccess(binder, BinderOperation.deleteBinder)) {
+					// Yes!  Add the ToolbarItem for it.
+					adminMenuCreated  =
+					configMenuCreated = true;
+		
+					actionTBI = new ToolbarItem(PURGE);
+					markTBITitle(         actionTBI, (isFolder ? "toolbar.menu.purge_folder" : "toolbar.menu.purge_workspace"));
+					markTBIEvent(         actionTBI, TeamingEvents.PURGE_SELECTED_ENTRIES                                     );
+					markTBISelectedBinder(actionTBI, binder                                                                   );
 					
 					configTBI.addNestedItem(actionTBI);
 				}
@@ -2105,7 +1842,7 @@ public class GwtMenuHelper {
 			configTBI.addNestedItem(actionTBI);
 		}
 		
-		// Does the user have rights to configure e-mail settings on
+		// Does the user have rights to configure email settings on
 		// this binder?
 		if (isFolder && bm.testAccess(binder, BinderOperation.manageMail)) {
 			Folder folder = ((Folder) binder);
@@ -2152,7 +1889,7 @@ public class GwtMenuHelper {
 		
 		// Does the user have rights to view who has access to this
 		// binder?
-		if (!(user.isShared())) {
+		if (!(GwtServerHelper.getCurrentUser().isShared())) {
 			// Yes!  Add the ToolbarItem for it.
 			url = createActionUrl(request);
 			url.setParameter(WebKeys.ACTION,            WebKeys.ACTION_ACCESS_CONTROL         );
@@ -2454,158 +2191,7 @@ public class GwtMenuHelper {
 	}
 	
 	/*
-	 * Constructs the ToolbarItems for action menu on individual groups
-	 * in the Manage Groups dialog.
-	 */
-	private static void constructGroupManageGroupItems(ToolbarItem entryToolbar, AllModulesInjected bs, HttpServletRequest request, Long groupId) {
-		// Access the group in question.
-		Group group = ((Group) bs.getProfileModule().getEntry(groupId));
-		
-		// Are we in Filr mode?
-		ToolbarItem manageGroupTBI;
-		if (Utils.checkIfFilr()) {
-			// Yes!  Add whether adHoc folders are accessible.
-			Boolean adHocFlag = AdminHelper.getAdhocFolderSettingFromUserOrGroup(bs, groupId);
-			if (null == adHocFlag) {
-				adHocFlag = AdminHelper.getAdhocFolderSettingFromZone(bs);
-			}
-			boolean hasAdHocFolders = adHocFlag;
-			boolean perGroupAdHoc   = (null != group.isAdHocFoldersEnabled());
-
-			if (hasAdHocFolders) {
-				// ...add the disable users adHoc folders item...
-				manageGroupTBI = new ToolbarItem("1_disableSelectedAdHoc");
-				markTBITitle(manageGroupTBI, "toolbar.disable.user.adHoc.perGroup");
-				markTBIEvent(manageGroupTBI, TeamingEvents.DISABLE_SELECTED_USERS_ADHOC_FOLDERS);
-				entryToolbar.addNestedItem(manageGroupTBI);
-			}
-			
-			else {
-				// ...otherwise, if the group doesn't have adHoc
-				// ...folders, add the enable users adHoc folders
-				// ...item...
-				manageGroupTBI = new ToolbarItem("1_enableSelectedAdHoc");
-				markTBITitle(manageGroupTBI, "toolbar.enable.user.adHoc.perGroup");
-				markTBIEvent(manageGroupTBI, TeamingEvents.ENABLE_SELECTED_USERS_ADHOC_FOLDERS);
-				entryToolbar.addNestedItem(manageGroupTBI);
-			}
-
-			// ...if the group currently has a per user adHoc folder
-			// ...setting...
-			if (perGroupAdHoc) {
-				// ...and add the clear users adHoc folders item.
-				manageGroupTBI = new ToolbarItem("1_clearSelectedAdHoc");
-				markTBITitle(manageGroupTBI, "toolbar.clear.user.adHoc");
-				markTBIEvent(manageGroupTBI, TeamingEvents.CLEAR_SELECTED_USERS_ADHOC_FOLDERS);
-				entryToolbar.addNestedItem(manageGroupTBI);
-			}
-
-			// Add a separator after the previous item.
-			entryToolbar.addNestedItem(ToolbarItem.constructSeparatorTBI());
-	
-			// Add whether files can be downloaded.
-			Boolean dlFlag = AdminHelper.getDownloadSettingFromUserOrGroup(bs, groupId);
-			if (null == dlFlag) {
-				dlFlag = AdminHelper.getDownloadSettingFromZone(bs);
-			}
-			boolean canDownload      = dlFlag;
-			boolean perGroupDownload = (null != group.isDownloadEnabled());
-			
-			if (canDownload) {
-				// ...add the disable download item...
-				manageGroupTBI = new ToolbarItem("1_disableSelectedDownload");
-				markTBITitle(manageGroupTBI, "toolbar.disable.user.download.perGroup");
-				markTBIEvent(manageGroupTBI, TeamingEvents.DISABLE_SELECTED_USERS_DOWNLOAD);
-				entryToolbar.addNestedItem(manageGroupTBI);
-			}
-			
-			else {
-				// ...otherwise, if the group doesn't have the download
-				// ...setting, add the enable download item...
-				manageGroupTBI = new ToolbarItem("1_enableSelectedDownload");
-				markTBITitle(manageGroupTBI, "toolbar.enable.user.download.perGroup");
-				markTBIEvent(manageGroupTBI, TeamingEvents.ENABLE_SELECTED_USERS_DOWNLOAD);
-				entryToolbar.addNestedItem(manageGroupTBI);
-			}
-	
-			// ...if the group currently has a per user download
-			// ...setting...
-			if (perGroupDownload) {
-				// ...and add the clear users download item.
-				manageGroupTBI = new ToolbarItem("1_clearSelectedDownload");
-				markTBITitle(manageGroupTBI, "toolbar.clear.user.download");
-				markTBIEvent(manageGroupTBI, TeamingEvents.CLEAR_SELECTED_USERS_DOWNLOAD);
-				entryToolbar.addNestedItem(manageGroupTBI);
-			}
-
-			// Add a separator after the previous item.
-			entryToolbar.addNestedItem(ToolbarItem.constructSeparatorTBI());
-		}
-
-		// Add whether web access is enabled.
-		Boolean waFlag = AdminHelper.getWebAccessSettingFromUserOrGroup(bs, groupId);
-		if (null == waFlag) {
-			waFlag = AdminHelper.getWebAccessSettingFromZone(bs);
-		}
-		boolean hasWebAccess      = waFlag;
-		boolean perGroupWebAccess = (null != group.isWebAccessEnabled());
-		
-		if (hasWebAccess) {
-			// ...add the disable web access item...
-			manageGroupTBI = new ToolbarItem("1_disableSelectedWebAccess");
-			markTBITitle(manageGroupTBI, "toolbar.disable.user.webAccess.perGroup");
-			markTBIEvent(manageGroupTBI, TeamingEvents.DISABLE_SELECTED_USERS_WEBACCESS);
-			entryToolbar.addNestedItem(manageGroupTBI);
-		}
-		
-		else {
-			// ...otherwise, if the group doesn't have a web access
-			// ...setting, add the enable web access item...
-			manageGroupTBI = new ToolbarItem("1_enableSelectedWebAccess");
-			markTBITitle(manageGroupTBI, "toolbar.enable.user.webAccess.perGroup");
-			markTBIEvent(manageGroupTBI, TeamingEvents.ENABLE_SELECTED_USERS_WEBACCESS);
-			entryToolbar.addNestedItem(manageGroupTBI);
-		}
-
-		// ...if the group currently has a per group web access
-		// ...setting...
-		if (perGroupWebAccess) {
-			// ...and add the clear group's web access item.
-			manageGroupTBI = new ToolbarItem("1_clearSelectedWebAccess");
-			markTBITitle(manageGroupTBI, "toolbar.clear.user.webAccess");
-			markTBIEvent(manageGroupTBI, TeamingEvents.CLEAR_SELECTED_USERS_WEBACCESS);
-			entryToolbar.addNestedItem(manageGroupTBI);
-		}
-	}
-
-	/*
-	 * Constructs a ToolbarItem for wipe operations against the
-	 * selected mobile devices.
-	 */
-	private static void constructMobileDeviceWipeItems(ToolbarItem entryToolbar, AllModulesInjected bs, HttpServletRequest request) {
-		// Create the wipe toolbar item...
-		ToolbarItem wipeTBI = new ToolbarItem("1_wipe");
-		markTBITitle(wipeTBI, "toolbar.wipe");
-
-		// ...add the schedule wipe command...
-		ToolbarItem mdTBI;
-		mdTBI = new ToolbarItem("1_scheduleWipe");
-		markTBITitle(mdTBI, "toolbar.mobileDevice.scheduleWipe.multi");
-		markTBIEvent(mdTBI, TeamingEvents.SCHEDULE_WIPE_SELECTED_MOBILE_DEVICES);
-		wipeTBI.addNestedItem(mdTBI);
-		
-		// ...add the clear scheduled wipe command...
-		mdTBI = new ToolbarItem("1_clearWipe");
-		markTBITitle(mdTBI, "toolbar.mobileDevice.clearScheduledWipe.multi");
-		markTBIEvent(mdTBI, TeamingEvents.CLEAR_SCHEDULED_WIPE_SELECTED_MOBILE_DEVICES);
-		wipeTBI.addNestedItem(mdTBI);
-
-		// ...and the wipe toolbar to the entry toolbar.
-		entryToolbar.addNestedItem(wipeTBI);
-	}
-
-	/*
-	 * Constructs a ToolbarItem to run the send e-mail to team members
+	 * Constructs a ToolbarItem to run the send email to team members
 	 * (actually, contributors but I followed the naming that was used
 	 * in the JSP code) dialog. 
 	 */
@@ -2628,14 +2214,11 @@ public class GwtMenuHelper {
 	/*
 	 * Constructs a ToolbarItem to run the share binder dialog.
 	 */
-	private static ToolbarItem constructShareBinderItem(HttpServletRequest request, Binder binder, String specificTitleKey) {
-		if (!(MiscUtil.hasString(specificTitleKey))) {
-			specificTitleKey = GwtUIHelper.buildRelevanceKey(binder, "relevance.shareThis");
-		}
+	private static ToolbarItem constructShareBinderItem(HttpServletRequest request, Binder binder) {
 		ToolbarItem     shareTBI = new ToolbarItem(SHARE);
-		markTBITitle(   shareTBI, specificTitleKey                 );
-		markTBIEvent(   shareTBI, TeamingEvents.INVOKE_SHARE_BINDER);
-		markTBIBinderId(shareTBI, binder.getId()                   );
+		markTBITitle(   shareTBI, GwtUIHelper.buildRelevanceKey(binder, "relevance.shareThis"));
+		markTBIEvent(   shareTBI, TeamingEvents.INVOKE_SHARE_BINDER                           );
+		markTBIBinderId(shareTBI, binder.getId()                                              );
 		return shareTBI;
 	}
 	
@@ -2742,7 +2325,7 @@ public class GwtMenuHelper {
 	 */
 	private static void dumpString(String dumpThis) {
 		// Simply dump the string.
-		GwtLogHelper.debug(m_logger, dumpThis);
+		m_logger.debug(dumpThis);
 	}
 	
 	private static void dumpString(String dumpStart, String dumpThis) {
@@ -2783,7 +2366,7 @@ public class GwtMenuHelper {
 	 */
 	private static void dumpToolbarItems(List<ToolbarItem> tbiList, String dumpStart) {
 		// If debug logging is enabled...
-		if (GwtLogHelper.isDebugEnabled(m_logger)) {
+		if (m_logger.isDebugEnabled()) {
 			// ...scan the toolbar items...
 			for (ToolbarItem tbi:  tbiList) {
 				// ...dumping the contents of each.
@@ -2987,78 +2570,33 @@ public class GwtMenuHelper {
 				constructEntryManageUserItems(actionToolbar, bs, request, entityId.getEntityId());
 			}
 			
-			// No, we aren't working on an entity from the
-			// administration console's manage users dialog!  Are we
-			// working with an entity from a mobile devices dialog?
-			else if (binderInfo.isBinderMobileDevices()) {
-				// Yes!  Add the items for the action menu on a mobile
-				// device.
-				MobileDevice md = GwtMobileDeviceHelper.getMobileDevice(bs, entityId);
-				if (null != md) {
-					ToolbarItem mdTBI;
-					mdTBI = new ToolbarItem("1_deleteSelected");
-					markTBITitle(mdTBI, "toolbar.mobileDevice.delete");
-					markTBIEvent(mdTBI, TeamingEvents.DELETE_SELECTED_MOBILE_DEVICES);
-					actionToolbar.addNestedItem(mdTBI);
-					
-					if (md.isWipeScheduled()) {
-						mdTBI = new ToolbarItem("1_clearWipe");
-						markTBITitle(mdTBI, "toolbar.mobileDevice.clearScheduledWipe");
-						markTBIEvent(mdTBI, TeamingEvents.CLEAR_SCHEDULED_WIPE_SELECTED_MOBILE_DEVICES);
-					}
-					else {
-						mdTBI = new ToolbarItem("1_scheduleWipe");
-						markTBITitle(mdTBI, "toolbar.mobileDevice.scheduleWipe");
-						markTBIEvent(mdTBI, TeamingEvents.SCHEDULE_WIPE_SELECTED_MOBILE_DEVICES);
-					}
-					actionToolbar.addNestedItem(mdTBI);
-				}
-			}
-			
 			else {
-				// No, we aren't working on an entity from a mobile
-				// devices dialog either!
+				// No, we aren't working on an entity from the
+				// administration console's manage users dialog!
 				String eidType = entityId.getEntityType();
 				if (eidType.equals(EntityType.folderEntry.name())) {
-					FolderEntry fe       = bs.getFolderModule().getEntry(entityId.getBinderId(), entityId.getEntityId());
-					boolean     sharable = GwtShareHelper.isEntitySharable(bs, fe);
-					if (sharable) {
-						constructEntryShareItem(
-							actionToolbar,
-							bs,
-							request,
-							EntityType.folderEntry,
-							GwtServerHelper.isFamilyFile(
-								GwtServerHelper.getFolderEntityFamily(
-									bs,
-									fe)));
-						if (actionToolbar.hasNestedToolbarItems()) {
-							actionToolbar.addNestedItem(ToolbarItem.constructSeparatorTBI());
-						}
-					}
+					FolderEntry fe= bs.getFolderModule().getEntry(entityId.getBinderId(), entityId.getEntityId());
 					
-					constructEntryZipAndDownload(  actionToolbar, bs, request, fe                    );					
+					if (GwtShareHelper.isEntitySharable(bs, fe)) {
+						constructEntryShareItem(       actionToolbar, bs, request);
+						constructEntryManageSharesItem(actionToolbar, bs         );
+					}
 					constructEntryDetailsItem(     actionToolbar, bs, request, "toolbar.details.view");
 					constructEntryViewHtmlItem(    actionToolbar, bs, request, fe                    );
 					constructEntryViewWhoHasAccess(actionToolbar, bs, request                        );
 					constructEntryRenameFile(      actionToolbar, bs, request, fe                    );
 					constructEntrySubscribeItem(   actionToolbar, bs, request, true                  );
-					
-					if (sharable) {
-						constructEntryManageSharesItem(actionToolbar, bs);
-					}
 				}
 				
 				else if (eidType.equals(EntityType.folder.name())) {
-					Long    folderId = entityId.getEntityId();
-					Folder  folder   = bs.getFolderModule().getFolder(folderId);
-					boolean sharable = GwtShareHelper.isEntitySharable(bs, folder);
-					if (sharable) {
-						actionToolbar.addNestedItem(constructShareBinderItem(request, folder, "toolbar.shareSelected.folder"));
-						actionToolbar.addNestedItem(ToolbarItem.constructSeparatorTBI());
-					}
+					Long	folderId = entityId.getEntityId();
+					Folder	folder   = bs.getFolderModule().getFolder(folderId);
 					
-					constructEntryZipAndDownload(actionToolbar, bs, request, folder);
+					boolean addShare = GwtShareHelper.isEntitySharable(bs, folder);
+					if (addShare) {
+						actionToolbar.addNestedItem(constructShareBinderItem(request, folder));
+						constructEntryManageSharesItem(actionToolbar, bs);
+					}
 					if (!(Utils.checkIfFilr())) {
 						boolean isFavorite = false;
 						List<FavoriteInfo> favorites = GwtServerHelper.getFavorites(bs);
@@ -3074,17 +2612,13 @@ public class GwtMenuHelper {
 					constructEntryViewWhoHasAccess(actionToolbar, bs, request         );
 					constructEntryRenameFolder(    actionToolbar, bs, request, folder );
 					constructEntrySubscribeItem(   actionToolbar, bs, request, true   );
-					
-					if (sharable) {
-						constructEntryManageSharesItem(actionToolbar, bs);
-					}
 				}
 			}
 			
 			// If we get here, reply refers to the 
 			// GetToolbarItemsRpcResponseData containing the
 			// ToolbarItem's for the entity.  Return it.
-			GwtLogHelper.debug(m_logger, "GwtMenuHelper.getEntityToolbarItems():");
+			m_logger.debug("GwtMenuHelper.getEntityToolbarItems():");
 			dumpToolbarItems(toolbarItems, "...");
 			return reply;
 		}
@@ -3129,30 +2663,9 @@ public class GwtMenuHelper {
 			// items.
 			constructEntryPinnedItem(entryToolbar, bs, request, viewType, folder);
 
-			// Are we returning the toolbar items for other than a
-			// trash or collections view and are we in other than Filr
-			// mode?
-			boolean isBinderCollection    = folderInfo.isBinderCollection();
-			boolean isBinderMobileDevices = folderInfo.isBinderMobileDevices();
-			boolean isBinderTrash         = folderInfo.isBinderTrash();
-			if ((!isBinderTrash) && (!isBinderCollection) && (!isBinderMobileDevices) && (!(Utils.checkIfFilr()))) {
-				// Yes!  Add the configure accessories item to the
-				// toolbar.
-				constructEntryConfigureAccessories(
-					bs,
-					request,
-					binder,
-					configureToolbarItems);
-			}
-
-			// If the binder supports column configuration...
-			ToolbarItem configureColumns = constructEntryConfigureColumsItem(binder);
-			if (null != configureColumns) {
-				// ...add the toolbar item to the configure list.
-				configureToolbarItems.add(configureColumns);
-			}
-
 			// Are we returning the toolbar items for a trash view?
+			boolean isBinderCollection = folderInfo.isBinderCollection();
+			boolean isBinderTrash      = folderInfo.isBinderTrash();
 			if (isBinderTrash) {
 				// Yes!  Construct the items for viewing the trash.
 				constructEntryTrashItems(entryToolbar, bs, request, binder);
@@ -3183,9 +2696,7 @@ public class GwtMenuHelper {
 					boolean isCollectionNetFolders   = (CollectionType.NET_FOLDERS    == ct);
 					boolean isCollectionSharedByMe   = (CollectionType.SHARED_BY_ME   == ct);
 					boolean isCollectionSharedWithMe = (CollectionType.SHARED_WITH_ME == ct);
-					boolean isCollectionSharedPublic = (CollectionType.SHARED_PUBLIC  == ct);
-					boolean isCollectionShared       = (isCollectionSharedByMe || isCollectionSharedWithMe || isCollectionSharedPublic);
-					if ((!(Utils.checkIfFilr())) && isCollectionShared) {
+					if ((!(Utils.checkIfFilr())) && (isCollectionSharedByMe || isCollectionSharedWithMe)) {
 						constructEntryToggleSharedViewItem(entryToolbar, bs, request                                                                                  );
 					}
 					boolean useHomeAsMyFiles = GwtServerHelper.useHomeAsMyFiles(bs);
@@ -3197,9 +2708,9 @@ public class GwtMenuHelper {
 						constructEntryAddFileFolderItem(   entryToolbar, bs, request,                                                  ws, homeFolderTargetId         );
 					}
 					if ((isCollectionMyFiles || isCollectionSharedByMe || isCollectionSharedWithMe) && GwtShareHelper.isSharingEnabled(bs)) {
-					    constructEntryShareItems(          entryToolbar, bs, request, true                                                                            );
+					    constructEntryShareItem(           entryToolbar, bs, request                                                                                  );
 					}
-					if (((isCollectionMyFiles && (!useHomeAsMyFiles) && (!isCollectionNetFolders))) || (isCollectionShared && (!isCollectionSharedPublic))) {
+					if ((isCollectionMyFiles && (!useHomeAsMyFiles)) && (!isCollectionNetFolders)) {
 						constructEntryDeleteItem(          entryToolbar, bs, request,                           (isCollectionMyFiles ? ws : null), isCollectionMyFiles);
 					}
 					if (isCollectionMyFiles && supportsApplets && (null != GwtServerHelper.getMyFilesContainerId(bs)) && isAddEntryAllowed()) {
@@ -3208,23 +2719,10 @@ public class GwtMenuHelper {
 					constructEntryMoreItems(               entryToolbar, bs, request, folderId, viewType, null, (isCollectionMyFiles ? ws : null), ct                 );
 				}
 			}
-
-			// No, we aren't returning the toolbar items for a
-			// collection view either!  Are we returning them for a
-			// mobile devices view?
-			else if (isBinderMobileDevices) {
-				// Yes!  Construct the appropriate menu items for
-				// it.
-				ToolbarItem deleteMobileDeviceTBI = new ToolbarItem("1_deleteSelected");
-				markTBITitle(deleteMobileDeviceTBI, "toolbar.mobileDevice.delete.multi");
-				markTBIEvent(deleteMobileDeviceTBI, TeamingEvents.DELETE_SELECTED_MOBILE_DEVICES);
-				entryToolbar.addNestedItem(deleteMobileDeviceTBI);
-				constructMobileDeviceWipeItems(entryToolbar, bs, request);
-			}
 			
 			else {
 				// No, we aren't returning the toolbar items for a
-				// mobile devices view either!  Is this is other than a
+				// collection view either!  Is this is other than a
 				// mirrored folder, or if its a mirrored folder, is its
 				// resource driver configured?
 				boolean isMirrored           = (isFolder && folder.isMirrored());
@@ -3253,8 +2751,7 @@ public class GwtMenuHelper {
 					
 					// Constructs the items for sharing and deleting
 					// the selected entries.
-					boolean isFileFolder = GwtServerHelper.isFamilyFile(GwtServerHelper.getFolderEntityFamily(bs, folder));
-					constructEntryShareItems(entryToolbar, bs, request, isFileFolder    );
+					constructEntryShareItem( entryToolbar, bs, request, viewType, folder);
 					constructEntryDeleteItem(entryToolbar, bs, request, viewType, folder);
 		
 					// Can we determine the folder's view type?
@@ -3309,10 +2806,30 @@ public class GwtMenuHelper {
 				}
 			}
 			
+			// Are we returning the toolbar items for other than a
+			// trash or collections view and are we in other than Filr
+			// mode?
+			if ((!isBinderTrash) && (!isBinderCollection) && (!(Utils.checkIfFilr()))) {
+				// Yes!  Add the configure accessories item to the
+				// toolbar.
+				constructEntryConfigureAccessories(
+					bs,
+					request,
+					binder,
+					configureToolbarItems);
+			}
+
+			// If the binder supports column configuration...
+			ToolbarItem configureColumns = constructEntryConfigureColumsItem(binder);
+			if (null != configureColumns) {
+				// ...add the toolbar item to the configure list.
+				configureToolbarItems.add(configureColumns);
+			}
+
 			// If we get here, reply refers to the
 			// GetFolderToolbarItemsRpcResponseData containing the
 			// ToolbarItem's for the folder.  Return it.
-			GwtLogHelper.debug(m_logger, "GwtMenuHelper.getFolderToolbarItems():");
+			m_logger.debug("GwtMenuHelper.getFolderToolbarItems():");
 			dumpToolbarItems(configureToolbarItems, "...");
 			dumpToolbarItems(toolbarItems,          "...");
 			return reply;
@@ -3367,7 +2884,7 @@ public class GwtMenuHelper {
 
 			// If we get here, reply refers to the List<ToolbarItem>
 			// for the footer toolbar.  Return it.
-			GwtLogHelper.debug(m_logger, "GwtMenuHelper.getFooterToolbarItems():");
+			m_logger.debug("GwtMenuHelper.getFooterToolbarItems():");
 			dumpToolbarItems(reply, "...");
 			return reply;
 		}
@@ -3377,42 +2894,6 @@ public class GwtMenuHelper {
 		}
 	}
 
-	/**
-	 * Returns a GetToolbarItemsRpcResponseData containing the 
-	 * ToolbarItem's for a group given the current user's rights to
-	 * that group.
-	 *
-	 * @param bs
-	 * @param request
-	 * @param groupId
-	 * 
-	 * @return
-	 */
-	public static GetToolbarItemsRpcResponseData getGroupActionToolbarItems(AllModulesInjected bs, HttpServletRequest request, Long groupId) {
-		SimpleProfiler.start("GwtMenuHelper.getGroupActionToolbarItems()");
-		try {
-			// Allocate a List<ToolbarItem> to hold the ToolbarItem's
-			// that we'll return.
-			ToolbarItem						actionToolbar = new ToolbarItem(WebKeys.GROUP_ACTION_TOOLBAR);
-			List<ToolbarItem>				toolbarItems  = actionToolbar.getNestedItemsList();
-			GetToolbarItemsRpcResponseData	reply         = new GetToolbarItemsRpcResponseData(toolbarItems);
-
-			// Add the per group management items.
-			constructGroupManageGroupItems(actionToolbar, bs, request, groupId);
-			
-			// If we get here, reply refers to the 
-			// GetToolbarItemsRpcResponseData containing the
-			// ToolbarItem's for the group.  Return it.
-			GwtLogHelper.debug(m_logger, "GwtMenuHelper.getGroupActionToolbarItems():");
-			dumpToolbarItems(toolbarItems, "...");
-			return reply;
-		}
-		
-		finally {
-			SimpleProfiler.stop("GwtMenuHelper.getGroupActionToolbarItems()");
-		}
-	}
-	
 	/*
 	 * Returns the hostname of the current running instance of Vibe.
 	 */
@@ -3423,7 +2904,7 @@ public class GwtMenuHelper {
 		        InetAddress addr = InetAddress.getLocalHost();
 		        hostname = addr.getHostName();
 		    } catch (UnknownHostException e) {
-				GwtLogHelper.debug(m_logger, "GwtMenuHelper.getHostName( UnknownHostException ):  Using localhost");
+				m_logger.debug("GwtMenuHelper.getHostName( UnknownHostException ):  Using localhost");
 				hostname = "localhost";
 		    }
 		}
@@ -3494,11 +2975,10 @@ public class GwtMenuHelper {
 		catch (Exception e) {
 			// Convert the exception to a GwtTeamingException and throw
 			// that.
-			throw
-				GwtLogHelper.getGwtClientException(
-					m_logger,
-					e,
-					"GwtMenuHelper.getSignGuestbookUrl( SOURCE EXCEPTION ):  ");
+			if ((!(GwtServerHelper.m_logger.isDebugEnabled())) && m_logger.isDebugEnabled()) {
+			     m_logger.debug("GwtMenuHelper.getSignGuestbookUrl( SOURCE EXCEPTION ):  ", e);
+			}
+			throw GwtServerHelper.getGwtTeamingException(e);
 		}
 	}
 	
@@ -3614,7 +3094,7 @@ public class GwtMenuHelper {
 			
 			// If we get here, reply refers to the List<ToolbarItem> of
 			// the ToolbarItem's for the binder.  Return it.
-			GwtLogHelper.debug(m_logger, "GwtMenuHelper.getToolbarItems():");
+			m_logger.debug("GwtMenuHelper.getToolbarItems():");
 			dumpToolbarItems(reply, "...");
 			return reply;
 		}
@@ -3656,61 +3136,12 @@ public class GwtMenuHelper {
 			// Can the user share this entry?
 			SharingModule sm = bs.getSharingModule();
 			if ((!isGuest) && sm.isSharingEnabled() && sm.testAddShareEntity(fe)) {
-				// Yes!  Is it a file entry?
-				if (GwtServerHelper.isFamilyFile(GwtServerHelper.getFolderEntityFamily(bs, fe))) {
-					// Yes!  Add a share toolbar item for it.
-					ToolbarItem shareItemsTBI = new ToolbarItem("1_share");
-					markTBITitle(shareItemsTBI, "toolbar.share");
-	
-					String keyTail;
-					if (isFilr)
-					     keyTail = "file";
-					else keyTail = "entry";
-					
-					actionTBI = new ToolbarItem(SHARE);
-					markTBITitle(   actionTBI, "toolbar.shareSelected." + keyTail);
-					markTBIEvent(   actionTBI, TeamingEvents.SHARE_SELECTED_ENTITIES);
-					markTBIEntryIds(actionTBI, fe);
-					shareItemsTBI.addNestedItem(actionTBI);
-					
-					if (isFilr)
-					     keyTail = "filr";
-					else keyTail = "vibe";
-					
-					actionTBI = new ToolbarItem(EMAIL_PUBLIC_LINK);
-					markTBITitle(   actionTBI, "toolbar.emailPublicLinkSelected." + keyTail);
-					markTBIEvent(   actionTBI, TeamingEvents.EMAIL_PUBLIC_LINK_SELECTED_ENTITIES);
-					markTBIEntryIds(actionTBI, fe);
-					shareItemsTBI.addNestedItem(actionTBI);
-					
-					actionTBI = new ToolbarItem(COPY_PUBLIC_LINK);
-					markTBITitle(   actionTBI, "toolbar.copyPublicLinkSelected." + keyTail);
-					markTBIEvent(   actionTBI, TeamingEvents.COPY_PUBLIC_LINK_SELECTED_ENTITIES);
-					markTBIEntryIds(actionTBI, fe);
-					shareItemsTBI.addNestedItem(actionTBI);
-					
-					boolean sMT = MailToPublicLinkEntityEvent.SUPPORT_MAILTO_SHARES;
-					if (sMT && (!(shareListsDefined(bs)))) {
-						actionTBI = new ToolbarItem(MAILTO_PUBLIC_LINK);
-						markTBITitle(   actionTBI, "toolbar.mailtoPublicLink." + keyTail);
-						markTBIEvent(   actionTBI, TeamingEvents.MAILTO_PUBLIC_LINK_ENTITY);
-						markTBIEntryIds(actionTBI, fe);
-						shareItemsTBI.addNestedItem(actionTBI);
-					}
-					
-					// ...and the share toolbar to the view toolbar.
-					reply.add(shareItemsTBI);
-				}
-				
-				else {
-					// No, it isn't a file entry.  Add a simple share
-					// item to the view toolbar.
-					actionTBI = new ToolbarItem(SHARE);
-					markTBITitle(   actionTBI, "toolbar.shareSelected.entry");
-					markTBIEvent(   actionTBI, TeamingEvents.SHARE_SELECTED_ENTITIES);
-					markTBIEntryIds(actionTBI, fe);
-					reply.add(actionTBI);
-				}
+				// Yes!  Add a share toolbar item for it.
+				actionTBI = new ToolbarItem(SHARE);
+				markTBITitle(   actionTBI, "toolbar.shareSelected"             );
+				markTBIEvent(   actionTBI, TeamingEvents.SHARE_SELECTED_ENTRIES);
+				markTBIEntryIds(actionTBI, fe                                  );
+				reply.add(actionTBI);
 			}
 			
 			// Can the user modify this entry?
@@ -3772,12 +3203,12 @@ public class GwtMenuHelper {
 			}
 
 			// Can the user move this entry to the trash?
-			if (canTrashEntity(bs, fe)) {
+			if (fm.testAccess(fe, FolderOperation.preDeleteEntry) && (!(folder.isMirrored()))) {
 				// Yes!  Add a delete toolbar item for it.
 				actionTBI = new ToolbarItem(DELETE);
-				markTBITitle(   actionTBI, "toolbar.delete"                      );
-				markTBIEvent(   actionTBI, TeamingEvents.DELETE_SELECTED_ENTITIES);
-				markTBIEntryIds(actionTBI, fe                                    );
+				markTBITitle(   actionTBI, "toolbar.delete"                     );
+				markTBIEvent(   actionTBI, TeamingEvents.DELETE_SELECTED_ENTRIES);
+				markTBIEntryIds(actionTBI, fe                                   );
 				reply.add(actionTBI);
 			}
 			
@@ -3794,9 +3225,9 @@ public class GwtMenuHelper {
 			if (fe.isTop() && fm.testAccess(fe, FolderOperation.copyEntry)) {
 				// Yes!  Add a copy toolbar item for it.
 				actionTBI = new ToolbarItem(COPY);
-				markTBITitle(   actionTBI, "toolbar.copy"                      );
-				markTBIEvent(   actionTBI, TeamingEvents.COPY_SELECTED_ENTITIES);
-				markTBIEntryIds(actionTBI, fe                                  );
+				markTBITitle(   actionTBI, "toolbar.copy"                     );
+				markTBIEvent(   actionTBI, TeamingEvents.COPY_SELECTED_ENTRIES);
+				markTBIEntryIds(actionTBI, fe                                 );
 				dropdownTBI.addNestedItem(actionTBI);
 			}
 			
@@ -3805,20 +3236,19 @@ public class GwtMenuHelper {
 			if (((!locked) || isLockedByLoggedInUser) && fe.isTop() && fm.testAccess(fe, FolderOperation.moveEntry)) {
 				// Yes!  Add a move toolbar item for it.
 				actionTBI = new ToolbarItem(MOVE);
-				markTBITitle(   actionTBI, "toolbar.move"                      );
-				markTBIEvent(   actionTBI, TeamingEvents.MOVE_SELECTED_ENTITIES);
-				markTBIEntryIds(actionTBI, fe                                  );
+				markTBITitle(   actionTBI, "toolbar.move"                     );
+				markTBIEvent(   actionTBI, TeamingEvents.MOVE_SELECTED_ENTRIES);
+				markTBIEntryIds(actionTBI, fe                                 );
 				dropdownTBI.addNestedItem(actionTBI);
 			}
 			
-			// Is this a file entry?
-			boolean canDownload = AdminHelper.getEffectiveDownloadSetting(bs, user);
-			if (canDownload && (null != GwtServerHelper.getFileEntrysFileAttachment(bs, fe, true))) {
-				// Yes!  Allow the user to zip and download it.
-				actionTBI = new ToolbarItem(ZIP_AND_DOWNLOAD                            );
-				markTBITitle(   actionTBI, "toolbar.zipAndDownload"                     );
-				markTBIEvent(   actionTBI, TeamingEvents.ZIP_AND_DOWNLOAD_SELECTED_FILES);
-				markTBIEntryIds(actionTBI, fe                                           );
+			// Can the user purge this entry?
+			if (fm.testAccess(fe, FolderOperation.deleteEntry)) {
+				// Yes!  Add a purge toolbar item for it.
+				actionTBI = new ToolbarItem(PURGE);
+				markTBITitle(   actionTBI, "toolbar.purge"                     );
+				markTBIEvent(   actionTBI, TeamingEvents.PURGE_SELECTED_ENTRIES);
+				markTBIEntryIds(actionTBI, fe                                  );
 				dropdownTBI.addNestedItem(actionTBI);
 			}
 			
@@ -3830,9 +3260,9 @@ public class GwtMenuHelper {
 					if (!locked) {
 						// No!  Add a lock toolbar item for it.
 						actionTBI = new ToolbarItem(LOCK);
-						markTBITitle(   actionTBI, "toolbar.lock.entry"                );
-						markTBIEvent(   actionTBI, TeamingEvents.LOCK_SELECTED_ENTITIES);
-						markTBIEntryIds(actionTBI, fe                                  );
+						markTBITitle(   actionTBI, "toolbar.lock.entry");
+						markTBIEvent(   actionTBI, TeamingEvents.LOCK_SELECTED_ENTRIES);
+						markTBIEntryIds(actionTBI, fe                                 );
 						dropdownTBI.addNestedItem(actionTBI);
 					}
 					
@@ -3845,9 +3275,9 @@ public class GwtMenuHelper {
 						boolean	isBinderAdmin = fm.testAccess(fe, FolderOperation.overrideReserveEntry);
 						if (isBinderAdmin || isLockedByLoggedInUser) {
 							actionTBI = new ToolbarItem(UNLOCK);
-							markTBITitle(   actionTBI, "toolbar.unlock.entry"                );
-							markTBIEvent(   actionTBI, TeamingEvents.UNLOCK_SELECTED_ENTITIES);
-							markTBIEntryIds(actionTBI, fe                                    );
+							markTBITitle(   actionTBI, "toolbar.unlock.entry");
+							markTBIEvent(   actionTBI, TeamingEvents.UNLOCK_SELECTED_ENTRIES);
+							markTBIEntryIds(actionTBI, fe                                   );
 							dropdownTBI.addNestedItem(actionTBI);
 						}
 					}
@@ -3859,19 +3289,19 @@ public class GwtMenuHelper {
 			boolean entrySeen = seenMap.checkIfSeen(fe);
 			if (entrySeen) {
 				actionTBI = new ToolbarItem(UNSEEN);
-				markTBITitle(   actionTBI, "toolbar.markUnread.entry"                 );
-				markTBIEvent(   actionTBI, TeamingEvents.MARK_UNREAD_SELECTED_ENTITIES);
-				markTBIEntryIds(actionTBI, fe                                         );
+				markTBITitle(   actionTBI, "toolbar.markUnread.entry"                );
+				markTBIEvent(   actionTBI, TeamingEvents.MARK_UNREAD_SELECTED_ENTRIES);
+				markTBIEntryIds(actionTBI, fe                                        );
 				dropdownTBI.addNestedItem(actionTBI);
 			}
 			else {
 				actionTBI = new ToolbarItem(SEEN);
-				markTBITitle(   actionTBI, "toolbar.markRead.entry"                 );
-				markTBIEvent(   actionTBI, TeamingEvents.MARK_READ_SELECTED_ENTITIES);
-				markTBIEntryIds(actionTBI, fe                                       );
+				markTBITitle(   actionTBI, "toolbar.markRead.entry"                );
+				markTBIEvent(   actionTBI, TeamingEvents.MARK_READ_SELECTED_ENTRIES);
+				markTBIEntryIds(actionTBI, fe                                      );
 				dropdownTBI.addNestedItem(actionTBI);
 			}
-			
+
 			boolean needSeparator = dropdownTBI.hasNestedToolbarItems();
 
 			// Are we in Filr mode?
@@ -3904,9 +3334,9 @@ public class GwtMenuHelper {
 					// ...and add a change entry type toolbar item for
 					// ...it.
 					actionTBI = new ToolbarItem(CHANGE_ENTRY_TYPE);
-					markTBITitle(   actionTBI, "toolbar.changeEntryType"                        );
-					markTBIEvent(   actionTBI, TeamingEvents.CHANGE_ENTRY_TYPE_SELECTED_ENTITIES);
-					markTBIEntryIds(actionTBI, fe                                               );
+					markTBITitle(   actionTBI, "toolbar.changeEntryType"                       );
+					markTBIEvent(   actionTBI, TeamingEvents.CHANGE_ENTRY_TYPE_SELECTED_ENTRIES);
+					markTBIEntryIds(actionTBI, fe                                              );
 					dropdownTBI.addNestedItem(actionTBI);
 				}
 			}
@@ -3918,15 +3348,15 @@ public class GwtMenuHelper {
 				
 				// ...and add a subscribe toolbar item.
 				actionTBI = new ToolbarItem(SUBSCRIBE);
-				markTBITitle(   actionTBI, "toolbar.menu.subscribeToEntrySelected"  );
-				markTBIEvent(   actionTBI, TeamingEvents.SUBSCRIBE_SELECTED_ENTITIES);
-				markTBIEntryIds(actionTBI, fe                                       );
+				markTBITitle(   actionTBI, "toolbar.menu.subscribeToEntrySelected" );
+				markTBIEvent(   actionTBI, TeamingEvents.SUBSCRIBE_SELECTED_ENTRIES);
+				markTBIEntryIds(actionTBI, fe                                      );
 				dropdownTBI.addNestedItem(actionTBI);
 
-				// Does the user have an e-mail address?
+				// Does the user have an email address?
 				if (MiscUtil.hasString(user.getEmailAddress())) {
-					// Yes!  Add an e-mail contributors toolbar item
-					// for it.
+					// Yes!  Add an email contributors toolbar item for
+					// it.
 					url = createActionUrl(request);
 					url.setParameter(WebKeys.ACTION,          WebKeys.ACTION_SEND_ENTRY_EMAIL                      );
 					url.setParameter(WebKeys.URL_BINDER_ID,   folderId                                             );
@@ -4057,16 +3487,22 @@ public class GwtMenuHelper {
 	private static boolean isBinderTrashEnabled(Binder binder) {
 		boolean reply = true;
 		if (binder instanceof Folder) {
-			reply = true;
+			Folder folder = ((Folder) binder);
+			reply = (!(folder.isMirrored()));
 		}
+		
 		else if (binder instanceof Workspace) {
-			reply =
-				((!(BinderHelper.isBinderProfilesRootWS(  binder))) &&
-				 (!(BinderHelper.isBinderNetFoldersRootWS(binder))));
+			Workspace ws = ((Workspace) binder);
+			if (ws.isReserved()) {
+				if (ws.getInternalId().equals(ObjectKeys.PROFILE_ROOT_INTERNALID) ||
+				    ws.getInternalId().equals(ObjectKeys.NET_FOLDERS_ROOT_INTERNALID)) {
+					reply = false;
+				}
+			}
 		}
 		return reply;
 	}
-
+	
 	/*
 	 * Returns true if a folder is writable mirrored folder and false
 	 * otherwise.
@@ -4238,13 +3674,6 @@ public class GwtMenuHelper {
 	}
 	
 	/*
-	 * Marks a ToolbarItem with a recursive flag.
-	 */
-	private static void markTBIRecursive(ToolbarItem tbi, boolean recursive) {
-		tbi.addQualifier("recursive", String.valueOf(recursive));
-	}
-	
-	/*
 	 * Marks a ToolbarItem as being selected in some way.
 	 */
 	private static void markTBISelected(ToolbarItem tbi) {
@@ -4332,28 +3761,5 @@ public class GwtMenuHelper {
 	private static void markTBIUrlAsTargetedAnchor(ToolbarItem tbi, AdaptedPortletURL url) {
 		// Always use the initial form of the method.
 		markTBIUrlAsTargetedAnchor(tbi, url.toString(), null);
-	}
-	
-	/*
-	 * Returns true if there are any share lists defined against the
-	 * zone and false otherwise.
-	 */
-	private static boolean shareListsDefined(AllModulesInjected bs) {
-		// Is there a ShareList defined?
-		ShareLists sl = bs.getSharingModule().getShareLists();
-		if (null != sl) {
-			// Yes!  Is it disabled?
-			if (!(sl.isDisable())) {
-				// No!  Return true if it contains any domains or email
-				// addresses and false otherwise.
-				return (
-					MiscUtil.hasItems(sl.getDomains()) ||
-					MiscUtil.hasItems(sl.getEmailAddresses()));
-			}
-		}
-
-		// If we get here, there are no share lists active.  Return
-		// false.
-		return false;
 	}
 }

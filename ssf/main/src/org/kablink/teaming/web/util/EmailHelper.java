@@ -71,6 +71,9 @@ import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.Utils;
 
+import static org.kablink.teaming.domain.ShareItem.RecipientType.group;
+import static org.kablink.teaming.domain.ShareItem.RecipientType.user;
+
 /**
  * Helper methods for email handling.
  * 
@@ -591,66 +594,6 @@ public class EmailHelper {
 	}
 	
 	/**
-	 * Send a public link notification mail message to a collection
-	 * email addresses.
-	 * 
-	 * @param bs			- Access to modules.
-	 * @param share			- Share item.
-	 * @param sharedEntity	- Entity (folder or folder entry) being shared.
-	 * @param emas			- toList,  stand alone email address.
-	 * @param bccEMAs		- bccList
-	 * @param viewUrl		- The public link view URL.
-	 * @param downloadUrl	- The public link download URL.
-	 * 
-	 * @return
-	 * 
-	 * @throws Exception
-	 */
-	public static Map<String, Object> sendPublicLinkNotification(
-		AllModulesInjected	bs,				//
-		ShareItem			share,			//
-		DefinableEntity		sharedEntity,	//
-		Collection<String>	emas,			//
-		Collection<String>	bccEMAs,		//
-		String				viewUrl,		//
-		String				downloadUrl)	//
-			throws Exception
-	{
-		try {
-			// Are there any actual targets for the email?
-			boolean hasTargets = (
-				MiscUtil.hasItems(emas) ||
-				MiscUtil.hasItems(bccEMAs));
-
-			Map<String, Object> reply;
-			if (hasTargets) {
-				// Yes!  Send it.
-				reply = bs.getAdminModule().sendPublicLinkMail(
-					share,
-					sharedEntity,
-					emas,
-					bccEMAs,
-					viewUrl,
-					downloadUrl);
-			}
-			else {
-				// No, there aren't any targets!  Return an empty
-				// reply.
-				reply = new HashMap<String, Object>();
-			}
-			
-			// If we get here, reply contains a map of the results of
-			// the email notification.  Return it.
-			return reply;
-		}
-		
-		catch (Exception ex) {
-			m_logger.debug("EmailHelper.sendPublicLinkNotification( SOURCE EXCEPTION ):  ", ex);
-			throw ex;
-		}
-	}
-
-	/**
 	 * Send a share notification mail message to a collection of users
 	 * and/or explicit email addresses.
 	 * 
@@ -716,97 +659,13 @@ public class EmailHelper {
 		}
 	}
 
-	/**
-	 * Sends email to public link recipients.
-	 * 
-	 * @param bs
-	 * @param shareItem
-	 * @param currentUser
-	 * @param recipientEMAs
-	 * @param viewUrl
-	 * @param downloadUrl
-	 * 
-	 * @return
-	 */
-    @SuppressWarnings("unchecked")
-    public static List<SendMailErrorWrapper> sendEmailToPublicLinkRecipients(AllModulesInjected bs, ShareItem shareItem, User currentUser, List<String> recipientEMAs, String viewUrl, String downloadUrl) {
-    	// Do we have everything required to send the email?
-        if ((null == bs) || (null == currentUser) || (null == shareItem) || (!(MiscUtil.hasItems(recipientEMAs))) || (!(MiscUtil.hasString(downloadUrl)))) {
-        	// No!  Log the error and bail.
-            m_logger.error("invalid parameter in sendEmailToPublicLinkRecipients():1");
-            return null;
-        }
-
-        EntityIdentifier entityId = shareItem.getSharedEntityIdentifier();
-        DefinableEntity sharedEntity;
-        if (entityId.getEntityType().isBinder())
-             sharedEntity = bs.getBinderModule().getBinder(entityId.getEntityId());
-        else sharedEntity = bs.getFolderModule().getEntry(null, entityId.getEntityId());
-
-        // Does this user want to be BCC'd on all mail sent out?
-		List emailErrors = null;
-        try {
-        	List<String> bccEMAs;
-        	String bccEMA = currentUser.getBccEmailAddress();
-        	if (MiscUtil.hasString(bccEMA)) {
-        		bccEMAs = new ArrayList<String>();
-        		bccEMAs.add(bccEMA);
-        	}
-        	else {
-        		bccEMAs = null;
-        	}
-        	
-            Map<String,Object> errorMap = sendPublicLinkNotification(
-            	bs,
-            	shareItem,
-            	sharedEntity,
-            	recipientEMAs,
-            	bccEMAs,
-            	viewUrl,
-            	downloadUrl);
-
-            if (null != errorMap) {
-                emailErrors = ((List<SendMailErrorWrapper>) errorMap.get(ObjectKeys.SENDMAIL_ERRORS));
-            }
-        }
-        catch (Exception ex) {
-            m_logger.error("EmailHelper.sendEmailToPublicLinkRecipients() threw an exception: " + ex.toString());
-        }
-        return emailErrors;
-    }
-    
-    public static List<SendMailErrorWrapper> sendEmailToPublicLinkRecipients(AllModulesInjected bs, ShareItem shareItem, User currentUser, String recipientEMA, String viewUrl, String downloadUrl) {
-    	// Do we have everything required to send the email?
-        if (!(MiscUtil.hasString(recipientEMA))) {
-        	// No!  Log the error and bail.
-            m_logger.error("invalid parameter in sendEmailToPublicLinkRecipients():2");
-            return null;
-        }
-        
-    	// Always use the initial form of the method.
-    	List<String> recipientEMAs = new ArrayList<String>();
-    	recipientEMAs.add(recipientEMA);
-    	return sendEmailToPublicLinkRecipients(bs, shareItem, currentUser, recipientEMAs, viewUrl, downloadUrl);
-    }
-
-	/**
-	 * ?
-	 * 
-	 * @param ami
-	 * @param shareItem
-	 * @param isExternalUser
-	 * @param currentUser
-	 * 
-	 * @return
-	 */
-    @SuppressWarnings("unchecked")
     public static List<SendMailErrorWrapper> sendEmailToRecipient(
             AllModulesInjected ami,
             ShareItem shareItem,
             boolean isExternalUser,
             User currentUser )
     {
-		List emailErrors;
+        List emailErrors;
         Set<Long> principalIds;
         Set<Long> teamIds;
         Set<Long> bccIds;
@@ -870,7 +729,7 @@ public class EmailHelper {
             {
                 errorMap = null;
 
-                errorMap = sendShareInviteToExternalUser(
+                errorMap = EmailHelper.sendShareInviteToExternalUser(
                         ami,
                         shareItem,
                         sharedEntity,
@@ -878,7 +737,7 @@ public class EmailHelper {
             }
             else
             {
-                errorMap = sendShareNotification(
+                errorMap = EmailHelper.sendShareNotification(
                         ami,
                         shareItem,
                         sharedEntity,
@@ -896,7 +755,7 @@ public class EmailHelper {
         }
         catch ( Exception ex )
         {
-            m_logger.error( "EmailHelper.sendShareNotification() threw an exception: " + ex.toString() );
+            m_logger.error( "GwtEmailHelper.sendShareNotification() threw an exception: " + ex.toString() );
         }
         return emailErrors;
     }

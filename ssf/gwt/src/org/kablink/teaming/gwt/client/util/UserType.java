@@ -66,10 +66,6 @@ public enum UserType implements IsSerializable {
 		return reply;
 	}
 	
-	public boolean isGuest() {
-		return this.equals(EXTERNAL_GUEST);
-	}
-	
 	public boolean isInternal() {
 		boolean reply;
 		switch (this) {

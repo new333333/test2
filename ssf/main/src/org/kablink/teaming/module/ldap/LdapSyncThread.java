@@ -38,16 +38,12 @@ import java.net.UnknownHostException;
 import javax.naming.CommunicationException;
 import javax.naming.NamingException;
 import javax.portlet.PortletRequest;
+import javax.portlet.PortletSession;
 import javax.portlet.RenderRequest;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.domain.LdapConnectionConfig;
 import org.kablink.teaming.domain.LdapSyncException;
 import org.kablink.teaming.module.ldap.LdapModule;
-import org.kablink.teaming.module.ldap.LdapModule.LdapSyncMode;
 import org.kablink.teaming.module.ldap.LdapSchedule;
 import org.kablink.teaming.module.ldap.LdapSyncResults;
 import org.kablink.teaming.module.ldap.LdapSyncResults.SyncStatus;
@@ -62,48 +58,12 @@ import org.kablink.teaming.web.util.WebHelper;
 public class LdapSyncThread
 	extends Thread
 {
-	private static Log m_logger = LogFactory.getLog( LdapSyncThread.class );
-
 	private LdapSyncResults	m_ldapSyncResults;	// The results of the sync will be stored here as the sync progresses.
-	private HttpSession		m_session = null;	// The session we stored this object in.
+	private PortletSession		m_session = null;	// The session we stored this object in.
 	private String				m_id;
 	private LdapModule			m_ldapModule;
 	private boolean			m_syncUsersAndGroups;
 	private String[]		m_listOfLdapConfigsToSyncGuid;
-	private LdapSyncMode	m_syncMode;
-
-	/**
-	 * 
-	 */
-	private static LdapSyncThread createLdapSyncThread(
-		HttpSession session,
-		String id,
-		LdapModule ldapModule,
-		boolean syncUsersAndGroups,
-		String[] listOfLdapConfigsToSyncGuid,
-		LdapSyncMode syncMode )
-	{
-		LdapSyncThread ldapSyncThread;
-		
-		if( session == null )
-			return null; // unable to allocate a new LdapSyncThread object.
-
-		ldapSyncThread = new LdapSyncThread(
-										session,
-										id,
-										ldapModule,
-										syncUsersAndGroups,
-										listOfLdapConfigsToSyncGuid,
-										syncMode );
-		
-		// Set the priority of the thread to be the lowest.
-		ldapSyncThread.setPriority( Thread.MIN_PRIORITY );
-		
-		// Store this LdapSyncThread object in the session object.
-		session.setAttribute( id, ldapSyncThread );
-		
-		return ldapSyncThread;
-	}
 	
 	/**
 	 * Create an LdapSyncThread object.
@@ -113,49 +73,23 @@ public class LdapSyncThread
 		String			id,				// Create the thread using this id
 		LdapModule		ldapModule,
 		boolean			syncUsersAndGroups,
-		String[]		listOfLdapConfigsToSyncGuid,
-		LdapSyncMode	syncMode )
+		String[]		listOfLdapConfigsToSyncGuid )
 	{
 		LdapSyncThread	ldapSyncThread;
-		HttpSession 	session;
+		PortletSession 	session;
 		
-		session = WebHelper.getRequiredSession( WebHelper.getHttpServletRequest( request ) );
-
-		ldapSyncThread = createLdapSyncThread(
-											session,
-											id,
-											ldapModule,
-											syncUsersAndGroups,
-											listOfLdapConfigsToSyncGuid,
-											syncMode );
-	
-		return ldapSyncThread;
-	}// end createLdapSyncThread()
-	
-	
-	/**
-	 * Create an LdapSyncThread object.
-	 */
-	public static LdapSyncThread createLdapSyncThread(
-		HttpServletRequest	request,
-		String				id,				// Create the thread using this id
-		LdapModule			ldapModule,
-		boolean				syncUsersAndGroups,
-		String[]			listOfLdapConfigsToSyncGuid,
-		LdapSyncMode		syncMode )
-	{
-		LdapSyncThread	ldapSyncThread;
-		HttpSession 	session;
+		session = WebHelper.getRequiredPortletSession( request );
 		
-		session = WebHelper.getRequiredSession( request );
+		if( session == null )
+			return null; // unable to allocate a new LdapSyncThread object.
+	
+		ldapSyncThread = new LdapSyncThread( session, id, ldapModule, syncUsersAndGroups, listOfLdapConfigsToSyncGuid );
 		
-		ldapSyncThread = createLdapSyncThread(
-											session,
-											id,
-											ldapModule,
-											syncUsersAndGroups,
-											listOfLdapConfigsToSyncGuid,
-											syncMode );
+		// Set the priority of the thread to be the lowest.
+		ldapSyncThread.setPriority( Thread.MIN_PRIORITY );
+		
+		// Store this LdapSyncThread object in the session object.
+		session.setAttribute( id, ldapSyncThread, PortletSession.APPLICATION_SCOPE );
 	
 		return ldapSyncThread;
 	}// end createLdapSyncThread()
@@ -169,16 +103,17 @@ public class LdapSyncThread
 		String			id )
 	{
 		LdapSyncThread	ldapSyncThread	= null;
-		HttpServletRequest servletRequest;
+		PortletSession	session;
 
 		if ( id == null )
 			return null;
 		
-		servletRequest = WebHelper.getHttpServletRequest( request );
-		if ( servletRequest == null )
+		session = request.getPortletSession( false );
+		if ( session == null )
 			return null;
-	
-		ldapSyncThread = getLdapSyncThread( servletRequest, id );
+
+		// Get the LdapSyncThread object that was stored on the session.
+		ldapSyncThread = (LdapSyncThread) session.getAttribute( id, PortletSession.APPLICATION_SCOPE );
 		
 		return ldapSyncThread;
 
@@ -186,57 +121,10 @@ public class LdapSyncThread
 	
 	
 	/**
-	 * Return the LdapSyncThread object with the given id.
-	 */
-	public static LdapSyncThread getLdapSyncThread(
-		HttpServletRequest	servletRequest,
-		String			id )
-	{
-		LdapSyncThread	ldapSyncThread	= null;
-		HttpSession	session;
-
-		if ( id == null )
-			return null;
-		
-		if ( servletRequest == null )
-			return null;
-		
-		session = servletRequest.getSession( false );
-		if ( session == null )
-			return null;
-
-		// Get the LdapSyncThread object that was stored on the session.
-		ldapSyncThread = (LdapSyncThread) session.getAttribute( id );
-		
-		return ldapSyncThread;
-	}
-	
-	
-	/**
 	 * Return the LdapSyncResults object for the given LdapSyncThread id.
 	 */
 	public static LdapSyncResults getLdapSyncResults(
 		PortletRequest	request,
-		String			id )
-	{
-		LdapSyncResults	ldapSyncResults	= null;
-		HttpServletRequest servletRequest;
-		
-		servletRequest = WebHelper.getHttpServletRequest( request );
-		if ( servletRequest == null )
-			return null;
-		
-		ldapSyncResults = getLdapSyncResults( servletRequest, id );
-		
-		return ldapSyncResults;
-	}// end getLdapSyncResults()	
-	
-	
-	/**
-	 * Return the LdapSyncResults object for the given LdapSyncThread id.
-	 */
-	public static LdapSyncResults getLdapSyncResults(
-		HttpServletRequest	request,
 		String			id )
 	{
 		LdapSyncThread	ldapSyncThread;
@@ -247,23 +135,20 @@ public class LdapSyncThread
 		
 		if ( ldapSyncThread != null )
 			ldapSyncResults = ldapSyncThread.getLdapSyncResults();
-		else
-			m_logger.error( "-------> in LdapSyncThread.getLdapSyncResults(), getLdapSyncThread() returned null" );
 		
 		return ldapSyncResults;
-	}	
+	}// end getLdapSyncResults()	
 	
 	
     /**
 	 * Class constructor. (1 of 1)
 	 */
 	private LdapSyncThread(
-		HttpSession		session,
+		PortletSession	session,
 		String			id,
 		LdapModule		ldapModule,
 		boolean			syncUsersAndGroups,
-		String[]		listOfLdapConfigsToSyncGuid,
-		LdapSyncMode	syncMode )
+		String[]		listOfLdapConfigsToSyncGuid )
 	{
 		// Initialize this object's super class.
 		super( id );
@@ -273,7 +158,6 @@ public class LdapSyncThread
 		m_ldapModule = ldapModule;
 		m_syncUsersAndGroups = syncUsersAndGroups;
 		m_listOfLdapConfigsToSyncGuid = listOfLdapConfigsToSyncGuid;
-		m_syncMode = syncMode;
 		
 		// Create an LdapSyncResults object to hold the results of the sync.
 		m_ldapSyncResults = new LdapSyncResults( id );
@@ -283,7 +167,7 @@ public class LdapSyncThread
 	/**
 	 * Execute the code that will perform the ldap sync.
 	 */
-	public LdapSyncResults doLdapSync()
+	public void doLdapSync()
 	{
 		boolean 		enabled;
 		LdapSyncResults	syncResults;
@@ -302,7 +186,7 @@ public class LdapSyncThread
 		try
 		{
 			// Perform the sync.
-			m_ldapModule.syncAll( m_syncUsersAndGroups, m_listOfLdapConfigsToSyncGuid, m_syncMode, syncResults );
+			m_ldapModule.syncAll( m_syncUsersAndGroups, m_listOfLdapConfigsToSyncGuid, syncResults );
 			
 			// Did syncAll() return because a sync was already in progress?
 			if ( syncResults.getStatus() != SyncStatus.STATUS_SYNC_ALREADY_IN_PROGRESS )
@@ -352,8 +236,6 @@ public class LdapSyncThread
 				m_ldapModule.setLdapSchedule( schedule );
 			}
 		}
-		
-		return syncResults;
 	}// end doLdapSync()
 	
 	

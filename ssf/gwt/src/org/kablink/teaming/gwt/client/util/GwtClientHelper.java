@@ -40,23 +40,17 @@ import java.util.Map;
 
 import org.kablink.teaming.gwt.client.GwtMainPage;
 import org.kablink.teaming.gwt.client.GwtTeaming;
-import org.kablink.teaming.gwt.client.GwtTeamingDataTableImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingException;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.RequestInfo;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
-import org.kablink.teaming.gwt.client.event.WindowTitleSetEvent;
 import org.kablink.teaming.gwt.client.lpe.LandingPageEditor;
 import org.kablink.teaming.gwt.client.profile.widgets.GwtProfilePage;
 import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData.ErrorInfo;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.tasklisting.TaskListing;
-import org.kablink.teaming.gwt.client.widgets.AlertDlg;
-import org.kablink.teaming.gwt.client.widgets.AlertDlg.AlertDlgClient;
-import org.kablink.teaming.gwt.client.widgets.ConfirmCallback;
 import org.kablink.teaming.gwt.client.widgets.MultiErrorAlertDlg;
-import org.kablink.teaming.gwt.client.widgets.DlgBox.DlgButtonMode;
 import org.kablink.teaming.gwt.client.widgets.MultiErrorAlertDlg.MultiErrorAlertDlgClient;
 import org.kablink.teaming.gwt.client.widgets.WidgetStyles;
 
@@ -68,7 +62,6 @@ import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.dom.client.Node;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.dom.client.Style.Unit;
-import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.logical.shared.CloseEvent;
 import com.google.gwt.event.logical.shared.CloseHandler;
 import com.google.gwt.resources.client.ImageResource;
@@ -96,12 +89,6 @@ import com.google.gwt.user.client.ui.Widget;
  * @author drfoster@novell.com
  */
 public class GwtClientHelper {
-	private final static boolean USE_JAVASCRIPT_ALERT	= true;	//! DRF (20131106):  Leave true on checkin until AlertDlg.java is working.
-	
-	// Holds an instantiated AlertDlg when one is create.
-	private static AlertDlg	m_alertDlg;
-	
-	// Holds an instantiated MultiErrorAlertDlg when one is create.
 	private static MultiErrorAlertDlg	m_meaDlg;
 	
 	// String used to recognized an '&' formatted URL vs. a '/'
@@ -206,23 +193,6 @@ public class GwtClientHelper {
 		return urlString;
 	}
 
-	/**
-	 * Determine if the two string are equal
-	 */
-	public static boolean areStringsEqual( String s1, String s2 )
-	{
-		if ( s1 != null && s2 == null )
-			return false;
-		
-		if ( s1 == null && s2 != null )
-			return false;
-		
-		if ( s1 != null && s1.equalsIgnoreCase( s2 ) == false )
-			return false;
-		
-		return true;
-	}
-	
 	/**
 	 * Returns the boolean value stored in a string.
 	 * 
@@ -387,7 +357,7 @@ public class GwtClientHelper {
 				new ScheduledCommand() {
 					@Override
 					public void execute() {
-						deferredAlertImpl(msg);
+						Window.alert(msg);
 					}
 				},
 				delay);
@@ -399,48 +369,6 @@ public class GwtClientHelper {
 		deferredAlert(msg, 0);
 	}
 
-	/*
-	 * Implementation method for deferredAlert().
-	 */
-	private static void deferredAlertImpl(final String msg) {
-		// If we're supposed to use a JavaScript.alert()...
-		if (USE_JAVASCRIPT_ALERT) {
-			// ...use it and bail.
-			Window.alert(msg);
-			return;
-		}
-
-		// Have we created an instance of an AlertDlg yet?
-		if (null == m_alertDlg) {
-			// No!  Create one now...
-			AlertDlg.createAsync(new AlertDlgClient() {
-				@Override
-				public void onUnavailable() {
-					// Nothing to do.  Error handled in asynchronous
-					// provider.
-				}
-				
-				@Override
-				public void onSuccess(AlertDlg aDlg) {
-					// ...save it and use it to display the message.
-					m_alertDlg = aDlg;
-					deferredAlertImpl(msg);
-				}
-			});
-		}
-		
-		else {
-			// Yes, we've created an instance of an AlertDlg!  Use it
-			// to display the message.
-			deferCommand(new ScheduledCommand() {
-				@Override
-				public void execute() {
-					AlertDlg.initAndShow(m_alertDlg, msg);
-				}
-			});
-		}
-	}
-
 	/**
 	 * Displays a message to the user regarding possibly multiple
 	 * errors.
@@ -448,9 +376,8 @@ public class GwtClientHelper {
 	 * @param baseError
 	 * @param multiErrors
 	 * @param delay
-	 * @param confirmCallback
 	 */
-	public static void displayMultipleErrors(final String baseError, final List<ErrorInfo> multiErrors, final int delay, final ConfirmCallback confirmCallback, final DlgButtonMode confirmButtons) {
+	public static void displayMultipleErrors(final String baseError, final List<ErrorInfo> multiErrors, final int delay) {
 		if (null == m_meaDlg) {
 			MultiErrorAlertDlg.createAsync(new MultiErrorAlertDlgClient() {
 				@Override
@@ -462,36 +389,26 @@ public class GwtClientHelper {
 				@Override
 				public void onSuccess(MultiErrorAlertDlg meaDlg) {
 					m_meaDlg = meaDlg;
-					displayMultipleErrorsAsync(baseError, multiErrors, delay, confirmCallback, confirmButtons);
+					displayMultipleErrorsAsync(baseError, multiErrors, delay);
 				}
 			});
 		}
 		
 		else {
-			displayMultipleErrorsAsync(baseError, multiErrors, delay, confirmCallback, confirmButtons);
+			displayMultipleErrorsAsync(baseError, multiErrors, delay);
 		}
 			
 	}
 	
-	public static void displayMultipleErrors(final String baseError, final List<ErrorInfo> multiErrors, final int delay) {
-		// Always use the initial form of the method.
-		displayMultipleErrors(baseError, multiErrors, delay, null, null);
-	}
-	
-	public static void displayMultipleErrors(String baseError, List<ErrorInfo> multiErrors, ConfirmCallback confirmCallback, DlgButtonMode confirmButtons) {
-		// Always use the initial form of the method.
-		displayMultipleErrors(baseError, multiErrors, 0, confirmCallback, confirmButtons);
-	}
-
 	public static void displayMultipleErrors(String baseError, List<ErrorInfo> multiErrors) {
 		// Always use the initial form of the method.
-		displayMultipleErrors(baseError, multiErrors, 0, null, null);
+		displayMultipleErrors(baseError, multiErrors, 0);
 	}
 
 	/*
 	 * Asynchronously displays the list of multiple error messages.
 	 */
-	private static void displayMultipleErrorsAsync(final String baseError, final List<ErrorInfo> multiErrors, final int delay, final ConfirmCallback confirmCallback, final DlgButtonMode confirmButtons) {
+	private static void displayMultipleErrorsAsync(final String baseError, final List<ErrorInfo> multiErrors, final int delay) {
 		// Do we have anything to display?
 		if (hasString(baseError) && hasItems(multiErrors)) {
 			// Yes!  If we don't have a specific amount of time to
@@ -500,7 +417,7 @@ public class GwtClientHelper {
 				new ScheduledCommand() {
 					@Override
 					public void execute() {
-						displayMultipleErrorsNow(baseError, multiErrors, confirmCallback, confirmButtons);
+						displayMultipleErrorsNow(baseError, multiErrors);
 					}
 				},
 				delay);
@@ -510,8 +427,8 @@ public class GwtClientHelper {
 	/*
 	 * Synchronously displays the list of multiple error messages.
 	 */
-	private static void displayMultipleErrorsNow(String baseError, List<ErrorInfo> multiErrors, ConfirmCallback confirmCallback, DlgButtonMode confirmButtons) {
-		MultiErrorAlertDlg.initAndShow(m_meaDlg, baseError, multiErrors, confirmCallback, confirmButtons);
+	private static void displayMultipleErrorsNow(String baseError, List<ErrorInfo> multiErrors) {
+		MultiErrorAlertDlg.initAndShow(m_meaDlg, baseError, multiErrors);
 	}
 
 	/**
@@ -520,46 +437,6 @@ public class GwtClientHelper {
 	public static void executeCommand(VibeRpcCmd cmd, AsyncCallback<VibeRpcResponse> callback) {
 		GwtTeaming.getRpcService().executeCommand(HttpRequestInfo.createHttpRequestInfo(), cmd, callback);
 	}	
-
-	/**
-	 * Returns the ImageResource to use for a group type <IMG>.
-	 * 
-	 * @param groupType
-	 * 
-	 * @return
-	 */
-	public static ImageResource getGroupTypeImage( GroupType groupType )
-	{
-		GwtTeamingDataTableImageBundle images;
-		ImageResource reply;
-
-		images = GwtTeaming.getDataTableImageBundle();
-
-		if ( groupType == null )
-			return images.groupType_Unknown();
-
-		switch ( groupType )
-		{
-		case INTERNAL_LDAP:
-			reply = images.groupType_LDAP();
-			break;
-			
-		case INTERNAL_SYSTEM:
-			reply = images.groupType_System();
-			break;
-		
-		case INTERNAL_LOCAL:
-			reply = images.groupType_Local();
-			break;
-			
-		default:
-			reply = images.groupType_Unknown();
-			break;
-		}
-		
-		return reply;		
-	}
-	
 
 	/**
 	 * Returns the path to Vibe's images.
@@ -583,20 +460,6 @@ public class GwtClientHelper {
 			else if (ri.isLicenseFilrAndVibe()) reply = LicenseType.FILR_AND_VIBE;
 			else if (ri.isLicenseVibe())        reply = LicenseType.VIBE;
 		}
-		return reply;
-	}
-
-	/**
-	 * Returns the current product name, Filr or Vibe.
-	 * 
-	 * @return
-	 */
-	public static String getProductName() {
-		GwtTeamingMessages messages = GwtTeaming.getMessages();
-		String reply =
-			(GwtClientHelper.isLicenseFilr() ?
-				messages.productFilr() :
-				messages.productVibe());
 		return reply;
 	}
 	
@@ -782,16 +645,6 @@ public class GwtClientHelper {
 					cause = patchMessage(messages.rpcFailure_AccessToFolderDenied(), patches);
 					break;
 					
-				case APPLICATION_EXISTS_EXCEPTION:
-					displayAlert = true;
-					cause = patchMessage(messages.rpcFailure_CreateApplicationAlreadyExists(), patches);
-					break;
-					
-				case APPLICATION_GROUP_EXISTS_EXCEPTION:
-					displayAlert = true;
-					cause = patchMessage(messages.rpcFailure_CreateApplicationGroupAlreadyExists(), patches);
-					break;
-					
 				case FAVORITES_LIMIT_EXCEEDED:
 					errorMessage = messages.rpcFailure_AddFavoriteLimitExceeded();
 					cause = "";
@@ -811,11 +664,6 @@ public class GwtClientHelper {
 				case NO_BINDER_BY_THE_ID_EXCEPTION:
 					displayAlert = true;
 					cause = patchMessage(messages.rpcFailure_FolderDoesNotExist(), patches);
-					break;
-					
-				case USER_ALREADY_EXISTS:
-					displayAlert = true;
-					cause = patchMessage(messages.rpcFailure_CreateUserAlreadyExists(), patches);
 					break;
 					
 				case USER_NOT_LOGGED_IN:
@@ -969,19 +817,6 @@ public class GwtClientHelper {
 	}
 	
 	/**
-	 * Returns true if Cloud Folders are enabled and false otherwise.
-	 * 
-	 * @return
-	 */
-	public static boolean isCloudFoldersEnabled() {
-		RequestInfo ri = getRequestInfo();
-		if (null == ri) {
-			return false;
-		}
-		return ri.isCloudFoldersEnabled();
-	}
-	
-	/**
 	 * Returns true if the control key is currently pressed and false
 	 * otherwise.
 	 * 
@@ -1022,21 +857,7 @@ public class GwtClientHelper {
 	}
 	
 	/**
-	 * Returns true if the logged in user is an external user and false
-	 * otherwise.
-	 * 
-	 * @return
-	 */
-	public static boolean isExternalUser() {
-		return getRequestInfo().isExternalUser();
-	}
-
-	/**
 	 * Returns true if the given id is belongs to the "guest" user.
-	 * 
-	 * @param id
-	 * 
-	 * @return
 	 */
 	public static boolean isGuest( String id )
 	{
@@ -1046,16 +867,6 @@ public class GwtClientHelper {
 		return id.equalsIgnoreCase( getRequestInfo().getGuestId() );
 	}
 	
-	/**
-	 * Returns true if the logged in user is the Guest user and false
-	 * otherwise.
-	 * 
-	 * @return
-	 */
-	public static boolean isGuestUser() {
-		return getRequestInfo().isGuestUser();
-	}
-
 	/**
 	 * Returns true if the current user is guest
 	 */
@@ -1068,55 +879,6 @@ public class GwtClientHelper {
 		
 		return isGuest( currentUserId );
 	}
-	
-	/**
-	 * Return true if the key that was pressed is valid in a numeric field. 
-	 */
-	public static boolean isKeyValidForNumericField( char charCode, int keyCode )
-	{
-        if ( Character.isDigit( charCode ) == false &&
-        	 keyCode != KeyCodes.KEY_TAB &&
-        	 keyCode != KeyCodes.KEY_BACKSPACE &&
-        	 keyCode != KeyCodes.KEY_DELETE &&
-        	 keyCode != KeyCodes.KEY_ENTER &&
-        	 keyCode != KeyCodes.KEY_HOME &&
-        	 keyCode != KeyCodes.KEY_END &&
-        	 keyCode != KeyCodes.KEY_LEFT &&
-        	 keyCode != KeyCodes.KEY_UP &&
-        	 keyCode != KeyCodes.KEY_RIGHT &&
-        	 keyCode != KeyCodes.KEY_DOWN )
-        {
-        	return false;
-        }
-
-        // On Chrome, the keyCode for '.' is the same as for KEY_DELETE.
-        if ( charCode == '.' )
-        	return false;
-        
-        return true;
-	}
-	
-	/**
-	 * Returns true if the given keyCode is a navigation key.
-	 */
-	public static boolean isNavigationKey( int keyCode )
-	{
-		boolean result = false;
-		
-        if ( keyCode == KeyCodes.KEY_TAB ||
-        	 keyCode == KeyCodes.KEY_HOME ||
-        	 keyCode == KeyCodes.KEY_END ||
-        	 keyCode == KeyCodes.KEY_LEFT ||
-        	 keyCode == KeyCodes.KEY_UP ||
-             keyCode == KeyCodes.KEY_RIGHT ||
-             keyCode == KeyCodes.KEY_DOWN )
-        {
-        	result = true;
-        }
-
-        return result;
-	}
-	
 	
 	/**
 	 * Returns true if we're running in Filr mode and false
@@ -1191,16 +953,6 @@ public class GwtClientHelper {
 	}
 
 	/**
-	 * Returns true if the logged in user should see the 'Public'
-	 * collection.
-	 * 
-	 * @return
-	 */
-	public static boolean isShowPublicCollection() {
-		return getRequestInfo().isShowPublicCollection();
-	}
-
-	/**
 	 * Returns true if the logged in user is a site administrator and
 	 * false otherwise.
 	 * 
@@ -1215,7 +967,6 @@ public class GwtClientHelper {
 	 * otherwise.
 	 */
 	public static native boolean jsBrowserSupportsHtml5FileAPIs() /*-{
-//!		alert("HTML5 support: $wnd.File: " + $wnd.File + ", $wnd.FileReader: " + $wnd.FileReader + ", $wnd.FileList: " + $wnd.FileList + ", $wnd.Blob: " + $wnd.Blob);
 		if ($wnd.File && $wnd.FileReader && $wnd.FileList && $wnd.Blob) {
 			return true;
 		}
@@ -1250,39 +1001,6 @@ public class GwtClientHelper {
 	}-*/;
 	
 	/**
-	 * Simulates a click on an HTML Element.
-	 * 
-	 * @param htmlElement
-	 */
-	public static native void jsClickElement(Element htmlElement) /*-{
-		htmlElement.click();
-	}-*/;
-
-	/**
-	 * Synchronously simulates a click on a Widget.
-	 * 
-	 * @param w
-	 */
-	public static void jsClickWidget(Widget w){
-		jsClickElement(w.getElement());
-	}
-
-	/**
-	 * Asynchronously simulates a click on a Widget.
-	 * 
-	 * @param w
-	 */
-	public static void jsClickWidgetAsync(final Widget w){
-		deferCommand(
-			new ScheduledCommand() {
-				@Override
-				public void execute() {
-					jsClickWidget(w);
-				}
-			});
-	}
-	
-	/**
 	 * Invokes edit-in-place on a file using the applet.
 	 * 
 	 * @param binderId
@@ -1310,7 +1028,7 @@ public class GwtClientHelper {
 	 *  @param attachmentUrl
 	 */
 	public static void jsEditInPlace_WebDAV(String attachmentUrl) {
-		jsLaunchUrlInWindow(attachmentUrl, "_blank");
+		GwtClientHelper.jsLaunchUrlInWindow(attachmentUrl, "_blank");
 	}
 	
 	/**
@@ -1376,16 +1094,6 @@ public class GwtClientHelper {
 	}-*/;
 
 	/**
-	 * Used to fire a simple Vibe event to the outer most GwtMainpage's
-	 * event bus from anywhere within the application.
-	 * 
-	 * @param eventEnum
-	 */
-	public static native void jsFireVibeEventOnMainEventBus(TeamingEvents eventEnum) /*-{
-		$wnd.top.ss_fireVibeEventOnMainEventBus(eventEnum);
-	}-*/;
-
-	/**
 	 * Returns the JavaScript variable ss_allowNextPrevOnView.
 	 * 
 	 * @return
@@ -1430,15 +1138,6 @@ public class GwtClientHelper {
 	public static native int jsGetContentIFrameTop() /*-{
 		var iFrameDIV = $wnd.top.document.getElementById('contentControl');
 		return $wnd.top.ss_getObjectTop(iFrameDIV);
-	}-*/;
-
-	/**
-	 * Returns the text on the main GWT page's <title>.
-	 * 
-	 * @return
-	 */
-	public static native String jsGetMainTitle() /*-{
-		return $wnd.top.document.title;
 	}-*/;
 
 	/**
@@ -1586,27 +1285,9 @@ public class GwtClientHelper {
 		$wnd.top.ss_openUrlInWindow({href: url}, windowName, windowWidth, windowHeight);
 	}-*/;
 	
-	public static void jsLaunchUrlInWindowAsync(final String url, final String windowName, final int windowHeight, final int windowWidth) {
-		deferCommand(new ScheduledCommand() {
-			@Override
-			public void execute() {
-				jsLaunchUrlInWindow(url, windowName, windowHeight, windowWidth);
-			}
-		});
-	}
-	
 	public static native void jsLaunchUrlInWindow(String url, String windowName) /*-{
 		$wnd.top.ss_openUrlInWindow({href: url}, windowName);
 	}-*/;
-	
-	public static void jsLaunchUrlInWindowAsync(final String url, final String windowName) {
-		deferCommand(new ScheduledCommand() {
-			@Override
-			public void execute() {
-				jsLaunchUrlInWindow(url, windowName);
-			}
-		});
-	}
 
 	/**
 	 * Loads a URL into the current window.
@@ -1633,6 +1314,16 @@ public class GwtClientHelper {
 		if ($wnd.top.ss_logoff != null) {
 			$wnd.top.ss_logoff();
 		}
+	}-*/;
+
+	/**
+	 * Used to fire a simple Vibe event to the outer most GwtMainpage's
+	 * event bus from anywhere within the application.
+	 * 
+	 * @param event
+	 */
+	public static native void jsFireVibeEventOnMainEventBus(TeamingEvents eventEnum) /*-{
+		$wnd.top.ss_fireVibeEventOnMainEventBus(eventEnum);
 	}-*/;
 
 	/**
@@ -1670,22 +1361,12 @@ public class GwtClientHelper {
 		$wnd.top.ss_setEntryPopupIframeSize();
 	}-*/;
 
-	/*
-	 * Sets the text on the main GWT page's <title>.
-	 */
-	private static native void jsSetMainTitleImpl(String title) /*-{
-		$wnd.top.document.title = title;
-	}-*/;
-	
 	/**
 	 * Sets the text on the main GWT page's <title>.
-	 * 
-	 * @param title
 	 */
-	public static void jsSetMainTitle(String title) {
-		jsSetMainTitleImpl(title);
-		GwtTeaming.fireEventAsync(new WindowTitleSetEvent(title));
-	}
+	public static native void jsSetMainTitle(String title) /*-{
+		$wnd.top.document.title = title;
+	}-*/;
 
 	/**
 	 * Runs an entry view URL in the content frame.
@@ -1713,58 +1394,6 @@ public class GwtClientHelper {
 		return s1.localeCompare(s2);
 	}-*/;
 
-	/**
-	 * Percent encodes a string, stripping any newlines.
-	 * 
-	 * See the following for the algorithm implemented:
-	 *		http://shadow2531.com/opera/testcases/mailto/modern_mailto_uri_scheme.html
-	 * 
-	 * @param s
-	 * 
-	 * @return
-	 */
-	public static native String jsUTF8PercentEncodeWithNewlinesStripped(String s) /*-{
-	    try {
-	        return encodeURIComponent(s.replace(/\r|\n/g, ""));
-	    }
-	    
-	    catch (e) {
-	        return "Error%20encoding%20data.";
-	    }
-	}-*/;
-
-	/**
-	 * Percent encodes a string, normalizing newlines.
-	 * 
-	 * See the following for the algorithm implemented:
-	 *		http://shadow2531.com/opera/testcases/mailto/modern_mailto_uri_scheme.html
-	 * 
-	 * @param s
-	 * 
-	 * @return
-	 */
-	public static native String jsUTF8PercentEncodeWithNormalizedNewlines(String s) /*-{
-	    try {
-	        // Normalize raw newlines first so that *if* there are any
-	        // newlines in s, \r\n, stray \r and \n all come out as
-	        // %0D%0A.
-	        return encodeURIComponent(s.replace(/\r\n|\r|\n/g, "\r\n"));
-	    }
-	    
-	    catch (e) {
-	        return "Error%20encoding%20data.";
-	    }
-	}-*/;
-
-	/**
-	 * Does a JavaScript window.open() on the given URI.
-	 *  
-	 * @param uri
-	 */
-	public static native void jsWindowOpen(String uri) /*-{
-		window.open(uri);
-	}-*/;
-	
 	/**
 	 * Sets a TeamingPopupPanel to use one-way-corner animation to
 	 * open.
@@ -1872,29 +1501,6 @@ public class GwtClientHelper {
 		deferCommand(cmd, 0);
 	}
 
-	/**
-	 * Look for the given value in the given listbox
-	 */
-	public static int doesListboxContainValue( ListBox listbox, String value )
-	{
-		int i;
-		
-		if ( listbox == null || value == null )
-			return -1;
-		
-		for (i = 0; i < listbox.getItemCount(); ++i)
-		{
-			String nextValue;
-			
-			nextValue = listbox.getValue( i );
-			if ( value.equalsIgnoreCase( nextValue ) )
-				return i;
-		}
-		
-		// If we get here we did not find the value.
-		return -1;
-	}
-	
 	/**
 	 * For the given list box, select the item in the list box that has
 	 * the given value.
@@ -2155,50 +1761,7 @@ public class GwtClientHelper {
 		NativeEvent clickEvent = Document.get().createClickEvent(1, 0, 0, 0, 0, false, false, false, false);
 		e.dispatchEvent(clickEvent);
 	}
-
-	/**
-	 * 
-	 * @param s
-	 * @param delimiter
-	 */
-	public static String[] split( String s, String delimiter )
-	{
-		List<String> nodeValues;
-		int offset = 0;
-		int pos;
-
-		if ( s == null || delimiter == null )
-		{
-			return new String[0];
-		}
-
-		s = s.trim();
-
-		if ( !s.endsWith( delimiter ) )
-		{
-			s += delimiter;
-		}
-
-		if ( s.equals( delimiter ) )
-		{
-			return new String[0];
-		}
-
-		nodeValues = new ArrayList<String>();
-
-		pos = s.indexOf( delimiter, offset );
-		while ( pos != -1 )
-		{
-			nodeValues.add( s.substring( offset, pos ) );
-
-			offset = pos + delimiter.length();
-			pos = s.indexOf( delimiter, offset );
-		}
-
-		return (String[])nodeValues.toArray(new String[0]);
-	}
-
-
+	
 	/**
 	 * Validates we have a URL in an OnSelectBinderInfo object.
 	 * 

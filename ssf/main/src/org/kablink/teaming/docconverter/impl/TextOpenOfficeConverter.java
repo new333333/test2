@@ -52,13 +52,11 @@ import com.sun.star.uri.ExternalUriReferenceTranslator;
 import com.sun.star.connection.NoConnectException;
 
 import org.kablink.teaming.UncheckedIOException;
-import org.kablink.teaming.docconverter.HtmlConverter;
 import org.kablink.teaming.docconverter.TextConverter;
 import org.kablink.teaming.docconverter.util.OpenOfficeHelper;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.FileAttachment;
-import org.kablink.teaming.domain.ShareItem;
 import org.kablink.teaming.repository.RepositoryServiceException;
 import org.kablink.teaming.web.util.MiscUtil;
 
@@ -306,12 +304,5 @@ public class TextOpenOfficeConverter
 			FileAttachment fa) throws UncheckedIOException,
 			RepositoryServiceException {
 		super.deleteConvertedFile(binder, entry, fa, TextConverter.TEXT_SUBDIR, TextConverter.TEXT_FILE_SUFFIX);
-	}
-	
-	@Override
-	public void deleteConvertedFile(ShareItem shareItem, Binder binder, DefinableEntity entry,
-			FileAttachment fa) throws UncheckedIOException,
-			RepositoryServiceException {
-		// Only used for HTML conversions.
 	}
 }
