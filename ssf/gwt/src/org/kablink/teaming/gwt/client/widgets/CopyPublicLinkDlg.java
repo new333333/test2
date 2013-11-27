@@ -72,7 +72,7 @@ import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.TextBox;
 
 /**
- * Implements Vibe's Copy Public Link dialog.
+ * Implements a Copy Public Link dialog.
  *  
  * @author drfoster@novell.com
  */
@@ -414,8 +414,7 @@ public class CopyPublicLinkDlg extends DlgBox {
 			public void onFailure(Throwable t) {
 				GwtClientHelper.handleGwtRPCFailure(
 					t,
-					m_messages.rpcFailure_GetFolderEntry(),
-					entityId.getEntityId());
+					m_messages.rpcFailure_GetFolderEntry());
 			}
 	
 			@Override
@@ -426,7 +425,7 @@ public class CopyPublicLinkDlg extends DlgBox {
 						@Override
 						public void execute() {
 							// Update the name of the entity in the
-							// header....
+							// header...
 							m_headerNameLabel.setText( feInfo.getEntryName()       );
 							m_headerPathLabel.setText( feInfo.getParentBinderName());
 							m_headerPathLabel.setTitle(feInfo.getParentBinderName());
