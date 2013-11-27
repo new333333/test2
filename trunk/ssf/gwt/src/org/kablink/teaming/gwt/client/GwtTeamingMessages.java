@@ -3204,12 +3204,13 @@ public interface GwtTeamingMessages extends Messages
 	String manageMobileDevicesDlg_failureDeletingMobileDevices();
 
 	// Strings used in the Mail To Multiple Public Links Select dialog.
-	String mailToMultiplePublicLinksSelect_Caption(String product);
+	String mailToMultiplePublicLinksSelect(String product);
+	String mailToMultiplePublicLinksSelect_Caption(String product, int count);
 	String mailToMultiplePublicLinksSelect_Column_Expires();
 	String mailToMultiplePublicLinksSelect_Column_Note();
 	String mailToMultiplePublicLinksSelect_Column_SharedOn();
-	String mailToMultiplePublicLinksSelect_Header(String product);
-	String mailToMultiplePublicLinksSelect_InternalError_NoLinks();
+	String mailToMultiplePublicLinksSelect_HeaderTail(String product);
+	String mailToMultiplePublicLinksSelect_InternalError_NoLinks(String product);
 	String mailToMultiplePublicLinksSelect_Never();
 	String mailToMultiplePublicLinksSelect_NoNote();
 	

@@ -1440,7 +1440,7 @@ public class BinderViewsHelper {
 				default:
 					// More than one!  We need to ask the user which
 					// one to mail.
-					mailToMultiplePublicLinksAsync(plData.getSubject(), plList);
+					mailToMultiplePublicLinksAsync(entityId, plData.getSubject(), plList);
 					break;
 				}
 			}
@@ -1451,11 +1451,11 @@ public class BinderViewsHelper {
 	 * Asynchronously runs the mail to multiple public links select
 	 * dialog for the user to select which public link is to be mailed.
 	 */
-	private static void mailToMultiplePublicLinksAsync(final String subject, final List<MailToPublicLinkInfo> plInfoList) {
+	private static void mailToMultiplePublicLinksAsync(final EntityId entityId, final String subject, final List<MailToPublicLinkInfo> plInfoList) {
 		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
-				mailToMultiplePublicLinksNow(subject, plInfoList);
+				mailToMultiplePublicLinksNow(entityId, subject, plInfoList);
 			}
 		});
 	}
@@ -1464,7 +1464,7 @@ public class BinderViewsHelper {
 	 * Synchronously runs the mail to multiple public links select
 	 * dialog for the user to select which public link is to be mailed.
 	 */
-	private static void mailToMultiplePublicLinksNow(final String subject, final List<MailToPublicLinkInfo> plInfoList) {
+	private static void mailToMultiplePublicLinksNow(final EntityId entityId, final String subject, final List<MailToPublicLinkInfo> plInfoList) {
 		if (null == m_mailPLSelectDlg) {
 			MailToMultiplePublicLinksSelectDlg.createAsync(new MailToMultiplePublicLinksSelectDlgClient() {
 				@Override
@@ -1476,13 +1476,13 @@ public class BinderViewsHelper {
 				@Override
 				public void onSuccess(MailToMultiplePublicLinksSelectDlg mtmplsDlg) {
 					m_mailPLSelectDlg = mtmplsDlg;
-					mailToMultiplePublicLinksImplAsync(subject, plInfoList);
+					mailToMultiplePublicLinksImplAsync(entityId, subject, plInfoList);
 				}
 			});
 		}
 		
 		else {
-			mailToMultiplePublicLinksImplNow(subject, plInfoList);
+			mailToMultiplePublicLinksImplNow(entityId, subject, plInfoList);
 		}
 	}
 
@@ -1490,11 +1490,11 @@ public class BinderViewsHelper {
 	 * Asynchronously runs the mail to multiple public links select
 	 * dialog for the user to select which public link is to be mailed.
 	 */
-	private static void mailToMultiplePublicLinksImplAsync(final String subject, final List<MailToPublicLinkInfo> plInfoList) {
+	private static void mailToMultiplePublicLinksImplAsync(final EntityId entityId, final String subject, final List<MailToPublicLinkInfo> plInfoList) {
 		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
-				mailToMultiplePublicLinksImplNow(subject, plInfoList);
+				mailToMultiplePublicLinksImplNow(entityId, subject, plInfoList);
 			}
 		});
 	}
@@ -1503,9 +1503,10 @@ public class BinderViewsHelper {
 	 * Synchronously runs the mail to multiple public links select
 	 * dialog for the user to select which public link is to be mailed.
 	 */
-	private static void mailToMultiplePublicLinksImplNow(final String subject, final List<MailToPublicLinkInfo> plInfoList) {
+	private static void mailToMultiplePublicLinksImplNow(final EntityId entityId, final String subject, final List<MailToPublicLinkInfo> plInfoList) {
 		MailToMultiplePublicLinksSelectDlg.initAndShow(
 			m_mailPLSelectDlg,
+			entityId,
 			plInfoList,
 			new MailToMultiplePublicLinksSelectCallback() {
 				@Override
