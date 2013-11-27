@@ -112,7 +112,7 @@ public class LdapUserSource extends BaseRestObject {
         this.groupSearches = groupSearches;
     }
 
-    @XmlElement(name="proxy_dn")
+    @XmlElement(name="username")
     public String getPrincipal() {
         return principal;
     }
@@ -121,7 +121,7 @@ public class LdapUserSource extends BaseRestObject {
         this.principal = principal;
     }
 
-    @XmlElement(name="proxy_password")
+    @XmlElement(name="password")
     public String getCredentials() {
         return credentials;
     }
