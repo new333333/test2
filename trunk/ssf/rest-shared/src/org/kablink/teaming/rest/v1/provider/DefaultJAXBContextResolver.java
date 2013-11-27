@@ -123,6 +123,7 @@ public class DefaultJAXBContextResolver implements ContextResolver<JAXBContext> 
             AssignedRight.class,
             AssignedSharingPermission.class,
             ExternalSharingRestrictions.class,
+            GroupSynchronization.class,
             KeyValuePair.class,
             LdapHomeDirConfig.class,
             LdapSearchInfo.class,
@@ -134,6 +135,8 @@ public class DefaultJAXBContextResolver implements ContextResolver<JAXBContext> 
             SelectedDays.class,
             ShareSettings.class,
             Time.class,
+            UserSynchronization.class,
+            UserSourceSynchronization.class,
     		};
     
     public DefaultJAXBContextResolver() throws Exception {

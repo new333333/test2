@@ -1451,7 +1451,13 @@ text/calendar											  ics
 				<property name="resourceDriverModule"><ref bean="resourceDriverModule"/></property>
 			</bean>
 		</property>
-	</bean>		
+        <property name="transactionAttributes">
+            <props>
+                <prop key="get*">PROPAGATION_REQUIRED,readOnly,+org.kablink.teaming.security.AccessControlException,+org.kablink.teaming.exception.UncheckedCodedException</prop>
+                <prop key="set*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+            </props>
+        </property>
+	</bean>
 
 	<!-- ==============================Extension Support ==================== -->
 	<bean id="extensionManager" parent="dependOnCommonServicesTemplate" class="org.kablink.teaming.extension.impl.ExtensionManagerImpl">

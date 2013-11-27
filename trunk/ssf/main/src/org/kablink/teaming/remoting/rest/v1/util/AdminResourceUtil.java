@@ -203,7 +203,7 @@ public class AdminResourceUtil {
         return model;
     }
 
-    private static Schedule buildSchedule(ScheduleInfo scheduleInfo) {
+    public static Schedule buildSchedule(ScheduleInfo scheduleInfo) {
         Schedule model = null;
         if (scheduleInfo!=null) {
             model = new Schedule();

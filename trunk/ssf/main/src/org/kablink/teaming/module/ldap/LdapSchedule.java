@@ -89,7 +89,11 @@ public class LdapSchedule {
 		return scheduleInfo;
 	}
 
-	public boolean isScheduleEnabled() {
+    public void setScheduleInfo(ScheduleInfo scheduleInfo) {
+        this.scheduleInfo = scheduleInfo;
+    }
+
+    public boolean isScheduleEnabled() {
 		return GetterUtil.get((String)getDetails().get(ENABLE_SCHEDULE), false);
 	}
 	public void setScheduleEnabled(boolean scheduleEnabled) {

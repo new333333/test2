@@ -6359,15 +6359,15 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	 * @param name
 	 * @return
 	 */
-	private String getDefaultLocaleId()
+    public String getDefaultLocaleId()
 	{
 		String			defaultLocaleId;
 		Workspace		topWorkspace;
 		WorkspaceModule	workspaceModule;
 		
 		// Get the top workspace.  That is where global properties are stored.
-		workspaceModule = (WorkspaceModule) SpringContextUtil.getBean( "workspaceModule" );
-		topWorkspace = workspaceModule.getTopWorkspace();
+        workspaceModule = getWorkspaceModule();
+        topWorkspace = workspaceModule.getTopWorkspace();
 		
 		// Get the default locale property.
 		defaultLocaleId = (String) topWorkspace.getProperty( ObjectKeys.GLOBAL_PROPERTY_DEFAULT_LOCALE );
@@ -6390,15 +6390,15 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	 * @param name
 	 * @return
 	 */
-	private String getDefaultTimeZone()
+	public String getDefaultTimeZone()
 	{
 		String			defaultTimeZone;
 		Workspace		topWorkspace;
 		WorkspaceModule	workspaceModule;
 		
 		// Get the top workspace.  That is where global properties are stored.
-		workspaceModule = (WorkspaceModule) SpringContextUtil.getBean( "workspaceModule" );
-		topWorkspace = workspaceModule.getTopWorkspace();
+        workspaceModule = getWorkspaceModule();
+        topWorkspace = workspaceModule.getTopWorkspace();
 		
 		// Get the default time zone property.
 		defaultTimeZone = (String) topWorkspace.getProperty( ObjectKeys.GLOBAL_PROPERTY_DEFAULT_TIME_ZONE );
@@ -6409,7 +6409,45 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	}// end getDefaultTimeZone()
 
 
-	protected String nameToId(String name) {
+    /**
+     * Set the default locale setting.  This setting is used to set the locale  on a user when
+     * the user is created from an ldap sync.
+     */
+    public void setDefaultLocale(String localeId)
+    {
+        Workspace	topWorkspace;
+
+        if ( localeId == null || localeId.length() == 0 )
+            return;
+
+        // Get the top workspace.  That is where global properties are stored.
+        topWorkspace = getWorkspaceModule().getTopWorkspace();
+
+        // Save the default locale id as a global property
+        topWorkspace.setProperty( ObjectKeys.GLOBAL_PROPERTY_DEFAULT_LOCALE, localeId );
+
+    }
+
+
+    /**
+     * Set the default time zone setting.  This setting is used to set the time zone on a user when
+     * the user is created from an ldap sync.
+     */
+    public void setDefaultTimeZone(String timeZoneId)
+    {
+        Workspace	topWorkspace;
+
+        if ( timeZoneId == null || timeZoneId.length() == 0 )
+            return;
+
+        // Get the top workspace.  That is where global properties are stored.
+        topWorkspace = getWorkspaceModule().getTopWorkspace();
+
+        // Save the default time zone as a global property
+        topWorkspace.setProperty( ObjectKeys.GLOBAL_PROPERTY_DEFAULT_TIME_ZONE, timeZoneId );
+    }
+
+    protected String nameToId(String name) {
 		return name;
 	}
 	protected String idToName(String id) {
@@ -7269,5 +7307,11 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			getProfileModule().deleteEntryFinish();
 		}
 		IndexSynchronizationManager.applyChanges();
+    }
+
+    private WorkspaceModule getWorkspaceModule() {
+        WorkspaceModule workspaceModule;
+        workspaceModule = (WorkspaceModule) SpringContextUtil.getBean("workspaceModule");
+        return workspaceModule;
     }
 }
