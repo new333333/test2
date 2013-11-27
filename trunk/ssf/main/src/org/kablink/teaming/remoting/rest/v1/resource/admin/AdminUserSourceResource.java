@@ -151,7 +151,6 @@ public class AdminUserSourceResource extends AbstractAdminResource {
                 } else {
                     existing.setUserDelete(false);
                 }
-                existing.setUserSync(users.getSyncProfiles());
             }
             if (users.getDefaultTimezone()!=null) {
                 TimeZone tz = TimeZone.getTimeZone(users.getDefaultTimezone());
