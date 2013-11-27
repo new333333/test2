@@ -35,10 +35,12 @@ package org.kablink.teaming.remoting.rest.v1.resource.admin;
 import com.sun.jersey.spi.resource.Singleton;
 import org.dom4j.Element;
 import org.kablink.teaming.domain.LdapConnectionConfig;
+import org.kablink.teaming.domain.LdapSyncException;
 import org.kablink.teaming.domain.NoLdapConnectionConfigByTheIdException;
 import org.kablink.teaming.jobs.ScheduleInfo;
 import org.kablink.teaming.module.ldap.LdapModule;
 import org.kablink.teaming.module.ldap.LdapSchedule;
+import org.kablink.teaming.module.ldap.LdapSyncResults;
 import org.kablink.teaming.remoting.rest.v1.exc.BadRequestException;
 import org.kablink.teaming.remoting.rest.v1.resource.AbstractResource;
 import org.kablink.teaming.remoting.rest.v1.util.AdminResourceUtil;
@@ -93,8 +95,17 @@ public class AdminUserSourceResource extends AbstractAdminResource {
         return AdminResourceUtil.buildUserSource(config, getResourceDriverModule());
    	}
 
+    @POST
+    @Path("sync")
+    @Consumes({"*/*"})
+   	public org.kablink.teaming.rest.v1.model.admin.LdapSyncResults syncSources() throws LdapSyncException {
+        LdapSyncResults results = new LdapSyncResults(String.valueOf( Math.random() ));
+        getLdapModule().syncAll(true, null, LdapModule.LdapSyncMode.PERFORM_SYNC, results);
+        return AdminResourceUtil.buildLdapSyncResults(results);
+   	}
+
     @GET
-    @Path("synchronization")
+    @Path("sync_config")
     public UserSourceSynchronization getUserSourceSynchronization() {
         UserSourceSynchronization sync = new UserSourceSynchronization();
         LdapSchedule ldapSchedule = getLdapModule().getLdapSchedule();
@@ -123,7 +134,7 @@ public class AdminUserSourceResource extends AbstractAdminResource {
     }
 
     @PUT
-    @Path("synchronization")
+    @Path("sync_config")
     @Consumes( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
     public UserSourceSynchronization updateUserSourceSynchronization(UserSourceSynchronization sync) {
         LdapModule ldapModule = getLdapModule();

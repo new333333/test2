@@ -127,6 +127,7 @@ public class DefaultJAXBContextResolver implements ContextResolver<JAXBContext> 
             KeyValuePair.class,
             LdapHomeDirConfig.class,
             LdapSearchInfo.class,
+            LdapSyncResults.class,
             LdapUserSource.class,
             NetFolder.class,
             NetFolderServer.class,
