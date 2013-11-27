@@ -221,6 +221,10 @@ public class AdminInfoDlg extends DlgBox
 						case UPGRADE_TEMPLATES:
 							taskInfo = GwtTeaming.getMessages().adminInfoDlgUpgradeTemplates();
 							break;
+							
+						case UPGRADE_IMPORT_TYPLESS_DN:
+							taskInfo = GwtTeaming.getMessages().adminInfoDlgUpgradeImportTypelessDN();
+							break;
 						}
 						
 						if ( taskInfo != null )

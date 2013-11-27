@@ -541,6 +541,17 @@ protected void modifyEntry_indexAdd(Binder binder, Entry entry,
     		entryData.put(ObjectKeys.FIELD_PRINCIPAL_NAME, inputData.getSingleValue(ObjectKeys.FIELD_PRINCIPAL_NAME));
     	}
 
+   		if ( inputData.exists( ObjectKeys.FIELD_PRINCIPAL_TYPELESS_DN ) && !entryData.containsKey( ObjectKeys.FIELD_PRINCIPAL_TYPELESS_DN ) )
+   		{
+   			String value;
+   			
+   			value = inputData.getSingleValue( ObjectKeys.FIELD_PRINCIPAL_TYPELESS_DN );
+   			if ( value != null )
+   				value = value.toLowerCase();
+   			
+   			entryData.put( ObjectKeys.FIELD_PRINCIPAL_TYPELESS_DN, value );
+   		}
+
        	// Handle the ldapGuid attribute
    		if (inputData.exists( ObjectKeys.FIELD_PRINCIPAL_LDAPGUID ) && !entryData.containsKey( ObjectKeys.FIELD_PRINCIPAL_LDAPGUID ) )
    		{

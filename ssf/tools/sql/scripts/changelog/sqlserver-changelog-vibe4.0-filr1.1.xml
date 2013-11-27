@@ -423,4 +423,13 @@
         </addColumn>
     </changeSet>
 
+    <changeSet author="jay" context="schema" failOnError="true" id="34">
+        <comment>Add typelessDN field to SS_Principals</comment>
+        <addColumn tableName="SS_Principals">
+            <column name="typelessDN" type="VARCHAR(255)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>

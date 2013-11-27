@@ -685,7 +685,25 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 				getProfileModule().setUserProperty(superU.getId(), ObjectKeys.USER_PROPERTY_UPGRADE_TEMPLATES, "true");
 			}
 		}
+
+		if ( version.intValue() <= 16 )
+		{
+			if ( Utils.checkIfFilr() )
+			{
+				ProfileModule profileModule;
 				
+				profileModule = getProfileModule();
+				
+				// When upgrading to Filr 1.1 an ldap sync needs to be run to import a typeless dn
+				// for each user and group.
+				profileModule.setUserProperty( superU.getId(), ObjectKeys.USER_PROPERTY_UPGRADE_IMPORT_TYPELESS_DN, null );
+
+				// We don't need to perform the other admin tasks.
+				profileModule.setUserProperty( superU.getId(), ObjectKeys.USER_PROPERTY_UPGRADE_DEFINITIONS, "true" );
+				profileModule.setUserProperty( superU.getId(), ObjectKeys.USER_PROPERTY_UPGRADE_SEARCH_INDEX, "true" );
+				profileModule.setUserProperty( superU.getId(), ObjectKeys.USER_PROPERTY_UPGRADE_TEMPLATES, "true" );
+			}
+		}
   	}
  	
  	private void correctFilrRoles(ZoneConfig zoneConfig) {

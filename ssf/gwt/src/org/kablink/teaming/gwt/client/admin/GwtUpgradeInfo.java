@@ -250,7 +250,8 @@ public class GwtUpgradeInfo
 	{
 		UPGRADE_DEFINITIONS,
 		UPGRADE_SEARCH_INDEX,
-		UPGRADE_TEMPLATES;
+		UPGRADE_TEMPLATES,
+		UPGRADE_IMPORT_TYPLESS_DN;
 	}// end UpgradeTask
 	
 }// end GwtUpgradeInfo

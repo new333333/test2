@@ -2173,6 +2173,72 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		return null;
 	}
 	
+    /**
+     * Convert the fully-qualified dn to a typeless dn
+     */
+    private String getTypelessDN( String fqdn )
+    {
+    	StringBuffer typelessDN;
+		int fromIndex;
+		boolean keepGoing = true;
+    	
+    	if ( fqdn == null || fqdn.length() == 0 )
+    		return null;
+    	
+    	typelessDN = new StringBuffer();
+    	
+		fromIndex = 0;
+		while ( keepGoing )
+		{
+			int index;
+
+			// Find the next '='
+			index = fqdn.indexOf( '=', fromIndex );
+			if ( index > 0 && (index+1) < fqdn.length() )
+			{
+				char prevCh = ' ';
+				boolean foundComma;
+
+				typelessDN.append( '.' );
+				
+				foundComma = false;
+				++index;
+				while ( index < fqdn.length() && foundComma == false )
+				{
+					char nextCh;
+					
+					nextCh = fqdn.charAt( index );
+					++index;
+					
+					if ( nextCh == ',' && prevCh != '\\' )
+					{
+						// We have found the end of this section of the dn
+						foundComma = true;
+					}
+					else
+					{
+						if ( nextCh == '+' || nextCh == '=' || nextCh == '.' )
+						{
+							// '+', '=' and '.'  must be escaped.
+							if ( prevCh != '\\' )
+								typelessDN.append( '\\' );
+						}
+						
+						typelessDN.append( nextCh );
+						prevCh = nextCh;
+					}
+				}
+				
+				keepGoing = foundComma;
+				fromIndex = index;
+			}
+			else
+				keepGoing = false;
+		}
+    	
+    	return typelessDN.toString();
+    }
+    
     @Override
     public String readLdapGuidFromDirectory(String userName, Long zoneId, LdapConnectionConfig config) {
 		String ldapGuidAttribute;
@@ -2944,6 +3010,21 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	   			delContainers = true;
 	   		m_containerCoordinator.wrapUp( delContainers );
 
+	   		// Remove the admin task to run an ldap sync to import typeless dn information
+	   		{
+	   	 		User superUser;
+	   			
+	   	 		//	get super user from config file - must exist or throws and error
+	   			superUser = getProfileDao().getReservedUser(
+	   													ObjectKeys.SUPER_USER_INTERNALID,
+	   													zone.getId() );
+	
+				getProfileModule().setUserProperty(
+												superUser.getId(),
+												ObjectKeys.USER_PROPERTY_UPGRADE_IMPORT_TYPELESS_DN,
+												"true" );
+	   		}
+	   		
 	   		if ( ldapSyncEx != null )
 	   			throw ldapSyncEx;
 	   		
@@ -3817,6 +3898,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			Object[] row = null; 
 			Object[] row2 = null;
 			String ldapGuid = null;
+			String typelessDN = null;
 			boolean foundLocalUser = false;
 			
 			if (logger.isDebugEnabled())
@@ -3824,6 +3906,9 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 
 			// Add the necessary containers for this user.
 			m_containerCoordinator.record( dn );
+			
+			// Get the typeless dn
+			typelessDN = getTypelessDN( dn );
 			
 			// Do we have the name of the ldap attribute that holds the guid?
 			if ( ldapGuidAttribute != null && ldapGuidAttribute.length() > 0 )
@@ -3903,6 +3988,9 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					// Update the domain name
 					userMods.put( ObjectKeys.FIELD_PRINCIPAL_DOMAIN_NAME, domainName );
 
+					// Update the typelessDN field
+					userMods.put( ObjectKeys.FIELD_PRINCIPAL_TYPELESS_DN, typelessDN );
+
 					// Did we find the ldap user in Teaming by their ldap guid?
 					if ( foundLdapGuid )
 					{
@@ -3975,6 +4063,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					
 					userMods.put(ObjectKeys.FIELD_PRINCIPAL_NAME, ssName);
 					userMods.put(ObjectKeys.FIELD_PRINCIPAL_FOREIGNNAME, dn);
+					userMods.put( ObjectKeys.FIELD_PRINCIPAL_TYPELESS_DN, typelessDN );
 					userMods.put(ObjectKeys.FIELD_ZONE, zoneId);
 					userMods.put( ObjectKeys.FIELD_PRINCIPAL_DOMAIN_NAME, domainName );
 					
@@ -4642,6 +4731,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			boolean foundLdapGuid = false;
 			String ldapGuid = null;
 			String ssName;
+			String typelessDN;
 			Object[] row = null;
 			
 			if (logger.isDebugEnabled())
@@ -4649,6 +4739,9 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			
 			// Add the necessary containers for this group.
 			m_containerCoordinator.record( dn );
+			
+			// Get the typeless dn
+			typelessDN = getTypelessDN( dn );
 			
 			if ( domainName != null )
 				domainName = domainName.toLowerCase();
@@ -4733,6 +4826,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 						
 						userMods.put(ObjectKeys.FIELD_PRINCIPAL_NAME,ssName);
 						userMods.put(ObjectKeys.FIELD_PRINCIPAL_FOREIGNNAME, dn);
+						userMods.put( ObjectKeys.FIELD_PRINCIPAL_TYPELESS_DN, typelessDN );
 						userMods.put(ObjectKeys.FIELD_ZONE, zoneId);
 						userMods.put( ObjectKeys.FIELD_PRINCIPAL_DOMAIN_NAME, domainName );
 
@@ -4774,6 +4868,9 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					// Make sure the dn stored in Teaming is updated for this user.
 					userMods.put( ObjectKeys.FIELD_PRINCIPAL_FOREIGNNAME, dn );
 					row[PRINCIPAL_FOREIGN_NAME] = dn;
+
+					// Update the typelessDN field
+					userMods.put( ObjectKeys.FIELD_PRINCIPAL_TYPELESS_DN, typelessDN );
 
 					// Update the domain name
 					userMods.put( ObjectKeys.FIELD_PRINCIPAL_DOMAIN_NAME, domainName );

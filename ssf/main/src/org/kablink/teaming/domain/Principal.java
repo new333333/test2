@@ -72,6 +72,7 @@ public abstract class Principal extends Entry implements IPrincipal {
 	protected boolean disabled=false;
     protected String name;
     protected String foreignName="";
+    protected String typelessDN = "";
     protected String ldapGuid="";
     protected String objectSid;
     protected String samAccountName;
@@ -273,6 +274,29 @@ public abstract class Principal extends Entry implements IPrincipal {
     }
     
 
+    /**
+     * @hibernate.property length="128"
+     * @return
+     */
+    public String getTypelessDN()
+    {
+    	return typelessDN;
+    }
+    
+    /**
+     * 
+     */
+    public void setTypelessDN( String typelessDN )
+    {
+    	// We always store typeless dn in lower case in the database so that we can match
+    	// on typeless dn case insensitively using case-sensitive database lookup for
+    	// efficiency reason.
+    	if ( typelessDN != null )
+    		typelessDN = typelessDN.toLowerCase();
+    	
+    	this.typelessDN = typelessDN;
+    }
+    
     /**
      * @hibernate.property length="128"
      * @return
