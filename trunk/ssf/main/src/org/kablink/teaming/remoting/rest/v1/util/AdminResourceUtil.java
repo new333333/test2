@@ -40,6 +40,7 @@ import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.ResourceDriverConfig;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.jobs.ScheduleInfo;
+import org.kablink.teaming.module.ldap.LdapSyncResults;
 import org.kablink.teaming.module.resourcedriver.ResourceDriverModule;
 import org.kablink.teaming.rest.v1.model.Access;
 import org.kablink.teaming.rest.v1.model.LongIdLinkPair;
@@ -316,5 +317,26 @@ public class AdminResourceUtil {
             return null;
         }
         return recipient;
+    }
+
+    public static org.kablink.teaming.rest.v1.model.admin.LdapSyncResults buildLdapSyncResults(LdapSyncResults results) {
+        org.kablink.teaming.rest.v1.model.admin.LdapSyncResults model = new org.kablink.teaming.rest.v1.model.admin.LdapSyncResults();
+        model.setStatus(results.getStatus().name());
+        model.setError(results.getErrorDesc());
+        model.setAddedGroups(buildList(results.getAddedGroups()));
+        model.setModifiedGroups(buildList(results.getModifiedGroups()));
+        model.setDeletedGroups(buildList(results.getDeletedGroups()));
+        model.setAddedUsers(buildList(results.getAddedUsers()));
+        model.setModifiedUsers(buildList(results.getModifiedUsers()));
+        model.setDeletedUsers(buildList(results.getDisabledUsers()));
+        model.setDisabledUsers(buildList(results.getDisabledUsers()));
+        return model;
+    }
+
+    private static List<String> buildList(LdapSyncResults.PartialLdapSyncResults results) {
+        if (results!=null) {
+            return results.getResults();
+        }
+        return null;
     }
 }

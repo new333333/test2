@@ -94,7 +94,8 @@ public class MainAdminResource extends AbstractAdminResource {
         obj.addAdditionalLink("personal_storage", "/admin/personal_storage");
         obj.addAdditionalLink("share_settings", "/admin/share_settings");
         obj.addAdditionalLink("user_sources", "/admin/user_sources");
-        obj.addAdditionalLink("user_source_sync", "/admin/user_sources/synchronization");
+        obj.addAdditionalLink("user_source_sync", "/admin/user_sources/sync");
+        obj.addAdditionalLink("user_source_sync_config", "/admin/user_sources/sync_config");
         obj.addAdditionalLink("web_application", "/admin/web_application");
    		return obj;
    	}
