@@ -137,6 +137,7 @@ public class DefaultJAXBContextResolver implements ContextResolver<JAXBContext> 
             Time.class,
             UserSynchronization.class,
             UserSourceSynchronization.class,
+            WebAppConfig.class,
     		};
     
     public DefaultJAXBContextResolver() throws Exception {

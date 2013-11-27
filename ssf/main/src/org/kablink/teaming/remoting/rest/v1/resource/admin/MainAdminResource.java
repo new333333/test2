@@ -35,6 +35,8 @@ package org.kablink.teaming.remoting.rest.v1.resource.admin;
 import com.sun.jersey.spi.resource.Singleton;
 import org.dom4j.Document;
 import org.kablink.teaming.context.request.RequestContextHolder;
+import org.kablink.teaming.domain.AuthenticationConfig;
+import org.kablink.teaming.domain.OpenIDConfig;
 import org.kablink.teaming.domain.ZoneInfo;
 import org.kablink.teaming.remoting.rest.v1.resource.AbstractResource;
 import org.kablink.teaming.remoting.rest.v1.util.AdminResourceUtil;
@@ -50,6 +52,7 @@ import org.kablink.teaming.rest.v1.model.admin.AssignedSharingPermission;
 import org.kablink.teaming.rest.v1.model.admin.ExternalSharingRestrictions;
 import org.kablink.teaming.rest.v1.model.admin.PersonalStorage;
 import org.kablink.teaming.rest.v1.model.admin.ShareSettings;
+import org.kablink.teaming.rest.v1.model.admin.WebAppConfig;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.ShareLists;
 import org.kablink.teaming.web.util.AdminHelper;
@@ -92,6 +95,7 @@ public class MainAdminResource extends AbstractAdminResource {
         obj.addAdditionalLink("share_settings", "/admin/share_settings");
         obj.addAdditionalLink("user_sources", "/admin/user_sources");
         obj.addAdditionalLink("user_source_sync", "/admin/user_sources/synchronization");
+        obj.addAdditionalLink("web_application", "/admin/web_application");
    		return obj;
    	}
 
@@ -112,6 +116,55 @@ public class MainAdminResource extends AbstractAdminResource {
         validateMandatoryField(settings, "getAllowPersonalStorage");
         getAdminModule().setAdHocFoldersEnabled(settings.getAllowPersonalStorage());
         return getPersonalStorageSettings();
+    }
+
+    @GET
+    @Path("/web_application")
+    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+    public WebAppConfig getWebApplicationSettings() {
+        WebAppConfig settings = new WebAppConfig();
+        settings.setLink("/admin/web_application");
+        settings.setEnabled(getAdminModule().isWebAccessEnabled());
+        settings.setAllowDownloads(getAdminModule().isDownloadEnabled());
+        AuthenticationConfig authConfig = getAuthenticationModule().getAuthenticationConfig();
+        settings.setAllowGuestAccess(authConfig.isAllowAnonymousAccess());
+        settings.setReadOnlyGuest(authConfig.isAnonymousReadOnly());
+        org.kablink.teaming.domain.ZoneConfig zoneConfig = getZoneModule().getZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
+        OpenIDConfig openIdConfig = zoneConfig.getOpenIDConfig();
+        settings.setAllowOpenId(zoneConfig.isExternalUserEnabled() && openIdConfig.isAuthenticationEnabled());
+        return settings;
+    }
+
+    @PUT
+    @Path("/web_application")
+    @Consumes( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+    public WebAppConfig updateWebAppSettings(WebAppConfig settings) {
+        if (settings.getEnabled()!=null) {
+            getAdminModule().setWebAccessEnabled(settings.getEnabled());
+        }
+        if (settings.getAllowDownloads()!=null) {
+            getAdminModule().setDownloadEnabled(settings.getAllowDownloads());
+        }
+        if (settings.getAllowGuestAccess()!=null || settings.getReadOnlyGuest()!=null) {
+            AuthenticationConfig authConfig = getAuthenticationModule().getAuthenticationConfig();
+            if (settings.getAllowGuestAccess()!=null) {
+                authConfig.setAllowAnonymousAccess(settings.getAllowGuestAccess());
+            }
+            if (settings.getReadOnlyGuest()!=null) {
+                authConfig.setAnonymousReadOnly(settings.getReadOnlyGuest());
+            }
+            getAuthenticationModule().setAuthenticationConfig(authConfig);
+        }
+        if (settings.getAllowOpenId()!=null) {
+            org.kablink.teaming.domain.ZoneConfig zoneConfig = getZoneModule().getZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
+
+            OpenIDConfig openIdConfig = zoneConfig.getOpenIDConfig();
+            openIdConfig.setAuthenticationEnabled( settings.getAllowOpenId() );
+
+            getAdminModule().setOpenIDConfig( openIdConfig );
+        }
+
+        return getWebApplicationSettings();
     }
 
     @GET
