@@ -48,6 +48,7 @@ import org.kablink.teaming.rest.v1.model.SearchableObject;
 import org.kablink.teaming.rest.v1.model.ZoneConfig;
 import org.kablink.teaming.rest.v1.model.admin.AssignedSharingPermission;
 import org.kablink.teaming.rest.v1.model.admin.ExternalSharingRestrictions;
+import org.kablink.teaming.rest.v1.model.admin.PersonalStorage;
 import org.kablink.teaming.rest.v1.model.admin.ShareSettings;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.ShareLists;
@@ -87,10 +88,30 @@ public class MainAdminResource extends AbstractAdminResource {
         RootRestObject obj = new RootRestObject();
         obj.addAdditionalLink("net_folder_servers", "/admin/net_folder_servers");
         obj.addAdditionalLink("net_folders", "/admin/net_folders");
+        obj.addAdditionalLink("personal_storage", "/admin/personal_storage");
         obj.addAdditionalLink("share_settings", "/admin/share_settings");
         obj.addAdditionalLink("user_sources", "/admin/user_sources");
    		return obj;
    	}
+
+    @GET
+    @Path("/personal_storage")
+    @Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+    public PersonalStorage getPersonalStorageSettings() {
+        PersonalStorage settings = new PersonalStorage();
+        settings.setLink("/admin/personal_storage");
+        settings.setAllowPersonalStorage(AdminHelper.getAdhocFolderSettingFromZone(this));
+        return settings;
+    }
+
+    @PUT
+    @Path("/personal_storage")
+    @Consumes( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+    public PersonalStorage updatePersonalStorageSettings(PersonalStorage settings) {
+        validateMandatoryField(settings, "getAllowPersonalStorage");
+        getAdminModule().setAdHocFoldersEnabled(settings.getAllowPersonalStorage());
+        return getPersonalStorageSettings();
+    }
 
     @GET
     @Path("/share_settings")
