@@ -87,4 +87,9 @@ public interface LdapModule {
 	public void syncUser(Long userId) throws NoUserByTheNameException,NamingException;
 
 	public Integer testGroupMembershipCriteria( String baseDn, String filter, boolean searchSubtree ) throws LdapSyncException;
+
+    public String getDefaultLocaleId();
+    public String getDefaultTimeZone();
+    public void setDefaultLocale(String localeId);
+    public void setDefaultTimeZone(String timeZoneId);
 }

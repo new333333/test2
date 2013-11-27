@@ -36,20 +36,28 @@ import com.sun.jersey.spi.resource.Singleton;
 import org.dom4j.Element;
 import org.kablink.teaming.domain.LdapConnectionConfig;
 import org.kablink.teaming.domain.NoLdapConnectionConfigByTheIdException;
+import org.kablink.teaming.jobs.ScheduleInfo;
+import org.kablink.teaming.module.ldap.LdapModule;
+import org.kablink.teaming.module.ldap.LdapSchedule;
 import org.kablink.teaming.remoting.rest.v1.exc.BadRequestException;
 import org.kablink.teaming.remoting.rest.v1.resource.AbstractResource;
 import org.kablink.teaming.remoting.rest.v1.util.AdminResourceUtil;
 import org.kablink.teaming.rest.v1.model.SearchResultList;
+import org.kablink.teaming.rest.v1.model.admin.GroupSynchronization;
 import org.kablink.teaming.rest.v1.model.admin.KeyValuePair;
 import org.kablink.teaming.rest.v1.model.admin.LdapSearchInfo;
 import org.kablink.teaming.rest.v1.model.admin.LdapUserSource;
+import org.kablink.teaming.rest.v1.model.admin.UserSourceSynchronization;
+import org.kablink.teaming.rest.v1.model.admin.UserSynchronization;
 import org.kablink.teaming.util.SZoneConfig;
+import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.util.api.ApiErrorCode;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -58,7 +66,9 @@ import javax.xml.crypto.dsig.keyinfo.KeyValue;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.TimeZone;
 
 @Path("/admin/user_sources")
 @Singleton
@@ -66,7 +76,6 @@ import java.util.Map;
 public class AdminUserSourceResource extends AbstractAdminResource {
 
     @GET
-   	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
    	public SearchResultList<LdapUserSource> getUserSources() {
         List<LdapConnectionConfig> configList = getAuthenticationModule().getLdapConnectionConfigs();
         SearchResultList<LdapUserSource> results = new SearchResultList<LdapUserSource>();
@@ -78,12 +87,106 @@ public class AdminUserSourceResource extends AbstractAdminResource {
 
     @POST
    	@Consumes( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
-   	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
    	public LdapUserSource createUserSource(LdapUserSource userSource) {
         LdapConnectionConfig config = toLdapConnectionConfig(userSource);
         getAuthenticationModule().saveLdapConnectionConfig(config);
         return AdminResourceUtil.buildUserSource(config, getResourceDriverModule());
    	}
+
+    @GET
+    @Path("synchronization")
+    public UserSourceSynchronization getUserSourceSynchronization() {
+        UserSourceSynchronization sync = new UserSourceSynchronization();
+        LdapSchedule ldapSchedule = getLdapModule().getLdapSchedule();
+        sync.setSchedule(AdminResourceUtil.buildSchedule(ldapSchedule.getScheduleInfo()));
+        UserSynchronization users = new UserSynchronization();
+        users.setRegister(ldapSchedule.isUserRegister());
+        users.setSyncProfiles(ldapSchedule.isUserSync());
+        if (ldapSchedule.isUserDelete()) {
+            users.setRemovedAccountAction(UserSynchronization.RemovedAccountAction.delete.name());
+            users.setDeleteWorkspace(ldapSchedule.isUserWorkspaceDelete());
+        } else {
+            users.setRemovedAccountAction(UserSynchronization.RemovedAccountAction.disable.name());
+        }
+        users.setDefaultTimezone(getLdapModule().getDefaultTimeZone());
+        users.setDefaultLocale(getLdapModule().getDefaultLocaleId());
+        sync.setUsers(users);
+
+        GroupSynchronization groups = new GroupSynchronization();
+        groups.setRegister(ldapSchedule.isGroupRegister());
+        groups.setSyncProfiles(ldapSchedule.isGroupSync());
+        groups.setSyncMembership(ldapSchedule.isMembershipSync());
+        groups.setDeleteRemovedGroups(ldapSchedule.isGroupDelete());
+        sync.setGroups(groups);
+
+        return sync;
+    }
+
+    @PUT
+    @Path("synchronization")
+    @Consumes( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+    public UserSourceSynchronization updateUserSourceSynchronization(UserSourceSynchronization sync) {
+        LdapModule ldapModule = getLdapModule();
+        LdapSchedule existing = ldapModule.getLdapSchedule();
+        if (sync.getSchedule()!=null) {
+            ScheduleInfo scheduleInfo = toScheduleInfo(sync.getSchedule());
+            existing.setScheduleInfo(scheduleInfo);
+        }
+        UserSynchronization users = sync.getUsers();
+        if (users !=null) {
+            if (users.getSyncProfiles()!=null) {
+                existing.setUserSync(users.getSyncProfiles());
+            }
+            if (users.getRegister()!=null) {
+                existing.setUserRegister(users.getRegister());
+            }
+            if (users.getRemovedAccountAction()!=null) {
+                UserSynchronization.RemovedAccountAction action = toEnum(UserSynchronization.RemovedAccountAction.class,
+                        "removed_account_action", users.getRemovedAccountAction());
+                if (action==UserSynchronization.RemovedAccountAction.delete) {
+                    existing.setUserDelete(true);
+                    if (users.getDeleteWorkspace()!=null) {
+                        existing.setUserWorkspaceDelete(users.getDeleteWorkspace());
+                    }
+                } else {
+                    existing.setUserDelete(false);
+                }
+                existing.setUserSync(users.getSyncProfiles());
+            }
+            if (users.getDefaultTimezone()!=null) {
+                TimeZone tz = TimeZone.getTimeZone(users.getDefaultTimezone());
+                if (tz==null || !tz.getID().equals(users.getDefaultTimezone())) {
+                    throw new BadRequestException(ApiErrorCode.BAD_INPUT, "Invalid time zone: " + users.getDefaultTimezone());
+                }
+                ldapModule.setDefaultTimeZone(users.getDefaultTimezone());
+            }
+            if (users.getDefaultLocale()!=null) {
+                Locale locale = MiscUtil.findLocale(users.getDefaultLocale());
+                if (locale==null) {
+                    throw new BadRequestException(ApiErrorCode.BAD_INPUT, "Invalid locale: " + users.getDefaultLocale());
+                }
+                ldapModule.setDefaultLocale(users.getDefaultLocale());
+            }
+        }
+        GroupSynchronization groups = sync.getGroups();
+        if (groups!=null) {
+            if (groups.getRegister()!=null) {
+                existing.setGroupRegister(groups.getRegister());
+            }
+            if (groups.getSyncProfiles()!=null) {
+                existing.setGroupSync(groups.getSyncProfiles());
+            }
+            if (groups.getSyncMembership()!=null) {
+                existing.setMembershipSync(groups.getSyncMembership());
+            }
+            if (groups.getDeleteRemovedGroups()!=null) {
+                existing.setGroupDelete(groups.getDeleteRemovedGroups());
+            }
+        }
+        ldapModule.setLdapSchedule(existing);
+
+        return getUserSourceSynchronization();
+    }
 
     @GET
     @Path("{id}")

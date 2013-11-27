@@ -1067,7 +1067,16 @@ public final class MiscUtil
 	{
 		return ( ( null == iaList ) ? new ArrayList<InternetAddress>() : iaList );
 	}// end validateIAL()
-	
+
+
+    public static Locale findLocale(String localeId) {
+        for (Locale locale : NLT.getLocales()) {
+            if (locale.toString().equals(localeId)) {
+                return locale;
+            }
+        }
+        return null;
+    }
 	/**
 	 * Validates that a List<Locale> is non-null.
 	 * 
