@@ -51,7 +51,7 @@ import org.kablink.teaming.util.Utils;
 public class ZoneConfig extends ZonedObject implements WorkArea {
 	public static final String WORKAREA_TYPE = "zone";
 	
-	public static Integer ZONE_LATEST_VERSION=16;  //This is used to introduce changes and fix things up between releases.
+	public static Integer ZONE_LATEST_VERSION=17;  //This is used to introduce changes and fix things up between releases.
 	private Integer upgradeVersion=ZONE_LATEST_VERSION; 
 	private AuthenticationConfig authenticationConfig;
 	private HomePageConfig homePageConfig;

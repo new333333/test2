@@ -606,6 +606,7 @@ public interface ObjectKeys {
     public static final String USER_PROPERTY_UPGRADE_DEFINITIONS = "upgradeDefinitions";
     public static final String USER_PROPERTY_UPGRADE_TEMPLATES = "upgradeTemplates";
     public static final String USER_PROPERTY_UPGRADE_SEARCH_INDEX = "upgradeSearchIndex";
+    public static final String USER_PROPERTY_UPGRADE_IMPORT_TYPELESS_DN = "typelessDN";
     public static final String USER_PROPERTY_WHATS_NEW_SHOW_SETTING = "whatsNewShowSetting";
     public static final String USER_PROPERTY_EXPANDED_BINDERS_LIST = "expandedBindersList";
     public static final String USER_PROPERTY_DEFAULT_ACTIVITY_STREAM = "defaultActivityStream";
@@ -745,6 +746,7 @@ public interface ObjectKeys {
     public static final String FIELD_PRINCIPAL_NAME="name";
     public static final String FIELD_PRINCIPAL_SAM_ACCOUNT_NAME = "samAccountName";
     public static final String FIELD_PRINCIPAL_TYPE="type";
+    public static final String FIELD_PRINCIPAL_TYPELESS_DN = "typelessDN";
     public static final String FIELD_PRINCIPAL_DISABLED="disabled";
     public static final String FIELD_PRINCIPAL_DOMAIN_NAME = "domainName";
     public static final String FIELD_GROUP_DYNAMIC = "dynamic";
