@@ -48,9 +48,7 @@ import org.kablink.teaming.dao.FolderDao;
 import org.kablink.teaming.dao.util.NetFolderSelectSpec;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Binder.SyncScheduleOption;
-import org.kablink.teaming.domain.Description;
 import org.kablink.teaming.domain.Folder;
-import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.ResourceDriverConfig;
 import org.kablink.teaming.domain.ResourceDriverConfig.AuthenticationType;
@@ -1222,108 +1220,31 @@ public class NetFolderHelper
 		return null;
 	}
 
-    public static List<NetFolderRole> getNetFolderRights(
+    public static List<AssignedRole> getNetFolderRights(
             AllModulesInjected ami,
             Binder binder )
     {
-        Map<Long, NetFolderRole> roleMap = new HashMap<Long, NetFolderRole>();
-        List<NetFolderRole.RoleType> listOfRoles;
-        AdminModule adminModule;
+        List<AssignedRole.RoleType> listOfRoles;
+        listOfRoles = new ArrayList<AssignedRole.RoleType>();
+        listOfRoles.add( AssignedRole.RoleType.AllowAccess );
+        listOfRoles.add(AssignedRole.RoleType.ShareExternal);
+        listOfRoles.add(AssignedRole.RoleType.ShareForward);
+        listOfRoles.add(AssignedRole.RoleType.ShareInternal);
+        listOfRoles.add( AssignedRole.RoleType.SharePublic );
 
-        listOfRoles = new ArrayList<NetFolderRole.RoleType>();
-        listOfRoles.add( NetFolderRole.RoleType.AllowAccess );
-        listOfRoles.add(NetFolderRole.RoleType.ShareExternal);
-        listOfRoles.add(NetFolderRole.RoleType.ShareForward);
-        listOfRoles.add(NetFolderRole.RoleType.ShareInternal);
-        listOfRoles.add( NetFolderRole.RoleType.SharePublic );
-
-        adminModule = ami.getAdminModule();
-
-        for ( NetFolderRole.RoleType nextRole : listOfRoles )
-        {
-            WorkAreaFunctionMembership membership;
-            Set<Long> memberIds;
-            List principals = null;
-
-            // Get the Function id for the given role
-            String internalId = nextRole.getInternalId();
-            if (internalId==null) {
-                continue;
-            }
-            Function function = adminModule.getFunctionByInternalId(internalId);
-            // Did we find the function for the given role?
-            if ( function == null ){
-                continue;
-            }
-
-            // Get the role's membership
-            membership = adminModule.getWorkAreaFunctionMembership( binder, function.getId() );
-            if ( membership == null )
-                continue;
-
-            // Get the member ids
-            memberIds = membership.getMemberIds();
-            if ( memberIds == null )
-                continue;
-
-            try {
-                principals = ResolveIds.getPrincipals(memberIds);
-            } catch ( Exception ex ) {
-                // Nothing to do
-            }
-
-            if ( MiscUtil.hasItems( principals ) == false )
-                continue;
-
-            for ( Object nextObj :  principals ) {
-                if ( nextObj instanceof Principal)
-                {
-                    Principal nextPrincipal = (Principal) nextObj;
-                    NetFolderRole role = roleMap.get(nextPrincipal.getId());
-                    if (role==null) {
-                        role = new NetFolderRole(nextPrincipal);
-                        roleMap.put(nextPrincipal.getId(), role);
-                    }
-                    role.addRole(nextRole);
-                }
-            }
-        }// end for
-
-        return new ArrayList(roleMap.values());
+        return AdminHelper.getAssignedRights(ami, binder, listOfRoles);
     }
 
-    public static void setNetFolderRights(AllModulesInjected ami, Long binderId, List<NetFolderRole> roles) {
-        AdminModule adminModule;
-        Binder binder;
-
-        adminModule = ami.getAdminModule();
-
+    public static void setNetFolderRights(AllModulesInjected ami, Long binderId, List<AssignedRole> roles) {
         // Get the binder's work area
-        binder = ami.getBinderModule().getBinder( binderId );
-
-        Map<NetFolderRole.RoleType, List<Long>> memberMap = new HashMap<NetFolderRole.RoleType, List<Long>>();
-
-        for ( NetFolderRole.RoleType role : NetFolderRole.RoleType.values()) {
+        List<AssignedRole.RoleType> roleTypes = new ArrayList<AssignedRole.RoleType>();
+        for ( AssignedRole.RoleType role : AssignedRole.RoleType.values()) {
             if (role.isApplicableToNetFolders()) {
-                memberMap.put(role, new ArrayList<Long>());
+                roleTypes.add(role);
             }
         }
-
-        for (NetFolderRole role : roles) {
-            Long id = role.getPrincipal().getId();
-            for (NetFolderRole.RoleType roleType : role.getRoles()) {
-                if (memberMap.containsKey(roleType)) {
-                    memberMap.get(roleType).add(id);
-                }
-            }
-        }
-
-        for (Map.Entry<NetFolderRole.RoleType, List<Long>> entry : memberMap.entrySet()) {
-            Function function = adminModule.getFunctionByInternalId(entry.getKey().getInternalId());
-            if (function!=null) {
-                adminModule.resetWorkAreaFunctionMemberships(binder, function.getId(), entry.getValue());
-            }
-        }
+        Binder binder = ami.getBinderModule().getBinder( binderId );
+        AdminHelper.setAssignedRights(ami, binder, roleTypes, roles);
     }
 
 }

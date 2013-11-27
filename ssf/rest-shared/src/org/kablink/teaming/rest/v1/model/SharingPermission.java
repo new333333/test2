@@ -21,6 +21,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class SharingPermission {
     private Boolean internal;
     private Boolean external;
+    private Boolean allInternal;
+    private Boolean allExternal;
     private Boolean public_;
     private Boolean grantReshare;
 
@@ -40,6 +42,24 @@ public class SharingPermission {
 
     public void setInternal(Boolean internal) {
         this.internal = internal;
+    }
+
+    @XmlElement(name = "all_internal")
+    public Boolean getAllInternal() {
+        return allInternal;
+    }
+
+    public void setAllInternal(Boolean allInternal) {
+        this.allInternal = allInternal;
+    }
+
+    @XmlElement(name = "all_external")
+    public Boolean getAllExternal() {
+        return allExternal;
+    }
+
+    public void setAllExternal(Boolean allExternal) {
+        this.allExternal = allExternal;
     }
 
     @XmlElement(name = "public")
