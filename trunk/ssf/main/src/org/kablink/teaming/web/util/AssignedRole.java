@@ -46,28 +46,30 @@ import java.util.Set;
  * Date: 11/21/13
  * Time: 12:43 PM
  */
-public class NetFolderRole {
+public class AssignedRole {
     public enum RoleType implements IsSerializable
     {
-        ShareExternal (ObjectKeys.FUNCTION_ALLOW_SHARING_EXTERNAL_INTERNALID, true),
-        ShareForward (ObjectKeys.FUNCTION_ALLOW_SHARING_FORWARD_INTERNALID, true),
-        ShareInternal (ObjectKeys.FUNCTION_ALLOW_SHARING_INTERNAL_INTERNALID, true),
-        SharePublic (ObjectKeys.FUNCTION_ALLOW_SHARING_PUBLIC_INTERNALID, true),
-        EnableShareExternal (ObjectKeys.FUNCTION_ENABLE_EXTERNAL_SHARING_INTERNALID, false),
-        EnableShareForward (ObjectKeys.FUNCTION_ENABLE_FORWARD_SHARING_INTERNALID, false),
-        EnableShareInternal (ObjectKeys.FUNCTION_ENABLE_INTERNAL_SHARING_INTERNALID, false),
-        EnableSharePublic (ObjectKeys.FUNCTION_ENABLE_PUBLIC_SHARING_INTERNALID, false),
-        EnableShareWithAllInternal (ObjectKeys.FUNCTION_ENABLE_SHARING_ALL_INTERNAL_INTERNALID, false),
-        EnableShareWithAllExternal (ObjectKeys.FUNCTION_ENABLE_SHARING_ALL_EXTERNAL_INTERNALID, false),
-        AllowAccess (ObjectKeys.FUNCTION_ALLOW_ACCESS_NET_FOLDER_INTERNALID, true),
-        Unknown (null, false);
+        ShareExternal (ObjectKeys.FUNCTION_ALLOW_SHARING_EXTERNAL_INTERNALID, true, false),
+        ShareForward (ObjectKeys.FUNCTION_ALLOW_SHARING_FORWARD_INTERNALID, true, false),
+        ShareInternal (ObjectKeys.FUNCTION_ALLOW_SHARING_INTERNAL_INTERNALID, true, false),
+        SharePublic (ObjectKeys.FUNCTION_ALLOW_SHARING_PUBLIC_INTERNALID, true, false),
+        EnableShareExternal (ObjectKeys.FUNCTION_ENABLE_EXTERNAL_SHARING_INTERNALID, false, true),
+        EnableShareForward (ObjectKeys.FUNCTION_ENABLE_FORWARD_SHARING_INTERNALID, false, true),
+        EnableShareInternal (ObjectKeys.FUNCTION_ENABLE_INTERNAL_SHARING_INTERNALID, false, true),
+        EnableSharePublic (ObjectKeys.FUNCTION_ENABLE_PUBLIC_SHARING_INTERNALID, false, true),
+        EnableShareWithAllInternal (ObjectKeys.FUNCTION_ENABLE_SHARING_ALL_INTERNAL_INTERNALID, false, true),
+        EnableShareWithAllExternal (ObjectKeys.FUNCTION_ENABLE_SHARING_ALL_EXTERNAL_INTERNALID, false, true),
+        AllowAccess (ObjectKeys.FUNCTION_ALLOW_ACCESS_NET_FOLDER_INTERNALID, true, false),
+        Unknown (null, false, false);
 
         private String internalId;
         private boolean applicableToNetFolders;
+        private boolean applicableToZoneConfig;
 
-        private RoleType(String internalId, boolean applicableToNetFolders) {
+        private RoleType(String internalId, boolean applicableToNetFolders, boolean applicableToZoneConfig) {
             this.internalId = internalId;
             this.applicableToNetFolders = applicableToNetFolders;
+            this.applicableToZoneConfig = applicableToZoneConfig;
         }
 
         public String getInternalId() {
@@ -77,12 +79,16 @@ public class NetFolderRole {
         public boolean isApplicableToNetFolders() {
             return applicableToNetFolders;
         }
+
+        public boolean isApplicableToZoneConfig() {
+            return applicableToZoneConfig;
+        }
     }
 
     private Principal principal;
     private Set<RoleType> roles;
 
-    public NetFolderRole(Principal principal) {
+    public AssignedRole(Principal principal) {
         this.principal = principal;
         roles = new LinkedHashSet<RoleType>();
     }
@@ -97,5 +103,9 @@ public class NetFolderRole {
 
     public Set<RoleType> getRoles() {
         return roles;
+    }
+
+    public void setRoles(Set<RoleType> roles) {
+        this.roles = roles;
     }
 }

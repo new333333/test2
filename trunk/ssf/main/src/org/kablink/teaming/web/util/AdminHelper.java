@@ -33,14 +33,19 @@
 package org.kablink.teaming.web.util;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
+import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Group;
+import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.module.admin.AdminModule;
@@ -48,10 +53,14 @@ import org.kablink.teaming.domain.MobileAppsConfig.MobileOpenInSetting;
 import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.runas.RunasCallback;
 import org.kablink.teaming.runas.RunasTemplate;
+import org.kablink.teaming.security.function.Function;
+import org.kablink.teaming.security.function.WorkArea;
+import org.kablink.teaming.security.function.WorkAreaFunctionMembership;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.FileLinkAction;
 import org.kablink.teaming.util.PrincipalDesktopAppsConfig;
 import org.kablink.teaming.util.PrincipalMobileAppsConfig;
+import org.kablink.teaming.util.ResolveIds;
 import org.kablink.teaming.util.Utils;
 
 /**
@@ -837,4 +846,127 @@ public class AdminHelper {
 		// Always use the initial form of the method.
 		return getWebAccessSettingFromZone(bs.getAdminModule());
 	}
+
+    public static List<AssignedRole> getAssignedRights(
+            AllModulesInjected ami,
+            WorkArea workArea,
+            List<AssignedRole.RoleType> roleTypes)
+    {
+        Map<Long, AssignedRole> roleMap = new HashMap<Long, AssignedRole>();
+        AdminModule adminModule;
+
+        adminModule = ami.getAdminModule();
+
+        for ( AssignedRole.RoleType nextRole : roleTypes )
+        {
+            WorkAreaFunctionMembership membership;
+            Set<Long> memberIds;
+            List principals = null;
+
+            // Get the Function id for the given role
+            String internalId = nextRole.getInternalId();
+            if (internalId==null) {
+                continue;
+            }
+            Function function = adminModule.getFunctionByInternalId(internalId);
+            // Did we find the function for the given role?
+            if ( function == null ){
+                continue;
+            }
+
+            // Get the role's membership
+            membership = adminModule.getWorkAreaFunctionMembership( workArea, function.getId() );
+            if ( membership == null )
+                continue;
+
+            // Get the member ids
+            memberIds = membership.getMemberIds();
+            if ( memberIds == null )
+                continue;
+
+            try {
+                principals = ResolveIds.getPrincipals(memberIds);
+            } catch ( Exception ex ) {
+                // Nothing to do
+            }
+
+            if ( MiscUtil.hasItems( principals ) == false )
+                continue;
+
+            for ( Object nextObj :  principals ) {
+                if ( nextObj instanceof Principal)
+                {
+                    Principal nextPrincipal = (Principal) nextObj;
+                    AssignedRole role = roleMap.get(nextPrincipal.getId());
+                    if (role==null) {
+                        role = new AssignedRole(nextPrincipal);
+                        roleMap.put(nextPrincipal.getId(), role);
+                    }
+                    role.addRole(nextRole);
+                }
+            }
+        }// end for
+
+        return new ArrayList(roleMap.values());
+    }
+
+    public static void setAssignedRights(AllModulesInjected ami, WorkArea workArea, List<AssignedRole.RoleType> roleTypes,
+                                         List<AssignedRole> roles) {
+        AdminModule adminModule;
+
+        adminModule = ami.getAdminModule();
+
+        Map<AssignedRole.RoleType, List<Long>> memberMap = new HashMap<AssignedRole.RoleType, List<Long>>();
+
+        for ( AssignedRole.RoleType role : roleTypes) {
+            memberMap.put(role, new ArrayList<Long>());
+        }
+
+        for (AssignedRole role : roles) {
+            Long id = role.getPrincipal().getId();
+            for (AssignedRole.RoleType roleType : role.getRoles()) {
+                if (memberMap.containsKey(roleType)) {
+                    memberMap.get(roleType).add(id);
+                }
+            }
+        }
+
+        for (Map.Entry<AssignedRole.RoleType, List<Long>> entry : memberMap.entrySet()) {
+            Function function = adminModule.getFunctionByInternalId(entry.getKey().getInternalId());
+            if (function!=null) {
+                adminModule.resetWorkAreaFunctionMemberships(workArea, function.getId(), entry.getValue());
+            }
+        }
+    }
+
+    public static List<AssignedRole> getGlobalSharingRights(
+            AllModulesInjected ami)
+    {
+        List<AssignedRole.RoleType> roleTypes = new ArrayList<AssignedRole.RoleType>();
+        for ( AssignedRole.RoleType role : AssignedRole.RoleType.values()) {
+            if (role.isApplicableToZoneConfig()) {
+                roleTypes.add(role);
+            }
+        }
+
+        org.kablink.teaming.domain.ZoneConfig zoneConfig =
+                ami.getZoneModule().getZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
+
+        return AdminHelper.getAssignedRights(ami, zoneConfig, roleTypes);
+    }
+
+    public static void setGlobalSharingRights(AllModulesInjected ami, List<AssignedRole> roles) {
+        // Get the binder's work area
+        List<AssignedRole.RoleType> roleTypes = new ArrayList<AssignedRole.RoleType>();
+        for ( AssignedRole.RoleType role : AssignedRole.RoleType.values()) {
+            if (role.isApplicableToZoneConfig()) {
+                roleTypes.add(role);
+            }
+        }
+        org.kablink.teaming.domain.ZoneConfig zoneConfig =
+                ami.getZoneModule().getZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
+        AdminHelper.setAssignedRights(ami, zoneConfig, roleTypes, roles);
+    }
+
+
 }

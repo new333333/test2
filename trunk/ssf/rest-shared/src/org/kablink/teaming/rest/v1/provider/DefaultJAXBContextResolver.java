@@ -120,12 +120,19 @@ public class DefaultJAXBContextResolver implements ContextResolver<JAXBContext> 
             ZoneConfig.class,
 
             // Admin model objects
+            AssignedRight.class,
+            AssignedSharingPermission.class,
+            ExternalSharingRestrictions.class,
             KeyValuePair.class,
             LdapHomeDirConfig.class,
             LdapSearchInfo.class,
             LdapUserSource.class,
             NetFolder.class,
             NetFolderServer.class,
+            Schedule.class,
+            SelectedDays.class,
+            ShareSettings.class,
+            Time.class,
     		};
     
     public DefaultJAXBContextResolver() throws Exception {
