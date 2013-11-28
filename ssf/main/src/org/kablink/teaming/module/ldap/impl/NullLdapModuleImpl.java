@@ -117,7 +117,25 @@ public class NullLdapModuleImpl extends CommonDependencyInjection implements Lda
 		return null;
 	}
 
-	@Override
+    @Override
+    public String getDefaultLocaleId() {
+        return null;
+    }
+
+    @Override
+    public String getDefaultTimeZone() {
+        return null;
+    }
+
+    @Override
+    public void setDefaultLocale(String localeId) {
+    }
+
+    @Override
+    public void setDefaultTimeZone(String timeZoneId) {
+    }
+
+    @Override
 	public String readLdapGuidFromDirectory(String userName, Long zoneId,
 			LdapConnectionConfig config) {
 		return null;
