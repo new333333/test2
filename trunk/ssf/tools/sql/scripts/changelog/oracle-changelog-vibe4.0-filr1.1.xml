@@ -433,4 +433,10 @@
         </addColumn>
     </changeSet>
 
+    <changeSet author="jong" context="schema" failOnError="true" id="35">
+        <createIndex indexName="TYPELESSDN_PRINCIPAL" tableName="SS_PRINCIPALS" unique="false">
+            <column name="TYPELESSDN"/>
+        </createIndex>
+    </changeSet>
+
 </databaseChangeLog>

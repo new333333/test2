@@ -56,5 +56,6 @@ public class ParameterNames {
     public static final String SAMACCOUNTNAME="samAccountName";
     public static final String OPENID_IDENTITY="openidIdentity";
     public static final String DOMAIN_NAME="domainName";
+    public static final String TYPELESS_DN="typelessDN";
 }
 

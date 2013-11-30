@@ -139,6 +139,8 @@ public interface ProfileDao {
  	 	 	
  	public Long findPrincipalIdByForeignName(String foreignName, Long zoneId);
  	
+ 	public Long findPrincipalIdByTypelessDN(String typelessDN, Long zoneId);
+ 	
  	public Long findPrincipalIdByName(String name, Long zoneId);
 
  	public Long findPrincipalIdByDomainAndSamaccount(String domainName, String samaccountName, Long zoneId);
