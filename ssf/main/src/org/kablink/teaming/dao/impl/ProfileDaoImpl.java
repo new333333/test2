@@ -871,6 +871,36 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 	}
 
  	@Override
+	public Long findPrincipalIdByTypelessDN( final String typelessDN, final Long zoneId ) 
+	{
+	   long begin = System.nanoTime();
+	   try
+	   {
+	       Long id = (Long)getHibernateTemplate().execute(
+                new HibernateCallback()
+                {
+                    @Override
+					public Object doInHibernate(Session session) throws HibernateException
+                    {
+                 	   //only returns active principals
+                       // We store typeless DNs in lower case in the database.
+                  	   return session.getNamedQuery( "find-Principal-id-By-TypelessDN" )
+                             		.setString( ParameterNames.TYPELESS_DN, typelessDN.toLowerCase() )
+                             		.setLong( ParameterNames.ZONE_ID, zoneId )
+                             		.setCacheable( isPrincipalQueryCacheable() )
+                             		.uniqueResult();
+                    }
+                }
+             );		
+	       return id;
+	   }
+	   finally
+	   {
+		   end(begin, "findPrincipalIdByTypelessDN(String,Long)");
+	   }	        
+	}
+
+ 	@Override
 	public Long findPrincipalIdByName( final String name, final Long zoneId ) 
 	{
 	   long begin = System.nanoTime();

@@ -463,4 +463,10 @@ update SS_Principals set domainName=LOWER(domainName);
         </addColumn>
     </changeSet>
 
+    <changeSet author="jong" context="schema" failOnError="true" id="40">
+        <createIndex indexName="typelessDN_principal" tableName="SS_Principals" unique="false">
+            <column name="typelessDN"/>
+        </createIndex>
+    </changeSet>
+    
 </databaseChangeLog>
