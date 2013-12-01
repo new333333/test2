@@ -697,7 +697,8 @@ public class SearchUtils {
 					if(session == null)
 						return false; // cannot obtain session for the user
 					try {
-						session.setPath(resourcePath);
+						String docType = doc.get(Constants.DOC_TYPE_FIELD);
+						session.setPath(resourcePath, (docType != null && docType.equals(Constants.DOC_TYPE_BINDER))? Boolean.TRUE : Boolean.FALSE);
 						return session.isVisible();
 					}
 					finally {
@@ -739,7 +740,7 @@ public class SearchUtils {
 			return null; // The source system doesn't recognize this user. 
 		
 		try {
-			session.setPath(parentBinder.getResourcePath());
+			session.setPath(parentBinder.getResourcePath(), Boolean.TRUE);
 			List<ResourceItem> children = session.getChildren(false, false, false, false);
 			List<String> titles = null;
 			if(children != null && children.size() > 0) {

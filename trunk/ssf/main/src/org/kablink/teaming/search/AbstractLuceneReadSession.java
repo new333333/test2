@@ -217,7 +217,8 @@ public abstract class AbstractLuceneReadSession extends AbstractLuceneSession im
 				if(session == null)
 					return false; // can not perform access check on this
 				try {
-					session.setPath(resourcePath);
+					String docType = doc.get(Constants.DOC_TYPE_FIELD);
+					session.setPath(resourcePath, (docType != null && docType.equals(Constants.DOC_TYPE_BINDER))? Boolean.TRUE : Boolean.FALSE);
 					return session.isVisible();
 				}
 				finally {

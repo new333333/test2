@@ -58,19 +58,21 @@ public interface ResourceSession {
 	 * Set the path.
 	 * 
 	 * @param resourcePath
+	 * @param isDir
 	 * @return
 	 * @throws IOException 
 	 */
-	public ResourceSession setPath(String resourcePath) throws UncheckedIOException;
+	public ResourceSession setPath(String resourcePath, Boolean isDir) throws UncheckedIOException;
 	
 	/**
 	 * Set the path.
 	 * 
 	 * @param parentResourcePath
 	 * @param childResourceName
+	 * @param isDir
 	 * @return
 	 */
-	public ResourceSession setPath(String parentResourcePath, String childResourceName) throws UncheckedIOException;
+	public ResourceSession setPath(String parentResourcePath, String childResourceName, Boolean isDir) throws UncheckedIOException;
 	
 	/**
 	 * Close the session.
