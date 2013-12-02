@@ -1584,9 +1584,6 @@ public class ModifyNetFolderRootDlg extends DlgBox
 			if ( m_rootTypeListbox != null )
 				initServerType( netFolderRoot.getRootType() );
 
-			// Select the appropriate auth type
-			initAuthType( netFolderRoot.getAuthType() );
-			
 			// If the root type is WebDAV, initialize the WebDAV specific controls
 			if ( netFolderRoot.getRootType() == NetFolderRootType.WEB_DAV )
 			{
@@ -1645,6 +1642,14 @@ public class ModifyNetFolderRootDlg extends DlgBox
 		}
 		
 		danceDlg( false );
+
+		if ( m_netFolderRoot != null )
+		{
+			// initAuthType() must be called after danceDlg() because danceDlg() will add/remove
+			// items from the authentication type listbox depending on the selected server type.
+			// Select the appropriate auth type
+			initAuthType( netFolderRoot.getAuthType() );
+		}
 	}
 
 	/**
