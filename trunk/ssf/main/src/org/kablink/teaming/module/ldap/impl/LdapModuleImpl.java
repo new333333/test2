@@ -2640,6 +2640,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				try {
 					String[] attributesToRead;
 					Attributes lAttrs;
+					String typelessDN;
 
 					int scope = (searchInfo.isSearchSubtree()?SearchControls.SUBTREE_SCOPE:SearchControls.ONELEVEL_SCOPE);
 					SearchControls sch = new SearchControls(scope, 1, 0, userAttributeNames, false, false);
@@ -2667,12 +2668,19 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					} else {
 						dn = bd.getNameInNamespace();
 					}
+					
+					// Get the typeless dn
+					typelessDN = getTypelessDN( dn );
+
 					mods.put(ObjectKeys.FIELD_PRINCIPAL_FOREIGNNAME, dn);
 
 					// Make sure the name gets updated.
 					mods.put( ObjectKeys.FIELD_PRINCIPAL_NAME, ldapUserName );
 					
 					mods.put( ObjectKeys.FIELD_PRINCIPAL_DOMAIN_NAME, domainName );
+
+					// Update the typelessDN field
+					mods.put( ObjectKeys.FIELD_PRINCIPAL_TYPELESS_DN, typelessDN );
 				}
 				finally
 				{
