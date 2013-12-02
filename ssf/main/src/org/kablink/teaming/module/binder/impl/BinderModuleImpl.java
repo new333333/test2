@@ -1890,8 +1890,6 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 			hits = luceneSession.search(RequestContextHolder.getRequestContext().getUserId(),
 					so.getAclQueryStr(), searchMode, soQuery, so.getSortBy(), offset,
 					maxResults);
-		} catch (Exception e) {
-			logger.info("Exception:" + e);
 		} finally {
 			luceneSession.close();
 		}
@@ -1916,8 +1914,6 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 			hits = SearchUtils.searchFolderOneLevelWithInferredAccess(luceneSession, RequestContextHolder.getRequestContext().getUserId(),
 					so.getAclQueryStr(), searchMode, soQuery, so.getSortBy(), offset,
 					maxResults, parentBinder);
-		} catch (Exception e) {
-			logger.info("Exception:" + e);
 		} finally {
 			luceneSession.close();
 		}
