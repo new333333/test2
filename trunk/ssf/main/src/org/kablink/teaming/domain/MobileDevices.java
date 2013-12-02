@@ -70,7 +70,6 @@ public class MobileDevices {
 	 */
 	public static class MobileDevice {
 		private boolean	m_wipeScheduled;	//
-		private Date	m_lastAvtivity;		//
 		private Date	m_lastLogin;		//
 		private Date	m_lastWipe;			//
 		private String	m_description;		//
@@ -90,7 +89,6 @@ public class MobileDevices {
 		 * @return
 		 */
 		public boolean isWipeScheduled() {return m_wipeScheduled;}
-		public Date    getLastActivity() {return m_lastAvtivity; }
 		public Date    getLastLogin()    {return m_lastLogin;    }
 		public Date    getLastWipe()     {return m_lastWipe;     }
 		public String  getDescription()  {return m_description;  }
@@ -103,7 +101,6 @@ public class MobileDevices {
 		 * @param
 		 */
 		public void setWipeScheduled(boolean wipeScheduled) {m_wipeScheduled = wipeScheduled;}
-		public void setLastActivity( Date    lastActivity)  {m_lastAvtivity  = lastActivity; }
 		public void setLastLogin(    Date    lastLogin)     {m_lastLogin     = lastLogin;    }
 		public void setLastWipe(     Date    lastWipe)      {m_lastWipe      = lastWipe;     }
 		public void setDescription(  String  description)   {m_description   = description;  }
@@ -126,7 +123,6 @@ public class MobileDevices {
 			reply.setId(           deviceElement.attributeValue("id"));
 			reply.setDescription(  getElementStringValue( deviceElement.element("description"))  );
 			reply.setPushToken(    getElementStringValue( deviceElement.element("pushToken"))    );
-			reply.setLastActivity( getElementDateValue(   deviceElement.element("lastActivity")) );
 			reply.setLastLogin(    getElementDateValue(   deviceElement.element("lastLogin"))    );
 			reply.setLastWipe(     getElementDateValue(   deviceElement.element("lastWipe"))     );
 			reply.setWipeScheduled(getElementBooleanValue(deviceElement.element("wipeScheduled")));
@@ -144,7 +140,6 @@ public class MobileDevices {
 			strBuff.append("<device id=\""   + getSafeString(getId())               +            "\">"  );
 			strBuff.append("<description>"   + getSafeString(    getDescription())  + "</description>"  );
 			strBuff.append("<pushToken>"     + getSafeString(    getPushToken())    + "</pushToken>"    );
-			strBuff.append("<lastActivity>"  + getSafeDateString(getLastActivity()) + "</lastActivity>" );
 			strBuff.append("<lastLogin>"     + getSafeDateString(getLastLogin())    + "</lastLogin>"    );
 			strBuff.append("<lastWipe>"      + getSafeDateString(getLastWipe())     + "</lastWipe>"     );
 			strBuff.append("<wipeScheduled>" + String.valueOf(   isWipeScheduled()) + "</wipeScheduled>");
