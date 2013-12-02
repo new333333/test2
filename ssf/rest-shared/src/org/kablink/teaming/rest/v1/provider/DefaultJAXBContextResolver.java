@@ -131,6 +131,7 @@ public class DefaultJAXBContextResolver implements ContextResolver<JAXBContext> 
             LdapUserSource.class,
             NetFolder.class,
             NetFolderServer.class,
+            NetFolderSyncStatus.class,
             PersonalStorage.class,
             Schedule.class,
             SelectedDays.class,
