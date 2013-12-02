@@ -1612,7 +1612,7 @@ public class GwtNetFolderHelper
 			ConnectionTestStatus status;
    			
    			aclDriver = (AclResourceDriver) resourceDriver;
-   			aclDriver.initialize(null);
+   			aclDriver.initialize();
    			status = aclDriver.testConnection(
 		   								proxyName,
 		   								proxyPwd,
