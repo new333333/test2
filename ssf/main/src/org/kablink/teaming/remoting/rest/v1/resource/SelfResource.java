@@ -112,6 +112,7 @@ public class SelfResource extends AbstractFileResource {
     @GET
    	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public User getSelf(@QueryParam("include_attachments") @DefaultValue("true") boolean includeAttachments,
+                        @QueryParam("include_mobile_devices") @DefaultValue("false") boolean includeMobileDevices,
                         @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr) {
         Principal entry = getLoggedInUser();
 
@@ -148,6 +149,14 @@ public class SelfResource extends AbstractFileResource {
 
         user.setDesktopAppConfig(zoneConfig.getDesktopAppConfig());
         user.setMobileAppConfig(zoneConfig.getMobileAppConfig());
+        if (includeMobileDevices) {
+            MobileDevices mobileDevices = getProfileModule().getMobileDevices(getLoggedInUserId());
+            List<MobileDevice> devices = new ArrayList<MobileDevice>();
+            for (MobileDevices.MobileDevice d :mobileDevices.getMobileDeviceList()) {
+                devices.add(ResourceUtil.buildMobileDevice(d));
+            }
+            user.setMobileDevices(devices);
+        }
         return user;
     }
 
