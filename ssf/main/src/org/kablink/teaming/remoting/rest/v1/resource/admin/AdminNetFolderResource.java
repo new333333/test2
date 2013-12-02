@@ -35,6 +35,7 @@ package org.kablink.teaming.remoting.rest.v1.resource.admin;
 import com.sun.jersey.spi.resource.Singleton;
 import org.kablink.teaming.dao.util.NetFolderSelectSpec;
 import org.kablink.teaming.domain.Binder;
+import org.kablink.teaming.domain.BinderState;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.NoBinderByTheIdException;
 import org.kablink.teaming.domain.NoFolderByTheIdException;
@@ -46,6 +47,7 @@ import org.kablink.teaming.remoting.rest.v1.util.AdminResourceUtil;
 import org.kablink.teaming.rest.v1.model.SearchResultList;
 import org.kablink.teaming.rest.v1.model.admin.NetFolder;
 import org.kablink.teaming.rest.v1.model.admin.NetFolderServer;
+import org.kablink.teaming.rest.v1.model.admin.NetFolderSyncStatus;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.web.util.NetFolderHelper;
 
@@ -114,6 +116,39 @@ public class AdminNetFolderResource extends AbstractAdminResource {
     public void deleteNetFolderServer(@PathParam("id") Long id) {
         Folder folder = lookupNetFolder(id);
         NetFolderHelper.deleteNetFolder(getFolderModule(), id, false);
+    }
+
+
+    @GET
+    @Path("{id}/sync")
+    public NetFolderSyncStatus getSyncStatus(@PathParam("id") Long id) {
+        Folder netFolder = lookupNetFolder(id);
+        BinderState binderState = (BinderState) getCoreDao().load( BinderState.class, id );
+        if ( binderState != null ) {
+            BinderState.FullSyncStats syncStats;
+            syncStats = binderState.getFullSyncStats();
+            if ( syncStats != null ) {
+                return AdminResourceUtil.buildNetFolderSyncStatus(syncStats);
+            }
+        }
+        return null;
+    }
+
+    @POST
+    @Path("{id}/sync")
+    @Consumes({"*/*"})
+    public NetFolderSyncStatus syncNetFolder(@PathParam("id") Long id) {
+        Folder netFolder = lookupNetFolder(id);
+        getFolderModule().enqueueFullSynchronize(netFolder.getId());
+        return getSyncStatus(id);
+    }
+
+    @DELETE
+    @Path("{id}/sync")
+    @Consumes({"*/*"})
+    public void cancelNetFolderSync(@PathParam("id") Long id) {
+        Folder netFolder = lookupNetFolder(id);
+        getFolderModule().requestNetFolderFullSyncStop(netFolder.getId());
     }
 
     private Folder lookupNetFolder(Long id) {

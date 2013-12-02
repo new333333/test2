@@ -33,6 +33,7 @@
 package org.kablink.teaming.remoting.rest.v1.util;
 
 import org.kablink.teaming.domain.Binder;
+import org.kablink.teaming.domain.BinderState;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.LdapConnectionConfig;
@@ -54,6 +55,7 @@ import org.kablink.teaming.rest.v1.model.admin.LdapSearchInfo;
 import org.kablink.teaming.rest.v1.model.admin.LdapUserSource;
 import org.kablink.teaming.rest.v1.model.admin.NetFolder;
 import org.kablink.teaming.rest.v1.model.admin.NetFolderServer;
+import org.kablink.teaming.rest.v1.model.admin.NetFolderSyncStatus;
 import org.kablink.teaming.rest.v1.model.admin.Schedule;
 import org.kablink.teaming.rest.v1.model.admin.SelectedDays;
 import org.kablink.teaming.rest.v1.model.admin.Time;
@@ -125,6 +127,7 @@ public class AdminResourceUtil {
         model.setFullSyncDirOnly(folder.getFullSyncDirOnly());
 
         model.setLink(AdminLinkUriUtil.getNetFolderLinkUri(folder.getId()));
+        model.addAdditionalLink("sync", model.getLink() + "/sync");
 
         return model;
     }
@@ -338,5 +341,30 @@ public class AdminResourceUtil {
             return results.getResults();
         }
         return null;
+    }
+
+    public static NetFolderSyncStatus buildNetFolderSyncStatus(BinderState.FullSyncStats syncStats) {
+        NetFolderSyncStatus model = new NetFolderSyncStatus();
+        model.setStatus(syncStats.getStatus().name());
+        model.setDirectoryEnumerationFailure(syncStats.getEnumerationFailed());
+        model.setDirectoryOnly(syncStats.getDirOnly());
+        model.setEndDate(syncStats.getEndDate());
+        model.setEntriesExpunged(syncStats.getCountEntryExpunge());
+        model.setFailures(syncStats.getCountFailure());
+        model.setFilesAdded(syncStats.getCountFileAdd());
+        model.setFilesExpunged(syncStats.getCountFileExpunge());
+        model.setFilesFound(syncStats.getCountFiles());
+        model.setFilesModified(syncStats.getCountFileModify());
+        model.setFilesWithModifiedACL(syncStats.getCountFileSetAcl());
+        model.setFilesWithModifiedOwner(syncStats.getCountFileSetOwnership());
+        model.setFoldersAdded(syncStats.getCountFolderAdd());
+        model.setFoldersExpunged(syncStats.getCountFolderExpunge());
+        model.setFoldersFound(syncStats.getCountFolders());
+        model.setFoldersProcessed(syncStats.getCountFolderProcessed());
+        model.setFoldersWithModifiedACL(syncStats.getCountFolderSetAcl());
+        model.setFoldersWithModifiedOwner(syncStats.getCountFolderSetOwnership());
+        model.setNodeIPAddress(syncStats.getStatusIpv4Address());
+        model.setStartDate(syncStats.getStartDate());
+        return model;
     }
 }
