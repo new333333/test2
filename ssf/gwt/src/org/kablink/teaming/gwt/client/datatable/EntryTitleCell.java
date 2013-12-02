@@ -405,22 +405,25 @@ public class EntryTitleCell extends AbstractCell<EntryTitleInfo> {
 	 * Called when a something is dragged into the drag and drop popup.
 	 */
 	private void onDragEnter(NativeEvent event, Element dndTarget, EntryTitleInfo eti) {
-		// If this isn't a folder we can add entries to...
-		if (!(eti.canAddFolderEntries())) {
-			// ...ignore the event.
-			return;
+		// Does the browser support HTML4 uploads?
+		if (GwtClientHelper.jsBrowserSupportsHtml5FileAPIs()) {
+			// Yes!  If this isn't a folder we can add entries to...
+			if (!(eti.canAddFolderEntries())) {
+				// ...ignore the event.
+				return;
+			}
+	
+			// If we're not currently uploading anything...
+			if (!(m_uploadHost.getHtml5UploadHelper().uploadsPending())) {
+				// ...turn on the drag and drop highlighting...
+				setDnDHighlight(dndTarget, true);
+			}
+			
+			// ...and stop the event propagation since this is a valid
+			// ...drop target.
+			event.stopPropagation();
+			event.preventDefault();
 		}
-
-		// If we're not currently uploading anything...
-		if (!(m_uploadHost.getHtml5UploadHelper().uploadsPending())) {
-			// ...turn on the drag and drop highlighting...
-			setDnDHighlight(dndTarget, true);
-		}
-		
-		// ...and stop the event propagation since this is a valid drop
-		// ...target.
-		event.stopPropagation();
-		event.preventDefault();
 	}
 	
 	/*
@@ -428,22 +431,25 @@ public class EntryTitleCell extends AbstractCell<EntryTitleInfo> {
 	 * popup.
 	 */
 	private void onDragLeave(NativeEvent event, Element dndTarget, EntryTitleInfo eti) {
-		// If this isn't a folder we can add entries to...
-		if (!(eti.canAddFolderEntries())) {
-			// ...ignore the event.
-			return;
+		// Does the browser support HTML4 uploads?
+		if (GwtClientHelper.jsBrowserSupportsHtml5FileAPIs()) {
+			// Yes!  If this isn't a folder we can add entries to...
+			if (!(eti.canAddFolderEntries())) {
+				// ...ignore the event.
+				return;
+			}
+			
+			// If we're not currently uploading anything...
+			if (!(m_uploadHost.getHtml5UploadHelper().uploadsPending())) {
+				// ...turn off the drag and drop highlighting...
+				setDnDHighlight(dndTarget, false);
+			}
+			
+			// ...and stop the event propagation since this is a valid
+			// ...drop target.
+			event.stopPropagation();
+			event.preventDefault();
 		}
-		
-		// If we're not currently uploading anything...
-		if (!(m_uploadHost.getHtml5UploadHelper().uploadsPending())) {
-			// ...turn off the drag and drop highlighting...
-			setDnDHighlight(dndTarget, false);
-		}
-		
-		// ...and stop the event propagation since this is a valid drop
-		// ...target.
-		event.stopPropagation();
-		event.preventDefault();
 	}
 
 	/*
@@ -451,58 +457,65 @@ public class EntryTitleCell extends AbstractCell<EntryTitleInfo> {
 	 * popup.
 	 */
 	private void onDragOver(NativeEvent event, Element dndTarget, EntryTitleInfo eti) {
-		// If this isn't a folder we can add entries to...
-		if (!(eti.canAddFolderEntries())) {
-			// ...ignore the event.
-			return;
+		// Does the browser support HTML4 uploads?
+		if (GwtClientHelper.jsBrowserSupportsHtml5FileAPIs()) {
+			// Yes!  If this isn't a folder we can add entries to...
+			if (!(eti.canAddFolderEntries())) {
+				// ...ignore the event.
+				return;
+			}
+			
+			// If we're not currently uploading anything...
+			if (!(m_uploadHost.getHtml5UploadHelper().uploadsPending())) {
+				// ...turn on the drag and drop highlighting...
+				setDnDHighlight(dndTarget, true);
+			}
+			
+			// ...and stop the event propagation since this is a valid
+			// ...drop target.
+			event.stopPropagation();
+			event.preventDefault();
 		}
-		
-		// If we're not currently uploading anything...
-		if (!(m_uploadHost.getHtml5UploadHelper().uploadsPending())) {
-			// ...turn on the drag and drop highlighting...
-			setDnDHighlight(dndTarget, true);
-		}
-		
-		// ...and stop the event propagation since this is a valid drop
-		// ...target.
-		event.stopPropagation();
-		event.preventDefault();
 	}
 
 	/*
 	 * Called when a something is dropped on the drag and drop popup.
 	 */
 	private void onDrop(NativeEvent event, Element dndTarget, EntryTitleInfo eti) {
-		// If this isn't a folder we can add entries to...
-		if (!(eti.canAddFolderEntries())) {
-			// ...ignore the event.
-			return;
-		}
-		
-		// If we're not currently uploading anything...
-		if (!(m_uploadHost.getHtml5UploadHelper().uploadsPending())) {
-			// ...turn off the drag and drop highlighting...
-			setDnDHighlight(dndTarget, false);
-
-			// ...if the drop data doesn't contain any files...
-			FileList fileList = event.getDataTransfer().<DataTransferExt>cast().getFiles();
-			int files = ((null == fileList) ? 0 : fileList.getLength());
-			if (0 == files) {
-				// ...tell the user about the problem...
-				GwtClientHelper.deferredAlert(m_messages.html5Uploader_Warning_NoFiles());
+		// Does the browser support HTML4 uploads?
+		if (GwtClientHelper.jsBrowserSupportsHtml5FileAPIs()) {
+			// Yes!  If this isn't a folder we can add entries to...
+			if (!(eti.canAddFolderEntries())) {
+				// ...ignore the event.
+				return;
 			}
-			else {
-				// ...otherwise, process the files that were dropped...
-				processFilesAsync(
-					eti.getEntityId().buildBaseBinderInfo(),
-					Html5UploadHelper.getListFromFileList(fileList));
+			
+			// If we're not currently uploading anything...
+			if (!(m_uploadHost.getHtml5UploadHelper().uploadsPending())) {
+				// ...turn off the drag and drop highlighting...
+				setDnDHighlight(dndTarget, false);
+	
+				// ...if the drop data doesn't contain any files...
+				FileList fileList = event.getDataTransfer().<DataTransferExt>cast().getFiles();
+				int files = ((null == fileList) ? 0 : fileList.getLength());
+				if (0 == files) {
+					// ...tell the user about the problem...
+					GwtClientHelper.deferredAlert(m_messages.html5Uploader_Warning_NoFiles());
 				}
+				else {
+					// ...otherwise, process the files that were
+					// ...dropped...
+					processFilesAsync(
+						eti.getEntityId().buildBaseBinderInfo(),
+						Html5UploadHelper.getListFromFileList(fileList));
+					}
+			}
+			
+			// ...and stop the event propagation since this is a valid
+			// ...drop target.
+			event.stopPropagation();
+			event.preventDefault();
 		}
-		
-		// ...and stop the event propagation since this is a valid drop
-		// ...target.
-		event.stopPropagation();
-		event.preventDefault();
 	}
 
     /**
@@ -537,18 +550,21 @@ public class EntryTitleCell extends AbstractCell<EntryTitleInfo> {
 	 * Synchronously process files dropped on the panel.
 	 */
 	private void processFilesNow(BinderInfo fi, List<File> files) {
-		// Show the upload popup...
-		Html5UploadHelper uploadHelper = m_uploadHost.getHtml5UploadHelper();
-		Html5UploadPopup  uploadPopup  = m_uploadHost.getHtml5UploadPopup();
-		uploadPopup.setHtml5UploadHelper(uploadHelper);
-		uploadPopup.setActive(true);
-		
-		// ...and start the upload.
-		Html5UploadHelper.uploadFiles(
-			uploadHelper,
-			fi,
-			files,
-			null);	// null -> No event needs to be fired on completion of an upload. 
+		// Does the browser support HTML4 uploads?
+		if (GwtClientHelper.jsBrowserSupportsHtml5FileAPIs()) {
+			// Yes!  Show the upload popup...
+			Html5UploadHelper uploadHelper = m_uploadHost.getHtml5UploadHelper();
+			Html5UploadPopup  uploadPopup  = m_uploadHost.getHtml5UploadPopup();
+			uploadPopup.setHtml5UploadHelper(uploadHelper);
+			uploadPopup.setActive(true);
+			
+			// ...and start the upload.
+			Html5UploadHelper.uploadFiles(
+				uploadHelper,
+				fi,
+				files,
+				null);	// null -> No event needs to be fired on completion of an upload.
+		}
 	}
 
 	/**
@@ -702,10 +718,14 @@ public class EntryTitleCell extends AbstractCell<EntryTitleInfo> {
 	 * Sets or clears the drag and drop highlighting on the cell.
 	 */
 	private void setDnDHighlight(Element dndTarget, boolean highlight) {
-		String highlightStyle = (ENTRY_TITLE_ROOT_STYLE + "DropTarget");
-		if (highlight)
-		     dndTarget.addClassName(   highlightStyle);
-		else dndTarget.removeClassName(highlightStyle);
-		m_uploadHost.getDnDHintLabel().setVisible(highlight);
+		// Does the browser support HTML4 uploads?
+		if (GwtClientHelper.jsBrowserSupportsHtml5FileAPIs()) {
+			// Yes!  Set the highlight.
+			String highlightStyle = (ENTRY_TITLE_ROOT_STYLE + "DropTarget");
+			if (highlight)
+			     dndTarget.addClassName(   highlightStyle);
+			else dndTarget.removeClassName(highlightStyle);
+			m_uploadHost.getDnDHintLabel().setVisible(highlight);
+		}
 	}
 }
