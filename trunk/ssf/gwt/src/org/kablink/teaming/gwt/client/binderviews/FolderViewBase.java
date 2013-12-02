@@ -342,9 +342,12 @@ public abstract class FolderViewBase extends ViewBase
 		m_flowPanel = new VibeFlowPanel();
 		m_flowPanel.addStyleName(m_styleBase + "FlowPanel");
 
-		// ...create the panel we'll show while HTML5 uploads are
-		// ...active...
-		m_uploadPopup = new Html5UploadPopup();
+		// ...if the browser supports HTML5 uploads...
+		if (GwtClientHelper.jsBrowserSupportsHtml5FileAPIs()) {
+			// ...create the panel we'll show while HTML5 uploads are
+			// ...active...
+			m_uploadPopup = new Html5UploadPopup();
+		}
 		
 		// ...and finally, tie everything together.
 		trackVerticalPanel(VIEW_CONTENT_PANEL_INDEX, m_flowPanel);
@@ -612,8 +615,12 @@ public abstract class FolderViewBase extends ViewBase
 	 */
 	@Override
 	public void incrProgress(long amount) {
-		m_uploadPopup.incrPerItemProgress(amount);
-		m_uploadPopup.incrTotalProgress(  amount);
+		// If we have an HTML5 upload popup...
+		if (null != m_uploadPopup) {
+			// ...increment its progress.
+			m_uploadPopup.incrPerItemProgress(amount);
+			m_uploadPopup.incrTotalProgress(  amount);
+		}
 	}
 
 	/**
@@ -734,10 +741,19 @@ public abstract class FolderViewBase extends ViewBase
 	 * Synchronously loads the next part of the view.
 	 */
 	private void loadPart2Now() {
-		// Note that the implementation of 
-		// Html5UploadCallback.onSuccess() invokes part 3 of the load
-		// process.
-		Html5UploadHelper.createAsync(this);
+		// Does the browser support HTML5 uploads?
+		if (GwtClientHelper.jsBrowserSupportsHtml5FileAPIs()) {
+			// Yes!  Note that the implementation of
+			// Html5UploadCallback.onSuccess() invokes part 3 of the
+			// load process.  Simply create the HTML5 upload helper.
+			Html5UploadHelper.createAsync(this);
+		}
+		
+		else {
+			// No, the browser doesn't support HTML5 uploads!  Continue
+			// with the next part of the load.
+			loadPart3Now();
+		}
 	}
 
 	/*
@@ -1300,11 +1316,13 @@ public abstract class FolderViewBase extends ViewBase
 	 */
 	@Override
 	public void onDragEnter(DragEnterEvent event) {
-		if (!(m_uploadHelper.uploadsPending())) {
-			setDnDHighlight(true);
+		if (null != m_uploadHelper) {
+			if (!(m_uploadHelper.uploadsPending())) {
+				setDnDHighlight(true);
+			}
+			event.stopPropagation();
+			event.preventDefault();
 		}
-		event.stopPropagation();
-		event.preventDefault();
 	}
 	
 	/**
@@ -1317,11 +1335,13 @@ public abstract class FolderViewBase extends ViewBase
 	 */
 	@Override
 	public void onDragLeave(DragLeaveEvent event) {
-		if (!(m_uploadHelper.uploadsPending())) {
-			setDnDHighlight(false);
+		if (null != m_uploadHelper) {
+			if (!(m_uploadHelper.uploadsPending())) {
+				setDnDHighlight(false);
+			}
+			event.stopPropagation();
+			event.preventDefault();
 		}
-		event.stopPropagation();
-		event.preventDefault();
 	}
 
 	/**
@@ -1334,13 +1354,15 @@ public abstract class FolderViewBase extends ViewBase
 	 */
 	@Override
 	public void onDragOver(DragOverEvent event) {
-		// Mandatory handler, otherwise the default behavior will kick
-		// in and onDrop will never be called.
-		if (!(m_uploadHelper.uploadsPending())) {
-			setDnDHighlight(true);
+		if (null != m_uploadHelper) {
+			// Mandatory handler, otherwise the default behavior will
+			// kick in and onDrop will never be called.
+			if (!(m_uploadHelper.uploadsPending())) {
+				setDnDHighlight(true);
+			}
+			event.stopPropagation();
+			event.preventDefault();
 		}
-		event.stopPropagation();
-		event.preventDefault();
 	}
 
 	/**
@@ -1352,23 +1374,26 @@ public abstract class FolderViewBase extends ViewBase
 	 */
 	@Override
 	public void onDrop(DropEvent event) {
-		if (!(m_uploadHelper.uploadsPending())) {
-			setDnDHighlight(false);
-			
-			// If the drop data doesn't contain any files...
-			FileList fileList = event.getDataTransfer().<DataTransferExt>cast().getFiles();
-			int files = ((null == fileList) ? 0 : fileList.getLength());
-			if (0 == files) {
-				// ...tell the user about the problem...
-				GwtClientHelper.deferredAlert(m_messages.html5Uploader_Warning_NoFiles());
+		if (null != m_uploadHelper) {
+			if (!(m_uploadHelper.uploadsPending())) {
+				setDnDHighlight(false);
+				
+				// If the drop data doesn't contain any files...
+				FileList fileList = event.getDataTransfer().<DataTransferExt>cast().getFiles();
+				int files = ((null == fileList) ? 0 : fileList.getLength());
+				if (0 == files) {
+					// ...tell the user about the problem...
+					GwtClientHelper.deferredAlert(m_messages.html5Uploader_Warning_NoFiles());
+				}
+				else {
+					// ...otherwise, process the files that were
+					// ...dropped...
+					processFiles(fileList);
+				}
 			}
-			else {
-				// ...otherwise, process the files that were dropped...
-				processFiles(fileList);
-			}
+			event.stopPropagation();
+			event.preventDefault();
 		}
-		event.stopPropagation();
-		event.preventDefault();
 	}
 
 	/**
@@ -1408,8 +1433,11 @@ public abstract class FolderViewBase extends ViewBase
 	 */
 	@Override
 	public void onUnavailable() {
-		// Nothing to do.  The user will have been told about the
-		// error.
+		// The user will have been told about the error in the
+		// createAsync() call.  Simply store null for the upload helper
+		// and continue with the load process.
+		m_uploadHelper = null;
+		loadPart3Async();
 	}
 
 	/*
@@ -1462,14 +1490,17 @@ public abstract class FolderViewBase extends ViewBase
 	 * Synchronously process files dropped on the panel.
 	 */
 	private void processFilesNow(BinderInfo fi, List<File> files) {
-		// Show the upload popup and start the upload.
-		m_uploadPopup.setHtml5UploadHelper(m_uploadHelper);
-		m_uploadPopup.setActive(           true          );
-		Html5UploadHelper.uploadFiles(
-			m_uploadHelper,
-			fi,
-			files,
-			new FullUIReloadEvent());
+		// If we have an HTML5 upload popup...
+		if ((null != m_uploadPopup) && (null != m_uploadHelper)) {
+			// ...show it and start the upload.
+			m_uploadPopup.setHtml5UploadHelper(m_uploadHelper);
+			m_uploadPopup.setActive(           true          );
+			Html5UploadHelper.uploadFiles(
+				m_uploadHelper,
+				fi,
+				files,
+				new FullUIReloadEvent());
+		}
 	}
 
 	/**
@@ -1564,7 +1595,11 @@ public abstract class FolderViewBase extends ViewBase
 	 */
 	@Override
 	public void setPerItemProgress(long min, long max) {
-		m_uploadPopup.setPerItemProgress(0, min, max);
+		// If we have an HTML5 upload popup...
+		if (null != m_uploadPopup) {
+			// ...set its progress indicator.
+			m_uploadPopup.setPerItemProgress(0, min, max);
+		}
 	}
 
 	/**
@@ -1594,7 +1629,11 @@ public abstract class FolderViewBase extends ViewBase
 	 */
 	@Override
 	public void setTotalCurrentProgress(double amount) {
-		m_uploadPopup.setTotalCurrentProgress(amount);
+		// If we have an HTML5 upload popup...
+		if (null != m_uploadPopup) {
+			// ...set its total current progress.
+			m_uploadPopup.setTotalCurrentProgress(amount);
+		}
 	}
 
 	/**
@@ -1606,7 +1645,11 @@ public abstract class FolderViewBase extends ViewBase
 	 */
 	@Override
 	public void setTotalMaxProgress(double max) {
-		m_uploadPopup.setTotalProgress(0, 0, max);
+		// If we have an HTML5 upload popup...
+		if (null != m_uploadPopup) {
+			// ...set its total progress.
+			m_uploadPopup.setTotalProgress(0, 0, max);
+		}
 	}
 
 	/**
@@ -1619,33 +1662,38 @@ public abstract class FolderViewBase extends ViewBase
 	 */
 	@Override
 	public void setUploadState(Html5UploadState previousState, Html5UploadState newState) {
-		switch (newState) {
-		case UPLOADING:
-			// We're uploading a file!  If we weren't previously
-			// performing an upload...
-			if (!(previousState.equals(Html5UploadState.UPLOADING))) {
-				// ...update the upload popup to show that we are now.
-				m_uploadPopup.setAbortVisible(           true                             );
-				m_uploadPopup.setProgressBarsVisible(    true                             );
-				m_uploadPopup.setTotalProgressBarVisible(1 < m_uploadHelper.getReadTotal());
+		// Do we have an HTML5 upload popup?
+		if ((null != m_uploadPopup) && (null != m_uploadHelper)) {
+			// What upload state is being set?
+			switch (newState) {
+			case UPLOADING:
+				// We're uploading a file!  If we weren't previously
+				// performing an upload...
+				if (!(previousState.equals(Html5UploadState.UPLOADING))) {
+					// ...update the upload popup to show that we are
+					// ...now.
+					m_uploadPopup.setAbortVisible(           true                             );
+					m_uploadPopup.setProgressBarsVisible(    true                             );
+					m_uploadPopup.setTotalProgressBarVisible(1 < m_uploadHelper.getReadTotal());
+				}
+				break;
+				
+			case INACTIVE:
+				// We're waiting for user input!  Restore the upload
+				// popup to its initial state.
+				m_uploadPopup.setAbortVisible(       true                               );
+				m_uploadPopup.setHintText(           m_messages.addFilesHtml5PopupHint());
+				m_uploadPopup.setProgressBarsVisible(false                              );
+				m_uploadPopup.setActive(             false                              );
+				break;
+				
+			case VALIDATING:
+				// We're validating the user's selections before
+				// uploading them!
+				m_uploadPopup.setAbortVisible(false                                    );
+				m_uploadPopup.setHintText(    m_messages.addFilesHtml5PopupValidating());
+				break;
 			}
-			break;
-			
-		case INACTIVE:
-			// We're waiting for user input!  Restore the upload popup
-			// to its initial state.
-			m_uploadPopup.setAbortVisible(       true                               );
-			m_uploadPopup.setHintText(           m_messages.addFilesHtml5PopupHint());
-			m_uploadPopup.setProgressBarsVisible(false                              );
-			m_uploadPopup.setActive(             false                              );
-			break;
-			
-		case VALIDATING:
-			// We're validating the user's selections before uploading
-			// them!
-			m_uploadPopup.setAbortVisible(false                                    );
-			m_uploadPopup.setHintText(    m_messages.addFilesHtml5PopupValidating());
-			break;
 		}
 	}
 
@@ -1715,13 +1763,17 @@ public abstract class FolderViewBase extends ViewBase
 	 */
 	@Override
 	public void uploadComplete(boolean aborted, VibeEventBase<?> completeEvent) {
-		// Hide the upload popup...
-		m_uploadPopup.setActive(false);
-
-		// ...and if we were given an event to fire upon completion...
-		if (null != completeEvent) {
-			// ...fire it.
-			GwtTeaming.fireEventAsync(completeEvent);
+		// If we have an HTML5 upload popup...
+		if (null != m_uploadPopup) {
+			// ...hide it...
+			m_uploadPopup.setActive(false);
+	
+			// ...and if we were given an event to fire upon
+			// ...completion...
+			if (null != completeEvent) {
+				// ...fire it.
+				GwtTeaming.fireEventAsync(completeEvent);
+			}
 		}
 	}
 
@@ -1736,12 +1788,15 @@ public abstract class FolderViewBase extends ViewBase
 	 */
 	@Override
 	public void uploadingNextFile(String fileName, int thisFile, int totalFiles) {
-		// Simply update the upload popup's hint.
-		m_uploadPopup.setHintText(
-			m_messages.addFilesHtml5PopupBusy(
-				fileName,
-				thisFile,
-				totalFiles));
+		// If we have an HTML5 upload popup...
+		if (null != m_uploadPopup) {
+			// ...set its hint.
+			m_uploadPopup.setHintText(
+				m_messages.addFilesHtml5PopupBusy(
+					fileName,
+					thisFile,
+					totalFiles));
+		}
 	}
 
 	/**
