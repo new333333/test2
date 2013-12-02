@@ -45,7 +45,7 @@ import com.google.web.bindery.event.shared.SimpleEventBus;
  * @author drfoster@novell.com
  */
 public class MailToPublicLinkEntityEvent extends VibeEventBase<MailToPublicLinkEntityEvent.Handler> {
-	public final static boolean	SUPPORT_MAILTO_SHARES	= true;	//! DRF (20131125):  Leave false on checkin until the feature is finished and approved.
+	public final static boolean	SUPPORT_MAILTO_SHARES	= false;	//! DRF (20131125):  Leave false on checkin until the feature is finished and approved.
 	
     public static Type<Handler> TYPE = new Type<Handler>();
     
