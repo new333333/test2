@@ -6074,18 +6074,6 @@ public class GwtViewHelper {
 					url.setParameter(WebKeys.URL_ENTRY_ID,   userIdS                            );
 					reply.setModifyUrl(url.toString());
 				}
-				
-				// Does the current user have rights to delete users
-				// and is this other than a reserved user?
-				if (pm.testAccess(user, ProfileOperation.deleteEntry) && (!(user.isReserved()))) {
-					// Yes!  Store the delete URL for this user.
-					AdaptedPortletURL url = new AdaptedPortletURL(request, "ss_forum", true);
-					url.setParameter(WebKeys.ACTION,         WebKeys.ACTION_MODIFY_PROFILE_ENTRY);
-					url.setParameter(WebKeys.URL_OPERATION,  WebKeys.OPERATION_DELETE           );
-					url.setParameter(WebKeys.URL_BINDER_ID,  profilesWSIdS                      );
-					url.setParameter(WebKeys.URL_ENTRY_ID,   userIdS                            );
-					reply.setDeleteUrl(url.toString());
-				}
 			}
 
 			// If we get here, reply refers to an
