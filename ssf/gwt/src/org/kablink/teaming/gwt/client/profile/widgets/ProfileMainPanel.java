@@ -86,25 +86,21 @@ import com.google.gwt.dom.client.NodeList;
  */
 @SuppressWarnings("unchecked")
 public class ProfileMainPanel extends Composite implements SubmitCompleteHandler {
-
-	ProfileRequestInfo profileRequestInfo;
+	ProfileRequestInfo				profileRequestInfo;			//
 	
-	private FlexTable grid;
-	private FlowPanel mainPanel;
-	private FlowPanel titlePanel;
-	private ProfileFollowingWidget followingAnchor;
-	private boolean isEditable = false;
-	private Anchor edit;
-	private ProfileAvatarArea profileAvatarArea;
-	private EditSuccessfulHandler editAvatarSuccessHandler;
-
-	private FileUpload fileUpload;
-	private Anchor uploadBtn;
-	private Anchor delete;
-	private FormPanel formPanel;
-	private GwtProfilePage m_profilePage;
-
-	private InlineLabel quotaMsgLabel;
+	private Anchor					m_editBtn;					//
+	private Anchor					m_uploadBtn;				//
+	private boolean					m_isEditable;				//
+	private EditSuccessfulHandler	m_editAvatarSuccessHandler;	//
+	private FileUpload				m_fileUpload;				//
+	private FlexTable				m_grid;						//
+	private FlowPanel				m_mainPanel;				//
+	private FlowPanel				m_titlePanel;				//
+	private FormPanel				m_formPanel;				//
+	private GwtProfilePage			m_profilePage;				//
+	private InlineLabel				m_quotaMsgLabel;			//
+	private ProfileAvatarArea		m_profileAvatarArea;		//
+	private ProfileFollowingWidget	m_followingAnchor;			//
 
 	/**
 	 * Constructor
@@ -113,11 +109,11 @@ public class ProfileMainPanel extends Composite implements SubmitCompleteHandler
 	 */
 	public ProfileMainPanel(final ProfileRequestInfo profileRequestInfo, final GwtProfilePage profilePage) {
 		this.profileRequestInfo = profileRequestInfo;
-		this.m_profilePage = profilePage;
+		m_profilePage = profilePage;
 		
 		// create the main panel
-		mainPanel = new FlowPanel();
-		mainPanel.setStyleName("profile-Content-c");
+		m_mainPanel = new FlowPanel();
+		m_mainPanel.setStyleName("profile-Content-c");
 
 		// add user's title to the profile div
 		createTitleArea();
@@ -129,7 +125,7 @@ public class ProfileMainPanel extends Composite implements SubmitCompleteHandler
 		createContentPanel();
 
 		// All composites must call initWidget() in their constructors.
-		initWidget(mainPanel);
+		initWidget(m_mainPanel);
 	}
 
 	/**
@@ -137,13 +133,13 @@ public class ProfileMainPanel extends Composite implements SubmitCompleteHandler
 	 * name value pairs
 	 */
 	private void createContentPanel() {
-		grid = new FlexTable();
-		grid.setWidth("100%");
-		grid.setCellSpacing(0);
-		grid.setCellPadding(0);
-		//grid.resizeColumns(3);
-		grid.setStyleName("sectionTable");
-		mainPanel.add(grid);
+		m_grid = new FlexTable();
+		m_grid.setWidth("100%");
+		m_grid.setCellSpacing(0);
+		m_grid.setCellPadding(0);
+		//m_grid.resizeColumns(3);
+		m_grid.setStyleName("sectionTable");
+		m_mainPanel.add(m_grid);
 	}
 
 	/**
@@ -152,15 +148,15 @@ public class ProfileMainPanel extends Composite implements SubmitCompleteHandler
 	private void createTitleArea() {
 
 		// create a title div for the user title and actionable items
-		titlePanel = new FlowPanel();
-		titlePanel.addStyleName("profile-title-area");
-		mainPanel.add(titlePanel);
+		m_titlePanel = new FlowPanel();
+		m_titlePanel.addStyleName("profile-title-area");
+		m_mainPanel.add(m_titlePanel);
 
 		String userName = profileRequestInfo.getUserName();
 		if (GwtClientHelper.isLicenseFilr()) {
 			InlineLabel unLabel = new InlineLabel(userName);
 			unLabel.addStyleName("profile-title");
-			titlePanel.add(unLabel);
+			m_titlePanel.add(unLabel);
 		}
 		
 		else {
@@ -170,18 +166,18 @@ public class ProfileMainPanel extends Composite implements SubmitCompleteHandler
 			anchor.setTitle(GwtTeaming.getMessages().qViewWorkspaceTitle());
 			
 			anchor.addStyleName("profile-title");
-			titlePanel.add(anchor);
+			m_titlePanel.add(anchor);
 	
 			Anchor workspace = new Anchor( GwtTeaming.getMessages().qViewWorkspace(), url);
 			workspace.setTitle(GwtTeaming.getMessages().qViewWorkspaceTitle());
 			
 			workspace.addStyleName("profile-workspace-link");
 	
-			titlePanel.add(workspace);
+			m_titlePanel.add(workspace);
 		}
 		
 		PresenceControl presence = new PresenceControl(profileRequestInfo.getBinderId(), true, true, true);
-		titlePanel.add(presence);
+		m_titlePanel.add(presence);
 	}
 
 	/**
@@ -193,71 +189,16 @@ public class ProfileMainPanel extends Composite implements SubmitCompleteHandler
 		
 		FlowPanel actionsPanel = new FlowPanel();
 		actionsPanel.addStyleName("profile-actions");
-		titlePanel.add(actionsPanel);
+		m_titlePanel.add(actionsPanel);
 		
 		if (!(GwtClientHelper.isLicenseFilr())) {
 			//create the following action
-			followingAnchor = createFollowingAction(actionsPanel);
+			m_followingAnchor = createFollowingAction(actionsPanel);
 		}
 		
-		//create the edit action
-		edit = createEditAction(actionsPanel);
+		//create the m_editBtn action
+		m_editBtn = createEditAction(actionsPanel);
 
-//		// Add a mouse-over handler
-//		MouseOverHandler mouseOverHandler = new MouseOverHandler() {
-//			@Override
-//			public void onMouseOver(MouseOverEvent event) {
-//				Widget widget;
-//
-//				widget = (Widget) event.getSource();
-//				widget.removeStyleName("subhead-control-bg1");
-//				widget.addStyleName("subhead-control-bg2");
-//			}// end onMouseOver()
-//		};
-//		edit.addMouseOverHandler(mouseOverHandler);
-//		
-//
-//		// Add a mouse-out handler
-//		MouseOutHandler mouseOutHandler = new MouseOutHandler() {
-//			@Override
-//			public void onMouseOut(MouseOutEvent event) {
-//				Widget widget;
-//
-//				// Remove the background color we added to the anchor when the
-//				// user moved the mouse over the anchor.
-//				widget = (Widget) event.getSource();
-//				removeMouseOverStyles(widget);
-//			}// end onMouseOut()
-//		};
-//		edit.addMouseOutHandler(mouseOutHandler);
-		
-		delete = createDeleteAction(actionsPanel);
-		
-		// Add a mouse-over handler
-//		delete.addMouseOverHandler( new MouseOverHandler() {
-//			@Override
-//			public void onMouseOver(MouseOverEvent event) {
-//				Widget widget;
-//
-//				widget = (Widget) event.getSource();
-//				widget.removeStyleName("subhead-control-bg1");
-//				widget.addStyleName("subhead-control-bg2");
-//			}// end onMouseOver()
-//		});
-//
-//		// Add a mouse-out handler
-//		delete.addMouseOutHandler( new MouseOutHandler() {
-//			@Override
-//			public void onMouseOut(MouseOutEvent event) {
-//				Widget widget;
-//
-//				// Remove the background color we added to the anchor when the
-//				// user moved the mouse over the anchor.
-//				widget = (Widget) event.getSource();
-//				removeMouseOverStyles(widget);
-//			}// end onMouseOut()
-//		});
-		
 		updateFollowingStatus();
 	}
 
@@ -273,11 +214,6 @@ public class ProfileMainPanel extends Composite implements SubmitCompleteHandler
 		fAnchor.setVisible(showFollowButton());
 		followPanel.add(fAnchor);
 		
-//		fAnchor.addStyleName("editBrandingLink");
-//		fAnchor.addStyleName("editBrandingAdvancedLink");
-//		fAnchor.addStyleName("roundcornerSM");
-//		fAnchor.addStyleName("subhead-control-bg1");
-		
 		fAnchor.addClickHandler(new ActionClickHandler("FollowId"));;
 		
 		return fAnchor;
@@ -292,35 +228,10 @@ public class ProfileMainPanel extends Composite implements SubmitCompleteHandler
 		Anchor eAnchor = new Anchor(GwtTeaming.getMessages().profileEdit());
 		eAnchor.setTitle(GwtTeaming.getMessages().profileEditTitle());
 		
-//		eAnchor.addStyleName("editBrandingLink");
-//		eAnchor.addStyleName("editBrandingAdvancedLink");
-//		eAnchor.addStyleName("roundcornerSM");
-//		eAnchor.addStyleName("subhead-control-bg1");
 		eAnchor.setVisible(isProfileModifable());
 
 		actions.add(eAnchor);
 		eAnchor.addClickHandler(new ActionClickHandler("EditId"));
-
-		return eAnchor;
-	}
-	
-	private Anchor createDeleteAction(FlowPanel panel) {
-		
-		FlowPanel actions = new FlowPanel();
-		actions.addStyleName("profile-action");
-		panel.add(actions);
-
-		Anchor eAnchor = new Anchor(GwtTeaming.getMessages().profileDelete());
-		eAnchor.setTitle(GwtTeaming.getMessages().profileDelete());
-		
-//		eAnchor.addStyleName("editBrandingLink");
-//		eAnchor.addStyleName("editBrandingAdvancedLink");
-//		eAnchor.addStyleName("roundcornerSM");
-//		eAnchor.addStyleName("subhead-control-bg1");
-		eAnchor.setVisible(profileRequestInfo.isBinderAdmin() && !profileRequestInfo.isOwner());
-
-		actions.add(eAnchor);
-		eAnchor.addClickHandler(new ActionClickHandler("DeleteId"));
 
 		return eAnchor;
 	}
@@ -336,11 +247,11 @@ public class ProfileMainPanel extends Composite implements SubmitCompleteHandler
 	
 
 	/**
-	 * Create the Profile Main Content Section, this creates the grid that
+	 * Create the Profile Main Content Section, this creates the m_grid that
 	 * should hold all of the user attribute name value pairs
 	 * 
 	 * @param cat
-	 * @param grid
+	 * @param m_grid
 	 * @param rowCount
 	 * @return
 	 */
@@ -362,7 +273,7 @@ public class ProfileMainPanel extends Composite implements SubmitCompleteHandler
 				buildUploadImage(grid);
 			}
 			
-			editAvatarSuccessHandler = createAvatarSuccessHandler();
+			m_editAvatarSuccessHandler = createAvatarSuccessHandler();
 		}
 		
 		for (ProfileAttribute attr : cat.getAttributes()) {
@@ -380,7 +291,7 @@ public class ProfileMainPanel extends Composite implements SubmitCompleteHandler
 				row = grid.getRowCount();
 				grid.setWidget(row, 0, title);
 
-				ProfileAttributeWidget.createAsync(attr, isEditable, row, new ProfileAttributeWidgetClient() {					
+				ProfileAttributeWidget.createAsync(attr, m_isEditable, row, new ProfileAttributeWidgetClient() {					
 					@Override
 					public void onUnavailable() {
 						// Nothing to do.  Error handled in
@@ -398,9 +309,9 @@ public class ProfileMainPanel extends Composite implements SubmitCompleteHandler
 				});
 			} else {
 				//This must be a picture attribute
-				profileAvatarArea = new ProfileAvatarArea(attr, isEditable, getRequestInfo(), editAvatarSuccessHandler);
+				m_profileAvatarArea = new ProfileAvatarArea(attr, m_isEditable, getRequestInfo(), m_editAvatarSuccessHandler);
 				row = grid.getRowCount();
-				grid.setWidget(row, 0, profileAvatarArea);
+				grid.setWidget(row, 0, m_profileAvatarArea);
 				grid.getFlexCellFormatter().setColSpan(row, 0, 2);
 				grid.getFlexCellFormatter().setHorizontalAlignment(row, 0,
 						HasHorizontalAlignment.ALIGN_LEFT);
@@ -415,45 +326,45 @@ public class ProfileMainPanel extends Composite implements SubmitCompleteHandler
 		panel.setWidth("100%");
 		
 		//create a form element in order to upload a new photo
-		formPanel = new FormPanel();
-		panel.add(formPanel);
+		m_formPanel = new FormPanel();
+		panel.add(m_formPanel);
 		
-		formPanel.setEncoding( FormPanel.ENCODING_MULTIPART );
-		formPanel.setMethod( FormPanel.METHOD_POST );
-		formPanel.addSubmitCompleteHandler( this );
+		m_formPanel.setEncoding( FormPanel.ENCODING_MULTIPART );
+		m_formPanel.setMethod( FormPanel.METHOD_POST );
+		m_formPanel.addSubmitCompleteHandler( this );
 		
-		fileUpload = new FileUpload();
-		fileUpload.addStyleName("profileUpload");
+		m_fileUpload = new FileUpload();
+		m_fileUpload.addStyleName("profileUpload");
 		String name = "picture";
-		fileUpload.setName( name );
-		InputElement input = fileUpload.getElement().cast();
+		m_fileUpload.setName( name );
+		InputElement input = m_fileUpload.getElement().cast();
 		input.setSize(40);
 		input.setId(name);
 		
-		formPanel.add(fileUpload);
-		formPanel.getElement().setId("form1");
-		formPanel.setAction( profileRequestInfo.getModifyUrl() + "&okBtn=1" + "&profile=1" );
+		m_formPanel.add(m_fileUpload);
+		m_formPanel.getElement().setId("form1");
+		m_formPanel.setAction( profileRequestInfo.getModifyUrl() + "&okBtn=1" + "&profile=1" );
 	
-		uploadBtn = new Anchor(GwtTeaming.getMessages().profileUpload());
-		uploadBtn.setTitle(GwtTeaming.getMessages().profileUploadSelect());
-		uploadBtn.addClickHandler( new ClickHandler(){
+		m_uploadBtn = new Anchor(GwtTeaming.getMessages().profileUpload());
+		m_uploadBtn.setTitle(GwtTeaming.getMessages().profileUploadSelect());
+		m_uploadBtn.addClickHandler( new ClickHandler(){
 				@Override
 				public void onClick(ClickEvent event){
-					formPanel.submit();
+					m_formPanel.submit();
 				}
 			});
 		
-		uploadBtn.setVisible(false);
-		uploadBtn.addStyleName("profile-anchor");
-		uploadBtn.addStyleName("profileUploadButton");
+		m_uploadBtn.setVisible(false);
+		m_uploadBtn.addStyleName("profile-anchor");
+		m_uploadBtn.addStyleName("profileUploadButton");
 		//add the upload button to the div
-		panel.add(uploadBtn);
+		panel.add(m_uploadBtn);
 		
 		//if the file upload changes, add the upload button
-		fileUpload.addChangeHandler(new ChangeHandler(){
+		m_fileUpload.addChangeHandler(new ChangeHandler(){
 			@Override
 			public void onChange(ChangeEvent event) {
-				uploadBtn.setVisible(true);
+				m_uploadBtn.setVisible(true);
 			}
 		});
 		
@@ -470,7 +381,7 @@ public class ProfileMainPanel extends Composite implements SubmitCompleteHandler
 		// remove the bottom border from the section heading titles
 		grid.getFlexCellFormatter().setStyleName(row, 0, "sectionHeadingRBB");
 		
-		formPanel.addSubmitCompleteHandler(new SubmitCompleteHandler() {
+		m_formPanel.addSubmitCompleteHandler(new SubmitCompleteHandler() {
 			@Override
 			public void onSubmitComplete(SubmitCompleteEvent event) {
 				// When the form submission is successfully completed, this event is
@@ -506,13 +417,13 @@ public class ProfileMainPanel extends Composite implements SubmitCompleteHandler
 	private FlowPanel createMessageDiv() {
 		FlowPanel msgDiv = null; 
 		msgDiv = new FlowPanel();
-		quotaMsgLabel = new InlineLabel();
+		m_quotaMsgLabel = new InlineLabel();
 		msgDiv.addStyleName("stats_error_msg");
-		msgDiv.add(quotaMsgLabel);
+		msgDiv.add(m_quotaMsgLabel);
 
 		String quota = profileRequestInfo.getQuotaMessage();
 		if(GwtClientHelper.hasString(quota)) {
-			quotaMsgLabel.setText(quota);
+			m_quotaMsgLabel.setText(quota);
 		}
 		
 		return msgDiv;
@@ -525,7 +436,7 @@ public class ProfileMainPanel extends Composite implements SubmitCompleteHandler
 	 * @param cat
 	 */
 	public void setCategory(ProfileCategory cat) {
-		createProfileInfoSection(cat, grid);
+		createProfileInfoSection(cat, m_grid);
 	}
 
 	/**
@@ -535,7 +446,7 @@ public class ProfileMainPanel extends Composite implements SubmitCompleteHandler
 	private void removeMouseOverStyles(Widget widget) {
 		widget.removeStyleName("subhead-control-bg2");
 		widget.addStyleName("subhead-control-bg1");
-	}// end removeMouseOverStyles()
+	}
 
 	/*
 	 * This method will be called to track the current binder.
@@ -570,7 +481,7 @@ public class ProfileMainPanel extends Composite implements SubmitCompleteHandler
 							t,
 							GwtTeaming.getMessages().rpcFailure_IsPersonTracked(),
 							profileRequestInfo.getBinderId());
-					}//end onFailure()
+					}
 					
 					@Override
 					public void onSuccess( VibeRpcResponse response )
@@ -586,13 +497,13 @@ public class ProfileMainPanel extends Composite implements SubmitCompleteHandler
 						} else {
 							updateFollowingButton(false);
 						}
-					}// end onSuccess()
+					}
 				});
 	}
 
 
 	public void setEditable(boolean edit) {
-		isEditable  = edit;
+		m_isEditable  = edit;
 	}
 	
 	public class ActionClickHandler implements ClickHandler {
@@ -610,8 +521,8 @@ public class ProfileMainPanel extends Composite implements SubmitCompleteHandler
 					GwtClientHelper.jsLaunchUrlInWindow(url, "_blank", 800, 800);
 				}
 			} else if(handlerId.equals("FollowId")) {
-				if (null != followingAnchor) {
-					if(followingAnchor.isChecked()) {
+				if (null != m_followingAnchor) {
+					if(m_followingAnchor.isChecked()) {
 						unfollowPerson();
 					} else {
 						followPerson();
@@ -627,7 +538,7 @@ public class ProfileMainPanel extends Composite implements SubmitCompleteHandler
 	}
 
 	/**
-	 * Use to determine if should show the edit button
+	 * Use to determine if should show the m_editBtn button
 	 * 
 	 * @return true if owns this profile or is binderAdmin
 	 */
@@ -641,15 +552,15 @@ public class ProfileMainPanel extends Composite implements SubmitCompleteHandler
 	 * @param isFollowing
 	 */
 	private void updateFollowingButton(boolean isFollowing) {
-		if (null != followingAnchor) {
+		if (null != m_followingAnchor) {
 			if(isFollowing) {
-				followingAnchor.setText(GwtTeaming.getMessages().qViewFollowing());
-				followingAnchor.setTitle(GwtTeaming.getMessages().qViewFollowingTitle());
-				followingAnchor.setChecked(true);
+				m_followingAnchor.setText(GwtTeaming.getMessages().qViewFollowing());
+				m_followingAnchor.setTitle(GwtTeaming.getMessages().qViewFollowingTitle());
+				m_followingAnchor.setChecked(true);
 			} else {
-				followingAnchor.setText(GwtTeaming.getMessages().qViewFollow());
-				followingAnchor.setTitle(GwtTeaming.getMessages().qViewFollowTitle());
-				followingAnchor.setChecked(false);
+				m_followingAnchor.setText(GwtTeaming.getMessages().qViewFollow());
+				m_followingAnchor.setTitle(GwtTeaming.getMessages().qViewFollowTitle());
+				m_followingAnchor.setChecked(false);
 			}
 		}
 	}
@@ -690,7 +601,7 @@ public class ProfileMainPanel extends Composite implements SubmitCompleteHandler
 						removeStyleName("profile-selected-bg");
 						addStyleName("subhead-control-bg2");
 					}
-				}// end onMouseOver()
+				}
 			});
 
 			// Add a mouse-out handler
@@ -704,7 +615,7 @@ public class ProfileMainPanel extends Composite implements SubmitCompleteHandler
 						removeStyleName("subhead-control-bg2");
 						addStyleName("profile-selected-bg");
 					}
-				}// end onMouseOut()
+				}
 			});
 		}
 
@@ -744,10 +655,10 @@ public class ProfileMainPanel extends Composite implements SubmitCompleteHandler
 	@Override
 	public void onSubmitComplete(SubmitCompleteEvent event) {
 		// Do we have an editSuccessfulHandler?
-		if ( editAvatarSuccessHandler != null )
+		if ( m_editAvatarSuccessHandler != null )
 		{
 			// Yes, call it.
-			editAvatarSuccessHandler.editSuccessful( null );
+			m_editAvatarSuccessHandler.editSuccessful( null );
 		}
 	}
 	
@@ -757,24 +668,24 @@ public class ProfileMainPanel extends Composite implements SubmitCompleteHandler
 	
 	private EditSuccessfulHandler createAvatarSuccessHandler() {
 		
-		if(editAvatarSuccessHandler == null) {
+		if(m_editAvatarSuccessHandler == null) {
 			
-			editAvatarSuccessHandler = new EditSuccessfulHandler() {
+			m_editAvatarSuccessHandler = new EditSuccessfulHandler() {
 				@Override
 				public boolean editSuccessful(Object obj) {
 					
 					GetProfileAvatarsCmd cmd;
 					
-					if(profileAvatarArea != null) {
-						profileAvatarArea.clear();
+					if(m_profileAvatarArea != null) {
+						m_profileAvatarArea.clear();
 					}
 					
-					if(formPanel != null) {
-						formPanel.reset();
+					if(m_formPanel != null) {
+						m_formPanel.reset();
 					}
 					
-					if(uploadBtn != null & uploadBtn.isVisible()){
-						uploadBtn.setVisible(false);
+					if(m_uploadBtn != null & m_uploadBtn.isVisible()){
+						m_uploadBtn.setVisible(false);
 					}
 					
 					//rebuild the avatar area
@@ -798,7 +709,7 @@ public class ProfileMainPanel extends Composite implements SubmitCompleteHandler
 							attr = (ProfileAttribute) response.getResponseData();
 							
 							try {
-								profileAvatarArea.createWidget(attr);
+								m_profileAvatarArea.createWidget(attr);
 
 								//replace the image on sidebar with the current image
 								List<ProfileAttributeListElement> value = (List<ProfileAttributeListElement>)attr.getValue();
@@ -847,7 +758,7 @@ public class ProfileMainPanel extends Composite implements SubmitCompleteHandler
 			};
 		}
 		
-		return editAvatarSuccessHandler;
+		return m_editAvatarSuccessHandler;
 	}
 	
 	private void updateQuota() {
@@ -872,9 +783,9 @@ public class ProfileMainPanel extends Composite implements SubmitCompleteHandler
 				
 				if(info != null) {
 					if(info.getQuotaMessage() != null){
-						quotaMsgLabel.setText(info.getQuotaMessage());
+						m_quotaMsgLabel.setText(info.getQuotaMessage());
 					} else {
-						quotaMsgLabel.setText("");
+						m_quotaMsgLabel.setText("");
 					}
 					
 					if(info.getUsedQuota() != null) {
@@ -888,10 +799,27 @@ public class ProfileMainPanel extends Composite implements SubmitCompleteHandler
 		GwtClientHelper.executeCommand( cmd, callback );
 	}
 	
-	public final native boolean isFileError() /*-{  if( wnd.profileEmptyFrame.ss_error_code != null ) {
-															return true; 
-													} else {
-													 		return false;
-													}}-*/;
-	public final native String getFileError() /*-{ return window.profileEmptyFrame.ss_error_msg; }-*/;
+	/**
+	 * ?
+	 * 
+	 * @return
+	 */
+	public final native boolean isFileError() /*-{
+		if(null != wnd.profileEmptyFrame.ss_error_code) {
+			return true; 
+		}
+		
+		else {
+			return false;
+		}
+	}-*/;
+	
+	/**
+	 * ?
+	 * 
+	 * @return
+	 */
+	public final native String getFileError() /*-{
+		return window.profileEmptyFrame.ss_error_msg;
+	}-*/;
 }

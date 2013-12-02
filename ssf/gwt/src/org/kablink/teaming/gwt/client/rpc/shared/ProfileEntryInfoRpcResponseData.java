@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -46,7 +46,6 @@ public class ProfileEntryInfoRpcResponseData implements IsSerializable, VibeRpcR
 	private LinkedHashMap<String, ProfileAttribute>	m_profileEntryInfo;	// A map of profile entry attribute names to ProfileAttribute's.
 	private String									m_aboutMeHtml;		// The user's 'About Me' HTML.
 	private String									m_avatarUrl;		// The URL of the user's avatar, if they've defined one.
-	private String									m_deleteUrl;		// The URL to use to delete the user.
 	private String									m_modifyUrl;		// The URL to use to modify the user's profile.
 	
 	/**
@@ -132,7 +131,6 @@ public class ProfileEntryInfoRpcResponseData implements IsSerializable, VibeRpcR
 	public LinkedHashMap<String, ProfileAttribute> getProfileEntryInfo() {return m_profileEntryInfo;}
 	public String                                  getAboutMeHtml()      {return m_aboutMeHtml;     }
 	public String                                  getAvatarUrl()        {return m_avatarUrl;       }
-	public String                                  getDeleteUrl()        {return m_deleteUrl;       }
 	public String                                  getModifyUrl()        {return m_modifyUrl;       }
 	
 	/**
@@ -143,7 +141,6 @@ public class ProfileEntryInfoRpcResponseData implements IsSerializable, VibeRpcR
 	public void setProfileEntryInfo(LinkedHashMap<String, ProfileAttribute> profileEntryInfo) {m_profileEntryInfo = profileEntryInfo;}
 	public void setAboutMeHtml(     String                                  aboutMeHtml)      {m_aboutMeHtml      = aboutMeHtml;     }
 	public void setAvatarUrl(       String                                  avatarUrl)        {m_avatarUrl        = avatarUrl;       }
-	public void setDeleteUrl(       String                                  deleteUrl)        {m_deleteUrl        = deleteUrl;       }
 	public void setModifyUrl(       String                                  modifyUrl)        {m_modifyUrl        = modifyUrl;       }
 	
 	/**
