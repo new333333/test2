@@ -905,4 +905,16 @@ public class ResourceUtil {
         LinkUriUtil.populateAvatarLinks(model);
         return model;
     }
+
+    public static MobileDevice buildMobileDevice(MobileDevices.MobileDevice device) {
+        MobileDevice model = new MobileDevice();
+        model.setId(device.getId());
+        model.setDescription(device.getDescription());
+        model.setLastLogin(device.getLastLogin());
+        model.setLastWipe(device.getLastWipe());
+        model.setPushToken(device.getPushToken());
+        model.setWipeScheduled(device.isWipeScheduled());
+        model.setLink("/self/mobile_devices/" + model.getId());
+        return model;
+    }
 }

@@ -43,6 +43,8 @@ import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.shared.FolderUtils;
 import org.kablink.teaming.remoting.rest.v1.exc.BadRequestException;
+import org.kablink.teaming.remoting.rest.v1.exc.ConflictException;
+import org.kablink.teaming.remoting.rest.v1.exc.NotFoundException;
 import org.kablink.teaming.remoting.rest.v1.exc.NotModifiedException;
 import org.kablink.teaming.remoting.rest.v1.util.BinderBriefBuilder;
 import org.kablink.teaming.remoting.rest.v1.util.LinkUriUtil;
@@ -55,6 +57,7 @@ import org.kablink.teaming.rest.v1.model.DefinableEntityBrief;
 import org.kablink.teaming.rest.v1.model.FileProperties;
 import org.kablink.teaming.rest.v1.model.LibraryInfo;
 import org.kablink.teaming.rest.v1.model.LongIdLinkPair;
+import org.kablink.teaming.rest.v1.model.MobileDevice;
 import org.kablink.teaming.rest.v1.model.ParentBinder;
 import org.kablink.teaming.rest.v1.model.RecentActivityEntry;
 import org.kablink.teaming.rest.v1.model.SearchResultList;
@@ -75,10 +78,12 @@ import org.kablink.util.search.Restrictions;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -115,6 +120,7 @@ public class SelfResource extends AbstractFileResource {
         user.setDiskSpaceQuota(getProfileModule().getMaxUserQuota(entry.getId()));
         user.addAdditionalLink("password", user.getLink() + "/password");
         user.setLink("/self");
+        user.addAdditionalLink("mobile_devices", "/self/mobile_devices");
         user.addAdditionalLink("roots", "/self/roots");
         if (SearchUtils.userCanAccessMyFiles(this, getLoggedInUser())) {
             user.addAdditionalLink("my_files", "/self/my_files");
@@ -542,6 +548,111 @@ public class SelfResource extends AbstractFileResource {
                 offset, maxCount, criteria, "/self/my_files/recent_activity", nextParams);
         setMyFilesParents(resultList);
         return resultList;
+    }
+
+    @GET
+    @Path("mobile_devices")
+    public SearchResultList<MobileDevice> getMobileDevices() {
+        MobileDevices mobileDevices = getProfileModule().getMobileDevices(getLoggedInUserId());
+        SearchResultList<MobileDevice> results = new SearchResultList<MobileDevice>();
+        if (mobileDevices!=null && mobileDevices.getMobileDeviceList()!=null) {
+            for (MobileDevices.MobileDevice device : mobileDevices.getMobileDeviceList()) {
+                results.append(ResourceUtil.buildMobileDevice(device));
+            }
+        }
+        return results;
+    }
+
+    @POST
+    @Path("mobile_devices")
+    @Consumes( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+    public MobileDevice addMobileDevice(MobileDevice device) {
+        MobileDevices.MobileDevice mobileDevice = toMobileDevice(device);
+        MobileDevices mobileDevices = getProfileModule().getMobileDevices(getLoggedInUserId());
+        if (mobileDevices!=null) {
+            for (MobileDevices.MobileDevice d : mobileDevices.getMobileDeviceList()) {
+                if (device.getId().equals(d.getId())) {
+                    throw new ConflictException(ApiErrorCode.DEVICE_EXISTS, "A device with the specified ID already exists.");
+                }
+            }
+        }
+        mobileDevices.addMobileDevice(mobileDevice);
+        getProfileModule().setMobileDevices(getLoggedInUserId(), mobileDevices);
+        return ResourceUtil.buildMobileDevice(mobileDevice);
+    }
+
+    @GET
+    @Path("mobile_devices/{id}")
+    public MobileDevice getMobileDevice(@PathParam("id") String id) {
+        MobileDevices mobileDevices = getProfileModule().getMobileDevices(getLoggedInUserId());
+        if (mobileDevices!=null) {
+            for (MobileDevices.MobileDevice device : mobileDevices.getMobileDeviceList()) {
+                if (id.equals(device.getId())) {
+                    return ResourceUtil.buildMobileDevice(device);
+                }
+            }
+        }
+        throw new NotFoundException(ApiErrorCode.DEVICE_NOT_FOUND, "No device with ID: " + id);
+    }
+
+    @PUT
+    @Path("mobile_devices/{id}")
+    @Consumes( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+    public MobileDevice updateMobileDevice(@PathParam("id") String id, MobileDevice newDevice) {
+        newDevice.setId(id);
+        MobileDevices.MobileDevice mobileDevice = toMobileDevice(newDevice);
+        MobileDevices mobileDevices = getProfileModule().getMobileDevices(getLoggedInUserId());
+        if (mobileDevices!=null) {
+            for (MobileDevices.MobileDevice device : mobileDevices.getMobileDeviceList()) {
+                if (id.equals(device.getId())) {
+                    if (mobileDevice.getDescription()!=null) {
+                        device.setDescription(mobileDevice.getDescription());
+                    }
+                    if (mobileDevice.getPushToken()!=null) {
+                        device.setPushToken(mobileDevice.getPushToken());
+                    }
+                    if (mobileDevice.getLastWipe()!=null) {
+                        device.setLastWipe(mobileDevice.getLastWipe());
+                    }
+                    mobileDevice.setLastLogin(new Date());
+                    if (newDevice.isWipeScheduled()!=null) {
+                        device.setWipeScheduled(newDevice.isWipeScheduled());
+                    }
+                    mobileDevices.setMobileDevices(mobileDevices.getMobileDeviceList());
+                    getProfileModule().setMobileDevices(getLoggedInUserId(), mobileDevices);
+                    return ResourceUtil.buildMobileDevice(device);
+                }
+            }
+        }
+        throw new NotFoundException(ApiErrorCode.DEVICE_NOT_FOUND, "No device with ID: " + id);
+    }
+
+    @DELETE
+    @Path("mobile_devices/{id}")
+    public void deleteMobileDevice(@PathParam("id") String id, MobileDevice newDevice) {
+        MobileDevices.MobileDevice mobileDevice = toMobileDevice(newDevice);
+        MobileDevices mobileDevices = getProfileModule().getMobileDevices(getLoggedInUserId());
+        if (mobileDevices!=null) {
+            for (MobileDevices.MobileDevice device : mobileDevices.getMobileDeviceList()) {
+                if (id.equals(device.getId())) {
+                    mobileDevices.getMobileDeviceList().remove(device);
+                    getProfileModule().setMobileDevices(getLoggedInUserId(), mobileDevices);
+                    return;
+                }
+            }
+        }
+        throw new NotFoundException(ApiErrorCode.DEVICE_NOT_FOUND, "No device with ID: " + id);
+    }
+
+    private MobileDevices.MobileDevice toMobileDevice(MobileDevice mobileDevice) {
+        validateMandatoryField(mobileDevice, "getId");
+        MobileDevices.MobileDevice device = new MobileDevices.MobileDevice();
+        device.setId(mobileDevice.getId());
+        device.setPushToken(mobileDevice.getPushToken());
+        device.setDescription(mobileDevice.getDescription());
+        device.setLastLogin(new Date());
+        device.setLastWipe(mobileDevice.getLastWipe());
+        return device;
     }
 
     private SearchResultList<BinderBrief> _getMyFilesLibraryFolders(int descriptionFormat, Integer offset, Integer maxCount, Date parentModTime) {

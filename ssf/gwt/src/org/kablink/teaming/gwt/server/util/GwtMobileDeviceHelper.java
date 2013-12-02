@@ -120,7 +120,6 @@ public class GwtMobileDeviceHelper {
 				String       nowStr = String.valueOf(now.getTime());
 				MobileDevice md     = new MobileDevice();
 				md.setWipeScheduled((0 == (i % 2))                          );	// Mark every other one as having a wipe scheduled.
-				md.setLastActivity( now                                     );
 				md.setLastLogin(    now                                     );
 				md.setId(           nowStr                                  );
 				md.setDescription(  user.getTitle() + ":" + nowStr + ":" + i);
@@ -485,7 +484,7 @@ public class GwtMobileDeviceHelper {
 							else if (FolderColumn.isColumnDeviceWipeDate(cName)) {
 								// Wipe date!  Generate a date/time
 								// string for it.
-								Date wipeDate = md.getLastLogin();
+								Date wipeDate = md.getLastWipe();
 								if (null != wipeDate) {
 									fr.setColumnValue(
 										fc,
