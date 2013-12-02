@@ -33,7 +33,9 @@
 package org.kablink.teaming.rest.v1.model;
 
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.util.List;
 
 @XmlRootElement(name = "user")
 public class User extends Principal {
@@ -57,6 +59,7 @@ public class User extends Principal {
    	private LongIdLinkPair workspace;
     private MobileAppConfig mobileAppConfig;
     private DesktopAppConfig desktopAppConfig;
+    private List<MobileDevice> mobileDevices;
 
     public User() {
         super();
@@ -247,5 +250,15 @@ public class User extends Principal {
 
     public void setDesktopAppConfig(DesktopAppConfig desktopAppConfig) {
         this.desktopAppConfig = desktopAppConfig;
+    }
+
+    @XmlElementWrapper(name="mobile_devices")
+    @XmlElement(name="mobile_device")
+    public List<MobileDevice> getMobileDevices() {
+        return mobileDevices;
+    }
+
+    public void setMobileDevices(List<MobileDevice> mobileDevices) {
+        this.mobileDevices = mobileDevices;
     }
 }
