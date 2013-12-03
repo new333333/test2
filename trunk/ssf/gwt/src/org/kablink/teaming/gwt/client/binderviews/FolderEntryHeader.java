@@ -54,9 +54,9 @@ import org.kablink.teaming.gwt.client.util.ViewFolderEntryInfo;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Image;
@@ -78,7 +78,13 @@ public class FolderEntryHeader extends VibeFlowPanel {
 	private ProfileEntryDlg					m_profileEntryDlg;	// A profile entry dialog, once one has been instantiated.
 	private VibeFlowPanel					m_descPanel;		//
 	private VibeFlowPanel					m_showDescPanel;	//
-	
+
+	/**
+	 * Constructor method.
+	 * 
+	 * @param fec
+	 * @param fed
+	 */
 	public FolderEntryHeader(FolderEntryCallback fec, FolderEntryDetails fed) {
 		// Initialize the super class...
 		super();
