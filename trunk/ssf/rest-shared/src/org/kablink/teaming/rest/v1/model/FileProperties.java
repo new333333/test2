@@ -40,6 +40,7 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 //This annotation is necessary not only for XML but also for JSON representation.
 @XmlRootElement(name="file")
@@ -147,4 +148,9 @@ public class FileProperties extends BaseFileProperties {
         return new FileProperties(this);
     }
 
+    @Override
+    @XmlTransient
+    public String getDisplayName() {
+        return getName();
+    }
 }

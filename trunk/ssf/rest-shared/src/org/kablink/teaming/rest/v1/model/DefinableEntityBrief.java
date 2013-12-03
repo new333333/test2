@@ -172,4 +172,10 @@ public abstract class DefinableEntityBrief extends SearchableObject {
     public String toString() {
         return super.toString() + " id=" + this.id;
     }
+
+    @Override
+    @XmlTransient
+    public String getDisplayName() {
+        return getTitle();
+    }
 }

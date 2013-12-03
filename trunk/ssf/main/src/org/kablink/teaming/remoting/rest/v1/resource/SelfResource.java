@@ -267,6 +267,24 @@ public class SelfResource extends AbstractFileResource {
     }
 
     @GET
+    @Path("/my_files/library_children")
+   	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+    public Response getMyFileLibraryChildren(
+            @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr,
+            @QueryParam("first") @DefaultValue("0") Integer offset,
+            @QueryParam("count") @DefaultValue("-1") Integer maxCount,
+            @Context HttpServletRequest request) {
+        SearchResultList<SearchableObject> results = _getMyFilesLibraryChildren(getIfModifiedSinceDate(request), true, false, true,
+                toDomainFormat(descriptionFormatStr), offset, maxCount, "/self/my_files/library_children");
+        Date lastModified = results.getLastModified();
+        if (lastModified!=null) {
+            return Response.ok(results).lastModified(lastModified).build();
+        } else {
+            return Response.ok(results).build();
+        }
+    }
+
+    @GET
     @Path("/my_files/library_folders")
    	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
     public Response getMyFileLibraryFolders(
@@ -274,17 +292,9 @@ public class SelfResource extends AbstractFileResource {
             @QueryParam("first") @DefaultValue("0") Integer offset,
             @QueryParam("count") @DefaultValue("-1") Integer maxCount,
             @Context HttpServletRequest request) {
-        if (!SearchUtils.userCanAccessMyFiles(this, getLoggedInUser())) {
-            throw new AccessControlException("Personal storage is not allowed.", null);
-        }
-
-        Date lastModified = getMyFilesLibraryModifiedDate(false);
-        Date ifModifiedSince = getIfModifiedSinceDate(request);
-        if (ifModifiedSince!=null && lastModified!=null && !ifModifiedSince.before(lastModified)) {
-            throw new NotModifiedException();
-        }
-        SearchResultList<BinderBrief> results = _getMyFilesLibraryFolders(toDomainFormat(descriptionFormatStr), offset,
-                maxCount, lastModified);
+        SearchResultList<SearchableObject> results = _getMyFilesLibraryChildren(getIfModifiedSinceDate(request), true, false, false,
+                toDomainFormat(descriptionFormatStr), offset, maxCount, "/self/my_files/library_children");
+        Date lastModified = results.getLastModified();
         if (lastModified!=null) {
             return Response.ok(results).lastModified(lastModified).build();
         } else {
@@ -677,16 +687,24 @@ public class SelfResource extends AbstractFileResource {
         return results;
     }
 
-    private SearchResultList<SearchableObject> _getMyFilesLibraryChildren(boolean folders, boolean entries, boolean files,
-                                                                          int descriptionFormat, Integer offset, Integer maxCount, Date parentModTime) {
+    private SearchResultList<SearchableObject> _getMyFilesLibraryChildren(Date ifModifiedSince, boolean folders, boolean entries, boolean files,
+                                                                          int descriptionFormat, Integer offset, Integer maxCount, String nextUrl) {
+        if (!SearchUtils.userCanAccessMyFiles(this, getLoggedInUser())) {
+            throw new AccessControlException("Personal storage is not allowed.", null);
+        }
+
+        Date lastModified = getMyFilesLibraryModifiedDate(false);
+        if (ifModifiedSince!=null && lastModified!=null && !ifModifiedSince.before(lastModified)) {
+            throw new NotModifiedException();
+        }
         Map<String, Object> nextParams = new HashMap<String, Object>();
         if (descriptionFormat==Description.FORMAT_HTML) {
             nextParams.put("description_format", "html");
         } else {
             nextParams.put("description_format", "text");
         }
-        Criteria crit = SearchUtils.getMyFilesSearchCriteria(this, getLoggedInUser().getWorkspaceId(), folders, entries, false, true);
-        SearchResultList<SearchableObject> results = lookUpChildren(crit, descriptionFormat, offset, maxCount, "/self/my_files/library_folders", nextParams, parentModTime);
+        Criteria crit = SearchUtils.getMyFilesSearchCriteria(this, getLoggedInUser().getWorkspaceId(), folders, entries, false, files);
+        SearchResultList<SearchableObject> results = lookUpChildren(crit, descriptionFormat, offset, maxCount, nextUrl, nextParams, lastModified);
         setMyFilesParents(results);
         return results;
     }
