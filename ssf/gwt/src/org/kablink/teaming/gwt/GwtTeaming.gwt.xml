@@ -60,12 +60,14 @@
 	
 	<!-- Limit support of which browsers we compile for.  Speeds up -->
 	<!-- compilation during development.                            -->
-	<set-property name="user.agent" value="gecko1_8,ie6,ie8,ie9,opera,safari"/>
+	<extend-property name="user.agent" values="ie6" />	<!-- Required to add ie6 back in with GWT 2.6. -->
+	<set-property    name="user.agent" value="gecko1_8,ie6,ie8,ie9,ie10,opera,safari"/>
 	<!-- Possible user.agent values:                                -->
-	<!--    gecko1_8:  Firefox 2.x and 3.x.                         -->
+	<!--    gecko1_8:  Firefox.                                     -->
 	<!--    ie6:       IE6 and IE7.                                 -->
 	<!--    ie8:       IE8.                                         -->
 	<!--    ie9:       IE9.                                         -->
+	<!--    ie10:      IE10.                                        -->
 	<!--    opera:     Opera, all versions.                         -->
 	<!--    safari:    Safari and Chrome (webkit), all versions.    -->
 
@@ -86,6 +88,10 @@
 	<replace-with class="org.kablink.teaming.gwt.client.util.AgentIE9">
 		<when-type-is class="org.kablink.teaming.gwt.client.util.Agent"/>
 		<when-property-is name="user.agent" value="ie9" />
+	</replace-with>
+	<replace-with class="org.kablink.teaming.gwt.client.util.AgentIE10">
+		<when-type-is class="org.kablink.teaming.gwt.client.util.Agent"/>
+		<when-property-is name="user.agent" value="ie10" />
 	</replace-with>
 	<replace-with class="org.kablink.teaming.gwt.client.util.AgentOpera">
 		<when-type-is class="org.kablink.teaming.gwt.client.util.Agent"/>
