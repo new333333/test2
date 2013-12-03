@@ -79,9 +79,11 @@ import org.kablink.teaming.util.SZoneConfig;
 import org.kablink.teaming.util.SimpleMultipartFile;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.TempFileUtil;
+import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.util.WindowsUtil;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.portlet.ParamsWrappedActionRequest;
+import org.kablink.util.BrowserSniffer;
 import org.kablink.util.Html;
 import org.kablink.util.PortalDetector;
 import org.kablink.util.Validator;
@@ -661,5 +663,29 @@ public class WebHelper {
 		if(auth == null)
 			return false;
 		return (auth instanceof OpenIDAuthenticationToken);
+	}
+	
+	public static boolean isMobileUI(HttpServletRequest req) {
+		HttpSession session = WebHelper.getRequiredSession(req);
+		boolean mobileFullUI = false;
+		if (session != null) {
+			Boolean mfu = (Boolean) session.getAttribute(WebKeys.MOBILE_FULL_UI);
+			if (Utils.checkIfFilr() || (mfu != null && mfu)) {
+				//In Filr we don't support the mobile ui. just use the full ui
+				mobileFullUI = true;
+			}
+		}
+		
+		// We're at the root URL. Re-direct the client to its workspace.
+		// Do this only if the request method is GET.
+		String userAgents = org.kablink.teaming.util.SPropsUtil.getString("mobile.userAgents", "");
+		String tabletUserAgents = org.kablink.teaming.util.SPropsUtil.getString("tablet.userAgentRegexp", "");
+		Boolean testForAndroid = org.kablink.teaming.util.SPropsUtil.getBoolean("tablet.useDefaultTestForAndroidTablets", false);
+		if (BrowserSniffer.is_mobile(req, userAgents) && !mobileFullUI && 
+				!BrowserSniffer.is_tablet(req, tabletUserAgents, testForAndroid)) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 }
