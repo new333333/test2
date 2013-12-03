@@ -78,7 +78,6 @@ import org.kablink.teaming.web.util.WebHelper;
 import org.kablink.util.BrowserSniffer;
 import org.kablink.util.Validator;
 import org.kablink.util.api.ApiErrorCode;
-
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 import org.springframework.web.portlet.ModelAndView;
@@ -345,12 +344,8 @@ public class LoginController  extends SAbstractControllerRetry {
         		model.put( WebKeys.LOGIN_STATUS, exStatus        );
         		model.put( WebKeys.LOGIN_ERROR,  ex.getMessage() );
 
-        		HttpServletRequest req = WebHelper.getHttpServletRequest(request);
-        		if(BrowserSniffer.is_wap_xhtml(req) || 
-        				BrowserSniffer.is_blackberry(req) || 
-        				BrowserSniffer.is_iphone(req) ||
-        				BrowserSniffer.is_droid(req)) {
-        			
+        		HttpServletRequest req = ((HttpServletRequestReachable) request).getHttpServletRequest();
+        		if (WebHelper.isMobileUI(req)) {
         			String view = "mobile/show_login_form";
         			
         			Cookie[] cookies = request.getCookies();
