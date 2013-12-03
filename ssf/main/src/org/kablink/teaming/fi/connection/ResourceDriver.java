@@ -37,6 +37,8 @@ import java.util.Date;
 import org.kablink.teaming.UncheckedIOException;
 import org.kablink.teaming.domain.ResourceDriverConfig;
 import org.kablink.teaming.fi.FIException;
+import org.kablink.teaming.fi.InitializeException;
+import org.kablink.teaming.fi.ShutdownException;
 
 
 /**
@@ -47,7 +49,13 @@ import org.kablink.teaming.fi.FIException;
  */
 public interface ResourceDriver {
 	
-	public void initialize()  throws FIException, UncheckedIOException;
+	/**
+	 * Initialize the driver.
+	 * 
+	 * @throws InitializeException
+	 * @throws UncheckedIOException
+	 */
+	public void initialize() throws InitializeException, UncheckedIOException;
 
 	/**
 	 * Shutdown the driver. 
@@ -55,7 +63,7 @@ public interface ResourceDriver {
 	 * All system resources and network connections must be closed and released.
 	 *
 	 */
-	public void shutdown();
+	public void shutdown() throws ShutdownException, UncheckedIOException;
 	
 	/**
 	 * Return the name of the driver instance. This name must be unique within a Vibe installation.
