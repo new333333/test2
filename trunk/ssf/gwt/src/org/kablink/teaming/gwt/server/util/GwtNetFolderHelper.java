@@ -1612,7 +1612,11 @@ public class GwtNetFolderHelper
 			ConnectionTestStatus status;
    			
    			aclDriver = (AclResourceDriver) resourceDriver;
-   			aclDriver.initialize();
+   			// Do not call initialize() method on the driver when we create a temporary one
+   			// just for the purpose of testing a connection. Specifically, if we call initialize()
+   			// on a FAMT resource driver, it may trigger building a rights cache which can take
+   			// significant time and system resources which we do not need for this test.
+   			//aclDriver.initialize();
    			status = aclDriver.testConnection(
 		   								proxyName,
 		   								proxyPwd,
@@ -1637,7 +1641,13 @@ public class GwtNetFolderHelper
    				break;
    			}
 
-   			aclDriver.shutdown();
+   			// Even though we didn't call initialize() above, we still call shutdown
+   			// because there might be some resources that the driver may have internally
+   			// obtained which needs to be freed up. We shall see if this trick works OK.
+   			try {
+   				aclDriver.shutdown();
+   			}
+   			catch(Exception ignore) {}
    		}
    		
    		return statusCode;
