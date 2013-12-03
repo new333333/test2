@@ -233,6 +233,9 @@ public class MailToMultiplePublicLinksSelectDlg extends DlgBox implements EditCa
 		m_linksPanel.setWidget(    row, COLINDEX_SHARED_ON, sharedOnLink); m_linksFCF.addStyleName(row, COLINDEX_SHARED_ON, "vibe-mailToMultiplePublicLinksSelectDlg-tableCell"    );	// No-wrap.
 		m_linksPanel.setText(      row, COLINDEX_EXPIRES,   expires     ); m_linksFCF.addStyleName(row, COLINDEX_EXPIRES,   "vibe-mailToMultiplePublicLinksSelectDlg-tableCell"    );	// No-wrap.
 		m_linksPanel.setText(      row, COLINDEX_NOTE,      note        ); m_linksFCF.addStyleName(row, COLINDEX_NOTE,      "vibe-mailToMultiplePublicLinksSelectDlg-tableCellNote");	// Allows wrapping.
+		if (pl.isExpired()) {
+			m_linksFCF.addStyleName(row, COLINDEX_EXPIRES, "vibe-mailToMultiplePublicLinksSelectDlg-tableCellExpires");
+		}
 		m_linksRF.addStyleName(    row, "regrow vibe-mailToMultiplePublicLinksSelectDlg-tableRow");
 		m_linksRF.setVerticalAlign(row, HasVerticalAlignment.ALIGN_TOP);
 	}

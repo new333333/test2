@@ -794,7 +794,6 @@ public class GwtShareHelper
 	{
 		GwtEmailPublicLinkResults results;
 		ArrayList<String> listOfEmailAddresses;
-		ArrayList<String> listOfValidEmailAddresses;
 		List<EntityId> listOfEntityIds;
 		List<SendMailErrorWrapper> emailErrors = null;
 		User currentUser;
@@ -805,47 +804,12 @@ public class GwtShareHelper
 
 		emailErrors = new ArrayList<SendMailErrorWrapper>();
 
-		listOfValidEmailAddresses = new ArrayList<String>();
-		
-		// Validate the email addresses against the black list
 		listOfEmailAddresses = data.getListOfEmailAddresses();
-		if ( listOfEmailAddresses != null && listOfEmailAddresses.size() > 0 )
-		{
-			ShareLists shareLists;
-			SharingModule sharingModule;
-
-			sharingModule = ami.getSharingModule();
-			shareLists = sharingModule.getShareLists();
-			if ( shareLists != null )
-			{
-				for ( String nextEmailAddr : listOfEmailAddresses )
-				{
-					// Is this email address valid?
-					if ( sharingModule.isExternalAddressValid( nextEmailAddr, shareLists ) == false )
-					{
-						String msg;
-						String[] args;
-						SendMailErrorWrapper error;
-						MailSendException msEx = null;
-
-						// No
-						args = new String[1];
-						args[0] = nextEmailAddr;
-						msg = NLT.get( "email.public.link.email.address.on.blacklist", args );
-						error = new SendMailErrorWrapper( msEx, msg );
-													
-						emailErrors.add( error );
-					}
-					else
-						listOfValidEmailAddresses.add( nextEmailAddr );
-				}
-			}
-		}
 		
 		listOfEntityIds = data.getListOfEntities();
 		
 		if ( listOfEntityIds != null && listOfEntityIds.size() > 0 &&
-			 listOfValidEmailAddresses != null && listOfValidEmailAddresses.size() > 0 )
+			 listOfEmailAddresses != null && listOfEmailAddresses.size() > 0 )
 		{
 			for ( EntityId nextEntityId : listOfEntityIds )
 			{
@@ -918,7 +882,7 @@ public class GwtShareHelper
 																					ami,
 																					shareItem,
 																					currentUser,
-																					listOfValidEmailAddresses,
+																					listOfEmailAddresses,
 																					viewUrl,
 																					downloadUrl);
 						if ( entityEmailErrors != null )
@@ -2988,7 +2952,9 @@ public class GwtShareHelper
 			if ( MiscUtil.hasItems( entityIds ) )
 			{
 				// Yes!  Prepare the common things we need to build the
-				// public links... 
+				// public links...
+				FolderModule fm = bs.getFolderModule();
+				SharingModule sm = bs.getSharingModule();
 				Long userId = GwtServerHelper.getCurrentUserId();
 				ShareExpirationValue expires = new ShareExpirationValue();
 				expires.setType( ShareExpirationType.NEVER );
@@ -3011,53 +2977,88 @@ public class GwtShareHelper
 
 					try
 					{
-						// Can we get the name of the primary file
-						// attached to this entry?
-						FolderEntry fe      = bs.getFolderModule().getEntry( null, eid.getEntityId() );
-						            feTitle = fe.getTitle();
-						String      fName   = MiscUtil.getPrimaryFileName(fe);
-						if ( ! ( MiscUtil.hasString( fName ) ) )
+						// Are there any public link shares defined on
+						// this entity?
+						List<ShareItem> plShares = getPublicLinkShareItems( bs, userId, eid );
+						if ( ! ( MiscUtil.hasItems( plShares ) ) )
 						{
-							// No!  Then we can't build links for it.
-							// Generate an error and skip it.
-							reply.addError( NLT.get( "publicLink.error.NoFile", new String[]{ feTitle } ) );
-							continue;
+							// No!  Can we get the name of the primary
+							// file attached to this entry?
+							FolderEntry fe = fm.getEntry( null, eid.getEntityId() );
+							feTitle = fe.getTitle();
+							String fName = MiscUtil.getPrimaryFileName(fe);
+							if ( ! ( MiscUtil.hasString( fName ) ) )
+							{
+								// No!  Then we can't build links for it.
+								// Generate an error and skip it.
+								reply.addError( NLT.get( "publicLink.error.NoFile", new String[]{ feTitle } ) );
+								continue;
+							}
+							
+							// Generate the public link 'share' on the
+							// entry...
+							ShareItem si = buildPublicLinkShareItem( bs, userId, eid, expires, "" );
+							if ( null == si )
+							{
+								reply.addError( NLT.get( "publicLink.error.CantShare", new String[]{ feTitle } ) );
+								continue;
+							}
+							sm.addShareItem( si );
+							
+							// ...and add it to the list of public link
+							// ...shares.
+							plShares.add( si );
 						}
-						
-						// Generate the public link 'share' on the
-						// entry...
-						ShareItem si = buildPublicLinkShareItem( bs, userId, eid, expires, "" );
-						if ( null == si )
+
+						// Scan the public link shares on this entry.
+						for ( ShareItem si:  plShares )
 						{
-							reply.addError( NLT.get( "publicLink.error.CantShare", new String[]{ feTitle } ) );
-							continue;
+							// Can we get the name of the primary file
+							// attached to this entry?
+							FolderEntry fe = ((FolderEntry) sm.getSharedEntity( si ));
+				            feTitle = fe.getTitle();
+							String fName = MiscUtil.getPrimaryFileName(fe);
+							if ( ! ( MiscUtil.hasString( fName ) ) )
+							{
+								// No!  Then we can't build links for it.
+								// Generate an error and skip it.
+								reply.addError( NLT.get( "publicLink.error.NoFile", new String[]{ feTitle } ) );
+								continue;
+							}
+							
+							// ...construct a download link URL for it...
+							Long   siId = si.getId();
+							String siPK = si.getPassKey();
+							String downloadUrl = WebUrlUtil.getSharedPublicFileUrl( request, siId, siPK, WebKeys.URL_SHARE_PUBLIC_LINK, fName );
+	
+							// ...and if we support viewing it as HTML,
+							// ...construct a view link URL for it...
+							String viewUrl;
+							if ( GwtViewHelper.supportsViewAsHtml( fName ) )
+							     viewUrl = WebUrlUtil.getSharedPublicFileUrl( request, siId, siPK, WebKeys.URL_SHARE_PUBLIC_LINK_HTML, fName );
+							else viewUrl = null;
+							
+							// ...get the share's expiration...
+							String expiration;
+							Date expirationDate = si.getEndDate();
+							if ( null == expirationDate )
+							     expiration = null;
+							else expiration = GwtServerHelper.getDateTimeString( expirationDate, DateFormat.MEDIUM, DateFormat.SHORT );
+	
+							// ...and add the public link information to
+							// ...the reply.
+							reply.addPublicLink(
+								eid,
+								feTitle,
+								fe.getParentBinder().getPathName(),
+								FileIconsHelper.getFileIconFromFileName(
+									fName,
+									IconSize.SMALL ),
+								downloadUrl,
+								viewUrl,
+								si.isExpired(),
+								expiration );
 						}
-						bs.getSharingModule().addShareItem( si );
-						
-						// ...construct a download link URL for it...
-						Long   siId = si.getId();
-						String siPK = si.getPassKey();
-						String downloadUrl = WebUrlUtil.getSharedPublicFileUrl( request, siId, siPK, WebKeys.URL_SHARE_PUBLIC_LINK, fName );
-
-						// ...and it we support viewing it as HTML,
-						// ...construct a view link URL for it...
-						String viewUrl;
-						if ( GwtViewHelper.supportsViewAsHtml( fName ) )
-						     viewUrl = WebUrlUtil.getSharedPublicFileUrl( request, siId, siPK, WebKeys.URL_SHARE_PUBLIC_LINK_HTML, fName );
-						else viewUrl = null;
-
-						// ...and add the public link information to
-						// ...the reply.
-						reply.addPublicLink(
-							eid,
-							feTitle,
-							fe.getParentBinder().getPathName(),
-							FileIconsHelper.getFileIconFromFileName(
-								fName,
-								IconSize.SMALL ),
-							downloadUrl,
-							viewUrl);
-						
 					}
 					
 					catch ( Exception e )
@@ -3117,7 +3118,7 @@ public class GwtShareHelper
 			// Create a MailToPublicLinksRpcResponseData we can return.
 			MailToPublicLinksRpcResponseData reply = new MailToPublicLinksRpcResponseData();
 
-			// Prepare the common things we need to build public links. 
+			// Prepare the common things we need to build public links.
 			User user                    = GwtServerHelper.getCurrentUser();
 			Long userId                  = user.getId();
 			ShareExpirationValue expires = new ShareExpirationValue();
@@ -3212,6 +3213,7 @@ public class GwtShareHelper
 						viewUrl,
 						plShare.getComment(),
 						sharedOn,
+						plShare.isExpired(),
 						expiration );
 					reply.addMailToPublicLink( plLink );
 				}

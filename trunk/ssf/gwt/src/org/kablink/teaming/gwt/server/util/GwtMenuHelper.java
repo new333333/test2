@@ -112,7 +112,6 @@ import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ReleaseInfo;
 import org.kablink.teaming.util.SPropsUtil;
-import org.kablink.teaming.util.ShareLists;
 import org.kablink.teaming.util.SimpleProfiler;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.Utils;
@@ -1375,8 +1374,7 @@ public class GwtMenuHelper {
 				markTBIEvent(shareTBI, TeamingEvents.COPY_PUBLIC_LINK_SELECTED_ENTITIES);
 				entryToolbar.addNestedItem(shareTBI);
 				
-				boolean sMT = MailToPublicLinkEntityEvent.SUPPORT_MAILTO_SHARES;
-				if (sMT && (!(shareListsDefined(bs)))) {
+				if (MailToPublicLinkEntityEvent.SUPPORT_MAILTO_SHARES) {
 					shareTBI = new ToolbarItem("1_mailtoPublicLink");
 					markTBITitle(shareTBI, "toolbar.mailtoPublicLink." + keyTail);
 					markTBIEvent(shareTBI, TeamingEvents.MAILTO_PUBLIC_LINK_ENTITY);
@@ -3689,8 +3687,7 @@ public class GwtMenuHelper {
 					markTBIEntryIds(actionTBI, fe);
 					shareItemsTBI.addNestedItem(actionTBI);
 					
-					boolean sMT = MailToPublicLinkEntityEvent.SUPPORT_MAILTO_SHARES;
-					if (sMT && (!(shareListsDefined(bs)))) {
+					if (MailToPublicLinkEntityEvent.SUPPORT_MAILTO_SHARES) {
 						actionTBI = new ToolbarItem(MAILTO_PUBLIC_LINK);
 						markTBITitle(   actionTBI, "toolbar.mailtoPublicLink." + keyTail);
 						markTBIEvent(   actionTBI, TeamingEvents.MAILTO_PUBLIC_LINK_ENTITY);
@@ -4332,28 +4329,5 @@ public class GwtMenuHelper {
 	private static void markTBIUrlAsTargetedAnchor(ToolbarItem tbi, AdaptedPortletURL url) {
 		// Always use the initial form of the method.
 		markTBIUrlAsTargetedAnchor(tbi, url.toString(), null);
-	}
-	
-	/*
-	 * Returns true if there are any share lists defined against the
-	 * zone and false otherwise.
-	 */
-	private static boolean shareListsDefined(AllModulesInjected bs) {
-		// Is there a ShareList defined?
-		ShareLists sl = bs.getSharingModule().getShareLists();
-		if (null != sl) {
-			// Yes!  Is it disabled?
-			if (!(sl.isDisable())) {
-				// No!  Return true if it contains any domains or email
-				// addresses and false otherwise.
-				return (
-					MiscUtil.hasItems(sl.getDomains()) ||
-					MiscUtil.hasItems(sl.getEmailAddresses()));
-			}
-		}
-
-		// If we get here, there are no share lists active.  Return
-		// false.
-		return false;
 	}
 }
