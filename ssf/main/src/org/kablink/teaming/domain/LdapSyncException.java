@@ -32,6 +32,9 @@
  */
 package org.kablink.teaming.domain;
 
+import org.kablink.util.VibeRuntimeException;
+import org.kablink.util.api.ApiErrorCode;
+
 import javax.naming.NamingException;
 
 
@@ -42,7 +45,7 @@ import javax.naming.NamingException;
  * @author jwootton
  *
  */
-public class LdapSyncException extends Exception
+public class LdapSyncException extends VibeRuntimeException
 {
 	private LdapConnectionConfig	m_ldapConfig	= null;	// The ldap connection that was being used when the problem happened.
 	private NamingException		m_namingEx		= null;	// The NamingException that was thrown when during the ldap sync.
@@ -54,7 +57,7 @@ public class LdapSyncException extends Exception
     	LdapConnectionConfig	ldapConfig,
     	NamingException			namingException )
     {
-    	super();
+    	super(namingException.getMessage(), namingException);
     	
     	m_ldapConfig = ldapConfig;
     	m_namingEx = namingException;
@@ -77,5 +80,14 @@ public class LdapSyncException extends Exception
     {
     	return m_namingEx;
     }// end getNamingException()
-    
+
+    @Override
+    public ApiErrorCode getApiErrorCode() {
+        return ApiErrorCode.LDAP_SYNC_ERROR;
+    }
+
+    @Override
+    public int getHttpStatusCode() {
+        return 500;
+    }
 }// end LdapSyncException

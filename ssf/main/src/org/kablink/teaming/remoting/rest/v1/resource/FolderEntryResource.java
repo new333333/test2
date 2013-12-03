@@ -235,8 +235,9 @@ public class FolderEntryResource extends AbstractFolderEntryResource {
     @Path("{id}/shares")
     public Share shareEntity(@PathParam("id") Long id,
                              @QueryParam("notify") @DefaultValue("false") boolean notifyRecipient,
+                             @QueryParam("notify_address") Set<String> notifyAddresses,
                              Share share) {
-        return shareEntity(_getFolderEntry(id), share, notifyRecipient);
+        return shareEntity(_getFolderEntry(id), share, notifyRecipient, notifyAddresses);
     }
 
     protected org.kablink.teaming.domain.FolderEntry _getFolderEntry(long id) {
