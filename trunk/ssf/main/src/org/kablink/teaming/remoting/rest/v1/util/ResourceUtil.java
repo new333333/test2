@@ -74,6 +74,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -850,15 +851,24 @@ public class ResourceUtil {
 
         model.setLink(LinkUriUtil.getShareLinkUri(model.getId()));
 
-        if (model.getRecipient().getType().equals(ShareRecipient.PUBLIC_LINK)) {
-            String fileName = MiscUtil.getPrimaryFileName(sharedEntity);
-            model.addAdditionalPermaLink("download", PermaLinkUtil.getSharedPublicFileDownloadPermalink(shareItem.getId(), shareItem.getPassKey(), fileName));
-            if (SsfsUtil.supportsViewAsHtml(fileName) || MiscUtil.isPdf(fileName)) {
-                model.addAdditionalPermaLink("view", PermaLinkUtil.getSharedPublicFileViewPermalink(shareItem.getId(), shareItem.getPassKey(), fileName));
+        if (shareItem.getRecipientType()== ShareItem.RecipientType.publicLink) {
+            Map<String, String> urls = buildPublicLinks(shareItem, sharedEntity);
+            for (String name : urls.keySet()) {
+                model.addAdditionalPermaLink(name, urls.get(name));
             }
         }
 
         return model;
+    }
+
+    public static Map<String, String> buildPublicLinks(ShareItem shareItem, org.kablink.teaming.domain.DefinableEntity sharedEntity) {
+        Map<String, String> urls = new HashMap<String, String>();
+        String fileName = MiscUtil.getPrimaryFileName(sharedEntity);
+        urls.put("download", PermaLinkUtil.getSharedPublicFileDownloadPermalink(shareItem.getId(), shareItem.getPassKey(), fileName));
+        if (SsfsUtil.supportsViewAsHtml(fileName) || MiscUtil.isPdf(fileName)) {
+            urls.put("view", PermaLinkUtil.getSharedPublicFileViewPermalink(shareItem.getId(), shareItem.getPassKey(), fileName));
+        }
+        return urls;
     }
 
     private static void populateRecipientLink(ShareRecipient recipient) {

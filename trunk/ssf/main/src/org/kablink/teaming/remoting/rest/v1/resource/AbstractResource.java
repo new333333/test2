@@ -78,6 +78,7 @@ import org.kablink.teaming.security.AccessControlManager;
 import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.util.AbstractAllModulesInjected;
 import org.kablink.teaming.util.InvokeException;
+import org.kablink.teaming.util.ShareLists;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.util.stringcheck.StringCheckUtil;
@@ -481,9 +482,21 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         return spec;
     }
 
-    protected Share shareEntity(org.kablink.teaming.domain.DefinableEntity entity, Share share, boolean notifyRecipient) {
+    protected Share shareEntity(org.kablink.teaming.domain.DefinableEntity entity, Share share,
+                                boolean notifyRecipient, Set<String> notifyAddresses) {
         share.setSharedEntity(new EntityId(entity.getId(), entity.getEntityType().name(), null));
         ShareItem shareItem = toShareItem(share);
+        if (notifyRecipient && shareItem.getRecipientType() == ShareItem.RecipientType.publicLink) {
+            if (notifyAddresses==null || notifyAddresses.size()==0) {
+                throw new BadRequestException(ApiErrorCode.BAD_INPUT, "Missing notify_address query parameter.");
+            }
+            ShareLists shareLists = getSharingModule().getShareLists();
+            for (String addr : notifyAddresses) {
+                if (!getSharingModule().isExternalAddressValid(addr, shareLists)) {
+                    throw new InvalidEmailAddressException(addr);
+                }
+            }
+        }
         List<ShareItem> shareItems = new ArrayList<ShareItem>(2);
         shareItems.add(shareItem);
 
@@ -538,10 +551,20 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
             }
         }
         if (notifyRecipient) {
-            try {
-                EmailHelper.sendEmailToRecipient(this, shareItem, isExternal, getLoggedInUser());
-            } catch (Exception e) {
-                logger.warn("Failed to send share notification email", e);
+            if (shareItem.getRecipientType()==ShareItem.RecipientType.publicLink) {
+                Map<String, String> urls = ResourceUtil.buildPublicLinks(shareItem, entity);
+                try {
+                    EmailHelper.sendEmailToPublicLinkRecipients(this, shareItem, getLoggedInUser(),
+                            new ArrayList<String>(notifyAddresses), urls.get("view"), urls.get("download"));
+                } catch (Exception e) {
+                    logger.warn("Failed to send share notification email", e);
+                }
+            } else {
+                try {
+                    EmailHelper.sendEmailToRecipient(this, shareItem, isExternal, getLoggedInUser());
+                } catch (Exception e) {
+                    logger.warn("Failed to send share notification email", e);
+                }
             }
         }
         return ResourceUtil.buildShare(shareItem, entity, buildShareRecipient(shareItem));
@@ -923,7 +946,7 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
             recipient.setId(0L);
 
             if (entity.getEntityType() != EntityIdentifier.EntityType.folderEntry) {
-                throw new BadRequestException(ApiErrorCode.BAD_INPUT, "'recipient'.'type' of 'public_link' is only valid for 'folderEntry' recipients.");
+                throw new BadRequestException(ApiErrorCode.BAD_INPUT, "'recipient.type' of 'public_link' is only valid for 'folderEntry' recipients.");
             }
         }
         ShareItem.Role role;

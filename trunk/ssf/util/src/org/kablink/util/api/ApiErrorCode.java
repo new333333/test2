@@ -183,7 +183,9 @@ public enum ApiErrorCode {
 
 	// OpenID errors
     LDAP_CONFIG_NOT_FOUND, // No ldap config object found with this name or id
-	NET_FOLDER_NOT_FOUND, // No net folder found with this name or id
+
+    LDAP_SYNC_ERROR,
+    NET_FOLDER_NOT_FOUND, // No net folder found with this name or id
 
 	// ShareItem errors
 	SHAREITEM_NOT_FOUND, // No share found with this name or id

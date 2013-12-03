@@ -372,7 +372,7 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
     public Share shareEntity(@PathParam("id") Long id,
                              @QueryParam("notify") @DefaultValue("false") boolean notifyRecipient,
                              Share share) {
-        return shareEntity(_getBinder(id), share, notifyRecipient);
+        return shareEntity(_getBinder(id), share, notifyRecipient, null);
     }
 
     @GET
