@@ -33,6 +33,7 @@
 package org.kablink.teaming.rest.v1.model;
 
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 /**
  * User: david
@@ -63,6 +64,9 @@ public abstract class SearchableObject extends BaseRestObject {
     public void setDocType(String docType) {
         this.docType = docType;
     }
+
+    @XmlTransient
+    abstract public String getDisplayName();
 
     @Override
     abstract public Object clone() throws CloneNotSupportedException;

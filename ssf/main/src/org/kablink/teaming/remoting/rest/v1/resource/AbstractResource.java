@@ -1194,18 +1194,30 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         }
     }
 
+    protected Date getSharedByLibraryModifiedDate(Long userId, boolean recursive) {
+        return getSharesLibraryModifiedDate(null, recursive, getSharedBySpec(userId), true, true);
+    }
+
     protected Date getSharedWithLibraryModifiedDate(Long userId, boolean recursive) {
-        ShareItemSelectSpec spec = getSharedWithSpec(userId);
+        return getSharesLibraryModifiedDate(userId, recursive, getSharedWithSpec(userId), false, true);
+    }
+
+    protected Date getPublicSharesLibraryModifiedDate(boolean recursive) {
+        Long userId = getLoggedInUserId();
+        return getSharesLibraryModifiedDate(null, recursive, getSharedWithSpec(userId), true, false);
+    }
+
+    private Date getSharesLibraryModifiedDate(Long userId, boolean recursive, ShareItemSelectSpec spec, boolean includePublic, boolean includeNonPublic) {
         // Include deleted entries as well.
         spec.deleted = null;
-        List<ShareItem> shareItems = getShareItems(spec, userId, true, false, true);
+        List<ShareItem> shareItems = getShareItems(spec, userId, true, includePublic, includeNonPublic);
         Date libraryModifiedDateForShareItems = getLibraryModifiedDateForShareItems(recursive, shareItems);
         Date hideDate = getSharingModule().getHiddenShareModTimeForCurrentUser(true);
         return max(hideDate, libraryModifiedDateForShareItems);
     }
 
     protected Date getLibraryModifiedDateForShareItems(boolean recursive, List<ShareItem> shareItems) {
-        Date maxDate = null;
+        Date maxDate = new Date(0);
         List<Long> binderList = new ArrayList<Long>();
         for (ShareItem item : shareItems) {
             if (item.isExpired()) {
@@ -1236,11 +1248,23 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         return maxDate;
     }
 
+    protected LibraryInfo getSharedByLibraryInfo(Long userId) {
+        return getSharesLibraryInfo(null, getSharedBySpec(userId), true, true);
+    }
+
     protected LibraryInfo getSharedWithLibraryInfo(Long userId) {
-        ShareItemSelectSpec spec = getSharedWithSpec(userId);
+        return getSharesLibraryInfo(userId, getSharedWithSpec(userId), false, true);
+    }
+
+    protected LibraryInfo getPublicSharesLibraryInfo() {
+        Long userId = getLoggedInUserId();
+        return getSharesLibraryInfo(null, getSharedWithSpec(userId), true, false);
+    }
+
+    protected LibraryInfo getSharesLibraryInfo(Long userId, ShareItemSelectSpec spec, boolean includePublic, boolean includeNonPublic) {
         // Include deleted entries as well.
         spec.deleted = null;
-        List<ShareItem> shareItems = getShareItems(spec, userId, true, false, true);
+        List<ShareItem> shareItems = getShareItems(spec, userId, true, includePublic, includeNonPublic);
         LibraryInfo info = getLibraryInfoForShareItems(shareItems);
         Date hideDate = getSharingModule().getHiddenShareModTimeForCurrentUser(true);
         info.setModifiedDate(max(hideDate, info.getModifiedDate()));
@@ -1248,7 +1272,7 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
     }
 
     protected LibraryInfo getLibraryInfoForShareItems(List<ShareItem> shareItems) {
-        Date maxDate = null;
+        Date maxDate = new Date(0);
         int files = 0;
         int folders = 0;
         long diskSpace = 0;
@@ -1499,6 +1523,7 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         binder.addAdditionalLink("child_library_files", baseUri + "/library_files");
         binder.addAdditionalLink("child_library_folders", baseUri + "/library_folders");
         binder.addAdditionalLink("child_library_tree", baseUri + "/library_tree");
+        binder.addAdditionalLink("library_children", baseUri + "/library_children");
         binder.addAdditionalLink("recent_activity", baseUri + "/recent_activity");
         return binder;
     }
@@ -1521,6 +1546,7 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         binder.addAdditionalLink("child_library_files", baseUri + "/library_files");
         binder.addAdditionalLink("child_library_folders", baseUri + "/library_folders");
         binder.addAdditionalLink("child_library_tree", baseUri + "/library_tree");
+        binder.addAdditionalLink("library_children", baseUri + "/library_children");
         binder.addAdditionalLink("recent_activity", baseUri + "/recent_activity");
         return binder;
     }
@@ -1542,7 +1568,7 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         binder.addAdditionalLink("child_library_entities", baseUri + "/library_entities");
         binder.addAdditionalLink("child_library_files", baseUri + "/library_files");
         binder.addAdditionalLink("child_library_folders", baseUri + "/library_folders");
-//        binder.addAdditionalLink("child_library_tree", baseUri + "/library_tree");
+        binder.addAdditionalLink("library_children", baseUri + "/library_children");
         binder.addAdditionalLink("recent_activity", baseUri + "/recent_activity");
         return binder;
     }
@@ -1561,20 +1587,15 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         binder.setPermaLink(PermaLinkUtil.getUserPermalink(null, userId.toString(), PermaLinkUtil.COLLECTION_NET_FOLDERS));
         String baseUri = "/net_folders";
         binder.addAdditionalLink("child_binders", baseUri);
-        //binder.addAdditionalLink("child_binder_tree", baseUri + "/binder_tree");
-        //binder.addAdditionalLink("child_files", baseUri + "/files");
         binder.addAdditionalLink("child_library_entities", baseUri + "/library_entities");
-        //binder.addAdditionalLink("child_library_files", baseUri + "/library_files");
         binder.addAdditionalLink("child_library_folders", baseUri);
-        //binder.addAdditionalLink("child_library_tree", baseUri + "/library_tree");
+        binder.addAdditionalLink("library_children", baseUri);
         binder.addAdditionalLink("recent_activity", baseUri + "/recent_activity");
         return binder;
     }
 
     protected BinderBrief getFakePublicShares() {
         BinderBrief binder = new BinderBrief();
-
-        Binder netFoldersBinder = SearchUtils.getNetFoldersRootBinder();
         //TODO: localize
         binder.setId(ObjectKeys.PUBLIC_SHARES_ID);
         binder.setTitle("Public");
@@ -1590,6 +1611,7 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         binder.addAdditionalLink("child_library_files", baseUri + "/library_files");
         binder.addAdditionalLink("child_library_folders", baseUri + "/library_folders");
         binder.addAdditionalLink("child_library_tree", baseUri + "/library_tree");
+        binder.addAdditionalLink("library_children", baseUri + "/library_children");
         binder.addAdditionalLink("recent_activity", baseUri + "/recent_activity");
         return binder;
     }

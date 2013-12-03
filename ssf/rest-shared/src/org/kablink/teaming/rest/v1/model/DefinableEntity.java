@@ -34,6 +34,7 @@ package org.kablink.teaming.rest.v1.model;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlTransient;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -248,5 +249,11 @@ public abstract class DefinableEntity extends SearchableObject {
             }
         }
         return null;
+    }
+
+    @Override
+    @XmlTransient
+    public String getDisplayName() {
+        return getTitle();
     }
 }

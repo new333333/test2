@@ -33,6 +33,7 @@
 package org.kablink.teaming.rest.v1.model;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 @XmlRootElement(name="file_version")
 public class FileVersionProperties extends BaseFileProperties {
@@ -43,6 +44,12 @@ public class FileVersionProperties extends BaseFileProperties {
 
     protected FileVersionProperties(FileVersionProperties orig) {
         super(orig);
+    }
+
+    @Override
+    @XmlTransient
+    public String getDisplayName() {
+        return getId();
     }
 
     @Override

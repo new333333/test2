@@ -121,6 +121,8 @@ public class BinderResource extends AbstractResource {
                 results.append(getFakeMyFileFolders());
             } else if (id.equals(ObjectKeys.NET_FOLDERS_ID)) {
                 results.append(getFakeNetFolders());
+            } else if (id.equals(ObjectKeys.PUBLIC_SHARES_ID)) {
+                results.append(getFakePublicShares());
             }
         }
 
@@ -181,8 +183,12 @@ public class BinderResource extends AbstractResource {
             LibraryInfo info = new LibraryInfo();
             if (id.equals(ObjectKeys.SHARED_WITH_ME_ID)) {
                 info.setModifiedDate(getSharedWithLibraryModifiedDate(getLoggedInUserId(), true));
+            } else if (id.equals(ObjectKeys.SHARED_BY_ME_ID)) {
+                info.setModifiedDate(getSharedByLibraryModifiedDate(getLoggedInUserId(), true));
             } else if (id.equals(ObjectKeys.MY_FILES_ID)) {
                 info.setModifiedDate(getMyFilesLibraryModifiedDate(true));
+            } else if (id.equals(ObjectKeys.PUBLIC_SHARES_ID)) {
+                info.setModifiedDate(getPublicSharesLibraryModifiedDate(true));
             } else if (id>0) {
                 info.setModifiedDate(getLibraryModifiedDate(new Long[]{id}, true));
             }
@@ -197,8 +203,12 @@ public class BinderResource extends AbstractResource {
             Long id = binder.getId();
             if (id.equals(ObjectKeys.SHARED_WITH_ME_ID)) {
                 binder.setLibraryInfo(getSharedWithLibraryInfo(getLoggedInUserId()));
+            } else if (id.equals(ObjectKeys.SHARED_BY_ME_ID)) {
+                binder.setLibraryInfo(getSharedByLibraryInfo(getLoggedInUserId()));
             } else if (id.equals(ObjectKeys.MY_FILES_ID)) {
                 binder.setLibraryInfo(getMyFilesLibraryInfo());
+            } else if (id.equals(ObjectKeys.PUBLIC_SHARES_ID)) {
+                binder.setLibraryInfo(getPublicSharesLibraryInfo());
             } else if (id>0) {
                 binder.setLibraryInfo(getLibraryInfo(new Long[]{id}, binder.getMirrored()));
             }
