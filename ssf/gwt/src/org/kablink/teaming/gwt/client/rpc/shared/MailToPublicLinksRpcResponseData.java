@@ -52,6 +52,7 @@ public class MailToPublicLinksRpcResponseData implements IsSerializable, VibeRpc
 	 * Inner class used to encapsulate the public links of a file.
 	 */
 	public static class MailToPublicLinkInfo implements IsSerializable {
+		private boolean	m_expired;		//
 		private String	m_comment;		//
 		private String	m_downloadUrl;	//
 		private String	m_expiration;	//
@@ -76,9 +77,10 @@ public class MailToPublicLinksRpcResponseData implements IsSerializable, VibeRpc
 		 * @param viewUrl
 		 * @param comment
 		 * @param sharedOn
+		 * @param expired
 		 * @param expiration
 		 */
-		public MailToPublicLinkInfo(String downloadUrl, String viewUrl, String comment, String sharedOn, String expiration) {
+		public MailToPublicLinkInfo(String downloadUrl, String viewUrl, String comment, String sharedOn, boolean expired, String expiration) {
 			// Initialize the this object...
 			this();
 			
@@ -86,6 +88,7 @@ public class MailToPublicLinksRpcResponseData implements IsSerializable, VibeRpc
 			setDownloadUrl(downloadUrl);
 			setViewUrl(    viewUrl    );
 			setComment(    comment    );
+			setExpired(    expired    );
 			setExpiration( expiration );
 			setSharedOn(   sharedOn   );
 		}
@@ -95,22 +98,24 @@ public class MailToPublicLinksRpcResponseData implements IsSerializable, VibeRpc
 		 * 
 		 * @return
 		 */
-		public String getComment()     {return m_comment;    }
-		public String getDownloadUrl() {return m_downloadUrl;}
-		public String getExpiration()  {return m_expiration; }
-		public String getSharedOn()    {return m_sharedOn;   }
-		public String getViewUrl()     {return m_viewUrl;    }
+		public boolean isExpired()      {return m_expired;    }
+		public String  getComment()     {return m_comment;    }
+		public String  getDownloadUrl() {return m_downloadUrl;}
+		public String  getExpiration()  {return m_expiration; }
+		public String  getSharedOn()    {return m_sharedOn;   }
+		public String  getViewUrl()     {return m_viewUrl;    }
 		
 		/**
 		 * Set'er methods.
 		 * 
 		 * @param
 		 */
-		public void setComment(    String comment)     {m_comment     = comment;    }
-		public void setDownloadUrl(String downloadUrl) {m_downloadUrl = downloadUrl;}
-		public void setExpiration( String expiration)  {m_expiration  = expiration; }
-		public void setSharedOn(   String sharedOn)    {m_sharedOn    = sharedOn;   }
-		public void setViewUrl(    String viewUrl)     {m_viewUrl     = viewUrl;    }
+		public void setExpired(    boolean expired)     {m_expired     = expired;    }
+		public void setComment(    String  comment)     {m_comment     = comment;    }
+		public void setDownloadUrl(String  downloadUrl) {m_downloadUrl = downloadUrl;}
+		public void setExpiration( String  expiration)  {m_expiration  = expiration; }
+		public void setSharedOn(   String  sharedOn)    {m_sharedOn    = sharedOn;   }
+		public void setViewUrl(    String  viewUrl)     {m_viewUrl     = viewUrl;    }
 	}
 	
 	/**

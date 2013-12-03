@@ -5929,28 +5929,29 @@ td.datePickerMonth {
 /* End:  Email Public Link dialog styles. */
 
 /* Start:  Mail To Muliple Public Links Select dialog styles. */
-	.vibe-mailToMultiplePublicLinksSelectDlg                 {width: 800px;}
-	.vibe-mailToMultiplePublicLinksSelectDlg-contentPanel    {margin-top: 10px;}
-	.vibe-mailToMultiplePublicLinksSelectDlg-headerLabel     {}
-	.vibe-mailToMultiplePublicLinksSelectDlg-headerNameLabel {font-size: 1.2em; line-height: 1.4em; color: #1f1f1f;}
-	.vibe-mailToMultiplePublicLinksSelectDlg-headerNamePanel {margin-left: 55px; width: 700px;}
-	.vibe-mailToMultiplePublicLinksSelectDlg-headerPanel     {position: relative; margin-bottom: 15px;}
-	.vibe-mailToMultiplePublicLinksSelectDlg-headerPanel img {position: absolute; top: 0px; left: 1px;}
-	.vibe-mailToMultiplePublicLinksSelectDlg-headerPathLabel {color: #505354; font-size: 13px; line-height: 16px; overflow: hidden;}
-	.vibe-mailToMultiplePublicLinksSelectDlg-hintPanel       {display: block; width: 775px; white-space: normal; margin-top: 10px;}
-	.vibe-mailToMultiplePublicLinksSelectDlg-hintStart       {display: inline; font-weight: bold; font-size: .95em; padding-right: 4px;}
-	.vibe-mailToMultiplePublicLinksSelectDlg-hintTail        {display: inline; font-weight: normal; font-size: .9em;}
-	.vibe-mailToMultiplePublicLinksSelectDlg-linksPanel      {color: #505354; font-size: 12px;}
-	.vibe-mailToMultiplePublicLinksSelectDlg-mainPanel       {margin: 10px 10px 10px 13px;}
-	.vibe-mailToMultiplePublicLinksSelectDlg-scrollPanel     {overflow: auto !important; border: 1px solid #C4C4C4;}
-	.vibe-mailToMultiplePublicLinksSelectDlg-scrollLimit     {height: 175px;}
-	.vibe-mailToMultiplePublicLinksSelectDlg-tableCell       {white-space: nowrap;}
-	.vibe-mailToMultiplePublicLinksSelectDlg-tableCellNote   {white-space: normal !important;}
-	.vibe-mailToMultiplePublicLinksSelectDlg-tableColumnCell {white-space: nowrap;}
-	.vibe-mailToMultiplePublicLinksSelectDlg-tableHeader     {}
-	.vibe-mailToMultiplePublicLinksSelectDlg-tableLink       {white-space: nowrap;}
-	.vibe-mailToMultiplePublicLinksSelectDlg-tableLink:hover {cursor: pointer; background: url(images/blends/teal_slice.png) repeat-x; background-position: center; -moz-border-radius: 5px; border-radius: 5px; -webkit-border-radius: 5px;}
-	.vibe-mailToMultiplePublicLinksSelectDlg-tableRow        {}
+	.vibe-mailToMultiplePublicLinksSelectDlg                  {width: 800px;}
+	.vibe-mailToMultiplePublicLinksSelectDlg-contentPanel     {margin-top: 10px;}
+	.vibe-mailToMultiplePublicLinksSelectDlg-headerLabel      {}
+	.vibe-mailToMultiplePublicLinksSelectDlg-headerNameLabel  {font-size: 1.2em; line-height: 1.4em; color: #1f1f1f;}
+	.vibe-mailToMultiplePublicLinksSelectDlg-headerNamePanel  {margin-left: 55px; width: 700px;}
+	.vibe-mailToMultiplePublicLinksSelectDlg-headerPanel      {position: relative; margin-bottom: 15px;}
+	.vibe-mailToMultiplePublicLinksSelectDlg-headerPanel img  {position: absolute; top: 0px; left: 1px;}
+	.vibe-mailToMultiplePublicLinksSelectDlg-headerPathLabel  {color: #505354; font-size: 13px; line-height: 16px; overflow: hidden;}
+	.vibe-mailToMultiplePublicLinksSelectDlg-hintPanel        {display: block; width: 775px; white-space: normal; margin-top: 10px;}
+	.vibe-mailToMultiplePublicLinksSelectDlg-hintStart        {display: inline; font-weight: bold; font-size: .95em; padding-right: 4px;}
+	.vibe-mailToMultiplePublicLinksSelectDlg-hintTail         {display: inline; font-weight: normal; font-size: .9em;}
+	.vibe-mailToMultiplePublicLinksSelectDlg-linksPanel       {color: #505354; font-size: 12px;}
+	.vibe-mailToMultiplePublicLinksSelectDlg-mainPanel        {margin: 10px 10px 10px 13px;}
+	.vibe-mailToMultiplePublicLinksSelectDlg-scrollPanel      {overflow: auto !important; border: 1px solid #C4C4C4;}
+	.vibe-mailToMultiplePublicLinksSelectDlg-scrollLimit      {height: 175px;}
+	.vibe-mailToMultiplePublicLinksSelectDlg-tableCell        {white-space: nowrap;}
+	.vibe-mailToMultiplePublicLinksSelectDlg-tableCellExpires {color: red; font-weight: bold;}
+	.vibe-mailToMultiplePublicLinksSelectDlg-tableCellNote    {white-space: normal !important;}
+	.vibe-mailToMultiplePublicLinksSelectDlg-tableColumnCell  {white-space: nowrap;}
+	.vibe-mailToMultiplePublicLinksSelectDlg-tableHeader      {}
+	.vibe-mailToMultiplePublicLinksSelectDlg-tableLink        {white-space: nowrap;}
+	.vibe-mailToMultiplePublicLinksSelectDlg-tableLink:hover  {cursor: pointer; background: url(images/blends/teal_slice.png) repeat-x; background-position: center; -moz-border-radius: 5px; border-radius: 5px; -webkit-border-radius: 5px;}
+	.vibe-mailToMultiplePublicLinksSelectDlg-tableRow         {}
 /* End:  Mail To Muliple Public Links Select dialog styles. */
 
 /* Start: Share Expiration widget styles. */

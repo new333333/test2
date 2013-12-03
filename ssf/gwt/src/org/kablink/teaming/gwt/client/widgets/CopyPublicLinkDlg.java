@@ -247,7 +247,7 @@ public class CopyPublicLinkDlg extends DlgBox {
 
 				// If we got any links, display them.  Otherwise,
 				// display the create links button again.
-				Map<String, PublicLinkInfo> plMap = plData.getPublicLinksMap();
+				Map<String, List<PublicLinkInfo>> plMap = plData.getPublicLinksMap();
 				if ((null != plMap) && (!(plMap.isEmpty())))
 				     displayPublicLinks(plMap);
 				else showCreateLinksButton();
@@ -314,7 +314,7 @@ public class CopyPublicLinkDlg extends DlgBox {
 	/*
 	 * Displays the links from the map.
 	 */
-	private void displayPublicLinks(Map<String, PublicLinkInfo> plMap) {
+	private void displayPublicLinks(Map<String, List<PublicLinkInfo>> plMap) {
 		// Clear the content panel...
 		m_linksPanel.clear();
 		
@@ -322,12 +322,21 @@ public class CopyPublicLinkDlg extends DlgBox {
 		m_linksPanel.removeStyleName("vibe-copyPublicLinkDlg-scrollLimit");	// Limit on the ScrollPanel...
 		m_linksScroller.addStyleName("vibe-copyPublicLinkDlg-scrollLimit");	// ...not the VerticalPanel.
 		
-		// Scan the links...
+		// Scan the files...
 		boolean     showFileInfo = (1 < m_entityIds.size());
 		Set<String> plKeys       = plMap.keySet();
 		for (String key:  plKeys) {
-			// ...adding each to the display.
-			displayPublicLink(plMap.get(key), showFileInfo);
+			// ...and if there are any links for a file...
+			List<PublicLinkInfo> plList = plMap.get(key);
+			if (GwtClientHelper.hasItems(plList)) {
+				// ...scan them...
+				boolean perFileShowInfo = showFileInfo;
+				for (PublicLinkInfo pl:  plList) {
+					// ...adding each to the display.
+					displayPublicLink(pl, perFileShowInfo);
+					perFileShowInfo = false;	// Only show it for this first set of links.
+				}
+			}
 		}
 	}
 	

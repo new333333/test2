@@ -49,14 +49,16 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * @author drfoster@novell.com
  */
 public class PublicLinksRpcResponseData implements IsSerializable, VibeRpcResponseData {
-	private ErrorListRpcResponseData	m_errors;		//
-	private Map<String, PublicLinkInfo>	m_publicLinks;	//
+	private ErrorListRpcResponseData			m_errors;		//
+	private Map<String, List<PublicLinkInfo>>	m_publicLinks;	//
 
 	/**
 	 * Inner class used to encapsulate the public links of a file.
 	 */
 	public static class PublicLinkInfo implements IsSerializable {
+		private boolean	m_expired;		//
 		private String	m_downloadUrl;	//
+		private String	m_expiration;	//
 		private String	m_imageUrl;		//
 		private String	m_path;			//
 		private String	m_title;		//
@@ -81,8 +83,10 @@ public class PublicLinksRpcResponseData implements IsSerializable, VibeRpcRespon
 		 * @param imageUrl
 		 * @param downloadUrl
 		 * @param viewUrl
+		 * @param expired
+		 * @param expiration
 		 */
-		public PublicLinkInfo(String title, String path, String imageUrl, String downloadUrl, String viewUrl) {
+		public PublicLinkInfo(String title, String path, String imageUrl, String downloadUrl, String viewUrl, boolean expired, String expiration) {
 			// Initialize the this object...
 			this();
 			
@@ -92,6 +96,8 @@ public class PublicLinksRpcResponseData implements IsSerializable, VibeRpcRespon
 			setImageUrl   (imageUrl   );
 			setDownloadUrl(downloadUrl);
 			setViewUrl(    viewUrl    );
+			setExpired(    expired    );
+			setExpiration( expiration );
 		}
 		
 		/**
@@ -99,22 +105,26 @@ public class PublicLinksRpcResponseData implements IsSerializable, VibeRpcRespon
 		 * 
 		 * @return
 		 */
-		public String getDownloadUrl() {return m_downloadUrl;}
-		public String getImageUrl()    {return m_imageUrl;   }
-		public String getTitle()       {return m_title;      }
-		public String getPath()        {return m_path;       }
-		public String getViewUrl()     {return m_viewUrl;    }
+		public boolean isExpired()      {return m_expired;    }
+		public String  getDownloadUrl() {return m_downloadUrl;}
+		public String  getExpiration()  {return m_expiration; }
+		public String  getImageUrl()    {return m_imageUrl;   }
+		public String  getTitle()       {return m_title;      }
+		public String  getPath()        {return m_path;       }
+		public String  getViewUrl()     {return m_viewUrl;    }
 		
 		/**
 		 * Set'er methods.
 		 * 
 		 * @param
 		 */
-		public void setDownloadUrl(String downloadUrl) {m_downloadUrl = downloadUrl;}
-		public void setImageUrl(   String imageUrl)    {m_imageUrl    = imageUrl;   }
-		public void setPath(       String path)        {m_path        = path;       }
-		public void setTitle(      String title)       {m_title       = title;      }
-		public void setViewUrl(    String viewUrl)     {m_viewUrl     = viewUrl;    }
+		public void setExpired(    boolean expired)     {m_expired     = expired;    }
+		public void setDownloadUrl(String  downloadUrl) {m_downloadUrl = downloadUrl;}
+		public void setExpiration( String  expiration)  {m_expiration  = expiration; }
+		public void setImageUrl(   String  imageUrl)    {m_imageUrl    = imageUrl;   }
+		public void setPath(       String  path)        {m_path        = path;       }
+		public void setTitle(      String  title)       {m_title       = title;      }
+		public void setViewUrl(    String  viewUrl)     {m_viewUrl     = viewUrl;    }
 	}
 	
 	/**
@@ -129,7 +139,7 @@ public class PublicLinksRpcResponseData implements IsSerializable, VibeRpcRespon
 		
 		// ...and initialize anything else that requires it.
 		m_errors      = new ErrorListRpcResponseData(new ArrayList<ErrorInfo>());
-		m_publicLinks = new HashMap<String, PublicLinkInfo>();
+		m_publicLinks = new HashMap<String, List<PublicLinkInfo>>();
 	}
 	
 	/**
@@ -137,22 +147,30 @@ public class PublicLinksRpcResponseData implements IsSerializable, VibeRpcRespon
 	 * 
 	 * @return
 	 */
-	public boolean                     hasErrors()                  {return m_errors.hasErrors();           }
-	public ErrorListRpcResponseData    getErrors()                  {return m_errors;                       }
-	public int                         getErrorCount()              {return m_errors.getErrorCount();       }
-	public int                         getTotalMessageCount()       {return m_errors.getTotalMessageCount();}
-	public int                         getWarningCount()            {return m_errors.getWarningCount();     }
-	public List<ErrorInfo>             getErrorList()               {return m_errors.getErrorList();        }
-	public PublicLinkInfo              getPublicLinks(EntityId eid) {return m_publicLinks.get(eid);         }
-	public Map<String, PublicLinkInfo> getPublicLinksMap()          {return m_publicLinks;                  }
+	public boolean                           hasErrors()                  {return m_errors.hasErrors();           }
+	public ErrorListRpcResponseData          getErrors()                  {return m_errors;                       }
+	public int                               getErrorCount()              {return m_errors.getErrorCount();       }
+	public int                               getTotalMessageCount()       {return m_errors.getTotalMessageCount();}
+	public int                               getWarningCount()            {return m_errors.getWarningCount();     }
+	public List<ErrorInfo>                   getErrorList()               {return m_errors.getErrorList();        }
+	public List<PublicLinkInfo>              getPublicLinks(EntityId eid) {return m_publicLinks.get(eid);         }
+	public Map<String, List<PublicLinkInfo>> getPublicLinksMap()          {return m_publicLinks;                  }
 	
 	/**
 	 * Add'er methods.
 	 * 
 	 * @param
 	 */
-	public void addError(     String   error)                                                                               {m_errors.addError(  error  );                                                       }
-	public void addWarning(   String   warning)                                                                             {m_errors.addWarning(warning);                                                       }
-	public void addPublicLink(EntityId eid, PublicLinkInfo pl)                                                              {m_publicLinks.put(eid.getEntityIdString(), pl);                                     }
-	public void addPublicLink(EntityId eid, String title, String path, String imageUrl, String downloadUrl, String viewUrl) {addPublicLink(eid, new PublicLinkInfo(title, path, imageUrl, downloadUrl, viewUrl));}
+	public void addError(     String   error)                                                                                                                   {m_errors.addError(  error  );                                                                            }
+	public void addWarning(   String   warning)                                                                                                                 {m_errors.addWarning(warning);                                                                            }
+	public void addPublicLink(EntityId eid, String title, String path, String imageUrl, String downloadUrl, String viewUrl, boolean expired, String expiration) {addPublicLink(eid, new PublicLinkInfo(title, path, imageUrl, downloadUrl, viewUrl, expired, expiration));}
+	public void addPublicLink(EntityId eid, PublicLinkInfo pl) {
+		String eidKey = eid.getEntityIdString();
+		List<PublicLinkInfo> plList = m_publicLinks.get(eidKey);
+		if (null == plList) {
+			plList = new ArrayList<PublicLinkInfo>();
+			m_publicLinks.put(eidKey, plList);
+		}
+		plList.add(pl);
+	}
 }
