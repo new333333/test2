@@ -60,7 +60,7 @@
 	
 	<!-- Limit support of which browsers we compile for.  Speeds up -->
 	<!-- compilation during development.                            -->
-	<extend-property name="user.agent" values="ie6" />	<!-- Required to add ie6 back in with GWT 2.6. -->
+	<extend-property name="user.agent" values="ie6,opera" />	<!-- Required to add ie6 and opera back in with GWT 2.6. -->
 	<set-property    name="user.agent" value="gecko1_8,ie6,ie8,ie9,ie10,opera,safari"/>
 	<!-- Possible user.agent values:                                -->
 	<!--    gecko1_8:  Firefox.                                     -->
