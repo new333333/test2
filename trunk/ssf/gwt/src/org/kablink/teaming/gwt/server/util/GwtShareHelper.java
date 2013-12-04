@@ -2436,7 +2436,7 @@ public class GwtShareHelper
 	public static boolean isEntitySharable( AllModulesInjected bs, DefinableEntity de )
 	{
 		SharingModule sm = bs.getSharingModule();
-		return ( sm.testAddShareEntity( de ) || sm.testAddShareEntityPublic( de ) );
+		return ( sm.testAddShareEntity( de ) || sm.testAddShareEntityPublic( de ) || sm.testPublicLinkShareEntity( de ) );
 	}
 
 	/**

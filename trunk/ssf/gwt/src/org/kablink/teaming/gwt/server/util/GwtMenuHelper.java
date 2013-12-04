@@ -1330,7 +1330,7 @@ public class GwtMenuHelper {
 					entryToolbar,
 					bs,
 					request,
-					folder.getEntityType(),
+					folder,
 					GwtServerHelper.isFamilyFile(
 						GwtServerHelper.getFolderEntityFamily(
 							bs,
@@ -1342,24 +1342,28 @@ public class GwtMenuHelper {
 	/*
 	 * Constructs a ToolbarItem for sharing the selected entries.
 	 */
-	private static void constructEntryShareItem(ToolbarItem entryToolbar, AllModulesInjected bs, HttpServletRequest request, EntityType et, boolean isFileEntity) {
+	private static void constructEntryShareItem(ToolbarItem entryToolbar, AllModulesInjected bs, HttpServletRequest request, DefinableEntity de, boolean isFileEntity) {
 		// For non-guest users...
 		boolean isGuest = GwtServerHelper.getCurrentUser().isShared();
 		if (!isGuest) {
 			// ...add the share items.
 			boolean isFilr   = Utils.checkIfFilr();
-			boolean isFolder = et.equals(EntityType.folder);
+			boolean isFolder = de.getEntityType().equals(EntityType.folder);
 			String keyTail;
 			if      (isFolder) keyTail = "folder";
 			else if (isFilr)   keyTail = "file";
 			else               keyTail = "entry";
 			
-			ToolbarItem shareTBI = new ToolbarItem("1_shareSelected");
-			markTBITitle(shareTBI, "toolbar.shareSelected." + keyTail);
-			markTBIEvent(shareTBI, TeamingEvents.SHARE_SELECTED_ENTITIES);
-			entryToolbar.addNestedItem(shareTBI);
+			ToolbarItem shareTBI;
+			SharingModule sm = bs.getSharingModule();
+			if (sm.testAddShareEntity(de)) {
+				shareTBI = new ToolbarItem("1_shareSelected");
+				markTBITitle(shareTBI, "toolbar.shareSelected." + keyTail);
+				markTBIEvent(shareTBI, TeamingEvents.SHARE_SELECTED_ENTITIES);
+				entryToolbar.addNestedItem(shareTBI);
+			}
 			
-			if ((!isFolder) && isFileEntity) {
+			if ((!isFolder) && isFileEntity && sm.testPublicLinkShareEntity(de)) {
 				if (isFilr)
 				     keyTail = "filr";
 				else keyTail = "vibe";
@@ -3025,7 +3029,7 @@ public class GwtMenuHelper {
 							actionToolbar,
 							bs,
 							request,
-							EntityType.folderEntry,
+							fe,
 							GwtServerHelper.isFamilyFile(
 								GwtServerHelper.getFolderEntityFamily(
 									bs,
@@ -3653,7 +3657,9 @@ public class GwtMenuHelper {
 
 			// Can the user share this entry?
 			SharingModule sm = bs.getSharingModule();
-			if ((!isGuest) && sm.isSharingEnabled() && sm.testAddShareEntity(fe)) {
+			boolean canAddShare        = sm.testAddShareEntity(fe);
+			boolean canPublicLinkShare = sm.testPublicLinkShareEntity(fe);
+			if ((!isGuest) && sm.isSharingEnabled() && (canAddShare || canPublicLinkShare)) {
 				// Yes!  Is it a file entry?
 				if (GwtServerHelper.isFamilyFile(GwtServerHelper.getFolderEntityFamily(bs, fe))) {
 					// Yes!  Add a share toolbar item for it.
@@ -3664,35 +3670,39 @@ public class GwtMenuHelper {
 					if (isFilr)
 					     keyTail = "file";
 					else keyTail = "entry";
-					
-					actionTBI = new ToolbarItem(SHARE);
-					markTBITitle(   actionTBI, "toolbar.shareSelected." + keyTail);
-					markTBIEvent(   actionTBI, TeamingEvents.SHARE_SELECTED_ENTITIES);
-					markTBIEntryIds(actionTBI, fe);
-					shareItemsTBI.addNestedItem(actionTBI);
-					
-					if (isFilr)
-					     keyTail = "filr";
-					else keyTail = "vibe";
-					
-					actionTBI = new ToolbarItem(EMAIL_PUBLIC_LINK);
-					markTBITitle(   actionTBI, "toolbar.emailPublicLinkSelected." + keyTail);
-					markTBIEvent(   actionTBI, TeamingEvents.EMAIL_PUBLIC_LINK_SELECTED_ENTITIES);
-					markTBIEntryIds(actionTBI, fe);
-					shareItemsTBI.addNestedItem(actionTBI);
-					
-					actionTBI = new ToolbarItem(COPY_PUBLIC_LINK);
-					markTBITitle(   actionTBI, "toolbar.copyPublicLinkSelected." + keyTail);
-					markTBIEvent(   actionTBI, TeamingEvents.COPY_PUBLIC_LINK_SELECTED_ENTITIES);
-					markTBIEntryIds(actionTBI, fe);
-					shareItemsTBI.addNestedItem(actionTBI);
-					
-					if (MailToPublicLinkEntityEvent.SUPPORT_MAILTO_SHARES) {
-						actionTBI = new ToolbarItem(MAILTO_PUBLIC_LINK);
-						markTBITitle(   actionTBI, "toolbar.mailtoPublicLink." + keyTail);
-						markTBIEvent(   actionTBI, TeamingEvents.MAILTO_PUBLIC_LINK_ENTITY);
+
+					if (canAddShare) {
+						actionTBI = new ToolbarItem(SHARE);
+						markTBITitle(   actionTBI, "toolbar.shareSelected." + keyTail);
+						markTBIEvent(   actionTBI, TeamingEvents.SHARE_SELECTED_ENTITIES);
 						markTBIEntryIds(actionTBI, fe);
 						shareItemsTBI.addNestedItem(actionTBI);
+					}
+					
+					if (canPublicLinkShare) {
+						if (isFilr)
+						     keyTail = "filr";
+						else keyTail = "vibe";
+						
+						actionTBI = new ToolbarItem(EMAIL_PUBLIC_LINK);
+						markTBITitle(   actionTBI, "toolbar.emailPublicLinkSelected." + keyTail);
+						markTBIEvent(   actionTBI, TeamingEvents.EMAIL_PUBLIC_LINK_SELECTED_ENTITIES);
+						markTBIEntryIds(actionTBI, fe);
+						shareItemsTBI.addNestedItem(actionTBI);
+						
+						actionTBI = new ToolbarItem(COPY_PUBLIC_LINK);
+						markTBITitle(   actionTBI, "toolbar.copyPublicLinkSelected." + keyTail);
+						markTBIEvent(   actionTBI, TeamingEvents.COPY_PUBLIC_LINK_SELECTED_ENTITIES);
+						markTBIEntryIds(actionTBI, fe);
+						shareItemsTBI.addNestedItem(actionTBI);
+						
+						if (MailToPublicLinkEntityEvent.SUPPORT_MAILTO_SHARES) {
+							actionTBI = new ToolbarItem(MAILTO_PUBLIC_LINK);
+							markTBITitle(   actionTBI, "toolbar.mailtoPublicLink." + keyTail);
+							markTBIEvent(   actionTBI, TeamingEvents.MAILTO_PUBLIC_LINK_ENTITY);
+							markTBIEntryIds(actionTBI, fe);
+							shareItemsTBI.addNestedItem(actionTBI);
+						}
 					}
 					
 					// ...and the share toolbar to the view toolbar.

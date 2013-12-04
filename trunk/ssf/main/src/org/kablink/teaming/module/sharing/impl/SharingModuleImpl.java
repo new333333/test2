@@ -619,6 +619,27 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
         // share to the given entity and false otherwise.  Return it.
         return reply;
     }
+    
+    /**
+     * Returns true the the logged in user can create a public link on
+     * the given entity and false otherwise.
+     * 
+     * @return
+     */
+    @Override
+	public boolean testPublicLinkShareEntity(DefinableEntity de) {
+    	// If we weren't given an entity or the entity is not a folder
+    	// entry...
+    	if ((null == de) || (!(de instanceof FolderEntry))) {
+    		// ...we can't share a public link for it.
+    		return false;
+    	}
+    	
+//!		...this needs to be implemented...
+		// Need to check public link sharing rights once it's
+    	// implemented.
+		return testAddShareEntity(de);
+	}
 
     //Routine to validate the rights being given to guest in a share
 	public boolean validateGuestAccessRights(ShareItem shareItem) {
@@ -644,6 +665,8 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 			accessControlManager = ((AccessControlManager) SpringContextUtil.getBean("accessControlManager"));
 		}
 		
+//!		...this needs to be implemented...
+		// Need to expand the check to include public link sharing.
 		return (
 			accessControlManager.testOperation(zoneConfig, WorkAreaOperation.ENABLE_SHARING_EXTERNAL) ||
 			accessControlManager.testOperation(zoneConfig, WorkAreaOperation.ENABLE_SHARING_INTERNAL) ||
