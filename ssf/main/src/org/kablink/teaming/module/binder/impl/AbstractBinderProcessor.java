@@ -2028,12 +2028,14 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
    		//get all the ids of child binders. order for statusTicket to make some sense
    		if(logger.isDebugEnabled())
    			logger.debug("Fetching IDs of all binders at or below [" + binder.getPathName() + "]");
+		Map params = new HashMap();
+		params.put("deleted", false);
    		List<Long> ids = getCoreDao().loadObjects("select x.id from org.kablink.teaming.domain.Binder x where x.binderKey.sortKey like '" +
-				binder.getBinderKey().getSortKey() + "%' order by x.binderKey.sortKey", null);
+				binder.getBinderKey().getSortKey() + "%' and x.deleted=:deleted order by x.binderKey.sortKey", params);
 		int inClauseLimit=SPropsUtil.getInt("db.clause.limit", 1000);
 		if (exclusions != null) ids.removeAll(exclusions);
-		Map params = new HashMap();
 		int bindersIndexed = 0;
+		params.clear();
 		for (int i=0; i<ids.size(); i+=inClauseLimit) {
 			List subList = ids.subList(i, Math.min(ids.size(), i+inClauseLimit));
 			params.put("pList", subList);
