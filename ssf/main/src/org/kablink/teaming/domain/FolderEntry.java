@@ -40,6 +40,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.ArrayList;
 
+import org.kablink.teaming.fi.connection.ResourceDriver;
 import org.kablink.teaming.security.function.WorkArea;
 
 /**
@@ -496,7 +497,14 @@ public class FolderEntry extends WorkflowControlledEntry implements WorkflowSupp
 	}
     
 	public boolean noAclDredged() {
-		return (ResourceDriverConfig.DriverType.famt == getParentFolder().getResourceDriverType());
+		ResourceDriver driver = getParentFolder().getResourceDriver();
+		if (driver != null) {
+			ResourceDriverConfig config = driver.getConfig();
+			if (config != null) {
+				return config.isAclAware();
+			}
+		}
+		return false;
 	}
 
 }
