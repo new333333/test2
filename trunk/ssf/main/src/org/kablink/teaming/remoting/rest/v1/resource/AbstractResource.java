@@ -551,23 +551,27 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
             }
         }
         if (notifyRecipient) {
-            if (shareItem.getRecipientType()==ShareItem.RecipientType.publicLink) {
-                Map<String, String> urls = ResourceUtil.buildPublicLinks(shareItem, entity);
-                try {
-                    EmailHelper.sendEmailToPublicLinkRecipients(this, shareItem, getLoggedInUser(),
-                            new ArrayList<String>(notifyAddresses), urls.get("view"), urls.get("download"));
-                } catch (Exception e) {
-                    logger.warn("Failed to send share notification email", e);
-                }
-            } else {
-                try {
-                    EmailHelper.sendEmailToRecipient(this, shareItem, isExternal, getLoggedInUser());
-                } catch (Exception e) {
-                    logger.warn("Failed to send share notification email", e);
-                }
-            }
+            notifyShareRecipients(shareItem, entity, isExternal, notifyAddresses);
         }
         return ResourceUtil.buildShare(shareItem, entity, buildShareRecipient(shareItem));
+    }
+
+    protected void notifyShareRecipients(ShareItem shareItem, org.kablink.teaming.domain.DefinableEntity entity, boolean external, Set<String> notifyAddresses) {
+        if (shareItem.getRecipientType()==ShareItem.RecipientType.publicLink) {
+            Map<String, String> urls = ResourceUtil.buildPublicLinks(shareItem, entity);
+            try {
+                EmailHelper.sendEmailToPublicLinkRecipients(this, shareItem, getLoggedInUser(),
+                        new ArrayList<String>(notifyAddresses), urls.get("view"), urls.get("download"));
+            } catch (Exception e) {
+                logger.warn("Failed to send share notification email", e);
+            }
+        } else {
+            try {
+                EmailHelper.sendEmailToRecipient(this, shareItem, external, getLoggedInUser());
+            } catch (Exception e) {
+                logger.warn("Failed to send share notification email", e);
+            }
+        }
     }
 
     protected ShareItem findExistingShare(Long sharer, EntityIdentifier sharedEntity, Long recipientId, ShareItem.RecipientType recipientType) {

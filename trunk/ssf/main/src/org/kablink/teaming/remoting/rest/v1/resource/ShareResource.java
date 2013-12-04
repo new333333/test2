@@ -19,6 +19,7 @@ import com.sun.jersey.spi.resource.Singleton;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.dao.util.ShareItemSelectSpec;
 import org.kablink.teaming.domain.*;
+import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.FolderEntry;
@@ -56,7 +57,8 @@ public class ShareResource extends AbstractResource {
     @POST
     @Consumes({MediaType.APPLICATION_FORM_URLENCODED})
     public NotifyWarning [] noopPostShare(@FormParam("id") List<Long> ids,
-                              @FormParam("notify") @DefaultValue("false") boolean notifyRecipient) {
+                              @FormParam("notify") @DefaultValue("false") boolean notifyRecipient,
+                              @FormParam("notify_address") Set<String> notifyAddresses) {
         if (notifyRecipient && ids!=null) {
             User loggedInUser = getLoggedInUser();
             List<NotifyWarning> failures = new ArrayList<NotifyWarning>();
@@ -69,7 +71,18 @@ public class ShareResource extends AbstractResource {
                                     "Cannot notify recipients of public shares"));
                         } else {
                             try {
-                                EmailHelper.sendEmailToRecipient(this, shareItem, false, loggedInUser);
+                                DefinableEntity entity = null;
+                                if (shareItem.getRecipientType()== ShareItem.RecipientType.publicLink) {
+                                    entity = findDefinableEntity(shareItem.getSharedEntityIdentifier());
+                                    if (notifyAddresses==null || notifyAddresses.size()==0) {
+                                        failures.add(new NotifyWarning(id, ApiErrorCode.BAD_INPUT.name(),
+                                                "Missing notify_address form parameter"));
+                                    } else {
+                                        notifyShareRecipients(shareItem, entity, false, notifyAddresses);
+                                    }
+                                } else {
+                                    notifyShareRecipients(shareItem, entity, false, null);
+                                }
                             } catch (Exception e) {
                                 logger.warn("Failed to send share notification email", e);
                                 failures.add(new NotifyWarning(id, ApiErrorCode.SERVER_ERROR.name(),
