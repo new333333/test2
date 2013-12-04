@@ -34,6 +34,7 @@ import org.kablink.teaming.rest.v1.model.Tag;
 import org.kablink.teaming.search.SearchUtils;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.web.util.EmailHelper;
+import org.kablink.util.VibeRuntimeException;
 import org.kablink.util.api.ApiErrorCode;
 import org.kablink.util.search.*;
 
@@ -71,18 +72,12 @@ public class ShareResource extends AbstractResource {
                                     "Cannot notify recipients of public shares"));
                         } else {
                             try {
-                                DefinableEntity entity = null;
-                                if (shareItem.getRecipientType()== ShareItem.RecipientType.publicLink) {
-                                    entity = findDefinableEntity(shareItem.getSharedEntityIdentifier());
-                                    if (notifyAddresses==null || notifyAddresses.size()==0) {
-                                        failures.add(new NotifyWarning(id, ApiErrorCode.BAD_INPUT.name(),
-                                                "Missing notify_address form parameter"));
-                                    } else {
-                                        notifyShareRecipients(shareItem, entity, false, notifyAddresses);
-                                    }
-                                } else {
-                                    notifyShareRecipients(shareItem, entity, false, null);
-                                }
+                                validateNotifyParameters(notifyRecipient, notifyAddresses, shareItem);
+                                notifyShareRecipients(shareItem, notifyAddresses);
+                            } catch (VibeRuntimeException e) {
+                                logger.warn("Failed to send share notification email", e);
+                                failures.add(new NotifyWarning(id, e.getApiErrorCode().name(),
+                                        "Failed to send the notification email: " + e.getMessage()));
                             } catch (Exception e) {
                                 logger.warn("Failed to send share notification email", e);
                                 failures.add(new NotifyWarning(id, ApiErrorCode.SERVER_ERROR.name(),
@@ -118,6 +113,7 @@ public class ShareResource extends AbstractResource {
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public Share updateShare(@PathParam("id") Long id,
                              @QueryParam("notify") @DefaultValue("false") boolean notifyRecipient,
+                             @QueryParam("notify_address") Set<String> notifyAddresses,
                              Share share) {
         List<ShareItem> origItems;
         ShareItem item = _getShareItem(id);
@@ -128,6 +124,9 @@ public class ShareResource extends AbstractResource {
             origItems = new ArrayList<ShareItem>(1);
             origItems.add(item);
         }
+
+        validateNotifyParameters(notifyRecipient, notifyAddresses, item);
+
         // You can't change the shared entity or the recipient via this API.  Perhaps I should fail if the client supplies
         // these values and they don't match?
         share.setSharedEntity(new EntityId(item.getSharedEntityIdentifier().getEntityId(), item.getSharedEntityIdentifier().getEntityType().name(), null));
@@ -145,14 +144,11 @@ public class ShareResource extends AbstractResource {
             shareItem.setRecipientId(origItem.getRecipientId());
             shareItem = getSharingModule().modifyShareItem(shareItem, origItem.getId());
         }
+        DefinableEntity entity = findDefinableEntity(shareItem.getSharedEntityIdentifier());
         if (notifyRecipient) {
-            try {
-                EmailHelper.sendEmailToRecipient(this, shareItem, false, getLoggedInUser());
-            } catch (Exception e) {
-                logger.warn("Failed to send share notification email", e);
-            }
+            notifyShareRecipients(shareItem, entity, false, notifyAddresses);
         }
-        return ResourceUtil.buildShare(shareItem, findDefinableEntity(shareItem.getSharedEntityIdentifier()), buildShareRecipient(shareItem));
+        return ResourceUtil.buildShare(shareItem, entity, buildShareRecipient(shareItem));
     }
 
     @DELETE
