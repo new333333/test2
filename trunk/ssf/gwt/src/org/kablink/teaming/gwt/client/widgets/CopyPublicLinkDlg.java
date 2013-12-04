@@ -44,10 +44,10 @@ import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.rpc.shared.GetEntryCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetPublicLinksCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.PublicLinksRpcResponseData;
-import org.kablink.teaming.gwt.client.rpc.shared.PublicLinksRpcResponseData.PublicLinkInfo;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+import org.kablink.teaming.gwt.client.util.PublicLinkInfo;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 
@@ -439,12 +439,13 @@ public class CopyPublicLinkDlg extends DlgBox {
 							m_headerPathLabel.setText( feInfo.getParentBinderName());
 							m_headerPathLabel.setTitle(feInfo.getParentBinderName());
 							
-							// If we have a URL for the file image...
+							// ...set an appropriate image in the
+							// ...header...
 							String imgUrl = feInfo.getFileImgUrl();
-							if (GwtClientHelper.hasString(imgUrl)) {
-								// ...set it into the header.
-								m_headerImg.setUrl(m_imagesPath + imgUrl);
-							}
+							if (GwtClientHelper.hasString(imgUrl))
+							     imgUrl = (m_imagesPath + imgUrl);
+							else imgUrl = m_filrImages.entry_large().getSafeUri().asString();
+							m_headerImg.setUrl(imgUrl);
 
 							// ...and finish the population.
 							populateDlgFromInfoNow();

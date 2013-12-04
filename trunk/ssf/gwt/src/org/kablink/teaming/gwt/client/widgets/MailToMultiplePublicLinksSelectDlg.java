@@ -40,9 +40,9 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.rpc.shared.GetEntryCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
-import org.kablink.teaming.gwt.client.rpc.shared.MailToPublicLinksRpcResponseData.MailToPublicLinkInfo;
 import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+import org.kablink.teaming.gwt.client.util.PublicLinkInfo;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 
@@ -74,7 +74,7 @@ public class MailToMultiplePublicLinksSelectDlg extends DlgBox implements EditCa
 	private Image									m_headerImg;		// Image in the dialog's header representing what we're mailing links for. 
 	private Label									m_headerNameLabel;	// Name of what we're mailing links for.
 	private Label									m_headerPathLabel;	// Path to what we're mailing links for.
-	private List<MailToPublicLinkInfo>				m_plInfoList;		// The list of mail to public links the user can choose from.
+	private List<PublicLinkInfo>					m_plInfoList;		// The list of mail to public links the user can choose from.
 	private MailToMultiplePublicLinksSelectCallback	m_mailToCallback;	// The callback to let the caller know what the user selects.
 	private RowFormatter							m_linksRF;			// The RowFormatter for m_linksPanel.
 	private ScrollPanel								m_linksScroller;	// The ScrollPanel that contains the links.
@@ -204,7 +204,7 @@ public class MailToMultiplePublicLinksSelectDlg extends DlgBox implements EditCa
 	/*
 	 * Displays an individual link in the list.
 	 */
-	private void displayPublicLink(final MailToPublicLinkInfo pl) {
+	private void displayPublicLink(final PublicLinkInfo pl) {
 		// If this is the first public link...
 		int row = m_linksPanel.getRowCount();
 		if (0 == row) {
@@ -252,7 +252,7 @@ public class MailToMultiplePublicLinksSelectDlg extends DlgBox implements EditCa
 		m_linksScroller.addStyleName("vibe-mailToMultiplePublicLinksSelectDlg-scrollLimit");	// ...not the VerticalPanel.
 		
 		// Scan the links...
-		for (MailToPublicLinkInfo plInfo:  m_plInfoList) {
+		for (PublicLinkInfo plInfo:  m_plInfoList) {
 			// ...adding each to the display.
 			displayPublicLink(plInfo);
 		}
@@ -373,7 +373,7 @@ public class MailToMultiplePublicLinksSelectDlg extends DlgBox implements EditCa
 	 * Asynchronously runs the given instance of the mail to multiple
 	 * public links select dialog.
 	 */
-	private static void runDlgAsync(final MailToMultiplePublicLinksSelectDlg mtmplsDlg, final EntityId entityId, final List<MailToPublicLinkInfo> plInfoList, final MailToMultiplePublicLinksSelectCallback mailToCallback) {
+	private static void runDlgAsync(final MailToMultiplePublicLinksSelectDlg mtmplsDlg, final EntityId entityId, final List<PublicLinkInfo> plInfoList, final MailToMultiplePublicLinksSelectCallback mailToCallback) {
 		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
@@ -386,7 +386,7 @@ public class MailToMultiplePublicLinksSelectDlg extends DlgBox implements EditCa
 	 * Synchronously runs the given instance of the mail to multiple
 	 * public links select dialog.
 	 */
-	private void runDlgNow(EntityId entityId, List<MailToPublicLinkInfo> plInfoList, MailToMultiplePublicLinksSelectCallback mailToCallback) {
+	private void runDlgNow(EntityId entityId, List<PublicLinkInfo> plInfoList, MailToMultiplePublicLinksSelectCallback mailToCallback) {
 		// Store the parameters.
 		m_entityId       = entityId;
 		m_plInfoList     = plInfoList;
@@ -439,7 +439,7 @@ public class MailToMultiplePublicLinksSelectDlg extends DlgBox implements EditCa
 	 */
 	public interface MailToMultiplePublicLinksSelectCallback {
 		void onCancel();
-		void onSelect(MailToPublicLinkInfo plInfo);
+		void onSelect(PublicLinkInfo plInfo);
 	}
 
 	/*
@@ -453,7 +453,7 @@ public class MailToMultiplePublicLinksSelectDlg extends DlgBox implements EditCa
 			// initAndShow)_ parameters,
 			final MailToMultiplePublicLinksSelectDlg		mtmplsDlg,
 			final EntityId									entityId,
-			final List<MailToPublicLinkInfo>				plInfoList,
+			final List<PublicLinkInfo>						plInfoList,
 			final MailToMultiplePublicLinksSelectCallback	mailToCallback) {
 		GWT.runAsync(MailToMultiplePublicLinksSelectDlg.class, new RunAsyncCallback() {
 			@Override
@@ -502,7 +502,7 @@ public class MailToMultiplePublicLinksSelectDlg extends DlgBox implements EditCa
 	 * @param plInfoList
 	 * @param mailToCallback
 	 */
-	public static void initAndShow(MailToMultiplePublicLinksSelectDlg mtmplsDlg, EntityId entityId, List<MailToPublicLinkInfo> plInfoList, MailToMultiplePublicLinksSelectCallback mailToCallback) {
+	public static void initAndShow(MailToMultiplePublicLinksSelectDlg mtmplsDlg, EntityId entityId, List<PublicLinkInfo> plInfoList, MailToMultiplePublicLinksSelectCallback mailToCallback) {
 		doAsyncOperation(null, mtmplsDlg, entityId, plInfoList, mailToCallback);
 	}
 }

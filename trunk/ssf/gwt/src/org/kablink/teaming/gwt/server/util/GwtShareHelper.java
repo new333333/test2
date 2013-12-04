@@ -84,7 +84,6 @@ import org.kablink.teaming.gwt.client.GwtRole.GwtRoleType;
 import org.kablink.teaming.gwt.client.rpc.shared.BooleanRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData.ErrorInfo;
-import org.kablink.teaming.gwt.client.rpc.shared.MailToPublicLinksRpcResponseData.MailToPublicLinkInfo;
 import org.kablink.teaming.gwt.client.rpc.shared.MailToPublicLinksRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.PublicLinksRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ValidateShareListsRpcResponseData;
@@ -95,6 +94,7 @@ import org.kablink.teaming.gwt.client.util.GwtRecipientType;
 import org.kablink.teaming.gwt.client.util.GwtShareItem;
 import org.kablink.teaming.gwt.client.util.GwtShareLists;
 import org.kablink.teaming.gwt.client.util.GwtSharingInfo;
+import org.kablink.teaming.gwt.client.util.PublicLinkInfo;
 import org.kablink.teaming.gwt.client.util.ShareExpirationValue;
 import org.kablink.teaming.gwt.client.util.ShareExpirationValue.ShareExpirationType;
 import org.kablink.teaming.gwt.client.util.ShareRights;
@@ -3038,6 +3038,10 @@ public class GwtShareHelper
 							     viewUrl = WebUrlUtil.getSharedPublicFileUrl( request, siId, siPK, WebKeys.URL_SHARE_PUBLIC_LINK_HTML, fName );
 							else viewUrl = null;
 							
+							// ...get the date it was shared...
+							Date   sharedOnDate = si.getStartDate();
+							String sharedOn     = GwtServerHelper.getDateTimeString( sharedOnDate, DateFormat.MEDIUM, DateFormat.SHORT );
+							
 							// ...get the share's expiration...
 							String expiration;
 							Date expirationDate = si.getEndDate();
@@ -3056,6 +3060,8 @@ public class GwtShareHelper
 									IconSize.SMALL ),
 								downloadUrl,
 								viewUrl,
+								si.getComment(),
+								sharedOn,
 								si.isExpired(),
 								expiration );
 						}
@@ -3194,6 +3200,10 @@ public class GwtShareHelper
 					     viewUrl = WebUrlUtil.getSharedPublicFileUrl( request, siId, siPK, WebKeys.URL_SHARE_PUBLIC_LINK_HTML, fName );
 					else viewUrl = null;
 
+					// ...get the date it was shared...
+					Date   sharedOnDate = plShare.getStartDate();
+					String sharedOn     = GwtServerHelper.getDateTimeString( sharedOnDate, DateFormat.MEDIUM, DateFormat.SHORT );
+					
 					// ...if the share expires, return its expiration
 					// ...date...
 					String expiration;
@@ -3202,13 +3212,14 @@ public class GwtShareHelper
 					     expiration = null;
 					else expiration = GwtServerHelper.getDateTimeString( expirationDate, DateFormat.MEDIUM, DateFormat.SHORT );
 
-					// ...return the date it was shared...
-					Date   sharedOnDate = plShare.getStartDate();
-					String sharedOn     = GwtServerHelper.getDateTimeString( sharedOnDate, DateFormat.MEDIUM, DateFormat.SHORT );
-	
 					// ...and add the mail to public link information
 					// ...to the reply.
-					MailToPublicLinkInfo plLink = new MailToPublicLinkInfo(
+					PublicLinkInfo plLink = new PublicLinkInfo(
+						feTitle,
+						fe.getParentBinder().getPathName(),
+						FileIconsHelper.getFileIconFromFileName(
+							fName,
+							IconSize.SMALL ),
 						downloadUrl,
 						viewUrl,
 						plShare.getComment(),

@@ -39,6 +39,7 @@ import java.util.Map;
 
 import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData.ErrorInfo;
 import org.kablink.teaming.gwt.client.util.EntityId;
+import org.kablink.teaming.gwt.client.util.PublicLinkInfo;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
@@ -52,81 +53,6 @@ public class PublicLinksRpcResponseData implements IsSerializable, VibeRpcRespon
 	private ErrorListRpcResponseData			m_errors;		//
 	private Map<String, List<PublicLinkInfo>>	m_publicLinks;	//
 
-	/**
-	 * Inner class used to encapsulate the public links of a file.
-	 */
-	public static class PublicLinkInfo implements IsSerializable {
-		private boolean	m_expired;		//
-		private String	m_downloadUrl;	//
-		private String	m_expiration;	//
-		private String	m_imageUrl;		//
-		private String	m_path;			//
-		private String	m_title;		//
-		private String	m_viewUrl;		//
-
-		/**
-		 * Constructor method.
-		 * 
-		 * Zero parameter constructor as per GWT serialization
-		 * requirements.
-		 */
-		public PublicLinkInfo() {
-			// Initialize the super class.
-			super();
-		}
-
-		/**
-		 * Constructor method.
-		 *
-		 * @param title
-		 * @param path
-		 * @param imageUrl
-		 * @param downloadUrl
-		 * @param viewUrl
-		 * @param expired
-		 * @param expiration
-		 */
-		public PublicLinkInfo(String title, String path, String imageUrl, String downloadUrl, String viewUrl, boolean expired, String expiration) {
-			// Initialize the this object...
-			this();
-			
-			// ...and store the parameters.
-			setTitle(      title      );
-			setPath(       path       );
-			setImageUrl   (imageUrl   );
-			setDownloadUrl(downloadUrl);
-			setViewUrl(    viewUrl    );
-			setExpired(    expired    );
-			setExpiration( expiration );
-		}
-		
-		/**
-		 * Get'er methods.
-		 * 
-		 * @return
-		 */
-		public boolean isExpired()      {return m_expired;    }
-		public String  getDownloadUrl() {return m_downloadUrl;}
-		public String  getExpiration()  {return m_expiration; }
-		public String  getImageUrl()    {return m_imageUrl;   }
-		public String  getTitle()       {return m_title;      }
-		public String  getPath()        {return m_path;       }
-		public String  getViewUrl()     {return m_viewUrl;    }
-		
-		/**
-		 * Set'er methods.
-		 * 
-		 * @param
-		 */
-		public void setExpired(    boolean expired)     {m_expired     = expired;    }
-		public void setDownloadUrl(String  downloadUrl) {m_downloadUrl = downloadUrl;}
-		public void setExpiration( String  expiration)  {m_expiration  = expiration; }
-		public void setImageUrl(   String  imageUrl)    {m_imageUrl    = imageUrl;   }
-		public void setPath(       String  path)        {m_path        = path;       }
-		public void setTitle(      String  title)       {m_title       = title;      }
-		public void setViewUrl(    String  viewUrl)     {m_viewUrl     = viewUrl;    }
-	}
-	
 	/**
 	 * Constructor method.
 	 * 
@@ -161,9 +87,9 @@ public class PublicLinksRpcResponseData implements IsSerializable, VibeRpcRespon
 	 * 
 	 * @param
 	 */
-	public void addError(     String   error)                                                                                                                   {m_errors.addError(  error  );                                                                            }
-	public void addWarning(   String   warning)                                                                                                                 {m_errors.addWarning(warning);                                                                            }
-	public void addPublicLink(EntityId eid, String title, String path, String imageUrl, String downloadUrl, String viewUrl, boolean expired, String expiration) {addPublicLink(eid, new PublicLinkInfo(title, path, imageUrl, downloadUrl, viewUrl, expired, expiration));}
+	public void addError(     String   error)                                                                                                                                                    {m_errors.addError(  error  );                                                                                               }
+	public void addWarning(   String   warning)                                                                                                                                                  {m_errors.addWarning(warning);                                                                                               }
+	public void addPublicLink(EntityId eid, String title, String path, String imageUrl, String downloadUrl, String viewUrl, String comment, String sharedOn, boolean expired, String expiration) {addPublicLink(eid, new PublicLinkInfo(title, path, imageUrl, downloadUrl, viewUrl, comment, sharedOn, expired, expiration));}
 	public void addPublicLink(EntityId eid, PublicLinkInfo pl) {
 		String eidKey = eid.getEntityIdString();
 		List<PublicLinkInfo> plList = m_publicLinks.get(eidKey);
