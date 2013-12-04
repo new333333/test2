@@ -32,82 +32,49 @@
  */
 package org.kablink.teaming.gwt.client.event;
 
-import java.util.List;
-
-import org.kablink.teaming.gwt.client.util.EntityId;
+import org.kablink.teaming.gwt.client.datatable.MobileDeviceWipeScheduleInfo;
 
 import com.google.gwt.event.shared.EventHandler;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 import com.google.web.bindery.event.shared.SimpleEventBus;
 
 /**
- * The MarkReadSelectedEntitiesEvent is used to mark a collection of
- * entities as having been read.
- * 
- * See the definition of the SelectedEntitiesEventBase class for how and
- * when an EntityId (or List<EntityId>) should be passed into the
- * construction of this class.
+ * The MobileDeviceWipeScheduleStateChangedEvent tells the UI the the
+ * wipe scheduled state of an entity has changed.
  * 
  * @author drfoster@novell.com
  */
-public class MarkReadSelectedEntitiesEvent extends SelectedEntitiesEventBase<MarkReadSelectedEntitiesEvent.Handler> {
-    public static Type<Handler> TYPE = new Type<Handler>();
-    
-    private Long	m_folderId;	//
-    
+public class MobileDeviceWipeScheduleStateChangedEvent extends VibeEventBase<MobileDeviceWipeScheduleStateChangedEvent.Handler> {
+	public static Type<Handler> TYPE = new Type<Handler>();
+
+    private MobileDeviceWipeScheduleInfo	m_wipeSchedule;	//
+
 	/**
 	 * Handler interface for this event.
 	 */
 	public interface Handler extends EventHandler {
-		void onMarkReadSelectedEntities(MarkReadSelectedEntitiesEvent event);
+		void onMobileDeviceWipeScheduleStateChanged(MobileDeviceWipeScheduleStateChangedEvent event);
 	}
 	
 	/**
-	 * Class constructor.
+	 * Constructor methods.
 	 */
-	public MarkReadSelectedEntitiesEvent() {
+	public MobileDeviceWipeScheduleStateChangedEvent() {
 		// Initialize the super class.
 		super();
 	}
-	
+
 	/**
-	 * Class constructor.
+	 * Constructor methods.
 	 * 
-	 * @param folderId
-	 * @param selectedEntityId
+	 * @param wipeSchedule
 	 */
-	public MarkReadSelectedEntitiesEvent(Long folderId, EntityId selectedEntityId) {
+	public MobileDeviceWipeScheduleStateChangedEvent(MobileDeviceWipeScheduleInfo wipeSchedule) {
 		// Initialize this object...
 		this();
 		
-		// ...and store the parameters.
-		setFolderId(        folderId        );
-		setSelectedEntityId(selectedEntityId);
-	}
-
-	/**
-	 * Class constructor.
-	 * 
-	 * @param folderId
-	 * @param selectedEntities
-	 */
-	public MarkReadSelectedEntitiesEvent(Long folderId, List<EntityId> selectedEntities) {
-		// Initialize this object...
-		this();
-		
-		// ...and store the parameters.
-		setFolderId(        folderId        );
-		setSelectedEntities(selectedEntities);
-	}
-
-	/**
-	 * Class constructor.
-	 * 
-	 * @param folderId
-	 */
-	public MarkReadSelectedEntitiesEvent(Long folderId) {
-		// Initialize this object.
-		this(folderId, ((List<EntityId>) null));
+		// ...and store the parameter.
+		setWipeSchedule(wipeSchedule);
 	}
 
 	/**
@@ -115,14 +82,14 @@ public class MarkReadSelectedEntitiesEvent extends SelectedEntitiesEventBase<Mar
 	 * 
 	 * @return
 	 */
-	public Long getFolderId() {return m_folderId;}
+	public MobileDeviceWipeScheduleInfo getWipeSchedule() {return m_wipeSchedule;}
 	
 	/**
 	 * Set'er methods.
 	 * 
 	 * @param
 	 */
-	public void setFolderId(Long folderId) {m_folderId = folderId;} 
+	public void setWipeSchedule(MobileDeviceWipeScheduleInfo wipeSchedule) {m_wipeSchedule = wipeSchedule;}
 	
 	/**
 	 * Dispatches this event when one is triggered.
@@ -131,23 +98,23 @@ public class MarkReadSelectedEntitiesEvent extends SelectedEntitiesEventBase<Mar
 	 * 
 	 * @param handler
 	 */
-    @Override
-    protected void doDispatch(Handler handler) {
-   		handler.onMarkReadSelectedEntities(this);
-    }    
+	@Override
+	protected void doDispatch(Handler handler) {
+		handler.onMobileDeviceWipeScheduleStateChanged(this);
+	}
 	
 	/**
 	 * Returns the GwtEvent.Type of this event.
-	 *
+	 * 
 	 * Implements GwtEvent.getAssociatedType()
 	 * 
 	 * @return
 	 */
-    @Override
-    public Type<Handler> getAssociatedType() {
-        return TYPE;
-    }
-    
+	@Override
+	public Type<Handler> getAssociatedType() {
+		return TYPE;
+	}
+
 	/**
 	 * Returns the TeamingEvents enumeration value corresponding to
 	 * this event.
@@ -158,7 +125,7 @@ public class MarkReadSelectedEntitiesEvent extends SelectedEntitiesEventBase<Mar
 	 */
 	@Override
 	public TeamingEvents getEventEnum() {
-		return TeamingEvents.MARK_READ_SELECTED_ENTITIES;
+		return TeamingEvents.MOBILE_DEVICE_WIPE_SCHEDULE_CHANGED;
 	}
 		
 	/**
