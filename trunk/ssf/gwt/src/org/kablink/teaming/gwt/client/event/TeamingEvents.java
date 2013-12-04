@@ -298,6 +298,7 @@ public enum TeamingEvents implements IsSerializable {
 	MANAGE_SHARES_SELECTED_ENTITIES,				// Invokes the Share dialog in administrative mode.
 	MARK_READ_SELECTED_ENTITIES,					// Marks the Selected Entities as     Having Been Read.
 	MARK_UNREAD_SELECTED_ENTITIES,					// Marks the Selected Entities as Not Having Been Read.
+	MOBILE_DEVICE_WIPE_SCHEDULE_CHANGED,			// Signifies a mobile devices wipe schedule has changed.
 	MOVE_SELECTED_ENTITIES,							// Moves the Selected Entities.
 	PUBLIC_COLLECTION_STATE_CHANGED,				// The Visibility State of the Public Collection Changed.
 	RELOAD_DIALOG_CONTENT,							// Tells a dialog to reload its content.

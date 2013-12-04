@@ -34,6 +34,7 @@ package org.kablink.teaming.gwt.client.datatable;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
+import org.kablink.teaming.gwt.client.event.MobileDeviceWipeScheduleStateChangedEvent;
 import org.kablink.teaming.gwt.client.rpc.shared.BooleanRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.SetMobileDevicesWipeScheduledStateCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
@@ -232,7 +233,8 @@ public class MobileDeviceWipeScheduledCell extends AbstractCell<MobileDeviceWipe
 			public void onSuccess(VibeRpcResponse response) {
 				boolean reply = ((BooleanRpcResponseData) response.getResponseData()).getBooleanValue();
 				if (reply) {
-					// Yes!  Update the display to reflect the change.
+					// Yes!  Update the cell's display to reflect the
+					// change...
 					boolean newWipeScheduled = (!(wipeScheduled.isWipeScheduled()));
 					wipeScheduled.setWipeScheduled(newWipeScheduled);
 					String display;
@@ -248,6 +250,11 @@ public class MobileDeviceWipeScheduledCell extends AbstractCell<MobileDeviceWipe
 					wipeScheduled.setDisplay(      display);
 					wipeStatusElement.setInnerText(display);
 					wipeStatusElement.setTitle(    title  );
+					
+					// ...and let the data table know about it too.
+					GwtTeaming.fireEventAsync(
+						new MobileDeviceWipeScheduleStateChangedEvent(
+							wipeScheduled));
 				}
 			}
 		});

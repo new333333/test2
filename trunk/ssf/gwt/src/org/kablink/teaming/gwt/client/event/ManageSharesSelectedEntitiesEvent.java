@@ -54,7 +54,7 @@ public class ManageSharesSelectedEntitiesEvent extends SelectedEntitiesEventBase
 {
     public static Type<Handler> TYPE = new Type<Handler>();
 
-    public Long	m_folderId;
+    private Long	m_folderId;	//
 
 	/**
 	 * Handler interface for this event.

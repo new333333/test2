@@ -115,6 +115,7 @@ import org.kablink.teaming.gwt.client.event.MailToPublicLinkEntityEvent;
 import org.kablink.teaming.gwt.client.event.ManageSharesSelectedEntitiesEvent;
 import org.kablink.teaming.gwt.client.event.MarkReadSelectedEntitiesEvent;
 import org.kablink.teaming.gwt.client.event.MarkUnreadSelectedEntitiesEvent;
+import org.kablink.teaming.gwt.client.event.MobileDeviceWipeScheduleStateChangedEvent;
 import org.kablink.teaming.gwt.client.event.MoveSelectedEntitiesEvent;
 import org.kablink.teaming.gwt.client.event.QuickFilterEvent;
 import org.kablink.teaming.gwt.client.event.SharedViewFilterEvent;
@@ -248,6 +249,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		ManageSharesSelectedEntitiesEvent.Handler,
 		MarkReadSelectedEntitiesEvent.Handler,
 		MarkUnreadSelectedEntitiesEvent.Handler,
+		MobileDeviceWipeScheduleStateChangedEvent.Handler,
 		MoveSelectedEntitiesEvent.Handler,
 		QuickFilterEvent.Handler,
 		SharedViewFilterEvent.Handler,
@@ -339,6 +341,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		TeamingEvents.MANAGE_SHARES_SELECTED_ENTITIES,
 		TeamingEvents.MARK_READ_SELECTED_ENTITIES,
 		TeamingEvents.MARK_UNREAD_SELECTED_ENTITIES,
+		TeamingEvents.MOBILE_DEVICE_WIPE_SCHEDULE_CHANGED,
 		TeamingEvents.MOVE_SELECTED_ENTITIES,
 		TeamingEvents.QUICK_FILTER,
 		TeamingEvents.SHARED_VIEW_FILTER,
@@ -1324,6 +1327,20 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	private FolderColumn getFullNameColumn() {
 		for (FolderColumn fc:  m_folderColumnsList) {
 			if (FolderColumn.isColumnFullName(fc.getColumnName())) {
+				return fc;
+			}
+		}
+		return null;
+	}
+	
+	/*
+	 * Scans the current columns looking for the device wipe schedule
+	 * column.  If it is found, it's returned.  Otherwise, null is
+	 * returned.
+	 */
+	private FolderColumn getDeviceWipeScheduleColumn() {
+		for (FolderColumn fc:  m_folderColumnsList) {
+			if (FolderColumn.isColumnDeviceWipeScheduled(fc.getColumnName())) {
 				return fc;
 			}
 		}
@@ -2927,6 +2944,37 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 				selectedEntityIds = getSelectedEntityIds();
 			}
 			BinderViewsHelper.markEntriesUnread(selectedEntityIds);
+		}
+	}
+	
+	/**
+	 * Handles MobileDeviceWipeScheduleStateChangedEvent's received by this class.
+	 * 
+	 * Implements the MobileDeviceWipeScheduleStateChangedEvent.Handler.onMobileDeviceWipeScheduleStateChanged() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onMobileDeviceWipeScheduleStateChanged(MobileDeviceWipeScheduleStateChangedEvent event) {
+		// If the event doesn't have a wipe schedule... 
+		MobileDeviceWipeScheduleInfo wipeSchedule = event.getWipeSchedule();
+		if (null == wipeSchedule) {
+			// ...ignore it.
+			return;
+		}
+		
+		// Is the event targeted to this folder?
+		Long eventFolderId = wipeSchedule.getEntityId().getBinderId();
+		if (eventFolderId.equals(getFolderId())) {
+			// Yes!  Can we find the associated row and column?
+			FolderRow    fr = getRowByEntityId(wipeSchedule.getEntityId());
+			FolderColumn fc = getDeviceWipeScheduleColumn();
+			if ((null != fr) && (null != fc)) {
+				// Yes!  Update the column values in the row based on
+				// wipe schedule from the event.
+				fr.setColumnWipeScheduled(fc, wipeSchedule.isWipeScheduled());
+				fr.setColumnValue(        fc, wipeSchedule.getDisplay()     );
+			}
 		}
 	}
 	

@@ -54,7 +54,7 @@ import com.google.web.bindery.event.shared.SimpleEventBus;
 public class SetSelectedUserMobileSettingsEvent extends SelectedEntitiesEventBase<SetSelectedUserMobileSettingsEvent.Handler> {
 	public static Type<Handler> TYPE = new Type<Handler>();
 
-    public Long	m_folderId;	//
+    private Long	m_folderId;	//
 
 	/**
 	 * Handler interface for this event.

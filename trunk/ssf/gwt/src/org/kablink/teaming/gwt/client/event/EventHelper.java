@@ -1674,6 +1674,15 @@ public class EventHelper {
 				}
 				break;
 			
+			case MOBILE_DEVICE_WIPE_SCHEDULE_CHANGED:
+				// A MobileDeviceWipeScheduleStateChangedEvent!  Can
+				// the event handler we were given handle that?
+				if (eventHandler instanceof MobileDeviceWipeScheduleStateChangedEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = MobileDeviceWipeScheduleStateChangedEvent.registerEvent(eventBus, ((MobileDeviceWipeScheduleStateChangedEvent.Handler) eventHandler));
+				}
+				break;
+			
 			case MOVE_SELECTED_ENTITIES:
 				// A MoveSelectedEntitiesEvent!  Can the event handler
 				// we were given handle that?
@@ -2866,6 +2875,7 @@ public class EventHelper {
 			case MAILTO_PUBLIC_LINK_ENTITY:                    hasHandler = (eventHandler instanceof MailToPublicLinkEntityEvent.Handler);                 break;
 			case MARK_READ_SELECTED_ENTITIES:                  hasHandler = (eventHandler instanceof MarkReadSelectedEntitiesEvent.Handler);               break;
 			case MARK_UNREAD_SELECTED_ENTITIES:                hasHandler = (eventHandler instanceof MarkUnreadSelectedEntitiesEvent.Handler);             break;
+			case MOBILE_DEVICE_WIPE_SCHEDULE_CHANGED:          hasHandler = (eventHandler instanceof MobileDeviceWipeScheduleStateChangedEvent.Handler);   break;
 			case MOVE_SELECTED_ENTITIES:                       hasHandler = (eventHandler instanceof MoveSelectedEntitiesEvent.Handler);                   break;
 			case PUBLIC_COLLECTION_STATE_CHANGED:              hasHandler = (eventHandler instanceof PublicCollectionStateChangedEvent.Handler);           break;
 			case SCHEDULE_WIPE_SELECTED_MOBILE_DEVICES:        hasHandler = (eventHandler instanceof ScheduleWipeSelectedMobileDevicesEvent.Handler);      break;
