@@ -3392,6 +3392,7 @@ public class GwtViewHelper {
 						}
 						
 						// Scan the List<EntityId> again.
+						SharingModule sm = bs.getSharingModule();
 						for (EntityId eid:  entityIds) {
 							// Skipping any binders.
 							if (eid.isBinder()) {
@@ -3414,6 +3415,9 @@ public class GwtViewHelper {
 								     entryShareRight = ShareRight.SHARABLE;
 								else entryShareRight = ShareRight.NOT_SHARABLE_RIGHTS_VIOLATION;
 								entryRights.setShareRight(entryShareRight);
+								if (entryShareRight.canShare()) {
+									entryRights.setCanPublicLink(sm.testPublicLinkShareEntity(entry));
+								}
 								
 								reply.setEntityRights(eid, entryRights);
 							}
@@ -3479,7 +3483,8 @@ public class GwtViewHelper {
 										binderShareRight = ShareRight.NOT_SHARABLE_RIGHTS_VIOLATION;
 									}
 								}
-								binderRights.setShareRight(binderShareRight);
+								binderRights.setShareRight(   binderShareRight);
+								binderRights.setCanPublicLink(false           );	// Public links to a binder are not supported.
 								
 								reply.setEntityRights(eid, binderRights);
 							}

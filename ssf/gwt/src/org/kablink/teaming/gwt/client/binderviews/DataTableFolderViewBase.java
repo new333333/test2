@@ -4271,14 +4271,14 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 			for (FolderRow row : rows) {
 				// Is this row selected?
 				if (fsm.isSelected(row)) {
-					// Yes!  Is it sharable?
+					// Yes!  Is it be public linked?
 					EntityRights er = entityRightsMap.get(EntityRights.getEntityRightsKey(row.getEntityId()));
-					if ((null == er) || (!(er.isCanShare()))) {
+					if ((null == er) || (!(er.isCanPublicLink()))) {
 						// No!  Track it as invalid.
 						reply.add(row);
 					}
 					
-					// Yes, it's sharable!  Is it an entry?
+					// Yes, it can be public linked!  Is it an entry?
 					else if (row.getEntityId().isBinder()) {
 						// No!  Track it as invalid.
 						reply.add(row);

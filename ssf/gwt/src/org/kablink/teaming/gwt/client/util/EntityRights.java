@@ -42,6 +42,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 public class EntityRights implements IsSerializable {
 	private boolean		m_canAddReplies;	//
 	private boolean		m_canModify;		//
+	private boolean		m_canPublicLink;	//
 	private boolean		m_canPurge;			//
 	private boolean		m_canTrash;			//
 	private ShareRight	m_shareRight;		//
@@ -71,6 +72,7 @@ public class EntityRights implements IsSerializable {
 	 */
 	public boolean    isCanAddReplies() {return m_canAddReplies;                                    }
 	public boolean    isCanModify()     {return m_canModify;                                        }
+	public boolean    isCanPublicLink() {return m_canPublicLink;                                    }
 	public boolean    isCanPurge()      {return m_canPurge;                                         }
 	public boolean    isCanShare()      {return ((null != m_shareRight) && m_shareRight.canShare());}
 	public boolean    isCanTrash()      {return m_canTrash;                                         }
@@ -83,6 +85,7 @@ public class EntityRights implements IsSerializable {
 	 */
 	public void setCanAddReplies(boolean    canAddReplies) {m_canAddReplies = canAddReplies;}
 	public void setCanModify(    boolean    canModify)     {m_canModify     = canModify;    }
+	public void setCanPublicLink(boolean    canPublicLink) {m_canPublicLink = canPublicLink;}
 	public void setCanPurge(     boolean    canPurge)      {m_canPurge      = canPurge;     }
 	public void setCanTrash(     boolean    canTrash)      {m_canTrash      = canTrash;     }
 	public void setShareRight(   ShareRight shareRight)    {m_shareRight    = shareRight;   }
