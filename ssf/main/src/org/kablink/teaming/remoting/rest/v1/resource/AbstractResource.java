@@ -486,17 +486,7 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
                                 boolean notifyRecipient, Set<String> notifyAddresses) {
         share.setSharedEntity(new EntityId(entity.getId(), entity.getEntityType().name(), null));
         ShareItem shareItem = toShareItem(share);
-        if (notifyRecipient && shareItem.getRecipientType() == ShareItem.RecipientType.publicLink) {
-            if (notifyAddresses==null || notifyAddresses.size()==0) {
-                throw new BadRequestException(ApiErrorCode.BAD_INPUT, "Missing notify_address query parameter.");
-            }
-            ShareLists shareLists = getSharingModule().getShareLists();
-            for (String addr : notifyAddresses) {
-                if (!getSharingModule().isExternalAddressValid(addr, shareLists)) {
-                    throw new InvalidEmailAddressException(addr);
-                }
-            }
-        }
+        validateNotifyParameters(notifyRecipient, notifyAddresses, shareItem);
         List<ShareItem> shareItems = new ArrayList<ShareItem>(2);
         shareItems.add(shareItem);
 
@@ -554,6 +544,30 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
             notifyShareRecipients(shareItem, entity, isExternal, notifyAddresses);
         }
         return ResourceUtil.buildShare(shareItem, entity, buildShareRecipient(shareItem));
+    }
+
+    protected void validateNotifyParameters(boolean notifyRecipient, Set<String> notifyAddresses, ShareItem shareItem) {
+        if (notifyRecipient && shareItem.getRecipientType() == ShareItem.RecipientType.publicLink) {
+            if (notifyAddresses==null || notifyAddresses.size()==0) {
+                throw new BadRequestException(ApiErrorCode.BAD_INPUT, "Missing notify_address query parameter.");
+            }
+            ShareLists shareLists = getSharingModule().getShareLists();
+            for (String addr : notifyAddresses) {
+                if (!getSharingModule().isExternalAddressValid(addr, shareLists)) {
+                    throw new InvalidEmailAddressException(addr);
+                }
+            }
+        }
+    }
+
+    protected void notifyShareRecipients(ShareItem shareItem, Set<String> notifyAddresses) {
+        org.kablink.teaming.domain.DefinableEntity entity = null;
+        if (shareItem.getRecipientType()== ShareItem.RecipientType.publicLink) {
+            entity = findDefinableEntity(shareItem.getSharedEntityIdentifier());
+            notifyShareRecipients(shareItem, entity, false, notifyAddresses);
+        } else {
+            notifyShareRecipients(shareItem, entity, false, null);
+        }
     }
 
     protected void notifyShareRecipients(ShareItem shareItem, org.kablink.teaming.domain.DefinableEntity entity, boolean external, Set<String> notifyAddresses) {
