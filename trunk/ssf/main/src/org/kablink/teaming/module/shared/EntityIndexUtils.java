@@ -1505,12 +1505,7 @@ public class EntityIndexUtils {
     		if(folder.isMirrored() && folder.getResourceDriver() != null) {
     			ResourceDriver driver = getResourceDriverManager().getDriver(folder.getResourceDriverName());
     			ResourceDriverConfig config = driver.getConfig();
-    			if(ResourceDriverConfig.DriverType.famt == config.getDriverType() ||
-    					ResourceDriverConfig.DriverType.windows_server == config.getDriverType() ||
-    					ResourceDriverConfig.DriverType.netware == config.getDriverType() ||
-    					ResourceDriverConfig.DriverType.oes == config.getDriverType() ||
-    					ResourceDriverConfig.DriverType.share_point_2010 == config.getDriverType() ||
-    					ResourceDriverConfig.DriverType.share_point_2013 == config.getDriverType()) {
+    			if (config.isAclAware()) {
             		Field path = FieldFactory.createFieldStoredNotIndexed(RESOURCE_PATH_FIELD, folder.getResourcePath());
             		doc.add( path );    			
     			}
@@ -1522,12 +1517,7 @@ public class EntityIndexUtils {
     		if(parentFolder.isMirrored() && parentFolder.getResourceDriverName() != null) {
     			ResourceDriver driver = getResourceDriverManager().getDriver(parentFolder.getResourceDriverName());
     			ResourceDriverConfig config = driver.getConfig();
-    			if(ResourceDriverConfig.DriverType.famt == config.getDriverType() ||
-    					ResourceDriverConfig.DriverType.windows_server == config.getDriverType() ||
-    					ResourceDriverConfig.DriverType.netware == config.getDriverType() ||
-    					ResourceDriverConfig.DriverType.oes == config.getDriverType() ||
-    					ResourceDriverConfig.DriverType.share_point_2010 == config.getDriverType() ||
-    					ResourceDriverConfig.DriverType.share_point_2013 == config.getDriverType()) {
+    			if (config.isAclAware()) {
             		Field path = FieldFactory.createFieldStoredNotIndexed(RESOURCE_PATH_FIELD, 
             				driver.normalizedResourcePath(parentFolder.getResourcePath(), folderEntry.getTitle()));
             		doc.add( path );    			

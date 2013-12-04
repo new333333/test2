@@ -426,6 +426,21 @@ public class ResourceDriverConfig extends ZonedObject implements WorkArea {
 	public Set<Long> getChildWorkAreas() {
 		return null;
 	}
+	
+	//Routine to determine if this resource driver handles its own acls
+	public boolean isAclAware() {
+		if (ResourceDriverConfig.DriverType.famt == this.getDriverType() ||
+				ResourceDriverConfig.DriverType.windows_server == this.getDriverType() ||
+				ResourceDriverConfig.DriverType.netware == this.getDriverType() ||
+				ResourceDriverConfig.DriverType.oes == this.getDriverType() ||
+				ResourceDriverConfig.DriverType.cloud_folders == this.getDriverType() ||
+				ResourceDriverConfig.DriverType.share_point_2010 == this.getDriverType() ||
+				ResourceDriverConfig.DriverType.share_point_2013 == this.getDriverType()) {
+			return true;
+		} else {
+			return false;
+		}
+	}
 
     public boolean isAclExternallyControlled() {
     	return Boolean.FALSE;
