@@ -61,7 +61,6 @@ import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData.ErrorInfo;
 import org.kablink.teaming.gwt.client.rpc.shared.GetMailToPublicLinksCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.MailToPublicLinksRpcResponseData;
-import org.kablink.teaming.gwt.client.rpc.shared.MailToPublicLinksRpcResponseData.MailToPublicLinkInfo;
 import org.kablink.teaming.gwt.client.rpc.shared.GetViewFolderEntryUrlCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetZipDownloadFilesUrlCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetZipDownloadFolderUrlCmd;
@@ -82,6 +81,7 @@ import org.kablink.teaming.gwt.client.util.CollectionType;
 import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.EntityRights;
 import org.kablink.teaming.gwt.client.util.EntityRights.ShareRight;
+import org.kablink.teaming.gwt.client.util.PublicLinkInfo;
 import org.kablink.teaming.gwt.client.util.runasync.RunAsyncCmd;
 import org.kablink.teaming.gwt.client.util.runasync.RunAsyncCreateDlgParams;
 import org.kablink.teaming.gwt.client.util.runasync.ShareThisDlgInitAndShowParams;
@@ -1426,7 +1426,7 @@ public class BinderViewsHelper {
 				}
 
 				// How many links to we have for the entity?
-				List<MailToPublicLinkInfo> plList = plData.getMailToPublicLinks();
+				List<PublicLinkInfo> plList = plData.getMailToPublicLinks();
 				switch ((null == plList) ? 0 : plList.size()) {
 				case 0:
 					// None!  Nothing to do.
@@ -1451,7 +1451,7 @@ public class BinderViewsHelper {
 	 * Asynchronously runs the mail to multiple public links select
 	 * dialog for the user to select which public link is to be mailed.
 	 */
-	private static void mailToMultiplePublicLinksAsync(final EntityId entityId, final String subject, final List<MailToPublicLinkInfo> plInfoList) {
+	private static void mailToMultiplePublicLinksAsync(final EntityId entityId, final String subject, final List<PublicLinkInfo> plInfoList) {
 		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
@@ -1464,7 +1464,7 @@ public class BinderViewsHelper {
 	 * Synchronously runs the mail to multiple public links select
 	 * dialog for the user to select which public link is to be mailed.
 	 */
-	private static void mailToMultiplePublicLinksNow(final EntityId entityId, final String subject, final List<MailToPublicLinkInfo> plInfoList) {
+	private static void mailToMultiplePublicLinksNow(final EntityId entityId, final String subject, final List<PublicLinkInfo> plInfoList) {
 		if (null == m_mailPLSelectDlg) {
 			MailToMultiplePublicLinksSelectDlg.createAsync(new MailToMultiplePublicLinksSelectDlgClient() {
 				@Override
@@ -1490,7 +1490,7 @@ public class BinderViewsHelper {
 	 * Asynchronously runs the mail to multiple public links select
 	 * dialog for the user to select which public link is to be mailed.
 	 */
-	private static void mailToMultiplePublicLinksImplAsync(final EntityId entityId, final String subject, final List<MailToPublicLinkInfo> plInfoList) {
+	private static void mailToMultiplePublicLinksImplAsync(final EntityId entityId, final String subject, final List<PublicLinkInfo> plInfoList) {
 		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
@@ -1503,7 +1503,7 @@ public class BinderViewsHelper {
 	 * Synchronously runs the mail to multiple public links select
 	 * dialog for the user to select which public link is to be mailed.
 	 */
-	private static void mailToMultiplePublicLinksImplNow(final EntityId entityId, final String subject, final List<MailToPublicLinkInfo> plInfoList) {
+	private static void mailToMultiplePublicLinksImplNow(final EntityId entityId, final String subject, final List<PublicLinkInfo> plInfoList) {
 		MailToMultiplePublicLinksSelectDlg.initAndShow(
 			m_mailPLSelectDlg,
 			entityId,
@@ -1516,7 +1516,7 @@ public class BinderViewsHelper {
 				}
 
 				@Override
-				public void onSelect(MailToPublicLinkInfo plInfo) {
+				public void onSelect(PublicLinkInfo plInfo) {
 					// Mail the public link the user selected.
 					mailToPublicLinkAsync(subject, plInfo);
 				}
@@ -1526,7 +1526,7 @@ public class BinderViewsHelper {
 	/*
 	 * Asynchronously mails the public link using a 'mailto://...' URL.
 	 */
-	private static void mailToPublicLinkAsync(final String subject, final MailToPublicLinkInfo plLink) {
+	private static void mailToPublicLinkAsync(final String subject, final PublicLinkInfo plLink) {
 		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
@@ -1538,7 +1538,7 @@ public class BinderViewsHelper {
 	/*
 	 * Synchronously mails the public link using a 'mailto://...' URL.
 	 */
-	private static void mailToPublicLinkNow(final String subject, final MailToPublicLinkInfo plLink) {
+	private static void mailToPublicLinkNow(final String subject, final PublicLinkInfo plLink) {
 		// Construct the body text using the public link URLs...
 		StringBuilder body    = new StringBuilder(); 
 		String        url     = plLink.getViewUrl();

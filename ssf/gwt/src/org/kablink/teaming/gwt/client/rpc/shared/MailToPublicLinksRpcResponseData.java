@@ -35,6 +35,8 @@ package org.kablink.teaming.gwt.client.rpc.shared;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.kablink.teaming.gwt.client.util.PublicLinkInfo;
+
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
@@ -44,80 +46,10 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * @author drfoster@novell.com
  */
 public class MailToPublicLinksRpcResponseData implements IsSerializable, VibeRpcResponseData {
-	private String						m_error;				//
-	private String						m_subject;				//
-	private List<MailToPublicLinkInfo>	m_mailToPublicLinks;	//
+	private String					m_error;				//
+	private String					m_subject;				//
+	private List<PublicLinkInfo>	m_mailToPublicLinks;	//
 
-	/**
-	 * Inner class used to encapsulate the public links of a file.
-	 */
-	public static class MailToPublicLinkInfo implements IsSerializable {
-		private boolean	m_expired;		//
-		private String	m_comment;		//
-		private String	m_downloadUrl;	//
-		private String	m_expiration;	//
-		private String	m_sharedOn;		//
-		private String	m_viewUrl;		//
-
-		/**
-		 * Constructor method.
-		 * 
-		 * Zero parameter constructor as per GWT serialization
-		 * requirements.
-		 */
-		public MailToPublicLinkInfo() {
-			// Initialize the super class.
-			super();
-		}
-
-		/**
-		 * Constructor method.
-		 *
-		 * @param downloadUrl
-		 * @param viewUrl
-		 * @param comment
-		 * @param sharedOn
-		 * @param expired
-		 * @param expiration
-		 */
-		public MailToPublicLinkInfo(String downloadUrl, String viewUrl, String comment, String sharedOn, boolean expired, String expiration) {
-			// Initialize the this object...
-			this();
-			
-			// ...and store the parameters.
-			setDownloadUrl(downloadUrl);
-			setViewUrl(    viewUrl    );
-			setComment(    comment    );
-			setExpired(    expired    );
-			setExpiration( expiration );
-			setSharedOn(   sharedOn   );
-		}
-		
-		/**
-		 * Get'er methods.
-		 * 
-		 * @return
-		 */
-		public boolean isExpired()      {return m_expired;    }
-		public String  getComment()     {return m_comment;    }
-		public String  getDownloadUrl() {return m_downloadUrl;}
-		public String  getExpiration()  {return m_expiration; }
-		public String  getSharedOn()    {return m_sharedOn;   }
-		public String  getViewUrl()     {return m_viewUrl;    }
-		
-		/**
-		 * Set'er methods.
-		 * 
-		 * @param
-		 */
-		public void setExpired(    boolean expired)     {m_expired     = expired;    }
-		public void setComment(    String  comment)     {m_comment     = comment;    }
-		public void setDownloadUrl(String  downloadUrl) {m_downloadUrl = downloadUrl;}
-		public void setExpiration( String  expiration)  {m_expiration  = expiration; }
-		public void setSharedOn(   String  sharedOn)    {m_sharedOn    = sharedOn;   }
-		public void setViewUrl(    String  viewUrl)     {m_viewUrl     = viewUrl;    }
-	}
-	
 	/**
 	 * Constructor method.
 	 * 
@@ -129,7 +61,7 @@ public class MailToPublicLinksRpcResponseData implements IsSerializable, VibeRpc
 		super();
 		
 		// ...and initialize anything else that requires it.
-		m_mailToPublicLinks = new ArrayList<MailToPublicLinkInfo>();
+		m_mailToPublicLinks = new ArrayList<PublicLinkInfo>();
 	}
 
 	/**
@@ -150,10 +82,10 @@ public class MailToPublicLinksRpcResponseData implements IsSerializable, VibeRpc
 	 * 
 	 * @return
 	 */
-	public boolean                    hasError()             {return ((null != m_error) && (0 < m_error.length()));}
-	public List<MailToPublicLinkInfo> getMailToPublicLinks() {return m_mailToPublicLinks;                          }
-	public String                     getError()             {return m_error;                                      }
-	public String                     getSubject()           {return m_subject;                                    }
+	public boolean              hasError()             {return ((null != m_error) && (0 < m_error.length()));}
+	public List<PublicLinkInfo> getMailToPublicLinks() {return m_mailToPublicLinks;                          }
+	public String               getError()             {return m_error;                                      }
+	public String               getSubject()           {return m_subject;                                    }
 
 	/**
 	 * Set'er methods.
@@ -166,5 +98,5 @@ public class MailToPublicLinksRpcResponseData implements IsSerializable, VibeRpc
 	 * 
 	 * @param
 	 */
-	public void addMailToPublicLink(MailToPublicLinkInfo pl) {m_mailToPublicLinks.add(pl);}
+	public void addMailToPublicLink(PublicLinkInfo pl) {m_mailToPublicLinks.add(pl);}
 }
