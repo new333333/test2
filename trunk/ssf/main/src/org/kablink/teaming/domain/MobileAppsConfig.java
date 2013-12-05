@@ -120,45 +120,45 @@ public class MobileAppsConfig
 	/**
 	 * 
 	 */
-	public boolean getMobileAppsAllowCacheContent()
+	public Boolean getMobileAppsAllowCacheContent()
 	{
 		if ( mobileAppsAllowCacheContent == null )
 			return SPropsUtil.getBoolean( "mobile.apps.allow.cache.content.default", true );
 
-		return mobileAppsAllowCacheContent.booleanValue();
+		return mobileAppsAllowCacheContent;
 	}
 	
 	/**
 	 * 
 	 */
-	public boolean getMobileAppsAllowCachePwd()
+	public Boolean getMobileAppsAllowCachePwd()
 	{
 		if ( mobileAppsAllowCachePwd == null )
 			return SPropsUtil.getBoolean( "mobile.apps.allow.cache.pwd.default", true );
 		
-		return mobileAppsAllowCachePwd.booleanValue();
+		return mobileAppsAllowCachePwd;
 	}
 
 	/**
 	 * 
 	 */
-	public boolean getMobileAppsAllowPlayWithOtherApps()
+	public Boolean getMobileAppsAllowPlayWithOtherApps()
 	{
 		if ( mobileAppsAllowPlayWithOtherApps == null )
 			return SPropsUtil.getBoolean( "mobile.apps.allow.play.with.other.apps.default", true );
 		
-		return mobileAppsAllowPlayWithOtherApps.booleanValue();
+		return mobileAppsAllowPlayWithOtherApps;
 	}
 	
 	/**
 	 * 
 	 */
-	public boolean getMobileAppsEnabled()
+	public Boolean getMobileAppsEnabled()
 	{
 		if( mobileAppsEnabled == null )
 			return SPropsUtil.getBoolean( "mobile.apps.enabled.default", true );
 		
-		return mobileAppsEnabled.booleanValue();
+		return mobileAppsEnabled;
 	}
 
 	/**
@@ -175,33 +175,33 @@ public class MobileAppsConfig
 	/**
 	 * 
 	 */
-	public void setMobileAppsAllowCacheContent( boolean allow )
+	public void setMobileAppsAllowCacheContent( Boolean allow )
 	{
-		mobileAppsAllowCacheContent = Boolean.valueOf( allow );
+		mobileAppsAllowCacheContent = allow;
 	}
 	
 	/**
 	 * 
 	 */
-	public void setMobileAppsAllowCachePwd( boolean allow )
+	public void setMobileAppsAllowCachePwd( Boolean allow )
 	{
-		mobileAppsAllowCachePwd = Boolean.valueOf( allow );
+		mobileAppsAllowCachePwd = allow;
 	}
 
 	/**
 	 * 
 	 */
-	public void setMobileAppsAllowPlayWithOtherApps( boolean allow )
+	public void setMobileAppsAllowPlayWithOtherApps( Boolean allow )
 	{
-		mobileAppsAllowPlayWithOtherApps = Boolean.valueOf( allow );
+		mobileAppsAllowPlayWithOtherApps = allow;
 	}
 
 	/**
 	 * 
 	 */
-	public void setMobileAppsEnabled( boolean enabled )
+	public void setMobileAppsEnabled( Boolean enabled )
 	{
-		mobileAppsEnabled = Boolean.valueOf( enabled );
+		mobileAppsEnabled = enabled;
 	}
 	
 	/**
@@ -218,7 +218,7 @@ public class MobileAppsConfig
      * 
      * @return
      */
-    public boolean getMobileCutCopyEnabled()
+    public Boolean getMobileCutCopyEnabled()
     {
 		if ( null == mobileCutCopyEnabled )
 		{
@@ -228,7 +228,7 @@ public class MobileAppsConfig
     	return this.mobileCutCopyEnabled;
     }
     
-    public boolean getMobileAndroidScreenCaptureEnabled()
+    public Boolean getMobileAndroidScreenCaptureEnabled()
     {
     	if ( null == mobileAndroidScreenCaptureEnabled )
     	{
@@ -238,7 +238,7 @@ public class MobileAppsConfig
     	return this.mobileAndroidScreenCaptureEnabled;
     }
     
-    public boolean getMobileDisableOnRootedOrJailBrokenDevices()
+    public Boolean getMobileDisableOnRootedOrJailBrokenDevices()
     {
     	if ( null == mobileDisableOnRootedOrJailBrokenDevices )
     	{
@@ -279,10 +279,10 @@ public class MobileAppsConfig
      * 
      * @param
      */
-    public  void setMobileCutCopyEnabled(                     boolean                mobileCutCopyEnabled )                     { this.mobileCutCopyEnabled                     = mobileCutCopyEnabled;                                     }
-    public  void setMobileAndroidScreenCaptureEnabled(        boolean                mobileAndroidScreenCaptureEnabled )        { this.mobileAndroidScreenCaptureEnabled        = mobileAndroidScreenCaptureEnabled;                        }
-    public  void setMobileDisableOnRootedOrJailBrokenDevices( boolean                mobileDisableOnRootedOrJailBrokenDevices ) { this.mobileDisableOnRootedOrJailBrokenDevices = mobileDisableOnRootedOrJailBrokenDevices;                 }
-    private void setMobileOpenIn(                             Integer                mobileOpenIn )                             { this.mobileOpenIn                             = mobileOpenIn;                                             }
-    public  void setMobileOpenInEnum(                         MobileOpenInSetting    mobileOpenIn )                             { this.mobileOpenIn                             = ((null == mobileOpenIn) ? null : mobileOpenIn.getValue());}
-    public  void setMobileOpenInWhiteLists(                   MobileOpenInWhiteLists mobileOpenInWhiteLists )                   { this.mobileOpenInWhiteLists                   = mobileOpenInWhiteLists;                                   }
+    public  void setMobileCutCopyEnabled(                     Boolean                mobileCutCopyEnabled )                     { this.mobileCutCopyEnabled                     = mobileCutCopyEnabled;                                       }
+    public  void setMobileAndroidScreenCaptureEnabled(        Boolean                mobileAndroidScreenCaptureEnabled )        { this.mobileAndroidScreenCaptureEnabled        = mobileAndroidScreenCaptureEnabled;                          }
+    public  void setMobileDisableOnRootedOrJailBrokenDevices( Boolean                mobileDisableOnRootedOrJailBrokenDevices ) { this.mobileDisableOnRootedOrJailBrokenDevices = mobileDisableOnRootedOrJailBrokenDevices;                   }
+    private void setMobileOpenIn(                             Integer                mobileOpenIn )                             { this.mobileOpenIn                             = mobileOpenIn;                                               }
+    public  void setMobileOpenInEnum(                         MobileOpenInSetting    mobileOpenIn )                             { this.mobileOpenIn                             = ((null == mobileOpenIn) ? null : mobileOpenIn.getValue());  }
+    public  void setMobileOpenInWhiteLists(                   MobileOpenInWhiteLists mobileOpenInWhiteLists )                   { this.mobileOpenInWhiteLists                   = mobileOpenInWhiteLists;                                     }
 }
