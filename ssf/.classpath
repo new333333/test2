@@ -191,5 +191,6 @@
 	<classpathentry kind="lib" path="tools/gwt/validation-api-1.0.0.GA-sources.jar"/>
 	<classpathentry kind="lib" path="tools/gwt/validation-api-1.0.0.GA.jar" sourcepath="tools/gwt/validation-api-1.0.0.GA-sources.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/openid4java.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/tomcat-jdbc.jar"/>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>
 </classpath>
