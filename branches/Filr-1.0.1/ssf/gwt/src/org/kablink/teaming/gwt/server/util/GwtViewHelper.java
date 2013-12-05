@@ -656,7 +656,7 @@ public class GwtViewHelper {
 		        FolderEntry fe = ((FolderEntry) entity);
 		        entryMap.put(Constants.TOTALREPLYCOUNT_FIELD,   String.valueOf(fe.getTotalReplyCount()));
 		        entryMap.put(Constants.LASTACTIVITY_FIELD,      fe.getLastActivity()                   );
-		        entryMap.put(Constants.MODIFICATION_DATE_FIELD, fe.getModification()                   );
+		        entryMap.put(Constants.MODIFICATION_DATE_FIELD, fe.getModificationDate()               );
 				FileAttachment fa = GwtServerHelper.getFileEntrysFileAttachment(bs, fe);
 				if (null != fa) {
 			        entryMap.put(Constants.FILE_TIME_FIELD,  String.valueOf(fa.getModification().getDate().getTime()));
@@ -672,8 +672,8 @@ public class GwtViewHelper {
 				// binder!  Store the binder's path and modification
 				// date...
 				Binder binder = ((Binder) entity);
-				entryMap.put(Constants.ENTITY_PATH,             binder.getPathName()    );
-		        entryMap.put(Constants.MODIFICATION_DATE_FIELD, binder.getModification());
+				entryMap.put(Constants.ENTITY_PATH,             binder.getPathName()        );
+		        entryMap.put(Constants.MODIFICATION_DATE_FIELD, binder.getModificationDate());
 		        
 				// ...and store its parent's ID in the Map.
 				binderIdField = Constants.BINDERS_PARENT_ID_FIELD;
