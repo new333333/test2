@@ -415,7 +415,7 @@ public class ResourceUtil {
         mobileAppConfig.setAllowCutCopy(mac.getMobileCutCopyEnabled());
         mobileAppConfig.setAllowRootedDevices(mac.getMobileDisableOnRootedOrJailBrokenDevices());
         mobileAppConfig.setAllowScreenCapture(mac.getMobileAndroidScreenCaptureEnabled());
-        MobileAppConfig.OpenInApps openIn = toModelEnum(mac.getMobileOpenIn());
+        MobileAppConfig.OpenInApps openIn = toModelEnum(mac.getMobileOpenInEnum());
         mobileAppConfig.setAllowedOpenInApps(openIn.name());
         if (openIn == MobileAppConfig.OpenInApps.selected) {
             MobileOpenInWhiteLists whiteLists = mac.getMobileOpenInWhiteLists();

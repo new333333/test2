@@ -6663,7 +6663,7 @@ public class GwtServerHelper {
 		gwtMobileAppsConfig.setMobileAndroidScreenCaptureEnabled( mobileAppsConfig.getMobileAndroidScreenCaptureEnabled() );
 		gwtMobileAppsConfig.setMobileDisableOnRootedOrJailBrokenDevices( mobileAppsConfig.getMobileDisableOnRootedOrJailBrokenDevices() );
 		GwtMobileOpenInSetting gwtMoi;
-		MobileOpenInSetting moi = mobileAppsConfig.getMobileOpenIn();
+		MobileOpenInSetting moi = mobileAppsConfig.getMobileOpenInEnum();
 		if ( null == moi )
 		{
 			gwtMoi = GwtMobileOpenInSetting.ALL_APPLICATIONS;
@@ -10624,7 +10624,7 @@ public class GwtServerHelper {
 				case WHITE_LIST:        moi = MobileOpenInSetting.WHITE_LIST;       break;
 				}
 			}
-			mobileAppsConfig.setMobileOpenIn( moi );
+			mobileAppsConfig.setMobileOpenInEnum( moi );
 			MobileOpenInWhiteLists mwl = mobileAppsConfig.getMobileOpenInWhiteLists();
 			if ( null == mwl )
 			{

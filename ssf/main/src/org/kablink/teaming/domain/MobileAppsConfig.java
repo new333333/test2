@@ -40,6 +40,7 @@ import org.kablink.teaming.util.SPropsUtil;
  * 
  * @author jwootton
  */
+@SuppressWarnings("unused")
 public class MobileAppsConfig
 {
 	private Boolean mobileAppsEnabled;
@@ -64,9 +65,31 @@ public class MobileAppsConfig
      */
     public enum MobileOpenInSetting
     {
-    	DISABLED,
-    	ALL_APPLICATIONS,
-    	WHITE_LIST;
+    	DISABLED( 0 ),
+    	ALL_APPLICATIONS( 1 ),
+    	WHITE_LIST( 2 );
+    	
+    	private int m_value;
+
+    	/**
+    	 * Constructor method.
+    	 * 
+    	 * @param value
+    	 */
+    	MobileOpenInSetting( int value )
+    	{
+    		m_value = value;
+    	}
+
+    	/**
+    	 * Returns the integer value of the enumeration.
+    	 * 
+    	 * @return
+    	 */
+    	public int getValue()
+    	{
+    		return m_value;
+    	}
 
     	/**
     	 * Returns a MobileOpenInSetting mapped from an integer.
@@ -78,9 +101,9 @@ public class MobileAppsConfig
     	public static MobileOpenInSetting valueOf( int setting )
     	{
     		MobileOpenInSetting reply;
-    		if      ( DISABLED.ordinal()   == setting ) reply = MobileOpenInSetting.DISABLED;
-    		else if ( WHITE_LIST.ordinal() == setting ) reply = MobileOpenInSetting.WHITE_LIST;
-    		else                                        reply = MobileOpenInSetting.ALL_APPLICATIONS;
+    		if      ( DISABLED.getValue()   == setting ) reply = MobileOpenInSetting.DISABLED;
+    		else if ( WHITE_LIST.getValue() == setting ) reply = MobileOpenInSetting.WHITE_LIST;
+    		else                                         reply = MobileOpenInSetting.ALL_APPLICATIONS;
     		return reply;
     	}
     }
@@ -224,8 +247,16 @@ public class MobileAppsConfig
     	
     	return this.mobileDisableOnRootedOrJailBrokenDevices;
     }
+
+    /*
+     * private:  Used only by hibernate.
+     */
+	private Integer getMobileOpenIn()
+    {
+    	return this.mobileOpenIn;
+    }
     
-    public MobileOpenInSetting getMobileOpenIn()
+    public MobileOpenInSetting getMobileOpenInEnum()
     {
     	if ( null == this.mobileOpenIn )
     	{
@@ -244,11 +275,14 @@ public class MobileAppsConfig
      * Set'er methods for the Mobile Application Management (MAM)
      * settings.
      * 
+     * private set'er:  Used only by hibernate.
+     * 
      * @param
      */
-    public void setMobileCutCopyEnabled(                     boolean                mobileCutCopyEnabled )                     { this.mobileCutCopyEnabled                     = mobileCutCopyEnabled;                                    }
-    public void setMobileAndroidScreenCaptureEnabled(        boolean                mobileAndroidScreenCaptureEnabled )        { this.mobileAndroidScreenCaptureEnabled        = mobileAndroidScreenCaptureEnabled;                       }
-    public void setMobileDisableOnRootedOrJailBrokenDevices( boolean                mobileDisableOnRootedOrJailBrokenDevices ) { this.mobileDisableOnRootedOrJailBrokenDevices = mobileDisableOnRootedOrJailBrokenDevices;                }
-    public void setMobileOpenIn(                             MobileOpenInSetting    mobileOpenIn )                             { this.mobileOpenIn                             = ((null == mobileOpenIn) ? null : mobileOpenIn.ordinal());}
-    public void setMobileOpenInWhiteLists(                   MobileOpenInWhiteLists mobileOpenInWhiteLists )                   { this.mobileOpenInWhiteLists                   = mobileOpenInWhiteLists;                                  }
+    public  void setMobileCutCopyEnabled(                     boolean                mobileCutCopyEnabled )                     { this.mobileCutCopyEnabled                     = mobileCutCopyEnabled;                                     }
+    public  void setMobileAndroidScreenCaptureEnabled(        boolean                mobileAndroidScreenCaptureEnabled )        { this.mobileAndroidScreenCaptureEnabled        = mobileAndroidScreenCaptureEnabled;                        }
+    public  void setMobileDisableOnRootedOrJailBrokenDevices( boolean                mobileDisableOnRootedOrJailBrokenDevices ) { this.mobileDisableOnRootedOrJailBrokenDevices = mobileDisableOnRootedOrJailBrokenDevices;                 }
+    private void setMobileOpenIn(                             Integer                mobileOpenIn )                             { this.mobileOpenIn                             = mobileOpenIn;                                             }
+    public  void setMobileOpenInEnum(                         MobileOpenInSetting    mobileOpenIn )                             { this.mobileOpenIn                             = ((null == mobileOpenIn) ? null : mobileOpenIn.getValue());}
+    public  void setMobileOpenInWhiteLists(                   MobileOpenInWhiteLists mobileOpenInWhiteLists )                   { this.mobileOpenInWhiteLists                   = mobileOpenInWhiteLists;                                   }
 }
