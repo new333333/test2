@@ -779,7 +779,7 @@ public class GwtViewHelper {
 			        FolderEntry fe = ((FolderEntry) entity);
 			        entryMap.put(Constants.TOTALREPLYCOUNT_FIELD,   String.valueOf(fe.getTotalReplyCount()));
 			        entryMap.put(Constants.LASTACTIVITY_FIELD,      fe.getLastActivity()                   );
-			        entryMap.put(Constants.MODIFICATION_DATE_FIELD, fe.getModification()                   );
+			        entryMap.put(Constants.MODIFICATION_DATE_FIELD, fe.getModificationDate()               );
 					
 					// Store the entry's parent binder's ID in the Map.
 					binderIdField = Constants.BINDER_ID_FIELD;
@@ -791,7 +791,7 @@ public class GwtViewHelper {
 					// modification date...
 					Binder binder = ((Binder) entity);
 					entryMap.put(Constants.ENTITY_PATH,             binder.getPathName()                                  );
-			        entryMap.put(Constants.MODIFICATION_DATE_FIELD, binder.getModification()                              );
+			        entryMap.put(Constants.MODIFICATION_DATE_FIELD, binder.getModificationDate()                          );
 			        entryMap.put(Constants.ICON_NAME_FIELD,         binder.getIconName()                                  );
 			        entryMap.put(Constants.IS_HOME_DIR_FIELD,      (binder.isHomeDir() ? Constants.TRUE : Constants.FALSE));
 			        
