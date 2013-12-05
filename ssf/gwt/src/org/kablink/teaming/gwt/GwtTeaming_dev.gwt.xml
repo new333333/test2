@@ -21,4 +21,8 @@
 		
 	<set-property          name="locale" value="en"  />	<!-- English only.       -->
 	<set-property-fallback name="locale" value="en"  />	<!-- Default is English. -->
+	
+	<!-- Enable GWT's Super Dev Mode debugging. -->
+	<add-linker                 name="xsiframe"                            />
+	<set-configuration-property name="devModeRedirectEnabled" value="true" />
 </module>
