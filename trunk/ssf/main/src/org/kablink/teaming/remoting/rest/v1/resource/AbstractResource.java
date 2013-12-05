@@ -793,7 +793,7 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         Junction crit = Restrictions.conjunction()
                 .add(Restrictions.eq(Constants.DOC_TYPE_FIELD, Constants.DOC_TYPE_ENTRY))
                 .add(Restrictions.eq(Constants.ENTRY_TYPE_FIELD, Constants.ENTRY_TYPE_GROUP))
-                .add(SearchUtils.buildExcludeUniversalAndContainerGroupCriterion(includeAllUsersGroup));
+                .add(SearchUtils.buildExcludeUniversalAndContainerGroupCriterion(!includeAllUsersGroup));
         if (fromLdap!=null) {
             crit.add(Restrictions.eq(Constants.IS_GROUP_FROM_LDAP_FIELD, fromLdap.toString()));
         }

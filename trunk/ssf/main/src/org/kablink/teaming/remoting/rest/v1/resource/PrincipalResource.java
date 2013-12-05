@@ -91,6 +91,7 @@ public class PrincipalResource extends AbstractPrincipalResource {
 		@QueryParam("keyword") String keyword,
 		@QueryParam("included_groups") @DefaultValue("all") String groups,
 		@QueryParam("included_users") @DefaultValue("all") String users,
+		@QueryParam("include_all_users_group") @DefaultValue("true") boolean includeAllUsers,
         @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr,
 		@QueryParam("first") @DefaultValue("0") Integer offset,
 		@QueryParam("count") @DefaultValue("25") Integer maxCount) {
@@ -118,11 +119,11 @@ public class PrincipalResource extends AbstractPrincipalResource {
         if (groupOption!=PrincipalOptions.none) {
             Criterion groupCrit;
             if (groupOption==PrincipalOptions.local) {
-                groupCrit = buildGroupsCriterion(Boolean.FALSE, true);
+                groupCrit = buildGroupsCriterion(Boolean.FALSE, includeAllUsers);
             } else if (groupOption==PrincipalOptions.ldap) {
-                groupCrit = buildGroupsCriterion(Boolean.TRUE, true);
+                groupCrit = buildGroupsCriterion(Boolean.TRUE, includeAllUsers);
             } else {
-                groupCrit = buildGroupsCriterion(null, true);
+                groupCrit = buildGroupsCriterion(null, includeAllUsers);
             }
             orJunction.add(groupCrit);
         }
