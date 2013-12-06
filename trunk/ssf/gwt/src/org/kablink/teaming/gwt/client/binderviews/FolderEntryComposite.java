@@ -141,8 +141,10 @@ public class FolderEntryComposite extends ResizeComposite
 	private GwtTeamingDataTableImageBundle	m_images;					// Access to Vibe's images.
 	private GwtTeamingMessages				m_messages;					// Access to Vibe's messages.
 	private int								m_readyComponents;			// Components that are ready, incremented as they callback.
-	private Label							m_caption;					// The text on the left of the caption bar. 
+	private Label							m_captionLabel;				// The label on the left of the caption bar. 
 	private List<HandlerRegistration>		m_registeredEventHandlers;	// Event handlers that are currently registered.
+	private Panel							m_captionRightPanel;		// The panel at the right end of the caption containing the navigation arrows and close button.
+	private Panel							m_captionRootPanel;			// Root panel holding the caption widget.
 	private ViewReady						m_viewReady;				// Stores a ViewReady created for the classes that extends it.
 	private VibeFlexTable					m_contentGrid;				// A <TABLE> containing the content portions of the view (everything but the sidebar.)
 	private VibeFlowPanel 					m_captionImagePanel;		// A panel holding an image in the caption, if one is required.
@@ -150,6 +152,8 @@ public class FolderEntryComposite extends ResizeComposite
 	private VibeFlowPanel					m_rootPanel;				// The panel containing everything about the composite.
 	private ViewFolderEntryInfo				m_vfei;						// The view information for the folder entry being viewed.
 
+	private final static int CAPTION_LABEL_OVERHEAD		=  25;	// Pixels the width of the caption label is reduced by to account for overhead, ...
+	private final static int CAPTION_LABEL_MINIMUM		= 100;	// Minimum size, in pixels of the caption label.
 	private final static int MINIMUM_CONTENT_HEIGHT		= 150;	// The minimum height (in pixels) of the composite's content  panel.
 	private final static int MINIMUM_DOCUMENT_HEIGHT	=  50;	// The minimum height (in pixels) of the composite's document area.
 	public  final static int MINIMUM_SHARING_HEIGHT		= 100;	// The minimum height (in pixels) of the sidebar's sharing area.
@@ -294,22 +298,25 @@ public class FolderEntryComposite extends ResizeComposite
 			else container.addStyleName("teamingDlgBoxHeaderBG_NonIE");
 		}
 
+		// Save the panel that contains the caption widgets.
+		m_captionRootPanel = container;
+
 		// Create a panel to hold an image displayed in the caption, if
 		// there will be one.
 		m_captionImagePanel = new VibeFlowPanel();
 		m_captionImagePanel.setStyleName("teamingDlgBoxHeader-captionImagePanel");
-		container.add(m_captionImagePanel);
+		m_captionRootPanel.add(m_captionImagePanel);
 		
 		// Create the label with the entry's title.
-		m_caption = new Label(m_vfei.getTitle());
-		m_caption.setStyleName("teamingDlgBoxHeader-captionLabel");
-		container.add(m_caption);
+		m_captionLabel = new Label(m_vfei.getTitle());
+		m_captionLabel.setStyleName("teamingDlgBoxHeader-captionLabel vibe-feComposite-captionLabel");
+		m_captionRootPanel.add(m_captionLabel);
 
 		// Create the widgets that appear at the right end of the caption.
-		createCaptionRight(container);
+		createCaptionRight();
 
 		// Finally, add the caption panel to the root panel.
-		rootPanel.add(container);
+		rootPanel.add(m_captionRootPanel);
 	}
 
 	/*
@@ -388,17 +395,17 @@ public class FolderEntryComposite extends ResizeComposite
 	/*
 	 * Creates a panel that lives at the right edge of the caption.
 	 */
-	private void createCaptionRight(Panel container) {
+	private void createCaptionRight() {
 		// Create the right aligned panel
-		VibeFlowPanel rightPanel = new VibeFlowPanel();
-		rightPanel.addStyleName("vibe-feComposite-rightPanel");
-		container.add(rightPanel);
+		m_captionRightPanel = new VibeFlowPanel();
+		m_captionRightPanel.addStyleName("vibe-feComposite-rightPanel");
+		m_captionRootPanel.add(m_captionRightPanel);
 
 		//
-		createCaptionNavigation(rightPanel);
+		createCaptionNavigation(m_captionRightPanel);
 		
 		// Add a close button when necessary.
-		createCaptionClose(rightPanel);
+		createCaptionClose(m_captionRightPanel);
 	}
 
 	/*
@@ -441,7 +448,7 @@ public class FolderEntryComposite extends ResizeComposite
 	@Override
 	public void doNavigate(ViewFolderEntryInfo vfei) {
 		m_vfei = vfei;
-		m_caption.setText(m_vfei.getTitle());
+		m_captionLabel.setText(m_vfei.getTitle());
 		m_sidebarArea.doNavigate(m_vfei.getEntityId());
 		reloadFolderEntryViewer(false);	// false -> Not part of a refresh.
 	}
@@ -1241,6 +1248,16 @@ public class FolderEntryComposite extends ResizeComposite
 		m_documentArea.setHeight(      docHeight     + "px");
 		m_contentPanel.setHeight(      contentHeight + "px");
 		m_sidebarArea.setSidebarHeight(contentHeight       );
+		
+		// Adjust the width of the caption label so that it doesn't
+		// overlap the right panel.
+		int captionWidth      = m_captionRootPanel.getOffsetWidth();
+		int captionRightWidth = m_captionRightPanel.getOffsetWidth();
+		int captionLabelWidth = ((captionWidth - captionRightWidth) - CAPTION_LABEL_OVERHEAD);
+		if (CAPTION_LABEL_MINIMUM > captionLabelWidth) {
+			captionLabelWidth = CAPTION_LABEL_MINIMUM;
+		}
+		m_captionLabel.setWidth(captionLabelWidth + "px");
 	}
 
 	/**
