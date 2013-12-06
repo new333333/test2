@@ -541,6 +541,7 @@ public class GwtShareHelper
 		{
 			try
 			{
+				// Create this ShareItem in the db.
 				ami.getSharingModule().addShareItem( shareItem );
 			}
 			catch ( Exception ex )
@@ -619,7 +620,7 @@ public class GwtShareHelper
 			rightSet.setAllowSharingPublic( false );
 		}
 		
-		// Create the new ShareItem in the db
+		// Create the new ShareItem.  This does not create a new ShareItem in the db
 		{
 			shareItem = new ShareItem(
 									sharedById,
@@ -813,15 +814,17 @@ public class GwtShareHelper
 		{
 			for ( EntityId nextEntityId : listOfEntityIds )
 			{
+				ShareItem shareItem = null;
 				String fileName = null;
 				
-				// Get the name of the file.
+				// Get the name of the file
 				try
 				{
 					FolderEntry entry;
 					FileAttachment fileAttach;
 					FileItem fileItem;
 
+					// Get the name of the file.
 					entry = ami.getFolderModule().getEntry( null, nextEntityId.getEntityId() );
 					fileAttach = MiscUtil.getPrimaryFileAttachment( entry );
 					fileItem = fileAttach.getFileItem();
@@ -839,18 +842,46 @@ public class GwtShareHelper
 					emailErrors.add( error );
 				}
 				
+				// Did we get a file name?
 				if ( fileName != null )
 				{
-					ShareItem shareItem;
+					List<ShareItem> listOfShareItems;
 
-					// Create a "public link" ShareItem
-					shareItem = createPublicLinkShareItem(
-													ami,
-													currentUser.getId(),
-													nextEntityId,
-													data.getExpirationValue(),
-													data.getMessage() );
-					
+					// Yes
+					// Has the user already created a "public link" share for this file?
+					listOfShareItems = getPublicLinkShareItems( ami, currentUser.getId(), nextEntityId );
+					if ( listOfShareItems != null && listOfShareItems.size() > 0 )
+					{
+						ShareItem tmpShareItem;
+						
+						// Yes
+						// There should only be one.
+						shareItem = listOfShareItems.get( 0 );
+
+						// Build a ShareItem with the new information.  buildPublicLinksShareItem()
+						// will not create a new ShareItem in the db.
+						tmpShareItem = buildPublicLinkShareItem(
+															ami,
+															currentUser.getId(),
+															nextEntityId,
+															data.getExpirationValue(),
+															data.getMessage() );
+						
+						// Modify the existing "public link" share item.
+						ami.getSharingModule().modifyShareItem( tmpShareItem, shareItem.getId() );
+					}
+					else
+					{
+						// No
+						// Create a "public link" ShareItem
+						shareItem = createPublicLinkShareItem(
+														ami,
+														currentUser.getId(),
+														nextEntityId,
+														data.getExpirationValue(),
+														data.getMessage() );
+					}
+
 					if ( shareItem != null && shareItem.getId() != null )
 					{
 						List<SendMailErrorWrapper> entityEmailErrors = null;
@@ -904,7 +935,7 @@ public class GwtShareHelper
 						emailErrors.add( error );
 					}
 				}
-			}
+			}// end for()
 		}
 
 		// Add any errors that happened to the results.
