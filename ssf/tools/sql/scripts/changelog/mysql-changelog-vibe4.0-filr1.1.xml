@@ -469,4 +469,19 @@ update SS_Principals set domainName=LOWER(domainName);
         </createIndex>
     </changeSet>
     
+    <changeSet author="jong" context="schema" failOnError="true" id="41">
+        <preConditions onFail="MARK_RAN">
+            <indexExists indexName="internal_Binder"/>
+        </preConditions>
+        <comment>Drop old internal_Binder index, if exists, from SS_Forums table</comment>
+        <dropIndex indexName="internal_Binder" tableName="SS_Forums"/>        
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="42">
+        <comment>Create index on internalId column in SS_Forums table</comment>
+        <createIndex indexName="internalId_Binder" tableName="SS_Forums" unique="false">
+            <column name="internalId"/>
+        </createIndex>
+    </changeSet>
+    
 </databaseChangeLog>

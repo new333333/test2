@@ -439,4 +439,19 @@
         </createIndex>
     </changeSet>
 
+    <changeSet author="jong" context="schema" failOnError="true" id="36">
+        <preConditions onFail="MARK_RAN">
+            <indexExists indexName="INTERNAL_BINDER"/>
+        </preConditions>
+        <comment>Drop old internal_Binder index, if exists, from SS_Forums table</comment>
+        <dropIndex indexName="INTERNAL_BINDER" tableName="SS_FORUMS"/>        
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="37">
+        <comment>Create index on internalId column in SS_Forums table</comment>
+        <createIndex indexName="INTERNALID_BINDER" tableName="SS_FORUMS" unique="false">
+            <column name="INTERNALID"/>
+        </createIndex>
+    </changeSet>
+    
 </databaseChangeLog>
