@@ -54,6 +54,7 @@ import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.NativeEvent;
+import com.google.gwt.dom.client.Style.Position;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -61,6 +62,7 @@ import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.KeyDownHandler;
+import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.dom.client.KeyUpHandler;
@@ -719,6 +721,7 @@ public class FindCtrl extends Composite
 	
 	
 	
+	private Label m_floatingHintLabel;
 	private TextBox m_txtBox;
 	private SearchResultsWidget m_searchResultsWidget;
 	private Object m_selectedObj = null;
@@ -831,11 +834,52 @@ public class FindCtrl extends Composite
 		}
 
 		// Create a text box for the user to type in.
-		m_txtBox = new TextBox();
-		m_txtBox.setVisibleLength( visibleLength );
-		m_txtBox.addKeyUpHandler( this );
-		m_txtBox.addKeyDownHandler( this );
-		mainPanel.add( m_txtBox );
+		{
+			FlowPanel panel;
+			
+			panel = new FlowPanel();
+			panel.getElement().getStyle().setPosition( Position.RELATIVE );
+
+			m_txtBox = new TextBox();
+			m_txtBox.setVisibleLength( visibleLength );
+			m_txtBox.addKeyUpHandler( this );
+			m_txtBox.addKeyDownHandler( this );
+			m_txtBox.addKeyPressHandler( new KeyPressHandler()
+			{
+				@Override
+				public void onKeyPress( KeyPressEvent event )
+				{
+					// Hide the hint.
+					m_floatingHintLabel.setVisible( false );
+				}
+			} );
+			panel.add( m_txtBox );
+			
+			// Create a hint we will put over the top of the text box
+			m_floatingHintLabel = new Label( "" );
+			m_floatingHintLabel.addStyleName( "findCtrl_FloatingHint" );
+			m_floatingHintLabel.addClickHandler( new ClickHandler()
+			{
+				@Override
+				public void onClick( ClickEvent event )
+				{
+					Scheduler.ScheduledCommand cmd;
+					
+					cmd = new Scheduler.ScheduledCommand()
+					{
+						@Override
+						public void execute()
+						{
+							m_txtBox.setFocus( true );
+						}
+					};
+					Scheduler.get().scheduleDeferred( cmd );
+				}
+			} ); 
+			panel.add( m_floatingHintLabel );
+
+			mainPanel.add( panel );
+		}
 		
 		// Create a widget where the search results will live.
 		{
@@ -1269,6 +1313,14 @@ public class FindCtrl extends Composite
 	/**
 	 * 
 	 */
+	public void setFloatingHintText( String txt )
+	{
+		m_floatingHintLabel.setText( txt );
+	}
+	
+	/**
+	 * 
+	 */
 	public void setInitialSearchString( String searchString )
 	{
 		if ( searchString == null )
@@ -1363,6 +1415,14 @@ public class FindCtrl extends Composite
 	{
 		updateTextBoxWithSelectedItem( selectedItem );
 		GwtTeaming.fireEvent( new SearchFindResultsEvent( m_containerWidget, selectedItem ) );
+	}
+	
+	/**
+	 * 
+	 */
+	public void showFloatingHint()
+	{
+		m_floatingHintLabel.setVisible( true );
 	}
 	
 	/**

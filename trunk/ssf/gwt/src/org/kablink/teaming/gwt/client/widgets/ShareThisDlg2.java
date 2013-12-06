@@ -703,13 +703,11 @@ public class ShareThisDlg2 extends DlgBox
 			rowFormatter = findTable.getRowFormatter();
 			rowFormatter.setVerticalAlign( 0, HasVerticalAlignment.ALIGN_TOP );
 			m_findCtrl.setIsSendingEmail( true );
+			m_findCtrl.setFloatingHintText( messages.shareDlg_shareWithHint() );
 			findTable.setWidget( 0, 0, m_findCtrl );
 			
-			shareLabel = new Label( messages.shareDlg_shareLabel() );
-			shareLabel.addStyleName( "shareThisDlg_shareLabel" );
 			m_addShareTable = new FlexTable();
-			m_addShareTable.setWidget( 0, 0, shareLabel );
-			m_addShareTable.setWidget( 0, 1, findTable );
+			m_addShareTable.setWidget( 0, 0, findTable );
 			m_mainPanel.add( m_addShareTable );
 
 			// On IE calling m_cellFormatter.setWidth( row, col, "*" ); throws an exception.
@@ -719,7 +717,7 @@ public class ShareThisDlg2 extends DlgBox
 				FlexCellFormatter mainCellFormatter;
 
 				mainCellFormatter = m_addShareTable.getFlexCellFormatter();
-				DOM.setElementAttribute( mainCellFormatter.getElement( 0, 1 ), "width", "*" );
+				DOM.setElementAttribute( mainCellFormatter.getElement( 0, 0 ), "width", "*" );
 			}
 			
 			// Add an "add external user" image.
@@ -2025,6 +2023,8 @@ public class ShareThisDlg2 extends DlgBox
 			
 			// Set the filter of the Find Control to only search for users and groups.
 			m_findCtrl.setSearchType( SearchType.PRINCIPAL );
+			
+			m_findCtrl.showFloatingHint();
 		}
 		
 		// Remove all of the rows from the table.
