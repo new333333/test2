@@ -1603,6 +1603,17 @@ body, table td, select
 	top: 5px;
 }
 
+.findCtrl_FloatingHint
+{
+	color: #949494;
+	font-size: 13px;
+	position: absolute;
+	left: 10px;
+	top: 10px;
+	z-index: 1000;
+}
+
+
 .gwtFindCtrl .gwt-TextBox
 {
 	margin-top: 2px;
