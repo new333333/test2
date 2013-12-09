@@ -155,6 +155,7 @@ import org.kablink.teaming.web.util.ExportHelper;
 import org.kablink.teaming.web.util.GwtUIHelper;
 import org.kablink.teaming.web.util.TrashHelper;
 import org.kablink.teaming.web.util.WebHelper;
+import org.kablink.util.StringUtil;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
 import org.kablink.util.search.Criteria;
@@ -729,12 +730,12 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 			Set<Long> done = new HashSet();
 			if (!checked.isEmpty()) {
 				if(logger.isDebugEnabled())
-					logger.debug("Setting indexers to " + toString(nodeNames));
+					logger.debug("Setting indexers to " + StringUtil.toString(nodeNames));
 				IndexSynchronizationManager.setNodeNames(nodeNames);
 				try {
 					if (clearAll) {
 						if(logger.isDebugEnabled())
-							logger.debug("Purging indexes on " + toString(nodeNames));
+							logger.debug("Purging indexes on " + StringUtil.toString(nodeNames));
 						LuceneWriteSession luceneSession = getLuceneSessionFactory()
 								.openWriteSession(nodeNames);
 						try {
@@ -852,12 +853,12 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 			Set<Long> done = new HashSet<Long>();
 			if (!checked.isEmpty()) {
 				if(logger.isDebugEnabled())
-					logger.debug("Setting indexers to " + toString(nodeNames));
+					logger.debug("Setting indexers to " + StringUtil.toString(nodeNames));
 				IndexSynchronizationManager.setNodeNames(nodeNames);
 				try {
 					if (clearAll) {
 						if(logger.isDebugEnabled())
-							logger.debug("Purging indexes on " + toString(nodeNames));
+							logger.debug("Purging indexes on " + StringUtil.toString(nodeNames));
 						LuceneWriteSession luceneSession = getLuceneSessionFactory()
 								.openWriteSession(nodeNames);
 						try {
@@ -978,20 +979,6 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		}
 	}
 	
-    private static String toString(String[] strs) {
-    	StringBuilder sb = new StringBuilder();
-    	sb.append("[");
-    	if(strs != null) {
-	    	for(String str:strs) {
-	    		if(sb.length() > 1)
-	    			sb.append(",");
-	    		sb.append(str);
-	    	}
-    	}
-    	sb.append("]");
-    	return sb.toString();
-    }
-
    	private List<Long> indexBinderTree(Binder binder, Set<Long> exclusions, StatusTicket statusTicket, IndexErrors errors, BinderToIndexQueue queue) {
    		//get all the ids of child binders. order for statusTicket to make some sense
    		if(logger.isDebugEnabled())
@@ -3727,7 +3714,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 					IndexSynchronizationManagerInterceptor.setThreshold(indexFlushThreshold);
 					try {
 						if(logger.isDebugEnabled())
-							logger.debug("Setting indexers to " + BinderModuleImpl.toString(nodeNames));
+							logger.debug("Setting indexers to " + StringUtil.toString(nodeNames));
 						IndexSynchronizationManager.setNodeNames(nodeNames);
 						try {
 							CacheMode cacheModeOrig = SessionUtil.getCacheMode();
