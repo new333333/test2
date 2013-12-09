@@ -1579,6 +1579,18 @@ body, table td, select
 	background: none repeat scroll 0 0 #CCE9EE;
 }
 
+.findSearchResults_NoItemsFound
+{
+	border-bottom: 1px solid #BABDB6;
+	color: #505354;
+	margin-bottom: .5em;
+	margin-left: 1em;
+	margin-right: .5em;
+	margin-top: 1em;
+	padding-bottom: 6px;
+	white-space: nowrap;
+}
+
 .findCtrlScopePanel
 {
 }
