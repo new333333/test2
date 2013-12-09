@@ -67,7 +67,6 @@ import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
-import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
@@ -364,6 +363,20 @@ public class FindCtrl extends Composite
 					m_contentPanel.add( widget );
 				}// end for()
 			}
+			
+			// Do we have any results?
+			if ( m_displayCount == 0 )
+			{
+				FlowPanel topPanel;
+				Label label;
+				
+				// No, add "No items found" message.
+				topPanel = new FlowPanel();
+				topPanel.addStyleName( "findSearchResults_NoItemsFound" );
+				label = new Label( GwtTeaming.getMessages().findCtrl_NoItemsFound() );
+				topPanel.add( label );
+				m_contentPanel.add( topPanel );
+			}
 
 			// Figure out the position of the last result within the total number of results.
 			position = (searchCriteria.getPageNumber() * searchCriteria.getMaxResults()) + m_displayCount;
@@ -464,7 +477,7 @@ public class FindCtrl extends Composite
 			imageResource = GwtTeaming.getImageBundle().previous16();
 			m_prevImg = new Image(imageResource);
 			m_prevImg.addStyleName( "cursorPointer" );
-			DOM.setElementAttribute( m_prevImg.getElement(), "id", "viewPreviousPageOfResults" );
+			m_prevImg.getElement().setAttribute( "id", "viewPreviousPageOfResults" );
 			imgPanel.add( m_prevImg );
 			m_prevImg.setVisible( false );
 			
@@ -482,7 +495,7 @@ public class FindCtrl extends Composite
 			imageResource = GwtTeaming.getImageBundle().next16();
 			m_nextImg = new Image(imageResource);
 			m_nextImg.addStyleName( "cursorPointer" );
-			DOM.setElementAttribute( m_nextImg.getElement(), "id", "viewNextPageOfResults" );
+			m_nextImg.getElement().setAttribute( "id", "viewNextPageOfResults" );
 			imgPanel.add( m_nextImg );
 			m_nextImg.setVisible( false );
 
@@ -934,18 +947,9 @@ public class FindCtrl extends Composite
 
 				if ( gwtSearchResults != null )
 				{
-					// Did we get any results back.
-					if ( gwtSearchResults.getCountTotal() > 0 )
-					{
-						// Yes
-						// Show the search-results widget.
-						showSearchResults();
-					}
-					else
-					{
-						// No, hide the search results
-						hideSearchResults();
-					}
+					// Yes
+					// Show the search-results widget.
+					showSearchResults();
 
 					// Add the search results to the search results widget.
 					m_searchResultsWidget.addSearchResults( m_searchCriteria, gwtSearchResults );
@@ -1127,7 +1131,7 @@ public class FindCtrl extends Composite
 			
 			// Get the id of the image that was clicked on.
 			img = (Image) clickEvent.getSource();
-			id = DOM.getElementAttribute( img.getElement(), "id" );
+			id = img.getElement().getAttribute( "id" );
 			
 			if ( id != null )
 			{
