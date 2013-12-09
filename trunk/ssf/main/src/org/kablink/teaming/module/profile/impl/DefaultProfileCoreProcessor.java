@@ -973,4 +973,14 @@ protected void modifyEntry_indexAdd(Binder binder, Entry entry,
     		return; // Do NOT index container group
     	super.addEntry_indexAdd(binder, entry, inputData, fileUploadItems, ctx);
     }
+    
+    @Override
+	protected List<Long> indexEntries_getEntryIds(Binder binder) {
+   		return getProfileDao().getAllPrincipalIds(binder.getZoneId(), true);	// true -> Include disabled.
+    }
+    
+    @Override
+    protected List<Entry> indexEntries_loadEntries(List<Long> ids, Long zoneId) {
+    	return getCoreDao().loadObjects(ids, Principal.class, zoneId);
+    }
 }

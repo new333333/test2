@@ -694,7 +694,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		if(allowUseOfHelperThreads && SPropsUtil.getBoolean("index.tree.helper.threads.allow", true))
 			return indexTreeWithHelper(binderIds, statusTicket, nodeNames, errors);
 		else
-			return indexTreeWithoutHelper(binderIds, statusTicket, nodeNames, errors);			
+			return indexTreeWithoutHelper(binderIds, statusTicket, nodeNames, errors);				
 	}
 
 	private Set<Long> indexTreeWithoutHelper(Collection binderIds, StatusTicket statusTicket,
@@ -882,7 +882,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 						IndexSynchronizationManager.applyChanges();
 					}
 					
-					int queueSize = SPropsUtil.getInt("index.tree.helper.threads.queue.size", 100);
+					int queueSize = SPropsUtil.getInt("index.tree.helper.threads.queue.size", 100000);
 					BinderToIndexQueue queue = new BinderToIndexQueue(queueSize);
 					
 					int threadsSize = SPropsUtil.getInt("index.tree.helper.threads.size", 4);
@@ -892,24 +892,22 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 					if(logger.isDebugEnabled())
 						logger.debug("Creating a queue with size " + queueSize + " and " + threadsSize + " helper threads");
 					CacheMode consumerCacheMode = CacheMode.parse(SPropsUtil.getString("index.tree.consumer.secondlevel.cache.mode", "normal").toUpperCase());
-					boolean consumerClearAfter = SPropsUtil.getBoolean("index.tree.consumer.clear.after", true);
 					for(int i = 0; i < threadsSize; i++) {
-						helperThread = new Thread(new IndexHelper(statusTicket, nodeNames, consumerCacheMode, consumerClearAfter, errors, queue, RequestContextHolder.getRequestContext()),
+						helperThread = new Thread(new IndexHelper(statusTicket, nodeNames, consumerCacheMode, errors, queue, RequestContextHolder.getRequestContext()),
 								Thread.currentThread().getName() + "-(" + (i+1) + "-" + now + ")");
 						helperThreads[i] = helperThread;
 						helperThread.start();
 					}
 					
-					boolean producerClearAfter = SPropsUtil.getBoolean("index.tree.producer.clear.after", true);
 					if(logger.isDebugEnabled())
 						logger.debug("Producing work items for helper threads to consume");
 					for (Binder binder : checked) {
-						done.addAll(indexTree(binder, done, statusTicket, errors, queue, producerClearAfter));
+						done.addAll(indexBinderTree(binder, done, statusTicket, errors, queue));
 					}
 
 					if(logger.isDebugEnabled())
 						logger.debug("No more work items to produce for helper threads");
-					BinderToIndex poisonPill = new BinderToIndex(null, null);
+					Long poisonPill = Long.valueOf(-1L);
 					for(int i = 0; i < threadsSize; i++) {
 						try {
 							queue.put(poisonPill);
@@ -994,79 +992,29 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
     	return sb.toString();
     }
 
-   	private List<Long> indexTree(Binder binder, Set<Long> exclusions, StatusTicket statusTicket, IndexErrors errors, BinderToIndexQueue queue, boolean clearAfter) {
+   	private List<Long> indexBinderTree(Binder binder, Set<Long> exclusions, StatusTicket statusTicket, IndexErrors errors, BinderToIndexQueue queue) {
    		//get all the ids of child binders. order for statusTicket to make some sense
    		if(logger.isDebugEnabled())
    			logger.debug("Fetching IDs of all binders at or below [" + binder.getPathName() + "]");
-		Map params = new HashMap();
+		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("deleted", false);
    		List<Long> ids = getCoreDao().loadObjects("select x.id from org.kablink.teaming.domain.Binder x where x.binderKey.sortKey like '" +
 				binder.getBinderKey().getSortKey() + "%' and x.deleted=:deleted order by x.binderKey.sortKey", params);
-		int inClauseLimit=SPropsUtil.getInt("db.clause.limit", 1000);
 		if (exclusions != null) 
 			ids.removeAll(exclusions);
 		queue.incrementTotalExpectedCount(ids.size());
-		params.clear();
-		for (int i=0; i<ids.size(); i+=inClauseLimit) {
-			List<Long> subList = ids.subList(i, Math.min(ids.size(), i+inClauseLimit));
-			params.put("pList", subList);
-			if(logger.isDebugEnabled())
-				logger.debug("Loading " + subList.size() + " binder objects");
-			List<Binder> binders = getCoreDao().loadObjects("from org.kablink.teaming.domain.Binder x where x.id in (:pList) order by x.binderKey.sortKey", params);
-			if(logger.isDebugEnabled())
-				logger.debug("Bulk loading collections for " + binders.size() + " binders");
-			getCoreDao().bulkLoadCollections(binders);
-			List<EntityIdentifier> folderIds = new ArrayList();
-			List<EntityIdentifier> workspaceIds = new ArrayList();
-			List<EntityIdentifier> otherIds = new ArrayList();
-			for (Binder e: binders) {
-				if(EntityIdentifier.EntityType.folder.equals(e.getEntityType()))
-					folderIds.add(e.getEntityIdentifier());
-				else if(EntityIdentifier.EntityType.workspace.equals(e.getEntityType()))
-					workspaceIds.add(e.getEntityIdentifier());
-				else 
-					otherIds.add(e.getEntityIdentifier());
+		for(Long id:ids) {
+			try {
+				if(logger.isTraceEnabled())
+					logger.trace("Calling put() on queue " + queue.toString() + " with value " + id);
+				queue.put(id);
+			} catch (InterruptedException e) {
+				Thread.currentThread().interrupt(); // Restore the interrupt
 			}
-			if(logger.isDebugEnabled())
-				logger.debug("Loading tags for " + folderIds.size() + " folders");
-			Map<EntityIdentifier,List<Tag>> tagMap = getCoreDao().loadAllTagsByEntity(folderIds);
-			if(logger.isDebugEnabled())
-				logger.debug("Loading tags for " + workspaceIds.size() + " workspaces");
-			tagMap.putAll(getCoreDao().loadAllTagsByEntity(workspaceIds));
-			if(logger.isDebugEnabled())
-				logger.debug("Loading tags for " + otherIds.size() + " others");
-			tagMap.putAll(getCoreDao().loadAllTagsByEntity(otherIds));
-
-			List<Tag> tags;
-			for (Binder b:binders) {
-				tags = tagMap.get(b.getEntityIdentifier());
-				b.getEntryDef(); // Pre-load definitions
-				b.getCreation().getPrincipal().getTitle(); // Pre-load creator principal
-				b.getModification().getPrincipal().getTitle(); // Pre-load modification principal
-				if(logger.isDebugEnabled())
-					logger.debug("Evicting tags and binder");
-	   	    	getCoreDao().evict(tags);
-	   	    	getCoreDao().evict(b);
-				try {
-					if(logger.isDebugEnabled())
-						logger.debug("Putting binder [" + b.getPathName() + "] in the queue (size=" + queue.size() + ",putCount=" + queue.getPutCount() + ",takenCount=" + queue.getTakenCount() + ",totalExpectedCount=" + queue.getTotalExpectedCount() + ")");
-					queue.put(new BinderToIndex(b, tags));
-				} catch (InterruptedException e) {}   	    	
-			}
-			if(logger.isDebugEnabled())
-				logger.debug("Applying changes to index");
-	  		IndexSynchronizationManager.applyChanges(SPropsUtil.getInt("lucene.flush.threshold", 100));
-
-	  		if(clearAfter) {
-   	    		if(logger.isDebugEnabled())
-   	    			logger.debug("Clearing Hibernate session");
-   	    		getCoreDao().clear();
-   	    	}
-		}
+		}				
 		if(logger.isDebugEnabled())
-			logger.debug("Processed " + ids.size() + " binders");
+			logger.debug("Identified " + ids.size() + " binders to be indexed");
    		return ids;
-
    	}
 
 	@Override
@@ -3749,16 +3697,14 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		private StatusTicket statusTicket;
 		String[] nodeNames;
 		CacheMode cacheMode;
-		boolean clearAfter;
 		private IndexErrors errors;
 		private BinderToIndexQueue queue;
 		private RequestContext parentRequestContext;
 		
-		IndexHelper(StatusTicket statusTicket, String[] nodeNames, CacheMode cacheMode, boolean clearAfter, IndexErrors errors, BinderToIndexQueue queue, RequestContext parentRequestContext) {
+		IndexHelper(StatusTicket statusTicket, String[] nodeNames, CacheMode cacheMode, IndexErrors errors, BinderToIndexQueue queue, RequestContext parentRequestContext) {
 			this.statusTicket = statusTicket;
 			this.nodeNames = nodeNames;
 			this.cacheMode = cacheMode;
-			this.clearAfter = clearAfter;
 			this.errors = errors;
 			this.queue = queue;
 			this.parentRequestContext = parentRequestContext;
@@ -3789,56 +3735,83 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 								logger.debug("Changing cache mode from " + cacheModeOrig + " to " + cacheMode);
 							SessionUtil.setCacheMode(cacheMode);
 	
-							BinderToIndex binderToIndex;
-							Binder binder;
-							while(true) {
-								try {
+							int batchSize = SPropsUtil.getInt("index.tree.helper.threads.batch.size", 1000);
+							int inClauseLimit = SPropsUtil.getInt("db.clause.limit", 1000);
+							batchSize = Math.min(batchSize, inClauseLimit);
+							boolean poisonPillEncountered = false;
+							List<Long> subList;
+							Long binderId;
+							Map<String, Object> params = new HashMap<String, Object>();
+							while(!poisonPillEncountered) {
+								subList = new ArrayList<Long>();
+								for(int i = 0; i < batchSize; i++) {
+									try {
+										if(logger.isTraceEnabled())
+											logger.trace("Calling take() on queue " + queue.toString());
+										binderId = queue.take();
+										if(binderId.longValue() != -1L) {
+											subList.add(binderId);
+										}
+										else {
+											if(logger.isDebugEnabled())
+												logger.debug("Encountered poison pill");
+											poisonPillEncountered = true;
+											break;
+										}
+									} catch (InterruptedException e1) {
+										Thread.currentThread().interrupt(); // Restore the interrupt
+									}
+								}
+								if(subList.size() == 0)
+									continue;								
+								params.put("pList", subList);
+								if(logger.isDebugEnabled())
+									logger.debug("Loading " + subList.size() + " binder objects");
+								else if(logger.isTraceEnabled())
+									logger.trace("Loading " + subList.size() + " binder objects: " + subList);
+								List<Binder> binders = getCoreDao().loadObjects("from org.kablink.teaming.domain.Binder x where x.id in (:pList) order by x.binderKey.sortKey", params);
+								if(logger.isDebugEnabled())
+									logger.debug("Bulk loading collections for " + binders.size() + " binders");
+								getCoreDao().bulkLoadCollections(binders);
+								List<EntityIdentifier> folderIds = new ArrayList();
+								List<EntityIdentifier> workspaceIds = new ArrayList();
+								List<EntityIdentifier> otherIds = new ArrayList();
+								for (Binder e: binders) {
+									if(EntityIdentifier.EntityType.folder.equals(e.getEntityType()))
+										folderIds.add(e.getEntityIdentifier());
+									else if(EntityIdentifier.EntityType.workspace.equals(e.getEntityType()))
+										workspaceIds.add(e.getEntityIdentifier());
+									else 
+										otherIds.add(e.getEntityIdentifier());
+								}
+								if(logger.isDebugEnabled())
+									logger.debug("Loading tags for " + folderIds.size() + " folders");
+								Map<EntityIdentifier,List<Tag>> tagMap = getCoreDao().loadAllTagsByEntity(folderIds);
+								if(logger.isDebugEnabled())
+									logger.debug("Loading tags for " + workspaceIds.size() + " workspaces");
+								tagMap.putAll(getCoreDao().loadAllTagsByEntity(workspaceIds));
+								if(logger.isDebugEnabled())
+									logger.debug("Loading tags for " + otherIds.size() + " others");
+								tagMap.putAll(getCoreDao().loadAllTagsByEntity(otherIds));
+
+								for (Binder b:binders) {
+						   	    	statusTicket.setStatus(NLT.get("index.indexingBinder", new Object[] {String.valueOf(queue.incrementProcessedCount()), String.valueOf(queue.getTotalExpectedCount())}));				   	   		
+						   	    	BinderProcessor processor = (BinderProcessor)getProcessorManager().getProcessor(b, b.getProcessorKey(BinderProcessor.PROCESSOR_KEY));									
+						   	    	Collection<Tag> tags = tagMap.get(b.getEntityIdentifier());						   	   		
 									if(logger.isDebugEnabled())
-										logger.debug("Calling take() on the queue (size=" + queue.size() + ",putCount=" + queue.getPutCount() + ",takenCount=" + queue.getTakenCount() + ",totalExpectedCount=" + queue.getTotalExpectedCount() + ")");
-									binderToIndex = queue.take();
-									binder = binderToIndex.binder;
-									if(binder == null) {
-										// poison pill
-										if(logger.isDebugEnabled())
-											logger.debug("Encountered poison pill");
-										break; // done
-									}	
-									/*
-									if(logger.isTraceEnabled())
-										logger.trace("Attaching binder object (id=" + binder.getId() + ") to current session");
-									getCoreDao().update(binder);
-									*/
-						   	    	statusTicket.setStatus(NLT.get("index.indexingBinder", new Object[] {String.valueOf(queue.getTakenCount()), String.valueOf(queue.getTotalExpectedCount())}));				   	   		
+										logger.debug("Indexing binder [" + b.getPathName() + "] (id=" + b.getId() + ")");
+						   	    	IndexErrors binderErrors = processor.indexBinder(b, true, false, tags, false, false);
+						   	    	errors.add(binderErrors);						   	    	
 									if(logger.isDebugEnabled())
-										logger.debug("Indexing binder [" + binder.getPathName() + "]");
-						   	    	BinderProcessor processor = (BinderProcessor)getProcessorManager().getProcessor(binder, binder.getProcessorKey(BinderProcessor.PROCESSOR_KEY));								
-						   	    	IndexErrors binderErrors = processor.indexBinder(binder, true, false, binderToIndex.tags);
-						   	    	errors.add(binderErrors);					   	    	
-						   	    	// No need to evict the binder just indexed, since it is not associated with the Hibernate session owned by this thread.
-						   	    	
+										logger.debug("Evicting tags and binder");
+						   	    	getCoreDao().evict(tags);
+						   	    	getCoreDao().evict(b);
 									if(logger.isDebugEnabled())
 										logger.debug("Applying changes to index if applicable");
 							  		IndexSynchronizationManager.applyChanges(indexFlushThreshold);
-	
-							  		if(clearAfter) {
-							  			// Clear everything in the session
-						   	    		if(logger.isDebugEnabled())
-						   	    			logger.debug("Clearing Hibernate session");
-						   	    		getCoreDao().clear();
-						   	    	}
-							  		/*
-							  		else {
-							  			// Only evict the binder
-							  			if(logger.isDebugEnabled())
-							  				logger.debug("Evincting binder object (id=" + binder.getId() + ") from current session");
-							  			getCoreDao().evict(binder);
-							  		}
-							  		*/
-								} catch (InterruptedException e) {
-									Thread.currentThread().interrupt(); // Restore the interrupt
-									continue;
 								}
-							}
+							} // end while
+							
 							if(logger.isDebugEnabled())
 								logger.debug("Applying remaining changes to index if any");
 							IndexSynchronizationManager.applyChanges();
@@ -3868,21 +3841,10 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 					logger.trace("Tearing down Hibernate session");
 				SessionUtil.sessionStop();
 			}
-
-		}
-		
-	}
-	
-	static class BinderToIndex {
-		private Binder binder;
-		private List<Tag> tags;
-		BinderToIndex(Binder binder, List<Tag> tags) {
-			this.binder = binder;
-			this.tags = tags;
-		}
+		}	
 	}
 
-	static class BinderToIndexQueue extends LinkedBlockingQueue<BinderToIndex> {
+	static class BinderToIndexQueue extends LinkedBlockingQueue<Long> {
 		private static final long serialVersionUID = 1L;
 		
 		// Number of items put into the queue so far since creation of the queue
@@ -3893,24 +3855,28 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		// This includes both those items that have already been put into the queue and those
 		// that are yet to be put into the queue (i.e., future items).
 		private AtomicInteger totalExpectedCount = new AtomicInteger();
+		// Number of items actually processed by helper threads.
+		// Since helper threads take items off the queue in a batch, the actual
+		// number of items processed trail the number of items taken off the queue.
+		private AtomicInteger processedCount = new AtomicInteger();
 		
 	    public BinderToIndexQueue(int capacity) {
 	    	super(capacity);
 	    }
 	    
 		@Override
-	    public void put(BinderToIndex binder) throws InterruptedException {
-	    	super.put(binder);
-	    	if(binder.binder != null)
+	    public void put(Long binderId) throws InterruptedException {
+	    	super.put(binderId);
+	    	if(binderId.longValue() != -1L)
 	    		putCount.incrementAndGet();
 	    }
 		
 		@Override
-		public BinderToIndex take() throws InterruptedException {
-			 BinderToIndex binder = super.take();
-			 if(binder.binder != null)
+		public Long take() throws InterruptedException {
+			 Long binderId = super.take();
+			 if(binderId.longValue() != -1L)
 				 takenCount.incrementAndGet();
-			 return binder;
+			 return binderId;
 		}
 		
 		int getPutCount() {
@@ -3927,6 +3893,19 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		
 		void incrementTotalExpectedCount(int delta) {
 			totalExpectedCount.addAndGet(delta);
+		}
+		
+		int getProcessedCount() {
+			return processedCount.intValue();
+		}
+		
+		int incrementProcessedCount() {
+			return processedCount.incrementAndGet();
+		}
+		
+		@Override
+		public String toString() {
+			return "(size=" + this.size() + ",putCount=" + this.getPutCount() + ",takenCount=" + this.getTakenCount() + ",processedCount=" + this.getProcessedCount() + ",totalExpectedCount=" + this.getTotalExpectedCount() + ")";
 		}
 	}
 }

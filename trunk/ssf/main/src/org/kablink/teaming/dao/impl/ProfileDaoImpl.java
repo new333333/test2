@@ -73,6 +73,7 @@ import org.kablink.teaming.domain.ApplicationPrincipal;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.EmailAddress;
 import org.kablink.teaming.domain.EntityIdentifier;
+import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.GroupPrincipal;
 import org.kablink.teaming.domain.IdentityInfo;
@@ -1398,11 +1399,38 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
        return new SFQuery(query);
     }
     
+    @Override
+    public List<Long> getAllPrincipalIds(final Long zoneId, final boolean includeDisabled) {
+		long begin = System.nanoTime();
+		try {
+	    	List<Long> result = (List<Long>)getHibernateTemplate().execute(
+	                new HibernateCallback() {
+	                    @Override
+						public Object doInHibernate(Session session) throws HibernateException {
+	                    	Criteria crit = session.createCriteria(Principal.class)
+	                    			.setProjection(Projections.property("id"))
+	                    			.add(Restrictions.eq(ObjectKeys.FIELD_ZONE, zoneId))
+	                    			.add(Restrictions.eq(ObjectKeys.FIELD_ENTITY_DELETED, Boolean.FALSE))
+	                    			.setCacheable(false);
+	                    	if(!includeDisabled)
+	                    		crit.add(Restrictions.eq(ObjectKeys.FIELD_PRINCIPAL_DISABLED, Boolean.FALSE));
+	                    	return crit.list();
+	                    }
+	                }
+	            );  
+	    	return result;
+    	}
+    	finally {
+    		end(begin, "getAllPrincipalIds()");
+    	}	        
+    }
+    
  	@Override
 	public void bulkLoadCollections(final Collection<Principal> entries) {
 		long begin = System.nanoTime();
 		try {
-	 		if (entries.size() > inClauseLimit) throw new IllegalArgumentException("Collection to large");
+	 		if (entries.size() > inClauseLimit) 
+	 			throw new IllegalArgumentException("Collection to large");
 	  	    getHibernateTemplate().execute(
 	            new HibernateCallback() {
 	                @Override

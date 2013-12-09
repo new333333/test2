@@ -827,12 +827,16 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
 		                  			Map.Entry me = (Map.Entry)iter.next();
 		                  			Object val = me.getValue();
 		                  			if (val instanceof Collection) {
-		                  				if (((Collection)val).size() > inClauseLimit) throw new IllegalArgumentException("Collection to large");
-		                  				if (((Collection)val).size() == 0) throw new IllegalArgumentException("Collection to small");
+		                  				if (((Collection)val).size() > inClauseLimit) 
+		                  					throw new IllegalArgumentException("Collection to large");
+		                  				if (((Collection)val).size() == 0) 
+		                  					throw new IllegalArgumentException("Collection to small");
 		                  				q.setParameterList((String)me.getKey(), (Collection)val);
 		                  			} else if (val instanceof Object[]) {
-		                  				if (((Object[])val).length > inClauseLimit) throw new IllegalArgumentException("Collection to large");
-		                  				if (((Object[])val).length == 0) throw new IllegalArgumentException("Collection to small");
+		                  				if (((Object[])val).length > inClauseLimit) 
+		                  					throw new IllegalArgumentException("Collection to large");
+		                  				if (((Object[])val).length == 0) 
+		                  					throw new IllegalArgumentException("Collection to small");
 		                  				q.setParameterList((String)me.getKey(), (Object[])val);
 		                  			} else {
 		                  				q.setParameter((String)me.getKey(), val);
@@ -1997,7 +2001,8 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
 		long begin = System.nanoTime();
 		try {
 			if ((entries == null) || entries.isEmpty())  return;
-	 		if (entries.size() > inClauseLimit) throw new IllegalArgumentException("Collection to large");
+	 		if (entries.size() > inClauseLimit) 
+	 			throw new IllegalArgumentException("Collection to large");
 	       	final TreeSet sorted = new TreeSet(new LongIdComparator());
 	       	sorted.addAll(entries);
 			getHibernateTemplate().execute(
@@ -2182,7 +2187,8 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
 		long begin = System.nanoTime();
 		try {
 			if (entityIds.isEmpty()) return new HashMap();
-			if (entityIds.size() > inClauseLimit) throw new IllegalArgumentException("Collection to large");
+			if (entityIds.size() > inClauseLimit) 
+				throw new IllegalArgumentException("Collection to large");
 			List<Tag> tags = (List)getHibernateTemplate().execute(
 		            new HibernateCallback() {
 		                @Override
@@ -2566,12 +2572,16 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
 		                  			Map.Entry me = (Map.Entry)iter.next();
 		                  			Object val = me.getValue();
 		                  			if (val instanceof Collection) {
-		                  				if (((Collection)val).size() > inClauseLimit) throw new IllegalArgumentException("Collection to large");
-		                  				if (((Collection)val).size() == 0) throw new IllegalArgumentException("Collection to small");
+		                  				if (((Collection)val).size() > inClauseLimit) 
+		                  					throw new IllegalArgumentException("Collection to large");
+		                  				if (((Collection)val).size() == 0) 
+		                  					throw new IllegalArgumentException("Collection to small");
 		                  				query.setParameterList((String)me.getKey(), (Collection)val);
 		                  			} else if (val instanceof Object[]) {
-		                  				if (((Object[])val).length > inClauseLimit) throw new IllegalArgumentException("Collection to large");
-		                  				if (((Object[])val).length == 0) throw new IllegalArgumentException("Collection to small");
+		                  				if (((Object[])val).length > inClauseLimit) 
+		                  					throw new IllegalArgumentException("Collection to large");
+		                  				if (((Object[])val).length == 0) 
+		                  					throw new IllegalArgumentException("Collection to small");
 		                  				query.setParameterList((String)me.getKey(), (Object[])val);
 		                  			} else {
 		                  				query.setParameter((String)me.getKey(), val);
@@ -3297,7 +3307,8 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
     	}	        
 	}
 
-	private List<Long> getFolderEntryIds(final Binder binder) {
+	@Override
+	public List<Long> getFolderEntryIds(final Binder binder) {
 		// Return a list of IDs of folder entries whose parents are the specified folder
 		long begin = System.nanoTime();
 		try {
