@@ -164,6 +164,23 @@ public interface AclResourceSession extends ResourceSession {
 	public boolean isVisible() throws FIException, UncheckedIOException;
 	
 	/**
+	 * Return whether or not the individual resource in the specified array is visible to the user owning this session.
+	 * A resource may be file or folder, and defined to be visible if the user should be able to see the
+	 * existence of the resource, either by explicit rights granted on that resource or, in the case of folder, 
+	 * by inferred access given by some other resource below that folder.
+	 * <p>
+	 * This method is functionally equivalent to calling <code>setPath</code> and <code>isVisible</code> methods
+	 * in a loop specifying one resource at a time. This method should ignore the current path associated with
+	 * the session.
+	 * 
+	 * @param resourcePaths
+	 * @return
+	 * @throws FIException
+	 * @throws UncheckedIOException
+	 */
+	public boolean[] areVisible(String[] resourcePaths) throws FIException, UncheckedIOException;
+	
+	/**
 	 * Returns <code>ResourceItem</code> representing the resource at the current path, or <code>null</code>
 	 * if no such resource is available.
 	 * 

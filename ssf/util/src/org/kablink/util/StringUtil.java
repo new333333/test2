@@ -912,4 +912,19 @@ public class StringUtil {
 		}
 		return sb.toString();
 	}
+	
+    public static String toString(String[] strs) {
+    	StringBuilder sb = new StringBuilder();
+    	sb.append("[");
+    	if(strs != null) {
+	    	for(String str:strs) {
+	    		if(sb.length() > 1)
+	    			sb.append(",");
+	    		sb.append(str);
+	    	}
+    	}
+    	sb.append("]");
+    	return sb.toString();
+    }
+
 }
