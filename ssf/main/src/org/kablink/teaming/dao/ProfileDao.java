@@ -387,4 +387,7 @@ public interface ProfileDao {
  	 */
 	public Set<Long> getSharerIdsToSharedEntities(
 			Collection<EntityIdentifier> sharedEntityIdentifiers);
+	
+    public List<Long> getAllPrincipalIds(Long zoneId, boolean includeDisabled);
+
 }

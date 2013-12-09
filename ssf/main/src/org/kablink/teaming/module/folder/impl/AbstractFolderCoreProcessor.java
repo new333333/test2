@@ -1244,4 +1244,13 @@ protected void deleteBinder_postDelete(Binder binder, Map ctx) {
         }
 	}
     
+    @Override
+	protected List<Long> indexEntries_getEntryIds(Binder binder) {
+		return getCoreDao().getFolderEntryIds(binder);
+   	}
+
+    @Override
+    protected List<Entry> indexEntries_loadEntries(List<Long> ids, Long zoneId) {
+    	return getCoreDao().loadObjects(ids, FolderEntry.class, zoneId);
+    }
 }

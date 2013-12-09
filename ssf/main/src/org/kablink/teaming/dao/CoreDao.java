@@ -276,4 +276,7 @@ public interface CoreDao {
 	public void purgeShares(Binder binder, boolean includeEntryShares);
 	
 	public Long peekFullSyncTask();
+	
+	public List<Long> getFolderEntryIds(final Binder binder);
+
 }

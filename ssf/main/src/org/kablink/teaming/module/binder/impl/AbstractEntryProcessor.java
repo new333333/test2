@@ -60,6 +60,8 @@ import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.Entry;
 import org.kablink.teaming.domain.Event;
 import org.kablink.teaming.domain.FileAttachment;
+import org.kablink.teaming.domain.Folder;
+import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.HistoryStamp;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.TitleException;
@@ -1245,18 +1247,34 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
      */
     @Override
 	public IndexErrors indexBinder(Binder binder, boolean includeEntries, boolean deleteIndex, Collection tags) {
-    	return indexBinder(binder, includeEntries, deleteIndex, tags, false);
+    	return indexBinder(binder, includeEntries, deleteIndex, tags, false, true);
     }
     
     @Override
-	public IndexErrors indexBinder(Binder binder, boolean includeEntries, boolean deleteIndex, Collection tags, boolean skipFileContentIndexing) {
+	public IndexErrors indexBinder(Binder binder, boolean includeEntries, boolean deleteIndex, Collection tags, boolean skipFileContentIndexing, boolean useScrollForEntries) {
     	IndexErrors errors = super.indexBinder(binder, includeEntries, deleteIndex, tags);
     	if (includeEntries == false) return errors;
-    	IndexErrors entryErrors = indexEntries(binder, deleteIndex, false, skipFileContentIndexing);
+    	IndexErrors entryErrors;
+    	if(useScrollForEntries) {
+    		// This method uses Hibernate's scroll (wrapper for cursor) to handle potentially
+    		// large number of entries without bringing them all at once into memory.
+    		// This was the only mode of operation in Filr 1.0 and still used for some
+    		// other use cases in Filr 1.1.
+    		entryErrors = indexEntries(binder, deleteIndex, false, skipFileContentIndexing);
+    	}
+    	else {
+    		// This method doesn't use Hibernate's scroll and instead read all IDs of the
+    		// entries into memory at once. And then it loads one batch worth of entries
+    		// into memory and process them before continuing to the next batch, etc.
+    		// The reason why we add this in Filr 1.1 is because the scroll-based approach
+    		// doesn't work when we use helper threads for admin-triggered re-indexing
+    		// task. For some unknown reason, we get "Operation not allowed after ResultSet closed"
+    		// error if we use scroll in conjunction with helper threads (see bug #846126).
+    		entryErrors = indexEntriesNoScroll(binder, deleteIndex, false, skipFileContentIndexing);
+    	}
     	errors.add(entryErrors);
     	return errors;
     }
-    
     
     // This method indexes a binder and it's entries by deleting and reindexing each entry one at a time.
     public IndexErrors indexBinderIncremental(Binder binder, boolean includeEntries, boolean deleteIndex, Collection tags, boolean skipFileContentIndexing) {
@@ -1293,12 +1311,10 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
   		int threshhold = SPropsUtil.getInt("lucene.flush.threshold", 100);
        	try {       
        		List batch = new ArrayList();
-  			List docs = new ArrayList();
   			int total=0;
       		while (query.hasNext()) {
        			int count=0;
        			batch.clear();
-       			docs.clear();
        			// get 1000 entries, then build collections by hand 
        			//for performance
        			while (query.hasNext() && (count < SPropsUtil.getInt("index.entries.batch.size", 1000))) {
@@ -1308,46 +1324,10 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
        				batch.add(obj);
        				++count;
        			}
+       			
        			total += count;
-       			//have 1000 entries, manually load their collections
-       			SimpleProfiler.start("indexEntries_load");
-       			indexEntries_load(binder, batch);
-       			SimpleProfiler.stop("indexEntries_load");
-       			logger.info("Indexing at " + total + "(" + binder.getPathName() + ")");
-       			SimpleProfiler.start("indexEntries_loadTags");
-       			Map tags = indexEntries_loadTags(binder, batch);
-       			SimpleProfiler.stop("indexEntries_loadTags");
-       			for (int i=0; i<batch.size(); ++i) {
-       				Entry entry = (Entry)batch.get(i);
-       				if (deleteEntries) {
-       					IndexSynchronizationManager.deleteDocument(entry.getIndexDocumentUid());
-       				}
-   					List entryTags = (List)tags.get(entry.getEntityIdentifier());
-       				if (indexEntries_validate(binder, entry)) {
-       					// 	Create an index document from the entry object. 
-       					// Entry already deleted from index, so pretend we are new
-       	       			SimpleProfiler.start("indexEntries_indexEntryWithAttachments");
-       				   	try {
-       				   		IndexErrors entryErrors = indexEntryWithAttachments(binder, entry, entry.getFileAttachments(), null, true, entryTags, skipFileContentIndexing);
-       				   		errors.add(entryErrors);
-       				   	} catch(Exception e) {
-       				   		logger.error("Error indexing entry: (" + entry.getId().toString() + ") " + entry.getTitle(), e);
-       				   		errors.addError(entry);
-       				   	}
-       	       			SimpleProfiler.stop("indexEntries_indexEntryWithAttachments");
-       				   	indexEntries_postIndex(binder, entry);
-       				}
-           			getCoreDao().evict(entryTags);
-       				getCoreDao().evict(entry);
-          	  		//apply after we have gathered a few
-   	       			SimpleProfiler.start("indexEntries_applyChanges");
-           	   		IndexSynchronizationManager.applyChanges(threshhold);
-   	       			SimpleProfiler.stop("indexEntries_applyChanges");
-       			}
-       	 	            	            
-       			// Register the index document for indexing.
-       			logger.info("Indexing done at " + total + "("+ binder.getPathName() + ")");
-       		
+       			
+       			indexEntryBatch(binder, batch, deleteEntries, skipFileContentIndexing, errors, total, threshhold);
         	}
         	
         } finally {
@@ -1357,6 +1337,94 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         }
         return errors;
     }
+    
+    protected abstract List<Long> indexEntries_getEntryIds(Binder binder);
+    
+    protected abstract List<Entry> indexEntries_loadEntries(List<Long> ids, Long zoneId);
+    
+    //If called from write transaction, make sure session is flushed cause this bypasses
+    //hibernate loading of collections and goes to database directly.
+    protected IndexErrors indexEntriesNoScroll(Binder binder, boolean deleteIndex, boolean deleteEntries, boolean skipFileContentIndexing) {
+    	IndexErrors errors = new IndexErrors();
+    	SimpleProfiler.start("indexEntries");
+    	//may already have been handled with an optimized query
+    	if (deleteIndex && !deleteEntries) {
+        	SimpleProfiler.start("indexEntries_preIndex");
+    		indexEntries_preIndex(binder);
+        	SimpleProfiler.stop("indexEntries_preIndex");
+    	}
+  		//flush any changes so any exiting changes don't get lost on the evict
+ //   	SimpleProfiler.startProfiler("indexEntries_flush");
+ //   	getCoreDao().flush();
+ //   	SimpleProfiler.stopProfiler("indexEntries_flush");
+  		
+  		int threshhold = SPropsUtil.getInt("lucene.flush.threshold", 100);
+  		int batchSizeLimit = SPropsUtil.getInt("index.entries.batch.size", 1000);
+  		int inClauseLimit=SPropsUtil.getInt("db.clause.limit", 1000);
+  		batchSizeLimit = Math.min(batchSizeLimit, inClauseLimit);
+    
+		List<Entry> batch;
+		int total=0;		
+		
+		List<Long> entryIds = indexEntries_getEntryIds(binder);
+		
+		for(int j = 0; j < entryIds.size(); j += batchSizeLimit) {
+			List<Long> subList = entryIds.subList(j, Math.min(entryIds.size(), j + batchSizeLimit));
+			if(logger.isDebugEnabled())
+				logger.debug("Loading " + subList.size() + " folder entry objects");
+			
+			batch = indexEntries_loadEntries(subList, binder.getZoneId());	
+			
+   			total += batch.size();
+   			
+   			indexEntryBatch(binder, batch, deleteEntries, skipFileContentIndexing, errors, total, threshhold);	
+    	}
+
+        SimpleProfiler.stop("indexEntries");
+
+        return errors;
+    }
+    
+    protected void indexEntryBatch(Binder binder, List<Entry> batch, boolean deleteEntries, boolean skipFileContentIndexing, IndexErrors errors, int total, int threshhold) {
+			//have 1000 entries, manually load their collections
+			SimpleProfiler.start("indexEntries_load");
+			indexEntries_load(binder, batch);
+			SimpleProfiler.stop("indexEntries_load");
+			logger.info("Indexing at " + total + "(" + binder.getPathName() + ")");
+			SimpleProfiler.start("indexEntries_loadTags");
+			Map tags = indexEntries_loadTags(binder, batch);
+			SimpleProfiler.stop("indexEntries_loadTags");
+			for (int i=0; i<batch.size(); ++i) {
+				Entry entry = (Entry)batch.get(i);
+				if (deleteEntries) {
+					IndexSynchronizationManager.deleteDocument(entry.getIndexDocumentUid());
+				}
+				List entryTags = (List)tags.get(entry.getEntityIdentifier());
+				if (indexEntries_validate(binder, entry)) {
+					// 	Create an index document from the entry object. 
+					// Entry already deleted from index, so pretend we are new
+	       			SimpleProfiler.start("indexEntries_indexEntryWithAttachments");
+				   	try {
+				   		IndexErrors entryErrors = indexEntryWithAttachments(binder, entry, entry.getFileAttachments(), null, true, entryTags, skipFileContentIndexing);
+				   		errors.add(entryErrors);
+				   	} catch(Exception e) {
+				   		logger.error("Error indexing entry: (" + entry.getId().toString() + ") " + entry.getTitle(), e);
+				   		errors.addError(entry);
+				   	}
+	       			SimpleProfiler.stop("indexEntries_indexEntryWithAttachments");
+				   	indexEntries_postIndex(binder, entry);
+				}
+   			getCoreDao().evict(entryTags);
+				getCoreDao().evict(entry);
+  	  		//apply after we have gathered a few
+      			SimpleProfiler.start("indexEntries_applyChanges");
+   	   		IndexSynchronizationManager.applyChanges(threshhold);
+      			SimpleProfiler.stop("indexEntries_applyChanges");
+			}
+	 	            	            
+			logger.info("Indexing done at " + total + "("+ binder.getPathName() + ")");
+    }
+    
     protected void indexEntries_preIndex(Binder binder) {
     	indexDeleteEntries(binder); 
     }

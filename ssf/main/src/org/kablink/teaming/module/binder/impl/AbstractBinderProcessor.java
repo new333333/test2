@@ -2004,8 +2004,9 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     }
     
     @Override
-	public IndexErrors indexBinder(Binder binder, boolean includeEntries, boolean deleteIndex, Collection tags, boolean skipFileContentIndexing) {
+	public IndexErrors indexBinder(Binder binder, boolean includeEntries, boolean deleteIndex, Collection tags, boolean skipFileContentIndexing, boolean useScrollForEntries) {
     	// Ignore skipFileContentIndexing arg
+    	// Ignore useScrollForEntries
     	return indexBinder(binder, includeEntries, deleteIndex, tags);
     }
     //***********************************************************************************************************
@@ -2067,7 +2068,6 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 			tagMap.putAll(getCoreDao().loadAllTagsByEntity(otherIds));
 
 			for (Binder b:binders) {
-				if (b.isDeleted()) continue;
 	   	    	BinderProcessor processor = (BinderProcessor)getProcessorManager().getProcessor(b, b.getProcessorKey(BinderProcessor.PROCESSOR_KEY));
 				
 	   	    	Collection tags = (Collection)tagMap.get(b.getEntityIdentifier());
