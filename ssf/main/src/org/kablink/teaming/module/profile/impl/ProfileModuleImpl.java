@@ -138,7 +138,6 @@ import org.kablink.teaming.util.encrypt.EncryptUtil;
 import org.kablink.teaming.web.util.DateHelper;
 import org.kablink.teaming.web.util.DefinitionHelper;
 import org.kablink.teaming.web.util.EventHelper;
-import org.kablink.teaming.web.util.ListUtil;
 import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.PermaLinkUtil;
 import org.kablink.util.StringUtil;
@@ -619,9 +618,13 @@ public UserProperties setUserProperties(Long userId, Map<String, Object> values)
    }
 	//RO transaction
    @Override
-public UserProperties getUserProperties(Long userId) {
-		User user = getUser(userId, false);
-		return getProperties(user);
+   public UserProperties getUserProperties(Long userId, boolean checkActive) {
+	   User user = getUser(userId, false, checkActive);
+	   return getProperties(user);
+   }
+   @Override
+   public UserProperties getUserProperties(Long userId) {
+	   return getUserProperties(userId, true);
    }
    
    //RW transaction

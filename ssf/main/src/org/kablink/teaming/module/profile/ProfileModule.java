@@ -362,6 +362,7 @@ public interface ProfileModule {
 	 * @return
 	 */
     public UserProperties getUserProperties(Long userId);
+    public UserProperties getUserProperties(Long userId, boolean checkActive);
     /**
      * Return user properties associated with specific binder
      * @param userId - null for current user
