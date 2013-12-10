@@ -173,13 +173,12 @@ public interface AclResourceSession extends ResourceSession {
 	 * in a loop specifying one resource at a time. This method should ignore the current path associated with
 	 * the session.
 	 * 
-	 * @param resourcePaths
-	 * @param areDir
+	 * @param resourcePaths A map of a resource path to an indication of whether the resource refers to a directory or not
 	 * @return
 	 * @throws FIException
 	 * @throws UncheckedIOException
 	 */
-	public boolean[] areVisible(String[] resourcePaths, Boolean[] areDir) throws FIException, UncheckedIOException;
+	public Map<String,Boolean> areVisible(Map<String, Boolean> resourcePaths) throws FIException, UncheckedIOException;
 	
 	/**
 	 * Returns <code>ResourceItem</code> representing the resource at the current path, or <code>null</code>
