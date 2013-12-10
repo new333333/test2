@@ -75,10 +75,15 @@ public class FolderEntryHeader extends VibeFlowPanel {
 	private GwtTeamingDataTableImageBundle	m_images;			// Access to Vibe's images.
 	private GwtTeamingFilrImageBundle		m_filrImages;		// Access to Filr's images.
 	private GwtTeamingMessages				m_messages;			// Access to Vibe's messages.
+	private Label							m_titleLabel;		// The Label that holds the title.
+	private Label							m_sizeLabel;		// The label holding the size of the file.
 	private ProfileEntryDlg					m_profileEntryDlg;	// A profile entry dialog, once one has been instantiated.
 	private VibeFlowPanel					m_descPanel;		//
 	private VibeFlowPanel					m_showDescPanel;	//
 
+	private final static int MINIMUM_TITLE_WIDTH	= 150;	// Minimum width we allow the title text to be.
+	private final static int TITLE_OVERHEAD			= 130;	// Amount to reduce the title width by to account for margins and other horizontal overhead.
+	
 	/**
 	 * Constructor method.
 	 * 
@@ -263,8 +268,8 @@ public class FolderEntryHeader extends VibeFlowPanel {
 		}
 
 		// Create the title label...
-		Label titleL = new Label(m_fed.getTitle());
-		titleL.addStyleName("vibe-feView-headerContentTitleAsLabel");
+		m_titleLabel = new Label(m_fed.getTitle());
+		m_titleLabel.addStyleName("vibe-feView-headerContentTitleAsLabel");
 		
 		// ...iIf the entry has a file download URL...
 		String dlUrl = m_fed.getDownloadUrl();
@@ -274,24 +279,22 @@ public class FolderEntryHeader extends VibeFlowPanel {
 			titleA.addStyleName("vibe-feView-headerContentTitleAsAnchor");
 			titleA.setHref(dlUrl);
 			titleA.setTarget("_blank");
-			titleA.getElement().appendChild(titleL.getElement());
-			titleL.addStyleName("displayInline");
+			titleA.getElement().appendChild(m_titleLabel.getElement());
 			titlePanel.add(titleA);
 
 			// ...and if there's a file size to display...
 			String fileSize = m_fed.getFileSizeDisplay();
 			if (GwtClientHelper.hasString(fileSize)) {
 				// ...add that to the right of the download URL...
-				Label sizeL = new Label(m_messages.folderEntry_FileSize(fileSize));
-				sizeL.addStyleName("vibe-feView-headerContentTitleFileSize displayInline");
-				titlePanel.add(sizeL);
+				m_sizeLabel = new Label(m_messages.folderEntry_FileSize(fileSize));
+				m_sizeLabel.addStyleName("vibe-feView-headerContentTitleFileSize displayInline");
+				titlePanel.add(m_sizeLabel);
 			}
 		}
 		
 		else {
 			// ...otherwise, just add the title Label directly...
-			titleL.addStyleName("displayBlock");
-			titlePanel.add(titleL);
+			titlePanel.add(m_titleLabel);
 		}
 		
 		// ...and add the entry's path.
@@ -487,6 +490,40 @@ public class FolderEntryHeader extends VibeFlowPanel {
 		if (show)
 		     FolderEntryCookies.removeCookieValue(    Cookie.DESCRIPTION_VISIBLE, m_fed.getEntityId()       );
 		else FolderEntryCookies.setBooleanCookieValue(Cookie.DESCRIPTION_VISIBLE, m_fed.getEntityId(), false);
+	}
+	
+	/**
+	 * Called when the header needs to be resized.
+	 */
+	public void setHeaderSize() {
+		m_titleLabel.addStyleName("width1px");	// Initially reduced so it doesn't affect the overall size calculations below.
+		setHeaderSizeAsync();
+	}
+
+	/*
+	 * Asynchronously set the size of the header.
+	 */
+	private void setHeaderSizeAsync() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
+			@Override
+			public void execute() {
+				setHeaderSizeNow();
+			}
+		});
+	}
+	
+	/*
+	 * Asynchronously set the size of the header.
+	 */
+	private void setHeaderSizeNow() {
+		int headerWidth = getOffsetWidth();
+		int sizeWidth   = ((null == m_sizeLabel) ? 0 : m_sizeLabel.getOffsetWidth());
+		int titleWidth  = ((headerWidth - sizeWidth) - TITLE_OVERHEAD);
+		if (MINIMUM_TITLE_WIDTH > titleWidth) {
+			titleWidth = MINIMUM_TITLE_WIDTH;
+		}
+		m_titleLabel.removeStyleName("width1px");	// Remove the synthetic width value we initially set.
+		GwtClientHelper.jsSetMaxWidth(m_titleLabel.getElement(), titleWidth);
 	}
 	
 	/*
