@@ -1258,6 +1258,10 @@ public class FolderEntryComposite extends ResizeComposite
 			captionLabelWidth = CAPTION_LABEL_MINIMUM;
 		}
 		m_captionLabel.setWidth(captionLabelWidth + "px");
+
+		// Finally, tell the header to set its size based on where
+		// we're at.
+		m_headerArea.setHeaderSize();
 	}
 
 	/**

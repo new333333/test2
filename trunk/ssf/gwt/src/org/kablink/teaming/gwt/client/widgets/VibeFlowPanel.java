@@ -77,7 +77,7 @@ public class VibeFlowPanel extends FlowPanel
 			public void execute()
 			{
 				onResizeNow();
-			}//end execute()
+			}
 		});
 	}//end onResizeAsync()
 	
