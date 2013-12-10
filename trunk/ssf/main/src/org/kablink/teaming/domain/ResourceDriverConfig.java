@@ -206,8 +206,17 @@ public class ResourceDriverConfig extends ZonedObject implements WorkArea {
     		return false;
     	if(!objectEquals(volume, config.volume))
     		return false;
+    	/* Do NOT include mod time in the equality test for two reasons.
+    	 * 1. Mod time is a kind of book keeping data rather than something that describes the content. 
+    	 * 2. Due to precision discrepancy and data type discrepancy between in-memory time and stored-in-database 
+    	 * time, they may differ when in fact they should be the same.
+    	 * The mod time of individual driver should only be used for each Filr node to determine whether
+    	 * it should potentially refresh the list or not, which is different from saying that the content
+    	 * of the driver has necessarily changed.
     	if(!objectEquals(modifiedOn, config.getModifiedOn()))
     		return false;
+    		*/
+    	
     	if(!objectEquals(getChangeDetectionMechanism(), config.getChangeDetectionMechanism()))
     		return false;
     	
@@ -603,5 +612,10 @@ public class ResourceDriverConfig extends ZonedObject implements WorkArea {
 				return true;
 			}
 		}
+	}
+	
+	@Override
+	public String toString() {
+		return name;
 	}
 }
