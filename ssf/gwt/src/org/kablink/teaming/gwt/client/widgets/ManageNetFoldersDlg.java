@@ -936,7 +936,11 @@ public class ManageNetFoldersDlg extends DlgBox
 						if ( responseData != null )
 						{
 							List<NetFolder> listOfNetFolders;
+							int count;
 
+							count = responseData.getTotalCount();
+							m_netFoldersTable.setRowCount( count, true );
+							
 							listOfNetFolders = responseData.getListOfNetFolders();
 							addNetFolders( startIndex, listOfNetFolders );
 						}
