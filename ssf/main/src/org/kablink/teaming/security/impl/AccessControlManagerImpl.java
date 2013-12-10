@@ -385,7 +385,7 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
 				}
 			}
 			//if current user is the workArea owner, add special Id to is membership
-			if (user.getId().equals(workAreaStart.getOwnerId())) userApplicationLevelMembersToLookup.add(ObjectKeys.OWNER_USER_ID);
+			if (user.getId().equals(workArea.getOwnerId())) userApplicationLevelMembersToLookup.add(ObjectKeys.OWNER_USER_ID);
 			Set<Long> teamMembers = null;
 			if (workAreaStart instanceof FolderEntry) {
 				teamMembers = ((FolderEntry)workAreaStart).getParentBinder().getTeamMemberIds();
