@@ -174,11 +174,12 @@ public interface AclResourceSession extends ResourceSession {
 	 * the session.
 	 * 
 	 * @param resourcePaths
+	 * @param areDir
 	 * @return
 	 * @throws FIException
 	 * @throws UncheckedIOException
 	 */
-	public boolean[] areVisible(String[] resourcePaths) throws FIException, UncheckedIOException;
+	public boolean[] areVisible(String[] resourcePaths, Boolean[] areDir) throws FIException, UncheckedIOException;
 	
 	/**
 	 * Returns <code>ResourceItem</code> representing the resource at the current path, or <code>null</code>
