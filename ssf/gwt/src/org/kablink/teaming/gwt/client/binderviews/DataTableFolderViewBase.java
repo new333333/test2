@@ -2061,8 +2061,11 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	 */
 	@Override
 	public void onContentChanged(final ContentChangedEvent event) {
-		// If a share changed in the 'Shared By Me' collection view...
-		if (Change.SHARING.equals(event.getChange()) && getFolderInfo().getCollectionType().equals(CollectionType.SHARED_BY_ME)) {
+		// If a share changed in the 'Shared by Me' or 'Public'
+		// collection views...
+		if (Change.SHARING.equals(event.getChange())                &&
+				(getFolderInfo().getCollectionType().isSharedByMe() ||
+				 getFolderInfo().getCollectionType().isSharedPublic())) {
 			// ...force the UI to refresh.
 			FullUIReloadEvent.fireOneAsync();
 		}

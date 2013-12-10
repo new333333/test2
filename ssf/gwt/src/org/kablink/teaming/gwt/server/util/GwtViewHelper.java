@@ -1603,8 +1603,9 @@ public class GwtViewHelper {
 					continue;
 				}
 	
-				// Did user somehow share the item with themselves?
-				if (si.getSharerId().equals(userId)) {
+				// Did user somehow create a non-public share of the
+				// item with themselves?
+				if ((!isPublic) && si.getSharerId().equals(userId)) {
 					// Yes!  Skip it.
 					continue;
 				}
