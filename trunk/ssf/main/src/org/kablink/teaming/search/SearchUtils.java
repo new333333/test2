@@ -961,7 +961,7 @@ public class SearchUtils {
 
    		// Return any My Files Storage folder ID stored in the user's
    		// properties?
-   		UserProperties userProperties = bs.getProfileModule().getUserProperties(user.getId());
+   		UserProperties userProperties = bs.getProfileModule().getUserProperties(user.getId(), false);	// false -> User can be disabled.
    		return ((null == userProperties) ? null : ((Long) userProperties.getProperty(ObjectKeys.USER_PROPERTY_MYFILES_DIR_DEPRECATED)));
    	}
 

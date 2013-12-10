@@ -1076,31 +1076,34 @@ public void delete(final Folder folder) {
  	@Override
 	public List<Folder> findMyFilesStorageFolders(final MyFilesStorageSelectSpec selectSpec, final long zoneId) {
         List<Folder> result = new ArrayList<Folder>();
-
-        long begin = System.nanoTime();
-		try {
-            result = ((List<Folder>) getHibernateTemplate().execute(
-            		new HibernateCallback() {
-                @Override
-				public Object doInHibernate(Session session) throws HibernateException {
-                   	Criteria crit = session.createCriteria(Folder.class);
-    				crit.add(Restrictions.eq(ObjectKeys.FIELD_BINDER_IS_MYFILES_DIR, Boolean.TRUE));
-    				
-    				Binder parentBinder = getCoreDao().loadBinder(selectSpec.getUserWorkspaceId(), zoneId);
-           			crit.add( Restrictions.eq(ObjectKeys.FIELD_ENTITY_PARENTBINDER, parentBinder));
-                   	
-                	return crit.list();
-				}
-            }));
-    	}
-		
-		catch (Exception ex) {
-			logger.error("findMyFilesStorageFolders() caught an exception: " + ex.toString() );
-		}
-		
-    	finally {
-    		end(begin, "findMyFilesStorageFolders(MyFilesStorageSelectSpec)");
-    	}	              	
+        
+        final Long userWSId = selectSpec.getUserWorkspaceId();
+        if (null != userWSId) {
+	        long begin = System.nanoTime();
+			try {
+	            result = ((List<Folder>) getHibernateTemplate().execute(
+	            		new HibernateCallback() {
+	                @Override
+					public Object doInHibernate(Session session) throws HibernateException {
+	                   	Criteria crit = session.createCriteria(Folder.class);
+	    				crit.add(Restrictions.eq(ObjectKeys.FIELD_BINDER_IS_MYFILES_DIR, Boolean.TRUE));
+	    				
+	    				Binder parentBinder = getCoreDao().loadBinder(userWSId, zoneId);
+	           			crit.add( Restrictions.eq(ObjectKeys.FIELD_ENTITY_PARENTBINDER, parentBinder));
+	                   	
+	                	return crit.list();
+					}
+	            }));
+	    	}
+			
+			catch (Exception ex) {
+				logger.error("findMyFilesStorageFolders() caught an exception: " + ex.toString() );
+			}
+			
+	    	finally {
+	    		end(begin, "findMyFilesStorageFolders(MyFilesStorageSelectSpec)");
+	    	}
+        }
 
       	return result;   	
 	}
