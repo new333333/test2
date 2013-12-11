@@ -124,7 +124,7 @@ public class LdapSchedule {
 		getDetails().put(DELETE_GROUPS, Boolean.toString(disable));			
 	}
 	public boolean isUserRegister() {
-		return  GetterUtil.get((String)getDetails().get(REGISTER_USERS), false);
+		return  GetterUtil.get( (String)getDetails().get(REGISTER_USERS), true );
 	}
 	public void setUserRegister(boolean create) {
 		getDetails().put(REGISTER_USERS, Boolean.toString(create));
@@ -137,7 +137,7 @@ public class LdapSchedule {
 	}
 
 	public boolean isUserSync() {
-		return  GetterUtil.get((String)getDetails().get(SYNC_USERS), false);			
+		return  GetterUtil.get((String)getDetails().get(SYNC_USERS), true );			
 	}
 	public void setUserSync(boolean create) {
 		getDetails().put(SYNC_USERS, Boolean.toString(create));
