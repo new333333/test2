@@ -161,7 +161,7 @@ public interface AclResourceSession extends ResourceSession {
 	 * @throws FIException
 	 * @throws UncheckedIOException
 	 */
-	public boolean isVisible() throws FIException, UncheckedIOException;
+	public boolean isVisible(Map<String, List<String>> groupIds) throws FIException, UncheckedIOException;
 	
 	/**
 	 * Return whether or not the individual resource in the specified array is visible to the user owning this session.
@@ -178,7 +178,7 @@ public interface AclResourceSession extends ResourceSession {
 	 * @throws FIException
 	 * @throws UncheckedIOException
 	 */
-	public Map<String,Boolean> areVisible(Map<String, Boolean> resourcePaths) throws FIException, UncheckedIOException;
+	public Map<String,Boolean> areVisible(Map<String, Boolean> resourcePaths, Map<String, List<String>> groupIds) throws FIException, UncheckedIOException;
 	
 	/**
 	 * Returns <code>ResourceItem</code> representing the resource at the current path, or <code>null</code>
