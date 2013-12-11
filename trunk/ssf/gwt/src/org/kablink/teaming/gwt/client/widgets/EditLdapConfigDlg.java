@@ -71,7 +71,6 @@ import org.kablink.teaming.gwt.client.util.runasync.RunAsyncCmd;
 import org.kablink.teaming.gwt.client.util.runasync.RunAsyncCmd.RunAsyncCmdType;
 import org.kablink.teaming.gwt.client.util.runasync.RunAsyncCreateDlgParams;
 import org.kablink.teaming.gwt.client.util.runasync.RunAsyncInitAndShowParams;
-import org.kablink.teaming.gwt.client.util.runasync.RunAsyncParams;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import org.kablink.teaming.gwt.client.widgets.EditLdapServerConfigDlg.EditLdapServerConfigDlgClient;
 import org.kablink.teaming.gwt.client.widgets.LdapSyncResultsDlg.LdapSyncResultsDlgClient;
@@ -2004,9 +2003,11 @@ public class EditLdapConfigDlg extends DlgBox
 		
 		// Get the list of selected ldap servers
 		{
-			Set<GwtLdapConnectionConfig> selectedServers;
+			Set<GwtLdapConnectionConfig> selectedServers = null;
 			
-			selectedServers = getSelectedLdapServers();
+			if ( syncAll == false )
+				selectedServers = getSelectedLdapServers();
+			
 			if ( selectedServers != null && selectedServers.size() > 0 )
 			{
 				Iterator<GwtLdapConnectionConfig> serverIterator;
