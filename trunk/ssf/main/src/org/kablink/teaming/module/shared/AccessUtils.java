@@ -61,6 +61,8 @@ import org.kablink.teaming.domain.WorkflowControlledEntry;
 import org.kablink.teaming.domain.WorkflowState;
 import org.kablink.teaming.domain.WorkflowSupport;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
+import org.kablink.teaming.fi.connection.ResourceDriver;
+import org.kablink.teaming.fi.connection.ResourceDriverManager;
 import org.kablink.teaming.fi.connection.acl.AclItemPermissionMapper;
 import org.kablink.teaming.fi.connection.acl.AclItemPermissionMappingException;
 import org.kablink.teaming.fi.connection.acl.AclItemPrincipalMappingException;
@@ -1064,7 +1066,6 @@ public class AccessUtils  {
 	 * @return
 	 */
 	public static Long askExternalSystemForRoleId(FolderEntry netFolderFile) {
-		User user = RequestContextHolder.getRequestContext().getUser();
 		Folder parentFolder = netFolderFile.getParentFolder();
 		if(!parentFolder.noAclDredgedWithEntries())
 			throw new IllegalArgumentException("Invalid entry '" + netFolderFile.getId() + "' for this method");
@@ -1073,7 +1074,7 @@ public class AccessUtils  {
 		if(session == null)
 			return null; // cannot obtain session for the user
 		try {
-			Map<String, List<String>> groupIds = driver.getAclItemPrincipalMapper().toFileSystemGroupIds(user);
+			Map<String, List<String>> groupIds = getFileSystemGroupIds(driver);
 			session.setPath(parentFolder.getResourcePath(), netFolderFile.getTitle(), Boolean.FALSE);
 			String permissionName = null;
 			try {
@@ -1098,6 +1099,33 @@ public class AccessUtils  {
 		finally {
 			session.close();
 		}
+	}
+
+	public static Map<String, List<String>> getFileSystemGroupIds(String resourceDriverName) throws AclItemPrincipalMappingException {
+		ResourceDriver driver;
+		
+		try {
+			driver = getResourceDriverManager().getDriver(resourceDriverName);
+		}
+		catch(Exception e) {
+			logger.warn("Can not find resource driver by name '" + resourceDriverName + "'", e);
+			return Collections.EMPTY_MAP;
+		}
+
+		return getFileSystemGroupIds(driver);
+	}
+	
+	public static Map<String, List<String>> getFileSystemGroupIds(ResourceDriver driver) throws AclItemPrincipalMappingException {
+		if(!(driver instanceof AclResourceDriver)) {
+			return Collections.EMPTY_MAP;
+		}
+		else {
+			return ((AclResourceDriver)driver).getAclItemPrincipalMapper().toFileSystemGroupIds(RequestContextHolder.getRequestContext().getUser());
+		}
+	}
+	
+	private static ResourceDriverManager getResourceDriverManager() {
+		return (ResourceDriverManager) SpringContextUtil.getBean("resourceDriverManager");
 	}
 
 }

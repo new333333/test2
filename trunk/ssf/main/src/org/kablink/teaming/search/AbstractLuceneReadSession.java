@@ -43,9 +43,13 @@ import org.apache.lucene.document.NumericField;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.Sort;
 import org.kablink.teaming.ConfigurationException;
+import org.kablink.teaming.UncheckedIOException;
+import org.kablink.teaming.fi.FIException;
+import org.kablink.teaming.fi.connection.acl.AclItemPrincipalMappingException;
 import org.kablink.teaming.fi.connection.acl.AclResourceSession;
 import org.kablink.teaming.lucene.Hits;
 import org.kablink.teaming.lucene.LuceneException;
+import org.kablink.teaming.module.shared.AccessUtils;
 import org.kablink.teaming.search.postfilter.PostFilterCallback;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SimpleProfiler;
@@ -219,7 +223,12 @@ public abstract class AbstractLuceneReadSession extends AbstractLuceneSession im
 				try {
 					String docType = doc.get(Constants.DOC_TYPE_FIELD);
 					session.setPath(resourcePath, (docType != null && docType.equals(Constants.DOC_TYPE_BINDER))? Boolean.TRUE : Boolean.FALSE);
-					return session.isVisible();
+					try {
+						return session.isVisible(AccessUtils.getFileSystemGroupIds(resourceDriverName));
+					} catch (Exception e) {
+						logger.error("Error checking visibility on resource [" + resourcePath + "]", e);
+						return false; // fails the test
+					}
 				}
 				finally {
 					session.close();

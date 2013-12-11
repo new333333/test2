@@ -699,7 +699,12 @@ public class SearchUtils {
 					try {
 						String docType = doc.get(Constants.DOC_TYPE_FIELD);
 						session.setPath(resourcePath, (docType != null && docType.equals(Constants.DOC_TYPE_BINDER))? Boolean.TRUE : Boolean.FALSE);
-						return session.isVisible();
+						try {
+							return session.isVisible(AccessUtils.getFileSystemGroupIds(resourceDriverName));
+						} catch (Exception e) {
+							logger.error("Error checking visibility on resource [" + resourcePath + "]", e);
+							return false; // fails the test
+						}
 					}
 					finally {
 						session.close();

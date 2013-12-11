@@ -66,6 +66,7 @@ import org.kablink.teaming.InternalException;
 import org.kablink.teaming.NoObjectByTheIdException;
 import org.kablink.teaming.NotSupportedException;
 import org.kablink.teaming.ObjectKeys;
+import org.kablink.teaming.UncheckedIOException;
 import org.kablink.teaming.comparator.BinderComparator;
 import org.kablink.teaming.comparator.PrincipalComparator;
 import org.kablink.teaming.context.request.RequestContext;
@@ -106,7 +107,9 @@ import org.kablink.teaming.domain.ZoneConfig;
 import org.kablink.teaming.domain.ZoneInfo;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.domain.FileAttachment.FileStatus;
+import org.kablink.teaming.fi.FIException;
 import org.kablink.teaming.fi.connection.ResourceSession;
+import org.kablink.teaming.fi.connection.acl.AclItemPrincipalMappingException;
 import org.kablink.teaming.fi.connection.acl.AclResourceSession;
 import org.kablink.teaming.lucene.Hits;
 import org.kablink.teaming.lucene.util.TagObject;
@@ -121,6 +124,7 @@ import org.kablink.teaming.module.folder.FolderModule.FolderOperation;
 import org.kablink.teaming.module.impl.CommonDependencyInjection;
 import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.profile.ProfileModule.ProfileOperation;
+import org.kablink.teaming.module.shared.AccessUtils;
 import org.kablink.teaming.module.shared.EmptyInputData;
 import org.kablink.teaming.module.shared.EntityIndexUtils;
 import org.kablink.teaming.module.shared.InputDataAccessor;
@@ -3657,7 +3661,12 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 				return false; // cannot obtain session for the user
 			try {
 				session.setPath(binder.getResourcePath(), Boolean.TRUE);
-				return session.isVisible();
+				try {
+					return session.isVisible(AccessUtils.getFileSystemGroupIds(binder.getResourceDriver()));
+				} catch (Exception e) {
+					logger.error("Error checking visibility on folder resource [" + binder.getResourcePath() + "]", e);
+					return false; // fails the test
+				}
 			}
 			finally {
 				session.close();
