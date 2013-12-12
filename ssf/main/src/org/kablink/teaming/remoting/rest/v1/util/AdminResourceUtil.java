@@ -78,9 +78,15 @@ public class AdminResourceUtil {
     public static NetFolderServer buildNetFolderServer(ResourceDriverConfig config, boolean fullDetails) {
         NetFolderServer model = new NetFolderServer();
         model.setAccountName(config.getAccountName());
-        model.setAuthenticationType(config.getAuthenticationType().name());
-        model.setChangeDetectionMechanism(config.getChangeDetectionMechanism().name());
-        model.setDriverType(config.getDriverType().name());
+        if (config.getAuthenticationType()!=null) {
+            model.setAuthenticationType(config.getAuthenticationType().name());
+        }
+        if (config.getChangeDetectionMechanism()!=null) {
+            model.setChangeDetectionMechanism(config.getChangeDetectionMechanism().name());
+        }
+        if (config.getDriverType()!=null) {
+            model.setDriverType(config.getDriverType().name());
+        }
         model.setFullSyncDirOnly(config.getFullSyncDirOnly());
         model.setId(config.getId());
         model.setModifiedOn(config.getModifiedOn());
