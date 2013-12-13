@@ -57,6 +57,7 @@ import org.hibernate.Query;
 import org.hibernate.ReplicationMode;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.ProjectionList;
@@ -92,6 +93,7 @@ import org.kablink.teaming.domain.Entry;
 import org.kablink.teaming.domain.Event;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.FolderEntry;
+import org.kablink.teaming.domain.HKey;
 import org.kablink.teaming.domain.IndexNode;
 import org.kablink.teaming.domain.LdapConnectionConfig;
 import org.kablink.teaming.domain.LibraryEntry;
@@ -3173,7 +3175,45 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
 		}
 	}
 
-	@Override
+    @Override
+    public List getAuditTrailEntries(final Long zoneId, final Date sinceDate, final HKey parentBinderKey,
+                                     final AuditTrail.AuditType[] types, final int maxResults) {
+        long begin = System.nanoTime();
+        try {
+            List results = (List) getHibernateTemplate().execute(
+                    new HibernateCallback() {
+                        public Object doInHibernate(Session session) throws HibernateException {
+                            Criterion typeExpr;
+                            if (types.length==1) {
+                                typeExpr = Restrictions.eq("transactionType", types[0].name());
+                            } else {
+                                List<String> vals = new ArrayList<String>();
+                                for (AuditTrail.AuditType type : types) {
+                                    vals.add(type.name());
+                                }
+                                typeExpr = Restrictions.in("transactionType", vals);
+                            }
+                            return session.createCriteria(AuditTrail.class)
+                                    .add(Restrictions.eq(ObjectKeys.FIELD_ZONE, zoneId))
+                                    .add(Restrictions.isNotNull("startDate"))
+                                    .add(Restrictions.ge("startDate", sinceDate))
+                                    .add(Restrictions.like("owningBinderKey", parentBinderKey.getSortKey() + "%"))
+                                    .add(typeExpr)
+                                    .setCacheable(false)
+                                    .setMaxResults(maxResults)
+                                    .addOrder(Order.asc("startDate"))
+                                    .list();
+                        }
+                    }
+            );
+            return results;
+        }
+        finally {
+            end(begin, "getAuditTrailEntries2()");
+        }
+    }
+
+    @Override
 	public int purgeAuditTrail(final Long zoneId, final Date purgeBeforeDate) {
 		long begin = System.nanoTime();
 		try {

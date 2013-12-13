@@ -44,6 +44,7 @@ import org.kablink.teaming.rest.v1.model.Binder;
 import org.kablink.teaming.rest.v1.model.BinderBrief;
 import org.kablink.teaming.rest.v1.model.LibraryInfo;
 import org.kablink.teaming.rest.v1.model.SearchResultList;
+import org.kablink.teaming.search.SearchUtils;
 import org.kablink.util.api.ApiErrorCode;
 import org.kablink.util.search.Constants;
 import org.kablink.util.search.Criterion;
@@ -77,7 +78,7 @@ public class BinderResource extends AbstractResource {
         List<Long> specialIds = new ArrayList<Long>();
         Set<Long> missingIds = new HashSet<Long>();
         Junction criterion = Restrictions.conjunction();
-        criterion.add(buildBindersCriterion());
+        criterion.add(SearchUtils.buildBindersCriterion());
         if (ids!=null) {
             Junction or = Restrictions.disjunction();
             for (Long id : ids) {
@@ -141,7 +142,7 @@ public class BinderResource extends AbstractResource {
                                                                   @QueryParam("first") @DefaultValue("0") Integer offset,
                                                                   @QueryParam("count") @DefaultValue("-1") Integer maxCount) {
         String query = getRawInputStreamAsString(request);
-        Document queryDoc = buildQueryDocument(query, buildBindersCriterion());
+        Document queryDoc = buildQueryDocument(query, SearchUtils.buildBindersCriterion());
         Map resultsMap = getBinderModule().executeSearchQuery(queryDoc, Constants.SEARCH_MODE_NORMAL, offset, maxCount);
         SearchResultList<BinderBrief> results = new SearchResultList<BinderBrief>(offset);
         Map<String, Object> nextParams = new HashMap<String, Object>();

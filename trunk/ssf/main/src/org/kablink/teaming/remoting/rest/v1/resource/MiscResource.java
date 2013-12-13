@@ -131,7 +131,7 @@ public class MiscResource extends AbstractResource {
       			getZoneModule().getZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
         ZoneInfo info = getZoneModule().getZoneInfo(zoneConfig.getZoneId());
         return ResourceUtil.buildZoneConfig(zoneConfig, info, getProfileModule().getPrincipalMobileAppsConfig(getLoggedInUserId()),
-                getProfileModule().getPrincipalDesktopAppsConfig(getLoggedInUserId()));
+                getProfileModule().getPrincipalDesktopAppsConfig(getLoggedInUserId()), this);
 	}
 
     @GET

@@ -185,6 +185,7 @@ public class LinkUriUtil {
         model.addAdditionalLink("child_binder_tree", model.getLink() + "/binder_tree");
         model.addAdditionalLink("child_files", model.getLink() + "/files");
         if (isWorkspace(model) || isLibraryFolder(model)) {
+            model.addAdditionalLink("library_changes", model.getLink() + "/library_changes");
             model.addAdditionalLink("library_children", model.getLink() + "/library_children");
             model.addAdditionalLink("child_library_entities", model.getLink() + "/library_entities");
             model.addAdditionalLink("child_library_folders", model.getLink() + "/library_folders");

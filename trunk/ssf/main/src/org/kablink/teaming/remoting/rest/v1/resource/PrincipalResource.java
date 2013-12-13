@@ -110,20 +110,20 @@ public class PrincipalResource extends AbstractPrincipalResource {
         PrincipalOptions userOption = toEnum(PrincipalOptions.class, "included_users", users);
         PrincipalOptions groupOption = toEnum(PrincipalOptions.class, "included_groups", groups);
         Junction orJunction = Restrictions.disjunction();
-        orJunction.add(getFalseCriterion());
+        orJunction.add(SearchUtils.getFalseCriterion());
         if (userOption!=PrincipalOptions.none) {
-            Criterion userCrit = buildUsersCriterion(allowExternal);
+            Criterion userCrit = SearchUtils.buildUsersCriterion(allowExternal);
             // TODO: support local-only and ldap-only searches (not currently supported by the index)
             orJunction.add(userCrit);
         }
         if (groupOption!=PrincipalOptions.none) {
             Criterion groupCrit;
             if (groupOption==PrincipalOptions.local) {
-                groupCrit = buildGroupsCriterion(Boolean.FALSE, includeAllUsers);
+                groupCrit = SearchUtils.buildGroupsCriterion(Boolean.FALSE, includeAllUsers);
             } else if (groupOption==PrincipalOptions.ldap) {
-                groupCrit = buildGroupsCriterion(Boolean.TRUE, includeAllUsers);
+                groupCrit = SearchUtils.buildGroupsCriterion(Boolean.TRUE, includeAllUsers);
             } else {
-                groupCrit = buildGroupsCriterion(null, includeAllUsers);
+                groupCrit = SearchUtils.buildGroupsCriterion(null, includeAllUsers);
             }
             orJunction.add(groupCrit);
         }

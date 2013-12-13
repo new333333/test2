@@ -43,6 +43,8 @@ import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.rest.v1.model.*;
 import org.kablink.teaming.rest.v1.model.AverageRating;
 import org.kablink.teaming.rest.v1.model.Binder;
+import org.kablink.teaming.rest.v1.model.BinderChange;
+import org.kablink.teaming.rest.v1.model.BinderChanges;
 import org.kablink.teaming.rest.v1.model.DefinableEntity;
 import org.kablink.teaming.rest.v1.model.Description;
 import org.kablink.teaming.rest.v1.model.Entry;
@@ -57,6 +59,7 @@ import org.kablink.teaming.rest.v1.model.Workspace;
 import org.kablink.teaming.rest.v1.model.ZoneConfig;
 import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.ssfs.util.SsfsUtil;
+import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.InvokeUtil;
 import org.kablink.teaming.util.ObjectPropertyNotFoundException;
 import org.kablink.teaming.util.PrincipalDesktopAppsConfig;
@@ -80,6 +83,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedSet;
 
 /**
  * This class contains utility methods that are shared among multiple resource types.
@@ -114,6 +118,57 @@ public class ResourceUtil {
         }
    		return cal;
    	}
+
+    public static BinderChanges buildBinderChanges(org.kablink.teaming.domain.BinderChanges changes, List<BaseBinderChange> changeList) {
+        BinderChanges model = new BinderChanges();
+        model.setCount(changes.getCount());
+        model.setTotal(changes.getTotal());
+        model.appendAll(changeList);
+        if (changeList.size()>0) {
+            model.setLastModified(changeList.get(changeList.size()-1).getDate());
+        }
+        return model;
+    }
+
+    public static BaseBinderChange buildBinderChange(org.kablink.teaming.domain.BinderChange change, org.kablink.teaming.domain.DefinableEntity entity, boolean preferFile, int descriptionFormat) {
+        BaseBinderChange model = null;
+        EntityIdentifier entityId = change.getEntityId();
+        EntityIdentifier.EntityType entityType = entityId.getEntityType();
+        if (entityType == EntityIdentifier.EntityType.folderEntry) {
+            if (preferFile && entity!=null) {
+                SortedSet<FileAttachment> fileAttachments = entity.getFileAttachments();
+                if (fileAttachments.size()>0) {
+                    FileAttachment attachment = fileAttachments.first();
+                    FileChange model1 = new FileChange();
+                    model1.setAction(change.getAction().name());
+                    model1.setDate(change.getDate());
+                    model1.setId(attachment.getId());
+                    model1.setFile(buildFileProperties(attachment));
+                    model = model1;
+                }
+            }
+            if (model==null) {
+                FolderEntryChange model1 = new FolderEntryChange();
+                model1.setId(entityId.getEntityId());
+                model1.setAction(change.getAction().name());
+                model1.setDate(change.getDate());
+                if (entity!=null) {
+                    model1.setEntry(buildFolderEntry((org.kablink.teaming.domain.FolderEntry) entity, false, descriptionFormat));
+                }
+                model = model1;
+            }
+        } else if (entityType.isBinder()) {
+            BinderChange model1 = new BinderChange();
+            model1.setId(entityId.getEntityId());
+            model1.setAction(change.getAction().name());
+            model1.setDate(change.getDate());
+            if (entity!=null) {
+                model1.setBinder(buildBinder((org.kablink.teaming.domain.Binder) entity, false, descriptionFormat));
+            }
+            model = model1;
+        }
+        return model;
+    }
 
     public static FolderEntryBrief buildFolderEntryBrief(org.kablink.teaming.domain.FolderEntry entry) {
         FolderEntryBrief model = new FolderEntryBrief();
@@ -355,7 +410,8 @@ public class ResourceUtil {
     }
 
     public static ZoneConfig buildZoneConfig(org.kablink.teaming.domain.ZoneConfig config, ZoneInfo zoneInfo,
-                                             PrincipalMobileAppsConfig userMobileAppsConfig, PrincipalDesktopAppsConfig userDesktopAppsConfig) {
+                                             PrincipalMobileAppsConfig userMobileAppsConfig, PrincipalDesktopAppsConfig userDesktopAppsConfig,
+                                             AllModulesInjected ami) {
         ZoneConfig modelConfig = new ZoneConfig();
         modelConfig.setId(config.getZoneId());
         if (zoneInfo!=null) {
@@ -375,6 +431,7 @@ public class ResourceUtil {
 
         modelConfig.setFileSizeLimitUserDefault(config.getFileSizeLimitUserDefault());
         modelConfig.setFileVersionsMaxAge(config.getFileVersionsMaxAge());
+        modelConfig.setAllowShareWithLdapGroups(ami.getAdminModule().isSharingWithLdapGroupsEnabled());
 
         DesktopAppConfig desktopAppConfig = buildDesktopAppConfig(config);
         overrideDesktopAppConfig(desktopAppConfig, userDesktopAppsConfig);
@@ -927,4 +984,20 @@ public class ResourceUtil {
         model.setLink("/self/mobile_devices/" + model.getId());
         return model;
     }
+
+    public static Date max(Date d1, Date d2) {
+        if (d1==null) {
+            return d2;
+        }
+        if (d2==null) {
+            return d1;
+        }
+        if (d1.compareTo(d2)>=0) {
+            return d1;
+        } else {
+            return d2;
+        }
+    }
+
+
 }

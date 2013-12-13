@@ -303,5 +303,16 @@ public class AuditTrail extends ZonedObject {
 	public void setDeletedFolderEntryFamily(String deletedFolderEntryFamily) {
 		this.deletedFolderEntryFamily = deletedFolderEntryFamily;
 	}
-	
+
+    public EntityIdentifier toEntityIdentifier() {
+        if (entityType!=null && entityId!=null) {
+            try {
+                EntityIdentifier.EntityType type = EntityIdentifier.EntityType.valueOf(entityType);
+                return new EntityIdentifier(entityId, type);
+            } catch (IllegalArgumentException e) {
+            }
+        }
+        return null;
+    }
+
 }

@@ -53,6 +53,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.servlet.http.HttpSession;
 
+import org.apache.lucene.document.DateTools;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.SortField;
@@ -75,7 +76,10 @@ import org.kablink.teaming.dao.util.FilterControls;
 import org.kablink.teaming.dao.util.ObjectControls;
 import org.kablink.teaming.dao.util.SFQuery;
 import org.kablink.teaming.domain.Attachment;
+import org.kablink.teaming.domain.AuditTrail;
 import org.kablink.teaming.domain.Binder;
+import org.kablink.teaming.domain.BinderChange;
+import org.kablink.teaming.domain.BinderChanges;
 import org.kablink.teaming.domain.BinderQuota;
 import org.kablink.teaming.domain.ChangeLog;
 import org.kablink.teaming.domain.DefinableEntity;
@@ -163,7 +167,9 @@ import org.kablink.util.StringUtil;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
 import org.kablink.util.search.Criteria;
+import org.kablink.util.search.Junction;
 import org.kablink.util.search.Order;
+import org.kablink.util.search.Restrictions;
 import org.springframework.orm.hibernate3.HibernateSystemException;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -171,6 +177,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 import static org.kablink.util.search.Restrictions.between;
+import static org.kablink.util.search.Restrictions.conjunction;
 import static org.kablink.util.search.Restrictions.eq;
 import static org.kablink.util.search.Restrictions.in;
 
@@ -3687,6 +3694,120 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	        }
 		}
 	}
+
+    public BinderChanges searchForChanges(Long binderId, Date sinceDate, int maxResults) {
+        if (haveAclsChangedSinceDate(binderId, sinceDate)) {
+            throw new AclChangeException();
+        }
+
+        Map map = searchForChangedEntities(binderId, sinceDate, true, true, true, false, maxResults);
+        List deleteEntries = getDeleteAuditTrailEntries(binderId, sinceDate, maxResults);
+
+        Integer searchCount = (Integer)map.get(ObjectKeys.TOTAL_SEARCH_RECORDS_RETURNED);
+        Integer searchTotal = (Integer)map.get(ObjectKeys.TOTAL_SEARCH_COUNT);
+        List<Map> searchEntries = (List<Map>)map.get(ObjectKeys.SEARCH_ENTRIES);
+
+        Iterator deleteIterator = deleteEntries.iterator();
+        Iterator<Map> addModIterator = searchEntries.iterator();
+
+        AuditTrail nextDelete = deleteIterator.hasNext() ? (AuditTrail) deleteIterator.next() : null;
+        Map nextAddMod = addModIterator.hasNext() ? addModIterator.next() : null;
+
+        List<BinderChange> mergedResults = new ArrayList<BinderChange>(maxResults);
+        boolean done = false;
+        while (!done) {
+            if (mergedResults.size()>=maxResults || (nextDelete==null && nextAddMod==null)) {
+                done = true;
+            } else {
+                boolean useDelete;
+                if (nextDelete==null) {
+                    useDelete = false;
+                } else if (nextAddMod==null) {
+                    useDelete = true;
+                } else {
+                    useDelete = nextDelete.getStartDate().before(getResultModDate(nextAddMod));
+                }
+
+                if (useDelete) {
+                    EntityIdentifier entityId = nextDelete.toEntityIdentifier();
+                    if (entityId!=null) {
+                        BinderChange change = new BinderChange();
+                        change.setEntityId(entityId);
+                        change.setAction(BinderChange.Action.delete);
+                        change.setDate(nextDelete.getStartDate());
+                        mergedResults.add(change);
+                    }
+                    nextDelete = deleteIterator.hasNext() ? (AuditTrail) deleteIterator.next() : null;
+                } else {
+                    EntityIdentifier entityId = buildIdentifier(nextAddMod);
+                    if (entityId!=null) {
+                        BinderChange change = new BinderChange();
+                        change.setEntityId(entityId);
+                        if (getResultCreateDate(nextAddMod).after(sinceDate)) {
+                            change.setAction(BinderChange.Action.add);
+                        } else {
+                            change.setAction(BinderChange.Action.modify);
+                        }
+                        change.setDate(getResultModDate(nextAddMod));
+                        change.setSearchMap(nextAddMod);
+                        mergedResults.add(change);
+                    }
+                    nextAddMod = addModIterator.hasNext() ? addModIterator.next() : null;
+                }
+            }
+        }
+        BinderChanges changes = new BinderChanges();
+        changes.setChanges(mergedResults);
+        changes.setCount(mergedResults.size());
+        changes.setTotal(searchTotal + deleteEntries.size());
+        return changes;
+    }
+
+    private EntityIdentifier buildIdentifier(Map entry) {
+        String idStr = (String) entry.get(Constants.DOCID_FIELD);
+        String typeStr = (String) entry.get(Constants.ENTITY_FIELD);
+        try {
+            return new EntityIdentifier(Long.parseLong(idStr), EntityType.valueOf(typeStr));
+        } catch (Exception e) {
+        }
+        return null;
+    }
+
+    private Date getResultCreateDate(Map entry) {
+        return (Date) entry.get(Constants.CREATION_DATE_FIELD);
+    }
+
+    private Date getResultModDate(Map entry) {
+        return (Date) entry.get(Constants.MODIFICATION_DATE_FIELD);
+    }
+
+    private boolean haveAclsChangedSinceDate(Long binderId, Date sinceDate) {
+        Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
+        Binder binder = getBinder(binderId);
+        List aclChanges = getCoreDao().getAuditTrailEntries(zoneId, sinceDate, binder.getBinderKey(),
+                new AuditTrail.AuditType[]{AuditTrail.AuditType.acl}, 1);
+        return aclChanges.size()>0;
+    }
+
+    private List getDeleteAuditTrailEntries(Long binderId, Date sinceDate, int maxResults) {
+        Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
+        Binder binder = getBinder(binderId);
+        return getCoreDao().getAuditTrailEntries(zoneId, sinceDate, binder.getBinderKey(),
+                new AuditTrail.AuditType[]{AuditTrail.AuditType.delete, AuditTrail.AuditType.preDelete}, maxResults);
+    }
+
+    private Map searchForChangedEntities(Long binderId, Date sinceDate, boolean libraryOnly, boolean binders, boolean entries, boolean attachments, int maxResults){
+        Criteria crit = new Criteria();
+        crit.add(org.kablink.teaming.search.SearchUtils.buildAncentryCriterion(binderId));
+        crit.add(org.kablink.teaming.search.SearchUtils.buildDocTypeCriterion(binders, entries, attachments, false));
+        if (libraryOnly) {
+            crit.add(org.kablink.teaming.search.SearchUtils.buildLibraryCriterion(true));
+        }
+        crit.add(Restrictions.between(Constants.MODIFICATION_DATE_FIELD, DateTools.dateToString(sinceDate, DateTools.Resolution.SECOND),
+                DateTools.dateToString(new Date(), DateTools.Resolution.SECOND)));
+        crit.addOrder(new Order(Constants.MODIFICATION_DATE_FIELD, true));
+        return executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, 0, maxResults);
+    }
 	
 	class IndexHelper implements Runnable {
 		

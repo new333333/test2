@@ -193,4 +193,6 @@ public enum ApiErrorCode {
 
     DEVICE_EXISTS, // A device with the ID already exists
     DEVICE_NOT_FOUND, // No device found with this id
+
+    ACL_CHANGED, // No device found with this id
 }

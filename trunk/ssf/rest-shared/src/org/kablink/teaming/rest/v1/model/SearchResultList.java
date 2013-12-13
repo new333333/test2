@@ -114,6 +114,42 @@ public class SearchResultList<T> {
         this.next = next;
     }
 
+    public void setNext(String nextUrl, Map<String, Object> params) {
+        StringBuilder builder = new StringBuilder(nextUrl);
+        boolean first = true;
+        for (Map.Entry<String, Object> entry : params.entrySet()) {
+            if (first) {
+                builder.append("?");
+                first = false;
+            } else {
+                builder.append("&");
+            }
+            try {
+                Object value = entry.getValue();
+                if (value instanceof Collection) {
+                    boolean subFirst = true;
+                    for (Object v : (Collection)value) {
+                        if (subFirst) {
+                            subFirst = false;
+                        } else {
+                            builder.append("&");
+                        }
+                        builder.append(URLEncoder.encode(entry.getKey(), "UTF-8"))
+                                .append("=")
+                                .append(URLEncoder.encode((String)v, "UTF-8"));
+                    }
+                } else {
+                    builder.append(URLEncoder.encode(entry.getKey(), "UTF-8"))
+                           .append("=")
+                           .append(URLEncoder.encode((String)entry.getValue(), "UTF-8"));
+                }
+            } catch (UnsupportedEncodingException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        setNext(builder.toString());
+    }
+
     public void setNextIfNecessary(String nextUrl, Map<String, Object> nextParams) {
         if (nextUrl!=null) {
             int offset = first + count;
@@ -124,39 +160,7 @@ public class SearchResultList<T> {
                 }
                 params.put("first", Integer.toString(offset));
                 params.put("count", Integer.toString(count));
-                StringBuilder builder = new StringBuilder(nextUrl);
-                boolean first = true;
-                for (Map.Entry<String, Object> entry : params.entrySet()) {
-                    if (first) {
-                        builder.append("?");
-                        first = false;
-                    } else {
-                        builder.append("&");
-                    }
-                    try {
-                        Object value = entry.getValue();
-                        if (value instanceof Collection) {
-                            boolean subFirst = true;
-                            for (Object v : (Collection)value) {
-                                if (subFirst) {
-                                    subFirst = false;
-                                } else {
-                                    builder.append("&");
-                                }
-                                builder.append(URLEncoder.encode(entry.getKey(), "UTF-8"))
-                                        .append("=")
-                                        .append(URLEncoder.encode((String)v, "UTF-8"));
-                            }
-                        } else {
-                            builder.append(URLEncoder.encode(entry.getKey(), "UTF-8"))
-                                   .append("=")
-                                   .append(URLEncoder.encode((String)entry.getValue(), "UTF-8"));
-                        }
-                    } catch (UnsupportedEncodingException e) {
-                        throw new RuntimeException(e);
-                    }
-                }
-                setNext(builder.toString());
+                setNext(nextUrl, params);
             }
         }
     }

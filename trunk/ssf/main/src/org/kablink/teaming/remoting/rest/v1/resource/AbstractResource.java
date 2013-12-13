@@ -60,7 +60,6 @@ import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.Workspace;
-import org.kablink.teaming.fi.AccessDeniedException;
 import org.kablink.teaming.module.shared.AccessUtils;
 import org.kablink.teaming.module.sharing.SharingModule;
 import org.kablink.teaming.remoting.rest.v1.exc.BadRequestException;
@@ -270,8 +269,8 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
                                                                           boolean includeParentPaths, int descriptionFormat, String nextUrl) {
         keyword = SearchUtils.validateSearchText(keyword);
         Criteria crit = new Criteria();
-        crit.add(buildDocTypeCriterion(includeBinders, includeFolderEntries, includeFiles, includeReplies));
-        crit.add(buildLibraryCriterion(true));
+        crit.add(SearchUtils.buildDocTypeCriterion(includeBinders, includeFolderEntries, includeFiles, includeReplies));
+        crit.add(SearchUtils.buildLibraryCriterion(true));
         crit.add(searchContext);
 
         Map<String, Object> nextParams = new HashMap<String, Object>();
@@ -691,145 +690,6 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
    		}
    	}
 
-    protected Criterion buildLibraryTreeCriterion() {
-        Junction criteria = Restrictions.disjunction();
-        criteria.add(SearchUtils.libraryFolders());
-        criteria.add(buildWorkspacesCriterion());
-        return criteria;
-    }
-
-    protected Criterion buildDocTypeCriterion(boolean includeBinders, boolean includeFolderEntries, boolean includeFiles, boolean includeReplies) {
-        Junction types = Restrictions.disjunction();
-        // Include a restriction that will always evaluate to false.  That way if all of the include* parameters are false
-        // no results will be returned (instead of all results being returned)
-        types.add(getFalseCriterion());
-        if (includeBinders) {
-            types.add(buildBindersCriterion());
-        }
-        if (includeFiles) {
-            types.add(buildAttachmentsCriterion());
-        }
-        if (includeFolderEntries) {
-            types.add(buildEntriesCriterion());
-        }
-        if (includeReplies) {
-            types.add(buildRepliesCriterion());
-        }
-        return types;
-    }
-
-    protected Criterion getFalseCriterion() {
-        return Restrictions.eq(Constants.DOC_TYPE_FIELD, "_fake_");
-    }
-
-    protected Criterion buildEntryCriterion(Long id) {
-        return Restrictions.conjunction()
-        			.add(buildEntriesAndRepliesCriterion())
-                    .add(Restrictions.disjunction()
-                            .add(Restrictions.eq(Constants.DOCID_FIELD, id.toString()))
-                            .add(Restrictions.eq(Constants.ENTRY_TOP_ENTRY_ID_FIELD, id.toString())));
-    }
-
-    protected Criterion buildAttachmentsCriterion() {
-        return Restrictions.eq(Constants.DOC_TYPE_FIELD, Constants.DOC_TYPE_ATTACHMENT);
-    }
-
-    protected Criterion buildAttachmentCriterion(Long entryId) {
-        return Restrictions.conjunction()
-                .add(Restrictions.eq(Constants.DOC_TYPE_FIELD, Constants.DOC_TYPE_ATTACHMENT))
-                .add(Restrictions.eq(Constants.ENTRY_TYPE_FIELD, Constants.DOC_TYPE_ENTRY))
-                .add(Restrictions.eq(Constants.DOCID_FIELD, entryId.toString()));
-    }
-
-    protected Criterion buildEntriesAndRepliesCriterion() {
-        return Restrictions.conjunction()
-        			.add(Restrictions.eq(Constants.DOC_TYPE_FIELD, Constants.DOC_TYPE_ENTRY))
-        			.add(Restrictions.in(Constants.ENTRY_TYPE_FIELD, new String[]{Constants.ENTRY_TYPE_ENTRY, Constants.ENTRY_TYPE_REPLY}));
-    }
-
-    protected Criterion buildEntriesCriterion() {
-        return Restrictions.conjunction()
-        			.add(Restrictions.eq(Constants.DOC_TYPE_FIELD, Constants.DOC_TYPE_ENTRY))
-        			.add(Restrictions.in(Constants.ENTRY_TYPE_FIELD, new String[]{Constants.ENTRY_TYPE_ENTRY}));
-    }
-
-    protected Criterion buildRepliesCriterion() {
-        return Restrictions.conjunction()
-        			.add(Restrictions.eq(Constants.DOC_TYPE_FIELD, Constants.DOC_TYPE_ENTRY))
-        			.add(Restrictions.in(Constants.ENTRY_TYPE_FIELD, new String[]{Constants.ENTRY_TYPE_REPLY}));
-    }
-
-    protected Criterion buildFoldersCriterion() {
-        return Restrictions.conjunction()
-        			.add(Restrictions.eq(Constants.DOC_TYPE_FIELD, Constants.DOC_TYPE_BINDER))
-        			.add(Restrictions.eq(Constants.ENTITY_FIELD, Constants.ENTITY_TYPE_FOLDER));
-    }
-
-    protected Criterion buildWorkspacesCriterion() {
-        return Restrictions.conjunction()
-        			.add(Restrictions.eq(Constants.DOC_TYPE_FIELD, Constants.DOC_TYPE_BINDER))
-        			.add(Restrictions.eq(Constants.ENTITY_FIELD, Constants.ENTITY_TYPE_WORKSPACE));
-    }
-
-    protected Criterion buildBinderCriterion(Long id) {
-        return Restrictions.conjunction()
-        			.add(buildBindersCriterion())
-                    .add(Restrictions.eq(Constants.DOCID_FIELD, id.toString()));
-    }
-
-    protected Criterion buildUsersCriterion(boolean allowExternal) {
-        Junction crit = Restrictions.conjunction()
-                .add(Restrictions.eq(Constants.PERSONFLAG_FIELD, Boolean.TRUE.toString()))
-                .add(Restrictions.eq(Constants.DISABLED_USER_FIELD, Boolean.FALSE.toString()))
-                .add(Restrictions.eq(Constants.DOC_TYPE_FIELD, Constants.DOC_TYPE_ENTRY))
-                .add(Restrictions.eq(Constants.ENTRY_TYPE_FIELD, Constants.ENTRY_TYPE_USER));
-        if (!allowExternal) {
-            crit.add(Restrictions.eq(Constants.IDENTITY_INTERNAL_FIELD, Boolean.TRUE.toString()));
-        }
-        return crit;
-    }
-
-    protected Criterion buildGroupsCriterion(Boolean fromLdap, boolean includeAllUsersGroup) {
-        Junction crit = Restrictions.conjunction()
-                .add(Restrictions.eq(Constants.DOC_TYPE_FIELD, Constants.DOC_TYPE_ENTRY))
-                .add(Restrictions.eq(Constants.ENTRY_TYPE_FIELD, Constants.ENTRY_TYPE_GROUP))
-                .add(SearchUtils.buildExcludeUniversalAndContainerGroupCriterion(!includeAllUsersGroup));
-        if (fromLdap!=null) {
-            crit.add(Restrictions.eq(Constants.IS_GROUP_FROM_LDAP_FIELD, fromLdap.toString()));
-        }
-        return crit;
-    }
-
-    protected Criterion buildBindersCriterion() {
-        return Restrictions.eq(Constants.DOC_TYPE_FIELD, Constants.DOC_TYPE_BINDER);
-    }
-
-    protected Criterion buildAncentryCriterion(Long id) {
-        return Restrictions.eq(Constants.ENTRY_ANCESTRY, id.toString());
-    }
-
-    protected Criterion buildParentBinderCriterion(Long id) {
-        return  Restrictions.disjunction()
-                .add(Restrictions.eq(Constants.BINDER_ID_FIELD, id.toString()))
-                .add(Restrictions.eq(Constants.BINDERS_PARENT_ID_FIELD, id.toString()));
-    }
-
-    protected Criterion buildSearchBinderCriterion(Long id, boolean recursive) {
-        if (recursive) {
-            return buildAncentryCriterion(id);
-        } else {
-            return buildParentBinderCriterion(id);
-        }
-    }
-
-    protected Criterion buildLibraryCriterion(Boolean onlyLibrary) {
-        return Restrictions.eq(Constants.IS_LIBRARY_FIELD, ((Boolean) onlyLibrary).toString());
-    }
-
-    protected Criterion buildFileNameCriterion(String fileName) {
-        return Restrictions.like(Constants.FILENAME_FIELD, fileName);
-    }
-
     protected Document buildQueryDocument(String query, Criterion additionalCriteria) {
         query = StringCheckUtil.check(query);
 
@@ -1098,7 +958,7 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         if (maxCount==null) {
             maxCount = -1;
         }
-        crit.add(buildBindersCriterion());
+        crit.add(SearchUtils.buildBindersCriterion());
         Map resultMap = getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, offset, maxCount);
         SearchResultList<BinderBrief> results = new SearchResultList<BinderBrief>(offset);
         results.setLastModified(lastModified);
@@ -1113,7 +973,7 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         if (maxCount==null) {
             maxCount = -1;
         }
-        crit.add(buildEntriesCriterion());
+        crit.add(SearchUtils.buildEntriesCriterion());
         Map resultMap = getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, offset, maxCount);
         SearchResultList<FolderEntryBrief> results = new SearchResultList<FolderEntryBrief>(offset);
         SearchResultBuilderUtil.buildSearchResults(results, new FolderEntryBriefBuilder(), resultMap, nextUrl, nextParams, offset);
@@ -1137,7 +997,7 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
 
     protected Map searchForBinders(Criterion criterion) {
         Junction outerCriterion = Restrictions.conjunction()
-                .add(buildBindersCriterion()).add(criterion);
+                .add(SearchUtils.buildBindersCriterion()).add(criterion);
         Criteria crit = new Criteria();
         crit.add(outerCriterion);
         return getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, 0, -1);
@@ -1198,20 +1058,6 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         return spec;
     }
 
-    protected Date max(Date d1, Date d2) {
-        if (d1==null) {
-            return d2;
-        }
-        if (d2==null) {
-            return d1;
-        }
-        if (d1.compareTo(d2)>=0) {
-            return d1;
-        } else {
-            return d2;
-        }
-    }
-
     protected Date getSharedByLibraryModifiedDate(Long userId, boolean recursive) {
         return getSharesLibraryModifiedDate(null, recursive, getSharedBySpec(userId), true, true);
     }
@@ -1231,7 +1077,7 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         List<ShareItem> shareItems = getShareItems(spec, userId, true, includePublic, includeNonPublic);
         Date libraryModifiedDateForShareItems = getLibraryModifiedDateForShareItems(recursive, shareItems);
         Date hideDate = getSharingModule().getHiddenShareModTimeForCurrentUser(true);
-        return max(hideDate, libraryModifiedDateForShareItems);
+        return ResourceUtil.max(hideDate, libraryModifiedDateForShareItems);
     }
 
     protected Date getLibraryModifiedDateForShareItems(boolean recursive, List<ShareItem> shareItems) {
@@ -1239,30 +1085,30 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         List<Long> binderList = new ArrayList<Long>();
         for (ShareItem item : shareItems) {
             if (item.isExpired()) {
-                maxDate = max(maxDate, item.getEndDate());
+                maxDate = ResourceUtil.max(maxDate, item.getEndDate());
             } else if (item.isDeleted()) {
-                maxDate = max(maxDate, item.getDeletedDate());
+                maxDate = ResourceUtil.max(maxDate, item.getDeletedDate());
             } else {
-                maxDate = max(maxDate, item.getStartDate());
+                maxDate = ResourceUtil.max(maxDate, item.getStartDate());
                 EntityIdentifier entityId = item.getSharedEntityIdentifier();
                 if (entityId.getEntityType()== EntityIdentifier.EntityType.folderEntry) {
                     FolderEntry entry = (FolderEntry) getSharingModule().getSharedEntity(item);
                     if (entry.isPreDeleted()) {
-                        maxDate = max(maxDate, new Date(entry.getPreDeletedWhen()));
+                        maxDate = ResourceUtil.max(maxDate, new Date(entry.getPreDeletedWhen()));
                     } else {
-                        maxDate = max(maxDate, entry.getModificationDate());
+                        maxDate = ResourceUtil.max(maxDate, entry.getModificationDate());
                     }
                 } else if (entityId.getEntityType()== EntityIdentifier.EntityType.folder || entityId.getEntityType()== EntityIdentifier.EntityType.workspace) {
                     Binder binder = (Binder) getSharingModule().getSharedEntity(item);
                     if (isBinderPreDeleted(binder)) {
-                        maxDate = max(maxDate, getPreDeletedDate(binder));
+                        maxDate = ResourceUtil.max(maxDate, getPreDeletedDate(binder));
                     } else if (recursive) {
                         binderList.add(binder.getId());
                     }
                 }
             }
         }
-        maxDate = max(maxDate, getLibraryModifiedDate(binderList.toArray(new Long[binderList.size()]), recursive));
+        maxDate = ResourceUtil.max(maxDate, getLibraryModifiedDate(binderList.toArray(new Long[binderList.size()]), recursive));
         return maxDate;
     }
 
@@ -1285,7 +1131,7 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         List<ShareItem> shareItems = getShareItems(spec, userId, true, includePublic, includeNonPublic);
         LibraryInfo info = getLibraryInfoForShareItems(shareItems);
         Date hideDate = getSharingModule().getHiddenShareModTimeForCurrentUser(true);
-        info.setModifiedDate(max(hideDate, info.getModifiedDate()));
+        info.setModifiedDate(ResourceUtil.max(hideDate, info.getModifiedDate()));
         return info;
     }
 
@@ -1297,19 +1143,19 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         List<Long> binderList = new ArrayList<Long>();
         for (ShareItem item : shareItems) {
             if (item.isExpired()) {
-                maxDate = max(maxDate, item.getEndDate());
+                maxDate = ResourceUtil.max(maxDate, item.getEndDate());
             } else if (item.isDeleted()) {
-                maxDate = max(maxDate, item.getDeletedDate());
+                maxDate = ResourceUtil.max(maxDate, item.getDeletedDate());
             } else {
-                maxDate = max(maxDate, item.getStartDate());
+                maxDate = ResourceUtil.max(maxDate, item.getStartDate());
                 try {
                     EntityIdentifier entityId = item.getSharedEntityIdentifier();
                     if (entityId.getEntityType()== EntityIdentifier.EntityType.folderEntry) {
                         FolderEntry entry = (FolderEntry) getSharingModule().getSharedEntity(item);
                         if (entry.isPreDeleted()) {
-                            maxDate = max(maxDate, new Date(entry.getPreDeletedWhen()));
+                            maxDate = ResourceUtil.max(maxDate, new Date(entry.getPreDeletedWhen()));
                         } else {
-                            maxDate = max(maxDate, entry.getModificationDate());
+                            maxDate = ResourceUtil.max(maxDate, entry.getModificationDate());
                         }
                         for (Attachment att : entry.getAttachments()) {
                             if (att instanceof FileAttachment) {
@@ -1320,7 +1166,7 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
                     } else if (entityId.getEntityType()== EntityIdentifier.EntityType.folder || entityId.getEntityType()== EntityIdentifier.EntityType.workspace) {
                         Binder binder = (Binder) getSharingModule().getSharedEntity(item);
                         if (isBinderPreDeleted(binder)) {
-                            maxDate = max(maxDate, getPreDeletedDate(binder));
+                            maxDate = ResourceUtil.max(maxDate, getPreDeletedDate(binder));
                         } else {
                             binderList.add(binder.getId());
                             folders++;
@@ -1332,7 +1178,7 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
             }
         }
         LibraryInfo info = getLibraryInfo(binderList.toArray(new Long[binderList.size()]));
-        info.setModifiedDate(max(maxDate, info.getModifiedDate()));
+        info.setModifiedDate(ResourceUtil.max(maxDate, info.getModifiedDate()));
         info.setDiskSpace(info.getDiskSpace() + diskSpace);
         info.setFolderCount(info.getFolderCount() + folders);
         info.setFileCount(info.getFileCount() + files);
@@ -1395,9 +1241,9 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
                     if (!idSet.contains(binderId)) {
                         folders++;
                     }
-                    modDate = max(modDate, (Date) entry.get(Constants.MODIFICATION_DATE_FIELD));
+                    modDate = ResourceUtil.max(modDate, (Date) entry.get(Constants.MODIFICATION_DATE_FIELD));
                 } else if (Constants.DOC_TYPE_ENTRY.equals(docType)) {
-                    modDate = max(modDate, (Date) entry.get(Constants.MODIFICATION_DATE_FIELD));
+                    modDate = ResourceUtil.max(modDate, (Date) entry.get(Constants.MODIFICATION_DATE_FIELD));
                 }
             }
         }
@@ -1418,7 +1264,7 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         if (recursive) {
             Junction or = Restrictions.disjunction();
             for (Long binderId : binderIds) {
-                or.add(buildAncentryCriterion(binderId));
+                or.add(SearchUtils.buildAncentryCriterion(binderId));
             }
             crit.add(or);
             or = buildWorkspacesAndLibraryEntitiesCriterion(includeAttachments);
@@ -1426,8 +1272,8 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         } else {
             Junction or = Restrictions.disjunction();
             for (Long binderId : binderIds) {
-                or.add(buildBinderCriterion(binderId));
-                or.add(buildParentBinderCriterion(binderId));
+                or.add(SearchUtils.buildBinderCriterion(binderId));
+                or.add(SearchUtils.buildParentBinderCriterion(binderId));
             }
             crit.add(or);
             crit.add(buildWorkspacesAndLibraryEntitiesCriterion(includeAttachments));
@@ -1440,16 +1286,16 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
     private Junction buildWorkspacesAndLibraryEntitiesCriterion(boolean includeAttachments) {
         Junction or;
         or = Restrictions.disjunction();
-        or.add(buildWorkspacesCriterion());
+        or.add(SearchUtils.buildWorkspacesCriterion());
 
         Junction and = Restrictions.conjunction();
         or.add(and);
-        and.add(buildLibraryCriterion(Boolean.TRUE));
+        and.add(SearchUtils.buildLibraryCriterion(Boolean.TRUE));
         or = Restrictions.disjunction();
-        or.add(buildFoldersCriterion());
-        or.add(buildEntriesCriterion());
+        or.add(SearchUtils.buildFoldersCriterion());
+        or.add(SearchUtils.buildEntriesCriterion());
         if (includeAttachments) {
-            or.add(buildAttachmentsCriterion());
+            or.add(SearchUtils.buildAttachmentsCriterion());
         }
         and.add(or);
         return or;
@@ -1505,7 +1351,7 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         libraryInfo.setMirrored(Boolean.TRUE);
         Date syncDate = null;
         for (Long id : binderIds) {
-            syncDate = max(syncDate, getFolderModule().getLastFullSyncCompletionTime(id));
+            syncDate = ResourceUtil.max(syncDate, getFolderModule().getLastFullSyncCompletionTime(id));
         }
         libraryInfo.setLastMirroredSyncDate(syncDate);
     }
