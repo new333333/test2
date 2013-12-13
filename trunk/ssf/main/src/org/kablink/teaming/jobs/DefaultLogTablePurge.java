@@ -74,7 +74,7 @@ public class DefaultLogTablePurge extends SSCronTriggerJob implements LogTablePu
   		}
   		
   		if (zoneConfig.getChangeLogsKeepDays() > 0) {
-  			Date purgeBeforeDate = new Date(now.getTime() - zoneConfig.getChangeLogsKeepDays()*1000*60*60*24);
+  			Date purgeBeforeDate = new Date(now.getTime() - ((long)zoneConfig.getChangeLogsKeepDays())*1000L*60L*60L*24L);
   			List entriesToBeDeleted = getCoreDao().getChangeLogEntries(zoneId, purgeBeforeDate);
   			if (adminModule.writeChangeLogLogFile(entriesToBeDeleted)) {
   				//The entries to be purged were safely logged to disk, so we can delete them from the database
