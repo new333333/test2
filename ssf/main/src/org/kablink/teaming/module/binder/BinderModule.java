@@ -35,6 +35,7 @@ package org.kablink.teaming.module.binder;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Map;
 import java.util.List;
 import java.util.SortedSet;
@@ -42,6 +43,7 @@ import java.util.Set;
 
 import org.dom4j.Document;
 import org.kablink.teaming.domain.Binder;
+import org.kablink.teaming.domain.BinderChanges;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.NoBinderByTheIdException;
@@ -848,4 +850,6 @@ public interface BinderModule {
      * @return
      */
     public boolean testInferredAccessToBinder(User user, Binder binder);
+
+    public BinderChanges searchForChanges(Long binderId, Date sinceDate, int maxResults);
 }

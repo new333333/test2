@@ -50,6 +50,7 @@ import org.kablink.teaming.rest.v1.model.FileProperties;
 import org.kablink.teaming.rest.v1.model.Permission;
 import org.kablink.teaming.rest.v1.model.SearchResultList;
 import org.kablink.teaming.search.SearchFieldResult;
+import org.kablink.teaming.search.SearchUtils;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.util.api.ApiErrorCode;
 import org.kablink.util.search.*;
@@ -81,9 +82,9 @@ public abstract class AbstractDefinableEntityResource extends AbstractFileResour
         Criterion criterion = null;
         DefinableEntity entity = getDefinableEntity(id);
         if (entity instanceof Entry) {
-            criterion = super.buildEntryCriterion(id);
+            criterion = SearchUtils.buildEntryCriterion(id);
         } else if (entity instanceof Binder) {
-            criterion = super.buildBinderCriterion(id);
+            criterion = SearchUtils.buildBinderCriterion(id);
         }
 
         if (criterion==null) {

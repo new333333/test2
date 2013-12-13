@@ -145,7 +145,8 @@ public class SelfResource extends AbstractFileResource {
                 getZoneModule().getZoneConfig(RequestContextHolder.getRequestContext().getZoneId()),
                 null,
                 getProfileModule().getPrincipalMobileAppsConfig(getLoggedInUserId()),
-                getProfileModule().getPrincipalDesktopAppsConfig(getLoggedInUserId()));
+                getProfileModule().getPrincipalDesktopAppsConfig(getLoggedInUserId()),
+                this);
 
         user.setDesktopAppConfig(zoneConfig.getDesktopAppConfig());
         user.setMobileAppConfig(zoneConfig.getMobileAppConfig());
@@ -407,7 +408,7 @@ public class SelfResource extends AbstractFileResource {
                 Junction searchContext = Restrictions.disjunction();
                 for (BinderBrief binder : folders.getResults()) {
                     Junction shareCrit = Restrictions.conjunction();
-                    shareCrit.add(buildSearchBinderCriterion(binder.getId(), true));
+                    shareCrit.add(SearchUtils.buildSearchBinderCriterion(binder.getId(), true));
                     searchContext.add(shareCrit);
                 }
                 subContextSearch.add(searchContext);
@@ -739,7 +740,7 @@ public class SelfResource extends AbstractFileResource {
             return null;
         }
         Criteria root = new Criteria();
-        root.add(super.buildBindersCriterion());
+        root.add(SearchUtils.buildBindersCriterion());
         Junction ids = Restrictions.disjunction();
         for (Long id : myFilesFolderIds) {
             ids.add(Restrictions.eq(Constants.DOCID_FIELD, id.toString()));
@@ -775,15 +776,15 @@ public class SelfResource extends AbstractFileResource {
         nextParams.put("recursive", Boolean.toString(recursive));
         nextParams.put("parent_binder_paths", Boolean.toString(includeParentPaths));
         Criteria crit = new Criteria();
-        crit.add(buildAttachmentsCriterion());
-        crit.add(buildLibraryCriterion(true));
+        crit.add(SearchUtils.buildAttachmentsCriterion());
+        crit.add(SearchUtils.buildLibraryCriterion(true));
         Junction searchContexts = null;
         if (recursive) {
             SearchResultList<BinderBrief> folders = _getMyFilesLibraryFolders(Description.FORMAT_NONE, 0, -1, null);
             if (folders.getCount()>0) {
                 searchContexts = Restrictions.disjunction();
                 for (BinderBrief folder : folders.getResults()) {
-                    searchContexts.add(buildAncentryCriterion(folder.getId()));
+                    searchContexts.add(SearchUtils.buildAncentryCriterion(folder.getId()));
                 }
             }
         }
@@ -795,7 +796,7 @@ public class SelfResource extends AbstractFileResource {
             crit.add(myFiles.asJunction());
         }
         if (fileName!=null) {
-            crit.add(buildFileNameCriterion(fileName));
+            crit.add(SearchUtils.buildFileNameCriterion(fileName));
         }
         SearchResultList<FileProperties> resultList = lookUpAttachments(crit, offset, maxCount, "/self/my_files/library_files", nextParams, getMyFilesFoldersModifiedTime());
         setMyFilesParents(resultList);

@@ -102,7 +102,7 @@ public class FileResource extends AbstractFileResource {
         nextParams.put("library", Boolean.toString(onlyLibraryFiles));
 
         Junction criterion = Restrictions.conjunction()
-            .add(buildAttachmentsCriterion());
+            .add(SearchUtils.buildAttachmentsCriterion());
 
         if (ids!=null && ids.size()>0) {
             Junction or = Restrictions.disjunction();
@@ -113,11 +113,11 @@ public class FileResource extends AbstractFileResource {
             nextParams.put("id", ids);
         }
         if (onlyLibraryFiles) {
-            criterion.add(buildLibraryCriterion(onlyLibraryFiles));
+            criterion.add(SearchUtils.buildLibraryCriterion(onlyLibraryFiles));
         }
         if (fileName!=null) {
             nextParams.put("file_name", fileName);
-            criterion.add(buildFileNameCriterion(fileName));
+            criterion.add(SearchUtils.buildFileNameCriterion(fileName));
         }
         Criteria crit = new Criteria();
         crit.add(criterion);

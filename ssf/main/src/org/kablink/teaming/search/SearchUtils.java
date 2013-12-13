@@ -635,7 +635,146 @@ public class SearchUtils {
         return crit;
     }
 
-	/*
+    public static Criterion buildDocTypeCriterion(boolean includeBinders, boolean includeFolderEntries, boolean includeFiles, boolean includeReplies) {
+        Junction types = Restrictions.disjunction();
+        // Include a restriction that will always evaluate to false.  That way if all of the include* parameters are false
+        // no results will be returned (instead of all results being returned)
+        types.add(getFalseCriterion());
+        if (includeBinders) {
+            types.add(buildBindersCriterion());
+        }
+        if (includeFiles) {
+            types.add(buildAttachmentsCriterion());
+        }
+        if (includeFolderEntries) {
+            types.add(buildEntriesCriterion());
+        }
+        if (includeReplies) {
+            types.add(buildRepliesCriterion());
+        }
+        return types;
+    }
+
+    public static Criterion buildEntryCriterion(Long id) {
+        return Restrictions.conjunction()
+                .add(buildEntriesAndRepliesCriterion())
+                .add(Restrictions.disjunction()
+                        .add(Restrictions.eq(Constants.DOCID_FIELD, id.toString()))
+                        .add(Restrictions.eq(Constants.ENTRY_TOP_ENTRY_ID_FIELD, id.toString())));
+    }
+
+    public static Criterion buildAttachmentsCriterion() {
+        return Restrictions.eq(Constants.DOC_TYPE_FIELD, Constants.DOC_TYPE_ATTACHMENT);
+    }
+
+    public static Criterion buildAttachmentCriterion(Long entryId) {
+        return Restrictions.conjunction()
+                .add(Restrictions.eq(Constants.DOC_TYPE_FIELD, Constants.DOC_TYPE_ATTACHMENT))
+                .add(Restrictions.eq(Constants.ENTRY_TYPE_FIELD, Constants.DOC_TYPE_ENTRY))
+                .add(Restrictions.eq(Constants.DOCID_FIELD, entryId.toString()));
+    }
+
+    public static Criterion buildEntriesAndRepliesCriterion() {
+        return Restrictions.conjunction()
+                .add(Restrictions.eq(Constants.DOC_TYPE_FIELD, Constants.DOC_TYPE_ENTRY))
+                .add(Restrictions.in(Constants.ENTRY_TYPE_FIELD, new String[]{Constants.ENTRY_TYPE_ENTRY, Constants.ENTRY_TYPE_REPLY}));
+    }
+
+    public static Criterion buildEntriesCriterion() {
+        return Restrictions.conjunction()
+                .add(Restrictions.eq(Constants.DOC_TYPE_FIELD, Constants.DOC_TYPE_ENTRY))
+                .add(Restrictions.in(Constants.ENTRY_TYPE_FIELD, new String[]{Constants.ENTRY_TYPE_ENTRY}));
+    }
+
+    public static Criterion buildRepliesCriterion() {
+        return Restrictions.conjunction()
+                .add(Restrictions.eq(Constants.DOC_TYPE_FIELD, Constants.DOC_TYPE_ENTRY))
+                .add(Restrictions.in(Constants.ENTRY_TYPE_FIELD, new String[]{Constants.ENTRY_TYPE_REPLY}));
+    }
+
+    public static Criterion buildFoldersCriterion() {
+        return Restrictions.conjunction()
+                .add(Restrictions.eq(Constants.DOC_TYPE_FIELD, Constants.DOC_TYPE_BINDER))
+                .add(Restrictions.eq(Constants.ENTITY_FIELD, Constants.ENTITY_TYPE_FOLDER));
+    }
+
+    public static Criterion buildWorkspacesCriterion() {
+        return Restrictions.conjunction()
+                .add(Restrictions.eq(Constants.DOC_TYPE_FIELD, Constants.DOC_TYPE_BINDER))
+                .add(Restrictions.eq(Constants.ENTITY_FIELD, Constants.ENTITY_TYPE_WORKSPACE));
+    }
+
+    public static Criterion buildBindersCriterion() {
+        return Restrictions.eq(Constants.DOC_TYPE_FIELD, Constants.DOC_TYPE_BINDER);
+    }
+
+    public static Criterion buildAncentryCriterion(Long id) {
+        return Restrictions.eq(Constants.ENTRY_ANCESTRY, id.toString());
+    }
+
+    public static Criterion getFalseCriterion() {
+        return Restrictions.eq(Constants.DOC_TYPE_FIELD, "_fake_");
+    }
+
+    public static Criterion buildLibraryTreeCriterion() {
+        Junction criteria = Restrictions.disjunction();
+        criteria.add(SearchUtils.libraryFolders());
+        criteria.add(buildWorkspacesCriterion());
+        return criteria;
+    }
+
+    public static Criterion buildBinderCriterion(Long id) {
+        return Restrictions.conjunction()
+                .add(buildBindersCriterion())
+                .add(Restrictions.eq(Constants.DOCID_FIELD, id.toString()));
+    }
+
+    public static Criterion buildUsersCriterion(boolean allowExternal) {
+        Junction crit = Restrictions.conjunction()
+                .add(Restrictions.eq(Constants.PERSONFLAG_FIELD, Boolean.TRUE.toString()))
+                .add(Restrictions.eq(Constants.DISABLED_USER_FIELD, Boolean.FALSE.toString()))
+                .add(Restrictions.eq(Constants.DOC_TYPE_FIELD, Constants.DOC_TYPE_ENTRY))
+                .add(Restrictions.eq(Constants.ENTRY_TYPE_FIELD, Constants.ENTRY_TYPE_USER));
+        if (!allowExternal) {
+            crit.add(Restrictions.eq(Constants.IDENTITY_INTERNAL_FIELD, Boolean.TRUE.toString()));
+        }
+        return crit;
+    }
+
+    public static Criterion buildGroupsCriterion(Boolean fromLdap, boolean includeAllUsersGroup) {
+        Junction crit = Restrictions.conjunction()
+                .add(Restrictions.eq(Constants.DOC_TYPE_FIELD, Constants.DOC_TYPE_ENTRY))
+                .add(Restrictions.eq(Constants.ENTRY_TYPE_FIELD, Constants.ENTRY_TYPE_GROUP))
+                .add(SearchUtils.buildExcludeUniversalAndContainerGroupCriterion(!includeAllUsersGroup));
+        if (fromLdap!=null) {
+            crit.add(Restrictions.eq(Constants.IS_GROUP_FROM_LDAP_FIELD, fromLdap.toString()));
+        }
+        return crit;
+    }
+
+    public static Criterion buildParentBinderCriterion(Long id) {
+        return  Restrictions.disjunction()
+                .add(Restrictions.eq(Constants.BINDER_ID_FIELD, id.toString()))
+                .add(Restrictions.eq(Constants.BINDERS_PARENT_ID_FIELD, id.toString()));
+    }
+
+    public static Criterion buildSearchBinderCriterion(Long id, boolean recursive) {
+        if (recursive) {
+            return buildAncentryCriterion(id);
+        } else {
+            return buildParentBinderCriterion(id);
+        }
+    }
+
+    public static Criterion buildLibraryCriterion(Boolean onlyLibrary) {
+        return Restrictions.eq(Constants.IS_LIBRARY_FIELD, ((Boolean) onlyLibrary).toString());
+    }
+
+    public static Criterion buildFileNameCriterion(String fileName) {
+        return Restrictions.like(Constants.FILENAME_FIELD, fileName);
+    }
+
+    /*
 	 * Creates a user's My Files container and returns its ID.
 	 */
 	private static Long createMyFilesFolder(AllModulesInjected bs, Long userWorkspaceId) {

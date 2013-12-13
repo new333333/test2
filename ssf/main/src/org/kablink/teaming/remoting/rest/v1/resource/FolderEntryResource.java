@@ -54,6 +54,7 @@ import org.kablink.teaming.rest.v1.model.Operation;
 import org.kablink.teaming.rest.v1.model.Permission;
 import org.kablink.teaming.rest.v1.model.SearchResultList;
 import org.kablink.teaming.rest.v1.model.Share;
+import org.kablink.teaming.search.SearchUtils;
 import org.kablink.teaming.util.SimpleProfiler;
 import org.kablink.util.api.ApiErrorCode;
 import org.kablink.util.search.Constants;
@@ -89,7 +90,7 @@ public class FolderEntryResource extends AbstractFolderEntryResource {
                                                                @QueryParam("first") @DefaultValue("0") Integer offset,
 			                                                   @QueryParam("count") @DefaultValue("-1") Integer maxCount) {
         Junction criterion = Restrictions.conjunction();
-        criterion.add(buildEntriesCriterion());
+        criterion.add(SearchUtils.buildEntriesCriterion());
         if (ids!=null) {
             Junction or = Restrictions.disjunction();
             for (Long id : ids) {
@@ -113,7 +114,7 @@ public class FolderEntryResource extends AbstractFolderEntryResource {
                                                          @QueryParam("first") @DefaultValue("0") Integer offset,
 			                                             @QueryParam("count") @DefaultValue("-1") Integer maxCount) {
         String query = getRawInputStreamAsString(request);
-        Document queryDoc = buildQueryDocument(query, buildEntriesCriterion());
+        Document queryDoc = buildQueryDocument(query, SearchUtils.buildEntriesCriterion());
         Map folderEntries = getBinderModule().executeSearchQuery(queryDoc, Constants.SEARCH_MODE_NORMAL, offset, maxCount);
         SearchResultList<FolderEntryBrief> results = new SearchResultList<FolderEntryBrief>(offset);
         Map<String, Object> nextParams = new HashMap<String, Object>();

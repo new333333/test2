@@ -105,7 +105,7 @@ public class UserResource extends AbstractPrincipalResource {
             criterion.add(or);
             nextParams.put("id", ids);
         }
-        criterion.add(buildUsersCriterion(allowExternal));
+        criterion.add(SearchUtils.buildUsersCriterion(allowExternal));
         if (name!=null) {
             criterion.add(Restrictions.like(Constants.LOGINNAME_FIELD, name));
             nextParams.put("name", name);

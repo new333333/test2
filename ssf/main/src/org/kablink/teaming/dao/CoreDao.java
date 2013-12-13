@@ -42,6 +42,7 @@ import org.kablink.teaming.NoObjectByTheIdException;
 import org.kablink.teaming.dao.util.FilterControls;
 import org.kablink.teaming.dao.util.ObjectControls;
 import org.kablink.teaming.dao.util.SFQuery;
+import org.kablink.teaming.domain.AuditTrail;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.BinderQuota;
 import org.kablink.teaming.domain.BinderState;
@@ -50,6 +51,7 @@ import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.EntityDashboard;
 import org.kablink.teaming.domain.EntityIdentifier;
+import org.kablink.teaming.domain.HKey;
 import org.kablink.teaming.domain.IndexNode;
 import org.kablink.teaming.domain.LdapConnectionConfig;
 import org.kablink.teaming.domain.LibraryEntry;
@@ -266,6 +268,8 @@ public interface CoreDao {
 	public List<OpenIDProvider> findOpenIDProviders(Long zoneId);
 	
 	public List getAuditTrailEntries(final Long zoneId, final Date purgeBeforeDate);
+	public List getAuditTrailEntries(final Long zoneId, final Date sinceDate, HKey parentBinderKey,
+                                     AuditTrail.AuditType [] types, int maxResults);
 	public int purgeAuditTrail(Long zoneId, Date purgeBeforeDate);
 	
 	public List getChangeLogEntries(final Long zoneId, final Date purgeBeforeDate);

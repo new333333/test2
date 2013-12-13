@@ -2,8 +2,13 @@ package org.kablink.teaming.remoting.rest.v1.resource;
 
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.dao.util.ShareItemSelectSpec;
-import org.kablink.teaming.domain.*;
+import org.kablink.teaming.domain.BinderChange;
+import org.kablink.teaming.domain.DefinableEntity;
+import org.kablink.teaming.domain.EntityIdentifier;
+import org.kablink.teaming.domain.NoBinderByTheIdException;
+import org.kablink.teaming.domain.NoTagByTheIdException;
 import org.kablink.teaming.domain.Principal;
+import org.kablink.teaming.domain.ShareItem;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.file.FileIndexData;
 import org.kablink.teaming.module.file.FileList;
@@ -20,10 +25,23 @@ import org.kablink.teaming.remoting.rest.v1.util.ResourceUtil;
 import org.kablink.teaming.remoting.rest.v1.util.RestModelInputData;
 import org.kablink.teaming.remoting.rest.v1.util.SearchResultBuilderUtil;
 import org.kablink.teaming.remoting.rest.v1.util.UniversalBuilder;
-import org.kablink.teaming.rest.v1.model.*;
+import org.kablink.teaming.rest.v1.model.Access;
+import org.kablink.teaming.rest.v1.model.BaseBinderChange;
 import org.kablink.teaming.rest.v1.model.Binder;
+import org.kablink.teaming.rest.v1.model.BinderBrief;
+import org.kablink.teaming.rest.v1.model.BinderChanges;
+import org.kablink.teaming.rest.v1.model.BinderTree;
+import org.kablink.teaming.rest.v1.model.FileProperties;
 import org.kablink.teaming.rest.v1.model.Folder;
+import org.kablink.teaming.rest.v1.model.LibraryInfo;
+import org.kablink.teaming.rest.v1.model.ParentBinder;
+import org.kablink.teaming.rest.v1.model.PrincipalBrief;
+import org.kablink.teaming.rest.v1.model.RecentActivityEntry;
+import org.kablink.teaming.rest.v1.model.SearchResultList;
+import org.kablink.teaming.rest.v1.model.SearchableObject;
+import org.kablink.teaming.rest.v1.model.Share;
 import org.kablink.teaming.rest.v1.model.Tag;
+import org.kablink.teaming.rest.v1.model.TeamMember;
 import org.kablink.teaming.search.SearchUtils;
 import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.util.api.ApiErrorCode;
@@ -39,7 +57,11 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.Locale;
 
 /**
  * User: david
@@ -48,6 +70,7 @@ import java.util.*;
  */
 abstract public class AbstractBinderResource extends AbstractDefinableEntityResource {
 
+    protected static DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.US);
     abstract protected String getBasePath();
     
     /**
@@ -191,8 +214,47 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 	public BinderTree getLibraryTree(@PathParam("id") long id,
                                      @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr) {
-        return getSubBinderTree(id, buildLibraryTreeCriterion(), toDomainFormat(descriptionFormatStr));
+        return getSubBinderTree(id, SearchUtils.buildLibraryTreeCriterion(), toDomainFormat(descriptionFormatStr));
 	}
+
+    @GET
+    @Path ("{id}/library_changes")
+    public BinderChanges getLibraryChildrenChanges(@PathParam("id") long id,
+                                              @QueryParam("since") String since,
+                                              @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr,
+                                              @QueryParam ("count") @DefaultValue("500") Integer maxCount) {
+        if (since==null) {
+            throw new BadRequestException(ApiErrorCode.BAD_INPUT, "Missing 'since' query parameter");
+        }
+        try {
+            Date sinceDate = dateFormat.parse(since);
+            org.kablink.teaming.domain.BinderChanges binderChanges = getBinderModule().searchForChanges(id, sinceDate, maxCount);
+            List<BaseBinderChange> changes = new ArrayList<BaseBinderChange>();
+            for (org.kablink.teaming.domain.BinderChange change : binderChanges.getChanges()) {
+                DefinableEntity definableEntity = null;
+                try {
+                    if (change.getAction() != BinderChange.Action.delete) {
+                        definableEntity = findDefinableEntity(change.getEntityId());
+                    }
+                } catch (Exception e) {
+                    logger.warn("Unable to look up entity: " + change.getEntityId(), e);
+                }
+                changes.add(ResourceUtil.buildBinderChange(change, definableEntity, false, toDomainFormat(descriptionFormatStr)));
+            }
+            BinderChanges results = ResourceUtil.buildBinderChanges(binderChanges, changes);
+            results.setLastChange(results.getLastModified());
+            if (results.getTotal()>results.getCount()) {
+                HashMap<String, Object> nextParams = new HashMap<String, Object>();
+                nextParams.put("since", dateFormat.format(results.getLastChange()));
+                nextParams.put("description_format", descriptionFormatStr);
+                nextParams.put("count", maxCount.toString());
+                results.setNext(getBasePath() + id + "/library_changes", nextParams);
+            }
+            return results;
+        } catch (ParseException e) {
+            throw new BadRequestException(ApiErrorCode.BAD_INPUT, "Invalid date in the 'since' query parameter");
+        }
+    }
 
     @GET
    	@Path("{id}/library_children")
@@ -209,7 +271,7 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
         if (ifModifiedSince!=null && !ifModifiedSince.before(lastModified)) {
             throw new NotModifiedException();
         }
-        SearchResultList<SearchableObject> children = getChildren(id, buildLibraryCriterion(true), true, false, true, offset, maxCount,
+        SearchResultList<SearchableObject> children = getChildren(id, SearchUtils.buildLibraryCriterion(true), true, false, true, offset, maxCount,
                 getBasePath() + id + "/library_children", nextParams, toDomainFormat(descriptionFormatStr), ifModifiedSince);
         return Response.ok(children).lastModified(lastModified).build();
    	}
@@ -509,12 +571,12 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
         Junction criterion = Restrictions.conjunction()
             .add(Restrictions.eq(Constants.DOC_TYPE_FIELD, Constants.DOC_TYPE_ATTACHMENT));
 
-        criterion.add(buildSearchBinderCriterion(id, recursive));
+        criterion.add(SearchUtils.buildSearchBinderCriterion(id, recursive));
         if (onlyLibraryFiles) {
-            criterion.add(buildLibraryCriterion(onlyLibraryFiles));
+            criterion.add(SearchUtils.buildLibraryCriterion(onlyLibraryFiles));
         }
         if (fileName!=null) {
-            criterion.add(buildFileNameCriterion(fileName));
+            criterion.add(SearchUtils.buildFileNameCriterion(fileName));
         }
         if (offset==null) {
             offset = 0;
@@ -574,16 +636,16 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
         }
         Junction or = Restrictions.disjunction();
         if (binders) {
-            or.add(buildBindersCriterion());
+            or.add(SearchUtils.buildBindersCriterion());
         }
         if (entries) {
-            or.add(buildEntriesCriterion());
+            or.add(SearchUtils.buildEntriesCriterion());
         }
         if (files) {
-            or.add(buildAttachmentsCriterion());
+            or.add(SearchUtils.buildAttachmentsCriterion());
         }
         crit.add(or);
-        crit.add(buildParentBinderCriterion(id));
+        crit.add(SearchUtils.buildParentBinderCriterion(id));
         crit.addOrder(new Order(Constants.ENTITY_FIELD, true));
         crit.addOrder(new Order(Constants.SORT_TITLE_FIELD, true));
         Map resultMap = getBinderModule().searchFolderOneLevelWithInferredAccess(crit, Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, offset, maxCount, binder);
@@ -602,7 +664,7 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
             crit.add(filter);
         }
         crit.add(Restrictions.eq(Constants.DOC_TYPE_FIELD, Constants.DOC_TYPE_BINDER));
-        crit.add(buildAncentryCriterion(id));
+        crit.add(SearchUtils.buildAncentryCriterion(id));
         Map resultMap = getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, 0, -1);
         BinderTree results = new BinderTree();
         SearchResultBuilderUtil.buildSearchResultsTree(this, results, id, new BinderBriefBuilder(descriptionFormat), resultMap);

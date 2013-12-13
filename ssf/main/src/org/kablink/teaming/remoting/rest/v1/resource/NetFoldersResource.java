@@ -98,9 +98,9 @@ public class NetFoldersResource extends AbstractResource {
             for (BinderBrief binder : netFolders.getResults()) {
                 Junction shareCrit = Restrictions.conjunction();
                 if (recursive) {
-                    shareCrit.add(buildSearchBinderCriterion(binder.getId(), true));
+                    shareCrit.add(SearchUtils.buildSearchBinderCriterion(binder.getId(), true));
                 } else {
-                    shareCrit.add(buildBinderCriterion(binder.getId()));
+                    shareCrit.add(SearchUtils.buildBinderCriterion(binder.getId()));
                 }
                 searchContext.add(shareCrit);
             }

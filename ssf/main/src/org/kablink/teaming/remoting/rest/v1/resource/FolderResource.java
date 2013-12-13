@@ -67,6 +67,7 @@ import org.kablink.teaming.rest.v1.model.Operation;
 import org.kablink.teaming.rest.v1.model.Permission;
 import org.kablink.teaming.rest.v1.model.SearchResultList;
 import org.kablink.teaming.rest.v1.model.SearchableObject;
+import org.kablink.teaming.search.SearchUtils;
 import org.kablink.teaming.util.SimpleProfiler;
 import org.kablink.util.api.ApiErrorCode;
 import org.kablink.util.search.Constants;
@@ -106,7 +107,7 @@ public class FolderResource extends AbstractBinderResource {
             @QueryParam("first") @DefaultValue("0") Integer offset,
             @QueryParam("count") @DefaultValue("-1") Integer maxCount) {
         Junction criterion = Restrictions.conjunction();
-        criterion.add(buildFoldersCriterion());
+        criterion.add(SearchUtils.buildFoldersCriterion());
         if (ids!=null) {
             Junction or = Restrictions.disjunction();
             for (Long id : ids) {
@@ -131,7 +132,7 @@ public class FolderResource extends AbstractBinderResource {
                                                     @QueryParam("first") @DefaultValue("0") Integer offset,
    			                                        @QueryParam("count") @DefaultValue("-1") Integer maxCount) {
         String query = getRawInputStreamAsString(request);
-        Document queryDoc = buildQueryDocument(query, buildFoldersCriterion());
+        Document queryDoc = buildQueryDocument(query, SearchUtils.buildFoldersCriterion());
         Map resultsMap = getBinderModule().executeSearchQuery(queryDoc, Constants.SEARCH_MODE_NORMAL, offset, maxCount);
         SearchResultList<BinderBrief> results = new SearchResultList<BinderBrief>(offset);
         Map<String, Object> nextParams = new HashMap<String, Object>();
@@ -373,7 +374,7 @@ public class FolderResource extends AbstractBinderResource {
                                                   @QueryParam("first") @DefaultValue("0") Integer offset,
                                                   @QueryParam("count") @DefaultValue("-1") Integer maxCount) {
         _getFolder(id);
-        return searchForLibraryEntities(keyword, buildSearchBinderCriterion(id, recursive), recursive, offset, maxCount,
+        return searchForLibraryEntities(keyword, SearchUtils.buildSearchBinderCriterion(id, recursive), recursive, offset, maxCount,
                 includeBinders, includeFolderEntries, includeReplies, includeFiles, includeParentPaths, toDomainFormat(descriptionFormatStr),
                 "/folders/" + id + "/library_entities");
 	}

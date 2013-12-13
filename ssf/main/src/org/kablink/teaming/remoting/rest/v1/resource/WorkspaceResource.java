@@ -90,7 +90,7 @@ public class WorkspaceResource extends AbstractBinderResource {
                                                        @QueryParam("first") @DefaultValue("0") Integer offset,
                                                        @QueryParam("count") @DefaultValue("-1") Integer maxCount) {
         Junction criterion = Restrictions.conjunction();
-        criterion.add(buildWorkspacesCriterion());
+        criterion.add(SearchUtils.buildWorkspacesCriterion());
         if (ids!=null) {
             Junction or = Restrictions.disjunction();
             for (Long id : ids) {
@@ -115,7 +115,7 @@ public class WorkspaceResource extends AbstractBinderResource {
                                                                      @QueryParam("first") @DefaultValue("0") Integer offset,
                                                                      @QueryParam("count") @DefaultValue("-1") Integer maxCount) {
         String query = getRawInputStreamAsString(request);
-        Document queryDoc = buildQueryDocument(query, buildWorkspacesCriterion());
+        Document queryDoc = buildQueryDocument(query, SearchUtils.buildWorkspacesCriterion());
         Map resultsMap = getBinderModule().executeSearchQuery(queryDoc, Constants.SEARCH_MODE_NORMAL, offset, maxCount);
         SearchResultList<BinderBrief> results = new SearchResultList<BinderBrief>(offset);
         Map<String, Object> nextParams = new HashMap<String, Object>();
@@ -288,7 +288,7 @@ public class WorkspaceResource extends AbstractBinderResource {
                                                   @QueryParam("first") @DefaultValue("0") Integer offset,
                                                   @QueryParam("count") @DefaultValue("-1") Integer maxCount) {
         _getWorkspace(id);
-        return searchForLibraryEntities(keyword, buildSearchBinderCriterion(id, recursive), recursive, offset, maxCount,
+        return searchForLibraryEntities(keyword, SearchUtils.buildSearchBinderCriterion(id, recursive), recursive, offset, maxCount,
                 includeBinders, includeFolderEntries, includeReplies, includeFiles, includeParentPaths, toDomainFormat(descriptionFormatStr),
                 "/workspaces/" + id + "/library_entities");
 	}

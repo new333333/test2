@@ -526,7 +526,7 @@ public class ShareResource extends AbstractResource {
                                                    @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr) {
         SharedBinderBrief [] sharedBinders = getSharedWithBinders(userId, true, false, showHidden, showUnhidden, false, true);
         return getSubBinderTree(ObjectKeys.SHARED_WITH_ME_ID, "/self/shared_with_me", sharedBinders,
-                buildLibraryTreeCriterion(), toDomainFormat(descriptionFormatStr));
+                SearchUtils.buildLibraryTreeCriterion(), toDomainFormat(descriptionFormatStr));
     }
 
     @GET
@@ -1056,7 +1056,7 @@ public class ShareResource extends AbstractResource {
                 criterion.add(Restrictions.eq(Constants.IS_LIBRARY_FIELD, ((Boolean) onlyLibraryFiles).toString()));
             }
             if (fileName!=null) {
-                criterion.add(buildFileNameCriterion(fileName));
+                criterion.add(SearchUtils.buildFileNameCriterion(fileName));
             }
             List<FileIndexData> files = getFileModule().getFileDataFromIndex(new Criteria().add(criterion));
             for (FileIndexData file : files) {
@@ -1093,8 +1093,8 @@ public class ShareResource extends AbstractResource {
                     FolderEntry entry = (FolderEntry) getSharingModule().getSharedEntity(shareItem);
                     if (showToUser(entry, topId, showHidden, showUnhidden)) {
                         shareCrit.add(Restrictions.disjunction()
-                                .add(buildEntryCriterion(entityId.getEntityId()))
-                                .add(buildAttachmentCriterion(entityId.getEntityId()))
+                                .add(SearchUtils.buildEntryCriterion(entityId.getEntityId()))
+                                .add(SearchUtils.buildAttachmentCriterion(entityId.getEntityId()))
                         );
                     }
                 } else if (entityId.getEntityType()==EntityIdentifier.EntityType.folder ||
@@ -1102,9 +1102,9 @@ public class ShareResource extends AbstractResource {
                     Binder binder = (Binder) getSharingModule().getSharedEntity(shareItem);
                     if (showBinderToUser(binder, false, topId, showHidden, showUnhidden)) {
                         if (recursive) {
-                            shareCrit.add(buildSearchBinderCriterion(entityId.getEntityId(), true));
+                            shareCrit.add(SearchUtils.buildSearchBinderCriterion(entityId.getEntityId(), true));
                         } else {
-                            shareCrit.add(buildBinderCriterion(entityId.getEntityId()));
+                            shareCrit.add(SearchUtils.buildBinderCriterion(entityId.getEntityId()));
                         }
                     }
                 }

@@ -548,7 +548,7 @@ public void setExtFunctionMembershipInherited(boolean extFunctionMembershipInher
 		if (auditTrailKeepDays == null) {
 			if (Utils.checkIfFilr() || Utils.checkIfIPrint()) {
 				return SPropsUtil.getInt("default.table.purge.keep.days.audittrail.filr", 183);
-			} else {
+            } else {
 				return SPropsUtil.getInt("default.table.purge.keep.days.audittrail", 0);
 			}
 		} else {
