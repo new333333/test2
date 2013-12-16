@@ -100,7 +100,7 @@ public class ProfileMainPanel extends Composite implements SubmitCompleteHandler
 
 	private FileUpload fileUpload;
 	private Anchor uploadBtn;
-	private Anchor delete;
+//	private Anchor delete;
 	private FormPanel formPanel;
 	private GwtProfilePage m_profilePage;
 
@@ -230,10 +230,10 @@ public class ProfileMainPanel extends Composite implements SubmitCompleteHandler
 //			}// end onMouseOut()
 //		};
 //		edit.addMouseOutHandler(mouseOutHandler);
-		
-		delete = createDeleteAction(actionsPanel);
-		
-		// Add a mouse-over handler
+//		
+//		delete = createDeleteAction(actionsPanel);
+//		
+//		// Add a mouse-over handler
 //		delete.addMouseOverHandler( new MouseOverHandler() {
 //			@Override
 //			public void onMouseOver(MouseOverEvent event) {
@@ -304,26 +304,26 @@ public class ProfileMainPanel extends Composite implements SubmitCompleteHandler
 		return eAnchor;
 	}
 	
-	private Anchor createDeleteAction(FlowPanel panel) {
-		
-		FlowPanel actions = new FlowPanel();
-		actions.addStyleName("profile-action");
-		panel.add(actions);
-
-		Anchor eAnchor = new Anchor(GwtTeaming.getMessages().profileDelete());
-		eAnchor.setTitle(GwtTeaming.getMessages().profileDelete());
-		
+//	private Anchor createDeleteAction(FlowPanel panel) {
+//		
+//		FlowPanel actions = new FlowPanel();
+//		actions.addStyleName("profile-action");
+//		panel.add(actions);
+//
+//		Anchor eAnchor = new Anchor(GwtTeaming.getMessages().profileDelete());
+//		eAnchor.setTitle(GwtTeaming.getMessages().profileDelete());
+//		
 //		eAnchor.addStyleName("editBrandingLink");
 //		eAnchor.addStyleName("editBrandingAdvancedLink");
 //		eAnchor.addStyleName("roundcornerSM");
 //		eAnchor.addStyleName("subhead-control-bg1");
-		eAnchor.setVisible(profileRequestInfo.isBinderAdmin() && !profileRequestInfo.isOwner());
-
-		actions.add(eAnchor);
-		eAnchor.addClickHandler(new ActionClickHandler("DeleteId"));
-
-		return eAnchor;
-	}
+//		eAnchor.setVisible(profileRequestInfo.isBinderAdmin() && !profileRequestInfo.isOwner());
+//
+//		actions.add(eAnchor);
+//		eAnchor.addClickHandler(new ActionClickHandler("DeleteId"));
+//
+//		return eAnchor;
+//	}
 	
 	/**
 	 * Use to determine if should show the follow button
