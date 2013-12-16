@@ -275,27 +275,7 @@ public class ProfileEntryDlg extends DlgBox {
 					GwtClientHelper.jsLaunchToolbarPopupUrl(modifyUrl, 850, 600);
 				}
 			});
-		}
 
-		// Do we have a URL for this user to delete this entry?
-		final String deleteUrl = m_profileEntryInfo.getDeleteUrl();
-		boolean hasDelete = GwtClientHelper.hasString(deleteUrl);
-		if (hasDelete) {
-			// Yes!  Create a push button so they can.
-			Button button = new Button(m_messages.profileEntryDlgDelete());
-			button.addStyleName("vibe-profileEntryDlg-button vibe-profileEntryDlg-delete");
-			buttonPanel.add(button);
-			button.addClickHandler(new ClickHandler() {
-				@Override
-				public void onClick(ClickEvent event) {
-					hide();
-					GwtClientHelper.jsLaunchToolbarPopupUrl(deleteUrl, 900, 150);
-				}
-			});
-		}
-
-		// If we created an push buttons...
-		if (hasModify || hasDelete) {
 			// ...add the button panel to the grid.
 			int row = grid.getRowCount();
 			grid.setWidget(row, 0, buttonPanel);
