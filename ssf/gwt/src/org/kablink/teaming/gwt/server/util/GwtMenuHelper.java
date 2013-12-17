@@ -3751,7 +3751,7 @@ public class GwtMenuHelper {
 						// edit the file?
 						String operatingSystem  = BrowserSniffer.getOSInfo(request);
 						String relativeFilePath = fa.getFileItem().getName();
-						String strOpenInEditor  = SsfsUtil.openInEditor(relativeFilePath, operatingSystem);
+						String strOpenInEditor  = SsfsUtil.openInEditor(relativeFilePath, operatingSystem, bs.getProfileModule().getUserProperties(null));
 						if (MiscUtil.hasString(strOpenInEditor)) {
 							String strEditorType;
 							if (BrowserSniffer.is_ie(request))
