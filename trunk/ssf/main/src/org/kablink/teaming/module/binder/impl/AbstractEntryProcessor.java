@@ -394,18 +394,22 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     
     protected Map addEntry_toEntryData(Binder binder, Definition def, InputDataAccessor inputData, Map fileItems, Map ctx) {
         //Call the definition processor to get the entry data to be stored
+    	Map entryDataAll;
+    	Map entryData;
         if (def != null) {
-        	return getDefinitionModule().getEntryData(def.getDefinition(), inputData, fileItems);
+        	entryDataAll = getDefinitionModule().getEntryData(def.getDefinition(), inputData, fileItems);
+        	entryData = (Map) entryDataAll.get(ObjectKeys.DEFINITION_ENTRY_DATA);
         } else {
         	//handle basic fields only without definition
-        	Map entryDataAll = new HashMap();
-	        Map entryData = new HashMap();
+        	entryDataAll = new HashMap();
+	        entryData = new HashMap();
 			List fileData = new ArrayList();
 			EntryDataErrors entryDataErrors = new EntryDataErrors();
 			entryDataAll.put(ObjectKeys.DEFINITION_ENTRY_DATA, entryData);
 			entryDataAll.put(ObjectKeys.DEFINITION_FILE_DATA, fileData);
 			entryDataAll.put(ObjectKeys.DEFINITION_ERRORS, entryDataErrors);
- 			if (inputData.exists(ObjectKeys.FIELD_ENTITY_TITLE)) entryData.put(ObjectKeys.FIELD_ENTITY_TITLE, inputData.getSingleValue("title"));
+ 			if (inputData.exists(ObjectKeys.FIELD_ENTITY_TITLE)) 
+ 				entryData.put(ObjectKeys.FIELD_ENTITY_TITLE, inputData.getSingleValue(ObjectKeys.FIELD_ENTITY_TITLE));
 			if (inputData.exists(ObjectKeys.FIELD_ENTITY_DESCRIPTION)) {
 				Description description = new Description();
 				description.setText(inputData.getSingleValue(ObjectKeys.FIELD_ENTITY_DESCRIPTION));
@@ -425,9 +429,14 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 				}
 				entryData.put(ObjectKeys.FIELD_ENTITY_DESCRIPTION, description);
 			}
-      	
-        	return entryDataAll;
         }
+      	
+        // This field is not controlled by definition any way, so should be processed regardless of whether
+        // the entry has a definition or not.
+		if (inputData.exists(ObjectKeys.FIELD_RESOURCE_HANDLE)) 
+			entryData.put(ObjectKeys.FIELD_RESOURCE_HANDLE, inputData.getSingleValue(ObjectKeys.FIELD_RESOURCE_HANDLE));
+			
+    	return entryDataAll;
     }
     
     protected Entry addEntry_create(Definition def, Class clazz, Map ctx)  {

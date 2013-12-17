@@ -111,5 +111,6 @@
     </component>
     <property name="popularity" optimistic-lock="false" access="field"/>
     <one-to-one name="folderEntryStats" class="org.kablink.teaming.domain.FolderEntryStats" cascade="all,delete-orphan"/>
+    <property name="resourceHandle" length="128"/>
    </class>
 </hibernate-mapping>

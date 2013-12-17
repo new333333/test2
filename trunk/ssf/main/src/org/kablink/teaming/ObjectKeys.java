@@ -715,6 +715,7 @@ public interface ObjectKeys {
 	public static final String FIELD_BINDER_FULL_SYNC_DIR_ONLY = "fullSyncDirOnly";
 	
 	public static final String FIELD_RESOURCE_DRIVER_TYPE = "type";
+	public static final String FIELD_RESOURCE_HANDLE = "resourceHandle"; 
 
     public static final String FIELD_USER_FIRSTNAME="firstName";
     public static final String FIELD_USER_MIDDLENAME="middleName";

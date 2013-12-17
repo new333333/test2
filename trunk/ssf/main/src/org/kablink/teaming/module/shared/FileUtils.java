@@ -144,7 +144,7 @@ public class FileUtils {
 		if (Validator.isNull(dataName) && entry.getParentFolder().isLibrary()) {
 			// The file is being created within a library folder and the client hasn't specified a data item name explicitly.
 			// This will attach the file to the most appropriate definition element (data item) of the entry type (which is by default "upload").
-			FolderUtils.modifyLibraryEntry(entry, filename, is, null, modDate, expectedMd5, true, null, null);
+			FolderUtils.modifyLibraryEntry(entry, filename, null, is, null, modDate, expectedMd5, true, null, null);
 		}
 		else {
 			if (Validator.isNull(dataName) || "ss_attachFile".equals(dataName)) 

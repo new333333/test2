@@ -534,7 +534,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 				try {
 					if(binder.getResourcePath() == null && parent.getResourcePath() != null) {
 						session = getResourceDriverManager().getSession(driver, ResourceDriverManager.FileOperation.CREATE_FOLDER, parent);
-						session.setPath(parent.getResourcePath(), binder.getTitle(), Boolean.TRUE);
+						session.setPath(parent.getResourcePath(), parent.getResourceHandle(), binder.getTitle(), binder.getResourceHandle(), Boolean.TRUE);
 						binder.setResourcePath(session.getPath());
 						normalizeResourcePath(binder);
 					}
@@ -552,7 +552,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 						else {
 							if(session == null) {						
 								session = getResourceDriverManager().getSession(driver, ResourceDriverManager.FileOperation.CREATE_FOLDER, parent);
-								session.setPath(binder.getResourcePath(), Boolean.TRUE);
+								session.setPath(binder.getResourcePath(), binder.getResourceHandle(), Boolean.TRUE);
 							}
 							
 							session.createDirectory();
@@ -681,6 +681,9 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
    			}
    			if (inputData.exists(ObjectKeys.FIELD_BINDER_RESOURCE_PATH) && !entryData.containsKey(ObjectKeys.FIELD_BINDER_RESOURCE_PATH)) {
    				entryData.put(ObjectKeys.FIELD_BINDER_RESOURCE_PATH, inputData.getSingleValue(ObjectKeys.FIELD_BINDER_RESOURCE_PATH));
+   			}
+   			if (inputData.exists(ObjectKeys.FIELD_RESOURCE_HANDLE) && !entryData.containsKey(ObjectKeys.FIELD_RESOURCE_HANDLE)) {
+   				entryData.put(ObjectKeys.FIELD_RESOURCE_HANDLE, inputData.getSingleValue(ObjectKeys.FIELD_RESOURCE_HANDLE));
    			}
 
    			if ( inputData.exists( ObjectKeys.FIELD_BINDER_IS_HOME_DIR ) && !entryData.containsKey( ObjectKeys.FIELD_BINDER_IS_HOME_DIR ) )
@@ -963,9 +966,9 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 						new String[] {binder.getPathName(), driver.getTitle()});
     		}
     		else {
-				ResourceSession session = getResourceDriverManager().getSession(driver, ResourceDriverManager.FileOperation.UPDATE, binder.getParentBinder()).setPath(binder.getResourcePath(), Boolean.TRUE);
+				ResourceSession session = getResourceDriverManager().getSession(driver, ResourceDriverManager.FileOperation.UPDATE, binder.getParentBinder()).setPath(binder.getResourcePath(), binder.getResourceHandle(), Boolean.TRUE);
 				try {
-					session.move(binder.getParentBinder().getResourcePath(), newTitle);
+					session.move(binder.getParentBinder().getResourcePath(), binder.getParentBinder().getResourceHandle(), newTitle);
 					
 					// Do not yet update the resource path in the binder, since we 
 					// need old info again shortly.
@@ -1163,7 +1166,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 						}
 					}
 					if (okToDeleteSource) {
-		    			ResourceSession session = getResourceDriverManager().getSession(driver, ResourceDriverManager.FileOperation.DELETE, binder.getParentBinder()).setPath(binder.getResourcePath(), Boolean.TRUE);
+		    			ResourceSession session = getResourceDriverManager().getSession(driver, ResourceDriverManager.FileOperation.DELETE, binder.getParentBinder()).setPath(binder.getResourcePath(), binder.getResourceHandle(), Boolean.TRUE);
 		    			try {
 		    				session.delete();
 		    			}
@@ -1353,9 +1356,9 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     		    		}
     		    		else {
         					// We can/must move the resource.
-	    					ResourceSession session = getResourceDriverManager().getSession(driver, ResourceDriverManager.FileOperation.MOVE_FOLDER, source.getParentBinder(), destination).setPath(source.getResourcePath(), Boolean.TRUE); 
+	    					ResourceSession session = getResourceDriverManager().getSession(driver, ResourceDriverManager.FileOperation.MOVE_FOLDER, source.getParentBinder(), destination).setPath(source.getResourcePath(), source.getResourceHandle(), Boolean.TRUE); 
 	    					try {
-	    						session.move(destination.getResourcePath(), source.getTitle());  	
+	    						session.move(destination.getResourcePath(), destination.getResourceHandle(), source.getTitle());  	
 	    						// Do not yet update the resource path in the source, it will be done by callder.
 	    						resourcePathAffected=true;
 	    					}

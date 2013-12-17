@@ -484,4 +484,28 @@ update SS_Principals set domainName=LOWER(domainName);
         </createIndex>
     </changeSet>
     
+    <changeSet author="jong" context="schema" failOnError="true" id="43">
+        <comment>New column to hold resource handles for folders</comment>
+        <addColumn tableName="SS_Forums">
+            <column name="resourceHandle" type="VARCHAR(128)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+        <modifySql dbms="mysql">
+            <append value=" character set latin1 collate latin1_bin"/>
+        </modifySql>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="44">
+        <comment>New column to hold resource handles for files</comment>
+        <addColumn tableName="SS_FolderEntries">
+            <column name="resourceHandle" type="VARCHAR(128)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+        <modifySql dbms="mysql">
+            <append value=" character set latin1 collate latin1_bin"/>
+        </modifySql>
+    </changeSet>
+
 </databaseChangeLog>

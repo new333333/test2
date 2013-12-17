@@ -454,4 +454,22 @@
         </createIndex>
     </changeSet>
     
+    <changeSet author="jong" context="schema" failOnError="true" id="38">
+        <comment>New column to hold resource handles for folders</comment>
+        <addColumn tableName="SS_FORUMS">
+            <column name="RESOURCEHANDLE" type="VARCHAR2(128 BYTE)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="39">
+        <comment>New column to hold resource handles for files</comment>
+        <addColumn tableName="SS_FOLDERENTRIES">
+            <column name="RESOURCEHANDLE" type="VARCHAR2(128 BYTE)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>

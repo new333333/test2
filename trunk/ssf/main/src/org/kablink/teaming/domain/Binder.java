@@ -174,6 +174,7 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
     protected Long jitsAclMaxAge; // in milliseconds
     protected Boolean fullSyncDirOnly; // Applicable only to mirrored folders
     protected Short syncScheduleOption;	// SyncScheduleOption
+    protected String resourceHandle;
 
     
     public Binder() {
@@ -994,7 +995,15 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
     		syncScheduleOption = new Short( option.getValue() );
     }
     
-    /**
+    public String getResourceHandle() {
+		return resourceHandle;
+	}
+    
+	public void setResourceHandle(String resourceHandle) {
+		this.resourceHandle = resourceHandle;
+	}
+	
+	/**
      * @hibernate.property
      * @return
      */

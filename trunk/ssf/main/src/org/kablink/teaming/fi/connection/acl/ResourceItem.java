@@ -44,6 +44,7 @@ public class ResourceItem {
 	
 	private String parentPath;
 	private String name;
+	private String handle;
 	// This field is relevant only for files. The value is 0 for folders.
 	private long lastModified;
 	private boolean directory;
@@ -132,6 +133,14 @@ public class ResourceItem {
 		this.name = name;
 	}
 	
+	public String getHandle() {
+		return handle;
+	}
+
+	public void setHandle(String handle) {
+		this.handle = handle;
+	}
+
 	/**
 	 * Returns last modified time of the file, or <code>0</code> if directory.
 	 * 
