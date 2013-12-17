@@ -66,7 +66,7 @@ abstract public class AbstractFileResource extends AbstractResource {
             // An entry containing a file with this name exists.
             if(logger.isDebugEnabled())
                 logger.debug("createNew: updating existing file '" + fileName + "' + owned by " + entry.getEntityIdentifier().toString() + " in folder " + folder.getId());
-            FolderUtils.modifyLibraryEntry(entry, fileName, is, null, dateFromISO8601(modDateISO8601), expectedMd5, true, null, null);
+            FolderUtils.modifyLibraryEntry(entry, fileName, null, is, null, dateFromISO8601(modDateISO8601), expectedMd5, true, null, null);
         }
         else {
             // We need to create a new entry

@@ -48,6 +48,13 @@ public interface ResourceSession {
 	public String getPath();
 	
 	/**
+	 * Returns handle, or <code>null</code> if handle is not set.
+	 * 
+	 * @return
+	 */
+	public String getHandle();
+	
+	/**
 	 * Return the last element name of the path, or <code>null</code> if path is not set.
 	 * 
 	 * @return
@@ -57,22 +64,26 @@ public interface ResourceSession {
 	/**
 	 * Set the path.
 	 * 
-	 * @param resourcePath
-	 * @param isDir
+	 * @param resourcePath (required) path information according to conventional hierarchical file system view
+	 * @param resourceHandle (optional) a opaque handle uniquely identifying the resource
+	 * @param isDir (optional) whether the resource refers to a directory or a file
 	 * @return
 	 * @throws IOException 
 	 */
-	public ResourceSession setPath(String resourcePath, Boolean isDir) throws UncheckedIOException;
+	public ResourceSession setPath(String resourcePath, String resourceHandle, Boolean isDir) throws UncheckedIOException;
 	
 	/**
 	 * Set the path.
 	 * 
-	 * @param parentResourcePath
-	 * @param childResourceName
-	 * @param isDir
+	 * @param parentResourcePath (required) path of the parent resource according to conventional hierarchical file system view,
+	 * parent resource always refers to a directory
+	 * @param parentResourceHandle (optional) a opaque handle uniquely identifying the parent resource
+	 * @param childResourceName (required) name of the child resource
+	 * @param childResourceHandle (optional) a opaque handle uniquely identifying the child resource
+	 * @param isDir (optional) whether the child resource refers to a directory or a file
 	 * @return
 	 */
-	public ResourceSession setPath(String parentResourcePath, String childResourceName, Boolean isDir) throws UncheckedIOException;
+	public ResourceSession setPath(String parentResourcePath, String parentResourceHandle, String childResourceName, String childResourceHandle, Boolean isDir) throws UncheckedIOException;
 	
 	/**
 	 * Close the session.
@@ -174,10 +185,11 @@ public interface ResourceSession {
 	 * The <code>targetName</code> defines new name of the resource being moved.
 	 * 
 	 * @param targetDirectoryResourcePath
+	 * @param targetDirectoryResourceHandle
 	 * @param targetName
 	 * @param targetName
 	 * @throws FIException
 	 * @throws IllegalStateException
 	 */
-	public void move(String targetDirectoryResourcePath, String targetName) throws FIException, IllegalStateException;
+	public void move(String targetDirectoryResourcePath, String targetDirectoryResourceHandle, String targetName) throws FIException, IllegalStateException;
 }

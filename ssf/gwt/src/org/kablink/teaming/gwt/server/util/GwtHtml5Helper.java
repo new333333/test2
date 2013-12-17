@@ -424,7 +424,7 @@ public class GwtHtml5Helper {
 	        	    	FolderEntry existingEntry = fm.getLibraryFolderEntryByFileName(folder, fileName);
 	    	    		if (null != existingEntry) {
 	    	    			// ...we modify it...
-	        	    		FolderUtils.modifyLibraryEntry(existingEntry, fileName, fi, null, modDate, null, true, null, null);
+	        	    		FolderUtils.modifyLibraryEntry(existingEntry, fileName, null, fi, null, modDate, null, true, null, null);
 	        				pm.setSeen(null, existingEntry);
 	        	    	}
 	    	    		

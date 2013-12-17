@@ -85,7 +85,7 @@ public class Utils {
 	// The following controls whether we can switch UI modes without
 	// having to install a license.  It MUST be set false in the
 	// shipping code.
-	public final static boolean ENABLE_SSF_UI_OVERRIDE	= false;
+	public final static boolean ENABLE_SSF_UI_OVERRIDE	= true;
 
 	/*
 	 * Enumeration used to communicate the type of license we're running

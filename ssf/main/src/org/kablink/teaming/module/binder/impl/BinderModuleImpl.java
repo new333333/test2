@@ -3667,7 +3667,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 			if(session == null)
 				return false; // cannot obtain session for the user
 			try {
-				session.setPath(binder.getResourcePath(), Boolean.TRUE);
+				session.setPath(binder.getResourcePath(), binder.getResourceHandle(), Boolean.TRUE);
 				try {
 					return session.isVisible(AccessUtils.getFileSystemGroupIds(binder.getResourceDriver()));
 				} catch (Exception e) {

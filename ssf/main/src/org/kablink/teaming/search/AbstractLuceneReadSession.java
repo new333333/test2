@@ -222,7 +222,12 @@ public abstract class AbstractLuceneReadSession extends AbstractLuceneSession im
 					return false; // can not perform access check on this
 				try {
 					String docType = doc.get(Constants.DOC_TYPE_FIELD);
-					session.setPath(resourcePath, (docType != null && docType.equals(Constants.DOC_TYPE_BINDER))? Boolean.TRUE : Boolean.FALSE);
+					// TODO JK 12/16/2013
+					// ACL checking against the data source makes sense only when the back-end data source provides such service.
+					// When such service is not provided (e.g. with cloud folder), this filtering method is not supposed to be even invoked.
+					// Therefore, it's OK to pass null for resource handle, since it is only used by cloud folder at least for now.
+					// This may change in the future as we add 'handle' support for the most widely used back-end such as NCP/CIFS shares.
+					session.setPath(resourcePath, null, (docType != null && docType.equals(Constants.DOC_TYPE_BINDER))? Boolean.TRUE : Boolean.FALSE);
 					try {
 						return session.isVisible(AccessUtils.getFileSystemGroupIds(resourceDriverName));
 					} catch (Exception e) {

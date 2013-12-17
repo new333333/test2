@@ -71,6 +71,8 @@ public class FolderEntry extends WorkflowControlledEntry implements WorkflowSupp
 	protected Long preDeletedBy;
     protected Long popularity;
     protected FolderEntryStats folderEntryStats;
+    protected String resourceHandle;
+    
     public FolderEntry() {
         super();
     }
@@ -505,6 +507,14 @@ public class FolderEntry extends WorkflowControlledEntry implements WorkflowSupp
 			}
 		}
 		return false;
+	}
+	
+	public String getResourceHandle() {
+		return resourceHandle;
+	}
+	
+	public void setResourceHandle(String resourceHandle) {
+		this.resourceHandle = resourceHandle;
 	}
 
 }

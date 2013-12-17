@@ -669,7 +669,8 @@ public class SearchUtils {
 			throw e; // Propagate this up
 		}
 		catch(Exception ignore) {
-			// Ignore all other exceptions
+			// Ignore all other exceptions, but still log it to show why it failed.
+			logger.warn("JITS request failed", ignore);
 		}
 		
 		Binder netFoldersBinder = org.kablink.teaming.search.SearchUtils.getNetFoldersRootBinder();
@@ -698,7 +699,12 @@ public class SearchUtils {
 						return false; // cannot obtain session for the user
 					try {
 						String docType = doc.get(Constants.DOC_TYPE_FIELD);
-						session.setPath(resourcePath, (docType != null && docType.equals(Constants.DOC_TYPE_BINDER))? Boolean.TRUE : Boolean.FALSE);
+						// TODO JK 12/16/2013
+						// ACL checking against the data source makes sense only when the back-end data source provides such service.
+						// When such service is not provided (e.g. with cloud folder), this filtering method is not supposed to be even invoked.
+						// Therefore, it's OK to pass null for resource handle, since it is only used by cloud folder at least for now.
+						// This may change in the future as we add 'handle' support for the most widely used back-end such as NCP/CIFS shares.
+						session.setPath(resourcePath, null, (docType != null && docType.equals(Constants.DOC_TYPE_BINDER))? Boolean.TRUE : Boolean.FALSE);
 						try {
 							return session.isVisible(AccessUtils.getFileSystemGroupIds(resourceDriverName));
 						} catch (Exception e) {
@@ -745,7 +751,7 @@ public class SearchUtils {
 			return null; // The source system doesn't recognize this user. 
 		
 		try {
-			session.setPath(parentBinder.getResourcePath(), Boolean.TRUE);
+			session.setPath(parentBinder.getResourcePath(), parentBinder.getResourceHandle(), Boolean.TRUE);
 			List<ResourceItem> children = session.getChildren(false, false, false, false);
 			List<String> titles = null;
 			if(children != null && children.size() > 0) {
@@ -788,22 +794,15 @@ public class SearchUtils {
 			return null;
 		}
 
-		if(user.getIdentityInfo().isFromLdap()) {
+		if(logger.isDebugEnabled())
+			logger.debug("Opening a session on resource driver '" + driver.getName() + "' for user '" + user.getName() + "' to check access");
+		
+		try {
+			return getResourceDriverManager().openSessionUserMode((AclResourceDriver) driver);
+		} catch (AclItemPrincipalMappingException e) {
 			if(logger.isDebugEnabled())
-				logger.debug("Opening a session on resource driver '" + driver.getName() + "' for user '" + user.getName() + "' to check access");
-			
-			try {
-				return getResourceDriverManager().openSessionUserMode((AclResourceDriver) driver);
-			} catch (AclItemPrincipalMappingException e) {
-				if(logger.isDebugEnabled())
-					logger.debug("Unable to open session on ACL resource driver '" + driver.getName() + "' for user '" + user.getName() + "'");
-				return null;
-			}
-		}
-		else {
-			if(logger.isTraceEnabled())
-				logger.trace("No need to open a session on resource driver '" + driver.getName() + "' for user '" + user.getName() + "' to check access because the user is not provisioned from LDAP");
-			return null;			
+				logger.debug("Unable to open session on ACL resource driver '" + driver.getName() + "' for user '" + user.getName() + "'");
+			return null;
 		}
 	}
 	

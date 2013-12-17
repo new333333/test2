@@ -823,7 +823,7 @@ public class KablinkFileSystemLibrary implements KablinkFileSystem {
 			InputStream content, Date modDate, String expectedMd5)
 	throws NoAccessException {
 		try {
-			FolderUtils.modifyLibraryEntry(entry, fileName, content, null, modDate, expectedMd5, true, null, null);
+			FolderUtils.modifyLibraryEntry(entry, fileName, null, content, null, modDate, expectedMd5, true, null, null);
 		}
 		catch(ConfigurationException e) {
 			throw new KablinkFileSystemException(e.getLocalizedMessage());

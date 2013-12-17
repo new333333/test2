@@ -1075,7 +1075,7 @@ public class AccessUtils  {
 			return null; // cannot obtain session for the user
 		try {
 			Map<String, List<String>> groupIds = getFileSystemGroupIds(driver);
-			session.setPath(parentFolder.getResourcePath(), netFolderFile.getTitle(), Boolean.FALSE);
+			session.setPath(parentFolder.getResourcePath(), parentFolder.getResourceHandle(), netFolderFile.getTitle(), netFolderFile.getResourceHandle(), Boolean.FALSE);
 			String permissionName = null;
 			try {
 				permissionName = session.getPermissionName(groupIds);
