@@ -345,6 +345,9 @@ public class ShareItem extends PersistentLongIdObject implements EntityIdentifia
 		this.expirationHandled = expirationHandled;
 	}
 	
+	//****IMPORTANT****
+	//These lists should be kept in sync with the fillFilrRoleViewer, fillFilrRoleEditor, 
+	//    and fillFilrRoleContributor routines in AbstractZoneModule
 	public static enum Role {
 		VIEWER("share.role.title.viewer", 
 				new WorkAreaOperation[] {
@@ -366,10 +369,8 @@ public class ShareItem extends PersistentLongIdObject implements EntityIdentifia
 				WorkAreaOperation.CREATE_ENTRIES, 
 				WorkAreaOperation.CREATE_FOLDERS, 
 				WorkAreaOperation.DELETE_ENTRIES,
-				WorkAreaOperation.BINDER_ADMINISTRATION, 
 				WorkAreaOperation.ADD_COMMUNITY_TAGS, 
 				WorkAreaOperation.GENERATE_REPORTS, 
-				WorkAreaOperation.CHANGE_ACCESS_CONTROL
 				}),
 		NONE("share.role.title.none",
 				new WorkAreaOperation[] {}),

@@ -162,6 +162,20 @@ public class GwtShareHelper
 	}
 	
 	/**
+	 * Compare the 2 RightSet objects to see if they have the same or greater rights
+	 */
+	private static boolean areRightSetsGreaterOrEqual( RightSet rightSet1, RightSet rightSet2 )
+	{
+		if ( rightSet1 == null || rightSet2 == null )
+		{
+			m_logger.error( "In GwtShareHelper.areRightSetsGreaterOrEqual(), one of the RightSet parameters is null" );
+			return false;
+		}
+	
+		return rightSet1.greaterOrEqual( rightSet2 );
+	}
+	
+	/**
 	 * See if the user has rights to share with the "all external users" group.
 	 */
 	public static boolean canShareWithAllExternalUsersGroup( AllModulesInjected ami )
@@ -1021,19 +1035,19 @@ public class GwtShareHelper
 			contributorRightSet = getContributorRightSet();
 
 			// Is the given RightSet equal to the "View" RightSet
-			if ( areRightSetsEqual( rightSet, viewerRightSet ) )
+			if ( areRightSetsGreaterOrEqual( rightSet, viewerRightSet ) )
 			{
 				// Yes
 				accessRights = AccessRights.VIEWER;
 			}
 			// Is the given RightSet equal to the "Editor" RightSet
-			else if ( areRightSetsEqual( rightSet, editorRightSet ) )
+			if ( areRightSetsGreaterOrEqual( rightSet, editorRightSet ) )
 			{
 				// Yes
 				accessRights = AccessRights.EDITOR;
 			}
 			// Is the given RightSet equal to the "Contributor" RightSet
-			else if ( areRightSetsEqual( rightSet, contributorRightSet ) )
+			if ( areRightSetsGreaterOrEqual( rightSet, contributorRightSet ) )
 			{
 				// Yes
 				accessRights = AccessRights.CONTRIBUTOR;
