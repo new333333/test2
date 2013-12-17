@@ -338,6 +338,39 @@ public class WorkAreaOperation {
 			return true;
 		}
 
+	    public boolean greaterOrEqual(Object obj) {
+			if(this==obj) return true;
+			if(obj == null) return false;
+			if(!(obj instanceof RightSet)) return false;
+			RightSet that = (RightSet) obj;
+			if(!greaterOrEqualRights(this.createEntries, that.createEntries)) return false;
+			if(!greaterOrEqualRights(this.modifyEntries, that.modifyEntries)) return false;
+			if(!greaterOrEqualRights(this.modifyEntryFields, that.modifyEntryFields)) return false;
+			if(!greaterOrEqualRights(this.deleteEntries, that.deleteEntries)) return false;
+			if(!greaterOrEqualRights(this.readEntries, that.readEntries)) return false;
+			if(!greaterOrEqualRights(this.addReplies, that.addReplies)) return false;
+			if(!greaterOrEqualRights(this.generateReports, that.generateReports)) return false;
+			if(!greaterOrEqualRights(this.binderAdministration, that.binderAdministration)) return false;
+			if(!greaterOrEqualRights(this.createEntryAcls, that.createEntryAcls)) return false;
+			if(!greaterOrEqualRights(this.changeAccessControl, that.changeAccessControl)) return false;
+			if(!greaterOrEqualRights(this.createWorkspaces, that.createWorkspaces)) return false;
+			if(!greaterOrEqualRights(this.createFolders, that.createFolders)) return false;
+			if(!greaterOrEqualRights(this.manageEntryDefinitions, that.manageEntryDefinitions)) return false;
+			if(!greaterOrEqualRights(this.manageWorkflowDefinitions, that.manageWorkflowDefinitions)) return false;
+			if(!greaterOrEqualRights(this.creatorReadEntries, that.creatorReadEntries)) return false;
+			if(!greaterOrEqualRights(this.creatorModifyEntries, that.creatorModifyEntries)) return false;
+			if(!greaterOrEqualRights(this.creatorDeleteEntries, that.creatorDeleteEntries)) return false;
+			if(!greaterOrEqualRights(this.ownerCreateEntryAcls, that.ownerCreateEntryAcls)) return false;
+			if(!greaterOrEqualRights(this.addTags, that.addTags)) return false;
+			if(!greaterOrEqualRights(this.viewBinderTitle, that.viewBinderTitle)) return false;
+			if(!greaterOrEqualRights(this.allowSharing, that.allowSharing)) return false;
+			if(!greaterOrEqualRights(this.allowSharingExternal, that.allowSharingExternal)) return false;
+			if(!greaterOrEqualRights(this.allowSharingPublic, that.allowSharingPublic)) return false;
+			if(!greaterOrEqualRights(this.allowSharingForward, that.allowSharingForward)) return false;
+			if(!greaterOrEqualRights(this.allowAccessNetFolder, that.allowAccessNetFolder)) return false;
+			return true;
+		}
+
 	    public List<WorkAreaOperation> getRights() {
 	    	List<WorkAreaOperation> rights = new ArrayList<WorkAreaOperation>();
 			if(this.createEntries) rights.add(WorkAreaOperation.CREATE_ENTRIES);
@@ -708,6 +741,14 @@ public class WorkAreaOperation {
 			if(right2 == null)
 				right2 = Boolean.FALSE;
 			return right1.equals(right2);
+		}
+		
+		private boolean greaterOrEqualRights(Boolean right1, Boolean right2) {
+			if(right1 == null)
+				right1 = Boolean.FALSE;
+			if(right2 == null)
+				right2 = Boolean.FALSE;
+			return (right1.equals(right2) || right1);
 		}
 		
 		private static boolean andRights(Boolean right1, Boolean right2) {
