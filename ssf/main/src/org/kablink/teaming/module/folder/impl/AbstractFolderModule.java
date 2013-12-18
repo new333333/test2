@@ -121,6 +121,7 @@ import org.kablink.teaming.module.rss.RssModule;
 import org.kablink.teaming.module.shared.AccessUtils;
 import org.kablink.teaming.module.shared.EmptyInputData;
 import org.kablink.teaming.module.shared.EntityIndexUtils;
+import org.kablink.teaming.module.shared.FolderUtils;
 import org.kablink.teaming.module.shared.InputDataAccessor;
 import org.kablink.teaming.module.shared.SearchUtils;
 import org.kablink.teaming.module.workflow.WorkflowModule;
@@ -1857,7 +1858,7 @@ public void modifyWorkflowState(Long folderId, Long entryId, Long stateId, Strin
 	}
 
     public Date getLastFullSyncCompletionTime(Long folderId) {
-        Folder topMostMirroredFolder = getTopMostMirroredFolder(getFolder(folderId));
+        Folder topMostMirroredFolder = FolderUtils.getTopMostMirroredFolder(getFolder(folderId));
         if (topMostMirroredFolder!=null) {
         	return getLastFullSyncCompletionTime(topMostMirroredFolder);
         }
@@ -1878,19 +1879,6 @@ public void modifyWorkflowState(Long folderId, Long entryId, Long stateId, Strin
             return binderState.getUpdatedToDate();
         }
         return null;
-    }
-    
-    protected Folder getTopMostMirroredFolder(Folder folder) {
-        Folder top = folder;
-        Binder parent;
-        while(true) {
-            parent = top.getParentBinder();
-            if(parent == null) break;
-            if(!parent.isMirrored()) break;
-            if(!parent.getResourceDriverName().equals(top.getResourceDriverName())) break;
-            top = (Folder) parent;
-        }
-        return top;
     }
 
 }

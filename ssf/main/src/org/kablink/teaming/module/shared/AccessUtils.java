@@ -1070,7 +1070,7 @@ public class AccessUtils  {
 		if(!parentFolder.noAclDredgedWithEntries())
 			throw new IllegalArgumentException("Invalid entry '" + netFolderFile.getId() + "' for this method");
 		AclResourceDriver driver = (AclResourceDriver) parentFolder.getResourceDriver();
-		AclResourceSession session = SearchUtils.openAclResourceSession(parentFolder.getResourceDriver());
+		AclResourceSession session = SearchUtils.openAclResourceSession(parentFolder.getResourceDriver(), FolderUtils.getNetFolderOwnerId(parentFolder));
 		if(session == null)
 			return null; // cannot obtain session for the user
 		try {

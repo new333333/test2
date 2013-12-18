@@ -131,6 +131,7 @@ import org.kablink.teaming.module.profile.ProfileModule.ProfileOperation;
 import org.kablink.teaming.module.shared.AccessUtils;
 import org.kablink.teaming.module.shared.EmptyInputData;
 import org.kablink.teaming.module.shared.EntityIndexUtils;
+import org.kablink.teaming.module.shared.FolderUtils;
 import org.kablink.teaming.module.shared.InputDataAccessor;
 import org.kablink.teaming.module.shared.ObjectBuilder;
 import org.kablink.teaming.module.shared.SearchUtils;
@@ -3663,7 +3664,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 			// stored in the search index. Specifically, when user has access to a file but not
 			// to any of its ancestor folders, the search index would not be able to compute it.
 			// So we have to ask the file system directly.
-			AclResourceSession session = SearchUtils.openAclResourceSession(binder.getResourceDriver());
+			AclResourceSession session = SearchUtils.openAclResourceSession(binder.getResourceDriver(), FolderUtils.getNetFolderOwnerId((Folder)binder));
 			if(session == null)
 				return false; // cannot obtain session for the user
 			try {
