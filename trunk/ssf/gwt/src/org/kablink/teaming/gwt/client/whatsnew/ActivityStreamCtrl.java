@@ -99,7 +99,6 @@ import com.google.gwt.event.dom.client.MouseOutHandler;
 import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
-import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.resources.client.ImageResource;
@@ -206,7 +205,7 @@ public class ActivityStreamCtrl extends ResizeComposite
 	// The following defines the TeamingEvents that are handled by
 	// this class.  See EventHelper.registerEventHandlers() for how
 	// this array is used.
-	private TeamingEvents[] m_registeredEvents = new TeamingEvents[] {
+	private final static TeamingEvents[] REGISTERED_EVENTS = new TeamingEvents[] {
 		// Activity stream events.
 		TeamingEvents.ACTIVITY_STREAM,
 		TeamingEvents.ACTIVITY_STREAM_EXIT,
@@ -630,7 +629,7 @@ public class ActivityStreamCtrl extends ResizeComposite
 		imageResource = GwtTeaming.getImageBundle().previous16();
 		m_prevImg = new Image(imageResource);
 		m_prevImg.addStyleName( "cursorPointer" );
-		DOM.setElementAttribute( m_prevImg.getElement(), "id", "viewPreviousPageOfResults" );
+		m_prevImg.getElement().setAttribute( "id", "viewPreviousPageOfResults" );
 		imgPanel.add( m_prevImg );
 		m_prevImg.setVisible( false );
 		m_prevImg.addClickHandler( this );
@@ -650,7 +649,7 @@ public class ActivityStreamCtrl extends ResizeComposite
 		imageResource = GwtTeaming.getImageBundle().next16();
 		m_nextImg = new Image(imageResource);
 		m_nextImg.addStyleName( "cursorPointer" );
-		DOM.setElementAttribute( m_nextImg.getElement(), "id", "viewNextPageOfResults" );
+		m_nextImg.getElement().setAttribute( "id", "viewNextPageOfResults" );
 		imgPanel.add( m_nextImg );
 		m_nextImg.setVisible( false );
 		m_nextImg.addClickHandler( this );
@@ -1520,7 +1519,7 @@ public class ActivityStreamCtrl extends ResizeComposite
 			
 			// Get the id of the image that was clicked on.
 			img = (Image) clickEvent.getSource();
-			id = DOM.getElementAttribute( img.getElement(), "id" );
+			id = img.getElement().getAttribute( "id" );
 			
 			if ( id != null )
 			{
@@ -1653,7 +1652,7 @@ public class ActivityStreamCtrl extends ResizeComposite
 			// ...register the events.
 			EventHelper.registerEventHandlers(
 										GwtTeaming.getEventBus(),
-										m_registeredEvents,
+										REGISTERED_EVENTS,
 										this,
 										m_registeredEventHandlers );
 		}
@@ -2015,7 +2014,7 @@ public class ActivityStreamCtrl extends ResizeComposite
 				width = getWidget().getOffsetWidth();
 				x = (width - m_msgPanel.getOffsetWidth()) / 2;
 				x -= 40;
-				DOM.setStyleAttribute( m_msgPanel.getElement(), "left", Integer.toString( x ) + "px" );
+				m_msgPanel.getElement().getStyle().setProperty( "left", Integer.toString( x ) + "px" );
 			
 				// Show the message
 				m_msgPanel.setVisible( true );
@@ -2037,7 +2036,7 @@ public class ActivityStreamCtrl extends ResizeComposite
 		width = getWidget().getOffsetWidth();
 		x = (width - m_searchingPanel.getOffsetWidth()) / 2;
 		x -= 40;
-		DOM.setStyleAttribute( m_searchingPanel.getElement(), "left", Integer.toString( x ) + "px" );
+		m_searchingPanel.getElement().getStyle().setProperty( "left", Integer.toString( x ) + "px" );
 		
 		// Show the "searching..." text
 		m_searchingPanel.setVisible( true );
@@ -2450,8 +2449,10 @@ public class ActivityStreamCtrl extends ResizeComposite
 	/**
 	 * Loads the ActivityStreamCtrl split point and returns an instance of
 	 * it via the callback.
-	 * 
-	 * @param mainPage
+	 *
+	 * @param usage
+	 * @param createHeader
+	 * @param actionMenu
 	 * @param asCtrlClient
 	 */
 	public static void createAsync( final ActivityStreamCtrlUsage usage, final boolean createHeader, final ActionsPopupMenu actionsMenu, final ActivityStreamCtrlClient asCtrlClient )
@@ -2474,30 +2475,9 @@ public class ActivityStreamCtrl extends ResizeComposite
 		} );
 	}// end createAsync()
 
-	/**
-	 * Loads the ActivityStreamCtrl split point and returns an instance of
-	 * it via the callback.
-	 * 
-	 * @param mainPage
-	 * @param asCtrlClient
-	 */
 	public static void createAsync( final ActivityStreamCtrlUsage usage, final ActionsPopupMenu actionsMenu, final ActivityStreamCtrlClient asCtrlClient )
 	{
-		GWT.runAsync( ActivityStreamCtrl.class, new RunAsyncCallback()
-		{			
-			@Override
-			public void onSuccess()
-			{
-				ActivityStreamCtrl asCtrl = new ActivityStreamCtrl( usage, true, actionsMenu );
-				asCtrlClient.onSuccess( asCtrl );
-			}// end onSuccess()
-			
-			@Override
-			public void onFailure( Throwable reason )
-			{
-				Window.alert( GwtTeaming.getMessages().codeSplitFailure_ActivityStreamCtrl() );
-				asCtrlClient.onUnavailable();
-			}// end onFailure()
-		} );
+		// Always use the initial form of the method.
+		createAsync( usage, true, actionsMenu, asCtrlClient );	// true -> Create header.
 	}// end createAsync()
 }// end ActivityStreamCtrl

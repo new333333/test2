@@ -55,7 +55,7 @@ import org.kablink.teaming.gwt.client.whatsnew.ActivityStreamCtrl.ActivityStream
 import org.kablink.teaming.gwt.client.whatsnew.ActivityStreamCtrl.DescViewFormat;
 
 import com.google.gwt.core.client.Scheduler;
-import com.google.gwt.user.client.Element;
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Composite;
@@ -68,6 +68,7 @@ import com.google.gwt.user.client.ui.Composite;
 public class CommentsWidget extends Composite
 	implements ActivityStreamCommentsContainer, CommentAddedCallback
 {
+	private boolean m_acsPseudoAttached;	// Set true once m_activityStreamCtrl is used and pseudo attached to the DOM.
 	private CommentAddedCallback m_commentAddedCallback;
 	private CommentsInfo m_commentsInfo;
 	private VibeFlowPanel m_mainPanel;
@@ -110,6 +111,15 @@ public class CommentsWidget extends Composite
 		commentUI.addStyleName( "commentsWidget_commentStylesOverride" );
 		commentUI.setData( activityStreamEntry );
 		m_mainPanel.add( commentUI );
+
+		// If the activity stream control hasn't been pseudo attached
+		// to the DOM yet...
+		if ( ! m_acsPseudoAttached )
+		{
+			// ...tell it to attach.
+			m_activityStreamCtrl.onAttach();
+			m_acsPseudoAttached = true;
+		}
 		
 		if ( scrollIntoView )
 		{
@@ -479,6 +489,35 @@ public class CommentsWidget extends Composite
 		};
          
 		showTimer.scheduleRepeating( 75 );
+	}
+
+	/**
+	 * Called when the CommentsWidget is attached to the DOM.
+	 * 
+	 * Overrides the Widget.onAttach() method.
+	 */
+	@Override
+	public void onAttach() {
+		super.onAttach();
+	}
+	
+	/**
+	 * Called when the CommentsWidget is detached from the DOM.
+	 * 
+	 * Overrides the Widget.onDetach() method.
+	 */
+	@Override
+	public void onDetach() {
+		super.onDetach();
+
+		// If the activity stream control has been pseudo attached to
+		// the DOM...
+		if ( m_acsPseudoAttached )
+		{
+			// ...tell it to detach.
+			m_activityStreamCtrl.onDetach();
+			m_acsPseudoAttached = false;
+		}
 	}
 }
 
