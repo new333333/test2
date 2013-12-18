@@ -67,6 +67,7 @@ import org.kablink.teaming.domain.ResourceDriverConfig;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserPrincipal;
 import org.kablink.teaming.fi.auth.AuthException;
+import org.kablink.teaming.fi.auth.AuthSupport;
 import org.kablink.teaming.fi.connection.ResourceDriver;
 import org.kablink.teaming.fi.connection.ResourceDriverManager;
 import org.kablink.teaming.fi.connection.acl.AclItemPrincipalMappingException;
@@ -694,7 +695,8 @@ public class SearchUtils {
 					String resourcePath = doc.get(Constants.RESOURCE_PATH_FIELD);
 					if(resourcePath == null)
 						resourcePath = ""; // It is possible to define a net folder without specifying a sub-path.
-					AclResourceSession session = openAclResourceSession(resourceDriverName);				
+					Long ownerId = Long.valueOf(doc.get(Constants.OWNERID_FIELD)); // Used only by cloud folder
+					AclResourceSession session = openAclResourceSession(resourceDriverName, ownerId);				
 					if(session == null)
 						return false; // cannot obtain session for the user
 					try {
@@ -729,7 +731,7 @@ public class SearchUtils {
 			List<String> childrenTitles = null;
 			if(Validator.isNotNull(aclQueryStr)) {
 				// We must apply access check one way or another
-				childrenTitles = getChildrenTitlesFromSourceSystem(parentBinder);
+				childrenTitles = getChildrenTitlesFromSourceSystem((Folder)parentBinder);
 			}
 			else {
 				// The user is not confined by access check (e.g. admin), which means that 
@@ -744,8 +746,8 @@ public class SearchUtils {
 		}
 	}
 	
-	private static List<String> getChildrenTitlesFromSourceSystem(Binder parentBinder) {
-		AclResourceSession session = openAclResourceSession((AclResourceDriver) parentBinder.getResourceDriver());
+	private static List<String> getChildrenTitlesFromSourceSystem(Folder parentBinder) {
+		AclResourceSession session = openAclResourceSession((AclResourceDriver) parentBinder.getResourceDriver(), FolderUtils.getNetFolderOwnerId(parentBinder));
 		
 		if(session == null)
 			return null; // The source system doesn't recognize this user. 
@@ -772,7 +774,7 @@ public class SearchUtils {
 		}
 	}
 	
-	public static AclResourceSession openAclResourceSession(String resourceDriverName) {
+	public static AclResourceSession openAclResourceSession(String resourceDriverName, Long netFolderOwnerId) {
 		ResourceDriver driver;
 		
 		try {
@@ -783,10 +785,10 @@ public class SearchUtils {
 			return null;
 		}
 		
-		return openAclResourceSession(driver);
+		return openAclResourceSession(driver, netFolderOwnerId);
 	}
 	
-	public static AclResourceSession openAclResourceSession(ResourceDriver driver) {
+	public static AclResourceSession openAclResourceSession(ResourceDriver driver, Long netFolderOwnerId) {
 		User user = RequestContextHolder.getRequestContext().getUser();
 
 		if(!(driver instanceof AclResourceDriver)) {
@@ -798,7 +800,11 @@ public class SearchUtils {
 			logger.debug("Opening a session on resource driver '" + driver.getName() + "' for user '" + user.getName() + "' to check access");
 		
 		try {
-			return getResourceDriverManager().openSessionUserMode((AclResourceDriver) driver);
+			AclResourceDriver adriver = (AclResourceDriver) driver;
+			if(adriver instanceof AuthSupport)
+				return getResourceDriverManager().openSessionWithAuth(adriver, netFolderOwnerId);
+			else 
+				return getResourceDriverManager().openSessionUserMode(adriver);
 		} catch (AclItemPrincipalMappingException e) {
 			if(logger.isDebugEnabled())
 				logger.debug("Unable to open session on ACL resource driver '" + driver.getName() + "' for user '" + user.getName() + "'");

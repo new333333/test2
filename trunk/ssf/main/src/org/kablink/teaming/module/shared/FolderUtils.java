@@ -731,6 +731,34 @@ public class FolderUtils {
         BinderUtils.inheritAll(folderId);
 	}
 
+    public static Folder getTopMostMirroredFolder(Folder folder) {
+        Folder top = folder;
+        Binder parent;
+        while(true) {
+            parent = top.getParentBinder();
+            if(parent == null) break;
+            if(!parent.isMirrored()) break;
+            if(!parent.getResourceDriverName().equals(top.getResourceDriverName())) break;
+            top = (Folder) parent;
+        }
+        return top;
+    }
+
+    public static Long getNetFolderOwnerId(Folder folder) {
+    	// TODO $$$$$ This method is needed only for cloud folders. So let's short circuit the 
+    	// implementation to minimize overhead since we don't want to slow down NCP/CIFS net folders.
+    	
+    	return folder.getOwnerId();
+    	
+    	/*
+    	Folder netFolder = getTopMostMirroredFolder(folder);
+    	if(netFolder != null)
+    		return netFolder.getOwnerId();
+    	else
+    		return null;
+    	*/
+    }
+    
 	private static FolderModule getFolderModule() {
 		return (FolderModule) SpringContextUtil.getBean("folderModule");
 	}

@@ -217,7 +217,8 @@ public abstract class AbstractLuceneReadSession extends AbstractLuceneSession im
 				String resourcePath = doc.get(Constants.RESOURCE_PATH_FIELD);
 				if(resourcePath == null)
 					resourcePath = "";
-				AclResourceSession session = org.kablink.teaming.module.shared.SearchUtils.openAclResourceSession(resourceDriverName);				
+				Long ownerId = Long.valueOf(doc.get(Constants.OWNERID_FIELD)); // Used only by cloud folder
+				AclResourceSession session = org.kablink.teaming.module.shared.SearchUtils.openAclResourceSession(resourceDriverName, ownerId);				
 				if(session == null)
 					return false; // can not perform access check on this
 				try {
