@@ -1678,16 +1678,6 @@ public class GwtClientHelper {
 	}-*/;
 
 	/**
-	 * Using JavaScript, sets the max-width style on an element.
-	 * 
-	 * @param htmlElement
-	 * @param width
-	 */
-	public static native void jsSetMaxWidth(Element htmlElement, int width) /*-{
-		htmlElement.style.maxWidth = (width + "px");
-	}-*/;
-	
-	/**
 	 * Sets the text on the main GWT page's <title>.
 	 * 
 	 * @param title

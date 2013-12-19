@@ -195,24 +195,22 @@ public class FolderEntryDocument extends VibeFlowPanel {
 	 */
 	@Override
 	public void onResize() {
+		// Allow the super class to process the sizing.
 		super.onResize();
 
 		// If we're displaying a document as an <IMG>...
 		if (m_fed.isContentImage() && (null != m_contentImage)) {
-			// ...and the image is widget than the width we have to
-			// ...display in...
+			// ...and the image is wider than the width we have to
+			// ...display it in...
 			int offsetWidth = (getOffsetWidth() - IMAGE_OVERHEAD);
 			if (IMAGE_MINIMUM > offsetWidth) {
 				offsetWidth = IMAGE_MINIMUM;
 			}
-			if (m_fed.getContentImageWidth() > offsetWidth) {
-				// ...scale the image to fit.
-				m_contentImage.setWidth(offsetWidth + "px");
-			}
-			else {
-				// ...otherwise, remove any scaling we may have had.
-				m_contentImage.getElement().getStyle().setProperty("width", "");
-			}
+			// ...scale the image to fit, otherwise, remove any scaling
+			// ...we may have had.
+			if (m_fed.getContentImageWidth() > offsetWidth)
+			     m_contentImage.setWidth(offsetWidth + "px");
+			else m_contentImage.getElement().getStyle().setProperty("width", "");
 		}
 	}
 }

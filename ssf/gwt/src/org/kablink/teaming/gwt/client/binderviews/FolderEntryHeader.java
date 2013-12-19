@@ -496,7 +496,7 @@ public class FolderEntryHeader extends VibeFlowPanel {
 	 * Called when the header needs to be resized.
 	 */
 	public void setHeaderSize() {
-		m_titleLabel.addStyleName("width1px");	// Initially reduced so it doesn't affect the overall size calculations below.
+		m_titleLabel.setVisible(false);	// Hide it first so it doesn't affect the overall size calculations below.
 		setHeaderSizeAsync();
 	}
 
@@ -522,8 +522,8 @@ public class FolderEntryHeader extends VibeFlowPanel {
 		if (MINIMUM_TITLE_WIDTH > titleWidth) {
 			titleWidth = MINIMUM_TITLE_WIDTH;
 		}
-		m_titleLabel.removeStyleName("width1px");	// Remove the synthetic width value we initially set.
-		GwtClientHelper.jsSetMaxWidth(m_titleLabel.getElement(), titleWidth);
+		m_titleLabel.setVisible(true);
+		m_titleLabel.getElement().getStyle().setProperty("maxWidth", (titleWidth + "px"));
 	}
 	
 	/*
