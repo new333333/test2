@@ -89,6 +89,7 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.FlexTable.FlexCellFormatter;
+import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.FormPanel;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.Image;
@@ -143,6 +144,7 @@ public class FolderEntryComposite extends ResizeComposite
 	private int								m_readyComponents;			// Components that are ready, incremented as they callback.
 	private Label							m_captionLabel;				// The label on the left of the caption bar. 
 	private List<HandlerRegistration>		m_registeredEventHandlers;	// Event handlers that are currently registered.
+	private PermalinksDlg					m_permalinksDlg;				//
 	private Panel							m_captionRightPanel;		// The panel at the right end of the caption containing the navigation arrows and close button.
 	private Panel							m_captionRootPanel;			// Root panel holding the caption widget.
 	private ViewReady						m_viewReady;				// Stores a ViewReady created for the classes that extends it.
@@ -202,6 +204,72 @@ public class FolderEntryComposite extends ResizeComposite
 		TeamingEvents.UNLOCK_SELECTED_ENTITIES,
 		TeamingEvents.ZIP_AND_DOWNLOAD_SELECTED_FILES,
 	};
+	
+	/*
+	 * Dialog used to show the view's permalinks. 
+	 */
+	private class PermalinksDlg extends DlgBox {
+		/**
+		 * Constructor method.
+		 * 
+		 * @param permalinksPanel
+		 */
+		public PermalinksDlg(Panel permalinksPanel) {
+			// Initialize the super class...
+			super(false, true, DlgButtonMode.Close);
+
+			// ...add this dialog's specific style...
+			addStyleName("vibe-feComposite-permalinksDlg");
+
+			// ...and create the dialog's content.
+			createAllDlgContent(
+				m_messages.folderEntry_Permalinks(),	// The dialog's header.
+				getSimpleSuccessfulHandler(),			// The dialog's EditSuccessfulHandler.
+				getSimpleCanceledHandler(),				// The dialog's EditCanceledHandler.
+				permalinksPanel);						// Create callback data.
+		}
+
+		/**
+		 * Called to create the dialog's contents.
+		 * 
+		 * Implements the DlgBox.createContent() method.
+		 * 
+		 * @param propertiesObj
+		 * 
+		 * @return
+		 */
+		@Override
+		public Panel createContent(Object propertiesObj) {
+			// The dialog's content is simply the Panel passed through
+			// as the parameter.
+			return ((Panel) propertiesObj);
+		}
+
+		/**
+		 * Unused.
+		 * 
+		 * Implements the Dlgo.getDataFromDlg() method.
+		 * 
+		 * @return
+		 */
+		@Override
+		public Object getDataFromDlg() {
+			return "";
+		}
+
+		/**
+		 * Unused.
+		 * 
+		 * Implements the Dlgo.getFocusWidget() method.
+		 * 
+		 * @return
+		 */
+		@Override
+		public FocusWidget getFocusWidget() {
+			// There are no focusable widgets in the dialog.
+			return null;
+		}
+	}
 	
 	/*
 	 * Constructor method.
@@ -564,21 +632,55 @@ public class FolderEntryComposite extends ResizeComposite
 	 * Synchronously loads the next part of the composite.
 	 */
 	private void loadPart1Now(final boolean refresh) {
-		FooterPanel.createAsync(this, m_vfei.getEntityId(), this, new ToolPanelClient() {			
-			@Override
-			public void onUnavailable() {
-				// Nothing to do.  Error handled in asynchronous
-				// provider.
-			}
-			
-			@Override
-			public void onSuccess(ToolPanelBase tpb) {
-				m_footerPanel = ((FooterPanel) tpb);
-				m_footerPanel.addStyleName("vibe-feComposite-footerPanel");
-				m_rootPanel.add(m_footerPanel);
-				loadPart2Async(refresh);
-			}
-		});
+		FooterPanel.createAsync(
+				this,
+				m_vfei.getEntityId(),
+				this,
+				new ToolPanelClient() {			
+					@Override
+					public void onUnavailable() {
+						// Nothing to do.  Error handled in asynchronous
+						// provider.
+					}
+					
+					@Override
+					public void onSuccess(ToolPanelBase tpb) {
+						m_footerPanel = ((FooterPanel) tpb);
+						m_footerPanel.addStyleName("vibe-feComposite-footerPanel");
+						m_rootPanel.add(m_footerPanel);
+						loadPart2Async(refresh);
+					}
+				},
+				new FooterPanelVisibility() {
+					@Override
+					public void footerPanelVisible(boolean show) {
+						// Are we showing the permalinks?
+						boolean havePermalinksDlg   = (null != m_permalinksDlg);
+						Panel   permalinksDataPanel = m_footerPanel.getDataPanel();
+						if (show) {
+							// Yes!  Have we create a permalinks dialog
+							// yet?
+							if (!havePermalinksDlg) {
+								// No!  Create one now...
+								permalinksDataPanel.removeFromParent();
+								permalinksDataPanel.addStyleName("vibe-feComposite-permalinksData");
+								m_footerPanel.hideCloser();
+								m_permalinksDlg = new PermalinksDlg(permalinksDataPanel);
+							}
+							
+							// ...and show it.
+							m_permalinksDlg.center();
+						}
+						
+						// No, we aren't showing the permalinks!  If we
+						// have a permalinks dialog...
+						else if (havePermalinksDlg) {
+							// ...hide it.
+							m_permalinksDlg.hide();
+						}
+					}
+				}
+			);
 	}
 
 	/*

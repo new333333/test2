@@ -2504,6 +2504,7 @@ public interface GwtTeamingMessages extends Messages
 	String folderEntry_Locked();
 	String folderEntry_Modified();
 	String folderEntry_NoShares(String what);
+	String folderEntry_Permalinks();
 	String folderEntry_SharedBy();
 	String folderEntry_SharedOn(String date);
 	String folderEntry_SharedWith();

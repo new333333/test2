@@ -68,6 +68,7 @@ import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
+import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.RequiresResize;
 import com.google.gwt.user.client.ui.ResizeComposite;
 import com.google.gwt.user.client.ui.TextBox;
@@ -79,10 +80,12 @@ import com.google.gwt.user.client.ui.TextBox;
  */
 public class FooterPanel extends ToolPanelBase {
 	private boolean					m_isFilr;		//
+	private FooterPanelVisibility	m_fpVisibility;	//
 	private GwtTeamingImageBundle	m_images;		//
 	private GwtTeamingMessages		m_messages;		//
 	private List<ToolbarItem>		m_toolbarIems;	//
 	private ToolbarItem				m_footerTBI;	//
+	private VibeFlowPanel			m_closerPanel;	// The panel holding the close button in the upper right corner of the footer's display.
 	private VibeFlowPanel			m_fp;			// The panel holding the FooterPanel's contents.
 	private VibeFlowPanel			m_dataPanel;	// The panel holding the display of the data, ..., once rendered.
 	
@@ -119,9 +122,12 @@ public class FooterPanel extends ToolPanelBase {
 	 * splitting.  All instantiations of this object must be done
 	 * through its createAsync().
 	 */
-	private FooterPanel(RequiresResize containerResizer, BinderInfo binderInfo, EntityId entityId, ToolPanelReady toolPanelReady) {
+	private FooterPanel(RequiresResize containerResizer, BinderInfo binderInfo, EntityId entityId, ToolPanelReady toolPanelReady, FooterPanelVisibility	fpVisibility) {
 		// Initialize the super class...
 		super(containerResizer, binderInfo, entityId, toolPanelReady);
+		
+		// ...store the footer specific parameters...
+		m_fpVisibility = fpVisibility;
 
 		// ...initialize the data members...
 		m_images   = GwtTeaming.getImageBundle();
@@ -136,6 +142,26 @@ public class FooterPanel extends ToolPanelBase {
 		loadPart1Async();
 	}
 
+	/**
+	 * Returns the data panel containing the footer.
+	 * 
+	 * @return
+	 */
+	public Panel getDataPanel() {
+		return m_dataPanel;
+	}
+	
+	/**
+	 * Hides the footer's closer panel.
+	 */
+	public void hideCloser() {
+		// If we have a closer panel...
+		if (null != m_closerPanel) {
+			// ...hide it.
+			m_closerPanel.setVisible(false);
+		}
+	}
+	
 	/*
 	 * Initialize the Map of the strings used by the footer based
 	 * whether we're in Filr or Vibe mode.
@@ -191,7 +217,7 @@ public class FooterPanel extends ToolPanelBase {
 			m_strMap.put(StringIds.KEY_WEBDAV_FOLDER,       m_messages.vibeBinderFooter_Vibe_WebDAVUrlHintFolder());
 		}
 	}
-	
+
 	/*
 	 * Asynchronously construct's the contents of the footer panel.
 	 */
@@ -295,7 +321,7 @@ public class FooterPanel extends ToolPanelBase {
 			a.addClickHandler(new ClickHandler() {
 				@Override
 				public void onClick(ClickEvent event) {
-					setFooterVisibleAsync((null == m_dataPanel) || (!(m_dataPanel.isVisible())));
+					setFooterVisibleAsync((null == m_dataPanel) || (!(m_dataPanel.isVisible())) || (null != m_fpVisibility));
 				}
 			});
 			a.addMouseOutHandler(new MouseOutHandler() {
@@ -351,14 +377,14 @@ public class FooterPanel extends ToolPanelBase {
 		m_fp.add(m_dataPanel);
 
 		// ...create a link to close it...
-		VibeFlowPanel closerPanel = new VibeFlowPanel();
-		closerPanel.addStyleName("vibe-footerDataCloser");
-		m_dataPanel.add(closerPanel);
+		m_closerPanel = new VibeFlowPanel();
+		m_closerPanel.addStyleName("vibe-footerDataCloser");
+		m_dataPanel.add(m_closerPanel);
 		Anchor closerA = new Anchor();
 		closerA.addStyleName("vibe-footerDataCloserAnchor");
 		final Image closerImg = new Image(m_images.closeX());
 		closerA.getElement().appendChild(closerImg.getElement());
-		closerPanel.add(closerA);
+		m_closerPanel.add(closerA);
 		closerA.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
@@ -366,7 +392,9 @@ public class FooterPanel extends ToolPanelBase {
 				// resize to reflect the new visibility state of the
 				// footer.
 				m_dataPanel.setVisible(false);
-				panelResized();
+				if (null == m_fpVisibility)
+				     panelResized();
+				else m_fpVisibility.footerPanelVisible(false);
 			}
 		});
 		closerA.addMouseOutHandler(new MouseOutHandler() {
@@ -512,7 +540,9 @@ public class FooterPanel extends ToolPanelBase {
 
 		// Finally, force the container to resize to reflect the
 		// expanded footer.
-		panelResized();
+		if (null == m_fpVisibility)
+		     panelResized();
+		else m_fpVisibility.footerPanelVisible(true);
 	}
 
 	/*
@@ -663,7 +693,9 @@ public class FooterPanel extends ToolPanelBase {
 			// container to resize to reflect the new
 			// visibility state of the footer.
 			m_dataPanel.setVisible(show);
-			panelResized();
+			if (null == m_fpVisibility)
+			     panelResized();
+			else m_fpVisibility.footerPanelVisible(show);
 		}
 		
 		else {
@@ -685,11 +717,12 @@ public class FooterPanel extends ToolPanelBase {
 	 */
 	private static void doAsyncOperation(
 			// createAsync() parameters.
-			final ResizeComposite	containerResizer,
-			final BinderInfo		binderInfo,
-			final EntityId			entityId,
-			final ToolPanelReady	toolPanelReady,
-			final ToolPanelClient	tpClient,
+			final ResizeComposite		containerResizer,
+			final BinderInfo			binderInfo,
+			final EntityId				entityId,
+			final ToolPanelReady		toolPanelReady,
+			final ToolPanelClient		tpClient,
+			final FooterPanelVisibility	fpVisibility,
 			
 			// expandFooter parameters.
 			final FooterPanel expandFP) {
@@ -698,7 +731,7 @@ public class FooterPanel extends ToolPanelBase {
 			@Override
 			public void onSuccess() {
 				if (null == expandFP) {
-					FooterPanel fp = new FooterPanel(containerResizer, binderInfo, entityId, toolPanelReady);
+					FooterPanel fp = new FooterPanel(containerResizer, binderInfo, entityId, toolPanelReady, fpVisibility);
 					tpClient.onSuccess(fp);
 				}
 				
@@ -723,9 +756,38 @@ public class FooterPanel extends ToolPanelBase {
 	 * @param binderInfo
 	 * @param toolPanelReady
 	 * @param tpClient
+	 * @param fpVisibility
+	 */
+	public static void createAsync(final ResizeComposite containerResizer, final BinderInfo binderInfo, final ToolPanelReady toolPanelReady, final ToolPanelClient tpClient, FooterPanelVisibility fpVisibility) {
+		doAsyncOperation(containerResizer, binderInfo, null, toolPanelReady, tpClient, fpVisibility, null);
+	}
+	
+	/**
+	 * Loads the FooterPanel split point for a binder and returns an
+	 * instance of it via the callback.
+	 * 
+	 * @param containerResizer
+	 * @param binderInfo
+	 * @param toolPanelReady
+	 * @param tpClient
 	 */
 	public static void createAsync(final ResizeComposite containerResizer, final BinderInfo binderInfo, final ToolPanelReady toolPanelReady, final ToolPanelClient tpClient) {
-		doAsyncOperation(containerResizer, binderInfo, null, toolPanelReady, tpClient, null);
+		// Always use the previous form of the method.
+		createAsync(containerResizer, binderInfo, toolPanelReady, tpClient, null);
+	}
+	
+	/**
+	 * Loads the FooterPanel split point for an entity and returns an
+	 * instance of it via the callback.
+	 * 
+	 * @param containerResizer
+	 * @param entityId
+	 * @param toolPanelReady
+	 * @param tpClient
+	 * @param fpVisibility
+	 */
+	public static void createAsync(final ResizeComposite containerResizer, final EntityId entityId, final ToolPanelReady toolPanelReady, final ToolPanelClient tpClient, FooterPanelVisibility fpVisibility) {
+		doAsyncOperation(containerResizer, null, entityId, toolPanelReady, tpClient, fpVisibility, null);
 	}
 	
 	/**
@@ -738,7 +800,8 @@ public class FooterPanel extends ToolPanelBase {
 	 * @param tpClient
 	 */
 	public static void createAsync(final ResizeComposite containerResizer, final EntityId entityId, final ToolPanelReady toolPanelReady, final ToolPanelClient tpClient) {
-		doAsyncOperation(containerResizer, null, entityId, toolPanelReady, tpClient, null);
+		// Always use the previous form of the method.
+		createAsync(containerResizer, entityId, toolPanelReady, tpClient, null);
 	}
 	
 	/**
@@ -747,6 +810,6 @@ public class FooterPanel extends ToolPanelBase {
 	 * @param fp
 	 */
 	public static void expandFooter(FooterPanel fp) {
-		doAsyncOperation(null, null, null, null, null, fp);
+		doAsyncOperation(null, null, null, null, null, null, fp);
 	}
 }
