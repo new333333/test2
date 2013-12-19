@@ -193,17 +193,19 @@
 	/* End:  Sidebar styles. */
 	
 	/* Start:  Folder entry composite styles. */
-		.vibe-feComposite-captionLabel {display: inline-block !important; overflow: hidden; text-overflow: ellipsis;}
-		.vibe-feComposite-closeImg     {}
-		.vibe-feComposite-closeLabel   {white-space: nowrap; margin-right: 5px; vertical-align: middle; font-weight: normal; font-size: .9em; }
-		.vibe-feComposite-closePanel   {position: relative; top: -1px; display: inline; white-space: nowrap; cursor: pointer !important;}
-		.vibe-feComposite-contentPanel {position: relative; padding: 10px; overflow-x: hidden; overflow-y: auto;}
-		.vibe-feComposite-footerPanel  {padding-bottom: 10px; border-top: 1px solid #CCC;}
-		.vibe-feComposite-navNextImg   {cursor: pointer;}
-		.vibe-feComposite-navPanel     {position: relative; display: inline; white-space: nowrap;}
-		.vibe-feComposite-navPrevImg   {cursor: pointer; padding-right: 1px;}
-		.vibe-feComposite-rightPanel   {position: absolute; top: 0px; right: 8px; white-space: nowrap;}
-		.vibe-feComposite-rootPanel    {}
+		.vibe-feComposite-captionLabel   {display: inline-block !important; overflow: hidden; text-overflow: ellipsis;}
+		.vibe-feComposite-closeImg       {}
+		.vibe-feComposite-closeLabel     {white-space: nowrap; margin-right: 5px; vertical-align: middle; font-weight: normal; font-size: .9em; }
+		.vibe-feComposite-closePanel     {position: relative; top: -1px; display: inline; white-space: nowrap; cursor: pointer !important;}
+		.vibe-feComposite-contentPanel   {position: relative; padding: 10px; overflow-x: hidden; overflow-y: auto;}
+		.vibe-feComposite-footerPanel    {padding-bottom: 10px; border-top: 1px solid #CCC;}
+		.vibe-feComposite-navNextImg     {cursor: pointer;}
+		.vibe-feComposite-navPanel       {position: relative; display: inline; white-space: nowrap;}
+		.vibe-feComposite-navPrevImg     {cursor: pointer; padding-right: 1px;}
+		.vibe-feComposite-permalinksData {margin: 0px !important; background: transparent !important;}
+		.vibe-feComposite-permalinksDlg  {width: 1280px;}
+		.vibe-feComposite-rightPanel     {position: absolute; top: 0px; right: 8px; white-space: nowrap;}
+		.vibe-feComposite-rootPanel      {}
 	/* End:  Folder entry composite styles. */
 	
 	/* Start:  Folder entry dialog styles. */
