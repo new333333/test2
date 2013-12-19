@@ -154,13 +154,14 @@ public class FolderEntryComposite extends ResizeComposite
 	private VibeFlowPanel					m_rootPanel;				// The panel containing everything about the composite.
 	private ViewFolderEntryInfo				m_vfei;						// The view information for the folder entry being viewed.
 
-	private final static int CAPTION_LABEL_OVERHEAD		=  25;	// Pixels the width of the caption label is reduced by to account for overhead, ...
-	private final static int CAPTION_LABEL_MINIMUM		= 100;	// Minimum size, in pixels of the caption label.
-	private final static int MINIMUM_CONTENT_HEIGHT		= 150;	// The minimum height (in pixels) of the composite's content  panel.
-	private final static int MINIMUM_DOCUMENT_HEIGHT	=  50;	// The minimum height (in pixels) of the composite's document area.
-	public  final static int MINIMUM_SHARING_HEIGHT		= 100;	// The minimum height (in pixels) of the sidebar's sharing area.
-	private final static int FOOTER_ADJUST_DLG			=  20;	// Height adjustment required for adequate spacing below the footer when hosted in a dialog.
-	private final static int FOOTER_ADJUST_VIEW			=  30;	// Height adjustment required for adequate spacing below the footer when hosted in a view.
+	private final static int CAPTION_LABEL_OVERHEAD			=  25;	// Pixels the width of the caption label is reduced by to account for overhead, ...
+	private final static int CAPTION_LABEL_MINIMUM			= 100;	// Minimum size, in pixels of the caption label.
+	private final static int CONTENT_AREA_VERTICAL_PADDING	=  20;	// Padding (top + bottom) as defined in the vibe-feComposite-contentPanel style.
+	private final static int MINIMUM_CONTENT_HEIGHT			= 150;	// The minimum height (in pixels) of the composite's content  panel.
+	private final static int MINIMUM_DOCUMENT_HEIGHT		=  50;	// The minimum height (in pixels) of the composite's document area.
+	public  final static int MINIMUM_SHARING_HEIGHT			= 100;	// The minimum height (in pixels) of the sidebar's sharing area.
+	private final static int FOOTER_ADJUST_DLG				=  20;	// Height adjustment required for adequate spacing below the footer when hosted in a dialog.
+	private final static int FOOTER_ADJUST_VIEW				=  30;	// Height adjustment required for adequate spacing below the footer when hosted in a view.
 	
 	private final static int CONTENT_ROW	= 0;	// Row    index in m_contentGrid for the content.
 	private final static int CONTENT_CELL	= 0;	// Column index in m_contentGrid for the content.
@@ -1347,9 +1348,9 @@ public class FolderEntryComposite extends ResizeComposite
 		else container.removeStyleName("vibe-verticalScroll");
 		
 		// Set the height of the content panel.
-		m_documentArea.setHeight(      docHeight     + "px");
-		m_contentPanel.setHeight(      contentHeight + "px");
-		m_sidebarArea.setSidebarHeight(contentHeight       );
+		m_documentArea.setHeight(      docHeight     + "px"                         );
+		m_contentPanel.setHeight(      contentHeight + "px"                         );
+		m_sidebarArea.setSidebarHeight(contentHeight + CONTENT_AREA_VERTICAL_PADDING);	// Sidebar height needs to account for the vertical padding in the content area.
 		
 		// Adjust the width of the caption label so that it doesn't
 		// overlap the right panel.
