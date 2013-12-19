@@ -53,7 +53,6 @@ import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
-import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -62,7 +61,6 @@ import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
-import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
@@ -134,13 +132,12 @@ public class ManageCommentsComposite extends ResizeComposite implements KeyDownH
 	 * Asynchronously adds a comment to the entry.
 	 */
 	private void addCommentAsync(final String comment) {
-		ScheduledCommand doAdd = new ScheduledCommand() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
 				addCommentNow(comment);
 			}
-		};
-		Scheduler.get().scheduleDeferred(doAdd);
+		});
 	}
 
 	/*
@@ -162,7 +159,7 @@ public class ManageCommentsComposite extends ResizeComposite implements KeyDownH
 			@Override
 			public void onSuccess(VibeRpcResponse result) {
 				final ActivityStreamEntry asEntry = ((ActivityStreamEntryRpcResponseData) result.getResponseData()).getActivityStreamEntry();
-				Scheduler.ScheduledCommand doAdd = new Scheduler.ScheduledCommand() {
+				GwtClientHelper.deferCommand(new ScheduledCommand() {
 					@Override
 					public void execute() {
 						// Add the comment to the comment widget...
@@ -181,8 +178,7 @@ public class ManageCommentsComposite extends ResizeComposite implements KeyDownH
 							}
 						}
 					}
-				};
-				Scheduler.get().scheduleDeferred(doAdd);
+				});
 			}
 		});
 	}
@@ -271,13 +267,12 @@ public class ManageCommentsComposite extends ResizeComposite implements KeyDownH
 	 * comments composite.
 	 */
 	private static void initCompositeAsync(final ManageCommentsComposite mcc, final CommentsInfo commentsInfo, final CommentAddedCallback addedCallback) {
-		ScheduledCommand doRun = new ScheduledCommand() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
 				mcc.initCompositeNow(commentsInfo, addedCallback);
 			}
-		};
-		Scheduler.get().scheduleDeferred(doRun);
+		});
 	}
 	
 	/*
@@ -321,13 +316,12 @@ public class ManageCommentsComposite extends ResizeComposite implements KeyDownH
 	 * Asynchronously populates the contents of the composite.
 	 */
 	private void populateCompositeAsync() {
-		ScheduledCommand doPopulate = new ScheduledCommand() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
 				populateCompositeNow();
 			}
-		};
-		Scheduler.get().scheduleDeferred(doPopulate);
+		});
 	}
 	
 	/*
@@ -377,25 +371,13 @@ public class ManageCommentsComposite extends ResizeComposite implements KeyDownH
 	 * vertical scroll bar.
 	 */
 	private void scrollCommentsToBottomAsync(int delay) {
-		if (0 < delay) {
-			Timer doScroll = new Timer() {
-				@Override
-				public void run() {
-					scrollCommentsToBottomNow();
-				}
-			};
-			doScroll.schedule(delay);
-		}
-		
-		else {
-			ScheduledCommand doScroll = new ScheduledCommand() {
-				@Override
-				public void execute() {
-					scrollCommentsToBottomNow();
-				}
-			};
-			Scheduler.get().scheduleDeferred(doScroll);
-		}
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
+			@Override
+			public void execute() {
+				scrollCommentsToBottomNow();
+			}
+		},
+		delay);
 	}
 	
 	private void scrollCommentsToBottomAsync() {

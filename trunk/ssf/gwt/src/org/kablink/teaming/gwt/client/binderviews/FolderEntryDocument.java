@@ -34,8 +34,6 @@ package org.kablink.teaming.gwt.client.binderviews;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingDataTableImageBundle;
-import org.kablink.teaming.gwt.client.GwtTeamingFilrImageBundle;
-import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.util.FolderEntryDetails;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.ViewFileInfo;
@@ -43,8 +41,7 @@ import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Style;
-import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.Element;
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.ui.Frame;
 import com.google.gwt.user.client.ui.Image;
 
@@ -53,14 +50,11 @@ import com.google.gwt.user.client.ui.Image;
  * 
  * @author drfoster@novell.com
  */
-@SuppressWarnings("unused")
 public class FolderEntryDocument extends VibeFlowPanel {
 	private FolderEntryCallback				m_fec;			// Callback to the folder entry composite.
 	private FolderEntryDetails				m_fed;			// The full details about the folder entry being viewed.
 	private Frame							m_htmlFrame;	// The <IFRAME> containing rendered HTML when it's available from the file.
 	private GwtTeamingDataTableImageBundle	m_images;		// Access to Vibe's images.
-	private GwtTeamingFilrImageBundle		m_filrImages;	// Access to Filr's images.
-	private GwtTeamingMessages				m_messages;		// Access to Vibe's messages.
 	private Image							m_contentImage;	//
 
 	private final static int	NO_VSCROLL_ADJUST		= 20;
@@ -78,9 +72,7 @@ public class FolderEntryDocument extends VibeFlowPanel {
 		m_fed = fed;
 		
 		// ...initialize the data members requiring it...
-		m_filrImages = GwtTeaming.getFilrImageBundle();
-		m_images     = GwtTeaming.getDataTableImageBundle();
-		m_messages   = GwtTeaming.getMessages();
+		m_images = GwtTeaming.getDataTableImageBundle();
 		
 		// ...and construct the document's content.
 		createContent();
@@ -219,7 +211,7 @@ public class FolderEntryDocument extends VibeFlowPanel {
 			}
 			else {
 				// ...otherwise, remove any scaling we may have had.
-			    DOM.setStyleAttribute(m_contentImage.getElement(), "width", "");
+				m_contentImage.getElement().getStyle().setProperty("width", "");
 			}
 		}
 	}

@@ -249,7 +249,7 @@ public class FolderEntrySidebar extends VibeFlowPanel implements CommentAddedCal
 		innerPanel.add(titlePanel);
 
 		// ...add the expander image to the title panel...
-		ImageResource expanderImg = (m_commentsVisible ? m_images.slideDown() : m_images.slideUp());
+		ImageResource expanderImg = (m_commentsVisible ? m_images.slideUp() : m_images.slideDown());
 		m_sharingExpanderImg = GwtClientHelper.buildImage(expanderImg.getSafeUri().asString());
 		m_sharingExpanderImg.addStyleName("vibe-feView-sidebarSectionHeadExpander");
 		titlePanel.add(m_sharingExpanderImg);
@@ -400,15 +400,13 @@ public class FolderEntrySidebar extends VibeFlowPanel implements CommentAddedCal
 		if (m_commentsVisible)
 		     expanderRes = m_images.slideUp();
 		else expanderRes = m_images.slideDown();
-		m_commentsExpanderImg.setUrl(expanderRes.getSafeUri().asString());
+		String expanderResUri = expanderRes.getSafeUri().asString();
+		m_commentsExpanderImg.setUrl(expanderResUri);
 		m_commentsArea.setCommentsVisible(m_commentsVisible);
 
 		// ...toggle the state of the sharing...
-		if (m_commentsVisible)
-		     expanderRes = m_images.slideDown();
-		else expanderRes = m_images.slideUp();
         if (m_sharingAreaShown) {
-        	m_sharingExpanderImg.setUrl(expanderRes.getSafeUri().asString());
+        	m_sharingExpanderImg.setUrl(expanderResUri);
         }
 
 		// ...store the current state in a cookie...
