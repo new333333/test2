@@ -1321,13 +1321,13 @@ public class FolderEntryComposite extends ResizeComposite
 		int		footerHeight = m_footerPanel.getOffsetHeight();				// Height of the composite's footer panel.
 
 		// What's the optimal height for the content panel?
-		boolean addConainerScroll = false;;
+		boolean addContainerScroll = false;;
 		int contentHeight = (((cHeight - contentTop) - footerHeight) - getFooterAdjust());
 		if (MINIMUM_CONTENT_HEIGHT > contentHeight) {
 			// Too small!  Use the minimum even though this may result
 			// in a vertical scroll bar.
-			contentHeight     = MINIMUM_CONTENT_HEIGHT;
-			addConainerScroll = true;
+			contentHeight      = MINIMUM_CONTENT_HEIGHT;
+			addContainerScroll = true;
 		}
 
 		// Calculate the height we can give to the document area.
@@ -1336,14 +1336,14 @@ public class FolderEntryComposite extends ResizeComposite
 		int docAbove     = (headerHeight  + menuHeight + 30);	// Adjust for padding...
 		int docHeight    = (contentHeight - docAbove       );
 		if (MINIMUM_DOCUMENT_HEIGHT > docHeight) {
-			docHeight         = MINIMUM_DOCUMENT_HEIGHT;
-			contentHeight     = (docAbove + docHeight);
-			addConainerScroll = true;
+			docHeight          = MINIMUM_DOCUMENT_HEIGHT;
+			contentHeight      = (docAbove + docHeight);
+			addContainerScroll = true;
 		}
 
 		// Add/remove the vertical scroll bar from the container as
 		// necessary.
-		if (addConainerScroll)
+		if (addContainerScroll)
 		     container.addStyleName(   "vibe-verticalScroll");
 		else container.removeStyleName("vibe-verticalScroll");
 		
