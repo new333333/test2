@@ -3163,12 +3163,12 @@ public class GwtViewHelper {
 	private static String[] getCollectionColumnNames(CollectionType ct) {
 		String[] reply;
 		switch (ct) {
-		case MY_FILES:       reply = pruneColumnNames(ct, "title", "comments", "size",   "date"                                                                     ); break;
-		case NET_FOLDERS:    reply = pruneColumnNames(ct, "title", "date",     "netfolder_access", "descriptionHtml"                                                ); break;
-		case SHARED_BY_ME:   reply = pruneColumnNames(ct, "title", "comments", "share_sharedWith", "share_date", "share_expiration", "share_access", "share_message"); break;
-		case SHARED_WITH_ME:
-		case SHARED_PUBLIC:  reply = pruneColumnNames(ct, "title", "comments", "share_sharedBy",   "share_date", "share_expiration", "share_access", "share_message"); break;
-		default:             reply = new String[0];                                                                                                                    break;
+		case MY_FILES:        reply = pruneColumnNames(ct, "title", "comments", "size",   "date"                                                                     ); break;
+		case NET_FOLDERS:     reply = pruneColumnNames(ct, "title", "date",     "netfolder_access", "descriptionHtml"                                                ); break;
+		case SHARED_BY_ME:    reply = pruneColumnNames(ct, "title", "comments", "share_sharedWith", "share_date", "share_expiration", "share_access", "share_message"); break;
+		case SHARED_PUBLIC:
+		case SHARED_WITH_ME:  reply = pruneColumnNames(ct, "title", "comments", "share_sharedBy",   "share_date", "share_expiration", "share_access", "share_message"); break;
+		default:              reply = new String[0];                                                                                                                    break;
 		}
 		return reply;
 	}
@@ -4894,9 +4894,9 @@ public class GwtViewHelper {
 									}
 								}
 								
-								// Are we working on a 'Shared by/with Me' collection?
+								// Are we working on a 'Shared by/with Me' or 'Public' collection?
 								GwtSharedMeItem smItem;
-								if (isCollectionSharedByMe || isCollectionSharedWithMe) {
+								if (isCollectionSharedByMe || isCollectionSharedWithMe || isCollectionSharedPublic) {
 									// Yes!  Find the GwtSharedMeItem for this row.
 									smItem = GwtSharedMeItem.findShareMeInList(
 										docId,
