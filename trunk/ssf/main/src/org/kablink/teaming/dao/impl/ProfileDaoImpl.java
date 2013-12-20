@@ -73,7 +73,6 @@ import org.kablink.teaming.domain.ApplicationPrincipal;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.EmailAddress;
 import org.kablink.teaming.domain.EntityIdentifier;
-import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.GroupPrincipal;
 import org.kablink.teaming.domain.IdentityInfo;
@@ -766,51 +765,34 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 	   }	        
 	}
 
- 	/**
- 	 * Find an user in the ss_principals table using the objectSid.
- 	 */
  	@Override
-	public User findUserByObjectSid( final String objectSid, final Long zoneId ) 
-		throws NoUserByTheNameException
+	public Long findUserIdByObjectSid( final String objectSid, final Long zoneId ) 
 	{
 	   long begin = System.nanoTime();
 	   try
 	   {
-	       User user = (User)getHibernateTemplate().execute(
+	       Long id = (Long)getHibernateTemplate().execute(
                 new HibernateCallback()
                 {
                     @Override
 					public Object doInHibernate(Session session) throws HibernateException
                     {
-                 	   //only returns active users
-                 	   User user = (User)session.getNamedQuery( "find-User-By-ObjectSid" )
-                             		.setString( ParameterNames.OBJECT_SID, objectSid )
+                 	   //only returns active user
+                  	   return session.getNamedQuery( "find-User-id-By-ObjectSid" )
+                             		.setString( ParameterNames.OBJECT_SID,  objectSid)
                              		.setLong( ParameterNames.ZONE_ID, zoneId )
                              		.setCacheable( isPrincipalQueryCacheable() )
                              		.uniqueResult();
-                 	   
-                        //query ensures user is not deleted and not disabled
-                 	   if ( user == null )
-                 	   {
-                 		   throw new NoUserByTheNameException( objectSid ); 
-                       }
-                       
-                 	   return user;
                     }
                 }
              );		
-
-	       user = (User) filterInaccessiblePrincipal(user);
-	       if (user == null) 
-	    	   throw new NoUserByTheNameException( objectSid ); 
-
-	       return user;
+	       return id;
 	   }
 	   finally
 	   {
-		   end(begin, "findUserByObjectSid(String,Long)");
+		   end(begin, "findUserIdByObjectSid(String,Long)");
 	   }	        
-	}// end findUserByLdapGuid()
+	}
 
  	@Override
 	public Long findPrincipalIdByObjectSid( final String objectSid, final Long zoneId ) 
@@ -838,6 +820,36 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 	   finally
 	   {
 		   end(begin, "findPrincipalIdByObjectSid(String,Long)");
+	   }	        
+	}
+
+ 	@Override
+	public Long findUserIdByForeignName( final String foreignName, final Long zoneId ) 
+	{
+	   long begin = System.nanoTime();
+	   try
+	   {
+	       Long id = (Long)getHibernateTemplate().execute(
+                new HibernateCallback()
+                {
+                    @Override
+					public Object doInHibernate(Session session) throws HibernateException
+                    {
+                 	   //only returns active user
+                       // We store foreign names in lower case in the database.
+                  	   return session.getNamedQuery( "find-User-id-By-ForeignName" )
+                             		.setString( ParameterNames.FOREIGN_NAME, foreignName.toLowerCase() )
+                             		.setLong( ParameterNames.ZONE_ID, zoneId )
+                             		.setCacheable( isPrincipalQueryCacheable() )
+                             		.uniqueResult();
+                    }
+                }
+             );		
+	       return id;
+	   }
+	   finally
+	   {
+		   end(begin, "findUserIdByForeignName(String,Long)");
 	   }	        
 	}
 
@@ -872,6 +884,36 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 	}
 
  	@Override
+	public Long findUserIdByTypelessDN( final String typelessDN, final Long zoneId ) 
+	{
+	   long begin = System.nanoTime();
+	   try
+	   {
+	       Long id = (Long)getHibernateTemplate().execute(
+                new HibernateCallback()
+                {
+                    @Override
+					public Object doInHibernate(Session session) throws HibernateException
+                    {
+                 	   //only returns active users
+                       // We store typeless DNs in lower case in the database.
+                  	   return session.getNamedQuery( "find-User-id-By-TypelessDN" )
+                             		.setString( ParameterNames.TYPELESS_DN, typelessDN.toLowerCase() )
+                             		.setLong( ParameterNames.ZONE_ID, zoneId )
+                             		.setCacheable( isPrincipalQueryCacheable() )
+                             		.uniqueResult();
+                    }
+                }
+             );		
+	       return id;
+	   }
+	   finally
+	   {
+		   end(begin, "findUserIdByTypelessDN(String,Long)");
+	   }	        
+	}
+
+ 	@Override
 	public Long findPrincipalIdByTypelessDN( final String typelessDN, final Long zoneId ) 
 	{
 	   long begin = System.nanoTime();
@@ -902,6 +944,36 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 	}
 
  	@Override
+	public Long findUserIdByName( final String name, final Long zoneId ) 
+	{
+	   long begin = System.nanoTime();
+	   try
+	   {
+	       Long id = (Long)getHibernateTemplate().execute(
+                new HibernateCallback()
+                {
+                    @Override
+					public Object doInHibernate(Session session) throws HibernateException
+                    {
+                 	   //only returns active users
+                       // We store names in lower case in the database.
+                  	   return session.getNamedQuery( "find-User-id-By-Name" )
+                             		.setString( ParameterNames.NAME, name.toLowerCase() )
+                             		.setLong( ParameterNames.ZONE_ID, zoneId )
+                             		.setCacheable( isPrincipalQueryCacheable() )
+                             		.uniqueResult();
+                    }
+                }
+             );		
+	       return id;
+	   }
+	   finally
+	   {
+		   end(begin, "findUserIdByName(String,Long)");
+	   }	        
+	}
+
+ 	@Override
 	public Long findPrincipalIdByName( final String name, final Long zoneId ) 
 	{
 	   long begin = System.nanoTime();
@@ -915,7 +987,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
                     {
                  	   //only returns active principals
                        // We store names in lower case in the database.
-                  	   return session.getNamedQuery( "find-Principal-id-Company" )
+                  	   return session.getNamedQuery( "find-Principal-id-By-Name" )
                              		.setString( ParameterNames.NAME, name.toLowerCase() )
                              		.setLong( ParameterNames.ZONE_ID, zoneId )
                              		.setCacheable( isPrincipalQueryCacheable() )
@@ -931,6 +1003,36 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 	   }	        
 	}
 
+ 	@Override
+ 	public Long findUserIdByDomainAndSamaccount(final String domainName, final String samaccountName, final Long zoneId) {
+ 	   long begin = System.nanoTime();
+ 	   try
+ 	   {
+ 	       Long id = (Long)getHibernateTemplate().execute(
+                 new HibernateCallback()
+                 {
+                     @Override
+ 					public Object doInHibernate(Session session) throws HibernateException
+                     {
+                  	   //only returns active users
+                        // We store names in lower case in the database.
+                   	   return session.getNamedQuery( "find-User-id-By-Domain-Sam" )
+                         		.setString( ParameterNames.DOMAIN_NAME, domainName.toLowerCase() )
+                              	.setString( ParameterNames.SAMACCOUNTNAME, samaccountName.toLowerCase() )
+                              	.setLong( ParameterNames.ZONE_ID, zoneId )
+                              	.setCacheable( isPrincipalQueryCacheable() )
+                              	.uniqueResult();
+                     }
+                 }
+              );		
+ 	       return id;
+ 	   }
+ 	   finally
+ 	   {
+ 		   end(begin, "findUserIdByDomainAndSamaccount(String,String,Long)");
+ 	   }	        
+ 	}
+ 	
  	@Override
  	public Long findPrincipalIdByDomainAndSamaccount(final String domainName, final String samaccountName, final Long zoneId) {
  	   long begin = System.nanoTime();

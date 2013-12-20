@@ -35,7 +35,6 @@ package org.kablink.teaming.fi.connection.acl;
 import java.util.List;
 import java.util.Map;
 
-import org.kablink.teaming.domain.ResourceDriverConfig;
 import org.kablink.teaming.domain.User;
 
 /**
@@ -61,6 +60,18 @@ public interface AclItemPrincipalMapper {
 	 * 
 	 */
 	public Long toVibePrincipalId(String aclItemPrincipalIdType, String aclItemPrincipalId) throws AclItemPrincipalMappingException;
+	
+	/**
+	 * Returns the ID of the Vibe user object that this particular principal ID maps to.
+	 * If the principal ID refers to a non-user object such as group, then it throws
+	 * <code>AclItemPrincipalMappingException</code>.
+	 * 
+	 * @param aclItemPrincipalIdType
+	 * @param aclItemPrincipalId
+	 * @return
+	 * @throws AclItemPrincipalMappingException
+	 */
+	public Long toVibeUserId(String aclItemPrincipalIdType, String aclItemPrincipalId) throws AclItemPrincipalMappingException;
 	
 	/**
 	 * Returns the file system principal ID corresponding to the specified Vibe user object. 

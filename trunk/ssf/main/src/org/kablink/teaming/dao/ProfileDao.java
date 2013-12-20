@@ -131,19 +131,26 @@ public interface ProfileDao {
  	 		throws NoUserByTheNameException;
  	 	
  	public Long findPrincipalIdByLdapGuid(String ldapGuid, Long zoneId);
- 	 	
- 	public User findUserByObjectSid( String objectSid, Long zoneId ) 
- 	 	 		throws NoUserByTheNameException;
  	 	 	
  	public Long findPrincipalIdByObjectSid(String objectSid, Long zoneId);
- 	 	 	
+	 	
+ 	public Long findUserIdByObjectSid(String objectSid, Long zoneId);
+	 	
  	public Long findPrincipalIdByForeignName(String foreignName, Long zoneId);
+ 	
+ 	public Long findUserIdByForeignName(String foreignName, Long zoneId);
  	
  	public Long findPrincipalIdByTypelessDN(String typelessDN, Long zoneId);
  	
+ 	public Long findUserIdByTypelessDN(String typelessDN, Long zoneId);
+ 	
  	public Long findPrincipalIdByName(String name, Long zoneId);
 
+ 	public Long findUserIdByName(String name, Long zoneId);
+
  	public Long findPrincipalIdByDomainAndSamaccount(String domainName, String samaccountName, Long zoneId);
+
+ 	public Long findUserIdByDomainAndSamaccount(String domainName, String samaccountName, Long zoneId);
 
  	public Principal findPrincipalByName(String name, Long zoneId) 
  		throws NoPrincipalByTheNameException;
