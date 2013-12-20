@@ -128,6 +128,7 @@ public class FolderEntryComposite extends ResizeComposite
 		UnlockSelectedEntitiesEvent.Handler,
 		ZipAndDownloadSelectedFilesEvent.Handler
 {
+	private boolean							m_blockHeaderInducedResize;	// Used to control recursive onResize() calls while resizing the header.
 	private boolean							m_compositeReady;			// Set true once the composite and all its components are ready.
 	private boolean							m_isDialog;					// true -> The composite is hosted in a dialog.  false -> It's hosted in a view.
 	private boolean							m_sidebarVisible;			// true -> The sidebar is visible.  false -> It's not.
@@ -144,7 +145,7 @@ public class FolderEntryComposite extends ResizeComposite
 	private int								m_readyComponents;			// Components that are ready, incremented as they callback.
 	private Label							m_captionLabel;				// The label on the left of the caption bar. 
 	private List<HandlerRegistration>		m_registeredEventHandlers;	// Event handlers that are currently registered.
-	private PermalinksDlg					m_permalinksDlg;				//
+	private PermalinksDlg					m_permalinksDlg;			// The dialog used to display entry permalinks.
 	private Panel							m_captionRightPanel;		// The panel at the right end of the caption containing the navigation arrows and close button.
 	private Panel							m_captionRootPanel;			// Root panel holding the caption widget.
 	private ViewReady						m_viewReady;				// Stores a ViewReady created for the classes that extends it.
@@ -162,6 +163,8 @@ public class FolderEntryComposite extends ResizeComposite
 	public  final static int MINIMUM_SHARING_HEIGHT			= 100;	// The minimum height (in pixels) of the sidebar's sharing area.
 	private final static int FOOTER_ADJUST_DLG				=  20;	// Height adjustment required for adequate spacing below the footer when hosted in a dialog.
 	private final static int FOOTER_ADJUST_VIEW				=  30;	// Height adjustment required for adequate spacing below the footer when hosted in a view.
+	
+	private final static int BLOCK_HEADER_FORCED_RESIZE_DURATION	= 500;	// Milliseconds we ignore onResize() calls after resizing the header.
 	
 	private final static int CONTENT_ROW	= 0;	// Row    index in m_contentGrid for the content.
 	private final static int CONTENT_CELL	= 0;	// Column index in m_contentGrid for the content.
@@ -1289,6 +1292,12 @@ public class FolderEntryComposite extends ResizeComposite
 	 */
 	@Override
 	public void onResize() {
+		// If we're blocking resizes while resizing the header...
+		if (m_blockHeaderInducedResize) {
+			// ...ignore this onResize() call.
+			return;
+		}
+		
 		// Pass the resize on to the super class...
 		super.onResize();
 		
@@ -1363,8 +1372,20 @@ public class FolderEntryComposite extends ResizeComposite
 		m_captionLabel.setWidth(captionLabelWidth + "px");
 
 		// Finally, tell the header to set its size based on where
-		// we're at.
+		// we're at.  Note that while the header is resizing, we
+		// ignore additional onResize() requests.  This is done to
+		// stop recursive onResize() calls as when the header resizes,
+		// it causes its parent (i.e., this composite) to resize, ...
+		m_blockHeaderInducedResize = true;
 		m_headerArea.setHeaderSize();
+		GwtClientHelper.deferCommand(
+			new ScheduledCommand() {
+				@Override
+				public void execute() {
+					m_blockHeaderInducedResize = false;
+				}
+			},
+			BLOCK_HEADER_FORCED_RESIZE_DURATION);
 	}
 
 	/**
