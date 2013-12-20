@@ -53,10 +53,13 @@ import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.ViewFolderEntryInfo;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.safehtml.client.SafeHtmlTemplates;
+import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Image;
@@ -78,11 +81,20 @@ public class FolderEntryHeader extends VibeFlowPanel {
 	private Label							m_titleLabel;		// The Label that holds the title.
 	private Label							m_sizeLabel;		// The label holding the size of the file.
 	private ProfileEntryDlg					m_profileEntryDlg;	// A profile entry dialog, once one has been instantiated.
-	private VibeFlowPanel					m_descPanel;		//
-	private VibeFlowPanel					m_showDescPanel;	//
+	private VibeFlowPanel					m_descPanel;		// The panel that holds the entry's description.
+	private VibeFlowPanel					m_showDescPanel;	// The panel that holds the widgets that allow the user to hide/show the description.
 
 	private final static int MINIMUM_TITLE_WIDTH	= 150;	// Minimum width we allow the title text to be.
 	private final static int TITLE_OVERHEAD			= 130;	// Amount to reduce the title width by to account for margins and other horizontal overhead.
+	
+	/*
+	 * Template used to generate a modified label in the header.
+	 */
+	public interface ModifiedTemplate extends SafeHtmlTemplates {
+		@Template("<strong>{0}</strong>  <span class=\"vibe-feView-headerContentPersonModifiedLabel\">{1}</span>")
+		SafeHtml modifiedHtml(String modifiedResource, String modifedDate);
+	}
+	private final static ModifiedTemplate MODIFIED_TEMPLATE = GWT.create(ModifiedTemplate.class);
 	
 	/**
 	 * Constructor method.
@@ -342,13 +354,9 @@ public class FolderEntryHeader extends VibeFlowPanel {
 		final UserInfo modifierInfo = m_fed.getModifier(); 
 		if (m_fed.isModifierCreator()) {
 			// ...add the modification time...
-			VibeFlowPanel html     = new VibeFlowPanel();
-			InlineLabel   htmlSpan = new InlineLabel(modifierInfo.getDate());
-			htmlSpan.addStyleName("vibe-feView-headerContentPersonModifiedLabel");
-			html.add(htmlSpan);
 			InlineLabel modifierLabel = new InlineLabel();
 			modifierLabel.addStyleName("vibe-feView-headerContentPersonModified");
-			modifierLabel.getElement().setInnerHTML(("<strong>" + m_messages.folderEntry_Modified() + "</strong>") + html.getElement().getInnerHTML());
+			modifierLabel.getElement().setInnerSafeHtml(MODIFIED_TEMPLATE.modifiedHtml(m_messages.folderEntry_Modified(), modifierInfo.getDate()));
 			creatorPanel.add(modifierLabel);
 		}
 		
@@ -496,7 +504,7 @@ public class FolderEntryHeader extends VibeFlowPanel {
 	 * Called when the header needs to be resized.
 	 */
 	public void setHeaderSize() {
-		m_titleLabel.setVisible(false);	// Hide it first so it doesn't affect the overall size calculations below.
+		m_titleLabel.addStyleName("width1px");	// Initially reduced so it doesn't affect the overall size calculations below.
 		setHeaderSizeAsync();
 	}
 
@@ -522,7 +530,7 @@ public class FolderEntryHeader extends VibeFlowPanel {
 		if (MINIMUM_TITLE_WIDTH > titleWidth) {
 			titleWidth = MINIMUM_TITLE_WIDTH;
 		}
-		m_titleLabel.setVisible(true);
+		m_titleLabel.removeStyleName("width1px");	// Remove the synthetic width value we initially set.
 		m_titleLabel.getElement().getStyle().setProperty("maxWidth", (titleWidth + "px"));
 	}
 	
