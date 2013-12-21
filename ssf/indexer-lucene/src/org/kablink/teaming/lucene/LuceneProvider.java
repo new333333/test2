@@ -609,10 +609,11 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 			Long parentBinderId, String parentBinderPath) throws LuceneException {
 		IndexSearcherHandle indexSearcherHandle = getIndexSearcherHandle();
 
-		Filter implicitlyAccessibleSubFoldersFilter = null;
-		
+		Filter implicitlyAccessibleSubFoldersFilter = null;		
+		boolean nonNetFolderInferredAccessEnable = PropsUtil.getBoolean("lucene.search.non.netfolder.inferred.access.enable", false);
+
 		try {
-			if(aclQueryStr != null && aclQueryStr.length() > 0) {
+			if(nonNetFolderInferredAccessEnable && aclQueryStr != null && aclQueryStr.length() > 0) {
 				// This search is bound by ACL. We need to tweak the search in order to handle the anomaly associated with Net Folders (i.e., "implicit" permissions).
 				BooleanQuery implicitlyAccessibleSubFoldersQuery = new BooleanQuery();
 				implicitlyAccessibleSubFoldersQuery.add(new TermQuery(new Term(Constants.ENTRY_ANCESTRY, parentBinderId.toString())), BooleanClause.Occur.MUST);
@@ -629,7 +630,8 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 				}
 			}
 			else {
-				// The user has access to everything any way, so no need to worry about visibility and no need to augment the original acl clauses.
+				// Either inferred access computation is disabled on non net folders OR the user has access to everything any way, 
+				// so no need to worry about visibility and no need to augment the original acl clauses.
 			}
 		} catch (IOException e) {
 			throw newLuceneException("Error searching index", e);
