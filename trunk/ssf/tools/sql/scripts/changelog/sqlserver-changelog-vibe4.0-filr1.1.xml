@@ -394,12 +394,6 @@
                 <constraints nullable="true" />
             </column>
         </addColumn>
-        
-        <addColumn tableName="SS_Principals">
-            <column name="mobileDevices" type="ntext">
-                <constraints nullable="true" />
-            </column>
-        </addColumn>
     </changeSet>
 
     <changeSet author="jay" context="schema" failOnError="true" id="32">

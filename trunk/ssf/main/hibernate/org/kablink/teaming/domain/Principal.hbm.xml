@@ -134,9 +134,6 @@
 		  <property name="extProvState" access="field" type="short"/>
 		  <property name="extProvSeed"/>
 		  <property name="workspacePreDeleted" access="field"/>
-		  <component name="mobileDevices" class="org.kablink.teaming.domain.MobileDevices">
-		  	<property name="mobileDevices" length="2000000" type="org.kablink.teaming.dao.util.SSClobStringType"/>
-		  </component>
 	    </subclass>
   	</subclass>
   	<subclass dynamic-update="true" name="org.kablink.teaming.domain.ApplicationPrincipal">
