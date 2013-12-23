@@ -51,7 +51,7 @@ import com.google.gwt.user.client.ui.Widget;
  * @author drfoster@novell.com
  */
 public class MobileDevicesView extends DataTableFolderViewBase {
-	public final static boolean	CLICK_ON_ZERO_TO_CREATE_DUMMIES	= true;	//! DRF (20131119):  Leave false on checkin!  DEBUG ONLY:  Setting true will cause a device bubble that represents zero devices to create dummy devices when clicked. 
+	public final static boolean	CLICK_ON_ZERO_TO_CREATE_DUMMIES	= false;	//! DRF (20131119):  Leave false on checkin!  DEBUG ONLY:  Setting true will cause a device bubble that represents zero devices to create dummy devices when clicked. 
 	public final static boolean	SHOW_MOBILE_DEVICES_SYSTEM		= true;		// Setting false will eliminate the 'Administration Console -> Management -> Mobile Devices' option.
 	public final static boolean	SHOW_MOBILE_DEVICES_USER		= true;		// Setting false will disable the manage mobile devices dialog from displaying off the device count bubble in the manage user's view. 
 	
