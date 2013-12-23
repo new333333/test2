@@ -56,7 +56,6 @@ import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.GroupPrincipal;
 import org.kablink.teaming.domain.IdentityInfo;
 import org.kablink.teaming.domain.IndividualPrincipal;
-import org.kablink.teaming.domain.MobileDevices;
 import org.kablink.teaming.domain.NoUserByTheNameException;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.ProfileBinder;
@@ -887,34 +886,6 @@ public interface ProfileModule {
      * @return
      */
     public Collection<User> getAllExternalUsers();
-    
-    /**
-     * Returns a Collection<User> of all the users that have mobile
-     * devices.
-     *  
-     * @return
-     */
-    public Collection<User> getAllUsersWithMobileDevices();
-    
-    /**
-     * Get'er methods for the Mobile Application Management (MAM)
-     * settings.
-     * 
-     * Returns a user's MobileDevices, if any are defined.
-     * 
-     * @return
-     */
-    public MobileDevices getMobileDevices(Long userId);
-    
-    /**
-     * Set'er methods for the Mobile Application Management (MAM)
-     * settings.
-     *
-     * Stores a MobileDevices as part of a user.
-     * 
-     * @param
-     */
-    public void setMobileDevices(Long userId, MobileDevices mobileDevices);
     
     /**
      * Returns a PrincipalMobileAppsConfig for the user or group as

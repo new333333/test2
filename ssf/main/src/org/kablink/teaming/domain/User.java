@@ -135,7 +135,6 @@ public class User extends UserPrincipal implements IndividualPrincipal {
     protected Long diskSpaceUsed;
     protected Long maxGroupsQuota;
     protected Long maxGroupsFileSizeLimit;
-    protected MobileDevices mobileDevices;
     private SortedSet groupNames; // sorted set of group names; this field is computed
     
     protected Short extProvState; // applicable only to external users
@@ -152,7 +151,6 @@ public class User extends UserPrincipal implements IndividualPrincipal {
 	// For use by application
 	public User(IdentityInfo identityInfo) {
 		super(identityInfo);
-		this.mobileDevices = new MobileDevices();
 	}
 	
 	@Override
@@ -442,17 +440,6 @@ public class User extends UserPrincipal implements IndividualPrincipal {
 		this.maxGroupsFileSizeLimit = maxGroupsFileSizeLimit;
 	}
 
-	/**
-     * @hibernate.component
-     */
-	public MobileDevices getMobileDevices() {
-		return this.mobileDevices;
-	}
-	
-	public void setMobileDevices(MobileDevices mobileDevices) {
-		this.mobileDevices = mobileDevices;
-	}
-	
 	/**
 	 * @param diskSpace to increment.
 	 */

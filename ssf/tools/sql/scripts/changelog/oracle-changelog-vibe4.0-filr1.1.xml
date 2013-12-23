@@ -395,12 +395,6 @@
                 <constraints nullable="true" />
             </column>
         </addColumn>
-        
-        <addColumn tableName="SS_PRINCIPALS">
-            <column name="mobileDevices" type="CLOB">
-                <constraints nullable="true" />
-            </column>
-        </addColumn>
     </changeSet>
 
     <changeSet author="jay" context="schema" failOnError="true" id="32">

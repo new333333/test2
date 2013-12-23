@@ -425,12 +425,6 @@ update SS_Principals set domainName=LOWER(domainName);
                 <constraints nullable="true" />
             </column>
         </addColumn>
-        
-        <addColumn tableName="SS_Principals">
-            <column name="mobileDevices" type="LONGTEXT">
-                <constraints nullable="true" />
-            </column>
-        </addColumn>
     </changeSet>
 
     <changeSet author="jay" context="schema" failOnError="true" id="37">
