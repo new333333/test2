@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -30,10 +30,8 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-
 package org.kablink.teaming.remoting.rest.v1.util;
 
-import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.domain.*;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.definition.DefinitionModule;
@@ -90,8 +88,8 @@ import java.util.SortedSet;
  * Do not place in this class any methods that are used by a single resource type.
  * 
  * @author jong
- *
  */
+@SuppressWarnings({"unchecked", "unused"})
 public class ResourceUtil {
     private static DefinitionModule definitionModule;
     private static Set<String> ignoredCustomFields = new HashSet<String>() {
@@ -631,7 +629,7 @@ public class ResourceUtil {
         if (includeAttachments) {
             Set<Attachment> attachments = entity.getAttachments();
             List<BaseFileProperties> props = new ArrayList<BaseFileProperties>(attachments.size());
-            int i = 0;
+			int i = 0;
             for (Attachment attachment : attachments) {
                 if (attachment instanceof FileAttachment) {
                     props.add(ResourceUtil.buildFileProperties((FileAttachment) attachment));
@@ -648,7 +646,8 @@ public class ResourceUtil {
     private static void populateCustomFields(final DefinableEntity model, final org.kablink.teaming.domain.DefinableEntity entity, final int descriptionFormat) {
         final Map<String, CustomField> fields = new LinkedHashMap<String, CustomField>();
         DefinitionModule.DefinitionVisitor visitor = new DefinitionModule.DefinitionVisitor() {
-            public void visit(Element entryElement, Element flagElement, Map args) {
+            @Override
+			public void visit(Element entryElement, Element flagElement, Map args) {
                 if (flagElement.attributeValue("apply").equals("true")) {
                     String fieldBuilder = flagElement.attributeValue("elementBuilder");
                     String typeValue = entryElement.attributeValue("name");
@@ -678,14 +677,16 @@ public class ResourceUtil {
                     }
                 }
             }
-            public String getFlagElementName() { return "webService"; }
+            @Override
+			public String getFlagElementName() { return "webService"; }
         };
 
         getDefinitionModule().walkDefinition(entity, visitor, null);
 
         List<CustomField> fieldList = new ArrayList<CustomField>(fields.values());
         Collections.sort(fieldList, new Comparator<CustomField>() {
-            public int compare(CustomField o1, CustomField o2) {
+            @Override
+			public int compare(CustomField o1, CustomField o2) {
                 return o1.getName().compareTo(o2.getName());
             }
         });
@@ -973,14 +974,14 @@ public class ResourceUtil {
         return model;
     }
 
-    public static MobileDevice buildMobileDevice(MobileDevices.MobileDevice device) {
-        MobileDevice model = new MobileDevice();
-        model.setId(device.getId());
+    public static org.kablink.teaming.rest.v1.model.MobileDevice buildMobileDevice(org.kablink.teaming.domain.MobileDevice device) {
+    	org.kablink.teaming.rest.v1.model.MobileDevice model = new org.kablink.teaming.rest.v1.model.MobileDevice();
+        model.setId(device.getDeviceId());
         model.setDescription(device.getDescription());
         model.setLastLogin(device.getLastLogin());
         model.setLastWipe(device.getLastWipe());
-        model.setPushToken(device.getPushToken());
-        model.setWipeScheduled(device.isWipeScheduled());
+//!     model.setPushToken(device.getPushToken());
+        model.setWipeScheduled(device.getWipeScheduled());
         model.setLink("/self/mobile_devices/" + model.getId());
         return model;
     }
@@ -998,6 +999,4 @@ public class ResourceUtil {
             return d2;
         }
     }
-
-
 }

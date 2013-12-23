@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -32,7 +32,6 @@
  */
 package org.kablink.teaming.dao;
 
-
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -40,12 +39,12 @@ import java.util.Date;
 
 import org.kablink.teaming.NoObjectByTheIdException;
 import org.kablink.teaming.dao.util.FilterControls;
+import org.kablink.teaming.dao.util.MobileDeviceSelectSpec;
 import org.kablink.teaming.dao.util.ObjectControls;
 import org.kablink.teaming.dao.util.SFQuery;
 import org.kablink.teaming.domain.AuditTrail;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.BinderQuota;
-import org.kablink.teaming.domain.BinderState;
 import org.kablink.teaming.domain.Dashboard;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.Definition;
@@ -55,10 +54,10 @@ import org.kablink.teaming.domain.HKey;
 import org.kablink.teaming.domain.IndexNode;
 import org.kablink.teaming.domain.LdapConnectionConfig;
 import org.kablink.teaming.domain.LibraryEntry;
+import org.kablink.teaming.domain.MobileDevice;
 import org.kablink.teaming.domain.NotifyStatus;
 import org.kablink.teaming.domain.OpenIDProvider;
 import org.kablink.teaming.domain.PostingDef;
-import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.SimpleName;
 import org.kablink.teaming.domain.Subscription;
 import org.kablink.teaming.domain.Tag;
@@ -68,11 +67,12 @@ import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.ZoneConfig;
 import org.springframework.dao.DataAccessException;
 
-
 /**
+ * ?
+ * 
  * @author Jong Kim
- *
  */
+@SuppressWarnings("unchecked")
 public interface CoreDao {
     public void bulkLoadCollections(Collection entries);
 	/**
@@ -283,4 +283,13 @@ public interface CoreDao {
 	
 	public List<Long> getFolderEntryIds(final Binder binder);
 
+	/**
+	 * Used to find all MobileDevice's that meet the specifications.
+	 * 
+	 * @param selectSpec
+	 * @param zoneId
+	 * 
+	 * @return
+	 */
+	public List<MobileDevice> findMobileDevices(final MobileDeviceSelectSpec selectSpec, final Long zoneId);
 }

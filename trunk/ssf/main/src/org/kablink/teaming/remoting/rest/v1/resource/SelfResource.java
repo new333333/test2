@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
  *
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -18,7 +18,7 @@
  * (c) 1998-2009 Novell, Inc. All Rights Reserved.
  *
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -33,12 +33,16 @@
 package org.kablink.teaming.remoting.rest.v1.resource;
 
 import com.sun.jersey.spi.resource.Singleton;
+
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
-import org.kablink.teaming.domain.*;
+import org.kablink.teaming.domain.Attachment;
 import org.kablink.teaming.domain.Binder;
+import org.kablink.teaming.domain.Description;
+import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.Principal;
+import org.kablink.teaming.domain.TeamInfo;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.shared.FolderUtils;
@@ -91,6 +95,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+
 import java.io.InputStream;
 import java.util.*;
 
@@ -102,6 +107,7 @@ import java.util.*;
 @Path("/self")
 @Singleton
 @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+@SuppressWarnings("unchecked")
 public class SelfResource extends AbstractFileResource {
 
     /**
@@ -151,9 +157,9 @@ public class SelfResource extends AbstractFileResource {
         user.setDesktopAppConfig(zoneConfig.getDesktopAppConfig());
         user.setMobileAppConfig(zoneConfig.getMobileAppConfig());
         if (includeMobileDevices) {
-            MobileDevices mobileDevices = getProfileModule().getMobileDevices(getLoggedInUserId());
+        	List<org.kablink.teaming.domain.MobileDevice> mobileDevices = getMobileDeviceModule().getMobileDevices(getLoggedInUserId());
             List<MobileDevice> devices = new ArrayList<MobileDevice>();
-            for (MobileDevices.MobileDevice d :mobileDevices.getMobileDeviceList()) {
+            for (org.kablink.teaming.domain.MobileDevice d :mobileDevices) {
                 devices.add(ResourceUtil.buildMobileDevice(d));
             }
             user.setMobileDevices(devices);
@@ -201,7 +207,8 @@ public class SelfResource extends AbstractFileResource {
      * @deprecated  This operation is temporary and is very likely to change.
      * @return Returns a list of BinderBrief objects.
      */
-    @GET
+    @Deprecated
+	@GET
     @Path("/roots")
    	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
     public SearchResultList<BinderBrief> getRoots() {
@@ -303,7 +310,7 @@ public class SelfResource extends AbstractFileResource {
         }
     }
 
-    @POST
+	@POST
     @Path("/my_files/library_folders")
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
@@ -573,10 +580,10 @@ public class SelfResource extends AbstractFileResource {
     @GET
     @Path("mobile_devices")
     public SearchResultList<MobileDevice> getMobileDevices() {
-        MobileDevices mobileDevices = getProfileModule().getMobileDevices(getLoggedInUserId());
+    	List<org.kablink.teaming.domain.MobileDevice> mobileDevices = getMobileDeviceModule().getMobileDevices(getLoggedInUserId());
         SearchResultList<MobileDevice> results = new SearchResultList<MobileDevice>();
-        if (mobileDevices!=null && mobileDevices.getMobileDeviceList()!=null) {
-            for (MobileDevices.MobileDevice device : mobileDevices.getMobileDeviceList()) {
+        if (mobileDevices!=null) {
+            for (org.kablink.teaming.domain.MobileDevice device : mobileDevices) {
                 results.append(ResourceUtil.buildMobileDevice(device));
             }
         }
@@ -587,30 +594,21 @@ public class SelfResource extends AbstractFileResource {
     @Path("mobile_devices")
     @Consumes( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
     public MobileDevice addMobileDevice(MobileDevice device) {
-        MobileDevices.MobileDevice mobileDevice = toMobileDevice(device);
-        MobileDevices mobileDevices = getProfileModule().getMobileDevices(getLoggedInUserId());
-        if (mobileDevices!=null) {
-            for (MobileDevices.MobileDevice d : mobileDevices.getMobileDeviceList()) {
-                if (device.getId().equals(d.getId())) {
-                    throw new ConflictException(ApiErrorCode.DEVICE_EXISTS, "A device with the specified ID already exists.");
-                }
-            }
+        org.kablink.teaming.domain.MobileDevice existingDevice = getMobileDeviceModule().getMobileDevice(getLoggedInUserId(), device.getId());
+        if (null != existingDevice) {
+            throw new ConflictException(ApiErrorCode.DEVICE_EXISTS, "A device with the specified ID already exists.");
         }
-        mobileDevices.addMobileDevice(mobileDevice);
-        getProfileModule().setMobileDevices(getLoggedInUserId(), mobileDevices);
+        org.kablink.teaming.domain.MobileDevice mobileDevice = toMobileDevice(device);
+        getMobileDeviceModule().addMobileDevice(mobileDevice);
         return ResourceUtil.buildMobileDevice(mobileDevice);
     }
 
     @GET
     @Path("mobile_devices/{id}")
     public MobileDevice getMobileDevice(@PathParam("id") String id) {
-        MobileDevices mobileDevices = getProfileModule().getMobileDevices(getLoggedInUserId());
-        if (mobileDevices!=null) {
-            for (MobileDevices.MobileDevice device : mobileDevices.getMobileDeviceList()) {
-                if (id.equals(device.getId())) {
-                    return ResourceUtil.buildMobileDevice(device);
-                }
-            }
+    	org.kablink.teaming.domain.MobileDevice device = getMobileDeviceModule().getMobileDevice(getLoggedInUserId(), id);
+        if (null != device) {
+            return ResourceUtil.buildMobileDevice(device);
         }
         throw new NotFoundException(ApiErrorCode.DEVICE_NOT_FOUND, "No device with ID: " + id);
     }
@@ -620,29 +618,24 @@ public class SelfResource extends AbstractFileResource {
     @Consumes( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
     public MobileDevice updateMobileDevice(@PathParam("id") String id, MobileDevice newDevice) {
         newDevice.setId(id);
-        MobileDevices.MobileDevice mobileDevice = toMobileDevice(newDevice);
-        MobileDevices mobileDevices = getProfileModule().getMobileDevices(getLoggedInUserId());
-        if (mobileDevices!=null) {
-            for (MobileDevices.MobileDevice device : mobileDevices.getMobileDeviceList()) {
-                if (id.equals(device.getId())) {
-                    if (mobileDevice.getDescription()!=null) {
-                        device.setDescription(mobileDevice.getDescription());
-                    }
-                    if (mobileDevice.getPushToken()!=null) {
-                        device.setPushToken(mobileDevice.getPushToken());
-                    }
-                    if (mobileDevice.getLastWipe()!=null) {
-                        device.setLastWipe(mobileDevice.getLastWipe());
-                    }
-                    mobileDevice.setLastLogin(new Date());
-                    if (newDevice.isWipeScheduled()!=null) {
-                        device.setWipeScheduled(newDevice.isWipeScheduled());
-                    }
-                    mobileDevices.setMobileDevices(mobileDevices.getMobileDeviceList());
-                    getProfileModule().setMobileDevices(getLoggedInUserId(), mobileDevices);
-                    return ResourceUtil.buildMobileDevice(device);
-                }
+        org.kablink.teaming.domain.MobileDevice newDomainDevice      = toMobileDevice(newDevice);
+        org.kablink.teaming.domain.MobileDevice existingDomainDevice = getMobileDeviceModule().getMobileDevice(getLoggedInUserId(), id);
+        if (existingDomainDevice!=null) {
+            if (newDomainDevice.getDescription()!=null) {
+                existingDomainDevice.setDescription(newDomainDevice.getDescription());
             }
+//!         if (mobileDevice.getPushToken()!=null) {
+//!             existingevice.setPushToken(mobileDevice.getPushToken());
+//!         }
+            if (newDomainDevice.getLastWipe()!=null) {
+                existingDomainDevice.setLastWipe(newDomainDevice.getLastWipe());
+            }
+            newDomainDevice.setLastLogin(new Date());
+            if (newDevice.isWipeScheduled()!=null) {
+                existingDomainDevice.setWipeScheduled(newDevice.isWipeScheduled());
+            }
+            getMobileDeviceModule().modifyMobileDevice(existingDomainDevice);
+            return ResourceUtil.buildMobileDevice(existingDomainDevice);
         }
         throw new NotFoundException(ApiErrorCode.DEVICE_NOT_FOUND, "No device with ID: " + id);
     }
@@ -650,25 +643,18 @@ public class SelfResource extends AbstractFileResource {
     @DELETE
     @Path("mobile_devices/{id}")
     public void deleteMobileDevice(@PathParam("id") String id, MobileDevice newDevice) {
-        MobileDevices.MobileDevice mobileDevice = toMobileDevice(newDevice);
-        MobileDevices mobileDevices = getProfileModule().getMobileDevices(getLoggedInUserId());
-        if (mobileDevices!=null) {
-            for (MobileDevices.MobileDevice device : mobileDevices.getMobileDeviceList()) {
-                if (id.equals(device.getId())) {
-                    mobileDevices.getMobileDeviceList().remove(device);
-                    getProfileModule().setMobileDevices(getLoggedInUserId(), mobileDevices);
-                    return;
-                }
-            }
+        org.kablink.teaming.domain.MobileDevice mobileDevice = getMobileDeviceModule().getMobileDevice(getLoggedInUserId(), id);
+        if (mobileDevice!=null) {
+            getMobileDeviceModule().deleteMobileDevice(getLoggedInUserId(), id);
+            return;
         }
         throw new NotFoundException(ApiErrorCode.DEVICE_NOT_FOUND, "No device with ID: " + id);
     }
 
-    private MobileDevices.MobileDevice toMobileDevice(MobileDevice mobileDevice) {
+    private org.kablink.teaming.domain.MobileDevice toMobileDevice(MobileDevice mobileDevice) {
         validateMandatoryField(mobileDevice, "getId");
-        MobileDevices.MobileDevice device = new MobileDevices.MobileDevice();
-        device.setId(mobileDevice.getId());
-        device.setPushToken(mobileDevice.getPushToken());
+        org.kablink.teaming.domain.MobileDevice device = new org.kablink.teaming.domain.MobileDevice(getLoggedInUserId(), mobileDevice.getId());
+//!     device.setPushToken(mobileDevice.getPushToken());
         device.setDescription(mobileDevice.getDescription());
         device.setLastLogin(new Date());
         device.setLastWipe(mobileDevice.getLastWipe());

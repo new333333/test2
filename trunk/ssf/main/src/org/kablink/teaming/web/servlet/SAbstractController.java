@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -52,6 +52,7 @@ import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.ical.IcalModule;
 import org.kablink.teaming.module.ldap.LdapModule;
 import org.kablink.teaming.module.license.LicenseModule;
+import org.kablink.teaming.module.mobiledevice.MobileDeviceModule;
 import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.report.ReportModule;
 import org.kablink.teaming.module.resourcedriver.ResourceDriverModule;
@@ -67,10 +68,13 @@ import org.kablink.teaming.util.stringcheck.StringCheckUtil;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
 
-
-public abstract class SAbstractController extends AbstractController
-implements AllModulesInjected {
-	
+/**
+ * ?
+ * 
+ * @author ?
+ */
+@SuppressWarnings("unchecked")
+public abstract class SAbstractController extends AbstractController implements AllModulesInjected {
 	protected Log logger = LogFactory.getLog(getClass());
 	
 	private WorkspaceModule workspaceModule;
@@ -94,169 +98,224 @@ implements AllModulesInjected {
 	private LicenseModule licenseModule;
 	private ZoneModule zoneModule;
 	private SharingModule sharingModule;
+	private MobileDeviceModule mobileDeviceModule;
 	
+	@Override
 	public void setBinderModule(BinderModule binderModule) {
 		this.binderModule = binderModule;
 	}
 	
+	@Override
 	public BinderModule getBinderModule() {
 		return binderModule;
 	}
 
+	@Override
 	public void setWorkspaceModule(WorkspaceModule workspaceModule) {
 		this.workspaceModule = workspaceModule;
 	}
 	
+	@Override
 	public WorkspaceModule getWorkspaceModule() {
 		return workspaceModule;
 	}
 
+	@Override
 	public void setFolderModule(FolderModule folderModule) {
 		this.folderModule = folderModule;
 	}
 	
+	@Override
 	public FolderModule getFolderModule() {
 		return folderModule;
 	}
 	
-    public TemplateModule getTemplateModule() {
+    @Override
+	public TemplateModule getTemplateModule() {
     	return templateModule;
     }
-    public void setTemplateModule(TemplateModule templateModule) {
+    @Override
+	public void setTemplateModule(TemplateModule templateModule) {
     	this.templateModule = templateModule;
     }
 
+	@Override
 	public void setAdminModule(AdminModule adminModule) {
 		this.adminModule = adminModule;
 	}
 	
+	@Override
 	public AdminModule getAdminModule() {
 		return adminModule;
 	}
 
+	@Override
 	public void setAuthenticationModule(AuthenticationModule authenticationModule) {
 		this.authenticationModule = authenticationModule;
 	}
 	
+	@Override
 	public AuthenticationModule getAuthenticationModule() {
 		return authenticationModule;
 	}
 
+	@Override
 	public void setProfileModule(ProfileModule profileModule) {
 		this.profileModule = profileModule;
 	}
 	
+	@Override
 	public ProfileModule getProfileModule() {
 		return profileModule;
 	}
 	
+	@Override
 	public void setDefinitionModule(DefinitionModule definitionModule) {
 		this.definitionModule = definitionModule;
 	}
 	
+	@Override
 	public DefinitionModule getDefinitionModule() {
 		return definitionModule;
 	}
 
+	@Override
 	public WorkflowModule getWorkflowModule() {
 		return workflowModule;
 	}
 
+	@Override
 	public void setWorkflowModule(WorkflowModule workflowModule) {
 		this.workflowModule = workflowModule;
 	}
+	@Override
 	public void setLdapModule(LdapModule ldapModule) {
 		this.ldapModule = ldapModule;
 	}
 	
+	@Override
 	public LdapModule getLdapModule() {
 		return ldapModule;
 	}	
 	
+	@Override
 	public void setFileModule(FileModule fileModule) {
 		this.fileModule = fileModule;
 	}
+	@Override
 	public FileModule getFileModule() {
 		return fileModule;
 	}
 
+	@Override
 	public ConvertedFileModule getConvertedFileModule() {
 		return convertedFileModule;
 	}
 
+	@Override
 	public void setConvertedFileModule(ConvertedFileModule convertedFileModule) {
 		this.convertedFileModule = convertedFileModule;
 	}
 
+	@Override
 	public void setDashboardModule(DashboardModule dashboardModule) {
 		this.dashboardModule = dashboardModule;
 	}
 	
+	@Override
 	public DashboardModule getDashboardModule() {
 		return dashboardModule;
 	}
 
+	@Override
 	public void setReportModule(ReportModule reportModule) {
 		this.reportModule = reportModule;
 	}
 	
+	@Override
 	public ReportModule getReportModule() {
 		return reportModule;
 	}
 	
+	@Override
 	public void setResourceDriverModule(ResourceDriverModule resourceDriverModule) {
 		this.resourceDriverModule = resourceDriverModule;
 	}
 	
+	@Override
 	public ResourceDriverModule getResourceDriverModule() {
 		return resourceDriverModule;
 	}
 	
+	@Override
 	public ConferencingModule getConferencingModule() {
 		return conferencingModule;
 	}
 
+	@Override
 	public void setConferencingModule(ConferencingModule conferencingModule) {
 		this.conferencingModule = conferencingModule;
 	}
 	
+	@Override
 	public IcalModule getIcalModule() {
 		return icalModule;
 	}
+	@Override
 	public void setIcalModule(IcalModule icalModule) {
 		this.icalModule = icalModule;
 	}	
 	
+	@Override
 	public RssModule getRssModule() {
 		return rssModule;
 	}
+	@Override
 	public void setRssModule(RssModule rssModule) {
 		this.rssModule = rssModule;
 	}
 	
+	@Override
 	public LicenseModule getLicenseModule() {
 		return licenseModule;
 	}
+	@Override
 	public void setLicenseModule(LicenseModule licenseModule) {
 		this.licenseModule = licenseModule;
 	}
 
+	@Override
 	public ZoneModule getZoneModule() {
 		return zoneModule;
 	}
+	@Override
 	public void setZoneModule(ZoneModule zoneModule) {
 		this.zoneModule = zoneModule;
 	}
 
+	@Override
 	public SharingModule getSharingModule() {
 		if(sharingModule == null)
 			sharingModule = (SharingModule) SpringContextUtil.getBean("sharingModule");
 		return sharingModule;
 	}
+	@Override
 	public void setSharingModule(SharingModule sharingModule) {
 		this.sharingModule = sharingModule;
 	}
 
+	@Override
+	public MobileDeviceModule getMobileDeviceModule() {
+		if(mobileDeviceModule == null)
+			mobileDeviceModule = (MobileDeviceModule) SpringContextUtil.getBean("mobileDeviceModule");
+		return mobileDeviceModule;
+	}
+	@Override
+	public void setMobileDeviceModule(MobileDeviceModule mobileDeviceModule) {
+		this.mobileDeviceModule = mobileDeviceModule;
+	}
+
+	@Override
 	protected ModelAndView handleRequestInternal(HttpServletRequest req, HttpServletResponse res) throws Exception {
 		Map formData = req.getParameterMap();
 		Map newFormData = StringCheckUtil.check(formData);
@@ -277,5 +336,4 @@ implements AllModulesInjected {
 	protected ModelAndView handleRequestAfterValidation(HttpServletRequest req, HttpServletResponse res) throws Exception {
 	    throw new ServletException("Subclass must override this method");
 	}
-
 }

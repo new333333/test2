@@ -34,6 +34,7 @@ package org.kablink.teaming.gwt.client.widgets;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
+import org.kablink.teaming.gwt.client.rpc.shared.FolderRowsRpcResponseData.TotalCountType;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.i18n.client.NumberFormat;
@@ -48,9 +49,14 @@ import com.google.gwt.view.client.Range;
  * @author drfoster@novell.com
  */
 public class VibeSimplePager extends SimplePager {
+	private TotalCountType						m_totalCountType;						//
+	
 	private final static GwtTeamingMessages		m_messages = GwtTeaming.getMessages();	// Access to the GWT localized string resource.
 	private final static SimplePager.Resources	SIMPLE_PAGER_RESOURCES = GWT.create(SimplePager.Resources.class);
 	
+	/**
+	 * Constructor method.
+	 */
 	public VibeSimplePager() {
 		// Simply initialize the super class.
 		super(
@@ -61,6 +67,20 @@ public class VibeSimplePager extends SimplePager {
 			true);	// true -> Show last page button.
 	}
 
+	/**
+	 * Get'er methods.
+	 * 
+	 * @return
+	 */
+	public TotalCountType getTotalCountType() {return m_totalCountType;}
+	
+	/**
+	 * Set'er methods.
+	 * 
+	 * @param
+	 */
+	public void setTotalCountType(TotalCountType totalCountType) {m_totalCountType = totalCountType;}
+	
 	/**
 	 * Set the page start index.  We override this method to
 	 * fix the problem that the last page display will be
@@ -119,9 +139,21 @@ public class VibeSimplePager extends SimplePager {
 		String dataSizeS  = formatter.format(dataSize );
 		
 		String text;
-		if (display.isRowCountExact())
+		if (display.isRowCountExact()) {
 		     text = m_messages.vibeSimplePager_Of(    pageStartS, endIndexS, dataSizeS);
-		else text = m_messages.vibeSimplePager_OfOver(pageStartS, endIndexS, dataSizeS);
+		}
+		else {
+			if (null == m_totalCountType) {
+				m_totalCountType = TotalCountType.OF_OVER;
+			}
+			switch (m_totalCountType) {
+			case APPROXIMATE:  text = m_messages.vibeSimplePager_OfApproximately(pageStartS, endIndexS, dataSizeS); break;
+			case AT_LEAST:     text = m_messages.vibeSimplePager_OfAtLeast(      pageStartS, endIndexS, dataSizeS); break;
+			case EXACT:
+			case OF_OVER:
+			default:           text = m_messages.vibeSimplePager_OfOver(         pageStartS, endIndexS, dataSizeS); break;
+			}
+		}
 		return text;
 	  }
 }
