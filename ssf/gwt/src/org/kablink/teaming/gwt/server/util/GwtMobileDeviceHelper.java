@@ -164,6 +164,7 @@ public class GwtMobileDeviceHelper {
 					Long   userId = eid.getEntityId();
 					mdm.deleteMobileDevice(userId, mid);
 				}
+				reply.setSuccessfulDeletes(entityIds);
 			}
 		}
 		
