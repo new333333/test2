@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -44,6 +44,7 @@ import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.ical.IcalModule;
 import org.kablink.teaming.module.ldap.LdapModule;
 import org.kablink.teaming.module.license.LicenseModule;
+import org.kablink.teaming.module.mobiledevice.MobileDeviceModule;
 import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.report.ReportModule;
 import org.kablink.teaming.module.resourcedriver.ResourceDriverModule;
@@ -56,12 +57,11 @@ import org.kablink.teaming.module.zone.ZoneModule;
 
 /**
  * This convenience interface acts as a facade for all business modules and 
- * services defined in the system that should be accessibe to a variety of 
+ * services defined in the system that should be accessible to a variety of 
  * client handler layers such as presentation layer for web application, 
  * web services handlers, and WebDAV handlers, etc.
  * 
  * @author jong
- *
  */
 public interface AllModulesInjected {
 
@@ -142,4 +142,7 @@ public interface AllModulesInjected {
 	
 	void setSharingModule(SharingModule sharingModule);
 	SharingModule getSharingModule();
+	
+	void setMobileDeviceModule(MobileDeviceModule mobileDeviceModule);
+	MobileDeviceModule getMobileDeviceModule();
 }

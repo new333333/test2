@@ -462,6 +462,7 @@ public interface ObjectKeys {
     public static final String SEARCH_SCOPE_SHARED_WITH_ME = "sharedWithMe";
     public static final String SEARCH_SCOPE_SHARED_BY_ME = "sharedByMe";
     public static final String SEARCH_SCOPE_CURRENT = "current";
+    public static final String SEARCH_QUICK_FILTER = "quickFilter";
     public static final int SEARCH_MAX_HITS_DEFAULT = 10;
     public static final int SEARCH_MAX_HITS_SUB_BINDERS = 1000;
     public static final int SEARCH_MAX_HITS_FOLDER_ENTRIES = 1000;
@@ -687,6 +688,15 @@ public interface ObjectKeys {
     public static final String FIELD_ENTITY_TEMPLATE_OWNING_BINDER_ID="templateOwningBinderId";
 
     public static final String FIELD_FILE_ID="_fileID";
+    
+    public static final String FIELD_MOBILE_DEVICE_DESCRIPTION    = "description";
+    public static final String FIELD_MOBILE_DEVICE_DEVICE_ID      = "deviceId";
+    public static final String FIELD_MOBILE_DEVICE_LAST_ACTIVITY  = "lastActivity";
+    public static final String FIELD_MOBILE_DEVICE_LAST_LOGIN     = "lastLogin";
+    public static final String FIELD_MOBILE_DEVICE_USER_ID        = "userId";
+    public static final String FIELD_MOBILE_DEVICE_USER_TITLE     = "userTitle";
+    public static final String FIELD_MOBILE_DEVICE_WIPE_DATE      = "lastWipe";
+    public static final String FIELD_MOBILE_DEVICE_WIPE_SCHEDULED = "wipeScheduled";
     
     public static final String FIELD_APPLICATION_POST_URL="postUrl";
     public static final String FIELD_APPLICATION_TIMEOUT="timeout";

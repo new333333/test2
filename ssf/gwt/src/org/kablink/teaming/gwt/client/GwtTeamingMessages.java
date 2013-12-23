@@ -1910,8 +1910,10 @@ public interface GwtTeamingMessages extends Messages
 	String vibeDataTable_WhatsNew();
 	
 	// Strings used by the Vibe simple pager widget.
-	String vibeSimplePager_Of(String start, String end, String size);
-	String vibeSimplePager_OfOver(String start, String end, String size);
+	String vibeSimplePager_Of(             String start, String end, String size);
+	String vibeSimplePager_OfApproximately(String start, String end, String size);
+	String vibeSimplePager_OfAtLeast(      String start, String end, String size);
+	String vibeSimplePager_OfOver(         String start, String end, String size);
 	
 	// String used in the Landing Page
 	String nowFollowingBinder();

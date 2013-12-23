@@ -69,6 +69,7 @@
 	    <mapping resource="org/kablink/teaming/domain/LdapConnectionConfig.hbm.xml"/>
 	    <mapping resource="org/kablink/teaming/domain/LibraryEntry.hbm.xml"/>
 	    <mapping resource="org/kablink/teaming/domain/LicenseStats.hbm.xml"/>
+	    <mapping resource="org/kablink/teaming/domain/MobileDevice.hbm.xml"/>
 	    <mapping resource="org/kablink/teaming/domain/Membership.hbm.xml"/>
 	    <mapping resource="org/kablink/teaming/domain/NotifyStatus.hbm.xml"/>
 	    <mapping resource="org/kablink/teaming/domain/PostingDef.hbm.xml"/>
@@ -230,6 +231,7 @@
  		<class-cache class="org.kablink.teaming.domain.IndexNode" usage="read-write"/>
  		<class-cache class="org.kablink.teaming.domain.LdapConnectionConfig" usage="read-write"/>
  		<class-cache class="org.kablink.teaming.domain.Membership" usage="read-write"/>
+ 		<class-cache class="org.kablink.teaming.domain.MobileDevice" usage="read-write"/>
  		<class-cache class="org.kablink.teaming.domain.PostingDef" usage="read-write"/>
  		<class-cache class="org.kablink.teaming.domain.Principal" usage="read-write"/>
  		<class-cache class="org.kablink.teaming.domain.ShareItem" usage="read-write"/>

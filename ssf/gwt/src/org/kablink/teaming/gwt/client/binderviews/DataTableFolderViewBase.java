@@ -139,6 +139,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.CanAddEntitiesToBindersRpcRespo
 import org.kablink.teaming.gwt.client.rpc.shared.EntityRightsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.FolderColumnsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.FolderRowsRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.FolderRowsRpcResponseData.TotalCountType;
 import org.kablink.teaming.gwt.client.rpc.shared.GetCanAddEntitiesToBindersCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetEntityRightsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetFolderColumnsCmd;
@@ -3192,8 +3193,10 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 					}
 					
 					// Apply the rows we read.
-					vdt.setRowData( responseData.getStartOffset(), folderRows                            );
-					vdt.setRowCount(responseData.getTotalRows(),   (!(responseData.isTotalApproximate())));
+					TotalCountType tct = responseData.getTotalCountType();
+					m_dataTablePager.setTotalCountType(tct);
+					vdt.setRowData( responseData.getStartOffset(), folderRows   );
+					vdt.setRowCount(responseData.getTotalRows(),   tct.isExact());
 					
 					// If we have an entry menu...
 					EntryMenuPanel emp = getEntryMenuPanel();

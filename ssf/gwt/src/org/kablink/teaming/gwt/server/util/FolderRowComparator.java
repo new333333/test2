@@ -37,7 +37,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.kablink.teaming.comparator.StringComparator;
-import org.kablink.teaming.domain.MobileDevices.MobileDevice;
+import org.kablink.teaming.domain.MobileDevice;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.DescriptionHtml;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderColumn;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderRow;
@@ -338,7 +338,7 @@ public class FolderRowComparator implements Comparator<FolderRow> {
 			MobileDevice md = ((MobileDevice) fr.getServerMobileDevice());
 			if (null != md) {
 				// Yes!  Does it have a wipe scheduled flag?
-				Boolean wipeScheduled = md.isWipeScheduled();
+				Boolean wipeScheduled = md.getWipeScheduled();
 				if (null != wipeScheduled) {
 					// Yes!  Return its appropriate display string.
 					String key;

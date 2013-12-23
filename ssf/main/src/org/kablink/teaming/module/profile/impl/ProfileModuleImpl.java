@@ -51,7 +51,6 @@ import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
-
 import org.kablink.teaming.ApplicationExistsException;
 import org.kablink.teaming.ApplicationGroupExistsException;
 import org.kablink.teaming.GroupExistsException;
@@ -113,6 +112,7 @@ import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.definition.DefinitionModule;
 import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.impl.CommonDependencyInjection;
+import org.kablink.teaming.module.mobiledevice.MobileDeviceModule;
 import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.profile.processor.ProfileCoreProcessor;
 import org.kablink.teaming.module.shared.AccessUtils;
@@ -133,6 +133,7 @@ import org.kablink.teaming.util.ReflectHelper;
 import org.kablink.teaming.util.ResolveIds;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SZoneConfig;
+import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.util.encrypt.EncryptUtil;
 import org.kablink.teaming.web.util.DateHelper;
@@ -143,7 +144,6 @@ import org.kablink.teaming.web.util.PermaLinkUtil;
 import org.kablink.util.StringUtil;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
-
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -213,6 +213,11 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
     	this.profileModule = profileModule;
     }
 
+    protected MobileDeviceModule getMobileDeviceModule() {
+		// Can't use IoC due to circular dependency
+		return (MobileDeviceModule) SpringContextUtil.getBean("mobileDeviceModule");
+    }
+    
     private TransactionTemplate transactionTemplate;
     protected TransactionTemplate getTransactionTemplate() {
 		return transactionTemplate;
@@ -1208,8 +1213,16 @@ public void modifyEntry(Long entryId, InputDataAccessor inputData,
     		   if (a != null) atts.add(a);
     	   }
        }
+
        processor.modifyEntry(binder, entry, inputData, fileItems, atts, fileRenamesTo, options);
-      }
+       
+       // If we're modifying a User object...
+       if (entry instanceof User) {
+    	   // ...we need to make sure the user's title stored in their
+    	   // ...mobile devices are correct.
+    	   getMobileDeviceModule().setMatchingUserTitles((User) entry);
+       }
+   }
 
    //NO transaction
     @Override

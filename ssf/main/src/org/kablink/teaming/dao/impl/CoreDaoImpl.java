@@ -59,6 +59,7 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Expression;
+import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.ProjectionList;
 import org.hibernate.criterion.Projections;
@@ -71,6 +72,7 @@ import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.CoreDao;
 import org.kablink.teaming.dao.KablinkDao;
 import org.kablink.teaming.dao.util.FilterControls;
+import org.kablink.teaming.dao.util.MobileDeviceSelectSpec;
 import org.kablink.teaming.dao.util.ObjectControls;
 import org.kablink.teaming.dao.util.OrderBy;
 import org.kablink.teaming.dao.util.SFQuery;
@@ -92,12 +94,14 @@ import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.Entry;
 import org.kablink.teaming.domain.Event;
 import org.kablink.teaming.domain.FileAttachment;
+import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.HKey;
 import org.kablink.teaming.domain.IndexNode;
 import org.kablink.teaming.domain.LdapConnectionConfig;
 import org.kablink.teaming.domain.LibraryEntry;
 import org.kablink.teaming.domain.LoginInfo;
+import org.kablink.teaming.domain.MobileDevice;
 import org.kablink.teaming.domain.NoBinderByTheIdException;
 import org.kablink.teaming.domain.NoBinderByTheNameException;
 import org.kablink.teaming.domain.NoBinderQuotaByTheIdException;
@@ -132,6 +136,7 @@ import org.kablink.teaming.domain.SimpleName.SimpleNamePK;
 import org.kablink.teaming.util.Constants;
 import org.kablink.teaming.util.ReleaseInfo;
 import org.kablink.teaming.util.SPropsUtil;
+import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.util.Validator;
 import org.kablink.util.dao.hibernate.DynamicDialect;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
@@ -3152,12 +3157,14 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
 
 	}
 	
+	@Override
 	public List getAuditTrailEntries(final Long zoneId, final Date purgeBeforeDate) {
 		long begin = System.nanoTime();
 		try {
 			List results = (List) getHibernateTemplate().execute(
 		    	new HibernateCallback() {
-		    		public Object doInHibernate(Session session) throws HibernateException {
+		    		@Override
+					public Object doInHibernate(Session session) throws HibernateException {
                         return session.createCriteria(AuditTrail.class)
 							.add(Restrictions.eq(ObjectKeys.FIELD_ZONE, zoneId))
 							.add(Restrictions.isNotNull("startDate"))
@@ -3182,7 +3189,8 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
         try {
             List results = (List) getHibernateTemplate().execute(
                     new HibernateCallback() {
-                        public Object doInHibernate(Session session) throws HibernateException {
+                        @Override
+						public Object doInHibernate(Session session) throws HibernateException {
                             Criterion typeExpr;
                             if (types.length==1) {
                                 typeExpr = Restrictions.eq("transactionType", types[0].name());
@@ -3236,12 +3244,14 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
 		}
 	}
 	
+	@Override
 	public List getChangeLogEntries(final Long zoneId, final Date purgeBeforeDate) {
 		long begin = System.nanoTime();
 		try {
 			List results = (List) getHibernateTemplate().execute(
 		    	new HibernateCallback() {
-		    		public Object doInHibernate(Session session) throws HibernateException {
+		    		@Override
+					public Object doInHibernate(Session session) throws HibernateException {
                         return session.createCriteria(ChangeLog.class)
 							.add(Restrictions.eq(ObjectKeys.FIELD_ZONE, zoneId))
 							.add(Restrictions.isNotNull("operationDate"))
@@ -3369,5 +3379,86 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
     	finally {
     		end(begin, "getFolderEntryIds(binder)");
     	}	        
+	}
+	
+	/**
+	 * Used to find all MobileDevice's that meet the specifications.
+	 * 
+	 * @param selectSpec
+	 * @param zoneId
+	 * 
+	 * @return
+	 */
+	@Override
+	public List<MobileDevice> findMobileDevices(final MobileDeviceSelectSpec selectSpec, final Long zoneId) {
+        List result = null;
+        long begin  = System.nanoTime();
+		try {
+			HibernateCallback callback = new HibernateCallback() {
+                @Override
+				public Object doInHibernate( Session session ) throws HibernateException {
+                	// Create the base Criteria for the query.
+                	Criteria crit = session.createCriteria(MobileDevice.class);
+
+                	// Factor in the sorting required.
+                	String sortBy = selectSpec.getSortBy();
+                	if (!(MiscUtil.hasString(sortBy))) {
+                		sortBy = ObjectKeys.FIELD_MOBILE_DEVICE_DESCRIPTION;
+                	}
+                	Order order = (selectSpec.isSortAscend() ? Order.asc(sortBy) : Order.desc(sortBy));
+                	crit.addOrder(order);
+                	
+                	// Factor in the paging required.
+                	int startIndex = selectSpec.getStartIndex();
+                	if ((-1) != startIndex) {
+                		crit.setFirstResult(startIndex);
+                	}
+                	int pageSize = selectSpec.getPageSize();
+                	if ((-1) != pageSize) {
+                		crit.setMaxResults(pageSize);
+                	}
+                	
+                	// If we're querying for a specific user...
+                	Long userId = selectSpec.getUserId();
+                	if (null != userId) {
+                		// ...add their ID to the criteria.
+                    	crit.add(Restrictions.eq(ObjectKeys.FIELD_MOBILE_DEVICE_USER_ID, userId));
+                	}
+
+                	// If we're querying for a specific device ID...
+                	String deviceId = selectSpec.getDeviceId();
+                	if (MiscUtil.hasString(deviceId)) {
+                		// ...add its ID to the criteria.
+                		crit.add(Restrictions.eq(ObjectKeys.FIELD_MOBILE_DEVICE_DEVICE_ID, deviceId));
+                	}
+                	
+                	// Do we have a quick filter?
+                	String quickFilter = selectSpec.getQuickFilter();
+                	if (MiscUtil.hasString(quickFilter)) {
+                		// Yes!  See if it's in the description or
+                		// userTitle columns.
+                		Criterion description = Restrictions.ilike(ObjectKeys.FIELD_MOBILE_DEVICE_DESCRIPTION, quickFilter, MatchMode.ANYWHERE);
+                		Criterion userTitle   = Restrictions.ilike(ObjectKeys.FIELD_MOBILE_DEVICE_USER_TITLE,  quickFilter, MatchMode.ANYWHERE);
+                		crit.add(Restrictions.or(description, userTitle));
+                	}
+
+                	// Get the results.
+                	return crit.list();
+                }
+            };
+
+            // Issue the database query.
+            result = ((List) getHibernateTemplate().execute(callback));
+    	}
+		
+		catch (Exception ex) {
+			logger.error("findMobileDevices() caught an exception: " + ex.toString());
+		}
+		
+    	finally {
+    		end(begin, "findMobileDevices(MobileDeviceSelectSpec)");
+    	}	              	
+
+      	return result;   	
 	}
  }

@@ -62,7 +62,7 @@ import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.HistoryStamp;
 import org.kablink.teaming.domain.IdentityInfo;
-import org.kablink.teaming.domain.MobileDevices.MobileDevice;
+import org.kablink.teaming.domain.MobileDevice;
 import org.kablink.teaming.domain.ProfileBinder;
 import org.kablink.teaming.domain.SeenMap;
 import org.kablink.teaming.domain.SimpleName;
@@ -3003,7 +3003,7 @@ public class GwtMenuHelper {
 					markTBIEvent(mdTBI, TeamingEvents.DELETE_SELECTED_MOBILE_DEVICES);
 					actionToolbar.addNestedItem(mdTBI);
 					
-					if (md.isWipeScheduled()) {
+					if (md.getWipeScheduled()) {
 						mdTBI = new ToolbarItem("1_clearWipe");
 						markTBITitle(mdTBI, "toolbar.mobileDevice.clearScheduledWipe");
 						markTBIEvent(mdTBI, TeamingEvents.CLEAR_SCHEDULED_WIPE_SELECTED_MOBILE_DEVICES);
