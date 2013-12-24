@@ -136,6 +136,20 @@ public interface LicenseManager {
 	
 	/**
 	 * 
+	 * @return Total number of internal devices from all licenses
+	 */
+	public long getInternalDevices();
+
+	
+	/**
+	 * 
+	 * @return Total number of external devices from all licenses
+	 */
+	public long getExternalDevices();
+
+	
+	/**
+	 * 
 	 * @return whether there is a valid license loaded
 	 */
 	public boolean validLicenseExists();

@@ -119,6 +119,16 @@ public class NullLicenseManager implements LicenseManager {
 		return 0;
 	}
 	
+	public long getInternalDevices()
+	{
+		return 0;
+	}
+
+	public long getExternalDevices()
+	{
+		return 0;
+	}
+
 	public boolean validLicenseExists()
 	{
 		return false;

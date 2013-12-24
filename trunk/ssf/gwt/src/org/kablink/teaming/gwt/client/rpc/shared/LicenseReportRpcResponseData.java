@@ -49,6 +49,8 @@ public class LicenseReportRpcResponseData implements IsSerializable, VibeRpcResp
 	private List<LicenseStatsItem>	m_licenseStats;		//
 	private long					m_externalUsers;	//
 	private long					m_registeredUsers;	//
+	private long					m_externalDevices;	//
+	private long					m_internalDevices;	//
 	private String					m_licenseKey;		//
 	private String					m_beginDate;		//
 	private String					m_endDate;			//
@@ -220,6 +222,8 @@ public class LicenseReportRpcResponseData implements IsSerializable, VibeRpcResp
 	public List<LicenseStatsItem> getLicenseStats()    {return m_licenseStats;   }
 	public long                   getExternalUsers()   {return m_externalUsers;  }
 	public long                   getRegisteredUsers() {return m_registeredUsers;}
+	public long                   getExternalDevices() {return m_externalDevices;  }
+	public long                   getInternalDevices() {return m_internalDevices;}
 	public String                 getLicenseKey()      {return m_licenseKey;     }
 	public String                 getBeginDate()       {return m_beginDate;      }
 	public String                 getEndDate()         {return m_endDate;        }
