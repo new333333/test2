@@ -263,12 +263,22 @@ implements LicenseModule, ZoneSchedule {
 	
 	public long getRegisteredUsers()
 	{
-			return getLicenseManager().getRegisteredUsers();
+		return getLicenseManager().getRegisteredUsers();
 	}
 
 	public long getExternalUsers()
 	{
-			return getLicenseManager().getExternalUsers();
+		return getLicenseManager().getExternalUsers();
+	}
+
+	public long getInternalDevices()
+	{
+		return getLicenseManager().getInternalDevices();
+	}
+
+	public long getExternalDevices()
+	{
+		return getLicenseManager().getExternalDevices();
 	}
 
 	public boolean testAccess(LicenseOperation operation)

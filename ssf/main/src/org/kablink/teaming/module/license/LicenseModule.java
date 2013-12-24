@@ -53,4 +53,7 @@ public interface LicenseModule {
 
 	public long getRegisteredUsers();
 	public long getExternalUsers();
+
+	public long getInternalDevices();
+	public long getExternalDevices();
 }
