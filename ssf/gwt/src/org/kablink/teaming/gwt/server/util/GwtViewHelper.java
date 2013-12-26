@@ -505,8 +505,30 @@ public class GwtViewHelper {
 			try {
 				// Are we to create a Cloud folder?
 				if (null == cft) {
-					// No!  Can we create the new folder?
+					// No!  Are we creating a new folder in a mirrored
+					// or net folder?
 					final BinderModule bm = bs.getBinderModule();
+					Binder parentBinder = bm.getBinder(binderId);
+					if (parentBinder.isMirrored() || parentBinder.isAclExternallyControlled()) {
+						// Yes!  Then we check for duplicates rather
+						// than allowing the back end to do it.  The
+						// reason for this is that the exception thrown
+						// by the back end for mirrored or net folders
+						// is too generic to recognize easily as being
+						// a naming conflict.  This lets the error
+						// handling take the same path regardless of
+						// the parent folder type.  Does a folder by the
+						// given name already exist?
+						String path = (parentBinder.getPathName() + "/" + folderName);
+						Binder existingFolder = bm.getBinderByPathName(path);
+						if (null != existingFolder) {
+							// Yes!  Throw a TitleException to generate
+							// the appropriate error.
+							throw new TitleException(folderName);
+						}
+					}
+					
+					// Can we create the new folder?
 					final Long newId = bs.getTemplateModule().addBinder(folderTemplateId, binderId, folderName, null).getId();
 					if ((null != newId) && (null != bm.getBinder(newId))) {
 						reply.setFolderId(  newId     );
