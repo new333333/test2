@@ -48,8 +48,6 @@ import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.module.admin.AdminModule.AdminOperation;
-import org.kablink.teaming.module.binder.BinderModule;
-import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.impl.CommonDependencyInjection;
 import org.kablink.teaming.module.mobiledevice.MobileDeviceModule;
 import org.kablink.teaming.module.profile.ProfileModule;
@@ -68,8 +66,6 @@ import org.springframework.transaction.support.TransactionTemplate;
  */
 public class MobileDeviceModuleImpl extends CommonDependencyInjection implements MobileDeviceModule {
 	private AdminModule			m_adminModule;			//
-	private BinderModule		m_binderModule;			//
-	private FolderModule		m_folderModule;			//
 	private ProfileModule		m_profileModule;		//
 	private TransactionTemplate	m_transactionTemplate;	//
 
@@ -79,8 +75,6 @@ public class MobileDeviceModuleImpl extends CommonDependencyInjection implements
 	 * @return
 	 */
     protected AdminModule         getAdminModule()         {if (null == m_adminModule)   {m_adminModule   = ((AdminModule)   SpringContextUtil.getBean("adminModule")  );} return m_adminModule;  }
-	protected BinderModule        getBinderModule()        {if (null == m_binderModule)  {m_binderModule  = ((BinderModule)  SpringContextUtil.getBean("binderModule") );} return m_binderModule; }
-    protected FolderModule        getFolderModule()        {if (null == m_folderModule)  {m_folderModule  = ((FolderModule)  SpringContextUtil.getBean("folderModule") );} return m_folderModule; }
 	protected ProfileModule       getProfileModule()       {if (null == m_profileModule) {m_profileModule = ((ProfileModule) SpringContextUtil.getBean("profileModule"));} return m_profileModule;}
     protected TransactionTemplate getTransactionTemplate() {return m_transactionTemplate;}
 	
@@ -90,8 +84,6 @@ public class MobileDeviceModuleImpl extends CommonDependencyInjection implements
      * @param
      */
     public void setAdminModule(        AdminModule         adminModule)         {m_adminModule         = adminModule;        }
-	public void setBinderModule(       BinderModule        binderModule)        {m_binderModule        = binderModule;       }
-	public void setFolderModule(       FolderModule        folderModule)        {m_folderModule        = folderModule;       }
 	public void setProfileModule(      ProfileModule       profileModule)       {m_profileModule       = profileModule;      }
 	public void setTransactionTemplate(TransactionTemplate transactionTemplate) {m_transactionTemplate = transactionTemplate;}
 	

@@ -971,10 +971,7 @@
 		<property name="target">
 			<bean class="org.kablink.teaming.module.mobiledevice.impl.MobileDeviceModuleImpl">
 				<property name="coreDao"><ref bean="coreDao"/></property>
-				<property name="profileDao"><ref bean="profileDao"/></property>
 				<property name="adminModule"><ref bean="adminModule"/></property>
-				<property name="binderModule"><ref bean="binderModule"/></property>
-				<property name="folderModule"><ref bean="folderModule"/></property>
 				<property name="profileModule"><ref bean="profileModule"/></property>
 				<property name="transactionTemplate"><ref bean="transactionTemplate"/></property>
 				<property name="processorManager"><ref bean="modelProcessorManager"/></property>				
@@ -984,7 +981,6 @@
 		<property name="transactionAttributes">
 			<props>
 				<prop key="add*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
-			    <prop key="create*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 			    <prop key="delete*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 			    <prop key="get*">PROPAGATION_REQUIRED,readOnly,+org.kablink.teaming.security.AccessControlException,+org.kablink.teaming.exception.UncheckedCodedException</prop>
 			    <prop key="modify*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
