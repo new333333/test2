@@ -182,11 +182,11 @@ import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.AnchorElement;
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.dom.client.Style.Unit;
-import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Event.NativePreviewEvent;
@@ -1197,7 +1197,7 @@ public class GwtMainPage extends ResizeComposite
 	private native void initSimpleUserProfileJS( GwtMainPage gwtMainPage ) /*-{
 		$wnd.ss_invokeSimpleProfile = function( element, binderId, userName )
 		{
-			gwtMainPage.@org.kablink.teaming.gwt.client.GwtMainPage::fireInvokeSimpleProfile(Lcom/google/gwt/user/client/Element;Ljava/lang/String;Ljava/lang/String;)( element, binderId, userName );
+			gwtMainPage.@org.kablink.teaming.gwt.client.GwtMainPage::fireInvokeSimpleProfile(Lcom/google/gwt/dom/client/Element;Ljava/lang/String;Ljava/lang/String;)( element, binderId, userName );
 		}//end ss_fireInvokeSimpleProfile
 	}-*/;	
 

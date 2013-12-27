@@ -1681,10 +1681,18 @@ public class GwtClientHelper {
 	 * Sets the text on the main GWT page's <title>.
 	 * 
 	 * @param title
+	 * @param fireTitleSetEvent
 	 */
-	public static void jsSetMainTitle(String title) {
+	public static void jsSetMainTitle(String title, boolean fireTitleSetEvent) {
 		jsSetMainTitleImpl(title);
-		GwtTeaming.fireEventAsync(new WindowTitleSetEvent(title));
+		if (fireTitleSetEvent) {
+			GwtTeaming.fireEventAsync(new WindowTitleSetEvent(title));
+		}
+	}
+	
+	public static void jsSetMainTitle(String title) {
+		// Always use the initial form of the method.
+		jsSetMainTitle(title, true);
 	}
 
 	/**
