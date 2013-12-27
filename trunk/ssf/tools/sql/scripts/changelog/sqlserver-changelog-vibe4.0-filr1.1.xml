@@ -465,4 +465,26 @@
         </addColumn>
     </changeSet>
 
+    <changeSet author="jong" context="schema" failOnError="true" id="40">
+        <comment>Table used to represent mobile devices.</comment>
+        <createTable tableName="SS_MobileDevice">
+            <column name="userId" type="NUMERIC(19,0)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="deviceId" type="VARCHAR(128)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="zoneId" type="NUMERIC(19,0)"/>
+            <column name="description" type="NVARCHAR(255)"/>
+            <column name="userTitle" type="NVARCHAR(255)"/>
+            <column name="lastLogin" type="DATETIME"/>            
+            <column name="lastWipe" type="DATETIME"/>            
+            <column name="wipeScheduled" type="TINYINT"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="41">
+        <addPrimaryKey columnNames="userId, deviceId" constraintName="PK__SS_MobileDevice" schemaName="dbo" tableName="SS_MobileDevice"/>
+    </changeSet>
+
 </databaseChangeLog>
