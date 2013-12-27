@@ -466,4 +466,26 @@
         </addColumn>
     </changeSet>
 
+    <changeSet author="jong" context="schema" failOnError="true" id="40">
+        <comment>Table used to represent mobile devices.</comment>
+        <createTable tableName="SS_MOBILEDEVICE">
+            <column name="USERID" type="NUMBER(19,0)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="DEVICEID" type="VARCHAR2(128 BYTE)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ZONEID" type="NUMBER(19,0)"/>
+            <column name="DESCRIPTION" type="VARCHAR2(255 CHAR)"/>
+            <column name="USERTITLE" type="VARCHAR2(255 CHAR)"/>
+            <column name="LASTLOGIN" type="TIMESTAMP(6)"/>            
+            <column name="LASTWIPE" type="TIMESTAMP(6)"/>            
+            <column name="WIPESCHEDULED" type="NUMBER(1,0)"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="41">
+        <addPrimaryKey columnNames="USERID, DEVICEID" tableName="SS_MOBILEDEVICE"/>
+    </changeSet>
+    
 </databaseChangeLog>
