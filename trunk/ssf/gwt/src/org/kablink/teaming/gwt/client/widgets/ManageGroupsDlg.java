@@ -71,6 +71,7 @@ import org.kablink.teaming.gwt.client.widgets.ModifyGroupDlg.ModifyGroupDlgClien
 
 import com.google.gwt.cell.client.CheckboxCell;
 import com.google.gwt.cell.client.FieldUpdater;
+import com.google.gwt.cell.client.ValueUpdater;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
@@ -363,23 +364,61 @@ public class ManageGroupsDlg extends DlgBox implements
 									m_selectionModel,
 									DefaultSelectionEventManager.<GroupInfoPlus> createCheckboxManager() );
 
-		// Add a checkbox in the first column
+		// Add a checkbox in the first column.
 		{
+			// Define the select all checkbox in the header...
+			CheckboxCell ckboxCell = new CheckboxCell( true, false );
+			final VibeSelectAllHeader saHeader = new VibeSelectAllHeader( ckboxCell );
+			saHeader.setUpdater(
+				new ValueUpdater<Boolean>()
+				{
+					@Override
+					public void update( Boolean checked )
+					{
+						List<GroupInfoPlus> rows = m_groupsTable.getVisibleItems();
+						if ( null != rows )
+						{
+							for ( GroupInfoPlus row : rows )
+							{
+								m_selectionModel.setSelected( row, checked );
+							}
+						}
+					}
+				} );
+			
+			// ...define a column for it...
 			Column<GroupInfoPlus, Boolean> ckboxColumn;
-			CheckboxCell ckboxCell;
-
-			ckboxCell = new CheckboxCell(true, false);
-			ckboxColumn = new Column<GroupInfoPlus, Boolean>(ckboxCell) {
+			ckboxColumn = new Column<GroupInfoPlus, Boolean>( ckboxCell )
+			{
 				@Override
-				public Boolean getValue(GroupInfoPlus groupInfoPlus) {
+				public Boolean getValue( GroupInfoPlus groupInfoPlus )
+				{
 					// Get the value from the selection model.
-					return m_selectionModel.isSelected(groupInfoPlus);
+					return m_selectionModel.isSelected( groupInfoPlus );
 				}
 			};
+			
+			// ...connect updating the contents of the table when the
+			// ...check box is checked or unchecked...
+			ckboxColumn.setFieldUpdater(
+				new FieldUpdater<GroupInfoPlus, Boolean>()
+				{
+					@Override
+					public void update( int index, GroupInfoPlus row, Boolean checked )
+					{
+						m_selectionModel.setSelected( row, checked );
+						if ( ! checked )
+						{
+							saHeader.setValue( checked );
+						}
+					};
+				} );
+
+			// ...and connect it all together.
 			m_groupsTable.addColumn(
 								ckboxColumn,
-								SafeHtmlUtils.fromSafeConstant("<br/>"));
-			m_groupsTable.setColumnWidth(ckboxColumn, 20, Unit.PX);
+								saHeader );
+			m_groupsTable.setColumnWidth( ckboxColumn, 20, Unit.PX );
 		}
 
 		// Add the "Type" column.

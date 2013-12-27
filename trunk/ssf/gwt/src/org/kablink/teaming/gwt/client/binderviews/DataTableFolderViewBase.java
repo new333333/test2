@@ -174,16 +174,15 @@ import org.kablink.teaming.gwt.client.widgets.ConfirmCallback;
 import org.kablink.teaming.gwt.client.widgets.ConfirmDlg;
 import org.kablink.teaming.gwt.client.widgets.ConfirmDlg.ConfirmDlgClient;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
+import org.kablink.teaming.gwt.client.widgets.VibeSelectAllHeader;
 import org.kablink.teaming.gwt.client.widgets.VibeSimplePager;
 import org.kablink.teaming.gwt.client.widgets.VibeVerticalPanel;
 
-import com.google.gwt.cell.client.Cell.Context;
 import com.google.gwt.cell.client.CheckboxCell;
 import com.google.gwt.cell.client.FieldUpdater;
 import com.google.gwt.cell.client.ValueUpdater;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Element;
-import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.view.client.AsyncDataProvider;
 import com.google.gwt.view.client.DefaultSelectionEventManager;
@@ -203,7 +202,6 @@ import com.google.gwt.user.cellview.client.DataGrid;
 import com.google.gwt.user.cellview.client.Header;
 import com.google.gwt.user.cellview.client.RowStyles;
 import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
@@ -519,63 +517,6 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		}
 	}
 
-	/*
-	 * Inner class used to represent a select all check box in a data
-	 * table's header.
-	 */
-	private class SelectAllHeader extends Header<Boolean> {
-		private boolean m_checked;	//
-
-		/**
-		 * Constructor method.
-		 * 
-		 * @param cell
-		 */
-		public SelectAllHeader(CheckboxCell cell) {
-			super(cell);
-		}
-
-		/**
-		 * Get'er methods.
-		 * 
-		 * Overrides the Header.getValue() method.
-		 * 
-		 * @return
-		 */
-		@Override
-		public Boolean getValue() {return m_checked;}
-		 
-		/**
-		 * Set'er methods.
-		 * 
-		 * Set the state of the selection.  If a row is unselected, we
-		 * can call this method to deselect the header checkbox
-		 * 
-		 * @param checked
-		 */
-		public void setValue(boolean checked) {m_checked = checked;}
-		 
-		/**
-		 * Called to handle events captured by a check box header.
-		 * 
-		 * @param context
-		 * @param elem
-		 * @param event
-		 * 
-		 * Overrides the Header.onBroserEvent() method.
-		 */
-		@Override
-		public void onBrowserEvent(Context context, Element elem, NativeEvent event) {
-			Event evt = Event.as(event);
-			int eventType = evt.getTypeInt();
-			switch (eventType) {
-			case Event.ONCHANGE:
-				m_checked = (!m_checked);
-			}
-			super.onBrowserEvent(context, elem, event);
-		}
-	}
-
 	/**
 	 * Constructor method.
 	 * 
@@ -652,13 +593,11 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	/*
 	 * Adds a select column to the data table including a select all
 	 * checkbox in the header.
-	 * 
-	 * @author rvasudevan@novell.com
 	 */
 	private void addSelectColumn(final FolderRowSelectionModel selectionModel, int colIndex, double pctTotal) {
 		// Define the select all checkbox in the header...
 		CheckboxCell cbSelectAllCell = new CheckboxCell();
-		final SelectAllHeader saHeader = new SelectAllHeader(cbSelectAllCell);
+		final VibeSelectAllHeader saHeader = new VibeSelectAllHeader(cbSelectAllCell);
 		saHeader.setUpdater(new ValueUpdater<Boolean>() {
 			@Override
 			public void update(Boolean checked) {
