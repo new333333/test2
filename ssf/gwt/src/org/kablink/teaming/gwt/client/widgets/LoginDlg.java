@@ -56,6 +56,8 @@ import org.kablink.teaming.gwt.client.rpc.shared.GetLoginInfoCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.RequestResetPwdCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
+import org.kablink.teaming.gwt.client.util.Agent;
+import org.kablink.teaming.gwt.client.util.AgentBase;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
@@ -735,9 +737,9 @@ public class LoginDlg extends DlgBox
 
 			// Turn auto complete on/off.
 			if ( loginInfo.getAllowAutoComplete() == true )
-				DOM.removeElementAttribute( m_formPanel.getElement(), "autocomplete" );
+				m_formPanel.getElement().removeAttribute( "autocomplete" );
 			else
-				DOM.setElementAttribute( m_formPanel.getElement(), "autocomplete", "off" );
+				m_formPanel.getElement().setAttribute( "autocomplete", "off" );
 			
 			// Is OpenID authentication available?
 			if ( loginInfo.getAllowOpenIdAuthentication() )
@@ -2159,7 +2161,19 @@ public class LoginDlg extends DlgBox
 	 */
 	private void setWindowTitleNow( final String windowTitle )
 	{
+		// Set the window title we were given...
 		GwtClientHelper.jsSetMainTitle( windowTitle );
+		
+		// ...and if we're in UI debug mode...
+		if ( GwtClientHelper.isDebugUI() )
+		{
+			// ...set the window title to the name of the GWT user
+			// ...agent to facilitate debugging incorrect GWT
+			// ...permutation issues.
+			AgentBase agent = GWT.create(Agent.class);
+			String agentTitle = ("GWT user.agent: " + agent.getAgentName());
+			GwtClientHelper.jsSetMainTitle( agentTitle, false );	// false -> Don't send the window title changed event.
+		}
 	}
 	
 	/**
