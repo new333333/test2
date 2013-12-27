@@ -468,7 +468,7 @@ public class ResourceUtil {
         mobileAppConfig.setEnabled(mac.getMobileAppsEnabled());
         mobileAppConfig.setSyncInterval(mac.getMobileAppsSyncInterval());
         mobileAppConfig.setAllowCutCopy(mac.getMobileCutCopyEnabled());
-        mobileAppConfig.setAllowRootedDevices(mac.getMobileDisableOnRootedOrJailBrokenDevices());
+        mobileAppConfig.setAllowRootedDevices(Boolean.FALSE.equals(mac.getMobileDisableOnRootedOrJailBrokenDevices()));
         mobileAppConfig.setAllowScreenCapture(mac.getMobileAndroidScreenCaptureEnabled());
         MobileAppConfig.OpenInApps openIn = toModelEnum(mac.getMobileOpenInEnum());
         mobileAppConfig.setAllowedOpenInApps(openIn.name());
