@@ -44,6 +44,7 @@ import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.gwt.client.GwtTeamingException;
 import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.util.HistoryInfo;
+import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.web.util.GwtUISessionData;
 
 /**
@@ -55,8 +56,8 @@ import org.kablink.teaming.web.util.GwtUISessionData;
 public class GwtHistoryHelper {
 	protected static Log m_logger = LogFactory.getLog(GwtHistoryHelper.class);
 	
-	private final static int	MAX_HISTORY_CACHE	= 50;			// Maximum number of history items we track for a user.
-	private final static String	CACHED_HISTORY		= "historyMap";	// Key into the session where we store a user's history.
+	private final static int	MAX_HISTORY_CACHE	= SPropsUtil.getInt("max.user.history", 50);	// Maximum number of history items we track for a user.
+	private final static String	CACHED_HISTORY		= "historyMap";									// Key into the session where we store a user's history.
 	
 	/*
 	 * Inhibits this class from being instantiated. 

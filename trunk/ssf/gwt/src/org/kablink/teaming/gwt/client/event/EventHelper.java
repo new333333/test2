@@ -1791,6 +1791,15 @@ public class EventHelper {
 				}
 				break;
 				
+			case SET_FILR_ACTION_FROM_COLLECTION_TYPE:
+				// A SetFilrActionFromCollectionTypeEvent!  Can the
+				// event handler we were given handle that?
+				if (eventHandler instanceof SetFilrActionFromCollectionTypeEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = SetFilrActionFromCollectionTypeEvent.registerEvent(eventBus, ((SetFilrActionFromCollectionTypeEvent.Handler) eventHandler));
+				}
+				break;
+				
 			case SET_FOLDER_SORT:
 				// A SetFolderSortEvent!  Can the event handler we were
 				// given handle that?
@@ -2802,6 +2811,7 @@ public class EventHelper {
 			case GET_SIDEBAR_COLLECTION:                       hasHandler = (eventHandler instanceof GetSidebarCollectionEvent.Handler);                   break;
 			case REFRESH_SIDEBAR_TREE:                 	       hasHandler = (eventHandler instanceof RefreshSidebarTreeEvent.Handler);                     break;
 			case REROOT_SIDEBAR_TREE:                 	       hasHandler = (eventHandler instanceof RerootSidebarTreeEvent.Handler);                      break;
+			case SET_FILR_ACTION_FROM_COLLECTION_TYPE:         hasHandler = (eventHandler instanceof SetFilrActionFromCollectionTypeEvent.Handler);        break;
 			case SIDEBAR_HIDE:                      	       hasHandler = (eventHandler instanceof SidebarHideEvent.Handler);                            break;
 			case SIDEBAR_SHOW:                      	       hasHandler = (eventHandler instanceof SidebarShowEvent.Handler);                            break;
 			

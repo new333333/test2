@@ -65,7 +65,7 @@ public class OnSelectBinderInfo {
 		FAVORITE_SELECT,				// A favorite was selected from the My Favorites menu.
 		FORCE_FULL_RELOAD,				// Forces the full UI to reload.
 		GOTO_CONTENT_URL,				// User clicked on something that loads some URL into the content frame.
-		HISTORY_URL,					// Content URL from the browser's history. 
+		HISTORY_ACTION,					// Content is changing because of an interaction with the browser's history. 
 		JSP_CONTENT_LOADED,				// Unknown JSP content has been loaded into the content area.
 		PROFILE_QUICK_VIEW_SELECT,		// The workspace or profile button in the quick view dialog was selected.
 		RECENT_PLACE_SELECT,			// A recent place was selected from the Recent Places menu.
@@ -77,7 +77,14 @@ public class OnSelectBinderInfo {
 		VIEW_TEAM_MEMBERS,				// The members of the current binders team are to be show.
 		VIEW_FOLDER_ENTRY,				// A folder entry is being shown.
 		
-		UNKNOWN,						// Default value.  Should never be processed.
+		UNKNOWN;						// Default value.  Should never be processed.
+
+		/**
+		 * Get'er methods.
+		 * 
+		 * @return
+		 */
+		public boolean isHistoryAction() {return this.equals(HISTORY_ACTION);}
 	}
 
 	/**
