@@ -106,9 +106,11 @@ import org.kablink.teaming.gwt.client.rpc.shared.ChangeFavoriteStateCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.CollectionPointData;
 import org.kablink.teaming.gwt.client.rpc.shared.GetBinderPermalinkCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetCollectionPointDataCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetHistoryUrlCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetMainPageInfoCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetPersonalPrefsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetUserWorkspaceInfoCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.HistoryUrlRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.MainPageInfoRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.PersistActivityStreamSelectionCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveBrandingCmd;
@@ -187,7 +189,10 @@ import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.dom.client.Style.Unit;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Event.NativePreviewEvent;
 import com.google.gwt.user.client.Window;
@@ -390,6 +395,13 @@ public class GwtMainPage extends ResizeComposite
 //			Window.alert(userAgent);
 			Window.setStatus(userAgent);
 			Window.setTitle( userAgent);
+		}
+		
+		// If browser history handling is enabled...
+		if ( HistoryUrlRpcResponseData.ENABLE_BROWSER_HISTORY )	//! Note that this is still in development !!!
+		{
+			// ...initialize browser history handling. 
+			setupHistory();
 		}
 		
 		// Construct and initialize the page.
@@ -633,14 +645,52 @@ public class GwtMainPage extends ResizeComposite
 		Event.addNativePreviewHandler(new Event.NativePreviewHandler() {
 			@Override
 			public void onPreviewNativeEvent(NativePreviewEvent event) {
-				if (!event.isCanceled()) {
-					NativeEvent ne = event.getNativeEvent();
-					switch (event.getTypeInt()) {
+				// Is the event canceled?
+				if ( ! event.isCanceled() )
+				{
+					// No!  What's the event?  
+					switch ( event.getTypeInt() )
+					{
 					case Event.ONKEYDOWN:
-						m_controlKeyDown = (17 == ne.getKeyCode());
+						// A key down!  Is the control key down?
+						NativeEvent ne = event.getNativeEvent();
+						m_controlKeyDown = ne.getCtrlKey();
+						
+						// Is browser history handling is enabled?
+						if ( HistoryUrlRpcResponseData.ENABLE_BROWSER_HISTORY )	//! Note that this is still in development !!!
+						{
+							// Yes!  We need to intercept a browser
+							// refresh.  Note (DRF):  I found the code
+							// to recognize this from here:
+							//    http://gonithethinker.blogspot.com/2013/04/prevent-default-refresh-event-in.html
+							int     keyCode   = ne.getKeyCode();
+							boolean modifiedR = ( 'R' == keyCode );
+							if ( modifiedR )
+							{
+								if ( GwtClientHelper.isOSMac() )
+									 modifiedR = ne.getMetaKey();	// Command-R on a Mac...
+								else modifiedR = m_controlKeyDown;	// ...and control-R everywhere else.
+							}
+							
+							// Is the user is refreshing the page?
+							boolean browserRefresh;
+							if      ( modifiedR )      browserRefresh = true;	// Command/Control-R -> Refresh.
+							else if ( 116 == keyCode ) browserRefresh = true;	// F5                -> Refresh.
+							else                       browserRefresh = false;
+							if (browserRefresh)
+							{
+								// Yes!  Fire the current history state
+								// and kill the event.
+								History.fireCurrentHistoryState();
+								ne.preventDefault();
+							}
+						}
+							
 						break;
 						
 					case Event.ONKEYUP:
+						// A key up!  The control key can no longer be
+						// down.
 						m_controlKeyDown = false;
 						break;
 					}
@@ -4222,4 +4272,87 @@ public class GwtMainPage extends ResizeComposite
 		// Always use the initial form of the method.
 		prefetch(null);
 	}// end prefetch()
+	
+
+	/*
+	 * Initializes browser history handling.
+	 */
+	private void setupHistory() {
+		History.addValueChangeHandler( new ValueChangeHandler<String>()
+		{
+			@Override
+			public void onValueChange( ValueChangeEvent<String> event )
+			{
+				// Parse the history token
+				try
+				{
+					String historyToken = event.getValue();
+					if ( historyToken.substring( 0, HistoryUrlRpcResponseData.HISTORY_MARKER_LENGTH ).equals( HistoryUrlRpcResponseData.HISTORY_MARKER ) )
+					{
+						String token = historyToken.substring( HistoryUrlRpcResponseData.HISTORY_MARKER_LENGTH );
+						if ( GwtClientHelper.hasString( token ) )
+						{
+							processHistoryTokenAsync( token );
+							return;
+						}
+					}
+				}
+				catch ( Exception e ) {}
+				
+				FullUIReloadEvent.fireOneAsync();
+			}
+		} );
+	}
+
+	/*
+	 * Asynchronously processes a history token.
+	 */
+	private void processHistoryTokenAsync( final String token )
+	{
+		GwtClientHelper.deferCommand( new ScheduledCommand()
+		{
+			@Override
+			public void execute()
+			{
+				processHistoryTokenNow( token );
+			}
+		} );
+	}
+	
+	/*
+	 * Synchronously processes a history token.
+	 */
+	private void processHistoryTokenNow( final String token )
+	{
+		GetHistoryUrlCmd cmd = new GetHistoryUrlCmd( token );
+		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
+		{
+			@Override
+			public void onFailure( Throwable t )
+			{
+				FullUIReloadEvent.fireOneAsync();
+			}//end onFailure()
+			
+			@Override
+			public void onSuccess( VibeRpcResponse response )
+			{
+				HistoryUrlRpcResponseData result = ((HistoryUrlRpcResponseData) response.getResponseData());
+				if ( null != result )
+				{
+					// Change the browser's URL.
+					OnSelectBinderInfo osbInfo = new OnSelectBinderInfo(
+						result.getUrl(),
+						Instigator.HISTORY_URL );	//! result.getInstigator() );
+					osbInfo.setHistorySelectedMastheadCollection( result.getSelectedMastheadCollection() );
+					
+					if ( GwtClientHelper.validateOSBI( osbInfo ) )
+					{
+						GwtTeaming.fireEventAsync( new ChangeContextEvent( osbInfo ) );
+						return;
+					}
+				}
+				FullUIReloadEvent.fireOneAsync();
+			}// end onSuccess()
+		});
+	}
 }// end GwtMainPage

@@ -74,6 +74,8 @@ import org.kablink.teaming.gwt.client.event.CopySelectedEntitiesEvent;
 import org.kablink.teaming.gwt.client.event.DeleteSelectedEntitiesEvent;
 import org.kablink.teaming.gwt.client.event.FullUIReloadEvent;
 import org.kablink.teaming.gwt.client.event.GetCurrentViewInfoEvent;
+import org.kablink.teaming.gwt.client.event.GetSidebarCollectionEvent;
+import org.kablink.teaming.gwt.client.event.GetSidebarCollectionEvent.CollectionCallback;
 import org.kablink.teaming.gwt.client.event.GotoUrlEvent;
 import org.kablink.teaming.gwt.client.event.InvokeEmailNotificationEvent;
 import org.kablink.teaming.gwt.client.event.InvokeShareBinderEvent;
@@ -110,10 +112,13 @@ import org.kablink.teaming.gwt.client.event.ViewForumEntryEvent;
 import org.kablink.teaming.gwt.client.rpc.shared.GetBinderPermalinkCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetParentBinderPermalinkCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetViewInfoCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.HistoryUrlRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.PushHistoryUrlCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.BinderType;
+import org.kablink.teaming.gwt.client.util.CollectionType;
 import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.FolderType;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
@@ -135,6 +140,7 @@ import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.FrameElement;
+import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -583,8 +589,8 @@ public class ContentControl extends Composite
 
 		// Reload the URL.
 		ContextChangingEvent.fireOne();						
-		setUrl(         "",  Instigator.FORCE_FULL_RELOAD );
-		setViewFromUrl( url, Instigator.FORCE_FULL_RELOAD );
+		setUrl(         "",  Instigator.FORCE_FULL_RELOAD       );
+		setViewFromUrl( url, Instigator.FORCE_FULL_RELOAD, null );
 	}// end reload()
 
 	/*
@@ -666,6 +672,53 @@ public class ContentControl extends Composite
 		}
 	}-*/;	
 
+	/*
+	 * Asynchronously pushes a URL on the user's history stack. 
+	 */
+	private void pushHistoryAsync( final String url, final Instigator instigator ) {
+		GwtTeaming.fireEventAsync( new GetSidebarCollectionEvent( new CollectionCallback()
+		{
+			@Override
+			public void collection( final CollectionType collectionType ) {
+				GwtClientHelper.deferCommand( new ScheduledCommand()
+				{
+					@Override
+					public void execute()
+					{
+						pushHistoryNow( url, instigator, collectionType );
+					}// end execute()
+				} );
+			}
+		} ) );
+	}// end pushHistoryAsync()
+	
+	/*
+	 * Synchronously pushes a URL on the user's history stack. 
+	 */
+	private void pushHistoryNow( final String url, final Instigator instigator, final CollectionType collectionType ) {
+		PushHistoryUrlCmd cmd = new PushHistoryUrlCmd( url, instigator, collectionType );
+		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
+		{
+			@Override
+			public void onFailure( Throwable t )
+			{
+				// Ignore.
+			}// end onFailure()
+			
+			@Override
+			public void onSuccess( VibeRpcResponse response )
+			{
+				String token = ((StringRpcResponseData) response.getResponseData()).getStringValue();
+				if ( GwtClientHelper.hasString( token ) )
+				{
+					History.newItem(
+						(HistoryUrlRpcResponseData.HISTORY_MARKER + token),	// History token.
+						false );											// false -> Don't fire a change event for this item.
+				}
+			}//end onSuccess()
+		});
+	}// end pushHistoryNow()
+
 	/**
 	 * This method will set the URL used by the IFRAME.
 	 * 
@@ -680,14 +733,14 @@ public class ContentControl extends Composite
 	/*
 	 * Asynchronously loads a view based on a ViewInfo.
 	 */
-	private void setViewAsync( final ViewInfo vi, final String url, final Instigator instigator )
+	private void setViewAsync( final ViewInfo vi, final String url, final Instigator instigator, final CollectionType historySelectedMastheadCollection )
 	{
 		GwtClientHelper.deferCommand( new ScheduledCommand()
 		{
 			@Override
 			public void execute()
 			{
-				setViewNow( vi, url, instigator );
+				setViewNow( vi, url, instigator, historySelectedMastheadCollection );
 			}// end execute()
 		} );
 	}// end setViewAsync()
@@ -695,8 +748,17 @@ public class ContentControl extends Composite
 	/*
 	 * Sets the view based on the URL.
 	 */
-	private void setViewFromUrl( final String url, final Instigator instigator )
+	private void setViewFromUrl( final String url, final Instigator instigator, final CollectionType historySelectedMastheadCollection )
 	{
+		// If browser history handling is enabled...
+		if ( HistoryUrlRpcResponseData.ENABLE_BROWSER_HISTORY ) {	//! Note that this is still in development !!!
+			// ...and we're not navigating to a URL from the history...
+			if ( ! ( Instigator.HISTORY_URL.equals( instigator ) ) ) {
+				// ...push it into the history.
+				pushHistoryAsync( url, instigator );
+			}
+		}
+		
 		// Are we running the admin console?
 		if ( m_isAdminContent )
 		{
@@ -730,7 +792,7 @@ public class ContentControl extends Composite
 					if ( GwtClientHelper.hasString( overrideUrl ) )
 					     targetUrl = overrideUrl;
 					else targetUrl = url;
-					setViewAsync( vi, targetUrl, instigator );
+					setViewAsync( vi, targetUrl, instigator, historySelectedMastheadCollection );
 				}//end onSuccess()
 			});
 		}
@@ -742,7 +804,7 @@ public class ContentControl extends Composite
 	 * If a view cannot be determined (or no ViewInfo was provided),
 	 * the URL is loaded into the IFRAME instead.
 	 */
-	private void setViewNow( final ViewInfo vi, final String url, final Instigator instigator )
+	private void setViewNow( final ViewInfo vi, final String url, final Instigator instigator, final CollectionType historySelectedMastheadCollection )
 	{
 		m_currentView       = vi;
 		m_contentInstigator = instigator;
@@ -797,12 +859,9 @@ public class ContentControl extends Composite
 								{
 									// Notify those who care about the
 									// change in context.
-									GwtTeaming.fireEvent(
-										new ContextChangedEvent(
-											new OnSelectBinderInfo(
-												bi,
-												url,
-												instigator )));
+									OnSelectBinderInfo osbInfo = new OnSelectBinderInfo( bi, url, instigator );
+									osbInfo.setHistorySelectedMastheadCollection(historySelectedMastheadCollection);
+									GwtTeaming.fireEvent( new ContextChangedEvent( osbInfo ) );
 									
 									if ( ViewType.BINDER_WITH_ENTRY_VIEW.equals( vt ) )
 									{
@@ -1223,7 +1282,10 @@ public class ContentControl extends Composite
 			// Yes!  Tell everybody the context is about to be changed
 			// and change it.
 			ContextChangingEvent.fireOne();						
-			setViewFromUrl( osbInfo.getBinderUrl(), osbInfo.getInstigator() );
+			setViewFromUrl(
+				osbInfo.getBinderUrl(),
+				osbInfo.getInstigator(),
+				osbInfo.getHistorySelectedMastheadCollection() );
 		}
 	}// end onChangeContext()
 
@@ -1513,7 +1575,7 @@ public class ContentControl extends Composite
 	public void onGotoUrl( GotoUrlEvent event )
 	{
 		ContextChangingEvent.fireOne();						
-		setViewAsync( null, event.getUrl(), Instigator.GOTO_CONTENT_URL );
+		setViewAsync( null, event.getUrl(), Instigator.GOTO_CONTENT_URL, null );
 	}
 
 	
@@ -2404,7 +2466,7 @@ public class ContentControl extends Composite
 			@Override
 			public void execute() 
 			{
-				setViewFromUrl( event.getViewForumEntryUrl(), Instigator.VIEW_FOLDER_ENTRY );
+				setViewFromUrl( event.getViewForumEntryUrl(), Instigator.VIEW_FOLDER_ENTRY, null );
 			}
 		};
 		Scheduler.get().scheduleDeferred( cmd );

@@ -48,6 +48,7 @@ import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.CollectionType;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
+import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Style;
@@ -97,7 +98,6 @@ public class FilrActionsCtrl extends Composite
 		TeamingEvents.MASTHEAD_UNHIGHLIGHT_ALL_ACTIONS,
 		TeamingEvents.PUBLIC_COLLECTION_STATE_CHANGED,
 	};
-
 	
 	/**
 	 * 
@@ -111,6 +111,7 @@ public class FilrActionsCtrl extends Composite
 		SHARED_PUBLIC,
 		UNKNOWN
 	}
+	
 	/**
 	 * 
 	 */
@@ -426,20 +427,41 @@ public class FilrActionsCtrl extends Composite
 		osbInfo = event.getOnSelectBinderInfo();
 		if ( GwtClientHelper.validateOSBI( osbInfo, false ))
 		{
+			CollectionType	actionCT = null; 
+			
 			// Yes
-			// Are we dealing with a collection?
-			BinderInfo binderInfo = osbInfo.getBinderInfo();
-			if ( GwtClientHelper.isBinderInfoMyFilesHome( binderInfo ) )
+			// Are we dealing with a history token?
+			if ( Instigator.HISTORY_URL.equals( osbInfo.getInstigator() ))
 			{
-				binderInfo = GwtClientHelper.buildMyFilesBinderInfo();
+				// Yes
+				// Use the collection type from it.
+				actionCT = osbInfo.getHistorySelectedMastheadCollection();
 			}
-			if ( binderInfo.isBinderCollection() )
+			
+			else
 			{
-				FilrAction action = null;
+				// No, we aren't dealing with a history token!  Are we
+				// dealing with a collection?
+				BinderInfo binderInfo = osbInfo.getBinderInfo();
+				if ( GwtClientHelper.isBinderInfoMyFilesHome( binderInfo ) )
+				{
+					binderInfo = GwtClientHelper.buildMyFilesBinderInfo();
+				}
+				if ( binderInfo.isBinderCollection() )
+				{
+					// Yes
+					actionCT = binderInfo.getCollectionType();
+				}
+			}
+
+			// Do we have a collection type to set the action from?
+			if ( null != actionCT )
+			{
+				FilrAction action;
 				
 				// Yes
 				// Select the appropriate collection point.
-				switch ( binderInfo.getCollectionType() )
+				switch ( actionCT )
 				{
 				case MY_FILES:
 					action = m_myFilesAction;
@@ -462,11 +484,14 @@ public class FilrActionsCtrl extends Composite
 					break;
 				
 				default:
+					action = null;
 					break;
 				}
 				
-				if ( action != null )
+				if ( null != action )
+				{
 					selectAction( action );
+				}
 			}
 		}
 	}
