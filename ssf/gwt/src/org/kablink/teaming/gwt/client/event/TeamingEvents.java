@@ -224,6 +224,7 @@ public enum TeamingEvents implements IsSerializable {
 	GET_SIDEBAR_COLLECTION,							// Returns the collection currently loaded in the sidebar tree.
 	REFRESH_SIDEBAR_TREE,							// Refreshes the sidebar tree content maintaining its current root and selected binder.
 	REROOT_SIDEBAR_TREE,							// Re-roots the sidebar tree to the currently selected binder.
+	SET_FILR_ACTION_FROM_COLLECTION_TYPE,			// Sets the Filr action in the masthead from a collection type.
 	SIDEBAR_HIDE,									// Hides the left navigation panel.
 	SIDEBAR_SHOW,									// Shows the left navigation panel.
 	

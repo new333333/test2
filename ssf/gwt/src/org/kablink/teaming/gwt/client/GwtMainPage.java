@@ -209,7 +209,7 @@ import com.google.gwt.user.client.ui.RootPanel;
  */
 public class GwtMainPage extends ResizeComposite
 	implements
-	// Event handlers implemented by this class.
+		// Event handlers implemented by this class.
 		ActivityStreamEvent.Handler,
 		ActivityStreamEnterEvent.Handler,
 		ActivityStreamExitEvent.Handler,
@@ -4259,24 +4259,24 @@ public class GwtMainPage extends ResizeComposite
 			@Override
 			public void onValueChange( ValueChangeEvent<String> event )
 			{
-				// Parse the history token
 				try
 				{
+					// If we can find the history token...
 					String historyToken = event.getValue();
 					if ( historyToken.substring( 0, HistoryInfo.HISTORY_MARKER_LENGTH ).equals( HistoryInfo.HISTORY_MARKER ) )
 					{
 						String token = historyToken.substring( HistoryInfo.HISTORY_MARKER_LENGTH );
 						if ( GwtClientHelper.hasString( token ) )
 						{
+							// ...process it...
 							processHistoryTokenAsync( token );
 							return;
 						}
 					}
 				}
-				catch ( Exception e ) {}
+				catch ( Exception e ) {/* Ignored. */}
 				
-				// If we didn't handle the history token, simply force
-				// the content to refresh.
+				// ...otherwise, simply force the content to refresh.
 				FullUIReloadEvent.fireOneAsync();
 			}
 		} );
@@ -4304,7 +4304,7 @@ public class GwtMainPage extends ResizeComposite
 	{
 		OnSelectBinderInfo osbInfo = new OnSelectBinderInfo(
 			historyInfo.getUrl(),
-			Instigator.HISTORY_URL );	//! historyInfo.getInstigator() );
+			Instigator.HISTORY_ACTION );	//! historyInfo.getInstigator() );
 		osbInfo.setHistorySelectedMastheadCollection( historyInfo.getSelectedMastheadCollection() );
 		GwtTeaming.fireEvent( new ChangeContextEvent( osbInfo ) );
 	}// endprocessHistoryInfoNow()

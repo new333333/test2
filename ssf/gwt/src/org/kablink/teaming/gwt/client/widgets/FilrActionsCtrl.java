@@ -42,15 +42,16 @@ import org.kablink.teaming.gwt.client.event.AdministrationExitEvent;
 import org.kablink.teaming.gwt.client.event.ContextChangedEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.GetSidebarCollectionEvent;
+import org.kablink.teaming.gwt.client.event.SetFilrActionFromCollectionTypeEvent;
 import org.kablink.teaming.gwt.client.event.ShowCollectionEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.CollectionType;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
-import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 
 import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -76,7 +77,8 @@ public class FilrActionsCtrl extends Composite
 		ContextChangedEvent.Handler,
 		GetSidebarCollectionEvent.Handler,
 		MastheadUnhighlightAllActionsEvent.Handler,
-		PublicCollectionStateChangedEvent.Handler
+		PublicCollectionStateChangedEvent.Handler,
+		SetFilrActionFromCollectionTypeEvent.Handler
 {
 	private FilrAction m_selectedAction;
 	private HorizontalPanel m_mainPanel;
@@ -97,6 +99,7 @@ public class FilrActionsCtrl extends Composite
 		TeamingEvents.GET_SIDEBAR_COLLECTION,
 		TeamingEvents.MASTHEAD_UNHIGHLIGHT_ALL_ACTIONS,
 		TeamingEvents.PUBLIC_COLLECTION_STATE_CHANGED,
+		TeamingEvents.SET_FILR_ACTION_FROM_COLLECTION_TYPE,
 	};
 	
 	/**
@@ -431,7 +434,7 @@ public class FilrActionsCtrl extends Composite
 			
 			// Yes
 			// Are we dealing with a history token?
-			if ( Instigator.HISTORY_URL.equals( osbInfo.getInstigator() ))
+			if ( osbInfo.getInstigator().isHistoryAction() )
 			{
 				// Yes
 				// Use the collection type from it.
@@ -457,41 +460,9 @@ public class FilrActionsCtrl extends Composite
 			// Do we have a collection type to set the action from?
 			if ( null != actionCT )
 			{
-				FilrAction action;
-				
 				// Yes
-				// Select the appropriate collection point.
-				switch ( actionCT )
-				{
-				case MY_FILES:
-					action = m_myFilesAction;
-					break;
-				
-				case NET_FOLDERS:
-					action = m_netFoldersAction;
-					break;
-				
-				case SHARED_BY_ME:
-					action = m_sharedByMeAction;
-					break;
-				
-				case SHARED_WITH_ME:
-					action = m_sharedWithMeAction;
-					break;
-				
-				case SHARED_PUBLIC:
-					action = m_sharedPublicAction;
-					break;
-				
-				default:
-					action = null;
-					break;
-				}
-				
-				if ( null != action )
-				{
-					selectAction( action );
-				}
+				// Put it into effect.
+				setFilrActionFromCollectionTypeAsync( actionCT );
 			}
 		}
 	}
@@ -553,6 +524,64 @@ public class FilrActionsCtrl extends Composite
 			m_sharedPublicAction.setVisible( ! event.isPublicCollectionHidden() );
 		}
 	}
+
+	/**
+	 * Handles SetFilrActionFromCollectionTypeEvent's received by this class.
+	 * 
+	 * Implements the SetFilrActionFromCollectionTypeEvent.Handler.onSetFilrActionFromCollectionType() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onSetFilrActionFromCollectionType( SetFilrActionFromCollectionTypeEvent event )
+	{
+		setFilrActionFromCollectionTypeAsync( event.getCollectionType() );
+	}// end onSetFilrActionFromCollectionType()
+
+	/*
+	 * Asynchronously sets the Filr action from a collection type.
+	 */
+	private void setFilrActionFromCollectionTypeAsync( final CollectionType collectionType )
+	{
+		GwtClientHelper.deferCommand( new ScheduledCommand()
+		{
+			@Override
+			public void execute()
+			{
+				setFilrActionFromCollectionTypeNow( collectionType );
+			}// end execute()
+		} );
+	}// end setFilrActionFromCollectionTypeAsync()
+	
+	/*
+	 * Synchronously sets the Filr action from a collection type.
+	 */
+	private void setFilrActionFromCollectionTypeNow( final CollectionType collectionType )
+	{
+		// Do we have a collection type?
+		if ( null != collectionType )
+		{
+			FilrAction action;
+			
+			// Yes
+			// Map it to the appropriate collection point...
+			switch ( collectionType )
+			{
+			case MY_FILES:        action = m_myFilesAction;      break;
+			case NET_FOLDERS:     action = m_netFoldersAction;   break;
+			case SHARED_BY_ME:    action = m_sharedByMeAction;   break;
+			case SHARED_PUBLIC:   action = m_sharedPublicAction; break;
+			case SHARED_WITH_ME:  action = m_sharedWithMeAction; break;
+			default:              action = null;                 break;
+			}
+			
+			if ( null != action )
+			{
+				// ...and select it.
+				selectAction( action );
+			}
+		}
+	}// end setFilrActionFromCollectionTypeNow()
 
 	/**
 	 * Select the given action

@@ -80,6 +80,7 @@ import org.kablink.teaming.gwt.client.event.GotoUrlEvent;
 import org.kablink.teaming.gwt.client.event.InvokeEmailNotificationEvent;
 import org.kablink.teaming.gwt.client.event.InvokeShareBinderEvent;
 import org.kablink.teaming.gwt.client.event.MoveSelectedEntitiesEvent;
+import org.kablink.teaming.gwt.client.event.SetFilrActionFromCollectionTypeEvent;
 import org.kablink.teaming.gwt.client.event.ShareSelectedEntitiesEvent;
 import org.kablink.teaming.gwt.client.event.ShowBlogFolderEvent;
 import org.kablink.teaming.gwt.client.event.ShowCalendarFolderEvent;
@@ -756,7 +757,7 @@ public class ContentControl extends Composite
 		// If browser history handling is enabled...
 		if ( HistoryInfo.ENABLE_BROWSER_HISTORY ) {	//! Note that this is still in development !!!
 			// ...and we're not navigating to a URL from the history...
-			if ( ! ( Instigator.HISTORY_URL.equals( instigator ) ) ) {
+			if ( ! instigator.isHistoryAction() ) {
 				// ...push it into the history.
 				pushHistoryInfoAsync( url, instigator );
 			}
@@ -1125,6 +1126,13 @@ public class ContentControl extends Composite
 							@Override
 							public void viewReady()
 							{
+								if ( instigator.isHistoryAction() )
+								{
+									GwtTeaming.fireEventAsync(
+										new SetFilrActionFromCollectionTypeEvent(
+											historySelectedMastheadCollection));
+								}
+								
 								EntityId eid = vfei.getEntityId();
 								if ( vi.isInvokeShare() )
 								{
@@ -1161,6 +1169,14 @@ public class ContentControl extends Composite
 						// If we get here, we just run the JSP based folder
 						// entry viewer.
 						jsViewFolderEntry( url, "no" );
+						
+						if ( instigator.isHistoryAction() )
+						{
+							GwtTeaming.fireEventAsync(
+								new SetFilrActionFromCollectionTypeEvent(
+									historySelectedMastheadCollection));
+						}
+						
 						EntityId eid = vi.getFolderEntryInfo().getEntityId();
 						if ( vi.isInvokeShare() )
 						{
