@@ -40,15 +40,21 @@ import org.kablink.teaming.gwt.client.lpe.LandingPageEditor.LandingPageEditorCli
 import org.kablink.teaming.gwt.client.profile.widgets.GwtProfilePage;
 import org.kablink.teaming.gwt.client.profile.widgets.UserStatusControl;
 import org.kablink.teaming.gwt.client.profile.widgets.UserStatusControl.UserStatusControlClient;
+import org.kablink.teaming.gwt.client.rpc.shared.GetHistoryInfoCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.service.GwtRpcService;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 import org.kablink.teaming.gwt.client.tasklisting.TaskListing;
 import org.kablink.teaming.gwt.client.tasklisting.TaskListing.TaskListingClient;
+import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+import org.kablink.teaming.gwt.client.util.HistoryInfo;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootLayoutPanel;
 import com.google.gwt.user.client.ui.RootPanel;
@@ -72,9 +78,10 @@ public class GwtTeaming implements EntryPoint
 	private static final GwtTeamingWorkspaceTreeImageBundle	m_wsTreeImageBundle			=                       GWT.create( GwtTeamingWorkspaceTreeImageBundle.class );
 	private static final GwtRpcServiceAsync					m_gwtRpcService 			= ((GwtRpcServiceAsync) GWT.create( GwtRpcService.class                     ));
 	private static final SimpleEventBus 					m_eventBus 					= 						GWT.create( SimpleEventBus.class                     );
-	public static RequestInfo m_requestInfo = jsGetRequestInfo();
 	
-	private static GwtMainPage	m_mainPage = null;	
+	private static GwtMainPage	m_mainPage;							// The application's main page.	
+	private static HistoryInfo	m_browserReloadInfo;				// History information for reloading the browser page.
+	public  static RequestInfo	m_requestInfo = jsGetRequestInfo();	// The current RequestInfo block loaded by the JSP.
 	
 	/**
 	 * Returns the object that is used to retrieve Cloud Folder images.
@@ -197,6 +204,17 @@ public class GwtTeaming implements EntryPoint
 		return m_gwtRpcService;
 	}// end getRpcService()
 	
+
+	/**
+	 * Returns the HistoryInfo to use if the browser is being reloaded.
+	 * 
+	 * @return
+	 */
+	public static HistoryInfo getBrowserReloadInfo()
+	{
+		return m_browserReloadInfo;
+	}// end getBrowserReloadInfo()
+	
 	
 	/**
 	 * Use JSNI to get the name of the parent window.
@@ -209,7 +227,7 @@ public class GwtTeaming implements EntryPoint
 		return "";
 	}-*/;
 	
-	
+
 	/**
 	 * Use JSNI to see if we are running inside a landing page.
 	 */
@@ -221,6 +239,35 @@ public class GwtTeaming implements EntryPoint
 	}-*/;
 	
 
+	/*
+	 * Loads the main page's split point.
+	 */
+	private void loadGwtMainPage()
+	{
+		// Load the main page's split point.
+		GwtMainPage.createAsync(
+				new GwtMainPageClient() {				
+			@Override
+			public void onUnavailable()
+			{
+				// Nothing to do.  Error handled in
+				// asynchronous provider.
+			}// end onUnavailable()
+			
+			@Override
+			public void onSuccess( GwtMainPage mainPage )
+			{
+				RootLayoutPanel rlPanel;
+				
+				m_mainPage = mainPage;
+				
+				rlPanel = RootLayoutPanel.get();
+				rlPanel.add( mainPage );
+			}// end onSuccess()
+		} );
+	}
+	
+	
 	/**
 	 * This is the entry point method.
 	 */
@@ -301,28 +348,56 @@ public class GwtTeaming implements EntryPoint
 		RootPanel mainRootPanel = RootPanel.get( "gwtMainPageDiv" );
 		if ( mainRootPanel != null )
 		{
-			// Yes!  Load the main page's split point.
-			GwtMainPage.createAsync(
-					new GwtMainPageClient() {				
-				@Override
-				public void onUnavailable()
+			// Yes!  Does the location URL have a history token?
+			// (I.e., is the browser being reloaded?)
+			String historyToken = null;
+			String url          = Window.Location.createUrlBuilder().buildString();
+			if ( GwtClientHelper.hasString( url ) )
+			{
+				int historyPos = url.lastIndexOf( "#" + HistoryInfo.HISTORY_MARKER );
+				if ( (-1) != historyPos )
 				{
-					// Nothing to do.  Error handled in
-					// asynchronous provider.
-				}// end onUnavailable()
-				
-				@Override
-				public void onSuccess( GwtMainPage mainPage )
-				{
-					RootLayoutPanel rlPanel;
-					
-					m_mainPage = mainPage;
-					
-					rlPanel = RootLayoutPanel.get();
-					rlPanel.add( mainPage );
-				}// end onSuccess()
-			} );
+					// Yes!  Store it so GwtMainPage can access it to
+					// construct its content.
+					historyToken = url.substring( historyPos + HistoryInfo.HISTORY_MARKER_LENGTH + 1 );
+				}
+			}
+
+			// If we don't have a history token...
+			if ( null == historyToken )
+			{
+				// ...simply load the main page's split point.
+				loadGwtMainPage();
+			}
 			
+			else
+			{
+				// ...otherwise, we need to pull the history
+				// ...information from the server so we can reload it
+				// ...with the construction of the main page content.
+				GetHistoryInfoCmd cmd = new GetHistoryInfoCmd( historyToken );
+				GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
+				{
+					@Override
+					public void onFailure( Throwable t )
+					{
+						// On a failure, simply load the main page's
+						// split point.
+						loadGwtMainPage();
+					}//end onFailure()
+					
+					@Override
+					public void onSuccess( VibeRpcResponse response )
+					{
+						// Save the history information and load the
+						// main page's split point.  GwtMainPage will
+						// use this to construct its content.
+						m_browserReloadInfo = ((HistoryInfo) response.getResponseData());
+						loadGwtMainPage();
+					}// end onSuccess()
+				});
+			}
+
 			return;
 		}
 		

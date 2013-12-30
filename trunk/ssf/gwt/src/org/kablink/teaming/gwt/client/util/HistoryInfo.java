@@ -30,43 +30,51 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.gwt.client.rpc.shared;
+package org.kablink.teaming.gwt.client.util;
 
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponseData;
 import org.kablink.teaming.gwt.client.util.CollectionType;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 
+import com.google.gwt.user.client.rpc.IsSerializable;
+
 /**
- * This class holds all of the information necessary to execute the
- * 'push history URL' command.
+ * This class holds the response data for retrieving history
+ * information from the tracked history cache.
  * 
  * @author drfoster@novell.com
  */
-public class PushHistoryUrlCmd extends VibeRpcCmd {
+public class HistoryInfo implements IsSerializable, VibeRpcResponseData {
+	public final static boolean	ENABLE_BROWSER_HISTORY	= false;	//! DRF (20131227):  Leave false on checkin until it's all working.
+
 	private CollectionType	m_selectedMastheadCollection;	//
 	private Instigator		m_instigator;					//
 	private String			m_url;							//
+	
+	public final static String	HISTORY_MARKER			= "history";				// Marker appended to a URL with a history token so that we can relocate the URL during browser navigations.
+	public final static int		HISTORY_MARKER_LENGTH	= HISTORY_MARKER.length();	// Length of HISTORY_MARKER.
 	
 	/*
 	 * Constructor method.
 	 * 
 	 * For GWT serialization, must have a zero parameter constructor.
 	 */
-	private PushHistoryUrlCmd() {
+	private HistoryInfo() {
 		// Initialize the super class.
 		super();
 	}
 	
 	/**
 	 * Constructor method.
-	 * 
+	 *
 	 * @param url
 	 * @param instigator
 	 * @param selectedMastheadCollection
 	 */
-	public PushHistoryUrlCmd(String url, Instigator instigator, CollectionType selectedMastheadCollection) {
+	public HistoryInfo(String url, Instigator instigator, CollectionType selectedMastheadCollection) {
 		// Initialize this object...
 		this();
-		
+
 		// ...and store the parameters.
 		setUrl(                       url                       );
 		setInstigator(                instigator                );
@@ -90,16 +98,4 @@ public class PushHistoryUrlCmd extends VibeRpcCmd {
 	public void setSelectedMastheadCollection(CollectionType selectedMastheadCollection) {m_selectedMastheadCollection = selectedMastheadCollection;}
 	public void setInstigator(                Instigator     instigator)                 {m_instigator                 = instigator;                }
 	public void setUrl(                       String         url)                        {m_url                        = url;                       }
-	
-	/**
-	 * Returns the command's enumeration value.
-	 * 
-	 * Implements VibeRpcCmd.getCmdType()
-	 * 
-	 * @return
-	 */
-	@Override
-	public int getCmdType() {
-		return VibeRpcCmdType.PUSH_HISTORY_URL.ordinal();
-	}
 }

@@ -106,11 +106,10 @@ import org.kablink.teaming.gwt.client.rpc.shared.ChangeFavoriteStateCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.CollectionPointData;
 import org.kablink.teaming.gwt.client.rpc.shared.GetBinderPermalinkCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetCollectionPointDataCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.GetHistoryUrlCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetHistoryInfoCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetMainPageInfoCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetPersonalPrefsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetUserWorkspaceInfoCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.HistoryUrlRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.MainPageInfoRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.PersistActivityStreamSelectionCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveBrandingCmd;
@@ -130,6 +129,7 @@ import org.kablink.teaming.gwt.client.util.BinderInfoHelper;
 import org.kablink.teaming.gwt.client.util.CollectionType;
 import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+import org.kablink.teaming.gwt.client.util.HistoryInfo;
 import org.kablink.teaming.gwt.client.util.OnBrowseHierarchyInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
 import org.kablink.teaming.gwt.client.util.ViewFolderEntryInfo;
@@ -185,7 +185,6 @@ import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.AnchorElement;
 import com.google.gwt.dom.client.Element;
-import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.dom.client.Style.Unit;
@@ -398,7 +397,7 @@ public class GwtMainPage extends ResizeComposite
 		}
 		
 		// If browser history handling is enabled...
-		if ( HistoryUrlRpcResponseData.ENABLE_BROWSER_HISTORY )	//! Note that this is still in development !!!
+		if ( HistoryInfo.ENABLE_BROWSER_HISTORY )	//! Note that this is still in development !!!
 		{
 			// ...initialize browser history handling. 
 			setupHistory();
@@ -653,39 +652,7 @@ public class GwtMainPage extends ResizeComposite
 					{
 					case Event.ONKEYDOWN:
 						// A key down!  Is the control key down?
-						NativeEvent ne = event.getNativeEvent();
-						m_controlKeyDown = ne.getCtrlKey();
-						
-						// Is browser history handling is enabled?
-						if ( HistoryUrlRpcResponseData.ENABLE_BROWSER_HISTORY )	//! Note that this is still in development !!!
-						{
-							// Yes!  We need to intercept a browser
-							// refresh.  Note (DRF):  I found the code
-							// to recognize this from here:
-							//    http://gonithethinker.blogspot.com/2013/04/prevent-default-refresh-event-in.html
-							int     keyCode   = ne.getKeyCode();
-							boolean modifiedR = ( 'R' == keyCode );
-							if ( modifiedR )
-							{
-								if ( GwtClientHelper.isOSMac() )
-									 modifiedR = ne.getMetaKey();	// Command-R on a Mac...
-								else modifiedR = m_controlKeyDown;	// ...and control-R everywhere else.
-							}
-							
-							// Is the user is refreshing the page?
-							boolean browserRefresh;
-							if      ( modifiedR )      browserRefresh = true;	// Command/Control-R -> Refresh.
-							else if ( 116 == keyCode ) browserRefresh = true;	// F5                -> Refresh.
-							else                       browserRefresh = false;
-							if (browserRefresh)
-							{
-								// Yes!  Fire the current history state
-								// and kill the event.
-								History.fireCurrentHistoryState();
-								ne.preventDefault();
-							}
-						}
-							
+						m_controlKeyDown = event.getNativeEvent().getCtrlKey();
 						break;
 						
 					case Event.ONKEYUP:
@@ -735,7 +702,6 @@ public class GwtMainPage extends ResizeComposite
 	private void constructMainPage_Finish()
 	{
 		Element bodyElement;
-		String url;
 
 		// Register the events to be handled by this class.
 		EventHelper.registerEventHandlers(
@@ -813,33 +779,43 @@ public class GwtMainPage extends ResizeComposite
 		m_contentLayoutPanel = new MainContentLayoutPanel( m_contentCtrl, m_activityStreamCtrl );
 		m_contentLayoutPanel.addStyleName( "contentLayoutPanel" );
 		m_splitLayoutPanel.add( m_contentLayoutPanel );
-		
-		// Do we have a URL we should set the ContentControl to?
-		url = m_requestInfo.getAdaptedUrl();
-		if ( GwtClientHelper.hasString( url ) )
+
+		// Is the browser being reloaded?
+		HistoryInfo browserReloadInfo = GwtTeaming.getBrowserReloadInfo();
+		if ( null != browserReloadInfo )
 		{
-			// Yes!  If we're supposed to show a collection at login...
-			String showCollectionOnLogin = m_requestInfo.getShowCollectionOnLogin();
-			if ( GwtClientHelper.hasString( showCollectionOnLogin ) )
+			// Yes!  Process the history data to perform the reload.
+			processHistoryInfoAsync( browserReloadInfo );
+		}
+		
+		else
+		{
+			// No, the browser isn't being reloaded!  Do we have a URL
+			// we should set the ContentControl to?
+			String url = m_requestInfo.getAdaptedUrl();
+			if ( GwtClientHelper.hasString( url ) )
 			{
-				// ...add it to the URL...
-				url += ( "&showCollection=" + showCollectionOnLogin);
+				// Yes!  If we're supposed to show a collection at
+				// login...
+				String showCollectionOnLogin = m_requestInfo.getShowCollectionOnLogin();
+				if ( GwtClientHelper.hasString( showCollectionOnLogin ) )
+				{
+					// ...add it to the URL...
+					url += ( "&showCollection=" + showCollectionOnLogin);
+				}
+				
+				// ...and put the URL into affect.
+				gotoUrlAsync( url );
 			}
-			
-			// ...and put the URL into affect.
-			gotoUrlAsync( url );
 		}
 		
 		// Is the user logged in?
 		if ( m_requestInfo.isUserLoggedIn() == false )
 		{
-			boolean promptForLogin;
 			final boolean canCancel;
 			
-			// No
-			promptForLogin = m_requestInfo.promptForLogin();
-			
-			// Should we prompt for login?
+			// No!  Should we prompt for login?
+			boolean promptForLogin = m_requestInfo.promptForLogin();
 			if ( promptForLogin == false )
 			{
 				// No, are we running Filr?
@@ -4287,9 +4263,9 @@ public class GwtMainPage extends ResizeComposite
 				try
 				{
 					String historyToken = event.getValue();
-					if ( historyToken.substring( 0, HistoryUrlRpcResponseData.HISTORY_MARKER_LENGTH ).equals( HistoryUrlRpcResponseData.HISTORY_MARKER ) )
+					if ( historyToken.substring( 0, HistoryInfo.HISTORY_MARKER_LENGTH ).equals( HistoryInfo.HISTORY_MARKER ) )
 					{
-						String token = historyToken.substring( HistoryUrlRpcResponseData.HISTORY_MARKER_LENGTH );
+						String token = historyToken.substring( HistoryInfo.HISTORY_MARKER_LENGTH );
 						if ( GwtClientHelper.hasString( token ) )
 						{
 							processHistoryTokenAsync( token );
@@ -4299,11 +4275,40 @@ public class GwtMainPage extends ResizeComposite
 				}
 				catch ( Exception e ) {}
 				
+				// If we didn't handle the history token, simply force
+				// the content to refresh.
 				FullUIReloadEvent.fireOneAsync();
 			}
 		} );
 	}
 
+	/*
+	 * Asynchronously puts a HistoryInfo into effect.
+	 */
+	private void processHistoryInfoAsync( final HistoryInfo historyInfo )
+	{
+		GwtClientHelper.deferCommand( new ScheduledCommand()
+		{
+			@Override
+			public void execute()
+			{
+				processHistoryInfoNow( historyInfo );
+			}// end execute()
+		} );
+	}// end processHistoryInfoAsync()
+	
+	/*
+	 * Synchronously puts a HistoryInfo into effect.
+	 */
+	private void processHistoryInfoNow( final HistoryInfo historyInfo )
+	{
+		OnSelectBinderInfo osbInfo = new OnSelectBinderInfo(
+			historyInfo.getUrl(),
+			Instigator.HISTORY_URL );	//! historyInfo.getInstigator() );
+		osbInfo.setHistorySelectedMastheadCollection( historyInfo.getSelectedMastheadCollection() );
+		GwtTeaming.fireEvent( new ChangeContextEvent( osbInfo ) );
+	}// endprocessHistoryInfoNow()
+	
 	/*
 	 * Asynchronously processes a history token.
 	 */
@@ -4315,44 +4320,36 @@ public class GwtMainPage extends ResizeComposite
 			public void execute()
 			{
 				processHistoryTokenNow( token );
-			}
+			}// end execute()
 		} );
-	}
+	}// end processHistoryTokenAsync()
 	
 	/*
 	 * Synchronously processes a history token.
 	 */
 	private void processHistoryTokenNow( final String token )
 	{
-		GetHistoryUrlCmd cmd = new GetHistoryUrlCmd( token );
+		GetHistoryInfoCmd cmd = new GetHistoryInfoCmd( token );
 		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
 		{
 			@Override
 			public void onFailure( Throwable t )
 			{
+				// On any failure, we simply force the content to
+				// reload.
 				FullUIReloadEvent.fireOneAsync();
 			}//end onFailure()
 			
 			@Override
 			public void onSuccess( VibeRpcResponse response )
 			{
-				HistoryUrlRpcResponseData result = ((HistoryUrlRpcResponseData) response.getResponseData());
-				if ( null != result )
-				{
-					// Change the browser's URL.
-					OnSelectBinderInfo osbInfo = new OnSelectBinderInfo(
-						result.getUrl(),
-						Instigator.HISTORY_URL );	//! result.getInstigator() );
-					osbInfo.setHistorySelectedMastheadCollection( result.getSelectedMastheadCollection() );
-					
-					if ( GwtClientHelper.validateOSBI( osbInfo ) )
-					{
-						GwtTeaming.fireEventAsync( new ChangeContextEvent( osbInfo ) );
-						return;
-					}
-				}
-				FullUIReloadEvent.fireOneAsync();
+				// If we have the HistoryInfo, put it into effect,
+				// otherwise, simply force the content to reload.
+				HistoryInfo historyInfo = ((HistoryInfo) response.getResponseData());
+				if ( null != historyInfo )
+				     processHistoryInfoAsync( historyInfo );
+				else FullUIReloadEvent.fireOneAsync();
 			}// end onSuccess()
 		});
-	}
+	}// end processHistoryTokenNow()
 }// end GwtMainPage

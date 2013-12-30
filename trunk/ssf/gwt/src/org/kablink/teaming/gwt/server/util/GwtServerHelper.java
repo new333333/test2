@@ -9857,7 +9857,7 @@ public class GwtServerHelper {
 		case GET_GROUP_MEMBERSHIP_INFO:
 		case GET_GROUPS:
 		case GET_HELP_URL:
-		case GET_HISTORY_URL:
+		case GET_HISTORY_INFO:
 		case GET_HORIZONTAL_NODE:
 		case GET_HORIZONTAL_TREE:
 		case GET_HTML5_SPECS:
@@ -9968,7 +9968,7 @@ public class GwtServerHelper {
 		case PERSIST_NODE_EXPAND:
 		case PIN_ENTRY:
 		case PURGE_TASKS:
-		case PUSH_HISTORY_URL:
+		case PUSH_HISTORY_INFO:
 		case REMOVE_EXTENSION:
 		case REMOVE_FAVORITE:
 		case REMOVE_TASK_LINKAGE:

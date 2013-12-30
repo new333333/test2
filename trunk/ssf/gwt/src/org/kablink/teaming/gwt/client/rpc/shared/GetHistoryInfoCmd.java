@@ -32,52 +32,36 @@
  */
 package org.kablink.teaming.gwt.client.rpc.shared;
 
-import org.kablink.teaming.gwt.client.util.CollectionType;
-import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
-
-import com.google.gwt.user.client.rpc.IsSerializable;
-
 /**
- * This class holds the response data for retrieving a URL from the
- * tracked history.
+ * This class holds all of the information necessary to execute the
+ * 'get history info' command.
  * 
  * @author drfoster@novell.com
  */
-public class HistoryUrlRpcResponseData implements IsSerializable, VibeRpcResponseData {
-	public final static boolean	ENABLE_BROWSER_HISTORY	= false;	//! DRF (20131227):  Leave false on checkin until it's all working.
-
-	private CollectionType	m_selectedMastheadCollection;	//
-	private Instigator		m_instigator;					//
-	private String			m_url;							//
-	
-	public final static String	HISTORY_MARKER			= "history";				// Marker appended to a URL with a history token so that we can relocate the URL during browser navigations.
-	public final static int		HISTORY_MARKER_LENGTH	= HISTORY_MARKER.length();	// Length of HISTORY_MARKER.
+public class GetHistoryInfoCmd extends VibeRpcCmd {
+	private String	m_historyToken;	//
 	
 	/*
 	 * Constructor method.
 	 * 
 	 * For GWT serialization, must have a zero parameter constructor.
 	 */
-	private HistoryUrlRpcResponseData() {
+	private GetHistoryInfoCmd() {
 		// Initialize the super class.
 		super();
 	}
 	
 	/**
 	 * Constructor method.
-	 *
-	 * @param url
-	 * @param instigator
-	 * @param selectedMastheadCollection
+	 * 
+	 * @param historyToken
 	 */
-	public HistoryUrlRpcResponseData(String url, Instigator instigator, CollectionType selectedMastheadCollection) {
+	public GetHistoryInfoCmd(String historyToken) {
 		// Initialize this object...
 		this();
-
-		// ...and store the parameters.
-		setUrl(                       url                       );
-		setInstigator(                instigator                );
-		setSelectedMastheadCollection(selectedMastheadCollection);
+		
+		// ...and store the parameter.
+		setHistoryToken(historyToken);
 	}
 	
 	/**
@@ -85,16 +69,24 @@ public class HistoryUrlRpcResponseData implements IsSerializable, VibeRpcRespons
 	 * 
 	 * @return
 	 */
-	public CollectionType getSelectedMastheadCollection() {return m_selectedMastheadCollection;}
-	public Instigator     getInstigator()                 {return m_instigator;                }
-	public String         getUrl()                        {return m_url;                       }
+	public String getHistoryToken() {return m_historyToken;}
 
 	/**
 	 * Set'er methods.
 	 * 
 	 * @param
 	 */
-	public void setSelectedMastheadCollection(CollectionType selectedMastheadCollection) {m_selectedMastheadCollection = selectedMastheadCollection;}
-	public void setInstigator(                Instigator     instigator)                 {m_instigator                 = instigator;                }
-	public void setUrl(                       String         url)                        {m_url                        = url;                       }
+	public void setHistoryToken(String historyToken) {m_historyToken = historyToken;}
+	
+	/**
+	 * Returns the command's enumeration value.
+	 * 
+	 * Implements VibeRpcCmd.getCmdType()
+	 * 
+	 * @return
+	 */
+	@Override
+	public int getCmdType() {
+		return VibeRpcCmdType.GET_HISTORY_INFO.ordinal();
+	}
 }
