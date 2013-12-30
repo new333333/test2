@@ -179,6 +179,7 @@ import org.kablink.teaming.gwt.server.util.GwtBlogHelper;
 import org.kablink.teaming.gwt.server.util.GwtCalendarHelper;
 import org.kablink.teaming.gwt.server.util.GwtDeleteHelper;
 import org.kablink.teaming.gwt.server.util.GwtEmailHelper;
+import org.kablink.teaming.gwt.server.util.GwtHistoryHelper;
 import org.kablink.teaming.gwt.server.util.GwtHtml5Helper;
 import org.kablink.teaming.gwt.server.util.GwtLdapHelper;
 import org.kablink.teaming.gwt.server.util.GwtLogHelper;
@@ -1670,6 +1671,14 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case GET_HISTORY_URL:
+		{
+			GetHistoryUrlCmd ghuCmd = ((GetHistoryUrlCmd) cmd);
+			HistoryUrlRpcResponseData responseData = GwtHistoryHelper.getHistoryUrl( getRequest( ri ), ghuCmd.getToken() );
+			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
 		case GET_HTML5_SPECS:
 		{
 			@SuppressWarnings( "unused" )
@@ -2829,8 +2838,20 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		
 		case PURGE_TASKS:
 		{
-			PurgeTasksCmd dtCmd = ((PurgeTasksCmd) cmd);
-			ErrorListRpcResponseData responseData = purgeTasks( ri, dtCmd.getEntityIds() );
+			PurgeTasksCmd ptCmd = ((PurgeTasksCmd) cmd);
+			ErrorListRpcResponseData responseData = purgeTasks( ri, ptCmd.getEntityIds() );
+			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
+		case PUSH_HISTORY_URL:
+		{
+			PushHistoryUrlCmd phuCmd = ((PushHistoryUrlCmd) cmd);
+			StringRpcResponseData responseData = GwtHistoryHelper.pushHistoryUrl(
+				getRequest( ri ),
+				phuCmd.getUrl(),
+				phuCmd.getInstigator(),
+				phuCmd.getSelectedMastheadCollection() );
 			response = new VibeRpcResponse( responseData );
 			return response;
 		}

@@ -40,7 +40,7 @@
 <c:set var="ss_skip_head_close" value="true" scope="request"/>
 <c:set var="ss_GWT_main_page" value="true" scope="request"/>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
-<%@ include file="/WEB-INF/jsp/common/initializeGWT.jsp"     %>
+<%@ include file="/WEB-INF/jsp/common/initializeGWT.jsp" %>
 <jsp:include page="/WEB-INF/jsp/sidebars/sidebar_appConfig.jsp" /> 
 
 <% // The following javascript files are needed because the enhanced view widget on %>
@@ -321,8 +321,8 @@
   <body>
     <c:set var="gwtUI" value="true" scope="request"/>
 
-    <!-- OPTIONAL: include this if you want history support -->
-    <iframe src="javascript:''" id="__gwt_historyFrame" tabIndex='-1' style="position:absolute;width:0;height:0;border:0"></iframe>
+    <!-- Included for GWT based history support. -->
+    <iframe src="javascript:''" id="__gwt_historyFrame" style="position:absolute;width:0;height:0;border:0"></iframe>
 
 	<!-- This div will hold the content of the main Teaming page. -->
 	<div id="gwtMainPageDiv">

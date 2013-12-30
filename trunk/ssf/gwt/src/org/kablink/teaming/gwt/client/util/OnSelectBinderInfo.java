@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -34,6 +34,8 @@ package org.kablink.teaming.gwt.client.util;
 
 import org.kablink.teaming.gwt.client.util.TreeInfo;
 
+import com.google.gwt.user.client.rpc.IsSerializable;
+
 /**
  * Class used to communicate information about context (i.e.,
  * binder, ...) selection.
@@ -41,16 +43,20 @@ import org.kablink.teaming.gwt.client.util.TreeInfo;
  * @author drfoster@novell.com
  */
 public class OnSelectBinderInfo {
-	private BinderInfo	m_binderInfo;		//
-	private boolean		m_isPermalinkUrl;	//
-	private Instigator	m_instigator;		//
-	private String		m_binderUrl;		//
+	private CollectionType	m_historySelectedMastheadCollection;	//
+	private BinderInfo		m_binderInfo;							//
+	private boolean			m_isPermalinkUrl;						//
+	private Instigator		m_instigator;							//
+	private String			m_binderUrl;							//
 
 	// Various marker strings used to recognize the format of a URL.
 	private final static String GWT_MARKER = "seen_by_gwt";
 
-	// Used to identify the instigator of the binder selection.
-	public enum Instigator {
+	/**
+	 * Enumeration used to identify the instigator of a binder
+	 * selection.
+	 */
+	public enum Instigator implements IsSerializable {
 		ACTIVITY_STREAM_BINDER_SELECT,	// The binder link in an activity stream was selected.
 		ACTIVITY_STREAM_SOURCE_SELECT,	// The top level source link of an activity stream was selected.
 		ADMINISTRATION_CONSOLE,			// The admin console instigated the selection.
@@ -59,6 +65,7 @@ public class OnSelectBinderInfo {
 		FAVORITE_SELECT,				// A favorite was selected from the My Favorites menu.
 		FORCE_FULL_RELOAD,				// Forces the full UI to reload.
 		GOTO_CONTENT_URL,				// User clicked on something that loads some URL into the content frame.
+		HISTORY_URL,					// Content URL from the browser's history. 
 		JSP_CONTENT_LOADED,				// Unknown JSP content has been loaded into the content area.
 		PROFILE_QUICK_VIEW_SELECT,		// The workspace or profile button in the quick view dialog was selected.
 		RECENT_PLACE_SELECT,			// A recent place was selected from the Recent Places menu.
@@ -153,6 +160,16 @@ public class OnSelectBinderInfo {
 	}
 
 	/**
+	 * Returns the CollectionType that was selected in the masthead
+	 * associated with a history token.
+	 * 
+	 * @return
+	 */
+	public CollectionType getHistorySelectedMastheadCollection() {
+		return m_historySelectedMastheadCollection;
+	}
+	
+	/**
 	 * Returns the instigator of the binder selection, if known.
 	 * 
 	 * @return
@@ -195,6 +212,15 @@ public class OnSelectBinderInfo {
 	 */
 	private void setBinderInfo(BinderInfo binderInfo) {
 		m_binderInfo = binderInfo;
+	}
+
+	/**
+	 * Stores the CollectionType associated with a history token.
+	 * 
+	 * @param historySelectedMastheadCollection
+	 */
+	public void setHistorySelectedMastheadCollection(CollectionType historySelectedMastheadCollection) {
+		m_historySelectedMastheadCollection = historySelectedMastheadCollection;
 	}
 	
 	/**

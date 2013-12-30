@@ -77,6 +77,7 @@ import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.safehtml.shared.SafeUri;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.Window.Navigator;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -1176,6 +1177,50 @@ public class GwtClientHelper {
 		return getLicenseType().isVibeEnabled();
 	}
 
+	/*
+	 * Returns true of the browser is running on the specified OS and
+	 * false otherwise.
+	 */
+	private static boolean isOSImpl(String osCheck) {
+		boolean reply;
+		String platform = Navigator.getPlatform();
+		reply = (hasString(platform) && hasString(osCheck));
+		if (reply) {
+			reply = ((-1) != platform.toLowerCase().indexOf(osCheck.toLowerCase()));
+		}
+		return reply;
+	}
+	
+	/**
+	 * Returns true of the browser is running on Linux and false
+	 * otherwise.
+	 * 
+	 * @return
+	 */
+	public static boolean isOSLinux() {
+		return isOSImpl("linux");
+	}
+	
+	/**
+	 * Returns true of the browser is running on a Mac and false
+	 * otherwise.
+	 * 
+	 * @return
+	 */
+	public static boolean isOSMac() {
+		return isOSImpl("mac");
+	}
+	
+	/**
+	 * Returns true of the browser is running on Windows and false
+	 * otherwise.
+	 * 
+	 * @return
+	 */
+	public static boolean isOSWindows() {
+		return isOSImpl("windows");
+	}
+	
 	/**
 	 * Returns true if a URL is a permalink URL and false otherwise.
 	 * 
