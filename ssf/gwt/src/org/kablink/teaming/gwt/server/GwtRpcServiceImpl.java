@@ -147,6 +147,7 @@ import org.kablink.teaming.gwt.client.util.FolderEntryDetails;
 import org.kablink.teaming.gwt.client.util.FolderSortSetting;
 import org.kablink.teaming.gwt.client.util.GwtShareLists;
 import org.kablink.teaming.gwt.client.util.GwtSharingInfo;
+import org.kablink.teaming.gwt.client.util.HistoryInfo;
 import org.kablink.teaming.gwt.client.util.ProjectInfo;
 import org.kablink.teaming.gwt.client.util.SelectedUsersDetails;
 import org.kablink.teaming.gwt.client.util.SelectionDetails;
@@ -1671,10 +1672,10 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
-		case GET_HISTORY_URL:
+		case GET_HISTORY_INFO:
 		{
-			GetHistoryUrlCmd ghuCmd = ((GetHistoryUrlCmd) cmd);
-			HistoryUrlRpcResponseData responseData = GwtHistoryHelper.getHistoryUrl( getRequest( ri ), ghuCmd.getToken() );
+			GetHistoryInfoCmd ghiCmd = ((GetHistoryInfoCmd) cmd);
+			HistoryInfo responseData = GwtHistoryHelper.getHistoryInfo( getRequest( ri ), ghiCmd.getHistoryToken() );
 			response = new VibeRpcResponse( responseData );
 			return response;
 		}
@@ -2844,14 +2845,10 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
-		case PUSH_HISTORY_URL:
+		case PUSH_HISTORY_INFO:
 		{
-			PushHistoryUrlCmd phuCmd = ((PushHistoryUrlCmd) cmd);
-			StringRpcResponseData responseData = GwtHistoryHelper.pushHistoryUrl(
-				getRequest( ri ),
-				phuCmd.getUrl(),
-				phuCmd.getInstigator(),
-				phuCmd.getSelectedMastheadCollection() );
+			PushHistoryInfoCmd phiCmd = ((PushHistoryInfoCmd) cmd);
+			StringRpcResponseData responseData = GwtHistoryHelper.pushHistoryInfo( getRequest( ri ), phiCmd.getHistoryInfo() );
 			response = new VibeRpcResponse( responseData );
 			return response;
 		}

@@ -42,10 +42,8 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.gwt.client.GwtTeamingException;
-import org.kablink.teaming.gwt.client.rpc.shared.HistoryUrlRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
-import org.kablink.teaming.gwt.client.util.CollectionType;
-import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
+import org.kablink.teaming.gwt.client.util.HistoryInfo;
 import org.kablink.teaming.web.util.GwtUISessionData;
 
 /**
@@ -57,7 +55,7 @@ import org.kablink.teaming.web.util.GwtUISessionData;
 public class GwtHistoryHelper {
 	protected static Log m_logger = LogFactory.getLog(GwtHistoryHelper.class);
 	
-	private final static int	MAX_HISTORY_CACHE	= 50;			// Maximum number of history items we track for a user's history.
+	private final static int	MAX_HISTORY_CACHE	= 50;			// Maximum number of history items we track for a user.
 	private final static String	CACHED_HISTORY		= "historyMap";	// Key into the session where we store a user's history.
 	
 	/*
@@ -72,35 +70,35 @@ public class GwtHistoryHelper {
 	 * Returns null otherwise.
 	 */
 	@SuppressWarnings("unchecked")
-	private static Map<String, HistoryUrlRpcResponseData> getHistoryMap(HttpSession session) {
-		Map<String, HistoryUrlRpcResponseData> reply;
+	private static Map<String, HistoryInfo> getHistoryMap(HttpSession session) {
+		Map<String, HistoryInfo> reply;
 		GwtUISessionData sessionData = ((GwtUISessionData) session.getAttribute(CACHED_HISTORY));
 		if (null == sessionData)
-		      reply = null;
-		else reply = ((Map<String, HistoryUrlRpcResponseData>) sessionData.getData());
+		     reply = null;
+		else reply = ((Map<String, HistoryInfo>) sessionData.getData());
 		return reply;
 	}
 	
 	/**
-	 * Returns a specific URL, based on a history token, from the
-	 * current user's history map.  If no such URL can be found, null
-	 * is returned.
+	 * Returns a specific HistoryInfo, based on a history token, from
+	 * the current user's history map.  If no such HistoryInfo can be
+	 * found, null is returned.
 	 * 
 	 * @param request
-	 * @param token
+	 * @param historyToken
 	 * 
 	 * @return
 	 * 
 	 * @throws GwtTeamingException
 	 */
-	public static HistoryUrlRpcResponseData getHistoryUrl(HttpServletRequest request, String token) throws GwtTeamingException {
+	public static HistoryInfo getHistoryInfo(HttpServletRequest request, String historyToken) throws GwtTeamingException {
 		try {
-			HistoryUrlRpcResponseData reply;
+			HistoryInfo reply;
 			HttpSession session = GwtServerHelper.getCurrentHttpSession();
-			Map<String, HistoryUrlRpcResponseData> historyMap = getHistoryMap(session);
+			Map<String, HistoryInfo> historyMap = getHistoryMap(session);
 			if (null == historyMap)
 			     reply = null;
-			else reply = historyMap.get(token);
+			else reply = historyMap.get(historyToken);
 			return reply;
 		}
 		
@@ -113,26 +111,24 @@ public class GwtHistoryHelper {
 	}
 	
 	/**
-	 * Pushes a URL into the current user's history map.
+	 * Pushes a HistoryInfo into the current user's history map.
 	 * 
 	 * @param request
-	 * @param url
-	 * @param instigator
-	 * @param selectedMastheadCollection
+	 * @param historyInfo
 	 * 
 	 * @return
 	 * 
 	 * @throws GwtTeamingException
 	 */
 	@SuppressWarnings("unchecked")
-	public static StringRpcResponseData pushHistoryUrl(HttpServletRequest request, String url, Instigator instigator, CollectionType selectedMastheadCollection) throws GwtTeamingException {
+	public static StringRpcResponseData pushHistoryInfo(HttpServletRequest request, HistoryInfo historyInfo) throws GwtTeamingException {
 		try {
 			// Does this user have a history map defined?
 			HttpSession session = GwtServerHelper.getCurrentHttpSession();
-			Map<String, HistoryUrlRpcResponseData> historyMap = getHistoryMap(session);
+			Map<String, HistoryInfo> historyMap = getHistoryMap(session);
 			if (null == historyMap) {
 				// No!  Define one now...
-				historyMap = new LinkedHashMap<String, HistoryUrlRpcResponseData>(
+				historyMap = new LinkedHashMap<String, HistoryInfo>(
 						(MAX_HISTORY_CACHE + 1),	// Initial capacity.
 						(.75F)) {					// Load factor.
 					@Override
@@ -147,9 +143,9 @@ public class GwtHistoryHelper {
 				session.setAttribute(CACHED_HISTORY, new GwtUISessionData(historyMap));
 			}
 
-			// Store the URL in the history map.
+			// Store the HistoryInfo in the history map.
 			String token = String.valueOf(new Date().getTime());
-			historyMap.put(token, new HistoryUrlRpcResponseData(url, instigator, selectedMastheadCollection));
+			historyMap.put(token, historyInfo);
 			StringRpcResponseData reply = new StringRpcResponseData(token);
 			return reply;
 		}

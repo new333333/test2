@@ -112,8 +112,7 @@ import org.kablink.teaming.gwt.client.event.ViewForumEntryEvent;
 import org.kablink.teaming.gwt.client.rpc.shared.GetBinderPermalinkCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetParentBinderPermalinkCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetViewInfoCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.HistoryUrlRpcResponseData;
-import org.kablink.teaming.gwt.client.rpc.shared.PushHistoryUrlCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.PushHistoryInfoCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
@@ -122,6 +121,7 @@ import org.kablink.teaming.gwt.client.util.CollectionType;
 import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.FolderType;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+import org.kablink.teaming.gwt.client.util.HistoryInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 import org.kablink.teaming.gwt.client.util.ViewFolderEntryInfo;
@@ -673,30 +673,33 @@ public class ContentControl extends Composite
 	}-*/;	
 
 	/*
-	 * Asynchronously pushes a URL on the user's history stack. 
+	 * Asynchronously pushes a HistoryInfo on the user's history stack. 
 	 */
-	private void pushHistoryAsync( final String url, final Instigator instigator ) {
+	private void pushHistoryInfoAsync( final String url, final Instigator instigator )
+	{
 		GwtTeaming.fireEventAsync( new GetSidebarCollectionEvent( new CollectionCallback()
 		{
 			@Override
-			public void collection( final CollectionType collectionType ) {
+			public void collection( final CollectionType collectionType )
+			{
 				GwtClientHelper.deferCommand( new ScheduledCommand()
 				{
 					@Override
 					public void execute()
 					{
-						pushHistoryNow( url, instigator, collectionType );
+						pushHistoryInfoNow( url, instigator, collectionType );
 					}// end execute()
 				} );
 			}
 		} ) );
-	}// end pushHistoryAsync()
+	}// end pushHistoryInfoAsync()
 	
 	/*
-	 * Synchronously pushes a URL on the user's history stack. 
+	 * Synchronously pushes a HistoryInfo on the user's history stack. 
 	 */
-	private void pushHistoryNow( final String url, final Instigator instigator, final CollectionType collectionType ) {
-		PushHistoryUrlCmd cmd = new PushHistoryUrlCmd( url, instigator, collectionType );
+	private void pushHistoryInfoNow( final String url, final Instigator instigator, final CollectionType collectionType )
+	{
+		PushHistoryInfoCmd cmd = new PushHistoryInfoCmd( url, instigator, collectionType );
 		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
 		{
 			@Override
@@ -712,12 +715,12 @@ public class ContentControl extends Composite
 				if ( GwtClientHelper.hasString( token ) )
 				{
 					History.newItem(
-						(HistoryUrlRpcResponseData.HISTORY_MARKER + token),	// History token.
-						false );											// false -> Don't fire a change event for this item.
+						(HistoryInfo.HISTORY_MARKER + token),	// History token.
+						false );								// false -> Don't fire a change event for this item.
 				}
 			}//end onSuccess()
 		});
-	}// end pushHistoryNow()
+	}// end pushHistoryInfoNow()
 
 	/**
 	 * This method will set the URL used by the IFRAME.
@@ -751,11 +754,11 @@ public class ContentControl extends Composite
 	private void setViewFromUrl( final String url, final Instigator instigator, final CollectionType historySelectedMastheadCollection )
 	{
 		// If browser history handling is enabled...
-		if ( HistoryUrlRpcResponseData.ENABLE_BROWSER_HISTORY ) {	//! Note that this is still in development !!!
+		if ( HistoryInfo.ENABLE_BROWSER_HISTORY ) {	//! Note that this is still in development !!!
 			// ...and we're not navigating to a URL from the history...
 			if ( ! ( Instigator.HISTORY_URL.equals( instigator ) ) ) {
 				// ...push it into the history.
-				pushHistoryAsync( url, instigator );
+				pushHistoryInfoAsync( url, instigator );
 			}
 		}
 		

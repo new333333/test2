@@ -32,21 +32,25 @@
  */
 package org.kablink.teaming.gwt.client.rpc.shared;
 
+import org.kablink.teaming.gwt.client.util.CollectionType;
+import org.kablink.teaming.gwt.client.util.HistoryInfo;
+import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
+
 /**
  * This class holds all of the information necessary to execute the
- * 'get history URL' command.
+ * 'push history info' command.
  * 
  * @author drfoster@novell.com
  */
-public class GetHistoryUrlCmd extends VibeRpcCmd {
-	private String	m_token;	//
+public class PushHistoryInfoCmd extends VibeRpcCmd {
+	private HistoryInfo m_historyInfo;	//
 	
 	/*
 	 * Constructor method.
 	 * 
 	 * For GWT serialization, must have a zero parameter constructor.
 	 */
-	private GetHistoryUrlCmd() {
+	private PushHistoryInfoCmd() {
 		// Initialize the super class.
 		super();
 	}
@@ -54,14 +58,26 @@ public class GetHistoryUrlCmd extends VibeRpcCmd {
 	/**
 	 * Constructor method.
 	 * 
-	 * @param token
+	 * @param historyInfo
 	 */
-	public GetHistoryUrlCmd(String token) {
+	public PushHistoryInfoCmd(HistoryInfo historyInfo) {
 		// Initialize this object...
 		this();
 		
 		// ...and store the parameter.
-		setToken(token);
+		setHistoryInfo(historyInfo);
+	}
+	
+	/**
+	 * Constructor method.
+	 * 
+	 * @param url
+	 * @param instigator
+	 * @param selectedMastheadCollection
+	 */
+	public PushHistoryInfoCmd(String url, Instigator instigator, CollectionType selectedMastheadCollection) {
+		// Always use the previous form of the constructor.
+		this(new HistoryInfo(url, instigator, selectedMastheadCollection));
 	}
 	
 	/**
@@ -69,14 +85,14 @@ public class GetHistoryUrlCmd extends VibeRpcCmd {
 	 * 
 	 * @return
 	 */
-	public String getToken() {return m_token;}
+	public HistoryInfo getHistoryInfo() {return m_historyInfo;}
 
 	/**
 	 * Set'er methods.
 	 * 
 	 * @param
 	 */
-	public void setToken(String token) {m_token = token;}
+	public void setHistoryInfo(HistoryInfo historyInfo) {m_historyInfo = historyInfo;}
 	
 	/**
 	 * Returns the command's enumeration value.
@@ -87,6 +103,6 @@ public class GetHistoryUrlCmd extends VibeRpcCmd {
 	 */
 	@Override
 	public int getCmdType() {
-		return VibeRpcCmdType.GET_HISTORY_URL.ordinal();
+		return VibeRpcCmdType.PUSH_HISTORY_INFO.ordinal();
 	}
 }
