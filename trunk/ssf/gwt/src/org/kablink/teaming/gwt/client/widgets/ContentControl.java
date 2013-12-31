@@ -586,8 +586,8 @@ public class ContentControl extends Composite
 
 		// Reload the URL.
 		ContextChangingEvent.fireOne();						
-		setUrl(         "",  Instigator.FORCE_FULL_RELOAD       );
-		setViewFromUrl( url, Instigator.FORCE_FULL_RELOAD, null );
+		setUrl(         "",  Instigator.FORCE_FULL_RELOAD              );
+		setViewFromUrl( url, Instigator.FORCE_FULL_RELOAD, false, null );
 	}// end reload()
 
 	/*
@@ -683,14 +683,19 @@ public class ContentControl extends Composite
 	/*
 	 * Asynchronously loads a view based on a ViewInfo.
 	 */
-	private void setViewAsync( final ViewInfo vi, final String url, final Instigator instigator, final CollectionType historySelectedMastheadCollection )
+	private void setViewAsync( final ViewInfo vi, final String url, final Instigator instigator, final boolean historyAction, final CollectionType historySelectedMastheadCollection )
 	{
 		GwtClientHelper.deferCommand( new ScheduledCommand()
 		{
 			@Override
 			public void execute()
 			{
-				setViewNow( vi, url, instigator, historySelectedMastheadCollection );
+				setViewNow(
+					vi,
+					url,
+					instigator,
+					historyAction,
+					historySelectedMastheadCollection );
 			}// end execute()
 		} );
 	}// end setViewAsync()
@@ -698,15 +703,13 @@ public class ContentControl extends Composite
 	/*
 	 * Sets the view based on the URL.
 	 */
-	private void setViewFromUrl( final String url, final Instigator instigator, final CollectionType historySelectedMastheadCollection )
+	private void setViewFromUrl( final String url, final Instigator instigator, final boolean historyAction, final CollectionType historySelectedMastheadCollection )
 	{
-		// If browser history handling is enabled...
-		if ( HistoryHelper.ENABLE_BROWSER_HISTORY ) {	//! Note that this is still in development !!!
-			// ...and we're not navigating to a URL from the history...
-			if ( ! instigator.isHistoryAction() ) {
-				// ...push it into the history.
-				HistoryHelper.pushHistoryUrlInfoAsync( url, instigator );
-			}
+		// If we're not navigating to the URL from the history...
+		if ( ! historyAction )
+		{
+			// ...push it into the history cache.
+			HistoryHelper.pushHistoryInfoAsync( url, instigator );
 		}
 		
 		// Are we running the admin console?
@@ -742,7 +745,7 @@ public class ContentControl extends Composite
 					if ( GwtClientHelper.hasString( overrideUrl ) )
 					     targetUrl = overrideUrl;
 					else targetUrl = url;
-					setViewAsync( vi, targetUrl, instigator, historySelectedMastheadCollection );
+					setViewAsync( vi, targetUrl, instigator, historyAction, historySelectedMastheadCollection );
 				}//end onSuccess()
 			});
 		}
@@ -754,7 +757,7 @@ public class ContentControl extends Composite
 	 * If a view cannot be determined (or no ViewInfo was provided),
 	 * the URL is loaded into the IFRAME instead.
 	 */
-	private void setViewNow( final ViewInfo vi, final String url, final Instigator instigator, final CollectionType historySelectedMastheadCollection )
+	private void setViewNow( final ViewInfo vi, final String url, final Instigator instigator, final boolean historyAction, final CollectionType historySelectedMastheadCollection )
 	{
 		m_currentView       = vi;
 		m_contentInstigator = instigator;
@@ -810,8 +813,10 @@ public class ContentControl extends Composite
 									// Notify those who care about the
 									// change in context.
 									OnSelectBinderInfo osbInfo = new OnSelectBinderInfo( bi, url, instigator );
-									osbInfo.setHistorySelectedMastheadCollection(historySelectedMastheadCollection);
-									GwtTeaming.fireEvent( new ContextChangedEvent( osbInfo ) );
+									ContextChangedEvent ccEvent = new ContextChangedEvent( osbInfo );
+									ccEvent.setHistoryAction(historyAction);
+									ccEvent.setHistorySelectedMastheadCollection(historySelectedMastheadCollection);
+									GwtTeaming.fireEvent( ccEvent );
 									
 									if ( ViewType.BINDER_WITH_ENTRY_VIEW.equals( vt ) )
 									{
@@ -1072,7 +1077,7 @@ public class ContentControl extends Composite
 							@Override
 							public void viewReady()
 							{
-								if ( instigator.isHistoryAction() )
+								if ( historyAction )
 								{
 									GwtTeaming.fireEventAsync(
 										new SetFilrActionFromCollectionTypeEvent(
@@ -1116,7 +1121,7 @@ public class ContentControl extends Composite
 						// entry viewer.
 						jsViewFolderEntry( url, "no" );
 						
-						if ( instigator.isHistoryAction() )
+						if ( historyAction )
 						{
 							GwtTeaming.fireEventAsync(
 								new SetFilrActionFromCollectionTypeEvent(
@@ -1250,7 +1255,8 @@ public class ContentControl extends Composite
 			setViewFromUrl(
 				osbInfo.getBinderUrl(),
 				osbInfo.getInstigator(),
-				osbInfo.getHistorySelectedMastheadCollection() );
+				event.isHistoryAction(),
+				event.getHistorySelectedMastheadCollection() );
 		}
 	}// end onChangeContext()
 
@@ -1540,7 +1546,7 @@ public class ContentControl extends Composite
 	public void onGotoUrl( GotoUrlEvent event )
 	{
 		ContextChangingEvent.fireOne();						
-		setViewAsync( null, event.getUrl(), Instigator.GOTO_CONTENT_URL, null );
+		setViewAsync( null, event.getUrl(), Instigator.GOTO_CONTENT_URL, false, null );
 	}
 
 	
@@ -2431,7 +2437,11 @@ public class ContentControl extends Composite
 			@Override
 			public void execute() 
 			{
-				setViewFromUrl( event.getViewForumEntryUrl(), Instigator.VIEW_FOLDER_ENTRY, null );
+				setViewFromUrl(
+					event.getViewForumEntryUrl(),
+					Instigator.VIEW_FOLDER_ENTRY,
+					false,	// false -> Not a history action.
+					null );	// null  -> No history Filr masthead action.
 			}
 		};
 		Scheduler.get().scheduleDeferred( cmd );

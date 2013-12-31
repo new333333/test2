@@ -690,9 +690,10 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 	 * Overrides TreeDisplayBase.enterActivityStreamMode().
 	 * 
 	 * @param defaultASI
+	 * @param fromEnterEvent
 	 */
 	@Override
-	public void enterActivityStreamMode(final ActivityStreamInfo defaultASI) {		
+	public void enterActivityStreamMode(final ActivityStreamInfo defaultASI, final boolean fromEnterEvent) {		
 		// Are we currently in activity stream mode?
 		if (isInActivityStreamMode()) {
 			// Yes!  If we we're given an activity stream to select...
@@ -724,7 +725,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 				public void onSuccess(VibeRpcResponse response) {
 					// ...and put it into effect.
 					TreeInfo ti = ((TreeInfo) response.getResponseData());
-					enterActivityStreamModeAsync(ti, defaultASI);
+					enterActivityStreamModeAsync(ti, defaultASI, fromEnterEvent);
 				}
 			});
 		}
@@ -734,11 +735,11 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 	 * Asynchronously loads an activity stream based TreeInfo into the
 	 * sidebar.
 	 */
-	private void enterActivityStreamModeAsync(final TreeInfo asRootTI, final ActivityStreamInfo defaultASI) {
+	private void enterActivityStreamModeAsync(final TreeInfo asRootTI, final ActivityStreamInfo defaultASI, final boolean fromEnterEvent) {
 		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
-				enterActivityStreamModeNow(asRootTI, defaultASI);
+				enterActivityStreamModeNow(asRootTI, defaultASI, fromEnterEvent);
 			}
 		});
 	}
@@ -747,7 +748,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 	 * Synchronously loads an activity stream based TreeInfo into the
 	 * sidebar.
 	 */
-	private void enterActivityStreamModeNow(TreeInfo asRootTI, ActivityStreamInfo defaultASI) {
+	private void enterActivityStreamModeNow(TreeInfo asRootTI, ActivityStreamInfo defaultASI, boolean fromEnterEvent) {
 		// Put the activity streams TreeInfo into affect...
 		m_selectedActivityStream = defaultASI;
 		setRootTreeInfo(asRootTI);
@@ -757,7 +758,9 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		// ...and if we have a default activity stream to select...
 		if (null != defaultASI) {
 			// ...put it into affect.
-			GwtTeaming.fireEvent(new ActivityStreamEvent(defaultASI));
+			ActivityStreamEvent asEvent = new ActivityStreamEvent(defaultASI);
+			asEvent.setFromEnterEvent(fromEnterEvent);
+			GwtTeaming.fireEvent(asEvent);
 		}
 
 		// Finally, reset the menu so that it display what's
@@ -1507,8 +1510,8 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 	public void setActivityStream(ActivityStreamInfo asi) {
 		// Set/load the activity stream, as appropriate. 
 		if (isInActivityStreamMode())
-			 setActivityStreamImpl(  asi);
-		else enterActivityStreamMode(asi);
+			 setActivityStreamImpl(  asi       );
+		else enterActivityStreamMode(asi, false);
 	}
 
 	/*

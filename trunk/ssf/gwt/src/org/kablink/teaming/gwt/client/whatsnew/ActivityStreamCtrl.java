@@ -64,6 +64,7 @@ import org.kablink.teaming.gwt.client.util.ActivityStreamInfo;
 import org.kablink.teaming.gwt.client.util.ActivityStreamParams;
 import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+import org.kablink.teaming.gwt.client.util.HistoryHelper;
 import org.kablink.teaming.gwt.client.util.ActivityStreamData.PagingData;
 import org.kablink.teaming.gwt.client.util.ActivityStreamData.SpecificFolderData;
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo.ActivityStream;
@@ -1675,8 +1676,9 @@ public class ActivityStreamCtrl extends ResizeComposite
 	}
 	
 	
-	/**
-	 * Issue an ajax request to save the current show setting to the user's properties.
+	/*
+	 * Issue an ajax request to save the current show setting to the
+	 * user's properties.
 	 */
 	private void saveShowSetting()
 	{
@@ -2181,6 +2183,17 @@ public class ActivityStreamCtrl extends ResizeComposite
 	@Override
 	public void onActivityStream( ActivityStreamEvent event )
 	{
+		// If this is...
+		if ( ( ! ( event.isHistoryAction()  ) ) &&	// ...not the result of a history action and...
+		     ( ! ( event.isFromEnterEvent() ) ) &&	// ...it's not from an activity stream enter event and...
+		     m_usage.isStandalone() )				// ...this is a stand alone activity stream control...
+		{
+			// ...push the change into the history cache.
+			HistoryHelper.pushHistoryInfoAsync(
+				event.getActivityStreamInfo(),
+				ActivityStreamDataType.OTHER );
+		}
+		
 		setActivityStream( event.getActivityStreamInfo(), null );
 		show();
 	}// end onActivityStream()

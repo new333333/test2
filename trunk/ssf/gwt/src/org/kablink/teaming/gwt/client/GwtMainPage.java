@@ -386,21 +386,16 @@ public class GwtMainPage extends ResizeComposite
 		if (m_requestInfo.isDebugUI()) {
 			// ...display the GWT user agent we loaded in the status
 			// ...bar and tab.
-			AgentBase agent = GWT.create(Agent.class);
-			String userAgent = ("GWT user.agent: " + agent.getAgentName());
-//			Window.alert(userAgent);
+			AgentBase agent     = GWT.create(Agent.class);
+			String    userAgent = ("GWT user.agent: " + agent.getAgentName());
 			Window.setStatus(userAgent);
 			Window.setTitle( userAgent);
 		}
 		
-		// If browser history handling is enabled...
-		if ( HistoryHelper.ENABLE_BROWSER_HISTORY )	//! Note that this is still in development !!!
-		{
-			// ...initialize browser history handling. 
-			HistoryHelper.setupHistory();
-		}
+		// Initialize browser history handling... 
+		HistoryHelper.initializeBrowserHistory();
 		
-		// Construct and initialize the page.
+		// ...and construct and initialize the page.
 		constructMainPage_Start();
 		initWidget( m_mainPanel );
 	}
@@ -2370,8 +2365,18 @@ public class GwtMainPage extends ResizeComposite
 	@Override
 	public void onActivityStreamEnter( ActivityStreamEnterEvent event )
 	{
+		// If we're not entering the activity stream from the
+		// history...
+		if ( ! event.isHistoryAction() )
+		{
+			// ...push it into the history cache.
+			HistoryHelper.pushHistoryInfoAsync(
+				event.getActivityStreamInfo(),
+				event.getShowSetting() );
+		}
+		
 		handleOnActivityStreamEnter( event.getShowSetting() );
-	}//end enterActivityStreamMode()
+	}//end onActivityStreamEnter()
 
 
 	/**
@@ -2386,7 +2391,7 @@ public class GwtMainPage extends ResizeComposite
 	{
 		m_contentLayoutPanel.showContentControl();
 		m_contentCtrl.setDimensions( m_contentLayoutPanel.getOffsetWidth(), m_contentLayoutPanel.getOffsetHeight() );
-	}
+	}//end onActivityStreamExit()
 
 	/**
 	 * Handles AdministrationEvent's received by this class.
