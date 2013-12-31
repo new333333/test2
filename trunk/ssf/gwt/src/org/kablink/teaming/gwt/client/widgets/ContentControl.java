@@ -74,8 +74,6 @@ import org.kablink.teaming.gwt.client.event.CopySelectedEntitiesEvent;
 import org.kablink.teaming.gwt.client.event.DeleteSelectedEntitiesEvent;
 import org.kablink.teaming.gwt.client.event.FullUIReloadEvent;
 import org.kablink.teaming.gwt.client.event.GetCurrentViewInfoEvent;
-import org.kablink.teaming.gwt.client.event.GetSidebarCollectionEvent;
-import org.kablink.teaming.gwt.client.event.GetSidebarCollectionEvent.CollectionCallback;
 import org.kablink.teaming.gwt.client.event.GotoUrlEvent;
 import org.kablink.teaming.gwt.client.event.InvokeEmailNotificationEvent;
 import org.kablink.teaming.gwt.client.event.InvokeShareBinderEvent;
@@ -113,7 +111,6 @@ import org.kablink.teaming.gwt.client.event.ViewForumEntryEvent;
 import org.kablink.teaming.gwt.client.rpc.shared.GetBinderPermalinkCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetParentBinderPermalinkCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetViewInfoCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.PushHistoryInfoCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
@@ -122,7 +119,7 @@ import org.kablink.teaming.gwt.client.util.CollectionType;
 import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.FolderType;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
-import org.kablink.teaming.gwt.client.util.HistoryInfo;
+import org.kablink.teaming.gwt.client.util.HistoryHelper;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 import org.kablink.teaming.gwt.client.util.ViewFolderEntryInfo;
@@ -141,7 +138,6 @@ import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.FrameElement;
-import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -673,56 +669,6 @@ public class ContentControl extends Composite
 		}
 	}-*/;	
 
-	/*
-	 * Asynchronously pushes a HistoryInfo on the user's history stack. 
-	 */
-	private void pushHistoryInfoAsync( final String url, final Instigator instigator )
-	{
-		GwtTeaming.fireEventAsync( new GetSidebarCollectionEvent( new CollectionCallback()
-		{
-			@Override
-			public void collection( final CollectionType collectionType )
-			{
-				GwtClientHelper.deferCommand( new ScheduledCommand()
-				{
-					@Override
-					public void execute()
-					{
-						pushHistoryInfoNow( url, instigator, collectionType );
-					}// end execute()
-				} );
-			}
-		} ) );
-	}// end pushHistoryInfoAsync()
-	
-	/*
-	 * Synchronously pushes a HistoryInfo on the user's history stack. 
-	 */
-	private void pushHistoryInfoNow( final String url, final Instigator instigator, final CollectionType collectionType )
-	{
-		PushHistoryInfoCmd cmd = new PushHistoryInfoCmd( url, instigator, collectionType );
-		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
-		{
-			@Override
-			public void onFailure( Throwable t )
-			{
-				// Ignore.
-			}// end onFailure()
-			
-			@Override
-			public void onSuccess( VibeRpcResponse response )
-			{
-				String token = ((StringRpcResponseData) response.getResponseData()).getStringValue();
-				if ( GwtClientHelper.hasString( token ) )
-				{
-					History.newItem(
-						(HistoryInfo.HISTORY_MARKER + token),	// History token.
-						false );								// false -> Don't fire a change event for this item.
-				}
-			}//end onSuccess()
-		});
-	}// end pushHistoryInfoNow()
-
 	/**
 	 * This method will set the URL used by the IFRAME.
 	 * 
@@ -755,11 +701,11 @@ public class ContentControl extends Composite
 	private void setViewFromUrl( final String url, final Instigator instigator, final CollectionType historySelectedMastheadCollection )
 	{
 		// If browser history handling is enabled...
-		if ( HistoryInfo.ENABLE_BROWSER_HISTORY ) {	//! Note that this is still in development !!!
+		if ( HistoryHelper.ENABLE_BROWSER_HISTORY ) {	//! Note that this is still in development !!!
 			// ...and we're not navigating to a URL from the history...
 			if ( ! instigator.isHistoryAction() ) {
 				// ...push it into the history.
-				pushHistoryInfoAsync( url, instigator );
+				HistoryHelper.pushHistoryUrlInfoAsync( url, instigator );
 			}
 		}
 		
