@@ -575,11 +575,10 @@ public class FilrActionsCtrl extends Composite
 			default:              action = null;                 break;
 			}
 			
+			// ...and select it.
 			if ( null != action )
-			{
-				// ...and select it.
-				selectAction( action );
-			}
+			     selectAction( action );
+			else unhighlightAllActions();
 		}
 	}// end setFilrActionFromCollectionTypeNow()
 
@@ -638,5 +637,7 @@ public class FilrActionsCtrl extends Composite
 		
 		if ( m_sharedPublicAction != null )
 			m_sharedPublicAction.setIsSelected( false );
+		
+		m_selectedAction = null;
 	}
 }

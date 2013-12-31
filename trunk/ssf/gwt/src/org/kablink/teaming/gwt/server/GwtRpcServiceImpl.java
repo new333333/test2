@@ -378,6 +378,13 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case CLEAR_HISTORY:
+		{
+			BooleanRpcResponseData responseData = GwtHistoryHelper.clearHistory( getRequest( ri ) );
+			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
 		case COLLAPSE_SUBTASKS:
 		{
 			CollapseSubtasksCmd csCmd = ((CollapseSubtasksCmd) cmd);

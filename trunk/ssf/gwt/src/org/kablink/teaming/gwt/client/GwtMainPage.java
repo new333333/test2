@@ -3202,6 +3202,7 @@ public class GwtMainPage extends ResizeComposite
 	@Override
 	public void onLogout( LogoutEvent event )
 	{
+		HistoryHelper.clearHistory();
 		GwtClientHelper.jsLogout();
 	}// end onLogout()
 	

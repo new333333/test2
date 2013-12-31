@@ -41,6 +41,7 @@ import org.kablink.teaming.gwt.client.event.GetSidebarCollectionEvent;
 import org.kablink.teaming.gwt.client.event.SetFilrActionFromCollectionTypeEvent;
 import org.kablink.teaming.gwt.client.event.VibeEventBase;
 import org.kablink.teaming.gwt.client.event.GetSidebarCollectionEvent.CollectionCallback;
+import org.kablink.teaming.gwt.client.rpc.shared.ClearHistoryCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetHistoryInfoCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.PushHistoryInfoCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
@@ -83,6 +84,27 @@ public class HistoryHelper {
 		// Inhibits this class from being instantiated.
 	}
 
+	/**
+	 * Clears the user's history information that's cached on the
+	 * server. 
+	 */
+	public static void clearHistory() {
+		// If browser history handling is not enabled...
+		if (!HistoryHelper.ENABLE_BROWSER_HISTORY) {	//! Note that this is still in development !!!
+			// ...bail.
+			return;
+		}
+
+		// Request that the history be cleared from the server.
+		GwtClientHelper.executeCommand(new ClearHistoryCmd(), new AsyncCallback<VibeRpcResponse>() {
+			@Override
+			public void onFailure(Throwable t) {/* Ignored. */}
+			
+			@Override
+			public void onSuccess(VibeRpcResponse response) {/* Ignored. */}
+		});
+	}
+	
 	/**
 	 * Returns the the browser history token currently stored in the
 	 * Window.Location object.  If there is no history token there,
