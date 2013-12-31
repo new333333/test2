@@ -434,11 +434,11 @@ public class FilrActionsCtrl extends Composite
 			
 			// Yes
 			// Are we dealing with a history token?
-			if ( osbInfo.getInstigator().isHistoryAction() )
+			if ( event.isHistoryAction() )
 			{
 				// Yes
 				// Use the collection type from it.
-				actionCT = osbInfo.getHistorySelectedMastheadCollection();
+				actionCT = event.getHistorySelectedMastheadCollection();
 			}
 			
 			else

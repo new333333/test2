@@ -236,8 +236,9 @@ public abstract class TreeDisplayBase {
 	 * implement entering activity stream mode.
 	 * 
 	 * @param defaultASI
+	 * @param fromEnterEvent
 	 */
-	public void enterActivityStreamMode(ActivityStreamInfo defaultASI) {
+	public void enterActivityStreamMode(ActivityStreamInfo defaultASI, boolean fromEnterEvent) {
 		// By default, we ignore this.
 	}
 	

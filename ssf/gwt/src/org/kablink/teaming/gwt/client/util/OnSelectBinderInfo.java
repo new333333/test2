@@ -43,11 +43,10 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * @author drfoster@novell.com
  */
 public class OnSelectBinderInfo {
-	private CollectionType	m_historySelectedMastheadCollection;	//
-	private BinderInfo		m_binderInfo;							//
-	private boolean			m_isPermalinkUrl;						//
-	private Instigator		m_instigator;							//
-	private String			m_binderUrl;							//
+	private BinderInfo	m_binderInfo;	//
+	private boolean		m_permalinkUrl;	//
+	private Instigator	m_instigator;	//
+	private String		m_binderUrl;	//
 
 	// Various marker strings used to recognize the format of a URL.
 	private final static String GWT_MARKER = "seen_by_gwt";
@@ -65,7 +64,6 @@ public class OnSelectBinderInfo {
 		FAVORITE_SELECT,				// A favorite was selected from the My Favorites menu.
 		FORCE_FULL_RELOAD,				// Forces the full UI to reload.
 		GOTO_CONTENT_URL,				// User clicked on something that loads some URL into the content frame.
-		HISTORY_ACTION,					// Content is changing because of an interaction with the browser's history. 
 		JSP_CONTENT_LOADED,				// Unknown JSP content has been loaded into the content area.
 		PROFILE_QUICK_VIEW_SELECT,		// The workspace or profile button in the quick view dialog was selected.
 		RECENT_PLACE_SELECT,			// A recent place was selected from the Recent Places menu.
@@ -78,13 +76,6 @@ public class OnSelectBinderInfo {
 		VIEW_FOLDER_ENTRY,				// A folder entry is being shown.
 		
 		UNKNOWN;						// Default value.  Should never be processed.
-
-		/**
-		 * Get'er methods.
-		 * 
-		 * @return
-		 */
-		public boolean isHistoryAction() {return this.equals(HISTORY_ACTION);}
 	}
 
 	/**
@@ -132,8 +123,8 @@ public class OnSelectBinderInfo {
 	 */
 	private void fixupUrl() {
 		// If the URL is a permalink...
-		m_isPermalinkUrl = GwtClientHelper.isPermalinkUrl(m_binderUrl);
-		if (m_isPermalinkUrl) {
+		m_permalinkUrl = GwtClientHelper.isPermalinkUrl(m_binderUrl);
+		if (m_permalinkUrl) {
 			// ...add a GWT marker.
 			m_binderUrl = GwtClientHelper.appendUrlParam(m_binderUrl, GWT_MARKER, "1");
 		}
@@ -167,16 +158,6 @@ public class OnSelectBinderInfo {
 	}
 
 	/**
-	 * Returns the CollectionType that was selected in the masthead
-	 * associated with a history token.
-	 * 
-	 * @return
-	 */
-	public CollectionType getHistorySelectedMastheadCollection() {
-		return m_historySelectedMastheadCollection;
-	}
-	
-	/**
 	 * Returns the instigator of the binder selection, if known.
 	 * 
 	 * @return
@@ -202,7 +183,7 @@ public class OnSelectBinderInfo {
 	 * @return
 	 */
 	public boolean isPermalinkUrl() {
-		return m_isPermalinkUrl;
+		return m_permalinkUrl;
 	}
 	
 	/**
@@ -221,15 +202,6 @@ public class OnSelectBinderInfo {
 		m_binderInfo = binderInfo;
 	}
 
-	/**
-	 * Stores the CollectionType associated with a history token.
-	 * 
-	 * @param historySelectedMastheadCollection
-	 */
-	public void setHistorySelectedMastheadCollection(CollectionType historySelectedMastheadCollection) {
-		m_historySelectedMastheadCollection = historySelectedMastheadCollection;
-	}
-	
 	/**
 	 * Stores a binder URL into this OnSelectBinderInfo object.
 	 * 

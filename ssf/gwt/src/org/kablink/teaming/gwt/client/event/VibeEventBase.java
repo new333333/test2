@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -32,6 +32,8 @@
  */
 package org.kablink.teaming.gwt.client.event;
 
+import org.kablink.teaming.gwt.client.util.CollectionType;
+
 import com.google.gwt.event.shared.EventHandler;
 import com.google.gwt.event.shared.GwtEvent;
 
@@ -42,6 +44,9 @@ import com.google.gwt.event.shared.GwtEvent;
  * @author drfoster@novell.com
  */
 public abstract class VibeEventBase<H extends EventHandler> extends GwtEvent<H> {
+	private boolean			m_historyAction;						// true -> Event is the result of an action from the browser's history.
+	private CollectionType	m_historySelectedMastheadCollection;	// If m_historyAction is true, contains the CollectionType that should be selected in the masthead as a result of this event.
+	
 	/**
 	 * Returns the TeamingEvents enumeration value corresponding to the
 	 * event.
@@ -112,4 +117,20 @@ public abstract class VibeEventBase<H extends EventHandler> extends GwtEvent<H> 
 		// In all other cases, we forward the event to the handler.
 		return true;
 	}
+
+	/**
+	 * Get'er methods.
+	 * 
+	 * @return
+	 */
+	public final boolean        isHistoryAction()                      {return m_historyAction;                    }
+	public final CollectionType getHistorySelectedMastheadCollection() {return m_historySelectedMastheadCollection;}
+
+	/**
+	 * Set'er methods.
+	 * 
+	 * @param
+	 */
+	public final void setHistoryAction(                    boolean        historyAction)                     {m_historyAction                     = historyAction;                    }
+	public final void setHistorySelectedMastheadCollection(CollectionType historySelectedMastheadCollection) {m_historySelectedMastheadCollection = historySelectedMastheadCollection;}
 }

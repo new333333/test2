@@ -239,26 +239,26 @@ public class WorkspaceTreeControl extends ResizeComposite
 		}
 	}
 	
-	/**
+	/*
 	 * Called when activity stream mode is to be entered on the sidebar
 	 * tree.
 	 *
 	 * @param defaultASI
 	 */
-	public void enterActivityStreamMode(ActivityStreamInfo defaultASI) {
+	private void enterActivityStreamMode(ActivityStreamInfo defaultASI, boolean fromEnterEvent) {
 		// If we're displaying a sidebar tree...
 		if (isSidebarTree() && (null != m_treeDisplay)) {
 			// ...tell it to load the activity stream navigation
 			// ...points.
-			m_treeDisplay.enterActivityStreamMode(defaultASI);
+			m_treeDisplay.enterActivityStreamMode(defaultASI, fromEnterEvent);
 		}
 	}
 	
-	/**
+	/*
 	 * Called when activity stream mode is to be exited on the sidebar
 	 * tree
 	 */
-	public void exitActivityStreamMode(ExitMode exitMode) {
+	private void exitActivityStreamMode(ExitMode exitMode) {
 		// If we're displaying a sidebar tree...
 		if (isSidebarTree() && (null != m_treeDisplay)) {
 			// ...tell it to exit activity stream mode.
@@ -373,7 +373,7 @@ public class WorkspaceTreeControl extends ResizeComposite
 	 */
 	@Override
 	public void onActivityStreamEnter(ActivityStreamEnterEvent event) {
-		enterActivityStreamMode(event.getActivityStreamInfo());
+		enterActivityStreamMode(event.getActivityStreamInfo(), true);
 	}
 
 	/**
@@ -700,7 +700,7 @@ public class WorkspaceTreeControl extends ResizeComposite
 					ActivityStreamInfo asi = new ActivityStreamInfo();
 					asi.setActivityStream(ActivityStream.SITE_WIDE);
 					asi.setTitle(GwtTeaming.getMessages().treeSiteWide());
-					m_treeDisplay.enterActivityStreamMode(asi);
+					m_treeDisplay.enterActivityStreamMode(asi, false);
 				}
 				
 				@Override
@@ -715,7 +715,7 @@ public class WorkspaceTreeControl extends ResizeComposite
 						asi.setActivityStream(ActivityStream.SITE_WIDE);
 						asi.setTitle(GwtTeaming.getMessages().treeSiteWide());
 					}
-					m_treeDisplay.enterActivityStreamMode(asi);
+					m_treeDisplay.enterActivityStreamMode(asi, false);
 				}
 			});
 		}

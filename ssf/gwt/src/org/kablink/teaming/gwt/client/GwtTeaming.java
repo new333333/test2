@@ -40,21 +40,18 @@ import org.kablink.teaming.gwt.client.lpe.LandingPageEditor.LandingPageEditorCli
 import org.kablink.teaming.gwt.client.profile.widgets.GwtProfilePage;
 import org.kablink.teaming.gwt.client.profile.widgets.UserStatusControl;
 import org.kablink.teaming.gwt.client.profile.widgets.UserStatusControl.UserStatusControlClient;
-import org.kablink.teaming.gwt.client.rpc.shared.GetHistoryInfoCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.service.GwtRpcService;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 import org.kablink.teaming.gwt.client.tasklisting.TaskListing;
 import org.kablink.teaming.gwt.client.tasklisting.TaskListing.TaskListingClient;
-import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HistoryHelper;
+import org.kablink.teaming.gwt.client.util.HistoryHelper.HistoryInfoCallback;
 import org.kablink.teaming.gwt.client.util.HistoryInfo;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
-import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootLayoutPanel;
 import com.google.gwt.user.client.ui.RootPanel;
@@ -363,27 +360,18 @@ public class GwtTeaming implements EntryPoint
 				// corresponding HistoryInfo from the server so we can
 				// reload it with the construction of the main page's
 				// content.
-				GetHistoryInfoCmd ghiCmd = new GetHistoryInfoCmd( historyToken );
-				GwtClientHelper.executeCommand( ghiCmd, new AsyncCallback<VibeRpcResponse>()
+				HistoryHelper.getHistoryInfo( historyToken, new HistoryInfoCallback()
 				{
 					@Override
-					public void onFailure( Throwable t )
-					{
-						// On a failure, simply load the main page's
-						// split point.
-						loadGwtMainPage();
-					}//end onFailure()
-					
-					@Override
-					public void onSuccess( VibeRpcResponse response )
+					public void historyInfo(HistoryInfo hi)
 					{
 						// Save the HistoryInfo and load the main
-						// page's split point.  GwtMainPage will use
-						// this to construct its content.
-						m_browserReloadInfo = ((HistoryInfo) response.getResponseData());
+						// page's split point.  GwtMainPage will use it
+						// to construct its content.
+						m_browserReloadInfo = hi;
 						loadGwtMainPage();
-					}// end onSuccess()
-				});
+					}// end historyInfo()
+				} );
 			}
 
 			return;

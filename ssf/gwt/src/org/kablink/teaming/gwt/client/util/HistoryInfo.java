@@ -45,15 +45,89 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * @author drfoster@novell.com
  */
 public class HistoryInfo implements IsSerializable, VibeRpcResponseData {
-	private CollectionType	m_selectedMastheadCollection;	// The collection type selected in the masthead when the HistoryInfo was created.
-	private ItemType		m_itemType;						//
-	private UrlInfo			m_urlInfo;						// Refers to the UrlInfo when m_itemType is URL.
+	private CollectionType				m_selectedMastheadCollection;	// The collection type selected in the masthead when the HistoryInfo was created.
+	private HistoryActivityStreamInfo	m_asInfo;						// Refers to the HistoryActivityStreamInfo when m_itemType is ACTIVITY_STREAM.
+	private HistoryItemType				m_itemType;						// The type of HistoryInfo this object represents.
+	private HistoryUrlInfo				m_urlInfo;						// Refers to the HistoryUrlInfo when m_itemType is URL.
+
+	/**
+	 * Inner class used to describe an activity stream based history
+	 * item. 
+	 */
+	public static class HistoryActivityStreamInfo implements IsSerializable {
+		private ActivityStreamDataType	m_showSetting;	//
+		private ActivityStreamInfo		m_asi;			//
+		
+		/*
+		 * Constructor method.
+		 * 
+		 * For GWT serialization, must have a zero parameter constructor.
+		 */
+		private HistoryActivityStreamInfo() {
+			// Initialize the super class...
+			super();
+			
+			// ...and initialize anything else that requires it.
+			setShowSetting(ActivityStreamDataType.OTHER);
+		}
+		
+		/**
+		 * Constructor method.
+		 * 
+		 * @param asi			May be null.
+		 * @param showSetting
+		 */
+		public HistoryActivityStreamInfo(ActivityStreamInfo asi, ActivityStreamDataType showSetting) {
+			// Initialize the object...
+			this();
+
+			// ...and store the parameters.
+			setActivityStreamInfo(asi        );
+			setShowSetting(       showSetting);
+		}
+		
+		/**
+		 * Constructor method.
+		 * 
+		 * @param asi	May be null.
+		 */
+		public HistoryActivityStreamInfo(ActivityStreamInfo asi) {
+			// Always use one of the previous forms of the constructor.
+			this(asi, ActivityStreamDataType.OTHER);
+		}
+		
+		/**
+		 * Constructor method.
+		 * 
+		 * @param showSetting
+		 */
+		public HistoryActivityStreamInfo(ActivityStreamDataType showSetting) {
+			// Always use one of the previous forms of the constructor.
+			this(null, showSetting);
+		}
+		
+		/**
+		 * Get'er methods.
+		 * 
+		 * @return
+		 */
+		public ActivityStreamDataType getShowSetting()        {return m_showSetting;}
+		public ActivityStreamInfo     getActivityStreamInfo() {return m_asi;        }
+		
+		/**
+		 * Set'er methods.
+		 * 
+		 * @param
+		 */
+		public void setShowSetting(       ActivityStreamDataType showSetting) {m_showSetting = showSetting;}
+		public void setActivityStreamInfo(ActivityStreamInfo     asi)         {m_asi         = asi;        }
+	}
 	
 	/**
 	 * Enumeration that specifies the type of item a HistoryInfo
 	 * describes. 
 	 */
-	public enum ItemType implements IsSerializable {
+	public enum HistoryItemType implements IsSerializable {
 		ACTIVITY_STREAM,
 		URL;
 		
@@ -67,7 +141,7 @@ public class HistoryInfo implements IsSerializable, VibeRpcResponseData {
 	/**
 	 * Inner class used to describe a URL based history item. 
 	 */
-	public static class UrlInfo implements IsSerializable {
+	public static class HistoryUrlInfo implements IsSerializable {
 		private Instigator	m_instigator;	//
 		private String		m_url;			//
 		
@@ -76,7 +150,7 @@ public class HistoryInfo implements IsSerializable, VibeRpcResponseData {
 		 * 
 		 * For GWT serialization, must have a zero parameter constructor.
 		 */
-		private UrlInfo() {
+		private HistoryUrlInfo() {
 			// Initialize the super class.
 			super();
 		}
@@ -87,7 +161,7 @@ public class HistoryInfo implements IsSerializable, VibeRpcResponseData {
 		 * @param url
 		 * @param instigator
 		 */
-		public UrlInfo(String url, Instigator instigator) {
+		public HistoryUrlInfo(String url, Instigator instigator) {
 			// Initialize this object...
 			this();
 
@@ -124,6 +198,23 @@ public class HistoryInfo implements IsSerializable, VibeRpcResponseData {
 	}
 	
 	/**
+	 * Constructor method for an activity stream based HistoryInfo.
+	 *
+	 * @param selectedMastheadCollection
+	 * @param asi
+	 * @param showSetting
+	 */
+	public HistoryInfo(CollectionType selectedMastheadCollection, ActivityStreamInfo asi, ActivityStreamDataType showSetting) {
+		// Initialize this object...
+		this();
+
+		// ...and store the parameters.
+		setSelectedMastheadCollection(selectedMastheadCollection                     );
+		setItemType(                  HistoryItemType.ACTIVITY_STREAM                );
+		setActivityStreamInfo(        new HistoryActivityStreamInfo(asi, showSetting));
+	}
+	
+	/**
 	 * Constructor method for a URL based HistoryInfo.
 	 *
 	 * @param selectedMastheadCollection
@@ -135,9 +226,9 @@ public class HistoryInfo implements IsSerializable, VibeRpcResponseData {
 		this();
 
 		// ...and store the parameters.
-		setSelectedMastheadCollection(selectedMastheadCollection  );
-		setItemType(                  ItemType.URL                );
-		setUrlInfo(                   new UrlInfo(url, instigator));
+		setSelectedMastheadCollection(selectedMastheadCollection         );
+		setItemType(                  HistoryItemType.URL                );
+		setUrlInfo(                   new HistoryUrlInfo(url, instigator));
 	}
 	
 	/**
@@ -145,16 +236,18 @@ public class HistoryInfo implements IsSerializable, VibeRpcResponseData {
 	 * 
 	 * @return
 	 */
-	public CollectionType getSelectedMastheadCollection() {return m_selectedMastheadCollection;}
-	public ItemType       getItemType()                   {return m_itemType;                  }
-	public UrlInfo        getUrlInfo()                    {return m_urlInfo;                   }
+	public CollectionType            getSelectedMastheadCollection() {return m_selectedMastheadCollection;}
+	public HistoryActivityStreamInfo getActivityStreamInfo()         {return m_asInfo;                    }
+	public HistoryItemType           getItemType()                   {return m_itemType;                  }
+	public HistoryUrlInfo            getUrlInfo()                    {return m_urlInfo;                   }
 	
 	/**
 	 * Set'er methods.
 	 * 
 	 * @param
 	 */
-	public void setSelectedMastheadCollection(CollectionType selectedMastheadCollection) {m_selectedMastheadCollection = selectedMastheadCollection;}
-	public void setItemType(                  ItemType       itemType)                   {m_itemType                   = itemType;                  }
-	public void setUrlInfo(                   UrlInfo        urlInfo)                    {m_urlInfo                    = urlInfo;                   }
+	public void setSelectedMastheadCollection(CollectionType            selectedMastheadCollection) {m_selectedMastheadCollection = selectedMastheadCollection;}
+	public void setActivityStreamInfo(        HistoryActivityStreamInfo asInfo)                     {m_asInfo                     = asInfo;                    }
+	public void setItemType(                  HistoryItemType           itemType)                   {m_itemType                   = itemType;                  }
+	public void setUrlInfo(                   HistoryUrlInfo            urlInfo)                    {m_urlInfo                    = urlInfo;                   }
 }

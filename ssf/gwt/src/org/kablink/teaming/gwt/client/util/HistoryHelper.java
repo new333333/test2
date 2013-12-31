@@ -33,15 +33,21 @@
 package org.kablink.teaming.gwt.client.util;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.event.ActivityStreamEnterEvent;
+import org.kablink.teaming.gwt.client.event.ActivityStreamEvent;
 import org.kablink.teaming.gwt.client.event.ChangeContextEvent;
 import org.kablink.teaming.gwt.client.event.FullUIReloadEvent;
 import org.kablink.teaming.gwt.client.event.GetSidebarCollectionEvent;
+import org.kablink.teaming.gwt.client.event.SetFilrActionFromCollectionTypeEvent;
+import org.kablink.teaming.gwt.client.event.VibeEventBase;
 import org.kablink.teaming.gwt.client.event.GetSidebarCollectionEvent.CollectionCallback;
 import org.kablink.teaming.gwt.client.rpc.shared.GetHistoryInfoCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.PushHistoryInfoCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
-import org.kablink.teaming.gwt.client.util.HistoryInfo.UrlInfo;
+import org.kablink.teaming.gwt.client.util.HistoryInfo.HistoryActivityStreamInfo;
+import org.kablink.teaming.gwt.client.util.HistoryInfo.HistoryItemType;
+import org.kablink.teaming.gwt.client.util.HistoryInfo.HistoryUrlInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
@@ -58,10 +64,17 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
  * @author drfoster@novell.com
  */
 public class HistoryHelper {
-	public final static boolean	ENABLE_BROWSER_HISTORY	= false;	//! DRF (20131231):  Leave false on checkin until it's all working.
+	private final static boolean ENABLE_BROWSER_HISTORY	= false;	//! DRF (20131231):  Leave false on checkin until it's all working.
 	
 	private final static String	HISTORY_MARKER			= "history";				// Marker appended to a URL with a history token so that we can relocate the URL during browser navigations.
 	private final static int	HISTORY_MARKER_LENGTH	= HISTORY_MARKER.length();	// Length of HISTORY_MARKER.
+
+	/**
+	 * Callback interface used to interact with getHistoryInfo().
+	 */
+	public interface HistoryInfoCallback {
+		public void historyInfo(HistoryInfo hi);
+	}
 	
 	/*
 	 * Constructor method. 
@@ -94,7 +107,76 @@ public class HistoryHelper {
 		// token or null if there isn't one.  Return it. 
 		return reply;
 	}
+
+	/**
+	 * Returns the HistoryInfo corresponding to a history token via a
+	 * callback.
+	 * 
+	 * @param historyToken
+	 * @param historyCB
+	 */
+	public static void getHistoryInfo(String historyToken, final HistoryInfoCallback historyCB) {
+		// If we don't have a callback...
+		if (null == historyCB) {
+			// ...we can't do anything.
+			return;
+		}
+
+		// If we don't have a history token...
+		if (!(GwtClientHelper.hasString(historyToken))) {
+			// ...there can be no corresponding HistoryInfo.
+			historyCB.historyInfo(null);
+			return;
+		}
+
+		// Request the HistoryInfo from the server...
+		GwtClientHelper.executeCommand(new GetHistoryInfoCmd(historyToken), new AsyncCallback<VibeRpcResponse>() {
+			@Override
+			public void onFailure(Throwable t) {
+				// ...if the request fails, return null...
+				historyCB.historyInfo(null);
+			}
+			
+			@Override
+			public void onSuccess(VibeRpcResponse response) {
+				// ...otherwise, return the HistoryInfo we got back.
+				historyCB.historyInfo((HistoryInfo) response.getResponseData());
+			}
+		});
+	}
 	
+	/**
+	 * Initializes browser history handling.
+	 */
+	public static void initializeBrowserHistory() {
+		// If browser history handling is not enabled...
+		if (!HistoryHelper.ENABLE_BROWSER_HISTORY) {	//! Note that this is still in development !!!
+			// ...bail.
+			return;
+		}
+		
+		History.addValueChangeHandler(new ValueChangeHandler<String>() {
+			@Override
+			public void onValueChange(ValueChangeEvent<String> event) {
+				try {
+					// If we can find the history token...
+					String historyToken = event.getValue();
+					if (historyToken.substring(0, HISTORY_MARKER_LENGTH).equals(HISTORY_MARKER)) {
+						String token = historyToken.substring(HISTORY_MARKER_LENGTH);
+						if (GwtClientHelper.hasString(token)) {
+							// ...process it...
+							processHistoryTokenAsync(token);
+							return;
+						}
+					}
+				}
+				catch (Exception e) {/* Ignored. */}
+				
+				// ...otherwise, simply force the content to refresh.
+				FullUIReloadEvent.fireOneAsync();
+			}
+		});
+	}
 	/**
 	 * Asynchronously puts a HistoryInfo into effect.
 	 * 
@@ -114,22 +196,44 @@ public class HistoryHelper {
 	 */
 	private static void processHistoryInfoNow(final HistoryInfo historyInfo) {
 		// What type of HistoryInfo are we processing?
-		switch (historyInfo.getItemType()) {
+		HistoryItemType historyType = historyInfo.getItemType();
+		switch (historyType) {
 		case ACTIVITY_STREAM:
-			// An Activity Stream!  Put it into effect.
-//!			...this needs to be implemented...
-			GwtClientHelper.deferredAlert("HistoryHelper.processHistoryInfoNow( ACTIVITY_STREAM ):  ...this needs to be implemented...");
+			// An Activity Stream!  Put it into effect...
+			HistoryActivityStreamInfo asInfo = historyInfo.getActivityStreamInfo();
+			VibeEventBase<?> asEvent = null;
+			if (GwtTeaming.getMainPage().isActivityStreamActive())
+			     asEvent = new ActivityStreamEvent(     asInfo.getActivityStreamInfo()                         );
+			else asEvent = new ActivityStreamEnterEvent(asInfo.getActivityStreamInfo(), asInfo.getShowSetting());
+			asEvent.setHistoryAction(true);
+			asEvent.setHistorySelectedMastheadCollection(historyInfo.getSelectedMastheadCollection());
+			GwtTeaming.fireEvent(asEvent);
 			
+			// ...and make sure the masthead selection is what it
+			// ...should be for this HistoryInfo.
+			GwtTeaming.fireEventAsync(
+				new SetFilrActionFromCollectionTypeEvent(
+					historyInfo.getSelectedMastheadCollection()));
+
 			break;
 			
 		case URL:
 			// A URL!  Put it into effect.
-			UrlInfo urlInfo = historyInfo.getUrlInfo();
-			OnSelectBinderInfo osbInfo = new OnSelectBinderInfo(
-				urlInfo.getUrl(),
-				Instigator.HISTORY_ACTION);	//! urlInfo.getInstigator());
-			osbInfo.setHistorySelectedMastheadCollection(historyInfo.getSelectedMastheadCollection());
-			GwtTeaming.fireEvent(new ChangeContextEvent(osbInfo));
+			HistoryUrlInfo     urlInfo = historyInfo.getUrlInfo();
+			OnSelectBinderInfo osbInfo = new OnSelectBinderInfo(urlInfo.getUrl(), urlInfo.getInstigator());
+			ChangeContextEvent ccEvent = new ChangeContextEvent(osbInfo);
+			ccEvent.setHistoryAction(true);
+			ccEvent.setHistorySelectedMastheadCollection(historyInfo.getSelectedMastheadCollection());
+			GwtTeaming.fireEvent(ccEvent);
+			
+			break;
+			
+		default:
+			// Whatever it is, code hasn't been written to handle this
+			// yet!  Tell the user about the problem.
+//!			...this needs to be implemented...
+			GwtClientHelper.debugAlert(
+				"HistoryHelper.processHistoryInfoNow( Unhandled history type:  " + historyType.name() + " ):  ...this needs to be implemented...");
 			
 			break;
 		}
@@ -174,20 +278,28 @@ public class HistoryHelper {
 	}
 	
 	/**
-	 * Asynchronously pushes a URL based HistoryInfo on the user's
-	 * history stack.
+	 * Asynchronously pushes an activity stream based HistoryInfo on
+	 * the user's history stack.
 	 * 
-	 * @param url
-	 * @param instigator
+	 * @param asi
+	 * @param asdt
 	 */
-	public static void pushHistoryUrlInfoAsync(final String url, final Instigator instigator) {
+	public static void pushHistoryInfoAsync(final ActivityStreamInfo asi, final ActivityStreamDataType asdt) {
+		// If browser history handling is not enabled...
+		if (!HistoryHelper.ENABLE_BROWSER_HISTORY) {	//! Note that this is still in development !!!
+			// ...bail.
+			return;
+		}
+
+		// Get the collection that's selection in the masthead...
 		GwtTeaming.fireEventAsync(new GetSidebarCollectionEvent(new CollectionCallback() {
 			@Override
 			public void collection(final CollectionType selectedMastheadCollection) {
 				GwtClientHelper.deferCommand(new ScheduledCommand() {
 					@Override
 					public void execute() {
-						pushHistoryUrlInfoNow(selectedMastheadCollection, url, instigator);
+						// ...and push the history information.
+						pushHistoryInfoNow(selectedMastheadCollection, asi, asdt);
 					}
 				});
 			}
@@ -195,11 +307,12 @@ public class HistoryHelper {
 	}
 	
 	/*
-	 * Synchronously pushes a URL based HistoryInfo on the user's
-	 * history stack.
+	 * Synchronously pushes an activity stream based HistoryInfo on
+	 * the user's history stack.
 	 */
-	private static void pushHistoryUrlInfoNow(final CollectionType selectedMastheadCollection, final String url, final Instigator instigator) {
-		PushHistoryInfoCmd phiCmd = new PushHistoryInfoCmd(selectedMastheadCollection, url, instigator);
+	private static void pushHistoryInfoNow(final CollectionType selectedMastheadCollection, final ActivityStreamInfo asi, final ActivityStreamDataType asdt) {
+		HistoryInfo        hi     = new HistoryInfo(selectedMastheadCollection, asi, asdt);
+		PushHistoryInfoCmd phiCmd = new PushHistoryInfoCmd(hi);
 		GwtClientHelper.executeCommand(phiCmd, new AsyncCallback<VibeRpcResponse>() {
 			@Override
 			public void onFailure(Throwable t) {/* Ignored. */}
@@ -217,28 +330,51 @@ public class HistoryHelper {
 	}
 
 	/**
-	 * Initializes browser history handling.
+	 * Asynchronously pushes a URL based HistoryInfo on the user's
+	 * history stack.
+	 * 
+	 * @param url
+	 * @param instigator
 	 */
-	public static void setupHistory() {
-		History.addValueChangeHandler(new ValueChangeHandler<String>() {
+	public static void pushHistoryInfoAsync(final String url, final Instigator instigator) {
+		// If browser history handling is not enabled...
+		if (!HistoryHelper.ENABLE_BROWSER_HISTORY) {	//! Note that this is still in development !!!
+			// ...bail.
+			return;
+		}
+		
+		GwtTeaming.fireEventAsync(new GetSidebarCollectionEvent(new CollectionCallback() {
 			@Override
-			public void onValueChange(ValueChangeEvent<String> event) {
-				try {
-					// If we can find the history token...
-					String historyToken = event.getValue();
-					if (historyToken.substring(0, HISTORY_MARKER_LENGTH).equals(HISTORY_MARKER)) {
-						String token = historyToken.substring(HISTORY_MARKER_LENGTH);
-						if (GwtClientHelper.hasString(token)) {
-							// ...process it...
-							processHistoryTokenAsync(token);
-							return;
-						}
+			public void collection(final CollectionType selectedMastheadCollection) {
+				GwtClientHelper.deferCommand(new ScheduledCommand() {
+					@Override
+					public void execute() {
+						pushHistoryInfoNow(selectedMastheadCollection, url, instigator);
 					}
+				});
+			}
+		}));
+	}
+	
+	/*
+	 * Synchronously pushes a URL based HistoryInfo on the user's
+	 * history stack.
+	 */
+	private static void pushHistoryInfoNow(final CollectionType selectedMastheadCollection, final String url, final Instigator instigator) {
+		HistoryInfo        hi     = new HistoryInfo(selectedMastheadCollection, url, instigator);
+		PushHistoryInfoCmd phiCmd = new PushHistoryInfoCmd(hi);
+		GwtClientHelper.executeCommand(phiCmd, new AsyncCallback<VibeRpcResponse>() {
+			@Override
+			public void onFailure(Throwable t) {/* Ignored. */}
+			
+			@Override
+			public void onSuccess(VibeRpcResponse response) {
+				String token = ((StringRpcResponseData) response.getResponseData()).getStringValue();
+				if (GwtClientHelper.hasString(token)) {
+					History.newItem(
+						(HISTORY_MARKER + token),	// History token.
+						false);						// false -> Don't fire a change event for this item.
 				}
-				catch (Exception e) {/* Ignored. */}
-				
-				// ...otherwise, simply force the content to refresh.
-				FullUIReloadEvent.fireOneAsync();
 			}
 		});
 	}

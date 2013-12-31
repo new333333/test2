@@ -32,9 +32,7 @@
  */
 package org.kablink.teaming.gwt.client.rpc.shared;
 
-import org.kablink.teaming.gwt.client.util.CollectionType;
 import org.kablink.teaming.gwt.client.util.HistoryInfo;
-import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 
 /**
  * This class holds all of the information necessary to execute the
@@ -66,18 +64,6 @@ public class PushHistoryInfoCmd extends VibeRpcCmd {
 		
 		// ...and store the parameter.
 		setHistoryInfo(historyInfo);
-	}
-	
-	/**
-	 * Constructor method for pushing a URL based HistoryInfo.
-	 * 
-	 * @param selectedMastheadCollection
-	 * @param url
-	 * @param instigator
-	 */
-	public PushHistoryInfoCmd(CollectionType selectedMastheadCollection, String url, Instigator instigator) {
-		// Always use the previous form of the constructor.
-		this(new HistoryInfo(selectedMastheadCollection, url, instigator));
 	}
 	
 	/**
