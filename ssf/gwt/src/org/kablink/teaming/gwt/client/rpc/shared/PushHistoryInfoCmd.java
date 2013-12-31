@@ -69,15 +69,15 @@ public class PushHistoryInfoCmd extends VibeRpcCmd {
 	}
 	
 	/**
-	 * Constructor method.
+	 * Constructor method for pushing a URL based HistoryInfo.
 	 * 
+	 * @param selectedMastheadCollection
 	 * @param url
 	 * @param instigator
-	 * @param selectedMastheadCollection
 	 */
-	public PushHistoryInfoCmd(String url, Instigator instigator, CollectionType selectedMastheadCollection) {
+	public PushHistoryInfoCmd(CollectionType selectedMastheadCollection, String url, Instigator instigator) {
 		// Always use the previous form of the constructor.
-		this(new HistoryInfo(url, instigator, selectedMastheadCollection));
+		this(new HistoryInfo(selectedMastheadCollection, url, instigator));
 	}
 	
 	/**

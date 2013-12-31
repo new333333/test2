@@ -47,13 +47,13 @@ import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 import org.kablink.teaming.gwt.client.tasklisting.TaskListing;
 import org.kablink.teaming.gwt.client.tasklisting.TaskListing.TaskListingClient;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+import org.kablink.teaming.gwt.client.util.HistoryHelper;
 import org.kablink.teaming.gwt.client.util.HistoryInfo;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootLayoutPanel;
@@ -348,35 +348,23 @@ public class GwtTeaming implements EntryPoint
 		RootPanel mainRootPanel = RootPanel.get( "gwtMainPageDiv" );
 		if ( mainRootPanel != null )
 		{
-			// Yes!  Does the location URL have a history token?
-			// (I.e., is the browser being reloaded?)
-			String historyToken = null;
-			String url          = Window.Location.createUrlBuilder().buildString();
-			if ( GwtClientHelper.hasString( url ) )
-			{
-				int historyPos = url.lastIndexOf( "#" + HistoryInfo.HISTORY_MARKER );
-				if ( (-1) != historyPos )
-				{
-					// Yes!  Store it so GwtMainPage can access it to
-					// construct its content.
-					historyToken = url.substring( historyPos + HistoryInfo.HISTORY_MARKER_LENGTH + 1 );
-				}
-			}
-
-			// If we don't have a history token...
+			// Yes!  Does the current browser Window.Location URL have
+			// a history token?  (I.e., is the browser being reloaded?)
+			String historyToken = HistoryHelper.getCurrentBrowserHistoryToken();
 			if ( null == historyToken )
 			{
-				// ...simply load the main page's split point.
+				// No!  Simply load the main page's split point.
 				loadGwtMainPage();
 			}
 			
 			else
 			{
-				// ...otherwise, we need to pull the history
-				// ...information from the server so we can reload it
-				// ...with the construction of the main page content.
-				GetHistoryInfoCmd cmd = new GetHistoryInfoCmd( historyToken );
-				GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
+				// Yes, we have a history token!  We need to pull the
+				// corresponding HistoryInfo from the server so we can
+				// reload it with the construction of the main page's
+				// content.
+				GetHistoryInfoCmd ghiCmd = new GetHistoryInfoCmd( historyToken );
+				GwtClientHelper.executeCommand( ghiCmd, new AsyncCallback<VibeRpcResponse>()
 				{
 					@Override
 					public void onFailure( Throwable t )
@@ -389,9 +377,9 @@ public class GwtTeaming implements EntryPoint
 					@Override
 					public void onSuccess( VibeRpcResponse response )
 					{
-						// Save the history information and load the
-						// main page's split point.  GwtMainPage will
-						// use this to construct its content.
+						// Save the HistoryInfo and load the main
+						// page's split point.  GwtMainPage will use
+						// this to construct its content.
 						m_browserReloadInfo = ((HistoryInfo) response.getResponseData());
 						loadGwtMainPage();
 					}// end onSuccess()

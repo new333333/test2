@@ -45,14 +45,73 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * @author drfoster@novell.com
  */
 public class HistoryInfo implements IsSerializable, VibeRpcResponseData {
-	public final static boolean	ENABLE_BROWSER_HISTORY	= false;	//! DRF (20131227):  Leave false on checkin until it's all working.
-
-	private CollectionType	m_selectedMastheadCollection;	//
-	private Instigator		m_instigator;					//
-	private String			m_url;							//
+	private CollectionType	m_selectedMastheadCollection;	// The collection type selected in the masthead when the HistoryInfo was created.
+	private ItemType		m_itemType;						//
+	private UrlInfo			m_urlInfo;						// Refers to the UrlInfo when m_itemType is URL.
 	
-	public final static String	HISTORY_MARKER			= "history";				// Marker appended to a URL with a history token so that we can relocate the URL during browser navigations.
-	public final static int		HISTORY_MARKER_LENGTH	= HISTORY_MARKER.length();	// Length of HISTORY_MARKER.
+	/**
+	 * Enumeration that specifies the type of item a HistoryInfo
+	 * describes. 
+	 */
+	public enum ItemType implements IsSerializable {
+		ACTIVITY_STREAM,
+		URL;
+		
+		/**
+		 * Get'er methods.
+		 */
+		public boolean isActivityStream() {return this.equals(ACTIVITY_STREAM);}
+		public boolean isUrl()            {return this.equals(URL);            }
+	}
+
+	/**
+	 * Inner class used to describe a URL based history item. 
+	 */
+	public static class UrlInfo implements IsSerializable {
+		private Instigator	m_instigator;	//
+		private String		m_url;			//
+		
+		/*
+		 * Constructor method.
+		 * 
+		 * For GWT serialization, must have a zero parameter constructor.
+		 */
+		private UrlInfo() {
+			// Initialize the super class.
+			super();
+		}
+		
+		/**
+		 * Constructor method.
+		 *
+		 * @param url
+		 * @param instigator
+		 */
+		public UrlInfo(String url, Instigator instigator) {
+			// Initialize this object...
+			this();
+
+			// ...and store the parameters.
+			setUrl(       url       );
+			setInstigator(instigator);
+		}
+		
+		/**
+		 * Get'er methods.
+		 * 
+		 * @return
+		 */
+		public Instigator getInstigator() {return m_instigator;}
+		public String     getUrl()        {return m_url;       }
+
+		/**
+		 * Set'er methods.
+		 * 
+		 * @param
+		 */
+		public void setInstigator(Instigator instigator) {m_instigator = instigator;}
+		public void setUrl(       String     url)        {m_url        = url;       }
+	}
 	
 	/*
 	 * Constructor method.
@@ -65,20 +124,20 @@ public class HistoryInfo implements IsSerializable, VibeRpcResponseData {
 	}
 	
 	/**
-	 * Constructor method.
+	 * Constructor method for a URL based HistoryInfo.
 	 *
+	 * @param selectedMastheadCollection
 	 * @param url
 	 * @param instigator
-	 * @param selectedMastheadCollection
 	 */
-	public HistoryInfo(String url, Instigator instigator, CollectionType selectedMastheadCollection) {
+	public HistoryInfo(CollectionType selectedMastheadCollection, String url, Instigator instigator) {
 		// Initialize this object...
 		this();
 
 		// ...and store the parameters.
-		setUrl(                       url                       );
-		setInstigator(                instigator                );
-		setSelectedMastheadCollection(selectedMastheadCollection);
+		setSelectedMastheadCollection(selectedMastheadCollection  );
+		setItemType(                  ItemType.URL                );
+		setUrlInfo(                   new UrlInfo(url, instigator));
 	}
 	
 	/**
@@ -87,15 +146,15 @@ public class HistoryInfo implements IsSerializable, VibeRpcResponseData {
 	 * @return
 	 */
 	public CollectionType getSelectedMastheadCollection() {return m_selectedMastheadCollection;}
-	public Instigator     getInstigator()                 {return m_instigator;                }
-	public String         getUrl()                        {return m_url;                       }
-
+	public ItemType       getItemType()                   {return m_itemType;                  }
+	public UrlInfo        getUrlInfo()                    {return m_urlInfo;                   }
+	
 	/**
 	 * Set'er methods.
 	 * 
 	 * @param
 	 */
 	public void setSelectedMastheadCollection(CollectionType selectedMastheadCollection) {m_selectedMastheadCollection = selectedMastheadCollection;}
-	public void setInstigator(                Instigator     instigator)                 {m_instigator                 = instigator;                }
-	public void setUrl(                       String         url)                        {m_url                        = url;                       }
+	public void setItemType(                  ItemType       itemType)                   {m_itemType                   = itemType;                  }
+	public void setUrlInfo(                   UrlInfo        urlInfo)                    {m_urlInfo                    = urlInfo;                   }
 }

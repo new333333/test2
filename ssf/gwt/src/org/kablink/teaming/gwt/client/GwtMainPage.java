@@ -106,7 +106,6 @@ import org.kablink.teaming.gwt.client.rpc.shared.ChangeFavoriteStateCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.CollectionPointData;
 import org.kablink.teaming.gwt.client.rpc.shared.GetBinderPermalinkCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetCollectionPointDataCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.GetHistoryInfoCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetMainPageInfoCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetPersonalPrefsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetUserWorkspaceInfoCmd;
@@ -129,6 +128,7 @@ import org.kablink.teaming.gwt.client.util.BinderInfoHelper;
 import org.kablink.teaming.gwt.client.util.CollectionType;
 import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+import org.kablink.teaming.gwt.client.util.HistoryHelper;
 import org.kablink.teaming.gwt.client.util.HistoryInfo;
 import org.kablink.teaming.gwt.client.util.OnBrowseHierarchyInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
@@ -188,10 +188,7 @@ import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.dom.client.Style.Unit;
-import com.google.gwt.event.logical.shared.ValueChangeEvent;
-import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.user.client.Event;
-import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Event.NativePreviewEvent;
 import com.google.gwt.user.client.Window;
@@ -397,10 +394,10 @@ public class GwtMainPage extends ResizeComposite
 		}
 		
 		// If browser history handling is enabled...
-		if ( HistoryInfo.ENABLE_BROWSER_HISTORY )	//! Note that this is still in development !!!
+		if ( HistoryHelper.ENABLE_BROWSER_HISTORY )	//! Note that this is still in development !!!
 		{
 			// ...initialize browser history handling. 
-			setupHistory();
+			HistoryHelper.setupHistory();
 		}
 		
 		// Construct and initialize the page.
@@ -785,7 +782,7 @@ public class GwtMainPage extends ResizeComposite
 		if ( null != browserReloadInfo )
 		{
 			// Yes!  Process the history data to perform the reload.
-			processHistoryInfoAsync( browserReloadInfo );
+			HistoryHelper.processHistoryInfoAsync( browserReloadInfo );
 		}
 		
 		else
@@ -4248,108 +4245,4 @@ public class GwtMainPage extends ResizeComposite
 		// Always use the initial form of the method.
 		prefetch(null);
 	}// end prefetch()
-	
-
-	/*
-	 * Initializes browser history handling.
-	 */
-	private void setupHistory() {
-		History.addValueChangeHandler( new ValueChangeHandler<String>()
-		{
-			@Override
-			public void onValueChange( ValueChangeEvent<String> event )
-			{
-				try
-				{
-					// If we can find the history token...
-					String historyToken = event.getValue();
-					if ( historyToken.substring( 0, HistoryInfo.HISTORY_MARKER_LENGTH ).equals( HistoryInfo.HISTORY_MARKER ) )
-					{
-						String token = historyToken.substring( HistoryInfo.HISTORY_MARKER_LENGTH );
-						if ( GwtClientHelper.hasString( token ) )
-						{
-							// ...process it...
-							processHistoryTokenAsync( token );
-							return;
-						}
-					}
-				}
-				catch ( Exception e ) {/* Ignored. */}
-				
-				// ...otherwise, simply force the content to refresh.
-				FullUIReloadEvent.fireOneAsync();
-			}
-		} );
-	}
-
-	/*
-	 * Asynchronously puts a HistoryInfo into effect.
-	 */
-	private void processHistoryInfoAsync( final HistoryInfo historyInfo )
-	{
-		GwtClientHelper.deferCommand( new ScheduledCommand()
-		{
-			@Override
-			public void execute()
-			{
-				processHistoryInfoNow( historyInfo );
-			}// end execute()
-		} );
-	}// end processHistoryInfoAsync()
-	
-	/*
-	 * Synchronously puts a HistoryInfo into effect.
-	 */
-	private void processHistoryInfoNow( final HistoryInfo historyInfo )
-	{
-		OnSelectBinderInfo osbInfo = new OnSelectBinderInfo(
-			historyInfo.getUrl(),
-			Instigator.HISTORY_ACTION );	//! historyInfo.getInstigator() );
-		osbInfo.setHistorySelectedMastheadCollection( historyInfo.getSelectedMastheadCollection() );
-		GwtTeaming.fireEvent( new ChangeContextEvent( osbInfo ) );
-	}// endprocessHistoryInfoNow()
-	
-	/*
-	 * Asynchronously processes a history token.
-	 */
-	private void processHistoryTokenAsync( final String token )
-	{
-		GwtClientHelper.deferCommand( new ScheduledCommand()
-		{
-			@Override
-			public void execute()
-			{
-				processHistoryTokenNow( token );
-			}// end execute()
-		} );
-	}// end processHistoryTokenAsync()
-	
-	/*
-	 * Synchronously processes a history token.
-	 */
-	private void processHistoryTokenNow( final String token )
-	{
-		GetHistoryInfoCmd cmd = new GetHistoryInfoCmd( token );
-		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
-		{
-			@Override
-			public void onFailure( Throwable t )
-			{
-				// On any failure, we simply force the content to
-				// reload.
-				FullUIReloadEvent.fireOneAsync();
-			}//end onFailure()
-			
-			@Override
-			public void onSuccess( VibeRpcResponse response )
-			{
-				// If we have the HistoryInfo, put it into effect,
-				// otherwise, simply force the content to reload.
-				HistoryInfo historyInfo = ((HistoryInfo) response.getResponseData());
-				if ( null != historyInfo )
-				     processHistoryInfoAsync( historyInfo );
-				else FullUIReloadEvent.fireOneAsync();
-			}// end onSuccess()
-		});
-	}// end processHistoryTokenNow()
 }// end GwtMainPage
