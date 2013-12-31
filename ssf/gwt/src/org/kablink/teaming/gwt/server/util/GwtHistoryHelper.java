@@ -42,6 +42,7 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.gwt.client.GwtTeamingException;
+import org.kablink.teaming.gwt.client.rpc.shared.BooleanRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.util.HistoryInfo;
 import org.kablink.teaming.util.SPropsUtil;
@@ -66,6 +67,32 @@ public class GwtHistoryHelper {
 		// Nothing to do.
 	}
 
+	/**
+	 * Clears the contents of a user's history map.
+	 * 
+	 * @param request
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public static BooleanRpcResponseData clearHistory(HttpServletRequest request) throws GwtTeamingException {
+		try {
+			// Simply remove the user's history map from the session.
+			// It will get recreated if something new gets pushed.
+			HttpSession session = GwtServerHelper.getCurrentHttpSession();
+			session.removeAttribute(CACHED_HISTORY);
+			return new BooleanRpcResponseData(true);
+		}
+		
+		catch (Exception ex) {
+			throw GwtLogHelper.getGwtClientException(
+				m_logger,
+				ex,
+				"GwtHistoryHelper.clearHistory( SOURCE EXCEPTION ):  ");
+		}		
+	}
+	
 	/*
 	 * Returns the history map from the session, if one exists.
 	 * Returns null otherwise.
