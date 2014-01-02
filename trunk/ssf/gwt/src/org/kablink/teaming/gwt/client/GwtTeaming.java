@@ -45,8 +45,8 @@ import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
 import org.kablink.teaming.gwt.client.tasklisting.TaskListing;
 import org.kablink.teaming.gwt.client.tasklisting.TaskListing.TaskListingClient;
 import org.kablink.teaming.gwt.client.util.HistoryHelper;
-import org.kablink.teaming.gwt.client.util.HistoryHelper.HistoryInfoCallback;
 import org.kablink.teaming.gwt.client.util.HistoryInfo;
+import org.kablink.teaming.gwt.client.util.HistoryInfoCallback;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;

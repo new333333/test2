@@ -74,7 +74,7 @@ public class HistoryInfo implements IsSerializable, VibeRpcResponseData {
 		/**
 		 * Constructor method.
 		 * 
-		 * @param asi			May be null.
+		 * @param asi
 		 * @param showSetting
 		 */
 		public HistoryActivityStreamInfo(ActivityStreamInfo asi, ActivityStreamDataType showSetting) {
@@ -89,7 +89,7 @@ public class HistoryInfo implements IsSerializable, VibeRpcResponseData {
 		/**
 		 * Constructor method.
 		 * 
-		 * @param asi	May be null.
+		 * @param asi
 		 */
 		public HistoryActivityStreamInfo(ActivityStreamInfo asi) {
 			// Always use one of the previous forms of the constructor.
