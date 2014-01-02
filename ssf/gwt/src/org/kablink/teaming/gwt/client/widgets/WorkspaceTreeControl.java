@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -673,20 +673,21 @@ public class WorkspaceTreeControl extends ResizeComposite
 		m_treeDisplay = new TreeDisplayVertical(wsTree, ti);
 		
 		// Are we starting up showing what's new?
-		if (GwtClientHelper.getRequestInfo().isShowWhatsNewOnLogin()) {
+		RequestInfo ri = GwtClientHelper.getRequestInfo();
+		if (ri.isShowWhatsNewOnLogin()) {
 			// Yes!  Then we enter activity stream mode by
 			// default.  Tell the menu about the context...
+			final boolean historyAction = ri.isShowSpecificWhatsNewHistoryAction();
 			m_mainPage.setMenuContext(selectedBinderInfo, false, "");
 			
 			// ...and enter activity stream mode.
 			m_treeDisplay.setRenderContext(selectedBinderInfo, mainPanel);
-			RequestInfo ri = GwtClientHelper.getRequestInfo();
 			GetDefaultActivityStreamCmd cmd =
 				new GetDefaultActivityStreamCmd(
 					selectedBinderInfo.getBinderIdAsLong(),
 					ri.getShowSpecificWhatsNew(),
 					ri.getShowSpecificWhatsNewId());
-			ri.clearShowSpecificWhatsOnLogin();
+			ri.clearShowSpecificWhatsNew();
 			GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
 				@Override
 				public void onFailure(Throwable t) {
@@ -700,7 +701,7 @@ public class WorkspaceTreeControl extends ResizeComposite
 					ActivityStreamInfo asi = new ActivityStreamInfo();
 					asi.setActivityStream(ActivityStream.SITE_WIDE);
 					asi.setTitle(GwtTeaming.getMessages().treeSiteWide());
-					m_treeDisplay.enterActivityStreamMode(asi, false);
+					m_treeDisplay.enterActivityStreamMode(asi, historyAction);
 				}
 				
 				@Override
@@ -715,7 +716,7 @@ public class WorkspaceTreeControl extends ResizeComposite
 						asi.setActivityStream(ActivityStream.SITE_WIDE);
 						asi.setTitle(GwtTeaming.getMessages().treeSiteWide());
 					}
-					m_treeDisplay.enterActivityStreamMode(asi, false);
+					m_treeDisplay.enterActivityStreamMode(asi, historyAction);
 				}
 			});
 		}

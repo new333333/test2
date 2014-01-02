@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -694,7 +694,6 @@ public class RequestInfo extends JavaScriptObject
 		return this.getBFromS( this.isUserLoggedIn );
 	}-*/;
 
-	
 	/**
 	 * Return whether the tinyMCE editor can run on the device the user is running on. 
 	 * 
@@ -778,8 +777,8 @@ public class RequestInfo extends JavaScriptObject
 	}-*/;
 
 	/**
-	 * Returns true if we should be showing the site wide activity
-	 * stream and false otherwise.
+	 * Interacts with the settings dealing with activity stream access
+	 * on login.
 	 * 
 	 * @return
 	 */
@@ -793,9 +792,14 @@ public class RequestInfo extends JavaScriptObject
 		this.showWhatsNewOnLogin = 'false';
 	}-*/;
 
+	public final native void setShowWhatsNewOnLogin()
+	/*-{
+		this.showWhatsNewOnLogin = 'true';
+	}-*/;
+
 	/**
-	 * Returns information about a specific ActivityStream that's
-	 * supposed to navigated to.
+	 * Interacts with settings dealing with a specific ActivityStream
+	 * being navigated to.
 	 * 
 	 * @return
 	 */
@@ -803,6 +807,7 @@ public class RequestInfo extends JavaScriptObject
 	/*-{
 		return this.specificWhatsNew;
 	}-*/;
+	
 	public final ActivityStream getShowSpecificWhatsNew()
 	{
 		ActivityStream reply;
@@ -817,18 +822,38 @@ public class RequestInfo extends JavaScriptObject
 		}
 		return reply;
 	}
-	private final native void setShowSpecificWhatsNew(String asS)
+	
+	public final void setShowSpecificWhatsNew(ActivityStream as)
+	{
+		setShowSpecificWhatsNewS( String.valueOf( as.getValue() ) );
+	}
+	
+	private final native void setShowSpecificWhatsNewS(String asS)
 	/*-{
 		this.specificWhatsNew = asS;
 	}-*/;
-	public final void clearShowSpecificWhatsOnLogin()
+	
+	public final void clearShowSpecificWhatsNew()
 	{
-		setShowSpecificWhatsNew( String.valueOf( ActivityStream.UNKNOWN.getValue() ) );
+		setShowSpecificWhatsNewS( String.valueOf( ActivityStream.UNKNOWN.getValue() ) );
+		clearShowSpecificWhatsNewHistoryAction();
 	}
+	
 	private final native String getShowSpecificWhatsNewIdS()
 	/*-{
 		return this.specificWhatsNewId;
 	}-*/;
+	
+	public final void setShowSpecificWhatsNewId( Long id )
+	{
+		setShowSpecificWhatsNewIdS( String.valueOf( id ) );
+	}
+	
+	private final native void setShowSpecificWhatsNewIdS( String id )
+	/*-{
+		this.specificWhatsNewId = String( id );
+	}-*/;
+	
 	public final Long getShowSpecificWhatsNewId()
 	{
 		Long reply;
@@ -844,11 +869,37 @@ public class RequestInfo extends JavaScriptObject
 		return reply;
 	}
 	
+	public final native boolean isShowSpecificWhatsNewHistoryAction()
+	/*-{
+		return this.getBFromS( this.specificWhatsNewHistoryAction );
+	}-*/;
+	
+	public final native void clearShowSpecificWhatsNewHistoryAction()
+	/*-{
+		this.specificWhatsNewHistoryAction = 'false';
+	}-*/;
+
+	public final native void setShowSpecificWhatsNewHistoryAction()
+	/*-{
+		this.specificWhatsNewHistoryAction = 'true';
+	}-*/;
+
+	/**
+	 * Return true if the logged in user has admin rights to the
+	 * currently selected binder.
+	 * 
+	 * @return
+	 */
 	public final native boolean isBinderAdmin()
 	/*-{
 		return this.getBFromS( this.isBinderAdmin );
 	}-*/;
 	
+	/**
+	 * Interacts with the information dealing with quotas.
+	 * 
+	 * @return
+	 */
 	public final native boolean isQuotasEnabled()
 	/*-{
 		return this.getBFromS( this.isQuotasEnabled );
@@ -869,6 +920,21 @@ public class RequestInfo extends JavaScriptObject
 		return this.getBFromS( this.isQuotasDiskQuotaExceeded );
 	}-*/;
 	
+	public final native boolean isDiskQuotaHighWaterMarkExceeded()
+	/*-{
+		return this.getBFromS( this.isDiskQuotaHighWaterMarkExceeded );
+	}-*/;
+	
+	public final native String getQuotaMessage()
+	/*-{
+		return this.quotasDiskMessage;
+	}-*/;
+
+	/**
+	 * ?
+	 * 
+	 * @return
+	 */
 	public final native boolean isModifyAllowed()
 	/*-{
 		return this.getBFromS( this.isModifyAllowed );
@@ -879,20 +945,21 @@ public class RequestInfo extends JavaScriptObject
 		return this.modifyUrl;
 	}-*/;
 	
-	public final native boolean isDiskQuotaHighWaterMarkExceeded()
-	/*-{
-		return this.getBFromS( this.isDiskQuotaHighWaterMarkExceeded );
-	}-*/;
-
+	/**
+	 * ?
+	 * 
+	 * @return
+	 */
 	public final native String getDeleteUserUrl()
 	/*-{
 		return this.deleteUserUrl;
 	}-*/;
 
-	public final native String getQuotaMessage()
-	/*-{
-		return this.quotasDiskMessage;
-	}-*/;
+	/**
+	 * ?
+	 * 
+	 * @return
+	 */
 	public final native String getUserDescription()
 	/*-{
 		return this.userDescription;

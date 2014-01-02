@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -772,18 +772,42 @@ public class GwtMainPage extends ResizeComposite
 		m_contentLayoutPanel.addStyleName( "contentLayoutPanel" );
 		m_splitLayoutPanel.add( m_contentLayoutPanel );
 
-		// Is the browser being reloaded?
-		HistoryInfo browserReloadInfo = GwtTeaming.getBrowserReloadInfo();
-		if ( null != browserReloadInfo )
+		// Is the browser being reloaded on an activity stream?
+		HistoryInfo reloadInfo       = GwtTeaming.getBrowserReloadInfo();
+		boolean     isReload         = ( null != reloadInfo );
+		boolean     isReloadWhatsNew = ( isReload && reloadInfo.getItemType().isActivityStream() );
+		if ( isReloadWhatsNew )
 		{
-			// Yes!  Process the history data to perform the reload.
-			HistoryHelper.processHistoryInfoAsync( browserReloadInfo );
+			// Yes!  Set things in the RequestInfo so that the
+			// appropriate stream gets reloaded.
+			ActivityStreamInfo asi    = reloadInfo.getActivityStreamInfo().getActivityStreamInfo();
+			String[]           asiIds = asi.getBinderIds();
+			
+			m_requestInfo.setShowWhatsNewOnLogin();
+			m_requestInfo.setShowSpecificWhatsNew( asi.getActivityStream() );
+			if ( ( null != asiIds ) && ( 0 < asiIds.length ) )
+			{
+				m_requestInfo.setShowSpecificWhatsNewId( Long.parseLong( asiIds[0] ) );
+			}
+			m_requestInfo.setShowSpecificWhatsNewHistoryAction();
+		}
+		
+		// Is the browser being reloaded on other than an activity
+		// stream?
+		if ( isReload && ( ! isReloadWhatsNew ) )
+		{
+			// Yes!  Process the history data directly to perform the
+			// reload.
+			HistoryHelper.processHistoryInfoAsync( reloadInfo );
 		}
 		
 		else
 		{
-			// No, the browser isn't being reloaded!  Do we have a URL
-			// we should set the ContentControl to?
+			// No, the browser isn't being reloaded or its being
+			// reloaded on an activity stream!  Do we have a URL we
+			// should set the ContentControl to?  (Note we do this in
+			// the reload activity stream case so that we have a
+			// context loaded for the activity stream to run on.)
 			String url = m_requestInfo.getAdaptedUrl();
 			if ( GwtClientHelper.hasString( url ) )
 			{
@@ -797,7 +821,7 @@ public class GwtMainPage extends ResizeComposite
 				}
 				
 				// ...and put the URL into affect.
-				gotoUrlAsync( url );
+				gotoUrlAsync( url, isReload );
 			}
 		}
 		
@@ -2219,15 +2243,20 @@ public class GwtMainPage extends ResizeComposite
 	 * This method will be called asynchronously goto a URL,
 	 * permalink or otherwise, received as a parameter.
 	 */
-	private void gotoUrlAsync( final String url )
+	private void gotoUrlAsync( final String url, final boolean historyAction )
 	{
 		GwtClientHelper.deferCommand( new ScheduledCommand() {
 			@Override
 			public void execute()
 			{
-				gotoUrlNow( url );
+				gotoUrlNow( url, historyAction );
 			}// end execute()
 		} );
+	}// end gotoUrlAsync()
+	
+	private void gotoUrlAsync( final String url )
+	{
+		gotoUrlAsync( url, false );
 	}// end gotoUrlAsync()
 	
 	private void gotoUrlAsync_FromJSP( final String url )
@@ -2287,7 +2316,7 @@ public class GwtMainPage extends ResizeComposite
 	 * This method will be called synchronously goto a URL,
 	 * permalink or otherwise, received as a parameter.
 	 */
-	private void gotoUrlNow( final String url )
+	private void gotoUrlNow( final String url, final boolean historyAction )
 	{
 		// Change the browser's URL.
 		OnSelectBinderInfo osbInfo = new OnSelectBinderInfo(
@@ -2296,7 +2325,9 @@ public class GwtMainPage extends ResizeComposite
 		
 		if ( GwtClientHelper.validateOSBI( osbInfo ) )
 		{
-			GwtTeaming.fireEvent( new ChangeContextEvent( osbInfo ) );
+			ChangeContextEvent ccEvent = new ChangeContextEvent( osbInfo );
+			ccEvent.setHistoryAction( historyAction );
+			GwtTeaming.fireEvent( ccEvent );
 		}
 	}//end gotoUrlNow()
 	
