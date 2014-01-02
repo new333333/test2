@@ -70,13 +70,6 @@ public class HistoryHelper {
 	private final static String	HISTORY_MARKER			= "history";				// Marker appended to a URL with a history token so that we can relocate the URL during browser navigations.
 	private final static int	HISTORY_MARKER_LENGTH	= HISTORY_MARKER.length();	// Length of HISTORY_MARKER.
 
-	/**
-	 * Callback interface used to interact with getHistoryInfo().
-	 */
-	public interface HistoryInfoCallback {
-		public void historyInfo(HistoryInfo hi);
-	}
-	
 	/*
 	 * Constructor method. 
 	 */
@@ -182,12 +175,12 @@ public class HistoryHelper {
 			public void onValueChange(ValueChangeEvent<String> event) {
 				try {
 					// If we can find the history token...
-					String historyToken = event.getValue();
-					if (historyToken.substring(0, HISTORY_MARKER_LENGTH).equals(HISTORY_MARKER)) {
-						String token = historyToken.substring(HISTORY_MARKER_LENGTH);
-						if (GwtClientHelper.hasString(token)) {
+					String historyMarker = event.getValue();
+					if (historyMarker.substring(0, HISTORY_MARKER_LENGTH).equals(HISTORY_MARKER)) {
+						String historyToken = historyMarker.substring(HISTORY_MARKER_LENGTH);
+						if (GwtClientHelper.hasString(historyToken)) {
 							// ...process it...
-							processHistoryTokenAsync(token);
+							processHistoryTokenAsync(historyToken);
 							return;
 						}
 					}
@@ -264,13 +257,13 @@ public class HistoryHelper {
 	/**
 	 * Asynchronously processes a history token.
 	 * 
-	 * @param token
+	 * @param historyToken
 	 */
-	public static void processHistoryTokenAsync(final String token) {
+	public static void processHistoryTokenAsync(final String historyToken) {
 		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
-				processHistoryTokenNow(token);
+				processHistoryTokenNow(historyToken);
 			}
 		});
 	}
@@ -278,8 +271,8 @@ public class HistoryHelper {
 	/*
 	 * Synchronously processes a history token.
 	 */
-	private static void processHistoryTokenNow(final String token) {
-		GwtClientHelper.executeCommand(new GetHistoryInfoCmd(token), new AsyncCallback<VibeRpcResponse>() {
+	private static void processHistoryTokenNow(final String historyToken) {
+		GwtClientHelper.executeCommand(new GetHistoryInfoCmd(historyToken), new AsyncCallback<VibeRpcResponse>() {
 			@Override
 			public void onFailure(Throwable t) {
 				// On any failure, we simply force the content to
@@ -341,11 +334,11 @@ public class HistoryHelper {
 			
 			@Override
 			public void onSuccess(VibeRpcResponse response) {
-				String token = ((StringRpcResponseData) response.getResponseData()).getStringValue();
-				if (GwtClientHelper.hasString(token)) {
+				String historyToken = ((StringRpcResponseData) response.getResponseData()).getStringValue();
+				if (GwtClientHelper.hasString(historyToken)) {
 					History.newItem(
-						(HISTORY_MARKER + token),	// History token.
-						false);						// false -> Don't fire a change event for this item.
+						(HISTORY_MARKER + historyToken),	// History marker.
+						false);								// false -> Don't fire a change event for this item.
 				}
 			}
 		});
@@ -362,6 +355,12 @@ public class HistoryHelper {
 		// If browser history handling is not enabled...
 		if (!HistoryHelper.ENABLE_BROWSER_HISTORY) {	//! Note that this is still in development !!!
 			// ...bail.
+			return;
+		}
+
+		// If the URL is simply forcing the UI to reload...
+		if (Instigator.FORCE_FULL_RELOAD.equals(instigator)) {
+			// ...we don't add that to the history.
 			return;
 		}
 		
@@ -391,11 +390,11 @@ public class HistoryHelper {
 			
 			@Override
 			public void onSuccess(VibeRpcResponse response) {
-				String token = ((StringRpcResponseData) response.getResponseData()).getStringValue();
-				if (GwtClientHelper.hasString(token)) {
+				String historyToken = ((StringRpcResponseData) response.getResponseData()).getStringValue();
+				if (GwtClientHelper.hasString(historyToken)) {
 					History.newItem(
-						(HISTORY_MARKER + token),	// History token.
-						false);						// false -> Don't fire a change event for this item.
+						(HISTORY_MARKER + historyToken),	// History marker.
+						false);								// false -> Don't fire a change event for this item.
 				}
 			}
 		});

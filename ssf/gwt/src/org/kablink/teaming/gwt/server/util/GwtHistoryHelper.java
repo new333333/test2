@@ -45,6 +45,8 @@ import org.kablink.teaming.gwt.client.GwtTeamingException;
 import org.kablink.teaming.gwt.client.rpc.shared.BooleanRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.util.HistoryInfo;
+import org.kablink.teaming.gwt.client.util.HistoryInfo.HistoryActivityStreamInfo;
+import org.kablink.teaming.gwt.client.util.HistoryInfo.HistoryUrlInfo;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.web.util.GwtUISessionData;
 
@@ -82,6 +84,7 @@ public class GwtHistoryHelper {
 			// It will get recreated if something new gets pushed.
 			HttpSession session = GwtServerHelper.getCurrentHttpSession();
 			session.removeAttribute(CACHED_HISTORY);
+			dumpHistoryInfo("clear", "all", null);
 			return new BooleanRpcResponseData(true);
 		}
 		
@@ -91,6 +94,48 @@ public class GwtHistoryHelper {
 				ex,
 				"GwtHistoryHelper.clearHistory( SOURCE EXCEPTION ):  ");
 		}		
+	}
+
+	/*
+	 * Dumps the contents of a HistoryInfo object.
+	 */
+	private static void dumpHistoryInfo(String method, String historyToken, HistoryInfo hi) {
+		// If debug tracing isn't enabled...
+		if (!(GwtLogHelper.isDebugEnabled(m_logger))) {
+			// ...bail.
+			return;
+		}
+		
+		// If we weren't given a HistoryInfo to dump...
+		Long userId = GwtServerHelper.getCurrentUserId();
+		if (null == hi) {
+			// ...trace that fact and bail.
+			GwtLogHelper.debug(m_logger, "dumpHistoryInfo( " + method + ":T=" + historyToken + ":U=" + userId + " ):  No HistoryInfo supplied.");
+			return;
+		}
+		
+		// Dump the contents of the HistoryInfo.
+		GwtLogHelper.debug(m_logger, "dumpHistoryInfo( " + method + ":T=" + historyToken + ":U=" + userId + " ):");
+		GwtLogHelper.debug(m_logger, "...Masthead Collection:  "   + hi.getSelectedMastheadCollection().name());
+		GwtLogHelper.debug(m_logger, "...Type:  "                  + hi.getItemType().name());
+		switch (hi.getItemType()) {
+		case ACTIVITY_STREAM:
+			HistoryActivityStreamInfo asInfo = hi.getActivityStreamInfo();
+			GwtLogHelper.debug(m_logger, "......Show Setting:  "   + ((null == asInfo.getShowSetting()) ? "*null*" : asInfo.getShowSetting().name()));
+			GwtLogHelper.debug(m_logger, "......ActivityStream:  " + asInfo.getActivityStreamInfo().getStreamName());
+			GwtLogHelper.debug(m_logger, "......Title:  "          + asInfo.getActivityStreamInfo().getTitle());
+			break;
+			
+		case URL:
+			HistoryUrlInfo urlInfo = hi.getUrlInfo();
+			GwtLogHelper.debug(m_logger, "......Instigator:  "     + urlInfo.getInstigator().name());
+			GwtLogHelper.debug(m_logger, "......URL:  "            + urlInfo.getUrl());
+			break;
+		
+		default:
+			GwtLogHelper.debug(m_logger, "......*Internal Error*:  No history item type handler.");
+			break;
+		}
 	}
 	
 	/*
@@ -127,6 +172,8 @@ public class GwtHistoryHelper {
 			if (null == historyMap)
 			     reply = null;
 			else reply = historyMap.get(historyToken);
+			
+			dumpHistoryInfo("get", historyToken, reply);
 			return reply;
 		}
 		
@@ -172,9 +219,10 @@ public class GwtHistoryHelper {
 			}
 
 			// Store the HistoryInfo in the history map.
-			String token = String.valueOf(new Date().getTime());
-			historyMap.put(token, historyInfo);
-			StringRpcResponseData reply = new StringRpcResponseData(token);
+			String historyToken = String.valueOf(new Date().getTime());
+			historyMap.put(historyToken, historyInfo);
+			StringRpcResponseData reply = new StringRpcResponseData(historyToken);
+			dumpHistoryInfo("push", historyToken, historyInfo);
 			return reply;
 		}
 		

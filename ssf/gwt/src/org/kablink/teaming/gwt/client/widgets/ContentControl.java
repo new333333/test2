@@ -705,13 +705,6 @@ public class ContentControl extends Composite
 	 */
 	private void setViewFromUrl( final String url, final Instigator instigator, final boolean historyAction, final CollectionType historySelectedMastheadCollection )
 	{
-		// If we're not navigating to the URL from the history...
-		if ( ! historyAction )
-		{
-			// ...push it into the history cache.
-			HistoryHelper.pushHistoryInfoAsync( url, instigator );
-		}
-		
 		// Are we running the admin console?
 		if ( m_isAdminContent )
 		{
@@ -814,9 +807,18 @@ public class ContentControl extends Composite
 									// change in context.
 									OnSelectBinderInfo osbInfo = new OnSelectBinderInfo( bi, url, instigator );
 									ContextChangedEvent ccEvent = new ContextChangedEvent( osbInfo );
-									ccEvent.setHistoryAction(historyAction);
-									ccEvent.setHistorySelectedMastheadCollection(historySelectedMastheadCollection);
+									ccEvent.setHistoryAction( historyAction );
+									ccEvent.setHistorySelectedMastheadCollection( historySelectedMastheadCollection );
 									GwtTeaming.fireEvent( ccEvent );
+									
+									// If we're not navigating from the
+									// history...
+									if ( ! historyAction )
+									{
+										// ...push the URL into the
+										// ...history cache.
+										HistoryHelper.pushHistoryInfoAsync( url, instigator );
+									}
 									
 									if ( ViewType.BINDER_WITH_ENTRY_VIEW.equals( vt ) )
 									{
@@ -1077,35 +1079,44 @@ public class ContentControl extends Composite
 							@Override
 							public void viewReady()
 							{
-								if ( historyAction )
+								GwtClientHelper.deferCommand( new ScheduledCommand()
 								{
-									GwtTeaming.fireEventAsync(
-										new SetFilrActionFromCollectionTypeEvent(
-											historySelectedMastheadCollection));
-								}
-								
-								EntityId eid = vfei.getEntityId();
-								if ( vi.isInvokeShare() )
-								{
-									if ( vi.isInvokeShareEnabled() )
+									@Override
+									public void execute()
 									{
-										GwtTeaming.fireEventAsync(
-											new ShareSelectedEntitiesEvent(
-												eid.getBinderId(),
-												eid ) );
-									}
-									else
-									{
-										GwtClientHelper.deferredAlert(GwtTeaming.getMessages().contentControl_Warning_ShareNoRights());
-									}
-								}
-								if ( vi.isInvokeSubscribe() )
-								{
-									GwtTeaming.fireEventAsync(
-										new SubscribeSelectedEntitiesEvent(
-											eid.getBinderId(),
-											eid ) );
-								}
+										// If we're navigating from the
+										// history, make sure the
+										// masthead matches what was
+										// there.  Otherwise, push the
+										// URL into the history cache.
+										if ( historyAction )
+										     GwtTeaming.fireEventAsync( new SetFilrActionFromCollectionTypeEvent( historySelectedMastheadCollection ) );
+										else HistoryHelper.pushHistoryInfoAsync( url, instigator );
+										
+										EntityId eid = vfei.getEntityId();
+										if ( vi.isInvokeShare() )
+										{
+											if ( vi.isInvokeShareEnabled() )
+											{
+												GwtTeaming.fireEventAsync(
+													new ShareSelectedEntitiesEvent(
+														eid.getBinderId(),
+														eid ) );
+											}
+											else
+											{
+												GwtClientHelper.deferredAlert(GwtTeaming.getMessages().contentControl_Warning_ShareNoRights());
+											}
+										}
+										if ( vi.isInvokeSubscribe() )
+										{
+											GwtTeaming.fireEventAsync(
+												new SubscribeSelectedEntitiesEvent(
+													eid.getBinderId(),
+													eid ) );
+										}
+									}// end execute()
+								} );
 							}//end viewReady()
 						} ) );
 						
