@@ -95,10 +95,10 @@ public class HistoryHelper {
 		// Request that the history be cleared from the server.
 		GwtClientHelper.executeCommand(new ClearHistoryCmd(), new AsyncCallback<VibeRpcResponse>() {
 			@Override
-			public void onFailure(Throwable t) {/* Ignored. */}
+			public void onFailure(Throwable t) {}	// Ignored.
 			
 			@Override
-			public void onSuccess(VibeRpcResponse response) {/* Ignored. */}
+			public void onSuccess(VibeRpcResponse response) {}	// Ignored.
 		});
 	}
 	
@@ -189,7 +189,7 @@ public class HistoryHelper {
 						}
 					}
 				}
-				catch (Exception e) {/* Ignored. */}
+				catch (Exception e) {}	// Ignored.
 				
 				// ...otherwise, simply force the content to refresh.
 				FullUIReloadEvent.fireOneAsync();
@@ -352,7 +352,7 @@ public class HistoryHelper {
 		PushHistoryInfoCmd phiCmd = new PushHistoryInfoCmd(hi);
 		GwtClientHelper.executeCommand(phiCmd, new AsyncCallback<VibeRpcResponse>() {
 			@Override
-			public void onFailure(Throwable t) {/* Ignored. */}
+			public void onFailure(Throwable t) {}	// Ignored.
 			
 			@Override
 			public void onSuccess(VibeRpcResponse response) {
@@ -404,7 +404,7 @@ public class HistoryHelper {
 		PushHistoryInfoCmd phiCmd = new PushHistoryInfoCmd(hi);
 		GwtClientHelper.executeCommand(phiCmd, new AsyncCallback<VibeRpcResponse>() {
 			@Override
-			public void onFailure(Throwable t) {/* Ignored. */}
+			public void onFailure(Throwable t) {}	// Ignored.
 			
 			@Override
 			public void onSuccess(VibeRpcResponse response) {
@@ -460,7 +460,7 @@ public class HistoryHelper {
 		PushHistoryInfoCmd phiCmd = new PushHistoryInfoCmd(hi);
 		GwtClientHelper.executeCommand(phiCmd, new AsyncCallback<VibeRpcResponse>() {
 			@Override
-			public void onFailure(Throwable t) {/* Ignored. */}
+			public void onFailure(Throwable t) {}	// Ignored.
 			
 			@Override
 			public void onSuccess(VibeRpcResponse response) {
