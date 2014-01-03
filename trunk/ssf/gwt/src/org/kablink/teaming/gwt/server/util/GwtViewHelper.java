@@ -533,17 +533,19 @@ public class GwtViewHelper {
 					if ((null != newId) && (null != bm.getBinder(newId))) {
 						reply.setFolderId(  newId     );
 						reply.setFolderName(folderName);
-						
-						RunWithTemplate.runWith(
-							new RunWithCallback() {
-								@Override
-								public Object runWith() {
-									bm.setTeamMembershipInherited(newId, true);			
-									return null;
-								}
-							},
-							new WorkAreaOperation[]{WorkAreaOperation.BINDER_ADMINISTRATION},
-							null);
+						if (!bm.getBinder(newId).isTeamMembershipInherited()) {
+							//Make sure team memberships are inherited
+							RunWithTemplate.runWith(
+								new RunWithCallback() {
+									@Override
+									public Object runWith() {
+										bm.setTeamMembershipInherited(newId, true);			
+										return null;
+									}
+								},
+								new WorkAreaOperation[]{WorkAreaOperation.BINDER_ADMINISTRATION},
+								null);
+						}
 					}
 				}
 				
