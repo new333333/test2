@@ -42,10 +42,12 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.gwt.client.GwtTeamingException;
+import org.kablink.teaming.gwt.client.admin.GwtAdminAction;
 import org.kablink.teaming.gwt.client.rpc.shared.BooleanRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.util.HistoryInfo;
 import org.kablink.teaming.gwt.client.util.HistoryInfo.HistoryActivityStreamInfo;
+import org.kablink.teaming.gwt.client.util.HistoryInfo.HistoryAdminActionInfo;
 import org.kablink.teaming.gwt.client.util.HistoryInfo.HistoryUrlInfo;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.web.util.GwtUISessionData;
@@ -124,6 +126,19 @@ public class GwtHistoryHelper {
 			GwtLogHelper.debug(m_logger, "......Show Setting:  "   + ((null == asInfo.getShowSetting()) ? "*null*" : asInfo.getShowSetting().name()));
 			GwtLogHelper.debug(m_logger, "......ActivityStream:  " + asInfo.getActivityStreamInfo().getStreamName());
 			GwtLogHelper.debug(m_logger, "......Title:  "          + asInfo.getActivityStreamInfo().getTitle());
+			break;
+
+		case ADMIN_ACTION:
+			HistoryAdminActionInfo aaInfo = hi.getAdminActionInfo();
+			GwtAdminAction adminAction = aaInfo.getAdminAction();
+			if (null == adminAction) {
+				GwtLogHelper.debug(m_logger, "......Action:  *null*");
+			}
+			else {
+				GwtLogHelper.debug(m_logger, "......Action:  "         +                                                       adminAction.getActionType().name());
+				GwtLogHelper.debug(m_logger, "......Localized Name:  " + ((null == adminAction.getLocalizedName() ? "*null*" : adminAction.getLocalizedName()  )));
+				GwtLogHelper.debug(m_logger, "......URL:  "            + ((null == adminAction.getUrl()           ? "*null*" : adminAction.getUrl()            )));
+			}
 			break;
 			
 		case URL:

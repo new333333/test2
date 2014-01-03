@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -39,6 +39,7 @@ import org.kablink.teaming.gwt.client.datatable.ManageMobileDevicesDlg;
 import org.kablink.teaming.gwt.client.datatable.ManageMobileDevicesDlg.ManageMobileDevicesDlgClient;
 import org.kablink.teaming.gwt.client.event.EditSiteBrandingEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
+import org.kablink.teaming.gwt.client.event.AdministrationActionEvent;
 import org.kablink.teaming.gwt.client.event.InvokeConfigureAdhocFoldersDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeConfigureFileSyncAppDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeConfigureMobileAppsDlgEvent;
@@ -85,6 +86,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.GetUpgradeInfoCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveBrandingCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+import org.kablink.teaming.gwt.client.util.HistoryHelper;
 import org.kablink.teaming.gwt.client.util.MobileDevicesInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 import org.kablink.teaming.gwt.client.util.runasync.ConfigureFileSyncAppDlgInitAndShowParams;
@@ -152,7 +154,8 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
  */
 public class AdminControl extends TeamingPopupPanel
 	implements 
-	// Event handlers implemented by this class.
+		// Event handlers implemented by this class.
+		AdministrationActionEvent.Handler,
 		EditSiteBrandingEvent.Handler,
 		InvokeConfigureAdhocFoldersDlgEvent.Handler,
 		InvokeConfigureFileSyncAppDlgEvent.Handler,
@@ -214,6 +217,7 @@ public class AdminControl extends TeamingPopupPanel
 	// this array is used.
 	private TeamingEvents[] m_registeredEvents = new TeamingEvents[] {
 		// Administration events.
+		TeamingEvents.ADMINISTRATION_ACTION,
 		TeamingEvents.EDIT_SITE_BRANDING,
 		TeamingEvents.INVOKE_CONFIGURE_ADHOC_FOLDERS_DLG,
 		TeamingEvents.INVOKE_CONFIGURE_FILE_SYNC_APP_DLG,
@@ -289,7 +293,11 @@ public class AdminControl extends TeamingPopupPanel
 		@Override
 		public void onClick( ClickEvent event )
 		{
-			// Tell the AdminControl that an action was selected.
+			// Push it into the history cache...
+			HistoryHelper.pushHistoryInfoAsync( m_adminAction );
+			
+			// ...and tell the AdminControl that an action was
+			// ...selected.
 			adminActionSelected( m_adminAction );
 		}// end onClick()
 		
@@ -1861,6 +1869,25 @@ public class AdminControl extends TeamingPopupPanel
 		// handlers.
 		super.onDetach();
 		unregisterEvents();
+	}
+	
+	/**
+	 * Handles AdministrationActionEvent's received by this class.
+	 * 
+	 * Implements the AdministrationActionEvent.Handler.onAdministrationAction() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onAdministrationAction( AdministrationActionEvent event )
+	{
+		GwtAdminAction adminAction = event.getAdminAction();
+		if (null == adminAction)
+		{
+			GwtClientHelper.deferredAlert("AdminControl.onAdministrationAction( *Internal Error* ):  There was no GwtAdminAction supplied with the event.");
+			return;
+		}
+		adminActionSelected( adminAction );
 	}
 	
 	/**

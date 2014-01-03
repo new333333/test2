@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -32,6 +32,7 @@
  */
 package org.kablink.teaming.gwt.client.util;
 
+import org.kablink.teaming.gwt.client.admin.GwtAdminAction;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponseData;
 import org.kablink.teaming.gwt.client.util.CollectionType;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
@@ -47,6 +48,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 public class HistoryInfo implements IsSerializable, VibeRpcResponseData {
 	private CollectionType				m_selectedMastheadCollection;	// The collection type selected in the masthead when the HistoryInfo was created.
 	private HistoryActivityStreamInfo	m_asInfo;						// Refers to the HistoryActivityStreamInfo when m_itemType is ACTIVITY_STREAM.
+	private HistoryAdminActionInfo		m_aaInfo;						// Refers to the HistoryAdminActionInfo when m_itemType is ADMIN_ACTION.
 	private HistoryItemType				m_itemType;						// The type of HistoryInfo this object represents.
 	private HistoryUrlInfo				m_urlInfo;						// Refers to the HistoryUrlInfo when m_itemType is URL.
 
@@ -122,6 +124,51 @@ public class HistoryInfo implements IsSerializable, VibeRpcResponseData {
 		public void setShowSetting(       ActivityStreamDataType showSetting) {m_showSetting = showSetting;}
 		public void setActivityStreamInfo(ActivityStreamInfo     asi)         {m_asi         = asi;        }
 	}
+
+	/**
+	 * Inner class used to describe an administrative action based
+	 * history item. 
+	 */
+	public static class HistoryAdminActionInfo implements IsSerializable {
+		private GwtAdminAction	m_adminAction;	//
+		
+		/*
+		 * Constructor method.
+		 * 
+		 * For GWT serialization, must have a zero parameter constructor.
+		 */
+		private HistoryAdminActionInfo() {
+			// Initialize the super class.
+			super();
+		}
+		
+		/**
+		 * Class constructor.
+		 * 
+		 * @param adminAction
+		 */
+		public HistoryAdminActionInfo(GwtAdminAction adminAction) {
+			// Initialize this object...
+			this();
+
+			// ...and store the parameter.
+			setAdminAction(adminAction);
+		}
+		
+		/**
+		 * Get'er methods.
+		 * 
+		 * @return
+		 */
+		public GwtAdminAction getAdminAction() {return m_adminAction;}
+		
+		/**
+		 * Set'er methods.
+		 * 
+		 * @param
+		 */
+		public void setAdminAction(GwtAdminAction adminAction) {m_adminAction = adminAction;}
+	}
 	
 	/**
 	 * Enumeration that specifies the type of item a HistoryInfo
@@ -129,12 +176,14 @@ public class HistoryInfo implements IsSerializable, VibeRpcResponseData {
 	 */
 	public enum HistoryItemType implements IsSerializable {
 		ACTIVITY_STREAM,
+		ADMIN_ACTION,
 		URL;
 		
 		/**
 		 * Get'er methods.
 		 */
 		public boolean isActivityStream() {return this.equals(ACTIVITY_STREAM);}
+		public boolean isAdminAction()    {return this.equals(ADMIN_ACTION);   } 
 		public boolean isUrl()            {return this.equals(URL);            }
 	}
 
@@ -215,6 +264,23 @@ public class HistoryInfo implements IsSerializable, VibeRpcResponseData {
 	}
 	
 	/**
+	 * Constructor method for an administrative action based
+	 * HistoryInfo.
+	 *
+	 * @param selectedMastheadCollection
+	 * @param adminAction
+	 */
+	public HistoryInfo(CollectionType selectedMastheadCollection, GwtAdminAction adminAction) {
+		// Initialize this object...
+		this();
+
+		// ...and store the parameters.
+		setSelectedMastheadCollection(selectedMastheadCollection             );
+		setItemType(                  HistoryItemType.ADMIN_ACTION           );
+		setAdminActionInfo(           new HistoryAdminActionInfo(adminAction));
+	}
+	
+	/**
 	 * Constructor method for a URL based HistoryInfo.
 	 *
 	 * @param selectedMastheadCollection
@@ -238,6 +304,7 @@ public class HistoryInfo implements IsSerializable, VibeRpcResponseData {
 	 */
 	public CollectionType            getSelectedMastheadCollection() {return m_selectedMastheadCollection;}
 	public HistoryActivityStreamInfo getActivityStreamInfo()         {return m_asInfo;                    }
+	public HistoryAdminActionInfo    getAdminActionInfo()            {return m_aaInfo;                    }
 	public HistoryItemType           getItemType()                   {return m_itemType;                  }
 	public HistoryUrlInfo            getUrlInfo()                    {return m_urlInfo;                   }
 	
@@ -248,6 +315,7 @@ public class HistoryInfo implements IsSerializable, VibeRpcResponseData {
 	 */
 	public void setSelectedMastheadCollection(CollectionType            selectedMastheadCollection) {m_selectedMastheadCollection = selectedMastheadCollection;}
 	public void setActivityStreamInfo(        HistoryActivityStreamInfo asInfo)                     {m_asInfo                     = asInfo;                    }
+	public void setAdminActionInfo(           HistoryAdminActionInfo    aaInfo)                     {m_aaInfo                     = aaInfo;                    }
 	public void setItemType(                  HistoryItemType           itemType)                   {m_itemType                   = itemType;                  }
 	public void setUrlInfo(                   HistoryUrlInfo            urlInfo)                    {m_urlInfo                    = urlInfo;                   }
 }

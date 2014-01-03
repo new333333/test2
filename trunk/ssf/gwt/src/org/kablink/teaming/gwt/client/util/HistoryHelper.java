@@ -33,8 +33,11 @@
 package org.kablink.teaming.gwt.client.util;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.admin.GwtAdminAction;
 import org.kablink.teaming.gwt.client.event.ActivityStreamEnterEvent;
 import org.kablink.teaming.gwt.client.event.ActivityStreamEvent;
+import org.kablink.teaming.gwt.client.event.AdministrationActionEvent;
+import org.kablink.teaming.gwt.client.event.AdministrationEvent;
 import org.kablink.teaming.gwt.client.event.ChangeContextEvent;
 import org.kablink.teaming.gwt.client.event.FullUIReloadEvent;
 import org.kablink.teaming.gwt.client.event.GetSidebarCollectionEvent;
@@ -47,6 +50,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.PushHistoryInfoCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.HistoryInfo.HistoryActivityStreamInfo;
+import org.kablink.teaming.gwt.client.util.HistoryInfo.HistoryAdminActionInfo;
 import org.kablink.teaming.gwt.client.util.HistoryInfo.HistoryItemType;
 import org.kablink.teaming.gwt.client.util.HistoryInfo.HistoryUrlInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
@@ -231,6 +235,26 @@ public class HistoryHelper {
 					historyInfo.getSelectedMastheadCollection()));
 
 			break;
+
+		case ADMIN_ACTION:
+			// An Administration Action!  Put it into effect... 
+			HistoryAdminActionInfo aaInfo = historyInfo.getAdminActionInfo();
+			GwtAdminAction adminAction = aaInfo.getAdminAction();
+			VibeEventBase<?> aEvent;
+			if (null == adminAction)
+			     aEvent = new AdministrationEvent();
+			else aEvent = new AdministrationActionEvent(adminAction);
+			aEvent.setHistoryAction(true);
+			aEvent.setHistorySelectedMastheadCollection(historyInfo.getSelectedMastheadCollection());
+			GwtTeaming.fireEvent(aEvent);
+			
+			// ...and make sure the masthead selection is what it
+			// ...should be for this HistoryInfo.
+			GwtTeaming.fireEventAsync(
+				new SetFilrActionFromCollectionTypeEvent(
+					historyInfo.getSelectedMastheadCollection()));
+			
+			break;
 			
 		case URL:
 			// A URL!  Put it into effect.
@@ -246,7 +270,6 @@ public class HistoryHelper {
 		default:
 			// Whatever it is, code hasn't been written to handle this
 			// yet!  Tell the user about the problem.
-//!			...this needs to be implemented...
 			GwtClientHelper.debugAlert(
 				"HistoryHelper.processHistoryInfoNow( Unhandled history type:  " + historyType.name() + " ):  ...this needs to be implemented...");
 			
@@ -293,8 +316,59 @@ public class HistoryHelper {
 	}
 	
 	/**
-	 * Asynchronously pushes an activity stream based HistoryInfo on
-	 * the user's history stack.
+	 * Asynchronously pushes an administrative action based HistoryInfo
+	 * into the user's history cache.
+	 * 
+	 * @param adminAction
+	 */
+	public static void pushHistoryInfoAsync(final GwtAdminAction adminAction) {
+		// If browser history handling is not enabled...
+		if (!HistoryHelper.ENABLE_BROWSER_HISTORY) {	//! Note that this is still in development !!!
+			// ...bail.
+			return;
+		}
+
+		// Get the collection that's selection in the masthead...
+		GwtTeaming.fireEventAsync(new GetSidebarCollectionEvent(new CollectionCallback() {
+			@Override
+			public void collection(final CollectionType selectedMastheadCollection) {
+				GwtClientHelper.deferCommand(new ScheduledCommand() {
+					@Override
+					public void execute() {
+						// ...and push the history information.
+						pushHistoryInfoNow(selectedMastheadCollection, adminAction);
+					}
+				});
+			}
+		}));
+	}
+	
+	/*
+	 * Synchronously pushes an administration action based HistoryInfo
+	 * into the user's history cache.
+	 */
+	private static void pushHistoryInfoNow(final CollectionType selectedMastheadCollection, final GwtAdminAction adminAction) {
+		HistoryInfo        hi     = new HistoryInfo(selectedMastheadCollection, adminAction);
+		PushHistoryInfoCmd phiCmd = new PushHistoryInfoCmd(hi);
+		GwtClientHelper.executeCommand(phiCmd, new AsyncCallback<VibeRpcResponse>() {
+			@Override
+			public void onFailure(Throwable t) {/* Ignored. */}
+			
+			@Override
+			public void onSuccess(VibeRpcResponse response) {
+				String historyToken = ((StringRpcResponseData) response.getResponseData()).getStringValue();
+				if (GwtClientHelper.hasString(historyToken)) {
+					History.newItem(
+						(HISTORY_MARKER + historyToken),	// History marker.
+						false);								// false -> Don't fire a change event for this item.
+				}
+			}
+		});
+	}
+
+	/**
+	 * Asynchronously pushes an activity stream based HistoryInfo into
+	 * the user's history cache.
 	 * 
 	 * @param asi
 	 * @param asdt
@@ -322,8 +396,8 @@ public class HistoryHelper {
 	}
 	
 	/*
-	 * Synchronously pushes an activity stream based HistoryInfo on
-	 * the user's history stack.
+	 * Synchronously pushes an activity stream based HistoryInfo into
+	 * the user's history cache.
 	 */
 	private static void pushHistoryInfoNow(final CollectionType selectedMastheadCollection, final ActivityStreamInfo asi, final ActivityStreamDataType asdt) {
 		HistoryInfo        hi     = new HistoryInfo(selectedMastheadCollection, asi, asdt);
@@ -345,8 +419,8 @@ public class HistoryHelper {
 	}
 
 	/**
-	 * Asynchronously pushes a URL based HistoryInfo on the user's
-	 * history stack.
+	 * Asynchronously pushes a URL based HistoryInfo into the user's
+	 * history cache.
 	 * 
 	 * @param url
 	 * @param instigator
@@ -378,8 +452,8 @@ public class HistoryHelper {
 	}
 	
 	/*
-	 * Synchronously pushes a URL based HistoryInfo on the user's
-	 * history stack.
+	 * Synchronously pushes a URL based HistoryInfo into the user's
+	 * history cache.
 	 */
 	private static void pushHistoryInfoNow(final CollectionType selectedMastheadCollection, final String url, final Instigator instigator) {
 		HistoryInfo        hi     = new HistoryInfo(selectedMastheadCollection, url, instigator);

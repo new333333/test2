@@ -36,12 +36,14 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import org.kablink.teaming.gwt.client.UIStateManager.UIState;
+import org.kablink.teaming.gwt.client.admin.GwtAdminAction;
 import org.kablink.teaming.gwt.client.binderviews.ProfileEntryDlg;
 import org.kablink.teaming.gwt.client.binderviews.ProfileEntryDlg.ProfileEntryDlgClient;
 import org.kablink.teaming.gwt.client.binderviews.util.BinderViewsHelper;
 import org.kablink.teaming.gwt.client.event.ActivityStreamEnterEvent;
 import org.kablink.teaming.gwt.client.event.ActivityStreamEvent;
 import org.kablink.teaming.gwt.client.event.ActivityStreamExitEvent;
+import org.kablink.teaming.gwt.client.event.AdministrationActionEvent;
 import org.kablink.teaming.gwt.client.event.AdministrationEvent;
 import org.kablink.teaming.gwt.client.event.AdministrationExitEvent;
 import org.kablink.teaming.gwt.client.event.AdministrationUpgradeCheckEvent;
@@ -210,6 +212,7 @@ public class GwtMainPage extends ResizeComposite
 		ActivityStreamEvent.Handler,
 		ActivityStreamEnterEvent.Handler,
 		ActivityStreamExitEvent.Handler,
+		AdministrationActionEvent.Handler,
 		AdministrationEvent.Handler,
 		AdministrationExitEvent.Handler,
 		AdministrationUpgradeCheckEvent.Handler,
@@ -299,6 +302,7 @@ public class GwtMainPage extends ResizeComposite
 		
 		// Administration events.
 		TeamingEvents.ADMINISTRATION,
+		TeamingEvents.ADMINISTRATION_ACTION,
 		TeamingEvents.ADMINISTRATION_EXIT,
 		TeamingEvents.ADMINISTRATION_UPGRADE_CHECK,
 		
@@ -2425,6 +2429,43 @@ public class GwtMainPage extends ResizeComposite
 	}//end onActivityStreamExit()
 
 	/**
+	 * Handles AdministrationActionEvent's received by this class.
+	 * 
+	 * Implements the AdministrationActionEvent.Handler.onAdministrationAction() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onAdministrationAction( AdministrationActionEvent event )
+	{
+		// If we're not entering the activity stream from the
+		// history...
+		GwtAdminAction adminAction = event.getAdminAction();
+		if ( ! event.isHistoryAction() )
+		{
+			// ...push it into the history cache.
+			HistoryHelper.pushHistoryInfoAsync( adminAction );
+		}
+
+		// Is the administration console currently active?
+		if ( !isAdminActive() )
+		{
+			// No!  Activate it.  Save the current ui state.
+			saveUIState();
+			
+			// Hide any popup entry iframe divs...
+			GwtClientHelper.jsHideEntryPopupDiv();
+			
+			// ...and show the admin control.
+			showAdminControl();
+			
+//!			...this needs to be implemented...
+			GwtClientHelper.deferredAlert("GwtMainPage.onAdministrationAction( Activate '" + adminAction.getActionType().name() + "' ):  ...this needs to be implemented...");
+		}
+		
+	}
+	
+	/**
 	 * Handles AdministrationEvent's received by this class.
 	 * 
 	 * Implements the AdministrationEvent.Handler.onAdministration() method.
@@ -2434,6 +2475,14 @@ public class GwtMainPage extends ResizeComposite
 	@Override
 	public void onAdministration( AdministrationEvent event )
 	{
+		// If we're not entering the activity stream from the
+		// history...
+		if ( ! event.isHistoryAction() )
+		{
+			// ...push it into the history cache.
+			HistoryHelper.pushHistoryInfoAsync( (GwtAdminAction) null );
+		}
+		
 		// Save the current ui state
 		saveUIState();
 		
