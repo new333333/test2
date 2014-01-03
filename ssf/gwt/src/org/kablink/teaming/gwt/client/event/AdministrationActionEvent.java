@@ -32,35 +32,64 @@
  */
 package org.kablink.teaming.gwt.client.event;
 
-import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.admin.GwtAdminAction;
 
 import com.google.gwt.event.shared.EventHandler;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 import com.google.web.bindery.event.shared.SimpleEventBus;
 
 /**
- * The AdministrationEvent is used to activate administration mode.
+ * The AdministrationActionEvent is used to activate an administration
+ * action.
  * 
  * @author drfoster@novell.com
  */
-public class AdministrationEvent extends VibeEventBase<AdministrationEvent.Handler> {
+public class AdministrationActionEvent extends VibeEventBase<AdministrationActionEvent.Handler> {
 	public static Type<Handler> TYPE = new Type<Handler>();
+	
+	private GwtAdminAction	m_adminAction;	//
 	
 	/**
 	 * Handler interface for this event.
 	 */
 	public interface Handler extends EventHandler {
-		void onAdministration(AdministrationEvent event);
+		void onAdministrationAction(AdministrationActionEvent event);
 	}
 	
+	/*
+	 * Class constructor.
+	 */
+	private AdministrationActionEvent() {
+		// Initialize the super class.
+		super();
+	}
+
 	/**
 	 * Class constructor.
 	 * 
-	 * @param asi
+	 * @param adminAction
 	 */
-	public AdministrationEvent() {
-		super();
+	public AdministrationActionEvent(GwtAdminAction adminAction) {
+		// Initialize this object...
+		this();
+		
+		// ...and store the parameter.
+		setAdminAction(adminAction);
 	}
+	
+	/**
+	 * Get'er methods.
+	 * 
+	 * @return
+	 */
+	public GwtAdminAction getAdminAction() {return m_adminAction;}
+	
+	/**
+	 * Set'er methods.
+	 * 
+	 * @param
+	 */
+	public void setAdminAction(GwtAdminAction adminAction) {m_adminAction = adminAction;}
 
 	/**
 	 * Dispatches this event when one is triggered.
@@ -71,23 +100,9 @@ public class AdministrationEvent extends VibeEventBase<AdministrationEvent.Handl
 	 */
 	@Override
 	protected void doDispatch(Handler handler) {
-		handler.onAdministration(this);
+		handler.onAdministrationAction(this);
 	}
 	
-	/**
-	 * Synchronously fires a new one of these events.
-	 */
-	public static void fireOne() {
-		GwtTeaming.fireEvent(new AdministrationEvent());
-	}
-
-	/**
-	 * Asynchronously fires a new one of these events.
-	 */
-	public static void fireOneAsync() {
-		GwtTeaming.fireEventAsync(new AdministrationEvent());
-	}
-
 	/**
 	 * Returns the GwtEvent.Type of this event.
 	 *
@@ -110,7 +125,7 @@ public class AdministrationEvent extends VibeEventBase<AdministrationEvent.Handl
 	 */
 	@Override
 	public TeamingEvents getEventEnum() {
-		return TeamingEvents.ADMINISTRATION;
+		return TeamingEvents.ADMINISTRATION_ACTION;
 	}
 		
 	/**
