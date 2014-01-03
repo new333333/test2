@@ -63,6 +63,7 @@ import org.kablink.teaming.gwt.client.event.PreLogoutEvent;
 import org.kablink.teaming.gwt.client.event.SidebarHideEvent;
 import org.kablink.teaming.gwt.client.event.SidebarShowEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
+import org.kablink.teaming.gwt.client.event.VibeEventBase;
 import org.kablink.teaming.gwt.client.AdminConsoleInfo;
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtBrandingData;
@@ -121,7 +122,6 @@ import org.kablink.teaming.gwt.client.widgets.ShareThisDlg2.ShareThisDlg2Client;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
-import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.dom.client.Style.Unit;
@@ -543,9 +543,7 @@ public class AdminControl extends TeamingPopupPanel
 						@Override
 						public void onClick( ClickEvent event  )
 						{
-							Scheduler.ScheduledCommand cmd;
-							
-							cmd = new Scheduler.ScheduledCommand()
+							GwtClientHelper.deferCommand( new ScheduledCommand()
 							{
 								/**
 								 * 
@@ -557,8 +555,7 @@ public class AdminControl extends TeamingPopupPanel
 									// When we get the response the callback will open the AdminInfoDlg.
 									getUpgradeInfoFromServer( m_rpcGetUpgradeInfoCallback2 );
 								}
-							};
-							Scheduler.get().scheduleDeferred( cmd );
+							} );
 						}// end onClick()
 					}
 					);
@@ -579,9 +576,7 @@ public class AdminControl extends TeamingPopupPanel
 						@Override
 						public void onClick( ClickEvent event )
 						{
-							Scheduler.ScheduledCommand cmd;
-							
-							cmd = new Scheduler.ScheduledCommand()
+							GwtClientHelper.deferCommand( new ScheduledCommand()
 							{
 								@Override
 								public void execute()
@@ -589,8 +584,7 @@ public class AdminControl extends TeamingPopupPanel
 									// Fire the event that closes the admin console.
 									FilrActionsCtrl.closeAdminConsole();
 								}
-							};
-							Scheduler.get().scheduleDeferred( cmd );
+							} );
 						}
 					} );
 					
@@ -672,11 +666,10 @@ public class AdminControl extends TeamingPopupPanel
 				public void onSuccess( VibeRpcResponse response )
 				{
 					final GwtUpgradeInfo upgradeInfo;
-					Scheduler.ScheduledCommand cmd;
 					
 					upgradeInfo = (GwtUpgradeInfo) response.getResponseData();
 					
-					cmd = new Scheduler.ScheduledCommand()
+					GwtClientHelper.deferCommand( new ScheduledCommand()
 					{
 						@Override
 						public void execute() 
@@ -693,24 +686,20 @@ public class AdminControl extends TeamingPopupPanel
 							y = m_adminActionsTreeControl.getAbsoluteTop();
 							showAdminInfoDlg( upgradeInfo, x, y );
 						}
-					};
-					Scheduler.get().scheduleDeferred( cmd );
+					} );
 				}// end onSuccess()
 			};
 
 			// Issue a deferred command to get the administration actions the user has rights to run.
 			{
-				Scheduler.ScheduledCommand cmd;
-
-				cmd = new Scheduler.ScheduledCommand()
+				GwtClientHelper.deferCommand( new ScheduledCommand()
 				{
 					@Override
 					public void execute()
 					{
 						getAdminActionsFromServer();
 					}
-				};
-				Scheduler.get().scheduleDeferred( cmd );
+				} );
 			}
 			
 			initWidget( mainPanel );
@@ -760,7 +749,6 @@ public class AdminControl extends TeamingPopupPanel
 	{
 		super( false, false );
 		
-		Scheduler.ScheduledCommand cmd;
 		final FlowPanel mainPanel = new FlowPanel();
 		
 		mainPanel.addStyleName( "adminControl" );
@@ -802,15 +790,14 @@ public class AdminControl extends TeamingPopupPanel
 		} );
 		
 		// Issue an rpc request to get the info needed to update the home page
-		cmd = new Scheduler.ScheduledCommand()
+		GwtClientHelper.deferCommand( new ScheduledCommand()
 		{
 			@Override
 			public void execute() 
 			{
 				updateHomePage();
 			}
-		};
-		Scheduler.get().scheduleDeferred( cmd );
+		} );
 		
 		setWidget( mainPanel );
 	}// end AdminControl()
@@ -933,15 +920,13 @@ public class AdminControl extends TeamingPopupPanel
 			url = adminAction.getUrl();
 			if ( url != null && url.length() > 0 )
 			{
-				Scheduler.ScheduledCommand cmd;
-
 				// Clear the iframe's content 
 				m_contentControl.clear();
 				
 				// Set the iframe's content to the selected administration page.
 				m_contentControl.setUrl( url, Instigator.ADMINISTRATION_CONSOLE );
 				
-				cmd = new Scheduler.ScheduledCommand()
+				GwtClientHelper.deferCommand( new ScheduledCommand()
 				{
 					@Override
 					public void execute()
@@ -950,8 +935,7 @@ public class AdminControl extends TeamingPopupPanel
 						showContentPanel();
 						relayoutPage();
 					}
-				};
-				Scheduler.get().scheduleDeferred( cmd );
+				} );
 			}
 		}
 	}// end adminActionSelected()
@@ -1003,9 +987,7 @@ public class AdminControl extends TeamingPopupPanel
 			@Override
 			public void onSuccess( final VibeRpcResponse response )
 			{
-				Scheduler.ScheduledCommand cmd;
-				
-				cmd = new Scheduler.ScheduledCommand()
+				GwtClientHelper.deferCommand( new ScheduledCommand()
 				{
 					/**
 					 * 
@@ -1032,8 +1014,7 @@ public class AdminControl extends TeamingPopupPanel
 							showAdminInfoDlg( upgradeInfo, 250, 100 );
 						}
 					}
-				};
-				Scheduler.get().scheduleDeferred( cmd );
+				} );
 			}
 		};
 
@@ -1145,19 +1126,16 @@ public class AdminControl extends TeamingPopupPanel
 				@Override
 				public void onSuccess( EditLdapConfigDlg elcDlg )
 				{
-					ScheduledCommand cmd;
-					
 					m_editLdapConfigDlg = elcDlg;
 
-					cmd = new ScheduledCommand()
+					GwtClientHelper.deferCommand( new ScheduledCommand()
 					{
 						@Override
 						public void execute() 
 						{
 							invokeEditLdapConfigDlg();
 						}
-					};
-					Scheduler.get().scheduleDeferred( cmd );
+					} );
 				}
 			} );
 		}
@@ -1205,9 +1183,7 @@ public class AdminControl extends TeamingPopupPanel
 				@Override
 				public void onSuccess( final VibeRpcResponse response )
 				{
-					Scheduler.ScheduledCommand cmd;
-					
-					cmd = new Scheduler.ScheduledCommand()
+					GwtClientHelper.deferCommand( new ScheduledCommand()
 					{
 						@Override
 						public void execute()
@@ -1222,8 +1198,7 @@ public class AdminControl extends TeamingPopupPanel
 								invokeEditNetFolderDlg( netFolder, showRelativeTo );
 							}
 						}
-					};
-					Scheduler.get().scheduleDeferred( cmd );
+					} );
 				}
 			};
 
@@ -1273,19 +1248,16 @@ public class AdminControl extends TeamingPopupPanel
 				@Override
 				public void onSuccess( final ModifyNetFolderDlg mnfDlg )
 				{
-					ScheduledCommand cmd;
-
 					m_modifyNetFolderDlg = mnfDlg;
 
-					cmd = new ScheduledCommand()
+					GwtClientHelper.deferCommand( new ScheduledCommand()
 					{
 						@Override
 						public void execute() 
 						{
 							invokeEditNetFolderDlg( netFolder, showRelativeTo );
 						}
-					};
-					Scheduler.get().scheduleDeferred( cmd );
+					} );
 				}
 			} );
 		}
@@ -1356,9 +1328,7 @@ public class AdminControl extends TeamingPopupPanel
 							@Override
 							public void onSuccess( VibeRpcResponse response )
 							{
-								Scheduler.ScheduledCommand cmd;
-								
-								cmd = new Scheduler.ScheduledCommand()
+								GwtClientHelper.deferCommand( new ScheduledCommand()
 								{
 									@Override
 									public void execute()
@@ -1371,8 +1341,7 @@ public class AdminControl extends TeamingPopupPanel
 										if ( mastHead != null )
 											mastHead.refreshSiteBranding();
 									}
-								};
-								Scheduler.get().scheduleDeferred( cmd );
+								} );
 							}
 						};
 					}
@@ -1424,19 +1393,16 @@ public class AdminControl extends TeamingPopupPanel
 				@Override
 				public void onSuccess( EditBrandingDlg ebDlg )
 				{
-					Scheduler.ScheduledCommand cmd;
-					
 					m_editSiteBrandingDlg = ebDlg;
 					
-					cmd = new Scheduler.ScheduledCommand()
+					GwtClientHelper.deferCommand( new ScheduledCommand()
 					{
 						@Override
 						public void execute()
 						{
 							invokeEditSiteBrandingDlgImpl( brandingData, x, y );
 						}
-					};
-					Scheduler.get().scheduleDeferred( cmd );
+					} );
 				}
 			} );
 		}
@@ -1503,30 +1469,25 @@ public class AdminControl extends TeamingPopupPanel
 				@Override
 				public void onSuccess( ShareThisDlg2 stDlg )
 				{
-					Scheduler.ScheduledCommand cmd;
-					
 					// ...and show it with the given entity IDs.
 					m_shareDlg = stDlg;
 					
-					cmd = new Scheduler.ScheduledCommand()
+					GwtClientHelper.deferCommand( new ScheduledCommand()
 					{
 						@Override
 						public void execute()
 						{
 							invokeManageSharesDlg();
 						}
-					};
-					Scheduler.get().scheduleDeferred( cmd );
+					} );
 				}
 			};
 			ShareThisDlg2.runAsyncCmd( createCmd, client );
 		}
 		else
 		{
-			Scheduler.ScheduledCommand cmd;
-			
 			// Yes, we've already create a share dialog!  Simply show it.
-			cmd = new Scheduler.ScheduledCommand()
+			GwtClientHelper.deferCommand( new ScheduledCommand()
 			{
 				@Override
 				public void execute() 
@@ -1547,8 +1508,7 @@ public class AdminControl extends TeamingPopupPanel
 					// Run the async command to show the dialog
 					ShareThisDlg2.runAsyncCmd( initAndShowCmd, null );
 				}
-			};
-			Scheduler.get().scheduleDeferred( cmd );
+			} );
 		}
 	}
 	
@@ -1598,11 +1558,9 @@ public class AdminControl extends TeamingPopupPanel
 				@Override
 				public void onSuccess( final NameCompletionSettingsDlg ncsDlg )
 				{
-					ScheduledCommand cmd;
-					
 					m_nameCompletionSettingsDlg = ncsDlg;
 					
-					cmd = new ScheduledCommand()
+					GwtClientHelper.deferCommand( new ScheduledCommand()
 					{
 						@Override
 						public void execute() 
@@ -1611,8 +1569,7 @@ public class AdminControl extends TeamingPopupPanel
 							// fire the event to invoke the "Name Completion Settings" dialog.
 							InvokeNameCompletionSettingsDlgEvent.fireOne();
 						}
-					};
-					Scheduler.get().scheduleDeferred( cmd );
+					} );
 				}
 			} );
 
@@ -1639,31 +1596,33 @@ public class AdminControl extends TeamingPopupPanel
 	/**
 	 * 
 	 */
-	public void relayoutPage()
+	public void relayoutPage( final VibeEventBase<?> fireOnLayout )
 	{
 		// If the AdminControl is visible...
 		if ( isShowing() )
 		{		
-			Scheduler.ScheduledCommand cmd;
-	
-			cmd = new Scheduler.ScheduledCommand()
+			GwtClientHelper.deferCommand( new ScheduledCommand()
 			{
 				@Override
 				public void execute()
 				{
 					// ...update the page's layout.
-					relayoutPageNow();
+					relayoutPageNow( fireOnLayout );
 				}
-			};
-			Scheduler.get().scheduleDeferred( cmd );
+			} );
 		}
 	}// end relayoutPage()
 	
+	public void relayoutPage()
+	{
+		// Always use the initial form of the method.
+		relayoutPage( null );	// null -> No event needs to be fired when the layout is complete.
+	}// end relayoutPage()
 	
-	/**
-	 * 
+	
+	/*
 	 */
-	private void relayoutPageNow()
+	private void relayoutPageNow( final VibeEventBase<?> fireOnLayout )
 	{
 		int width;
 		int height;
@@ -1719,6 +1678,11 @@ public class AdminControl extends TeamingPopupPanel
 		// Set the height of the tree control.
 		style = m_adminActionsTreeControl.getElement().getStyle();
 		style.setHeight( height, Style.Unit.PX );
+		
+		if ( null != fireOnLayout )
+		{
+			GwtTeaming.fireEventAsync( fireOnLayout );
+		}
 	}// end relayoutPageNow()
 
 	
@@ -1739,14 +1703,13 @@ public class AdminControl extends TeamingPopupPanel
 			@Override
 			public void onSuccess( final AdminInfoDlg adminInfoDlg )
 			{
-				ScheduledCommand initAndShowDlg = new ScheduledCommand() {
+				GwtClientHelper.deferCommand( new ScheduledCommand() {
 					@Override
 					public void execute()
 					{
 						showAdminInfoDlgImpl( adminInfoDlg, upgradeInfo );
 					}// end execute()
-				};
-				Scheduler.get().scheduleDeferred( initAndShowDlg );
+				} );
 			}// onSuccess()
 		} );
 	}// end showAdminInfoDlg()
@@ -1771,23 +1734,27 @@ public class AdminControl extends TeamingPopupPanel
 	/**
 	 * 
 	 */
-	public void showControl( final UIObject target )
+	public void showControl( final UIObject target, final VibeEventBase<?> fireOnShow )
 	{
-		if ( !isShowing() )
+		if ( isShowing() )
 		{
-			Scheduler.ScheduledCommand cmd;
-	
+			if ( null != fireOnShow )
+			{
+				GwtTeaming.fireEventAsync( fireOnShow );
+			}
+		}
+		
+		else
+		{
 			// Set the position of the content control.
-			cmd = new Scheduler.ScheduledCommand()
+			GwtClientHelper.deferCommand( new ScheduledCommand()
 			{
 				@Override
 				public void execute()
 				{
-					Scheduler.ScheduledCommand cmd2;
-	            	
 					relayoutPage();
 					
-					cmd2 = new Scheduler.ScheduledCommand()
+					GwtClientHelper.deferCommand( new ScheduledCommand()
 					{
 						@Override
 						public void execute()
@@ -1795,16 +1762,14 @@ public class AdminControl extends TeamingPopupPanel
 							showRelativeTo( target );
 							showHomePage();
 							showTreeControl();
-							relayoutPage();
+							relayoutPage( fireOnShow );
 						}
-					};
-					Scheduler.get().scheduleDeferred( cmd2 );
+					} );
 				}
-			};
-			Scheduler.get().scheduleDeferred( cmd );
+			} );
 	
 			// Issue an ajax request to get the upgrade information from the server.
-			cmd = new Scheduler.ScheduledCommand()
+			GwtClientHelper.deferCommand( new ScheduledCommand()
 			{
 				@Override
 				public void execute()
@@ -1814,10 +1779,15 @@ public class AdminControl extends TeamingPopupPanel
 					showUpgradeTasks();
 					updateHomePage();
 				}
-			};
-			Scheduler.get().scheduleDeferred( cmd );
+			} );
 		}
 	}// end showControl()
+	
+	public void showControl( final UIObject target )
+	{
+		// Always use the initial form of the method.
+		showControl( target, null );	// null -> No event needs to be fired when shown.
+	}
 	
 	/**
 	 * Show the page that gives the user some information about the administration console.
@@ -1900,9 +1870,7 @@ public class AdminControl extends TeamingPopupPanel
 	@Override
 	public void onEditSiteBranding( EditSiteBrandingEvent event )
 	{
-		Scheduler.ScheduledCommand cmd;
-		
-		cmd = new Scheduler.ScheduledCommand()
+		GwtClientHelper.deferCommand( new ScheduledCommand()
 		{
 			@Override
 			public void execute()
@@ -1918,8 +1886,7 @@ public class AdminControl extends TeamingPopupPanel
 					invokeEditSiteBrandingDlg( siteBrandingData );
 				}
 			}
-		};
-		Scheduler.get().scheduleDeferred( cmd );
+		} );
 	}
 	
 	/**
@@ -1976,19 +1943,16 @@ public class AdminControl extends TeamingPopupPanel
 				@Override
 				public void onSuccess( ConfigureAdhocFoldersDlg cafDlg )
 				{
-					ScheduledCommand cmd;
-					
 					m_configureAdhocFoldersDlg = cafDlg;
 					
-					cmd = new ScheduledCommand()
+					GwtClientHelper.deferCommand( new ScheduledCommand()
 					{
 						@Override
 						public void execute() 
 						{
 							invokeConfigureAdhocFoldersDlg( x, y );
 						}
-					};
-					Scheduler.get().scheduleDeferred( cmd );
+					} );
 				}
 			} );
 		}
@@ -2056,11 +2020,9 @@ public class AdminControl extends TeamingPopupPanel
 			public void onSuccess( VibeRpcResponse response )
 			{
 				final GwtFileSyncAppConfiguration fileSyncAppConfiguration;
-				ScheduledCommand cmd1;
-
 				fileSyncAppConfiguration = (GwtFileSyncAppConfiguration) response.getResponseData();
 				
-				cmd1 = new Scheduler.ScheduledCommand()
+				GwtClientHelper.deferCommand( new ScheduledCommand()
 				{
 					@Override
 					public void execute()
@@ -2107,19 +2069,16 @@ public class AdminControl extends TeamingPopupPanel
 								@Override
 								public void onSuccess( ConfigureFileSyncAppDlg cfsaDlg )
 								{
-									ScheduledCommand cmd;
-									
 									m_configureFileSyncAppDlg = cfsaDlg;
 
-									cmd = new ScheduledCommand()
+									GwtClientHelper.deferCommand( new ScheduledCommand()
 									{
 										@Override
 										public void execute() 
 										{
 											invokeConfigureFileSyncAppDlg( x, y, fileSyncAppConfiguration );
 										}
-									};
-									Scheduler.get().scheduleDeferred( cmd );
+									} );
 								}
 							} );
 						}
@@ -2128,8 +2087,7 @@ public class AdminControl extends TeamingPopupPanel
 							invokeConfigureFileSyncAppDlg( x, y, fileSyncAppConfiguration );
 						}
 					}
-				};
-				Scheduler.get().scheduleDeferred( cmd1 );
+				} );
 			}
 		};
 
@@ -2211,9 +2169,7 @@ public class AdminControl extends TeamingPopupPanel
 				@Override
 				public void onSuccess( final ConfigureMobileAppsDlg cmaDlg )
 				{
-					ScheduledCommand cmd;
-					
-					cmd = new ScheduledCommand()
+					GwtClientHelper.deferCommand( new ScheduledCommand()
 					{
 						@Override
 						public void execute() 
@@ -2223,8 +2179,7 @@ public class AdminControl extends TeamingPopupPanel
 							m_configureMobileAppsDlg.init();
 							m_configureMobileAppsDlg.show();
 						}
-					};
-					Scheduler.get().scheduleDeferred( cmd );
+					} );
 				}
 			} );
 		}
@@ -2282,9 +2237,7 @@ public class AdminControl extends TeamingPopupPanel
 				@Override
 				public void onSuccess( final EditZoneShareSettingsDlg ezsrDlg )
 				{
-					ScheduledCommand cmd;
-					
-					cmd = new ScheduledCommand()
+					GwtClientHelper.deferCommand( new ScheduledCommand()
 					{
 						@Override
 						public void execute() 
@@ -2294,8 +2247,7 @@ public class AdminControl extends TeamingPopupPanel
 							m_editZoneShareSettingsDlg.init();
 							m_editZoneShareSettingsDlg.show();
 						}
-					};
-					Scheduler.get().scheduleDeferred( cmd );
+					} );
 				}
 			} );
 		}
@@ -2353,9 +2305,7 @@ public class AdminControl extends TeamingPopupPanel
 				@Override
 				public void onSuccess( final ConfigureUserAccessDlg cuaDlg )
 				{
-					ScheduledCommand cmd;
-					
-					cmd = new ScheduledCommand()
+					GwtClientHelper.deferCommand( new ScheduledCommand()
 					{
 						@Override
 						public void execute() 
@@ -2365,8 +2315,7 @@ public class AdminControl extends TeamingPopupPanel
 							m_configureUserAccessDlg.init();
 							m_configureUserAccessDlg.show();
 						}
-					};
-					Scheduler.get().scheduleDeferred( cmd );
+					} );
 				}
 			} );
 		}
@@ -2389,17 +2338,14 @@ public class AdminControl extends TeamingPopupPanel
 	@Override
 	public void onInvokeEditLdapConfigDlg( InvokeEditLdapConfigDlgEvent event )
 	{
-		Scheduler.ScheduledCommand cmd;
-		
-		cmd = new Scheduler.ScheduledCommand()
+		GwtClientHelper.deferCommand( new ScheduledCommand()
 		{
 			@Override
 			public void execute()
 			{
 				invokeEditLdapConfigDlg();
 			}
-		};
-		Scheduler.get().scheduleDeferred( cmd );
+		} );
 	}
 	
 
@@ -2412,17 +2358,14 @@ public class AdminControl extends TeamingPopupPanel
 	@Override
 	public void onInvokeEditNetFolderDlg( final InvokeEditNetFolderDlgEvent event )
 	{
-		Scheduler.ScheduledCommand cmd;
-		
-		cmd = new Scheduler.ScheduledCommand()
+		GwtClientHelper.deferCommand( new ScheduledCommand()
 		{
 			@Override
 			public void execute()
 			{
 				invokeEditNetFolderDlgById( event.getNetFolderId(), event.getShowRelativeTo() );
 			}
-		};
-		Scheduler.get().scheduleDeferred( cmd );
+		} );
 	}
 	
 	/**
@@ -2468,9 +2411,7 @@ public class AdminControl extends TeamingPopupPanel
 				@Override
 				public void onSuccess( final JitsZoneConfigDlg jzcDlg )
 				{
-					ScheduledCommand cmd;
-					
-					cmd = new ScheduledCommand()
+					GwtClientHelper.deferCommand( new ScheduledCommand()
 					{
 						@Override
 						public void execute() 
@@ -2480,8 +2421,7 @@ public class AdminControl extends TeamingPopupPanel
 							m_jitsDlg.init();
 							m_jitsDlg.show();
 						}
-					};
-					Scheduler.get().scheduleDeferred( cmd );
+					} );
 				}
 			} );
 		}
@@ -2564,9 +2504,7 @@ public class AdminControl extends TeamingPopupPanel
 						@Override
 						public void onSuccess( final ManageDatabasePruneDlg cfsaDlg )
 						{
-							ScheduledCommand cmd;
-							
-							cmd = new ScheduledCommand()
+							GwtClientHelper.deferCommand( new ScheduledCommand()
 							{
 								@Override
 								public void execute() 
@@ -2576,8 +2514,7 @@ public class AdminControl extends TeamingPopupPanel
 									m_manageDatabasePruneDlg.init( databasePruneConfiguration );
 									m_manageDatabasePruneDlg.show();
 								}
-							};
-							Scheduler.get().scheduleDeferred( cmd );
+							} );
 						}
 					} );
 				}
@@ -2645,9 +2582,7 @@ public class AdminControl extends TeamingPopupPanel
 				@Override
 				public void onSuccess( final ManageNetFoldersDlg mnfDlg )
 				{
-					ScheduledCommand cmd;
-					
-					cmd = new ScheduledCommand()
+					GwtClientHelper.deferCommand( new ScheduledCommand()
 					{
 						@Override
 						public void execute() 
@@ -2657,8 +2592,7 @@ public class AdminControl extends TeamingPopupPanel
 							m_manageNetFoldersDlg.init();
 							m_manageNetFoldersDlg.show();
 						}
-					};
-					Scheduler.get().scheduleDeferred( cmd );
+					} );
 				}
 			} );
 		}
@@ -2715,9 +2649,7 @@ public class AdminControl extends TeamingPopupPanel
 				@Override
 				public void onSuccess( final ManageNetFolderRootsDlg mfsrDlg )
 				{
-					ScheduledCommand cmd;
-					
-					cmd = new ScheduledCommand()
+					GwtClientHelper.deferCommand( new ScheduledCommand()
 					{
 						@Override
 						public void execute() 
@@ -2727,8 +2659,7 @@ public class AdminControl extends TeamingPopupPanel
 							m_manageNetFolderRootsDlg.init();
 							m_manageNetFolderRootsDlg.show();
 						}
-					};
-					Scheduler.get().scheduleDeferred( cmd );
+					} );
 				}
 			} );
 		}
@@ -2785,9 +2716,7 @@ public class AdminControl extends TeamingPopupPanel
 				@Override
 				public void onSuccess( final ManageGroupsDlg mgDlg )
 				{
-					ScheduledCommand cmd;
-					
-					cmd = new ScheduledCommand()
+					GwtClientHelper.deferCommand( new ScheduledCommand()
 					{
 						@Override
 						public void execute() 
@@ -2797,8 +2726,7 @@ public class AdminControl extends TeamingPopupPanel
 							m_manageGroupsDlg.init();
 							m_manageGroupsDlg.show();
 						}
-					};
-					Scheduler.get().scheduleDeferred( cmd );
+					} );
 				}
 			} );
 		}
@@ -2840,9 +2768,7 @@ public class AdminControl extends TeamingPopupPanel
 				@Override
 				public void onSuccess( final ManageMobileDevicesDlg mmdDlg )
 				{
-					ScheduledCommand cmd;
-					
-					cmd = new ScheduledCommand()
+					GwtClientHelper.deferCommand( new ScheduledCommand()
 					{
 						@Override
 						public void execute() 
@@ -2850,8 +2776,7 @@ public class AdminControl extends TeamingPopupPanel
 							m_manageMobileDevicesDlg = mmdDlg;
 							ManageMobileDevicesDlg.initAndShow( m_manageMobileDevicesDlg, new MobileDevicesInfo(), x, y, m_dlgWidth, m_dlgHeight );
 						}
-					};
-					Scheduler.get().scheduleDeferred( cmd );
+					} );
 				}
 			},
 			x, 
@@ -2898,9 +2823,7 @@ public class AdminControl extends TeamingPopupPanel
 				@Override
 				public void onSuccess( final ManageUsersDlg muDlg )
 				{
-					ScheduledCommand cmd;
-					
-					cmd = new ScheduledCommand()
+					GwtClientHelper.deferCommand( new ScheduledCommand()
 					{
 						@Override
 						public void execute() 
@@ -2908,8 +2831,7 @@ public class AdminControl extends TeamingPopupPanel
 							m_manageUsersDlg = muDlg;
 							ManageUsersDlg.initAndShow( m_manageUsersDlg, x, y, m_dlgWidth, m_dlgHeight );
 						}
-					};
-					Scheduler.get().scheduleDeferred( cmd );
+					} );
 				}
 			},
 			true,	// true -> auto hide.
@@ -2952,17 +2874,14 @@ public class AdminControl extends TeamingPopupPanel
 	@Override
 	public void onInvokeNameCompletionSettingsDlg( InvokeNameCompletionSettingsDlgEvent event )
 	{
-		Scheduler.ScheduledCommand cmd;
-		
-		cmd = new Scheduler.ScheduledCommand()
+		GwtClientHelper.deferCommand( new ScheduledCommand()
 		{
 			@Override
 			public void execute()
 			{
 				invokeNameCompletionSettingsDlg();
 			}
-		};
-		Scheduler.get().scheduleDeferred( cmd );
+		} );
 	}
 	
 
@@ -2995,9 +2914,7 @@ public class AdminControl extends TeamingPopupPanel
 				@Override
 				public void onSuccess( final RunAReportDlg muDlg )
 				{
-					ScheduledCommand cmd;
-					
-					cmd = new ScheduledCommand()
+					GwtClientHelper.deferCommand( new ScheduledCommand()
 					{
 						@Override
 						public void execute() 
@@ -3005,8 +2922,7 @@ public class AdminControl extends TeamingPopupPanel
 							m_runAReportDlg = muDlg;
 							RunAReportDlg.initAndShow( m_runAReportDlg, x, y );
 						}
-					};
-					Scheduler.get().scheduleDeferred( cmd );
+					} );
 				}
 			},
 			true,	// true -> auto hide.
@@ -3069,9 +2985,7 @@ public class AdminControl extends TeamingPopupPanel
 				@Override
 				public void onSuccess( final ConfigureUserFileSyncAppDlg cufsaDlg )
 				{
-					ScheduledCommand cmd;
-					
-					cmd = new ScheduledCommand()
+					GwtClientHelper.deferCommand( new ScheduledCommand()
 					{
 						@Override
 						public void execute() 
@@ -3081,8 +2995,7 @@ public class AdminControl extends TeamingPopupPanel
 							m_configureUserFileSyncAppDlg.init( principalIds, event.getPrincipalsAreUsers() );
 							m_configureUserFileSyncAppDlg.show();
 						}
-					};
-					Scheduler.get().scheduleDeferred( cmd );
+					} );
 				}
 			} );
 		}
@@ -3138,9 +3051,7 @@ public class AdminControl extends TeamingPopupPanel
 				@Override
 				public void onSuccess( final ConfigureUserMobileAppsDlg cumaDlg )
 				{
-					ScheduledCommand cmd;
-					
-					cmd = new ScheduledCommand()
+					GwtClientHelper.deferCommand( new ScheduledCommand()
 					{
 						@Override
 						public void execute() 
@@ -3150,8 +3061,7 @@ public class AdminControl extends TeamingPopupPanel
 							m_configureUserMobileAppsDlg.init( principalIds, event.getPrincipalsAreUsers() );
 							m_configureUserMobileAppsDlg.show();
 						}
-					};
-					Scheduler.get().scheduleDeferred( cmd );
+					} );
 				}
 			} );
 		}
@@ -3174,18 +3084,15 @@ public class AdminControl extends TeamingPopupPanel
 	@Override
 	public void onManageSharesSelectedEntities( ManageSharesSelectedEntitiesEvent event )
 	{
-		Scheduler.ScheduledCommand cmd;
-
 		// Invoke the Manage Shares dialog
-		cmd = new Scheduler.ScheduledCommand()
+		GwtClientHelper.deferCommand( new ScheduledCommand()
 		{
 			@Override
 			public void execute() 
 			{
 				invokeManageSharesDlg();
 			}
-		};
-		Scheduler.get().scheduleDeferred( cmd );
+		} );
 	}
 	
 	/**
@@ -3287,11 +3194,10 @@ public class AdminControl extends TeamingPopupPanel
 			public void onSuccess( VibeRpcResponse response )
 			{
 				final GwtUpgradeInfo upgradeInfo;
-				Scheduler.ScheduledCommand cmd;
 				
 				upgradeInfo = (GwtUpgradeInfo) response.getResponseData();
 				
-				cmd = new Scheduler.ScheduledCommand()
+				GwtClientHelper.deferCommand( new ScheduledCommand()
 				{
 					@Override
 					public void execute() 
@@ -3300,8 +3206,7 @@ public class AdminControl extends TeamingPopupPanel
 						if ( m_homePage != null )
 							m_homePage.init( upgradeInfo );
 					}
-				};
-				Scheduler.get().scheduleDeferred( cmd );
+				} );
 			}// end onSuccess()
 		};
 

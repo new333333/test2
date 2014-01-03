@@ -96,6 +96,7 @@ import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.event.TrackCurrentBinderEvent;
 import org.kablink.teaming.gwt.client.event.UntrackCurrentBinderEvent;
 import org.kablink.teaming.gwt.client.event.UntrackCurrentPersonEvent;
+import org.kablink.teaming.gwt.client.event.VibeEventBase;
 import org.kablink.teaming.gwt.client.event.ViewCurrentBinderTeamMembersEvent;
 import org.kablink.teaming.gwt.client.event.ViewForumEntryEvent;
 import org.kablink.teaming.gwt.client.event.ViewTeamingFeedEvent;
@@ -2457,10 +2458,7 @@ public class GwtMainPage extends ResizeComposite
 			GwtClientHelper.jsHideEntryPopupDiv();
 			
 			// ...and show the admin control.
-			showAdminControl();
-			
-//!			...this needs to be implemented...
-			GwtClientHelper.deferredAlert("GwtMainPage.onAdministrationAction( Activate '" + adminAction.getActionType().name() + "' ):  ...this needs to be implemented...");
+			showAdminControl( event );
 		}
 		
 	}
@@ -2490,7 +2488,7 @@ public class GwtMainPage extends ResizeComposite
 		GwtClientHelper.jsHideEntryPopupDiv();
 		
 		// ...and show the admin control.
-		showAdminControl();
+		showAdminControl( null );
 	}
 	
 	/**
@@ -4067,12 +4065,12 @@ public class GwtMainPage extends ResizeComposite
 		return m_requestInfo.isUserLoggedIn();
 	}
 	
-	private void showAdminControl()
+	private void showAdminControl( final VibeEventBase<?> fireOnLoad )
 	{
 		// If we've already load the admin control...
 		if ( null != m_adminControl ) {
 			// ...simply show it.
-			showAdminControlImpl();
+			showAdminControlImpl( fireOnLoad );
 		}
 		
 		else
@@ -4099,7 +4097,7 @@ public class GwtMainPage extends ResizeComposite
 						public void execute()
 						{
 							// ...and then show it.
-							showAdminControlImpl();
+							showAdminControlImpl( fireOnLoad );
 						}// end execute()
 					} );
 				}// end onSuccess()
@@ -4107,7 +4105,7 @@ public class GwtMainPage extends ResizeComposite
 		}
 	}// end showAdminControl()
 	
-	private void showAdminControlImpl()
+	private void showAdminControlImpl( final VibeEventBase<?> fireOnLoad )
 	{
 		// Hide everything on the menu, the workspace tree control and the content control.
 		m_mainMenuCtrl.showAdministrationMenubar();
@@ -4118,12 +4116,12 @@ public class GwtMainPage extends ResizeComposite
 		if ( m_mainMenuCtrl.isVisible() )
 		{
 			// Yes, position the admin control relative to the main menu control.
-			m_adminControl.showControl( m_mainMenuCtrl );
+			m_adminControl.showControl( m_mainMenuCtrl, fireOnLoad );
 		}
 		else
 		{
 			// No, position the admin control relative to the masthead
-			m_adminControl.showControl( m_headerPanel );
+			m_adminControl.showControl( m_headerPanel, fireOnLoad );
 		}
 	}// end showAdminControlImpl()
 	
