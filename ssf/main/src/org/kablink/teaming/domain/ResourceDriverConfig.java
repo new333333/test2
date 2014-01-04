@@ -442,7 +442,7 @@ public class ResourceDriverConfig extends ZonedObject implements WorkArea {
 				ResourceDriverConfig.DriverType.windows_server == this.getDriverType() ||
 				ResourceDriverConfig.DriverType.netware == this.getDriverType() ||
 				ResourceDriverConfig.DriverType.oes == this.getDriverType() ||
-				ResourceDriverConfig.DriverType.cloud_folders == this.getDriverType() ||
+				//ResourceDriverConfig.DriverType.cloud_folders == this.getDriverType() ||
 				ResourceDriverConfig.DriverType.share_point_2010 == this.getDriverType() ||
 				ResourceDriverConfig.DriverType.share_point_2013 == this.getDriverType()) {
 			return true;
