@@ -32,6 +32,8 @@
  */
 package org.kablink.teaming.lucene;
 
+import gnu.trove.set.hash.TLongHashSet;
+
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.BitSet;
@@ -119,7 +121,7 @@ public class Hits implements Serializable {
     }
 
     public static Hits transfer(org.apache.lucene.search.IndexSearcher searcher, org.apache.lucene.search.TopDocs topDocs,
-            int offset, int maxSize, Set<String> noIntrinsicAclStoredButAccessibleThroughFilrGrantedAclEntryIds, boolean totalHitsApproximate) throws IOException {
+            int offset, int maxSize, TLongHashSet noIntrinsicAclStoredButAccessibleThroughFilrGrantedAclEntryIds, boolean totalHitsApproximate) throws IOException {
         if (topDocs == null) return new Hits(0);
     	int length = (topDocs.scoreDocs == null)? 0: topDocs.scoreDocs.length;
         length = Math.min(length - offset, maxSize);
@@ -128,20 +130,27 @@ public class Hits implements Serializable {
         ScoreDoc[] hits = topDocs.scoreDocs;
         Document doc;
         String entityType;
-        String entryId;
+        String entryStrId;
+        long entryId;
         for(int i = 0; i < length; i++) {
         	doc = searcher.doc(hits[offset + i].doc);
         	if(noIntrinsicAclStoredButAccessibleThroughFilrGrantedAclEntryIds != null) {
 	        	entityType = doc.get(Constants.ENTITY_FIELD);
 	        	if(entityType != null && Constants.ENTITY_TYPE_FOLDER_ENTRY.equals(entityType)) {
-	        		entryId = doc.get(Constants.DOCID_FIELD);
-	        		if(entryId != null && noIntrinsicAclStoredButAccessibleThroughFilrGrantedAclEntryIds.contains(entryId)) {
-	        			// This doc represents a folder entry or reply/comment or attachment that doesn't
-	        			// have its intrinsic ACL indexed with it but instead have share-granted ACL
-	        			// that made it pass the caller's regular ACL filter. We want to pass this
-	        			// information to the caller so that the caller wouldn't have to apply 
-	        			// post-filtering on this doc.
-	        			ss_hits.setNoIntrinsicAclStoredButAccessibleThroughFilrGrantedAcl(true, i);
+	        		entryStrId = doc.get(Constants.DOCID_FIELD);
+	        		if(entryStrId != null) {
+	        			try {
+	        				entryId = Long.parseLong(entryStrId);
+	    	        		if(noIntrinsicAclStoredButAccessibleThroughFilrGrantedAclEntryIds.contains(entryId)) {
+	    	        			// This doc represents a folder entry or reply/comment or attachment that doesn't
+	    	        			// have its intrinsic ACL indexed with it but instead have share-granted ACL
+	    	        			// that made it pass the caller's regular ACL filter. We want to pass this
+	    	        			// information to the caller so that the caller wouldn't have to apply 
+	    	        			// post-filtering on this doc.
+	    	        			ss_hits.setNoIntrinsicAclStoredButAccessibleThroughFilrGrantedAcl(true, i);
+	    	        		}
+	        			}
+	        			catch(NumberFormatException e) {}
 	        		}
 	        	}
         	}

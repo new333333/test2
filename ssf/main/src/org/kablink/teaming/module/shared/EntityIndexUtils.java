@@ -613,10 +613,9 @@ public class EntityIndexUtils {
     	//Add the id of the creator (no, not that one...)
         Field docIdField = FieldFactory.createFieldStoredNotAnalyzed(DOCID_FIELD, entry.getId().toString());
         doc.add(docIdField);
-       	
-       	if(entry instanceof Folder) { // Folder gets another field containing its ID value, but this time as a numeric field.
-       		doc.add(new NumericField(FOLDER_ID_FIELD).setLongValue(entry.getId().longValue()));
-       	}
+        
+       	// Entity gets another field containing its ID value, but this time as a numeric field.
+       	doc.add(new NumericField(ENTITY_ID_FIELD).setLongValue(entry.getId().longValue()));
     }
 
     public static void addParentBinder(Document doc, DefinableEntity entry, boolean fieldsOnly) {

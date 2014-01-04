@@ -32,9 +32,9 @@
  */
 package org.kablink.teaming.lucene;
 
+import gnu.trove.set.hash.TLongHashSet;
+
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.Set;
 
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.search.DocIdSet;
@@ -51,7 +51,7 @@ public class ThreadLocalAclQueryFilter extends Filter{
 
 	private static final long serialVersionUID = 1L;
 	
-	private static final ThreadLocal<Set<String>> threadLocal = new ThreadLocal<Set<String>>();
+	private static final ThreadLocal<TLongHashSet> threadLocal = new ThreadLocal<TLongHashSet>();
 	
 	Filter aclQueryFilter; // original ACL query filter
 	
@@ -64,9 +64,9 @@ public class ThreadLocalAclQueryFilter extends Filter{
 	@Override
 	public DocIdSet getDocIdSet(IndexReader reader) throws IOException {
 		final long[] entryAclParentIds = FieldCache.DEFAULT.getLongs(reader, Constants.ENTRY_ACL_PARENT_ID_FIELD);
-		final String[] entryIdStrs = FieldCache.DEFAULT.getStrings(reader, Constants.DOCID_FIELD);
+		final long[] entityIds = FieldCache.DEFAULT.getLongs(reader, Constants.ENTITY_ID_FIELD);
 		
-		Set<String> noIntrinsicAclStoredButAccessibleThroughFilrGrantedAclEntryIds = new HashSet<String>();
+		TLongHashSet noIntrinsicAclStoredButAccessibleThroughFilrGrantedAclEntryIds = new TLongHashSet();
 
 		final DocIdSet docIdSet = aclQueryFilter.getDocIdSet(reader);
 		
@@ -81,7 +81,7 @@ public class ThreadLocalAclQueryFilter extends Filter{
 						// passed the original ACL query filter is a clear indication that there are "additional" 
 						// ACL indexed on this doc that made it pass the filter. In the current application, that 
 						// should be share-granted ACL. We need to pass this information up to the caller
-						noIntrinsicAclStoredButAccessibleThroughFilrGrantedAclEntryIds.add(entryIdStrs[docId]);
+						noIntrinsicAclStoredButAccessibleThroughFilrGrantedAclEntryIds.add(entityIds[docId]);
 					}
 					docId = it.nextDoc();
 				}
@@ -96,7 +96,7 @@ public class ThreadLocalAclQueryFilter extends Filter{
 		return docIdSet;
 	}
 
-	public static Set<String> getNoIntrinsicAclStoredButAccessibleThroughFilrGrantedAclEntryIds() {
+	public static TLongHashSet getNoIntrinsicAclStoredButAccessibleThroughFilrGrantedAclEntryIds() {
 		return threadLocal.get();
 	}
 	

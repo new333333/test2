@@ -75,8 +75,11 @@ public class AccessibleFoldersCollector extends Collector {
 	public void collect(int doc) throws IOException {
 		long folderId = folderIds[doc];
 		if(folderId > 0) {
-			// This doc has a valid value in the specific field, which indicates that this
-			// doc represents a folder in Vibe. Put it in the result.
+			// This doc has a valid value in the specific field. We can safely assume that
+			// this doc represents a folder entity in Vibe/Filr because the query this collector
+			// is collecting the execution results for explicitly narrowed the search space to
+			// entities of folder type only (see makeAccessibleFoldersAclQuery method in 
+			// LuceneProvider class).
 			accessibleFolderIds.add(folderId);
 		}
 	}
@@ -87,7 +90,7 @@ public class AccessibleFoldersCollector extends Collector {
 	@Override
 	public void setNextReader(IndexReader reader, int docBase)
 			throws IOException {
-		folderIds = FieldCache.DEFAULT.getLongs(reader, Constants.FOLDER_ID_FIELD);
+		folderIds = FieldCache.DEFAULT.getLongs(reader, Constants.ENTITY_ID_FIELD);
 	}
 
 	/* (non-Javadoc)
