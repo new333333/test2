@@ -76,26 +76,36 @@ import com.google.gwt.xml.client.XMLParser;
  * Helper methods for the GWT UI client code that deals with browser
  * history.
  *
- * An example of the XML used to store history in the HTML5 session
- * store is as follows:
+ * When supported by the browser, history information is tracked in the
+ * HTML5 session store as HistoryInfo's serialized to an XML stream.
+ * The XML used to store history is constructed as follows:
  *		
- *	 <history itemType="..." selectedMastheadCollection="...">
- *	 	<activityStream showSetting="..." activityStreamInfo="..." />
- *				- or -	 			
- *	 	<adminAction action="..." localizedName="..." url="..." />
- *				- or -	 			
- *	 	<url instigator="..." url="..." />
- *	 </history>
+ *	 	<history itemType="..." selectedMastheadCollection="...">
+ *	 		<activityStream showSetting="..." activityStreamInfo="..." />
+ *							- or -	 			
+ *	 		<adminAction action="..." localizedName="..." url="..." />
+ *							- or -	 			
+ *	 		<url instigator="..." url="..." />
+ *	 	</history>
  *
  * @author drfoster@novell.com
  */
 public class HistoryHelper {
-	private final static boolean ENABLE_BROWSER_HISTORY	= false;	//! DRF (20140103):  Leave false on checkin until it's all working.
-	private final static boolean HTML5_BROWSER_HISTORY	= false;	//! DRF (20140103):  Leave false on checkin until it's all working.
+	private final static boolean ENABLE_HISTORY	= false;	//! DRF (20140106):  Leave false on checkin until it's all working.
+
+	// The following are used to control and provide access to the
+	// HTML5 session store.
+	private static boolean		m_html5Supported 	= Storage.isSessionStorageSupported();
+	private static StorageMap	m_html5SessionStore	= (m_html5Supported ? new StorageMap(Storage.getSessionStorageIfSupported()) : null); 
+
+	// The following controls what happens if the browser doesn't
+	// support HTML5 storage.  true  -> History information will be
+	// tracked on the server.  false -> History will not be supported.
+	private final static boolean RPC_TO_SERVER_WITHOUT_HTML5	= true;	//
 	
-	private final static String	HISTORY_MARKER				= "history";				// Marker appended to a URL with a history token so that we can relocate the URL during browser navigations.
-	private final static int	HISTORY_MARKER_LENGTH		= HISTORY_MARKER.length();	// Length of HISTORY_MARKER.
-	private final static String	HISTORY_STORAGE_KEY_BASE	= "historyStorage:";		// Used to construct keys into m_html5Storage where serialized HistoryInfo's are stored.
+	private final static String	HISTORY_MARKER			= "";						// Marker appended to a URL with a history token so that we can relocate the URL during browser navigation.
+	private final static int	HISTORY_MARKER_LENGTH	= HISTORY_MARKER.length();	// Length of HISTORY_MARKER.
+	private final static String	HTML5_STORAGE_KEY_BASE	= "historyStorage:";		// Used to construct keys into HTML5 session store where serialized HistoryInfo's are stored.
 
 	// The following are used as the tag and attribute names for the
 	// XML used to represent a serialized HistoryInfo object.
@@ -110,8 +120,6 @@ public class HistoryHelper {
 	private final static String	XML_SELECTED_MASTHEAD_COLLECTION	= "selectedMastheadCollection";
 	private final static String XML_SHOW_SETTING					= "showSetting";
 	private final static String XML_URL								= "url";
-	
-	private static StorageMap	m_html5Storage;	// Initialized upon first use.
 
 	/*
 	 * Constructor method. 
@@ -121,52 +129,51 @@ public class HistoryHelper {
 	}
 
 	/**
-	 * Clears the user's history information that's cached on the
-	 * server. 
+	 * Clears the user's history information. 
 	 */
 	public static void clearHistory() {
-		// If browser history handling is not enabled...
-		if (!(isBrowserHistoryEnabled())) {	//! Note that this is still in development !!!
+		// If history handling is not supported...
+		if (!(isHistorySupported())) {
 			// ...bail.
 			return;
 		}
 
-		// Are we using the HTML5 store for history?
-		if (HTML5_BROWSER_HISTORY) {
-			// Yes!  Clear the HistoryInfo's stored there.
-			clearHistoryFromHtml5Storage();
-		}
-		
-		else {
-			// No, we're using the server for storage!  Request that
-			// the history be cleared from the server.
-			GwtClientHelper.executeCommand(new ClearHistoryCmd(), new AsyncCallback<VibeRpcResponse>() {
-				@Override
-				public void onFailure(Throwable t) {}	// Ignored.
-				
-				@Override
-				public void onSuccess(VibeRpcResponse response) {}	// Ignored.
-			});
-		}
+		// Clear the history from the appropriate location.
+		if (m_html5Supported)
+		     clearHistoryFromHtml5Storage();
+		else clearHistoryFromServer();
 	}
 
 	/*
-	 * Clears this HistoryInfo's from the HTML5 store.
+	 * Clears this HistoryInfo's from the HTML5 session store.
 	 */
 	private static void clearHistoryFromHtml5Storage() {
 		// Collect the HistoryInfo keys...
 		List<String> historyKeys = new ArrayList<String>();
-		StorageMap hs = getHistoryStorage();
-		for (String key:  hs.keySet()) {
-			if (key.startsWith(HISTORY_STORAGE_KEY_BASE)) {
+		for (String key:  m_html5SessionStore.keySet()) {
+			if (key.startsWith(HTML5_STORAGE_KEY_BASE)) {
 				historyKeys.add(key);
 			}
 		}
 		
-		// ...and delete them from the HTML5 store.
+		// ...and delete them from the HTML5 session store.
 		for (String key:  historyKeys) {
-			hs.remove(key);
+			m_html5SessionStore.remove(key);
 		}
+	}
+	
+	/*
+	 * Clears this HistoryInfo's from the the server
+	 */
+	private static void clearHistoryFromServer() {
+		// Request that the history be cleared from the server.
+		GwtClientHelper.executeCommand(new ClearHistoryCmd(), new AsyncCallback<VibeRpcResponse>() {
+			@Override
+			public void onFailure(Throwable t) {}	// Ignored.
+			
+			@Override
+			public void onSuccess(VibeRpcResponse response) {}	// Ignored.
+		});
 	}
 	
 	/**
@@ -215,127 +222,125 @@ public class HistoryHelper {
 			return;
 		}
 
-		// Are we using the HTML5 store for history?
-		if (HTML5_BROWSER_HISTORY) {
-			// Yes!  Write the HistoryInfo to the HTML5 store and
-			// return its key.
-			historyCB.historyInfo(getHistoryInfoFromHtml5Storage(historyToken));
-		}
-		
-		else {
-			// No, we're using the server for storage!  Request the
-			// HistoryInfo from the server...
-			GwtClientHelper.executeCommand(new GetHistoryInfoCmd(historyToken), new AsyncCallback<VibeRpcResponse>() {
-				@Override
-				public void onFailure(Throwable t) {
-					// ...if the request fails, return null...
-					historyCB.historyInfo(null);
-				}
-				
-				@Override
-				public void onSuccess(VibeRpcResponse response) {
-					// ...otherwise, return the HistoryInfo we got back.
-					historyCB.historyInfo((HistoryInfo) response.getResponseData());
-				}
-			});
-		}
+		// Read the requested HistoryInfo from the appropriate
+		// location.
+		if (m_html5Supported)
+		     getHistoryInfoFromHtml5Storage(historyToken, historyCB);
+		else getHistoryInfoFromServer(      historyToken, historyCB);
 	}
 	
 	/*
-	 * Returns the HistoryInfo corresponding to the given historyToken
-	 * from the HTML5 store.
+	 * Request the HistoryInfo corresponding to the given historyToken
+	 * from the HTML5 session store.
 	 */
-	private static HistoryInfo getHistoryInfoFromHtml5Storage(String historyToken) {
-		HistoryInfo reply = null;
-		StorageMap hs = getHistoryStorage();
-		String xml = hs.get(HISTORY_STORAGE_KEY_BASE + historyToken);
+	private static void getHistoryInfoFromHtml5Storage(String historyToken, HistoryInfoCallback historyCB) {
+		HistoryInfo historyInfo = null;
+		String xml = m_html5SessionStore.get(HTML5_STORAGE_KEY_BASE + historyToken);
 		if (GwtClientHelper.hasString(xml)) {
-			Document xmlD = XMLParser.parse(xml);
-			Element historyE = xmlD.getDocumentElement();
+			Document xmlD     = XMLParser.parse(xml);
+			Element  historyE = xmlD.getDocumentElement();
 			assert ((null != historyE) && historyE.getNodeName().equals(XML_HISTORY)) : "HistoryHelper.getHistoryInfoFromHtml5Storage( *Internal Error* ):  Bogus history XML root";
-			CollectionType selectedMastheadCollection = CollectionType.valueOf(historyE.getAttribute(XML_SELECTED_MASTHEAD_COLLECTION));  
-			Element childE = ((Element) historyE.getFirstChild());
-			HistoryItemType historyType = HistoryItemType.valueOf(historyE.getAttribute(XML_ITEM_TYPE));
+			
+			CollectionType  selectedMastheadCollection = CollectionType.valueOf(historyE.getAttribute(XML_SELECTED_MASTHEAD_COLLECTION));  
+			Element         childE                     = ((Element) historyE.getFirstChild());
+			HistoryItemType historyType                = HistoryItemType.valueOf(historyE.getAttribute(XML_ITEM_TYPE));
 			switch(historyType) {
 			case ACTIVITY_STREAM: {
 				assert ((null != childE) && childE.getNodeName().equals(XML_ACTIVITY_STREAM)) : "HistoryHelper.getHistoryInfoFromHtml5Storage( *Internal Error* ):  Bogus history <activityStream>";
+				
 				ActivityStreamDataType showSetting = ActivityStreamDataType.valueOf(childE.getAttribute(XML_SHOW_SETTING));
-				ActivityStreamInfo asInfo = ActivityStreamInfo.parse(childE.getAttribute(XML_ACTIVITY_STREAM_INFO));
-				reply = new HistoryInfo(selectedMastheadCollection, asInfo, showSetting);
+				ActivityStreamInfo     asInfo      = ActivityStreamInfo.parse(      childE.getAttribute(XML_ACTIVITY_STREAM_INFO));
+				historyInfo = new HistoryInfo(selectedMastheadCollection, asInfo, showSetting);
+				
 				break;
 			}
 				
 			case ADMIN_ACTION: {
 				assert ((null != childE) && childE.getNodeName().equals(XML_ADMIN_ACTION)) : "HistoryHelper.getHistoryInfoFromHtml5Storage( *Internal Error* ):  Bogus history <adminAction>";
+				
 				GwtAdminAction adminAction = null;
 				String actionS = childE.getAttribute(XML_ACTION);
 				if (GwtClientHelper.hasString(actionS)) {
-					AdminAction action = AdminAction.valueOf(actionS);
-					String localizedName = childE.getAttribute(XML_LOCALIZED_NAME);
-					String url = childE.getAttribute(XML_URL);
+					AdminAction action        = AdminAction.valueOf(actionS);
+					String      localizedName = childE.getAttribute(XML_LOCALIZED_NAME);
+					String      url           = childE.getAttribute(XML_URL);
 					adminAction = new GwtAdminAction();
 					adminAction.init(localizedName, url, action);
 				}
-				reply = new HistoryInfo(selectedMastheadCollection, adminAction);
+				historyInfo = new HistoryInfo(selectedMastheadCollection, adminAction);
+				
 				break;
 			}
 				
 			case URL: {
 				assert ((null != childE) && childE.getNodeName().equals(XML_URL)) : "HistoryHelper.getHistoryInfoFromHtml5Storage( *Internal Error* ):  Bogus history <url>";
+				
 				Instigator instigator = Instigator.valueOf(childE.getAttribute(XML_INSTIGATOR));
-				String url = childE.getAttribute(XML_URL);
-				reply = new HistoryInfo(selectedMastheadCollection, url, instigator);
+				String     url        = childE.getAttribute(XML_URL);
+				historyInfo = new HistoryInfo(selectedMastheadCollection, url, instigator);
+				
 				break;
 			}
 			
 			default:
-				// Whatever it is, code hasn't been written to handle this
-				// yet!  Tell the user about the problem.
+				// Whatever it is, code hasn't been written to handle
+				// it yet!  Tell the user about the problem.
 				GwtClientHelper.debugAlert(
 					"HistoryHelper.getHistoryInfoFromHtml5Storage( Unhandled history type:  " + historyType.name() + " ):  ...this needs to be implemented...");
 				
 				break;
 			}
 		}
-		return reply;
-	}
-
-	/*
-	 * Returns the HTML5 StorageMap to use for storing history.
-	 */
-	private static StorageMap getHistoryStorage() {
-		// If we haven't cached the HTML5 StorageMap...
-		if (null == m_html5Storage) {
-			// ...create and cache it now...
-			m_html5Storage = new StorageMap(Storage.getSessionStorageIfSupported());
-		}
 		
-		// ...and return it.
-		return m_html5Storage;
+		historyCB.historyInfo(historyInfo);
 	}
 	
+	/*
+	 * Request the HistoryInfo corresponding to the given historyToken
+	 * from the server.
+	 */
+	private static void getHistoryInfoFromServer(final String historyToken, final HistoryInfoCallback historyCB) {
+		// Request the HistoryInfo from the server...
+		GwtClientHelper.executeCommand(new GetHistoryInfoCmd(historyToken), new AsyncCallback<VibeRpcResponse>() {
+			@Override
+			public void onFailure(Throwable t) {
+				// ...if the request fails, return null...
+				historyCB.historyInfo(null);
+			}
+			
+			@Override
+			public void onSuccess(VibeRpcResponse response) {
+				// ...otherwise, return the HistoryInfo we got back.
+				historyCB.historyInfo((HistoryInfo) response.getResponseData());
+			}
+		});
+	}
+
 	/**
 	 * Initializes browser history handling.
 	 */
 	public static void initializeBrowserHistory() {
-		// If browser history handling is not enabled...
-		if (!(isBrowserHistoryEnabled())) {	//! Note that this is still in development !!!
+		// If history handling is not supported...
+		if (!(isHistorySupported())) {
 			// ...bail.
 			return;
 		}
-		
+
+		// Connect to the GWT history manager.
 		History.addValueChangeHandler(new ValueChangeHandler<String>() {
 			@Override
 			public void onValueChange(ValueChangeEvent<String> event) {
 				try {
 					// If we can find the history token...
 					String historyMarker = event.getValue();
-					if (historyMarker.substring(0, HISTORY_MARKER_LENGTH).equals(HISTORY_MARKER)) {
-						String historyToken = historyMarker.substring(HISTORY_MARKER_LENGTH);
-						if (GwtClientHelper.hasString(historyToken)) {
-							// ...process it...
-							processHistoryTokenAsync(historyToken);
-							return;
+					if (GwtClientHelper.hasString(historyMarker)) {
+						if (historyMarker.substring(0, HISTORY_MARKER_LENGTH).equals(HISTORY_MARKER)) {
+							String historyToken = historyMarker.substring(HISTORY_MARKER_LENGTH);
+							if (GwtClientHelper.hasString(historyToken)) {
+								// ...process it...
+								processHistoryTokenAsync(historyToken);
+								return;
+							}
 						}
 					}
 				}
@@ -347,25 +352,34 @@ public class HistoryHelper {
 		});
 	}
 
-	/**
-	 * Returns true if browser history support is enabled and false
-	 * otherwise.
+	/*
+	 * Returns true if history is supported and false otherwise.
 	 */
-	public final static boolean isBrowserHistoryEnabled() {
-		// Is browser history enabled?
-		boolean reply = ENABLE_BROWSER_HISTORY;	//! Note that this is still in development !!!
+	private final static boolean isHistorySupported() {
+		// Is history enabled?
+		boolean reply = ENABLE_HISTORY;	//! Note that this is still in development !!!
 		if (reply) {
-			// Yes!  Are we supposed to use the HTML5 store for
-			// history?
-			if (HTML5_BROWSER_HISTORY) {	//! Note that this is still in development !!!
-				// Yes!  Return true if HTML5 storage is supported and
-				// false otherwise.
-				reply = Storage.isSessionStorageSupported();
+			// Yes!  Does the browser support HTML5 storage?
+			if (m_html5Supported) {
+				// Yes!  Do we have access to the HTML5 session store?  
+				reply = (null != m_html5SessionStore);
+				if (!reply) {
+					// No!  Then we'll act like the browser really
+					// doesn't support it.
+					m_html5Supported = false;
+				}
+			}
+
+			// If we don't have access to the HTML5 session store...
+			if (!reply) {
+				// ...should we track history using RPC's to the
+				// ...server?
+				reply = RPC_TO_SERVER_WITHOUT_HTML5;	//! Note that this is still in development !!!
 			}
 		}
 		
-		// If we get here, reply is true if browser history is
-		// supported and false otherwise.  Return it.
+		// If we get here, reply is true if history is supported and
+		// false otherwise.  Return it.
 		return reply;
 	}
 	
@@ -468,53 +482,26 @@ public class HistoryHelper {
 	 * Synchronously processes a history token.
 	 */
 	private static void processHistoryTokenNow(final String historyToken) {
-		// Are we using the HTML5 store for history?
-		if (HTML5_BROWSER_HISTORY) {
-			// Yes!  Read the history from the HTML5 store and process
-			// it.
-			HistoryInfo historyInfo = getHistoryInfoFromHtml5Storage(historyToken);
-			if (null != historyInfo)
-			     processHistoryInfoAsync(historyInfo);
-			else FullUIReloadEvent.fireOneAsync();
-		}
+		// Create a callback to process the history information from
+		// where ever we read it from...
+		HistoryInfoCallback hiCallback = new HistoryInfoCallback() {
+			@Override
+			public void historyInfo(HistoryInfo historyInfo) {
+				if (null != historyInfo)
+				     processHistoryInfoAsync(historyInfo);
+				else FullUIReloadEvent.fireOneAsync();
+			}
+		};
 		
-		else {
-			// No, we're using the server for storage!  Get the
-			// HistoryInfo from the server.
-			GwtClientHelper.executeCommand(new GetHistoryInfoCmd(historyToken), new AsyncCallback<VibeRpcResponse>() {
-				@Override
-				public void onFailure(Throwable t) {
-					// On any failure, we simply force the content to
-					// reload.
-					FullUIReloadEvent.fireOneAsync();
-				}
-				
-				@Override
-				public void onSuccess(VibeRpcResponse response) {
-					// If we have the HistoryInfo, put it into effect,
-					// otherwise, simply force the content to reload.
-					HistoryInfo historyInfo = ((HistoryInfo) response.getResponseData());
-					if (null != historyInfo)
-					     processHistoryInfoAsync(historyInfo);
-					else FullUIReloadEvent.fireOneAsync();
-				}
-			});
-		}
+		// ...and read and process the history information from the
+		// ...appropriate location. 
+		if (m_html5Supported)
+		     getHistoryInfoFromHtml5Storage(historyToken, hiCallback);
+		else getHistoryInfoFromServer(      historyToken, hiCallback);
 	}
 
 	/*
-	 * Stores a HistoryInfo in Html5 storage.
- *
- * 
- *	 <history itemType="..." selectedMastheadCollection="...">
- *	 	<activityStream showSetting="..." activityStreamInfo="..." />
- *				- or -	 			
- *	 	<adminAction action="..." localizedName="..." url="..." />
- *				- or -	 			
- *	 	<url instigator="..." url="..." />
- *	 </history>
- *
- *
+	 * Stores a HistoryInfo in the HTML5 session store.
 	 */
 	private static void pushHistoryInfoToHtml5Storage(HistoryInfo historyInfo) {
 		Document xmlD = XMLParser.createDocument();
@@ -563,14 +550,36 @@ public class HistoryHelper {
 			break;
 		}
 
-		// Write the XML to the HTML5 store...
+		// Write the XML to the HTML5 session store...
 		String historyToken = String.valueOf(new Date().getTime());
-		getHistoryStorage().put((HISTORY_STORAGE_KEY_BASE + historyToken), xmlD.toString());
+		m_html5SessionStore.put((HTML5_STORAGE_KEY_BASE + historyToken), xmlD.toString());
 		
 		// ...and put the history token in the History.
 		History.newItem(
 			(HISTORY_MARKER + historyToken),	// History marker.
 			false);								// false -> Don't fire a change event for this item.
+	}
+	
+	/*
+	 * Stores a HistoryInfo on the server.
+	 */
+	private static void pushHistoryInfoToServer(HistoryInfo historyInfo) {
+		// Push the HistoryInfo to the server.
+		PushHistoryInfoCmd phiCmd = new PushHistoryInfoCmd(historyInfo);
+		GwtClientHelper.executeCommand(phiCmd, new AsyncCallback<VibeRpcResponse>() {
+			@Override
+			public void onFailure(Throwable t) {}	// Ignored.
+			
+			@Override
+			public void onSuccess(VibeRpcResponse response) {
+				String historyToken = ((StringRpcResponseData) response.getResponseData()).getStringValue();
+				if (GwtClientHelper.hasString(historyToken)) {
+					History.newItem(
+						(HISTORY_MARKER + historyToken),	// History marker.
+						false);								// false -> Don't fire a change event for this item.
+				}
+			}
+		});
 	}
 	
 	/**
@@ -580,8 +589,8 @@ public class HistoryHelper {
 	 * @param adminAction
 	 */
 	public static void pushHistoryInfoAsync(final GwtAdminAction adminAction) {
-		// If browser history handling is not enabled...
-		if (!(isBrowserHistoryEnabled())) {	//! Note that this is still in development !!!
+		// If history handling is not supported...
+		if (!(isHistorySupported())) {
 			// ...bail.
 			return;
 		}
@@ -619,8 +628,8 @@ public class HistoryHelper {
 	 * @param asdt
 	 */
 	public static void pushHistoryInfoAsync(final ActivityStreamInfo asi, final ActivityStreamDataType asdt) {
-		// If browser history handling is not enabled...
-		if (!(isBrowserHistoryEnabled())) {	//! Note that this is still in development !!!
+		// If history handling is not supported...
+		if (!(isHistorySupported())) {
 			// ...bail.
 			return;
 		}
@@ -658,8 +667,8 @@ public class HistoryHelper {
 	 * @param instigator
 	 */
 	public static void pushHistoryInfoAsync(final String url, final Instigator instigator) {
-		// If browser history handling is not enabled...
-		if (!(isBrowserHistoryEnabled())) {	//! Note that this is still in development !!!
+		// If history handling is not supported...
+		if (!(isHistorySupported())) {
 			// ...bail.
 			return;
 		}
@@ -697,30 +706,9 @@ public class HistoryHelper {
 	 * Implementation method that actually stores a HistoryInfo.
 	 */
 	private static void pushHistoryInfoImpl(final HistoryInfo historyInfo) {
-		// Are we using HTML5 storage for history?
-		if (HTML5_BROWSER_HISTORY) {
-			// Yes!  Push the HistoryInfo to the HTML5 store.
-			pushHistoryInfoToHtml5Storage(historyInfo);
-		}
-		
-		else {
-			// No, we're using the server for storage!  Push the
-			// HistoryInfo to the server.
-			PushHistoryInfoCmd phiCmd = new PushHistoryInfoCmd(historyInfo);
-			GwtClientHelper.executeCommand(phiCmd, new AsyncCallback<VibeRpcResponse>() {
-				@Override
-				public void onFailure(Throwable t) {}	// Ignored.
-				
-				@Override
-				public void onSuccess(VibeRpcResponse response) {
-					String historyToken = ((StringRpcResponseData) response.getResponseData()).getStringValue();
-					if (GwtClientHelper.hasString(historyToken)) {
-						History.newItem(
-							(HISTORY_MARKER + historyToken),	// History marker.
-							false);								// false -> Don't fire a change event for this item.
-					}
-				}
-			});
-		}
+		// Write the history information to the appropriate location.
+		if (m_html5Supported)
+		     pushHistoryInfoToHtml5Storage(historyInfo);
+		else pushHistoryInfoToServer(      historyInfo);
 	}
 }
