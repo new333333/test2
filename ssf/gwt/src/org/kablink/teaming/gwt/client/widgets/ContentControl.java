@@ -358,6 +358,20 @@ public class ContentControl extends Composite
 	}// end getContentFrame()
 
 	/**
+	 * Returns the URL current set in the content IFRAME.
+	 * 
+	 * @return
+	 */
+	public String getContentFrameUrl()
+	{
+		String reply;
+		if (null == m_frame)
+		     reply = null;
+		else reply = m_frame.getUrl();
+		return reply;
+	}// end getContentFrameUrl()
+
+	/**
 	 * Returns a List<String> of the URLs currently store in the
 	 * content history.
 	 * 
@@ -586,8 +600,8 @@ public class ContentControl extends Composite
 
 		// Reload the URL.
 		ContextChangingEvent.fireOne();						
-		setUrl(         "",  Instigator.FORCE_FULL_RELOAD              );
-		setViewFromUrl( url, Instigator.FORCE_FULL_RELOAD, false, null );
+		setContentFrameUrl( "",  Instigator.FORCE_FULL_RELOAD              );
+		setViewFromUrl(     url, Instigator.FORCE_FULL_RELOAD, false, null );
 	}// end reload()
 
 	/*
@@ -673,8 +687,9 @@ public class ContentControl extends Composite
 	 * This method will set the URL used by the IFRAME.
 	 * 
 	 * @param url
+	 * @param instigator
 	 */
-	public void setUrl( String url, Instigator instigator )
+	public void setContentFrameUrl( String url, Instigator instigator )
 	{
 		m_contentInstigator = instigator;
 		m_frame.setUrl( url );
@@ -709,7 +724,7 @@ public class ContentControl extends Composite
 		if ( m_isAdminContent )
 		{
 			// Yes!  Simply activate the URL.
-			setUrl( url, Instigator.ADMINISTRATION_CONSOLE );
+			setContentFrameUrl( url, Instigator.ADMINISTRATION_CONSOLE );
 		}
 		else
 		{
@@ -1192,14 +1207,14 @@ public class ContentControl extends Composite
 				GwtClientHelper.jsHideNewPageEntryViewDIV();
 				
 				// ...and clear out the content of the IFRAME.
-				setUrl( "", instigator );
+				setContentFrameUrl( "", instigator );
 				clear();
 				
 				break;
 			
 			case JSP_CONTENT_VIEW:
 				// A JSP view!  Load the URL into the content frame...
-				setUrl( url, instigator );
+				setContentFrameUrl( url, instigator );
 				
 				// ...tell the main content layout panel to not show a
 				// ...GWT widget it may have...
@@ -1208,6 +1223,13 @@ public class ContentControl extends Composite
 				// ...make sure the ContentControl is showing...
 				ShowContentControlEvent.fireOne();
 
+				// ...if we're navigating from the history, make sure
+				// ...the masthead matches what was there.  Otherwise,
+				// ...push the URL into the history cache.
+				if ( historyAction )
+				     GwtTeaming.fireEventAsync( new SetFilrActionFromCollectionTypeEvent( historySelectedMastheadCollection ) );
+				else HistoryHelper.pushHistoryInfoAsync( url, instigator );
+				
 				// ...if requested invoke the share and/or subscribe
 				// ...dialogs on the view.
 				if ( vi.isInvokeShare() )

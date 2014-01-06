@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -48,7 +48,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 
-import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.resources.client.ImageResource;
@@ -62,7 +62,8 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TeamingPopupPanel;
 
 /**
- * This class displays the actions a user can perform from the mast head.
+ * This class displays the actions a user can perform from the
+ * masthead.
  * 
  * @author jwootton
  */
@@ -204,9 +205,7 @@ public class UserActionsPopup extends TeamingPopupPanel
 			@Override
 			public void onClick( ClickEvent event )
 			{
-				Scheduler.ScheduledCommand cmd;
-				
-				cmd = new Scheduler.ScheduledCommand()
+				GwtClientHelper.deferCommand( new ScheduledCommand()
 				{
 					@Override
 					public void execute()
@@ -215,8 +214,7 @@ public class UserActionsPopup extends TeamingPopupPanel
 						
 						GwtTeaming.fireEvent( actionEvent );
 					}
-				};
-				Scheduler.get().scheduleDeferred( cmd );
+				} );
 			}
 		};
 		actionPanel.addDomHandler( clickHandler, ClickEvent.getType() );
@@ -265,10 +263,8 @@ public class UserActionsPopup extends TeamingPopupPanel
 				// Did we get a url for the "site administration" action?
 				if ( url != null && url.length() > 0 )
 				{
-					Scheduler.ScheduledCommand cmd;
-					
 					// Yes
-					cmd = new Scheduler.ScheduledCommand()
+					GwtClientHelper.deferCommand( new ScheduledCommand()
 					{
 						/**
 						 * 
@@ -285,8 +281,7 @@ public class UserActionsPopup extends TeamingPopupPanel
 												new AdministrationEvent() );
 							m_contentPanel.insert( actionPanel, 0 );
 						}
-					};
-					Scheduler.get().scheduleDeferred( cmd );
+					} );
 				}
 			}
 		};
@@ -319,7 +314,7 @@ public class UserActionsPopup extends TeamingPopupPanel
 		actionPanel = addAction(
 							GwtTeaming.getMessages().userActionsPanel_ViewProfile(),
 							GwtTeaming.getImageBundle().userActionsPanel_ViewProfile(),
-							new GotoMyWorkspaceEvent() );
+							new GotoMyWorkspaceEvent( true ) );	// true -> Force this to be a View Profile, even in Vibe.
 		m_contentPanel.add( actionPanel );
 		
 		// Add "Personal Preferences"
@@ -376,9 +371,7 @@ public class UserActionsPopup extends TeamingPopupPanel
 				@Override
 				public void onClick( ClickEvent event )
 				{
-					Scheduler.ScheduledCommand cmd;
-					
-					cmd = new Scheduler.ScheduledCommand()
+					GwtClientHelper.deferCommand( new ScheduledCommand()
 					{
 						@Override
 						public void execute()
@@ -386,8 +379,7 @@ public class UserActionsPopup extends TeamingPopupPanel
 							hide();
 							LogoutEvent.fireOne();
 						}
-					};
-					Scheduler.get().scheduleDeferred( cmd );
+					} );
 				}
 			} );
 			panel.add( signOutLabel );
@@ -403,9 +395,7 @@ public class UserActionsPopup extends TeamingPopupPanel
 				@Override
 				public void onClick( ClickEvent event )
 				{
-					Scheduler.ScheduledCommand cmd;
-					
-					cmd = new Scheduler.ScheduledCommand()
+					GwtClientHelper.deferCommand( new ScheduledCommand()
 					{
 						@Override
 						public void execute()
@@ -413,8 +403,7 @@ public class UserActionsPopup extends TeamingPopupPanel
 							hide();
 							LoginEvent.fireOne();
 						}
-					};
-					Scheduler.get().scheduleDeferred( cmd );
+					} );
 				}
 			} );
 			panel.add( signInLabel );
@@ -538,17 +527,14 @@ public class UserActionsPopup extends TeamingPopupPanel
 		
 		// Issue an rpc request to get the quota information
 		{
-			Scheduler.ScheduledCommand cmd;
-			
-			cmd = new Scheduler.ScheduledCommand()
+			GwtClientHelper.deferCommand( new ScheduledCommand()
 			{
 				@Override
 				public void execute()
 				{
 					getDiskQuotaDataFromServer();
 				}
-			};
-			Scheduler.get().scheduleDeferred( cmd );
+			} );
 		}
 	}	
 }

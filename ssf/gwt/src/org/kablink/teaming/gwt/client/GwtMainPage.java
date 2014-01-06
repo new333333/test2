@@ -2921,7 +2921,7 @@ public class GwtMainPage extends ResizeComposite
 		m_contentLayoutPanel.showContentControl();
 		m_requestInfo.setRerootSidebarTree();
 		String myWSUrl = m_requestInfo.getMyWorkspaceUrl();
-		if ( GwtClientHelper.isLicenseFilr() )
+		if ( GwtClientHelper.isLicenseFilr() || event.isViewProfile() )
 		{
 			myWSUrl = GwtClientHelper.appendUrlParam( myWSUrl, "operation", "showProfile" );
 		}

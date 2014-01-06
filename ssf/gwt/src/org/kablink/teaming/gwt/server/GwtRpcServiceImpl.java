@@ -612,6 +612,14 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case DUMP_HISTORY_INFO:
+		{
+			DumpHistoryInfoCmd dhiCmd = ((DumpHistoryInfoCmd) cmd);
+			GwtHistoryHelper.dumpHistoryInfo( getRequest( ri ), dhiCmd.getMethod(), dhiCmd.getHistoryToken(), dhiCmd.getHistoryInfo() );
+			response = new VibeRpcResponse( new BooleanRpcResponseData( true ) );
+			return response;
+		}
+		
 		case EMAIL_PUBLIC_LINK:
 		{
 			EmailPublicLinkCmd eplCmd;
