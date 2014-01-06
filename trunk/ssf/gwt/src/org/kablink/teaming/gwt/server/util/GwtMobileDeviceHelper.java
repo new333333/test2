@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -257,49 +257,29 @@ public class GwtMobileDeviceHelper {
 				options.put(ObjectKeys.SEARCH_QUICK_FILTER, quickFilter);
 			}
 
-			// Are we reading by pages? 
-			int startIndex = GwtUIHelper.getOptionInt(options, ObjectKeys.SEARCH_OFFSET,   0                );
-			int pageSize   = GwtUIHelper.getOptionInt(options, ObjectKeys.SEARCH_MAX_HITS, Integer.MAX_VALUE);
-			boolean paging = (pageSize < Integer.MAX_VALUE);
-			if (paging) {
-				// Yes!  We increase the page size by one so we can
-				// detect when there's more available beyond what we
-				// really need.
-				pageSize += 1;
-				options.put(ObjectKeys.SEARCH_MAX_HITS, new Integer(pageSize));
-			}
+			// Where are we starting the read from? 
+			int startIndex = GwtUIHelper.getOptionInt(options, ObjectKeys.SEARCH_OFFSET, 0);
 			
 			// Are we being asked for system wide or a per user mobile
 			// device rows?
 			MobileDeviceModule    mdm     = bs.getMobileDeviceModule();
 			MobileDevicesViewSpec mdvSpec = bi.getMobileDevicesViewSpec();
-			List<MobileDevice> mds;
+			Map mdMap;
 			if (mdvSpec.isSystem())
-			     mds = mdm.getMobileDevices(                     options);	// System wide!
-			else mds = mdm.getMobileDevices(mdvSpec.getUserId(), options);	// Per user!
-
+			     mdMap = mdm.getMobileDevices(                     options);	// System wide!
+			else mdMap = mdm.getMobileDevices(mdvSpec.getUserId(), options);	// Per user!
+			
 			// Did we get any MobileDevice's?
-			if (!(MiscUtil.hasItems(mds))) {
+			List<MobileDevice> mdList = (MiscUtil.hasItems(mdMap) ? ((List<MobileDevice>) mdMap.get(ObjectKeys.SEARCH_ENTRIES)) : null);
+			if (!(MiscUtil.hasItems(mdList))) {
 				// No!  Return an empty row set.
 				return GwtViewHelper.buildEmptyFolderRows();
 			}
-
-			// Are there more devices beyond the current page?
-			int mdCount = mds.size();
-			boolean hasMore = (paging && (pageSize == mdCount));
-			if (hasMore) {
-				// Yes!  Remove the last one we read as we don't need
-				// it and it's beyond the page size requested.
-				mdCount -= 1;
-				mds.remove(mdCount);
-			}
-			else {
-				pageSize = mdCount; 
-			}
+			Long mdTotal = ((Long) mdMap.get(ObjectKeys.SEARCH_COUNT_TOTAL));
 
 			// Resolve the user's we have devices for...
 			List<Long> userIds = new ArrayList<Long>();;
-			for (MobileDevice md:  mds) {
+			for (MobileDevice md:  mdList) {
 				ListUtil.addLongToListLongIfUnique(userIds, md.getUserId());
 			}
 			List<Principal> pList = ResolveIds.getPrincipals(userIds);
@@ -312,7 +292,7 @@ public class GwtMobileDeviceHelper {
 			
 			// Scan the user device map.
 			List<FolderRow> deviceRows = new ArrayList<FolderRow>();
-			for (MobileDevice md:  mds) {
+			for (MobileDevice md:  mdList) {
 				// Create the FolderRow for this device and add
 				// it to the list. 
 				EntityId  eid = new EntityId(binder.getId(), md.getUserId(), EntityId.MOBILE_DEVICE, md.getDeviceId());
@@ -402,11 +382,11 @@ public class GwtMobileDeviceHelper {
 			// data.
 			return
 				new FolderRowsRpcResponseData(
-					deviceRows,													// FolderRows.
-					startIndex,													// Start index.
-					(startIndex + pageSize),									// Total count.
-					(hasMore ? TotalCountType.AT_LEAST : TotalCountType.EXACT),	// How the total count should be interpreted.
-					new ArrayList<Long>());										// Contributor IDs.
+					deviceRows,				// FolderRows.
+					startIndex,				// Start index.
+					mdTotal.intValue(),		// Total count.
+					TotalCountType.EXACT,	// How the total count should be interpreted.
+					new ArrayList<Long>());	// Contributor IDs.
 		}
 		
 		finally {

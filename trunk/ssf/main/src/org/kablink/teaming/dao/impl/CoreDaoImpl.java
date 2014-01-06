@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -3384,21 +3384,27 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
 	/**
 	 * Used to find all MobileDevice's that meet the specifications.
 	 * 
+	 * Returns a Map containing:
+	 * 		Key:  ObjectKeys.SEARCH_ENTRIES:      List<MobileDevice> of the MobileDevice's.
+	 *		Key:  ObjectKeys.SEARCH_COUNT_TOTAL:  Long of the total entries available that satisfy the selection specifications.
+	 * 
 	 * @param selectSpec
 	 * @param zoneId
 	 * 
 	 * @return
 	 */
 	@Override
-	public List<MobileDevice> findMobileDevices(final MobileDeviceSelectSpec selectSpec, final Long zoneId) {
-        List result = null;
+	public Map findMobileDevices(final MobileDeviceSelectSpec selectSpec, final Long zoneId) {
+        Map result = null;
         long begin  = System.nanoTime();
 		try {
 			HibernateCallback callback = new HibernateCallback() {
                 @Override
 				public Object doInHibernate( Session session ) throws HibernateException {
-                	// Create the base Criteria for the query.
-                	Criteria crit = session.createCriteria(MobileDevice.class);
+                	// Create the base Criteria's for the queries.
+                	Criteria critQuery = session.createCriteria(MobileDevice.class);	// Criteria for reading the list.
+                	Criteria critTotal = session.createCriteria(MobileDevice.class);	// Criteria for determining the total count when paging.
+                	critTotal.setProjection(Projections.rowCount());
 
                 	// Factor in the sorting required.
                 	String sortBy = selectSpec.getSortBy();
@@ -3406,30 +3412,35 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
                 		sortBy = ObjectKeys.FIELD_MOBILE_DEVICE_DESCRIPTION;
                 	}
                 	Order order = (selectSpec.isSortAscend() ? Order.asc(sortBy) : Order.desc(sortBy));
-                	crit.addOrder(order);
+                	critQuery.addOrder(order);	// Not used for the total count.
                 	
                 	// Factor in the paging required.
-                	int startIndex = selectSpec.getStartIndex();
-                	if ((-1) != startIndex) {
-                		crit.setFirstResult(startIndex);
+                	int     startIndex = selectSpec.getStartIndex();
+                	boolean hasStart   = (0 < startIndex);
+                	if (hasStart) {
+                		critQuery.setFirstResult(startIndex);	// Not used for the total count.
                 	}
-                	int pageSize = selectSpec.getPageSize();
-                	if ((-1) != pageSize) {
-                		crit.setMaxResults(pageSize);
+                	int     pageSize = selectSpec.getPageSize();
+                	boolean hasSize  = (((-1) != pageSize) && (Integer.MAX_VALUE != pageSize));
+                	if (hasSize)  {
+                		critQuery.setMaxResults(pageSize);	// Not used for the total count.
                 	}
+                	boolean paging = (hasStart || hasSize);
                 	
                 	// If we're querying for a specific user...
                 	Long userId = selectSpec.getUserId();
                 	if (null != userId) {
                 		// ...add their ID to the criteria.
-                    	crit.add(Restrictions.eq(ObjectKeys.FIELD_MOBILE_DEVICE_USER_ID, userId));
+                    	critQuery.add(Restrictions.eq(ObjectKeys.FIELD_MOBILE_DEVICE_USER_ID, userId));
+                    	critTotal.add(Restrictions.eq(ObjectKeys.FIELD_MOBILE_DEVICE_USER_ID, userId));
                 	}
 
                 	// If we're querying for a specific device ID...
                 	String deviceId = selectSpec.getDeviceId();
                 	if (MiscUtil.hasString(deviceId)) {
                 		// ...add its ID to the criteria.
-                		crit.add(Restrictions.eq(ObjectKeys.FIELD_MOBILE_DEVICE_DEVICE_ID, deviceId));
+                		critQuery.add(Restrictions.eq(ObjectKeys.FIELD_MOBILE_DEVICE_DEVICE_ID, deviceId));
+                		critTotal.add(Restrictions.eq(ObjectKeys.FIELD_MOBILE_DEVICE_DEVICE_ID, deviceId));
                 	}
                 	
                 	// Do we have a quick filter?
@@ -3439,16 +3450,29 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
                 		// userTitle columns.
                 		Criterion description = Restrictions.ilike(ObjectKeys.FIELD_MOBILE_DEVICE_DESCRIPTION, quickFilter, MatchMode.ANYWHERE);
                 		Criterion userTitle   = Restrictions.ilike(ObjectKeys.FIELD_MOBILE_DEVICE_USER_TITLE,  quickFilter, MatchMode.ANYWHERE);
-                		crit.add(Restrictions.or(description, userTitle));
+                		critQuery.add(Restrictions.or(description, userTitle));
+                		critTotal.add(Restrictions.or(description, userTitle));
                 	}
 
                 	// Get the results.
-                	return crit.list();
+                	Map reply = new HashMap();
+                	List<MobileDevice> mdList = critQuery.list();
+                	if (null == mdList) {
+                		mdList = new ArrayList<MobileDevice>();
+                	}
+                	reply.put(ObjectKeys.SEARCH_ENTRIES, mdList);
+                	
+                	Long mdTotal;
+                	if (paging)
+                	     mdTotal = ((Long) critTotal.uniqueResult());	// If we're paging, we have to obtain the total separately...
+                	else mdTotal = new Long(mdList.size());				// ...otherwise, the size of the list to the total.
+                	reply.put(ObjectKeys.SEARCH_COUNT_TOTAL, mdTotal);
+                	return reply;
                 }
             };
 
             // Issue the database query.
-            result = ((List) getHibernateTemplate().execute(callback));
+            result = ((Map) getHibernateTemplate().execute(callback));
     	}
 		
 		catch (Exception ex) {

@@ -64,6 +64,7 @@ import org.springframework.transaction.support.TransactionTemplate;
  *
  * @author drfoster@novell.com
  */
+@SuppressWarnings("unchecked")
 public class MobileDeviceModuleImpl extends CommonDependencyInjection implements MobileDeviceModule {
 	private AdminModule			m_adminModule;			//
 	private ProfileModule		m_profileModule;		//
@@ -119,14 +120,19 @@ public class MobileDeviceModuleImpl extends CommonDependencyInjection implements
      * 
      * @param userId
      */
-    @Override
+	@Override
     public void deleteAllMobileDevices(Long userId) {
     	// Validate that the user can manage MobileDevice's.
     	getAdminModule().checkAccess(AdminOperation.manageFunction);
     	
     	// Are there any MobileDevice's for this user ID?
-    	final List<MobileDevice> mobileDevices = getMobileDevices(userId);
-    	if (!(MiscUtil.hasItems(mobileDevices))) {
+    	final Map mdMap = getMobileDevices(userId);
+    	if (!(MiscUtil.hasItems(mdMap))) {
+    		// No!  Bail.
+    		return;
+    	}
+    	final List<MobileDevice> mdList = ((List<MobileDevice>) mdMap.get(ObjectKeys.SEARCH_ENTRIES));
+    	if (!(MiscUtil.hasItems(mdList))) {
     		// No!  Bail.
     		return;
     	}
@@ -135,7 +141,7 @@ public class MobileDeviceModuleImpl extends CommonDependencyInjection implements
 		getTransactionTemplate().execute(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
-				for (MobileDevice md:  mobileDevices) {
+				for (MobileDevice md:  mdList) {
 					getCoreDao().delete(md);
 				}
 				return null;
@@ -188,7 +194,6 @@ public class MobileDeviceModuleImpl extends CommonDependencyInjection implements
      * @return
      */
     @Override
-    @SuppressWarnings("unchecked")
 	public MobileDevice getMobileDevice(Long userId, String deviceId) {
     	// Validate the parameters.
 		if (null == userId) {
@@ -223,8 +228,7 @@ public class MobileDeviceModuleImpl extends CommonDependencyInjection implements
      * @return
      */
     @Override
-    @SuppressWarnings("unchecked")
-	public List<MobileDevice> getMobileDevices(Long userId, Map options) {
+	public Map getMobileDevices(Long userId, Map options) {
     	// If we have a user ID...
     	boolean systemWide = (null == userId);
 		if (!systemWide) {
@@ -236,39 +240,40 @@ public class MobileDeviceModuleImpl extends CommonDependencyInjection implements
 		if (null == options) {
 			options = new HashMap();
 		}
-		boolean sortAscend  = (!(GwtUIHelper.getOptionBoolean(options, ObjectKeys.SEARCH_SORT_DESCEND, false))          );
-		String  sortBy      =    GwtUIHelper.getOptionString( options, ObjectKeys.SEARCH_SORT_BY,      "description"    );
-		int     start       =    GwtUIHelper.getOptionInt(    options, ObjectKeys.SEARCH_OFFSET,       0                );
-		int     length      =    GwtUIHelper.getOptionInt(    options, ObjectKeys.SEARCH_MAX_HITS,     Integer.MAX_VALUE);
-		String  quickFilter =    GwtUIHelper.getOptionString( options, ObjectKeys.SEARCH_QUICK_FILTER, ""               );
+		boolean sortAscend  = (!(GwtUIHelper.getOptionBoolean(options, ObjectKeys.SEARCH_SORT_DESCEND, false))      );
+		String  sortBy      =    GwtUIHelper.getOptionString( options, ObjectKeys.SEARCH_SORT_BY,      "description");
+		int     start       =    GwtUIHelper.getOptionInt(    options, ObjectKeys.SEARCH_OFFSET,       (-1)         );
+		int     length      =    GwtUIHelper.getOptionInt(    options, ObjectKeys.SEARCH_MAX_HITS,     (-1)         );
+		String  quickFilter =    GwtUIHelper.getOptionString( options, ObjectKeys.SEARCH_QUICK_FILTER, ""           );
 		
 		// Query for the matching mobile devices.
 		Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
 		MobileDeviceSelectSpec mdss = new MobileDeviceSelectSpec(sortAscend, sortBy, start, length, userId, null, quickFilter);
-		List<MobileDevice> reply = getCoreDao().findMobileDevices(mdss, zoneId);
+		Map reply = getCoreDao().findMobileDevices(mdss, zoneId);
 		
 		// Return them.
 		if (null == reply) {
-			reply = new ArrayList<MobileDevice>();
+			reply = new HashMap();
+			reply.put(ObjectKeys.SEARCH_ENTRIES,     new ArrayList<MobileDevice>());
+			reply.put(ObjectKeys.SEARCH_COUNT_TOTAL, new Long(0));
 		}
     	return reply;
     }
     
-    @Override
-	public List<MobileDevice> getMobileDevices(Long userId) {
+	@Override
+	public Map getMobileDevices(Long userId) {
 		// Always use the initial form of the method.
 		return getMobileDevices(userId, null);
 	}
     
     @Override
-	public List<MobileDevice> getMobileDevices() {
+	public Map getMobileDevices() {
 		// Always use the initial form of the method.
 		return getMobileDevices(null, null);
 	}
     
 	@Override
-    @SuppressWarnings("unchecked")
-	public List<MobileDevice> getMobileDevices(Map options) {
+	public Map getMobileDevices(Map options) {
 		// Always use the initial form of the method.
 		return getMobileDevices(null, options);
 	}
@@ -318,23 +323,27 @@ public class MobileDeviceModuleImpl extends CommonDependencyInjection implements
 	public void setMatchingUserTitles(User user) {
 		// Does this user have any mobile devices? 
 		Long userId = user.getId();
-		List<MobileDevice> mds = getMobileDevices(userId);
-		if (MiscUtil.hasItems(mds)) {
-			// Yes!  If its the current user matching their devices to
-			// their title, we don't enforce manage rights.  Otherwise,
-			// we do.  Do we need to enforce manage rights?
-			User    currentUser   = RequestContextHolder.getRequestContext().getUser();
-			boolean enforceRights = (!(userId.equals(currentUser.getId())));
- 			
-			// Scan the mobile devices.
-			String userTitle = user.getTitle();
-			for (MobileDevice md:  mds) {
-				// Do we need to modify this mobile device because the
-				// user's title doesn't match?
-				if (!(md.getUserTitle().equals(userTitle))) {
-					// Yes!  Modify it.
-					md.setUserTitle(userTitle);
-					modifyMobileDeviceImpl(md, enforceRights);
+		Map mdMap = getMobileDevices(userId);
+		if (MiscUtil.hasItems(mdMap)) {
+			List<MobileDevice> mdList = ((List<MobileDevice>) mdMap.get(ObjectKeys.SEARCH_ENTRIES));
+			if (MiscUtil.hasItems(mdList)) {
+				// Yes!  If its the current user matching their devices
+				// to their title, we don't enforce manage rights.
+				// Otherwise, we do.  Do we need to enforce manage
+				// rights?
+				User    currentUser   = RequestContextHolder.getRequestContext().getUser();
+				boolean enforceRights = (!(userId.equals(currentUser.getId())));
+	 			
+				// Scan the mobile devices.
+				String userTitle = user.getTitle();
+				for (MobileDevice md:  mdList) {
+					// Do we need to modify this mobile device because the
+					// user's title doesn't match?
+					if (!(md.getUserTitle().equals(userTitle))) {
+						// Yes!  Modify it.
+						md.setUserTitle(userTitle);
+						modifyMobileDeviceImpl(md, enforceRights);
+					}
 				}
 			}
 		}
