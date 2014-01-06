@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -89,7 +89,6 @@ import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.GroupPrincipal;
 import org.kablink.teaming.domain.HistoryStamp;
 import org.kablink.teaming.domain.IdentityInfo;
-import org.kablink.teaming.domain.MobileDevice;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.ReservedByAnotherUserException;
 import org.kablink.teaming.domain.ResourceDriverConfig;
@@ -5889,6 +5888,7 @@ public class GwtViewHelper {
 	 * Given a List<Long> of principal IDs read from entry maps,
 	 * returns an equivalent List<PrincipalInfo> object.
 	 */
+	@SuppressWarnings("unchecked")
 	private static void getUserInfoFromPIds(AllModulesInjected bs, HttpServletRequest request, List<PrincipalInfo> piList, List<MobileDevicesInfo> mdList, List<Long> principalIds) {
 		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtViewHelper.getUserInfoFromPIds()");
 		try {
@@ -5948,12 +5948,12 @@ public class GwtViewHelper {
 					// requested?
 					if (null != mdList) {
 						// Yes!  How many MobileDevice's do they have?
-						List<MobileDevice> mds = mdm.getMobileDevices(user.getId());
-						int mdCount = ((null == mds) ? 0 : mds.size());
+						Map  mdMap   = mdm.getMobileDevices(user.getId());
+						Long mdCount = ((null == mdMap) ? new Long(0) : ((Long) mdMap.get(ObjectKeys.SEARCH_COUNT_TOTAL)));
 						
 						// Add a MobileDevicesInfo to the
 						// List<MobileDevicesInfo> we were given.
-						mdList.add(new MobileDevicesInfo(user.getId(), mdCount));
+						mdList.add(new MobileDevicesInfo(user.getId(), mdCount.intValue()));
 					}
 					
 					// ...and add the PrincipalInfo to the reply list.

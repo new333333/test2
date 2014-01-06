@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  *
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -18,7 +18,7 @@
  * (c) 1998-2009 Novell, Inc. All Rights Reserved.
  *
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -157,10 +157,13 @@ public class SelfResource extends AbstractFileResource {
         user.setDesktopAppConfig(zoneConfig.getDesktopAppConfig());
         user.setMobileAppConfig(zoneConfig.getMobileAppConfig());
         if (includeMobileDevices) {
-        	List<org.kablink.teaming.domain.MobileDevice> mobileDevices = getMobileDeviceModule().getMobileDevices(getLoggedInUserId());
+        	Map mdMap = getMobileDeviceModule().getMobileDevices(getLoggedInUserId());
+        	List<org.kablink.teaming.domain.MobileDevice> mdList = ((null == mdMap) ? null : ((List<org.kablink.teaming.domain.MobileDevice>) mdMap.get(ObjectKeys.SEARCH_ENTRIES)));
             List<MobileDevice> devices = new ArrayList<MobileDevice>();
-            for (org.kablink.teaming.domain.MobileDevice d :mobileDevices) {
-                devices.add(ResourceUtil.buildMobileDevice(d));
+            if (null != mdList) {
+	            for (org.kablink.teaming.domain.MobileDevice d :mdList) {
+	                devices.add(ResourceUtil.buildMobileDevice(d));
+	            }
             }
             user.setMobileDevices(devices);
         }
@@ -580,10 +583,11 @@ public class SelfResource extends AbstractFileResource {
     @GET
     @Path("mobile_devices")
     public SearchResultList<MobileDevice> getMobileDevices() {
-    	List<org.kablink.teaming.domain.MobileDevice> mobileDevices = getMobileDeviceModule().getMobileDevices(getLoggedInUserId());
+    	Map mdMap = getMobileDeviceModule().getMobileDevices(getLoggedInUserId());
+    	List<org.kablink.teaming.domain.MobileDevice> mdList = ((null == mdMap) ? null : ((List<org.kablink.teaming.domain.MobileDevice>) mdMap.get(ObjectKeys.SEARCH_ENTRIES)));
         SearchResultList<MobileDevice> results = new SearchResultList<MobileDevice>();
-        if (mobileDevices!=null) {
-            for (org.kablink.teaming.domain.MobileDevice device : mobileDevices) {
+        if (null != mdList) {
+            for (org.kablink.teaming.domain.MobileDevice device : mdList) {
                 results.append(ResourceUtil.buildMobileDevice(device));
             }
         }

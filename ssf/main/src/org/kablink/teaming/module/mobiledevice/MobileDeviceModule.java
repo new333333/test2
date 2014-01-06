@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -32,7 +32,6 @@
  */
 package org.kablink.teaming.module.mobiledevice;
 
-import java.util.List;
 import java.util.Map;
 
 import org.kablink.teaming.domain.MobileDevice;
@@ -82,15 +81,19 @@ public interface MobileDeviceModule {
     /**
      * Returns a collection of MobileDevice's.
      * 
+	 * Returns a Map containing:
+	 * 		Key:  ObjectKeys.SEARCH_ENTRIES:      List<MobileDevice> of the MobileDevice's.
+	 *		Key:  ObjectKeys.SEARCH_COUNT_TOTAL:  Long of the total entries available that satisfy the selection specifications.
+	 * 
      * @param userId
      * @param options
      * 
      * @return
      */
-    public List<MobileDevice> getMobileDevices(                        );	// Returns all MobileDevice's...
-    public List<MobileDevice> getMobileDevices(             Map options);	// ...system wide.
-    public List<MobileDevice> getMobileDevices(Long userId             );	// Returns all MobileDevice's...
-    public List<MobileDevice> getMobileDevices(Long userId, Map options);	// ...for the given user.
+    public Map getMobileDevices(                        );	// Returns all MobileDevice's...
+    public Map getMobileDevices(             Map options);	// ...system wide.
+    public Map getMobileDevices(Long userId             );	// Returns all MobileDevice's...
+    public Map getMobileDevices(Long userId, Map options);	// ...for the given user.
     
     /**
      * Modifies a user's MobileDevice.
