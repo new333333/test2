@@ -924,7 +924,7 @@ public class AdminControl extends TeamingPopupPanel
 				m_contentControl.clear();
 				
 				// Set the iframe's content to the selected administration page.
-				m_contentControl.setUrl( url, Instigator.ADMINISTRATION_CONSOLE );
+				m_contentControl.setContentFrameUrl( url, Instigator.ADMINISTRATION_CONSOLE );
 				
 				GwtClientHelper.deferCommand( new ScheduledCommand()
 				{
@@ -953,7 +953,7 @@ public class AdminControl extends TeamingPopupPanel
 			m_contentControl.clear();
 		
 			// Set the iframe's content to nothing.
-			m_contentControl.setUrl( "", Instigator.ADMINISTRATION_CONSOLE );
+			m_contentControl.setContentFrameUrl( "", Instigator.ADMINISTRATION_CONSOLE );
 		}
 	}// end doPreLogoutCleanup()
 	

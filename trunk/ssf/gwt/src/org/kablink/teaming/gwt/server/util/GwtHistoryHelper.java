@@ -86,7 +86,7 @@ public class GwtHistoryHelper {
 			// It will get recreated if something new gets pushed.
 			HttpSession session = GwtServerHelper.getCurrentHttpSession();
 			session.removeAttribute(CACHED_HISTORY);
-			dumpHistoryInfo("clear", "all", null);
+			dumpHistoryInfo("server:clear", "all", null);
 			return new BooleanRpcResponseData(true);
 		}
 		
@@ -153,6 +153,29 @@ public class GwtHistoryHelper {
 		}
 	}
 	
+	/**
+	 * Dumps a HistoryInfo object to the system log.
+	 * 
+	 * @param request
+	 * @param method
+	 * @param historyToken
+	 * @param historyInfo
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public static void dumpHistoryInfo(HttpServletRequest request, String method, String historyToken, HistoryInfo historyInfo) throws GwtTeamingException {
+		try {
+			dumpHistoryInfo(method, historyToken, historyInfo);
+		}
+		
+		catch (Exception ex) {
+			throw GwtLogHelper.getGwtClientException(
+				m_logger,
+				ex,
+				"GwtHistoryHelper.dumpHistoryUrl( SOURCE EXCEPTION ):  ");
+		}		
+	}
+	
 	/*
 	 * Returns the history map from the session, if one exists.
 	 * Returns null otherwise.
@@ -188,7 +211,7 @@ public class GwtHistoryHelper {
 			     reply = null;
 			else reply = historyMap.get(historyToken);
 			
-			dumpHistoryInfo("get", historyToken, reply);
+			dumpHistoryInfo("server:get", historyToken, reply);
 			return reply;
 		}
 		
@@ -237,7 +260,7 @@ public class GwtHistoryHelper {
 			String historyToken = String.valueOf(new Date().getTime());
 			historyMap.put(historyToken, historyInfo);
 			StringRpcResponseData reply = new StringRpcResponseData(historyToken);
-			dumpHistoryInfo("push", historyToken, historyInfo);
+			dumpHistoryInfo("server:push", historyToken, historyInfo);
 			return reply;
 		}
 		

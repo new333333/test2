@@ -50,6 +50,7 @@ import org.kablink.teaming.gwt.client.event.SetFilrActionFromCollectionTypeEvent
 import org.kablink.teaming.gwt.client.event.VibeEventBase;
 import org.kablink.teaming.gwt.client.event.GetSidebarCollectionEvent.CollectionCallback;
 import org.kablink.teaming.gwt.client.rpc.shared.ClearHistoryCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.DumpHistoryInfoCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetHistoryInfoCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.PushHistoryInfoCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
@@ -105,7 +106,7 @@ public class HistoryHelper {
 	
 	private final static String	HISTORY_MARKER			= "";						// Marker appended to a URL with a history token so that we can relocate the URL during browser navigation.
 	private final static int	HISTORY_MARKER_LENGTH	= HISTORY_MARKER.length();	// Length of HISTORY_MARKER.
-	private final static String	HTML5_STORAGE_KEY_BASE	= "historyStorage:";		// Used to construct keys into HTML5 session store where serialized HistoryInfo's are stored.
+	private final static String	HTML5_STORAGE_KEY_BASE	= "historyStorage:";		// Used to construct keys into the HTML5 session store where serialized HistoryInfo's are stored.
 
 	// The following are used as the tag and attribute names for the
 	// XML used to represent a serialized HistoryInfo object.
@@ -159,6 +160,18 @@ public class HistoryHelper {
 		// ...and delete them from the HTML5 session store.
 		for (String key:  historyKeys) {
 			m_html5SessionStore.remove(key);
+		}
+
+		// If we're in debug mode...
+		if (GwtClientHelper.isDebugUI()) {
+			// ...dump the clear to the system log.
+			GwtClientHelper.executeCommand(new DumpHistoryInfoCmd("html5:clear", "all", null), new AsyncCallback<VibeRpcResponse>() {
+				@Override
+				public void onFailure(Throwable t) {}	// Ignored.
+				
+				@Override
+				public void onSuccess(VibeRpcResponse response) {}	// Ignored.
+			});
 		}
 	}
 	
@@ -291,8 +304,21 @@ public class HistoryHelper {
 				break;
 			}
 		}
-		
+
+		// Pass the HistoryInfo back to the callback.
 		historyCB.historyInfo(historyInfo);
+		
+		// If we're in debug mode...
+		if (GwtClientHelper.isDebugUI()) {
+			// ...dump the HistoryInfo to the system log.
+			GwtClientHelper.executeCommand(new DumpHistoryInfoCmd("html5:get", historyToken, historyInfo), new AsyncCallback<VibeRpcResponse>() {
+				@Override
+				public void onFailure(Throwable t) {}	// Ignored.
+				
+				@Override
+				public void onSuccess(VibeRpcResponse response) {}	// Ignored.
+			});
+		}
 	}
 	
 	/*
@@ -482,67 +508,69 @@ public class HistoryHelper {
 	 * Synchronously processes a history token.
 	 */
 	private static void processHistoryTokenNow(final String historyToken) {
-		// Create a callback to process the history information from
-		// where ever we read it from...
-		HistoryInfoCallback hiCallback = new HistoryInfoCallback() {
+		// Read and process the history information from the
+		// appropriate location. 
+		getHistoryInfo( historyToken, new HistoryInfoCallback() {
 			@Override
 			public void historyInfo(HistoryInfo historyInfo) {
 				if (null != historyInfo)
 				     processHistoryInfoAsync(historyInfo);
 				else FullUIReloadEvent.fireOneAsync();
 			}
-		};
-		
-		// ...and read and process the history information from the
-		// ...appropriate location. 
-		if (m_html5Supported)
-		     getHistoryInfoFromHtml5Storage(historyToken, hiCallback);
-		else getHistoryInfoFromServer(      historyToken, hiCallback);
+		} );
 	}
 
 	/*
 	 * Stores a HistoryInfo in the HTML5 session store.
 	 */
 	private static void pushHistoryInfoToHtml5Storage(HistoryInfo historyInfo) {
-		Document xmlD = XMLParser.createDocument();
-		Element historyE = xmlD.createElement(XML_HISTORY);
+		// Create the <history> XML document.
+		Document xmlD     = XMLParser.createDocument();
+		Element  historyE = xmlD.createElement(XML_HISTORY);
 		xmlD.appendChild(historyE);
-		historyE.setAttribute(XML_ITEM_TYPE, historyInfo.getItemType().name());
+		historyE.setAttribute(XML_ITEM_TYPE,                    historyInfo.getItemType().name());
 		historyE.setAttribute(XML_SELECTED_MASTHEAD_COLLECTION, historyInfo.getSelectedMastheadCollection().name());
+
+		// What type of HistoryInto are we dealing with?
 		HistoryItemType historyType = historyInfo.getItemType();
 		switch (historyType) {
 		case ACTIVITY_STREAM: {
-			HistoryActivityStreamInfo asInfo = historyInfo.getActivityStreamInfo();
+			// An Activity Stream!  Add an <activityStream> to the
+			// <history> for it.
 			Element childE = xmlD.createElement(XML_ACTIVITY_STREAM);
 			historyE.appendChild(childE);
-			childE.setAttribute(XML_SHOW_SETTING, asInfo.getShowSetting().name());
+			HistoryActivityStreamInfo asInfo = historyInfo.getActivityStreamInfo();
+			childE.setAttribute(XML_SHOW_SETTING,         asInfo.getShowSetting().name());
 			childE.setAttribute(XML_ACTIVITY_STREAM_INFO, asInfo.getActivityStreamInfo().getStringValue());
 			break;
 		}
 			
 		case ADMIN_ACTION: {
-			GwtAdminAction aaAction = historyInfo.getAdminActionInfo().getAdminAction();
+			// An Admin Action!  Add an <adminAction> to the <history>
+			// for it.
 			Element childE = xmlD.createElement(XML_ADMIN_ACTION);
+			GwtAdminAction aaAction = historyInfo.getAdminActionInfo().getAdminAction();
 			historyE.appendChild(childE);
 			if (null != aaAction) {
-				childE.setAttribute(XML_ACTION, aaAction.getActionType().name());
+				childE.setAttribute(XML_ACTION,         aaAction.getActionType().name());
 				childE.setAttribute(XML_LOCALIZED_NAME, aaAction.getLocalizedName());
-				childE.setAttribute(XML_URL, aaAction.getUrl());
+				childE.setAttribute(XML_URL,            aaAction.getUrl());
 			}
 			break;
 		}
 			
 		case URL: {
-			HistoryUrlInfo uInfo = historyInfo.getUrlInfo();
+			// A URL!  Add a <url> to the <history> for it.
 			Element childE = xmlD.createElement(XML_URL);
 			historyE.appendChild(childE);
+			HistoryUrlInfo uInfo = historyInfo.getUrlInfo();
 			childE.setAttribute(XML_INSTIGATOR, uInfo.getInstigator().name());
-			childE.setAttribute(XML_URL, uInfo.getUrl());
+			childE.setAttribute(XML_URL,        uInfo.getUrl());
 			break;
 		}
 		
 		default:
-			// Whatever it is, code hasn't been written to handle this
+			// Whatever it is, code hasn't been written to handle it
 			// yet!  Tell the user about the problem.
 			GwtClientHelper.debugAlert(
 				"HistoryHelper.pushHistoryInfoToHtml5Storage( Unhandled history type:  " + historyType.name() + " ):  ...this needs to be implemented...");
@@ -558,6 +586,18 @@ public class HistoryHelper {
 		History.newItem(
 			(HISTORY_MARKER + historyToken),	// History marker.
 			false);								// false -> Don't fire a change event for this item.
+		
+		// Finally, if we're in debug mode...
+		if (GwtClientHelper.isDebugUI()) {
+			// ...dump the HistoryInfo to the system log.
+			GwtClientHelper.executeCommand(new DumpHistoryInfoCmd("html5:push", historyToken, historyInfo), new AsyncCallback<VibeRpcResponse>() {
+				@Override
+				public void onFailure(Throwable t) {}	// Ignored.
+				
+				@Override
+				public void onSuccess(VibeRpcResponse response) {}	// Ignored.
+			});
+		}
 	}
 	
 	/*
