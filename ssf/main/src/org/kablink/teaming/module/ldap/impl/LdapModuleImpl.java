@@ -616,23 +616,23 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				if ( value != null && value instanceof byte[] )
 				{
 					int i;
-					byte[] bytes;
+					String strValue;
 					StringBuffer strBuffer;
 					
 					homeDirInfo = new HomeDirInfo();
 					strBuffer = new StringBuffer();
-					bytes = (byte[]) value;
+					strValue = new String( (byte[]) value );
 					
 					// Get the dn of the volume object
 					{
 						String volumeDn;
 
 						i = 0;
-						while ( i < bytes.length )
+						while ( i < strValue.length() )
 						{
 							char ch;
 							
-							ch = (char) bytes[i];
+							ch = strValue.charAt( i );
 							++i;
 							
 							if ( ch == '#' )
@@ -650,11 +650,11 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					
 					// Skip over the namespace value
 					{
-						while ( i < bytes.length )
+						while ( i < strValue.length() )
 						{
 							char ch;
 							
-							ch = (char) bytes[i];
+							ch = strValue.charAt( i );
 							++i;
 							
 							if ( ch == '#' )
@@ -670,11 +670,11 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 						strBuffer = new StringBuffer();
 						numChars = 0;
 
-						while ( i < bytes.length )
+						while ( i < strValue.length() )
 						{
 							char ch;
 							
-							ch = (char) bytes[i];
+							ch = strValue.charAt( i );
 							++i;
 							
 							// We don't want a \ as the first character in the name
