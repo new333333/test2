@@ -157,8 +157,7 @@ public class SelfResource extends AbstractFileResource {
         user.setDesktopAppConfig(zoneConfig.getDesktopAppConfig());
         user.setMobileAppConfig(zoneConfig.getMobileAppConfig());
         if (includeMobileDevices) {
-        	Map mdMap = getMobileDeviceModule().getMobileDevices(getLoggedInUserId());
-        	List<org.kablink.teaming.domain.MobileDevice> mdList = ((null == mdMap) ? null : ((List<org.kablink.teaming.domain.MobileDevice>) mdMap.get(ObjectKeys.SEARCH_ENTRIES)));
+        	List<org.kablink.teaming.domain.MobileDevice> mdList = getMobileDeviceModule().getMobileDeviceList(getLoggedInUserId());
             List<MobileDevice> devices = new ArrayList<MobileDevice>();
             if (null != mdList) {
 	            for (org.kablink.teaming.domain.MobileDevice d :mdList) {
@@ -583,8 +582,7 @@ public class SelfResource extends AbstractFileResource {
     @GET
     @Path("mobile_devices")
     public SearchResultList<MobileDevice> getMobileDevices() {
-    	Map mdMap = getMobileDeviceModule().getMobileDevices(getLoggedInUserId());
-    	List<org.kablink.teaming.domain.MobileDevice> mdList = ((null == mdMap) ? null : ((List<org.kablink.teaming.domain.MobileDevice>) mdMap.get(ObjectKeys.SEARCH_ENTRIES)));
+    	List<org.kablink.teaming.domain.MobileDevice> mdList = getMobileDeviceModule().getMobileDeviceList(getLoggedInUserId());
         SearchResultList<MobileDevice> results = new SearchResultList<MobileDevice>();
         if (null != mdList) {
             for (org.kablink.teaming.domain.MobileDevice device : mdList) {

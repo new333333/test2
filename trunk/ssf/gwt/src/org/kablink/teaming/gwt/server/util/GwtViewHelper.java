@@ -89,6 +89,7 @@ import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.GroupPrincipal;
 import org.kablink.teaming.domain.HistoryStamp;
 import org.kablink.teaming.domain.IdentityInfo;
+import org.kablink.teaming.domain.MobileDevice;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.ReservedByAnotherUserException;
 import org.kablink.teaming.domain.ResourceDriverConfig;
@@ -5888,7 +5889,6 @@ public class GwtViewHelper {
 	 * Given a List<Long> of principal IDs read from entry maps,
 	 * returns an equivalent List<PrincipalInfo> object.
 	 */
-	@SuppressWarnings("unchecked")
 	private static void getUserInfoFromPIds(AllModulesInjected bs, HttpServletRequest request, List<PrincipalInfo> piList, List<MobileDevicesInfo> mdList, List<Long> principalIds) {
 		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtViewHelper.getUserInfoFromPIds()");
 		try {
@@ -5948,12 +5948,12 @@ public class GwtViewHelper {
 					// requested?
 					if (null != mdList) {
 						// Yes!  How many MobileDevice's do they have?
-						Map  mdMap   = mdm.getMobileDevices(user.getId());
-						Long mdCount = ((null == mdMap) ? new Long(0) : ((Long) mdMap.get(ObjectKeys.SEARCH_COUNT_TOTAL)));
+						List<MobileDevice> mds = mdm.getMobileDeviceList(user.getId());
+						int mdCount = mds.size();
 						
 						// Add a MobileDevicesInfo to the
 						// List<MobileDevicesInfo> we were given.
-						mdList.add(new MobileDevicesInfo(user.getId(), mdCount.intValue()));
+						mdList.add(new MobileDevicesInfo(user.getId(), mdCount));
 					}
 					
 					// ...and add the PrincipalInfo to the reply list.
