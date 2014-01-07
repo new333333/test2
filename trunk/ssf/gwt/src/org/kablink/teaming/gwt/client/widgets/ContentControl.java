@@ -151,7 +151,7 @@ import com.google.gwt.user.client.ui.NamedFrame;
  */
 public class ContentControl extends Composite
 	implements
-	// Event handlers implemented by this class.
+		// Event handlers implemented by this class.
 		ContributorIdsRequestEvent.Handler,
 		ChangeContextEvent.Handler,
 		CopySelectedEntitiesEvent.Handler,
@@ -187,10 +187,12 @@ public class ContentControl extends Composite
 	private boolean			m_isAdminContent;							//
 	private boolean			m_isDebugUI;								//
 	private boolean			m_isDebugLP;								//
+	private FlowPanel		m_mainContentPanel;							//
 	private FolderEntryDlg	m_folderEntryDlg;							//
 	private GwtMainPage		m_mainPage;									//
 	private Instigator		m_contentInstigator = Instigator.UNKNOWN;	//
-	private NamedFrame		m_frame;									//
+	private NamedFrame		m_contentFrame;								//
+	private String			m_contentFrameName;							//
 	private ViewInfo		m_currentView;								//
 	private ViewMode		m_viewMode = ViewMode.JSP_CONTENT_VIEW;		//
 	
@@ -263,7 +265,8 @@ public class ContentControl extends Composite
 	private ContentControl( GwtMainPage mainPage, String name )
 	{		
 		// Store the parameters.
-		m_mainPage = mainPage;
+		m_mainPage         = mainPage;
+		m_contentFrameName = name;
 
 		// Extract some commonly used flags from the RequestInfo.
 		RequestInfo ri = GwtClientHelper.getRequestInfo();
@@ -284,19 +287,14 @@ public class ContentControl extends Composite
 		// Initialize the JavaScript for tracking content history.
 		initContentHistoryJS( CONTENT_HISTORY_MAXDEPTH );
 		
-		FlowPanel mainPanel = new FlowPanel();
-		mainPanel.addStyleName( "contentControl" );
+		m_mainContentPanel = new FlowPanel();
+		m_mainContentPanel.addStyleName( "contentControl" );
 
-		// Give the IFRAME a name so that view_workarea_navbar.jsp,
-		// doesn't set the URL of the browser.
-		m_frame = new NamedFrame( name );
-		m_frame.setPixelSize( 700, 500 );
-		m_frame.getElement().setId( m_isAdminContent ?  "adminContentControl" : "contentControl" );
-		m_frame.setUrl( "" );
-		mainPanel.add( m_frame );
+		// Create and store the content IFRAME.
+		setContentFrameUrl( "" );
 		
 		// All composites must call initWidget() in their constructors.
-		initWidget( mainPanel );
+		initWidget( m_mainContentPanel );
 	}// end ContentControl()
 	
 	
@@ -305,13 +303,7 @@ public class ContentControl extends Composite
 	 */
 	public void clear()
 	{
-		FrameElement frameElement;
-			
-		frameElement = getContentFrame();
-		if ( null != frameElement )
-		{
-			frameElement.setSrc( "/ssf/html/empty.html" );
-		}
+		setContentFrameUrl( "/ssf/html/empty.html" );
 	}
 	
 	/**
@@ -350,26 +342,12 @@ public class ContentControl extends Composite
 	private FrameElement getContentFrame()
 	{
 		FrameElement reply;
-		Element e = m_frame.getElement();
+		Element e = m_contentFrame.getElement();
 		if ( e instanceof FrameElement )
 		     reply = ((FrameElement) e);
 		else reply = null;
 		return reply;
 	}// end getContentFrame()
-
-	/**
-	 * Returns the URL current set in the content IFRAME.
-	 * 
-	 * @return
-	 */
-	public String getContentFrameUrl()
-	{
-		String reply;
-		if (null == m_frame)
-		     reply = null;
-		else reply = m_frame.getUrl();
-		return reply;
-	}// end getContentFrameUrl()
 
 	/**
 	 * Returns a List<String> of the URLs currently store in the
@@ -644,7 +622,7 @@ public class ContentControl extends Composite
 			
 			// Set the width and height of the frame.
 			setSize( (width + "px"), (height + "px") );
-			m_frame.setPixelSize( width, height );
+			m_contentFrame.setPixelSize( width, height );
 	
 			// Does the content panel contain a task listing?
 			FrameElement fe = getContentFrame();
@@ -684,16 +662,77 @@ public class ContentControl extends Composite
 	}-*/;	
 
 	/**
-	 * This method will set the URL used by the IFRAME.
-	 * 
-	 * @param url
+	 * This method will set the URL used by the content IFRAME.
+	 *
+	 * The logic here creates a new Frame each time the URL is set.
+	 * This is done to address a problem with IFRAME's and GWT history
+	 * as per the following web site:
+	 *  - - - - - - - - - - - - - - - - - - -
+	 * http://owenrh.blogspot.com/2011/04/gwt-iframes-and-history.html
+	 * - - - - - Copied From There - - - - -
+	 * So I ran into this problem the other day, and thought I'd 
+	 * document the solution I found for it.
+	 *  
+	 * We've got a scenario on a project where we embed an IFRAME into
+	 * the page and load content into it. The problem is that the every
+	 * time the src attribute on the IFRAME was set, the browser
+	 * created a non-GWT history event.  This meant that when the user
+	 * pressed back there would be spurious history events, stopping
+	 * anything from happening, or they'd have to press back multiple
+	 * times instead of once.
+	 *  
+	 * After some investigation I discovered the solution. Basically,
+	 * creating a GWT Frame widget, setting the URL in the constructor,
+	 * and adding it to the page each time the content changed didn't
+	 * create these history events.  The history events seem to be
+	 * related to call the Frame.setSrc( ) method, or setting the src
+	 * attribute on the IFRAME element in the HTML.
+	 *  - - - - - - - - - - - - - - - - - - -
+	 *  
+	 * @param newUrl
 	 * @param instigator
 	 */
-	public void setContentFrameUrl( String url, Instigator instigator )
+	public void setContentFrameUrl( String newUrl, Instigator instigator )
 	{
-		m_contentInstigator = instigator;
-		m_frame.setUrl( url );
-	}// end setUrl()
+		// If we were given an instigator...
+		if ( null != instigator )
+		{
+			// ..store it.
+			m_contentInstigator = instigator;
+		}
+
+		// Do we already have a content IFRAME?
+		if ( null != m_contentFrame )
+		{
+			// Yes!  Are we setting a 0 length URL when that's what's
+			// already there?
+			String oldUrl = m_contentFrame.getUrl();
+			int    oldLen = ( ( null == oldUrl ) ? 0 : oldUrl.length() );
+			int    newLen = ( ( null == newUrl ) ? 0 : newUrl.length() );
+			if ( ( 0 == oldLen ) && ( 0 == newLen ) )
+			{
+				// Yes!  Then we don't need to do anything.  Bail.
+				return;
+			}
+			m_mainContentPanel.remove( m_contentFrame );		// Remove an existing content IFRAME...
+		}														// ...
+		m_contentFrame = new NamedFrame( m_contentFrameName );	// ...and create a new one as per the function header comments.
+		m_contentFrame.setUrl(           newUrl             );
+		
+		// We give the IFRAME a name so that view_workarea_navbar.jsp,
+		// doesn't set the URL of the browser.
+		m_contentFrame.setPixelSize( 700, 500 );
+		m_contentFrame.getElement().setId( m_isAdminContent ?  "adminContentControl" : "contentControl" );
+		
+		// Finally, add the new IFRAME to the content panel.
+		m_mainContentPanel.add( m_contentFrame );
+	}// end setContentFrameUrl()
+	
+	public void setContentFrameUrl( String url )
+	{
+		// Always use the initial form of the method.
+		setContentFrameUrl( url, null );
+	}// end setContentFrameUrl()
 	
 	/*
 	 * Asynchronously loads a view based on a ViewInfo.
