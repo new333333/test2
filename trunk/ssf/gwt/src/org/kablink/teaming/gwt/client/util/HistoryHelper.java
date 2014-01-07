@@ -92,8 +92,6 @@ import com.google.gwt.xml.client.XMLParser;
  * @author drfoster@novell.com
  */
 public class HistoryHelper {
-	private final static boolean ENABLE_HISTORY	= false;	//! DRF (20140106):  Leave false on checkin until it's all working.
-
 	// The following are used to control and provide access to the
 	// HTML5 session store.
 	private static boolean		m_html5Supported 	= Storage.isSessionStorageSupported();
@@ -403,26 +401,22 @@ public class HistoryHelper {
 	 * Returns true if history is supported and false otherwise.
 	 */
 	private final static boolean isHistorySupported() {
-		// Is history enabled?
-		boolean reply = ENABLE_HISTORY;	//! Note that this is still in development !!!
+		// Does the browser support HTML5 storage?
+		boolean reply = m_html5Supported;
 		if (reply) {
-			// Yes!  Does the browser support HTML5 storage?
-			if (m_html5Supported) {
-				// Yes!  Do we have access to the HTML5 session store?  
-				reply = (null != m_html5SessionStore);
-				if (!reply) {
-					// No!  Then we'll act like the browser really
-					// doesn't support it.
-					m_html5Supported = false;
-				}
-			}
-
-			// If we don't have access to the HTML5 session store...
+			// Yes!  Do we have access to the HTML5 session store?  
+			reply = (null != m_html5SessionStore);
 			if (!reply) {
-				// ...should we track history using RPC's to the
-				// ...server?
-				reply = GwtClientHelper.getRequestInfo().isTrackNonHTML5HistoryOnServer();
+				// No!  Then we'll act like the browser really doesn't
+				// support it.
+				m_html5Supported = false;
 			}
+		}
+
+		// If we don't have access to the HTML5 session store...
+		if (!reply) {
+			// ...should we track history using RPC's to the server?
+			reply = GwtClientHelper.getRequestInfo().isTrackNonHTML5HistoryOnServer();
 		}
 		
 		// If we get here, reply is true if history is supported and
