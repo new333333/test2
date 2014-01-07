@@ -58,7 +58,6 @@ import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.RadioButton;
-import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
 /**
@@ -103,7 +102,7 @@ public class EditShareWidget extends Composite
 	private ShareExpirationWidget m_expirationWidget;
 	
 	// Data members used with share note
-	private TextArea m_noteTextArea;
+	private TextAreaWithMax m_noteTextArea;
 
 	
 	private static String VIEWER = "viewer";
@@ -242,7 +241,8 @@ public class EditShareWidget extends Composite
 		mainTable.setText( row, 0, GwtTeaming.getMessages().editShareNoteDlg_noteLabel() );
 		++row;
 		
-		m_noteTextArea = new TextArea();
+		m_noteTextArea = new TextAreaWithMax();
+		m_noteTextArea.setMaxLength( 255 );
 		m_noteTextArea.addStyleName( "editShareNoteDlg_TextArea" );
 		m_noteTextArea.addStyleName( "editShareNoteDlg_TextAreaBorder" );
 		mainTable.setWidget( row, 0, m_noteTextArea );
