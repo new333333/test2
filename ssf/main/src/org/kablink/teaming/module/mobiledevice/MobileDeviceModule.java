@@ -32,6 +32,7 @@
  */
 package org.kablink.teaming.module.mobiledevice;
 
+import java.util.List;
 import java.util.Map;
 
 import org.kablink.teaming.domain.MobileDevice;
@@ -79,7 +80,17 @@ public interface MobileDeviceModule {
     public MobileDevice getMobileDevice(Long userId, String deviceId);
     
     /**
-     * Returns a collection of MobileDevice's.
+     * Returns a list of MobileDevice's.
+     * 
+     * @param userId
+     * 
+     * @return
+     */
+    public List<MobileDevice> getMobileDeviceList(           );	// Returns MobileDevice's system wide.
+    public List<MobileDevice> getMobileDeviceList(Long userId);	// Returns MobileDevice's for the given user.
+    
+    /**
+     * Returns a list of MobileDevice's.
      * 
 	 * Returns a Map containing:
 	 * 		Key:  ObjectKeys.SEARCH_ENTRIES:      List<MobileDevice> of the MobileDevice's.
@@ -90,10 +101,8 @@ public interface MobileDeviceModule {
      * 
      * @return
      */
-    public Map getMobileDevices(                        );	// Returns all MobileDevice's...
-    public Map getMobileDevices(             Map options);	// ...system wide.
-    public Map getMobileDevices(Long userId             );	// Returns all MobileDevice's...
-    public Map getMobileDevices(Long userId, Map options);	// ...for the given user.
+    public Map getMobileDevices(             Map options);	// Returns MobileDevice's system wide.
+    public Map getMobileDevices(Long userId, Map options);	// Returns MobileDevice's for the given user.
     
     /**
      * Modifies a user's MobileDevice.

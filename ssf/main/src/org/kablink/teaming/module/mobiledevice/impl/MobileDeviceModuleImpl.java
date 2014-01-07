@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -126,12 +126,7 @@ public class MobileDeviceModuleImpl extends CommonDependencyInjection implements
     	getAdminModule().checkAccess(AdminOperation.manageFunction);
     	
     	// Are there any MobileDevice's for this user ID?
-    	final Map mdMap = getMobileDevices(userId);
-    	if (!(MiscUtil.hasItems(mdMap))) {
-    		// No!  Bail.
-    		return;
-    	}
-    	final List<MobileDevice> mdList = ((List<MobileDevice>) mdMap.get(ObjectKeys.SEARCH_ENTRIES));
+    	final List<MobileDevice> mdList = getMobileDeviceList(userId);
     	if (!(MiscUtil.hasItems(mdList))) {
     		// No!  Bail.
     		return;
@@ -261,15 +256,29 @@ public class MobileDeviceModuleImpl extends CommonDependencyInjection implements
     }
     
 	@Override
-	public Map getMobileDevices(Long userId) {
-		// Always use the initial form of the method.
-		return getMobileDevices(userId, null);
+	public List<MobileDevice> getMobileDeviceList(Long userId) {
+		List<MobileDevice> reply;
+		Map mdMap = getMobileDevices(userId, null);
+		if (null != mdMap)
+		     reply = ((List<MobileDevice>) mdMap.get(ObjectKeys.SEARCH_ENTRIES));
+		else reply = null;
+		if (null == reply) {
+			reply = new ArrayList<MobileDevice>();
+		}
+		return reply;
 	}
     
     @Override
-	public Map getMobileDevices() {
-		// Always use the initial form of the method.
-		return getMobileDevices(null, null);
+	public List<MobileDevice> getMobileDeviceList() {
+		List<MobileDevice> reply;
+		Map mdMap = getMobileDevices(null, null);
+		if (null != mdMap)
+		     reply = ((List<MobileDevice>) mdMap.get(ObjectKeys.SEARCH_ENTRIES));
+		else reply = null;
+		if (null == reply) {
+			reply = new ArrayList<MobileDevice>();
+		}
+		return reply;
 	}
     
 	@Override
@@ -323,27 +332,23 @@ public class MobileDeviceModuleImpl extends CommonDependencyInjection implements
 	public void setMatchingUserTitles(User user) {
 		// Does this user have any mobile devices? 
 		Long userId = user.getId();
-		Map mdMap = getMobileDevices(userId);
-		if (MiscUtil.hasItems(mdMap)) {
-			List<MobileDevice> mdList = ((List<MobileDevice>) mdMap.get(ObjectKeys.SEARCH_ENTRIES));
-			if (MiscUtil.hasItems(mdList)) {
-				// Yes!  If its the current user matching their devices
-				// to their title, we don't enforce manage rights.
-				// Otherwise, we do.  Do we need to enforce manage
-				// rights?
-				User    currentUser   = RequestContextHolder.getRequestContext().getUser();
-				boolean enforceRights = (!(userId.equals(currentUser.getId())));
-	 			
-				// Scan the mobile devices.
-				String userTitle = user.getTitle();
-				for (MobileDevice md:  mdList) {
-					// Do we need to modify this mobile device because the
-					// user's title doesn't match?
-					if (!(md.getUserTitle().equals(userTitle))) {
-						// Yes!  Modify it.
-						md.setUserTitle(userTitle);
-						modifyMobileDeviceImpl(md, enforceRights);
-					}
+		List<MobileDevice> mdList = getMobileDeviceList(userId);
+		if (MiscUtil.hasItems(mdList)) {
+			// Yes!  If its the current user matching their devices to
+			// their title, we don't enforce manage rights.  Otherwise,
+			// we do.  Do we need to enforce manage rights?
+			User    currentUser   = RequestContextHolder.getRequestContext().getUser();
+			boolean enforceRights = (!(userId.equals(currentUser.getId())));
+ 			
+			// Scan the mobile devices.
+			String userTitle = user.getTitle();
+			for (MobileDevice md:  mdList) {
+				// Do we need to modify this mobile device because the
+				// user's title doesn't match?
+				if (!(md.getUserTitle().equals(userTitle))) {
+					// Yes!  Modify it.
+					md.setUserTitle(userTitle);
+					modifyMobileDeviceImpl(md, enforceRights);
 				}
 			}
 		}
