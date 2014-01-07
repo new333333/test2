@@ -61,8 +61,8 @@ import org.kablink.teaming.web.util.GwtUISessionData;
 public class GwtHistoryHelper {
 	protected static Log m_logger = LogFactory.getLog(GwtHistoryHelper.class);
 	
-	private final static int	MAX_HISTORY_CACHE	= SPropsUtil.getInt("max.user.history", 50);	// Maximum number of history items we track for a user.
-	private final static String	CACHED_HISTORY		= "historyMap";									// Key into the session where we store a user's history.
+	private final static int	MAX_SERVER_HISTORY_CACHE	= SPropsUtil.getInt("max.non.html5.user.history.items", 50);	// Maximum number of history items we track for users running on browsers without HTML5 storage support.
+	private final static String	CACHED_HISTORY				= "historyMap";													// Key into the session where we store a user's history.
 	
 	/*
 	 * Inhibits this class from being instantiated. 
@@ -242,13 +242,13 @@ public class GwtHistoryHelper {
 			if (null == historyMap) {
 				// No!  Define one now...
 				historyMap = new LinkedHashMap<String, HistoryInfo>(
-						(MAX_HISTORY_CACHE + 1),	// Initial capacity.
-						(.75F)) {					// Load factor.
+						(MAX_SERVER_HISTORY_CACHE + 1),	// Initial capacity.
+						(.75F)) {						// Load factor.
 					@Override
 				    protected boolean removeEldestEntry(Map.Entry eldest) {
 						// This enforces that the map will never exceed
 						// its maximum size.
-						return (size() > MAX_HISTORY_CACHE);
+						return (size() > MAX_SERVER_HISTORY_CACHE);
 					}
 				};
 				

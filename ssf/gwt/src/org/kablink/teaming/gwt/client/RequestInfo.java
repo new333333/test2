@@ -586,7 +586,19 @@ public class RequestInfo extends JavaScriptObject
 	/*-{
 		return (this.getBFromS( this.isExternalUser ));
 	}-*/;
-
+	
+	/**
+	 * Return the flag that tells us if users running on a browser that
+	 * doesn't support HTML5 storage should have their history tracked
+	 * on the server.
+	 * 
+	 * @return
+	 */
+	public final native boolean isTrackNonHTML5HistoryOnServer()
+	/*-{
+		return (this.getBFromS( this.trackNonHTML5HistoryOnServer ));
+	}-*/;
+	
 	/**
 	 * Return the id of the "all external users" group
 	 */
