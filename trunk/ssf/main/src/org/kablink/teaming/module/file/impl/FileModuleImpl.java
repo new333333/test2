@@ -2434,7 +2434,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     			}
     			catch(IOException e) {}
     		}
-    		if(lock == null) {
+    		if(lock == null || SPropsUtil.getBoolean("file.save.auto.commit", true)) {
     			// This update request is being made without the user's prior 
     			// obtaining lock. Since there's no lock to associate the 
     			// checkout with, we must checkin the file here. 
@@ -3020,8 +3020,10 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 						metadataDirty = true;
 		            	// add the size of the file to the users disk usage
 		            	incrementDiskSpaceUsed(fa);
-		            	ChangeLog changes = ChangeLogUtils.createAndBuild(entity, ChangeLog.FILEMODIFY, fa);
-		            	newObjs.add(changes);
+		            	if(newObjs != null) {
+			            	ChangeLog changes = ChangeLogUtils.createAndBuild(entity, ChangeLog.FILEMODIFY, fa);
+			            	newObjs.add(changes);
+		            	}
 					}
 				}  
 			}
