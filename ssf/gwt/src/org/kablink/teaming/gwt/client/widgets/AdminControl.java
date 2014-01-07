@@ -1738,10 +1738,9 @@ public class AdminControl extends TeamingPopupPanel
 	{
 		if ( isShowing() )
 		{
-			if ( null != fireOnShow )
-			{
-				GwtTeaming.fireEventAsync( fireOnShow );
-			}
+			if ( null == fireOnShow )
+			     showHomePage();
+			else GwtTeaming.fireEventAsync( fireOnShow );
 		}
 		
 		else

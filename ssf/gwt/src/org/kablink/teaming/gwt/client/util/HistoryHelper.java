@@ -376,6 +376,10 @@ public class HistoryHelper {
 				FullUIReloadEvent.fireOneAsync();
 			}
 		});
+
+		// It's required that we 'fire' the current history state when
+		// initializing.
+		History.fireCurrentHistoryState();
 	}
 
 	/*
