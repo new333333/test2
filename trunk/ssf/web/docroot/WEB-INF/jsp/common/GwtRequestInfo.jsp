@@ -93,6 +93,7 @@
 		timeZone:							'${ssUser.timeZone.ID}',
 		timeZoneIdAbrev:					'<fmt:formatDate value="<%= now %>" pattern="z" timeZone="${ssUser.timeZone.ID}" />',
 		timeZoneOffsetHour:					${tzOffsetHour},
+		trackNonHTML5HistoryOnServer:		'${trackNonHTML5History}',
 		loginCanCancel:						'<ssf:escapeJavaScript>${login_can_cancel}</ssf:escapeJavaScript>',
 		loginInvitationUrl:					'<ssf:escapeJavaScript>${ss_login_invitation_url}</ssf:escapeJavaScript>',
 		loginError:							'<ssf:escapeJavaScript>${ss_loginError}</ssf:escapeJavaScript>',

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -1517,6 +1517,11 @@ public class GwtUIHelper {
 		// Put out a flag indicating whether the current user has
 		// access to the root workspace.
 		model.put(WebKeys.HAS_ROOT_DIR_ACCESS, hasRootDirAccess(bs));
+
+		// Put out a flag indicating whether history for users running
+		// on a non-HTML5 browser should be tracked on the server.
+		Boolean trackNonHTML5History = SPropsUtil.getBoolean("track.non.html5.history.on.server", true);
+		model.put(WebKeys.TRACK_NON_HTML5_HISTORY, trackNonHTML5History);
 
 		// Put out the character the current user uses for a decimal
 		// separator.

@@ -99,11 +99,6 @@ public class HistoryHelper {
 	private static boolean		m_html5Supported 	= Storage.isSessionStorageSupported();
 	private static StorageMap	m_html5SessionStore	= (m_html5Supported ? new StorageMap(Storage.getSessionStorageIfSupported()) : null); 
 
-	// The following controls what happens if the browser doesn't
-	// support HTML5 storage.  true  -> History information will be
-	// tracked on the server.  false -> History will not be supported.
-	private final static boolean RPC_TO_SERVER_WITHOUT_HTML5	= true;	//
-	
 	private final static String	HISTORY_MARKER			= "";						// Marker appended to a URL with a history token so that we can relocate the URL during browser navigation.
 	private final static int	HISTORY_MARKER_LENGTH	= HISTORY_MARKER.length();	// Length of HISTORY_MARKER.
 	private final static String	HTML5_STORAGE_KEY_BASE	= "historyStorage:";		// Used to construct keys into the HTML5 session store where serialized HistoryInfo's are stored.
@@ -247,20 +242,27 @@ public class HistoryHelper {
 	 * from the HTML5 session store.
 	 */
 	private static void getHistoryInfoFromHtml5Storage(String historyToken, HistoryInfoCallback historyCB) {
+		// Can we find the XML for the history token?
 		HistoryInfo historyInfo = null;
 		String xml = m_html5SessionStore.get(HTML5_STORAGE_KEY_BASE + historyToken);
 		if (GwtClientHelper.hasString(xml)) {
+			// Yes!  Parse it.
 			Document xmlD     = XMLParser.parse(xml);
 			Element  historyE = xmlD.getDocumentElement();
 			assert ((null != historyE) && historyE.getNodeName().equals(XML_HISTORY)) : "HistoryHelper.getHistoryInfoFromHtml5Storage( *Internal Error* ):  Bogus history XML root";
-			
+
+			// What type of history item is it?
 			CollectionType  selectedMastheadCollection = CollectionType.valueOf(historyE.getAttribute(XML_SELECTED_MASTHEAD_COLLECTION));  
 			Element         childE                     = ((Element) historyE.getFirstChild());
 			HistoryItemType historyType                = HistoryItemType.valueOf(historyE.getAttribute(XML_ITEM_TYPE));
 			switch(historyType) {
 			case ACTIVITY_STREAM: {
+				// An Activity Stream.  Assert the have a valid child
+				// element...
 				assert ((null != childE) && childE.getNodeName().equals(XML_ACTIVITY_STREAM)) : "HistoryHelper.getHistoryInfoFromHtml5Storage( *Internal Error* ):  Bogus history <activityStream>";
-				
+
+				// ...and parse out the HistoryInfo for the activity
+				// ...stream.
 				ActivityStreamDataType showSetting = ActivityStreamDataType.valueOf(childE.getAttribute(XML_SHOW_SETTING));
 				ActivityStreamInfo     asInfo      = ActivityStreamInfo.parse(      childE.getAttribute(XML_ACTIVITY_STREAM_INFO));
 				historyInfo = new HistoryInfo(selectedMastheadCollection, asInfo, showSetting);
@@ -269,8 +271,12 @@ public class HistoryHelper {
 			}
 				
 			case ADMIN_ACTION: {
+				// An Admin Action.  Assert the have a valid child
+				// element...
 				assert ((null != childE) && childE.getNodeName().equals(XML_ADMIN_ACTION)) : "HistoryHelper.getHistoryInfoFromHtml5Storage( *Internal Error* ):  Bogus history <adminAction>";
 				
+				// ...and parse out the HistoryInfo for the admin
+				// ...action.
 				GwtAdminAction adminAction = null;
 				String actionS = childE.getAttribute(XML_ACTION);
 				if (GwtClientHelper.hasString(actionS)) {
@@ -286,8 +292,10 @@ public class HistoryHelper {
 			}
 				
 			case URL: {
+				// A URL.  Assert the have a valid child element...
 				assert ((null != childE) && childE.getNodeName().equals(XML_URL)) : "HistoryHelper.getHistoryInfoFromHtml5Storage( *Internal Error* ):  Bogus history <url>";
 				
+				// ...and parse out the HistoryInfo for the URL.
 				Instigator instigator = Instigator.valueOf(childE.getAttribute(XML_INSTIGATOR));
 				String     url        = childE.getAttribute(XML_URL);
 				historyInfo = new HistoryInfo(selectedMastheadCollection, url, instigator);
@@ -336,7 +344,8 @@ public class HistoryHelper {
 			
 			@Override
 			public void onSuccess(VibeRpcResponse response) {
-				// ...otherwise, return the HistoryInfo we got back.
+				// ...otherwise, return whatever we got back for the
+				// ...HistoryInfo.
 				historyCB.historyInfo((HistoryInfo) response.getResponseData());
 			}
 		});
@@ -354,6 +363,14 @@ public class HistoryHelper {
 
 		// Connect to the GWT history manager.
 		History.addValueChangeHandler(new ValueChangeHandler<String>() {
+			/**
+			 * The ValueChangeHandler will be triggered whenever we're
+			 * supposed to navigate to place to someplace from the
+			 * history as indicated by the history token contained in
+			 * the event.
+			 * 
+			 * @param event
+			 */
 			@Override
 			public void onValueChange(ValueChangeEvent<String> event) {
 				try {
@@ -378,7 +395,7 @@ public class HistoryHelper {
 		});
 
 		// It's required that we 'fire' the current history state when
-		// initializing.
+		// we initialize.
 		History.fireCurrentHistoryState();
 	}
 
@@ -404,7 +421,7 @@ public class HistoryHelper {
 			if (!reply) {
 				// ...should we track history using RPC's to the
 				// ...server?
-				reply = RPC_TO_SERVER_WITHOUT_HTML5;	//! Note that this is still in development !!!
+				reply = GwtClientHelper.getRequestInfo().isTrackNonHTML5HistoryOnServer();
 			}
 		}
 		
@@ -482,10 +499,13 @@ public class HistoryHelper {
 			ccEvent.setHistorySelectedMastheadCollection(historyInfo.getSelectedMastheadCollection());
 			GwtTeaming.fireEvent(ccEvent);
 			
+			// Note that in this case, the processing of the URL will
+			// take care of the appropriate selection in the masthead.
+			
 			break;
 			
 		default:
-			// Whatever it is, code hasn't been written to handle this
+			// Whatever it is, code hasn't been written to handle it
 			// yet!  Tell the user about the problem.
 			GwtClientHelper.debugAlert(
 				"HistoryHelper.processHistoryInfoNow( Unhandled history type:  " + historyType.name() + " ):  ...this needs to be implemented...");
@@ -513,10 +533,11 @@ public class HistoryHelper {
 	 */
 	private static void processHistoryTokenNow(final String historyToken) {
 		// Read and process the history information from the
-		// appropriate location. 
-		getHistoryInfo( historyToken, new HistoryInfoCallback() {
+		// appropriate location... 
+		getHistoryInfo(historyToken, new HistoryInfoCallback() {
 			@Override
 			public void historyInfo(HistoryInfo historyInfo) {
+				// ...and process it.
 				if (null != historyInfo)
 				     processHistoryInfoAsync(historyInfo);
 				else FullUIReloadEvent.fireOneAsync();
@@ -586,7 +607,7 @@ public class HistoryHelper {
 		String historyToken = String.valueOf(new Date().getTime());
 		m_html5SessionStore.put((HTML5_STORAGE_KEY_BASE + historyToken), xmlD.toString());
 		
-		// ...and put the history token in the History.
+		// ...and write the history token into the History.
 		History.newItem(
 			(HISTORY_MARKER + historyToken),	// History marker.
 			false);								// false -> Don't fire a change event for this item.
@@ -723,12 +744,14 @@ public class HistoryHelper {
 			return;
 		}
 		
+		// Get the collection that's selection in the masthead...
 		GwtTeaming.fireEventAsync(new GetSidebarCollectionEvent(new CollectionCallback() {
 			@Override
 			public void collection(final CollectionType selectedMastheadCollection) {
 				GwtClientHelper.deferCommand(new ScheduledCommand() {
 					@Override
 					public void execute() {
+						// ...and push the history information.
 						pushHistoryInfoNow(selectedMastheadCollection, url, instigator);
 					}
 				});
@@ -750,7 +773,7 @@ public class HistoryHelper {
 	 * Implementation method that actually stores a HistoryInfo.
 	 */
 	private static void pushHistoryInfoImpl(final HistoryInfo historyInfo) {
-		// Write the history information to the appropriate location.
+		// Push the history information to the appropriate location.
 		if (m_html5Supported)
 		     pushHistoryInfoToHtml5Storage(historyInfo);
 		else pushHistoryInfoToServer(      historyInfo);
