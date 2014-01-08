@@ -59,6 +59,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.ManageMobileDevicesInfoRpcRespo
 import org.kablink.teaming.gwt.client.rpc.shared.SetMobileDevicesWipeScheduledStateCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.EntityId;
+import org.kablink.teaming.gwt.client.util.HelpData;
 import org.kablink.teaming.gwt.client.util.MobileDeviceRemovedCallback;
 import org.kablink.teaming.gwt.client.util.MobileDevicesInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
@@ -318,6 +319,22 @@ public class ManageMobileDevicesDlg extends DlgBox
 		// Unused.
 		return null;
 	}
+
+	/**
+	 * 
+	 */
+	@Override
+	public HelpData getHelpData()
+	{
+		HelpData helpData;
+		
+		helpData = new HelpData();
+		helpData.setGuideName( HelpData.ADMIN_GUIDE );
+		helpData.setPageId( "mobile_mng" );
+		
+		return helpData;
+	}
+	
 
 	/**
 	 * Handles AdministrationExitEvent's received by this class.

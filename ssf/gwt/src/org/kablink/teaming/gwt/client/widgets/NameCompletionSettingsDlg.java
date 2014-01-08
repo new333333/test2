@@ -46,6 +46,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.SaveNameCompletionSettingsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveNameCompletionSettingsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+import org.kablink.teaming.gwt.client.util.HelpData;
 import org.kablink.teaming.gwt.client.util.runasync.RunAsyncCmd;
 import org.kablink.teaming.gwt.client.util.runasync.RunAsyncCreateDlgParams;
 import org.kablink.teaming.gwt.client.util.runasync.RunAsyncInitAndShowParams;
@@ -272,6 +273,21 @@ public class NameCompletionSettingsDlg extends DlgBox
 		return field;
 	}
 	
+	/**
+	 * 
+	 */
+	@Override
+	public HelpData getHelpData()
+	{
+		HelpData helpData;
+		
+		helpData = new HelpData();
+		helpData.setGuideName( HelpData.ADMIN_GUIDE );
+		helpData.setPageId( "groups_namecompletion" );
+		
+		return helpData;
+	}
+
 	/**
 	 * Issue an rpc request to get the name completion settings from the server.
 	 */

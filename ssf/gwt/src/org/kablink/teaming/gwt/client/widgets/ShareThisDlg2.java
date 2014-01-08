@@ -87,9 +87,6 @@ import org.kablink.teaming.gwt.client.util.ShareExpirationValue.ShareExpirationT
 import org.kablink.teaming.gwt.client.util.ShareRights;
 import org.kablink.teaming.gwt.client.util.ShareRights.AccessRights;
 import org.kablink.teaming.gwt.client.util.UserType;
-import org.kablink.teaming.gwt.client.util.runasync.RunAsyncCmd;
-import org.kablink.teaming.gwt.client.util.runasync.RunAsyncCreateDlgParams;
-import org.kablink.teaming.gwt.client.util.runasync.ShareThisDlgInitAndShowParams;
 import org.kablink.teaming.gwt.client.widgets.FindCtrl;
 import org.kablink.teaming.gwt.client.widgets.FindCtrl.FindCtrlClient;
 import org.kablink.teaming.gwt.client.widgets.ShareSendToWidget.SendToValue;
@@ -243,11 +240,14 @@ public class ShareThisDlg2 extends DlgBox
 		int x,
 		int y,
 		Integer width,
-		Integer height )
+		Integer height,
+		ShareThisDlgMode mode )
 	{
 		// Initialize the superclass.
 		super( autoHide, modal, x, y, width, height, DlgButtonMode.OkCancel );
 
+		m_mode = mode;
+		
 		// Create the dialog's content
 		createAllDlgContent(
 			"",		// // No caption yet.  It's set appropriately when the dialog runs.
@@ -654,7 +654,6 @@ public class ShareThisDlg2 extends DlgBox
 		
 		// Add the find control.
 		{
-			Label shareLabel;
 			HTMLTable.RowFormatter rowFormatter;
 			FlexTable findTable;
 
@@ -3115,10 +3114,17 @@ public class ShareThisDlg2 extends DlgBox
 	}
 
 	/**
-	 * Executes code through the GWT.runAsync() method to ensure that all of the
-	 * executing code is in this split point.
+	 * Create the dialog through the GWT.runAsync() method to ensure the code is in this split point.
 	 */
-	public static void runAsyncCmd( final RunAsyncCmd cmd, final ShareThisDlg2Client stDlgClient )
+	public static void createDlg(
+		final boolean autoHide,
+		final boolean modal,
+		final int left,
+		final int top,
+		final Integer width,
+		final Integer height,
+		final ShareThisDlgMode mode,
+		final ShareThisDlg2Client stDlgClient )
 	{
 		GWT.runAsync( ShareThisDlg2.class, new RunAsyncCallback()
 		{
@@ -3135,85 +3141,86 @@ public class ShareThisDlg2 extends DlgBox
 			@Override
 			public void onSuccess()
 			{
-				switch ( cmd.getCmdType() )
+				final ShareThisDlg2 stDlg;
+				LoadAsyncControlsCallback callback;
+
+				stDlg = new ShareThisDlg2(
+									autoHide,
+									modal,
+									left,
+									top,
+									width,
+									height,
+									mode );
+
+				// createControlsAsync() will call callback.onSuccess() after it finishes creating
+				// the controls that need to be created via GWT.runAsync(...)
+				callback = new LoadAsyncControlsCallback()
 				{
-				case CREATE:
-				{
-					final ShareThisDlg2 stDlg;
-					int x = 0;
-					int y = 0;
-					RunAsyncCreateDlgParams params;
-					LoadAsyncControlsCallback callback;
-					
-					params = (RunAsyncCreateDlgParams) cmd.getParams();
-					
-					if ( params.getLeft() != null )
-						x = params.getLeft();
-					
-					if ( params.getTop() != null )
-						y = params.getTop();
-					
-					stDlg = new ShareThisDlg2(
-											params.getAutoHide(),
-											params.getModal(),
-											x,
-											y,
-											params.getWidth(),
-											params.getHeight() );
-					
-					// createControlsAsync() will call callback.onSuccess() after it finishes creating
-					// the controls that need to be created via GWT.runAsync(...)
-					callback = new LoadAsyncControlsCallback()
+					@Override
+					public void onFailure()
 					{
-						@Override
-						public void onFailure()
-						{
-							stDlgClient.onUnavailable();
-						}
+						stDlgClient.onUnavailable();
+					}
 
-						@Override
-						public void onSuccess()
-						{
-							if ( stDlgClient != null )
-								stDlgClient.onSuccess( stDlg );
-						}
-					};
-					stDlg.createControlsAsync( callback );
-					
-					break;
-				}
-					
-				case INIT_AND_SHOW:
+					@Override
+					public void onSuccess()
+					{
+						if ( stDlgClient != null )
+							stDlgClient.onSuccess( stDlg );
+					}
+				};
+				stDlg.createControlsAsync( callback );
+			}
+		} );
+	}
+
+	/**
+	 * Initialize and show the dialog through the GWT.runAsync() method to ensure
+	 * the executing code is in this split point.
+	 */
+	public static void initAndShow(
+		final ShareThisDlg2 dlg,
+		final String caption,
+		final List<EntityId> entityIds,
+		final ShareThisDlgMode mode,
+		final Integer left,
+		final Integer top,
+		final Integer width,
+		final Integer height,
+		final Boolean showCentered,
+		final ShareThisDlg2Client stDlgClient )
+	{
+		GWT.runAsync( ShareThisDlg2.class, new RunAsyncCallback()
+		{
+			@Override
+			public void onFailure( Throwable reason )
+			{
+				Window.alert( GwtTeaming.getMessages().codeSplitFailure_ShareThisDlg() );
+				if ( stDlgClient != null )
 				{
-					ShareThisDlgInitAndShowParams params;
-					ShareThisDlg2 dlg;
-					
-					params = (ShareThisDlgInitAndShowParams)cmd.getParams();
-					dlg = (ShareThisDlg2) params.getUIObj();
-
-					if ( params.getWidth() != null && params.getHeight() != null )
-						dlg.setPixelSize( params.getWidth(), params.getHeight() );
-					
-					dlg.init(
-							params.getCaption(),
-							params.getEntityIds(),
-							params.getMode() );
-					
-					if ( params.getLeft() != null && params.getTop() != null )
-						dlg.setPopupPosition( params.getLeft(), params.getTop() );
-					
-					if ( params.getShowCentered() != null && params.getShowCentered() == true )
-						dlg.showDlg( null );
-					else
-						dlg.showDlg();
-
-					break;
+					stDlgClient.onUnavailable();
 				}
-					
-				case UNKNOWN:
-				default:
-					break;
-				}
+			}
+
+			@Override
+			public void onSuccess()
+			{
+				if ( width != null && height != null )
+					dlg.setPixelSize( width, height );
+				
+				dlg.init(
+						caption,
+						entityIds,
+						mode );
+				
+				if ( left != null && top != null )
+					dlg.setPopupPosition( left, top );
+				
+				if ( showCentered != null && showCentered == true )
+					dlg.showDlg( null );
+				else
+					dlg.showDlg();
 			}
 		} );
 	}
