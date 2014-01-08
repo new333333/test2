@@ -43,7 +43,6 @@ import org.hibernate.Criteria;
 import org.hibernate.FetchMode;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
-import org.hibernate.ScrollableResults;
 import org.hibernate.Session;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Expression;
@@ -1213,7 +1212,7 @@ public void delete(final Folder folder) {
  	@Override
 	public int getNumberOfNetFolders( final NetFolderSelectSpec selectSpec, final long zoneId )
 	{
-        Integer count = null;
+        Long finalCount = null;
 
         long begin = System.nanoTime();
 		try
@@ -1228,8 +1227,8 @@ public void delete(final Folder folder) {
                 	Criteria crit;
                 	String filter;
                 	String rootName;
-                	ScrollableResults results;
-                	Integer count;
+                	Object result;
+                	Long count = null;
 
                 	crit = session.createCriteria( Folder.class );
                 	
@@ -1284,16 +1283,20 @@ public void delete(final Folder folder) {
                 		crit.add( Restrictions.or( server, Restrictions.or( title, path ) ) );
                 	}
                 	
-                	results = crit.scroll();
-                	results.last();
+                	crit.setProjection( Projections.rowCount() );
                 	
-                	count = new Integer( results.getRowNumber()+1 );
+                	result = crit.uniqueResult();
+                	if ( result != null && result instanceof Long )
+                		count = (Long) crit.uniqueResult();
                 	
-                	return count;
+                	if ( count != null )
+                		return count;
+                	
+                	return new Long( 0 );
                 }
             };
  
-            count = (Integer)getHibernateTemplate().execute( callback );
+            finalCount = (Long)getHibernateTemplate().execute( callback );
     	}
 		catch ( Exception ex )
 		{
@@ -1304,8 +1307,8 @@ public void delete(final Folder folder) {
     		end( begin, "getNumberOfNetFolders(NetFolderSelectSpec)");
     	}	              	
 
-		if ( count != null )
-			return count.intValue();
+		if ( finalCount != null )
+			return finalCount.intValue();
 		
       	return 0;   	
 	}
