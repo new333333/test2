@@ -97,7 +97,6 @@ import org.kablink.teaming.gwt.client.util.runasync.RunAsyncCmd;
 import org.kablink.teaming.gwt.client.util.runasync.RunAsyncCreateDlgParams;
 import org.kablink.teaming.gwt.client.util.runasync.RunAsyncInitAndShowParams;
 import org.kablink.teaming.gwt.client.util.runasync.RunAsyncCmd.RunAsyncCmdType;
-import org.kablink.teaming.gwt.client.util.runasync.ShareThisDlgInitAndShowParams;
 import org.kablink.teaming.gwt.client.widgets.AdminInfoDlg.AdminInfoDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ConfigureAdhocFoldersDlg.ConfigureAdhocFoldersDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ConfigureFileSyncAppDlg.ConfigureFileSyncAppDlgClient;
@@ -1444,20 +1443,8 @@ public class AdminControl extends TeamingPopupPanel
 		if ( m_shareDlg == null )
 		{
 			ShareThisDlg2Client client;
-			RunAsyncCmd createCmd;
-			RunAsyncCreateDlgParams params;
 			
 			// No, create it.
-			params = new RunAsyncCreateDlgParams();
-			params.setAutoHide( new Boolean( true ) );
-			params.setModal( new Boolean( false ) );
-			params.setLeft( new Integer( m_contentControlX ) );
-			params.setTop( new Integer( m_contentControlY ) );
-			params.setHeight( new Integer( m_dlgHeight ) );
-			params.setWidth( new Integer( m_dlgWidth ) );
-
-			createCmd = new RunAsyncCmd( RunAsyncCmdType.CREATE, params );
-			
 			client = new ShareThisDlg2Client()
 			{
 				@Override
@@ -1482,7 +1469,16 @@ public class AdminControl extends TeamingPopupPanel
 					} );
 				}
 			};
-			ShareThisDlg2.runAsyncCmd( createCmd, client );
+
+			ShareThisDlg2.createDlg(
+								true,
+								false,
+								m_contentControlX,
+								m_contentControlY,
+								new Integer( m_dlgWidth ),
+								new Integer( m_dlgHeight ),
+								ShareThisDlg2.ShareThisDlgMode.MANAGE_ALL,
+								client );
 		}
 		else
 		{
@@ -1492,21 +1488,18 @@ public class AdminControl extends TeamingPopupPanel
 				@Override
 				public void execute() 
 				{
-					RunAsyncCmd initAndShowCmd;
-					ShareThisDlgInitAndShowParams params;
-				
-					params = new ShareThisDlgInitAndShowParams();
-					params.setUIObj( m_shareDlg );
-					params.setWidth( new Integer( m_dlgWidth ) );
-					params.setHeight( new Integer( m_dlgHeight ) );
-					params.setCaption( GwtTeaming.getMessages().shareDlg_manageShares() );
-					params.setEntityIds( null );
-					params.setMode( ShareThisDlg2.ShareThisDlgMode.MANAGE_ALL );
-				
-					initAndShowCmd = new RunAsyncCmd( RunAsyncCmdType.INIT_AND_SHOW, params );
-					
 					// Run the async command to show the dialog
-					ShareThisDlg2.runAsyncCmd( initAndShowCmd, null );
+					ShareThisDlg2.initAndShow(
+											m_shareDlg,
+											GwtTeaming.getMessages().shareDlg_manageShares(),
+											null,
+											ShareThisDlg2.ShareThisDlgMode.MANAGE_ALL,
+											null,
+											null,
+											new Integer( m_dlgWidth ),
+											new Integer( m_dlgHeight ),
+											new Boolean( false ),
+											null );
 				}
 			} );
 		}

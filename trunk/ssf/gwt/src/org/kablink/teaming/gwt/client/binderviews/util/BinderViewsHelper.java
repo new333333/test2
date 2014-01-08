@@ -82,10 +82,6 @@ import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.EntityRights;
 import org.kablink.teaming.gwt.client.util.EntityRights.ShareRight;
 import org.kablink.teaming.gwt.client.util.PublicLinkInfo;
-import org.kablink.teaming.gwt.client.util.runasync.RunAsyncCmd;
-import org.kablink.teaming.gwt.client.util.runasync.RunAsyncCreateDlgParams;
-import org.kablink.teaming.gwt.client.util.runasync.ShareThisDlgInitAndShowParams;
-import org.kablink.teaming.gwt.client.util.runasync.RunAsyncCmd.RunAsyncCmdType;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.CopyPublicLinkDlg;
 import org.kablink.teaming.gwt.client.widgets.CopyPublicLinkDlg.CopyPublicLinkDlgClient;
@@ -1297,17 +1293,17 @@ public class BinderViewsHelper {
 
 		// Have we created a share dialog yet?
 		if (null == m_shareDlg) {
-			RunAsyncCmd createCmd;
-			RunAsyncCreateDlgParams params;
 			
 			// No!  Create one now...
-			params = new RunAsyncCreateDlgParams();
-			params.setAutoHide( new Boolean( false ) );
-			params.setModal( new Boolean( true ) );
-
-			createCmd = new RunAsyncCmd( RunAsyncCmdType.CREATE, params );
-
-			ShareThisDlg2.runAsyncCmd( createCmd, new ShareThisDlg2Client() {
+			ShareThisDlg2.createDlg(
+								false,
+								true,
+								0,
+								0,
+								null,
+								null,
+								ShareThisDlg2.ShareThisDlgMode.MANAGE_SELECTED,
+								new ShareThisDlg2Client() {
 				@Override
 				public void onUnavailable() {
 					// Nothing to do.  Error handled in asynchronous
@@ -1741,18 +1737,16 @@ public class BinderViewsHelper {
 
 		// Have we created a copy/move entries dialog yet?
 		if (null == m_shareDlg) {
-			RunAsyncCmd createCmd;
-			RunAsyncCreateDlgParams params;
-			
-			// No, create it.
-			params = new RunAsyncCreateDlgParams();
-			params.setAutoHide( new Boolean( false ) );
-			params.setModal( new Boolean( true ) );
-
-			createCmd = new RunAsyncCmd( RunAsyncCmdType.CREATE, params );
-			
 			// No!  Create one now...
-			ShareThisDlg2.runAsyncCmd( createCmd, new ShareThisDlg2Client() {
+			ShareThisDlg2.createDlg(
+								new Boolean( false ),
+								new Boolean( true ),
+								0,
+								0,
+								null,
+								null,
+								ShareThisDlg2.ShareThisDlgMode.NORMAL,
+								new ShareThisDlg2Client() {
 				@Override
 				public void onUnavailable() {
 					// Nothing to do.  Error handled in
@@ -1897,22 +1891,22 @@ public class BinderViewsHelper {
 	 * Synchronously shows the share dialog in administrative mode.
 	 */
 	private static void showManageSharesDlgNow(List<EntityId> entityIds) {
-		RunAsyncCmd initAndShowCmd;
-		ShareThisDlgInitAndShowParams params;
 		String caption;
-	
-		params = new ShareThisDlgInitAndShowParams();
-		params.setUIObj( m_shareDlg );
+
 		caption = GwtClientHelper.patchMessage(m_messages.manageShares(), String.valueOf(entityIds.size()));
-		params.setCaption( caption );
-		params.setEntityIds( entityIds );
-		params.setShowCentered( true );
-		params.setMode( ShareThisDlg2.ShareThisDlgMode.MANAGE_SELECTED );
-	
-		initAndShowCmd = new RunAsyncCmd( RunAsyncCmdType.INIT_AND_SHOW, params );
-		
+
 		// Run the async command to show the dialog
-		ShareThisDlg2.runAsyncCmd( initAndShowCmd, null );
+		ShareThisDlg2.initAndShow(
+								m_shareDlg,
+								caption,
+								entityIds,
+								ShareThisDlg2.ShareThisDlgMode.MANAGE_SELECTED,
+								null,
+								null,
+								null,
+								null,
+								new Boolean( true ),
+								null );
 	}
 
 	/*
@@ -1931,22 +1925,22 @@ public class BinderViewsHelper {
 	 * Synchronously shows the share dialog.
 	 */
 	private static void showShareDlgNow(List<EntityId> entityIds) {
-		RunAsyncCmd initAndShowCmd;
-		ShareThisDlgInitAndShowParams params;
 		String caption;
 	
-		params = new ShareThisDlgInitAndShowParams();
-		params.setUIObj( m_shareDlg );
 		caption = GwtClientHelper.patchMessage(m_messages.shareTheseItems(), String.valueOf(entityIds.size()));
-		params.setCaption( caption );
-		params.setEntityIds( entityIds );
-		params.setMode( ShareThisDlg2.ShareThisDlgMode.NORMAL );
-		params.setShowCentered( new Boolean( true ) );
-	
-		initAndShowCmd = new RunAsyncCmd( RunAsyncCmdType.INIT_AND_SHOW, params );
-		
+
 		// Run the async command to show the dialog
-		ShareThisDlg2.runAsyncCmd( initAndShowCmd, null );
+		ShareThisDlg2.initAndShow(
+								m_shareDlg,
+								caption,
+								entityIds,
+								ShareThisDlg2.ShareThisDlgMode.NORMAL,
+								null,
+								null,
+								null,
+								null,
+								new Boolean( true ),
+								null );
 	}
 
 	/**
