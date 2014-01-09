@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -39,6 +39,7 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingDataTableImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingFilrImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
+import org.kablink.teaming.gwt.client.MenuIds;
 import org.kablink.teaming.gwt.client.event.ChangeContextEvent;
 import org.kablink.teaming.gwt.client.event.ChangeEntryTypeSelectedEntitiesEvent;
 import org.kablink.teaming.gwt.client.event.CopyPublicLinkSelectedEntitiesEvent;
@@ -117,6 +118,7 @@ public class FolderEntryMenu extends VibeFlowPanel {
 
 		// Create a menu bar widget and add it to the panel.
 		m_entryMenu = new VibeMenuBar("vibe-feView-menuBar");
+		m_entryMenu.getElement().setId(MenuIds.FEVIEW_MENU);
 		add(m_entryMenu);
 		
 		// Scan the toolbar items..
@@ -273,6 +275,7 @@ public class FolderEntryMenu extends VibeFlowPanel {
 		});
 
 		// Finally, tie it all together.
+		menuItem.getElement().setId(simpleTBI.getName());
 		menuItem.addStyleName((menuBar == m_entryMenu) ? "vibe-feView-menuBarItem" : "vibe-feView-menuPopupItem");
 		if (null != menuBar)
 		     menuBar.addItem(      menuItem);
@@ -304,8 +307,10 @@ public class FolderEntryMenu extends VibeFlowPanel {
 	private void renderStructuredTBI(VibeMenuBar menuBar, PopupMenu popupMenu, ToolbarItem structuredTBI) {
 		// Create a drop down menu for the structured toolbar item...
 		VibeMenuBar	structuredMenuBar = new VibeMenuBar(true);	// true -> Vertical drop down menu.
+		structuredMenuBar.getElement().setId(structuredTBI.getName());
 		structuredMenuBar.addStyleName("vibe-feView-menuPopup");
 		VibeMenuItem structuredMenuItem = new VibeMenuItem(structuredTBI.getTitle(), structuredMenuBar);
+		structuredMenuItem.getElement().setId(structuredTBI.getName() + "_Item");
 		structuredMenuItem.addStyleName("vibe-feView-menuBarItem");
 		structuredMenuItem.setHTML(renderStructuredItemHTML(structuredTBI.getTitle(), true));
 		if (null != menuBar)

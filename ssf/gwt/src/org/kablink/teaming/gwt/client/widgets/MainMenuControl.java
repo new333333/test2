@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -65,6 +65,7 @@ import org.kablink.teaming.gwt.client.GwtMainPage;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMainMenuImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
+import org.kablink.teaming.gwt.client.MenuIds;
 import org.kablink.teaming.gwt.client.RequestInfo;
 import org.kablink.teaming.gwt.client.mainmenu.ClipboardDlg;
 import org.kablink.teaming.gwt.client.mainmenu.ClipboardDlg.ClipboardDlgClient;
@@ -376,7 +377,7 @@ public class MainMenuControl extends Composite
 	 * the menu bar.
 	 */
 	private void addCloseAdministrationToCommon(MenuBar menuPanel) {
-		m_closeAdminBox = new MenuBarBox("ss_mainMenuCloseAdmin", m_messages.close());
+		m_closeAdminBox = new MenuBarBox(MenuIds.MAIN_CLOSE_ADMIN, m_messages.close());
 		m_closeAdminBox.setScheduledCommand(
 			new ScheduledCommand() {
 				@Override
@@ -395,13 +396,13 @@ public class MainMenuControl extends Composite
 	 */
 	private void addCommonItems() {
 		// ...add the slide-left/right toggle...
-		m_wsTreeSlider = new MenuBarToggle(m_images.slideLeft(), m_messages.mainMenuAltLeftNavHideShow(), TeamingEvents.SIDEBAR_HIDE, m_images.slideRight(), m_messages.mainMenuAltLeftNavHideShow(), TeamingEvents.SIDEBAR_SHOW);
+		m_wsTreeSlider = new MenuBarToggle(MenuIds.MAIN_SIDEBAR_VISIBILITY, m_images.slideLeft(), m_messages.mainMenuAltLeftNavHideShow(), TeamingEvents.SIDEBAR_HIDE, m_images.slideRight(), m_messages.mainMenuAltLeftNavHideShow(), TeamingEvents.SIDEBAR_SHOW);
 		m_wsTreeSlider.addStyleName("vibe-mainMenuButton subhead-control-bg1 roundcornerSM");
 		m_mainMenu.addItem(m_wsTreeSlider);
 		MenuLoadedEvent.fireOneAsync(MenuItem.SIDEBAR_VISIBILITY);
 
 		// ...add the slide-up/down toggle...
-		m_mastHeadSlider = new MenuBarToggle(m_images.slideUp(), m_messages.mainMenuAltMastHeadHideShow(), TeamingEvents.MASTHEAD_HIDE, m_images.slideDown(), m_messages.mainMenuAltMastHeadHideShow(), TeamingEvents.MASTHEAD_SHOW);
+		m_mastHeadSlider = new MenuBarToggle(MenuIds.MAIN_MASTHEAD_VISIBILITY, m_images.slideUp(), m_messages.mainMenuAltMastHeadHideShow(), TeamingEvents.MASTHEAD_HIDE, m_images.slideDown(), m_messages.mainMenuAltMastHeadHideShow(), TeamingEvents.MASTHEAD_SHOW);
 		m_mastHeadSlider.addStyleName("vibe-mainMenuButton subhead-control-bg1 roundcornerSM");
 		m_mainMenu.addItem(m_mastHeadSlider);
 		MenuLoadedEvent.fireOneAsync(MenuItem.MASHEAD_VISIBILITY);
@@ -410,7 +411,7 @@ public class MainMenuControl extends Composite
 		if (WorkspaceTreeControl.siteNavigationAvailable()) {
 			// ...add the browse hierarchy button...
 			BrowseHierarchyEvent bhe = new BrowseHierarchyEvent();
-			m_bhButton = new MenuBarButton(m_images.browseHierarchy(), m_messages.mainMenuAltBrowseHierarchy(), bhe);
+			m_bhButton = new MenuBarButton(MenuIds.MAIN_BREADCRUMB_BROWSER, m_images.browseHierarchy(), m_messages.mainMenuAltBrowseHierarchy(), bhe);
 			bhe.setOnBrowseHierarchyInfo(new OnBrowseHierarchyInfo(m_bhButton));
 			m_bhButton.addStyleName("vibe-mainMenuButton subhead-control-bg1 roundcornerSM");
 			m_mainMenu.addItem(m_bhButton);
@@ -448,7 +449,7 @@ public class MainMenuControl extends Composite
 							case FOLDER:     manageName = m_messages.mainMenuBarFolder();    break;
 							case WORKSPACE:  manageName = m_messages.mainMenuBarWorkspace(); break;
 							}
-							m_manageBox = new MenuBarBox("ss_mainMenuManage", manageName, mmp.getMenuBar());
+							m_manageBox = new MenuBarBox(MenuIds.MAIN_MANAGE, manageName, mmp.getMenuBar());
 							
 							// ...and tie it all together.
 							mmp.setMenuBox(m_manageBox);
@@ -479,7 +480,7 @@ public class MainMenuControl extends Composite
 	 */
 	private void addMyFavoritesToCommon(MenuBar menuPanel) {
 		m_myFavoritesMenuPopup = new MyFavoritesMenuPopup(this);
-		m_myFavoritesBox = new MenuBarBox("ss_mainMenuMyFavorites", m_messages.mainMenuBarMyFavorites(), m_myFavoritesMenuPopup.getMenuBar());
+		m_myFavoritesBox = new MenuBarBox(MenuIds.MAIN_MY_FAVORITES, m_messages.mainMenuBarMyFavorites(), m_myFavoritesMenuPopup.getMenuBar());
 		m_myFavoritesMenuPopup.setMenuBox(m_myFavoritesBox);
 		menuPanel.addItem(m_myFavoritesBox);
 		MenuLoadedEvent.fireOneAsync(MenuItem.MY_FAVORITES);
@@ -490,7 +491,7 @@ public class MainMenuControl extends Composite
 	 */
 	private void addMyTeamsToCommon(MenuBar menuPanel) {
 		m_myTeamsMenuPopup = new MyTeamsMenuPopup(this);
-		m_myTeamsBox = new MenuBarBox("ss_mainMenuMyTeams", m_messages.mainMenuBarMyTeams(), m_myTeamsMenuPopup.getMenuBar());
+		m_myTeamsBox = new MenuBarBox(MenuIds.MAIN_MY_TEAMS, m_messages.mainMenuBarMyTeams(), m_myTeamsMenuPopup.getMenuBar());
 		m_myTeamsMenuPopup.setMenuBox(m_myTeamsBox);
 		menuPanel.addItem(m_myTeamsBox);
 		MenuLoadedEvent.fireOneAsync(MenuItem.MY_TEAMS);
@@ -501,7 +502,7 @@ public class MainMenuControl extends Composite
 	 * bar.
 	 */
 	private void addMyWorkspaceToCommon(MenuBar menuPanel) {
-		m_myWorkspaceBox = new MenuBarBox("ss_mainMenuMyWorkspace", m_images.home16(), m_messages.mainMenuBarMyWorkspace());
+		m_myWorkspaceBox = new MenuBarBox(MenuIds.MAIN_MY_WORKSPACE, m_images.home16(), m_messages.mainMenuBarMyWorkspace());
 		m_myWorkspaceBox.setScheduledCommand(
 			new ScheduledCommand() {
 				@Override
@@ -523,7 +524,7 @@ public class MainMenuControl extends Composite
 			rpmp.setCurrentBinder(m_contextBinder);
 			rpmp.setToolbarItemList(m_contextTBIList);
 			if (rpmp.shouldShowMenu()) {
-				m_recentPlacesBox = new MenuBarBox("ss_mainMenuRecentPlaces", m_messages.mainMenuBarRecentPlaces(), rpmp.getMenuBar());
+				m_recentPlacesBox = new MenuBarBox(MenuIds.MAIN_RECENT_PLACES, m_messages.mainMenuBarRecentPlaces(), rpmp.getMenuBar());
 				rpmp.setMenuBox(m_recentPlacesBox);
 				m_mainMenu.addItem(m_recentPlacesBox);
 				MenuLoadedEvent.fireOneAsync(MenuItem.RECENT_PLACES);
@@ -556,7 +557,7 @@ public class MainMenuControl extends Composite
 					vmp.setCurrentBinder(m_contextBinder);
 					vmp.setToolbarItemList(m_contextTBIList);
 					if (vmp.shouldShowMenu()) {
-						m_viewsBox = new MenuBarBox("ss_mainMenuViews", m_messages.mainMenuBarViews(), vmp.getMenuBar());
+						m_viewsBox = new MenuBarBox(MenuIds.MAIN_VIEWS, m_messages.mainMenuBarViews(), vmp.getMenuBar());
 						vmp.setMenuBox(m_viewsBox);
 						m_mainMenu.addItem(m_viewsBox);
 						MenuLoadedEvent.fireOneAsync(MenuItem.VIEW);
@@ -576,7 +577,7 @@ public class MainMenuControl extends Composite
 	 * Adds the What's New item to the common portion of the menu bar.
 	 */
 	private void addWhatsNewToCommon(MenuBar menuPanel) {
-		m_whatsNewBox = new MenuBarBox("ss_mainMenuWhatsNew", m_images.newMenu(), m_messages.mainMenuBarWhatsNew());
+		m_whatsNewBox = new MenuBarBox(MenuIds.MAIN_WHATS_NEW, m_images.newMenu(), m_messages.mainMenuBarWhatsNew());
 		m_whatsNewBox.setScheduledCommand(
 			new ScheduledCommand() {
 				@Override

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -37,6 +37,7 @@ import java.util.List;
 
 import org.kablink.teaming.gwt.client.GwtConstants;
 import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.MenuIds;
 import org.kablink.teaming.gwt.client.event.CalendarShowEvent;
 import org.kablink.teaming.gwt.client.event.ChangeContextEvent;
 import org.kablink.teaming.gwt.client.event.ChangeEntryTypeSelectedEntitiesEvent;
@@ -311,6 +312,7 @@ public class EntryMenuPanel extends ToolPanelBase
 	 */
 	private void constructMenuPanels() {
 		m_entryMenu = new VibeMenuBar("vibe-entryMenuBar");
+		m_entryMenu.getElement().setId(MenuIds.ENTRY_MENU);
 		m_grid.setWidget(0, 0, m_entryMenu);
 
 		VibeFlowPanel rightPanel = new VibeFlowPanel();
@@ -379,6 +381,7 @@ public class EntryMenuPanel extends ToolPanelBase
 			new ManageUsersFilterEvent(muf),
 			null,
 			mufText);
+		reply.getElement().setId(muf.name());
 		reply.setCheckedState(mufChecked);
 		return reply;
 	}
@@ -391,6 +394,7 @@ public class EntryMenuPanel extends ToolPanelBase
 			new SharedViewFilterEvent(svf),
 			null,
 			svfText);
+		reply.getElement().setId(svf.name());
 		reply.setCheckedState(svfChecked);
 		return reply;
 	}
@@ -844,6 +848,7 @@ public class EntryMenuPanel extends ToolPanelBase
 							bf.getFilterAddUrl())));	// ...otherwise, it activates it.
 			}
 		});
+		reply.getElement().setId(MenuIds.ENTRY_DEFINED_FILTER);
 		return reply;
 	}
 	
@@ -857,6 +862,7 @@ public class EntryMenuPanel extends ToolPanelBase
 			// ...there are predefined filters that are specific to
 			// ...that.  Construct the filter drop down menu...
 			PopupMenu filterDropdownMenu = constructFilterDropdownMenu(true);	// true -> Items may be checked.
+			filterDropdownMenu.getElement().setId(MenuIds.ENTRY_FILTER_POPUP);
 			
 			// ...construct the menu items and store them so they can
 			// ...be easily accessed by the manage users dialog.
@@ -889,6 +895,7 @@ public class EntryMenuPanel extends ToolPanelBase
 			// ...there are predefined filters that are specific to
 			// ...that.  Construct the filter drop down menu...
 			PopupMenu filterDropdownMenu = constructFilterDropdownMenu(true);	// true -> Items may be checked.
+			filterDropdownMenu.getElement().setId(MenuIds.ENTRY_FILTER_POPUP);
 
 			// ...construct the menu items and store them so they can
 			// ...be easily accessed by the view.
@@ -949,6 +956,7 @@ public class EntryMenuPanel extends ToolPanelBase
 					GwtTeaming.fireEvent(new GotoContentUrlEvent(filterEditUrl));
 				}
 			});
+			mi.getElement().setId(MenuIds.ENTRY_EDIT_FILTERS);
 			filterDropdownMenu.addMenuItem(mi);
 			if ((!hasFiltersOffUrl) && (0 < filtersCount)) {
 				filterDropdownMenu.addSeparator();
@@ -964,6 +972,7 @@ public class EntryMenuPanel extends ToolPanelBase
 					GwtTeaming.fireEvent(new GotoContentUrlEvent(filtersOffUrl));
 				}
 			});
+			mi.getElement().setId(MenuIds.ENTRY_FILTERS_OFF);
 			filterDropdownMenu.addMenuItem(mi);
 			if (0 < filtersCount) {
 				filterDropdownMenu.addSeparator();
@@ -1034,6 +1043,7 @@ public class EntryMenuPanel extends ToolPanelBase
 		if (supportsQuickFilter()) {
 			// ...add a quick filter widget...
 			QuickFilter qf = new QuickFilter(m_binderInfo.getBinderIdAsLong());
+			qf.getElement().setId(MenuIds.ENTRY_FILTER_COMPOSITE);
 			qf.addStyleName("vibe-entryMenu-quickFilters-filter");
 			qf.addStyleName(m_isIE ? "displayInline" : "displayInlineBlock");
 			m_quickFilterPanel.add(qf);
@@ -1241,6 +1251,7 @@ public class EntryMenuPanel extends ToolPanelBase
 				}
 			}
 		});
+		menuItem.getElement().setId(simpleTBI.getName());
 		switch (simpleTBI.getTeamingEvent()) {
 		case INVOKE_DROPBOX:                  m_addFilesMenu             = menuItem; break;
 		case DELETE_SELECTED_ENTITIES:        m_deleteMenu               = menuItem; break;
@@ -1288,8 +1299,10 @@ public class EntryMenuPanel extends ToolPanelBase
 	private void renderStructuredTBI(VibeMenuBar menuBar, PopupMenu popupMenu, ToolbarItem structuredTBI) {
 		// Create a drop down menu for the structured toolbar item...
 		VibeMenuBar	structuredMenuBar = new VibeMenuBar(true);	// true -> Vertical drop down menu.
+		structuredMenuBar.getElement().setId(structuredTBI.getName());
 		structuredMenuBar.addStyleName("vibe-entryMenuPopup");
 		VibeMenuItem structuredMenuItem = new VibeMenuItem(structuredTBI.getTitle(), structuredMenuBar);
+		structuredMenuItem.getElement().setId(structuredTBI.getName() + "_Item");
 		structuredMenuItem.addStyleName("vibe-entryMenuBarItem");
 		structuredMenuItem.setHTML(renderStructuredItemHTML(structuredTBI.getTitle(), true));
 		if (null != menuBar)

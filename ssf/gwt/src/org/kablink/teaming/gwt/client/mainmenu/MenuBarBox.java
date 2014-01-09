@@ -61,7 +61,7 @@ public class MenuBarBox extends VibeMenuItem {
 		super("", cmd);
 		
 		// ...and initialize everything else.
-		initBox(itemImgRes, itemText, false);
+		initBox(boxId, itemImgRes, itemText, false);
 	}
 	
 	/**
@@ -77,7 +77,7 @@ public class MenuBarBox extends VibeMenuItem {
 		super("", subMenu);
 		
 		// ...and initialize everything else.
-		initBox(itemImgRes, itemText, true);
+		initBox(boxId, itemImgRes, itemText, true);
 	}
 	
 	/**
@@ -139,7 +139,10 @@ public class MenuBarBox extends VibeMenuItem {
 	/*
 	 * Completes the initialization of a MenuBarBox.
 	 */
-	private void initBox(ImageResource itemImgRes, String itemText, boolean dropdown) {
+	private void initBox(String boxId, ImageResource itemImgRes, String itemText, boolean dropdown) {
+		// Add the ID to the box.
+		getElement().setId(boxId);
+		
 		// Add the base style to the box.
 		addStyleName("vibe-mainMenuContent");
 
