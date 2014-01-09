@@ -4795,34 +4795,10 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					row = (Object[])ssGroups.get(ssName);
 					if ( row != null )
 					{
-						int i;
-						String originalSsName;
-						
-						logger.debug( "group already exists: '" + ssName + "'" );
-
 						// Yes
 						// Try to create a unique name for the group.  For example, ico-group(2)
-						// We don't want to try forever so we try 1,000 times
-						originalSsName = ssName;
-						ssName = null;
-						for (i = 1; i <= 1000; ++i)
-						{
-							String tmpName;
-							
-							// Does this name exist?
-							tmpName = originalSsName + "(" + i + ")";
-							if ( ssGroups.get( tmpName ) == null )
-							{
-								logger.debug( "Group: '" + originalSsName + "' will be known Filr as: '" + tmpName + "'" );
-
-								// No
-								ssName = tmpName;
-								break;
-							}
-						}
-						
-						if ( ssName == null )
-							logger.error( "Could not generate a unique name for the group: '" + originalSsName + "'" );
+						logger.debug( "group already exists: '" + ssName + "'" );
+						ssName = getUniqueGroupName( ssName );
 					}
 					
 					if ( ssName != null && ssName.length() > 0 )
@@ -4860,18 +4836,67 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			else
 			{
 				ssName = teamingName;
-				if (sync)
+				if ( sync )
 				{
 					Map userMods = new HashMap();
+					String originalDn;
+					boolean renameGroup = false;
+					
 					if (logger.isDebugEnabled())
 						logger.debug("\t\tUpdating group:" + ssName);
 					
 					// Map the attributes read from the ldap directory to Teaming attributes.
 					getUpdates( groupAttributeNames, groupAttributes, lAttrs, userMods, ldapGuidAttribute );
 
-					// We never want to change a group's name in Teaming.  Remove the "name" attribute
-					// from the list of attributes to be written to the db.
-					userMods.remove( ObjectKeys.FIELD_PRINCIPAL_NAME );
+					// Has the dn of this group changed?
+					originalDn = (String) row[PRINCIPAL_FOREIGN_NAME];
+					if ( dn.equalsIgnoreCase( originalDn ) == false )
+					{
+						String nameInDb;
+						
+						// Yes
+						// That means the group has either been moved or renamed.
+						// Was the group name changed in the ldap directory?
+						nameInDb = (String) row[PRINCIPAL_NAME];
+						if ( teamingName.equalsIgnoreCase( nameInDb ) == false )
+						{
+							Object[] tmpRow;
+							
+							// Yes
+							// Does the group's new name already exist in the db?
+							tmpRow = (Object[])ssGroups.get( teamingName );
+							if ( tmpRow != null && tmpRow != row )
+							{
+								// Yes
+								// Try to create a unique name for the group.  For example, ico-group(2)
+								logger.debug( "group name for a rename already exists: '" + nameInDb + "'" );
+								ssName = getUniqueGroupName( teamingName );
+
+								// Do we have a new name?
+								if ( ssName != null && ssName.length() > 0 )
+								{
+									// Yes
+									renameGroup = true;
+								}
+							}
+							else
+							{
+								ssName = teamingName;
+								renameGroup = true;
+							}
+						}
+					}
+
+					if ( renameGroup == true && ssName != null )
+					{
+						userMods.put( ObjectKeys.FIELD_PRINCIPAL_NAME, ssName );
+						row[PRINCIPAL_NAME] = ssName;
+					}
+					else
+					{
+						// Remove the "name" attribute from the list of attributes to be written to the db.
+						userMods.remove( ObjectKeys.FIELD_PRINCIPAL_NAME );
+					}
 
 					// Make sure the dn stored in Teaming is updated for this user.
 					userMods.put( ObjectKeys.FIELD_PRINCIPAL_FOREIGNNAME, dn );
@@ -4893,6 +4918,38 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			
 			return isSSGroup;
 		}// end record()
+		
+		/**
+		 * Try to compose a unique group name using the given group name as a base
+		 */
+		private String getUniqueGroupName( String originalGroupName )
+		{
+			String uniqueName = null;
+			int i;
+			
+			// Yes
+			// We don't want to try forever so we try 1,000 times
+			uniqueName = null;
+			for (i = 1; i <= 1000; ++i)
+			{
+				String tmpName;
+				
+				// Does this name exist?
+				tmpName = originalGroupName + "(" + i + ")";
+				if ( ssGroups.get( tmpName ) == null )
+				{
+					// No
+					logger.debug( "Got unique group name: " + tmpName );
+					uniqueName = tmpName;
+					break;
+				}
+			}
+			
+			if ( uniqueName == null )
+				logger.error( "Could not generate a unique name for the group: '" + originalGroupName + "'" );
+
+			return uniqueName;
+		}
 		
 	    /**
 	     * Create groups.
