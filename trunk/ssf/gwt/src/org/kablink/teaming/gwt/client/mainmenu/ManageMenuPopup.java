@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -36,6 +36,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.MenuIds;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.mainmenu.FolderOptionsDlg.FolderOptionsDlgClient;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
@@ -65,7 +66,7 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 	private List<ToolbarItem>	m_teamAndEmailBucket;	// List of team and email items for the context based menu.
 	private List<ToolbarItem>	m_toolbarItemList;		// The context based toolbar requirements.
 	private List<ToolbarItem>	m_filrBucket;			// List of Filr specific  items for the context based menu.
-	private TagThisDlg			m_tagThisDlg;			//
+	private TagThisDlg			m_tagThisDlg;			// Instance of a TagThisDlg.
 	private TeamManagementInfo	m_tmi;					// The team management information for which team management menu items should appear on the menu.
 	private ToolbarItem			m_brandingTBI;			// The branding                  toolbar item, if found.
 	private ToolbarItem			m_calendarImportTBI;	// The calendar import           toolbar item, if found.
@@ -78,7 +79,7 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 	private ToolbarItem			m_trackPersonTBI;		// The person tracking           toolbar item, if found.
 	private ToolbarItem			m_trashTBI;				// The trash                     toolbar item, if found.
 	
-	private final String IDBASE = "manage_";	// Base ID for the items created in this menu.
+	private final static String IDBASE = "manage_";	// Base ID for the items created in this menu.
 
 	/*
 	 * Constructor method.
@@ -238,15 +239,13 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 			// Add the team management items.
 			ToolbarItem localTBI;
 			if (m_tmi.isViewAllowed()) {
-				localTBI = new ToolbarItem();
-				localTBI.setName("viewTeam");
+				localTBI = new ToolbarItem(MenuIds.MANAGE_VIEW_TEAM);
 				localTBI.setTitle(m_messages.mainMenuManageViewTeam());
 				localTBI.setTeamingEvent(TeamingEvents.VIEW_CURRENT_BINDER_TEAM_MEMBERS);
 				m_teamAndEmailBucket.add(localTBI);
 			}
 			if (m_tmi.isManageAllowed()) {
-				localTBI = new ToolbarItem();
-				localTBI.setName("editTeam");
+				localTBI = new ToolbarItem(MenuIds.MANAGE_EDIT_TEAM);
 				localTBI.setTitle(m_messages.mainMenuManageEditTeam());
 				localTBI.setUrl(m_tmi.getManageUrl());
 				localTBI.addQualifier("popup", "true");
@@ -255,8 +254,7 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 				m_teamAndEmailBucket.add(localTBI);
 			}
 			if (m_tmi.isTeamMeetingAllowed()) {
-				localTBI = new ToolbarItem();
-				localTBI.setName("meetTeam");
+				localTBI = new ToolbarItem(MenuIds.MANAGE_MEET_TEAM);
 				localTBI.setTitle(m_messages.mainMenuManageStartTeamConference());
 				localTBI.setUrl(m_tmi.getTeamMeetingUrl());
 				localTBI.addQualifier("popup", "true");
@@ -265,8 +263,7 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 				m_teamAndEmailBucket.add(localTBI);
 			}
 			if (m_tmi.isSendMailAllowed()) {
-				localTBI = new ToolbarItem();
-				localTBI.setName("mailTeam");
+				localTBI = new ToolbarItem(MenuIds.MANAGE_MAIL_TEAM);
 				localTBI.setTitle(m_messages.mainMenuManageEmailTeam());
 				localTBI.setUrl(m_tmi.getSendMailUrl());
 				localTBI.addQualifier("popup", "true");
@@ -383,7 +380,7 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 				ToolbarItem adminTBI = tbi.getNestedToolbarItem("administration");
 				categoriesTBI = ((null == adminTBI) ? null : adminTBI.getNestedToolbarItem("categories"));
 				if (null != categoriesTBI) {
-					m_commonActionsTBI = new ToolbarItem();
+					m_commonActionsTBI = new ToolbarItem(MenuIds.MANAGE_COMMON);
 					copyNestedToolbarItems(m_commonActionsTBI, categoriesTBI.getNestedToolbarItem(null));
 					copyNestedToolbarItems(m_commonActionsTBI, categoriesTBI.getNestedToolbarItem("addBinder"));
 					copyNestedToolbarItems(m_commonActionsTBI, categoriesTBI.getNestedToolbarItem("configuration"));

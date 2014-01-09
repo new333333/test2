@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -38,6 +38,7 @@ import java.util.List;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingDataTableImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
+import org.kablink.teaming.gwt.client.MenuIds;
 import org.kablink.teaming.gwt.client.event.QuickFilterEvent;
 import org.kablink.teaming.gwt.client.util.EventWrapper;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
@@ -86,6 +87,7 @@ public class QuickFilter extends ResizeComposite {
 		
 		// ...create the filter <IMG>...
 		m_quickFilterImage = new Image(m_images.filterOff());
+		m_quickFilterImage.getElement().setId(MenuIds.ENTRY_FILTER_IMAGE);
 		m_quickFilterImage.setTitle(m_messages.quickFilterAltOff());
 		m_quickFilterImage.setStyleName("vibe-quickFilter_image");
 		m_quickFilterImage.getElement().setAttribute("align", "absmiddle");
@@ -99,6 +101,7 @@ public class QuickFilter extends ResizeComposite {
 		
 		// ...create the filter <INPUT>...
 		m_quickFilterInput = new TextBox();
+		m_quickFilterInput.getElement().setId(MenuIds.ENTRY_FILTER_INPUT);
 		m_quickFilterInput.setValue(m_messages.quickFilter_empty());
 		m_quickFilterInput.addStyleName("vibe-quickFilter_input");
 		setBlurStyles();
@@ -162,6 +165,7 @@ public class QuickFilter extends ResizeComposite {
 
 		// ...tie it all together...
 		m_quickFilterDIV = new VibeFlowPanel();
+		m_quickFilterDIV.getElement().setId(MenuIds.ENTRY_FILTER_DIV);
 		m_quickFilterDIV.add(m_quickFilterImage);
 		m_quickFilterDIV.add(m_quickFilterInput);
 		
