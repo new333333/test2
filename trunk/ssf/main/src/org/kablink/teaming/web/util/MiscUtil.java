@@ -833,8 +833,8 @@ public final class MiscUtil
 		if ( Utils.checkIfFilr() )
 		{
 			// Yes
-			url += "/novell-filr1";
-			product = "/filr1";
+			url += "/novell-filr-1-1";
+			product = "/filr-1-1";
 		}
 		// Are we running Novell Teaming?
 		else if ( ReleaseInfo.isLicenseRequiredEdition())

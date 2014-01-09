@@ -39,6 +39,8 @@
 <%@ page import="org.kablink.teaming.util.NLT" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <c:set var="ss_windowTitle" value='<%= NLT.get("administration.configure_search_index") %>' scope="request"/>
+<c:set var="helpGuideName" value="admin" scope="request" />
+<c:set var="helpPageId" value="searchindex" scope="request" />
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <%
 String wsTreeName = "" + renderResponse.getNamespace();

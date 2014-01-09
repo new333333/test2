@@ -51,6 +51,7 @@
         <c:if test="${!empty ss_title}">
     	  <ssf:nlt tag="${ss_title}" checkIfTag="true"/>
         </c:if>
+		<c:if test="${!empty helpGuideName}"><ssf:showHelp guideName="${helpGuideName}" pageId="${helpPageId}" /></c:if>
       </td>
       <td valign="top" align="right">
 		<%--

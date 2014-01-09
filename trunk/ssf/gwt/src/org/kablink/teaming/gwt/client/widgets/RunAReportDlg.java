@@ -579,10 +579,7 @@ public class RunAReportDlg extends DlgBox
 		
 		helpData = new HelpData();
 		helpData.setGuideName( HelpData.ADMIN_GUIDE );
-		if ( GwtTeaming.m_requestInfo.isLicenseFilr() )
-			helpData.setPageId( "reports_filr" );
-		else
-			helpData.setPageId( "reports" );
+		helpData.setPageId( "reports_generate" );
 		
 		return helpData;
 	}
