@@ -160,12 +160,24 @@ public class FindCtrl extends Composite
 				{
 					GwtDisplayField field;
 					
-					// What field are we supposed to use as the primary display?
-					field = m_nameCompletionSettings.getGroupPrimaryDisplayField();
-					if ( field == GwtDisplayField.NAME )
-						name = item.getShortDisplayName();
-					else if ( field == GwtDisplayField.TITLE )
+					// Are we dealing with the "all external users" or the "all internal users" group?
+					name = item.getName();
+					if ( name != null &&
+						 (name.equalsIgnoreCase( "allextusers" ) || name.equalsIgnoreCase( "allusers" )) )
+					{
+						// Yes
+						// Always display the title
 						name = item.getTitle();
+					}
+					else
+					{
+						// What field are we supposed to use as the primary display?
+						field = m_nameCompletionSettings.getGroupPrimaryDisplayField();
+						if ( field == GwtDisplayField.NAME )
+							name = item.getShortDisplayName();
+						else if ( field == GwtDisplayField.TITLE )
+							name = item.getTitle();
+					}
 				}
 				
 				anchor = new Anchor( name );
