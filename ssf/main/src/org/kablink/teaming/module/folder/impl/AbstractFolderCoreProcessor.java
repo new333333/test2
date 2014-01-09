@@ -186,7 +186,11 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
         } catch(WriteFilesException ex) {
 	       	//See if there was an entry created. If so, delete it.
         	if (ex.getEntityId() != null && newEntry != null && ex.getEntityId().equals(newEntry.getId())) {
-        		deleteEntry(parent.getParentBinder(), newEntry, false, new HashMap());
+        		try {
+        			deleteEntry(parent.getParentBinder(), newEntry, false, new HashMap());
+        		} catch(Exception e) {
+        			//Any further errors while trying to delete the entry are ignored
+        		}
         		ex.setEntityId(null);
         	}
         	throw ex;
@@ -362,12 +366,31 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     }
     //no write transaction    
     @Override
-	protected void deleteEntry_processFiles(Binder parentBinder, Entry entry, boolean deleteMirroredSource, Map ctx) {
+	protected void deleteEntry_processFiles(Binder parentBinder, Entry entry, boolean deleteMirroredSource, Map ctx) 
+			throws WriteFilesException {
     	List<FolderEntry> replies = (List)ctx.get("this.replies");
      	for (FolderEntry reply: replies) {
-     		super.deleteEntry_processFiles(parentBinder, reply, deleteMirroredSource, null);
+     		try {
+     			super.deleteEntry_processFiles(parentBinder, reply, deleteMirroredSource, null);
+    		} catch(WriteFilesException e) {
+    			//The files attached to this entry could not be deleted
+    			//See if the error should be propagated
+    			if (ctx.containsKey(ObjectKeys.INPUT_OPTION_PROPAGATE_ERRORS) &&
+    					(boolean)ctx.get(ObjectKeys.INPUT_OPTION_PROPAGATE_ERRORS)) {
+    				throw e;
+    			}
+    		}
     	}
-       	super.deleteEntry_processFiles(parentBinder, entry, deleteMirroredSource, null);
+     	try {
+     		super.deleteEntry_processFiles(parentBinder, entry, deleteMirroredSource, null);
+		} catch(WriteFilesException e) {
+			//The files attached to this entry could not be deleted
+			//See if the error should be propagated
+			if (ctx.containsKey(ObjectKeys.INPUT_OPTION_PROPAGATE_ERRORS) &&
+					(boolean)ctx.get(ObjectKeys.INPUT_OPTION_PROPAGATE_ERRORS)) {
+				throw e;
+			}
+		}
     }
     
     //inside write transaction    

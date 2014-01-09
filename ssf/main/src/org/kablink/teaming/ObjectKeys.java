@@ -665,6 +665,7 @@ public interface ObjectKeys {
     public static final String INPUT_OPTION_VALIDATION_ONLY="org.kablink.teaming.options.validation_only";
     public static final String INPUT_OPTION_REQUIRED_TITLE="org.kablink.teaming.options.required.title";
     public static final String INPUT_OPTION_OWNER_ID="org.kablink.teaming.options.entity.owner.id";
+    public static final String INPUT_OPTION_PROPAGATE_ERRORS="org.kablink.teaming.options.propagate.errors";
     public static final String INPUT_OPTION_SKIP_PARENT_MODTIME_UPDATE="org.kablink.teaming.options.skip.parent.modtime.update";
     public static final String INPUT_OPTION_SKIP_DB_LOG="org.kablink.teaming.options.skip_db_log";
     public static final String INPUT_OPTION_SKIP_NOTIFY_STATUS="org.kablink.teaming.options.skip_notify_status";

@@ -57,6 +57,7 @@ import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.definition.DefinitionModule;
+import org.kablink.teaming.module.file.FilesErrors;
 import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.template.TemplateModule;
@@ -330,20 +331,26 @@ public class FolderUtils {
 	public static void deleteMirroredFolder(Folder folder, boolean deleteMirroredSource, Boolean skipParentModtimeUpdate)
 	throws AccessControlException {
 		Map options = new HashMap();
+		options.put(ObjectKeys.INPUT_OPTION_PROPAGATE_ERRORS, true);
 		if(skipParentModtimeUpdate != null)
 			options.put(ObjectKeys.INPUT_OPTION_SKIP_PARENT_MODTIME_UPDATE, skipParentModtimeUpdate);
 		getBinderModule().deleteBinder(folder.getId(), deleteMirroredSource, options);
 	}
 	
-	public static void deleteMirroredEntry(Folder parentFolder, FolderEntry entry, boolean deleteMirroredSource, Boolean skipParentModtimeUpdate) {
+	public static void deleteMirroredEntry(Folder parentFolder, FolderEntry entry, boolean deleteMirroredSource, 
+			Boolean skipParentModtimeUpdate) throws AccessControlException, WriteFilesException {
 		Map options = new HashMap();
+		options.put(ObjectKeys.INPUT_OPTION_PROPAGATE_ERRORS, true);
 		if(skipParentModtimeUpdate != null)
 			options.put(ObjectKeys.INPUT_OPTION_SKIP_PARENT_MODTIME_UPDATE, skipParentModtimeUpdate);
 		getFolderModule().deleteEntry(parentFolder.getId(), entry.getId(), deleteMirroredSource, options);
 	}
 	
-	public static void deleteMirroredEntry(Long folderId, Long entryId, boolean deleteMirroredSource) {
-		getFolderModule().deleteEntry(folderId, entryId, deleteMirroredSource, null);
+	public static void deleteMirroredEntry(Long folderId, Long entryId, boolean deleteMirroredSource) 
+			throws AccessControlException, WriteFilesException {
+		Map options = new HashMap();
+		options.put(ObjectKeys.INPUT_OPTION_PROPAGATE_ERRORS, true);
+		getFolderModule().deleteEntry(folderId, entryId, deleteMirroredSource, options);
 	}
 	
 	public static boolean isMirroredFolder(Binder binder) {
@@ -689,13 +696,15 @@ public class FolderUtils {
 		return null;
 	}
 	
-	public static void deleteFileInFolderEntry(FolderEntry entry, FileAttachment fa) throws AccessControlException, ReservedByAnotherUserException, WriteFilesException, WriteEntryDataException {
+	public static void deleteFileInFolderEntry(FolderEntry entry, FileAttachment fa) 
+			throws AccessControlException, ReservedByAnotherUserException, WriteFilesException, WriteEntryDataException {
         // By default, entry is simply moved into trash rather than permanently deleted.
         boolean predelete = SPropsUtil.getBoolean("folderutils.deleteentry.predelete", true);
         deleteFileInFolderEntry(entry, fa, predelete);
     }
 
-	public static void deleteFileInFolderEntry(FolderEntry entry, FileAttachment fa, boolean predelete) throws AccessControlException, ReservedByAnotherUserException, WriteFilesException, WriteEntryDataException {
+	public static void deleteFileInFolderEntry(FolderEntry entry, FileAttachment fa, boolean predelete) 
+			throws AccessControlException, ReservedByAnotherUserException, WriteFilesException, WriteEntryDataException {
 		Binder parentBinder = entry.getParentBinder();
 		if(parentBinder.isMirrored() && fa.getRepositoryName().equals(ObjectKeys.FI_ADAPTER)) {
 			// The file being deleted is a mirrored file.
@@ -718,10 +727,11 @@ public class FolderUtils {
 				// This file being deleted is the only file associated with the entry.
 				// Delete the entire entry, instead of leaving an empty/dangling entry with no file.
 				// This will honor the Bug #554284.
-				if(predelete)
+				if(predelete) {
 					getFolderModule().preDeleteEntry(parentBinder.getId(), entry.getId(), RequestContextHolder.getRequestContext().getUserId());
-				else
-					getFolderModule().deleteEntry(parentBinder.getId(), entry.getId(), true, null);					
+				} else {
+					getFolderModule().deleteEntry(parentBinder.getId(), entry.getId(), true, null);
+				}
 			}
 		}
 

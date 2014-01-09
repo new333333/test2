@@ -307,9 +307,10 @@ public interface FolderModule {
      * @param deleteMirroredSource
      * @param options - processing options or null
      * @throws AccessControlException
+     * @throws WriteFilesException 
      */
     public void deleteEntry(Long parentFolderId, Long entryId, boolean deleteMirroredSource, Map options) 
-    	throws AccessControlException;
+    	throws AccessControlException, WriteFilesException;
     /**
      * Stop a running workflow and delete it from the states of the <code>FolderEntry</code>.
      * @param parentFolderId
