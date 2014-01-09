@@ -38,6 +38,8 @@
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <%@ page import="org.kablink.teaming.web.util.GwtUIHelper" %>
 <c:set var="ss_windowTitle" value='<%= NLT.get("administration.configure_mail") %>' scope="request"/>
+<c:set var="helpGuideName" value="admin" scope="request" />
+<c:set var="helpPageId" value="emailintegration_configure" scope="request" />
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <body class="ss_style_body tundra">
 <div class="ss_pseudoPortal">
@@ -112,7 +114,7 @@ function ss_checkIfNumberValid(s) {
 		  onClick="return handleCloseBtn();"/>
 </div>
 <input type="checkbox" class="ss_style" id="notifyenabled" name="notifyenabled" <c:if test="${ssScheduleInfonotify.enabled}">checked</c:if> />
-<label for="notifyenabled"><span class="ss_labelRight"><ssf:nlt tag="notify.schedule.enable"/> </span></label><ssf:showHelp guideName="admin" pageId="emailintegration" />
+<label for="notifyenabled"><span class="ss_labelRight"><ssf:nlt tag="notify.schedule.enable"/> </span></label>
 <br/>
 <fieldset class="ss_fieldset">
   <legend class="ss_legend"><ssf:nlt tag="notify.header" /></legend>	

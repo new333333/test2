@@ -36,6 +36,8 @@
 <%@ page import="org.kablink.teaming.web.util.GwtUIHelper" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <c:set var="ss_windowTitle" value='<%= NLT.get("administration.manage.fileUploadLimits") %>' scope="request"/>
+<c:set var="helpGuideName" value="admin" scope="request" />
+<c:set var="helpPageId" value="dataquota_filelimit" scope="request" />
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <body class="ss_style_body tundra">
 

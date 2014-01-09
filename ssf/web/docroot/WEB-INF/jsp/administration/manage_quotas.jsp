@@ -231,6 +231,7 @@ function ss_checkForAllUsersGroup() {
 			  <c:if test="${ss_allowPersonalStorage}">checked=checked</c:if>
 			/>
 			<span class="ss_bold"><ssf:nlt tag="administration.quotas.allowPersonalStorage" /></span>
+			<ssf:showHelp guideName="admin" pageId="personalfolders" />
 		</legend>
 		<br/>
 	</c:if>
@@ -284,7 +285,9 @@ function ss_checkForAllUsersGroup() {
     <legend class="ss_legend"><input type="checkbox" name="enableQuotas" 
 	  <c:if test="${ss_quotasEnabled}">checked=checked</c:if>
 	  />
-	  <b><ssf:nlt tag="administration.quotas.enable" /></b></legend>
+	  <b><ssf:nlt tag="administration.quotas.enable" /></b>
+	  <ssf:showHelp guideName="admin" pageId="dataquota" />
+	  </legend>
 		
 	<table style="margin: 10px">
 	<tr>

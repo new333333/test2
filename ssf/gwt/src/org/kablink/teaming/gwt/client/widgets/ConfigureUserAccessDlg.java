@@ -403,7 +403,7 @@ public class ConfigureUserAccessDlg extends DlgBox
 		
 		helpData = new HelpData();
 		helpData.setGuideName( HelpData.ADMIN_GUIDE );
-		helpData.setPageId( "access_external" );
+		helpData.setPageId( "access" );
 		
 		return helpData;
 	}
