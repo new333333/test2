@@ -249,19 +249,31 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         } catch(WriteFilesException ex) {
         	//See if there was an entry created. If so, delete it.
         	if (ex.getEntityId() != null && newEntry != null && ex.getEntityId().equals(newEntry.getId())) {
-        		deleteEntry(binder, newEntry, false, new HashMap());
+        		try {
+        			deleteEntry(binder, newEntry, false, new HashMap());
+        		} catch(Exception e) {
+        			//Any further errors while trying to delete the entry are ignored
+        		}
         		ex.setEntityId(null);
         	}
         	throw ex;
         } catch (DataIntegrityViolationException e) {
             if (newEntry != null && newEntry.getId()!=null) {
-           		deleteEntry(binder, newEntry, false, new HashMap());
+            	try {
+            		deleteEntry(binder, newEntry, false, new HashMap());
+            	} catch(Exception e2) {
+            		//Any further errors while trying to delete the entry are ignored
+            	}
            	}
             throw new DataIntegrityViolationException(e.getLocalizedMessage(), e);
         } catch(Exception ex) {
         	entryDataErrors.addProblem(new Problem(Problem.GENERAL_PROBLEM, ex));
         	if (newEntry != null && newEntry.getId()!=null) {
-        		deleteEntry(binder, newEntry, false, new HashMap());
+        		try {
+        			deleteEntry(binder, newEntry, false, new HashMap());
+        		} catch(Exception e2) {
+        			//Any further errors while trying to delete the entry are ignored
+        		}
         	}
         	throw new WriteEntryDataException(entryDataErrors);
         } finally {
@@ -981,7 +993,8 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     //***********************************************************************************************************   
     //no transaction expected
     @Override
-	public void deleteEntry(final Binder parentBinder, final Entry entry, final boolean deleteMirroredSource, Map options) {
+	public void deleteEntry(final Binder parentBinder, final Entry entry, final boolean deleteMirroredSource, Map options) 
+			throws WriteFilesException {
         SimpleProfiler.start("deleteEntry");
 
     	final Map ctx = new HashMap();
@@ -1056,7 +1069,8 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     }
     
     //no transaction
-    protected void deleteEntry_processFiles(Binder parentBinder, Entry entry, boolean deleteMirroredSource, Map ctx) {
+    protected void deleteEntry_processFiles(Binder parentBinder, Entry entry, boolean deleteMirroredSource, Map ctx) 
+    		throws WriteFilesException {
     	//attachment meta-data not deleted.  Done in optimized delete entry
     	if(deleteMirroredSource && parentBinder.isMirrored()) {
     		if(getResourceDriverManager().isReadonly(parentBinder.getResourceDriverName())) {
@@ -1066,7 +1080,16 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     			deleteMirroredSource = false;
     		}
     	}
-    	getFileModule().deleteFiles(parentBinder, entry, deleteMirroredSource, null);
+    	FilesErrors errors = new FilesErrors();
+    	errors = getFileModule().deleteFiles(parentBinder, entry, deleteMirroredSource, errors);
+     	if (errors.getProblems().size() > 0) {
+    		// At least one error occured during the operation. 
+     		//Shoud this error be propagated?
+     		if (ctx.containsKey(ObjectKeys.INPUT_OPTION_PROPAGATE_ERRORS) &&
+					(boolean)ctx.get(ObjectKeys.INPUT_OPTION_PROPAGATE_ERRORS)) {
+     			throw new WriteFilesException(errors, entry.getId());
+     		}
+    	}
     }
     //inside write transaction    
     protected void deleteEntry_delete(Binder parentBinder, Entry entry, Map ctx) {

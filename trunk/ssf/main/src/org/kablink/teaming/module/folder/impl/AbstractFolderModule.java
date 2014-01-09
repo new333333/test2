@@ -1075,17 +1075,30 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
     //no transaction        
     @Override
 	public void deleteEntry(Long parentFolderId, Long entryId) {
-    	deleteEntry(parentFolderId, entryId, true, null);
+    	try {
+    		deleteEntry(parentFolderId, entryId, true, null);
+    	} catch(WriteFilesException e) {
+    		//Failure to delete the files attached to this entry are ignored for this type of call
+    	}
     }
     //no transaction    
     @Override
-	public void deleteEntry(Long folderId, Long entryId, boolean deleteMirroredSource, Map options) {
+	public void deleteEntry(Long folderId, Long entryId, boolean deleteMirroredSource, Map options) 
+			throws WriteFilesException {
     	deCount.incrementAndGet();
         FolderEntry entry = loadEntry(folderId, entryId);   	
         checkAccess(entry, FolderOperation.deleteEntry);
         Folder folder = entry.getParentFolder();
         FolderCoreProcessor processor=loadProcessor(folder);
-        processor.deleteEntry(folder, entry, deleteMirroredSource, options);
+        try {
+        	processor.deleteEntry(folder, entry, deleteMirroredSource, options);
+		} catch(WriteFilesException e) {
+			//The files attached to this entry could not be deleted
+			if (options.containsKey(ObjectKeys.INPUT_OPTION_PROPAGATE_ERRORS) && 
+					(boolean)options.get(ObjectKeys.INPUT_OPTION_PROPAGATE_ERRORS)) {
+				throw e;
+			}
+		}
     }
     //inside write transaction    
     @Override
@@ -1117,7 +1130,11 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
         if ((folder.isMirrored() || destination.isMirrored())) {
 			//To move to and from mirrored folders, copy the entry to the destination folder then delete the original entry
 			newEntry = (FolderEntry) processor.copyEntry(folder, entry, destination, toFileNames, options);
-			processor.deleteEntry(folder, entry, true, options);
+			try {
+				processor.deleteEntry(folder, entry, true, options);
+			} catch(WriteFilesException e) {
+				//The files attached to this entry could not be deleted
+			}
 		} else {
 			processor.moveEntry(folder, entry, destination, toFileNames, options);
             newEntry = entry;

@@ -1334,6 +1334,9 @@ public void modifyEntry(Long entryId, InputDataAccessor inputData,
         		   } catch  (AccessControlException ac) {
         			   //can't do one, can't do any
         			   logger.error(ac.getLocalizedMessage());
+        		   } catch  (WriteFilesException ac) {
+        			   //can't do one, can't do any
+        			   logger.error(ac.getLocalizedMessage());
         		   }
 			return null;
 	     }});
@@ -1597,12 +1600,12 @@ public void disableEntry(Long principalId, boolean disabled) {
    }
    //RW transaction
    @Override
-public void deleteEntry(Long principalId, Map options) {
+public void deleteEntry(Long principalId, Map options) throws WriteFilesException {
 	   deleteEntry(principalId, options, false);
    }
    //RW transaction
    @Override
-public void deleteEntry(Long principalId, Map options, boolean phase1Only) {
+public void deleteEntry(Long principalId, Map options, boolean phase1Only) throws WriteFilesException {
 	   boolean delMirroredFolderSource = (!(Utils.checkIfFilr()));	// Only delete mirrored source by default if not Filr.
 	   
         Principal entry = getProfileDao().loadPrincipal(principalId, RequestContextHolder.getRequestContext().getZoneId(), false);
@@ -1611,7 +1614,7 @@ public void deleteEntry(Long principalId, Map options, boolean phase1Only) {
     		throw new NotSupportedException("errorcode.principal.reserved", new Object[]{entry.getName()});       	
         Binder binder = entry.getParentBinder();
         ProfileCoreProcessor processor=loadProcessor(binder);
-       	processor.deleteEntry(binder, entry, true, options); 
+        processor.deleteEntry(binder, entry, true, options); 
        	boolean delWs = Boolean.FALSE;
        	if (options != null )
        	{
@@ -1986,7 +1989,11 @@ public Map getUsers() {
 		try {
 			User user = getProfileDao().findUserByName(userName, 
 					RequestContextHolder.getRequestContext().getZoneName());
-			deleteEntry(user.getId(),options);
+			try {
+				deleteEntry(user.getId(),options);
+			} catch(WriteFilesException e) {
+				//Ignore if there was a problem deleting attached files (which shouldn't happen)
+			}
 		}
 		catch(NoUserByTheNameException thisIsOk) {}
 	}
