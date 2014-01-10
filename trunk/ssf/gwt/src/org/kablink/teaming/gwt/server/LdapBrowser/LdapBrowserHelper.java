@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -35,8 +35,10 @@ package org.kablink.teaming.gwt.server.LdapBrowser;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.ConnectException;
 import java.net.MalformedURLException;
 import java.net.NoRouteToHostException;
+import java.net.UnknownHostException;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
@@ -47,6 +49,7 @@ import java.util.Hashtable;
 import java.util.List;
 
 import javax.naming.Context;
+import javax.naming.CommunicationException;
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
 import javax.naming.directory.Attribute;
@@ -60,7 +63,6 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.CoreDao;
 import org.kablink.teaming.domain.Workspace;
@@ -75,10 +77,10 @@ import org.kablink.teaming.gwt.server.util.GwtLogHelper;
 import org.kablink.teaming.gwt.server.util.GwtServerProfiler;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.NLT;
+import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SZoneConfig;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.web.util.MiscUtil;
-
 import org.springframework.ldap.AuthenticationException;
 import org.springframework.ldap.OperationNotSupportedException;
 import org.springframework.ldap.control.PagedResultsCookie;
@@ -275,8 +277,12 @@ public final class LdapBrowserHelper {
 					else msgKey = "ldapBrowserError.anonymousNotSupported";
 					msgPatches  = new String[]{ds.getAddress()};
 				}
-				else if (rootCause instanceof NoRouteToHostException) {
+				else if ((rootCause instanceof NoRouteToHostException) || (rootCause instanceof UnknownHostException)) {
 					msgKey     = "ldapBrowserError.noRouteToHost";
+					msgPatches = new String[]{ds.getAddress()};
+				}
+				else if (isRootCauseConnectionTimeoutException(rootCause)) {
+					msgKey     = "ldapBrowserError.connectionTimeout";
 					msgPatches = new String[]{ds.getAddress()};
 				}
 				else {
@@ -309,7 +315,10 @@ public final class LdapBrowserHelper {
 			env.put(Context.SECURITY_PRINCIPAL,      userDn                                                    );
 			env.put(Context.SECURITY_CREDENTIALS,    password                                                  );		
 			env.put(Context.SECURITY_AUTHENTICATION, getLdapProperty(zoneName, Context.SECURITY_AUTHENTICATION));
-		} 
+		}
+
+		// Set any timeouts required for the connection.
+		setLdapTimeouts(env);
 
 		// Specify the attributes we'll want returned as binary data.
 		String guid = ds.getGuidAttribute();
@@ -376,7 +385,6 @@ public final class LdapBrowserHelper {
 				ldapContextSource.setUserDn(userDn);
 				ldapContextSource.setPassword(password);
 			}
-	
 			ldapContextSource.afterPropertiesSet();
 	
 			QueryOutput<LdapObject> returnObj = new QueryOutput<LdapObject>();
@@ -620,6 +628,26 @@ public final class LdapBrowserHelper {
 	}
 	
 	/*
+	 * Returns true if a root cause exception indicates that the LDAP
+	 * connection to the LDAP server timed out, for whatever reason.
+	 */
+	private static boolean isRootCauseConnectionTimeoutException(Throwable rootCause) {
+		boolean reply = (
+			(null != rootCause) &&
+				((rootCause instanceof CommunicationException) ||
+				 (rootCause instanceof ConnectException)));
+		if (reply) {
+			String details = rootCause.getMessage();
+			reply = MiscUtil.hasString(details);
+			if (reply) {
+				details = details.toLowerCase();
+				reply   = details.contains("connection timed out");
+			}
+		}
+		return reply;
+	}
+	
+	/*
 	 * Return true if a NamingEnumeration has a value available and
 	 * false otherwise.
 	 */
@@ -642,6 +670,25 @@ public final class LdapBrowserHelper {
 		}
 	
 		return hasMore;
+	}
+	
+	/**
+	 * Based on the ssf*.properties settings, sets timeout values in
+	 * the environment Hashtable used for LDAP connections.
+	 * 
+	 * @param env
+	 */
+	@SuppressWarnings("unchecked")
+	public static void setLdapTimeouts(Hashtable env) {
+		// Set any timeouts required for the connection.
+		int to = SPropsUtil.getInt("ldap.browser.connection.timeout", 5000);
+		if (0 < to) {
+			env.put("com.sun.jndi.ldap.connect.timeout", String.valueOf(to));
+		}
+		to = SPropsUtil.getInt("ldap.browser.read.timeout", 5000);
+		if (0 < to) {
+			env.put("com.sun.jndi.ldap.read.timeout", String.valueOf(to));
+		}
 	}
 	
 	/*
