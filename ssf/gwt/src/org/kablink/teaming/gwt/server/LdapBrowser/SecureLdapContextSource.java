@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -77,23 +77,25 @@ public class SecureLdapContextSource extends LdapContextSource {
 	public void afterPropertiesSet() throws Exception {
 		super.afterPropertiesSet(); // To change body of overridden methods use File | Settings | File Templates.
 		boolean anonymous = ((!(MiscUtil.hasString(m_userName))) && (!(MiscUtil.hasString(m_password))));
+		Hashtable env;
 		if ((null != m_useSSL) && m_useSSL) {
-			Hashtable env;
 			if (anonymous)
 			     env = super.getAnonymousEnv();
 			else env = super.getAuthenticatedEnv(m_userName, m_password);
 
+			// Set the LDAP connection timeout values, if any.
+			LdapBrowserHelper.setLdapTimeouts(env);
+			
 			// Simple authentication needs username and m_password,
 			// external needs a keystore.
 			env.put(Context.SECURITY_AUTHENTICATION, "External");
 
-			// Specify use of ssl.
+			// Specify use of SSL.
 			env.put(Context.SECURITY_PROTOCOL, "ssl");
-
 			env.put("java.naming.ldap.factory.socket", "org.kablink.teaming.gwt.server.LdapBrowser.LdapSslSocketFactory");
 
-			// This next two lines causes the LdapSslFactory and the
-			// trust manager to be initialized.
+			// This next lines causes the LdapSslFactory and the trust
+			// manager to be initialized.
 			super.setBaseEnvironmentProperties(env);
 			if (anonymous)
 			     super.setAnonymousReadOnly(true);
@@ -102,8 +104,17 @@ public class SecureLdapContextSource extends LdapContextSource {
 		}
 		
 		else if (anonymous) {
-			super.setBaseEnvironmentProperties(super.getAnonymousEnv());
+			env = super.getAnonymousEnv();
+			LdapBrowserHelper.setLdapTimeouts(env);
+			super.setBaseEnvironmentProperties(env);
 			super.setAnonymousReadOnly(true);
+			super.afterPropertiesSet();
+		}
+		
+		else {
+			env = super.getAuthenticatedEnv(m_userName, m_password);
+			LdapBrowserHelper.setLdapTimeouts(env);
+			super.setupAuthenticatedEnvironment(env, m_userName, m_password);
 			super.afterPropertiesSet();
 		}
 	}
