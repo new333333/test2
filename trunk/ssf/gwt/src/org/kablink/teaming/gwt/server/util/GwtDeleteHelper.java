@@ -36,6 +36,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -462,36 +463,128 @@ public class GwtDeleteHelper {
 	private static void doPurgeSelections(AllModulesInjected bs, HttpServletRequest request, List<EntityId> entityIds, boolean deleteMirroredSource, ErrorListRpcResponseData reply) throws GwtTeamingException {
 		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtDeleteHelper.doPurgeSelections()");
 		try {
-			// Scan the entry IDs...
-			BinderModule bm         = bs.getBinderModule();
-			FolderModule fm         = bs.getFolderModule();
+			// Access the modules we need to purge things.
+			BinderModule bm = bs.getBinderModule();
+			FolderModule fm = bs.getFolderModule();
+			
+			// Scan the entities...
+			List<Long> entryIds  = new ArrayList<Long>();
+			List<Long> binderIds = new ArrayList<Long>();
 			for (EntityId entityId:  entityIds) {
+				// ...collecting the binder and entry IDs separately.
+				Long eId = entityId.getEntityId();
+				if (entityId.isEntry())
+				     entryIds.add( eId);
+				else binderIds.add(eId);
+			}
+			
+			// Do we have any entry IDs?
+			Map<Long, FolderEntry> entryMap = new HashMap<Long, FolderEntry>();
+			boolean hasEntries = (!(entryIds.isEmpty())); 
+			if (hasEntries) {
+				// Yes!  Access and scan the entries...
+				Set<FolderEntry> entrySet = fm.getEntries(entryIds);
+				for (FolderEntry fe:  entrySet) {
+					// ...mapping the ID to the FolderEntry for future
+					// ...easy access. 
+					entryMap.put(fe.getId(), fe);
+				}
+			}
+			
+			// Do we have any binder IDs?
+			Map<Long, Binder> binderMap = new HashMap<Long, Binder>();
+			boolean hasBinders = (!(binderIds.isEmpty())); 
+			if (hasBinders) {
+				// Yes!  Access and scan the binders...
+				Set<Binder> binderSet = bm.getBinders(binderIds);
+				for (Binder binder:  binderSet) {
+					// ...mapping the ID to the Binder for future
+					// ...easy access. 
+					binderMap.put(binder.getId(), binder);
+				}
+			}
+
+			// Allocate the option maps we need if we're purging any
+			// entries.
+            Map<String, Boolean> adHocOptions;
+            Map<String, Boolean> mfOptions;
+            if (hasEntries) {
+	            adHocOptions = new HashMap<String, Boolean>();
+	            mfOptions    = new HashMap<String, Boolean>();
+	            mfOptions.put(ObjectKeys.INPUT_OPTION_PROPAGATE_ERRORS, Boolean.TRUE);
+            }
+            else {
+	            adHocOptions =
+	            mfOptions    = null;
+            }
+
+            // Scan the entities...
+			for (EntityId entityId:  entityIds) {
+				// ...extracting the containing binder and entity ID.
+				Long bId = entityId.getBinderId();
+				Long eId = entityId.getEntityId();
+				
 				try {
-					// ...purging each entity...
+					// Is this entity a binder?
 					if (entityId.isBinder()) {
-						Long   binderId = entityId.getEntityId();
-						Binder binder   = bm.getBinder(binderId);
+						// Yes!  Can we find the binder to purge?
+						Binder binder = binderMap.get(eId);
+						if (null == binder) {
+							// No!  Tell the user about the problem.
+							String entryTitle = GwtServerHelper.getEntityTitle(bs, entityId);
+							reply.addError(NLT.get("purgeEntryError.CantFindEntity", new String[]{entryTitle}));
+							continue;
+						}
+						
+						// What type of binder is it?
 						if (BinderHelper.isBinderHomeFolder(binder)) {
-							// ...except Home folders which cannot...
-							// ...be purged...
+							// A Home folder!  We don't allow them to
+							// be purged.  Tell the user about the problem.
 							String entryTitle = GwtServerHelper.getEntityTitle(bs, entityId);
 							reply.addError(NLT.get("purgeEntryError.AccssControlException", new String[]{entryTitle}));
 						}
 						else if (CloudFolderHelper.isCloudFolder(binder)) {
-							CloudFolderHelper.deleteCloudFolder(bs, ((Folder) binder), deleteMirroredSource);
+							// A Cloud folder!  Purge it.
+							CloudFolderHelper.deleteCloudFolder(
+								bs,
+								((Folder) binder),
+								deleteMirroredSource);
 						}
 						else {
-							bm.deleteBinder(binderId, deleteMirroredSource, null);
+							// Some other binder type!  Purge it.
+							bm.deleteBinder(
+								eId,
+								deleteMirroredSource,
+								null);
 						}
 					}
 					
 					else {
-						fm.deleteEntry(entityId.getBinderId(), entityId.getEntityId());
+						// No, the entity isn't a binder!  It must be
+						// and entry.  Can we find it?
+						FolderEntry fe = entryMap.get(eId);
+						if (null == fe) {
+							// No!  Tell the user about the problem.
+							String entryTitle = GwtServerHelper.getEntityTitle(bs, entityId);
+							reply.addError(NLT.get("purgeEntryError.CantFindEntity", new String[]{entryTitle}));
+							continue;
+						}
+						
+						// Purge the entry using the appropriate option
+						// map.
+						fm.deleteEntry(
+							bId,
+							eId,
+							deleteMirroredSource,
+							(fe.getParentBinder().isMirrored() ?
+								mfOptions                      :
+								adHocOptions));
 					}
 				}
 				
 				catch (Exception e) {
-					// ...tracking any that we couldn't purge.
+					// Tracking the errors for things we couldn't
+					// purge.
 					String entryTitle = GwtServerHelper.getEntityTitle(bs, entityId);
 					String msgKey;
 					if (e instanceof AccessControlException) msgKey = "purgeEntryError.AccssControlException";
