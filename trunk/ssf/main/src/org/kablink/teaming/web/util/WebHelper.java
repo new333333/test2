@@ -54,6 +54,7 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.UncheckedIOException;
 import org.kablink.teaming.context.request.HttpSessionContext;
 import org.kablink.teaming.context.request.RequestContext;
@@ -283,7 +284,7 @@ public class WebHelper {
 		final HttpSession ses = request.getSession();
 		final String infoId = (String) ses.getAttribute(WebKeys.TOKEN_INFO_ID);
 		if(infoId == null) { 
-			String ldapGuid;
+			String ldapGuid = null;
 			LdapModule ldapModule;
 			final User user;
 			User tmpUser = null;
@@ -296,9 +297,13 @@ public class WebHelper {
 				username = SZoneConfig.getGuestUserName(getZoneNameByVirtualHost(request));
 			}
 			
-			// Read this user's ldap guid from the ldap directory.
-			ldapModule = getLdapModule();
-			ldapGuid = ldapModule.readLdapGuidFromDirectory( username, getZoneIdByVirtualHost( request ) );
+			// Are we dealing with the guest user?
+			if ( username != null && username.equalsIgnoreCase( ObjectKeys.GUEST ) == false )
+			{
+				// Read this user's ldap guid from the ldap directory.
+				ldapModule = getLdapModule();
+				ldapGuid = ldapModule.readLdapGuidFromDirectory( username, getZoneIdByVirtualHost( request ) );
+			}
 			
 			// Did we find an ldap guid for this user?
 			if ( ldapGuid != null && ldapGuid.length() > 0 )
