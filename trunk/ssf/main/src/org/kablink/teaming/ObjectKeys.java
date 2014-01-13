@@ -843,6 +843,7 @@ public interface ObjectKeys {
     public static final String XTAG_ENTITY_SHARE_SHARER_ID="sharerId";
     public static final String XTAG_ENTITY_SHARE_RECIPIENT_TYPE="recipientType";
     public static final String XTAG_ENTITY_SHARE_RECIPIENT_ID="recipientId";
+    public static final String XTAG_ENTITY_SHARE_START_DATE="startDate";
     public static final String XTAG_ENTITY_SHARE_EXPIRATION="expiration";
     public static final String XTAG_ENTITY_SHARE_ROLE="role";
     //values of name= attributes on XTAG_ELEMENT_TYPE_ATTRIBUTE for principals
