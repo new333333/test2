@@ -311,6 +311,14 @@ public abstract class AbstractAuthenticationProviderModule extends BaseAuthentic
 		if(!us.getFilter().equals("")) {
 			filter = "(&" + search + us.getFilter() + ")";
 		}
+		
+		if ( filter != null && filter.length() > 0 )
+		{
+			// Carriage returns and line feeds in the filter cause authentication to fail.
+			filter = filter.replaceAll( "\r", "" );
+			filter = filter.replaceAll( "\n", "" );
+		}
+		
 		FilterBasedLdapUserSearch userSearch = new FilterBasedLdapUserSearch(
 				us.getBaseDn(), filter, contextSource);
 		if (!us.isSearchSubtree()) {
