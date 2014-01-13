@@ -88,13 +88,13 @@ import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.document.DateTools;
-
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.Node;
 import org.dom4j.io.OutputFormat;
-
+import org.kablink.teaming.GroupExistsException;
+import org.kablink.teaming.IllegalCharacterInNameException;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.PasswordMismatchException;
 import org.kablink.teaming.calendar.TimeZoneHelper;
@@ -121,6 +121,7 @@ import org.kablink.teaming.domain.GroupPrincipal;
 import org.kablink.teaming.domain.HistoryStamp;
 import org.kablink.teaming.domain.IdentityInfo;
 import org.kablink.teaming.domain.MobileAppsConfig;
+import org.kablink.teaming.domain.TitleException;
 import org.kablink.teaming.domain.MobileAppsConfig.MobileOpenInSetting;
 import org.kablink.teaming.domain.MobileOpenInWhiteLists;
 import org.kablink.teaming.domain.NameCompletionSettings;
@@ -1964,7 +1965,32 @@ public class GwtServerHelper {
 		}
 		catch( Exception ex)
 		{
-			throw GwtLogHelper.getGwtClientException(m_logger, ex );
+			GwtTeamingException gtEx;
+			
+			gtEx = GwtLogHelper.getGwtClientException();
+			
+			if ( ex instanceof GroupExistsException )
+			{
+				String[] args;
+				
+				args = new String[] { name };
+				gtEx.setAdditionalDetails( NLT.get( "group.duplicate.name", args ) );
+			}
+			else if ( ex instanceof IllegalCharacterInNameException )
+			{
+				gtEx.setAdditionalDetails( NLT.get( "group.name.illegal.characters" ) );
+			}
+			else
+			{
+				String[] args;
+				
+				args = new String[] { ex.toString() };
+				gtEx.setAdditionalDetails( NLT.get( "group.create.unknown.error", args ) );
+			}
+			
+			GwtLogHelper.error( m_logger, "Error creating group: " + name, ex );
+			
+			throw gtEx;				
 		}
 		
 		return newGroup;
