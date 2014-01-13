@@ -40,11 +40,11 @@ import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GroupMembershipInfo;
 import org.kablink.teaming.gwt.client.GwtDynamicGroupMembershipCriteria;
 import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.GwtTeamingException;
 import org.kablink.teaming.gwt.client.GwtTeamingItem;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
+import org.kablink.teaming.gwt.client.GwtTeamingException.ExceptionType;
 import org.kablink.teaming.gwt.client.event.GroupCreatedEvent;
-import org.kablink.teaming.gwt.client.event.GroupCreationFailedEvent;
-import org.kablink.teaming.gwt.client.event.GroupCreationStartedEvent;
 import org.kablink.teaming.gwt.client.event.GroupModificationFailedEvent;
 import org.kablink.teaming.gwt.client.event.GroupModificationStartedEvent;
 import org.kablink.teaming.gwt.client.event.GroupModifiedEvent;
@@ -79,6 +79,7 @@ import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.InlineLabel;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.TextArea;
@@ -314,19 +315,44 @@ public class ModifyGroupDlg extends DlgBox
 			@Override
 			public void onFailure( Throwable caught )
 			{
-				GroupCreationFailedEvent event;
-				GroupInfo newGroupInfo;
+				FlowPanel errorPanel;
+				Label label;
+				String errMsg;
 				
-				// Create a GroupInfo object that will represent the group we are going to create.
-				newGroupInfo = new GroupInfo();
-				newGroupInfo.setId( Long.valueOf( -1 ) );
-				newGroupInfo.setName( getGroupName() );
-				newGroupInfo.setTitle( getGroupTitle() );
-				newGroupInfo.setDesc( getGroupDesc() );
+				hideStatusMsg();
+				setOkEnabled( true );
+
+				// Get the panel that holds the errors.
+				errorPanel = getErrorPanel();
+				errorPanel.clear();
 				
-				// Fire an event that lets everyone know the group creation failed.
-				event = new GroupCreationFailedEvent( newGroupInfo, caught );
-				GwtTeaming.fireEvent( event );
+				if ( caught instanceof GwtTeamingException )
+				{
+					GwtTeamingException ex;
+					
+					ex = (GwtTeamingException) caught;
+					if ( ex.getExceptionType() == ExceptionType.GROUP_ALREADY_EXISTS )
+					{
+						String desc;
+						
+						desc = GwtTeaming.getMessages().modifyGroupDlgGroupAlreadyExists();
+						errMsg = GwtTeaming.getMessages().modifyGroupDlgErrorCreatingGroup( desc );
+					}
+					else
+					{
+						errMsg = GwtTeaming.getMessages().modifyGroupDlgErrorCreatingGroup( ex.getAdditionalDetails() );
+					}
+				}
+				else
+				{
+					errMsg = GwtTeaming.getMessages().modifyGroupDlgErrorCreatingGroup( caught.toString() );
+				}
+				
+				label = new Label( errMsg );
+				label.addStyleName( "dlgErrorLabel" );
+				errorPanel.add( label );
+				
+				showErrorPanel();
 			}
 
 			@Override
@@ -335,32 +361,23 @@ public class ModifyGroupDlg extends DlgBox
 				GroupCreatedEvent event;
 				GroupInfo groupInfo;
 				
+				hideStatusMsg();
+				setOkEnabled( true );
+
 				groupInfo = (GroupInfo) result.getResponseData();
 				
 				// Fire an event that lets everyone know a group was created.
 				event = new GroupCreatedEvent( groupInfo );
 				GwtTeaming.fireEvent( event );
+
+				// Close this dialog.
+				hide();
 			}						
 		};
 		
-		// Close this dialog.
-		hide();
-
-		// Fire an event that indicates we have started the process of creating a group
-		{
-			GroupCreationStartedEvent event;
-			GroupInfo newGroupInfo;
-			
-			// Create a GroupInfo object that will represent the group we are going to create.
-			newGroupInfo = new GroupInfo();
-			newGroupInfo.setId( Long.valueOf( -1 ) );
-			newGroupInfo.setName( getGroupName() );
-			newGroupInfo.setTitle( getGroupTitle() );
-			newGroupInfo.setDesc( getGroupDesc() );
-			
-			event = new GroupCreationStartedEvent( newGroupInfo );
-			GwtTeaming.fireEvent( event );
-		}
+		// Change the status message to "Creating group..."
+		setOkEnabled( false );
+		showStatusMsg( GwtTeaming.getMessages().modifyGroupDlgCreatingGroup() );
 		
 		// Issue an rpc request to create the group.
 		cmd = new CreateGroupCmd(

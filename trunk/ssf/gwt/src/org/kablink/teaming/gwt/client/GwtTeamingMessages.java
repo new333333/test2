@@ -2198,10 +2198,13 @@ public interface GwtTeamingMessages extends Messages
 	
 	// Strings used in the Modify Group dialog
 	String addGroupDlgHeader();
+	String modifyGroupDlgCreatingGroup();
 	String modifyGroupDlgEditGroupMembershipLabel();
+	String modifyGroupDlgErrorCreatingGroup( String desc );
 	String modifyGroupDlgDescriptionLabel();
 	String modifyGroupDlgDynamicLabel();
 	String modifyGroupDlgDynamicGroupMembershipNotAllowed();
+	String modifyGroupDlgGroupAlreadyExists();
 	String modifyGroupDlgHeader( String groupTitle );
 	String modifyGroupDlgNameLabel();
 	String modifyGroupDlgNameRequired();
