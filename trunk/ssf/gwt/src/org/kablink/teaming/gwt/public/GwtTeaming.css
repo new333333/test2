@@ -665,7 +665,7 @@
 .shareThisDlg_HeaderNamePanel
 {
 	margin-left: 55px;
-	width: 550px;
+	width: 610px;
 }
 
 .shareThisDlg_HeaderNameLabel
@@ -673,6 +673,7 @@
 	font-size: 1.2em;
 	line-height: 1.4em;
 	color: #1f1f1f;
+	overflow: hidden;
 }
 
 .shareThisDlg_HeaderPathLabel
