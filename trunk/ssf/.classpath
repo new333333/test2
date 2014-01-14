@@ -133,6 +133,7 @@
 	<classpathentry kind="lib" path="lib/gwt-crypto.jar"/>
 	<classpathentry kind="lib" path="tools/gwt/gwt-dnd.jar"/>
 	<classpathentry kind="lib" path="tools/gwt/gwt-log.jar"/>
+	<classpathentry kind="lib" path="lib/gwtquery.jar"/>
 	<classpathentry kind="lib" path="lib/lib-gwt-file.jar"/>
 	<classpathentry kind="lib" path="lib/tomcat-dbcp.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/javaxt-core.jar" sourcepath="/usr/local/javaxt-core/src"/>
