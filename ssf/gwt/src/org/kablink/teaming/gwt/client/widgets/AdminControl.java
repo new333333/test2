@@ -91,8 +91,6 @@ import org.kablink.teaming.gwt.client.util.HistoryHelper;
 import org.kablink.teaming.gwt.client.util.MobileDevicesInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 import org.kablink.teaming.gwt.client.util.runasync.ConfigureFileSyncAppDlgInitAndShowParams;
-import org.kablink.teaming.gwt.client.util.runasync.EditBrandingDlgInitAndShowParams;
-import org.kablink.teaming.gwt.client.util.runasync.ModifyNetFolderDlgInitAndShowParams;
 import org.kablink.teaming.gwt.client.util.runasync.RunAsyncCmd;
 import org.kablink.teaming.gwt.client.util.runasync.RunAsyncCreateDlgParams;
 import org.kablink.teaming.gwt.client.util.runasync.RunAsyncInitAndShowParams;
@@ -1097,20 +1095,6 @@ public class AdminControl extends TeamingPopupPanel
 		// Have we created the dialog yet?
 		if ( m_editLdapConfigDlg == null )
 		{
-			RunAsyncCmd createCmd;
-			RunAsyncCreateDlgParams params;
-			
-			// No, create it.
-			params = new RunAsyncCreateDlgParams();
-			params.setAutoHide( new Boolean( true ) );
-			params.setModal( new Boolean( false ) );
-			params.setLeft( new Integer( m_contentControlX ) );
-			params.setTop( new Integer( m_contentControlY ) );
-			params.setHeight( new Integer( m_dlgHeight ) );
-			params.setWidth( new Integer( m_dlgWidth ) );
-
-			createCmd = new RunAsyncCmd( RunAsyncCmdType.CREATE, params );
-			
 			// Create the dialog.
 			EditLdapConfigDlg.createDlg(
 									true,
@@ -1221,20 +1205,12 @@ public class AdminControl extends TeamingPopupPanel
 		
 		if ( m_modifyNetFolderDlg == null )
 		{
-			RunAsyncCmd createCmd;
-			RunAsyncCreateDlgParams params;
-			
 			// No, create it.
-			params = new RunAsyncCreateDlgParams();
-			params.setAutoHide( new Boolean( true ) );
-			params.setModal( new Boolean( false ) );
-			params.setLeft( new Integer( x ) );
-			params.setTop( new Integer( y ) );
-
-			createCmd = new RunAsyncCmd( RunAsyncCmdType.CREATE, params );
-			
-			ModifyNetFolderDlg.runAsyncCmd(
-										createCmd,
+			ModifyNetFolderDlg.createDlg(
+										true,
+										false,
+										x,
+										y,
 										new ModifyNetFolderDlgClient()
 			{			
 				@Override
@@ -1261,18 +1237,13 @@ public class AdminControl extends TeamingPopupPanel
 		}
 		else
 		{
-			RunAsyncCmd initAndShowCmd;
-			ModifyNetFolderDlgInitAndShowParams params;
-		
-			params = new ModifyNetFolderDlgInitAndShowParams();
-			params.setUIObj( m_modifyNetFolderDlg );
-			params.setLeft( new Integer( m_contentControlX ) );
-			params.setTop( new Integer( m_contentControlY ) );
-			params.setShowRelativeTo( showRelativeTo );
-			params.setNetFolder( netFolder );
-		
-			initAndShowCmd = new RunAsyncCmd( RunAsyncCmdType.INIT_AND_SHOW, params );
-			ModifyNetFolderDlg.runAsyncCmd( initAndShowCmd, null );
+			ModifyNetFolderDlg.initAndShow(
+										m_modifyNetFolderDlg,
+										m_contentControlX,
+										m_contentControlY,
+										showRelativeTo,
+										netFolder,
+										null );
 		}
 	}
 
@@ -1365,22 +1336,17 @@ public class AdminControl extends TeamingPopupPanel
 		// Have we already created an "Edit branding" dialog?
 		if ( m_editSiteBrandingDlg == null )
 		{
-			RunAsyncCmd createCmd;
-			RunAsyncCreateDlgParams params;
-			
 			// No, create it.
-			params = new RunAsyncCreateDlgParams();
-			params.setEditSuccessfulHandler( m_editBrandingSuccessHandler );
-			params.setAutoHide( new Boolean( false ) );
-			params.setModal( new Boolean( true ) );
-			params.setLeft( new Integer( x ) );
-			params.setTop( new Integer( y ) );
-			params.setHeight( new Integer( m_dlgHeight ) );
-			params.setWidth( new Integer( m_dlgWidth ) );
-
-			createCmd = new RunAsyncCmd( RunAsyncCmdType.CREATE, params );
-
-			EditBrandingDlg.runAsyncCmd( createCmd, new EditBrandingDlgClient()
+			EditBrandingDlg.createDlg(
+									false,
+									true,
+									x,
+									y,
+									m_dlgWidth,
+									m_dlgHeight,
+									m_editBrandingSuccessHandler,
+									null,
+									new EditBrandingDlgClient()
 			{				
 				@Override
 				public void onUnavailable()
@@ -1416,21 +1382,15 @@ public class AdminControl extends TeamingPopupPanel
 	 */
 	private void invokeEditSiteBrandingDlgImpl( GwtBrandingData brandingData, int x, int y )
 	{
-		RunAsyncCmd initAndShowCmd;
-		EditBrandingDlgInitAndShowParams params;
-	
-		params = new EditBrandingDlgInitAndShowParams();
-		params.setUIObj( m_editSiteBrandingDlg );
-		params.setBrandingData( brandingData );
-		params.setWidth( new Integer( m_dlgWidth ) );
-		params.setHeight( new Integer( m_dlgHeight ) );
-		params.setLeft( new Integer( m_contentControlX ) );
-		params.setTop( new Integer( m_contentControlY ) );
-	
-		initAndShowCmd = new RunAsyncCmd( RunAsyncCmdType.INIT_AND_SHOW, params );
-
 		// Run an async cmd to show the dialog.
-		EditBrandingDlg.runAsyncCmd( initAndShowCmd, null );
+		EditBrandingDlg.initAndShow(
+								m_editSiteBrandingDlg,
+								brandingData,
+								new Integer( m_contentControlX ),
+								new Integer( m_contentControlY ),
+								new Integer( m_dlgWidth ),
+								new Integer( m_dlgHeight ),
+								null );
 	}
 
 	/**

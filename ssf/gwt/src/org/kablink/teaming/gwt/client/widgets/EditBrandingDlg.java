@@ -47,9 +47,6 @@ import org.kablink.teaming.gwt.client.rpc.shared.GetFileAttachmentsRpcResponseDa
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HelpData;
-import org.kablink.teaming.gwt.client.util.runasync.EditBrandingDlgInitAndShowParams;
-import org.kablink.teaming.gwt.client.util.runasync.RunAsyncCmd;
-import org.kablink.teaming.gwt.client.util.runasync.RunAsyncCreateDlgParams;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import org.kablink.teaming.gwt.client.widgets.TinyMCEDlg.TinyMCEDlgClient;
 
@@ -62,8 +59,6 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.dom.client.KeyUpHandler;
-import com.google.gwt.event.dom.client.MouseOutHandler;
-import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Anchor;
@@ -1564,7 +1559,16 @@ public class EditBrandingDlg extends DlgBox
 	 * Executes code through the GWT.runAsync() method to ensure that all of the
 	 * executing code is in this split point.
 	 */
-	public static void runAsyncCmd( final RunAsyncCmd cmd, final EditBrandingDlgClient ebDlgClient )
+	public static void createDlg(
+		final boolean autoHide,
+		final boolean modal,
+		final int left,
+		final int top,
+		final Integer width,
+		final Integer height,
+		final EditSuccessfulHandler editSuccessfulHandler,
+		final EditCanceledHandler editCanceledHandler,
+		final EditBrandingDlgClient ebDlgClient )
 	{
 		GWT.runAsync( EditBrandingDlg.class, new RunAsyncCallback()
 		{
@@ -1578,54 +1582,58 @@ public class EditBrandingDlg extends DlgBox
 			@Override
 			public void onSuccess()
 			{
-				switch ( cmd.getCmdType() )
-				{
-				case CREATE:
-				{
-					EditBrandingDlg ebDlg;
-					RunAsyncCreateDlgParams params;
-					
-					params = (RunAsyncCreateDlgParams) cmd.getParams();
-					ebDlg = new EditBrandingDlg(
-												params.getEditSuccessfulHandler(),
-												params.getEditCanceledHandler(),
-												params.getAutoHide(),
-												params.getModal(),
-												params.getLeft(),
-												params.getTop(),
-												params.getWidth(),
-												params.getHeight() );
-					
-					if ( ebDlgClient != null )
-						ebDlgClient.onSuccess( ebDlg );
-					
-					break;
-				}
-					
-				case INIT_AND_SHOW:
-				{
-					EditBrandingDlgInitAndShowParams params;
-					EditBrandingDlg dlg;
-					
-					params = (EditBrandingDlgInitAndShowParams)cmd.getParams();
-					dlg = params.getUIObj();
+				EditBrandingDlg ebDlg;
+				
+				ebDlg = new EditBrandingDlg(
+											editSuccessfulHandler,
+											editCanceledHandler,
+											autoHide,
+											modal,
+											left,
+											top,
+											width,
+											height );
+				
+				if ( ebDlgClient != null )
+					ebDlgClient.onSuccess( ebDlg );
+			}
+		} );
+	}
 
-					if ( params.getWidth() != null && params.getHeight() != null )
-						dlg.setPixelSize( params.getWidth(), params.getHeight());
-					
-					dlg.init( params.getBrandingData() );
-					
-					if ( params.getLeft() != null && params.getTop() != null )
-						dlg.setPopupPosition( params.getLeft(), params.getTop() );
-					
-					dlg.show();
-					break;
-				}
-					
-				case UNKNOWN:
-				default:
-					break;
-				}
+	/**
+	 * Executes code through the GWT.runAsync() method to ensure that all of the
+	 * executing code is in this split point.
+	 */
+	public static void initAndShow(
+		final EditBrandingDlg dlg,
+		final GwtBrandingData brandingData,
+		final Integer left,
+		final Integer top,
+		final Integer width,
+		final Integer height,
+		final EditBrandingDlgClient ebDlgClient )
+	{
+		GWT.runAsync( EditBrandingDlg.class, new RunAsyncCallback()
+		{
+			@Override
+			public void onFailure( Throwable reason )
+			{
+				Window.alert( GwtTeaming.getMessages().codeSplitFailure_EditBrandingDlg() );
+				ebDlgClient.onUnavailable();
+			}
+
+			@Override
+			public void onSuccess()
+			{
+				if ( width != null && height != null )
+					dlg.setPixelSize( width, height );
+				
+				dlg.init( brandingData );
+				
+				if ( left != null && top != null )
+					dlg.setPopupPosition( left, top );
+				
+				dlg.show();
 			}
 		} );
 	}
