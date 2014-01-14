@@ -95,8 +95,6 @@ public enum TeamingEvents implements IsSerializable {
 	GOTO_URL,										// Changes the content to the given url.
 
 	GROUP_CREATED,									// Notification that a group was created.
-	GROUP_CREATION_FAILED,							// Notification that a group creation failed.
-	GROUP_CREATION_STARTED,							// Notification that the process of creating a group has started.
 	GROUP_MODIFICATION_FAILED,						// Notification that the process of modifying a group has failed.
 	GROUP_MODIFICATION_STARTED,						// Notification that the process of modifying a group has started.
 	GROUP_MODIFIED,									// Notification that a group was modified.

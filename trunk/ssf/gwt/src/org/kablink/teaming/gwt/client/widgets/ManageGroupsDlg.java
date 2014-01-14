@@ -48,8 +48,6 @@ import org.kablink.teaming.gwt.client.datatable.VibeCellTable;
 import org.kablink.teaming.gwt.client.datatable.VibeDataTableConstants;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.GroupCreatedEvent;
-import org.kablink.teaming.gwt.client.event.GroupCreationFailedEvent;
-import org.kablink.teaming.gwt.client.event.GroupCreationStartedEvent;
 import org.kablink.teaming.gwt.client.event.GroupModificationFailedEvent;
 import org.kablink.teaming.gwt.client.event.GroupModificationStartedEvent;
 import org.kablink.teaming.gwt.client.event.GroupModifiedEvent;
@@ -103,8 +101,6 @@ import com.google.gwt.view.client.MultiSelectionModel;
  */
 public class ManageGroupsDlg extends DlgBox implements
 		GroupCreatedEvent.Handler,
-		GroupCreationFailedEvent.Handler,
-		GroupCreationStartedEvent.Handler,
 		GroupModificationFailedEvent.Handler,
 		GroupModificationStartedEvent.Handler,
 		GroupModifiedEvent.Handler,
@@ -126,8 +122,6 @@ public class ManageGroupsDlg extends DlgBox implements
 	private TeamingEvents[] m_registeredEvents = new TeamingEvents[]
 	{
 		TeamingEvents.GROUP_CREATED,
-		TeamingEvents.GROUP_CREATION_FAILED,
-		TeamingEvents.GROUP_CREATION_STARTED,
 		TeamingEvents.GROUP_MODIFICATION_FAILED,
 		TeamingEvents.GROUP_MODIFICATION_STARTED,
 		TeamingEvents.GROUP_MODIFIED,
@@ -892,83 +886,11 @@ public class ManageGroupsDlg extends DlgBox implements
 		// Get the newly created group.
 		createdGroupInfo = event.getGroupInfo();
 
-		if (createdGroupInfo != null) {
-			GroupInfoPlus groupInfoPlus;
-
-			// Find this group in our list of groups.
-			groupInfoPlus = findNewGroupByName(createdGroupInfo.getName());
-
-			if (groupInfoPlus != null) {
-				GroupInfo groupInfo;
-
-				groupInfo = groupInfoPlus.getGroupInfo();
-
-				// Update the group with the title and description from the
-				// group that
-				// was passed in the event.
-				groupInfo.setId(createdGroupInfo.getId());
-				groupInfo.setTitle(createdGroupInfo.getTitle());
-				groupInfo.setDesc(createdGroupInfo.getDesc());
-
-				// Update the status of the group.
-				groupInfoPlus.setStatus(GroupModificationStatus.READY);
-
-				// Update the table to reflect the fact that a group was
-				// modified.
-				m_dataProvider.refresh();
-			}
-		}
-	}
-
-	/**
-	 * Handles the GroupCreationFailedEvent received by this class.
-	 */
-	@Override
-	public void onGroupCreationFailed(GroupCreationFailedEvent event) {
-		GroupInfo groupInfo;
-
-		// Get the group we failed on
-		groupInfo = event.getGroupInfo();
-
-		if (groupInfo != null) {
-			GroupInfoPlus groupInfoPlus;
-
-			// Tell the user about the error
-			GwtClientHelper.handleGwtRPCFailure(event.getException(),
-					GwtTeaming.getMessages().rpcFailure_CreateGroup(),
-					groupInfo.getName());
-
-			// Find this group in our list of groups.
-			groupInfoPlus = findNewGroupByName(groupInfo.getName());
-
-			if (groupInfoPlus != null) {
-				// Remove the group from the list.
-				m_listOfGroups.remove(groupInfoPlus);
-
-				// Update the table to reflect the fact that we deleted a group.
-				m_dataProvider.refresh();
-
-				// Tell the table how many groups we have.
-				m_groupsTable.setRowCount(m_listOfGroups.size(), true);
-			}
-		}
-	}
-
-	/**
-	 * Handles the GroupCreationStartedEvent received by this class
-	 */
-	@Override
-	public void onGroupCreationStarted(GroupCreationStartedEvent event) {
-		GroupInfo groupInfo;
-
-		// Get the GroupInfo passed in the event.
-		groupInfo = event.getGroupInfo();
-
-		if (groupInfo != null) {
+		if ( createdGroupInfo != null )
+		{
 			GroupInfoPlus newGroupInfoPlus;
 
-			newGroupInfoPlus = new GroupInfoPlus(groupInfo,
-					GroupModificationStatus.GROUP_CREATION_IN_PROGRESS);
+			newGroupInfoPlus = new GroupInfoPlus( createdGroupInfo, GroupModificationStatus.READY );
 
 			// Add the group as the first group in the list.
 			m_listOfGroups.add(0, newGroupInfoPlus);
