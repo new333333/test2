@@ -1,1 +1,0 @@
-LGPL: explode.jar, portal-common.jar, portlet-api.jar
