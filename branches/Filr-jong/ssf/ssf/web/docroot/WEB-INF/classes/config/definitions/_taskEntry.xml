@@ -1,0 +1,458 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<definition name="_taskEntry" caption="__definition_default_task_entry" type="1" nextId="72" definitionType="1" databaseId="402883c1129b1f8101129b28bbe50002"> 
+  <item name="entryForm" caption="__entry_form_definition" type="form" id="1"> 
+    <properties/>  
+    <item name="entryFormForm" caption="__form" id="2"> 
+      <item name="title" caption="__title" type="data" id="3"> 
+        <properties> 
+          <property name="name" value="title"/>  
+          <property name="caption" value="__title"/>  
+          <property name="width" value="60"/>  
+          <property name="inline" value=""/>  
+          <property name="generated" value=""/>  
+          <property name="itemSource" value=""/> 
+        </properties> 
+      </item>  
+      <item name="guestName" caption="__guestName" type="data" category="entryData" display="form" id="63"> 
+        <properties> 
+          <property name="caption" value="__guest.default.caption"/>  
+          <property name="name" value="_guestName"/>  
+          <property name="width" value=""/>  
+          <property name="required" value="false"/> 
+        </properties> 
+      </item>
+      <item name="captcha" caption="__captcha" multipleAllowed="false" type="data" dataType="text" category="commonEntryData" display="form" id="71">
+        <properties>
+          <property name="caption" value="__captcha"/>
+          <property name="name" value="_captcha"/>
+          <property name="guestOnly" value="true"/>
+        </properties>
+      </item>  
+      <item name="description" caption="__description" type="data" id="4"> 
+        <properties> 
+          <property name="name" value="description"/>  
+          <property name="caption" value="__description"/>  
+          <property name="height" value=""/>  
+          <property name="required" value=""/> 
+        </properties> 
+      </item>  
+      <properties> 
+        <property name="name" value="form1"/>  
+        <property name="type" value="task"/> 
+      </properties>  
+      <item name="event" caption="__event" type="data" category="entryData" id="22" dataType="event" display="form"> 
+        <properties> 
+          <property name="caption" value="__task_time_period"/>  
+          <property name="name" value="start_end"/>  
+          <property name="hasDuration" value="true"/>  
+          <property name="hasDurationDays" value="true"/>  
+          <property name="hasRecurrence" value="false"/>  
+          <property name="timeZoneSensitiveActive" value="false"/>  
+          <property name="required" value="false"/>  
+          <property name="fieldModificationAllowed" value="false"/> 
+        </properties> 
+      </item>  
+      <item name="selectbox" caption="__selectbox" type="data" category="commonEntryData" id="23" display="form"> 
+        <item name="selectboxSelection" caption="__selection" id="24"> 
+          <properties> 
+            <property name="name" value="p1"/>  
+            <property name="caption" value="__task_priority_critical"/>  
+            <property name="default" value="false"/> 
+          </properties> 
+        </item>  
+        <item name="selectboxSelection" caption="__selection" id="25"> 
+          <properties> 
+            <property name="name" value="p2"/>  
+            <property name="caption" value="__task_priority_high"/>  
+            <property name="default" value="false"/> 
+          </properties> 
+        </item>  
+        <item name="selectboxSelection" caption="__selection" id="26"> 
+          <properties> 
+            <property name="name" value="p3"/>  
+            <property name="caption" value="__task_priority_medium"/>  
+            <property name="default" value="true"/> 
+          </properties> 
+        </item>  
+        <item name="selectboxSelection" caption="__selection" id="27"> 
+          <properties> 
+            <property name="name" value="p4"/>  
+            <property name="caption" value="__task_priority_low"/>  
+            <property name="default" value="false"/> 
+          </properties> 
+        </item>  
+        <item name="selectboxSelection" caption="__selection" id="62"> 
+          <properties> 
+            <property name="name" value="p5"/>  
+            <property name="caption" value="__task_priority_least"/>  
+            <property name="default" value="false"/> 
+          </properties> 
+        </item>  
+        <properties> 
+          <property name="caption" value="__task_priority"/>  
+          <property name="name" value="priority"/>  
+          <property name="multipleAllowed" value="false"/>  
+          <property name="size" value="1"/>  
+          <property name="required" value="false"/>  
+          <property name="fieldModificationAllowed" value="false"/>  
+          <property name="userVersionAllowed" value="false"/> 
+        </properties> 
+      </item>  
+      <item name="user_list" caption="__user_list" type="data" category="commonEntryData" id="28"> 
+        <properties> 
+          <property name="name" value="assignment"/>  
+          <property name="caption" value="__task_assigned_to"/>  
+          <property name="inline" value="false"/>  
+          <property name="required" value="false"/>  
+          <property name="includeCreatorOnAdd" value="true"/> 
+        </properties> 
+      </item>  
+      <item name="group_list" caption="__group_list" type="data" category="commonEntryData" id="59"> 
+        <properties> 
+          <property name="caption" value="__task_assigned_to_groups"/>  
+          <property name="name" value="assignment_groups"/>  
+          <property name="required" value="false"/> 
+        </properties> 
+      </item>  
+      <item name="team_list" caption="__team_list" type="data" category="commonEntryData" id="61"> 
+        <properties> 
+          <property name="caption" value="__task_assigned_to_teams"/>  
+          <property name="name" value="assignment_teams"/>  
+          <property name="required" value="false"/> 
+        </properties> 
+      </item>  
+      <item name="external_user_list" caption="__external_user_list" type="data" category="commonEntryData" display="form" id="65"> 
+        <properties> 
+          <property name="caption" value="__task_external_assigned_to"/>  
+          <property name="name" value="responsible_external"/> 
+        </properties> 
+      </item>  
+      <item name="checkbox" caption="__checkbox" type="data" category="commonEntryData" display="form" id="64"> 
+        <properties> 
+          <property name="caption" value="__task_assigned_to_notify"/>  
+          <property name="name" value="assignment_notify"/> 
+        </properties> 
+      </item>  
+      <item name="selectbox" caption="__selectbox" type="data" category="commonEntryData" id="30" display="form"> 
+        <item name="selectboxSelection" caption="__selection" id="31"> 
+          <properties> 
+            <property name="name" value="s1"/>  
+            <property name="caption" value="__task_status_needs_action"/>  
+            <property name="default" value="true"/> 
+          </properties> 
+        </item>  
+        <item name="selectboxSelection" caption="__selection" id="33"> 
+          <properties> 
+            <property name="name" value="s2"/>  
+            <property name="caption" value="__task_status_in_process"/>  
+            <property name="default" value="false"/> 
+          </properties> 
+        </item>  
+        <item name="selectboxSelection" caption="__selection" id="34"> 
+          <properties> 
+            <property name="name" value="s3"/>  
+            <property name="caption" value="__task_status_completed"/>  
+            <property name="default" value="false"/> 
+          </properties> 
+        </item>  
+        <item name="selectboxSelection" caption="__selection" id="35"> 
+          <properties> 
+            <property name="name" value="s4"/>  
+            <property name="caption" value="__task_status_cancelled"/>  
+            <property name="default" value="false"/> 
+          </properties> 
+        </item>  
+        <properties> 
+          <property name="caption" value="__task_status"/>  
+          <property name="name" value="status"/>  
+          <property name="multipleAllowed" value="false"/>  
+          <property name="size" value="1"/>  
+          <property name="required" value="false"/>  
+          <property name="fieldModificationAllowed" value="false"/>  
+          <property name="userVersionAllowed" value="false"/> 
+        </properties> 
+      </item>  
+      <item name="selectbox" caption="__selectbox" type="data" category="commonEntryData" id="36" display="form"> 
+        <item name="selectboxSelection" caption="__selection" id="37"> 
+          <properties> 
+            <property name="name" value="c000"/>  
+            <property name="caption" value="__task_completed_0"/>  
+            <property name="default" value="true"/> 
+          </properties> 
+        </item>  
+        <item name="selectboxSelection" caption="__selection" id="38"> 
+          <properties> 
+            <property name="name" value="c010"/>  
+            <property name="caption" value="__task_completed_10"/>  
+            <property name="default" value="false"/> 
+          </properties> 
+        </item>  
+        <item name="selectboxSelection" caption="__selection" id="39"> 
+          <properties> 
+            <property name="name" value="c020"/>  
+            <property name="caption" value="__task_completed_20"/>  
+            <property name="default" value="false"/> 
+          </properties> 
+        </item>  
+        <item name="selectboxSelection" caption="__selection" id="40"> 
+          <properties> 
+            <property name="name" value="c030"/>  
+            <property name="caption" value="__task_completed_30"/>  
+            <property name="default" value="false"/> 
+          </properties> 
+        </item>  
+        <item name="selectboxSelection" caption="__selection" id="41"> 
+          <properties> 
+            <property name="name" value="c040"/>  
+            <property name="caption" value="__task_completed_40"/>  
+            <property name="default" value="false"/> 
+          </properties> 
+        </item>  
+        <item name="selectboxSelection" caption="__selection" id="42"> 
+          <properties> 
+            <property name="name" value="c050"/>  
+            <property name="caption" value="__task_completed_50"/>  
+            <property name="default" value="false"/> 
+          </properties> 
+        </item>  
+        <item name="selectboxSelection" caption="__selection" id="43"> 
+          <properties> 
+            <property name="name" value="c060"/>  
+            <property name="caption" value="__task_completed_60"/>  
+            <property name="default" value="false"/> 
+          </properties> 
+        </item>  
+        <item name="selectboxSelection" caption="__selection" id="44"> 
+          <properties> 
+            <property name="name" value="c070"/>  
+            <property name="caption" value="__task_completed_70"/>  
+            <property name="default" value="false"/> 
+          </properties> 
+        </item>  
+        <item name="selectboxSelection" caption="__selection" id="45"> 
+          <properties> 
+            <property name="name" value="c080"/>  
+            <property name="caption" value="__task_completed_80"/>  
+            <property name="default" value="false"/> 
+          </properties> 
+        </item>  
+        <item name="selectboxSelection" caption="__selection" id="46"> 
+          <properties> 
+            <property name="name" value="c090"/>  
+            <property name="caption" value="__task_completed_90"/>  
+            <property name="default" value="false"/> 
+          </properties> 
+        </item>  
+        <item name="selectboxSelection" caption="__selection" id="47"> 
+          <properties> 
+            <property name="name" value="c100"/>  
+            <property name="caption" value="__task_completed_100"/>  
+            <property name="default" value="false"/> 
+          </properties> 
+        </item>  
+        <properties> 
+          <property name="caption" value="__task_completed"/>  
+          <property name="name" value="completed"/>  
+          <property name="multipleAllowed" value="false"/>  
+          <property name="size" value="1"/>  
+          <property name="required" value="false"/>  
+          <property name="fieldModificationAllowed" value="false"/>  
+          <property name="userVersionAllowed" value="false"/> 
+        </properties> 
+      </item>  
+      <item name="attachFiles" caption="__attach_files" type="data" id="5"> 
+        <properties> 
+          <property name="name" value="ss_attachFile"/>  
+          <property name="caption" value="__attach_files"/>  
+          <property name="width" value="60"/>  
+          <property name="number" value=""/>  
+          <property name="storage" value=""/>  
+          <property name="hide" value=""/> 
+        </properties> 
+      </item>  
+      <item name="subscribe" caption="__subscribe" category="entryData" id="58"> 
+        <properties> 
+          <property name="name" value="_subscribe"/>  
+          <property name="caption" value="__subscribe"/> 
+        </properties> 
+      </item>  
+      <item name="sendMail" caption="__sendMail" category="entryData" id="57"> 
+        <properties> 
+          <property name="name" value="_sendMail"/>  
+          <property name="caption" value="__sendMail"/> 
+        </properties> 
+      </item>  
+      <item name="entryFormButtons" caption="__form_buttons" id="6"> 
+        <properties> 
+          <property name="alignment" value=""/> 
+        </properties>  
+        <item name="okButton" caption="__ok_button" id="7"> 
+          <properties> 
+            <property name="caption" value="__ok"/>  
+            <property name="onClick" value=""/> 
+          </properties> 
+        </item>  
+        <item name="cancelButton" caption="__cancel_button" id="8"> 
+          <properties> 
+            <property name="caption" value="__cancel"/>  
+            <property name="onClick" value=""/> 
+          </properties> 
+        </item> 
+      </item> 
+    </item> 
+  </item>  
+  <item name="entryView" caption="__entry_view_definition" id="9"> 
+    <properties> 
+      <property name="type" value="entryView"/> 
+    </properties>  
+    <item name="titleView" caption="__title" id="10"> 
+      <properties> 
+        <property name="caption" value="__title"/> 
+      </properties> 
+    </item>  
+    <item name="entrySignatureView" caption="__entry_signature" id="11"> 
+      <properties> 
+        <property name="caption" value=""/> 
+      </properties> 
+    </item>  
+    <item name="descriptionView" caption="__description" id="12"> 
+      <properties> 
+        <property name="caption" value="__description"/> 
+      </properties> 
+    </item>  
+    <item name="entryWorkflow" caption="__entry_workflow" id="13"> 
+      <properties> 
+        <property name="caption" value="__entry_workflow"/> 
+      </properties> 
+    </item>  
+    <item name="entryDataItem" type="dataView" caption="__entry_data_item" category="entryViewData" id="48" formItem="selectbox"> 
+      <properties> 
+        <property name="name" value="completed"/>  
+        <property name="caption" value="__task_completed"/> 
+      </properties> 
+    </item>  
+    <item name="entryDataItem" type="dataView" caption="__entry_data_item" category="entryViewData" id="49" formItem="user_list"> 
+      <properties> 
+        <property name="name" value="assignment"/>  
+        <property name="caption" value="__task_assigned_to"/> 
+      </properties> 
+    </item>  
+    <item name="entryDataItem" type="dataView" caption="__entry_data_item" category="entryViewData" id="60" formItem="group_list" display="view"> 
+      <properties> 
+        <property name="caption" value="__task_assigned_to_groups"/>  
+        <property name="name" value="assignment_groups"/> 
+      </properties> 
+    </item>  
+    <item name="entryDataItem" type="dataView" caption="__entry_data_item" category="entryViewData" id="29" formItem="team_list" display="view"> 
+      <properties> 
+        <property name="caption" value="__task_assigned_to_teams"/>  
+        <property name="name" value="assignment_teams"/> 
+      </properties> 
+    </item>  
+    <item name="entryDataItem" type="dataView" caption="__entry_data_item" category="entryViewData" display="view" id="66" formItem="external_user_list"> 
+      <properties> 
+        <property name="caption" value="__task_external_assigned_to"/>  
+        <property name="name" value="responsible_external"/> 
+      </properties> 
+    </item>  
+    <item name="entryDataItem" type="dataView" caption="__entry_data_item" category="entryViewData" id="51" formItem="selectbox"> 
+      <properties> 
+        <property name="name" value="priority"/>  
+        <property name="caption" value="__task_priority"/> 
+      </properties> 
+    </item>  
+    <item name="entryDataItem" type="dataView" caption="__entry_data_item" category="entryViewData" id="52" formItem="selectbox"> 
+      <properties> 
+        <property name="name" value="status"/>  
+        <property name="caption" value="__task_status"/> 
+      </properties> 
+    </item>  
+    <item name="entryDataItem" type="dataView" caption="__entry_data_item" category="entryViewData" id="53" formItem="event"> 
+      <properties> 
+        <property name="name" value="start_end"/>  
+        <property name="caption" value="__task_time_period"/> 
+      </properties>  
+      <operations> 
+        <operation name="deleteItem" caption="__delete"/>  
+        <operation name="modifyItem" caption="__modify"/>  
+        <operation name="moveItem" caption="__move"/> 
+      </operations> 
+    </item>  
+    <item name="entryCommentsAndAttachments" caption="__entry_commentsAndAttachments" category="entryViewData" display="view" id="67"> 
+      <properties> 
+        <property name="caption" value=""/>  
+        <property name="tabTitle" value="comments"/> 
+      </properties> 
+    </item> 
+  </item>  
+  <item name="entryBlogView" caption="__entry_blog_view_definition" id="16"> 
+    <properties> 
+      <property name="type" value="blog"/> 
+    </properties>  
+    <item name="titleBlogView" caption="__title" id="17"> 
+      <properties> 
+        <property name="caption" value="__title"/> 
+      </properties> 
+    </item>  
+    <item name="descriptionBlogView" caption="__description" id="18"> 
+      <properties> 
+        <property name="caption" value="__description"/> 
+      </properties> 
+    </item>  
+    <item name="entryBlogWorkflow" caption="__entry_workflow" id="19"> 
+      <properties> 
+        <property name="caption" value="__entry_workflow"/> 
+      </properties> 
+    </item>  
+    <item name="entryBlogDataItem" type="dataView" caption="__entry_data_item" category="blogEntryViewData" id="54" formItem="user_list"> 
+      <properties> 
+        <property name="name" value="assignment"/>  
+        <property name="caption" value="__task_assigned_to"/> 
+      </properties> 
+    </item>  
+    <item name="entryBlogDataItem" type="dataView" caption="__entry_data_item" category="blogEntryViewData" id="50" formItem="group_list"> 
+      <properties> 
+        <property name="name" value="assignment_groups"/>  
+        <property name="caption" value="__task_assigned_to_groups"/> 
+      </properties> 
+    </item>  
+    <item name="entryBlogDataItem" type="dataView" caption="__entry_data_item" category="blogEntryViewData" id="32" formItem="team_list"> 
+      <properties> 
+        <property name="name" value="assignment_teams"/>  
+        <property name="caption" value="__task_assigned_to_teams"/> 
+      </properties> 
+    </item>  
+    <item name="entryBlogDataItem" type="dataView" caption="__entry_data_item" category="blogEntryViewData" id="55" formItem="selectbox"> 
+      <properties> 
+        <property name="name" value="priority"/>  
+        <property name="caption" value="__task_priority"/> 
+      </properties> 
+    </item>  
+    <item name="entryBlogDataItem" type="dataView" caption="__entry_data_item" category="blogEntryViewData" id="56" formItem="selectbox"> 
+      <properties> 
+        <property name="name" value="status"/>  
+        <property name="caption" value="__task_status"/> 
+      </properties> 
+    </item>  
+    <item name="entryBlogAttachments" caption="__entry_attachments" category="blogEntryViewData" display="view" id="69"> 
+      <properties> 
+        <property name="caption" value="__entry_attachments"/> 
+      </properties> 
+    </item>  
+    <item name="entryBlogComments" caption="__entry_blog_comments" category="blogEntryViewData" display="view" id="70"> 
+      <properties> 
+        <property name="caption" value="__entry_comments"/> 
+      </properties> 
+    </item> 
+  </item>  
+  <properties> 
+    <property name="name" value="_taskEntry"/>  
+    <property name="caption" value="__definition_default_task_entry"/>  
+    <property name="family" value="task"/>  
+    <property name="replyStyle" value="402883c6115753d801115777f284000b"/> 
+  </properties>  
+  <export-mappings>
+    <export definitionId="402883c6115753d801115777f284000b">_comment</export>
+  </export-mappings>
+</definition>

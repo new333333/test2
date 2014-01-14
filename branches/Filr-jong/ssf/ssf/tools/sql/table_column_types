@@ -1,0 +1,34 @@
+
+ss_attachments fileName filelock_subject filelock_ownerInfo versionName
+ss_audittrail state threadName description deletedFolderEntryFamily
+ss_changelogs userName xmlString
+ss_customattributes stringValue description_text xmlValue
+ss_definitions name title
+ss_emailaddresses address
+ss_emaillog fromField subj comment toEmailAddresses fileAttachments
+ss_events calUid
+ss_folderentries postedBy description_text title normalTitle
+ss_forums name pathName branding brandingExt resourcePath description_text title normalTitle searchTitle templateTitle tDescription_text notify_email notify_fromAddress notify_subject
+ss_functions name
+ss_functionoperation operationName
+ss_functionconditions encodedSpec title description_text 
+ss_libraryentries name
+ss_postings emailAddress
+ss_principals name foreignName description_text title normalTitle firstName lastName middleName organization zonName postUrl status skypeId twitterId ldapQuery
+ss_tags name
+ss_workflowresponses response
+ss_workflowstates state threadName
+ss_zoneconfig fsaAutoUpdateUrl
+ss_zoneinfo zoneName virtualHost
+ss_simplename name emailaddress
+ss_ldapconnectionconfig url userSearches groupSearches principal userIdAttribute mappings credentials
+ss_workflowhistory state threadName
+ss_shareitemmember comment
+jbpm_action TRANSITIONNAME_
+jbpm_decisionconditions TRANSITIONNAME_
+jbpm_message TRANSITIONNAME_ TEXT_
+jbpm_node NAME_
+jbpm_timer TRANSITIONNAME_
+jbpm_token NAME_
+jbpm_transition NAME_
+jbpm_variableinstance STRINGVALUE_

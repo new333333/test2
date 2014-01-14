@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/menu_selectSite"
+          android:icon="@drawable/ic_menu_view"
+          android:title="@string/menu_selectSite" />
+    
+    <item android:id="@+id/menu_addSite"
+          android:icon="@drawable/ic_menu_add"
+          android:title="@string/menu_addSite" />
+    
+    <item android:id="@+id/menu_editSite"
+    	  android:icon="@drawable/ic_menu_edit"
+          android:title="@string/menu_editSite" />
+    
+    <!--
+    <item android:id="@+id/menu_settings"
+          android:icon="@drawable/ic_menu_preferences"
+          android:title="@string/menu_settings" />
+    -->
+</menu>
