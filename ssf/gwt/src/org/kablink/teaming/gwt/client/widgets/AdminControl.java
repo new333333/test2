@@ -90,11 +90,6 @@ import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HistoryHelper;
 import org.kablink.teaming.gwt.client.util.MobileDevicesInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
-import org.kablink.teaming.gwt.client.util.runasync.ConfigureFileSyncAppDlgInitAndShowParams;
-import org.kablink.teaming.gwt.client.util.runasync.RunAsyncCmd;
-import org.kablink.teaming.gwt.client.util.runasync.RunAsyncCreateDlgParams;
-import org.kablink.teaming.gwt.client.util.runasync.RunAsyncInitAndShowParams;
-import org.kablink.teaming.gwt.client.util.runasync.RunAsyncCmd.RunAsyncCmdType;
 import org.kablink.teaming.gwt.client.widgets.AdminInfoDlg.AdminInfoDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ConfigureAdhocFoldersDlg.ConfigureAdhocFoldersDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ConfigureFileSyncAppDlg.ConfigureFileSyncAppDlgClient;
@@ -1480,25 +1475,18 @@ public class AdminControl extends TeamingPopupPanel
 		{
 			Integer width;
 			Integer height;
-			RunAsyncCmd createCmd;
-			RunAsyncCreateDlgParams params;
 			
 			height = new Integer( m_dlgHeight );
 			width = new Integer( m_dlgWidth );
 
-			params = new RunAsyncCreateDlgParams();
-			params.setAutoHide( new Boolean( true ) );
-			params.setModal( new Boolean( false ) );
-			params.setLeft( new Integer( x ) );
-			params.setTop( new Integer( y ) );
-			params.setHeight( height );
-			params.setWidth( width );
-
-			createCmd = new RunAsyncCmd( RunAsyncCmdType.CREATE, params );
-			
 			// Run an async cmd to create the dialog.
-			NameCompletionSettingsDlg.runAsyncCmd(
-											createCmd,
+			NameCompletionSettingsDlg.createDlg(
+											true,
+											false,
+											new Integer( x ),
+											new Integer( y ),
+											width,
+											height,
 											new NameCompletionSettingsDlgClient()
 			{			
 				@Override
@@ -1528,20 +1516,14 @@ public class AdminControl extends TeamingPopupPanel
 		}
 		else
 		{
-			RunAsyncCmd initAndShowCmd;
-			RunAsyncInitAndShowParams params;
-		
-			params = new RunAsyncInitAndShowParams();
-			params.setUIObj( m_nameCompletionSettingsDlg );
-			params.setWidth( new Integer( m_dlgWidth ) );
-			params.setHeight( new Integer( m_dlgHeight ) );
-			params.setLeft( new Integer( x ) );
-			params.setTop( new Integer( y ) );
-		
-			initAndShowCmd = new RunAsyncCmd( RunAsyncCmdType.INIT_AND_SHOW, params );
-
 			// Run an async cmd to show the dialog.
-			NameCompletionSettingsDlg.runAsyncCmd( initAndShowCmd, null );
+			NameCompletionSettingsDlg.initAndShow(
+												m_nameCompletionSettingsDlg,
+												new Integer( x ),
+												new Integer( y ),
+												new Integer( m_dlgWidth ),
+												new Integer( m_dlgHeight ),
+												null );
 		}
 	}
 
@@ -1862,28 +1844,19 @@ public class AdminControl extends TeamingPopupPanel
 		{
 			int width;
 			int height;
-			RunAsyncCmd createCmd;
-			RunAsyncCreateDlgParams params;
 			
-			// No, create one.
 			height = m_dlgHeight;
 			width = m_dlgWidth;
 			
-			// No, create it.
-			params = new RunAsyncCreateDlgParams();
-			params.setAutoHide( new Boolean( true ) );
-			params.setModal( new Boolean( false ) );
-			params.setLeft( new Integer( x ) );
-			params.setTop( new Integer( y ) );
-			params.setHeight( new Integer( height ) );
-			params.setWidth( new Integer( width ) );
-
-			createCmd = new RunAsyncCmd( RunAsyncCmdType.CREATE, params );
-			
-			// Run an async cmd to create the dialog.
-			ConfigureAdhocFoldersDlg.runAsyncCmd(
-									createCmd,
-									new ConfigureAdhocFoldersDlgClient()
+			// No, create one.
+			ConfigureAdhocFoldersDlg.createDlg(
+											new Boolean( true ),
+											new Boolean( false ),
+											new Integer( x ),
+											new Integer( y ),
+											new Integer( width ),
+											new Integer( height ),
+											new ConfigureAdhocFoldersDlgClient()
 			{			
 				@Override
 				public void onUnavailable()
@@ -1920,20 +1893,14 @@ public class AdminControl extends TeamingPopupPanel
 	{
 		if ( m_configureAdhocFoldersDlg != null )
 		{
-			RunAsyncCmd initAndShowCmd;
-			RunAsyncInitAndShowParams params;
-		
-			params = new RunAsyncInitAndShowParams();
-			params.setUIObj( m_configureAdhocFoldersDlg );
-			params.setWidth( new Integer( m_dlgWidth ) );
-			params.setHeight( new Integer( m_dlgHeight ) );
-			params.setLeft( new Integer( x ) );
-			params.setTop( new Integer( y ) );
-		
-			initAndShowCmd = new RunAsyncCmd( RunAsyncCmdType.INIT_AND_SHOW, params );
-
 			// Run an async cmd to show the dialog.
-			ConfigureAdhocFoldersDlg.runAsyncCmd( initAndShowCmd, null );
+			ConfigureAdhocFoldersDlg.initAndShow(
+											m_configureAdhocFoldersDlg,
+											new Integer( x ),
+											new Integer( y ),
+											new Integer( m_dlgWidth ),
+											new Integer( m_dlgHeight ),
+											null );
 		}
 	}
 	
@@ -1990,25 +1957,19 @@ public class AdminControl extends TeamingPopupPanel
 						{
 							int width;
 							int height;
-							RunAsyncCmd createCmd;
-							RunAsyncCreateDlgParams params;
 							
 							// No, create it.
 							height = m_dlgHeight;
 							width = m_dlgWidth;
-							params = new RunAsyncCreateDlgParams();
-							params.setAutoHide( new Boolean( true ) );
-							params.setModal( new Boolean( false ) );
-							params.setLeft( new Integer( x ) );
-							params.setTop( new Integer( y ) );
-							params.setWidth( new Integer( width ) );
-							params.setHeight( new Integer( height ) );
 
-							createCmd = new RunAsyncCmd( RunAsyncCmdType.CREATE, params );
-							
 							// Run an async cmd to create the dialog.
-							ConfigureFileSyncAppDlg.runAsyncCmd(
-															createCmd,
+							ConfigureFileSyncAppDlg.createDlg(
+															new Boolean( true ),
+															new Boolean( false ),
+															new Integer( x ),
+															new Integer( y ),
+															new Integer( width ),
+															new Integer( height ),
 															new ConfigureFileSyncAppDlgClient()
 							{			
 								@Override
@@ -2058,21 +2019,15 @@ public class AdminControl extends TeamingPopupPanel
 	 */
 	private void invokeConfigureFileSyncAppDlg( int x, int y, GwtFileSyncAppConfiguration fileSyncAppConfig )
 	{
-		RunAsyncCmd initAndShowCmd;
-		ConfigureFileSyncAppDlgInitAndShowParams params;
-	
-		params = new ConfigureFileSyncAppDlgInitAndShowParams();
-		params.setConfig( fileSyncAppConfig );
-		params.setUIObj( m_configureFileSyncAppDlg );
-		params.setWidth( new Integer( m_dlgWidth ) );
-		params.setHeight( new Integer( m_dlgHeight ) );
-		params.setLeft( new Integer( x ) );
-		params.setTop( new Integer( y ) );
-	
-		initAndShowCmd = new RunAsyncCmd( RunAsyncCmdType.INIT_AND_SHOW, params );
-
 		// Run an async cmd to show the dialog.
-		ConfigureFileSyncAppDlg.runAsyncCmd( initAndShowCmd, null );
+		ConfigureFileSyncAppDlg.initAndShow(
+										m_configureFileSyncAppDlg,
+										fileSyncAppConfig,
+										new Integer( x ),
+										new Integer( y ),
+										new Integer( m_dlgWidth ),
+										new Integer( m_dlgHeight ),
+										null );
 	}
 	
 
