@@ -72,10 +72,6 @@ import org.kablink.teaming.gwt.client.rpc.shared.SyncNetFoldersRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HelpData;
-import org.kablink.teaming.gwt.client.util.runasync.ModifyNetFolderDlgInitAndShowParams;
-import org.kablink.teaming.gwt.client.util.runasync.RunAsyncCmd;
-import org.kablink.teaming.gwt.client.util.runasync.RunAsyncCreateDlgParams;
-import org.kablink.teaming.gwt.client.util.runasync.RunAsyncCmd.RunAsyncCmdType;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import org.kablink.teaming.gwt.client.widgets.ModifyNetFolderDlg.ModifyNetFolderDlgClient;
 import org.kablink.teaming.gwt.client.widgets.NetFolderSyncStatisticsDlg.NetFolderSyncStatisticsDlgClient;
@@ -1253,20 +1249,12 @@ public class ManageNetFoldersDlg extends DlgBox
 		
 		if ( m_modifyNetFolderDlg == null )
 		{
-			RunAsyncCmd createCmd;
-			RunAsyncCreateDlgParams params;
-			
 			// No, create it.
-			params = new RunAsyncCreateDlgParams();
-			params.setAutoHide( new Boolean( true ) );
-			params.setModal( new Boolean( false ) );
-			params.setLeft( new Integer( x ) );
-			params.setTop( new Integer( y ) );
-
-			createCmd = new RunAsyncCmd( RunAsyncCmdType.CREATE, params );
-			
-			ModifyNetFolderDlg.runAsyncCmd(
-										createCmd,
+			ModifyNetFolderDlg.createDlg(
+										true,
+										false,
+										x,
+										y,
 										new ModifyNetFolderDlgClient()
 			{			
 				@Override
@@ -1296,17 +1284,7 @@ public class ManageNetFoldersDlg extends DlgBox
 		}
 		else
 		{
-			RunAsyncCmd initAndShowCmd;
-			ModifyNetFolderDlgInitAndShowParams params;
-		
-			params = new ModifyNetFolderDlgInitAndShowParams();
-			params.setUIObj( m_modifyNetFolderDlg );
-			params.setLeft( new Integer( x ) );
-			params.setTop( new Integer( y ) );
-			params.setNetFolder( netFolder );
-		
-			initAndShowCmd = new RunAsyncCmd( RunAsyncCmdType.INIT_AND_SHOW, params );
-			ModifyNetFolderDlg.runAsyncCmd( initAndShowCmd, null );
+			ModifyNetFolderDlg.initAndShow( m_modifyNetFolderDlg, x, y, null, netFolder, null );
 		}
 	}
 
