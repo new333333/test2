@@ -56,9 +56,6 @@ import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponseData;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
-import org.kablink.teaming.gwt.client.util.runasync.LdapSyncResultsDlgInitAndShowParams;
-import org.kablink.teaming.gwt.client.util.runasync.RunAsyncCmd;
-import org.kablink.teaming.gwt.client.util.runasync.RunAsyncCreateDlgParams;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import org.kablink.teaming.gwt.client.widgets.EditLdapConfigDlg.GwtLdapSyncMode;
 
@@ -1463,7 +1460,12 @@ public class LdapSyncResultsDlg extends DlgBox
 	 * Executes code through the GWT.runAsync() method to ensure that all of the
 	 * executing code is in this split point.
 	 */
-	public static void runAsyncCmd( final RunAsyncCmd cmd, final LdapSyncResultsDlgClient lsrDlgClient )
+	public static void createDlg(
+		final boolean autoHide,
+		final boolean modal,
+		final int left,
+		final int top,
+		final LdapSyncResultsDlgClient lsrDlgClient )
 	{
 		GWT.runAsync( LdapSyncResultsDlg.class, new RunAsyncCallback()
 		{
@@ -1480,49 +1482,53 @@ public class LdapSyncResultsDlg extends DlgBox
 			@Override
 			public void onSuccess()
 			{
-				switch ( cmd.getCmdType() )
-				{
-				case CREATE:
-				{
-					RunAsyncCreateDlgParams params;
-					LdapSyncResultsDlg lsrDlg;
-					
-					params = (RunAsyncCreateDlgParams) cmd.getParams();
-					lsrDlg = new LdapSyncResultsDlg(
-												params.getAutoHide(),
-												params.getModal(),
-												params.getLeft(),
-												params.getTop() );
-					
-					if ( lsrDlgClient != null )
-						lsrDlgClient.onSuccess( lsrDlg );
-					
-					break;
-				}
-					
-				case INIT_AND_SHOW:
-				{
-					LdapSyncResultsDlgInitAndShowParams params;
-					LdapSyncResultsDlg dlg;
-					
-					params = (LdapSyncResultsDlgInitAndShowParams) cmd.getParams();
+				LdapSyncResultsDlg lsrDlg;
+				
+				lsrDlg = new LdapSyncResultsDlg(
+											autoHide,
+											modal,
+											left,
+											top );
+				
+				if ( lsrDlgClient != null )
+					lsrDlgClient.onSuccess( lsrDlg );
+			}
+		} );
+	}
 
-					dlg = params.getUIObj();
+	/**
+	 * Executes code through the GWT.runAsync() method to ensure that all of the
+	 * executing code is in this split point.
+	 */
+	public static void initAndShow(
+		final LdapSyncResultsDlg dlg,
+		final List<GwtLdapConnectionConfig> listOfLdapServers,
+		final String syncId,
+		final boolean clearResults,
+		final GwtLdapSyncMode syncMode,
+		final LdapSyncResultsDlgClient lsrDlgClient )
+	{
+		GWT.runAsync( LdapSyncResultsDlg.class, new RunAsyncCallback()
+		{
+			@Override
+			public void onFailure( Throwable reason )
+			{
+				Window.alert( GwtTeaming.getMessages().codeSplitFailure_EditLdapConfigDlg() );
+				if ( lsrDlgClient != null )
+				{
+					lsrDlgClient.onUnavailable();
+				}
+			}
 
-					dlg.init(
-							params.getListOfLdapServers(),
-							params.getSyncId(),
-							params.getClearResults(),
-							params.getSyncMode() );
-					dlg.show();
-					
-					break;
-				}
-					
-				case UNKNOWN:
-				default:
-					break;
-				}
+			@Override
+			public void onSuccess()
+			{
+				dlg.init(
+						listOfLdapServers,
+						syncId,
+						clearResults,
+						syncMode );
+				dlg.show();
 			}
 		} );
 	}

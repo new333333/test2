@@ -52,9 +52,6 @@ import org.kablink.teaming.gwt.client.rpc.shared.GetNetFolderRootsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetNetFolderRootsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
-import org.kablink.teaming.gwt.client.util.runasync.EditLdapSearchDlgInitAndShowParams;
-import org.kablink.teaming.gwt.client.util.runasync.RunAsyncCmd;
-import org.kablink.teaming.gwt.client.util.runasync.RunAsyncCreateDlgParams;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import org.kablink.teaming.gwt.client.widgets.LdapBrowserDlg.LdapBrowserDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ModifyNetFolderRootDlg.ModifyNetFolderRootDlgClient;
@@ -917,7 +914,13 @@ public class EditLdapSearchDlg extends DlgBox
 	 * Executes code through the GWT.runAsync() method to ensure that all of the
 	 * executing code is in this split point.
 	 */
-	public static void runAsyncCmd( final RunAsyncCmd cmd, final EditLdapSearchDlgClient elsDlgClient )
+	public static void createDlg(
+		final boolean autoHide,
+		final boolean modal,
+		final int left,
+		final int top,
+		final EditSuccessfulHandler editSuccessfulHandler,
+		final EditLdapSearchDlgClient elsDlgClient )
 	{
 		GWT.runAsync( EditLdapSearchDlg.class, new RunAsyncCallback()
 		{
@@ -934,46 +937,51 @@ public class EditLdapSearchDlg extends DlgBox
 			@Override
 			public void onSuccess()
 			{
-				switch ( cmd.getCmdType() )
-				{
-				case CREATE:
-				{
-					EditLdapSearchDlg elsDlg;
-					RunAsyncCreateDlgParams params;
-					
-					params = (RunAsyncCreateDlgParams) cmd.getParams();
-					elsDlg = new EditLdapSearchDlg(
-												params.getAutoHide(),
-												params.getModal(),
-												params.getLeft(),
-												params.getTop(),
-												params.getEditSuccessfulHandler() );
-					
-					if ( elsDlgClient != null )
-						elsDlgClient.onSuccess( elsDlg );
-					
-					break;
-				}
-					
-				case INIT_AND_SHOW:
-				{
-					EditLdapSearchDlgInitAndShowParams params;
-					EditLdapSearchDlg dlg;
-					
-					params = (EditLdapSearchDlgInitAndShowParams)cmd.getParams();
-					dlg = params.getUIObj();
+				EditLdapSearchDlg elsDlg;
+				
+				elsDlg = new EditLdapSearchDlg(
+											autoHide,
+											modal,
+											left,
+											top,
+											editSuccessfulHandler );
+				
+				if ( elsDlgClient != null )
+					elsDlgClient.onSuccess( elsDlg );
+			}
+		} );
+	}
 
-					dlg.init( params.getDirectoryServer(), params.getLdapSearch(), params.getShowHomeDirInfoControls() );
-					dlg.initHandlers( params.getEditSuccessfulHandler(), null );
-					dlg.show();
-					
-					break;
+	/**
+	 * Executes code through the GWT.runAsync() method to ensure that all of the
+	 * executing code is in this split point.
+	 */
+	public static void initAndShow(
+		final EditLdapSearchDlg dlg,
+		final DirectoryServer directoryServer,
+		final GwtLdapSearchInfo searchInfo,
+		final boolean showHomeDirInfoControls,
+		final EditSuccessfulHandler editSuccessfulHandler,
+		final EditLdapSearchDlgClient elsDlgClient )
+	{
+		GWT.runAsync( EditLdapSearchDlg.class, new RunAsyncCallback()
+		{
+			@Override
+			public void onFailure( Throwable reason )
+			{
+				Window.alert( GwtTeaming.getMessages().codeSplitFailure_EditLdapSearchDlg() );
+				if ( elsDlgClient != null )
+				{
+					elsDlgClient.onUnavailable();
 				}
-					
-				case UNKNOWN:
-				default:
-					break;
-				}
+			}
+
+			@Override
+			public void onSuccess()
+			{
+				dlg.init( directoryServer, searchInfo, showHomeDirInfoControls );
+				dlg.initHandlers( editSuccessfulHandler, null );
+				dlg.show();
 			}
 		} );
 	}

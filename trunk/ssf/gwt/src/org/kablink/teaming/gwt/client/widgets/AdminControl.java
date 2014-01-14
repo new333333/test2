@@ -1111,9 +1111,14 @@ public class AdminControl extends TeamingPopupPanel
 
 			createCmd = new RunAsyncCmd( RunAsyncCmdType.CREATE, params );
 			
-			// Run an async cmd to create the dialog.
-			EditLdapConfigDlg.runAsyncCmd(
-									createCmd,
+			// Create the dialog.
+			EditLdapConfigDlg.createDlg(
+									true,
+									false,
+									m_contentControlX,
+									m_contentControlY,
+									m_dlgWidth,
+									m_dlgHeight,
 									new EditLdapConfigDlgClient()
 			{			
 				@Override
@@ -1140,20 +1145,14 @@ public class AdminControl extends TeamingPopupPanel
 		}
 		else
 		{
-			RunAsyncCmd initAndShowCmd;
-			RunAsyncInitAndShowParams params;
-			
-			params = new RunAsyncInitAndShowParams();
-			params.setUIObj( m_editLdapConfigDlg );
-			params.setWidth( new Integer( m_dlgWidth ) );
-			params.setHeight( new Integer( m_dlgHeight ) );
-			params.setLeft( new Integer( m_contentControlX ) );
-			params.setTop( new Integer( m_contentControlY ) );
-			
-			initAndShowCmd = new RunAsyncCmd( RunAsyncCmdType.INIT_AND_SHOW, params );
-
-			// Run an async cmd to show the dialog.
-			EditLdapConfigDlg.runAsyncCmd( initAndShowCmd, null );
+			// Show the dialog.
+			EditLdapConfigDlg.initAndShow(
+										m_editLdapConfigDlg,
+										m_dlgWidth,
+										m_dlgHeight,
+										m_contentControlX,
+										m_contentControlY,
+										null );
 		}
 	}
 	
