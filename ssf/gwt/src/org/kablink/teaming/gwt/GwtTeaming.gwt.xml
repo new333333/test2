@@ -24,16 +24,19 @@
 		<inherits name='com.bradrydzewski.gwt.calendar.theme.outlook.Outlook' /> 
 	-->
 	
-	<!-- Inherit the GWT drag-and-drop support libraries. -->
+	<!-- Inherit the GWT drag-and-drop support library. -->
 	<inherits name='com.allen_sauer.gwt.dnd.gwt-dnd' />
 	
-	<!-- Inherit the GWT W3C file APIs support libraries. -->	
+	<!-- Inherit the GWT W3C file APIs support library. -->	
 	<inherits name="org.vectomatic.libgwtfile"/>
 	
-	<!-- Inherit the GWT 'Crypto' API support libraries. -->	
-	<inherits name="com.googlecode.gwt.crypto.Crypto"/>
+	<!-- Inherit the GWT 'Crypto' API support library. -->	
+	<inherits name="com.googlecode.gwt.crypto.Crypto" />
 	
- 	<!-- Other 'generic' module inherits go here. -->
+	<!-- Inherit the gQuery support library. -->	
+	<inherits name="com.google.gwt.query.Query" />
+	
+	<!-- Other 'generic' module inherits go here. -->
 
 	<!-- Specify the application entry point class. -->
 	<entry-point class='org.kablink.teaming.gwt.client.GwtTeaming'/>

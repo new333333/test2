@@ -41,6 +41,7 @@ ezmorph 1.0.1
 firebug-lite 1.2
 groovy 1.8.5
 Guice 3.0 (used by openid4java)
+gQuery 1.4.0 (jQuery port to GWT)
 gwt 2.6.0rc4 (Google Web Toolkit)
 gwt-cal 0.9.3 (GWT Calendar widget)
 gwt-crypto 2.3.0-20110518.123759-2 (Crypto module for the Google Web Toolkit)
