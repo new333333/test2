@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<definition name="_userWorkspace" caption="__definition_default_user_workspace" type="12" nextId="17" definitionType="12" databaseId="402883b90cc53079010cc539bf26000b" internalId="402883b90cc53079010cc539bf26000b"> 
+  <item name="userWorkspaceForm" caption="__workspace_form" type="form" id="1"> 
+    <properties/>  
+    <item name="description" caption="__description" type="data" id="3"> 
+      <properties> 
+        <property name="name" value="description"/>  
+        <property name="caption" value="__description"/>  
+        <property name="height" value=""/>  
+        <property name="required" value=""/> 
+      </properties> 
+    </item>  
+    <item name="workspaceIcon" caption="__icon" type="data" id="4"> 
+      <properties> 
+        <property name="name" value="iconName"/>  
+        <property name="caption" value="__icon"/> 
+      </properties> 
+    </item>  
+    <item name="workspaceRemoteApp" caption="__remoteApp" type="data" category="workspaceData" display="form" id="12"> 
+      <properties> 
+        <property name="caption" value="__remoteApp"/>  
+        <property name="name" value="remote1"/> 
+      </properties> 
+    </item>  
+    <item name="attachFiles" caption="__attach_files" type="data" category="commonEntryData" display="form" id="16">
+      <properties>
+        <property name="caption" value="__attach_files"/>
+        <property name="name" value="ss_attachFile"/>
+        <property name="width" value="60"/>
+        <property name="number" value=""/>
+        <property name="storage" value="simpleFileRepository"/>
+        <property name="hide" value="true"/>
+      </properties>
+    </item>
+  </item>  
+  <item name="userWorkspaceView" caption="__user_workspace_view" id="5"> 
+    <properties/>  
+    <item name="workspaceTitleView" caption="__title" category="workspaceViewData" display="view" id="14"> 
+      <item name="workspaceTitleDescriptionView" caption="__description" category="folderViewData" display="view" id="15"> 
+        <properties> 
+          <property name="caption" value="__description"/> 
+        </properties> 
+      </item> 
+    </item>  
+    <item name="workspaceDataItem" type="dataView" caption="__workspace_data_item" category="workspaceViewData" display="view" id="13" formItem="workspaceRemoteApp"> 
+      <properties> 
+        <property name="caption" value="__remoteApp"/>  
+        <property name="name" value="remote1"/> 
+      </properties> 
+    </item>  
+    <item name="relevanceDashboard" caption="__relevance_dashboard" display="view" id="10"> 
+      <item name="userWorkspaceBusinessCard" caption="__user_workspace_businessCard" id="6"> 
+        <properties> 
+          <property name="caption" value="__user_workspace_businessCard"/> 
+        </properties> 
+      </item> 
+    </item> 
+  </item>  
+  <properties> 
+    <property name="name" value="_userWorkspace"/>  
+    <property name="caption" value="__definition_default_user_workspace"/>  
+    <property name="family" value="user"/> 
+  </properties>  
+  <export-mappings/>
+</definition>
