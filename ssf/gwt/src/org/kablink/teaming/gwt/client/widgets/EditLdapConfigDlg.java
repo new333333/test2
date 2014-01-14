@@ -65,12 +65,6 @@ import org.kablink.teaming.gwt.client.rpc.shared.StartLdapSyncRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HelpData;
-import org.kablink.teaming.gwt.client.util.runasync.EditLdapServerDlgInitAndShowParams;
-import org.kablink.teaming.gwt.client.util.runasync.LdapSyncResultsDlgInitAndShowParams;
-import org.kablink.teaming.gwt.client.util.runasync.RunAsyncCmd;
-import org.kablink.teaming.gwt.client.util.runasync.RunAsyncCmd.RunAsyncCmdType;
-import org.kablink.teaming.gwt.client.util.runasync.RunAsyncCreateDlgParams;
-import org.kablink.teaming.gwt.client.util.runasync.RunAsyncInitAndShowParams;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import org.kablink.teaming.gwt.client.widgets.EditLdapServerConfigDlg.EditLdapServerConfigDlgClient;
 import org.kablink.teaming.gwt.client.widgets.LdapSyncResultsDlg.LdapSyncResultsDlgClient;
@@ -1503,23 +1497,17 @@ public class EditLdapConfigDlg extends DlgBox
 		{
 			int x;
 			int y;
-			RunAsyncCmd createCmd;
-			RunAsyncCreateDlgParams params;
 
 			// No, create it
 			x = m_ldapServersTable.getAbsoluteLeft();
 			y = m_ldapServersTable.getAbsoluteTop() - 50;
-			params = new RunAsyncCreateDlgParams();
-			params.setAutoHide( new Boolean( true ) );
-			params.setModal( new Boolean( false ) );
-			params.setLeft( new Integer( x ) );
-			params.setTop( new Integer( y ) );
 
-			createCmd = new RunAsyncCmd( RunAsyncCmdType.CREATE, params );
-
-			// Run an async cmd to create the dialog.
-			LdapSyncResultsDlg.runAsyncCmd(
-									createCmd,
+			// Create the dialog.
+			LdapSyncResultsDlg.createDlg(
+									true,
+									false,
+									x,
+									y,
 									new LdapSyncResultsDlgClient()
 			{			
 				@Override
@@ -1549,20 +1537,14 @@ public class EditLdapConfigDlg extends DlgBox
 		}
 		else
 		{
-			RunAsyncCmd initAndShowCmd;
-			LdapSyncResultsDlgInitAndShowParams params;
-			
-			params = new LdapSyncResultsDlgInitAndShowParams();
-			params.setUIObj( m_ldapSyncResultsDlg );
-			params.setListOfLdapServers( m_listOfLdapServers );
-			params.setSyncId( m_ldapSyncId );
-			params.setClearResults( new Boolean( clearResults ) );
-			params.setSyncMode( syncMode );
-			
-			initAndShowCmd = new RunAsyncCmd( RunAsyncCmdType.INIT_AND_SHOW, params );
-
 			// Run an async cmd to show the dialog.
-			LdapSyncResultsDlg.runAsyncCmd( initAndShowCmd, null );
+			LdapSyncResultsDlg.initAndShow(
+										m_ldapSyncResultsDlg,
+										m_listOfLdapServers,
+										m_ldapSyncId,
+										clearResults,
+										syncMode,
+										null );
 		}
 	}
 	
@@ -1606,8 +1588,6 @@ public class EditLdapConfigDlg extends DlgBox
 		// Have we created the dialog yet?
 		if ( m_editLdapServerDlg == null )
 		{
-			RunAsyncCmd createCmd;
-			RunAsyncCreateDlgParams params;
 			int x;
 			int y;
 			
@@ -1615,17 +1595,13 @@ public class EditLdapConfigDlg extends DlgBox
 			x = m_ldapServersTable.getAbsoluteLeft();
 			y = m_ldapServersTable.getAbsoluteTop();
 			
-			params = new RunAsyncCreateDlgParams();
-			params.setAutoHide( new Boolean( false ) );
-			params.setModal( new Boolean( true ) );
-			params.setLeft( new Integer( x ) );
-			params.setTop( new Integer( y ) );
-
-			createCmd = new RunAsyncCmd( RunAsyncCmdType.CREATE, params );
-			
-			// Run an async cmd to create the dialog.
-			EditLdapServerConfigDlg.runAsyncCmd(
-											createCmd,
+			// Create the dialog.
+			EditLdapServerConfigDlg.createDlg(
+											false,
+											true,
+											x,
+											y,
+											null,
 											new EditLdapServerConfigDlgClient()
 			{			
 				@Override
@@ -1655,20 +1631,14 @@ public class EditLdapConfigDlg extends DlgBox
 		}
 		else
 		{
-			RunAsyncCmd initAndShowCmd;
-			EditLdapServerDlgInitAndShowParams params;
-		
-			params = new EditLdapServerDlgInitAndShowParams();
-			params.setUIObj( m_editLdapServerDlg );
-			params.setConfig( ldapServer );
-			params.setDefaultUserFilter( m_ldapConfig.getDefaultUserFilter() );
-			params.setDefaultGroupFilter( m_ldapConfig.getDefaultGroupFilter() );
-			params.setEditSuccessfulHandler( editSuccessfulHandler );
-		
-			initAndShowCmd = new RunAsyncCmd( RunAsyncCmdType.INIT_AND_SHOW, params );
-
 			// Run an async cmd to show the dialog.
-			EditLdapServerConfigDlg.runAsyncCmd( initAndShowCmd, null );
+			EditLdapServerConfigDlg.initAndShow(
+											m_editLdapServerDlg,
+											ldapServer,
+											m_ldapConfig.getDefaultUserFilter(),
+											m_ldapConfig.getDefaultGroupFilter(),
+											editSuccessfulHandler,
+											null );
 		}
 	}
 
@@ -2062,7 +2032,14 @@ public class EditLdapConfigDlg extends DlgBox
 	 * Executes code through the GWT.runAsync() method to ensure that all of the
 	 * executing code is in this split point.
 	 */
-	public static void runAsyncCmd( final RunAsyncCmd cmd, final EditLdapConfigDlgClient elcDlgClient )
+	public static void createDlg(
+		final boolean autoHide,
+		final boolean modal,
+		final int left,
+		final int top,
+		final int width,
+		final int height,
+		final EditLdapConfigDlgClient elcDlgClient )
 	{
 		GWT.runAsync( EditLdapConfigDlg.class, new RunAsyncCallback()
 		{
@@ -2079,48 +2056,53 @@ public class EditLdapConfigDlg extends DlgBox
 			@Override
 			public void onSuccess()
 			{
-				switch ( cmd.getCmdType() )
-				{
-				case CREATE:
-				{
-					EditLdapConfigDlg elcDlg;
-					RunAsyncCreateDlgParams params;
-					
-					params = (RunAsyncCreateDlgParams) cmd.getParams();
-					elcDlg = new EditLdapConfigDlg(
-												params.getAutoHide(),
-												params.getModal(),
-												params.getLeft(),
-												params.getTop(),
-												params.getWidth(),
-												params.getHeight() );
-					
-					if ( elcDlgClient != null )
-						elcDlgClient.onSuccess( elcDlg );
-					
-					break;
-				}
-					
-				case INIT_AND_SHOW:
-				{
-					RunAsyncInitAndShowParams params;
-					EditLdapConfigDlg dlg;
-					
-					params = (RunAsyncInitAndShowParams) cmd.getParams();
-					dlg = (EditLdapConfigDlg) params.getUIObj();
+				EditLdapConfigDlg elcDlg;
+				
+				elcDlg = new EditLdapConfigDlg(
+											autoHide,
+											modal,
+											left,
+											top,
+											width,
+											height );
+				
+				if ( elcDlgClient != null )
+					elcDlgClient.onSuccess( elcDlg );
+			}
+		} );
+	}
 
-					dlg.setPixelSize( params.getWidth(), params.getHeight() );
-					dlg.init();
-					dlg.setPopupPosition( params.getLeft(), params.getTop() );
-					dlg.show();
-					
-					break;
+	/**
+	 * Executes code through the GWT.runAsync() method to ensure that all of the
+	 * executing code is in this split point.
+	 */
+	public static void initAndShow(
+		final EditLdapConfigDlg dlg,
+		final int width,
+		final int height,
+		final int left,
+		final int top,
+		final EditLdapConfigDlgClient elcDlgClient )
+	{
+		GWT.runAsync( EditLdapConfigDlg.class, new RunAsyncCallback()
+		{
+			@Override
+			public void onFailure( Throwable reason )
+			{
+				Window.alert( GwtTeaming.getMessages().codeSplitFailure_EditLdapConfigDlg() );
+				if ( elcDlgClient != null )
+				{
+					elcDlgClient.onUnavailable();
 				}
-					
-				case UNKNOWN:
-				default:
-					break;
-				}
+			}
+
+			@Override
+			public void onSuccess()
+			{
+				dlg.setPixelSize( width, height );
+				dlg.init();
+				dlg.setPopupPosition( left, top );
+				dlg.show();
 			}
 		} );
 	}
