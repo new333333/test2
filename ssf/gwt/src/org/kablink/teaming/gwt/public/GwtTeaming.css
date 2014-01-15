@@ -5998,7 +5998,7 @@ td.datePickerMonth {
 	.gwNameCellImg               {padding-right: 3px;}
 	.gwNameCellImg-empty         {padding-right: 3px; width: 16px; height: 16px;}
 	.gwNameCellImg-root          {padding-right: 3px;}
-	.ldapBrowser-browsePanel     {}
+	.ldapBrowser-browsePanel     {display: inline-block;}
 	.ldapBrowser-mainPanel       {margin: 10px 10px 10px 13px;}
 	.ldapBrowser-scroller        {overflow: auto; height: 250px; width: 600px;}
 	.ldapBrowser-treesPanel      {white-space: nowrap; padding-bottom: 5px;}
