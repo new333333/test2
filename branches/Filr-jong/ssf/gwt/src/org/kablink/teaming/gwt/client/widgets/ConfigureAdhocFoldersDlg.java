@@ -44,9 +44,6 @@ import org.kablink.teaming.gwt.client.rpc.shared.SaveAdhocFolderSettingCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HelpData;
-import org.kablink.teaming.gwt.client.util.runasync.RunAsyncCmd;
-import org.kablink.teaming.gwt.client.util.runasync.RunAsyncCreateDlgParams;
-import org.kablink.teaming.gwt.client.util.runasync.RunAsyncInitAndShowParams;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 
 import com.google.gwt.core.client.GWT;
@@ -298,7 +295,14 @@ public class ConfigureAdhocFoldersDlg extends DlgBox
 	 * Executes code through the GWT.runAsync() method to ensure that all of the
 	 * executing code is in this split point.
 	 */
-	public static void runAsyncCmd( final RunAsyncCmd cmd, final ConfigureAdhocFoldersDlgClient cafDlgClient )
+	public static void createDlg(
+		final Boolean autoHide,
+		final Boolean modal,
+		final Integer left,
+		final Integer top,
+		final Integer width,
+		final Integer height,
+		final ConfigureAdhocFoldersDlgClient cafDlgClient )
 	{
 		GWT.runAsync( ConfigureAdhocFoldersDlg.class, new RunAsyncCallback()
 		{
@@ -315,53 +319,58 @@ public class ConfigureAdhocFoldersDlg extends DlgBox
 			@Override
 			public void onSuccess()
 			{
-				switch ( cmd.getCmdType() )
+				ConfigureAdhocFoldersDlg cafDlg;
+				
+				cafDlg = new ConfigureAdhocFoldersDlg(
+											autoHide,
+											modal,
+											left,
+											top,
+											width,
+											height );
+				
+				if ( cafDlgClient != null )
+					cafDlgClient.onSuccess( cafDlg );
+			}
+		} );
+	}
+	
+	/**
+	 * Executes code through the GWT.runAsync() method to ensure that all of the
+	 * executing code is in this split point.
+	 */
+	public static void initAndShow(
+		final ConfigureAdhocFoldersDlg dlg,
+		final Integer left,
+		final Integer top,
+		final Integer width,
+		final Integer height,
+		final ConfigureAdhocFoldersDlgClient cafDlgClient )
+	{
+		GWT.runAsync( ConfigureAdhocFoldersDlg.class, new RunAsyncCallback()
+		{
+			@Override
+			public void onFailure( Throwable reason )
+			{
+				Window.alert( GwtTeaming.getMessages().codeSplitFailure_ConfigureAdhocFoldersDlg() );
+				if ( cafDlgClient != null )
 				{
-				case CREATE:
-				{
-					ConfigureAdhocFoldersDlg cafDlg;
-					RunAsyncCreateDlgParams params;
-					
-					params = (RunAsyncCreateDlgParams) cmd.getParams();
-					cafDlg = new ConfigureAdhocFoldersDlg(
-												params.getAutoHide(),
-												params.getModal(),
-												params.getLeft(),
-												params.getTop(),
-												params.getWidth(),
-												params.getHeight() );
-					
-					if ( cafDlgClient != null )
-						cafDlgClient.onSuccess( cafDlg );
-					
-					break;
+					cafDlgClient.onUnavailable();
 				}
-					
-				case INIT_AND_SHOW:
-				{
-					RunAsyncInitAndShowParams params;
-					ConfigureAdhocFoldersDlg dlg;
-					
-					params = (RunAsyncInitAndShowParams)cmd.getParams();
-					dlg = (ConfigureAdhocFoldersDlg) params.getUIObj();
+			}
 
-					if ( params.getWidth() != null && params.getHeight() != null )
-						dlg.setPixelSize( params.getWidth(), params.getHeight() );
-					
-					dlg.init( null );
-					
-					if ( params.getLeft() != null && params.getTop() != null )
-						dlg.setPopupPosition( params.getLeft(), params.getTop() );
-					
-					dlg.show();
-
-					break;
-				}
-					
-				case UNKNOWN:
-				default:
-					break;
-				}
+			@Override
+			public void onSuccess()
+			{
+				if ( width != null && height != null )
+					dlg.setPixelSize( width, height );
+				
+				dlg.init( null );
+				
+				if ( left != null && top != null )
+					dlg.setPopupPosition( left, top );
+				
+				dlg.show();
 			}
 		} );
 	}
