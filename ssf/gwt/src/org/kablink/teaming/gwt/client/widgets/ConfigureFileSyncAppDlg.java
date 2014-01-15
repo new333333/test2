@@ -42,9 +42,6 @@ import org.kablink.teaming.gwt.client.rpc.shared.SaveFileSyncAppConfigurationCmd
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HelpData;
-import org.kablink.teaming.gwt.client.util.runasync.ConfigureFileSyncAppDlgInitAndShowParams;
-import org.kablink.teaming.gwt.client.util.runasync.RunAsyncCmd;
-import org.kablink.teaming.gwt.client.util.runasync.RunAsyncCreateDlgParams;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 
 import com.google.gwt.core.client.GWT;
@@ -600,7 +597,14 @@ public class ConfigureFileSyncAppDlg extends DlgBox
 	 * Executes code through the GWT.runAsync() method to ensure that all of the
 	 * executing code is in this split point.
 	 */
-	public static void runAsyncCmd( final RunAsyncCmd cmd, final ConfigureFileSyncAppDlgClient cfsaDlgClient )
+	public static void createDlg(
+		final Boolean autoHide,
+		final Boolean modal,
+		final Integer left,
+		final Integer top,
+		final Integer width,
+		final Integer height,
+		final ConfigureFileSyncAppDlgClient cfsaDlgClient )
 	{
 		GWT.runAsync( ConfigureFileSyncAppDlg.class, new RunAsyncCallback()
 		{
@@ -617,53 +621,59 @@ public class ConfigureFileSyncAppDlg extends DlgBox
 			@Override
 			public void onSuccess()
 			{
-				switch ( cmd.getCmdType() )
-				{
-				case CREATE:
-				{
-					ConfigureFileSyncAppDlg cfsaDlg;
-					RunAsyncCreateDlgParams params;
-					
-					params = (RunAsyncCreateDlgParams) cmd.getParams();
-					cfsaDlg = new ConfigureFileSyncAppDlg(
-												params.getAutoHide(),
-												params.getModal(),
-												params.getLeft(),
-												params.getTop(),
-												params.getWidth(),
-												params.getHeight() );
-					
-					if ( cfsaDlgClient != null )
-						cfsaDlgClient.onSuccess( cfsaDlg );
-					
-					break;
-				}
-					
-				case INIT_AND_SHOW:
-				{
-					ConfigureFileSyncAppDlgInitAndShowParams params;
-					ConfigureFileSyncAppDlg dlg;
-					
-					params = (ConfigureFileSyncAppDlgInitAndShowParams)cmd.getParams();
-					dlg = params.getUIObj();
+				ConfigureFileSyncAppDlg cfsaDlg;
+				
+				cfsaDlg = new ConfigureFileSyncAppDlg(
+											autoHide,
+											modal,
+											left,
+											top,
+											width,
+											height );
+				
+				if ( cfsaDlgClient != null )
+					cfsaDlgClient.onSuccess( cfsaDlg );
+			}
+		} );
+	}
 
-					if ( params.getWidth() != null && params.getHeight() != null )
-						dlg.setPixelSize( params.getWidth(), params.getHeight() );
-					
-					dlg.init( params.getConfig() );
-					
-					if ( params.getLeft() != null && params.getTop() != null )
-						dlg.setPopupPosition( params.getLeft(), params.getTop() );
-
-					dlg.show();
-
-					break;
+	/**
+	 * Executes code through the GWT.runAsync() method to ensure that all of the
+	 * executing code is in this split point.
+	 */
+	public static void initAndShow(
+		final ConfigureFileSyncAppDlg dlg,
+		final GwtFileSyncAppConfiguration config,
+		final Integer left,
+		final Integer top,
+		final Integer width,
+		final Integer height,
+		final ConfigureFileSyncAppDlgClient cfsaDlgClient )
+	{
+		GWT.runAsync( ConfigureFileSyncAppDlg.class, new RunAsyncCallback()
+		{
+			@Override
+			public void onFailure( Throwable reason )
+			{
+				Window.alert( GwtTeaming.getMessages().codeSplitFailure_ConfigureFileSyncAppDlg() );
+				if ( cfsaDlgClient != null )
+				{
+					cfsaDlgClient.onUnavailable();
 				}
-					
-				case UNKNOWN:
-				default:
-					break;
-				}
+			}
+
+			@Override
+			public void onSuccess()
+			{
+				if ( width != null && height != null )
+					dlg.setPixelSize( width, height );
+				
+				dlg.init( config );
+				
+				if ( left != null && top != null )
+					dlg.setPopupPosition( left, top );
+
+				dlg.show();
 			}
 		} );
 	}
