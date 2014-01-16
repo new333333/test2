@@ -37,6 +37,7 @@ public class NetFolder extends BaseRestObject {
     private String relativePath;
     private Boolean homeDir;
     private Boolean indexContent;
+    private Boolean inheritIndexContent;
     private Boolean jitsEnabled;
     private Long jitsMaxAge;
     private Long jitsMaxACLAge;
@@ -53,6 +54,7 @@ public class NetFolder extends BaseRestObject {
         relativePath = (relativePath==null) ? folder.relativePath : relativePath;
         homeDir = (homeDir==null) ? folder.homeDir : homeDir;
         indexContent = (indexContent==null) ? folder.indexContent : indexContent;
+        inheritIndexContent = (inheritIndexContent==null) ? folder.inheritIndexContent : inheritIndexContent;
         jitsMaxAge = (jitsMaxAge==null) ? folder.jitsMaxAge : jitsMaxAge;
         jitsMaxACLAge = (jitsMaxACLAge==null) ? folder.jitsMaxACLAge : jitsMaxACLAge;
         fullSyncDirOnly = (fullSyncDirOnly==null) ? folder.fullSyncDirOnly : fullSyncDirOnly;
@@ -109,6 +111,15 @@ public class NetFolder extends BaseRestObject {
 
     public void setIndexContent(Boolean indexContent) {
         this.indexContent = indexContent;
+    }
+
+    @XmlElement(name="inherit_index_content")
+    public Boolean getInheritIndexContent() {
+        return inheritIndexContent==null ? Boolean.TRUE : inheritIndexContent;
+    }
+
+    public void setInheritIndexContent(Boolean inherit) {
+        this.inheritIndexContent = inherit;
     }
 
     @XmlElement(name="jits_enabled")

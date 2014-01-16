@@ -533,5 +533,20 @@ update SS_Principals set domainName=LOWER(domainName);
     <changeSet author="dennis" context="schema" failOnError="true" id="47">
         <addPrimaryKey columnNames="userId, deviceId" tableName="SS_MobileDevice"/>
     </changeSet>
+
+    <changeSet author="jay" context="schema" failOnError="true" id="48">
+        <comment>Add useInheritedIndexContent field to SS_Forums table</comment>
+        <addColumn tableName="SS_Forums">
+            <column name="useInheritedIndexContent" type="BIT">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+        <comment>Add indexContent field to SS_ResourceDriver table</comment>
+        <addColumn tableName="SS_ResourceDriver">
+            <column name="indexContent" type="BIT">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
     
 </databaseChangeLog>

@@ -487,4 +487,19 @@
         <addPrimaryKey columnNames="userId, deviceId" constraintName="PK__SS_MobileDevice" schemaName="dbo" tableName="SS_MobileDevice"/>
     </changeSet>
 
+    <changeSet author="jay" context="schema" failOnError="true" id="42">
+        <comment>Add useInheritedIndexContent field to SS_Forums table</comment>
+        <addColumn tableName="SS_Forums">
+            <column name="useInheritedIndexContent" type="TINYINT">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+        <comment>Add indexContent field to SS_ResourceDriver</comment>
+        <addColumn tableName="SS_ResourceDriver">
+            <column name="indexContent" type="TINYINT">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+	</changeSet>
+
 </databaseChangeLog>

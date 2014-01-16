@@ -175,6 +175,7 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
     protected Boolean fullSyncDirOnly; // Applicable only to mirrored folders
     protected Short syncScheduleOption;	// SyncScheduleOption
     protected String resourceHandle;
+    protected Boolean useInheritedIndexContent = Boolean.TRUE;
 
     
     public Binder() {
@@ -215,6 +216,7 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
 		 jitsAclMaxAge = source.jitsAclMaxAge;
 		 fullSyncDirOnly = source.fullSyncDirOnly;
 		 syncScheduleOption = source.syncScheduleOption;
+		 useInheritedIndexContent = source.useInheritedIndexContent;
      }
     /**
      * Return the zone id
@@ -880,12 +882,77 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
     	else
     		return indexContent .booleanValue();
     }
-    
+
+    /**
+     * 
+     */
     public void setIndexContent( boolean index )
     {
    		indexContent = new Boolean( index );
     }
     
+    /**
+     * Return the computed value of "index content".  If this binder is inheriting the value
+     * of "index content" then we will get the value of "index content" from the net folder server
+     * this binder is pointing to.  Otherwise, we will use the value of "index content" from
+     * this binder.
+     */
+    public boolean getComputedIndexContent()
+    {
+    	ResourceDriver resourceDriver;
+    	
+    	if ( getUseInheritedIndexContent() == false )
+    		return getIndexContent();
+    	
+    	resourceDriver = getResourceDriver();
+    	if ( resourceDriver != null )
+    	{
+    		ResourceDriverConfig rdConfig;
+    		
+    		rdConfig = resourceDriver.getConfig();
+    		if ( rdConfig != null )
+    			return rdConfig.getIndexContent();
+    	}
+    	
+    	return false;
+    }
+    
+    /**
+     * Return whether the the "index content" setting should be inherited from the net folder server.
+     * @return
+     */
+    public boolean getUseInheritedIndexContent()
+    {
+    	boolean useInherited;
+    	
+    	// If the useInheritedIndexContent field is null that means this binder existed
+    	// before we added this field.
+    	if ( useInheritedIndexContent == null )
+    	{
+    		// If the content of this binder should be indexed, then we will say not to inherit
+    		// the "index content" setting from the net folder server.
+    		if ( getIndexContent() == true )
+    			useInherited = false;
+    		else
+    			useInherited = true;
+    	}
+    	else
+    	{
+    		useInherited = useInheritedIndexContent.booleanValue();
+    	}
+    	
+    	return useInherited;
+    }
+
+    /**
+     * 
+     */
+    public void setUseInheritedIndexContent( boolean inherit )
+    {
+   		useInheritedIndexContent = new Boolean( inherit );
+    }
+    
+
     public boolean isJitsEnabled() {
     	if(jitsEnabled == null)
     		return SPropsUtil.getBoolean("nf.jits.enabled", true);

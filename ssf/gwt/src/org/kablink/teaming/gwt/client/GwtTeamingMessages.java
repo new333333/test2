@@ -2311,6 +2311,7 @@ public interface GwtTeamingMessages extends Messages
 	String modifyNetFolderServerDlg_Group();
 	String modifyNetFolderServerDlg_HostUrlLabel();
 	String modifyNetFolderServerDlg_HostUrlRequired();
+	String modifyNetFolderServerDlg_IndexContentCB();
 	String modifyNetFolderServerDlg_InsufficientRights();
 	String modifyNetFolderServerDlg_IsSharePointServerLabel();
 	String modifyNetFolderServerDlg_Minutes();
@@ -2423,10 +2424,12 @@ public interface GwtTeamingMessages extends Messages
 	String modifyNetFolderDlg_SelectPrincipalsHint();
 	String modifyNetFolderDlg_ScheduleTab();
 	String modifyNetFolderDlg_SyncScheduleCaption();
+	String modifyNetFolderDlg_UseNetFolderIndexContentOptionRbLabel();
 	String modifyNetFolderDlg_UseNetFolderScheduleRbLabel();
-	String modifyNetFolderDlg_UseNetFolderSyncOptionRbLabel();
+	String modifyNetFolderDlg_UseNetFolderServerIndexContentOptionRbLabel();
 	String modifyNetFolderDlg_UseNetFolderServerScheduleRbLabel();
 	String modifyNetFolderDlg_UseNetFolderServerSyncOptionRbLabel();
+	String modifyNetFolderDlg_UseNetFolderSyncOptionRbLabel();
 	
 	// Strings used in the Schedule widget
 	String scheduleWidget_AtTimeLabel();

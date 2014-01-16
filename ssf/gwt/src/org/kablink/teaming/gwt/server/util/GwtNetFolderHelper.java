@@ -224,6 +224,7 @@ public class GwtNetFolderHelper
 												parentBinder.getId(),
 												false,
 												netFolder.getIndexContent(),
+												netFolder.getInheritIndexContentSetting(),
 												netFolder.getFullSyncDirOnly() );
 			
 			// Set the rights on the net folder
@@ -260,6 +261,8 @@ public class GwtNetFolderHelper
 			newNetFolder.setDataSyncSettings( netFolder.getDataSyncSettings() );
 			newNetFolder.setJitsConfig( netFolder.getJitsConfig() );
 			newNetFolder.setFullSyncDirOnly( netFolder.getFullSyncDirOnly() );
+			newNetFolder.setIndexContent( netFolder.getIndexContent() );
+			newNetFolder.setInheritIndexContentSetting( netFolder.getInheritIndexContentSetting() );
 		}
 		catch ( Exception ex )
 		{
@@ -328,6 +331,7 @@ public class GwtNetFolderHelper
 													authType,
 													netFolderRoot.getUseDirectoryRights(),
 													netFolderRoot.getCachedRightsRefreshInterval(),
+													netFolderRoot.getIndexContent(),
 													scheduleInfo );
 		}
 		catch ( RDException ex )
@@ -539,6 +543,7 @@ public class GwtNetFolderHelper
 				nfRoot.setFullSyncDirOnly( driver.getFullSyncDirOnly() );
 				nfRoot.setUseDirectoryRights( driver.getUseDirectoryRights() );
 				nfRoot.setCachedRightsRefreshInterval( driver.getCachedRightsRefreshInterval() );
+				nfRoot.setIndexContent( driver.getIndexContent() );
 				
 				{
 					AuthenticationType authType;
@@ -838,6 +843,7 @@ public class GwtNetFolderHelper
 		netFolder.setDisplayName( displayName );
 		
 		netFolder.setIndexContent( binder.getIndexContent() );
+		netFolder.setInheritIndexContentSetting( binder.getUseInheritedIndexContent() );
 		netFolder.setFullSyncDirOnly( binder.getFullSyncDirOnly() );
 
 		return netFolder;
@@ -1286,6 +1292,7 @@ public class GwtNetFolderHelper
 										scheduleInfo,
 										syncScheduleOption,
 										netFolder.getIndexContent(),
+										netFolder.getInheritIndexContentSetting(),
 										netFolder.getFullSyncDirOnly() );
 
 			// Set the rights on the net folder
@@ -1380,6 +1387,7 @@ public class GwtNetFolderHelper
 											authType,
 											netFolderRoot.getUseDirectoryRights(),
 											netFolderRoot.getCachedRightsRefreshInterval(),
+											netFolderRoot.getIndexContent(),
 											scheduleInfo );
 		}
 		catch ( Exception ex )

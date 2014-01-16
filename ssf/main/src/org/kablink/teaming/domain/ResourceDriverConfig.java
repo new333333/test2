@@ -65,6 +65,7 @@ public class ResourceDriverConfig extends ZonedObject implements WorkArea {
 	private Short authenticationType;
 	private Boolean useDirectoryRights;
 	private Integer cachedRightsRefreshInterval;
+	private Boolean indexContent;
 		
 	public enum DriverType {
 		filesystem (0),
@@ -228,6 +229,9 @@ public class ResourceDriverConfig extends ZonedObject implements WorkArea {
     	
     	if ( !objectEquals( getCachedRightsRefreshInterval(), config.getCachedRightsRefreshInterval() ) )
     		return false;
+    	
+    	if ( !objectEquals( indexContent, config.indexContent ) )
+    		return false;
 
     	return true;
     }
@@ -272,6 +276,22 @@ public class ResourceDriverConfig extends ZonedObject implements WorkArea {
 		this.driverType = type;
 	}
 	
+	/**
+	 * 
+	 */
+	public Boolean getIndexContent()
+	{
+		return indexContent;
+	}
+
+	/**
+	 * 
+	 */
+	public void setIndexContent( Boolean index )
+	{
+		this.indexContent = index;
+	}
+
 	public boolean isReadOnly() {
 		if(readOnly == null)
 			return true;

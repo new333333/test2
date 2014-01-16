@@ -49,7 +49,6 @@ import org.kablink.teaming.dao.util.NetFolderSelectSpec;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Binder.SyncScheduleOption;
 import org.kablink.teaming.domain.Folder;
-import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.ResourceDriverConfig;
 import org.kablink.teaming.domain.ResourceDriverConfig.AuthenticationType;
 import org.kablink.teaming.domain.TemplateBinder;
@@ -80,12 +79,9 @@ import org.kablink.teaming.runas.RunasCallback;
 import org.kablink.teaming.runas.RunasTemplate;
 import org.kablink.teaming.runasync.RunAsyncManager;
 import org.kablink.teaming.security.AccessControlException;
-import org.kablink.teaming.security.function.Function;
-import org.kablink.teaming.security.function.WorkAreaFunctionMembership;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ReflectHelper;
-import org.kablink.teaming.util.ResolveIds;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SZoneConfig;
 import org.kablink.teaming.util.SpringContextUtil;
@@ -181,6 +177,7 @@ public class NetFolderHelper
 													null,
 													null,
 													null,
+													false,
 													scheduleInfo );
 		
 		// Add a task for the administrator to enter the proxy credentials for this server.
@@ -379,6 +376,7 @@ public class NetFolderHelper
 															workspaceId,
 															true,
 															false,
+															new Boolean( true ),
 															null );
 
 				// As the fix for bug 831849 we must call getCoreDao().clear() before we call
@@ -496,6 +494,7 @@ public class NetFolderHelper
 		Long parentBinderId,
 		boolean isHomeDir,
 		boolean indexContent,
+		Boolean inheritIndexContentOption,
 		Boolean fullSyncDirOnly ) throws WriteFilesException, WriteEntryDataException
 	{
 		Binder binder = null;
@@ -543,6 +542,7 @@ public class NetFolderHelper
 											path,
 											isHomeDir,
 											indexContent,
+											inheritIndexContentOption,
 											syncScheduleOption,
 											fullSyncDirOnly );
 			
@@ -584,6 +584,7 @@ public class NetFolderHelper
 		AuthenticationType authType,
 		Boolean useDirectoryRights,
 		Integer cachedRightsRefreshInterval,
+		Boolean indexContent,
 		ScheduleInfo scheduleInfo ) throws RDException
 	{
 		Map options;
@@ -608,6 +609,7 @@ public class NetFolderHelper
 		options.put( ObjectKeys.RESOURCE_DRIVER_AUTHENTICATION_TYPE, authType );
 		options.put( ObjectKeys.RESOURCE_DRIVER_USE_DIRECTORY_RIGHTS, useDirectoryRights );
 		options.put( ObjectKeys.RESOURCE_DRIVER_CACHED_RIGHTS_REFRESH_INTERVAL, cachedRightsRefreshInterval );
+		options.put( ObjectKeys.RESOURCE_DRIVER_INDEX_CONTENT, indexContent );
 		
 		// Is the root type WebDAV?
 		if ( driverType == DriverType.webdav )
@@ -937,10 +939,20 @@ public class NetFolderHelper
 		ScheduleInfo scheduleInfo,
 		SyncScheduleOption syncScheduleOption,
 		boolean indexContent,
+		Boolean inheritIndexContent,
 		Boolean fullSyncDirOnly ) throws AccessControlException, WriteFilesException, WriteEntryDataException
 	{
 		// Modify the binder with the net folder information.
-		folderModule.modifyNetFolder(id, netFolderName, netFolderRootName, relativePath, null, indexContent, syncScheduleOption, fullSyncDirOnly );
+		folderModule.modifyNetFolder(
+									id,
+									netFolderName,
+									netFolderRootName,
+									relativePath,
+									null,
+									indexContent,
+									inheritIndexContent,
+									syncScheduleOption,
+									fullSyncDirOnly );
 
 		// Set the net folder's sync schedule
 		if ( scheduleInfo != null )
@@ -978,6 +990,7 @@ public class NetFolderHelper
 		AuthenticationType authType,
 		Boolean useDirectoryRights,
 		Integer cachedRightsRefreshInterval,
+		Boolean indexContent,
 		ScheduleInfo scheduleInfo )
 	{
 		Map options;
@@ -1006,6 +1019,7 @@ public class NetFolderHelper
 		options.put( ObjectKeys.RESOURCE_DRIVER_AUTHENTICATION_TYPE, authType );
 		options.put( ObjectKeys.RESOURCE_DRIVER_USE_DIRECTORY_RIGHTS, useDirectoryRights );
 		options.put( ObjectKeys.RESOURCE_DRIVER_CACHED_RIGHTS_REFRESH_INTERVAL, cachedRightsRefreshInterval );
+		options.put( ObjectKeys.RESOURCE_DRIVER_INDEX_CONTENT, indexContent );
 
 		// Always prevent the top level folder from being deleted
 		// This is forced so that the folder could not accidentally be deleted if the 

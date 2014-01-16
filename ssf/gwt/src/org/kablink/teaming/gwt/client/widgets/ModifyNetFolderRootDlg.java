@@ -131,6 +131,7 @@ public class ModifyNetFolderRootDlg extends DlgBox
 	private Label m_windowsProxyNameHint;
 	private TabPanel m_tabPanel;
 	private LdapBrowserDlg m_ldapBrowserDlg;
+	private CheckBox m_indexContentCB;
 	
 	private List<LdapBrowseSpec> m_ldapServerList;	// List of LDAP servers obtained the first time m_browseProxyDnBtn is clicked.
 	
@@ -681,6 +682,11 @@ public class ModifyNetFolderRootDlg extends DlgBox
 		messages = GwtTeaming.getMessages();
 		
 		mainPanel = new FlowPanel();
+		
+		tmpPanel = new FlowPanel();
+		m_indexContentCB = new CheckBox( messages.modifyNetFolderServerDlg_IndexContentCB() );
+		tmpPanel.add( m_indexContentCB );
+		mainPanel.add( tmpPanel );
 		
 		tmpPanel = new FlowPanel();
 		m_fullSyncDirOnlyCB = new CheckBox( messages.modifyNetFolderServerDlg_SyncOnlyDirStructureCB() );
@@ -1361,6 +1367,14 @@ public class ModifyNetFolderRootDlg extends DlgBox
 	/**
 	 * 
 	 */
+	private Boolean getIndexContent()
+	{
+		return m_indexContentCB.getValue();
+	}
+	
+	/**
+	 * 
+	 */
 	private boolean getIsSharePointServer()
 	{
 		return m_isSharePointServerCkbox.getValue();
@@ -1399,6 +1413,7 @@ public class ModifyNetFolderRootDlg extends DlgBox
 		netFolderRoot.setFullSyncDirOnly( getFullSyncDirOnly() );
 		netFolderRoot.setUseDirectoryRights( getUseDirectoryRights() );
 		netFolderRoot.setCachedRightsRefreshInterval( getCachedRightsRefreshInterval() );
+		netFolderRoot.setIndexContent( getIndexContent() );
 		
 		if ( m_showPrivilegedUsersUI && m_selectPrincipalsWidget != null )
 			netFolderRoot.setListOfPrincipals( getListOfPrivilegedPrincipals() );
@@ -1552,6 +1567,7 @@ public class ModifyNetFolderRootDlg extends DlgBox
 		// Clear out the sync schedule controls
 		m_scheduleWidget.init( null );
 		
+		m_indexContentCB.setValue( false );
 		m_fullSyncDirOnlyCB.setValue( false );
 		m_useDirectoryRightsCB.setValue( false );
 		m_cachedRightsRefreshIntervalTB.setValue( "" );
@@ -1593,6 +1609,15 @@ public class ModifyNetFolderRootDlg extends DlgBox
 
 			// Initialize the sync schedule controls
 			m_scheduleWidget.init( m_netFolderRoot.getSyncSchedule() );
+			
+			// Initialize the "index content" control
+			{
+				Boolean value;
+				
+				value = m_netFolderRoot.getIndexContent();
+				if ( value != null )
+					m_indexContentCB.setValue( value );
+			}
 			
 			// Initialize the "sync only the directory structure" control
 			{

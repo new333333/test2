@@ -106,6 +106,7 @@ public class AdminNetFolderServerResource extends AbstractAdminResource {
                 driverConfig.getAccountName(), driverConfig.getPassword(), null, null, false, false,
                 driverConfig.getFullSyncDirOnly(), driverConfig.getAuthenticationType(),
                 driverConfig.getUseDirectoryRights(), driverConfig.getCachedRightsRefreshInterval(),
+                driverConfig.getIndexContent(),
                 toScheduleInfo(netFolderServer.getSyncSchedule()));
         return AdminResourceUtil.buildNetFolderServer(driverConfig, true);
    	}
@@ -130,7 +131,9 @@ public class AdminNetFolderServerResource extends AbstractAdminResource {
         newConfig = NetFolderHelper.modifyNetFolderRoot(getAdminModule(), getResourceDriverModule(), getProfileModule(), getBinderModule(),
                 getWorkspaceModule(), existingConfig.getName(), newConfig.getRootPath(), newConfig.getAccountName(), newConfig.getPassword(),
                 newConfig.getDriverType(), null, false, false, null, newConfig.getFullSyncDirOnly(), newConfig.getAuthenticationType(),
-                newConfig.getUseDirectoryRights(), newConfig.getCachedRightsRefreshInterval(), toScheduleInfo(newServer.getSyncSchedule()));
+                newConfig.getUseDirectoryRights(), newConfig.getCachedRightsRefreshInterval(),
+                newConfig.getIndexContent(),
+                toScheduleInfo(newServer.getSyncSchedule()));
         return AdminResourceUtil.buildNetFolderServer(newConfig, true);
     }
 
