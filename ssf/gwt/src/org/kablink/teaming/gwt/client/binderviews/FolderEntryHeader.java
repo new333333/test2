@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -88,13 +88,13 @@ public class FolderEntryHeader extends VibeFlowPanel {
 	private final static int TITLE_OVERHEAD			= 130;	// Amount to reduce the title width by to account for margins and other horizontal overhead.
 	
 	/*
-	 * Template used to generate a modified label in the header.
+	 * Template used to generate a <strong> label in the header.
 	 */
-	public interface ModifiedTemplate extends SafeHtmlTemplates {
-		@Template("<strong>{0}</strong>  <span class=\"vibe-feView-headerContentPersonModifiedLabel\">{1}</span>")
-		SafeHtml modifiedHtml(String modifiedResource, String modifedDate);
+	public interface StrongTemplate extends SafeHtmlTemplates {
+		@Template("<strong>{0}</strong>  <span class=\"{2}\">{1}</span>")
+		SafeHtml strongHtml(String stringResource, String strongDate, String strongStyle);
 	}
-	private final static ModifiedTemplate MODIFIED_TEMPLATE = GWT.create(ModifiedTemplate.class);
+	private final static StrongTemplate STRONG_TEMPLATE = GWT.create(StrongTemplate.class);
 	
 	/**
 	 * Constructor method.
@@ -119,6 +119,52 @@ public class FolderEntryHeader extends VibeFlowPanel {
 		createContent();
 	}
 
+	/*
+	 * Adds a additional row of information about a user's access to
+	 * the entry to the header.
+	 */
+	private void addAdditionalUserInfoRow(VibeFlowPanel contentPanel, final UserInfo userInfo, String timeLabelStyle, String timeStyle, String timeText) {
+		// Create the user panel...
+		VibeFlowPanel userPanel = new VibeFlowPanel();
+		userPanel.addStyleName("vibe-feView-headerContentPersonPanel");
+		
+		// ...create the user anchor...
+		final Anchor userPanelAnchor = new Anchor();
+		userPanelAnchor.addStyleName("vibe-feView-headerContentPersonAnchor");
+		userPanelAnchor.getElement().appendChild(userPanel.getElement());
+		userPanelAnchor.addClickHandler(new ClickHandler() {
+			@Override
+			public void onClick(ClickEvent event) {
+				invokeProfile(userInfo.getPrincipalInfo(), userPanelAnchor);
+			}
+		});
+		contentPanel.add(userPanelAnchor);
+		
+		// ...create the user avatar...
+		String userAvatarUrl = userInfo.getPrincipalInfo().getAvatarUrl();
+		if (!(GwtClientHelper.hasString(userAvatarUrl))) {
+			userAvatarUrl = m_images.userPhoto().getSafeUri().asString();
+		}
+		Image userAvatar = GwtClientHelper.buildImage(userAvatarUrl);
+		userAvatar.addStyleName("vibe-feView-headerContentPersonAvatar");
+		userPanel.add(userAvatar);
+		
+		// ...create the user title...
+		InlineLabel userTitle = new InlineLabel(userInfo.getPrincipalInfo().getTitle());
+		userPanel.add(userTitle);
+
+		// ...and finally, create the user time (modification,
+		// ...lock, ...) associated with the user.
+		InlineLabel timeLabel = new InlineLabel();
+		timeLabel.addStyleName(timeStyle);
+		timeLabel.getElement().setInnerSafeHtml(
+			STRONG_TEMPLATE.strongHtml(
+				timeText,
+				userInfo.getDate(),
+				timeLabelStyle));
+		userPanel.add(timeLabel);
+	}
+	
 	/*
 	 * Creates an Anchor for navigating to a bread crumb link.
 	 */
@@ -233,16 +279,33 @@ public class FolderEntryHeader extends VibeFlowPanel {
 		add(i);
 
 		// Is the entry locked?
-		if (m_fed.isLocked()) {
-			// Yes!  Added the locked indicator to the image.
-			i = GwtClientHelper.buildImage(m_images.lock().getSafeUri().asString());
+		if (m_fed.isEntryLocked()) {
+			// Yes!  Added the entry locked indicator to the image.
+			i = GwtClientHelper.buildImage(m_images.entryLock().getSafeUri().asString());
 			i.addStyleName("vibe-feView-headerEntryLockImage");
-			i.setTitle(m_messages.folderEntry_Alt_LockedBy(m_fed.getLocker().getPrincipalInfo().getTitle()));
+			i.setTitle(m_messages.folderEntry_Alt_EntryLockedBy(m_fed.getEntryLocker().getPrincipalInfo().getTitle()));
 			add(i);
 			
 			Label l = new Label(m_messages.folderEntry_Locked());
-			l.addStyleName("vibe-feView-headerEntryLockLabel");
+			l.addStyleName("vibe-feView-headerLockLabel");
 			add(l);
+		}
+		
+		// Is the file locked?
+		if (m_fed.isFileLocked()) {
+			// Yes!  Added the file locked indicator to the image...
+			i = GwtClientHelper.buildImage(m_images.fileLock().getSafeUri().asString());
+			i.addStyleName("vibe-feView-headerFileLockImage");
+			i.setTitle(m_messages.folderEntry_Alt_FileLockedBy(m_fed.getFileLocker().getPrincipalInfo().getTitle()));
+			add(i);
+
+			// ...and if the entry isn't locked as well...
+			if (!(m_fed.isEntryLocked())) {
+				// ...and the locked label.
+				Label l = new Label(m_messages.folderEntry_Locked());
+				l.addStyleName("vibe-feView-headerLockLabel");
+				add(l);
+			}
 		}
 	}
 
@@ -353,48 +416,53 @@ public class FolderEntryHeader extends VibeFlowPanel {
 		// ...modifier...
 		final UserInfo modifierInfo = m_fed.getModifier(); 
 		if (m_fed.isModifierCreator()) {
-			// ...add the modification time...
-			InlineLabel modifierLabel = new InlineLabel();
-			modifierLabel.addStyleName("vibe-feView-headerContentPersonModified");
-			modifierLabel.getElement().setInnerSafeHtml(MODIFIED_TEMPLATE.modifiedHtml(m_messages.folderEntry_Modified(), modifierInfo.getDate()));
-			creatorPanel.add(modifierLabel);
+			// ...and it was modified at some time other than when it
+			// ...was created...
+			if (!(modifierInfo.getDate().equals(creatorInfo.getDate()))) {
+				// ...add the modification time...
+				InlineLabel modifierLabel = new InlineLabel();
+				modifierLabel.addStyleName("vibe-feView-headerContentPersonModified");
+				modifierLabel.getElement().setInnerSafeHtml(
+					STRONG_TEMPLATE.strongHtml(
+						m_messages.folderEntry_Modified(),
+						modifierInfo.getDate(),
+						"vibe-feView-headerContentPersonModifiedLabel"));
+				creatorPanel.add(modifierLabel);
+			}
 		}
 		
 		else {
 			// ...otherwise, add the entry's modifier...
-			VibeFlowPanel modifierPanel = new VibeFlowPanel();
-			modifierPanel.addStyleName("vibe-feView-headerContentPersonPanel");
-			final Anchor modifierPanelAnchor = new Anchor();
-			modifierPanelAnchor.addStyleName("vibe-feView-headerContentPersonAnchor");
-			modifierPanelAnchor.getElement().appendChild(modifierPanel.getElement());
-			modifierPanelAnchor.addClickHandler(new ClickHandler() {
-				@Override
-				public void onClick(ClickEvent event) {
-					invokeProfile(modifierInfo.getPrincipalInfo(), modifierPanelAnchor);
-				}
-			});
-			contentPanel.add(modifierPanelAnchor);
-			String modifierAvatarUrl = modifierInfo.getPrincipalInfo().getAvatarUrl();
-			if (!(GwtClientHelper.hasString(modifierAvatarUrl))) {
-				modifierAvatarUrl = m_images.userPhoto().getSafeUri().asString();
-			}
-			Image modifierAvatar = GwtClientHelper.buildImage(modifierAvatarUrl);
-			modifierAvatar.addStyleName("vibe-feView-headerContentPersonAvatar");
-			modifierPanel.add(modifierAvatar);
-			InlineLabel modifier = new InlineLabel(modifierInfo.getPrincipalInfo().getTitle());
-			modifierPanel.add(modifier);
+			addAdditionalUserInfoRow(
+				contentPanel,
+				modifierInfo,
+				"vibe-feView-headerContentPersonModifiedLabel",
+				"vibe-feView-headerContentPersonModified",
+				m_messages.folderEntry_Modified());
+		}
 
-			// ...and add then entry's modification time.
-			InlineLabel modificationLabel = new InlineLabel();
-			modificationLabel.addStyleName("vibe-feView-headerContentPersonCreated");
-			VibeFlowPanel html     = new VibeFlowPanel();
-			InlineLabel   htmlSpan = new InlineLabel(modifierInfo.getDate());
-			htmlSpan.addStyleName("vibe-feView-headerContentPersonModifiedLabel");
-			html.add(htmlSpan);
-			InlineLabel modifierLabel = new InlineLabel();
-			modifierLabel.addStyleName("vibe-feView-headerContentPersonModified");
-			modifierLabel.getElement().setInnerHTML(("<strong>" + m_messages.folderEntry_Modified() + "</strong>") + html.getElement().getInnerHTML());
-			modifierPanel.add(modifierLabel);
+		// ...if the entry is locked...
+		UserInfo lui = m_fed.getEntryLocker();
+		if (null != lui) {
+			// ...add the entry locker...
+			addAdditionalUserInfoRow(
+				contentPanel,
+				lui,
+				"vibe-feView-headerContentPersonLockedLabel",
+				"vibe-feView-headerContentPersonLocked",
+				m_messages.folderEntry_EntryLocked());
+		}
+		
+		// ...if the file is locked...
+		lui = m_fed.getFileLocker();
+		if (null != lui) {
+			// ...add the file locker.
+			addAdditionalUserInfoRow(
+				contentPanel,
+				lui,
+				"vibe-feView-headerContentPersonLockedLabel",
+				"vibe-feView-headerContentPersonLocked",
+				m_messages.folderEntry_FileLocked());
 		}
 	}
 	

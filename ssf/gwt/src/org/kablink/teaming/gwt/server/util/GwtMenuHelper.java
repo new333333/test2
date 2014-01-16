@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -166,6 +166,7 @@ public class GwtMenuHelper {
 	private final static String EMAIL_PUBLIC_LINK		= "emailPublicLink";
 	private final static String	FILE_DOWNLOAD			= "fileDownload";
 	private final static String FOLDER_VIEWS			= "folderViews";
+	private final static String FORCE_FILE_UNLOCK		= "forceFileUnlock";
 	private final static String ICALENDAR				= "iCalendar";
 	private final static String IMPORT_EXPORT			= "importExport";
 	private final static String LOCK					= "lock"; 
@@ -4025,6 +4026,18 @@ public class GwtMenuHelper {
 				// entry toolbar.
 				reply.add(dropdownTBI);
 			}
+
+			// Is this admin viewing a file that's locked?
+			boolean isAdmin = (user.isSuper() && user.isPerson());
+			if (isAdmin && isFileLocked(fe)) {
+				// Yes!  Give them the option to forcibly unlock the
+				// file.
+				actionTBI = new ToolbarItem(FORCE_FILE_UNLOCK);
+				markTBITitle(   actionTBI, "toolbar.force.file.unlock"     );
+				markTBIEvent(   actionTBI, TeamingEvents.FORCE_FILES_UNLOCK);
+				markTBIEntryIds(actionTBI, fe                              );
+				reply.add(actionTBI);
+			}
 			
 			// If we get here, reply refers to the List<ToolbarItem>
 			// containing the toolbar items for the entry viewer.
@@ -4074,6 +4087,15 @@ public class GwtMenuHelper {
 		return reply;
 	}
 
+	/*
+	 * Returns true if the entry has a primary file that's locked and
+	 * false otherwise.
+	 */
+	private static boolean isFileLocked(FolderEntry fe) {
+		FileAttachment fa = MiscUtil.getPrimaryFileAttachment(fe);
+		return ((null != fa) && (null != fa.getFileLock()));
+	}
+	
 	/*
 	 * Returns true if a folder is writable mirrored folder and false
 	 * otherwise.
