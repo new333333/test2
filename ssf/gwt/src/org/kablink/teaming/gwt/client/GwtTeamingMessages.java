@@ -2505,6 +2505,7 @@ public interface GwtTeamingMessages extends Messages
 	String folderEntry_Alt_Previous();
 	String folderEntry_Close();
 	String folderEntry_Comments(int count);
+	String folderEntry_Confirm_ForceFileUnlock();
 	String folderEntry_Entry();
 	String folderEntry_EntryLocked();
 	String folderEntry_Error_NoNext();
