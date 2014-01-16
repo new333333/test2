@@ -115,6 +115,8 @@ public class ModifyNetFolderDlg extends DlgBox
 	private TextBox m_nameTxtBox;
 	private TextBox m_relativePathTxtBox;
 	private ListBox m_netFolderRootsListbox;
+	private RadioButton m_useNFServerIndexContentOptionRB;
+	private RadioButton m_useNFIndexContentOptionRB;
 	private CheckBox m_indexContentCkbox;
 	private CheckBox m_jitsEnabledCkbox;
 	private TextBox m_jitsResultsMaxAge;
@@ -401,15 +403,33 @@ public class ModifyNetFolderDlg extends DlgBox
 		// Add a "Index the content of this net folder" checkbox
 		{
 			FlowPanel tmpPanel;
+			FlowPanel indexPanel;
 			FlexCellFormatter cellFormatter;
 
 			cellFormatter = table.getFlexCellFormatter();
 			cellFormatter.setColSpan( nextRow, 0, 2 );
-			m_indexContentCkbox = new CheckBox( messages.modifyNetFolderDlg_IndexContentLabel() );
+
+			indexPanel = new FlowPanel();
+			indexPanel.addStyleName( "margintop3" );
+			
+			m_useNFServerIndexContentOptionRB = new RadioButton( "indexContentOption", messages.modifyNetFolderDlg_UseNetFolderServerIndexContentOptionRbLabel() );
 			tmpPanel = new FlowPanel();
 			tmpPanel.addStyleName( "margintop3" );
+			tmpPanel.add( m_useNFServerIndexContentOptionRB );
+			indexPanel.add( tmpPanel );
+
+			m_useNFIndexContentOptionRB = new RadioButton( "indexContentOption", messages.modifyNetFolderDlg_UseNetFolderIndexContentOptionRbLabel() );
+			tmpPanel = new FlowPanel();
+			tmpPanel.add( m_useNFIndexContentOptionRB );
+			indexPanel.add( tmpPanel );
+
+			m_indexContentCkbox = new CheckBox( messages.modifyNetFolderDlg_IndexContentLabel() );
+			tmpPanel = new FlowPanel();
+			tmpPanel.getElement().getStyle().setMarginLeft( 30, Unit.PX );
 			tmpPanel.add( m_indexContentCkbox );
-			table.setWidget( nextRow, 0, tmpPanel );
+			indexPanel.add( tmpPanel );
+			
+			table.setWidget( nextRow, 0, indexPanel );
 			++nextRow;
 		}
 		
@@ -879,6 +899,14 @@ public class ModifyNetFolderDlg extends DlgBox
 	/**
 	 * 
 	 */
+	private Boolean getInheritIndexContent()
+	{
+		return m_useNFServerIndexContentOptionRB.getValue();
+	}
+	
+	/**
+	 * 
+	 */
 	private GwtJitsNetFolderConfig getJitsSettings()
 	{
 		GwtJitsNetFolderConfig settings;
@@ -1025,6 +1053,7 @@ public class ModifyNetFolderDlg extends DlgBox
 		netFolder.setDisplayName( getName() );
 		netFolder.setRelativePath( getRelativePath() );
 		netFolder.setNetFolderRootName( getNetFolderRootName() );
+		netFolder.setInheritIndexContentSetting( getInheritIndexContent() );
 		netFolder.setIndexContent( getIndexContent() );
 		netFolder.setSyncScheduleConfig( getSyncScheduleConfig() );
 		netFolder.setDataSyncSettings( getDataSyncSettings() );
@@ -1153,6 +1182,8 @@ public class ModifyNetFolderDlg extends DlgBox
 		// Clear existing data in the controls.
 		m_nameTxtBox.setValue( "" );
 		m_relativePathTxtBox.setValue( "" );
+		m_useNFServerIndexContentOptionRB.setValue( true );
+		m_useNFIndexContentOptionRB.setValue( false );
 		m_indexContentCkbox.setValue( false );
 		m_netFolderRootsListbox.clear();
 		m_netFolderRootsListbox.setVisible( false );
@@ -1185,6 +1216,17 @@ public class ModifyNetFolderDlg extends DlgBox
 			
 			m_relativePathTxtBox.setValue( netFolder.getRelativePath() );
 			
+			if ( netFolder.getInheritIndexContentSetting() )
+			{
+				m_useNFServerIndexContentOptionRB.setValue( true );
+				m_useNFIndexContentOptionRB.setValue( false );
+			}
+			else
+			{
+				m_useNFServerIndexContentOptionRB.setValue( false );
+				m_useNFIndexContentOptionRB.setValue( true );
+			}
+
 			m_indexContentCkbox.setValue( netFolder.getIndexContent() );
 			
 			// Are we dealing with a home net folder?

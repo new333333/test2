@@ -106,7 +106,7 @@ public class BaseFolderModule extends AbstractFolderModule implements BaseFolder
 	}
 
 	@Override
-	public void modifyNetFolder(Long folderId, String netFolderName, String rootName, String path, Boolean isHomeDir, boolean indexContent, SyncScheduleOption syncScheduleOption, Boolean fullSyncDirOnly )
+	public void modifyNetFolder(Long folderId, String netFolderName, String rootName, String path, Boolean isHomeDir, boolean indexContent, Boolean inheritIndexContent, SyncScheduleOption syncScheduleOption, Boolean fullSyncDirOnly )
 			throws AccessControlException, WriteFilesException, WriteEntryDataException {
 	}
 
@@ -121,7 +121,7 @@ public class BaseFolderModule extends AbstractFolderModule implements BaseFolder
 	@Override
 	public Folder createNetFolder(Long templateId, Long parentBinderId,
 			String name, User owner, String rootName, String path,
-			Boolean isHomeDir, boolean indexContent, SyncScheduleOption syncScheduleOption,
+			Boolean isHomeDir, boolean indexContent, Boolean inheritIndexContent, SyncScheduleOption syncScheduleOption,
 			Boolean fullSyncDirOnly ) throws AccessControlException, WriteFilesException, WriteEntryDataException {
 		return null;
 	}

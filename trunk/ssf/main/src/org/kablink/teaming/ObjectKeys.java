@@ -536,6 +536,7 @@ public interface ObjectKeys {
 	public static final String RESOURCE_DRIVER_USE_DIRECTORY_RIGHTS = "useDirectoryRights";
 	public static final String RESOURCE_DRIVER_VOLUME = "volume";
 	public static final String RESOURCE_DRIVER_MODIFIED_ON = "modifiedOn";
+	public static final String RESOURCE_DRIVER_INDEX_CONTENT = "indexContent";
 	
     //User and Principal objects
     public static final int USER_STATUS_DATABASE_FIELD_LENGTH = 256;
@@ -724,6 +725,7 @@ public interface ObjectKeys {
 	public static final String FIELD_BINDER_SYNC_SCHEDULE_OPTION = "syncScheduleOption";
 	public static final String FIELD_WS_SEARCHTITLE="searchTitle";
 	public static final String FIELD_BINDER_FULL_SYNC_DIR_ONLY = "fullSyncDirOnly";
+    public static final String FIELD_BINDER_USE_INHERITED_INDEX_CONTENT = "useInheritedIndexContent";
 	
 	public static final String FIELD_RESOURCE_DRIVER_TYPE = "type";
 	public static final String FIELD_RESOURCE_HANDLE = "resourceHandle"; 

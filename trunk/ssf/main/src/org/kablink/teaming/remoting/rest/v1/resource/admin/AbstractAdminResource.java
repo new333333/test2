@@ -47,7 +47,7 @@ public class AbstractAdminResource extends AbstractResource {
 
         Binder binder = NetFolderHelper.createNetFolder(getTemplateModule(), getBinderModule(), getFolderModule(), getAdminModule(), getLoggedInUser(),
                 netFolder.getName(), resourceDriverConfig.getName(), netFolder.getRelativePath(), toScheduleInfo(netFolder.getSyncSchedule()),
-                syncScheduleOption, parentBinder.getId(), false, netFolder.getIndexContent(), netFolder.getFullSyncDirOnly());
+                syncScheduleOption, parentBinder.getId(), false, netFolder.getIndexContent(), netFolder.getInheritIndexContent(), netFolder.getFullSyncDirOnly());
 
         if (roles!=null) {
             NetFolderHelper.setNetFolderRights(this, binder.getId(), roles);
@@ -65,7 +65,7 @@ public class AbstractAdminResource extends AbstractResource {
 
         NetFolderHelper.modifyNetFolder(getBinderModule(), getFolderModule(), netFolder.getId(),
                 netFolder.getName(), resourceDriverConfig.getName(), netFolder.getRelativePath(), toScheduleInfo(netFolder.getSyncSchedule()),
-                syncScheduleOption, netFolder.getIndexContent(), netFolder.getFullSyncDirOnly());
+                syncScheduleOption, netFolder.getIndexContent(), netFolder.getInheritIndexContent(), netFolder.getFullSyncDirOnly());
 
         if (roles!=null) {
             NetFolderHelper.setNetFolderRights(this, netFolder.getId(), roles);

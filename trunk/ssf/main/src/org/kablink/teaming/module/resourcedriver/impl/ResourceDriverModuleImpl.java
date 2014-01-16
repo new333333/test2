@@ -354,6 +354,16 @@ public class ResourceDriverModuleImpl implements ResourceDriverModule {
 			   		newResourceDriver.setCachedRightsRefreshInterval( value );
 			   	}
 			   	
+			   	if ( options.containsKey( ObjectKeys.RESOURCE_DRIVER_INDEX_CONTENT ) )
+			   	{
+			   		Boolean value = null;
+			   		
+			   		if ( options.get( ObjectKeys.RESOURCE_DRIVER_INDEX_CONTENT ) != null )
+			   			value = (Boolean) options.get( ObjectKeys.RESOURCE_DRIVER_INDEX_CONTENT );
+			   		
+			   		newResourceDriver.setIndexContent( value );
+			   	}
+			   	
 			   	newResourceDriver.setModifiedOn(new Date());	//Set the date of last modification to "now"
 				getCoreDao().save(newResourceDriver);
 				
@@ -486,6 +496,16 @@ public class ResourceDriverModuleImpl implements ResourceDriverModule {
 			   		rdc.setCachedRightsRefreshInterval( value );
 			   	}
 			   	
+			   	if ( options.containsKey( ObjectKeys.RESOURCE_DRIVER_INDEX_CONTENT ) )
+			   	{
+			   		Boolean value = null;
+			   		
+			   		if ( options.get( ObjectKeys.RESOURCE_DRIVER_INDEX_CONTENT ) != null )
+			   			value = (Boolean) options.get( ObjectKeys.RESOURCE_DRIVER_INDEX_CONTENT );
+			   		
+			   		rdc.setIndexContent( value );
+			   	}
+
 			   	rdc.setModifiedOn(new Date());	//Set the date of last modification to "now"
 				getCoreDao().save(rdc);
     			return null;
