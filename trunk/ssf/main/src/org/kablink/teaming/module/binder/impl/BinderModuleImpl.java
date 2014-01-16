@@ -1641,7 +1641,14 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	@Override
 	public void deleteBinder(Long binderId, boolean deleteMirroredSource,
 			Map options, boolean phase1Only, boolean createDbLogForTopBinderOnly) {
-		Binder binder = loadBinder(binderId);
+		Binder binder;
+		try {
+			binder = loadBinder(binderId);
+		}
+		catch(NoBinderByTheIdException e) {
+			// The binder is no longer found, meaning there's nothing more we need to do.
+			return;
+		}
 		Binder parentBinder = null;
 		if(binder != null)
 			parentBinder = binder.getParentBinder();
