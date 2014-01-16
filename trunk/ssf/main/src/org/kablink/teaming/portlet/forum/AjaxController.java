@@ -3434,7 +3434,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 		model.put("status", true);
 		StatusTicket statusTicket = WebStatusTicket.findStatusTicket(
 				PortletRequestUtils.getRequiredStringParameter(request, WebKeys.URL_STATUS_TICKET_ID), request);
-		if (statusTicket.isDone()) statusMap.put(WebKeys.AJAX_STATUS_COMPLETED, "true");
+		if (statusTicket.isDone() || WebKeys.AJAX_STATUS_STATE_COMPLETED.equals(statusTicket.getState())) statusMap.put(WebKeys.AJAX_STATUS_COMPLETED, "true");
 		model.put("ss_operation_status", statusTicket.getStatus());
 		response.setContentType("text/xml");
 		return new ModelAndView("common/check_status", model);	

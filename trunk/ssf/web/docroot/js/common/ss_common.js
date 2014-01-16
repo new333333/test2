@@ -3230,6 +3230,17 @@ function ss_setupStatusMessageDiv() {
     	document.getElementsByTagName("body").item(0).appendChild(smDiv);
 	}
 }
+//Routine to get a status_message
+function ss_getStatusMessage() {
+	var value = '';
+	var smId = document.getElementById('ss_status_message');
+	if (smId != null) {
+		// There is a status message
+		value = smId.innerHTML;
+	}
+	return value;
+}
+
 // common processing for callback after ajax call
 function ss_postRequestAlertError(obj) {
 	// See if there was an error

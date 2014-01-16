@@ -48,6 +48,7 @@ public class GwtWebStatusTicket implements StatusTicket
 	private HttpSession m_session;
 	private String m_id;
 	private String m_status;
+	private String m_state;
 	private Boolean m_doneFlag = false;
 
 	private static GwtWebStatusTicket m_unknownTicket = new GwtWebStatusTicket( null, "__UNKNOWN__")
@@ -188,4 +189,22 @@ public class GwtWebStatusTicket implements StatusTicket
 	{
 		return m_status;
 	}
+	/**
+	 * 
+	 */
+	@Override
+	public void setState( String state )
+	{
+		m_state = state;
+	}
+
+	/**
+	 * 
+	 */
+	@Override
+	public String getState()
+	{
+		return m_state;
+	}
+
 }

@@ -48,14 +48,29 @@ public interface StatusTicket {
 	 * @return
 	 */
 	public void setStatus(String status);
-	
+		
 	/**
 	 * Retrieve the latest status.
 	 * 
 	 * @return
 	 */
 	public String getStatus();
+
+	/**
+	 * Retrieve the latest state.
+	 * 
+	 * @return
+	 */
+	public String getState();
 	
+	/**
+	 * Update the ticket with new state.
+	 * 
+	 * @param state
+	 * @return
+	 */
+	public void setState(String state);
+
 	/**
 	 * Done with the ticket.
 	 * 
@@ -75,6 +90,8 @@ public interface StatusTicket {
 		public String getId() { return "__NULL__"; }
 		public void setStatus(String status) {}
 		public String getStatus() { return ""; }
+		public void setState(String state) {}
+		public String getState() { return ""; }
 		public void done() {}
 		public boolean isDone() { return false; }
 	};
