@@ -17,6 +17,8 @@
 		.vibe-feView-headerContentPersonAnchor        {cursor: pointer; text-decoration: none;}
 		.vibe-feView-headerContentPersonAvatar        {margin-right: 5px; width: 20px; height: 20px; -moz-border-radius: 2px; border-radius: 2px; -webkit-border-radius: 2px; vertical-align: middle; display: inline-block;}
 		.vibe-feView-headerContentPersonCreated       {font-size: 10px; color: #666666; font-weight: normal; padding-left: 8px;}
+		.vibe-feView-headerContentPersonLocked        {padding-left: 10px; font-size: 10px; color: #666666; font-weight: normal;}
+		.vibe-feView-headerContentPersonLockedLabel   {padding-left: 5px;}
 		.vibe-feView-headerContentPersonModified      {padding-left: 10px; font-size: 10px; color: #666666; font-weight: normal;}
 		.vibe-feView-headerContentPersonModifiedLabel {padding-left: 5px;}
 		.vibe-feView-headerContentPanel               {margin-left: 50px; margin-top: 0.3em; display: block;}
@@ -36,7 +38,8 @@
 		.vibe-feView-headerDescriptionShowOuter       {height: 10px; position: relative; margin-top: 10px;}
 		.vibe-feView-headerEntryImage                 {position: absolute; left:  5px; top:  0px;}
 		.vibe-feView-headerEntryLockImage             {position: absolute; left: 19px; top: 34px;}
-		.vibe-feView-headerEntryLockLabel             {position: absolute; left: 10px; top: 55px; font-size: 12px; color: #949494;}
+		.vibe-feView-headerFileLockImage              {position: absolute; left: 29px; top: 34px;}
+		.vibe-feView-headerLockLabel                  {position: absolute; left: 10px; top: 55px; font-size: 12px; color: #949494;}
 		.vibe-feView-headerRoot                       {position: relative; display: block; padding: 0px 50px 10px 10px;}
 	/* End:  Header styles. */
 	

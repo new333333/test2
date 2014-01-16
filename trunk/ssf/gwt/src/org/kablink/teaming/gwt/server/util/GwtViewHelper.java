@@ -83,6 +83,7 @@ import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.domain.Description;
 import org.kablink.teaming.domain.FileAttachment;
+import org.kablink.teaming.domain.FileAttachment.FileLock;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.Group;
@@ -166,6 +167,7 @@ import org.kablink.teaming.gwt.client.util.EntryLinkInfo;
 import org.kablink.teaming.gwt.client.util.EntryTitleInfo;
 import org.kablink.teaming.gwt.client.util.FolderEntryDetails;
 import org.kablink.teaming.gwt.client.util.FolderEntryDetails.ShareInfo;
+import org.kablink.teaming.gwt.client.util.FolderEntryDetails.UserInfo;
 import org.kablink.teaming.gwt.client.util.GwtFileLinkAction;
 import org.kablink.teaming.gwt.client.util.MobileDevicesInfo;
 import org.kablink.teaming.gwt.client.util.SelectedUsersDetails;
@@ -173,7 +175,6 @@ import org.kablink.teaming.gwt.client.util.SelectionDetails;
 import org.kablink.teaming.gwt.client.util.SharedViewState;
 import org.kablink.teaming.gwt.client.util.TagInfo;
 import org.kablink.teaming.gwt.client.util.UserType;
-import org.kablink.teaming.gwt.client.util.FolderEntryDetails.UserInfo;
 import org.kablink.teaming.gwt.client.util.FolderType;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.ManageUsersState;
@@ -182,8 +183,6 @@ import org.kablink.teaming.gwt.client.util.ShareDateInfo;
 import org.kablink.teaming.gwt.client.util.ShareExpirationInfo;
 import org.kablink.teaming.gwt.client.util.ShareMessageInfo;
 import org.kablink.teaming.gwt.client.util.ShareStringValue;
-import org.kablink.teaming.gwt.server.util.GwtPerShareInfo.PerShareInfoComparator;
-import org.kablink.teaming.gwt.server.util.GwtSharedMeItem.SharedMeEntriesMapComparator;
 import org.kablink.teaming.gwt.client.util.PrincipalInfo;
 import org.kablink.teaming.gwt.client.util.ShareRights;
 import org.kablink.teaming.gwt.client.util.TaskFolderInfo;
@@ -193,11 +192,14 @@ import org.kablink.teaming.gwt.client.util.ViewFolderEntryInfo;
 import org.kablink.teaming.gwt.client.util.ViewType;
 import org.kablink.teaming.gwt.client.util.WorkspaceType;
 import org.kablink.teaming.gwt.client.util.ViewInfo;
+import org.kablink.teaming.gwt.server.util.GwtPerShareInfo.PerShareInfoComparator;
+import org.kablink.teaming.gwt.server.util.GwtSharedMeItem.SharedMeEntriesMapComparator;
 import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.module.admin.AdminModule.AdminOperation;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
+import org.kablink.teaming.module.file.FileModule;
 import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.folder.FilesLockedByOtherUsersException;
 import org.kablink.teaming.module.folder.FolderModule;
@@ -686,8 +688,24 @@ public class GwtViewHelper {
 	}
 	
 	/*
-	 * Constructs and returns a UserInfo object using a HistoryStamp.
+	 * Constructs and returns a UserInfo object using a Date an a user
+	 * ID.
 	 */
+	private static UserInfo buildFolderEntryUser(AllModulesInjected bs, HttpServletRequest request, Date hsDate, Long hsUserId) {
+		// Create the UserInfo to return...
+		UserInfo reply = new UserInfo();
+
+		// ...set the Date when the user performed the action...
+		reply.setDate(GwtServerHelper.getDateTimeString(hsDate, DateFormat.MEDIUM, DateFormat.SHORT));
+		
+		// ...and set the PrincipalInfo about how performed the action.
+		reply.setPrincipalInfo(getPIFromPId(bs, request, hsUserId));
+		
+		// If we get here, reply refers to the UserInfo that describes
+		// the user from the given HistoryStamp.  Return it.
+		return reply;
+	}
+	
 	private static UserInfo buildFolderEntryUser(AllModulesInjected bs, HttpServletRequest request, HistoryStamp hs) {
 		// If we don't have a HistoryStamp...
 		if (null == hs) {
@@ -695,18 +713,8 @@ public class GwtViewHelper {
 			return null;
 		}
 		
-		// Create the UserInfo to return...
-		UserInfo reply = new UserInfo();
-
-		// ...set the Date when the user performed the action...
-		reply.setDate(GwtServerHelper.getDateTimeString(hs.getDate(), DateFormat.MEDIUM, DateFormat.SHORT));
-		
-		// ...and set the PrincipalInfo about how performed the action.
-		reply.setPrincipalInfo(getPIFromPId(bs, request, hs.getPrincipal().getId()));
-		
-		// If we get here, reply refers to the UserInfo that describes
-		// the user from the given HistoryStamp.  Return it.
-		return reply;
+		// Always use the initial form of the method.
+		return buildFolderEntryUser(bs, request, hs.getDate(), hs.getPrincipal().getId());
 	}
 
 	/*
@@ -2303,6 +2311,50 @@ public class GwtViewHelper {
 		}
 	}
 
+	/**
+	 * Forces the selected files to be unlocked.
+	 * 
+	 * @param bs
+	 * @param request
+	 * @param entityIds
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public static BooleanRpcResponseData forceFilesUnlock(AllModulesInjected bs, HttpServletRequest request, List<EntityId> entityIds) throws GwtTeamingException {
+		try {
+			// Are there any entities to unlock?
+			if (MiscUtil.hasItems(entityIds)) {
+				// Yes!  Scan them...
+				FileModule   fim = bs.getFileModule();
+				FolderModule fom = bs.getFolderModule();
+				for (EntityId eid:  entityIds) {
+					// ...forcing their primary file to be unlocked.
+					FolderEntry    fe = fom.getEntry(eid.getBinderId(), eid.getEntityId());
+					FileAttachment fa = MiscUtil.getPrimaryFileAttachment(fe);
+					if ((null != fa) && (null != fa.getFileLock())) {
+						fim.forceUnlock(fe.getParentBinder(), fe, fa);
+					}
+				}
+			}
+			
+			// If we get here, the unlocks were successful.  Return
+			// true.
+			return new BooleanRpcResponseData(Boolean.TRUE);
+		}
+		
+		catch (Exception e) {
+			// Convert the exception to a GwtTeamingException and throw
+			// that.
+			throw
+				GwtLogHelper.getGwtClientException(
+					m_logger,
+					e,
+					"GwtViewHelper.forceFilesUnlock( SOURCE EXCEPTION ):  ");
+		}
+	}
+	
 	/**
 	 * Return true of the accessory panel should be visible on the
 	 * given binder and false otherwise.
@@ -4234,11 +4286,15 @@ public class GwtViewHelper {
 			String  family = GwtServerHelper.getFolderEntityFamily(bs, feTop);
 			reply.setFamily(family);
 			String fileSizeDisplay = "";
+			FileAttachment fa;
 			if (GwtServerHelper.isFamilyFile(family)) {
-				FileAttachment fa = MiscUtil.getPrimaryFileAttachment(feTop);
+				fa = MiscUtil.getPrimaryFileAttachment(feTop);
 				if (null != fa) {
 					fileSizeDisplay = buildFileSizeDisplayFromKBSize(user, fa.getFileItem().getLengthKB());
 				}
+			}
+			else {
+				fa = null;
 			}
 			reply.setFileSizeDisplay(fileSizeDisplay);
 	
@@ -4253,8 +4309,20 @@ public class GwtViewHelper {
 			
 			// ...set the entry's locker...
 			HistoryStamp lStamp = fe.getReservation();
-			reply.setLocker(buildFolderEntryUser(bs, request, lStamp));
-			reply.setLockedByLoggedInUser((null != lStamp) && lStamp.getPrincipal().getId().equals(userId));
+			reply.setEntryLocker(buildFolderEntryUser(bs, request, lStamp));
+			reply.setEntryLockedByLoggedInUser((null != lStamp) && lStamp.getPrincipal().getId().equals(userId));
+
+			// ...if it's a file...
+			if (null != fa) {
+				// ...that's locked...
+				FileLock fl = fa.getFileLock();
+				if (null != fl) {
+					// ...set the file's locker...
+					Long lockerId = fl.getOwner().getId();
+					reply.setFileLocker(buildFolderEntryUser(bs, request, fl.getExpirationDate(), lockerId));
+					reply.setFileLockedByLoggedInUser(lockerId.equals(userId));
+				}
+			}
 
 			// ...set the contributor's to this entry...
 			reply.setContributors(ListFolderHelper.collectContributorIds(fe));
@@ -4287,7 +4355,7 @@ public class GwtViewHelper {
 	
 			// ...if this is a file entry with a filename...
 			FileAttachment faForEntryIcon;
-			FileAttachment fa = GwtServerHelper.getFileEntrysFileAttachment(bs, fe, isTop);
+			fa = GwtServerHelper.getFileEntrysFileAttachment(bs, fe, isTop);
 			if (null != fa) {
 				// ...store it for using for the entry icon...
 				faForEntryIcon = fa;

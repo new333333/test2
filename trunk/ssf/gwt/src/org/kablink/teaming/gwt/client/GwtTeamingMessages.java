@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -84,7 +84,7 @@ public interface GwtTeamingMessages extends Messages
 	String showFolderDesc();
 	String showTitleBar();
 	
-	// Strings used with the Googld Gadget widget in the landing page editor
+	// Strings used with the Google Gadget widget in the landing page editor
 	String googleGadgetCodeLabel();
 	String googleGadgetProperties();
 	
@@ -356,6 +356,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_ExpandSubtasks();
 	String rpcFailure_FindUserByEmailAddress();
 	String rpcFailure_FolderDoesNotExist();
+	String rpcFailure_ForceFilesUnlock();
 	String rpcFailure_GetAccessoryStatus();
 	String rpcFailure_GetActivityStreamParams();
 	String rpcFailure_GetActivityStreamsTree();
@@ -2496,17 +2497,20 @@ public interface GwtTeamingMessages extends Messages
 	
 	// Strings used by the GWT based Folder Entry viewer.
 	String folderEntry_Alt_Close();
+	String folderEntry_Alt_EntryLockedBy(String user);
+	String folderEntry_Alt_FileLockedBy(String user);
 	String folderEntry_Alt_Hide();
-	String folderEntry_Alt_LockedBy(String user);
 	String folderEntry_Alt_MarkRead();
 	String folderEntry_Alt_Next();
 	String folderEntry_Alt_Previous();
 	String folderEntry_Close();
 	String folderEntry_Comments(int count);
 	String folderEntry_Entry();
+	String folderEntry_EntryLocked();
 	String folderEntry_Error_NoNext();
 	String folderEntry_Error_NoPrevious();
 	String folderEntry_File();
+	String folderEntry_FileLocked();
 	String folderEntry_FileSize(String size);
 	String folderEntry_Hide();
 	String folderEntry_Locked();

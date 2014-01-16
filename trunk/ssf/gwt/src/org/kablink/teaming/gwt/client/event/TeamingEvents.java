@@ -291,6 +291,7 @@ public enum TeamingEvents implements IsSerializable {
 	ENABLE_SELECTED_USERS_WEBACCESS,				// Enables web access for the the Selected Users.
 	FIND_CONTROL_BROWSE,							// Invoke the find control browser.
 	FOLDER_ENTRY_ACTION_COMPLETE,					// An action on a folder entry has completed.
+	FORCE_FILES_UNLOCK,								// Forces the primary file on the selected entities to be unlocked.
 	GET_MANAGE_TITLE,								// Event to request the management component's title.
 	HIDE_SELECTED_SHARES,							// Marks the selected shares as being hidden.
 	LOCK_SELECTED_ENTITIES,							// Locks the Selected Entities.
