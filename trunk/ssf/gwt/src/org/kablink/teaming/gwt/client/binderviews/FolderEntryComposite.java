@@ -77,10 +77,13 @@ import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
 import org.kablink.teaming.gwt.client.util.ViewFolderEntryInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
+import org.kablink.teaming.gwt.client.widgets.ConfirmCallback;
+import org.kablink.teaming.gwt.client.widgets.ConfirmDlg;
 import org.kablink.teaming.gwt.client.widgets.ContentControl;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import org.kablink.teaming.gwt.client.widgets.VibeFlexTable;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
+import org.kablink.teaming.gwt.client.widgets.ConfirmDlg.ConfirmDlgClient;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
@@ -1053,10 +1056,42 @@ public class FolderEntryComposite extends ResizeComposite
 	 * Asynchronously forces the selected files to be unlocked.
 	 */
 	private void onForceFilesUnlockAsync(final List<EntityId> entityIds) {
-		GwtClientHelper.deferCommand(new ScheduledCommand() {
+		ConfirmDlg.createAsync(new ConfirmDlgClient() {
 			@Override
-			public void execute() {
-				onForceFilesUnlockNow(entityIds);
+			public void onUnavailable() {
+				// Nothing to do.  Error handled in
+				// asynchronous provider.
+			}
+			
+			@Override
+			public void onSuccess(ConfirmDlg cDlg) {
+				ConfirmDlg.initAndShow(
+					cDlg,
+					new ConfirmCallback() {
+						@Override
+						public void dialogReady() {
+							// Ignored.  We don't really care when the
+							// dialog is ready.
+						}
+
+						@Override
+						public void accepted() {
+							// Yes, they're sure!  Force the files to
+							// be unlocked.
+							GwtClientHelper.deferCommand(new ScheduledCommand() {
+								@Override
+								public void execute() {
+									onForceFilesUnlockNow(entityIds);
+								}
+							});
+						}
+
+						@Override
+						public void rejected() {
+							// No, they're not sure!
+						}
+					},
+					m_messages.folderEntry_Confirm_ForceFileUnlock());
 			}
 		});
 	}
