@@ -1050,7 +1050,13 @@ public class ModifyNetFolderDlg extends DlgBox
 		
 		netFolder = new NetFolder();
 		netFolder.setName( getName() );
-		netFolder.setDisplayName( getName() );
+		
+		// If we are working with an existing net folder, grab its display name.
+		if ( m_netFolder != null )
+			netFolder.setDisplayName( m_netFolder.getDisplayName() );
+		else
+			netFolder.setDisplayName( getName() );
+		
 		netFolder.setRelativePath( getRelativePath() );
 		netFolder.setNetFolderRootName( getNetFolderRootName() );
 		netFolder.setInheritIndexContentSetting( getInheritIndexContent() );
