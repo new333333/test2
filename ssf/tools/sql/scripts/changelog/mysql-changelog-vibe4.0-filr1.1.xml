@@ -549,4 +549,31 @@ update SS_Principals set domainName=LOWER(domainName);
         </addColumn>
     </changeSet>
     
+    <changeSet author="jay" context="schema" failOnError="true" id="49">
+        <comment>Add useInheritedJitsSettings field to SS_Forums table</comment>
+        <addColumn tableName="SS_Forums">
+            <column name="useInheritedJitsSettings" type="BIT">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+        <comment>Add jitsEnabled field to SS_ResourceDriver table</comment>
+        <addColumn tableName="SS_ResourceDriver">
+            <column name="jitsEnabled" type="BIT">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+        <comment>Add jitsMaxAge field to SS_ResourceDriver table</comment>
+        <addColumn tableName="SS_ResourceDriver">
+            <column name="jitsMaxAge" type="BIGINT">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+        <comment>Add jitsAclMaxAge field to SS_ResourceDriver table</comment>
+        <addColumn tableName="SS_ResourceDriver">
+            <column name="jitsAclMaxAge" type="BIGINT">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+    
 </databaseChangeLog>

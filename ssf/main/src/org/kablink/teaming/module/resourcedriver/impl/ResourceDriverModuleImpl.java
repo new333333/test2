@@ -364,6 +364,45 @@ public class ResourceDriverModuleImpl implements ResourceDriverModule {
 			   		newResourceDriver.setIndexContent( value );
 			   	}
 			   	
+			   	if ( options.containsKey( ObjectKeys.RESOURCE_DRIVER_JITS_ENABLED ) )
+			   	{
+			   		Boolean value = null;
+			   		
+			   		if ( options.get( ObjectKeys.RESOURCE_DRIVER_JITS_ENABLED ) != null )
+			   			value = (Boolean) options.get( ObjectKeys.RESOURCE_DRIVER_JITS_ENABLED );
+			   		
+			   		if ( value != null )
+			   			newResourceDriver.setJitsEnabled( value );
+			   		else
+			   			newResourceDriver.setJitsEnabled( false );
+			   	}
+			   	
+			   	if ( options.containsKey( ObjectKeys.RESOURCE_DRIVER_JITS_RESULTS_MAX_AGE ) )
+			   	{
+			   		Long value = null;
+			   		
+			   		if ( options.get( ObjectKeys.RESOURCE_DRIVER_JITS_RESULTS_MAX_AGE ) != null )
+			   			value = (Long) options.get( ObjectKeys.RESOURCE_DRIVER_JITS_RESULTS_MAX_AGE );
+			   		
+			   		if ( value != null )
+				   		newResourceDriver.setJitsMaxAge( value );
+			   		else
+				   		newResourceDriver.setJitsMaxAge( 0 );
+			   	}
+			   	
+			   	if ( options.containsKey( ObjectKeys.RESOURCE_DRIVER_JITS_ACL_MAX_AGE ) )
+			   	{
+			   		Long value = null;
+			   		
+			   		if ( options.get( ObjectKeys.RESOURCE_DRIVER_JITS_ACL_MAX_AGE ) != null )
+			   			value = (Long) options.get( ObjectKeys.RESOURCE_DRIVER_JITS_ACL_MAX_AGE );
+			   		
+			   		if ( value != null )
+				   		newResourceDriver.setJitsAclMaxAge( value );
+			   		else
+				   		newResourceDriver.setJitsAclMaxAge( 0 );
+			   	}
+			   	
 			   	newResourceDriver.setModifiedOn(new Date());	//Set the date of last modification to "now"
 				getCoreDao().save(newResourceDriver);
 				
@@ -506,6 +545,45 @@ public class ResourceDriverModuleImpl implements ResourceDriverModule {
 			   		rdc.setIndexContent( value );
 			   	}
 
+			   	if ( options.containsKey( ObjectKeys.RESOURCE_DRIVER_JITS_ENABLED ) )
+			   	{
+			   		Boolean value = null;
+			   		
+			   		if ( options.get( ObjectKeys.RESOURCE_DRIVER_JITS_ENABLED ) != null )
+			   			value = (Boolean) options.get( ObjectKeys.RESOURCE_DRIVER_JITS_ENABLED );
+			   		
+			   		if ( value != null )
+			   			rdc.setJitsEnabled( value );
+			   		else
+			   			rdc.setJitsEnabled( false );
+			   	}
+			   	
+			   	if ( options.containsKey( ObjectKeys.RESOURCE_DRIVER_JITS_RESULTS_MAX_AGE ) )
+			   	{
+			   		Long value = null;
+			   		
+			   		if ( options.get( ObjectKeys.RESOURCE_DRIVER_JITS_RESULTS_MAX_AGE ) != null )
+			   			value = (Long) options.get( ObjectKeys.RESOURCE_DRIVER_JITS_RESULTS_MAX_AGE );
+			   		
+			   		if ( value != null )
+			   			rdc.setJitsMaxAge( value );
+			   		else
+			   			rdc.setJitsMaxAge( 0 );
+			   	}
+			   	
+			   	if ( options.containsKey( ObjectKeys.RESOURCE_DRIVER_JITS_ACL_MAX_AGE ) )
+			   	{
+			   		Long value = null;
+			   		
+			   		if ( options.get( ObjectKeys.RESOURCE_DRIVER_JITS_ACL_MAX_AGE ) != null )
+			   			value = (Long) options.get( ObjectKeys.RESOURCE_DRIVER_JITS_ACL_MAX_AGE );
+			   		
+			   		if ( value != null )
+			   			rdc.setJitsAclMaxAge( value );
+			   		else
+			   			rdc.setJitsAclMaxAge( 0 );
+			   	}
+			   	
 			   	rdc.setModifiedOn(new Date());	//Set the date of last modification to "now"
 				getCoreDao().save(rdc);
     			return null;

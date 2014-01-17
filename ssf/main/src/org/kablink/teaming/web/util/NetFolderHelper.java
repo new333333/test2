@@ -178,6 +178,9 @@ public class NetFolderHelper
 													null,
 													null,
 													false,
+													new Boolean( true ),
+													new Long( 35000 ),
+													new Long( 65000 ),
 													scheduleInfo );
 		
 		// Add a task for the administrator to enter the proxy credentials for this server.
@@ -396,6 +399,7 @@ public class NetFolderHelper
 												binderModule,
 												netFolderBinder.getId(),
 												true,
+												true,
 												getDefaultJitsAclMaxAge(),
 												getDefaultJitsResultsMaxAge() );
 				}
@@ -585,6 +589,9 @@ public class NetFolderHelper
 		Boolean useDirectoryRights,
 		Integer cachedRightsRefreshInterval,
 		Boolean indexContent,
+		Boolean enableJits,
+		Long jitsResultsMaxAge,
+		Long jitsAclMaxAge,
 		ScheduleInfo scheduleInfo ) throws RDException
 	{
 		Map options;
@@ -610,6 +617,9 @@ public class NetFolderHelper
 		options.put( ObjectKeys.RESOURCE_DRIVER_USE_DIRECTORY_RIGHTS, useDirectoryRights );
 		options.put( ObjectKeys.RESOURCE_DRIVER_CACHED_RIGHTS_REFRESH_INTERVAL, cachedRightsRefreshInterval );
 		options.put( ObjectKeys.RESOURCE_DRIVER_INDEX_CONTENT, indexContent );
+		options.put( ObjectKeys.RESOURCE_DRIVER_JITS_ENABLED, enableJits );
+		options.put( ObjectKeys.RESOURCE_DRIVER_JITS_RESULTS_MAX_AGE, jitsResultsMaxAge );
+		options.put( ObjectKeys.RESOURCE_DRIVER_JITS_ACL_MAX_AGE, jitsAclMaxAge );
 		
 		// Is the root type WebDAV?
 		if ( driverType == DriverType.webdav )
@@ -992,6 +1002,9 @@ public class NetFolderHelper
 		Boolean useDirectoryRights,
 		Integer cachedRightsRefreshInterval,
 		Boolean indexContent,
+		Boolean enableJits,
+		Long jitsResultsMaxAge,
+		Long jitsAclMaxAge,
 		ScheduleInfo scheduleInfo )
 	{
 		Map options;
@@ -1023,6 +1036,9 @@ public class NetFolderHelper
 		options.put( ObjectKeys.RESOURCE_DRIVER_USE_DIRECTORY_RIGHTS, useDirectoryRights );
 		options.put( ObjectKeys.RESOURCE_DRIVER_CACHED_RIGHTS_REFRESH_INTERVAL, cachedRightsRefreshInterval );
 		options.put( ObjectKeys.RESOURCE_DRIVER_INDEX_CONTENT, indexContent );
+		options.put( ObjectKeys.RESOURCE_DRIVER_JITS_ENABLED, enableJits );
+		options.put( ObjectKeys.RESOURCE_DRIVER_JITS_RESULTS_MAX_AGE, jitsResultsMaxAge );
+		options.put( ObjectKeys.RESOURCE_DRIVER_JITS_ACL_MAX_AGE, jitsAclMaxAge );
 
 		// Always prevent the top level folder from being deleted
 		// This is forced so that the folder could not accidentally be deleted if the 
@@ -1207,6 +1223,7 @@ public class NetFolderHelper
 	public static void saveJitsSettings(
 		BinderModule binderModule,
 		Long binderId,
+		boolean inheritJitsSettings,
 		boolean jitsEnabled,
 		long aclMaxAge,
 		long resultsMaxAge )
@@ -1221,6 +1238,8 @@ public class NetFolderHelper
 			deleteAtts = new HashSet();
 			fileMap = new HashMap();
 			formData = new HashMap();
+
+			formData.put( ObjectKeys.FIELD_BINDER_USE_INHERITED_JITS_SETTINGS, Boolean.valueOf( inheritJitsSettings ) );
 
 			formData.put( ObjectKeys.FIELD_BINDER_JITS_ENABLED, Boolean.toString( jitsEnabled ) );
 			

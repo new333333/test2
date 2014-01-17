@@ -59,6 +59,9 @@ public class NetFolderRoot
 	private String m_proxyPwd = "";
 	private GwtSchedule m_syncSchedule;
 	private Boolean m_indexContent;
+	private Boolean m_jitsEnabled;
+	private long m_jitsResultsMaxAge = 0;
+	private long m_jitsAclMaxAge = 0;
 	private Boolean m_fullSyncDirOnly;
 	private ArrayList<GwtPrincipal> m_principals;
 	private NetFolderRootStatus m_status;
@@ -174,6 +177,9 @@ public class NetFolderRoot
 		m_authType = null;
 		m_useDirectoryRights = null;
 		m_cachedRightsRefreshInterval = null;
+		m_jitsEnabled = null;
+		m_jitsResultsMaxAge = 0;
+		m_jitsAclMaxAge = 0;
 	}	
 	
 	/**
@@ -205,6 +211,9 @@ public class NetFolderRoot
 		m_authType = root.getAuthType();
 		m_useDirectoryRights = root.getUseDirectoryRights();
 		m_cachedRightsRefreshInterval = root.getCachedRightsRefreshInterval();
+		m_jitsEnabled = root.getJitsEnabled();
+		m_jitsResultsMaxAge = root.getJitsResultsMaxAge();
+		m_jitsAclMaxAge = root.getJitsAclMaxAge();
 
 		m_statusTicketId = root.getStatusTicketId();
 
@@ -359,6 +368,30 @@ public class NetFolderRoot
 	public Boolean getIndexContent()
 	{
 		return m_indexContent;
+	}
+	
+	/**
+	 * 
+	 */
+	public Boolean getJitsEnabled()
+	{
+		return m_jitsEnabled;
+	}
+	
+	/**
+	 * 
+	 */
+	public long getJitsAclMaxAge()
+	{
+		return m_jitsAclMaxAge;
+	}
+	
+	/**
+	 * 
+	 */
+	public long getJitsResultsMaxAge()
+	{
+		return m_jitsResultsMaxAge;
 	}
 	
 	/**
@@ -527,6 +560,30 @@ public class NetFolderRoot
 	public void setIndexContent( Boolean value )
 	{
 		m_indexContent = value;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setJitsEnabled( Boolean value )
+	{
+		m_jitsEnabled = value;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setJitsResultsMaxAge( long value )
+	{
+		m_jitsResultsMaxAge = value;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setJitsAclMaxAge( long value )
+	{
+		m_jitsAclMaxAge = value;
 	}
 	
 	/**

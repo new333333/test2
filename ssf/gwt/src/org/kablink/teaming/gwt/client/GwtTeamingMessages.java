@@ -2425,6 +2425,8 @@ public interface GwtTeamingMessages extends Messages
 	String modifyNetFolderDlg_SelectPrincipalsHint();
 	String modifyNetFolderDlg_ScheduleTab();
 	String modifyNetFolderDlg_SyncScheduleCaption();
+	String modifyNetFolderDlg_UseJistsSettingsFromNetFolderRbLabel();
+	String modifyNetFolderDlg_UseJitsSettingsFromNetFolderServerRbLabel();
 	String modifyNetFolderDlg_UseNetFolderIndexContentOptionRbLabel();
 	String modifyNetFolderDlg_UseNetFolderScheduleRbLabel();
 	String modifyNetFolderDlg_UseNetFolderServerIndexContentOptionRbLabel();

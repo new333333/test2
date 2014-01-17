@@ -85,6 +85,8 @@ import com.google.gwt.user.client.ui.FlexTable.FlexCellFormatter;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusWidget;
+import com.google.gwt.user.client.ui.HasVerticalAlignment;
+import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
@@ -132,6 +134,9 @@ public class ModifyNetFolderRootDlg extends DlgBox
 	private TabPanel m_tabPanel;
 	private LdapBrowserDlg m_ldapBrowserDlg;
 	private CheckBox m_indexContentCB;
+	private CheckBox m_jitsEnabledCkbox;
+	private TextBox m_jitsResultsMaxAge;
+	private TextBox m_jitsAclMaxAge;
 	
 	private List<LdapBrowseSpec> m_ldapServerList;	// List of LDAP servers obtained the first time m_browseProxyDnBtn is clicked.
 	
@@ -688,6 +693,113 @@ public class ModifyNetFolderRootDlg extends DlgBox
 		tmpPanel.add( m_indexContentCB );
 		mainPanel.add( tmpPanel );
 		
+		// Add the controls needed to define Jits settings
+		{
+			FlowPanel jitsPanel;
+
+			jitsPanel = new FlowPanel();
+			mainPanel.add( jitsPanel );
+			
+			m_jitsEnabledCkbox = new CheckBox( messages.modifyNetFolderDlg_EnableJitsLabel() );
+			tmpPanel = new FlowPanel();
+			tmpPanel.add( m_jitsEnabledCkbox );
+			jitsPanel.add( tmpPanel );
+			
+			// Add a panel that holds all the max age controls.
+			{
+				FlowPanel maxAgePanel;
+				
+				maxAgePanel = new FlowPanel();
+				maxAgePanel.addStyleName( "marginleft3" );
+				
+				// Add the controls for "results max age"
+				{
+					HorizontalPanel hPanel;
+					Label intervalLabel;
+
+					hPanel = new HorizontalPanel();
+					hPanel.setVerticalAlignment( HasVerticalAlignment.ALIGN_MIDDLE );
+					hPanel.setSpacing( 0 );
+					
+					intervalLabel = new Label( messages.modifyNetFolderDlg_JitsResultsMaxAgeLabel() );
+					hPanel.add( intervalLabel );
+					
+					m_jitsResultsMaxAge = new TextBox();
+					m_jitsResultsMaxAge.addKeyPressHandler( new KeyPressHandler()
+					{
+						@Override
+						public void onKeyPress( KeyPressEvent event )
+						{
+					        int keyCode;
+
+					        // Get the key the user pressed
+					        keyCode = event.getNativeEvent().getKeyCode();
+					        
+					        if ( GwtClientHelper.isKeyValidForNumericField( event.getCharCode(), keyCode ) == false )
+					        {
+				        		// Suppress the current keyboard event.
+					        	m_jitsResultsMaxAge.cancelKey();
+					        }
+						}
+					} );
+					m_jitsResultsMaxAge.setVisibleLength( 3 );
+					hPanel.add( m_jitsResultsMaxAge );
+					
+					intervalLabel = new Label( messages.jitsZoneConfigDlg_SecondsLabel() );
+					intervalLabel.addStyleName( "marginleft2px" );
+					intervalLabel.addStyleName( "gray3" );
+					hPanel.add( intervalLabel );
+
+					maxAgePanel.add( hPanel );
+				}
+
+				// Add the controls for "acl max age"
+				{
+					HorizontalPanel hPanel;
+					Label intervalLabel;
+
+					hPanel = new HorizontalPanel();
+					hPanel.setVerticalAlignment( HasVerticalAlignment.ALIGN_MIDDLE );
+					hPanel.setSpacing( 0 );
+					
+					intervalLabel = new Label( messages.modifyNetFolderDlg_JitsAclMaxAgeLabel() );
+					hPanel.add( intervalLabel );
+					
+					m_jitsAclMaxAge = new TextBox();
+					m_jitsAclMaxAge.addKeyPressHandler( new KeyPressHandler()
+					{
+						@Override
+						public void onKeyPress( KeyPressEvent event )
+						{
+					        int keyCode;
+
+					        // Get the key the user pressed
+					        keyCode = event.getNativeEvent().getKeyCode();
+					        
+					        if ( GwtClientHelper.isKeyValidForNumericField( event.getCharCode(), keyCode ) == false )
+					        {
+				        		// Suppress the current keyboard event.
+					        	m_jitsAclMaxAge.cancelKey();
+					        }
+						}
+					} );
+					m_jitsAclMaxAge.setVisibleLength( 3 );
+					hPanel.add( m_jitsAclMaxAge );
+					
+					intervalLabel = new Label( messages.jitsZoneConfigDlg_SecondsLabel() );
+					intervalLabel.addStyleName( "marginleft2px" );
+					intervalLabel.addStyleName( "gray3" );
+					hPanel.add( intervalLabel );
+
+					maxAgePanel.add( hPanel );
+				}
+
+				jitsPanel.add( maxAgePanel );
+			}
+			
+			mainPanel.add( jitsPanel );
+		}
+		
 		tmpPanel = new FlowPanel();
 		m_fullSyncDirOnlyCB = new CheckBox( messages.modifyNetFolderServerDlg_SyncOnlyDirStructureCB() );
 		tmpPanel.add( m_fullSyncDirOnlyCB );
@@ -1176,6 +1288,49 @@ public class ModifyNetFolderRootDlg extends DlgBox
 		return interval;
 	}
 	
+	/**
+	 * 
+	 */
+	private long getJitsAclMaxAge()
+	{
+		String maxAgeStr;
+		long maxAge = 0;
+		
+		maxAgeStr = m_jitsAclMaxAge.getText();
+		if ( maxAgeStr != null && maxAgeStr.length() > 0 )
+			maxAge = Long.parseLong( maxAgeStr );
+		
+		maxAge *= 1000;
+		return maxAge;
+	}
+	
+	/**
+	 * 
+	 */
+	private boolean getJitsEnabled()
+	{
+		if ( m_jitsEnabledCkbox.getValue() == Boolean.TRUE )
+			return true;
+
+		return false;
+	}
+	
+	/**
+	 * 
+	 */
+	private long getJitsResultsMaxAge()
+	{
+		String maxAgeStr;
+		long maxAge = 0;
+		
+		maxAgeStr = m_jitsResultsMaxAge.getText();
+		if ( maxAgeStr != null && maxAgeStr.length() > 0 )
+			maxAge = Long.parseLong( maxAgeStr );
+		
+		maxAge *= 1000;
+		return maxAge;
+	}
+	
 	/*
 	 * Gets the list of LDAP servers and runs the browser on them.
 	 */
@@ -1414,6 +1569,9 @@ public class ModifyNetFolderRootDlg extends DlgBox
 		netFolderRoot.setUseDirectoryRights( getUseDirectoryRights() );
 		netFolderRoot.setCachedRightsRefreshInterval( getCachedRightsRefreshInterval() );
 		netFolderRoot.setIndexContent( getIndexContent() );
+		netFolderRoot.setJitsEnabled( getJitsEnabled() );
+		netFolderRoot.setJitsResultsMaxAge( getJitsResultsMaxAge() );
+		netFolderRoot.setJitsAclMaxAge( getJitsAclMaxAge() );
 		
 		if ( m_showPrivilegedUsersUI && m_selectPrincipalsWidget != null )
 			netFolderRoot.setListOfPrincipals( getListOfPrivilegedPrincipals() );
@@ -1658,6 +1816,8 @@ public class ModifyNetFolderRootDlg extends DlgBox
 			m_tabPanel.selectTab( 0 );
 		}
 		
+		initJits();
+		
 		danceDlg( false );
 
 		if ( m_netFolderRoot != null )
@@ -1678,6 +1838,29 @@ public class ModifyNetFolderRootDlg extends DlgBox
 			GwtClientHelper.selectListboxItemByValue( m_authTypeListbox, authType.toString() );
 	}
 	
+	/**
+	 * Initialize the controls used for the jits settings
+	 */
+	private void initJits()
+	{
+		m_jitsEnabledCkbox.setValue( false );
+		m_jitsAclMaxAge.setValue( "" );
+		m_jitsResultsMaxAge.setValue( "" );
+		
+		if ( m_netFolderRoot != null )
+		{
+			m_jitsEnabledCkbox.setValue( m_netFolderRoot.getJitsEnabled() );
+			m_jitsAclMaxAge.setValue( String.valueOf( m_netFolderRoot.getJitsAclMaxAge() / 1000 ) );
+			m_jitsResultsMaxAge.setValue( String.valueOf( m_netFolderRoot.getJitsResultsMaxAge() / 1000 ) );
+		}
+		else
+		{
+			m_jitsEnabledCkbox.setValue( false );
+			m_jitsAclMaxAge.setValue( "60" );
+			m_jitsResultsMaxAge.setValue( "30" );
+		}
+	}
+
 	/**
 	 * Initialize the server type
 	 */
