@@ -1,3 +1,12 @@
+When adding entries to this file, please visit the Filr/Vibe credits
+report (the code lives in credits.jsp) and make SURE your additions
+are covered.
+
+The credits report can be seen from Administration Console, System,
+Reports dialog and then selecting "Credits" from the drop down.
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  
 Activation 1.1.1 (from Sun)
 addressing 1.0 (WS-Addressing implementation; required by WSS4J)
 Ant 1.6.2
