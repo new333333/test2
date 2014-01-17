@@ -118,6 +118,8 @@ public class ModifyNetFolderDlg extends DlgBox
 	private RadioButton m_useNFServerIndexContentOptionRB;
 	private RadioButton m_useNFIndexContentOptionRB;
 	private CheckBox m_indexContentCkbox;
+	private RadioButton m_useJitsSettingsFromNFServerRB;
+	private RadioButton m_useJitsSettingsFromNetFolderRB;
 	private CheckBox m_jitsEnabledCkbox;
 	private TextBox m_jitsResultsMaxAge;
 	private TextBox m_jitsAclMaxAge;
@@ -406,9 +408,6 @@ public class ModifyNetFolderDlg extends DlgBox
 			FlowPanel indexPanel;
 			FlexCellFormatter cellFormatter;
 
-			cellFormatter = table.getFlexCellFormatter();
-			cellFormatter.setColSpan( nextRow, 0, 2 );
-
 			indexPanel = new FlowPanel();
 			indexPanel.addStyleName( "margintop3" );
 			
@@ -425,85 +424,111 @@ public class ModifyNetFolderDlg extends DlgBox
 
 			m_indexContentCkbox = new CheckBox( messages.modifyNetFolderDlg_IndexContentLabel() );
 			tmpPanel = new FlowPanel();
-			tmpPanel.getElement().getStyle().setMarginLeft( 30, Unit.PX );
+			tmpPanel.addStyleName( "marginleft3" );
 			tmpPanel.add( m_indexContentCkbox );
 			indexPanel.add( tmpPanel );
 			
+			cellFormatter = table.getFlexCellFormatter();
+			cellFormatter.setColSpan( nextRow, 0, 2 );
+
 			table.setWidget( nextRow, 0, indexPanel );
 			++nextRow;
 		}
 		
 		// Add the controls needed to define Jits settings
 		{
+			FlowPanel mainJitsPanel;
+			FlowPanel subJitsPanel;
 			FlowPanel tmpPanel;
 			FlexCellFormatter cellFormatter;
 
-			cellFormatter = table.getFlexCellFormatter();
-			cellFormatter.setColSpan( nextRow, 0, 2 );
+			mainJitsPanel = new FlowPanel();
+			mainJitsPanel.addStyleName( "margintop3" );
+
+			m_useJitsSettingsFromNFServerRB = new RadioButton( "inheritJitsSettings", messages.modifyNetFolderDlg_UseJitsSettingsFromNetFolderServerRbLabel() );
+			tmpPanel = new FlowPanel();
+			tmpPanel.add( m_useJitsSettingsFromNFServerRB );
+			mainJitsPanel.add( tmpPanel );
+
+			m_useJitsSettingsFromNetFolderRB = new RadioButton( "inheritJitsSettings", messages.modifyNetFolderDlg_UseJistsSettingsFromNetFolderRbLabel() );
+			tmpPanel = new FlowPanel();
+			tmpPanel.add( m_useJitsSettingsFromNetFolderRB );
+			mainJitsPanel.add( tmpPanel );
+
+			subJitsPanel = new FlowPanel();
+			subJitsPanel.addStyleName( "marginleft3" );
+			mainJitsPanel.add( subJitsPanel );
+			
 			m_jitsEnabledCkbox = new CheckBox( messages.modifyNetFolderDlg_EnableJitsLabel() );
 			tmpPanel = new FlowPanel();
-			tmpPanel.addStyleName( "margintop3" );
 			tmpPanel.add( m_jitsEnabledCkbox );
-			table.setWidget( nextRow, 0, tmpPanel );
-			++nextRow;
+			subJitsPanel.add( tmpPanel );
 			
-			// Add the controls for "results max age"
+			// Add a panel that holds all the max age controls.
 			{
-				HorizontalPanel hPanel;
-				Label intervalLabel;
-
-				cellFormatter.setColSpan( nextRow, 0, 2 );
-
-				hPanel = new HorizontalPanel();
-				hPanel.setVerticalAlignment( HasVerticalAlignment.ALIGN_MIDDLE );
-				hPanel.setSpacing( 0 );
+				FlowPanel maxAgePanel;
 				
-				intervalLabel = new Label( messages.modifyNetFolderDlg_JitsResultsMaxAgeLabel() );
-				intervalLabel.addStyleName( "marginleft3" );
+				maxAgePanel = new FlowPanel();
+				maxAgePanel.addStyleName( "marginleft3" );
+				
+				// Add the controls for "results max age"
+				{
+					HorizontalPanel hPanel;
+					Label intervalLabel;
 
-				hPanel.add( intervalLabel );
-				
-				m_jitsResultsMaxAge = new TextBox();
-				m_jitsResultsMaxAge.addKeyPressHandler( this );
-				m_jitsResultsMaxAge.setVisibleLength( 3 );
-				hPanel.add( m_jitsResultsMaxAge );
-				
-				intervalLabel = new Label( messages.jitsZoneConfigDlg_SecondsLabel() );
-				intervalLabel.addStyleName( "marginleft2px" );
-				intervalLabel.addStyleName( "gray3" );
-				hPanel.add( intervalLabel );
-				table.setWidget( nextRow, 0, hPanel );
-				++nextRow;
+					hPanel = new HorizontalPanel();
+					hPanel.setVerticalAlignment( HasVerticalAlignment.ALIGN_MIDDLE );
+					hPanel.setSpacing( 0 );
+					
+					intervalLabel = new Label( messages.modifyNetFolderDlg_JitsResultsMaxAgeLabel() );
+					hPanel.add( intervalLabel );
+					
+					m_jitsResultsMaxAge = new TextBox();
+					m_jitsResultsMaxAge.addKeyPressHandler( this );
+					m_jitsResultsMaxAge.setVisibleLength( 3 );
+					hPanel.add( m_jitsResultsMaxAge );
+					
+					intervalLabel = new Label( messages.jitsZoneConfigDlg_SecondsLabel() );
+					intervalLabel.addStyleName( "marginleft2px" );
+					intervalLabel.addStyleName( "gray3" );
+					hPanel.add( intervalLabel );
+
+					maxAgePanel.add( hPanel );
+				}
+
+				// Add the controls for "acl max age"
+				{
+					HorizontalPanel hPanel;
+					Label intervalLabel;
+
+					hPanel = new HorizontalPanel();
+					hPanel.setVerticalAlignment( HasVerticalAlignment.ALIGN_MIDDLE );
+					hPanel.setSpacing( 0 );
+					
+					intervalLabel = new Label( messages.modifyNetFolderDlg_JitsAclMaxAgeLabel() );
+					hPanel.add( intervalLabel );
+					
+					m_jitsAclMaxAge = new TextBox();
+					m_jitsAclMaxAge.addKeyPressHandler( this );
+					m_jitsAclMaxAge.setVisibleLength( 3 );
+					hPanel.add( m_jitsAclMaxAge );
+					
+					intervalLabel = new Label( messages.jitsZoneConfigDlg_SecondsLabel() );
+					intervalLabel.addStyleName( "marginleft2px" );
+					intervalLabel.addStyleName( "gray3" );
+					hPanel.add( intervalLabel );
+
+					maxAgePanel.add( hPanel );
+				}
+
+				subJitsPanel.add( maxAgePanel );
 			}
 
-			// Add the controls for "acl max age"
-			{
-				HorizontalPanel hPanel;
-				Label intervalLabel;
-
-				cellFormatter.setColSpan( nextRow, 0, 2 );
-
-				hPanel = new HorizontalPanel();
-				hPanel.setVerticalAlignment( HasVerticalAlignment.ALIGN_MIDDLE );
-				hPanel.setSpacing( 0 );
-				
-				intervalLabel = new Label( messages.modifyNetFolderDlg_JitsAclMaxAgeLabel() );
-				intervalLabel.addStyleName( "marginleft3" );
-
-				hPanel.add( intervalLabel );
-				
-				m_jitsAclMaxAge = new TextBox();
-				m_jitsAclMaxAge.addKeyPressHandler( this );
-				m_jitsAclMaxAge.setVisibleLength( 3 );
-				hPanel.add( m_jitsAclMaxAge );
-				
-				intervalLabel = new Label( messages.jitsZoneConfigDlg_SecondsLabel() );
-				intervalLabel.addStyleName( "marginleft2px" );
-				intervalLabel.addStyleName( "gray3" );
-				hPanel.add( intervalLabel );
-				table.setWidget( nextRow, 0, hPanel );
-				++nextRow;
-			}
+			cellFormatter = table.getFlexCellFormatter();
+			cellFormatter.setColSpan( nextRow, 0, 2 );
+			
+			table.setWidget( nextRow, 0, mainJitsPanel );
+			++nextRow;
 		}
 		
 		mainPanel.add( table );
@@ -907,6 +932,14 @@ public class ModifyNetFolderDlg extends DlgBox
 	/**
 	 * 
 	 */
+	private Boolean getInheritJitsSettings()
+	{
+		return m_useJitsSettingsFromNFServerRB.getValue();
+	}
+	
+	/**
+	 * 
+	 */
 	private GwtJitsNetFolderConfig getJitsSettings()
 	{
 		GwtJitsNetFolderConfig settings;
@@ -1060,6 +1093,7 @@ public class ModifyNetFolderDlg extends DlgBox
 		netFolder.setRelativePath( getRelativePath() );
 		netFolder.setNetFolderRootName( getNetFolderRootName() );
 		netFolder.setInheritIndexContentSetting( getInheritIndexContent() );
+		netFolder.setInheritJitsSettings( getInheritJitsSettings() );
 		netFolder.setIndexContent( getIndexContent() );
 		netFolder.setSyncScheduleConfig( getSyncScheduleConfig() );
 		netFolder.setDataSyncSettings( getDataSyncSettings() );
@@ -1301,6 +1335,8 @@ public class ModifyNetFolderDlg extends DlgBox
 	 */
 	private void initJits()
 	{
+		m_useJitsSettingsFromNFServerRB.setValue( true );
+		m_useJitsSettingsFromNetFolderRB.setValue( false );
 		m_jitsEnabledCkbox.setValue( true );
 		m_jitsAclMaxAge.setValue( "" );
 		m_jitsResultsMaxAge.setValue( "" );
@@ -1309,6 +1345,17 @@ public class ModifyNetFolderDlg extends DlgBox
 		{
 			GwtJitsNetFolderConfig settings;
 			
+			if ( m_netFolder.getInheritJitsSettings() )
+			{
+				m_useJitsSettingsFromNFServerRB.setValue( true );
+				m_useJitsSettingsFromNetFolderRB.setValue( false );
+			}
+			else
+			{
+				m_useJitsSettingsFromNFServerRB.setValue( false );
+				m_useJitsSettingsFromNetFolderRB.setValue( true );
+			}
+
 			settings = m_netFolder.getJitsConfig();
 			if ( settings != null )
 			{

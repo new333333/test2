@@ -38,6 +38,7 @@ import java.util.Set;
 
 import org.kablink.teaming.security.function.WorkArea;
 import org.kablink.teaming.security.function.WorkAreaOperation;
+import org.kablink.teaming.util.SPropsUtil;
 
 public class ResourceDriverConfig extends ZonedObject implements WorkArea {
 
@@ -66,6 +67,9 @@ public class ResourceDriverConfig extends ZonedObject implements WorkArea {
 	private Boolean useDirectoryRights;
 	private Integer cachedRightsRefreshInterval;
 	private Boolean indexContent;
+    protected Boolean jitsEnabled; // Applicable only to mirrored folders
+    protected Long jitsMaxAge; // in milliseconds
+    protected Long jitsAclMaxAge; // in milliseconds
 		
 	public enum DriverType {
 		filesystem (0),
@@ -233,6 +237,15 @@ public class ResourceDriverConfig extends ZonedObject implements WorkArea {
     	if ( !objectEquals( indexContent, config.indexContent ) )
     		return false;
 
+    	if ( !objectEquals( jitsEnabled, config.jitsEnabled ) )
+    		return false;
+
+    	if ( !objectEquals( jitsMaxAge, config.jitsMaxAge ) )
+    		return false;
+
+    	if ( !objectEquals( jitsAclMaxAge, config.jitsAclMaxAge ) )
+    		return false;
+
     	return true;
     }
     
@@ -292,6 +305,63 @@ public class ResourceDriverConfig extends ZonedObject implements WorkArea {
 		this.indexContent = index;
 	}
 
+	/**
+	 * 
+	 */
+    public boolean isJitsEnabled()
+    {
+    	if ( jitsEnabled == null )
+    		return SPropsUtil.getBoolean( "nfs.jits.enabled", true );
+    	else
+    		return jitsEnabled.booleanValue();
+    }
+    
+    /**
+     * 
+     */
+    public void setJitsEnabled( boolean jitsEnabled )
+    {
+    	this.jitsEnabled = jitsEnabled;
+    }
+    
+    /**
+     * 
+     */
+	public long getJitsMaxAge()
+	{
+		if ( jitsMaxAge == null )
+			return SPropsUtil.getLong( "nfs.jits.max.age", 30000L );
+		else 
+			return jitsMaxAge.longValue();
+	}
+	
+	/**
+	 * 
+	 */
+	public void setJitsMaxAge( long jitsMaxAge )
+	{
+		this.jitsMaxAge = Long.valueOf( jitsMaxAge );
+	}
+    
+	/**
+	 * 
+	 */
+	public long getJitsAclMaxAge()
+	{
+		if ( jitsAclMaxAge == null )
+			return SPropsUtil.getLong( "nfs.jits.acl.max.age", 60000L );
+		else 
+			return jitsAclMaxAge.longValue();
+	}
+	
+	/**
+	 * 
+	 */
+	public void setJitsAclMaxAge( long jitsAclMaxAge )
+	{
+		this.jitsAclMaxAge = Long.valueOf( jitsAclMaxAge );
+	}
+    
 	public boolean isReadOnly() {
 		if(readOnly == null)
 			return true;

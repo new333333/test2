@@ -34,5 +34,8 @@
     <property name="useDirectoryRights" access="field" />
     <property name="cachedRightsRefreshInterval" access="field" />
 	<property name="indexContent" access="field"/>
+    <property name="jitsEnabled" access="field"/>
+    <property name="jitsMaxAge" access="field"/>
+    <property name="jitsAclMaxAge" access="field"/>
   </class>
 </hibernate-mapping>
