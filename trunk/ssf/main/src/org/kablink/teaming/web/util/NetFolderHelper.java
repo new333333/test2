@@ -977,6 +977,7 @@ public class NetFolderHelper
 		final ProfileModule profileModule,
 		BinderModule binderModule,
 		WorkspaceModule workspaceModule,
+		FolderModule folderModule,
 		String rootName,
 		String rootPath,
 		String proxyName,
@@ -1004,12 +1005,14 @@ public class NetFolderHelper
 		boolean isConfigured1;
 		boolean isConfigured2;
 		boolean reIndexNeeded = false;
+		Boolean indexContentOld;
 
 		adminModule.checkAccess( AdminOperation.manageResourceDrivers );
 
 		// Is the driver configured
 		rdConfig = ResourceDriverManagerUtil.getResourceDriverManager().getDriverConfig( rootName );
 		isConfigured1 = isNetFolderServerConfigured( rdConfig );
+		indexContentOld = rdConfig.getIndexContent();
 		
 		options = new HashMap();
 		options.put( ObjectKeys.RESOURCE_DRIVER_READ_ONLY, Boolean.FALSE );
@@ -1141,6 +1144,57 @@ public class NetFolderHelper
 					binderModule.indexBinder( binderId, false );
 				}
 			}
+		}
+		
+		// If the file content indexing flag has changed on the net folder server,
+		// we may need to create new background jobs for member net folders.
+		if(Boolean.TRUE.equals(indexContent)) {
+			if(Boolean.TRUE.equals(indexContentOld)) {
+				// This setting hasn't changed. No adjustment to make.
+			}
+			else {
+				// The file content indexing was not on previously, but is on now.
+				// This affects all member net folders that inherit this setting from the parent net folder server.
+				List<Folder> listOfNetFolders;
+				NetFolderSelectSpec selectSpec;
+
+				// Find all of the net folders that reference this net folder server.
+				selectSpec = new NetFolderSelectSpec();
+				selectSpec.setRootName( rdConfig.getName() );
+				selectSpec.setIncludeHomeDirNetFolders( true );
+				selectSpec.setFilter( null );
+				listOfNetFolders = NetFolderHelper.getAllNetFolders2(
+															binderModule,
+															workspaceModule,
+															selectSpec );
+
+				if ( listOfNetFolders != null )
+				{
+					for ( Folder netFolder:  listOfNetFolders )
+					{
+						if(netFolder.getUseInheritedIndexContent()) {
+							// This net folder inherits file content indexing setting from the net folder server.
+							// Make sure that a job exists for this net folder.
+							try {
+								folderModule.netFolderContentIndexingJobSchedule(netFolder.getId());
+							}
+							catch(Exception e) {
+								m_logger.error("Error scheduling file content indexing job for net folder " + netFolder.getId(), e);
+								continue; // continue to the next net folder
+							}
+						}
+					}
+				}
+			}
+		}
+		else {
+			// File content indexing is either off or unspecified (which is equivalent to off)
+			// on this net folder server. This affects all member net folders that inherit
+			// this setting from the parent net folder server. However, we will not try to
+			// unschedule jobs for those affected net folders at this point, since it has
+			// the danger of failing because some of the jobs may be running currently.
+			// Instead, those jobs will voluntarily check appropriate settings at the next run
+			// and self-destruct them as necessary.
 		}
 		
 		return rdConfig;
