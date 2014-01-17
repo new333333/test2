@@ -294,6 +294,9 @@ public class ResourceDriverConfig extends ZonedObject implements WorkArea {
 	 */
 	public Boolean getIndexContent()
 	{
+		if ( indexContent == null )
+			return new Boolean( false );
+		
 		return indexContent;
 	}
 
