@@ -129,7 +129,7 @@ public class AdminNetFolderServerResource extends AbstractAdminResource {
 
         ResourceDriverConfig newConfig = toResourceDriverConfig(newServer);
         newConfig = NetFolderHelper.modifyNetFolderRoot(getAdminModule(), getResourceDriverModule(), getProfileModule(), getBinderModule(),
-                getWorkspaceModule(), existingConfig.getName(), newConfig.getRootPath(), newConfig.getAccountName(), newConfig.getPassword(),
+                getWorkspaceModule(), getFolderModule(), existingConfig.getName(), newConfig.getRootPath(), newConfig.getAccountName(), newConfig.getPassword(),
                 newConfig.getDriverType(), null, false, false, null, newConfig.getFullSyncDirOnly(), newConfig.getAuthenticationType(),
                 newConfig.getUseDirectoryRights(), newConfig.getCachedRightsRefreshInterval(),
                 newConfig.getIndexContent(),

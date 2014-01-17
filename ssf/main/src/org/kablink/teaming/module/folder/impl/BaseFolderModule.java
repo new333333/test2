@@ -172,4 +172,16 @@ public class BaseFolderModule extends AbstractFolderModule implements BaseFolder
 			throws FIException, UncheckedIOException, ConfigurationException {
 		return FileSyncStatus.nochange;
 	}
+
+	@Override
+	public void netFolderContentIndexingJobSchedule(Long folderId) {
+	}
+
+	@Override
+	public void netFolderContentIndexingJobUnschedule(Long folderId) {
+	}
+
+	@Override
+	public void netFolderContentIndexingJobDelete(Long folderId) {
+	}
 }

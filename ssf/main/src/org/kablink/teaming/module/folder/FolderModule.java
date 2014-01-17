@@ -810,4 +810,21 @@ public interface FolderModule {
 	 * @throws WriteEntryDataException
 	 */
 	public void modifyCloudFolder(Long folderId, String cloudFolderName, String rootName) throws AccessControlException, WriteFilesException, WriteEntryDataException;
+	
+	/**
+	 * Schedule and enable background job for file content indexing for the specified net folder.
+	 * 
+	 * @param folderId
+	 */
+	public void netFolderContentIndexingJobSchedule(Long folderId);
+	
+	/**
+	 * Unschedule background job, if any, for file content indexing for the specified net folder.
+	 */
+	public void netFolderContentIndexingJobDelete(Long folderId);
+	
+	/**
+	 * Delete background job, if any, for file content indexing for the specified net folder.
+	 */
+	public void netFolderContentIndexingJobUnschedule(Long folderId);
 }
