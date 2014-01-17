@@ -1186,12 +1186,14 @@ public class ContentControl extends Composite
 						// entry viewer.
 						jsViewFolderEntry( url, "no" );
 						
+						// If we're navigating from the
+						// history, make sure the
+						// masthead matches what was
+						// there.  Otherwise, push the
+						// URL into the history cache.
 						if ( historyAction )
-						{
-							GwtTeaming.fireEventAsync(
-								new SetFilrActionFromCollectionTypeEvent(
-									historySelectedMastheadCollection));
-						}
+						     GwtTeaming.fireEventAsync( new SetFilrActionFromCollectionTypeEvent( historySelectedMastheadCollection ) );
+						else HistoryHelper.pushHistoryInfoAsync( url, instigator );
 						
 						EntityId eid = vi.getFolderEntryInfo().getEntityId();
 						if ( vi.isInvokeShare() )
