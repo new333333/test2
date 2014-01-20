@@ -592,6 +592,7 @@ public class ShareThisDlg2 extends DlgBox
 		m_mainPanel = new FlowPanel();
 		m_mainPanel.addStyleName( "teamingDlgBoxContent" );
 		m_mainPanel.addStyleName( "dlgContent" );
+		m_mainPanel.addStyleName( "teamingDlgBoxContentOverride" );
 
 		return m_mainPanel;
 	}
@@ -602,7 +603,7 @@ public class ShareThisDlg2 extends DlgBox
 	private void createShareControls()
 	{
 		GwtTeamingMessages messages;
-		int tableWidth = 300;
+		int tableWidth = 330;
 		
 		messages = GwtTeaming.getMessages();
 		
@@ -699,6 +700,7 @@ public class ShareThisDlg2 extends DlgBox
 			}
 
 			findTable = new FlexTable();
+			findTable.addStyleName( "shareThisDlg_findTable" );
 			rowFormatter = findTable.getRowFormatter();
 			rowFormatter.setVerticalAlign( 0, HasVerticalAlignment.ALIGN_TOP );
 			m_findCtrl.setIsSendingEmail( true );
@@ -800,7 +802,7 @@ public class ShareThisDlg2 extends DlgBox
 			
 			menuPanel = new FlowPanel();
 			menuPanel.addStyleName( "shareDlg_MenuPanel" );
-			menuPanel.addStyleName( "marginTop10px" );
+			menuPanel.addStyleName( "shareDlg_MenuPanelOverride" );
 			menuPanel.getElement().getStyle().setWidth( tableWidth-6, Unit.PX );
 			
 			// Add an "Edit" button.
@@ -997,8 +999,8 @@ public class ShareThisDlg2 extends DlgBox
 				{
 					m_editSharePanel = new FlowPanel();
 					m_editSharePanel.addStyleName( "shareThisDlg_EditSharePanel" );
-					m_editSharePanel.setWidth( "400px" );
-					m_editSharePanel.setHeight( "360px" );
+				//	m_editSharePanel.setWidth( "400px" );
+				//	m_editSharePanel.setHeight( "360px" );
 					
 					// Create the Edit Share widget
 					m_editShareWidget = new EditShareWidget();

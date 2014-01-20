@@ -142,8 +142,8 @@ public class FindCtrl extends Composite
 				
 				// Yes
 				img = new Image( imgUrl );
-				img.setHeight( "20px" );
-				img.setWidth( "20px" );
+				img.setHeight( "25px" );
+				img.setWidth( "25px" );
 				table.setWidget( 0, 0, img );
 			}
 
@@ -212,7 +212,8 @@ public class FindCtrl extends Composite
 					Label secondaryText;
 	
 					secondaryText = new Label( secondaryDisplayText );
-					secondaryText.addStyleName( "fontSize75em" );
+					secondaryText.addStyleName( "fontSize85em" );
+					secondaryText.addStyleName( "gwt-label" );
 					secondaryText.setWordWrap( false );
 					infoPanel.add( secondaryText );
 				}
