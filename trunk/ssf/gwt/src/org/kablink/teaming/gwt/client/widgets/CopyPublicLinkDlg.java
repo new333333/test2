@@ -192,9 +192,9 @@ public class CopyPublicLinkDlg extends DlgBox {
 		VibeFlowPanel hintPanel = new VibeFlowPanel();
 		hintPanel.addStyleName("vibe-copyPublicLinkDlg-hintPanel");
 		mainPanel.add(hintPanel);
-		Label hintStart = new Label(m_messages.copyPublicLink(m_product));
-		hintStart.addStyleName("vibe-copyPublicLinkDlg-hintStart");
-		hintPanel.add(hintStart);
+//		Label hintStart = new Label(m_messages.copyPublicLink(m_product));
+//		hintStart.addStyleName("vibe-copyPublicLinkDlg-hintStart");
+//		hintPanel.add(hintStart);
 		m_hintTail = new Label();
 		m_hintTail.addStyleName("vibe-copyPublicLinkDlg-hintTail");
 		hintPanel.add(m_hintTail);

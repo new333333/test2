@@ -639,8 +639,8 @@
 {
 	background-color: #EDEDED;
 	height: 360px;
+	width: 330px;
 	margin-left: 6px;
-	width: 400px;
 }
 
 .shareThisDlg_ExpiresLabel, .shareThisDlg_DefaultExpiresLabel
@@ -652,14 +652,18 @@
 .shareThisDlg_HeaderPanel
 {
 	position: relative;
-	margin-bottom: 15px;
+	background-color: #fff;
+	margin-bottom: 10px;
+	padding: 10px;
+	border-bottom: 1px solid #c4c4c4;
+	
 }
 
 .shareThisDlg_HeaderPanel img
 {
 	position: absolute;
-	top: 0px;
-	left: 1px;
+	top: 8px;
+	left: 8px;
 }
 
 .shareThisDlg_HeaderNamePanel
@@ -670,18 +674,16 @@
 
 .shareThisDlg_HeaderNameLabel
 {
-	font-size: 1.2em;
-	line-height: 1.4em;
 	color: #1f1f1f;
 	overflow: hidden;
 }
 
 .shareThisDlg_HeaderPathLabel
 {
-	color: #505354;
+	color: #666666;
 	font-size: 13px;
 	line-height: 16px;
-	overflow: hidden;
+	margin-top: 3px;
 }
 
 .shareThisDlg_NoteLabel
@@ -818,10 +820,17 @@
 
 .shareThisDlg_MakePublicDiv
 {
-	margin-left: 5px;
-	margin-bottom: 15px;
+	position: absolute;
+	top: 10px;
+	right: 8px;
 	z-index: 100;
-}		
+}
+
+.shareThisDlg_findTable
+{
+	margin-left: -3px;
+	margin-top: -5px;
+}
 
 .shareWithPublicDlg_instructionsLabel
 {
@@ -834,6 +843,14 @@
 {
 	overflow-x: hidden;
 	overflow-y: auto;
+}
+
+.shareThisDlg_ListOfSharesPanel table.th
+{
+	background: pink;
+	border-left: 0px;
+	border-bottom: 0px;
+	
 }
 
 .shareItem_InfoPanel
@@ -854,7 +871,7 @@
 
 .shareItem_RecipientName
 {
-	color: #135C8F;
+	color: #000;
 	font-weight: bold;
 }
 
@@ -1560,11 +1577,9 @@ body, table td, select
 /* Style used for an item in a search result list. */
 .findSearchResultItemWidget
 {
-	border-bottom: 1px solid #BABDB6;
-	margin-bottom: .25em;
-	margin-left: .5em;
-	margin-right: .5em;
-	padding-bottom: 6px;
+	border-bottom: 1px solid #ccc;
+	margin-bottom: 0px;
+	padding: 3px;
 	white-space: nowrap;
 }
 .findSearchResultItemWidget a
@@ -1623,7 +1638,7 @@ body, table td, select
 	font-size: 13px;
 	position: absolute;
 	left: 10px;
-	top: 10px;
+	top: 8px;
 	z-index: 1000;
 }
 
@@ -1860,6 +1875,10 @@ body, table td, select
 .fontSize75em
 {
 	font-size: .8em;
+}
+.fontSize85em
+{
+	font-size: .85em;
 }
 
 /* From Lynn's styles. */
@@ -3192,7 +3211,13 @@ body, table td, select
 /* Styles for the content of a dialog box. */
 .teamingDlgBoxContent
 {
+	position: relative;
 	margin: 10px;
+}
+
+.teamingDlgBoxContentOverride
+{
+	margin: 0px !important;
 }
 
 .teamingDlgBoxBody
@@ -4560,6 +4585,13 @@ td.datePickerMonth {
     white-space: nowrap;
 }
 
+.shareDlg_MenuPanelOverride
+{
+	position: absolute;
+	background-color: transparent !important;
+	text-align: right;
+}
+
 .groupTitlePanel, .netFolderRoot_NamePanel, .netFolder_NamePanel, .ldapSource_ServerUrlPanel, .ldapSearch_BaseDnPanel
 {
 	font-size: 14px;
@@ -4589,7 +4621,8 @@ td.datePickerMonth {
 
 .noObjectsFound
 {
-	text-align: left;
+	color: #949494;
+	text-align: center;
 	padding: 15px 10px;
 	background: white;
 }
@@ -5148,10 +5181,10 @@ td.datePickerMonth {
 	color: #353838;
 	font-family: Arial,Helvetica,sans-serif;
 	font-size: 14px;
-	height: 45px;
+	height: 50px;
 	padding: 5px;
 	resize: none;
-	width: 350px;
+	width: 290px;
 }
 
 .editShareNoteDlg_TextAreaBorder
@@ -5289,6 +5322,11 @@ td.datePickerMonth {
 .userActionsPopup_NamePanel .statsTable .gwt-label
 {
 	white-space: nowrap;
+}
+
+.gwt-label
+{
+	color: #666666;
 }
 
 .userActionsPopup_SignOutLabel
@@ -5864,7 +5902,7 @@ td.datePickerMonth {
 	.vibe-copyPublicLinkDlg-headerPanel          {position: relative; margin-bottom: 15px;}
 	.vibe-copyPublicLinkDlg-headerPanel img      {position: absolute; top: 0px; left: 1px;}
 	.vibe-copyPublicLinkDlg-headerNamePanel      {margin-left: 55px; width: 550px;}
-	.vibe-copyPublicLinkDlg-headerNameLabel      {font-size: 1.2em; line-height: 1.4em; color: #1f1f1f;}
+	.vibe-copyPublicLinkDlg-headerNameLabel      {font-size: 1.15em; line-height: 1.3em; color: #1f1f1f;}
 	.vibe-copyPublicLinkDlg-headerPathLabel      {color: #505354; font-size: 13px; line-height: 16px; overflow: hidden;}
 	.vibe-copyPublicLinkDlg-hintPanel            {display: block; width: 600px; white-space: normal; margin-top: 10px;}
 	.vibe-copyPublicLinkDlg-hintStart            {display: inline; font-weight: bold; font-size: .95em; padding-right: 4px;}
@@ -5872,7 +5910,7 @@ td.datePickerMonth {
 	.vibe-copyPublicLinkDlg-linksHeaderPanel     {position: relative; margin-bottom: 5px; margin-left: 8px; margin-top: 10px;}
 	.vibe-copyPublicLinkDlg-linksHeaderPanel img {position: absolute; top: 2px; left: 0px;}
 	.vibe-copyPublicLinkDlg-linksHeaderNamePanel {margin-left: 30px; width: 540px;}
-	.vibe-copyPublicLinkDlg-linksHeaderNameLabel {font-size: 1.2em; line-height: 1.4em; color: #1f1f1f;}
+	.vibe-copyPublicLinkDlg-linksHeaderNameLabel {font-size: 1.15em; line-height: 1.3em; color: #1f1f1f;}
 	.vibe-copyPublicLinkDlg-linksHeaderPathLabel {color: #505354; font-size: 13px; line-height: 16px; overflow: hidden;}
 	.vibe-copyPublicLinkDlg-linksLabel           {display: block; position: relative; margin-left: 10px;}
 	.vibe-copyPublicLinkDlg-linksLabel2          {margin-top: 10px;}
@@ -5910,8 +5948,8 @@ td.datePickerMonth {
 
 .emailPublicLinkDlg_HeaderNameLabel
 {
-	font-size: 1.2em;
-	line-height: 1.4em;
+	font-size: 1.15em;
+	line-height: 1.3em;
 	color: #1f1f1f;
 }
 
@@ -5957,7 +5995,7 @@ td.datePickerMonth {
 	.vibe-mailToMultiplePublicLinksSelectDlg                  {width: 800px;}
 	.vibe-mailToMultiplePublicLinksSelectDlg-contentPanel     {margin-top: 10px;}
 	.vibe-mailToMultiplePublicLinksSelectDlg-headerLabel      {}
-	.vibe-mailToMultiplePublicLinksSelectDlg-headerNameLabel  {font-size: 1.2em; line-height: 1.4em; color: #1f1f1f;}
+	.vibe-mailToMultiplePublicLinksSelectDlg-headerNameLabel  {font-size: 1.15em; line-height: 1.3em; color: #1f1f1f;}
 	.vibe-mailToMultiplePublicLinksSelectDlg-headerNamePanel  {margin-left: 55px; width: 700px;}
 	.vibe-mailToMultiplePublicLinksSelectDlg-headerPanel      {position: relative; margin-bottom: 15px;}
 	.vibe-mailToMultiplePublicLinksSelectDlg-headerPanel img  {position: absolute; top: 0px; left: 1px;}
@@ -6068,7 +6106,7 @@ td.datePickerMonth {
     border-color: #BABDB6;
     border-radius: 5px;
     border-style: solid;
-    border-width: 1px;
+    border-width: 0px; /* changed from 1px */
 }
 
 /* End:  Styles used in the "Edit Share" widget. */
