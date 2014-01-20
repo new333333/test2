@@ -58,6 +58,7 @@
 		allExternalUsersGroupId:			'${allExternalUsersGroupId}',
 		allInternalUsersGroupId:			'${allInternalUsersGroupId}',
 		allowShowPeople:					'${allowShowPeople}',
+		showSyncOnlyDirStructureUI:			'${showSyncOnlyDirStructureUI}',
 		baseVibeUrl:						'<ssf:escapeJavaScript><ssf:url></ssf:url></ssf:escapeJavaScript>',
 		canSeeOtherUsers:					'<ssf:escapeJavaScript>${canSeeOtherUsers}</ssf:escapeJavaScript>',
 		cloudFoldersEnabled:				'${cloudFoldersEnabled}',

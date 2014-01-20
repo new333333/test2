@@ -38,6 +38,7 @@ import java.util.List;
 
 import org.kablink.teaming.gwt.client.EditCanceledHandler;
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
+import org.kablink.teaming.gwt.client.GwtMainPage;
 import org.kablink.teaming.gwt.client.GwtPrincipal;
 import org.kablink.teaming.gwt.client.GwtSchedule;
 import org.kablink.teaming.gwt.client.GwtTeaming;
@@ -126,7 +127,7 @@ public class ModifyNetFolderRootDlg extends DlgBox
 	private ScheduleWidget m_scheduleWidget;
 	private FlowPanel m_inProgressPanel;
 	private List<HandlerRegistration> m_registeredEventHandlers;
-	private CheckBox m_fullSyncDirOnlyCB;
+	private CheckBox m_fullSyncDirOnlyCB = null;
 	private CheckBox m_useDirectoryRightsCB;
 	private TextBox m_cachedRightsRefreshIntervalTB;
 	private Label m_oesProxyNameHint;
@@ -800,10 +801,13 @@ public class ModifyNetFolderRootDlg extends DlgBox
 			mainPanel.add( jitsPanel );
 		}
 		
-		tmpPanel = new FlowPanel();
-		m_fullSyncDirOnlyCB = new CheckBox( messages.modifyNetFolderServerDlg_SyncOnlyDirStructureCB() );
-		tmpPanel.add( m_fullSyncDirOnlyCB );
-		mainPanel.add( tmpPanel );
+		if ( GwtMainPage.m_requestInfo.getShowSyncOnlyDirStructureUI() )
+		{
+			tmpPanel = new FlowPanel();
+			m_fullSyncDirOnlyCB = new CheckBox( messages.modifyNetFolderServerDlg_SyncOnlyDirStructureCB() );
+			tmpPanel.add( m_fullSyncDirOnlyCB );
+			mainPanel.add( tmpPanel );
+		}
 		
 		tmpPanel = new FlowPanel();
 		m_useDirectoryRightsCB = new CheckBox( messages.modifyNetFolderServerDlg_UseDirectoryRightsCB() );
@@ -1493,7 +1497,10 @@ public class ModifyNetFolderRootDlg extends DlgBox
 	 */
 	public Boolean getFullSyncDirOnly()
 	{
-		return m_fullSyncDirOnlyCB.getValue();
+		if ( GwtMainPage.m_requestInfo.getShowSyncOnlyDirStructureUI() )
+			return m_fullSyncDirOnlyCB.getValue();
+		
+		return Boolean.FALSE;
 	}
 	
 	/**
@@ -1726,7 +1733,8 @@ public class ModifyNetFolderRootDlg extends DlgBox
 		m_scheduleWidget.init( null );
 		
 		m_indexContentCB.setValue( false );
-		m_fullSyncDirOnlyCB.setValue( false );
+		if ( GwtMainPage.m_requestInfo.getShowSyncOnlyDirStructureUI() )
+			m_fullSyncDirOnlyCB.setValue( false );
 		m_useDirectoryRightsCB.setValue( false );
 		m_cachedRightsRefreshIntervalTB.setValue( "" );
 		
@@ -1778,6 +1786,7 @@ public class ModifyNetFolderRootDlg extends DlgBox
 			}
 			
 			// Initialize the "sync only the directory structure" control
+			if ( GwtMainPage.m_requestInfo.getShowSyncOnlyDirStructureUI() )
 			{
 				Boolean value;
 				

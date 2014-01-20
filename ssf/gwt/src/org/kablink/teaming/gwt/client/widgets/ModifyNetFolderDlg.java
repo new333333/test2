@@ -38,6 +38,7 @@ import java.util.List;
 
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtJitsNetFolderConfig;
+import org.kablink.teaming.gwt.client.GwtMainPage;
 import org.kablink.teaming.gwt.client.GwtNetFolderSyncScheduleConfig;
 import org.kablink.teaming.gwt.client.GwtNetFolderSyncScheduleConfig.NetFolderSyncScheduleOption;
 import org.kablink.teaming.gwt.client.GwtRole;
@@ -133,7 +134,7 @@ public class ModifyNetFolderDlg extends DlgBox
 	private CheckBox m_allowMobileAppsToSync;
 	private RadioButton m_useNFServerSyncOptionRB;
 	private RadioButton m_useNFSyncOptionRB;
-	private CheckBox m_fullSyncDirOnlyCB;
+	private CheckBox m_fullSyncDirOnlyCB = null;
 	private Panel m_rightsPanel;
 	private ModifyNetFolderRootDlg m_modifyNetFolderRootDlg;
 	private List<NetFolderRoot> m_listOfNetFolderRoots;
@@ -574,6 +575,7 @@ public class ModifyNetFolderDlg extends DlgBox
 		m_allowMobileAppsToSync.setVisible(false);
 		
 		// Add the radio buttons for selecting which sync option to use.
+		if ( GwtMainPage.m_requestInfo.getShowSyncOnlyDirStructureUI() )
 		{
 			FlowPanel panel;
 			
@@ -892,6 +894,9 @@ public class ModifyNetFolderDlg extends DlgBox
 	 */
 	private Boolean getFullSyncDirOnly()
 	{
+		if ( GwtMainPage.m_requestInfo.getShowSyncOnlyDirStructureUI() == false )
+			return null;
+		
 		if ( m_useNFServerSyncOptionRB.getValue() == true )
 			return null;
 		
@@ -1302,9 +1307,12 @@ public class ModifyNetFolderDlg extends DlgBox
 		m_allowDesktopAppToSync.setValue( true );
 		m_allowMobileAppsToSync.setValue( true );
 		
-		m_useNFServerSyncOptionRB.setValue( true );
-		m_useNFSyncOptionRB.setValue( false );
-		m_fullSyncDirOnlyCB.setValue( false );
+		if ( GwtMainPage.m_requestInfo.getShowSyncOnlyDirStructureUI() )
+		{
+			m_useNFServerSyncOptionRB.setValue( true );
+			m_useNFSyncOptionRB.setValue( false );
+			m_fullSyncDirOnlyCB.setValue( false );
+		}
 		
 		if ( m_netFolder != null )
 		{
@@ -1318,14 +1326,17 @@ public class ModifyNetFolderDlg extends DlgBox
 				m_allowMobileAppsToSync.setValue( settings.getAllowMobileAppsToSyncData() );
 			}
 			
-			dirOnly = m_netFolder.getFullSyncDirOnly(); 
-			if ( dirOnly == null )
-				m_useNFServerSyncOptionRB.setValue( true );
-			else
+			if ( GwtMainPage.m_requestInfo.getShowSyncOnlyDirStructureUI() )
 			{
-				m_useNFServerSyncOptionRB.setValue( false );
-				m_useNFSyncOptionRB.setValue( true );
-				m_fullSyncDirOnlyCB.setValue( dirOnly );
+				dirOnly = m_netFolder.getFullSyncDirOnly(); 
+				if ( dirOnly == null )
+					m_useNFServerSyncOptionRB.setValue( true );
+				else
+				{
+					m_useNFServerSyncOptionRB.setValue( false );
+					m_useNFSyncOptionRB.setValue( true );
+					m_fullSyncDirOnlyCB.setValue( dirOnly );
+				}
 			}
 		}
 	}
