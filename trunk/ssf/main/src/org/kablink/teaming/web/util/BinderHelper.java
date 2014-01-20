@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -2789,21 +2789,16 @@ public class BinderHelper {
     	}
     }
 
-	public static Tabs.TabEntry initTabs(PortletRequest request, Binder binder) throws Exception {
-		//Set up the tabs
-		Tabs tabs = Tabs.getTabs(request);
-
-		String newTab = PortletRequestUtils.getStringParameter(request, WebKeys.URL_NEW_TAB, "1");
-		if ("1".equals(newTab)) {
-			return tabs.findTab(binder, true);
-		} else if ("0".equals(newTab)) {
-			//	make sure params are set up
-			return tabs.findTab(binder, false);
-		} else  {
-			return tabs.findTab(binder, true);			
-		}
+	public static Tabs.TabEntry initTabs(Tabs tabs, Binder binder, boolean clearData) throws Exception {
+		return tabs.findTab(binder, true);
 	}
 
+	public static Tabs.TabEntry initTabs(PortletRequest request, Binder binder) throws Exception {
+		//Set up the tabs
+		String newTab = PortletRequestUtils.getStringParameter(request, WebKeys.URL_NEW_TAB, "1");
+		return initTabs(Tabs.getTabs(request), binder, (!("0".equals(newTab))));
+	}
+	
 	public static boolean isWebdavSupported(HttpServletRequest req) {
 		//Is this ie8
 		if (BrowserSniffer.is_ie_8(req)) return SPropsUtil.getBoolean("webdav.ie.8", false);
