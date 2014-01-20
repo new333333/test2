@@ -212,6 +212,26 @@ public class GwtMenuHelper {
 		// Nothing to do.
 	}
 
+	/**
+	 * Ensures that the given binder is being tracked for the recent
+	 * places menu.
+	 * 
+	 * @param request
+	 * @param binder
+	 * @param clearTab
+	 */
+	public static void addBinderToRecentPlaces(HttpServletRequest request, Binder binder, boolean clearTab) {
+		try {
+			BinderHelper.initTabs(Tabs.getTabs(request), binder, true);
+		}
+		catch (Exception e) {}	// Ignored.
+	}
+	
+	public static void addBinderToRecentPlaces(HttpServletRequest request, Binder binder) {
+		// Always use the initial form of the method.
+		addBinderToRecentPlaces(request, binder, true);
+	}
+	
 	/*
 	 * Adds a separator to a ToolbarItem's nested toolbar, if needed.
 	 */
@@ -3610,6 +3630,10 @@ public class GwtMenuHelper {
 			case folder:     buildFolderMenuItems(   bs, request, ((Folder)        binder), reply); break;
 			case profiles:   buildProfilesMenuItems( bs, request, ((ProfileBinder) binder), reply); break;
 			}
+
+			// ...make sure the binder is being tracked for the recent
+			// ...places menu...
+			addBinderToRecentPlaces(request, binder);
 
 			// ...and add the ToolbarItem's required by all binder
 			// ...types to the list.
