@@ -293,6 +293,16 @@ public class RequestInfo extends JavaScriptObject
 	/*-{
 		return this.locale;
 	}-*/;
+
+	/**
+	 * Return the flag that tells us if we should show the "Synchronize only the directory structure"
+	 * ui in the net folder and net folder server dialogs.
+	 */
+	public final native boolean getShowSyncOnlyDirStructureUI()
+	/*-{
+		return this.getBFromS( this.showSyncOnlyDirStructureUI );
+	}-*/;
+	
 	
 	/**
 	 * Return the user's time zone.

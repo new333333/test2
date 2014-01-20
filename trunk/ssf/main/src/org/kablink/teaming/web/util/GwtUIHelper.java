@@ -1432,7 +1432,7 @@ public class GwtUIHelper {
 	 */
 	public static void setCommonRequestInfoData(PortletRequest request, AllModulesInjected bs, Map<String, Object> model) {
 		User currentUser = RequestContextHolder.getRequestContext().getUser();
-		
+
 		// Put out the flag indicating whether the UI should be in
 		// debug mode (i.e., perform extra checking, display messages,
 		// ...)
@@ -1588,6 +1588,15 @@ public class GwtUIHelper {
 												RequestContextHolder.getRequestContext().getZoneId() );
 				canSeeOtherUsers = bs.getBinderModule().testAccess( binder, BinderOperation.readEntries );
 				model.put( "canSeeOtherUsers", String.valueOf( canSeeOtherUsers ) );
+			}
+			
+			// Add the flag that tells us whether to display the "Synchronize only the directory structure"
+			// ui for net folder and net folder servers.
+			{
+				Boolean show;
+				
+				show = SPropsUtil.getBoolean( "show.sync.only.directory.structure.ui", false );
+				model.put( "showSyncOnlyDirStructureUI", show );
 			}
 		}
 		
