@@ -2273,6 +2273,7 @@ public interface GwtTeamingMessages extends Messages
 
 	// Strings used with the "Share send-to" widget
 	String shareSendToWidget_AllRecipients();
+	String shareSendToWidget_NoOne();
 	String shareSendToWidget_OnlyModifiedRecipients();
 	String shareSendToWidget_OnlyNewRecipients();
 	String shareSendToWidget_SelectedRecipients();

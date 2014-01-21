@@ -116,7 +116,6 @@ import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Anchor;
-import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlexTable.FlexCellFormatter;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -167,7 +166,6 @@ public class ShareThisDlg2 extends DlgBox
 	private Label m_headerPathLabel;
 	private FindCtrl m_findCtrl;
 	private FindCtrl m_manageSharesFindCtrl;
-	private CheckBox m_notifyCheckbox;
 	private Image m_addExternalUserImg;
 	private FlowPanel m_mainPanel;
 	private FlexTable m_addShareTable;
@@ -1136,11 +1134,14 @@ public class ShareThisDlg2 extends DlgBox
 		
 		// Create the "notify" controls
 		{
+			InlineLabel label;
+			
 			tmpPanel = new FlowPanel();
 			tmpPanel.addStyleName( "marginTop5px" );
-			m_notifyCheckbox = new CheckBox( messages.shareDlg_notifyLabel() );
-			m_notifyCheckbox.setValue( true );
-			tmpPanel.add( m_notifyCheckbox );
+			tmpPanel.addStyleName( "marginleft1" );
+			
+			label = new InlineLabel( messages.shareDlg_notifyLabel() );
+			tmpPanel.add( label );
 			
 			m_sendToWidget = new ShareSendToWidget();
 			m_sendToWidget.init( SendToValue.ONLY_MODIFIED_RECIPIENTS );
@@ -1415,7 +1416,10 @@ public class ShareThisDlg2 extends DlgBox
 		sharingData.setListOfToBeDeletedShareItems( m_sharingInfo.getListOfToBeDeletedShareItems() );
 		
 		// Get who should be notified.
-		sharingData.setNotifyRecipients( m_notifyCheckbox.getValue() );
+		if ( m_sendToWidget.getSendToValue() == SendToValue.NO_ONE )
+			sharingData.setNotifyRecipients( false );
+		else
+			sharingData.setNotifyRecipients( true );
 		sharingData.setSendToValue( m_sendToWidget.getSendToValue() );
 		
 		// Issue an ajax request to share the entities.
