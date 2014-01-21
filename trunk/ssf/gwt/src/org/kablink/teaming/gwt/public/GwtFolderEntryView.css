@@ -11,9 +11,9 @@
 	
 	/* Start:  Header styles. */
 		.vibe-feView-headerContentBCAnchor            {cursor: pointer; font-size: 10px; color: gray !important; white-space: nowrap; text-decoration: none;}
-		.vibe-feView-headerContentBCAnchor:hover      {color: #135c8f !important; cursor: pointer; background-color: #b5dae2; -moz-border-radius: 3px; border-radius: 3px; -webkit-border-radius: 3px; padding: 2px;}
+		.vibe-feView-headerContentBCAnchor:hover      {color: #135c8f !important; cursor: pointer; background-color: #cce9ee; -moz-border-radius: 3px; border-radius: 3px; -webkit-border-radius: 3px; padding: 2px;}
 		.vibe-feView-headerContentBCPanel             {display: inline; padding-bottom: 2px; white-space: nowrap;}
-		.vibe-feView-headerContentPersonPanel         {color: #353838; font-size: 0.85em; font-weight: bold; margin-top: 6px; display: block;}
+		.vibe-feView-headerContentPersonPanel         {color: #353838; font-size: 0.85em; font-weight: bold; margin-top: 4px; display: block;}
 		.vibe-feView-headerContentPersonAnchor        {cursor: pointer; text-decoration: none;}
 		.vibe-feView-headerContentPersonAvatar        {margin-right: 5px; width: 16px; height: 16px; -moz-border-radius: 2px; border-radius: 2px; -webkit-border-radius: 2px; vertical-align: middle; display: inline-block;}
 		.vibe-feView-headerContentPersonCreated       {font-size: 10px; color: #666666; font-weight: normal; padding-left: 8px;}
@@ -24,14 +24,14 @@
 		.vibe-feView-headerContentPanel               {margin-left: 50px; margin-top: 0.3em; display: block;}
 		.vibe-feView-headerContentPath                {color: #505354; padding-top: 0px; font-size: 13px; line-height: 18px; display: block;}
 		.vibe-feView-headerContentTitleAsAnchor       {display: inline-block; cursor: pointer; text-decoration: none;}
-		.vibe-feView-headerContentTitleAsAnchor:hover {color: #135c8f !important; cursor: pointer; background-color: #b5dae2; -moz-border-radius: 3px; border-radius: 3px; -webkit-border-radius: 3px; padding: 2px;}
+		.vibe-feView-headerContentTitleAsAnchor:hover {color: #135c8f !important; cursor: pointer; background-color: #cce9ee; -moz-border-radius: 3px; border-radius: 3px; -webkit-border-radius: 3px;}
 		.vibe-feView-headerContentTitleAsLabel        {display: inline-block; text-overflow: ellipsis; overflow: hidden; font-size: 16px; line-height: 18px;}
 		.vibe-feView-headerContentTitleFileSize       {color: #666666; padding-left: 15px; font-size: 13px; vertical-align: top;}
 		.vibe-feView-headerContentTitleMarkRead       {cursor: pointer; padding-right: 3px;}
 		.vibe-feView-headerContentTitlePanel          {display: inline-block;}
 		.vibe-feView-headerDescription                {display: block; position: relative; margin-top: 10px;}
 		.vibe-feView-headerDescriptionAnchor          {cursor: pointer;}
-		.vibe-feView-headerDescriptionAnchor:hover    {color: #135c8f !important; cursor: pointer; background-color: #b5dae2; -moz-border-radius: 3px; border-radius: 3px; -webkit-border-radius: 3px; padding: 2px;}
+		.vibe-feView-headerDescriptionAnchor:hover    {color: #135c8f !important; cursor: pointer; background-color: #cce9ee; -moz-border-radius: 3px; border-radius: 3px; -webkit-border-radius: 3px; padding: 2px;}
 		.vibe-feView-headerDescriptionHide            {font-size: 10px; display: block; position: absolute; left: -60px; top: 0px; margin-top: 0.35em;}
 		.vibe-feView-headerDescriptionHtml            {font-size: 0.9em; margin-top: 0.3em; display: block;}
 		.vibe-feView-headerDescriptionShowInner       {font-size: 10px; position: absolute; left: -60px; top: 0px; margin-top: 0.35em; display: block;}
@@ -44,7 +44,7 @@
 	/* End:  Header styles. */
 	
 	/* Start:  Menu styles. */
-		.vibe-feView-menuPanel    {display: block; padding: 3px 380px 3px 10px; border-top: 1px solid #CCC; border-bottom: 1px solid #CCC; margin-left: -10px; margin-right: -10px;}
+		.vibe-feView-menuPanel    {display: block; padding: 1px 380px 1px 10px; border-top: 1px solid #CCC; border-bottom: 1px solid #CCC; margin-left: -10px; margin-right: -10px;}
 		.vibe-feView-menuBar      {padding: 3px; background: transparent;}
 		.vibe-feView-menuBar .gwt-MenuItem-selected {
 			color: #135c8f !important;
@@ -103,7 +103,7 @@
 		.vibe-feView_commentsComposite-addCommentAvatar       {vertical-align: top !important; padding: 5px 10px; width: 30px; height: 30px; border-radius: 2px;}
 		.vibe-feView_commentsComposite-addCommentHint         {color: #949494; font-size: .8em; display: inline-block; width: 150px;}
 		.vibe-feView_commentsComposite-addCommentHintPanel    {padding-top: 5px; padding-right: 5px;}
-		.vibe-feView_commentsComposite-addCommentPanel        {color: #353838; background-color: #fafafa; padding-top: 15px; padding-bottom: 15px;}
+		.vibe-feView_commentsComposite-addCommentPanel        {color: #353838; background-color: #fafafa; padding-top: 15px; padding-bottom: 15px; }
 		.vibe-feView_commentsComposite-addCommentPanel-nonIE  {width: 100%; }
 		.vibe-feView_commentsComposite-addCommentTextArea     {background-color: #fff; font-family: Arial, Helvetica, sans-serif; font-size: 14px; width: 280px; height: 45px; padding: 5px; border: 1px solid #c4c4c4; -moz-border-radius: 3px; border-radius: 3px; -webkit-border-radius: 3px;}
 		.vibe-feView_commentsComposite-captionImg             {width: 36px; height: 36px;}
@@ -171,7 +171,7 @@
 		.vibe-feView-sidebarSectionHeadInner          {}
 		.vibe-feView-sidebarSectionHeadOuter          {position: relative; width: 350px; background-color: #f6f6f6; border-bottom: 1px solid #cccccc; z-index: 1000;}
 		.vibe-feView-sidebarSectionHeadText           {color: #5691a6 !important;}
-		.vibe-feView-sidebarSectionHeadTitle          {position: relative; font-size: 14px; height: 20px; padding: 8px 5px 6px 32px; }
+		.vibe-feView-sidebarSectionHeadTitle          {position: relative; font-size: 14px; height: 20px; padding: 8px 5px 6px 18px; }
 		.vibe-feView-sidebarSliderImg                 {padding-top: 5px; padding-left: 4px;}
 		.vibe-feView-sidebarSliderDiv-hidden          {right: 0px !important;}
 		.vibe-feView-sidebarSliderDiv:hover           {cursor: pointer;}
