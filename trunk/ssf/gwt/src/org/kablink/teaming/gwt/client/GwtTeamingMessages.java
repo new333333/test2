@@ -791,6 +791,7 @@ public interface GwtTeamingMessages extends Messages
 	String resourceLibMenuItem();
 	String resourceLibraryHint();
 	String teamingFeedHint();
+	String trashInformation();
 	
 	// Strings used in the edit branding dialog.
 	String addImage();
