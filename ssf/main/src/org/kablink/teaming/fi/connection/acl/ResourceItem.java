@@ -32,8 +32,6 @@
  */
 package org.kablink.teaming.fi.connection.acl;
 
-import org.kablink.teaming.util.Constants;
-
 /**
  * This class represents core metadata associated with a file or directory
  * as retrieved from the file system.
@@ -257,12 +255,34 @@ public class ResourceItem {
 	/**
 	 * Returns String representation of the object.
 	 */
+	@Override
 	public String toString() {
-		// Note: This is NOT a normalized path, but merely a string representation of the object
-		// useful for display purpose only. So it must NOT be treated as a valid path to the resource.
-		// A normalized path can only be obtained from the respective resource driver implementing
-		// class.
-		return parentPath + Constants.SLASH + name;
+		// Note: This is NOT a normalized path, but merely a string representation of the object useful
+		// for display purpose only. So it must NOT be treated as a valid path to the resource.
+		// A normalized path can only be obtained from the respective resource driver implementing class.		
+		StringBuilder sb = new StringBuilder();
+		sb.append("{")
+		.append("parentPath=")
+		.append(parentPath)
+		.append(",name=")
+		.append(name)
+		.append(",handle=")
+		.append(handle)
+		.append(",lastModified=")
+		.append(lastModified)
+		.append(",directory=")
+		.append(directory)
+		.append(",contentLength=")
+		.append(contentLength)
+		.append(",aclInherited=")
+		.append(aclInherited)
+		.append(",ownerId=")
+		.append(ownerId)
+		.append(",ownerIdType=")
+		.append(ownerIdType)
+		.append("}");
+		return sb.toString();
+
 	}
 	
 	private static String makeParentPath(String path) {

@@ -48,6 +48,20 @@ public class AclItem {
 	private String principalIdType;
 	private Set<String> principalIds;
 	
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("{")
+		.append("permissionName=")
+		.append(permissionName)
+		.append(",principalIdType=")
+		.append(principalIdType)
+		.append(",principalIds=")
+		.append(principalIds)
+		.append("}");
+		return sb.toString();
+	}
+	
 	/**
 	 * Constructor
 	 * 
