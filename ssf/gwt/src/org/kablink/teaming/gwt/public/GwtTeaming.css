@@ -5324,6 +5324,10 @@ td.datePickerMonth {
 	white-space: nowrap;
 }
 
+.userActionsPopup_TrashInfoButton {cursor: pointer; margin-left: 2px;}
+.userActionsPopup_TrashInfoCell   {border-bottom: 0px !important;}
+.userActionsPopup_TrashInfoDlg    {z-index: 5001 !important;}
+
 .gwt-label
 {
 	color: #666666;
@@ -5885,7 +5889,7 @@ td.datePickerMonth {
  
 /* Start:  Alert dialog styles. */
 	.vibe-alertDlg_Grid      {max-width: 500px;}
-	.vibe-alertDlg_NameLabel {color: #414648; line-height: 1.1em; margin-right: 8px; white-space: normal;}
+	.vibe-alertDlg_NameLabel {color: #414648; font-size: 1em; line-height: 1.1em; margin-right: 8px; white-space: normal;}
 	.vibe-alertDlg_Panel     {padding: 10px;}
 /* End:  Alert dialog styles. */
 
