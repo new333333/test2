@@ -2333,9 +2333,9 @@ body, table td, select
 	background: url(images/trans50_black.png) repeat transparent !important;
 	border: 0px;
 	padding: 0px !important;
-	margin-top: 5px;
+	margin-top: 1px;
 	right: 20px;
-	z-index: 351;
+	z-index: 2000;
 }
 .breadCrumb_Browser
 {
