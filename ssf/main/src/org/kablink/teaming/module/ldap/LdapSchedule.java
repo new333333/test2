@@ -130,7 +130,7 @@ public class LdapSchedule {
 		getDetails().put(REGISTER_USERS, Boolean.toString(create));
 	}
 	public boolean isGroupRegister() {
-		return  GetterUtil.get((String)getDetails().get(REGISTER_GROUPS), false);			
+		return  GetterUtil.get((String)getDetails().get(REGISTER_GROUPS), true );			
 	}
 	public void setGroupRegister(boolean create) {
 		getDetails().put(REGISTER_GROUPS, Boolean.toString(create));
@@ -150,7 +150,7 @@ public class LdapSchedule {
 		getDetails().put(SYNC_GROUPS, Boolean.toString(create));
 	}
 	public boolean isMembershipSync() {
-		return  GetterUtil.get((String)getDetails().get(SYNC_MEMBERSHIP), false);			
+		return  GetterUtil.get((String)getDetails().get(SYNC_MEMBERSHIP), true );			
 	}
 	public void setMembershipSync(boolean create) {
 		getDetails().put(SYNC_MEMBERSHIP, Boolean.toString(create));
