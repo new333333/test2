@@ -11,27 +11,27 @@
 	
 	/* Start:  Header styles. */
 		.vibe-feView-headerContentBCAnchor            {cursor: pointer; font-size: 10px; color: gray !important; white-space: nowrap; text-decoration: none;}
-		.vibe-feView-headerContentBCAnchor:hover      {color: #135c8f !important; cursor: pointer; background: url(images/blends/teal_slice.png) repeat-x; background-position:center; -moz-border-radius: 3px; border-radius: 3px; -webkit-border-radius: 3px; padding: 2px;}
+		.vibe-feView-headerContentBCAnchor:hover      {color: #135c8f !important; cursor: pointer; background-color: #b5dae2; -moz-border-radius: 3px; border-radius: 3px; -webkit-border-radius: 3px; padding: 2px;}
 		.vibe-feView-headerContentBCPanel             {display: inline; padding-bottom: 2px; white-space: nowrap;}
-		.vibe-feView-headerContentPersonPanel         {color: #353838; font-size: 0.85em; font-weight: bold; margin-top: 10px; display: block;}
+		.vibe-feView-headerContentPersonPanel         {color: #353838; font-size: 0.85em; font-weight: bold; margin-top: 6px; display: block;}
 		.vibe-feView-headerContentPersonAnchor        {cursor: pointer; text-decoration: none;}
-		.vibe-feView-headerContentPersonAvatar        {margin-right: 5px; width: 20px; height: 20px; -moz-border-radius: 2px; border-radius: 2px; -webkit-border-radius: 2px; vertical-align: middle; display: inline-block;}
+		.vibe-feView-headerContentPersonAvatar        {margin-right: 5px; width: 16px; height: 16px; -moz-border-radius: 2px; border-radius: 2px; -webkit-border-radius: 2px; vertical-align: middle; display: inline-block;}
 		.vibe-feView-headerContentPersonCreated       {font-size: 10px; color: #666666; font-weight: normal; padding-left: 8px;}
-		.vibe-feView-headerContentPersonLocked        {padding-left: 10px; font-size: 10px; color: #666666; font-weight: normal;}
+		.vibe-feView-headerContentPersonLocked        {padding-left: 10px; font-size: 10px; color: #e00000; font-weight: normal;}
 		.vibe-feView-headerContentPersonLockedLabel   {padding-left: 5px;}
 		.vibe-feView-headerContentPersonModified      {padding-left: 10px; font-size: 10px; color: #666666; font-weight: normal;}
 		.vibe-feView-headerContentPersonModifiedLabel {padding-left: 5px;}
 		.vibe-feView-headerContentPanel               {margin-left: 50px; margin-top: 0.3em; display: block;}
-		.vibe-feView-headerContentPath                {color: #505354; padding-top: 5px; font-size: 13px; line-height: 16px; display: block;}
+		.vibe-feView-headerContentPath                {color: #505354; padding-top: 0px; font-size: 13px; line-height: 18px; display: block;}
 		.vibe-feView-headerContentTitleAsAnchor       {display: inline-block; cursor: pointer; text-decoration: none;}
-		.vibe-feView-headerContentTitleAsAnchor:hover {color: #135c8f !important; cursor: pointer; background: url(images/blends/teal_slice.png) repeat-x; background-position:center; -moz-border-radius: 3px; border-radius: 3px; -webkit-border-radius: 3px; padding: 2px;}
-		.vibe-feView-headerContentTitleAsLabel        {display: inline-block; text-overflow: ellipsis; overflow: hidden; font-size: 1.2em;}
-		.vibe-feView-headerContentTitleFileSize       {color: #666666; padding-left: 12px; font-size: 13px; vertical-align: top;}
+		.vibe-feView-headerContentTitleAsAnchor:hover {color: #135c8f !important; cursor: pointer; background-color: #b5dae2; -moz-border-radius: 3px; border-radius: 3px; -webkit-border-radius: 3px; padding: 2px;}
+		.vibe-feView-headerContentTitleAsLabel        {display: inline-block; text-overflow: ellipsis; overflow: hidden; font-size: 16px; line-height: 18px;}
+		.vibe-feView-headerContentTitleFileSize       {color: #666666; padding-left: 15px; font-size: 13px; vertical-align: top;}
 		.vibe-feView-headerContentTitleMarkRead       {cursor: pointer; padding-right: 3px;}
 		.vibe-feView-headerContentTitlePanel          {display: inline-block;}
 		.vibe-feView-headerDescription                {display: block; position: relative; margin-top: 10px;}
 		.vibe-feView-headerDescriptionAnchor          {cursor: pointer;}
-		.vibe-feView-headerDescriptionAnchor:hover    {color: #135c8f !important; cursor: pointer; background: url(images/blends/teal_slice.png) repeat-x; background-position:center; -moz-border-radius: 3px; border-radius: 3px; -webkit-border-radius: 3px; padding: 2px;}
+		.vibe-feView-headerDescriptionAnchor:hover    {color: #135c8f !important; cursor: pointer; background-color: #b5dae2; -moz-border-radius: 3px; border-radius: 3px; -webkit-border-radius: 3px; padding: 2px;}
 		.vibe-feView-headerDescriptionHide            {font-size: 10px; display: block; position: absolute; left: -60px; top: 0px; margin-top: 0.35em;}
 		.vibe-feView-headerDescriptionHtml            {font-size: 0.9em; margin-top: 0.3em; display: block;}
 		.vibe-feView-headerDescriptionShowInner       {font-size: 10px; position: absolute; left: -60px; top: 0px; margin-top: 0.35em; display: block;}
@@ -39,7 +39,7 @@
 		.vibe-feView-headerEntryImage                 {position: absolute; left:  5px; top:  0px;}
 		.vibe-feView-headerEntryLockImage             {position: absolute; left: 19px; top: 34px;}
 		.vibe-feView-headerFileLockImage              {position: absolute; left: 29px; top: 34px;}
-		.vibe-feView-headerLockLabel                  {position: absolute; left: 10px; top: 55px; font-size: 12px; color: #949494;}
+		.vibe-feView-headerLockLabel                  {position: absolute; left: 10px; top: 55px; font-size: 10px; color: #ffffff;} 
 		.vibe-feView-headerRoot                       {position: relative; display: block; padding: 0px 50px 10px 10px;}
 	/* End:  Header styles. */
 	
