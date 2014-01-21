@@ -52,8 +52,7 @@ public class TraceableInputStreamWrapper extends InputStream implements Comparab
 	private String path; // Some sort of path representing the original resource.
 	
 	public TraceableInputStreamWrapper(InputStream original, String path) {
-		if(logger.isDebugEnabled())
-			logger.debug("new() on [" + path + "]");
+		logger.debug("calling constructor() on [" + path + "]");
 		
 		this.original = original;
 		this.path = path;
@@ -67,49 +66,48 @@ public class TraceableInputStreamWrapper extends InputStream implements Comparab
 	}
 	
 	@Override
-	public int read() throws IOException {
-		if(logger.isTraceEnabled())
-			logger.trace("read() on [" + path + "]");
-		
-		return original.read();
+	public int read() throws IOException {	
+		logger.debug("read() on [" + path + "]");	
+		int result = original.read();
+		logger.debug("Returning [" + result + "]");
+		return result;
 	}
 	
 	@Override
     public int read(byte b[]) throws IOException {
-		if(logger.isTraceEnabled())
-			logger.trace("read(byte[" + b.length + "]) on [" + path + "]");
-		
-		return original.read(b);
+		logger.debug("calling read(byte[" + b.length + "]) on [" + path + "]");
+		int result = original.read(b);
+		logger.debug("Returning [" + result + "]");
+		return result;
     }
 
 	@Override
     public int read(byte b[], int off, int len) throws IOException {
-		if(logger.isTraceEnabled())
-			logger.trace("read(byte[" + b.length + "]," + off + "," + len + ") on [" + path + "]");
-		
-		return original.read(b, off, len);
+		logger.debug("calling read(byte[" + b.length + "]," + off + "," + len + ") on [" + path + "]");
+		int result = original.read(b, off, len);
+		logger.debug("Returning [" + result + "]");
+		return result;
     }
 
 	@Override
     public long skip(long n) throws IOException {
-		if(logger.isTraceEnabled())
-			logger.trace("skip(" + n + ") on [" + path + "]");
-		
-		return original.skip(n);
+		logger.debug("calling skip(" + n + ") on [" + path + "]");
+		long result = original.skip(n);
+		logger.debug("Returning [" + result + "]");
+		return result;
     }
 
 	@Override
     public int available() throws IOException {
-		if(logger.isTraceEnabled())
-			logger.trace("available() on [" + path + "]");
-		
-		return original.available();
+		logger.debug("calling available() on [" + path + "]");	
+		int result = original.available();
+		logger.debug("Returning [" + result + "]");
+		return result;
     }
 
 	@Override
     public void close() throws IOException {
-		if(logger.isDebugEnabled())
-			logger.debug("close() on [" + path + "]");
+		logger.debug("calling close() on [" + path + "]");
 		
 		try {
 			original.close();
@@ -123,26 +121,24 @@ public class TraceableInputStreamWrapper extends InputStream implements Comparab
 
 	@Override
     public synchronized void mark(int readlimit) {
-		if(logger.isTraceEnabled())
-			logger.trace("mark(" + readlimit + ") on [" + path + "]");
+		logger.debug("calling mark(" + readlimit + ") on [" + path + "]");
 		
 		original.mark(readlimit);
 	}
 
 	@Override
     public synchronized void reset() throws IOException {
-		if(logger.isTraceEnabled())
-			logger.trace("reset() on [" + path + "]");
+		logger.debug("calling reset() on [" + path + "]");
 		
 		original.reset();
     }
 
 	@Override
     public boolean markSupported() {
-		if(logger.isTraceEnabled())
-			logger.trace("markSupported() on [" + path + "]");
-		
-        return original.markSupported();
+		logger.debug("calling markSupported() on [" + path + "]");
+        boolean result = original.markSupported();
+        logger.debug("Returning [" + result + "]");
+        return result;
     }
 
 	public static String getOpenStreamHandlesAsString() {
