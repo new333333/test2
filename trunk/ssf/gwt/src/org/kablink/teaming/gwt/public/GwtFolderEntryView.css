@@ -100,12 +100,12 @@
 	
 	/* Start:  Comments styles. */
 		.vibe-feView_commentsComposite                        {background-color: white !important;}
-		.vibe-feView_commentsComposite-addCommentAvatar       {vertical-align: top !important; padding: 5px 10px; width: 30px; height: 30px; border-radius: 2px;}
+		.vibe-feView_commentsComposite-addCommentAvatar       {vertical-align: top !important; margin-left: 12px; margin-right: 5px; margin-top: 2px; width: 30px; height: 30px; border-radius: 2px;}
 		.vibe-feView_commentsComposite-addCommentHint         {color: #949494; font-size: .8em; display: inline-block; width: 150px;}
 		.vibe-feView_commentsComposite-addCommentHintPanel    {padding-top: 5px; padding-right: 5px;}
 		.vibe-feView_commentsComposite-addCommentPanel        {color: #353838; background-color: #fafafa; padding-top: 15px; padding-bottom: 15px; }
 		.vibe-feView_commentsComposite-addCommentPanel-nonIE  {width: 100%; }
-		.vibe-feView_commentsComposite-addCommentTextArea     {background-color: #fff; font-family: Arial, Helvetica, sans-serif; font-size: 14px; width: 280px; height: 45px; padding: 5px; border: 1px solid #c4c4c4; -moz-border-radius: 3px; border-radius: 3px; -webkit-border-radius: 3px;}
+		.vibe-feView_commentsComposite-addCommentTextArea     {background-color: #fff; font-family: Arial, Helvetica, sans-serif; font-size: 14px; width: 275px; height: 45px; padding: 5px; border: 1px solid #c4c4c4; -moz-border-radius: 3px; border-radius: 3px; -webkit-border-radius: 3px;}
 		.vibe-feView_commentsComposite-captionImg             {width: 36px; height: 36px;}
 		.vibe-feView_commentsComposite-commentsWidget         {height: 300px; position: relative; overflow: auto; width: 330px; border-bottom: 1px solid #cccccc;}
 		.vibe-feView_commentsComposite-label                  {}
@@ -122,7 +122,7 @@
 		  	white-space: nowrap !important;
 			border: 1px solid transparent;
 		  	background: #949494 none repeat scroll 0 0;
-			margin-right:3px;
+			margin-right: 10px;
 			margin-bottom: 6px;
 			padding: 2px 10px;
 			text-decoration:none;
