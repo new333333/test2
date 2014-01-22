@@ -57,6 +57,7 @@ public class FolderEntryDetails implements IsSerializable {
 	private boolean						m_top;							// true -> The entry is a top level entry.  false -> It's a comment.
 	private CommentsInfo				m_comments;						// Information about the comments on the entry.
 	private EntityId					m_entityId;						// The folder entry to view.
+	private EntityRights				m_entityRights;					// The rights the user has to the folder entry.
 	private int							m_contentImageHeight;			// If m_contentIsImage is true, the height   of the images.
 	private int							m_contentImageRotation;			// If m_contentIsImage is true, the rotation of the images.
 	private int							m_contentImageWidth;			// If m_contentIsImage is true, the width    of the images.
@@ -167,12 +168,12 @@ public class FolderEntryDetails implements IsSerializable {
 		
 	}
 	
-	/**
+	/*
 	 * Constructor method.
 	 * 
 	 * Zero parameter constructor required for GWT serialization.
 	 */
-	public FolderEntryDetails() {
+	private FolderEntryDetails() {
 		// Initialize the super class...
 		super();
 		
@@ -186,13 +187,15 @@ public class FolderEntryDetails implements IsSerializable {
 	 * Constructor method.
 	 * 
 	 * @param entityId
+	 * @param entityRights
 	 */
-	public FolderEntryDetails(EntityId entityId) {
+	public FolderEntryDetails(EntityId entityId, EntityRights entityRights) {
 		// Initialize this object...
 		this();
 
-		// ...and store the parameter.
-		setEntityId(entityId);
+		// ...and store the parameters.
+		setEntityId(    entityId    );
+		setEntityRights(entityRights);
 	}
 	
 	/**
@@ -200,10 +203,11 @@ public class FolderEntryDetails implements IsSerializable {
 	 * 
 	 * @param binderId
 	 * @param entryId
+	 * @param entityRights
 	 */
-	public FolderEntryDetails(Long binderId, Long entryId) {
+	public FolderEntryDetails(Long binderId, Long entryId, EntityRights entityRights) {
 		// Always use the alternate form of the constructor.
-		this(new EntityId(binderId, entryId, EntityId.FOLDER_ENTRY));
+		this(new EntityId(binderId, entryId, EntityId.FOLDER_ENTRY), entityRights);
 	}
 	
 	/**
@@ -224,6 +228,7 @@ public class FolderEntryDetails implements IsSerializable {
 	public boolean                   isHtmlViewable()              {return (null != m_htmlView);       }
 	public CommentsInfo              getComments()                 {return m_comments;                 }
 	public EntityId                  getEntityId()                 {return m_entityId;                 }
+	public EntityRights              getEntityRights()             {return m_entityRights;             }
 	public int                       getContentImageHeight()       {return m_contentImageHeight;       }
 	public int                       getContentImageRotation()     {return m_contentImageRotation;     }
 	public int                       getContentImageWidth()        {return m_contentImageWidth;        }
@@ -260,6 +265,7 @@ public class FolderEntryDetails implements IsSerializable {
 	public void setTop(                      boolean                   top)                       {m_top                       = top;                      }
 	public void setComments(                 CommentsInfo              comments)                  {m_comments                  = comments;                 }
 	public void setEntityId(                 EntityId                  entityId)                  {m_entityId                  = entityId;                 }
+	public void setEntityRights(             EntityRights              entityRights)              {m_entityRights              = entityRights;             }
 	public void setContentImageHeight(       int                       contentImageHeight)        {m_contentImageHeight        = contentImageHeight;       }
 	public void setContentImageRotation(     int                       contentImageRotation)      {m_contentImageRotation      = contentImageRotation;     }
 	public void setContentImageWidth(        int                       contentImageWidth)         {m_contentImageWidth         = contentImageWidth;        }
