@@ -90,10 +90,9 @@
 
 .activityStreamActionsPanel:hover
 {
-	background: url(images/blends/teal_slice.png) repeat-x;
-	background-position:center;
-	-moz-border-radius: 5px;
+	background: #cce9ee;
 	border-radius: 5px;
+	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;
 }
 
@@ -239,10 +238,9 @@
 .activityStreamHover, .shareThisDlg_NameHover, .groupMembershipNameHover, .selectPrincipalsWidget_NameHover
 {
 	cursor: pointer;
-	background: url(images/blends/teal_slice.png) repeat-x;
-	background-position:center;
-	-moz-border-radius: 5px;
+	background: #cce9ee;
 	border-radius: 5px;
+	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;
 }
 .activityStreamHover span {
@@ -373,8 +371,7 @@
 
 .activityStreamShowHideDescLabel:hover
 {
-	background: url(images/blends/teal_slice.png) repeat-x;
-	background-position:center;
+	background: #cce9ee;
 	cursor: pointer;
 	border-radius: 5px;
 	-moz-border-radius: 5px;
@@ -749,8 +746,7 @@
 .shareThisDlg_RightsLabel:hover, .shareThisDlg_ExpiresLabel:hover, .shareThisDlg_DefaultExpiresLabel:hover, .shareThisDlg_shareWithTeamsLink:hover, .shareThisDlg_NoteLabel:hover, .shareThisDlg_PublicRecipientTypeImage:hover
 {
 	cursor: pointer;
-	background: url(images/blends/teal_slice.png) repeat-x;
-	background-position:center;
+	background: #cce9ee;
 	-moz-border-radius: 5px;
 	border-radius: 5px;
 	-webkit-border-radius: 5px;
@@ -1139,22 +1135,10 @@ a, a:visited, a:hover {
     color: #135c8f !important;
 	cursor: pointer;
 	border: 1px solid #81b2bd;
+	background: #cee9ee;
 	border-radius: 15px;
 	-moz-border-radius: 15px;
 	-webkit-border-radius: 15px;
-	background: linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: -o-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: -moz-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: -webkit-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: -ms-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: -webkit-gradient(
-		linear,
-		left bottom,
-		left top,
-		color-stop(0.47, #A8D4DD),
-		color-stop(0.53, #D5EDF1),
-		color-stop(1, #C8E4E9));
 }
 
 body, table td, select
@@ -1298,8 +1282,8 @@ body, table td, select
 	color: #FFFFFF;
 	font-size: 0.8em;
 	position: absolute;
-	right: -8px;
-	top: -8px;
+	right: -7px;
+	top: -7px;
 	z-index: 1001;
 }
 
@@ -1427,13 +1411,7 @@ body, table td, select
 	color: #135c8f !important;
 	border: 1px solid #81b2bd;
 	padding: 2px 5px  !important;
-	background: linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: -o-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: -moz-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: -webkit-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: -ms-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: -webkit-gradient(linear, left bottom, left top, color-stop(0.47, #A8D4DD), color-stop(0.53, #D5EDF1), color-stop(1, #C8E4E9));
+	background: #cee9ee;
 	border-radius: 5px !important;
 	-moz-border-radius: 5px !important;
 	-webkit-border-radius: 5px !important;
@@ -2677,10 +2655,9 @@ body, table td, select
 .tagThisDlg_TagName:hover
 {
 	cursor: pointer;
-	background: url(images/teal_slice.png) repeat-x center;
-	background-position:center;
-	-moz-border-radius: 3px;
+	background: #cce9ee;
 	border-radius: 3px;
+	-moz-border-radius: 3px;
 	-webkit-border-radius: 3px;
 }
 
@@ -3086,19 +3063,7 @@ body, table td, select
     text-decoration: none !important;
 	font-size: 12px important;
 	border: 1px solid #81b2bd;
-	background: linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: -o-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: -moz-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: -webkit-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: -ms-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: -webkit-gradient(
-		linear,
-		left bottom,
-		left top,
-		color-stop(0.47, #A8D4DD),
-		color-stop(0.53, #D5EDF1),
-		color-stop(1, #C8E4E9));
+	background: #cee9ee;
 	border-radius: 15px;
 	-moz-border-radius: 15px;
 	-webkit-border-radius: 15px;
@@ -3106,10 +3071,7 @@ body, table td, select
 
 .gwt-Button {
 	color: #1f1f1f;
-	background: -webkit-gradient(linear, left top, left bottom, from(#ffffff), to(#E0E0E0));
-	background: -moz-linear-gradient(center top , #ffffff, #E0E0E0) repeat scroll 0 0;
-	background: linear-gradient(top , #ffffff, #E0E0E0) repeat scroll 0 0;
-	background-color: transparent;
+	background: #f6f6f6;
 	border: 1px solid #b8b8b8;
 	font-weight: normal !important;
 	font-size: 12px;
@@ -3123,6 +3085,7 @@ body, table td, select
 	-webkit-border-radius: 15px;
 }
 .gwt-Button:hover {
+	background: #cce9ee;
 	border: 1px solid #81b2bd;
 	font-size: 12px important;
 	}
@@ -3360,12 +3323,12 @@ body, table td, select
 .subhead-control-bg2, .btn-bg2, .colorPickerLink:hover
 {
 	color: #FFFFFF;
-	background: url(images/teal_slice.png) repeat-x center;
+	background: #cce9ee;
 }
 .btn-bg3
 {
 	color: #FFFFFF;
-	background: url(images/blue_slice.png) repeat-x center;
+	background: #cce9ee;
 }
 .inside-btn2
 {
@@ -3487,9 +3450,9 @@ a.ss_new_thread {
 	top:-15px;
 }
 .qViewClose img {
-	background-image:url(images/close_w_border.png) !important;
-	width: 27px !important;
-	height: 27px !important;
+	background-image:url(images/close_20.png) !important;
+	width: 20px !important;
+	height: 20px !important;
 	cursor: pointer;
 }
 .qViewInfoTable {
@@ -3511,8 +3474,8 @@ a.ss_new_thread {
 	padding:2px 5px;
 	text-align:center;
 	position: relative;
-	
 	border: 1px solid #B8B8B8;
+	background: #f6f6f6;
 	font-weight: normal !important;
 	font-size: 12px;
 	padding: 2px 5px  !important;
@@ -3522,14 +3485,10 @@ a.ss_new_thread {
 	border-radius: 15px;
 	-moz-border-radius: 15px;
 	-webkit-border-radius: 15px;
-	background: -webkit-gradient(linear, left top, left bottom, from(#ffffff), to(#E0E0E0));
-	background: -moz-linear-gradient(center top , #ffffff, #E0E0E0) repeat scroll 0 0;
-	background: linear-gradient(center top , #ffffff, #E0E0E0) repeat scroll 0 0;
-	background-color: transparent;	
 }
 .qView-action2 {
 	color: #135c8f;
-	background: url("images/teal_slice.png") repeat-x center;
+	background: #cce9ee;
 	border:1px solid #81b2bd;
 }
 .qView-action-following  {
@@ -3545,7 +3504,7 @@ a.ss_new_thread {
 	text-align:center;
 }
 .qView-action-following:hover {
-	background: url("images/teal_slice.png") repeat-x center;
+	background: #cce9ee;
 	border:1px solid #81b2bd;
 	color:#135c8f;
 }
@@ -3819,10 +3778,9 @@ top:100px;
 {
 	color: #135c8f;
 	cursor: pointer;
-	background: url(images/blends/teal_slice.png) repeat-x;
-	background-position:center;
-	-moz-border-radius: 5px;
+	background: #cce9ee;
 	border-radius: 5px;
+	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;
 }
 .gwtTaskList_calculatedDate
@@ -4254,7 +4212,7 @@ td.datePickerMonth {
 
 /* Start:  Cliboard dialog styles. */
 	.vibe-cbDlg_Anchor          {color: #135c8f; text-decoration: none;}
-	.vibe-cbDlg_Anchor:hover    {color: #135c8f; cursor: pointer; background: url(images/blends/teal_slice.png) repeat-x; background-position:center; -moz-border-radius: 5px; border-radius: 5px; -webkit-border-radius: 5px;}
+	.vibe-cbDlg_Anchor:hover    {color: #135c8f; cursor: pointer; background: #cce9ee; border-radius: 5px; -moz-border-radius: 5px; -webkit-border-radius: 5px;}
 	.vibe-cbDlg_Checkbox        {margin-left: 5px;}
 	.vibe-cbDlg_ClearAll        {margin-left: 10px;}
 	.vibe-cbDlg_Grid            {margin: 20px 10px 10px 20px;}
@@ -4285,12 +4243,12 @@ td.datePickerMonth {
 	.vibe-emailNotifDlg_ExpanderImg       {}
 	.vibe-emailNotifDlg_FooterCheck       {}
 	.vibe-emailNotifDlg_FooterHelp        {margin-left: 10px;}
-	.vibe-emailNotifDlg_FooterHelp:hover  {color: #135c8f; cursor: pointer; background: url(images/blends/teal_slice.png) repeat-x; background-position:center; -moz-border-radius: 5px; border-radius: 5px; -webkit-border-radius: 5px;}
+	.vibe-emailNotifDlg_FooterHelp:hover  {color: #135c8f; cursor: pointer; background: #cce9ee; -moz-border-radius: 5px; border-radius: 5px; -webkit-border-radius: 5px;}
 	.vibe-emailNotifDlg_FooterLabel       {}
 	.vibe-emailNotifDlg_FooterPanel       {display: block; white-space: nowrap; margin-top: 15px; margin-bottom: 10px;}
 	.vibe-emailNotifDlg_LastWidget        {margin-bottom: 10px;}
 	.vibe-emailNotifDlg_MsgTypeHelp       {margin-left: 10px;}
-	.vibe-emailNotifDlg_MsgTypeHelp:hover {color: #135c8f; cursor: pointer; background: url(images/blends/teal_slice.png) repeat-x; background-position:center; -moz-border-radius: 5px; border-radius: 5px; -webkit-border-radius: 5px;}
+	.vibe-emailNotifDlg_MsgTypeHelp:hover {color: #135c8f; cursor: pointer; background: #cce9ee; -moz-border-radius: 5px; border-radius: 5px; -webkit-border-radius: 5px;}
 	.vibe-emailNotifDlg_MsgTypeLabel      {}
 	.vibe-emailNotifDlg_MsgTypePanel      {display: block; white-space: nowrap;}
 	.vibe-emailNotifDlg_ReadingPanel      {}
@@ -4508,7 +4466,7 @@ td.datePickerMonth {
 /* Start:  Who Has Access dialog styles. */
 	.vibe-whoHasAccessDlg-content            {margin: 10px 10px 10px 13px;}
 	.vibe-whoHasAccessDlg-group              {}
-	.vibe-whoHasAccessDlg-group:hover        {cursor: pointer; background: url(images/blends/teal_slice.png) repeat-x; background-position:center; -moz-border-radius: 5px; border-radius: 5px; -webkit-border-radius: 5px;}	
+	.vibe-whoHasAccessDlg-group:hover        {cursor: pointer; background: #cce9ee; -moz-border-radius: 5px; border-radius: 5px; -webkit-border-radius: 5px;}	
 	.vibe-whoHasAccessDlg-headerImg          {height: 25px; width: 25p; padding-right: 5px;}
 	.vibe-whoHasAccessDlg-headerLabel        {white-space: nowrap; font-weight: bold;}
 	.vibe-whoHasAccessDlg-headerPanel        {display: inline; white-space: nowrap; padding-bottom: 13px; vertical-align: middle;}
@@ -4778,8 +4736,8 @@ td.datePickerMonth {
 	background-color: #EBF5F5;
 	margin-top: 8px;
 	padding: 10px;
-	-moz-border-radius: 5px;
 	border-radius: 5px;
+	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;
 }
 
@@ -4808,13 +4766,12 @@ td.datePickerMonth {
 
 .blogArchiveCtrlMonthLabel:hover, .blogArchiveCtrlFolderLabel:hover
 {
-	background: url(images/blends/teal_slice.png) repeat-x;
-	background-position:center;
+	background: #cce9ee;
 	cursor: pointer;
 	font-family: Arial,Helvetica,sans-serif;
 	font-size: 12px;
-	-moz-border-radius: 5px;
 	border-radius: 5px;
+	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;
 }
 
@@ -4860,13 +4817,12 @@ td.datePickerMonth {
  
  .blogGlobalTagsCtrlTagLabel:hover
  {
-	background: url(images/blends/teal_slice.png) repeat-x;
-	background-position:center;
+	background: #cce9ee;
 	cursor: pointer;
 	font-family: Arial,Helvetica,sans-serif;
 	font-size: 12px;
-	-moz-border-radius: 5px;
 	border-radius: 5px;
+	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;
 }
  
@@ -4894,13 +4850,12 @@ td.datePickerMonth {
  
  .blogPageCtrl_newPageLink:hover
  {
-	background: url(images/blends/teal_slice.png) repeat-x;
-	background-position:center;
+	background: #cce9ee;
 	cursor: pointer;
 	font-family: Arial,Helvetica,sans-serif;
 	font-size: 12px;
-	-moz-border-radius: 5px;
 	border-radius: 5px;
+	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;
  }
  
@@ -5005,10 +4960,9 @@ td.datePickerMonth {
 .shareSendToWidget_mainLabel:hover
 {
 	cursor: pointer;
-	background: url(images/blends/teal_slice.png) repeat-x;
-	background-position:center;
-	-moz-border-radius: 5px;
+	background: #cce9ee;
 	border-radius: 5px;
+	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;
 }
 
@@ -5384,7 +5338,7 @@ td.datePickerMonth {
 	.vibe-desktopAppCtrl-closePanel          {display: block; position: absolute; top: 1px; right: 6px; cursor: pointer;}
 	.vibe-desktopAppCtrl-control             {display: block; position: relative; background-color: #EBECA5; border-color: #BABDB6; border-style: solid; border-width: 1px; font-size: 12px; margin: 5px 10px; padding: 5px 10px; -moz-border-radius: 5px; border-radius: 5px; -webkit-border-radius: 5px;}
 	.vibe-desktopAppCtrl-dontShowLabel       {color: #135C8F;}
-	.vibe-desktopAppCtrl-dontShowLabel:hover {background: url(images/blends/teal_slice.png) repeat-x; background-position: center; -moz-border-radius: 5px; border-radius: 5px; -webkit-border-radius: 5px;}
+	.vibe-desktopAppCtrl-dontShowLabel:hover {background: #cce9ee; -moz-border-radius: 5px; border-radius: 5px; -webkit-border-radius: 5px;}
 	.vibe-desktopAppCtrl-dontShowPanel       {display: block; position: absolute; top: 10px; right: 40px; text-decoration: none; cursor: pointer;}
 	.vibe-desktopAppCtrl-hintLabel           {}
 	.vibe-desktopAppCtrl-hintPanel           {display: block; margin: 0px; margin-top: 3px !important; padding: 0px; padding-top: 5px !important;}
@@ -5398,7 +5352,7 @@ td.datePickerMonth {
 /* Start:  Import profiles dialog styles. */
 	.vibe-importProfilesDlg-content    {text-align: left; width: 100%; margin-bottom: 10px; margin-top: 10px; padding: 3px 10px;}
 	.vibe-importProfilesDlg-hint       {color: #135c8f; text-decoration: none; margin: 8px 0px 8px 0px; font-size: 11px !important; cursor: pointer; margin: 3px 10px; font-size: 1em !important;}
-	.vibe-importProfilesDlg-hint:hover {color: #135c8f; cursor: pointer; background: url(images/blends/teal_slice.png) repeat-x; background-position:center; -moz-border-radius: 5px; border-radius: 5px; -webkit-border-radius: 5px;}
+	.vibe-importProfilesDlg-hint:hover {color: #135c8f; cursor: pointer; background: #cce9ee; -moz-border-radius: 5px; border-radius: 5px; -webkit-border-radius: 5px;}
 	.vibe-importProfilesDlg-input      {width: 250px;}
 	.vibe-importProfilesDlg-panel      {}
 /* End:  Import profiles dialog styles. */
@@ -5479,10 +5433,9 @@ td.datePickerMonth {
 .netFolderRightsWidget_RightsLabel:hover
 {
 	cursor: pointer;
-	background: url(images/blends/teal_slice.png) repeat-x;
-	background-position:center;
-	-moz-border-radius: 5px;
+	background: #cce9ee;
 	border-radius: 5px;
+	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;
 }
 /* End: */
@@ -5646,8 +5599,7 @@ td.datePickerMonth {
 .zoneShareRightsWidget_RightsLabel:hover
 {
 	cursor: pointer;
-	background: url(images/blends/teal_slice.png) repeat-x;
-	background-position:center;
+	background: #cce9ee;
 	border-radius: 5px;
 	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;
@@ -5705,8 +5657,7 @@ td.datePickerMonth {
 	.vibe-findBrowser-nodeTxtInert        {}
 	.vibe-findBrowser-nodeTxtActive       {}
 	.vibe-findBrowser-nodeTxtActive:hover {
-		background: url(images/blends/teal_slice.png) repeat-x;
-		background-position:center;
+		background: #cce9ee;
 		cursor: pointer;
 		border-radius: 5px;
 		-moz-border-radius: 5px;
@@ -5914,7 +5865,7 @@ td.datePickerMonth {
 	.vibe-copyPublicLinkDlg-headerNamePanel      {margin-left: 55px; width: 550px;}
 	.vibe-copyPublicLinkDlg-headerNameLabel      {font-size: 1.15em; line-height: 1.3em; color: #1f1f1f;}
 	.vibe-copyPublicLinkDlg-headerPathLabel      {color: #505354; font-size: 13px; line-height: 16px; overflow: hidden;}
-	.vibe-copyPublicLinkDlg-hintPanel            {display: block; width: 600px; white-space: normal; margin-top: 10px;}
+	.vibe-copyPublicLinkDlg-hintPanel            {color: #353838; display: block; width: 600px; white-space: normal; margin-top: 10px;}
 	.vibe-copyPublicLinkDlg-hintStart            {display: inline; font-weight: bold; font-size: .95em; padding-right: 4px;}
 	.vibe-copyPublicLinkDlg-hintTail             {display: inline; font-weight: normal; font-size: .9em;}
 	.vibe-copyPublicLinkDlg-linksHeaderPanel     {position: relative; margin-bottom: 5px; margin-left: 8px; margin-top: 10px;}
@@ -5978,8 +5929,9 @@ td.datePickerMonth {
 
 .emailPublicLinkDlg_Hint
 {
-	color: #4D6D8B;
+	color: #353838;
 	font-size: 13px;
+	width: 550px;
 }
 
 .emailPublicLinkDlg_FloatingHint
@@ -6023,7 +5975,7 @@ td.datePickerMonth {
 	.vibe-mailToMultiplePublicLinksSelectDlg-tableColumnCell  {white-space: nowrap;}
 	.vibe-mailToMultiplePublicLinksSelectDlg-tableHeader      {}
 	.vibe-mailToMultiplePublicLinksSelectDlg-tableLink        {white-space: nowrap;}
-	.vibe-mailToMultiplePublicLinksSelectDlg-tableLink:hover  {cursor: pointer; background: url(images/blends/teal_slice.png) repeat-x; background-position: center; -moz-border-radius: 5px; border-radius: 5px; -webkit-border-radius: 5px;}
+	.vibe-mailToMultiplePublicLinksSelectDlg-tableLink:hover  {cursor: pointer; background: #cce9ee; -moz-border-radius: 5px; border-radius: 5px; -webkit-border-radius: 5px;}
 	.vibe-mailToMultiplePublicLinksSelectDlg-tableRow         {}
 /* End:  Mail To Muliple Public Links Select dialog styles. */
 
