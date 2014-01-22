@@ -328,6 +328,24 @@ public class GwtMenuHelper {
 	}
 	
 	/*
+	 * Returns true of the user has the right to delete the entities
+	 * contained in the binder and false otherwise.
+	 */
+	private static boolean canDeleteContainedEntries(AllModulesInjected bs, Binder binder) {
+		return bs.getBinderModule().testAccess(binder, BinderOperation.deleteEntries);
+	}
+	
+	/*
+	 * Returns true of the user has the right to delete the entity and
+	 * false otherwise.
+	 * 
+	 * They can delete the entity if they can trash or purge it.
+	 */
+	private static boolean canDeleteEntity(AllModulesInjected bs, DefinableEntity de) {
+		return (canTrashEntity(bs, de) || canPurgeEntity(bs, de));
+	}
+	
+	/*
 	 * Returns true of the user has the right to purge the entity and
 	 * false otherwise.
 	 */
@@ -350,8 +368,8 @@ public class GwtMenuHelper {
 	}
 	
 	/*
-	 * Returns true of the user has the right to move the entity to the
-	 * trash and false otherwise.
+	 * Returns true of the user has the right to trash the entity and
+	 * false otherwise.
 	 */
 	private static boolean canTrashEntity(AllModulesInjected bs, DefinableEntity de) {
 		boolean reply;
@@ -364,13 +382,9 @@ public class GwtMenuHelper {
 		else {
 			reply = false;
 		}
-		
-		if (!reply) {
-			reply = canPurgeEntity(bs, de);
-		}
-		
 		return reply;
 	}
+	
 	
 	/*
 	 * Constructs a ToolbarItem for About.
@@ -764,7 +778,7 @@ public class GwtMenuHelper {
 		if (MiscUtil.hasString(viewType)) {
 			if (folderSupportsDeleteAndPurge(folder, viewType)) {
 				// ...and for which the user has rights to do it...
-				if (canTrashEntity(bs, folder)) {
+				if (canDeleteContainedEntries(bs, folder)) {
 					// ...add a Delete item.
 					constructEntryDeleteItem(entryToolbar);
 				}
@@ -777,7 +791,7 @@ public class GwtMenuHelper {
 	 */
 	private static void constructEntryDeleteItem(ToolbarItem entryToolbar, AllModulesInjected bs, HttpServletRequest request, Workspace ws, boolean isMyFilesCollection) {
 		// If the user has rights to do it...
-		if ((null == ws) || isMyFilesCollection || canTrashEntity(bs, ws)) {
+		if ((null == ws) || isMyFilesCollection || canDeleteContainedEntries(bs, ws)) {
 			// ...add a Delete item.
 			constructEntryDeleteItem(entryToolbar);
 		}
@@ -2043,9 +2057,8 @@ public class GwtMenuHelper {
 			// Yes!  Is the binder one the user can't delete, even if
 			// they have rights?
 			if (!(BinderHelper.isBinderDeleteProtected( binder))) {
-				// Yes!  Is this a binder the user can move to the
-				// trash?
-				if (canTrashEntity(bs, binder) && isBinderTrashEnabled(binder)) {
+				// Yes!  Is this a binder the user can delete?
+				if (canDeleteEntity(bs, binder) && isBinderTrashEnabled(binder)) {
 					// Yes!  Add the ToolbarItem for it.
 					adminMenuCreated  =
 					configMenuCreated = true;
@@ -3803,8 +3816,8 @@ public class GwtMenuHelper {
 				}
 			}
 
-			// Can the user move this entry to the trash?
-			if (canTrashEntity(bs, fe)) {
+			// Can the user delete this entry?
+			if (canDeleteEntity(bs, fe)) {
 				// Yes!  Add a delete toolbar item for it.
 				actionTBI = new ToolbarItem(DELETE);
 				markTBITitle(   actionTBI, "toolbar.delete"                      );
