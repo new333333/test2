@@ -1823,9 +1823,8 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 
 			attributeValues = (Object[]) userList.get( i );
 			
-			// If this user is not disabled and is not one of the system users, add the
-			// user to the map.
-			if ( ((Boolean)attributeValues[PRINCIPAL_DISABLED] == Boolean.FALSE) && (Validator.isNull( (String)attributeValues[this.PRINCIPAL_INTERNALID])) )
+			// If this user is not one of the system users, add the user to the map.
+			if ( (Validator.isNull( (String)attributeValues[this.PRINCIPAL_INTERNALID])) )
 			{
 				String name;
 
@@ -3867,8 +3866,8 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				if ( ldapGuid != null && ldapGuid.length() > 0 )
 					m_listOfUsersByLdapGuid.put( ldapGuid, attributeValues );
 				
-				//initialize all users as not found unless already disabled or reserved
-				if (((Boolean)attributeValues[PRINCIPAL_DISABLED] == Boolean.FALSE) && (Validator.isNull((String)attributeValues[PRINCIPAL_INTERNALID])))
+				//initialize all users as not found unless they are a reserved user.
+				if ( Validator.isNull((String)attributeValues[PRINCIPAL_INTERNALID]) )
 				{
 					notInLdap.put((Long)attributeValues[PRINCIPAL_ID], ssName);
 				}
@@ -4688,9 +4687,8 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				if ( ldapGuid != null && ldapGuid.length() > 0 )
 					m_listOfGroupsByLdapGuid.put( ldapGuid, row );
 				
-				//initialize all groups as not found unless already disabled or reserved
-				if ( ((Boolean)row[PRINCIPAL_DISABLED] == Boolean.FALSE) &&
-					 (Validator.isNull((String)row[PRINCIPAL_INTERNALID])) )
+				//initialize all groups as not found unless they are a reserved group
+				if ( Validator.isNull((String)row[PRINCIPAL_INTERNALID]) )
 				{
 					m_groupsNotInLdap.put((Long)row[PRINCIPAL_ID], ssName);
 				}
