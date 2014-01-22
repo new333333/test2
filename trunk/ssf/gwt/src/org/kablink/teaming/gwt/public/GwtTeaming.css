@@ -5867,7 +5867,7 @@ td.datePickerMonth {
 	.vibe-copyPublicLinkDlg-headerPathLabel      {color: #505354; font-size: 13px; line-height: 16px; overflow: hidden;}
 	.vibe-copyPublicLinkDlg-hintPanel            {color: #353838; display: block; width: 600px; white-space: normal; margin-top: 10px;}
 	.vibe-copyPublicLinkDlg-hintStart            {display: inline; font-weight: bold; font-size: .95em; padding-right: 4px;}
-	.vibe-copyPublicLinkDlg-hintTail             {display: inline; font-weight: normal; font-size: .9em;}
+	.vibe-copyPublicLinkDlg-hintTail             {display: inline; font-weight: normal; font-size: 14px;}
 	.vibe-copyPublicLinkDlg-linksHeaderPanel     {position: relative; margin-bottom: 5px; margin-left: 8px; margin-top: 10px;}
 	.vibe-copyPublicLinkDlg-linksHeaderPanel img {position: absolute; top: 2px; left: 0px;}
 	.vibe-copyPublicLinkDlg-linksHeaderNamePanel {margin-left: 30px; width: 540px;}
@@ -5930,8 +5930,10 @@ td.datePickerMonth {
 .emailPublicLinkDlg_Hint
 {
 	color: #353838;
-	font-size: 13px;
+	font-size: 14px;
+	line-height: 18px;
 	width: 550px;
+	padding-bottom: 5px;
 }
 
 .emailPublicLinkDlg_FloatingHint
