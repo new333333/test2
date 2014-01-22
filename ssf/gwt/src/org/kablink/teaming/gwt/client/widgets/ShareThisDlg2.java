@@ -801,7 +801,7 @@ public class ShareThisDlg2 extends DlgBox
 			menuPanel = new FlowPanel();
 			menuPanel.addStyleName( "shareDlg_MenuPanel" );
 			menuPanel.addStyleName( "shareDlg_MenuPanelOverride" );
-			menuPanel.getElement().getStyle().setWidth( tableWidth-6, Unit.PX );
+			menuPanel.getElement().getStyle().setRight( 360, Unit.PX );
 			
 			// Add an "Edit" button.
 			label = new InlineLabel( messages.shareDlg_editButton() );
@@ -1177,6 +1177,13 @@ public class ShareThisDlg2 extends DlgBox
 		else
 		{
 			Window.alert( GwtTeaming.getMessages().shareDlg_selectSharesToDelete() );
+		}
+		
+		// Is the "edit share" widget visible?
+		if ( m_editShareWidget != null && m_editShareWidget.isVisible() )
+		{
+			// Yes, close it.
+			m_editShareWidget.setVisible( false );
 		}
 	}
 	
