@@ -4619,6 +4619,12 @@ td.datePickerMonth {
 	font-style: italic;
 }
 
+.dynamicGroupMembership_BrowseDN
+{
+	margin-bottom: 3px;
+	margin-left: 3px;
+}
+
 .noObjectsFound
 {
 	color: #949494;

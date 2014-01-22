@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -520,11 +520,11 @@ public class LdapBrowserDlg extends DlgBox implements EditCanceledHandler {
 	 * Asynchronously issues a GWT RPC command to get the LDAP
 	 * configuration data from the server.
 	 */
-	private static void getLdapServerListFromServerAsync(final LdapBrowseListCallback ldapBrowseListCallback) {
+	private static void getLdapServerListFromServerAsync(final LdapSearchInfo si, final LdapBrowseListCallback ldapBrowseListCallback) {
 		GwtClientHelper.deferCommand( new ScheduledCommand() {
 			@Override
 			public void execute() {
-				getLdapServerListFromServerNow(ldapBrowseListCallback);
+				getLdapServerListFromServerNow(si, ldapBrowseListCallback);
 			}
 		});
 	}
@@ -533,7 +533,7 @@ public class LdapBrowserDlg extends DlgBox implements EditCanceledHandler {
 	 * Synchronously issue a GWT RPC request to get the LDAP
 	 * configuration data from the server.
 	 */
-	private static void getLdapServerListFromServerNow(final LdapBrowseListCallback ldapBrowseListCallback) {
+	private static void getLdapServerListFromServerNow(final LdapSearchInfo si, final LdapBrowseListCallback ldapBrowseListCallback) {
 		// Execute the GWT RPC command to get the LDAP configurations.
 		GwtClientHelper.executeCommand(new GetLdapConfigCmd(), new AsyncCallback<VibeRpcResponse>() {
 			@Override
@@ -555,13 +555,8 @@ public class LdapBrowserDlg extends DlgBox implements EditCanceledHandler {
 				ArrayList<GwtLdapConnectionConfig> ldapConnections = ((null == m_ldapConfig) ? null : m_ldapConfig.getListOfLdapConnections());
 				if (GwtClientHelper.hasItems(ldapConnections)) {
 					// Yes!  We'll use the same LdapSearchInfo for all
-					// of them.
-					LdapSearchInfo si = new LdapSearchInfo();
-					si.setSearchObjectClass(LdapSearchInfo.RETURN_USERS);
-					si.setSearchSubTree(false);
-
-					// Construct the List<LdapBrowseSpec> using the
-					// information from the
+					// of them.  Construct the List<LdapBrowseSpec>
+					// using the information from the
 					// List<GwtLdapConnectionConfig>.
 					for (GwtLdapConnectionConfig ldapConnection:  ldapConnections) {
 						DirectoryServer ds = new DirectoryServer();
@@ -807,7 +802,8 @@ public class LdapBrowserDlg extends DlgBox implements EditCanceledHandler {
 			final LdapBrowserDlgClient ldapDlgClient,
 			
 			// getLdapServerList parameters.
-			final LdapBrowseListCallback ldapBrowseListCallback,
+			final LdapSearchInfo			si,
+			final LdapBrowseListCallback	ldapBrowseListCallback,
 			
 			// initAndShow parameters,
 			final LdapBrowserDlg		ldapDlg,
@@ -837,7 +833,7 @@ public class LdapBrowserDlg extends DlgBox implements EditCanceledHandler {
 				else if (null != ldapBrowseListCallback) {
 					// Yes!  Issue the RPC request to get the defined
 					// LDAP servers.
-					getLdapServerListFromServerAsync(ldapBrowseListCallback);
+					getLdapServerListFromServerAsync(si, ldapBrowseListCallback);
 				}
 				
 				else {
@@ -857,7 +853,7 @@ public class LdapBrowserDlg extends DlgBox implements EditCanceledHandler {
 	 * @param ldapDlgClient
 	 */
 	public static void createAsync(LdapBrowserDlgClient ldapDlgClient) {
-		doAsyncOperation(ldapDlgClient, null, null, null, null, null);
+		doAsyncOperation(ldapDlgClient, null, null, null, null, null, null);
 	}
 	
 	/**
@@ -866,8 +862,18 @@ public class LdapBrowserDlg extends DlgBox implements EditCanceledHandler {
 	 * 
 	 * @param ldapDlgClient
 	 */
+	public static void getLdapServerList(LdapSearchInfo si, LdapBrowseListCallback ldapBrowseListCallback) {
+		doAsyncOperation(null, si, ldapBrowseListCallback, null, null, null, null);
+	}
+	
 	public static void getLdapServerList(LdapBrowseListCallback ldapBrowseListCallback) {
-		doAsyncOperation(null, ldapBrowseListCallback, null, null, null, null);
+		// Default searching for users.
+		LdapSearchInfo si = new LdapSearchInfo();
+		si.setSearchObjectClass(LdapSearchInfo.RETURN_USERS);
+		si.setSearchSubTree(false);
+		
+		// Always use the initial form of the method.
+		getLdapServerList(si, ldapBrowseListCallback);
 	}
 	
 	/**
@@ -879,7 +885,7 @@ public class LdapBrowserDlg extends DlgBox implements EditCanceledHandler {
 	 * @param showRelativeTo
 	 */
 	public static void initAndShow(LdapBrowserDlg ldapDlg, LdapBrowserCallback ldapCallback, List<LdapBrowseSpec> browseList, UIObject showRelativeTo) {
-		doAsyncOperation(null, null, ldapDlg, ldapCallback, browseList, showRelativeTo);
+		doAsyncOperation(null, null, null, ldapDlg, ldapCallback, browseList, showRelativeTo);
 	}
 	
 	public static void initAndShow(LdapBrowserDlg ldapDlg, LdapBrowserCallback ldapCallback, LdapBrowseSpec browse, UIObject showRelativeTo) {
