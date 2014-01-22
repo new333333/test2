@@ -72,6 +72,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.GetNextPreviousFolderEntryInfoC
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.rpc.shared.ViewFolderEntryInfoRpcResponseData;
 import org.kablink.teaming.gwt.client.util.EntityId;
+import org.kablink.teaming.gwt.client.util.EntityRights;
 import org.kablink.teaming.gwt.client.util.FolderEntryDetails;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
@@ -589,6 +590,18 @@ public class FolderEntryComposite extends ResizeComposite
 	@Override
 	public EntityId getEntityId() {
 		return m_vfei.getEntityId();
+	}
+
+	/**
+	 * Returns the EntityRights of folder entry being viewed.
+	 * 
+	 * Implements the FolderEntryCallback.getEntityRights() method.
+	 * 
+	 * @param vfei
+	 */
+	@Override
+	public EntityRights getEntityRights() {
+		return m_fed.getEntityRights();
 	}
 
 	/*

@@ -3592,6 +3592,16 @@ public class GwtViewHelper {
 			gsp.stop();
 		}
 	}
+
+	/*
+	 * Returns the EntityRights for an individual entity.
+	 */
+	private static EntityRights getEntityRights(AllModulesInjected bs, HttpServletRequest request, EntityId eid) throws GwtTeamingException {
+		List<EntityId> eidList = new ArrayList<EntityId>();
+		eidList.add(eid);
+		EntityRightsRpcResponseData erData = getEntityRights(bs, request, eidList);
+		return erData.getEntityRights(eid);
+	}
 	
 	/**
 	 * Returns the entry description from a search results Map.
@@ -4256,7 +4266,12 @@ public class GwtViewHelper {
 			// Create the ViewFolderEntryInfo to return...
 			User                user   = GwtServerHelper.getCurrentUser();
 			Long				userId = user.getId();
-			FolderEntryDetails	reply  = new FolderEntryDetails(entityId);
+			FolderEntryDetails	reply  = new FolderEntryDetails(
+				entityId,
+				getEntityRights(
+					bs,
+					request,
+					entityId));
 			
 			// ...set whether the user has seen this entry...
 			Long			folderId = entityId.getBinderId();
