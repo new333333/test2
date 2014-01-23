@@ -23,6 +23,6 @@
 	<set-property-fallback name="locale" value="en"  />	<!-- Default is English. -->
 	
 	<!-- Enable GWT's Super Dev Mode debugging. -->
-	<add-linker                 name="xsiframe"                            />
-	<set-configuration-property name="devModeRedirectEnabled" value="true" />
+	<add-linker                 name="xsiframe"                           />
+	<set-configuration-property name="devModeUrlWhitelistRegexp" value="" />	<!-- Allows any address to debug. -->
 </module>
