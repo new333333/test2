@@ -206,6 +206,11 @@
 		</property>
 	</bean>
 
+	<!-- Local transaction manager for JDBC. If using JTA, comment out this element -->
+	<bean id="jdbcTransactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource"><ref bean="dataSource"/></property>
+	</bean>
+
 	<bean id="baseTransactionWithoutInterceptorsProxy" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean"
 			abstract="true">
 		<property name="transactionManager"><ref bean="transactionManager"/></property>
@@ -247,8 +252,16 @@
 		</property>
 	</bean>
 
+	<!-- Transaction template for use with Hibernate -->
 	<bean id="transactionTemplate" class="org.springframework.transaction.support.TransactionTemplate">
 		<property name="transactionManager"><ref bean="transactionManager"/></property>
+		<property name="isolationLevelName"><value>ISOLATION_READ_COMMITTED</value></property>
+		<property name="propagationBehaviorName"><value>PROPAGATION_REQUIRED</value></property>
+	</bean>
+
+	<!-- Transaction template for use with JDBC -->
+	<bean id="jdbcTransactionTemplate" class="org.springframework.transaction.support.TransactionTemplate">
+		<property name="transactionManager"><ref bean="jdbcTransactionManager"/></property>
 		<property name="isolationLevelName"><value>ISOLATION_READ_COMMITTED</value></property>
 		<property name="propagationBehaviorName"><value>PROPAGATION_REQUIRED</value></property>
 	</bean>
@@ -1101,6 +1114,7 @@ text/calendar											  ics
 	<bean id="coreDao" class="org.kablink.teaming.dao.impl.CoreDaoImpl">
 		<property name="sessionFactory"><ref bean="sessionFactory"/></property>
 	</bean>
+	
 	<bean id="profileDao" class="org.kablink.teaming.dao.impl.ProfileDaoImpl" depends-on="zoneConfig,sPropsUtil">
 		<property name="sessionFactory"><ref bean="sessionFactory"/></property>
 		<property name="coreDao"><ref bean="coreDao"/></property>
@@ -1111,6 +1125,10 @@ text/calendar											  ics
 		<property name="coreDao"><ref bean="coreDao"/></property>
 	</bean>
 
+	<bean id="jdbcDao" class="org.kablink.teaming.dao.impl.JdbcDaoImpl">
+		<property name="dataSource"><ref bean="dataSource"/></property>
+	</bean>
+	
 	<!-- ======================== File & Repository Services ====================== -->
 	
 	<bean id="simpleFileRepository" class="org.kablink.teaming.repository.file.FileRepositorySessionFactory" 
