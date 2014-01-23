@@ -616,77 +616,99 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				if ( value != null && value instanceof byte[] )
 				{
 					int i;
+					int index;
 					String strValue;
 					StringBuffer strBuffer;
+					boolean validFormat;
 					
 					homeDirInfo = new HomeDirInfo();
 					strBuffer = new StringBuffer();
 					strValue = new String( (byte[]) value );
 					
-					// Get the dn of the volume object
+					// Is the format of the value found in the home directory attribute valid?
+					// The string should be of the format, "dn of volume object#namespace value#home dir path"
+					// For example, "cn=test_vol1,o=novell#0#home\Peter"
+					validFormat = false;
+					index = strValue.indexOf( '#' );
+					if ( index > 0 )
 					{
-						String volumeDn;
-
-						i = 0;
-						while ( i < strValue.length() )
-						{
-							char ch;
-							
-							ch = strValue.charAt( i );
-							++i;
-							
-							if ( ch == '#' )
-								break;
-							
-							strBuffer.append( ch );
-						}
-						
-						volumeDn = strBuffer.toString();
-						if ( volumeDn != null && volumeDn.length() > 0 )
-						{
-							readVolumeAndServerInfoFromLdap( ldapContext, dirType, volumeDn, homeDirInfo, logErrors );
-						}
+						index = strValue.indexOf( '#', index+1 );
+						if ( index > 0 )
+							validFormat = true;
 					}
 					
-					// Skip over the namespace value
+					if ( validFormat )
 					{
-						while ( i < strValue.length() )
+						// Get the dn of the volume object
 						{
-							char ch;
+							String volumeDn;
+	
+							i = 0;
+							while ( i < strValue.length() )
+							{
+								char ch;
+								
+								ch = strValue.charAt( i );
+								++i;
+								
+								if ( ch == '#' )
+									break;
+								
+								strBuffer.append( ch );
+							}
 							
-							ch = strValue.charAt( i );
-							++i;
+							volumeDn = strBuffer.toString();
+							if ( volumeDn != null && volumeDn.length() > 0 )
+							{
+								readVolumeAndServerInfoFromLdap( ldapContext, dirType, volumeDn, homeDirInfo, logErrors );
+							}
+						}
+						
+						// Skip over the namespace value
+						{
+							while ( i < strValue.length() )
+							{
+								char ch;
+								
+								ch = strValue.charAt( i );
+								++i;
+								
+								if ( ch == '#' )
+									break;
+							}
+						}
+						
+						// Get the name of the user's home directory
+						{
+							String dirName;
+							int numChars;
 							
-							if ( ch == '#' )
-								break;
+							strBuffer = new StringBuffer();
+							numChars = 0;
+	
+							while ( i < strValue.length() )
+							{
+								char ch;
+								
+								ch = strValue.charAt( i );
+								++i;
+								
+								// We don't want a \ as the first character in the name
+								if ( numChars == 0 && ch == '\\' )
+									continue;
+								
+								strBuffer.append( ch );
+								++numChars;
+							}
+							
+							dirName = strBuffer.toString();
+							homeDirInfo.setPath( dirName );
 						}
 					}
-					
-					// Get the name of the user's home directory
+					else
 					{
-						String dirName;
-						int numChars;
-						
-						strBuffer = new StringBuffer();
-						numChars = 0;
-
-						while ( i < strValue.length() )
-						{
-							char ch;
-							
-							ch = strValue.charAt( i );
-							++i;
-							
-							// We don't want a \ as the first character in the name
-							if ( numChars == 0 && ch == '\\' )
-								continue;
-							
-							strBuffer.append( ch );
-							++numChars;
-						}
-						
-						dirName = strBuffer.toString();
-						homeDirInfo.setPath( dirName );
+						if ( logErrors || logger.isDebugEnabled() )
+							logger.error( "The value found in the home directory attribute is not in the correct format for the user: " + userDn + " \nhome directory value: " + strValue );
 					}
 				}
 			}
