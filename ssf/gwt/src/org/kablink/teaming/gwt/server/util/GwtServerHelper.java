@@ -121,7 +121,6 @@ import org.kablink.teaming.domain.GroupPrincipal;
 import org.kablink.teaming.domain.HistoryStamp;
 import org.kablink.teaming.domain.IdentityInfo;
 import org.kablink.teaming.domain.MobileAppsConfig;
-import org.kablink.teaming.domain.TitleException;
 import org.kablink.teaming.domain.MobileAppsConfig.MobileOpenInSetting;
 import org.kablink.teaming.domain.MobileOpenInWhiteLists;
 import org.kablink.teaming.domain.NameCompletionSettings;
@@ -6509,29 +6508,32 @@ public class GwtServerHelper {
 			// ...get the URL to the current user's avatar...
 			String userAvatarUrl = getUserAvatarUrl(bs, request, getCurrentUser());
 
-			// ...if the zone configuration has an auto update URL or
-			// ...it can be deployed from the local server...
+			// ...if the current user is not Guest and the zone
+			// ...configuration has an auto update URL or it can be
+			// ...deployed from the local server...
 			boolean desktopAppEnabled        = false;
 			boolean showDesktopAppDownloader = false;
-			ZoneConfig zc = bs.getZoneModule().getZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
-			String baseUrl = zc.getFsaAutoUpdateUrl();
-			baseUrl = ((null == baseUrl) ? "" : baseUrl.trim());
-			if ((0 < baseUrl.length()) || zc.getFsaDeployLocalApps()) {
-				// ...get what we know about desktop application
-				// ...deployment...
-				GwtFileSyncAppConfiguration fsaConfig = getFileSyncAppConfiguration(bs);
-				desktopAppEnabled = fsaConfig.getIsDeploymentEnabled();
-				if (desktopAppEnabled) {
-					UserProperties userProperties = bs.getProfileModule().getUserProperties(null);
-					String s = ((String) userProperties.getProperty(ObjectKeys.USER_PROPERTY_SHOW_DESKTOP_APP_DOWNLOAD));
-					if (MiscUtil.hasString(s))
-					     showDesktopAppDownloader = Boolean.parseBoolean(s);
-					else showDesktopAppDownloader = true;
+			if (!(GwtServerHelper.getCurrentUser().isShared())) {
+				ZoneConfig zc = bs.getZoneModule().getZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
+				String baseUrl = zc.getFsaAutoUpdateUrl();
+				baseUrl = ((null == baseUrl) ? "" : baseUrl.trim());
+				if ((0 < baseUrl.length()) || zc.getFsaDeployLocalApps()) {
+					// ...get what we know about desktop application
+					// ...deployment...
+					GwtFileSyncAppConfiguration fsaConfig = getFileSyncAppConfiguration(bs);
+					desktopAppEnabled = fsaConfig.getIsDeploymentEnabled();
+					if (desktopAppEnabled) {
+						UserProperties userProperties = bs.getProfileModule().getUserProperties(null);
+						String s = ((String) userProperties.getProperty(ObjectKeys.USER_PROPERTY_SHOW_DESKTOP_APP_DOWNLOAD));
+						if (MiscUtil.hasString(s))
+						     showDesktopAppDownloader = Boolean.parseBoolean(s);
+						else showDesktopAppDownloader = true;
+					}
 				}
-			}
-			
-			else {
-				GwtLogHelper.debug(m_logger, "GwtServerHelper.getMainPageInfo():  The file synchronization application auto update URL is not available.");
+				
+				else {
+					GwtLogHelper.debug(m_logger, "GwtServerHelper.getMainPageInfo():  The file synchronization application auto update URL is not available.");
+				}
 			}
 			
 			// Does the current user's Home folder serve as their My Files repository?
