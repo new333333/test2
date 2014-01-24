@@ -203,7 +203,10 @@ public class EditShareWidget extends Composite
 				Scheduler.get().scheduleDeferred( cmd );
 			}
 		} );
-		panel.add( applyBtn );
+		
+		// We are removing the Apply button for now.  We'll see what the beta customers say.
+		// The Share dialog will call our saveSettings() method.
+//!!!		panel.add( applyBtn );
 
 		return panel;
 	}
@@ -880,6 +883,13 @@ public class EditShareWidget extends Composite
 			shareItem.setShareExpirationValue( expirationValue );
 	}
 		
+	/**
+	 * 
+	 */
+	public void saveSettings()
+	{
+		editSuccessful( Boolean.TRUE );
+	}
 	
 	/**
 	 * Update the GwtShareItem with the share rights from the dialog
