@@ -46,6 +46,10 @@ import org.kablink.teaming.gwt.client.util.CloudFolderType;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 
+import com.eemi.gwt.tour.client.GwtTour;
+import com.eemi.gwt.tour.client.Placement;
+import com.eemi.gwt.tour.client.Tour;
+import com.eemi.gwt.tour.client.TourStep;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
@@ -77,6 +81,7 @@ public class AddNewFolderDlg extends DlgBox implements EditSuccessfulHandler {
 	private Long				m_binderId;			// The binder the new folder is to be added to.
 	private Long				m_folderTemplateId;	// The ID of the folder template to use to create the folder.
 	private TextBox 			m_folderNameInput;	//
+	private Tour				m_tour;				//
 
 	/*
 	 * Class constructor.
@@ -264,6 +269,9 @@ public class AddNewFolderDlg extends DlgBox implements EditSuccessfulHandler {
 	 * Synchronously populates the contents of the dialog.
 	 */
 	private void populateDlgNow() {
+		m_tour = new Tour("AddNewFolderTour");
+		m_tour.setShowPrevButton(true);
+		
 		// Clear anything already in the dialog's panel.
 		m_dlgPanel.clear();
 
@@ -281,6 +289,7 @@ public class AddNewFolderDlg extends DlgBox implements EditSuccessfulHandler {
 
 		// ...and add an input widget.
 		m_folderNameInput = new TextBox();
+		m_folderNameInput.getElement().setId("vibe-addNewFolderDlg_NameInput");
 		m_folderNameInput.addStyleName("vibe-addNewFolderDlg_NameInput");
 		m_folderNameInput.addKeyDownHandler(new KeyDownHandler() {
 			@Override
@@ -303,6 +312,12 @@ public class AddNewFolderDlg extends DlgBox implements EditSuccessfulHandler {
 		gridCellFmt.setVerticalAlignment(0, 1, HasVerticalAlignment.ALIGN_MIDDLE);
 		GwtClientHelper.setFocusDelayed(m_folderNameInput);
 		
+		TourStep step = new TourStep(Placement.RIGHT, "vibe-addNewFolderDlg_NameInput");
+		step.setContent("Enter the name of the new folder here.");
+		step.setTitle("Folder name");
+		step.setYOffset(-20);
+		m_tour.addStep(step);
+		
 		// Do we allow adding a Cloud Folder? 
 		if (m_allowCloudFolder) {
 			// Yes!  Generate the appropriate widgets.
@@ -313,6 +328,7 @@ public class AddNewFolderDlg extends DlgBox implements EditSuccessfulHandler {
 			
 			m_folderTypeLB = new ListBox();
 			m_folderTypeLB.addStyleName("vibe-addNewFolderDlg_TypeSelect");
+			m_folderTypeLB.getElement().setId("vibe-addNewFolderDlg_TypeSelect");
 			grid.setWidget(1, 1, m_folderTypeLB);
 			gridCellFmt.setVerticalAlignment(1, 1, HasVerticalAlignment.ALIGN_MIDDLE);
 			
@@ -331,11 +347,24 @@ public class AddNewFolderDlg extends DlgBox implements EditSuccessfulHandler {
 				m_folderTypeLB.addItem(display, cft.name());
 			}
 			m_folderTypeLB.setSelectedIndex(0);
+			
+			step = new TourStep(Placement.RIGHT, "vibe-addNewFolderDlg_TypeSelect");
+			step.setContent("Select the type of folder here.");
+			step.setTitle("Folder type");
+			step.setYOffset(-20);
+			m_tour.addStep(step);
 		}
 		
 		// Finally, show the dialog centered on the screen.
 		setButtonsEnabled(true);
 		show(true);
+		
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
+			@Override
+			public void execute() {
+				GwtTour.startTour(m_tour);
+			}
+		});
 	}
 	
 	/*

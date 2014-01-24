@@ -142,6 +142,7 @@ a:hover {
 <br/><span>gwt-crypto</span>
 <br/><span>gwt-dnd</span>
 <br/><span>gwt-log</span>
+<br/><span>gwt-tour</span>
 <br/><span>Jackrabbit</span>
 <br/><span>Jackson</span>
 <br/><span>Jakarta Taglibs</span>
