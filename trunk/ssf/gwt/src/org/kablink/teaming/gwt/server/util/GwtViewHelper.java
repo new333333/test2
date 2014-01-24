@@ -1329,13 +1329,14 @@ public class GwtViewHelper {
 						GwtEventHelper.setAssignmentInfoPresence(        ai, userPresence     );
 						GwtEventHelper.setAssignmentInfoPresenceUserWSId(ai, presenceUserWSIds);
 						GwtEventHelper.setAssignmentInfoAvatarUrl(       ai, avatarUrls       );
-						GwtEventHelper.setAssignmentInfoHover(           ai, principalEMAs    );
+						GwtEventHelper.setAssignmentInfoHover(           ai, principalTitles  );
 					}
 					break;
 					
 				case GROUP:
 					if (GwtEventHelper.setAssignmentInfoTitle(  ai, principalTitles)) {
 						GwtEventHelper.setAssignmentInfoMembers(ai, groupCounts     );
+						GwtEventHelper.setAssignmentInfoHover(  ai, principalTitles );
 						ai.setPresenceDude("pics/group_icon_small.png");
 					}
 					break;
@@ -1343,6 +1344,7 @@ public class GwtViewHelper {
 				case TEAM:
 					if (GwtEventHelper.setAssignmentInfoTitle(  ai, teamTitles)) {
 						GwtEventHelper.setAssignmentInfoMembers(ai, teamCounts );
+						GwtEventHelper.setAssignmentInfoHover(  ai, teamTitles );
 						ai.setPresenceDude("pics/team_16.png");
 					}
 					break;
@@ -2807,7 +2809,7 @@ public class GwtViewHelper {
 				GwtEventHelper.setAssignmentInfoPresence(        ai, userPresence     );
 				GwtEventHelper.setAssignmentInfoPresenceUserWSId(ai, presenceUserWSIds);
 				GwtEventHelper.setAssignmentInfoAvatarUrl(       ai, avatarUrls       );
-				GwtEventHelper.setAssignmentInfoHover(           ai, principalEMAs    );
+				GwtEventHelper.setAssignmentInfoHover(           ai, principalTitles  );
 			}
 			else {
 				removeList.add(ai);

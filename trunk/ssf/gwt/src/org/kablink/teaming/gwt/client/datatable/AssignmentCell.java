@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -36,6 +36,7 @@ import java.util.List;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingDataTableImageBundle;
+import org.kablink.teaming.gwt.client.binderviews.folderdata.ColumnWidth;
 import org.kablink.teaming.gwt.client.presence.GwtPresenceInfo;
 import org.kablink.teaming.gwt.client.presence.PresenceControl;
 import org.kablink.teaming.gwt.client.util.AssignmentInfo.AssigneeType;
@@ -62,8 +63,13 @@ import com.google.gwt.user.client.ui.Label;
  * @author drfoster@novell.com
  */
 public class AssignmentCell extends AbstractCell<List<AssignmentInfo>> {
-	private boolean							m_isIE;		//
-	private GwtTeamingDataTableImageBundle	m_images;	//
+	private boolean							m_isIE;				//
+	private ColumnWidth						m_cw;				//
+	private GwtTeamingDataTableImageBundle	m_images;			//
+
+	private final static boolean	USE_ELLIPSIS_WITH_PX_SIZES	= false;		// Controls whether styles to use an '...' to truncate long names are added with the column size is in pixels.
+	private final static int		ASSIGNEE_WIDTH_ADJUST		= (25 + 16);	// 25 for the image + 16 for the padding on the <td>.
+	private final static int		MIN_ASSIGNEE_WIDTH			= 50;			// The minimum width we'll allow an assignee label to be (no ellipsis below this.)
 	
 	/*
 	 * Inner class used to encapsulate information about an event
@@ -143,17 +149,56 @@ public class AssignmentCell extends AbstractCell<List<AssignmentInfo>> {
 	/**
 	 * Constructor method.
 	 */
-	public AssignmentCell() {
+	public AssignmentCell(ColumnWidth cw) {
 		// Sink the events we need to process assignments...
 		super(
 			VibeDataTableConstants.CELL_EVENT_CLICK,
 			VibeDataTableConstants.CELL_EVENT_KEYDOWN,
 			VibeDataTableConstants.CELL_EVENT_MOUSEOVER,
 			VibeDataTableConstants.CELL_EVENT_MOUSEOUT);
+
+		// ...store the parameter...
+		m_cw = cw;
 		
 		// ...and initialize everything else.
 		m_images = GwtTeaming.getDataTableImageBundle();
 		m_isIE   = GwtClientHelper.jsIsIE();
+	}
+
+	/*
+	 * Creates a Label with the appropriate styles.
+	 */
+	private Label createAssigneeLabel(String title, String hover) {
+		// Create the label with the base styles.
+		Label reply = new Label(title);
+		reply.addStyleName("vibe-dataTableAssignment-label vibe-dataTableAssignment-enabled");
+		if (m_isIE) {
+			reply.addStyleName("vibe-dataTableAssignment-labelIE");
+		}
+
+		// If we have hover text for the label...
+		if (GwtClientHelper.hasString(hover)) {
+			// ...add it as the label's title.
+			reply.setTitle(hover);
+		}
+
+		// Do we needs to style it to use ellipsis with long names?
+		boolean useEllipsis = USE_ELLIPSIS_WITH_PX_SIZES;
+		if (useEllipsis && m_cw.isPX()) {
+			// Yes!  Since we it's a fixed width, add styles so that if
+			// it's long, the name will get truncated and padded with
+			// ellipsis.
+			reply.addStyleName("vibe-dataTableAssignment-labelEllipsis");
+			int pxWidth = (((int) m_cw.getWidth()) - ASSIGNEE_WIDTH_ADJUST);
+			if (MIN_ASSIGNEE_WIDTH > pxWidth) {
+				pxWidth = MIN_ASSIGNEE_WIDTH;
+			}
+			reply.setWidth(pxWidth + "px");
+		}
+
+		// If we get here, reply refers to the assignee Label.  Return
+		// it.
+		return reply;
 	}
 
 	/*
@@ -298,8 +343,10 @@ public class AssignmentCell extends AbstractCell<List<AssignmentInfo>> {
 			}
 			
 			// Do we have any hover text for this assignment?
-			String	hover    = ai.getHover();
-			boolean	hasHover = GwtClientHelper.hasString(hover);
+			String hover = ai.getHover();
+			if (!(GwtClientHelper.hasString(hover))) {
+				hover = ai.getTitle();
+			}
 			
 			// Generate a panel to hold the assignment...
 			VibeFlowPanel fp = new VibeFlowPanel();
@@ -324,15 +371,8 @@ public class AssignmentCell extends AbstractCell<List<AssignmentInfo>> {
 				fp.add(presenceControl);
 				
 				// ...and add a name link for it.
-				Label presenceLabel = new Label(ai.getTitle());
-				presenceLabel.addStyleName("vibe-dataTableAssignment-label vibe-dataTableAssignment-enabled");
-				if (m_isIE) {
-					presenceLabel.addStyleName("vibe-dataTableAssignment-labelIE");
-				}
+				Label presenceLabel = createAssigneeLabel(ai.getTitle(), hover);
 				presenceLabel.getElement().setAttribute(VibeDataTableConstants.CELL_WIDGET_ATTRIBUTE, (VibeDataTableConstants.CELL_WIDGET_PRESENCE_LABEL + assignmentIndexTail));
-				if (hasHover) {
-					presenceLabel.setTitle(hover);
-				}
 				fp.add(presenceLabel);
 				break;
 			}
@@ -354,16 +394,9 @@ public class AssignmentCell extends AbstractCell<List<AssignmentInfo>> {
 				int    members       = ai.getMembers();
 				String membersString = GwtTeaming.getMessages().vibeDataTable_MemberCount(String.valueOf(members));
 				String assigneeLabel = (ai.getTitle() + " " + membersString);
-				Label assignee = new Label(assigneeLabel);
-				assignee.addStyleName("vibe-dataTableAssignment-label vibe-dataTableAssignment-enabled");
-				if (m_isIE) {
-					assignee.addStyleName("vibe-dataTableAssignment-labelIE");
-				}
+				Label assignee = createAssigneeLabel(assigneeLabel, hover);
 				if (AssigneeType.GROUP.equals(ait)) {
 					assignee.getElement().setAttribute(VibeDataTableConstants.CELL_WIDGET_ATTRIBUTE, (VibeDataTableConstants.CELL_WIDGET_PRESENCE_LABEL + assignmentIndexTail));
-				}
-				if (hasHover) {
-					assignee.setTitle(hover);
 				}
 				fp.add(assignee);
 				
@@ -382,15 +415,7 @@ public class AssignmentCell extends AbstractCell<List<AssignmentInfo>> {
 				fp.add(imgPanel);
 
 				// ...and add a label.
-				Label assignee = new Label(ai.getTitle());
-				assignee.addStyleName("vibe-dataTableAssignment-label vibe-dataTableAssignment-enabled");
-				if (m_isIE) {
-					assignee.addStyleName("vibe-dataTableAssignment-labelIE");
-				}
-				if (hasHover) {
-					assignee.setTitle(hover);
-				}
-				fp.add(assignee);
+				fp.add(createAssigneeLabel(ai.getTitle(), hover));
 				break;
 			}
 			
@@ -406,15 +431,7 @@ public class AssignmentCell extends AbstractCell<List<AssignmentInfo>> {
 				fp.add(imgPanel);
 	
 				// ...and add a label.
-				Label assignee = new Label(ai.getTitle());
-				assignee.addStyleName("vibe-dataTableAssignment-label vibe-dataTableAssignment-enabled");
-				if (m_isIE) {
-					assignee.addStyleName("vibe-dataTableAssignment-labelIE");
-				}
-				if (hasHover) {
-					assignee.setTitle(hover);
-				}
-				fp.add(assignee);
+				fp.add(createAssigneeLabel(ai.getTitle(), hover));
 				break;
 			}
 			}
