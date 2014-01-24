@@ -46,6 +46,8 @@ import org.kablink.teaming.gwt.client.util.ShareRights.AccessRights;
 
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Style.Unit;
+import com.google.gwt.event.dom.client.ChangeEvent;
+import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.Button;
@@ -89,9 +91,9 @@ public class EditShareWidget extends Composite
 	private ListBox m_canReshareExternalListbox;
 	private ListBox m_canResharePublicListbox;
 	private Label m_canShareLabel;
-	private CheckBox m_canShareExternalCkbox;
-	private CheckBox m_canShareInternalCkbox;
-	private CheckBox m_canSharePublicCkbox;
+	private CheckBox m_canReshareExternalCkbox;
+	private CheckBox m_canReshareInternalCkbox;
+	private CheckBox m_canResharePublicCkbox;
 	private Label m_canReshareInternalLabel;
 	private Label m_canReshareExternalLabel;
 	private Label m_canResharePublicLabel;
@@ -330,6 +332,45 @@ public class EditShareWidget extends Composite
 			m_canResharePublicListbox.addItem( messages.editShareDlg_yes(), RESHARE_YES );
 			m_canResharePublicListbox.addItem( messages.editShareDlg_no(), RESHARE_NO );
 			m_canResharePublicListbox.addItem( messages.editShareDlg_leaveUnchanged(), LEAVE_UNCHANGED );
+			m_canResharePublicListbox.addChangeHandler( new ChangeHandler()
+			{
+				@Override
+				public void onChange( ChangeEvent event )
+				{
+					Scheduler.ScheduledCommand cmd;
+
+					cmd = new Scheduler.ScheduledCommand()
+					{
+						@Override
+						public void execute()
+						{
+							int selectedIndex;
+							
+							selectedIndex = m_canResharePublicListbox.getSelectedIndex();
+							if ( selectedIndex >= 0 )
+							{
+								String value;
+								
+								// Did the user select Yes in the public listbox?
+								value = m_canResharePublicListbox.getValue( selectedIndex );
+								if ( value != null && value.equalsIgnoreCase( RESHARE_YES ) == true )
+								{
+									// Yes
+									// Select Yes in the "Internal users" and "External users" listboxes
+									// because if you are sharing with the public you also need to
+									// give rights to share with internal and external users.
+									GwtClientHelper.selectListboxItemByValue( m_canReshareInternalListbox, RESHARE_YES );
+									GwtClientHelper.selectListboxItemByValue( m_canReshareExternalListbox, RESHARE_YES );
+								}
+							}
+							
+							danceDlg();
+						}
+					};
+					
+					Scheduler.get().scheduleDeferred( cmd );
+				}
+			} );
 			hPanel.add( m_canResharePublicListbox );
 			m_resharePanelForMultiEdit.add( hPanel );
 		}
@@ -386,21 +427,45 @@ public class EditShareWidget extends Composite
 		mainPanel.add( m_canShareLabel );
 		
 		// Add the "allow share internal checkbox.
-		m_canShareInternalCkbox = new CheckBox( messages.editShareRightsDlg_CanShareInternalLabel() );
+		m_canReshareInternalCkbox = new CheckBox( messages.editShareRightsDlg_CanShareInternalLabel() );
 		tmpPanel = new FlowPanel();
-		tmpPanel.add( m_canShareInternalCkbox );
+		tmpPanel.add( m_canReshareInternalCkbox );
 		rbPanel.add( tmpPanel );
 		
 		// Add the "allow share external" checkbox.
-		m_canShareExternalCkbox = new CheckBox( messages.editShareRightsDlg_CanShareExternalLabel() );
+		m_canReshareExternalCkbox = new CheckBox( messages.editShareRightsDlg_CanShareExternalLabel() );
 		tmpPanel = new FlowPanel();
-		tmpPanel.add( m_canShareExternalCkbox );
+		tmpPanel.add( m_canReshareExternalCkbox );
 		rbPanel.add( tmpPanel );
 		
 		// Add the "allow share public" checkbox.
-		m_canSharePublicCkbox = new CheckBox( messages.editShareRightsDlg_CanSharePublicLabel() );
+		m_canResharePublicCkbox = new CheckBox( messages.editShareRightsDlg_CanSharePublicLabel() );
+		m_canResharePublicCkbox.addClickHandler( new ClickHandler()
+		{
+			@Override
+			public void onClick( ClickEvent event )
+			{
+				Scheduler.ScheduledCommand cmd;
+				
+				cmd = new Scheduler.ScheduledCommand()
+				{
+					@Override
+					public void execute()
+					{
+						if ( m_canResharePublicCkbox.getValue() == true )
+						{
+							m_canReshareInternalCkbox.setValue( Boolean.TRUE );
+							m_canReshareExternalCkbox.setValue( Boolean.TRUE );
+						}
+						
+						danceDlg();
+					}
+				};
+				Scheduler.get().scheduleDeferred( cmd );
+			}
+		} );
 		tmpPanel = new FlowPanel();
-		tmpPanel.add( m_canSharePublicCkbox );
+		tmpPanel.add( m_canResharePublicCkbox );
 		rbPanel.add( tmpPanel );
 		
 		mainPanel.add( rbPanel );
@@ -420,6 +485,56 @@ public class EditShareWidget extends Composite
 		m_rightsPanelForSingleEdit = createRightsContentForSingleEdit();
 
 		panel.add( m_rightsPanel );
+	}
+	
+	/**
+	 * 
+	 */
+	private void danceDlg()
+	{
+		if ( m_listOfShareItems != null )
+		{
+			if ( m_listOfShareItems.size() == 1 )
+			{
+				// If the public checkbox is checked then the internal and external checkboxes
+				// must be checked and disabled.
+				if ( m_canResharePublicCkbox.getValue() == true )
+				{
+					m_canReshareInternalCkbox.setEnabled( false );
+					m_canReshareExternalCkbox.setEnabled( false );
+				}
+				else
+				{
+					m_canReshareInternalCkbox.setEnabled( true );
+					m_canReshareExternalCkbox.setEnabled( true );
+				}
+			}
+			else
+			{
+				int selectedIndex;
+				
+				selectedIndex = m_canResharePublicListbox.getSelectedIndex();
+				if ( selectedIndex >= 0 )
+				{
+					String value;
+					
+					// Did the user select Yes in the public listbox?
+					value = m_canResharePublicListbox.getValue( selectedIndex );
+					if ( value != null && value.equalsIgnoreCase( RESHARE_YES ) == true )
+					{
+						// Yes
+						// Disable the "Internal users" and "External Users" listboxes.
+						m_canReshareInternalListbox.setEnabled( false );
+						m_canReshareExternalListbox.setEnabled( false );
+					}
+					else
+					{
+						m_canReshareInternalListbox.setEnabled( true );
+						m_canReshareExternalListbox.setEnabled( true );
+					}
+				}
+			}
+		}
 	}
 	
 	/**
@@ -496,6 +611,8 @@ public class EditShareWidget extends Composite
 		initRightsControls( listOfShareItems, highestRightsPossible );
 		initExpirationControls( listOfShareItems );
 		initNoteControls( listOfShareItems );
+		
+		danceDlg();
 	}
 	
 	/**
@@ -715,16 +832,16 @@ public class EditShareWidget extends Composite
 		m_canShareLabel.setVisible( canShareForward );
 		
 		// Show/hide the "share internal" checkbox depending on whether the user has "share internal" rights.
-		m_canShareInternalCkbox.setVisible( canShareForward && highestRightsPossible.getCanShareWithInternalUsers() );
-		m_canShareInternalCkbox.setValue( shareRights.getCanShareWithInternalUsers() );
+		m_canReshareInternalCkbox.setVisible( canShareForward && highestRightsPossible.getCanShareWithInternalUsers() );
+		m_canReshareInternalCkbox.setValue( shareRights.getCanShareWithInternalUsers() );
 		
 		// Show/hide the "share external" checkbox depending on whether the user has "share external" rights.
-		m_canShareExternalCkbox.setVisible( canShareForward && highestRightsPossible.getCanShareWithExternalUsers() );
-		m_canShareExternalCkbox.setValue( shareRights.getCanShareWithExternalUsers() );
+		m_canReshareExternalCkbox.setVisible( canShareForward && highestRightsPossible.getCanShareWithExternalUsers() );
+		m_canReshareExternalCkbox.setValue( shareRights.getCanShareWithExternalUsers() );
 		
 		// Show/hide the "share public" checkbox depending on whether the user has "share public" rights.
-		m_canSharePublicCkbox.setVisible( canShareForward && highestRightsPossible.getCanShareWithPublic() );
-		m_canSharePublicCkbox.setValue( shareRights.getCanShareWithPublic() );
+		m_canResharePublicCkbox.setVisible( canShareForward && highestRightsPossible.getCanShareWithPublic() );
+		m_canResharePublicCkbox.setValue( shareRights.getCanShareWithPublic() );
 	}
 	
 	/**
@@ -926,7 +1043,7 @@ public class EditShareWidget extends Composite
 
 		canShareForward = false;
 		
-		if ( m_canShareInternalCkbox.isVisible() && m_canShareInternalCkbox.getValue() == true )
+		if ( m_canReshareInternalCkbox.isVisible() && m_canReshareInternalCkbox.getValue() == true )
 		{
 			canShareForward = true;
 			shareRights.setCanShareWithInternalUsers( true );
@@ -934,7 +1051,7 @@ public class EditShareWidget extends Composite
 		else
 			shareRights.setCanShareWithInternalUsers( false );
 
-		if ( m_canShareExternalCkbox.isVisible() && m_canShareExternalCkbox.getValue() == true )
+		if ( m_canReshareExternalCkbox.isVisible() && m_canReshareExternalCkbox.getValue() == true )
 		{
 			canShareForward = true;
 			shareRights.setCanShareWithExternalUsers( true );
@@ -942,7 +1059,7 @@ public class EditShareWidget extends Composite
 		else
 			shareRights.setCanShareWithExternalUsers( false );
 
-		if ( m_canSharePublicCkbox.isVisible() && m_canSharePublicCkbox.getValue() == true )
+		if ( m_canResharePublicCkbox.isVisible() && m_canResharePublicCkbox.getValue() == true )
 		{
 			canShareForward = true;
 			shareRights.setCanShareWithPublic( true );
