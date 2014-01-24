@@ -136,6 +136,7 @@
 	<classpathentry kind="lib" path="lib/gwtquery.jar"/>
 	<classpathentry kind="lib" path="lib/draggable-plugin.jar"/>
 	<classpathentry kind="lib" path="lib/lib-gwt-file.jar"/>
+	<classpathentry kind="lib" path="lib/gwt-tour.jar"/>
 	<classpathentry kind="lib" path="lib/tomcat-dbcp.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/javaxt-core.jar" sourcepath="/usr/local/javaxt-core/src"/>
 	<classpathentry exported="true" kind="lib" path="lib/lucene-core.jar"/>

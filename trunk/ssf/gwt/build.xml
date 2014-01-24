@@ -172,7 +172,7 @@
 	<target name="compile-gwt" depends="init-gwt-build">
 		<!-- Compile the GWT stuff into www. -->
 		<java
-				classpath="src:${gwt.dir}/gwt-user.jar:${lib.dir}/gwt-cal.jar:${lib.dir}/lib-gwt-file.jar:${lib.dir}/gwt-crypto.jar:${gwt.dir}/gwt-dnd.jar:${gwt.dir}/gwt-log.jar:${lib.dir}/gwtquery.jar:${lib.dir}/draggable-plugin.jar:${gwt.dir}/validation-api-1.0.0.GA.jar:${gwt.dir}/validation-api-1.0.0.GA-sources.jar:${gwt.dir}/${gwt.dev.jar}:"
+				classpath="src:${gwt.dir}/gwt-user.jar:${lib.dir}/gwt-cal.jar:${lib.dir}/lib-gwt-file.jar:${lib.dir}/gwt-crypto.jar:${gwt.dir}/gwt-dnd.jar:${gwt.dir}/gwt-log.jar:${lib.dir}/gwtquery.jar:${lib.dir}/draggable-plugin.jar:${lib.dir}/gwt-tour.jar:${gwt.dir}/validation-api-1.0.0.GA.jar:${gwt.dir}/validation-api-1.0.0.GA-sources.jar:${gwt.dir}/${gwt.dev.jar}:"
 				failonerror="true"
 				classname="com.google.gwt.dev.Compiler"
 				fork="true">

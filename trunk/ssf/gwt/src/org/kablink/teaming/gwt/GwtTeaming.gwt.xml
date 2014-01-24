@@ -36,6 +36,10 @@
 	<!-- Inherit the gQuery support libraries. -->	
 	<inherits name="com.google.gwt.query.Query"           />
 	<inherits name="gwtquery.plugins.draggable.Draggable" />
+	
+	<!-- Inherit the GWT Tour support library. -->
+	<set-configuration-property name='xsiframe.failIfScriptTag' value='FALSE'/>
+	<inherits name="com.eemi.gwt.tour.GwtTour"/>
 		
 	<!-- Other 'generic' module inherits go here. -->
 
