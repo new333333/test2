@@ -164,6 +164,7 @@
 		.vibe-dataTableAssignment-enabled         {color: #353838;}
 		.vibe-dataTableAssignment-image           {height: 25px; width: 25px; border-radius: 2px; margin-right: 3px;}
 		.vibe-dataTableAssignment-label           {display: inline; font-weight: bold; padding-left: 2px !important;}
+		.vibe-dataTableAssignment-labelEllipsis   {display: inline-block !important; overflow: hidden; text-overflow: ellipsis;}
 		.vibe-dataTableAssignment-labelIE         {vertical-align: -5px;}
 		.vibe-dataTableAssignment-list            {}
 		.vibe-dataTableAssignment-panel           {white-space: nowrap;}
