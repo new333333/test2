@@ -634,10 +634,10 @@
 
 .shareThisDlg_EditSharePanel
 {
-	background-color: #EDEDED;
+	background-color: transparent;
 	height: 360px;
-	width: 330px;
-	margin-left: 6px;
+	width: 320px;
+	margin-left: 15px;
 }
 
 .shareThisDlg_ExpiresLabel, .shareThisDlg_DefaultExpiresLabel
@@ -824,8 +824,9 @@
 
 .shareThisDlg_findTable
 {
-	margin-left: -3px;
-	margin-top: -5px;
+	margin-left: 5px;
+	margin-top: -8px;
+	margin-bottom: 4px;
 }
 
 .shareWithPublicDlg_instructionsLabel
@@ -835,22 +836,36 @@
 	margin-top: 12px;
 }
 
+.shareThisDlg_ListOfSharesParentTable
+{
+	position: relative;
+}
+
+.shareThisDlg_ListOfSharesTable
+{
+
+}
+
 .shareThisDlg_ListOfSharesPanel
 {
 	overflow-x: hidden;
 	overflow-y: auto;
+	position: relative;
 }
 
-.shareThisDlg_ListOfSharesPanel table.th
+.shareThisDlg_ListOfSharesPanel table th
 {
-	background: pink;
+	background: transparent;
 	border-left: 0px;
-	border-bottom: 0px;
-	
+	border-bottom: 1px solid #e0e0e0;
+	border-top: 3px solid transparent !important;
+	color: #5691A6;
+	font-size: 14px;
 }
 
 .shareItem_InfoPanel
 {
+	padding: 3px 0;
 	cursor: pointer;
 }
 
@@ -861,8 +876,11 @@
 
 .shareItem_RecipientAvatar
 {
-	height: 40px;
-	width: 40px;
+	height: 35px;
+	width: 35px;
+	margin-top: 2px;
+	margin-right: 5px;
+	border-radius: 2px;
 }
 
 .shareItem_RecipientName
@@ -4502,14 +4520,7 @@ td.datePickerMonth {
     border-radius: 15px;
 	-moz-border-radius: 15px;
 	-webkit-border-radius: 15px;
-	background: -moz-linear-gradient(top,  #ffffff, #E0E0E0); /* FF3.6+ */
-	background: -webkit-gradient(linear, left top, left bottom, color-stop(100%,#ffffff), color-stop(0%,#E0E0E0)); /* Chrome,Safari4+ */
-	background: -webkit-linear-gradient(top,  #ffffff, #E0E0E0); /* Chrome10+,Safari5.1+ */
-	background: -o-linear-gradient(top,  #ffffff 47%, #E0E0E0); /* Opera 11.10+ */
-	background: -ms-linear-gradient(top, #ffffff 47%, #E0E0E0); /* IE10+ */
-	background: linear-gradient(top,  #ffffff, #E0E0E0); /* W3C */
-
-    
+	background: #f6f6f6;    
 }
 
 .groupManagementDropDown         {}
@@ -4521,12 +4532,7 @@ td.datePickerMonth {
 {
 	color: #135c8f;
 	border: 1px solid #81b2bd;
-	background: -moz-linear-gradient(bottom,  #a8d4dd 47%, #d5edf1 53%, #c8e4e9 100%); /* FF3.6+ */
-	background: -webkit-gradient(linear, left bottom, left top, color-stop(47%,#a8d4dd), color-stop(53%,#d5edf1), color-stop(100%,#c8e4e9)); /* Chrome,Safari4+ */
-	background: -webkit-linear-gradient(bottom,  #a8d4dd 47%, #d5edf1 53%, #c8e4e9 100%); /* Chrome10+,Safari5.1+ */
-	background: -o-linear-gradient(bottom,  #a8d4dd 47%, #d5edf1 53%, #c8e4e9 100%); /* Opera 11.10+ */
-	background: -ms-linear-gradient(bottom, #a8d4dd 47%, #d5edf1 53%, #c8e4e9 100%); /* IE10+ */
-	background: linear-gradient(bottom,  #a8d4dd 47%, #d5edf1 53%, #c8e4e9 100%); /* W3C */
+	background: #cee9ee;
 
 }
 
@@ -4546,8 +4552,9 @@ td.datePickerMonth {
 .shareDlg_MenuPanelOverride
 {
 	position: absolute;
+	top: 0;
+	right: 0;
 	background-color: transparent !important;
-	text-align: right;
 }
 
 .groupTitlePanel, .netFolderRoot_NamePanel, .netFolder_NamePanel, .ldapSource_ServerUrlPanel, .ldapSearch_BaseDnPanel
@@ -4587,8 +4594,8 @@ td.datePickerMonth {
 {
 	color: #949494;
 	text-align: center;
-	padding: 15px 10px;
-	background: white;
+	padding: 15px 10px 50px 10px;
+	background: transparent;
 }
 
 .manageGroups_QuickFilterPanel
@@ -6036,7 +6043,6 @@ td.datePickerMonth {
 
 .editShareWidget_contentPanel
 {
-	background-color: white;
     padding: 6px 10px;
 }
 
@@ -6050,19 +6056,14 @@ td.datePickerMonth {
 
 .editShareWidget_headerPanel
 {
-	color: #fff;
-	font-size: 14px;
+	color: #5691a6;
+	font-size: 16px;
 	font-weight: bold;
 	padding: 5px;
 	white-space: nowrap;
 	vertical-align: middle;
-	
-	background-color: #81b2bd;
-	background-image: -webkit-linear-gradient(top, #abced1, #81b2bd) !important; 
-	background-image:    -moz-linear-gradient(top, #abced1, #81b2bd) !important; 
-	background-image:     -ms-linear-gradient(top, #abced1, #81b2bd) !important; 
-	background-image:      -o-linear-gradient(top, #abced1, #81b2bd) !important; 
-	background-image:         linear-gradient(top, #abced1, #81b2bd) !important; /* standard, but currently unimplemented */
+	text-align: center;
+	border-bottom: 1px solid #e0e0e0;
 }
 
 .editShareWidget_mainPanel

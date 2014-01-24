@@ -239,6 +239,7 @@ public class EditShareWidget extends Composite
 		row = 0;
 		
 		mainTable.setText( row, 0, GwtTeaming.getMessages().editShareNoteDlg_noteLabel() );
+		mainTable.getRowFormatter().addStyleName(row,"gwt-label");
 		++row;
 		
 		m_noteTextArea = new TextAreaWithMax();
