@@ -793,65 +793,6 @@ public class ShareThisDlg2 extends DlgBox
 			}
 		}
 		
-		// Create a menu
-		{
-			InlineLabel label;
-			FlowPanel menuPanel;
-			
-			menuPanel = new FlowPanel();
-			menuPanel.addStyleName( "shareDlg_MenuPanel" );
-			menuPanel.addStyleName( "shareDlg_MenuPanelOverride" );
-			menuPanel.getElement().getStyle().setRight( 360, Unit.PX );
-			
-			// Add an "Edit" button.
-			label = new InlineLabel( messages.shareDlg_editButton() );
-			label.addStyleName( "shareDlg_Btn" );
-			label.addClickHandler( new ClickHandler()
-			{
-				@Override
-				public void onClick( ClickEvent event )
-				{
-					Scheduler.ScheduledCommand cmd;
-					
-					cmd = new Scheduler.ScheduledCommand()
-					{
-						@Override
-						public void execute()
-						{
-							editSelectedShares();
-						}
-					};
-					Scheduler.get().scheduleDeferred( cmd );
-				}
-			} );
-			menuPanel.add( label );
-			
-			// Add a "Delete" button.
-			label = new InlineLabel( messages.shareDlg_deleteButton() );
-			label.addStyleName( "shareDlg_Btn" );
-			label.addClickHandler( new ClickHandler()
-			{
-				@Override
-				public void onClick( ClickEvent event )
-				{
-					Scheduler.ScheduledCommand cmd;
-					
-					cmd = new Scheduler.ScheduledCommand()
-					{
-						@Override
-						public void execute()
-						{
-							deleteSelectedShares();
-						}
-					};
-					Scheduler.get().scheduleDeferred( cmd );
-				}
-			} );
-			menuPanel.add( label );
-			
-			m_mainPanel.add( menuPanel );
-		}
-		
 		// Create a table to hold the list of shares
 		{
 			CellTable.Resources cellTableResources;
@@ -860,6 +801,7 @@ public class ShareThisDlg2 extends DlgBox
 			cellTableResources = GWT.create( VibeCellTable.VibeCellTableResources.class );
 			m_shareTable = new CellTable<GwtShareItem>( 20, cellTableResources );
 			m_shareTable.setWidth( String.valueOf( tableWidth ) + "px" );
+			m_shareTable.addStyleName( "shareThisDlg_ListOfSharesTable" );
 			
 		    // Add a selection model so we can select shares.
 		    m_selectionModel = new MultiSelectionModel<GwtShareItem>();
@@ -978,12 +920,71 @@ public class ShareThisDlg2 extends DlgBox
 				FlowPanel leftSubPanel;
 			
 				leftPanel = new VerticalPanel();
+				leftPanel.addStyleName( "shareThisDlg_ListOfSharesParentTable" );
 				
 				// Put the table that holds the list of recipients into a scrollable div
 				leftSubPanel = new FlowPanel();
 				leftSubPanel.addStyleName( "shareThisDlg_ListOfSharesPanel" );
 				leftSubPanel.add( m_shareTable );
 				leftPanel.add( leftSubPanel );
+
+				// Create a menu
+				{
+					InlineLabel label;
+					FlowPanel menuPanel;
+					
+					menuPanel = new FlowPanel();
+					menuPanel.addStyleName( "shareDlg_MenuPanel" );
+					menuPanel.addStyleName( "shareDlg_MenuPanelOverride" );
+					
+					// Add an "Edit" button.
+					label = new InlineLabel( messages.shareDlg_editButton() );
+					label.addStyleName( "shareDlg_Btn" );
+					label.addClickHandler( new ClickHandler()
+					{
+						@Override
+						public void onClick( ClickEvent event )
+						{
+							Scheduler.ScheduledCommand cmd;
+							
+							cmd = new Scheduler.ScheduledCommand()
+							{
+								@Override
+								public void execute()
+								{
+									editSelectedShares();
+								}
+							};
+							Scheduler.get().scheduleDeferred( cmd );
+						}
+					} );
+					menuPanel.add( label );
+					
+					// Add a "Delete" button.
+					label = new InlineLabel( messages.shareDlg_deleteButton() );
+					label.addStyleName( "shareDlg_Btn" );
+					label.addClickHandler( new ClickHandler()
+					{
+						@Override
+						public void onClick( ClickEvent event )
+						{
+							Scheduler.ScheduledCommand cmd;
+							
+							cmd = new Scheduler.ScheduledCommand()
+							{
+								@Override
+								public void execute()
+								{
+									deleteSelectedShares();
+								}
+							};
+							Scheduler.get().scheduleDeferred( cmd );
+						}
+					} );
+					menuPanel.add( label );
+					
+					leftPanel.add( menuPanel );
+				}
 
 				// Create a pager
 				m_pager = new VibeSimplePager();
