@@ -728,6 +728,10 @@ public class ShareThisDlg2 extends DlgBox
 				imageResource = GwtTeaming.getImageBundle().add_btn();
 				m_addExternalUserImg = new Image( imageResource );
 				m_addExternalUserImg.addStyleName( "cursorPointer" );
+				
+				// this style hides the + icon
+				m_addExternalUserImg.addStyleName( "displayNone" ); 
+				
 				m_addExternalUserImg.getElement().setAttribute( "title", messages.shareDlg_addExternalUserTitle() );
 				findTable.setWidget( 0, 1, m_addExternalUserImg );
 				findCellFormatter = findTable.getFlexCellFormatter();
@@ -1138,8 +1142,7 @@ public class ShareThisDlg2 extends DlgBox
 			InlineLabel label;
 			
 			tmpPanel = new FlowPanel();
-			tmpPanel.addStyleName( "marginTop5px" );
-			tmpPanel.addStyleName( "marginleft1" );
+			tmpPanel.addStyleName( "shareThisDlg_Notify" );
 			
 			label = new InlineLabel( messages.shareDlg_notifyLabel() );
 			tmpPanel.add( label );

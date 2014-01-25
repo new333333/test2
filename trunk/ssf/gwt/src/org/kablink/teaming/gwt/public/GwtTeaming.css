@@ -828,6 +828,10 @@
 	margin-top: -8px;
 	margin-bottom: 4px;
 }
+.shareThisDlg_findTable input
+{
+	width: 300px;
+}
 
 .shareWithPublicDlg_instructionsLabel
 {
@@ -863,6 +867,14 @@
 	font-size: 14px;
 }
 
+.shareThisDlg_Notify
+{
+	position:absolute;
+	bottom: -42px;
+	left: 15px;
+	font-size: 15px;
+}
+
 .shareItem_InfoPanel
 {
 	padding: 3px 0;
@@ -871,6 +883,7 @@
 
 .shareItem_mainPanel
 {
+	width: 230px;
 	margin-left: 4px;
 }
 
@@ -5177,6 +5190,16 @@ td.datePickerMonth {
 .editShareRightsDlg_RbPanel
 {
 	margin-left: 10px;
+	margin-bottom: 10px;
+}
+.editShareRightsDlg_accessLabel
+{
+	color: #666666;
+}
+.editShareRightsDlg_reshareLabel
+{
+	color: #666666;
+	margin-top: 5px;
 }
 
 
@@ -6048,7 +6071,6 @@ td.datePickerMonth {
 
 .editShareWidget_footerPanel
 {
-	background-color: white;
 	text-align: left;
 	padding-bottom: 10px;
 	padding-left: 6px;
@@ -6057,10 +6079,11 @@ td.datePickerMonth {
 .editShareWidget_headerPanel
 {
 	color: #5691a6;
-	font-size: 16px;
+	font-size: 14px;
 	font-weight: bold;
-	padding: 5px;
+	padding: 8px 2px 4px 2px;
 	white-space: nowrap;
+	overflow: hidden;
 	vertical-align: middle;
 	text-align: center;
 	border-bottom: 1px solid #e0e0e0;
