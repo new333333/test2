@@ -398,6 +398,7 @@ public class EditShareWidget extends Composite
 		
 		// Add an "Access Rights" heading
 		label = new Label( messages.editShareDlg_accessRightsLabel() );
+		label.addStyleName("editShareRightsDlg_accessLabel");
 		mainPanel.add( label );
 		
 		// Create a panel for the radio buttons to live in.
@@ -426,7 +427,7 @@ public class EditShareWidget extends Composite
 		
 		// Add the "Allow the recipient to re-share this item with:"
 		m_canShareLabel = new Label( messages.editShareRightsDlg_CanShareLabel() );
-		m_canShareLabel.addStyleName( "margintop2" );
+		m_canShareLabel.addStyleName( "editShareRightsDlg_reshareLabel" );
 		mainPanel.add( m_canShareLabel );
 		
 		// Add the "allow share internal checkbox.
