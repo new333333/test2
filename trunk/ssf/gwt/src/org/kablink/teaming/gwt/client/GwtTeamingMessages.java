@@ -813,6 +813,15 @@ public interface GwtTeamingMessages extends Messages
 	String editBrandingDlg_LoginDialogCaption();
 	String editBrandingDlg_LoginDialogImgHint();
 	String editBrandingDlg_UploadLabel();
+	String editBrandingDlg_Tour_advancedBranding();
+	String editBrandingDlg_Tour_backgroundColor();
+	String editBrandingDlg_Tour_backgroundImage();
+	String editBrandingDlg_Tour_brandingArea(String product);
+	String editBrandingDlg_Tour_brandingImage();
+	String editBrandingDlg_Tour_finish(String product);
+	String editBrandingDlg_Tour_loginDlgImage(String product);
+	String editBrandingDlg_Tour_start(String product);
+	String editBrandingDlg_Tour_textColor();
 	String imgNone();
 	String invalidBackgroundColor( String color );
 	String invalidTextColor( String color );
@@ -3233,5 +3242,12 @@ public interface GwtTeamingMessages extends Messages
 	String mailToMultiplePublicLinksSelect_InternalError_NoLinks(String product);
 	String mailToMultiplePublicLinksSelect_Never();
 	String mailToMultiplePublicLinksSelect_NoNote();
+
+	// Strings for the tour facility.
+	String tourCloseAlt();
+	String tourDone();
+	String tourNext();
+	String tourPrev();
+	String tourSkip();
 	
 }// end GwtTeamingMessages

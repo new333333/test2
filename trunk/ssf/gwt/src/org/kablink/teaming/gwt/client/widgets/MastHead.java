@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -39,6 +39,7 @@ import org.kablink.teaming.gwt.client.event.BrowseHierarchyEvent;
 import org.kablink.teaming.gwt.client.event.ChangeContextEvent;
 import org.kablink.teaming.gwt.client.event.ContextChangedEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
+import org.kablink.teaming.gwt.client.event.GetSiteBrandingPanelEvent;
 import org.kablink.teaming.gwt.client.event.LoginEvent;
 import org.kablink.teaming.gwt.client.event.MastheadHideEvent;
 import org.kablink.teaming.gwt.client.event.MastheadShowEvent;
@@ -94,6 +95,7 @@ public class MastHead extends Composite
 	// Event handlers implemented by this class.
 		ActivityStreamExitEvent.Handler,
 		ContextChangedEvent.Handler,
+		GetSiteBrandingPanelEvent.Handler,
 		MastheadHideEvent.Handler,
 		MastheadShowEvent.Handler,
 		MastheadUnhighlightAllActionsEvent.Handler
@@ -129,6 +131,7 @@ public class MastHead extends Composite
 	// this array is used.
 	private TeamingEvents[] m_registeredEvents = new TeamingEvents[] {
 		TeamingEvents.ACTIVITY_STREAM_EXIT,
+		TeamingEvents.GET_SITE_BRANDING_PANEL,
 
 		// Context events.
 		TeamingEvents.CONTEXT_CHANGED,
@@ -1313,6 +1316,19 @@ public class MastHead extends Composite
 			setBinderId( bi.getBinderId() );
 		}
 	}// end onContextChanged()
+	
+	/**
+	 * Handles GetSiteBrandingPanelEvent's received by this class.
+	 * 
+	 * Implements the GetSiteBrandingPanelEvent.Handler.onGetSiteBrandingPanel() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onGetSiteBrandingPanel( final GetSiteBrandingPanelEvent event )
+	{
+		event.getSiteBrandingPanelCallback().siteBrandingPanel( m_siteBrandingPanel );
+	}// end onGetSiteBrandingPanel()
 	
 	/**
 	 * Handles MastheadHideEvent's received by this class.
