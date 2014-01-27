@@ -964,11 +964,13 @@ public class EditBrandingDlg extends DlgBox
 		{
 			// Yes
 			setCaption( m_messages.brandingDlgSiteBrandingHeader() );
+			setTourEnabled( true );
 		}
 		else
 		{
 			// No
 			setCaption( m_messages.brandingDlgHeader() );
+			setTourEnabled( false );
 		}
 		
 		// Remember the branding data we started with.
@@ -1634,20 +1636,22 @@ public class EditBrandingDlg extends DlgBox
 	}
 
 	/**
-	 * Overrides DlgBox.dlgHasTour() to connect the site branding tour.
-	 */
-	@Override
-	public boolean dlgHasTour() {
-		return (m_siteBranding && (null != m_siteBrandingTour));
-	}
-
-	/**
 	 * Overrides DlgBox.invokeTour() to connect the site branding tour.
 	 */
 	@Override
 	public void invokeTour() {
-		if (dlgHasTour()) {
+		if (m_siteBranding && (null != m_siteBrandingTour)) {
 			m_siteBrandingTour.start();
+		}
+	}
+	
+	/**
+	 * Overrides DlgBox.stopTour() to connect the site branding tour.
+	 */
+	@Override
+	public void stopTour() {
+		if (m_siteBranding && (null != m_siteBrandingTour)) {
+			m_siteBrandingTour.stop();
 		}
 	}
 	

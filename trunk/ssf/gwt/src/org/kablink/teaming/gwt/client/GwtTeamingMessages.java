@@ -231,6 +231,7 @@ public interface GwtTeamingMessages extends Messages
 	String change();
 	String edit();
 	String find();
+	String helpDlg();
 	String login();
 	String missingRequestInfo();
 	String none();
@@ -247,6 +248,9 @@ public interface GwtTeamingMessages extends Messages
 	String showTitle();
 	String signOut();
 	String title();
+	String tourDlg();
+	String tourMissingStart();
+	String tourMissingStop();
 	String unknownFileUploadError( String error);
 	String vibeInsideLandingPage();
 	String close();
