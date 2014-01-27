@@ -32,11 +32,14 @@
  */
 package org.kablink.teaming.gwt.client.widgets;
 
+import java.util.List;
+
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 
 import com.eemi.gwt.tour.client.GwtTour;
 import com.eemi.gwt.tour.client.Tour;
+import com.eemi.gwt.tour.client.TourStep;
 
 /**
  * Encapsulates a Tour to supply localization, ...
@@ -65,6 +68,24 @@ public class VibeTour extends Tour {
 		setShowPrevButton(true);
 	}
 
+	/**
+	 * Sets the tour's steps ensuring that the last step will show 
+	 * 'Done' instead of 'Next'.
+	 * 
+	 * @param steps
+	 * 
+	 * Overrides the Tour.setSteps() method.
+	 */
+	@Override
+	public void setSteps(List<TourStep> steps) {
+		int count = ((null == steps) ? 0 : steps.size());
+		int iLast = (count - 1);
+		for (int i = 0; i < count; i += 1) {
+			steps.get(i).setShowNextButton(i != iLast);
+		}
+		super.setSteps(steps);
+	}
+	
 	/**
 	 * Starts this tour from the beginning.
 	 */

@@ -201,7 +201,7 @@ public class EditBrandingDlg extends DlgBox
 	public Panel createContent( Object props )
 	{
 		m_siteBrandingTour = new VibeTour( "siteBrandingTour" );
-		addTourStep( Placement.BOTTOM, getHeaderPanel(), m_messages.editBrandingDlg_Tour_start( m_productName ) );
+		addBrandingAreaTourStep( Placement.RIGHT, m_messages.editBrandingDlg_Tour_start( m_productName ) );
 		
 		FlowPanel mainPanel = null;
 		Label spacer;
@@ -545,7 +545,7 @@ public class EditBrandingDlg extends DlgBox
 			textColorHint.addStyleName( "displayInlineBlock" );
 			
 			addTourStep( Placement.RIGHT, hPanel, m_messages.editBrandingDlg_Tour_textColor() );
-			addBrandingAreaTourStep();
+			addBrandingAreaTourStep( Placement.RIGHT, m_messages.editBrandingDlg_Tour_brandingArea( m_productName ) );
 
 			// Add the browse image to the link.
 			colorBrowseImg = new Image( GwtTeaming.getImageBundle().colorPicker() );
@@ -1587,13 +1587,15 @@ public class EditBrandingDlg extends DlgBox
 	
 	private void addTourStep( Placement placement, Widget widget, String content )
 	{
-		addTourStep( placement, widget, content, false );	// false -> Position is not fixed.
+		// Always use the initial form of the method.
+		addTourStep( placement, widget, content, false );	// false -> Not fixed.
 	}
+	
 	
 	/*
 	 * Adds a tour step for the branding area to the tour.
 	 */
-	private void addBrandingAreaTourStep()
+	private void addBrandingAreaTourStep( final Placement placement, final String content )
 	{
 		GwtTeaming.fireEvent(
 			new GetSiteBrandingPanelEvent(
@@ -1603,10 +1605,10 @@ public class EditBrandingDlg extends DlgBox
 					public void siteBrandingPanel( Widget siteBrandingPanel )
 					{
 						addTourStep(
-							Placement.RIGHT,
+							placement,
 							siteBrandingPanel,
-							m_messages.editBrandingDlg_Tour_brandingArea( m_productName ),
-							true );	// true -> Position is fixed.
+							content,
+							true );	// true -> The branding panel is fixed.
 					}
 				} ) );
 	}
