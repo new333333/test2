@@ -2215,13 +2215,15 @@ public class ShareThisDlg2 extends DlgBox
 						if ( retValue == true )
 						{
 							Scheduler.ScheduledCommand cmd;
+							final ArrayList<GwtShareItem> listOfShareItems;
 							
+							listOfShareItems = m_editShareWidget.getListOfShareItems();
 							cmd = new Scheduler.ScheduledCommand()
 							{
 								@Override
 								public void execute() 
 								{
-									refreshShareInfoUI( m_editShareWidget.getListOfShareItems() );
+									refreshShareInfoUI( listOfShareItems );
 								}
 							};
 							Scheduler.get().scheduleDeferred( cmd );
