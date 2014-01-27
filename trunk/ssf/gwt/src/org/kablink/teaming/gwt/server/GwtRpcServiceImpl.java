@@ -1736,6 +1736,15 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case GET_IS_USER_EXTERNAL:
+		{
+			GetIsUserExternalCmd giueCmd = ((GetIsUserExternalCmd) cmd);
+			boolean result = GwtViewHelper.isUserExternal( this, getRequest( ri ), giueCmd.getUserId() );
+			BooleanRpcResponseData responseData = new BooleanRpcResponseData( result );
+			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
 		case GET_IS_DYNAMIC_GROUP_MEMBERSHIP_ALLOWED:
 		{
 			boolean isAllowed;

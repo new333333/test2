@@ -37,6 +37,7 @@ import java.util.List;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingDataTableImageBundle;
+import org.kablink.teaming.gwt.client.GwtTeamingFilrImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.event.ContentChangedEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
@@ -45,8 +46,10 @@ import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.event.ContentChangedEvent.Change;
 import org.kablink.teaming.gwt.client.presence.GwtPresenceInfo;
 import org.kablink.teaming.gwt.client.presence.PresenceControl;
+import org.kablink.teaming.gwt.client.rpc.shared.BooleanRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.FolderEntryDetailsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.GetFolderEntryDetailsCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetIsUserExternalCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.AssignmentInfo;
 import org.kablink.teaming.gwt.client.util.EntityId;
@@ -61,6 +64,7 @@ import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
@@ -78,6 +82,7 @@ public class FolderEntrySharing extends VibeFlowPanel
 {
 	private FolderEntryCallback				m_fec;						// Callback to the folder entry composite.
 	private GwtTeamingDataTableImageBundle	m_images;					// Access to Vibe's data table images.
+	private GwtTeamingFilrImageBundle		m_filrImages;				// Access to Filr's images.
 	private GwtTeamingMessages				m_messages;					// Access to Vibe's messages.
 	private List<HandlerRegistration>		m_registeredEventHandlers;	// Event handlers that are currently registered.
 	private List<ShareInfo>					m_sharedByItems;			// A List<ShareInfo> of shares of the item with the current user.
@@ -107,8 +112,9 @@ public class FolderEntrySharing extends VibeFlowPanel
 		m_sharedWithItems = sharedWithItems;
 		
 		// ...initialize the data members requiring it...
-		m_images   = GwtTeaming.getDataTableImageBundle();
-		m_messages = GwtTeaming.getMessages();
+		m_images     = GwtTeaming.getDataTableImageBundle();
+		m_filrImages = GwtTeaming.getFilrImageBundle();
+		m_messages   = GwtTeaming.getMessages();
 		
 		// ...and construct the sharing manager's content.
 		createContentAsync(true);	// true -> Notify the composite that we're ready.
@@ -232,7 +238,7 @@ public class FolderEntrySharing extends VibeFlowPanel
 			presenceControl.setImageAlignment("top");
 			presenceControl.addStyleName("vibe-feView-shareItemAvatar cursorPointer");
 			presenceControl.setAnchorStyleName("cursorPointer");
-			presenceControl.setImageOverride(getPresenceImage(ai));
+			setPresenceAvatarUrl(ai, presenceControl);
 			presenceControl.addImageStyleName("vibe-feView-shareItemAvatar");
 			shareItemPanel.add(presenceControl);
 			presenceControl.addClickHandler(new ClickHandler() {
@@ -404,18 +410,6 @@ public class FolderEntrySharing extends VibeFlowPanel
 	}
 	
 	/*
-	 * Returns the URL to the image to display for presence for an
-	 * AssignmentInfo.
-	 */
-	private String getPresenceImage(AssignmentInfo ai) {
-		String reply = ai.getAvatarUrl();
-		if (!(GwtClientHelper.hasString(reply))) {
-			reply = m_images.userPhoto().getSafeUri().asString();
-		}
-		return reply;
-	}
-	
-	/*
 	 * Called to invoke the group membership popup on an
 	 * AssignmentInfo.
 	 */
@@ -547,6 +541,49 @@ public class FolderEntrySharing extends VibeFlowPanel
 		}
 	}
 
+	/*
+	 * Sets the URL for a presence control to the image to display for
+	 * presence for an AssignmentInfo.
+	 */
+	private void setPresenceAvatarUrl(final AssignmentInfo ai, final PresenceControl pc) {
+		// If the AssignmentInfo has an avatar URL...
+		String avatarUrl = ai.getAvatarUrl();
+		if (GwtClientHelper.hasString(avatarUrl)) {
+			// ...just use it.
+			pc.setImageOverride(avatarUrl);
+			return;
+		}
+
+		// If the assignee isn't an individual user...
+		if (!(ai.getAssigneeType().isIndividual())) {
+			// ...just use the default.
+			pc.setImageOverride(m_images.userPhoto().getSafeUri().asString());
+			return;
+		}
+
+		// Send an RPC to the server asking if this user is external...
+		GetIsUserExternalCmd cmd = new GetIsUserExternalCmd(ai.getId());
+		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
+			@Override
+			public void onFailure(Throwable caught) {
+				// ...with any error, just use the default...
+				pc.setImageOverride(m_images.userPhoto().getSafeUri().asString());
+			}
+
+			@Override
+			public void onSuccess(VibeRpcResponse response) {
+				// ...and use the result to display the appropriate
+				// ...avatar.
+				BooleanRpcResponseData responseData = ((BooleanRpcResponseData) response.getResponseData());
+				ImageResource ir;
+				if (responseData.getBooleanValue())
+				     ir = m_filrImages.filrExternalUser48();
+				else ir = m_images.userPhoto();
+				pc.setImageOverride(ir.getSafeUri().asString());
+			}
+		});
+	}
+	
 	/*
 	 * Unregisters any global event handlers that may be registered.
 	 */

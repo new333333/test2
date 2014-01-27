@@ -8315,6 +8315,34 @@ public class GwtViewHelper {
 		// Return false.
 		return false;
 	}
+
+	/**
+	 * Returns true if the specified user is external and false otherwise.
+	 * 
+	 * @param bs
+	 * @param request
+	 * @param userId
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public static boolean isUserExternal(AllModulesInjected bs, HttpServletRequest request, Long userId) throws GwtTeamingException {
+		try {
+			User user = ((User) bs.getProfileModule().getEntry(userId));
+			return (!(user.getIdentityInfo().isInternal()));
+		}
+		
+		catch (Exception e) {
+			// Convert the exception to a GwtTeamingException and throw
+			// that.
+			throw
+				GwtLogHelper.getGwtClientException(
+					m_logger,
+					e,
+					"GwtViewHelper.isUserExternal( SOURCE EXCEPTION ):  ");
+		}
+	}
 	
 	/**
 	 * Locks the entries.
