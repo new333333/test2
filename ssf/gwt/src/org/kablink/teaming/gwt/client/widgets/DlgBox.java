@@ -772,8 +772,27 @@ public abstract class DlgBox extends TeamingPopupPanel
 		// Do we have help data?
 		if ( m_helpData != null )
 		{
-			GwtClientHelper.invokeHelp( m_helpData );
+			if (GwtClientHelper.isControlKeyDown() && dlgHasTour())
+			     invokeTour();
+			else GwtClientHelper.invokeHelp( m_helpData );
 		}
+	}
+
+	/**
+	 * Dialogs that supply a must override this method.
+	 */
+	public void invokeTour()
+	{
+		// Nothing to do.
+	}
+	
+	/**
+	 * Dialogs that supply a must override this method.
+	 */
+	public boolean dlgHasTour()
+	{
+		// By default, dialog's don't have tours.
+		return false;
 	}
 	
 	/**
