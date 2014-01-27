@@ -33,6 +33,7 @@
 
 package org.kablink.teaming.module.ldap.impl;
 import java.io.IOException;
+import java.net.InetAddress;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -242,6 +243,11 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	protected static String SYNC_JOB="ldap.job"; //properties in xml file need a unique name
 	private ContainerCoordinator m_containerCoordinator;
 
+	// We cache server host names so we don't have to call InetAddress.getByName() over and over
+	// Key: ip address
+	// Value: host name
+	Map<String, String> m_hostNameMap = new HashMap<String, String>();
+	
 	// As we create net folder servers, we will put the server and vol information in
 	// m_server_vol_map.
 	// Key: server name / volume name
@@ -258,6 +264,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		// that should be used for the home directory net folder.  Otherwise, use m_serverAddr and
 		// m_volume
 		private String m_netFolderServerName;
+		private String m_serverHostName;
 		private String m_serverAddr;
 		private String m_volume;
 		private String m_path;
@@ -267,6 +274,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		 */
 		public HomeDirInfo() {
 			m_netFolderServerName = null;
+			m_serverHostName = null;
 			m_serverAddr = null;
 			m_volume = null;
 			m_path = null;
@@ -292,6 +300,14 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		 */
 		public String getServerAddr() {
 			return m_serverAddr;
+		}
+		
+		/**
+		 * 
+		 */
+		public String getServerHostName()
+		{
+			return m_serverHostName;
 		}
 
 		/**
@@ -321,6 +337,14 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		 */
 		public void setServerAddr(String addr) {
 			m_serverAddr = addr;
+		}
+		
+		/**
+		 * 
+		 */
+		public void setServerHostName( String hostName )
+		{
+			m_serverHostName = hostName;
 		}
 
 		/**
@@ -1051,6 +1075,40 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				if ( logErrors || logger.isDebugEnabled() )
 					logger.error( "Error reading attributes from the server object: " + serverDn + " " + ex.toString() );
 			}
+		}
+		
+		if ( serverAddr != null && serverAddr.length() > 0 )
+		{
+			String hostName;
+			
+			// Have we already done a reverse dns lookup on this ip address?
+			hostName = m_hostNameMap.get( serverAddr );
+			if ( hostName == null )
+			{
+				// No, do a reverse dns lookup on the ip address.
+				try
+				{
+					InetAddress addr;
+					
+					addr = InetAddress.getByName( serverAddr );
+					if ( addr != null )
+					{
+						hostName = addr.getHostName();
+						
+						m_hostNameMap.put( serverAddr,  hostName );
+					}
+				}
+				catch ( Exception ex )
+				{
+					
+				}
+			}
+			
+			if ( hostName != null && hostName.length() > 0 )
+			{
+				homeDirInfo.setServerHostName( hostName );
+			}
+				
 		}
 		
 		homeDirInfo.setServerAddr( serverAddr );
@@ -2819,6 +2877,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	   		boolean delContainers;
 
 			m_server_vol_map.clear();
+			m_hostNameMap.clear();
 			m_zoneSyncInProgressMap.put( zone.getId(), Boolean.TRUE );
 			
 			// Sync guids if called for.

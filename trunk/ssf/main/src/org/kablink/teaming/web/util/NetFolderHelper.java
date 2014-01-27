@@ -105,6 +105,7 @@ public class NetFolderHelper
 		ResourceDriverModule resourceDriverModule,
 		HomeDirInfo homeDirInfo )
 	{
+		String hostName = null;
 		String serverAddr = null;
 		String volume = null;
 		String serverUNC;
@@ -123,6 +124,7 @@ public class NetFolderHelper
 
 		if ( homeDirInfo != null )
 		{
+			hostName = homeDirInfo.getServerHostName();
 			serverAddr = homeDirInfo.getServerAddr();
 			volume = homeDirInfo.getVolume();
 		}
@@ -136,7 +138,7 @@ public class NetFolderHelper
 			return null;
 		}
 
-		// Does a net folder server already exist with this unc?
+		// Does a net folder server already exist with a unc using the server's ip address?
 		serverUNC = "\\\\" + serverAddr + "\\" + volume;
 		rdConfig = findNetFolderRootByUNC( adminModule, resourceDriverModule, serverUNC );
 		if ( rdConfig != null )
@@ -145,9 +147,25 @@ public class NetFolderHelper
 			m_logger.info( "In NetFolderHelper.createHomeDirNetFolderServer(), net folder server already exists" );
 			return rdConfig;
 		}
+		
+		if ( hostName != null && hostName.length() > 0 )
+		{
+			// Does a net folder server already exist with a unc using the server's host name?
+			serverUNC = "\\\\" + hostName + "\\" + volume;
+			rdConfig = findNetFolderRootByUNC( adminModule, resourceDriverModule, serverUNC );
+			if ( rdConfig != null )
+			{
+				// Yes
+				m_logger.info( "In NetFolderHelper.createHomeDirNetFolderServer(), net folder server already exists" );
+				return rdConfig;
+			}
+		}
 
 		// Create a net folder root.  The administrator will need to fill in credentials.
-		rootName = serverAddr + "-" + volume;
+		if ( hostName != null && hostName.length() > 0 )
+			rootName = hostName + "-" + volume;
+		else
+			rootName = serverAddr + "-" + volume;
 		m_logger.info( "About to create a net folder server called: " + rootName  );
 		
 		// Create a default schedule for syncing the net folders associated with this net folder server
