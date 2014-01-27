@@ -1518,7 +1518,10 @@ public class EntityIndexUtils {
     			ResourceDriverConfig config = driver.getConfig();
     			if (config.isAclAware()) {
             		Field path = FieldFactory.createFieldStoredNotIndexed(RESOURCE_PATH_FIELD, 
-            				driver.normalizedResourcePath(parentFolder.getResourcePath(), folderEntry.getTitle()));
+            				driver.normalizedResourcePath(parentFolder.getResourcePath(), 
+            						// Only the top-most entry's title correctly reflects the file name associated with it.
+            						// A comment/reply may have title like "Re: debug.doc", etc.
+            						(folderEntry.isTop())? folderEntry.getTitle() : folderEntry.getTopEntry().getTitle()));
             		doc.add( path );    			
     			}
      		}
