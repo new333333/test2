@@ -1361,6 +1361,16 @@ body, table td, select
 	top: 4px;
 }
 
+/* Styles used for the tour link in a dialog header. */
+.dlgHeaderTourImg
+{
+	cursor: pointer;
+	padding: 2px;
+	position: absolute;
+	right: 40px;
+	top: 4px;
+}
+
 /* Styles used for the error panel in a dialog. */
 .dlgErrorPanel
 {

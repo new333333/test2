@@ -71,4 +71,11 @@ public class VibeTour extends Tour {
 	public void start() {
 		GwtTour.startTour(this, 0);
 	}
+	
+	/**
+	 * Stops this tour if it's running.
+	 */
+	public void stop() {
+		GwtTour.endTour();
+	}
 }
