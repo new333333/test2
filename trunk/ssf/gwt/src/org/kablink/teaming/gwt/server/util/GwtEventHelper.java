@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -400,6 +400,7 @@ public class GwtEventHelper {
 	 * @param principalTitles
 	 * @param groupCounts
 	 * @param userPresence
+	 * @param userExternal
 	 * @param presenceUserWSIds
 	 * @param teamTitles
 	 * @param teamCounts
@@ -418,6 +419,7 @@ public class GwtEventHelper {
 			Map<Long, String>			principalTitles,
 			Map<Long, Integer>			groupCounts,
 			Map<Long, GwtPresenceInfo>	userPresence,
+			Map<Long, Boolean>			userExternal,
 			Map<Long, Long>				presenceUserWSIds,
 			
 			Map<Long, String>			teamTitles,
@@ -463,6 +465,7 @@ public class GwtEventHelper {
 						if (MiscUtil.hasString(avatarUrl)) {
 							avatarUrls.put(pId, avatarUrl);
 						}
+						userExternal.put(pId, new Boolean(!(user.getIdentityInfo().isInternal())));
 					}
 				}
 			}
@@ -520,6 +523,26 @@ public class GwtEventHelper {
 		boolean reply = MiscUtil.hasString(ema);
 		if (reply) {
 			ai.setEmailAddress(ema);
+		}
+		return reply;
+	}
+
+	/**
+	 * Stores the external flag of an AssignmentInfo based on Map
+	 * lookup using its ID.
+	 * 
+	 * Returns true if an external flag was stored and false otherwise.
+	 * 
+	 * @param ai
+	 * @param userExternalMap
+	 * 
+	 * @return
+	 */
+	public static boolean setAssignmentInfoExternal(AssignmentInfo ai, Map<Long, Boolean> userExternalMap) {
+		Boolean userExternal = userExternalMap.get(ai.getId());
+		boolean reply = (null != userExternal);
+		if (reply) {
+			ai.setUserExternal(userExternal);
 		}
 		return reply;
 	}
