@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -44,6 +44,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  */
 public class PrincipalInfo implements IsSerializable {
 	private boolean			m_userDisabled;			// true -> The principal is disabled.  false -> It's not.
+	private boolean			m_userExternal;			// true -> The principal is external.  false -> They're internal.
 	private boolean			m_userHasWS;			// true -> The principal's workspace exists.
 	private boolean			m_userPerson;			// true -> The principal is person.  false -> It's not (could be a system user such as File Synchronization Agent, ...)
 	private boolean			m_userWSInTrash;		// true -> The principal's workspace exists and is in the trash.
@@ -72,6 +73,7 @@ public class PrincipalInfo implements IsSerializable {
 	 * @return
 	 */
 	public boolean         isUserDisabled()         {return m_userDisabled;       }
+	public boolean         isUserExternal()         {return m_userExternal;       }
 	public boolean         isUserHasWS()            {return m_userHasWS;          }
 	public boolean         isUserPerson()           {return m_userPerson;         }
 	public boolean         isUserWSInTrash()        {return m_userWSInTrash;      }
@@ -91,6 +93,7 @@ public class PrincipalInfo implements IsSerializable {
 	 * @param
 	 */
 	public void setUserDisabled(       boolean         userDisabled)        {m_userDisabled        = userDisabled;       }
+	public void setUserExternal(       boolean         userExternal)        {m_userExternal        = userExternal;       }
 	public void setUserHasWS(          boolean         userHasWS)           {m_userHasWS           = userHasWS;          }
 	public void setUserPerson(         boolean         userPerson)          {m_userPerson          = userPerson;         }
 	public void setUserWSInTrash(      boolean         userWSInTrash)       {m_userWSInTrash       = userWSInTrash;      }

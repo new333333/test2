@@ -36,6 +36,7 @@ import java.util.List;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingDataTableImageBundle;
+import org.kablink.teaming.gwt.client.GwtTeamingFilrImageBundle;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.ColumnWidth;
 import org.kablink.teaming.gwt.client.presence.GwtPresenceInfo;
 import org.kablink.teaming.gwt.client.presence.PresenceControl;
@@ -49,6 +50,7 @@ import com.google.gwt.cell.client.AbstractCell;
 import com.google.gwt.cell.client.ValueUpdater;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.NativeEvent;
+import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
@@ -63,9 +65,10 @@ import com.google.gwt.user.client.ui.Label;
  * @author drfoster@novell.com
  */
 public class AssignmentCell extends AbstractCell<List<AssignmentInfo>> {
-	private boolean							m_isIE;				//
-	private ColumnWidth						m_cw;				//
-	private GwtTeamingDataTableImageBundle	m_images;			//
+	private boolean							m_isIE;			//
+	private ColumnWidth						m_cw;			//
+	private GwtTeamingDataTableImageBundle	m_images;		//
+	private GwtTeamingFilrImageBundle		m_filrImages;	//
 
 	private final static boolean	USE_ELLIPSIS_WITH_PX_SIZES	= false;		// Controls whether styles to use an '...' to truncate long names are added with the column size is in pixels.
 	private final static int		ASSIGNEE_WIDTH_ADJUST		= (25 + 16);	// 25 for the image + 16 for the padding on the <td>.
@@ -161,8 +164,9 @@ public class AssignmentCell extends AbstractCell<List<AssignmentInfo>> {
 		m_cw = cw;
 		
 		// ...and initialize everything else.
-		m_images = GwtTeaming.getDataTableImageBundle();
-		m_isIE   = GwtClientHelper.jsIsIE();
+		m_images     = GwtTeaming.getDataTableImageBundle();
+		m_filrImages = GwtTeaming.getFilrImageBundle();
+		m_isIE       = GwtClientHelper.jsIsIE();
 	}
 
 	/*
@@ -208,7 +212,11 @@ public class AssignmentCell extends AbstractCell<List<AssignmentInfo>> {
 	private String getPresenceImage(AssignmentInfo ai) {
 		String reply = ai.getAvatarUrl();
 		if (!(GwtClientHelper.hasString(reply))) {
-			reply = m_images.userPhoto().getSafeUri().asString();
+			ImageResource ir;
+			if (ai.isUserExternal())
+			     ir = m_filrImages.filrExternalUser48();
+			else ir = m_images.userPhoto();
+			reply = ir.getSafeUri().asString();
 		}
 		return reply;
 	}

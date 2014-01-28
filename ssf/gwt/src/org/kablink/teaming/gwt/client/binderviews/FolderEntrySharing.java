@@ -46,10 +46,8 @@ import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.event.ContentChangedEvent.Change;
 import org.kablink.teaming.gwt.client.presence.GwtPresenceInfo;
 import org.kablink.teaming.gwt.client.presence.PresenceControl;
-import org.kablink.teaming.gwt.client.rpc.shared.BooleanRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.FolderEntryDetailsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.GetFolderEntryDetailsCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.GetIsUserExternalCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.AssignmentInfo;
 import org.kablink.teaming.gwt.client.util.EntityId;
@@ -561,27 +559,12 @@ public class FolderEntrySharing extends VibeFlowPanel
 			return;
 		}
 
-		// Send an RPC to the server asking if this user is external...
-		GetIsUserExternalCmd cmd = new GetIsUserExternalCmd(ai.getId());
-		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
-			@Override
-			public void onFailure(Throwable caught) {
-				// ...with any error, just use the default...
-				pc.setImageOverride(m_images.userPhoto().getSafeUri().asString());
-			}
-
-			@Override
-			public void onSuccess(VibeRpcResponse response) {
-				// ...and use the result to display the appropriate
-				// ...avatar.
-				BooleanRpcResponseData responseData = ((BooleanRpcResponseData) response.getResponseData());
-				ImageResource ir;
-				if (responseData.getBooleanValue())
-				     ir = m_filrImages.filrExternalUser48();
-				else ir = m_images.userPhoto();
-				pc.setImageOverride(ir.getSafeUri().asString());
-			}
-		});
+		// Otherwise, use an appropriate avatar for the user type.
+		ImageResource ir;
+		if (ai.isUserExternal())
+		     ir = m_filrImages.filrExternalUser48();
+		else ir = m_images.userPhoto();
+		pc.setImageOverride(ir.getSafeUri().asString());
 	}
 	
 	/*
