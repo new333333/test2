@@ -36,6 +36,7 @@ package org.kablink.teaming.gwt.client;
 
 import java.util.ArrayList;
 
+import org.kablink.teaming.gwt.client.GwtRole.GwtRoleType;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponseData;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
@@ -64,6 +65,38 @@ public class ZoneShareRights
 	}	
 	
 	/**
+	 * See if the given principal id has the right to reshare  
+	 */
+	public boolean canReshare( Long principalId )
+	{
+		return hasRights( GwtRoleType.EnableShareForward, principalId );
+	}
+	
+	/**
+	 * See if the given principal id has the right to share with external users.
+	 */
+	public boolean canShareExternal( Long principalId )
+	{
+		return hasRights( GwtRoleType.EnableShareExternal, principalId );
+	}
+	
+	/**
+	 * See if the given principal id has the right to share with internal users.
+	 */
+	public boolean canShareInternal( Long principalId )
+	{
+		return hasRights( GwtRoleType.EnableShareInternal, principalId );
+	}
+	
+	/**
+	 * See if the given principal id has the right to share with the public
+	 */
+	public boolean canSharePublic( Long principalId )
+	{
+		return hasRights( GwtRoleType.EnableSharePublic, principalId );
+	}
+	
+	/**
 	 * 
 	 */
 	public boolean getAllowShareWithLdapGroups()
@@ -77,6 +110,35 @@ public class ZoneShareRights
 	public ArrayList<GwtRole> getRoles()
 	{
 		return m_roles;
+	}
+	
+	/**
+	 * See if the given principal id has the given right
+	 */
+	private boolean hasRights( GwtRoleType roleType, Long principalId )
+	{
+		if ( m_roles != null && roleType != null && principalId != null )
+		{
+			for ( GwtRole nextRole : m_roles )
+			{
+				if ( nextRole.getType() == roleType )
+				{
+					ArrayList<Long> listOfMemberIds;
+					
+					listOfMemberIds = nextRole.getMemberIds();
+					if ( listOfMemberIds != null )
+					{
+						for ( Long nextMemberId : listOfMemberIds )
+						{
+							if ( nextMemberId.equals( principalId ) )
+								return true;
+						}
+					}
+				}
+			}
+		}
+		
+		return false;
 	}
 
 	/**

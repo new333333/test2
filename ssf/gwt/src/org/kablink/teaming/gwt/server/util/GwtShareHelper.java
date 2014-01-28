@@ -94,6 +94,7 @@ import org.kablink.teaming.gwt.client.util.GwtRecipientType;
 import org.kablink.teaming.gwt.client.util.GwtShareItem;
 import org.kablink.teaming.gwt.client.util.GwtShareLists;
 import org.kablink.teaming.gwt.client.util.GwtSharingInfo;
+import org.kablink.teaming.gwt.client.util.PerUserShareRightsInfo;
 import org.kablink.teaming.gwt.client.util.PublicLinkInfo;
 import org.kablink.teaming.gwt.client.util.ShareExpirationValue;
 import org.kablink.teaming.gwt.client.util.ShareExpirationValue.ShareExpirationType;
@@ -3310,4 +3311,110 @@ public class GwtShareHelper
 			gsp.stop();
 		}
 	}
+	
+	/**
+	 * Returns share rights the given user has been granted at the zone level.
+	 * 
+	 */
+	public static PerUserShareRightsInfo getUserZoneShareSettings(
+		AllModulesInjected ami,
+		Long principalId ) throws GwtTeamingException
+	{
+    	PerUserShareRightsInfo shareRights;
+    	Long zoneId;
+    	ZoneConfig zoneConfig;
+
+    	shareRights = new PerUserShareRightsInfo( false, false, false, false );
+
+		zoneId = RequestContextHolder.getRequestContext().getZoneId();
+		zoneConfig = ami.getZoneModule().getZoneConfig( zoneId );
+
+		m_accessControlManager = getAccessControlManager();
+		if ( m_accessControlManager == null )
+		{
+			m_logger.error( "In GwtShareHelper.getUserZoneShareSettings(), unable to get the access control manager" );
+			return shareRights;
+		}
+
+		try
+		{
+			ArrayList<Long> ids;
+			SortedSet<Principal> principals;
+			
+			ids = new ArrayList<Long>();
+			ids.add( principalId );
+			principals = ami.getProfileModule().getPrincipals( ids );
+			if ( principals != null && principals.size() == 1 )
+			{
+				Principal principal = null;
+
+				principal = principals.first();
+				if ( principal instanceof User )
+				{
+			    	User user = null;
+
+			    	user = (User) principal;
+
+			    	try
+					{
+						// Is share forwarding enabled at the zone level for this user?
+						m_accessControlManager.checkOperation( user, zoneConfig, WorkAreaOperation.ENABLE_SHARING_FORWARD );
+						shareRights.setAllowForwarding( true );
+					}
+					catch ( AccessControlException acEx )
+					{
+					}
+
+					try
+					{
+						// Is sharing with internal users enabled at the zone level for this user?
+						m_accessControlManager.checkOperation( user, zoneConfig, WorkAreaOperation.ENABLE_SHARING_INTERNAL );
+						shareRights.setAllowInternal( true );
+					}
+					catch ( AccessControlException acEx )
+					{
+					}
+
+					try
+					{
+						// Is sharing with external users enabled at the zone level for this user?
+						m_accessControlManager.checkOperation( user, zoneConfig, WorkAreaOperation.ENABLE_SHARING_EXTERNAL );
+						shareRights.setAllowExternal( true );
+					}
+					catch ( AccessControlException acEx )
+					{
+					}
+
+					try
+					{
+						// Is sharing with the public enabled at the zone level for this user?
+						m_accessControlManager.checkOperation( user, zoneConfig, WorkAreaOperation.ENABLE_SHARING_PUBLIC );
+						shareRights.setAllowPublic( true );
+					}
+					catch ( AccessControlException acEx )
+					{
+					}
+				}
+				else if ( principal instanceof Group )
+				{
+					ZoneShareRights zoneShareRights;
+
+					// Get all of the share rights set at the zone level.
+					zoneShareRights = GwtShareHelper.getZoneShareRights( ami );
+					
+					shareRights.setAllowForwarding( zoneShareRights.canReshare( principalId ) );
+					shareRights.setAllowInternal( zoneShareRights.canShareInternal( principalId ) );
+					shareRights.setAllowExternal( zoneShareRights.canShareExternal( principalId ) );
+					shareRights.setAllowPublic( zoneShareRights.canSharePublic( principalId ) );
+				}
+			}
+		}
+		catch ( AccessControlException acEx )
+		{
+			// Nothing to do
+		}
+		
+		return shareRights;
+	}
+
 }
