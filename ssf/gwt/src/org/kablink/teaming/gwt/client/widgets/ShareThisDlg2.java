@@ -1052,86 +1052,87 @@ public class ShareThisDlg2 extends DlgBox
 			m_headerPathLabel = new Label();
 			m_headerPathLabel.addStyleName( "shareThisDlg_HeaderPathLabel" );
 			namePanel.add( m_headerPathLabel );
-			
+//lynn			
+		
+			// Add the controls needed to select how to manage share items.
+			{
+				FlexTable table;
+				
+				m_manageShareItemsPanel = new FlowPanel();
+				m_manageShareItemsPanel.addStyleName( "shareThisDlg_ManageSharesPanel" );
+				
+				table = new FlexTable();
+				table.setText( 0, 0, messages.shareDlg_findShareItemsBy() );
+				
+				m_manageShareItemsPanel.add( table );
+				
+				// Create a listbox that will hold the options of how to find share items.
+				{
+					m_findByListbox = new ListBox( false );
+					m_findByListbox.setVisibleItemCount( 1 );
+					
+					m_findByListbox.addItem( messages.shareDlg_findSharesByHint(), FIND_SHARES_BY_HINT );
+					m_findByListbox.addItem( messages.shareDlg_findSharesByUser(), FIND_SHARES_BY_USER );
+					m_findByListbox.addItem( messages.shareDlg_findSharesByFile(), FIND_SHARES_BY_FILE );
+					m_findByListbox.addItem( messages.shareDlg_findSharesByFolder(), FIND_SHARES_BY_FOLDER );
+					m_findByListbox.addItem( messages.shareDlg_findAllShares(), FIND_ALL_SHARES );
+					m_findByListbox.setSelectedIndex( 0 );
+					
+					m_findByListbox.addChangeHandler( new ChangeHandler()
+					{
+						@Override
+						public void onChange( ChangeEvent event )
+						{
+							Scheduler.ScheduledCommand cmd;
+							
+							cmd = new Scheduler.ScheduledCommand()
+							{
+								@Override
+								public void execute()
+								{
+									int selectedIndex;
+								
+									selectedIndex = m_findByListbox.getSelectedIndex();
+									if ( selectedIndex >= 0 )
+									{
+										handleFindSharesBySelectionChanged( m_findByListbox.getValue( selectedIndex ) );
+										
+										// Since something was selected, remove the hint.
+										if ( m_findByListbox.getValue( 0 ).equalsIgnoreCase( FIND_SHARES_BY_HINT ) )
+											m_findByListbox.removeItem( 0 );
+									}
+								}
+							};
+							Scheduler.get().scheduleDeferred( cmd );
+						}
+					} );
+	
+					table.setWidget( 0, 1, m_findByListbox );
+	
+					// Create a table that will hold the controls needed to search for a user/file/folder
+					{
+						FlexTable table2;
+						
+						table2 = new FlexTable();
+						table.setWidget( 0, 2, table2 );
+						
+						m_manageSharesFindCtrlLabel = new InlineLabel( "abc" );
+						m_manageSharesFindCtrlLabel.addStyleName( "marginleft2" );
+						table2.setWidget( 0, 0, m_manageSharesFindCtrlLabel );
+						table2.setWidget( 0, 1, m_manageSharesFindCtrl );
+						
+						m_manageSharesFindCtrl.setContainerWidget( m_manageShareItemsPanel );
+						m_manageSharesFindCtrl.setVisible( false );
+						m_manageSharesFindCtrlLabel.setVisible( false );
+					}
+				}
+
+				headerPanel.add( m_manageShareItemsPanel );
+			}
+
 			headerPanel.add( namePanel );
 			
 			m_mainPanel.add( headerPanel );
-		}
-		
-		// Add the controls needed to select how to manage share items.
-		{
-			FlexTable table;
-			
-			m_manageShareItemsPanel = new FlowPanel();
-			m_manageShareItemsPanel.addStyleName( "shareThisDlg_ManageSharesPanel" );
-			
-			table = new FlexTable();
-			table.setText( 0, 0, messages.shareDlg_findShareItemsBy() );
-			
-			m_manageShareItemsPanel.add( table );
-			
-			// Create a listbox that will hold the options of how to find share items.
-			{
-				m_findByListbox = new ListBox( false );
-				m_findByListbox.setVisibleItemCount( 1 );
-				
-				m_findByListbox.addItem( messages.shareDlg_findSharesByHint(), FIND_SHARES_BY_HINT );
-				m_findByListbox.addItem( messages.shareDlg_findSharesByUser(), FIND_SHARES_BY_USER );
-				m_findByListbox.addItem( messages.shareDlg_findSharesByFile(), FIND_SHARES_BY_FILE );
-				m_findByListbox.addItem( messages.shareDlg_findSharesByFolder(), FIND_SHARES_BY_FOLDER );
-				m_findByListbox.addItem( messages.shareDlg_findAllShares(), FIND_ALL_SHARES );
-				m_findByListbox.setSelectedIndex( 0 );
-				
-				m_findByListbox.addChangeHandler( new ChangeHandler()
-				{
-					@Override
-					public void onChange( ChangeEvent event )
-					{
-						Scheduler.ScheduledCommand cmd;
-						
-						cmd = new Scheduler.ScheduledCommand()
-						{
-							@Override
-							public void execute()
-							{
-								int selectedIndex;
-							
-								selectedIndex = m_findByListbox.getSelectedIndex();
-								if ( selectedIndex >= 0 )
-								{
-									handleFindSharesBySelectionChanged( m_findByListbox.getValue( selectedIndex ) );
-									
-									// Since something was selected, remove the hint.
-									if ( m_findByListbox.getValue( 0 ).equalsIgnoreCase( FIND_SHARES_BY_HINT ) )
-										m_findByListbox.removeItem( 0 );
-								}
-							}
-						};
-						Scheduler.get().scheduleDeferred( cmd );
-					}
-				} );
-
-				table.setWidget( 0, 1, m_findByListbox );
-
-				// Create a table that will hold the controls needed to search for a user/file/folder
-				{
-					FlexTable table2;
-					
-					table2 = new FlexTable();
-					table.setWidget( 0, 2, table2 );
-					
-					m_manageSharesFindCtrlLabel = new InlineLabel( "abc" );
-					m_manageSharesFindCtrlLabel.addStyleName( "marginleft2" );
-					table2.setWidget( 0, 0, m_manageSharesFindCtrlLabel );
-					table2.setWidget( 0, 1, m_manageSharesFindCtrl );
-					
-					m_manageSharesFindCtrl.setContainerWidget( m_manageShareItemsPanel );
-					m_manageSharesFindCtrl.setVisible( false );
-					m_manageSharesFindCtrlLabel.setVisible( false );
-				}
-			}
-			
-			m_mainPanel.add( m_manageShareItemsPanel );
 		}
 		
 		// Add the controls needed for sharing.
