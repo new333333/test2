@@ -32,6 +32,8 @@
  */
 package org.kablink.teaming.gwt.client.util;
 
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponseData;
+
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
@@ -39,7 +41,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * 
  * @author drfoster@novell.com
  */
-public class PerUserShareRightsInfo implements IsSerializable {
+public class PerUserShareRightsInfo implements IsSerializable, VibeRpcResponseData {
 	private boolean m_allowExternal;	//
 	private boolean m_allowForwarding;	//
 	private boolean m_allowInternal;	//
