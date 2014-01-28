@@ -172,7 +172,30 @@ public class EditNetFolderRightsDlg extends DlgBox
 		// Add the "allow share public" checkbox.
 		m_canSharePublicCkbox = new CheckBox( messages.editNetFolderRightsDlg_SharePublicLabel() );
 		m_canSharePublicCkbox.addStyleName( "editNetFolderRightsDlg_RightsCkbox" );
-		m_canSharePublicCkbox.addClickHandler( clickHandler );
+		m_canSharePublicCkbox.addClickHandler( new ClickHandler()
+		{
+			@Override
+			public void onClick( ClickEvent event )
+			{
+				Scheduler.ScheduledCommand cmd;
+				
+				cmd = new Scheduler.ScheduledCommand()
+				{
+					@Override
+					public void execute()
+					{
+						if ( m_canSharePublicCkbox.getValue() == true )
+						{
+							m_canShareInternalCkbox.setValue( Boolean.TRUE );
+							m_canShareExternalCkbox.setValue( Boolean.TRUE );
+						}
+						
+						danceDlg();
+					}
+				};
+				Scheduler.get().scheduleDeferred( cmd );
+			}
+		} );
 		tmpPanel = new FlowPanel();
 		tmpPanel.addStyleName( "marginleft1" );
 		tmpPanel.add( m_canSharePublicCkbox );
@@ -214,6 +237,14 @@ public class EditNetFolderRightsDlg extends DlgBox
 				enable = true;
 			
 			m_canGrantReshareCkbox.setEnabled( enable );
+		}
+		
+		// If the "public" checkbox is checked, disable the "internal users"
+		// and "external users" checkboxes
+		if ( m_canSharePublicCkbox.getValue() == true )
+		{
+			m_canShareInternalCkbox.setEnabled( false );
+			m_canShareExternalCkbox.setEnabled( false );
 		}
 	}
 	
