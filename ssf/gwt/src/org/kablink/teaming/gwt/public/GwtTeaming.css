@@ -653,13 +653,12 @@
 	margin-bottom: 10px;
 	padding: 10px;
 	border-bottom: 1px solid #c4c4c4;
-	
 }
 
-.shareThisDlg_HeaderPanel img
+.shareThisDlg_HeaderImg
 {
 	position: absolute;
-	top: 8px;
+	top: 6px;
 	left: 8px;
 }
 
@@ -778,6 +777,12 @@
 .shareThisDlg_ShareWithTeamsPanel
 {
 	padding-top: 10px;
+}
+
+.shareThisDlg_ManageSharesPanel
+{
+	margin-left: 10px;
+	margin-bottom: -5px;
 }
 
 .shareThisDlg_TextArea
@@ -4551,7 +4556,7 @@ td.datePickerMonth {
 .groupManagementDropDownImg      {vertical-align: middle;}
 .groupManagementDropDownImgNonIE {margin-left: 1px;}
 
-.groupManagementBtn:hover, .manageNetFolderRootsDlg_Btn:hover, .manageNetFoldersDlg_Btn:hover
+.groupManagementBtn:hover, .manageNetFolderRootsDlg_Btn:hover, .manageNetFoldersDlg_Btn:hover, .shareDlg_Btn:hover, .editLdapConfigDlg_Btn:hover
 {
 	color: #135c8f;
 	border: 1px solid #81b2bd;
