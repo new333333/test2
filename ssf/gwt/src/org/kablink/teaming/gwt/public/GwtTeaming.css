@@ -874,9 +874,7 @@
 
 .shareThisDlg_Notify
 {
-	position:absolute;
-	bottom: -42px;
-	left: 15px;
+	margin-left: 40px;
 	font-size: 15px;
 }
 
