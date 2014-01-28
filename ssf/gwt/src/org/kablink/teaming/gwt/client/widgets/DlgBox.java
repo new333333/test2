@@ -402,7 +402,8 @@ public abstract class DlgBox extends TeamingPopupPanel
 			m_statusPanel.setVisible( false );
 			m_footerPanel.add( m_statusPanel );
 			
-			m_statusImg = GwtClientHelper.buildImage( GwtTeaming.getImageBundle().spinner16() );
+			m_statusImg = GwtClientHelper.buildImage( GwtTeaming.getImageBundle().spinner25() );
+			m_statusImg.addStyleName( "padding5R" );
 			m_statusPanel.add( m_statusImg );
 
 			m_statusLabel = new InlineLabel();
