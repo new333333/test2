@@ -8693,16 +8693,18 @@ public class GwtViewHelper {
 				//        org.kablink.teaming.webdav.FileResource.renameFile()
 				// 
 				// Access the entry and attachment we're renaming.
-				FolderModule   fm = bs.getFolderModule();
-				FolderEntry    fe = fm.getEntry(eid.getBinderId(), eid.getEntityId());
-				FileAttachment fa = GwtServerHelper.getFileEntrysFileAttachment(bs, fe, true);
+				FolderModule   fm      = bs.getFolderModule();
+				FolderEntry    fe      = fm.getEntry(eid.getBinderId(), eid.getEntityId());
+				FileAttachment fa      = GwtServerHelper.getFileEntrysFileAttachment(bs, fe, true);
+				String         faName  = ((null == fa) ? "" : fa.getFileItem().getName());
+				String         feTitle = fe.getTitle();
 				
 				// If the current entry title is identical to the name
 				// of the file, it's reasonable to change the title to
 				// match the new name as well.  Do we have to rename
 				// the entry?
-				InputDataAccessor inputData;				
-				if ((null == fa) || fa.getFileItem().getName().equals(fe.getTitle())) {
+				InputDataAccessor inputData;
+				if ((null == fa) || faName.equals(feTitle)) {
 					// Yes!  Setup the appropriate input data.
 					Map data = new HashMap();
 					data.put(ObjectKeys.FIELD_ENTITY_TITLE, entityName);
@@ -8715,7 +8717,12 @@ public class GwtViewHelper {
 
 				// Setup the appropriate  file rename.
 				Map<FileAttachment,String> renamesTo;
-				if (null == fa) {
+				if ((null == fa) || faName.equals(entityName)) {
+					if (feTitle.equals(entityName)) {
+						// Everything already matches the new name!  No
+						// renaming is necessary;
+						return reply;
+					}
 					renamesTo = null;
 				}
 				else {
