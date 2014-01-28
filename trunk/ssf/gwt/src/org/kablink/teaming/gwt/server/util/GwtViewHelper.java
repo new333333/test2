@@ -8759,17 +8759,36 @@ public class GwtViewHelper {
 				}
 				
 				catch (Exception e) {
-					// No!  Return the reason why in the string response...
+					// No!  Did we get a WriteEntryDataException?
 					String messageKey;
-					if      (e instanceof AccessControlException)          messageKey = "renameEntityError.AccssControlException.file";
-					else if (e instanceof IllegalCharacterInNameException) messageKey = "renameEntityError.IllegalCharacterInNameException.file";
-					else if (e instanceof ReservedByAnotherUserException)  messageKey = "renameEntityError.ReservedByAnotherUserException.file";
-					else if (e instanceof WriteFilesException)             messageKey = "renameEntityError.WriteFilesException.file";
-					else if (e instanceof WriteEntryDataException)         messageKey = "renameEntityError.WriteEntryDataException.file";
-					else                                                   messageKey = "renameEntityError.OtherException.file";
-					reply.setStringValue(NLT.get(messageKey, new String[]{entityName}));
+					boolean handledEx = false;
+					if (e instanceof WriteEntryDataException) {
+						// Yes!  Is it because a file with that name
+						// already exists?
+						if (null != fm.getLibraryFolderEntryByFileName(fe.getParentFolder(), entityName)) {
+							// Yes!  Return a more specific error for
+							// this condition than the code below would
+							// result in. 
+							messageKey = "entry.duplicateFileInLibrary3";
+							reply.setStringValue(NLT.get(messageKey));
+							handledEx = true;
+						}
+					}
+
+					// Did we handle the exception above?
+					if (!handledEx) {
+						// No!  Return a generic reason why in the
+						// string response.
+						if      (e instanceof AccessControlException)          messageKey = "renameEntityError.AccssControlException.file";
+						else if (e instanceof IllegalCharacterInNameException) messageKey = "renameEntityError.IllegalCharacterInNameException.file";
+						else if (e instanceof ReservedByAnotherUserException)  messageKey = "renameEntityError.ReservedByAnotherUserException.file";
+						else if (e instanceof WriteFilesException)             messageKey = "renameEntityError.WriteFilesException.file";
+						else if (e instanceof WriteEntryDataException)         messageKey = "renameEntityError.WriteEntryDataException.file";
+						else                                                   messageKey = "renameEntityError.OtherException.file";
+						reply.setStringValue(NLT.get(messageKey, new String[]{entityName}));
+					}
 					
-					// ...and log it.
+					// Whatever the exception was, log it.
 					GwtLogHelper.error(m_logger, "GwtViewHelper.renameEntity( Entity title:  '" + entityName + ", EXCEPTION:2 ):  ", e);
 				}
 			}
