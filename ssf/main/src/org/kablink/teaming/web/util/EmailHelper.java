@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -50,7 +50,6 @@ import javax.mail.internet.InternetAddress;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.ProfileDao;
@@ -61,7 +60,6 @@ import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.ShareItem;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserPrincipal;
-import org.kablink.teaming.module.admin.SendMailErrorWrapper;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.util.AllModulesInjected;
@@ -76,6 +74,7 @@ import org.kablink.teaming.util.Utils;
  * 
  * @author drfoster@novell.com
  */
+@SuppressWarnings("unchecked")
 public class EmailHelper {
 	protected static Log m_logger = LogFactory.getLog(EmailHelper.class);
 	
@@ -116,7 +115,6 @@ public class EmailHelper {
 	 * @param targetTZs
 	 * @param principalIds
 	 */
-	@SuppressWarnings("unchecked")
 	public static void addPrincipalsToLocaleMap(String usedAs, Map<Locale, List<InternetAddress>> localeMap, List<TimeZone> targetTZs, Collection<Long> principalIds) {
 		// Resolve the principal IDs and scan them.
 		List<Principal> principals = ResolveIds.getPrincipals(principalIds);
@@ -239,7 +237,6 @@ public class EmailHelper {
 	 * Adds an error to a List regarding an Address[] of email
 	 * addresses that could not be sent to.
 	 */
-	@SuppressWarnings("unchecked")
 	public static void addMailFailures(List errors, Address[] errorAddrs, String resourceKey) {
 		// Do we have anything to based the mail failures on?
 		int errorCount = ((null == errorAddrs) ? 0 : errorAddrs.length);
@@ -728,8 +725,7 @@ public class EmailHelper {
 	 * 
 	 * @return
 	 */
-    @SuppressWarnings("unchecked")
-    public static List<SendMailErrorWrapper> sendEmailToPublicLinkRecipients(AllModulesInjected bs, ShareItem shareItem, User currentUser, List<String> recipientEMAs, String viewUrl, String downloadUrl) {
+    public static List sendEmailToPublicLinkRecipients(AllModulesInjected bs, ShareItem shareItem, User currentUser, List<String> recipientEMAs, String viewUrl, String downloadUrl) {
     	// Do we have everything required to send the email?
         if ((null == bs) || (null == currentUser) || (null == shareItem) || (!(MiscUtil.hasItems(recipientEMAs))) || (!(MiscUtil.hasString(downloadUrl)))) {
         	// No!  Log the error and bail.
@@ -766,7 +762,7 @@ public class EmailHelper {
             	downloadUrl);
 
             if (null != errorMap) {
-                emailErrors = ((List<SendMailErrorWrapper>) errorMap.get(ObjectKeys.SENDMAIL_ERRORS));
+                emailErrors = ((List) errorMap.get(ObjectKeys.SENDMAIL_ERRORS));
             }
         }
         catch (Exception ex) {
@@ -775,7 +771,7 @@ public class EmailHelper {
         return emailErrors;
     }
     
-    public static List<SendMailErrorWrapper> sendEmailToPublicLinkRecipients(AllModulesInjected bs, ShareItem shareItem, User currentUser, String recipientEMA, String viewUrl, String downloadUrl) {
+    public static List sendEmailToPublicLinkRecipients(AllModulesInjected bs, ShareItem shareItem, User currentUser, String recipientEMA, String viewUrl, String downloadUrl) {
     	// Do we have everything required to send the email?
         if (!(MiscUtil.hasString(recipientEMA))) {
         	// No!  Log the error and bail.
@@ -799,8 +795,7 @@ public class EmailHelper {
 	 * 
 	 * @return
 	 */
-    @SuppressWarnings("unchecked")
-    public static List<SendMailErrorWrapper> sendEmailToRecipient(
+    public static List sendEmailToRecipient(
             AllModulesInjected ami,
             ShareItem shareItem,
             boolean isExternalUser,
@@ -891,7 +886,7 @@ public class EmailHelper {
 
             if ( errorMap != null )
             {
-                emailErrors = ((List<SendMailErrorWrapper>) errorMap.get( ObjectKeys.SENDMAIL_ERRORS ));
+                emailErrors = ((List) errorMap.get( ObjectKeys.SENDMAIL_ERRORS ));
             }
         }
         catch ( Exception ex )
@@ -1073,7 +1068,6 @@ public class EmailHelper {
 	 * Validates that the Long's in a Set<Long> are valid principal
 	 * IDs.
 	 */
-	@SuppressWarnings("unchecked")
 	private static Set<Long> validatePrincipalIds(Set<Long> principalIds) {
 		Set<Long> reply = new HashSet<Long>();
 		if (MiscUtil.hasItems(principalIds)) {
