@@ -1377,9 +1377,15 @@ public class ModifyNetFolderDlg extends DlgBox
 		}
 		else
 		{
+			Long value;
+			
 			m_jitsEnabledCkbox.setValue( false );
-			m_jitsAclMaxAge.setValue( "60" );
-			m_jitsResultsMaxAge.setValue( "30" );
+			
+			value = GwtMainPage.m_requestInfo.getDefaultJitsAclMaxAge() / 1000;
+			m_jitsAclMaxAge.setValue( value.toString() );
+			
+			value = GwtMainPage.m_requestInfo.getDefaultJitsResultsMaxAge() / 1000;
+			m_jitsResultsMaxAge.setValue( value.toString() );
 		}
 	}
 	

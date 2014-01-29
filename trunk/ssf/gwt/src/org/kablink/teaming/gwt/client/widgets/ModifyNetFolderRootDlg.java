@@ -930,7 +930,7 @@ public class ModifyNetFolderRootDlg extends DlgBox
 			netFolderRoot = getNetFolderRootFromDlg();
 			
 			showStatusMsg( GwtTeaming.getMessages().modifyNetFolderServerDlg_CreatingNetFolderServer() );
-
+			
 			cmd = new CreateNetFolderRootCmd( netFolderRoot );
 			GwtClientHelper.executeCommand( cmd, rpcCallback );
 		}
@@ -1887,9 +1887,15 @@ public class ModifyNetFolderRootDlg extends DlgBox
 		}
 		else
 		{
+			Long value;
+			
 			m_jitsEnabledCkbox.setValue( false );
-			m_jitsAclMaxAge.setValue( "60" );
-			m_jitsResultsMaxAge.setValue( "30" );
+			
+			value = GwtMainPage.m_requestInfo.getDefaultJitsAclMaxAge() / 1000;
+			m_jitsAclMaxAge.setValue( value.toString() );
+			
+			value = GwtMainPage.m_requestInfo.getDefaultJitsResultsMaxAge() / 1000;
+			m_jitsResultsMaxAge.setValue( value.toString() );
 		}
 	}
 

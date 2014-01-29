@@ -67,6 +67,8 @@
 		decimalSeparator:					'${decimalSeparator}',
 		debugUI:							'${vibeUIDebug}',
 		debugLP:							'${vibeLPDebug}',
+		defaultJitsResultsMaxAge:			'${defaultJitsResultsMaxAge}',
+		defaultJitsAclMaxAge:				'${defaultJitsAclMaxAge}',
 		deleteUserUrl:						'${ss_deleteEntryAdapter}',
 		errMsg:								'<ssf:escapeJavaScript>${errMsg}</ssf:escapeJavaScript>',
 		guestId:							'${guestId}',

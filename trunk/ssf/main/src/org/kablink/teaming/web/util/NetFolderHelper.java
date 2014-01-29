@@ -33,11 +33,13 @@
 package org.kablink.teaming.web.util;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TimeZone;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -169,13 +171,37 @@ public class NetFolderHelper
 		m_logger.info( "About to create a net folder server called: " + rootName  );
 		
 		// Create a default schedule for syncing the net folders associated with this net folder server
-		// The schedule is configured to run every day at 11:00pm
+		// The schedule is configured to run every day at midnight
 		zoneId = RequestContextHolder.getRequestContext().getZoneId();
 		scheduleInfo = new ScheduleInfo( zoneId );
 		scheduleInfo.setEnabled( true );
 		schedule = new Schedule( "" );
 		schedule.setDaily( true );
-		schedule.setHours( "23" );
+		// Set the schedule for midnight gmt
+		{
+			User currentUser;
+			String hourStr;
+			
+			currentUser = RequestContextHolder.getRequestContext().getUser();
+			if ( currentUser != null )
+			{
+				TimeZone tz;
+				Date now = new Date();
+				int offset;
+				int offsetHour;
+				int hour;
+
+				tz = currentUser.getTimeZone();
+				offset = tz.getOffset( now.getTime() );
+				offsetHour = offset / (1000*60*60);
+				hour = (0 - offsetHour) % 24;
+				hourStr = String.valueOf( hour );
+			}
+			else
+				hourStr = "0";
+			
+			schedule.setHours( hourStr );
+		}
 		schedule.setMinutes( "0" );
 		scheduleInfo.setSchedule( schedule );
 		
@@ -197,8 +223,8 @@ public class NetFolderHelper
 													null,
 													false,
 													new Boolean( true ),
-													new Long( 35000 ),
-													new Long( 65000 ),
+													NetFolderHelper.getDefaultJitsResultsMaxAge(),
+													NetFolderHelper.getDefaultJitsAclMaxAge(),
 													scheduleInfo );
 		
 		// Add a task for the administrator to enter the proxy credentials for this server.
@@ -377,11 +403,49 @@ public class NetFolderHelper
 			if ( netFolderBinder == null )
 			{
 				String folderName;
+				Long zoneId;
+				ScheduleInfo scheduleInfo;
+				Schedule schedule;
 	
 				// No, create one.
 				folderName = NLT.get( "netfolder.default.homedir.name" );
 				m_logger.info( "About to create a net folder called: " + folderName + ", for the users home directory for user: " + user.getName() );
 				
+				// Create a default schedule for syncing the net folder
+				// The schedule is disabled and configured to run every day at midnight
+				zoneId = RequestContextHolder.getRequestContext().getZoneId();
+				scheduleInfo = new ScheduleInfo( zoneId );
+				scheduleInfo.setEnabled( false );
+				schedule = new Schedule( "" );
+				schedule.setDaily( true );
+				// Set the schedule for midnight gmt
+				{
+					User currentUser;
+					String hourStr;
+					
+					currentUser = RequestContextHolder.getRequestContext().getUser();
+					if ( currentUser != null )
+					{
+						TimeZone tz;
+						Date now = new Date();
+						int offset;
+						int offsetHour;
+						int hour;
+
+						tz = currentUser.getTimeZone();
+						offset = tz.getOffset( now.getTime() );
+						offsetHour = offset / (1000*60*60);
+						hour = (0 - offsetHour) % 24;
+						hourStr = String.valueOf( hour );
+					}
+					else
+						hourStr = "0";
+					
+					schedule.setHours( hourStr );
+				}
+				schedule.setMinutes( "0" );
+				scheduleInfo.setSchedule( schedule );
+
 				// Create a net folder in the user's workspace
 				netFolderBinder = NetFolderHelper.createNetFolder(
 															templateModule,
@@ -392,7 +456,7 @@ public class NetFolderHelper
 															folderName,
 															rdConfig.getName(),
 															path,
-															null,
+															scheduleInfo,
 															SyncScheduleOption.useNetFolderServerSchedule,
 															workspaceId,
 															true,
@@ -837,7 +901,7 @@ public class NetFolderHelper
 	 */
 	public static long getDefaultJitsAclMaxAge()
 	{
-		return SPropsUtil.getLong( "nf.jits.acl.max.age", 60000L );
+		return SPropsUtil.getLong( "nf.jits.acl.max.age", 600000L );
 	}
 	
 	/**
@@ -845,7 +909,7 @@ public class NetFolderHelper
 	 */
 	public static long getDefaultJitsResultsMaxAge()
 	{
-		return SPropsUtil.getLong( "nf.jits.max.age", 30000L );
+		return SPropsUtil.getLong( "nf.jits.max.age", 60000L );
 	}
 	
 	/**
