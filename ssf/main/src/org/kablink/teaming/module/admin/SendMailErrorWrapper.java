@@ -36,6 +36,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.kablink.teaming.web.util.MiscUtil;
+
 import org.springframework.mail.MailAuthenticationException;
 import org.springframework.mail.MailSendException;
 
@@ -48,10 +49,13 @@ public class SendMailErrorWrapper {
 	private Exception	m_exception;	//
 	private String		m_errorMessage;	//
 
-	/*
+	/**
 	 * Constructor method.
+	 * 
+	 * @param exception
+	 * @param errorMessage
 	 */
-	private SendMailErrorWrapper(Exception exception, String errorMessage) {
+	public SendMailErrorWrapper(Exception exception, String errorMessage) {
 		// Initialize the super class...
 		super();
 
@@ -63,25 +67,13 @@ public class SendMailErrorWrapper {
 	/**
 	 * Constructor method.
 	 * 
-	 * @param exception
 	 * @param errorMessage
 	 */
-	public SendMailErrorWrapper(MailSendException exception, String errorMessage) {
-		// Always use the private form of the constructor.
-		this(((Exception) exception), errorMessage);
+	public SendMailErrorWrapper(String errorMessage) {
+		// Always use the initial form of the constructor.
+		this(((Exception) null), errorMessage);
 	}
 	
-	/**
-	 * Constructor method.
-	 * 
-	 * @param exception
-	 * @param errorMessage
-	 */
-	public SendMailErrorWrapper(MailAuthenticationException exception, String errorMessage) {
-		// Always use the private form of the constructor.
-		this(((Exception) exception), errorMessage);
-	}
-
 	/**
 	 * Get'er methods.
 	 * 
@@ -99,15 +91,14 @@ public class SendMailErrorWrapper {
 	public void setErrorMessage(String    errorMessage) {m_errorMessage = errorMessage;}
 
 	/**
-	 * Extract the error messages out of a List and returns them as a
-	 * List<String>.
+	 * Extract the error messages out of a List<SendMailErrorWrapper>
+	 * and returns them as a List<String>.
 	 * 
 	 * @param sendMailErrors
 	 * 
 	 * @return
 	 */
-	@SuppressWarnings("unchecked")
-	public static List<String> getErrorMessages(List sendMailErrors) {
+	public static List<String> getErrorMessages(List<SendMailErrorWrapper> sendMailErrors) {
 		List<String> reply = new ArrayList<String>();
 		if (MiscUtil.hasItems(sendMailErrors)) {
 			for (Object sendMailErrorO:  sendMailErrors) {

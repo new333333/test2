@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -53,6 +53,7 @@ import org.kablink.teaming.domain.Description;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.User;
+import org.kablink.teaming.module.admin.SendMailErrorWrapper;
 import org.kablink.teaming.module.mail.MailSentStatus;
 import org.kablink.teaming.module.shared.AccessUtils;
 import org.kablink.teaming.security.AccessControlException;
@@ -64,13 +65,16 @@ import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.PortletRequestUtils;
 import org.kablink.teaming.web.util.WebHelper;
 import org.kablink.util.StringUtil;
+
 import org.springframework.web.portlet.ModelAndView;
 
 /**
+ * ?
+ * 
  * @author Peter Hurley
- *
  */
 public class SendEntryMailController extends SAbstractController {
+	@Override
 	@SuppressWarnings("unchecked")
 	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) 
 	throws Exception {
@@ -138,8 +142,8 @@ public class SendEntryMailController extends SAbstractController {
 				response.setRenderParameter(WebKeys.EMAIL_FAILED_ADDRESSES,  getStringEmail(result.getFailedToSend()));
 			}
 			response.setRenderParameter(WebKeys.EMAIL_FAILED_ACCESS, noAccessPrincipals.toArray(new String[noAccessPrincipals.size()]));
-			List errors = (List)status.get(ObjectKeys.SENDMAIL_ERRORS);
-			response.setRenderParameter(WebKeys.ERROR_LIST, (String[])errors.toArray( new String[0]));
+			List<SendMailErrorWrapper> errors = ((List<SendMailErrorWrapper>) status.get(ObjectKeys.SENDMAIL_ERRORS));
+			response.setRenderParameter(WebKeys.ERROR_LIST, ((String[]) (SendMailErrorWrapper.getErrorMessages(errors).toArray(new String[0]))));
 			if (formData.containsKey(WebKeys.URL_SEND_MAIL_LOCATION)) response.setRenderParameter(WebKeys.URL_SEND_MAIL_LOCATION, request.getParameter(WebKeys.URL_SEND_MAIL_LOCATION));
 			if (formData.containsKey(WebKeys.USER_IDS_TO_ADD))        response.setRenderParameter(WebKeys.USER_IDS_TO_ADD,        request.getParameter(WebKeys.USER_IDS_TO_ADD));
 		} else if (formData.containsKey("closeBtn") || formData.containsKey("cancelBtn")) {
@@ -154,6 +158,7 @@ public class SendEntryMailController extends SAbstractController {
 		for (Address email: addrs) addresses[i++] = email.toString();
 		return addresses;
 	}
+	@Override
 	@SuppressWarnings("unchecked")
 	public ModelAndView handleRenderRequestAfterValidation(RenderRequest request, 
 			RenderResponse response) throws Exception {
@@ -193,5 +198,4 @@ public class SendEntryMailController extends SAbstractController {
 		
 		return new ModelAndView(WebKeys.VIEW_BINDER_SENDMAIL, model);
 	}
-
 }

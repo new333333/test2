@@ -874,14 +874,14 @@ public class GwtShareHelper
 		GwtEmailPublicLinkResults results;
 		ArrayList<String> listOfEmailAddresses;
 		List<EntityId> listOfEntityIds;
-		List emailErrors = null;
+		List<SendMailErrorWrapper> emailErrors = null;
 		User currentUser;
 		
 		results = new GwtEmailPublicLinkResults();
 
 		currentUser = GwtServerHelper.getCurrentUser();
 
-		emailErrors = new ArrayList();
+		emailErrors = new ArrayList<SendMailErrorWrapper>();
 
 		listOfEmailAddresses = data.getListOfEmailAddresses();
 		
@@ -962,7 +962,7 @@ public class GwtShareHelper
 
 					if ( shareItem != null && shareItem.getId() != null )
 					{
-						List entityEmailErrors = null;
+						List<SendMailErrorWrapper> entityEmailErrors = null;
 						String viewUrl = null;
 						String downloadUrl = null;
 						
@@ -2196,7 +2196,7 @@ public class GwtShareHelper
 		AllModulesInjected ami,
 		ArrayList<Long> listOfShareItemIds )
 	{
-		List emailErrors;
+		List<SendMailErrorWrapper> emailErrors;
 		GwtSendShareNotificationEmailResults results;
 		User currentUser;
 		
@@ -2213,7 +2213,7 @@ public class GwtShareHelper
 			try
 			{
 				ShareItem shareItem;
-				List entityEmailErrors = null;
+				List<SendMailErrorWrapper> entityEmailErrors = null;
 				boolean isExternal;
 
 				// Get the ShareItem.
