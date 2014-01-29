@@ -273,6 +273,7 @@ public class EditShareWidget extends Composite
 		hPanel.setSpacing( 4 );
 		
 		label = new Label( messages.editShareDlg_accessRightsLabel() );
+		label.addStyleName( "gwt-label" );
 		hPanel.add( label );
 		m_accessRightsListbox = new ListBox( false );
 		m_accessRightsListbox.setVisibleItemCount( 1 );
@@ -285,11 +286,12 @@ public class EditShareWidget extends Composite
 			m_resharePanelForMultiEdit.addStyleName( "margintop2" );
 			panel.add( m_resharePanelForMultiEdit );
 			
-			// Add a "Allow the recipient to re-share this item with:" label
+			// Add a "Allow re-share with:" label
 			hPanel = new HorizontalPanel();
 			hPanel.setVerticalAlignment( HasVerticalAlignment.ALIGN_MIDDLE );
 			hPanel.setSpacing( 4 );
 			label = new Label( messages.editShareRightsDlg_CanShareLabel() );
+			label.addStyleName( "gwt-label" );
 			hPanel.add( label );
 			m_resharePanelForMultiEdit.add( hPanel );
 			
