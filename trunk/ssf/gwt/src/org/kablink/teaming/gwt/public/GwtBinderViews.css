@@ -443,12 +443,12 @@
 
 /* Start:  Manage comments composite styles. */
 	.vibe-manageCommentsComposite                        {background-color: white !important;}
-	.vibe-manageCommentsComposite-addCommentAvatar       {vertical-align: top !important; padding: 5px 10px; width: 30px; height: 30px; border-radius: 2px;}
+	.vibe-manageCommentsComposite-addCommentAvatar       {vertical-align: top !important; margin: 3px 5px 5px 15px; width: 30px; height: 30px; border-radius: 2px;}
 	.vibe-manageCommentsComposite-addCommentHint         {color: #949494; font-size: .8em; display: inline-block; width: 280px;}
-	.vibe-manageCommentsComposite-addCommentHintPanel    {padding-top: 5px; padding-right: 5px;}
-	.vibe-manageCommentsComposite-addCommentPanel        {color: #353838; background-color: #F6F6F6; border-top-color: #cccccc; border-top-style: solid; border-top-width: 1px; padding-top: 15px; padding-bottom: 15px; box-shadow: 0px 2px 3px #e0e0e0 inset;}
+	.vibe-manageCommentsComposite-addCommentHintPanel    {padding-top: 5px; padding-right: 10px;}
+	.vibe-manageCommentsComposite-addCommentPanel        {color: #353838; background-color: #F6F6F6; border-top-color: #cccccc; border-top-style: solid; border-top-width: 1px; padding-top: 15px; padding-bottom: 15px; }
 	.vibe-manageCommentsComposite-addCommentPanel-nonIE  {width: 100%; }
-	.vibe-manageCommentsComposite-addCommentTextArea     {background-color: white; font-family: Arial, Helvetica, sans-serif; font-size: 14px; width: 500px; height: 45px; padding: 5px; border: 1px solid #E0E0E0; -moz-border-radius: 3px; border-radius: 3px; -webkit-border-radius: 3px;}
+	.vibe-manageCommentsComposite-addCommentTextArea     {background-color: #fff; font-family: Arial, Helvetica, sans-serif; font-size: 14px; width: 490px; height: 45px; padding: 5px; border: 1px solid #ccc; -moz-border-radius: 3px; border-radius: 3px; -webkit-border-radius: 3px;}
 	.vibe-manageCommentsComposite-captionImg             {width: 36px; height: 36px;}
 	.vibe-manageCommentsComposite-commentsWidget         {height: 300px; overflow: auto; position: relative; width: 550px;}
 	.vibe-manageCommentsComposite-label                  {}
