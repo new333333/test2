@@ -1052,7 +1052,6 @@ public class ShareThisDlg2 extends DlgBox
 			m_headerPathLabel = new Label();
 			m_headerPathLabel.addStyleName( "shareThisDlg_HeaderPathLabel" );
 			namePanel.add( m_headerPathLabel );
-//lynn			
 		
 			// Add the controls needed to select how to manage share items.
 			{
