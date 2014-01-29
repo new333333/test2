@@ -1006,9 +1006,19 @@ public class ModifyNetFolderRootDlg extends DlgBox
 						m_authTypeLabel.setVisible( true );
 						m_authTypeListbox.setVisible( true );
 						
-						// Remove Kerberos and "auto detect" and add "nmas" to the authentication type listbox
+						// Remove NTLM, Kerberos and "auto detect" and add "nmas" to the authentication type listbox
 						{
 							int index;
+							
+							// Is NTLM in the listbox?
+							index = GwtClientHelper.doesListboxContainValue(
+																		m_authTypeListbox,
+																		GwtAuthenticationType.NTLM.toString() );
+							if ( index != -1 )
+							{
+								// Yes, remove it.
+								m_authTypeListbox.removeItem( index );
+							}
 							
 							// Is Kerberos in the listbox?
 							index = GwtClientHelper.doesListboxContainValue(
@@ -1057,9 +1067,22 @@ public class ModifyNetFolderRootDlg extends DlgBox
 						m_authTypeLabel.setVisible( true );
 						m_authTypeListbox.setVisible( true );
 						
-						// Remove "nmas" and add "kerberos" and "auto detect" to the authentication type listbox
+						// Remove "nmas" and add "ntlm", "kerberos" and "auto detect" to the authentication type listbox
 						{
 							int index;
+							
+							// Is NTLM in the listbox?
+							index = GwtClientHelper.doesListboxContainValue(
+																		m_authTypeListbox,
+																		GwtAuthenticationType.NTLM.toString() );
+							if ( index == -1 )
+							{
+								// No, add it
+								m_authTypeListbox.insertItem(
+														messages.modifyNetFolderServerDlg_AuthType_Ntlm(),
+														GwtAuthenticationType.NTLM.toString(),
+														0 );
+							}
 							
 							// Is Kerberos in the listbox?
 							index = GwtClientHelper.doesListboxContainValue(
