@@ -85,6 +85,9 @@ import org.kablink.teaming.search.filter.SearchFilter;
 import org.kablink.teaming.search.filter.SearchFilterKeys;
 import org.kablink.teaming.search.filter.SearchFilterToSearchBooleanConverter;
 import org.kablink.teaming.search.postfilter.PostFilterCallback;
+import org.kablink.teaming.security.AccessControlManager;
+import org.kablink.teaming.security.function.WorkArea;
+import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.task.TaskHelper;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.web.WebKeys;
@@ -724,21 +727,43 @@ public class SearchUtils {
 		}
 		else if(parentBinder.noAclDredgedWithEntries()) {
 			// The parent binder is a net folder which does not store file ACLs in the search index.
-			// We need to consolidate the information in the search index with the dynamic list
-			// obtained from the file system in order to determine which subset of the children
-			// the user has access to.
-			
 			List<String> childrenTitles = null;
 			if(Validator.isNotNull(aclQueryStr)) {
-				// We must apply access check one way or another
-				childrenTitles = getChildrenTitlesFromSourceSystem((Folder)parentBinder);
+				boolean shareGrantedAccess = getAccessControlManager().testRightGrantedBySharing(RequestContextHolder.getRequestContext().getUser(), (WorkArea) parentBinder, WorkAreaOperation.READ_ENTRIES);
+				if(shareGrantedAccess) {
+					// This means that we already know the calling user has the right to read the parent binder given by
+					// at least one sharing involving the binder either directly or indirectly. In this case, we give
+					// the user read access to all files and sub-folders within the binder WITHOUT asking the index.
+					// As a matter of fact, currently, the index doesn't have enough information to figure this out on its own.
+					// A couple of important points:
+					// 1. Filr supports folder sharing only for Home Folders (and not Net Folders), and with all Home
+					//    Folders, we assume that the owner/sharer always has read access to EVERYTHING in her Home
+					//    Folder. Consequently, a sharee of a folder within a Home Folder automatically has read access
+					//    to EVERYTHING within that folder and down. Therefore, it is OK to short circuit ACL checking
+					//    for contents of the shared folder.
+					// 2. The normal execution path where we obtain children list from the file system and pass it
+					//    down to the search service as a kind of ACL filter (see below) does NOT work in this case, 
+					//    because the calling user has NO file system rights to the content of the shared folder.
+					// 3. This strategy works OK for folder navigation, but not for general search. In other word,
+					//    general search is still broken with regard to folder sharing. For that reason, this fix
+					//    is only temporary and we need a real fix (see bug #858636).
+					aclQueryStr = null; // Let the Lucene Service skip access checking on the contents of the binder.
+				}
+				else {		
+					// The sharing facility doesn't grant this user read right to the parent binder, which means
+					// that the system must rely on the regular file system right to make determination.
+					
+					// We need to consolidate the information in the search index with the dynamic list
+					// obtained from the file system in order to determine which subset of the children
+					// the user has access to.
+					childrenTitles = getChildrenTitlesFromSourceSystem((Folder)parentBinder);
+				}
 			}
 			else {
 				// The user is not confined by access check (e.g. admin), which means that 
 				// dynamic filtering against file system is not necessary either.
 			}
-			
-		    return luceneSession.searchNetFolderOneLevel(contextUserId, aclQueryStr, childrenTitles, query, sort, offset, size);
+		    return luceneSession.searchNetFolderOneLevel(contextUserId, aclQueryStr, childrenTitles, query, sort, offset, size);					
 		}
 		else {
 			// All other cases
@@ -818,5 +843,9 @@ public class SearchUtils {
 	
 	private static ResourceDriverManager getResourceDriverManager() {
 		return (ResourceDriverManager) SpringContextUtil.getBean("resourceDriverManager");
+	}
+	
+	private static AccessControlManager getAccessControlManager() {
+		return (AccessControlManager) SpringContextUtil.getBean("accessControlManager");
 	}
 }
