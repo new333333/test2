@@ -50,6 +50,7 @@ import javax.mail.internet.InternetAddress;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.ProfileDao;
@@ -60,6 +61,7 @@ import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.ShareItem;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserPrincipal;
+import org.kablink.teaming.module.admin.SendMailErrorWrapper;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.util.AllModulesInjected;
@@ -74,7 +76,6 @@ import org.kablink.teaming.util.Utils;
  * 
  * @author drfoster@novell.com
  */
-@SuppressWarnings("unchecked")
 public class EmailHelper {
 	protected static Log m_logger = LogFactory.getLog(EmailHelper.class);
 	
@@ -115,6 +116,7 @@ public class EmailHelper {
 	 * @param targetTZs
 	 * @param principalIds
 	 */
+	@SuppressWarnings("unchecked")
 	public static void addPrincipalsToLocaleMap(String usedAs, Map<Locale, List<InternetAddress>> localeMap, List<TimeZone> targetTZs, Collection<Long> principalIds) {
 		// Resolve the principal IDs and scan them.
 		List<Principal> principals = ResolveIds.getPrincipals(principalIds);
@@ -233,11 +235,16 @@ public class EmailHelper {
 		}
 	}
 
-	/*
-	 * Adds an error to a List regarding an Address[] of email
-	 * addresses that could not be sent to.
+	/**
+	 * Adds an error to a List<SendMailErrorWrapper> regarding an
+	 * Exception and an Address[] of email addresses that could not be sent to.
+	 * 
+	 * @param errors
+	 * @param ex
+	 * @param errorAddrs
+	 * @param resourceKey
 	 */
-	public static void addMailFailures(List errors, Address[] errorAddrs, String resourceKey) {
+	public static void addMailFailures(List<SendMailErrorWrapper> errors, Exception ex, Address[] errorAddrs, String resourceKey) {
 		// Do we have anything to based the mail failures on?
 		int errorCount = ((null == errorAddrs) ? 0 : errorAddrs.length);
 		if ((null != errors) && (0 < errorCount) && MiscUtil.hasString(resourceKey)) {
@@ -252,10 +259,12 @@ public class EmailHelper {
 
 			// ...and log the error.
 			errors.add(
-				NLT.get(
-					resourceKey,
-					new String[]{s.toString()},
-					Locale.getDefault()));
+				new SendMailErrorWrapper(
+					ex,
+					NLT.get(
+						resourceKey,
+						new String[]{s.toString()},
+						Locale.getDefault())));
 		}
 	}
 
@@ -366,6 +375,7 @@ public class EmailHelper {
 	 * 
 	 * @return
 	 */
+	@SuppressWarnings("unchecked")
 	public static List<Locale> getTargetLocales(Map<Locale, List<InternetAddress>> ... localeMaps) {
 		// Allocate a List<Locale> to return.
 		List<Locale> reply = new ArrayList<Locale>();
@@ -725,7 +735,8 @@ public class EmailHelper {
 	 * 
 	 * @return
 	 */
-    public static List sendEmailToPublicLinkRecipients(AllModulesInjected bs, ShareItem shareItem, User currentUser, List<String> recipientEMAs, String viewUrl, String downloadUrl) {
+	@SuppressWarnings("unchecked")
+    public static List<SendMailErrorWrapper> sendEmailToPublicLinkRecipients(AllModulesInjected bs, ShareItem shareItem, User currentUser, List<String> recipientEMAs, String viewUrl, String downloadUrl) {
     	// Do we have everything required to send the email?
         if ((null == bs) || (null == currentUser) || (null == shareItem) || (!(MiscUtil.hasItems(recipientEMAs))) || (!(MiscUtil.hasString(downloadUrl)))) {
         	// No!  Log the error and bail.
@@ -740,7 +751,7 @@ public class EmailHelper {
         else sharedEntity = bs.getFolderModule().getEntry(null, entityId.getEntityId());
 
         // Does this user want to be BCC'd on all mail sent out?
-		List emailErrors = null;
+		List<SendMailErrorWrapper> emailErrors = null;
         try {
         	List<String> bccEMAs;
         	String bccEMA = currentUser.getBccEmailAddress();
@@ -762,7 +773,7 @@ public class EmailHelper {
             	downloadUrl);
 
             if (null != errorMap) {
-                emailErrors = ((List) errorMap.get(ObjectKeys.SENDMAIL_ERRORS));
+                emailErrors = ((List<SendMailErrorWrapper>) errorMap.get(ObjectKeys.SENDMAIL_ERRORS));
             }
         }
         catch (Exception ex) {
@@ -771,7 +782,7 @@ public class EmailHelper {
         return emailErrors;
     }
     
-    public static List sendEmailToPublicLinkRecipients(AllModulesInjected bs, ShareItem shareItem, User currentUser, String recipientEMA, String viewUrl, String downloadUrl) {
+    public static List<SendMailErrorWrapper> sendEmailToPublicLinkRecipients(AllModulesInjected bs, ShareItem shareItem, User currentUser, String recipientEMA, String viewUrl, String downloadUrl) {
     	// Do we have everything required to send the email?
         if (!(MiscUtil.hasString(recipientEMA))) {
         	// No!  Log the error and bail.
@@ -788,38 +799,24 @@ public class EmailHelper {
 	/**
 	 * ?
 	 * 
-	 * @param ami
+	 * @param bs
 	 * @param shareItem
 	 * @param isExternalUser
 	 * @param currentUser
 	 * 
 	 * @return
 	 */
-    public static List sendEmailToRecipient(
-            AllModulesInjected ami,
-            ShareItem shareItem,
-            boolean isExternalUser,
-            User currentUser )
-    {
-		List emailErrors;
-        Set<Long> principalIds;
-        Set<Long> teamIds;
-        Set<Long> bccIds;
-        String bccEmailAddress;
-        EntityIdentifier entityId;
-        DefinableEntity sharedEntity;
-
-        if ( ami == null || currentUser == null || shareItem == null )
-        {
-            m_logger.error( "invalid parameter in sendEmailToRecipient()" );
+	@SuppressWarnings("unchecked")
+    public static List<SendMailErrorWrapper> sendEmailToRecipient(AllModulesInjected bs, ShareItem shareItem, boolean isExternalUser, User currentUser) {
+        if ((null == bs) || (null == currentUser) || (null == shareItem)) {
+            m_logger.error("invalid parameter in sendEmailToRecipient()");
             return null;
         }
 
-        principalIds = new HashSet<Long>();
-        teamIds = new HashSet<Long>();
+        Set<Long> principalIds = new HashSet<Long>();
+        Set<Long> teamIds      = new HashSet<Long>();
 
-        switch ( shareItem.getRecipientType() )
-        {
+        switch (shareItem.getRecipientType()) {
             case group:
             case user:
                 principalIds.add( shareItem.getRecipientId() );
@@ -830,68 +827,58 @@ public class EmailHelper {
                 break;
 
             default:
-                m_logger.error( "unknow recipient type in sendEmailToRecipient()" );
+                m_logger.error("unknow recipient type in sendEmailToRecipient()");
                 break;
         }
 
-        entityId = shareItem.getSharedEntityIdentifier();
-        if ( entityId.getEntityType().isBinder() )
-            sharedEntity = ami.getBinderModule().getBinder( entityId.getEntityId() );
-        else
-            sharedEntity = ami.getFolderModule().getEntry( null, entityId.getEntityId() );
+        DefinableEntity sharedEntity;
+        EntityIdentifier entityId = shareItem.getSharedEntityIdentifier();
+        if (entityId.getEntityType().isBinder())
+             sharedEntity = bs.getBinderModule().getBinder(     entityId.getEntityId());
+        else sharedEntity = bs.getFolderModule().getEntry(null, entityId.getEntityId());
 
         // Does this user want to be BCC'd on all mail sent out?
-        bccEmailAddress = currentUser.getBccEmailAddress();
-        if ( MiscUtil.hasString( bccEmailAddress ) )
-        {
-            // Yes!
-            // Add them to a BCC list.
+        Set<Long> bccIds;
+        String bccEmailAddress = currentUser.getBccEmailAddress();
+        if (MiscUtil.hasString(bccEmailAddress)) {
+            // Yes!  Add them to a BCC list.
             bccIds = new HashSet<Long>();
-            bccIds.add( currentUser.getId() );
+            bccIds.add(currentUser.getId());
         }
-        else
-        {
+        else {
             bccIds = null;
         }
 
-        emailErrors = null;
-        try
-        {
+		List<SendMailErrorWrapper> emailErrors = null;
+        try {
             Map<String,Object> errorMap;
-
-            if ( isExternalUser &&
-                    getExternalUserAccountState( ami, shareItem.getRecipientId() ) == User.ExtProvState.initial &&
-                    !getExternalUserLoggedInWithOpenIdAtLeastOnce( ami, shareItem.getRecipientId()))
-            {
-                errorMap = null;
-
+            if (isExternalUser &&
+            		(getExternalUserAccountState(                 bs, shareItem.getRecipientId()) == User.ExtProvState.initial) &&
+            		!getExternalUserLoggedInWithOpenIdAtLeastOnce(bs, shareItem.getRecipientId())) {
                 errorMap = sendShareInviteToExternalUser(
-                        ami,
-                        shareItem,
-                        sharedEntity,
-                        shareItem.getRecipientId() );
+                    bs,
+                    shareItem,
+                    sharedEntity,
+                    shareItem.getRecipientId() );
             }
-            else
-            {
+            else {
                 errorMap = sendShareNotification(
-                        ami,
-                        shareItem,
-                        sharedEntity,
-                        principalIds,
-                        teamIds,
-                        null,	// null -> No stand alone email addresses.
-                        null,	// null -> No CC'ed users.
-                        bccIds );
+                    bs,
+                    shareItem,
+                    sharedEntity,
+                    principalIds,
+                    teamIds,
+                    null,	// null -> No stand alone email addresses.
+                    null,	// null -> No CC'ed users.
+                    bccIds );
             }
 
-            if ( errorMap != null )
-            {
-                emailErrors = ((List) errorMap.get( ObjectKeys.SENDMAIL_ERRORS ));
+            if (null != null) {
+                emailErrors = ((List<SendMailErrorWrapper>) errorMap.get(ObjectKeys.SENDMAIL_ERRORS));
             }
         }
-        catch ( Exception ex )
-        {
-            m_logger.error( "EmailHelper.sendShareNotification() threw an exception: " + ex.toString() );
+        catch (Exception ex) {
+            m_logger.error("EmailHelper.sendShareNotification() threw an exception: " + ex.toString());
         }
         return emailErrors;
     }
@@ -900,37 +887,24 @@ public class EmailHelper {
      * Return the state of the external user account.  Possible values are, initial, bound and verified.
      * This method will return null if the given user is not an external user.
      */
-    private static User.ExtProvState getExternalUserAccountState(
-            AllModulesInjected ami,
-            Long userId )
-    {
-        try
-        {
-            ArrayList<Long> ids;
-            SortedSet<Principal> principals;
-
-            ids = new ArrayList<Long>();
+    private static User.ExtProvState getExternalUserAccountState(AllModulesInjected bs, Long userId) {
+        try {
+            ArrayList<Long> ids = new ArrayList<Long>();
             ids.add( userId );
-            principals = ami.getProfileModule().getPrincipals( ids );
-            if ( principals != null && principals.size() == 1 )
-            {
-                Principal principal;
-
-                //
-                principal = principals.first();
-                if ( principal instanceof User )
-                {
-                    User user;
-
-                    user = (User) principal;
-                    if ( user.getIdentityInfo().isInternal() == false )
+            SortedSet<Principal> principals = bs.getProfileModule().getPrincipals( ids );
+            if ((null != principals) && (1 == principals.size())) {
+                Principal principal = principals.first();
+                if (principal instanceof User) {
+                    User user = ((User) principal);
+                    if (!(user.getIdentityInfo().isInternal())) {
                         return user.getExtProvState();
+                    }
                 }
             }
         }
-        catch ( AccessControlException acEx )
-        {
-            // Nothing to do
+        
+        catch (AccessControlException acEx) {
+            // Nothing to do.
         }
 
         return null;
@@ -940,37 +914,24 @@ public class EmailHelper {
      * Return true iff the user is an external user and has logged in using OpenID at least once.
      * It doesn't matter whether the user is self provisioned or not.
      */
-    private static boolean getExternalUserLoggedInWithOpenIdAtLeastOnce(
-            AllModulesInjected ami,
-            Long userId )
-    {
-        try
-        {
-            ArrayList<Long> ids;
-            SortedSet<Principal> principals;
-
-            ids = new ArrayList<Long>();
+    private static boolean getExternalUserLoggedInWithOpenIdAtLeastOnce(AllModulesInjected bs, Long userId) {
+        try {
+            ArrayList<Long> ids = new ArrayList<Long>();
             ids.add( userId );
-            principals = ami.getProfileModule().getPrincipals( ids );
-            if ( principals != null && principals.size() == 1 )
-            {
-                Principal principal;
-
-                //
-                principal = principals.first();
-                if ( principal instanceof User )
-                {
-                    User user;
-
-                    user = (User) principal;
-                    if ( user.getIdentityInfo().isInternal() == false )
+            SortedSet<Principal> principals = bs.getProfileModule().getPrincipals( ids );
+            if ((null != principals) && (1 == principals.size())) {
+                Principal principal = principals.first();
+                if (principal instanceof User) {
+                    User user = ((User) principal);
+                    if (!(user.getIdentityInfo().isInternal())) {
                         return user.getIdentityInfo().isFromOpenid();
+                    }
                 }
             }
         }
-        catch ( AccessControlException acEx )
-        {
-            // Nothing to do
+        
+        catch (AccessControlException acEx) {
+            // Nothing to do.
         }
 
         return false;
@@ -1068,6 +1029,7 @@ public class EmailHelper {
 	 * Validates that the Long's in a Set<Long> are valid principal
 	 * IDs.
 	 */
+	@SuppressWarnings("unchecked")
 	private static Set<Long> validatePrincipalIds(Set<Long> principalIds) {
 		Set<Long> reply = new HashSet<Long>();
 		if (MiscUtil.hasItems(principalIds)) {
