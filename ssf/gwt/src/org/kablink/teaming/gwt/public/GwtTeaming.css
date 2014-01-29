@@ -838,11 +838,14 @@
 	width: 300px;
 }
 
+.shareWithPublicDlg_content
+{
+	margin: 15px;
+}
 .shareWithPublicDlg_instructionsLabel
 {
-	font-size: .9em;
-	line-height: 1.5em;
-	margin-top: 12px;
+	font-size: 13px;
+	color: #666666;
 }
 
 .shareThisDlg_ListOfSharesParentTable
@@ -1330,7 +1333,7 @@ body, table td, select
 {
 	left: 10px;
 	position: absolute;
-	top: 12px;
+	top: 10px;
 	z-index: 1901;
 }
 
