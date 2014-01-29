@@ -1662,6 +1662,17 @@ public class GwtUIHelper {
 			allowShowPeople = SPropsUtil.getBoolean( "allow.show.people", true );
 			model.put( "allowShowPeople", allowShowPeople );
 		}
+		
+		// Add the default jits max age values
+		{
+			Long value;
+			
+			value = NetFolderHelper.getDefaultJitsResultsMaxAge();
+			model.put( "defaultJitsResultsMaxAge", value );
+			
+			value = NetFolderHelper.getDefaultJitsAclMaxAge();
+			model.put( "defaultJitsAclMaxAge", value );
+		}
 	}
 	
 	/**

@@ -56,6 +56,7 @@ import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.util.LongIdUtil;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.web.util.DefinitionHelper;
+import org.kablink.teaming.web.util.NetFolderHelper;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
 
@@ -1093,7 +1094,7 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
     
 	public long getJitsMaxAge() {
 		if(jitsMaxAge == null)
-			return SPropsUtil.getLong("nf.jits.max.age", 30000L);
+			return NetFolderHelper.getDefaultJitsResultsMaxAge();
 		else 
 			return jitsMaxAge.longValue();
 	}
@@ -1103,7 +1104,7 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
     
 	public long getJitsAclMaxAge() {
 		if(jitsAclMaxAge == null)
-			return SPropsUtil.getLong("nf.jits.acl.max.age", 60000L);
+			return NetFolderHelper.getDefaultJitsAclMaxAge();
 		else 
 			return jitsAclMaxAge.longValue();
 	}

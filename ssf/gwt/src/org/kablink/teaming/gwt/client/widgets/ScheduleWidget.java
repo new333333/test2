@@ -409,7 +409,7 @@ public class ScheduleWidget extends Composite
 		// Clear all controls
 		{
 			m_enableScheduleCkbox.setValue( false );
-			m_dailyRb.setValue( false );
+			m_dailyRb.setValue( true );
 			m_onSelectedDaysRb.setValue( false );
 			m_monCkbox.setValue( false );
 			m_tueCkbox.setValue( false );
@@ -418,11 +418,11 @@ public class ScheduleWidget extends Composite
 			m_friCkbox.setValue( false );
 			m_satCkbox.setValue( false );
 			m_sunCkbox.setValue( false );
-			m_atTimeRb.setValue( false );
+			m_atTimeRb.setValue( true );
 			m_atHoursListbox.setSelectedIndex( 0 );
 			m_atMinutesListbox.setSelectedIndex( 0 );
 			m_repeatEveryRb.setValue( false );
-			m_repeatEveryListbox.setSelectedIndex( 0 );
+			m_repeatEveryListbox.setSelectedIndex( m_repeatEveryListbox.getItemCount()-1 );
 		}
 		
 		// Do we have a schedule?
@@ -432,9 +432,15 @@ public class ScheduleWidget extends Composite
 			m_enableScheduleCkbox.setValue( schedule.getEnabled() );
 			
 			if ( schedule.getDayFrequency() == DayFrequency.EVERY_DAY )
+			{
 				m_dailyRb.setValue( true );
+				m_onSelectedDaysRb.setValue( false );
+			}
 			else
+			{
+				m_dailyRb.setValue( false );
 				m_onSelectedDaysRb.setValue( true );
+			}
 			
 			m_monCkbox.setValue( schedule.getOnMonday() );
 			m_tueCkbox.setValue( schedule.getOnTuesdy() );
@@ -452,6 +458,7 @@ public class ScheduleWidget extends Composite
 				String hoursStr;
 				
 				m_atTimeRb.setValue( true );
+				m_repeatEveryRb.setValue( false );
 
 				hour = schedule.getAtHours();
 				hoursStr = String.valueOf( hour );
@@ -473,6 +480,7 @@ public class ScheduleWidget extends Composite
 			{
 				int repeatEveryValue;
 
+				m_atTimeRb.setValue( false );
 				m_repeatEveryRb.setValue( true );
 				
 				repeatEveryValue = schedule.getRepeatEveryValue();

@@ -654,7 +654,7 @@ public void setExtFunctionMembershipInherited(boolean extFunctionMembershipInher
 	
 	public long getJitsWaitTimeout() {
 		if(jitsWaitTimeout == null)
-			return SPropsUtil.getLong("nf.jits.wait.timeout", 15000L);
+			return SPropsUtil.getLong("nf.jits.wait.timeout", 5000L);
 		return jitsWaitTimeout;
 	}
 	public void setJitsWaitTimeout(long jitsWaitTimeout) {
