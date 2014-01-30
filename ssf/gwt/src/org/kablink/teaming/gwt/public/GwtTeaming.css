@@ -4538,7 +4538,7 @@ td.datePickerMonth {
 	.vibe-whoHasAccessDlg-scrollPanelCell    {border-style: solid solid solid; border-width: 1px; border-color: #e0e0e0; vertical-align: top; width: 225px;}
 	.vibe-whoHasAccessDlg-scrollPanelGroups  {} 
 	.vibe-whoHasAccessDlg-scrollPanelHeader  {white-space: nowrap; font-weight: normal;} 
-	.vibe-whoHasAccessDlg-scrollPanelImg     {height: 25px; width: 25px; padding-right: 5px; padding-bottom: 1px; border-radius: 2px;}
+	.vibe-whoHasAccessDlg-scrollPanelImg     {height: 25px; width: 25px; margin-right: 5px; margin-bottom: 1px; border-radius: 2px;}
 	.vibe-whoHasAccessDlg-scrollPanelLimit   {background-color: #fff; height: 150px;}
 	.vibe-whoHasAccessDlg-scrollPanelUsers   {} 
 /* End:  Who Has Access dialog styles. */
