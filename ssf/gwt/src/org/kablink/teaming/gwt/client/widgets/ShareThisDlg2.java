@@ -474,10 +474,30 @@ public class ShareThisDlg2 extends DlgBox
 	private void addShareWithPublic()
 	{
 		GwtPublic publicEntity;
+		final ArrayList<GwtShareItem>  listOfShareItems;
 		
 		publicEntity = new GwtPublic();
 		publicEntity.setName( GwtTeaming.getMessages().publicName() );
-		addShare( publicEntity );
+		listOfShareItems = addShare( publicEntity );
+
+		if ( listOfShareItems != null && listOfShareItems.size() > 0 )
+		{
+			Scheduler.ScheduledCommand cmd;
+			
+			cmd = new Scheduler.ScheduledCommand()
+			{
+				@Override
+				public void execute()
+				{
+					InvokeEditShareRightsDlgEvent event;
+
+					// Fire an event to invoke the "edit share rights" dialog.
+					event = new InvokeEditShareRightsDlgEvent( listOfShareItems );
+					GwtTeaming.fireEvent( event );
+				}
+			};
+			Scheduler.get().scheduleDeferred( cmd );
+		}
 	}
 	
 	
