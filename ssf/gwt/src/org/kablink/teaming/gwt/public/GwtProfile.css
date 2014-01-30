@@ -16,16 +16,17 @@ position:relative;
 .column-head  {
 	position: relative;
 	color: #FFFFFF;
-	font-weight: bold;
+	font-weight: normal;
 	letter-spacing: 0.02em;
 	margin-bottom: 0.5em;
-	padding: 8px;
+	padding: 5px 8px;
 	cursor: pointer;
 	border-radius: 5px 5px 0px 0px;
 	-moz-border-radius: 5px 5px 0px 0px;
 	-webkit-border-radius: 5px 5px 0px 0px;
 	background-color: #81b2bd;
-	background-image: -webkit-linear-gradient(top, #abced1, #81b2bd) !important; 
+	background-image: none;
+/*	background-image: -webkit-linear-gradient(top, #abced1, #81b2bd) !important; 
 	background-image:    -moz-linear-gradient(top, #abced1, #81b2bd) !important; 
 	background-image:     -ms-linear-gradient(top, #abced1, #81b2bd) !important; 
 	background-image:      -o-linear-gradient(top, #abced1, #81b2bd) !important; 
@@ -78,7 +79,7 @@ margin-top:0.5em;
 
 .profile-title  {
 color: #505354;
-font-size: 2em;
+font-size: 20px;
 letter-spacing: 0.02em;
 }
 
@@ -88,7 +89,7 @@ text-decoration:none;
 }
 
 .sectionHeading {
-color:#5A9A98!important;
+color:#5691a6!important;
 font-size:1.1em;
 line-height:1.1em;
 padding:5px 0 5px 0;
