@@ -69,12 +69,13 @@ import org.kablink.teaming.gwt.client.util.ActivityStreamData.PagingData;
 import org.kablink.teaming.gwt.client.util.ActivityStreamData.SpecificFolderData;
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo.ActivityStream;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
-import org.kablink.teaming.gwt.client.widgets.ShareThisDlg;
 import org.kablink.teaming.gwt.client.widgets.ConfirmCallback;
 import org.kablink.teaming.gwt.client.widgets.ConfirmDlg.ConfirmDlgClient;
-import org.kablink.teaming.gwt.client.widgets.ShareThisDlg.ShareThisDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ConfirmDlg;
+import org.kablink.teaming.gwt.client.widgets.ShareThisDlg2;
+import org.kablink.teaming.gwt.client.widgets.ShareThisDlg2.ShareThisDlgMode;
 import org.kablink.teaming.gwt.client.widgets.TagThisDlg;
+import org.kablink.teaming.gwt.client.widgets.ShareThisDlg2.ShareThisDlg2Client;
 import org.kablink.teaming.gwt.client.widgets.TagThisDlg.TagThisDlgClient;
 import org.kablink.teaming.gwt.client.widgets.VibeDockLayoutPanel;
 import org.kablink.teaming.gwt.client.rpc.shared.ActivityStreamDataRpcResponseData;
@@ -194,7 +195,7 @@ public class ActivityStreamCtrl extends ResizeComposite
 	private ActionsPopupMenu m_actionsPopupMenu = null;
 	private ShowSettingPopupMenu m_showSettingPopupMenu = null;
 	private TagThisDlg m_tagThisDlg = null;
-	private ShareThisDlg m_shareThisDlg = null;
+	private ShareThisDlg2 m_shareThisDlg = null;
 	private ActivityStreamDataType m_showSetting = ActivityStreamDataType.OTHER;
 	private ActivityStreamCtrlUsage m_usage;	// How this ActivityStreamCtrl is being used.
 	private List<HandlerRegistration>	m_registeredEventHandlers;	// Event handlers that are currently registered.
@@ -1302,11 +1303,18 @@ public class ActivityStreamCtrl extends ResizeComposite
 					// ...simply show it again with the entry.
 					showShareThisDlg( entry );
 				}
-				
 				else
 				{
 					// Otherwise, we need to create it!
-					ShareThisDlg.createAsync(new ShareThisDlgClient()
+					ShareThisDlg2.createDlg(
+										new Boolean( false ),
+										new Boolean( true ),
+										0,
+										0,
+										null,
+										null,
+										ShareThisDlg2.ShareThisDlgMode.NORMAL,
+										new ShareThisDlg2Client()
 					{
 						@Override
 						public void onUnavailable()
@@ -1316,10 +1324,20 @@ public class ActivityStreamCtrl extends ResizeComposite
 						}// end onUnavailable()
 						
 						@Override
-						public void onSuccess( ShareThisDlg stDlg )
+						public void onSuccess( ShareThisDlg2 stDlg )
 						{
+							Scheduler.ScheduledCommand cmd;
+							
 							m_shareThisDlg = stDlg;
-							showShareThisDlg( entry );
+							cmd = new Scheduler.ScheduledCommand()
+							{
+								@Override
+								public void execute()
+								{
+									showShareThisDlg( entry );
+								}
+							};
+							Scheduler.get().scheduleDeferred( cmd );
 						}// end onSuccess()
 					});
 				}
@@ -1345,12 +1363,13 @@ public class ActivityStreamCtrl extends ResizeComposite
 	{
 		List<EntityId> entityIds = new ArrayList<EntityId>();
 		entityIds.add( entry.getEntryEntityId() );
-		ShareThisDlg.initAndShow(
-			m_shareThisDlg,
-			entry,	// Show the dialog relative to this.
-			GwtTeaming.getMessages().shareCaption(),
-			entry.getEntryTitle(),
-			entityIds );
+		ShareThisDlg2.initAndShow(
+							m_shareThisDlg,
+							entry,
+							GwtTeaming.getMessages().shareCaption(),
+							entityIds,
+							ShareThisDlgMode.NORMAL,
+							null );
 	}// end showShareThisDlg()
 	
 	

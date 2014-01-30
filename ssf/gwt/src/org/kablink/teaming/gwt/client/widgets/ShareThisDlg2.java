@@ -136,7 +136,6 @@ import com.google.gwt.view.client.DefaultSelectionEventManager;
 import com.google.gwt.view.client.ListDataProvider;
 import com.google.gwt.view.client.MultiSelectionModel;
 import com.google.web.bindery.event.shared.HandlerRegistration;
-
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 
 /**
@@ -3256,6 +3255,46 @@ public class ShareThisDlg2 extends DlgBox
 					dlg.showDlg( null );
 				else
 					dlg.showDlg();
+			}
+		} );
+	}
+
+	/**
+	 * Initialize and show the dialog through the GWT.runAsync() method to ensure
+	 * the executing code is in this split point.
+	 */
+	public static void initAndShow(
+		final ShareThisDlg2 dlg,
+		final UIObject target,
+		final String caption,
+		final List<EntityId> entityIds,
+		final ShareThisDlgMode mode,
+		final ShareThisDlg2Client stDlgClient )
+	{
+		GWT.runAsync( ShareThisDlg2.class, new RunAsyncCallback()
+		{
+			@Override
+			public void onFailure( Throwable reason )
+			{
+				Window.alert( GwtTeaming.getMessages().codeSplitFailure_ShareThisDlg() );
+				if ( stDlgClient != null )
+				{
+					stDlgClient.onUnavailable();
+				}
+			}
+
+			@Override
+			public void onSuccess()
+			{
+				dlg.init(
+						caption,
+						entityIds,
+						mode );
+				
+				if ( target == null )
+					dlg.show( true );
+				else
+					dlg.showRelativeToTarget( target );
 			}
 		} );
 	}
