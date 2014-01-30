@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -42,7 +42,6 @@ import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
-import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -60,6 +59,8 @@ import com.google.gwt.user.client.ui.Widget;
 public class ProfileAttributeWidget  {
 	private Widget widget;
 	private boolean isEditMode = false;
+	
+	private final static String	EMPTY_ATTRIBUTE	= "";	// 20140120 (DRF) Was:  "..";
 
 	/*
 	 * Note that the class constructor is private to facilitate code
@@ -74,7 +75,7 @@ public class ProfileAttributeWidget  {
 	
 	private void createWidget(ProfileAttribute attr){
 		
-		widget = new Label("..");
+		widget = new Label(EMPTY_ATTRIBUTE);
 		
 		if(isEditMode){
 			if(attr.getValue() != null) {
@@ -90,22 +91,24 @@ public class ProfileAttributeWidget  {
 			if(attr.getDisplayType()!= null && attr.getDisplayType().equals("email") ) {
 				if(attr.getValue() != null) {
 					String url = "mailto:"+ attr.getValue().toString();
-					String val = "..";
+					String val = EMPTY_ATTRIBUTE;
 					if(attr.getValue() != null){
 						if(GwtClientHelper.hasString(attr.getValue().toString())) {
 							val = attr.getValue().toString();
 						}
 					}
-					widget = new Anchor(val, url);
+					if(hasAttrValue(val)) {
+						widget = new Anchor(val, url);
+						widget.addStyleName("profile-value");
+						widget.addStyleName("profile-anchor");
+					}
 				} 
-				widget.addStyleName("profile-value");
-				widget.addStyleName("profile-anchor");
 			} else if (attr.getDataName().equals("labeledUri")) {
-				String label = "..";
+				String label = EMPTY_ATTRIBUTE;
 				String uri = "";
 				if(attr.getValue() != null) {
 					String labeledUri = attr.getValue().toString();
-					if(GwtClientHelper.hasString(labeledUri)){
+					if(hasAttrValue(labeledUri)){
 						int index = hasLabel(labeledUri);
 						if(index > -1){
 							label = labeledUri.substring(0, index);
@@ -114,16 +117,16 @@ public class ProfileAttributeWidget  {
 							label = labeledUri;
 							uri = appendUrlToHttp(labeledUri);
 						}
+						widget = new Anchor(label, uri, "_blank");
+						widget.addStyleName("profile-value");
+						widget.addStyleName("profile-anchor");
 					}
-					widget = new Anchor(label, uri, "_blank");
 				} 
-				widget.addStyleName("profile-value");
-				widget.addStyleName("profile-anchor");
 			} else if (attr.getDataName().equals("skypeId")) {
-				String label = "..";
+				String label = EMPTY_ATTRIBUTE;
 				if(attr.getValue() != null) {
 					label = attr.getValue().toString();
-					if(GwtClientHelper.hasString(label)){						
+					if(hasAttrValue(label)){						
 						String pathToJs;
 						String pathToImage;
 						RequestInfo ri = GwtClientHelper.getRequestInfo();
@@ -145,10 +148,10 @@ public class ProfileAttributeWidget  {
 							"<a href=\"skype:" + label + "?call\"><img src=\"" + skypeImage + "\" style=\"border: none;\" width=\"70\" height=\"23\" alt=\"" + skypeAlt + "\" title=\"" + skypeAlt + "\" /></a>";
 						
 						widget = new HTML(html);
+						widget.addStyleName("profile-value");
+						widget.addStyleName("profile-anchor");
 					}
 				} 
-				widget.addStyleName("profile-value");
-				widget.addStyleName("profile-anchor");
 			} else {
 				int type = attr.getValueType();
 				switch(type){
@@ -158,7 +161,7 @@ public class ProfileAttributeWidget  {
 					case ProfileAttribute.DATE:
 						if(attr.getValue() != null) {
 							String s = attr.getValue().toString();
-							if(GwtClientHelper.hasString(s)){
+							if(hasAttrValue(s)){
 								widget = new HTML(s);
 							}
 						}
@@ -186,7 +189,7 @@ public class ProfileAttributeWidget  {
 											anchor.getElement().appendChild(img.getElement());
 										}
 									} else {
-										String val = "..";
+										String val = EMPTY_ATTRIBUTE;
 										if(valItem.getValue() != null) {
 											if(GwtClientHelper.hasString(valItem.getValue().toString())){
 												val = valItem.getValue().toString();
@@ -200,7 +203,7 @@ public class ProfileAttributeWidget  {
 						} 
 						break;
 					default: 
-						widget = new Label("..");
+						widget = new Label(EMPTY_ATTRIBUTE);
 						break;
 				}
 
@@ -234,6 +237,12 @@ public class ProfileAttributeWidget  {
 		return urlString;
 	}
 
+	/*
+	 */
+	private static boolean hasAttrValue(String val) {
+		return GwtClientHelper.hasString(val) && (!(val.equals(EMPTY_ATTRIBUTE)));
+	}
+	
 	/**
 	 * 
 	 */

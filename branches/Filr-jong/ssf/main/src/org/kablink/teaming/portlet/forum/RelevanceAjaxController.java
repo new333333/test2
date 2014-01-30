@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -46,6 +46,7 @@ import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
 import org.dom4j.Element;
+
 import org.kablink.teaming.ConfigurationException;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
@@ -56,6 +57,7 @@ import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.User;
+import org.kablink.teaming.module.admin.SendMailErrorWrapper;
 import org.kablink.teaming.module.mail.MailSentStatus;
 import org.kablink.teaming.module.shared.AccessUtils;
 import org.kablink.teaming.security.AccessControlException;
@@ -72,16 +74,16 @@ import org.kablink.teaming.web.util.PermaLinkUtil;
 import org.kablink.teaming.web.util.PortletRequestUtils;
 import org.kablink.teaming.web.util.RelevanceDashboardHelper;
 import org.kablink.teaming.web.util.WebHelper;
+
 import org.springframework.web.portlet.ModelAndView;
 
 /**
+ * ?
+ * 
  * @author Peter Hurley
- *
  */
 @SuppressWarnings("unchecked")
 public class RelevanceAjaxController  extends SAbstractControllerRetry {
-	
-	
 	//caller will retry on OptimisiticLockExceptions
 	@Override
 	public void handleActionRequestWithRetry(ActionRequest request, ActionResponse response) throws Exception {
@@ -275,10 +277,11 @@ public class RelevanceAjaxController  extends SAbstractControllerRetry {
 				MailSentStatus result = (MailSentStatus)status.get(ObjectKeys.SENDMAIL_STATUS);
 				
 				// If there were any errors from this send...
-				List errors = (List)status.get(ObjectKeys.SENDMAIL_ERRORS);
+				List<SendMailErrorWrapper> errors = ((List<SendMailErrorWrapper>) status.get(ObjectKeys.SENDMAIL_ERRORS));
 				if ((null != errors) && (!(errors.isEmpty()))) {
 					// ...copy them into the combined errors list.
-					for (Object error:  errors) {
+					List<String> errorStrings = SendMailErrorWrapper.getErrorMessages(errors);
+					for (Object error:  errorStrings) {
 						combinedErrors.add(error);
 					}
 				}
@@ -421,5 +424,4 @@ public class RelevanceAjaxController  extends SAbstractControllerRetry {
 		if (binderId != null) model.put(WebKeys.BINDER_ID, binderId.toString());
 		RelevanceDashboardHelper.setupRelevanceDashboardPageBeans(bs, binderId, type, model);
 	}
-	
 }

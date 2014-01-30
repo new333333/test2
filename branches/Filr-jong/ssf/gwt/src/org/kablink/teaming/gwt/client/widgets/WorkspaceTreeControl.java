@@ -43,6 +43,7 @@ import org.kablink.teaming.gwt.client.event.ChangeContextEvent;
 import org.kablink.teaming.gwt.client.event.ContextChangedEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.GetSidebarCollectionEvent;
+import org.kablink.teaming.gwt.client.event.GetSidebarCollectionEvent.CollectionCallback;
 import org.kablink.teaming.gwt.client.event.MenuLoadedEvent;
 import org.kablink.teaming.gwt.client.event.RefreshSidebarTreeEvent;
 import org.kablink.teaming.gwt.client.event.RerootSidebarTreeEvent;
@@ -60,6 +61,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo;
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo.ActivityStream;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
+import org.kablink.teaming.gwt.client.util.CollectionType;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
@@ -488,7 +490,10 @@ public class WorkspaceTreeControl extends ResizeComposite
 		// If this is a sidebar tree...
 		if (isSidebarTree()) {
 			// ...tell it to return its collection.
-			m_treeDisplay.getSidebarCollection(event.getCollectionCallback());
+			CollectionCallback cb = event.getCollectionCallback();
+			if (null == m_treeDisplay)
+			     cb.collection(CollectionType.NOT_A_COLLECTION);
+			else m_treeDisplay.getSidebarCollection(cb);
 		}
 	}
 	

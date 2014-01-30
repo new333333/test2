@@ -116,7 +116,6 @@ import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Anchor;
-import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlexTable.FlexCellFormatter;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -137,7 +136,6 @@ import com.google.gwt.view.client.DefaultSelectionEventManager;
 import com.google.gwt.view.client.ListDataProvider;
 import com.google.gwt.view.client.MultiSelectionModel;
 import com.google.web.bindery.event.shared.HandlerRegistration;
-
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 
 /**
@@ -167,7 +165,6 @@ public class ShareThisDlg2 extends DlgBox
 	private Label m_headerPathLabel;
 	private FindCtrl m_findCtrl;
 	private FindCtrl m_manageSharesFindCtrl;
-	private CheckBox m_notifyCheckbox;
 	private Image m_addExternalUserImg;
 	private FlowPanel m_mainPanel;
 	private FlexTable m_addShareTable;
@@ -592,6 +589,7 @@ public class ShareThisDlg2 extends DlgBox
 		m_mainPanel = new FlowPanel();
 		m_mainPanel.addStyleName( "teamingDlgBoxContent" );
 		m_mainPanel.addStyleName( "dlgContent" );
+		m_mainPanel.addStyleName( "teamingDlgBoxContentOverride" );
 
 		return m_mainPanel;
 	}
@@ -602,7 +600,7 @@ public class ShareThisDlg2 extends DlgBox
 	private void createShareControls()
 	{
 		GwtTeamingMessages messages;
-		int tableWidth = 300;
+		int tableWidth = 330;
 		
 		messages = GwtTeaming.getMessages();
 		
@@ -699,6 +697,7 @@ public class ShareThisDlg2 extends DlgBox
 			}
 
 			findTable = new FlexTable();
+			findTable.addStyleName( "shareThisDlg_findTable" );
 			rowFormatter = findTable.getRowFormatter();
 			rowFormatter.setVerticalAlign( 0, HasVerticalAlignment.ALIGN_TOP );
 			m_findCtrl.setIsSendingEmail( true );
@@ -728,6 +727,10 @@ public class ShareThisDlg2 extends DlgBox
 				imageResource = GwtTeaming.getImageBundle().add_btn();
 				m_addExternalUserImg = new Image( imageResource );
 				m_addExternalUserImg.addStyleName( "cursorPointer" );
+				
+				// this style hides the + icon
+				m_addExternalUserImg.addStyleName( "displayNone" ); 
+				
 				m_addExternalUserImg.getElement().setAttribute( "title", messages.shareDlg_addExternalUserTitle() );
 				findTable.setWidget( 0, 1, m_addExternalUserImg );
 				findCellFormatter = findTable.getFlexCellFormatter();
@@ -793,65 +796,6 @@ public class ShareThisDlg2 extends DlgBox
 			}
 		}
 		
-		// Create a menu
-		{
-			InlineLabel label;
-			FlowPanel menuPanel;
-			
-			menuPanel = new FlowPanel();
-			menuPanel.addStyleName( "shareDlg_MenuPanel" );
-			menuPanel.addStyleName( "marginTop10px" );
-			menuPanel.getElement().getStyle().setWidth( tableWidth-6, Unit.PX );
-			
-			// Add an "Edit" button.
-			label = new InlineLabel( messages.shareDlg_editButton() );
-			label.addStyleName( "shareDlg_Btn" );
-			label.addClickHandler( new ClickHandler()
-			{
-				@Override
-				public void onClick( ClickEvent event )
-				{
-					Scheduler.ScheduledCommand cmd;
-					
-					cmd = new Scheduler.ScheduledCommand()
-					{
-						@Override
-						public void execute()
-						{
-							editSelectedShares();
-						}
-					};
-					Scheduler.get().scheduleDeferred( cmd );
-				}
-			} );
-			menuPanel.add( label );
-			
-			// Add a "Delete" button.
-			label = new InlineLabel( messages.shareDlg_deleteButton() );
-			label.addStyleName( "shareDlg_Btn" );
-			label.addClickHandler( new ClickHandler()
-			{
-				@Override
-				public void onClick( ClickEvent event )
-				{
-					Scheduler.ScheduledCommand cmd;
-					
-					cmd = new Scheduler.ScheduledCommand()
-					{
-						@Override
-						public void execute()
-						{
-							deleteSelectedShares();
-						}
-					};
-					Scheduler.get().scheduleDeferred( cmd );
-				}
-			} );
-			menuPanel.add( label );
-			
-			m_mainPanel.add( menuPanel );
-		}
-		
 		// Create a table to hold the list of shares
 		{
 			CellTable.Resources cellTableResources;
@@ -860,6 +804,7 @@ public class ShareThisDlg2 extends DlgBox
 			cellTableResources = GWT.create( VibeCellTable.VibeCellTableResources.class );
 			m_shareTable = new CellTable<GwtShareItem>( 20, cellTableResources );
 			m_shareTable.setWidth( String.valueOf( tableWidth ) + "px" );
+			m_shareTable.addStyleName( "shareThisDlg_ListOfSharesTable" );
 			
 		    // Add a selection model so we can select shares.
 		    m_selectionModel = new MultiSelectionModel<GwtShareItem>();
@@ -978,12 +923,71 @@ public class ShareThisDlg2 extends DlgBox
 				FlowPanel leftSubPanel;
 			
 				leftPanel = new VerticalPanel();
+				leftPanel.addStyleName( "shareThisDlg_ListOfSharesParentTable" );
 				
 				// Put the table that holds the list of recipients into a scrollable div
 				leftSubPanel = new FlowPanel();
 				leftSubPanel.addStyleName( "shareThisDlg_ListOfSharesPanel" );
 				leftSubPanel.add( m_shareTable );
 				leftPanel.add( leftSubPanel );
+
+				// Create a menu
+				{
+					InlineLabel label;
+					FlowPanel menuPanel;
+					
+					menuPanel = new FlowPanel();
+					menuPanel.addStyleName( "shareDlg_MenuPanel" );
+					menuPanel.addStyleName( "shareDlg_MenuPanelOverride" );
+					
+					// Add an "Edit" button.
+					label = new InlineLabel( messages.shareDlg_editButton() );
+					label.addStyleName( "shareDlg_Btn" );
+					label.addClickHandler( new ClickHandler()
+					{
+						@Override
+						public void onClick( ClickEvent event )
+						{
+							Scheduler.ScheduledCommand cmd;
+							
+							cmd = new Scheduler.ScheduledCommand()
+							{
+								@Override
+								public void execute()
+								{
+									editSelectedShares();
+								}
+							};
+							Scheduler.get().scheduleDeferred( cmd );
+						}
+					} );
+					menuPanel.add( label );
+					
+					// Add a "Delete" button.
+					label = new InlineLabel( messages.shareDlg_deleteButton() );
+					label.addStyleName( "shareDlg_Btn" );
+					label.addClickHandler( new ClickHandler()
+					{
+						@Override
+						public void onClick( ClickEvent event )
+						{
+							Scheduler.ScheduledCommand cmd;
+							
+							cmd = new Scheduler.ScheduledCommand()
+							{
+								@Override
+								public void execute()
+								{
+									deleteSelectedShares();
+								}
+							};
+							Scheduler.get().scheduleDeferred( cmd );
+						}
+					} );
+					menuPanel.add( label );
+					
+					leftPanel.add( menuPanel );
+				}
 
 				// Create a pager
 				m_pager = new VibeSimplePager();
@@ -997,8 +1001,8 @@ public class ShareThisDlg2 extends DlgBox
 				{
 					m_editSharePanel = new FlowPanel();
 					m_editSharePanel.addStyleName( "shareThisDlg_EditSharePanel" );
-					m_editSharePanel.setWidth( "400px" );
-					m_editSharePanel.setHeight( "360px" );
+				//	m_editSharePanel.setWidth( "400px" );
+				//	m_editSharePanel.setHeight( "360px" );
 					
 					// Create the Edit Share widget
 					m_editShareWidget = new EditShareWidget();
@@ -1047,86 +1051,86 @@ public class ShareThisDlg2 extends DlgBox
 			m_headerPathLabel = new Label();
 			m_headerPathLabel.addStyleName( "shareThisDlg_HeaderPathLabel" );
 			namePanel.add( m_headerPathLabel );
-			
+		
+			// Add the controls needed to select how to manage share items.
+			{
+				FlexTable table;
+				
+				m_manageShareItemsPanel = new FlowPanel();
+				m_manageShareItemsPanel.addStyleName( "shareThisDlg_ManageSharesPanel" );
+				
+				table = new FlexTable();
+				table.setText( 0, 0, messages.shareDlg_findShareItemsBy() );
+				
+				m_manageShareItemsPanel.add( table );
+				
+				// Create a listbox that will hold the options of how to find share items.
+				{
+					m_findByListbox = new ListBox( false );
+					m_findByListbox.setVisibleItemCount( 1 );
+					
+					m_findByListbox.addItem( messages.shareDlg_findSharesByHint(), FIND_SHARES_BY_HINT );
+					m_findByListbox.addItem( messages.shareDlg_findSharesByUser(), FIND_SHARES_BY_USER );
+					m_findByListbox.addItem( messages.shareDlg_findSharesByFile(), FIND_SHARES_BY_FILE );
+					m_findByListbox.addItem( messages.shareDlg_findSharesByFolder(), FIND_SHARES_BY_FOLDER );
+					m_findByListbox.addItem( messages.shareDlg_findAllShares(), FIND_ALL_SHARES );
+					m_findByListbox.setSelectedIndex( 0 );
+					
+					m_findByListbox.addChangeHandler( new ChangeHandler()
+					{
+						@Override
+						public void onChange( ChangeEvent event )
+						{
+							Scheduler.ScheduledCommand cmd;
+							
+							cmd = new Scheduler.ScheduledCommand()
+							{
+								@Override
+								public void execute()
+								{
+									int selectedIndex;
+								
+									selectedIndex = m_findByListbox.getSelectedIndex();
+									if ( selectedIndex >= 0 )
+									{
+										handleFindSharesBySelectionChanged( m_findByListbox.getValue( selectedIndex ) );
+										
+										// Since something was selected, remove the hint.
+										if ( m_findByListbox.getValue( 0 ).equalsIgnoreCase( FIND_SHARES_BY_HINT ) )
+											m_findByListbox.removeItem( 0 );
+									}
+								}
+							};
+							Scheduler.get().scheduleDeferred( cmd );
+						}
+					} );
+	
+					table.setWidget( 0, 1, m_findByListbox );
+	
+					// Create a table that will hold the controls needed to search for a user/file/folder
+					{
+						FlexTable table2;
+						
+						table2 = new FlexTable();
+						table.setWidget( 0, 2, table2 );
+						
+						m_manageSharesFindCtrlLabel = new InlineLabel( "abc" );
+						m_manageSharesFindCtrlLabel.addStyleName( "marginleft2" );
+						table2.setWidget( 0, 0, m_manageSharesFindCtrlLabel );
+						table2.setWidget( 0, 1, m_manageSharesFindCtrl );
+						
+						m_manageSharesFindCtrl.setContainerWidget( m_manageShareItemsPanel );
+						m_manageSharesFindCtrl.setVisible( false );
+						m_manageSharesFindCtrlLabel.setVisible( false );
+					}
+				}
+
+				headerPanel.add( m_manageShareItemsPanel );
+			}
+
 			headerPanel.add( namePanel );
 			
 			m_mainPanel.add( headerPanel );
-		}
-		
-		// Add the controls needed to select how to manage share items.
-		{
-			FlexTable table;
-			
-			m_manageShareItemsPanel = new FlowPanel();
-			m_manageShareItemsPanel.addStyleName( "shareThisDlg_ManageSharesPanel" );
-			
-			table = new FlexTable();
-			table.setText( 0, 0, messages.shareDlg_findShareItemsBy() );
-			
-			m_manageShareItemsPanel.add( table );
-			
-			// Create a listbox that will hold the options of how to find share items.
-			{
-				m_findByListbox = new ListBox( false );
-				m_findByListbox.setVisibleItemCount( 1 );
-				
-				m_findByListbox.addItem( messages.shareDlg_findSharesByHint(), FIND_SHARES_BY_HINT );
-				m_findByListbox.addItem( messages.shareDlg_findSharesByUser(), FIND_SHARES_BY_USER );
-				m_findByListbox.addItem( messages.shareDlg_findSharesByFile(), FIND_SHARES_BY_FILE );
-				m_findByListbox.addItem( messages.shareDlg_findSharesByFolder(), FIND_SHARES_BY_FOLDER );
-				m_findByListbox.addItem( messages.shareDlg_findAllShares(), FIND_ALL_SHARES );
-				m_findByListbox.setSelectedIndex( 0 );
-				
-				m_findByListbox.addChangeHandler( new ChangeHandler()
-				{
-					@Override
-					public void onChange( ChangeEvent event )
-					{
-						Scheduler.ScheduledCommand cmd;
-						
-						cmd = new Scheduler.ScheduledCommand()
-						{
-							@Override
-							public void execute()
-							{
-								int selectedIndex;
-							
-								selectedIndex = m_findByListbox.getSelectedIndex();
-								if ( selectedIndex >= 0 )
-								{
-									handleFindSharesBySelectionChanged( m_findByListbox.getValue( selectedIndex ) );
-									
-									// Since something was selected, remove the hint.
-									if ( m_findByListbox.getValue( 0 ).equalsIgnoreCase( FIND_SHARES_BY_HINT ) )
-										m_findByListbox.removeItem( 0 );
-								}
-							}
-						};
-						Scheduler.get().scheduleDeferred( cmd );
-					}
-				} );
-
-				table.setWidget( 0, 1, m_findByListbox );
-
-				// Create a table that will hold the controls needed to search for a user/file/folder
-				{
-					FlexTable table2;
-					
-					table2 = new FlexTable();
-					table.setWidget( 0, 2, table2 );
-					
-					m_manageSharesFindCtrlLabel = new InlineLabel( "abc" );
-					m_manageSharesFindCtrlLabel.addStyleName( "marginleft2" );
-					table2.setWidget( 0, 0, m_manageSharesFindCtrlLabel );
-					table2.setWidget( 0, 1, m_manageSharesFindCtrl );
-					
-					m_manageSharesFindCtrl.setContainerWidget( m_manageShareItemsPanel );
-					m_manageSharesFindCtrl.setVisible( false );
-					m_manageSharesFindCtrlLabel.setVisible( false );
-				}
-			}
-			
-			m_mainPanel.add( m_manageShareItemsPanel );
 		}
 		
 		// Add the controls needed for sharing.
@@ -1134,11 +1138,13 @@ public class ShareThisDlg2 extends DlgBox
 		
 		// Create the "notify" controls
 		{
+			InlineLabel label;
+			
 			tmpPanel = new FlowPanel();
-			tmpPanel.addStyleName( "marginTop5px" );
-			m_notifyCheckbox = new CheckBox( messages.shareDlg_notifyLabel() );
-			m_notifyCheckbox.setValue( true );
-			tmpPanel.add( m_notifyCheckbox );
+			tmpPanel.addStyleName( "shareThisDlg_Notify" );
+			
+			label = new InlineLabel( messages.shareDlg_notifyLabel() );
+			tmpPanel.add( label );
 			
 			m_sendToWidget = new ShareSendToWidget();
 			m_sendToWidget.init( SendToValue.ONLY_MODIFIED_RECIPIENTS );
@@ -1174,6 +1180,13 @@ public class ShareThisDlg2 extends DlgBox
 		else
 		{
 			Window.alert( GwtTeaming.getMessages().shareDlg_selectSharesToDelete() );
+		}
+		
+		// Is the "edit share" widget visible?
+		if ( m_editShareWidget != null && m_editShareWidget.isVisible() )
+		{
+			// Yes, close it.
+			m_editShareWidget.setVisible( false );
 		}
 	}
 	
@@ -1394,6 +1407,14 @@ public class ShareThisDlg2 extends DlgBox
 			};
 		}
 
+		// Is the "edit share" widget visible?
+		if ( m_editShareWidget != null && m_editShareWidget.isVisible() )
+		{
+			// Yes
+			// The user may not have hit apply.  Tell the "edit share" widget to save its changes
+			m_editShareWidget.saveSettings();
+		}
+		
 		// Disable the Ok button.
 		showStatusMsg( GwtTeaming.getMessages().shareDlg_savingShareInfo() );
 		setOkEnabled( false );
@@ -1405,7 +1426,10 @@ public class ShareThisDlg2 extends DlgBox
 		sharingData.setListOfToBeDeletedShareItems( m_sharingInfo.getListOfToBeDeletedShareItems() );
 		
 		// Get who should be notified.
-		sharingData.setNotifyRecipients( m_notifyCheckbox.getValue() );
+		if ( m_sendToWidget.getSendToValue() == SendToValue.NO_ONE )
+			sharingData.setNotifyRecipients( false );
+		else
+			sharingData.setNotifyRecipients( true );
 		sharingData.setSendToValue( m_sendToWidget.getSendToValue() );
 		
 		// Issue an ajax request to share the entities.
@@ -2190,13 +2214,15 @@ public class ShareThisDlg2 extends DlgBox
 						if ( retValue == true )
 						{
 							Scheduler.ScheduledCommand cmd;
+							final ArrayList<GwtShareItem> listOfShareItems;
 							
+							listOfShareItems = m_editShareWidget.getListOfShareItems();
 							cmd = new Scheduler.ScheduledCommand()
 							{
 								@Override
 								public void execute() 
 								{
-									refreshShareInfoUI( m_editShareWidget.getListOfShareItems() );
+									refreshShareInfoUI( listOfShareItems );
 								}
 							};
 							Scheduler.get().scheduleDeferred( cmd );
@@ -2208,6 +2234,14 @@ public class ShareThisDlg2 extends DlgBox
 			};
 		}
 
+		// Is the "edit share" widget visible?
+		if ( m_editShareWidget != null && m_editShareWidget.isVisible() )
+		{
+			// Yes
+			// Tell the "edit share" widget to save its changes
+			m_editShareWidget.saveSettings();
+		}
+		
 		ShareRights highestRightsPossible;
 		GwtShareItem shareItem;
 		boolean recipientIsExternal = false;
@@ -3221,6 +3255,46 @@ public class ShareThisDlg2 extends DlgBox
 					dlg.showDlg( null );
 				else
 					dlg.showDlg();
+			}
+		} );
+	}
+
+	/**
+	 * Initialize and show the dialog through the GWT.runAsync() method to ensure
+	 * the executing code is in this split point.
+	 */
+	public static void initAndShow(
+		final ShareThisDlg2 dlg,
+		final UIObject target,
+		final String caption,
+		final List<EntityId> entityIds,
+		final ShareThisDlgMode mode,
+		final ShareThisDlg2Client stDlgClient )
+	{
+		GWT.runAsync( ShareThisDlg2.class, new RunAsyncCallback()
+		{
+			@Override
+			public void onFailure( Throwable reason )
+			{
+				Window.alert( GwtTeaming.getMessages().codeSplitFailure_ShareThisDlg() );
+				if ( stDlgClient != null )
+				{
+					stDlgClient.onUnavailable();
+				}
+			}
+
+			@Override
+			public void onSuccess()
+			{
+				dlg.init(
+						caption,
+						entityIds,
+						mode );
+				
+				if ( target == null )
+					dlg.show( true );
+				else
+					dlg.showRelativeToTarget( target );
 			}
 		} );
 	}

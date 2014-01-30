@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -45,6 +45,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.util.ShareItemSelectSpec;
 import org.kablink.teaming.domain.EntityIdentifier;
@@ -94,6 +95,7 @@ import org.kablink.teaming.gwt.client.util.GwtRecipientType;
 import org.kablink.teaming.gwt.client.util.GwtShareItem;
 import org.kablink.teaming.gwt.client.util.GwtShareLists;
 import org.kablink.teaming.gwt.client.util.GwtSharingInfo;
+import org.kablink.teaming.gwt.client.util.PerUserShareRightsInfo;
 import org.kablink.teaming.gwt.client.util.PublicLinkInfo;
 import org.kablink.teaming.gwt.client.util.ShareExpirationValue;
 import org.kablink.teaming.gwt.client.util.ShareExpirationValue.ShareExpirationType;
@@ -122,6 +124,7 @@ import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.EmailHelper;
 import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.WebUrlUtil;
+
 import org.springframework.mail.MailSendException;
 
 /**
@@ -129,15 +132,14 @@ import org.springframework.mail.MailSendException;
  *
  * @author jwootton@novell.com
  */
+@SuppressWarnings("unchecked")
 public class GwtShareHelper 
 {
-	protected static Log m_logger = LogFactory.getLog( GwtShareHelper.class );
-	private static long MILLISEC_IN_A_DAY = 86400000;
-	private static AccessControlManager m_accessControlManager = null;
-
+	protected static Log					m_logger               = LogFactory.getLog( GwtShareHelper.class );
+	private   static long					MILLISEC_IN_A_DAY      = 86400000;
+	private   static AccessControlManager	m_accessControlManager = null;
 	
 	/**
-	 * 
 	 */
 	public enum ShareOperation
 	{
@@ -147,9 +149,11 @@ public class GwtShareHelper
 		SHARE_WITH_PUBLIC,
 	}
 	
-	/**
-	 * Compare the 2 RightSet objects to see if they have the same rights
+	/*
+	 * Compare the 2 RightSet objects to see if they have the same
+	 * rights.
 	 */
+	@SuppressWarnings("unused")
 	private static boolean areRightSetsEqual( RightSet rightSet1, RightSet rightSet2 )
 	{
 		if ( rightSet1 == null || rightSet2 == null )
@@ -161,8 +165,9 @@ public class GwtShareHelper
 		return rightSet1.equals( rightSet2 );
 	}
 	
-	/**
-	 * Compare the 2 RightSet objects to see if they have the same or greater rights
+	/*
+	 * Compare the 2 RightSet objects to see if they have the same or
+	 * greater rights.
 	 */
 	private static boolean areRightSetsGreaterOrEqual( RightSet rightSet1, RightSet rightSet2 )
 	{
@@ -177,6 +182,10 @@ public class GwtShareHelper
 	
 	/**
 	 * See if the user has rights to share with the "all external users" group.
+	 * 
+	 * @param ami
+	 * 
+	 * @return
 	 */
 	public static boolean canShareWithAllExternalUsersGroup( AllModulesInjected ami )
 	{
@@ -209,6 +218,10 @@ public class GwtShareHelper
 	
 	/**
 	 * See if the user has rights to share with the "all internal users" group.
+	 * 
+	 * @param ami
+	 * 
+	 * @return
 	 */
 	public static boolean canShareWithAllInternalUsersGroup( AllModulesInjected ami )
 	{
@@ -241,6 +254,12 @@ public class GwtShareHelper
 	
 	/**
 	 * See if the user can share the given entity
+	 * 
+	 * @param ami
+	 * @param entityid
+	 * @param shareOperation
+	 * 
+	 * @return
 	 */
 	public static boolean canShareWith(
 		AllModulesInjected ami,
@@ -339,6 +358,12 @@ public class GwtShareHelper
 	
 	/**
 	 * See if the user can share the given entities for the given operation
+	 * 
+	 * @param ami
+	 * @param listOfEntityids
+	 * @param shareOperation
+	 * 
+	 * @return
 	 */
 	public static boolean canShareWith(
 		AllModulesInjected ami,
@@ -368,6 +393,11 @@ public class GwtShareHelper
 			
 	/**
 	 * See if the user can share the given entities with external users.
+	 * 
+	 * @param ami
+	 * @param listOfEntityids
+	 * 
+	 * @return
 	 */
 	public static boolean canShareWithExternalUsers (
 		AllModulesInjected ami,
@@ -378,6 +408,11 @@ public class GwtShareHelper
 
 	/**
 	 * See if the user can share the given entities with internal users.
+	 * 
+	 * @param ami
+	 * @param listOfEntityids
+	 * 
+	 * @return
 	 */
 	public static boolean canShareWithInternalUsers (
 		AllModulesInjected ami,
@@ -388,6 +423,11 @@ public class GwtShareHelper
 
 	/**
 	 * See if the user can share the given entities with the public.
+	 * 
+	 * @param ami
+	 * @param listOfEntityids
+	 * 
+	 * @return
 	 */
 	public static boolean canShareWithPublic (
 		AllModulesInjected ami,
@@ -398,6 +438,11 @@ public class GwtShareHelper
 
 	/**
 	 * See if the user can share the given entities with the public.
+	 * 
+	 * @param ami
+	 * @param listOfEntityids
+	 * 
+	 * @return
 	 */
 	public static boolean canShareForward (
 		AllModulesInjected ami,
@@ -409,6 +454,11 @@ public class GwtShareHelper
 	/**
 	 * Take the given list of GwtShareItems and find shares with "all users" and "guest" and 
 	 * combine them into 1 "public" share.
+	 * 
+	 * @param ami
+	 * @param listOfGwtShareItems
+	 * 
+	 * @return
 	 */
 	private static ArrayList<GwtShareItem> consolidatePublicShareItems(
 		AllModulesInjected ami,
@@ -540,6 +590,14 @@ public class GwtShareHelper
 	
 	/**
 	 * Create a ShareItem that can be used as a "public link" share.
+	 * 
+	 * @param ami
+	 * @param sharedById
+	 * @param entityId
+	 * @param expirationValue
+	 * @param comment
+	 * 
+	 * @return
 	 */
 	private static ShareItem createPublicLinkShareItem(
 		AllModulesInjected ami,
@@ -567,7 +625,7 @@ public class GwtShareHelper
 		return shareItem;
 	}
 	
-	/**
+	/*
 	 * Create a ShareItem from the given GwtShareItem object
 	 */
 	private static ShareItem createShareItem(
@@ -582,7 +640,7 @@ public class GwtShareHelper
 		return shareItem;
 	}
 	
-	/**
+	/*
 	 * Build a ShareItem that can be used as a "public link" share
 	 */
 	private static ShareItem buildPublicLinkShareItem(
@@ -652,7 +710,7 @@ public class GwtShareHelper
 		return shareItem;
 	}
 	
-	/**
+	/*
 	 * Build a ShareItem from the given GwtShareItem object
 	 */
 	private static ShareItem buildShareItem(
@@ -800,7 +858,13 @@ public class GwtShareHelper
 	}
 	
 	/**
+	 * ?
 	 * 
+	 * @param ami
+	 * @param request
+	 * @param data
+	 * 
+	 * @return
 	 */
 	public static GwtEmailPublicLinkResults emailPublicLink(
 		AllModulesInjected ami,
@@ -961,7 +1025,7 @@ public class GwtShareHelper
 		return results;
 	}
 	
-	/**
+	/*
 	 * Take the given list of GwtShareItems and find the share item that has the given recipientId,
 	 * sharedById and entityId 
 	 */
@@ -990,7 +1054,9 @@ public class GwtShareHelper
 	}
 	
 	/**
+	 * ?
 	 * 
+	 * @return
 	 */
 	public static AccessControlManager getAccessControlManager()
 	{
@@ -1002,6 +1068,10 @@ public class GwtShareHelper
 	
 	/**
 	 * Get AccessRights that corresponds to the given RightSet
+	 * 
+	 * @param rightSet
+	 * 
+	 * @return
 	 */
 	public static AccessRights getAccessRightsFromRightSet( RightSet rightSet )
 	{
@@ -1063,7 +1133,7 @@ public class GwtShareHelper
 		return accessRights;
 	}
 
-	/**
+	/*
 	 * Return the RightSet that corresponds to the "Contributor" rights
 	 */
 	private static RightSet getContributorRightSet()
@@ -1077,7 +1147,7 @@ public class GwtShareHelper
 		return rightSet;
 	}
 	
-	/**
+	/*
 	 * Return the RightSet that corresponds to the "Editor" rights
 	 */
 	private static RightSet getEditorRightSet()
@@ -1095,6 +1165,8 @@ public class GwtShareHelper
 	 * Return an EntityIdentifier for the given EntityId
 	 * 
 	 * @param entityId
+	 * 
+	 * @return
 	 */
 	public static EntityIdentifier getEntityIdentifierFromEntityId( EntityId entityId )
 	{
@@ -1129,7 +1201,7 @@ public class GwtShareHelper
 		return entityIdentifier;
 	}
 	
-	/**
+	/*
 	 * Return the name of the given entity
 	 */
 	private static String getEntityName( AllModulesInjected ami, EntityId entityId )
@@ -1144,7 +1216,7 @@ public class GwtShareHelper
 		return entity.getTitle();
 	}
 	
-	/**
+	/*
 	 * Return the state of the external user account.  Possible values are, initial, bound and verified.
 	 * This method will return null if the given user is not an external user.
 	 */
@@ -1184,7 +1256,7 @@ public class GwtShareHelper
 			return null;
 		}
 
-	/**
+	/*
 	 * Return the name of the given group
 	 */
 	private static String getGroupName( AllModulesInjected ami, ShareItem shareItem )
@@ -1220,7 +1292,7 @@ public class GwtShareHelper
 		return name;
 	}
 
-	/**
+	/*
 	 * Return the "highest" access rights based on acls the logged-in user has to the given entity
 	 */
 	private static AccessRights getHighestEntityAccessRightsFromACLs(
@@ -1314,7 +1386,7 @@ public class GwtShareHelper
 		return accessRights;
 	}
 	
-	/**
+	/*
 	 * Return the "highest" share rights the logged-in user has to the given entity
 	 */
 	private static ShareRights getHighestEntityShareRights( AllModulesInjected ami, EntityId entityId )
@@ -1404,7 +1476,7 @@ public class GwtShareHelper
 		return shareRights;
 	}
 	
-	/**
+	/*
 	 * Get the list of GwtShareItems for the given EntityId
 	 */
 	private static ArrayList<GwtShareItem> getListOfGwtShareItems(
@@ -1658,7 +1730,7 @@ public class GwtShareHelper
 		return listOfGwtShareItems;
 	}
 
-	/**
+	/*
 	 * Return the id of the given user.  If the user is an external user we will see if their
 	 * user account has been created.  If it hasn't we will create it.
 	 */
@@ -1683,7 +1755,7 @@ public class GwtShareHelper
 		return id;
 	}
 	
-	/**
+	/*
 	 * Return the appropriate RightSet object for the given ShareRights object
 	 */
 	private static RightSet getRightSetFromShareRights( GwtShareItem gwtShareItem )
@@ -1724,6 +1796,10 @@ public class GwtShareHelper
 	
 	/**
 	 * Get a ShareRights object that corresponds to the given RightSet
+	 * 
+	 * @param rightSet
+	 * 
+	 * @return
 	 */
 	public static ShareRights getShareRightsFromRightSet( RightSet rightSet )
 	{
@@ -1757,8 +1833,11 @@ public class GwtShareHelper
 	
 	/**
 	 * Return the sharing roles that are defined at the zone level.
+	 * 
+	 * @param ami
+	 * 
+	 * @return
 	 */
-	@SuppressWarnings("rawtypes")
 	public static ZoneShareRights getZoneShareRights( AllModulesInjected ami )
 	{
 		ZoneShareRights shareSettings;
@@ -1901,6 +1980,12 @@ public class GwtShareHelper
 
 	/**
 	 * Return sharing information for the given entities
+	 * 
+	 * @param ami
+	 * @param listOfEntityids
+	 * @param sharedById
+	 * 
+	 * @return
 	 */
 	public static GwtSharingInfo getSharingInfo(
 		AllModulesInjected ami,
@@ -2034,7 +2119,7 @@ public class GwtShareHelper
 		return sharingInfo;
 	}
 
-	/**
+	/*
 	 * Return the name of the given team
 	 */
 	private static String getTeamName( AllModulesInjected ami, ShareItem shareItem )
@@ -2060,7 +2145,7 @@ public class GwtShareHelper
 		return name;
 	}
 
-	/**
+	/*
 	 * Return the given user
 	 */
 	private static User getUser( AllModulesInjected ami, ShareItem shareItem )
@@ -2085,7 +2170,7 @@ public class GwtShareHelper
 		return null;
 	}
 
-	/**
+	/*
 	 * Return the RightSet that corresponds to the "Viewer" rights
 	 */
 	private static RightSet getViewerRightSet()
@@ -2101,6 +2186,11 @@ public class GwtShareHelper
 
 	/**
 	 * Send a notification email for each of the given share items
+	 * 
+	 * @param ami
+	 * @param listOfShareItemIds
+	 * 
+	 * @return
 	 */
 	public static GwtSendShareNotificationEmailResults sendShareNotificationEmail(
 		AllModulesInjected ami,
@@ -2196,7 +2286,12 @@ public class GwtShareHelper
 	}
 		
 	/**
-	 * Save the given share data. 
+	 * Save the given share data.
+	 * 
+	 * @param ami
+	 * @param sharingData
+	 * 
+	 * @return
 	 */
 	public static GwtShareEntryResults shareEntry(
 		AllModulesInjected ami,
@@ -2498,7 +2593,12 @@ public class GwtShareHelper
 	}
 
 	/**
+	 * ?
 	 * 
+	 * @param ami
+	 * @param rights
+	 * 
+	 * @return
 	 */
 	public static Boolean saveZoneShareRights( AllModulesInjected ami, ZoneShareRights rights )
 	{
@@ -2859,6 +2959,7 @@ public class GwtShareHelper
 	 * Deletes shares with the specified IDs.
 	 * 
 	 * @param bs
+	 * @param request
 	 * @param shareIds
 	 * 
 	 * @return
@@ -3310,4 +3411,114 @@ public class GwtShareHelper
 			gsp.stop();
 		}
 	}
+	
+	/**
+	 * Returns share rights the given user has been granted at the zone level.
+	 * 
+	 * @param ami
+	 * @param princiaplId
+	 * 
+	 * @return
+	 */
+	public static PerUserShareRightsInfo getUserZoneShareSettings(
+		AllModulesInjected ami,
+		Long principalId ) throws GwtTeamingException
+	{
+    	PerUserShareRightsInfo shareRights;
+    	Long zoneId;
+    	ZoneConfig zoneConfig;
+
+    	shareRights = new PerUserShareRightsInfo( false, false, false, false );
+
+		zoneId = RequestContextHolder.getRequestContext().getZoneId();
+		zoneConfig = ami.getZoneModule().getZoneConfig( zoneId );
+
+		m_accessControlManager = getAccessControlManager();
+		if ( m_accessControlManager == null )
+		{
+			m_logger.error( "In GwtShareHelper.getUserZoneShareSettings(), unable to get the access control manager" );
+			return shareRights;
+		}
+
+		try
+		{
+			ArrayList<Long> ids;
+			SortedSet<Principal> principals;
+			
+			ids = new ArrayList<Long>();
+			ids.add( principalId );
+			principals = ami.getProfileModule().getPrincipals( ids );
+			if ( principals != null && principals.size() == 1 )
+			{
+				Principal principal = null;
+
+				principal = principals.first();
+				if ( principal instanceof User )
+				{
+			    	User user = null;
+
+			    	user = (User) principal;
+
+			    	try
+					{
+						// Is share forwarding enabled at the zone level for this user?
+						m_accessControlManager.checkOperation( user, zoneConfig, WorkAreaOperation.ENABLE_SHARING_FORWARD );
+						shareRights.setAllowForwarding( true );
+					}
+					catch ( AccessControlException acEx )
+					{
+					}
+
+					try
+					{
+						// Is sharing with internal users enabled at the zone level for this user?
+						m_accessControlManager.checkOperation( user, zoneConfig, WorkAreaOperation.ENABLE_SHARING_INTERNAL );
+						shareRights.setAllowInternal( true );
+					}
+					catch ( AccessControlException acEx )
+					{
+					}
+
+					try
+					{
+						// Is sharing with external users enabled at the zone level for this user?
+						m_accessControlManager.checkOperation( user, zoneConfig, WorkAreaOperation.ENABLE_SHARING_EXTERNAL );
+						shareRights.setAllowExternal( true );
+					}
+					catch ( AccessControlException acEx )
+					{
+					}
+
+					try
+					{
+						// Is sharing with the public enabled at the zone level for this user?
+						m_accessControlManager.checkOperation( user, zoneConfig, WorkAreaOperation.ENABLE_SHARING_PUBLIC );
+						shareRights.setAllowPublic( true );
+					}
+					catch ( AccessControlException acEx )
+					{
+					}
+				}
+				else if ( principal instanceof Group )
+				{
+					ZoneShareRights zoneShareRights;
+
+					// Get all of the share rights set at the zone level.
+					zoneShareRights = GwtShareHelper.getZoneShareRights( ami );
+					
+					shareRights.setAllowForwarding( zoneShareRights.canReshare( principalId ) );
+					shareRights.setAllowInternal( zoneShareRights.canShareInternal( principalId ) );
+					shareRights.setAllowExternal( zoneShareRights.canShareExternal( principalId ) );
+					shareRights.setAllowPublic( zoneShareRights.canSharePublic( principalId ) );
+				}
+			}
+		}
+		catch ( AccessControlException acEx )
+		{
+			// Nothing to do
+		}
+		
+		return shareRights;
+	}
+
 }

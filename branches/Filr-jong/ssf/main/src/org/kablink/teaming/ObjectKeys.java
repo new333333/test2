@@ -536,6 +536,10 @@ public interface ObjectKeys {
 	public static final String RESOURCE_DRIVER_USE_DIRECTORY_RIGHTS = "useDirectoryRights";
 	public static final String RESOURCE_DRIVER_VOLUME = "volume";
 	public static final String RESOURCE_DRIVER_MODIFIED_ON = "modifiedOn";
+	public static final String RESOURCE_DRIVER_INDEX_CONTENT = "indexContent";
+	public static final String RESOURCE_DRIVER_JITS_ENABLED = "jitsEnabled";
+    public static final String RESOURCE_DRIVER_JITS_ACL_MAX_AGE = "jitsAclMaxAge";
+    public static final String RESOURCE_DRIVER_JITS_RESULTS_MAX_AGE = "jitsMaxAge";
 	
     //User and Principal objects
     public static final int USER_STATUS_DATABASE_FIELD_LENGTH = 256;
@@ -724,6 +728,8 @@ public interface ObjectKeys {
 	public static final String FIELD_BINDER_SYNC_SCHEDULE_OPTION = "syncScheduleOption";
 	public static final String FIELD_WS_SEARCHTITLE="searchTitle";
 	public static final String FIELD_BINDER_FULL_SYNC_DIR_ONLY = "fullSyncDirOnly";
+    public static final String FIELD_BINDER_USE_INHERITED_INDEX_CONTENT = "useInheritedIndexContent";
+    public static final String FIELD_BINDER_USE_INHERITED_JITS_SETTINGS = "useInheritedJitsSettings";
 	
 	public static final String FIELD_RESOURCE_DRIVER_TYPE = "type";
 	public static final String FIELD_RESOURCE_HANDLE = "resourceHandle"; 
@@ -970,6 +976,8 @@ public interface ObjectKeys {
     public static final String LICENSE_OPTION_VIBE = "com.novell.teaming.Vibe";
     public static final String LICENSE_OPTION_FILR = "com.novell.teaming.Filr";
     public static final String LICENSE_OPTION_IPRINT = "com.novell.teaming.iPrint";
+    public static final String LICENSE_OPTION_IPRINT_DESKTOP = "com.novell.teaming.iPrintDesktop";
+    public static final String LICENSE_OPTION_IPRINT_MOBILE = "com.novell.teaming.iPrintMobile";
     public static final String LICENSE_OPTION_EXT_USERS = "com.novell.teaming.ExtUsers";
     
     //License Activity

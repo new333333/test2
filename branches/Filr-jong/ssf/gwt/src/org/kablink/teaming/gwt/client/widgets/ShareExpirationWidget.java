@@ -95,10 +95,11 @@ public class ShareExpirationWidget extends Composite
 		// Give this panel a fixed width so the dialog doesn't resize after the user
 		// selects an expiration type.
 		mainPanel.setWidth( "300px" );
-		mainPanel.setHeight( "40px" );
+		mainPanel.setHeight( "35px" );
 
 		mainTable = new FlexTable();
 		mainTable.addStyleName( "shareExpirationWidget_table" );
+		mainTable.addStyleName( "gwt-label" );
 		mainPanel.add( mainTable );
 		
 		col = 0;

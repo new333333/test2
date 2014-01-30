@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -37,9 +37,11 @@ import java.util.List;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingDataTableImageBundle;
+import org.kablink.teaming.gwt.client.GwtTeamingFilrImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.event.ContentChangedEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
+import org.kablink.teaming.gwt.client.event.ShareSelectedEntitiesEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.event.ContentChangedEvent.Change;
 import org.kablink.teaming.gwt.client.presence.GwtPresenceInfo;
@@ -48,6 +50,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.FolderEntryDetailsRpcResponseDa
 import org.kablink.teaming.gwt.client.rpc.shared.GetFolderEntryDetailsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.AssignmentInfo;
+import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.FolderEntryDetails;
 import org.kablink.teaming.gwt.client.util.FolderEntryDetails.ShareInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
@@ -59,6 +62,7 @@ import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
@@ -76,6 +80,7 @@ public class FolderEntrySharing extends VibeFlowPanel
 {
 	private FolderEntryCallback				m_fec;						// Callback to the folder entry composite.
 	private GwtTeamingDataTableImageBundle	m_images;					// Access to Vibe's data table images.
+	private GwtTeamingFilrImageBundle		m_filrImages;				// Access to Filr's images.
 	private GwtTeamingMessages				m_messages;					// Access to Vibe's messages.
 	private List<HandlerRegistration>		m_registeredEventHandlers;	// Event handlers that are currently registered.
 	private List<ShareInfo>					m_sharedByItems;			// A List<ShareInfo> of shares of the item with the current user.
@@ -105,8 +110,9 @@ public class FolderEntrySharing extends VibeFlowPanel
 		m_sharedWithItems = sharedWithItems;
 		
 		// ...initialize the data members requiring it...
-		m_images   = GwtTeaming.getDataTableImageBundle();
-		m_messages = GwtTeaming.getMessages();
+		m_images     = GwtTeaming.getDataTableImageBundle();
+		m_filrImages = GwtTeaming.getFilrImageBundle();
+		m_messages   = GwtTeaming.getMessages();
 		
 		// ...and construct the sharing manager's content.
 		createContentAsync(true);	// true -> Notify the composite that we're ready.
@@ -135,8 +141,8 @@ public class FolderEntrySharing extends VibeFlowPanel
 		if (GwtClientHelper.hasItems(m_sharedByItems) || GwtClientHelper.hasItems(m_sharedWithItems)) {
 			// ...create the display widgets for the
 			// ...List<ShareInfo>'s...
-			createSharedItemContent(m_sharedByItems,   m_messages.folderEntry_SharedBy());
-			createSharedItemContent(m_sharedWithItems, m_messages.folderEntry_SharedWith());
+			createSharedItemContent(m_sharedByItems,   m_messages.folderEntry_SharedBy(),   false                                             );
+			createSharedItemContent(m_sharedWithItems, m_messages.folderEntry_SharedWith(), m_fec.getEntityRights().getShareRight().canShare());
 		}
 		
 		else {
@@ -172,7 +178,7 @@ public class FolderEntrySharing extends VibeFlowPanel
 	 * Creates the widgets for displaying the content of a
 	 * List<ShareInfo>.
 	 */
-	private void createSharedItemContent(List<ShareInfo> shares, String caption) {
+	private void createSharedItemContent(List<ShareInfo> shares, String caption, boolean makeItemsShareLinks) {
 		// If we don't have any shares to display...
 		if (!(GwtClientHelper.hasItems(shares))) {
 			// ...bail.
@@ -187,7 +193,7 @@ public class FolderEntrySharing extends VibeFlowPanel
 		// Scan the ShareInfo's...
 		for (ShareInfo si:  shares) {
 			// ...creating the display for each.
-			createSharedItem(si);
+			createSharedItem(si, makeItemsShareLinks);
 		}
 		
 	}
@@ -196,10 +202,24 @@ public class FolderEntrySharing extends VibeFlowPanel
 	 * Creates the widgets for displaying the content of an individual
 	 * ShareInfo.
 	 */
-	private void createSharedItem(ShareInfo share) {
+	private void createSharedItem(ShareInfo share, boolean makeItemShareLink) {
 		// Create the panel for the share.
 		VibeFlowPanel shareItemPanel = new VibeFlowPanel();
 		shareItemPanel.addStyleName("vibe-feView-shareItemPanel");
+		if (makeItemShareLink) {
+			shareItemPanel.addStyleName("cursorPointer");
+			shareItemPanel.addDomHandler(new ClickHandler() {
+				@Override
+				public void onClick(ClickEvent event) {
+					EntityId eid = m_fec.getEntityId();
+					GwtTeaming.fireEventAsync(
+						new ShareSelectedEntitiesEvent(
+							eid.getBinderId(),
+							eid));
+				}
+			},
+			ClickEvent.getType());
+		}
 		add(shareItemPanel);
 		
 		// Extract the hover text for this share's assignment.
@@ -216,13 +236,15 @@ public class FolderEntrySharing extends VibeFlowPanel
 			presenceControl.setImageAlignment("top");
 			presenceControl.addStyleName("vibe-feView-shareItemAvatar cursorPointer");
 			presenceControl.setAnchorStyleName("cursorPointer");
-			presenceControl.setImageOverride(getPresenceImage(ai));
+			setPresenceAvatarUrl(ai, presenceControl);
 			presenceControl.addImageStyleName("vibe-feView-shareItemAvatar");
 			shareItemPanel.add(presenceControl);
 			presenceControl.addClickHandler(new ClickHandler() {
 				@Override
 				public void onClick(ClickEvent event) {
 					invokeSimpleProfile(ai, presenceControl.getElement());
+					event.stopPropagation();
+					event.preventDefault();
 				}
 			});
 
@@ -237,6 +259,8 @@ public class FolderEntrySharing extends VibeFlowPanel
 				@Override
 				public void onClick(ClickEvent event) {
 					invokeSimpleProfile(ai, presenceLabel.getElement());
+					event.stopPropagation();
+					event.preventDefault();
 				}
 			});
 			
@@ -256,6 +280,8 @@ public class FolderEntrySharing extends VibeFlowPanel
 					@Override
 					public void onClick(ClickEvent event) {
 						invokeGroupMembership(ai, assigneeImg.getElement());
+						event.stopPropagation();
+						event.preventDefault();
 					}
 				});
 			}
@@ -276,6 +302,8 @@ public class FolderEntrySharing extends VibeFlowPanel
 					@Override
 					public void onClick(ClickEvent event) {
 						invokeGroupMembership(ai, assignee.getElement());
+						event.stopPropagation();
+						event.preventDefault();
 					}
 				});
 			}
@@ -377,18 +405,6 @@ public class FolderEntrySharing extends VibeFlowPanel
 			info.addStyleName("vibe-feView-shareItemNote");
 			shareItemPanel.add(info);
 		}
-	}
-	
-	/*
-	 * Returns the URL to the image to display for presence for an
-	 * AssignmentInfo.
-	 */
-	private String getPresenceImage(AssignmentInfo ai) {
-		String reply = ai.getAvatarUrl();
-		if (!(GwtClientHelper.hasString(reply))) {
-			reply = m_images.userPhoto().getSafeUri().asString();
-		}
-		return reply;
 	}
 	
 	/*
@@ -523,6 +539,34 @@ public class FolderEntrySharing extends VibeFlowPanel
 		}
 	}
 
+	/*
+	 * Sets the URL for a presence control to the image to display for
+	 * presence for an AssignmentInfo.
+	 */
+	private void setPresenceAvatarUrl(final AssignmentInfo ai, final PresenceControl pc) {
+		// If the AssignmentInfo has an avatar URL...
+		String avatarUrl = ai.getAvatarUrl();
+		if (GwtClientHelper.hasString(avatarUrl)) {
+			// ...just use it.
+			pc.setImageOverride(avatarUrl);
+			return;
+		}
+
+		// If the assignee isn't an individual user...
+		if (!(ai.getAssigneeType().isIndividual())) {
+			// ...just use the default.
+			pc.setImageOverride(m_images.userPhoto().getSafeUri().asString());
+			return;
+		}
+
+		// Otherwise, use an appropriate avatar for the user type.
+		ImageResource ir;
+		if (ai.isUserExternal())
+		     ir = m_filrImages.filrExternalUser48();
+		else ir = m_images.userPhoto();
+		pc.setImageOverride(ir.getSafeUri().asString());
+	}
+	
 	/*
 	 * Unregisters any global event handlers that may be registered.
 	 */

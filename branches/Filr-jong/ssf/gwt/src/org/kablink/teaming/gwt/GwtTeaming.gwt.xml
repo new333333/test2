@@ -33,9 +33,14 @@
 	<!-- Inherit the GWT 'Crypto' API support library. -->	
 	<inherits name="com.googlecode.gwt.crypto.Crypto" />
 	
-	<!-- Inherit the gQuery support library. -->	
-	<inherits name="com.google.gwt.query.Query" />
+	<!-- Inherit the gQuery support libraries. -->	
+	<inherits name="com.google.gwt.query.Query"           />
+	<inherits name="gwtquery.plugins.draggable.Draggable" />
 	
+	<!-- Inherit the GWT Tour support library. -->
+	<set-configuration-property name='xsiframe.failIfScriptTag' value='FALSE'/>
+	<inherits name="com.eemi.gwt.tour.GwtTour"/>
+		
 	<!-- Other 'generic' module inherits go here. -->
 
 	<!-- Specify the application entry point class. -->

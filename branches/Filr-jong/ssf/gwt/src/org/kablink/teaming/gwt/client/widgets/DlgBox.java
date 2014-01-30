@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -41,13 +41,11 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HelpData;
 
-import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style.Overflow;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -60,6 +58,10 @@ import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.TeamingPopupPanel;
 import com.google.gwt.user.client.ui.UIObject;
 
+import static com.google.gwt.query.client.GQuery.$;
+import static gwtquery.plugins.draggable.client.Draggable.Draggable;
+import gwtquery.plugins.draggable.client.DraggableOptions;
+
 /**
  * A general dialog box class for use throughout Vibe.
  * 
@@ -69,36 +71,38 @@ public abstract class DlgBox extends TeamingPopupPanel
 	implements ClickHandler
 {
 	private final static boolean	DEBUG_SHOW_STATE = false;	// true -> Show alerts to help debug show state problems.  false -> Don't.
-	
-	private boolean					m_superHide;				// true while performing a super.hide().
-	private boolean					m_superShow;				// true while performing a super.center() or super.show().
-	private EditSuccessfulHandler	m_editSuccessfulHandler;	// Handler to call when the user presses Ok.
-	private EditCanceledHandler		m_editCanceledHandler;		// Handler to call when the user presses Cancel.
-	private DlgButtonMode			m_dlgBtnMode;				//
-	private boolean					m_showFooter;				//
-	private Button					m_okBtn;					//
-	private Button					m_cancelBtn;				//
-	private HelpData				m_helpData;					//
-	private FlowPanel 				m_closePanel;				//
-	private Image 					m_closeImg;					//
-	protected FocusWidget 			m_focusWidget;				// Widget that should receive the focus when this dialog is shown.
-	protected boolean 				m_modal;					//
-	protected boolean 				m_visible;					//
-	private Label 					m_caption;					//
-	private FlowPanel				m_captionImagePanel;		//
-	private Panel					m_headerPanel;				//
-	private FlowPanel				m_bodyPanel;				//
-	private FlowPanel				m_errorPanelWrapper;
-	private FlowPanel 				m_errorPanel;				//
-	private Panel 					m_contentPanel;				//
-	private FlowPanel				m_footerPanel;				//
-	private FlowPanel				m_statusPanel;				//
-	private InlineLabel 			m_statusLabel;				//
-	private Image					m_statusImg;				//
-	private int 					m_id;						//
-	private boolean					m_fixedSize;				//
-	private Integer					m_height;					//
-	private boolean					m_useOverflowAutoOnContent = true;
+
+	private boolean					m_draggable;						// Set true once the dialog has been made draggable.
+	private boolean					m_superHide;						// true while performing a super.hide().
+	private boolean					m_superShow;						// true while performing a super.center() or super.show().
+	private EditSuccessfulHandler	m_editSuccessfulHandler;			// Handler to call when the user presses Ok.
+	private EditCanceledHandler		m_editCanceledHandler;				// Handler to call when the user presses Cancel.
+	private DlgButtonMode			m_dlgBtnMode;						//
+	private boolean					m_showFooter;						//
+	private Button					m_okBtn;							//
+	private Button					m_cancelBtn;						//
+	private HelpData				m_helpData;							//
+	private FlowPanel 				m_closePanel;						//
+	private Image 					m_closeImg;							//
+	private Image					m_tourButton;						//
+	protected FocusWidget 			m_focusWidget;						// Widget that should receive the focus when this dialog is shown.
+	protected boolean 				m_modal;							//
+	protected boolean 				m_visible;							//
+	private Label 					m_caption;							//
+	private FlowPanel				m_captionImagePanel;				//
+	private Panel					m_headerPanel;						//
+	private FlowPanel				m_bodyPanel;						//
+	private FlowPanel				m_errorPanelWrapper;				//
+	private FlowPanel 				m_errorPanel;						//
+	private Panel 					m_contentPanel;						//
+	private FlowPanel				m_footerPanel;						//
+	private FlowPanel				m_statusPanel;						//
+	private InlineLabel 			m_statusLabel;						//
+	private Image					m_statusImg;						//
+	private int 					m_id;								//
+	private boolean					m_fixedSize;						//
+	private Integer					m_height;							//
+	private boolean					m_useOverflowAutoOnContent = true;	//
     	
 	private static int				m_uniqueId       = 100;						//
 	private static List<DlgBox>		m_visibleDialogs = new ArrayList<DlgBox>();	//
@@ -310,13 +314,10 @@ public abstract class DlgBox extends TeamingPopupPanel
 		if ( m_dlgBtnMode == DlgButtonMode.Cancel || m_dlgBtnMode == DlgButtonMode.Close ||
 			 m_dlgBtnMode == DlgButtonMode.OkCancel )
 		{
-			ImageResource imageResource;
-			
 			m_closePanel = new FlowPanel();
 			m_closePanel.addStyleName( "dlgBox_closePanel" );
 			
-			imageResource = GwtTeaming.getImageBundle().closeBorder();
-			m_closeImg = new Image( imageResource );
+			m_closeImg = GwtClientHelper.buildImage( GwtTeaming.getImageBundle().closeBorder() );
 			m_closeImg.addClickHandler( this );
 			m_closePanel.add( m_closeImg );
 			panel.add( m_closePanel );
@@ -343,15 +344,13 @@ public abstract class DlgBox extends TeamingPopupPanel
 
 			// Add a "close" image so the user can close the error panel
 			{
-				ImageResource imageResource;
 				Image closeImg;
 				FlowPanel closePanel;
 				
 				closePanel = new FlowPanel();
 				closePanel.addStyleName( "dlgBox_closeErrorPanel" );
 				
-				imageResource = GwtTeaming.getImageBundle().closeBorder();
-				closeImg = new Image( imageResource );
+				closeImg = GwtClientHelper.buildImage( GwtTeaming.getImageBundle().closeBorder() );
 				closeImg.addClickHandler( new ClickHandler()
 				{
 					@Override
@@ -398,16 +397,13 @@ public abstract class DlgBox extends TeamingPopupPanel
 		
 		// Add a panel that will display a status message
 		{
-			ImageResource imgResource;
-			
 			m_statusPanel = new FlowPanel();
 			m_statusPanel.addStyleName( "dlgBox_statusPanel" );
 			m_statusPanel.setVisible( false );
 			m_footerPanel.add( m_statusPanel );
 			
-			imgResource = GwtTeaming.getImageBundle().spinner16();
-			m_statusImg = new Image( imgResource );
-			m_statusImg.getElement().setAttribute( "align", "absmiddle" );
+			m_statusImg = GwtClientHelper.buildImage( GwtTeaming.getImageBundle().spinner25() );
+			m_statusImg.addStyleName( "padding5R" );
 			m_statusPanel.add( m_statusImg );
 
 			m_statusLabel = new InlineLabel();
@@ -520,14 +516,13 @@ public abstract class DlgBox extends TeamingPopupPanel
 		if ( m_helpData != null )
 		{
 			ClickHandler clickHandler;
-			ImageResource imageResource;
 			Image img;
 			
-			imageResource = GwtTeaming.getImageBundle().help3();
-			img = new Image( imageResource );
+			img = GwtClientHelper.buildImage( GwtTeaming.getImageBundle().help3() );
 			img.addStyleName( "dlgHeaderHelpImg" );
 			img.getElement().setId( "helpImg" );
 			flowPanel.add( img );
+			img.setTitle( GwtTeaming.getMessages().helpDlg() );
 
 			// Add a click handler for the Actions image.
 			clickHandler = new ClickHandler()
@@ -535,23 +530,53 @@ public abstract class DlgBox extends TeamingPopupPanel
 				@Override
 				public void onClick( ClickEvent clickEvent )
 				{
-					Scheduler.ScheduledCommand cmd;
-					cmd = new Scheduler.ScheduledCommand()
+					GwtClientHelper.deferCommand( new ScheduledCommand()
 					{
-						/**
-						 * 
-						 */
 						@Override
 						public void execute()
 						{
 							// Invoke help for this dialog.
 							invokeHelp();
 						}
-					};
-					Scheduler.get().scheduleDeferred( cmd );
+					} );
 				}
 			};
 			img.addClickHandler( clickHandler );
+		}
+		
+		// Add a tour button to the header.
+		{
+			ClickHandler clickHandler;
+			
+			m_tourButton = GwtClientHelper.buildImage( GwtTeaming.getImageBundle().tour3() );
+			m_tourButton.addStyleName( "dlgHeaderTourImg" );
+			m_tourButton.setTitle( GwtTeaming.getMessages().tourDlg() );
+			m_tourButton.getElement().setId( "tourImg" );
+			flowPanel.add( m_tourButton );
+
+			// Add a click handler for the Actions image.
+			clickHandler = new ClickHandler()
+			{
+				@Override
+				public void onClick( ClickEvent clickEvent )
+				{
+					GwtClientHelper.deferCommand( new ScheduledCommand()
+					{
+						@Override
+						public void execute()
+						{
+							// Invoke the tour for this dialog.
+							invokeTour();
+						}
+					} );
+				}
+			};
+			m_tourButton.addClickHandler( clickHandler );
+			
+			// By default, the tour button is hidden.  Dialog
+			// implementations must explicitly call
+			// DlgBox.setTourEnabled() to show it.
+			m_tourButton.setVisible( false );
 		}
 		
 		return flowPanel;
@@ -708,6 +733,7 @@ public abstract class DlgBox extends TeamingPopupPanel
 	 */
 	private void hideImpl()
 	{
+		makeDraggableAsync( false );
 		m_visibleDialogs.remove( this );
 		if ( !m_superHide )
 		{
@@ -775,6 +801,38 @@ public abstract class DlgBox extends TeamingPopupPanel
 			GwtClientHelper.invokeHelp( m_helpData );
 		}
 	}
+
+	/**
+	 * Dialogs that supply a tour must override this method.
+	 */
+	public void invokeTour()
+	{
+		// It's an internal error if this gets invokes as the super
+		// class MUST override this method if it enable's touring the
+		// dialog.
+		GwtClientHelper.deferredAlert( GwtTeaming.getMessages().tourMissingStart() );
+	}
+
+	/**
+	 * Dialogs that supply a tour must override this method.
+	 */
+	public void stopTour()
+	{
+		// It's an internal error if this gets invokes as the super
+		// class MUST override this method if it enable's touring the
+		// dialog.
+		GwtClientHelper.deferredAlert( GwtTeaming.getMessages().tourMissingStop() );
+	}
+
+	/**
+	 * Show/hides (i.e., enables/disables) the dialog's 'Tour' button.
+	 * 
+	 * @param enabled
+	 */
+	public void setTourEnabled( boolean enabled )
+	{
+		m_tourButton.setVisible( enabled );
+	}
 	
 	/**
 	 * Returns true if the error panel is visible and false otherwise.
@@ -787,18 +845,23 @@ public abstract class DlgBox extends TeamingPopupPanel
 	}
 	
 	/*
-	 * Asynchronously makes the dialog dragable.
+	 * Asynchronously makes the dialog draggable.
 	 */
-	private void makeDraggableAsync()
+	private void makeDraggableAsync( final boolean draggable )
 	{
-		ScheduledCommand cmd;
+		// If the dialog is already in the draggable state requested...
+		if ( m_draggable == draggable )
+		{
+			// ...bail.
+			return;
+		}
 		
-		cmd = new ScheduledCommand()
+		GwtClientHelper.deferCommand( new ScheduledCommand()
 		{
 			@Override
 			public void execute()
 			{
-				makeDraggableNow( String.valueOf( m_id ) );
+				makeDraggableNow( String.valueOf( m_id ), draggable );
 				
 				// Are we dealing with a fixed sized dialog?
 				if ( m_fixedSize )
@@ -826,19 +889,30 @@ public abstract class DlgBox extends TeamingPopupPanel
 						m_bodyPanel.getElement().getStyle().setOverflow( Overflow.AUTO );
 				}
 			}
-		};
-		Scheduler.get().scheduleDeferred( cmd );
+		} );
 	}// end makeDraggableAsync()
 	
 	/*
-	 * Synchronously makes the dialog dragable.
+	 * Synchronously sets the dialog's draggable state.
 	 * 
-     * Makes this dialog draggable by using the native JQuery Draggable
+     * Sets the dialog's draggable state using gQuery.
      */
-    private static native void makeDraggableNow( String id )
-    /*-{
-		$wnd.jQuery( "#teamingDlgBox-" + id ).draggable( { handle : '#teamingDlgBoxHeader-' + id } );
-	}-*/;
+    private void makeDraggableNow( String id, boolean draggable )
+    {
+    	if ( draggable && ( ! m_draggable ) )
+    	{
+	    	DraggableOptions dOpts = new DraggableOptions();
+	    	dOpts.setHandle( "#teamingDlgBoxHeader-" + id );
+	    	$( "#teamingDlgBox-" + id ).as( Draggable ).draggable( dOpts );
+			m_draggable = true;
+    	}
+    	
+    	else if ( ( ! draggable ) && m_draggable )
+    	{
+	    	$( "#teamingDlgBox-" + id ).as( Draggable ).destroy();
+    		m_draggable = false;
+    	}
+    }
 
 
     /**
@@ -882,17 +956,14 @@ public abstract class DlgBox extends TeamingPopupPanel
 		// Did the user click on ok?
 		if ( source == m_okBtn )
 		{
-			Scheduler.ScheduledCommand cmd;
-			
-			cmd = new Scheduler.ScheduledCommand()
+			GwtClientHelper.deferCommand( new ScheduledCommand()
 			{
 				@Override
 				public void execute() 
 				{
 					okBtnPressed();
 				}
-			};
-			Scheduler.get().scheduleDeferred( cmd );
+			} );
 			return;
 		}
 		
@@ -1029,7 +1100,7 @@ public abstract class DlgBox extends TeamingPopupPanel
 			GwtClientHelper.setFocusDelayed( m_focusWidget );
 		}
 		
-		makeDraggableAsync();
+		makeDraggableAsync( true );
 	}// end show()
 	
 	/**
@@ -1052,6 +1123,25 @@ public abstract class DlgBox extends TeamingPopupPanel
 		show( true );
 	}// end center()
 
+	/**
+	 * Called when the dialog is detached.
+	 * 
+	 * Overrides the Widget.onDetach() method.
+	 */
+	@Override
+	public void onDetach()
+	{
+		// If the tour button is visible...
+		if ( m_tourButton.isVisible() )
+		{
+			// ...stop any tours that may be running...
+			stopTour();
+		}
+		
+		// ...and pass the detach on to the super class.
+		super.onDetach();
+	}
+	
 	/**
 	 * Sets the size state dialog as being fixed or floating.
 	 * 
@@ -1126,7 +1216,7 @@ public abstract class DlgBox extends TeamingPopupPanel
 				}
 				
 				setPopupPosition( x, Math.max( y, 0 ) );
-				makeDraggableAsync();
+				makeDraggableAsync( true );
 			}
 		};
 		setPopupPositionAndShow( posCallback );

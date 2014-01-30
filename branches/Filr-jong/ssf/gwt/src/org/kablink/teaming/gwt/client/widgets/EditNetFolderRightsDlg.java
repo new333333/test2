@@ -36,7 +36,11 @@ package org.kablink.teaming.gwt.client.widgets;
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
+import org.kablink.teaming.gwt.client.rpc.shared.GetUserZoneShareSettingsCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
+import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.PerUserRightsInfo;
+import org.kablink.teaming.gwt.client.util.PerUserShareRightsInfo;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 
 import com.google.gwt.core.client.GWT;
@@ -46,6 +50,7 @@ import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusWidget;
@@ -67,6 +72,7 @@ public class EditNetFolderRightsDlg extends DlgBox
 	private CheckBox m_canGrantReshareCkbox;
 	private EditSuccessfulHandler m_editSuccessfulHandler;
 	private PerUserRightsInfo m_rightsInfo;
+	private PerUserShareRightsInfo m_zoneShareRights;	// The rights the user has been given at the zone level.
 	
 	/**
 	 * Callback interface to interact with the "Edit Net Folder Rights" dialog asynchronously after it loads. 
@@ -172,7 +178,30 @@ public class EditNetFolderRightsDlg extends DlgBox
 		// Add the "allow share public" checkbox.
 		m_canSharePublicCkbox = new CheckBox( messages.editNetFolderRightsDlg_SharePublicLabel() );
 		m_canSharePublicCkbox.addStyleName( "editNetFolderRightsDlg_RightsCkbox" );
-		m_canSharePublicCkbox.addClickHandler( clickHandler );
+		m_canSharePublicCkbox.addClickHandler( new ClickHandler()
+		{
+			@Override
+			public void onClick( ClickEvent event )
+			{
+				Scheduler.ScheduledCommand cmd;
+				
+				cmd = new Scheduler.ScheduledCommand()
+				{
+					@Override
+					public void execute()
+					{
+						if ( m_canSharePublicCkbox.getValue() == true )
+						{
+							m_canShareInternalCkbox.setValue( Boolean.TRUE );
+							m_canShareExternalCkbox.setValue( Boolean.TRUE );
+						}
+						
+						danceDlg();
+					}
+				};
+				Scheduler.get().scheduleDeferred( cmd );
+			}
+		} );
 		tmpPanel = new FlowPanel();
 		tmpPanel.addStyleName( "marginleft1" );
 		tmpPanel.add( m_canSharePublicCkbox );
@@ -214,6 +243,51 @@ public class EditNetFolderRightsDlg extends DlgBox
 				enable = true;
 			
 			m_canGrantReshareCkbox.setEnabled( enable );
+		}
+		
+		// If the "public" checkbox is checked, disable the "internal users"
+		// and "external users" checkboxes
+		if ( m_canSharePublicCkbox.getValue() == true )
+		{
+			m_canShareInternalCkbox.setEnabled( false );
+			m_canShareExternalCkbox.setEnabled( false );
+		}
+		
+		// Do we have the rights this user has been given at the zone level?
+		if ( m_zoneShareRights != null )
+		{
+			// Yes.
+			// Can the user reshare?
+			if ( m_zoneShareRights.isAllowForwarding() == false )
+			{
+				// No
+				m_canGrantReshareCkbox.setValue( Boolean.FALSE );
+				m_canGrantReshareCkbox.setEnabled( false );
+			}
+			
+			// Can the user share with internal users?
+			if ( m_zoneShareRights.isAllowInternal() == false )
+			{
+				// No
+				m_canShareInternalCkbox.setValue( Boolean.FALSE );
+				m_canShareInternalCkbox.setEnabled( false );
+			}
+			
+			// Can the user share with external users?
+			if ( m_zoneShareRights.isAllowExternal() == false )
+			{
+				// No
+				m_canShareExternalCkbox.setValue( Boolean.FALSE );
+				m_canShareExternalCkbox.setEnabled( false );
+			}
+			
+			// Can the user share with the public?
+			if ( m_zoneShareRights.isAllowPublic() == false )
+			{
+				// No
+				m_canSharePublicCkbox.setValue( Boolean.FALSE );
+				m_canSharePublicCkbox.setEnabled( false );
+			}
 		}
 	}
 	
@@ -280,11 +354,75 @@ public class EditNetFolderRightsDlg extends DlgBox
 	{
 		return null;
 	}
+	
+	/**
+	 * Get the zone share settings for the given user.
+	 */
+	private void getZoneShareSettings( Long principalId )
+	{
+		GetUserZoneShareSettingsCmd cmd;
+		AsyncCallback<VibeRpcResponse> rpcCallback;
+		
+		rpcCallback = new AsyncCallback<VibeRpcResponse>()
+		{
+			@Override
+			public void onFailure( Throwable caught )
+			{
+				FlowPanel errorPanel;
+				Label label;
+				String errMsg;
+				
+				setOkEnabled( false );
+
+				// Get the panel that holds the errors.
+				errorPanel = getErrorPanel();
+				errorPanel.clear();
+				
+				errMsg = GwtTeaming.getMessages().editNetFolderRightsDlg_ErrorRetrievingZoneShareRights( caught.toString() );
+				
+				label = new Label( errMsg );
+				label.addStyleName( "dlgErrorLabel" );
+				errorPanel.add( label );
+				
+				showErrorPanel();
+			}
+
+			@Override
+			public void onSuccess( VibeRpcResponse result )
+			{
+				if ( result.getResponseData() instanceof PerUserShareRightsInfo )
+				{
+					ScheduledCommand cmd;
+
+					m_zoneShareRights = (PerUserShareRightsInfo) result.getResponseData();
+					
+					cmd = new Scheduler.ScheduledCommand()
+					{
+						@Override
+						public void execute()
+						{
+							danceDlg();
+						}
+					};
+					Scheduler.get().scheduleDeferred( cmd );
+	
+					setOkEnabled( true );
+				}
+			}						
+		};
+		
+		// Issue an rpc request to get the share rights this user has been given at the zone level.
+		{
+			cmd = new GetUserZoneShareSettingsCmd( principalId );
+			GwtClientHelper.executeCommand( cmd, rpcCallback );
+		}
+	}
 
 	/**
 	 * Initialize the controls in the dialog with the values from the properties
 	 */
 	public void init(
+		Long principalId,
 		PerUserRightsInfo rightsInfo,
 		EditSuccessfulHandler editSuccessfulHandler )
 	{
@@ -306,7 +444,9 @@ public class EditNetFolderRightsDlg extends DlgBox
 			m_allowAccessCkbox.setValue( m_rightsInfo.canAccess() );
 		}
 		
-		danceDlg();
+		// Get the zone share settings for the given user
+		m_zoneShareRights = null;
+		getZoneShareSettings( principalId );
 	}
 	
 	/**

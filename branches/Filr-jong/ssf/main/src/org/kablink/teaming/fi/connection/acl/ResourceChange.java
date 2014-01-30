@@ -175,13 +175,13 @@ public class ResourceChange implements Comparable<ResourceChange> {
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
-		sb.append("[timestamp=")
+		sb.append("{timestamp=")
 		.append(timestamp)
 		.append(",type=")
 		.append(type.name())
 		.append(",path=")
 		.append(path)
-		.append("]");
+		.append("}");
 		return sb.toString();
 	}
 }

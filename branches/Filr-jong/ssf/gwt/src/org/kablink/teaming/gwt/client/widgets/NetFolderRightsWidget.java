@@ -133,7 +133,7 @@ public class NetFolderRightsWidget extends Composite
 			}
 			
 			// Invoke the "edit net folder rights" dialog.
-			m_editNetFolderRightsDlg.init( m_rightsInfo, m_editRightsHandler );
+			m_editNetFolderRightsDlg.init( m_principalId, m_rightsInfo, m_editRightsHandler );
 			m_editNetFolderRightsDlg.showRelativeToTarget( m_rightsLabel );
 		}
 		else

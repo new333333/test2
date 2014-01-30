@@ -107,6 +107,7 @@ public class EditShareNoteDlg extends DlgBox
 
 		mainTable = new FlexTable();
 		mainTable.addStyleName( "editShareNoteDlg_table" );
+		mainTable.addStyleName( "gwt-label" );
 		mainTable.getRowFormatter().setVerticalAlign( 0, HasVerticalAlignment.ALIGN_TOP );
 		mainPanel.add( mainTable );
 		

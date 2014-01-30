@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -197,6 +197,10 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 			rerenderRow(m_grid, m_gridRow, m_ti, true);
 			m_expanderImg.setResource(getImages().tree_opener());
 			
+			// ...reset the selector config position in case the
+			// ...collapse caused it to move...
+			repositionBinderConfig();
+			
 			// ...and tell everybody that it's been collapsed.
 			GwtTeaming.fireEventAsync(
 				new TreeNodeCollapsedEvent(
@@ -227,6 +231,10 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 				rerenderRow(m_grid, m_gridRow, m_ti, false);
 			}
 			m_expanderImg.setResource(getImages().tree_closer());
+			
+			// ...reset the selector config position in case the
+			// ...expand caused it to move...
+			repositionBinderConfig();
 			
 			// ...and tell everybody that it's been expanded.
 			GwtTeaming.fireEventAsync(
@@ -1470,13 +1478,42 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 	}
 
 	/*
+	 * Does what's necessary to ensure the binder config selector
+	 * is still positioned correctly.
+	 * 
+	 * This is typically necessary when a an entry containing the one
+	 * with the configuration is expanded or collapsed or when one
+	 * above the one with the configuration is expanded or collapsed.
+	 */
+	private void repositionBinderConfig() {
+		// Clear the existing configuration item...
+		clearSelectorConfig();
+		
+		// ...and if nothing is selected...
+		if (null == m_selectedBinderInfo) {
+			// ...bail.
+			return;
+		}
+		
+		// ...otherwise, find the selected configuration item...
+		TreeInfo rootTI = getRootTreeInfo();
+		TreeInfo selectedTI;
+		if (m_selectedBinderInfo.isBinderCollection())
+		     selectedTI = TreeInfo.findCollectionTI(rootTI, m_selectedBinderInfo.getCollectionType());
+		else selectedTI = TreeInfo.findBinderTI(    rootTI, m_selectedBinderInfo.getBinderId());
+		
+		// ...and show the configuration menu on it.
+		showBinderConfig(selectedTI, getSelectorId(selectedTI));
+	}
+	
+	/*
 	 * Clears and re-renders a TreeInfo object into a FlexTable row.
 	 */
 	private void rerenderRow(FlexTable grid, int row, TreeInfo ti, boolean rerenderToCollapse) {
 		clearRow(grid, row);
 		renderRow(grid, row, ti, getRenderDepth(ti), rerenderToCollapse);
 	}
-	
+
 	/*
 	 * Asynchronously runs the selector configuration menu.
 	 */

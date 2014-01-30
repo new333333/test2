@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -39,7 +39,6 @@ import org.kablink.teaming.gwt.client.widgets.DlgBox;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
-import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.client.Window;
@@ -48,6 +47,7 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.Panel;
+import com.google.gwt.user.client.ui.UIObject;
 
 /**
  * Implements an alert dialog that can replace GWT's Windows.alert()
@@ -56,9 +56,10 @@ import com.google.gwt.user.client.ui.Panel;
  * @author drfoster@novell.com
  */
 public class AlertDlg extends DlgBox {
-	private FlowPanel			m_dlgPanel;		// The panel holding the dialog's content.
-	private GwtTeamingMessages	m_messages;		// Access to Vibe's messages.
-	private String				m_alertText;	// The text to alert the user with. 
+	private FlowPanel			m_dlgPanel;			// The panel holding the dialog's content.
+	private GwtTeamingMessages	m_messages;			// Access to Vibe's messages.
+	private String				m_alertText;		// The text to alert the user with.
+	private UIObject			m_showRelativeTo;	// UIObject to show the dialog relative to.  null -> Center it.
 
 	/*
 	 * Class constructor.
@@ -67,9 +68,9 @@ public class AlertDlg extends DlgBox {
 	 * splitting.  All instantiations of this object must be done
 	 * through its createAsync().
 	 */
-	private AlertDlg() {
+	private AlertDlg(boolean autoHide, boolean modal) {
 		// Initialize the super class...
-		super(false, true, DlgButtonMode.Close);	// false -> Don't auto hide.  true -> Modal.
+		super(autoHide, modal, DlgButtonMode.Close);
 
 		// ...initialize everything else...
 		m_messages = GwtTeaming.getMessages();
@@ -129,13 +130,12 @@ public class AlertDlg extends DlgBox {
 	 * Asynchronously populates the contents of the dialog.
 	 */
 	private void populateDlgAsync() {
-		ScheduledCommand doPopulate = new ScheduledCommand() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
 				populateDlgNow();
 			}
-		};
-		Scheduler.get().scheduleDeferred(doPopulate);
+		});
 	}
 	
 	/*
@@ -157,29 +157,31 @@ public class AlertDlg extends DlgBox {
 		gridCellFmt.addStyleName(0, 0, "vibe-alertDlg_NameLabel");
 		gridCellFmt.setVerticalAlignment(0, 0, HasVerticalAlignment.ALIGN_MIDDLE);
 
-		// Finally, show the dialog centered on the screen.
-		center();
+		// Finally, show the dialog.
+		if (null == m_showRelativeTo)
+		     center();
+		else showRelativeTo(m_showRelativeTo);
 	}
 	
 	/*
 	 * Asynchronously runs the given instance of the alert dialog.
 	 */
-	private static void runDlgAsync(final AlertDlg aDlg, final String alertText) {
-		ScheduledCommand doRun = new ScheduledCommand() {
+	private static void runDlgAsync(final AlertDlg aDlg, final String alertText, final UIObject showRelativeTo) {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
-				aDlg.runDlgNow(alertText);
+				aDlg.runDlgNow(alertText, showRelativeTo);
 			}
-		};
-		Scheduler.get().scheduleDeferred(doRun);
+		});
 	}
 	
 	/*
 	 * Synchronously runs the given instance of the alert dialog.
 	 */
-	private void runDlgNow(String alertText) {
-		// Store the parameter...
-		m_alertText = alertText;
+	private void runDlgNow(String alertText, final UIObject showRelativeTo) {
+		// Store the parameters...
+		m_alertText      = alertText;
+		m_showRelativeTo = showRelativeTo;
 
 		// ...and start populating the dialog.
 		populateDlgAsync();
@@ -206,11 +208,14 @@ public class AlertDlg extends DlgBox {
 	 */
 	private static void doAsyncOperation(
 			// createAsync() parameters.
-			final AlertDlgClient aDlgClient,
+			final AlertDlgClient	aDlgClient,
+			final boolean			autoHide,
+			final boolean			modal,
 			
 			// initAndShow() parameters,
 			final AlertDlg	aDlg,
-			final String	alertText) {
+			final String	alertText,
+			final UIObject	showRelativeTo) {
 		GWT.runAsync(AlertDlg.class, new RunAsyncCallback() {
 			@Override
 			public void onFailure(Throwable reason) {
@@ -225,7 +230,7 @@ public class AlertDlg extends DlgBox {
 				// Is this a request to create a dialog?
 				if (null != aDlgClient) {
 					// Yes!  Create it and return it via the callback.
-					AlertDlg aDlg = new AlertDlg();
+					AlertDlg aDlg = new AlertDlg(autoHide, modal);
 					aDlgClient.onSuccess(aDlg);
 				}
 				
@@ -233,7 +238,7 @@ public class AlertDlg extends DlgBox {
 					// No, it's not a request to create a dialog!  It
 					// must be a request to run an existing one.  Run
 					// it.
-					runDlgAsync(aDlg, alertText);
+					runDlgAsync(aDlg, alertText, showRelativeTo);
 				}
 			}
 		});
@@ -244,9 +249,16 @@ public class AlertDlg extends DlgBox {
 	 * the callback.
 	 * 
 	 * @param aDlgClient
+	 * @param autoHide
+	 * @param modal
 	 */
+	public static void createAsync(AlertDlgClient aDlgClient, boolean autoHide, boolean modal) {
+		doAsyncOperation(aDlgClient, autoHide, modal, null, null, null);
+	}
+	
 	public static void createAsync(AlertDlgClient aDlgClient) {
-		doAsyncOperation(aDlgClient, null, null);
+		// Always use the initial form of the method.
+		createAsync(aDlgClient, false, true);	// false -> Don't auto hide.  true -> Modal.
 	}
 	
 	/**
@@ -254,8 +266,14 @@ public class AlertDlg extends DlgBox {
 	 * 
 	 * @param aDlg
 	 * @param alertText
+	 * @param showRelativeTo
 	 */
+	public static void initAndShow(AlertDlg aDlg, String alertText, UIObject showRelativeTo) {
+		doAsyncOperation(null, false, false, aDlg, alertText, showRelativeTo);
+	}
+	
 	public static void initAndShow(AlertDlg aDlg, String alertText) {
-		doAsyncOperation(null, aDlg, alertText);
+		// Always use the initial form of the method.
+		initAndShow(aDlg, alertText, null);
 	}
 }

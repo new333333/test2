@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -59,6 +59,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.DisableUsersCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.EnableUsersCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData.ErrorInfo;
+import org.kablink.teaming.gwt.client.rpc.shared.ForceFilesUnlockCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetMailToPublicLinksCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.MailToPublicLinksRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.GetViewFolderEntryUrlCmd;
@@ -1103,6 +1104,45 @@ public class BinderViewsHelper {
 		enableUsersWebAccess(userId, null);
 	}
 
+	/**
+	 * Forces the selected files to be unlocked.
+	 *
+	 * @param entityIds
+	 * @param reloadEvent
+	 */
+	public static void forceUnlockSelectedFiles(List<EntityId> entityIds, final VibeEventBase<?> reloadEvent) {
+		// If we weren't given any entity IDs to be unlocked...
+		if (!(GwtClientHelper.hasItems(entityIds))) {
+			// ...bail.
+			return;
+		}
+		
+		// Show a busy spinner while we unlock the files.
+		final SpinnerPopup busy = new SpinnerPopup();
+		busy.center();
+
+		// Send a request to unlock the files.
+		ForceFilesUnlockCmd cmd = new ForceFilesUnlockCmd(entityIds);
+		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
+			@Override
+			public void onFailure(Throwable caught) {
+				busy.hide();
+				GwtClientHelper.handleGwtRPCFailure(
+					caught,
+					m_messages.rpcFailure_ForceFilesUnlock());
+			}
+
+			@Override
+			public void onSuccess(VibeRpcResponse response) {
+				// Simply force the content to refresh.
+				busy.hide();
+				if (null == reloadEvent)
+				     FullUIReloadEvent.fireOneAsync();
+				else GwtTeaming.fireEventAsync(reloadEvent);
+			}
+		});
+	}
+	
 	/**
 	 * Returns a count of the entities that can't be shared because
 	 * they're Net Folders.

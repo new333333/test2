@@ -33,6 +33,7 @@
 
 package org.kablink.teaming.module.ldap.impl;
 import java.io.IOException;
+import java.net.InetAddress;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -242,6 +243,11 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	protected static String SYNC_JOB="ldap.job"; //properties in xml file need a unique name
 	private ContainerCoordinator m_containerCoordinator;
 
+	// We cache server host names so we don't have to call InetAddress.getByName() over and over
+	// Key: ip address
+	// Value: host name
+	Map<String, String> m_hostNameMap = new HashMap<String, String>();
+	
 	// As we create net folder servers, we will put the server and vol information in
 	// m_server_vol_map.
 	// Key: server name / volume name
@@ -258,6 +264,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		// that should be used for the home directory net folder.  Otherwise, use m_serverAddr and
 		// m_volume
 		private String m_netFolderServerName;
+		private String m_serverHostName;
 		private String m_serverAddr;
 		private String m_volume;
 		private String m_path;
@@ -267,6 +274,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		 */
 		public HomeDirInfo() {
 			m_netFolderServerName = null;
+			m_serverHostName = null;
 			m_serverAddr = null;
 			m_volume = null;
 			m_path = null;
@@ -292,6 +300,14 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		 */
 		public String getServerAddr() {
 			return m_serverAddr;
+		}
+		
+		/**
+		 * 
+		 */
+		public String getServerHostName()
+		{
+			return m_serverHostName;
 		}
 
 		/**
@@ -321,6 +337,14 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		 */
 		public void setServerAddr(String addr) {
 			m_serverAddr = addr;
+		}
+		
+		/**
+		 * 
+		 */
+		public void setServerHostName( String hostName )
+		{
+			m_serverHostName = hostName;
 		}
 
 		/**
@@ -616,77 +640,99 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				if ( value != null && value instanceof byte[] )
 				{
 					int i;
+					int index;
 					String strValue;
 					StringBuffer strBuffer;
+					boolean validFormat;
 					
 					homeDirInfo = new HomeDirInfo();
 					strBuffer = new StringBuffer();
 					strValue = new String( (byte[]) value );
 					
-					// Get the dn of the volume object
+					// Is the format of the value found in the home directory attribute valid?
+					// The string should be of the format, "dn of volume object#namespace value#home dir path"
+					// For example, "cn=test_vol1,o=novell#0#home\Peter"
+					validFormat = false;
+					index = strValue.indexOf( '#' );
+					if ( index > 0 )
 					{
-						String volumeDn;
-
-						i = 0;
-						while ( i < strValue.length() )
-						{
-							char ch;
-							
-							ch = strValue.charAt( i );
-							++i;
-							
-							if ( ch == '#' )
-								break;
-							
-							strBuffer.append( ch );
-						}
-						
-						volumeDn = strBuffer.toString();
-						if ( volumeDn != null && volumeDn.length() > 0 )
-						{
-							readVolumeAndServerInfoFromLdap( ldapContext, dirType, volumeDn, homeDirInfo, logErrors );
-						}
+						index = strValue.indexOf( '#', index+1 );
+						if ( index > 0 )
+							validFormat = true;
 					}
 					
-					// Skip over the namespace value
+					if ( validFormat )
 					{
-						while ( i < strValue.length() )
+						// Get the dn of the volume object
 						{
-							char ch;
+							String volumeDn;
+	
+							i = 0;
+							while ( i < strValue.length() )
+							{
+								char ch;
+								
+								ch = strValue.charAt( i );
+								++i;
+								
+								if ( ch == '#' )
+									break;
+								
+								strBuffer.append( ch );
+							}
 							
-							ch = strValue.charAt( i );
-							++i;
+							volumeDn = strBuffer.toString();
+							if ( volumeDn != null && volumeDn.length() > 0 )
+							{
+								readVolumeAndServerInfoFromLdap( ldapContext, dirType, volumeDn, homeDirInfo, logErrors );
+							}
+						}
+						
+						// Skip over the namespace value
+						{
+							while ( i < strValue.length() )
+							{
+								char ch;
+								
+								ch = strValue.charAt( i );
+								++i;
+								
+								if ( ch == '#' )
+									break;
+							}
+						}
+						
+						// Get the name of the user's home directory
+						{
+							String dirName;
+							int numChars;
 							
-							if ( ch == '#' )
-								break;
+							strBuffer = new StringBuffer();
+							numChars = 0;
+	
+							while ( i < strValue.length() )
+							{
+								char ch;
+								
+								ch = strValue.charAt( i );
+								++i;
+								
+								// We don't want a \ as the first character in the name
+								if ( numChars == 0 && ch == '\\' )
+									continue;
+								
+								strBuffer.append( ch );
+								++numChars;
+							}
+							
+							dirName = strBuffer.toString();
+							homeDirInfo.setPath( dirName );
 						}
 					}
-					
-					// Get the name of the user's home directory
+					else
 					{
-						String dirName;
-						int numChars;
-						
-						strBuffer = new StringBuffer();
-						numChars = 0;
-
-						while ( i < strValue.length() )
-						{
-							char ch;
-							
-							ch = strValue.charAt( i );
-							++i;
-							
-							// We don't want a \ as the first character in the name
-							if ( numChars == 0 && ch == '\\' )
-								continue;
-							
-							strBuffer.append( ch );
-							++numChars;
-						}
-						
-						dirName = strBuffer.toString();
-						homeDirInfo.setPath( dirName );
+						if ( logErrors || logger.isDebugEnabled() )
+							logger.error( "The value found in the home directory attribute is not in the correct format for the user: " + userDn + " \nhome directory value: " + strValue );
 					}
 				}
 			}
@@ -1029,6 +1075,40 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				if ( logErrors || logger.isDebugEnabled() )
 					logger.error( "Error reading attributes from the server object: " + serverDn + " " + ex.toString() );
 			}
+		}
+		
+		if ( serverAddr != null && serverAddr.length() > 0 )
+		{
+			String hostName;
+			
+			// Have we already done a reverse dns lookup on this ip address?
+			hostName = m_hostNameMap.get( serverAddr );
+			if ( hostName == null )
+			{
+				// No, do a reverse dns lookup on the ip address.
+				try
+				{
+					InetAddress addr;
+					
+					addr = InetAddress.getByName( serverAddr );
+					if ( addr != null )
+					{
+						hostName = addr.getHostName();
+						
+						m_hostNameMap.put( serverAddr,  hostName );
+					}
+				}
+				catch ( Exception ex )
+				{
+					
+				}
+			}
+			
+			if ( hostName != null && hostName.length() > 0 )
+			{
+				homeDirInfo.setServerHostName( hostName );
+			}
+				
 		}
 		
 		homeDirInfo.setServerAddr( serverAddr );
@@ -1823,9 +1903,8 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 
 			attributeValues = (Object[]) userList.get( i );
 			
-			// If this user is not disabled and is not one of the system users, add the
-			// user to the map.
-			if ( ((Boolean)attributeValues[PRINCIPAL_DISABLED] == Boolean.FALSE) && (Validator.isNull( (String)attributeValues[this.PRINCIPAL_INTERNALID])) )
+			// If this user is not one of the system users, add the user to the map.
+			if ( (Validator.isNull( (String)attributeValues[this.PRINCIPAL_INTERNALID])) )
 			{
 				String name;
 
@@ -2798,6 +2877,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	   		boolean delContainers;
 
 			m_server_vol_map.clear();
+			m_hostNameMap.clear();
 			m_zoneSyncInProgressMap.put( zone.getId(), Boolean.TRUE );
 			
 			// Sync guids if called for.
@@ -3867,8 +3947,8 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				if ( ldapGuid != null && ldapGuid.length() > 0 )
 					m_listOfUsersByLdapGuid.put( ldapGuid, attributeValues );
 				
-				//initialize all users as not found unless already disabled or reserved
-				if (((Boolean)attributeValues[PRINCIPAL_DISABLED] == Boolean.FALSE) && (Validator.isNull((String)attributeValues[PRINCIPAL_INTERNALID])))
+				//initialize all users as not found unless they are a reserved user.
+				if ( Validator.isNull((String)attributeValues[PRINCIPAL_INTERNALID]) )
 				{
 					notInLdap.put((Long)attributeValues[PRINCIPAL_ID], ssName);
 				}
@@ -4688,9 +4768,8 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				if ( ldapGuid != null && ldapGuid.length() > 0 )
 					m_listOfGroupsByLdapGuid.put( ldapGuid, row );
 				
-				//initialize all groups as not found unless already disabled or reserved
-				if ( ((Boolean)row[PRINCIPAL_DISABLED] == Boolean.FALSE) &&
-					 (Validator.isNull((String)row[PRINCIPAL_INTERNALID])) )
+				//initialize all groups as not found unless they are a reserved group
+				if ( Validator.isNull((String)row[PRINCIPAL_INTERNALID]) )
 				{
 					m_groupsNotInLdap.put((Long)row[PRINCIPAL_ID], ssName);
 				}

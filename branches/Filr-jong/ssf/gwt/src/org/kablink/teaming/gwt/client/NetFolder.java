@@ -59,6 +59,8 @@ public class NetFolder
 	private ArrayList<GwtRole> m_roles;
 	private boolean m_isHomeDir;
 	private boolean m_indexContent;
+	private Boolean m_inheritIndexContentSetting;
+	private Boolean m_inheritJitsSettings;
 	private NetFolderDataSyncSettings m_dataSyncSettings;
 	private GwtJitsNetFolderConfig m_jitsConfig;
 	private Boolean m_fullSyncDirOnly;
@@ -89,6 +91,8 @@ public class NetFolder
 		// Nothing to do.
 		m_isHomeDir = false;
 		m_indexContent = false;
+		m_inheritIndexContentSetting = true;
+		m_inheritJitsSettings = true;
 		m_fullSyncDirOnly = null;
 	}	
 	
@@ -105,6 +109,8 @@ public class NetFolder
 		m_syncScheduleConfig = netFolder.getSyncScheduleConfig();
 		m_isHomeDir = netFolder.getIsHomeDir();
 		m_indexContent = netFolder.getIndexContent();
+		m_inheritIndexContentSetting = netFolder.getInheritIndexContentSetting();
+		m_inheritJitsSettings = netFolder.getInheritJitsSettings();
 		
 		m_dataSyncSettings = new NetFolderDataSyncSettings();
 		m_dataSyncSettings.copy( netFolder.getDataSyncSettings() );
@@ -156,6 +162,22 @@ public class NetFolder
 	public boolean getIndexContent()
 	{
 		return m_indexContent;
+	}
+	
+	/**
+	 * 
+	 */
+	public boolean getInheritIndexContentSetting()
+	{
+		return m_inheritIndexContentSetting;
+	}
+	
+	/**
+	 * 
+	 */
+	public boolean getInheritJitsSettings()
+	{
+		return m_inheritJitsSettings;
 	}
 	
 	/**
@@ -265,6 +287,22 @@ public class NetFolder
 	public void setIndexContent( boolean index )
 	{
 		m_indexContent = index;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setInheritIndexContentSetting( Boolean inherit )
+	{
+		m_inheritIndexContentSetting = inherit;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setInheritJitsSettings( Boolean inherit )
+	{
+		m_inheritJitsSettings = inherit;
 	}
 	
 	/**

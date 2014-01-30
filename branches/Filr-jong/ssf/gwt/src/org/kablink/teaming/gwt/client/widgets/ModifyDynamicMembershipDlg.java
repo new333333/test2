@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -32,19 +32,24 @@
  */
 package org.kablink.teaming.gwt.client.widgets;
 
+import java.util.List;
 
 import org.kablink.teaming.gwt.client.EditCanceledHandler;
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtDynamicGroupMembershipCriteria;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
+import org.kablink.teaming.gwt.client.ldapbrowser.LdapObject;
+import org.kablink.teaming.gwt.client.ldapbrowser.LdapSearchInfo;
 import org.kablink.teaming.gwt.client.rpc.shared.IntegerRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.TestGroupMembershipCriteriaCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
+import org.kablink.teaming.gwt.client.widgets.LdapBrowserDlg.LdapBrowseListCallback;
+import org.kablink.teaming.gwt.client.widgets.LdapBrowserDlg.LdapBrowserDlgClient;
 
-import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -64,11 +69,10 @@ import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.FlexTable.FlexCellFormatter;
 
-
 /**
  * This dialog can be used to modify the dynamic membership of a group.
+ * 
  * @author jwootton
- *
  */
 public class ModifyDynamicMembershipDlg extends DlgBox
 {
@@ -80,6 +84,9 @@ public class ModifyDynamicMembershipDlg extends DlgBox
 	private FlowPanel m_inProgressPanel;
 	private ShowDynamicMembershipDlg m_dynamicMembershipDlg;
 	private Long m_groupId;
+	private Button m_browseBaseDnBtn;				// LDAP browse button next to m_baseDnTxtBox.
+	private LdapBrowserDlg m_ldapBrowserDlg;		// An instance of an LdapBrowserDlg.
+	private List<LdapBrowseSpec> m_ldapServerList;	// List of LDAP servers obtained the first time m_browseBaseDnBtn is clicked.
 	
 	/**
 	 * 
@@ -139,9 +146,7 @@ public class ModifyDynamicMembershipDlg extends DlgBox
 				@Override
 				public void onClick( ClickEvent event )
 				{
-					Scheduler.ScheduledCommand cmd;
-					
-					cmd = new Scheduler.ScheduledCommand()
+					GwtClientHelper.deferCommand( new ScheduledCommand()
 					{
 						/**
 						 * 
@@ -152,8 +157,7 @@ public class ModifyDynamicMembershipDlg extends DlgBox
 							// Invoke the Show Dynamic Membership dialog.
 							invokeShowDynamicMembershipDlg();
 						}
-					};
-					Scheduler.get().scheduleDeferred( cmd );
+					} );
 				}
 				
 			};
@@ -171,9 +175,34 @@ public class ModifyDynamicMembershipDlg extends DlgBox
 			label = new InlineLabel( messages.modifyDynamicMembershipDlgBaseDnLabel() );
 			table.setWidget( nextRow, 0, label );
 			
+			FlowPanel tmpPanel = new FlowPanel();
 			m_baseDnTxtBox = new TextBox();
 			m_baseDnTxtBox.setVisibleLength( 40 );
-			table.setWidget( nextRow, 1, m_baseDnTxtBox );
+			tmpPanel.add( m_baseDnTxtBox );
+			
+			FlowPanel html = new FlowPanel();
+			Image btnImg = GwtClientHelper.buildImage( GwtTeaming.getImageBundle().browseLdap().getSafeUri().asString() );
+			btnImg.setTitle( GwtTeaming.getMessages().modifyDynamicMembershipDlgBaseDnAlt() );
+			html.add( btnImg );
+			m_browseBaseDnBtn = new Button( html.getElement().getInnerHTML() );
+			m_browseBaseDnBtn.addStyleName( "dynamicGroupMembership_BrowseDN" );
+			m_browseBaseDnBtn.addClickHandler( new ClickHandler()
+			{
+				@Override
+				public void onClick( ClickEvent event )
+				{
+					GwtClientHelper.deferCommand( new ScheduledCommand()
+					{
+						@Override
+						public void execute()
+						{
+							browseLdapForBaseDNAsync();
+						}
+					} );
+				}
+			} );
+			tmpPanel.add( m_browseBaseDnBtn );
+			table.setWidget( nextRow, 1, tmpPanel );
 			++nextRow;
 		}
 		
@@ -237,9 +266,7 @@ public class ModifyDynamicMembershipDlg extends DlgBox
 				@Override
 				public void onClick( ClickEvent event )
 				{
-					Scheduler.ScheduledCommand cmd;
-					
-					cmd = new Scheduler.ScheduledCommand()
+					GwtClientHelper.deferCommand( new ScheduledCommand()
 					{
 						/**
 						 * 
@@ -252,8 +279,7 @@ public class ModifyDynamicMembershipDlg extends DlgBox
 							// were found.
 							invokeExecuteLdapQueryDlg();
 						}
-					};
-					Scheduler.get().scheduleDeferred( cmd );
+					} );
 				}
 				
 			};
@@ -287,6 +313,155 @@ public class ModifyDynamicMembershipDlg extends DlgBox
 		return mainPanel;
 	}
 
+	/*
+	 * Runs the LDAP browser for the base DN.
+	 */
+	private void browseLdapForBaseDNAsync()
+	{
+		GwtClientHelper.deferCommand( new ScheduledCommand()
+		{
+			@Override
+			public void execute()
+			{
+				browseLdapForBaseDNNow();
+			}
+		} );
+	}
+	
+	private void browseLdapForBaseDNNow()
+	{
+		// Have we instantiated an LDAP browser yet?
+		if ( null == m_ldapBrowserDlg )
+		{
+			// No!  Create one now...
+			LdapBrowserDlg.createAsync( new LdapBrowserDlgClient()
+			{
+				@Override
+				public void onUnavailable()
+				{
+					// Nothing to do.  Error handled in
+					// asynchronous provider.
+				}
+				
+				@Override
+				public void onSuccess( LdapBrowserDlg ldapDlg )
+				{
+					// ...save it away and run it.
+					m_ldapBrowserDlg = ldapDlg;
+					getLdapServersAndRunLdapBrowserAsync();
+				}
+			} );
+		}
+		
+		else
+		{
+			// Yes, we've already instantiated an LDAP browser!  Simply
+			// run it.
+			getLdapServersAndRunLdapBrowserNow();
+		}
+	}
+
+	/*
+	 * Gets the list of LDAP servers and runs the browser on them.
+	 */
+	private void getLdapServersAndRunLdapBrowserAsync()
+	{
+		GwtClientHelper.deferCommand(new ScheduledCommand()
+		{
+			@Override
+			public void execute()
+			{
+				// ...and run it.
+				getLdapServersAndRunLdapBrowserNow();
+			}
+		} );
+	}
+	
+	private void getLdapServersAndRunLdapBrowserNow()
+	{
+		// Have we obtained the list of LDAP servers yet?
+		if ( null == m_ldapServerList )
+		{
+			// No!  Read them now...
+			LdapSearchInfo si = new LdapSearchInfo();
+			si.setSearchObjectClass(LdapSearchInfo.RETURN_CONTAINERS_ONLY);
+			si.setSearchSubTree(false);
+			LdapBrowserDlg.getLdapServerList( si, new LdapBrowseListCallback()
+			{
+				@Override
+				public void onFailure()
+				{
+					// Nothing to do.  Error handled in
+					// asynchronous provider.
+				}
+				
+				@Override
+				public void onSuccess( List<LdapBrowseSpec> serverList )
+				{
+					// ...save them away and run the dialog.
+					m_ldapServerList = serverList;
+					runLdapBrowserAsync();
+				}
+			} );
+		}
+		
+		else
+		{
+			// Yes, we've already obtained the list of LDAP servers!
+			// Simply run the dialog.
+			runLdapBrowserNow();
+		}
+	}
+
+	/*
+	 * Runs the LDAP browser.
+	 */
+	private void runLdapBrowserAsync()
+	{
+		GwtClientHelper.deferCommand(new ScheduledCommand()
+		{
+			@Override
+			public void execute()
+			{
+				runLdapBrowserNow();
+			}
+		} );
+	}
+	
+	private void runLdapBrowserNow()
+	{
+		// Do we have any LDAP servers to browse?
+		int c = ( ( null == m_ldapServerList ) ? 0 : m_ldapServerList.size() );
+		if ( 0 == c )
+		{
+			// No!  Tell the user about the problem and bail.
+			GwtClientHelper.deferredAlert( GwtTeaming.getMessages().modifyNetFolderServerDlg_NoLdapServers() );
+			return;
+		}
+		
+		// Run the LDAP browser using the list of LDAP servers.
+		LdapBrowserDlg.initAndShow( 
+			m_ldapBrowserDlg,
+			new LdapBrowserCallback()
+			{
+				@Override
+				public void closed()
+				{
+					// Ignored.  We don't care if the user closes
+					// the browser.
+				}
+
+				@Override
+				public void selectionChanged( LdapObject selection )
+				{
+					m_baseDnTxtBox.setValue( selection.getDn() );
+					m_ldapBrowserDlg.hide();
+				}
+			},
+			m_ldapServerList,		// List of LDAP servers that can be browsed.
+			m_browseBaseDnBtn );	// The dialog is positioned relative to this.
+	}
+	
 	/**
 	 * Return the criteria for group membership
 	 */
@@ -328,6 +503,11 @@ public class ModifyDynamicMembershipDlg extends DlgBox
 	public void init( GwtDynamicGroupMembershipCriteria membershipCriteria, Integer currentMembershipCnt, Long groupId )
 	{
 		m_groupId = groupId;
+		
+		// Forget about any list of LDAP servers.  The list may have
+		// changed since this dialog was last run and setting this to
+		// null will cause it to be reloaded when needed.
+		m_ldapServerList = null;
 		
 		if ( membershipCriteria != null )
 		{

@@ -195,6 +195,66 @@ public class RequestInfo extends JavaScriptObject
 	}-*/;
 	
 	/**
+	 * Return the default value for jits results max age
+	 */
+	public final native String getDefaultJitsResultsMaxAgeAsString()
+	/*-{
+		return this.defaultJitsResultsMaxAge;
+	}-*/;
+	
+	/**
+	 * Return the default value for jits results max age
+	 */
+	public final Long getDefaultJitsResultsMaxAge()
+	{
+		Long defaultVal;
+
+		try
+		{
+			String value;
+
+			value = getDefaultJitsResultsMaxAgeAsString();
+			defaultVal = Long.parseLong( value );
+		}
+		catch ( Exception ex )
+		{
+			defaultVal = 60000L;
+		}
+		
+		return defaultVal;
+	}
+	
+	/**
+	 * Return the default value for jits acl max age
+	 */
+	public final native String getDefaultJitsAclMaxAgeAsString()
+	/*-{
+		return this.defaultJitsAclMaxAge;
+	}-*/;
+	
+	/**
+	 * Return the default value for jits acl max age
+	 */
+	public final Long getDefaultJitsAclMaxAge()
+	{
+		Long defaultVal;
+
+		try
+		{
+			String value;
+
+			value = getDefaultJitsAclMaxAgeAsString();
+			defaultVal = Long.parseLong( value );
+		}
+		catch ( Exception ex )
+		{
+			defaultVal = 600000L;
+		}
+		
+		return defaultVal;
+	}
+	
+	/**
 	 * Return the URL used for simple searches.
 	 * 
 	 * @return
@@ -293,6 +353,16 @@ public class RequestInfo extends JavaScriptObject
 	/*-{
 		return this.locale;
 	}-*/;
+
+	/**
+	 * Return the flag that tells us if we should show the "Synchronize only the directory structure"
+	 * ui in the net folder and net folder server dialogs.
+	 */
+	public final native boolean getShowSyncOnlyDirStructureUI()
+	/*-{
+		return this.getBFromS( this.showSyncOnlyDirStructureUI );
+	}-*/;
+	
 	
 	/**
 	 * Return the user's time zone.

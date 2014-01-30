@@ -116,6 +116,7 @@ public class AdminResourceUtil {
         model.setHomeDir(folder.isHomeDir());
 
         model.setIndexContent(folder.getIndexContent());
+        model.setInheritIndexContent(folder.getUseInheritedIndexContent());
 
         model.setJitsEnabled(folder.isJitsEnabled());
         model.setJitsMaxACLAge(folder.getJitsMaxAge());

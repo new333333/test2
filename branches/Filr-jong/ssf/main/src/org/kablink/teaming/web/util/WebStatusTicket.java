@@ -43,6 +43,7 @@ public class WebStatusTicket implements StatusTicket {
 	private PortletSession session;
 	private String id;
 	private String status;
+	private String state;
 	private Boolean doneFlag = false;
 
 	/**
@@ -111,6 +112,14 @@ public class WebStatusTicket implements StatusTicket {
 
 	public synchronized String getStatus() {
 		return status;
+	}
+	
+	public synchronized void setState(String state) {
+		this.state = state;
+	}
+
+	public synchronized String getState() {
+		return state;
 	}
 	
 	private static WebStatusTicket unknownTicket = new WebStatusTicket(null, "__UNKNOWN__") {

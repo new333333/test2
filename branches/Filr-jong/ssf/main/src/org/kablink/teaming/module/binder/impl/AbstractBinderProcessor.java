@@ -140,6 +140,7 @@ import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SimpleProfiler;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.StatusTicket;
+import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.util.StringUtil;
@@ -780,6 +781,30 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
    	   				dirOnly = Boolean.valueOf( inputData.getSingleValue( ObjectKeys.FIELD_BINDER_FULL_SYNC_DIR_ONLY ) );
  
    				entryData.put( ObjectKeys.FIELD_BINDER_FULL_SYNC_DIR_ONLY, dirOnly );
+   			}
+
+   			if ( inputData.exists( ObjectKeys.FIELD_BINDER_USE_INHERITED_INDEX_CONTENT ) && !entryData.containsKey( ObjectKeys.FIELD_BINDER_USE_INHERITED_INDEX_CONTENT ) )
+   			{
+   				Boolean inherit = null;
+   				Object value;
+   				
+   				value = inputData.getSingleObject( ObjectKeys.FIELD_BINDER_USE_INHERITED_INDEX_CONTENT );
+   				if ( value != null && value instanceof Boolean )
+   	   				inherit = (Boolean)value;
+   					
+   				entryData.put( ObjectKeys.FIELD_BINDER_USE_INHERITED_INDEX_CONTENT, inherit );
+   			}
+
+   			if ( inputData.exists( ObjectKeys.FIELD_BINDER_USE_INHERITED_JITS_SETTINGS ) && !entryData.containsKey( ObjectKeys.FIELD_BINDER_USE_INHERITED_JITS_SETTINGS ) )
+   			{
+   				Boolean inherit = null;
+   				Object value;
+   				
+   				value = inputData.getSingleObject( ObjectKeys.FIELD_BINDER_USE_INHERITED_JITS_SETTINGS );
+   				if ( value != null && value instanceof Boolean )
+   	   				inherit = (Boolean)value;
+   					
+   				entryData.put( ObjectKeys.FIELD_BINDER_USE_INHERITED_JITS_SETTINGS, inherit );
    			}
    		}
    		Boolean library = null;
@@ -2087,6 +2112,8 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 	   	    	getCoreDao().evict(b);
 	   	    	bindersIndexed++;
 			}
+   	    	statusTicket.setStatus(NLT.get("index.finished") + "<br/><br/>" + NLT.get("index.indexingBinder", new Object[] {String.valueOf(bindersIndexed), String.valueOf(ids.size())}));
+   	    	statusTicket.setState(WebKeys.AJAX_STATUS_STATE_COMPLETED);
 			if(logger.isDebugEnabled())
 				logger.debug("Applying changes to index");
 	  		IndexSynchronizationManager.applyChanges(SPropsUtil.getInt("lucene.flush.threshold", 100));

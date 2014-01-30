@@ -116,8 +116,8 @@ public class ReadFileController extends AbstractReadFileController {
 	private final static String ZIPFOLDER_DEFAULT_FILENAME = "folder.zip";
 	
 	@Override
-	protected ModelAndView handleRequestAfterValidation(HttpServletRequest request,
-            HttpServletResponse response) throws Exception {
+	protected ModelAndView handleRequestAfterValidation(final HttpServletRequest request,
+            final HttpServletResponse response) throws Exception {
 		Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
 		Boolean singleByte = SPropsUtil.getBoolean("export.filename.8bitsinglebyte.only", true);
 		
@@ -401,7 +401,7 @@ public class ReadFileController extends AbstractReadFileController {
 			try {
 				Long shareItemId = Long.parseLong(String.valueOf(args[WebUrlUtil.FILE_URL_SHARED_PUBLIC_FILE_SHARE_ID]));
 				String passKey = args[WebUrlUtil.FILE_URL_SHARED_PUBLIC_FILE_PASSKEY];
-				String operation = args[WebUrlUtil.FILE_URL_SHARED_PUBLIC_FILE_OPERATION];
+				final String operation = args[WebUrlUtil.FILE_URL_SHARED_PUBLIC_FILE_OPERATION];
 				if (operation.equals(WebKeys.URL_SHARE_PUBLIC_LINK) || operation.equals(WebKeys.URL_SHARE_PUBLIC_LINK_HTML)) {
 					final ShareItem shareItem = getSharingModule().getShareItem(shareItemId);
 					if (shareItem != null && shareItem.isLatest() && !shareItem.isExpired() && !shareItem.isDeleted()) {
@@ -411,127 +411,137 @@ public class ReadFileController extends AbstractReadFileController {
 							if (sharer != null & sharer.isActive()) {
 								//OK, run this request under the account of the sharer to see if the access to the item is still allowed
 								final String fn = args[WebUrlUtil.FILE_URL_SHARED_PUBLIC_FILE_NAME];
-								FileAttachment fa = (FileAttachment) RunasTemplate.runas(new RunasCallback() {
+					            Exception result = (Exception) RunasTemplate.runas(new RunasCallback() {
 									@Override
 									public Object doAs() {
-										DefinableEntity entity = getSharingModule().getSharedEntity(shareItem);
-										FileAttachment fa = null;
-										if (entity != null) {
-											fa = getAttachment(entity, fn, WebKeys.READ_FILE_LAST, null);
+										try {
+											DefinableEntity sharedEntity = getSharingModule().getSharedEntity(shareItem);
+											FileAttachment fa = null;
+											if (sharedEntity != null) {
+												fa = getAttachment(sharedEntity, fn, WebKeys.READ_FILE_LAST, null);
+											}
+											if (fa != null && operation.equals(WebKeys.URL_SHARE_PUBLIC_LINK)) {
+												DefinableEntity entity = fa.getOwner().getEntity();
+												String shortFileName = FileUtil.getShortFileName(fa.getFileItem().getName());	
+												String contentType = getFileTypeMap().getContentType(shortFileName);
+												WebUrlUtil.getSharedPublicFileUrl(request, shareItem.getId(), shareItem.getPassKey(), WebKeys.URL_SHARE_PUBLIC_LINK, shortFileName);
+												//Protect against XSS attacks if this is an HTML file
+												contentType = FileUtils.validateDownloadContentType(contentType);
+				
+												if (!(contentType.toLowerCase().contains("charset"))) {
+													String encoding = SPropsUtil.getString("web.char.encoding", "UTF-8");
+													if (MiscUtil.hasString(encoding)) {
+														contentType += ("; charset=" + encoding);
+													}
+												}
+												response.setContentType(contentType);
+												boolean isHttps = request.getScheme().equalsIgnoreCase("https");
+												String cacheControl = "private, max-age=86400";
+												if (isHttps) {
+													response.setHeader("Pragma", "public");
+													cacheControl += ", proxy-revalidate, s-maxage=0";
+												}
+												response.setHeader("Cache-Control", cacheControl);
+												String attachment = "";
+												if (FileHelper.checkIfAttachment(contentType)) attachment = "attachment; ";
+												response.setHeader("Content-Disposition",
+														attachment + "filename=\"" + FileHelper.encodeFileName(request, shortFileName) + "\"");
+												response.setHeader("Last-Modified", formatDate(fa.getModification().getDate()));	
+												try {
+													Binder parent = getBinder(entity);
+													if (!fa.isEncrypted()) {
+														//The file length cannot be guaranteed if the file is encrypted. It is better to leave this field off in that case.
+														response.setHeader("Content-Length", 
+															String.valueOf(FileHelper.getLength(parent, entity, fa)));
+													}
+													getFileModule().readFile(parent, entity, fa, response.getOutputStream());
+													//Report the file download in the audit trail
+													getReportModule().addFileInfo(AuditType.download, fa);
+												}
+												catch(Exception e) {
+													response.sendError(HttpServletResponse.SC_BAD_REQUEST, NLT.get("file.error") + ": " + e.getMessage());
+												}
+												
+											} else if (fa != null && operation.equals(WebKeys.URL_SHARE_PUBLIC_LINK_HTML)) {
+												String viewType = ServletRequestUtils.getStringParameter(request, WebKeys.URL_FILE_VIEW_TYPE, ""); 
+												String fileId = ServletRequestUtils.getStringParameter(request, WebKeys.URL_FILE_ID, ""); 
+												String fileTitle = ServletRequestUtils.getStringParameter(request, WebKeys.URL_FILE_TITLE, ""); 
+												if (!fileTitle.equals("")) fileTitle = Http.decodeURL(fileTitle);
+												String fileTime = ServletRequestUtils.getStringParameter(request, WebKeys.URL_FILE_TIME, ""); 
+												if (viewType.equals("")) {
+													/**
+													 * Convert specified file (XLS, PDF, DOC, etc) to HTML format and display to browser. Part of "View as HTML" functionality.
+													 */
+													DefinableEntity entity = fa.getOwner().getEntity();
+													try {
+														Binder parent = null;
+														if (entity instanceof Binder) parent = (Binder)entity;
+														if (entity instanceof FolderEntry) parent = ((FolderEntry)entity).getParentBinder();
+														response.setContentType("text/html");
+														response.setHeader("Cache-Control", "private");
+														if (entity != null && parent != null) {
+															getConvertedFileModule().readCacheHtmlFile(request.getRequestURI(), shareItem, parent, entity, fa, response.getOutputStream());
+															getReportModule().addFileInfo(AuditType.download, fa);
+														}
+														return null;
+													}
+													catch(Exception e) {
+														String url = WebUrlUtil.getServletRootURL(request);
+														url += "errorHandler";
+														String eMsg = e.getLocalizedMessage();
+														if (eMsg == null) eMsg = e.toString();
+														eMsg = eMsg.replaceAll("\"", "'");
+														String output = "<html><head><script language='javascript'>function submitForm(){ document.errorform.submit(); }</script></head><body onload='javascript:submitForm()'><form name='errorform' action='" + url + "'><input type='hidden' name='ssf-error' value=\"" + eMsg + "\"></input></form></body></html>";
+														
+														response.setContentType("text/html; charset=UTF-8");
+														response.getOutputStream().print(output);
+														response.getOutputStream().flush();
+													}
+													
+												} else if (viewType.equals("image") || viewType.equals("url")) {
+													/**
+													 * There is a <IMG> or <A> in an HTML file that points to a file within the SS file repository
+													 * We must fetch that file from disk an stream into the browser. The file location could be anywhere
+													 * on the server machine. Part of "View as HTML" functionality.
+													 */
+													try {
+														DefinableEntity entity = fa.getOwner().getEntity();
+														Binder parent = getBinder(entity);
+														String fileName = ServletRequestUtils.getStringParameter(request, "filename", ""); 
+														if (viewType.equals("url")) {
+															response.setContentType("text/html");
+															response.setHeader("Cache-Control", "private");
+															getConvertedFileModule().readCacheUrlReferenceFile(shareItem, parent, entity, fa, response.getOutputStream(), fileName);
+														} else {
+															response.setContentType("image/jpeg");
+															getConvertedFileModule().readCacheImageReferenceFile(shareItem, parent, entity, fa, response.getOutputStream(), fileName);
+														}
+													}
+													catch(Exception e) {
+														response.getOutputStream().print(NLT.get("file.error") + ": " + e.getLocalizedMessage());
+													}
+													
+													try {
+														response.getOutputStream().flush();
+													}
+													catch(Exception ignore) {}
+												}
+	
+											} else {
+												response.sendError(HttpServletResponse.SC_BAD_REQUEST, NLT.get("file.error.unknownFile"));
+											}
+										} catch(Exception e) {
+											// Bad format of url; just return null.
+											logger.error("ReadFileController.handleRequestAfterValidation( Share File Downlaod ):  EXCEPTION:  ", e);
+											//res.sendError(HttpServletResponse.SC_BAD_REQUEST, NLT.get("file.error.unknownFile"));
+											return e;
 										}
-										return fa;
+										return null;
 									}
 								}, zoneId, sharer.getId());
-								if (fa != null && operation.equals(WebKeys.URL_SHARE_PUBLIC_LINK)) {
-									DefinableEntity entity = fa.getOwner().getEntity();
-									String shortFileName = FileUtil.getShortFileName(fa.getFileItem().getName());	
-									String contentType = getFileTypeMap().getContentType(shortFileName);
-									WebUrlUtil.getSharedPublicFileUrl(request, shareItem.getId(), shareItem.getPassKey(), WebKeys.URL_SHARE_PUBLIC_LINK, shortFileName);
-									//Protect against XSS attacks if this is an HTML file
-									contentType = FileUtils.validateDownloadContentType(contentType);
-	
-									if (!(contentType.toLowerCase().contains("charset"))) {
-										String encoding = SPropsUtil.getString("web.char.encoding", "UTF-8");
-										if (MiscUtil.hasString(encoding)) {
-											contentType += ("; charset=" + encoding);
-										}
-									}
-									response.setContentType(contentType);
-									boolean isHttps = request.getScheme().equalsIgnoreCase("https");
-									String cacheControl = "private, max-age=86400";
-									if (isHttps) {
-										response.setHeader("Pragma", "public");
-										cacheControl += ", proxy-revalidate, s-maxage=0";
-									}
-									response.setHeader("Cache-Control", cacheControl);
-									String attachment = "";
-									if (FileHelper.checkIfAttachment(contentType)) attachment = "attachment; ";
-									response.setHeader("Content-Disposition",
-											attachment + "filename=\"" + FileHelper.encodeFileName(request, shortFileName) + "\"");
-									response.setHeader("Last-Modified", formatDate(fa.getModification().getDate()));	
-									try {
-										Binder parent = getBinder(entity);
-										if (!fa.isEncrypted()) {
-											//The file length cannot be guaranteed if the file is encrypted. It is better to leave this field off in that case.
-											response.setHeader("Content-Length", 
-												String.valueOf(FileHelper.getLength(parent, entity, fa)));
-										}
-										getFileModule().readFile(parent, entity, fa, response.getOutputStream());
-										//Report the file download in the audit trail
-										getReportModule().addFileInfo(AuditType.download, fa);
-									}
-									catch(Exception e) {
-										response.sendError(HttpServletResponse.SC_BAD_REQUEST, NLT.get("file.error") + ": " + e.getMessage());
-									}
-									
-								} else if (fa != null && operation.equals(WebKeys.URL_SHARE_PUBLIC_LINK_HTML)) {
-									String viewType = ServletRequestUtils.getStringParameter(request, WebKeys.URL_FILE_VIEW_TYPE, ""); 
-									String fileId = ServletRequestUtils.getStringParameter(request, WebKeys.URL_FILE_ID, ""); 
-									String fileTitle = ServletRequestUtils.getStringParameter(request, WebKeys.URL_FILE_TITLE, ""); 
-									if (!fileTitle.equals("")) fileTitle = Http.decodeURL(fileTitle);
-									String fileTime = ServletRequestUtils.getStringParameter(request, WebKeys.URL_FILE_TIME, ""); 
-									if (viewType.equals("")) {
-										/**
-										 * Convert specified file (XLS, PDF, DOC, etc) to HTML format and display to browser. Part of "View as HTML" functionality.
-										 */
-										DefinableEntity entity = fa.getOwner().getEntity();
-										try {
-											Binder parent = null;
-											if (entity instanceof Binder) parent = (Binder)entity;
-											if (entity instanceof FolderEntry) parent = ((FolderEntry)entity).getParentBinder();
-											response.setContentType("text/html");
-											response.setHeader("Cache-Control", "private");
-											if (entity != null && parent != null) {
-												getConvertedFileModule().readCacheHtmlFile(request.getRequestURI(), shareItem, parent, entity, fa, response.getOutputStream());
-												getReportModule().addFileInfo(AuditType.download, fa);
-											}
-											return null;
-										}
-										catch(Exception e) {
-											String url = WebUrlUtil.getServletRootURL(request);
-											url += "errorHandler";
-											String eMsg = e.getLocalizedMessage();
-											if (eMsg == null) eMsg = e.toString();
-											eMsg = eMsg.replaceAll("\"", "'");
-											String output = "<html><head><script language='javascript'>function submitForm(){ document.errorform.submit(); }</script></head><body onload='javascript:submitForm()'><form name='errorform' action='" + url + "'><input type='hidden' name='ssf-error' value=\"" + eMsg + "\"></input></form></body></html>";
-											
-											response.setContentType("text/html; charset=UTF-8");
-											response.getOutputStream().print(output);
-											response.getOutputStream().flush();
-										}
-										
-									} else if (viewType.equals("image") || viewType.equals("url")) {
-										/**
-										 * There is a <IMG> or <A> in an HTML file that points to a file within the SS file repository
-										 * We must fetch that file from disk an stream into the browser. The file location could be anywhere
-										 * on the server machine. Part of "View as HTML" functionality.
-										 */
-										try {
-											DefinableEntity entity = fa.getOwner().getEntity();
-											Binder parent = getBinder(entity);
-											String fileName = ServletRequestUtils.getStringParameter(request, "filename", ""); 
-											if (viewType.equals("url")) {
-												response.setContentType("text/html");
-												response.setHeader("Cache-Control", "private");
-												getConvertedFileModule().readCacheUrlReferenceFile(shareItem, parent, entity, fa, response.getOutputStream(), fileName);
-											} else {
-												response.setContentType("image/jpeg");
-												getConvertedFileModule().readCacheImageReferenceFile(shareItem, parent, entity, fa, response.getOutputStream(), fileName);
-											}
-										}
-										catch(Exception e) {
-											response.getOutputStream().print(NLT.get("file.error") + ": " + e.getLocalizedMessage());
-										}
-										
-										try {
-											response.getOutputStream().flush();
-										}
-										catch(Exception ignore) {}
-									}
-
-								} else {
-									response.sendError(HttpServletResponse.SC_BAD_REQUEST, NLT.get("file.error.unknownFile"));
-								}
+					            if (result != null) {
+					            	response.sendError(HttpServletResponse.SC_BAD_REQUEST, NLT.get("file.error.unknownFile"));
+					            }
 							}
 						}
 					}

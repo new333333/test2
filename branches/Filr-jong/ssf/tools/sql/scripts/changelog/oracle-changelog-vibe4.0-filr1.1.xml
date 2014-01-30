@@ -488,4 +488,46 @@
         <addPrimaryKey columnNames="USERID, DEVICEID" tableName="SS_MOBILEDEVICE"/>
     </changeSet>
     
+    <changeSet author="jay" context="schema" failOnError="true" id="42">
+        <comment>Add useInheritedIndexContent field to SS_Forums table</comment>
+        <addColumn tableName="SS_FORUMS">
+            <column name="USEINHERITEDINDEXCONTENT" type="NUMBER(1,0)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+        <comment>Add indexContent field to SS_ResourceDriver table</comment>
+        <addColumn tableName="SS_RESOURCEDRIVER">
+            <column name="INDEXCONTENT" type="NUMBER(1,0)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+	</changeSet>
+	    
+    <changeSet author="jay" context="schema" failOnError="true" id="43">
+        <comment>Add useInheritedJitsSettings field to SS_Forums table</comment>
+        <addColumn tableName="SS_FORUMS">
+            <column name="USEINHERITEDJITSSETTINGS" type="NUMBER(1,0)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+        <comment>Add jitsEnabled field to SS_ResourceDriver table</comment>
+        <addColumn tableName="SS_RESOURCEDRIVER">
+            <column name="JITSENABLED" type="NUMBER(1,0)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+        <comment>Add jitsMaxAge field to SS_ResourceDriver table</comment>
+        <addColumn tableName="SS_RESOURCEDRIVER">
+            <column name="JITSMAXAGE" type="NUMBER(19,0)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+        <comment>Add jitsAclMaxAge field to SS_ResourceDriver table</comment>
+        <addColumn tableName="SS_RESOURCEDRIVER">
+            <column name="JITSACLMAXAGE" type="NUMBER(19,0)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+	</changeSet>
+	    
 </databaseChangeLog>

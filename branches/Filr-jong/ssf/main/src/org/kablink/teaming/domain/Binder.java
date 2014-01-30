@@ -56,6 +56,7 @@ import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.util.LongIdUtil;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.web.util.DefinitionHelper;
+import org.kablink.teaming.web.util.NetFolderHelper;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
 
@@ -175,6 +176,8 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
     protected Boolean fullSyncDirOnly; // Applicable only to mirrored folders
     protected Short syncScheduleOption;	// SyncScheduleOption
     protected String resourceHandle;
+    protected Boolean useInheritedIndexContent = Boolean.TRUE;
+    protected Boolean useInheritedJitsSettings = Boolean.TRUE;
 
     
     public Binder() {
@@ -215,6 +218,8 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
 		 jitsAclMaxAge = source.jitsAclMaxAge;
 		 fullSyncDirOnly = source.fullSyncDirOnly;
 		 syncScheduleOption = source.syncScheduleOption;
+		 useInheritedIndexContent = source.useInheritedIndexContent;
+		 useInheritedJitsSettings = source.useInheritedJitsSettings;
      }
     /**
      * Return the zone id
@@ -880,10 +885,201 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
     	else
     		return indexContent .booleanValue();
     }
-    
+
+    /**
+     * 
+     */
     public void setIndexContent( boolean index )
     {
    		indexContent = new Boolean( index );
+    }
+    
+    /**
+     * Return the computed value of "index content".  If this binder is inheriting the value
+     * of "index content" then we will get the value of "index content" from the net folder server
+     * this binder is pointing to.  Otherwise, we will use the value of "index content" from
+     * this binder.
+     */
+    public boolean getComputedIndexContent()
+    {
+    	ResourceDriver resourceDriver;
+    	
+    	if ( getUseInheritedIndexContent() == false )
+    		return getIndexContent();
+    	
+    	resourceDriver = getResourceDriver();
+    	if ( resourceDriver != null )
+    	{
+    		ResourceDriverConfig rdConfig;
+    		
+    		rdConfig = resourceDriver.getConfig();
+    		if ( rdConfig != null )
+    			return rdConfig.getIndexContent();
+    	}
+    	
+    	return false;
+    }
+    
+    /**
+     * Return whether the the "index content" setting should be inherited from the net folder server.
+     * @return
+     */
+    public boolean getUseInheritedIndexContent()
+    {
+    	boolean useInherited;
+    	
+    	// If the useInheritedIndexContent field is null that means this binder existed
+    	// before we added this field.
+    	if ( useInheritedIndexContent == null )
+    	{
+    		// If the content of this binder should be indexed, then we will say not to inherit
+    		// the "index content" setting from the net folder server.
+    		if ( getIndexContent() == true )
+    			useInherited = false;
+    		else
+    			useInherited = true;
+    	}
+    	else
+    	{
+    		useInherited = useInheritedIndexContent.booleanValue();
+    	}
+    	
+    	return useInherited;
+    }
+
+    /**
+     * 
+     */
+    public void setUseInheritedIndexContent( boolean inherit )
+    {
+   		useInheritedIndexContent = new Boolean( inherit );
+    }
+    
+
+    /**
+     * Return whether the the jits settings should be inherited from the net folder server.
+     * @return
+     */
+    public boolean getUseInheritedJitsSettings()
+    {
+    	boolean useInherited;
+    	
+    	// If the useInheritedJitsSettings field is null that means this binder existed
+    	// before we added this field.
+    	if ( useInheritedJitsSettings == null )
+    	{
+    		// Are we dealing with a home dir net folder?
+    		if ( isHomeDir() )
+    		{
+    			// Yes
+    			// Has the value of "enable jits" changed from the default?
+    			// The default is true.
+    			if ( isJitsEnabled() == false )
+    			{
+    				// Yes
+    				useInherited = false;
+    			}
+    			else
+    				useInherited = true;
+    		}
+    		else
+    		{
+    			// No
+    			useInherited = false;
+    		}
+    	}
+    	else
+    	{
+    		useInherited = useInheritedJitsSettings.booleanValue();
+    	}
+    	
+    	return useInherited;
+    }
+
+    /**
+     * 
+     */
+    public void setUseInheritedJitsSettings( boolean inherit )
+    {
+   		useInheritedJitsSettings = new Boolean( inherit );
+    }
+    
+    /**
+     * Return the computed value of "Enable Jits".  If this binder is inheriting the jits
+     * settings then we will get the value of "enable jits" from the net folder server
+     * this binder is pointing to.  Otherwise, we will use the value of "enable jits" from
+     * this binder.
+     */
+    public boolean getComputedIsJitsEnabled()
+    {
+    	ResourceDriver resourceDriver;
+    	
+    	if ( getUseInheritedJitsSettings() == false )
+    		return isJitsEnabled();
+    	
+    	resourceDriver = getResourceDriver();
+    	if ( resourceDriver != null )
+    	{
+    		ResourceDriverConfig rdConfig;
+    		
+    		rdConfig = resourceDriver.getConfig();
+    		if ( rdConfig != null )
+    			return rdConfig.isJitsEnabled();
+    	}
+    	
+    	return false;
+    }
+    
+    /**
+     * Return the computed value of "Jits max age".  If this binder is inheriting the jits
+     * settings then we will get the value of "jits max age" from the net folder server
+     * this binder is pointing to.  Otherwise, we will use the value of "jits max age" from
+     * this binder.
+     */
+    public long getComputedJitsMaxAge()
+    {
+    	ResourceDriver resourceDriver;
+    	
+    	if ( getUseInheritedJitsSettings() == false )
+    		return getJitsMaxAge();
+    	
+    	resourceDriver = getResourceDriver();
+    	if ( resourceDriver != null )
+    	{
+    		ResourceDriverConfig rdConfig;
+    		
+    		rdConfig = resourceDriver.getConfig();
+    		if ( rdConfig != null )
+    			return rdConfig.getJitsMaxAge();
+    	}
+    	
+    	return getJitsMaxAge();
+    }
+    
+    /**
+     * Return the computed value of "Jits max acl age".  If this binder is inheriting the jits
+     * settings then we will get the value of "jits max acl age" from the net folder server
+     * this binder is pointing to.  Otherwise, we will use the value of "jits max acl age" from
+     * this binder.
+     */
+    public long getComputedJitsAclMaxAge()
+    {
+    	ResourceDriver resourceDriver;
+    	
+    	if ( getUseInheritedJitsSettings() == false )
+    		return getJitsAclMaxAge();
+    	
+    	resourceDriver = getResourceDriver();
+    	if ( resourceDriver != null )
+    	{
+    		ResourceDriverConfig rdConfig;
+    		
+    		rdConfig = resourceDriver.getConfig();
+    		if ( rdConfig != null )
+    			return rdConfig.getJitsAclMaxAge();
+    	}
+    	
+    	return getJitsAclMaxAge();
     }
     
     public boolean isJitsEnabled() {
@@ -898,7 +1094,7 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
     
 	public long getJitsMaxAge() {
 		if(jitsMaxAge == null)
-			return SPropsUtil.getLong("nf.jits.max.age", 30000L);
+			return NetFolderHelper.getDefaultJitsResultsMaxAge();
 		else 
 			return jitsMaxAge.longValue();
 	}
@@ -908,7 +1104,7 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
     
 	public long getJitsAclMaxAge() {
 		if(jitsAclMaxAge == null)
-			return SPropsUtil.getLong("nf.jits.acl.max.age", 60000L);
+			return NetFolderHelper.getDefaultJitsAclMaxAge();
 		else 
 			return jitsAclMaxAge.longValue();
 	}

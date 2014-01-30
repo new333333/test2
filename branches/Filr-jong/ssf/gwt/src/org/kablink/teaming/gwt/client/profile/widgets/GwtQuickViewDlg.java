@@ -403,8 +403,7 @@ public class GwtQuickViewDlg extends DlgBox {
 		Anchor closeA = new Anchor();
 		closeA.addStyleName("qViewClose");
 
-		Image cancelImage = new Image(GwtTeaming.getMainMenuImageBundle()
-				.closeXMouseOver());
+		Image cancelImage = new Image(GwtTeaming.getImageBundle().closeBorder());
 		closeA.getElement().appendChild(cancelImage.getElement());
 
 		// GwtTeaming.getMessages().cancel()

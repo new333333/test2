@@ -457,13 +457,13 @@ public class CloudFolderHelper {
 	/*
 	 */
 	private static long getDefaultJitsAclMaxAge() {
-		return SPropsUtil.getLong("nf.jits.acl.max.age", 60000L);
+		return NetFolderHelper.getDefaultJitsAclMaxAge();
 	}
 	
 	/*
 	 */
 	private static long getDefaultJitsResultsMaxAge() {
-		return SPropsUtil.getLong("nf.jits.max.age", 30000L);
+		return NetFolderHelper.getDefaultJitsResultsMaxAge();
 	}
 	
 	/**

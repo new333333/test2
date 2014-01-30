@@ -135,6 +135,12 @@ function ss_getOperationStatus()
 	ajaxRequest.addKeyValue("ss_statusId",ss_indexStatusTicket);
 	ajaxRequest.sendRequest();  //Send the request
 	ss_indexTimeout = setTimeout(ss_getOperationStatus, 1000);
+	var statusMessage = ss_getStatusMessage();
+	if (statusMessage == "completed") {
+		try {
+			ss_hideSpinnerImg();
+		} catch(e) {}
+	}
 }
 
 function ss_submitIndexingForm( indexing, formName, callbackName ) {

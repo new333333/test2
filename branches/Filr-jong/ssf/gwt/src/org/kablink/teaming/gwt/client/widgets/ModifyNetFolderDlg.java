@@ -38,6 +38,7 @@ import java.util.List;
 
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtJitsNetFolderConfig;
+import org.kablink.teaming.gwt.client.GwtMainPage;
 import org.kablink.teaming.gwt.client.GwtNetFolderSyncScheduleConfig;
 import org.kablink.teaming.gwt.client.GwtNetFolderSyncScheduleConfig.NetFolderSyncScheduleOption;
 import org.kablink.teaming.gwt.client.GwtRole;
@@ -115,7 +116,11 @@ public class ModifyNetFolderDlg extends DlgBox
 	private TextBox m_nameTxtBox;
 	private TextBox m_relativePathTxtBox;
 	private ListBox m_netFolderRootsListbox;
+	private RadioButton m_useNFServerIndexContentOptionRB;
+	private RadioButton m_useNFIndexContentOptionRB;
 	private CheckBox m_indexContentCkbox;
+	private RadioButton m_useJitsSettingsFromNFServerRB;
+	private RadioButton m_useJitsSettingsFromNetFolderRB;
 	private CheckBox m_jitsEnabledCkbox;
 	private TextBox m_jitsResultsMaxAge;
 	private TextBox m_jitsAclMaxAge;
@@ -129,7 +134,7 @@ public class ModifyNetFolderDlg extends DlgBox
 	private CheckBox m_allowMobileAppsToSync;
 	private RadioButton m_useNFServerSyncOptionRB;
 	private RadioButton m_useNFSyncOptionRB;
-	private CheckBox m_fullSyncDirOnlyCB;
+	private CheckBox m_fullSyncDirOnlyCB = null;
 	private Panel m_rightsPanel;
 	private ModifyNetFolderRootDlg m_modifyNetFolderRootDlg;
 	private List<NetFolderRoot> m_listOfNetFolderRoots;
@@ -401,89 +406,130 @@ public class ModifyNetFolderDlg extends DlgBox
 		// Add a "Index the content of this net folder" checkbox
 		{
 			FlowPanel tmpPanel;
+			FlowPanel indexPanel;
 			FlexCellFormatter cellFormatter;
 
-			cellFormatter = table.getFlexCellFormatter();
-			cellFormatter.setColSpan( nextRow, 0, 2 );
-			m_indexContentCkbox = new CheckBox( messages.modifyNetFolderDlg_IndexContentLabel() );
+			indexPanel = new FlowPanel();
+			indexPanel.addStyleName( "margintop3" );
+			
+			m_useNFServerIndexContentOptionRB = new RadioButton( "indexContentOption", messages.modifyNetFolderDlg_UseNetFolderServerIndexContentOptionRbLabel() );
 			tmpPanel = new FlowPanel();
 			tmpPanel.addStyleName( "margintop3" );
+			tmpPanel.add( m_useNFServerIndexContentOptionRB );
+			indexPanel.add( tmpPanel );
+
+			m_useNFIndexContentOptionRB = new RadioButton( "indexContentOption", messages.modifyNetFolderDlg_UseNetFolderIndexContentOptionRbLabel() );
+			tmpPanel = new FlowPanel();
+			tmpPanel.add( m_useNFIndexContentOptionRB );
+			indexPanel.add( tmpPanel );
+
+			m_indexContentCkbox = new CheckBox( messages.modifyNetFolderDlg_IndexContentLabel() );
+			tmpPanel = new FlowPanel();
+			tmpPanel.addStyleName( "marginleft3" );
 			tmpPanel.add( m_indexContentCkbox );
-			table.setWidget( nextRow, 0, tmpPanel );
+			indexPanel.add( tmpPanel );
+			
+			cellFormatter = table.getFlexCellFormatter();
+			cellFormatter.setColSpan( nextRow, 0, 2 );
+
+			table.setWidget( nextRow, 0, indexPanel );
 			++nextRow;
 		}
 		
 		// Add the controls needed to define Jits settings
 		{
+			FlowPanel mainJitsPanel;
+			FlowPanel subJitsPanel;
 			FlowPanel tmpPanel;
 			FlexCellFormatter cellFormatter;
 
-			cellFormatter = table.getFlexCellFormatter();
-			cellFormatter.setColSpan( nextRow, 0, 2 );
+			mainJitsPanel = new FlowPanel();
+			mainJitsPanel.addStyleName( "margintop3" );
+
+			m_useJitsSettingsFromNFServerRB = new RadioButton( "inheritJitsSettings", messages.modifyNetFolderDlg_UseJitsSettingsFromNetFolderServerRbLabel() );
+			tmpPanel = new FlowPanel();
+			tmpPanel.add( m_useJitsSettingsFromNFServerRB );
+			mainJitsPanel.add( tmpPanel );
+
+			m_useJitsSettingsFromNetFolderRB = new RadioButton( "inheritJitsSettings", messages.modifyNetFolderDlg_UseJistsSettingsFromNetFolderRbLabel() );
+			tmpPanel = new FlowPanel();
+			tmpPanel.add( m_useJitsSettingsFromNetFolderRB );
+			mainJitsPanel.add( tmpPanel );
+
+			subJitsPanel = new FlowPanel();
+			subJitsPanel.addStyleName( "marginleft3" );
+			mainJitsPanel.add( subJitsPanel );
+			
 			m_jitsEnabledCkbox = new CheckBox( messages.modifyNetFolderDlg_EnableJitsLabel() );
 			tmpPanel = new FlowPanel();
-			tmpPanel.addStyleName( "margintop3" );
 			tmpPanel.add( m_jitsEnabledCkbox );
-			table.setWidget( nextRow, 0, tmpPanel );
-			++nextRow;
+			subJitsPanel.add( tmpPanel );
 			
-			// Add the controls for "results max age"
+			// Add a panel that holds all the max age controls.
 			{
-				HorizontalPanel hPanel;
-				Label intervalLabel;
-
-				cellFormatter.setColSpan( nextRow, 0, 2 );
-
-				hPanel = new HorizontalPanel();
-				hPanel.setVerticalAlignment( HasVerticalAlignment.ALIGN_MIDDLE );
-				hPanel.setSpacing( 0 );
+				FlowPanel maxAgePanel;
 				
-				intervalLabel = new Label( messages.modifyNetFolderDlg_JitsResultsMaxAgeLabel() );
-				intervalLabel.addStyleName( "marginleft3" );
+				maxAgePanel = new FlowPanel();
+				maxAgePanel.addStyleName( "marginleft3" );
+				
+				// Add the controls for "results max age"
+				{
+					HorizontalPanel hPanel;
+					Label intervalLabel;
 
-				hPanel.add( intervalLabel );
-				
-				m_jitsResultsMaxAge = new TextBox();
-				m_jitsResultsMaxAge.addKeyPressHandler( this );
-				m_jitsResultsMaxAge.setVisibleLength( 3 );
-				hPanel.add( m_jitsResultsMaxAge );
-				
-				intervalLabel = new Label( messages.jitsZoneConfigDlg_SecondsLabel() );
-				intervalLabel.addStyleName( "marginleft2px" );
-				intervalLabel.addStyleName( "gray3" );
-				hPanel.add( intervalLabel );
-				table.setWidget( nextRow, 0, hPanel );
-				++nextRow;
+					hPanel = new HorizontalPanel();
+					hPanel.setVerticalAlignment( HasVerticalAlignment.ALIGN_MIDDLE );
+					hPanel.setSpacing( 0 );
+					
+					intervalLabel = new Label( messages.modifyNetFolderDlg_JitsResultsMaxAgeLabel() );
+					hPanel.add( intervalLabel );
+					
+					m_jitsResultsMaxAge = new TextBox();
+					m_jitsResultsMaxAge.addKeyPressHandler( this );
+					m_jitsResultsMaxAge.setVisibleLength( 3 );
+					hPanel.add( m_jitsResultsMaxAge );
+					
+					intervalLabel = new Label( messages.jitsZoneConfigDlg_SecondsLabel() );
+					intervalLabel.addStyleName( "marginleft2px" );
+					intervalLabel.addStyleName( "gray3" );
+					hPanel.add( intervalLabel );
+
+					maxAgePanel.add( hPanel );
+				}
+
+				// Add the controls for "acl max age"
+				{
+					HorizontalPanel hPanel;
+					Label intervalLabel;
+
+					hPanel = new HorizontalPanel();
+					hPanel.setVerticalAlignment( HasVerticalAlignment.ALIGN_MIDDLE );
+					hPanel.setSpacing( 0 );
+					
+					intervalLabel = new Label( messages.modifyNetFolderDlg_JitsAclMaxAgeLabel() );
+					hPanel.add( intervalLabel );
+					
+					m_jitsAclMaxAge = new TextBox();
+					m_jitsAclMaxAge.addKeyPressHandler( this );
+					m_jitsAclMaxAge.setVisibleLength( 3 );
+					hPanel.add( m_jitsAclMaxAge );
+					
+					intervalLabel = new Label( messages.jitsZoneConfigDlg_SecondsLabel() );
+					intervalLabel.addStyleName( "marginleft2px" );
+					intervalLabel.addStyleName( "gray3" );
+					hPanel.add( intervalLabel );
+
+					maxAgePanel.add( hPanel );
+				}
+
+				subJitsPanel.add( maxAgePanel );
 			}
 
-			// Add the controls for "acl max age"
-			{
-				HorizontalPanel hPanel;
-				Label intervalLabel;
-
-				cellFormatter.setColSpan( nextRow, 0, 2 );
-
-				hPanel = new HorizontalPanel();
-				hPanel.setVerticalAlignment( HasVerticalAlignment.ALIGN_MIDDLE );
-				hPanel.setSpacing( 0 );
-				
-				intervalLabel = new Label( messages.modifyNetFolderDlg_JitsAclMaxAgeLabel() );
-				intervalLabel.addStyleName( "marginleft3" );
-
-				hPanel.add( intervalLabel );
-				
-				m_jitsAclMaxAge = new TextBox();
-				m_jitsAclMaxAge.addKeyPressHandler( this );
-				m_jitsAclMaxAge.setVisibleLength( 3 );
-				hPanel.add( m_jitsAclMaxAge );
-				
-				intervalLabel = new Label( messages.jitsZoneConfigDlg_SecondsLabel() );
-				intervalLabel.addStyleName( "marginleft2px" );
-				intervalLabel.addStyleName( "gray3" );
-				hPanel.add( intervalLabel );
-				table.setWidget( nextRow, 0, hPanel );
-				++nextRow;
-			}
+			cellFormatter = table.getFlexCellFormatter();
+			cellFormatter.setColSpan( nextRow, 0, 2 );
+			
+			table.setWidget( nextRow, 0, mainJitsPanel );
+			++nextRow;
 		}
 		
 		mainPanel.add( table );
@@ -529,6 +575,7 @@ public class ModifyNetFolderDlg extends DlgBox
 		m_allowMobileAppsToSync.setVisible(false);
 		
 		// Add the radio buttons for selecting which sync option to use.
+		if ( GwtMainPage.m_requestInfo.getShowSyncOnlyDirStructureUI() )
 		{
 			FlowPanel panel;
 			
@@ -847,6 +894,9 @@ public class ModifyNetFolderDlg extends DlgBox
 	 */
 	private Boolean getFullSyncDirOnly()
 	{
+		if ( GwtMainPage.m_requestInfo.getShowSyncOnlyDirStructureUI() == false )
+			return null;
+		
 		if ( m_useNFServerSyncOptionRB.getValue() == true )
 			return null;
 		
@@ -874,6 +924,22 @@ public class ModifyNetFolderDlg extends DlgBox
 	private boolean getIndexContent()
 	{
 		return m_indexContentCkbox.getValue();
+	}
+	
+	/**
+	 * 
+	 */
+	private Boolean getInheritIndexContent()
+	{
+		return m_useNFServerIndexContentOptionRB.getValue();
+	}
+	
+	/**
+	 * 
+	 */
+	private Boolean getInheritJitsSettings()
+	{
+		return m_useJitsSettingsFromNFServerRB.getValue();
 	}
 	
 	/**
@@ -1022,9 +1088,17 @@ public class ModifyNetFolderDlg extends DlgBox
 		
 		netFolder = new NetFolder();
 		netFolder.setName( getName() );
-		netFolder.setDisplayName( getName() );
+		
+		// If we are working with an existing net folder, grab its display name.
+		if ( m_netFolder != null )
+			netFolder.setDisplayName( m_netFolder.getDisplayName() );
+		else
+			netFolder.setDisplayName( getName() );
+		
 		netFolder.setRelativePath( getRelativePath() );
 		netFolder.setNetFolderRootName( getNetFolderRootName() );
+		netFolder.setInheritIndexContentSetting( getInheritIndexContent() );
+		netFolder.setInheritJitsSettings( getInheritJitsSettings() );
 		netFolder.setIndexContent( getIndexContent() );
 		netFolder.setSyncScheduleConfig( getSyncScheduleConfig() );
 		netFolder.setDataSyncSettings( getDataSyncSettings() );
@@ -1153,6 +1227,8 @@ public class ModifyNetFolderDlg extends DlgBox
 		// Clear existing data in the controls.
 		m_nameTxtBox.setValue( "" );
 		m_relativePathTxtBox.setValue( "" );
+		m_useNFServerIndexContentOptionRB.setValue( true );
+		m_useNFIndexContentOptionRB.setValue( false );
 		m_indexContentCkbox.setValue( false );
 		m_netFolderRootsListbox.clear();
 		m_netFolderRootsListbox.setVisible( false );
@@ -1185,6 +1261,17 @@ public class ModifyNetFolderDlg extends DlgBox
 			
 			m_relativePathTxtBox.setValue( netFolder.getRelativePath() );
 			
+			if ( netFolder.getInheritIndexContentSetting() )
+			{
+				m_useNFServerIndexContentOptionRB.setValue( true );
+				m_useNFIndexContentOptionRB.setValue( false );
+			}
+			else
+			{
+				m_useNFServerIndexContentOptionRB.setValue( false );
+				m_useNFIndexContentOptionRB.setValue( true );
+			}
+
 			m_indexContentCkbox.setValue( netFolder.getIndexContent() );
 			
 			// Are we dealing with a home net folder?
@@ -1220,9 +1307,12 @@ public class ModifyNetFolderDlg extends DlgBox
 		m_allowDesktopAppToSync.setValue( true );
 		m_allowMobileAppsToSync.setValue( true );
 		
-		m_useNFServerSyncOptionRB.setValue( true );
-		m_useNFSyncOptionRB.setValue( false );
-		m_fullSyncDirOnlyCB.setValue( false );
+		if ( GwtMainPage.m_requestInfo.getShowSyncOnlyDirStructureUI() )
+		{
+			m_useNFServerSyncOptionRB.setValue( true );
+			m_useNFSyncOptionRB.setValue( false );
+			m_fullSyncDirOnlyCB.setValue( false );
+		}
 		
 		if ( m_netFolder != null )
 		{
@@ -1236,14 +1326,17 @@ public class ModifyNetFolderDlg extends DlgBox
 				m_allowMobileAppsToSync.setValue( settings.getAllowMobileAppsToSyncData() );
 			}
 			
-			dirOnly = m_netFolder.getFullSyncDirOnly(); 
-			if ( dirOnly == null )
-				m_useNFServerSyncOptionRB.setValue( true );
-			else
+			if ( GwtMainPage.m_requestInfo.getShowSyncOnlyDirStructureUI() )
 			{
-				m_useNFServerSyncOptionRB.setValue( false );
-				m_useNFSyncOptionRB.setValue( true );
-				m_fullSyncDirOnlyCB.setValue( dirOnly );
+				dirOnly = m_netFolder.getFullSyncDirOnly(); 
+				if ( dirOnly == null )
+					m_useNFServerSyncOptionRB.setValue( true );
+				else
+				{
+					m_useNFServerSyncOptionRB.setValue( false );
+					m_useNFSyncOptionRB.setValue( true );
+					m_fullSyncDirOnlyCB.setValue( dirOnly );
+				}
 			}
 		}
 	}
@@ -1253,6 +1346,8 @@ public class ModifyNetFolderDlg extends DlgBox
 	 */
 	private void initJits()
 	{
+		m_useJitsSettingsFromNFServerRB.setValue( true );
+		m_useJitsSettingsFromNetFolderRB.setValue( false );
 		m_jitsEnabledCkbox.setValue( true );
 		m_jitsAclMaxAge.setValue( "" );
 		m_jitsResultsMaxAge.setValue( "" );
@@ -1261,6 +1356,17 @@ public class ModifyNetFolderDlg extends DlgBox
 		{
 			GwtJitsNetFolderConfig settings;
 			
+			if ( m_netFolder.getInheritJitsSettings() )
+			{
+				m_useJitsSettingsFromNFServerRB.setValue( true );
+				m_useJitsSettingsFromNetFolderRB.setValue( false );
+			}
+			else
+			{
+				m_useJitsSettingsFromNFServerRB.setValue( false );
+				m_useJitsSettingsFromNetFolderRB.setValue( true );
+			}
+
 			settings = m_netFolder.getJitsConfig();
 			if ( settings != null )
 			{
@@ -1271,9 +1377,15 @@ public class ModifyNetFolderDlg extends DlgBox
 		}
 		else
 		{
+			Long value;
+			
 			m_jitsEnabledCkbox.setValue( false );
-			m_jitsAclMaxAge.setValue( "60" );
-			m_jitsResultsMaxAge.setValue( "30" );
+			
+			value = GwtMainPage.m_requestInfo.getDefaultJitsAclMaxAge() / 1000;
+			m_jitsAclMaxAge.setValue( value.toString() );
+			
+			value = GwtMainPage.m_requestInfo.getDefaultJitsResultsMaxAge() / 1000;
+			m_jitsResultsMaxAge.setValue( value.toString() );
 		}
 	}
 	

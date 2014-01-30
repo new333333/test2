@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -46,6 +46,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.calendar.EventsViewHelper;
 import org.kablink.teaming.context.request.RequestContextHolder;
@@ -166,6 +167,7 @@ public class GwtMenuHelper {
 	private final static String EMAIL_PUBLIC_LINK		= "emailPublicLink";
 	private final static String	FILE_DOWNLOAD			= "fileDownload";
 	private final static String FOLDER_VIEWS			= "folderViews";
+	private final static String FORCE_FILE_UNLOCK		= "forceFileUnlock";
 	private final static String ICALENDAR				= "iCalendar";
 	private final static String IMPORT_EXPORT			= "importExport";
 	private final static String LOCK					= "lock"; 
@@ -211,6 +213,26 @@ public class GwtMenuHelper {
 		// Nothing to do.
 	}
 
+	/**
+	 * Ensures that the given binder is being tracked for the recent
+	 * places menu.
+	 * 
+	 * @param request
+	 * @param binder
+	 * @param clearTab
+	 */
+	public static void addBinderToRecentPlaces(HttpServletRequest request, Binder binder, boolean clearTab) {
+		try {
+			BinderHelper.initTabs(Tabs.getTabs(request), binder, true);
+		}
+		catch (Exception e) {}	// Ignored.
+	}
+	
+	public static void addBinderToRecentPlaces(HttpServletRequest request, Binder binder) {
+		// Always use the initial form of the method.
+		addBinderToRecentPlaces(request, binder, true);
+	}
+	
 	/*
 	 * Adds a separator to a ToolbarItem's nested toolbar, if needed.
 	 */
@@ -307,6 +329,24 @@ public class GwtMenuHelper {
 	}
 	
 	/*
+	 * Returns true of the user has the right to delete the entities
+	 * contained in the binder and false otherwise.
+	 */
+	private static boolean canDeleteContainedEntries(AllModulesInjected bs, Binder binder) {
+		return bs.getBinderModule().testAccess(binder, BinderOperation.deleteEntries);
+	}
+	
+	/*
+	 * Returns true of the user has the right to delete the entity and
+	 * false otherwise.
+	 * 
+	 * They can delete the entity if they can trash or purge it.
+	 */
+	private static boolean canDeleteEntity(AllModulesInjected bs, DefinableEntity de) {
+		return (canTrashEntity(bs, de) || canPurgeEntity(bs, de));
+	}
+	
+	/*
 	 * Returns true of the user has the right to purge the entity and
 	 * false otherwise.
 	 */
@@ -329,8 +369,8 @@ public class GwtMenuHelper {
 	}
 	
 	/*
-	 * Returns true of the user has the right to move the entity to the
-	 * trash and false otherwise.
+	 * Returns true of the user has the right to trash the entity and
+	 * false otherwise.
 	 */
 	private static boolean canTrashEntity(AllModulesInjected bs, DefinableEntity de) {
 		boolean reply;
@@ -343,13 +383,9 @@ public class GwtMenuHelper {
 		else {
 			reply = false;
 		}
-		
-		if (!reply) {
-			reply = canPurgeEntity(bs, de);
-		}
-		
 		return reply;
 	}
+	
 	
 	/*
 	 * Constructs a ToolbarItem for About.
@@ -743,7 +779,7 @@ public class GwtMenuHelper {
 		if (MiscUtil.hasString(viewType)) {
 			if (folderSupportsDeleteAndPurge(folder, viewType)) {
 				// ...and for which the user has rights to do it...
-				if (canTrashEntity(bs, folder)) {
+				if (canDeleteContainedEntries(bs, folder)) {
 					// ...add a Delete item.
 					constructEntryDeleteItem(entryToolbar);
 				}
@@ -756,7 +792,7 @@ public class GwtMenuHelper {
 	 */
 	private static void constructEntryDeleteItem(ToolbarItem entryToolbar, AllModulesInjected bs, HttpServletRequest request, Workspace ws, boolean isMyFilesCollection) {
 		// If the user has rights to do it...
-		if ((null == ws) || isMyFilesCollection || canTrashEntity(bs, ws)) {
+		if ((null == ws) || isMyFilesCollection || canDeleteContainedEntries(bs, ws)) {
 			// ...add a Delete item.
 			constructEntryDeleteItem(entryToolbar);
 		}
@@ -1049,39 +1085,42 @@ public class GwtMenuHelper {
 			}
 		}
 
-		// ...for a 'Shared By/With Me' collection...
-		if (isSharedCollection) {
-			// ...we allow shares to be hidden or shown...
-			tbi = new ToolbarItem("1_hideSelected");
-			markTBITitle(tbi, "toolbar.hideShares");
-			markTBIEvent(tbi, TeamingEvents.HIDE_SELECTED_SHARES);
-			moreTBI.addNestedItem(tbi);
+		// ...if this is other than the guest user...
+		if (!isGuest) {
+			// ...for a 'Shared By/With Me' collection...
+			if (isSharedCollection) {
+				// ...we allow shares to be hidden or shown...
+				tbi = new ToolbarItem("1_hideSelected");
+				markTBITitle(tbi, "toolbar.hideShares");
+				markTBIEvent(tbi, TeamingEvents.HIDE_SELECTED_SHARES);
+				moreTBI.addNestedItem(tbi);
+				
+				tbi = new ToolbarItem("1_showSelected");
+				markTBITitle(tbi, "toolbar.showShares");
+				markTBIEvent(tbi, TeamingEvents.SHOW_SELECTED_SHARES);
+				moreTBI.addNestedItem(tbi);
+			}
 			
-			tbi = new ToolbarItem("1_showSelected");
-			markTBITitle(tbi, "toolbar.showShares");
-			markTBIEvent(tbi, TeamingEvents.SHOW_SELECTED_SHARES);
-			moreTBI.addNestedItem(tbi);
+			// ...add a separator item if needed...
+			if (moreTBI.hasNestedToolbarItems() && isEntryContainer) {
+				moreTBI.addNestedItem(ToolbarItem.constructSeparatorTBI());
+			}
+			
+			if (isEntryContainer && (!isFilr)) {
+				// ...add the change entry type item when not Filr....
+				tbi = new ToolbarItem("1_changeEntryTypeSelected");
+				markTBITitle(tbi, "toolbar.changeEntryType");
+				markTBIEvent(tbi, TeamingEvents.CHANGE_ENTRY_TYPE_SELECTED_ENTITIES);
+				moreTBI.addNestedItem(tbi);
+			}
+	
+			// ...add the subscribe item...
+			constructEntrySubscribeItem(moreTBI, bs, request, false);
+			
+			// ...and add the 'Manage Shares...' menu item.  This will
+			// ...only be available for the admin users.
+			constructEntryManageSharesItem(moreTBI, bs);
 		}
-		
-		// ...add a separator item...
-		if (moreTBI.hasNestedToolbarItems() && (isEntryContainer || (!isGuest))) {
-			moreTBI.addNestedItem(ToolbarItem.constructSeparatorTBI());
-		}
-		
-		if (isEntryContainer && (!isFilr)) {
-			// ...add the change entry type item when not Filr....
-			tbi = new ToolbarItem("1_changeEntryTypeSelected");
-			markTBITitle(tbi, "toolbar.changeEntryType");
-			markTBIEvent(tbi, TeamingEvents.CHANGE_ENTRY_TYPE_SELECTED_ENTITIES);
-			moreTBI.addNestedItem(tbi);
-		}
-
-		// ...add the subscribe item.
-		constructEntrySubscribeItem(moreTBI, bs, request, false);
-		
-		// Add the 'Manage Shares...' menu item.  This will only be
-		// available for the admin users.
-		constructEntryManageSharesItem(moreTBI, bs);
 
 		// If we added anything to the more toolbar...
 		if (!(moreTBI.getNestedItemsList().isEmpty())) {
@@ -2022,9 +2061,8 @@ public class GwtMenuHelper {
 			// Yes!  Is the binder one the user can't delete, even if
 			// they have rights?
 			if (!(BinderHelper.isBinderDeleteProtected( binder))) {
-				// Yes!  Is this a binder the user can move to the
-				// trash?
-				if (canTrashEntity(bs, binder) && isBinderTrashEnabled(binder)) {
+				// Yes!  Is this a binder the user can delete?
+				if (canDeleteEntity(bs, binder) && isBinderTrashEnabled(binder)) {
 					// Yes!  Add the ToolbarItem for it.
 					adminMenuCreated  =
 					configMenuCreated = true;
@@ -3610,6 +3648,10 @@ public class GwtMenuHelper {
 			case profiles:   buildProfilesMenuItems( bs, request, ((ProfileBinder) binder), reply); break;
 			}
 
+			// ...make sure the binder is being tracked for the recent
+			// ...places menu...
+			addBinderToRecentPlaces(request, binder);
+
 			// ...and add the ToolbarItem's required by all binder
 			// ...types to the list.
 			buildMiscMenuItems(bs, request, binder, binderType, reply);
@@ -3778,8 +3820,8 @@ public class GwtMenuHelper {
 				}
 			}
 
-			// Can the user move this entry to the trash?
-			if (canTrashEntity(bs, fe)) {
+			// Can the user delete this entry?
+			if (canDeleteEntity(bs, fe)) {
 				// Yes!  Add a delete toolbar item for it.
 				actionTBI = new ToolbarItem(DELETE);
 				markTBITitle(   actionTBI, "toolbar.delete"                      );
@@ -4025,6 +4067,18 @@ public class GwtMenuHelper {
 				// entry toolbar.
 				reply.add(dropdownTBI);
 			}
+
+			// Is this admin viewing a file that's locked?
+			boolean isAdmin = (user.isSuper() && user.isPerson());
+			if (isAdmin && isFileLocked(fe)) {
+				// Yes!  Give them the option to forcibly unlock the
+				// file.
+				actionTBI = new ToolbarItem(FORCE_FILE_UNLOCK);
+				markTBITitle(   actionTBI, "toolbar.force.file.unlock"     );
+				markTBIEvent(   actionTBI, TeamingEvents.FORCE_FILES_UNLOCK);
+				markTBIEntryIds(actionTBI, fe                              );
+				reply.add(actionTBI);
+			}
 			
 			// If we get here, reply refers to the List<ToolbarItem>
 			// containing the toolbar items for the entry viewer.
@@ -4074,6 +4128,15 @@ public class GwtMenuHelper {
 		return reply;
 	}
 
+	/*
+	 * Returns true if the entry has a primary file that's locked and
+	 * false otherwise.
+	 */
+	private static boolean isFileLocked(FolderEntry fe) {
+		FileAttachment fa = MiscUtil.getPrimaryFileAttachment(fe);
+		return ((null != fa) && (null != fa.getFileLock()));
+	}
+	
 	/*
 	 * Returns true if a folder is writable mirrored folder and false
 	 * otherwise.

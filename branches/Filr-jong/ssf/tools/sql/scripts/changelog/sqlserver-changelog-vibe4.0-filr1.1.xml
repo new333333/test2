@@ -487,4 +487,46 @@
         <addPrimaryKey columnNames="userId, deviceId" constraintName="PK__SS_MobileDevice" schemaName="dbo" tableName="SS_MobileDevice"/>
     </changeSet>
 
+    <changeSet author="jay" context="schema" failOnError="true" id="42">
+        <comment>Add useInheritedIndexContent field to SS_Forums table</comment>
+        <addColumn tableName="SS_Forums">
+            <column name="useInheritedIndexContent" type="TINYINT">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+        <comment>Add indexContent field to SS_ResourceDriver</comment>
+        <addColumn tableName="SS_ResourceDriver">
+            <column name="indexContent" type="TINYINT">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+	</changeSet>
+
+    <changeSet author="jay" context="schema" failOnError="true" id="43">
+        <comment>Add useInheritedJitsSettings field to SS_Forums table</comment>
+        <addColumn tableName="SS_Forums">
+            <column name="useInheritedJitsSettings" type="TINYINT">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+        <comment>Add jitsEnabled field to SS_ResourceDriver table</comment>
+        <addColumn tableName="SS_ResourceDriver">
+            <column name="jitsEnabled" type="TINYINT">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+        <comment>Add jitsMaxAge field to SS_ResourceDriver table</comment>
+        <addColumn tableName="SS_ResourceDriver">
+            <column name="jitsMaxAge" type="NUMERIC(19,0)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+        <comment>Add jitsAclMaxAge field to SS_ResourceDriver table</comment>
+        <addColumn tableName="SS_ResourceDriver">
+            <column name="jitsAclMaxAge" type="NUMERIC(19,0)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+	</changeSet>
+
 </databaseChangeLog>

@@ -224,6 +224,7 @@ public class GwtNetFolderHelper
 												parentBinder.getId(),
 												false,
 												netFolder.getIndexContent(),
+												netFolder.getInheritIndexContentSetting(),
 												netFolder.getFullSyncDirOnly() );
 			
 			// Set the rights on the net folder
@@ -242,6 +243,7 @@ public class GwtNetFolderHelper
 					NetFolderHelper.saveJitsSettings(
 												ami.getBinderModule(),
 												binder.getId(),
+												netFolder.getInheritJitsSettings(),
 												settings.getJitsEnabled(),
 												settings.getAclMaxAge(),
 												settings.getResultsMaxAge() );
@@ -260,6 +262,9 @@ public class GwtNetFolderHelper
 			newNetFolder.setDataSyncSettings( netFolder.getDataSyncSettings() );
 			newNetFolder.setJitsConfig( netFolder.getJitsConfig() );
 			newNetFolder.setFullSyncDirOnly( netFolder.getFullSyncDirOnly() );
+			newNetFolder.setIndexContent( netFolder.getIndexContent() );
+			newNetFolder.setInheritIndexContentSetting( netFolder.getInheritIndexContentSetting() );
+			newNetFolder.setInheritJitsSettings( netFolder.getInheritJitsSettings() );
 		}
 		catch ( Exception ex )
 		{
@@ -328,6 +333,10 @@ public class GwtNetFolderHelper
 													authType,
 													netFolderRoot.getUseDirectoryRights(),
 													netFolderRoot.getCachedRightsRefreshInterval(),
+													netFolderRoot.getIndexContent(),
+													netFolderRoot.getJitsEnabled(),
+													netFolderRoot.getJitsResultsMaxAge(),
+													netFolderRoot.getJitsAclMaxAge(),
 													scheduleInfo );
 		}
 		catch ( RDException ex )
@@ -354,6 +363,10 @@ public class GwtNetFolderHelper
 			newRoot.setFullSyncDirOnly( rdConfig.getFullSyncDirOnly() );
 			newRoot.setUseDirectoryRights( rdConfig.getUseDirectoryRights() );
 			newRoot.setCachedRightsRefreshInterval( rdConfig.getCachedRightsRefreshInterval() );
+			newRoot.setIndexContent( rdConfig.getIndexContent() );
+			newRoot.setJitsEnabled( rdConfig.isJitsEnabled() );
+			newRoot.setJitsResultsMaxAge( rdConfig.getJitsMaxAge() );
+			newRoot.setJitsAclMaxAge( rdConfig.getJitsAclMaxAge() );
 			
 			{
 				AuthenticationType authType;
@@ -539,6 +552,10 @@ public class GwtNetFolderHelper
 				nfRoot.setFullSyncDirOnly( driver.getFullSyncDirOnly() );
 				nfRoot.setUseDirectoryRights( driver.getUseDirectoryRights() );
 				nfRoot.setCachedRightsRefreshInterval( driver.getCachedRightsRefreshInterval() );
+				nfRoot.setIndexContent( driver.getIndexContent() );
+				nfRoot.setJitsEnabled( driver.isJitsEnabled() );
+				nfRoot.setJitsResultsMaxAge( driver.getJitsMaxAge() );
+				nfRoot.setJitsAclMaxAge( driver.getJitsAclMaxAge() );
 				
 				{
 					AuthenticationType authType;
@@ -838,6 +855,8 @@ public class GwtNetFolderHelper
 		netFolder.setDisplayName( displayName );
 		
 		netFolder.setIndexContent( binder.getIndexContent() );
+		netFolder.setInheritIndexContentSetting( binder.getUseInheritedIndexContent() );
+		netFolder.setInheritJitsSettings( binder.getUseInheritedJitsSettings() );
 		netFolder.setFullSyncDirOnly( binder.getFullSyncDirOnly() );
 
 		return netFolder;
@@ -1286,6 +1305,7 @@ public class GwtNetFolderHelper
 										scheduleInfo,
 										syncScheduleOption,
 										netFolder.getIndexContent(),
+										netFolder.getInheritIndexContentSetting(),
 										netFolder.getFullSyncDirOnly() );
 
 			// Set the rights on the net folder
@@ -1305,6 +1325,7 @@ public class GwtNetFolderHelper
 					NetFolderHelper.saveJitsSettings(
 												ami.getBinderModule(),
 												netFolder.getId(),
+												netFolder.getInheritJitsSettings(),
 												settings.getJitsEnabled(),
 												settings.getAclMaxAge(),
 												settings.getResultsMaxAge() );
@@ -1367,6 +1388,7 @@ public class GwtNetFolderHelper
 											ami.getProfileModule(),
 											ami.getBinderModule(),
 											ami.getWorkspaceModule(),
+											ami.getFolderModule(),
 											netFolderRoot.getName(),
 											netFolderRoot.getRootPath(),
 											netFolderRoot.getProxyName(),
@@ -1380,6 +1402,10 @@ public class GwtNetFolderHelper
 											authType,
 											netFolderRoot.getUseDirectoryRights(),
 											netFolderRoot.getCachedRightsRefreshInterval(),
+											netFolderRoot.getIndexContent(),
+											netFolderRoot.getJitsEnabled(),
+											netFolderRoot.getJitsResultsMaxAge(),
+											netFolderRoot.getJitsAclMaxAge(),
 											scheduleInfo );
 		}
 		catch ( Exception ex )
@@ -1397,7 +1423,7 @@ public class GwtNetFolderHelper
 	/**
 	 * Save the data sync settings for the given net folder binder
 	 */
-	@SuppressWarnings({ "unchecked", "unused" })
+	@SuppressWarnings({ "unchecked", "unused", "rawtypes" })
 	private static void saveDataSyncSettings(
 		AllModulesInjected ami,
 		Long binderId,

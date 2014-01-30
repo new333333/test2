@@ -64,9 +64,11 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
+
 import org.kablink.teaming.BinderQuotaException;
 import org.kablink.teaming.IllegalCharacterInNameException;
 import org.kablink.teaming.NotSupportedException;
@@ -83,6 +85,7 @@ import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.domain.Description;
 import org.kablink.teaming.domain.FileAttachment;
+import org.kablink.teaming.domain.FileAttachment.FileLock;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.Group;
@@ -166,6 +169,7 @@ import org.kablink.teaming.gwt.client.util.EntryLinkInfo;
 import org.kablink.teaming.gwt.client.util.EntryTitleInfo;
 import org.kablink.teaming.gwt.client.util.FolderEntryDetails;
 import org.kablink.teaming.gwt.client.util.FolderEntryDetails.ShareInfo;
+import org.kablink.teaming.gwt.client.util.FolderEntryDetails.UserInfo;
 import org.kablink.teaming.gwt.client.util.GwtFileLinkAction;
 import org.kablink.teaming.gwt.client.util.MobileDevicesInfo;
 import org.kablink.teaming.gwt.client.util.SelectedUsersDetails;
@@ -173,7 +177,6 @@ import org.kablink.teaming.gwt.client.util.SelectionDetails;
 import org.kablink.teaming.gwt.client.util.SharedViewState;
 import org.kablink.teaming.gwt.client.util.TagInfo;
 import org.kablink.teaming.gwt.client.util.UserType;
-import org.kablink.teaming.gwt.client.util.FolderEntryDetails.UserInfo;
 import org.kablink.teaming.gwt.client.util.FolderType;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.ManageUsersState;
@@ -182,8 +185,6 @@ import org.kablink.teaming.gwt.client.util.ShareDateInfo;
 import org.kablink.teaming.gwt.client.util.ShareExpirationInfo;
 import org.kablink.teaming.gwt.client.util.ShareMessageInfo;
 import org.kablink.teaming.gwt.client.util.ShareStringValue;
-import org.kablink.teaming.gwt.server.util.GwtPerShareInfo.PerShareInfoComparator;
-import org.kablink.teaming.gwt.server.util.GwtSharedMeItem.SharedMeEntriesMapComparator;
 import org.kablink.teaming.gwt.client.util.PrincipalInfo;
 import org.kablink.teaming.gwt.client.util.ShareRights;
 import org.kablink.teaming.gwt.client.util.TaskFolderInfo;
@@ -193,11 +194,14 @@ import org.kablink.teaming.gwt.client.util.ViewFolderEntryInfo;
 import org.kablink.teaming.gwt.client.util.ViewType;
 import org.kablink.teaming.gwt.client.util.WorkspaceType;
 import org.kablink.teaming.gwt.client.util.ViewInfo;
+import org.kablink.teaming.gwt.server.util.GwtPerShareInfo.PerShareInfoComparator;
+import org.kablink.teaming.gwt.server.util.GwtSharedMeItem.SharedMeEntriesMapComparator;
 import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.module.admin.AdminModule.AdminOperation;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
+import org.kablink.teaming.module.file.FileModule;
 import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.folder.FilesLockedByOtherUsersException;
 import org.kablink.teaming.module.folder.FolderModule;
@@ -686,8 +690,24 @@ public class GwtViewHelper {
 	}
 	
 	/*
-	 * Constructs and returns a UserInfo object using a HistoryStamp.
+	 * Constructs and returns a UserInfo object using a Date an a user
+	 * ID.
 	 */
+	private static UserInfo buildFolderEntryUser(AllModulesInjected bs, HttpServletRequest request, Date hsDate, Long hsUserId) {
+		// Create the UserInfo to return...
+		UserInfo reply = new UserInfo();
+
+		// ...set the Date when the user performed the action...
+		reply.setDate(GwtServerHelper.getDateTimeString(hsDate, DateFormat.MEDIUM, DateFormat.SHORT));
+		
+		// ...and set the PrincipalInfo about how performed the action.
+		reply.setPrincipalInfo(getPIFromPId(bs, request, hsUserId));
+		
+		// If we get here, reply refers to the UserInfo that describes
+		// the user from the given HistoryStamp.  Return it.
+		return reply;
+	}
+	
 	private static UserInfo buildFolderEntryUser(AllModulesInjected bs, HttpServletRequest request, HistoryStamp hs) {
 		// If we don't have a HistoryStamp...
 		if (null == hs) {
@@ -695,18 +715,8 @@ public class GwtViewHelper {
 			return null;
 		}
 		
-		// Create the UserInfo to return...
-		UserInfo reply = new UserInfo();
-
-		// ...set the Date when the user performed the action...
-		reply.setDate(GwtServerHelper.getDateTimeString(hs.getDate(), DateFormat.MEDIUM, DateFormat.SHORT));
-		
-		// ...and set the PrincipalInfo about how performed the action.
-		reply.setPrincipalInfo(getPIFromPId(bs, request, hs.getPrincipal().getId()));
-		
-		// If we get here, reply refers to the UserInfo that describes
-		// the user from the given HistoryStamp.  Return it.
-		return reply;
+		// Always use the initial form of the method.
+		return buildFolderEntryUser(bs, request, hs.getDate(), hs.getPrincipal().getId());
 	}
 
 	/*
@@ -1095,6 +1105,7 @@ public class GwtViewHelper {
 			Map<Long, String>			principalTitles   = new HashMap<Long, String>();
 			Map<Long, Integer>			groupCounts       = new HashMap<Long, Integer>();
 			Map<Long, GwtPresenceInfo>	userPresence      = new HashMap<Long, GwtPresenceInfo>();
+			Map<Long, Boolean>			userExternal      = new HashMap<Long, Boolean>();
 			Map<Long, Long>				presenceUserWSIds = new HashMap<Long, Long>();
 			Map<Long, String>			teamTitles        = new HashMap<Long, String>();
 			Map<Long, Integer>			teamCounts        = new HashMap<Long, Integer>();
@@ -1110,6 +1121,7 @@ public class GwtViewHelper {
 				principalTitles,
 				groupCounts,
 				userPresence,
+				userExternal,
 				presenceUserWSIds,
 				
 				teamTitles,
@@ -1120,32 +1132,32 @@ public class GwtViewHelper {
 			// Scan the List<FolderRow>'s again...
 			for (FolderRow fr:  folderRows) {
 				// ...this time, fixing the assignee lists.
-				fixupAIUsers(      getAIListFromFR(fr, TaskHelper.ASSIGNMENT_TASK_ENTRY_ATTRIBUTE_NAME),             principalTitles, principalEMAs, userPresence, presenceUserWSIds, avatarUrls);
-				fixupAIGroups(     getAIListFromFR(fr, TaskHelper.ASSIGNMENT_TASK_ENTRY_ATTRIBUTE_NAME),             principalTitles, groupCounts                                               );
-				fixupAITeams(      getAIListFromFR(fr, TaskHelper.ASSIGNMENT_TASK_ENTRY_ATTRIBUTE_NAME),             teamTitles,      teamCounts                                                );
-				fixupAIUsers(      getAIListFromFR(fr, EventHelper.ASSIGNMENT_CALENDAR_ENTRY_ATTRIBUTE_NAME),        principalTitles, principalEMAs, userPresence, presenceUserWSIds, avatarUrls);
-				fixupAIGroups(     getAIListFromFR(fr, EventHelper.ASSIGNMENT_CALENDAR_ENTRY_ATTRIBUTE_NAME),        principalTitles, groupCounts                                               );
-				fixupAITeams(      getAIListFromFR(fr, EventHelper.ASSIGNMENT_CALENDAR_ENTRY_ATTRIBUTE_NAME),        teamTitles,      teamCounts                                                );
-				fixupAIUsers(      getAIListFromFR(fr, RESPONSIBLE_MILESTONE_ENTRY_ATTRIBUTE_NAME),                  principalTitles, principalEMAs, userPresence, presenceUserWSIds, avatarUrls);
-				fixupAIGroups(     getAIListFromFR(fr, RESPONSIBLE_MILESTONE_ENTRY_ATTRIBUTE_NAME),                  principalTitles, groupCounts                                               );
-				fixupAITeams(      getAIListFromFR(fr, RESPONSIBLE_MILESTONE_ENTRY_ATTRIBUTE_NAME),                  teamTitles,      teamCounts                                                );
+				fixupAIUsers(      getAIListFromFR(fr, TaskHelper.ASSIGNMENT_TASK_ENTRY_ATTRIBUTE_NAME),             principalTitles, principalEMAs, userPresence, userExternal, presenceUserWSIds, avatarUrls);
+				fixupAIGroups(     getAIListFromFR(fr, TaskHelper.ASSIGNMENT_TASK_ENTRY_ATTRIBUTE_NAME),             principalTitles, groupCounts                                                             );
+				fixupAITeams(      getAIListFromFR(fr, TaskHelper.ASSIGNMENT_TASK_ENTRY_ATTRIBUTE_NAME),             teamTitles,      teamCounts                                                              );
+				fixupAIUsers(      getAIListFromFR(fr, EventHelper.ASSIGNMENT_CALENDAR_ENTRY_ATTRIBUTE_NAME),        principalTitles, principalEMAs, userPresence, userExternal, presenceUserWSIds, avatarUrls);
+				fixupAIGroups(     getAIListFromFR(fr, EventHelper.ASSIGNMENT_CALENDAR_ENTRY_ATTRIBUTE_NAME),        principalTitles, groupCounts                                                             );
+				fixupAITeams(      getAIListFromFR(fr, EventHelper.ASSIGNMENT_CALENDAR_ENTRY_ATTRIBUTE_NAME),        teamTitles,      teamCounts                                                              );
+				fixupAIUsers(      getAIListFromFR(fr, RESPONSIBLE_MILESTONE_ENTRY_ATTRIBUTE_NAME),                  principalTitles, principalEMAs, userPresence, userExternal, presenceUserWSIds, avatarUrls);
+				fixupAIGroups(     getAIListFromFR(fr, RESPONSIBLE_MILESTONE_ENTRY_ATTRIBUTE_NAME),                  principalTitles, groupCounts                                                             );
+				fixupAITeams(      getAIListFromFR(fr, RESPONSIBLE_MILESTONE_ENTRY_ATTRIBUTE_NAME),                  teamTitles,      teamCounts                                                              );
 				
-				fixupAIGroups(     getAIListFromFR(fr, TaskHelper.ASSIGNMENT_GROUPS_TASK_ENTRY_ATTRIBUTE_NAME),      principalTitles, groupCounts                                               );
-				fixupAIGroups(     getAIListFromFR(fr, EventHelper.ASSIGNMENT_GROUPS_CALENDAR_ENTRY_ATTRIBUTE_NAME), principalTitles, groupCounts                                               );
-				fixupAIGroups(     getAIListFromFR(fr, RESPONSIBLE_GROUPS_MILESTONE_ENTRY_ATTRIBUTE_NAME),           principalTitles, groupCounts                                               );
+				fixupAIGroups(     getAIListFromFR(fr, TaskHelper.ASSIGNMENT_GROUPS_TASK_ENTRY_ATTRIBUTE_NAME),      principalTitles, groupCounts                                                             );
+				fixupAIGroups(     getAIListFromFR(fr, EventHelper.ASSIGNMENT_GROUPS_CALENDAR_ENTRY_ATTRIBUTE_NAME), principalTitles, groupCounts                                                             );
+				fixupAIGroups(     getAIListFromFR(fr, RESPONSIBLE_GROUPS_MILESTONE_ENTRY_ATTRIBUTE_NAME),           principalTitles, groupCounts                                                             );
 				
-				fixupAITeams(      getAIListFromFR(fr, TaskHelper.ASSIGNMENT_TEAMS_TASK_ENTRY_ATTRIBUTE_NAME),       teamTitles,      teamCounts                                                );
-				fixupAITeams(      getAIListFromFR(fr, EventHelper.ASSIGNMENT_TEAMS_CALENDAR_ENTRY_ATTRIBUTE_NAME),  teamTitles,      teamCounts                                                );
-				fixupAITeams(      getAIListFromFR(fr, RESPONSIBLE_TEAMS_MILESTONE_ENTRY_ATTRIBUTE_NAME),            teamTitles,      teamCounts                                                );
+				fixupAITeams(      getAIListFromFR(fr, TaskHelper.ASSIGNMENT_TEAMS_TASK_ENTRY_ATTRIBUTE_NAME),       teamTitles,      teamCounts                                                              );
+				fixupAITeams(      getAIListFromFR(fr, EventHelper.ASSIGNMENT_TEAMS_CALENDAR_ENTRY_ATTRIBUTE_NAME),  teamTitles,      teamCounts                                                              );
+				fixupAITeams(      getAIListFromFR(fr, RESPONSIBLE_TEAMS_MILESTONE_ENTRY_ATTRIBUTE_NAME),            teamTitles,      teamCounts                                                              );
 				
-				fixupAIUsers(      getAIListFromFR(fr, FolderColumn.COLUMN_SHARE_SHARED_BY),                        principalTitles, principalEMAs, userPresence, presenceUserWSIds, avatarUrls);
-				fixupAIUsers(      getAIListFromFR(fr, FolderColumn.COLUMN_SHARE_SHARED_WITH),                      principalTitles, principalEMAs, userPresence, presenceUserWSIds, avatarUrls);
-				fixupAIGroups(     getAIListFromFR(fr, FolderColumn.COLUMN_SHARE_SHARED_WITH),                      principalTitles, groupCounts                                               );
-				fixupAIPublics(    getAIListFromFR(fr, FolderColumn.COLUMN_SHARE_SHARED_BY)                                                                                                    );
-				fixupAIPublics(    getAIListFromFR(fr, FolderColumn.COLUMN_SHARE_SHARED_WITH)                                                                                                  );
-				fixupAIPublicLinks(getAIListFromFR(fr, FolderColumn.COLUMN_SHARE_SHARED_BY)                                                                                                    );
-				fixupAIPublicLinks(getAIListFromFR(fr, FolderColumn.COLUMN_SHARE_SHARED_WITH)                                                                                                  );
-				fixupAITeams(      getAIListFromFR(fr, FolderColumn.COLUMN_SHARE_SHARED_WITH),                      teamTitles,      teamCounts                                                );
+				fixupAIUsers(      getAIListFromFR(fr, FolderColumn.COLUMN_SHARE_SHARED_BY),                         principalTitles, principalEMAs, userPresence, userExternal, presenceUserWSIds, avatarUrls);
+				fixupAIUsers(      getAIListFromFR(fr, FolderColumn.COLUMN_SHARE_SHARED_WITH),                       principalTitles, principalEMAs, userPresence, userExternal, presenceUserWSIds, avatarUrls);
+				fixupAIGroups(     getAIListFromFR(fr, FolderColumn.COLUMN_SHARE_SHARED_WITH),                       principalTitles, groupCounts                                                             );
+				fixupAIPublics(    getAIListFromFR(fr, FolderColumn.COLUMN_SHARE_SHARED_BY)                                                                                                                   );
+				fixupAIPublics(    getAIListFromFR(fr, FolderColumn.COLUMN_SHARE_SHARED_WITH)                                                                                                                 );
+				fixupAIPublicLinks(getAIListFromFR(fr, FolderColumn.COLUMN_SHARE_SHARED_BY)                                                                                                                   );
+				fixupAIPublicLinks(getAIListFromFR(fr, FolderColumn.COLUMN_SHARE_SHARED_WITH)                                                                                                                 );
+				fixupAITeams(      getAIListFromFR(fr, FolderColumn.COLUMN_SHARE_SHARED_WITH),                       teamTitles,      teamCounts                                                              );
 			}		
 	
 			// Finally, one last scan through the List<FolderRow>'s...
@@ -1288,6 +1300,7 @@ public class GwtViewHelper {
 			Map<Long, String>			principalTitles   = new HashMap<Long, String>();
 			Map<Long, Integer>			groupCounts       = new HashMap<Long, Integer>();
 			Map<Long, GwtPresenceInfo>	userPresence      = new HashMap<Long, GwtPresenceInfo>();
+			Map<Long, Boolean>			userExternal      = new HashMap<Long, Boolean>();
 			Map<Long, Long>				presenceUserWSIds = new HashMap<Long, Long>();
 			Map<Long, String>			teamTitles        = new HashMap<Long, String>();
 			Map<Long, Integer>			teamCounts        = new HashMap<Long, Integer>();
@@ -1303,6 +1316,7 @@ public class GwtViewHelper {
 				principalTitles,
 				groupCounts,
 				userPresence,
+				userExternal,
 				presenceUserWSIds,
 				
 				teamTitles,
@@ -1319,15 +1333,17 @@ public class GwtViewHelper {
 				case INDIVIDUAL:
 					if (GwtEventHelper.setAssignmentInfoTitle(           ai, principalTitles )) {
 						GwtEventHelper.setAssignmentInfoPresence(        ai, userPresence     );
+						GwtEventHelper.setAssignmentInfoExternal(        ai, userExternal     );
 						GwtEventHelper.setAssignmentInfoPresenceUserWSId(ai, presenceUserWSIds);
 						GwtEventHelper.setAssignmentInfoAvatarUrl(       ai, avatarUrls       );
-						GwtEventHelper.setAssignmentInfoHover(           ai, principalEMAs    );
+						GwtEventHelper.setAssignmentInfoHover(           ai, principalTitles  );
 					}
 					break;
 					
 				case GROUP:
 					if (GwtEventHelper.setAssignmentInfoTitle(  ai, principalTitles)) {
 						GwtEventHelper.setAssignmentInfoMembers(ai, groupCounts     );
+						GwtEventHelper.setAssignmentInfoHover(  ai, principalTitles );
 						ai.setPresenceDude("pics/group_icon_small.png");
 					}
 					break;
@@ -1335,6 +1351,7 @@ public class GwtViewHelper {
 				case TEAM:
 					if (GwtEventHelper.setAssignmentInfoTitle(  ai, teamTitles)) {
 						GwtEventHelper.setAssignmentInfoMembers(ai, teamCounts );
+						GwtEventHelper.setAssignmentInfoHover(  ai, teamTitles );
 						ai.setPresenceDude("pics/team_16.png");
 					}
 					break;
@@ -2304,6 +2321,50 @@ public class GwtViewHelper {
 	}
 
 	/**
+	 * Forces the selected files to be unlocked.
+	 * 
+	 * @param bs
+	 * @param request
+	 * @param entityIds
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public static BooleanRpcResponseData forceFilesUnlock(AllModulesInjected bs, HttpServletRequest request, List<EntityId> entityIds) throws GwtTeamingException {
+		try {
+			// Are there any entities to unlock?
+			if (MiscUtil.hasItems(entityIds)) {
+				// Yes!  Scan them...
+				FileModule   fim = bs.getFileModule();
+				FolderModule fom = bs.getFolderModule();
+				for (EntityId eid:  entityIds) {
+					// ...forcing their primary file to be unlocked.
+					FolderEntry    fe = fom.getEntry(eid.getBinderId(), eid.getEntityId());
+					FileAttachment fa = MiscUtil.getPrimaryFileAttachment(fe);
+					if ((null != fa) && (null != fa.getFileLock())) {
+						fim.forceUnlock(fe.getParentBinder(), fe, fa);
+					}
+				}
+			}
+			
+			// If we get here, the unlocks were successful.  Return
+			// true.
+			return new BooleanRpcResponseData(Boolean.TRUE);
+		}
+		
+		catch (Exception e) {
+			// Convert the exception to a GwtTeamingException and throw
+			// that.
+			throw
+				GwtLogHelper.getGwtClientException(
+					m_logger,
+					e,
+					"GwtViewHelper.forceFilesUnlock( SOURCE EXCEPTION ):  ");
+		}
+	}
+	
+	/**
 	 * Return true of the accessory panel should be visible on the
 	 * given binder and false otherwise.
 	 * 
@@ -2731,7 +2792,7 @@ public class GwtViewHelper {
 	/*
 	 * Fixes up the individual assignees in an List<AssignmentInfo>'s.
 	 */
-	private static void fixupAIUsers(List<AssignmentInfo> aiList, Map<Long, String> principalTitles, Map<Long, String> principalEMAs, Map<Long, GwtPresenceInfo> userPresence, Map<Long, Long> presenceUserWSIds, Map<Long, String> avatarUrls) {
+	private static void fixupAIUsers(List<AssignmentInfo> aiList, Map<Long, String> principalTitles, Map<Long, String> principalEMAs, Map<Long, GwtPresenceInfo> userPresence, Map<Long, Boolean> userExternal, Map<Long, Long> presenceUserWSIds, Map<Long, String> avatarUrls) {
 		// If don't have a list to fixup...
 		if (!(MiscUtil.hasItems(aiList))) {
 			// ...bail.
@@ -2753,9 +2814,10 @@ public class GwtViewHelper {
 			// ...and setting each one's title.
 			if (GwtEventHelper.setAssignmentInfoTitle(           ai, principalTitles )) {
 				GwtEventHelper.setAssignmentInfoPresence(        ai, userPresence     );
+				GwtEventHelper.setAssignmentInfoExternal(        ai, userExternal     );
 				GwtEventHelper.setAssignmentInfoPresenceUserWSId(ai, presenceUserWSIds);
 				GwtEventHelper.setAssignmentInfoAvatarUrl(       ai, avatarUrls       );
-				GwtEventHelper.setAssignmentInfoHover(           ai, principalEMAs    );
+				GwtEventHelper.setAssignmentInfoHover(           ai, principalTitles  );
 			}
 			else {
 				removeList.add(ai);
@@ -3540,6 +3602,16 @@ public class GwtViewHelper {
 			gsp.stop();
 		}
 	}
+
+	/*
+	 * Returns the EntityRights for an individual entity.
+	 */
+	private static EntityRights getEntityRights(AllModulesInjected bs, HttpServletRequest request, EntityId eid) throws GwtTeamingException {
+		List<EntityId> eidList = new ArrayList<EntityId>();
+		eidList.add(eid);
+		EntityRightsRpcResponseData erData = getEntityRights(bs, request, eidList);
+		return erData.getEntityRights(eid);
+	}
 	
 	/**
 	 * Returns the entry description from a search results Map.
@@ -4204,7 +4276,12 @@ public class GwtViewHelper {
 			// Create the ViewFolderEntryInfo to return...
 			User                user   = GwtServerHelper.getCurrentUser();
 			Long				userId = user.getId();
-			FolderEntryDetails	reply  = new FolderEntryDetails(entityId);
+			FolderEntryDetails	reply  = new FolderEntryDetails(
+				entityId,
+				getEntityRights(
+					bs,
+					request,
+					entityId));
 			
 			// ...set whether the user has seen this entry...
 			Long			folderId = entityId.getBinderId();
@@ -4234,11 +4311,15 @@ public class GwtViewHelper {
 			String  family = GwtServerHelper.getFolderEntityFamily(bs, feTop);
 			reply.setFamily(family);
 			String fileSizeDisplay = "";
+			FileAttachment fa;
 			if (GwtServerHelper.isFamilyFile(family)) {
-				FileAttachment fa = MiscUtil.getPrimaryFileAttachment(feTop);
+				fa = MiscUtil.getPrimaryFileAttachment(feTop);
 				if (null != fa) {
 					fileSizeDisplay = buildFileSizeDisplayFromKBSize(user, fa.getFileItem().getLengthKB());
 				}
+			}
+			else {
+				fa = null;
 			}
 			reply.setFileSizeDisplay(fileSizeDisplay);
 	
@@ -4253,8 +4334,20 @@ public class GwtViewHelper {
 			
 			// ...set the entry's locker...
 			HistoryStamp lStamp = fe.getReservation();
-			reply.setLocker(buildFolderEntryUser(bs, request, lStamp));
-			reply.setLockedByLoggedInUser((null != lStamp) && lStamp.getPrincipal().getId().equals(userId));
+			reply.setEntryLocker(buildFolderEntryUser(bs, request, lStamp));
+			reply.setEntryLockedByLoggedInUser((null != lStamp) && lStamp.getPrincipal().getId().equals(userId));
+
+			// ...if it's a file...
+			if (null != fa) {
+				// ...that's locked...
+				FileLock fl = fa.getFileLock();
+				if (null != fl) {
+					// ...set the file's locker...
+					Long lockerId = fl.getOwner().getId();
+					reply.setFileLocker(buildFolderEntryUser(bs, request, fl.getExpirationDate(), lockerId));
+					reply.setFileLockedByLoggedInUser(lockerId.equals(userId));
+				}
+			}
 
 			// ...set the contributor's to this entry...
 			reply.setContributors(ListFolderHelper.collectContributorIds(fe));
@@ -4287,7 +4380,7 @@ public class GwtViewHelper {
 	
 			// ...if this is a file entry with a filename...
 			FileAttachment faForEntryIcon;
-			FileAttachment fa = GwtServerHelper.getFileEntrysFileAttachment(bs, fe, isTop);
+			fa = GwtServerHelper.getFileEntrysFileAttachment(bs, fe, isTop);
 			if (null != fa) {
 				// ...store it for using for the entry icon...
 				faForEntryIcon = fa;
@@ -5999,11 +6092,12 @@ public class GwtViewHelper {
 		Long    userWSId      = user.getWorkspaceId();
 		boolean userHasWS     = (null != userWSId);
 		boolean userWSInTrash = (userHasWS && user.isWorkspacePreDeleted());
-		pi.setUserDisabled( user.isDisabled()     );
-		pi.setUserHasWS(    userHasWS             );
-		pi.setUserPerson(   user.isPerson()       );
-		pi.setUserWSInTrash(userWSInTrash         );
-		pi.setEmailAddress( user.getEmailAddress());
+		pi.setUserDisabled(  user.isDisabled()                   );
+		pi.setUserExternal(!(user.getIdentityInfo().isInternal()));
+		pi.setUserHasWS(     userHasWS                           );
+		pi.setUserPerson(    user.isPerson()                     );
+		pi.setUserWSInTrash( userWSInTrash                       );
+		pi.setEmailAddress(  user.getEmailAddress()              );
 		pi.setViewProfileEntryUrl(getViewProfileEntryUrl(bs, request, userId, bs.getProfileModule().getProfileBinderId()));
 		pi.setPresenceUserWSId(user.getWorkspaceId());
 		pi.setAvatarUrl(GwtServerHelper.getUserAvatarUrl(bs, request, user));
@@ -6677,9 +6771,23 @@ public class GwtViewHelper {
 	 */
 	public static SharedViewStateRpcResponseData getSharedViewState(AllModulesInjected bs, HttpServletRequest request, CollectionType ct) throws GwtTeamingException {
 		try {
-			HttpSession hSession = GwtServerHelper.getCurrentHttpSession();
-			Boolean showHidden    = ((Boolean) hSession.getAttribute(CACHED_SHARED_VIEW_SHOW_HIDDEN_BASE     + ct.name()));
-			Boolean showNonHidden = ((Boolean) hSession.getAttribute(CACHED_SHARED_VIEW_SHOW_NON_HIDDEN_BASE + ct.name()));
+			// For guest...
+			Boolean showHidden;
+			Boolean showNonHidden;
+			if (GwtServerHelper.getCurrentUser().isShared()) {
+				// ...we show everything since hiding shares is not
+				// ...supported...
+				showHidden    =
+				showNonHidden = Boolean.TRUE;
+			}
+			
+			else {
+				// ...otherwise, we look in the session cache as to
+				// ...whether to show hidden or non-hidden shares.
+				HttpSession hSession = GwtServerHelper.getCurrentHttpSession();
+				showHidden    = ((Boolean) hSession.getAttribute(CACHED_SHARED_VIEW_SHOW_HIDDEN_BASE     + ct.name()));
+				showNonHidden = ((Boolean) hSession.getAttribute(CACHED_SHARED_VIEW_SHOW_NON_HIDDEN_BASE + ct.name()));
+			}
 
 			// Construct the SharedViewStateRpcResponseData
 			// object to return.
@@ -8230,6 +8338,34 @@ public class GwtViewHelper {
 		// Return false.
 		return false;
 	}
+
+	/**
+	 * Returns true if the specified user is external and false otherwise.
+	 * 
+	 * @param bs
+	 * @param request
+	 * @param userId
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public static boolean isUserExternal(AllModulesInjected bs, HttpServletRequest request, Long userId) throws GwtTeamingException {
+		try {
+			User user = ((User) bs.getProfileModule().getEntry(userId));
+			return (!(user.getIdentityInfo().isInternal()));
+		}
+		
+		catch (Exception e) {
+			// Convert the exception to a GwtTeamingException and throw
+			// that.
+			throw
+				GwtLogHelper.getGwtClientException(
+					m_logger,
+					e,
+					"GwtViewHelper.isUserExternal( SOURCE EXCEPTION ):  ");
+		}
+	}
 	
 	/**
 	 * Locks the entries.
@@ -8557,16 +8693,18 @@ public class GwtViewHelper {
 				//        org.kablink.teaming.webdav.FileResource.renameFile()
 				// 
 				// Access the entry and attachment we're renaming.
-				FolderModule   fm = bs.getFolderModule();
-				FolderEntry    fe = fm.getEntry(eid.getBinderId(), eid.getEntityId());
-				FileAttachment fa = GwtServerHelper.getFileEntrysFileAttachment(bs, fe, true);
+				FolderModule   fm      = bs.getFolderModule();
+				FolderEntry    fe      = fm.getEntry(eid.getBinderId(), eid.getEntityId());
+				FileAttachment fa      = GwtServerHelper.getFileEntrysFileAttachment(bs, fe, true);
+				String         faName  = ((null == fa) ? "" : fa.getFileItem().getName());
+				String         feTitle = fe.getTitle();
 				
 				// If the current entry title is identical to the name
 				// of the file, it's reasonable to change the title to
 				// match the new name as well.  Do we have to rename
 				// the entry?
-				InputDataAccessor inputData;				
-				if ((null == fa) || fa.getFileItem().getName().equals(fe.getTitle())) {
+				InputDataAccessor inputData;
+				if ((null == fa) || faName.equals(feTitle)) {
 					// Yes!  Setup the appropriate input data.
 					Map data = new HashMap();
 					data.put(ObjectKeys.FIELD_ENTITY_TITLE, entityName);
@@ -8579,7 +8717,12 @@ public class GwtViewHelper {
 
 				// Setup the appropriate  file rename.
 				Map<FileAttachment,String> renamesTo;
-				if (null == fa) {
+				if ((null == fa) || faName.equals(entityName)) {
+					if (feTitle.equals(entityName)) {
+						// Everything already matches the new name!  No
+						// renaming is necessary;
+						return reply;
+					}
 					renamesTo = null;
 				}
 				else {
@@ -8616,17 +8759,36 @@ public class GwtViewHelper {
 				}
 				
 				catch (Exception e) {
-					// No!  Return the reason why in the string response...
+					// No!  Did we get a WriteEntryDataException?
 					String messageKey;
-					if      (e instanceof AccessControlException)          messageKey = "renameEntityError.AccssControlException.file";
-					else if (e instanceof IllegalCharacterInNameException) messageKey = "renameEntityError.IllegalCharacterInNameException.file";
-					else if (e instanceof ReservedByAnotherUserException)  messageKey = "renameEntityError.ReservedByAnotherUserException.file";
-					else if (e instanceof WriteFilesException)             messageKey = "renameEntityError.WriteFilesException.file";
-					else if (e instanceof WriteEntryDataException)         messageKey = "renameEntityError.WriteEntryDataException.file";
-					else                                                   messageKey = "renameEntityError.OtherException.file";
-					reply.setStringValue(NLT.get(messageKey, new String[]{entityName}));
+					boolean handledEx = false;
+					if (e instanceof WriteEntryDataException) {
+						// Yes!  Is it because a file with that name
+						// already exists?
+						if (null != fm.getLibraryFolderEntryByFileName(fe.getParentFolder(), entityName)) {
+							// Yes!  Return a more specific error for
+							// this condition than the code below would
+							// result in. 
+							messageKey = "entry.duplicateFileInLibrary3";
+							reply.setStringValue(NLT.get(messageKey));
+							handledEx = true;
+						}
+					}
+
+					// Did we handle the exception above?
+					if (!handledEx) {
+						// No!  Return a generic reason why in the
+						// string response.
+						if      (e instanceof AccessControlException)          messageKey = "renameEntityError.AccssControlException.file";
+						else if (e instanceof IllegalCharacterInNameException) messageKey = "renameEntityError.IllegalCharacterInNameException.file";
+						else if (e instanceof ReservedByAnotherUserException)  messageKey = "renameEntityError.ReservedByAnotherUserException.file";
+						else if (e instanceof WriteFilesException)             messageKey = "renameEntityError.WriteFilesException.file";
+						else if (e instanceof WriteEntryDataException)         messageKey = "renameEntityError.WriteEntryDataException.file";
+						else                                                   messageKey = "renameEntityError.OtherException.file";
+						reply.setStringValue(NLT.get(messageKey, new String[]{entityName}));
+					}
 					
-					// ...and log it.
+					// Whatever the exception was, log it.
 					GwtLogHelper.error(m_logger, "GwtViewHelper.renameEntity( Entity title:  '" + entityName + ", EXCEPTION:2 ):  ", e);
 				}
 			}

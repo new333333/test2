@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -42,6 +42,8 @@ import org.kablink.teaming.gwt.client.GwtMainPage;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.GwtBrandingDataExt.BrandingRule;
+import org.kablink.teaming.gwt.client.event.GetSiteBrandingPanelEvent;
+import org.kablink.teaming.gwt.client.event.GetSiteBrandingPanelEvent.SiteBrandingPanelCallback;
 import org.kablink.teaming.gwt.client.rpc.shared.GetFileAttachmentsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetFileAttachmentsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
@@ -49,6 +51,8 @@ import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HelpData;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import org.kablink.teaming.gwt.client.widgets.TinyMCEDlg.TinyMCEDlgClient;
+
+import com.eemi.gwt.tour.client.Placement;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
@@ -80,11 +84,10 @@ import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
-
 /**
- * 
+ * ?
+ *  
  * @author jwootton
- *
  */
 public class EditBrandingDlg extends DlgBox
 {
@@ -99,6 +102,7 @@ public class EditBrandingDlg extends DlgBox
 	private InlineLabel m_sampleText;
 	private AsyncCallback<VibeRpcResponse> m_rpcReadCallback = null;
 	private GwtBrandingData m_origBrandingData;		// The original branding data we started with.
+	private GwtTeamingMessages m_messages;
 	private TinyMCEDlg m_editAdvancedBrandingDlg = null;
 	private ArrayList<String> m_listOfFileAttachments = null;
 	private final String m_noAvailableImages = "no available images";
@@ -110,6 +114,9 @@ public class EditBrandingDlg extends DlgBox
 	private RadioButton m_ruleSiteBrandingOnlyRb = null;
 	private RadioButton m_ruleBothSiteAndBinderBrandingRb = null;
 	private RadioButton m_ruleBinderOverridesRb = null;
+	private VibeTour m_siteBrandingTour;
+	private String m_productName;
+	private boolean m_siteBranding;
 
 	/*
 	 * Note that the class constructor is private to facilitate code
@@ -128,6 +135,9 @@ public class EditBrandingDlg extends DlgBox
 	{
 		super( autoHide, modal, xPos, yPos, width, height, DlgButtonMode.OkCancel );
 		
+		m_messages = GwtTeaming.getMessages();
+		m_productName = GwtClientHelper.getProductName();
+		
 		// Create the callback that will be used when we issue an ajax call to get
 		// the list of files attached to the given binder.
 		m_rpcReadCallback = new AsyncCallback<VibeRpcResponse>()
@@ -140,7 +150,7 @@ public class EditBrandingDlg extends DlgBox
 			{
 				GwtClientHelper.handleGwtRPCFailure(
 					t,
-					GwtTeaming.getMessages().rpcFailure_GetBranding(),
+					m_messages.rpcFailure_GetBranding(),
 					m_origBrandingData.getBinderId() );
 				
 				// Update the list of files the user can select from for the branding image and background image.
@@ -166,7 +176,7 @@ public class EditBrandingDlg extends DlgBox
 		};
 		
 		// Create the header, content and footer of this dialog box.
-		createAllDlgContent( GwtTeaming.getMessages().brandingDlgHeader(), editSuccessfulHandler, editCanceledHandler, null ); 
+		createAllDlgContent( m_messages.brandingDlgHeader(), editSuccessfulHandler, editCanceledHandler, null ); 
 	}// end EditBrandingDlg()
 	
 
@@ -190,13 +200,13 @@ public class EditBrandingDlg extends DlgBox
 	@Override
 	public Panel createContent( Object props )
 	{
-		GwtTeamingMessages messages;
+		m_siteBrandingTour = new VibeTour( "siteBrandingTour" );
+		addBrandingAreaTourStep( Placement.RIGHT, m_messages.editBrandingDlg_Tour_start( m_productName ) );
+		
 		FlowPanel mainPanel = null;
 		Label spacer;
 		FlexTable table = null;
 		int nextRow;
-		
-		messages = GwtTeaming.getMessages();
 		
 		mainPanel = new FlowPanel();
 		mainPanel.setStyleName( "teamingDlgBoxContent" );
@@ -211,7 +221,7 @@ public class EditBrandingDlg extends DlgBox
 		{
 			HorizontalPanel hPanel;
 			
-			m_useBrandingImgRb = new RadioButton( "brandingType", messages.useBrandingImgLabel() );
+			m_useBrandingImgRb = new RadioButton( "brandingType", m_messages.useBrandingImgLabel() );
 			table.setWidget( nextRow, 0, m_useBrandingImgRb );
 
 			hPanel = new HorizontalPanel();
@@ -236,8 +246,10 @@ public class EditBrandingDlg extends DlgBox
 				flowPanel.addStyleName( "editBrandingBrowseLink" );
 
 				addFileAnchor = new Anchor();
-				addFileAnchor.setTitle( messages.addImage() );
+				addFileAnchor.setTitle( m_messages.addImage() );
 				flowPanel.add( addFileAnchor );
+				
+				addTourStep( Placement.RIGHT, flowPanel, m_messages.editBrandingDlg_Tour_brandingImage() );
 				
 				// Add a browse image to the link.
 				browseImg = new Image( GwtTeaming.getImageBundle().browseHierarchy() );
@@ -285,16 +297,18 @@ public class EditBrandingDlg extends DlgBox
 		
 		// Add the controls for "Use Advanced Branding"
 		{
-			m_useAdvancedBrandingRb = new RadioButton( "brandingType", messages.useAdvancedBrandingLabel() );
+			m_useAdvancedBrandingRb = new RadioButton( "brandingType", m_messages.useAdvancedBrandingLabel() );
 			
 			// Add a link the user can click on to edit the advanced branding.
 			{
 				Anchor advancedAnchor;
 				ClickHandler clickHandler;
 				
-				advancedAnchor = new Anchor( messages.advancedBtn() );
-				advancedAnchor.setTitle( messages.editAdvancedBranding() );
+				advancedAnchor = new Anchor( m_messages.advancedBtn() );
+				advancedAnchor.setTitle( m_messages.editAdvancedBranding() );
 				advancedAnchor.addStyleName( "editBrandingAdvancedLink" );
+				
+				addTourStep( Placement.RIGHT, advancedAnchor, m_messages.editBrandingDlg_Tour_advancedBranding() );
 				
 				// Add a clickhandler to the "advanced" link.  When the user clicks on the link we
 				// will invoke the "edit advanced branding" dialog.
@@ -343,7 +357,7 @@ public class EditBrandingDlg extends DlgBox
 		{
 			HorizontalPanel hPanel;
 			
-			table.setText( nextRow, 0, messages.backgroundImgLabel() );
+			table.setText( nextRow, 0, m_messages.backgroundImgLabel() );
 
 			// Create a list box to hold the list of attachments for the given binder.
 			// User can select one of these files to use as the background image.
@@ -367,8 +381,10 @@ public class EditBrandingDlg extends DlgBox
 				flowPanel.addStyleName( "editBrandingBrowseLink" );
 
 				addFileAnchor = new Anchor();
-				addFileAnchor.setTitle( messages.addImage() );
+				addFileAnchor.setTitle( m_messages.addImage() );
 				flowPanel.add( addFileAnchor );
+				
+				addTourStep( Placement.RIGHT, flowPanel, m_messages.editBrandingDlg_Tour_backgroundImage() );
 				
 				// Add the browse image to the link.
 				browseImg = new Image( GwtTeaming.getImageBundle().browseHierarchy() );
@@ -414,13 +430,13 @@ public class EditBrandingDlg extends DlgBox
 			++nextRow;
 			
 			// Add a "stretch image" checkbox.
-			m_stretchBgImgCb = new CheckBox( messages.stretchImg() );
+			m_stretchBgImgCb = new CheckBox( m_messages.stretchImg() );
 			table.setWidget( nextRow, 1, m_stretchBgImgCb );
 			++nextRow;
 		}
 		
 		// Add an empty row to add some space between the "background image" listbox and the "background color" textbox.
-		spacer = new Label( messages.colorDescription() );
+		spacer = new Label( m_messages.colorDescription() );
 		spacer.addStyleName( "margintop3" );
 		spacer.addStyleName( "gray3" );
 		table.setWidget( nextRow, 1, spacer );
@@ -437,7 +453,7 @@ public class EditBrandingDlg extends DlgBox
 			Element imgElement;
 			Image colorBrowseImg;
 			
-			table.setText( nextRow, 0, messages.backgroundColorLabel() );
+			table.setText( nextRow, 0, m_messages.backgroundColorLabel() );
 
 			// Create a panel where the background color control and hint will live.
 			hPanel = new HorizontalPanel();
@@ -450,9 +466,11 @@ public class EditBrandingDlg extends DlgBox
 			// Add a button next to the background color textbox the user can click on to invoke a color picker.
 
 			colorHint = new Anchor();
-			colorHint.setTitle( messages.displayColorPicker() );
+			colorHint.setTitle( m_messages.displayColorPicker() );
 			colorHint.addStyleName( "editBrandingBrowseLink" );
 			colorHint.addStyleName( "displayInlineBlock" );
+			
+			addTourStep( Placement.RIGHT, hPanel, m_messages.editBrandingDlg_Tour_backgroundColor() );
 
 			// Add the browse image to the link.
 			colorBrowseImg = new Image( GwtTeaming.getImageBundle().colorPicker() );
@@ -510,7 +528,7 @@ public class EditBrandingDlg extends DlgBox
 			Element imgElement;
 			Image colorBrowseImg;
 			
-			table.setText( nextRow, 0, messages.textColorLabel() );
+			table.setText( nextRow, 0, m_messages.textColorLabel() );
 
 			// Create a panel where the text color control and button will live.
 			hPanel = new HorizontalPanel();
@@ -522,9 +540,12 @@ public class EditBrandingDlg extends DlgBox
 			
 			// Add a button next to the text color textbox the user can click on to invoke a color picker.
 			textColorHint = new Anchor();
-			textColorHint.setTitle( messages.displayColorPicker() );
+			textColorHint.setTitle( m_messages.displayColorPicker() );
 			textColorHint.addStyleName( "editBrandingBrowseLink" );
 			textColorHint.addStyleName( "displayInlineBlock" );
+			
+			addTourStep( Placement.RIGHT, hPanel, m_messages.editBrandingDlg_Tour_textColor() );
+			addBrandingAreaTourStep( Placement.RIGHT, m_messages.editBrandingDlg_Tour_brandingArea( m_productName ) );
 
 			// Add the browse image to the link.
 			colorBrowseImg = new Image( GwtTeaming.getImageBundle().colorPicker() );
@@ -579,7 +600,7 @@ public class EditBrandingDlg extends DlgBox
 			cellFormatter = table.getCellFormatter();
 			cellFormatter.addStyleName( nextRow, 1, "paddingTop8px" );
 
-			m_sampleText = new InlineLabel( messages.sampleText() );
+			m_sampleText = new InlineLabel( m_messages.sampleText() );
 			m_sampleText.addStyleName( "editBrandingSampleText" );
 			table.setWidget( nextRow, 1, m_sampleText );
 			++nextRow;
@@ -593,20 +614,20 @@ public class EditBrandingDlg extends DlgBox
 			
 			m_rulesPanel = new FlowPanel();
 			
-			label = new Label( messages.brandingRulesLabel() );
+			label = new Label( m_messages.brandingRulesLabel() );
 			m_rulesPanel.add( label );
 
-			m_ruleSiteBrandingOnlyRb = new RadioButton( "brandingRule", messages.siteBrandingOnlyLabel() );
+			m_ruleSiteBrandingOnlyRb = new RadioButton( "brandingRule", m_messages.siteBrandingOnlyLabel() );
 			wrapperPanel = new FlowPanel();
 			wrapperPanel.add( m_ruleSiteBrandingOnlyRb );
 			m_rulesPanel.add( wrapperPanel );
 			
-			m_ruleBothSiteAndBinderBrandingRb = new RadioButton( "brandingRule", messages.siteAndBinderBrandingLabel() );
+			m_ruleBothSiteAndBinderBrandingRb = new RadioButton( "brandingRule", m_messages.siteAndBinderBrandingLabel() );
 			wrapperPanel = new FlowPanel();
 			wrapperPanel.add( m_ruleBothSiteAndBinderBrandingRb );
 			m_rulesPanel.add( wrapperPanel );
 			
-			m_ruleBinderOverridesRb = new RadioButton( "brandingRule", messages.binderOverridesBrandingLabel() );
+			m_ruleBinderOverridesRb = new RadioButton( "brandingRule", m_messages.binderOverridesBrandingLabel() );
 			wrapperPanel = new FlowPanel();
 			wrapperPanel.add( m_ruleBinderOverridesRb );
 			m_rulesPanel.add( wrapperPanel );
@@ -626,18 +647,20 @@ public class EditBrandingDlg extends DlgBox
 			FlexTable captionTable;
 			Label hint;
 			
-			captionPanel = new CaptionPanel( messages.editBrandingDlg_LoginDialogCaption() );
+			captionPanel = new CaptionPanel( m_messages.editBrandingDlg_LoginDialogCaption() );
 			captionPanel.addStyleName( "editBrandingDlg_LoginDialogCaptionPanel" );
+			
+			addTourStep( Placement.TOP, captionPanel, m_messages.editBrandingDlg_Tour_loginDlgImage( m_productName ) );
 			
 			captionPanelMainPanel = new FlowPanel();
 			captionPanel.add( captionPanelMainPanel );
 
-			hint = new Label( messages.editBrandingDlg_LoginDialogImgHint() );
+			hint = new Label( m_messages.editBrandingDlg_LoginDialogImgHint() );
 			hint.addStyleName( "editBrandingDlg_LoginDialogHint" );
 			captionPanelMainPanel.add( hint );
 			
 			captionTable = new FlexTable();
-			captionTable.setText( 0, 0, messages.editBrandingDlg_CurrentImage() );
+			captionTable.setText( 0, 0, m_messages.editBrandingDlg_CurrentImage() );
 
 			// Add a listbox the user can use to select the default image or a custom image.
 			{
@@ -661,7 +684,7 @@ public class EditBrandingDlg extends DlgBox
 				flowPanel.addStyleName( "editBrandingBrowseLink" );
 
 				addFileAnchor = new Anchor();
-				addFileAnchor.setTitle( messages.addImage() );
+				addFileAnchor.setTitle( m_messages.addImage() );
 				flowPanel.add( addFileAnchor );
 				
 				// Add the browse image to the link.
@@ -719,7 +742,7 @@ public class EditBrandingDlg extends DlgBox
 			panel.addStyleName( "margintop3" );
 			
 			// Add "Clear branding" button
-			clearBrandingBtn = new Button( messages.clearBrandingLabel() );
+			clearBrandingBtn = new Button( m_messages.clearBrandingLabel() );
 			panel.add( clearBrandingBtn );
 			
 			// Add a clickhandler to the "Clear branding" link.  When the user clicks on the link we
@@ -749,6 +772,8 @@ public class EditBrandingDlg extends DlgBox
 			
 			mainPanel.add( panel );
 		}
+		
+		addTourStep( Placement.BOTTOM, getHeaderPanel(), m_messages.editBrandingDlg_Tour_finish( m_productName ) );
 		
 		return mainPanel;
 	}// end createContent()
@@ -828,7 +853,7 @@ public class EditBrandingDlg extends DlgBox
 			if ( isColorValid( color ) == false )
 			{
 				// No, tell the user about the problem.
-				Window.alert( GwtTeaming.getMessages().invalidBackgroundColor( color ) );
+				Window.alert( m_messages.invalidBackgroundColor( color ) );
 				return null;
 			}
 		}
@@ -842,7 +867,7 @@ public class EditBrandingDlg extends DlgBox
 			if ( isColorValid( color ) == false )
 			{
 				// No, tell the user about the problem.
-				Window.alert( GwtTeaming.getMessages().invalidTextColor( color ) );
+				Window.alert( m_messages.invalidTextColor( color ) );
 				return null;
 			}
 		}
@@ -934,15 +959,18 @@ public class EditBrandingDlg extends DlgBox
 		String type;
 		
 		// Are we dealing with site branding?
-		if ( brandingData.isSiteBranding() )
+		m_siteBranding = brandingData.isSiteBranding();
+		if ( m_siteBranding )
 		{
 			// Yes
-			setCaption( GwtTeaming.getMessages().brandingDlgSiteBrandingHeader() );
+			setCaption( m_messages.brandingDlgSiteBrandingHeader() );
+			setTourEnabled( true );
 		}
 		else
 		{
 			// No
-			setCaption( GwtTeaming.getMessages().brandingDlgHeader() );
+			setCaption( m_messages.brandingDlgHeader() );
+			setTourEnabled( false );
 		}
 		
 		// Remember the branding data we started with.
@@ -1250,7 +1278,7 @@ public class EditBrandingDlg extends DlgBox
 		final int y)
 	{		
 		TinyMCEDlg.createAsync(
-			GwtTeaming.getMessages().editAdvancedBranding(),
+			m_messages.editAdvancedBranding(),
 			tinyMCEConfig,
 			editSuccessfulHandler,
 			editCanceledHandler,
@@ -1426,29 +1454,29 @@ public class EditBrandingDlg extends DlgBox
 		
 		// Add an entry called "None" to the branding listbox.  The user can select "None" if
 		// they don't want to use a branding image.
-		m_brandingImgListbox.addItem( GwtTeaming.getMessages().imgNone(), BrandingPanel.NO_IMAGE );
+		m_brandingImgListbox.addItem( m_messages.imgNone(), BrandingPanel.NO_IMAGE );
 		
 		// Add an entry called "None" to the login dialog image listbox.  The user can select "None" if
 		// they don't want to use an image in the login dialog.
-		m_loginDlgImgListbox.addItem( GwtTeaming.getMessages().imgNone(), BrandingPanel.NO_IMAGE );
+		m_loginDlgImgListbox.addItem( m_messages.imgNone(), BrandingPanel.NO_IMAGE );
 		
 		// Add a Novell Teaming or a Kablink Teaming entry to the branding listbox depending on
 		// whether we are running Novell or Kablink Teaming.  The user can select this entry if
 		// they want to use the Novell/Kablink Teaming branding image.
 		if ( GwtTeaming.m_requestInfo.isLicenseFilr() )
 		{
-			m_brandingImgListbox.addItem( GwtTeaming.getMessages().novellFilr(), BrandingPanel.DEFAULT_TEAMING_IMAGE );
-			m_loginDlgImgListbox.addItem( GwtTeaming.getMessages().novellFilr(), BrandingPanel.DEFAULT_TEAMING_IMAGE );
+			m_brandingImgListbox.addItem( m_messages.novellFilr(), BrandingPanel.DEFAULT_TEAMING_IMAGE );
+			m_loginDlgImgListbox.addItem( m_messages.novellFilr(), BrandingPanel.DEFAULT_TEAMING_IMAGE );
 		}
 		else if ( GwtMainPage.m_novellTeaming )
 		{
-			m_brandingImgListbox.addItem( GwtTeaming.getMessages().novellTeaming(), BrandingPanel.DEFAULT_TEAMING_IMAGE );
-			m_loginDlgImgListbox.addItem( GwtTeaming.getMessages().novellTeaming(), BrandingPanel.DEFAULT_TEAMING_IMAGE );
+			m_brandingImgListbox.addItem( m_messages.novellTeaming(), BrandingPanel.DEFAULT_TEAMING_IMAGE );
+			m_loginDlgImgListbox.addItem( m_messages.novellTeaming(), BrandingPanel.DEFAULT_TEAMING_IMAGE );
 		}
 		else
 		{
-			m_brandingImgListbox.addItem( GwtTeaming.getMessages().kablinkTeaming(), BrandingPanel.DEFAULT_TEAMING_IMAGE );
-			m_loginDlgImgListbox.addItem( GwtTeaming.getMessages().kablinkTeaming(), BrandingPanel.DEFAULT_TEAMING_IMAGE );
+			m_brandingImgListbox.addItem( m_messages.kablinkTeaming(), BrandingPanel.DEFAULT_TEAMING_IMAGE );
+			m_loginDlgImgListbox.addItem( m_messages.kablinkTeaming(), BrandingPanel.DEFAULT_TEAMING_IMAGE );
 		}
 
 		// Do we have any file attachments?
@@ -1457,7 +1485,7 @@ public class EditBrandingDlg extends DlgBox
 			// Yes
 			// Add an entry called "None" to the background listbox.  The user can select "None" if
 			// they don't want to use a background image.
-			m_backgroundImgListbox.addItem( GwtTeaming.getMessages().imgNone(), BrandingPanel.NO_IMAGE );
+			m_backgroundImgListbox.addItem( m_messages.imgNone(), BrandingPanel.NO_IMAGE );
 
 			// Add each file name to the "branding image" listbox and to the "background image" listbox.
 			for (i = 0; listOfFileAttachments != null && i < listOfFileAttachments.size(); ++i)
@@ -1474,7 +1502,7 @@ public class EditBrandingDlg extends DlgBox
 		{
 			// No
 			// Add an entry called "No available images" to the listboxes.
-			m_backgroundImgListbox.addItem( GwtTeaming.getMessages().noImagesAvailable(), m_noAvailableImages );
+			m_backgroundImgListbox.addItem( m_messages.noImagesAvailable(), m_noAvailableImages );
 		}
 		
 		// Select the branding image file in the listbox that is defined in the original branding data.
@@ -1545,6 +1573,89 @@ public class EditBrandingDlg extends DlgBox
 			}
 		}
 	}// end updateSampleTextColor()
+
+	/*
+	 * Adds a tour step to the tour.
+	 */
+	private void addTourStep( Placement placement, Widget widget, String content, boolean fixed )
+	{
+		VibeTourStep step = new VibeTourStep( placement, widget );
+		step.setContent( content );
+		setStepPosition( placement, step, fixed );
+		m_siteBrandingTour.addStep( step );
+	}
+	
+	private void addTourStep( Placement placement, Widget widget, String content )
+	{
+		// Always use the initial form of the method.
+		addTourStep( placement, widget, content, false );	// false -> Not fixed.
+	}
+	
+	
+	/*
+	 * Adds a tour step for the branding area to the tour.
+	 */
+	private void addBrandingAreaTourStep( final Placement placement, final String content )
+	{
+		GwtTeaming.fireEvent(
+			new GetSiteBrandingPanelEvent(
+				new SiteBrandingPanelCallback()
+				{
+					@Override
+					public void siteBrandingPanel( Widget siteBrandingPanel )
+					{
+						addTourStep(
+							placement,
+							siteBrandingPanel,
+							content,
+							true );	// true -> The branding panel is fixed.
+					}
+				} ) );
+	}
+	
+	/*
+	 * Sets the step's position based on it placement.
+	 */
+	private void setStepPosition(Placement placement, VibeTourStep step, boolean fixed) {
+		step.setFixedElement( fixed );
+		switch (placement) {
+		case RIGHT:
+			if (fixed)
+			{
+				step.setYOffset( 10);
+				step.setXOffset(100);
+			}
+			else
+			{
+				step.setYOffset(-20);
+			}
+			break;
+		
+		case BOTTOM:
+			step.centerXOffset();
+			break;
+		}
+	}
+
+	/**
+	 * Overrides DlgBox.invokeTour() to connect the site branding tour.
+	 */
+	@Override
+	public void invokeTour() {
+		if (m_siteBranding && (null != m_siteBrandingTour)) {
+			m_siteBrandingTour.start();
+		}
+	}
+	
+	/**
+	 * Overrides DlgBox.stopTour() to connect the site branding tour.
+	 */
+	@Override
+	public void stopTour() {
+		if (m_siteBranding && (null != m_siteBrandingTour)) {
+			m_siteBrandingTour.stop();
+		}
+	}
 	
 	/**
 	 * Callback interface to interact with the edit branding dialog

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0
  * (the "CPAL"); you may not use this file except in compliance with the CPAL.
@@ -16,10 +16,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information: Attribution Copyright Notice: Copyright (c)
- * 1998-2012 Novell, Inc. All Rights Reserved. Attribution Phrase (not exceeding
+ * 1998-2014 Novell, Inc. All Rights Reserved. Attribution Phrase (not exceeding
  * 10 words): [Powered by Kablink] Attribution URL: [www.kablink.org] Graphic
  * Image as provided in the Covered Code
  * [ssf/images/pics/powered_by_icecore.png]. Display of Attribution Information
@@ -30,6 +30,8 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
+
+//
 // Common javascript functions for forum portlets
 //
 
@@ -711,7 +713,8 @@ function ss_fetchUrlInIframe(url, anchorDivName, width, height) {
 	    ss_setObjectTop(iframeDivObj, y);
 	    ss_setObjectLeft(iframeDivObj, x);
 	}
-	iframeObj.src = url;
+//!	iframeObj.src = url;
+	ss_setUrlInFrame(iframeObj, url);
 }
 
 
@@ -2649,7 +2652,8 @@ function ss_showBackgroundIFrame(divId, frmId) {
 		frm = document.createElement("iframe");
 		if (typeof ss_baseRootPathUrl != 'undefined') {
 			var teaming_url = ss_baseRootPathUrl + 'js/forum/null.html';
-			frm.src = teaming_url;
+//!			frm.src = teaming_url;
+			ss_setUrlInFrame(frm, teaming_url);
 		}
 		frm.frameBorder = 0;
 		frm.scrolling = "no";
@@ -3077,7 +3081,8 @@ function ss_toolbarPopupUrl(url, windowName, width, height) {
 			entryContentDiv.style.display = "none";
 		}
 		ss_resizePopupDiv();
-		popupIframe.src = url;
+//!		popupIframe.src = url;
+		ss_setUrlInFrame(popupIframe, url);
 	} else if (url != "" && self.window.name == "ss_showentryframe") {
 		// Instead of popping up into another window, we now use the current
 		// showEntry frame
@@ -3230,6 +3235,17 @@ function ss_setupStatusMessageDiv() {
     	document.getElementsByTagName("body").item(0).appendChild(smDiv);
 	}
 }
+//Routine to get a status_message
+function ss_getStatusMessage() {
+	var value = '';
+	var smId = document.getElementById('ss_status_message');
+	if (smId != null) {
+		// There is a status message
+		value = smId.innerHTML;
+	}
+	return value;
+}
+
 // common processing for callback after ajax call
 function ss_postRequestAlertError(obj) {
 	// See if there was an error
@@ -4391,7 +4407,8 @@ function ss_showAddAttachmentBrowse(binderId, entryId, namespace) {
 	
 	// alert("ss_showAddAttachmentBrowse: frameObj.src: "+frameObj.src);
 	
-	frameObj.src = ss_rootPath + "js/attachments/entry_attachment_browse.html";
+//!	frameObj.src = ss_rootPath + "js/attachments/entry_attachment_browse.html";
+	ss_setUrlInFrame(frameObj, ss_rootPath + "js/attachments/entry_attachment_browse.html");
 	
 	ss_showDiv(divId);
 	frameObj.style.visibility = "visible";
@@ -4468,7 +4485,8 @@ function ss_showAddAttachmentDropbox(binderId, entryId, namespace) {
 	frameObj.style.visibility = "visible";
 
 	if (frameObj.src == "" || frameObj.src.indexOf("null.html") >= 0) {
-		frameObj.src = url;
+//!		frameObj.src = url;
+		ss_setUrlInFrame(frameObj, url);
 	}
 	
 	divObj.style.width = "400px";
@@ -4505,7 +4523,8 @@ function ss_openWebDAVFileOld(binderId, entryId, namespace, OSInfo, strURLValue)
 	ss_showDiv(divId);
 	frameObj.style.visibility = "visible";
 
-	frameObj.src = url;
+//!	frameObj.src = url;
+	ss_setUrlInFrame(frameObj, url);
 	
 	if (divObj != null) {
 		divObj.style.width = "1px";
@@ -4533,7 +4552,8 @@ function ss_openWebDAVFile(binderId, entryId, namespace, OSInfo, fileId) {
 	if (divObj != null) divObj.style.visibility = "visible";
 	frameObj.style.visibility = "visible";
 
-	frameObj.src = url;
+//!	frameObj.src = url;
+	ss_setUrlInFrame(frameObj, url);
 }
 
 function ss_checkEditClicked(entryId, namespace) {
@@ -4984,11 +5004,14 @@ function ss_showForumEntryInIframe_Overlay(url) {
 
     if (wObj.src && wObj.src == url) {
     	ss_nextUrl = url
-    	wObj.src = ss_forumRefreshUrl;
+//!    	wObj.src = ss_forumRefreshUrl;
+    	ss_setUrlInFrame(wObj, ss_forumRefreshUrl);
     } else if (wObj.src && wObj.src == ss_forumRefreshUrl && ss_nextUrl == url) {
-    	wObj.src = ss_forumRefreshUrl;
+//!    	wObj.src = ss_forumRefreshUrl;
+    	ss_setUrlInFrame(wObj, ss_forumRefreshUrl);
     } else {
-    	wObj.src = url
+//!    	wObj.src = url
+    	ss_setUrlInFrame(wObj, url);
     }
     try {wObj.focus();} catch(e){}
 
@@ -5542,7 +5565,8 @@ function ssTeams(namespace) {
 		dObj.style.display = "block";
 	    dojo.style(dObj, "visibility", "visible");
 	    dObj.style.zIndex = parseInt(ssMenuZ);
-	    fObj.src = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"show_my_teams", namespace:namespace});
+//!	    fObj.src = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"show_my_teams", namespace:namespace});
+    	ss_setUrlInFrame(fObj, ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"show_my_teams", namespace:namespace}));
 	    try {fObj.focus();} catch(e){}
 	}
 	this.hideAccessible = function() {
@@ -8483,7 +8507,8 @@ function ss_treeToggleAccessible(treeName, id, parentId, bottom, type, page, ind
     if (iframeDivObjParent != null && iframeDivObjParent != iframeDivObj) {
     	ss_setSelfLocation(url);
 	} else {
-		iframeObj.src = url;
+//!		iframeObj.src = url;
+    	ss_setUrlInFrame(iframeObj, url);
 	}
 }
 
@@ -9751,6 +9776,47 @@ function ss_setSelfLocation(url) {
 	}
 	else {
 		self.location.href = url;
+	}
+}
+
+/*
+ * Sets a URL into a frame with the frame disconnected from the DOM.
+ * 
+ * The logic here detaches the IFRAME from the DOM before setting the
+ * URL.   This is done to address a problem with IFRAME's and GWT
+ * history as per the following web site:
+ *  - - - - - - - - - - - - - - - - - - -
+ * http://owenrh.blogspot.com/2011/04/gwt-iframes-and-history.html
+ * - - - - - Copied From There - - - - -
+ * So I ran into this problem the other day, and thought I'd 
+ * document the solution I found for it.
+ *  
+ * We've got a scenario on a project where we embed an IFRAME into
+ * the page and load content into it. The problem is that the every
+ * time the src attribute on the IFRAME was set, the browser
+ * created a non-GWT history event.  This meant that when the user
+ * pressed back there would be spurious history events, stopping
+ * anything from happening, or they'd have to press back multiple
+ * times instead of once.
+ *  
+ * After some investigation I discovered the solution. Basically,
+ * creating a GWT Frame widget, setting the URL in the constructor,
+ * and adding it to the page each time the content changed didn't
+ * create these history events.  The history events seem to be
+ * related to call the Frame.setSrc( ) method, or setting the src
+ * attribute on the IFRAME element in the HTML.
+ *  - - - - - - - - - - - - - - - - - - -
+ */
+function ss_setUrlInFrame(frame, url) {
+	var frame_Parent = frame.parentNode;
+	if (null != frame_Parent) {
+		frame_Parent.removeChild(frame);
+	}
+	
+	frame.src = url
+	
+	if (null != frame_Parent) {
+		frame_Parent.appendChild(frame);
 	}
 }
 

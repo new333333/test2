@@ -106,6 +106,10 @@ public class AdminNetFolderServerResource extends AbstractAdminResource {
                 driverConfig.getAccountName(), driverConfig.getPassword(), null, null, false, false,
                 driverConfig.getFullSyncDirOnly(), driverConfig.getAuthenticationType(),
                 driverConfig.getUseDirectoryRights(), driverConfig.getCachedRightsRefreshInterval(),
+                driverConfig.getIndexContent(),
+                driverConfig.isJitsEnabled(),
+                new Long( driverConfig.getJitsMaxAge() ),
+                new Long( driverConfig.getJitsAclMaxAge() ),
                 toScheduleInfo(netFolderServer.getSyncSchedule()));
         return AdminResourceUtil.buildNetFolderServer(driverConfig, true);
    	}
@@ -128,9 +132,14 @@ public class AdminNetFolderServerResource extends AbstractAdminResource {
 
         ResourceDriverConfig newConfig = toResourceDriverConfig(newServer);
         newConfig = NetFolderHelper.modifyNetFolderRoot(getAdminModule(), getResourceDriverModule(), getProfileModule(), getBinderModule(),
-                getWorkspaceModule(), existingConfig.getName(), newConfig.getRootPath(), newConfig.getAccountName(), newConfig.getPassword(),
+                getWorkspaceModule(), getFolderModule(), existingConfig.getName(), newConfig.getRootPath(), newConfig.getAccountName(), newConfig.getPassword(),
                 newConfig.getDriverType(), null, false, false, null, newConfig.getFullSyncDirOnly(), newConfig.getAuthenticationType(),
-                newConfig.getUseDirectoryRights(), newConfig.getCachedRightsRefreshInterval(), toScheduleInfo(newServer.getSyncSchedule()));
+                newConfig.getUseDirectoryRights(), newConfig.getCachedRightsRefreshInterval(),
+                newConfig.getIndexContent(),
+                newConfig.isJitsEnabled(),
+                new Long( newConfig.getJitsMaxAge() ),
+                new Long( newConfig.getJitsAclMaxAge() ),
+                toScheduleInfo(newServer.getSyncSchedule()));
         return AdminResourceUtil.buildNetFolderServer(newConfig, true);
     }
 

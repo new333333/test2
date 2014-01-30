@@ -90,10 +90,9 @@
 
 .activityStreamActionsPanel:hover
 {
-	background: url(images/blends/teal_slice.png) repeat-x;
-	background-position:center;
-	-moz-border-radius: 5px;
+	background: #cce9ee;
 	border-radius: 5px;
+	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;
 }
 
@@ -239,10 +238,9 @@
 .activityStreamHover, .shareThisDlg_NameHover, .groupMembershipNameHover, .selectPrincipalsWidget_NameHover
 {
 	cursor: pointer;
-	background: url(images/blends/teal_slice.png) repeat-x;
-	background-position:center;
-	-moz-border-radius: 5px;
+	background: #cce9ee;
 	border-radius: 5px;
+	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;
 }
 .activityStreamHover span {
@@ -269,7 +267,7 @@
 .activityStreamCommentMainPanel
 {
 	border-top: 1px solid #e0e0e0;
-	margin-left: 50px;
+	margin-left: 45px;
 	margin-top: 10px;
 	padding-right: 0px;
 	padding-left: 0px;
@@ -346,7 +344,7 @@
 	margin-top: 4px;
 	margin-left: 1px;
 	margin-right: 20px;
-	padding-bottom: 12px;
+	padding-bottom: 8px;
 	position: relative;
 }
 
@@ -373,8 +371,7 @@
 
 .activityStreamShowHideDescLabel:hover
 {
-	background: url(images/blends/teal_slice.png) repeat-x;
-	background-position:center;
+	background: #cce9ee;
 	cursor: pointer;
 	border-radius: 5px;
 	-moz-border-radius: 5px;
@@ -386,8 +383,8 @@
 	left: 0;
 	position: absolute;
 	top: 1px;
-	width: 40px;
-	height: 40px;
+	width: 35px;
+	height: 35px;
 	border-radius: 2px;
 }
 
@@ -435,7 +432,7 @@
 .activityStreamCommentContentPanel
 {
 	font-size: 12px;
-	margin-left: 48px;
+	margin-left: 44px;
 	padding-top: 5px;
 	position: relative;
 	white-space: normal;
@@ -637,10 +634,10 @@
 
 .shareThisDlg_EditSharePanel
 {
-	background-color: #EDEDED;
+	background-color: transparent;
 	height: 360px;
-	margin-left: 6px;
-	width: 400px;
+	width: 320px;
+	margin-left: 15px;
 }
 
 .shareThisDlg_ExpiresLabel, .shareThisDlg_DefaultExpiresLabel
@@ -652,14 +649,17 @@
 .shareThisDlg_HeaderPanel
 {
 	position: relative;
-	margin-bottom: 15px;
+	background-color: #fff;
+	margin-bottom: 10px;
+	padding: 10px;
+	border-bottom: 1px solid #c4c4c4;
 }
 
-.shareThisDlg_HeaderPanel img
+.shareThisDlg_HeaderImg
 {
 	position: absolute;
-	top: 0px;
-	left: 1px;
+	top: 6px;
+	left: 8px;
 }
 
 .shareThisDlg_HeaderNamePanel
@@ -670,18 +670,16 @@
 
 .shareThisDlg_HeaderNameLabel
 {
-	font-size: 1.2em;
-	line-height: 1.4em;
 	color: #1f1f1f;
 	overflow: hidden;
 }
 
 .shareThisDlg_HeaderPathLabel
 {
-	color: #505354;
+	color: #666666;
 	font-size: 13px;
 	line-height: 16px;
-	overflow: hidden;
+	margin-top: 3px;
 }
 
 .shareThisDlg_NoteLabel
@@ -747,8 +745,7 @@
 .shareThisDlg_RightsLabel:hover, .shareThisDlg_ExpiresLabel:hover, .shareThisDlg_DefaultExpiresLabel:hover, .shareThisDlg_shareWithTeamsLink:hover, .shareThisDlg_NoteLabel:hover, .shareThisDlg_PublicRecipientTypeImage:hover
 {
 	cursor: pointer;
-	background: url(images/blends/teal_slice.png) repeat-x;
-	background-position:center;
+	background: #cce9ee;
 	-moz-border-radius: 5px;
 	border-radius: 5px;
 	-webkit-border-radius: 5px;
@@ -780,6 +777,12 @@
 .shareThisDlg_ShareWithTeamsPanel
 {
 	padding-top: 10px;
+}
+
+.shareThisDlg_ManageSharesPanel
+{
+	margin-left: 10px;
+	margin-bottom: -5px;
 }
 
 .shareThisDlg_TextArea
@@ -818,43 +821,91 @@
 
 .shareThisDlg_MakePublicDiv
 {
-	margin-left: 5px;
-	margin-bottom: 15px;
+	position: absolute;
+	top: 10px;
+	right: 8px;
 	z-index: 100;
-}		
+}
 
+.shareThisDlg_findTable
+{
+	margin-left: 5px;
+	margin-top: -8px;
+	margin-bottom: 4px;
+}
+.shareThisDlg_findTable input
+{
+	width: 300px;
+	border: 1px solid #c4c4c4;
+}
+
+.shareWithPublicDlg_content
+{
+	margin: 15px;
+}
 .shareWithPublicDlg_instructionsLabel
 {
-	font-size: .9em;
-	line-height: 1.5em;
-	margin-top: 12px;
+	font-size: 13px;
+	color: #666666;
+}
+
+.shareThisDlg_ListOfSharesParentTable
+{
+	position: relative;
+}
+
+.shareThisDlg_ListOfSharesTable
+{
+
 }
 
 .shareThisDlg_ListOfSharesPanel
 {
 	overflow-x: hidden;
 	overflow-y: auto;
+	position: relative;
+}
+
+.shareThisDlg_ListOfSharesPanel table th
+{
+	background: transparent;
+	border-left: 0px;
+	border-bottom: 1px solid #e0e0e0;
+	border-top: 3px solid transparent !important;
+	color: #5691A6;
+	font-size: 14px;
+}
+
+.shareThisDlg_Notify
+{
+	margin-left: 40px;
+	font-size: 15px;
 }
 
 .shareItem_InfoPanel
 {
+	padding: 3px 0;
 	cursor: pointer;
 }
 
 .shareItem_mainPanel
 {
+	width: 230px;
 	margin-left: 4px;
 }
 
 .shareItem_RecipientAvatar
 {
-	height: 40px;
-	width: 40px;
+	height: 35px;
+	width: 35px;
+	margin-top: 2px;
+	margin-right: 5px;
+	border-radius: 2px;
 }
 
 .shareItem_RecipientName
 {
-	color: #135C8F;
+	color: #000;
 	font-weight: bold;
 }
 
@@ -862,6 +913,13 @@
 {
 	color: #666666;
 	font-size: 11px;
+	letter-spacing: .25px;
+}
+
+.shareItem_FileAccessRights
+{
+	color: #000;
+	font-size: 12px;
 	letter-spacing: .25px;
 }
 .shareItem_Note
@@ -1122,22 +1180,10 @@ a, a:visited, a:hover {
     color: #135c8f !important;
 	cursor: pointer;
 	border: 1px solid #81b2bd;
+	background: #cee9ee;
 	border-radius: 15px;
 	-moz-border-radius: 15px;
 	-webkit-border-radius: 15px;
-	background: linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: -o-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: -moz-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: -webkit-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: -ms-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: -webkit-gradient(
-		linear,
-		left bottom,
-		left top,
-		color-stop(0.47, #A8D4DD),
-		color-stop(0.53, #D5EDF1),
-		color-stop(1, #C8E4E9));
 }
 
 body, table td, select
@@ -1281,8 +1327,8 @@ body, table td, select
 	color: #FFFFFF;
 	font-size: 0.8em;
 	position: absolute;
-	right: -8px;
-	top: -8px;
+	right: -7px;
+	top: -7px;
 	z-index: 1001;
 }
 
@@ -1295,7 +1341,7 @@ body, table td, select
 {
 	left: 10px;
 	position: absolute;
-	top: 12px;
+	top: 10px;
 	z-index: 1901;
 }
 
@@ -1326,6 +1372,16 @@ body, table td, select
 	padding: 2px;
 	position: absolute;
 	right: 20px;
+	top: 4px;
+}
+
+/* Styles used for the tour link in a dialog header. */
+.dlgHeaderTourImg
+{
+	cursor: pointer;
+	padding: 2px;
+	position: absolute;
+	right: 40px;
 	top: 4px;
 }
 
@@ -1410,13 +1466,7 @@ body, table td, select
 	color: #135c8f !important;
 	border: 1px solid #81b2bd;
 	padding: 2px 5px  !important;
-	background: linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: -o-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: -moz-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: -webkit-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: -ms-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: -webkit-gradient(linear, left bottom, left top, color-stop(0.47, #A8D4DD), color-stop(0.53, #D5EDF1), color-stop(1, #C8E4E9));
+	background: #cee9ee;
 	border-radius: 5px !important;
 	-moz-border-radius: 5px !important;
 	-webkit-border-radius: 5px !important;
@@ -1560,11 +1610,9 @@ body, table td, select
 /* Style used for an item in a search result list. */
 .findSearchResultItemWidget
 {
-	border-bottom: 1px solid #BABDB6;
-	margin-bottom: .25em;
-	margin-left: .5em;
-	margin-right: .5em;
-	padding-bottom: 6px;
+	border-bottom: 1px solid #ccc;
+	margin-bottom: 0px;
+	padding: 3px;
 	white-space: nowrap;
 }
 .findSearchResultItemWidget a
@@ -1623,7 +1671,7 @@ body, table td, select
 	font-size: 13px;
 	position: absolute;
 	left: 10px;
-	top: 10px;
+	top: 8px;
 	z-index: 1000;
 }
 
@@ -1860,6 +1908,10 @@ body, table td, select
 .fontSize75em
 {
 	font-size: .8em;
+}
+.fontSize85em
+{
+	font-size: .85em;
 }
 
 /* From Lynn's styles. */
@@ -2314,9 +2366,9 @@ body, table td, select
 	background: url(images/trans50_black.png) repeat transparent !important;
 	border: 0px;
 	padding: 0px !important;
-	margin-top: 5px;
+	margin-top: 1px;
 	right: 20px;
-	z-index: 351;
+	z-index: 2000;
 }
 .breadCrumb_Browser
 {
@@ -2658,10 +2710,9 @@ body, table td, select
 .tagThisDlg_TagName:hover
 {
 	cursor: pointer;
-	background: url(images/teal_slice.png) repeat-x center;
-	background-position:center;
-	-moz-border-radius: 3px;
+	background: #cce9ee;
 	border-radius: 3px;
+	-moz-border-radius: 3px;
 	-webkit-border-radius: 3px;
 }
 
@@ -3067,19 +3118,7 @@ body, table td, select
     text-decoration: none !important;
 	font-size: 12px important;
 	border: 1px solid #81b2bd;
-	background: linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: -o-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: -moz-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: -webkit-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: -ms-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: -webkit-gradient(
-		linear,
-		left bottom,
-		left top,
-		color-stop(0.47, #A8D4DD),
-		color-stop(0.53, #D5EDF1),
-		color-stop(1, #C8E4E9));
+	background: #cee9ee;
 	border-radius: 15px;
 	-moz-border-radius: 15px;
 	-webkit-border-radius: 15px;
@@ -3087,10 +3126,7 @@ body, table td, select
 
 .gwt-Button {
 	color: #1f1f1f;
-	background: -webkit-gradient(linear, left top, left bottom, from(#ffffff), to(#E0E0E0));
-	background: -moz-linear-gradient(center top , #ffffff, #E0E0E0) repeat scroll 0 0;
-	background: linear-gradient(top , #ffffff, #E0E0E0) repeat scroll 0 0;
-	background-color: transparent;
+	background: #f6f6f6;
 	border: 1px solid #b8b8b8;
 	font-weight: normal !important;
 	font-size: 12px;
@@ -3104,6 +3140,7 @@ body, table td, select
 	-webkit-border-radius: 15px;
 }
 .gwt-Button:hover {
+	background: #cce9ee;
 	border: 1px solid #81b2bd;
 	font-size: 12px important;
 	}
@@ -3192,7 +3229,13 @@ body, table td, select
 /* Styles for the content of a dialog box. */
 .teamingDlgBoxContent
 {
+	position: relative;
 	margin: 10px;
+}
+
+.teamingDlgBoxContentOverride
+{
+	margin: 0px !important;
 }
 
 .teamingDlgBoxBody
@@ -3204,8 +3247,8 @@ body, table td, select
 /* Styles for the footer of a dialog box. */
 .teamingDlgBoxFooter
 {
-	background-color: #f6f6f6;
-	box-shadow: 0px 2px 3px #e0e0e0 inset;
+	background-color: #fff;
+/*	box-shadow: 0px 2px 3px #e0e0e0 inset;  */
 	border-top: 1px solid #cccccc;
 	margin-top: 10px;
 	padding: 10px;
@@ -3226,9 +3269,9 @@ body, table td, select
 {
 	position: relative;
 	color: #fff;
-	font-size: 14px;
-	font-weight: bold;
-	padding: 5px;
+	font-size: 15px;
+	font-weight: normal;
+	padding: 3px 8px;
 	border-top-left-radius: 3px;
 	border-top-right-radius: 3px;
 	-moz-border-radius-topleft: 3px;
@@ -3239,7 +3282,8 @@ body, table td, select
 	vertical-align: middle;
 	
 	background-color: #81b2bd;
-	background-image: -webkit-linear-gradient(top, #abced1, #81b2bd) !important; 
+	background-image: none;
+/*	background-image: -webkit-linear-gradient(top, #abced1, #81b2bd) !important; 
 	background-image:    -moz-linear-gradient(top, #abced1, #81b2bd) !important; 
 	background-image:     -ms-linear-gradient(top, #abced1, #81b2bd) !important; 
 	background-image:      -o-linear-gradient(top, #abced1, #81b2bd) !important; 
@@ -3249,7 +3293,8 @@ body, table td, select
 .teamingDlgBoxHeaderBG_NonIE
 {
 	background-color: #81b2bd;
-	background-image: -webkit-linear-gradient(top, #abced1, #81b2bd) !important; 
+	background-image: none;
+/*	background-image: -webkit-linear-gradient(top, #abced1, #81b2bd) !important; 
 	background-image:    -moz-linear-gradient(top, #abced1, #81b2bd) !important; 
 	background-image:     -ms-linear-gradient(top, #abced1, #81b2bd) !important; 
 	background-image:      -o-linear-gradient(top, #abced1, #81b2bd) !important; 
@@ -3257,10 +3302,13 @@ body, table td, select
 }
 .teamingDlgBoxHeaderBG_IE
 {
-	background: url(images/dialog_header_tile3.png) repeat;
+	background-color: #81b2bd;
+	background-image: none;
+/*	background: url(images/dialog_header_tile3.png) repeat; */
 }
 
-.teamingDlgBoxHeader-captionImagePanel {display: inline;}
+
+.teamingDlgBoxHeader-captionImagePanel {display: inline; vertical-align: bottom}
 .teamingDlgBoxHeader-captionLabel      {display: inline !important;}
 
 .teamingDlgBoxHeader:hover
@@ -3335,12 +3383,12 @@ body, table td, select
 .subhead-control-bg2, .btn-bg2, .colorPickerLink:hover
 {
 	color: #FFFFFF;
-	background: url(images/teal_slice.png) repeat-x center;
+	background: #cce9ee;
 }
 .btn-bg3
 {
 	color: #FFFFFF;
-	background: url(images/blue_slice.png) repeat-x center;
+	background: #cce9ee;
 }
 .inside-btn2
 {
@@ -3395,7 +3443,7 @@ a.ss_new_thread {
 
 .qViewTitleText {
 	color:#FFFFFF;
-	font-size:1.4em;
+	font-size:20px;
 	letter-spacing:0.02em;
 	overflow:auto;
 	width:auto;
@@ -3458,13 +3506,13 @@ a.ss_new_thread {
 .qViewClose {
 	display: inline-block;
 	position:absolute;
-	right:-15px;
-	top:-15px;
+	right:-13px;
+	top:-13px;
 }
 .qViewClose img {
-	background-image:url(images/close_w_border.png) !important;
-	width: 27px !important;
-	height: 27px !important;
+	background-image:url(images/close_20.png) !important;
+	width: 20px !important;
+	height: 20px !important;
 	cursor: pointer;
 }
 .qViewInfoTable {
@@ -3486,8 +3534,8 @@ a.ss_new_thread {
 	padding:2px 5px;
 	text-align:center;
 	position: relative;
-	
 	border: 1px solid #B8B8B8;
+	background: #f6f6f6;
 	font-weight: normal !important;
 	font-size: 12px;
 	padding: 2px 5px  !important;
@@ -3497,14 +3545,10 @@ a.ss_new_thread {
 	border-radius: 15px;
 	-moz-border-radius: 15px;
 	-webkit-border-radius: 15px;
-	background: -webkit-gradient(linear, left top, left bottom, from(#ffffff), to(#E0E0E0));
-	background: -moz-linear-gradient(center top , #ffffff, #E0E0E0) repeat scroll 0 0;
-	background: linear-gradient(center top , #ffffff, #E0E0E0) repeat scroll 0 0;
-	background-color: transparent;	
 }
 .qView-action2 {
 	color: #135c8f;
-	background: url("images/teal_slice.png") repeat-x center;
+	background: #cce9ee;
 	border:1px solid #81b2bd;
 }
 .qView-action-following  {
@@ -3520,7 +3564,7 @@ a.ss_new_thread {
 	text-align:center;
 }
 .qView-action-following:hover {
-	background: url("images/teal_slice.png") repeat-x center;
+	background: #cce9ee;
 	border:1px solid #81b2bd;
 	color:#135c8f;
 }
@@ -3794,10 +3838,9 @@ top:100px;
 {
 	color: #135c8f;
 	cursor: pointer;
-	background: url(images/blends/teal_slice.png) repeat-x;
-	background-position:center;
-	-moz-border-radius: 5px;
+	background: #cce9ee;
 	border-radius: 5px;
+	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;
 }
 .gwtTaskList_calculatedDate
@@ -4229,7 +4272,7 @@ td.datePickerMonth {
 
 /* Start:  Cliboard dialog styles. */
 	.vibe-cbDlg_Anchor          {color: #135c8f; text-decoration: none;}
-	.vibe-cbDlg_Anchor:hover    {color: #135c8f; cursor: pointer; background: url(images/blends/teal_slice.png) repeat-x; background-position:center; -moz-border-radius: 5px; border-radius: 5px; -webkit-border-radius: 5px;}
+	.vibe-cbDlg_Anchor:hover    {color: #135c8f; cursor: pointer; background: #cce9ee; border-radius: 5px; -moz-border-radius: 5px; -webkit-border-radius: 5px;}
 	.vibe-cbDlg_Checkbox        {margin-left: 5px;}
 	.vibe-cbDlg_ClearAll        {margin-left: 10px;}
 	.vibe-cbDlg_Grid            {margin: 20px 10px 10px 20px;}
@@ -4260,12 +4303,12 @@ td.datePickerMonth {
 	.vibe-emailNotifDlg_ExpanderImg       {}
 	.vibe-emailNotifDlg_FooterCheck       {}
 	.vibe-emailNotifDlg_FooterHelp        {margin-left: 10px;}
-	.vibe-emailNotifDlg_FooterHelp:hover  {color: #135c8f; cursor: pointer; background: url(images/blends/teal_slice.png) repeat-x; background-position:center; -moz-border-radius: 5px; border-radius: 5px; -webkit-border-radius: 5px;}
+	.vibe-emailNotifDlg_FooterHelp:hover  {color: #135c8f; cursor: pointer; background: #cce9ee; -moz-border-radius: 5px; border-radius: 5px; -webkit-border-radius: 5px;}
 	.vibe-emailNotifDlg_FooterLabel       {}
 	.vibe-emailNotifDlg_FooterPanel       {display: block; white-space: nowrap; margin-top: 15px; margin-bottom: 10px;}
 	.vibe-emailNotifDlg_LastWidget        {margin-bottom: 10px;}
 	.vibe-emailNotifDlg_MsgTypeHelp       {margin-left: 10px;}
-	.vibe-emailNotifDlg_MsgTypeHelp:hover {color: #135c8f; cursor: pointer; background: url(images/blends/teal_slice.png) repeat-x; background-position:center; -moz-border-radius: 5px; border-radius: 5px; -webkit-border-radius: 5px;}
+	.vibe-emailNotifDlg_MsgTypeHelp:hover {color: #135c8f; cursor: pointer; background: #cce9ee; -moz-border-radius: 5px; border-radius: 5px; -webkit-border-radius: 5px;}
 	.vibe-emailNotifDlg_MsgTypeLabel      {}
 	.vibe-emailNotifDlg_MsgTypePanel      {display: block; white-space: nowrap;}
 	.vibe-emailNotifDlg_ReadingPanel      {}
@@ -4483,7 +4526,7 @@ td.datePickerMonth {
 /* Start:  Who Has Access dialog styles. */
 	.vibe-whoHasAccessDlg-content            {margin: 10px 10px 10px 13px;}
 	.vibe-whoHasAccessDlg-group              {}
-	.vibe-whoHasAccessDlg-group:hover        {cursor: pointer; background: url(images/blends/teal_slice.png) repeat-x; background-position:center; -moz-border-radius: 5px; border-radius: 5px; -webkit-border-radius: 5px;}	
+	.vibe-whoHasAccessDlg-group:hover        {cursor: pointer; background: #cce9ee; -moz-border-radius: 5px; border-radius: 5px; -webkit-border-radius: 5px;}	
 	.vibe-whoHasAccessDlg-headerImg          {height: 25px; width: 25p; padding-right: 5px;}
 	.vibe-whoHasAccessDlg-headerLabel        {white-space: nowrap; font-weight: bold;}
 	.vibe-whoHasAccessDlg-headerPanel        {display: inline; white-space: nowrap; padding-bottom: 13px; vertical-align: middle;}
@@ -4495,7 +4538,7 @@ td.datePickerMonth {
 	.vibe-whoHasAccessDlg-scrollPanelCell    {border-style: solid solid solid; border-width: 1px; border-color: #e0e0e0; vertical-align: top; width: 225px;}
 	.vibe-whoHasAccessDlg-scrollPanelGroups  {} 
 	.vibe-whoHasAccessDlg-scrollPanelHeader  {white-space: nowrap; font-weight: normal;} 
-	.vibe-whoHasAccessDlg-scrollPanelImg     {height: 25px; width: 25px; padding-right: 5px; padding-bottom: 1px; border-radius: 2px;}
+	.vibe-whoHasAccessDlg-scrollPanelImg     {height: 25px; width: 25px; margin-right: 5px; margin-bottom: 1px; border-radius: 2px;}
 	.vibe-whoHasAccessDlg-scrollPanelLimit   {background-color: #fff; height: 150px;}
 	.vibe-whoHasAccessDlg-scrollPanelUsers   {} 
 /* End:  Who Has Access dialog styles. */
@@ -4519,14 +4562,7 @@ td.datePickerMonth {
     border-radius: 15px;
 	-moz-border-radius: 15px;
 	-webkit-border-radius: 15px;
-	background: -moz-linear-gradient(top,  #ffffff, #E0E0E0); /* FF3.6+ */
-	background: -webkit-gradient(linear, left top, left bottom, color-stop(100%,#ffffff), color-stop(0%,#E0E0E0)); /* Chrome,Safari4+ */
-	background: -webkit-linear-gradient(top,  #ffffff, #E0E0E0); /* Chrome10+,Safari5.1+ */
-	background: -o-linear-gradient(top,  #ffffff 47%, #E0E0E0); /* Opera 11.10+ */
-	background: -ms-linear-gradient(top, #ffffff 47%, #E0E0E0); /* IE10+ */
-	background: linear-gradient(top,  #ffffff, #E0E0E0); /* W3C */
-
-    
+	background: #f6f6f6;    
 }
 
 .groupManagementDropDown         {}
@@ -4534,16 +4570,11 @@ td.datePickerMonth {
 .groupManagementDropDownImg      {vertical-align: middle;}
 .groupManagementDropDownImgNonIE {margin-left: 1px;}
 
-.groupManagementBtn:hover, .manageNetFolderRootsDlg_Btn:hover, .manageNetFoldersDlg_Btn:hover
+.groupManagementBtn:hover, .manageNetFolderRootsDlg_Btn:hover, .manageNetFoldersDlg_Btn:hover, .shareDlg_Btn:hover, .editLdapConfigDlg_Btn:hover
 {
 	color: #135c8f;
 	border: 1px solid #81b2bd;
-	background: -moz-linear-gradient(bottom,  #a8d4dd 47%, #d5edf1 53%, #c8e4e9 100%); /* FF3.6+ */
-	background: -webkit-gradient(linear, left bottom, left top, color-stop(47%,#a8d4dd), color-stop(53%,#d5edf1), color-stop(100%,#c8e4e9)); /* Chrome,Safari4+ */
-	background: -webkit-linear-gradient(bottom,  #a8d4dd 47%, #d5edf1 53%, #c8e4e9 100%); /* Chrome10+,Safari5.1+ */
-	background: -o-linear-gradient(bottom,  #a8d4dd 47%, #d5edf1 53%, #c8e4e9 100%); /* Opera 11.10+ */
-	background: -ms-linear-gradient(bottom, #a8d4dd 47%, #d5edf1 53%, #c8e4e9 100%); /* IE10+ */
-	background: linear-gradient(bottom,  #a8d4dd 47%, #d5edf1 53%, #c8e4e9 100%); /* W3C */
+	background: #cee9ee;
 
 }
 
@@ -4558,6 +4589,14 @@ td.datePickerMonth {
     padding: 3px 3px 3px 5px;
     position: relative;
     white-space: nowrap;
+}
+
+.shareDlg_MenuPanelOverride
+{
+	position: absolute;
+	top: 0;
+	right: 0;
+	background-color: transparent !important;
 }
 
 .groupTitlePanel, .netFolderRoot_NamePanel, .netFolder_NamePanel, .ldapSource_ServerUrlPanel, .ldapSearch_BaseDnPanel
@@ -4587,11 +4626,18 @@ td.datePickerMonth {
 	font-style: italic;
 }
 
+.dynamicGroupMembership_BrowseDN
+{
+	margin-bottom: 3px;
+	margin-left: 3px;
+}
+
 .noObjectsFound
 {
-	text-align: left;
-	padding: 15px 10px;
-	background: white;
+	color: #949494;
+	text-align: center;
+	padding: 15px 10px 50px 10px;
+	background: transparent;
 }
 
 .manageGroups_QuickFilterPanel
@@ -4739,8 +4785,8 @@ td.datePickerMonth {
 	background-color: #EBF5F5;
 	margin-top: 8px;
 	padding: 10px;
-	-moz-border-radius: 5px;
 	border-radius: 5px;
+	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;
 }
 
@@ -4769,13 +4815,12 @@ td.datePickerMonth {
 
 .blogArchiveCtrlMonthLabel:hover, .blogArchiveCtrlFolderLabel:hover
 {
-	background: url(images/blends/teal_slice.png) repeat-x;
-	background-position:center;
+	background: #cce9ee;
 	cursor: pointer;
 	font-family: Arial,Helvetica,sans-serif;
 	font-size: 12px;
-	-moz-border-radius: 5px;
 	border-radius: 5px;
+	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;
 }
 
@@ -4821,13 +4866,12 @@ td.datePickerMonth {
  
  .blogGlobalTagsCtrlTagLabel:hover
  {
-	background: url(images/blends/teal_slice.png) repeat-x;
-	background-position:center;
+	background: #cce9ee;
 	cursor: pointer;
 	font-family: Arial,Helvetica,sans-serif;
 	font-size: 12px;
-	-moz-border-radius: 5px;
 	border-radius: 5px;
+	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;
 }
  
@@ -4855,13 +4899,12 @@ td.datePickerMonth {
  
  .blogPageCtrl_newPageLink:hover
  {
-	background: url(images/blends/teal_slice.png) repeat-x;
-	background-position:center;
+	background: #cce9ee;
 	cursor: pointer;
 	font-family: Arial,Helvetica,sans-serif;
 	font-size: 12px;
-	-moz-border-radius: 5px;
 	border-radius: 5px;
+	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;
  }
  
@@ -4949,7 +4992,7 @@ td.datePickerMonth {
 
 .commentsWidget_commentStylesOverride
 {
-	margin-left: 10px !important;
+	margin-left: 3px !important;
 }
 
 
@@ -4966,10 +5009,9 @@ td.datePickerMonth {
 .shareSendToWidget_mainLabel:hover
 {
 	cursor: pointer;
-	background: url(images/blends/teal_slice.png) repeat-x;
-	background-position:center;
-	-moz-border-radius: 5px;
+	background: #cce9ee;
 	border-radius: 5px;
+	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;
 }
 
@@ -5148,14 +5190,15 @@ td.datePickerMonth {
 	color: #353838;
 	font-family: Arial,Helvetica,sans-serif;
 	font-size: 14px;
-	height: 45px;
+	height: 70px;
 	padding: 5px;
 	resize: none;
-	width: 350px;
+	width: 290px;
 }
 
 .editShareNoteDlg_TextAreaBorder
 {
+	border: 1px solid #c4c4c4;
 }
 
 .editShareNoteDlg_MainPanel
@@ -5177,6 +5220,16 @@ td.datePickerMonth {
 .editShareRightsDlg_RbPanel
 {
 	margin-left: 10px;
+	margin-bottom: 10px;
+}
+.editShareRightsDlg_accessLabel
+{
+	color: #666666;
+}
+.editShareRightsDlg_reshareLabel
+{
+	color: #666666;
+	margin-top: 5px;
 }
 
 
@@ -5291,6 +5344,15 @@ td.datePickerMonth {
 	white-space: nowrap;
 }
 
+.userActionsPopup_TrashInfoButton {cursor: pointer; margin-left: 2px;}
+.userActionsPopup_TrashInfoCell   {border-bottom: 0px !important;}
+.userActionsPopup_TrashInfoDlg    {z-index: 5001 !important;}
+
+.gwt-label
+{
+	color: #666666;
+}
+
 .userActionsPopup_SignOutLabel
 {
 	display: inline-block;
@@ -5336,7 +5398,7 @@ td.datePickerMonth {
 	.vibe-desktopAppCtrl-closePanel          {display: block; position: absolute; top: 1px; right: 6px; cursor: pointer;}
 	.vibe-desktopAppCtrl-control             {display: block; position: relative; background-color: #EBECA5; border-color: #BABDB6; border-style: solid; border-width: 1px; font-size: 12px; margin: 5px 10px; padding: 5px 10px; -moz-border-radius: 5px; border-radius: 5px; -webkit-border-radius: 5px;}
 	.vibe-desktopAppCtrl-dontShowLabel       {color: #135C8F;}
-	.vibe-desktopAppCtrl-dontShowLabel:hover {background: url(images/blends/teal_slice.png) repeat-x; background-position: center; -moz-border-radius: 5px; border-radius: 5px; -webkit-border-radius: 5px;}
+	.vibe-desktopAppCtrl-dontShowLabel:hover {background: #cce9ee; -moz-border-radius: 5px; border-radius: 5px; -webkit-border-radius: 5px;}
 	.vibe-desktopAppCtrl-dontShowPanel       {display: block; position: absolute; top: 10px; right: 40px; text-decoration: none; cursor: pointer;}
 	.vibe-desktopAppCtrl-hintLabel           {}
 	.vibe-desktopAppCtrl-hintPanel           {display: block; margin: 0px; margin-top: 3px !important; padding: 0px; padding-top: 5px !important;}
@@ -5350,7 +5412,7 @@ td.datePickerMonth {
 /* Start:  Import profiles dialog styles. */
 	.vibe-importProfilesDlg-content    {text-align: left; width: 100%; margin-bottom: 10px; margin-top: 10px; padding: 3px 10px;}
 	.vibe-importProfilesDlg-hint       {color: #135c8f; text-decoration: none; margin: 8px 0px 8px 0px; font-size: 11px !important; cursor: pointer; margin: 3px 10px; font-size: 1em !important;}
-	.vibe-importProfilesDlg-hint:hover {color: #135c8f; cursor: pointer; background: url(images/blends/teal_slice.png) repeat-x; background-position:center; -moz-border-radius: 5px; border-radius: 5px; -webkit-border-radius: 5px;}
+	.vibe-importProfilesDlg-hint:hover {color: #135c8f; cursor: pointer; background: #cce9ee; -moz-border-radius: 5px; border-radius: 5px; -webkit-border-radius: 5px;}
 	.vibe-importProfilesDlg-input      {width: 250px;}
 	.vibe-importProfilesDlg-panel      {}
 /* End:  Import profiles dialog styles. */
@@ -5431,10 +5493,9 @@ td.datePickerMonth {
 .netFolderRightsWidget_RightsLabel:hover
 {
 	cursor: pointer;
-	background: url(images/blends/teal_slice.png) repeat-x;
-	background-position:center;
-	-moz-border-radius: 5px;
+	background: #cce9ee;
 	border-radius: 5px;
+	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;
 }
 /* End: */
@@ -5598,8 +5659,7 @@ td.datePickerMonth {
 .zoneShareRightsWidget_RightsLabel:hover
 {
 	cursor: pointer;
-	background: url(images/blends/teal_slice.png) repeat-x;
-	background-position:center;
+	background: #cce9ee;
 	border-radius: 5px;
 	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;
@@ -5657,8 +5717,7 @@ td.datePickerMonth {
 	.vibe-findBrowser-nodeTxtInert        {}
 	.vibe-findBrowser-nodeTxtActive       {}
 	.vibe-findBrowser-nodeTxtActive:hover {
-		background: url(images/blends/teal_slice.png) repeat-x;
-		background-position:center;
+		background: #cce9ee;
 		cursor: pointer;
 		border-radius: 5px;
 		-moz-border-radius: 5px;
@@ -5847,7 +5906,7 @@ td.datePickerMonth {
  
 /* Start:  Alert dialog styles. */
 	.vibe-alertDlg_Grid      {max-width: 500px;}
-	.vibe-alertDlg_NameLabel {color: #414648; line-height: 1.1em; margin-right: 8px; white-space: normal;}
+	.vibe-alertDlg_NameLabel {color: #414648; font-size: 1em; line-height: 1.1em; margin-right: 8px; white-space: normal;}
 	.vibe-alertDlg_Panel     {padding: 10px;}
 /* End:  Alert dialog styles. */
 
@@ -5864,19 +5923,19 @@ td.datePickerMonth {
 	.vibe-copyPublicLinkDlg-headerPanel          {position: relative; margin-bottom: 15px;}
 	.vibe-copyPublicLinkDlg-headerPanel img      {position: absolute; top: 0px; left: 1px;}
 	.vibe-copyPublicLinkDlg-headerNamePanel      {margin-left: 55px; width: 550px;}
-	.vibe-copyPublicLinkDlg-headerNameLabel      {font-size: 1.2em; line-height: 1.4em; color: #1f1f1f;}
+	.vibe-copyPublicLinkDlg-headerNameLabel      {font-size: 1.15em; line-height: 1.3em; color: #1f1f1f;}
 	.vibe-copyPublicLinkDlg-headerPathLabel      {color: #505354; font-size: 13px; line-height: 16px; overflow: hidden;}
-	.vibe-copyPublicLinkDlg-hintPanel            {display: block; width: 600px; white-space: normal; margin-top: 10px;}
+	.vibe-copyPublicLinkDlg-hintPanel            {color: #353838; display: block; width: 600px; white-space: normal; margin-top: 10px;}
 	.vibe-copyPublicLinkDlg-hintStart            {display: inline; font-weight: bold; font-size: .95em; padding-right: 4px;}
-	.vibe-copyPublicLinkDlg-hintTail             {display: inline; font-weight: normal; font-size: .9em;}
+	.vibe-copyPublicLinkDlg-hintTail             {display: inline; font-weight: normal; font-size: 14px;}
 	.vibe-copyPublicLinkDlg-linksHeaderPanel     {position: relative; margin-bottom: 5px; margin-left: 8px; margin-top: 10px;}
 	.vibe-copyPublicLinkDlg-linksHeaderPanel img {position: absolute; top: 2px; left: 0px;}
 	.vibe-copyPublicLinkDlg-linksHeaderNamePanel {margin-left: 30px; width: 540px;}
-	.vibe-copyPublicLinkDlg-linksHeaderNameLabel {font-size: 1.2em; line-height: 1.4em; color: #1f1f1f;}
+	.vibe-copyPublicLinkDlg-linksHeaderNameLabel {font-size: 1.15em; line-height: 1.3em; color: #1f1f1f;}
 	.vibe-copyPublicLinkDlg-linksHeaderPathLabel {color: #505354; font-size: 13px; line-height: 16px; overflow: hidden;}
-	.vibe-copyPublicLinkDlg-linksLabel           {display: block; position: relative; margin-left: 10px;}
+	.vibe-copyPublicLinkDlg-linksLabel           {display: block; position: relative; margin-left: 10px; margin-top: 10px;}
 	.vibe-copyPublicLinkDlg-linksLabel2          {margin-top: 10px;}
-	.vibe-copyPublicLinkDlg-linksInput           {width: 95%; background-color: #fafafa; color: #505354; overflow: hidden; padding: 0px !important; border: 1px solid lightgray; margin-left: 10px;}
+	.vibe-copyPublicLinkDlg-linksInput           {width: 95%; background-color: #fff; color: #1f1f1f; overflow: hidden; padding: 2px !important; border: 1px solid #ccc; margin-left: 10px;}
 	.vibe-copyPublicLinkDlg-linksPanel           {color: #505354; font-size: 12px;}
 	.vibe-copyPublicLinkDlg-mainPanel            {margin: 10px 10px 10px 13px;}
 	.vibe-copyPublicLinkDlg-readingImage         {display: inline; padding-right: 5px;}
@@ -5910,8 +5969,8 @@ td.datePickerMonth {
 
 .emailPublicLinkDlg_HeaderNameLabel
 {
-	font-size: 1.2em;
-	line-height: 1.4em;
+	font-size: 1.15em;
+	line-height: 1.3em;
 	color: #1f1f1f;
 }
 
@@ -5930,8 +5989,11 @@ td.datePickerMonth {
 
 .emailPublicLinkDlg_Hint
 {
-	color: #4D6D8B;
-	font-size: 13px;
+	color: #353838;
+	font-size: 14px;
+	line-height: 18px;
+	width: 550px;
+	padding-bottom: 5px;
 }
 
 .emailPublicLinkDlg_FloatingHint
@@ -5957,7 +6019,7 @@ td.datePickerMonth {
 	.vibe-mailToMultiplePublicLinksSelectDlg                  {width: 800px;}
 	.vibe-mailToMultiplePublicLinksSelectDlg-contentPanel     {margin-top: 10px;}
 	.vibe-mailToMultiplePublicLinksSelectDlg-headerLabel      {}
-	.vibe-mailToMultiplePublicLinksSelectDlg-headerNameLabel  {font-size: 1.2em; line-height: 1.4em; color: #1f1f1f;}
+	.vibe-mailToMultiplePublicLinksSelectDlg-headerNameLabel  {font-size: 1.15em; line-height: 1.3em; color: #1f1f1f;}
 	.vibe-mailToMultiplePublicLinksSelectDlg-headerNamePanel  {margin-left: 55px; width: 700px;}
 	.vibe-mailToMultiplePublicLinksSelectDlg-headerPanel      {position: relative; margin-bottom: 15px;}
 	.vibe-mailToMultiplePublicLinksSelectDlg-headerPanel img  {position: absolute; top: 0px; left: 1px;}
@@ -5975,7 +6037,7 @@ td.datePickerMonth {
 	.vibe-mailToMultiplePublicLinksSelectDlg-tableColumnCell  {white-space: nowrap;}
 	.vibe-mailToMultiplePublicLinksSelectDlg-tableHeader      {}
 	.vibe-mailToMultiplePublicLinksSelectDlg-tableLink        {white-space: nowrap;}
-	.vibe-mailToMultiplePublicLinksSelectDlg-tableLink:hover  {cursor: pointer; background: url(images/blends/teal_slice.png) repeat-x; background-position: center; -moz-border-radius: 5px; border-radius: 5px; -webkit-border-radius: 5px;}
+	.vibe-mailToMultiplePublicLinksSelectDlg-tableLink:hover  {cursor: pointer; background: #cce9ee; -moz-border-radius: 5px; border-radius: 5px; -webkit-border-radius: 5px;}
 	.vibe-mailToMultiplePublicLinksSelectDlg-tableRow         {}
 /* End:  Mail To Muliple Public Links Select dialog styles. */
 
@@ -5998,7 +6060,7 @@ td.datePickerMonth {
 	.gwNameCellImg               {padding-right: 3px;}
 	.gwNameCellImg-empty         {padding-right: 3px; width: 16px; height: 16px;}
 	.gwNameCellImg-root          {padding-right: 3px;}
-	.ldapBrowser-browsePanel     {}
+	.ldapBrowser-browsePanel     {display: inline-block;}
 	.ldapBrowser-mainPanel       {margin: 10px 10px 10px 13px;}
 	.ldapBrowser-scroller        {overflow: auto; height: 250px; width: 600px;}
 	.ldapBrowser-treesPanel      {white-space: nowrap; padding-bottom: 5px;}
@@ -6034,13 +6096,11 @@ td.datePickerMonth {
 
 .editShareWidget_contentPanel
 {
-	background-color: white;
     padding: 6px 10px;
 }
 
 .editShareWidget_footerPanel
 {
-	background-color: white;
 	text-align: left;
 	padding-bottom: 10px;
 	padding-left: 6px;
@@ -6048,19 +6108,15 @@ td.datePickerMonth {
 
 .editShareWidget_headerPanel
 {
-	color: #fff;
+	color: #5691a6;
 	font-size: 14px;
 	font-weight: bold;
-	padding: 5px;
+	padding: 8px 2px 4px 2px;
 	white-space: nowrap;
+	overflow: hidden;
 	vertical-align: middle;
-	
-	background-color: #81b2bd;
-	background-image: -webkit-linear-gradient(top, #abced1, #81b2bd) !important; 
-	background-image:    -moz-linear-gradient(top, #abced1, #81b2bd) !important; 
-	background-image:     -ms-linear-gradient(top, #abced1, #81b2bd) !important; 
-	background-image:      -o-linear-gradient(top, #abced1, #81b2bd) !important; 
-	background-image:         linear-gradient(top, #abced1, #81b2bd) !important; /* standard, but currently unimplemented */
+	text-align: center;
+	border-bottom: 1px solid #e0e0e0;
 }
 
 .editShareWidget_mainPanel
@@ -6068,7 +6124,7 @@ td.datePickerMonth {
     border-color: #BABDB6;
     border-radius: 5px;
     border-style: solid;
-    border-width: 1px;
+    border-width: 0px; /* changed from 1px */
 }
 
 /* End:  Styles used in the "Edit Share" widget. */

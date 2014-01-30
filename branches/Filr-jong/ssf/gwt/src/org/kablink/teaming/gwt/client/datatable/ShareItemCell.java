@@ -400,7 +400,7 @@ public class ShareItemCell extends AbstractCell<GwtShareItem>
 					label = new Label( messages.shareDlg_fileLabel() + " " + shareItem.getEntityName() );
 				else
 					label = new Label( messages.shareDlg_folderLabel() + " " + shareItem.getEntityName() );
-				label.addStyleName( "shareItem_AccessRights" );
+				label.addStyleName( "shareItem_FileAccessRights" );
 				mainPanel.add( label );
 			}
 		}
