@@ -462,11 +462,13 @@ public class ShareItemCell extends AbstractCell<GwtShareItem>
 		// Are we dealing with a public share?
 		if ( shareItem.getRecipientType() == GwtRecipientType.PUBLIC_TYPE )
 		{
-			// Yes, add a link that the user can click on to get the public url
-			label = new Label( messages.shareDlg_publicUrlLabel() );
-			label.addStyleName( "shareItem_PublicUrl" );
-			label.getElement().setAttribute( "public-url-div", "true" );
-			mainPanel.add( label );
+		   // Yes, add a link that the user can click to get the public urls
+			Image img;
+            img = new Image( GwtTeaming.getImageBundle().publicLink16());
+            img.addStyleName( "shareItem_PublicUrl" );
+			img.setTitle( messages.shareDlg_publicUrlLabel() );
+         	img.getElement().setAttribute( "public-url-div", "true" );
+            mainPanel.add( img );
 		}
 		
 		// Add the note
