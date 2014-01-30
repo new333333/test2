@@ -248,7 +248,7 @@ public class LoginFilter  implements Filter {
 		if(isPathPermittedUnauthenticated(req.getPathInfo()) || isActionPermittedUnauthenticated(req.getParameter("action"))) {
 			String currentURL = Http.getCompleteURL(req);
 
-			if ( currentURL.contains( "action=__login" ) )
+			if ( currentURL.contains( "action=__login" ) && guestAccessAllowed() )
 			{
 				String workspaceUrl;
 
