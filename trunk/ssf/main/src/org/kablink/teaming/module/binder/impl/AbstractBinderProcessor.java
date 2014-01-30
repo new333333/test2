@@ -2489,7 +2489,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 		//The root folder of a folder chain dictates if file contents are to be indexed
 		Binder rootFolder = AccessUtils.getRootFolder(entity);
 		Field contentIndexTypeField;
-		if (!skipFileContentIndexing && (rootFolder == null || rootFolder.getIndexContent())) {
+		if (!skipFileContentIndexing && (rootFolder == null || rootFolder.getComputedIndexContent())) {
 			//The file contents of files in this folder are to be added to the index
 			// Get the Text converter from manager
 	    	TextConverter converter = textConverterManager.getConverter();
