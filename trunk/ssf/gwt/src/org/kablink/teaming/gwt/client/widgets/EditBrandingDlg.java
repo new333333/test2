@@ -201,7 +201,7 @@ public class EditBrandingDlg extends DlgBox
 	public Panel createContent( Object props )
 	{
 		m_siteBrandingTour = new VibeTour( "siteBrandingTour" );
-		addBrandingAreaTourStep( Placement.RIGHT, m_messages.editBrandingDlg_Tour_start( m_productName ) );
+		addBrandingAreaTourStep( m_messages.editBrandingDlg_Tour_start( m_productName ) );
 		
 		FlowPanel mainPanel = null;
 		Label spacer;
@@ -545,7 +545,7 @@ public class EditBrandingDlg extends DlgBox
 			textColorHint.addStyleName( "displayInlineBlock" );
 			
 			addTourStep( Placement.RIGHT, hPanel, m_messages.editBrandingDlg_Tour_textColor() );
-			addBrandingAreaTourStep( Placement.RIGHT, m_messages.editBrandingDlg_Tour_brandingArea( m_productName ) );
+			addBrandingAreaTourStep( m_messages.editBrandingDlg_Tour_brandingArea( m_productName ) );
 
 			// Add the browse image to the link.
 			colorBrowseImg = new Image( GwtTeaming.getImageBundle().colorPicker() );
@@ -1577,25 +1577,44 @@ public class EditBrandingDlg extends DlgBox
 	/*
 	 * Adds a tour step to the tour.
 	 */
-	private void addTourStep( Placement placement, Widget widget, String content, boolean fixed )
+	private void addTourStep( Placement placement, Widget widget, String content, int xOffset, int yOffset )
 	{
 		VibeTourStep step = new VibeTourStep( placement, widget );
 		step.setContent( content );
-		setStepPosition( placement, step, fixed );
+		setStepPosition( placement, step, xOffset, yOffset );
 		m_siteBrandingTour.addStep( step );
 	}
 	
 	private void addTourStep( Placement placement, Widget widget, String content )
 	{
-		// Always use the initial form of the method.
-		addTourStep( placement, widget, content, false );	// false -> Not fixed.
+		// Calculate the default offsets...
+		int xOffset;
+		int yOffset;
+		switch ( placement )
+		{
+		default:
+		case TOP:
+		case BOTTOM:
+		case LEFT:
+			xOffset =
+			yOffset = 0;
+			break;
+			
+		case RIGHT:
+			xOffset =    0;
+			yOffset = (-20);
+			break;
+		}
+		
+		// ...and always use the initial form of the method.
+		addTourStep( placement, widget, content, xOffset, yOffset );
 	}
 	
 	
 	/*
 	 * Adds a tour step for the branding area to the tour.
 	 */
-	private void addBrandingAreaTourStep( final Placement placement, final String content )
+	private void addBrandingAreaTourStep( final String content )
 	{
 		GwtTeaming.fireEvent(
 			new GetSiteBrandingPanelEvent(
@@ -1605,10 +1624,11 @@ public class EditBrandingDlg extends DlgBox
 					public void siteBrandingPanel( Widget siteBrandingPanel )
 					{
 						addTourStep(
-							placement,
+							Placement.RIGHT,
 							siteBrandingPanel,
 							content,
-							true );	// true -> The branding panel is fixed.
+							100,	// x and...
+							10 );	// ...y offsets for the branding panel.
 					}
 				} ) );
 	}
@@ -1616,24 +1636,13 @@ public class EditBrandingDlg extends DlgBox
 	/*
 	 * Sets the step's position based on it placement.
 	 */
-	private void setStepPosition(Placement placement, VibeTourStep step, boolean fixed) {
-		step.setFixedElement( fixed );
-		switch (placement) {
-		case RIGHT:
-			if (fixed)
-			{
-				step.setYOffset( 10);
-				step.setXOffset(100);
-			}
-			else
-			{
-				step.setYOffset(-20);
-			}
-			break;
-		
-		case BOTTOM:
+	private void setStepPosition( Placement placement, VibeTourStep step, int xOffset, int yOffset )
+	{
+		step.setXOffset( xOffset );
+		step.setYOffset( yOffset );
+		if ( Placement.BOTTOM.equals( placement ))
+		{
 			step.centerXOffset();
-			break;
 		}
 	}
 
@@ -1641,8 +1650,10 @@ public class EditBrandingDlg extends DlgBox
 	 * Overrides DlgBox.invokeTour() to connect the site branding tour.
 	 */
 	@Override
-	public void invokeTour() {
-		if (m_siteBranding && (null != m_siteBrandingTour)) {
+	public void invokeTour()
+	{
+		if ( m_siteBranding && ( null != m_siteBrandingTour ) )
+		{
 			m_siteBrandingTour.start();
 		}
 	}
@@ -1651,8 +1662,10 @@ public class EditBrandingDlg extends DlgBox
 	 * Overrides DlgBox.stopTour() to connect the site branding tour.
 	 */
 	@Override
-	public void stopTour() {
-		if (m_siteBranding && (null != m_siteBrandingTour)) {
+	public void stopTour()
+	{
+		if ( m_siteBranding && ( null != m_siteBrandingTour ) )
+		{
 			m_siteBrandingTour.stop();
 		}
 	}
