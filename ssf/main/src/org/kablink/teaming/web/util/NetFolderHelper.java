@@ -33,11 +33,13 @@
 package org.kablink.teaming.web.util;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TimeZone;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -49,7 +51,6 @@ import org.kablink.teaming.dao.util.NetFolderSelectSpec;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Binder.SyncScheduleOption;
 import org.kablink.teaming.domain.Folder;
-import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.ResourceDriverConfig;
 import org.kablink.teaming.domain.ResourceDriverConfig.AuthenticationType;
 import org.kablink.teaming.domain.TemplateBinder;
@@ -80,12 +81,9 @@ import org.kablink.teaming.runas.RunasCallback;
 import org.kablink.teaming.runas.RunasTemplate;
 import org.kablink.teaming.runasync.RunAsyncManager;
 import org.kablink.teaming.security.AccessControlException;
-import org.kablink.teaming.security.function.Function;
-import org.kablink.teaming.security.function.WorkAreaFunctionMembership;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ReflectHelper;
-import org.kablink.teaming.util.ResolveIds;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SZoneConfig;
 import org.kablink.teaming.util.SpringContextUtil;
@@ -109,6 +107,7 @@ public class NetFolderHelper
 		ResourceDriverModule resourceDriverModule,
 		HomeDirInfo homeDirInfo )
 	{
+		String hostName = null;
 		String serverAddr = null;
 		String volume = null;
 		String serverUNC;
@@ -127,6 +126,7 @@ public class NetFolderHelper
 
 		if ( homeDirInfo != null )
 		{
+			hostName = homeDirInfo.getServerHostName();
 			serverAddr = homeDirInfo.getServerAddr();
 			volume = homeDirInfo.getVolume();
 		}
@@ -140,7 +140,7 @@ public class NetFolderHelper
 			return null;
 		}
 
-		// Does a net folder server already exist with this unc?
+		// Does a net folder server already exist with a unc using the server's ip address?
 		serverUNC = "\\\\" + serverAddr + "\\" + volume;
 		rdConfig = findNetFolderRootByUNC( adminModule, resourceDriverModule, serverUNC );
 		if ( rdConfig != null )
@@ -149,19 +149,59 @@ public class NetFolderHelper
 			m_logger.info( "In NetFolderHelper.createHomeDirNetFolderServer(), net folder server already exists" );
 			return rdConfig;
 		}
+		
+		if ( hostName != null && hostName.length() > 0 )
+		{
+			// Does a net folder server already exist with a unc using the server's host name?
+			serverUNC = "\\\\" + hostName + "\\" + volume;
+			rdConfig = findNetFolderRootByUNC( adminModule, resourceDriverModule, serverUNC );
+			if ( rdConfig != null )
+			{
+				// Yes
+				m_logger.info( "In NetFolderHelper.createHomeDirNetFolderServer(), net folder server already exists" );
+				return rdConfig;
+			}
+		}
 
 		// Create a net folder root.  The administrator will need to fill in credentials.
-		rootName = serverAddr + "-" + volume;
+		if ( hostName != null && hostName.length() > 0 )
+			rootName = hostName + "-" + volume;
+		else
+			rootName = serverAddr + "-" + volume;
 		m_logger.info( "About to create a net folder server called: " + rootName  );
 		
 		// Create a default schedule for syncing the net folders associated with this net folder server
-		// The schedule is configured to run every day at 11:00pm
+		// The schedule is configured to run every day at midnight
 		zoneId = RequestContextHolder.getRequestContext().getZoneId();
 		scheduleInfo = new ScheduleInfo( zoneId );
 		scheduleInfo.setEnabled( true );
 		schedule = new Schedule( "" );
 		schedule.setDaily( true );
-		schedule.setHours( "23" );
+		// Set the schedule for midnight gmt
+		{
+			User currentUser;
+			String hourStr;
+			
+			currentUser = RequestContextHolder.getRequestContext().getUser();
+			if ( currentUser != null )
+			{
+				TimeZone tz;
+				Date now = new Date();
+				int offset;
+				int offsetHour;
+				int hour;
+
+				tz = currentUser.getTimeZone();
+				offset = tz.getOffset( now.getTime() );
+				offsetHour = offset / (1000*60*60);
+				hour = (0 - offsetHour) % 24;
+				hourStr = String.valueOf( hour );
+			}
+			else
+				hourStr = "0";
+			
+			schedule.setHours( hourStr );
+		}
 		schedule.setMinutes( "0" );
 		scheduleInfo.setSchedule( schedule );
 		
@@ -181,6 +221,10 @@ public class NetFolderHelper
 													null,
 													null,
 													null,
+													false,
+													new Boolean( true ),
+													NetFolderHelper.getDefaultJitsResultsMaxAge(),
+													NetFolderHelper.getDefaultJitsAclMaxAge(),
 													scheduleInfo );
 		
 		// Add a task for the administrator to enter the proxy credentials for this server.
@@ -359,11 +403,49 @@ public class NetFolderHelper
 			if ( netFolderBinder == null )
 			{
 				String folderName;
+				Long zoneId;
+				ScheduleInfo scheduleInfo;
+				Schedule schedule;
 	
 				// No, create one.
 				folderName = NLT.get( "netfolder.default.homedir.name" );
 				m_logger.info( "About to create a net folder called: " + folderName + ", for the users home directory for user: " + user.getName() );
 				
+				// Create a default schedule for syncing the net folder
+				// The schedule is disabled and configured to run every day at midnight
+				zoneId = RequestContextHolder.getRequestContext().getZoneId();
+				scheduleInfo = new ScheduleInfo( zoneId );
+				scheduleInfo.setEnabled( false );
+				schedule = new Schedule( "" );
+				schedule.setDaily( true );
+				// Set the schedule for midnight gmt
+				{
+					User currentUser;
+					String hourStr;
+					
+					currentUser = RequestContextHolder.getRequestContext().getUser();
+					if ( currentUser != null )
+					{
+						TimeZone tz;
+						Date now = new Date();
+						int offset;
+						int offsetHour;
+						int hour;
+
+						tz = currentUser.getTimeZone();
+						offset = tz.getOffset( now.getTime() );
+						offsetHour = offset / (1000*60*60);
+						hour = (0 - offsetHour) % 24;
+						hourStr = String.valueOf( hour );
+					}
+					else
+						hourStr = "0";
+					
+					schedule.setHours( hourStr );
+				}
+				schedule.setMinutes( "0" );
+				scheduleInfo.setSchedule( schedule );
+
 				// Create a net folder in the user's workspace
 				netFolderBinder = NetFolderHelper.createNetFolder(
 															templateModule,
@@ -374,11 +456,12 @@ public class NetFolderHelper
 															folderName,
 															rdConfig.getName(),
 															path,
-															null,
+															scheduleInfo,
 															SyncScheduleOption.useNetFolderServerSchedule,
 															workspaceId,
 															true,
 															false,
+															new Boolean( true ),
 															null );
 
 				// As the fix for bug 831849 we must call getCoreDao().clear() before we call
@@ -397,6 +480,7 @@ public class NetFolderHelper
 					NetFolderHelper.saveJitsSettings(
 												binderModule,
 												netFolderBinder.getId(),
+												true,
 												true,
 												getDefaultJitsAclMaxAge(),
 												getDefaultJitsResultsMaxAge() );
@@ -496,6 +580,7 @@ public class NetFolderHelper
 		Long parentBinderId,
 		boolean isHomeDir,
 		boolean indexContent,
+		Boolean inheritIndexContentOption,
 		Boolean fullSyncDirOnly ) throws WriteFilesException, WriteEntryDataException
 	{
 		Binder binder = null;
@@ -543,6 +628,7 @@ public class NetFolderHelper
 											path,
 											isHomeDir,
 											indexContent,
+											inheritIndexContentOption,
 											syncScheduleOption,
 											fullSyncDirOnly );
 			
@@ -584,6 +670,10 @@ public class NetFolderHelper
 		AuthenticationType authType,
 		Boolean useDirectoryRights,
 		Integer cachedRightsRefreshInterval,
+		Boolean indexContent,
+		Boolean enableJits,
+		Long jitsResultsMaxAge,
+		Long jitsAclMaxAge,
 		ScheduleInfo scheduleInfo ) throws RDException
 	{
 		Map options;
@@ -608,6 +698,10 @@ public class NetFolderHelper
 		options.put( ObjectKeys.RESOURCE_DRIVER_AUTHENTICATION_TYPE, authType );
 		options.put( ObjectKeys.RESOURCE_DRIVER_USE_DIRECTORY_RIGHTS, useDirectoryRights );
 		options.put( ObjectKeys.RESOURCE_DRIVER_CACHED_RIGHTS_REFRESH_INTERVAL, cachedRightsRefreshInterval );
+		options.put( ObjectKeys.RESOURCE_DRIVER_INDEX_CONTENT, indexContent );
+		options.put( ObjectKeys.RESOURCE_DRIVER_JITS_ENABLED, enableJits );
+		options.put( ObjectKeys.RESOURCE_DRIVER_JITS_RESULTS_MAX_AGE, jitsResultsMaxAge );
+		options.put( ObjectKeys.RESOURCE_DRIVER_JITS_ACL_MAX_AGE, jitsAclMaxAge );
 		
 		// Is the root type WebDAV?
 		if ( driverType == DriverType.webdav )
@@ -807,7 +901,7 @@ public class NetFolderHelper
 	 */
 	public static long getDefaultJitsAclMaxAge()
 	{
-		return SPropsUtil.getLong( "nf.jits.acl.max.age", 60000L );
+		return SPropsUtil.getLong( "nf.jits.acl.max.age", 600000L );
 	}
 	
 	/**
@@ -815,7 +909,7 @@ public class NetFolderHelper
 	 */
 	public static long getDefaultJitsResultsMaxAge()
 	{
-		return SPropsUtil.getLong( "nf.jits.max.age", 30000L );
+		return SPropsUtil.getLong( "nf.jits.max.age", 60000L );
 	}
 	
 	/**
@@ -937,10 +1031,20 @@ public class NetFolderHelper
 		ScheduleInfo scheduleInfo,
 		SyncScheduleOption syncScheduleOption,
 		boolean indexContent,
+		Boolean inheritIndexContent,
 		Boolean fullSyncDirOnly ) throws AccessControlException, WriteFilesException, WriteEntryDataException
 	{
 		// Modify the binder with the net folder information.
-		folderModule.modifyNetFolder(id, netFolderName, netFolderRootName, relativePath, null, indexContent, syncScheduleOption, fullSyncDirOnly );
+		folderModule.modifyNetFolder(
+									id,
+									netFolderName,
+									netFolderRootName,
+									relativePath,
+									null,
+									indexContent,
+									inheritIndexContent,
+									syncScheduleOption,
+									fullSyncDirOnly );
 
 		// Set the net folder's sync schedule
 		if ( scheduleInfo != null )
@@ -965,6 +1069,7 @@ public class NetFolderHelper
 		final ProfileModule profileModule,
 		BinderModule binderModule,
 		WorkspaceModule workspaceModule,
+		FolderModule folderModule,
 		String rootName,
 		String rootPath,
 		String proxyName,
@@ -978,6 +1083,10 @@ public class NetFolderHelper
 		AuthenticationType authType,
 		Boolean useDirectoryRights,
 		Integer cachedRightsRefreshInterval,
+		Boolean indexContent,
+		Boolean enableJits,
+		Long jitsResultsMaxAge,
+		Long jitsAclMaxAge,
 		ScheduleInfo scheduleInfo )
 	{
 		Map options;
@@ -991,12 +1100,14 @@ public class NetFolderHelper
 		boolean isConfigured1;
 		boolean isConfigured2;
 		boolean reIndexNeeded = false;
+		Boolean indexContentOld;
 
 		adminModule.checkAccess( AdminOperation.manageResourceDrivers );
 
 		// Is the driver configured
 		rdConfig = ResourceDriverManagerUtil.getResourceDriverManager().getDriverConfig( rootName );
 		isConfigured1 = isNetFolderServerConfigured( rdConfig );
+		indexContentOld = rdConfig.getIndexContent();
 		
 		options = new HashMap();
 		options.put( ObjectKeys.RESOURCE_DRIVER_READ_ONLY, Boolean.FALSE );
@@ -1006,6 +1117,10 @@ public class NetFolderHelper
 		options.put( ObjectKeys.RESOURCE_DRIVER_AUTHENTICATION_TYPE, authType );
 		options.put( ObjectKeys.RESOURCE_DRIVER_USE_DIRECTORY_RIGHTS, useDirectoryRights );
 		options.put( ObjectKeys.RESOURCE_DRIVER_CACHED_RIGHTS_REFRESH_INTERVAL, cachedRightsRefreshInterval );
+		options.put( ObjectKeys.RESOURCE_DRIVER_INDEX_CONTENT, indexContent );
+		options.put( ObjectKeys.RESOURCE_DRIVER_JITS_ENABLED, enableJits );
+		options.put( ObjectKeys.RESOURCE_DRIVER_JITS_RESULTS_MAX_AGE, jitsResultsMaxAge );
+		options.put( ObjectKeys.RESOURCE_DRIVER_JITS_ACL_MAX_AGE, jitsAclMaxAge );
 
 		// Always prevent the top level folder from being deleted
 		// This is forced so that the folder could not accidentally be deleted if the 
@@ -1129,6 +1244,57 @@ public class NetFolderHelper
 			}
 		}
 		
+		// If the file content indexing flag has changed on the net folder server,
+		// we may need to create new background jobs for member net folders.
+		if(Boolean.TRUE.equals(indexContent)) {
+			if(Boolean.TRUE.equals(indexContentOld)) {
+				// This setting hasn't changed. No adjustment to make.
+			}
+			else {
+				// The file content indexing was not on previously, but is on now.
+				// This affects all member net folders that inherit this setting from the parent net folder server.
+				List<Folder> listOfNetFolders;
+				NetFolderSelectSpec selectSpec;
+
+				// Find all of the net folders that reference this net folder server.
+				selectSpec = new NetFolderSelectSpec();
+				selectSpec.setRootName( rdConfig.getName() );
+				selectSpec.setIncludeHomeDirNetFolders( true );
+				selectSpec.setFilter( null );
+				listOfNetFolders = NetFolderHelper.getAllNetFolders2(
+															binderModule,
+															workspaceModule,
+															selectSpec );
+
+				if ( listOfNetFolders != null )
+				{
+					for ( Folder netFolder:  listOfNetFolders )
+					{
+						if(netFolder.getUseInheritedIndexContent()) {
+							// This net folder inherits file content indexing setting from the net folder server.
+							// Make sure that a job exists for this net folder.
+							try {
+								folderModule.netFolderContentIndexingJobSchedule(netFolder.getId());
+							}
+							catch(Exception e) {
+								m_logger.error("Error scheduling file content indexing job for net folder " + netFolder.getId(), e);
+								continue; // continue to the next net folder
+							}
+						}
+					}
+				}
+			}
+		}
+		else {
+			// File content indexing is either off or unspecified (which is equivalent to off)
+			// on this net folder server. This affects all member net folders that inherit
+			// this setting from the parent net folder server. However, we will not try to
+			// unschedule jobs for those affected net folders at this point, since it has
+			// the danger of failing because some of the jobs may be running currently.
+			// Instead, those jobs will voluntarily check appropriate settings at the next run
+			// and self-destruct them as necessary.
+		}
+		
 		return rdConfig;
 	}
 
@@ -1139,6 +1305,7 @@ public class NetFolderHelper
 	public static void saveJitsSettings(
 		BinderModule binderModule,
 		Long binderId,
+		boolean inheritJitsSettings,
 		boolean jitsEnabled,
 		long aclMaxAge,
 		long resultsMaxAge )
@@ -1153,6 +1320,8 @@ public class NetFolderHelper
 			deleteAtts = new HashSet();
 			fileMap = new HashMap();
 			formData = new HashMap();
+
+			formData.put( ObjectKeys.FIELD_BINDER_USE_INHERITED_JITS_SETTINGS, Boolean.valueOf( inheritJitsSettings ) );
 
 			formData.put( ObjectKeys.FIELD_BINDER_JITS_ENABLED, Boolean.toString( jitsEnabled ) );
 			

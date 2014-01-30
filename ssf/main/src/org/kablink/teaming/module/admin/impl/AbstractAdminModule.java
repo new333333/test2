@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -381,11 +381,13 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 		return (EntryProcessor)getProcessorManager().getProcessor(entry.getParentBinder(), entry.getParentBinder().getProcessorKey(EntryProcessor.PROCESSOR_KEY));
 	}
 
-    public boolean testAccess(AdminOperation operation) {
+    @Override
+	public boolean testAccess(AdminOperation operation) {
         return testUserAccess(RequestContextHolder.getRequestContext().getUser(), operation);
     }
 
-    public void checkAccess(AdminOperation operation) {
+    @Override
+	public void checkAccess(AdminOperation operation) {
         checkUserAccess(RequestContextHolder.getRequestContext().getUser(), operation);
     }
 
@@ -394,6 +396,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 	 * and easily change the required rights
    	 * 
    	 */
+	@Override
 	public boolean testUserAccess(User user, AdminOperation operation) {
    		try {
    			checkUserAccess(user, operation);
@@ -403,6 +406,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
    		}
    	}
 
+	@Override
 	public void checkUserAccess(User user, AdminOperation operation) {
    		Binder top = RequestContextHolder.getRequestContext().getZone();
 		switch (operation) {
@@ -1905,7 +1909,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 		}
     	User user = RequestContextHolder.getRequestContext().getUser();
    		String userName = Utils.getUserTitle(user);
-		List errors = new ArrayList();
+		List<SendMailErrorWrapper> errors = new ArrayList();
 		Map result = new HashMap();
 		result.put(ObjectKeys.SENDMAIL_ERRORS, errors);
 		//add email address listed 
@@ -1928,18 +1932,18 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 						ia.validate();
 						emailSet.add(ia);
 					} catch (Exception ex) {
-						errors.add(NLT.get("errorcode.badToAddress", new Object[] {userName, e, ex.getLocalizedMessage()}));						
+						errors.add(new SendMailErrorWrapper(ex, NLT.get("errorcode.badToAddress", new Object[] {userName, e, ex.getLocalizedMessage()})));						
 					}
 				}
 			}
 		}
 
 		if (removedAllUsersGroup) {
-			errors.add(0, NLT.get("errorcode.noSendToAllUsers"));
+			errors.add(0, new SendMailErrorWrapper(NLT.get("errorcode.noSendToAllUsers")));
 		}
 		if (emailSet == null || emailSet.isEmpty()) {
 			//no-one to send to
-			errors.add(0, NLT.get("errorcode.noRecipients"));
+			errors.add(0, new SendMailErrorWrapper(NLT.get("errorcode.noRecipients")));
 			return result;			
 		}
     	Map message = new HashMap();
@@ -1961,7 +1965,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 				emailAddr = "";
 				errorMsg = NLT.get("sendMail.noEmailAddress");
 			}
-			errors.add(0, NLT.get("errorcode.badFromAddress", new Object[] {Utils.getUserTitle(user), emailAddr, errorMsg})); 
+			errors.add(0, new SendMailErrorWrapper(ex, NLT.get("errorcode.badFromAddress", new Object[] {Utils.getUserTitle(user), emailAddr, errorMsg}))); 
 			//cannot send without valid from address
 			return result;
     	}
@@ -2159,9 +2163,8 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 	 			if ((0 < exCount) && exceptions[0] instanceof SendFailedException) {
 	 				// ...return them in the error list too.
 	 				SendFailedException sf = ((SendFailedException) exceptions[0]);
-	 				EmailHelper.addMailFailures(errors, sf.getInvalidAddresses(),     "share.notify.invalidAddresses"    );
-	 				EmailHelper.addMailFailures(errors, sf.getValidUnsentAddresses(), "share.notify.validUnsentAddresses");
-	 				
+	 				EmailHelper.addMailFailures(errors, sf, sf.getInvalidAddresses(),     "share.notify.invalidAddresses"    );
+	 				EmailHelper.addMailFailures(errors, sf, sf.getValidUnsentAddresses(), "share.notify.validUnsentAddresses");
 	 			}
 	 	   	}
 	 		
@@ -2325,9 +2328,8 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 	 			if ((0 < exCount) && exceptions[0] instanceof SendFailedException) {
 	 				// ...return them in the error list too.
 	 				SendFailedException sf = ((SendFailedException) exceptions[0]);
-	 				EmailHelper.addMailFailures(errors, sf.getInvalidAddresses(),     "share.notify.invalidAddresses"    );
-	 				EmailHelper.addMailFailures(errors, sf.getValidUnsentAddresses(), "share.notify.validUnsentAddresses");
-	 				
+	 				EmailHelper.addMailFailures(errors, sf, sf.getInvalidAddresses(),     "share.notify.invalidAddresses"    );
+	 				EmailHelper.addMailFailures(errors, sf, sf.getValidUnsentAddresses(), "share.notify.validUnsentAddresses");
 	 			}
 	 	   	}
 	 		
@@ -2502,9 +2504,8 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 	 			if ((0 < exCount) && exceptions[0] instanceof SendFailedException) {
 	 				// ...return them in the error list too.
 	 				SendFailedException sf = ((SendFailedException) exceptions[0]);
-	 				EmailHelper.addMailFailures(errors, sf.getInvalidAddresses(),     "url.notify.invalidAddresses"    );
-	 				EmailHelper.addMailFailures(errors, sf.getValidUnsentAddresses(), "url.notify.validUnsentAddresses");
-	 				
+	 				EmailHelper.addMailFailures(errors, sf, sf.getInvalidAddresses(),     "url.notify.invalidAddresses"    );
+	 				EmailHelper.addMailFailures(errors, sf, sf.getValidUnsentAddresses(), "url.notify.validUnsentAddresses");
 	 			}
 	 	   	}
 	 		
@@ -2654,9 +2655,8 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 	 			if ((0 < exCount) && exceptions[0] instanceof SendFailedException) {
 	 				// ...return them in the error list too.
 	 				SendFailedException sf = ((SendFailedException) exceptions[0]);
-	 				EmailHelper.addMailFailures(errors, sf.getInvalidAddresses(),     "share.notify.invalidAddresses"    );
-	 				EmailHelper.addMailFailures(errors, sf.getValidUnsentAddresses(), "share.notify.validUnsentAddresses");
-	 				
+	 				EmailHelper.addMailFailures(errors, sf, sf.getInvalidAddresses(),     "share.notify.invalidAddresses"    );
+	 				EmailHelper.addMailFailures(errors, sf, sf.getValidUnsentAddresses(), "share.notify.validUnsentAddresses");
 	 			}
 	 	   	}
 	 		
@@ -2824,9 +2824,8 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 	 			if ((0 < exCount) && exceptions[0] instanceof SendFailedException) {
 	 				// ...return them in the error list too.
 	 				SendFailedException sf = ((SendFailedException) exceptions[0]);
-	 				EmailHelper.addMailFailures(errors, sf.getInvalidAddresses(),     "share.notify.invalidAddresses"    );
-	 				EmailHelper.addMailFailures(errors, sf.getValidUnsentAddresses(), "share.notify.validUnsentAddresses");
-	 				
+	 				EmailHelper.addMailFailures(errors, sf, sf.getInvalidAddresses(),     "share.notify.invalidAddresses"    );
+	 				EmailHelper.addMailFailures(errors, sf, sf.getValidUnsentAddresses(), "share.notify.validUnsentAddresses");
 	 			}
 	 	   	}
 	 		

@@ -126,6 +126,7 @@ public class ShareWithPublicInfoDlg extends DlgBox
 		
 		mainPanel = new FlowPanel();
 		mainPanel.setStyleName( "teamingDlgBoxContent" );
+		mainPanel.setStyleName( "teamingDlgBoxContentOverride" );
 
 		// Create the controls needed in the header
 		{
@@ -155,29 +156,37 @@ public class ShareWithPublicInfoDlg extends DlgBox
 			mainPanel.add( headerPanel );
 		}
 		
+		{
+			FlowPanel contentPanel;
+			
+			contentPanel = new FlowPanel();
+			contentPanel.addStyleName( "shareWithPublicDlg_content" );
+
 		// Add controls for the view entry permalink
-		{
-			m_instructions1 = new Label( messages.shareWithPublicInfoDlg_InstructionsEntry( "" ) );
-			m_instructions1.addStyleName( "shareWithPublicDlg_instructionsLabel" );
-			mainPanel.add( m_instructions1 );
+			{
+				m_instructions1 = new Label( messages.shareWithPublicInfoDlg_InstructionsEntry( "" ) );
+				m_instructions1.addStyleName( "shareWithPublicDlg_instructionsLabel" );
+				contentPanel.add( m_instructions1 );
+				
+				m_viewEntryPermalinkTextBox = new TextBox();
+				m_viewEntryPermalinkTextBox.setVisibleLength( 60 );
+				contentPanel.add( m_viewEntryPermalinkTextBox );
+			}
 			
-			m_viewEntryPermalinkTextBox = new TextBox();
-			m_viewEntryPermalinkTextBox.setVisibleLength( 60 );
-			mainPanel.add( m_viewEntryPermalinkTextBox );
-		}
-		
-		// Add controls for the download file permalink
-		{
-			m_instructions2 = new Label( messages.shareWithPublicInfoDlg_Instructions2( "" ) );
-			m_instructions2.addStyleName( "margintop2" );
-			m_instructions2.addStyleName( "shareWithPublicDlg_instructionsLabel" );
-			mainPanel.add( m_instructions2 );
+			// Add controls for the download file permalink
+			{
+				m_instructions2 = new Label( messages.shareWithPublicInfoDlg_Instructions2( "" ) );
+				m_instructions2.addStyleName( "margintop2" );
+				m_instructions2.addStyleName( "shareWithPublicDlg_instructionsLabel" );
+				contentPanel.add( m_instructions2 );
+				
+				m_downloadFilePermalinkTextBox = new TextBox();
+				m_downloadFilePermalinkTextBox.setVisibleLength( 60 );
+				contentPanel.add( m_downloadFilePermalinkTextBox );
+			}
 			
-			m_downloadFilePermalinkTextBox = new TextBox();
-			m_downloadFilePermalinkTextBox.setVisibleLength( 60 );
-			mainPanel.add( m_downloadFilePermalinkTextBox );
+			mainPanel.add( contentPanel );
 		}
-		
 		return mainPanel;
 	}
 	

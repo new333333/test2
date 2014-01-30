@@ -173,7 +173,7 @@ public interface GwtTeamingImageBundle extends ClientBundle
 	public ImageResource calViewWeekSelected();
 
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/close_w_border.png")
+	@Source("org/kablink/teaming/gwt/public/images/close_20.png")
 	public ImageResource closeBorder();
 
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
@@ -643,6 +643,10 @@ public interface GwtTeamingImageBundle extends ClientBundle
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/teaming_feed2.png")
 	public ImageResource teamingFeed2();
+
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/tour_but_teal.png")
+	public ImageResource tour3();
 
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/arrow_up.png")

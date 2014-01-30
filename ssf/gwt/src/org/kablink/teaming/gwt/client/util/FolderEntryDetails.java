@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -46,35 +46,38 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * @author drfoster
  */
 public class FolderEntryDetails implements IsSerializable {
-	private BinderIcons					m_entryIcons;			// The icons related to the entry in various sizes.
-	private boolean						m_contentIsImage;		// true -> The content of the file can be viewed as an image.  false -> It can't.
-	private boolean						m_descIsHtml;			// true -> The entry's description is in HTML.  false -> It's in plain text.
-	private boolean						m_lockedByLoggedInUser;	// true -> The entry is locked by the logged in user.  false -> It's not locked, or locked by somebody else.
-	private boolean						m_modifierIsCreator;	// true -> The creator and modifier are the same user.  false -> They're not.
-	private boolean						m_seen;					// true -> The entry is  currently  marked as having been seen by the user.  false -> It isn't.
-	private boolean						m_seenPrevious;			// true -> The entry was previously marked as having been seen by the user.  false -> It wasn't.
-	private boolean						m_top;					// true -> The entry is a top level entry.  false -> It's a comment.
-	private CommentsInfo				m_comments;				// Information about the comments on the entry.
-	private EntityId					m_entityId;				// The folder entry to view.
-	private int							m_contentImageHeight;	// If m_contentIsImage is true, the height   of the images.
-	private int							m_contentImageRotation;	// If m_contentIsImage is true, the rotation of the images.
-	private int							m_contentImageWidth;	// If m_contentIsImage is true, the width    of the images.
-	private List<ShareInfo>				m_sharedByItems;		// List<ShareInfo> of who the shared this entry with the current user.
-	private List<ShareInfo>				m_sharedWithItems;		// List<ShareInfo> of who the current user shared this entry with.
-	private List<ToolbarItem>			m_toolbarItems;			// List<ToolbarItem> of the toolbar items for entry entry view's menu.
-	private List<ViewFolderEntryInfo>	m_commentBreadCrumbs;	// List<ViewFolderEntryInfo> of the break crumb links for a comment entry.
-	private String						m_desc;					// The entry description.
-	private String						m_descTxt;				// Plain text version of m_desc.
-	private String						m_family;				// The definition family of the folder entry.
-	private String                      m_fileSizeDisplay;		// For file entries, the display string for the size of the file.
-	private String						m_downloadUrl;			// The URL for downloading the file.
-	private String						m_path;					// The full path to the entry.
-	private String						m_title;				// The title of the folder entry.
-	private String[]					m_contributors;			// The IDs of the contributors to this entry.
-	private UserInfo					m_creator;				// The creator of the entry.
-	private UserInfo					m_locker;				// The user that has the entry locked.  null -> The entry is not locked.
-	private UserInfo					m_modifier;				// The last modifier of the entry.
-	private ViewFileInfo				m_htmlView;				// If the entry is a file entry that can be viewed as HTML, contains the information for viewing it.  null otherwise.
+	private BinderIcons					m_entryIcons;					// The icons related to the entry in various sizes.
+	private boolean						m_contentIsImage;				// true -> The content of the file can be viewed as an image.  false -> It can't.
+	private boolean						m_descIsHtml;					// true -> The entry's description is in HTML.  false -> It's in plain text.
+	private boolean						m_entryLockedByLoggedInUser;	// true -> The entry is locked by the logged in user.  false -> It's not locked, or locked by somebody else.
+	private boolean						m_fileLockedByLoggedInUser;		// true -> The file  is locked by the logged in user.  false -> It's not locked, or locked by somebody else.
+	private boolean						m_modifierIsCreator;			// true -> The creator and modifier are the same user.  false -> They're not.
+	private boolean						m_seen;							// true -> The entry is  currently  marked as having been seen by the user.  false -> It isn't.
+	private boolean						m_seenPrevious;					// true -> The entry was previously marked as having been seen by the user.  false -> It wasn't.
+	private boolean						m_top;							// true -> The entry is a top level entry.  false -> It's a comment.
+	private CommentsInfo				m_comments;						// Information about the comments on the entry.
+	private EntityId					m_entityId;						// The folder entry to view.
+	private EntityRights				m_entityRights;					// The rights the user has to the folder entry.
+	private int							m_contentImageHeight;			// If m_contentIsImage is true, the height   of the images.
+	private int							m_contentImageRotation;			// If m_contentIsImage is true, the rotation of the images.
+	private int							m_contentImageWidth;			// If m_contentIsImage is true, the width    of the images.
+	private List<ShareInfo>				m_sharedByItems;				// List<ShareInfo> of who the shared this entry with the current user.
+	private List<ShareInfo>				m_sharedWithItems;				// List<ShareInfo> of who the current user shared this entry with.
+	private List<ToolbarItem>			m_toolbarItems;					// List<ToolbarItem> of the toolbar items for entry entry view's menu.
+	private List<ViewFolderEntryInfo>	m_commentBreadCrumbs;			// List<ViewFolderEntryInfo> of the break crumb links for a comment entry.
+	private String						m_desc;							// The entry description.
+	private String						m_descTxt;						// Plain text version of m_desc.
+	private String						m_family;						// The definition family of the folder entry.
+	private String                      m_fileSizeDisplay;				// For file entries, the display string for the size of the file.
+	private String						m_downloadUrl;					// The URL for downloading the file.
+	private String						m_path;							// The full path to the entry.
+	private String						m_title;						// The title of the folder entry.
+	private String[]					m_contributors;					// The IDs of the contributors to this entry.
+	private UserInfo					m_creator;						// The creator of the entry.
+	private UserInfo					m_entryLocker;					// The user that has the entry locked.  null -> The entry is not locked.
+	private UserInfo					m_fileLocker;					// The user that has the file  locked.  null -> The file  is not locked.
+	private UserInfo					m_modifier;						// The last modifier of the entry.
+	private ViewFileInfo				m_htmlView;						// If the entry is a file entry that can be viewed as HTML, contains the information for viewing it.  null otherwise.
 
 	/**
 	 * Inner class used to track information about how an entry is
@@ -165,12 +168,12 @@ public class FolderEntryDetails implements IsSerializable {
 		
 	}
 	
-	/**
+	/*
 	 * Constructor method.
 	 * 
 	 * Zero parameter constructor required for GWT serialization.
 	 */
-	public FolderEntryDetails() {
+	private FolderEntryDetails() {
 		// Initialize the super class...
 		super();
 		
@@ -184,13 +187,15 @@ public class FolderEntryDetails implements IsSerializable {
 	 * Constructor method.
 	 * 
 	 * @param entityId
+	 * @param entityRights
 	 */
-	public FolderEntryDetails(EntityId entityId) {
+	public FolderEntryDetails(EntityId entityId, EntityRights entityRights) {
 		// Initialize this object...
 		this();
 
-		// ...and store the parameter.
-		setEntityId(entityId);
+		// ...and store the parameters.
+		setEntityId(    entityId    );
+		setEntityRights(entityRights);
 	}
 	
 	/**
@@ -198,10 +203,11 @@ public class FolderEntryDetails implements IsSerializable {
 	 * 
 	 * @param binderId
 	 * @param entryId
+	 * @param entityRights
 	 */
-	public FolderEntryDetails(Long binderId, Long entryId) {
+	public FolderEntryDetails(Long binderId, Long entryId, EntityRights entityRights) {
 		// Always use the alternate form of the constructor.
-		this(new EntityId(binderId, entryId, EntityId.FOLDER_ENTRY));
+		this(new EntityId(binderId, entryId, EntityId.FOLDER_ENTRY), entityRights);
 	}
 	
 	/**
@@ -209,70 +215,77 @@ public class FolderEntryDetails implements IsSerializable {
 	 * 
 	 * @return
 	 */
-	public boolean                   isContentImage()          {return m_contentIsImage;      }
-	public boolean                   isDescHtml()              {return m_descIsHtml;          }
-	public boolean                   isLocked()                {return (null != m_locker);    }
-	public boolean                   isLockedByLoggedInUser()  {return m_lockedByLoggedInUser;}
-	public boolean                   isModifierCreator()       {return m_modifierIsCreator;   }
-	public boolean                   isSeen()                  {return m_seen;                }
-	public boolean                   isSeenPrevious()          {return m_seenPrevious;        }
-	public boolean                   isTop()                   {return m_top;                 }
-	public boolean                   isHtmlViewable()          {return (null != m_htmlView);  }
-	public CommentsInfo              getComments()             {return m_comments;            }
-	public EntityId                  getEntityId()             {return m_entityId;            }
-	public int                       getContentImageHeight()   {return m_contentImageHeight;  }
-	public int                       getContentImageRotation() {return m_contentImageRotation;}
-	public int                       getContentImageWidth()    {return m_contentImageWidth;   }
-	public List<ShareInfo>           getSharedByItems()        {return m_sharedByItems;       }
-	public List<ShareInfo>           getSharedWithItems()      {return m_sharedWithItems;     }
-	public List<ToolbarItem>         getToolbarItems()         {return m_toolbarItems;        }
-	public List<ViewFolderEntryInfo> getCommentBreadCrumbs()   {return m_commentBreadCrumbs;  }
-	public String                    getDesc()                 {return m_desc;                }
-	public String                    getDescTxt()              {return m_descTxt;             }
-	public String                    getDownloadUrl()          {return m_downloadUrl;         }
-	public String                    getFamily()               {return m_family;              }
-	public String                    getFileSizeDisplay()      {return m_fileSizeDisplay;     }
-	public String                    getPath()                 {return m_path;                }
-	public String                    getTitle()                {return m_title;               }
-	public String[]                  getContributors()         {return m_contributors;        }
-	public UserInfo                  getCreator()              {return m_creator;             }
-	public UserInfo                  getLocker()               {return m_locker;              }
-	public UserInfo                  getModifier()             {return m_modifier;            }
-	public ViewFileInfo              getHtmlView()             {return m_htmlView;            }                            
+	public boolean                   isContentImage()              {return m_contentIsImage;           }
+	public boolean                   isDescHtml()                  {return m_descIsHtml;               }
+	public boolean                   isEntryLocked()               {return (null != m_entryLocker);    }
+	public boolean                   isEntryLockedByLoggedInUser() {return m_entryLockedByLoggedInUser;}
+	public boolean                   isFileLocked()                {return (null != m_fileLocker);     }
+	public boolean                   isFileLockedByLoggedInUser()  {return m_fileLockedByLoggedInUser; }
+	public boolean                   isModifierCreator()           {return m_modifierIsCreator;        }
+	public boolean                   isSeen()                      {return m_seen;                     }
+	public boolean                   isSeenPrevious()              {return m_seenPrevious;             }
+	public boolean                   isTop()                       {return m_top;                      }
+	public boolean                   isHtmlViewable()              {return (null != m_htmlView);       }
+	public CommentsInfo              getComments()                 {return m_comments;                 }
+	public EntityId                  getEntityId()                 {return m_entityId;                 }
+	public EntityRights              getEntityRights()             {return m_entityRights;             }
+	public int                       getContentImageHeight()       {return m_contentImageHeight;       }
+	public int                       getContentImageRotation()     {return m_contentImageRotation;     }
+	public int                       getContentImageWidth()        {return m_contentImageWidth;        }
+	public List<ShareInfo>           getSharedByItems()            {return m_sharedByItems;            }
+	public List<ShareInfo>           getSharedWithItems()          {return m_sharedWithItems;          }
+	public List<ToolbarItem>         getToolbarItems()             {return m_toolbarItems;             }
+	public List<ViewFolderEntryInfo> getCommentBreadCrumbs()       {return m_commentBreadCrumbs;       }
+	public String                    getDesc()                     {return m_desc;                     }
+	public String                    getDescTxt()                  {return m_descTxt;                  }
+	public String                    getDownloadUrl()              {return m_downloadUrl;              }
+	public String                    getFamily()                   {return m_family;                   }
+	public String                    getFileSizeDisplay()          {return m_fileSizeDisplay;          }
+	public String                    getPath()                     {return m_path;                     }
+	public String                    getTitle()                    {return m_title;                    }
+	public String[]                  getContributors()             {return m_contributors;             }
+	public UserInfo                  getCreator()                  {return m_creator;                  }
+	public UserInfo                  getEntryLocker()              {return m_entryLocker;              }
+	public UserInfo                  getFileLocker()               {return m_fileLocker;               }
+	public UserInfo                  getModifier()                 {return m_modifier;                 }
+	public ViewFileInfo              getHtmlView()                 {return m_htmlView;                 }                            
 	
 	/**
 	 * Set'er methods.
 	 * 
 	 * @param
 	 */
-	public void setContentIsImage(      boolean                   contentIsImage)         {m_contentIsImage       = contentIsImage;        }
-	public void setDescIsHtml(          boolean                   descIsHtml)             {m_descIsHtml           = descIsHtml;            }
-	public void setLockedByLoggedInUser(boolean                   lockedByLoggedInUser)   {m_lockedByLoggedInUser = lockedByLoggedInUser;  }
-	public void setModifierIsCreator(   boolean                   modifierIsCreator)      {m_modifierIsCreator    = modifierIsCreator;     }
-	public void setSeen(                boolean                   seen)                   {m_seen                 = seen;                  }
-	public void setSeenPrevious(        boolean                   seenPrevious)           {m_seenPrevious         = seenPrevious;          }
-	public void setTop(                 boolean                   top)                    {m_top                  = top;                   }
-	public void setComments(            CommentsInfo              comments)               {m_comments             = comments;              }
-	public void setEntityId(            EntityId                  entityId)               {m_entityId             = entityId;              }
-	public void setContentImageHeight(  int                       contentImageHeight)     {m_contentImageHeight   = contentImageHeight;    }
-	public void setContentImageRotation(int                       contentImageRotation)   {m_contentImageRotation = contentImageRotation;  }
-	public void setContentImageWidth(   int                       contentImageWidth)      {m_contentImageWidth    = contentImageWidth;     }
-	public void setSharedByItems(       List<ShareInfo>           sharedByItems)          {m_sharedByItems        = sharedByItems;         }
-	public void setSharedWithItems(     List<ShareInfo>           sharedWithItems)        {m_sharedWithItems      = sharedWithItems;       }
-	public void setToolbarItems(        List<ToolbarItem>         toolbarItems)           {m_toolbarItems         = toolbarItems;          }
-	public void setCommentBreadCrumbs(  List<ViewFolderEntryInfo> commentBreadCrumbItems) {m_commentBreadCrumbs   = commentBreadCrumbItems;}
-	public void setDesc(                String                    desc)                   {m_desc                 = desc;                  }
-	public void setDescTxt(             String                    descTxt)                {m_descTxt              = descTxt;               }
-	public void setDownloadUrl(         String                    downloadUrl)            {m_downloadUrl          = downloadUrl;           }
-	public void setFamily(              String                    family)                 {m_family               = family;                }
-	public void setFileSizeDisplay(     String                    fileSizeDisplay)        {m_fileSizeDisplay      = fileSizeDisplay;       }
-	public void setPath(                String                    path)                   {m_path                 = path;                  }
-	public void setTitle(               String                    title)                  {m_title                = title;                 }
-	public void setContributors(        String[]                  contributors)           {m_contributors         = contributors;          }
-	public void setCreator(             UserInfo                  creator)                {m_creator              = creator;               }
-	public void setLocker(              UserInfo                  locker)                 {m_locker               = locker;                }
-	public void setModifier(            UserInfo                  modifier)               {m_modifier             = modifier;              }
-	public void setHtmlView(            ViewFileInfo              htmlView)               {m_htmlView             = htmlView;              }
+	public void setContentIsImage(           boolean                   contentIsImage)            {m_contentIsImage            = contentIsImage;           }
+	public void setDescIsHtml(               boolean                   descIsHtml)                {m_descIsHtml                = descIsHtml;               }
+	public void setEntryLockedByLoggedInUser(boolean                   entryLockedByLoggedInUser) {m_entryLockedByLoggedInUser = entryLockedByLoggedInUser;}
+	public void setFileLockedByLoggedInUser( boolean                   fileLockedByLoggedInUser)  {m_fileLockedByLoggedInUser  = fileLockedByLoggedInUser; }
+	public void setModifierIsCreator(        boolean                   modifierIsCreator)         {m_modifierIsCreator         = modifierIsCreator;        }
+	public void setSeen(                     boolean                   seen)                      {m_seen                      = seen;                     }
+	public void setSeenPrevious(             boolean                   seenPrevious)              {m_seenPrevious              = seenPrevious;             }
+	public void setTop(                      boolean                   top)                       {m_top                       = top;                      }
+	public void setComments(                 CommentsInfo              comments)                  {m_comments                  = comments;                 }
+	public void setEntityId(                 EntityId                  entityId)                  {m_entityId                  = entityId;                 }
+	public void setEntityRights(             EntityRights              entityRights)              {m_entityRights              = entityRights;             }
+	public void setContentImageHeight(       int                       contentImageHeight)        {m_contentImageHeight        = contentImageHeight;       }
+	public void setContentImageRotation(     int                       contentImageRotation)      {m_contentImageRotation      = contentImageRotation;     }
+	public void setContentImageWidth(        int                       contentImageWidth)         {m_contentImageWidth         = contentImageWidth;        }
+	public void setSharedByItems(            List<ShareInfo>           sharedByItems)             {m_sharedByItems             = sharedByItems;            }
+	public void setSharedWithItems(          List<ShareInfo>           sharedWithItems)           {m_sharedWithItems           = sharedWithItems;          }
+	public void setToolbarItems(             List<ToolbarItem>         toolbarItems)              {m_toolbarItems              = toolbarItems;             }
+	public void setCommentBreadCrumbs(       List<ViewFolderEntryInfo> commentBreadCrumbItems)    {m_commentBreadCrumbs        = commentBreadCrumbItems;   }
+	public void setDesc(                     String                    desc)                      {m_desc                      = desc;                     }
+	public void setDescTxt(                  String                    descTxt)                   {m_descTxt                   = descTxt;                  }
+	public void setDownloadUrl(              String                    downloadUrl)               {m_downloadUrl               = downloadUrl;              }
+	public void setFamily(                   String                    family)                    {m_family                    = family;                   }
+	public void setFileSizeDisplay(          String                    fileSizeDisplay)           {m_fileSizeDisplay           = fileSizeDisplay;          }
+	public void setPath(                     String                    path)                      {m_path                      = path;                     }
+	public void setTitle(                    String                    title)                     {m_title                     = title;                    }
+	public void setContributors(             String[]                  contributors)              {m_contributors              = contributors;             }
+	public void setCreator(                  UserInfo                  creator)                   {m_creator                   = creator;                  }
+	public void setEntryLocker(              UserInfo                  entryLocker)               {m_entryLocker               = entryLocker;              }
+	public void setFileLocker(               UserInfo                  fileLocker)                {m_fileLocker                = fileLocker;               }
+	public void setModifier(                 UserInfo                  modifier)                  {m_modifier                  = modifier;                 }
+	public void setHtmlView(                 ViewFileInfo              htmlView)                  {m_htmlView                  = htmlView;                 }
 
 	/**
 	 * Add'er methods.

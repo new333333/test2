@@ -164,6 +164,7 @@
 		.vibe-dataTableAssignment-enabled         {color: #353838;}
 		.vibe-dataTableAssignment-image           {height: 25px; width: 25px; border-radius: 2px; margin-right: 3px;}
 		.vibe-dataTableAssignment-label           {display: inline; font-weight: bold; padding-left: 2px !important;}
+		.vibe-dataTableAssignment-labelEllipsis   {display: inline-block !important; overflow: hidden; text-overflow: ellipsis;}
 		.vibe-dataTableAssignment-labelIE         {vertical-align: -5px;}
 		.vibe-dataTableAssignment-list            {}
 		.vibe-dataTableAssignment-panel           {white-space: nowrap;}
@@ -442,12 +443,12 @@
 
 /* Start:  Manage comments composite styles. */
 	.vibe-manageCommentsComposite                        {background-color: white !important;}
-	.vibe-manageCommentsComposite-addCommentAvatar       {vertical-align: top !important; padding: 5px 10px; width: 30px; height: 30px; border-radius: 2px;}
+	.vibe-manageCommentsComposite-addCommentAvatar       {vertical-align: top !important; margin: 3px 5px 5px 15px; width: 30px; height: 30px; border-radius: 2px;}
 	.vibe-manageCommentsComposite-addCommentHint         {color: #949494; font-size: .8em; display: inline-block; width: 280px;}
-	.vibe-manageCommentsComposite-addCommentHintPanel    {padding-top: 5px; padding-right: 5px;}
-	.vibe-manageCommentsComposite-addCommentPanel        {color: #353838; background-color: #F6F6F6; border-top-color: #cccccc; border-top-style: solid; border-top-width: 1px; padding-top: 15px; padding-bottom: 15px; box-shadow: 0px 2px 3px #e0e0e0 inset;}
+	.vibe-manageCommentsComposite-addCommentHintPanel    {padding-top: 5px; padding-right: 10px;}
+	.vibe-manageCommentsComposite-addCommentPanel        {color: #353838; background-color: #F6F6F6; border-top-color: #cccccc; border-top-style: solid; border-top-width: 1px; padding-top: 15px; padding-bottom: 15px; }
 	.vibe-manageCommentsComposite-addCommentPanel-nonIE  {width: 100%; }
-	.vibe-manageCommentsComposite-addCommentTextArea     {background-color: white; font-family: Arial, Helvetica, sans-serif; font-size: 14px; width: 500px; height: 45px; padding: 5px; border: 1px solid #E0E0E0; -moz-border-radius: 3px; border-radius: 3px; -webkit-border-radius: 3px;}
+	.vibe-manageCommentsComposite-addCommentTextArea     {background-color: #fff; font-family: Arial, Helvetica, sans-serif; font-size: 14px; width: 490px; height: 45px; padding: 5px; border: 1px solid #ccc; -moz-border-radius: 3px; border-radius: 3px; -webkit-border-radius: 3px;}
 	.vibe-manageCommentsComposite-captionImg             {width: 36px; height: 36px;}
 	.vibe-manageCommentsComposite-commentsWidget         {height: 300px; overflow: auto; position: relative; width: 550px;}
 	.vibe-manageCommentsComposite-label                  {}
@@ -478,13 +479,7 @@
 	    white-space: nowrap !important;
 	    text-decoration: none !important;
 		border: 1px solid #81b2bd;
-		background: linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-		background: -o-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-		background: -moz-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-		background: linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-		background: -webkit-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-		background: -ms-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-		background: -webkit-gradient(linear, left bottom, left top, color-stop(0.47, #A8D4DD), color-stop(0.53, #D5EDF1), color-stop(1, #C8E4E9));
+		background: #cee9ee;
 		border-radius: 15px;
 		-moz-border-radius: 15px;
 		-webkit-border-radius: 15px;
@@ -573,23 +568,14 @@
 		border-radius: 5px;
 		-moz-border-radius: 5px;
 		-webkit-border-radius: 5px;
-		background: -webkit-gradient(linear, left top, left bottom, from(#ffffff), to(#E0E0E0));
-		background: -moz-linear-gradient(center top , #ffffff, #E0E0E0) repeat scroll 0 0;
-		background: linear-gradient(center top , #ffffff, #E0E0E0) repeat scroll 0 0;
-		background-color: transparent;
+		background: #f6f6f6;
 	}
 	
 	.vibe-cmeDlg_BrowseButton:hover {
 		color: #135c8f !important;
 		border: 1px solid #81b2bd;
 		padding: 2px 5px  !important;
-		background: linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-		background: -o-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-		background: -moz-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-		background: linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-		background: -webkit-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-		background: -ms-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-		background: -webkit-gradient(linear, left bottom, left top, color-stop(0.47, #A8D4DD), color-stop(0.53, #D5EDF1), color-stop(1, #C8E4E9));
+		background: #cee9ee;
 		border-radius: 5px !important;
 		-moz-border-radius: 5px !important;
 		-webkit-border-radius: 5px !important;

@@ -182,6 +182,17 @@ public class EmailPublicLinkDlg extends DlgBox implements EditSuccessfulHandler
 			mainPanel.add( headerPanel );
 		}
 		
+		// Add a hint
+		{
+			Label label;
+			
+			label = new Label( messages.emailPublicLinkDlg_Hint1() );
+			label.addStyleName( "emailPublicLinkDlg_Hint" );
+			label.getElement().getStyle().setMarginTop( 6, Unit.PX );
+			mainPanel.add( label );
+			
+		}
+
 		// Add the control for entering the email addresses.
 		{
 			FlowPanel panel;
@@ -278,21 +289,6 @@ public class EmailPublicLinkDlg extends DlgBox implements EditSuccessfulHandler
 		
 		// Add the expiration controls.
 		createExpirationContent( mainPanel );
-
-		// Add a hint
-		{
-			Label label;
-			
-			label = new Label( messages.emailPublicLinkDlg_Hint1() );
-			label.addStyleName( "emailPublicLinkDlg_Hint" );
-			label.getElement().getStyle().setMarginTop( 6, Unit.PX );
-			mainPanel.add( label );
-
-			label = new Label( messages.emailPublicLinkDlg_Hint2() );
-			label.addStyleName( "emailPublicLinkDlg_Hint" );
-			label.getElement().getStyle().setMarginBottom( 6, Unit.PX );
-			mainPanel.add( label );
-		}
 		
 		return mainPanel;
 	}

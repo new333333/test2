@@ -4009,7 +4009,7 @@ public class GwtMainPage extends ResizeComposite
 	 */
 	public boolean isActivityStreamActive()
 	{
-		return m_wsTreeCtrl.isInActivityStreamMode();
+		return ((null != m_wsTreeCtrl) && m_wsTreeCtrl.isInActivityStreamMode());
 	}// end isActivityStreamActive()
 
 	/**

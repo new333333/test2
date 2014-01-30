@@ -26,6 +26,8 @@
     <property name="allowDesktopAppToSyncData" access="field"/>
     <property name="allowMobileAppsToSyncData" access="field"/>
     <property name="indexContent" access="field"/>
+    <property name="useInheritedIndexContent" access="field"/>
+    <property name="useInheritedJitsSettings" access="field"/>
     <property name="jitsEnabled" access="field"/>
     <property name="jitsMaxAge" access="field"/>
     <property name="jitsAclMaxAge" access="field"/>

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -84,7 +84,7 @@ public interface GwtTeamingMessages extends Messages
 	String showFolderDesc();
 	String showTitleBar();
 	
-	// Strings used with the Googld Gadget widget in the landing page editor
+	// Strings used with the Google Gadget widget in the landing page editor
 	String googleGadgetCodeLabel();
 	String googleGadgetProperties();
 	
@@ -231,6 +231,7 @@ public interface GwtTeamingMessages extends Messages
 	String change();
 	String edit();
 	String find();
+	String helpDlg();
 	String login();
 	String missingRequestInfo();
 	String none();
@@ -247,6 +248,9 @@ public interface GwtTeamingMessages extends Messages
 	String showTitle();
 	String signOut();
 	String title();
+	String tourDlg();
+	String tourMissingStart();
+	String tourMissingStop();
 	String unknownFileUploadError( String error);
 	String vibeInsideLandingPage();
 	String close();
@@ -356,6 +360,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_ExpandSubtasks();
 	String rpcFailure_FindUserByEmailAddress();
 	String rpcFailure_FolderDoesNotExist();
+	String rpcFailure_ForceFilesUnlock();
 	String rpcFailure_GetAccessoryStatus();
 	String rpcFailure_GetActivityStreamParams();
 	String rpcFailure_GetActivityStreamsTree();
@@ -790,6 +795,7 @@ public interface GwtTeamingMessages extends Messages
 	String resourceLibMenuItem();
 	String resourceLibraryHint();
 	String teamingFeedHint();
+	String trashInformation();
 	
 	// Strings used in the edit branding dialog.
 	String addImage();
@@ -811,6 +817,15 @@ public interface GwtTeamingMessages extends Messages
 	String editBrandingDlg_LoginDialogCaption();
 	String editBrandingDlg_LoginDialogImgHint();
 	String editBrandingDlg_UploadLabel();
+	String editBrandingDlg_Tour_advancedBranding();
+	String editBrandingDlg_Tour_backgroundColor();
+	String editBrandingDlg_Tour_backgroundImage();
+	String editBrandingDlg_Tour_brandingArea(String product);
+	String editBrandingDlg_Tour_brandingImage();
+	String editBrandingDlg_Tour_finish(String product);
+	String editBrandingDlg_Tour_loginDlgImage(String product);
+	String editBrandingDlg_Tour_start(String product);
+	String editBrandingDlg_Tour_textColor();
 	String imgNone();
 	String invalidBackgroundColor( String color );
 	String invalidTextColor( String color );
@@ -2228,6 +2243,7 @@ public interface GwtTeamingMessages extends Messages
 	String modifyStaticMembershipDlgUserTab();
 
 	// Strings used in the Modify dynamic membership dialog
+	String modifyDynamicMembershipDlgBaseDnAlt();
 	String modifyDynamicMembershipDlgBaseDnLabel();
 	String modifyDynamicMembershipDlgCurrentMembershipLabel( int count );
 	String modifyDynamicMembershipDlgCurrentMembershipCalculatingLabel();
@@ -2272,6 +2288,7 @@ public interface GwtTeamingMessages extends Messages
 
 	// Strings used with the "Share send-to" widget
 	String shareSendToWidget_AllRecipients();
+	String shareSendToWidget_NoOne();
 	String shareSendToWidget_OnlyModifiedRecipients();
 	String shareSendToWidget_OnlyNewRecipients();
 	String shareSendToWidget_SelectedRecipients();
@@ -2311,6 +2328,7 @@ public interface GwtTeamingMessages extends Messages
 	String modifyNetFolderServerDlg_Group();
 	String modifyNetFolderServerDlg_HostUrlLabel();
 	String modifyNetFolderServerDlg_HostUrlRequired();
+	String modifyNetFolderServerDlg_IndexContentCB();
 	String modifyNetFolderServerDlg_InsufficientRights();
 	String modifyNetFolderServerDlg_IsSharePointServerLabel();
 	String modifyNetFolderServerDlg_Minutes();
@@ -2423,10 +2441,14 @@ public interface GwtTeamingMessages extends Messages
 	String modifyNetFolderDlg_SelectPrincipalsHint();
 	String modifyNetFolderDlg_ScheduleTab();
 	String modifyNetFolderDlg_SyncScheduleCaption();
+	String modifyNetFolderDlg_UseJistsSettingsFromNetFolderRbLabel();
+	String modifyNetFolderDlg_UseJitsSettingsFromNetFolderServerRbLabel();
+	String modifyNetFolderDlg_UseNetFolderIndexContentOptionRbLabel();
 	String modifyNetFolderDlg_UseNetFolderScheduleRbLabel();
-	String modifyNetFolderDlg_UseNetFolderSyncOptionRbLabel();
+	String modifyNetFolderDlg_UseNetFolderServerIndexContentOptionRbLabel();
 	String modifyNetFolderDlg_UseNetFolderServerScheduleRbLabel();
 	String modifyNetFolderDlg_UseNetFolderServerSyncOptionRbLabel();
+	String modifyNetFolderDlg_UseNetFolderSyncOptionRbLabel();
 	
 	// Strings used in the Schedule widget
 	String scheduleWidget_AtTimeLabel();
@@ -2493,17 +2515,21 @@ public interface GwtTeamingMessages extends Messages
 	
 	// Strings used by the GWT based Folder Entry viewer.
 	String folderEntry_Alt_Close();
+	String folderEntry_Alt_EntryLockedBy(String user);
+	String folderEntry_Alt_FileLockedBy(String user);
 	String folderEntry_Alt_Hide();
-	String folderEntry_Alt_LockedBy(String user);
 	String folderEntry_Alt_MarkRead();
 	String folderEntry_Alt_Next();
 	String folderEntry_Alt_Previous();
 	String folderEntry_Close();
 	String folderEntry_Comments(int count);
+	String folderEntry_Confirm_ForceFileUnlock();
 	String folderEntry_Entry();
+	String folderEntry_EntryLocked();
 	String folderEntry_Error_NoNext();
 	String folderEntry_Error_NoPrevious();
 	String folderEntry_File();
+	String folderEntry_FileLocked();
 	String folderEntry_FileSize(String size);
 	String folderEntry_Hide();
 	String folderEntry_Locked();
@@ -2625,6 +2651,7 @@ public interface GwtTeamingMessages extends Messages
 	String editNetFolderRightsDlg_AllowAccessLabel();
 	String editNetFolderRightsDlg_CanShareLabel();
 	String editNetFolderRightsDlg_Caption();
+	String editNetFolderRightsDlg_ErrorRetrievingZoneShareRights( String error );
 	String editNetFolderRightsDlg_Instructions();
 	String editNetFolderRightsDlg_ReShareLabel();
 	String editNetFolderRightsDlg_ShareInternalLabel();
@@ -2755,7 +2782,6 @@ public interface GwtTeamingMessages extends Messages
 	String configureMobileAppsDlgAddIos();
 	String configureMobileAppsDlgAllowAccess( String productName );
 	String configureMobileAppsDlgAllowCacheContent();
-	String configureMobileAppsDlgAllowCacheContentZone();
 	String configureMobileAppsDlgAllowCachePwd();
 	String configureMobileAppsDlgButton_Add();
 	String configureMobileAppsDlgButton_Delete();
@@ -3164,7 +3190,6 @@ public interface GwtTeamingMessages extends Messages
 	// Strings used in the Email Public Link dialog
 	String emailPublicLinkDlg_EmailHint();
 	String emailPublicLinkDlg_Hint1();
-	String emailPublicLinkDlg_Hint2();
 	String emailPublicLinkDlg_MessageHint();
 	String emailPublicLinkDlg_NoEmailAddresses();
 	String emailPublicLinkDlg_SendBtn();
@@ -3222,5 +3247,12 @@ public interface GwtTeamingMessages extends Messages
 	String mailToMultiplePublicLinksSelect_InternalError_NoLinks(String product);
 	String mailToMultiplePublicLinksSelect_Never();
 	String mailToMultiplePublicLinksSelect_NoNote();
+
+	// Strings for the tour facility.
+	String tourCloseAlt();
+	String tourDone();
+	String tourNext();
+	String tourPrev();
+	String tourSkip();
 	
 }// end GwtTeamingMessages

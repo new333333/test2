@@ -73,14 +73,14 @@ public class DefaultNetFolderContentIndexing extends SimpleTriggerJob implements
 		else {
 			try {
 				Folder netFolderRoot = loadFolder(binderId);
-				if(netFolderRoot.getIndexContent()) {
+				if(netFolderRoot.getComputedIndexContent()) {
 					folderModule.indexFileContentForNetFolder(netFolderRoot);
 				}
 				else {
-					// Content indexing is disabled on this folder at this time. Probably admin has changed that 
+					// Content indexing is disabled for this folder at this time. Probably admin has changed that 
 					// setting. Simply unschedule the job without physically deleting it. It will be re-scheduled
-					// next time the admin enables content indexing on this net folder.
-					logger.info("Unscheduling job because content indexing is currently disabled on net folder [" + netFolderRoot.getPathName() + "]");
+					// next time the admin enables content indexing for this net folder.
+					logger.info("Unscheduling job because content indexing is currently disabled for net folder [" + netFolderRoot.getPathName() + "]");
 					unscheduleJob(context);
 				}
 			} catch (NoFolderByTheIdException nf) {
@@ -107,6 +107,8 @@ public class DefaultNetFolderContentIndexing extends SimpleTriggerJob implements
 
 	@Override
 	public void unschedule(Long folderId) {
+		// Actually, this has the same effect as calling deleteJob() method because this job is
+		// not durable hence is automatically deleted when its (only) trigger is deleted.
 		unscheduleJob(folderId.toString(), NET_FOLDER_CONTENT_INDEXING_GROUP);
 	}
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -148,6 +148,7 @@ import org.kablink.teaming.gwt.client.util.FolderSortSetting;
 import org.kablink.teaming.gwt.client.util.GwtShareLists;
 import org.kablink.teaming.gwt.client.util.GwtSharingInfo;
 import org.kablink.teaming.gwt.client.util.HistoryInfo;
+import org.kablink.teaming.gwt.client.util.PerUserShareRightsInfo;
 import org.kablink.teaming.gwt.client.util.ProjectInfo;
 import org.kablink.teaming.gwt.client.util.SelectedUsersDetails;
 import org.kablink.teaming.gwt.client.util.SelectionDetails;
@@ -798,6 +799,14 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return (VibeRpcResponse) retValue;
 		}
 
+		case FORCE_FILES_UNLOCK:
+		{
+			ForceFilesUnlockCmd ffuCmd = ((ForceFilesUnlockCmd) cmd);
+			BooleanRpcResponseData result = GwtViewHelper.forceFilesUnlock( this, getRequest( ri ), ffuCmd.getEntityIds() );
+			response = new VibeRpcResponse( result );
+			return response;
+		}
+		
 		case GET_ACCESSORY_STATUS:
 		{
 			GetAccessoryStatusCmd gasCmd = ((GetAccessoryStatusCmd) cmd);
@@ -1728,6 +1737,15 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case GET_IS_USER_EXTERNAL:
+		{
+			GetIsUserExternalCmd giueCmd = ((GetIsUserExternalCmd) cmd);
+			boolean result = GwtViewHelper.isUserExternal( this, getRequest( ri ), giueCmd.getUserId() );
+			BooleanRpcResponseData responseData = new BooleanRpcResponseData( result );
+			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
 		case GET_IS_DYNAMIC_GROUP_MEMBERSHIP_ALLOWED:
 		{
 			boolean isAllowed;
@@ -2588,6 +2606,17 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			GetUserWorkspaceInfoCmd gusCmd = ((GetUserWorkspaceInfoCmd) cmd);
 			UserWorkspaceInfoRpcResponseData result = getUserWorkspaceInfo( ri, gusCmd.getBinderId() );
 			response = new VibeRpcResponse( result );
+			return response;
+		}
+		
+		case GET_USER_ZONE_SHARE_SETTINGS:
+		{
+			GetUserZoneShareSettingsCmd gussCmd;
+			PerUserShareRightsInfo shareSettings;
+			
+			gussCmd = (GetUserZoneShareSettingsCmd) cmd;
+			shareSettings = GwtShareHelper.getUserZoneShareSettings( this, gussCmd.getPrincipalId() );
+			response = new VibeRpcResponse( shareSettings );
 			return response;
 		}
 		

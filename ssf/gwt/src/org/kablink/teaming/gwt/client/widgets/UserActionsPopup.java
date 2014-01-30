@@ -47,6 +47,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.GetSiteAdminUrlCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+import org.kablink.teaming.gwt.client.widgets.AlertDlg.AlertDlgClient;
 
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -60,6 +61,7 @@ import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TeamingPopupPanel;
+import com.google.gwt.user.client.ui.Widget;
 
 /**
  * This class displays the actions a user can perform from the
@@ -69,6 +71,7 @@ import com.google.gwt.user.client.ui.TeamingPopupPanel;
  */
 public class UserActionsPopup extends TeamingPopupPanel
 {
+	private AlertDlg  m_trashInfoDlg;
 	private FlowPanel m_namePanel;
 	private FlexTable m_quotaTable;
 	private FlowPanel m_footerPanel;
@@ -504,6 +507,18 @@ public class UserActionsPopup extends TeamingPopupPanel
 			quotaUsedValueLabel.addStyleName( "bold" );
 			m_quotaTable.setHTML( 1, 0, quotaUsedLabel.toString() );
 			m_quotaTable.setHTML( 1, 1, quotaUsedValueLabel.toString() );
+
+			final Image trashInfoButton = GwtClientHelper.buildImage(GwtTeaming.getImageBundle().info2().getSafeUri().asString());
+			trashInfoButton.addStyleName( "userActionsPopup_TrashInfoButton" );
+			trashInfoButton.addClickHandler( new ClickHandler() {
+				@Override
+				public void onClick( ClickEvent event )
+				{
+					showTrashInfoAsync( trashInfoButton );
+				}
+			} );
+			m_quotaTable.setWidget( 1, 2, trashInfoButton );
+			m_quotaTable.getFlexCellFormatter().addStyleName( 1, 2, "userActionsPopup_TrashInfoCell" );
 			
 			m_quotaTable.setVisible( true );
 		}
@@ -511,6 +526,80 @@ public class UserActionsPopup extends TeamingPopupPanel
 		{
 			m_quotaTable.setVisible( false );
 		}
+	}
+	
+	/*
+	 * Asynchronously shows the trash information when the trash button
+	 * is clicked.
+	 */
+	private void showTrashInfoAsync( final Widget trashInfoButton )
+	{
+		GwtClientHelper.deferCommand( new ScheduledCommand()
+		{
+			@Override
+			public void execute()
+			{
+				showTrashInfoNow( trashInfoButton );
+			}
+		} );
+	}
+	
+	/*
+	 * Synchronously shows the trash information when the trash button
+	 * is clicked.
+	 */
+	private void showTrashInfoNow( final Widget trashInfoButton )
+	{
+		// Have we created the trash information dialog yet?
+		if ( null == m_trashInfoDlg )
+		{
+			// No!  Create it now...
+			AlertDlg.createAsync( new AlertDlgClient()
+			{
+				@Override
+				public void onUnavailable()
+				{
+					// Nothing to do.  Error handled in asynchronous
+					// provider.
+				}
+				
+				@Override
+				public void onSuccess( AlertDlg aDlg )
+				{
+					// ...and show it.
+					m_trashInfoDlg = aDlg;
+					m_trashInfoDlg.addStyleName( "userActionsPopup_TrashInfoDlg" );
+					showTrashInfoImpl( trashInfoButton );
+				}
+			},
+			true,		// true  -> Auto hide the dialog. 
+			false );	// false -> The dialog is not modal.
+		}
+		
+		else
+		{
+			// Yes, we've already created the trash information dialog!
+			// Simply show it.
+			showTrashInfoImpl( trashInfoButton );
+		}
+	}
+
+	/*
+	 * Implementation method that shows the trash information dialog.
+	 */
+	private void showTrashInfoImpl( final Widget trashInfoButton )
+	{
+		GwtClientHelper.deferCommand( new ScheduledCommand()
+		{
+			@Override
+			public void execute()
+			{
+				AlertDlg.initAndShow(
+					m_trashInfoDlg,
+					GwtTeaming.getMessages().trashInformation(),
+					trashInfoButton );
+			}
+		});
 	}
 	
 	/**
@@ -536,5 +625,20 @@ public class UserActionsPopup extends TeamingPopupPanel
 				}
 			} );
 		}
-	}	
+	}
+
+	/**
+	 * Hides this popup.
+	 */
+	@Override
+	public void hide( boolean autoClosed )
+	{
+		// If we don't have a trash information dialog or the trash
+		// information dialog is not attached to the DOM...
+		if ( ( null == m_trashInfoDlg ) || ( ! ( m_trashInfoDlg.isAttached() ) ) )
+		{
+			// ...allow the popup to hide.
+			super.hide( autoClosed );
+		}
+	}
 }

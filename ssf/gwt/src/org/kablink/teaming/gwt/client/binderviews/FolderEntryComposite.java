@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -49,6 +49,7 @@ import org.kablink.teaming.gwt.client.event.EmailPublicLinkSelectedEntitiesEvent
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.EventsHandledBySourceMarker;
 import org.kablink.teaming.gwt.client.event.FolderEntryActionCompleteEvent;
+import org.kablink.teaming.gwt.client.event.ForceFilesUnlockEvent;
 import org.kablink.teaming.gwt.client.event.InvokeEditInPlaceEvent;
 import org.kablink.teaming.gwt.client.event.LockSelectedEntitiesEvent;
 import org.kablink.teaming.gwt.client.event.MailToPublicLinkEntityEvent;
@@ -71,15 +72,19 @@ import org.kablink.teaming.gwt.client.rpc.shared.GetNextPreviousFolderEntryInfoC
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.rpc.shared.ViewFolderEntryInfoRpcResponseData;
 import org.kablink.teaming.gwt.client.util.EntityId;
+import org.kablink.teaming.gwt.client.util.EntityRights;
 import org.kablink.teaming.gwt.client.util.FolderEntryDetails;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
 import org.kablink.teaming.gwt.client.util.ViewFolderEntryInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
+import org.kablink.teaming.gwt.client.widgets.ConfirmCallback;
+import org.kablink.teaming.gwt.client.widgets.ConfirmDlg;
 import org.kablink.teaming.gwt.client.widgets.ContentControl;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import org.kablink.teaming.gwt.client.widgets.VibeFlexTable;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
+import org.kablink.teaming.gwt.client.widgets.ConfirmDlg.ConfirmDlgClient;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
@@ -116,6 +121,7 @@ public class FolderEntryComposite extends ResizeComposite
 		DeleteSelectedEntitiesEvent.Handler,
 		EmailPublicLinkSelectedEntitiesEvent.Handler,
 		FolderEntryActionCompleteEvent.Handler,
+		ForceFilesUnlockEvent.Handler,
 		InvokeEditInPlaceEvent.Handler,
 		LockSelectedEntitiesEvent.Handler,
 		MailToPublicLinkEntityEvent.Handler,
@@ -196,6 +202,7 @@ public class FolderEntryComposite extends ResizeComposite
 		TeamingEvents.DELETE_SELECTED_ENTITIES,
 		TeamingEvents.EMAIL_PUBLIC_LINK_SELECTED_ENTITIES,
 		TeamingEvents.FOLDER_ENTRY_ACTION_COMPLETE,
+		TeamingEvents.FORCE_FILES_UNLOCK,
 		TeamingEvents.INVOKE_EDIT_IN_PLACE,
 		TeamingEvents.LOCK_SELECTED_ENTITIES,
 		TeamingEvents.MAILTO_PUBLIC_LINK_ENTITY,
@@ -583,6 +590,18 @@ public class FolderEntryComposite extends ResizeComposite
 	@Override
 	public EntityId getEntityId() {
 		return m_vfei.getEntityId();
+	}
+
+	/**
+	 * Returns the EntityRights of folder entry being viewed.
+	 * 
+	 * Implements the FolderEntryCallback.getEntityRights() method.
+	 * 
+	 * @param vfei
+	 */
+	@Override
+	public EntityRights getEntityRights() {
+		return m_fed.getEntityRights();
 	}
 
 	/*
@@ -1027,6 +1046,78 @@ public class FolderEntryComposite extends ResizeComposite
 			     closeFolderEntryViewer();
 			else reloadFolderEntryViewer(true);	// true -> Part of a refresh.
 		}
+	}
+	
+	/**
+	 * Handles ForceFilesUnlockEvent's received by this class.
+	 * 
+	 * Implements the ForceFilesUnlockEvent.Handler.onForceFilesUnlock() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onForceFilesUnlock(ForceFilesUnlockEvent event) {
+		// Is the event targeted to this entry?
+		List<EntityId> entityIds = event.getSelectedEntities();
+		if (isCompositeEntry(entityIds)) {
+			// Yes!  Force the file to be unlocked.
+			onForceFilesUnlockAsync(entityIds);
+		}
+	}
+
+	/*
+	 * Asynchronously forces the selected files to be unlocked.
+	 */
+	private void onForceFilesUnlockAsync(final List<EntityId> entityIds) {
+		ConfirmDlg.createAsync(new ConfirmDlgClient() {
+			@Override
+			public void onUnavailable() {
+				// Nothing to do.  Error handled in
+				// asynchronous provider.
+			}
+			
+			@Override
+			public void onSuccess(ConfirmDlg cDlg) {
+				ConfirmDlg.initAndShow(
+					cDlg,
+					new ConfirmCallback() {
+						@Override
+						public void dialogReady() {
+							// Ignored.  We don't really care when the
+							// dialog is ready.
+						}
+
+						@Override
+						public void accepted() {
+							// Yes, they're sure!  Force the files to
+							// be unlocked.
+							GwtClientHelper.deferCommand(new ScheduledCommand() {
+								@Override
+								public void execute() {
+									onForceFilesUnlockNow(entityIds);
+								}
+							});
+						}
+
+						@Override
+						public void rejected() {
+							// No, they're not sure!
+						}
+					},
+					m_messages.folderEntry_Confirm_ForceFileUnlock());
+			}
+		});
+	}
+	
+	/*
+	 * Synchronously forces the selected files to be unlocked.
+	 */
+	private void onForceFilesUnlockNow(final List<EntityId> entityIds) {
+		BinderViewsHelper.forceUnlockSelectedFiles(
+			entityIds,
+			new FolderEntryActionCompleteEvent(
+				m_vfei.getEntityId(),
+				false));
 	}
 	
 	/**
