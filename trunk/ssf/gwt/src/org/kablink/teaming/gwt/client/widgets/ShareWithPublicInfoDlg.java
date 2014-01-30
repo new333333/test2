@@ -162,7 +162,7 @@ public class ShareWithPublicInfoDlg extends DlgBox
 			contentPanel = new FlowPanel();
 			contentPanel.addStyleName( "shareWithPublicDlg_content" );
 
-		// Add controls for the view entry permalink
+			// Add controls for the view entry permalink
 			{
 				m_instructions1 = new Label( messages.shareWithPublicInfoDlg_InstructionsEntry( "" ) );
 				m_instructions1.addStyleName( "shareWithPublicDlg_instructionsLabel" );
@@ -294,11 +294,20 @@ public class ShareWithPublicInfoDlg extends DlgBox
 							@Override
 							public void execute()
 							{
+								String imgUrl;
+								
 								updateInstructions( gwtFolderEntry.getEntryName(), true );
 								
 								// Update the name of the entity in the header.
 								m_headerNameLabel.setText( gwtFolderEntry.getEntryName() );
 								m_headerPathLabel.setText( gwtFolderEntry.getParentBinderName() );
+
+								// Do we have a url for the file image?
+								imgUrl = gwtFolderEntry.getFileImgUrl();
+								if ( imgUrl != null && imgUrl.length() > 0 )
+								{
+									m_headerImg.setUrl( GwtClientHelper.getRequestInfo().getImagesPath() + imgUrl );
+								}
 							}
 						};
 						Scheduler.get().scheduleDeferred( cmd );
