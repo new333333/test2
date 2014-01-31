@@ -526,7 +526,7 @@ public class GwtMainPage extends ResizeComposite
 	 */
 	private void loadContentControl()
 	{
-		ContentControl.createAsync( this, "gwtContentIframe", new ContentControlClient()
+		ContentControl.createControl( this, "gwtContentIframe", new ContentControlClient()
 		{			
 			@Override
 			public void onUnavailable()
@@ -2411,7 +2411,7 @@ public class GwtMainPage extends ResizeComposite
 	public void onActivityStreamExit( ActivityStreamExitEvent event )
 	{
 		m_contentLayoutPanel.showContentControl();
-		m_contentCtrl.setDimensions( m_contentLayoutPanel.getOffsetWidth(), m_contentLayoutPanel.getOffsetHeight() );
+		ContentControl.setDimensions( m_contentCtrl, m_contentLayoutPanel.getOffsetWidth(), m_contentLayoutPanel.getOffsetHeight() );
 	}//end onActivityStreamExit()
 
 	/**
@@ -3932,7 +3932,7 @@ public class GwtMainPage extends ResizeComposite
 				
 				// Yes
 				if ( m_contentCtrl != null )
-					m_contentCtrl.setDimensions( width, height );
+					ContentControl.setDimensions( m_contentCtrl, width, height );
 				
 				if ( isActivityStreamActive() )
 					m_activityStreamCtrl.setSize( width, height );
@@ -3986,7 +3986,7 @@ public class GwtMainPage extends ResizeComposite
 		}
 		else
 		{
-			m_contentCtrl.reload();
+			ContentControl.reload( m_contentCtrl );
 		}
 	}// end reloadContentPanel()
 	
