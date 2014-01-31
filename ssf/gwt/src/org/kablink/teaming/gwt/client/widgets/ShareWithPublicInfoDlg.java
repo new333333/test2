@@ -164,7 +164,7 @@ public class ShareWithPublicInfoDlg extends DlgBox
 
 			// Add controls for the view entry permalink
 			{
-				m_instructions1 = new Label( messages.shareWithPublicInfoDlg_InstructionsEntry( "" ) );
+				m_instructions1 = new Label( messages.shareWithPublicInfoDlg_InstructionsEntry() );
 				m_instructions1.addStyleName( "shareWithPublicDlg_instructionsLabel" );
 				contentPanel.add( m_instructions1 );
 				
@@ -175,7 +175,7 @@ public class ShareWithPublicInfoDlg extends DlgBox
 			
 			// Add controls for the download file permalink
 			{
-				m_instructions2 = new Label( messages.shareWithPublicInfoDlg_Instructions2( "" ) );
+				m_instructions2 = new Label( messages.shareWithPublicInfoDlg_Instructions2() );
 				m_instructions2.addStyleName( "margintop2" );
 				m_instructions2.addStyleName( "shareWithPublicDlg_instructionsLabel" );
 				contentPanel.add( m_instructions2 );
@@ -532,10 +532,10 @@ public class ShareWithPublicInfoDlg extends DlgBox
 	{
 		String instructions1;
 		if (itemIsEntry)
-		     instructions1 = GwtTeaming.getMessages().shareWithPublicInfoDlg_InstructionsEntry(  itemName );
-		else instructions1 = GwtTeaming.getMessages().shareWithPublicInfoDlg_InstructionsFolder( itemName );
+		     instructions1 = GwtTeaming.getMessages().shareWithPublicInfoDlg_InstructionsEntry();
+		else instructions1 = GwtTeaming.getMessages().shareWithPublicInfoDlg_InstructionsFolder();
 		m_instructions1.setText( instructions1 );
-		m_instructions2.setText( GwtTeaming.getMessages().shareWithPublicInfoDlg_Instructions2( itemName ) );
+		m_instructions2.setText( GwtTeaming.getMessages().shareWithPublicInfoDlg_Instructions2() );
 	}
 	
 	/**
