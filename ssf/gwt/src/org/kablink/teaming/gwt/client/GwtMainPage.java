@@ -1301,10 +1301,7 @@ public class GwtMainPage extends ResizeComposite
 	 */
 	private void closeAdministrationContentPanel()
 	{
-		if ( m_adminControl != null )
-		{
-			m_adminControl.showHomePage();
-		}
+		AdminControl.showHomePage( m_adminControl );
 	}// end closeAdministrationContentPanel()
 	
 	/*
@@ -2515,7 +2512,7 @@ public class GwtMainPage extends ResizeComposite
 	private void onAdministrationExitNow()
 	{
 		// Hide the administration console and its menu.
-		m_adminControl.hideControl();
+		AdminControl.hideControl( m_adminControl );
 		m_mainMenuCtrl.hideAdministrationMenubar();
 		
 		m_splitLayoutPanel.setVisible( true );
@@ -3918,7 +3915,7 @@ public class GwtMainPage extends ResizeComposite
 					@Override
 					public void execute()
 					{
-						m_adminControl.relayoutPage();
+						AdminControl.relayoutPage( m_adminControl );
 					}
 				};
 				Scheduler.get().scheduleDeferred( cmd );
@@ -4064,7 +4061,7 @@ public class GwtMainPage extends ResizeComposite
 		else
 		{
 			// ...otherwise, we load its split point...
-			AdminControl.createAsync(
+			AdminControl.createDlg(
 					this,
 					new AdminControlClient() {				
 				@Override
@@ -4104,12 +4101,12 @@ public class GwtMainPage extends ResizeComposite
 		if ( m_mainMenuCtrl.isVisible() )
 		{
 			// Yes, position the admin control relative to the main menu control.
-			m_adminControl.showControl( m_mainMenuCtrl, fireOnLoad );
+			AdminControl.showControl( m_adminControl, m_mainMenuCtrl, fireOnLoad );
 		}
 		else
 		{
 			// No, position the admin control relative to the masthead
-			m_adminControl.showControl( m_headerPanel, fireOnLoad );
+			AdminControl.showControl( m_adminControl, m_headerPanel, fireOnLoad );
 		}
 	}// end showAdminControlImpl()
 	
