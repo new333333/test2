@@ -307,7 +307,7 @@ public class ContentControl extends Composite
 	/**
 	 * Clear the contents of the IFRAME.
 	 */
-	public void clear()
+	private void clear()
 	{
 		setContentFrameUrl( "/ssf/html/empty.html" );
 	}
@@ -337,7 +337,7 @@ public class ContentControl extends Composite
 	/**
 	 * 
 	 */
-	public void empty()
+	private void empty()
 	{
 		clear();
 	}
@@ -574,7 +574,7 @@ public class ContentControl extends Composite
 	/**
 	 * Reload the page that is currently being displayed.
 	 */
-	public void reload()
+	private void reload()
 	{
 		// Clear the IFRAME content.
 		clear();
@@ -615,7 +615,7 @@ public class ContentControl extends Composite
 	/**
 	 * Set the width and height of this control.
 	 */
-	public void setDimensions( int width, int height )
+	private void setDimensions( int width, int height )
 	{
 		if ( isVisible() )
 		{
@@ -698,7 +698,7 @@ public class ContentControl extends Composite
 	 * @param newUrl
 	 * @param instigator
 	 */
-	public void setContentFrameUrl( String newUrl, Instigator instigator )
+	private void setContentFrameUrl( String newUrl, Instigator instigator )
 	{
 		// If we were given an instigator...
 		if ( null != instigator )
@@ -714,7 +714,12 @@ public class ContentControl extends Composite
 		m_mainContentPanel.add(    m_contentFrame );
 	}// end setContentFrameUrl()
 	
-	public void setContentFrameUrl( String url )
+
+	/**
+	 * 
+	 * @param url
+	 */
+	private void setContentFrameUrl( String url )
 	{
 		// Always use the initial form of the method.
 		setContentFrameUrl( url, null );
@@ -2508,6 +2513,28 @@ public class ContentControl extends Composite
 	}
 	
 	/**
+	 * Put clear() behind a split point
+	 */
+	public static void clear( final ContentControl contentControl )
+	{
+		GWT.runAsync( ContentControl.class, new RunAsyncCallback()
+		{			
+			@Override
+			public void onFailure( Throwable reason )
+			{
+				GwtClientHelper.deferredAlert( GwtTeaming.getMessages().codeSplitFailure_ContentControl() );
+			}
+
+			@Override
+			public void onSuccess()
+			{
+				if ( contentControl != null )
+					contentControl.clear();
+			}
+		} );
+	}
+	
+	/**
 	 * Loads the ContentControl split point and returns an instance of
 	 * it via the callback.
 	 * 
@@ -2515,7 +2542,7 @@ public class ContentControl extends Composite
 	 * @param name
 	 * @param contentCtrlClient
 	 */
-	public static void createAsync( final GwtMainPage mainPage, final String name, final ContentControlClient contentCtrlClient )
+	public static void createControl( final GwtMainPage mainPage, final String name, final ContentControlClient contentCtrlClient )
 	{
 		GWT.runAsync( ContentControl.class, new RunAsyncCallback()
 		{			
@@ -2534,4 +2561,99 @@ public class ContentControl extends Composite
 			}// end onFailure()
 		} );
 	}// end createAsync()
+
+	/**
+	 * Put empty() behind a split point
+	 */
+	public static void empty( final ContentControl contentControl )
+	{
+		GWT.runAsync( ContentControl.class, new RunAsyncCallback()
+		{			
+			@Override
+			public void onFailure( Throwable reason )
+			{
+				GwtClientHelper.deferredAlert( GwtTeaming.getMessages().codeSplitFailure_ContentControl() );
+			}
+
+			@Override
+			public void onSuccess()
+			{
+				if ( contentControl != null )
+					contentControl.empty();
+			}
+		} );
+	}
+	
+	/**
+	 * Put reload() behind a split point
+	 */
+	public static void reload( final ContentControl contentControl )
+	{
+		GWT.runAsync( ContentControl.class, new RunAsyncCallback()
+		{			
+			@Override
+			public void onFailure( Throwable reason )
+			{
+				GwtClientHelper.deferredAlert( GwtTeaming.getMessages().codeSplitFailure_ContentControl() );
+			}
+
+			@Override
+			public void onSuccess()
+			{
+				if ( contentControl != null )
+					contentControl.reload();
+			}
+		} );
+	}
+	
+	/**
+	 * Put the setContentFrameUrl() behind a split point
+	 */
+	public static void setContentFrameUrl(
+		final ContentControl contentControl,
+		final String newUrl,
+		final Instigator instigator )
+	{
+		GWT.runAsync( ContentControl.class, new RunAsyncCallback()
+		{			
+			@Override
+			public void onFailure( Throwable reason )
+			{
+				GwtClientHelper.deferredAlert( GwtTeaming.getMessages().codeSplitFailure_ContentControl() );
+			}
+
+			@Override
+			public void onSuccess()
+			{
+				if ( contentControl != null )
+					contentControl.setContentFrameUrl( newUrl, instigator );
+			}
+		} );
+	}// end setContentFrameUrl()
+
+	/**
+	 * Put setDimensions() behind a split point
+	 */
+	public static void setDimensions(
+		final ContentControl contentControl,
+		final int width,
+		final int height )
+	{
+		GWT.runAsync( ContentControl.class, new RunAsyncCallback()
+		{			
+			@Override
+			public void onFailure( Throwable reason )
+			{
+				GwtClientHelper.deferredAlert( GwtTeaming.getMessages().codeSplitFailure_ContentControl() );
+			}
+
+			@Override
+			public void onSuccess()
+			{
+				if ( contentControl != null )
+					contentControl.setDimensions( width, height );
+			}
+		} );
+	}
+
 }// end ContentControl

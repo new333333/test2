@@ -758,7 +758,7 @@ public class AdminControl extends TeamingPopupPanel
 		setStylePrimaryName( "adminControlPopup" );
 		
 		// Create a control to hold the administration page for the selected administration action.
-		ContentControl.createAsync(
+		ContentControl.createControl(
 				mainPage,
 				"adminContentControl",
 				new ContentControlClient()
@@ -913,10 +913,10 @@ public class AdminControl extends TeamingPopupPanel
 			if ( url != null && url.length() > 0 )
 			{
 				// Clear the iframe's content 
-				m_contentControl.clear();
+				ContentControl.clear( m_contentControl );
 				
 				// Set the iframe's content to the selected administration page.
-				m_contentControl.setContentFrameUrl( url, Instigator.ADMINISTRATION_CONSOLE );
+				ContentControl.setContentFrameUrl( m_contentControl, url, Instigator.ADMINISTRATION_CONSOLE );
 				
 				GwtClientHelper.deferCommand( new ScheduledCommand()
 				{
@@ -942,10 +942,10 @@ public class AdminControl extends TeamingPopupPanel
 		if ( isShowing() == true )
 		{
 			// Clear the iframe's content 
-			m_contentControl.clear();
+			ContentControl.clear( m_contentControl );
 		
 			// Set the iframe's content to nothing.
-			m_contentControl.setContentFrameUrl( "", Instigator.ADMINISTRATION_CONSOLE );
+			ContentControl.setContentFrameUrl( m_contentControl, "", Instigator.ADMINISTRATION_CONSOLE );
 		}
 	}// end doPreLogoutCleanup()
 	
@@ -1515,7 +1515,7 @@ public class AdminControl extends TeamingPopupPanel
 		// Set the width and height of the content control.
 		m_contentControlWidth = width;
 		m_contentControlHeight = height + GwtConstants.PANEL_PADDING;
-		m_contentControl.setDimensions( m_contentControlWidth, m_contentControlHeight );
+		ContentControl.setDimensions( m_contentControl, m_contentControlWidth, m_contentControlHeight );
 		
 		// Set the width and height that should be used by GWT dialogs
 		m_dlgWidth = m_contentControlWidth - 12;
@@ -1622,7 +1622,7 @@ public class AdminControl extends TeamingPopupPanel
 	{
 		if ( m_homePage != null )
 		{
-			m_contentControl.clear();
+			ContentControl.clear( m_contentControl );
 			m_contentControl.setVisible( false );
 			m_homePage.setVisible( true );
 		}
