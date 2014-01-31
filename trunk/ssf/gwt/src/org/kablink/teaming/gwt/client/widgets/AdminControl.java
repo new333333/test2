@@ -2018,7 +2018,7 @@ public class AdminControl extends TeamingPopupPanel
 			// No, create one.
 			height = m_dlgHeight;
 			width = m_dlgWidth;
-			EditZoneShareSettingsDlg.createAsync(
+			EditZoneShareSettingsDlg.createDlg(
 											true, 
 											false,
 											x, 
@@ -2043,8 +2043,7 @@ public class AdminControl extends TeamingPopupPanel
 						{
 							m_editZoneShareSettingsDlg = ezsrDlg;
 							
-							m_editZoneShareSettingsDlg.init();
-							m_editZoneShareSettingsDlg.show();
+							EditZoneShareSettingsDlg.initAndShow( m_editZoneShareSettingsDlg );
 						}
 					} );
 				}
@@ -2053,9 +2052,8 @@ public class AdminControl extends TeamingPopupPanel
 		else
 		{
 			m_editZoneShareSettingsDlg.setPixelSize( m_dlgWidth, m_dlgHeight );
-			m_editZoneShareSettingsDlg.init();
 			m_editZoneShareSettingsDlg.setPopupPosition( x, y );
-			m_editZoneShareSettingsDlg.show();
+			EditZoneShareSettingsDlg.initAndShow( m_editZoneShareSettingsDlg );
 		}
 	}
 	
