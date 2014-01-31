@@ -38,29 +38,29 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
 import com.google.web.bindery.event.shared.SimpleEventBus;
 
 /**
- * The GetSiteBrandingPanelEvent is used to get the panel that the site
- * branding lives in.
+ * The GetMastHeadLeftEdgeEvent is used to get the widget that lives on
+ * the left edge of the masthead.
  * 
  * @author drfoster@novell.com
  */
-public class GetSiteBrandingPanelEvent extends VibeEventBase<GetSiteBrandingPanelEvent.Handler> {
+public class GetMastHeadLeftEdgeEvent extends VibeEventBase<GetMastHeadLeftEdgeEvent.Handler> {
     public static Type<Handler> TYPE = new Type<Handler>();
 
-    private SiteBrandingPanelCallback	m_sbpCallback;	//
+    private MastHeadLeftEdgeCallback	m_sbpCallback;	//
 
     /**
-     * Interface used by the implementor to return the site branding
-     * panel.
+     * Interface used by the implementor to return the masthead's left
+     * edge widget.
      */
-    public interface SiteBrandingPanelCallback {
-    	public void siteBrandingPanel(Widget siteBrandingPanel);
+    public interface MastHeadLeftEdgeCallback {
+    	public void mhLeftEdgeWidget(Widget mhLeftEdgeWidget);
     }
     
 	/**
 	 * Handler interface for this event.
 	 */
 	public interface Handler extends EventHandler {
-		void onGetSiteBrandingPanel(GetSiteBrandingPanelEvent event);
+		void onGetMastHeadLeftEdge(GetMastHeadLeftEdgeEvent event);
 	}
 	
 	/**
@@ -68,12 +68,12 @@ public class GetSiteBrandingPanelEvent extends VibeEventBase<GetSiteBrandingPane
 	 * 
 	 * @param sbpCallback
 	 */
-	public GetSiteBrandingPanelEvent(SiteBrandingPanelCallback sbpCallback) {
+	public GetMastHeadLeftEdgeEvent(MastHeadLeftEdgeCallback sbpCallback) {
 		// Initialize the super class...
 		super();
 		
 		// ...and store the parameter.
-		setSiteBrandingPanelCallback(sbpCallback);
+		setMastHeadLeftEdgeCallback(sbpCallback);
 	}
 
 	/**
@@ -81,14 +81,14 @@ public class GetSiteBrandingPanelEvent extends VibeEventBase<GetSiteBrandingPane
 	 * 
 	 * @return
 	 */
-	public SiteBrandingPanelCallback getSiteBrandingPanelCallback() {return m_sbpCallback;}
+	public MastHeadLeftEdgeCallback getMastHeadLeftEdgeCallback() {return m_sbpCallback;}
 	
 	/**
 	 * Set'er methods.
 	 * 
 	 * @param
 	 */
-	public void setSiteBrandingPanelCallback(SiteBrandingPanelCallback mutCallback) {m_sbpCallback = mutCallback;}
+	public void setMastHeadLeftEdgeCallback(MastHeadLeftEdgeCallback mutCallback) {m_sbpCallback = mutCallback;}
 	
 	/**
 	 * Dispatches this event when one is triggered.
@@ -99,7 +99,7 @@ public class GetSiteBrandingPanelEvent extends VibeEventBase<GetSiteBrandingPane
 	 */
     @Override
     protected void doDispatch(Handler handler) {
-        handler.onGetSiteBrandingPanel(this);
+        handler.onGetMastHeadLeftEdge(this);
     }
 	
 	/**
@@ -124,7 +124,7 @@ public class GetSiteBrandingPanelEvent extends VibeEventBase<GetSiteBrandingPane
 	 */
 	@Override
 	public TeamingEvents getEventEnum() {
-		return TeamingEvents.GET_SITE_BRANDING_PANEL;
+		return TeamingEvents.GET_MASTHEAD_LEFT_EDGE;
 	}
 
 	/**

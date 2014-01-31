@@ -851,21 +851,21 @@ public class EventHelper {
 				}
 				break;
 				
+			case GET_MASTHEAD_LEFT_EDGE:
+				// An GetMastHeadLeftEdgeEvent!  Can the event handler
+				// we were given handle that?
+				if (eventHandler instanceof GetMastHeadLeftEdgeEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = GetMastHeadLeftEdgeEvent.registerEvent(eventBus, ((GetMastHeadLeftEdgeEvent.Handler) eventHandler));
+				}
+				break;
+				
 			case GET_SIDEBAR_COLLECTION:
 				// An GetSidebarCollectionEvent!  Can the event handler
 				// we were given handle that?
 				if (eventHandler instanceof GetSidebarCollectionEvent.Handler) {
 					handlerNotDefined = false;
 					registrationHandler = GetSidebarCollectionEvent.registerEvent(eventBus, ((GetSidebarCollectionEvent.Handler) eventHandler));
-				}
-				break;
-				
-			case GET_SITE_BRANDING_PANEL:
-				// An GetSiteBrandingPanelEvent!  Can the event handler
-				// we were given handle that?
-				if (eventHandler instanceof GetSiteBrandingPanelEvent.Handler) {
-					handlerNotDefined = false;
-					registrationHandler = GetSiteBrandingPanelEvent.registerEvent(eventBus, ((GetSiteBrandingPanelEvent.Handler) eventHandler));
 				}
 				break;
 				
@@ -2885,7 +2885,7 @@ public class EventHelper {
 			case FOLDER_ENTRY_ACTION_COMPLETE:                 hasHandler = (eventHandler instanceof FolderEntryActionCompleteEvent.Handler);              break;
 			case FORCE_FILES_UNLOCK:                           hasHandler = (eventHandler instanceof ForceFilesUnlockEvent.Handler);                       break;
 			case GET_MANAGE_TITLE:                             hasHandler = (eventHandler instanceof GetManageTitleEvent.Handler);                         break;
-			case GET_SITE_BRANDING_PANEL:                      hasHandler = (eventHandler instanceof GetSiteBrandingPanelEvent.Handler);                   break;
+			case GET_MASTHEAD_LEFT_EDGE:                       hasHandler = (eventHandler instanceof GetMastHeadLeftEdgeEvent.Handler);                    break;
 			case HIDE_SELECTED_SHARES:                         hasHandler = (eventHandler instanceof HideSelectedSharesEvent.Handler);                     break;
 			case LOCK_SELECTED_ENTITIES:                       hasHandler = (eventHandler instanceof LockSelectedEntitiesEvent.Handler);                   break;
 			case MAILTO_PUBLIC_LINK_ENTITY:                    hasHandler = (eventHandler instanceof MailToPublicLinkEntityEvent.Handler);                 break;
