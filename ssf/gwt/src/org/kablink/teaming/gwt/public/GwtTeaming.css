@@ -2805,6 +2805,15 @@ body, table td, select
 	z-index: 0;
 }
 
+.mastHead-LeftEdge
+{
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	width: 0px;
+	height: 100%;
+}
+
 /* Style used for the beta text in the masthead. */
 .mastheadBeta
 {

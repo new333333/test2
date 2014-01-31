@@ -42,8 +42,8 @@ import org.kablink.teaming.gwt.client.GwtMainPage;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.GwtBrandingDataExt.BrandingRule;
-import org.kablink.teaming.gwt.client.event.GetSiteBrandingPanelEvent;
-import org.kablink.teaming.gwt.client.event.GetSiteBrandingPanelEvent.SiteBrandingPanelCallback;
+import org.kablink.teaming.gwt.client.event.GetMastHeadLeftEdgeEvent;
+import org.kablink.teaming.gwt.client.event.GetMastHeadLeftEdgeEvent.MastHeadLeftEdgeCallback;
 import org.kablink.teaming.gwt.client.rpc.shared.GetFileAttachmentsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetFileAttachmentsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
@@ -117,6 +117,15 @@ public class EditBrandingDlg extends DlgBox
 	private VibeTour m_siteBrandingTour;
 	private String m_productName;
 	private boolean m_siteBranding;
+
+	// Offsets controlling how things are positioned within the site
+	// branding tour.
+	private final static int TOUR_BRANDING_X_OFFSET	=   50;
+	private final static int TOUR_BRANDING_Y_OFFSET	=   10;
+	private final static int TOUR_OTHER_X_OFFSET	=    0;
+	private final static int TOUR_OTHER_Y_OFFSET	=    0;
+	private final static int TOUR_RIGHT_X_OFFSET	=    0;
+	private final static int TOUR_RIGHT_Y_OFFSET	= (-20);
 
 	/*
 	 * Note that the class constructor is private to facilitate code
@@ -1596,13 +1605,13 @@ public class EditBrandingDlg extends DlgBox
 		case TOP:
 		case BOTTOM:
 		case LEFT:
-			xOffset =
-			yOffset = 0;
+			xOffset = TOUR_OTHER_X_OFFSET;
+			yOffset = TOUR_OTHER_Y_OFFSET;
 			break;
 			
 		case RIGHT:
-			xOffset =    0;
-			yOffset = (-20);
+			xOffset = TOUR_RIGHT_X_OFFSET;
+			yOffset = TOUR_RIGHT_Y_OFFSET;
 			break;
 		}
 		
@@ -1617,18 +1626,18 @@ public class EditBrandingDlg extends DlgBox
 	private void addBrandingAreaTourStep( final String content )
 	{
 		GwtTeaming.fireEvent(
-			new GetSiteBrandingPanelEvent(
-				new SiteBrandingPanelCallback()
+			new GetMastHeadLeftEdgeEvent(
+				new MastHeadLeftEdgeCallback()
 				{
 					@Override
-					public void siteBrandingPanel( Widget siteBrandingPanel )
+					public void mhLeftEdgeWidget( Widget mhLeftEdge )
 					{
 						addTourStep(
 							Placement.RIGHT,
-							siteBrandingPanel,
+							mhLeftEdge,
 							content,
-							100,	// x and...
-							10 );	// ...y offsets for the branding panel.
+							TOUR_BRANDING_X_OFFSET,		// x and...
+							TOUR_BRANDING_Y_OFFSET );	// ...y offsets within the branding panel.
 					}
 				} ) );
 	}
