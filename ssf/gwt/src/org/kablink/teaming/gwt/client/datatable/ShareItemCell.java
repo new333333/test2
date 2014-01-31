@@ -50,6 +50,8 @@ import org.kablink.teaming.gwt.client.util.GwtSharingInfo;
 import org.kablink.teaming.gwt.client.util.ShareExpirationValue;
 import org.kablink.teaming.gwt.client.util.ShareExpirationValue.ShareExpirationType;
 import org.kablink.teaming.gwt.client.util.ShareRights;
+import org.kablink.teaming.gwt.client.widgets.CopyPublicLinkDlg;
+import org.kablink.teaming.gwt.client.widgets.CopyPublicLinkDlg.CopyPublicLinkDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ShareWithPublicInfoDlg;
 import org.kablink.teaming.gwt.client.widgets.ShareThisDlg2.ShareThisDlgMode;
 import org.kablink.teaming.gwt.client.widgets.ShareWithPublicInfoDlg.ShareWithPublicInfoDlgClient;
@@ -78,6 +80,7 @@ import com.google.gwt.user.client.ui.UIObject;
 public class ShareItemCell extends AbstractCell<GwtShareItem>
 {
 	private ShareWithPublicInfoDlg m_shareWithPublicInfoDlg=null;
+	private CopyPublicLinkDlg m_copyPublicLinkDlg=null;
 
 	/**
 	 * 
@@ -196,6 +199,61 @@ public class ShareItemCell extends AbstractCell<GwtShareItem>
 	/**
 	 * 
 	 */
+	private void invokeCopyFilrLinkDlg(
+		final GwtShareItem shareItem,
+		final UIObject target )
+	{
+		if ( shareItem == null )
+			return;
+		
+		if ( m_copyPublicLinkDlg == null )
+		{
+			// No!  Create one now...
+			CopyPublicLinkDlg.createAsync( new CopyPublicLinkDlgClient()
+			{
+				@Override
+				public void onUnavailable()
+				{
+					// Nothing to do.  Error handled in
+					// asynchronous provider.
+				}
+				
+				@Override
+				public void onSuccess( CopyPublicLinkDlg cplDlg )
+				{
+					Scheduler.ScheduledCommand cmd;
+					
+					m_copyPublicLinkDlg = cplDlg;
+					
+					cmd = new Scheduler.ScheduledCommand()
+					{
+						@Override
+						public void execute()
+						{
+							invokeCopyFilrLinkDlg( shareItem, target );
+						}
+					};
+					Scheduler.get().scheduleDeferred( cmd );
+				}
+			});
+		}
+		else
+		{
+			String caption;
+			ArrayList<EntityId> entityIds;
+
+			caption = GwtClientHelper.patchMessage(
+											GwtTeaming.getMessages().copyPublicLinkTheseItems( GwtClientHelper.getProductName() ),
+											String.valueOf( 1 ) );
+			entityIds = new ArrayList<EntityId>();
+			entityIds.add( shareItem.getEntityId() );
+			CopyPublicLinkDlg.initAndShow( m_copyPublicLinkDlg, caption, entityIds );
+		}
+	}
+	
+	/**
+	 * 
+	 */
 	private void invokeShareWithPublicInfoDlg(
 		final GwtShareItem shareItem,
 		final UIObject target )
@@ -213,8 +271,19 @@ public class ShareItemCell extends AbstractCell<GwtShareItem>
 				@Override
 				public void onSuccess( ShareWithPublicInfoDlg swpiDlg )
 				{
+					Scheduler.ScheduledCommand cmd;
+					
 					m_shareWithPublicInfoDlg = swpiDlg;
-					invokeShareWithPublicInfoDlg( shareItem, target );
+					
+					cmd = new Scheduler.ScheduledCommand()
+					{
+						@Override
+						public void execute()
+						{
+							invokeShareWithPublicInfoDlg( shareItem, target );
+						}
+					};
+					Scheduler.get().scheduleDeferred( cmd );
 				}
 			} );
 		}
@@ -271,7 +340,32 @@ public class ShareItemCell extends AbstractCell<GwtShareItem>
 			else
 			{
 				// No
-				valueUpdater.update( value );
+				// Did the user click on the "Filr link" icon?
+				value1 = element.getAttribute( "filr-link-img" );
+				if ( value1 != null && value1.equalsIgnoreCase( "true" ) )
+				{
+					Scheduler.ScheduledCommand cmd;
+					
+					// Yes
+					cmd = new Scheduler.ScheduledCommand()
+					{
+						@Override
+						public void execute()
+						{
+							ElementWrapper wrapper;
+							
+							// Yes
+							wrapper = new ElementWrapper( element );
+							invokeCopyFilrLinkDlg( value, wrapper );
+						}
+					};
+					Scheduler.get().scheduleDeferred( cmd );
+				}
+				else
+				{
+					// Yes
+					valueUpdater.update( value );
+				}
 			}
 		}
 	}
@@ -491,6 +585,18 @@ public class ShareItemCell extends AbstractCell<GwtShareItem>
 				label.addStyleName( "shareItem_Note" );
 				mainPanel.add( label );
 			}
+		}
+		
+		// Are we dealing with a "Filr link"?
+		if ( shareItem.getRecipientType() == GwtRecipientType.PUBLIC_LINK )
+		{
+			Image img;
+			
+			// Yes, add a link that the user can click on to invoke the "Copy Filr Link" dialog.
+			img = new Image( GwtTeaming.getImageBundle().publicLink16() );
+			img.getElement().setAttribute( "filr-link-img", "true" );
+			img.getElement().setTitle( messages.shareDlg_publicLinkTitle() );
+			mainPanel.add( img );
 		}
 		
 		sb.append( SafeHtmlUtils.fromSafeConstant( topPanel.getElement().getInnerHTML() ) );
