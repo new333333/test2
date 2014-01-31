@@ -39,6 +39,7 @@ import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+import org.kablink.teaming.gwt.client.util.GwtRecipientType;
 import org.kablink.teaming.gwt.client.util.GwtShareItem;
 import org.kablink.teaming.gwt.client.util.ShareExpirationValue;
 import org.kablink.teaming.gwt.client.util.ShareRights;
@@ -105,6 +106,8 @@ public class EditShareWidget extends Composite
 	
 	// Data members used with share note
 	private TextAreaWithMax m_noteTextArea;
+	
+	private Label m_descLabel;
 
 	
 	private static String VIEWER = "viewer";
@@ -152,6 +155,14 @@ public class EditShareWidget extends Composite
 		createRightsContent( mainPanel );
 		createExpirationContent( mainPanel );
 		createNoteContent( mainPanel );
+		
+		// Add a label that will be used to display a description of a Filr Link and a Public Link
+		{
+			m_descLabel = new Label();
+			m_descLabel.addStyleName( "editShareWidget_descLabel" );
+			m_descLabel.setVisible( false );
+			mainPanel.add( m_descLabel );
+		}
 		
 		return mainPanel;
 	}
@@ -617,6 +628,34 @@ public class EditShareWidget extends Composite
 		initRightsControls( listOfShareItems, highestRightsPossible );
 		initExpirationControls( listOfShareItems );
 		initNoteControls( listOfShareItems );
+		
+		// Initialize the description
+		{
+			m_descLabel.setVisible( false );
+			if ( m_listOfShareItems != null && m_listOfShareItems.size() == 1 )
+			{
+				GwtShareItem shareItem;
+				GwtRecipientType recipientType;
+				String desc = null;
+				
+				shareItem = m_listOfShareItems.get( 0 );
+				recipientType = shareItem.getRecipientType();
+				if ( recipientType == GwtRecipientType.PUBLIC_LINK )
+				{
+					desc = GwtTeaming.getMessages().editShareDlg_filrLinkDesc();
+				}
+				else if ( recipientType == GwtRecipientType.PUBLIC_TYPE )
+				{
+					desc = GwtTeaming.getMessages().editShareDlg_publicLinkDesc();
+				}
+				
+				if ( desc != null )
+				{
+					m_descLabel.setText( desc );
+					m_descLabel.setVisible( true );
+				}
+			}
+		}
 		
 		danceDlg();
 	}

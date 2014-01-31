@@ -6094,6 +6094,13 @@ td.datePickerMonth {
 
 /* Start:  Styles used in the "Configure Mobile Applications" dialog. */
 
+.editShareWidget_descLabel
+{
+	color: #666666;
+	margin-left: 5px;
+	margin-top: 20px;
+}
+
 .editShareWidget_contentPanel
 {
     padding: 6px 10px;
