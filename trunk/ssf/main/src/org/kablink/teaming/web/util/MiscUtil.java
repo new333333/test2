@@ -58,7 +58,6 @@ import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.comparator.StringComparator;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.*;
-import org.kablink.teaming.gwt.server.util.GwtServerHelper;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.zone.ZoneModule;
@@ -512,7 +511,7 @@ public final class MiscUtil
 	 * @return
 	 */
 	public static int safeSColatedCompare(String s1, String s2) {
-		Collator collator = Collator.getInstance(GwtServerHelper.getCurrentUser().getLocale());
+		Collator collator = Collator.getInstance( RequestContextHolder.getRequestContext().getUser().getLocale());
 		collator.setStrength(Collator.IDENTICAL);
 		return
 			collator.compare(
