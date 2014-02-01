@@ -91,6 +91,7 @@ import org.kablink.teaming.domain.AuditTrail.AuditType;
 import org.kablink.teaming.fi.connection.ResourceDriver;
 import org.kablink.teaming.fi.connection.ResourceDriverManager;
 import org.kablink.teaming.fi.connection.ResourceSession;
+import org.kablink.teaming.fi.connection.acl.AclResourceDriver;
 import org.kablink.teaming.jobs.BinderReindex;
 import org.kablink.teaming.jobs.DefaultMirroredFolderSynchronization;
 import org.kablink.teaming.jobs.MirroredFolderSynchronization;
@@ -2488,8 +2489,11 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 		//See if the file contents are supposed to be indexed
 		//The root folder of a folder chain dictates if file contents are to be indexed
 		Binder rootFolder = AccessUtils.getRootFolder(entity);
+		boolean rootFolderIsNetFolder = false;
+		if(rootFolder != null && rootFolder.isMirrored() && rootFolder.getResourceDriver() instanceof AclResourceDriver)
+			rootFolderIsNetFolder = true;
 		Field contentIndexTypeField;
-		if (!skipFileContentIndexing && (rootFolder == null || rootFolder.getComputedIndexContent())) {
+		if (!skipFileContentIndexing && (rootFolder == null || (rootFolderIsNetFolder && rootFolder.getComputedIndexContent()))) {
 			//The file contents of files in this folder are to be added to the index
 			// Get the Text converter from manager
 	    	TextConverter converter = textConverterManager.getConverter();
