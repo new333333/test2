@@ -2493,7 +2493,10 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 		if(rootFolder != null && rootFolder.isMirrored() && rootFolder.getResourceDriver() instanceof AclResourceDriver)
 			rootFolderIsNetFolder = true;
 		Field contentIndexTypeField;
-		if (!skipFileContentIndexing && (rootFolder == null || (rootFolderIsNetFolder && rootFolder.getComputedIndexContent()))) {
+		if (!skipFileContentIndexing && 
+				(rootFolder == null || 
+				!rootFolderIsNetFolder ||
+				(rootFolderIsNetFolder && rootFolder.getComputedIndexContent()))) {
 			//The file contents of files in this folder are to be added to the index
 			// Get the Text converter from manager
 	    	TextConverter converter = textConverterManager.getConverter();
