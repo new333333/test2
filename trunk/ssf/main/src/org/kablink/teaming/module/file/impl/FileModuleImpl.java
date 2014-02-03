@@ -2114,20 +2114,22 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     	
 		RepositorySession session = null;
 		
-		if(fAtt == null) { // New file
-			// If we're dealing with a mirrored folder (net folder), and we're creating a new mirrored
-			// file entry in the database as part of file sync process, and the caller (i.e. file sync
-			// process) specified the content legnth of the file, then we have all the metadata 
-			// information necessary to create the file attachment object in the database WITHOUT
-			// ever having to further interact with the back-end file system. Therefore, we do NOT
-			// need to incur the overhead of opening a session for that file.
-			if(!ObjectKeys.FI_ADAPTER.equalsIgnoreCase(fui.getRepositoryName()) || 
-					fui.isSynchToRepository() ||
-					fui.getCallerSpecifiedContentLength() == null)
-				session = RepositorySessionFactoryUtil.openSession(repositoryName, binder.getResourceDriverName(), ResourceDriverManager.FileOperation.CREATE_FILE, binder);
-		}
-		else { // Existing file
-			session = RepositorySessionFactoryUtil.openSession(repositoryName, binder.getResourceDriverName(), ResourceDriverManager.FileOperation.UPDATE, entry);
+		if(!fui.calledByFileSync()) {
+			if(fAtt == null) { // New file
+				// If we're dealing with a mirrored folder (net folder), and we're creating a new mirrored
+				// file entry in the database as part of file sync process, and the caller (i.e. file sync
+				// process) specified the content legnth of the file, then we have all the metadata 
+				// information necessary to create the file attachment object in the database WITHOUT
+				// ever having to further interact with the back-end file system. Therefore, we do NOT
+				// need to incur the overhead of opening a session for that file.
+				if(!ObjectKeys.FI_ADAPTER.equalsIgnoreCase(fui.getRepositoryName()) || 
+						fui.isSynchToRepository() ||
+						fui.getCallerSpecifiedContentLength() == null)
+					session = RepositorySessionFactoryUtil.openSession(repositoryName, binder.getResourceDriverName(), ResourceDriverManager.FileOperation.CREATE_FILE, binder);
+			}
+			else { // Existing file
+				session = RepositorySessionFactoryUtil.openSession(repositoryName, binder.getResourceDriverName(), ResourceDriverManager.FileOperation.UPDATE, entry);
+			}
 		}
 
     	try {
@@ -2256,20 +2258,22 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 //    	FileAttachment fAtt = entry.getFileAttachment(fui.getRepositoryName(), relativeFilePath);
     	FileAttachment fAtt = entry.getFileAttachment(relativeFilePath);
     	
-    	// Before checking the lock, we must make sure that the lock state is
-    	// up-to-date.
-    	List newObjs = new ArrayList();
-    	if(closeExpiredLock(session, binder, entry, fAtt, true, newObjs) || newObjs.size() > 0) {
-    		// Handling of expired lock resulted in some changes to the metadata. 
-    		// We want to commit this changes separately from the main work that this
-    		// method is being invoked to perform, since they are two completely separate
-    		// works and we do not want the outcome of the main work to affect 
-    		// the durability of the changes incurred inside closeExpiredLock().
-    		triggerUpdateTransaction(newObjs);
+    	if(!fui.calledByFileSync()) {
+	    	// Before checking the lock, we must make sure that the lock state is
+	    	// up-to-date.
+	    	List newObjs = new ArrayList();
+	    	if(closeExpiredLock(session, binder, entry, fAtt, true, newObjs) || newObjs.size() > 0) {
+	    		// Handling of expired lock resulted in some changes to the metadata. 
+	    		// We want to commit this changes separately from the main work that this
+	    		// method is being invoked to perform, since they are two completely separate
+	    		// works and we do not want the outcome of the main work to affect 
+	    		// the durability of the changes incurred inside closeExpiredLock().
+	    		triggerUpdateTransaction(newObjs);
+	    	}
+	    	
+	    	// Now that lock state is current, we can test it for the user.
+	    	checkLock(entry, fAtt);
     	}
-    	
-    	// Now that lock state is current, we can test it for the user.
-    	checkLock(entry, fAtt);
     	
     	// Check data quota
     	checkDataQuota(binder, fui);
@@ -2304,7 +2308,11 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	    	// if exists, is effective and owned by the calling user.
 	    	
 	    	Long fileSize = null;
-	    	int fileInfo = session.fileInfo(binder, entry, relativeFilePath);
+	    	int fileInfo; 
+	    	if(fui.calledByFileSync())
+	    		fileInfo = RepositorySession.VERSIONED_FILE;
+	    	else
+	    		fileInfo = session.fileInfo(binder, entry, relativeFilePath);
 	    	if(fileInfo == RepositorySession.VERSIONED_FILE) { // Normal condition
 	    		UpdateInfo updateInfo = updateVersionedFile(session, binder, entry, fui, lock);
 	    		versionName = updateInfo.versionName;
