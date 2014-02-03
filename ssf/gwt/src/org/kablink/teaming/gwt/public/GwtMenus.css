@@ -29,10 +29,10 @@
 		color: #135c8f;
 		padding: 0px 4px;
 		border: 1px solid #ccc;
-		-moz-border-radius: 5px;
 		border-radius: 5px;
+		-moz-border-radius: 5px;
 		-webkit-border-radius: 5px;
-		background-image: linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
+/*		background-image: linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
 		background-image: -o-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
 		background-image: -moz-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
 		background-image: linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
@@ -44,25 +44,27 @@
 			left top,
 			color-stop(0.47, #A8D4DD),
 			color-stop(0.53, #D5EDF1),
-			color-stop(1, #C8E4E9));
+			color-stop(1, #C8E4E9));  */
 	}
 
 	.vibe-entryMenuBar       {padding: 3px;}
 	.vibe-entryMenuBarCheck  {margin-right: 2px;}
 	.vibe-entryMenuPin       {}
-	.vibe-menuDisabled       {color: silver !important;}
+	.vibe-menuDisabled       {color: #c4c4c4 !important; background-color: #ededed !important;}
 	.vibe-menuDisabled:hover {
-		background: -webkit-gradient(linear, left top, left bottom, from(#ffffff), to(#E0E0E0));
+/*		background: -webkit-gradient(linear, left top, left bottom, from(#ffffff), to(#E0E0E0));
 		background: -moz-linear-gradient(center top , #ffffff, #E0E0E0) repeat scroll 0 0;
-		background: linear-gradient(center top , #ffffff, #E0E0E0) repeat scroll 0 0;
-		background-color: transparent;
-		border: 1px solid #B8B8B8;
+		background: linear-gradient(center top , #ffffff, #E0E0E0) repeat scroll 0 0;        */
+		color: #c4c4c4 !important;
+		background-color: #ededed !important;
+		border: 1px solid #B8B8B8 !important;
 		font-weight: normal !important;
+		cursor: pointer !important;
 		font-size: 12px;
 		padding: 2px 10px  !important;
-		text-decoration:none;	
-		-moz-border-radius: 15px;
+		text-decoration:none;
 		border-radius: 15px;
+		-moz-border-radius: 15px;
 		-webkit-border-radius: 15px;
 	}
 	
@@ -78,10 +80,10 @@
 		border-radius: 15px;
 		-moz-border-radius: 15px;
 		-webkit-border-radius: 15px;
-		background: -webkit-gradient(linear, left top, left bottom, from(#ffffff), to(#E0E0E0));
+/*		background: -webkit-gradient(linear, left top, left bottom, from(#ffffff), to(#E0E0E0));
 		background: -moz-linear-gradient(center top , #ffffff, #E0E0E0) repeat scroll 0 0;
-		background: linear-gradient(center top , #ffffff, #E0E0E0) repeat scroll 0 0;
-		background-color: transparent;
+		background: linear-gradient(center top , #ffffff, #E0E0E0) repeat scroll 0 0;              */
+		background-color: #f6f6f6;
 	}
 	
 	.vibe-entryMenuPopup     {white-space: nowrap;}
@@ -241,15 +243,18 @@
 	.gwt-MenuBar .gwt-MenuItem-selected {
 		color: #81b2bd;
 		background-color: #353838;
-		-moz-border-radius: 3px;
 		border-radius: 3px;
+		-moz-border-radius: 3px;
 		-webkit-border-radius: 3px;
 		}		
 		
 	.vibe-mainMenuControl .gwt-MenuBar .gwt-MenuItem-selected {
-		color:#135c8f !important;
-		background-color:#C8E4E9 !important;
-		background-image: linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%)!important;
+		color:#135c8f;
+		background-color:#cce9ee;
+		border-radius: 3px;
+		-moz-border-radius: 3px;
+		-webkit-border-radius: 3px;
+/*		background-image: linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%)!important;
 		background-image: -o-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%) !important;
 		background-image: -moz-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%) !important;
 		background-image: linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%) !important;
@@ -261,17 +266,17 @@
 			left top,
 			color-stop(0.47, #A8D4DD),
 			color-stop(0.53, #D5EDF1),
-			color-stop(1, #C8E4E9)) !important;
-		-moz-border-radius: 3px;
-		border-radius: 3px;
-		-webkit-border-radius: 3px;
+			color-stop(1, #C8E4E9)) !important;  */
 		}	
 		
 	.vibe-entryMenuBar .gwt-MenuItem-selected {
-		color: #135c8f !important;
-		background-color:#C8E4E9 !important;
+		color: #135c8f;
+		background-color:#cce9ee;
 		border: 1px solid #81b2bd;
-		background: linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
+		border-radius: 15px;
+		-moz-border-radius: 15px;
+		-webkit-border-radius: 15px;
+/*		background: linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
 		background: -o-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
 		background: -moz-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
 		background: linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
@@ -283,10 +288,7 @@
 			left top,
 			color-stop(0.47, #A8D4DD),
 			color-stop(0.53, #D5EDF1),
-			color-stop(1, #C8E4E9));
-		-moz-border-radius: 15px;
-		border-radius: 15px;
-		-webkit-border-radius: 15px;
+			color-stop(1, #C8E4E9));      */
 	}
 
 	/* End: GWT Vertical Menu styles*/

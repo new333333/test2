@@ -35,7 +35,7 @@
 		.vibe-breadCrumbTrashAnchor        {padding-left: 5px; cursor: pointer;}
 		.vibe-breadCrumbTrashImg           {width: 25px; height: 25px;}
 		.vibe-breadCrumbWhatsNewLink       {cursor: pointer; color: #135c8f !important; padding: 2px; font-size: 12px; vertical-align: middle; padding-right: 15px;}
-		.vibe-breadCrumbWhatsNewLink:hover {color: #135c8f !important; cursor: pointer; background: url(images/blends/teal_slice.png) repeat-x; background-position:center; border-radius: 3px; -moz-border-radius: 3px; -webkit-border-radius: 3px; padding: 2px; padding-right: 15px;}
+		.vibe-breadCrumbWhatsNewLink:hover {color: #135c8f !important; cursor: pointer; background: #cce9ee; border-radius: 3px; -moz-border-radius: 3px; -webkit-border-radius: 3px; padding: 2px; padding-right: 15px;}
 	/* ...End:  Bread crumb panel styles. */
 	
 	/* ...Start:  Binder owner avatar panel styles. */
@@ -86,12 +86,12 @@
 		.vibe-entryMenu-grid                {padding: 0px !important; background-color: #ededed; display: table; table-layout: fixed;}
 		.vibe-entryMenu-quickFilters-filter {padding-top: 1px;}
 		.vibe-entryMenu-quickFilters-panel  {vertical-align: top; padding: 0 0 0 5px; margin-top: 1px; border-left: none; height: 19px; white-space: nowrap; background-color: #fff; border: 1px solid #b8b8b8; -moz-border-radius: 15px; border-radius: 15px; -webkit-border-radius: 15px;}
-		.vibe-entryMenu-rightPanel          {padding-right: 5px; margin-right: 3px;}
+		.vibe-entryMenu-rightPanel          {padding-right: 5px; margin-right: 3px; margin-top: 3px;}
 /* ...End:  Entry menu panel styles. */
 	
 	/* ...Start:  Filter panel styles. */
 		.vibe-filterAnchor                 {cursor: pointer;}
-		.vibe-filterAnchor-hover           {color: #135c8f; cursor: pointer; background: url(images/blends/teal_slice.png) repeat-x; background-position:center; -moz-border-radius: 5px; border-radius: 5px; -webkit-border-radius: 5px;}
+		.vibe-filterAnchor-hover           {color: #135c8f; cursor: pointer; background: #cce9ee; -moz-border-radius: 5px; border-radius: 5px; -webkit-border-radius: 5px;}
 		.vibe-filterAnchorLabel            {font-size: 12px; white-space: nowrap;}
 		.vibe-filterAnchorLabel-current    {color: white !important; font-weight: bold !important; background-color: #81b2bd; padding: 2px 5px; -moz-border-radius: 3px; border-radius: 3px; -webkit-border-radius: 3px;}
 		.vibe-filterAnchorLabel-notcurrent {font-weight: normal !important; padding: 2px 5px;}
@@ -113,7 +113,7 @@
 	/* ...Start:  Footer panel styles. */
 		.vibe-footerPanel                       {padding-top: 5px !important;}
 		.vibe-footerAnchor                      {cursor: pointer; color: #666;}
-		.vibe-footerAnchor-hover                {color: #135c8f; cursor: pointer; background: url(images/blends/teal_slice.png) repeat-x; background-position:center; -moz-border-radius: 5px; border-radius: 5px; -webkit-border-radius: 5px;}
+		.vibe-footerAnchor-hover                {color: #135c8f; cursor: pointer; background: #cce9ee; -moz-border-radius: 5px; border-radius: 5px; -webkit-border-radius: 5px;}
 		.vibe-footerAnchorLabel                 {font-size: small;}
 		.vibe-footerAnchorPanel                 {text-align: center;}
 		.vibe-footerDataCloser                  {text-align: right;}
@@ -125,7 +125,7 @@
 		.vibe-footerDataLinksGrid               {width: 100%; background: #fafafa; border-spacing: 2px; box-shadow: 0px 2px 6px #949494;}
 		.vibe-footerDataLinksInput              {width: 100%; background-color: #fafafa; overflow: hidden; padding: 0px !important; border: 0px;}
 		.vibe-footerDataLinksOpenerAnchor       {cursor: pointer; color: #666; text-decoration: none;}
-		.vibe-footerDataLinksOpenerAnchor-hover {color: #135c8f; cursor: pointer; background: url(images/blends/teal_slice.png) repeat-x; background-position:center; -moz-border-radius: 5px; border-radius: 5px; -webkit-border-radius: 5px;}
+		.vibe-footerDataLinksOpenerAnchor-hover {color: #135c8f; cursor: pointer; background: #cce9ee; -moz-border-radius: 5px; border-radius: 5px; -webkit-border-radius: 5px;}
 		.vibe-footerDataLinksOpenerLabel        {}
 		.vibe-footerDataLinksPanel              {padding: 10px;}
 		.vibe-footerDataLinksText               {}
@@ -184,7 +184,7 @@
 		.vibe-dataTableCustom-string              {}
 		.vibe-dataTableDescription-html           {white-space: normal;}
 		.vibe-dataTableDescription-span           {white-space: normal;}
-		.vibe-dataTableEMA-hover                  {color: #135c8f !important; cursor: pointer; background: url(images/blends/teal_slice.png) repeat-x; background-position:center; -moz-border-radius: 3px; border-radius: 3px; -webkit-border-radius: 3px; padding: 2px;}
+		.vibe-dataTableEMA-hover                  {color: #135c8f !important; cursor: pointer; background: #cce9ee; -moz-border-radius: 3px; border-radius: 3px; -webkit-border-radius: 3px; padding: 2px;}
 		.vibe-dataTableEMA-title                  {cursor: pointer; color: #135c8f !important; padding: 2px;}
 		.vibe-dataTableEMA-titleNoLink            {color: #353838 !important; padding: 2px;}
 		.vibe-dataTableEntity-Marker              {display: inline; cursor: pointer;}
@@ -209,7 +209,7 @@
 		.vibe-dataTableGuest-infoTextEMA          {display: block;}
 		.vibe-dataTableGuest-infoTitle            {display: block;}
 		.vibe-dataTableItem-Img                   {vertical-align: middle; margin-right: 2px;}
-		.vibe-dataTableLink-hover                 {color: #135c8f !important; cursor: pointer; background: url(images/blends/teal_slice.png) repeat-x; background-position:center; -moz-border-radius: 3px; border-radius: 3px; -webkit-border-radius: 3px; padding: 2px;}
+		.vibe-dataTableLink-hover                 {color: #135c8f !important; cursor: pointer; background-color: #cce9ee; -moz-border-radius: 3px; border-radius: 3px; -webkit-border-radius: 3px; padding: 2px;}
 		.vibe-dataTableLink-hoverNoLPad           {padding-left: 0px !important;}
 		.vibe-dataTableMobileDevices-bubble       {color: #135c8f; font-size: 12px; font-weight: bold; padding-top: 4px; padding-bottom: 5px; padding-left: 8px; padding-right: 8px; text-align: center; display: inline;}
 		.vibe-dataTableMobileDevices-bubbleBig    {background: url(images/devices_25_wide.png) no-repeat scroll center center transparent;}
@@ -306,7 +306,7 @@
 	/* ...Start:  Task graphs panel styles. */
 		.vibe-taskGraphsExpander        {display: block;}
 		.vibe-taskGraphsExpanderA       {text-decoration: none; cursor: pointer;}
-		.vibe-taskGraphsExpanderA-hover {color: #135c8f; cursor: pointer; background: url(images/blends/teal_slice.png) repeat-x; background-position:center; -moz-border-radius: 5px; border-radius: 5px; -webkit-border-radius: 5px;}
+		.vibe-taskGraphsExpanderA-hover {color: #135c8f; cursor: pointer; background-color: #cce9ee; -moz-border-radius: 5px; border-radius: 5px; -webkit-border-radius: 5px;}
 		.vibe-taskGraphsExpanderImg     {}
 		.vibe-taskGraphsGrid            {}
 		.vibe-taskGraphsHidden          {visibility: hidden; display:none;}
@@ -479,7 +479,7 @@
 	    white-space: nowrap !important;
 	    text-decoration: none !important;
 		border: 1px solid #81b2bd;
-		background: #cee9ee;
+		background: #cce9ee;
 		border-radius: 15px;
 		-moz-border-radius: 15px;
 		-webkit-border-radius: 15px;
@@ -575,7 +575,7 @@
 		color: #135c8f !important;
 		border: 1px solid #81b2bd;
 		padding: 2px 5px  !important;
-		background: #cee9ee;
+		background: #cce9ee;
 		border-radius: 5px !important;
 		-moz-border-radius: 5px !important;
 		-webkit-border-radius: 5px !important;
