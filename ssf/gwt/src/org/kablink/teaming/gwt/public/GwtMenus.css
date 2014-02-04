@@ -12,7 +12,7 @@
 /* End:  Generic binder view tools styles. */
 
 /* Start:  Entry menu styles. */
-	.vibe-configureMenuBar         {padding-right: 0px !important;}
+	.vibe-configureMenuBar         {padding-right: 0px !important; padding-left: 8px !important;}
 	.vibe-configureMenuBarDropDown {}
 	.vibe-configureMenuBarItem     {border: 0 !important; padding-left: 0px !important; padding-right: 0px !important; margin-right: 6px !important;}
 	.vibe-configureMenuImg         {padding-top: 1px; cursor: pointer;}
@@ -60,26 +60,26 @@
 		border: 1px solid #B8B8B8 !important;
 		font-weight: normal !important;
 		cursor: pointer !important;
-		font-size: 12px;
+		font-size: 11px;
 		padding: 2px 10px  !important;
 		text-decoration:none;
-		border-radius: 15px;
-		-moz-border-radius: 15px;
-		-webkit-border-radius: 15px;
+		border-radius: 5px;
+		-moz-border-radius: 5px;
+		-webkit-border-radius: 5px;
 	}
 	
 	.vibe-entryMenuBarItem
 	{	
 		border: 1px solid #B8B8B8;
 		font-weight: normal !important;
-		font-size: 12px;
+		font-size: 11px;
 		padding: 2px 10px  !important;
 		text-decoration:none;	
 		cursor: pointer !important;
 		white-space: nowrap;
-		border-radius: 15px;
-		-moz-border-radius: 15px;
-		-webkit-border-radius: 15px;
+		border-radius: 5px;
+		-moz-border-radius: 5px;
+		-webkit-border-radius: 5px;
 /*		background: -webkit-gradient(linear, left top, left bottom, from(#ffffff), to(#E0E0E0));
 		background: -moz-linear-gradient(center top , #ffffff, #E0E0E0) repeat scroll 0 0;
 		background: linear-gradient(center top , #ffffff, #E0E0E0) repeat scroll 0 0;              */
@@ -273,9 +273,9 @@
 		color: #135c8f;
 		background-color:#cce9ee;
 		border: 1px solid #81b2bd;
-		border-radius: 15px;
-		-moz-border-radius: 15px;
-		-webkit-border-radius: 15px;
+		border-radius: 5px;
+		-moz-border-radius: 5px;
+		-webkit-border-radius: 5px;
 /*		background: linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
 		background: -o-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
 		background: -moz-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
