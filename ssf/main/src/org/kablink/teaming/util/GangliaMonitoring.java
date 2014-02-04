@@ -74,6 +74,11 @@ public class GangliaMonitoring {
 	private AtomicLong failedLogins = new AtomicLong();
 	private AtomicInteger failedLoginsSince = new AtomicInteger();
 	
+	private AtomicLong filePreviewRequests = new AtomicLong();
+	private AtomicInteger filePreviewRequestsSince = new AtomicInteger();
+	private AtomicLong filePreviewConversions = new AtomicLong();
+	private AtomicInteger filePreviewConversionsSince = new AtomicInteger();
+	
 	private Thread task;
 	
 	public GangliaMonitoring() {
@@ -123,6 +128,18 @@ public class GangliaMonitoring {
 		if(instance == null) return 0; // not ready
 		instance.failedLoginsSince.addAndGet(1);
 		return instance.failedLogins.addAndGet(1);
+	}
+	
+	public static long incrementFilePreviewRequests() {
+		if(instance == null) return 0; // not ready
+		instance.filePreviewRequestsSince.addAndGet(1);
+		return instance.filePreviewRequests.addAndGet(1);
+	}
+	
+	public static long incrementFilePreviewConversions() {
+		if(instance == null) return 0; // not ready
+		instance.filePreviewConversionsSince.addAndGet(1);
+		return instance.filePreviewConversions.addAndGet(1);
 	}
 	
 	void dump() throws IOException {
@@ -207,6 +224,23 @@ public class GangliaMonitoring {
 			 * Number of failed logins from web client since the last time the information was dumped.
 			 */
 			writeProperty(writer, "failedLoginsSince", String.valueOf(instance.failedLoginsSince));
+			/*
+			 * Number of file "preview" requests since the server started. This represents any request
+			 * for a file preview whether a conversion is required or cache is used.
+			 */
+			writeProperty(writer, "filePreviewRequests", String.valueOf(instance.filePreviewRequests));
+			/*
+			 * Number of file "preview" requests since the last time the information was dumped.
+			 */
+			writeProperty(writer, "filePreviewRequestsSince", String.valueOf(instance.filePreviewRequestsSince));
+			/*
+			 * Number of actual file "preview" conversions (via Stellent) since the server started.
+			 */
+			writeProperty(writer, "filePreviewConversions", String.valueOf(instance.filePreviewConversions));
+			/*
+			 * Number of actual file "preview" conversions (via Stellent) since the last time the information was dumped.
+			 */
+			writeProperty(writer, "filePreviewConversionsSince", String.valueOf(instance.filePreviewConversionsSince));
 		}
 		finally {
 			// Reset/clear variables as appropriate.
@@ -217,6 +251,8 @@ public class GangliaMonitoring {
 			instance.foldersSharedSince.set(0);
 			instance.restRequestsSince.set(0);
 			instance.failedLoginsSince.set(0);
+			instance.filePreviewRequestsSince.set(0);
+			instance.filePreviewConversionsSince.set(0);
 			// Close the output file.
 			writer.close();
 		}
