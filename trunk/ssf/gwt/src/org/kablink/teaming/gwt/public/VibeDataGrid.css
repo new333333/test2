@@ -41,7 +41,7 @@
 }
 
 .dataGridFirstColumnFooter {}
-.dataGridFirstColumnHeader {border-left: 1px solid #d2d5d1;}
+.dataGridFirstColumnHeader {}
 .dataGridLastColumnFooter {}
 .dataGridLastColumnHeader {}
 
@@ -53,6 +53,7 @@
 .dataGridSortableHeader:hover {
 	color: #135c8f;
 	background-color: #e0e0e0;
+	border-radius: 2px;
 }
 
 .dataGridSortedHeaderAscending {	font-weight: bold; color: #000;}
