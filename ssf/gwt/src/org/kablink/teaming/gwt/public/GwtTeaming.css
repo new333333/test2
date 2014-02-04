@@ -1160,7 +1160,6 @@ a, a:visited, a:hover {
 
 .adminControl_CloseLabel
 {
-    border-radius: 15px 15px 15px 15px;
     color: #353838 !important;
     background: transparent;
 	border: 1px solid transparent;
@@ -1173,6 +1172,7 @@ a, a:visited, a:hover {
     padding-bottom: 2px;
     text-decoration: none;
     white-space: nowrap;
+    border-radius: 5px;
 }
 
 .adminControl_CloseLabel:hover
@@ -1181,9 +1181,9 @@ a, a:visited, a:hover {
 	cursor: pointer;
 	border: 1px solid #81b2bd;
 	background: #cee9ee;
-	border-radius: 15px;
-	-moz-border-radius: 15px;
-	-webkit-border-radius: 15px;
+	border-radius: 5px;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
 }
 
 body, table td, select
@@ -1878,9 +1878,9 @@ body, table td, select
 	margin-top: 5px;
 	padding: 2px 8px !important;
 	text-shadow: 0 0 0 transparent !important;
-	border-radius: 15px;
-	-moz-border-radius: 15px;
-	-webkit-border-radius: 15px;
+	border-radius: 5px;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
 }
 
 .workspaceTreeControlHeader_nav
@@ -5441,7 +5441,7 @@ td.datePickerMonth {
 	.vibe-userPropertiesDlg-buttonLook       {
 		border: 1px solid #B8B8B8;
 		font-weight: normal !important;
-		font-size: 12px;
+		font-size: 11px;
 		padding: 2px 6px  !important;
 		margin-right: 15px;
 		margin-bottom: 3px;
@@ -5449,13 +5449,13 @@ td.datePickerMonth {
 		white-space: nowrap;
 		text-align: center !important;
 		min-width: 150px;
+		background-color: #ffffff;
 		border-radius: 5px;
 		-moz-border-radius: 5px;
 		-webkit-border-radius: 5px;
-		background: -webkit-gradient(linear, left top, left bottom, from(#ffffff), to(#E0E0E0));
+/*		background: -webkit-gradient(linear, left top, left bottom, from(#ffffff), to(#E0E0E0));
 		background: -moz-linear-gradient(center top , #ffffff, #E0E0E0) repeat scroll 0 0;
-		background: linear-gradient(center top , #ffffff, #E0E0E0) repeat scroll 0 0;
-		background-color: ffffff;
+		background: linear-gradient(center top , #ffffff, #E0E0E0) repeat scroll 0 0;   */
 	}
 	.vibe-userPropertiesDlg-buttonAct        {cursor: pointer;}
 	.vibe-userPropertiesDlg-buttonNoAct      {
@@ -5877,15 +5877,15 @@ td.datePickerMonth {
 	background-color: #fff;
 	border: 1px solid #b8b8b8;
 	border-left: none;
-	border-radius: 15px;
 	height: 19px;
 	margin-right: 4px;
 	margin-top: 1px;
 	padding: 0 0 0 5px;
 	vertical-align: top;
 	white-space: nowrap;
-	-moz-border-radius: 15px;
-	-webkit-border-radius: 15px;	
+	border-radius: 5px;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;	
 }
 
 .ldapSyncResultsDlg_FilterPopup
@@ -5896,8 +5896,8 @@ td.datePickerMonth {
 	border-style: solid solid solid;
 	border-width: 1px;
 	padding: 5px 10px;
-	-moz-border-radius: 5px;
 	border-radius: 5px;
+	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;
 	z-index: 1100;
 }
