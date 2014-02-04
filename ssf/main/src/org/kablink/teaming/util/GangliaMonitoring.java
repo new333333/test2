@@ -71,6 +71,9 @@ public class GangliaMonitoring {
 	private AtomicLong restRequests = new AtomicLong();
 	private AtomicInteger restRequestsSince = new AtomicInteger();
 	
+	private AtomicLong failedLogins = new AtomicLong();
+	private AtomicInteger failedLoginsSince = new AtomicInteger();
+	
 	private Thread task;
 	
 	public GangliaMonitoring() {
@@ -114,6 +117,12 @@ public class GangliaMonitoring {
 		if(instance == null) return 0; // not ready
 		instance.restRequestsSince.addAndGet(1);
 		return instance.restRequests.addAndGet(1);
+	}
+	
+	public static long incrementFailedLogins() {
+		if(instance == null) return 0; // not ready
+		instance.failedLoginsSince.addAndGet(1);
+		return instance.failedLogins.addAndGet(1);
 	}
 	
 	void dump() throws IOException {
@@ -190,6 +199,14 @@ public class GangliaMonitoring {
 			 * Number of REST calls made to this server since the last time the information was dumped.
 			 */
 			writeProperty(writer, "restRequestsSince", String.valueOf(instance.restRequestsSince));
+			/*
+			 * Number of failed logins from web client since the server started.
+			 */
+			writeProperty(writer, "failedLogins", String.valueOf(instance.failedLogins));
+			/*
+			 * Number of failed logins from web client since the last time the information was dumped.
+			 */
+			writeProperty(writer, "failedLoginsSince", String.valueOf(instance.failedLoginsSince));
 		}
 		finally {
 			// Reset/clear variables as appropriate.
@@ -199,6 +216,7 @@ public class GangliaMonitoring {
 			instance.filesSharedSince.set(0);
 			instance.foldersSharedSince.set(0);
 			instance.restRequestsSince.set(0);
+			instance.failedLoginsSince.set(0);
 			// Close the output file.
 			writer.close();
 		}
