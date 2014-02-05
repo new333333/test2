@@ -239,6 +239,7 @@ import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.DateComparer;
 import org.kablink.teaming.util.FileIconsHelper;
 import org.kablink.teaming.util.FileLinkAction;
+import org.kablink.teaming.util.GangliaMonitoring;
 import org.kablink.teaming.util.IconSize;
 import org.kablink.teaming.util.LongIdUtil;
 import org.kablink.teaming.util.NLT;
@@ -4388,9 +4389,13 @@ public class GwtViewHelper {
 				// ...and set the ViewFileInfo for an HTML view of the
 				// ...file if it supports it...
 				ViewFileInfo vfi = buildViewFileInfo(request, fe, fa);
-				if (null == vfi)
-				     GwtImageHelper.setImageContentDetails(bs, request, reply, fe, fa);
-				else reply.setHtmlView(vfi);
+				if (null == vfi) {
+					GwtImageHelper.setImageContentDetails(bs, request, reply, fe, fa);
+					GangliaMonitoring.incrementFilePreviewRequests();
+				}
+				else {
+					reply.setHtmlView(vfi);
+				}
 				
 				reply.setDownloadUrl(
 					GwtServerHelper.getDownloadFileUrl(
