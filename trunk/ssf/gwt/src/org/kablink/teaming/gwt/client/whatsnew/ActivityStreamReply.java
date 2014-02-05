@@ -157,7 +157,6 @@ public class ActivityStreamReply extends Composite
 
 		sendBtn = new Button( GwtTeaming.getMessages().send() );
 		sendBtn.addStyleName( "activityStreamReplyBtn" );
-		sendBtn.addStyleName( "roundcorner" );
 		footerPanel.add( sendBtn );
 		
 		// Add a click handler for the send button.
@@ -173,7 +172,6 @@ public class ActivityStreamReply extends Composite
 		
 		cancelBtn = new Button( GwtTeaming.getMessages().cancel() );
 		cancelBtn.addStyleName( "activityStreamReplyBtn" );
-		cancelBtn.addStyleName( "roundcorner" );
 		footerPanel.add( cancelBtn );
 		
 		// Add a click handler for the cancel button.
