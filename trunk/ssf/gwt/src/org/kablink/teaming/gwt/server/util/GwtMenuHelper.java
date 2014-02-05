@@ -1014,9 +1014,10 @@ public class GwtMenuHelper {
 	 * the selected entries.
 	 */
 	private static void constructEntryMoreItems(ToolbarItem entryToolbar, AllModulesInjected bs, HttpServletRequest request, Long folderId, String viewType, Folder folder, Workspace ws, CollectionType ct) {
-		boolean isFilr              = Utils.checkIfFilr();
 		User    user                = GwtServerHelper.getCurrentUser();
 		boolean isGuest             = user.isShared();
+		boolean isFilr              = Utils.checkIfFilr();
+		boolean isFilrGuest         = (isFilr && isGuest);
 		boolean isFolder            = (null != folder);
 		boolean isMyFilesCollection = CollectionType.MY_FILES.equals(ct);
 		boolean isSharedCollection  = ct.isSharedCollection();
@@ -1026,19 +1027,23 @@ public class GwtMenuHelper {
 		ToolbarItem moreTBI = new ToolbarItem("1_more");
 		markTBITitle(moreTBI, "toolbar.more");
 
-		// ...add the copy item...
-		ToolbarItem tbi = new ToolbarItem("1_copySelected");
-		markTBITitle(tbi, "toolbar.copy");
-		markTBIEvent(tbi, TeamingEvents.COPY_SELECTED_ENTITIES);
-		moreTBI.addNestedItem(tbi);
-
-		// ...for non-shared collections...
-		if (!isSharedCollection) {
-			// ...add the move item....
-			tbi = new ToolbarItem("1_moveSelected");
-			markTBITitle(tbi, "toolbar.move");
-			markTBIEvent(tbi, TeamingEvents.MOVE_SELECTED_ENTITIES);
+		// ...if this is not the Filr Guest user...
+		ToolbarItem tbi;
+		if (!isFilrGuest) {
+			// ...add the copy item...
+			tbi = new ToolbarItem("1_copySelected");
+			markTBITitle(tbi, "toolbar.copy");
+			markTBIEvent(tbi, TeamingEvents.COPY_SELECTED_ENTITIES);
 			moreTBI.addNestedItem(tbi);
+
+			// ...for non-shared collections...
+			if (!isSharedCollection) {
+				// ...add the move item....
+				tbi = new ToolbarItem("1_moveSelected");
+				markTBITitle(tbi, "toolbar.move");
+				markTBIEvent(tbi, TeamingEvents.MOVE_SELECTED_ENTITIES);
+				moreTBI.addNestedItem(tbi);
+			}
 		}
 		
 		// ...for My Files, Shared by/with Me lists and file folders...
@@ -1889,15 +1894,18 @@ public class GwtMenuHelper {
 		User user = GwtServerHelper.getCurrentUser();
 		if ((isFolder || isWorkspace) && (!isWorkspaceReserved)) {			
 			// Yes!  Can the user potentially copy or move this binder?
-			boolean allowCopyMove;
-			if (isWorkspace) {
-				Integer wsDefType = binder.getDefinitionType();
-				allowCopyMove = ((null == wsDefType) || 
-					((Definition.USER_WORKSPACE_VIEW != wsDefType.intValue()) &&
-					 (Definition.EXTERNAL_USER_WORKSPACE_VIEW != wsDefType.intValue())));
-			}
-			else {
-				allowCopyMove = true;
+			boolean isFilrGuest   = (isFilr && GwtServerHelper.getCurrentUser().isShared());
+			boolean allowCopyMove = (!isFilrGuest);
+			if (allowCopyMove) {
+				if (isWorkspace) {
+					Integer wsDefType = binder.getDefinitionType();
+					allowCopyMove = ((null == wsDefType) || 
+						((Definition.USER_WORKSPACE_VIEW != wsDefType.intValue()) &&
+						 (Definition.EXTERNAL_USER_WORKSPACE_VIEW != wsDefType.intValue())));
+				}
+				else {
+					allowCopyMove = true;
+				}
 			}
 			if (allowCopyMove) {
 				// Yes!  Do they have rights to move it?
@@ -3687,13 +3695,14 @@ public class GwtMenuHelper {
 
 			// Define some variables we'll need to build the toolbar
 			// items.
-			User    			user     = GwtServerHelper.getCurrentUser();
-			boolean				isGuest  = user.isShared();
-			boolean				isFilr   = Utils.checkIfFilr();
-			Folder				folder   = fe.getParentFolder();
-			String				feId     = String.valueOf(fe.getId());
-			String				folderId = String.valueOf(folder.getId());
-			FolderModule		fm       = bs.getFolderModule();
+			User    			user        = GwtServerHelper.getCurrentUser();
+			boolean				isGuest     = user.isShared();
+			boolean				isFilr      = Utils.checkIfFilr();
+			boolean				isFilrGuest = (isGuest && isFilr);
+			Folder				folder      = fe.getParentFolder();
+			String				feId        = String.valueOf(fe.getId());
+			String				folderId    = String.valueOf(folder.getId());
+			FolderModule		fm          = bs.getFolderModule();
 			AdaptedPortletURL	url;
 			ToolbarItem			actionTBI;
 
@@ -3839,25 +3848,28 @@ public class GwtMenuHelper {
 			ToolbarItem dropdownTBI = new ToolbarItem(MORE);
 			markTBITitle(dropdownTBI, "toolbar.more");
 
-			// Can the user copy this entry?
-			if (fe.isTop() && fm.testAccess(fe, FolderOperation.copyEntry)) {
-				// Yes!  Add a copy toolbar item for it.
-				actionTBI = new ToolbarItem(COPY);
-				markTBITitle(   actionTBI, "toolbar.copy"                      );
-				markTBIEvent(   actionTBI, TeamingEvents.COPY_SELECTED_ENTITIES);
-				markTBIEntryIds(actionTBI, fe                                  );
-				dropdownTBI.addNestedItem(actionTBI);
-			}
-			
-			// Can the user move this entry?
+			// Is this other than the Filr Guest user?
 			boolean isLockedByLoggedInUser = (locked && lStamp.getPrincipal().getId().equals(user.getId()));
-			if (((!locked) || isLockedByLoggedInUser) && fe.isTop() && fm.testAccess(fe, FolderOperation.moveEntry)) {
-				// Yes!  Add a move toolbar item for it.
-				actionTBI = new ToolbarItem(MOVE);
-				markTBITitle(   actionTBI, "toolbar.move"                      );
-				markTBIEvent(   actionTBI, TeamingEvents.MOVE_SELECTED_ENTITIES);
-				markTBIEntryIds(actionTBI, fe                                  );
-				dropdownTBI.addNestedItem(actionTBI);
+			if (!isFilrGuest) {
+				// Yes!  Can the user copy this entry?
+				if (fe.isTop() && fm.testAccess(fe, FolderOperation.copyEntry)) {
+					// Yes!  Add a copy toolbar item for it.
+					actionTBI = new ToolbarItem(COPY);
+					markTBITitle(   actionTBI, "toolbar.copy"                      );
+					markTBIEvent(   actionTBI, TeamingEvents.COPY_SELECTED_ENTITIES);
+					markTBIEntryIds(actionTBI, fe                                  );
+					dropdownTBI.addNestedItem(actionTBI);
+				}
+				
+				// Can the user move this entry?
+				if (((!locked) || isLockedByLoggedInUser) && fe.isTop() && fm.testAccess(fe, FolderOperation.moveEntry)) {
+					// Yes!  Add a move toolbar item for it.
+					actionTBI = new ToolbarItem(MOVE);
+					markTBITitle(   actionTBI, "toolbar.move"                      );
+					markTBIEvent(   actionTBI, TeamingEvents.MOVE_SELECTED_ENTITIES);
+					markTBIEntryIds(actionTBI, fe                                  );
+					dropdownTBI.addNestedItem(actionTBI);
+				}
 			}
 			
 			// Is this a file entry?
