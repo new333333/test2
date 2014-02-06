@@ -874,7 +874,7 @@ public class AdminControl extends TeamingPopupPanel
 		else if ( adminAction.getActionType() == AdminAction.ADD_USER )
 		{
 			// Fire the event to invoke the "Manage users" dialog.
-			InvokeManageUsersDlgEvent.fireOne();
+			GwtTeaming.fireEvent( new InvokeManageUsersDlgEvent( false ) );	// false -> Not a trash view.
 		}
 		
 		else if ( adminAction.getActionType() == AdminAction.MANAGE_MOBILE_DEVICES )
@@ -2599,7 +2599,7 @@ public class AdminControl extends TeamingPopupPanel
 	 * @param event
 	 */
 	@Override
-	public void onInvokeManageUsersDlg( InvokeManageUsersDlgEvent event )
+	public void onInvokeManageUsersDlg( final InvokeManageUsersDlgEvent event )
 	{
 		// Get the position of the content control.
 		final int x = m_contentControlX;
@@ -2626,7 +2626,7 @@ public class AdminControl extends TeamingPopupPanel
 						public void execute() 
 						{
 							m_manageUsersDlg = muDlg;
-							ManageUsersDlg.initAndShow( m_manageUsersDlg, x, y, m_dlgWidth, m_dlgHeight );
+							ManageUsersDlg.initAndShow( m_manageUsersDlg, event.isTrashView(), x, y, m_dlgWidth, m_dlgHeight );
 						}
 					} );
 				}
@@ -2644,7 +2644,7 @@ public class AdminControl extends TeamingPopupPanel
 			// Yes, we've already created a "Manage Users" dialog!
 			// Simply initialize and show it.
 			m_manageUsersDlg.setPixelSize( m_dlgWidth, m_dlgHeight );
-			ManageUsersDlg.initAndShow( m_manageUsersDlg, x, y, m_dlgWidth, m_dlgHeight );
+			ManageUsersDlg.initAndShow( m_manageUsersDlg, event.isTrashView(), x, y, m_dlgWidth, m_dlgHeight );
 		}
 	}
 	

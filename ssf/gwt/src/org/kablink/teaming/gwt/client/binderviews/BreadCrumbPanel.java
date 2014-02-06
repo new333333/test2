@@ -44,6 +44,7 @@ import org.kablink.teaming.gwt.client.event.GetManageTitleEvent.ManageTitleCallb
 import org.kablink.teaming.gwt.client.event.MenuLoadedEvent.MenuItem;
 import org.kablink.teaming.gwt.client.event.GotoContentUrlEvent;
 import org.kablink.teaming.gwt.client.event.HideManageMenuEvent;
+import org.kablink.teaming.gwt.client.event.InvokeManageUsersDlgEvent;
 import org.kablink.teaming.gwt.client.event.MenuLoadedEvent;
 import org.kablink.teaming.gwt.client.event.TreeNodeCollapsedEvent;
 import org.kablink.teaming.gwt.client.event.TreeNodeExpandedEvent;
@@ -61,6 +62,7 @@ import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.TreeInfo;
 import org.kablink.teaming.gwt.client.util.TreeMode;
+import org.kablink.teaming.gwt.client.widgets.ManageUsersDlg;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 import org.kablink.teaming.gwt.client.widgets.WorkspaceTreeControl;
 import org.kablink.teaming.gwt.client.widgets.WorkspaceTreeControl.WorkspaceTreeControlClient;
@@ -475,7 +477,8 @@ public class BreadCrumbPanel extends ToolPanelBase
 	 * false otherwise.
 	 */
 	private boolean needsTrashLink() {
-		boolean reply = m_binderInfo.isBinderProfilesRootWSManagement();	// Always on the user management view.
+		boolean showTrashInManageUsers = ManageUsersDlg.SHOW_TRASH_IN_MANAGE_USERS;
+		boolean reply = (m_binderInfo.isBinderProfilesRootWSManagement() && showTrashInManageUsers);
 		if (!reply) {
 			reply = (
 				(!(m_binderInfo.isBinderProfilesRootWS())) &&	// Not on view of users...
@@ -721,22 +724,34 @@ public class BreadCrumbPanel extends ToolPanelBase
 	 * Synchronously runs the trash viewer on the current BinderInfo.
 	 */
 	private void viewTrashNow() {
-		// Get the URL to view the trash on the current BinderInfo...
-		GwtClientHelper.executeCommand(new GetTrashUrlCmd(m_binderInfo), new AsyncCallback<VibeRpcResponse>() {
-			@Override
-			public void onFailure(Throwable t) {
-				GwtClientHelper.handleGwtRPCFailure(
-					t,
-					GwtTeaming.getMessages().rpcFailure_GetTrashUrl(),
-					m_binderInfo.getBinderId());
-			}
-			
-			@Override
-			public void onSuccess(VibeRpcResponse response) {
-				// ...and navigate to that URL.
-				StringRpcResponseData responseData = ((StringRpcResponseData) response.getResponseData());
-				GwtTeaming.fireEventAsync(new GotoContentUrlEvent(responseData.getStringValue()));
-			}
-		});
+		// Are we managing users?
+		if (m_binderInfo.isBinderProfilesRootWSManagement()) {
+			// Yes!  Simply tell the administration console to view the
+			// trash on the personal workspaces binder.
+			GwtTeaming.fireEventAsync(
+				new InvokeManageUsersDlgEvent(
+					true));	// true -> Trash view.
+		}
+		
+		else {
+			// No, we aren't managing users!  Get the URL to view the
+			// trash on the current BinderInfo...
+			GwtClientHelper.executeCommand(new GetTrashUrlCmd(m_binderInfo), new AsyncCallback<VibeRpcResponse>() {
+				@Override
+				public void onFailure(Throwable t) {
+					GwtClientHelper.handleGwtRPCFailure(
+						t,
+						GwtTeaming.getMessages().rpcFailure_GetTrashUrl(),
+						m_binderInfo.getBinderId());
+				}
+				
+				@Override
+				public void onSuccess(VibeRpcResponse response) {
+					// ...and navigate to that URL.
+					StringRpcResponseData responseData = ((StringRpcResponseData) response.getResponseData());
+					GwtTeaming.fireEventAsync(new GotoContentUrlEvent(responseData.getStringValue()));
+				}
+			});
+		}
 	}
 }
