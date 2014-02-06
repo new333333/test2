@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -37,6 +37,7 @@ import java.util.List;
 
 import org.kablink.teaming.gwt.client.binderviews.EntryMenuPanel;
 import org.kablink.teaming.gwt.client.binderviews.PersonalWorkspacesView;
+import org.kablink.teaming.gwt.client.binderviews.TrashView;
 import org.kablink.teaming.gwt.client.binderviews.ViewBase;
 import org.kablink.teaming.gwt.client.binderviews.ViewBase.ViewClient;
 import org.kablink.teaming.gwt.client.binderviews.ViewReady;
@@ -101,8 +102,11 @@ public class ManageUsersDlg extends DlgBox
 		SetSelectedUserMobileSettingsEvent.Handler,
 		SetSelectedUserShareRightsEvent.Handler
 {
-	private boolean							m_dlgAttached;				// true when the dialog is attached to the document.        false otherwise.
-	private boolean							m_viewReady;				// true once the embedded PersonalWorkspacesView is ready.  false otherwise.
+	public final static boolean SHOW_TRASH_IN_MANAGE_USERS	= false;	//! DRF (20140206):  Leave false on checkin until it all works.
+	
+	private boolean							m_dlgAttached;				// true when the dialog is attached to the document.         false otherwise.
+	private boolean							m_trashView;				// true if we're view the trash on the personal workspaces.  false otherwise.
+	private boolean							m_viewReady;				// true once the embedded PersonalWorkspacesView is ready.   false otherwise.
 	private GwtTeamingMessages				m_messages;					// Access to Vibe's messages.
 	private ImportProfilesDlg				m_importProfilesDlg;		// An ImportProfilesDlg, once one is created.
 	private int								m_dlgHeightAdjust = (-1);	// Calculated the first time the dialog is shown.
@@ -112,8 +116,9 @@ public class ManageUsersDlg extends DlgBox
 	private int								m_showCY;					// ...height of the dialog.
 	private List<HandlerRegistration>		m_registeredEventHandlers;	// Event handlers that are currently registered.
 	private ManageUsersInfoRpcResponseData	m_manageUsersInfo;			// Information necessary to run the manage users dialog.
-	private PersonalWorkspacesView			m_pwsView;					// The personal workspace view.
-	private UserPropertiesDlg				m_userPropertiesDlg;		// An UserPropertiesDlg, once one is created.
+	private PersonalWorkspacesView			m_pwsView;					// The personal workspace       view.
+	private TrashView						m_pwsTrashView;				// The personal workspace trash view.
+	private UserPropertiesDlg				m_userPropertiesDlg;		// A UserPropertiesDlg,  once one is created.
 	private UserShareRightsDlg				m_userShareRightsDlg;		// A UserShareRightsDlg, once one is created.
 	private VibeFlowPanel					m_rootPanel;				// The panel that holds the dialog's contents.
 
@@ -736,27 +741,35 @@ public class ManageUsersDlg extends DlgBox
 	private void populateDlgNow() {
 		// Clear anything already in the dialog (from a previous
 		// usage, ...)
-		m_dlgAttached =
-		m_viewReady   = false;
-		m_pwsView     = null;
+		m_dlgAttached  =
+		m_viewReady    = false;
+		m_pwsTrashView = null;
+		m_pwsView      = null;
 		m_rootPanel.clear();
+
+		if (m_trashView) {
+//!			...this needs to be implemented...
+			GwtClientHelper.deferredAlert("ManageUsersDlg.populateDlgNow( Trash View ):  ...this needs to be implemented...");
+		}
 		
-		// Create a PersonalWorkspacesView widget for the selected
-		// binder.
-		PersonalWorkspacesView.createAsync(m_manageUsersInfo.getProfilesRootWSInfo(), this, new ViewClient() {
-			@Override
-			public void onUnavailable() {
-				// Nothing to do.  Error handled in asynchronous
-				// provider.
-			}
-			
-			@Override
-			public void onSuccess(ViewBase pwsView) {
-				// Store the view and add it to the panel.
-				m_pwsView = ((PersonalWorkspacesView) pwsView);
-				m_rootPanel.add(m_pwsView);
-			}
-		});
+		else {
+			// Create a PersonalWorkspacesView widget for the selected
+			// binder.
+			PersonalWorkspacesView.createAsync(m_manageUsersInfo.getProfilesRootWSInfo(), this, new ViewClient() {
+				@Override
+				public void onUnavailable() {
+					// Nothing to do.  Error handled in asynchronous
+					// provider.
+				}
+				
+				@Override
+				public void onSuccess(ViewBase pwsView) {
+					// Store the view and add it to the panel.
+					m_pwsView = ((PersonalWorkspacesView) pwsView);
+					m_rootPanel.add(m_pwsView);
+				}
+			});
+		}
 
 		// Position and show the dialog.
 		setPopupPosition(m_showX, m_showY);
@@ -789,12 +802,12 @@ public class ManageUsersDlg extends DlgBox
 	 * Asynchronously runs the given instance of the manage users
 	 * dialog.
 	 */
-	private static void runDlgAsync(final ManageUsersDlg muDlg, final int x, final int y, final int width, final int height) {
+	private static void runDlgAsync(final ManageUsersDlg muDlg, final boolean trashView, final int x, final int y, final int width, final int height) {
 		GwtClientHelper.deferCommand(
 			new ScheduledCommand() {
 				@Override
 				public void execute() {
-					muDlg.runDlgNow(x, y, width, height);
+					muDlg.runDlgNow(trashView, x, y, width, height);
 				}
 			});
 	}
@@ -803,12 +816,13 @@ public class ManageUsersDlg extends DlgBox
 	 * Synchronously runs the given instance of the manage users
 	 * dialog.
 	 */
-	private void runDlgNow(int x, int y, int width, int height) {
+	private void runDlgNow(boolean trashView, int x, int y, int width, int height) {
 		// Store the parameters...
-		m_showX = x;
-		m_showY = y;
-		m_showCX = width;
-		m_showCY = height;
+		m_trashView = trashView;
+		m_showX     = x;
+		m_showY     = y;
+		m_showCX    = width;
+		m_showCY    = height;
 		
 		// ...and start populating the dialog.
 		populateDlgAsync();
@@ -857,6 +871,7 @@ public class ManageUsersDlg extends DlgBox
 			
 			// Parameters used to initialize and show an instance of the dialog.
 			final ManageUsersDlg	muDlg,
+			final boolean			trashView,
 			final int				initX,
 			final int				initY) {
 		GWT.runAsync(ManageUsersDlg.class, new RunAsyncCallback() {
@@ -882,7 +897,7 @@ public class ManageUsersDlg extends DlgBox
 					// No, it's not a request to create a dialog!  It
 					// must be a request to run an existing one.  Run
 					// it.
-					runDlgAsync(muDlg, initX, initY, createCX, createCY);
+					runDlgAsync(muDlg, trashView, initX, initY, createCX, createCY);
 				}
 			}
 		});
@@ -901,17 +916,18 @@ public class ManageUsersDlg extends DlgBox
 	 * @param cy
 	 */
 	public static void createAsync(ManageUsersDlgClient muDlgClient, boolean autoHide, boolean modal, int x, int y, int cx, int cy) {
-		doAsyncOperation(muDlgClient, autoHide, modal, x, y, cx, cy, null, (-1), (-1));
+		doAsyncOperation(muDlgClient, autoHide, modal, x, y, cx, cy, null, false, (-1), (-1));
 	}
 	
 	/**
 	 * Initializes and shows the manage users dialog.
 	 * 
 	 * @param muDlg
+	 * @param trashView
 	 * @param x
 	 * @param y
 	 */
-	public static void initAndShow(ManageUsersDlg muDlg, int x, int y, int width, int height) {
-		doAsyncOperation(null, false, false, (-1), (-1), width, height, muDlg, x, y);
+	public static void initAndShow(ManageUsersDlg muDlg, boolean trashView, int x, int y, int width, int height) {
+		doAsyncOperation(null, false, false, (-1), (-1), width, height, muDlg, trashView, x, y);
 	}
 }
