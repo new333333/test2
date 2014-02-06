@@ -62,7 +62,6 @@ import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.TreeInfo;
 import org.kablink.teaming.gwt.client.util.TreeMode;
-import org.kablink.teaming.gwt.client.widgets.ManageUsersDlg;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 import org.kablink.teaming.gwt.client.widgets.WorkspaceTreeControl;
 import org.kablink.teaming.gwt.client.widgets.WorkspaceTreeControl.WorkspaceTreeControlClient;
@@ -477,8 +476,7 @@ public class BreadCrumbPanel extends ToolPanelBase
 	 * false otherwise.
 	 */
 	private boolean needsTrashLink() {
-		boolean showTrashInManageUsers = ManageUsersDlg.SHOW_TRASH_IN_MANAGE_USERS;
-		boolean reply = (m_binderInfo.isBinderProfilesRootWSManagement() && showTrashInManageUsers);
+		boolean reply = m_binderInfo.isBinderProfilesRootWSManagement();
 		if (!reply) {
 			reply = (
 				(!(m_binderInfo.isBinderProfilesRootWS())) &&	// Not on view of users...

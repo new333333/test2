@@ -104,11 +104,9 @@ public class ManageUsersDlg extends DlgBox
 		SetSelectedUserMobileSettingsEvent.Handler,
 		SetSelectedUserShareRightsEvent.Handler
 {
-	public final static boolean SHOW_TRASH_IN_MANAGE_USERS	= false;	//! DRF (20140206):  Leave false on checkin until it all works.
-	
-	private boolean							m_dlgAttached;				// true when the dialog is attached to the document.         false otherwise.
-	private boolean							m_trashView;				// true if we're view the trash on the personal workspaces.  false otherwise.
-	private boolean							m_viewReady;				// true once the embedded view is ready.                     false otherwise.
+	private boolean							m_dlgAttached;				// true when the dialog is attached to the document.            false otherwise.
+	private boolean							m_trashView;				// true if we're viewing the trash on the personal workspaces.  false otherwise.
+	private boolean							m_viewReady;				// true once the embedded view is ready.                        false otherwise.
 	private GwtTeamingMessages				m_messages;					// Access to Vibe's messages.
 	private ImportProfilesDlg				m_importProfilesDlg;		// An ImportProfilesDlg, once one is created.
 	private int								m_dlgHeightAdjust = (-1);	// Calculated the first time the dialog is shown.
@@ -124,8 +122,8 @@ public class ManageUsersDlg extends DlgBox
 	private UserShareRightsDlg				m_userShareRightsDlg;		// A UserShareRightsDlg, once one is created.
 	private VibeFlowPanel					m_rootPanel;				// The panel that holds the dialog's contents.
 
-	// Constant adjustments to the size of the personal workspaces view
-	// so that it properly fits the dialog's content area.
+	// Constant adjustments to the size of the view so that it properly
+	// fits the dialog's content area.
 	private final static int DIALOG_HEIGHT_ADJUST	= 35;
 	private final static int DIALOG_WIDTH_ADJUST	= 20;
 	
@@ -252,17 +250,17 @@ public class ManageUsersDlg extends DlgBox
 	}
 
 	/**
+	 * Returns the HelpData for the manage users dialog.
 	 * 
+	 * Overrides the DlgBox.getHelpData() method.
+	 * 
+	 * @return
 	 */
 	@Override
-	public HelpData getHelpData()
-	{
-		HelpData helpData;
-		
-		helpData = new HelpData();
-		helpData.setGuideName( HelpData.ADMIN_GUIDE );
-		helpData.setPageId( "users" );
-		
+	public HelpData getHelpData() {
+		HelpData helpData = new HelpData();
+		helpData.setGuideName(HelpData.ADMIN_GUIDE);
+		helpData.setPageId("users");
 		return helpData;
 	}
 
@@ -733,8 +731,7 @@ public class ManageUsersDlg extends DlgBox
 	}
 
 	/**
-	 * Called when the personal workspaces view reaches the ready
-	 * state.
+	 * Called when the contained view reaches the ready state.
 	 * 
 	 * Implements the ViewReady.viewReady() method.
 	 */
