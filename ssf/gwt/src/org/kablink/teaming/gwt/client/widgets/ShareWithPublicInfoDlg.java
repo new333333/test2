@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -162,9 +162,9 @@ public class ShareWithPublicInfoDlg extends DlgBox
 			contentPanel = new FlowPanel();
 			contentPanel.addStyleName( "shareWithPublicDlg_content" );
 
-		// Add controls for the view entry permalink
+			// Add controls for the view entry permalink
 			{
-				m_instructions1 = new Label( messages.shareWithPublicInfoDlg_InstructionsEntry( "" ) );
+				m_instructions1 = new Label( messages.shareWithPublicInfoDlg_InstructionsEntry() );
 				m_instructions1.addStyleName( "shareWithPublicDlg_instructionsLabel" );
 				contentPanel.add( m_instructions1 );
 				
@@ -175,7 +175,7 @@ public class ShareWithPublicInfoDlg extends DlgBox
 			
 			// Add controls for the download file permalink
 			{
-				m_instructions2 = new Label( messages.shareWithPublicInfoDlg_Instructions2( "" ) );
+				m_instructions2 = new Label( messages.shareWithPublicInfoDlg_Instructions3() );
 				m_instructions2.addStyleName( "margintop2" );
 				m_instructions2.addStyleName( "shareWithPublicDlg_instructionsLabel" );
 				contentPanel.add( m_instructions2 );
@@ -294,11 +294,20 @@ public class ShareWithPublicInfoDlg extends DlgBox
 							@Override
 							public void execute()
 							{
+								String imgUrl;
+								
 								updateInstructions( gwtFolderEntry.getEntryName(), true );
 								
 								// Update the name of the entity in the header.
 								m_headerNameLabel.setText( gwtFolderEntry.getEntryName() );
 								m_headerPathLabel.setText( gwtFolderEntry.getParentBinderName() );
+
+								// Do we have a url for the file image?
+								imgUrl = gwtFolderEntry.getFileImgUrl();
+								if ( imgUrl != null && imgUrl.length() > 0 )
+								{
+									m_headerImg.setUrl( GwtClientHelper.getRequestInfo().getImagesPath() + imgUrl );
+								}
 							}
 						};
 						Scheduler.get().scheduleDeferred( cmd );
@@ -523,10 +532,10 @@ public class ShareWithPublicInfoDlg extends DlgBox
 	{
 		String instructions1;
 		if (itemIsEntry)
-		     instructions1 = GwtTeaming.getMessages().shareWithPublicInfoDlg_InstructionsEntry(  itemName );
-		else instructions1 = GwtTeaming.getMessages().shareWithPublicInfoDlg_InstructionsFolder( itemName );
+		     instructions1 = GwtTeaming.getMessages().shareWithPublicInfoDlg_InstructionsEntry();
+		else instructions1 = GwtTeaming.getMessages().shareWithPublicInfoDlg_InstructionsFolder();
 		m_instructions1.setText( instructions1 );
-		m_instructions2.setText( GwtTeaming.getMessages().shareWithPublicInfoDlg_Instructions2( itemName ) );
+		m_instructions2.setText( GwtTeaming.getMessages().shareWithPublicInfoDlg_Instructions3() );
 	}
 	
 	/**

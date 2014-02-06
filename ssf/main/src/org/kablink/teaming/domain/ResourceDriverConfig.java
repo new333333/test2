@@ -544,6 +544,18 @@ public class ResourceDriverConfig extends ZonedObject implements WorkArea {
 		}
 	}
 
+	//Routine to determine if this resource driver requires the Filr license
+	public boolean isFilrLicensed() {
+		if (ResourceDriverConfig.DriverType.famt == this.getDriverType() ||
+				ResourceDriverConfig.DriverType.windows_server == this.getDriverType() ||
+				ResourceDriverConfig.DriverType.netware == this.getDriverType() ||
+				ResourceDriverConfig.DriverType.oes == this.getDriverType()) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
     public boolean isAclExternallyControlled() {
     	return Boolean.FALSE;
     }

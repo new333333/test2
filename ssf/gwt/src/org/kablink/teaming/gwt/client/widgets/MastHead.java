@@ -39,7 +39,7 @@ import org.kablink.teaming.gwt.client.event.BrowseHierarchyEvent;
 import org.kablink.teaming.gwt.client.event.ChangeContextEvent;
 import org.kablink.teaming.gwt.client.event.ContextChangedEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
-import org.kablink.teaming.gwt.client.event.GetSiteBrandingPanelEvent;
+import org.kablink.teaming.gwt.client.event.GetMastHeadLeftEdgeEvent;
 import org.kablink.teaming.gwt.client.event.LoginEvent;
 import org.kablink.teaming.gwt.client.event.MastheadHideEvent;
 import org.kablink.teaming.gwt.client.event.MastheadShowEvent;
@@ -95,7 +95,7 @@ public class MastHead extends Composite
 	// Event handlers implemented by this class.
 		ActivityStreamExitEvent.Handler,
 		ContextChangedEvent.Handler,
-		GetSiteBrandingPanelEvent.Handler,
+		GetMastHeadLeftEdgeEvent.Handler,
 		MastheadHideEvent.Handler,
 		MastheadShowEvent.Handler,
 		MastheadUnhighlightAllActionsEvent.Handler
@@ -105,6 +105,7 @@ public class MastHead extends Composite
 	private RequestInfo m_requestInfo = null;
 	private String m_mastheadBinderId = null;
 	private FlowPanel m_mainMastheadPanel = null;
+	private FlowPanel m_leftEdgePanel = null;
 	private HorizontalPanel m_globalActionsPanel = null;
 	private FlowPanel m_userNamePanel;
 	private InlineLabel m_loginLink = null;
@@ -131,7 +132,7 @@ public class MastHead extends Composite
 	// this array is used.
 	private TeamingEvents[] m_registeredEvents = new TeamingEvents[] {
 		TeamingEvents.ACTIVITY_STREAM_EXIT,
-		TeamingEvents.GET_SITE_BRANDING_PANEL,
+		TeamingEvents.GET_MASTHEAD_LEFT_EDGE,
 
 		// Context events.
 		TeamingEvents.CONTEXT_CHANGED,
@@ -162,6 +163,10 @@ public class MastHead extends Composite
 
 		m_mainMastheadPanel = new FlowPanel();
 		m_mainMastheadPanel.addStyleName( "mastHead" );
+		
+		m_leftEdgePanel = new FlowPanel();
+		m_leftEdgePanel.addStyleName( "mastHead-LeftEdge ");
+		m_mainMastheadPanel.add( m_leftEdgePanel );
 		
 		// Create a branding panel that will display "site" branding if it exists.
 		m_siteBrandingPanel = new BrandingPanel( requestInfo );
@@ -1318,17 +1323,17 @@ public class MastHead extends Composite
 	}// end onContextChanged()
 	
 	/**
-	 * Handles GetSiteBrandingPanelEvent's received by this class.
+	 * Handles GetMastHeadLeftEdgeEvent's received by this class.
 	 * 
-	 * Implements the GetSiteBrandingPanelEvent.Handler.onGetSiteBrandingPanel() method.
+	 * Implements the GetMastHeadLeftEdgeEvent.Handler.onGetMastHeadLeftEdge() method.
 	 * 
 	 * @param event
 	 */
 	@Override
-	public void onGetSiteBrandingPanel( final GetSiteBrandingPanelEvent event )
+	public void onGetMastHeadLeftEdge( final GetMastHeadLeftEdgeEvent event )
 	{
-		event.getSiteBrandingPanelCallback().siteBrandingPanel( m_siteBrandingPanel );
-	}// end onGetSiteBrandingPanel()
+		event.getMastHeadLeftEdgeCallback().mhLeftEdgeWidget( m_leftEdgePanel );
+	}// end onGetMastHeadLeftEdge()
 	
 	/**
 	 * Handles MastheadHideEvent's received by this class.

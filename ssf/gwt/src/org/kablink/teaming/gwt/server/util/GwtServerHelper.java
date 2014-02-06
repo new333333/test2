@@ -8330,53 +8330,41 @@ public class GwtServerHelper {
 	
 	/**
 	 * Return the user access configuration
+	 * 
+	 * @param bs
+	 * @param request
+	 * 
+	 * @return
 	 */
-	public static UserAccessConfig getUserAccessConfig(
-		AllModulesInjected ami,
-		HttpServletRequest request )
-	{
-		UserAccessConfig config;
-		AuthenticationConfig authConfig;
-		AdminModule adminModule;
-		
-		authConfig = ami.getAuthenticationModule().getAuthenticationConfig();
+	public static UserAccessConfig getUserAccessConfig(AllModulesInjected bs, HttpServletRequest request) {
+		// Check for guest access.
+		UserAccessConfig     config     = new UserAccessConfig();
+		AuthenticationConfig authConfig = bs.getAuthenticationModule().getAuthenticationConfig();
+		config.setAllowGuestAccess(authConfig.isAllowAnonymousAccess());
+		config.setGuestReadOnly(   authConfig.isAnonymousReadOnly()   );
 
-		config = new UserAccessConfig();
-		
-		// Check for guest access
-		config.setAllowGuestAccess( authConfig.isAllowAnonymousAccess() );
-		config.setGuestReadOnly( authConfig.isAnonymousReadOnly() );
-
-		// Check for download and web access
-		adminModule = ami.getAdminModule();
+		// Check for download and web access.
+		AdminModule adminModule = bs.getAdminModule();
 		config.setAllowDownload( adminModule.isDownloadEnabled() );
 		config.setAllowWebAccess(adminModule.isWebAccessEnabled());
-		
-		if ( ReleaseInfo.isLicenseRequiredEdition() )
-		{
-			// Yes
-			// Does the license allow external users?
-			if ( LicenseChecker.isAuthorizedByLicense( "com.novell.teaming.ExtUsers" ) )
-			{
-				ZoneConfig zoneConfig;
-				ZoneModule zoneModule;
-				OpenIDConfig openIdConfig;
-				boolean allowOpenIdAuth;
-				
-				// Yes
-				zoneModule = ami.getZoneModule();
-				zoneConfig = zoneModule.getZoneConfig( RequestContextHolder.getRequestContext().getZoneId() );
-				openIdConfig = zoneConfig.getOpenIDConfig();
-				allowOpenIdAuth = zoneConfig.isExternalUserEnabled() && openIdConfig.isAuthenticationEnabled();
+
+		// Are we running with a Novell or Kablink product?
+		if (ReleaseInfo.isLicenseRequiredEdition()) {
+			// Novell!  Does the license allow external users?
+			if (LicenseChecker.isAuthorizedByLicense("com.novell.teaming.ExtUsers")) {
+				// Yes!
+				ZoneModule zoneModule = bs.getZoneModule();
+				ZoneConfig zoneConfig = zoneModule.getZoneConfig( RequestContextHolder.getRequestContext().getZoneId() );
+				OpenIDConfig openIdConfig = zoneConfig.getOpenIDConfig();
+				boolean allowOpenIdAuth = zoneConfig.isExternalUserEnabled() && openIdConfig.isAuthenticationEnabled();
 				config.setAllowExternalUsers( allowOpenIdAuth ); 
 				config.setAllowExternalUsersSelfReg( openIdConfig.isSelfProvisioningEnabled() );
 			}
 		}
-		else
-		{
-			// Self registration of internal users is only found in the Kablink version.
-			// Is self registration allowed?
-			config.setAllowSelfReg( authConfig.isAllowSelfRegistration() );
+		else {
+			// Kablink!  Self registration of internal users is only
+			// found in the Kablink version.  Is self registration allowed?
+			config.setAllowSelfReg(authConfig.isAllowSelfRegistration());
 		}
 		
 		return config;
@@ -10797,54 +10785,51 @@ public class GwtServerHelper {
 	}
 
 	/**
-	 * Save the UserAccessConfig information.  This includeds "allow guest access", "allow self registration",
-	 * "allow external users" and "allow external user to perform self registration"
+	 * Save the UserAccessConfig information.  This includes 'allow
+	 * guest access', 'allow self registration', 'allow external users'
+	 * and 'allow external user to perform self registration'.
+	 * 
+	 * @param bs
+	 * @param config
+	 * 
+	 * @return
 	 */
-	public static Boolean saveUserAccessConfig(
-		AllModulesInjected ami,
-		UserAccessConfig config )
-	{
-		AdminModule adminModule;
-		AuthenticationConfig authConfig;
+	public static Boolean saveUserAccessConfig(AllModulesInjected bs, UserAccessConfig config) {
+		// Set 'guest access'.
+		AuthenticationConfig authConfig = bs.getAuthenticationModule().getAuthenticationConfig();
+		authConfig.setAllowAnonymousAccess(config.getAllowGuestAccess());
 		
-		authConfig = ami.getAuthenticationModule().getAuthenticationConfig();
+		// Set 'guest read only'.
+		authConfig.setAnonymousReadOnly(config.getGuestReadOnly());
 		
-		// Set "guest access"
-		authConfig.setAllowAnonymousAccess( config.getAllowGuestAccess() );
-		
-		// Set "guest read only"
-		authConfig.setAnonymousReadOnly( config.getGuestReadOnly() );
-		
-		// Set "download" and "web access"
-		adminModule = ami.getAdminModule();
-		adminModule.setDownloadEnabled( config.getAllowDownload() );
-		adminModule.setWebAccessEnabled(config.getAllowWebAccess());
-		
-		if ( ReleaseInfo.isLicenseRequiredEdition() )
-		{
-			OpenIDConfig openIdConfig;
-			ZoneConfig zoneConfig;
-			ZoneModule zoneModule;
+		// Set 'download' and 'web access'.
+		AdminModule am = bs.getAdminModule();
+		am.setDownloadEnabled( config.getAllowDownload() );
+		am.setWebAccessEnabled(config.getAllowWebAccess());
+
+		// Is this a Novell or Kablink version?
+		if (ReleaseInfo.isLicenseRequiredEdition()) {
+			// Novell!
+			ZoneModule zoneModule = bs.getZoneModule();
+			ZoneConfig zoneConfig = zoneModule.getZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
 			
-			zoneModule = ami.getZoneModule();
-			zoneConfig = zoneModule.getZoneConfig( RequestContextHolder.getRequestContext().getZoneId() );
+			// Set 'allow external users to self register'.
+			OpenIDConfig openIdConfig = zoneConfig.getOpenIDConfig();
+			openIdConfig.setAuthenticationEnabled(  config.getAllowExternalUsers()       );
+			openIdConfig.setSelfProvisioningEnabled(config.getAllowExternalUsersSelfReg());
 			
-			// Set "allow external users to self register"
-			openIdConfig = zoneConfig.getOpenIDConfig();
-			openIdConfig.setAuthenticationEnabled( config.getAllowExternalUsers() );
-			openIdConfig.setSelfProvisioningEnabled( config.getAllowExternalUsersSelfReg() );
-			
-			// Set "allow external users"
-			adminModule.setExternalUserEnabled( config.getAllowExternalUsers() );
-			adminModule.setOpenIDConfig( openIdConfig );
-		}
-		else
-		{
-			// Self registration is only found in the Kablink version
-			authConfig.setAllowSelfRegistration( config.getAllowSelfReg() );
+			// Set 'allow external users'.
+			am.setExternalUserEnabled(config.getAllowExternalUsers());
+			am.setOpenIDConfig(openIdConfig);
 		}
 		
-		ami.getAuthenticationModule().setAuthenticationConfig( authConfig );
+		else {
+			// Kablink!  Self registration is only found in Kablink.
+			authConfig.setAllowSelfRegistration(config.getAllowSelfReg());
+		}
+
+		// Finally, store the user access configuration.
+		bs.getAuthenticationModule().setAuthenticationConfig(authConfig);
 		
 		return Boolean.TRUE;
 	}

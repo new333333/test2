@@ -293,7 +293,7 @@ public enum TeamingEvents implements IsSerializable {
 	FOLDER_ENTRY_ACTION_COMPLETE,					// An action on a folder entry has completed.
 	FORCE_FILES_UNLOCK,								// Forces the primary file on the selected entities to be unlocked.
 	GET_MANAGE_TITLE,								// Event to request the management component's title.
-	GET_SITE_BRANDING_PANEL,						// Event to request the site branding panel.
+	GET_MASTHEAD_LEFT_EDGE,							// Event to request the masthead's left edge widget.
 	HIDE_SELECTED_SHARES,							// Marks the selected shares as being hidden.
 	LOCK_SELECTED_ENTITIES,							// Locks the Selected Entities.
 	MAILTO_PUBLIC_LINK_ENTITY,						// Mails the Public Link of the Entity Using a 'mailto://...' URL.

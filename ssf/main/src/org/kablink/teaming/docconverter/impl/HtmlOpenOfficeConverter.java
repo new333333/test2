@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -58,11 +58,11 @@ import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.ShareItem;
 import org.kablink.teaming.repository.RepositoryServiceException;
+import org.kablink.teaming.util.GangliaMonitoring;
 import org.kablink.teaming.web.util.MiscUtil;
 
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
-
 
 /**
  * Performs file conversions to HTML using OpenOffice.
@@ -79,49 +79,90 @@ import org.springframework.beans.factory.InitializingBean;
  * @version 1.00
  * @see Export Export
  */
-public class HtmlOpenOfficeConverter
-	extends HtmlConverter
-	implements HtmlOpenOfficeConverterMBean, InitializingBean, DisposableBean
-{
-	private String _host = null;
-	private int _port = 0;
+public class HtmlOpenOfficeConverter extends HtmlConverter implements HtmlOpenOfficeConverterMBean, InitializingBean, DisposableBean {
+	private int		_port = 0;		//
+	private String	_host = null;	//
 
-	public HtmlOpenOfficeConverter()
-	{
+	/**
+	 * Constructor method.
+	 */
+	public HtmlOpenOfficeConverter() {
 		super();
 	}
-	
+
+	/**
+	 * ?
+	 * 
+	 * @throws Exception.
+	 */
+	@Override
 	public void afterPropertiesSet() throws Exception {
-		
 	}	
-	
-	public void destroy() throws Exception 
-	{	
+
+	/**
+	 * ?
+	 * 
+	 * @throws Exception
+	 */
+	@Override
+	public void destroy() throws Exception {	
 		// Close the socket connection that you established in afterPropertiesSet.
 		// Do any other cleanup stuff as necessary. 
 	}
-	
+
+	/**
+	 * ?
+	 * 
+	 * @return
+	 */
+	@Override
 	public String getHost() {
 		return _host;
 	}
 
+	/**
+	 * ?
+	 * 
+	 * @param host_in
+	 */
 	public void setHost(String host_in) {
 		_host = host_in;
 	}
-	
+
+	/**
+	 * ?
+	 * 
+	 * @return
+	 */
+	@Override
 	public int getPort() {
 		return _port;
 	}
 
+	/**
+	 * ?
+	 * 
+	 * @param port_in
+	 */
 	public void setPort(int port_in) {
 		_port = port_in;
 	}
-	
-	public String convertToUrl(File f, XComponentContext xComponentContext)
-		throws java.net.MalformedURLException 
+
+	/**
+	 * ?
+	 * 
+	 * @param f
+	 * @param xComponentContext
+	 * 
+	 * @return
+	 * 
+	 * @throws java.net.MalformedURLException
+	 */
+	public String convertToUrl(File f, XComponentContext xComponentContext) throws java.net.MalformedURLException 
 	{
 		String returnUrl = null;
 	
+		@SuppressWarnings("deprecation")
 		java.net.URL u = f.toURL();
 		returnUrl =  ExternalUriReferenceTranslator.create(xComponentContext).translateToInternal(u.toExternalForm());
 	
@@ -134,11 +175,11 @@ public class HtmlOpenOfficeConverter
 	 *  @param ifp     Input path.
 	 *  @param ofp     Output path.
 	 *  @param timeout Export process timeout in milliseconds.
+	 *  
 	 *  @return <code>true</code> if successful, <code>false</code> otherwise
 	 */
-	public void convert(String origFileName, String ifp, String ofp, long timeout, String parameters)
-		throws Exception
-	{
+	@Override
+	public void convert(String origFileName, String ifp, String ofp, long timeout, String parameters) throws Exception {
 		XStorable xstorable = null;
 		XComponent xcomponent = null;
 		XUnoUrlResolver xurlresolver = null;
@@ -274,19 +315,39 @@ public class HtmlOpenOfficeConverter
 			}
 		}
 	    
-	    return;
+	    // After a successful conversion, increment the conversions
+	    // count.
+		GangliaMonitoring.incrementFilePreviewConversions();
 	  }
 
+	/**
+	 * ?
+	 *
+	 * @param binder
+	 * @param entry
+	 * @param fa
+	 * 
+	 * @throws UncheckedIOException
+	 * @throws RepositoryServiceException
+	 */
 	@Override
-	public void deleteConvertedFile(Binder binder, DefinableEntity entry,
-			FileAttachment fa) throws UncheckedIOException,
-			RepositoryServiceException {
-		super.deleteConvertedFile(binder, entry, fa, this.HTML_SUBDIR, this.HTML_FILE_SUFFIX);
+	public void deleteConvertedFile(Binder binder, DefinableEntity entry, FileAttachment fa) throws UncheckedIOException, RepositoryServiceException {
+		super.deleteConvertedFile(binder, entry, fa, HtmlConverter.HTML_SUBDIR, HtmlConverter.HTML_FILE_SUFFIX);
 	}
 
-	public void deleteConvertedFile(ShareItem shareItem, Binder binder, DefinableEntity entry,
-			FileAttachment fa) throws UncheckedIOException,
-			RepositoryServiceException {
+	/**
+	 * ?
+	 *
+	 * @param shareItem
+	 * @param binder
+	 * @param entry
+	 * @param fa
+	 * 
+	 * @throws UncheckedIOException
+	 * @throws RepositoryServiceException
+	 */
+	@Override
+	public void deleteConvertedFile(ShareItem shareItem, Binder binder, DefinableEntity entry, FileAttachment fa) throws UncheckedIOException, RepositoryServiceException {
 		String subDir = HTML_PUBLIC_SUBDIR + String.valueOf(shareItem.getId());
 		super.deleteConvertedFile(binder, entry, fa, subDir, HtmlConverter.HTML_FILE_SUFFIX);
 	}

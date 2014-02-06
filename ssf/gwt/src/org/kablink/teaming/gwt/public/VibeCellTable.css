@@ -18,15 +18,16 @@
 
 @sprite .cellTableHeader {
 	gwt-image: 'headerBackground';
-	background-repeat: repeat-x;
-	background-position: bottom;
-	/* border-right: 1px solid #d2d5d1; */
-	border-top: 1px solid #d2d5d1;
-	border-bottom: 1px solid #b8b8b8;
+	background-repeat: no-repeat;
+/*	background-position: bottom;
+	border-right: 1px solid #d2d5d1; 
+	border-top: 1px solid #d2d5d1;   */
+	border-bottom: 1px solid #ccc;
+	background-color: #ededed;
 	padding: 2px 8px;
 	text-align: left;
 	color: #666666;
-	font-size: 12px;
+	font-size: 11px;
 	overflow: hidden;
 	white-space: nowrap;
 	font-weight: normal;
@@ -40,7 +41,7 @@
 }
 
 .cellTableFirstColumnFooter {}
-.cellTableFirstColumnHeader {border-left: 1px solid #d2d5d1;}
+.cellTableFirstColumnHeader {}
 .cellTableLastColumnFooter {}
 .cellTableLastColumnHeader {}
 

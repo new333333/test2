@@ -474,10 +474,30 @@ public class ShareThisDlg2 extends DlgBox
 	private void addShareWithPublic()
 	{
 		GwtPublic publicEntity;
+		final ArrayList<GwtShareItem>  listOfShareItems;
 		
 		publicEntity = new GwtPublic();
 		publicEntity.setName( GwtTeaming.getMessages().publicName() );
-		addShare( publicEntity );
+		listOfShareItems = addShare( publicEntity );
+
+		if ( listOfShareItems != null && listOfShareItems.size() > 0 )
+		{
+			Scheduler.ScheduledCommand cmd;
+			
+			cmd = new Scheduler.ScheduledCommand()
+			{
+				@Override
+				public void execute()
+				{
+					InvokeEditShareRightsDlgEvent event;
+
+					// Fire an event to invoke the "edit share rights" dialog.
+					event = new InvokeEditShareRightsDlgEvent( listOfShareItems );
+					GwtTeaming.fireEvent( event );
+				}
+			};
+			Scheduler.get().scheduleDeferred( cmd );
+		}
 	}
 	
 	
@@ -839,6 +859,21 @@ public class ShareThisDlg2 extends DlgBox
 									m_selectionModel.setSelected( nextShareItem, checked );
 								}
 							}
+							
+		    				// Invoke the edit share widget for all selected share items.
+							{
+			    				Scheduler.ScheduledCommand cmd;
+			    				
+			    				cmd = new Scheduler.ScheduledCommand()
+			    				{
+									@Override
+									public void execute()
+									{
+										editSelectedShares();
+									}
+								};
+								Scheduler.get().scheduleDeferred( cmd );
+							}
 						}
 					} );
 				}
@@ -867,6 +902,21 @@ public class ShareThisDlg2 extends DlgBox
 			    			if ( checked == false )
 			    			{
 			    				m_selectAllHeader.setValue( false );
+			    			}
+			    			
+		    				// Invoke the edit share widget for all selected share items.
+			    			{
+			    				Scheduler.ScheduledCommand cmd;
+			    				
+			    				cmd = new Scheduler.ScheduledCommand()
+			    				{
+									@Override
+									public void execute()
+									{
+										editSelectedShares();
+									}
+								};
+								Scheduler.get().scheduleDeferred( cmd );
 			    			}
 			    		}
 			    	} );
@@ -939,29 +989,6 @@ public class ShareThisDlg2 extends DlgBox
 					menuPanel = new FlowPanel();
 					menuPanel.addStyleName( "shareDlg_MenuPanel" );
 					menuPanel.addStyleName( "shareDlg_MenuPanelOverride" );
-					
-					// Add an "Edit" button.
-					label = new InlineLabel( messages.shareDlg_editButton() );
-					label.addStyleName( "shareDlg_Btn" );
-					label.addClickHandler( new ClickHandler()
-					{
-						@Override
-						public void onClick( ClickEvent event )
-						{
-							Scheduler.ScheduledCommand cmd;
-							
-							cmd = new Scheduler.ScheduledCommand()
-							{
-								@Override
-								public void execute()
-								{
-									editSelectedShares();
-								}
-							};
-							Scheduler.get().scheduleDeferred( cmd );
-						}
-					} );
-					menuPanel.add( label );
 					
 					// Add a "Delete" button.
 					label = new InlineLabel( messages.shareDlg_deleteButton() );
@@ -1253,7 +1280,7 @@ public class ShareThisDlg2 extends DlgBox
 		}
 		else
 		{
-			Window.alert( GwtTeaming.getMessages().shareDlg_selectSharesToEdit() );
+			m_editShareWidget.setVisible( false );
 		}
 	}
 	
@@ -2473,6 +2500,21 @@ public class ShareThisDlg2 extends DlgBox
 	}
 	
 	/**
+	 * Select the first share item in the list (if there is one)
+	 */
+	private void selectFirstShareItem()
+	{
+		if ( m_listOfShares != null && m_listOfShares.size() > 0 )
+		{
+			ArrayList<GwtShareItem> listOfShares;
+			
+			listOfShares = new ArrayList<GwtShareItem>();
+			listOfShares.add( m_listOfShares.get( 0 ) );
+			invokeEditShareDlg( listOfShares );
+		}
+	}
+	
+	/**
 	 * Issue an rpc request to send an email for each of the given share item ids.
 	 */
 	private void sendNotificationEmails( ArrayList<Long> listOfShareItemIds )
@@ -2738,6 +2780,8 @@ public class ShareThisDlg2 extends DlgBox
 			sortShareItems( listOfShareItems );
 				
 			addShares( listOfShareItems );
+			
+			selectFirstShareItem();
 		}
 	}
 	

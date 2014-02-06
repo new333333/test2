@@ -424,13 +424,14 @@ public abstract class AbstractAuthenticationProviderModule extends BaseAuthentic
 				}
 			}
 			catch(AuthenticationServiceException e) {
+				unsuccessfulAuthentication(authentication);
 				Throwable t = e.getCause();
 				logger.error(e.getMessage() + ((t != null)? ": " + t.toString() : ""));
 				throw e;
 			}
 			catch(AuthenticationException e) {
-				String exDesc;
-				
+				unsuccessfulAuthentication(authentication);
+				String exDesc;				
 				Long zone = getZoneModule().getZoneIdByVirtualHost(ZoneContextHolder.getServerName());
 				if ( e.getCause() != null )
 					exDesc = e.getCause().toString();
@@ -440,6 +441,7 @@ public abstract class AbstractAuthenticationProviderModule extends BaseAuthentic
 				throw e;
 			}
 			catch(RuntimeException e) {
+				unsuccessfulAuthentication(authentication);
 				Long zone = getZoneModule().getZoneIdByVirtualHost(ZoneContextHolder.getServerName());
 				logger.error("Authentication failure for [" + authentication.getName() + "]", e);
 				throw e;	
@@ -640,6 +642,12 @@ public abstract class AbstractAuthenticationProviderModule extends BaseAuthentic
 	private Authentication successfulAuthentication(Authentication result) {
 		if(LoginInfo.AUTHENTICATOR_WEB.equals(getAuthenticator()))
 			GangliaMonitoring.addLoggedInUser(getLoginName(result)); // This metric is applicable only with web client (browser)
+		return result;
+	}
+	
+	private Authentication unsuccessfulAuthentication(Authentication result) {
+		if(LoginInfo.AUTHENTICATOR_WEB.equals(getAuthenticator()))
+			GangliaMonitoring.incrementFailedLogins(); // This metric is applicable only with web client (browser)
 		return result;
 	}
 	

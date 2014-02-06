@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -163,31 +163,7 @@ public class FolderEntryDocument extends VibeFlowPanel {
 		// ...and tell the composite that we're ready.
 		m_fec.viewComponentReady();
 	}
-	
-	/**
-	 * Called to set the panel's height.
-	 * 
-	 * Overrides the UIObject.setHeight() method.
-	 */
-	@Override
-	public void setHeight(final String height) {
-		// If we've got an <IFRAME> containing HTML...
-		if (null != m_htmlFrame) {
-			// ...set it's size after things stabilize...
-			m_htmlFrame.setWidth("1px");	// We first set it to 1px so that the getOffsetWidth() call below isn't affected by the current width.
-			GwtClientHelper.deferCommand(new ScheduledCommand() {
-				@Override
-				public void execute() {
-					m_htmlFrame.setHeight(height);
-					m_htmlFrame.setWidth((getOffsetWidth() - NO_VSCROLL_ADJUST) + "px");
-				}
-			});
-		}
 
-		// ...and pass the height to the super class.
-		super.setHeight(height);
-	}
-	
 	/**
 	 * Called when the document gets resized.
 	 * 
@@ -195,9 +171,17 @@ public class FolderEntryDocument extends VibeFlowPanel {
 	 */
 	@Override
 	public void onResize() {
-		// Allow the super class to process the sizing.
+		// Allow the super class to process the sizing...
 		super.onResize();
 
+		// ...and set the content image width, if necessary.
+		setContentImageWidth();
+	}
+	
+	/*
+	 * Sets a content image's width, as necessary.
+	 */
+	private void setContentImageWidth() {
 		// If we're displaying a document as an <IMG>...
 		if (m_fed.isContentImage() && (null != m_contentImage)) {
 			// ...and the image is wider than the width we have to
@@ -212,5 +196,39 @@ public class FolderEntryDocument extends VibeFlowPanel {
 			     m_contentImage.setWidth(offsetWidth + "px");
 			else m_contentImage.getElement().getStyle().setProperty("width", "");
 		}
+	}
+	
+	/**
+	 * Called to set the panel's height.
+	 * 
+	 * Overrides the UIObject.setHeight() method.
+	 */
+	@Override
+	public void setHeight(final String height) {
+		// If we've got an <IFRAME> containing HTML...
+		if (null != m_htmlFrame) {
+			// ...set its true size after things stabilize...
+			m_htmlFrame.setWidth("1px");	// We first set it to 1px so that the getOffsetWidth() call below isn't affected by the current width.
+			GwtClientHelper.deferCommand(new ScheduledCommand() {
+				@Override
+				public void execute() {
+					m_htmlFrame.setHeight(height);
+					m_htmlFrame.setWidth((getOffsetWidth() - NO_VSCROLL_ADJUST) + "px");
+				}
+			});
+		}
+		else if (m_fed.isContentImage() && (null != m_contentImage)) {
+			// ...set its true size after things stabilize...
+			m_contentImage.setWidth("1px");	// We first set it to 1px so any getOffsetWidth() calls below aren't affected by the current width.
+			GwtClientHelper.deferCommand(new ScheduledCommand() {
+				@Override
+				public void execute() {
+					setContentImageWidth();
+				}
+			});
+		}
+
+		// ...and pass the height to the super class.
+		super.setHeight(height);
 	}
 }
