@@ -3098,6 +3098,7 @@ public interface GwtTeamingMessages extends Messages
 	String editLdapServerConfigDlg_DeleteSearchLabel();
 	String editLdapServerConfigDlg_DirTypeLabel();
 	String editLdapServerConfigDlg_ErrorNoBaseDn();
+	String editLdapServerConfigDlg_ErrorNoGuidAttrib();
 	String editLdapServerConfigDlg_ErrorNoPwd();
 	String editLdapServerConfigDlg_ErrorNoProxyDn();
 	String editLdapServerConfigDlg_ErrorNoServerUrl();

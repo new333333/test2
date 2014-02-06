@@ -103,6 +103,9 @@ public class EditLdapServerConfigDlg extends DlgBox
 	private static String SAM_ACCOUNT_NAME_ATTRIB = "sAMAccountName";
 	private static String CN_ATTRIB = "cn";
 	private static String OTHER_ATTRIB = "other";
+	private static String EDIR_GUID_NAME = "GUID";
+	private static String AD_GUID_NAME = "objectGUID";
+	private static String OTHER_GUID_NAME = "other-guid";
 	
 	private GwtLdapConnectionConfig m_serverConfig;
 	private String m_defaultGroupFilter = null;
@@ -115,13 +118,11 @@ public class EditLdapServerConfigDlg extends DlgBox
 	private TextBox m_serverUrlTextBox;
 	private TextBox m_proxyDnTextBox;
 	private PasswordTextBox m_proxyPwdTextBox;
-	private TextBox m_guidAttribTextBox;
 	private TextArea m_userAttribMappingsTextArea;
 	private FlexTable m_serverPanelTable;
 	private ListBox m_dirTypeLB;
+	private ListBox m_guidLB;
 	private ListBox m_nameAttribLB;
-	private int m_ldapGuidHintRow;
-	private int m_ldapGuidControlsRow;
 
 	// Controls used in the Users tab
 	private CellTable<GwtLdapSearchInfo> m_userSearchesTable;
@@ -590,7 +591,7 @@ public class EditLdapServerConfigDlg extends DlgBox
 			++row;
 		}
 		
-		// Add the ldap guid attribute controls
+		// Add the controls for entering ldap attribute names.
 		{
 			// Add a listbox that holds the different directory types
 			{
@@ -603,7 +604,11 @@ public class EditLdapServerConfigDlg extends DlgBox
 				m_dirTypeLB.setVisibleItemCount( 1 );
 				m_dirTypeLB.addItem( EDIR_NAME, DIR_TYPE_EDIR );
 				m_dirTypeLB.addItem( AD_NAME, DIR_TYPE_AD );
-				m_dirTypeLB.addItem( messages.editLdapServerConfigDlg_Other(), DIR_TYPE_OTHER );
+				
+				// Filr only supports eDir and AD.  Add "Other" if we are not running Filr
+				if ( GwtClientHelper.isLicenseFilr() == false )
+					m_dirTypeLB.addItem( messages.editLdapServerConfigDlg_Other(), DIR_TYPE_OTHER );
+				
 				m_dirTypeLB.addChangeHandler( new ChangeHandler()
 				{
 					@Override
@@ -626,6 +631,14 @@ public class EditLdapServerConfigDlg extends DlgBox
 				++row;
 			}
 			
+			// Add a little space
+			{
+				tmpPanel = new FlowPanel();
+				tmpPanel.getElement().getStyle().setMarginTop( 5, Unit.PX );
+				m_serverPanelTable.setWidget( row, 0, tmpPanel );
+				++row;
+			}
+			
 			// Add controls for entering the name of the attribute that uniquely identifies a user.
 			{
 				// Add a hint for the guid attribute
@@ -635,18 +648,39 @@ public class EditLdapServerConfigDlg extends DlgBox
 				tmpPanel.add( label );
 				m_serverPanelTable.setHTML( row, 0, tmpPanel.getElement().getInnerHTML() );
 				cellFormatter.setColSpan( row, 0, 2 );
-				m_ldapGuidHintRow = row;
 				++row;
 				
 				tmpPanel = new FlowPanel();
 				label = new Label( messages.editLdapServerConfigDlg_GuidAttributeLabel() );
 				tmpPanel.add( label );
-				m_serverPanelTable.setHTML( row, 0, tmpPanel.getElement().getInnerHTML()  );
+				m_serverPanelTable.setHTML( row, 0, tmpPanel.getElement().getInnerHTML() );
 				
-				m_guidAttribTextBox = new TextBox();
-				m_guidAttribTextBox.setVisibleLength( 20 );
-				m_serverPanelTable.setWidget( row, 1, m_guidAttribTextBox );
-				m_ldapGuidControlsRow = row;
+				// Add a listbox that holds the names of the attributes used by eDir and AD
+				m_guidLB = new ListBox( false );
+				m_guidLB.setVisibleItemCount( 1 );
+				m_guidLB.addItem( EDIR_GUID_NAME, EDIR_GUID_NAME );
+				m_guidLB.addItem( AD_GUID_NAME, AD_GUID_NAME );
+				m_guidLB.addItem( messages.editLdapServerConfigDlg_Other(), OTHER_GUID_NAME );
+				
+				m_guidLB.addChangeHandler( new ChangeHandler()
+				{
+					@Override
+					public void onChange( ChangeEvent event )
+					{
+						Scheduler.ScheduledCommand cmd;
+						
+						cmd = new Scheduler.ScheduledCommand()
+						{
+							@Override
+							public void execute()
+							{
+								handleGuidSelectionChanged();
+							}
+						};
+						Scheduler.get().scheduleDeferred( cmd );
+					}
+				} );
+				m_serverPanelTable.setWidget( row, 1, m_guidLB );
 				++row;
 			}
 		}
@@ -1015,18 +1049,9 @@ public class EditLdapServerConfigDlg extends DlgBox
 	private void danceDlg()
 	{
 		String dirType;
-		boolean visible = false;
 		
 		// Get the selected directory type
 		dirType = getSelectedDirType();
-		
-		if ( dirType.equalsIgnoreCase( DIR_TYPE_OTHER ) )
-			visible = true;
-		
-		// Show/hide the controls that let the user enter the name of the attribute that uniquely
-		// identifies a user.
-		m_serverPanelTable.getRowFormatter().setVisible( m_ldapGuidHintRow, visible );
-		m_serverPanelTable.getRowFormatter().setVisible( m_ldapGuidControlsRow, visible );
 		
 		// Add or remove attribute names from the listbox depending on the selected dir type
 		{
@@ -1172,6 +1197,12 @@ public class EditLdapServerConfigDlg extends DlgBox
 
 				if ( isFieldValid( pwd, m_proxyPwdTextBox, messages.editLdapServerConfigDlg_ErrorNoPwd() ) == false )
 					return null;
+				
+				if ( guidAttrib.equalsIgnoreCase( OTHER_GUID_NAME ) )
+				{
+					Window.alert( messages.editLdapServerConfigDlg_ErrorNoGuidAttrib() );
+					return null;
+				}
 				
 				if ( userIdAttrib.equalsIgnoreCase( OTHER_ATTRIB ) )
 				{
@@ -1350,18 +1381,13 @@ public class EditLdapServerConfigDlg extends DlgBox
 	 */
 	private String getSelectedGuidAttrib()
 	{
-		String dirType;
 		String guid;
+		int index;
 		
 		guid = "GUID";
-		dirType = getSelectedDirType();
-		if ( dirType != null )
-		{
-			if ( dirType.equalsIgnoreCase( DIR_TYPE_OTHER ) )
-				guid = m_guidAttribTextBox.getValue();
-			else
-				guid = dirType;
-		}
+		index = m_guidLB.getSelectedIndex();
+		if ( index >= 0 )
+			guid = m_guidLB.getValue( index );
 		
 		return guid;
 	}
@@ -1414,22 +1440,64 @@ public class EditLdapServerConfigDlg extends DlgBox
 		
 		danceDlg();
 		
-		// If the user selected "other" for the directory type, give
-		// the focus to the text box where the user will enter the name
-		// of the guid attribute.
 		dirType = getSelectedDirType();
-		if ( DIR_TYPE_OTHER.equalsIgnoreCase( dirType ) )
-			m_guidAttribTextBox.setFocus( true );
-		else if ( DIR_TYPE_AD.equalsIgnoreCase( dirType ) )
+
+		if ( DIR_TYPE_AD.equalsIgnoreCase( dirType ) )
 		{
-			// User selected Active Directory so select sAMAccountName as the
-			// name attribute.
+			// User selected Active Directory.
+			// Select "objectGUID" as the guid attribute
+			GwtClientHelper.selectListboxItemByValue( m_guidLB, AD_GUID_NAME );
+			
+			// Select sAMAccountName as the name attribute.
 			GwtClientHelper.selectListboxItemByValue( m_nameAttribLB, SAM_ACCOUNT_NAME_ATTRIB );
 		}
 		else if ( DIR_TYPE_EDIR.equalsIgnoreCase( dirType ) )
 		{
-			// User selected eDirectory so select cn as the name attribute
+			// User selected eDirectory
+			// Select "GUID" as the guid attribute
+			GwtClientHelper.selectListboxItemByValue( m_guidLB, EDIR_GUID_NAME );
+			
+			// Select cn as the name attribute
 			GwtClientHelper.selectListboxItemByValue( m_nameAttribLB, CN_ATTRIB );
+		}
+	}
+	
+	/**
+	 * This method gets called when the guid selection changes
+	 */
+	private void handleGuidSelectionChanged()
+	{
+		String guidName;
+		
+		// Did the user select "Other"? 
+		guidName = getSelectedGuidAttrib();
+		if ( guidName != null && guidName.equalsIgnoreCase( OTHER_GUID_NAME ) )
+		{
+			String attribName;
+			String msg;
+			
+			// Yes, prompt the user for the name of the guid attribute.
+			msg = GwtTeaming.getMessages().editLdapServerConfigDlg_NameAttributePrompt( getProductName() );
+			attribName = Window.prompt( msg, "" );
+			
+			// Did the user enter the name of an ldap attribute?
+			if ( attribName != null && attribName.length() > 0 )
+			{
+				int index;
+				
+				// Yes
+				// Does the name already exist in our listbox?
+				index = GwtClientHelper.doesListboxContainValue( m_guidLB, attribName );
+				if ( index == -1 )
+				{
+					// No, add it before "other"
+					index = GwtClientHelper.doesListboxContainValue( m_guidLB, OTHER_ATTRIB );
+					m_guidLB.insertItem( attribName, attribName, index );
+				}
+				
+				// Select the name that was entered
+				GwtClientHelper.selectListboxItemByValue( m_guidLB, attribName );
+			}
 		}
 	}
 	
@@ -1452,7 +1520,7 @@ public class EditLdapServerConfigDlg extends DlgBox
 			attribName = Window.prompt( msg, "" );
 			
 			// Did the user enter the name of an ldap attribute?
-			if ( attribName != null )
+			if ( attribName != null && attribName.length() > 0 )
 			{
 				int index;
 				
@@ -1521,7 +1589,6 @@ public class EditLdapServerConfigDlg extends DlgBox
 		m_serverUrlTextBox.setValue( "" );
 		m_proxyDnTextBox.setValue( "" );
 		m_proxyPwdTextBox.setValue( "" );
-		m_guidAttribTextBox.setValue( "" );
 		m_userAttribMappingsTextArea.setValue( "" );
 		
 		if ( config == null )
@@ -1530,6 +1597,7 @@ public class EditLdapServerConfigDlg extends DlgBox
 		m_serverUrlTextBox.setValue( config.getServerUrl() );
 		m_proxyDnTextBox.setValue( config.getProxyDn() );
 		m_proxyPwdTextBox.setValue( config.getProxyPwd() );
+		setDirType( config );
 		setGuidValue( config.getLdapGuidAttribute() );
 		setNameAttribValue( config.getUserIdAttribute() );
 		m_userAttribMappingsTextArea.setValue( config.getUserAttributeMappingsAsString() );
@@ -1752,22 +1820,54 @@ public class EditLdapServerConfigDlg extends DlgBox
 	/**
 	 * 
 	 */
+	private void setDirType( GwtLdapConnectionConfig config )
+	{
+		String dirType;
+		
+		if ( config == null )
+			return;
+		
+		{
+			String guidValue;
+
+			guidValue = config.getLdapGuidAttribute();
+			if ( guidValue == null || guidValue.length() == 0 )
+				dirType = DIR_TYPE_EDIR;
+			else
+				dirType = guidValue;
+		}
+
+		if ( dirType.equalsIgnoreCase( DIR_TYPE_EDIR ) == false && dirType.equalsIgnoreCase( DIR_TYPE_AD ) == false )
+		{
+			String proxyDn;
+			
+			// The admin must have selected another attribute besides "GUID" and "objectGUID"
+			// Look at the proxy user dn to see if it contains "dc=".  If it does then we
+			// are probably dealing with AD
+			proxyDn = config.getProxyDn();
+			if ( proxyDn != null && proxyDn.indexOf( "dc=" ) >= 0 )
+			{
+				dirType = DIR_TYPE_AD;
+			}
+			else
+			{
+				// Default to eDir
+				dirType = DIR_TYPE_EDIR;
+			}
+		}
+
+		GwtClientHelper.selectListboxItemByValue( m_dirTypeLB, dirType );
+	}
+	
+	/**
+	 * 
+	 */
 	private void setGuidValue( String guidValue )
 	{
-		m_guidAttribTextBox.setValue( "" );
-		
 		if ( guidValue == null || guidValue.length() == 0 )
-			guidValue = DIR_TYPE_EDIR;
+			guidValue = EDIR_GUID_NAME;
 
-		if ( guidValue.equalsIgnoreCase( DIR_TYPE_EDIR ) || guidValue.equalsIgnoreCase( DIR_TYPE_AD ) )
-		{
-			GwtClientHelper.selectListboxItemByValue( m_dirTypeLB, guidValue );
-		}
-		else
-		{
-			GwtClientHelper.selectListboxItemByValue( m_dirTypeLB, DIR_TYPE_OTHER );
-			m_guidAttribTextBox.setValue( guidValue );
-		}
+		GwtClientHelper.selectListboxItemByValue( m_guidLB, guidValue );
 	}
 	
 	/**
