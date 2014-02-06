@@ -48,7 +48,9 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.dom4j.Element;
+
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.CoreDao;
@@ -82,6 +84,7 @@ import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.Toolbar;
 import org.kablink.teaming.web.util.WebHelper;
 import org.kablink.util.BrowserSniffer;
+
 import org.springframework.web.portlet.ModelAndView;
 
 /**
@@ -890,6 +893,23 @@ public class GwtUIHelper {
 		return (((null == obj) || (0 == obj.length())) ? defStr : obj);
 	}
 
+	/*
+	 * Returns the string representation of the profile binder ID.
+	 */
+	private static String getProfileBinderIdSafely(AllModulesInjected bs) {
+		Long profileBinderId;
+		
+		try {
+			profileBinderId = bs.getProfileModule().getProfileBinderId();
+		}
+		catch (Exception e) {
+			profileBinderId = null;
+		}
+		
+		String reply = ((null == profileBinderId) ? "" : String.valueOf(profileBinderId.longValue()));
+		return reply;
+	}
+	
 	/**
 	 * Returns the string representation of the top most workspace ID.
 	 * 
@@ -1422,6 +1442,7 @@ public class GwtUIHelper {
 	 * - productName
 	 * - ss_helpUrl
 	 * - topWSId
+	 * - profileBinderId
 	 * - showWhatsNew
 	 * - showCollection
 	 * - isFormLoginAllowed
@@ -1507,6 +1528,10 @@ public class GwtUIHelper {
 		// Put out the ID of the top Vibe workspace.
 		String topWSId = getTopWSIdSafely(bs);
 		model.put("topWSId", topWSId);
+		
+		// Put out the ID of the profileBinder.
+		String profileBinderId = getProfileBinderIdSafely(bs);
+		model.put("profileBinderId", profileBinderId);
 		
 		// Put out the flag indicating whether cloud folders are
 		// enabled.

@@ -131,6 +131,7 @@
 		teamingFeedUrl:						'<ssf:escapeJavaScript><ssf:url adapter="true" portletName="ss_forum" action="__ajax_mobile" operation="view_teaming_live" actionUrl="false" /></ssf:escapeJavaScript>',
 		tinyMCELang:						'${tinyMCELang}',
 		topWSId:							'${topWSId}',
+		profileBinderId:					'${profileBinderId}',
 		userAvatarUrl:						'',	// Initialized in GwtMainPage.loadInitialData().
 		userDescription:					'',
 		userId:								'${ssUser.id}',

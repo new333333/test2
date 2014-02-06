@@ -827,28 +827,31 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 
 			// Is the node above the tail binder a folder?
 			final TreeInfo prevTI = getPreviousTI(ti);
-			boolean manageUsers = ti.getBinderInfo().isBinderProfilesRootWSManagement();
-			if ((null != prevTI) && ((isTrash() && (!manageUsers)) || (BinderType.FOLDER == prevTI.getBinderInfo().getBinderType()))) {
-				// Yes!  Add an up button to navigate to it...
-				addUpButton(
-					fp,
-					getMessages().treePreviousFolder(),
-					new Command() {
-						@Override
-						public void execute() {
-							// If we can change contexts...
-							if (canChangeContext()) {
-								// ...select the appropriate TreeInfo...
-								selectBinder(prevTI);
-								
-								// ...and change the context.
-								GwtTeaming.fireEvent(
-									new ChangeContextEvent(
-										buildOnSelectBinderInfo(
-											prevTI)));
+			if ((null != prevTI) && (isTrash()  || (BinderType.FOLDER == prevTI.getBinderInfo().getBinderType()))) {
+				// Yes!  Is it for a binder other than the profiles
+				// root?
+				if (!(GwtClientHelper.isBinderInfoProfilesRoot(ti.getBinderInfo()))) {
+					// Yes!  Add an up button to navigate to it...
+					addUpButton(
+						fp,
+						getMessages().treePreviousFolder(),
+						new Command() {
+							@Override
+							public void execute() {
+								// If we can change contexts...
+								if (canChangeContext()) {
+									// ...select the appropriate TreeInfo...
+									selectBinder(prevTI);
+									
+									// ...and change the context.
+									GwtTeaming.fireEvent(
+										new ChangeContextEvent(
+											buildOnSelectBinderInfo(
+												prevTI)));
+								}
 							}
-						}
-					});
+						});
+				}
 				
 				// ...add the image and anchor for the binder...
 				addTIImageAndAnchor(fp, ti, selectorW);
