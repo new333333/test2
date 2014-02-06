@@ -126,7 +126,7 @@ public abstract class TreeDisplayBase {
 				if (canChangeContext()) {
 					// Yes!  Are we viewing the trash in the manage
 					// user's dialog? 
-					if (isTrash() && m_ti.getBinderInfo().isBinderProfilesRootWSManagement()) {
+					if (isTrash() && GwtClientHelper.isBinderInfoProfilesRoot(m_ti.getBinderInfo())) {
 						// Yes!  Simply tell the dialog to exit the trash viewer.
 						GwtTeaming.fireEventAsync(
 							new InvokeManageUsersDlgEvent(

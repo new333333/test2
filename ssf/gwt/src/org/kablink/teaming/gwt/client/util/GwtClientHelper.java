@@ -718,6 +718,27 @@ public class GwtClientHelper {
     }
     
     /**
+     * Returns true if the given BinderInfo represents the profiles
+     * root binder and false otherwise.
+     * 
+     * @param bi
+     * 
+     * @return
+     */
+    public static boolean isBinderInfoProfilesRoot(BinderInfo bi) {
+    	boolean reply;
+    	reply = bi.isBinderWorkspace();
+    	if (reply) {
+			String pbId = getRequestInfo().getProfileBinderId();
+			reply = GwtClientHelper.hasString(pbId);
+			if (reply) {
+				reply = pbId.equals(bi.getBinderId());
+			}
+    	}
+    	return reply;
+    }
+    
+    /**
      * Converts a GWT Date in the timezone of the browser to a time in
      * GMT.
      * 
