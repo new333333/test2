@@ -679,8 +679,8 @@ public class Utils {
 		}
 		
 		// No ssf*.properties override!  Check the license.
-		if (LicenseChecker.isAuthorizedByLicense("com.novell.teaming.Filr") &&
-				LicenseChecker.isAuthorizedByLicense("com.novell.teaming.Vibe")) {
+		if (LicenseChecker.isAuthorizedByLicense(ObjectKeys.LICENSE_OPTION_FILR) &&
+				LicenseChecker.isAuthorizedByLicense(ObjectKeys.LICENSE_OPTION_VIBE)) {
 			return true;
 		} else {
 			return false;

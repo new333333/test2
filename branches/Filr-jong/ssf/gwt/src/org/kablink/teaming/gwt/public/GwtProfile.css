@@ -252,9 +252,9 @@ display: inline-block;
 	text-decoration:none;
 	background: #949494;
 	padding: 2px 6px;
-	-moz-border-radius: 15px;
-	border-radius: 15px;
-	-webkit-border-radius: 15px;
+	border-radius: 5px;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
 	}
 
 .user_status a.clearStatus:hover {
@@ -262,9 +262,9 @@ display: inline-block;
 	text-decoration:none;
 	background: #85BCC3 url(images/header_blend_teal_bg.png) repeat-x scroll center bottom;
 	padding: 2px 6px;
-	-moz-border-radius: 15px;
-	border-radius: 15px;
-	-webkit-border-radius: 15px;
+	border-radius: 5px;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
 	}
 
 .shareButton {
@@ -373,20 +373,20 @@ top: 0px;
 	text-decoration:none;	
 	cursor: pointer !important;
 	white-space: nowrap;
-	border-radius: 15px;
-	-moz-border-radius: 15px;
-	-webkit-border-radius: 15px;
-	background: -webkit-gradient(linear, left top, left bottom, from(#ffffff), to(#E0E0E0));
-	background: -moz-linear-gradient(center top , #ffffff, #E0E0E0) repeat scroll 0 0;
-	background: linear-gradient(center top , #ffffff, #E0E0E0) repeat scroll 0 0;
 	background-color: #fff;	
+	border-radius: 5px;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+/*	background: -webkit-gradient(linear, left top, left bottom, from(#ffffff), to(#E0E0E0));
+	background: -moz-linear-gradient(center top , #ffffff, #E0E0E0) repeat scroll 0 0;
+	background: linear-gradient(center top , #ffffff, #E0E0E0) repeat scroll 0 0;    */
 }
 .profile-action a:hover {
 	color: #135c8f;
 	border: 1px solid #81b2bd;
-	border-radius: 15px;
-	-moz-border-radius: 15px;
-	-webkit-border-radius: 15px;	
+	border-radius: 5px;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;	
 }
 * html .profile-action a {width:100%;}
 .profile-workspace-link {
@@ -424,12 +424,12 @@ background:none repeat scroll 0 0 white;
 background-color:#E6F2F4;
 border:medium none;
 color:#318998;
-font-family:"lucida grande",tahoma,verdana,arial,sans-serif;
+font-family:Arial, Helvetica, sans-serif;
 font-weight:bold;
 margin:0.3em 0;
 padding:0.12em 0.8em;
--moz-border-radius: 3px;
 border-radius: 3px;
+-moz-border-radius: 3px;
 -webkit-border-radius: 3px;
 }
 .profile-save-button, .profile-edit-button, .profile-cancel-button {

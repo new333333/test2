@@ -39,6 +39,7 @@ import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
+import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HelpData;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 
@@ -271,7 +272,7 @@ public class EditZoneShareSettingsDlg extends DlgBox
 	/**
 	 * 
 	 */
-	public void init()
+	private void init()
 	{
 		hideErrorPanel();
 		
@@ -353,7 +354,7 @@ public class EditZoneShareSettingsDlg extends DlgBox
 	 * of it via the callback.
 	 * 
 	 */
-	public static void createAsync(
+	public static void createDlg(
 							final boolean autoHide,
 							final boolean modal,
 							final int left,
@@ -389,5 +390,30 @@ public class EditZoneShareSettingsDlg extends DlgBox
 				ezsrDlgClient.onSuccess( cssDlg );
 			}
 		});
+	}
+	
+	/**
+	 * Put the initAndShow() method behind a split point
+	 */
+	public static void initAndShow( final EditZoneShareSettingsDlg dlg )
+	{
+		GWT.runAsync( EditZoneShareSettingsDlg.class, new RunAsyncCallback()
+		{			
+			@Override
+			public void onFailure( Throwable reason )
+			{
+				GwtClientHelper.deferredAlert( GwtTeaming.getMessages().codeSplitFailure_EditZoneShareSettingsDlg() );
+			}
+
+			@Override
+			public void onSuccess()
+			{
+				if ( dlg != null )
+				{
+					dlg.init();
+					dlg.show();
+				}
+			}
+		} );
 	}
 }

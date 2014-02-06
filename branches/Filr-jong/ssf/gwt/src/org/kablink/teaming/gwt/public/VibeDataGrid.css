@@ -17,16 +17,17 @@
 }
 
 @sprite .dataGridHeader {
-	gwt-image: 'headerBackground';
-	background-repeat: repeat-x;
-	background-position: bottom;
+	gwt-image: 'headerBackground'; 
+	background-repeat: no-repeat;
+	/*background-position: bottom; */
 	/* border-right: 1px solid #d2d5d1; */
-	border-top: 1px solid #d2d5d1;
-	border-bottom: 1px solid #b8b8b8;
+	/* border-top: 1px solid #d2d5d1;  */
+	border-bottom: 1px solid #ccc;  
 	padding: 2px 8px;
 	text-align: left;
 	color: #666666;
-	font-size: 12px;
+	background-color: #ededed;
+	font-size: 11px;
 	overflow: hidden;
 	white-space: nowrap;
 	font-weight: normal;
@@ -40,7 +41,7 @@
 }
 
 .dataGridFirstColumnFooter {}
-.dataGridFirstColumnHeader {border-left: 1px solid #d2d5d1;}
+.dataGridFirstColumnHeader {}
 .dataGridLastColumnFooter {}
 .dataGridLastColumnHeader {}
 
@@ -51,7 +52,8 @@
 
 .dataGridSortableHeader:hover {
 	color: #135c8f;
-	background-color: blue;
+	background-color: #e0e0e0;
+	border-radius: 2px;
 }
 
 .dataGridSortedHeaderAscending {	font-weight: bold; color: #000;}

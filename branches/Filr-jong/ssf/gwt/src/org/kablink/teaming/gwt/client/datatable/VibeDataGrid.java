@@ -65,7 +65,7 @@ public class VibeDataGrid<T> extends DataGrid<T> {
 		ImageResource dataGridSortDescending();
 
 		@ImageOptions(repeatStyle = RepeatStyle.Both)
-		@Source("org/kablink/teaming/gwt/public/images/blends/gray_blend8_28.png")
+		@Source("org/kablink/teaming/gwt/public/images/1px_spacer.gif")
 		ImageResource headerBackground();
 
 		// ...and style sheets.

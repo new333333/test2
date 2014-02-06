@@ -53,6 +53,7 @@ import org.kablink.teaming.gwt.client.datatable.ApplyColumnWidths;
 import org.kablink.teaming.gwt.client.rpc.shared.BooleanRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.CompleteExternalUserSelfRegistrationCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetLoginInfoCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetSiteBrandingCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.RequestResetPwdCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.service.GwtRpcServiceAsync;
@@ -459,69 +460,39 @@ public class LoginDlg extends DlgBox
 	/**
 	 * 
 	 */
-	private void createHeaderNow()
+	private void createHeaderNow( GwtBrandingData brandingData )
 	{
-		MastHead mastHead;
 		boolean useDefaultImg = true;
 		String imgUrl = null;
 		
-		// Get the branding data.
-		mastHead = GwtTeaming.getMainPage().getMastHead();
-		if ( mastHead != null )
+		if ( brandingData != null )
 		{
-			GwtBrandingData brandingData;
+			String imgName;
 			
-			// Has the site branding already been retrieved?
-			if ( mastHead.hasSiteBrandingBeenRetrieved() == false && m_numAttempts < 8 )
+			// Get the name of the image to use.
+			imgName = brandingData.getLoginDlgImageName();
+			
+			// Do we have an image name to use
+			if ( imgName != null && imgName.length() > 0 )
 			{
-				Timer timer;
-				
-				// No
-				// We need to wait until the masthead has read the branding data
-				timer = new Timer()
-				{
-					@Override
-					public void run()
-					{
-						createHeaderNow();
-					}
-				};
-				
-				++m_numAttempts;
-				timer.schedule( 150 );
-				return;
-			}
-
-			brandingData = mastHead.getSiteBrandingData();
-			if ( brandingData != null )
-			{
-				String imgName;
-				
-				// Get the name of the image to use.
-				imgName = brandingData.getLoginDlgImageName();
-				
-				// Do we have an image name to use
-				if ( imgName != null && imgName.length() > 0 )
+				// Yes
+				// Is the branding image name "__default teaming image__"?
+				if ( imgName.equalsIgnoreCase( BrandingPanel.DEFAULT_TEAMING_IMAGE ) )
 				{
 					// Yes
-					// Is the branding image name "__default teaming image__"?
-					if ( imgName.equalsIgnoreCase( BrandingPanel.DEFAULT_TEAMING_IMAGE ) )
-					{
-						// Yes
-						useDefaultImg = true;
-					}
-					// Is the branding image name "__no image__"?
-					else if ( imgName.equalsIgnoreCase( BrandingPanel.NO_IMAGE ) )
-					{
-						// Yes
+					useDefaultImg = true;
+				}
+				// Is the branding image name "__no image__"?
+				else if ( imgName.equalsIgnoreCase( BrandingPanel.NO_IMAGE ) )
+				{
+					// Yes
+					useDefaultImg = false;
+				}
+				else
+				{
+					imgUrl = brandingData.getLoginDlgImageUrl();
+					if ( imgUrl != null && imgUrl.length() > 0 )
 						useDefaultImg = false;
-					}
-					else
-					{
-						imgUrl = brandingData.getLoginDlgImageUrl();
-						if ( imgUrl != null && imgUrl.length() > 0 )
-							useDefaultImg = false;
-					}
 				}
 			}
 		}
@@ -938,6 +909,73 @@ public class LoginDlg extends DlgBox
 		
 		return null;
 	}
+
+	/**
+	 * Get the site branding data and then finish creating the header.
+	 */
+	private void getSiteBrandingDataThenCreateHeader()
+	{
+		AsyncCallback<VibeRpcResponse> getSiteBrandingCallback;
+		GetSiteBrandingCmd cmd;
+
+		// Create the callback that will be used when we issue an ajax call to get the site branding
+		getSiteBrandingCallback = new AsyncCallback<VibeRpcResponse>()
+		{
+			/**
+			 * 
+			 */
+			@Override
+			public void onFailure( final Throwable t )
+			{
+				Scheduler.ScheduledCommand cmd;
+
+				cmd = new Scheduler.ScheduledCommand()
+				{
+					@Override
+					public void execute()
+					{
+						String[] patches = null;
+
+						GwtClientHelper.handleGwtRPCFailure(
+								t,
+								GwtTeaming.getMessages().rpcFailure_GetBranding(),
+								patches );
+	
+						createHeaderNow( null );
+					}
+				};
+				Scheduler.get().scheduleDeferred( cmd );
+			}
+	
+			/**
+			 * 
+			 * @param result
+			 */
+			@Override
+			public void onSuccess( VibeRpcResponse response )
+			{
+				final GwtBrandingData brandingData;
+				Scheduler.ScheduledCommand cmd;
+				
+				brandingData = (GwtBrandingData) response.getResponseData();
+
+				cmd = new Scheduler.ScheduledCommand()
+				{
+					@Override
+					public void execute()
+					{
+						createHeaderNow( brandingData );
+					}
+				};
+				Scheduler.get().scheduleDeferred( cmd );
+				
+			}
+		};
+		
+		// Issue an ajax request to get the site branding data.
+		cmd = new GetSiteBrandingCmd();
+		GwtClientHelper.executeCommand( cmd, getSiteBrandingCallback );
+	}
 	
 	/**
 	 * This method gets called when the user clicks on the Register button
@@ -1304,9 +1342,9 @@ public class LoginDlg extends DlgBox
 
 		setAllowCancel( allowCancel );
 
-		// Create the header.  createHeaderNow() will show the dialog when it is finished.
+		// Create the header.  getSiteBrandingDataThenCreateHeader() will show the dialog when it is finished.
 		m_initialized = true;
-		createHeaderNow();
+		getSiteBrandingDataThenCreateHeader();
 
 		// Issue an ajax request to get self registration info and a list of open id providers
 		getLoginInfoFromServer( loginStatus );

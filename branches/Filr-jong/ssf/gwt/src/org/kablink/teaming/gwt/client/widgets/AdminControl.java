@@ -758,7 +758,7 @@ public class AdminControl extends TeamingPopupPanel
 		setStylePrimaryName( "adminControlPopup" );
 		
 		// Create a control to hold the administration page for the selected administration action.
-		ContentControl.createAsync(
+		ContentControl.createControl(
 				mainPage,
 				"adminContentControl",
 				new ContentControlClient()
@@ -913,10 +913,10 @@ public class AdminControl extends TeamingPopupPanel
 			if ( url != null && url.length() > 0 )
 			{
 				// Clear the iframe's content 
-				m_contentControl.clear();
+				ContentControl.clear( m_contentControl );
 				
 				// Set the iframe's content to the selected administration page.
-				m_contentControl.setContentFrameUrl( url, Instigator.ADMINISTRATION_CONSOLE );
+				ContentControl.setContentFrameUrl( m_contentControl, url, Instigator.ADMINISTRATION_CONSOLE );
 				
 				GwtClientHelper.deferCommand( new ScheduledCommand()
 				{
@@ -937,84 +937,17 @@ public class AdminControl extends TeamingPopupPanel
 	 * For some reason if we try to logout while the "configure ldap" page is still loaded
 	 * we see an error in IE.  So clear the content panel.
 	 */
-	public void doPreLogoutCleanup()
+	private void doPreLogoutCleanup()
 	{
 		if ( isShowing() == true )
 		{
 			// Clear the iframe's content 
-			m_contentControl.clear();
+			ContentControl.clear( m_contentControl );
 		
 			// Set the iframe's content to nothing.
-			m_contentControl.setContentFrameUrl( "", Instigator.ADMINISTRATION_CONSOLE );
+			ContentControl.setContentFrameUrl( m_contentControl, "", Instigator.ADMINISTRATION_CONSOLE );
 		}
 	}// end doPreLogoutCleanup()
-	
-	
-	/**
-	 * Issue an ajax request to get information about the upgrade tasks that need to be performed.
-	 * If there are upgrade tasks that need to be performed show the list of tasks.
-	 */
-	public static void showUpgradeTasks()
-	{
-		AsyncCallback<VibeRpcResponse> rpcGetUpgradeInfoCallback = null;
-
-		// Create the callback that will be used when we issue an ajax call to get upgrade information
-		rpcGetUpgradeInfoCallback = new AsyncCallback<VibeRpcResponse>()
-		{
-			/**
-			 * 
-			 */
-			@Override
-			public void onFailure( Throwable t )
-			{
-				GwtClientHelper.handleGwtRPCFailure(
-					t,
-					GwtTeaming.getMessages().rpcFailure_GetUpgradeInfo() );
-			}
-	
-			/**
-			 * 
-			 * @param result
-			 */
-			@Override
-			public void onSuccess( final VibeRpcResponse response )
-			{
-				GwtClientHelper.deferCommand( new ScheduledCommand()
-				{
-					/**
-					 * 
-					 */
-					@Override
-					public void execute()
-					{
-						GwtUpgradeInfo upgradeInfo;
-						boolean upgradeTasksExist;
-						boolean filrAdminTasksExist;
-						
-						upgradeInfo = (GwtUpgradeInfo) response.getResponseData();
-						
-						// Are there upgrade tasks that need to be performed?
-						upgradeTasksExist = upgradeInfo.doUpgradeTasksExist();
-						
-						filrAdminTasksExist = false;
-						if ( GwtTeaming.m_requestInfo.isLicenseFilr() && upgradeInfo.doFilrAdminTasksExist() )
-							filrAdminTasksExist = true;
-						
-						if ( upgradeTasksExist || filrAdminTasksExist || upgradeInfo.getIsLicenseExpired() )
-						{
-							// Yes, invoke the AdminInfoDlg.
-							showAdminInfoDlg( upgradeInfo, 250, 100 );
-						}
-					}
-				} );
-			}
-		};
-
-		// When we get the upgrade info from the server our callback will check to
-    	// see if upgrade tasks exists.  If they do, the callback will invoke the
-    	// AdminInfoDlg which will show the user the tasks they need to do.
-		getUpgradeInfoFromServer( rpcGetUpgradeInfoCallback );
-	}
 	
 	
 	/**
@@ -1049,19 +982,7 @@ public class AdminControl extends TeamingPopupPanel
 	/**
 	 * 
 	 */
-	public void hideContentPanel()
-	{
-		if ( m_contentControl.isVisible() )
-		{
-			m_contentControl.setVisible( false );
-		}
-	}// end hideContentPanel()
-	
-	
-	/**
-	 * 
-	 */
-	public void hideControl()
+	private void hideControl()
 	{
 		if ( isShowing() )
 		{
@@ -1073,7 +994,7 @@ public class AdminControl extends TeamingPopupPanel
 	/**
 	 * 
 	 */
-	public void hideTreeControl()
+	private void hideTreeControl()
 	{
 		if ( m_adminActionsTreeControl.isVisible() )
 		{
@@ -1391,7 +1312,7 @@ public class AdminControl extends TeamingPopupPanel
 	/**
 	 * Invokes the Share dialog in administrative mode.
 	 */
-	public void invokeManageSharesDlg()
+	private void invokeManageSharesDlg()
 	{
 		// Have we created a share dialog yet?
 		if ( m_shareDlg == null )
@@ -1530,7 +1451,7 @@ public class AdminControl extends TeamingPopupPanel
 	/**
 	 * 
 	 */
-	public void relayoutPage( final VibeEventBase<?> fireOnLayout )
+	private void relayoutPage( final VibeEventBase<?> fireOnLayout )
 	{
 		// If the AdminControl is visible...
 		if ( isShowing() )
@@ -1547,10 +1468,12 @@ public class AdminControl extends TeamingPopupPanel
 		}
 	}// end relayoutPage()
 	
-	public void relayoutPage()
+	private void relayoutPage()
 	{
+		VibeEventBase<?> fireOnLayout = null;
+		
 		// Always use the initial form of the method.
-		relayoutPage( null );	// null -> No event needs to be fired when the layout is complete.
+		relayoutPage( fireOnLayout );	// null -> No event needs to be fired when the layout is complete.
 	}// end relayoutPage()
 	
 	
@@ -1592,7 +1515,7 @@ public class AdminControl extends TeamingPopupPanel
 		// Set the width and height of the content control.
 		m_contentControlWidth = width;
 		m_contentControlHeight = height + GwtConstants.PANEL_PADDING;
-		m_contentControl.setDimensions( m_contentControlWidth, m_contentControlHeight );
+		ContentControl.setDimensions( m_contentControl, m_contentControlWidth, m_contentControlHeight );
 		
 		// Set the width and height that should be used by GWT dialogs
 		m_dlgWidth = m_contentControlWidth - 12;
@@ -1623,40 +1546,7 @@ public class AdminControl extends TeamingPopupPanel
 	/**
 	 * 
 	 */
-	public static void showAdminInfoDlg( final GwtUpgradeInfo upgradeInfo, final int x, final int y )
-	{
-		AdminInfoDlg.createAsync( false, true, x, y, new AdminInfoDlgClient()
-		{			
-			@Override
-			public void onUnavailable()
-			{
-				// Nothing to do.  Error handled in
-				// asynchronous provider.
-			}// end onUnavailable()
-			
-			@Override
-			public void onSuccess( final AdminInfoDlg adminInfoDlg )
-			{
-				GwtClientHelper.deferCommand( new ScheduledCommand() {
-					@Override
-					public void execute()
-					{
-						showAdminInfoDlgImpl( adminInfoDlg, upgradeInfo );
-					}// end execute()
-				} );
-			}// onSuccess()
-		} );
-	}// end showAdminInfoDlg()
-	
-	private static void showAdminInfoDlgImpl( final AdminInfoDlg adminInfoDlg, final GwtUpgradeInfo upgradeInfo ) {
-		AdminInfoDlg.initAndShow( adminInfoDlg, upgradeInfo );
-	}
-	
-	
-	/**
-	 * 
-	 */
-	public void showContentPanel()
+	private void showContentPanel()
 	{
 		if ( !m_contentControl.isVisible() )
 		{
@@ -1668,7 +1558,7 @@ public class AdminControl extends TeamingPopupPanel
 	/**
 	 * 
 	 */
-	public void showControl( final UIObject target, final VibeEventBase<?> fireOnShow )
+	private void showControl( final UIObject target, final VibeEventBase<?> fireOnShow )
 	{
 		if ( isShowing() )
 		{
@@ -1716,7 +1606,10 @@ public class AdminControl extends TeamingPopupPanel
 		}
 	}// end showControl()
 	
-	public void showControl( final UIObject target )
+	/**
+	 * 
+	 */
+	private void showControl( final UIObject target )
 	{
 		// Always use the initial form of the method.
 		showControl( target, null );	// null -> No event needs to be fired when shown.
@@ -1725,11 +1618,11 @@ public class AdminControl extends TeamingPopupPanel
 	/**
 	 * Show the page that gives the user some information about the administration console.
 	 */
-	public void showHomePage()
+	private void showHomePage()
 	{
 		if ( m_homePage != null )
 		{
-			m_contentControl.clear();
+			ContentControl.clear( m_contentControl );
 			m_contentControl.setVisible( false );
 			m_homePage.setVisible( true );
 		}
@@ -1738,7 +1631,7 @@ public class AdminControl extends TeamingPopupPanel
 	/**
 	 * 
 	 */
-	public void showTreeControl()
+	private void showTreeControl()
 	{
 		if ( !m_adminActionsTreeControl.isVisible() )
 		{
@@ -2125,7 +2018,7 @@ public class AdminControl extends TeamingPopupPanel
 			// No, create one.
 			height = m_dlgHeight;
 			width = m_dlgWidth;
-			EditZoneShareSettingsDlg.createAsync(
+			EditZoneShareSettingsDlg.createDlg(
 											true, 
 											false,
 											x, 
@@ -2150,8 +2043,7 @@ public class AdminControl extends TeamingPopupPanel
 						{
 							m_editZoneShareSettingsDlg = ezsrDlg;
 							
-							m_editZoneShareSettingsDlg.init();
-							m_editZoneShareSettingsDlg.show();
+							EditZoneShareSettingsDlg.initAndShow( m_editZoneShareSettingsDlg );
 						}
 					} );
 				}
@@ -2160,9 +2052,8 @@ public class AdminControl extends TeamingPopupPanel
 		else
 		{
 			m_editZoneShareSettingsDlg.setPixelSize( m_dlgWidth, m_dlgHeight );
-			m_editZoneShareSettingsDlg.init();
 			m_editZoneShareSettingsDlg.setPopupPosition( x, y );
-			m_editZoneShareSettingsDlg.show();
+			EditZoneShareSettingsDlg.initAndShow( m_editZoneShareSettingsDlg );
 		}
 	}
 	
@@ -3134,7 +3025,7 @@ public class AdminControl extends TeamingPopupPanel
 	 * 
 	 * @param adminCtrlClient
 	 */
-	public static void createAsync( final GwtMainPage mainPage, final AdminControlClient adminCtrlClient )
+	public static void createDlg( final GwtMainPage mainPage, final AdminControlClient adminCtrlClient )
 	{
 		GWT.runAsync( AdminControl.class, new RunAsyncCallback()
 		{			
@@ -3153,4 +3044,235 @@ public class AdminControl extends TeamingPopupPanel
 			}// end onFailure()
 		} );
 	}// end createAsync()
+
+	/**
+	 * Put hideControl() behind a split point
+	 */
+	public static void hideControl( final AdminControl adminControl )
+	{
+		GWT.runAsync( AdminControl.class, new RunAsyncCallback()
+		{
+			@Override
+			public void onSuccess()
+			{
+				if ( adminControl != null )
+					adminControl.hideControl();
+			}
+			
+			@Override
+			public void onFailure( Throwable reason )
+			{
+				Window.alert( GwtTeaming.getMessages().codeSplitFailure_AdminControl() );
+			}
+		});
+	}
+
+	/**
+	 * Put relayoutPage() behind a split point.
+	 */
+	public static void relayoutPage( final AdminControl adminControl )
+	{
+		GWT.runAsync( AdminControl.class, new RunAsyncCallback()
+		{
+			@Override
+			public void onSuccess()
+			{
+				if ( adminControl != null )
+					adminControl.relayoutPage();
+			}
+			
+			@Override
+			public void onFailure( Throwable reason )
+			{
+				Window.alert( GwtTeaming.getMessages().codeSplitFailure_AdminControl() );
+			}
+		});
+	}
+
+	/**
+	 * 
+	 */
+	public static void showAdminInfoDlg( final GwtUpgradeInfo upgradeInfo, final int x, final int y )
+	{
+		AdminInfoDlg.createAsync( false, true, x, y, new AdminInfoDlgClient()
+		{			
+			@Override
+			public void onUnavailable()
+			{
+				// Nothing to do.  Error handled in
+				// asynchronous provider.
+			}// end onUnavailable()
+			
+			@Override
+			public void onSuccess( final AdminInfoDlg adminInfoDlg )
+			{
+				GwtClientHelper.deferCommand( new ScheduledCommand() {
+					@Override
+					public void execute()
+					{
+						showAdminInfoDlgImpl( adminInfoDlg, upgradeInfo );
+					}// end execute()
+				} );
+			}// onSuccess()
+		} );
+	}// end showAdminInfoDlg()
+
+	/**
+	 * 
+	 */
+	private static void showAdminInfoDlgImpl( final AdminInfoDlg adminInfoDlg, final GwtUpgradeInfo upgradeInfo )
+	{
+		AdminInfoDlg.initAndShow( adminInfoDlg, upgradeInfo );
+	}
+	
+	/**
+	 * Put showControl() behind a split point.
+	 */
+	public static void showControl(
+		final AdminControl adminControl,
+		final UIObject target,
+		final VibeEventBase<?> fireOnShow ) 
+	{
+		GWT.runAsync( AdminControl.class, new RunAsyncCallback()
+		{
+			@Override
+			public void onSuccess()
+			{
+				if ( adminControl != null )
+					adminControl.showControl( target, fireOnShow );
+			}
+			
+			@Override
+			public void onFailure( Throwable reason )
+			{
+				Window.alert( GwtTeaming.getMessages().codeSplitFailure_AdminControl() );
+			}
+		});
+	}
+
+	/**
+	 * Put showControl() behind a split point.
+	 */
+	public static void showControl(
+		final AdminControl adminControl,
+		final UIObject target )
+	{
+		GWT.runAsync( AdminControl.class, new RunAsyncCallback()
+		{
+			@Override
+			public void onSuccess()
+			{
+				if ( adminControl != null )
+					adminControl.showControl( target );
+			}
+			
+			@Override
+			public void onFailure( Throwable reason )
+			{
+				Window.alert( GwtTeaming.getMessages().codeSplitFailure_AdminControl() );
+			}
+		});
+	}
+
+	/**
+	 * Put showHomePage() behind a split point.
+	 */
+	public static void showHomePage( final AdminControl adminControl )
+	{
+		GWT.runAsync( AdminControl.class, new RunAsyncCallback()
+		{
+			@Override
+			public void onSuccess()
+			{
+				if ( adminControl != null )
+					adminControl.showHomePage();
+			}
+			
+			@Override
+			public void onFailure( Throwable reason )
+			{
+				Window.alert( GwtTeaming.getMessages().codeSplitFailure_AdminControl() );
+			}
+		});
+	}
+
+	/**
+	 * Issue an ajax request to get information about the upgrade tasks that need to be performed.
+	 * If there are upgrade tasks that need to be performed show the list of tasks.
+	 */
+	public static void showUpgradeTasks()
+	{
+		GWT.runAsync( AdminControl.class, new RunAsyncCallback()
+		{
+			@Override
+			public void onFailure(Throwable reason)
+			{
+				Window.alert( GwtTeaming.getMessages().codeSplitFailure_AdminControl() );
+			}
+			
+			@Override
+			public void onSuccess()
+			{
+				AsyncCallback<VibeRpcResponse> rpcGetUpgradeInfoCallback = null;
+
+				// Create the callback that will be used when we issue an ajax call to get upgrade information
+				rpcGetUpgradeInfoCallback = new AsyncCallback<VibeRpcResponse>()
+				{
+					/**
+					 * 
+					 */
+					@Override
+					public void onFailure( Throwable t )
+					{
+						GwtClientHelper.handleGwtRPCFailure(
+							t,
+							GwtTeaming.getMessages().rpcFailure_GetUpgradeInfo() );
+					}
+			
+					/**
+					 * 
+					 * @param result
+					 */
+					@Override
+					public void onSuccess( final VibeRpcResponse response )
+					{
+						GwtClientHelper.deferCommand( new ScheduledCommand()
+						{
+							/**
+							 * 
+							 */
+							@Override
+							public void execute()
+							{
+								GwtUpgradeInfo upgradeInfo;
+								boolean upgradeTasksExist;
+								boolean filrAdminTasksExist;
+								
+								upgradeInfo = (GwtUpgradeInfo) response.getResponseData();
+								
+								// Are there upgrade tasks that need to be performed?
+								upgradeTasksExist = upgradeInfo.doUpgradeTasksExist();
+								
+								filrAdminTasksExist = false;
+								if ( GwtTeaming.m_requestInfo.isLicenseFilr() && upgradeInfo.doFilrAdminTasksExist() )
+									filrAdminTasksExist = true;
+								
+								if ( upgradeTasksExist || filrAdminTasksExist || upgradeInfo.getIsLicenseExpired() )
+								{
+									// Yes, invoke the AdminInfoDlg.
+									showAdminInfoDlg( upgradeInfo, 250, 100 );
+								}
+							}
+						} );
+					}
+				};
+
+				// When we get the upgrade info from the server our callback will check to
+		    	// see if upgrade tasks exists.  If they do, the callback will invoke the
+		    	// AdminInfoDlg which will show the user the tasks they need to do.
+				getUpgradeInfoFromServer( rpcGetUpgradeInfoCallback );
+			}
+		} );
+	}
+
 }// end AdminControl

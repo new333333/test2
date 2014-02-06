@@ -40,7 +40,14 @@
 	<!-- Inherit the GWT Tour support library. -->
 	<set-configuration-property name='xsiframe.failIfScriptTag' value='FALSE'/>
 	<inherits name="com.eemi.gwt.tour.GwtTour"/>
-		
+
+	<!-- Fixes a build warning with the IE9 permutation -->
+	<!-- with the GWT Tour stuff.                       -->	
+	<replace-with class="gwtquery.plugins.draggable.client.impl.DraggableHandlerImplIE8">
+		<when-type-is class="gwtquery.plugins.draggable.client.impl.DraggableHandlerImpl"/>
+		<when-property-is name="user.agent" value="ie9"/>
+	</replace-with>
+   		
 	<!-- Other 'generic' module inherits go here. -->
 
 	<!-- Specify the application entry point class. -->

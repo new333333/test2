@@ -1439,6 +1439,7 @@ public interface GwtTeamingMessages extends Messages
 	String shareDlg_noTeamsToShareWith();
 	String shareDlg_noteLabel();
 	String shareDlg_notifyLabel();
+	String shareDlg_publicLinkTitle();
 	String shareDlg_publicUrlLabel();
 	String shareDlg_readingShareInfo();
 	String shareDlg_reshareExternal();
@@ -2486,8 +2487,10 @@ public interface GwtTeamingMessages extends Messages
 	String editShareDlg_canReshareExternalLabel();
 	String editShareDlg_canReshareInternalLabel();
 	String editShareDlg_canResharePublicLabel();
+	String editShareDlg_filrLinkDesc();
 	String editShareDlg_leaveUnchanged();
 	String editShareDlg_no();
+	String editShareDlg_publicLinkDesc();
 	String editShareDlg_undefinedNote();
 	String editShareDlg_yes();
 
@@ -2952,9 +2955,9 @@ public interface GwtTeamingMessages extends Messages
 
 	// Strings used in the Share with public info dialog
 	String shareWithPublicInfoDlg_Header();
-	String shareWithPublicInfoDlg_InstructionsEntry( String itemName );
-	String shareWithPublicInfoDlg_InstructionsFolder( String itemName );
-	String shareWithPublicInfoDlg_Instructions2( String itemName );
+	String shareWithPublicInfoDlg_InstructionsEntry();
+	String shareWithPublicInfoDlg_InstructionsFolder();
+	String shareWithPublicInfoDlg_Instructions3();
 
 	// Strings used in the Change Password dialog
 	String changePasswordDlg_ChangeDefaultPasswordHint();
