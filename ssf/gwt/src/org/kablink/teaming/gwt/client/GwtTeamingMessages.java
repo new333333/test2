@@ -2655,6 +2655,7 @@ public interface GwtTeamingMessages extends Messages
 	String editNetFolderRightsDlg_CanShareLabel();
 	String editNetFolderRightsDlg_Caption();
 	String editNetFolderRightsDlg_ErrorRetrievingZoneShareRights( String error );
+	String editNetFolderRightsDlg_Hint();
 	String editNetFolderRightsDlg_Instructions();
 	String editNetFolderRightsDlg_ReShareLabel();
 	String editNetFolderRightsDlg_ShareInternalLabel();

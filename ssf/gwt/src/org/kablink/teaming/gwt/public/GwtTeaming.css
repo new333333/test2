@@ -5542,7 +5542,15 @@ td.datePickerMonth {
 	font-size: 14px; 
 	padding-bottom: 10px;
 	margin-left: 4px;
-	
+}
+
+.editNetFolderRightsDlg_Hint
+{
+	color: #4D6D8B; 
+	font-size: 14px; 
+	padding-bottom: 10px;
+	margin-left: 4px;
+	width: 450px;
 }
 /* End */
 
