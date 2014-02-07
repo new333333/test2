@@ -64,11 +64,9 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
-
 import org.kablink.teaming.BinderQuotaException;
 import org.kablink.teaming.IllegalCharacterInNameException;
 import org.kablink.teaming.NotSupportedException;
@@ -113,6 +111,7 @@ import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderRow;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderRow.PrincipalInfoId;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.GuestInfo;
 import org.kablink.teaming.gwt.client.GwtTeamingException;
+import org.kablink.teaming.gwt.client.mainmenu.ToolbarItem;
 import org.kablink.teaming.gwt.client.presence.GwtPresenceInfo;
 import org.kablink.teaming.gwt.client.rpc.shared.AvatarInfoRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.BinderDescriptionRpcResponseData;
@@ -3490,20 +3489,30 @@ public class GwtViewHelper {
 							FolderEntry entry = entryMap.get(eid.getEntityId());
 							if (null != entry) {
 								// Yes!  Create the EntityRights for the
-								// entry. 
+								// entry.  Is the entry in the trash? 
 								EntityRights entryRights = new EntityRights();
-								entryRights.setCanAddReplies( fm.testAccess(entry, FolderOperation.addReply      ));
-								entryRights.setCanModify(     fm.testAccess(entry, FolderOperation.modifyEntry   ));
-								entryRights.setCanPurge(      fm.testAccess(entry, FolderOperation.deleteEntry   ));
-								entryRights.setCanTrash(      fm.testAccess(entry, FolderOperation.preDeleteEntry));
-								
-								ShareRight entryShareRight;
-								if (GwtShareHelper.isEntitySharable(bs, entry))
-								     entryShareRight = ShareRight.SHARABLE;
-								else entryShareRight = ShareRight.NOT_SHARABLE_RIGHTS_VIOLATION;
-								entryRights.setShareRight(entryShareRight);
-								if (entryShareRight.canShare()) {
-									entryRights.setCanPublicLink(sm.testPublicLinkShareEntity(entry));
+								if (entry.isPreDeleted()) {
+									// Yes!  Then the user can't
+									// interact with it.
+									entryRights.setShareRight(ShareRight.NOT_SHARABLE_RIGHTS_VIOLATION);
+								}
+								else {
+									// No, the entry isn't in the
+									// trash!  Determine the user's
+									// rights to it.
+									entryRights.setCanAddReplies( fm.testAccess(entry, FolderOperation.addReply      ));
+									entryRights.setCanModify(     fm.testAccess(entry, FolderOperation.modifyEntry   ));
+									entryRights.setCanPurge(      fm.testAccess(entry, FolderOperation.deleteEntry   ));
+									entryRights.setCanTrash(      fm.testAccess(entry, FolderOperation.preDeleteEntry));
+									
+									ShareRight entryShareRight;
+									if (GwtShareHelper.isEntitySharable(bs, entry))
+									     entryShareRight = ShareRight.SHARABLE;
+									else entryShareRight = ShareRight.NOT_SHARABLE_RIGHTS_VIOLATION;
+									entryRights.setShareRight(entryShareRight);
+									if (entryShareRight.canShare()) {
+										entryRights.setCanPublicLink(sm.testPublicLinkShareEntity(entry));
+									}
 								}
 								
 								reply.setEntityRights(eid, entryRights);
@@ -4299,6 +4308,10 @@ public class GwtViewHelper {
 			}
 			reply.setSeen(feSeen);
 			
+			// ...set whether the entry is in the trash...
+			boolean trashed = fe.isPreDeleted();
+			reply.setTrashed(trashed);
+			
 			// ...set the entry's path... 
 			FolderEntry feTop = fe.getTopEntry();
 			boolean		isTop = (null == feTop);
@@ -4448,7 +4461,11 @@ public class GwtViewHelper {
 			}
 			
 			// ...set the view's toolbar items....
-			reply.setToolbarItems(GwtMenuHelper.getViewEntryToolbarItems(bs, request, fe));
+			List<ToolbarItem> tbItems;
+			if (trashed)
+			     tbItems = new ArrayList<ToolbarItem>();	// No possible interaction if the entry is in the trash.
+			else tbItems = GwtMenuHelper.getViewEntryToolbarItems(bs, request, fe);
+			reply.setToolbarItems(tbItems);
 
 			// ...for non-Guest internal users...
 			if ((!(user.isShared())) && user.getIdentityInfo().isInternal()) {

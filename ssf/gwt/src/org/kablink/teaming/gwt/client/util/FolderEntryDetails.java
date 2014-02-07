@@ -55,6 +55,7 @@ public class FolderEntryDetails implements IsSerializable {
 	private boolean						m_seen;							// true -> The entry is  currently  marked as having been seen by the user.  false -> It isn't.
 	private boolean						m_seenPrevious;					// true -> The entry was previously marked as having been seen by the user.  false -> It wasn't.
 	private boolean						m_top;							// true -> The entry is a top level entry.  false -> It's a comment.
+	private boolean						m_trashed;						// true -> The entry is in the trash.       false -> It's a comment.
 	private CommentsInfo				m_comments;						// Information about the comments on the entry.
 	private EntityId					m_entityId;						// The folder entry to view.
 	private EntityRights				m_entityRights;					// The rights the user has to the folder entry.
@@ -225,6 +226,7 @@ public class FolderEntryDetails implements IsSerializable {
 	public boolean                   isSeen()                      {return m_seen;                     }
 	public boolean                   isSeenPrevious()              {return m_seenPrevious;             }
 	public boolean                   isTop()                       {return m_top;                      }
+	public boolean                   isTrashed()                   {return m_trashed;                  }
 	public boolean                   isHtmlViewable()              {return (null != m_htmlView);       }
 	public CommentsInfo              getComments()                 {return m_comments;                 }
 	public EntityId                  getEntityId()                 {return m_entityId;                 }
@@ -263,6 +265,7 @@ public class FolderEntryDetails implements IsSerializable {
 	public void setSeen(                     boolean                   seen)                      {m_seen                      = seen;                     }
 	public void setSeenPrevious(             boolean                   seenPrevious)              {m_seenPrevious              = seenPrevious;             }
 	public void setTop(                      boolean                   top)                       {m_top                       = top;                      }
+	public void setTrashed(                  boolean                   trashed)                   {m_trashed                   = trashed;                  }
 	public void setComments(                 CommentsInfo              comments)                  {m_comments                  = comments;                 }
 	public void setEntityId(                 EntityId                  entityId)                  {m_entityId                  = entityId;                 }
 	public void setEntityRights(             EntityRights              entityRights)              {m_entityRights              = entityRights;             }

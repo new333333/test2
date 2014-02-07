@@ -83,7 +83,7 @@ import com.google.gwt.user.client.ui.Widget;
 public class EntryTitleCell extends AbstractCell<EntryTitleInfo> {
 	private BinderInfo			m_binderInfo;		// The binder hosting this cell.
 	private GwtFileLinkAction	m_fileLinkAction;	// The action to take when the cell's link is activated.
-	private GwtTeamingMessages  m_messages;			// 
+	private GwtTeamingMessages  m_messages;			// Access the to the localized resource strings. 
 	private Html5UploadHost		m_uploadHost;		// An HTML5 host we can use for uploading files into the folder represented by this cell.
 	private HoverHintPopup		m_hoverHintPopup;	// A hint popup that gets displayed when the user mouses over this cell.
 
@@ -95,6 +95,7 @@ public class EntryTitleCell extends AbstractCell<EntryTitleInfo> {
 	 * Constructor method.
 	 * 
 	 * @param fla
+	 * @param bi
 	 * @param uploadHost
 	 */
 	public EntryTitleCell(GwtFileLinkAction fla, BinderInfo bi, Html5UploadHost uploadHost) {
@@ -146,7 +147,8 @@ public class EntryTitleCell extends AbstractCell<EntryTitleInfo> {
 		String reply;
 		if (eti.isFile()) {
 			String fileDownloadUrl = eti.getFileDownloadUrl();
-			switch (m_fileLinkAction) {
+			GwtFileLinkAction fla = (eti.isTrash() ? GwtFileLinkAction.VIEW_DETAILS : m_fileLinkAction);	// We always View Details on entries in the trash.
+			switch (fla) {
 			default:
 			case DOWNLOAD:
 				reply = fileDownloadUrl;
