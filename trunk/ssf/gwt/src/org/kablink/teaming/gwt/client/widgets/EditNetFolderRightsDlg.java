@@ -127,6 +127,12 @@ public class EditNetFolderRightsDlg extends DlgBox
 		label.addStyleName( "editNetFolderRightsDlg_Instructions" );
 		mainPanel.add( label );
 		
+		// Add a hint that the admin must set the appropriate rights in the Share Settings
+		// dialog in order for the recipient to perform the share operations
+		label = new Label( messages.editNetFolderRightsDlg_Hint() );
+		label.addStyleName( "editNetFolderRightsDlg_Hint" );
+		mainPanel.add( label );
+		
 		clickHandler = new ClickHandler()
 		{
 			@Override
