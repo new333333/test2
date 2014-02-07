@@ -3138,7 +3138,7 @@ body, table td, select
 
 .gwt-Button {
 	color: #1f1f1f;
-	background: #f6f6f6;
+	background: #fafafa;
 	border: 1px solid #b8b8b8;
 	font-weight: normal !important;
 	font-size: 12px;
@@ -4351,13 +4351,13 @@ td.datePickerMonth {
 	border-collapse: separate;
 	border-spacing: 0;
 	color: #666666;
-	font-size: .85em;
-
 	white-space: nowrap;
-	background:url(images/blends/gray_blend8_28.png) repeat-x;
-	background-position:bottom;
+	background: #ededed;
 }
-
+.oltHeader td
+{
+	font-size: 11px;
+}
 .oltHeaderPadding, .oltContentPadding
 {
 	padding: 5px 10px 5px 5px;
@@ -4365,27 +4365,27 @@ td.datePickerMonth {
 
 .oltHeaderBorderBottom, .oltContentBorderBottom
 {
-	border-bottom: 1px solid #DBDBD3;	
+	border-bottom: 1px solid #D2D5D1;	
 }
 
 .oltHeaderBorderTop
 {
-	border-top: 1px solid #DBDBD3;
+	border-top: 1px solid #D2D5D1;
 }
 
 .oltBorderLeft
 {
-	border-left: 1px solid #BBBBB9;
+	border-left: 1px solid #D2D5D1;
 }
 
 .oltBorderRight
 {
-	border-right: 1px solid #BBBBB9;
+	border-right: 1px solid #D2D5D1;
 }
 
 .oltLastRowBorderBottom
 {
-	border-bottom: 1px solid #BBBBB9;
+	border-bottom: 1px solid #D2D5D1;
 }
 /* End of styles used with an object list table */
 
@@ -4685,7 +4685,7 @@ td.datePickerMonth {
 	-webkit-border-radius: 15px;
 }
 
-.manageNetFoldersDlg_QuickFilterPanel .ss_entryMenuFilterDIV
+.manageNetFoldersDlg_QuickFilterPanel #ss_entryMenuFilterDIV
 {
 	margin-top: -2px;
 }
@@ -4718,16 +4718,18 @@ td.datePickerMonth {
 	border-style: none;
 	border-width: 3px 2px 2px;
 	overflow: visible !important;
-	padding: 10px;
-	background-color: #EDEDED;
+	padding: 15px;
+	margin: 0 -10px -10px;
+	background-color: #f6f6f6;
 	border-radius: 0px 3px 3px 3px;
 	-moz-border-radius: 0px 3px 3px 3px;
-	border-radius: 0px 3px 3px 3px;
 }
  
 .vibe-tabPanel .gwt-TabBar
 {
 	border-bottom: 1px solid #c4c4c4;
+	margin: 0 -10px;
+	padding: 0 10px;
 }
 
 .vibe-tabPanel .gwt-TabBarItem-wrapper
@@ -4737,30 +4739,29 @@ td.datePickerMonth {
  
 .vibe-tabPanel .gwt-TabBar .gwt-TabBarItem
 {
-	background: none repeat scroll 0 0 #949494;
-	color: white;
-	-moz-border-radius: 3px;
-	border-radius: 3px;
-	border-radius: 3px;
+	background: none repeat scroll 0 0 transparent;
+	color: #505354;
 	font-weight: normal;
 	padding: 3px 10px;
 	margin-right: 6px;
 	margin-left: 0px;
 	margin-bottom: 4px;
+	border-radius: 3px;
+	-moz-border-radius: 3px;
 }
  
 .vibe-tabPanel .gwt-TabBar .gwt-TabBarItem:hover
 {
-	background-color: #81B2BD;
-	color: white;
+	background-color: #81b2bd;
+	color: #fff;
 }
  
 .vibe-tabPanel .gwt-TabBar .gwt-TabBarItem-selected,.vibe-tabPanel .gwt-TabBar .gwt-TabBarItem-selected:hover
 {
-	background: none repeat scroll 0 0 #EDEDED;
-	background: -webkit-gradient(linear, 0% 100%, 0% 0, from(#EDEDED), to(#f6f6f6) );
-	background: -moz-linear-gradient(center top, #FAFAFA, #EDEDED) repeat scroll 0 0 transparent;
-	background: linear-gradient(center top, #FAFAFA, #EDEDED) repeat scroll 0 0 transparent;
+	background: none repeat scroll 0 0 #f6f6f6;
+	background: -webkit-linear-gradient(#fafafa, #f6f6f6);
+	background: -moz-linear-gradient(#FAFAFA, #f6f6f6) repeat scroll 0 0 transparent;
+	background: linear-gradient(#FAFAFA, #f6f6f6) repeat scroll 0 0 transparent;
 	cursor: default;
 	padding: 6px 10px;
 	color: black;
@@ -4768,7 +4769,7 @@ td.datePickerMonth {
 	border-radius: 3px 3px 0px 0px;
 	-moz-border-radius: 3px 3px 0px 0px;
 	-webkit-border-radius: 0px 3px 3px 3px;
-	border-bottom: 3px solid #EDEDED;
+	border-bottom: 3px solid #f6f6f6;
 	border-top: 1px solid #c4c4c4;
 	border-left: 1px solid #c4c4c4;
 	border-right: 1px solid #c4c4c4;
@@ -5036,9 +5037,9 @@ td.datePickerMonth {
 
 .modifyNetFolderRootDlg_SelectPrivelegedUsersHint, .modifyNetFolderDlg_SelectPrincipalsHint, .editLdapServerConfigDlg_ServerUrlHint
 {
-	color: #4D6D8B;
+	color: #505354;
 	font-size: 1em;
-	margin-bottom: 0.5em;
+	padding-bottom: 10px;
 }
 
 .modifyNetFolderRootDlg_PrivilegedPrincipalsTable
@@ -5087,8 +5088,6 @@ td.datePickerMonth {
 	width: 80%;
 }
 
-
-
 /**
  * Styles used in the SelectPrincipalsWidget
  */
@@ -5112,9 +5111,15 @@ td.datePickerMonth {
 	width: 570px;
 }
 
+.selectPrincipalsWidget_PrincipalsTable
+{
+	min-width: 370px;
+}
+
 .selectPrincipals_PrincipalsTable_Cell
 {
 	overflow: hidden;
+	background: #fafafa;
 }
 
 .selectPrincipals_PrincipalsTable_highlightRow
@@ -5511,7 +5516,7 @@ td.datePickerMonth {
 /* Start: Net Folder Rights widget styles */
 .netFolderRightsWidget_RightsLabel
 {
-	color: #5691A6;
+	color: #135c8f;
 	padding-left: 4px;
 }
 
