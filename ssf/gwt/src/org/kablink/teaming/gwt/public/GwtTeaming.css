@@ -909,7 +909,7 @@
 	font-weight: bold;
 }
 
-.shareItem_Expiration, .shareItem_AccessRights, .shareItem_ReshareRights, .shareItem_PublicUrl, .shareItem_SharedByName
+.shareItem_Expiration, .shareItem_AccessRights, .shareItem_ReshareRights, .shareItem_PublicUrl, .shareItem_SharedByName, .shareItem_GroupLink
 {
 	color: #666666;
 	font-size: 11px;

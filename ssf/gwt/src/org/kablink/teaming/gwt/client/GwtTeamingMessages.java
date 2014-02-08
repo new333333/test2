@@ -1432,6 +1432,7 @@ public interface GwtTeamingMessages extends Messages
 	String shareDlg_findSharesByHint();
 	String shareDlg_findSharesByUser();
 	String shareDlg_folderLabel();
+	String shareDlg_groupMembershipLabel();
 	String shareDlg_makePublic();
 	String shareDlg_manageShares();
 	String shareDlg_manageMultipleItems( int numItems );

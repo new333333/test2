@@ -51,6 +51,7 @@ import org.kablink.teaming.gwt.client.util.ShareExpirationValue;
 import org.kablink.teaming.gwt.client.util.ShareExpirationValue.ShareExpirationType;
 import org.kablink.teaming.gwt.client.util.ShareRights;
 import org.kablink.teaming.gwt.client.widgets.CopyPublicLinkDlg;
+import org.kablink.teaming.gwt.client.widgets.GroupMembershipPopup;
 import org.kablink.teaming.gwt.client.widgets.CopyPublicLinkDlg.CopyPublicLinkDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ShareWithPublicInfoDlg;
 import org.kablink.teaming.gwt.client.widgets.ShareThisDlg2.ShareThisDlgMode;
@@ -250,6 +251,27 @@ public class ShareItemCell extends AbstractCell<GwtShareItem>
 			CopyPublicLinkDlg.initAndShow( m_copyPublicLinkDlg, caption, entityIds );
 		}
 	}
+
+	
+	/**
+	 * 
+	 */
+	private void invokeGroupMembershipDlg(
+		final GwtShareItem shareItem,
+		final UIObject target )
+	{
+		GroupMembershipPopup popup;
+		
+		// Create a popup that will display the membership of this group.
+		popup = new GroupMembershipPopup(
+										true,
+										false,
+										shareItem.getRecipientName(),
+										shareItem.getRecipientId().toString() );
+		
+		popup.setPopupPosition( target.getAbsoluteLeft(), target.getAbsoluteTop() );
+		popup.show();
+	}
 	
 	/**
 	 * 
@@ -313,13 +335,18 @@ public class ShareItemCell extends AbstractCell<GwtShareItem>
 		{
 			EventTarget eventTarget;
 			final Element element;
-			String value1;
+			String publicUrlDiv;
+			String filrLinkImg;
+			String groupLinkDiv;
 			
-			// Did the user click on the "public url" link?
 			eventTarget = event.getEventTarget();
 			element = Element.as( eventTarget );
-			value1 = element.getAttribute( "public-url-div" );
-			if ( value1 != null && value1.equalsIgnoreCase( "true" ) )
+			groupLinkDiv = element.getAttribute( "group-link-div" );
+			filrLinkImg = element.getAttribute( "filr-link-img" );
+			publicUrlDiv = element.getAttribute( "public-url-div" );
+			
+			// Did the user click on the "public url" link?
+			if ( publicUrlDiv != null && publicUrlDiv.equalsIgnoreCase( "true" ) )
 			{
 				Scheduler.ScheduledCommand cmd;
 				
@@ -337,35 +364,50 @@ public class ShareItemCell extends AbstractCell<GwtShareItem>
 				};
 				Scheduler.get().scheduleDeferred( cmd );
 			}
+			// Did the user click on the "Filr link" icon?
+			else if ( filrLinkImg != null && filrLinkImg.equalsIgnoreCase( "true" ) )
+			{
+				Scheduler.ScheduledCommand cmd;
+				
+				// Yes
+				cmd = new Scheduler.ScheduledCommand()
+				{
+					@Override
+					public void execute()
+					{
+						ElementWrapper wrapper;
+						
+						// Yes
+						wrapper = new ElementWrapper( element );
+						invokeCopyFilrLinkDlg( value, wrapper );
+					}
+				};
+				Scheduler.get().scheduleDeferred( cmd );
+			}
+			// Did the user click on the "Group link" icon?
+			else if ( groupLinkDiv != null && groupLinkDiv.equalsIgnoreCase( "true" ) )
+			{
+				Scheduler.ScheduledCommand cmd;
+				
+				// Yes
+				cmd = new Scheduler.ScheduledCommand()
+				{
+					@Override
+					public void execute()
+					{
+						ElementWrapper wrapper;
+						
+						// Yes
+						wrapper = new ElementWrapper( element );
+						invokeGroupMembershipDlg( value, wrapper );
+					}
+				};
+				Scheduler.get().scheduleDeferred( cmd );
+			}
 			else
 			{
-				// No
-				// Did the user click on the "Filr link" icon?
-				value1 = element.getAttribute( "filr-link-img" );
-				if ( value1 != null && value1.equalsIgnoreCase( "true" ) )
-				{
-					Scheduler.ScheduledCommand cmd;
-					
-					// Yes
-					cmd = new Scheduler.ScheduledCommand()
-					{
-						@Override
-						public void execute()
-						{
-							ElementWrapper wrapper;
-							
-							// Yes
-							wrapper = new ElementWrapper( element );
-							invokeCopyFilrLinkDlg( value, wrapper );
-						}
-					};
-					Scheduler.get().scheduleDeferred( cmd );
-				}
-				else
-				{
-					// Yes
-					valueUpdater.update( value );
-				}
+				// Yes
+				valueUpdater.update( value );
 			}
 		}
 	}
@@ -553,18 +595,6 @@ public class ShareItemCell extends AbstractCell<GwtShareItem>
 			}
 		}
 		
-		// Are we dealing with a public share?
-		if ( shareItem.getRecipientType() == GwtRecipientType.PUBLIC_TYPE )
-		{
-		   // Yes, add a link that the user can click to get the public urls
-			Image img;
-            img = new Image( GwtTeaming.getImageBundle().publicLink16());
-            img.addStyleName( "shareItem_PublicUrl" );
-			img.setTitle( messages.shareDlg_publicUrlLabel() );
-         	img.getElement().setAttribute( "public-url-div", "true" );
-            mainPanel.add( img );
-		}
-		
 		// Add the note
 		{
 			String note;
@@ -585,6 +615,31 @@ public class ShareItemCell extends AbstractCell<GwtShareItem>
 				label.addStyleName( "shareItem_Note" );
 				mainPanel.add( label );
 			}
+		}
+		
+		// Are we dealing with a public share?
+		if ( shareItem.getRecipientType() == GwtRecipientType.PUBLIC_TYPE )
+		{
+		   // Yes, add a link that the user can click to get the public urls
+			Image img;
+            img = new Image( GwtTeaming.getImageBundle().publicLink16());
+            img.addStyleName( "shareItem_PublicUrl" );
+			img.setTitle( messages.shareDlg_publicUrlLabel() );
+         	img.getElement().setAttribute( "public-url-div", "true" );
+            mainPanel.add( img );
+		}
+		
+		// Are we dealing with a group?
+		if ( shareItem.getRecipientType() == GwtRecipientType.GROUP )
+		{
+		   // Yes, add a link that the user can click to see the group membership
+			Image img;
+
+			img = new Image( GwtTeaming.getFilrImageBundle().filrGroup16() );
+            img.addStyleName( "shareItem_GroupLink" );
+			img.setTitle( messages.shareDlg_groupMembershipLabel() );
+         	img.getElement().setAttribute( "group-link-div", "true" );
+            mainPanel.add( img );
 		}
 		
 		// Are we dealing with a "Filr link"?

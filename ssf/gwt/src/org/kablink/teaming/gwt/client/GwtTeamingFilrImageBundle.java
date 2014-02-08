@@ -248,6 +248,10 @@ public interface GwtTeamingFilrImageBundle extends ClientBundle {
 	public ImageResource whatsNew_transparent_48();
 
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/Filr/filr_group_16.png")
+	public ImageResource filrGroup16();
+	
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/Filr/filr_group_25.png")
 	public ImageResource filrGroup25();
 	
