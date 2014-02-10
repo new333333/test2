@@ -3732,9 +3732,9 @@ public class GwtMenuHelper {
 						     keyTail = "filr";
 						else keyTail = "vibe";
 						
-						actionTBI = new ToolbarItem(EMAIL_PUBLIC_LINK);
-						markTBITitle(   actionTBI, "toolbar.emailPublicLinkSelected." + keyTail);
-						markTBIEvent(   actionTBI, TeamingEvents.EMAIL_PUBLIC_LINK_SELECTED_ENTITIES);
+						actionTBI = new ToolbarItem(COPY_PUBLIC_LINK);
+						markTBITitle(   actionTBI, "toolbar.copyPublicLinkSelected." + keyTail);
+						markTBIEvent(   actionTBI, TeamingEvents.COPY_PUBLIC_LINK_SELECTED_ENTITIES);
 						markTBIEntryIds(actionTBI, fe);
 						shareItemsTBI.addNestedItem(actionTBI);
 						
@@ -3744,9 +3744,9 @@ public class GwtMenuHelper {
 						markTBIEntryIds(actionTBI, fe);
 						shareItemsTBI.addNestedItem(actionTBI);
 						
-						actionTBI = new ToolbarItem(COPY_PUBLIC_LINK);
-						markTBITitle(   actionTBI, "toolbar.copyPublicLinkSelected." + keyTail);
-						markTBIEvent(   actionTBI, TeamingEvents.COPY_PUBLIC_LINK_SELECTED_ENTITIES);
+						actionTBI = new ToolbarItem(EMAIL_PUBLIC_LINK);
+						markTBITitle(   actionTBI, "toolbar.emailPublicLinkSelected." + keyTail);
+						markTBIEvent(   actionTBI, TeamingEvents.EMAIL_PUBLIC_LINK_SELECTED_ENTITIES);
 						markTBIEntryIds(actionTBI, fe);
 						shareItemsTBI.addNestedItem(actionTBI);
 					}
