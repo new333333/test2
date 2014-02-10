@@ -98,7 +98,9 @@
 
 .dataGridKeyboardSelectedCell {}
 
-.dataGridFirstColumn {border-left: 1px solid #d2d5d1;}
-.dataGridLastColumn {border-right: 1px solid #d2d5d1;}
+.dataGridFirstColumn {}
+.dataGridLastColumn {}
+/*.dataGridFirstColumn {border-left: 1px solid #d2d5d1;}
+.dataGridLastColumn {border-right: 1px solid #d2d5d1;}  */
 
 /* End: */
