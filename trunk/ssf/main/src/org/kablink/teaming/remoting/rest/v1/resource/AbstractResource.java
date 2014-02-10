@@ -1668,6 +1668,32 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         }
     }
 
+    protected ExternalSharingRestrictions _getExternalSharingRestrictions() {
+        ExternalSharingRestrictions restrictions = new ExternalSharingRestrictions();
+        ShareLists shareLists = getSharingModule().getShareLists();
+        ShareLists.ShareListMode shareListMode = shareLists.getShareListMode();
+        if (shareListMode== ShareLists.ShareListMode.DISABLED) {
+            restrictions.setMode(ExternalSharingRestrictions.Mode.none.name());
+        } else if (shareListMode == ShareLists.ShareListMode.BLACKLIST) {
+            restrictions.setMode(ExternalSharingRestrictions.Mode.blacklist.name());
+        } else {
+            restrictions.setMode(ExternalSharingRestrictions.Mode.whitelist.name());
+        }
+        List<String> domains = shareLists.getDomains();
+        if (domains==null) {
+            restrictions.setDomainList(new ArrayList<String>(0));
+        } else {
+            restrictions.setDomainList(domains);
+        }
+        List<String> emailAddresses = shareLists.getEmailAddresses();
+        if (emailAddresses==null) {
+            restrictions.setEmailList(new ArrayList<String>(0));
+        } else {
+            restrictions.setEmailList(emailAddresses);
+        }
+        return restrictions;
+    }
+
     protected static CoreDao getCoreDao() {
         return (CoreDao) SpringContextUtil.getBean("coreDao");
     }

@@ -12,7 +12,7 @@
  * OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT, OR OTHERWISE, ARISING FROM, OUT OF, OR IN
  * CONNECTION WITH THE WORK OR THE USE OR OTHER DEALINGS IN THE WORK.
  */
-package org.kablink.teaming.rest.v1.model.admin;
+package org.kablink.teaming.rest.v1.model;
 
 import org.kablink.teaming.rest.v1.model.BaseRestObject;
 
