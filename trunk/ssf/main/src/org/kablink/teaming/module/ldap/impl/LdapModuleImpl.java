@@ -1253,6 +1253,12 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			ProfileModule profileModule;
 
 			// Yes
+			// Remove all carriage returns and line feeds
+			{
+				filter = filter.replaceAll( "\r", "" );
+				filter = filter.replaceAll( "\n", "" );
+			}
+			
 			profileModule = getProfileModule();
 			
 			zone = RequestContextHolder.getRequestContext().getZone();
@@ -1301,22 +1307,22 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 						// will return.
 						while ( hasMore( searchCtx ) )
 						{
-							Binding binding;
-							Attributes lAttrs = null;
-							String[] ldapAttributesToRead = { ldapGuidAttribute };
-							String guid;
-							User user;
-
-							// Get the next user/group in the list.
-							binding = (Binding)searchCtx.next();
-
-							// Read the guid for this user/group from the ldap directory.
-							lAttrs = ldapContext.getAttributes( binding.getNameInNamespace(), ldapAttributesToRead );
-							guid = getLdapGuid( lAttrs, ldapGuidAttribute );
-
-							// Does this user exist in Vibe.
 							try
 							{
+								Binding binding;
+								Attributes lAttrs = null;
+								String[] ldapAttributesToRead = { ldapGuidAttribute };
+								String guid;
+								User user;
+	
+								// Get the next user/group in the list.
+								binding = (Binding)searchCtx.next();
+	
+								// Read the guid for this user/group from the ldap directory.
+								lAttrs = ldapContext.getAttributes( binding.getNameInNamespace(), ldapAttributesToRead );
+								guid = getLdapGuid( lAttrs, ldapGuidAttribute );
+
+								// Does this user exist in Vibe.
 								user = profileModule.findUserByLdapGuid( guid );
 								if ( user != null )
 								{
@@ -1328,6 +1334,10 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 							{
 								// Nothing to do
 							}
+					  		catch (NamingException ex)
+					  		{
+					  			namingEx = ex;
+					  		}
 						}
 					}
 			  		catch (NamingException ex)
