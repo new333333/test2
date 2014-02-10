@@ -75,7 +75,6 @@ import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.gwt.client.GwtTeamingException;
 import org.kablink.teaming.gwt.client.event.InvokeSendEmailToTeamEvent;
-import org.kablink.teaming.gwt.client.event.MailToPublicLinkEntityEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.mainmenu.FavoriteInfo;
 import org.kablink.teaming.gwt.client.mainmenu.RecentPlaceInfo;
@@ -1412,22 +1411,20 @@ public class GwtMenuHelper {
 				     keyTail = "filr";
 				else keyTail = "vibe";
 				
-				shareTBI = new ToolbarItem("1_emailPublicLinkSelected");
-				markTBITitle(shareTBI, "toolbar.emailPublicLinkSelected." + keyTail);
-				markTBIEvent(shareTBI, TeamingEvents.EMAIL_PUBLIC_LINK_SELECTED_ENTITIES);
-				entryToolbar.addNestedItem(shareTBI);
-				
 				shareTBI = new ToolbarItem("1_copyPublicLinkSelected");
 				markTBITitle(shareTBI, "toolbar.copyPublicLinkSelected." + keyTail);
 				markTBIEvent(shareTBI, TeamingEvents.COPY_PUBLIC_LINK_SELECTED_ENTITIES);
 				entryToolbar.addNestedItem(shareTBI);
 				
-				if (MailToPublicLinkEntityEvent.SUPPORT_MAILTO_SHARES) {
-					shareTBI = new ToolbarItem("1_mailtoPublicLink");
-					markTBITitle(shareTBI, "toolbar.mailtoPublicLink." + keyTail);
-					markTBIEvent(shareTBI, TeamingEvents.MAILTO_PUBLIC_LINK_ENTITY);
-					entryToolbar.addNestedItem(shareTBI);
-				}
+				shareTBI = new ToolbarItem("1_mailtoPublicLink");
+				markTBITitle(shareTBI, "toolbar.mailtoPublicLink." + keyTail);
+				markTBIEvent(shareTBI, TeamingEvents.MAILTO_PUBLIC_LINK_ENTITY);
+				entryToolbar.addNestedItem(shareTBI);
+				
+				shareTBI = new ToolbarItem("1_emailPublicLinkSelected");
+				markTBITitle(shareTBI, "toolbar.emailPublicLinkSelected." + keyTail);
+				markTBIEvent(shareTBI, TeamingEvents.EMAIL_PUBLIC_LINK_SELECTED_ENTITIES);
+				entryToolbar.addNestedItem(shareTBI);
 			}
 		}
 	}
@@ -3741,19 +3738,17 @@ public class GwtMenuHelper {
 						markTBIEntryIds(actionTBI, fe);
 						shareItemsTBI.addNestedItem(actionTBI);
 						
+						actionTBI = new ToolbarItem(MAILTO_PUBLIC_LINK);
+						markTBITitle(   actionTBI, "toolbar.mailtoPublicLink." + keyTail);
+						markTBIEvent(   actionTBI, TeamingEvents.MAILTO_PUBLIC_LINK_ENTITY);
+						markTBIEntryIds(actionTBI, fe);
+						shareItemsTBI.addNestedItem(actionTBI);
+						
 						actionTBI = new ToolbarItem(COPY_PUBLIC_LINK);
 						markTBITitle(   actionTBI, "toolbar.copyPublicLinkSelected." + keyTail);
 						markTBIEvent(   actionTBI, TeamingEvents.COPY_PUBLIC_LINK_SELECTED_ENTITIES);
 						markTBIEntryIds(actionTBI, fe);
 						shareItemsTBI.addNestedItem(actionTBI);
-						
-						if (MailToPublicLinkEntityEvent.SUPPORT_MAILTO_SHARES) {
-							actionTBI = new ToolbarItem(MAILTO_PUBLIC_LINK);
-							markTBITitle(   actionTBI, "toolbar.mailtoPublicLink." + keyTail);
-							markTBIEvent(   actionTBI, TeamingEvents.MAILTO_PUBLIC_LINK_ENTITY);
-							markTBIEntryIds(actionTBI, fe);
-							shareItemsTBI.addNestedItem(actionTBI);
-						}
 					}
 					
 					// ...and the share toolbar to the view toolbar.
