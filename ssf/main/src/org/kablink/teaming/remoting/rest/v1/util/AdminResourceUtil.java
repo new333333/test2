@@ -91,7 +91,8 @@ public class AdminResourceUtil {
         model.setId(config.getId());
         model.setModifiedOn(config.getModifiedOn());
         model.setName(config.getName());
-        model.setPassword(config.getPassword());
+        // Don't return the password in the results.
+        // model.setPassword(config.getPassword());
         model.setRootPath(config.getRootPath());
         model.setCachedRightsRefreshInterval(config.getCachedRightsRefreshInterval());
         model.setUseDirectoryRights(config.getUseDirectoryRights());
@@ -145,7 +146,8 @@ public class AdminResourceUtil {
         model.setId(ldapConfig.getId());
         model.setUrl(ldapConfig.getUrl());
         model.setPrincipal(ldapConfig.getPrincipal());
-        model.setCredentials(ldapConfig.getCredentials());
+        // Don't return the password in the results
+        // model.setCredentials(ldapConfig.getCredentials());
         model.setGuidAttribute(ldapConfig.getLdapGuidAttribute());
         model.setUsernameAttribute(ldapConfig.getUserIdAttribute());
         model.setMappings(buildKeyValueList(ldapConfig.getMappings()));
