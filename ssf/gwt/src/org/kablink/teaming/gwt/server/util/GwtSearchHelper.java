@@ -503,6 +503,10 @@ public class GwtSearchHelper
 									else
 										--searchHits;
 								}
+								else
+								{
+									--searchHits;
+								}
 							}
 						}
 			    	}
