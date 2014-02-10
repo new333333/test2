@@ -14,10 +14,8 @@
  */
 package org.kablink.teaming.rest.v1.model.admin;
 
-import org.kablink.teaming.rest.v1.model.Access;
 import org.kablink.teaming.rest.v1.model.BaseRestObject;
-import org.kablink.teaming.rest.v1.model.Recipient;
-import org.kablink.teaming.rest.v1.model.ShareRecipient;
+import org.kablink.teaming.rest.v1.model.ExternalSharingRestrictions;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
