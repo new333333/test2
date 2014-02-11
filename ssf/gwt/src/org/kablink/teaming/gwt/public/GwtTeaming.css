@@ -1833,9 +1833,7 @@ body, table td, select
 	background-color: transparent;
 	padding: 0 0 8px;
 	overflow: auto;
-	border-radius: 5px;
-	-moz-border-radius: 5px;
-	-webkit-border-radius: 5px;
+	border-right: 1px solid #e0e0e0;
 }
 
 .workspaceTreeControl_blankContent {display: block; margin: 10px; color: #666666; font-size: 1.1em;}
@@ -1863,11 +1861,11 @@ body, table td, select
 {
 	font-size: 20px;
 	font-weight: normal;
-	text-shadow: 0 2px 8px #949494;
+/*	text-shadow: 0 2px 8px #949494;  */
 }
 .workspaceTreeControlHeader_base
 {
-	color: #fff;
+	color: #949494;
 	font-weight: normal;
 	padding: 5px;
 }
@@ -4957,7 +4955,9 @@ td.datePickerMonth {
 
 .FilrAction_MainPanel
 {
-    border: 1px solid transparent;
+    border-top: 1px solid transparent;
+    border-left: 1px solid transparent;
+    border-right: 1px solid transparent;
     color: #FFFFFF;
     display: inline-block;
     font-size: 12px;
@@ -4969,7 +4969,9 @@ td.datePickerMonth {
 .FilrAction_MainPanel:hover
 {
 	background: url(images/trans20_91daf2.png) repeat;
-    border: 1px solid #3C4143;
+    border-top: 1px solid #3C4143;
+    border-left: 1px solid #3C4143;
+    border-right: 1px solid #3C4143;
 	border-top-left-radius: 5px;
 	border-top-right-radius: 5px;
 	-moz-border-radius-topleft: 5px;
@@ -4988,7 +4990,7 @@ td.datePickerMonth {
 	-moz-border-radius-topright: 5px;
 	-webkit-border-top-left-radius: 5px;	
 	-webkit-border-top-right-radius: 5px;	
-	box-shadow:	0 1px 1px #000 inset;
+/*	box-shadow:	0 1px 1px #000 inset;  */
 }
 
 .FilrAction_Selected .FilrAction_Text
@@ -5822,7 +5824,7 @@ td.datePickerMonth {
 .poweredByImg
 {
 	position: absolute;
-	right: 10px;
+	right: 30px;
 	top: 30px;
 }
 
