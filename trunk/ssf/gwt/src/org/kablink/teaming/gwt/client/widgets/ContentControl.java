@@ -625,6 +625,8 @@ public class ContentControl extends Composite
 				width  += GwtConstants.CONTENT_WIDTH_ADJUST;
 				height += GwtConstants.CONTENT_HEIGHT_ADJUST;
 			}
+			if ( 0 > width  ) width  = 0;
+			if ( 0 > height ) height = 0;
 			
 			// Set the width and height of the frame.
 			setSize( (width + "px"), (height + "px") );

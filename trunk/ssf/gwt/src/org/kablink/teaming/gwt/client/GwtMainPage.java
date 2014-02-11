@@ -2526,6 +2526,13 @@ public class GwtMainPage extends ResizeComposite
 		{
 			m_contentLayoutPanel.showContentControl();
 		}
+		else {
+			CollectionType ct;
+			if      ( m_requestInfo.isGuestUser()    ) ct = CollectionType.SHARED_PUBLIC;
+			else if ( m_requestInfo.isExternalUser() ) ct = CollectionType.SHARED_WITH_ME;
+			else                                       ct = CollectionType.MY_FILES;
+			GwtTeaming.fireEventAsync( new ShowCollectionEvent( ct ) );
+		}
 		
 		// Restore the ui state to what it was before we opened
 		// the site administration.
