@@ -44,6 +44,7 @@ public class NetFolderSelectSpec {
 	private String m_filter;
 	private String m_rootName;
 	private boolean m_includeHomeDirNetFolders;
+	private boolean m_includeNonHomeDirNetFolders;
 	private int m_startIndex;	// Return the net folders starting at this index.
 	private int m_pageSize;
 	
@@ -55,6 +56,7 @@ public class NetFolderSelectSpec {
 		m_filter = null;
 		m_rootName = null;
 		m_includeHomeDirNetFolders = false;
+        m_includeNonHomeDirNetFolders = true;
 		m_startIndex = -1;
 		m_pageSize = -1;
 	}
@@ -74,8 +76,13 @@ public class NetFolderSelectSpec {
 	{
 		m_includeHomeDirNetFolders = include;
 	}
-	
-	/**
+
+    public void setIncludeNonHomeDirNetFolders(boolean include)
+    {
+        this.m_includeNonHomeDirNetFolders = include;
+    }
+
+    /**
 	 * 
 	 */
 	public void setPageSize( int pageSize )
@@ -114,8 +121,12 @@ public class NetFolderSelectSpec {
 	{
 		return m_includeHomeDirNetFolders;
 	}
-	
-	/**
+
+    public boolean getIncludeNonHomeDirNetFolders() {
+        return m_includeNonHomeDirNetFolders;
+    }
+
+    /**
 	 * 
 	 */
 	public int getPageSize()
