@@ -88,7 +88,7 @@ public class WorkspaceResource extends AbstractBinderResource {
     public SearchResultList<BinderBrief> getWorkspaces(@QueryParam("id") Set<Long> ids,
                                                        @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr,
                                                        @QueryParam("first") @DefaultValue("0") Integer offset,
-                                                       @QueryParam("count") @DefaultValue("-1") Integer maxCount) {
+                                                       @QueryParam("count") @DefaultValue("100") Integer maxCount) {
         Junction criterion = Restrictions.conjunction();
         criterion.add(SearchUtils.buildWorkspacesCriterion());
         if (ids!=null) {
@@ -113,7 +113,7 @@ public class WorkspaceResource extends AbstractBinderResource {
    	public SearchResultList<BinderBrief> getWorkspacesViaLegacyQuery(@Context HttpServletRequest request,
                                                                      @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr,
                                                                      @QueryParam("first") @DefaultValue("0") Integer offset,
-                                                                     @QueryParam("count") @DefaultValue("-1") Integer maxCount) {
+                                                                     @QueryParam("count") @DefaultValue("100") Integer maxCount) {
         String query = getRawInputStreamAsString(request);
         Document queryDoc = buildQueryDocument(query, SearchUtils.buildWorkspacesCriterion());
         Map resultsMap = getBinderModule().executeSearchQuery(queryDoc, Constants.SEARCH_MODE_NORMAL, offset, maxCount);
@@ -136,7 +136,7 @@ public class WorkspaceResource extends AbstractBinderResource {
     public Response getSubBinders(@PathParam("id") long id,
                                   @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr,
                                   @QueryParam("first") @DefaultValue("0") Integer offset,
-                                  @QueryParam("count") @DefaultValue("-1") Integer maxCount,
+                                  @QueryParam("count") @DefaultValue("100") Integer maxCount,
                                   @Context HttpServletRequest request) {
         Map<String, Object> nextParams = new HashMap<String, Object>();
         nextParams.put("description_format", descriptionFormatStr);
@@ -156,7 +156,7 @@ public class WorkspaceResource extends AbstractBinderResource {
     public Response getChildren(@PathParam("id") long id,
                                 @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr,
                                 @QueryParam("first") @DefaultValue("0") Integer offset,
-                                @QueryParam("count") @DefaultValue("-1") Integer maxCount,
+                                @QueryParam("count") @DefaultValue("100") Integer maxCount,
                                 @Context HttpServletRequest request) {
         Map<String, Object> nextParams = new HashMap<String, Object>();
         nextParams.put("description_format", descriptionFormatStr);
@@ -188,7 +188,7 @@ public class WorkspaceResource extends AbstractBinderResource {
 	public Response getSubWorkspaces(@PathParam("id") long id,
                                      @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr,
 			                         @QueryParam("first") @DefaultValue("0") Integer offset,
-			                         @QueryParam("count") @DefaultValue("-1") Integer maxCount,
+			                         @QueryParam("count") @DefaultValue("100") Integer maxCount,
                                      @Context HttpServletRequest request) {
         Map<String, Object> nextParams = new HashMap<String, Object>();
         nextParams.put("description_format", descriptionFormatStr);
@@ -227,7 +227,7 @@ public class WorkspaceResource extends AbstractBinderResource {
 	public Response getSubFolders(@PathParam("id") long id,
                                   @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr,
 			                      @QueryParam("first") @DefaultValue("0") int offset,
-			                      @QueryParam("count") @DefaultValue("-1") int maxCount,
+			                      @QueryParam("count") @DefaultValue("100") int maxCount,
                                   @Context HttpServletRequest request) {
         Map<String, Object> nextParams = new HashMap<String, Object>();
         nextParams.put("description_format", descriptionFormatStr);
@@ -286,7 +286,7 @@ public class WorkspaceResource extends AbstractBinderResource {
                                                   @QueryParam("keyword") String keyword,
                                                   @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr,
                                                   @QueryParam("first") @DefaultValue("0") Integer offset,
-                                                  @QueryParam("count") @DefaultValue("-1") Integer maxCount) {
+                                                  @QueryParam("count") @DefaultValue("100") Integer maxCount) {
         _getWorkspace(id);
         return searchForLibraryEntities(keyword, SearchUtils.buildSearchBinderCriterion(id, recursive), recursive, offset, maxCount,
                 includeBinders, includeFolderEntries, includeReplies, includeFiles, includeParentPaths, toDomainFormat(descriptionFormatStr),

@@ -295,7 +295,7 @@ public class ShareResource extends AbstractResource {
                                                                                @QueryParam("keyword") String keyword,
                                                                                @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr,
                                                                                @QueryParam("first") @DefaultValue("0") Integer offset,
-                                                                               @QueryParam("count") @DefaultValue("-1") Integer maxCount) {
+                                                                               @QueryParam("count") @DefaultValue("100") Integer maxCount) {
         _getUser(userId);
         ShareItemSelectSpec spec = getSharedBySpec(userId);
         SearchResultList<SearchableObject> results = _getLibraryEntities(ObjectKeys.SHARED_BY_ME_ID, null, recursive,
@@ -438,7 +438,7 @@ public class ShareResource extends AbstractResource {
                                                       @QueryParam("keyword") String keyword,
                                                       @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr,
                                                       @QueryParam("first") @DefaultValue("0") Integer offset,
-                                                      @QueryParam("count") @DefaultValue("-1") Integer maxCount) {
+                                                      @QueryParam("count") @DefaultValue("100") Integer maxCount) {
         _getUser(userId);
         ShareItemSelectSpec spec = getSharedWithSpec(userId);
         SearchResultList<SearchableObject> results = _getLibraryEntities(ObjectKeys.SHARED_WITH_ME_ID, userId, recursive,
@@ -686,7 +686,7 @@ public class ShareResource extends AbstractResource {
                                                                              @QueryParam("keyword") String keyword,
                                                                              @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr,
                                                                              @QueryParam("first") @DefaultValue("0") Integer offset,
-                                                                             @QueryParam("count") @DefaultValue("-1") Integer maxCount) {
+                                                                             @QueryParam("count") @DefaultValue("100") Integer maxCount) {
         if (!getEffectivePublicCollectionSetting(getLoggedInUser())) {
             throw new AccessControlException("Access to the public collection is not allowed.", null);
         }
