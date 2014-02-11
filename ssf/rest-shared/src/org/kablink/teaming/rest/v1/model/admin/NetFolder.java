@@ -31,10 +31,15 @@ import java.util.List;
  */
 @XmlRootElement(name="net_folder")
 public class NetFolder extends BaseRestObject {
+    public enum Type {
+        net,
+        home
+    }
     private Long id;
     private String name;
     private LongIdLinkPair server;
     private String relativePath;
+    private String type;
     private Boolean homeDir;
     private Boolean indexContent;
     private Boolean inheritIndexContent;

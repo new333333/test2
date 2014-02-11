@@ -152,11 +152,22 @@ public class AdminNetFolderServerResource extends AbstractAdminResource {
     @GET
     @Path("{id}/net_folders")
     public SearchResultList<NetFolder> getNetFolders(@PathParam("id") Long id,
-                                                     @QueryParam("include_full_details") @DefaultValue("false") boolean fullDetails) {
+                                                     @QueryParam("include_full_details") @DefaultValue("false") boolean fullDetails,
+                                                     @QueryParam("type") String type) {
         ResourceDriverConfig resourceDriverConfig = getResourceDriverModule().getResourceDriverConfig(id);
         NetFolderSelectSpec selectSpec = new NetFolderSelectSpec();
         selectSpec.setRootName(resourceDriverConfig.getName());
-        selectSpec.setIncludeHomeDirNetFolders(false);
+        NetFolder.Type nfType = toEnum(NetFolder.Type.class, "type", type);
+        if (nfType==NetFolder.Type.net) {
+            selectSpec.setIncludeHomeDirNetFolders(false);
+            selectSpec.setIncludeNonHomeDirNetFolders(true);
+        } else if (nfType == NetFolder.Type.home) {
+            selectSpec.setIncludeHomeDirNetFolders(true);
+            selectSpec.setIncludeNonHomeDirNetFolders(false);
+        } else {
+            selectSpec.setIncludeHomeDirNetFolders(true);
+            selectSpec.setIncludeHomeDirNetFolders(true);
+        }
         List<Folder> folderList = NetFolderHelper.getAllNetFolders2(getBinderModule(), getWorkspaceModule(), selectSpec);
 
         SearchResultList<NetFolder> results = new SearchResultList<NetFolder>();

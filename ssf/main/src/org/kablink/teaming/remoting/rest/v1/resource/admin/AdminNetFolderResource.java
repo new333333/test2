@@ -42,6 +42,7 @@ import org.kablink.teaming.domain.NoFolderByTheIdException;
 import org.kablink.teaming.domain.ResourceDriverConfig;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.file.WriteFilesException;
+import org.kablink.teaming.remoting.rest.v1.exc.BadRequestException;
 import org.kablink.teaming.remoting.rest.v1.resource.AbstractResource;
 import org.kablink.teaming.remoting.rest.v1.util.AdminResourceUtil;
 import org.kablink.teaming.rest.v1.model.SearchResultList;
@@ -50,6 +51,7 @@ import org.kablink.teaming.rest.v1.model.admin.NetFolderServer;
 import org.kablink.teaming.rest.v1.model.admin.NetFolderSyncStatus;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.web.util.NetFolderHelper;
+import org.kablink.util.api.ApiErrorCode;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -71,9 +73,20 @@ public class AdminNetFolderResource extends AbstractAdminResource {
 
     @GET
    	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
-   	public SearchResultList<NetFolder> getNetFolders(@QueryParam("include_full_details") @DefaultValue("false") boolean fullDetails) {
+   	public SearchResultList<NetFolder> getNetFolders(@QueryParam("include_full_details") @DefaultValue("false") boolean fullDetails,
+                                                     @QueryParam("type") String type) {
         NetFolderSelectSpec selectSpec = new NetFolderSelectSpec();
-        selectSpec.setIncludeHomeDirNetFolders(false);
+        NetFolder.Type nfType = toEnum(NetFolder.Type.class, "type", type);
+        if (nfType==NetFolder.Type.net) {
+            selectSpec.setIncludeHomeDirNetFolders(false);
+            selectSpec.setIncludeNonHomeDirNetFolders(true);
+        } else if (nfType == NetFolder.Type.home) {
+            selectSpec.setIncludeHomeDirNetFolders(true);
+            selectSpec.setIncludeNonHomeDirNetFolders(false);
+        } else {
+            selectSpec.setIncludeHomeDirNetFolders(true);
+            selectSpec.setIncludeNonHomeDirNetFolders(true);
+        }
         List<Folder> folderList = NetFolderHelper.getAllNetFolders2(getBinderModule(), getWorkspaceModule(), selectSpec);
 
         SearchResultList<NetFolder> results = new SearchResultList<NetFolder>();
