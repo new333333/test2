@@ -75,7 +75,7 @@ import java.util.Set;
  */
 public class AdminResourceUtil {
 
-    public static NetFolderServer buildNetFolderServer(ResourceDriverConfig config, boolean fullDetails) {
+    public static NetFolderServer buildNetFolderServer(ResourceDriverConfig config, boolean fullDetails, boolean includePassword) {
         NetFolderServer model = new NetFolderServer();
         model.setAccountName(config.getAccountName());
         if (config.getAuthenticationType()!=null) {
@@ -91,11 +91,16 @@ public class AdminResourceUtil {
         model.setId(config.getId());
         model.setModifiedOn(config.getModifiedOn());
         model.setName(config.getName());
-        // Don't return the password in the results.
-        // model.setPassword(config.getPassword());
+        if (includePassword) {
+            model.setPassword(config.getPassword());
+        }
         model.setRootPath(config.getRootPath());
         model.setCachedRightsRefreshInterval(config.getCachedRightsRefreshInterval());
         model.setUseDirectoryRights(config.getUseDirectoryRights());
+        model.setIndexContent(config.getIndexContent());
+        model.setJitsEnabled(config.isJitsEnabled());
+        model.setJitsMaxAge(config.getJitsMaxAge());
+        model.setJitsMaxACLAge(config.getJitsAclMaxAge());
         if (fullDetails) {
             model.setSyncSchedule(buildSchedule(NetFolderHelper.getNetFolderServerSynchronizationSchedule(model.getId())));
         }
