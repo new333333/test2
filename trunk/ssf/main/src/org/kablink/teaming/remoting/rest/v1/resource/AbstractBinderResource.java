@@ -262,7 +262,7 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
    	public Response getLibraryChildren(@PathParam("id") long id,
                                        @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr,
                                        @QueryParam("first") @DefaultValue("0") Integer offset,
-                                       @QueryParam("count") @DefaultValue("-1") Integer maxCount,
+                                       @QueryParam("count") @DefaultValue("100") Integer maxCount,
                                        @Context HttpServletRequest request) {
         Map<String, Object> nextParams = new HashMap<String, Object>();
         nextParams.put("description_format", descriptionFormatStr);
@@ -282,7 +282,7 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
    	public Response getLibraryFolders(@PathParam("id") long id,
                                          @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr,
                                          @QueryParam("first") @DefaultValue("0") Integer offset,
-                                         @QueryParam("count") @DefaultValue("-1") Integer maxCount,
+                                         @QueryParam("count") @DefaultValue("100") Integer maxCount,
                                          @Context HttpServletRequest request) {
         Map<String, Object> nextParams = new HashMap<String, Object>();
         nextParams.put("description_format", descriptionFormatStr);
@@ -343,6 +343,9 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
                                                   @QueryParam("first") Integer offset,
                                                   @QueryParam("count") Integer maxCount,
                                                   @Context HttpServletRequest request) {
+        if (!recursive && maxCount==null) {
+            maxCount = 100;
+        }
         Map<String, Object> nextParams = new HashMap<String, Object>();
         if (fileName!=null) {
             nextParams.put("file_name", fileName);
@@ -368,7 +371,7 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
                                                      @QueryParam("recursive") @DefaultValue("false") boolean recursive,
                                                   @QueryParam("parent_binder_paths") @DefaultValue("false") boolean includeParentPaths,
                                                   @QueryParam("first") Integer offset,
-                                                  @QueryParam("count") Integer maxCount,
+                                                  @QueryParam("count") @DefaultValue("100") Integer maxCount,
                                                   @Context HttpServletRequest request) {
         Map<String, Object> nextParams = new HashMap<String, Object>();
         if (fileName!=null) {

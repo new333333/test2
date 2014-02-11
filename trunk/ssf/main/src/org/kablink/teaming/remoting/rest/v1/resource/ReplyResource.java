@@ -92,7 +92,7 @@ public class ReplyResource extends AbstractFolderEntryResource {
 	public SearchResultList<ReplyBrief> getReply(@QueryParam("id") Set<Long> ids,
                                                  @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr,
                                                  @QueryParam("first") @DefaultValue("0") Integer offset,
-			                                     @QueryParam("count") @DefaultValue("-1") Integer maxCount) {
+			                                     @QueryParam("count") @DefaultValue("100") Integer maxCount) {
         Junction criterion = Restrictions.conjunction();
         criterion.add(SearchUtils.buildRepliesCriterion());
         if (ids!=null) {

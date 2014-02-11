@@ -105,7 +105,7 @@ public class FolderResource extends AbstractBinderResource {
     public SearchResultList<BinderBrief> getFolders(@QueryParam("id") Set<Long> ids,
             @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr,
             @QueryParam("first") @DefaultValue("0") Integer offset,
-            @QueryParam("count") @DefaultValue("-1") Integer maxCount) {
+            @QueryParam("count") @DefaultValue("100") Integer maxCount) {
         Junction criterion = Restrictions.conjunction();
         criterion.add(SearchUtils.buildFoldersCriterion());
         if (ids!=null) {
@@ -130,7 +130,7 @@ public class FolderResource extends AbstractBinderResource {
    	public SearchResultList<BinderBrief> getFoldersViaLegacyQuery(@Context HttpServletRequest request,
                                                                   @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr,
                                                     @QueryParam("first") @DefaultValue("0") Integer offset,
-   			                                        @QueryParam("count") @DefaultValue("-1") Integer maxCount) {
+   			                                        @QueryParam("count") @DefaultValue("100") Integer maxCount) {
         String query = getRawInputStreamAsString(request);
         Document queryDoc = buildQueryDocument(query, SearchUtils.buildFoldersCriterion());
         Map resultsMap = getBinderModule().executeSearchQuery(queryDoc, Constants.SEARCH_MODE_NORMAL, offset, maxCount);
@@ -205,7 +205,7 @@ public class FolderResource extends AbstractBinderResource {
     public Response getSubBinders(@PathParam("id") long id,
                                   @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr,
                                   @QueryParam("first") @DefaultValue("0") Integer offset,
-                                  @QueryParam("count") @DefaultValue("-1") Integer maxCount,
+                                  @QueryParam("count") @DefaultValue("100") Integer maxCount,
                                   @Context HttpServletRequest request) {
         Map<String, Object> nextParams = new HashMap<String, Object>();
         nextParams.put("description_format", descriptionFormatStr);
@@ -225,7 +225,7 @@ public class FolderResource extends AbstractBinderResource {
     public Response getChildren(@PathParam("id") long id,
                                 @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr,
                                 @QueryParam("first") @DefaultValue("0") Integer offset,
-                                @QueryParam("count") @DefaultValue("-1") Integer maxCount,
+                                @QueryParam("count") @DefaultValue("100") Integer maxCount,
                                 @Context HttpServletRequest request) {
         Map<String, Object> nextParams = new HashMap<String, Object>();
         nextParams.put("description_format", descriptionFormatStr);
@@ -246,7 +246,7 @@ public class FolderResource extends AbstractBinderResource {
 	public Response getSubFolders(@PathParam("id") long id,
                                   @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr,
 			@QueryParam("first") @DefaultValue("0") Integer offset,
-			@QueryParam("count") @DefaultValue("-1") Integer maxCount,
+			@QueryParam("count") @DefaultValue("100") Integer maxCount,
             @Context HttpServletRequest request) {
         Map<String, Object> nextParams = new HashMap<String, Object>();
         nextParams.put("description_format", descriptionFormatStr);
@@ -285,7 +285,7 @@ public class FolderResource extends AbstractBinderResource {
                                                                @QueryParam("parent_binder_paths") @DefaultValue("false") boolean includeParentPaths,
                                                                @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr,
                                                             @QueryParam("first") Integer offset,
-                                                            @QueryParam("count") Integer maxCount,
+                                                            @QueryParam("count") @DefaultValue("100") Integer maxCount,
                                                             @QueryParam("file_name") String fileName) {
         Folder folder = _getFolder(id);
         SearchResultList<FolderEntryBrief> results = new SearchResultList<FolderEntryBrief>(0, folder.getModificationDate());
@@ -372,7 +372,7 @@ public class FolderResource extends AbstractBinderResource {
                                                   @QueryParam("keyword") String keyword,
                                                   @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr,
                                                   @QueryParam("first") @DefaultValue("0") Integer offset,
-                                                  @QueryParam("count") @DefaultValue("-1") Integer maxCount) {
+                                                  @QueryParam("count") @DefaultValue("100") Integer maxCount) {
         _getFolder(id);
         return searchForLibraryEntities(keyword, SearchUtils.buildSearchBinderCriterion(id, recursive), recursive, offset, maxCount,
                 includeBinders, includeFolderEntries, includeReplies, includeFiles, includeParentPaths, toDomainFormat(descriptionFormatStr),

@@ -282,7 +282,7 @@ public class SelfResource extends AbstractFileResource {
     public Response getMyFileLibraryChildren(
             @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr,
             @QueryParam("first") @DefaultValue("0") Integer offset,
-            @QueryParam("count") @DefaultValue("-1") Integer maxCount,
+            @QueryParam("count") @DefaultValue("100") Integer maxCount,
             @Context HttpServletRequest request) {
         SearchResultList<SearchableObject> results = _getMyFilesLibraryChildren(getIfModifiedSinceDate(request), true, false, true,
                 toDomainFormat(descriptionFormatStr), offset, maxCount, "/self/my_files/library_children");
@@ -300,7 +300,7 @@ public class SelfResource extends AbstractFileResource {
     public Response getMyFileLibraryFolders(
             @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr,
             @QueryParam("first") @DefaultValue("0") Integer offset,
-            @QueryParam("count") @DefaultValue("-1") Integer maxCount,
+            @QueryParam("count") @DefaultValue("100") Integer maxCount,
             @Context HttpServletRequest request) {
         SearchResultList<SearchableObject> results = _getMyFilesLibraryChildren(getIfModifiedSinceDate(request), true, false, false,
                 toDomainFormat(descriptionFormatStr), offset, maxCount, "/self/my_files/library_children");
@@ -404,7 +404,7 @@ public class SelfResource extends AbstractFileResource {
               @QueryParam("keyword") String keyword,
               @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr,
               @QueryParam("first") @DefaultValue("0") Integer offset,
-              @QueryParam("count") @DefaultValue("-1") Integer maxCount) {
+              @QueryParam("count") @DefaultValue("100") Integer maxCount) {
         if (!SearchUtils.userCanAccessMyFiles(this, getLoggedInUser())) {
             throw new AccessControlException("Personal storage is not allowed.", null);
         }
@@ -451,6 +451,9 @@ public class SelfResource extends AbstractFileResource {
             @QueryParam("first") Integer offset,
             @QueryParam("count") Integer maxCount,
             @Context HttpServletRequest request) {
+        if (!recursive && maxCount==null) {
+            maxCount = 100;
+        }
         if (!SearchUtils.userCanAccessMyFiles(this, getLoggedInUser())) {
             throw new AccessControlException("Personal storage is not allowed.", null);
         }
