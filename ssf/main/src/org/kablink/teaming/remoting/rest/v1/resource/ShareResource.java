@@ -105,7 +105,7 @@ public class ShareResource extends AbstractResource {
     @Path("/{id}")
     public Share getShare(@PathParam("id") Long id) {
         ShareItem share = _getShareItem(id);
-        return ResourceUtil.buildShare(share, findDefinableEntity(share.getSharedEntityIdentifier()), buildShareRecipient(share));
+        return ResourceUtil.buildShare(share, findDefinableEntity(share.getSharedEntityIdentifier()), buildShareRecipient(share), isGuestAccessEnabled());
     }
 
     @POST
@@ -148,7 +148,7 @@ public class ShareResource extends AbstractResource {
         if (notifyRecipient) {
             notifyShareRecipients(shareItem, entity, false, notifyAddresses);
         }
-        return ResourceUtil.buildShare(shareItem, entity, buildShareRecipient(shareItem));
+        return ResourceUtil.buildShare(shareItem, entity, buildShareRecipient(shareItem), isGuestAccessEnabled());
     }
 
     @DELETE
@@ -176,7 +176,8 @@ public class ShareResource extends AbstractResource {
         SearchResultList<Share> results = new SearchResultList<Share>();
         List<ShareItem> shareItems = getShareItems(spec, true, true, true);
         for (ShareItem shareItem : shareItems) {
-            results.append(ResourceUtil.buildShare(shareItem, findDefinableEntity(shareItem.getSharedEntityIdentifier()), buildShareRecipient(shareItem)));
+            results.append(ResourceUtil.buildShare(shareItem, findDefinableEntity(shareItem.getSharedEntityIdentifier()),
+                    buildShareRecipient(shareItem), isGuestAccessEnabled()));
         }
         return results;
     }
@@ -352,7 +353,8 @@ public class ShareResource extends AbstractResource {
         SearchResultList<Share> results = new SearchResultList<Share>();
         List<ShareItem> shareItems = getShareItems(spec, userId, false, false, true);
         for (ShareItem shareItem : shareItems) {
-            results.append(ResourceUtil.buildShare(shareItem, findDefinableEntity(shareItem.getSharedEntityIdentifier()), buildShareRecipient(shareItem)));
+            results.append(ResourceUtil.buildShare(shareItem, findDefinableEntity(shareItem.getSharedEntityIdentifier()),
+                    buildShareRecipient(shareItem), isGuestAccessEnabled()));
         }
         return results;
     }
@@ -557,7 +559,8 @@ public class ShareResource extends AbstractResource {
         SearchResultList<Share> results = new SearchResultList<Share>();
         List<ShareItem> shareItems = getShareItems(spec, getLoggedInUserId(), false, true, false);
         for (ShareItem shareItem : shareItems) {
-            results.append(ResourceUtil.buildShare(shareItem, findDefinableEntity(shareItem.getSharedEntityIdentifier()), buildShareRecipient(shareItem)));
+            results.append(ResourceUtil.buildShare(shareItem, findDefinableEntity(shareItem.getSharedEntityIdentifier()),
+                    buildShareRecipient(shareItem), isGuestAccessEnabled()));
         }
         return results;
     }
@@ -858,6 +861,7 @@ public class ShareResource extends AbstractResource {
 
     private SearchResultList<SharedFolderEntryBrief> _getSharedEntries(Long topId, String topHref, ShareItemSelectSpec spec, Long excludedSharerId, boolean includeParentPaths,
                                                                        boolean showHidden, boolean showUnhidden, boolean showPublic, boolean showNonPublic) {
+        boolean guestEnabled = isGuestAccessEnabled();
         Map<Long, SharedFolderEntryBrief> resultMap = new LinkedHashMap<Long, SharedFolderEntryBrief>();
         List<ShareItem> shareItems = getShareItems(spec, excludedSharerId, topId == ObjectKeys.SHARED_BY_ME_ID, showPublic, showNonPublic);
         for (ShareItem shareItem : shareItems) {
@@ -867,9 +871,9 @@ public class ShareResource extends AbstractResource {
                     if (showToUser(entry, topId, showHidden, showUnhidden)) {
                         SharedFolderEntryBrief binderBrief = resultMap.get(entry.getId());
                         if (binderBrief!=null) {
-                            binderBrief.addShare(ResourceUtil.buildShare(shareItem, entry, buildShareRecipient(shareItem)));
+                            binderBrief.addShare(ResourceUtil.buildShare(shareItem, entry, buildShareRecipient(shareItem), guestEnabled));
                         } else {
-                            binderBrief = ResourceUtil.buildSharedFolderEntryBrief(shareItem, buildShareRecipient(shareItem), entry);
+                            binderBrief = ResourceUtil.buildSharedFolderEntryBrief(shareItem, buildShareRecipient(shareItem), entry, guestEnabled);
                             binderBrief.setParentBinder(new ParentBinder(topId, topHref));
                             resultMap.put(entry.getId(), binderBrief);
                         }
@@ -916,6 +920,7 @@ public class ShareResource extends AbstractResource {
     protected List<SearchableObject> _getSharedEntities(Long topId, String topHref, ShareItemSelectSpec spec, Long excludedSharerId, boolean onlyLibrary,
                                                       boolean showHidden, boolean showUnhidden, boolean showPublic, boolean showNonPublic,
                                                       boolean folders, boolean entries, boolean files)  {
+        boolean guestEnabled = isGuestAccessEnabled();
         Map<Object, SearchableObject> resultMap = new LinkedHashMap<Object, SearchableObject>();
         List<ShareItem> shareItems = getShareItems(spec, excludedSharerId, topId==ObjectKeys.SHARED_BY_ME_ID, showPublic, showNonPublic);
         for (ShareItem shareItem : shareItems) {
@@ -926,9 +931,9 @@ public class ShareResource extends AbstractResource {
                         if (entries) {
                             SharedFolderEntryBrief entryBrief = (SharedFolderEntryBrief) resultMap.get(entry.getId());
                             if (entryBrief!=null) {
-                                entryBrief.addShare(ResourceUtil.buildShare(shareItem, entry, buildShareRecipient(shareItem)));
+                                entryBrief.addShare(ResourceUtil.buildShare(shareItem, entry, buildShareRecipient(shareItem), guestEnabled));
                             } else {
-                                entryBrief = ResourceUtil.buildSharedFolderEntryBrief(shareItem, buildShareRecipient(shareItem), entry);
+                                entryBrief = ResourceUtil.buildSharedFolderEntryBrief(shareItem, buildShareRecipient(shareItem), entry, guestEnabled);
                                 if (topId!=null) {
                                     entryBrief.setParentBinder(new ParentBinder(topId, topHref));
                                 }
@@ -941,9 +946,9 @@ public class ShareResource extends AbstractResource {
                                 if (attachment instanceof FileAttachment) {
                                     SharedFileProperties fileProps = (SharedFileProperties) resultMap.get(attachment.getId());
                                     if (fileProps!=null) {
-                                        fileProps.addShare(ResourceUtil.buildShare(shareItem, entry, buildShareRecipient(shareItem)));
+                                        fileProps.addShare(ResourceUtil.buildShare(shareItem, entry, buildShareRecipient(shareItem), guestEnabled));
                                     } else {
-                                        fileProps = ResourceUtil.buildSharedFileProperties(shareItem, buildShareRecipient(shareItem), (FileAttachment) attachment);
+                                        fileProps = ResourceUtil.buildSharedFileProperties(shareItem, buildShareRecipient(shareItem), (FileAttachment) attachment, guestEnabled);
                                         fileProps.setBinder(new ParentBinder(topId, topHref));
                                         resultMap.put(attachment.getId(), fileProps);
                                     }
@@ -956,9 +961,9 @@ public class ShareResource extends AbstractResource {
                     if (showBinderToUser(binder, onlyLibrary, topId, showHidden, showUnhidden)) {
                         SharedBinderBrief binderBrief = (SharedBinderBrief) resultMap.get(binder.getId());
                         if (binderBrief!=null) {
-                            binderBrief.addShare(ResourceUtil.buildShare(shareItem, binder, buildShareRecipient(shareItem)));
+                            binderBrief.addShare(ResourceUtil.buildShare(shareItem, binder, buildShareRecipient(shareItem), guestEnabled));
                         } else {
-                            binderBrief = ResourceUtil.buildSharedBinderBrief(shareItem, buildShareRecipient(shareItem), binder);
+                            binderBrief = ResourceUtil.buildSharedBinderBrief(shareItem, buildShareRecipient(shareItem), binder, guestEnabled);
                             if (topId!=null) {
                                 binderBrief.setParentBinder(new ParentBinder(topId, topHref));
                             }

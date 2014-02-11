@@ -635,7 +635,7 @@ public class SelfResource extends AbstractFileResource {
             if (newDomainDevice.getLastWipe()!=null) {
                 existingDomainDevice.setLastWipe(newDomainDevice.getLastWipe());
             }
-            newDomainDevice.setLastLogin(new Date());
+            existingDomainDevice.setLastLogin(new Date());
             if (newDevice.isWipeScheduled()!=null) {
                 existingDomainDevice.setWipeScheduled(newDevice.isWipeScheduled());
             }
