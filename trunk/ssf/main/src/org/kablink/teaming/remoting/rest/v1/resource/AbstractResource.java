@@ -542,7 +542,7 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         if (notifyRecipient) {
             notifyShareRecipients(shareItem, entity, isExternal, notifyAddresses);
         }
-        return ResourceUtil.buildShare(shareItem, entity, buildShareRecipient(shareItem));
+        return ResourceUtil.buildShare(shareItem, entity, buildShareRecipient(shareItem), isGuestAccessEnabled());
     }
 
     protected void validateNotifyParameters(boolean notifyRecipient, Set<String> notifyAddresses, ShareItem shareItem) {
@@ -1543,7 +1543,7 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
             SharingModule sharingModule = getSharingModule();
             sharing.setInternal(sharingModule.testAddShareEntityInternal(entity));
             sharing.setExternal(sharingModule.testAddShareEntityExternal(entity));
-            sharing.setPublic(sharingModule.testAddShareEntityPublic(entity));
+            sharing.setPublic(sharingModule.testAddShareEntityPublic(entity) && isGuestAccessEnabled());
             sharing.setGrantReshare(sharingModule.testShareEntityForward(entity));
         } else {
             sharing.setInternal(false);
@@ -1692,6 +1692,10 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
             restrictions.setEmailList(emailAddresses);
         }
         return restrictions;
+    }
+
+    protected boolean isGuestAccessEnabled() {
+        return getAuthenticationModule().getAuthenticationConfig().isAllowAnonymousAccess();
     }
 
     protected static CoreDao getCoreDao() {

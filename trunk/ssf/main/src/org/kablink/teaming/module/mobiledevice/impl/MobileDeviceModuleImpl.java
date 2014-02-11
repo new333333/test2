@@ -87,7 +87,12 @@ public class MobileDeviceModuleImpl extends CommonDependencyInjection implements
     public void setAdminModule(        AdminModule         adminModule)         {m_adminModule         = adminModule;        }
 	public void setProfileModule(      ProfileModule       profileModule)       {m_profileModule       = profileModule;      }
 	public void setTransactionTemplate(TransactionTemplate transactionTemplate) {m_transactionTemplate = transactionTemplate;}
-	
+
+
+    private Long getLoggedInUserId() {
+        return RequestContextHolder.getRequestContext().getUserId();
+    }
+
     /**
      * Creates a new MobileDevice for a user.
      *
@@ -97,8 +102,10 @@ public class MobileDeviceModuleImpl extends CommonDependencyInjection implements
      */
     @Override
 	public void addMobileDevice(final MobileDevice mobileDevice) {
-    	// Validate that the user can manage MobileDevice's.
-    	getAdminModule().checkAccess(AdminOperation.manageFunction);
+        if (!getLoggedInUserId().equals(mobileDevice.getUserId())) {
+            // Validate that the user can manage MobileDevice's.
+            getAdminModule().checkAccess(AdminOperation.manageFunction);
+        }
 
     	// Validate the contents of the MobileDevice.
     	validateMobileDevice(mobileDevice);
@@ -123,7 +130,9 @@ public class MobileDeviceModuleImpl extends CommonDependencyInjection implements
 	@Override
     public void deleteAllMobileDevices(Long userId) {
     	// Validate that the user can manage MobileDevice's.
-    	getAdminModule().checkAccess(AdminOperation.manageFunction);
+        if (!getLoggedInUserId().equals(userId)) {
+        	getAdminModule().checkAccess(AdminOperation.manageFunction);
+        }
     	
     	// Are there any MobileDevice's for this user ID?
     	final List<MobileDevice> mdList = getMobileDeviceList(userId);
@@ -155,7 +164,9 @@ public class MobileDeviceModuleImpl extends CommonDependencyInjection implements
     @Override
 	public void deleteMobileDevice(Long userId, String deviceId) {
     	// Validate that the user can manage MobileDevice's.
-    	getAdminModule().checkAccess(AdminOperation.manageFunction);
+        if (!getLoggedInUserId().equals(userId)) {
+            getAdminModule().checkAccess(AdminOperation.manageFunction);
+        }
     	
     	// Does a MobileDevice with these ID's exist?
     	final MobileDevice mobileDevice = getMobileDevice(userId, deviceId);
@@ -305,8 +316,10 @@ public class MobileDeviceModuleImpl extends CommonDependencyInjection implements
      */
 	private void modifyMobileDeviceImpl(final MobileDevice mobileDevice, boolean enforceRights) {
 		if (enforceRights) {
-	    	// Validate that the user can manage MobileDevice's.
-	    	getAdminModule().checkAccess(AdminOperation.manageFunction);
+            if (!getLoggedInUserId().equals(mobileDevice.getUserId())) {
+    	    	// Validate that the user can manage MobileDevice's.
+	        	getAdminModule().checkAccess(AdminOperation.manageFunction);
+            }
 		}
 
     	// Validate the contents of the MobileDevice.
