@@ -91,7 +91,7 @@ public class AdminNetFolderServerResource extends AbstractAdminResource {
         SearchResultList<NetFolderServer> results = new SearchResultList<NetFolderServer>();
         List<ResourceDriverConfig> configs = getResourceDriverModule().getAllNetFolderResourceDriverConfigs();
         for (ResourceDriverConfig config : configs) {
-            results.append(AdminResourceUtil.buildNetFolderServer(config, fullDetails));
+            results.append(AdminResourceUtil.buildNetFolderServer(config, fullDetails, false));
         }
         return results;
     }
@@ -111,14 +111,14 @@ public class AdminNetFolderServerResource extends AbstractAdminResource {
                 new Long( driverConfig.getJitsMaxAge() ),
                 new Long( driverConfig.getJitsAclMaxAge() ),
                 toScheduleInfo(netFolderServer.getSyncSchedule()));
-        return AdminResourceUtil.buildNetFolderServer(driverConfig, true);
+        return AdminResourceUtil.buildNetFolderServer(driverConfig, true, false);
    	}
 
     @GET
     @Path("{id}")
     public NetFolderServer getNetFolderServer(@PathParam("id") Long id) {
         ResourceDriverConfig resourceDriverConfig = getResourceDriverModule().getResourceDriverConfig(id);
-        return AdminResourceUtil.buildNetFolderServer(resourceDriverConfig, true);
+        return AdminResourceUtil.buildNetFolderServer(resourceDriverConfig, true, false);
     }
 
     @PUT
@@ -126,7 +126,7 @@ public class AdminNetFolderServerResource extends AbstractAdminResource {
     @Path("{id}")
     public NetFolderServer modifyNetFolderServer(@PathParam("id") Long id, NetFolderServer newServer) {
         ResourceDriverConfig existingConfig = getResourceDriverModule().getResourceDriverConfig(id);
-        NetFolderServer existingServer = AdminResourceUtil.buildNetFolderServer(existingConfig, false);
+        NetFolderServer existingServer = AdminResourceUtil.buildNetFolderServer(existingConfig, false, true);
         newServer.setId(id);
         newServer.replaceNullValues(existingServer);
 
@@ -140,7 +140,7 @@ public class AdminNetFolderServerResource extends AbstractAdminResource {
                 new Long( newConfig.getJitsMaxAge() ),
                 new Long( newConfig.getJitsAclMaxAge() ),
                 toScheduleInfo(newServer.getSyncSchedule()));
-        return AdminResourceUtil.buildNetFolderServer(newConfig, true);
+        return AdminResourceUtil.buildNetFolderServer(newConfig, true, false);
     }
 
     @DELETE
@@ -194,6 +194,16 @@ public class AdminNetFolderServerResource extends AbstractAdminResource {
         model.setRootPath(server.getRootPath());
         model.setCachedRightsRefreshInterval(server.getCachedRightsRefreshInterval());
         model.setUseDirectoryRights(server.getUseDirectoryRights());
+        model.setIndexContent(server.getIndexContent());
+        if (server.getJitsEnabled()!=null) {
+            model.setJitsEnabled(server.getJitsEnabled());
+        }
+        if (server.getJitsMaxAge()!=null) {
+            model.setJitsMaxAge(server.getJitsMaxAge());
+        }
+        if (server.getJitsMaxACLAge()!=null) {
+            model.setJitsAclMaxAge(server.getJitsMaxACLAge());
+        }
         return model;
     }
 }
