@@ -100,7 +100,7 @@ public class AdminNetFolderServerResource extends AbstractAdminResource {
    	@Consumes( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
    	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
    	public NetFolderServer createNetFolderServer(NetFolderServer netFolderServer) {
-        ResourceDriverConfig driverConfig = toResourceDriverConfig(netFolderServer);
+        ResourceDriverConfig driverConfig = toResourceDriverConfig(netFolderServer, true);
         driverConfig = NetFolderHelper.createNetFolderRoot(getAdminModule(), getResourceDriverModule(),
                 driverConfig.getName(), driverConfig.getRootPath(), driverConfig.getDriverType(),
                 driverConfig.getAccountName(), driverConfig.getPassword(), null, null, false, false,
@@ -127,10 +127,13 @@ public class AdminNetFolderServerResource extends AbstractAdminResource {
     public NetFolderServer modifyNetFolderServer(@PathParam("id") Long id, NetFolderServer newServer) {
         ResourceDriverConfig existingConfig = getResourceDriverModule().getResourceDriverConfig(id);
         NetFolderServer existingServer = AdminResourceUtil.buildNetFolderServer(existingConfig, false, true);
+        if (newServer.getName()!=null && !existingServer.getName().equals(newServer.getName())) {
+            throw new BadRequestException(ApiErrorCode.BAD_INPUT, "Renaming net folder servers is not supported.");
+        }
         newServer.setId(id);
         newServer.replaceNullValues(existingServer);
 
-        ResourceDriverConfig newConfig = toResourceDriverConfig(newServer);
+        ResourceDriverConfig newConfig = toResourceDriverConfig(newServer, false);
         newConfig = NetFolderHelper.modifyNetFolderRoot(getAdminModule(), getResourceDriverModule(), getProfileModule(), getBinderModule(),
                 getWorkspaceModule(), getFolderModule(), existingConfig.getName(), newConfig.getRootPath(), newConfig.getAccountName(), newConfig.getPassword(),
                 newConfig.getDriverType(), null, false, false, null, newConfig.getFullSyncDirOnly(), newConfig.getAuthenticationType(),
@@ -184,13 +187,15 @@ public class AdminNetFolderServerResource extends AbstractAdminResource {
         return _createNetFolder(netFolder, resourceDriverConfig);
     }
 
-    private ResourceDriverConfig toResourceDriverConfig(NetFolderServer server) {
-        validateMandatoryField(server, "getName");
-        validateMandatoryField(server, "getDriverType");
-        validateMandatoryField(server, "getRootPath");
-        validateMandatoryField(server, "getAuthenticationType");
-        validateMandatoryField(server, "getAccountName");
-        validateMandatoryField(server, "getPassword");
+    private ResourceDriverConfig toResourceDriverConfig(NetFolderServer server, boolean requireAllValues) {
+        if (requireAllValues) {
+            validateMandatoryField(server, "getName");
+            validateMandatoryField(server, "getDriverType");
+            validateMandatoryField(server, "getRootPath");
+            validateMandatoryField(server, "getAuthenticationType");
+            validateMandatoryField(server, "getAccountName");
+            validateMandatoryField(server, "getPassword");
+        }
 
         ResourceDriverConfig model = new ResourceDriverConfig();
         model.setAccountName(server.getAccountName());
