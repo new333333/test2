@@ -944,6 +944,8 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         if (maxCount==null) {
             maxCount = -1;
         }
+        crit.addOrder(new Order(Constants.ENTITY_FIELD, true));
+        crit.addOrder(new Order(Constants.SORT_TITLE_FIELD, true));
         Map resultMap = getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, offset, maxCount);
         SearchResultList<SearchableObject> results = new SearchResultList<SearchableObject>(offset);
         results.setLastModified(lastModified);
