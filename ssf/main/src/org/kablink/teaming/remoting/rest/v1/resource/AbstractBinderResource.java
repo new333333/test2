@@ -652,7 +652,7 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
         crit.add(SearchUtils.buildParentBinderCriterion(id));
         crit.addOrder(new Order(Constants.ENTITY_FIELD, true));
         crit.addOrder(new Order(Constants.SORT_TITLE_FIELD, true));
-        Map resultMap = getBinderModule().searchFolderOneLevelWithInferredAccess(crit, Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, offset, maxCount, binder);
+        Map resultMap = getBinderModule().searchFolderOneLevelWithInferredAccess(crit, Constants.SEARCH_MODE_NORMAL, offset, maxCount, binder);
         SearchResultList<SearchableObject> results = new SearchResultList<SearchableObject>(offset, binder.getModificationDate());
         SearchResultBuilderUtil.buildSearchResults(results, new UniversalBuilder(descriptionFormat), resultMap, nextUrl, nextParams, offset);
         if (modifiedSince!=null && !modifiedSince.before(results.getLastModified())) {
