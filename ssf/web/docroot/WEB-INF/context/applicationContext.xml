@@ -224,6 +224,7 @@
 				<prop key="move*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="update*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="create*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="save*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="set*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="get*">PROPAGATION_REQUIRED,readOnly,+org.kablink.teaming.security.AccessControlException,+org.kablink.teaming.exception.UncheckedCodedException</prop>
 				<prop key="index*">PROPAGATION_REQUIRED,readOnly,+org.kablink.teaming.security.AccessControlException</prop>
