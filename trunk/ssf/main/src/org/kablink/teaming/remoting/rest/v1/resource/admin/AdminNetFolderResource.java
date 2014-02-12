@@ -180,28 +180,4 @@ public class AdminNetFolderResource extends AbstractAdminResource {
         }
         return folder;
     }
-
-    private ResourceDriverConfig toResourceDriverConfig(NetFolderServer server) {
-        validateMandatoryField(server, "getName");
-        validateMandatoryField(server, "getDriverType");
-        validateMandatoryField(server, "getRootPath");
-        validateMandatoryField(server, "getAuthenticationType");
-        validateMandatoryField(server, "getAccountName");
-        validateMandatoryField(server, "getPassword");
-
-        ResourceDriverConfig model = new ResourceDriverConfig();
-        model.setAccountName(server.getAccountName());
-        model.setAuthenticationType(toEnum(ResourceDriverConfig.AuthenticationType.class, "auth_type", server.getAuthenticationType()));
-        model.setChangeDetectionMechanism(toEnum(ResourceDriverConfig.ChangeDetectionMechanism.class, "change_detection_mechanism", server.getChangeDetectionMechanism()));
-        model.setDriverType(toEnum(ResourceDriverConfig.DriverType.class, "driver_type", server.getDriverType()));
-        model.setFullSyncDirOnly(server.getFullSyncDirOnly());
-        model.setId(server.getId());
-        model.setModifiedOn(server.getModifiedOn());
-        model.setName(server.getName());
-        model.setPassword(server.getPassword());
-        model.setRootPath(server.getRootPath());
-        model.setCachedRightsRefreshInterval(server.getCachedRightsRefreshInterval());
-        model.setUseDirectoryRights(server.getUseDirectoryRights());
-        return model;
-    }
 }
