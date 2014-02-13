@@ -478,6 +478,24 @@
 	line-height: 15px;
 }
 
+.activityStreamTitlePanel
+{
+	display: inline-block;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	max-width: 80%;
+}
+
+.ActivityStreamTopEntryAdditionalUIPanel
+{
+	display: inline;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	width: 20%;
+}
+
 .activityStreamTopEntryBinderName
 {
 	color: #666666 !important;

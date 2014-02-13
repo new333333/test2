@@ -106,17 +106,22 @@ public class ActivityStreamTopEntry extends ActivityStreamUIEntry
 	@Override
 	public void addAdditionalHeaderUI( FlowPanel headerPanel )
 	{
+		FlowPanel panel;
 		ImageResource imageResource;
 
+		panel = new FlowPanel();
+		panel.addStyleName( "ActivityStreamTopEntryAdditionalUIPanel" );
+		headerPanel.add( panel );
+		
 		imageResource = GwtTeaming.getImageBundle().breadSpace();
 		m_breadSpaceImg = new Image( imageResource );
 		m_breadSpaceImg.setVisible( false );
-		headerPanel.add( m_breadSpaceImg );
+		panel.add( m_breadSpaceImg );
 		
 		// Create a label that holds the name of the binder this entry comes from.
 		m_parentBinderName = new Anchor();
 		m_parentBinderName.addStyleName( "activityStreamTopEntryBinderName" );
-		headerPanel.add( m_parentBinderName );
+		panel.add( m_parentBinderName );
 		
 		// Add mouse over handler.
 		{
