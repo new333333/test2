@@ -36,6 +36,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.util.NLT;
 import org.kablink.util.HttpStatusCodeSupport;
 import org.kablink.util.api.ApiErrorCode;
@@ -45,6 +47,8 @@ import org.kablink.util.api.ApiErrorCodeSupport;
 public class EntryDataErrors implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
+	
+	private static final Log logger = LogFactory.getLog(EntryDataErrors.class);
 	
 	private List<Problem> problems;
 	
@@ -102,7 +106,7 @@ public class EntryDataErrors implements Serializable {
 		public Problem(int type, Exception e) {
 			this.type = type;
 			this.exception = e;
-			//logger.warn("Entry data error: " + e.getMessage());
+			logger.error("Entry data error (type=" + type + ")", e);
 		}
 
 		public Exception getException() {
