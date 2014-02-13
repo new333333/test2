@@ -850,7 +850,7 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
         
         try {
         	results = luceneSession.search(RequestContextHolder.getRequestContext().getUserId(),
-        			so.getAclQueryStr(), Constants.SEARCH_MODE_NORMAL, so.getLuceneQuery(),so.getSortBy(),0,0);
+        			so.getBaseAclQueryStr(), so.getExtendedAclQueryStr(), Constants.SEARCH_MODE_NORMAL, so.getLuceneQuery(),so.getSortBy(),0,0);
         	//results = instreamSession.search(so.getQueryString(),so.getSortBy(),0,0);
         } catch (Exception e) {
         	logger.warn("Exception throw while searching in getRecentEntries: " + e.toString());

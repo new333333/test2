@@ -77,7 +77,7 @@ public interface LuceneReadSession extends LuceneSession {
 	 * 
 	 * @throws LuceneException
 	 */
-	public Hits search(Long contextUserId, String aclQueryStr, int mode, Query query) throws LuceneException;
+	public Hits search(Long contextUserId, String baseAclQueryStr, String extendedAclQueryStr, int mode, Query query) throws LuceneException;
 
 	/**
 	 * Search and return only the portion of the result specified.
@@ -88,10 +88,10 @@ public interface LuceneReadSession extends LuceneSession {
 	 * @return
 	 * @throws LuceneException
 	 */
-	public Hits search(Long contextUserId, String aclQueryStr, int mode, Query query, Sort sort, int offset, int size)
+	public Hits search(Long contextUserId, String baseAclQueryStr, String extendedAclQueryStr, int mode, Query query, Sort sort, int offset, int size)
 			throws LuceneException;
 	
-	public Hits search(Long contextUserId, String aclQueryStr, int mode, Query query, Sort sort, int offset, int size, PostFilterCallback callback)
+	public Hits search(Long contextUserId, String baseAclQueryStr, String extendedAclQueryStr, int mode, Query query, Sort sort, int offset, int size, PostFilterCallback callback)
 			throws LuceneException;
 	
 	/**
@@ -118,7 +118,7 @@ public interface LuceneReadSession extends LuceneSession {
 	 * @return
 	 * @throws LuceneException
 	 */
-	public Hits searchNonNetFolderOneLevelWithInferredAccess(Long contextUserId, String aclQueryStr, int mode, Query query, Sort sort, int offset, int size, 
+	public Hits searchNonNetFolderOneLevelWithInferredAccess(Long contextUserId, String baseAclQueryStr, String extendedAclQueryStr, int mode, Query query, Sort sort, int offset, int size, 
 			Long parentBinderId, String parentBinderPath) throws LuceneException;
 
 	/**
@@ -138,7 +138,7 @@ public interface LuceneReadSession extends LuceneSession {
 	 * @return
 	 * @throws LuceneException
 	 */
-	public Hits searchNetFolderOneLevel(Long contextUserId, String aclQueryStr, List<String> titles, Query query, Sort sort, int offset, int size) throws LuceneException;
+	public Hits searchNetFolderOneLevel(Long contextUserId, String baseAclQueryStr, String extendedAclQueryStr, List<String> titles, Query query, Sort sort, int offset, int size) throws LuceneException;
 	
 	/**
      * Return whether or not the calling user can gain inferred access to the specified

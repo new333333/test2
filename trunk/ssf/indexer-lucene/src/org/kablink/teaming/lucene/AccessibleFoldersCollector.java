@@ -78,8 +78,8 @@ public class AccessibleFoldersCollector extends Collector {
 			// This doc has a valid value in the specific field. We can safely assume that
 			// this doc represents a folder entity in Vibe/Filr because the query this collector
 			// is collecting the execution results for explicitly narrowed the search space to
-			// entities of folder type only (see makeAccessibleFoldersAclQuery method in 
-			// LuceneProvider class).
+			// entities of folder type only (see makeAccessibleFoldersAclQuery method and
+			// makeShareAccessibleFoldersAclQuery method in LuceneProvider class).
 			accessibleFolderIds.add(folderId);
 		}
 	}
