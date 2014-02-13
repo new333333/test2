@@ -1882,7 +1882,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 		
 		SearchObject so = qbb.buildQuery(crit.toQuery());
 		
-		Hits hits = luceneSessionn.search(RequestContextHolder.getRequestContext().getUserId(), so.getAclQueryStr(), Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, 
+		Hits hits = luceneSessionn.search(RequestContextHolder.getRequestContext().getUserId(), so.getBaseAclQueryStr(), so.getExtendedAclQueryStr(), Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, 
 				so.getLuceneQuery());
 		luceneSessionn.close();
 		for (int i = 0; i < hits.length(); i++) {

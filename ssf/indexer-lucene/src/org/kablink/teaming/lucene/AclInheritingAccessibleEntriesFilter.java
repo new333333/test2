@@ -51,11 +51,15 @@ public class AclInheritingAccessibleEntriesFilter extends Filter {
 	private static final long serialVersionUID = 1L;
 	
 	Filter aclInheritingEntriesFilter;
-	TLongHashSet accessibleFolderIds;
+	TLongHashSet baseAccessibleFolderIds;
+	TLongHashSet extendedAccessibleFolderIds;
 	
-	public AclInheritingAccessibleEntriesFilter(Filter aclInheritingEntriesFilter, TLongHashSet accessibleFolderIds) {
+	TLongHashSet noIntrinsicAclStoredButAccessibleThroughExtendedAclOnParentFolder_entryIds = new TLongHashSet();
+	
+	public AclInheritingAccessibleEntriesFilter(Filter aclInheritingEntriesFilter, TLongHashSet baseAccessibleFolderIds, TLongHashSet extendedAccessibleFolderIds) {
 		this.aclInheritingEntriesFilter = aclInheritingEntriesFilter;
-		this.accessibleFolderIds = accessibleFolderIds;
+		this.baseAccessibleFolderIds = baseAccessibleFolderIds;
+		this.extendedAccessibleFolderIds = extendedAccessibleFolderIds;
 	}
 
 	/* (non-Javadoc)
@@ -77,17 +81,18 @@ public class AclInheritingAccessibleEntriesFilter extends Filter {
 		 *         The negative value represents the ID of the parent folder multiplied by -1.
 		 */
 		final long[] entryAclParentIds = FieldCache.DEFAULT.getLongs(reader, Constants.ENTRY_ACL_PARENT_ID_FIELD);
+		final long[] entityIds = FieldCache.DEFAULT.getLongs(reader, Constants.ENTITY_ID_FIELD);
 		
 		final DocIdSet innerSet = aclInheritingEntriesFilter.getDocIdSet(reader);
 		
-		return new NullSafeFilteredDocIdSet(innerSet, accessibleFolderIds, entryAclParentIds) {
+		return new NullSafeFilteredDocIdSet(innerSet) {
 			@Override
 			protected boolean match(int docid) throws IOException {
 				long entryAclParentId = entryAclParentIds[docid];
 				if(entryAclParentId > 0) {
 					// This doc represents an entry (or an attachment within an entry) that inherits ACL
 					// from its parent folder. We need to check if the user has access to the parent folder.
-					if(accessibleFolderIds.contains(entryAclParentId))
+					if(baseAccessibleFolderIds.contains(entryAclParentId) || extendedAccessibleFolderIds.contains(entryAclParentId))
 						return true; // The user has access to parent folder. Grant access to this entry/attachment.
 					else
 						return false; // The user has no access to parent folder. Deny access to this entry/attachment.
@@ -97,10 +102,23 @@ public class AclInheritingAccessibleEntriesFilter extends Filter {
 					// is not stored with the search index, which means that the search index does not know
 					// whether the user has access to this entry or not. We include this entry in the result
 					// AS LONG AS it is in a folder that the user has access to.
-					if(accessibleFolderIds.contains(entryAclParentId * -1))
-						return true; // The user has access to parent folder. Include this entry/attachment in the result for now.
-					else
+					if(baseAccessibleFolderIds.contains(entryAclParentId * -1)) {
+						// The user has access to parent folder through base ACL. 
+						// Include this entry/attachment as a candidate in the result for now, 
+						// so that the caller can check if the user has access to this file or not.
+						return true; 
+					}
+					else if(extendedAccessibleFolderIds.contains(entryAclParentId * -1)) {
+						// The user has access to parent folder through extended ACL such as sharing. 
+						// Include this entry/attachment in the result. Also, add the entry ID of this
+						// document into a set, which can be used to instruct the caller that it doesn't
+						// have to perform post-filtering on this entry.
+						noIntrinsicAclStoredButAccessibleThroughExtendedAclOnParentFolder_entryIds.add(entityIds[docid]);
+						return true;
+					}
+					else {
 						return false; // The user has no access to parent folder. Include this entry/attachment in the result for now.
+					}
 				}
 				else {
 					// In the current usage, this can not occur, because previous filter in the chain
@@ -112,6 +130,13 @@ public class AclInheritingAccessibleEntriesFilter extends Filter {
 				}
 			}			
 		};
+	}
+	
+	/*
+	 * Return a set of IDs of file entries (from net folders) whose parent folders are accessible to the user due to sharing.
+	 */
+	public TLongHashSet getNoIntrinsicAclStoredButAccessibleThroughExtendedAclOnParentFolder_entryIds() {
+		return noIntrinsicAclStoredButAccessibleThroughExtendedAclOnParentFolder_entryIds;
 	}
 
 }

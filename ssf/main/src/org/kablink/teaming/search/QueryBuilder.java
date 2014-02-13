@@ -209,6 +209,16 @@ public class QueryBuilder {
 					so.getLuceneQuery().toString() +
 					org.kablink.teaming.util.Constants.NEWLINE +
 					
+					"Base ACL query =>" +
+					org.kablink.teaming.util.Constants.NEWLINE + 
+					so.getBaseAclQueryStr() + 
+					org.kablink.teaming.util.Constants.NEWLINE +
+					
+					"Extended ACL query =>" +
+					org.kablink.teaming.util.Constants.NEWLINE + 
+					so.getExtendedAclQueryStr() +
+					org.kablink.teaming.util.Constants.NEWLINE +
+					
 					"ACL query =>" +
 					org.kablink.teaming.util.Constants.NEWLINE + 
 					so.getAclQueryStr()
@@ -700,17 +710,36 @@ public class QueryBuilder {
 			return null;
 		}
 
-		StringBuilder sb = new StringBuilder();
+		StringBuilder extendedAclClause = new StringBuilder();
+		getExtendedAclClauseForIds(userPrincipals, user.getId(), extendedAclClause, so);
+		if(so != null)
+			so.setExtendedAclQueryStr(extendedAclClause.toString());
 		
-		getAclClauseForIds(userPrincipals, user.getId(), sb, so);
+		StringBuilder baseAclClause = new StringBuilder();
+		getAclClauseForIds(userPrincipals, user.getId(), baseAclClause, so);
 		if(applicationPrincipals != null) {
-			sb.append(" AND ");
-			getAclClauseForIds(applicationPrincipals, null, sb, so);
-		}
+			baseAclClause.append(" AND ");
+			getAclClauseForIds(applicationPrincipals, null, baseAclClause, so);
+		}	
+		if(so != null)
+			so.setBaseAclQueryStr(baseAclClause.toString());
 		
-		return sb.toString();
+		return "(" + extendedAclClause.toString() + ") OR " + baseAclClause.toString();
 	}
 	
+	private StringBuilder getExtendedAclClauseForIds(Set principalIds, Long userId, StringBuilder sb, SearchObject so) {
+		Long allUsersGroupId = Utils.getAllUsersGroupId();
+		Long allExtUsersGroupId = Utils.getAllExtUsersGroupId();
+		//Add the shared entries outside of the root folder restrictions
+		sb.append(idField(principalIds, SHARED_PREFIX, new ArrayList<Long>()));
+		if (user.getIdentityInfo().isInternal() && !user.isShared()) {
+			sb.append(" OR ").append(SHARED_PREFIX).append(String.valueOf(allUsersGroupId));
+		} else if (!user.getIdentityInfo().isInternal() && !user.isShared()) {
+			sb.append(" OR ").append(SHARED_PREFIX).append(String.valueOf(allExtUsersGroupId));
+		}
+		return sb;
+	}
+
 	private StringBuilder getAclClauseForIds(Set principalIds, Long userId, StringBuilder qString, SearchObject so)
 	{
 		Long allUsersGroupId = Utils.getAllUsersGroupId();
@@ -765,15 +794,6 @@ public class QueryBuilder {
 			}
 		}
 		String entryAll = getConditionExp(ENTRY_PREFIX, Constants.READ_ACL_ALL, conditionsMet);
-
-		//Add the shared entries outside of the root folder restrictions
-		String sharedPrincipals = idField(principalIds, SHARED_PREFIX, new ArrayList<Long>());
-		if (user.getIdentityInfo().isInternal() && !user.isShared()) {
-			sharedPrincipals += " OR " + SHARED_PREFIX + String.valueOf(allUsersGroupId);
-		} else if (!user.getIdentityInfo().isInternal() && !user.isShared()) {
-			sharedPrincipals += " OR " + SHARED_PREFIX + String.valueOf(allExtUsersGroupId);
-		}
-		qString.append("(" + sharedPrincipals + ") OR ");
 
 		//Start with the Net Folder Root acl
 		String rootPrincipals = idField(principalIds, ROOT_PREFIX, new ArrayList<Long>());

@@ -63,18 +63,18 @@ public class NilLuceneReadSession implements LuceneReadSession {
 	}
 
 	@Override
-	public Hits search(Long contextUserId, String aclQueryStr, int mode, Query query) throws LuceneException {
+	public Hits search(Long contextUserId, String baseAclQueryStr, String extendedAclQueryStr, int mode, Query query) throws LuceneException {
 		return new Hits(0);
 	}
 
 	@Override
-	public Hits search(Long contextUserId, String aclQueryStr, int mode, Query query, Sort sort, int offset, int size)
+	public Hits search(Long contextUserId, String baseAclQueryStr, String extendedAclQueryStr, int mode, Query query, Sort sort, int offset, int size)
 			throws LuceneException {
 		return new Hits(0);
 	}
 
 	@Override
-	public Hits search(Long contextUserId, String aclQueryStr, int mode, Query query, Sort sort, int offset, int size, PostFilterCallback callbak)
+	public Hits search(Long contextUserId, String baseAclQueryStr, String extendedAclQueryStr, int mode, Query query, Sort sort, int offset, int size, PostFilterCallback callbak)
 			throws LuceneException {
 		return new Hits(0);
 	}
@@ -85,7 +85,7 @@ public class NilLuceneReadSession implements LuceneReadSession {
 
 	@Override
 	public Hits searchNonNetFolderOneLevelWithInferredAccess(Long contextUserId,
-			String aclQueryStr, int mode, Query query, Sort sort, int offset,
+			String baseAclQueryStr, String extendedAclQueryStr, int mode, Query query, Sort sort, int offset,
 			int size, Long parentBinderId, String parentBinderPath)
 			throws LuceneException {
 		return new Hits(0);
@@ -98,7 +98,7 @@ public class NilLuceneReadSession implements LuceneReadSession {
 	}
 
 	@Override
-	public Hits searchNetFolderOneLevel(Long contextUserId, String aclQueryStr,
+	public Hits searchNetFolderOneLevel(Long contextUserId, String baseAclQueryStr, String extendedAclQueryStr,
 			List<String> titles, Query query, Sort sort, int offset, int size)
 			throws LuceneException {
 		return new Hits(0);

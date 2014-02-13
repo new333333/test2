@@ -50,6 +50,7 @@ public abstract class AbstractLuceneSession implements LuceneSession {
 	}
 	
 	// Used for read
+	/*
 	protected void endRead(long begin, String methodName, Long contextUserId, String aclQueryStr, 
 			int mode, Query query, Sort sort, int offset, int size, int resultLength,
 			int filterSuccessCount, int filterFailureCount, int serviceCallCount) {
@@ -60,6 +61,39 @@ public abstract class AbstractLuceneSession implements LuceneSession {
 				logger.trace(diff + " ms, " + methodName + ", result=" + resultLength + 
 						", contextUserId=" + contextUserId + 
 						", aclQueryStr=[" + aclQueryStr + 
+						"], mode=" + mode + 
+						", query=[" + ((query==null)? "" : query.toString()) + 
+						"], sort=[" + ((sort==null)? "" : sort.toString()) + 
+						"], offset=" + offset +
+						", size=" + size +
+						", filterSuccessCount=" + filterSuccessCount +
+						", filterFailureCount=" + filterFailureCount + 
+						", serviceCallCount=" + serviceCallCount);
+		}
+		else if(logger.isDebugEnabled()) {
+			double diff = (System.nanoTime() - begin)/1000000.0;
+			if(diff >= (double) readFloor)
+				logger.debug(diff + " ms, " + methodName + ", result=" + resultLength + 					
+						", offset=" + offset +
+						", size=" + size +
+						", filterSuccessCount=" + filterSuccessCount +
+						", filterFailureCount=" + filterFailureCount + 
+						", serviceCallCount=" + serviceCallCount);
+		}
+	}*/
+
+	// Used for read
+	protected void endRead(long begin, String methodName, Long contextUserId, String baseAclQueryStr, String extendedAclQueryStr, 
+			int mode, Query query, Sort sort, int offset, int size, int resultLength,
+			int filterSuccessCount, int filterFailureCount, int serviceCallCount) {
+		init();
+		if(logger.isTraceEnabled()) {
+			double diff = (System.nanoTime() - begin)/1000000.0;
+			if(diff >= (double) readFloor)
+				logger.trace(diff + " ms, " + methodName + ", result=" + resultLength + 
+						", contextUserId=" + contextUserId + 
+						", baseAclQueryStr=[" + baseAclQueryStr + 
+						", extendedAclQueryStr=[" + extendedAclQueryStr + 
 						"], mode=" + mode + 
 						", query=[" + ((query==null)? "" : query.toString()) + 
 						"], sort=[" + ((sort==null)? "" : sort.toString()) + 
