@@ -919,39 +919,42 @@ public class GwtMenuHelper {
 			}
 		}
 
-		// ...for a 'Shared By/With Me' collection...
-		if (isSharedCollection) {
-			// ...we allow shares to be hidden or shown...
-			tbi = new ToolbarItem("1_hideSelected");
-			markTBITitle(tbi, "toolbar.hideShares");
-			markTBIEvent(tbi, TeamingEvents.HIDE_SELECTED_SHARES);
-			moreTBI.addNestedItem(tbi);
+		// ...if this is other than the guest user...
+		if (!isGuest) {
+			// ...for a 'Shared By/With Me' collection...
+			if (isSharedCollection) {
+				// ...we allow shares to be hidden or shown...
+				tbi = new ToolbarItem("1_hideSelected");
+				markTBITitle(tbi, "toolbar.hideShares");
+				markTBIEvent(tbi, TeamingEvents.HIDE_SELECTED_SHARES);
+				moreTBI.addNestedItem(tbi);
 			
-			tbi = new ToolbarItem("1_showSelected");
-			markTBITitle(tbi, "toolbar.showShares");
-			markTBIEvent(tbi, TeamingEvents.SHOW_SELECTED_SHARES);
-			moreTBI.addNestedItem(tbi);
-		}
+				tbi = new ToolbarItem("1_showSelected");
+				markTBITitle(tbi, "toolbar.showShares");
+				markTBIEvent(tbi, TeamingEvents.SHOW_SELECTED_SHARES);
+				moreTBI.addNestedItem(tbi);
+			}
 		
-		// ...add a separator item...
-		if (moreTBI.hasNestedToolbarItems() && (isEntryContainer || (!isGuest))) {
-			moreTBI.addNestedItem(ToolbarItem.constructSeparatorTBI());
-		}
+			// ...add a separator item...
+			if (moreTBI.hasNestedToolbarItems() && (isEntryContainer || (!isGuest))) {
+				moreTBI.addNestedItem(ToolbarItem.constructSeparatorTBI());
+			}
 		
-		if (isEntryContainer && (!isFilr)) {
-			// ...add the change entry type item when not Filr....
-			tbi = new ToolbarItem("1_changeEntryTypeSelected");
-			markTBITitle(tbi, "toolbar.changeEntryType");
-			markTBIEvent(tbi, TeamingEvents.CHANGE_ENTRY_TYPE_SELECTED_ENTRIES);
-			moreTBI.addNestedItem(tbi);
-		}
+			if (isEntryContainer && (!isFilr)) {
+				// ...add the change entry type item when not Filr....
+				tbi = new ToolbarItem("1_changeEntryTypeSelected");
+				markTBITitle(tbi, "toolbar.changeEntryType");
+				markTBIEvent(tbi, TeamingEvents.CHANGE_ENTRY_TYPE_SELECTED_ENTRIES);
+				moreTBI.addNestedItem(tbi);
+			}
 
-		// ...add the subscribe item.
-		constructEntrySubscribeItem(moreTBI, bs, request, false);
+			// ...add the subscribe item.
+			constructEntrySubscribeItem(moreTBI, bs, request, false);
 		
-		// Add the 'Manage Shares...' menu item.  This will only be
-		// available for the admin users.
-		constructEntryManageSharesItem(moreTBI, bs);
+			// Add the 'Manage Shares...' menu item.  This will only be
+			// available for the admin users.
+			constructEntryManageSharesItem(moreTBI, bs);
+		}
 
 		// If we added anything to the more toolbar...
 		if (!(moreTBI.getNestedItemsList().isEmpty())) {

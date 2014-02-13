@@ -880,23 +880,26 @@ public class EntryMenuPanel extends ToolPanelBase
 		
 		// If we're rendering the menu for a Shared By/With Me view... 
 		if (m_binderInfo.getCollectionType().isSharedCollection()) {
-			// ...there are predefined filters that are specific to
-			// ...that.  Construct the filter drop down menu...
-			PopupMenu filterDropdownMenu = constructFilterDropdownMenu(true);	// true -> Items may be checked.
+			// ...for other than guest...
+			if (!(GwtClientHelper.isCurrentUserGuest())) {
+				// ...there are predefined filters that are specific to
+				// ...that.  Construct the filter drop down menu...
+				PopupMenu filterDropdownMenu = constructFilterDropdownMenu(true);	// true -> Items may be checked.
 
-			// ...construct the menu items and store them so they can
-			// ...be easily accessed by the view.
-			boolean nonHidden   = m_sharedViewState.isShowNonHidden();
-			boolean hidden      = m_sharedViewState.isShowHidden();
-			m_sharedViewFilters = new SharedViewFilterItems(
-				constructSharedViewFilterItem(filterDropdownMenu, SharedViewFilter.SHOW_NON_HIDDEN, m_messages.vibeEntryMenu_SharedView_NonHiddenFilter(), nonHidden),
-				constructSharedViewFilterItem(filterDropdownMenu, SharedViewFilter.SHOW_HIDDEN,     m_messages.vibeEntryMenu_SharedView_HiddenFilter(),    hidden)  );
+				// ...construct the menu items and store them so they can
+				// ...be easily accessed by the view.
+				boolean nonHidden   = m_sharedViewState.isShowNonHidden();
+				boolean hidden      = m_sharedViewState.isShowHidden();
+				m_sharedViewFilters = new SharedViewFilterItems(
+					constructSharedViewFilterItem(filterDropdownMenu, SharedViewFilter.SHOW_NON_HIDDEN, m_messages.vibeEntryMenu_SharedView_NonHiddenFilter(), nonHidden),
+					constructSharedViewFilterItem(filterDropdownMenu, SharedViewFilter.SHOW_HIDDEN,     m_messages.vibeEntryMenu_SharedView_HiddenFilter(),    hidden)  );
 			
-			// If the filtering that's in affect causes the list to be
-			// empty...
-			if ((!nonHidden) && (!hidden)) {
-				// ...tell the user about it.
-				GwtClientHelper.deferredAlert(m_messages.vibeEntryMenu_SharedView_Warning_NoShares());
+				// If the filtering that's in affect causes the list to be
+				// empty...
+				if ((!nonHidden) && (!hidden)) {
+					// ...tell the user about it.
+					GwtClientHelper.deferredAlert(m_messages.vibeEntryMenu_SharedView_Warning_NoShares());
+				}
 			}
 			
 			return;
