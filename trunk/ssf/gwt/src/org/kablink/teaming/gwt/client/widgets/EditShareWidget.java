@@ -1132,8 +1132,24 @@ public class EditShareWidget extends Composite
 		String newNote;
 		
 		newNote = m_noteTextArea.getValue();
-		if ( newNote != null && newNote.equalsIgnoreCase( GwtTeaming.getMessages().editShareDlg_undefinedNote() ) == false )
-			shareItem.setComments( m_noteTextArea.getValue() );
+		
+		// Are we dealing with more than 1 share item?
+		if ( m_listOfShareItems != null && m_listOfShareItems.size() > 1 )
+		{
+			// Yes
+			// Is the note equal to "Do not modify"?
+			if ( newNote != null && newNote.equalsIgnoreCase( GwtTeaming.getMessages().editShareDlg_undefinedNote() ) == false )
+			{
+				// No, save the note
+				shareItem.setComments( m_noteTextArea.getValue() );
+			}
+		}
+		else
+		{
+			// No
+			if ( newNote != null )
+				shareItem.setComments( newNote );
+		}
 	}
 	
 	/**
