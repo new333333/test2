@@ -5202,9 +5202,23 @@ public class GwtViewHelper {
 	 */
 	public static SharedViewStateRpcResponseData getSharedViewState(AllModulesInjected bs, HttpServletRequest request, CollectionType ct) throws GwtTeamingException {
 		try {
-			HttpSession hSession = GwtServerHelper.getCurrentHttpSession();
-			Boolean showHidden    = ((Boolean) hSession.getAttribute(CACHED_SHARED_VIEW_SHOW_HIDDEN_BASE     + ct.name()));
-			Boolean showNonHidden = ((Boolean) hSession.getAttribute(CACHED_SHARED_VIEW_SHOW_NON_HIDDEN_BASE + ct.name()));
+			// For guest...
+			Boolean showHidden;
+			Boolean showNonHidden;
+			if (GwtServerHelper.getCurrentUser().isShared()) {
+				// ...we show everything since hiding shares is not
+				// ...supported...
+				showHidden    =
+				showNonHidden = Boolean.TRUE;
+			}
+			
+			else {
+				// ...otherwise, we look in the session cache as to
+				// ...whether to show hidden or non-hidden shares.
+				HttpSession hSession = GwtServerHelper.getCurrentHttpSession();
+				showHidden    = ((Boolean) hSession.getAttribute(CACHED_SHARED_VIEW_SHOW_HIDDEN_BASE     + ct.name()));
+				showNonHidden = ((Boolean) hSession.getAttribute(CACHED_SHARED_VIEW_SHOW_NON_HIDDEN_BASE + ct.name()));
+			}
 
 			// Construct the SharedViewStateRpcResponseData
 			// object to return.
