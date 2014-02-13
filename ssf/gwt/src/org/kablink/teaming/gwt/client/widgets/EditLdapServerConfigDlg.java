@@ -539,6 +539,7 @@ public class EditLdapServerConfigDlg extends DlgBox
 			m_proxyDnTextBox = new TextBox();
 			m_proxyDnTextBox.setVisibleLength( 40 );
 			tmpPanel.add( m_proxyDnTextBox );
+			
 			Image btnImg = GwtClientHelper.buildImage( GwtTeaming.getImageBundle().browseLdap().getSafeUri().asString() );
 			btnImg.setTitle( GwtTeaming.getMessages().editLdapServerConfigDlg_ProxyDn_Alt() );
 			FlowPanel html = new FlowPanel();
@@ -565,7 +566,10 @@ public class EditLdapServerConfigDlg extends DlgBox
 					} );
 				}
 			} );
-			tmpPanel.add( m_browseProxyDnBtn );
+			// Because most customers do not have anonymous access turned on in their ldap
+			// directory we are not going to add an ldap browse button.
+			// tmpPanel.add( m_browseProxyDnBtn );
+			
 			m_serverPanelTable.setWidget( row, 1, tmpPanel );
 			++row;
 		}
