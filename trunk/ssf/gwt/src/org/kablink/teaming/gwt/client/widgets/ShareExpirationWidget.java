@@ -451,6 +451,9 @@ public class ShareExpirationWidget extends Composite
 	{
 		ShareExpirationType expirationType;
 
+		m_expiresAfterTextBox.setText( "" );
+		m_dateBox.setValue( null );
+		
 		if ( expirationValue != null )
 		{
 			expirationType = expirationValue.getExpirationType();
