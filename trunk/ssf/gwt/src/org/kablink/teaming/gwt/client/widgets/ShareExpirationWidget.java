@@ -213,6 +213,7 @@ public class ShareExpirationWidget extends Composite
 			table = new FlexTable();
 			table.addStyleName( "shareExpirationWidget_expiresAfterTable" );
 			m_expiresAfterTextBox = new TextBox();
+			m_expiresAfterTextBox.setMaxLength( 4 );
 			m_expiresAfterTextBox.setVisibleLength( 4 );
 			m_expiresAfterTextBox.addStyleName( "shareExpirationWidget_expiresAfterTextBox" );
 			m_expiresAfterTextBox.addKeyPressHandler( this );
