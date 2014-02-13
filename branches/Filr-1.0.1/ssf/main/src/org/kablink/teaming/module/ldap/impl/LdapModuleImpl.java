@@ -4307,14 +4307,19 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 
 	}// end GroupCoordinator
 
-	protected void syncGroups(Binder zone, LdapContext ctx, LdapConnectionConfig config, GroupCoordinator groupCoordinator,
-							  boolean syncMembership) 
-		throws NamingException {
-		//ssname=> forum info
-		String [] sample = new String[0];
-		//ldap dn => forum info
+	/**
+	 * 
+	 */
+	protected void syncGroups(
+		Binder zone,
+		LdapContext ctx,
+		LdapConnectionConfig config,
+		GroupCoordinator groupCoordinator,
+		boolean syncMembership ) throws NamingException
+	{
 		boolean workingWithAD = false;
 		String ldapGuidAttribute;
+		int pageSize = 500;
 		
 		// Get the name of the ldap attribute we will use to get a guid from the ldap directory.
 		ldapGuidAttribute = config.getLdapGuidAttribute();
@@ -4324,17 +4329,17 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 
 		logger.info( "Starting to sync groups, syncGroups()" );
 
-		for(LdapConnectionConfig.SearchInfo searchInfo : config.getGroupSearches()) {
-			if(Validator.isNotNull(searchInfo.getFilterWithoutCRLF())) {
+		for(LdapConnectionConfig.SearchInfo searchInfo : config.getGroupSearches())
+		{
+			if ( Validator.isNotNull(searchInfo.getFilterWithoutCRLF()))
+			{
 				String[] attributesToRead;
 				String[] attributeNames;
 				List memberAttributes;
 				int i;
+				byte[] cookie = null;
 				
 				logger.info( "\tSearching for groups in base dn: " + searchInfo.getBaseDn() );
-				
-				// Get the name of the ldap attribute we will use to get a guid from the ldap directory.
-				ldapGuidAttribute = config.getLdapGuidAttribute();
 				
 				// Get the mapping of attributes for a group.
 				Map groupAttributes = (Map) getZoneMap(zone.getName()).get(GROUP_ATTRIBUTES);
@@ -4344,9 +4349,6 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				if ( workingWithAD == false )
 					la.addAll((List) getZoneMap(zone.getName()).get(MEMBER_ATTRIBUTES));
 				
-				int scope = (searchInfo.isSearchSubtree()?SearchControls.SUBTREE_SCOPE:SearchControls.ONELEVEL_SCOPE);
-				SearchControls sch = new SearchControls(scope, 0, 0, (String [])la.toArray(sample), false, false);
-	
 				// Create a String[] of all the attributes we need to read from the directory.
 				{
 					int len;
@@ -4399,96 +4401,143 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					}
 				}
 				
-				NamingEnumeration ctxSearch = ctx.search(searchInfo.getBaseDn(), searchInfo.getFilterWithoutCRLF(), sch);
+				// Request the paged results control
+				try
+				{
+					Control[] ctls = new Control[]{ new PagedResultsControl( pageSize, true ) };
+					ctx.setRequestControls( ctls );
+				}
+				catch ( IOException ex )
+				{
+					logger.error( "In syncGroups(), call to new PagedResultsControl() threw an exception: " + ex.toString() );
+				}
+				
+				int scope = (searchInfo.isSearchSubtree()?SearchControls.SUBTREE_SCOPE:SearchControls.ONELEVEL_SCOPE);
+				SearchControls sch = new SearchControls(
+													scope,
+													0,
+													0,
+													attributesToRead,
+													false,
+													false);
+	
+				do
+				{
+					NamingEnumeration results;
+					
+					results = ctx.search( searchInfo.getBaseDn(), searchInfo.getFilterWithoutCRLF(), sch );
 
-				while (hasMore( ctxSearch )) {
-					String groupName;
-					String fixedUpGroupName;
-					String teamingName;
-					Attribute id;
-					
-					Binding bd = (Binding)ctxSearch.next();
-					groupName = bd.getNameInNamespace();
-					
-					// Fixup the  by replacing all "/" with "\/".
-					fixedUpGroupName = fixupName( groupName );
-					fixedUpGroupName = fixedUpGroupName.trim();
-					
-					// Read the given attributes for this group from the directory.
-					Attributes lAttrs = ctx.getAttributes( fixedUpGroupName, attributesToRead );
-					
-					String relativeName = groupName.trim();
-					String dn;
-					if (bd.isRelative() && !"".equals(ctx.getNameInNamespace())) {
-						if(!"".equals(relativeName)) {
-							dn = relativeName + "," + ctx.getNameInNamespace().trim();
-						} else {
-							dn = ctx.getNameInNamespace().trim();
-						}
-					} else {
-						dn = relativeName;
-					}
-					
-					id = lAttrs.get( "cn" );
-					if ( id != null )
+					while ( hasMore( results ) )
 					{
-						teamingName = idToName((String)id.get());
-					}
-					else
-						teamingName = dn;
-					
-					if ( teamingName == null )
-						continue;
-
-					//doing this one at a time is going to be slow for lots of groups
-					//not sure why it was changed for v2
-					if(groupCoordinator.record(dn, teamingName, lAttrs, ldapGuidAttribute ) && syncMembership ) { 
-						//Get map indexed by id
-						Object[] gRow = groupCoordinator.getGroup(dn);
-						if (gRow == null) continue; //not created
-						Long groupId = (Long)gRow[PRINCIPAL_ID];
-						if (groupId == null) continue; // never got created
-
-						if ( workingWithAD == false )
-						{
-							Attribute att = null;
-							for (i=0; i<memberAttributes.size(); i++) {
-								att = lAttrs.get((String)memberAttributes.get(i));
-								if(att != null && att.get() != null && att.size() != 0) {
-									break;
-								}
-								att = null;
-							}
-							Enumeration members = null;
-							if(att != null) {
-								members = att.getAll();
+						String groupName;
+						String fixedUpGroupName;
+						String teamingName;
+						Attribute id;
+						SearchResult sr;
+						
+						sr = (SearchResult) results.next();
+						groupName = sr.getNameInNamespace();
+						
+						// Fixup the  by replacing all "/" with "\/".
+						fixedUpGroupName = fixupName( groupName );
+						fixedUpGroupName = fixedUpGroupName.trim();
+						
+						// Read the given attributes for this group from the directory.
+						Attributes lAttrs = sr.getAttributes();
+						
+						String relativeName = groupName.trim();
+						String dn;
+						if ( sr.isRelative() && !"".equals(ctx.getNameInNamespace())) {
+							if(!"".equals(relativeName)) {
+								dn = relativeName + "," + ctx.getNameInNamespace().trim();
 							} else {
-								NamingEnumeration<NameClassPair> e = ctx.list( fixedUpGroupName );
-		
-								LinkedList membersList = new LinkedList();
-								while(e.hasMore()) {
-									NameClassPair pair = e.next();
-									membersList.add(pair.getNameInNamespace());
-								}
-								members = Collections.enumeration(membersList);
+								dn = ctx.getNameInNamespace().trim();
 							}
-							if(members != null) {
-								groupCoordinator.syncMembership(groupId, members);
-							}
+						} else {
+							dn = relativeName;
+						}
+						
+						id = lAttrs.get( "cn" );
+						if ( id != null )
+						{
+							teamingName = idToName((String)id.get());
 						}
 						else
-						{
-							Enumeration members;
+							teamingName = dn;
+						
+						if ( teamingName == null )
+							continue;
+
+						//doing this one at a time is going to be slow for lots of groups
+						//not sure why it was changed for v2
+						if ( groupCoordinator.record( dn, teamingName, lAttrs, ldapGuidAttribute ) && syncMembership )
+						{ 
+							//Get map indexed by id
+							Object[] gRow = groupCoordinator.getGroup(dn);
+							if (gRow == null) continue; //not created
+							Long groupId = (Long)gRow[PRINCIPAL_ID];
+							if (groupId == null) continue; // never got created
 							
-							members = getGroupMembershipFromAD( teamingName, zone, config, searchInfo );
-							if ( members != null )
-								groupCoordinator.syncMembership( groupId, members );
+							if ( workingWithAD == false )
+							{
+								Attribute att = null;
+								for (i=0; i<memberAttributes.size(); i++) {
+									att = lAttrs.get((String)memberAttributes.get(i));
+									if(att != null && att.get() != null && att.size() != 0) {
+										break;
+									}
+									att = null;
+								}
+								Enumeration members = null;
+								if(att != null) {
+									members = att.getAll();
+								} else {
+									NamingEnumeration<NameClassPair> e = ctx.list( fixedUpGroupName );
+			
+									LinkedList membersList = new LinkedList();
+									while(e.hasMore()) {
+										NameClassPair pair = e.next();
+										membersList.add(pair.getNameInNamespace());
+									}
+									members = Collections.enumeration(membersList);
+								}
+								if(members != null) {
+									groupCoordinator.syncMembership(groupId, members);
+								}
+							}
+							else
+							{
+								Enumeration members;
+
+								members = getGroupMembershipFromAD( teamingName, zone, config, searchInfo );
+								if ( members != null )
+									groupCoordinator.syncMembership( groupId, members );
+							}
 						}
 					}
-				}
+
+					// examine the response controls
+					cookie = parseControls( ctx.getResponseControls() );
+
+					try
+					{
+						// pass the cookie back to the server for the next page
+						PagedResultsControl prCtrl;
+						
+						prCtrl = new PagedResultsControl( pageSize, cookie, Control.CRITICAL );
+						ctx.setRequestControls( new Control[]{ prCtrl } );
+					}
+					catch ( IOException ex )
+					{
+						cookie = null;
+						logger.error( "In syncGroups(), call to PagedResultsControl() threw an exception: " + ex.toString() );
+					}
+
+				} while ( (cookie != null) && (cookie.length != 0) );
 			}
 		}
 	}
+		
 	
 	/**
 	 * Read the group membership for the given group in AD
