@@ -4634,6 +4634,13 @@ td.datePickerMonth {
 	background-color: transparent !important;
 }
 
+.shareDlg_noShareItemsHint
+{
+	color: #949494;
+	font-size: 13px;
+	margin-left: 20px;
+}
+
 .groupTitlePanel, .netFolderRoot_NamePanel, .netFolder_NamePanel, .ldapSource_ServerUrlPanel, .ldapSearch_BaseDnPanel
 {
 	font-size: 14px;
