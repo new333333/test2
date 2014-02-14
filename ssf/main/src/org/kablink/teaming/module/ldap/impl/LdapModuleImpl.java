@@ -5954,6 +5954,22 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 
 	
 	/**
+	 * 
+	 */
+	private static boolean canVibeFieldValueBeEmpty( String fieldName )
+	{
+		if ( fieldName == null || fieldName.length() == 0 )
+			return false;
+		
+		if ( fieldName.equalsIgnoreCase( "name" ) || fieldName.equalsIgnoreCase( "title" ) )
+		{
+			return false;
+		}
+		
+		return true;
+	}
+	
+	/**
 	 * @param ldapAttrNames
 	 * @param mapping
 	 * @param attrs
@@ -5962,20 +5978,43 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	 * @throws NamingException
 	 */
 	@SuppressWarnings("unchecked")
-	protected static void getUpdates(String []ldapAttrNames, Map mapping, Attributes attrs, Map mods, String ldapGuidAttribute )  throws NamingException
+	protected static void getUpdates(
+		String []ldapAttrNames,
+		Map mapping,
+		Attributes attrs,
+		Map mods,
+		String ldapGuidAttribute ) throws NamingException
 	{
 		if ( ldapAttrNames != null )
 		{
 			for (int i=0; i<ldapAttrNames.length; i++) {
+				String vibeAttrName;
+				
+				vibeAttrName = (String) mapping.get( ldapAttrNames[i] );
+				
 				Attribute att = attrs.get(ldapAttrNames[i]);
-				if (att == null) continue;
-				Object val = att.get();
-				if (val == null) {
-					mods.put(mapping.get(ldapAttrNames[i]), null);
-				} else if (att.size() == 0) {
+				if ( att == null )
+				{
+					if ( canVibeFieldValueBeEmpty( vibeAttrName ) )
+						mods.put( vibeAttrName, "" );
+						
 					continue;
-				} else if (att.size() == 1) {
-					mods.put(mapping.get(ldapAttrNames[i]), val);					
+				}
+				
+				Object val = att.get();
+				if ( val == null )
+				{
+					if ( canVibeFieldValueBeEmpty( vibeAttrName ) )
+						mods.put( vibeAttrName, "" );
+				}
+				else if ( att.size() == 0 )
+				{
+					if ( canVibeFieldValueBeEmpty( vibeAttrName ) )
+						mods.put( vibeAttrName, "" );
+				}
+				else if ( att.size() == 1 )
+				{
+					mods.put( vibeAttrName, val );					
 				}
 				else
 				{
@@ -5995,7 +6034,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 						value = firstValue.toString();
 					}
 	
-					mods.put( mapping.get( ldapAttrNames[i]), value );
+					mods.put( vibeAttrName, value );
 				}
 			}
 		}
