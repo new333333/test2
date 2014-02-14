@@ -828,6 +828,9 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
             if (!recipient.getEntityType().equals(EntityType.user)) {
                 throw new NoUserByTheIdException(shareItem.getRecipientId());
             }
+            if (!recipient.isActive()) {
+                throw new NoUserByTheIdException(shareItem.getRecipientId());
+            }
             if (!recipient.getIdentityInfo().isInternal()) {
                 String email = recipient.getEmailAddress();
                 if (!isExternalAddressValid(email)) {
@@ -838,6 +841,9 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
             Principal recipient = getProfileModule().getEntry(shareItem.getRecipientId());
             if (!recipient.getEntityType().equals(EntityType.group)) {
                 throw new NoGroupByTheIdException(shareItem.getRecipientId());
+            }
+            if (!recipient.isActive()) {
+                throw new NoUserByTheIdException(shareItem.getRecipientId());
             }
             if (recipient.getIdentityInfo().isFromLdap() && !getAdminModule().isSharingWithLdapGroupsEnabled()) {
                 throw new AccessControlNonCodedException("System settings do not allow for sharing with LDAP groups.");
