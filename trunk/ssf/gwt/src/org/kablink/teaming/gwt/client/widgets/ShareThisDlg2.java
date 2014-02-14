@@ -167,9 +167,12 @@ public class ShareThisDlg2 extends DlgBox
 	private FindCtrl m_manageSharesFindCtrl;
 	private Image m_addExternalUserImg;
 	private FlowPanel m_mainPanel;
+	private Label m_noShareItemsHint;
+	private FlowPanel m_menuPanel;
 	private FlexTable m_addShareTable;
 	private InlineLabel m_shareWithTeamsLabel;
 	private InlineLabel m_manageSharesFindCtrlLabel;
+	private FlowPanel m_notifyPanel;
 	private ShareSendToWidget m_sendToWidget;
 	private FlowPanel m_makePublicPanel;
 	private FlowPanel m_manageShareItemsPanel;
@@ -270,6 +273,9 @@ public class ShareThisDlg2 extends DlgBox
 
 		// Tell the table how many groups we have.
 		m_shareTable.setRowCount( m_listOfShares.size(), true );
+		
+		// Make the necessary controls visible
+		showControls();
 	}
 	
 	/**
@@ -464,6 +470,13 @@ public class ShareThisDlg2 extends DlgBox
 
 		// Tell the table how many groups we have.
 		m_shareTable.setRowCount( m_listOfShares.size(), true );
+		
+		// Do we have any share items?
+		if ( m_listOfShares.size() > 0 )
+		{
+			// Yes, show all the necessary controls
+			showControls();
+		}
 	}
 
 
@@ -974,21 +987,27 @@ public class ShareThisDlg2 extends DlgBox
 			
 				leftPanel = new VerticalPanel();
 				leftPanel.addStyleName( "shareThisDlg_ListOfSharesParentTable" );
-				
+
+				// Add a hint that will be visible if there are no share items.
+				m_noShareItemsHint = new Label( messages.shareDlg_noShareItemsHint() );
+				m_noShareItemsHint.addStyleName( "shareDlg_noShareItemsHint" );
+				m_noShareItemsHint.setVisible( false );
+				leftPanel.add( m_noShareItemsHint );
+
 				// Put the table that holds the list of recipients into a scrollable div
 				leftSubPanel = new FlowPanel();
 				leftSubPanel.addStyleName( "shareThisDlg_ListOfSharesPanel" );
 				leftSubPanel.add( m_shareTable );
 				leftPanel.add( leftSubPanel );
 
+				
 				// Create a menu
 				{
 					InlineLabel label;
-					FlowPanel menuPanel;
 					
-					menuPanel = new FlowPanel();
-					menuPanel.addStyleName( "shareDlg_MenuPanel" );
-					menuPanel.addStyleName( "shareDlg_MenuPanelOverride" );
+					m_menuPanel = new FlowPanel();
+					m_menuPanel.addStyleName( "shareDlg_MenuPanel" );
+					m_menuPanel.addStyleName( "shareDlg_MenuPanelOverride" );
 					
 					// Add a "Delete" button.
 					label = new InlineLabel( messages.shareDlg_deleteButton() );
@@ -1011,9 +1030,9 @@ public class ShareThisDlg2 extends DlgBox
 							Scheduler.get().scheduleDeferred( cmd );
 						}
 					} );
-					menuPanel.add( label );
+					m_menuPanel.add( label );
 					
-					leftPanel.add( menuPanel );
+					leftPanel.add( m_menuPanel );
 				}
 
 				// Create a pager
@@ -1167,17 +1186,17 @@ public class ShareThisDlg2 extends DlgBox
 		{
 			InlineLabel label;
 			
-			tmpPanel = new FlowPanel();
-			tmpPanel.addStyleName( "shareThisDlg_Notify" );
+			m_notifyPanel = new FlowPanel();
+			m_notifyPanel.addStyleName( "shareThisDlg_Notify" );
 			
 			label = new InlineLabel( messages.shareDlg_notifyLabel() );
-			tmpPanel.add( label );
+			m_notifyPanel.add( label );
 			
 			m_sendToWidget = new ShareSendToWidget();
 			m_sendToWidget.init( SendToValue.ONLY_MODIFIED_RECIPIENTS );
-			tmpPanel.add( m_sendToWidget );
+			m_notifyPanel.add( m_sendToWidget );
 			
-			m_mainPanel.add( tmpPanel );
+			m_mainPanel.add( m_notifyPanel );
 		}
 	}
 	
@@ -2025,7 +2044,7 @@ public class ShareThisDlg2 extends DlgBox
 	/**
 	 * 
 	 */
-	public void init(
+	private void init(
 		String caption,
 		List<EntityId> entityIds,
 		ShareThisDlgMode mode )
@@ -2045,7 +2064,23 @@ public class ShareThisDlg2 extends DlgBox
 		hideStatusMsg();
 		setOkEnabled( true );
 
-		m_editShareWidget.setVisible( false );
+		if ( m_shareTable != null )
+			m_shareTable.setVisible( false );
+		
+		if ( m_pager != null )
+			m_pager.setVisible( false );
+		
+		if ( m_notifyPanel != null )
+			m_notifyPanel.setVisible( false );
+		
+		if ( m_editShareWidget != null )
+			m_editShareWidget.setVisible( false );
+		
+		if ( m_menuPanel != null )
+			m_menuPanel.setVisible( false );
+		
+		if ( m_noShareItemsHint != null )
+			m_noShareItemsHint.setVisible( true );
 		
 		m_selectAllHeader.setValue( false );
 
@@ -2607,6 +2642,27 @@ public class ShareThisDlg2 extends DlgBox
 		GwtClientHelper.executeCommand( cmd, m_sendNotificationEmailCallback );
 	}
 	
+	/**
+	 * If there were no share items when this dialog was invoked we hid all of the controls
+	 * except the find control.  This method will show all the controls we hid. 
+	 */
+	private void showControls()
+	{
+		if ( m_shareTable != null )
+			m_shareTable.setVisible( true );
+		
+		if ( m_pager != null )
+			m_pager.setVisible( true );
+		
+		if ( m_notifyPanel != null )
+			m_notifyPanel.setVisible( true );
+		
+		if ( m_menuPanel != null )
+			m_menuPanel.setVisible( true );
+		
+		m_noShareItemsHint.setVisible( false );
+	}
+
 	/*
 	 * 
 	 */
