@@ -841,22 +841,22 @@ public class ShareResource extends AbstractResource {
     protected List<SearchableObject> getPublicChildren(boolean onlyLibrary, boolean replaceParent, boolean showHidden, boolean showUnhidden)  {
         ShareItemSelectSpec spec = getSharedWithSpec(getLoggedInUserId());
         if (replaceParent) {
-            return _getSharedEntities(ObjectKeys.PUBLIC_SHARES_ID, "/self/public_shares", spec, getLoggedInUserId(), onlyLibrary, showHidden, showUnhidden, true, false, true, false, true);
+            return _getSharedEntities(ObjectKeys.PUBLIC_SHARES_ID, "/self/public_shares", spec, null, onlyLibrary, showHidden, showUnhidden, true, false, true, false, true);
         }
-        return _getSharedEntities(null, null, spec, getLoggedInUserId(), onlyLibrary, showHidden, showUnhidden, true, false, true, false, true);
+        return _getSharedEntities(null, null, spec, null, onlyLibrary, showHidden, showUnhidden, true, false, true, false, true);
     }
 
     protected SharedBinderBrief [] getPublicBinders(boolean onlyLibrary, boolean replaceParent, boolean showHidden, boolean showUnhidden)  {
         ShareItemSelectSpec spec = getSharedWithSpec(getLoggedInUserId());
         if (replaceParent) {
-            return _getSharedBinders(ObjectKeys.PUBLIC_SHARES_ID, "/self/public_shares", spec, getLoggedInUserId(), onlyLibrary, showHidden, showUnhidden, true, false);
+            return _getSharedBinders(ObjectKeys.PUBLIC_SHARES_ID, "/self/public_shares", spec, null, onlyLibrary, showHidden, showUnhidden, true, false);
         }
-        return _getSharedBinders(null, null, spec, getLoggedInUserId(), onlyLibrary, showHidden, showUnhidden, true, false);
+        return _getSharedBinders(null, null, spec, null, onlyLibrary, showHidden, showUnhidden, true, false);
     }
 
     protected SharedFileProperties [] getPublicFiles(boolean onlyLibrary, boolean showHidden, boolean showUnhidden)  {
         ShareItemSelectSpec spec = getSharedWithSpec(getLoggedInUserId());
-        return _getSharedFiles(ObjectKeys.PUBLIC_SHARES_ID, "/self/public_shares", spec, getLoggedInUserId(), onlyLibrary, showHidden, showUnhidden, true, false);
+        return _getSharedFiles(ObjectKeys.PUBLIC_SHARES_ID, "/self/public_shares", spec, null, onlyLibrary, showHidden, showUnhidden, true, false);
     }
 
     private SearchResultList<SharedFolderEntryBrief> _getSharedEntries(Long topId, String topHref, ShareItemSelectSpec spec, Long excludedSharerId, boolean includeParentPaths,
