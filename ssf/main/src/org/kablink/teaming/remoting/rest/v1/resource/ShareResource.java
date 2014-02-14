@@ -590,6 +590,18 @@ public class ShareResource extends AbstractResource {
     }
 
     @GET
+    @Path("/public/library_tree")
+    public BinderTree getPublicSharesLibraryTree(@QueryParam("hidden") @DefaultValue("false") boolean showHidden,
+                                                @QueryParam("unhidden") @DefaultValue("true") boolean showUnhidden,
+                                                @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr) {
+        if (!getEffectivePublicCollectionSetting(getLoggedInUser())) {
+            throw new AccessControlException("Access to the public collection is not allowed.", null);
+        }
+        SharedBinderBrief [] sharedBinders = getPublicBinders(true, false, showHidden, showUnhidden);
+        return getSubBinderTree(ObjectKeys.PUBLIC_SHARES_ID, "/self/public_shares", sharedBinders, null, toDomainFormat(descriptionFormatStr));
+    }
+
+    @GET
     @Path("/public/library_children")
     public Response getPublicSharesLibraryChildren(@QueryParam("hidden") @DefaultValue("false") boolean showHidden,
                                                    @QueryParam("unhidden") @DefaultValue("true") boolean showUnhidden,
