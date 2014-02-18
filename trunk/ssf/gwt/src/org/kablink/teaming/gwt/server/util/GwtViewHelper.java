@@ -174,7 +174,6 @@ import org.kablink.teaming.gwt.client.util.MobileDevicesInfo;
 import org.kablink.teaming.gwt.client.util.SelectedUsersDetails;
 import org.kablink.teaming.gwt.client.util.SelectionDetails;
 import org.kablink.teaming.gwt.client.util.SharedViewState;
-import org.kablink.teaming.gwt.client.util.TagInfo;
 import org.kablink.teaming.gwt.client.util.UserType;
 import org.kablink.teaming.gwt.client.util.FolderType;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
@@ -1549,7 +1548,7 @@ public class GwtViewHelper {
 			// Are we showing everything?
 			boolean showHidden     = svs.isShowHidden();
 			boolean showNonHidden  = svs.isShowNonHidden();
-			boolean isEntityHidden = isSharedEntityHidden(bs, CollectionType.SHARED_BY_ME, siEntity);
+			boolean isEntityHidden = sm.isSharedEntityHidden(siEntity, false);	// false -> Check hidden in Shared by Me list.
 			if ((!showHidden) || (!showNonHidden)) {
 				// No!  Are we supposed to show entities in this hide
 				// state?
@@ -1660,7 +1659,7 @@ public class GwtViewHelper {
 				// Are we showing everything?
 				boolean showHidden     = svs.isShowHidden();
 				boolean showNonHidden  = svs.isShowNonHidden();
-				boolean isEntityHidden = isSharedEntityHidden(bs, ct, siEntity);
+				boolean isEntityHidden = sm.isSharedEntityHidden(siEntity, true);	// true -> Check hidden in Shared with Me list.
 				if ((!showHidden) || (!showNonHidden)) {
 					// No!  Are we supposed to show entities in this
 					// hide state?
@@ -8328,37 +8327,6 @@ public class GwtViewHelper {
 	private static boolean isQueryParamSet(Map<String, String> nvMap, String name, String value) {
 		String qp = getQueryParameterString(nvMap, name);
 		return (MiscUtil.hasString(qp) && qp.trim().equalsIgnoreCase(value.trim()));
-	}
-
-	/*
-	 * Returns true if a DefinableEnity is tagged as a hidden share and
-	 * false otherwise.
-	 */
-	private static boolean isSharedEntityHidden(AllModulesInjected bs, CollectionType ct, DefinableEntity siEntity) {
-		// Does the entity have any personal tags defined on it?
-		boolean isEntry = siEntity.getEntityType().equals(EntityType.folderEntry);
-		ArrayList<TagInfo> entityTags;
-		if (isEntry)
-		     entityTags = GwtServerHelper.getEntryTags( bs, ((FolderEntry) siEntity), false, true);
-		else entityTags = GwtServerHelper.getBinderTags(bs, ((Binder)      siEntity), false, true);
-		if (MiscUtil.hasItems(entityTags)) {
-			// Yes!  Scan them.
-			for (TagInfo ti:  entityTags) {
-				// Is this tag marking this entry as being hidden?
-				boolean isHidden;
-				if (ct.equals(CollectionType.SHARED_BY_ME))
-				     isHidden = ti.isHiddenSharedByTag();
-				else isHidden = ti.isHiddenSharedWithTag();
-				if (isHidden) {
-					// Yes!  Return true, that's all we're looking for.
-					return true;
-				}
-			}
-		}
-		
-		// If we get here, the entity is not marked as being hidden.
-		// Return false.
-		return false;
 	}
 
 	/**
