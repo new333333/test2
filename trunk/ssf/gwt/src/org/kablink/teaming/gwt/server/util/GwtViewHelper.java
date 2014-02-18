@@ -4297,8 +4297,14 @@ public class GwtViewHelper {
 			FolderModule	fm       = bs.getFolderModule();
 			FolderEntry 	fe       = fm.getEntry(folderId, entityId.getEntityId());
 			ProfileModule	pm       = bs.getProfileModule();
-			SeenMap			seenMap  = pm.getUserSeenMap(userId);
-			boolean			feSeen   = seenMap.checkIfSeen(fe);
+			boolean			feSeen;
+			if (user.isShared()) {
+				feSeen = true;
+			}
+			else {
+				SeenMap seenMap = pm.getUserSeenMap(userId);
+				feSeen = seenMap.checkIfSeen(fe);
+			}
 			reply.setSeenPrevious(feSeen);
 			if ((!feSeen) && markRead) {
 				// ...and if it hasn't, it has now...
@@ -5211,7 +5217,7 @@ public class GwtViewHelper {
 											// Yes!  Construct an EntryTitleInfo for it.
 											EntryTitleInfo  eti = new EntryTitleInfo();
 											eti.setHidden((null != smItem) && smItem.isHidden());
-											eti.setSeen(isEntityFolderEntry ? seenMap.checkIfSeen(entryMap) : true);
+											eti.setSeen((isEntityFolderEntry && (!(user.isShared()))) ? seenMap.checkIfSeen(entryMap) : true);
 											eti.setTrash(isTrash);
 											eti.setTitle(MiscUtil.hasString(value) ? value : ("--" + NLT.get("entry.noTitle") + "--"));
 											eti.setEntityId(entityId);
@@ -9001,7 +9007,7 @@ public class GwtViewHelper {
 		try {
 			// Is this the guest user?
 			User	user    = GwtServerHelper.getCurrentUser();
-			boolean	isGuest = ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId());
+			boolean	isGuest = user.isShared();
 			if (isGuest) {
 				// Yes!  Then we don't save the dialog's position.
 				return;

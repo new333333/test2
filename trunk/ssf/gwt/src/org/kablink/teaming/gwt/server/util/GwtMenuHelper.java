@@ -3910,22 +3910,26 @@ public class GwtMenuHelper {
 				}
 			}
 
-			// Add a toolbar item for marking the item read or unread.
-			SeenMap seenMap = bs.getProfileModule().getUserSeenMap(null);
-			boolean entrySeen = seenMap.checkIfSeen(fe);
-			if (entrySeen) {
-				actionTBI = new ToolbarItem(UNSEEN);
-				markTBITitle(   actionTBI, "toolbar.markUnread.entry"                 );
-				markTBIEvent(   actionTBI, TeamingEvents.MARK_UNREAD_SELECTED_ENTITIES);
-				markTBIEntryIds(actionTBI, fe                                         );
-				dropdownTBI.addNestedItem(actionTBI);
-			}
-			else {
-				actionTBI = new ToolbarItem(SEEN);
-				markTBITitle(   actionTBI, "toolbar.markRead.entry"                 );
-				markTBIEvent(   actionTBI, TeamingEvents.MARK_READ_SELECTED_ENTITIES);
-				markTBIEntryIds(actionTBI, fe                                       );
-				dropdownTBI.addNestedItem(actionTBI);
+			// If the user is not the Guest user...
+			if (!isGuest) {
+				// ...add a toolbar item for marking the item read or
+				// ...unread.
+				SeenMap seenMap = bs.getProfileModule().getUserSeenMap(null);
+				boolean entrySeen = seenMap.checkIfSeen(fe);
+				if (entrySeen) {
+					actionTBI = new ToolbarItem(UNSEEN);
+					markTBITitle(   actionTBI, "toolbar.markUnread.entry"                 );
+					markTBIEvent(   actionTBI, TeamingEvents.MARK_UNREAD_SELECTED_ENTITIES);
+					markTBIEntryIds(actionTBI, fe                                         );
+					dropdownTBI.addNestedItem(actionTBI);
+				}
+				else {
+					actionTBI = new ToolbarItem(SEEN);
+					markTBITitle(   actionTBI, "toolbar.markRead.entry"                 );
+					markTBIEvent(   actionTBI, TeamingEvents.MARK_READ_SELECTED_ENTITIES);
+					markTBIEntryIds(actionTBI, fe                                       );
+					dropdownTBI.addNestedItem(actionTBI);
+				}
 			}
 			
 			boolean needSeparator = dropdownTBI.hasNestedToolbarItems();
