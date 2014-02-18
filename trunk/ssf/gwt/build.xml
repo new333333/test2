@@ -6,11 +6,11 @@
 
 
 	<!-- Define the basics of what we're building. -->
-	<property name="jar.file"            value="kablink-teaming-gwt.jar"                />
-	<property name="build.gwt.module"    value="GwtTeaming"                             />
-	<property name="gwt.src"             value="src/org/kablink/teaming/gwt"            />
-	<property name="gwt.all.browsers"    value="gecko1_8,ie6,ie8,ie9,ie10,opera,safari" />
-	<property name="gwt.browsers.module" value="buildBrowsers"                          />	<!-- Must match <inherits> tag in GwtTeaming.gwt.xml. -->
+	<property name="jar.file"            value="kablink-teaming-gwt.jar"      />
+	<property name="build.gwt.module"    value="GwtTeaming"                   />
+	<property name="gwt.src"             value="src/org/kablink/teaming/gwt"  />
+	<property name="gwt.all.browsers"    value="gecko1_8,ie8,ie9,ie10,safari" />
+	<property name="gwt.browsers.module" value="buildBrowsers"                />	<!-- Must match <inherits> tag in GwtTeaming.gwt.xml. -->
 
 	
 	<!-- Define what we're building for GwtTeaming. -->
