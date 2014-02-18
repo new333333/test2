@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -68,6 +68,7 @@ import org.kablink.teaming.util.ReflectHelper;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.ShareLists;
 import org.kablink.teaming.util.SpringContextUtil;
+import org.kablink.teaming.util.TagUtil;
 import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.util.api.ApiErrorCode;
@@ -1054,6 +1055,48 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 			logger.warn("Invalid shared entity '" + entityIdentifier + "'");
 		}
 	}
+    
+	/**
+	 * Returns true if a DefinableEnity is tagged as a hidden share and
+	 * false otherwise.
+	 * 
+     * @param siEntity
+     * @param recipient
+     * 
+     * @return
+	 */
+    @Override
+	public boolean isSharedEntityHidden(DefinableEntity siEntity, boolean recipient) {
+		// Does the entity have any personal tags defined on it?
+		Map<String, SortedSet<Tag>>	tagsMap;
+		if (siEntity.getEntityType().equals(EntityType.folderEntry))
+		     tagsMap = TagUtil.uniqueTags(getFolderModule().getTags((FolderEntry) siEntity));
+		else tagsMap = TagUtil.uniqueTags(getBinderModule().getTags((Binder)      siEntity));
+		Set<Tag> personalTagsSet = ((null == tagsMap) ? null : tagsMap.get(ObjectKeys.PERSONAL_ENTITY_TAGS));
+		if (MiscUtil.hasItems(personalTagsSet)) {
+			// Yes!  What personal tag would be used to mark this
+			// entity as being hidden?
+			String hideTag;
+			if (recipient)
+			     hideTag = ObjectKeys.HIDDEN_SHARED_WITH_TAG;
+			else hideTag = ObjectKeys.HIDDEN_SHARED_BY_TAG;
+			
+			// Scan the personal tags.
+			for (Tag tag:  personalTagsSet) {
+				// Does this tag mark the entity as being hidden?
+				if (tag.getName().equals(hideTag)) {
+					// Yes!  Return true.
+					return true;
+				}
+			}
+		}
+		
+		// If we get here, the entity is not marked as being hidden.
+		// Return false.
+		return false;
+	}
+
+
 	
 	/* (non-Javadoc)
 	 * @see org.kablink.teaming.module.sharing.SharingModule#getSharedEntity(org.kablink.teaming.domain.ShareItem)
