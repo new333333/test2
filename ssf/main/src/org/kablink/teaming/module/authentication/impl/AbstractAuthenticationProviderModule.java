@@ -42,14 +42,15 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.kablink.teaming.asmodule.security.authentication.AuthenticationContextHolder;
 import org.kablink.teaming.asmodule.zonecontext.ZoneContextHolder;
 import org.kablink.teaming.context.request.RequestContext;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.AuthenticationConfig;
+import org.kablink.teaming.domain.IdentityInfo;
 import org.kablink.teaming.domain.LdapConnectionConfig;
 import org.kablink.teaming.domain.LoginInfo;
+import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.ZoneConfig;
 import org.kablink.teaming.module.authentication.AuthenticationServiceProvider;
 import org.kablink.teaming.module.authentication.IdentityInfoObtainable;
@@ -80,7 +81,6 @@ import org.kablink.teaming.util.SimpleProfiler;
 import org.kablink.teaming.util.WindowsUtil;
 import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.util.Validator;
-
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.security.core.Authentication;
@@ -761,10 +761,41 @@ public abstract class AbstractAuthenticationProviderModule extends BaseAuthentic
 				if(logger.isDebugEnabled())	
 					logger.debug("External authentication failed: " + e.toString());
 				exc = e;
-				if((authenticateLdapMatchingUsersUsingLdapOnly && (e instanceof BadCredentialsException) && !(e instanceof UsernameNotFoundException))
+
+				// Did we find the user in the ldap directory?
+				if ( authenticateLdapMatchingUsersUsingLdapOnly && e instanceof UsernameNotFoundException )
+				{
+					User user;
+					
+					// No
+					// Does this user exist in the db?
+					user = getProfileDao().findUserByName( authentication.getName(), zoneId );
+					if ( user != null )
+					{
+						IdentityInfo identityInfo;
+						
+						// Yes
+						// Did this user come from ldap?
+						identityInfo = user.getIdentityInfo();
+						if ( identityInfo != null && identityInfo.isFromLdap() )
+						{
+							// Yes
+							// Because this user came from ldap and we can find them in ldap
+							// don't do a local authentication
+							mustSkipLocalAuthentication = true;
+						}
+					}
+				}
+				
+				if ( mustSkipLocalAuthentication == false )
+				{
+					if ( (authenticateLdapMatchingUsersUsingLdapOnly && (e instanceof BadCredentialsException) && !(e instanceof UsernameNotFoundException))
 						|| (authentication instanceof OpenIDAuthenticationToken)
-						|| (e instanceof AccountStatusException))
-					mustSkipLocalAuthentication = true;
+						|| (e instanceof AccountStatusException) )
+					{
+						mustSkipLocalAuthentication = true;
+					}
+				}
 			}
 		}
 		if(!mustSkipLocalAuthentication) {
