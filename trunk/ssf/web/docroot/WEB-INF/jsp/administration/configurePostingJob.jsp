@@ -108,15 +108,15 @@ function ss_checkIfNumberValid(s) {
 
 <form class="ss_style ss_form" name="${renderResponse.namespace}fm" id="${renderResponse.namespace}fm" method="post" 
 	action="<ssf:url action="configure_posting_job" actionUrl="true"/>">
-<div class="ss_buttonBarRight">
-<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.apply" />">
-<input type="button" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>"
-		  onClick="return handleCloseBtn();"/>
+
+<div class="gray3"><ssf:nlt tag="notify.description"/></div>
+
+<div class="margintop2 marginbottom3">
+	<input type="checkbox" class="ss_style" id="notifyenabled" name="notifyenabled" <c:if test="${ssScheduleInfonotify.enabled}">checked</c:if> />
+	<label for="notifyenabled"><span class="ss_labelRight"><ssf:nlt tag="notify.schedule.enable"/> </span></label>
 </div>
-<input type="checkbox" class="ss_style" id="notifyenabled" name="notifyenabled" <c:if test="${ssScheduleInfonotify.enabled}">checked</c:if> />
-<label for="notifyenabled"><span class="ss_labelRight"><ssf:nlt tag="notify.schedule.enable"/> </span></label>
-<br/>
-<fieldset class="ss_fieldset">
+
+<fieldset class="ss_fieldset marginleft2 marginbottom3">
   <legend class="ss_legend"><ssf:nlt tag="notify.header" /></legend>	
 <table class="ss_style" border="0" cellspacing="3" cellpadding="3">
 <tr>
@@ -128,7 +128,7 @@ function ss_checkIfNumberValid(s) {
 </td></tr></table>
 </fieldset>
 
-<fieldset class="ss_fieldset">
+<fieldset class="ss_fieldset marginleft2">
 	<legend class="ss_legend"><ssf:nlt tag="administration.configure.schedule.legend.outgoingAttachmentQuotas" /></legend>
 	<label for="outgoingAttachmentSumLimit">
 	  <span class="ss_labelAbove ss_normal"><ssf:nlt tag="administration.configure.schedule.quotaSum"/></span>
