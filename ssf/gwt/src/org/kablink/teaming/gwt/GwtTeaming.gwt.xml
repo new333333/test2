@@ -75,15 +75,12 @@
 	
    	<!-- Limit support of which browsers we compile for.  Speeds up -->
 	<!-- compilation during development.                            -->
-	<extend-property name="user.agent" values="ie6,opera"  />	<!-- Required to support ie6/7 and opera with GWT 2.6.                       -->
 	<inherits name='org.kablink.teaming.gwt.buildBrowsers' />	<!-- Must match definition and usage of ${gwt.browsers.module} in build.xml. -->
 	<!-- Possible user.agent values:                              -->
 	<!--    gecko1_8:  All versions of Firefox and IE11.          -->
-	<!--    ie6:       IE6 and IE7.                               -->
 	<!--    ie8:       IE8.                                       -->
 	<!--    ie9:       IE9.                                       -->
 	<!--    ie10:      IE10.                                      -->
-	<!--    opera:     Opera, all versions.                       -->
 	<!--    safari:    Safari and Chrome (webkit), all versions.  -->
 
 	<!-- Using deferred binding, when requested, load the -->
@@ -91,10 +88,6 @@
 	<replace-with class="org.kablink.teaming.gwt.client.util.AgentGecko18">
 		<when-type-is class="org.kablink.teaming.gwt.client.util.Agent"/>
 		<when-property-is name="user.agent" value="gecko1_8" />
-	</replace-with>
-	<replace-with class="org.kablink.teaming.gwt.client.util.AgentIE6">
-		<when-type-is class="org.kablink.teaming.gwt.client.util.Agent"/>
-		<when-property-is name="user.agent" value="ie6" />
 	</replace-with>
 	<replace-with class="org.kablink.teaming.gwt.client.util.AgentIE8">
 		<when-type-is class="org.kablink.teaming.gwt.client.util.Agent"/>
@@ -107,10 +100,6 @@
 	<replace-with class="org.kablink.teaming.gwt.client.util.AgentIE10">
 		<when-type-is class="org.kablink.teaming.gwt.client.util.Agent"/>
 		<when-property-is name="user.agent" value="ie10" />
-	</replace-with>
-	<replace-with class="org.kablink.teaming.gwt.client.util.AgentOpera">
-		<when-type-is class="org.kablink.teaming.gwt.client.util.Agent"/>
-		<when-property-is name="user.agent" value="opera" />
 	</replace-with>
 	<replace-with class="org.kablink.teaming.gwt.client.util.AgentSafari">
 		<when-type-is class="org.kablink.teaming.gwt.client.util.Agent"/>
