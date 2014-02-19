@@ -2425,6 +2425,7 @@ public interface GwtTeamingMessages extends Messages
 	String modifyNetFolderDlg_EnableSyncScheduleLabel();
 	String modifyNetFolderDlg_ErrorCreatingNetFolder( String err );
 	String modifyNetFolderDlg_ErrorModifyingNetFolder( String err );
+	String modifyNetFolderDlg_ForwardSlashNotPermittedInRelativePath();
 	String modifyNetFolderDlg_FullSyncDirOnlyCB();
 	String modifyNetFolderDlg_IndexContentLabel();
 	String modifyNetFolderDlg_InsufficientRights();
@@ -2439,6 +2440,8 @@ public interface GwtTeamingMessages extends Messages
 	String modifyNetFolderDlg_NoNetFolderServersPrompt();
 	String modifyNetFolderDlg_ParentBinderRequired();
 	String modifyNetFolderDlg_ParentFolderLabel();
+	String modifyNetFolderDlg_PleaseEnterRelativePath();
+	String modifyNetFolderDlg_PleaseSelectNetFolderServer();
 	String modifyNetFolderDlg_RelativePathLabel();
 	String modifyNetFolderDlg_RightsTab();
 	String modifyNetFolderDlg_SelectPrincipalsHint();
