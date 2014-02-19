@@ -371,9 +371,13 @@ public class GwtMobileDeviceHelper {
 					else if (FolderColumn.isColumnDeviceWipeScheduled(cName)) {
 						// Wipe scheduled!  Generate a Boolean
 						// wipe scheduled flag for it.
+						Boolean wipeScheduled = md.getWipeScheduled();
+						if (null == wipeScheduled) {
+							wipeScheduled = Boolean.FALSE;
+						}
 						fr.setColumnWipeScheduled(
 							fc,
-							md.getWipeScheduled());
+							wipeScheduled);
 					}
 				}
 			}
