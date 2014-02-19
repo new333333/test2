@@ -6545,7 +6545,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 				{
 					// If public shares are active and this is not an
 					// external user...
-					if ( personalPrefs.publicSharesActive() && user.getIdentityInfo().isFromLocal() )
+					if ( personalPrefs.publicSharesActive() && ( user.getIdentityInfo().isFromLocal() || user.getIdentityInfo().isFromLdap() ) )
 					{
 						// ...store the user's hide/show public collection value.
 						profileModule.setUserProperty(
