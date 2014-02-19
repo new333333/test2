@@ -32,9 +32,9 @@
  */
 package org.kablink.teaming.search.postfilter;
 
-import org.apache.lucene.document.Document;
+import java.util.Map;
 
 public interface PostFilterCallback {
 
-	public boolean doFilter(Document doc, boolean noIntrinsicAclStoredButAccessibleThroughFilrGrantedAcl);
+	public boolean doFilter(Map<String,Object> doc, boolean noIntrinsicAclStoredButAccessibleThroughFilrGrantedAcl);
 }

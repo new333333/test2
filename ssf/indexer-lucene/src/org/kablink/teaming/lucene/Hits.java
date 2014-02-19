@@ -36,13 +36,21 @@ import gnu.trove.set.hash.TLongHashSet;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.BitSet;
-import java.util.Set;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
+import org.apache.lucene.document.DateTools;
 import org.apache.lucene.document.Document;
+import org.apache.lucene.document.Fieldable;
+import org.apache.lucene.document.NumericField;
 import org.apache.lucene.search.ScoreDoc;
+import org.kablink.teaming.lucene.util.SearchFieldResult;
 import org.kablink.util.search.Constants;
-
 
 /**
  *
@@ -69,8 +77,8 @@ public class Hits implements Serializable {
     private boolean thereIsMore = false;
         
     // Matching documents. This field is set on the server side.
-    private Document[] documents;
-
+    private List<Map<String,Object>> documents;
+    
     // This optional field is for internal use only. Must NOT be used directly by the
     // application code. If true, the document represents a net folder file/entry/comment
     // that is accessible to the user via ACL granted through sharing. The value of false
@@ -82,7 +90,7 @@ public class Hits implements Serializable {
     
     public Hits(int length) {
         this.size = length;
-        documents = new Document[length];
+        documents = new ArrayList<Map<String,Object>>(length);
         noIntrinsicAclStoredButAccessibleThroughFilrGrantedAcl = new boolean[length];
      }
 
@@ -98,14 +106,12 @@ public class Hits implements Serializable {
     	}
     }
     
-    public void removeLast() {
-    	documents[size-1] = null;
-    	noIntrinsicAclStoredButAccessibleThroughFilrGrantedAcl[size-1] = false;
-    	size -= 1;
+    public List<Map<String,Object>> getDocuments() {
+    	return documents;
     }
     
-    public Document doc(int n) {
-        return documents[n];
+    public Map<String,Object> doc(int n) {
+    	return documents.get(n);
     }
 
     public int length() {
@@ -121,7 +127,9 @@ public class Hits implements Serializable {
     }
 
     public static Hits transfer(org.apache.lucene.search.IndexSearcher searcher, org.apache.lucene.search.TopDocs topDocs,
-            int offset, int maxSize, 
+            int offset, 
+            int maxSize, 
+            List<String> fieldNames,
             TLongHashSet noIntrinsicAclStoredButAccessibleThroughExtendedAcl_entryIds, 
             TLongHashSet noIntrinsicAclStoredButAccessibleThroughExtendedAclOnParentFolder_entryIds, 
             boolean totalHitsApproximate) throws IOException {
@@ -165,7 +173,7 @@ public class Hits implements Serializable {
 	        		}
 	        	}
         	}
-            ss_hits.setDoc(doc, i);
+            ss_hits.setDoc(toMap(doc, fieldNames), i);
             //ss_hits.setScore(hits[offset + i].score, i);
         }
         ss_hits.setTotalHits(topDocs.totalHits);
@@ -173,8 +181,73 @@ public class Hits implements Serializable {
         return ss_hits;
     }
 
-    public void setDoc(Document doc, int n) {
-        documents[n] = doc;
+    private static Map<String,Object> toMap(Document doc, List<String> fieldNames) {
+		Fieldable fld;
+		HashMap<String,Object> map = new HashMap<String,Object>();
+		//enumerate thru all the fields, and add to the map if relevant
+		List<Fieldable> flds = doc.getFields();
+		for(int i = 0; i < flds.size(); i++) {
+			fld = (Fieldable)flds.get(i);
+			// Include the field only if there's no restriction on fields or the field
+			// passes the restriction.
+			if(fieldNames == null || fieldNames.contains(fld.name())) {
+				//TODO This hack needs to go.
+				if (isDateField(fld.name())) {
+					try {
+						map.put(fld.name(),DateTools.stringToDate(fld.stringValue()));
+	            		} catch (ParseException e) {map.put(fld.name(),new Date());
+	            	}	
+				} else if(fld instanceof NumericField) {
+					map.put(fld.name(), ((NumericField) fld).getNumericValue());
+	            } else if (!map.containsKey(fld.name())) {
+	            	map.put(fld.name(), fld.stringValue());
+	            } else {
+	            	Object obj = map.get(fld.name());
+	            	SearchFieldResult val;
+	            	if (obj instanceof String) {
+	            		val = new SearchFieldResult();
+	            		//replace
+	            		map.put(fld.name(), val);
+	            		val.addValue((String)obj);
+	            	} else {
+	            		val = (SearchFieldResult)obj;
+	            	}
+	            	val.addValue(fld.stringValue());
+	            } 
+			}
+        }
+		return map;
+    }
+    
+	private static boolean isDateField(String fieldName) {
+    	
+    	if (fieldName == null) return false;
+	    	
+    	if (fieldName.equals(Constants.CREATION_DATE_FIELD)) return true;
+	    	
+	    if (fieldName.equals(Constants.MODIFICATION_DATE_FIELD)) return true;
+
+    	if (fieldName.equals(Constants.LASTACTIVITY_FIELD)) return true;    	
+
+    	if (fieldName.endsWith(Constants.EVENT_FIELD_START_DATE)) return true;
+
+    	if (fieldName.endsWith(Constants.EVENT_FIELD_CALC_START_DATE)) return true;
+
+    	if (fieldName.endsWith(Constants.EVENT_FIELD_LOGICAL_START_DATE)) return true;
+
+	    if (fieldName.endsWith(Constants.EVENT_FIELD_END_DATE)) return true;
+	    
+	    if (fieldName.endsWith(Constants.EVENT_FIELD_CALC_END_DATE)) return true;
+	    
+	    if (fieldName.endsWith(Constants.EVENT_FIELD_LOGICAL_END_DATE)) return true;
+	    
+	    if (fieldName.equals("due_date")) return true;
+	    	
+	    return false;
+    }
+
+    public void setDoc(Map doc, int n) {
+    	documents.set(n, doc);
     }
 
     public void setNoIntrinsicAclStoredButAccessibleThroughFilrGrantedAcl(boolean value, int n) {

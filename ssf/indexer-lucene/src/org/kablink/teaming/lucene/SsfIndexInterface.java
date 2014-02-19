@@ -64,7 +64,7 @@ public interface SsfIndexInterface extends java.rmi.Remote {
 	public void optimize(String indexname) throws RemoteException;
 
 	public org.kablink.teaming.lucene.Hits search(String indexname, Long contextUserId, String baseAclQueryStr, String extendedAclQueryStr, int mode, Query query,
-			Sort sort, int offset, int size) throws RemoteException;
+			List<String> fieldNames, Sort sort, int offset, int size) throws RemoteException;
 
 	public org.kablink.teaming.lucene.Hits searchNonNetFolderOneLevelWithInferredAccess(String indexname, Long contextUserId, String baseAclQueryStr, String extendedAclQueryStr, int mode, Query query,
 			Sort sort, int offset, int size, Long parentBinderId, String parentBinderPath) throws RemoteException;

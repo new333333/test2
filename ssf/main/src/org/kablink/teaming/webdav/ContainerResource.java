@@ -37,6 +37,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.lucene.search.Query;
 import org.kablink.teaming.ConfigurationException;
@@ -242,6 +243,7 @@ public abstract class ContainerResource extends WebdavCollectionResource impleme
 	        		so.getExtendedAclQueryStr(),
 	        		Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, 
 	        		soQuery, 
+	        		null,
 	        		null, 
 	        		0, 
 	        		Integer.MAX_VALUE);
@@ -253,11 +255,11 @@ public abstract class ContainerResource extends WebdavCollectionResource impleme
     	
         List<BinderIndexData> result = new ArrayList<BinderIndexData>();
         int count = hits.length();
-        org.apache.lucene.document.Document doc;
+        Map<String,Object> doc;
         String title;
         for(int i = 0; i < count; i++) {
         	doc = hits.doc(i);
-        	title = doc.get(Constants.TITLE_FIELD);
+        	title = (String) doc.get(Constants.TITLE_FIELD);
         	if(title != null) {
         		try {
 	        		result.add(new BinderIndexData(doc));

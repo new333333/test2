@@ -34,6 +34,7 @@ package org.kablink.teaming.module.file;
 
 import java.text.ParseException;
 import java.util.Date;
+import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -72,43 +73,43 @@ public class FileIndexData {
     private Integer majorVersionNumber; // Major version number - this field is new in Hudson
     private Integer minorVersionNumber; // Minor version number - this field is new in Hudson
 
-	public FileIndexData(org.apache.lucene.document.Document doc)  throws IllegalArgumentException {
-		name = doc.get(Constants.FILENAME_FIELD);
-		id = doc.get(Constants.FILE_ID_FIELD);
-		title = doc.get(Constants.TITLE_FIELD);
-		binderId = Long.valueOf(doc.get(Constants.BINDER_ID_FIELD));
-		String owningEntityTypeStr = doc.get(Constants.ENTITY_FIELD);
+	public FileIndexData(Map<String,Object> doc)  throws IllegalArgumentException {
+		name = (String)doc.get(Constants.FILENAME_FIELD);
+		id = (String)doc.get(Constants.FILE_ID_FIELD);
+		title = (String)doc.get(Constants.TITLE_FIELD);
+		binderId = Long.valueOf((String)doc.get(Constants.BINDER_ID_FIELD));
+		String owningEntityTypeStr = (String)doc.get(Constants.ENTITY_FIELD);
 		owningEntityType = entityTypeFromString(owningEntityTypeStr);
-		owningEntityId = Long.valueOf(doc.get(Constants.DOCID_FIELD));
-		creatorId = Long.valueOf(doc.get(Constants.CREATORID_FIELD));
-		creatorName = doc.get(Constants.CREATOR_NAME_FIELD);
-		modifierId = Long.valueOf(doc.get(Constants.MODIFICATIONID_FIELD));
-		modifierName = doc.get(Constants.MODIFICATION_NAME_FIELD);
-		String dateStr = doc.get(Constants.CREATION_DATE_FIELD);
+		owningEntityId = Long.valueOf((String)doc.get(Constants.DOCID_FIELD));
+		creatorId = Long.valueOf((String)doc.get(Constants.CREATORID_FIELD));
+		creatorName = (String)doc.get(Constants.CREATOR_NAME_FIELD);
+		modifierId = Long.valueOf((String)doc.get(Constants.MODIFICATIONID_FIELD));
+		modifierName = (String)doc.get(Constants.MODIFICATION_NAME_FIELD);
+		String dateStr = (String)doc.get(Constants.CREATION_DATE_FIELD);
 		try {
 			createdDate =  DateTools.stringToDate(dateStr);
 		} catch (ParseException e) {
 			logger.warn("Error parsing creation date [" + dateStr 
 					+ "] for file [" + id + "]. Setting it to current date");
 		}
-		dateStr = doc.get(Constants.MODIFICATION_DATE_FIELD);
+		dateStr = (String)doc.get(Constants.MODIFICATION_DATE_FIELD);
 		try {
 			modifiedDate =  DateTools.stringToDate(dateStr);
 		} catch (ParseException e) {
 			logger.warn("Error parsing modification date [" + dateStr 
 					+ "] for file [" + id + "]. Setting it to current date");
 		}
-		String sizeStr = doc.get(Constants.FILE_SIZE_IN_BYTES_FIELD);
+		String sizeStr = (String)doc.get(Constants.FILE_SIZE_IN_BYTES_FIELD);
 		if(sizeStr != null)
 			size = Long.valueOf(sizeStr);
 		else
 			size = null;
-        String versionStr = (String) doc.get(Constants.FILE_VERSION_FIELD);
+        String versionStr = (String)doc.get(Constants.FILE_VERSION_FIELD);
         if(versionStr != null)
             versionNumber = Integer.valueOf(versionStr);
         else
             versionNumber = null;
-        versionStr = (String) doc.get(Constants.FILE_MAJOR_VERSION_FIELD);
+        versionStr = (String)doc.get(Constants.FILE_MAJOR_VERSION_FIELD);
         if(versionStr != null)
             majorVersionNumber = Integer.valueOf(versionStr);
         else
@@ -118,7 +119,7 @@ public class FileIndexData {
             minorVersionNumber = Integer.valueOf(versionStr);
         else
             minorVersionNumber = null;
-        md5 = doc.get(Constants.FILE_MD5_FIELD);
+        md5 = (String)doc.get(Constants.FILE_MD5_FIELD);
 	}
 
 	public String getName() {

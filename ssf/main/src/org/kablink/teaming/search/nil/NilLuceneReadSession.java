@@ -63,18 +63,18 @@ public class NilLuceneReadSession implements LuceneReadSession {
 	}
 
 	@Override
-	public Hits search(Long contextUserId, String baseAclQueryStr, String extendedAclQueryStr, int mode, Query query) throws LuceneException {
+	public Hits search(Long contextUserId, String baseAclQueryStr, String extendedAclQueryStr, int mode, Query query, List<String> fieldNames) throws LuceneException {
 		return new Hits(0);
 	}
 
 	@Override
-	public Hits search(Long contextUserId, String baseAclQueryStr, String extendedAclQueryStr, int mode, Query query, Sort sort, int offset, int size)
+	public Hits search(Long contextUserId, String baseAclQueryStr, String extendedAclQueryStr, int mode, Query query, List<String> fieldNames, Sort sort, int offset, int size)
 			throws LuceneException {
 		return new Hits(0);
 	}
 
 	@Override
-	public Hits search(Long contextUserId, String baseAclQueryStr, String extendedAclQueryStr, int mode, Query query, Sort sort, int offset, int size, PostFilterCallback callbak)
+	public Hits search(Long contextUserId, String baseAclQueryStr, String extendedAclQueryStr, int mode, Query query, List<String> fieldNames, Sort sort, int offset, int size, PostFilterCallback callbak)
 			throws LuceneException {
 		return new Hits(0);
 	}
