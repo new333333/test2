@@ -639,7 +639,7 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 //!		...this needs to be implemented...
 		// Need to check public link sharing rights once it's
     	// implemented.
-		return testAddShareEntity(de);
+		return testAddShareEntityExternal(de);
 	}
 
     //Routine to validate the rights being given to guest in a share
