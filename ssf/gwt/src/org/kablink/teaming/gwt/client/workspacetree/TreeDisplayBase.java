@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -40,6 +40,7 @@ import org.kablink.teaming.gwt.client.GwtTeamingImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.GwtTeamingWorkspaceTreeImageBundle;
 import org.kablink.teaming.gwt.client.event.ActivityStreamEvent;
+import org.kablink.teaming.gwt.client.event.InvokeManageUsersDlgEvent;
 import org.kablink.teaming.gwt.client.event.ActivityStreamExitEvent.ExitMode;
 import org.kablink.teaming.gwt.client.event.ChangeContextEvent;
 import org.kablink.teaming.gwt.client.event.GetSidebarCollectionEvent.CollectionCallback;
@@ -123,13 +124,24 @@ public abstract class TreeDisplayBase {
 				// No, the item is not an activity stream either!  Are
 				// we in a state where we can change contexts?
 				if (canChangeContext()) {
-					// Yes!  Select the Binder and tell the
-					// WorkspaceTreeControl to handle it.
-					selectBinder(m_ti);
-					GwtTeaming.fireEvent(
-						new ChangeContextEvent(
-							buildOnSelectBinderInfo(
-								m_ti)));
+					// Yes!  Are we viewing the trash in the manage
+					// user's dialog? 
+					if (isTrash() && GwtClientHelper.isBinderInfoProfilesRoot(m_ti.getBinderInfo())) {
+						// Yes!  Simply tell the dialog to exit the trash viewer.
+						GwtTeaming.fireEventAsync(
+							new InvokeManageUsersDlgEvent(
+								false));	// false -> Not a trash view.
+					}
+					else {
+						// No, we aren't viewing the trash in the
+						// manage user's dialog!  Select the Binder and
+						// tell the WorkspaceTreeControl to handle it.
+						selectBinder(m_ti);
+						GwtTeaming.fireEvent(
+							new ChangeContextEvent(
+								buildOnSelectBinderInfo(
+									m_ti)));
+					}
 				}
 			}
 		}

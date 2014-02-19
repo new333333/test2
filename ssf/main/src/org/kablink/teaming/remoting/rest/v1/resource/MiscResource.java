@@ -130,8 +130,10 @@ public class MiscResource extends AbstractResource {
         org.kablink.teaming.domain.ZoneConfig zoneConfig =
       			getZoneModule().getZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
         ZoneInfo info = getZoneModule().getZoneInfo(zoneConfig.getZoneId());
-        return ResourceUtil.buildZoneConfig(zoneConfig, info, getProfileModule().getPrincipalMobileAppsConfig(getLoggedInUserId()),
+        ZoneConfig result = ResourceUtil.buildZoneConfig(zoneConfig, info, getProfileModule().getPrincipalMobileAppsConfig(getLoggedInUserId()),
                 getProfileModule().getPrincipalDesktopAppsConfig(getLoggedInUserId()), this);
+        result.setSharingRestrictions(_getExternalSharingRestrictions());
+        return result;
 	}
 
     @GET
@@ -152,7 +154,7 @@ public class MiscResource extends AbstractResource {
    	public SearchResultList<SearchableObject> legacySearch(@Context HttpServletRequest request,
                                                            @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr,
                                                          @QueryParam("first") @DefaultValue("0") Integer offset,
-                                                         @QueryParam("count") @DefaultValue("-1") Integer maxCount) {
+                                                         @QueryParam("count") @DefaultValue("100") Integer maxCount) {
         String query = getRawInputStreamAsString(request);
         Document queryDoc = buildQueryDocument(query, null);
         Map resultsMap = getBinderModule().executeSearchQuery(queryDoc, Constants.SEARCH_MODE_NORMAL, offset, maxCount);

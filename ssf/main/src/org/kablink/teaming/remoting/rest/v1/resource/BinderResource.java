@@ -73,7 +73,7 @@ public class BinderResource extends AbstractResource {
                                                     @QueryParam("library_info") @DefaultValue("false") boolean libraryInfo,
                                                     @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr,
                                                     @QueryParam("first") @DefaultValue("0") Integer offset,
-                                                    @QueryParam("count") @DefaultValue("-1") Integer maxCount) {
+                                                    @QueryParam("count") @DefaultValue("100") Integer maxCount) {
         boolean skipSearch = true;
         List<Long> specialIds = new ArrayList<Long>();
         Set<Long> missingIds = new HashSet<Long>();
@@ -140,7 +140,7 @@ public class BinderResource extends AbstractResource {
    	public SearchResultList<BinderBrief> getBindersViaLegacyQuery(@Context HttpServletRequest request,
                                                                   @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr,
                                                                   @QueryParam("first") @DefaultValue("0") Integer offset,
-                                                                  @QueryParam("count") @DefaultValue("-1") Integer maxCount) {
+                                                                  @QueryParam("count") @DefaultValue("100") Integer maxCount) {
         String query = getRawInputStreamAsString(request);
         Document queryDoc = buildQueryDocument(query, SearchUtils.buildBindersCriterion());
         Map resultsMap = getBinderModule().executeSearchQuery(queryDoc, Constants.SEARCH_MODE_NORMAL, offset, maxCount);

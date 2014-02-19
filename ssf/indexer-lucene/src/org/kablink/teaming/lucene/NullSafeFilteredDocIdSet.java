@@ -32,8 +32,6 @@
  */
 package org.kablink.teaming.lucene;
 
-import gnu.trove.set.hash.TLongHashSet;
-
 import java.io.IOException;
 
 import org.apache.lucene.search.DocIdSet;
@@ -45,41 +43,13 @@ import org.apache.lucene.search.FilteredDocIdSetIterator;
  * @author jong
  *
  */
-public class NullSafeFilteredDocIdSet extends FilteredDocIdSet {
+public abstract class NullSafeFilteredDocIdSet extends FilteredDocIdSet {
 
 	private DocIdSet innerSet;
-	private TLongHashSet accessibleFolderIds;
-	private long[] entryAclParentIds;
 	
-	public NullSafeFilteredDocIdSet(DocIdSet innerSet, TLongHashSet accessibleFolderIds, long[] entryAclParentIds) {
+	public NullSafeFilteredDocIdSet(DocIdSet innerSet) {
 		super(innerSet);
 		this.innerSet = innerSet;
-		this.accessibleFolderIds = accessibleFolderIds;
-		this.entryAclParentIds = entryAclParentIds;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.apache.lucene.search.FilteredDocIdSet#match(int)
-	 */
-	@Override
-	protected boolean match(int docid) throws IOException {
-		long entryAclParentId = entryAclParentIds[docid];
-		if(entryAclParentId > 0) {
-			// This doc represents an entry (or an attachment within that entry) that inherits ACL
-			// from its parent folder. We need to check if the user has access to the parent folder.
-			if(accessibleFolderIds.contains(entryAclParentId))
-				return true; // The user has access to parent folder. Grant access to this entry.
-			else
-				return false; // The user has no access to parent folder. Deny access to this entry.
-		}
-		else {
-			// This doc does not represent an entry that inherits ACL from its parent folder,
-			// which means that this doc represent either binder or entry that has its own
-			// set of ACL (such as folder entries with entry-level ACLs, or user objects).
-			// The previous filter in the chain (aclInheritingEntriesPermissibleAclFilter)
-			// has already validated this doc, so simply pass it on.
-			return true;
-		}
 	}
 
 	@Override

@@ -47,15 +47,15 @@ import org.kablink.util.search.Constants;
  * @author jong
  *
  */
-public class ThreadLocalAclQueryFilter extends Filter{
+public class ExtendedAclQueryFilter extends Filter {
 
 	private static final long serialVersionUID = 1L;
 	
-	private static final ThreadLocal<TLongHashSet> threadLocal = new ThreadLocal<TLongHashSet>();
-	
 	Filter aclQueryFilter; // original ACL query filter
 	
-	public ThreadLocalAclQueryFilter(Filter aclQueryFilter) {
+	TLongHashSet noIntrinsicAclStoredButAccessibleThroughExtendedAcl_entryIds = new TLongHashSet();
+	
+	public ExtendedAclQueryFilter(Filter aclQueryFilter) {
 		if(aclQueryFilter == null)
 			throw new IllegalArgumentException("ACL query filter must be specified");
 		this.aclQueryFilter = aclQueryFilter;
@@ -65,8 +65,6 @@ public class ThreadLocalAclQueryFilter extends Filter{
 	public DocIdSet getDocIdSet(IndexReader reader) throws IOException {
 		final long[] entryAclParentIds = FieldCache.DEFAULT.getLongs(reader, Constants.ENTRY_ACL_PARENT_ID_FIELD);
 		final long[] entityIds = FieldCache.DEFAULT.getLongs(reader, Constants.ENTITY_ID_FIELD);
-		
-		TLongHashSet noIntrinsicAclStoredButAccessibleThroughFilrGrantedAclEntryIds = new TLongHashSet();
 
 		final DocIdSet docIdSet = aclQueryFilter.getDocIdSet(reader);
 		
@@ -81,26 +79,18 @@ public class ThreadLocalAclQueryFilter extends Filter{
 						// passed the original ACL query filter is a clear indication that there are "additional" 
 						// ACL indexed on this doc that made it pass the filter. In the current application, that 
 						// should be share-granted ACL. We need to pass this information up to the caller
-						noIntrinsicAclStoredButAccessibleThroughFilrGrantedAclEntryIds.add(entityIds[docId]);
+						noIntrinsicAclStoredButAccessibleThroughExtendedAcl_entryIds.add(entityIds[docId]);
 					}
 					docId = it.nextDoc();
 				}
 			}
 		}
 		
-		if(noIntrinsicAclStoredButAccessibleThroughFilrGrantedAclEntryIds.isEmpty())
-			noIntrinsicAclStoredButAccessibleThroughFilrGrantedAclEntryIds = null;
-		
-		threadLocal.set(noIntrinsicAclStoredButAccessibleThroughFilrGrantedAclEntryIds);
-		
 		return docIdSet;
 	}
 
-	public static TLongHashSet getNoIntrinsicAclStoredButAccessibleThroughFilrGrantedAclEntryIds() {
-		return threadLocal.get();
+	public TLongHashSet getNoIntrinsicAclStoredButAccessibleThroughExtendedAcl_entryIds() {
+		return noIntrinsicAclStoredButAccessibleThroughExtendedAcl_entryIds;
 	}
-	
-	public static void clear() {
-		threadLocal.set(null);
-	}
+
 }

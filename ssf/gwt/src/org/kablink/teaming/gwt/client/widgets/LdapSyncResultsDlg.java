@@ -736,6 +736,7 @@ public class LdapSyncResultsDlg extends DlgBox
 		m_dataProvider.refresh();
 
 		// Tell the table how many sync results we have.
+		m_pager.setPage( 0 );
 		m_ldapSyncResultsTable.setRowCount( m_listOfDisplayedLdapSyncResults.size(), true );
 	}
 

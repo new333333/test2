@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -64,11 +64,11 @@ import org.kablink.teaming.gwt.client.widgets.EventButton;
 import org.kablink.teaming.gwt.client.widgets.WorkspaceTreeControl;
 
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Anchor;
@@ -827,27 +827,31 @@ public class TreeDisplayHorizontal extends TreeDisplayBase {
 
 			// Is the node above the tail binder a folder?
 			final TreeInfo prevTI = getPreviousTI(ti);
-			if ((null != prevTI) && (isTrash() || (BinderType.FOLDER == prevTI.getBinderInfo().getBinderType()))) {
-				// Yes!  Add an up button to navigate to it...
-				addUpButton(
-					fp,
-					getMessages().treePreviousFolder(),
-					new Command() {
-						@Override
-						public void execute() {
-							// If we can change contexts...
-							if (canChangeContext()) {
-								// ...select the appropriate TreeInfo...
-								selectBinder(prevTI);
-								
-								// ...and change the context.
-								GwtTeaming.fireEvent(
-									new ChangeContextEvent(
-										buildOnSelectBinderInfo(
-											prevTI)));
+			if ((null != prevTI) && (isTrash()  || (BinderType.FOLDER == prevTI.getBinderInfo().getBinderType()))) {
+				// Yes!  Is it for a binder other than the profiles
+				// root?
+				if (!(GwtClientHelper.isBinderInfoProfilesRoot(ti.getBinderInfo()))) {
+					// Yes!  Add an up button to navigate to it...
+					addUpButton(
+						fp,
+						getMessages().treePreviousFolder(),
+						new Command() {
+							@Override
+							public void execute() {
+								// If we can change contexts...
+								if (canChangeContext()) {
+									// ...select the appropriate TreeInfo...
+									selectBinder(prevTI);
+									
+									// ...and change the context.
+									GwtTeaming.fireEvent(
+										new ChangeContextEvent(
+											buildOnSelectBinderInfo(
+												prevTI)));
+								}
 							}
-						}
-					});
+						});
+				}
 				
 				// ...add the image and anchor for the binder...
 				addTIImageAndAnchor(fp, ti, selectorW);

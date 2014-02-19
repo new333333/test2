@@ -1165,6 +1165,10 @@ public void delete(final Folder folder) {
         					crit.add( Restrictions.eq( ObjectKeys.FIELD_ENTITY_PARENTBINDER, parentBinder ) );
         				}
         			}
+                    else if (selectSpec.getIncludeNonHomeDirNetFolders() == false )
+                    {
+                        crit.add( Restrictions.eq( ObjectKeys.FIELD_BINDER_IS_HOME_DIR, Boolean.TRUE ) );
+                    }
                 	
                 	// Do we have a filter?
                 	filter = selectSpec.getFilter();
@@ -1266,7 +1270,11 @@ public void delete(final Folder folder) {
         					crit.add( Restrictions.eq( ObjectKeys.FIELD_ENTITY_PARENTBINDER, parentBinder ) );
         				}
         			}
-                	
+                    else if (selectSpec.getIncludeNonHomeDirNetFolders() == false )
+                    {
+                        crit.add( Restrictions.eq( ObjectKeys.FIELD_BINDER_IS_HOME_DIR, Boolean.TRUE ) );
+                    }
+
                 	// Do we have a filter?
                 	filter = selectSpec.getFilter();
                 	if ( filter != null && filter.length() > 0 )

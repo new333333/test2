@@ -262,7 +262,7 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
    	public Response getLibraryChildren(@PathParam("id") long id,
                                        @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr,
                                        @QueryParam("first") @DefaultValue("0") Integer offset,
-                                       @QueryParam("count") @DefaultValue("-1") Integer maxCount,
+                                       @QueryParam("count") @DefaultValue("100") Integer maxCount,
                                        @Context HttpServletRequest request) {
         Map<String, Object> nextParams = new HashMap<String, Object>();
         nextParams.put("description_format", descriptionFormatStr);
@@ -282,7 +282,7 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
    	public Response getLibraryFolders(@PathParam("id") long id,
                                          @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr,
                                          @QueryParam("first") @DefaultValue("0") Integer offset,
-                                         @QueryParam("count") @DefaultValue("-1") Integer maxCount,
+                                         @QueryParam("count") @DefaultValue("100") Integer maxCount,
                                          @Context HttpServletRequest request) {
         Map<String, Object> nextParams = new HashMap<String, Object>();
         nextParams.put("description_format", descriptionFormatStr);
@@ -343,6 +343,9 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
                                                   @QueryParam("first") Integer offset,
                                                   @QueryParam("count") Integer maxCount,
                                                   @Context HttpServletRequest request) {
+        if (!recursive && maxCount==null) {
+            maxCount = 100;
+        }
         Map<String, Object> nextParams = new HashMap<String, Object>();
         if (fileName!=null) {
             nextParams.put("file_name", fileName);
@@ -368,7 +371,7 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
                                                      @QueryParam("recursive") @DefaultValue("false") boolean recursive,
                                                   @QueryParam("parent_binder_paths") @DefaultValue("false") boolean includeParentPaths,
                                                   @QueryParam("first") Integer offset,
-                                                  @QueryParam("count") Integer maxCount,
+                                                  @QueryParam("count") @DefaultValue("100") Integer maxCount,
                                                   @Context HttpServletRequest request) {
         Map<String, Object> nextParams = new HashMap<String, Object>();
         if (fileName!=null) {
@@ -424,7 +427,8 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
         SearchResultList<Share> results = new SearchResultList<Share>();
         List<ShareItem> shareItems = getShareItems(spec, true, true, true);
         for (ShareItem shareItem : shareItems) {
-            results.append(ResourceUtil.buildShare(shareItem, findDefinableEntity(shareItem.getSharedEntityIdentifier()), buildShareRecipient(shareItem)));
+            results.append(ResourceUtil.buildShare(shareItem, findDefinableEntity(shareItem.getSharedEntityIdentifier()),
+                    buildShareRecipient(shareItem), isGuestAccessEnabled()));
         }
         return results;
     }
@@ -648,7 +652,7 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
         crit.add(SearchUtils.buildParentBinderCriterion(id));
         crit.addOrder(new Order(Constants.ENTITY_FIELD, true));
         crit.addOrder(new Order(Constants.SORT_TITLE_FIELD, true));
-        Map resultMap = getBinderModule().searchFolderOneLevelWithInferredAccess(crit, Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, offset, maxCount, binder);
+        Map resultMap = getBinderModule().searchFolderOneLevelWithInferredAccess(crit, Constants.SEARCH_MODE_NORMAL, offset, maxCount, binder);
         SearchResultList<SearchableObject> results = new SearchResultList<SearchableObject>(offset, binder.getModificationDate());
         SearchResultBuilderUtil.buildSearchResults(results, new UniversalBuilder(descriptionFormat), resultMap, nextUrl, nextParams, offset);
         if (modifiedSince!=null && !modifiedSince.before(results.getLastModified())) {

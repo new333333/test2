@@ -1253,6 +1253,12 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			ProfileModule profileModule;
 
 			// Yes
+			// Remove all carriage returns and line feeds
+			{
+				filter = filter.replaceAll( "\r", "" );
+				filter = filter.replaceAll( "\n", "" );
+			}
+			
 			profileModule = getProfileModule();
 			
 			zone = RequestContextHolder.getRequestContext().getZone();
@@ -1301,22 +1307,22 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 						// will return.
 						while ( hasMore( searchCtx ) )
 						{
-							Binding binding;
-							Attributes lAttrs = null;
-							String[] ldapAttributesToRead = { ldapGuidAttribute };
-							String guid;
-							User user;
-
-							// Get the next user/group in the list.
-							binding = (Binding)searchCtx.next();
-
-							// Read the guid for this user/group from the ldap directory.
-							lAttrs = ldapContext.getAttributes( binding.getNameInNamespace(), ldapAttributesToRead );
-							guid = getLdapGuid( lAttrs, ldapGuidAttribute );
-
-							// Does this user exist in Vibe.
 							try
 							{
+								Binding binding;
+								Attributes lAttrs = null;
+								String[] ldapAttributesToRead = { ldapGuidAttribute };
+								String guid;
+								User user;
+	
+								// Get the next user/group in the list.
+								binding = (Binding)searchCtx.next();
+	
+								// Read the guid for this user/group from the ldap directory.
+								lAttrs = ldapContext.getAttributes( binding.getNameInNamespace(), ldapAttributesToRead );
+								guid = getLdapGuid( lAttrs, ldapGuidAttribute );
+
+								// Does this user exist in Vibe.
 								user = profileModule.findUserByLdapGuid( guid );
 								if ( user != null )
 								{
@@ -1328,6 +1334,10 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 							{
 								// Nothing to do
 							}
+					  		catch (NamingException ex)
+					  		{
+					  			namingEx = ex;
+					  		}
 						}
 					}
 			  		catch (NamingException ex)
@@ -5944,6 +5954,47 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 
 	
 	/**
+	 * 
+	 */
+	private static boolean canVibeFieldValueBeEmpty( String fieldName )
+	{
+		if ( fieldName == null || fieldName.length() == 0 )
+			return false;
+		
+		if ( fieldName.equalsIgnoreCase( "name" ) || fieldName.equalsIgnoreCase( "title" ) )
+		{
+			return false;
+		}
+		
+		return true;
+	}
+	
+	/**
+	 * Look in the given map to see if the given key hold a string value that is not empty
+	 */
+	private static boolean containsNonEmptyString( Map map, String key )
+	{
+		boolean retValue = false;
+		
+		if ( map != null && key != null )
+		{
+			Object value;
+
+			value = map.get( key );
+			if ( value != null && value instanceof String )
+			{
+				String strValue;
+				
+				strValue = (String) value;
+				if ( strValue.length() > 0 )
+					retValue = true;
+			}
+		}
+		
+		return retValue;
+	}
+	
+	/**
 	 * @param ldapAttrNames
 	 * @param mapping
 	 * @param attrs
@@ -5952,20 +6003,67 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	 * @throws NamingException
 	 */
 	@SuppressWarnings("unchecked")
-	protected static void getUpdates(String []ldapAttrNames, Map mapping, Attributes attrs, Map mods, String ldapGuidAttribute )  throws NamingException
+	protected static void getUpdates(
+		String []ldapAttrNames,
+		Map mapping,
+		Attributes attrs,
+		Map mods,
+		String ldapGuidAttribute ) throws NamingException
 	{
 		if ( ldapAttrNames != null )
 		{
 			for (int i=0; i<ldapAttrNames.length; i++) {
+				String vibeAttrName;
+				
+				vibeAttrName = (String) mapping.get( ldapAttrNames[i] );
+				
 				Attribute att = attrs.get(ldapAttrNames[i]);
-				if (att == null) continue;
-				Object val = att.get();
-				if (val == null) {
-					mods.put(mapping.get(ldapAttrNames[i]), null);
-				} else if (att.size() == 0) {
+				if ( att == null )
+				{
+					// Does the update mapping already hold a value for this attribute?
+					if ( containsNonEmptyString( mods, vibeAttrName ) == false )
+					{
+						// No, can this field be empty?
+						if ( canVibeFieldValueBeEmpty( vibeAttrName ) == true )
+						{
+							// Yes
+							mods.put( vibeAttrName, "" );
+						}
+					}
+						
 					continue;
-				} else if (att.size() == 1) {
-					mods.put(mapping.get(ldapAttrNames[i]), val);					
+				}
+				
+				Object val = att.get();
+				if ( val == null )
+				{
+					// Does the update mapping already hold a value for this attribute?
+					if ( containsNonEmptyString( mods, vibeAttrName ) == false )
+					{
+						// No, can this field be empty?
+						if ( canVibeFieldValueBeEmpty( vibeAttrName ) == true )
+						{
+							// Yes
+							mods.put( vibeAttrName, "" );
+						}
+					}
+				}
+				else if ( att.size() == 0 )
+				{
+					// Does the update mapping already hold a value for this attribute?
+					if ( containsNonEmptyString( mods, vibeAttrName ) == false )
+					{
+						// No, can this field be empty?
+						if ( canVibeFieldValueBeEmpty( vibeAttrName ) == true )
+						{
+							// Yes
+							mods.put( vibeAttrName, "" );
+						}
+					}
+				}
+				else if ( att.size() == 1 )
+				{
+					mods.put( vibeAttrName, val );					
 				}
 				else
 				{
@@ -5985,7 +6083,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 						value = firstValue.toString();
 					}
 	
-					mods.put( mapping.get( ldapAttrNames[i]), value );
+					mods.put( vibeAttrName, value );
 				}
 			}
 		}

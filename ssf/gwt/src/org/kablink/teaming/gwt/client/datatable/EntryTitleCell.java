@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -81,8 +81,9 @@ import com.google.gwt.user.client.ui.Widget;
  * @author drfoster@novell.com
  */
 public class EntryTitleCell extends AbstractCell<EntryTitleInfo> {
+	private BinderInfo			m_binderInfo;		// The binder hosting this cell.
 	private GwtFileLinkAction	m_fileLinkAction;	// The action to take when the cell's link is activated.
-	private GwtTeamingMessages  m_messages;			// 
+	private GwtTeamingMessages  m_messages;			// Access the to the localized resource strings. 
 	private Html5UploadHost		m_uploadHost;		// An HTML5 host we can use for uploading files into the folder represented by this cell.
 	private HoverHintPopup		m_hoverHintPopup;	// A hint popup that gets displayed when the user mouses over this cell.
 
@@ -94,9 +95,10 @@ public class EntryTitleCell extends AbstractCell<EntryTitleInfo> {
 	 * Constructor method.
 	 * 
 	 * @param fla
+	 * @param bi
 	 * @param uploadHost
 	 */
-	public EntryTitleCell(GwtFileLinkAction fla, Html5UploadHost uploadHost) {
+	public EntryTitleCell(GwtFileLinkAction fla, BinderInfo bi, Html5UploadHost uploadHost) {
 		// Sink the events we need to process an entry title...
 		super(
 			VibeDataTableConstants.CELL_EVENT_CLICK,
@@ -109,6 +111,7 @@ public class EntryTitleCell extends AbstractCell<EntryTitleInfo> {
 			VibeDataTableConstants.CELL_EVENT_MOUSEOUT);
 		
 		// ...store the parameters...
+		m_binderInfo     = bi;
 		m_fileLinkAction = fla;
 		m_uploadHost     = uploadHost;
 		
@@ -144,7 +147,8 @@ public class EntryTitleCell extends AbstractCell<EntryTitleInfo> {
 		String reply;
 		if (eti.isFile()) {
 			String fileDownloadUrl = eti.getFileDownloadUrl();
-			switch (m_fileLinkAction) {
+			GwtFileLinkAction fla = (eti.isTrash() ? GwtFileLinkAction.VIEW_DETAILS : m_fileLinkAction);	// We always View Details on entries in the trash.
+			switch (fla) {
 			default:
 			case DOWNLOAD:
 				reply = fileDownloadUrl;
@@ -595,8 +599,9 @@ public class EntryTitleCell extends AbstractCell<EntryTitleInfo> {
 		boolean			hasBinderImg    = (null != binderImg);
 		boolean			isHidden        = eti.isHidden();
 		boolean			isTrash         = eti.isTrash();
+		boolean			isProfilesTrash = (isTrash && GwtClientHelper.isBinderInfoProfilesRoot(m_binderInfo));
 		boolean			isEntry         = entityType.equals("folderEntry");
-		boolean			titleIsLink     = ((!isTrash) || ((null != entityType) && entityType.equals("folderEntry")));
+		boolean			titleIsLink     = ((!isTrash) || ((!isProfilesTrash) && (null != entityType) && entityType.equals("folderEntry")));
 		boolean			titleIsFileLink = (titleIsLink && eti.isFile());
 		VibeFlowPanel	html            = new VibeFlowPanel();
 		

@@ -91,7 +91,7 @@ public class AdminNetFolderServerResource extends AbstractAdminResource {
         SearchResultList<NetFolderServer> results = new SearchResultList<NetFolderServer>();
         List<ResourceDriverConfig> configs = getResourceDriverModule().getAllNetFolderResourceDriverConfigs();
         for (ResourceDriverConfig config : configs) {
-            results.append(AdminResourceUtil.buildNetFolderServer(config, fullDetails));
+            results.append(AdminResourceUtil.buildNetFolderServer(config, fullDetails, false));
         }
         return results;
     }
@@ -100,7 +100,7 @@ public class AdminNetFolderServerResource extends AbstractAdminResource {
    	@Consumes( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
    	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
    	public NetFolderServer createNetFolderServer(NetFolderServer netFolderServer) {
-        ResourceDriverConfig driverConfig = toResourceDriverConfig(netFolderServer);
+        ResourceDriverConfig driverConfig = toResourceDriverConfig(netFolderServer, true);
         driverConfig = NetFolderHelper.createNetFolderRoot(getAdminModule(), getResourceDriverModule(),
                 driverConfig.getName(), driverConfig.getRootPath(), driverConfig.getDriverType(),
                 driverConfig.getAccountName(), driverConfig.getPassword(), null, null, false, false,
@@ -111,14 +111,14 @@ public class AdminNetFolderServerResource extends AbstractAdminResource {
                 new Long( driverConfig.getJitsMaxAge() ),
                 new Long( driverConfig.getJitsAclMaxAge() ),
                 toScheduleInfo(netFolderServer.getSyncSchedule()));
-        return AdminResourceUtil.buildNetFolderServer(driverConfig, true);
+        return AdminResourceUtil.buildNetFolderServer(driverConfig, true, false);
    	}
 
     @GET
     @Path("{id}")
     public NetFolderServer getNetFolderServer(@PathParam("id") Long id) {
         ResourceDriverConfig resourceDriverConfig = getResourceDriverModule().getResourceDriverConfig(id);
-        return AdminResourceUtil.buildNetFolderServer(resourceDriverConfig, true);
+        return AdminResourceUtil.buildNetFolderServer(resourceDriverConfig, true, false);
     }
 
     @PUT
@@ -126,11 +126,14 @@ public class AdminNetFolderServerResource extends AbstractAdminResource {
     @Path("{id}")
     public NetFolderServer modifyNetFolderServer(@PathParam("id") Long id, NetFolderServer newServer) {
         ResourceDriverConfig existingConfig = getResourceDriverModule().getResourceDriverConfig(id);
-        NetFolderServer existingServer = AdminResourceUtil.buildNetFolderServer(existingConfig, false);
+        NetFolderServer existingServer = AdminResourceUtil.buildNetFolderServer(existingConfig, false, true);
+        if (newServer.getName()!=null && !existingServer.getName().equals(newServer.getName())) {
+            throw new BadRequestException(ApiErrorCode.BAD_INPUT, "Renaming net folder servers is not supported.");
+        }
         newServer.setId(id);
         newServer.replaceNullValues(existingServer);
 
-        ResourceDriverConfig newConfig = toResourceDriverConfig(newServer);
+        ResourceDriverConfig newConfig = toResourceDriverConfig(newServer, false);
         newConfig = NetFolderHelper.modifyNetFolderRoot(getAdminModule(), getResourceDriverModule(), getProfileModule(), getBinderModule(),
                 getWorkspaceModule(), getFolderModule(), existingConfig.getName(), newConfig.getRootPath(), newConfig.getAccountName(), newConfig.getPassword(),
                 newConfig.getDriverType(), null, false, false, null, newConfig.getFullSyncDirOnly(), newConfig.getAuthenticationType(),
@@ -140,7 +143,7 @@ public class AdminNetFolderServerResource extends AbstractAdminResource {
                 new Long( newConfig.getJitsMaxAge() ),
                 new Long( newConfig.getJitsAclMaxAge() ),
                 toScheduleInfo(newServer.getSyncSchedule()));
-        return AdminResourceUtil.buildNetFolderServer(newConfig, true);
+        return AdminResourceUtil.buildNetFolderServer(newConfig, true, false);
     }
 
     @DELETE
@@ -152,11 +155,22 @@ public class AdminNetFolderServerResource extends AbstractAdminResource {
     @GET
     @Path("{id}/net_folders")
     public SearchResultList<NetFolder> getNetFolders(@PathParam("id") Long id,
-                                                     @QueryParam("include_full_details") @DefaultValue("false") boolean fullDetails) {
+                                                     @QueryParam("include_full_details") @DefaultValue("false") boolean fullDetails,
+                                                     @QueryParam("type") String type) {
         ResourceDriverConfig resourceDriverConfig = getResourceDriverModule().getResourceDriverConfig(id);
         NetFolderSelectSpec selectSpec = new NetFolderSelectSpec();
         selectSpec.setRootName(resourceDriverConfig.getName());
-        selectSpec.setIncludeHomeDirNetFolders(false);
+        NetFolder.Type nfType = toEnum(NetFolder.Type.class, "type", type);
+        if (nfType==NetFolder.Type.net) {
+            selectSpec.setIncludeHomeDirNetFolders(false);
+            selectSpec.setIncludeNonHomeDirNetFolders(true);
+        } else if (nfType == NetFolder.Type.home) {
+            selectSpec.setIncludeHomeDirNetFolders(true);
+            selectSpec.setIncludeNonHomeDirNetFolders(false);
+        } else {
+            selectSpec.setIncludeHomeDirNetFolders(true);
+            selectSpec.setIncludeHomeDirNetFolders(true);
+        }
         List<Folder> folderList = NetFolderHelper.getAllNetFolders2(getBinderModule(), getWorkspaceModule(), selectSpec);
 
         SearchResultList<NetFolder> results = new SearchResultList<NetFolder>();
@@ -173,13 +187,15 @@ public class AdminNetFolderServerResource extends AbstractAdminResource {
         return _createNetFolder(netFolder, resourceDriverConfig);
     }
 
-    private ResourceDriverConfig toResourceDriverConfig(NetFolderServer server) {
-        validateMandatoryField(server, "getName");
-        validateMandatoryField(server, "getDriverType");
-        validateMandatoryField(server, "getRootPath");
-        validateMandatoryField(server, "getAuthenticationType");
-        validateMandatoryField(server, "getAccountName");
-        validateMandatoryField(server, "getPassword");
+    private ResourceDriverConfig toResourceDriverConfig(NetFolderServer server, boolean requireAllValues) {
+        if (requireAllValues) {
+            validateMandatoryField(server, "getName");
+            validateMandatoryField(server, "getDriverType");
+            validateMandatoryField(server, "getRootPath");
+            validateMandatoryField(server, "getAuthenticationType");
+            validateMandatoryField(server, "getAccountName");
+            validateMandatoryField(server, "getPassword");
+        }
 
         ResourceDriverConfig model = new ResourceDriverConfig();
         model.setAccountName(server.getAccountName());
@@ -194,6 +210,16 @@ public class AdminNetFolderServerResource extends AbstractAdminResource {
         model.setRootPath(server.getRootPath());
         model.setCachedRightsRefreshInterval(server.getCachedRightsRefreshInterval());
         model.setUseDirectoryRights(server.getUseDirectoryRights());
+        model.setIndexContent(server.getIndexContent());
+        if (server.getJitsEnabled()!=null) {
+            model.setJitsEnabled(server.getJitsEnabled());
+        }
+        if (server.getJitsMaxAge()!=null) {
+            model.setJitsMaxAge(server.getJitsMaxAge());
+        }
+        if (server.getJitsMaxACLAge()!=null) {
+            model.setJitsAclMaxAge(server.getJitsMaxACLAge());
+        }
         return model;
     }
 }

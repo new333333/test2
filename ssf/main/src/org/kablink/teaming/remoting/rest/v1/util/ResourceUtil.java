@@ -879,7 +879,7 @@ public class ResourceUtil {
    		return definitionModule;
    	}
 
-    public static Share buildShare(ShareItem shareItem, org.kablink.teaming.domain.DefinableEntity sharedEntity, ShareRecipient recipient) {
+    public static Share buildShare(ShareItem shareItem, org.kablink.teaming.domain.DefinableEntity sharedEntity, ShareRecipient recipient, boolean guestEnabled) {
         Share model = new Share();
         model.setComment(shareItem.getComment());
         model.setSharer(new LongIdLinkPair(shareItem.getSharerId(), LinkUriUtil.getUserLinkUri(shareItem.getSharerId())));
@@ -901,7 +901,7 @@ public class ResourceUtil {
         WorkAreaOperation.RightSet rightSet = shareItem.getRightSet();
         sharing.setInternal(rightSet.isAllowSharing());
         sharing.setExternal(rightSet.isAllowSharingExternal());
-        sharing.setPublic(rightSet.isAllowSharingPublic());
+        sharing.setPublic(rightSet.isAllowSharingPublic() && guestEnabled);
         sharing.setGrantReshare(rightSet.isAllowSharingForward());
         model.setAccess(access);
         model.setRole(access.getRole());
@@ -943,24 +943,24 @@ public class ResourceUtil {
         recipient.setLink(link);
     }
 
-    public static SharedBinderBrief buildSharedBinderBrief(ShareItem shareItem, ShareRecipient recipient, org.kablink.teaming.domain.Binder binder) {
+    public static SharedBinderBrief buildSharedBinderBrief(ShareItem shareItem, ShareRecipient recipient, org.kablink.teaming.domain.Binder binder, boolean guestEnabled) {
         SharedBinderBrief model = new SharedBinderBrief();
         populateBinderBrief(model, binder);
-        model.addShare(buildShare(shareItem, binder, recipient));
+        model.addShare(buildShare(shareItem, binder, recipient, guestEnabled));
         return model;
     }
 
-    public static SharedFileProperties buildSharedFileProperties(ShareItem shareItem, ShareRecipient recipient, FileAttachment attachment) {
+    public static SharedFileProperties buildSharedFileProperties(ShareItem shareItem, ShareRecipient recipient, FileAttachment attachment, boolean guestEnabled) {
         SharedFileProperties model = new SharedFileProperties();
         populateFileProperties(model, attachment);
-        model.addShare(buildShare(shareItem, attachment.getOwner().getEntity(), recipient));
+        model.addShare(buildShare(shareItem, attachment.getOwner().getEntity(), recipient, guestEnabled));
         return model;
     }
 
-    public static SharedFolderEntryBrief buildSharedFolderEntryBrief(ShareItem shareItem, ShareRecipient recipient, org.kablink.teaming.domain.FolderEntry entry) {
+    public static SharedFolderEntryBrief buildSharedFolderEntryBrief(ShareItem shareItem, ShareRecipient recipient, org.kablink.teaming.domain.FolderEntry entry, boolean guestEnabled) {
         SharedFolderEntryBrief model = new SharedFolderEntryBrief();
         populateEntryBrief(model, entry);
-        model.addShare(buildShare(shareItem, entry, recipient));
+        model.addShare(buildShare(shareItem, entry, recipient, guestEnabled));
         return model;
     }
 

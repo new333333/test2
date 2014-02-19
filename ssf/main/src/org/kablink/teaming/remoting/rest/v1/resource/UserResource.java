@@ -91,7 +91,7 @@ public class UserResource extends AbstractPrincipalResource {
             @QueryParam("email") String email,
             @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr,
             @QueryParam("first") @DefaultValue("0") Integer offset,
-            @QueryParam("count") @DefaultValue("-1") Integer maxCount) {
+            @QueryParam("count") @DefaultValue("100") Integer maxCount) {
 
         Map<String, Object> nextParams = new HashMap<String, Object>();
         boolean allowExternal = false;

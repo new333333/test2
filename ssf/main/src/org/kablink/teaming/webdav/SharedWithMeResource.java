@@ -152,8 +152,9 @@ public class SharedWithMeResource extends ContainerResource
 		for(ShareItem shareItem:shareItems) {
             if (shareItem.getSharedEntityIdentifier().getEntityType()== EntityIdentifier.EntityType.folderEntry) {
             	FolderEntry entry = (FolderEntry) getSharingModule().getSharedEntity(shareItem);
-        		// Expose the file only if it's contained in a library folder
-            	if(entry.getParentBinder().isLibrary()) {
+        		// Expose the file only if it's contained in a library folder AND the enclosing share is not hidden.
+            	if(entry.getParentBinder().isLibrary() &&
+            			!getSharingModule().isSharedEntityHidden(entry, true)) {
             		Set<Attachment> attachments = entry.getAttachments();
             		for(Attachment attachment:attachments) {
             			if(attachment instanceof FileAttachment) {
@@ -166,9 +167,12 @@ public class SharedWithMeResource extends ContainerResource
             }
             else if (shareItem.getSharedEntityIdentifier().getEntityType()== EntityIdentifier.EntityType.folder) {
             	Folder folder = (Folder) getSharingModule().getSharedEntity(shareItem);
-            	resource = makeResourceFromBinder(folder);
-            	if(resource != null)
-            		childrenResources.add(resource);
+            	// Expose the folder only if the enclosing share is not hidden.
+            	if(!getSharingModule().isSharedEntityHidden(folder, true)) {
+	            	resource = makeResourceFromBinder(folder);
+	            	if(resource != null)
+	            		childrenResources.add(resource);
+            	}
             }
 		}
 		Collections.sort(childrenResources, new Comparator<Resource>() {

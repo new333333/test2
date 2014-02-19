@@ -71,6 +71,10 @@ public class SearchObject {
 	
 	private String aclQueryStr;
 	
+	private String baseAclQueryStr;
+	
+	private String extendedAclQueryStr;
+	
 	private String netFolderRootAclQueryStr;
 	
 	// QueryParser is not thread-safe, let try thread local variable, it should be fine
@@ -163,14 +167,29 @@ public class SearchObject {
 	public Query getLuceneQuery() {
 		return luceneQuery;
 	}
-		
-	
+			
 	public String getAclQueryStr() {
 		return aclQueryStr;
 	}
 
 	public void setAclQueryStr(String aclQueryStr) {
 		this.aclQueryStr = aclQueryStr;
+	}
+	
+	public String getBaseAclQueryStr() {
+		return baseAclQueryStr;
+	}
+
+	public void setBaseAclQueryStr(String baseAclQueryStr) {
+		this.baseAclQueryStr = baseAclQueryStr;
+	}
+
+	public String getExtendedAclQueryStr() {
+		return extendedAclQueryStr;
+	}
+
+	public void setExtendedAclQueryStr(String extendedAclQueryStr) {
+		this.extendedAclQueryStr = extendedAclQueryStr;
 	}
 
 	public String getNetFolderRootAclQueryStr() {

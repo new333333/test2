@@ -643,7 +643,8 @@ public class SearchUtils {
 		if(so == null)
 			throw new IllegalArgumentException("Search object must be specifed");
 		
-		String aclQueryStr = so.getAclQueryStr();
+		String baseAclQueryStr = so.getBaseAclQueryStr();
+		String extendedAclQueryStr = so.getExtendedAclQueryStr();
 		Query query = so.getLuceneQuery();
 		Sort sort = so.getSortBy();
 		
@@ -688,7 +689,7 @@ public class SearchUtils {
 			// 3. The user should not see this net folder listed under his "Net Folders" collection view just 
 			//    because some other user shared with him this net folder or anything within that net folder
 			//    (i.e., sub-folder or file within).
-			return luceneSession.search(contextUserId, so.getNetFolderRootAclQueryStr(), mode, query, sort, offset, size,
+			return luceneSession.search(contextUserId, so.getNetFolderRootAclQueryStr(), null, mode, query, sort, offset, size,
 					new PostFilterCallback() {
 				public boolean doFilter(Document doc, boolean noIntrinsicAclStoredButAccessibleThroughFilrGrantedAcl) {
 					// This filter implementation ignores the second arg.
@@ -728,7 +729,7 @@ public class SearchUtils {
 		else if(parentBinder.noAclDredgedWithEntries()) {
 			// The parent binder is a net folder which does not store file ACLs in the search index.
 			List<String> childrenTitles = null;
-			if(Validator.isNotNull(aclQueryStr)) {
+			if(Validator.isNotNull(so.getAclQueryStr())) {
 				boolean shareGrantedAccess = getAccessControlManager().testRightGrantedBySharing(RequestContextHolder.getRequestContext().getUser(), (WorkArea) parentBinder, WorkAreaOperation.READ_ENTRIES);
 				if(shareGrantedAccess) {
 					// This means that we already know the calling user has the right to read the parent binder given by
@@ -747,7 +748,11 @@ public class SearchUtils {
 					// 3. This strategy works OK for folder navigation, but not for general search. In other word,
 					//    general search is still broken with regard to folder sharing. For that reason, this fix
 					//    is only temporary and we need a real fix (see bug #858636).
-					aclQueryStr = null; // Let the Lucene Service skip access checking on the contents of the binder.
+					// NOTE: It may be more efficient to implement this logic within the search service itself
+					//       so that this caller won't have to check share-granted right on the binder. 
+					//       We will revisit that topic when rewriting search service for next Filr release.
+					baseAclQueryStr = null; // Let the Lucene Service skip access checking on the contents of the binder.
+					extendedAclQueryStr = null;
 				}
 				else {		
 					// The sharing facility doesn't grant this user read right to the parent binder, which means
@@ -763,11 +768,11 @@ public class SearchUtils {
 				// The user is not confined by access check (e.g. admin), which means that 
 				// dynamic filtering against file system is not necessary either.
 			}
-		    return luceneSession.searchNetFolderOneLevel(contextUserId, aclQueryStr, childrenTitles, query, sort, offset, size);					
+		    return luceneSession.searchNetFolderOneLevel(contextUserId, baseAclQueryStr, extendedAclQueryStr, childrenTitles, query, sort, offset, size);					
 		}
 		else {
 			// All other cases
-			return luceneSession.searchNonNetFolderOneLevelWithInferredAccess(contextUserId, aclQueryStr, mode, query, sort, offset, size, parentBinder.getId(), parentBinder.getPathName());
+			return luceneSession.searchNonNetFolderOneLevelWithInferredAccess(contextUserId, baseAclQueryStr, extendedAclQueryStr, mode, query, sort, offset, size, parentBinder.getId(), parentBinder.getPathName());
 		}
 	}
 	

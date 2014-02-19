@@ -62,8 +62,8 @@ public class LocalLuceneReadSession extends AbstractLuceneReadSession implements
 	}
 
 	@Override
-	protected Hits invokeSearch(Long contextUserId, String aclQueryStr, int mode, Query query, Sort sort, int offset, int size) {
-		return luceneProvider.search(contextUserId, aclQueryStr, mode, query, sort, offset, size);
+	protected Hits invokeSearch(Long contextUserId, String baseAclQueryStr, String extendedAclQueryStr, int mode, Query query, Sort sort, int offset, int size) {
+		return luceneProvider.search(contextUserId, baseAclQueryStr, extendedAclQueryStr, mode, query, sort, offset, size);
 	}
 	
 	@Override
@@ -99,10 +99,10 @@ public class LocalLuceneReadSession extends AbstractLuceneReadSession implements
 
 	@Override
 	protected Hits invokeSearchNonNetFolderOneLevelWithInferredAccess(Long contextUserId,
-			String aclQueryStr, int mode, Query query, Sort sort, int offset,
+			String baseAclQueryStr, String extendedAclQueryStr, int mode, Query query, Sort sort, int offset,
 			int size, Long parentBinderId, String parentBinderPath)
 			throws LuceneException {
-		return luceneProvider.searchNonNetFolderOneLevelWithInferredAccess(contextUserId, aclQueryStr, mode, query, sort, offset, size, parentBinderId, parentBinderPath);
+		return luceneProvider.searchNonNetFolderOneLevelWithInferredAccess(contextUserId, baseAclQueryStr, extendedAclQueryStr, mode, query, sort, offset, size, parentBinderId, parentBinderPath);
 	}
 
 	@Override
@@ -112,9 +112,9 @@ public class LocalLuceneReadSession extends AbstractLuceneReadSession implements
 	}
 
 	@Override
-	protected Hits invokeSearchNetFolderOneLevel(Long contextUserId, String aclQueryStr,
+	protected Hits invokeSearchNetFolderOneLevel(Long contextUserId, String baseAclQueryStr, String extendedAclQueryStr,
 			List<String> titles, Query query, Sort sort, int offset, int size)
 			throws LuceneException {
-			return luceneProvider.searchNetFolderOneLevel(contextUserId, aclQueryStr, titles, query, sort, offset, size);
+			return luceneProvider.searchNetFolderOneLevel(contextUserId, baseAclQueryStr, extendedAclQueryStr, titles, query, sort, offset, size);
 	}
 }

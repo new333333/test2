@@ -1477,7 +1477,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
         Hits hits = null;
         try {
 	        hits = luceneSession.search(RequestContextHolder.getRequestContext().getUserId(),
-	        		so.getAclQueryStr(), Constants.SEARCH_MODE_NORMAL, soQuery, null, offset, size);
+	        		so.getBaseAclQueryStr(), so.getExtendedAclQueryStr(), Constants.SEARCH_MODE_NORMAL, soQuery, null, offset, size);
         }
         finally {
             luceneSession.close();
@@ -1541,7 +1541,8 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     	Hits hits = null;
         try {
 	        hits = luceneSession.search(RequestContextHolder.getRequestContext().getUserId(),
-	        		so.getAclQueryStr(), Constants.SEARCH_MODE_NORMAL, soQuery, null, 0, Integer.MAX_VALUE);
+	        		so.getBaseAclQueryStr(), so.getExtendedAclQueryStr(), 
+	        		Constants.SEARCH_MODE_NORMAL, soQuery, null, 0, Integer.MAX_VALUE);
         }
         finally {
             luceneSession.close();

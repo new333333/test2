@@ -605,13 +605,15 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 	 * This method fully computes inferred access (visibility) based on the ACLs
 	 * stored in the index.
 	 */
-	public org.kablink.teaming.lucene.Hits searchNonNetFolderOneLevelWithInferredAccess(Long contextUserId, String aclQueryStr, int mode, Query query, Sort sort, int offset, int size, 
+	public org.kablink.teaming.lucene.Hits searchNonNetFolderOneLevelWithInferredAccess(Long contextUserId, String baseAclQueryStr, String extendedAclQueryStr, int mode, Query query, Sort sort, int offset, int size, 
 			Long parentBinderId, String parentBinderPath) throws LuceneException {
 		IndexSearcherHandle indexSearcherHandle = getIndexSearcherHandle();
 
 		Filter implicitlyAccessibleSubFoldersFilter = null;		
 		boolean nonNetFolderInferredAccessEnable = PropsUtil.getBoolean("lucene.search.non.netfolder.inferred.access.enable", false);
 
+		String aclQueryStr = getAclQueryStr(baseAclQueryStr, extendedAclQueryStr);
+		
 		try {
 			if(nonNetFolderInferredAccessEnable && aclQueryStr != null && aclQueryStr.length() > 0) {
 				// This search is bound by ACL. We need to tweak the search in order to handle the anomaly associated with Net Folders (i.e., "implicit" permissions).
@@ -644,7 +646,7 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 			releaseIndexSearcherHandle(indexSearcherHandle);
 		}
 		
-		return searchInternal(contextUserId, aclQueryStr, mode, query, sort, offset, size, implicitlyAccessibleSubFoldersFilter, false);
+		return searchInternal(contextUserId, baseAclQueryStr, extendedAclQueryStr, mode, query, sort, offset, size, implicitlyAccessibleSubFoldersFilter, false);
 	}
 
 	/*
@@ -654,7 +656,7 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 	 * specified.
 	 * This method doesn't make any attempt to compute inferred access.
 	 */
-	public org.kablink.teaming.lucene.Hits searchNetFolderOneLevel(Long contextUserId, String aclQueryStr, List<String> titles, Query query, Sort sort, int offset, int size) throws LuceneException {
+	public org.kablink.teaming.lucene.Hits searchNetFolderOneLevel(Long contextUserId, String baseAclQueryStr, String extendedAclQueryStr, List<String> titles, Query query, Sort sort, int offset, int size) throws LuceneException {
 		if(size == 0)
 			throw new IllegalArgumentException("Size must be specified");
 
@@ -665,6 +667,8 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 		TopDocs topDocs = null;
 		
 		Filter aclFilter = null;
+
+		String aclQueryStr = getAclQueryStr(baseAclQueryStr, extendedAclQueryStr);
 
 		try {
 			if(aclQueryStr != null && aclQueryStr.length() > 0) {
@@ -702,7 +706,7 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 			}
 		   
 			org.kablink.teaming.lucene.Hits tempHits = org.kablink.teaming.lucene.Hits
-					.transfer(indexSearcherHandle.getIndexSearcher(), topDocs, offset, size, null, false);
+					.transfer(indexSearcherHandle.getIndexSearcher(), topDocs, offset, size, null, null, false);
 
 			end(startTime, "searchFolderOneLevel", contextUserId, aclQueryStr, titles, query, sort, offset, size, tempHits.length());
 			
@@ -726,23 +730,33 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 			return offset + requestedMaxSize;
 	}
 	
-	public org.kablink.teaming.lucene.Hits search(Long contextUserId, String aclQueryStr, int mode, Query query, Sort sort,
+	public org.kablink.teaming.lucene.Hits search(Long contextUserId, String baseAclQueryStr, String extendedAclQueryStr, int mode, Query query, Sort sort,
 			int offset, int size) throws LuceneException {
-		return searchInternal(contextUserId, aclQueryStr, mode, query, sort, offset, size, null, true);
+		return searchInternal(contextUserId, baseAclQueryStr, extendedAclQueryStr, mode, query, sort, offset, size, null, true);
 	}
 
-	private org.kablink.teaming.lucene.Hits searchInternal(Long contextUserId, String aclQueryStr, int mode, Query query, Sort sort,
+	private org.kablink.teaming.lucene.Hits searchInternal(Long contextUserId, String baseAclQueryStr, String extendedAclQueryStr, int mode, Query query, Sort sort,
 			int offset, int size, Filter alternateAclFilter, boolean totalHitsApproximate) throws LuceneException {
-		ThreadLocalAclQueryFilter.clear();
-		try {
-			return doSearchInternal(contextUserId, aclQueryStr, mode, query, sort, offset, size, alternateAclFilter, totalHitsApproximate);
-		}
-		finally {
-			ThreadLocalAclQueryFilter.clear();			
-		}
+		return doSearchInternal(contextUserId, baseAclQueryStr, extendedAclQueryStr, mode, query, sort, offset, size, alternateAclFilter, totalHitsApproximate);
 	}
 	
-	private org.kablink.teaming.lucene.Hits doSearchInternal(Long contextUserId, String aclQueryStr, int mode, Query query, Sort sort,
+	private String getAclQueryStr(String baseAclQueryStr, String extendedAclQueryStr) {
+		String aclQueryStr = null;
+		if(extendedAclQueryStr != null && extendedAclQueryStr.length() > 0) {
+			if(baseAclQueryStr != null && baseAclQueryStr.length() > 0) {
+				aclQueryStr = "(" + extendedAclQueryStr + ") OR " + baseAclQueryStr;
+			}
+			else {
+				aclQueryStr = extendedAclQueryStr;
+			}
+		}
+		else {
+			aclQueryStr = baseAclQueryStr;
+		}
+		return aclQueryStr;
+	}
+	
+	private org.kablink.teaming.lucene.Hits doSearchInternal(Long contextUserId, String baseAclQueryStr, String extendedAclQueryStr, int mode, Query query, Sort sort,
 			int offset, int size, Filter alternateAclFilter, boolean totalHitsApproximate) throws LuceneException {
 		if(size == 0)
 			throw new IllegalArgumentException("Size must be specified");
@@ -755,30 +769,49 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 		
 		Filter aclFilter = null;
 		
+		
 		try {
+			ExtendedAclQueryFilter extendeAclQueryFilter = null;
+			AclInheritingAccessibleEntriesFilter aclInheritingAccessibleEntriesFilter = null;
+			
+			String aclQueryStr = getAclQueryStr(baseAclQueryStr, extendedAclQueryStr);
+			
 			if(aclQueryStr != null && aclQueryStr.length() > 0) {
 				// The query result must be filtered by ACL restriction.
+				
 				if(mode == Constants.SEARCH_MODE_NORMAL) {
-					Query aclQuery = parseAclQueryStr(aclQueryStr);
+					TLongHashSet baseAccessibleFolderIds = null;
+					if(baseAclQueryStr != null && baseAclQueryStr.length() > 0) {
+						Query baseAclQuery = parseAclQueryStr(baseAclQueryStr);
+						
+						Query accessibleFoldersBaseAclQuery = makeAccessibleFoldersAclQuery(baseAclQuery);
+
+						baseAccessibleFolderIds = obtainAccessibleFolderIds(indexSearcherHandle.getIndexSearcher(), contextUserId, accessibleFoldersBaseAclQuery);
+					}					
 					
-					Query aclQueryCopy = (Query) aclQuery.clone();
+					TLongHashSet extendedAccessibleFolderIds = null;
+					if(extendedAclQueryStr != null && extendedAclQueryStr.length() > 0) {
+						Query extendedAclQuery = parseAclQueryStr(extendedAclQueryStr);
+						
+						Query accessibleFoldersExtendedAclQuery = makeAccessibleFoldersAclQuery(extendedAclQuery);
+
+						extendedAccessibleFolderIds = obtainAccessibleFolderIds(indexSearcherHandle.getIndexSearcher(), contextUserId, accessibleFoldersExtendedAclQuery);
+					}
+					
+					Query aclQuery = parseAclQueryStr(aclQueryStr);
 					
 					QueryWrapperFilter aclQueryFilter = new QueryWrapperFilter(aclQuery);
 					
-					ThreadLocalAclQueryFilter threadLocalAclQueryFilter = new ThreadLocalAclQueryFilter(aclQueryFilter);
-					
-					Query accessibleFoldersAclQuery = makeAccessibleFoldersAclQuery(aclQueryCopy);
-					
-					TLongHashSet accessibleFolderIds = obtainAccessibleFolderIds(indexSearcherHandle.getIndexSearcher(), contextUserId, accessibleFoldersAclQuery);
+					extendeAclQueryFilter = new ExtendedAclQueryFilter(aclQueryFilter);
 					
 					Filter aclInheritingEntriesFilter = makeAclInheritingEntriesFilter();
 					
-					AclInheritingAccessibleEntriesFilter aclInheritingAccessibleEntriesFilter = new AclInheritingAccessibleEntriesFilter(aclInheritingEntriesFilter, accessibleFolderIds);
+					aclInheritingAccessibleEntriesFilter = new AclInheritingAccessibleEntriesFilter(aclInheritingEntriesFilter, baseAccessibleFolderIds, extendedAccessibleFolderIds);
 					
 					if(alternateAclFilter != null)
-						aclFilter = new ChainedFilter(new Filter[] {threadLocalAclQueryFilter, aclInheritingAccessibleEntriesFilter, alternateAclFilter}, ChainedFilter.OR);		
+						aclFilter = new ChainedFilter(new Filter[] {extendeAclQueryFilter, aclInheritingAccessibleEntriesFilter, alternateAclFilter}, ChainedFilter.OR);		
 					else
-						aclFilter = new ChainedFilter(new Filter[] {threadLocalAclQueryFilter, aclInheritingAccessibleEntriesFilter}, ChainedFilter.OR);		
+						aclFilter = new ChainedFilter(new Filter[] {extendeAclQueryFilter, aclInheritingAccessibleEntriesFilter}, ChainedFilter.OR);		
 				}
 				else if(mode == Constants.SEARCH_MODE_SELF_CONTAINED_ONLY) {
 					if(alternateAclFilter != null)
@@ -842,9 +875,12 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 	        	}
 	        }
 	        /// END: Debug			
-			
+				        
 			org.kablink.teaming.lucene.Hits tempHits = org.kablink.teaming.lucene.Hits
-					.transfer(indexSearcherHandle.getIndexSearcher(), topDocs, offset, size, ThreadLocalAclQueryFilter.getNoIntrinsicAclStoredButAccessibleThroughFilrGrantedAclEntryIds(), totalHitsApproximate);
+					.transfer(indexSearcherHandle.getIndexSearcher(), topDocs, offset, size, 
+							(extendeAclQueryFilter == null)? null: extendeAclQueryFilter.getNoIntrinsicAclStoredButAccessibleThroughExtendedAcl_entryIds(),
+							(aclInheritingAccessibleEntriesFilter == null)? null : aclInheritingAccessibleEntriesFilter.getNoIntrinsicAclStoredButAccessibleThroughExtendedAclOnParentFolder_entryIds(),
+							totalHitsApproximate);
 			
 			/// BEGIN: Debug
 			if(hitsTransferBegin != null) {
@@ -1602,6 +1638,14 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 		return result;
 	}
 	
+	/*
+	 * Return IDs of folders accessible to the user based on the specified ACL query. If the specified
+	 * ACL query is a comprehensive one, this returns IDs of all folders that the user has access to.
+	 * If the specified ACL query is a share ACL query (share ACL query is a portion of the user's 
+	 * overall ACL query that exists due to folders shared with the user by other users), then this
+	 * method returns only the IDs of folders that the user can access through sharing (regardless of
+	 * whether the user also has file system access to the folder or not).
+	 */
 	private TLongHashSet obtainAccessibleFolderIds(IndexSearcher searcher, Long contextUserId, Query accessibleFoldersAclQuery) throws IOException {
 		long startTime = System.nanoTime();
 		

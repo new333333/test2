@@ -110,7 +110,7 @@ public abstract class ActivityStreamUIEntry extends Composite
 	private Image m_actionsImg1;
 	private Image m_actionsImg2;
 	private Image m_unreadImg;
-	private Anchor m_title;
+	private Anchor m_titleAnchor;
 	private InlineLabel m_actionsLabel;
 	private FlowPanel m_mainPanel;
 	private FlowPanel m_presencePanel;
@@ -328,8 +328,8 @@ public abstract class ActivityStreamUIEntry extends Composite
 	{
 		m_avatarImg.setUrl( "" );
 		m_avatarImg.setVisible( false );
-		if ( m_title != null )
-			m_title.getElement().setInnerHTML( "" );
+		if ( m_titleAnchor != null )
+			m_titleAnchor.getElement().setInnerHTML( "" );
 		m_author.setText( "" );
 		m_date.setText( "" );
 		m_descPanel.getElement().setInnerHTML( "" );
@@ -447,6 +447,7 @@ public abstract class ActivityStreamUIEntry extends Composite
 			// Create a <span> to hold the title.
 			titlePanel = new FlowPanel();
 			titlePanel.addStyleName( getTitlePanelStyleName() );
+			titlePanel.addStyleName( "activityStreamTitlePanel" );
 			headerPanel.add( titlePanel );
 			
 			// Add an image that indicates this entry has not been read.
@@ -483,24 +484,24 @@ public abstract class ActivityStreamUIEntry extends Composite
 				m_unreadImg.addClickHandler( clickHandler );
 			}
 			
-			m_title = new Anchor();
-			m_title.addStyleName( getTitleStyleName() );
-			m_title.setHref( "javascript:;" );
-			m_title.setTarget( "_blank" );
-			titlePanel.add( m_title );
+			m_titleAnchor = new Anchor();
+			m_titleAnchor.addStyleName( getTitleStyleName() );
+			m_titleAnchor.setHref( "javascript:;" );
+			m_titleAnchor.setTarget( "_blank" );
+			titlePanel.add( m_titleAnchor );
 			
 			// Add a mouse-over handler for the title.
-			m_title.addMouseOverHandler( this );
+			m_titleAnchor.addMouseOverHandler( this );
 			
 			// Add a mouse-out handler for the activity stream source name
-			m_title.addMouseOutHandler( this );
+			m_titleAnchor.addMouseOutHandler( this );
 			
 			// Add a click handler for the activity stream source name
-			m_titleClickHandlerReg = m_title.addClickHandler( this );
+			m_titleClickHandlerReg = m_titleAnchor.addClickHandler( this );
 			
 			// Add any additional ui to the header.  This gives classes that extend this
 			// class an opportunity to put additional data in the header.
-			addAdditionalHeaderUI( titlePanel );
+			addAdditionalHeaderUI( headerPanel );
 		}
 		
 		return headerPanel;
@@ -707,8 +708,8 @@ public abstract class ActivityStreamUIEntry extends Composite
 	 */
 	public String getEntryTitle()
 	{
-		if ( m_title != null )
-			return m_title.getText();
+		if ( m_titleAnchor != null )
+			return m_titleAnchor.getText();
 		
 		return "";
 	}
@@ -1072,14 +1073,14 @@ public abstract class ActivityStreamUIEntry extends Composite
 		final Object src;
 		
 		src = event.getSource();
-		if ( src == m_title || src == m_author || src == m_avatarImg )
+		if ( src == m_titleAnchor || src == m_author || src == m_avatarImg )
 		{
 			GwtClientHelper.deferCommand( new ScheduledCommand()
 			{
 				@Override
 				public void execute()
 				{
-					if ( src == m_title )
+					if ( src == m_titleAnchor )
 						handleClickOnTitle();
 					else if ( src == m_author )
 						handleClickOnAuthor( ((Widget)src).getElement() );
@@ -1100,7 +1101,7 @@ public abstract class ActivityStreamUIEntry extends Composite
 		Object src;
 		
 		src = event.getSource();
-		if ( src == m_title || src == m_author )
+		if ( src == m_titleAnchor || src == m_author )
 		{
 			((Widget)src).removeStyleName( "activityStreamHover" );
 		}
@@ -1124,7 +1125,7 @@ public abstract class ActivityStreamUIEntry extends Composite
 		Object src;
 		
 		src = event.getSource();
-		if ( src == m_title || src == m_author )
+		if ( src == m_titleAnchor || src == m_author )
 		{
 			((Widget)src).addStyleName( "activityStreamHover" );
 		}
@@ -1194,8 +1195,8 @@ public abstract class ActivityStreamUIEntry extends Composite
 		title = getEntryTitle( entryItem );
 		if ( title == null || title.length() == 0 )
 			title = GwtTeaming.getMessages().noTitle();
-		if ( m_title != null )
-			m_title.getElement().setInnerHTML( title );
+		if ( m_titleAnchor != null )
+			m_titleAnchor.getElement().setInnerHTML( title );
 		updateReadUnreadUI( entryItem.getEntrySeen() );
 		
 		m_author.setText( entryItem.getAuthorName() );
@@ -1286,19 +1287,19 @@ public abstract class ActivityStreamUIEntry extends Composite
 	 */
 	public void updateReadUnreadUI( boolean read )
 	{
-		if ( m_title != null && m_unreadImg != null )
+		if ( m_titleAnchor != null && m_unreadImg != null )
 		{
-			m_title.removeStyleName( "readEntry" );
-			m_title.removeStyleName( "unreadEntry" );
+			m_titleAnchor.removeStyleName( "readEntry" );
+			m_titleAnchor.removeStyleName( "unreadEntry" );
 	
 			if ( read )
 			{
-				m_title.addStyleName( "readEntry" );
+				m_titleAnchor.addStyleName( "readEntry" );
 				m_unreadImg.setVisible( false );
 			}
 			else
 			{
-				m_title.addStyleName( "unreadEntry" );
+				m_titleAnchor.addStyleName( "unreadEntry" );
 				m_unreadImg.setVisible( true );
 			}
 		}
@@ -1355,7 +1356,7 @@ public abstract class ActivityStreamUIEntry extends Composite
 				case VIEW_AS_HTML:
 					if ( USE_TITLE_ANCHOR_CLICKS )
 					{
-						m_title.setHref( m_titleClickAction.getUrl() );
+						m_titleAnchor.setHref( m_titleClickAction.getUrl() );
 						m_titleClickHandlerReg.removeHandler();
 					}
 					break;
@@ -1392,7 +1393,7 @@ public abstract class ActivityStreamUIEntry extends Composite
 		case DOWNLOAD_FILE:
 		case VIEW_AS_HTML:
 			if ( USE_TITLE_ANCHOR_CLICKS )
-			     GwtClientHelper.jsClickWidget( m_title );
+			     GwtClientHelper.jsClickWidget( m_titleAnchor );
 			else GwtClientHelper.jsLaunchUrlInWindow( m_titleClickAction.getUrl(), "_blank" );
 			break;
 			
