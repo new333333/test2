@@ -5970,6 +5970,31 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	}
 	
 	/**
+	 * Look in the given map to see if the given key hold a string value that is not empty
+	 */
+	private static boolean containsNonEmptyString( Map map, String key )
+	{
+		boolean retValue = false;
+		
+		if ( map != null && key != null )
+		{
+			Object value;
+
+			value = map.get( key );
+			if ( value != null && value instanceof String )
+			{
+				String strValue;
+				
+				strValue = (String) value;
+				if ( strValue.length() > 0 )
+					retValue = true;
+			}
+		}
+		
+		return retValue;
+	}
+	
+	/**
 	 * @param ldapAttrNames
 	 * @param mapping
 	 * @param attrs
@@ -5995,8 +6020,16 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				Attribute att = attrs.get(ldapAttrNames[i]);
 				if ( att == null )
 				{
-					if ( canVibeFieldValueBeEmpty( vibeAttrName ) )
-						mods.put( vibeAttrName, "" );
+					// Does the update mapping already hold a value for this attribute?
+					if ( containsNonEmptyString( mods, vibeAttrName ) == false )
+					{
+						// No, can this field be empty?
+						if ( canVibeFieldValueBeEmpty( vibeAttrName ) == true )
+						{
+							// Yes
+							mods.put( vibeAttrName, "" );
+						}
+					}
 						
 					continue;
 				}
@@ -6004,13 +6037,29 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				Object val = att.get();
 				if ( val == null )
 				{
-					if ( canVibeFieldValueBeEmpty( vibeAttrName ) )
-						mods.put( vibeAttrName, "" );
+					// Does the update mapping already hold a value for this attribute?
+					if ( containsNonEmptyString( mods, vibeAttrName ) == false )
+					{
+						// No, can this field be empty?
+						if ( canVibeFieldValueBeEmpty( vibeAttrName ) == true )
+						{
+							// Yes
+							mods.put( vibeAttrName, "" );
+						}
+					}
 				}
 				else if ( att.size() == 0 )
 				{
-					if ( canVibeFieldValueBeEmpty( vibeAttrName ) )
-						mods.put( vibeAttrName, "" );
+					// Does the update mapping already hold a value for this attribute?
+					if ( containsNonEmptyString( mods, vibeAttrName ) == false )
+					{
+						// No, can this field be empty?
+						if ( canVibeFieldValueBeEmpty( vibeAttrName ) == true )
+						{
+							// Yes
+							mods.put( vibeAttrName, "" );
+						}
+					}
 				}
 				else if ( att.size() == 1 )
 				{
