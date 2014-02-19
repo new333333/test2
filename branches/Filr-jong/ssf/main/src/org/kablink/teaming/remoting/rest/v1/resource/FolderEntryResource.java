@@ -88,7 +88,7 @@ public class FolderEntryResource extends AbstractFolderEntryResource {
 	public SearchResultList<FolderEntryBrief> getFolderEntries(@QueryParam("id") Set<Long> ids,
                                                                @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr,
                                                                @QueryParam("first") @DefaultValue("0") Integer offset,
-			                                                   @QueryParam("count") @DefaultValue("-1") Integer maxCount) {
+			                                                   @QueryParam("count") @DefaultValue("100") Integer maxCount) {
         Junction criterion = Restrictions.conjunction();
         criterion.add(SearchUtils.buildEntriesCriterion());
         if (ids!=null) {
@@ -112,7 +112,7 @@ public class FolderEntryResource extends AbstractFolderEntryResource {
 	public SearchResultList<FolderEntryBrief> getFolderEntriesViaLegacyQuery(@Context HttpServletRequest request,
                                                                              @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr,
                                                          @QueryParam("first") @DefaultValue("0") Integer offset,
-			                                             @QueryParam("count") @DefaultValue("-1") Integer maxCount) {
+			                                             @QueryParam("count") @DefaultValue("100") Integer maxCount) {
         String query = getRawInputStreamAsString(request);
         Document queryDoc = buildQueryDocument(query, SearchUtils.buildEntriesCriterion());
         Map folderEntries = getBinderModule().executeSearchQuery(queryDoc, Constants.SEARCH_MODE_NORMAL, offset, maxCount);
@@ -227,7 +227,8 @@ public class FolderEntryResource extends AbstractFolderEntryResource {
         SearchResultList<Share> results = new SearchResultList<Share>();
         List<ShareItem> shareItems = getShareItems(spec, true, true, true);
         for (ShareItem shareItem : shareItems) {
-            results.append(ResourceUtil.buildShare(shareItem, findDefinableEntity(shareItem.getSharedEntityIdentifier()), buildShareRecipient(shareItem)));
+            results.append(ResourceUtil.buildShare(shareItem, findDefinableEntity(shareItem.getSharedEntityIdentifier()),
+                    buildShareRecipient(shareItem), isGuestAccessEnabled()));
         }
         return results;
     }

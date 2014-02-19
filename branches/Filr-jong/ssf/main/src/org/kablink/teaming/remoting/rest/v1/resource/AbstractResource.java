@@ -542,7 +542,7 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         if (notifyRecipient) {
             notifyShareRecipients(shareItem, entity, isExternal, notifyAddresses);
         }
-        return ResourceUtil.buildShare(shareItem, entity, buildShareRecipient(shareItem));
+        return ResourceUtil.buildShare(shareItem, entity, buildShareRecipient(shareItem), isGuestAccessEnabled());
     }
 
     protected void validateNotifyParameters(boolean notifyRecipient, Set<String> notifyAddresses, ShareItem shareItem) {
@@ -944,6 +944,8 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         if (maxCount==null) {
             maxCount = -1;
         }
+        crit.addOrder(new Order(Constants.ENTITY_FIELD, true));
+        crit.addOrder(new Order(Constants.SORT_TITLE_FIELD, true));
         Map resultMap = getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, offset, maxCount);
         SearchResultList<SearchableObject> results = new SearchResultList<SearchableObject>(offset);
         results.setLastModified(lastModified);
@@ -1543,7 +1545,7 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
             SharingModule sharingModule = getSharingModule();
             sharing.setInternal(sharingModule.testAddShareEntityInternal(entity));
             sharing.setExternal(sharingModule.testAddShareEntityExternal(entity));
-            sharing.setPublic(sharingModule.testAddShareEntityPublic(entity));
+            sharing.setPublic(sharingModule.testAddShareEntityPublic(entity) && isGuestAccessEnabled());
             sharing.setGrantReshare(sharingModule.testShareEntityForward(entity));
         } else {
             sharing.setInternal(false);
@@ -1666,6 +1668,36 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
             }
             throw new BadRequestException(ApiErrorCode.BAD_INPUT, builder.toString());
         }
+    }
+
+    protected ExternalSharingRestrictions _getExternalSharingRestrictions() {
+        ExternalSharingRestrictions restrictions = new ExternalSharingRestrictions();
+        ShareLists shareLists = getSharingModule().getShareLists();
+        ShareLists.ShareListMode shareListMode = shareLists.getShareListMode();
+        if (shareListMode== ShareLists.ShareListMode.DISABLED) {
+            restrictions.setMode(ExternalSharingRestrictions.Mode.none.name());
+        } else if (shareListMode == ShareLists.ShareListMode.BLACKLIST) {
+            restrictions.setMode(ExternalSharingRestrictions.Mode.blacklist.name());
+        } else {
+            restrictions.setMode(ExternalSharingRestrictions.Mode.whitelist.name());
+        }
+        List<String> domains = shareLists.getDomains();
+        if (domains==null) {
+            restrictions.setDomainList(new ArrayList<String>(0));
+        } else {
+            restrictions.setDomainList(domains);
+        }
+        List<String> emailAddresses = shareLists.getEmailAddresses();
+        if (emailAddresses==null) {
+            restrictions.setEmailList(new ArrayList<String>(0));
+        } else {
+            restrictions.setEmailList(emailAddresses);
+        }
+        return restrictions;
+    }
+
+    protected boolean isGuestAccessEnabled() {
+        return getAuthenticationModule().getAuthenticationConfig().isAllowAnonymousAccess();
     }
 
     protected static CoreDao getCoreDao() {

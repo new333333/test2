@@ -859,6 +859,16 @@ public class RequestInfo extends JavaScriptObject
 	}-*/;
 
 	/**
+	 * Returns the ID of the profile binder.
+	 * 
+	 * @return
+	 */
+	public final native String getProfileBinderId()
+	/*-{
+		return this.profileBinderId;
+	}-*/;
+
+	/**
 	 * Interacts with the settings dealing with activity stream access
 	 * on login.
 	 * 

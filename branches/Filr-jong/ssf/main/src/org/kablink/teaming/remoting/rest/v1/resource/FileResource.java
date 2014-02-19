@@ -96,7 +96,7 @@ public class FileResource extends AbstractFileResource {
             @QueryParam("parent_binder_paths") @DefaultValue("false") boolean includeParentPaths,
             @QueryParam("library") @DefaultValue("false") boolean onlyLibraryFiles,
             @QueryParam("first") @DefaultValue("0") Integer offset,
-            @QueryParam("count") @DefaultValue("-1") Integer maxCount) {
+            @QueryParam("count") @DefaultValue("100") Integer maxCount) {
         Map<String, Object> nextParams = new HashMap<String, Object>();
         nextParams.put("parent_binder_paths", Boolean.toString(includeParentPaths));
         nextParams.put("library", Boolean.toString(onlyLibraryFiles));

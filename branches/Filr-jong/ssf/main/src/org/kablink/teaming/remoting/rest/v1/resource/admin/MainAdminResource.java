@@ -33,52 +33,30 @@
 package org.kablink.teaming.remoting.rest.v1.resource.admin;
 
 import com.sun.jersey.spi.resource.Singleton;
-import org.dom4j.Document;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.AuthenticationConfig;
 import org.kablink.teaming.domain.OpenIDConfig;
-import org.kablink.teaming.domain.ZoneInfo;
-import org.kablink.teaming.remoting.rest.v1.resource.AbstractResource;
 import org.kablink.teaming.remoting.rest.v1.util.AdminResourceUtil;
-import org.kablink.teaming.remoting.rest.v1.util.ResourceUtil;
-import org.kablink.teaming.remoting.rest.v1.util.SearchResultBuilderUtil;
-import org.kablink.teaming.remoting.rest.v1.util.UniversalBuilder;
-import org.kablink.teaming.rest.v1.model.ReleaseInfo;
 import org.kablink.teaming.rest.v1.model.RootRestObject;
-import org.kablink.teaming.rest.v1.model.SearchResultList;
-import org.kablink.teaming.rest.v1.model.SearchableObject;
-import org.kablink.teaming.rest.v1.model.ZoneConfig;
 import org.kablink.teaming.rest.v1.model.admin.AssignedSharingPermission;
-import org.kablink.teaming.rest.v1.model.admin.ExternalSharingRestrictions;
+import org.kablink.teaming.rest.v1.model.ExternalSharingRestrictions;
 import org.kablink.teaming.rest.v1.model.admin.PersonalStorage;
 import org.kablink.teaming.rest.v1.model.admin.ShareSettings;
 import org.kablink.teaming.rest.v1.model.admin.WebAppConfig;
-import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.ShareLists;
 import org.kablink.teaming.web.util.AdminHelper;
 import org.kablink.teaming.web.util.AssignedRole;
-import org.kablink.util.search.Constants;
 
-import javax.activation.MimetypesFileTypeMap;
-import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
-import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Path("/admin")
 @Singleton
@@ -178,7 +156,7 @@ public class MainAdminResource extends AbstractAdminResource {
         settings.addAdditionalLink("external_restrictions", settings.getLink() + "/external_restrictions");
         settings.setAllowShareWithLdapGroups(getAdminModule().isSharingWithLdapGroupsEnabled());
         settings.setSharingPermissions(getSharingPermissions());
-        settings.setExternalRestrictions(getExternalSharingRestrictions());
+        settings.setExternalRestrictions(_getExternalSharingRestrictions());
         return settings;
     }
 
@@ -253,29 +231,7 @@ public class MainAdminResource extends AbstractAdminResource {
     @GET
     @Path("/share_settings/external_restrictions")
     public ExternalSharingRestrictions getExternalSharingRestrictions() {
-        ExternalSharingRestrictions restrictions = new ExternalSharingRestrictions();
-        ShareLists shareLists = getSharingModule().getShareLists();
-        ShareLists.ShareListMode shareListMode = shareLists.getShareListMode();
-        if (shareListMode== ShareLists.ShareListMode.DISABLED) {
-            restrictions.setMode(ExternalSharingRestrictions.Mode.none.name());
-        } else if (shareListMode == ShareLists.ShareListMode.BLACKLIST) {
-            restrictions.setMode(ExternalSharingRestrictions.Mode.blacklist.name());
-        } else {
-            restrictions.setMode(ExternalSharingRestrictions.Mode.whitelist.name());
-        }
-        List<String> domains = shareLists.getDomains();
-        if (domains==null) {
-            restrictions.setDomainList(new ArrayList<String>(0));
-        } else {
-            restrictions.setDomainList(domains);
-        }
-        List<String> emailAddresses = shareLists.getEmailAddresses();
-        if (emailAddresses==null) {
-            restrictions.setEmailList(new ArrayList<String>(0));
-        } else {
-            restrictions.setEmailList(emailAddresses);
-        }
-        return restrictions;
+        return _getExternalSharingRestrictions();
     }
 
     @PUT

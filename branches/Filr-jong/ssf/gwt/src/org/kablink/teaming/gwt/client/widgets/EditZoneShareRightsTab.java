@@ -295,7 +295,7 @@ public class EditZoneShareRightsTab extends EditZoneShareTabBase
 			else
 				m_selectPrincipalsWidget.initWidget( null );
 
-			m_selectPrincipalsWidget.setSearchForExternalPrincipals( true );
+			m_selectPrincipalsWidget.setSearchForExternalPrincipals( false );
 			m_selectPrincipalsWidget.setSearchForInternalPrincipals( true );
 		}
 		else

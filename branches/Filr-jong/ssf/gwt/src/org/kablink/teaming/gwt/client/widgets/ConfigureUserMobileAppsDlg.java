@@ -46,6 +46,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponseData;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.GwtMobileOpenInSetting;
+import org.kablink.teaming.gwt.client.util.HelpData;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import org.kablink.teaming.gwt.client.widgets.PromptDlg.PromptDlgClient;
 
@@ -594,6 +595,21 @@ public class ConfigureUserMobileAppsDlg extends DlgBox
 			return true;
 
 		return false;
+	}
+
+	/**
+	 * 
+	 */
+	@Override
+	public HelpData getHelpData()
+	{
+		HelpData helpData;
+		
+		helpData = new HelpData();
+		helpData.setGuideName( HelpData.ADMIN_GUIDE );
+		helpData.setPageId( "mobile_user" );
+		
+		return helpData;
 	}
 
 	/*

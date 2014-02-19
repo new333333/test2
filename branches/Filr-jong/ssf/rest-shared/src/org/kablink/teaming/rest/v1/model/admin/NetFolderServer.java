@@ -42,6 +42,10 @@ public class NetFolderServer extends BaseRestObject {
     private Boolean useDirectoryRights;
     private Integer cachedRightsRefreshInterval;
     private Schedule syncSchedule;
+    private Boolean indexContent;
+    private Boolean jitsEnabled;
+    private Long jitsMaxAge;
+    private Long jitsMaxACLAge;
 
     public void replaceNullValues(NetFolderServer server) {
         id = (id==null) ? server.id : id;
@@ -55,6 +59,10 @@ public class NetFolderServer extends BaseRestObject {
         authenticationType = (authenticationType==null) ? server.authenticationType : authenticationType;
         useDirectoryRights = (useDirectoryRights==null) ? server.useDirectoryRights : useDirectoryRights;
         cachedRightsRefreshInterval = (cachedRightsRefreshInterval==null) ? server.cachedRightsRefreshInterval : cachedRightsRefreshInterval;
+        indexContent = (indexContent==null) ? server.indexContent : indexContent;
+        jitsEnabled = (jitsEnabled==null) ? server.jitsEnabled : jitsEnabled;
+        jitsMaxAge = (jitsMaxAge==null) ? server.jitsMaxAge : jitsMaxAge;
+        jitsMaxACLAge = (jitsMaxACLAge==null) ? server.jitsMaxACLAge : jitsMaxACLAge;
     }
 
     public Long getId() {
@@ -171,4 +179,41 @@ public class NetFolderServer extends BaseRestObject {
     public void setSyncSchedule(Schedule syncSchedule) {
         this.syncSchedule = syncSchedule;
     }
+
+    @XmlElement(name="index_content")
+    public Boolean getIndexContent() {
+        return indexContent==null ? Boolean.FALSE : indexContent;
+    }
+
+    public void setIndexContent(Boolean indexContent) {
+        this.indexContent = indexContent;
+    }
+
+    @XmlElement(name="jits_enabled")
+    public Boolean getJitsEnabled() {
+        return jitsEnabled;
+    }
+
+    public void setJitsEnabled(Boolean jitsEnabled) {
+        this.jitsEnabled = jitsEnabled;
+    }
+
+    @XmlElement(name="jits_max_age")
+    public Long getJitsMaxAge() {
+        return jitsMaxAge;
+    }
+
+    public void setJitsMaxAge(Long jitsMaxAge) {
+        this.jitsMaxAge = jitsMaxAge;
+    }
+
+    @XmlElement(name="jits_max_acl_age")
+    public Long getJitsMaxACLAge() {
+        return jitsMaxACLAge;
+    }
+
+    public void setJitsMaxACLAge(Long jitsMaxACLAge) {
+        this.jitsMaxACLAge = jitsMaxACLAge;
+    }
+
 }

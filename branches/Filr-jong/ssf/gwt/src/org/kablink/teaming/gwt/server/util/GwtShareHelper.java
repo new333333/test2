@@ -3501,15 +3501,15 @@ public class GwtShareHelper
 				}
 				else if ( principal instanceof Group )
 				{
-					ZoneShareRights zoneShareRights;
-
-					// Get all of the share rights set at the zone level.
-					zoneShareRights = GwtShareHelper.getZoneShareRights( ami );
-					
-					shareRights.setAllowForwarding( zoneShareRights.canReshare( principalId ) );
-					shareRights.setAllowInternal( zoneShareRights.canShareInternal( principalId ) );
-					shareRights.setAllowExternal( zoneShareRights.canShareExternal( principalId ) );
-					shareRights.setAllowPublic( zoneShareRights.canSharePublic( principalId ) );
+					// I spoke to Peter today (2/7/2014) and this is what he said.
+					// We have no way of determining what rights a particular group has.  Therefore
+					// we will allow the admin to set all rights.  This won't cause a problem because
+					// if an individual hasn't been given rights at the zone level they won't be able
+					// to perform the share.
+					shareRights.setAllowForwarding( true );
+					shareRights.setAllowInternal( true );
+					shareRights.setAllowExternal( true );
+					shareRights.setAllowPublic( true );
 				}
 			}
 		}

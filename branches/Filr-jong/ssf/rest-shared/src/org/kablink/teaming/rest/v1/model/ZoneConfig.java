@@ -51,6 +51,7 @@ public class ZoneConfig extends BaseRestObject {
    	private Long fileSizeLimitUserDefault;
    	private Long fileVersionsMaxAge;
     private Boolean allowShareWithLdapGroups;
+    private ExternalSharingRestrictions sharingRestrictions;
 
     public Long getId() {
         return id;
@@ -136,5 +137,14 @@ public class ZoneConfig extends BaseRestObject {
 
     public void setAllowShareWithLdapGroups(Boolean allowShareWithLdapGroups) {
         this.allowShareWithLdapGroups = allowShareWithLdapGroups;
+    }
+
+    @XmlElement(name="external_sharing_restrictions")
+    public ExternalSharingRestrictions getSharingRestrictions() {
+        return sharingRestrictions;
+    }
+
+    public void setSharingRestrictions(ExternalSharingRestrictions sharingRestrictions) {
+        this.sharingRestrictions = sharingRestrictions;
     }
 }

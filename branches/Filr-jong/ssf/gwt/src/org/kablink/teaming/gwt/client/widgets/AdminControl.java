@@ -124,6 +124,7 @@ import com.google.gwt.event.dom.client.MouseOutHandler;
 import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.resources.client.ImageResource;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Composite;
@@ -203,6 +204,13 @@ public class AdminControl extends TeamingPopupPanel
 	private NameCompletionSettingsDlg m_nameCompletionSettingsDlg = null;
 	private EditSuccessfulHandler m_editBrandingSuccessHandler = null;
 	private List<HandlerRegistration> m_registeredEventHandlers;
+	
+	// The following are used to coordinate firing a 'on layout' event
+	// AFTER all the layout requests in a sequence of them have
+	// finished.
+	private Timer				m_onLayoutEventTimer;
+	private VibeEventBase<?>	m_onLayoutEvent;
+	private final static int	ON_LAYOUT_EVENT_DELAY = 250;
 
 	// The following defines the TeamingEvents that are handled by
 	// this class.  See EventHelper.registerEventHandlers() for how
@@ -874,7 +882,7 @@ public class AdminControl extends TeamingPopupPanel
 		else if ( adminAction.getActionType() == AdminAction.ADD_USER )
 		{
 			// Fire the event to invoke the "Manage users" dialog.
-			InvokeManageUsersDlgEvent.fireOne();
+			GwtTeaming.fireEvent( new InvokeManageUsersDlgEvent( false ) );	// false -> Not a trash view.
 		}
 		
 		else if ( adminAction.getActionType() == AdminAction.MANAGE_MOBILE_DEVICES )
@@ -1485,6 +1493,15 @@ public class AdminControl extends TeamingPopupPanel
 		int height;
 		int x;
 		Style style;
+		
+		// If we have a Timer running to fire a fireOnLayout event...
+		if ( null != m_onLayoutEventTimer )
+		{
+			// ...cancel it while we process this layout request.
+			// ...(We'll restart it below.)
+			m_onLayoutEventTimer.cancel();
+			m_onLayoutEventTimer = null;
+		}
 
 		// Calculate where the content control should be positioned.
 		x = m_adminActionsTreeControl.getAbsoluteLeft() + m_adminActionsTreeControl.getOffsetWidth() + 8;
@@ -1535,10 +1552,28 @@ public class AdminControl extends TeamingPopupPanel
 		// Set the height of the tree control.
 		style = m_adminActionsTreeControl.getElement().getStyle();
 		style.setHeight( height, Style.Unit.PX );
-		
+
+		// If we have a fireOnLayout event...
 		if ( null != fireOnLayout )
 		{
-			GwtTeaming.fireEventAsync( fireOnLayout );
+			// ...save it.
+			m_onLayoutEvent = fireOnLayout;
+		}
+		
+		// If we have a saved fireOnLayout event...
+		if ( null != m_onLayoutEvent )
+		{
+			// ...start a Timer to fire it after a short delay. 
+			m_onLayoutEventTimer = new Timer()
+			{
+				@Override
+				public void run()
+				{
+					GwtTeaming.fireEventAsync( m_onLayoutEvent );
+					m_onLayoutEvent = null;
+				}
+			};
+			m_onLayoutEventTimer.schedule( ON_LAYOUT_EVENT_DELAY );
 		}
 	}// end relayoutPageNow()
 
@@ -2599,7 +2634,7 @@ public class AdminControl extends TeamingPopupPanel
 	 * @param event
 	 */
 	@Override
-	public void onInvokeManageUsersDlg( InvokeManageUsersDlgEvent event )
+	public void onInvokeManageUsersDlg( final InvokeManageUsersDlgEvent event )
 	{
 		// Get the position of the content control.
 		final int x = m_contentControlX;
@@ -2626,7 +2661,7 @@ public class AdminControl extends TeamingPopupPanel
 						public void execute() 
 						{
 							m_manageUsersDlg = muDlg;
-							ManageUsersDlg.initAndShow( m_manageUsersDlg, x, y, m_dlgWidth, m_dlgHeight );
+							ManageUsersDlg.initAndShow( m_manageUsersDlg, event.isTrashView(), x, y, m_dlgWidth, m_dlgHeight );
 						}
 					} );
 				}
@@ -2644,7 +2679,7 @@ public class AdminControl extends TeamingPopupPanel
 			// Yes, we've already created a "Manage Users" dialog!
 			// Simply initialize and show it.
 			m_manageUsersDlg.setPixelSize( m_dlgWidth, m_dlgHeight );
-			ManageUsersDlg.initAndShow( m_manageUsersDlg, x, y, m_dlgWidth, m_dlgHeight );
+			ManageUsersDlg.initAndShow( m_manageUsersDlg, event.isTrashView(), x, y, m_dlgWidth, m_dlgHeight );
 		}
 	}
 	

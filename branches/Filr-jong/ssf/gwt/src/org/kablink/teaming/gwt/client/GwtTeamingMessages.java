@@ -1432,10 +1432,12 @@ public interface GwtTeamingMessages extends Messages
 	String shareDlg_findSharesByHint();
 	String shareDlg_findSharesByUser();
 	String shareDlg_folderLabel();
+	String shareDlg_groupMembershipLabel();
 	String shareDlg_makePublic();
 	String shareDlg_manageShares();
 	String shareDlg_manageMultipleItems( int numItems );
 	String shareDlg_noNote();
+	String shareDlg_noShareItemsHint();
 	String shareDlg_noTeamsToShareWith();
 	String shareDlg_noteLabel();
 	String shareDlg_notifyLabel();
@@ -2655,6 +2657,7 @@ public interface GwtTeamingMessages extends Messages
 	String editNetFolderRightsDlg_CanShareLabel();
 	String editNetFolderRightsDlg_Caption();
 	String editNetFolderRightsDlg_ErrorRetrievingZoneShareRights( String error );
+	String editNetFolderRightsDlg_Hint();
 	String editNetFolderRightsDlg_Instructions();
 	String editNetFolderRightsDlg_ReShareLabel();
 	String editNetFolderRightsDlg_ShareInternalLabel();
@@ -3098,6 +3101,7 @@ public interface GwtTeamingMessages extends Messages
 	String editLdapServerConfigDlg_DeleteSearchLabel();
 	String editLdapServerConfigDlg_DirTypeLabel();
 	String editLdapServerConfigDlg_ErrorNoBaseDn();
+	String editLdapServerConfigDlg_ErrorNoGuidAttrib();
 	String editLdapServerConfigDlg_ErrorNoPwd();
 	String editLdapServerConfigDlg_ErrorNoProxyDn();
 	String editLdapServerConfigDlg_ErrorNoServerUrl();

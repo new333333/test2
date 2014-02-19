@@ -942,13 +942,13 @@ public class ModifyNetFolderRootDlg extends DlgBox
 	private void danceDlg( boolean setFocus )
 	{
 		int selectedIndex;
+		NetFolderRootType type = NetFolderRootType.WINDOWS;
 		
 		if ( m_rootTypeListbox != null )
 		{
 			selectedIndex = m_rootTypeListbox.getSelectedIndex();
 			if ( selectedIndex >= 0 )
 			{
-				NetFolderRootType type;
 				boolean visible;
 				
 				// Get the selected root type;
@@ -1147,8 +1147,13 @@ public class ModifyNetFolderRootDlg extends DlgBox
 			}
 		}
 		
-		// Is an authentication type selected?
-		if ( m_authTypeListbox.getSelectedIndex() == -1 )
+		// Is the server type Windows?
+		if ( type == NetFolderRootType.WINDOWS )
+		{
+			// Yes
+			GwtClientHelper.selectListboxItemByValue( m_authTypeListbox, GwtAuthenticationType.KERBEROS_THEN_NTLM.toString() );
+		}
+		else
 		{
 			// No, select the first one.
 			m_authTypeListbox.setItemSelected( 0, true );
@@ -1852,12 +1857,29 @@ public class ModifyNetFolderRootDlg extends DlgBox
 		
 		danceDlg( false );
 
-		if ( m_netFolderRoot != null )
 		{
+			GwtAuthenticationType authType;
+			
+			if ( netFolderRoot != null )
+				authType = netFolderRoot.getAuthType();
+			else
+			{
+				NetFolderRootType serverType;
+
+				// Get the selected server type
+				serverType = getSelectedRootType();
+
+				if ( serverType == NetFolderRootType.WINDOWS )
+					authType = GwtAuthenticationType.KERBEROS_THEN_NTLM;
+				else
+					authType = GwtAuthenticationType.NMAS;
+			}
+			
+		
 			// initAuthType() must be called after danceDlg() because danceDlg() will add/remove
 			// items from the authentication type listbox depending on the selected server type.
 			// Select the appropriate auth type
-			initAuthType( netFolderRoot.getAuthType() );
+			initAuthType( authType );
 		}
 	}
 

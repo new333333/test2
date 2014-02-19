@@ -64,11 +64,9 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
-
 import org.kablink.teaming.BinderQuotaException;
 import org.kablink.teaming.IllegalCharacterInNameException;
 import org.kablink.teaming.NotSupportedException;
@@ -113,6 +111,7 @@ import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderRow;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderRow.PrincipalInfoId;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.GuestInfo;
 import org.kablink.teaming.gwt.client.GwtTeamingException;
+import org.kablink.teaming.gwt.client.mainmenu.ToolbarItem;
 import org.kablink.teaming.gwt.client.presence.GwtPresenceInfo;
 import org.kablink.teaming.gwt.client.rpc.shared.AvatarInfoRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.BinderDescriptionRpcResponseData;
@@ -175,7 +174,6 @@ import org.kablink.teaming.gwt.client.util.MobileDevicesInfo;
 import org.kablink.teaming.gwt.client.util.SelectedUsersDetails;
 import org.kablink.teaming.gwt.client.util.SelectionDetails;
 import org.kablink.teaming.gwt.client.util.SharedViewState;
-import org.kablink.teaming.gwt.client.util.TagInfo;
 import org.kablink.teaming.gwt.client.util.UserType;
 import org.kablink.teaming.gwt.client.util.FolderType;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
@@ -1550,7 +1548,7 @@ public class GwtViewHelper {
 			// Are we showing everything?
 			boolean showHidden     = svs.isShowHidden();
 			boolean showNonHidden  = svs.isShowNonHidden();
-			boolean isEntityHidden = isSharedEntityHidden(bs, CollectionType.SHARED_BY_ME, siEntity);
+			boolean isEntityHidden = sm.isSharedEntityHidden(siEntity, false);	// false -> Check hidden in Shared by Me list.
 			if ((!showHidden) || (!showNonHidden)) {
 				// No!  Are we supposed to show entities in this hide
 				// state?
@@ -1661,7 +1659,7 @@ public class GwtViewHelper {
 				// Are we showing everything?
 				boolean showHidden     = svs.isShowHidden();
 				boolean showNonHidden  = svs.isShowNonHidden();
-				boolean isEntityHidden = isSharedEntityHidden(bs, ct, siEntity);
+				boolean isEntityHidden = sm.isSharedEntityHidden(siEntity, true);	// true -> Check hidden in Shared with Me list.
 				if ((!showHidden) || (!showNonHidden)) {
 					// No!  Are we supposed to show entities in this
 					// hide state?
@@ -3490,20 +3488,30 @@ public class GwtViewHelper {
 							FolderEntry entry = entryMap.get(eid.getEntityId());
 							if (null != entry) {
 								// Yes!  Create the EntityRights for the
-								// entry. 
+								// entry.  Is the entry in the trash? 
 								EntityRights entryRights = new EntityRights();
-								entryRights.setCanAddReplies( fm.testAccess(entry, FolderOperation.addReply      ));
-								entryRights.setCanModify(     fm.testAccess(entry, FolderOperation.modifyEntry   ));
-								entryRights.setCanPurge(      fm.testAccess(entry, FolderOperation.deleteEntry   ));
-								entryRights.setCanTrash(      fm.testAccess(entry, FolderOperation.preDeleteEntry));
-								
-								ShareRight entryShareRight;
-								if (GwtShareHelper.isEntitySharable(bs, entry))
-								     entryShareRight = ShareRight.SHARABLE;
-								else entryShareRight = ShareRight.NOT_SHARABLE_RIGHTS_VIOLATION;
-								entryRights.setShareRight(entryShareRight);
-								if (entryShareRight.canShare()) {
-									entryRights.setCanPublicLink(sm.testPublicLinkShareEntity(entry));
+								if (entry.isPreDeleted()) {
+									// Yes!  Then the user can't
+									// interact with it.
+									entryRights.setShareRight(ShareRight.NOT_SHARABLE_RIGHTS_VIOLATION);
+								}
+								else {
+									// No, the entry isn't in the
+									// trash!  Determine the user's
+									// rights to it.
+									entryRights.setCanAddReplies( fm.testAccess(entry, FolderOperation.addReply      ));
+									entryRights.setCanModify(     fm.testAccess(entry, FolderOperation.modifyEntry   ));
+									entryRights.setCanPurge(      fm.testAccess(entry, FolderOperation.deleteEntry   ));
+									entryRights.setCanTrash(      fm.testAccess(entry, FolderOperation.preDeleteEntry));
+									
+									ShareRight entryShareRight;
+									if (GwtShareHelper.isEntitySharable(bs, entry))
+									     entryShareRight = ShareRight.SHARABLE;
+									else entryShareRight = ShareRight.NOT_SHARABLE_RIGHTS_VIOLATION;
+									entryRights.setShareRight(entryShareRight);
+									if (entryShareRight.canShare()) {
+										entryRights.setCanPublicLink(sm.testPublicLinkShareEntity(entry));
+									}
 								}
 								
 								reply.setEntityRights(eid, entryRights);
@@ -4289,8 +4297,14 @@ public class GwtViewHelper {
 			FolderModule	fm       = bs.getFolderModule();
 			FolderEntry 	fe       = fm.getEntry(folderId, entityId.getEntityId());
 			ProfileModule	pm       = bs.getProfileModule();
-			SeenMap			seenMap  = pm.getUserSeenMap(userId);
-			boolean			feSeen   = seenMap.checkIfSeen(fe);
+			boolean			feSeen;
+			if (user.isShared()) {
+				feSeen = true;
+			}
+			else {
+				SeenMap seenMap = pm.getUserSeenMap(userId);
+				feSeen = seenMap.checkIfSeen(fe);
+			}
 			reply.setSeenPrevious(feSeen);
 			if ((!feSeen) && markRead) {
 				// ...and if it hasn't, it has now...
@@ -4298,6 +4312,10 @@ public class GwtViewHelper {
 				pm.setSeen(null, fe);
 			}
 			reply.setSeen(feSeen);
+			
+			// ...set whether the entry is in the trash...
+			boolean trashed = fe.isPreDeleted();
+			reply.setTrashed(trashed);
 			
 			// ...set the entry's path... 
 			FolderEntry feTop = fe.getTopEntry();
@@ -4448,7 +4466,11 @@ public class GwtViewHelper {
 			}
 			
 			// ...set the view's toolbar items....
-			reply.setToolbarItems(GwtMenuHelper.getViewEntryToolbarItems(bs, request, fe));
+			List<ToolbarItem> tbItems;
+			if (trashed)
+			     tbItems = new ArrayList<ToolbarItem>();	// No possible interaction if the entry is in the trash.
+			else tbItems = GwtMenuHelper.getViewEntryToolbarItems(bs, request, fe);
+			reply.setToolbarItems(tbItems);
 
 			// ...for non-Guest internal users...
 			if ((!(user.isShared())) && user.getIdentityInfo().isInternal()) {
@@ -5195,7 +5217,7 @@ public class GwtViewHelper {
 											// Yes!  Construct an EntryTitleInfo for it.
 											EntryTitleInfo  eti = new EntryTitleInfo();
 											eti.setHidden((null != smItem) && smItem.isHidden());
-											eti.setSeen(isEntityFolderEntry ? seenMap.checkIfSeen(entryMap) : true);
+											eti.setSeen((isEntityFolderEntry && (!(user.isShared()))) ? seenMap.checkIfSeen(entryMap) : true);
 											eti.setTrash(isTrash);
 											eti.setTitle(MiscUtil.hasString(value) ? value : ("--" + NLT.get("entry.noTitle") + "--"));
 											eti.setEntityId(entityId);
@@ -8313,37 +8335,6 @@ public class GwtViewHelper {
 		return (MiscUtil.hasString(qp) && qp.trim().equalsIgnoreCase(value.trim()));
 	}
 
-	/*
-	 * Returns true if a DefinableEnity is tagged as a hidden share and
-	 * false otherwise.
-	 */
-	private static boolean isSharedEntityHidden(AllModulesInjected bs, CollectionType ct, DefinableEntity siEntity) {
-		// Does the entity have any personal tags defined on it?
-		boolean isEntry = siEntity.getEntityType().equals(EntityType.folderEntry);
-		ArrayList<TagInfo> entityTags;
-		if (isEntry)
-		     entityTags = GwtServerHelper.getEntryTags( bs, ((FolderEntry) siEntity), false, true);
-		else entityTags = GwtServerHelper.getBinderTags(bs, ((Binder)      siEntity), false, true);
-		if (MiscUtil.hasItems(entityTags)) {
-			// Yes!  Scan them.
-			for (TagInfo ti:  entityTags) {
-				// Is this tag marking this entry as being hidden?
-				boolean isHidden;
-				if (ct.equals(CollectionType.SHARED_BY_ME))
-				     isHidden = ti.isHiddenSharedByTag();
-				else isHidden = ti.isHiddenSharedWithTag();
-				if (isHidden) {
-					// Yes!  Return true, that's all we're looking for.
-					return true;
-				}
-			}
-		}
-		
-		// If we get here, the entity is not marked as being hidden.
-		// Return false.
-		return false;
-	}
-
 	/**
 	 * Returns true if the specified user is external and false otherwise.
 	 * 
@@ -9016,7 +9007,7 @@ public class GwtViewHelper {
 		try {
 			// Is this the guest user?
 			User	user    = GwtServerHelper.getCurrentUser();
-			boolean	isGuest = ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId());
+			boolean	isGuest = user.isShared();
 			if (isGuest) {
 				// Yes!  Then we don't save the dialog's position.
 				return;

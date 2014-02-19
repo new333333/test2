@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -37,6 +37,7 @@ import java.util.List;
 
 import org.kablink.teaming.gwt.client.binderviews.EntryMenuPanel;
 import org.kablink.teaming.gwt.client.binderviews.PersonalWorkspacesView;
+import org.kablink.teaming.gwt.client.binderviews.TrashView;
 import org.kablink.teaming.gwt.client.binderviews.ViewBase;
 import org.kablink.teaming.gwt.client.binderviews.ViewBase.ViewClient;
 import org.kablink.teaming.gwt.client.binderviews.ViewReady;
@@ -61,10 +62,12 @@ import org.kablink.teaming.gwt.client.rpc.shared.GetManageUsersInfoCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ManageUsersInfoRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveManageUsersStateCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
+import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HelpData;
 import org.kablink.teaming.gwt.client.util.ManageUsersState;
+import org.kablink.teaming.gwt.client.util.WorkspaceType;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import org.kablink.teaming.gwt.client.widgets.ImportProfilesDlg.ImportProfilesDlgClient;
 import org.kablink.teaming.gwt.client.widgets.UserPropertiesDlg.UserPropertiesDlgClient;
@@ -101,8 +104,9 @@ public class ManageUsersDlg extends DlgBox
 		SetSelectedUserMobileSettingsEvent.Handler,
 		SetSelectedUserShareRightsEvent.Handler
 {
-	private boolean							m_dlgAttached;				// true when the dialog is attached to the document.        false otherwise.
-	private boolean							m_viewReady;				// true once the embedded PersonalWorkspacesView is ready.  false otherwise.
+	private boolean							m_dlgAttached;				// true when the dialog is attached to the document.            false otherwise.
+	private boolean							m_trashView;				// true if we're viewing the trash on the personal workspaces.  false otherwise.
+	private boolean							m_viewReady;				// true once the embedded view is ready.                        false otherwise.
 	private GwtTeamingMessages				m_messages;					// Access to Vibe's messages.
 	private ImportProfilesDlg				m_importProfilesDlg;		// An ImportProfilesDlg, once one is created.
 	private int								m_dlgHeightAdjust = (-1);	// Calculated the first time the dialog is shown.
@@ -112,13 +116,14 @@ public class ManageUsersDlg extends DlgBox
 	private int								m_showCY;					// ...height of the dialog.
 	private List<HandlerRegistration>		m_registeredEventHandlers;	// Event handlers that are currently registered.
 	private ManageUsersInfoRpcResponseData	m_manageUsersInfo;			// Information necessary to run the manage users dialog.
-	private PersonalWorkspacesView			m_pwsView;					// The personal workspace view.
-	private UserPropertiesDlg				m_userPropertiesDlg;		// An UserPropertiesDlg, once one is created.
+	private PersonalWorkspacesView			m_pwsView;					// The personal workspace       view.
+	private TrashView						m_pwsTrashView;				// The personal workspace trash view.
+	private UserPropertiesDlg				m_userPropertiesDlg;		// A UserPropertiesDlg,  once one is created.
 	private UserShareRightsDlg				m_userShareRightsDlg;		// A UserShareRightsDlg, once one is created.
 	private VibeFlowPanel					m_rootPanel;				// The panel that holds the dialog's contents.
 
-	// Constant adjustments to the size of the personal workspaces view
-	// so that it properly fits the dialog's content area.
+	// Constant adjustments to the size of the view so that it properly
+	// fits the dialog's content area.
 	private final static int DIALOG_HEIGHT_ADJUST	= 35;
 	private final static int DIALOG_WIDTH_ADJUST	= 20;
 	
@@ -245,17 +250,17 @@ public class ManageUsersDlg extends DlgBox
 	}
 
 	/**
+	 * Returns the HelpData for the manage users dialog.
 	 * 
+	 * Overrides the DlgBox.getHelpData() method.
+	 * 
+	 * @return
 	 */
 	@Override
-	public HelpData getHelpData()
-	{
-		HelpData helpData;
-		
-		helpData = new HelpData();
-		helpData.setGuideName( HelpData.ADMIN_GUIDE );
-		helpData.setPageId( "users" );
-		
+	public HelpData getHelpData() {
+		HelpData helpData = new HelpData();
+		helpData.setGuideName(HelpData.ADMIN_GUIDE);
+		helpData.setPageId("users");
 		return helpData;
 	}
 
@@ -309,9 +314,12 @@ public class ManageUsersDlg extends DlgBox
 	@Override
 	public void onDetach() {
 		// Let the widget detach and then unregister our event
-		// handlers.
+		// handlers...
 		super.onDetach();
 		unregisterEvents();
+		
+		// ...and mark the dialog as being detached.
+		m_dlgAttached = false;
 	}
 
 	/**
@@ -323,11 +331,9 @@ public class ManageUsersDlg extends DlgBox
 	 */
 	@Override
 	public void onFullUIReload(FullUIReloadEvent event) {
-		// If we have a personal workspace view...
-		if (null != m_pwsView) {
-			// ...tell it to reset itself.
-			m_pwsView.resetView();
-		}
+		// Tell whatever view we've got to reload.
+		if      (null != m_pwsView)      m_pwsView.resetView();
+		else if (null != m_pwsTrashView) m_pwsTrashView.resetView();
 	}
 	
 	/**
@@ -355,6 +361,12 @@ public class ManageUsersDlg extends DlgBox
 	 */
 	@Override
 	public void onManageUsersFilter(ManageUsersFilterEvent event) {
+		// If we don't have a PersonalWorkspacesView...
+		if (null == m_pwsView) {
+			// ...bail.
+			return;
+		}
+		
 		// Toggle the appropriate state...
 		EntryMenuPanel		emp = m_pwsView.getEntryMenuPanel();
 		ManageUsersState	mus = emp.getManageUsersState().createCopy();
@@ -394,32 +406,35 @@ public class ManageUsersDlg extends DlgBox
 	 */
 	@Override
 	public void onInvokeImportProfilesDlg(InvokeImportProfilesDlgEvent event) {
-		// Do we have a personal workspace view?
-		if (null != m_pwsView) {
-			// Yes!  Have we create an import profiles dialog yet?
-			if (null == m_importProfilesDlg) {
-				// No!  Can we create one now?
-				ImportProfilesDlg.createAsync(new ImportProfilesDlgClient() {
-					@Override
-					public void onUnavailable() {
-						// Nothing to do.  Error handled in 
-						// asynchronous provider.
-					}
-					
-					@Override
-					public void onSuccess(ImportProfilesDlg ipDlg) {
-						// Yes, we created the import profiles dialog!
-						// Show it.
-						m_importProfilesDlg = ipDlg;
-						showImportProfilesDlgAsync();
-					}
-				});
-			}
-			
-			else {
-				// Yes, we have an import profiles dialog!  Show it.
-				showImportProfilesDlgAsync();
-			}
+		// If we don't have a PersonalWorkspacesView...
+		if (null == m_pwsView) {
+			// ...bail.
+			return;
+		}
+		
+		// Have we create an import profiles dialog yet?
+		if (null == m_importProfilesDlg) {
+			// No!  Can we create one now?
+			ImportProfilesDlg.createAsync(new ImportProfilesDlgClient() {
+				@Override
+				public void onUnavailable() {
+					// Nothing to do.  Error handled in 
+					// asynchronous provider.
+				}
+				
+				@Override
+				public void onSuccess(ImportProfilesDlg ipDlg) {
+					// Yes, we created the import profiles dialog!
+					// Show it.
+					m_importProfilesDlg = ipDlg;
+					showImportProfilesDlgAsync();
+				}
+			});
+		}
+		
+		else {
+			// Yes, we have an import profiles dialog!  Show it.
+			showImportProfilesDlgAsync();
 		}
 	}
 	
@@ -502,29 +517,32 @@ public class ManageUsersDlg extends DlgBox
 	 */
 	@Override
 	public void onSetSelectedUserDesktopSettings(SetSelectedUserDesktopSettingsEvent event) {
-		// Do we have a personal workspace view?
-		if (null != m_pwsView) {
-			// Yes!  Is the event targeted to this folder?
-			Long eventFolderId = event.getFolderId();
-			if (eventFolderId.equals(m_manageUsersInfo.getProfilesRootWSInfo().getBinderIdAsLong())) {
-				// Yes!  Get the selected EntityId's...
-				List<EntityId> selectedEntityIds = event.getSelectedEntities();
-				if (!(GwtClientHelper.hasItems(selectedEntityIds))) {
-					selectedEntityIds = m_pwsView.getSelectedEntityIds();
-				}
-				
-				// ...extract the selected user ID's from that...
-				final List<Long> selectedUserList = new ArrayList<Long>();
-				for (EntityId eid:  selectedEntityIds) {
-					selectedUserList.add(eid.getEntityId());
-				}
-
-				// ...and use them to invoke the settings dialog.
-				GwtTeaming.fireEventAsync(
-					new InvokePrincipalDesktopSettingsDlgEvent(
-						selectedUserList,
-						true));	// true -> IDs are users.
+		// If we don't have a PersonalWorkspacesView...
+		if (null == m_pwsView) {
+			// ...bail.
+			return;
+		}
+		
+		// Is the event targeted to this folder?
+		Long eventFolderId = event.getFolderId();
+		if (eventFolderId.equals(m_manageUsersInfo.getProfilesRootWSInfo().getBinderIdAsLong())) {
+			// Yes!  Get the selected EntityId's...
+			List<EntityId> selectedEntityIds = event.getSelectedEntities();
+			if (!(GwtClientHelper.hasItems(selectedEntityIds))) {
+				selectedEntityIds = m_pwsView.getSelectedEntityIds();
 			}
+			
+			// ...extract the selected user ID's from that...
+			final List<Long> selectedUserList = new ArrayList<Long>();
+			for (EntityId eid:  selectedEntityIds) {
+				selectedUserList.add(eid.getEntityId());
+			}
+
+			// ...and use them to invoke the settings dialog.
+			GwtTeaming.fireEventAsync(
+				new InvokePrincipalDesktopSettingsDlgEvent(
+					selectedUserList,
+					true));	// true -> IDs are users.
 		}
 	}
 
@@ -537,29 +555,32 @@ public class ManageUsersDlg extends DlgBox
 	 */
 	@Override
 	public void onSetSelectedUserMobileSettings(SetSelectedUserMobileSettingsEvent event) {
-		// Do we have a personal workspace view?
-		if (null != m_pwsView) {
-			// Yes!  Is the event targeted to this folder?
-			Long eventFolderId = event.getFolderId();
-			if (eventFolderId.equals(m_manageUsersInfo.getProfilesRootWSInfo().getBinderIdAsLong())) {
-				// Yes!  Get the selected EntityId's...
-				List<EntityId> selectedEntityIds = event.getSelectedEntities();
-				if (!(GwtClientHelper.hasItems(selectedEntityIds))) {
-					selectedEntityIds = m_pwsView.getSelectedEntityIds();
-				}
-				
-				// ...extract the selected user ID's from that...
-				final List<Long> selectedUserList = new ArrayList<Long>();
-				for (EntityId eid:  selectedEntityIds) {
-					selectedUserList.add(eid.getEntityId());
-				}
-
-				// ...and use them to invoke the settings dialog.
-				GwtTeaming.fireEventAsync(
-					new InvokePrincipalMobileSettingsDlgEvent(
-						selectedUserList,
-						true));	// true -> IDs are users.
+		// If we don't have a PersonalWorkspacesView...
+		if (null == m_pwsView) {
+			// ...bail.
+			return;
+		}
+		
+		// Is the event targeted to this folder?
+		Long eventFolderId = event.getFolderId();
+		if (eventFolderId.equals(m_manageUsersInfo.getProfilesRootWSInfo().getBinderIdAsLong())) {
+			// Yes!  Get the selected EntityId's...
+			List<EntityId> selectedEntityIds = event.getSelectedEntities();
+			if (!(GwtClientHelper.hasItems(selectedEntityIds))) {
+				selectedEntityIds = m_pwsView.getSelectedEntityIds();
 			}
+			
+			// ...extract the selected user ID's from that...
+			final List<Long> selectedUserList = new ArrayList<Long>();
+			for (EntityId eid:  selectedEntityIds) {
+				selectedUserList.add(eid.getEntityId());
+			}
+
+			// ...and use them to invoke the settings dialog.
+			GwtTeaming.fireEventAsync(
+				new InvokePrincipalMobileSettingsDlgEvent(
+					selectedUserList,
+					true));	// true -> IDs are users.
 		}
 	}
 
@@ -572,28 +593,31 @@ public class ManageUsersDlg extends DlgBox
 	 */
 	@Override
 	public void onSetSelectedUserShareRights(SetSelectedUserShareRightsEvent event) {
-		// Do we have a personal workspace view?
-		if (null != m_pwsView) {
-			// Yes!  Is the event targeted to this folder?
-			Long eventFolderId = event.getFolderId();
-			if (eventFolderId.equals(m_manageUsersInfo.getProfilesRootWSInfo().getBinderIdAsLong())) {
-				// Yes!  Get the selected EntityId's...
-				List<EntityId> selectedEntityIds = event.getSelectedEntities();
-				if (!(GwtClientHelper.hasItems(selectedEntityIds))) {
-					selectedEntityIds = m_pwsView.getSelectedEntityIds();
-				}
-				
-				// ...extract the selected user ID's from that...
-				final List<Long> selectedUserList = new ArrayList<Long>();
-				for (EntityId eid:  selectedEntityIds) {
-					selectedUserList.add(eid.getEntityId());
-				}
-
-				// ...and invoke the user share rights dialog.
-				GwtTeaming.fireEventAsync(
-					new InvokeUserShareRightsDlgEvent(
-						selectedUserList));
+		// If we don't have a PersonalWorkspacesView...
+		if (null == m_pwsView) {
+			// ...bail.
+			return;
+		}
+		
+		// Is the event targeted to this folder?
+		Long eventFolderId = event.getFolderId();
+		if (eventFolderId.equals(m_manageUsersInfo.getProfilesRootWSInfo().getBinderIdAsLong())) {
+			// Yes!  Get the selected EntityId's...
+			List<EntityId> selectedEntityIds = event.getSelectedEntities();
+			if (!(GwtClientHelper.hasItems(selectedEntityIds))) {
+				selectedEntityIds = m_pwsView.getSelectedEntityIds();
 			}
+			
+			// ...extract the selected user ID's from that...
+			final List<Long> selectedUserList = new ArrayList<Long>();
+			for (EntityId eid:  selectedEntityIds) {
+				selectedUserList.add(eid.getEntityId());
+			}
+
+			// ...and invoke the user share rights dialog.
+			GwtTeaming.fireEventAsync(
+				new InvokeUserShareRightsDlgEvent(
+					selectedUserList));
 		}
 	}
 
@@ -636,10 +660,11 @@ public class ManageUsersDlg extends DlgBox
 				getFooterPanel().getOffsetHeight());
 		}
 
-		// ...set the size of the personal workspaces view...
-		m_pwsView.setPixelSize(
-			(m_showCX - DIALOG_WIDTH_ADJUST),
-			(m_showCY - m_dlgHeightAdjust));
+		// ...and set the size of the appropriate view.
+		int width  = (m_showCX - DIALOG_WIDTH_ADJUST);
+		int height = (m_showCY - m_dlgHeightAdjust);
+		if      (null != m_pwsView)      m_pwsView.setPixelSize(     width, height);
+		else if (null != m_pwsTrashView) m_pwsTrashView.setPixelSize(width, height);
 	}
 	
 	/*
@@ -706,8 +731,7 @@ public class ManageUsersDlg extends DlgBox
 	}
 
 	/**
-	 * Called when the personal workspaces view reaches the ready
-	 * state.
+	 * Called when the contained view reaches the ready state.
 	 * 
 	 * Implements the ViewReady.viewReady() method.
 	 */
@@ -736,27 +760,53 @@ public class ManageUsersDlg extends DlgBox
 	private void populateDlgNow() {
 		// Clear anything already in the dialog (from a previous
 		// usage, ...)
-		m_dlgAttached =
-		m_viewReady   = false;
-		m_pwsView     = null;
+		m_viewReady    = false;
+		m_pwsView      = null;
+		m_pwsTrashView = null;
 		m_rootPanel.clear();
+
+		// Are we viewing the trash on the personal workspaces?
+		final BinderInfo pwsBI = m_manageUsersInfo.getProfilesRootWSInfo();
+		if (m_trashView) {
+			// Yes!  Create a TrashView widget for the personal
+			// workspaces binder.
+			BinderInfo trashBI = pwsBI.copyBinderInfo();
+			trashBI.setWorkspaceType(WorkspaceType.TRASH);
+			TrashView.createAsync(trashBI, this, new ViewClient() {
+				@Override
+				public void onUnavailable() {
+					// Nothing to do.  Error handled in asynchronous
+					// provider.
+				}
+				
+				@Override
+				public void onSuccess(ViewBase pwsTrashView) {
+					// Store the view and add it to the panel.
+					m_pwsTrashView = ((TrashView) pwsTrashView);
+					m_rootPanel.add(m_pwsTrashView);
+				}
+			});
+		}
 		
-		// Create a PersonalWorkspacesView widget for the selected
-		// binder.
-		PersonalWorkspacesView.createAsync(m_manageUsersInfo.getProfilesRootWSInfo(), this, new ViewClient() {
-			@Override
-			public void onUnavailable() {
-				// Nothing to do.  Error handled in asynchronous
-				// provider.
-			}
-			
-			@Override
-			public void onSuccess(ViewBase pwsView) {
-				// Store the view and add it to the panel.
-				m_pwsView = ((PersonalWorkspacesView) pwsView);
-				m_rootPanel.add(m_pwsView);
-			}
-		});
+		else {
+			// No, we aren't viewing the trash on the personal
+			// workspaces!  Create a PersonalWorkspacesView widget for
+			// the selected binder.
+			PersonalWorkspacesView.createAsync(pwsBI, this, new ViewClient() {
+				@Override
+				public void onUnavailable() {
+					// Nothing to do.  Error handled in asynchronous
+					// provider.
+				}
+				
+				@Override
+				public void onSuccess(ViewBase pwsView) {
+					// Store the view and add it to the panel.
+					m_pwsView = ((PersonalWorkspacesView) pwsView);
+					m_rootPanel.add(m_pwsView);
+				}
+			});
+		}
 
 		// Position and show the dialog.
 		setPopupPosition(m_showX, m_showY);
@@ -789,12 +839,12 @@ public class ManageUsersDlg extends DlgBox
 	 * Asynchronously runs the given instance of the manage users
 	 * dialog.
 	 */
-	private static void runDlgAsync(final ManageUsersDlg muDlg, final int x, final int y, final int width, final int height) {
+	private static void runDlgAsync(final ManageUsersDlg muDlg, final boolean trashView, final int x, final int y, final int width, final int height) {
 		GwtClientHelper.deferCommand(
 			new ScheduledCommand() {
 				@Override
 				public void execute() {
-					muDlg.runDlgNow(x, y, width, height);
+					muDlg.runDlgNow(trashView, x, y, width, height);
 				}
 			});
 	}
@@ -803,12 +853,13 @@ public class ManageUsersDlg extends DlgBox
 	 * Synchronously runs the given instance of the manage users
 	 * dialog.
 	 */
-	private void runDlgNow(int x, int y, int width, int height) {
+	private void runDlgNow(boolean trashView, int x, int y, int width, int height) {
 		// Store the parameters...
-		m_showX = x;
-		m_showY = y;
-		m_showCX = width;
-		m_showCY = height;
+		m_trashView = trashView;
+		m_showX     = x;
+		m_showY     = y;
+		m_showCX    = width;
+		m_showCY    = height;
 		
 		// ...and start populating the dialog.
 		populateDlgAsync();
@@ -857,6 +908,7 @@ public class ManageUsersDlg extends DlgBox
 			
 			// Parameters used to initialize and show an instance of the dialog.
 			final ManageUsersDlg	muDlg,
+			final boolean			trashView,
 			final int				initX,
 			final int				initY) {
 		GWT.runAsync(ManageUsersDlg.class, new RunAsyncCallback() {
@@ -882,7 +934,7 @@ public class ManageUsersDlg extends DlgBox
 					// No, it's not a request to create a dialog!  It
 					// must be a request to run an existing one.  Run
 					// it.
-					runDlgAsync(muDlg, initX, initY, createCX, createCY);
+					runDlgAsync(muDlg, trashView, initX, initY, createCX, createCY);
 				}
 			}
 		});
@@ -901,17 +953,18 @@ public class ManageUsersDlg extends DlgBox
 	 * @param cy
 	 */
 	public static void createAsync(ManageUsersDlgClient muDlgClient, boolean autoHide, boolean modal, int x, int y, int cx, int cy) {
-		doAsyncOperation(muDlgClient, autoHide, modal, x, y, cx, cy, null, (-1), (-1));
+		doAsyncOperation(muDlgClient, autoHide, modal, x, y, cx, cy, null, false, (-1), (-1));
 	}
 	
 	/**
 	 * Initializes and shows the manage users dialog.
 	 * 
 	 * @param muDlg
+	 * @param trashView
 	 * @param x
 	 * @param y
 	 */
-	public static void initAndShow(ManageUsersDlg muDlg, int x, int y, int width, int height) {
-		doAsyncOperation(null, false, false, (-1), (-1), width, height, muDlg, x, y);
+	public static void initAndShow(ManageUsersDlg muDlg, boolean trashView, int x, int y, int width, int height) {
+		doAsyncOperation(null, false, false, (-1), (-1), width, height, muDlg, trashView, x, y);
 	}
 }

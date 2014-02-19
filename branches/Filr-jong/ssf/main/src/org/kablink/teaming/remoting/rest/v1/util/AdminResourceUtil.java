@@ -75,7 +75,7 @@ import java.util.Set;
  */
 public class AdminResourceUtil {
 
-    public static NetFolderServer buildNetFolderServer(ResourceDriverConfig config, boolean fullDetails) {
+    public static NetFolderServer buildNetFolderServer(ResourceDriverConfig config, boolean fullDetails, boolean includePassword) {
         NetFolderServer model = new NetFolderServer();
         model.setAccountName(config.getAccountName());
         if (config.getAuthenticationType()!=null) {
@@ -91,10 +91,16 @@ public class AdminResourceUtil {
         model.setId(config.getId());
         model.setModifiedOn(config.getModifiedOn());
         model.setName(config.getName());
-        model.setPassword(config.getPassword());
+        if (includePassword) {
+            model.setPassword(config.getPassword());
+        }
         model.setRootPath(config.getRootPath());
         model.setCachedRightsRefreshInterval(config.getCachedRightsRefreshInterval());
         model.setUseDirectoryRights(config.getUseDirectoryRights());
+        model.setIndexContent(config.getIndexContent());
+        model.setJitsEnabled(config.isJitsEnabled());
+        model.setJitsMaxAge(config.getJitsMaxAge());
+        model.setJitsMaxACLAge(config.getJitsAclMaxAge());
         if (fullDetails) {
             model.setSyncSchedule(buildSchedule(NetFolderHelper.getNetFolderServerSynchronizationSchedule(model.getId())));
         }
@@ -145,7 +151,8 @@ public class AdminResourceUtil {
         model.setId(ldapConfig.getId());
         model.setUrl(ldapConfig.getUrl());
         model.setPrincipal(ldapConfig.getPrincipal());
-        model.setCredentials(ldapConfig.getCredentials());
+        // Don't return the password in the results
+        // model.setCredentials(ldapConfig.getCredentials());
         model.setGuidAttribute(ldapConfig.getLdapGuidAttribute());
         model.setUsernameAttribute(ldapConfig.getUserIdAttribute());
         model.setMappings(buildKeyValueList(ldapConfig.getMappings()));

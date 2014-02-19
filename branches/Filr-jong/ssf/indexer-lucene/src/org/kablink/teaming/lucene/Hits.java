@@ -121,7 +121,10 @@ public class Hits implements Serializable {
     }
 
     public static Hits transfer(org.apache.lucene.search.IndexSearcher searcher, org.apache.lucene.search.TopDocs topDocs,
-            int offset, int maxSize, TLongHashSet noIntrinsicAclStoredButAccessibleThroughFilrGrantedAclEntryIds, boolean totalHitsApproximate) throws IOException {
+            int offset, int maxSize, 
+            TLongHashSet noIntrinsicAclStoredButAccessibleThroughExtendedAcl_entryIds, 
+            TLongHashSet noIntrinsicAclStoredButAccessibleThroughExtendedAclOnParentFolder_entryIds, 
+            boolean totalHitsApproximate) throws IOException {
         if (topDocs == null) return new Hits(0);
     	int length = (topDocs.scoreDocs == null)? 0: topDocs.scoreDocs.length;
         length = Math.min(length - offset, maxSize);
@@ -132,16 +135,24 @@ public class Hits implements Serializable {
         String entityType;
         String entryStrId;
         long entryId;
+        boolean checkExtendedAcl = 
+        		((noIntrinsicAclStoredButAccessibleThroughExtendedAcl_entryIds != null &&
+        		noIntrinsicAclStoredButAccessibleThroughExtendedAcl_entryIds.size() > 0) ||
+        		(noIntrinsicAclStoredButAccessibleThroughExtendedAclOnParentFolder_entryIds != null &&
+        				noIntrinsicAclStoredButAccessibleThroughExtendedAclOnParentFolder_entryIds.size() > 0));
         for(int i = 0; i < length; i++) {
         	doc = searcher.doc(hits[offset + i].doc);
-        	if(noIntrinsicAclStoredButAccessibleThroughFilrGrantedAclEntryIds != null) {
+        	if(checkExtendedAcl) {
 	        	entityType = doc.get(Constants.ENTITY_FIELD);
 	        	if(entityType != null && Constants.ENTITY_TYPE_FOLDER_ENTRY.equals(entityType)) {
 	        		entryStrId = doc.get(Constants.DOCID_FIELD);
 	        		if(entryStrId != null) {
 	        			try {
 	        				entryId = Long.parseLong(entryStrId);
-	    	        		if(noIntrinsicAclStoredButAccessibleThroughFilrGrantedAclEntryIds.contains(entryId)) {
+	        				if((noIntrinsicAclStoredButAccessibleThroughExtendedAcl_entryIds != null &&
+	        						noIntrinsicAclStoredButAccessibleThroughExtendedAcl_entryIds.contains(entryId)) ||
+	        						(noIntrinsicAclStoredButAccessibleThroughExtendedAclOnParentFolder_entryIds != null &&
+	        								noIntrinsicAclStoredButAccessibleThroughExtendedAclOnParentFolder_entryIds.contains(entryId))) {
 	    	        			// This doc represents a folder entry or reply/comment or attachment that doesn't
 	    	        			// have its intrinsic ACL indexed with it but instead have share-granted ACL
 	    	        			// that made it pass the caller's regular ACL filter. We want to pass this

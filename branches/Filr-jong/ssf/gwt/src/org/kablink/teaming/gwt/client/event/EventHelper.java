@@ -102,7 +102,6 @@ public class EventHelper {
 		case INVOKE_MANAGE_NET_FOLDERS_DLG:			reply = new InvokeManageNetFoldersDlgEvent();	  break;
 		case INVOKE_MANAGE_NET_FOLDER_ROOTS_DLG:	reply = new InvokeManageNetFolderRootsDlgEvent(); break;
 		case INVOKE_MANAGE_GROUPS_DLG:				reply = new InvokeManageGroupsDlgEvent();		  break;
-		case INVOKE_MANAGE_USERS_DLG:				reply = new InvokeManageUsersDlgEvent();		  break;
 		case INVOKE_MANAGE_MOBILE_DEVICES_DLG:		reply = new InvokeManageMobileDevicesDlgEvent();  break;
 		case INVOKE_NAME_COMPLETION_SETTINGS_DLG:	reply = new InvokeNameCompletionSettingsDlgEvent(); break;
 		case INVOKE_RENAME_ENTITY:				    reply = new InvokeRenameEntityEvent();		      break;

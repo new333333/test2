@@ -901,7 +901,7 @@ public class NetFolderHelper
 	 */
 	public static long getDefaultJitsAclMaxAge()
 	{
-		return SPropsUtil.getLong( "nf.jits.acl.max.age", 600000L );
+		return SPropsUtil.getLong( "nf.jits.acl.max.age", 3600000L );
 	}
 	
 	/**

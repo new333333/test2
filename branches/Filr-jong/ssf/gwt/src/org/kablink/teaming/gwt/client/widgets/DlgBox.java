@@ -1132,7 +1132,7 @@ public abstract class DlgBox extends TeamingPopupPanel
 	public void onDetach()
 	{
 		// If the tour button is visible...
-		if ( m_tourButton.isVisible() )
+		if ( ( null != m_tourButton ) && m_tourButton.isVisible() )
 		{
 			// ...stop any tours that may be running...
 			stopTour();

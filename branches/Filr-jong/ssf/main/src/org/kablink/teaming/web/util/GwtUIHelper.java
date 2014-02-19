@@ -36,6 +36,7 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -48,6 +49,7 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.dom4j.Document;
 import org.dom4j.Element;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
@@ -78,6 +80,8 @@ import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.WebKeys;
+import org.kablink.teaming.web.tree.DomTreeBuilder;
+import org.kablink.teaming.web.tree.WsDomTreeBuilder;
 import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.Toolbar;
 import org.kablink.teaming.web.util.WebHelper;
@@ -890,6 +894,23 @@ public class GwtUIHelper {
 		return (((null == obj) || (0 == obj.length())) ? defStr : obj);
 	}
 
+	/*
+	 * Returns the string representation of the profile binder ID.
+	 */
+	private static String getProfileBinderIdSafely(AllModulesInjected bs) {
+		Long profileBinderId;
+		
+		try {
+			profileBinderId = bs.getProfileModule().getProfileBinderId();
+		}
+		catch (Exception e) {
+			profileBinderId = null;
+		}
+		
+		String reply = ((null == profileBinderId) ? "" : String.valueOf(profileBinderId.longValue()));
+		return reply;
+	}
+	
 	/**
 	 * Returns the string representation of the top most workspace ID.
 	 * 
@@ -1081,13 +1102,36 @@ public class GwtUIHelper {
 	
 	/*
 	 * Returns true if the current user has access to the root
-	 * workspace and false otherwise.
+	 * workspace (and contents) and false otherwise.
 	 */
+	@SuppressWarnings("unchecked")
 	private static boolean hasRootDirAccess(AllModulesInjected bs) {
+		// Does the current user have access to the top workspace?
 		Workspace topWS;
 		try                  {topWS = bs.getWorkspaceModule().getTopWorkspace();}
 		catch (Exception ex) {topWS = null;                                     }
-		return (null != topWS);
+		boolean reply = (null != topWS);
+		if (reply) {
+			// Yes!  We build a DOM tree to ensure access to its
+			// contents.  This is the same call used to setup a
+			// tree browser for the find control and we don't want
+			// it to show if the user can't browse the tree.  This
+			// check will ensure that.
+			Document wsTree = bs.getBinderModule().getDomBinderTree(
+				topWS.getId(), 
+				new WsDomTreeBuilder(
+					topWS,	//
+					true,	// true -> childChildren
+					bs,		//
+					"",		//   "" -> No key.
+					""),	//   "" -> No no pageTuple.
+				1);			//    1 -> Levels.
+			
+			Element wsRoot = wsTree.getRootElement();
+			Iterator childIT = wsRoot.selectNodes("./" + DomTreeBuilder.NODE_CHILD).iterator();
+			reply = childIT.hasNext();
+		}
+		return reply;
 	}
 	
 	/**
@@ -1422,6 +1466,7 @@ public class GwtUIHelper {
 	 * - productName
 	 * - ss_helpUrl
 	 * - topWSId
+	 * - profileBinderId
 	 * - showWhatsNew
 	 * - showCollection
 	 * - isFormLoginAllowed
@@ -1507,6 +1552,10 @@ public class GwtUIHelper {
 		// Put out the ID of the top Vibe workspace.
 		String topWSId = getTopWSIdSafely(bs);
 		model.put("topWSId", topWSId);
+		
+		// Put out the ID of the profileBinder.
+		String profileBinderId = getProfileBinderIdSafely(bs);
+		model.put("profileBinderId", profileBinderId);
 		
 		// Put out the flag indicating whether cloud folders are
 		// enabled.

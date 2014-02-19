@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -160,8 +160,8 @@ public class TrashView extends DataTableFolderViewBase {
 		// the view's contents and tell the base class that we're done
 		// with the construction.
 		getFlowPanel().addStyleName("vibe-trashFlowPanel");
+		viewReady();
 		populateContent();
-		super.viewReady();
 	}
 	
 	/**
@@ -208,8 +208,9 @@ public class TrashView extends DataTableFolderViewBase {
 		case ACCESSORIES:
 		case DESCRIPTION:
 		case BINDER_OWNER_AVATAR:
-		case FILTER:  reply = false;                            break;
-		default:      reply = super.includePanel(folderPanel);  break;
+		case FILTER:  reply =  false;                                                                                              break;
+		case FOOTER:  reply = (super.includePanel(folderPanel) && (!(GwtClientHelper.isBinderInfoProfilesRoot(getFolderInfo())))); break;
+		default:      reply =  super.includePanel(folderPanel);                                                                    break;
 		}
 		
 		return reply;

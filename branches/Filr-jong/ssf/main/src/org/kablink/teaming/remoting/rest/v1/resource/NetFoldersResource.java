@@ -72,7 +72,7 @@ public class NetFoldersResource extends AbstractResource {
    	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
     public SearchResultList<NetFolderBrief> getNetFolders(@QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr,
                                                           @QueryParam("first") @DefaultValue("0") Integer offset,
-                                                          @QueryParam("count") @DefaultValue("-1") Integer maxCount) {
+                                                          @QueryParam("count") @DefaultValue("100") Integer maxCount) {
         Map<String, Object> nextParams = new HashMap<String, Object>();
         nextParams.put("description_format", descriptionFormatStr);
         return _getNetFolders(toDomainFormat(descriptionFormatStr), offset, maxCount, "/net_folders", nextParams);
@@ -90,7 +90,7 @@ public class NetFoldersResource extends AbstractResource {
                                                                  @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr,
                                                                  @QueryParam("keyword") String keyword,
                                                                  @QueryParam("first") @DefaultValue("0") Integer offset,
-                                                                 @QueryParam("count") @DefaultValue("-1") Integer maxCount) {
+                                                                 @QueryParam("count") @DefaultValue("100") Integer maxCount) {
         SearchResultList<SearchableObject> results;
         SearchResultList<NetFolderBrief> netFolders = getNetFolders(descriptionFormatStr, 0, -1);
         if (netFolders.getCount()>0) {
