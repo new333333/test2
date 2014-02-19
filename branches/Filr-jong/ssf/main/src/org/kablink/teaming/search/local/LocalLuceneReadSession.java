@@ -62,8 +62,8 @@ public class LocalLuceneReadSession extends AbstractLuceneReadSession implements
 	}
 
 	@Override
-	protected Hits invokeSearch(Long contextUserId, String baseAclQueryStr, String extendedAclQueryStr, int mode, Query query, Sort sort, int offset, int size) {
-		return luceneProvider.search(contextUserId, baseAclQueryStr, extendedAclQueryStr, mode, query, sort, offset, size);
+	protected Hits invokeSearch(Long contextUserId, String baseAclQueryStr, String extendedAclQueryStr, int mode, Query query, List<String> fieldNames, Sort sort, int offset, int size) {
+		return luceneProvider.search(contextUserId, baseAclQueryStr, extendedAclQueryStr, mode, query, fieldNames, sort, offset, size);
 	}
 	
 	@Override

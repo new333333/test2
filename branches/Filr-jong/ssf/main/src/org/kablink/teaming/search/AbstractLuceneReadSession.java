@@ -35,6 +35,7 @@ package org.kablink.teaming.search;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 
 import org.apache.commons.logging.Log;
@@ -63,23 +64,23 @@ public abstract class AbstractLuceneReadSession extends AbstractLuceneSession im
 	}
 
 	@Override
-	public Hits search(Long contextUserId, String baseAclQueryStr, String extendedAclQueryStr, int mode, Query query) throws LuceneException {
-		return search(contextUserId, baseAclQueryStr, extendedAclQueryStr, mode, query, null, 0, -1);
+	public Hits search(Long contextUserId, String baseAclQueryStr, String extendedAclQueryStr, int mode, Query query, List<String> fieldNames) throws LuceneException {
+		return search(contextUserId, baseAclQueryStr, extendedAclQueryStr, mode, query, fieldNames, null, 0, -1);
 	}
 
 	@Override
-	public Hits search(Long contextUserId, String baseAclQueryStr, String extendedAclQueryStr, int mode, Query query, Sort sort, int offset, int size)
+	public Hits search(Long contextUserId, String baseAclQueryStr, String extendedAclQueryStr, int mode, Query query, List<String> fieldNames, Sort sort, int offset, int size)
 			throws LuceneException {
-		return search(contextUserId, baseAclQueryStr, extendedAclQueryStr, mode, query, sort, offset, size, getPostFilterCallback());
+		return search(contextUserId, baseAclQueryStr, extendedAclQueryStr, mode, query, fieldNames, sort, offset, size, getPostFilterCallback());
 	}
 
 	@Override
-	public Hits search(Long contextUserId, String baseAclQueryStr, String extendedAclQueryStr, int mode, Query query, Sort sort, int offset, int size, PostFilterCallback callback)
+	public Hits search(Long contextUserId, String baseAclQueryStr, String extendedAclQueryStr, int mode, Query query, List<String> fieldNames, Sort sort, int offset, int size, PostFilterCallback callback)
 			throws LuceneException {
 		SimpleProfiler.start("search()");
 		long begin = System.nanoTime();
 		PostFilteringStats stats = new PostFilteringStats();
-		Hits hits = searchWithPostFiltering(contextUserId, baseAclQueryStr, extendedAclQueryStr, mode, query, sort, offset, size, callback, stats);
+		Hits hits = searchWithPostFiltering(contextUserId, baseAclQueryStr, extendedAclQueryStr, mode, query, fieldNames, sort, offset, size, callback, stats);
 		SimpleProfiler.stop("search()");
 		endRead(begin, "search", contextUserId, baseAclQueryStr, extendedAclQueryStr, mode, query, sort, offset, size, hits.length(), stats.sucessCount, stats.failureCount, stats.serviceCallCount);
 		return hits;
@@ -201,32 +202,32 @@ public abstract class AbstractLuceneReadSession extends AbstractLuceneSession im
 	
 	protected PostFilterCallback getPostFilterCallback() {
 		return new PostFilterCallback() {
-			public boolean doFilter(Document doc, boolean noIntrinsicAclStoredButAccessibleThroughFilrGrantedAcl) {
+			public boolean doFilter(Map<String,Object> doc, boolean noIntrinsicAclStoredButAccessibleThroughFilrGrantedAcl) {
 				if(noIntrinsicAclStoredButAccessibleThroughFilrGrantedAcl)
 					return true; // This doc represents an entry the user has access via sharing. Need not consult file system for access test.
-				NumericField field = (NumericField) doc.getFieldable(Constants.ENTRY_ACL_PARENT_ID_FIELD);
-				if(field == null)
+				Number entryAclParentId = (Number) doc.get(Constants.ENTRY_ACL_PARENT_ID_FIELD);
+				if(entryAclParentId == null)
 					return true; // doesn't require access check
-				if(field.getNumericValue().longValue() >= 0)
+				if(entryAclParentId.longValue() >= 0)
 					return true; // doesn't require access check
-				String resourceDriverName = doc.get(Constants.RESOURCE_DRIVER_NAME_FIELD);
+				String resourceDriverName = (String) doc.get(Constants.RESOURCE_DRIVER_NAME_FIELD);
 				if(Validator.isNull(resourceDriverName)) {
 					logger.warn("Can not perform access check because resource driver name is missing on this doc: " + doc.toString());
 					return false; // fails the test
 				}
-				String resourcePath = doc.get(Constants.RESOURCE_PATH_FIELD);
+				String resourcePath = (String) doc.get(Constants.RESOURCE_PATH_FIELD);
 				if(resourcePath == null)
 					resourcePath = "";
 				Long ownerId = null;
 				try {
-					ownerId = Long.valueOf(doc.get(Constants.OWNERID_FIELD)); // Used only by cloud folder
+					ownerId = Long.valueOf((String)doc.get(Constants.OWNERID_FIELD)); // Used only by cloud folder
 				}
 				catch(NumberFormatException ignore) {}
 				AclResourceSession session = org.kablink.teaming.module.shared.SearchUtils.openAclResourceSession(resourceDriverName, ownerId);				
 				if(session == null)
 					return false; // can not perform access check on this
 				try {
-					String docType = doc.get(Constants.DOC_TYPE_FIELD);
+					String docType = (String) doc.get(Constants.DOC_TYPE_FIELD);
 					// TODO JK 12/16/2013
 					// ACL checking against the data source makes sense only when the back-end data source provides such service.
 					// When such service is not provided (e.g. with cloud folder), this filtering method is not supposed to be even invoked.
@@ -247,20 +248,20 @@ public abstract class AbstractLuceneReadSession extends AbstractLuceneSession im
 		};
 	}
 	
-	protected Hits searchWithPostFiltering(Long contextUserId, String baseAclQueryStr, String extendedAclQueryStr, int mode, Query query, Sort sort,
+	protected Hits searchWithPostFiltering(Long contextUserId, String baseAclQueryStr, String extendedAclQueryStr, int mode, Query query, List<String> fieldNames, Sort sort,
 			int offset, int size, PostFilterCallback callback, PostFilteringStats stats) throws LuceneException {
-		Hits hits = doSearchWithPostFiltering(contextUserId, baseAclQueryStr, extendedAclQueryStr, mode, query, sort, offset, adjustSearchSizeToFindOutIfThereIsMoreWhenPostFilteringInvolved(size), callback, stats);
+		Hits hits = doSearchWithPostFiltering(contextUserId, baseAclQueryStr, extendedAclQueryStr, mode, query, fieldNames, sort, offset, adjustSearchSizeToFindOutIfThereIsMoreWhenPostFilteringInvolved(size), callback, stats);
 		return setClientSideFields(hits, offset, size);
 	}
 	
-	private Hits doSearchWithPostFiltering(Long contextUserId, String baseAclQueryStr, String extendedAclQueryStr, int mode, Query query, Sort sort,
+	private Hits doSearchWithPostFiltering(Long contextUserId, String baseAclQueryStr, String extendedAclQueryStr, int mode, Query query, List<String> fieldNames, Sort sort,
 			int offset, int size, PostFilterCallback callback, PostFilteringStats stats) throws LuceneException {
 		if(size <= 0)
 			throw new IllegalArgumentException("Size must be positive number");
 		
 		if(Validator.isNull(baseAclQueryStr) && Validator.isNull(extendedAclQueryStr)) {
 			// The user is not restricted by access check in the first place. So there is no point doing post filtering either.
-			return invokeSearch(contextUserId, baseAclQueryStr, extendedAclQueryStr, mode, query, sort, offset, size);
+			return invokeSearch(contextUserId, baseAclQueryStr, extendedAclQueryStr, mode, query, fieldNames, sort, offset, size);
 		}
 		
 		int filterPredictedSuccessPercentage = SPropsUtil.getInt("search.post.filtering.predicted.success.rate.percentage", 80);
@@ -273,7 +274,7 @@ public abstract class AbstractLuceneReadSession extends AbstractLuceneSession im
 		else if(filterPredictedSuccessPercentage == 100) {
 			// We expect all items to pass post filtering. Then there is no point in applying post filtering.
 			// NOTE: This value is for development use only and unsupported for production system.
-			return invokeSearch(contextUserId, baseAclQueryStr, extendedAclQueryStr, mode, query, sort, offset, size);			
+			return invokeSearch(contextUserId, baseAclQueryStr, extendedAclQueryStr, mode, query, fieldNames, sort, offset, size);			
 		}
 		else if(filterPredictedSuccessPercentage < 0 || filterPredictedSuccessPercentage > 100) {
 			throw new ConfigurationException("The value of search.post.filtering.predicted.success.rate.percentage property must be between 0 and 100 non-inclusive"); 
@@ -282,7 +283,7 @@ public abstract class AbstractLuceneReadSession extends AbstractLuceneSession im
 		int filterSuccessCount = 0;
 		int filterFailureCount = 0;
 
-		SearchServiceIterator searchServiceIterator = new SearchServiceIterator(contextUserId, baseAclQueryStr, extendedAclQueryStr, mode, query, sort, offset, size, filterPredictedSuccessPercentage);
+		SearchServiceIterator searchServiceIterator = new SearchServiceIterator(contextUserId, baseAclQueryStr, extendedAclQueryStr, mode, query, fieldNames, sort, offset, size, filterPredictedSuccessPercentage);
 		
 		// First, skip as many effective matches as offset
 		int skipCount = 0;
@@ -304,7 +305,7 @@ public abstract class AbstractLuceneReadSession extends AbstractLuceneSession im
 			return new Hits(0);
 		}
 		
-		List<Document> result = new ArrayList<Document>();		
+		List<Map<String,Object>> result = new ArrayList<Map<String,Object>>();		
 
 		// Second, gather as many effective matches as size
 		while(result.size() < size && searchServiceIterator.hasNext()) {
@@ -340,7 +341,7 @@ public abstract class AbstractLuceneReadSession extends AbstractLuceneSession im
 		return hits;
 	}
 	
-	protected abstract Hits invokeSearch(Long contextUserId, String baseAclQueryStr, String extendedAclQueryStr, int mode, Query query, Sort sort, int offset, int size) throws LuceneException;
+	protected abstract Hits invokeSearch(Long contextUserId, String baseAclQueryStr, String extendedAclQueryStr, int mode, Query query, List<String> fieldNames, Sort sort, int offset, int size) throws LuceneException;
 	
 	class SearchServiceIterator implements Iterator<Hit> {
 
@@ -354,6 +355,7 @@ public abstract class AbstractLuceneReadSession extends AbstractLuceneSession im
 		private String extendedAclQueryStr;
 		private int mode;
 		private Query query;
+		private List<String> fieldNames;
 		private Sort sort;
 		private int offset;
 		private int size;
@@ -370,13 +372,14 @@ public abstract class AbstractLuceneReadSession extends AbstractLuceneSession im
 		private int serviceCallCount;
 		
 		
-		SearchServiceIterator(Long contextUserId, String baseAclQueryStr, String extendedAclQueryStr, int mode, Query query, Sort sort,
+		SearchServiceIterator(Long contextUserId, String baseAclQueryStr, String extendedAclQueryStr, int mode, Query query, List<String> fieldNames, Sort sort,
 				int offset, int size, int filterPredictedSuccessPercentage) {
 			this.contextUserId = contextUserId;
 			this.baseAclQueryStr = baseAclQueryStr;
 			this.extendedAclQueryStr = extendedAclQueryStr;
 			this.mode = mode;
 			this.query = query;
+			this.fieldNames = fieldNames;
 			this.sort = sort;
 			this.offset = offset;
 			this.size = size;
@@ -388,7 +391,7 @@ public abstract class AbstractLuceneReadSession extends AbstractLuceneSession im
 			if(state == BEFORE_START) { // Service call never made yet
 				serviceOffset = 0; // Always start from offset of zero because we can't jump into middle due to post filtering requirement
 				serviceSize = computeServiceSizeInitial(offset, size, filterPredictedSuccessPercentage); // Current batch size
-				serviceHits = invokeSearch(contextUserId, baseAclQueryStr, extendedAclQueryStr, mode, query, sort, serviceOffset, serviceSize);
+				serviceHits = invokeSearch(contextUserId, baseAclQueryStr, extendedAclQueryStr, mode, query, fieldNames, sort, serviceOffset, serviceSize);
 				serviceCallCount++;
 				totalHits = serviceHits.getTotalHits();
 				hitsPosition = -1;
@@ -417,7 +420,7 @@ public abstract class AbstractLuceneReadSession extends AbstractLuceneSession im
 						// According to the current hits object, the index contains more items. Let's get it.
 						serviceOffset += serviceSize;
 						serviceSize = computeServiceSizeInitial();
-						serviceHits = invokeSearch(contextUserId, baseAclQueryStr, extendedAclQueryStr, mode, query, sort, serviceOffset, serviceSize);
+						serviceHits = invokeSearch(contextUserId, baseAclQueryStr, extendedAclQueryStr, mode, query, fieldNames, sort, serviceOffset, serviceSize);
 						serviceCallCount++;
 						hitsPosition = -1;
 						if(serviceHits.length() > 0) {
@@ -485,10 +488,10 @@ public abstract class AbstractLuceneReadSession extends AbstractLuceneSession im
 	}
 	
 	static class Hit {
-		Document doc;
+		Map<String,Object> doc;
 		boolean noIntrinsicAclStoredButAccessibleThroughFilrGrantedAcl;
 		
-		Hit(Document doc, boolean noIntrinsicAclStoredButAccessibleThroughFilrGrantedAcl) {
+		Hit(Map<String,Object> doc, boolean noIntrinsicAclStoredButAccessibleThroughFilrGrantedAcl) {
 			this.doc = doc;
 			this.noIntrinsicAclStoredButAccessibleThroughFilrGrantedAcl = noIntrinsicAclStoredButAccessibleThroughFilrGrantedAcl;
 		}

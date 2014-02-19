@@ -797,14 +797,14 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
 	        	Map<String, Counter> unseenCounts = new HashMap();
 		        Date modifyDate = new Date();
 		        for (int i = 0; i < hits.length(); i++) {
-					String folderIdString = hits.doc(i).getFieldable(Constants.BINDER_ID_FIELD).stringValue();
-					String entryIdString = hits.doc(i).getFieldable(Constants.DOCID_FIELD).stringValue();
+					String folderIdString = (String) hits.doc(i).get(Constants.BINDER_ID_FIELD);
+					String entryIdString = (String) hits.doc(i).get(Constants.DOCID_FIELD);
 					Long entryId = null;
 					if (entryIdString != null && !entryIdString.equals("")) {
 						entryId = new Long(entryIdString);
 					}
 					try {
-						modifyDate = DateTools.stringToDate(hits.doc(i).getFieldable(Constants.LASTACTIVITY_FIELD).stringValue());
+						modifyDate = DateTools.stringToDate((String) hits.doc(i).get(Constants.LASTACTIVITY_FIELD));
 					} catch (ParseException pe) {} // no need to do anything
 					Counter cnt = unseenCounts.get(folderIdString);
 					if (cnt == null) {
@@ -850,7 +850,7 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
         
         try {
         	results = luceneSession.search(RequestContextHolder.getRequestContext().getUserId(),
-        			so.getBaseAclQueryStr(), so.getExtendedAclQueryStr(), Constants.SEARCH_MODE_NORMAL, so.getLuceneQuery(),so.getSortBy(),0,0);
+        			so.getBaseAclQueryStr(), so.getExtendedAclQueryStr(), Constants.SEARCH_MODE_NORMAL, so.getLuceneQuery(), null, so.getSortBy(),0,0);
         	//results = instreamSession.search(so.getQueryString(),so.getSortBy(),0,0);
         } catch (Exception e) {
         	logger.warn("Exception throw while searching in getRecentEntries: " + e.toString());

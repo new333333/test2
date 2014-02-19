@@ -34,6 +34,7 @@ package org.kablink.teaming.module.binder;
 
 import java.text.ParseException;
 import java.util.Date;
+import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -71,48 +72,48 @@ public class BinderIndexData {
 	private Date createdDate; // created date
 	private Date modifiedDate; // modified date
 	
-	public BinderIndexData(org.apache.lucene.document.Document doc)  throws IllegalArgumentException {
-		id = Long.valueOf(doc.get(Constants.DOCID_FIELD));
-		String entityTypeStr = doc.get(Constants.ENTITY_FIELD);
+	public BinderIndexData(Map<String,Object> doc)  throws IllegalArgumentException {
+		id = Long.valueOf((String)doc.get(Constants.DOCID_FIELD));
+		String entityTypeStr = (String)doc.get((String)Constants.ENTITY_FIELD);
 		entityType = entityTypeFromString(entityTypeStr);
-		title = doc.get(Constants.TITLE_FIELD);
-		parentId = Long.valueOf(doc.get(Constants.BINDERS_PARENT_ID_FIELD));
-		family = doc.get(Constants.FAMILY_FIELD);
-		path = doc.get(Constants.ENTITY_PATH);
-		String libraryStr = doc.get(Constants.IS_LIBRARY_FIELD);
+		title = (String)doc.get(Constants.TITLE_FIELD);
+		parentId = Long.valueOf((String)doc.get(Constants.BINDERS_PARENT_ID_FIELD));
+		family = (String)doc.get(Constants.FAMILY_FIELD);
+		path = (String)doc.get(Constants.ENTITY_PATH);
+		String libraryStr = (String)doc.get(Constants.IS_LIBRARY_FIELD);
 		if(String.valueOf(true).equals(libraryStr))
 			library = true;
 		else
 			library = false;
-		String mirroredStr = doc.get(Constants.IS_MIRRORED_FIELD);
+		String mirroredStr = (String)doc.get(Constants.IS_MIRRORED_FIELD);
 		if(String.valueOf(true).equals(mirroredStr))
 			mirrored = true;
 		else
 			mirrored = false;
-		String homeDirStr = doc.get(Constants.IS_HOME_DIR_FIELD);
+		String homeDirStr = (String)doc.get(Constants.IS_HOME_DIR_FIELD);
 		if(String.valueOf(true).equals(homeDirStr))
 			homeDir = true;
 		else
 			homeDir = false;
-		String myFilesDirStr = doc.get(Constants.IS_MYFILES_DIR_FIELD);
+		String myFilesDirStr = (String)doc.get(Constants.IS_MYFILES_DIR_FIELD);
 		if(String.valueOf(true).equals(myFilesDirStr))
 			myFilesDir = true;
 		else
 			myFilesDir = false;
-		ownerId = Long.valueOf(doc.get(Constants.OWNERID_FIELD));
-		ownerName = doc.get(Constants.OWNER_NAME_FIELD);
-		creatorId = Long.valueOf(doc.get(Constants.CREATORID_FIELD));
-		creatorName = doc.get(Constants.CREATOR_NAME_FIELD);
-		modifierId = Long.valueOf(doc.get(Constants.MODIFICATIONID_FIELD));
-		modifierName = doc.get(Constants.MODIFICATION_NAME_FIELD);
-		String dateStr = doc.get(Constants.CREATION_DATE_FIELD);
+		ownerId = Long.valueOf((String)doc.get(Constants.OWNERID_FIELD));
+		ownerName = (String)doc.get(Constants.OWNER_NAME_FIELD);
+		creatorId = Long.valueOf((String)doc.get(Constants.CREATORID_FIELD));
+		creatorName = (String)doc.get(Constants.CREATOR_NAME_FIELD);
+		modifierId = Long.valueOf((String)doc.get(Constants.MODIFICATIONID_FIELD));
+		modifierName = (String)doc.get(Constants.MODIFICATION_NAME_FIELD);
+		String dateStr = (String)doc.get(Constants.CREATION_DATE_FIELD);
 		try {
 			createdDate =  DateTools.stringToDate(dateStr);
 		} catch (ParseException e) {
 			logger.warn("Error parsing creation date [" + dateStr 
 					+ "] for binder [" + id + "]. Setting it to current date");
 		}
-		dateStr = doc.get(Constants.MODIFICATION_DATE_FIELD);
+		dateStr = (String)doc.get(Constants.MODIFICATION_DATE_FIELD);
 		try {
 			modifiedDate =  DateTools.stringToDate(dateStr);
 		} catch (ParseException e) {

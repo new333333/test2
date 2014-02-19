@@ -30,8 +30,9 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.search;
+package org.kablink.teaming.lucene.util;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
@@ -40,7 +41,10 @@ import org.kablink.util.StringPool;
 import org.kablink.util.StringUtil;
 
 
-public class SearchFieldResult {
+public class SearchFieldResult implements Serializable {
+
+	private static final long serialVersionUID = 1L;
+	
 	private Set<String> values=new HashSet<String>();
     private static String [] sample = new String[0];
 

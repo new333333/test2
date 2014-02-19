@@ -646,7 +646,7 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 			releaseIndexSearcherHandle(indexSearcherHandle);
 		}
 		
-		return searchInternal(contextUserId, baseAclQueryStr, extendedAclQueryStr, mode, query, sort, offset, size, implicitlyAccessibleSubFoldersFilter, false);
+		return searchInternal(contextUserId, baseAclQueryStr, extendedAclQueryStr, mode, query, null, sort, offset, size, implicitlyAccessibleSubFoldersFilter, false);
 	}
 
 	/*
@@ -706,7 +706,7 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 			}
 		   
 			org.kablink.teaming.lucene.Hits tempHits = org.kablink.teaming.lucene.Hits
-					.transfer(indexSearcherHandle.getIndexSearcher(), topDocs, offset, size, null, null, false);
+					.transfer(indexSearcherHandle.getIndexSearcher(), topDocs, offset, size, null, null, null, false);
 
 			end(startTime, "searchFolderOneLevel", contextUserId, aclQueryStr, titles, query, sort, offset, size, tempHits.length());
 			
@@ -730,14 +730,14 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 			return offset + requestedMaxSize;
 	}
 	
-	public org.kablink.teaming.lucene.Hits search(Long contextUserId, String baseAclQueryStr, String extendedAclQueryStr, int mode, Query query, Sort sort,
+	public org.kablink.teaming.lucene.Hits search(Long contextUserId, String baseAclQueryStr, String extendedAclQueryStr, int mode, Query query, List<String> fieldNames, Sort sort,
 			int offset, int size) throws LuceneException {
-		return searchInternal(contextUserId, baseAclQueryStr, extendedAclQueryStr, mode, query, sort, offset, size, null, true);
+		return searchInternal(contextUserId, baseAclQueryStr, extendedAclQueryStr, mode, query, fieldNames, sort, offset, size, null, true);
 	}
 
-	private org.kablink.teaming.lucene.Hits searchInternal(Long contextUserId, String baseAclQueryStr, String extendedAclQueryStr, int mode, Query query, Sort sort,
+	private org.kablink.teaming.lucene.Hits searchInternal(Long contextUserId, String baseAclQueryStr, String extendedAclQueryStr, int mode, Query query, List<String> fieldNames, Sort sort,
 			int offset, int size, Filter alternateAclFilter, boolean totalHitsApproximate) throws LuceneException {
-		return doSearchInternal(contextUserId, baseAclQueryStr, extendedAclQueryStr, mode, query, sort, offset, size, alternateAclFilter, totalHitsApproximate);
+		return doSearchInternal(contextUserId, baseAclQueryStr, extendedAclQueryStr, mode, query, fieldNames, sort, offset, size, alternateAclFilter, totalHitsApproximate);
 	}
 	
 	private String getAclQueryStr(String baseAclQueryStr, String extendedAclQueryStr) {
@@ -756,7 +756,7 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 		return aclQueryStr;
 	}
 	
-	private org.kablink.teaming.lucene.Hits doSearchInternal(Long contextUserId, String baseAclQueryStr, String extendedAclQueryStr, int mode, Query query, Sort sort,
+	private org.kablink.teaming.lucene.Hits doSearchInternal(Long contextUserId, String baseAclQueryStr, String extendedAclQueryStr, int mode, Query query, List<String> fieldNames, Sort sort,
 			int offset, int size, Filter alternateAclFilter, boolean totalHitsApproximate) throws LuceneException {
 		if(size == 0)
 			throw new IllegalArgumentException("Size must be specified");
@@ -877,7 +877,11 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 	        /// END: Debug			
 				        
 			org.kablink.teaming.lucene.Hits tempHits = org.kablink.teaming.lucene.Hits
-					.transfer(indexSearcherHandle.getIndexSearcher(), topDocs, offset, size, 
+					.transfer(indexSearcherHandle.getIndexSearcher(), 
+							topDocs, 
+							offset, 
+							size, 
+							fieldNames,
 							(extendeAclQueryFilter == null)? null: extendeAclQueryFilter.getNoIntrinsicAclStoredButAccessibleThroughExtendedAcl_entryIds(),
 							(aclInheritingAccessibleEntriesFilter == null)? null : aclInheritingAccessibleEntriesFilter.getNoIntrinsicAclStoredButAccessibleThroughExtendedAclOnParentFolder_entryIds(),
 							totalHitsApproximate);
