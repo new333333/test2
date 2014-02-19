@@ -55,6 +55,7 @@ import org.kablink.teaming.remoting.rest.v1.util.LinkUriUtil;
 import org.kablink.teaming.remoting.rest.v1.util.ResourceUtil;
 import org.kablink.teaming.remoting.rest.v1.util.SearchResultBuilderUtil;
 import org.kablink.teaming.rest.v1.model.BinderBrief;
+import org.kablink.teaming.rest.v1.model.BinderChanges;
 import org.kablink.teaming.rest.v1.model.BinderTree;
 import org.kablink.teaming.rest.v1.model.DefinableEntity;
 import org.kablink.teaming.rest.v1.model.DefinableEntityBrief;
@@ -360,6 +361,18 @@ public class SelfResource extends AbstractFileResource {
         folder.setParentBinder(new ParentBinder(ObjectKeys.MY_FILES_ID, "/self/my_files"));
         return folder;
    	}
+
+    @GET
+    @Path ("/my_files/library_changes")
+    public BinderChanges getMyFilesChanges(@QueryParam("since") String since,
+                                           @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr,
+                                           @QueryParam ("count") @DefaultValue("500") Integer maxCount) {
+        if (!SearchUtils.userCanAccessMyFiles(this, getLoggedInUser())) {
+            throw new AccessControlException("Personal storage is not allowed.", null);
+        }
+        org.kablink.teaming.domain.Binder parent = getMyFilesFolderParent();
+        return getBinderChanges(new Long [] {parent.getId()}, since, descriptionFormatStr, maxCount, "/my_files/library_changes");
+    }
 
     @GET
     @Path("/my_files/library_tree")

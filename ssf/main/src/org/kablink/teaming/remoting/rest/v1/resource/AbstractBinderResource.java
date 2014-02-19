@@ -70,7 +70,6 @@ import java.util.Locale;
  */
 abstract public class AbstractBinderResource extends AbstractDefinableEntityResource {
 
-    protected static DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.US);
     abstract protected String getBasePath();
     
     /**
@@ -223,37 +222,7 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
                                               @QueryParam("since") String since,
                                               @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr,
                                               @QueryParam ("count") @DefaultValue("500") Integer maxCount) {
-        if (since==null) {
-            throw new BadRequestException(ApiErrorCode.BAD_INPUT, "Missing 'since' query parameter");
-        }
-        try {
-            Date sinceDate = dateFormat.parse(since);
-            org.kablink.teaming.domain.BinderChanges binderChanges = getBinderModule().searchForChanges(id, sinceDate, maxCount);
-            List<BaseBinderChange> changes = new ArrayList<BaseBinderChange>();
-            for (org.kablink.teaming.domain.BinderChange change : binderChanges.getChanges()) {
-                DefinableEntity definableEntity = null;
-                try {
-                    if (change.getAction() != BinderChange.Action.delete) {
-                        definableEntity = findDefinableEntity(change.getEntityId());
-                    }
-                } catch (Exception e) {
-                    logger.warn("Unable to look up entity: " + change.getEntityId(), e);
-                }
-                changes.add(ResourceUtil.buildBinderChange(change, definableEntity, false, toDomainFormat(descriptionFormatStr)));
-            }
-            BinderChanges results = ResourceUtil.buildBinderChanges(binderChanges, changes);
-            results.setLastChange(results.getLastModified());
-            if (results.getTotal()>results.getCount()) {
-                HashMap<String, Object> nextParams = new HashMap<String, Object>();
-                nextParams.put("since", dateFormat.format(results.getLastChange()));
-                nextParams.put("description_format", descriptionFormatStr);
-                nextParams.put("count", maxCount.toString());
-                results.setNext(getBasePath() + id + "/library_changes", nextParams);
-            }
-            return results;
-        } catch (ParseException e) {
-            throw new BadRequestException(ApiErrorCode.BAD_INPUT, "Invalid date in the 'since' query parameter");
-        }
+        return getBinderChanges(new Long [] {id}, since, descriptionFormatStr, maxCount, getBasePath() + id + "/library_changes");
     }
 
     @GET
