@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -77,6 +77,7 @@ import com.google.gwt.user.client.ui.TextBox;
  * @author drfoster@novell.com
  */
 public class CopyPublicLinkDlg extends DlgBox {
+	private boolean						m_createImmediate;	// true -> Immediately create the public links.  false -> The user needs to press a button to do so.
 	private GwtTeamingFilrImageBundle	m_filrImages;		// Access to Filr's images.
 	private GwtTeamingImageBundle		m_images;			// Access to Vibe's images.
 	private GwtTeamingMessages			m_messages;			// Access to Vibe's messages.
@@ -192,9 +193,6 @@ public class CopyPublicLinkDlg extends DlgBox {
 		VibeFlowPanel hintPanel = new VibeFlowPanel();
 		hintPanel.addStyleName("vibe-copyPublicLinkDlg-hintPanel");
 		mainPanel.add(hintPanel);
-//		Label hintStart = new Label(m_messages.copyPublicLink(m_product));
-//		hintStart.addStyleName("vibe-copyPublicLinkDlg-hintStart");
-//		hintPanel.add(hintStart);
 		m_hintTail = new Label();
 		m_hintTail.addStyleName("vibe-copyPublicLinkDlg-hintTail");
 		hintPanel.add(m_hintTail);
@@ -529,11 +527,11 @@ public class CopyPublicLinkDlg extends DlgBox {
 	 * Asynchronously runs the given instance of the copy public link
 	 * dialog.
 	 */
-	private static void runDlgAsync(final CopyPublicLinkDlg cplDlg, final String caption, final List<EntityId> entityIds) {
+	private static void runDlgAsync(final CopyPublicLinkDlg cplDlg, final String caption, final List<EntityId> entityIds, final boolean createImmediate) {
 		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
-				cplDlg.runDlgNow(caption, entityIds);
+				cplDlg.runDlgNow(caption, entityIds, createImmediate);
 			}
 		});
 	}
@@ -542,10 +540,11 @@ public class CopyPublicLinkDlg extends DlgBox {
 	 * Synchronously runs the given instance of the copy public link
 	 * dialog.
 	 */
-	private void runDlgNow(String caption, List<EntityId> entityIds) {
+	private void runDlgNow(String caption, List<EntityId> entityIds, boolean createImmediate) {
 		// Store the parameters...
 		setCaption(caption);
-		m_entityIds = entityIds;
+		m_entityIds       = entityIds;
+		m_createImmediate = createImmediate;
 
 		// Did we get any entities to run against?
 		int c = (GwtClientHelper.hasItems(m_entityIds) ? m_entityIds.size() : 0);
@@ -576,23 +575,32 @@ public class CopyPublicLinkDlg extends DlgBox {
 	 * Shows the widgets for the user to create the links.
 	 */
 	private void showCreateLinksButton() {
-		// Clear the content of the links panel... 
+		// Clear the content of the links panel. 
 		m_linksPanel.clear();
 		m_linksPanel.setWidth("100%");
 
-		// ...and add the create links push button.
-		Button createLinksBtn = new Button(m_messages.copyPublicLink_Button(m_product));
-		createLinksBtn.addClickHandler(new ClickHandler() {
-			@Override
-			public void onClick(ClickEvent event) {
-				createLinksAsync();
-			}
-		});
-		createLinksBtn.addStyleName("vibe-copyPublicLinkDlg-createButton");
-		m_linksPanel.add(createLinksBtn);
-		m_linksPanel.setCellHorizontalAlignment(createLinksBtn, HasHorizontalAlignment.ALIGN_CENTER);
-		m_linksPanel.setCellVerticalAlignment(  createLinksBtn, HasVerticalAlignment.ALIGN_MIDDLE  );
-		m_linksPanel.setCellWidth(              createLinksBtn, "100%"                             );
+		// If we're supposed to immediately create the public links...
+		if (m_createImmediate) {
+			// ...simply act like the create links push button was
+			// ...pressed...
+			createLinksAsync();
+		}
+		
+		else {
+			// ...otherwise, add the create links push button.
+			Button createLinksBtn = new Button(m_messages.copyPublicLink_Button(m_product));
+			createLinksBtn.addClickHandler(new ClickHandler() {
+				@Override
+				public void onClick(ClickEvent event) {
+					createLinksAsync();
+				}
+			});
+			createLinksBtn.addStyleName("vibe-copyPublicLinkDlg-createButton");
+			m_linksPanel.add(createLinksBtn);
+			m_linksPanel.setCellHorizontalAlignment(createLinksBtn, HasHorizontalAlignment.ALIGN_CENTER);
+			m_linksPanel.setCellVerticalAlignment(  createLinksBtn, HasVerticalAlignment.ALIGN_MIDDLE  );
+			m_linksPanel.setCellWidth(              createLinksBtn, "100%"                             );
+		}
 	}
 	
 	/*
@@ -647,7 +655,8 @@ public class CopyPublicLinkDlg extends DlgBox {
 			// initAndShow parameters,
 			final CopyPublicLinkDlg	cplDlg,
 			final String			caption,
-			final List<EntityId>	entityIds) {
+			final List<EntityId>	entityIds,
+			final boolean			createImmediate) {
 		GWT.runAsync(CopyPublicLinkDlg.class, new RunAsyncCallback() {
 			@Override
 			public void onFailure(Throwable reason) {
@@ -670,7 +679,7 @@ public class CopyPublicLinkDlg extends DlgBox {
 					// No, it's not a request to create a dialog!  It
 					// must be a request to run an existing one.  Run
 					// it.
-					runDlgAsync(cplDlg, caption, entityIds);
+					runDlgAsync(cplDlg, caption, entityIds, createImmediate);
 				}
 			}
 		});
@@ -683,7 +692,7 @@ public class CopyPublicLinkDlg extends DlgBox {
 	 * @param cplDlgClient
 	 */
 	public static void createAsync(CopyPublicLinkDlgClient cplDlgClient) {
-		doAsyncOperation(cplDlgClient, null, null, null);
+		doAsyncOperation(cplDlgClient, null, null, null, false);
 	}
 	
 	/**
@@ -692,8 +701,14 @@ public class CopyPublicLinkDlg extends DlgBox {
 	 * @param cplDlg
 	 * @param caption
 	 * @param entityIds
+	 * @param createImmediate
 	 */
+	public static void initAndShow(CopyPublicLinkDlg cplDlg, String caption, List<EntityId> entityIds, boolean createImmediate) {
+		doAsyncOperation(null, cplDlg, caption, entityIds, createImmediate);
+	}
+	
 	public static void initAndShow(CopyPublicLinkDlg cplDlg, String caption, List<EntityId> entityIds) {
-		doAsyncOperation(null, cplDlg, caption, entityIds);
+		// Always use the initial form of the method.
+		initAndShow(cplDlg, caption, entityIds, false);	// false -> Don't immediately create the public links.
 	}
 }

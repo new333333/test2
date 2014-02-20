@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -74,9 +74,10 @@ import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.UIObject;
 
-
 /**
- * A cell used to render a share item
+ * A cell used to render a share item.
+ * 
+ * @author jwootton
  */
 public class ShareItemCell extends AbstractCell<GwtShareItem>
 {
@@ -248,7 +249,7 @@ public class ShareItemCell extends AbstractCell<GwtShareItem>
 											String.valueOf( 1 ) );
 			entityIds = new ArrayList<EntityId>();
 			entityIds.add( shareItem.getEntityId() );
-			CopyPublicLinkDlg.initAndShow( m_copyPublicLinkDlg, caption, entityIds );
+			CopyPublicLinkDlg.initAndShow( m_copyPublicLinkDlg, caption, entityIds, true );	// true -> Immediately query for the public links.  false -> The user needs to press a button to do so.
 		}
 	}
 
