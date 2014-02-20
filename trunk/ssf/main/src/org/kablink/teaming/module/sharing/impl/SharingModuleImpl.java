@@ -666,12 +666,11 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 			accessControlManager = ((AccessControlManager) SpringContextUtil.getBean("accessControlManager"));
 		}
 		
-//!		...this needs to be implemented...
-		// Need to expand the check to include public link sharing.
 		return (
 			accessControlManager.testOperation(zoneConfig, WorkAreaOperation.ENABLE_SHARING_EXTERNAL) ||
 			accessControlManager.testOperation(zoneConfig, WorkAreaOperation.ENABLE_SHARING_INTERNAL) ||
-			accessControlManager.testOperation(zoneConfig, WorkAreaOperation.ENABLE_SHARING_PUBLIC));
+			accessControlManager.testOperation(zoneConfig, WorkAreaOperation.ENABLE_SHARING_PUBLIC)  ||
+			accessControlManager.testOperation(zoneConfig, WorkAreaOperation.ENABLE_LINK_SHARING));
 	}
 
     //NO transaction

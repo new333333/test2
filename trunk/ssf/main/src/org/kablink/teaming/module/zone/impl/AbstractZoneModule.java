@@ -2095,7 +2095,29 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 			getFunctionManager().addFunction(function);
 			setGlobalWorkareaFunctionMembership(zoneConfig, function, new HashSet());
 		}
-		
+
+		if (!functionInternalIds.containsKey(ObjectKeys.FUNCTION_ENABLE_LINK_SHARING_INTERNALID)) {
+			if (functionNames.containsKey(ObjectKeys.ROLE_ENABLE_LINK_SHARING)) {
+				function = (Function)functionNames.get(ObjectKeys.ROLE_ENABLE_LINK_SHARING);
+			} else {
+				function = new Function();
+			}
+			function.setZoneId(zoneConfig.getZoneId());
+			function.setName(ObjectKeys.ROLE_ENABLE_LINK_SHARING);
+			function.setScope(ObjectKeys.ROLE_TYPE_ZONE);
+			function.setInternalId(ObjectKeys.FUNCTION_ENABLE_LINK_SHARING_INTERNALID);
+			function.addOperation(WorkAreaOperation.ENABLE_LINK_SHARING);
+			function.setZoneWide(true);
+			//generate functionId
+			if (functionNames.containsKey(ObjectKeys.ROLE_ENABLE_LINK_SHARING)) {
+				getFunctionManager().updateFunction(function);
+			} else {
+				getFunctionManager().addFunction(function);
+			}
+			setGlobalWorkareaFunctionMembership(zoneConfig, function, new HashSet());
+		}
+
+
 		if (!functionInternalIds.containsKey(ObjectKeys.FUNCTION_VIEW_BINDER_TITLE_INTERNALID)) {
 			addViewBinderTitleRole(zoneConfig.getZoneId());
 		}
