@@ -140,4 +140,10 @@ public class NullResourceDriverManager implements ResourceDriverManager {
 			throws AclItemPrincipalMappingException {
 		return null;
 	}
+
+	@Override
+	public ResourceDriver createResourceDriverWithoutInitialization(
+			ResourceDriverConfig config) {
+		return null;
+	}
 }
