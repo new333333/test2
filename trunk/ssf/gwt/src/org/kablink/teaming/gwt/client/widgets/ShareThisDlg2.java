@@ -1911,10 +1911,14 @@ public class ShareThisDlg2 extends DlgBox
 		final String emailAddress;
 		AsyncCallback<VibeRpcResponse> findUserCallback;
 
+		// Hide the search-results widget.
+		m_findCtrl.hideSearchResults();
+
 		// Is sharing with an external user ok to do?
 		if ( m_sharingInfo.getCanShareWithExternalUsers() == false )
 		{
 			// No, bail.
+			Window.alert( GwtTeaming.getMessages().shareDlg_cantShareWithExternalUser() );
 			return;
 		}
 		
@@ -1922,9 +1926,6 @@ public class ShareThisDlg2 extends DlgBox
 
 		// Clear what the user has typed.
 		m_findCtrl.clearText();
-
-		// Hide the search-results widget.
-		m_findCtrl.hideSearchResults();
 
 		if ( emailAddress != null && emailAddress.length() > 0 )
 		{
