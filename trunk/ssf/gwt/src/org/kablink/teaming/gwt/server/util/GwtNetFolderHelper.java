@@ -1631,18 +1631,17 @@ public class GwtNetFolderHelper
    		rdConfig.setPassword( proxyPwd );
 		
    		rdManager = ResourceDriverManagerUtil.getResourceDriverManager();
-   		resourceDriver = rdManager.createResourceDriver( rdConfig );
+		// Do not call initialize() method on the driver when we create a temporary one
+		// just for the purpose of testing a connection. Specifically, if we call initialize()
+		// on a FAMT resource driver, it may trigger building a rights cache which can take
+		// significant time and system resources which we do not need for this test.
+   		resourceDriver = rdManager.createResourceDriverWithoutInitialization( rdConfig );
    		if ( resourceDriver != null && resourceDriver instanceof AclResourceDriver )
    		{
    			AclResourceDriver aclDriver;
 			ConnectionTestStatus status;
    			
    			aclDriver = (AclResourceDriver) resourceDriver;
-   			// Do not call initialize() method on the driver when we create a temporary one
-   			// just for the purpose of testing a connection. Specifically, if we call initialize()
-   			// on a FAMT resource driver, it may trigger building a rights cache which can take
-   			// significant time and system resources which we do not need for this test.
-   			//aclDriver.initialize();
    			status = aclDriver.testConnection(
 		   								proxyName,
 		   								proxyPwd,
