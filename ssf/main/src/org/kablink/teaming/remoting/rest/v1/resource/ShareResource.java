@@ -731,6 +731,37 @@ public class ShareResource extends AbstractResource {
     }
 
     @GET
+    @Path("/public/library_files")
+    public Response getPublicSharesLibraryFiles(@QueryParam("hidden") @DefaultValue("false") boolean showHidden,
+                                                                 @QueryParam("unhidden") @DefaultValue("true") boolean showUnhidden,
+                                                                 @QueryParam("file_name") String fileName,
+                                                                 @QueryParam("recursive") @DefaultValue("false") boolean recursive,
+                                                                 @QueryParam("parent_binder_paths") @DefaultValue("false") boolean includeParentPaths,
+                                                                 @Context HttpServletRequest request) {
+        if (!getEffectivePublicCollectionSetting(getLoggedInUser())) {
+            throw new AccessControlException("Access to the public collection is not allowed.", null);
+        }
+        Date lastModified = getPublicSharesLibraryModifiedDate(false);
+        Date ifModifiedSince = getIfModifiedSinceDate(request);
+        if (ifModifiedSince!=null && !ifModifiedSince.before(lastModified)) {
+            throw new NotModifiedException();
+        }
+        SearchResultList<FileProperties> results = new SearchResultList<FileProperties>();
+        results.appendAll(getPublicFiles(true, showHidden, showUnhidden));
+        if (recursive) {
+            results.appendAll(getSubFiles(getPublicBinders(true, false, showHidden, showUnhidden), fileName, false));
+        }
+        if (includeParentPaths) {
+            populateParentBinderPaths(results);
+        }
+        if (lastModified!=null) {
+            return Response.ok(results).lastModified(lastModified).build();
+        } else {
+            return Response.ok(results).build();
+        }
+    }
+
+    @GET
     @Path("/public/library_entities")
     public SearchResultList<SearchableObject> getPublicSharesLibraryEntities(@QueryParam("recursive") @DefaultValue("false") boolean recursive,
                                                                              @QueryParam("binders") @DefaultValue("true") boolean includeBinders,
