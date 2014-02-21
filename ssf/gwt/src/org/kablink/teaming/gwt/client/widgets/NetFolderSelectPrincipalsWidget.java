@@ -131,6 +131,7 @@ public class NetFolderSelectPrincipalsWidget extends SelectPrincipalsWidget
 		GwtRole shareExternalRole;
 		GwtRole shareInternalRole;
 		GwtRole sharePublicRole;
+		GwtRole sharePublicLinkRole;
 		GwtRole reshareRole;
 		ArrayList<GwtRole> roles;
 		ArrayList<GwtPrincipal> principals;
@@ -158,6 +159,10 @@ public class NetFolderSelectPrincipalsWidget extends SelectPrincipalsWidget
 			sharePublicRole = new GwtRole();
 			sharePublicRole.setType( GwtRoleType.SharePublic );
 			roles.add( sharePublicRole );
+			
+			sharePublicLinkRole = new GwtRole();
+			sharePublicLinkRole.setType( GwtRoleType.SharePublicLinks );
+			roles.add( sharePublicLinkRole );
 		}
 		
 		// Get the list of principals
@@ -189,6 +194,9 @@ public class NetFolderSelectPrincipalsWidget extends SelectPrincipalsWidget
 					
 					if ( rightsInfo.canSharePublic() )
 						sharePublicRole.addMember( nextPrincipal );
+					
+					if ( rightsInfo.canSharePublicLink() )
+						sharePublicLinkRole.addMember( nextPrincipal );
 				}
 			}
 		}
@@ -295,6 +303,10 @@ public class NetFolderSelectPrincipalsWidget extends SelectPrincipalsWidget
 							
 						case SharePublic:
 							rightsInfo.setCanSharePublic( true );
+							break;
+						
+						case SharePublicLinks:
+							rightsInfo.setCanSharePublicLink( true );
 							break;
 							
 						case AllowAccess:

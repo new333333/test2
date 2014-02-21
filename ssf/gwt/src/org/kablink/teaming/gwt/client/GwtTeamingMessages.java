@@ -2669,6 +2669,7 @@ public interface GwtTeamingMessages extends Messages
 	String editNetFolderRightsDlg_ReShareLabel();
 	String editNetFolderRightsDlg_ShareInternalLabel();
 	String editNetFolderRightsDlg_ShareExternalLabel();
+	String editNetFolderRightsDlg_ShareLinkLabel();
 	String editNetFolderRightsDlg_SharePublicLabel();
 
 	// Strings used for the empty collection view widget.
