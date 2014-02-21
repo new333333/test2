@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -171,6 +171,8 @@ public interface ObjectKeys {
 	public static final String FUNCTION_ALLOW_SHARING_EXTERNAL_INTERNALID="402883b90d0de1f3010d0df5582b0036";
 	//reserved id for _allowSharingPublic pseudo role
 	public static final String FUNCTION_ALLOW_SHARING_PUBLIC_INTERNALID="402883b90d0de1f3010d0df5582b0037";
+	//reserved id for _allowSharingPublicLinks pseudo role
+	public static final String FUNCTION_ALLOW_SHARING_PUBLIC_LINKS_INTERNALID="402883b90d0de1f3010d0df5582b0046";
 	//reserved id for _allowSharingForward pseudo role
 	public static final String FUNCTION_ALLOW_SHARING_FORWARD_INTERNALID="402883b90d0de1f3010d0df5582b0039";
 	//reserved id for _allowAccessNetFolder pseudo role
@@ -306,6 +308,7 @@ public interface ObjectKeys {
     public static final String ROLE_ALLOW_SHARING_INTERNAL="__role.allowSharing";
     public static final String ROLE_ALLOW_SHARING_EXTERNAL="__role.allowSharingExternal";
     public static final String ROLE_ALLOW_SHARING_PUBLIC="__role.allowSharingPublic";
+    public static final String ROLE_ALLOW_SHARING_PUBLIC_LINKS="__role.allowSharingPublicLinks";
     public static final String ROLE_ALLOW_SHARING_FORWARD="__role.allowSharingForward";
     public static final String ROLE_ALLOW_ACCESS_NET_FOLDER="__role.allowAccessNetFolder";
     public static final String ROLE_ENABLE_LINK_SHARING="__role.enableLinkSharing";

@@ -39,6 +39,10 @@
     <property name="members">-1</property>
   </workAreaFunctionMembership>
   <workAreaFunctionMembership>
+    <property name="functionName">__role.allowSharingPublicLinks</property>
+    <property name="members">-1</property>
+  </workAreaFunctionMembership>
+  <workAreaFunctionMembership>
     <property name="functionName">__role.visitor</property>
     <property name="members">-1 -2</property>
   </workAreaFunctionMembership>
