@@ -182,6 +182,9 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 			} else if (shareItem.getRecipientType().equals(RecipientType.team)) {
 				//Sharing with team not allowed yet. Teams need to be identified as internal, external, or public
 				throw new AccessControlException();
+			} else if (shareItem.getRecipientType().equals(RecipientType.publicLink)) {
+				//Check that the current user is enabled for this at the zone level
+				accessControlManager.checkOperation(zoneConfig, WorkAreaOperation.ENABLE_LINK_SHARING);
 			}
 			
 			//Check the setting of the Share Forward right
