@@ -64,6 +64,7 @@ public class GwtRole
 		EnableSharePublic,
 		EnableShareWithAllInternal,
 		EnableShareWithAllExternal,
+		EnableShareLink,
 		AllowAccess,
 		
 		Unknown

@@ -4905,6 +4905,10 @@ public class GwtServerHelper {
 		case EnableShareWithAllInternal:
 			fnInternalId = ObjectKeys.FUNCTION_ENABLE_SHARING_ALL_INTERNAL_INTERNALID;
 			break;
+			
+		case EnableShareLink:
+			fnInternalId = ObjectKeys.FUNCTION_ENABLE_LINK_SHARING_INTERNALID;
+			break;
 		}
 		
 		// Did we find the function's internal id?

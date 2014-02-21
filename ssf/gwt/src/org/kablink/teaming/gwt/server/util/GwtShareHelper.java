@@ -1878,6 +1878,9 @@ public class GwtShareHelper
 		role = new GwtRole();
 		role.setType( GwtRoleType.EnableShareWithAllInternal );
 		listOfRoles.add( role );
+		role = new GwtRole();
+		role.setType( GwtRoleType.EnableShareLink );
+		listOfRoles.add( role );
 		
 		shareSettings.setRoles( listOfRoles );
 		

@@ -2653,6 +2653,7 @@ public interface GwtTeamingMessages extends Messages
 	String internalRights();
 	String noRights();
 	String publicRights();
+	String shareLinkRights();
 	String shareWithAllExternalRights();
 	String shareWithAllInternalRights();
 
@@ -2935,6 +2936,7 @@ public interface GwtTeamingMessages extends Messages
 	String editUserZoneShareRightsDlg_ReShareLabel();
 	String editUserZoneShareRightsDlg_ShareExternalLabel();
 	String editUserZoneShareRightsDlg_ShareInternalLabel();
+	String editUserZoneShareRightsDlg_ShareLinkLabel();
 	String editUserZoneShareRightsDlg_SharePublicLabel();
 	String editUserZoneShareRightsDlg_ShareWithAllExternalUsersLabel();
 	String editUserZoneShareRightsDlg_ShareWithAllInternalUsersLabel();
