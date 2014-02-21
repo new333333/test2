@@ -965,6 +965,9 @@ public class GwtNetFolderHelper
 		role = new GwtRole();
 		role.setType( GwtRoleType.SharePublic );
 		listOfRoles.add( role );
+		role = new GwtRole();
+		role.setType( GwtRoleType.SharePublicLinks );
+		listOfRoles.add( role );
 		
 		adminModule = ami.getAdminModule();
 		
