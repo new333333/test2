@@ -515,6 +515,22 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 	
     
     /**
+     * Returns true if the current user can share public links of the
+     * given DefinableEntity and false otherwise.
+     * 
+     * @param de
+     * 
+     * @return
+     */
+	@Override
+	public boolean testAddShareEntityPublicLinks(DefinableEntity de) {
+        return _testAddShareEntity(de, new ShareOp [] {
+                new ShareOp(WorkAreaOperation.ENABLE_LINK_SHARING, FolderOperation.allowSharingPublicLinks, BinderOperation.allowSharingPublicLinks)
+        });
+	}
+	
+    
+    /**
      * Returns true if the current user can share forward the given
      * DefinableEntity and false otherwise.
      * 
@@ -624,27 +640,6 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
         return reply;
     }
     
-    /**
-     * Returns true the the logged in user can create a public link on
-     * the given entity and false otherwise.
-     * 
-     * @return
-     */
-    @Override
-	public boolean testPublicLinkShareEntity(DefinableEntity de) {
-    	// If we weren't given an entity or the entity is not a folder
-    	// entry...
-    	if ((null == de) || (!(de instanceof FolderEntry))) {
-    		// ...we can't share a public link for it.
-    		return false;
-    	}
-    	
-//!		...this needs to be implemented...
-		// Need to check public link sharing rights once it's
-    	// implemented.
-		return testAddShareEntityExternal(de);
-	}
-
     //Routine to validate the rights being given to guest in a share
 	public boolean validateGuestAccessRights(ShareItem shareItem) {
 		List<WorkAreaOperation> rights = shareItem.getRightSet().getRights();
@@ -672,8 +667,19 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 		return (
 			accessControlManager.testOperation(zoneConfig, WorkAreaOperation.ENABLE_SHARING_EXTERNAL) ||
 			accessControlManager.testOperation(zoneConfig, WorkAreaOperation.ENABLE_SHARING_INTERNAL) ||
-			accessControlManager.testOperation(zoneConfig, WorkAreaOperation.ENABLE_SHARING_PUBLIC)  ||
-			accessControlManager.testOperation(zoneConfig, WorkAreaOperation.ENABLE_LINK_SHARING));
+			accessControlManager.testOperation(zoneConfig, WorkAreaOperation.ENABLE_SHARING_PUBLIC));
+	}
+
+	@Override
+	public boolean isSharingPublicLinksEnabled() {
+    	Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
+    	ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(zoneId);
+		AccessControlManager accessControlManager = getAccessControlManager();
+		if (accessControlManager == null) {
+			accessControlManager = ((AccessControlManager) SpringContextUtil.getBean("accessControlManager"));
+		}
+		
+		return accessControlManager.testOperation(zoneConfig, WorkAreaOperation.ENABLE_LINK_SHARING);
 	}
 
     //NO transaction

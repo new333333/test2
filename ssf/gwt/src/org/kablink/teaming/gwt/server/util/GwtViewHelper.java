@@ -3505,12 +3505,12 @@ public class GwtViewHelper {
 									entryRights.setCanTrash(      fm.testAccess(entry, FolderOperation.preDeleteEntry));
 									
 									ShareRight entryShareRight;
-									if (GwtShareHelper.isEntitySharable(bs, entry))
+									if (GwtShareHelper.isEntitySharable(bs, entry) || GwtShareHelper.isEntityPublicLinkSharable(bs, entry))
 									     entryShareRight = ShareRight.SHARABLE;
 									else entryShareRight = ShareRight.NOT_SHARABLE_RIGHTS_VIOLATION;
 									entryRights.setShareRight(entryShareRight);
 									if (entryShareRight.canShare()) {
-										entryRights.setCanPublicLink(sm.testPublicLinkShareEntity(entry));
+										entryRights.setCanPublicLink(sm.testAddShareEntityPublicLinks(entry));
 									}
 								}
 								
@@ -7628,7 +7628,7 @@ public class GwtViewHelper {
 			boolean invokeShare = isQueryParamSet(nvMap, WebKeys.URL_INVOKE_SHARE, "1");
 			if (invokeShare) {
 				// ...mark the ViewInfo accordingly...
-				boolean invokeShareEnabled = (hasAccess && GwtShareHelper.isEntitySharable(bs, fe));
+				boolean invokeShareEnabled = (hasAccess && (GwtShareHelper.isEntitySharable(bs, fe) || GwtShareHelper.isEntityPublicLinkSharable(bs, fe)));
 				vi.setInvokeShare(       hasAccess         );
 				vi.setInvokeShareEnabled(invokeShareEnabled);
 			}

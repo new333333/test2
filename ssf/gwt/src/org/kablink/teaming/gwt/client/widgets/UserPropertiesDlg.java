@@ -111,6 +111,7 @@ public class UserPropertiesDlg extends DlgBox
 	private GwtTeamingMessages				m_messages;					// Access to Vibe's messages.
 	private List<HandlerRegistration>		m_registeredEventHandlers;	// Event handlers that are currently registered.
 	private Long							m_userId;					// The user we're dealing with.
+	private String							m_product;					// The name of the product (Filr vs. Vibe.)
 	private UIObject						m_showRelativeTo;			// UIObject to show the dialog relative to.  null -> Center it on the screen.
 	private UserPropertiesRpcResponseData	m_userProperties;			// Information about managing the user, once read from the server.
 	private VibeFlowPanel					m_fp;						// The panel holding the dialog's content.
@@ -138,6 +139,7 @@ public class UserPropertiesDlg extends DlgBox
 		// ...initialize everything else...
 		m_images   = GwtTeaming.getDataTableImageBundle();
 		m_messages = GwtTeaming.getMessages();
+		m_product  = GwtClientHelper.getProductName();
 	
 		// ...and create the dialog's content.
 		createAllDlgContent(
@@ -745,6 +747,11 @@ public class UserPropertiesDlg extends DlgBox
 				if (needJoint) rightsBuf.append("+");
 				else           needJoint = true;
 				rightsBuf.append(m_messages.userPropertiesDlgSharing_Public());
+			}
+			if (share.isAllowPublicLinks()) {
+				if (needJoint) rightsBuf.append("+");
+				else           needJoint = true;
+				rightsBuf.append(m_messages.userPropertiesDlgSharing_PublicLinks(m_product));
 			}
 			if (share.isAllowForwarding()) {
 				if (needJoint) rightsBuf.append("/");

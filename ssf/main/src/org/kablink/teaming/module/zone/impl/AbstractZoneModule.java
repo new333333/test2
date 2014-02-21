@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -1576,7 +1576,8 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 				 wao.equals( WorkAreaOperation.ALLOW_SHARING_EXTERNAL )  == false &&
 				 wao.equals( WorkAreaOperation.ALLOW_SHARING_FORWARD ) == false &&
 				 wao.equals( WorkAreaOperation.ALLOW_SHARING_INTERNAL ) == false &&
-				 wao.equals( WorkAreaOperation.ALLOW_SHARING_PUBLIC ) == false )
+				 wao.equals( WorkAreaOperation.ALLOW_SHARING_PUBLIC ) == false &&
+				 wao.equals( WorkAreaOperation.ALLOW_SHARING_PUBLIC_LINKS ) == false )
 			{
 				function.addOperation( wao );
 			}
@@ -2031,6 +2032,18 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 			function.setScope(ObjectKeys.ROLE_TYPE_BINDER);
 			function.setInternalId(ObjectKeys.FUNCTION_ALLOW_SHARING_PUBLIC_INTERNALID);
 			function.addOperation(WorkAreaOperation.ALLOW_SHARING_PUBLIC);
+			//generate functionId
+			getFunctionManager().addFunction(function);
+			setGlobalWorkareaFunctionMembership(zoneConfig, function, new HashSet());
+		}
+		
+		if (!functionInternalIds.containsKey(ObjectKeys.FUNCTION_ALLOW_SHARING_PUBLIC_LINKS_INTERNALID)) {
+			function = new Function();
+			function.setZoneId(zoneConfig.getZoneId());
+			function.setName(ObjectKeys.ROLE_ALLOW_SHARING_PUBLIC_LINKS);
+			function.setScope(ObjectKeys.ROLE_TYPE_BINDER);
+			function.setInternalId(ObjectKeys.FUNCTION_ALLOW_SHARING_PUBLIC_LINKS_INTERNALID);
+			function.addOperation(WorkAreaOperation.ALLOW_SHARING_PUBLIC_LINKS);
 			//generate functionId
 			getFunctionManager().addFunction(function);
 			setGlobalWorkareaFunctionMembership(zoneConfig, function, new HashSet());
