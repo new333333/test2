@@ -152,6 +152,7 @@ public class ZoneShareRightsSelectPrincipalsWidget extends SelectPrincipalsWidge
 		GwtRole shareInternalRole;
 		GwtRole sharePublicRole;
 		GwtRole reshareRole;
+		GwtRole shareLinkRole;
 		ArrayList<GwtRole> roles;
 		ArrayList<GwtPrincipal> principals;
 		
@@ -182,6 +183,10 @@ public class ZoneShareRightsSelectPrincipalsWidget extends SelectPrincipalsWidge
 			sharePublicRole = new GwtRole();
 			sharePublicRole.setType( GwtRoleType.EnableSharePublic );
 			roles.add( sharePublicRole );
+			
+			shareLinkRole = new GwtRole();
+			shareLinkRole.setType( GwtRoleType.EnableShareLink );
+			roles.add( shareLinkRole );
 		}
 		
 		// Get the list of principals
@@ -216,6 +221,12 @@ public class ZoneShareRightsSelectPrincipalsWidget extends SelectPrincipalsWidge
 					
 					if ( rightsInfo.getIsEnableShareWithAllInternal() )
 						shareWithAllInternalRole.addMember( nextPrincipal );
+					
+					if ( rightsInfo.getIsEnableShareWithAllInternal() )
+						shareWithAllInternalRole.addMember( nextPrincipal );
+					
+					if ( rightsInfo.getIsEnableShareLink() )
+						shareLinkRole.addMember( nextPrincipal );
 				}
 			}
 		}
@@ -330,6 +341,13 @@ public class ZoneShareRightsSelectPrincipalsWidget extends SelectPrincipalsWidge
 							
 						case EnableShareWithAllInternal:
 							rightsInfo.setEnableShareWithAllInternal( true );
+							break;
+							
+						case EnableShareLink:
+							rightsInfo.setEnableShareLink( true );
+							break;
+						
+						default:
 							break;
 						}
 					}

@@ -49,6 +49,7 @@ public class PerUserZoneShareRightsInfo implements IsSerializable
 	private boolean m_enableSharePublic;
 	private boolean m_enableShareWithAllExternal;
 	private boolean m_enableShareWithAllInternal;
+	private boolean m_enableShareLink;
 	
 	/**
 	 * Constructor method. 
@@ -83,6 +84,14 @@ public class PerUserZoneShareRightsInfo implements IsSerializable
 	public boolean getIsEnableShareInternal()
 	{
 		return m_enableShareInternal;
+	}
+	
+	/**
+	 * 
+	 */
+	public boolean getIsEnableShareLink()
+	{
+		return m_enableShareLink;
 	}
 	
 	/**
@@ -156,6 +165,13 @@ public class PerUserZoneShareRightsInfo implements IsSerializable
 			rights.append( GwtTeaming.getMessages().shareWithAllInternalRights() );
 		}
 		
+		if ( getIsEnableShareLink() )
+		{
+			if ( rights.length() > 0 )
+				rights.append( " / " );
+			rights.append( GwtTeaming.getMessages().shareLinkRights() );
+		}
+		
 		if ( rights.length() == 0 )
 			return GwtTeaming.getMessages().noRights();
 			
@@ -184,6 +200,14 @@ public class PerUserZoneShareRightsInfo implements IsSerializable
 	public void setEnableShareInternal( boolean enabled )
 	{
 		m_enableShareInternal = enabled;
+	}
+
+	/**
+	 * 
+	 */
+	public void setEnableShareLink( boolean enabled )
+	{
+		m_enableShareLink = enabled;
 	}
 
 	/**
