@@ -1558,11 +1558,13 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
             sharing.setInternal(sharingModule.testAddShareEntityInternal(entity));
             sharing.setExternal(sharingModule.testAddShareEntityExternal(entity));
             sharing.setPublic(sharingModule.testAddShareEntityPublic(entity) && isGuestAccessEnabled());
+            sharing.setPublicLink(sharingModule.testAddShareEntityPublicLinks(entity) && isGuestAccessEnabled());
             sharing.setGrantReshare(sharingModule.testShareEntityForward(entity));
         } else {
             sharing.setInternal(false);
             sharing.setExternal(false);
             sharing.setPublic(false);
+            sharing.setPublicLink(false);
             sharing.setGrantReshare(false);
         }
         return sharing;
@@ -1725,7 +1727,7 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
                 } catch (Exception e) {
                     logger.warn("Unable to look up entity: " + change.getEntityId(), e);
                 }
-                changes.add(ResourceUtil.buildBinderChange(change, definableEntity, false, toDomainFormat(descriptionFormatStr)));
+                changes.add(ResourceUtil.buildBinderChange(change, definableEntity, true, toDomainFormat(descriptionFormatStr)));
             }
             BinderChanges results = ResourceUtil.buildBinderChanges(binderChanges, changes);
             results.setLastChange(results.getLastModified());
