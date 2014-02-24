@@ -120,6 +120,8 @@ public interface ResourceDriverManager {
 	 */
 	public ResourceDriver createResourceDriver(ResourceDriverConfig config);
 
+	public ResourceDriver createResourceDriverWithoutInitialization(ResourceDriverConfig config);
+
 	public AclResourceSession openSessionWithAuth(AclResourceDriver authSupportingAclResourceDriver, Long netFolderOwnerDbId);
 	
 	public AclResourceSession openSessionUserMode(AclResourceDriver driver)  throws AclItemPrincipalMappingException;

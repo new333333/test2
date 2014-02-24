@@ -123,6 +123,17 @@ public class PerUserRightsInfo
 
 		return false;
 	}
+	
+	/**
+	 * 
+	 */
+	public boolean canSharePublicLink()
+	{
+		if ( m_shareRightsInfo != null )
+			return m_shareRightsInfo.isAllowPublicLinks();
+		
+		return false;
+	}
 
 	/**
 	 * 
@@ -156,6 +167,13 @@ public class PerUserRightsInfo
 				if ( rights.length() > 0 )
 					rights.append( "/" );
 				rights.append( GwtTeaming.getMessages().forwardingRights() );
+			}
+			
+			if ( m_shareRightsInfo.isAllowPublicLinks() )
+			{
+				if ( rights.length() > 0 )
+					rights.append( "/" );
+				rights.append( GwtTeaming.getMessages().shareLinkRights() );
 			}
 		}
 		
@@ -222,5 +240,16 @@ public class PerUserRightsInfo
 			m_shareRightsInfo = new PerUserShareRightsInfo();
 		
 		m_shareRightsInfo.setAllowPublic( allow );
+	}
+	
+	/**
+	 * 
+	 */
+	public void setCanSharePublicLink( boolean allow )
+	{
+		if ( m_shareRightsInfo == null )
+			m_shareRightsInfo = new PerUserShareRightsInfo();
+		
+		m_shareRightsInfo.setAllowPublicLinks( allow );
 	}
 }

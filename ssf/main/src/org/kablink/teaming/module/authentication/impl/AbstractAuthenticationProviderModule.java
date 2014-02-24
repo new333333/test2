@@ -765,11 +765,19 @@ public abstract class AbstractAuthenticationProviderModule extends BaseAuthentic
 				// Did we find the user in the ldap directory?
 				if ( authenticateLdapMatchingUsersUsingLdapOnly && e instanceof UsernameNotFoundException )
 				{
-					User user;
+					User user = null;
 					
 					// No
 					// Does this user exist in the db?
-					user = getProfileDao().findUserByName( authentication.getName(), zoneId );
+					try
+					{
+						user = getProfileDao().findUserByName( authentication.getName(), zoneId );
+					}
+					catch ( Exception ex )
+					{
+						// Nothing to do.
+					}
+					
 					if ( user != null )
 					{
 						IdentityInfo identityInfo;

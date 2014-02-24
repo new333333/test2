@@ -53,6 +53,7 @@ import org.kablink.teaming.dao.CoreDao;
 import org.kablink.teaming.dao.util.ShareItemSelectSpec;
 import org.kablink.teaming.domain.*;
 import org.kablink.teaming.domain.Binder;
+import org.kablink.teaming.domain.BinderChange;
 import org.kablink.teaming.domain.Description;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
@@ -67,6 +68,7 @@ import org.kablink.teaming.remoting.rest.v1.exc.NotFoundException;
 import org.kablink.teaming.remoting.rest.v1.exc.UnsupportedMediaTypeException;
 import org.kablink.teaming.remoting.rest.v1.util.*;
 import org.kablink.teaming.rest.v1.model.*;
+import org.kablink.teaming.rest.v1.model.BinderChanges;
 import org.kablink.teaming.rest.v1.model.DefinableEntity;
 import org.kablink.teaming.rest.v1.model.HistoryStamp;
 import org.kablink.teaming.rest.v1.model.Tag;
@@ -100,9 +102,15 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URLEncoder;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.Locale;
 
 public abstract class AbstractResource extends AbstractAllModulesInjected {
+
+    protected static DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.US);
 
     private static Set<WorkAreaOperation> ignoredOperations = new HashSet<WorkAreaOperation>() {
         {
@@ -1389,6 +1397,7 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         binder.addAdditionalLink("child_library_files", baseUri + "/library_files");
         binder.addAdditionalLink("child_library_folders", baseUri + "/library_folders");
         binder.addAdditionalLink("child_library_tree", baseUri + "/library_tree");
+        binder.addAdditionalLink("library_changes", baseUri + "/library_changes");
         binder.addAdditionalLink("library_children", baseUri + "/library_children");
         binder.addAdditionalLink("recent_activity", baseUri + "/recent_activity");
         return binder;
@@ -1412,6 +1421,7 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         binder.addAdditionalLink("child_library_files", baseUri + "/library_files");
         binder.addAdditionalLink("child_library_folders", baseUri + "/library_folders");
         binder.addAdditionalLink("child_library_tree", baseUri + "/library_tree");
+        binder.addAdditionalLink("library_changes", baseUri + "/library_changes");
         binder.addAdditionalLink("library_children", baseUri + "/library_children");
         binder.addAdditionalLink("recent_activity", baseUri + "/recent_activity");
         return binder;
@@ -1434,6 +1444,7 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         binder.addAdditionalLink("child_library_entities", baseUri + "/library_entities");
         binder.addAdditionalLink("child_library_files", baseUri + "/library_files");
         binder.addAdditionalLink("child_library_folders", baseUri + "/library_folders");
+        binder.addAdditionalLink("library_changes", baseUri + "/library_changes");
         binder.addAdditionalLink("library_children", baseUri + "/library_children");
         binder.addAdditionalLink("recent_activity", baseUri + "/recent_activity");
         return binder;
@@ -1477,6 +1488,7 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         binder.addAdditionalLink("child_library_files", baseUri + "/library_files");
         binder.addAdditionalLink("child_library_folders", baseUri + "/library_folders");
         binder.addAdditionalLink("child_library_tree", baseUri + "/library_tree");
+        binder.addAdditionalLink("library_changes", baseUri + "/library_changes");
         binder.addAdditionalLink("library_children", baseUri + "/library_children");
         binder.addAdditionalLink("recent_activity", baseUri + "/recent_activity");
         return binder;
@@ -1694,6 +1706,40 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
             restrictions.setEmailList(emailAddresses);
         }
         return restrictions;
+    }
+
+    protected BinderChanges getBinderChanges(Long [] binderIds, String since, String descriptionFormatStr, Integer maxCount, String nextUrl) {
+        if (since==null) {
+            throw new BadRequestException(ApiErrorCode.BAD_INPUT, "Missing 'since' query parameter");
+        }
+        try {
+            Date sinceDate = dateFormat.parse(since);
+            org.kablink.teaming.domain.BinderChanges binderChanges = getBinderModule().searchForChanges(binderIds, sinceDate, maxCount);
+            List<BaseBinderChange> changes = new ArrayList<BaseBinderChange>();
+            for (BinderChange change : binderChanges.getChanges()) {
+                org.kablink.teaming.domain.DefinableEntity definableEntity = null;
+                try {
+                    if (change.getAction() != BinderChange.Action.delete) {
+                        definableEntity = findDefinableEntity(change.getEntityId());
+                    }
+                } catch (Exception e) {
+                    logger.warn("Unable to look up entity: " + change.getEntityId(), e);
+                }
+                changes.add(ResourceUtil.buildBinderChange(change, definableEntity, false, toDomainFormat(descriptionFormatStr)));
+            }
+            BinderChanges results = ResourceUtil.buildBinderChanges(binderChanges, changes);
+            results.setLastChange(results.getLastModified());
+            if (results.getTotal()>results.getCount()) {
+                HashMap<String, Object> nextParams = new HashMap<String, Object>();
+                nextParams.put("since", dateFormat.format(results.getLastChange()));
+                nextParams.put("description_format", descriptionFormatStr);
+                nextParams.put("count", maxCount.toString());
+                results.setNext(nextUrl, nextParams);
+            }
+            return results;
+        } catch (ParseException e) {
+            throw new BadRequestException(ApiErrorCode.BAD_INPUT, "Invalid date in the 'since' query parameter");
+        }
     }
 
     protected boolean isGuestAccessEnabled() {

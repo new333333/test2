@@ -3271,7 +3271,7 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
 	}
 
     @Override
-    public List getAuditTrailEntries(final Long zoneId, final Date sinceDate, final HKey parentBinderKey,
+    public List getAuditTrailEntries(final Long zoneId, final Date sinceDate, final List<HKey> parentBinderKeys,
                                      final AuditTrail.AuditType[] types, final int maxResults) {
         long begin = System.nanoTime();
         try {
@@ -3289,11 +3289,21 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
                                 }
                                 typeExpr = Restrictions.in("transactionType", vals);
                             }
+                            Criterion parentKeysExpr;
+                            if (parentBinderKeys.size()==1) {
+                                parentKeysExpr = Restrictions.eq("owningBinderKey", parentBinderKeys.get(0).getSortKey() + "%");
+                            } else {
+                                List<String> vals = new ArrayList<String>();
+                                for (HKey key : parentBinderKeys) {
+                                    vals.add(key.getSortKey());
+                                }
+                                parentKeysExpr = Restrictions.in("owningBinderKey", vals);
+                            }
                             return session.createCriteria(AuditTrail.class)
                                     .add(Restrictions.eq(ObjectKeys.FIELD_ZONE, zoneId))
                                     .add(Restrictions.isNotNull("startDate"))
                                     .add(Restrictions.ge("startDate", sinceDate))
-                                    .add(Restrictions.like("owningBinderKey", parentBinderKey.getSortKey() + "%"))
+                                    .add(parentKeysExpr)
                                     .add(typeExpr)
                                     .setCacheable(false)
                                     .setMaxResults(maxResults)

@@ -65,6 +65,7 @@ public class EditUserZoneShareRightsDlg extends DlgBox
 	private CheckBox m_canShareInternalCkbox;
 	private CheckBox m_canSharePublicCkbox;
 	private CheckBox m_canShareWithAllInternalCkbox;
+	private CheckBox m_canShareLinkCkbox;
 	private EditSuccessfulHandler m_editSuccessfulHandler;
 	private PerUserZoneShareRightsInfo m_rightsInfo;
 	
@@ -192,6 +193,13 @@ public class EditUserZoneShareRightsDlg extends DlgBox
 		tmpPanel.add( m_canSharePublicCkbox );
 		mainPanel.add( tmpPanel );
 
+		// Add the "Share using links" checkbox.
+		m_canShareLinkCkbox = new CheckBox( messages.editUserZoneShareRightsDlg_ShareLinkLabel() );
+		m_canShareLinkCkbox.addStyleName( "editZoneShareRightsDlg_RightsCkbox" );
+		tmpPanel = new FlowPanel();
+		tmpPanel.add( m_canShareLinkCkbox );
+		mainPanel.add( tmpPanel );
+
 		return mainPanel;
 	}
 
@@ -241,6 +249,7 @@ public class EditUserZoneShareRightsDlg extends DlgBox
 			m_rightsInfo.setEnableShareInternal( m_canShareInternalCkbox.getValue() );
 			m_rightsInfo.setEnableSharePublic( m_canSharePublicCkbox.getValue() );
 			m_rightsInfo.setEnableShareWithAllInternal( m_canShareWithAllInternalCkbox.getValue() );
+			m_rightsInfo.setEnableShareLink( m_canShareLinkCkbox.getValue() );
 
 			// Do we have a handler we should call?
 			if ( m_editSuccessfulHandler != null )
@@ -283,6 +292,7 @@ public class EditUserZoneShareRightsDlg extends DlgBox
 		m_canShareInternalCkbox.setValue( false );
 		m_canSharePublicCkbox.setValue( false );
 		m_canShareWithAllInternalCkbox.setValue( false );
+		m_canShareLinkCkbox.setValue( false );
 
 		if ( m_rightsInfo != null )
 		{
@@ -291,6 +301,7 @@ public class EditUserZoneShareRightsDlg extends DlgBox
 			m_canShareInternalCkbox.setValue( m_rightsInfo.getIsEnableShareInternal() );
 			m_canSharePublicCkbox.setValue( m_rightsInfo.getIsEnableSharePublic() );
 			m_canShareWithAllInternalCkbox.setValue( m_rightsInfo.getIsEnableShareWithAllInternal() );
+			m_canShareLinkCkbox.setValue( m_rightsInfo.getIsEnableShareLink() );
 		}
 
 		danceDlg();

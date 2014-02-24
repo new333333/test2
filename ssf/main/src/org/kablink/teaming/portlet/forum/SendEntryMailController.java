@@ -123,7 +123,7 @@ public class SendEntryMailController extends SAbstractController {
 			totalIds.addAll(ccIds);
 			totalIds.addAll(bccIds);
 			//Set noAccessPrincipals = getFolderModule().getNoReadAccess(entry.getParentFolder(), totalIds);
-			Set<Principal> totalUsers = getProfileModule().getPrincipals(totalIds);
+			Set<Principal> totalUsers = getProfileModule().getPrincipals(totalIds, false);
 			List<String> noAccessPrincipals = new ArrayList();
 			for (Principal p : totalUsers) {
 				if (p instanceof User) {

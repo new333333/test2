@@ -1301,6 +1301,7 @@ public interface GwtTeamingMessages extends Messages
 	String qViewErrorWorkspaceDoesNotExist();
 	String qViewErrorDeletedWorkspace();
 	String qViewErrorNoProfile();
+	String qViewErrorNoRights();
 	String qViewErrorNoUserForQuickView();
 	String qViewErrorCantTrack();
 	String qViewErrorCantUntrack();
@@ -1335,6 +1336,7 @@ public interface GwtTeamingMessages extends Messages
 	String presenceUnknown();
 
 	// The following strings are used in the Administration Information dialog
+	String adminInfoDlgDocumentationLink();
 	String adminInfoDlgEnterProxyCredentials( String serverName );
 	String adminInfoDlgExpiredLicense( String productName );
 	String adminInfoDlgFilrTasksToBeCompleted();
@@ -2425,6 +2427,7 @@ public interface GwtTeamingMessages extends Messages
 	String modifyNetFolderDlg_EnableSyncScheduleLabel();
 	String modifyNetFolderDlg_ErrorCreatingNetFolder( String err );
 	String modifyNetFolderDlg_ErrorModifyingNetFolder( String err );
+	String modifyNetFolderDlg_ForwardSlashNotPermittedInRelativePath();
 	String modifyNetFolderDlg_FullSyncDirOnlyCB();
 	String modifyNetFolderDlg_IndexContentLabel();
 	String modifyNetFolderDlg_InsufficientRights();
@@ -2439,6 +2442,8 @@ public interface GwtTeamingMessages extends Messages
 	String modifyNetFolderDlg_NoNetFolderServersPrompt();
 	String modifyNetFolderDlg_ParentBinderRequired();
 	String modifyNetFolderDlg_ParentFolderLabel();
+	String modifyNetFolderDlg_PleaseEnterRelativePath();
+	String modifyNetFolderDlg_PleaseSelectNetFolderServer();
 	String modifyNetFolderDlg_RelativePathLabel();
 	String modifyNetFolderDlg_RightsTab();
 	String modifyNetFolderDlg_SelectPrincipalsHint();
@@ -2640,6 +2645,7 @@ public interface GwtTeamingMessages extends Messages
 	String userShareRightsDlgLabel_NoChange();
 	String userShareRightsDlgLabel_NoZoneSettings();
 	String userShareRightsDlgLabel_Public();
+	String userShareRightsDlgLabel_PublicLinks(String product);
 	String userShareRightsDlgProgress( int done, int total );
 
 	// Strings used to represent the different rights
@@ -2649,6 +2655,7 @@ public interface GwtTeamingMessages extends Messages
 	String internalRights();
 	String noRights();
 	String publicRights();
+	String shareLinkRights();
 	String shareWithAllExternalRights();
 	String shareWithAllInternalRights();
 
@@ -2662,6 +2669,7 @@ public interface GwtTeamingMessages extends Messages
 	String editNetFolderRightsDlg_ReShareLabel();
 	String editNetFolderRightsDlg_ShareInternalLabel();
 	String editNetFolderRightsDlg_ShareExternalLabel();
+	String editNetFolderRightsDlg_ShareLinkLabel();
 	String editNetFolderRightsDlg_SharePublicLabel();
 
 	// Strings used for the empty collection view widget.
@@ -2891,6 +2899,7 @@ public interface GwtTeamingMessages extends Messages
 	String userPropertiesDlgSharing_Internal();
 	String userPropertiesDlgSharing_NoRights();
 	String userPropertiesDlgSharing_Public();
+	String userPropertiesDlgSharing_PublicLinks(String product);
 	String userPropertiesDlgSourceLDAP();
 	String userPropertiesDlgSourceLocal();
 	String userPropertiesDlgUnknown();
@@ -2931,6 +2940,7 @@ public interface GwtTeamingMessages extends Messages
 	String editUserZoneShareRightsDlg_ReShareLabel();
 	String editUserZoneShareRightsDlg_ShareExternalLabel();
 	String editUserZoneShareRightsDlg_ShareInternalLabel();
+	String editUserZoneShareRightsDlg_ShareLinkLabel();
 	String editUserZoneShareRightsDlg_SharePublicLabel();
 	String editUserZoneShareRightsDlg_ShareWithAllExternalUsersLabel();
 	String editUserZoneShareRightsDlg_ShareWithAllInternalUsersLabel();

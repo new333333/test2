@@ -4878,6 +4878,10 @@ public class GwtServerHelper {
 			fnInternalId = ObjectKeys.FUNCTION_ALLOW_SHARING_PUBLIC_INTERNALID;
 			break;
 			
+		case SharePublicLinks:
+			fnInternalId = ObjectKeys.FUNCTION_ALLOW_SHARING_PUBLIC_LINKS_INTERNALID;
+			break;
+			
 		case AllowAccess:
 			fnInternalId = ObjectKeys.FUNCTION_ALLOW_ACCESS_NET_FOLDER_INTERNALID;
 			break;
@@ -4904,6 +4908,10 @@ public class GwtServerHelper {
 		
 		case EnableShareWithAllInternal:
 			fnInternalId = ObjectKeys.FUNCTION_ENABLE_SHARING_ALL_INTERNAL_INTERNALID;
+			break;
+			
+		case EnableShareLink:
+			fnInternalId = ObjectKeys.FUNCTION_ENABLE_LINK_SHARING_INTERNALID;
 			break;
 		}
 		
@@ -8564,10 +8572,11 @@ public class GwtServerHelper {
 					if (MiscUtil.hasString(fiId) && MiscUtil.hasItems(wafm.getMemberIds())) {
 						// Yes!  Check it for being one of the sharing
 						// functions.
-						if      (fiId.equalsIgnoreCase(ObjectKeys.FUNCTION_ENABLE_EXTERNAL_SHARING_INTERNALID)) reply.setExternalEnabled(  true);
-						else if (fiId.equalsIgnoreCase(ObjectKeys.FUNCTION_ENABLE_FORWARD_SHARING_INTERNALID))  reply.setForwardingEnabled(true);
-						else if (fiId.equalsIgnoreCase(ObjectKeys.FUNCTION_ENABLE_INTERNAL_SHARING_INTERNALID)) reply.setInternalEnabled(  true);
-						else if (fiId.equalsIgnoreCase(ObjectKeys.FUNCTION_ENABLE_PUBLIC_SHARING_INTERNALID))   reply.setPublicEnabled(    true);
+						if      (fiId.equalsIgnoreCase(ObjectKeys.FUNCTION_ENABLE_EXTERNAL_SHARING_INTERNALID)) reply.setExternalEnabled(   true);
+						else if (fiId.equalsIgnoreCase(ObjectKeys.FUNCTION_ENABLE_FORWARD_SHARING_INTERNALID))  reply.setForwardingEnabled( true);
+						else if (fiId.equalsIgnoreCase(ObjectKeys.FUNCTION_ENABLE_INTERNAL_SHARING_INTERNALID)) reply.setInternalEnabled(   true);
+						else if (fiId.equalsIgnoreCase(ObjectKeys.FUNCTION_ENABLE_PUBLIC_SHARING_INTERNALID))   reply.setPublicEnabled(     true);
+						else if (fiId.equalsIgnoreCase(ObjectKeys.FUNCTION_ENABLE_LINK_SHARING_INTERNALID))     reply.setPublicLinksEnabled(true);
 
 						// Once we set all the flags...
 						if (reply.allFlagsSet()) {
@@ -8595,10 +8604,11 @@ public class GwtServerHelper {
 							// No!  By default, everybody will have all
 							// the rights set from the create user
 							// template.
-							psri.setAllowExternal(  true);
-							psri.setAllowForwarding(true);
-							psri.setAllowInternal(  true);
-							psri.setAllowPublic(    true);
+							psri.setAllowExternal(   true);
+							psri.setAllowForwarding( true);
+							psri.setAllowInternal(   true);
+							psri.setAllowPublic(     true);
+							psri.setAllowPublicLinks(true);
 						}
 						
 						else {
@@ -8616,10 +8626,11 @@ public class GwtServerHelper {
 									if (MiscUtil.hasString(fiId) && MiscUtil.hasItems(memberIds) && memberIds.contains(ObjectKeys.OWNER_USER_ID)) {
 										// Yes!  Check for it being one
 										// of the sharing functions.
-										if      (fiId.equalsIgnoreCase(ObjectKeys.FUNCTION_ALLOW_SHARING_EXTERNAL_INTERNALID)) psri.setAllowExternal(  true);
-										else if (fiId.equalsIgnoreCase(ObjectKeys.FUNCTION_ALLOW_SHARING_FORWARD_INTERNALID))  psri.setAllowForwarding(true);
-										else if (fiId.equalsIgnoreCase(ObjectKeys.FUNCTION_ALLOW_SHARING_INTERNAL_INTERNALID)) psri.setAllowInternal(  true);
-										else if (fiId.equalsIgnoreCase(ObjectKeys.FUNCTION_ALLOW_SHARING_PUBLIC_INTERNALID))   psri.setAllowPublic(    true);
+										if      (fiId.equalsIgnoreCase(ObjectKeys.FUNCTION_ALLOW_SHARING_EXTERNAL_INTERNALID))     psri.setAllowExternal(   true);
+										else if (fiId.equalsIgnoreCase(ObjectKeys.FUNCTION_ALLOW_SHARING_FORWARD_INTERNALID))      psri.setAllowForwarding( true);
+										else if (fiId.equalsIgnoreCase(ObjectKeys.FUNCTION_ALLOW_SHARING_INTERNAL_INTERNALID))     psri.setAllowInternal(   true);
+										else if (fiId.equalsIgnoreCase(ObjectKeys.FUNCTION_ALLOW_SHARING_PUBLIC_INTERNALID))       psri.setAllowPublic(     true);
+										else if (fiId.equalsIgnoreCase(ObjectKeys.FUNCTION_ALLOW_SHARING_PUBLIC_LINKS_INTERNALID)) psri.setAllowPublicLinks(true);
 										
 										// Once we set all the flags...
 										if (psri.allFlagsSet()) {
@@ -11429,18 +11440,20 @@ public class GwtServerHelper {
 				
 				// Access the Function's we may need to set/clear
 				// on the selected user workspaces...
-				Long allowExternal   = null;
-				Long allowForwarding = null;
-				Long allowInternal   = null;
-				Long allowPublic     = null;
+				Long allowExternal    = null;
+				Long allowForwarding  = null;
+				Long allowInternal    = null;
+				Long allowPublic      = null;
+				Long allowPublicLinks = null;
 				List<Function> fs = bs.getAdminModule().getFunctions();
 				for (Function f:  fs) {
 					String fId = f.getInternalId();
 					if (MiscUtil.hasString(fId)) {
-						if      (fId.equalsIgnoreCase(ObjectKeys.FUNCTION_ALLOW_SHARING_EXTERNAL_INTERNALID)) allowExternal   = f.getId();
-						else if (fId.equalsIgnoreCase(ObjectKeys.FUNCTION_ALLOW_SHARING_FORWARD_INTERNALID))  allowForwarding = f.getId();
-						else if (fId.equalsIgnoreCase(ObjectKeys.FUNCTION_ALLOW_SHARING_INTERNAL_INTERNALID)) allowInternal   = f.getId();
-						else if (fId.equalsIgnoreCase(ObjectKeys.FUNCTION_ALLOW_SHARING_PUBLIC_INTERNALID))   allowPublic     = f.getId();
+						if      (fId.equalsIgnoreCase(ObjectKeys.FUNCTION_ALLOW_SHARING_EXTERNAL_INTERNALID))     allowExternal    = f.getId();
+						else if (fId.equalsIgnoreCase(ObjectKeys.FUNCTION_ALLOW_SHARING_FORWARD_INTERNALID))      allowForwarding  = f.getId();
+						else if (fId.equalsIgnoreCase(ObjectKeys.FUNCTION_ALLOW_SHARING_INTERNAL_INTERNALID))     allowInternal    = f.getId();
+						else if (fId.equalsIgnoreCase(ObjectKeys.FUNCTION_ALLOW_SHARING_PUBLIC_INTERNALID))       allowPublic      = f.getId();
+						else if (fId.equalsIgnoreCase(ObjectKeys.FUNCTION_ALLOW_SHARING_PUBLIC_LINKS_INTERNALID)) allowPublicLinks = f.getId();
 					}
 				}
 
@@ -11486,10 +11499,11 @@ public class GwtServerHelper {
 									// Set/clear the various sharing
 									// rights on it. 
 									Workspace ws = wm.getWorkspace(wsId);
-									if (setFlags.isAllowExternal())   am.updateWorkAreaFunctionMembership(ws, allowExternal,   valueFlags.isAllowExternal(),   ObjectKeys.OWNER_USER_ID);
-									if (setFlags.isAllowForwarding()) am.updateWorkAreaFunctionMembership(ws, allowForwarding, valueFlags.isAllowForwarding(), ObjectKeys.OWNER_USER_ID);
-									if (setFlags.isAllowInternal())   am.updateWorkAreaFunctionMembership(ws, allowInternal,   valueFlags.isAllowInternal(),   ObjectKeys.OWNER_USER_ID);
-									if (setFlags.isAllowPublic())     am.updateWorkAreaFunctionMembership(ws, allowPublic,     valueFlags.isAllowPublic(),     ObjectKeys.OWNER_USER_ID);
+									if (setFlags.isAllowExternal())    am.updateWorkAreaFunctionMembership(ws, allowExternal,    valueFlags.isAllowExternal(),    ObjectKeys.OWNER_USER_ID);
+									if (setFlags.isAllowForwarding())  am.updateWorkAreaFunctionMembership(ws, allowForwarding,  valueFlags.isAllowForwarding(),  ObjectKeys.OWNER_USER_ID);
+									if (setFlags.isAllowInternal())    am.updateWorkAreaFunctionMembership(ws, allowInternal,    valueFlags.isAllowInternal(),    ObjectKeys.OWNER_USER_ID);
+									if (setFlags.isAllowPublic())      am.updateWorkAreaFunctionMembership(ws, allowPublic,      valueFlags.isAllowPublic(),      ObjectKeys.OWNER_USER_ID);
+									if (setFlags.isAllowPublicLinks()) am.updateWorkAreaFunctionMembership(ws, allowPublicLinks, valueFlags.isAllowPublicLinks(), ObjectKeys.OWNER_USER_ID);
 								}
 							}
 						}
