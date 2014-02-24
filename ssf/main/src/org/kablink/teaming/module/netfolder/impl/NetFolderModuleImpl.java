@@ -33,10 +33,6 @@
 
 package org.kablink.teaming.module.netfolder.impl;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.NetFolder;
