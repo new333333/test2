@@ -798,7 +798,8 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
             SharingPermission sharePerms = access.getSharing();
             if (sharePerms!=null) {
                 if (Boolean.TRUE.equals(sharePerms.getExternal()) || Boolean.TRUE.equals(sharePerms.getGrantReshare()) ||
-                        Boolean.TRUE.equals(sharePerms.getPublic()) || Boolean.TRUE.equals(sharePerms.getInternal())) {
+                        Boolean.TRUE.equals(sharePerms.getPublic()) || Boolean.TRUE.equals(sharePerms.getPublicLink()) ||
+                        Boolean.TRUE.equals(sharePerms.getInternal())) {
                     throw new BadRequestException(ApiErrorCode.BAD_INPUT, "Cannot specify 'access.sharing' permissions for public shares.");
                 }
             }
@@ -862,6 +863,9 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
             }
             if (Boolean.TRUE.equals(sharing.getPublic())) {
                 rights.setAllowSharingPublic(true);
+            }
+            if (Boolean.TRUE.equals(sharing.getPublicLink())) {
+                rights.setAllowSharingPublicLinks(true);
             }
             if (rights.isAllowSharing() || rights.isAllowSharingExternal() || rights.isAllowSharingPublic()) {
                 rights.setAllowSharingForward(true);
