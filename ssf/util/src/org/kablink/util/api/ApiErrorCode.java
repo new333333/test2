@@ -195,4 +195,7 @@ public enum ApiErrorCode {
     DEVICE_NOT_FOUND, // No device found with this id
 
     ACL_CHANGED, // No device found with this id
+    
+    NET_FOLDER_SERVER_NOT_FOUND, // No net folder server found with this name or id
+
 }

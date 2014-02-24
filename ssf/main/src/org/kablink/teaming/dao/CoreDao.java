@@ -54,9 +54,15 @@ import org.kablink.teaming.domain.HKey;
 import org.kablink.teaming.domain.IndexNode;
 import org.kablink.teaming.domain.LdapConnectionConfig;
 import org.kablink.teaming.domain.LibraryEntry;
+import org.kablink.teaming.domain.NetFolder;
+import org.kablink.teaming.domain.NoNetFolderByTheIdException;
+import org.kablink.teaming.domain.NoNetFolderByTheNameException;
+import org.kablink.teaming.domain.NoNetFolderServerByTheIdException;
+import org.kablink.teaming.domain.NoNetFolderServerByTheNameException;
 import org.kablink.teaming.domain.NotifyStatus;
 import org.kablink.teaming.domain.OpenIDProvider;
 import org.kablink.teaming.domain.PostingDef;
+import org.kablink.teaming.domain.ResourceDriverConfig;
 import org.kablink.teaming.domain.SimpleName;
 import org.kablink.teaming.domain.Subscription;
 import org.kablink.teaming.domain.Tag;
@@ -295,4 +301,10 @@ public interface CoreDao {
 	 * @return
 	 */
 	public Map findMobileDevices(final MobileDeviceSelectSpec selectSpec, final Long zoneId);
+	
+	public NetFolder loadNetFolder(Long netFolderId) throws NoNetFolderByTheIdException;
+	public NetFolder loadNetFolderByName(String netFolderName) throws NoNetFolderByTheNameException;
+	
+	public  ResourceDriverConfig loadNetFolderServer(Long netFolderServerId) throws NoNetFolderServerByTheIdException;
+	public  ResourceDriverConfig loadNetFolderServerByName(String netFolderServerName) throws NoNetFolderServerByTheNameException;
 }

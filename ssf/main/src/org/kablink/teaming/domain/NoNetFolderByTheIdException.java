@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -30,40 +30,39 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.fi.connection;
+package org.kablink.teaming.domain;
 
-import java.util.List;
+import org.kablink.teaming.NoObjectByTheIdException;
+import org.kablink.util.api.ApiErrorCode;
 
-import org.kablink.teaming.domain.ResourceDriverConfig;
-import org.kablink.teaming.domain.ResourceDriverConfig.DriverType;
-import org.kablink.teaming.util.SpringContextUtil;
+/**
+ * @author jong
+ *
+ */
+public class NoNetFolderByTheIdException extends NoObjectByTheIdException {
 
-
-public class ResourceDriverManagerUtil {
-
-	public static List<ResourceDriver> getAllowedResourceDrivers() {
-		return getResourceDriverManager().getAllowedResourceDrivers();
-	}
+	private static final long serialVersionUID = 1L;
 	
-	public static ResourceDriver findResourceDriver(String driverName) {
-		return getResourceDriverManager().getDriver(driverName);
-	}
-	
-	public static ResourceDriver findResourceDriver(Long driverId) {
-		return getResourceDriverManager().getDriver(driverId);
-	}
-	
-	public static DriverType getResourceDriverType(String driverName) {
-		ResourceDriver driver = findResourceDriver(driverName);
-		if(driver != null) {
-			ResourceDriverConfig config = driver.getConfig();
-			if(config != null)
-				return config.getDriverType();
-		}
-		return null;
-	}
-	
-	public static ResourceDriverManager getResourceDriverManager() {
-		return (ResourceDriverManager) SpringContextUtil.getBean("resourceDriverManager");
+	private static final String NoNetFolderByTheIdException_ErrorCode = "errorcode.no.net.folder.by.the.id";
+    
+    public NoNetFolderByTheIdException(Long folderId) {
+        super(NoNetFolderByTheIdException_ErrorCode, folderId);
+    }
+    public NoNetFolderByTheIdException(Long folderId, String message) {
+        super(NoNetFolderByTheIdException_ErrorCode, folderId, message);
+    }
+    public NoNetFolderByTheIdException(Long folderId, String message, Throwable cause) {
+        super(NoNetFolderByTheIdException_ErrorCode,folderId, message, cause);
+    }
+    public NoNetFolderByTheIdException(Long folderId, Throwable cause) {
+        super(NoNetFolderByTheIdException_ErrorCode, folderId, cause);
+    }
+    
+	/* (non-Javadoc)
+	 * @see org.kablink.teaming.exception.ApiErrorCodeSupport#getApiErrorCode()
+	 */
+	@Override
+	public ApiErrorCode getApiErrorCode() {
+		return ApiErrorCode.NET_FOLDER_NOT_FOUND;
 	}
 }

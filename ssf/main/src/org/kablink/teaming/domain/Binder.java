@@ -52,6 +52,7 @@ import org.kablink.teaming.fi.connection.ResourceDriverManagerUtil;
 import org.kablink.teaming.fi.connection.acl.AclResourceDriver;
 import org.kablink.teaming.modelprocessor.InstanceLevelProcessorSupport;
 import org.kablink.teaming.module.definition.DefinitionModule;
+import org.kablink.teaming.module.netfolder.NetFolderUtil;
 import org.kablink.teaming.security.function.WorkArea;
 import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.util.LongIdUtil;
@@ -148,7 +149,6 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
     //wikis which link to titles
     protected boolean uniqueTitles=false;
     protected boolean mirrored = false;
-    protected String resourceDriverName;
     protected String resourcePath;
     protected int binderCount=0;
     protected HKey binderKey;
@@ -166,20 +166,9 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
     protected Long maxFileSize;	//MB (stored as the maximum number of mega-bytes)
     protected Boolean fileEncryptionEnabled;
     protected Boolean extFunctionMembershipInherited = Boolean.TRUE;
-    protected Boolean homeDir = Boolean.FALSE;
     protected Boolean myFilesDir = Boolean.FALSE;
-    protected Boolean allowDesktopAppToSyncData = Boolean.TRUE;
-    protected Boolean allowMobileAppsToSyncData = Boolean.TRUE;
-    protected Boolean indexContent = Boolean.TRUE;
-    protected Boolean jitsEnabled; // Applicable only to mirrored folders
-    protected Long jitsMaxAge; // in milliseconds
-    protected Long jitsAclMaxAge; // in milliseconds
-    protected Boolean fullSyncDirOnly; // Applicable only to mirrored folders
-    protected Short syncScheduleOption;	// SyncScheduleOption
     protected String resourceHandle;
-    protected Boolean useInheritedIndexContent = Boolean.TRUE;
-    protected Boolean useInheritedJitsSettings = Boolean.TRUE;
-
+    protected Long netFolderId;
     
     public Binder() {
     }
@@ -205,22 +194,11 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
 		 if (source.properties != null) properties = new HashMap(source.properties);
 		 owner = source.owner;
 		 mirrored = source.mirrored;
-		 resourceDriverName = source.resourceDriverName;
 		 resourcePath = source.resourcePath;
 		 branding = source.branding;
 		 brandingExt = source.brandingExt;
 		 //don't copy postingDef, notificationDef, internalId, binders, or pathName
 		 entryDef = source.entryDef;
-		 allowDesktopAppToSyncData = source.allowDesktopAppToSyncData;
-		 allowMobileAppsToSyncData = source.allowMobileAppsToSyncData;
-		 indexContent = source.indexContent;
-		 jitsEnabled = source.jitsEnabled;
-		 jitsMaxAge = source.jitsMaxAge;
-		 jitsAclMaxAge = source.jitsAclMaxAge;
-		 fullSyncDirOnly = source.fullSyncDirOnly;
-		 syncScheduleOption = source.syncScheduleOption;
-		 useInheritedIndexContent = source.useInheritedIndexContent;
-		 useInheritedJitsSettings = source.useInheritedJitsSettings;
      }
     /**
      * Return the zone id
@@ -770,32 +748,12 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
 		this.resourcePath = resourcePath;
 	}
 	
-	public String getResourceDriverName() {
-		return resourceDriverName;
-	}
-	public void setResourceDriverName(String resourceDriverName) {
-		this.resourceDriverName = resourceDriverName;
-	}
-
 	public ResourceDriver getResourceDriver() {
-		// Just a convenience method
-		ResourceDriver rd = null;
-		if (getResourceDriverName() != null) {
-			try {
-				rd = ResourceDriverManagerUtil.findResourceDriver(getResourceDriverName());
-			} catch(FIException e) {}
-			return rd;
-		} else {
-			return null;
+		ResourceDriver driver = null;
+		if(netFolderId != null) {
+			driver = NetFolderUtil.getResourceDriverByNetFolderId(netFolderId);
 		}
-	}
-	
-	public DriverType getResourceDriverType() {
-		// Just a convenience method
-		if(getResourceDriverName() != null)
-			return ResourceDriverManagerUtil.getResourceDriverType(getResourceDriverName());
-		else
-			return null;
+		return driver;
 	}
 	
 	public boolean noAclDredgedWithEntries() {
@@ -846,296 +804,7 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
     }// end setBrandingExt()
     
     
-    /**
-     * Return whether the desktop app can sync data from this binder
-     * @return
-     */
-    public boolean getAllowDesktopAppToSyncData()
-    {
-    	if ( allowDesktopAppToSyncData == null )
-    		return true;
-    	else
-    		return allowDesktopAppToSyncData.booleanValue();
-    }
     
-    public void setAllowDesktopAppToSyncData( boolean allow )
-    {
-   		allowDesktopAppToSyncData = new Boolean( allow );
-    }
-    
-    /**
-     * Return whether mobile apps can sync data from this binder
-     * @return
-     */
-    public boolean getAllowMobileAppsToSyncData()
-    {
-    	if ( allowMobileAppsToSyncData == null )
-    		return true;
-    	else
-    		return allowMobileAppsToSyncData.booleanValue();
-    }
-    
-    public void setAllowMobileAppsToSyncData( boolean allow )
-    {
-   		allowMobileAppsToSyncData = new Boolean( allow );
-    }
-    
-    /**
-     * Return whether the contents of this binder should be indexed.
-     * @return
-     */
-    public boolean getIndexContent()
-    {
-    	if ( indexContent == null )
-    		return true;
-    	else
-    		return indexContent .booleanValue();
-    }
-
-    /**
-     * 
-     */
-    public void setIndexContent( boolean index )
-    {
-   		indexContent = new Boolean( index );
-    }
-    
-    /**
-     * Return the computed value of "index content".  If this binder is inheriting the value
-     * of "index content" then we will get the value of "index content" from the net folder server
-     * this binder is pointing to.  Otherwise, we will use the value of "index content" from
-     * this binder.
-     */
-    public boolean getComputedIndexContent()
-    {
-    	ResourceDriver resourceDriver;
-    	
-    	if ( getUseInheritedIndexContent() == false )
-    		return getIndexContent();
-    	
-    	resourceDriver = getResourceDriver();
-    	if ( resourceDriver != null )
-    	{
-    		ResourceDriverConfig rdConfig;
-    		
-    		rdConfig = resourceDriver.getConfig();
-    		if ( rdConfig != null )
-    			return rdConfig.getIndexContent();
-    	}
-    	
-    	return false;
-    }
-    
-    /**
-     * Return whether the the "index content" setting should be inherited from the net folder server.
-     * @return
-     */
-    public boolean getUseInheritedIndexContent()
-    {
-    	boolean useInherited;
-    	
-    	// If the useInheritedIndexContent field is null that means this binder existed
-    	// before we added this field.
-    	if ( useInheritedIndexContent == null )
-    	{
-    		// If the content of this binder should be indexed, then we will say not to inherit
-    		// the "index content" setting from the net folder server.
-    		if ( getIndexContent() == true )
-    			useInherited = false;
-    		else
-    			useInherited = true;
-    	}
-    	else
-    	{
-    		useInherited = useInheritedIndexContent.booleanValue();
-    	}
-    	
-    	return useInherited;
-    }
-
-    /**
-     * 
-     */
-    public void setUseInheritedIndexContent( boolean inherit )
-    {
-   		useInheritedIndexContent = new Boolean( inherit );
-    }
-    
-
-    /**
-     * Return whether the the jits settings should be inherited from the net folder server.
-     * @return
-     */
-    public boolean getUseInheritedJitsSettings()
-    {
-    	boolean useInherited;
-    	
-    	// If the useInheritedJitsSettings field is null that means this binder existed
-    	// before we added this field.
-    	if ( useInheritedJitsSettings == null )
-    	{
-    		// Are we dealing with a home dir net folder?
-    		if ( isHomeDir() )
-    		{
-    			// Yes
-    			// Has the value of "enable jits" changed from the default?
-    			// The default is true.
-    			if ( isJitsEnabled() == false )
-    			{
-    				// Yes
-    				useInherited = false;
-    			}
-    			else
-    				useInherited = true;
-    		}
-    		else
-    		{
-    			// No
-    			useInherited = false;
-    		}
-    	}
-    	else
-    	{
-    		useInherited = useInheritedJitsSettings.booleanValue();
-    	}
-    	
-    	return useInherited;
-    }
-
-    /**
-     * 
-     */
-    public void setUseInheritedJitsSettings( boolean inherit )
-    {
-   		useInheritedJitsSettings = new Boolean( inherit );
-    }
-    
-    /**
-     * Return the computed value of "Enable Jits".  If this binder is inheriting the jits
-     * settings then we will get the value of "enable jits" from the net folder server
-     * this binder is pointing to.  Otherwise, we will use the value of "enable jits" from
-     * this binder.
-     */
-    public boolean getComputedIsJitsEnabled()
-    {
-    	ResourceDriver resourceDriver;
-    	
-    	if ( getUseInheritedJitsSettings() == false )
-    		return isJitsEnabled();
-    	
-    	resourceDriver = getResourceDriver();
-    	if ( resourceDriver != null )
-    	{
-    		ResourceDriverConfig rdConfig;
-    		
-    		rdConfig = resourceDriver.getConfig();
-    		if ( rdConfig != null )
-    			return rdConfig.isJitsEnabled();
-    	}
-    	
-    	return false;
-    }
-    
-    /**
-     * Return the computed value of "Jits max age".  If this binder is inheriting the jits
-     * settings then we will get the value of "jits max age" from the net folder server
-     * this binder is pointing to.  Otherwise, we will use the value of "jits max age" from
-     * this binder.
-     */
-    public long getComputedJitsMaxAge()
-    {
-    	ResourceDriver resourceDriver;
-    	
-    	if ( getUseInheritedJitsSettings() == false )
-    		return getJitsMaxAge();
-    	
-    	resourceDriver = getResourceDriver();
-    	if ( resourceDriver != null )
-    	{
-    		ResourceDriverConfig rdConfig;
-    		
-    		rdConfig = resourceDriver.getConfig();
-    		if ( rdConfig != null )
-    			return rdConfig.getJitsMaxAge();
-    	}
-    	
-    	return getJitsMaxAge();
-    }
-    
-    /**
-     * Return the computed value of "Jits max acl age".  If this binder is inheriting the jits
-     * settings then we will get the value of "jits max acl age" from the net folder server
-     * this binder is pointing to.  Otherwise, we will use the value of "jits max acl age" from
-     * this binder.
-     */
-    public long getComputedJitsAclMaxAge()
-    {
-    	ResourceDriver resourceDriver;
-    	
-    	if ( getUseInheritedJitsSettings() == false )
-    		return getJitsAclMaxAge();
-    	
-    	resourceDriver = getResourceDriver();
-    	if ( resourceDriver != null )
-    	{
-    		ResourceDriverConfig rdConfig;
-    		
-    		rdConfig = resourceDriver.getConfig();
-    		if ( rdConfig != null )
-    			return rdConfig.getJitsAclMaxAge();
-    	}
-    	
-    	return getJitsAclMaxAge();
-    }
-    
-    public boolean isJitsEnabled() {
-    	if(jitsEnabled == null)
-    		return SPropsUtil.getBoolean("nf.jits.enabled", true);
-    	else
-    		return jitsEnabled.booleanValue();
-    }
-    public void setJitsEnabled(boolean jitsEnabled) {
-    	this.jitsEnabled = jitsEnabled;
-    }
-    
-	public long getJitsMaxAge() {
-		if(jitsMaxAge == null)
-			return NetFolderHelper.getDefaultJitsResultsMaxAge();
-		else 
-			return jitsMaxAge.longValue();
-	}
-	public void setJitsMaxAge(long jitsMaxAge) {
-		this.jitsMaxAge = Long.valueOf(jitsMaxAge);
-	}
-    
-	public long getJitsAclMaxAge() {
-		if(jitsAclMaxAge == null)
-			return NetFolderHelper.getDefaultJitsAclMaxAge();
-		else 
-			return jitsAclMaxAge.longValue();
-	}
-	public void setJitsAclMaxAge(long jitsAclMaxAge) {
-		this.jitsAclMaxAge = Long.valueOf(jitsAclMaxAge);
-	}
-    
-	/**
-	 * 
-	 */
-	public Boolean getFullSyncDirOnly()
-	{
-		return fullSyncDirOnly;
-	}
-	
-	public boolean isFullSyncDirOnly() {
-		if(fullSyncDirOnly == null)
-			return SPropsUtil.getBoolean("nf.full.sync.dir.only", false);
-		else
-			return fullSyncDirOnly.booleanValue();
-	}
-	public void setFullSyncDirOnly( Boolean fullSyncDirOnly ) {
-		this.fullSyncDirOnly = fullSyncDirOnly;
-	}
-	
     /**
      * Get the xml document that holds the landing page properties such as the background color,
      * background image, etc. 
@@ -1173,30 +842,6 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
 	}
     
 
-    /**
-     * Return the sync schedule option.  Currently there are 2 possible values:
-     * "Use sync schedule from net folder server" and "Use sync schedule from net folder"
-     * @return
-     */
-    public SyncScheduleOption getSyncScheduleOption()
-    {
-    	if ( syncScheduleOption == null )
-    		return null;
-    	
-    	return SyncScheduleOption.valueOf( syncScheduleOption.shortValue() );
-    }
-
-    /**
-     * 
-     */
-    public void setSyncScheduleOption( SyncScheduleOption option )
-    {
-    	if ( option == null )
-    		syncScheduleOption = null;
-    	else
-    		syncScheduleOption = new Short( option.getValue() );
-    }
-    
     public String getResourceHandle() {
 		return resourceHandle;
 	}
@@ -1216,16 +861,6 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
     public void setPostingEnabled(Boolean postingEnabled)
     {
     	this.postingEnabled = postingEnabled;
-    }
-    
-    public boolean isHomeDir() {
-    	if(homeDir == null)
-    		return false;
-    	else
-    		return homeDir.booleanValue();
-    }
-    public void setHomeDir(boolean homeDir) {
-    	this.homeDir = homeDir;
     }
     
     public boolean isMyFilesDir() {
@@ -1440,4 +1075,157 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
         limited.title = this.title;
         return limited;
     }
+    
+	public Long getNetFolderId() {
+		return netFolderId;
+	}
+	public void setNetFolderId(Long netFolderId) {
+		this.netFolderId = netFolderId;
+	}
+    
+	public NetFolder getNetFolder() {
+		if(netFolderId == null)
+			return null;
+		return NetFolderUtil.getNetFolderById(netFolderId);
+	}
+	
+	
+	///// BEGIN: EVERY METHODS BETWEEN BEGIN & END MUST GO AS SOON AS WE CAN FIND TIME TO CLEAN UP
+    public boolean getAllowDesktopAppToSyncData() {
+    	NetFolder nf = this.getNetFolder();
+    	if(nf != null)
+    		return nf.getAllowDesktopAppToSyncData();
+    	else
+    		return false;
+    }
+	
+    public boolean getAllowMobileAppsToSyncData() {
+    	NetFolder nf = this.getNetFolder();
+    	if(nf != null)
+    		return nf.getAllowMobileAppsToSyncData();
+    	else
+    		return false;
+    }
+    
+    public boolean getComputedIndexContent() {
+    	NetFolder nf = this.getNetFolder();
+    	if(nf != null)
+    		return nf.getComputedIndexContent();
+    	else
+    		return false;
+    }
+    
+    public boolean getComputedIsJitsEnabled() {
+    	NetFolder nf = this.getNetFolder();
+    	if(nf != null)
+    		return nf.getComputedIsJitsEnabled();
+    	else
+    		return false;
+    }
+    
+    public long getComputedJitsAclMaxAge() {
+    	NetFolder nf = this.getNetFolder();
+    	if(nf != null)
+    		return nf.getComputedJitsAclMaxAge();
+    	else
+    		return 0;
+    }
+    
+    public long getComputedJitsMaxAge() {
+    	NetFolder nf = this.getNetFolder();
+    	if(nf != null)
+    		return nf.getComputedJitsMaxAge();
+    	else
+    		return 0;
+    }
+    
+	public Boolean getFullSyncDirOnly() {
+    	NetFolder nf = this.getNetFolder();
+    	if(nf != null)
+    		return nf.getFullSyncDirOnly();
+    	else
+    		return false;
+	}
+	
+    public boolean getIndexContent() {
+    	NetFolder nf = this.getNetFolder();
+    	if(nf != null)
+    		return nf.getIndexContent();
+    	else
+    		return false;
+    }
+    
+	public long getJitsAclMaxAge() {
+    	NetFolder nf = this.getNetFolder();
+    	if(nf != null)
+    		return nf.getJitsAclMaxAge();
+    	else
+    		return 0;
+	}
+	
+	public long getJitsMaxAge() {
+    	NetFolder nf = this.getNetFolder();
+    	if(nf != null)
+    		return nf.getJitsMaxAge();
+    	else
+    		return 0;
+	}
+	
+    public boolean isJitsEnabled() {
+    	NetFolder nf = this.getNetFolder();
+    	if(nf != null)
+    		return nf.isJitsEnabled();
+    	else
+    		return false;
+    }
+    
+    public SyncScheduleOption getSyncScheduleOption() {
+    	NetFolder nf = this.getNetFolder();
+    	if(nf != null)
+    		return nf.getSyncScheduleOption();
+    	else
+    		return null;
+    }
+
+    public boolean getUseInheritedIndexContent() {
+    	NetFolder nf = this.getNetFolder();
+    	if(nf != null)
+    		return nf.getUseInheritedIndexContent();
+    	else
+    		return false;
+    }
+    
+    public boolean getUseInheritedJitsSettings() {
+    	NetFolder nf = this.getNetFolder();
+    	if(nf != null)
+    		return nf.getUseInheritedJitsSettings();
+    	else
+    		return false;	
+    }
+    
+	public boolean isFullSyncDirOnly() {
+    	NetFolder nf = this.getNetFolder();
+    	if(nf != null)
+    		return nf.isFullSyncDirOnly();
+    	else
+    		return false;	
+	}
+	
+    public boolean isHomeDir() {
+    	NetFolder nf = this.getNetFolder();
+    	if(nf != null)
+    		return nf.isHomeDir();
+    	else
+    		return false;	
+    }
+    
+    public String getResourceDriverName() {
+    	ResourceDriver rd = this.getResourceDriver();
+    	if(rd != null)
+    		return rd.getName();
+    	else
+    		return null;
+    }
+    
+	///// END: EVERY METHODS BETWEEN BEGIN & END MUST GO AS SOON AS WE CAN FIND TIME TO CLEAN UP
 }

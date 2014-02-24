@@ -30,40 +30,38 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.fi.connection;
+package org.kablink.teaming.domain;
 
-import java.util.List;
+import org.kablink.teaming.NoObjectByTheNameException;
+import org.kablink.util.api.ApiErrorCode;
 
-import org.kablink.teaming.domain.ResourceDriverConfig;
-import org.kablink.teaming.domain.ResourceDriverConfig.DriverType;
-import org.kablink.teaming.util.SpringContextUtil;
+/**
+ * @author Jong Kim
+ *
+ */
+public class NoNetFolderServerByTheNameException extends NoObjectByTheNameException {
 
-
-public class ResourceDriverManagerUtil {
-
-	public static List<ResourceDriver> getAllowedResourceDrivers() {
-		return getResourceDriverManager().getAllowedResourceDrivers();
-	}
+	private static final long serialVersionUID = 1L;
 	
-	public static ResourceDriver findResourceDriver(String driverName) {
-		return getResourceDriverManager().getDriver(driverName);
-	}
-	
-	public static ResourceDriver findResourceDriver(Long driverId) {
-		return getResourceDriverManager().getDriver(driverId);
-	}
-	
-	public static DriverType getResourceDriverType(String driverName) {
-		ResourceDriver driver = findResourceDriver(driverName);
-		if(driver != null) {
-			ResourceDriverConfig config = driver.getConfig();
-			if(config != null)
-				return config.getDriverType();
-		}
-		return null;
-	}
-	
-	public static ResourceDriverManager getResourceDriverManager() {
-		return (ResourceDriverManager) SpringContextUtil.getBean("resourceDriverManager");
+	private static final String NoNetFolderServerByTheNameException_ErrorCode = "errorcode.no.net.folder.server.by.the.name";
+    
+    public NoNetFolderServerByTheNameException(String userName) {
+        super(NoNetFolderServerByTheNameException_ErrorCode, userName);
+    }
+    public NoNetFolderServerByTheNameException(String userName, String message) {
+        super(NoNetFolderServerByTheNameException_ErrorCode, userName, message);
+    }
+    public NoNetFolderServerByTheNameException(String userName, String message, Throwable cause) {
+        super(NoNetFolderServerByTheNameException_ErrorCode,userName, message, cause);
+    }
+    public NoNetFolderServerByTheNameException(String userName, Throwable cause) {
+        super(NoNetFolderServerByTheNameException_ErrorCode, userName, cause);
+    }
+	/* (non-Javadoc)
+	 * @see org.kablink.teaming.exception.ApiErrorCodeSupport#getApiErrorCode()
+	 */
+	@Override
+	public ApiErrorCode getApiErrorCode() {
+		return ApiErrorCode.NET_FOLDER_SERVER_NOT_FOUND;
 	}
 }

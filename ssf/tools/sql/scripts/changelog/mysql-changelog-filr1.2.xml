@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
+    
+    <changeSet author="jong" context="schema" failOnError="true" id="1">
+        <createTable tableName="net_folder">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            
+            <column name="name" type="VARCHAR()">
+                <constraints nullable="false"/>
+            </column>
+
+			<column name="netFolderServerId" type="BIGINT">
+                <constraints nullable="false"/>
+			</column>			
+			<column name="homeDir" type="BIT">
+                <constraints nullable="true"/>
+			</column>			
+			<column name="allowDesktopAppToSyncData" type="BIT">
+                <constraints nullable="true" />
+            </column>
+			<column name="allowMobileAppsToSyncData" type="BIT">
+                <constraints nullable="true" />
+            </column>
+            <column name="indexContent" type="BIT">
+                <constraints nullable="true" />
+            </column>
+            <column name="jitsEnabled" type="BIT">
+                <constraints nullable="true" />
+            </column>
+            <column name="jitsMaxAge" type="BIGINT">
+                <constraints nullable="true" />
+            </column>
+            <column name="jitsAclMaxAge" type="BIGINT">
+                <constraints nullable="true" />
+            </column>
+            <column name="fullSyncDirOnly" type="BIT">
+                <constraints nullable="true" />
+            </column>
+            <column name="syncScheduleOption" type="SMALLINT">
+                <constraints nullable="true" />
+            </column>
+            <column name="useInheritedIndexContent" type="BIT">
+                <constraints nullable="true" />
+            </column>
+            <column name="useInheritedJitsSettings" type="BIT">
+                <constraints nullable="true" />
+            </column>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" engine innodb"/>
+        </modifySql>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="2">
+        <addColumn tableName="SS_Forums">
+            <column name="netFolderId" type="BIGINT">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+	</changeSet>
+</databaseChangeLog>
