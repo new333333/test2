@@ -44,6 +44,7 @@ import org.kablink.teaming.web.util.NetFolderHelper;
  */
 public class NetFolder {
 
+	protected Long id;
 	protected String name;
 	protected Long netFolderServerId;
     protected Boolean homeDir = Boolean.FALSE;
@@ -57,6 +58,14 @@ public class NetFolder {
     protected Short syncScheduleOption;	// SyncScheduleOption
     protected Boolean useInheritedIndexContent = Boolean.TRUE;
     protected Boolean useInheritedJitsSettings = Boolean.TRUE;
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
 
 	public String getName() {
 		return name;
