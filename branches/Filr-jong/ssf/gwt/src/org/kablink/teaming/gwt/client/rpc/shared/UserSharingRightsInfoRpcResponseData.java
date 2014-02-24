@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -50,6 +50,7 @@ public class UserSharingRightsInfoRpcResponseData implements IsSerializable, Vib
 	private boolean 							m_forwardingEnabled;	//
 	private boolean 							m_internalEnabled;		//
 	private boolean								m_publicEnabled;		//
+	private boolean								m_publicLinksEnabled;	//
 	private Map<Long, PerUserShareRightsInfo>	m_userRightsMap;		//
 	
 	/**
@@ -74,6 +75,7 @@ public class UserSharingRightsInfoRpcResponseData implements IsSerializable, Vib
 	public boolean                           isForwardingEnabled()      {return m_forwardingEnabled;        }
 	public boolean                           isInternalEnabled()        {return m_internalEnabled;          }
 	public boolean                           isPublicEnabled()          {return m_publicEnabled;            }
+	public boolean                           isPublicLinksEnabled()     {return m_publicLinksEnabled;       }
 	public Map<Long, PerUserShareRightsInfo> getUserRightsMap()         {return m_userRightsMap;            }
 	public PerUserShareRightsInfo            getUserRights(Long userId) {return m_userRightsMap.get(userId);}
 	
@@ -82,12 +84,13 @@ public class UserSharingRightsInfoRpcResponseData implements IsSerializable, Vib
 	 * 
 	 * @param
 	 */
-	public void addUserRights(       Long userId, PerUserShareRightsInfo userRights)        {m_userRightsMap.put(userId, userRights);}
-	public void setExternalEnabled(  boolean                             externalEnabled)   {m_externalEnabled   = externalEnabled;  }
-	public void setForwardingEnabled(boolean                             forwardingEnabled) {m_forwardingEnabled = forwardingEnabled;}
-	public void setInternalEnabled(  boolean                             internalEnabled)   {m_internalEnabled   = internalEnabled;  }
-	public void setPublicEnabled(    boolean                             publicEnabled)     {m_publicEnabled     = publicEnabled;    }
-	public void setUserRightsMap(    Map<Long, PerUserShareRightsInfo>   userRightsMap)     {m_userRightsMap     = userRightsMap;    }
+	public void addUserRights(        Long userId, PerUserShareRightsInfo userRights)         {m_userRightsMap.put(userId, userRights);  }
+	public void setExternalEnabled(   boolean                             externalEnabled)    {m_externalEnabled    = externalEnabled;   }
+	public void setForwardingEnabled( boolean                             forwardingEnabled)  {m_forwardingEnabled  = forwardingEnabled; }
+	public void setInternalEnabled(   boolean                             internalEnabled)    {m_internalEnabled    = internalEnabled;   }
+	public void setPublicEnabled(     boolean                             publicEnabled)      {m_publicEnabled      = publicEnabled;     }
+	public void setPublicLinksEnabled(boolean                             publicLinksEnabled) {m_publicLinksEnabled = publicLinksEnabled;}
+	public void setUserRightsMap(     Map<Long, PerUserShareRightsInfo>   userRightsMap)      {m_userRightsMap      = userRightsMap;     }
 	
 	/**
 	 * Returns true if all of the flags are set and false otherwise.
@@ -99,7 +102,8 @@ public class UserSharingRightsInfoRpcResponseData implements IsSerializable, Vib
 			m_externalEnabled   &&
 			m_forwardingEnabled &&
 			m_internalEnabled   &&
-			m_publicEnabled);
+			m_publicEnabled     &&
+			m_publicLinksEnabled);
 	}
 	
 	/**
@@ -112,6 +116,7 @@ public class UserSharingRightsInfoRpcResponseData implements IsSerializable, Vib
 			m_externalEnabled   ||
 			m_forwardingEnabled ||
 			m_internalEnabled   ||
-			m_publicEnabled);
+			m_publicEnabled     ||
+			m_publicLinksEnabled);
 	}
 }

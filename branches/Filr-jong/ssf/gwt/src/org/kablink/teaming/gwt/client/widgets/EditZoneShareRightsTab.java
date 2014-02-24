@@ -196,7 +196,7 @@ public class EditZoneShareRightsTab extends EditZoneShareTabBase
 	}
 	
 	/**
-	 * Return the roles (rights) the user defined on this net folder
+	 * Return the roles (rights) the user defined
 	 */
 	private ArrayList<GwtRole> getRoles()
 	{

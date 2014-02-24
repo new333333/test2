@@ -5867,6 +5867,13 @@ td.datePickerMonth {
 	overflow: auto;
 }
 
+.adminInfoDlg_docLink
+{
+	color: #135c8f;
+	cursor: pointer;
+	text-decoration: none;
+}
+
 /**
  * Styles used in the Manage Net Folders dialog
  */

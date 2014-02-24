@@ -148,4 +148,10 @@ public class NullResourceDriverManager implements ResourceDriverManager {
 	public ResourceDriver getDriver(Long driverId) throws FIException {
 		return null;
 	}
+
+	@Override
+	public ResourceDriver createResourceDriverWithoutInitialization(
+			ResourceDriverConfig config) {
+		return null;
+	}
 }

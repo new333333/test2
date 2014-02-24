@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -44,7 +44,6 @@ import java.util.Map;
 import org.kablink.teaming.InternalException;
 import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
 import org.kablink.teaming.module.folder.FolderModule.FolderOperation;
-import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SPropsUtil;
 
 /**
@@ -58,11 +57,12 @@ import org.kablink.teaming.util.SPropsUtil;
  *
  * @author Jong Kim
  */
+@SuppressWarnings("unchecked")
 public class WorkAreaOperation {
 
     // It is critically important to have this map instantiated here
     // BEFORE pre-defined WorkAreOperation instances are created. 
-    private static final Map Instances = new HashMap();
+	private static final Map Instances = new HashMap();
     
     // Workarea operations/rights
     public final static WorkAreaOperation CREATE_ENTRIES = new WorkAreaOperation("createEntries");
@@ -92,6 +92,7 @@ public class WorkAreaOperation {
     public final static WorkAreaOperation ALLOW_SHARING_PUBLIC = new WorkAreaOperation("allowSharingPublic");
     public final static WorkAreaOperation ALLOW_SHARING_FORWARD = new WorkAreaOperation("allowSharingForward");
     public final static WorkAreaOperation ALLOW_ACCESS_NET_FOLDER = new WorkAreaOperation("allowAccessNetFolder");
+    public final static WorkAreaOperation ALLOW_SHARING_PUBLIC_LINKS = new WorkAreaOperation("allowSharingPublicLinks");
 
     // The following rights should not be used in access management of workareas.
     // Used to give access to zone-wide functions to a group of users
@@ -108,9 +109,11 @@ public class WorkAreaOperation {
     public final static WorkAreaOperation ENABLE_SHARING_FORWARD = new WorkAreaOperation("enableSharingForward", true);
     public final static WorkAreaOperation ENABLE_SHARING_ALL_INTERNAL = new WorkAreaOperation("enableSharingAllInternal", true);
     public final static WorkAreaOperation ENABLE_SHARING_ALL_EXTERNAL = new WorkAreaOperation("enableSharingAllExternal", true);
+    public final static WorkAreaOperation ENABLE_LINK_SHARING = new WorkAreaOperation("enableLinkSharing", true);
 
     // Default set of rights controlled by external ACLs.
 	public static final WorkAreaOperation[] EXTERNALLY_CONTROLLED_RIGHTS_DEFAULT = new WorkAreaOperation[] {
+		WorkAreaOperation.VIEW_BINDER_TITLE, 
 		WorkAreaOperation.READ_ENTRIES, 
 		WorkAreaOperation.CREATE_ENTRIES,
 		WorkAreaOperation.MODIFY_ENTRIES,
@@ -171,18 +174,21 @@ public class WorkAreaOperation {
     	Instances.remove(name);
     }
     
-    public boolean equals(Object obj) {
+    @Override
+	public boolean equals(Object obj) {
         if(obj instanceof WorkAreaOperation)
             return this.name.equals(((WorkAreaOperation) obj).name) && (this.zoneWide == ((WorkAreaOperation)obj).zoneWide);
         else 
             return false;
     }
     
-    public int hashCode() {
+    @Override
+	public int hashCode() {
         return 31*Boolean.valueOf(zoneWide).hashCode() + this.name.hashCode();
     }
     
-    public String toString() {
+    @Override
+	public String toString() {
         return getName();
     }
     
@@ -224,6 +230,7 @@ public class WorkAreaOperation {
 		protected Boolean allowSharingPublic = Boolean.FALSE;
 		protected Boolean allowSharingForward = Boolean.FALSE;
 		protected Boolean allowAccessNetFolder = Boolean.FALSE;
+		protected Boolean allowSharingPublicLinks = Boolean.FALSE;
 
         public static RightSet and(RightSet set1, RightSet set2) {
             RightSet andSet = new RightSet();
@@ -252,6 +259,7 @@ public class WorkAreaOperation {
             andSet.allowSharingPublic = andRights(set1.allowSharingPublic, set2.allowSharingPublic);
             andSet.allowSharingForward = andRights(set1.allowSharingForward, set2.allowSharingForward);
             andSet.allowAccessNetFolder = andRights(set1.allowAccessNetFolder, set2.allowAccessNetFolder);
+            andSet.allowSharingPublicLinks = andRights(set1.allowSharingPublicLinks, set2.allowSharingPublicLinks);
             return andSet;
         }
 		
@@ -301,6 +309,7 @@ public class WorkAreaOperation {
 			result = 29 * result + (Boolean.TRUE.equals(allowSharingPublic) ? 1231 : 1237);
 			result = 29 * result + (Boolean.TRUE.equals(allowSharingForward) ? 1231 : 1237);
 			result = 29 * result + (Boolean.TRUE.equals(allowAccessNetFolder) ? 1231 : 1237);
+			result = 29 * result + (Boolean.TRUE.equals(allowSharingPublicLinks) ? 1231 : 1237);
 			return result;
 		}
 
@@ -335,6 +344,7 @@ public class WorkAreaOperation {
 			if(!equalRights(this.allowSharingPublic, that.allowSharingPublic)) return false;
 			if(!equalRights(this.allowSharingForward, that.allowSharingForward)) return false;
 			if(!equalRights(this.allowAccessNetFolder, that.allowAccessNetFolder)) return false;
+			if(!equalRights(this.allowSharingPublicLinks, that.allowSharingPublicLinks)) return false;
 			return true;
 		}
 
@@ -368,6 +378,7 @@ public class WorkAreaOperation {
 			if(!greaterOrEqualRights(this.allowSharingPublic, that.allowSharingPublic)) return false;
 			if(!greaterOrEqualRights(this.allowSharingForward, that.allowSharingForward)) return false;
 			if(!greaterOrEqualRights(this.allowAccessNetFolder, that.allowAccessNetFolder)) return false;
+			if(!greaterOrEqualRights(this.allowSharingPublicLinks, that.allowSharingPublicLinks)) return false;
 			return true;
 		}
 
@@ -400,6 +411,7 @@ public class WorkAreaOperation {
 			if(this.allowSharingPublic) rights.add(WorkAreaOperation.ALLOW_SHARING_PUBLIC);
 			if(this.allowSharingForward) rights.add(WorkAreaOperation.ALLOW_SHARING_FORWARD);
 			if(this.allowAccessNetFolder) rights.add(WorkAreaOperation.ALLOW_ACCESS_NET_FOLDER);
+			if(this.allowSharingPublicLinks) rights.add(WorkAreaOperation.ALLOW_SHARING_PUBLIC_LINKS);
 			return rights;
 		}
 
@@ -433,6 +445,7 @@ public class WorkAreaOperation {
 			if(this.allowSharingPublic) rights.add(FolderOperation.allowSharingPublic);
 			if(this.allowSharingForward) rights.add(FolderOperation.allowSharingForward);
 			if(this.allowAccessNetFolder) rights.add(FolderOperation.readEntry);
+			if(this.allowSharingPublicLinks) rights.add(FolderOperation.allowSharingPublicLinks);
 			return rights;
 		}
 
@@ -466,6 +479,7 @@ public class WorkAreaOperation {
 			if(this.allowSharingPublic) rights.add(BinderOperation.allowSharingPublic);
 			if(this.allowSharingForward) rights.add(BinderOperation.allowSharingForward);
 			if(this.allowAccessNetFolder) rights.add(BinderOperation.allowAccessNetFolder);
+			if(this.allowSharingPublicLinks) rights.add(BinderOperation.allowSharingPublicLinks);
 			return rights;
 		}
 
@@ -733,6 +747,15 @@ public class WorkAreaOperation {
 
 		public void setAllowAccessNetFolder(boolean allowAccessNetFolder) {
 			this.allowAccessNetFolder = allowAccessNetFolder;
+		}
+		
+		public boolean isAllowSharingPublicLinks() {
+			if(allowSharingPublicLinks == null) return false;
+			return allowSharingPublicLinks;
+		}
+
+		public void setAllowSharingPublicLinks(boolean allowSharingPublicLinks) {
+			this.allowSharingPublicLinks = allowSharingPublicLinks;
 		}
 		
 		private boolean equalRights(Boolean right1, Boolean right2) {

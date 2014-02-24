@@ -69,6 +69,7 @@ public class EditNetFolderRightsDlg extends DlgBox
 	private CheckBox m_canShareExternalCkbox;
 	private CheckBox m_canShareInternalCkbox;
 	private CheckBox m_canSharePublicCkbox;
+	private CheckBox m_canShareLinkCkbox;
 	private CheckBox m_canGrantReshareCkbox;
 	private EditSuccessfulHandler m_editSuccessfulHandler;
 	private PerUserRightsInfo m_rightsInfo;
@@ -212,7 +213,16 @@ public class EditNetFolderRightsDlg extends DlgBox
 		tmpPanel.addStyleName( "marginleft1" );
 		tmpPanel.add( m_canSharePublicCkbox );
 		mainPanel.add( tmpPanel );
-		
+
+		// Add the "Share using Filr links" checkbox.
+		m_canShareLinkCkbox = new CheckBox( messages.editNetFolderRightsDlg_ShareLinkLabel() );
+		m_canShareLinkCkbox.addStyleName( "editNetFolderRightsDlg_RightsCkbox" );
+		tmpPanel = new FlowPanel();
+		tmpPanel.addStyleName( "marginleft1" );
+		tmpPanel.add( m_canShareLinkCkbox );
+		mainPanel.add( tmpPanel );
+
+
 		// Add the "allow grant re-share" checkbox
 		m_canGrantReshareCkbox = new CheckBox( messages.editNetFolderRightsDlg_ReShareLabel() );
 		m_canGrantReshareCkbox.addStyleName( "editNetFolderRightsDlg_RightsCkbox" );
@@ -237,6 +247,7 @@ public class EditNetFolderRightsDlg extends DlgBox
 		m_canShareExternalCkbox.setEnabled( enable );
 		m_canShareInternalCkbox.setEnabled( enable );
 		m_canSharePublicCkbox.setEnabled( enable );
+		m_canShareLinkCkbox.setEnabled( enable );
 		m_canGrantReshareCkbox.setEnabled( enable );
 		
 		// Enable/disable the "Allow the recipient to grant re-share privileges" checkbox 
@@ -294,6 +305,14 @@ public class EditNetFolderRightsDlg extends DlgBox
 				m_canSharePublicCkbox.setValue( Boolean.FALSE );
 				m_canSharePublicCkbox.setEnabled( false );
 			}
+			
+			// Can the user share using Filr links?
+			if ( m_zoneShareRights.isAllowPublicLinks() == false )
+			{
+				// No
+				m_canShareLinkCkbox.setValue( Boolean.FALSE );
+				m_canShareLinkCkbox.setEnabled( false );
+			}
 		}
 	}
 	
@@ -322,6 +341,9 @@ public class EditNetFolderRightsDlg extends DlgBox
 				value = m_canSharePublicCkbox.getValue();
 				m_rightsInfo.setCanSharePublic( value );
 
+				value = m_canShareLinkCkbox.getValue();
+				m_rightsInfo.setCanSharePublicLink( value );
+				
 				value = false;
 				if ( m_canGrantReshareCkbox.isEnabled() )
 					value = m_canGrantReshareCkbox.getValue();
@@ -333,6 +355,7 @@ public class EditNetFolderRightsDlg extends DlgBox
 				m_rightsInfo.setCanShareExternal( false );
 				m_rightsInfo.setCanShareInternal( false );
 				m_rightsInfo.setCanSharePublic( false );
+				m_rightsInfo.setCanSharePublicLink( false );
 			}
 
 			// Do we have a handler we should call?
@@ -438,6 +461,7 @@ public class EditNetFolderRightsDlg extends DlgBox
 		m_canShareExternalCkbox.setValue( false );
 		m_canShareInternalCkbox.setValue( false );
 		m_canSharePublicCkbox.setValue( false );
+		m_canShareLinkCkbox.setValue( false );
 		m_canGrantReshareCkbox.setValue( false );
 		m_allowAccessCkbox.setValue( false );
 
@@ -446,6 +470,7 @@ public class EditNetFolderRightsDlg extends DlgBox
 			m_canShareExternalCkbox.setValue( m_rightsInfo.canShareExternal() );
 			m_canShareInternalCkbox.setValue( m_rightsInfo.canShareInternal() );
 			m_canSharePublicCkbox.setValue( m_rightsInfo.canSharePublic() );
+			m_canShareLinkCkbox.setValue( m_rightsInfo.canSharePublicLink() );
 			m_canGrantReshareCkbox.setValue( m_rightsInfo.canReshare() );
 			m_allowAccessCkbox.setValue( m_rightsInfo.canAccess() );
 		}

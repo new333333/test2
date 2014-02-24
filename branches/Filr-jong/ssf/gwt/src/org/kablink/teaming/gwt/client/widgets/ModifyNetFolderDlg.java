@@ -369,7 +369,8 @@ public class ModifyNetFolderDlg extends DlgBox
 						@Override
 						public void execute()
 						{
-							testConnection();
+							if ( isConfigurationValid() == true )
+								testConnection();
 						}
 					};
 					Scheduler.get().scheduleDeferred( cmd );
@@ -1531,6 +1532,85 @@ public class ModifyNetFolderDlg extends DlgBox
 			m_modifyNetFolderRootDlg.setPopupPosition( x, y );
 			m_modifyNetFolderRootDlg.show();
 		}
+	}
+	
+	/**
+	 * Check to see if the configuration is valid.  We will check the follow:
+	 * 1. Net folder server has been selected.
+	 * 2. Relative path has been entered and does not contain a /
+	 */
+	private boolean isConfigurationValid()
+	{
+		String relPath;
+		
+		// Is a net folder server selected?
+		if ( getNetFolderRoot() == null )
+		{
+			Scheduler.ScheduledCommand cmd;
+			
+			// No
+			Window.alert( GwtTeaming.getMessages().modifyNetFolderDlg_PleaseSelectNetFolderServer() );
+			
+			cmd = new Scheduler.ScheduledCommand()
+			{
+				@Override
+				public void execute()
+				{
+					m_netFolderRootsListbox.setFocus( true );
+				}
+			};
+			Scheduler.get().scheduleDeferred( cmd );
+			
+			return false;
+		}
+		
+		// Has a relative path been entered?
+		relPath = getRelativePath();
+		if ( relPath == null || relPath.length() == 0 )
+		{
+			Scheduler.ScheduledCommand cmd;
+			
+			// No
+			Window.alert( GwtTeaming.getMessages().modifyNetFolderDlg_PleaseEnterRelativePath() );
+
+			cmd = new Scheduler.ScheduledCommand()
+			{
+				@Override
+				public void execute()
+				{
+					m_relativePathTxtBox.setFocus( true );
+				}
+			};
+			Scheduler.get().scheduleDeferred( cmd );
+			
+			return false;
+		}
+		
+		// Does the relative path have any '/' in it.
+		// A '/' in the relative path causes problems with OES-NCP when we do a test connection
+		// See bug, https://bugzilla.novell.com/show_bug.cgi?id=785315
+		if ( relPath.indexOf( '/' ) != -1 )
+		{
+			Scheduler.ScheduledCommand cmd;
+			
+			// Yes
+			Window.alert( GwtTeaming.getMessages().modifyNetFolderDlg_ForwardSlashNotPermittedInRelativePath() );
+
+			cmd = new Scheduler.ScheduledCommand()
+			{
+				@Override
+				public void execute()
+				{
+					m_relativePathTxtBox.setFocus( true );
+				}
+			};
+			Scheduler.get().scheduleDeferred( cmd );
+			
+			return false;
+		}
+		
+		// If we get here everything is valid
+		return true;
 	}
 	
 	/**

@@ -109,15 +109,15 @@ function handleRepeatEveryOnFocus()
    <table class="ss_style" border="0" cellpadding="0" cellspacing="0" width="100%">
    <tr>
    <td >
-	<div class="marginleft1 margintop2">
+	<div class="marginleft2 margintop2">
    <input type="radio"  name="${schedPrefix}schedType" id="daily" value="daily" <c:if test="${schedule.daily}">checked</c:if>/> 
    <label for="daily"><span class="ss_labelRight"><ssf:nlt tag="schedule.everyday"/></span></label>
    </div>
-   	<div class="marginleft1 margintop2">
+   	<div class="marginleft2 margintop2">
    <input type="radio"  name="${schedPrefix}schedType" id="weekly" value="weekly" <c:if test="${!schedule.daily}">checked</c:if>/> 
    <label for="weekly"><span class="ss_labelRight"><ssf:nlt tag="schedule.weekly"/></span>&nbsp;<span class="ss_normal"><ssf:nlt tag="schedule.weeklyWhen"/></span></label>
    </div>
-   <table class="ss_style marginleft3" border="0" cellpadding="4">
+   <table class="ss_style marginleft4" border="0" cellpadding="4">
 	  <tr>
 	<td align="center"><label>
 	<input type="checkbox"  name="${schedPrefix}onday_sun" id="${schedPrefix}onday_sun"  <c:if test="${schedule.onSunday}">checked</c:if>/>
@@ -150,7 +150,7 @@ function handleRepeatEveryOnFocus()
 	</tr>
 	</table>
 
-	<div class="marginleft1 margintop2" style="border-top: 1px solid #cccccc; padding-top: 10px;">
+	<div class="marginleft2 margintop2" style="border-top: 1px solid #cccccc; padding-top: 10px;">
 		<input type="radio"  name="${schedPrefix}hourType" id="absolute" value="absolute"   <c:if test="${!schedule.repeatHours}">checked</c:if>/>   
 		<label for="absolute"><span class="ss_labelRight"><ssf:nlt tag="schedule.attime"/></span></label>
 	
@@ -192,7 +192,7 @@ function handleRepeatEveryOnFocus()
 	
 </div>
 
-	<div class="marginleft1 margintop2"">
+	<div class="marginleft2 margintop2"">
 		<input type="radio"  name="${schedPrefix}hourType" id="repeat" value="repeat"   
 		  <c:if test="${schedule.repeatHours || schedule.repeatMinutes}">checked</c:if>/>
 		   

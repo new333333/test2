@@ -117,7 +117,7 @@ function ss_checkIfNumberValid(s) {
 </div>
 
 <fieldset class="ss_fieldset marginleft2 marginbottom3">
-  <legend class="ss_legend"><ssf:nlt tag="notify.header" /></legend>	
+  <legend class="ss_legend"><ssf:nlt tag="schedule.digestSchedule" /></legend>	
 <table class="ss_style" border="0" cellspacing="3" cellpadding="3">
 <tr>
 <td valign="top">
@@ -130,26 +130,29 @@ function ss_checkIfNumberValid(s) {
 
 <fieldset class="ss_fieldset marginleft2">
 	<legend class="ss_legend"><ssf:nlt tag="administration.configure.schedule.legend.outgoingAttachmentQuotas" /></legend>
-	<label for="outgoingAttachmentSumLimit">
-	  <span class="ss_labelAbove ss_normal"><ssf:nlt tag="administration.configure.schedule.quotaSum"/></span>
-	</label>
-	<input size="8" maxlength="8" type="textbox" style="text-align:right;"
-	  id="outgoingAttachmentSumLimit" 
-	  name="outgoingAttachmentSumLimit" 
-	  value="${ssMailConfig.outgoingAttachmentSumLimitKb}" 
-	  onChange='if (!ss_checkIfNumberValid(this.value)){this.value="";}' />
-	<span><ssf:nlt tag="file.sizeKB"/></span>
-	<br/>
-	<br/>
-	<label for="outgoingAttachmentSizeLimit">
-	  <span class="ss_labelAbove ss_normal"><ssf:nlt tag="administration.configure.schedule.quotaFile"/></span>
-	</label>
-	<input size="8" maxlength="8" type="textbox" style="text-align:right;"
-	  id= "outgoingAttachmentSizeLimit" 
-	  name="outgoingAttachmentSizeLimit" 
-	  value="${ssMailConfig.outgoingAttachmentSizeLimitKb}" 
-	  onChange='if (!ss_checkIfNumberValid(this.value)){this.value="";}' />
-	<span><ssf:nlt tag="file.sizeKB"/></span>
+	<div class="marginleft2">
+		<label for="outgoingAttachmentSumLimit">
+		  <span class="ss_labelAbove ss_normal"><ssf:nlt tag="administration.configure.schedule.quotaSum"/></span>
+		</label>
+		<input size="8" maxlength="8" type="textbox" style="text-align:right;"
+		  id="outgoingAttachmentSumLimit" 
+		  name="outgoingAttachmentSumLimit" 
+		  value="${ssMailConfig.outgoingAttachmentSumLimitKb}" 
+		  onChange='if (!ss_checkIfNumberValid(this.value)){this.value="";}' />
+		<span><ssf:nlt tag="file.sizeKB"/></span>
+	</div>
+	<div class="margintop3 marginleft2">
+		<label for="outgoingAttachmentSizeLimit">
+		  <span class="ss_labelAbove ss_normal"><ssf:nlt tag="administration.configure.schedule.quotaFile"/></span>
+		</label>
+		<input size="8" maxlength="8" type="textbox" style="text-align:right;"
+		  id= "outgoingAttachmentSizeLimit" 
+		  name="outgoingAttachmentSizeLimit" 
+		  value="${ssMailConfig.outgoingAttachmentSizeLimitKb}" 
+		  onChange='if (!ss_checkIfNumberValid(this.value)){this.value="";}' />
+		<span><ssf:nlt tag="file.sizeKB"/></span>
+		<div class="ss_normal margintop3"><ssf:nlt tag="administration.configure.schedule.quotaUnlimited"/></div>
+	</div>
 </fieldset>
 
 <c:if test="${ssSMTPEnabled}">

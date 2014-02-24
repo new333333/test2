@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -80,6 +80,7 @@ public class UserShareRightsDlg extends DlgBox implements EditSuccessfulHandler 
 	private List<Long>								m_userIds;				// The List<Long> of user IDs whose sharing rights are being set.
 	private PerUserShareRightsInfo					m_singleUserRights;		// If the sharing rights are being set for a single user, this contains their current rights setting when the dialog is invoked. 
 	private ProgressBar								m_progressBar;			// Progress bar displayed while saving the share rights.
+	private String									m_product;				// The name of the product (Filr vs. Vibe.)	
 	private UIObject								m_showRelativeTo;		// UIObject to show the dialog relative to.  null -> Center the dialog.
 	private UserSharingRightsInfoRpcResponseData	m_rightsInfo;			// Information about sharing rights available and to be set.
 	private VibeFlowPanel							m_progressPanel;		// Panel containing the progress bar.
@@ -92,13 +93,14 @@ public class UserShareRightsDlg extends DlgBox implements EditSuccessfulHandler 
 	private final static int COLUMN_NO_CHANGE	= 3;
 	
 	// Indexes of the various table rows.
-	private final static int ROW_HEADER_1	= 0;
-	private final static int ROW_INTERNAL	= 1;
-	private final static int ROW_EXTERNAL	= 2;
-	private final static int ROW_PUBLIC		= 3;
-	private final static int ROW_SPACER		= 4;
-	private final static int ROW_HEADER_2	= 5;
-	private final static int ROW_FORWARDING	= 6;
+	private final static int ROW_HEADER_1		= 0;
+	private final static int ROW_INTERNAL		= 1;
+	private final static int ROW_EXTERNAL		= 2;
+	private final static int ROW_PUBLIC			= 3;
+	private final static int ROW_PUBLIC_LINKS	= 4;
+	private final static int ROW_SPACER			= 5;
+	private final static int ROW_HEADER_2		= 6;
+	private final static int ROW_FORWARDING		= 7;
 
 	// The following is used to generate the IDs used for the various
 	// radio buttons contained in the dialog.
@@ -117,6 +119,7 @@ public class UserShareRightsDlg extends DlgBox implements EditSuccessfulHandler 
 
 		// ...initialize everything else...
 		m_messages = GwtTeaming.getMessages();
+		m_product  = GwtClientHelper.getProductName();
 	
 		// ...and create the dialog's content.
 		createAllDlgContent(
@@ -251,6 +254,13 @@ public class UserShareRightsDlg extends DlgBox implements EditSuccessfulHandler 
 		if (hasUnchanged)
 		     setFlags.setAllowPublic(!(isRBChecked(ROW_PUBLIC, COLUMN_NO_CHANGE)));
 		else setFlags.setAllowPublic(isRBChecked != m_singleUserRights.isAllowPublic());
+
+		// Initialize the public links set and value flags.
+		isRBChecked = isRBChecked(ROW_PUBLIC_LINKS, COLUMN_ALLOW);
+		valueFlags.setAllowPublicLinks(isRBChecked);
+		if (hasUnchanged)
+		     setFlags.setAllowPublicLinks(!(isRBChecked(ROW_PUBLIC_LINKS, COLUMN_NO_CHANGE)));
+		else setFlags.setAllowPublicLinks(isRBChecked != m_singleUserRights.isAllowPublicLinks());
 
 		// Finally, return a CombinderPerUserShareRightsInfo object
 		// with the set and value flags.
@@ -473,6 +483,18 @@ public class UserShareRightsDlg extends DlgBox implements EditSuccessfulHandler 
 		addRadioCell(    ft, fcf, ROW_PUBLIC, COLUMN_CLEAR, ((null != m_singleUserRights) && (!(m_singleUserRights.isAllowPublic()))));
 		if (null == m_singleUserRights) {
 			addRadioCell(ft, fcf, ROW_PUBLIC, COLUMN_NO_CHANGE, true);
+		}
+
+		// ...define the share public links cells...
+		hasZoneSetting = m_rightsInfo.isPublicLinksEnabled(); 
+		if (!hasZoneSetting) {
+			noZoneSettings += 1;
+		}
+		addRowHeaderCell(ft, fcf, ROW_PUBLIC_LINKS, COLUMN_HEADER, buildHeaderCellString(m_messages.userShareRightsDlgLabel_PublicLinks(m_product), hasZoneSetting));
+		addRadioCell(    ft, fcf, ROW_PUBLIC_LINKS, COLUMN_ALLOW, ((null != m_singleUserRights) &&    m_singleUserRights.isAllowPublicLinks())  );
+		addRadioCell(    ft, fcf, ROW_PUBLIC_LINKS, COLUMN_CLEAR, ((null != m_singleUserRights) && (!(m_singleUserRights.isAllowPublicLinks()))));
+		if (null == m_singleUserRights) {
+			addRadioCell(ft, fcf, ROW_PUBLIC_LINKS, COLUMN_NO_CHANGE, true);
 		}
 
 		// ...define the spacer above the share forwarding cells...

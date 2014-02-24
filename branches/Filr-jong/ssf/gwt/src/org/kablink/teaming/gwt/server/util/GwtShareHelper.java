@@ -1878,6 +1878,9 @@ public class GwtShareHelper
 		role = new GwtRole();
 		role.setType( GwtRoleType.EnableShareWithAllInternal );
 		listOfRoles.add( role );
+		role = new GwtRole();
+		role.setType( GwtRoleType.EnableShareLink );
+		listOfRoles.add( role );
 		
 		shareSettings.setRoles( listOfRoles );
 		
@@ -2573,10 +2576,23 @@ public class GwtShareHelper
 	 * 
 	 * @return
 	 */
-	public static boolean isEntitySharable( AllModulesInjected bs, DefinableEntity de )
-	{
+	public static boolean isEntitySharable(AllModulesInjected bs, DefinableEntity de) {
 		SharingModule sm = bs.getSharingModule();
-		return ( sm.testAddShareEntity( de ) || sm.testAddShareEntityPublic( de ) || sm.testPublicLinkShareEntity( de ) );
+		return (sm.testAddShareEntity(de) || sm.testAddShareEntityPublic(de));
+	}
+
+	/**
+	 * Returns true if an entity's public link can be shared and false
+	 * otherwise.
+	 * 
+	 * @param bs
+	 * @param de
+	 * 
+	 * @return
+	 */
+	public static boolean isEntityPublicLinkSharable(AllModulesInjected bs, DefinableEntity de) {
+		SharingModule sm = bs.getSharingModule();
+		return sm.testAddShareEntityPublicLinks(de);
 	}
 
 	/**
@@ -2587,9 +2603,20 @@ public class GwtShareHelper
 	 * 
 	 * @return
 	 */
-	public static boolean isSharingEnabled( AllModulesInjected bs )
-	{
+	public static boolean isSharingEnabled(AllModulesInjected bs) {
 		return bs.getSharingModule().isSharingEnabled();
+	}
+
+	/**
+	 * Returns true if sharing public links is currently enabled and
+	 * false otherwise.
+	 * 
+	 * @param bs
+	 * 
+	 * @return
+	 */
+	public static boolean isSharingPublicLinksEnabled(AllModulesInjected bs) {
+		return bs.getSharingModule().isSharingPublicLinksEnabled();
 	}
 
 	/**
@@ -3428,7 +3455,7 @@ public class GwtShareHelper
     	Long zoneId;
     	ZoneConfig zoneConfig;
 
-    	shareRights = new PerUserShareRightsInfo( false, false, false, false );
+    	shareRights = new PerUserShareRightsInfo( false, false, false, false, false );
 
 		zoneId = RequestContextHolder.getRequestContext().getZoneId();
 		zoneConfig = ami.getZoneModule().getZoneConfig( zoneId );
@@ -3494,6 +3521,16 @@ public class GwtShareHelper
 						// Is sharing with the public enabled at the zone level for this user?
 						m_accessControlManager.checkOperation( user, zoneConfig, WorkAreaOperation.ENABLE_SHARING_PUBLIC );
 						shareRights.setAllowPublic( true );
+					}
+					catch ( AccessControlException acEx )
+					{
+					}
+					
+					try
+					{
+						// Is sharing public links enabled at the zone level for this user?
+						m_accessControlManager.checkOperation( user, zoneConfig, WorkAreaOperation.ENABLE_LINK_SHARING );
+						shareRights.setAllowPublicLinks( true );
 					}
 					catch ( AccessControlException acEx )
 					{

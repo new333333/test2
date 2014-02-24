@@ -530,4 +530,10 @@
         </addColumn>
 	</changeSet>
 	    
+    <changeSet author="dennis" context="schema" failOnError="true" id="44">
+        <addColumn tableName="SS_SHAREITEM">
+			<column name="right_allowSharingPublicLinks" type="NUMBER(1,0)"/>
+        </addColumn>
+    </changeSet>
+    
 </databaseChangeLog>

@@ -41,19 +41,25 @@ import org.kablink.teaming.gwt.client.admin.GwtEnterProxyCredentialsTask;
 import org.kablink.teaming.gwt.client.admin.GwtFilrAdminTask;
 import org.kablink.teaming.gwt.client.admin.GwtSelectNetFolderServerTypeTask;
 import org.kablink.teaming.gwt.client.admin.GwtUpgradeInfo;
+import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+import org.kablink.teaming.gwt.client.util.HelpData;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.LIElement;
 import com.google.gwt.dom.client.UListElement;
 import com.google.gwt.dom.client.Style.Unit;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.PopupPanel;
 
@@ -129,16 +135,21 @@ public class AdminInfoDlg extends DlgBox
 		if ( upgradeInfo.getIsLicenseExpired() )
 		{
 			FlowPanel panel;
+			FlexTable licenseTable;
 			Image img;
 			InlineLabel label;
 			String productName;
+			String txt;
 			
 			// Yes
+			licenseTable = new FlexTable();
+			
 			panel = new FlowPanel();
+			licenseTable.setWidget( 0, 1, panel );
 			
 			img = new Image( GwtTeaming.getImageBundle().expiredLicenseIcon16() );
 			img.getElement().setAttribute( "align", "absmiddle" );
-			panel.add( img );
+			licenseTable.setWidget( 0, 0, img );
 			
 			if ( GwtTeaming.m_requestInfo.isLicenseFilr() )
 				productName = GwtTeaming.getMessages().novellFilr();
@@ -146,14 +157,50 @@ public class AdminInfoDlg extends DlgBox
 				productName = GwtTeaming.getMessages().novellTeaming();
 			else
 				productName = GwtTeaming.getMessages().kablinkTeaming();
-			label = new InlineLabel( " " + GwtTeaming.getMessages().adminInfoDlgExpiredLicense( productName ) );
+			txt = " " + GwtTeaming.getMessages().adminInfoDlgExpiredLicense( productName );
+			label = new InlineLabel();
+			label.getElement().setInnerHTML( txt );
 			panel.add( label );
+			
+			// Add a link to the documentation that describes how to update the license
+			{
+				ClickHandler clickHandler;
+				Label doc;
+				
+				doc = new Label( GwtTeaming.getMessages().adminInfoDlgDocumentationLink() );
+				doc.addStyleName( "adminInfoDlg_docLink" );
+				panel.add( doc );
+
+				// Add a click handler for the link to the documentation.
+				clickHandler = new ClickHandler()
+				{
+					@Override
+					public void onClick( ClickEvent clickEvent )
+					{
+						GwtClientHelper.deferCommand( new ScheduledCommand()
+						{
+							@Override
+							public void execute()
+							{
+								HelpData helpData;
+								
+								helpData = new HelpData();
+								helpData.setGuideName( HelpData.ADMIN_GUIDE );
+								helpData.setPageId( "license" );
+								
+								GwtClientHelper.invokeHelp( helpData );
+							}
+						} );
+					}
+				};
+				doc.addClickHandler( clickHandler );
+			}
 			
 			cellFormatter.setColSpan( row, 0, 2 );
 			cellFormatter.setWordWrap( row, 0, wordWrap );
 			if ( tdStyleName != null )
 				cellFormatter.addStyleName( row, 0, tdStyleName );
-			table.setHTML( row, 0, panel.getElement().getInnerHTML() );
+			table.setWidget( row, 0, licenseTable );
 			++row;
 		}
 		

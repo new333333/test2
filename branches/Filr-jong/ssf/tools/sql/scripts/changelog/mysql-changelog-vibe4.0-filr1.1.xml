@@ -576,4 +576,10 @@ update SS_Principals set domainName=LOWER(domainName);
         </addColumn>
     </changeSet>
     
+    <changeSet author="dennis" context="schema" failOnError="true" id="50">
+        <addColumn tableName="SS_ShareItem">
+			<column name="right_allowSharingPublicLinks" type="BIT"/>
+        </addColumn>
+    </changeSet>
+    
 </databaseChangeLog>
