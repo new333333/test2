@@ -140,4 +140,12 @@ public class NullResourceDriverManager implements ResourceDriverManager {
 			throws AclItemPrincipalMappingException {
 		return null;
 	}
+
+	/*
+	 * @see org.kablink.teaming.fi.connection.ResourceDriverManager#getDriver(java.lang.Long)
+	 */
+	@Override
+	public ResourceDriver getDriver(Long driverId) throws FIException {
+		return null;
+	}
 }
