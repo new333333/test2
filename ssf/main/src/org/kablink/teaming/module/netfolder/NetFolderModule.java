@@ -62,12 +62,12 @@ public interface NetFolderModule {
 	 * should be used ONLY WHEN it is absolutely necessary (e.g. to share the file
 	 * or to comment on the file).
 	 * 
-	 * @param netFolderName
+	 * @param netFolderId
 	 * @param filePath
 	 * @param create
 	 * @return
 	 */
-	public FolderEntry obtainFolderEntry(String netFolderName, String filePath, boolean create);
+	public FolderEntry obtainFolderEntry(Long netFolderId, String filePath, boolean create);
 	
 	/**
 	 * Returns the current <code>Folder</code> associated with the specified
@@ -80,11 +80,11 @@ public interface NetFolderModule {
 	 * Creating a new persistent folder object is an expensive operation, and 
 	 * should be used ONLY WHEN it is absolutely necessary (e.g. to share the folder).
 	 * 
-	 * @param netFolderName
+	 * @param netFolderId
 	 * @param folderPath
 	 * @param create
 	 * @return
 	 */
-	public Folder obtainFolder(String netFolderName, String folderPath, boolean create);
+	public Folder obtainFolder(Long netFolderId, String folderPath, boolean create);
 
 }
