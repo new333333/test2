@@ -35,7 +35,7 @@ package org.kablink.teaming.module.netfolder.impl;
 
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
-import org.kablink.teaming.domain.NetFolder;
+import org.kablink.teaming.domain.NetFolderConfig;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.Binder.SyncScheduleOption;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
@@ -55,11 +55,11 @@ import org.springframework.transaction.support.TransactionTemplate;
  */
 public class NetFolderModuleImpl extends CommonDependencyInjection implements NetFolderModule {
 
-    public NetFolder createNetFolder(Long templateId, Long parentBinderId, String name, User owner, String rootName, String path, Boolean isHomeDir, boolean indexContent, Boolean inheritIndexContent, SyncScheduleOption syncScheduleOption, Boolean fullSyncDirOnly ) 
+    public NetFolderConfig createNetFolder(Long templateId, Long parentBinderId, String name, User owner, String rootName, String path, Boolean isHomeDir, boolean indexContent, Boolean inheritIndexContent, SyncScheduleOption syncScheduleOption, Boolean fullSyncDirOnly ) 
     		throws AccessControlException, WriteFilesException, WriteEntryDataException {
     	
     	// Create and save a new net folder
-    	NetFolder nf = new NetFolder();
+    	NetFolderConfig nf = new NetFolderConfig();
     	nf.setName(name);
     	nf.setNetFolderServerId(NetFolderUtil.getNetFolderServerByName(rootName).getId());
     	nf.setHomeDir(isHomeDir);
@@ -71,7 +71,7 @@ public class NetFolderModuleImpl extends CommonDependencyInjection implements Ne
 
     	
 		// Create top-level folder corresponding to the net folder.
-    	getFolderModule().createNetFolder(templateId, parentBinderId, name, owner, rootName, path, isHomeDir, indexContent, inheritIndexContent, syncScheduleOption, fullSyncDirOnly);
+    	getFolderModule().createNetFolder(nf.getId(), templateId, parentBinderId, name, owner, rootName, path, isHomeDir, indexContent, inheritIndexContent, syncScheduleOption, fullSyncDirOnly);
 
    		return nf;
     }

@@ -59,6 +59,7 @@ import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.ldap.LdapModule;
 import org.kablink.teaming.module.ldap.impl.LdapModuleImpl.HomeDirInfo;
+import org.kablink.teaming.module.netfolder.NetFolderModule;
 import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.profile.processor.ProfileCoreProcessor;
 import org.kablink.teaming.module.report.ReportModule;
@@ -109,6 +110,7 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 	private TemplateModule templateModule;
 	private BinderModule binderModule;
 	private FolderModule folderModule;
+	private NetFolderModule netFolderModule;
 	private ResourceDriverModule resourceDriverModule;
 	private ProcessorManager processorManager;
 	private RunAsyncManager runAsyncManager;
@@ -172,6 +174,24 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 	protected FolderModule getFolderModule()
 	{
 		return folderModule;
+	}
+	
+	/**
+	 * 
+	 * @param folderModule
+	 */
+	public void setNetFolderModule( NetFolderModule netFolderModule )
+	{
+		this.netFolderModule = netFolderModule;
+	}
+
+	/**
+	 * 
+	 * @return
+	 */
+	protected NetFolderModule getNetFolderModule()
+	{
+		return netFolderModule;
 	}
 	
 	/**
@@ -469,6 +489,7 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 															getTemplateModule(),
 															getBinderModule(),
 															getFolderModule(),
+															getNetFolderModule(),
 															getAdminModule(),
 															getResourceDriverModule(),
 															getRunAsyncManager(),

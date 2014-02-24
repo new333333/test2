@@ -2,15 +2,16 @@
 <databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
     
     <changeSet author="jong" context="schema" failOnError="true" id="1">
-        <createTable tableName="net_folder">
+        <createTable tableName="net_folder_config">
             <column autoIncrement="true" name="id" type="BIGINT">
                 <constraints nullable="false" primaryKey="true"/>
-            </column>
-            
+            </column>           
             <column name="name" type="VARCHAR(64)">
                 <constraints nullable="false"/>
             </column>
-
+			<column name="folderId" type="BIGINT">
+                <constraints nullable="false"/>
+			</column>			
 			<column name="netFolderServerId" type="BIGINT">
                 <constraints nullable="false"/>
 			</column>			
@@ -54,8 +55,14 @@
     </changeSet>
 
     <changeSet author="jong" context="schema" failOnError="true" id="2">
+        <createIndex indexName="name_netFolderConfig" tableName="net_folder_config" unique="true">
+            <column name="name"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="3">
         <addColumn tableName="SS_Forums">
-            <column name="netFolderId" type="BIGINT">
+            <column name="netFolderConfigId" type="BIGINT">
                 <constraints nullable="true" />
             </column>
         </addColumn>

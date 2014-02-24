@@ -22,6 +22,7 @@
     <property name="resourcePath" length="1024" access="field"/>
     <property name="myFilesDir" access="field"/>
     <property name="resourceHandle" length="128" />
+    <property name="netFolderConfigId"/>
     <many-to-one name="parentBinder">
           <column name="parentBinder" index="owningBinder_Binder"/>
     </many-to-one>

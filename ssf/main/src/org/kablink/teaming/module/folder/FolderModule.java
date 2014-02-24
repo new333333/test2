@@ -732,7 +732,7 @@ public interface FolderModule {
 	
     public void syncAclForNetFolderRoot(Folder netFolderRoot);
 
-    public Folder createNetFolder(Long templateId, Long parentBinderId, String name, User owner, String rootName, String path, Boolean isHomeDir, boolean indexContent, Boolean inheritIndexContent, SyncScheduleOption syncScheduleOption, Boolean fullSyncDirOnly ) throws AccessControlException, WriteFilesException, WriteEntryDataException;
+    public Folder createNetFolder(Long netFolderConfigId, Long templateId, Long parentBinderId, String name, User owner, String rootName, String path, Boolean isHomeDir, boolean indexContent, Boolean inheritIndexContent, SyncScheduleOption syncScheduleOption, Boolean fullSyncDirOnly ) throws AccessControlException, WriteFilesException, WriteEntryDataException;
     
     /**
      * Get an object containing information about the latest full synchronization run on the specified net folder.

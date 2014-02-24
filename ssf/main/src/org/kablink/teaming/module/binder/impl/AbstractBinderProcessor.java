@@ -482,7 +482,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
  				throw new IllegalArgumentException("Mirrored folder must also be a library folder");
  			if(binder.getResourceDriverName() == null) {
  				if(parent.isMirrored()) {
- 					binder.setNetFolderId(parent.getNetFolderId());
+ 					binder.setNetFolderConfigId(parent.getNetFolderConfigId());
  				}
  				else {
  					throw new ConfigurationException("errorcode.mirrored.folder.requires.resource.driver." + (binder.isAclExternallyControlled() ? "net" : "mirrored"), new Object[]{});
@@ -506,7 +506,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
  			}
  		}
  		else {
- 			binder.setNetFolderId(null);
+ 			binder.setNetFolderConfigId(null);
  			binder.setResourcePath(null);
  		}
     }
@@ -528,7 +528,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 				binder.setMirrored(true);
 			}
 	    	normalizeResourcePathIfInInput(binder, inputData);
-	    	binder.setNetFolderId(parent.getNetFolderId());
+	    	binder.setNetFolderConfigId(parent.getNetFolderConfigId());
 						
 	    	if(binder.getResourceDriverName() != null) {
 				ResourceDriver driver = getResourceDriverManager().getDriver(binder.getResourceDriverName());

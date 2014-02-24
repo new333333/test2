@@ -42,10 +42,11 @@ import org.kablink.teaming.web.util.NetFolderHelper;
  * @author jong
  *
  */
-public class NetFolder {
+public class NetFolderConfig {
 
 	protected Long id;
 	protected String name;
+	protected Long folderId;
 	protected Long netFolderServerId;
     protected Boolean homeDir = Boolean.FALSE;
     protected Boolean allowDesktopAppToSyncData = Boolean.TRUE;
@@ -73,6 +74,14 @@ public class NetFolder {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public Long getFolderId() {
+		return folderId;
+	}
+
+	public void setFolderId(Long folderId) {
+		this.folderId = folderId;
 	}
 
 	public Long getNetFolderServerId() {
