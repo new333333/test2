@@ -102,7 +102,7 @@ import org.kablink.teaming.domain.LdapConnectionConfig;
 import org.kablink.teaming.domain.LibraryEntry;
 import org.kablink.teaming.domain.LoginInfo;
 import org.kablink.teaming.domain.MobileDevice;
-import org.kablink.teaming.domain.NetFolder;
+import org.kablink.teaming.domain.NetFolderConfig;
 import org.kablink.teaming.domain.NoBinderByTheIdException;
 import org.kablink.teaming.domain.NoBinderByTheNameException;
 import org.kablink.teaming.domain.NoBinderQuotaByTheIdException;
@@ -1480,10 +1480,10 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
     }
 
     @Override
-	public NetFolder loadNetFolder(Long netFolderId) throws NoNetFolderByTheIdException {  
+	public NetFolderConfig loadNetFolderConfig(Long netFolderId) throws NoNetFolderByTheIdException {  
 		long begin = System.nanoTime();
 		try {
-			NetFolder nf = (NetFolder)load(NetFolder.class, netFolderId);
+			NetFolderConfig nf = (NetFolderConfig)load(NetFolderConfig.class, netFolderId);
 			if(nf != null)
 				return nf;
 			else
@@ -1495,14 +1495,14 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
     }
     
     @Override
-    public NetFolder loadNetFolderByName(final String netFolderName) throws NoNetFolderByTheNameException {
+    public NetFolderConfig loadNetFolderConfigByName(final String netFolderName) throws NoNetFolderByTheNameException {
 		long begin = System.nanoTime();
 		try {
-			return (NetFolder)getHibernateTemplate().execute(
-		            new HibernateCallback<NetFolder>() {
+			return (NetFolderConfig)getHibernateTemplate().execute(
+		            new HibernateCallback<NetFolderConfig>() {
 		                @Override
-						public NetFolder doInHibernate(Session session) throws HibernateException {
-		                	NetFolder netFolder = (NetFolder)session.createCriteria(NetFolder.class)
+						public NetFolderConfig doInHibernate(Session session) throws HibernateException {
+		                	NetFolderConfig netFolder = (NetFolderConfig)session.createCriteria(NetFolderConfig.class)
 	                 		.add(Restrictions.eq("name", netFolderName))
 	                		.setCacheable(true)
 	                		.uniqueResult();

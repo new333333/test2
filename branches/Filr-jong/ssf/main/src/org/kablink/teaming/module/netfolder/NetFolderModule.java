@@ -34,7 +34,7 @@ package org.kablink.teaming.module.netfolder;
 
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
-import org.kablink.teaming.domain.NetFolder;
+import org.kablink.teaming.domain.NetFolderConfig;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.Binder.SyncScheduleOption;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
@@ -47,7 +47,29 @@ import org.kablink.teaming.security.AccessControlException;
  */
 public interface NetFolderModule {
 	
-    public NetFolder createNetFolder(Long templateId, Long parentBinderId, String name, User owner, String rootName, String path, Boolean isHomeDir, boolean indexContent, Boolean inheritIndexContent, SyncScheduleOption syncScheduleOption, Boolean fullSyncDirOnly ) 
+	/**
+	 * Create a net folder from the supplied configuration settings.
+	 * This creates a new <code>NetFolderConfig</code> object and persists it in the database.
+	 * It also creates a new persistent <code>Folder</code> object representing the top of the net folder 
+	 * hierarchy and these two pieces of information are linked together.
+	 * 
+	 * @param templateId
+	 * @param parentBinderId
+	 * @param name
+	 * @param owner
+	 * @param rootName
+	 * @param path
+	 * @param isHomeDir
+	 * @param indexContent
+	 * @param inheritIndexContent
+	 * @param syncScheduleOption
+	 * @param fullSyncDirOnly
+	 * @return newly created net folder config object
+	 * @throws AccessControlException
+	 * @throws WriteFilesException
+	 * @throws WriteEntryDataException
+	 */
+    public NetFolderConfig createNetFolder(Long templateId, Long parentBinderId, String name, User owner, String rootName, String path, Boolean isHomeDir, boolean indexContent, Boolean inheritIndexContent, SyncScheduleOption syncScheduleOption, Boolean fullSyncDirOnly ) 
     		throws AccessControlException, WriteFilesException, WriteEntryDataException;
 	
 	/**

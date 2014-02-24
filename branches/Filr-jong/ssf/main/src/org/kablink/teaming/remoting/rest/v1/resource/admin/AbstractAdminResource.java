@@ -45,7 +45,7 @@ public class AbstractAdminResource extends AbstractResource {
         Binder parentBinder = getCoreDao().loadReservedBinder(ObjectKeys.NET_FOLDERS_ROOT_INTERNALID,
                 RequestContextHolder.getRequestContext().getZoneId() );
 
-        Binder binder = NetFolderHelper.createNetFolder(getTemplateModule(), getBinderModule(), getFolderModule(), getAdminModule(), getLoggedInUser(),
+        Binder binder = NetFolderHelper.createNetFolder(getTemplateModule(), getBinderModule(), getFolderModule(), getNetFolderModule(), getAdminModule(), getLoggedInUser(),
                 netFolder.getName(), resourceDriverConfig.getName(), netFolder.getRelativePath(), toScheduleInfo(netFolder.getSyncSchedule()),
                 syncScheduleOption, parentBinder.getId(), false, netFolder.getIndexContent(), netFolder.getInheritIndexContent(), netFolder.getFullSyncDirOnly());
 

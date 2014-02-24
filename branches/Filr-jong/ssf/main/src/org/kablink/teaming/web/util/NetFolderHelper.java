@@ -51,6 +51,7 @@ import org.kablink.teaming.dao.util.NetFolderSelectSpec;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Binder.SyncScheduleOption;
 import org.kablink.teaming.domain.Folder;
+import org.kablink.teaming.domain.NetFolderConfig;
 import org.kablink.teaming.domain.ResourceDriverConfig;
 import org.kablink.teaming.domain.ResourceDriverConfig.AuthenticationType;
 import org.kablink.teaming.domain.TemplateBinder;
@@ -71,6 +72,7 @@ import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.ldap.impl.LdapModuleImpl.HomeDirInfo;
+import org.kablink.teaming.module.netfolder.NetFolderModule;
 import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.resourcedriver.RDException;
 import org.kablink.teaming.module.resourcedriver.ResourceDriverModule;
@@ -267,6 +269,7 @@ public class NetFolderHelper
 		TemplateModule templateModule,
 		BinderModule binderModule,
 		final FolderModule folderModule,
+		final NetFolderModule netFolderModule,
 		AdminModule adminModule,
 		ResourceDriverModule resourceDriverModule,
 		RunAsyncManager asyncManager,
@@ -278,6 +281,7 @@ public class NetFolderHelper
 							templateModule,
 							binderModule,
 							folderModule,
+							netFolderModule,
 							adminModule,
 							resourceDriverModule,
 							asyncManager,
@@ -295,6 +299,7 @@ public class NetFolderHelper
 		TemplateModule templateModule,
 		BinderModule binderModule,
 		final FolderModule folderModule,
+		final NetFolderModule netFolderModule,
 		AdminModule adminModule,
 		ResourceDriverModule resourceDriverModule,
 		RunAsyncManager asyncManager,
@@ -451,6 +456,7 @@ public class NetFolderHelper
 															templateModule,
 															binderModule,
 															folderModule,
+															netFolderModule,
 															adminModule,
 															user,
 															folderName,
@@ -570,6 +576,7 @@ public class NetFolderHelper
 		TemplateModule templateModule,
 		BinderModule binderModule,
 		FolderModule folderModule,
+		NetFolderModule netFolderModule,
 		AdminModule adminModule,
 		User owner,
 		String name,
@@ -619,7 +626,7 @@ public class NetFolderHelper
 
 		if ( templateId != null )
 		{			
-			binder = folderModule.createNetFolder(
+			NetFolderConfig nfc = netFolderModule.createNetFolder(
 											templateId,
 											parentBinderId,
 											name,
@@ -631,6 +638,8 @@ public class NetFolderHelper
 											inheritIndexContentOption,
 											syncScheduleOption,
 											fullSyncDirOnly );
+			
+			binder = binderModule.getBinder(nfc.getFolderId());
 			
 			// Set the net folder's sync schedule
 			if ( scheduleInfo != null )

@@ -2,14 +2,15 @@
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
 
 <hibernate-mapping auto-import="false">
-  <class dynamic-update="true" lazy="false" table="net_folder" dynamic-insert="false" name="org.kablink.teaming.domain.NetFolder">
+  <class dynamic-update="true" lazy="false" table="net_folder_config" dynamic-insert="false" name="org.kablink.teaming.domain.NetFolderConfig">
     <!--<cache usage="read-write"/>-->
     <id unsaved-value="null" name="id" type="long">
       <generator class="native">
       	<param name="sequence">ss_net_folder_id_sequence</param>
       </generator>
     </id>
-    <property name="name" length="64" />
+    <property name="name" length="64" not-null="true" index="name_netFolderConfig"/>
+    <property name="folderId" not-null="true"/>
     <property name="netFolderServerId" not-null="true"/>
     <property name="homeDir" access="field"/>
     <property name="allowDesktopAppToSyncData" access="field"/>

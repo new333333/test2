@@ -114,6 +114,7 @@ import org.kablink.teaming.module.ldap.LdapSchedule;
 import org.kablink.teaming.module.ldap.LdapSyncResults;
 import org.kablink.teaming.module.ldap.LdapSyncResults.PartialLdapSyncResults;
 import org.kablink.teaming.module.ldap.LdapSyncResults.SyncStatus;
+import org.kablink.teaming.module.netfolder.NetFolderModule;
 import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.profile.processor.ProfileCoreProcessor;
 import org.kablink.teaming.module.resourcedriver.ResourceDriverModule;
@@ -235,6 +236,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	protected TemplateModule templateModule;
 	protected BinderModule binderModule;
 	protected FolderModule folderModule;
+	protected NetFolderModule netFolderModule;
 	protected AdminModule adminModule;
 	protected ResourceDriverModule resourceDriverModule;
 	protected SessionFactory sessionFactory;
@@ -432,6 +434,24 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		this.folderModule = folderModule;
 	}
 
+	/**
+	 * 
+	 * @param folderModule
+	 */
+	public void setNetFolderModule( NetFolderModule netFolderModule )
+	{
+		this.netFolderModule = netFolderModule;
+	}
+
+	/**
+	 * 
+	 * @return
+	 */
+	protected NetFolderModule getNetFolderModule()
+	{
+		return netFolderModule;
+	}
+	
 	/**
 	 * 
 	 */
@@ -7324,6 +7344,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 											getTemplateModule(),
 											getBinderModule(),
 											getFolderModule(),
+											getNetFolderModule(),
 											getAdminModule(),
 											getResourceDriverModule(),
 											null,
