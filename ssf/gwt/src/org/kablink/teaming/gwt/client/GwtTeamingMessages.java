@@ -460,9 +460,12 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_NumberOfMembers();
 	String rpcFailure_GetNetFolder();
 	String rpcFailure_GetNetFolderSyncStatistics();
-	String rpcFailure_GetNextPreviousFolderEntryInfo();
+	String rpcFailure_GetNextFolderEntryInfo();
+	String rpcFailure_GetNextFolderEntryInfo_NoAccess();
 	String rpcFailure_GetParentBinderPermalink();
 	String rpcFailure_GetPersonalPreferences();
+	String rpcFailure_GetPreviousFolderEntryInfo();
+	String rpcFailure_GetPreviousFolderEntryInfo_NoAccess();
 	String rpcFailure_GetPresenceInfo();
 	String rpcFailure_GetProfileAvatars();
 	String rpcFailure_GetProfileEntryInfo();

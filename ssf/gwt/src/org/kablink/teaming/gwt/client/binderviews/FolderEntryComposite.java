@@ -35,6 +35,7 @@ package org.kablink.teaming.gwt.client.binderviews;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.kablink.teaming.gwt.client.GwtTeamingException.ExceptionType;
 import org.kablink.teaming.gwt.client.binderviews.FolderEntryCookies.Cookie;
 import org.kablink.teaming.gwt.client.binderviews.ToolPanelBase.ToolPanelClient;
 import org.kablink.teaming.gwt.client.binderviews.util.BinderViewsHelper;
@@ -64,6 +65,7 @@ import org.kablink.teaming.gwt.client.event.UnlockSelectedEntitiesEvent;
 import org.kablink.teaming.gwt.client.event.ZipAndDownloadSelectedFilesEvent;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingDataTableImageBundle;
+import org.kablink.teaming.gwt.client.GwtTeamingException;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.event.ChangeContextEvent;
 import org.kablink.teaming.gwt.client.rpc.shared.FolderEntryDetailsRpcResponseData;
@@ -552,10 +554,19 @@ public class FolderEntryComposite extends ResizeComposite
 		GetNextPreviousFolderEntryInfoCmd cmd = new GetNextPreviousFolderEntryInfoCmd(m_vfei.getEntityId(), previous);
 		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
 			@Override
-			public void onFailure(Throwable caught) {
-				GwtClientHelper.handleGwtRPCFailure(
-					caught,
-					m_messages.rpcFailure_GetNextPreviousFolderEntryInfo());
+			public void onFailure(Throwable t) {
+				String error;
+				if ((t instanceof GwtTeamingException) && ExceptionType.ACCESS_CONTROL_EXCEPTION.equals(((GwtTeamingException) t).getExceptionType())) {
+					if (previous)
+					     error = m_messages.rpcFailure_GetPreviousFolderEntryInfo_NoAccess();
+					else error = m_messages.rpcFailure_GetNextFolderEntryInfo_NoAccess();
+				}
+				else {
+					if (previous)
+					     error = m_messages.rpcFailure_GetPreviousFolderEntryInfo();
+					else error = m_messages.rpcFailure_GetNextFolderEntryInfo();
+				}
+				GwtClientHelper.handleGwtRPCFailure(t, error);
 			}
 
 			@Override
