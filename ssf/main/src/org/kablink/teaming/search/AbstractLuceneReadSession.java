@@ -323,7 +323,7 @@ public abstract class AbstractLuceneReadSession extends AbstractLuceneSession im
 		
 		Hits hits = new Hits(result.size());
 		for(int i = 0; i < result.size(); i++)
-			hits.setDoc(result.get(i), i);
+			hits.addDoc(result.get(i));
 		// Adjust the raw total hits count by subtracting the number of items that failed the post 
 		// filtering so far. In other word we factor in what we've learned by now. 
 		// This adjustment may not amount to much, but still better than nothing.
