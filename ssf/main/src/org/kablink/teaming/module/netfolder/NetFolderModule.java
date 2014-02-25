@@ -72,19 +72,11 @@ public interface NetFolderModule {
     public NetFolderConfig createNetFolder(Long templateId, Long parentBinderId, String name, User owner, String rootName, String path, Boolean isHomeDir, boolean indexContent, Boolean inheritIndexContent, SyncScheduleOption syncScheduleOption, Boolean fullSyncDirOnly ) throws AccessControlException, WriteFilesException, WriteEntryDataException;
 	
     /**
-     * Modify the configuration settings of the net folder.
+     * Persists the net folder config object containing modified configuration settings.
      * 
-     * @param netFolderConfigId
-     * @param name
-     * @param rootName
-     * @param path
-     * @param isHomeDir
-     * @param indexContent
-     * @param inheritIndexContent
-     * @param syncScheduleOption
-     * @param fullSyncDirOnly
+     * @param netFolderConfig
      */
-    public void modifyNetFolder(Long netFolderConfigId, String name, Long netFolderServerId, String path, Boolean isHomeDir, boolean indexContent, Boolean inheritIndexContent, SyncScheduleOption syncScheduleOption, Boolean fullSyncDirOnly ) throws AccessControlException, WriteFilesException, WriteEntryDataException;
+    public void modifyNetFolder(NetFolderConfig netFolderConfig);
 	
     /**
      * Delete the net folder. This deletes BOTH the configuration/definition of the net folder AND the entire data associated with it.

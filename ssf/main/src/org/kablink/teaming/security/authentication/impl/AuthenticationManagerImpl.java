@@ -522,7 +522,7 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 							// Delete the home net folder.
 							try
 							{
-								NetFolderHelper.deleteNetFolder( getFolderModule(), netFolderBinder.getId(), false );
+								NetFolderHelper.deleteNetFolder( getNetFolderModule(), netFolderBinder.getId(), false );
 							}
 							catch ( Exception e )
 							{

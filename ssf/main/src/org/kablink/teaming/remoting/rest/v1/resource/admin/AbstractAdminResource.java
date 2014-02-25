@@ -4,6 +4,7 @@ import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Folder;
+import org.kablink.teaming.domain.NetFolderConfig;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.ResourceDriverConfig;
 import org.kablink.teaming.jobs.ScheduleInfo;
@@ -45,10 +46,14 @@ public class AbstractAdminResource extends AbstractResource {
         Binder parentBinder = getCoreDao().loadReservedBinder(ObjectKeys.NET_FOLDERS_ROOT_INTERNALID,
                 RequestContextHolder.getRequestContext().getZoneId() );
 
-        Binder binder = NetFolderHelper.createNetFolder(getTemplateModule(), getBinderModule(), getFolderModule(), getNetFolderModule(), getAdminModule(), getLoggedInUser(),
+        
+        
+        NetFolderConfig nfc = NetFolderHelper.createNetFolder(getTemplateModule(), getBinderModule(), getFolderModule(), getNetFolderModule(), getAdminModule(), getLoggedInUser(),
                 netFolder.getName(), resourceDriverConfig.getName(), netFolder.getRelativePath(), toScheduleInfo(netFolder.getSyncSchedule()),
                 syncScheduleOption, parentBinder.getId(), false, netFolder.getIndexContent(), netFolder.getInheritIndexContent(), netFolder.getFullSyncDirOnly());
 
+        Binder binder = getBinderModule().getBinder(nfc.getFolderId());
+        
         if (roles!=null) {
             NetFolderHelper.setNetFolderRights(this, binder.getId(), roles);
         }

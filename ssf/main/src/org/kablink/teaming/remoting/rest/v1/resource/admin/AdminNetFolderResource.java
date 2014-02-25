@@ -128,7 +128,7 @@ public class AdminNetFolderResource extends AbstractAdminResource {
     @Path("{id}")
     public void deleteNetFolderServer(@PathParam("id") Long id) {
         Folder folder = lookupNetFolder(id);
-        NetFolderHelper.deleteNetFolder(getFolderModule(), id, false);
+        NetFolderHelper.deleteNetFolder(getNetFolderModule(), id, false);
     }
 
 
