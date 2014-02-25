@@ -302,7 +302,7 @@ public interface CoreDao {
 	 */
 	public Map findMobileDevices(final MobileDeviceSelectSpec selectSpec, final Long zoneId);
 	
-	public NetFolderConfig loadNetFolderConfig(Long netFolderId) throws NoNetFolderByTheIdException;
+	public NetFolderConfig loadNetFolderConfig(Long netFolderConfigId) throws NoNetFolderByTheIdException;
 	public NetFolderConfig loadNetFolderConfigByName(String netFolderName) throws NoNetFolderByTheNameException;
 	
 	public  ResourceDriverConfig loadNetFolderServer(Long netFolderServerId) throws NoNetFolderServerByTheIdException;

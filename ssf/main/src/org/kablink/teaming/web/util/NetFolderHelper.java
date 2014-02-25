@@ -1033,9 +1033,10 @@ public class NetFolderHelper
 	public static void modifyNetFolder(
 		BinderModule binderModule,
 		FolderModule folderModule,
+		NetFolderModule netFolderModule,
 		Long id,
 		String netFolderName,
-		String netFolderRootName,
+		Long netFolderRootId,
 		String relativePath,
 		ScheduleInfo scheduleInfo,
 		SyncScheduleOption syncScheduleOption,
@@ -1044,10 +1045,10 @@ public class NetFolderHelper
 		Boolean fullSyncDirOnly ) throws AccessControlException, WriteFilesException, WriteEntryDataException
 	{
 		// Modify the binder with the net folder information.
-		folderModule.modifyNetFolder(
+		netFolderModule.modifyNetFolder(
 									id,
 									netFolderName,
-									netFolderRootName,
+									netFolderRootId,
 									relativePath,
 									null,
 									indexContent,

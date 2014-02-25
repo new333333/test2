@@ -12,6 +12,7 @@
     <property name="name" length="64" not-null="true" index="name_netFolderConfig"/>
     <property name="folderId" not-null="true"/>
     <property name="netFolderServerId" not-null="true"/>
+    <property name="resourcePath" length="1024" not-null="true"/>
     <property name="homeDir" access="field"/>
     <property name="allowDesktopAppToSyncData" access="field"/>
     <property name="allowMobileAppsToSyncData" access="field"/>

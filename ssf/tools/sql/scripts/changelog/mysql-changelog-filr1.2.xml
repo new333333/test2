@@ -15,6 +15,9 @@
 			<column name="netFolderServerId" type="BIGINT">
                 <constraints nullable="false"/>
 			</column>			
+            <column name="resourcePath" type="VARCHAR(1024)">
+            	<constraints nullable="false"/>
+            </column>
 			<column name="homeDir" type="BIT">
                 <constraints nullable="true"/>
 			</column>			

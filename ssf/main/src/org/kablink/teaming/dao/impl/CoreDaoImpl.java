@@ -1480,17 +1480,17 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
     }
 
     @Override
-	public NetFolderConfig loadNetFolderConfig(Long netFolderId) throws NoNetFolderByTheIdException {  
+	public NetFolderConfig loadNetFolderConfig(Long netFolderConfigId) throws NoNetFolderByTheIdException {  
 		long begin = System.nanoTime();
 		try {
-			NetFolderConfig nf = (NetFolderConfig)load(NetFolderConfig.class, netFolderId);
+			NetFolderConfig nf = (NetFolderConfig)load(NetFolderConfig.class, netFolderConfigId);
 			if(nf != null)
 				return nf;
 			else
-				throw new NoNetFolderByTheIdException(netFolderId);
+				throw new NoNetFolderByTheIdException(netFolderConfigId);
     	}
     	finally {
-    		end(begin, "loadNetFolder(Long)");
+    		end(begin, "loadNetFolderConfig(Long)");
     	}	        
     }
     
@@ -1515,7 +1515,7 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
 		        );
     	}
     	finally {
-    		end(begin, "loadNetFolderByName(String)");
+    		end(begin, "loadNetFolderConfigByName(String)");
     	}	        
 
     }

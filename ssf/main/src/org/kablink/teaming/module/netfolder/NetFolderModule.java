@@ -69,9 +69,30 @@ public interface NetFolderModule {
 	 * @throws WriteFilesException
 	 * @throws WriteEntryDataException
 	 */
-    public NetFolderConfig createNetFolder(Long templateId, Long parentBinderId, String name, User owner, String rootName, String path, Boolean isHomeDir, boolean indexContent, Boolean inheritIndexContent, SyncScheduleOption syncScheduleOption, Boolean fullSyncDirOnly ) 
-    		throws AccessControlException, WriteFilesException, WriteEntryDataException;
+    public NetFolderConfig createNetFolder(Long templateId, Long parentBinderId, String name, User owner, String rootName, String path, Boolean isHomeDir, boolean indexContent, Boolean inheritIndexContent, SyncScheduleOption syncScheduleOption, Boolean fullSyncDirOnly ) throws AccessControlException, WriteFilesException, WriteEntryDataException;
 	
+    /**
+     * Modify the configuration settings of the net folder.
+     * 
+     * @param netFolderConfigId
+     * @param name
+     * @param rootName
+     * @param path
+     * @param isHomeDir
+     * @param indexContent
+     * @param inheritIndexContent
+     * @param syncScheduleOption
+     * @param fullSyncDirOnly
+     */
+    public void modifyNetFolder(Long netFolderConfigId, String name, Long netFolderServerId, String path, Boolean isHomeDir, boolean indexContent, Boolean inheritIndexContent, SyncScheduleOption syncScheduleOption, Boolean fullSyncDirOnly ) throws AccessControlException, WriteFilesException, WriteEntryDataException;
+	
+    /**
+     * Delete the net folder. This deletes BOTH the configuration/definition of the net folder AND the entire data associated with it.
+     * 
+     * @param netFolderConfigId
+     */
+    public void deleteNetFolder(Long netFolderConfigId, boolean deleteSource);
+    
 	/**
 	 * Returns the current <code>FolderEntry</code> associated with the specified
 	 * file in the specified net folder or, if there is no current entry and
@@ -84,12 +105,12 @@ public interface NetFolderModule {
 	 * should be used ONLY WHEN it is absolutely necessary (e.g. to share the file
 	 * or to comment on the file).
 	 * 
-	 * @param netFolderId
+	 * @param netFolderConfigId
 	 * @param filePath
 	 * @param create
 	 * @return
 	 */
-	public FolderEntry obtainFolderEntry(Long netFolderId, String filePath, boolean create);
+	public FolderEntry obtainFolderEntry(Long netFolderConfigId, String filePath, boolean create);
 	
 	/**
 	 * Returns the current <code>Folder</code> associated with the specified
@@ -102,11 +123,11 @@ public interface NetFolderModule {
 	 * Creating a new persistent folder object is an expensive operation, and 
 	 * should be used ONLY WHEN it is absolutely necessary (e.g. to share the folder).
 	 * 
-	 * @param netFolderId
+	 * @param netFolderConfigId
 	 * @param folderPath
 	 * @param create
 	 * @return
 	 */
-	public Folder obtainFolder(Long netFolderId, String folderPath, boolean create);
+	public Folder obtainFolder(Long netFolderConfigId, String folderPath, boolean create);
 
 }
