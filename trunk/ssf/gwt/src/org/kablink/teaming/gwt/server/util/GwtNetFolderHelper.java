@@ -1669,13 +1669,8 @@ public class GwtNetFolderHelper
    				break;
    			}
 
-   			// Even though we didn't call initialize() above, we still call shutdown
-   			// because there might be some resources that the driver may have internally
-   			// obtained which needs to be freed up. We shall see if this trick works OK.
-   			try {
-   				aclDriver.shutdown();
-   			}
-   			catch(Exception ignore) {}
+   			// Do not call shutdown() on this temporary driver instance, since we don't call initialize() on it.
+   			// Otherwise, the ref count FAMT maintains can go incorrect.
    		}
    		
    		return statusCode;
