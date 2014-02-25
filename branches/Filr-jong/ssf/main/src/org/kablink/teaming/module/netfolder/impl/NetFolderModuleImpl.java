@@ -140,6 +140,18 @@ public class NetFolderModuleImpl extends CommonDependencyInjection implements Ne
     }
     
 	@Override
+    public void modifyNetFolder(final NetFolderConfig netFolderConfig) {
+        getTransactionTemplate().execute(new TransactionCallback<Object>() {
+        	@Override
+			public Object doInTransaction(final TransactionStatus status) {
+        		getCoreDao().update(netFolderConfig);
+				return null;
+        	}
+        });
+    }
+    
+	/*
+	@Override
     public void modifyNetFolder(Long netFolderConfigId, final String name, final Long netFolderServerId, final String path, final Boolean isHomeDir, final boolean indexContent, final Boolean inheritIndexContent, final SyncScheduleOption syncScheduleOption, final Boolean fullSyncDirOnly ) throws AccessControlException, WriteFilesException, WriteEntryDataException {
     	final NetFolderConfig nfc = getCoreDao().loadNetFolderConfig(netFolderConfigId);
         getTransactionTemplate().execute(new TransactionCallback<Object>() {
@@ -156,7 +168,7 @@ public class NetFolderModuleImpl extends CommonDependencyInjection implements Ne
 				return null;
         	}
         });
-    }
+    }*/
     
 	@Override
     public void deleteNetFolder(Long netFolderConfigId, boolean deleteSource) {

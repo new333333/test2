@@ -572,7 +572,7 @@ public class NetFolderHelper
 	/**
 	 * Create a net folder from the given data
 	 */
-	public static Binder createNetFolder(
+	public static NetFolderConfig createNetFolder(
 		TemplateModule templateModule,
 		BinderModule binderModule,
 		FolderModule folderModule,
@@ -591,6 +591,7 @@ public class NetFolderHelper
 		Boolean fullSyncDirOnly ) throws WriteFilesException, WriteEntryDataException
 	{
 		Binder binder = null;
+		NetFolderConfig nfc = null;
 		Long templateId = null;
 		List<TemplateBinder> listOfTemplateBinders;
 		String templateInternalId;
@@ -626,7 +627,7 @@ public class NetFolderHelper
 
 		if ( templateId != null )
 		{			
-			NetFolderConfig nfc = netFolderModule.createNetFolder(
+			nfc = netFolderModule.createNetFolder(
 											templateId,
 											parentBinderId,
 											name,
@@ -639,7 +640,7 @@ public class NetFolderHelper
 											syncScheduleOption,
 											fullSyncDirOnly );
 			
-			binder = binderModule.getBinder(nfc.getFolderId());
+			//binder = binderModule.getBinder(nfc.getFolderId());
 			
 			// Set the net folder's sync schedule
 			if ( scheduleInfo != null )
@@ -656,7 +657,7 @@ public class NetFolderHelper
 		else
 			m_logger.error( "Could not find the template binder for a mirrored folder" );
 		
-		return binder;
+		return nfc;
 	}
 	
 	/**
@@ -754,11 +755,11 @@ public class NetFolderHelper
 	 * Delete the given net folder
 	 */
 	public static void deleteNetFolder(
-		FolderModule folderModule,
+		NetFolderModule netFolderModule,
 		Long id,
 		boolean deleteSource )
 	{
-		folderModule.deleteNetFolder( id, deleteSource );
+		netFolderModule.deleteNetFolder( id, deleteSource );
 	}
 	
 	/**
@@ -1045,7 +1046,7 @@ public class NetFolderHelper
 		Boolean fullSyncDirOnly ) throws AccessControlException, WriteFilesException, WriteEntryDataException
 	{
 		// Modify the binder with the net folder information.
-		netFolderModule.modifyNetFolder(
+		folderModule.modifyNetFolder(
 									id,
 									netFolderName,
 									netFolderRootId,

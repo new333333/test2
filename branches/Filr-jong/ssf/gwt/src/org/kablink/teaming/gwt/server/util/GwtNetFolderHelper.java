@@ -57,6 +57,7 @@ import org.kablink.teaming.domain.BinderState.FullSyncStatus;
 import org.kablink.teaming.domain.Description;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.Group;
+import org.kablink.teaming.domain.NetFolderConfig;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.ResourceDriverConfig;
 import org.kablink.teaming.domain.ResourceDriverConfig.AuthenticationType;
@@ -189,6 +190,7 @@ public class GwtNetFolderHelper
 		try
 		{
 			Binder binder;
+			NetFolderConfig nfc;
 			ScheduleInfo scheduleInfo = null;
 			SyncScheduleOption syncScheduleOption = null;
 			
@@ -210,7 +212,7 @@ public class GwtNetFolderHelper
 				}
 			}
 			
-			binder = NetFolderHelper.createNetFolder(
+			nfc = NetFolderHelper.createNetFolder(
 												ami.getTemplateModule(),
 												ami.getBinderModule(),
 												ami.getFolderModule(),
@@ -228,8 +230,10 @@ public class GwtNetFolderHelper
 												netFolder.getInheritIndexContentSetting(),
 												netFolder.getFullSyncDirOnly() );
 			
+			//binder = ami.getBinderModule().getBinder(nfc.getFolderId());
+			
 			// Set the rights on the net folder
-			setNetFolderRights( ami, binder.getId(), netFolder.getRoles() );
+			setNetFolderRights( ami, nfc.getFolderId(), netFolder.getRoles() );
 			
 			// Set the data sync settings on the net folder
 			saveDataSyncSettings( ami, binder.getId(), netFolder.getDataSyncSettings() );
@@ -403,7 +407,7 @@ public class GwtNetFolderHelper
 
 			try
 			{
-				NetFolderHelper.deleteNetFolder( ami.getFolderModule(), nextNetFolder.getId(), false );
+				NetFolderHelper.deleteNetFolder( ami.getNetFolderModule(), nextNetFolder.getId(), false );
 				result.setStatus( DeleteNetFolderStatus.SUCCESS, null );
 			}
 			catch ( CannotDeleteSyncingNetFolderException nfEx )
