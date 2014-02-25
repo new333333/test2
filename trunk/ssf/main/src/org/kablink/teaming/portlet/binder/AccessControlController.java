@@ -257,15 +257,15 @@ public class AccessControlController extends AbstractBinderController {
 				
 				
 				//Gather net folder data if this is a net folder
-				PortletURL url = response.createRenderURL();
-				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_ACCESS_CONTROL);
-				url.setParameter(WebKeys.URL_WORKAREA_ID, binder.getWorkAreaId().toString());
-				url.setParameter(WebKeys.URL_WORKAREA_TYPE, binder.getWorkAreaType());
-				url.setParameter(WebKeys.URL_OPERATION2, "debug");
-				model.put(WebKeys.ACCESS_NET_FOLDER_URL, url);
 				if (binder.isAclExternallyControlled() && binder instanceof Folder) {
 					model.put(WebKeys.ACCESS_NET_FOLDER_MAP, getFolderModule().getNetFolderAccessData((Folder)binder));
 					model.put(WebKeys.URL_OPERATION2, operation2);
+					PortletURL url = response.createRenderURL();
+					url.setParameter(WebKeys.ACTION, WebKeys.ACTION_ACCESS_CONTROL);
+					url.setParameter(WebKeys.URL_WORKAREA_ID, binder.getWorkAreaId().toString());
+					url.setParameter(WebKeys.URL_WORKAREA_TYPE, binder.getWorkAreaType());
+					url.setParameter(WebKeys.URL_OPERATION2, "debug");
+					model.put(WebKeys.ACCESS_NET_FOLDER_URL, url);
 				}
 			}
 		} catch(AccessControlException e) {
