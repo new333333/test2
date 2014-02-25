@@ -33,6 +33,8 @@
  */
 %>
 <%@ page import="org.kablink.teaming.util.Utils" %>
+<%@ page import="org.kablink.teaming.domain.User" %>
+<%@ page import="org.kablink.teaming.util.ResolveIds" %>
 
 <%@ page import="org.kablink.teaming.util.NLT" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
@@ -509,6 +511,14 @@ var ss_operationFailed = "<ssf:nlt tag="general.request.failed" text="Request fa
 </div>
 </ssf:box>
 
+<c:if test="${!empty ss_accessNetFolderUrl}">
+  <br/>
+  <br/>
+
+  <ssf:box style="rounded">
+    <a href="${ss_accessNetFolderUrl}">View Net Folder Access Information</a>
+  </ssf:box>
+</c:if>
 
 <br/>
 <br/>

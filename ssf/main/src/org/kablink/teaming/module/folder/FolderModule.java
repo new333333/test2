@@ -734,6 +734,8 @@ public interface FolderModule {
 
     public Folder createNetFolder(Long templateId, Long parentBinderId, String name, User owner, String rootName, String path, Boolean isHomeDir, boolean indexContent, Boolean inheritIndexContent, SyncScheduleOption syncScheduleOption, Boolean fullSyncDirOnly ) throws AccessControlException, WriteFilesException, WriteEntryDataException;
     
+    public Map getNetFolderAccessData(Folder netFolder);
+    
     /**
      * Get an object containing information about the latest full synchronization run on the specified net folder.
      * If no such object exists, this will return <code>null</code>.
