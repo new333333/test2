@@ -106,11 +106,6 @@ public class BaseFolderModule extends AbstractFolderModule implements BaseFolder
 	}
 
 	@Override
-	public void modifyNetFolder(Long folderId, String netFolderName, String rootName, String path, Boolean isHomeDir, boolean indexContent, Boolean inheritIndexContent, SyncScheduleOption syncScheduleOption, Boolean fullSyncDirOnly )
-			throws AccessControlException, WriteFilesException, WriteEntryDataException {
-	}
-
-	@Override
 	public void deleteNetFolder(Long folderId, boolean deleteSource) {
 	}
 
@@ -183,5 +178,14 @@ public class BaseFolderModule extends AbstractFolderModule implements BaseFolder
 
 	@Override
 	public void netFolderContentIndexingJobDelete(Long folderId) {
+	}
+
+	/*
+	 * @see org.kablink.teaming.module.folder.FolderModule#modifyNetFolder(java.lang.Long, java.lang.Long, java.lang.String, java.lang.String)
+	 */
+	@Override
+	public void modifyNetFolder(Long folderId, Long netFolderConfigId,
+			String netFolderName, String path) throws AccessControlException,
+			WriteFilesException, WriteEntryDataException {
 	}
 }

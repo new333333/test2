@@ -1089,7 +1089,6 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
 		return NetFolderUtil.getNetFolderConfigById(netFolderConfigId);
 	}
 	
-	
 	///// BEGIN: EVERY METHODS BETWEEN BEGIN & END MUST GO AS SOON AS WE CAN FIND TIME TO CLEAN UP
     public boolean getAllowDesktopAppToSyncData() {
     	NetFolderConfig nf = this.getNetFolder();

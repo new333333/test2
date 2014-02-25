@@ -48,6 +48,7 @@ public class NetFolderConfig {
 	protected String name;
 	protected Long folderId;
 	protected Long netFolderServerId;
+	protected String resourcePath;
     protected Boolean homeDir = Boolean.FALSE;
     protected Boolean allowDesktopAppToSyncData = Boolean.TRUE;
     protected Boolean allowMobileAppsToSyncData = Boolean.TRUE;
@@ -92,7 +93,15 @@ public class NetFolderConfig {
 		this.netFolderServerId = netFolderServerId;
 	}
 
-    public boolean isHomeDir() {
+    public String getResourcePath() {
+		return resourcePath;
+	}
+
+	public void setResourcePath(String resourcePath) {
+		this.resourcePath = resourcePath;
+	}
+
+	public boolean isHomeDir() {
     	if(homeDir == null)
     		return false;
     	else

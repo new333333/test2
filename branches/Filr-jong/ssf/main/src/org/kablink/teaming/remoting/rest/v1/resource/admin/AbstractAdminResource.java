@@ -63,8 +63,8 @@ public class AbstractAdminResource extends AbstractResource {
                 Binder.SyncScheduleOption.useNetFolderServerSchedule : Binder.SyncScheduleOption.useNetFolderSchedule;
         List<AssignedRole> roles = toNetFolderRoles(netFolder.getAssignedRights());
 
-        NetFolderHelper.modifyNetFolder(getBinderModule(), getFolderModule(), netFolder.getId(),
-                netFolder.getName(), resourceDriverConfig.getName(), netFolder.getRelativePath(), toScheduleInfo(netFolder.getSyncSchedule()),
+        NetFolderHelper.modifyNetFolder(getBinderModule(), getFolderModule(), getNetFolderModule(), netFolder.getId(),
+                netFolder.getName(), resourceDriverConfig.getId(), netFolder.getRelativePath(), toScheduleInfo(netFolder.getSyncSchedule()),
                 syncScheduleOption, netFolder.getIndexContent(), netFolder.getInheritIndexContent(), netFolder.getFullSyncDirOnly());
 
         if (roles!=null) {
