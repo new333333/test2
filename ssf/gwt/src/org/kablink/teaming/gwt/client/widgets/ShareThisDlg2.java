@@ -1458,6 +1458,13 @@ public class ShareThisDlg2 extends DlgBox
 			};
 		}
 
+		// Is the table that holds the list of share items visible?
+		if ( m_shareTable == null || m_shareTable.isVisible() == false )
+		{
+			// No, nothing to do.
+			return true;
+		}
+
 		// Is the "edit share" widget visible?
 		if ( m_editShareWidget != null && m_editShareWidget.isVisible() )
 		{
@@ -1503,6 +1510,10 @@ public class ShareThisDlg2 extends DlgBox
 		
 		// Remove all the share items we might have already.
 		removeAllShares();
+		
+		// Hide the edit share widget
+		if ( m_editShareWidget != null )
+			m_editShareWidget.setVisible( false );
 
 		// Issue an rpc request to get the share information for the entities we are working with.
 		cmd = new GetSharingInfoCmd( null, null );
@@ -1598,6 +1609,10 @@ public class ShareThisDlg2 extends DlgBox
 			
 			// Remove all the share items we might have already.
 			removeAllShares();
+			
+			// Hide the edit share widget
+			if ( m_editShareWidget != null )
+				m_editShareWidget.setVisible( false );
 
 			// Issue an rpc request to get the share information for the entities we are working with.
 			GwtClientHelper.executeCommand( cmd, m_getSharingInfoCallback );
@@ -2085,7 +2100,7 @@ public class ShareThisDlg2 extends DlgBox
 		if ( m_menuPanel != null )
 			m_menuPanel.setVisible( false );
 		
-		if ( m_noShareItemsHint != null )
+		if ( m_noShareItemsHint != null && mode != ShareThisDlgMode.MANAGE_ALL )
 			m_noShareItemsHint.setVisible( true );
 		
 		m_selectAllHeader.setValue( false );
