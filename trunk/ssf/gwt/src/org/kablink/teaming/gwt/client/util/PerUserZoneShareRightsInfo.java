@@ -169,7 +169,7 @@ public class PerUserZoneShareRightsInfo implements IsSerializable
 		{
 			if ( rights.length() > 0 )
 				rights.append( " / " );
-			rights.append( GwtTeaming.getMessages().shareLinkRights() );
+			rights.append( GwtTeaming.getMessages().shareLinkRights( GwtClientHelper.getProductName() ) );
 		}
 		
 		if ( rights.length() == 0 )

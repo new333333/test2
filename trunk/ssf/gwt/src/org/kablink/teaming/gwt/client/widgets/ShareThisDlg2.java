@@ -526,6 +526,7 @@ public class ShareThisDlg2 extends DlgBox
 		boolean canShareWithInternalUsers = true;
 		boolean canShareWithExternalUsers = true;
 		boolean canShareWithPublic = true;
+		boolean canSharePublicLink = true;
 		
 		if ( listOfShareItems != null )
 		{
@@ -547,6 +548,9 @@ public class ShareThisDlg2 extends DlgBox
 				
 				if ( shareRights.getCanShareWithPublic() == false )
 					canShareWithPublic = false;
+				
+				if ( shareRights.getCanSharePublicLink() == false )
+					canSharePublicLink = false;
 
 				nextAccessRights = shareRights.getAccessRights();
 				
@@ -578,6 +582,7 @@ public class ShareThisDlg2 extends DlgBox
 		highestRightsPossible.setCanShareWithInternalUsers( canShareWithInternalUsers );
 		highestRightsPossible.setCanShareWithExternalUsers( canShareWithExternalUsers );
 		highestRightsPossible.setCanShareWithPublic( canShareWithPublic );
+		highestRightsPossible.setCanSharePublicLink( canSharePublicLink );
 	
 		return highestRightsPossible;
 	}
@@ -2369,6 +2374,7 @@ public class ShareThisDlg2 extends DlgBox
 			highestRightsPossible.setCanShareWithExternalUsers( false );
 			highestRightsPossible.setCanShareWithInternalUsers( false );
 			highestRightsPossible.setCanShareWithPublic( false );
+			highestRightsPossible.setCanSharePublicLink( false );
 		}
 		// Is the recipient of the share an external user?
 		else if ( recipientIsExternal )
@@ -2384,6 +2390,7 @@ public class ShareThisDlg2 extends DlgBox
 			highestRightsPossible.setCanShareWithExternalUsers( false );
 			highestRightsPossible.setCanShareWithInternalUsers( false );
 			highestRightsPossible.setCanShareWithPublic( false );
+			highestRightsPossible.setCanSharePublicLink( false );
 		}
 		
 		m_editShareWidget.setWidgetHeight( m_editSharePanel.getOffsetHeight() );

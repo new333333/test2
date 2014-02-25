@@ -215,7 +215,7 @@ public class EditNetFolderRightsDlg extends DlgBox
 		mainPanel.add( tmpPanel );
 
 		// Add the "Share using Filr links" checkbox.
-		m_canShareLinkCkbox = new CheckBox( messages.editNetFolderRightsDlg_ShareLinkLabel() );
+		m_canShareLinkCkbox = new CheckBox( messages.editNetFolderRightsDlg_ShareLinkLabel( GwtClientHelper.getProductName() ) );
 		m_canShareLinkCkbox.addStyleName( "editNetFolderRightsDlg_RightsCkbox" );
 		tmpPanel = new FlowPanel();
 		tmpPanel.addStyleName( "marginleft1" );
