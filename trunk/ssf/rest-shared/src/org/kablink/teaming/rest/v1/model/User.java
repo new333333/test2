@@ -59,6 +59,7 @@ public class User extends Principal {
    	private LongIdLinkPair workspace;
     private MobileAppConfig mobileAppConfig;
     private DesktopAppConfig desktopAppConfig;
+    private List<LongIdLinkPair> groups;
     private List<MobileDevice> mobileDevices;
 
     public User() {
@@ -250,6 +251,16 @@ public class User extends Principal {
 
     public void setDesktopAppConfig(DesktopAppConfig desktopAppConfig) {
         this.desktopAppConfig = desktopAppConfig;
+    }
+
+    @XmlElementWrapper(name="groups")
+    @XmlElement(name="group")
+    public List<LongIdLinkPair> getGroups() {
+        return groups;
+    }
+
+    public void setGroups(List<LongIdLinkPair> groups) {
+        this.groups = groups;
     }
 
     @XmlElementWrapper(name="mobile_devices")
