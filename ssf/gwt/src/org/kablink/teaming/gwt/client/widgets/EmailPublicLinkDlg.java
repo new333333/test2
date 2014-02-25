@@ -186,7 +186,7 @@ public class EmailPublicLinkDlg extends DlgBox implements EditSuccessfulHandler
 		{
 			Label label;
 			
-			label = new Label( messages.emailPublicLinkDlg_Hint1() );
+			label = new Label( messages.emailPublicLinkDlg_Hint1( GwtClientHelper.getProductName() ) );
 			label.addStyleName( "emailPublicLinkDlg_Hint" );
 			label.getElement().getStyle().setMarginTop( 6, Unit.PX );
 			mainPanel.add( label );

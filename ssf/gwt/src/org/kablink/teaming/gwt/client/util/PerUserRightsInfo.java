@@ -173,7 +173,7 @@ public class PerUserRightsInfo
 			{
 				if ( rights.length() > 0 )
 					rights.append( "/" );
-				rights.append( GwtTeaming.getMessages().shareLinkRights() );
+				rights.append( GwtTeaming.getMessages().shareLinkRights( GwtClientHelper.getProductName() ) );
 			}
 		}
 		

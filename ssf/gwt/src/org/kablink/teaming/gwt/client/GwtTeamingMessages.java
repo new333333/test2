@@ -1446,7 +1446,7 @@ public interface GwtTeamingMessages extends Messages
 	String shareDlg_noTeamsToShareWith();
 	String shareDlg_noteLabel();
 	String shareDlg_notifyLabel();
-	String shareDlg_publicLinkTitle();
+	String shareDlg_publicLinkTitle( String productName );
 	String shareDlg_publicUrlLabel();
 	String shareDlg_readingShareInfo();
 	String shareDlg_reshareExternal();
@@ -1454,6 +1454,7 @@ public interface GwtTeamingMessages extends Messages
 	String shareDlg_reshareLabel();
 	String shareDlg_reshareNo();
 	String shareDlg_resharePublic();
+	String shareDlg_resharePublicLink( String productName );
 	String shareDlg_rightsLabel();
 	String shareDlg_savingShareInfo();
 	String shareDlg_selectMethodToFindShares();
@@ -2484,6 +2485,7 @@ public interface GwtTeamingMessages extends Messages
 	String editShareRightsDlg_CanShareInternalLabel();
 	String editShareRightsDlg_CanShareLabel();
 	String editShareRightsDlg_CanSharePublicLabel();
+	String editShareRightsDlg_CanSharePublicLinkLabel( String productName );
 	String editShareRightsDlg_caption();
 	String editShareRightsDlg_ContributorLabel();
 	String editShareRightsDlg_EditorLabel();
@@ -2497,7 +2499,8 @@ public interface GwtTeamingMessages extends Messages
 	String editShareDlg_canReshareExternalLabel();
 	String editShareDlg_canReshareInternalLabel();
 	String editShareDlg_canResharePublicLabel();
-	String editShareDlg_filrLinkDesc();
+	String editShareDlg_canResharePublicLinkLabel( String productName );
+	String editShareDlg_filrLinkDesc( String productName );
 	String editShareDlg_leaveUnchanged();
 	String editShareDlg_no();
 	String editShareDlg_publicLinkDesc();
@@ -2658,7 +2661,7 @@ public interface GwtTeamingMessages extends Messages
 	String internalRights();
 	String noRights();
 	String publicRights();
-	String shareLinkRights();
+	String shareLinkRights( String productName );
 	String shareWithAllExternalRights();
 	String shareWithAllInternalRights();
 
@@ -2672,7 +2675,7 @@ public interface GwtTeamingMessages extends Messages
 	String editNetFolderRightsDlg_ReShareLabel();
 	String editNetFolderRightsDlg_ShareInternalLabel();
 	String editNetFolderRightsDlg_ShareExternalLabel();
-	String editNetFolderRightsDlg_ShareLinkLabel();
+	String editNetFolderRightsDlg_ShareLinkLabel( String productName );
 	String editNetFolderRightsDlg_SharePublicLabel();
 
 	// Strings used for the empty collection view widget.
@@ -2943,7 +2946,7 @@ public interface GwtTeamingMessages extends Messages
 	String editUserZoneShareRightsDlg_ReShareLabel();
 	String editUserZoneShareRightsDlg_ShareExternalLabel();
 	String editUserZoneShareRightsDlg_ShareInternalLabel();
-	String editUserZoneShareRightsDlg_ShareLinkLabel();
+	String editUserZoneShareRightsDlg_ShareLinkLabel( String productName );
 	String editUserZoneShareRightsDlg_SharePublicLabel();
 	String editUserZoneShareRightsDlg_ShareWithAllExternalUsersLabel();
 	String editUserZoneShareRightsDlg_ShareWithAllInternalUsersLabel();
@@ -3209,7 +3212,7 @@ public interface GwtTeamingMessages extends Messages
 
 	// Strings used in the Email Public Link dialog
 	String emailPublicLinkDlg_EmailHint();
-	String emailPublicLinkDlg_Hint1();
+	String emailPublicLinkDlg_Hint1( String productName );
 	String emailPublicLinkDlg_MessageHint();
 	String emailPublicLinkDlg_NoEmailAddresses();
 	String emailPublicLinkDlg_SendBtn();

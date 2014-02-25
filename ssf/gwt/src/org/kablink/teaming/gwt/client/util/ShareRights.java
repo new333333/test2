@@ -46,6 +46,7 @@ public class ShareRights implements IsSerializable
 	private boolean m_canShareWithExternalUsers;
 	private boolean m_canShareWithInternalUsers;
 	private boolean m_canShareWithPublic;
+	private boolean m_canSharePublicLink;
 	
 	/**
 	 * 
@@ -68,6 +69,7 @@ public class ShareRights implements IsSerializable
 		m_canShareWithExternalUsers = false;
 		m_canShareWithInternalUsers = false;
 		m_canShareWithPublic = false;
+		m_canSharePublicLink = false;
 		m_canShareForward = false;
 	}
 	
@@ -114,6 +116,14 @@ public class ShareRights implements IsSerializable
 	/**
 	 * 
 	 */
+	public boolean getCanSharePublicLink()
+	{
+		return m_canSharePublicLink;
+	}
+	
+	/**
+	 * 
+	 */
 	public String getReshareRightsAsString()
 	{
 		StringBuffer sb;
@@ -139,6 +149,14 @@ public class ShareRights implements IsSerializable
 				sb.append( ", " );
 			
 			sb.append( GwtTeaming.getMessages().shareDlg_resharePublic() );
+		}
+		
+		if ( m_canSharePublicLink )
+		{
+			if ( sb.length() > 0 )
+				sb.append( ", " );
+			
+			sb.append( GwtTeaming.getMessages().shareDlg_resharePublicLink( GwtClientHelper.getProductName() ) );
 		}
 		
 		return sb.toString();
@@ -199,6 +217,14 @@ public class ShareRights implements IsSerializable
 	public void setCanShareWithPublic( boolean canShareWithPublic )
 	{
 		m_canShareWithPublic = canShareWithPublic;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setCanSharePublicLink( boolean canSharePublicLink )
+	{
+		m_canSharePublicLink = canSharePublicLink;
 	}
 }
 
