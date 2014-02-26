@@ -31,6 +31,7 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 package org.kablink.teaming.module.folder.impl;
+
 import static org.kablink.util.search.Restrictions.between;
 import static org.kablink.util.search.Restrictions.eq;
 import static org.kablink.util.search.Restrictions.in;
@@ -53,8 +54,10 @@ import java.util.TreeSet;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.lucene.document.DateTools;
+
 import org.dom4j.Document;
 import org.dom4j.Element;
+
 import org.kablink.teaming.BinderQuotaException;
 import org.kablink.teaming.DataQuotaException;
 import org.kablink.teaming.FileSizeLimitException;
@@ -150,6 +153,7 @@ import org.kablink.teaming.web.util.TrashHelper;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
 import org.kablink.util.search.Criteria;
+
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -1107,7 +1111,7 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
     }
     //inside write transaction    
     @Override
-	public FolderEntry moveEntry(Long folderId, Long entryId, Long destinationId, String[] toFileNames, Map options) {
+	public FolderEntry moveEntry(Long folderId, Long entryId, Long destinationId, String[] toFileNames, Map options) throws WriteFilesException {
         FolderEntry entry = loadEntry(folderId, entryId);   	
         checkAccess(entry, FolderOperation.moveEntry);
         Folder folder = entry.getParentFolder();
@@ -1224,7 +1228,7 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
 
     //inside write transaction    
     @Override
-	public FolderEntry copyEntry(Long folderId, Long entryId, Long destinationId, String[] toFileNames, Map options) {
+	public FolderEntry copyEntry(Long folderId, Long entryId, Long destinationId, String[] toFileNames, Map options) throws WriteFilesException {
         FolderEntry entry = loadEntry(folderId, entryId);   	
         checkAccess(entry, FolderOperation.copyEntry);
         Folder folder = entry.getParentFolder();
@@ -1879,7 +1883,8 @@ public void modifyWorkflowState(Long folderId, Long entryId, Long stateId, Strin
 		return ids.get(0);
 	}
 
-    public Date getLastFullSyncCompletionTime(Long folderId) {
+    @Override
+	public Date getLastFullSyncCompletionTime(Long folderId) {
         Folder topMostMirroredFolder = FolderUtils.getTopMostMirroredFolder(getFolder(folderId));
         if (topMostMirroredFolder!=null) {
         	return getLastFullSyncCompletionTime(topMostMirroredFolder);
@@ -1902,5 +1907,4 @@ public void modifyWorkflowState(Long folderId, Long entryId, Long stateId, Strin
         }
         return null;
     }
-
 }
