@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -31,15 +31,7 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 package org.kablink.teaming.module.workflow;
-/**
- * Handle setting variables, starting/stoping threads and recording the state when
- * a new node is entered or cancelling timers when a node is exitted.
- * This is done as part on one action so we can maintain the ordering
- * specified in the definition and reduce the amount of synchronization needed between the
- * JBPM definition and the Sitescape definition.
- * @author Janet McCann
- *
- */
+
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -56,6 +48,7 @@ import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 
 import org.dom4j.Element;
+
 import org.jbpm.context.exe.ContextInstance;
 import org.jbpm.graph.def.Event;
 import org.jbpm.graph.def.Node;
@@ -63,6 +56,7 @@ import org.jbpm.graph.def.ProcessDefinition;
 import org.jbpm.graph.exe.ExecutionContext;
 import org.jbpm.graph.exe.ProcessInstance;
 import org.jbpm.graph.exe.Token;
+
 import org.kablink.teaming.ConfigurationException;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
@@ -90,10 +84,10 @@ import org.kablink.teaming.module.definition.notify.Notify;
 import org.kablink.teaming.module.definition.notify.Notify.NotifyType;
 import org.kablink.teaming.module.definition.notify.NotifyBuilderUtil;
 import org.kablink.teaming.module.definition.notify.NotifyVisitor;
+import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.mail.EmailUtil;
 import org.kablink.teaming.module.mail.MailModule;
 import org.kablink.teaming.module.shared.MapInputData;
-import org.kablink.teaming.module.workflow.WorkflowProcessUtils.WfNotify;
 import org.kablink.teaming.module.workflow.jbpm.CalloutHelper;
 import org.kablink.teaming.module.workflow.support.WorkflowAction;
 import org.kablink.teaming.module.workflow.support.WorkflowScheduledAction;
@@ -116,6 +110,16 @@ import org.kablink.teaming.web.util.PermaLinkUtil;
 import org.kablink.util.Html;
 import org.kablink.util.Validator;
 
+/**
+ * Handle setting variables, starting/stoping threads and recording the state when
+ * a new node is entered or cancelling timers when a node is exitted.
+ * This is done as part on one action so we can maintain the ordering
+ * specified in the definition and reduce the amount of synchronization needed between the
+ * JBPM definition and the Sitescape definition.
+ * 
+ * @author Janet McCann
+ */
+@SuppressWarnings({"unchecked", "unused"})
 public class EnterExitEvent extends AbstractActionHandler {
 	  
 	//Indexing the entry is handled by the code that initiates a transition/nodeEnter/nodeExit
@@ -123,6 +127,7 @@ public class EnterExitEvent extends AbstractActionHandler {
 	//each time.  Only need one at the end of the transaction
 
 	private static final long serialVersionUID = -5904672789676975912L;
+	@Override
 	public void execute(ExecutionContext executionContext) throws Exception {
 		ContextInstance ctx = executionContext.getContextInstance();
 		Token token = executionContext.getToken();
@@ -234,6 +239,7 @@ public class EnterExitEvent extends AbstractActionHandler {
 		if (Validator.isNull(actionName)) return;
 		try {
 			getZoneClassManager().execute(new ExtensionCallback() {
+				@Override
 				public Object execute(Object action) {
 					if (action instanceof WorkflowScheduledAction) {
 						WorkflowProcess schedJob = null;
@@ -280,6 +286,7 @@ public class EnterExitEvent extends AbstractActionHandler {
 		if (runAsId == null) throw new ConfigurationException("Remote application cannot be run, user doesn't exist");
 
 		RunasTemplate.runas(new RunasCallback() {
+			@Override
 			public Object doAs() {
 				try {
 					Application app = getProfileDao().loadApplication(Long.valueOf(application), RequestContextHolder.getRequestContext().getZoneId());
@@ -334,7 +341,7 @@ public class EnterExitEvent extends AbstractActionHandler {
 		EntryProcessor processor = (EntryProcessor)((ProcessorManager)SpringContextUtil.getBean("modelProcessorManager")).getProcessor(parent, parent.getProcessorKey(EntryProcessor.PROCESSOR_KEY));
 		processor.moveEntry(parent, entry, destination, null, null);
 	}
-	protected void copyEntry(Element item, ExecutionContext executionContext, WorkflowSupport wfEntry, WorkflowState currentWs) {
+	protected void copyEntry(Element item, ExecutionContext executionContext, WorkflowSupport wfEntry, WorkflowState currentWs) throws WriteFilesException {
 		Entry entry = (Entry)wfEntry;
 		Binder parent = entry.getParentBinder();
 		Binder destination  = getDestination(item, entry);
@@ -792,5 +799,4 @@ public class EnterExitEvent extends AbstractActionHandler {
 		} 
 		return addrs;
 	}
-
 }
