@@ -84,12 +84,16 @@ function handleCloseBtn()
         <td>${ss_accessNetFolderMap['folder'].title}</td>
       </tr>
       <tr>
-        <td>Creator:</td>
+        <td>Folder Creator from File System:</td>
         <td>Id = ${ss_accessNetFolderMap['creator'].id}, Name = ${ss_accessNetFolderMap['creator'].name}, Title = ${ss_accessNetFolderMap['creator'].title}</td>
       </tr>
       <tr>
-       <td>Owner:</td>
+       <td>Folder Owner from Filr:</td>
         <td>Id = ${ss_accessNetFolderMap['owner'].id}, Name = ${ss_accessNetFolderMap['owner'].name}, Title = ${ss_accessNetFolderMap['owner'].title}</td>
+      </tr>
+      <tr>
+       <td>Folder Creator from Filr:</td>
+        <td>Id = ${ss_accessNetFolderMap['filr_creator'].id}, Name = ${ss_accessNetFolderMap['filr_creator'].name}, Title = ${ss_accessNetFolderMap['filr_creator'].title}</td>
       </tr>
       <tr>
         <td>dirAcl:</td>
@@ -105,6 +109,18 @@ function handleCloseBtn()
                 &nbsp;&nbsp;&nbsp;Principal: Id=${p.id}, Name=${p.name }, Title=${p.title} }<br/>
               </c:forEach>
           </c:forEach>
+        </td>
+      </tr>
+      <tr>
+        <td>Function Membership Inherited:</td>
+        <td>
+          ${ss_accessNetFolderMap['function_membership_inherited'] }
+        </td>
+      </tr>
+      <tr>
+        <td>External Function Membership Inherited:</td>
+        <td>
+          ${ss_accessNetFolderMap['ext_function_membership_inherited'] }
         </td>
       </tr>
       <tr>
