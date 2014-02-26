@@ -15,16 +15,14 @@ position:relative;
 
 .column-head  {
 	position: relative;
-	color: #FFFFFF;
+	color: #036f9f;
 	font-weight: normal;
 	letter-spacing: 0.02em;
 	margin-bottom: 0.5em;
 	padding: 5px 8px;
 	cursor: pointer;
-	border-radius: 5px 5px 0px 0px;
-	-moz-border-radius: 5px 5px 0px 0px;
-	-webkit-border-radius: 5px 5px 0px 0px;
-	background-color: #81b2bd;
+	border-bottom: 1px solid #e0e0e0;
+	background-color: #fff;
 	background-image: none;
 /*	background-image: -webkit-linear-gradient(top, #abced1, #81b2bd) !important; 
 	background-image:    -moz-linear-gradient(top, #abced1, #81b2bd) !important; 
@@ -384,6 +382,7 @@ top: 0px;
 .profile-action a:hover {
 	color: #135c8f;
 	border: 1px solid #81b2bd;
+	background-color: #cce9ee;
 	border-radius: 5px;
 	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;	
