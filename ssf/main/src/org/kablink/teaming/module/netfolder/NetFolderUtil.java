@@ -33,6 +33,7 @@
 package org.kablink.teaming.module.netfolder;
 
 import org.kablink.teaming.dao.CoreDao;
+import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.NetFolderConfig;
 import org.kablink.teaming.domain.NoNetFolderByTheIdException;
 import org.kablink.teaming.domain.NoNetFolderByTheNameException;
@@ -42,6 +43,7 @@ import org.kablink.teaming.domain.ResourceDriverConfig;
 import org.kablink.teaming.fi.FIException;
 import org.kablink.teaming.fi.connection.ResourceDriver;
 import org.kablink.teaming.fi.connection.ResourceDriverManagerUtil;
+import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.SpringContextUtil;
 
 /**
@@ -68,6 +70,14 @@ public class NetFolderUtil {
 		return getResourceDriverByNetFolderServerId(nf.getNetFolderServerId());
 	}
 	
+	/**
+	 * Return the Net Folder binder associated with the NetFolderConfig
+	 */
+	public static Binder getNetFolderBinder( AllModulesInjected ami, NetFolderConfig nfc )
+	{
+		return ami.getBinderModule().getBinder( nfc.getFolderId() );
+	}
+
 	public static ResourceDriverConfig getNetFolderServerById(Long netFolderServerId) throws NoNetFolderServerByTheIdException {
 		return getCoreDao().loadNetFolderServer(netFolderServerId);
 	}
