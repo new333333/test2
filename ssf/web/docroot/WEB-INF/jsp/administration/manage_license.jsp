@@ -162,13 +162,11 @@
   <c:if test="${!empty ssLicenseContact}">
     <span><ssf:nlt tag="license.contact"/> ${ssLicenseContact}</span>
     <br/>
-  </c:if>
-  <hr shade=noshade size=1/>
-	
+  </c:if>	
   </div>
   </c:if>
   
-  <div class="ss_style">
+  <div class="ss_style" style="margin-bottom: 100px; border-top: 1px solid #e0e0e0; padding-top: 10px; margin-top: 25px;">
 <c:if test='${empty ssLicenseException}'>
   <ssf:ifLicenseExpired><div class="ss_warning ss_license_warning"><span class="ss_warning ss_license_warning"><ssf:nlt tag="license.expired.warning"/></span></div></ssf:ifLicenseExpired>
   <ssf:ifLicenseExpired invert="true">
@@ -178,8 +176,6 @@
     </ssf:ifLicenseExpired>
   </ssf:ifLicenseExpired>
 </c:if>
-<br/>
-<br/>
 	<form class="ss_portlet_style ss_form" id="${ssNamespace}_btnForm" 
 	  name="${ssNamespace}_btnForm" method="post"  
 	  action="<ssf:url action="manage_license" actionUrl="true"/>">

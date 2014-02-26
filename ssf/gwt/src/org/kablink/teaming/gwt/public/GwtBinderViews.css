@@ -397,12 +397,12 @@
 	.vibe-addFilesHtml5Popup-html5UploadPopup-glass      {background-color: #09f; filter: alpha(opacity=30); opacity: 0.3; overflow: hidden;}
 	.vibe-addFilesHtml5Popup-html5UploadPopup-panel      {color: white; font-size: 1.2em; text-align: center; padding: 15px; -moz-border-radius: 10px; border-radius: 10px; -webkit-border-radius: 10px; background: url("images/trans50_black.png") repeat;}
 	.vibe-addFilesHtml5Popup-html5UploadPopup-root       {}
-	.vibe-addFilesHtml5Popup-innerHintBrowseButton       {font-size: 14px !important;}
-	.vibe-addFilesHtml5Popup-innerHintBrowseButton:hover {}
+	.vibe-addFilesHtml5Popup-innerHintBrowseButton       {font-size: 14px !important; border: 1px solid transparent;}
+	.vibe-addFilesHtml5Popup-innerHintBrowseButton:hover {font-size: 14px !important;}
 	.vibe-addFilesHtml5Popup-innerHintBrowsePanel        {display: block; margin-top: 1em;}
 	.vibe-addFilesHtml5Popup-innerHintBrowseUpload       {visibility: hidden; width: 0px; margin: 0px;}
-	.vibe-addFilesHtml5Popup-innerHintCloseButton        {font-size: 14px !important; margin-left: 20px;}
-	.vibe-addFilesHtml5Popup-innerHintCloseButton:hover  {}
+	.vibe-addFilesHtml5Popup-innerHintCloseButton        {font-size: 14px !important; margin-left: 20px; border: 1px solid transparent;}
+	.vibe-addFilesHtml5Popup-innerHintCloseButton:hover  {font-size: 14px !important; margin-left: 20px;}
 	.vibe-addFilesHtml5Popup-innerHintBusy               {margin-right: 10px; vertical-align: middle;}
 	.vibe-addFilesHtml5Popup-innerHintLabel              {}
 	.vibe-addFilesHtml5Popup-innerHintPanel              {position: absolute; top: 150px; left: 25%; right: 25%; color: white; font-size: 1.2em; text-align: center; padding: 15px; -moz-border-radius: 10px; border-radius: 10px; -webkit-border-radius: 10px; background: url("images/trans50_black.png") repeat;}
