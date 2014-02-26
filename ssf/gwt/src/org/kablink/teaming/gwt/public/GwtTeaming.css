@@ -489,7 +489,7 @@
 
 .ActivityStreamTopEntryAdditionalUIPanel
 {
-	display: inline;
+	display: inline-block;
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
@@ -1173,7 +1173,7 @@ a, a:visited, a:hover {
 {
 	position: absolute;
 	top: 8px;
-	background-color: transparent;
+	background-color: #fff;
 	border-radius: 5px;
 	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;
@@ -4566,7 +4566,7 @@ td.datePickerMonth {
 	.vibe-whoHasAccessDlg-group:hover        {cursor: pointer; background: #cce9ee; -moz-border-radius: 5px; border-radius: 5px; -webkit-border-radius: 5px;}	
 	.vibe-whoHasAccessDlg-headerImg          {height: 25px; width: 25p; padding-right: 5px;}
 	.vibe-whoHasAccessDlg-headerLabel        {white-space: nowrap; font-weight: bold;}
-	.vibe-whoHasAccessDlg-headerPanel        {display: inline; white-space: nowrap; padding-bottom: 13px; vertical-align: middle;}
+	.vibe-whoHasAccessDlg-headerPanel        {display: inline-block; white-space: nowrap; padding-bottom: 13px; vertical-align: middle;}
 	.vibe-whoHasAccessDlg-label              {}
 	.vibe-whoHasAccessDlg-readingPanel       {}
 	.vibe-whoHasAccessDlg-readingLabel       {vertical-align: top; margin-left: 5px;}
