@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -45,6 +45,7 @@ import java.util.Set;
 
 import org.dom4j.Document;
 import org.dom4j.Element;
+
 import org.kablink.teaming.NotSupportedException;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
@@ -93,6 +94,7 @@ import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.ServerTaskLinkage;
 import org.kablink.util.Validator;
+
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
@@ -486,7 +488,7 @@ public void setWorkflowResponse(Binder binder, Entry entry, Long stateId, InputD
    }
    //***********************************************************************************************************
    @Override
-public Entry copyEntry(Binder binder, Entry source, Binder destination, String[] toFileNames, Map options) {
+public Entry copyEntry(Binder binder, Entry source, Binder destination, String[] toFileNames, Map options) throws WriteFilesException {
    	 
 	   if (destination.isZone() || 
 			   ObjectKeys.PROFILE_ROOT_INTERNALID.equals(destination.getInternalId()) ||
@@ -528,7 +530,11 @@ public Entry copyEntry(Binder binder, Entry source, Binder destination, String[]
 		    List<Tag> entryTags = tags.get(child.getEntityIdentifier());
 			try{
 				// file name change is possible only for the top-level entry being copied.
-				doCopy(child, entry, entryTags, child.equals(source)?toFileNames:null, options);
+				FilesErrors errors = new FilesErrors();
+				doCopy(child, entry, entryTags, child.equals(source)?toFileNames:null, options, errors);
+				if (!errors.getProblems().isEmpty()) {
+					throw new WriteFilesException(errors);
+				}
 			} catch(Exception e) {
 				logger.error(e);
 				//The copy failed, so delete the attempted copy
@@ -537,6 +543,9 @@ public Entry copyEntry(Binder binder, Entry source, Binder destination, String[]
 				folderModule.deleteEntry(entry.getParentBinder().getId(), entry.getId());
 				if (e instanceof TitleException) {
 					throw ((TitleException) e);
+				}
+				else if (e instanceof WriteFilesException) {
+					throw ((WriteFilesException) e);
 				}
 				break;
 			}
@@ -551,9 +560,9 @@ public Entry copyEntry(Binder binder, Entry source, Binder destination, String[]
 	   return top; 
    }
  
-	protected void doCopy(FolderEntry source, FolderEntry entry, List<Tag> tags, String[] toFileNames, Map copyOptions) {
+	protected void doCopy(FolderEntry source, FolderEntry entry, List<Tag> tags, String[] toFileNames, Map copyOptions, FilesErrors errors) {
 		User user = RequestContextHolder.getRequestContext().getUser();
-		getFileModule().copyFiles(source.getParentBinder(), source, entry.getParentBinder(), entry, toFileNames);
+		getFileModule().copyFiles(source.getParentBinder(), source, entry.getParentBinder(), entry, toFileNames, errors);
 		EntryBuilder.copyAttributes(source, entry);
  		//copy tags
  		List myTags = new ArrayList();
@@ -970,7 +979,7 @@ protected void deleteBinder_postDelete(Binder binder, Map ctx) {
 			       				getCoreDao().save(dEntry); //need to generate id; do after sortkey is set
 			       				sourceMap.put(sEntry, dEntry);
 			      		    	List<Tag> entryTags = tags.get(sEntry.getEntityIdentifier());
-			       				doCopy(sEntry, dEntry, entryTags, null, options);
+			       				doCopy(sEntry, dEntry, entryTags, null, options, null);
 	
 			       				// Does the folder we're copy entries from
 			       				// contain task linkage information?

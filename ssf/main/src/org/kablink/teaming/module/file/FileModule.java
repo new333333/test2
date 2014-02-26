@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -43,17 +43,13 @@ import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.Description;
 import org.kablink.teaming.domain.FileAttachment;
-import org.kablink.teaming.domain.Folder;
-import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.ReservedByAnotherUserException;
 import org.kablink.teaming.domain.VersionAttachment;
 import org.kablink.teaming.domain.FileAttachment.FileStatus;
 import org.kablink.teaming.repository.RepositoryServiceException;
 import org.kablink.teaming.security.AccessControlException;
-import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.util.FileUploadItem;
 import org.kablink.util.search.Criteria;
-
 
 /**
  * Provides uniform interface and integrated management for various file 
@@ -76,10 +72,9 @@ import org.kablink.util.search.Criteria;
  * module and calling the method in the wrapper.   
  * 
  * @author jong
- *
  */
+@SuppressWarnings("unchecked")
 public interface FileModule {
-		
 	/**
 	 * Delete all files attached to the entity. If applicable, also delete 
 	 * generated files (scaled files and thumbnail files) associated with 
@@ -191,7 +186,7 @@ public interface FileModule {
      * @param fileUploadItems
      * @return
      */
-    public FilesErrors verifyCheckSums(List fileUploadItems);
+	public FilesErrors verifyCheckSums(List fileUploadItems);
     
     /**
      * Run configured filter on the files in the list. Depending on how the
@@ -392,12 +387,12 @@ public interface FileModule {
 	 * @param entity
 	 * @param destBinder
 	 * @param destEntity
+	 * 
 	 * @throws UncheckedIOException
 	 * @throws RepositoryServiceException
 	 */
-	public void copyFiles(Binder binder, DefinableEntity entity, 
-			Binder destBinder, DefinableEntity destEntity, String[] toFileNames)
-	throws UncheckedIOException, RepositoryServiceException;
+	public void copyFiles(Binder binder, DefinableEntity entity, Binder destBinder, DefinableEntity destEntity, String[] toFileNames, FilesErrors errors) throws UncheckedIOException, RepositoryServiceException;
+	public void copyFiles(Binder binder, DefinableEntity entity, Binder destBinder, DefinableEntity destEntity, String[] toFileNames)                     throws UncheckedIOException, RepositoryServiceException;
 	
 	/**
 	 * Modify the description of a file attachment. 

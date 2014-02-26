@@ -1786,6 +1786,7 @@ public class GwtViewHelper {
 						else if (e instanceof BinderQuotaException)    messageKey = "copyEntryError.BinderQuotaException";
 						else if (e instanceof NotSupportedException)  {messageKey = "copyEntryError.NotSupportedException"; nse = ((NotSupportedException) e);}
 						else if (e instanceof TitleException)          messageKey = "copyEntryError.TitleException";
+						else if (e instanceof WriteFilesException)     messageKey = "copyEntryError.WriteFilesException";
 						else                                           messageKey = "copyEntryError.OtherException";
 						String[] messageArgs;
 						if (null == nse) {
@@ -8497,6 +8498,7 @@ public class GwtViewHelper {
 						else if (e instanceof BinderQuotaException)    messageKey = "moveEntryError.BinderQuotaException";
 						else if (e instanceof NotSupportedException)  {messageKey = "moveEntryError.NotSupportedException"; nse = ((NotSupportedException) e);}
 						else if (e instanceof TitleException)          messageKey = "moveEntryError.TitleException";
+						else if (e instanceof WriteFilesException)     messageKey = "moveEntryError.WriteFilesException";
 						else                                           messageKey = "moveEntryError.OtherException";
 						String[] messageArgs;
 						if (null == nse) {

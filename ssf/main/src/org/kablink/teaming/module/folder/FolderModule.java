@@ -237,7 +237,7 @@ public interface FolderModule {
      * @throws AccessControlException
      */
     public FolderEntry copyEntry(Long folderId, Long entryId, Long destinationId, String[] toFileNames, Map options)
-    	throws AccessControlException;
+    	throws AccessControlException, WriteFilesException;
     public void copyFolderEntries(Long sourceId, Long destinationId) throws NotSupportedException;
     
     /**
@@ -574,7 +574,7 @@ public interface FolderModule {
      * @throws AccessControlException
      */
     public FolderEntry moveEntry(Long folderId, Long entryId, Long destinationId, String[] toFileNames, Map options)
-    	throws AccessControlException;
+    	throws AccessControlException, WriteFilesException;
 
     /**
      * Reserve the entry.
