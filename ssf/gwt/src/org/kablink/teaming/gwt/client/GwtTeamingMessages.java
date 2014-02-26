@@ -1442,7 +1442,9 @@ public interface GwtTeamingMessages extends Messages
 	String shareDlg_manageShares();
 	String shareDlg_manageMultipleItems( int numItems );
 	String shareDlg_noNote();
+	String shareDlg_noShareItemsFoundHint();
 	String shareDlg_noShareItemsHint();
+	String shareDlg_noShareItemsToManageHint();
 	String shareDlg_noTeamsToShareWith();
 	String shareDlg_noteLabel();
 	String shareDlg_notifyLabel();

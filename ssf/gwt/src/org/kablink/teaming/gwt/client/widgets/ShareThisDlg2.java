@@ -167,7 +167,9 @@ public class ShareThisDlg2 extends DlgBox
 	private FindCtrl m_manageSharesFindCtrl;
 	private Image m_addExternalUserImg;
 	private FlowPanel m_mainPanel;
-	private Label m_noShareItemsHint;
+	private Label m_noShareItemsEnterNameHint;
+	private Label m_noShareItemsToManageHint;
+	private Label m_noShareItemsFoundHint;
 	private FlowPanel m_menuPanel;
 	private FlexTable m_addShareTable;
 	private InlineLabel m_shareWithTeamsLabel;
@@ -476,6 +478,26 @@ public class ShareThisDlg2 extends DlgBox
 		{
 			// Yes, show all the necessary controls
 			showControls();
+		}
+		else
+		{
+			if ( m_mode == ShareThisDlgMode.MANAGE_ALL )
+			{
+				if ( m_shareTable != null )
+					m_shareTable.setVisible( false );
+				
+				if ( m_pager != null )
+					m_pager.setVisible( false );
+				
+				if ( m_notifyPanel != null )
+					m_notifyPanel.setVisible( false );
+				
+				if ( m_menuPanel != null )
+					m_menuPanel.setVisible( false );
+				
+				m_noShareItemsEnterNameHint.setVisible( false );
+				m_noShareItemsToManageHint.setVisible( false );
+			}
 		}
 	}
 
@@ -994,10 +1016,22 @@ public class ShareThisDlg2 extends DlgBox
 				leftPanel.addStyleName( "shareThisDlg_ListOfSharesParentTable" );
 
 				// Add a hint that will be visible if there are no share items.
-				m_noShareItemsHint = new Label( messages.shareDlg_noShareItemsHint() );
-				m_noShareItemsHint.addStyleName( "shareDlg_noShareItemsHint" );
-				m_noShareItemsHint.setVisible( false );
-				leftPanel.add( m_noShareItemsHint );
+				m_noShareItemsEnterNameHint = new Label( messages.shareDlg_noShareItemsHint() );
+				m_noShareItemsEnterNameHint.addStyleName( "shareDlg_noShareItemsHint" );
+				m_noShareItemsEnterNameHint.setVisible( false );
+				leftPanel.add( m_noShareItemsEnterNameHint );
+
+				// Add a hint that will be visible if there are no share items when we are in "manage selected" mode.
+				m_noShareItemsToManageHint = new Label( messages.shareDlg_noShareItemsToManageHint() );
+				m_noShareItemsToManageHint.addStyleName( "shareDlg_noShareItemsHint" );
+				m_noShareItemsToManageHint.setVisible( false );
+				leftPanel.add( m_noShareItemsToManageHint );
+
+				// Add a hint that will be visible if there are no share items when we are in "manage" mode.
+				m_noShareItemsFoundHint = new Label( messages.shareDlg_noShareItemsFoundHint() );
+				m_noShareItemsFoundHint.addStyleName( "shareDlg_noShareItemsHint" );
+				m_noShareItemsFoundHint.setVisible( false );
+				leftPanel.add( m_noShareItemsFoundHint );
 
 				// Put the table that holds the list of recipients into a scrollable div
 				leftSubPanel = new FlowPanel();
@@ -1511,6 +1545,8 @@ public class ShareThisDlg2 extends DlgBox
 		// Remove all the share items we might have already.
 		removeAllShares();
 		
+		m_noShareItemsFoundHint.setVisible( true );
+		
 		// Hide the edit share widget
 		if ( m_editShareWidget != null )
 			m_editShareWidget.setVisible( false );
@@ -1609,6 +1645,8 @@ public class ShareThisDlg2 extends DlgBox
 			
 			// Remove all the share items we might have already.
 			removeAllShares();
+			
+			m_noShareItemsFoundHint.setVisible( true );
 			
 			// Hide the edit share widget
 			if ( m_editShareWidget != null )
@@ -2100,8 +2138,12 @@ public class ShareThisDlg2 extends DlgBox
 		if ( m_menuPanel != null )
 			m_menuPanel.setVisible( false );
 		
-		if ( m_noShareItemsHint != null && mode != ShareThisDlgMode.MANAGE_ALL )
-			m_noShareItemsHint.setVisible( true );
+		m_noShareItemsEnterNameHint.setVisible( false );
+		m_noShareItemsToManageHint.setVisible( false );
+		if ( mode == ShareThisDlgMode.NORMAL )
+			m_noShareItemsEnterNameHint.setVisible( true );
+		else if ( mode == ShareThisDlgMode.MANAGE_SELECTED )
+			m_noShareItemsToManageHint.setVisible( true );
 		
 		m_selectAllHeader.setValue( false );
 
@@ -2683,7 +2725,9 @@ public class ShareThisDlg2 extends DlgBox
 		if ( m_menuPanel != null )
 			m_menuPanel.setVisible( true );
 		
-		m_noShareItemsHint.setVisible( false );
+		m_noShareItemsEnterNameHint.setVisible( false );
+		m_noShareItemsToManageHint.setVisible( false );
+		m_noShareItemsFoundHint.setVisible( false );
 	}
 
 	/*
