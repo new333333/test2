@@ -53,6 +53,7 @@ public class NetFolder
 	private String m_name;
 	private String m_displayName;
 	private String m_relativePath;
+	private Long m_netFolderRootId;
 	private String m_netFolderRootName;
 	private NetFolderSyncStatus m_status;
 	private GwtNetFolderSyncScheduleConfig m_syncScheduleConfig;
@@ -105,6 +106,7 @@ public class NetFolder
 		m_name = netFolder.getName();
 		m_displayName = netFolder.getDisplayName();
 		m_relativePath = netFolder.getRelativePath();
+		m_netFolderRootId = netFolder.getNetFolderRootId();
 		m_netFolderRootName = netFolder.getNetFolderRootName();
 		m_syncScheduleConfig = netFolder.getSyncScheduleConfig();
 		m_isHomeDir = netFolder.getIsHomeDir();
@@ -202,6 +204,14 @@ public class NetFolder
 	public String getName()
 	{
 		return m_name;
+	}
+	
+	/**
+	 * 
+	 */
+	public Long getNetFolderRootId()
+	{
+		return m_netFolderRootId;
 	}
 	
 	/**
@@ -329,6 +339,14 @@ public class NetFolder
 	public void setName( String name )
 	{
 		m_name = name;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setNetFolderRootId( Long id )
+	{
+		m_netFolderRootId = id;
 	}
 	
 	/**

@@ -73,6 +73,7 @@ import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.ldap.impl.LdapModuleImpl.HomeDirInfo;
 import org.kablink.teaming.module.netfolder.NetFolderModule;
+import org.kablink.teaming.module.netfolder.NetFolderUtil;
 import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.resourcedriver.RDException;
 import org.kablink.teaming.module.resourcedriver.ResourceDriverModule;
@@ -398,14 +399,15 @@ public class NetFolderHelper
 		
 		if ( rdConfig != null )
 		{
-			Binder netFolderBinder;
+			Binder homeDirNetFolderBinder;
+			NetFolderConfig nfc;
 			boolean syncNeeded = false;
 			
 			// Does a net folder already exist for this user's home directory
-			netFolderBinder = NetFolderHelper.findHomeDirNetFolder(
+			homeDirNetFolderBinder = NetFolderHelper.findHomeDirNetFolder(
 																binderModule,
 																user.getWorkspaceId() );
-			if ( netFolderBinder == null )
+			if ( homeDirNetFolderBinder == null )
 			{
 				String folderName;
 				Long zoneId;
@@ -452,23 +454,23 @@ public class NetFolderHelper
 				scheduleInfo.setSchedule( schedule );
 
 				// Create a net folder in the user's workspace
-				netFolderBinder = NetFolderHelper.createNetFolder(
-															templateModule,
-															binderModule,
-															folderModule,
-															netFolderModule,
-															adminModule,
-															user,
-															folderName,
-															rdConfig.getName(),
-															path,
-															scheduleInfo,
-															SyncScheduleOption.useNetFolderServerSchedule,
-															workspaceId,
-															true,
-															false,
-															new Boolean( true ),
-															null );
+				nfc = NetFolderHelper.createNetFolder(
+													templateModule,
+													binderModule,
+													folderModule,
+													netFolderModule,
+													adminModule,
+													user,
+													folderName,
+													rdConfig.getName(),
+													path,
+													scheduleInfo,
+													SyncScheduleOption.useNetFolderServerSchedule,
+													workspaceId,
+													true,
+													false,
+													new Boolean( true ),
+													null );
 
 				// As the fix for bug 831849 we must call getCoreDao().clear() before we call
 				// NetFolderHelper.saveJitsSettings().  If we don't, saveJitsSettings() throws
@@ -485,17 +487,20 @@ public class NetFolderHelper
 				{
 					NetFolderHelper.saveJitsSettings(
 												binderModule,
-												netFolderBinder.getId(),
+												nfc.getId(),
 												true,
 												true,
 												getDefaultJitsAclMaxAge(),
 												getDefaultJitsResultsMaxAge() );
 				}
 				
+				nfc = NetFolderUtil.getNetFolderConfigById( homeDirNetFolderBinder.getNetFolderConfigId() ); 
 				syncNeeded = false;
 			}
 			else
 			{
+				nfc = NetFolderUtil.getNetFolderConfigById( homeDirNetFolderBinder.getNetFolderConfigId() );
+				
 				// A home dir net folder already exists for this user.
 				// Are we supposed to try and update an existing net folder?
 				if ( updateExistingNetFolder )
@@ -507,7 +512,7 @@ public class NetFolderHelper
 					{
 						ResourceDriver driver;
 						
-						driver = netFolderBinder.getResourceDriver();
+						driver = nfc.getResourceDriver();
 						if ( driver != null )
 						{
 							ResourceDriverConfig currentRdConfig;
@@ -520,7 +525,7 @@ public class NetFolderHelper
 							
 					// Did any information about the home directory change?
 					if ( (serverUNC != null && serverUNC.equalsIgnoreCase( currentServerUNC ) == false) ||
-						 homeDirInfo.getPath().equalsIgnoreCase( netFolderBinder.getResourcePath() ) == false )
+						 homeDirInfo.getPath().equalsIgnoreCase( nfc.getResourcePath() ) == false )
 					{
 						Set deleteAtts;
 						Map fileMap = null;
@@ -536,7 +541,7 @@ public class NetFolderHelper
 		   				mid = new MapInputData( formData );
 	
 		   				// Modify the existing net folder with the home directory information.
-			   			binderModule.modifyBinder( netFolderBinder.getId(), mid, fileMap, deleteAtts, null );
+			   			binderModule.modifyBinder( nfc.getId(), mid, fileMap, deleteAtts, null );
 			   			
 			   			syncNeeded = false;
 					}
@@ -555,14 +560,14 @@ public class NetFolderHelper
 					{
 						final Long binderId;
 						
-						binderId = netFolderBinder.getId();
+						binderId = nfc.getId();
 
 						m_logger.info( "About to sync home directory net folder: " + binderId );
 						folderModule.enqueueFullSynchronize( binderId );
 					}
 					catch ( Exception e )
 					{
-						m_logger.error( "Error syncing next net folder: " + netFolderBinder.getName() + ", " + e.toString() );
+						m_logger.error( "Error syncing next net folder: " + nfc.getName() + ", " + e.toString() );
 					}
 				}
 			}
@@ -1046,6 +1051,8 @@ public class NetFolderHelper
 		Boolean fullSyncDirOnly ) throws AccessControlException, WriteFilesException, WriteEntryDataException
 	{
 		// Modify the binder with the net folder information.
+		//!!!jdw
+	/*
 		folderModule.modifyNetFolder(
 									id,
 									netFolderName,
@@ -1056,7 +1063,8 @@ public class NetFolderHelper
 									inheritIndexContent,
 									syncScheduleOption,
 									fullSyncDirOnly );
-
+	*/
+		
 		// Set the net folder's sync schedule
 		if ( scheduleInfo != null )
 		{
