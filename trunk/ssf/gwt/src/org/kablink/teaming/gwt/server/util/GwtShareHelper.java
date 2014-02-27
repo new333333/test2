@@ -3563,6 +3563,7 @@ public class GwtShareHelper
 					shareRights.setAllowInternal( true );
 					shareRights.setAllowExternal( true );
 					shareRights.setAllowPublic( true );
+					shareRights.setAllowPublicLinks( true );
 				}
 			}
 		}
