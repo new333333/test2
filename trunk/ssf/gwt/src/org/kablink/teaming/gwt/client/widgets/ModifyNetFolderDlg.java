@@ -76,6 +76,8 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.event.dom.client.KeyPressHandler;
+import com.google.gwt.event.logical.shared.SelectionEvent;
+import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
@@ -225,6 +227,31 @@ public class ModifyNetFolderDlg extends DlgBox
 		{
 			m_rightsPanel = createRightsPanel();
 			m_tabPanel.add( m_rightsPanel, messages.modifyNetFolderDlg_RightsTab() );
+			m_tabPanel.addSelectionHandler( new SelectionHandler<Integer>()
+			{
+				@Override
+				public void onSelection( SelectionEvent<Integer> event )
+				{
+					int tabId;
+
+					tabId = event.getSelectedItem();
+					if ( tabId == 1 )
+					{
+						Scheduler.ScheduledCommand cmd;
+						
+						cmd = new Scheduler.ScheduledCommand()
+						{
+							@Override
+							public void execute()
+							{
+								if ( m_selectPrincipalsWidget != null )
+									m_selectPrincipalsWidget.relayout();
+							}
+						};
+						Scheduler.get().scheduleDeferred( cmd );
+					}
+				}
+			} );
 		}
 		
 		// create the panel that will hold the controls for the schedule
@@ -1761,7 +1788,7 @@ public class ModifyNetFolderDlg extends DlgBox
 											m_registeredEventHandlers );
 		}
 	}
-
+	
 	/**
 	 * This method gets called when the user types in the "results max age" or the
 	 * "acl max age" text box.
