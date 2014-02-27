@@ -168,10 +168,9 @@ img { -ms-interpolation-mode: bicubic; }
 .ss_style a:hover {
   	color: ${ss_style_link_hover_color} !important;
 	background-color: #cce9ee;
-	color: 
+	color: #135c8f;
 	border-radius: 2px;
 	-moz-border-radius: 2px;
-	border-radius: 2px;
 	-webkit-border-radius: 2px;
 	}
 .ss_title_link {
@@ -685,6 +684,7 @@ button, input[type="reset"], input[type="button"], input[type="submit"] {
   	cursor: pointer;
   	white-space: nowrap;
 	border: 0px;
+	min-width: 60px;
 	border-radius: 5px;
 	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;
@@ -740,7 +740,8 @@ input[type="button"].n-button:hover {
 	color: #135c8f !important;
 	border: 1px solid #81b2bd;
   	padding: 2px 10px !important;
-background-color: #cce9ee;	border-radius: 5px;
+	background-color: #cce9ee;
+	border-radius: 5px;
 	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;
 	}
@@ -784,7 +785,8 @@ a.ss_tinyButton:hover {
   	font-size: 11px;
 	color: #135c8f !important;
 	border: 1px solid #81b2bd !important;
-background-color: #cce9ee;  	white-space: nowrap;
+	background-color: #cce9ee;
+	white-space: nowrap;
 	border-radius: 5px;
 	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;
@@ -3682,9 +3684,10 @@ div.ss_calendarNaviBar {
 .ss_calendarNaviBar .ss_hoursSelectorTitle:hover {
 	color: #135c8f !important;
 	border: 1px solid #81b2bd;
-background-color: #cce9ee;	border-radius: 15px;
-	-moz-border-radius: 15px;
-	-webkit-border-radius: 15px;
+	background-color: #cce9ee;
+	border-radius: 5px;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
 }
 
 
@@ -4322,7 +4325,8 @@ a.ss_button:hover {
     text-decoration: none !important;
   	padding: 2px 10px !important;
 	border: 0px solid #81b2bd;
-background-color: #cce9ee;	border-radius: 5px;
+	background-color: #cce9ee;
+	border-radius: 5px;
 	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;
   	<c:if test="<%= isIE %>">
@@ -4450,7 +4454,8 @@ div.ss_questionContainer a.ss_tinyButton:hover {
   	font-size: 11px;
 	color: #135c8f !important;
 	border: 1px solid #81b2bd;
-background-color: #cce9ee;  	white-space: nowrap;
+	background-color: #cce9ee;
+	white-space: nowrap;
 	border-radius: 5px;
 	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;
