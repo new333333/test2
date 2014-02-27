@@ -617,16 +617,9 @@ div.ss_popup {
 	}	
 div.ss_popup_top {
   	position: relative;
-  	background-image: url(<html:imagesPath/>roundcorners3/background_dc_bar.png);
-	background-position: bottom;
-  	background-repeat: repeat-x;
-  	height: 20px;
-	-moz-border-radius-topleft: 3px;
-	-moz-border-radius-topright: 3px;
-	border-top-left-radius: 3px;
-	border-top-right-radius: 3px;
-	-webkit-border-top-left-radius: 3px;
-	-webkit-border-top-right-radius: 3px;
+  	background-color: #fff; 
+  	height: 26px;
+	border-bottom: 1px solid #e0e0e0;
 	}
 div.ss_popup_topLg {
   	position: relative;
@@ -641,12 +634,11 @@ div.ss_popup_topLg {
 	}	
 div.ss_popup_title {
    font-family: ${ss_style_title_font_family};
-   font-size: ${ss_style_font_normalprint};
-   font-weight: bold;
-   color: #fff;
-   padding-top: 2px;
+   font-size: 14px;
+   font-weight: normal;
+   color: #036f9f;
+   padding-top: 10px;
    position: relative;
-   text-align: center;
 	}
 div.ss_popup_close {
   	position: relative;
@@ -732,7 +724,7 @@ div.ss_themeMenu {
   min-width: 150px;
 }
 .ss_themeMenu_top {
-	text-align: center;
+	text-align: left;
 	padding: 0px 15px;
 	white-space: nowrap;
 }
@@ -755,7 +747,7 @@ div.ss_themeMenu ul {
 
 div.ss_appConfigMenu {
   position:absolute;
-  border:1px solid ${ss_toolbar1_background_color};
+  border:0px solid ${ss_toolbar1_background_color};
   margin: 0px;
   background-color:${ss_style_background_color_opaque};
   text-align: left;
@@ -772,8 +764,7 @@ div.ss_appConfigMenu {
 div.ss_appConfigMenu a {
   font-family: ${ss_style_font_family};
   font-size: ${ss_style_font_size};
-  color: #039; 
-  text-decoration: underline;
+  color: #135c8f; 
 }
 
 div.ss_appConfigMenu ul {
