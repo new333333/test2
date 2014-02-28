@@ -181,7 +181,7 @@
 	<classpathentry exported="true" kind="lib" path="lib/milton-servlet.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/groovy-all.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/spring-security-config.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/spring-security-ldap.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/spring-security-ldap.jar" sourcepath="/home/jwootton/Notes/Spring/Security/spring-security-3.1.x/ldap/src/main/java/org/springframework/security/ldap"/>
 	<classpathentry exported="true" kind="lib" path="lib/spring-security-openid.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/spring-security-web.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jackson-jaxrs.jar"/>
