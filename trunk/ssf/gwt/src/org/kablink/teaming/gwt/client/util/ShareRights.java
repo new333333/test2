@@ -72,6 +72,51 @@ public class ShareRights implements IsSerializable
 		m_canSharePublicLink = false;
 		m_canShareForward = false;
 	}
+
+	/**
+	 * 
+	 */
+	public void copy( ShareRights rights )
+	{
+		if ( rights == null )
+			return;
+		
+		setAccessRights( rights.getAccessRights() );
+		setCanShareForward( rights.getCanShareForward() );
+		setCanSharePublicLink( rights.getCanSharePublicLink() );
+		setCanShareWithExternalUsers( rights.getCanShareWithExternalUsers() );
+		setCanShareWithInternalUsers( rights.getCanShareWithInternalUsers() );
+		setCanShareWithPublic( rights.getCanShareWithPublic() );
+	}
+	
+	/**
+	 * 
+	 */
+	public boolean equalsRights( ShareRights rights )
+	{
+		if ( rights == null )
+			return false;
+		
+		if ( getAccessRights() != rights.getAccessRights() )
+			return false;
+		
+		if ( getCanShareForward() != rights.getCanShareForward() )
+			return false;
+		
+		if ( getCanSharePublicLink() != rights.getCanSharePublicLink() )
+			return false;
+		
+		if ( getCanShareWithExternalUsers() != rights.getCanShareWithExternalUsers() )
+			return false;
+		
+		if ( getCanShareWithInternalUsers() != rights.getCanShareWithInternalUsers() )
+			return false;
+		
+		if ( getCanShareWithPublic() != rights.getCanShareWithPublic() )
+			return false;
+		
+		return true;
+	}
 	
 	/**
 	 * 
