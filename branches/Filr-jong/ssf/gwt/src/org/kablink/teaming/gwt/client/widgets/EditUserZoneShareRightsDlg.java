@@ -36,6 +36,7 @@ package org.kablink.teaming.gwt.client.widgets;
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
+import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.PerUserZoneShareRightsInfo;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 
@@ -194,7 +195,7 @@ public class EditUserZoneShareRightsDlg extends DlgBox
 		mainPanel.add( tmpPanel );
 
 		// Add the "Share using links" checkbox.
-		m_canShareLinkCkbox = new CheckBox( messages.editUserZoneShareRightsDlg_ShareLinkLabel() );
+		m_canShareLinkCkbox = new CheckBox( messages.editUserZoneShareRightsDlg_ShareLinkLabel( GwtClientHelper.getProductName() ) );
 		m_canShareLinkCkbox.addStyleName( "editZoneShareRightsDlg_RightsCkbox" );
 		tmpPanel = new FlowPanel();
 		tmpPanel.add( m_canShareLinkCkbox );

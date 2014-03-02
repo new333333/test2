@@ -666,6 +666,7 @@ public class WebKeys {
 	public static final String OPERATION_SET_UI_THEME = "set_ui_theme";
 	public static final String OPERATION_FIND_PLACE_FORM = "find_place_form";
     public static final String OPERATION_VIEW_ACCESS = "view_access";
+    public static final String OPERATION_VIEW_NET_FOLDER_ACCESS = "view_net_folder_access";
     public static final String OPERATION_MANAGE_ACCESS_SHARING = "manage_sharing";
     public static final String OPERATION_VIEW_ERROR_MESSAGE = "view_error_message";
     public static final String OPERATION_VIEW_EDIT_HISTORY = "view_edit_history";
@@ -761,6 +762,8 @@ public class WebKeys {
 	public static final String ACCESS_SORTED_APPLICATION_GROUPS_MAP = "ss_accessSortedApplicationGroupsMap";
 	public static final String ACCESS_SORTED_APPLICATIONS = "ss_accessSortedApplications";
 	public static final String ACCESS_SORTED_APPLICATIONS_MAP = "ss_accessSortedApplicationsMap";
+	public static final String ACCESS_NET_FOLDER_MAP = "ss_accessNetFolderMap";
+	public static final String ACCESS_NET_FOLDER_URL = "ss_accessNetFolderUrl";
 	public static final String ACCESS_SUPER_USER = "ss_superUser";
 	public static final String ACCESS_WORKAREA_IS_PERSONAL = "ss_accessWorkareaIsPersonal";
 	public static final String ACCESSIBLE_URL = "ss_accessibleUrl";
@@ -1621,6 +1624,7 @@ public class WebKeys {
     
     //View names
     public static final String VIEW_ACCESS_TO_BINDER = "binder/view_access";
+    public static final String VIEW_ACCESS_TO_NET_FOLDER = "binder/view_access_net_folder";
     public static final String VIEW_ACCESS_CONTROL = "binder/access_control";
     public static final String VIEW_ACCESS_CONTROL_SHARING = "binder/view_access_control_sharing";
     public static final String VIEW_ACCESS_CONTROL_ENTRY = "binder/access_control_entry";

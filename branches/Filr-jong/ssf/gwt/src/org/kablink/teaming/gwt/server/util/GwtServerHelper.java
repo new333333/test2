@@ -7623,7 +7623,10 @@ public class GwtServerHelper {
 			User user = getCurrentUser();
 			if (!(ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId()))) {
 				// No!  Get the user's display style preference.
-				String displayStyle = user.getDisplayStyle();
+				String displayStyle;
+				if (Utils.checkIfFilr())
+				     displayStyle = ObjectKeys.USER_DISPLAY_STYLE_NEWPAGE;
+				else displayStyle = user.getDisplayStyle();
 				personalPrefs.setDisplayStyle(displayStyle);
 				
 				// Get the number of entries per page that should be

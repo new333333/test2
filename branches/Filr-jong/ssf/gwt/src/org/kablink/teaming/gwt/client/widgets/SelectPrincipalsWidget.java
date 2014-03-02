@@ -989,7 +989,24 @@ public class SelectPrincipalsWidget extends Composite
 		}
 	}
 
-
+	/**
+	 * 
+	 */
+	public void relayout()
+	{
+		Scheduler.ScheduledCommand cmd;
+		
+		cmd = new Scheduler.ScheduledCommand()
+		{
+			@Override
+			public void execute()
+			{
+				adjustPrincipalsTablePanelHeight();
+			}
+		};
+		Scheduler.get().scheduleDeferred( cmd );
+	}
+	
 
 	
 	

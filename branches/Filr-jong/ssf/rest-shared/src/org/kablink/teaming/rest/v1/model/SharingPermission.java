@@ -24,6 +24,7 @@ public class SharingPermission {
     private Boolean allInternal;
     private Boolean allExternal;
     private Boolean public_;
+    private Boolean publicLink;
     private Boolean grantReshare;
 
     @XmlElement(name = "external")
@@ -69,6 +70,15 @@ public class SharingPermission {
 
     public void setPublic(Boolean public_) {
         this.public_ = public_;
+    }
+
+    @XmlElement(name = "public_link")
+    public Boolean getPublicLink() {
+        return publicLink;
+    }
+
+    public void setPublicLink(Boolean publicLink) {
+        this.publicLink = publicLink;
     }
 
     @XmlElement(name = "grant_reshare")

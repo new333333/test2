@@ -3291,7 +3291,7 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
                             }
                             Criterion parentKeysExpr;
                             if (parentBinderKeys.size()==1) {
-                                parentKeysExpr = Restrictions.eq("owningBinderKey", parentBinderKeys.get(0).getSortKey() + "%");
+                                parentKeysExpr = Restrictions.like("owningBinderKey", parentBinderKeys.get(0).getSortKey() + "%");
                             } else {
                                 List<String> vals = new ArrayList<String>();
                                 for (HKey key : parentBinderKeys) {

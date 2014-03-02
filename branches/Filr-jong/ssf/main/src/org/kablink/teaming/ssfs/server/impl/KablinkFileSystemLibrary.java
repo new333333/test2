@@ -482,7 +482,7 @@ public class KablinkFileSystemLibrary implements KablinkFileSystem {
 	
 	public void moveObject(Map sourceUri, Map targetUri, boolean overwrite) 
 	throws NoAccessException, NoSuchObjectException, 
-	AlreadyExistsException, TypeMismatchException, WriteEntryDataException {
+	AlreadyExistsException, TypeMismatchException, WriteEntryDataException, WriteFilesException {
 		Map sourceMap = new HashMap();
 		String sourceInfo = objectInfo(sourceUri, sourceMap);
 		
@@ -1076,7 +1076,7 @@ public class KablinkFileSystemLibrary implements KablinkFileSystem {
 	}
 	
 	private void moveResource(Map sourceUri, Map sourceMap, Map targetUri, 
-			Map targetMap) throws NoAccessException {
+			Map targetMap) throws NoAccessException, WriteFilesException {
 		try {
 			bs.getFolderModule().moveEntry(null, getFolderEntry(sourceMap).getId(), getParentBinder(targetMap).getId(), null, null);
 		}

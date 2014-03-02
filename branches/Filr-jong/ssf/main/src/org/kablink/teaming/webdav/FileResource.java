@@ -398,7 +398,12 @@ public class FileResource extends WebdavResource implements FileAttachmentResour
 								// This is the only file contained in the entry, therefore, we can safely copy the entire entry.
 								HashMap options = new HashMap();
 								options.put(ObjectKeys.INPUT_OPTION_REQUIRED_TITLE, name);
-								FolderEntry destEntry = getFolderModule().copyEntry(entry.getParentBinder().getId(), entry.getId(), toFolderId, new String[] {name}, options);
+								try {
+									FolderEntry destEntry = getFolderModule().copyEntry(entry.getParentBinder().getId(), entry.getId(), toFolderId, new String[] {name}, options);
+								}
+								catch (WriteFilesException e) {
+									throw new ConflictException(this, "Can not copy file '" + id + "' into the folder '" + toFolderId + "' because of a WriteFilesException");
+								}
 							}
 						}
 						else {
@@ -480,7 +485,12 @@ public class FileResource extends WebdavResource implements FileAttachmentResour
 								// This is the only file contained in the entry, therefore, we can safely move the entire entry.
 								HashMap options = new HashMap();
 								options.put(ObjectKeys.INPUT_OPTION_REQUIRED_TITLE, name);
-								getFolderModule().moveEntry(entry.getParentBinder().getId(), entry.getId(), destFolderId, new String[] {name}, options);
+								try {
+									getFolderModule().moveEntry(entry.getParentBinder().getId(), entry.getId(), destFolderId, new String[] {name}, options);
+								}
+								catch (WriteFilesException e) {
+									throw new ConflictException(this, "Can not move file '" + id + "' into the folder '" + destFolderId + "' because of a WriteFilesException");
+								}
 								// Finally, we need to adjust the state of this FileResource to properly reflect the post-operation state.
 								// Reload file attachment object just in case.
 								this.setWebdavPath(destFolderResource.getWebdavPath() + "/" + name);

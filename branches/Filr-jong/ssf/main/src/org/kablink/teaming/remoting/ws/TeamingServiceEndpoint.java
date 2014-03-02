@@ -37,6 +37,7 @@ import java.util.Calendar;
 import javax.xml.rpc.ServiceException;
 import javax.xml.rpc.server.ServiceLifecycle;
 
+import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.remoting.ws.model.Binder;
 import org.kablink.teaming.remoting.ws.model.BinderBrief;
 import org.kablink.teaming.remoting.ws.model.DefinitionBrief;
@@ -362,10 +363,10 @@ public class TeamingServiceEndpoint implements ServiceLifecycle,
 	public void folder_restoreEntry(String accessToken, long entryId) {
 		getFolderService().folder_restoreEntry(accessToken, entryId);
 	}
-    public long folder_copyEntry(String accessToken, long entryId, long destinationId) {
+    public long folder_copyEntry(String accessToken, long entryId, long destinationId) throws WriteFilesException {
     	return getFolderService().folder_copyEntry(accessToken, entryId, destinationId);
     }
-    public void folder_moveEntry(String accessToken, long entryId, long destinationId) {
+    public void folder_moveEntry(String accessToken, long entryId, long destinationId) throws WriteFilesException {
        	getFolderService().folder_moveEntry(accessToken, entryId, destinationId);
     }
     public void folder_reserveEntry(String accessToken, long entryId) {

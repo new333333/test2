@@ -675,17 +675,6 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 			getProfileModule().setUserProperty(superU.getId(), ObjectKeys.USER_PROPERTY_UPGRADE_TEMPLATES, "true");
 		}
 
-		if (version.intValue() <= 15) {
-			if (Utils.checkIfFilr()) {
-				//In Filr, we must reset all of the definitions and templates and definitions automatically
-				//But this is only done when needed (i.e., update the version if another change is made)
-				getAdminModule().updateDefaultDefinitions(top.getId(), false);
-				getTemplateModule().updateDefaultTemplates(top.getId(), true);
-				getProfileModule().setUserProperty(superU.getId(), ObjectKeys.USER_PROPERTY_UPGRADE_DEFINITIONS, "true");
-				getProfileModule().setUserProperty(superU.getId(), ObjectKeys.USER_PROPERTY_UPGRADE_TEMPLATES, "true");
-			}
-		}
-
 		if ( version.intValue() <= 16 )
 		{
 			if ( Utils.checkIfFilr() )
@@ -702,6 +691,17 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 				profileModule.setUserProperty( superU.getId(), ObjectKeys.USER_PROPERTY_UPGRADE_DEFINITIONS, "true" );
 				profileModule.setUserProperty( superU.getId(), ObjectKeys.USER_PROPERTY_UPGRADE_SEARCH_INDEX, "true" );
 				profileModule.setUserProperty( superU.getId(), ObjectKeys.USER_PROPERTY_UPGRADE_TEMPLATES, "true" );
+			}
+		}
+
+		if (version.intValue() <= 17) {
+			if (Utils.checkIfFilr()) {
+				//In Filr, we must reset all of the definitions and templates and definitions automatically
+				//But this is only done when needed (i.e., update the version if another change is made)
+				getAdminModule().updateDefaultDefinitions(top.getId(), false);
+				getTemplateModule().updateDefaultTemplates(top.getId(), true);
+				getProfileModule().setUserProperty(superU.getId(), ObjectKeys.USER_PROPERTY_UPGRADE_DEFINITIONS, "true");
+				getProfileModule().setUserProperty(superU.getId(), ObjectKeys.USER_PROPERTY_UPGRADE_TEMPLATES, "true");
 			}
 		}
   	}

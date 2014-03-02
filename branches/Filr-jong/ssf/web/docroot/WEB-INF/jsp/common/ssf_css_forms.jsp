@@ -180,11 +180,21 @@ td.rightend
 
 
 
-.ss_form_header, div.ss_form_header table td {
-	color:#fff;
+.ss_form_header {
+	color:#036f9f;
 	font-family: ${ss_style_font_family};
-	font-size: 14px !important;
-	font-weight: bold;
+	font-size: 15px !important;
+	font-weight: normal;
+	letter-spacing: .03em;
+	padding-top: 2px;
+	margin-bottom: 10px;
+	border-bottom: 1px solid #e0e0e0;
+	}
+div.ss_form_header table td {
+	color:#036f9f;
+	font-family: ${ss_style_font_family};
+	font-size: 15px !important;
+	font-weight: normal;
 	letter-spacing: .03em;
 	padding-top: 2px;
 	margin-bottom: 10px;
@@ -203,15 +213,16 @@ td.rightend
 	padding: 0 25px 25px 25px!important;
 	}
 .ss_form_wrap {
-	background: transparent url(<html:imagesPath/>pics/dialog_header_tile.png) repeat-x;
-	background-position: top;
+/*	background: transparent url(<html:imagesPath/>pics/dialog_header_tile.png) repeat-x;  */
+/*	background-position: top; */
+	background-color: #fff;
 	padding: 0 15px 15px 15px!important;
+/*	border-top-left-radius: 5px;
+	border-top-right-radius: 5px;
 	-moz-border-radius-topleft: 5px;
 	-moz-border-radius-topright: 5px;
-	border-top-left-radius: 5px;
-	border-top-right-radius: 5px;
 	-webkit-border-top-left-radius: 5px;
-	-webkit-border-top-right-radius: 5px;
+	-webkit-border-top-right-radius: 5px;  */
 	}
 .ss_form_element {
 	padding-top: 10px;

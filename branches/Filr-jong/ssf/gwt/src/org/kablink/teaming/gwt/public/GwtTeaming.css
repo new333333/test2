@@ -489,7 +489,7 @@
 
 .ActivityStreamTopEntryAdditionalUIPanel
 {
-	display: inline;
+	display: inline-block;
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
@@ -968,9 +968,10 @@
 
 .groupMembershipGroupNameLabel
 {
-	font-size: 12px;
+	font-size: 14px;
 	font-weight: bold;
-	padding-top: 8px;
+	padding-top: 6px;
+	display: inline-block;
 }
 
 .modifyStaticMembershipDlg_externalAllowedCb
@@ -1014,13 +1015,13 @@
 .groupMembershipPopup
 {
 	font-size: 14px;
-	background-color: #fafad5;
-	border-color: #BABDB6;
+	background-color: #fff;
+	border-color: #b8b8b8;
 	border-style: solid solid solid;
 	border-width: 1px;
 	padding: 5px 10px;
-	-moz-border-radius: 5px;
 	border-radius: 5px;
+	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;
 	z-index: 1100;
 }
@@ -1030,7 +1031,7 @@
 	cursor: pointer;
 	position: absolute;
 	right: 10px;
-	top: 5px;
+	top: 10px;
 }
 
 .groupMembershipTablePanel
@@ -1121,13 +1122,14 @@ a, a:visited, a:hover {
 	background-color: transparent;
 	padding: 0 0 8px;
 	position: absolute;
+	border-right: 1px solid #e0e0e0;
 	overflow: auto;
 	top: 8px;
-	width: 250px;
+	width: 255px;
 	z-index: 100;
-	border-radius: 5px;
+/*	border-radius: 5px;
 	-moz-border-radius: 5px;
-	-webkit-border-radius: 5px;
+	-webkit-border-radius: 5px;  */
 }
 
 /* Style used for the header in the AdminActionsTreeControl */
@@ -1171,7 +1173,7 @@ a, a:visited, a:hover {
 {
 	position: absolute;
 	top: 8px;
-	background-color:#fff;
+	background-color: #fff;
 	border-radius: 5px;
 	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;
@@ -4564,7 +4566,7 @@ td.datePickerMonth {
 	.vibe-whoHasAccessDlg-group:hover        {cursor: pointer; background: #cce9ee; -moz-border-radius: 5px; border-radius: 5px; -webkit-border-radius: 5px;}	
 	.vibe-whoHasAccessDlg-headerImg          {height: 25px; width: 25p; padding-right: 5px;}
 	.vibe-whoHasAccessDlg-headerLabel        {white-space: nowrap; font-weight: bold;}
-	.vibe-whoHasAccessDlg-headerPanel        {display: inline; white-space: nowrap; padding-bottom: 13px; vertical-align: middle;}
+	.vibe-whoHasAccessDlg-headerPanel        {display: inline-block; white-space: nowrap; padding-bottom: 13px; vertical-align: middle;}
 	.vibe-whoHasAccessDlg-label              {}
 	.vibe-whoHasAccessDlg-readingPanel       {}
 	.vibe-whoHasAccessDlg-readingLabel       {vertical-align: top; margin-left: 5px;}
@@ -5593,8 +5595,6 @@ td.datePickerMonth {
 
 .AdminConsoleHomePage_mainPanel
 {
-	border-left: 1px solid #ededed;
-	overflow: auto;
 	position: absolute;
 	overflow: hidden;
 }

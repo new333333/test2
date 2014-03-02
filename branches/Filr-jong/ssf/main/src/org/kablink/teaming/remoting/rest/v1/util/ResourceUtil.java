@@ -902,10 +902,11 @@ public class ResourceUtil {
         sharing.setInternal(rightSet.isAllowSharing());
         sharing.setExternal(rightSet.isAllowSharingExternal());
         sharing.setPublic(rightSet.isAllowSharingPublic() && guestEnabled);
+        sharing.setPublicLink(rightSet.isAllowSharingPublicLinks() && guestEnabled);
         sharing.setGrantReshare(rightSet.isAllowSharingForward());
         model.setAccess(access);
         model.setRole(access.getRole());
-        model.setCanShare(sharing.getPublic() || sharing.getExternal() || sharing.getInternal());
+        model.setCanShare(sharing.getPublic() || sharing.getPublicLink() || sharing.getExternal() || sharing.getInternal());
 
         model.setLink(LinkUriUtil.getShareLinkUri(model.getId()));
 

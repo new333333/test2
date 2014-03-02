@@ -34,6 +34,7 @@ package org.kablink.teaming.remoting.ws.service.folder;
 
 import java.util.Calendar;
 
+import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.remoting.ws.model.Description;
 import org.kablink.teaming.remoting.ws.model.FileVersions;
 import org.kablink.teaming.remoting.ws.model.FolderEntry;
@@ -97,8 +98,8 @@ public interface FolderService {
 	public void folder_deleteEntry(String accessToken, long entryId);
 	public void folder_preDeleteEntry(String accessToken, long entryId);
 	public void folder_restoreEntry(String accessToken, long entryId);
-    public long folder_copyEntry(String accessToken, long entryId, long destinationId);
-    public void folder_moveEntry(String accessToken, long entryId, long destinationId); 
+    public long folder_copyEntry(String accessToken, long entryId, long destinationId) throws WriteFilesException;
+    public void folder_moveEntry(String accessToken, long entryId, long destinationId) throws WriteFilesException; 
     public void folder_reserveEntry(String accessToken, long entryId);
     public void folder_unreserveEntry(String accessToken, long entryId);
 

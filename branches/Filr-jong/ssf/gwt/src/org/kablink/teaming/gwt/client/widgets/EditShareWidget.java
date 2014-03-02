@@ -91,13 +91,16 @@ public class EditShareWidget extends Composite
 	private ListBox m_canReshareInternalListbox;
 	private ListBox m_canReshareExternalListbox;
 	private ListBox m_canResharePublicListbox;
+	private ListBox m_canResharePublicLinkListbox;
 	private Label m_canShareLabel;
 	private CheckBox m_canReshareExternalCkbox;
 	private CheckBox m_canReshareInternalCkbox;
 	private CheckBox m_canResharePublicCkbox;
+	private CheckBox m_canResharePublicLinkCkbox;
 	private Label m_canReshareInternalLabel;
 	private Label m_canReshareExternalLabel;
 	private Label m_canResharePublicLabel;
+	private Label m_canResharePublicLinkLabel;
 	private EditSuccessfulHandler m_editSuccessfulHandler;
 	private ArrayList<GwtShareItem> m_listOfShareItems;
 	
@@ -389,6 +392,21 @@ public class EditShareWidget extends Composite
 			} );
 			hPanel.add( m_canResharePublicListbox );
 			m_resharePanelForMultiEdit.add( hPanel );
+
+			// Add the "Filr Link" listbox
+			hPanel = new HorizontalPanel();
+			hPanel.setVerticalAlignment( HasVerticalAlignment.ALIGN_MIDDLE );
+			hPanel.setSpacing( 4 );
+			hPanel.addStyleName( "marginleft1" );
+			m_canResharePublicLinkLabel = new Label( messages.editShareDlg_canResharePublicLinkLabel( GwtClientHelper.getProductName() ) );
+			hPanel.add( m_canResharePublicLinkLabel );
+			m_canResharePublicLinkListbox = new ListBox( false );
+			m_canResharePublicLinkListbox.setVisibleItemCount( 1 );
+			m_canResharePublicLinkListbox.addItem( messages.editShareDlg_yes(), RESHARE_YES );
+			m_canResharePublicLinkListbox.addItem( messages.editShareDlg_no(), RESHARE_NO );
+			m_canResharePublicLinkListbox.addItem( messages.editShareDlg_leaveUnchanged(), LEAVE_UNCHANGED );
+			hPanel.add( m_canResharePublicLinkListbox );
+			m_resharePanelForMultiEdit.add( hPanel );
 		}
 		
 		return panel;
@@ -485,6 +503,12 @@ public class EditShareWidget extends Composite
 		tmpPanel.add( m_canResharePublicCkbox );
 		rbPanel.add( tmpPanel );
 		
+		// Add the "allow share public link checkbox.
+		m_canResharePublicLinkCkbox = new CheckBox( messages.editShareRightsDlg_CanSharePublicLinkLabel( GwtClientHelper.getProductName() ) );
+		tmpPanel = new FlowPanel();
+		tmpPanel.add( m_canResharePublicLinkCkbox );
+		rbPanel.add( tmpPanel );
+		
 		mainPanel.add( rbPanel );
 		
 		return mainPanel;
@@ -530,25 +554,38 @@ public class EditShareWidget extends Composite
 			{
 				int selectedIndex;
 				
-				selectedIndex = m_canResharePublicListbox.getSelectedIndex();
-				if ( selectedIndex >= 0 )
+				if ( m_canResharePublicListbox.isVisible() == true )
 				{
-					String value;
-					
-					// Did the user select Yes in the public listbox?
-					value = m_canResharePublicListbox.getValue( selectedIndex );
-					if ( value != null && value.equalsIgnoreCase( RESHARE_YES ) == true )
+					selectedIndex = m_canResharePublicListbox.getSelectedIndex();
+					if ( selectedIndex >= 0 )
 					{
-						// Yes
-						// Disable the "Internal users" and "External Users" listboxes.
-						m_canReshareInternalListbox.setEnabled( false );
-						m_canReshareExternalListbox.setEnabled( false );
+						String value;
+						
+						// Did the user select Yes in the public listbox?
+						value = m_canResharePublicListbox.getValue( selectedIndex );
+						if ( value != null && value.equalsIgnoreCase( RESHARE_YES ) == true )
+						{
+							// Yes
+							// Disable the "Internal users" and "External Users" listboxes.
+							m_canReshareInternalListbox.setEnabled( false );
+							m_canReshareExternalListbox.setEnabled( false );
+						}
+						else
+						{
+							m_canReshareInternalListbox.setEnabled( true );
+							m_canReshareExternalListbox.setEnabled( true );
+						}
 					}
 					else
 					{
 						m_canReshareInternalListbox.setEnabled( true );
 						m_canReshareExternalListbox.setEnabled( true );
 					}
+				}
+				else
+				{
+					m_canReshareInternalListbox.setEnabled( true );
+					m_canReshareExternalListbox.setEnabled( true );
 				}
 			}
 		}
@@ -569,8 +606,6 @@ public class EditShareWidget extends Composite
 				saveShareRights( nextShareItem );
 				saveExpirationValue( nextShareItem );
 				saveNote( nextShareItem );
-				
-				nextShareItem.setIsDirty( true );
 			}
 			
 			// Do we have a handler we should call?
@@ -642,7 +677,7 @@ public class EditShareWidget extends Composite
 				recipientType = shareItem.getRecipientType();
 				if ( recipientType == GwtRecipientType.PUBLIC_LINK )
 				{
-					desc = GwtTeaming.getMessages().editShareDlg_filrLinkDesc();
+					desc = GwtTeaming.getMessages().editShareDlg_filrLinkDesc( GwtClientHelper.getProductName() );
 				}
 				else if ( recipientType == GwtRecipientType.PUBLIC_TYPE )
 				{
@@ -801,6 +836,13 @@ public class EditShareWidget extends Composite
 				m_canResharePublicListbox.setVisible( canShare );
 				if ( canShare )
 					GwtClientHelper.selectListboxItemByValue( m_canResharePublicListbox, LEAVE_UNCHANGED );
+
+				// Show/hide the "share public link" listbox depending on whether the user has "share public link" rights.
+				canShare = highestRightsPossible.getCanSharePublicLink();
+				m_canResharePublicLinkLabel.setVisible( canShare );
+				m_canResharePublicLinkListbox.setVisible( canShare );
+				if ( canShare )
+					GwtClientHelper.selectListboxItemByValue( m_canResharePublicLinkListbox, LEAVE_UNCHANGED );
 			}
 		}
 	}
@@ -887,6 +929,10 @@ public class EditShareWidget extends Composite
 		// Show/hide the "share public" checkbox depending on whether the user has "share public" rights.
 		m_canResharePublicCkbox.setVisible( canShareForward && highestRightsPossible.getCanShareWithPublic() );
 		m_canResharePublicCkbox.setValue( shareRights.getCanShareWithPublic() );
+		
+		// Show/hide the "share public link" checkbox depending on whether the user has "share public link" rights.
+		m_canResharePublicLinkCkbox.setVisible( canShareForward && highestRightsPossible.getCanSharePublicLink() );
+		m_canResharePublicLinkCkbox.setValue( shareRights.getCanSharePublicLink() );
 	}
 	
 	/**
@@ -918,11 +964,32 @@ public class EditShareWidget extends Composite
 	 */
 	private void saveExpirationValue( GwtShareItem shareItem )
 	{
+		ShareExpirationValue origValue;
 		ShareExpirationValue expirationValue;
+		boolean usedNewValue = false;
+		boolean dirty = false;
+		
+		origValue = shareItem.getShareExpirationValue();
 		
 		expirationValue = m_expirationWidget.getExpirationValue();
 		if ( expirationValue != null )
+		{
 			shareItem.setShareExpirationValue( expirationValue );
+			usedNewValue = true;
+		}
+		
+		if ( usedNewValue )
+		{
+			if ( origValue == null && expirationValue != null )
+				dirty = true;
+			else if ( origValue != null && expirationValue == null )
+				dirty = true;
+			else if ( expirationValue != null && expirationValue.equalsValue( origValue ) == false )
+				dirty = true;
+		}
+		
+		if ( dirty )
+			shareItem.setIsDirty( true );
 	}
 		
 	/**
@@ -957,8 +1024,12 @@ public class EditShareWidget extends Composite
 	private void saveShareRightsForMultiEdit( GwtShareItem shareItem )
 	{
 		ShareRights shareRights;
+		ShareRights origShareRights;
 		
 		shareRights = shareItem.getShareRights();
+		
+		origShareRights = new ShareRights();
+		origShareRights.copy( shareRights );
 		
 		// Save the access rights.
 		{
@@ -1067,9 +1138,36 @@ public class EditShareWidget extends Composite
 				}
 			}
 	
+			
+			if ( m_canResharePublicLinkListbox.isVisible() )
+			{
+				selectedIndex = m_canResharePublicLinkListbox.getSelectedIndex();
+				if ( selectedIndex >= 0 )
+				{
+					String value;
+					
+					value = m_canResharePublicLinkListbox.getValue( selectedIndex );
+					if ( value != null && value.equalsIgnoreCase( LEAVE_UNCHANGED ) == false )
+					{
+						setCanShareForward = true;
+
+						if ( value.equalsIgnoreCase( RESHARE_YES ) )
+						{
+							canShareForward = true;
+							shareRights.setCanSharePublicLink( true );
+						}
+						else
+							shareRights.setCanSharePublicLink( false );
+					}
+				}
+			}
+	
 			if ( setCanShareForward )
 				shareRights.setCanShareForward( canShareForward );
 		}
+		
+		if ( origShareRights.equalsRights( shareRights ) == false )
+			shareItem.setIsDirty( true );
 	}
 	
 	/**
@@ -1078,10 +1176,15 @@ public class EditShareWidget extends Composite
 	private void saveShareRightsForSingleEdit( GwtShareItem shareItem )
 	{
 		AccessRights accessRights;
+		ShareRights origShareRights;
 		ShareRights shareRights;
 		boolean canShareForward;
 		
 		shareRights = shareItem.getShareRights();
+		
+		origShareRights = new ShareRights();
+		origShareRights.copy( shareRights );
+		
 		accessRights = ShareRights.AccessRights.UNKNOWN;
 		
 		if ( m_viewerRb.isVisible() && m_viewerRb.getValue() == true )
@@ -1092,7 +1195,7 @@ public class EditShareWidget extends Composite
 			accessRights = ShareRights.AccessRights.CONTRIBUTOR;
 		
 		shareRights.setAccessRights( accessRights );
-
+		
 		canShareForward = false;
 		
 		if ( m_canReshareInternalCkbox.isVisible() && m_canReshareInternalCkbox.getValue() == true )
@@ -1119,9 +1222,18 @@ public class EditShareWidget extends Composite
 		else
 			shareRights.setCanShareWithPublic( false );
 
+		if ( m_canResharePublicLinkCkbox.isVisible() && m_canResharePublicLinkCkbox.getValue() == true )
+		{
+			canShareForward = true;
+			shareRights.setCanSharePublicLink( true );
+		}
+		else
+			shareRights.setCanSharePublicLink( false );
+
 		shareRights.setCanShareForward( canShareForward );
-		
-		shareItem.setIsDirty( true );
+
+		if ( origShareRights.equalsRights( shareRights ) == false )
+			shareItem.setIsDirty( true );
 	}
 	
 	/**
@@ -1129,8 +1241,12 @@ public class EditShareWidget extends Composite
 	 */
 	private void saveNote( GwtShareItem shareItem )
 	{
+		String origNote;
 		String newNote;
+		boolean usedNewNote = false;
+		boolean dirty = false;
 		
+		origNote = shareItem.getComments();
 		newNote = m_noteTextArea.getValue();
 		
 		// Are we dealing with more than 1 share item?
@@ -1141,15 +1257,32 @@ public class EditShareWidget extends Composite
 			if ( newNote != null && newNote.equalsIgnoreCase( GwtTeaming.getMessages().editShareDlg_undefinedNote() ) == false )
 			{
 				// No, save the note
-				shareItem.setComments( m_noteTextArea.getValue() );
+				shareItem.setComments( newNote );
+				usedNewNote = true;
 			}
 		}
 		else
 		{
 			// No
 			if ( newNote != null )
+			{
 				shareItem.setComments( newNote );
+				usedNewNote = true;
+			}
 		}
+		
+		if ( usedNewNote )
+		{
+			if ( origNote == null && newNote != null )
+				dirty = true;
+			else if ( origNote != null && newNote == null )
+				dirty = true;
+			else if ( newNote != null && newNote.equals( origNote ) == false )
+				dirty = true;
+		}
+		
+		if ( dirty )
+			shareItem.setIsDirty( true );
 	}
 	
 	/**

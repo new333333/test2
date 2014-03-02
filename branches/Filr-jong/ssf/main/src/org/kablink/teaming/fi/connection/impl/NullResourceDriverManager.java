@@ -141,14 +141,6 @@ public class NullResourceDriverManager implements ResourceDriverManager {
 		return null;
 	}
 
-	/*
-	 * @see org.kablink.teaming.fi.connection.ResourceDriverManager#getDriver(java.lang.Long)
-	 */
-	@Override
-	public ResourceDriver getDriver(Long driverId) throws FIException {
-		return null;
-	}
-
 	@Override
 	public ResourceDriver createResourceDriverWithoutInitialization(
 			ResourceDriverConfig config) {

@@ -37,6 +37,7 @@ import java.util.Date;
 import java.util.Map;
 
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
+import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.ssfs.AlreadyExistsException;
 import org.kablink.teaming.ssfs.LockException;
 import org.kablink.teaming.ssfs.NoAccessException;
@@ -80,7 +81,7 @@ public interface KablinkFileSystem {
 	*/
 
 	public String[] getChildrenNames(Map uri) throws  
-	NoAccessException, NoSuchObjectException;
+	NoAccessException, NoSuchObjectException, WriteFilesException;
 	
 	public Map getProperties(Map uri) throws  
 	NoAccessException, NoSuchObjectException;
@@ -99,5 +100,5 @@ public interface KablinkFileSystem {
 	
 	public void moveObject(Map sourceUri, Map targetUri, boolean overwrite)
 	throws NoAccessException, NoSuchObjectException, 
-	AlreadyExistsException, TypeMismatchException, WriteEntryDataException;
+	AlreadyExistsException, TypeMismatchException, WriteEntryDataException, WriteFilesException;
 }

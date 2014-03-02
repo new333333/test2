@@ -651,7 +651,7 @@ public class ShareItemCell extends AbstractCell<GwtShareItem>
 			// Yes, add a link that the user can click on to invoke the "Copy Filr Link" dialog.
 			img = new Image( GwtTeaming.getImageBundle().publicLink16() );
 			img.getElement().setAttribute( "filr-link-img", "true" );
-			img.getElement().setTitle( messages.shareDlg_publicLinkTitle() );
+			img.getElement().setTitle( messages.shareDlg_publicLinkTitle( GwtClientHelper.getProductName() ) );
 			mainPanel.add( img );
 		}
 		

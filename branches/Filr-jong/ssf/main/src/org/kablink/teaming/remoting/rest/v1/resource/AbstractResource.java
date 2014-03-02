@@ -798,7 +798,8 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
             SharingPermission sharePerms = access.getSharing();
             if (sharePerms!=null) {
                 if (Boolean.TRUE.equals(sharePerms.getExternal()) || Boolean.TRUE.equals(sharePerms.getGrantReshare()) ||
-                        Boolean.TRUE.equals(sharePerms.getPublic()) || Boolean.TRUE.equals(sharePerms.getInternal())) {
+                        Boolean.TRUE.equals(sharePerms.getPublic()) || Boolean.TRUE.equals(sharePerms.getPublicLink()) ||
+                        Boolean.TRUE.equals(sharePerms.getInternal())) {
                     throw new BadRequestException(ApiErrorCode.BAD_INPUT, "Cannot specify 'access.sharing' permissions for public shares.");
                 }
             }
@@ -862,6 +863,9 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
             }
             if (Boolean.TRUE.equals(sharing.getPublic())) {
                 rights.setAllowSharingPublic(true);
+            }
+            if (Boolean.TRUE.equals(sharing.getPublicLink())) {
+                rights.setAllowSharingPublicLinks(true);
             }
             if (rights.isAllowSharing() || rights.isAllowSharingExternal() || rights.isAllowSharingPublic()) {
                 rights.setAllowSharingForward(true);
@@ -1558,11 +1562,13 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
             sharing.setInternal(sharingModule.testAddShareEntityInternal(entity));
             sharing.setExternal(sharingModule.testAddShareEntityExternal(entity));
             sharing.setPublic(sharingModule.testAddShareEntityPublic(entity) && isGuestAccessEnabled());
+            sharing.setPublicLink(sharingModule.testAddShareEntityPublicLinks(entity) && isGuestAccessEnabled());
             sharing.setGrantReshare(sharingModule.testShareEntityForward(entity));
         } else {
             sharing.setInternal(false);
             sharing.setExternal(false);
             sharing.setPublic(false);
+            sharing.setPublicLink(false);
             sharing.setGrantReshare(false);
         }
         return sharing;
@@ -1725,7 +1731,7 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
                 } catch (Exception e) {
                     logger.warn("Unable to look up entity: " + change.getEntityId(), e);
                 }
-                changes.add(ResourceUtil.buildBinderChange(change, definableEntity, false, toDomainFormat(descriptionFormatStr)));
+                changes.add(ResourceUtil.buildBinderChange(change, definableEntity, true, toDomainFormat(descriptionFormatStr)));
             }
             BinderChanges results = ResourceUtil.buildBinderChanges(binderChanges, changes);
             results.setLastChange(results.getLastModified());

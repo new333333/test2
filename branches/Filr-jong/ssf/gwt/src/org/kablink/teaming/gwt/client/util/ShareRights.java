@@ -46,6 +46,7 @@ public class ShareRights implements IsSerializable
 	private boolean m_canShareWithExternalUsers;
 	private boolean m_canShareWithInternalUsers;
 	private boolean m_canShareWithPublic;
+	private boolean m_canSharePublicLink;
 	
 	/**
 	 * 
@@ -68,7 +69,53 @@ public class ShareRights implements IsSerializable
 		m_canShareWithExternalUsers = false;
 		m_canShareWithInternalUsers = false;
 		m_canShareWithPublic = false;
+		m_canSharePublicLink = false;
 		m_canShareForward = false;
+	}
+
+	/**
+	 * 
+	 */
+	public void copy( ShareRights rights )
+	{
+		if ( rights == null )
+			return;
+		
+		setAccessRights( rights.getAccessRights() );
+		setCanShareForward( rights.getCanShareForward() );
+		setCanSharePublicLink( rights.getCanSharePublicLink() );
+		setCanShareWithExternalUsers( rights.getCanShareWithExternalUsers() );
+		setCanShareWithInternalUsers( rights.getCanShareWithInternalUsers() );
+		setCanShareWithPublic( rights.getCanShareWithPublic() );
+	}
+	
+	/**
+	 * 
+	 */
+	public boolean equalsRights( ShareRights rights )
+	{
+		if ( rights == null )
+			return false;
+		
+		if ( getAccessRights() != rights.getAccessRights() )
+			return false;
+		
+		if ( getCanShareForward() != rights.getCanShareForward() )
+			return false;
+		
+		if ( getCanSharePublicLink() != rights.getCanSharePublicLink() )
+			return false;
+		
+		if ( getCanShareWithExternalUsers() != rights.getCanShareWithExternalUsers() )
+			return false;
+		
+		if ( getCanShareWithInternalUsers() != rights.getCanShareWithInternalUsers() )
+			return false;
+		
+		if ( getCanShareWithPublic() != rights.getCanShareWithPublic() )
+			return false;
+		
+		return true;
 	}
 	
 	/**
@@ -114,6 +161,14 @@ public class ShareRights implements IsSerializable
 	/**
 	 * 
 	 */
+	public boolean getCanSharePublicLink()
+	{
+		return m_canSharePublicLink;
+	}
+	
+	/**
+	 * 
+	 */
 	public String getReshareRightsAsString()
 	{
 		StringBuffer sb;
@@ -139,6 +194,14 @@ public class ShareRights implements IsSerializable
 				sb.append( ", " );
 			
 			sb.append( GwtTeaming.getMessages().shareDlg_resharePublic() );
+		}
+		
+		if ( m_canSharePublicLink )
+		{
+			if ( sb.length() > 0 )
+				sb.append( ", " );
+			
+			sb.append( GwtTeaming.getMessages().shareDlg_resharePublicLink( GwtClientHelper.getProductName() ) );
 		}
 		
 		return sb.toString();
@@ -199,6 +262,14 @@ public class ShareRights implements IsSerializable
 	public void setCanShareWithPublic( boolean canShareWithPublic )
 	{
 		m_canShareWithPublic = canShareWithPublic;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setCanSharePublicLink( boolean canSharePublicLink )
+	{
+		m_canSharePublicLink = canSharePublicLink;
 	}
 }
 

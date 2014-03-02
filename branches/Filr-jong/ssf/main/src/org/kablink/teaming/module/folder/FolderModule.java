@@ -239,7 +239,7 @@ public interface FolderModule {
      * @throws AccessControlException
      */
     public FolderEntry copyEntry(Long folderId, Long entryId, Long destinationId, String[] toFileNames, Map options)
-    	throws AccessControlException;
+    	throws AccessControlException, WriteFilesException;
     public void copyFolderEntries(Long sourceId, Long destinationId) throws NotSupportedException;
     
     /**
@@ -576,7 +576,7 @@ public interface FolderModule {
      * @throws AccessControlException
      */
     public FolderEntry moveEntry(Long folderId, Long entryId, Long destinationId, String[] toFileNames, Map options)
-    	throws AccessControlException;
+    	throws AccessControlException, WriteFilesException;
 
     /**
      * Reserve the entry.
@@ -735,6 +735,8 @@ public interface FolderModule {
     public void syncAclForNetFolderRoot(Folder netFolderRoot);
 
     public Folder createNetFolder(Long netFolderConfigId, Long templateId, Long parentBinderId, String folderName, User owner, String rootName, String path, Boolean isHomeDir, boolean indexContent, Boolean inheritIndexContent, SyncScheduleOption syncScheduleOption, Boolean fullSyncDirOnly ) throws AccessControlException, WriteFilesException, WriteEntryDataException;
+    
+    public Map getNetFolderAccessData(Folder netFolder);
     
     /**
      * Get an object containing information about the latest full synchronization run on the specified net folder.

@@ -41,6 +41,7 @@ import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Description;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.Folder;
+import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.TeamInfo;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
@@ -120,6 +121,7 @@ public class SelfResource extends AbstractFileResource {
    	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public User getSelf(@QueryParam("include_attachments") @DefaultValue("true") boolean includeAttachments,
                         @QueryParam("include_mobile_devices") @DefaultValue("false") boolean includeMobileDevices,
+                        @QueryParam("include_groups") @DefaultValue("false") boolean includeGroups,
                         @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr) {
         Principal entry = getLoggedInUser();
 
@@ -166,6 +168,15 @@ public class SelfResource extends AbstractFileResource {
 	            }
             }
             user.setMobileDevices(devices);
+        }
+
+        if (includeGroups) {
+            List<Group> groups = getProfileModule().getUserGroups(getLoggedInUserId());
+            List<LongIdLinkPair> ids = new ArrayList<LongIdLinkPair>(groups.size());
+            for (Group group : groups) {
+                ids.add(new LongIdLinkPair(group.getId(), LinkUriUtil.getGroupLinkUri(group.getId())));
+            }
+            user.setGroups(ids);
         }
         return user;
     }

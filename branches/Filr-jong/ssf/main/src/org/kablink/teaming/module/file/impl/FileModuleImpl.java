@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -61,7 +61,9 @@ import javax.crypto.SecretKey;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.search.Query;
+
 import org.dom4j.Element;
+
 import org.kablink.teaming.BinderQuotaException;
 import org.kablink.teaming.DataQuotaException;
 import org.kablink.teaming.FileSizeLimitException;
@@ -106,6 +108,7 @@ import org.kablink.teaming.lucene.Hits;
 import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
+import org.kablink.teaming.module.binder.impl.EntryDataErrors.Problem;
 import org.kablink.teaming.module.definition.DefinitionUtils;
 import org.kablink.teaming.module.file.ChecksumMismatchException;
 import org.kablink.teaming.module.file.ContentFilter;
@@ -118,6 +121,7 @@ import org.kablink.teaming.module.file.FilesErrors;
 import org.kablink.teaming.module.file.FilterException;
 import org.kablink.teaming.module.file.LockIdMismatchException;
 import org.kablink.teaming.module.file.LockedByAnotherUserException;
+import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.folder.FolderModule.FolderOperation;
 import org.kablink.teaming.module.impl.CommonDependencyInjection;
@@ -155,12 +159,12 @@ import org.kablink.util.KeyValuePair;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
 import org.kablink.util.search.Criteria;
+
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.FileCopyUtils;
-
 
 /**
  * This implementing class utilizes transactional demarcation strategies that 
@@ -179,8 +183,8 @@ import org.springframework.util.FileCopyUtils;
  * is discouraged for obvious performance/scalability reasons.  
  * 
  * @author jong
- *
  */
+@SuppressWarnings({"unchecked", "unused"})
 public class FileModuleImpl extends CommonDependencyInjection implements FileModule, InitializingBean {
 
 	private static final String FAILED_FILTER_FILE_DELETE 			= "delete";
@@ -314,6 +318,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		initFailedFilterTransaction();		
 	}
 	
+	@Override
 	public void afterPropertiesSet() throws Exception {
 		cacheFileStoreText = new FileStore(SPropsUtil.getString("cache.file.store.dir"), ObjectKeys.CONVERTER_DIR_TEXT);
 		cacheFileStoreHtml = new FileStore(SPropsUtil.getString("cache.file.store.dir"), ObjectKeys.CONVERTER_DIR_HTML);
@@ -324,12 +329,14 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		initContentFilter();	
 	}
 
+	@Override
 	public FilesErrors deleteFiles(final Binder binder, 
 			final DefinableEntity entry, boolean deleteMirroredSource, 
 			FilesErrors errors) {
 		return deleteFiles(binder, entry, deleteMirroredSource, errors, false);
 	}
 	
+	@Override
 	public FilesErrors deleteFiles(final Binder binder, 
 			final DefinableEntity entry, boolean deleteMirroredSource, 
 			FilesErrors errors, boolean skipDbLog) {
@@ -394,6 +401,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		return errors;
 	}
 	
+	@Override
 	public void deleteCachedFiles(Binder binder, DefinableEntity entry) {
 		String entityPath = FilePathUtil.getEntityDirPath(binder, entry);
 		try {
@@ -419,6 +427,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		}
 	}
 	
+	@Override
 	public FilesErrors deleteFile(Binder binder, DefinableEntity entry,
 			FileAttachment fAtt, FilesErrors errors) {
 		if(errors == null)
@@ -464,6 +473,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		return errors;
 	}
 	
+	@Override
 	public void readFile(Binder binder, DefinableEntity entry, FileAttachment fa, 
 			OutputStream out) {
 		String versionName = null;
@@ -490,6 +500,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		GangliaMonitoring.incrementFileReads();
 	}
 	
+	@Override
 	public InputStream readFile(Binder binder, DefinableEntity entry, FileAttachment fa) { 
 		String versionName = null;
 		String latestVersionName = null;
@@ -517,13 +528,15 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		return result;
 	}
 	
-    public FilesErrors writeFiles(Binder binder, DefinableEntity entry, 
+    @Override
+	public FilesErrors writeFiles(Binder binder, DefinableEntity entry, 
     		List fileUploadItems, FilesErrors errors) 
     	throws ReservedByAnotherUserException {
 		return writeFiles(binder, entry, fileUploadItems, errors, Boolean.TRUE, false);
     }
     
-    public FilesErrors writeFiles(Binder binder, DefinableEntity entry, 
+    @Override
+	public FilesErrors writeFiles(Binder binder, DefinableEntity entry, 
     		List fileUploadItems, FilesErrors errors, boolean skipDbLog) 
     	throws ReservedByAnotherUserException {
 		return writeFiles(binder, entry, fileUploadItems, errors, Boolean.TRUE, skipDbLog);
@@ -585,6 +598,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		return errors;
     }
 	    
+	@Override
 	public FilesErrors writeFilesValidationOnly(Binder binder, DefinableEntity entry, 
     		List fileUploadItems, FilesErrors errors) 
     	throws ReservedByAnotherUserException {
@@ -614,11 +628,13 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		return errors;
     }
 	
+	@Override
 	public void pruneFileVersions(Binder binder, DefinableEntity entry) {
 		Long maxVersions = getBinderModule().getBinderVersionsToKeep(binder);
 		pruneFileVersions(binder, entry, maxVersions);
 	}
 	
+	@Override
 	public void pruneFileVersions(Binder binder, DefinableEntity entry, Long maxVersions) {
     	if (maxVersions != null) {
 	    	Collection<FileAttachment> atts = entry.getFileAttachments();
@@ -690,7 +706,8 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		}	
 	}
 
-    public FilesErrors verifyCheckSums(List fileUploadItems) {
+    @Override
+	public FilesErrors verifyCheckSums(List fileUploadItems) {
         FilesErrors errors = null;
         // Note that we do not have to use String comparison in the expression
         // below. Just reference comparison is enough.
@@ -745,6 +762,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
         return errors;
     }
 
+	@Override
 	public FilesErrors filterFile(Binder binder, DefinableEntity entity, FileAttachment fa) 
 			throws FilterException {
 		if(contentFilters == null)
@@ -770,6 +788,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	}
 
 
+	@Override
 	public FilesErrors filterFiles(Binder binder, DefinableEntity entity, List fileUploadItems) 
 		throws FilterException {
 		if(contentFilters == null)
@@ -852,6 +871,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     	return errors;
 	}
 	
+	@Override
 	public void lock(Binder binder, DefinableEntity entity, FileAttachment fa, 
 			String lockId, String lockSubject, Date expirationDate, String lockOwnerInfo)
 		throws ReservedByAnotherUserException, 
@@ -919,7 +939,8 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     	triggerUpdateTransaction(newObjs);
 	}
 
-    public void unlock(Binder binder, DefinableEntity entity, FileAttachment fa,
+    @Override
+	public void unlock(Binder binder, DefinableEntity entity, FileAttachment fa,
     		String lockId) throws LockedByAnotherUserException, LockIdMismatchException,
     		UncheckedIOException, RepositoryServiceException {
 		User user = RequestContextHolder.getRequestContext().getUser();
@@ -963,7 +984,8 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		}
     }
 
-    public void forceUnlock(Binder binder, DefinableEntity entity, FileAttachment fa) 
+    @Override
+	public void forceUnlock(Binder binder, DefinableEntity entity, FileAttachment fa) 
     throws UncheckedIOException, RepositoryServiceException {
 		FileAttachment.FileLock lock = fa.getFileLock();
 
@@ -987,15 +1009,18 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     }
 
 
+	@Override
 	public void bringLocksUptodate(Binder binder, DefinableEntity entity) 
 		throws RepositoryServiceException, UncheckedIOException {
 		closeExpiredLocksTransactional(binder, entity, true);
 	}
 	
+	@Override
 	public void revertFileVersion(DefinableEntity entity, VersionAttachment va) 
 			throws UncheckedIOException, RepositoryServiceException, DataQuotaException {
 		revertFileVersion(entity, va, Boolean.TRUE);
 	}
+	@Override
 	public void revertFileVersion(DefinableEntity entity, VersionAttachment va, Boolean prune) 
 			throws UncheckedIOException, RepositoryServiceException, DataQuotaException {
 		revertFileVersion(entity, va, Boolean.TRUE, ChangeLog.FILEMODIFY_REVERT);
@@ -1071,6 +1096,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		saveChangeLogTransactional(changes);
 	}
 
+	@Override
 	public void modifyFileComment(DefinableEntity entity, FileAttachment fileAtt, Description description) {
 		fileAtt.getFileItem().setDescription(description);
 		if (fileAtt instanceof FileAttachment) {
@@ -1085,6 +1111,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		saveChangeLogTransactional(changes);
 	}
 	
+	@Override
 	public void modifyFileStatus(DefinableEntity entity, FileAttachment fileAtt, FileStatus fileStatus) {
 		fileAtt.setFileStatus(FileStatus.valueOf(fileStatus));
 		if (!(fileAtt instanceof VersionAttachment)) {
@@ -1099,6 +1126,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		saveChangeLogTransactional(changes);
 	}
 	
+	@Override
 	public void incrementMajorFileVersion(DefinableEntity entity, FileAttachment fileAtt) {
 		//First, make a copy of the higest version (if there is quota)
 		revertFileVersion(entity, fileAtt.getHighestVersion(), Boolean.FALSE);
@@ -1128,13 +1156,15 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	
 	private void saveChangeLogTransactional(final ChangeLog changeLog) {
         getTransactionTemplate().execute(new TransactionCallback() {
-        	public Object doInTransaction(TransactionStatus status) {  
+        	@Override
+			public Object doInTransaction(TransactionStatus status) {  
         		ChangeLogUtils.save(changeLog);
             	return null;
         	}
         });	
 	}
 	
+	@Override
 	public void renameFile(Binder binder, DefinableEntity entity, 
 			FileAttachment fa, String newName) 
 			throws UncheckedIOException, RepositoryServiceException {
@@ -1179,6 +1209,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		ChangeLogUtils.save(changes);
 	}
 	
+	@Override
 	public void moveFiles(Binder binder, DefinableEntity entity, 
 			Binder destBinder, DefinableEntity destEntity, String[] toFileNames)
 	throws UncheckedIOException, RepositoryServiceException {
@@ -1275,9 +1306,10 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		}
 	}
 
+	@Override
 	public void copyFiles(Binder binder, DefinableEntity entity, 
-			Binder destBinder, DefinableEntity destEntity, String[] toFileNames)
-	throws UncheckedIOException, RepositoryServiceException {
+		Binder destBinder, DefinableEntity destEntity, String[] toFileNames, FilesErrors errors)
+			throws UncheckedIOException, RepositoryServiceException {
 		List<FileUploadItem> fuis = new ArrayList<FileUploadItem>();
     	Collection<FileAttachment> atts = entity.getFileAttachments();
     	FileUploadItem fui;
@@ -1333,7 +1365,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	   		i++;
     	}
     	try {	
-    		writeFiles(destBinder, destEntity, fuis, null);
+    		writeFiles(destBinder, destEntity, fuis, errors);
     	}
     	finally {
 	    	for(FileUploadItem f : fuis) {
@@ -1347,6 +1379,14 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     	}
 	}
 	
+	@Override
+	public void copyFiles(Binder binder, DefinableEntity entity, 
+		Binder destBinder, DefinableEntity destEntity, String[] toFileNames)
+			throws UncheckedIOException, RepositoryServiceException {
+		copyFiles(binder, entity, destBinder, destEntity, toFileNames, null);
+	}
+	
+	@Override
 	public void encryptVersion(Binder binder, final DefinableEntity entity, 
 			final VersionAttachment va, FilesErrors errors) {
 		
@@ -1356,6 +1396,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		deleteVersion(binder, entity, va);
 	}
 
+	@Override
 	public void deleteVersion(Binder binder, DefinableEntity entity, 
 			VersionAttachment va) throws DeleteVersionException {
 		//List<String> beforeVersionNames = RepositoryUtil.getVersionNames(va.getRepositoryName(), binder, entity, 
@@ -1439,6 +1480,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		FileUtils.setFileVersionAging(entity);
 	}
 
+	@Override
 	public Map<String,FileIndexData> getChildrenFileDataFromIndex(Long binderId) {
 		// look for the specific binder id
     	// look only for attachments
@@ -1456,11 +1498,13 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
         return resultMap;
 	}
 
-    public List<FileIndexData> getFileDataFromIndex(Criteria crit) {
+    @Override
+	public List<FileIndexData> getFileDataFromIndex(Criteria crit) {
         return getFileDataFromIndex(crit, 0, Integer.MAX_VALUE).getFiles();
     }
 
-    public FileList getFileDataFromIndex(Criteria crit, int offset, int size) {
+    @Override
+	public FileList getFileDataFromIndex(Criteria crit, int offset, int size) {
         QueryBuilder qb = new QueryBuilder(true, false);
         org.dom4j.Document qTree = crit.toQuery(); //save for debug
         SearchObject so = qb.buildQuery(qTree);
@@ -1505,6 +1549,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
         return new FileList(result, offset, hits.getTotalHits());
     }
 
+	@Override
 	public Map<String,Long> getChildrenFileNamesUsingDatabaseWithoutAccessCheck(Long binderId) {
 		List<Object[]> objs = getCoreDao().loadObjects(
 				new ObjectControls(FileAttachment.class, new String[]{"fileItem.name", "owner.ownerId"}),
@@ -1516,6 +1561,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		return result;
 	}
 
+	@Override
 	public Map<String,Long> getChildrenFileNamesUsingSearchIndex(Binder binder) {
 		// look for the specific binder id
     	// look only for attachments
@@ -1569,7 +1615,8 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
         return result;
 	}
 
-    public Long deleteAgedFileVersions(DefinableEntity entity, Date agingDate) {
+    @Override
+	public Long deleteAgedFileVersions(DefinableEntity entity, Date agingDate) {
 		Binder binder = entity.getParentBinder();
 		Date now = new Date();
 		if (entity.getEntityType().equals(EntityType.folder) || entity.getEntityType().equals(EntityType.workspace)) {
@@ -1602,7 +1649,8 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	
 	private void triggerUpdateTransaction(final List newObjs) {
         getTransactionTemplate().execute(new TransactionCallback() {
-        	public Object doInTransaction(TransactionStatus status) {
+        	@Override
+			public Object doInTransaction(TransactionStatus status) {
         		if(newObjs != null) {
         			for(Object newObj:newObjs)
         				if(newObj instanceof ChangeLog)
@@ -1815,7 +1863,8 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 			final ChangeLog changeLog)  {
 		// Remove metadata and log change
 	       getTransactionTemplate().execute(new TransactionCallback() {
-	       	public Object doInTransaction(TransactionStatus status) {  
+	       	@Override
+			public Object doInTransaction(TransactionStatus status) {  
 	       		if(changeLog != null)
 	       			ChangeLogUtils.save(changeLog);
             	
@@ -1848,7 +1897,8 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		// (ie, empty changeLogs), so that any pending updates that the caller
 		// made up to this point can get recorded permanently.
         getTransactionTemplate().execute(new TransactionCallback() {
-        	public Object doInTransaction(TransactionStatus status) {  
+        	@Override
+			public Object doInTransaction(TransactionStatus status) {  
                 for(ChangeLog changeLog : changeLogs) {
                 	ChangeLogUtils.save(changeLog);
                 }
@@ -1904,7 +1954,8 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	private void writeFileMetadataTransactional(final Binder binder, final DefinableEntity entry, 
     		final FileUploadItem fui, final FileAttachment fAtt, final boolean isNew, final boolean versionCreated, final boolean skipDbLog) {	
 		getTransactionTemplate().execute(new TransactionCallback() {
-        	public Object doInTransaction(TransactionStatus status) {
+        	@Override
+			public Object doInTransaction(TransactionStatus status) {
         		writeFileMetadataNonTransactional(binder, entry, fui, fAtt, isNew, versionCreated, skipDbLog);
                 return null;
        	}
@@ -2579,6 +2630,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		}
 	}
 	
+	@Override
 	public boolean checkIfQuotaWouldBeExceeded(Binder binder, long fileSize, String fileName) {
 		//Check to see if adding a file of this size would exceed quota
 		//Return true = quota would be exceeded
@@ -3100,7 +3152,8 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     			this.getLockExpirationAllowanceMilliseconds() <= System.currentTimeMillis());
     }
     
-    public FileAttachment getFileAttachmentById(String fileId) 
+    @Override
+	public FileAttachment getFileAttachmentById(String fileId) 
     		throws AccessControlException {
 		User user = RequestContextHolder.getRequestContext().getUser();
     	FileAttachment fa = null;
@@ -3117,7 +3170,6 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     	return fa;
     }
     
-    @SuppressWarnings("unchecked")
 	private void setCustomAttribute(DefinableEntity entry, FileUploadItem fui, FileAttachment fAtt, boolean addToFront) {
     	// Is the FileUploadItem named?
 		Set fAtts = null;
@@ -3212,6 +3264,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     	return (fa.getFileVersionsUnsorted().size() > 0);
     }
     
+	@Override
 	public int checkQuotaAndFileSizeLimit(Long userId, Binder binder, long fileSize, String fileName) {
     	User user;
     	if(userId != null)
@@ -3251,7 +3304,8 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		}
 		// Trigger db transaction
 		getTransactionTemplate().execute(new TransactionCallback<Object>() {
-        	public Object doInTransaction(TransactionStatus status) {
+        	@Override
+			public Object doInTransaction(TransactionStatus status) {
         		return null;
         	}
         });	

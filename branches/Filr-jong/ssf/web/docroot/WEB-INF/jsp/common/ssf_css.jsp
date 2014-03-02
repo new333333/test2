@@ -167,11 +167,10 @@ img { -ms-interpolation-mode: bicubic; }
 	}
 .ss_style a:hover {
   	color: ${ss_style_link_hover_color} !important;
-	background: url(<html:imagesPath/>pics/teal_slice.png) repeat-x;
-    background-position:  left center;
+	background-color: #cce9ee;
+	color: #135c8f;
 	border-radius: 2px;
 	-moz-border-radius: 2px;
-	border-radius: 2px;
 	-webkit-border-radius: 2px;
 	}
 .ss_title_link {
@@ -685,10 +684,10 @@ button, input[type="reset"], input[type="button"], input[type="submit"] {
   	cursor: pointer;
   	white-space: nowrap;
 	border: 0px;
-	border-radius: 15px;
-	-moz-border-radius: 15px;
-	border-radius: 15px;
-	-webkit-border-radius: 15px;
+	min-width: 60px;
+	border-radius: 5px;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
     text-align: center !important;
 	<c:if test="<%= isIE %>">
   		margin-left: 1px; 
@@ -704,22 +703,10 @@ button:hover, input[type="reset"]:hover, input[type="button"]:hover, input[type=
     text-decoration: none !important;
   	padding: 2px 10px !important;
 	border: 0px solid #81b2bd;
-	background: linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: -o-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: -moz-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: -webkit-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: -ms-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: -webkit-gradient(
-		linear,
-		left bottom,
-		left top,
-		color-stop(0.47, #A8D4DD),
-		color-stop(0.53, #D5EDF1),
-		color-stop(1, #C8E4E9));
-	border-radius: 15px;
-	-moz-border-radius: 15px;
-	border-radius: 15px;
-	-webkit-border-radius: 15px;
+	background-color: #cce9ee;
+	border-radius: 5px;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
   	<c:if test="<%= isIE %>">
   		padding: 0px;
   		padding-top: -2px;
@@ -741,10 +728,9 @@ input[type="button"].n-button {
 	background-color: #81b2bd;
 	border: 0px;
 	height: 20px;
-	border-radius: 15px;
-	-moz-border-radius:15px;
-	border-radius:15px;
-	-webkit-border-radius:15px;
+	border-radius: 5px;
+	-moz-border-radius:5px;
+	-webkit-border-radius:5px;
 	<c:if test="<%= isIE %>">
   		margin-left: 1px; 
   		margin-right: 1px;
@@ -754,22 +740,10 @@ input[type="button"].n-button:hover {
 	color: #135c8f !important;
 	border: 1px solid #81b2bd;
   	padding: 2px 10px !important;
-	background: linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: -o-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: -moz-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: -webkit-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: -ms-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: -webkit-gradient(
-		linear,
-		left bottom,
-		left top,
-		color-stop(0.47, #A8D4DD),
-		color-stop(0.53, #D5EDF1),
-		color-stop(1, #C8E4E9));
-	border-radius: 15px;
-	-moz-border-radius: 15px;
-	border-radius: 15px;
-	-webkit-border-radius: 15px;
+	background-color: #cce9ee;
+	border-radius: 5px;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
 	}
 
 .n-buttonright {
@@ -801,10 +775,9 @@ a.ss_tinyButton:visited {
 	text-decoration:none;	
   	white-space: nowrap;
   	cursor: pointer !important;
-	border-radius: 15px;
-	-moz-border-radius: 15px;
-	border-radius: 15px;
-	-webkit-border-radius: 15px;
+	border-radius: 5px;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
 	}
 a.ss_tinyButton:focus,
 a.ss_tinyButton:hover {
@@ -812,23 +785,11 @@ a.ss_tinyButton:hover {
   	font-size: 11px;
 	color: #135c8f !important;
 	border: 1px solid #81b2bd !important;
-	background: linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: -o-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: -moz-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: -webkit-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: -ms-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: -webkit-gradient(
-		linear,
-		left bottom,
-		left top,
-		color-stop(0.47, #A8D4DD),
-		color-stop(0.53, #D5EDF1),
-		color-stop(1, #C8E4E9));
-  	white-space: nowrap;
-	border-radius: 15px;
-	-moz-border-radius: 15px;
-	border-radius: 15px;
-	-webkit-border-radius: 15px;
+	background-color: #cce9ee;
+	white-space: nowrap;
+	border-radius: 5px;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
 }
 
 /* styles for labels: required for forms; optional for views */
@@ -3717,29 +3678,16 @@ div.ss_calendarNaviBar {
 	text-decoration:none;	
 	border-radius: 15px;
 	-moz-border-radius: 15px;
-	border-radius: 15px;
 	-webkit-border-radius: 15px;
 }
 
 .ss_calendarNaviBar .ss_hoursSelectorTitle:hover {
 	color: #135c8f !important;
 	border: 1px solid #81b2bd;
-	background: linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: -o-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: -moz-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: -webkit-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: -ms-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: -webkit-gradient(
-		linear,
-		left bottom,
-		left top,
-		color-stop(0.47, #A8D4DD),
-		color-stop(0.53, #D5EDF1),
-		color-stop(1, #C8E4E9));
-	border-radius: 15px;
-	-moz-border-radius: 15px;
-	border-radius: 15px;
-	-webkit-border-radius: 15px;
+	background-color: #cce9ee;
+	border-radius: 5px;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
 }
 
 
@@ -4359,10 +4307,9 @@ a.ss_button, a.ss_button:visited {
   	cursor: pointer;
   	white-space: nowrap;
 	border: 0px;
-	border-radius: 15px;
-	-moz-border-radius: 15px;
-	border-radius: 15px;
-	-webkit-border-radius: 15px;
+	border-radius: 5px;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
     text-align: center !important;
 	<c:if test="<%= isIE %>">
   		margin-left: 1px; 
@@ -4378,21 +4325,10 @@ a.ss_button:hover {
     text-decoration: none !important;
   	padding: 2px 10px !important;
 	border: 0px solid #81b2bd;
-	background: linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: -o-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: -moz-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: -webkit-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: -ms-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: -webkit-gradient(
-		linear,
-		left bottom,
-		left top,
-		color-stop(0.47, #A8D4DD),
-		color-stop(0.53, #D5EDF1),
-		color-stop(1, #C8E4E9));
-	-moz-border-radius: 15px;
-	border-radius: 15px;
-	-webkit-border-radius: 15px;
+	background-color: #cce9ee;
+	border-radius: 5px;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
   	<c:if test="<%= isIE %>">
   		padding: 0px;
   		padding-top: -2px;
@@ -4509,33 +4445,20 @@ div.ss_questionContainer a.ss_tinyButton {
 	text-decoration:none;	
   	white-space: nowrap;
   	cursor: pointer !important;
-	border-radius: 15px;
-	-moz-border-radius: 15px;
-	border-radius: 15px;
-	-webkit-border-radius: 15px;
+	border-radius: 5px;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
 	}
 div.ss_questionContainer a.ss_tinyButton:focus,
 div.ss_questionContainer a.ss_tinyButton:hover {
   	font-size: 11px;
 	color: #135c8f !important;
 	border: 1px solid #81b2bd;
-	background: linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: -o-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: -moz-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: -webkit-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: -ms-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
-	background: -webkit-gradient(
-		linear,
-		left bottom,
-		left top,
-		color-stop(0.47, #A8D4DD),
-		color-stop(0.53, #D5EDF1),
-		color-stop(1, #C8E4E9));
-  	white-space: nowrap;
-	border-radius: 15px;
-	-moz-border-radius: 15px;
-	border-radius: 15px;
-	-webkit-border-radius: 15px;
+	background-color: #cce9ee;
+	white-space: nowrap;
+	border-radius: 5px;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
 }
 
 table.ss_surveys_list, table.ss_milestones_list {

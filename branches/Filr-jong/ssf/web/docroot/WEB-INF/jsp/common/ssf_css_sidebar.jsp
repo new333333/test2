@@ -526,13 +526,14 @@ button span {
 /********************* OBJECT LIST TABLE **********************/
 /* Object List Table styles as used by sidebar_appConfig.jsp. */
 
-.ss_objlist_table_columnhead	{color: black; font-weight: bold; font-size: 0.75em; background-color: #edeeec; border-bottom: 1px solid black}
-.ss_objlist_table_footer		{background-color: #efeeec; margin-top: 1em; padding: 0.5em; border-top: 1px solid #babdb6;}
-.ss_objlist_table_instructions	{color: #4d6d8b; font-size: 0.8em}
+.ss_objlist_table_columnhead	{color: #505354; font-size: 0.75em; background-color: #ededed; border-bottom: 1px solid #cccccc}
+.ss_objlist_table_footer		{margin-top: 1em; padding: 0.5em; border-top: 1px solid #cccccc;}
+.ss_objlist_table_instructions	{color: #505354; font-size: 0.8em}
 .ss_objlist_table_mediumtext	{color: black; font-size: 0.85em; line-height: 1.1em}
 .ss_objlist_table_smalltext		{color: black; font-size: 0.75em; line-height: 1em}
-.ss_objlist_table_tablehead		{color: white; font-weight: bold; font-size: 0.95em; background-color: #458ab9; text-align: left; text-indent: 0.2em; padding: 0.2em}
+.ss_objlist_table_tablehead	td	{color: #505354; font-weight: bold; font-size: 13px; background-color: #ededed; text-align: left; text-indent: 5px; padding: 5px}
 .ss_objlist_table_top			{}
+#emptyRowI						{color: #949494;}
 
 .ss_objlist_menu_bottomDIV	{margin-bottom: 0px; padding-bottom: 0px; border-bottom: 5px solid #458ab9}
 .ss_objlist_menu_itemDIV	{text-decoration: none; white-space: nowrap}
