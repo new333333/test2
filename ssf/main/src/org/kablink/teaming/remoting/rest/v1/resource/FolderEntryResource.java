@@ -36,12 +36,15 @@ import com.sun.jersey.spi.resource.Singleton;
 import org.dom4j.Document;
 import org.kablink.teaming.dao.util.ShareItemSelectSpec;
 import org.kablink.teaming.domain.EntityIdentifier;
+import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.NoFolderEntryByTheIdException;
 import org.kablink.teaming.domain.ShareItem;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.folder.FolderModule;
+import org.kablink.teaming.remoting.rest.v1.exc.BadRequestException;
 import org.kablink.teaming.remoting.rest.v1.exc.NotFoundException;
+import org.kablink.teaming.remoting.rest.v1.exc.NotModifiedException;
 import org.kablink.teaming.remoting.rest.v1.util.FolderEntryBriefBuilder;
 import org.kablink.teaming.remoting.rest.v1.util.ResourceUtil;
 import org.kablink.teaming.remoting.rest.v1.util.RestModelInputData;
@@ -65,6 +68,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
+import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -185,6 +189,32 @@ public class FolderEntryResource extends AbstractFolderEntryResource {
         SimpleProfiler.stop("folderService_modifyEntry");
         return ResourceUtil.buildFolderEntry((org.kablink.teaming.domain.FolderEntry) dEntry, true, toDomainFormat(descriptionFormatStr));
 	}
+
+    @POST
+    @Path("{id}")
+    @Consumes({MediaType.APPLICATION_FORM_URLENCODED})
+    public FolderEntry synchronize(@PathParam("id") Long id,
+                                   @FormParam("synchronize") Boolean sync,
+                                   @FormParam("description_format") @DefaultValue("text") String descriptionFormatStr) {
+        org.kablink.teaming.domain.FolderEntry entry = _getFolderEntry(id);
+        if (sync==null) {
+            throw new BadRequestException(ApiErrorCode.BAD_INPUT, "'synchronize' form parameter (true/false) is required");
+        }
+        if (Boolean.TRUE.equals(sync)) {
+            Folder folder = entry.getParentFolder();
+            if (folder.isMirrored()) {
+                FolderModule.FileSyncStatus status = getFolderModule().fileSynchronize(entry);
+                if (status == FolderModule.FileSyncStatus.deleted) {
+                    throw new NoFolderEntryByTheIdException(id);
+                } else if (status== FolderModule.FileSyncStatus.modified) {
+                    entry = _getFolderEntry(id);
+                    return ResourceUtil.buildFolderEntry(entry, true, toDomainFormat(descriptionFormatStr));
+                }
+            }
+            throw new NotModifiedException();
+        }
+        return null;
+    }
 
     @GET
     @Path("{id}/reservation")

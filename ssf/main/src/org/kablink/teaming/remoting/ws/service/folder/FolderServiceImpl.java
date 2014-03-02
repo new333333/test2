@@ -578,11 +578,11 @@ public void folder_deleteEntryWorkflow(String accessToken, long entryId, String 
 			new TrashHelper.TrashEntity(hm));
 	}
     @Override
-	public long folder_copyEntry(String accessToken, long entryId, long destinationId) {
+	public long folder_copyEntry(String accessToken, long entryId, long destinationId) throws WriteFilesException {
     	return getFolderModule().copyEntry(null, entryId, destinationId, null, null).getId().longValue();
     }
     @Override
-	public void folder_moveEntry(String accessToken, long entryId, long destinationId) {
+	public void folder_moveEntry(String accessToken, long entryId, long destinationId) throws WriteFilesException {
     	getFolderModule().moveEntry(null, entryId, destinationId, null, null);
     }
     @Override

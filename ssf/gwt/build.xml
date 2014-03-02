@@ -83,6 +83,28 @@
 				</echo>
 		    </else>
 		</if>
+		
+		<!-- Assertion enablement handling. -->
+		<if>
+			<isset property="development.build" />
+			<then>
+				<if>
+					<istrue value="${build.gwt.disable.assertions}" />
+					<then>
+						<echo message="Disabling assertions."/>
+					    <property name="gwt.additionalArgs3" value="" />
+					</then>
+					<else>
+						<echo message="Enabling assertions."/>
+					    <property name="gwt.additionalArgs3" value="-ea" />
+					</else>
+				</if>
+			</then>
+			<else>
+				<echo message="Disabling assertions."/>
+			    <property name="gwt.additionalArgs3" value="" />
+			</else>
+		</if>
 	</target>
 	<target name="init-gwt-production" if="production.build">
 		<echo message="Compiling ${build.gwt.module} for production."/>
@@ -98,7 +120,7 @@
 		<property name="gwt.localWorkers"    value="-localWorkers 2"         />
 		<property name="gwt.logLevel"        value="-logLevel INFO"          />
 		<property name="gwt.style"           value="-style DETAILED"         />
-		<property name="gwt.additionalArgs1" value="-draftCompile -ea"       />
+		<property name="gwt.additionalArgs1" value="-draftCompile"           />
 	</target>
 
 	<!-- Compilation report handling. -->
@@ -185,7 +207,7 @@
 			<jvmarg value="-XX:MaxPermSize=512m"     />
 			<jvmarg value="-Djava.awt.headless=true" />
 			<!-- GWT Compiler arguments. -->
-			<arg line="${gwt.war} ${gwt.style} ${gwt.logLevel} ${gwt.codeFragments} ${gwt.localWorkers} ${gwt.additionalArgs1} ${gwt.additionalArgs2} ${gwt.module}" />
+			<arg line="${gwt.war} ${gwt.style} ${gwt.logLevel} ${gwt.codeFragments} ${gwt.localWorkers} ${gwt.additionalArgs1} ${gwt.additionalArgs2} ${gwt.additionalArgs3} ${gwt.module}" />
 		</java>
 	</target>
 

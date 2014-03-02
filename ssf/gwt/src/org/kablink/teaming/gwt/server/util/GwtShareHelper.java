@@ -147,6 +147,7 @@ public class GwtShareHelper
 		SHARE_WITH_EXTERNAL_USERS,
 		SHARE_WITH_INTERNAL_USERS,
 		SHARE_WITH_PUBLIC,
+		SHARE_PUBLIC_LINK
 	}
 	
 	/*
@@ -325,13 +326,20 @@ public class GwtShareHelper
 				folderOperation = FolderOperation.allowSharingPublic;
 				break;
 			
+			case SHARE_PUBLIC_LINK:
+				// Is sharing a public link enabled at the zone level?
+				m_accessControlManager.checkOperation(zoneConfig, WorkAreaOperation.ENABLE_LINK_SHARING );
+				
+				binderOperation = BinderOperation.allowSharingPublicLinks;
+				folderOperation = FolderOperation.allowSharingPublicLinks;
+				break;
+				
 			default:
 				m_logger.info( "InGwtShareHelper.canShareWith(), unknown share operation: " + shareOperation.toString() );
 				return false;
 			}
 
 			// If we get here the given share operation is enabled at the zone level
-			
 			if ( entityId.isBinder() )
 			{
 				Binder binder;
@@ -1460,6 +1468,10 @@ public class GwtShareHelper
 		result = canShareWith( ami, entityId, ShareOperation.SHARE_WITH_PUBLIC );
 		shareRights.setCanShareWithPublic( result );
 		
+		// Determine if the user has "can share a Link" rights.
+		result = canShareWith( ami, entityId, ShareOperation.SHARE_PUBLIC_LINK );
+		shareRights.setCanSharePublicLink( result );
+		
 		// Determine if the user has "can share forward" rights.
 		{
 			DefinableEntity entity;
@@ -1790,6 +1802,7 @@ public class GwtShareHelper
 		rightSet.setAllowSharing( shareRights.getCanShareWithInternalUsers() );
 		rightSet.setAllowSharingExternal( shareRights.getCanShareWithExternalUsers() );
 		rightSet.setAllowSharingPublic( shareRights.getCanShareWithPublic() );
+		rightSet.setAllowSharingPublicLinks( shareRights.getCanSharePublicLink() );
 	
 		return rightSet;
 	}
@@ -1826,6 +1839,9 @@ public class GwtShareHelper
 			
 			// Does the RightSet allow "share forward"?
 			shareRights.setCanShareForward( rightSet.isAllowSharingForward() );
+			
+			// Does the RightSet allow "share public link"?
+			shareRights.setCanSharePublicLink( rightSet.isAllowSharingPublicLinks() );
 		}
 		
 		return shareRights;
@@ -3547,6 +3563,7 @@ public class GwtShareHelper
 					shareRights.setAllowInternal( true );
 					shareRights.setAllowExternal( true );
 					shareRights.setAllowPublic( true );
+					shareRights.setAllowPublicLinks( true );
 				}
 			}
 		}

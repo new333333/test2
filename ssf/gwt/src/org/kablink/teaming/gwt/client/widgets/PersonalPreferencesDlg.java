@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -64,6 +64,7 @@ import com.google.gwt.user.client.ui.TextBox;
 public class PersonalPreferencesDlg extends DlgBox
 	implements KeyPressHandler
 {
+	private boolean	m_isFilr;
 	private boolean m_publicSharesActive;
 	private ListBox m_entryDisplayStyleListbox;
 	private ListBox m_fileLinkActionListbox;
@@ -84,6 +85,8 @@ public class PersonalPreferencesDlg extends DlgBox
 		int yPos )
 	{
 		super( autoHide, modal, xPos, yPos );
+		
+		m_isFilr = GwtClientHelper.isLicenseFilr();
 		
 		// Create the header, content and footer of this dialog box.
 		createAllDlgContent( GwtTeaming.getMessages().personalPreferencesDlgHeader(), editSuccessfulHandler, editCanceledHandler, null );
@@ -111,19 +114,21 @@ public class PersonalPreferencesDlg extends DlgBox
 		table.addStyleName( "dlgContent" );
 		
 		nextRow = 0;
-		
-		// Create the controls for "Entry display style"
+
 		{
-			// hidden for Filr
-//			table.setText( nextRow, 0, messages.entryDisplayStyleLabel() );
+			// Create the controls for "Entry display style".  (Note
+			// that they're not shown for Filr.)
+			if ( ! m_isFilr )
+			{
+				table.setText( nextRow, 0, messages.entryDisplayStyleLabel() );
+			}
 			
 			// Create a listbox that will hold all the possible values for the "Entry Display Style".
 			m_entryDisplayStyleListbox = new ListBox( false );
 			m_entryDisplayStyleListbox.setVisibleItemCount( 1 );
 			m_entryDisplayStyleListbox.addItem( messages.showEntriesInNewPage(), "newpage" );
 			m_entryDisplayStyleListbox.addItem( messages.showEntriesAsAnOverlay(), "iframe" );
-			// added to hide in Filr
-			m_entryDisplayStyleListbox.setVisible( false );
+			m_entryDisplayStyleListbox.setVisible( ! m_isFilr );
 
 			table.setWidget( nextRow, 1, m_entryDisplayStyleListbox );
 			++nextRow;

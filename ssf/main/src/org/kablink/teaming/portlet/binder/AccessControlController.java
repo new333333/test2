@@ -44,6 +44,7 @@ import java.util.TreeMap;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
+import javax.portlet.PortletURL;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
@@ -54,14 +55,22 @@ import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.Entry;
+import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.Principal;
+import org.kablink.teaming.domain.ResourceDriverConfig;
 import org.kablink.teaming.domain.ShareItem;
 import org.kablink.teaming.domain.TemplateBinder;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.ZoneConfig;
+import org.kablink.teaming.fi.auth.AuthSupport;
+import org.kablink.teaming.fi.connection.ResourceDriver;
+import org.kablink.teaming.fi.connection.ResourceDriverManager;
+import org.kablink.teaming.fi.connection.ResourceSession;
 import org.kablink.teaming.fi.connection.acl.AclResourceDriver;
+import org.kablink.teaming.fi.connection.acl.AclResourceSession;
 import org.kablink.teaming.module.admin.AdminModule.AdminOperation;
+import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.folder.FolderModule.FolderOperation;
 import org.kablink.teaming.module.shared.AccessUtils;
 import org.kablink.teaming.module.sharing.SharingModule;
@@ -73,6 +82,7 @@ import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SimpleProfiler;
+import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.BinderHelper;
@@ -194,6 +204,7 @@ public class AccessControlController extends AbstractBinderController {
 		if (workAreaId == null) workAreaId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_WORKAREA_ID));				
 		String type = PortletRequestUtils.getStringParameter(request, WebKeys.URL_WORKAREA_TYPE);	
 		String operation = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");	
+		String operation2 = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION2, "");	
 		WorkArea wArea=null;
 		Map model = new HashMap();
 		Map formData = request.getParameterMap();
@@ -243,6 +254,19 @@ public class AccessControlController extends AbstractBinderController {
 				model.put(WebKeys.ACCESS_SUPER_USER, AccessUtils.getZoneSuperUser(binder.getZoneId()));
 				model.put(WebKeys.ACCESS_CONTROL_CONFIGURE_ALLOWED, 
 						getAdminModule().testAccess(binder, AdminOperation.manageFunctionMembership));
+				
+				
+				//Gather net folder data if this is a net folder
+				if (binder.isAclExternallyControlled() && binder instanceof Folder) {
+					model.put(WebKeys.ACCESS_NET_FOLDER_MAP, getFolderModule().getNetFolderAccessData((Folder)binder));
+					model.put(WebKeys.URL_OPERATION2, operation2);
+					PortletURL url = response.createRenderURL();
+					url.setParameter(WebKeys.ACTION, WebKeys.ACTION_ACCESS_CONTROL);
+					url.setParameter(WebKeys.URL_WORKAREA_ID, binder.getWorkAreaId().toString());
+					url.setParameter(WebKeys.URL_WORKAREA_TYPE, binder.getWorkAreaType());
+					url.setParameter(WebKeys.URL_OPERATION2, "debug");
+					model.put(WebKeys.ACCESS_NET_FOLDER_URL, url);
+				}
 			}
 		} catch(AccessControlException e) {
 			model.put(WebKeys.ACCESS_CONTROL_EXCEPTION, Boolean.TRUE);
@@ -270,14 +294,22 @@ public class AccessControlController extends AbstractBinderController {
 			return new ModelAndView(WebKeys.VIEW_ERROR_RETURN, model);
 		}
 		if (operation.equals(WebKeys.OPERATION_VIEW_ACCESS)) {
-			return new ModelAndView(WebKeys.VIEW_ACCESS_TO_BINDER, model);
+			if (operation2.equals("debug")) {
+				return new ModelAndView(WebKeys.VIEW_ACCESS_TO_NET_FOLDER, model);
+			} else {
+				return new ModelAndView(WebKeys.VIEW_ACCESS_TO_BINDER, model);
+			}
 		} else if (operation.equals(WebKeys.OPERATION_MANAGE_ACCESS_SHARING)) {
 			return new ModelAndView(WebKeys.VIEW_ACCESS_CONTROL_SHARING, model);
 		} else {
 			if (wArea instanceof Entry) {
 				return new ModelAndView(WebKeys.VIEW_ACCESS_CONTROL_ENTRY, model);
 			} else {
-				return new ModelAndView(WebKeys.VIEW_ACCESS_CONTROL, model);
+				if (operation2.equals("debug")) {
+					return new ModelAndView(WebKeys.VIEW_ACCESS_TO_NET_FOLDER, model);
+				} else {
+					return new ModelAndView(WebKeys.VIEW_ACCESS_CONTROL, model);
+				}
 			}
 		}
 	}
@@ -320,6 +352,7 @@ public class AccessControlController extends AbstractBinderController {
 		}
 
 	}
+	
 	//used by ajax controller
 	public static void setupAccess(AllModulesInjected bs, RenderRequest request, RenderResponse response, WorkArea wArea, Map model) {
 		setupAccessImpl(bs, request, response, wArea, model);

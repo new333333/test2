@@ -105,7 +105,7 @@
 		loginOpenIdProviderName:			'<ssf:escapeJavaScript>${ss_login_open_id_provider_name}</ssf:escapeJavaScript>',
 		loginOpenIdProviderUrl:				'<ssf:escapeJavaScript>${ss_login_open_id_provider_url}</ssf:escapeJavaScript>',
 		loginPostUrl:						'<ssf:escapeJavaScript>${ss_loginPostUrl}</ssf:escapeJavaScript>',
-		loginRefererUrl:					'${loginRefererUrl}',
+		loginRefererUrl:					'<ssf:escapeJavaScript>${loginRefererUrl}</ssf:escapeJavaScript>',
 		loginStatus:						'<ssf:escapeJavaScript>${ss_loginStatus}</ssf:escapeJavaScript>',
 		modifyUrl:							'${ss_modifyEntryAdapter}',
 		namespace:                          '${ss_namespace}',

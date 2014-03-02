@@ -213,6 +213,9 @@ public class AbstractAdminResource extends AbstractResource {
             if (Boolean.TRUE.equals(perms.getPublic())) {
                 role.addRole(AssignedRole.RoleType.SharePublic);
             }
+            if (Boolean.TRUE.equals(perms.getPublicLink())) {
+                role.addRole(AssignedRole.RoleType.SharePublicLinks);
+            }
             if (Boolean.TRUE.equals(perms.getGrantReshare())) {
                 role.addRole(AssignedRole.RoleType.ShareForward);
             }
@@ -254,6 +257,9 @@ public class AbstractAdminResource extends AbstractResource {
             }
             if (Boolean.TRUE.equals(perms.getPublic())) {
                 role.addRole(AssignedRole.RoleType.EnableSharePublic);
+            }
+            if (Boolean.TRUE.equals(perms.getPublicLink())) {
+                role.addRole(AssignedRole.RoleType.EnableLinkSharing);
             }
             if (Boolean.TRUE.equals(perms.getGrantReshare())) {
                 role.addRole(AssignedRole.RoleType.EnableShareForward);

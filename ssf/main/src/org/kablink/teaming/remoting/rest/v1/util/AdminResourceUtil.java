@@ -292,6 +292,7 @@ public class AdminResourceUtil {
             permission.setInternal(roles.contains(AssignedRole.RoleType.ShareInternal));
             permission.setExternal(roles.contains(AssignedRole.RoleType.ShareExternal));
             permission.setPublic(roles.contains(AssignedRole.RoleType.SharePublic));
+            permission.setPublicLink(roles.contains(AssignedRole.RoleType.SharePublicLinks));
             permission.setGrantReshare(roles.contains(AssignedRole.RoleType.ShareForward));
             access.setSharing(permission);
         } else {
@@ -317,6 +318,7 @@ public class AdminResourceUtil {
         permission.setAllInternal(roles.contains(AssignedRole.RoleType.EnableShareWithAllInternal));
         permission.setAllExternal(roles.contains(AssignedRole.RoleType.EnableShareWithAllExternal));
         permission.setPublic(roles.contains(AssignedRole.RoleType.EnableSharePublic));
+        permission.setPublicLink(roles.contains(AssignedRole.RoleType.EnableLinkSharing));
         permission.setGrantReshare(roles.contains(AssignedRole.RoleType.EnableShareForward));
         model.setSharing(permission);
         return model;

@@ -75,6 +75,23 @@ public class ShareExpirationValue
 	/**
 	 * 
 	 */
+	public boolean equalsValue( ShareExpirationValue value )
+	{
+		if ( value == null )
+			return false;
+		
+		if ( getExpirationType() != value.getExpirationType() )
+			return false;
+		
+		if ( getValue() != value.getValue() )
+			return false;
+		
+		return true;
+	}
+	
+	/**
+	 * 
+	 */
 	public ShareExpirationType getExpirationType()
 	{
 		return m_expirationType;

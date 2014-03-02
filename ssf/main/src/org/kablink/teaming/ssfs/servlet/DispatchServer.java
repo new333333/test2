@@ -51,6 +51,7 @@ import org.kablink.teaming.domain.LoginInfo;
 import org.kablink.teaming.domain.ReservedByAnotherUserException;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
+import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.zone.ZoneModule;
 import org.kablink.teaming.security.authentication.AuthenticationManagerUtil;
 import org.kablink.teaming.ssfs.AlreadyExistsException;
@@ -215,7 +216,7 @@ public class DispatchServer extends GenericServlet {
 
 	private void doSsfsRequest(Integer operation, ServletRequest req, ServletResponse res) 
 	throws ServletException, IOException, NoAccessException, AlreadyExistsException,
-	NoSuchObjectException, LockException, TypeMismatchException, WriteEntryDataException {
+	NoSuchObjectException, LockException, TypeMismatchException, WriteEntryDataException, WriteFilesException {
 		Map uri = (Map) req.getAttribute(CrossContextConstants.URI);
 		Map sourceUri = (Map) req.getAttribute(CrossContextConstants.SOURCE_URI);
 		Map targetUri = (Map) req.getAttribute(CrossContextConstants.TARGET_URI);
