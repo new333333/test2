@@ -509,7 +509,7 @@ public class GwtNetFolderHelper
 				Long nfcId;
 				
 				nfcId = nextFolder.getId();
-				nfc = NetFolderUtil.getNetFolderConfigById( nfcId );
+				nfc = NetFolderUtil.getNetFolderConfig( nfcId );
 				
 				if ( getMinimalInfo )
 					netFolder = GwtNetFolderHelper.getNetFolderWithMinimalInfo( ami, nfc );
@@ -892,7 +892,7 @@ public class GwtNetFolderHelper
 		NetFolderDataSyncSettings dataSyncSettings;
 		GwtJitsNetFolderConfig jitsSettings;
 		
-		nfc = NetFolderUtil.getNetFolderConfigById( id );
+		nfc = NetFolderUtil.getNetFolderConfig( id );
 
 		netFolder = getNetFolderWithMinimalInfo( ami, nfc );
 		
@@ -1161,7 +1161,7 @@ public class GwtNetFolderHelper
 		{
 			BinderState binderState;
 
-            binderState = (BinderState) getCoreDao().load( BinderState.class, NetFolderUtil.getNetFolderConfigById(netFolderConfigId).getFolderId() );
+            binderState = (BinderState) getCoreDao().load( BinderState.class, NetFolderUtil.getNetFolderConfig(netFolderConfigId).getFolderId() );
             if ( binderState != null )
             {
     			FullSyncStats syncStats;
@@ -1457,7 +1457,7 @@ public class GwtNetFolderHelper
 			MapInputData mid;
 			Map formData = null;
 			
-			NetFolderConfig nfc = NetFolderUtil.getNetFolderConfigById(netFolderConfigId);
+			NetFolderConfig nfc = NetFolderUtil.getNetFolderConfig(netFolderConfigId);
 			
 			nfc.setAllowDesktopAppToSyncData(settings.getAllowDesktopAppToSyncData());
 			

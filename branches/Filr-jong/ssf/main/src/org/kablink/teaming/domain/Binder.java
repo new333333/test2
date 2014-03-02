@@ -1086,7 +1086,7 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
 	public NetFolderConfig getNetFolder() {
 		if(netFolderConfigId == null)
 			return null;
-		return NetFolderUtil.getNetFolderConfigById(netFolderConfigId);
+		return NetFolderUtil.getNetFolderConfig(netFolderConfigId);
 	}
 	
 	///// BEGIN: EVERY METHODS BETWEEN BEGIN & END MUST GO AS SOON AS WE CAN FIND TIME TO CLEAN UP

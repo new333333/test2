@@ -86,7 +86,8 @@ public class NetFolderModuleImpl extends CommonDependencyInjection implements Ne
         });
 
 		// Create top-level folder corresponding to the net folder.
-    	final Folder folder = getFolderModule().createNetFolder(netFolderConfig.getId(), templateId, parentBinderId, name, owner, rootName, path, isHomeDir, indexContent, inheritIndexContent, syncScheduleOption, fullSyncDirOnly);
+   		String folderName = "_netfolder_" + netFolderConfig.getId();
+    	final Folder folder = getFolderModule().createNetFolder(netFolderConfig.getId(), templateId, parentBinderId, folderName, owner, rootName, path, isHomeDir, indexContent, inheritIndexContent, syncScheduleOption, fullSyncDirOnly);
     	
     	// Finish linking them
         getTransactionTemplate().execute(new TransactionCallback<Object>() {

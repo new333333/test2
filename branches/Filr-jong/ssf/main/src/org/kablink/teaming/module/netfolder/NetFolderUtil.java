@@ -40,8 +40,8 @@ import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.NetFolderConfig;
 import org.kablink.teaming.domain.NoBinderByTheIdException;
 import org.kablink.teaming.domain.NoFolderByTheIdException;
-import org.kablink.teaming.domain.NoNetFolderByTheIdException;
-import org.kablink.teaming.domain.NoNetFolderByTheNameException;
+import org.kablink.teaming.domain.NoNetFolderConfigByTheIdException;
+import org.kablink.teaming.domain.NoNetFolderConfigByTheNameException;
 import org.kablink.teaming.domain.NoNetFolderServerByTheIdException;
 import org.kablink.teaming.domain.NoNetFolderServerByTheNameException;
 import org.kablink.teaming.domain.ResourceDriverConfig;
@@ -56,20 +56,20 @@ import org.kablink.teaming.util.SpringContextUtil;
  */
 public class NetFolderUtil {
 
-	public static NetFolderConfig getNetFolderConfigById(Long netFolderConfigId) throws NoNetFolderByTheIdException {
+	public static NetFolderConfig getNetFolderConfig(Long netFolderConfigId) throws NoNetFolderConfigByTheIdException {
 		return getCoreDao().loadNetFolderConfig(netFolderConfigId);
 	}
 	
-	public static NetFolderConfig getNetFolderConfigByName(String netFolderName) throws NoNetFolderByTheNameException {
+	public static NetFolderConfig getNetFolderConfigByName(String netFolderName) throws NoNetFolderConfigByTheNameException {
 		return getCoreDao().loadNetFolderConfigByName(netFolderName);
 	}
 	
-	public static ResourceDriver getResourceDriverByNetFolderConfigId(Long netFolderConfigId) throws NoNetFolderByTheIdException, FIException {
-		NetFolderConfig nf = getNetFolderConfigById(netFolderConfigId);
+	public static ResourceDriver getResourceDriverByNetFolderConfigId(Long netFolderConfigId) throws NoNetFolderConfigByTheIdException, FIException {
+		NetFolderConfig nf = getNetFolderConfig(netFolderConfigId);
 		return getResourceDriverByNetFolderServerId(nf.getNetFolderServerId());
 	}
 	
-	public static ResourceDriver getResourceDriverByNetFolderConfigName(String netFolderConfigName) throws NoNetFolderByTheIdException, FIException {
+	public static ResourceDriver getResourceDriverByNetFolderConfigName(String netFolderConfigName) throws NoNetFolderConfigByTheIdException, FIException {
 		NetFolderConfig nf = getNetFolderConfigByName(netFolderConfigName);
 		return getResourceDriverByNetFolderServerId(nf.getNetFolderServerId());
 	}
@@ -86,12 +86,12 @@ public class NetFolderUtil {
 		return getFolderDao().loadFolder(nfc.getFolderId(), RequestContextHolder.getRequestContext().getZoneId());
 	}
 	
-	public static Binder getNetFolderBinder(Long netFolderConfigId) throws NoNetFolderByTheIdException, NoBinderByTheIdException {
-		return getNetFolderBinder(getNetFolderConfigById(netFolderConfigId));
+	public static Binder getNetFolderBinder(Long netFolderConfigId) throws NoNetFolderConfigByTheIdException, NoBinderByTheIdException {
+		return getNetFolderBinder(getNetFolderConfig(netFolderConfigId));
 	}
 	
-	public static Folder getNetFolderFolder(Long netFolderConfigId) throws NoNetFolderByTheIdException, NoFolderByTheIdException {
-		return getNetFolderFolder(getNetFolderConfigById(netFolderConfigId));
+	public static Folder getNetFolderFolder(Long netFolderConfigId) throws NoNetFolderConfigByTheIdException, NoFolderByTheIdException {
+		return getNetFolderFolder(getNetFolderConfig(netFolderConfigId));
 	}
 	
 	public static ResourceDriverConfig getNetFolderServerById(Long netFolderServerId) throws NoNetFolderServerByTheIdException {
@@ -102,11 +102,11 @@ public class NetFolderUtil {
 		return getCoreDao().loadNetFolderServerByName(netFolderServerName);
 	}
 	
-	public static ResourceDriver getResourceDriverByNetFolderServerId(Long netFolderServerId) throws NoNetFolderByTheIdException, FIException {
+	public static ResourceDriver getResourceDriverByNetFolderServerId(Long netFolderServerId) throws NoNetFolderConfigByTheIdException, FIException {
 		return ResourceDriverManagerUtil.findResourceDriver(netFolderServerId);
 	}
 	
-	public static ResourceDriver getResourceDriverByNetFolderServerName(String netFolderServerName) throws NoNetFolderByTheIdException, FIException {
+	public static ResourceDriver getResourceDriverByNetFolderServerName(String netFolderServerName) throws NoNetFolderConfigByTheIdException, FIException {
 		return ResourceDriverManagerUtil.findResourceDriver(netFolderServerName);
 	}
 	

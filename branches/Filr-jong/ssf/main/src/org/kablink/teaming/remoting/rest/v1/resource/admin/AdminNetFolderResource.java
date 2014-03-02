@@ -110,7 +110,7 @@ public class AdminNetFolderResource extends AbstractAdminResource {
     @GET
     @Path("{id}")
     public NetFolder getNetFolder(@PathParam("id") Long id) {
-    	NetFolderConfig nfc = NetFolderUtil.getNetFolderConfigById(id);
+    	NetFolderConfig nfc = NetFolderUtil.getNetFolderConfig(id);
         return AdminResourceUtil.buildNetFolder(nfc, this, true);
     }
 
@@ -118,7 +118,7 @@ public class AdminNetFolderResource extends AbstractAdminResource {
     @Path("{id}")
     @Consumes( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
     public NetFolder updateNetFolder(@PathParam("id") Long id, NetFolder netFolder) throws WriteFilesException, WriteEntryDataException {
-    	NetFolderConfig nfc = NetFolderUtil.getNetFolderConfigById(id);
+    	NetFolderConfig nfc = NetFolderUtil.getNetFolderConfig(id);
         netFolder.setId(id);
         NetFolder existing = AdminResourceUtil.buildNetFolder(nfc, this, false);
         netFolder.replaceNullValues(existing);

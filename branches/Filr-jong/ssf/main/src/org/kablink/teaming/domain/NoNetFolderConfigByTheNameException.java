@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2009 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -32,37 +32,36 @@
  */
 package org.kablink.teaming.domain;
 
-import org.kablink.teaming.NoObjectByTheIdException;
+import org.kablink.teaming.NoObjectByTheNameException;
 import org.kablink.util.api.ApiErrorCode;
 
 /**
- * @author jong
+ * @author Jong Kim
  *
  */
-public class NoNetFolderByTheIdException extends NoObjectByTheIdException {
+public class NoNetFolderConfigByTheNameException extends NoObjectByTheNameException {
 
 	private static final long serialVersionUID = 1L;
 	
-	private static final String NoNetFolderByTheIdException_ErrorCode = "errorcode.no.net.folder.by.the.id";
+	private static final String NoNetFolderConfigByTheNameException_ErrorCode = "errorcode.no.net.folder.config.by.the.name";
     
-    public NoNetFolderByTheIdException(Long folderId) {
-        super(NoNetFolderByTheIdException_ErrorCode, folderId);
+    public NoNetFolderConfigByTheNameException(String userName) {
+        super(NoNetFolderConfigByTheNameException_ErrorCode, userName);
     }
-    public NoNetFolderByTheIdException(Long folderId, String message) {
-        super(NoNetFolderByTheIdException_ErrorCode, folderId, message);
+    public NoNetFolderConfigByTheNameException(String userName, String message) {
+        super(NoNetFolderConfigByTheNameException_ErrorCode, userName, message);
     }
-    public NoNetFolderByTheIdException(Long folderId, String message, Throwable cause) {
-        super(NoNetFolderByTheIdException_ErrorCode,folderId, message, cause);
+    public NoNetFolderConfigByTheNameException(String userName, String message, Throwable cause) {
+        super(NoNetFolderConfigByTheNameException_ErrorCode,userName, message, cause);
     }
-    public NoNetFolderByTheIdException(Long folderId, Throwable cause) {
-        super(NoNetFolderByTheIdException_ErrorCode, folderId, cause);
+    public NoNetFolderConfigByTheNameException(String userName, Throwable cause) {
+        super(NoNetFolderConfigByTheNameException_ErrorCode, userName, cause);
     }
-    
 	/* (non-Javadoc)
 	 * @see org.kablink.teaming.exception.ApiErrorCodeSupport#getApiErrorCode()
 	 */
 	@Override
 	public ApiErrorCode getApiErrorCode() {
-		return ApiErrorCode.NET_FOLDER_NOT_FOUND;
+		return ApiErrorCode.NET_FOLDER_CONFIG_NOT_FOUND;
 	}
 }

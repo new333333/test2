@@ -77,7 +77,7 @@ public class AbstractAdminResource extends AbstractResource {
             NetFolderHelper.setNetFolderRights(this, netFolder.getId(), roles);
         }
 
-        return AdminResourceUtil.buildNetFolder(NetFolderUtil.getNetFolderConfigById(netFolder.getId()), this, true);
+        return AdminResourceUtil.buildNetFolder(NetFolderUtil.getNetFolderConfig(netFolder.getId()), this, true);
     }
 
     protected ScheduleInfo toScheduleInfo(Schedule model) {

@@ -494,12 +494,12 @@ public class NetFolderHelper
 												getDefaultJitsResultsMaxAge() );
 				}
 				
-				nfc = NetFolderUtil.getNetFolderConfigById( homeDirNetFolderBinder.getNetFolderConfigId() ); 
+				nfc = NetFolderUtil.getNetFolderConfig( homeDirNetFolderBinder.getNetFolderConfigId() ); 
 				syncNeeded = false;
 			}
 			else
 			{
-				nfc = NetFolderUtil.getNetFolderConfigById( homeDirNetFolderBinder.getNetFolderConfigId() );
+				nfc = NetFolderUtil.getNetFolderConfig( homeDirNetFolderBinder.getNetFolderConfigId() );
 				
 				// A home dir net folder already exists for this user.
 				// Are we supposed to try and update an existing net folder?
