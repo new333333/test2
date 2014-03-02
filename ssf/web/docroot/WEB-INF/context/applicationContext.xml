@@ -985,7 +985,10 @@
 	<bean id="netFolderModule"  parent="moduleTransactionProxy" depends-on="sPropsUtil">
 		<!--  dependences prevent inheriting from dependOnCommonServicesTemplate -->
 		<property name="target">
-			<bean class="org.kablink.teaming.module.netfolder.impl.NetFolderModuleImpl"/>		
+			<bean class="org.kablink.teaming.module.netfolder.impl.NetFolderModuleImpl">		
+				<property name="coreDao"><ref bean="coreDao"/></property>
+				<property name="profileDao"><ref bean="profileDao"/></property>
+			</bean>
 		</property>
 		<!-- Transaction is managed using transactionTemplate -->
 		<property name="transactionAttributes">

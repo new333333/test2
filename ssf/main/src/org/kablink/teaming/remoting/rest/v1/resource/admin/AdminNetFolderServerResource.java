@@ -40,6 +40,7 @@ import org.kablink.teaming.dao.util.NetFolderSelectSpec;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.LdapConnectionConfig;
+import org.kablink.teaming.domain.NetFolderConfig;
 import org.kablink.teaming.domain.NoLdapConnectionConfigByTheIdException;
 import org.kablink.teaming.domain.ResourceDriverConfig;
 import org.kablink.teaming.exception.UncheckedCodedException;
@@ -159,7 +160,7 @@ public class AdminNetFolderServerResource extends AbstractAdminResource {
                                                      @QueryParam("type") String type) {
         ResourceDriverConfig resourceDriverConfig = getResourceDriverModule().getResourceDriverConfig(id);
         NetFolderSelectSpec selectSpec = new NetFolderSelectSpec();
-        selectSpec.setRootName(resourceDriverConfig.getName());
+        selectSpec.setRootId(resourceDriverConfig.getId());
         NetFolder.Type nfType = toEnum(NetFolder.Type.class, "type", type);
         if (nfType==NetFolder.Type.net) {
             selectSpec.setIncludeHomeDirNetFolders(false);
@@ -171,10 +172,10 @@ public class AdminNetFolderServerResource extends AbstractAdminResource {
             selectSpec.setIncludeHomeDirNetFolders(true);
             selectSpec.setIncludeHomeDirNetFolders(true);
         }
-        List<Folder> folderList = NetFolderHelper.getAllNetFolders2(getBinderModule(), getWorkspaceModule(), selectSpec);
+        List<NetFolderConfig> folderList = NetFolderHelper.getAllNetFolders2(getBinderModule(), getWorkspaceModule(), selectSpec);
 
         SearchResultList<NetFolder> results = new SearchResultList<NetFolder>();
-        for (Folder folder : folderList) {
+        for (NetFolderConfig folder : folderList) {
             results.append(AdminResourceUtil.buildNetFolder(folder, this, fullDetails));
         }
         return results;

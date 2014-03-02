@@ -69,6 +69,7 @@ import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.HKey;
+import org.kablink.teaming.domain.NetFolderConfig;
 import org.kablink.teaming.domain.NoFolderByTheIdException;
 import org.kablink.teaming.domain.NoFolderEntryByTheIdException;
 import org.kablink.teaming.domain.Tag;
@@ -1111,7 +1112,7 @@ public void delete(final Folder folder) {
      * 
      */
  	@Override
-	public List<Folder> findNetFolders( final NetFolderSelectSpec selectSpec, final long zoneId )
+	public List<NetFolderConfig> findNetFolders( final NetFolderSelectSpec selectSpec, final long zoneId )
 	{
         List result = null;
 
@@ -1127,43 +1128,23 @@ public void delete(final Folder folder) {
 				{
                 	Criteria crit;
                 	String filter;
-                	String rootName;
+                	Long rootId;
 
-                	crit = session.createCriteria( Folder.class );
-                	
-                	// We only want net folders that have not been deleted
-                	crit.add( Restrictions.eq( ObjectKeys.FIELD_ENTITY_DELETED, Boolean.FALSE ) );
-                	
-                	// We only want mirrored folders
-                	crit.add( Restrictions.eq( ObjectKeys.FIELD_BINDER_MIRRORED, Boolean.TRUE ) );
-                	
-                	// We only want top-level folders
-                	crit.add( Restrictions.isNull( "topFolder" ) );
+                	crit = session.createCriteria( NetFolderConfig.class );
                 	
                 	// Are we looking for a net folder that is associated with a specific net folder root?
-                	rootName = selectSpec.getRootName();
-                	if ( rootName != null && rootName.length() > 0 )
+                	rootId = selectSpec.getRootId();
+                	if ( rootId != null )
                 	{
                 		// Yes
-                		crit.add( Restrictions.eq( ObjectKeys.FIELD_BINDER_RESOURCE_DRIVER_NAME, rootName ) );
+                		crit.add( Restrictions.eq( ObjectKeys.FIELD_NET_FOLDER_SERVER_ID, rootId ) );
                 	}
                 	
         			// Are we including "home directory" net folders?
         			if ( selectSpec.getIncludeHomeDirNetFolders() == false )
         			{
-        				Binder parentBinder;
-        				
         				// No
         				crit.add( Restrictions.eq( ObjectKeys.FIELD_BINDER_IS_HOME_DIR, Boolean.FALSE ) );
-        				
-        				// Get the binder where all non home dir net folders live.
-        				parentBinder = getCoreDao().loadReservedBinder(
-        														ObjectKeys.NET_FOLDERS_ROOT_INTERNALID, 
-        														zoneId );
-        				if ( parentBinder != null )
-        				{
-        					crit.add( Restrictions.eq( ObjectKeys.FIELD_ENTITY_PARENTBINDER, parentBinder ) );
-        				}
         			}
                     else if (selectSpec.getIncludeNonHomeDirNetFolders() == false )
                     {
@@ -1180,10 +1161,9 @@ public void delete(final Folder folder) {
                 		
                 		// Yes
                 		// See if the filter is in the title or the relative path or the server name.
-                		title = Restrictions.ilike( ObjectKeys.FIELD_ENTITY_TITLE, filter, MatchMode.ANYWHERE );
-                		path = Restrictions.ilike( ObjectKeys.FIELD_BINDER_RESOURCE_PATH, filter, MatchMode.ANYWHERE );
-                		server = Restrictions.ilike( ObjectKeys.FIELD_BINDER_RESOURCE_DRIVER_NAME, filter, MatchMode.ANYWHERE );
-                		crit.add( Restrictions.or( server, Restrictions.or( title, path ) ) );
+                		title = Restrictions.ilike( ObjectKeys.FIELD_NET_FOLDER_CONFIG_NAME, filter, MatchMode.ANYWHERE );
+                		path = Restrictions.ilike( ObjectKeys.FIELD_NET_FOLDER_CONFIG_RESOURCE_PATH, filter, MatchMode.ANYWHERE );
+                		crit.add( Restrictions.or( title, path ) );
                 	}
                 	
                 	if ( selectSpec.getStartIndex() != -1 )
@@ -1230,7 +1210,7 @@ public void delete(final Folder folder) {
 				{
                 	Criteria crit;
                 	String filter;
-                	String rootName;
+                	Long rootId;
                 	Object result;
                 	Long count = null;
 
@@ -1246,11 +1226,11 @@ public void delete(final Folder folder) {
                 	crit.add( Restrictions.isNull( "topFolder" ) );
                 	
                 	// Are we looking for a net folder that is associated with a specific net folder root?
-                	rootName = selectSpec.getRootName();
-                	if ( rootName != null && rootName.length() > 0 )
+                	rootId = selectSpec.getRootId();
+                	if ( rootId != null )
                 	{
                 		// Yes
-                		crit.add( Restrictions.eq( ObjectKeys.FIELD_BINDER_RESOURCE_DRIVER_NAME, rootName ) );
+                		crit.add( Restrictions.eq( ObjectKeys.FIELD_NET_FOLDER_SERVER_ID, rootId ) );
                 	}
                 	
         			// Are we including "home directory" net folders?

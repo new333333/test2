@@ -47,6 +47,7 @@ import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.CoreDao;
 import org.kablink.teaming.dao.util.NetFolderSelectSpec;
 import org.kablink.teaming.domain.Binder.SyncScheduleOption;
+import org.kablink.teaming.domain.NetFolderConfig;
 import org.kablink.teaming.domain.ResourceDriverConfig;
 import org.kablink.teaming.domain.ResourceDriverConfig.DriverType;
 import org.kablink.teaming.domain.ZoneConfig;
@@ -57,6 +58,7 @@ import org.kablink.teaming.jobs.NetFolderServerSynchronization;
 import org.kablink.teaming.jobs.ScheduleInfo;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.folder.FolderModule;
+import org.kablink.teaming.module.netfolder.NetFolderUtil;
 import org.kablink.teaming.module.resourcedriver.RDException;
 import org.kablink.teaming.module.resourcedriver.ResourceDriverModule;
 import org.kablink.teaming.module.workspace.WorkspaceModule;
@@ -719,7 +721,7 @@ public class ResourceDriverModuleImpl implements ResourceDriverModule {
 	{
 		NetFolderSelectSpec selectSpec;
 		FolderModule folderModule;
-		List<Long> listOfNetFolderIds;
+		List<Long> listOfNetFolderConfigIds;
 		
 		if ( rdConfig == null )
 			return false;
@@ -730,26 +732,29 @@ public class ResourceDriverModuleImpl implements ResourceDriverModule {
 		selectSpec = new NetFolderSelectSpec();
 		selectSpec.setFilter( null );
 		selectSpec.setIncludeHomeDirNetFolders( true );
-		selectSpec.setRootName( rdConfig.getName() );
-		listOfNetFolderIds = NetFolderHelper.getAllNetFolders(
+		selectSpec.setRootId( rdConfig.getId() );
+		listOfNetFolderConfigIds = NetFolderHelper.getAllNetFolders(
 													getBinderModule(),
 													getWorkspaceModule(),
 													selectSpec );
 
-		if ( listOfNetFolderIds != null )
+		if ( listOfNetFolderConfigIds != null )
 		{
-			for ( Long binderId:  listOfNetFolderIds )
+			NetFolderConfig nfc;
+			for ( Long netFolderConfigId:  listOfNetFolderConfigIds )
 			{
 				boolean syncFolder;
 				
 				syncFolder = false;
+				
+				nfc = NetFolderUtil.getNetFolderConfigById(netFolderConfigId);
 				
 				if ( excludeFoldersWithSchedule )
 				{
 					SyncScheduleOption syncScheduleOption;
 
 					// Does this net folder have a syncScheduleOption?
-					syncScheduleOption = NetFolderHelper.getSyncScheduleOption( getBinderModule(), binderId );
+					syncScheduleOption = nfc.getSyncScheduleOption();
 					if ( syncScheduleOption != null )
 					{
 						// Yes
@@ -766,7 +771,7 @@ public class ResourceDriverModuleImpl implements ResourceDriverModule {
 
 						// No
 						// Does this net folder have a sync schedule that is enabled?
-						scheduleInfo = NetFolderHelper.getMirroredFolderSynchronizationSchedule( binderId );
+						scheduleInfo = NetFolderHelper.getMirroredFolderSynchronizationSchedule( nfc.getFolderId() );
 						if ( scheduleInfo == null || scheduleInfo.isEnabled() == false )
 						{
 							// No
@@ -783,16 +788,16 @@ public class ResourceDriverModuleImpl implements ResourceDriverModule {
 					try {
 						// Yes, sync this net folder ... only if system shutdown is not in progress
 						if(!ContextListenerPostSpring.isShutdownInProgress()) {
-							folderModule.enqueueFullSynchronize( binderId );
+							folderModule.enqueueFullSynchronize( nfc.getFolderId() );
 						}
 						else {
 							// System shutting down. Abort the remaining work and return.
-							logger.info("System shutting down. Skipping full sync of net folder '" + binderId + "' and the rest.");
+							logger.info("System shutting down. Skipping full sync of net folder '" + nfc.getFolderId() + "' and the rest.");
 							break;
 						}
 					}
 					catch(Exception e) {
-						logger.error("Error during synchronization of net folder '" + binderId + "'", e);
+						logger.error("Error during synchronization of net folder '" + nfc.getFolderId() + "'", e);
 						continue; // Continue to the next net folder to sync.
 					}
 				}
