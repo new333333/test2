@@ -37,11 +37,13 @@ import org.kablink.teaming.dao.util.NetFolderSelectSpec;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.BinderState;
 import org.kablink.teaming.domain.Folder;
+import org.kablink.teaming.domain.NetFolderConfig;
 import org.kablink.teaming.domain.NoBinderByTheIdException;
 import org.kablink.teaming.domain.NoFolderByTheIdException;
 import org.kablink.teaming.domain.ResourceDriverConfig;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.file.WriteFilesException;
+import org.kablink.teaming.module.netfolder.NetFolderUtil;
 import org.kablink.teaming.remoting.rest.v1.exc.BadRequestException;
 import org.kablink.teaming.remoting.rest.v1.resource.AbstractResource;
 import org.kablink.teaming.remoting.rest.v1.util.AdminResourceUtil;
@@ -87,10 +89,10 @@ public class AdminNetFolderResource extends AbstractAdminResource {
             selectSpec.setIncludeHomeDirNetFolders(true);
             selectSpec.setIncludeNonHomeDirNetFolders(true);
         }
-        List<Folder> folderList = NetFolderHelper.getAllNetFolders2(getBinderModule(), getWorkspaceModule(), selectSpec);
+        List<NetFolderConfig> folderList = NetFolderHelper.getAllNetFolders2(getBinderModule(), getWorkspaceModule(), selectSpec);
 
         SearchResultList<NetFolder> results = new SearchResultList<NetFolder>();
-        for (Folder folder : folderList) {
+        for (NetFolderConfig folder : folderList) {
             results.append(AdminResourceUtil.buildNetFolder(folder, this, fullDetails));
         }
         return results;
@@ -108,17 +110,17 @@ public class AdminNetFolderResource extends AbstractAdminResource {
     @GET
     @Path("{id}")
     public NetFolder getNetFolder(@PathParam("id") Long id) {
-        Folder folder = lookupNetFolder(id);
-        return AdminResourceUtil.buildNetFolder(folder, this, true);
+    	NetFolderConfig nfc = NetFolderUtil.getNetFolderConfigById(id);
+        return AdminResourceUtil.buildNetFolder(nfc, this, true);
     }
 
     @PUT
     @Path("{id}")
     @Consumes( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
     public NetFolder updateNetFolder(@PathParam("id") Long id, NetFolder netFolder) throws WriteFilesException, WriteEntryDataException {
-        Folder folder = lookupNetFolder(id);
+    	NetFolderConfig nfc = NetFolderUtil.getNetFolderConfigById(id);
         netFolder.setId(id);
-        NetFolder existing = AdminResourceUtil.buildNetFolder(folder, this, false);
+        NetFolder existing = AdminResourceUtil.buildNetFolder(nfc, this, false);
         netFolder.replaceNullValues(existing);
         ResourceDriverConfig driverConfig = getResourceDriverModule().getResourceDriverConfig(netFolder.getServer().getId());
         return _modifyNetFolder(netFolder, driverConfig);

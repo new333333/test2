@@ -560,7 +560,7 @@ public class NetFolderHelper
 					{
 						final Long binderId;
 						
-						binderId = nfc.getId();
+						binderId = nfc.getFolderId();
 
 						m_logger.info( "About to sync home directory net folder: " + binderId );
 						folderModule.enqueueFullSynchronize( binderId );
@@ -935,15 +935,15 @@ public class NetFolderHelper
 		WorkspaceModule workspaceModule,
 		NetFolderSelectSpec selectSpec )
 	{
-		List<Folder> results;
-		List<Long> listOfNetFolderIds;
+		List<NetFolderConfig> results;
+		List<Long> listOfNetFolderConfigIds;
 		Workspace zone;
 		Long zoneId;
 		
 		zone = RequestContextHolder.getRequestContext().getZone();
 		zoneId = zone.getId();
 		
-		listOfNetFolderIds = new ArrayList<Long>();
+		listOfNetFolderConfigIds = new ArrayList<Long>();
 		
 		// Get the list of net folders for the given criteria.
 		results = getFolderDao().findNetFolders( selectSpec, zoneId );
@@ -951,26 +951,25 @@ public class NetFolderHelper
 		if ( results != null )
 		{
 			// We only want to return top-level net folders.
-			for ( Folder nextFolder: results )
+			for ( NetFolderConfig nextFolderConfig: results )
 			{
-				if ( nextFolder.isTop() && nextFolder.isDeleted() == false )
-					listOfNetFolderIds.add( nextFolder.getId() );
+				listOfNetFolderConfigIds.add( nextFolderConfig.getId() );
 			}
 		}
 
-		return listOfNetFolderIds;
+		return listOfNetFolderConfigIds;
 	}
 	
 
 	/**
 	 * Return all the net folders that are associated with the given net folder server
 	 */
-	public static List<Folder> getAllNetFolders2(
+	public static List<NetFolderConfig> getAllNetFolders2(
 		BinderModule binderModule,
 		WorkspaceModule workspaceModule,
 		NetFolderSelectSpec selectSpec )
 	{
-		List<Folder> results;
+		List<NetFolderConfig> results;
 		Workspace zone;
 		Long zoneId;
 		
@@ -1245,7 +1244,7 @@ public class NetFolderHelper
 
 			// Find all of the net folders that reference this net folder server.
 			selectSpec = new NetFolderSelectSpec();
-			selectSpec.setRootName( rdConfig.getName() );
+			selectSpec.setRootId( rdConfig.getId() );
 			selectSpec.setIncludeHomeDirNetFolders( true );
 			selectSpec.setFilter( null );
 			listOfNetFolderIds = NetFolderHelper.getAllNetFolders(
@@ -1272,12 +1271,12 @@ public class NetFolderHelper
 			else {
 				// The file content indexing was not on previously, but is on now.
 				// This affects all member net folders that inherit this setting from the parent net folder server.
-				List<Folder> listOfNetFolders;
+				List<NetFolderConfig> listOfNetFolders;
 				NetFolderSelectSpec selectSpec;
 
 				// Find all of the net folders that reference this net folder server.
 				selectSpec = new NetFolderSelectSpec();
-				selectSpec.setRootName( rdConfig.getName() );
+				selectSpec.setRootId( rdConfig.getId() );
 				selectSpec.setIncludeHomeDirNetFolders( true );
 				selectSpec.setFilter( null );
 				listOfNetFolders = NetFolderHelper.getAllNetFolders2(
@@ -1287,7 +1286,7 @@ public class NetFolderHelper
 
 				if ( listOfNetFolders != null )
 				{
-					for ( Folder netFolder:  listOfNetFolders )
+					for ( NetFolderConfig netFolder:  listOfNetFolders )
 					{
 						if(netFolder.getUseInheritedIndexContent()) {
 							// This net folder inherits file content indexing setting from the net folder server.
@@ -1391,22 +1390,6 @@ public class NetFolderHelper
 
 		return (NetFolderServerSynchronization)ReflectHelper.getInstance(className);
     }
-	
-	/**
-	 * Return the SyncScheduleOption for the given binder id
-	 */
-	public static SyncScheduleOption getSyncScheduleOption(
-		BinderModule binderModule,
-		Long folderId )
-	{
-		Binder binder;
-		
-		binder = binderModule.getBinder( folderId );
-		if ( binder != null )
-			return binder.getSyncScheduleOption();
-		
-		return null;
-	}
 
     public static List<AssignedRole> getNetFolderRights(
             AllModulesInjected ami,

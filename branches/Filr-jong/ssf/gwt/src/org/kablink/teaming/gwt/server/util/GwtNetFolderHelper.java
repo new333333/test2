@@ -233,7 +233,7 @@ public class GwtNetFolderHelper
 			//binder = ami.getBinderModule().getBinder(nfc.getFolderId());
 			
 			// Set the rights on the net folder
-			setNetFolderRights( ami, nfc.getFolderId(), netFolder.getRoles() );
+			setNetFolderRights( ami, NetFolderUtil.getNetFolderBinder(nfc), netFolder.getRoles() );
 			
 			// Set the data sync settings on the net folder
 			saveDataSyncSettings( ami, nfc.getId(), netFolder.getDataSyncSettings() );
@@ -453,7 +453,7 @@ public class GwtNetFolderHelper
 				// Get a list of net folders that are referencing this net folder server.
 				selectSpec = new NetFolderSelectSpec();
 				selectSpec.setIncludeHomeDirNetFolders( true );
-				selectSpec.setRootName( nextRoot.getName() );
+				selectSpec.setRootId( nextRoot.getId() );
 				selectSpec.setFilter( null );
 				listOfNetFolders = getAllNetFolders( ami, selectSpec, true );
 				
@@ -490,7 +490,7 @@ public class GwtNetFolderHelper
 		NetFolderSelectSpec selectSpec,
 		boolean getMinimalInfo )
 	{
-		List<Folder> listOfFolders;
+		List<NetFolderConfig> listOfFolders;
 		ArrayList<NetFolder> listOfNetFolders;
 		
 		listOfNetFolders = new ArrayList<NetFolder>();
@@ -502,13 +502,13 @@ public class GwtNetFolderHelper
 
 		if ( listOfFolders != null )
 		{
-			for ( Folder nextFolder :  listOfFolders )
+			for ( NetFolderConfig nextFolder :  listOfFolders )
 			{
 				NetFolder netFolder;
 				NetFolderConfig nfc;
 				Long nfcId;
 				
-				nfcId = nextFolder.getNetFolderConfigId();
+				nfcId = nextFolder.getId();
 				nfc = NetFolderUtil.getNetFolderConfigById( nfcId );
 				
 				if ( getMinimalInfo )
@@ -696,7 +696,7 @@ public class GwtNetFolderHelper
 			return null;
 		
 		// Get the ScheduleInfo for the given binder.
-		scheduleInfo = NetFolderHelper.getMirroredFolderSynchronizationSchedule( id );
+		scheduleInfo = NetFolderHelper.getMirroredFolderSynchronizationSchedule( NetFolderUtil.getNetFolderBinder(id).getId() );
 		
 		gwtSchedule = GwtServerHelper.getGwtSyncSchedule( scheduleInfo );
 		
@@ -849,7 +849,7 @@ public class GwtNetFolderHelper
 		netFolder.setIsHomeDir( nfc.isHomeDir() );
 		
 		// Is this a home dir net folder?
-		nfb = NetFolderUtil.getNetFolderBinder( ami, nfc );
+		nfb = NetFolderUtil.getNetFolderBinder( nfc );
 		name = nfb.getTitle();
 		displayName = name;
 		if ( nfc.isHomeDir() )
@@ -937,8 +937,8 @@ public class GwtNetFolderHelper
 		}
 		
 		// Get the rights associated with this net folder.
-//!!!jdw		listOfRoles = getNetFolderRights( ami, binder );
-//!!!jdw		netFolder.setRoles( listOfRoles );
+		listOfRoles = getNetFolderRights( ami, NetFolderUtil.getNetFolderBinder(nfc)  );
+		netFolder.setRoles( listOfRoles );
 		
 		// Get the data sync settings
 		dataSyncSettings = getDataSyncSettings( ami, nfc );
@@ -1153,15 +1153,15 @@ public class GwtNetFolderHelper
 	 * Get the sync status of the given net folder by converting a FullSyncStatus object
 	 * into a NetFolderSyncStatus object.
 	 */
-	public static NetFolderSyncStatus getNetFolderSyncStatus( Long binderId )
+	public static NetFolderSyncStatus getNetFolderSyncStatus( Long netFolderConfigId )
 	{
 		NetFolderSyncStatus status = NetFolderSyncStatus.SYNC_NEVER_RUN;
 		
-		if ( binderId != null )
+		if ( netFolderConfigId != null )
 		{
 			BinderState binderState;
 
-            binderState = (BinderState) getCoreDao().load( BinderState.class, binderId );
+            binderState = (BinderState) getCoreDao().load( BinderState.class, NetFolderUtil.getNetFolderConfigById(netFolderConfigId).getFolderId() );
             if ( binderState != null )
             {
     			FullSyncStats syncStats;
@@ -1331,7 +1331,7 @@ public class GwtNetFolderHelper
 
 			// Set the rights on the net folder
 			if ( netFolder.getIsHomeDir() == false )
-				setNetFolderRights( ami, netFolder.getId(), netFolder.getRoles() );
+				setNetFolderRights( ami, NetFolderUtil.getNetFolderBinder(netFolder.getId()), netFolder.getRoles() );
 			
 			// Save the data sync settings.
 			saveDataSyncSettings( ami, netFolder.getId(), netFolder.getDataSyncSettings() );
@@ -1447,34 +1447,29 @@ public class GwtNetFolderHelper
 	@SuppressWarnings({ "unchecked", "unused", "rawtypes" })
 	private static void saveDataSyncSettings(
 		AllModulesInjected ami,
-		Long binderId,
+		Long netFolderConfigId,
 		NetFolderDataSyncSettings settings )
 	{
-		if ( binderId != null && settings != null )
+		if ( netFolderConfigId != null && settings != null )
 		{
 			Set deleteAtts;
 			Map fileMap = null;
 			MapInputData mid;
 			Map formData = null;
 			
-			deleteAtts = new HashSet();
-			fileMap = new HashMap();
-			formData = new HashMap();
-	   		formData.put(
-	   					ObjectKeys.FIELD_BINDER_ALLOW_DESKTOP_APP_TO_SYNC_DATA,
-	   					Boolean.toString( settings.getAllowDesktopAppToSyncData() ) );
+			NetFolderConfig nfc = NetFolderUtil.getNetFolderConfigById(netFolderConfigId);
+			
+			nfc.setAllowDesktopAppToSyncData(settings.getAllowDesktopAppToSyncData());
+			
 	   		if ( false )
 	   		{
 	   			// Not writing anything as per bug 816823.
-		   		formData.put(
-	   					ObjectKeys.FIELD_BINDER_ALLOW_MOBILE_APPS_TO_SYNC_DATA,
-	   					Boolean.toString( settings.getAllowMobileAppsToSyncData() ) );
+	   			nfc.setAllowMobileAppsToSyncData(settings.getAllowMobileAppsToSyncData());
 	   		}
-			mid = new MapInputData( formData );
 
 			try
 			{
-				ami.getBinderModule().modifyBinder( binderId, mid, fileMap, deleteAtts, null );
+				ami.getNetFolderModule().modifyNetFolder(nfc);
 			}
 			catch ( Exception ex )
 			{
@@ -1488,21 +1483,17 @@ public class GwtNetFolderHelper
 	 */
 	private static void setNetFolderRights(
 		AllModulesInjected ami,
-		Long binderId,
+		Binder binder,
 		ArrayList<GwtRole> roles )
 	{
 		AdminModule adminModule;
-		Binder binder;
 
-		if ( binderId == null && roles == null )
+		if ( binder == null && roles == null )
 		{
 			GwtLogHelper.error( m_logger, "In GwtNetFolderHelper.setNetFolderRights(), invalid parameters" );
 		}
 		
 		adminModule = ami.getAdminModule();
-		
-		// Get the binder's work area
-		binder = ami.getBinderModule().getBinder( binderId );
 		
 		for ( GwtRole nextRole : roles )
 		{
@@ -1569,7 +1560,7 @@ public class GwtNetFolderHelper
 		{
 			try
 			{
-				if( ami.getFolderModule().enqueueFullSynchronize( nextNetFolder.getId() ) )
+				if( ami.getFolderModule().enqueueFullSynchronize( NetFolderUtil.getNetFolderBinder(nextNetFolder.getId()).getId() ) )
 				{
 					nextNetFolder.setStatus( getNetFolderSyncStatus( nextNetFolder.getId() ) );
 				}

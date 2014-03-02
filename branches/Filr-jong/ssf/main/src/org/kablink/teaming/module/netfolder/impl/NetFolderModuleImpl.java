@@ -71,6 +71,7 @@ public class NetFolderModuleImpl extends CommonDependencyInjection implements Ne
 			public Object doInTransaction(final TransactionStatus status) {
         		NetFolderConfig nfc = new NetFolderConfig();
             	nfc.setName(name);
+            	nfc.setFolderId(0L); // temporary value
             	nfc.setNetFolderServerId(NetFolderUtil.getNetFolderServerByName(rootName).getId());
             	nfc.setResourcePath(path);
             	nfc.setHomeDir(isHomeDir);

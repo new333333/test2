@@ -807,6 +807,15 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
    					
    				entryData.put( ObjectKeys.FIELD_BINDER_USE_INHERITED_JITS_SETTINGS, inherit );
    			}
+   			if ( inputData.exists( ObjectKeys.FIELD_NET_FOLDER_CONFIG_ID ) &&
+      				 !entryData.containsKey( ObjectKeys.FIELD_NET_FOLDER_CONFIG_ID ) )
+      			{
+      				Long value;
+      				
+      				value = Long.valueOf( inputData.getSingleValue( ObjectKeys.FIELD_NET_FOLDER_CONFIG_ID ) );
+      				if ( value != null )
+      					entryData.put( ObjectKeys.FIELD_NET_FOLDER_CONFIG_ID, value );
+      			}
    		}
    		Boolean library = null;
 		if (inputData.exists(ObjectKeys.FIELD_BINDER_LIBRARY) && !entryData.containsKey(ObjectKeys.FIELD_BINDER_LIBRARY))

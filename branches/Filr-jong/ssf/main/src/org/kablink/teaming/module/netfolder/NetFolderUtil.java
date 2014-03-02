@@ -32,9 +32,14 @@
  */
 package org.kablink.teaming.module.netfolder;
 
+import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.CoreDao;
+import org.kablink.teaming.dao.FolderDao;
 import org.kablink.teaming.domain.Binder;
+import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.NetFolderConfig;
+import org.kablink.teaming.domain.NoBinderByTheIdException;
+import org.kablink.teaming.domain.NoFolderByTheIdException;
 import org.kablink.teaming.domain.NoNetFolderByTheIdException;
 import org.kablink.teaming.domain.NoNetFolderByTheNameException;
 import org.kablink.teaming.domain.NoNetFolderServerByTheIdException;
@@ -43,7 +48,6 @@ import org.kablink.teaming.domain.ResourceDriverConfig;
 import org.kablink.teaming.fi.FIException;
 import org.kablink.teaming.fi.connection.ResourceDriver;
 import org.kablink.teaming.fi.connection.ResourceDriverManagerUtil;
-import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.SpringContextUtil;
 
 /**
@@ -73,11 +77,23 @@ public class NetFolderUtil {
 	/**
 	 * Return the Net Folder binder associated with the NetFolderConfig
 	 */
-	public static Binder getNetFolderBinder( AllModulesInjected ami, NetFolderConfig nfc )
+	public static Binder getNetFolderBinder( NetFolderConfig nfc ) throws NoBinderByTheIdException
 	{
-		return ami.getBinderModule().getBinder( nfc.getFolderId() );
+		return getCoreDao().loadBinder(nfc.getFolderId(), RequestContextHolder.getRequestContext().getZoneId());
 	}
 
+	public static Folder getNetFolderFolder(NetFolderConfig nfc) throws NoFolderByTheIdException {
+		return getFolderDao().loadFolder(nfc.getFolderId(), RequestContextHolder.getRequestContext().getZoneId());
+	}
+	
+	public static Binder getNetFolderBinder(Long netFolderConfigId) throws NoNetFolderByTheIdException, NoBinderByTheIdException {
+		return getNetFolderBinder(getNetFolderConfigById(netFolderConfigId));
+	}
+	
+	public static Folder getNetFolderFolder(Long netFolderConfigId) throws NoNetFolderByTheIdException, NoFolderByTheIdException {
+		return getNetFolderFolder(getNetFolderConfigById(netFolderConfigId));
+	}
+	
 	public static ResourceDriverConfig getNetFolderServerById(Long netFolderServerId) throws NoNetFolderServerByTheIdException {
 		return getCoreDao().loadNetFolderServer(netFolderServerId);
 	}
@@ -96,5 +112,9 @@ public class NetFolderUtil {
 	
 	private static CoreDao getCoreDao() {
 		return (CoreDao) SpringContextUtil.getBean("coreDao");
+	}
+	
+	private static FolderDao getFolderDao() {
+		return (FolderDao) SpringContextUtil.getBean("folderDao");
 	}
 }

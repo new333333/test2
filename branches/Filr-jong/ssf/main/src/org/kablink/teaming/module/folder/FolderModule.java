@@ -725,7 +725,7 @@ public interface FolderModule {
      */
     public void indexFileContentForNetFolder(Folder netFolderRoot);
 
-	public void modifyNetFolder(Long folderId, Long netFolderConfigId, String netFolderName, String path )
+	public void modifyNetFolder(Long folderId, Long netFolderConfigId, String netFolderName, String path, boolean indexContent, Boolean inheritIndexContent )
 			throws AccessControlException, WriteFilesException, WriteEntryDataException;
 
 	public void deleteNetFolder(Long folderId, boolean deleteSource);

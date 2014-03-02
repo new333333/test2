@@ -736,6 +736,11 @@ public interface ObjectKeys {
 	public static final String FIELD_BINDER_FULL_SYNC_DIR_ONLY = "fullSyncDirOnly";
     public static final String FIELD_BINDER_USE_INHERITED_INDEX_CONTENT = "useInheritedIndexContent";
     public static final String FIELD_BINDER_USE_INHERITED_JITS_SETTINGS = "useInheritedJitsSettings";
+	public static final String FIELD_NET_FOLDER_CONFIG_ID = "netFolderConfigId";
+	public static final String FIELD_NET_FOLDER_CONFIG_NAME = "name";
+	public static final String FIELD_NET_FOLDER_CONFIG_RESOURCE_PATH = "resourcePath";
+	public static final String FIELD_NET_FOLDER_SERVER_ID = "netFolderServerId";
+
 	
 	public static final String FIELD_RESOURCE_DRIVER_TYPE = "type";
 	public static final String FIELD_RESOURCE_HANDLE = "resourceHandle"; 

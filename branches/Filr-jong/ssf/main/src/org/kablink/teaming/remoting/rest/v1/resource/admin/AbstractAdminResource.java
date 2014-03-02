@@ -10,6 +10,7 @@ import org.kablink.teaming.domain.ResourceDriverConfig;
 import org.kablink.teaming.jobs.ScheduleInfo;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.file.WriteFilesException;
+import org.kablink.teaming.module.netfolder.NetFolderUtil;
 import org.kablink.teaming.remoting.rest.v1.exc.BadRequestException;
 import org.kablink.teaming.remoting.rest.v1.resource.AbstractResource;
 import org.kablink.teaming.remoting.rest.v1.util.AdminResourceUtil;
@@ -58,7 +59,7 @@ public class AbstractAdminResource extends AbstractResource {
             NetFolderHelper.setNetFolderRights(this, binder.getId(), roles);
         }
 
-        return AdminResourceUtil.buildNetFolder((Folder) binder, this, true);
+        return AdminResourceUtil.buildNetFolder(nfc, this, true);
     }
 
     protected NetFolder _modifyNetFolder(NetFolder netFolder, ResourceDriverConfig resourceDriverConfig) throws WriteFilesException, WriteEntryDataException {
@@ -76,7 +77,7 @@ public class AbstractAdminResource extends AbstractResource {
             NetFolderHelper.setNetFolderRights(this, netFolder.getId(), roles);
         }
 
-        return AdminResourceUtil.buildNetFolder((Folder) getBinderModule().getBinder(netFolder.getId()), this, true);
+        return AdminResourceUtil.buildNetFolder(NetFolderUtil.getNetFolderConfigById(netFolder.getId()), this, true);
     }
 
     protected ScheduleInfo toScheduleInfo(Schedule model) {
