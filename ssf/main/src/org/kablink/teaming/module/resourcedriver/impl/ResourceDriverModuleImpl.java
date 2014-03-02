@@ -747,7 +747,7 @@ public class ResourceDriverModuleImpl implements ResourceDriverModule {
 				
 				syncFolder = false;
 				
-				nfc = NetFolderUtil.getNetFolderConfigById(netFolderConfigId);
+				nfc = NetFolderUtil.getNetFolderConfig(netFolderConfigId);
 				
 				if ( excludeFoldersWithSchedule )
 				{

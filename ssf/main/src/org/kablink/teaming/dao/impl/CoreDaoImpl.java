@@ -110,8 +110,8 @@ import org.kablink.teaming.domain.NoDashboardByTheIdException;
 import org.kablink.teaming.domain.NoDefinitionByTheIdException;
 import org.kablink.teaming.domain.NoLdapConnectionConfigByTheIdException;
 import org.kablink.teaming.domain.NoLibraryEntryByTheIdException;
-import org.kablink.teaming.domain.NoNetFolderByTheIdException;
-import org.kablink.teaming.domain.NoNetFolderByTheNameException;
+import org.kablink.teaming.domain.NoNetFolderConfigByTheIdException;
+import org.kablink.teaming.domain.NoNetFolderConfigByTheNameException;
 import org.kablink.teaming.domain.NoNetFolderServerByTheIdException;
 import org.kablink.teaming.domain.NoNetFolderServerByTheNameException;
 import org.kablink.teaming.domain.NoOpenIDProviderByTheIdException;
@@ -1480,14 +1480,14 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
     }
 
     @Override
-	public NetFolderConfig loadNetFolderConfig(Long netFolderConfigId) throws NoNetFolderByTheIdException {  
+	public NetFolderConfig loadNetFolderConfig(Long netFolderConfigId) throws NoNetFolderConfigByTheIdException {  
 		long begin = System.nanoTime();
 		try {
 			NetFolderConfig nf = (NetFolderConfig)load(NetFolderConfig.class, netFolderConfigId);
 			if(nf != null)
 				return nf;
 			else
-				throw new NoNetFolderByTheIdException(netFolderConfigId);
+				throw new NoNetFolderConfigByTheIdException(netFolderConfigId);
     	}
     	finally {
     		end(begin, "loadNetFolderConfig(Long)");
@@ -1495,7 +1495,7 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
     }
     
     @Override
-    public NetFolderConfig loadNetFolderConfigByName(final String netFolderName) throws NoNetFolderByTheNameException {
+    public NetFolderConfig loadNetFolderConfigByName(final String netFolderName) throws NoNetFolderConfigByTheNameException {
 		long begin = System.nanoTime();
 		try {
 			return (NetFolderConfig)getHibernateTemplate().execute(
@@ -1507,7 +1507,7 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
 	                		.setCacheable(true)
 	                		.uniqueResult();
 		                    if (netFolder == null)
-		                    	throw new NoNetFolderByTheNameException(netFolderName);
+		                    	throw new NoNetFolderConfigByTheNameException(netFolderName);
 		                    else
 		                    	return netFolder;
 		                }

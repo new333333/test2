@@ -196,6 +196,8 @@ public enum ApiErrorCode {
 
     ACL_CHANGED, // No device found with this id
     
+    NET_FOLDER_CONFIG_NOT_FOUND, // No net folder configuration found with this name or id
+
     NET_FOLDER_SERVER_NOT_FOUND, // No net folder server found with this name or id
 
 }

@@ -185,7 +185,7 @@ public class BaseFolderModule extends AbstractFolderModule implements BaseFolder
 	 */
 	@Override
 	public void modifyNetFolder(Long folderId, Long netFolderConfigId,
-			String netFolderName, String path, boolean indexContent,
+			String path, boolean indexContent,
 			Boolean inheritIndexContent) throws AccessControlException,
 			WriteFilesException, WriteEntryDataException {
 	}

@@ -725,14 +725,14 @@ public interface FolderModule {
      */
     public void indexFileContentForNetFolder(Folder netFolderRoot);
 
-	public void modifyNetFolder(Long folderId, Long netFolderConfigId, String netFolderName, String path, boolean indexContent, Boolean inheritIndexContent )
+	public void modifyNetFolder(Long folderId, Long netFolderConfigId, String path, boolean indexContent, Boolean inheritIndexContent )
 			throws AccessControlException, WriteFilesException, WriteEntryDataException;
 
 	public void deleteNetFolder(Long folderId, boolean deleteSource);
 	
     public void syncAclForNetFolderRoot(Folder netFolderRoot);
 
-    public Folder createNetFolder(Long netFolderConfigId, Long templateId, Long parentBinderId, String name, User owner, String rootName, String path, Boolean isHomeDir, boolean indexContent, Boolean inheritIndexContent, SyncScheduleOption syncScheduleOption, Boolean fullSyncDirOnly ) throws AccessControlException, WriteFilesException, WriteEntryDataException;
+    public Folder createNetFolder(Long netFolderConfigId, Long templateId, Long parentBinderId, String folderName, User owner, String rootName, String path, Boolean isHomeDir, boolean indexContent, Boolean inheritIndexContent, SyncScheduleOption syncScheduleOption, Boolean fullSyncDirOnly ) throws AccessControlException, WriteFilesException, WriteEntryDataException;
     
     /**
      * Get an object containing information about the latest full synchronization run on the specified net folder.
