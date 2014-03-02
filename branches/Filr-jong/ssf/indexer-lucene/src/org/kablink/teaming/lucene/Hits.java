@@ -94,6 +94,13 @@ public class Hits implements Serializable {
         noIntrinsicAclStoredButAccessibleThroughFilrGrantedAcl = new boolean[length];
      }
 
+    public Hits(List<Map<String,Object>> documents) {
+    	this.size = documents.size();
+    	this.totalHits = documents.size();
+    	this.totalHitsApproximate = false;
+    	this.documents = documents;
+    }
+    
     public List<Map<String,Object>> getDocuments() {
     	return documents;
     }

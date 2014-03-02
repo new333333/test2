@@ -40,6 +40,8 @@ import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.fi.FIException;
+import org.kablink.teaming.fi.connection.acl.AclItemPrincipalMapper;
+import org.kablink.teaming.fi.connection.acl.ResourceItem;
 import org.kablink.teaming.jobs.ScheduleInfo;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.file.WriteFilesException;
@@ -188,5 +190,14 @@ public class BaseFolderModule extends AbstractFolderModule implements BaseFolder
 			String path, boolean indexContent,
 			Boolean inheritIndexContent) throws AccessControlException,
 			WriteFilesException, WriteEntryDataException {
+	}
+
+	/*
+	 * @see org.kablink.teaming.module.folder.FolderModule#getUserIdForOwner(org.kablink.teaming.fi.connection.acl.AclItemPrincipalMapper, org.kablink.teaming.fi.connection.acl.ResourceItem)
+	 */
+	@Override
+	public Long getUserIdForOwner(AclItemPrincipalMapper principalMapper,
+			ResourceItem resourceItem) {
+		return null;
 	}
 }

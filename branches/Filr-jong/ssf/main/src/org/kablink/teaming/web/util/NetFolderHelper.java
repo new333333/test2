@@ -1049,20 +1049,16 @@ public class NetFolderHelper
 		Boolean inheritIndexContent,
 		Boolean fullSyncDirOnly ) throws AccessControlException, WriteFilesException, WriteEntryDataException
 	{
-		// Modify the binder with the net folder information.
-		//!!!jdw
-	/*
-		folderModule.modifyNetFolder(
-									id,
-									netFolderName,
-									netFolderRootId,
-									relativePath,
-									null,
-									indexContent,
-									inheritIndexContent,
-									syncScheduleOption,
-									fullSyncDirOnly );
-	*/
+		NetFolderConfig nfc = NetFolderUtil.getNetFolderConfig(id);
+		nfc.setName(netFolderName);
+		nfc.setNetFolderServerId(netFolderRootId);
+		nfc.setResourcePath(relativePath);
+		nfc.setIndexContent(indexContent);
+		nfc.setUseInheritedIndexContent(inheritIndexContent);
+		nfc.setSyncScheduleOption(syncScheduleOption);
+		nfc.setFullSyncDirOnly(fullSyncDirOnly);
+		
+		netFolderModule.modifyNetFolder(nfc);
 		
 		// Set the net folder's sync schedule
 		if ( scheduleInfo != null )
@@ -1073,7 +1069,7 @@ public class NetFolderHelper
 				scheduleInfo.setEnabled( false );
 			
 			scheduleInfo.setFolderId( id );
-			folderModule.setSynchronizationSchedule( scheduleInfo, id );
+			folderModule.setSynchronizationSchedule( scheduleInfo, nfc.getFolderId() );
 		}
 	}
 	

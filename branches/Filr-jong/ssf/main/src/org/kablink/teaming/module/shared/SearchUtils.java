@@ -79,6 +79,8 @@ import org.kablink.teaming.lucene.LuceneException;
 import org.kablink.teaming.lucene.util.LanguageTaster;
 import org.kablink.teaming.lucene.util.SearchFieldResult;
 import org.kablink.teaming.module.folder.FolderModule;
+import org.kablink.teaming.runas.RunasCallback;
+import org.kablink.teaming.runas.RunasTemplate;
 import org.kablink.teaming.search.LuceneReadSession;
 import org.kablink.teaming.search.SearchObject;
 import org.kablink.teaming.search.filter.SearchFilter;
@@ -599,7 +601,7 @@ public class SearchUtils {
 			int mode, 
 			int offset, 
 			int size, 
-			Binder parentBinder)
+			final Binder parentBinder)
 					throws LuceneException, AuthException {
 		if(so == null)
 			throw new IllegalArgumentException("Search object must be specifed");
@@ -689,7 +691,7 @@ public class SearchUtils {
 		}
 		else if(parentBinder.noAclDredgedWithEntries()) {
 			// The parent binder is a net folder which does not store file ACLs in the search index.
-			List<String> childrenTitles = null;
+			List<Map<String,Object>> accessibleChildren = null;
 			if(Validator.isNotNull(so.getAclQueryStr())) {
 				boolean shareGrantedAccess = getAccessControlManager().testRightGrantedBySharing(RequestContextHolder.getRequestContext().getUser(), (WorkArea) parentBinder, WorkAreaOperation.READ_ENTRIES);
 				if(shareGrantedAccess) {
@@ -712,8 +714,15 @@ public class SearchUtils {
 					// NOTE: It may be more efficient to implement this logic within the search service itself
 					//       so that this caller won't have to check share-granted right on the binder. 
 					//       We will revisit that topic when rewriting search service for next Filr release.
-					baseAclQueryStr = null; // Let the Lucene Service skip access checking on the contents of the binder.
-					extendedAclQueryStr = null;
+					
+					// To make sure that the user gain access to all children, get the list as proxy user.
+					accessibleChildren = (List<Map<String,Object>>) RunasTemplate.runasAdmin(new RunasCallback() {
+						@Override
+						public Object doAs() {
+							return getAccessibleChildrenFromSourceSystem((Folder)parentBinder);
+						}
+					},
+					RequestContextHolder.getRequestContext().getZoneName());
 				}
 				else {		
 					// The sharing facility doesn't grant this user read right to the parent binder, which means
@@ -722,14 +731,25 @@ public class SearchUtils {
 					// We need to consolidate the information in the search index with the dynamic list
 					// obtained from the file system in order to determine which subset of the children
 					// the user has access to.
-					childrenTitles = getChildrenTitlesFromSourceSystem((Folder)parentBinder);
+					accessibleChildren = getAccessibleChildrenFromSourceSystem((Folder)parentBinder);
+					// TODO $$$ For now, do not query for additional children that the user may have access to
+					// via sharing. We will add that logic in later.
 				}
 			}
 			else {
 				// The user is not confined by access check (e.g. admin), which means that 
 				// dynamic filtering against file system is not necessary either.
+				// To make sure that the user gain access to all children, get the list as proxy user.
+				accessibleChildren = (List<Map<String,Object>>) RunasTemplate.runasAdmin(new RunasCallback() {
+					@Override
+					public Object doAs() {
+						return getAccessibleChildrenFromSourceSystem((Folder)parentBinder);
+					}
+				},
+				RequestContextHolder.getRequestContext().getZoneName());
 			}
-		    return luceneSession.searchNetFolderOneLevel(contextUserId, baseAclQueryStr, extendedAclQueryStr, childrenTitles, query, sort, offset, size);					
+		    //return luceneSession.searchNetFolderOneLevel(contextUserId, baseAclQueryStr, extendedAclQueryStr, childrenTitles, query, sort, offset, size);		
+			return toHits(accessibleChildren);
 		}
 		else {
 			// All other cases
@@ -737,23 +757,22 @@ public class SearchUtils {
 		}
 	}
 	
-	private static List<String> getChildrenTitlesFromSourceSystem(Folder parentBinder) {
+	private static List<Map<String,Object>> getAccessibleChildrenFromSourceSystem(Folder parentBinder) {
 		AclResourceSession session = openAclResourceSession((AclResourceDriver) parentBinder.getResourceDriver(), FolderUtils.getNetFolderOwnerId(parentBinder));
 		
 		if(session == null)
 			return null; // The source system doesn't recognize this user. 
-		
+			
 		try {
 			session.setPath(parentBinder.getResourcePath(), parentBinder.getResourceHandle(), Boolean.TRUE);
-			List<ResourceItem> children = session.getChildren(false, false, false, false);
-			List<String> titles = null;
-			if(children != null && children.size() > 0) {
-				titles = new ArrayList<String>(children.size());
+			List<ResourceItem> children = session.getChildren(false, false, false, true);
+			List<Map<String,Object>> result = new ArrayList<Map<String,Object>>();
+			if(children != null) {
 				for(ResourceItem child:children) {
-					titles.add(child.getName());
+					result.add(toMap(session, child));
 				}
 			}
-			return titles;
+			return result;
 		}
 		catch(Exception e) {
 			logger.error("Error getting listing for folder [" + parentBinder.getPathName() + "] with resource path [" + 
@@ -763,6 +782,39 @@ public class SearchUtils {
 		finally {
 			session.close();
 		}
+	}
+	
+	private static Map<String,Object> toMap(AclResourceSession session, ResourceItem child) {
+		Map<String,Object> result = new HashMap<String,Object>();
+		result.put(Constants.RESOURCE_PATH_FIELD, session.getResourceDriver().normalizedResourcePath(session.getPath(), child.getName()));
+		result.put(Constants.IS_LIBRARY_FIELD, Boolean.TRUE);
+		
+		if(child.isDirectory()) {
+			result.put(Constants.FAMILY_FIELD, Constants.FAMILY_FIELD_FILE);
+			result.put(Constants.CREATORID_FIELD,
+					getFolderModule().getUserIdForOwner(session.getAclResourceDriver().getAclItemPrincipalMapper(), child));
+			//result.put(Constants.CREATOR_NAME_FIELD, value);
+			result.put(Constants.DOC_TYPE_FIELD, Constants.DOC_TYPE_BINDER);
+			result.put(Constants.TITLE_FIELD, child.getName());
+			result.put(Constants.ENTITY_FIELD, Constants.ENTITY_TYPE_FOLDER);
+		}
+		else {
+			result.put(Constants.MODIFICATION_DATE_FIELD, new Date(child.getLastModified()).toGMTString());
+			result.put(Constants.FAMILY_FIELD, Constants.FAMILY_FIELD_FILE);
+			result.put(Constants.CREATORID_FIELD, 
+					getFolderModule().getUserIdForOwner(session.getAclResourceDriver().getAclItemPrincipalMapper(), child));
+			//result.put(Constants.CREATOR_NAME_FIELD, value);
+			result.put(Constants.DOC_TYPE_FIELD, Constants.DOC_TYPE_ENTRY);
+			result.put(Constants.FILE_SIZE_IN_BYTES_FIELD, child.getContentLength());
+			result.put(Constants.TITLE_FIELD, child.getName());
+			result.put(Constants.ENTITY_FIELD, Constants.ENTITY_TYPE_FOLDER_ENTRY);
+			result.put(Constants.FILENAME_FIELD, child.getName());
+		}
+		return result;
+	}
+	
+	private static Hits toHits(List<Map<String,Object>> children) {
+		return new Hits(children);
 	}
 	
 	public static AclResourceSession openAclResourceSession(String resourceDriverName, Long netFolderOwnerId) {

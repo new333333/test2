@@ -59,6 +59,8 @@ import org.kablink.teaming.domain.Tag;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.fi.FIException;
 import org.kablink.teaming.fi.auth.AuthException;
+import org.kablink.teaming.fi.connection.acl.AclItemPrincipalMapper;
+import org.kablink.teaming.fi.connection.acl.ResourceItem;
 import org.kablink.teaming.jobs.ScheduleInfo;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.file.WriteFilesException;
@@ -828,4 +830,7 @@ public interface FolderModule {
 	 * Delete background job, if any, for file content indexing for the specified net folder.
 	 */
 	public void netFolderContentIndexingJobUnschedule(Long folderId);
+	
+	public Long getUserIdForOwner(AclItemPrincipalMapper principalMapper, ResourceItem resourceItem);
+
 }
