@@ -913,7 +913,6 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			selectSpec = new NetFolderSelectSpec();
 			selectSpec.setFilter( gnfCmd.getFilter() );
 			selectSpec.setIncludeHomeDirNetFolders( gnfCmd.getIncludeHomeDirNetFolders() );
-			selectSpec.setRootId( gnfCmd.getRootName() ); // HOW DO I GET ROOT ID?
 			selectSpec.setStartIndex( gnfCmd.getStartIndex() );
 			selectSpec.setPageSize( gnfCmd.getPageSize() );
 			result = GwtNetFolderHelper.getAllNetFolders( this, selectSpec, true );
