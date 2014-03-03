@@ -45,6 +45,7 @@ import java.util.HashSet;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.kablink.teaming.ObjectKeys;
+import org.kablink.teaming.domain.NetFolderConfig.SyncScheduleOption;
 import org.kablink.teaming.domain.ResourceDriverConfig.DriverType;
 import org.kablink.teaming.fi.FIException;
 import org.kablink.teaming.fi.connection.ResourceDriver;
@@ -74,60 +75,6 @@ import org.kablink.util.search.Constants;
  */
 @SuppressWarnings("unchecked")
 public abstract class Binder extends DefinableEntity implements WorkArea, InstanceLevelProcessorSupport  {
-	/**
-	 * Different values for the sync schedule option 
-	 */
-	public enum SyncScheduleOption
-	{
-		/**
-		 * The sync schedule defined on the net folder server this net folder points to should be
-		 * used to perform scheduled syncs on this net folder.
-		 * 
-		 */
-		useNetFolderServerSchedule( (short)1 ),
-		
-		/**
-		 * The sync schedule defined on the net folder should be used to perform schedule syncs on
-		 * this net folder.
-		 */
-		useNetFolderSchedule( (short)2 );
-		
-		short value;
-		
-		/**
-		 * 
-		 */
-		SyncScheduleOption( short value )
-		{
-			this.value = value;
-		}
-		
-		/**
-		 * 
-		 */
-		public short getValue()
-		{
-			return value;
-		}
-		
-		/**
-		 * 
-		 */
-		public static SyncScheduleOption valueOf( short value )
-		{
-			switch(value)
-			{
-			case 1:
-				return SyncScheduleOption.useNetFolderServerSchedule;
-				
-			case 2:
-				return SyncScheduleOption.useNetFolderSchedule;
-				
-			default:
-				throw new IllegalArgumentException( "Invalid db value " + value + " for enum SyncScheduleOption" );
-			}
-		}
-	}
 
 	protected String name="";
     protected Principal owner; //initialized by hibernate access=field  

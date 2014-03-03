@@ -130,7 +130,7 @@ public class AdminResourceUtil {
         model.setJitsMaxACLAge(nfc.getJitsMaxAge());
         model.setJitsMaxAge(nfc.getJitsAclMaxAge());
 
-        model.setInheritSyncSchedule(nfc.getSyncScheduleOption() != Binder.SyncScheduleOption.useNetFolderSchedule);
+        model.setInheritSyncSchedule(nfc.getSyncScheduleOption() != NetFolderConfig.SyncScheduleOption.useNetFolderSchedule);
         if (fullDetails) {
             ScheduleInfo scheduleInfo = NetFolderHelper.getMirroredFolderSynchronizationSchedule( nfc.getFolderId() );
             model.setSyncSchedule(buildSchedule(scheduleInfo));

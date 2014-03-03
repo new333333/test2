@@ -50,7 +50,7 @@ import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.CoreDao;
 import org.kablink.teaming.dao.util.NetFolderSelectSpec;
 import org.kablink.teaming.domain.Binder;
-import org.kablink.teaming.domain.Binder.SyncScheduleOption;
+import org.kablink.teaming.domain.NetFolderConfig.SyncScheduleOption;
 import org.kablink.teaming.domain.BinderState;
 import org.kablink.teaming.domain.BinderState.FullSyncStats;
 import org.kablink.teaming.domain.BinderState.FullSyncStatus;

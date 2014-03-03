@@ -37,7 +37,7 @@ import java.util.Map;
 
 import org.kablink.teaming.ConfigurationException;
 import org.kablink.teaming.UncheckedIOException;
-import org.kablink.teaming.domain.Binder.SyncScheduleOption;
+import org.kablink.teaming.domain.NetFolderConfig.SyncScheduleOption;
 import org.kablink.teaming.domain.BinderState.FullSyncStats;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;

@@ -46,7 +46,7 @@ import org.kablink.teaming.UncheckedIOException;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.CoreDao;
 import org.kablink.teaming.dao.util.NetFolderSelectSpec;
-import org.kablink.teaming.domain.Binder.SyncScheduleOption;
+import org.kablink.teaming.domain.NetFolderConfig.SyncScheduleOption;
 import org.kablink.teaming.domain.NetFolderConfig;
 import org.kablink.teaming.domain.ResourceDriverConfig;
 import org.kablink.teaming.domain.ResourceDriverConfig.DriverType;

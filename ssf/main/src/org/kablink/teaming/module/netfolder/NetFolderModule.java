@@ -36,7 +36,7 @@ import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.NetFolderConfig;
 import org.kablink.teaming.domain.User;
-import org.kablink.teaming.domain.Binder.SyncScheduleOption;
+import org.kablink.teaming.domain.NetFolderConfig.SyncScheduleOption;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.security.AccessControlException;
