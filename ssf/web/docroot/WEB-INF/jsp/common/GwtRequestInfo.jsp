@@ -93,6 +93,8 @@
 		jsPath:								'<ssf:escapeJavaScript><html:rootPath/>js/</ssf:escapeJavaScript>',
 		language:							'${ssUser.locale.language}',
 		locale:								'${ssUser.locale}',
+		showFilrFeatures:					'${showFilrFeatures}',
+		showVibeFeatures:					'${showVibeFeatures}',
 		timeZone:							'${ssUser.timeZone.ID}',
 		timeZoneIdAbrev:					'<fmt:formatDate value="<%= now %>" pattern="z" timeZone="${ssUser.timeZone.ID}" />',
 		timeZoneOffsetHour:					${tzOffsetHour},
