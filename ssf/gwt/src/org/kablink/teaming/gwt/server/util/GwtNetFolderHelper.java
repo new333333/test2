@@ -1597,86 +1597,6 @@ public class GwtNetFolderHelper
 	}
 	
 	/**
-	 * Test the given connection
-	 */
-	private static GwtConnectionTestStatusCode testConnection(
-		String driverName,
-		NetFolderRootType rootType,
-		String rootPath,
-		String subPath,
-		String proxyName,
-		String proxyPwd )
-	{
-		String name;
-		ResourceDriverConfig rdConfig = null;
-		DriverType driverType;
-		ResourceDriver resourceDriver;
-		ResourceDriverManager rdManager;
-		GwtConnectionTestStatusCode statusCode;
-		
-		statusCode = GwtConnectionTestStatusCode.UNKNOWN;
-		
-		name = driverName;
-		if ( name != null )
-			name = "test-connection-" + name + "test-connection";
-		else
-			name = "test-connection-net-folder-root-test-connection";
-		
-		rdConfig = new ResourceDriverConfig();
-		rdConfig.setName( name );
-		driverType = getDriverType( rootType );
-		rdConfig.setDriverType( driverType );
-		rdConfig.setZoneId( RequestContextHolder.getRequestContext().getZoneId() );
-		rdConfig.setRootPath( rootPath );
-   		rdConfig.setReadOnly( false );
-   		rdConfig.setSynchTopDelete( false );
-   		rdConfig.setAccountName( proxyName );
-   		rdConfig.setPassword( proxyPwd );
-		
-   		rdManager = ResourceDriverManagerUtil.getResourceDriverManager();
-		// Do not call initialize() method on the driver when we create a temporary one
-		// just for the purpose of testing a connection. Specifically, if we call initialize()
-		// on a FAMT resource driver, it may trigger building a rights cache which can take
-		// significant time and system resources which we do not need for this test.
-   		resourceDriver = rdManager.createResourceDriverWithoutInitialization( rdConfig );
-   		if ( resourceDriver != null && resourceDriver instanceof AclResourceDriver )
-   		{
-   			AclResourceDriver aclDriver;
-			ConnectionTestStatus status;
-   			
-   			aclDriver = (AclResourceDriver) resourceDriver;
-   			status = aclDriver.testConnection(
-		   								proxyName,
-		   								proxyPwd,
-		   								subPath );
-
-   			switch ( status.getCode() )
-   			{
-   			case NETWORK_ERROR:
-   				statusCode = GwtConnectionTestStatusCode.NETWORK_ERROR;
-   				break;
-   			
-   			case NORMAL:
-   				statusCode = GwtConnectionTestStatusCode.NORMAL;
-   				break;
-   			
-   			case PROXY_CREDENTIALS_ERROR:
-   				statusCode = GwtConnectionTestStatusCode.PROXY_CREDENTIALS_ERROR;
-   				break;
-   			
-   			default:
-   				statusCode = GwtConnectionTestStatusCode.UNKNOWN;
-   				break;
-   			}
-
-   			// Do not call shutdown() on this temporary driver instance, since we don't call initialize() on it.
-   			// Otherwise, the ref count FAMT maintains can go incorrect.
-   		}
-   		
-   		return statusCode;
-	}
-
-	/**
 	 * Test the connection for the given net folder root
 	 */
 	public static TestNetFolderConnectionResponse testNetFolderConnection(
@@ -1688,18 +1608,41 @@ public class GwtNetFolderHelper
 		String proxyPwd )
 	{
 		TestNetFolderConnectionResponse response;
+		ConnectionTestStatus status;
 		GwtConnectionTestStatusCode statusCode;
 		
 		response = new TestNetFolderConnectionResponse();
+		statusCode = GwtConnectionTestStatusCode.UNKNOWN;
 		
-		statusCode = testConnection(
-								rootName,
-								rootType,
-								rootPath,
-								subPath,
-								proxyName,
-								proxyPwd );
+		status = NetFolderHelper.testNetFolderConnection(
+														rootName,
+														getDriverType( rootType ),
+														rootPath,
+														subPath,
+														proxyName,
+														proxyPwd );
+		if ( status != null )
+		{
+			switch ( status.getCode() )
+			{
+			case NETWORK_ERROR:
+				statusCode = GwtConnectionTestStatusCode.NETWORK_ERROR;
+				break;
 			
+			case NORMAL:
+				statusCode = GwtConnectionTestStatusCode.NORMAL;
+				break;
+			
+			case PROXY_CREDENTIALS_ERROR:
+				statusCode = GwtConnectionTestStatusCode.PROXY_CREDENTIALS_ERROR;
+				break;
+			
+			default:
+				statusCode = GwtConnectionTestStatusCode.UNKNOWN;
+				break;
+			}
+		}
+		
 		response.setStatusCode( statusCode );
 		
 		return response;
