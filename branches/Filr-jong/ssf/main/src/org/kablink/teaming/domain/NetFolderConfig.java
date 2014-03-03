@@ -32,7 +32,6 @@
  */
 package org.kablink.teaming.domain;
 
-import org.kablink.teaming.domain.Binder.SyncScheduleOption;
 import org.kablink.teaming.fi.connection.ResourceDriver;
 import org.kablink.teaming.fi.connection.ResourceDriverManagerUtil;
 import org.kablink.teaming.util.SPropsUtil;
@@ -43,6 +42,61 @@ import org.kablink.teaming.web.util.NetFolderHelper;
  *
  */
 public class NetFolderConfig {
+
+	/**
+	 * Different values for the sync schedule option 
+	 */
+	public enum SyncScheduleOption
+	{
+		/**
+		 * The sync schedule defined on the net folder server this net folder points to should be
+		 * used to perform scheduled syncs on this net folder.
+		 * 
+		 */
+		useNetFolderServerSchedule( (short)1 ),
+		
+		/**
+		 * The sync schedule defined on the net folder should be used to perform schedule syncs on
+		 * this net folder.
+		 */
+		useNetFolderSchedule( (short)2 );
+		
+		short value;
+		
+		/**
+		 * 
+		 */
+		SyncScheduleOption( short value )
+		{
+			this.value = value;
+		}
+		
+		/**
+		 * 
+		 */
+		public short getValue()
+		{
+			return value;
+		}
+		
+		/**
+		 * 
+		 */
+		public static SyncScheduleOption valueOf( short value )
+		{
+			switch(value)
+			{
+			case 1:
+				return SyncScheduleOption.useNetFolderServerSchedule;
+				
+			case 2:
+				return SyncScheduleOption.useNetFolderSchedule;
+				
+			default:
+				throw new IllegalArgumentException( "Invalid db value " + value + " for enum SyncScheduleOption" );
+			}
+		}
+	}
 
 	protected Long id;
 	protected String name;

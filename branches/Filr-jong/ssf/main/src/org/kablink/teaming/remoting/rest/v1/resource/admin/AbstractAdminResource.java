@@ -40,8 +40,8 @@ public class AbstractAdminResource extends AbstractResource {
     protected NetFolder _createNetFolder(NetFolder netFolder, ResourceDriverConfig resourceDriverConfig) throws WriteFilesException, WriteEntryDataException {
         validateMandatoryField(netFolder, "getName");
         validateMandatoryField(netFolder, "getRelativePath");
-        Binder.SyncScheduleOption syncScheduleOption = netFolder.getInheritSyncSchedule() ?
-                Binder.SyncScheduleOption.useNetFolderServerSchedule : Binder.SyncScheduleOption.useNetFolderSchedule;
+        NetFolderConfig.SyncScheduleOption syncScheduleOption = netFolder.getInheritSyncSchedule() ?
+        		NetFolderConfig.SyncScheduleOption.useNetFolderServerSchedule : NetFolderConfig.SyncScheduleOption.useNetFolderSchedule;
         List<AssignedRole> roles = toNetFolderRoles(netFolder.getAssignedRights());
 
         Binder parentBinder = getCoreDao().loadReservedBinder(ObjectKeys.NET_FOLDERS_ROOT_INTERNALID,
@@ -65,8 +65,8 @@ public class AbstractAdminResource extends AbstractResource {
     protected NetFolder _modifyNetFolder(NetFolder netFolder, ResourceDriverConfig resourceDriverConfig) throws WriteFilesException, WriteEntryDataException {
         validateMandatoryField(netFolder, "getName");
         validateMandatoryField(netFolder, "getRelativePath");
-        Binder.SyncScheduleOption syncScheduleOption = netFolder.getInheritSyncSchedule() ?
-                Binder.SyncScheduleOption.useNetFolderServerSchedule : Binder.SyncScheduleOption.useNetFolderSchedule;
+        NetFolderConfig.SyncScheduleOption syncScheduleOption = netFolder.getInheritSyncSchedule() ?
+                NetFolderConfig.SyncScheduleOption.useNetFolderServerSchedule : NetFolderConfig.SyncScheduleOption.useNetFolderSchedule;
         List<AssignedRole> roles = toNetFolderRoles(netFolder.getAssignedRights());
 
         NetFolderHelper.modifyNetFolder(getBinderModule(), getFolderModule(), getNetFolderModule(), netFolder.getId(),
