@@ -732,10 +732,12 @@ public class GwtServerHelper {
 		// If we get here, we have access to the user's workspace!  Add
 		// TreeInfo's for the various collections. 
 		if (!(user.isShared() && Utils.checkIfFilr())) {
-			addCollection(bs, request, userWS, ti, CollectionType.MY_FILES,       false);
-			addCollection(bs, request, userWS, ti, CollectionType.SHARED_WITH_ME, false);
-			addCollection(bs, request, userWS, ti, CollectionType.SHARED_BY_ME,   true );
-			addCollection(bs, request, userWS, ti, CollectionType.NET_FOLDERS,    false);
+			addCollection(    bs, request, userWS, ti, CollectionType.MY_FILES,       false);
+			addCollection(    bs, request, userWS, ti, CollectionType.SHARED_WITH_ME, false);
+			addCollection(    bs, request, userWS, ti, CollectionType.SHARED_BY_ME,   true );
+			if (LicenseChecker.showFilrFeatures()) {
+				addCollection(bs, request, userWS, ti, CollectionType.NET_FOLDERS,    false);
+			}
 		}
 		if (AdminHelper.getEffectivePublicCollectionSetting(bs, user)) {
 			addCollection(bs, request, userWS, ti, CollectionType.SHARED_PUBLIC,  false);

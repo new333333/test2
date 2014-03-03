@@ -611,6 +611,26 @@ public class RequestInfo extends JavaScriptObject
 	}-*/;
 
 	/**
+	 * Return the flag that tells us if we should expose Filr features.
+	 * 
+	 * @return
+	 */
+	public final native boolean showFilrFeatures()
+	/*-{
+		return (this.getBFromS( this.showFilrFeatures ));
+	}-*/;
+
+	/**
+	 * Return the flag that tells us if we should expose Vibe features.
+	 * 
+	 * @return
+	 */
+	public final native boolean showVibeFeatures()
+	/*-{
+		return (this.getBFromS( this.showVibeFeatures ));
+	}-*/;
+
+	/**
 	 * Return the flag that tells us if we are running Kablink Vibe.
 	 * 
 	 * @return
