@@ -83,6 +83,14 @@ public class RequestInfo extends JavaScriptObject
 	}-*/;
 
 	/**
+	 * Return the flag that tells us if SharePoint is a valid server type for a net folder server
+	 */
+	public final native boolean getAllowSharePointAsAServerType()
+	/*-{
+		return this.getBFromS( this.allowSharePointAsAServerType );
+	}-*/;
+	
+	/**
 	 * Return the flag that tells us if we should show the "show people" link in the mast head.
 	 */
 	public final native boolean getAllowShowPeople()

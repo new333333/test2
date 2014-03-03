@@ -1733,6 +1733,14 @@ public class GwtUIHelper {
 			value = NetFolderHelper.getDefaultJitsAclMaxAge();
 			model.put( "defaultJitsAclMaxAge", value );
 		}
+		
+		// Add a flag that indicates whether SharePoint can be used as a server type in a net folder server
+		{
+			Boolean allowSharePoint;
+			
+			allowSharePoint = SPropsUtil.getBoolean( "allow.sharepoint.as.server.type", false );
+			model.put( "allowSharePointAsAServerType", allowSharePoint );
+		}
 	}
 	
 	/**
