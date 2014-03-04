@@ -195,4 +195,5 @@ public enum ApiErrorCode {
     DEVICE_NOT_FOUND, // No device found with this id
 
     ACL_CHANGED, // No device found with this id
+    CHANGES_PURGED, // No device found with this id
 }
