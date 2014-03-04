@@ -215,9 +215,9 @@ public class GwtCalendarHelper {
 	 * for the timezone, this adjustment and that one cancel each other
 	 * out.
 	 */
-	private static Date adjustDateForAllDay(Date date, long tzOffset) {
+	private static Date adjustDateForAllDay(Date date, long browserTZOffset) {
 		Date reply = new DateMidnight(date).toDateTime().toDate();
-		reply.setTime(reply.getTime() - tzOffset);
+		reply.setTime(reply.getTime() - browserTZOffset);
 		return reply;
 	}
 	
@@ -552,6 +552,7 @@ public class GwtCalendarHelper {
 	 * 
 	 * @param bs
 	 * @param request
+	 * @param browserTZOffset
 	 * @param folderId
 	 * @param cdd
 	 * @param quickFilter
@@ -561,7 +562,7 @@ public class GwtCalendarHelper {
 	 * @throws GwtTeamingException
 	 */
 	@SuppressWarnings("unchecked")
-	public static CalendarAppointmentsRpcResponseData getCalendarAppointments(AllModulesInjected bs, HttpServletRequest request, Long folderId, CalendarDisplayDataRpcResponseData cdd, String quickFilter) throws GwtTeamingException {
+	public static CalendarAppointmentsRpcResponseData getCalendarAppointments(AllModulesInjected bs, HttpServletRequest request, long browserTZOffset, Long folderId, CalendarDisplayDataRpcResponseData cdd, String quickFilter) throws GwtTeamingException {
 		try {
 			// Access the objects we'll need to process the
 			// appointments from this folder.
@@ -767,10 +768,7 @@ public class GwtCalendarHelper {
 								Constants.EVENT_FIELD_LOGICAL_END_DATE));
 						if (null != endDate) {
 							if (allDay) {
-								endDate = adjustDateForAllDay(
-									endDate,
-									user.getTimeZone().getOffset(
-										endDate.getTime()));
+								endDate = adjustDateForAllDay(endDate, browserTZOffset);
 							}
 							appointment.setEnd(endDate);
 						}
@@ -783,10 +781,7 @@ public class GwtCalendarHelper {
 								Constants.EVENT_FIELD_LOGICAL_START_DATE));
 						if (null != startDay) {
 							if (allDay) {
-								startDay = adjustDateForAllDay(
-									startDay,
-									user.getTimeZone().getOffset(
-										startDay.getTime()));
+								startDay = adjustDateForAllDay(startDay, browserTZOffset);
 							}
 							appointment.setStart(startDay);
 						}
@@ -870,6 +865,7 @@ public class GwtCalendarHelper {
 	 * 
 	 * @param bs
 	 * @param request
+	 * @param browserTZOffset
 	 * @param folderInfo
 	 * 
 	 * @return
@@ -877,7 +873,7 @@ public class GwtCalendarHelper {
 	 * @throws GwtTeamingException
 	 */
 	@SuppressWarnings("unchecked")
-	public static CalendarDisplayDataRpcResponseData getCalendarDisplayData(AllModulesInjected bs, HttpServletRequest request, BinderInfo folderInfo) throws GwtTeamingException {
+	public static CalendarDisplayDataRpcResponseData getCalendarDisplayData(AllModulesInjected bs, HttpServletRequest request, long browserTZOffset, BinderInfo folderInfo) throws GwtTeamingException {
 		try {
 			BinderModule	bm = bs.getBinderModule();
 			FolderModule	fm = bs.getFolderModule();
@@ -1008,6 +1004,7 @@ public class GwtCalendarHelper {
 	 * 
 	 * @param bs
 	 * @param request
+	 * @param browserTZOffset
 	 * @param folderId
 	 * @param calendarDisplayData
 	 * 
@@ -1015,7 +1012,7 @@ public class GwtCalendarHelper {
 	 * 
 	 * @throws GwtTeamingException
 	 */
-	public static CalendarDisplayDataRpcResponseData getCalendarDisplayDate(AllModulesInjected bs, HttpServletRequest request, Long folderId, CalendarDisplayDataRpcResponseData calendarDisplayData) throws GwtTeamingException {
+	public static CalendarDisplayDataRpcResponseData getCalendarDisplayDate(AllModulesInjected bs, HttpServletRequest request, long browserTZOffset, Long folderId, CalendarDisplayDataRpcResponseData calendarDisplayData) throws GwtTeamingException {
 		try {
 			setCalendarDisplayDataDates(
 				calendarDisplayData,
@@ -1042,6 +1039,7 @@ public class GwtCalendarHelper {
 	 * 
 	 * @param bs
 	 * @param request
+	 * @param browserTZOffset
 	 * @param folderId
 	 * @param calendarDisplayData
 	 * @param next
@@ -1050,7 +1048,7 @@ public class GwtCalendarHelper {
 	 * 
 	 * @throws GwtTeamingException
 	 */
-	public static CalendarDisplayDataRpcResponseData getCalendarNextPreviousPeriod(AllModulesInjected bs, HttpServletRequest request, Long folderId, CalendarDisplayDataRpcResponseData calendarDisplayData, boolean next) throws GwtTeamingException {
+	public static CalendarDisplayDataRpcResponseData getCalendarNextPreviousPeriod(AllModulesInjected bs, HttpServletRequest request, long browserTZOffset, Long folderId, CalendarDisplayDataRpcResponseData calendarDisplayData, boolean next) throws GwtTeamingException {
 		try {
 			// Calculate the increment to use for the next/previous
 			// period...
@@ -1256,6 +1254,7 @@ public class GwtCalendarHelper {
 	 * 
 	 * @param bs
 	 * @param request
+	 * @param browserTZOffset
 	 * @param folderInfo
 	 * @param dayView
 	 * @param date
@@ -1265,7 +1264,7 @@ public class GwtCalendarHelper {
 	 * @throws GwtTeamingException
 	 */
 	@SuppressWarnings("unchecked")
-	public static CalendarDisplayDataRpcResponseData saveCalendarDayView(AllModulesInjected bs, HttpServletRequest request, BinderInfo folderInfo, CalendarDayView dayView, Date date) throws GwtTeamingException {
+	public static CalendarDisplayDataRpcResponseData saveCalendarDayView(AllModulesInjected bs, HttpServletRequest request, long browserTZOffset, BinderInfo folderInfo, CalendarDayView dayView, Date date) throws GwtTeamingException {
 		try {
 			// Store the new day view...
 			String gridType;
@@ -1290,7 +1289,7 @@ public class GwtCalendarHelper {
 			
 			// ...and return a CalendarDisplayDataRpcData with the
 			// ...changes.
-			CalendarDisplayDataRpcResponseData reply = getCalendarDisplayData(bs, request, folderInfo);
+			CalendarDisplayDataRpcResponseData reply = getCalendarDisplayData(bs, request, browserTZOffset, folderInfo);
 			if (null != date) {
 				setCalendarDisplayDataDates(reply, date, date);
 			}
@@ -1316,6 +1315,7 @@ public class GwtCalendarHelper {
 	 * 
 	 * @param bs
 	 * @param request
+	 * @param browserTZOffset
 	 * @param folderInfo
 	 * @param hours
 	 * 
@@ -1323,7 +1323,7 @@ public class GwtCalendarHelper {
 	 * 
 	 * @throws GwtTeamingException
 	 */
-	public static CalendarDisplayDataRpcResponseData saveCalendarHours(AllModulesInjected bs, HttpServletRequest request, BinderInfo folderInfo, CalendarHours hours) throws GwtTeamingException {
+	public static CalendarDisplayDataRpcResponseData saveCalendarHours(AllModulesInjected bs, HttpServletRequest request, long browserTZOffset, BinderInfo folderInfo, CalendarHours hours) throws GwtTeamingException {
 		try {
 			// Store the new hours...
 			String hoursType;
@@ -1336,7 +1336,7 @@ public class GwtCalendarHelper {
 			
 			// ...and return a CalendarDisplayDataRpcData with the
 			// ...changes.
-			CalendarDisplayDataRpcResponseData reply = getCalendarDisplayData(bs, request, folderInfo);
+			CalendarDisplayDataRpcResponseData reply = getCalendarDisplayData(bs, request, browserTZOffset, folderInfo);
 			cacheCalendarStartDay(request, reply.getStartDay(), folderInfo.getBinderIdAsLong());
 			return reply;
 		}
@@ -1401,6 +1401,7 @@ public class GwtCalendarHelper {
 	 * 
 	 * @param bs
 	 * @param request
+	 * @param browserTZOffset
 	 * @param folderInfo
 	 * @param show
 	 * 
@@ -1408,7 +1409,7 @@ public class GwtCalendarHelper {
 	 * 
 	 * @throws GwtTeamingException
 	 */
-	public static CalendarDisplayDataRpcResponseData saveCalendarShow(AllModulesInjected bs, HttpServletRequest request, BinderInfo folderInfo, CalendarShow show) throws GwtTeamingException {
+	public static CalendarDisplayDataRpcResponseData saveCalendarShow(AllModulesInjected bs, HttpServletRequest request, long browserTZOffset, BinderInfo folderInfo, CalendarShow show) throws GwtTeamingException {
 		try {
 			// Map the show setting to the appropriate mode and event
 			// types...
@@ -1429,7 +1430,7 @@ public class GwtCalendarHelper {
 			EventsViewHelper.setCalendarDisplayEventType(bs, userId, folderId, eventType);			
 			
 			// Return a CalendarDisplayDataRpcData with the changes.
-			CalendarDisplayDataRpcResponseData reply = getCalendarDisplayData(bs, request, folderInfo);
+			CalendarDisplayDataRpcResponseData reply = getCalendarDisplayData(bs, request, browserTZOffset, folderInfo);
 			cacheCalendarStartDay(request, reply.getStartDay(), folderId);
 			return reply;
 		}
@@ -1511,6 +1512,7 @@ public class GwtCalendarHelper {
 	 * 
 	 * @param bs
 	 * @param request
+	 * @param browserTZOffset
 	 * @param folderIdFromView
 	 * @param event
 	 * 
@@ -1519,7 +1521,7 @@ public class GwtCalendarHelper {
 	 * @throws GwtTeamingException
 	 */
 	@SuppressWarnings("unchecked")
-	public static Boolean updateCalendarEvent(AllModulesInjected bs, HttpServletRequest request, Long folderIdFromView, CalendarAppointment event) throws GwtTeamingException {
+	public static Boolean updateCalendarEvent(AllModulesInjected bs, HttpServletRequest request, long browserTZOffset, Long folderIdFromView, CalendarAppointment event) throws GwtTeamingException {
 		try {
 			// Read the FolderEntry...
 			Long folderId = event.getFolderId();

@@ -11558,7 +11558,7 @@ public class GwtServerHelper {
 		user = getCurrentUser();
 		
 		// Don't set the time zone for the guest user or admin user
-		if ( MiscUtil.isSystemUserAccount( user.getName() ) )
+		if ( MiscUtil.isSystemUserAccount( user ) )
 			return;
 
 		nowDate = new Date();

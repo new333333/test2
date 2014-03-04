@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -155,6 +155,7 @@ public class CalendarFolderView extends FolderViewBase
 	private CalendarSettingsDlg					m_calendarSettingsDlg;		//
 	private HoverHintPopup						m_hoverHintPopup;			//
 	private List<HandlerRegistration>			m_registeredEventHandlers;	// Event handlers that are currently registered.
+	private long								m_browserTZOffset;			// The timezone offset from the browser.
 	private String								m_quickFilter;				// Any quick filter that's active.
 	private VibeCalendar						m_calendar;					// The calendar widget contained in the view.
 
@@ -197,6 +198,9 @@ public class CalendarFolderView extends FolderViewBase
 	public CalendarFolderView(BinderInfo folderInfo, ViewReady viewReady) {
 		// Initialize the super class...
 		super(folderInfo, viewReady, "vibe-calendarFolder", false);
+
+		// ...initialize anything else that requires it...
+		m_browserTZOffset = (GwtClientHelper.getTimeZoneOffsetMillis(new Date()) * (-1l));
 		
 		// ...and tell it that we can provide the calendar display data
 		// ...if it needs it.
@@ -379,7 +383,7 @@ public class CalendarFolderView extends FolderViewBase
 
 				// Can we update the given event?
 				GwtClientHelper.executeCommand(
-						new UpdateCalendarEventCmd(getFolderInfo().getBinderIdAsLong(), ca),
+						new UpdateCalendarEventCmd(m_browserTZOffset, getFolderInfo().getBinderIdAsLong(), ca),
 						new AsyncCallback<VibeRpcResponse>() {
 					@Override
 					public void onFailure(Throwable t) {
@@ -490,7 +494,7 @@ public class CalendarFolderView extends FolderViewBase
 	 */
 	private void doCalendarNextPreviousPeriodNow(boolean next) {
 		GwtClientHelper.executeCommand(
-				new GetCalendarNextPreviousPeriodCmd(getFolderInfo().getBinderIdAsLong(), m_calendarDisplayData, next),
+				new GetCalendarNextPreviousPeriodCmd(m_browserTZOffset, getFolderInfo().getBinderIdAsLong(), m_calendarDisplayData, next),
 				new AsyncCallback<VibeRpcResponse>() {
 			@Override
 			public void onFailure(Throwable t) {
@@ -690,7 +694,7 @@ public class CalendarFolderView extends FolderViewBase
 		else {
 			// Otherwise, load it now.
 			GwtClientHelper.executeCommand(
-					new GetCalendarDisplayDataCmd(getFolderInfo()),
+					new GetCalendarDisplayDataCmd(m_browserTZOffset, getFolderInfo()),
 					new AsyncCallback<VibeRpcResponse>() {
 				@Override
 				public void onFailure(Throwable t) {
@@ -795,7 +799,7 @@ public class CalendarFolderView extends FolderViewBase
 		else {
 			// Otherwise, load it now.
 			GwtClientHelper.executeCommand(
-					new GetCalendarDisplayDataCmd(getFolderInfo()),
+					new GetCalendarDisplayDataCmd(m_browserTZOffset, getFolderInfo()),
 					new AsyncCallback<VibeRpcResponse>() {
 				@Override
 				public void onFailure(Throwable t) {
@@ -866,7 +870,7 @@ public class CalendarFolderView extends FolderViewBase
 			m_calendarDisplayData.setFirstDay(event.getDate());
 			m_calendarDisplayData.setStartDay(event.getDate());
 			GwtClientHelper.executeCommand(
-					new GetCalendarDisplayDateCmd(getFolderInfo().getBinderIdAsLong(), m_calendarDisplayData),
+					new GetCalendarDisplayDateCmd(m_browserTZOffset, getFolderInfo().getBinderIdAsLong(), m_calendarDisplayData),
 					new AsyncCallback<VibeRpcResponse>() {
 				@Override
 				public void onFailure(Throwable t) {
@@ -902,7 +906,7 @@ public class CalendarFolderView extends FolderViewBase
 		if (event.getFolderId().equals(getFolderId())) {
 			// Yes!  Can we can save the hours setting on the server?
 			GwtClientHelper.executeCommand(
-					new SaveCalendarHoursCmd(getFolderInfo(), event.getHours()),
+					new SaveCalendarHoursCmd(m_browserTZOffset, getFolderInfo(), event.getHours()),
 					new AsyncCallback<VibeRpcResponse>() {
 				@Override
 				public void onFailure(Throwable t) {
@@ -1009,7 +1013,7 @@ public class CalendarFolderView extends FolderViewBase
 		if (event.getFolderId().equals(getFolderId())) {
 			// Yes!  Can we can save the show setting on the server?
 			GwtClientHelper.executeCommand(
-					new SaveCalendarShowCmd(getFolderInfo(), event.getShow()),
+					new SaveCalendarShowCmd(m_browserTZOffset, getFolderInfo(), event.getShow()),
 					new AsyncCallback<VibeRpcResponse>() {
 				@Override
 				public void onFailure(Throwable t) {
@@ -1044,7 +1048,7 @@ public class CalendarFolderView extends FolderViewBase
 		if (event.getFolderId().equals(getFolderId())) {
 			// Yes!  Can we can save the view setting on the server?
 			GwtClientHelper.executeCommand(
-					new SaveCalendarDayViewCmd(getFolderInfo(), event.getDayView(), event.getDate()),
+					new SaveCalendarDayViewCmd(m_browserTZOffset, getFolderInfo(), event.getDayView(), event.getDate()),
 					new AsyncCallback<VibeRpcResponse>() {
 				@Override
 				public void onFailure(Throwable t) {
@@ -1453,7 +1457,7 @@ public class CalendarFolderView extends FolderViewBase
 		// Can we read the appointments for the calendar based on the
 		// current calendar display data?
 		GwtClientHelper.executeCommand(
-				new GetCalendarAppointmentsCmd(getFolderInfo().getBinderIdAsLong(), m_calendarDisplayData, m_quickFilter),
+				new GetCalendarAppointmentsCmd(m_browserTZOffset, getFolderInfo().getBinderIdAsLong(), m_calendarDisplayData, m_quickFilter),
 				new AsyncCallback<VibeRpcResponse>() {
 			@Override
 			public void onFailure(Throwable t) {
