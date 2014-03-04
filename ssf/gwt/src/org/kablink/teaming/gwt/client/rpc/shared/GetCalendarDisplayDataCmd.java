@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -41,28 +41,31 @@ import org.kablink.teaming.gwt.client.util.BinderInfo;
  * @author drfoster@novell.com
  */
 public class GetCalendarDisplayDataCmd extends VibeRpcCmd {
-	private BinderInfo	m_folderInfo;	//
+	private BinderInfo	m_folderInfo;		//
+	private long		m_browserTZOffset;	//
 	
-	/**
+	/*
 	 * Constructor method.
 	 * 
 	 * For GWT serialization, must have a zero parameter constructor.
 	 */
-	public GetCalendarDisplayDataCmd() {
+	private GetCalendarDisplayDataCmd() {
 		super();
 	}
 	
 	/**
 	 * Constructor method
 	 * 
+	 * @param browserTZOffset
 	 * @param folderInfo
 	 */
-	public GetCalendarDisplayDataCmd(BinderInfo folderInfo) {
+	public GetCalendarDisplayDataCmd(long browserTZOffset, BinderInfo folderInfo) {
 		// Initialize this object...
 		this();
 
 		// ...and save the parameter.
-		setFolderInfo(folderInfo);
+		setBrowserTZOffset(browserTZOffset);
+		setFolderInfo(     folderInfo     );
 	}
 	
 	/**
@@ -70,14 +73,16 @@ public class GetCalendarDisplayDataCmd extends VibeRpcCmd {
 	 * 
 	 * @return
 	 */
-	public BinderInfo getFolderInfo() {return m_folderInfo;}
+	public BinderInfo getFolderInfo()      {return m_folderInfo;     }
+	public long       getBrowserTZOffset() {return m_browserTZOffset;}
 	
 	/**
 	 * Set'er methods.
 	 * 
 	 * @param
 	 */
-	public void setFolderInfo(BinderInfo folderInfo) {m_folderInfo = folderInfo;}
+	public void setFolderInfo(     BinderInfo folderInfo)      {m_folderInfo      = folderInfo;     }
+	public void setBrowserTZOffset(long       browserTZOffset) {m_browserTZOffset = browserTZOffset;}
 	
 	/**
 	 * Returns the command's enumeration value.

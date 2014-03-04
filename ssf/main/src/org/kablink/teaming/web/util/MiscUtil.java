@@ -54,6 +54,7 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.comparator.StringComparator;
 import org.kablink.teaming.context.request.RequestContextHolder;
@@ -70,6 +71,7 @@ import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.WebKeys;
+
 import org.springframework.web.multipart.MultipartFile;
 
 /**
@@ -256,13 +258,23 @@ public final class MiscUtil
 	
 	
 	/**
-	 * This method will return true if the given name is the name of a system user account.
-	 * Currently there are 5 system user accounts: "admin", "guest", "_postingAgent", "_jobProcessingAgent", "_synchronizationAgent", and "_fileSyncAgent.
+	 * This method will return true if the given name is the name of a
+	 * system user account.
+	 * 
+	 * Currently there are 5 system user accounts: "admin", "guest",
+	 * "_postingAgent", "_jobProcessingAgent", "_synchronizationAgent",
+	 * and "_fileSyncAgent.
+	 * 
+	 * @param name
+	 * 
+	 * @return
 	 */
 	public static boolean isSystemUserAccount( String name )
 	{
 		if ( name == null)
+		{
 			return false;
+		}
 		
 		if ( name.equalsIgnoreCase( "admin" ) || name.equalsIgnoreCase( "guest" ) ||
 			  name.equalsIgnoreCase( "_postingAgent" ) || name.equalsIgnoreCase( "_jobProcessingAgent" ) ||
@@ -273,6 +285,34 @@ public final class MiscUtil
 		}
 		
 		// If we get here the name is not a system user account.
+		return false;
+	}// end isSystemUserAccount()
+
+	/**
+	 * This method will return true if the given User is a system user
+	 * account.
+	 * 
+	 * @param user
+	 * 
+	 * @return
+	 */
+	public static boolean isSystemUserAccount( User user )
+	{
+		// If we don't have a User...
+		if ( user == null)
+		{
+			// ...it can't be a system user account.
+			return false;
+		}
+
+		// If the User is Guest, Admin or not a person...
+		if ( user.isShared() || user.isSuper() || ( ! ( user.isPerson() ) ) )
+		{
+			// ...it's a system user account.
+			return true;
+		}
+		
+		// If we get here the User is not a system user account.
 		return false;
 	}// end isSystemUserAccount()
 

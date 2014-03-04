@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -44,16 +44,17 @@ import org.kablink.teaming.gwt.client.util.CalendarDayView;
  * @author drfoster@novell.com
  */
 public class SaveCalendarDayViewCmd extends VibeRpcCmd {
-	private BinderInfo		m_folderInfo;	//
-	private Date			m_date;			//
-	private CalendarDayView m_dayView;		//
+	private BinderInfo		m_folderInfo;		//
+	private Date			m_date;				//
+	private CalendarDayView m_dayView;			//
+	private long			m_browserTZOffset;	//
 	
-	/**
+	/*
 	 * Constructor method.
 	 * 
 	 * For GWT serialization, must have a zero parameter constructor.
 	 */
-	public SaveCalendarDayViewCmd() {
+	private SaveCalendarDayViewCmd() {
 		// Initialize the super class.
 		super();
 	}
@@ -61,10 +62,11 @@ public class SaveCalendarDayViewCmd extends VibeRpcCmd {
 	/**
 	 * Constructor method
 	 * 
+	 * @param browserTZOffset
 	 * @param folderInfo
 	 * @param dayView
 	 */
-	public SaveCalendarDayViewCmd(BinderInfo folderInfo, CalendarDayView dayView) {
+	public SaveCalendarDayViewCmd(long browserTZOffset, BinderInfo folderInfo, CalendarDayView dayView) {
 		// Initialize this object...
 		this();
 
@@ -76,13 +78,14 @@ public class SaveCalendarDayViewCmd extends VibeRpcCmd {
 	/**
 	 * Constructor method
 	 * 
+	 * @param browserTZOffset
 	 * @param folderInfo
 	 * @param dayView
 	 * @param date
 	 */
-	public SaveCalendarDayViewCmd(BinderInfo folderInfo, CalendarDayView dayView, Date date) {
+	public SaveCalendarDayViewCmd(long browserTZOffset, BinderInfo folderInfo, CalendarDayView dayView, Date date) {
 		// Initialize this object...
-		this(folderInfo, dayView);
+		this(browserTZOffset, folderInfo, dayView);
 
 		// ...and save the additional parameter.
 		setDate(date);
@@ -93,18 +96,20 @@ public class SaveCalendarDayViewCmd extends VibeRpcCmd {
 	 * 
 	 * @return
 	 */
-	public BinderInfo      getFolderInfo() {return m_folderInfo;}
-	public CalendarDayView getDayView()    {return m_dayView;   }
-	public Date            getDate()       {return m_date;      }
+	public BinderInfo      getFolderInfo()      {return m_folderInfo;     }
+	public CalendarDayView getDayView()         {return m_dayView;        }
+	public Date            getDate()            {return m_date;           }
+	public long            getBrowserTZOffset() {return m_browserTZOffset;}
 	
 	/**
 	 * Set'er methods.
 	 * 
 	 * @param
 	 */
-	public void setFolderInfo(BinderInfo      folderInfo) {m_folderInfo = folderInfo;}
-	public void setDayView(   CalendarDayView dayView)    {m_dayView    = dayView;   }
-	public void setDate(      Date            date)       {m_date       = date;      }
+	public void setFolderInfo(     BinderInfo      folderInfo)      {m_folderInfo      = folderInfo;     }
+	public void setDayView(        CalendarDayView dayView)         {m_dayView         = dayView;        }
+	public void setDate(           Date            date)            {m_date            = date;           }
+	public void setBrowserTZOffset(long            browserTZOffset) {m_browserTZOffset = browserTZOffset;}
 	
 	/**
 	 * Returns the command's enumeration value.
