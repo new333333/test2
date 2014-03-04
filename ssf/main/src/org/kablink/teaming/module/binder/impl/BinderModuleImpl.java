@@ -3715,6 +3715,11 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
         if (binderKeys==null || binderKeys.size()==0) {
             return null;
         }
+        Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
+        Date purgeDate = getCoreDao().getAuditTrailPurgeDate(zoneId);
+        if (purgeDate!=null && purgeDate.after(sinceDate)) {
+            throw new AuditTrailPurgedException();
+        }
         if (haveAclsChangedSinceDate(binderKeys, sinceDate)) {
             throw new AclChangeException();
         }

@@ -64,7 +64,7 @@ public class DefaultLogTablePurge extends SSCronTriggerJob implements LogTablePu
   		
   		//See if the audit trail and change log tables need to be pruned
   		if (zoneConfig.getAuditTrailKeepDays() > 0) {
-  			Date purgeBeforeDate = new Date(now.getTime() - ((long)zoneConfig.getAuditTrailKeepDays())*1000L*60L*60L*24L);
+  			Date purgeBeforeDate = getCoreDao().getAuditTrailPurgeDate(zoneId);
   			List entriesToBeDeleted = getCoreDao().getAuditTrailEntries(zoneId, purgeBeforeDate);
   			if (adminModule.writeAuditTrailLogFile(entriesToBeDeleted)) {
   				//The entries to be purged were safely logged to disk, so we can delete them from the database

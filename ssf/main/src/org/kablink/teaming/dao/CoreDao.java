@@ -265,7 +265,8 @@ public interface CoreDao {
 	public OpenIDProvider loadOpenIDProvider(Long zoneId, String openIDProviderId);
 	
 	public List<OpenIDProvider> findOpenIDProviders(Long zoneId);
-	
+
+    public Date getAuditTrailPurgeDate(final Long zoneId);
 	public List getAuditTrailEntries(final Long zoneId, final Date purgeBeforeDate);
 	public List getAuditTrailEntries(final Long zoneId, final Date sinceDate, List<HKey> parentBinderKey,
                                      AuditTrail.AuditType [] types, int maxResults);
