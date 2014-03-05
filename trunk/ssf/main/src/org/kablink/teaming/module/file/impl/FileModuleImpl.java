@@ -43,6 +43,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
@@ -1521,7 +1522,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
         Hits hits = null;
         try {
 	        hits = luceneSession.search(RequestContextHolder.getRequestContext().getUserId(),
-	        		so.getBaseAclQueryStr(), so.getExtendedAclQueryStr(), Constants.SEARCH_MODE_NORMAL, soQuery, null, offset, size);
+	        		so.getBaseAclQueryStr(), so.getExtendedAclQueryStr(), Constants.SEARCH_MODE_NORMAL, soQuery, null, null, offset, size);
         }
         finally {
             luceneSession.close();
@@ -1529,11 +1530,11 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 
         List<FileIndexData> result = new ArrayList<FileIndexData>();
         int count = hits.length();
-        org.apache.lucene.document.Document doc;
+        Map<String,Object> doc;
         String fileName;
         for(int i = 0; i < count; i++) {
         	doc = hits.doc(i);
-        	fileName = doc.get(Constants.FILENAME_FIELD);
+        	fileName = (String)doc.get(Constants.FILENAME_FIELD);
         	if(fileName != null) {
         		try {
 	        		result.add(new FileIndexData(doc));
@@ -1588,7 +1589,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
         try {
 	        hits = luceneSession.search(RequestContextHolder.getRequestContext().getUserId(),
 	        		so.getBaseAclQueryStr(), so.getExtendedAclQueryStr(), 
-	        		Constants.SEARCH_MODE_NORMAL, soQuery, null, 0, Integer.MAX_VALUE);
+	        		Constants.SEARCH_MODE_NORMAL, soQuery, Arrays.asList(Constants.FILENAME_FIELD, Constants.DOCID_FIELD), null, 0, Integer.MAX_VALUE);
         }
         finally {
             luceneSession.close();
@@ -1596,15 +1597,15 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     	
         Map<String,Long> result = new HashMap<String,Long>();
         int count = hits.length();
-        org.apache.lucene.document.Document doc;
+        Map<String,Object> doc;
         String fileName;
         Long entryId;
         for(int i = 0; i < count; i++) {
         	doc = hits.doc(i);
-        	fileName = doc.get(Constants.FILENAME_FIELD);
+        	fileName = (String)doc.get(Constants.FILENAME_FIELD);
         	if(fileName != null) {
         		try {
-	        		entryId = Long.valueOf(doc.get(Constants.DOCID_FIELD));
+	        		entryId = Long.valueOf((String)doc.get(Constants.DOCID_FIELD));
 	        		result.put(fileName, entryId);
         		}
         		catch(Exception ignore) {}

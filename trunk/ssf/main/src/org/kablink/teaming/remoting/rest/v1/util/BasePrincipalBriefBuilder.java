@@ -33,12 +33,12 @@
 package org.kablink.teaming.remoting.rest.v1.util;
 
 import org.kablink.teaming.ObjectKeys;
+import org.kablink.teaming.lucene.util.SearchFieldResult;
 import org.kablink.teaming.rest.v1.model.DefinableEntityBrief;
 import org.kablink.teaming.rest.v1.model.GroupBrief;
 import org.kablink.teaming.rest.v1.model.PrincipalBrief;
 import org.kablink.teaming.rest.v1.model.SearchResultTreeNode;
 import org.kablink.teaming.rest.v1.model.UserBrief;
-import org.kablink.teaming.search.SearchFieldResult;
 import org.kablink.util.search.Constants;
 
 import java.util.Map;

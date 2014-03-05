@@ -77,9 +77,9 @@ import org.kablink.teaming.fi.connection.acl.ResourceItem;
 import org.kablink.teaming.lucene.Hits;
 import org.kablink.teaming.lucene.LuceneException;
 import org.kablink.teaming.lucene.util.LanguageTaster;
+import org.kablink.teaming.lucene.util.SearchFieldResult;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.search.LuceneReadSession;
-import org.kablink.teaming.search.SearchFieldResult;
 import org.kablink.teaming.search.SearchObject;
 import org.kablink.teaming.search.filter.SearchFilter;
 import org.kablink.teaming.search.filter.SearchFilterKeys;
@@ -133,48 +133,9 @@ public class SearchUtils {
 
 	//Common search support
 	public static List getSearchEntries(Hits hits) {
-		//Iterate through the search results and build the entries array
-		ArrayList<Map> childEntries = new ArrayList(hits.length());
-		try {
-			int count=0;
-			Fieldable fld;
-			while (count < hits.length()) {
-				HashMap ent = new HashMap();
-				Document doc = hits.doc(count);
-				//enumerate thru all the returned fields, and add to the map object
-				List flds = doc.getFields();
-				for(int i = 0; i < flds.size(); i++) {
-					fld = (Fieldable)flds.get(i);
-					//TODO This hack needs to go.
-					if (SearchUtils.isDateField(fld.name())) {
-						try {
-							ent.put(fld.name(),DateTools.stringToDate(fld.stringValue()));
-		            		} catch (ParseException e) {ent.put(fld.name(),new Date());
-		            	}	
-		            } else if (!ent.containsKey(fld.name())) {
-		            	ent.put(fld.name(), fld.stringValue());
-		            } else {
-		            	Object obj = ent.get(fld.name());
-		            	SearchFieldResult val;
-		            	if (obj instanceof String) {
-		            		val = new SearchFieldResult();
-		            		//replace
-		            		ent.put(fld.name(), val);
-		            		val.addValue((String)obj);
-		            	} else {
-		            		val = (SearchFieldResult)obj;
-		            	}
-		            	val.addValue(fld.stringValue());
-		            } 
-		        }
-				childEntries.add(ent);
-				++count;
-		            
-		    }
-		} finally {
-		}
-		return childEntries;
+		return hits.getDocuments();
 	}
+	
 	public static List getSearchEntries(List<org.apache.lucene.document.Document> entries) {
 		//Iterate through each entry and build the entries array as if the entry came from a search
 		ArrayList<Map> childEntries = new ArrayList(entries.size());
@@ -689,22 +650,22 @@ public class SearchUtils {
 			// 3. The user should not see this net folder listed under his "Net Folders" collection view just 
 			//    because some other user shared with him this net folder or anything within that net folder
 			//    (i.e., sub-folder or file within).
-			return luceneSession.search(contextUserId, so.getNetFolderRootAclQueryStr(), null, mode, query, sort, offset, size,
+			return luceneSession.search(contextUserId, so.getNetFolderRootAclQueryStr(), null, mode, query, null, sort, offset, size,
 					new PostFilterCallback() {
-				public boolean doFilter(Document doc, boolean noIntrinsicAclStoredButAccessibleThroughFilrGrantedAcl) {
+				public boolean doFilter(Map<String,Object> doc, boolean noIntrinsicAclStoredButAccessibleThroughFilrGrantedAcl) {
 					// This filter implementation ignores the second arg.
-					String resourceDriverName = doc.get(Constants.RESOURCE_DRIVER_NAME_FIELD);
+					String resourceDriverName = (String) doc.get(Constants.RESOURCE_DRIVER_NAME_FIELD);
 					if(resourceDriverName == null) 
 						return false; // no resource driver
-					String resourcePath = doc.get(Constants.RESOURCE_PATH_FIELD);
+					String resourcePath = (String) doc.get(Constants.RESOURCE_PATH_FIELD);
 					if(resourcePath == null)
 						resourcePath = ""; // It is possible to define a net folder without specifying a sub-path.
-					Long ownerId = Long.valueOf(doc.get(Constants.OWNERID_FIELD)); // Used only by cloud folder
+					Long ownerId = Long.valueOf((String) doc.get(Constants.OWNERID_FIELD)); // Used only by cloud folder
 					AclResourceSession session = openAclResourceSession(resourceDriverName, ownerId);				
 					if(session == null)
 						return false; // cannot obtain session for the user
 					try {
-						String docType = doc.get(Constants.DOC_TYPE_FIELD);
+						String docType = (String) doc.get(Constants.DOC_TYPE_FIELD);
 						// TODO JK 12/16/2013
 						// ACL checking against the data source makes sense only when the back-end data source provides such service.
 						// When such service is not provided (e.g. with cloud folder), this filtering method is not supposed to be even invoked.
@@ -840,6 +801,12 @@ public class SearchUtils {
 				logger.debug("Unable to open session on ACL resource driver '" + driver.getName() + "' for user '" + user.getName() + "'");
 			return null;
 		}
+	}
+	
+	public static List<String> fieldNamesList(String fieldName) {
+		List<String> result = new ArrayList<String>();
+		result.add(fieldName);
+		return result;
 	}
 	
 	private static FolderModule getFolderModule() {

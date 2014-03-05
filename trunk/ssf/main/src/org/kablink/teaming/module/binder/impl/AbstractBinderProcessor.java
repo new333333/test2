@@ -1866,7 +1866,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
      
      private void executeUpdateQuery(Criteria crit, String field, String value, Boolean runInBackground, boolean indexEntries, boolean skipFileContentIndexing) {
 
-		org.apache.lucene.document.Document doc;
+		Map<String,Object> doc;
 		List<Long> binders = new ArrayList<Long>();
 		
 		// flush anything that is waiting
@@ -1883,14 +1883,14 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 		SearchObject so = qbb.buildQuery(crit.toQuery());
 		
 		Hits hits = luceneSessionn.search(RequestContextHolder.getRequestContext().getUserId(), so.getBaseAclQueryStr(), so.getExtendedAclQueryStr(), Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, 
-				so.getLuceneQuery());
+				so.getLuceneQuery(), SearchUtils.fieldNamesList(Constants.DOCID_FIELD));
 		luceneSessionn.close();
 		for (int i = 0; i < hits.length(); i++) {
 			doc = hits.doc(i);
-			String binderId = doc.get(Constants.DOCID_FIELD);
+			String binderId = (String) doc.get(Constants.DOCID_FIELD);
 			if (binderId != null) {
 				try {
-					binders.add(Long.valueOf(doc.get(Constants.DOCID_FIELD)));
+					binders.add(Long.valueOf(binderId));
 				} catch (Exception ignore) {
 				}
 			}

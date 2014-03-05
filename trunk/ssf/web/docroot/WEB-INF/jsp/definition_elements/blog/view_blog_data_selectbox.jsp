@@ -35,7 +35,7 @@
 <% //Selectbox view %>
 <%@ page import="org.kablink.teaming.web.util.DefinitionHelper" %>
 <%@ page import="org.kablink.teaming.util.NLT" %>
-<%@ page import="org.kablink.teaming.search.SearchFieldResult" %>
+<%@ page import="org.kablink.teaming.lucene.util.SearchFieldResult" %>
 <%
 	java.lang.Object thisEntry = (java.lang.Object) request.getAttribute("ssDefinitionEntry");
 	if (thisEntry instanceof FolderEntry) {
