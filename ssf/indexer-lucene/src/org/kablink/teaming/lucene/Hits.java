@@ -94,16 +94,11 @@ public class Hits implements Serializable {
         noIntrinsicAclStoredButAccessibleThroughFilrGrantedAcl = new boolean[length];
      }
 
-    // A sort of copy constructor
-    public Hits(Hits hits, BitSet bitSet, int accessibleCount) {
-    	this(accessibleCount);
-    	int index = 0;
-    	for(int i = 0; i < hits.size; i++) {
-    		if(bitSet.get(i)) {
-    			this.setDoc(hits.doc(i), index);
-    			index++;
-    		}
-    	}
+    public Hits(List<Map<String,Object>> documents) {
+    	this.size = documents.size();
+    	this.totalHits = documents.size();
+    	this.totalHitsApproximate = false;
+    	this.documents = documents;
     }
     
     public List<Map<String,Object>> getDocuments() {
@@ -173,7 +168,7 @@ public class Hits implements Serializable {
 	        		}
 	        	}
         	}
-            ss_hits.setDoc(toMap(doc, fieldNames), i);
+            ss_hits.addDoc(toMap(doc, fieldNames));
             //ss_hits.setScore(hits[offset + i].score, i);
         }
         ss_hits.setTotalHits(topDocs.totalHits);
@@ -246,10 +241,16 @@ public class Hits implements Serializable {
 	    return false;
     }
 
+	/*
     public void setDoc(Map doc, int n) {
     	documents.set(n, doc);
     }
+    */
 
+    public void addDoc(Map doc) {
+    	documents.add(doc);
+    }
+    
     public void setNoIntrinsicAclStoredButAccessibleThroughFilrGrantedAcl(boolean value, int n) {
     	noIntrinsicAclStoredButAccessibleThroughFilrGrantedAcl[n] = value;
     }
