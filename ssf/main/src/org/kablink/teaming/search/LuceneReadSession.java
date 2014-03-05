@@ -77,7 +77,7 @@ public interface LuceneReadSession extends LuceneSession {
 	 * 
 	 * @throws LuceneException
 	 */
-	public Hits search(Long contextUserId, String baseAclQueryStr, String extendedAclQueryStr, int mode, Query query) throws LuceneException;
+	public Hits search(Long contextUserId, String baseAclQueryStr, String extendedAclQueryStr, int mode, Query query, List<String> fieldNames) throws LuceneException;
 
 	/**
 	 * Search and return only the portion of the result specified.
@@ -88,10 +88,10 @@ public interface LuceneReadSession extends LuceneSession {
 	 * @return
 	 * @throws LuceneException
 	 */
-	public Hits search(Long contextUserId, String baseAclQueryStr, String extendedAclQueryStr, int mode, Query query, Sort sort, int offset, int size)
+	public Hits search(Long contextUserId, String baseAclQueryStr, String extendedAclQueryStr, int mode, Query query, List<String> fieldNames, Sort sort, int offset, int size)
 			throws LuceneException;
 	
-	public Hits search(Long contextUserId, String baseAclQueryStr, String extendedAclQueryStr, int mode, Query query, Sort sort, int offset, int size, PostFilterCallback callback)
+	public Hits search(Long contextUserId, String baseAclQueryStr, String extendedAclQueryStr, int mode, Query query, List<String> fieldNames, Sort sort, int offset, int size, PostFilterCallback callback)
 			throws LuceneException;
 	
 	/**

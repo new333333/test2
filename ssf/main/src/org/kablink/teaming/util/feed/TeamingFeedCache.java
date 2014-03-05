@@ -45,7 +45,7 @@ import java.util.concurrent.ConcurrentMap;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.User;
-import org.kablink.teaming.search.SearchFieldResult;
+import org.kablink.teaming.lucene.util.SearchFieldResult;
 import org.kablink.teaming.search.SearchUtils;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.SZoneConfig;

@@ -53,8 +53,8 @@ import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.NoPrincipalByTheNameException;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.User;
+import org.kablink.teaming.lucene.util.SearchFieldResult;
 import org.kablink.teaming.module.binder.BinderModule;
-import org.kablink.teaming.search.SearchFieldResult;
 import org.kablink.teaming.search.filter.SearchFilterKeys;
 import org.kablink.teaming.web.util.MiscUtil;
 

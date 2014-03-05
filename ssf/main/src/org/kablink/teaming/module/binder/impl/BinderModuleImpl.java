@@ -2152,7 +2152,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 				.openReadSession();
 		try {
 			hits = luceneSession.search(RequestContextHolder.getRequestContext().getUserId(),
-					so.getBaseAclQueryStr(), so.getExtendedAclQueryStr(), searchMode, soQuery, so.getSortBy(), offset,
+					so.getBaseAclQueryStr(), so.getExtendedAclQueryStr(), searchMode, soQuery, null, so.getSortBy(), offset,
 					maxResults);
 		} catch (RuntimeException e) {
 			logger.error("Error searching index", e);

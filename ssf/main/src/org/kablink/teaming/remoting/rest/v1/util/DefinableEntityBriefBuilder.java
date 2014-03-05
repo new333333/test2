@@ -33,8 +33,8 @@
 package org.kablink.teaming.remoting.rest.v1.util;
 
 import org.dom4j.Element;
+import org.kablink.teaming.lucene.util.SearchFieldResult;
 import org.kablink.teaming.rest.v1.model.*;
-import org.kablink.teaming.search.SearchFieldResult;
 import org.kablink.teaming.web.util.PermaLinkUtil;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
