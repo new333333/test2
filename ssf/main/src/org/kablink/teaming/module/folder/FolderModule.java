@@ -46,6 +46,7 @@ import org.kablink.teaming.UncheckedIOException;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Binder.SyncScheduleOption;
 import org.kablink.teaming.domain.BinderState.FullSyncStats;
+import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.Entry;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.Folder;
@@ -65,6 +66,7 @@ import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.shared.InputDataAccessor;
 import org.kablink.teaming.search.IndexErrors;
 import org.kablink.teaming.security.AccessControlException;
+import org.kablink.teaming.security.function.WorkArea;
 import org.kablink.teaming.util.StatusTicket;
 
 /**
@@ -645,6 +647,13 @@ public interface FolderModule {
 	 */
     public void setWorkflowResponse(Long folderId, Long entryId, Long stateId, InputDataAccessor inputData) 
     	throws AccessControlException;
+    /**
+     * 	Test access to an entity. 
+     * @param entity
+     * @param checkSharing
+     * @return
+     */
+    public boolean testReadAccess(User user, WorkArea workArea, boolean checkSharing);
     /**
      * 	Test access to a binder. 
      * @param folder
