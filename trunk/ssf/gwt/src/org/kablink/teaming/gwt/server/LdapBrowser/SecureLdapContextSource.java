@@ -50,6 +50,12 @@ public class SecureLdapContextSource extends LdapContextSource {
 	private String	m_userName;	//
 	private String	m_password;	//
 
+	// The following controls whether we use Java's SSLSocketFactory
+	// (i.e., 'javax.net.ssl.SSLSocketFactory', when false) or our own
+	// custom one (i.e., 'org.kablink.teaming.gwt.server.LdapBrowser.LdapSslSocketFactory'
+	// when true.)  As of 20140305, the custom one doesn't work.
+	private final static boolean USE_CUSTOM_SSL_SOCKET_FACTORY	= false;	//
+
 	/**
 	 * Constructor method.
 	 * 
@@ -92,7 +98,11 @@ public class SecureLdapContextSource extends LdapContextSource {
 
 			// Specify use of SSL.
 			env.put(Context.SECURITY_PROTOCOL, "ssl");
-			env.put("java.naming.ldap.factory.socket", "org.kablink.teaming.gwt.server.LdapBrowser.LdapSslSocketFactory");
+			String sslSocketFactory;
+			if (USE_CUSTOM_SSL_SOCKET_FACTORY)
+			     sslSocketFactory = "org.kablink.teaming.gwt.server.LdapBrowser.LdapSslSocketFactory";
+			else sslSocketFactory = "javax.net.ssl.SSLSocketFactory";
+			env.put("java.naming.ldap.factory.socket", sslSocketFactory);
 
 			// This next lines causes the LdapSslFactory and the trust
 			// manager to be initialized.
