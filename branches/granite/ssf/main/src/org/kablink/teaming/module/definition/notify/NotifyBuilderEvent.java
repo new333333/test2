@@ -39,6 +39,7 @@ import org.apache.velocity.VelocityContext;
 
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.calendar.EventsViewHelper;
+import org.kablink.teaming.calendar.TimeZoneHelper;
 import org.kablink.teaming.domain.CustomAttribute;
 import org.kablink.teaming.domain.Event;
 
@@ -71,7 +72,7 @@ public class NotifyBuilderEvent extends AbstractNotifyBuilder {
 			dateFormat = visitor.getNotifyDef().getDateTimeFormat();
 		} else {
 			dateFormat = DateFormat.getDateInstance(DateFormat.LONG, visitor.getNotifyDef().getLocale());
-			dateFormat.setTimeZone(visitor.getNotifyDef().getTimeZone());
+			dateFormat.setTimeZone(TimeZoneHelper.getTimeZone("GMT"));
 		}
 
 		ctx.put("ssEvent_startString", ((null == st) ? "" : dateFormat.format(st.getTime())));
