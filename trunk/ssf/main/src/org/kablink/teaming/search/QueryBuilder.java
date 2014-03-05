@@ -67,6 +67,8 @@ import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.lucene.util.LanguageTaster;
 import org.kablink.teaming.module.admin.AdminModule;
+import org.kablink.teaming.module.binder.BinderModule;
+import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.shared.AccessUtils;
 import org.kablink.teaming.module.workspace.WorkspaceModule;
 import org.kablink.teaming.security.AccessControlManager;
@@ -79,6 +81,8 @@ import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.util.XmlUtil;
 import org.kablink.util.search.Constants;
+
+
 
 
 import static org.kablink.util.search.Constants.*;
@@ -101,6 +105,7 @@ public class QueryBuilder {
 	private static final String ENTRY_OWNER_PREFIX=Constants.ENTRY_OWNER_ACL_FIELD + ":";
 
 	private boolean useAcls;
+	private boolean canSeeProfilesBinder;
 	private boolean preDeleted;
 	private User user;
 	private Application application;
@@ -124,6 +129,8 @@ public class QueryBuilder {
 			this.user = RequestContextHolder.getRequestContext().getUser();
 			this.application = RequestContextHolder.getRequestContext().getApplication();			
 		}
+		Long profileBinderId = getProfileModule().getProfileBinderId();
+		this.canSeeProfilesBinder = getBinderModule().checkAccess(profileBinderId, this.user);
 		if(useAcls) {
 			this.userPrincipals = getProfileDao().getAllPrincipalIds(user);
 			if(application != null && !application.isTrusted()) {
@@ -139,6 +146,14 @@ public class QueryBuilder {
 
 	protected WorkspaceModule getWorkspaceModule() {
 		return (WorkspaceModule)SpringContextUtil.getBean("workspaceModule");
+	}
+
+	protected ProfileModule getProfileModule() {
+		return (ProfileModule)SpringContextUtil.getBean("profileModule");
+	}
+
+	protected BinderModule getBinderModule() {
+		return (BinderModule)SpringContextUtil.getBean("binderModule");
 	}
 
 	protected static ProfileDao getProfileDao() {
@@ -824,7 +839,7 @@ public class QueryBuilder {
 				qString.append(" OR (" + getConditionExp(ENTRY_PREFIX, Constants.READ_ACL_BINDER_OWNER, conditionsMet) + " AND " +
 						ENTRY_OWNER_PREFIX + userId.toString() + ")");
 			}
-			if (!canOnlySeeCommonGroupMembers) {
+			if (!canOnlySeeCommonGroupMembers && this.canSeeProfilesBinder) {
 				qString.append(" OR (" + ENTRY_ALL_USERS + ")"); //OR (entryAcl:allUsers)
 			}
 			qString.append(" OR (" + idField(principalIds2, ENTRY_PREFIX, conditionsMet) + ")"); //OR (entryAcl:1 OR entryAcl:2)
@@ -845,7 +860,7 @@ public class QueryBuilder {
 			}
 			qString.append(") AND (");			//) AND (
 			qString.append("(" + entryAll);	//(entryAcl:all OR entryAcl:allUsers OR entryAcl:1 OR entryAcl:2)
-			if (!canOnlySeeCommonGroupMembers) {
+			if (!canOnlySeeCommonGroupMembers && this.canSeeProfilesBinder) {
 				qString.append(" OR " + ENTRY_ALL_USERS);
 			}
 			qString.append(" OR " +	
