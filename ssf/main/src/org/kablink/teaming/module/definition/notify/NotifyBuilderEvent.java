@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -36,7 +36,6 @@ import java.text.DateFormat;
 import java.util.Calendar;
 
 import org.apache.velocity.VelocityContext;
-
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.calendar.EventsViewHelper;
 import org.kablink.teaming.calendar.TimeZoneHelper;
@@ -45,16 +44,16 @@ import org.kablink.teaming.domain.Event;
 
 /**
  * ?
- * 
+ *
  * @author Janet McCann
  */
 public class NotifyBuilderEvent extends AbstractNotifyBuilder {
     @Override
-	public String getDefaultTemplate() {
+    public String getDefaultTemplate() {
     	return "event.vm";
     }
     
-	@Override
+    @Override
 	protected void build(NotifyVisitor visitor, String template, VelocityContext ctx, CustomAttribute attr) {
 		Object obj = attr.getValue();
 		if (!(obj instanceof Event)) return;
@@ -72,7 +71,7 @@ public class NotifyBuilderEvent extends AbstractNotifyBuilder {
 			dateFormat = visitor.getNotifyDef().getDateTimeFormat();
 		} else {
 			dateFormat = DateFormat.getDateInstance(DateFormat.LONG, visitor.getNotifyDef().getLocale());
-			dateFormat.setTimeZone(TimeZoneHelper.getTimeZone("GMT"));
+			dateFormat.setTimeZone(TimeZoneHelper.getDefault());
 		}
 
 		ctx.put("ssEvent_startString", ((null == st) ? "" : dateFormat.format(st.getTime())));
@@ -81,3 +80,4 @@ public class NotifyBuilderEvent extends AbstractNotifyBuilder {
 		super.build(visitor, template, ctx);
 	}
 }
+

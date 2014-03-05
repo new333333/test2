@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -93,14 +93,11 @@ import net.fortuna.ical4j.model.property.XProperty;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.dom4j.Node;
-
 import org.joda.time.DateTimeZone;
 import org.joda.time.YearMonthDay;
-
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.calendar.TimeZoneHelper;
 import org.kablink.teaming.context.request.RequestContextHolder;
@@ -1816,9 +1813,8 @@ public class IcalModuleImpl extends CommonDependencyInjection implements IcalMod
 		if(end != null) {
 			java.util.Date endDate = end.getDate();
 			if (end.getParameter(Value.DATE.getName()) != null) {
-				// only date (no time) so it's all days event
-				// intern we store the date of last event's day - so get one day before
-	 			endDate = new org.joda.time.DateTime(endDate).minusDays(1).toDate();
+				// Only date (no time) so it's an all day event.
+	 			endDate = new org.joda.time.DateTime(endDate).toDate();
 			}
 			GregorianCalendar endCal = new GregorianCalendar();
 			endCal.setTime(endDate);
@@ -1826,9 +1822,8 @@ public class IcalModuleImpl extends CommonDependencyInjection implements IcalMod
 		} else if (due != null) {
 			java.util.Date endDate = due.getDate();
 			if (due.getParameter(Value.DATE.getName()) != null) {
-				// only date (no time) so it's all days event
-				// intern we store the date of last event's day - so get one day before
-				endDate = new org.joda.time.DateTime(endDate).minusDays(1).toDate();
+				// Only date (no time) so it's an all day event.
+				endDate = new org.joda.time.DateTime(endDate).toDate();
 			}
 			GregorianCalendar endCal = new GregorianCalendar();
 			endCal.setTime(endDate);
@@ -2386,11 +2381,12 @@ public class IcalModuleImpl extends CommonDependencyInjection implements IcalMod
 			}
 		} else {
 			Date start = new Date(event.getLogicalStart().getTime());
-			Date end = (Date)start.clone();
-			if (event.getLogicalEnd() != null) {
-				end = new Date(event.getLogicalEnd().getTime());
-			}
-			end = new Date(new org.joda.time.DateTime(end).plusDays(1).toDate());
+			Date end;
+			java.util.Calendar eventEnd = event.getLogicalEnd();
+			if (null == eventEnd)
+				 end = ((Date) start.clone());
+			else end = new Date(eventEnd.getTime());
+			end = new Date(new org.joda.time.DateTime(end).plusDays(1).withTimeAtStartOfDay().minusSeconds(1).toDate());
 			vToDo = new VToDo(start, end, entry.getTitle());
 			vToDo.getProperties().getProperty(Property.DTSTART).getParameters().add(Value.DATE);
 			vToDo.getProperties().getProperty(Property.DUE    ).getParameters().add(Value.DATE);			
@@ -2690,20 +2686,19 @@ public class IcalModuleImpl extends CommonDependencyInjection implements IcalMod
 			vEvent.getProperties().add(Transp.OPAQUE);
 		} else {
 			Date start = new Date(event.getLogicalStart().getTime());
-			Date end = (Date)start.clone();
-			if (event.getLogicalEnd() != null) {
-				end = new Date(event.getLogicalEnd().getTime());
-			}
-			end = new Date(new org.joda.time.DateTime(end).plusDays(1).toDate());
+			Date end;
+			java.util.Calendar eventEnd = event.getLogicalEnd();
+			if (null == eventEnd)
+				 end = ((Date) start.clone());
+			else end = new Date(eventEnd.getTime());
+			end = new Date(new org.joda.time.DateTime(end).plusDays(1).withTimeAtStartOfDay().minusSeconds(1).toDate());
 			vEvent = new VEvent(start, end, entry.getTitle());
 			
-			// one day events mark as TRANSPARENT
-			// An 'event on a day' - anniversaries and birthdays
-			if ((new YearMonthDay(start)).equals((new YearMonthDay(end)).minusDays(1))) {
-				vEvent.getProperties().add(Transp.TRANSPARENT);
-			} else {
-				vEvent.getProperties().add(Transp.OPAQUE);
-			}
+			// One day events are marked as TRANSPARENT.  An 'event on
+			// a day' -> Anniversaries, Birthdays, ...
+			if ((new YearMonthDay(start)).equals((new YearMonthDay(end))))
+			     vEvent.getProperties().add(Transp.TRANSPARENT);
+			else vEvent.getProperties().add(Transp.OPAQUE     );
 			
 			setComponentAllDays(vEvent);
 		}
