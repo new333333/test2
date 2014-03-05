@@ -87,6 +87,10 @@ public class NullAccessControlManager implements AccessControlManager {
     public boolean testOperation(WorkArea workArea, WorkAreaOperation workAreaOperation) {
         return true; // Permission granted with no checking. 
     }
+    
+    public boolean testOperation(User user, WorkArea workArea, WorkAreaOperation workAreaOperation, boolean checkSharing) {
+    	return true;
+    }
 
     public void checkOperation(User user, WorkArea workArea, WorkAreaOperation workAreaOperation) throws AccessControlException {
     }

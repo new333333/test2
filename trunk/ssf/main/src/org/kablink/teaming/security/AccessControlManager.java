@@ -66,7 +66,9 @@ public interface AccessControlManager {
      */
     public boolean testOperation(WorkArea workArea,
             WorkAreaOperation workAreaOperation);
-        
+    public boolean testOperation(User user, WorkArea workArea, 
+    		WorkAreaOperation workAreaOperation, boolean checkSharing);    
+    
     /**
      * Same as {@link #checkOperation(User, WorkArea, WorkAreaOperation)} except
      * that this returns <code>boolean</code> flag rather than throwing an 
