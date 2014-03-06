@@ -3595,8 +3595,8 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			Long zoneId;
 			Group temp;
 			Definition groupDef;
+			String typelessDN;
 
-			// Yes
 			profileModule = getProfileModule();
 			
 			zone = RequestContextHolder.getRequestContext().getZone();
@@ -3606,12 +3606,16 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 
 			inputMap = new HashMap();
 			
+			// Get the typeless dn
+			typelessDN = getTypelessDN( dn );
+
 			identityInfo = new IdentityInfo( true, true, false, false );
 			
 			inputMap.put( ObjectKeys.FIELD_PRINCIPAL_NAME, dn );
 			inputMap.put( ObjectKeys.FIELD_PRINCIPAL_FOREIGNNAME, dn );
 			inputMap.put( ObjectKeys.FIELD_USER_PRINCIPAL_IDENTITY_INFO, identityInfo );
 		    inputMap.put( ObjectKeys.FIELD_GROUP_LDAP_CONTAINER, true );
+			inputMap.put( ObjectKeys.FIELD_PRINCIPAL_TYPELESS_DN, typelessDN );
 			inputMap.put( ObjectKeys.FIELD_ZONE, zoneId );
 
 	    	groupMods = new MapInputData( StringCheckUtil.check( inputMap ) );
