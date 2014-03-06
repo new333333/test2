@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -36,6 +36,7 @@ import java.text.DateFormat;
 import java.util.Calendar;
 
 import org.apache.velocity.VelocityContext;
+
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.calendar.EventsViewHelper;
 import org.kablink.teaming.calendar.TimeZoneHelper;
@@ -44,21 +45,22 @@ import org.kablink.teaming.domain.Event;
 
 /**
  * ?
- *
+ * 
  * @author Janet McCann
  */
 public class NotifyBuilderEvent extends AbstractNotifyBuilder {
     @Override
-    public String getDefaultTemplate() {
+	public String getDefaultTemplate() {
     	return "event.vm";
     }
     
-    @Override
+	@Override
 	protected void build(NotifyVisitor visitor, String template, VelocityContext ctx, CustomAttribute attr) {
 		Object obj = attr.getValue();
 		if (!(obj instanceof Event)) return;
 		Event event = (Event)obj;
-		//if processing a calendar or task attach events to mail as icals
+		// If processing a calendar or task attach events to mail as
+		// iCals.
     	String family = (String)visitor.getParam("org.kablink.teaming.notify.params.family");
     	if (ObjectKeys.FAMILY_CALENDAR.equals(family) || ObjectKeys.FAMILY_TASK.equals(family)) {
     		visitor.getNotifyDef().addEvent(visitor.getEntity(), event);
@@ -66,18 +68,17 @@ public class NotifyBuilderEvent extends AbstractNotifyBuilder {
 		Calendar st = event.getLogicalStart();
 		Calendar en = event.getLogicalEnd();
 			
-		DateFormat dateFormat = null;
-		if (!event.isAllDayEvent()) {
-			dateFormat = visitor.getNotifyDef().getDateTimeFormat();
-		} else {
+		DateFormat dateFormat;
+		if (event.isAllDayEvent()) {
 			dateFormat = DateFormat.getDateInstance(DateFormat.LONG, visitor.getNotifyDef().getLocale());
-			dateFormat.setTimeZone(TimeZoneHelper.getDefault());
+			dateFormat.setTimeZone(TimeZoneHelper.getTimeZone("GMT"));
+		} else {
+			dateFormat = visitor.getNotifyDef().getDateTimeFormat();
 		}
 
 		ctx.put("ssEvent_startString", ((null == st) ? "" : dateFormat.format(st.getTime())));
-		ctx.put("ssEvent_endString", ((null == en) ? "" : dateFormat.format(en.getTime())));
+		ctx.put("ssEvent_endString",   ((null == en) ? "" : dateFormat.format(en.getTime())));
 		ctx.put("ssEvent_repeatString", EventsViewHelper.eventToRepeatHumanReadableString(event, visitor.getNotifyDef().getLocale()));
 		super.build(visitor, template, ctx);
 	}
 }
-
