@@ -612,6 +612,9 @@ public interface BinderModule {
     public void setBinderVersionsInherited(Long binderId, final Boolean binderVersionsInherited)
 		throws AccessControlException;
 
+    public void setBinderVersionsInherited(Long binderId, final Boolean binderVersionsInherited, boolean doAccessCheck)
+		throws AccessControlException;
+
 	/**
      * Set the binderVersionsEnabled flag.
      * 
@@ -677,7 +680,9 @@ public interface BinderModule {
     public Boolean isBinderFileEncryptionEnabled(Binder binder);
     public void setBinderFileEncryptionInherited(Long binderId, final Boolean binderEncryptionInherited)
 		throws AccessControlException;
-    
+    public void setBinderFileEncryptionInherited(Long binderId, final Boolean binderEncryptionInherited, boolean doAccessCheck)
+		throws AccessControlException;
+
     public void setBinderBranding(Long binderId, final String branding) throws AccessControlException;
     public void setBinderBrandingExt(Long binderId, final String brandingExt) throws AccessControlException;
     
@@ -736,6 +741,8 @@ public interface BinderModule {
 	 * @throws AccessControlException
 	 */
 	public void setTeamMembershipInherited(Long binderId, boolean inherit)
+		throws AccessControlException;
+	public void setTeamMembershipInherited(Long binderId, boolean inherit, boolean doAccessCheck)
 		throws AccessControlException;
     /**
      * Sets a binder's My Files indicator
