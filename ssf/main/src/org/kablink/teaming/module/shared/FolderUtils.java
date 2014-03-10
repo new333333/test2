@@ -737,7 +737,7 @@ public class FolderUtils {
 
 	}
 	
-	public static void inheritAll(Long folderId) {
+	static void inheritAll(Long folderId) {
         BinderUtils.inheritAll(folderId);
 	}
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -32,6 +32,7 @@
  */
 package org.kablink.teaming.servlet.ical;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -47,11 +48,12 @@ import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.ical.util.ICalUtils;
 import org.kablink.teaming.module.mail.MailModule;
+import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.XmlFileUtil;
 import org.kablink.teaming.web.servlet.SAbstractController;
+
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
-
 
 /**
  * Outputs iCalendar for given entry. The output contains all entry events or empty calendar (only iCalendar header) 
@@ -60,17 +62,20 @@ import org.springframework.web.servlet.ModelAndView;
  * @author Pawel Nowicki
  */
 public class GetController extends SAbstractController {
-	
 	private MailModule mailModule;
 
+	/**
+	 * ?
+	 * 
+	 * @param request
+	 * @param response
+	 * 
+	 * @return
+	 */
 	@SuppressWarnings("unchecked")
 	@Override
 	protected ModelAndView handleRequestAfterValidation(HttpServletRequest request, HttpServletResponse response) throws Exception {
-
 		Long binderId = new Long(ServletRequestUtils.getRequiredStringParameter(request, "bi"));
-		if (binderId == null) {
-			return null;
-		}
 		
 		response.resetBuffer();
 		response.setContentType(MailModule.CONTENT_TYPE_CALENDAR + MailModule.CONTENT_TYPE_CHARSET_SUFFIX + XmlFileUtil.FILE_ENCODING);
@@ -90,7 +95,9 @@ public class GetController extends SAbstractController {
 			calendarOutputter.output(calendar, response.getWriter());
 		} else {
 			Folder folder = getFolderModule().getFolder(binderId);
-			Map entries = getFolderModule().getFullEntries(binderId, null);
+			Map options = new HashMap();
+			options.put(ObjectKeys.SEARCH_MAX_HITS, new Integer(SPropsUtil.getInt("ical.export.max", 250)));
+			Map entries = getFolderModule().getFullEntries(binderId, options);
 			List folderEntries = (List)entries.get(ObjectKeys.FULL_ENTRIES);
 			
 			CalendarOutputter calendarOutputter = ICalUtils.getCalendarOutputter();
@@ -101,10 +108,21 @@ public class GetController extends SAbstractController {
 		response.flushBuffer();
 		return null;
 	}
-	
+
+	/**
+	 * ?
+	 * 
+	 * @return
+	 */
 	public MailModule getMailModule() {
 		return mailModule;
 	}
+	
+	/**
+	 * ?
+	 * 
+	 * @param mailModule
+	 */
 	public void setMailModule(MailModule mailModule) {
 		this.mailModule = mailModule;
 	}

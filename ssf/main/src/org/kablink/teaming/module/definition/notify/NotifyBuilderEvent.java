@@ -39,6 +39,7 @@ import org.apache.velocity.VelocityContext;
 
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.calendar.EventsViewHelper;
+import org.kablink.teaming.calendar.TimeZoneHelper;
 import org.kablink.teaming.domain.CustomAttribute;
 import org.kablink.teaming.domain.Event;
 
@@ -58,7 +59,9 @@ public class NotifyBuilderEvent extends AbstractNotifyBuilder {
 		Object obj = attr.getValue();
 		if (!(obj instanceof Event)) return;
 		Event event = (Event)obj;
-		//if processing a calendar or task attach events to mail as icals
+		
+		// If processing a calendar or task attach events to mail as
+		// iCals.
     	String family = (String)visitor.getParam("org.kablink.teaming.notify.params.family");
     	if (ObjectKeys.FAMILY_CALENDAR.equals(family) || ObjectKeys.FAMILY_TASK.equals(family)) {
     		visitor.getNotifyDef().addEvent(visitor.getEntity(), event);
@@ -66,16 +69,16 @@ public class NotifyBuilderEvent extends AbstractNotifyBuilder {
 		Calendar st = event.getLogicalStart();
 		Calendar en = event.getLogicalEnd();
 			
-		DateFormat dateFormat = null;
-		if (!event.isAllDayEvent()) {
-			dateFormat = visitor.getNotifyDef().getDateTimeFormat();
-		} else {
+		DateFormat dateFormat;
+		if (event.isAllDayEvent()) {
 			dateFormat = DateFormat.getDateInstance(DateFormat.LONG, visitor.getNotifyDef().getLocale());
-			dateFormat.setTimeZone(visitor.getNotifyDef().getTimeZone());
+			dateFormat.setTimeZone(TimeZoneHelper.getTimeZone("GMT"));
+		} else {
+			dateFormat = visitor.getNotifyDef().getDateTimeFormat();
 		}
 
 		ctx.put("ssEvent_startString", ((null == st) ? "" : dateFormat.format(st.getTime())));
-		ctx.put("ssEvent_endString", ((null == en) ? "" : dateFormat.format(en.getTime())));
+		ctx.put("ssEvent_endString",   ((null == en) ? "" : dateFormat.format(en.getTime())));
 		ctx.put("ssEvent_repeatString", EventsViewHelper.eventToRepeatHumanReadableString(event, visitor.getNotifyDef().getLocale()));
 		super.build(visitor, template, ctx);
 	}

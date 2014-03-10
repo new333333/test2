@@ -83,6 +83,14 @@ public class RequestInfo extends JavaScriptObject
 	}-*/;
 
 	/**
+	 * Return the flag that tells us if SharePoint is a valid server type for a net folder server
+	 */
+	public final native boolean getAllowSharePointAsAServerType()
+	/*-{
+		return this.getBFromS( this.allowSharePointAsAServerType );
+	}-*/;
+	
+	/**
 	 * Return the flag that tells us if we should show the "show people" link in the mast head.
 	 */
 	public final native boolean getAllowShowPeople()
@@ -608,6 +616,26 @@ public class RequestInfo extends JavaScriptObject
 	public final native boolean isLicenseVibe()
 	/*-{
 		return (this.getBFromS( this.isLicenseVibe ));
+	}-*/;
+
+	/**
+	 * Return the flag that tells us if we should expose Filr features.
+	 * 
+	 * @return
+	 */
+	public final native boolean showFilrFeatures()
+	/*-{
+		return (this.getBFromS( this.showFilrFeatures ));
+	}-*/;
+
+	/**
+	 * Return the flag that tells us if we should expose Vibe features.
+	 * 
+	 * @return
+	 */
+	public final native boolean showVibeFeatures()
+	/*-{
+		return (this.getBFromS( this.showVibeFeatures ));
 	}-*/;
 
 	/**

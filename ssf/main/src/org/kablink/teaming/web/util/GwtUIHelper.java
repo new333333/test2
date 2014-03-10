@@ -68,6 +68,7 @@ import org.kablink.teaming.module.admin.AdminModule.AdminOperation;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
 import org.kablink.teaming.module.folder.FolderModule;
+import org.kablink.teaming.module.license.LicenseChecker;
 import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.portletadapter.AdaptedPortletURL;
 import org.kablink.teaming.search.SearchUtils;
@@ -1512,6 +1513,16 @@ public class GwtUIHelper {
 		boolean isLicenseVibe = (Utils.checkIfVibe() || Utils.checkIfKablink());
 		model.put("isLicenseVibe", Boolean.toString(isLicenseVibe));
 		
+		// Put out the flag that tells us if we are exposing Vibe
+		// features.
+		boolean showVibeFeatures = LicenseChecker.showVibeFeatures();
+		model.put("showVibeFeatures", Boolean.toString(showVibeFeatures));
+		
+		// Put out the flag that tells us if we are exposing Filr
+		// features.
+		boolean showFilrFeatures = LicenseChecker.showFilrFeatures();
+		model.put("showFilrFeatures", Boolean.toString(showFilrFeatures));
+		
 		// Put out the flag indicating if the user is a site
 		// administrator.
 		boolean isSiteAdmin = bs.getAdminModule().testAccess(AdminOperation.manageFunction);
@@ -1721,6 +1732,14 @@ public class GwtUIHelper {
 			
 			value = NetFolderHelper.getDefaultJitsAclMaxAge();
 			model.put( "defaultJitsAclMaxAge", value );
+		}
+		
+		// Add a flag that indicates whether SharePoint can be used as a server type in a net folder server
+		{
+			Boolean allowSharePoint;
+			
+			allowSharePoint = SPropsUtil.getBoolean( "allow.sharepoint.as.server.type", false );
+			model.put( "allowSharePointAsAServerType", allowSharePoint );
 		}
 	}
 	

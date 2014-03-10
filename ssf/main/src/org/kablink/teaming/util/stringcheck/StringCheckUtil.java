@@ -84,6 +84,10 @@ public class StringCheckUtil implements InitializingBean {
 		return getInstance().checkAll(input, checkOnly);
 	}
 	
+	public static String checkForQuotes(String input, boolean checkOnly) throws StringCheckException {
+		return getInstance().replaceQuotes(input, checkOnly);
+	}
+	
 	public static LinkedHashSet<String> check(LinkedHashSet<String> stringSet) throws StringCheckException {
 		if (stringSet == null ) return stringSet;
 		LinkedHashSet<String> result = new LinkedHashSet<String>();
@@ -157,6 +161,23 @@ public class StringCheckUtil implements InitializingBean {
 		boolean changed = false;
 		for(int i = 0; i < checkers.length; i++) {
 			String newInput = checkers[i].check(input, checkOnly);
+			if (input != null && !input.equals(newInput)) {
+				changed = true;
+				input = newInput;
+			}
+		}
+		if (checkOnly && changed) {
+			//If just checking, signal that a change occurred by throwing an exception
+			throw new StringCheckException();
+		}
+		return input;
+	}
+	
+	//Only if checkOnly=true and the check fails will StringCheckException be thrown.
+	private String replaceQuotes(String input, boolean checkOnly) throws StringCheckException {
+		boolean changed = false;
+		for(int i = 0; i < checkers.length; i++) {
+			String newInput = checkers[i].checkForQuotes(input, checkOnly);
 			if (input != null && !input.equals(newInput)) {
 				changed = true;
 				input = newInput;

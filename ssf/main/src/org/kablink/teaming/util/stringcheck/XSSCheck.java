@@ -177,6 +177,14 @@ public class XSSCheck implements StringCheck {
 			return fileContentAsString;
 	}
 	
+	public String checkForQuotes(String value, boolean checkOnly) throws StringCheckException {
+		if (value.contains("\"") || value.contains("'")) {
+			value = value.replaceAll("\"", "&#34;");	 //Replace all quotation marks. There should never be any quotation marks in these strings. 
+			value = value.replaceAll("'", "&#39;");		 //Replace all single quotation marks. This is intended to fix certain XSS attacks.
+		}
+		return value;
+	}
+	
 	// A subclass can override this method to provide custom or enhanced implementation.
 	protected String doCheck(String input, String type, String mode) throws XSSCheckException {
 		return doCheck(input, type, mode, false);
