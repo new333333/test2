@@ -3244,7 +3244,17 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
     	}	
 
 	}
-	
+
+    @Override
+    public Date getAuditTrailPurgeDate(final Long zoneId) {
+        Date purgeBeforeDate = null;
+        ZoneConfig zoneConfig = loadZoneConfig(zoneId);
+        if (zoneConfig.getAuditTrailKeepDays() > 0) {
+            purgeBeforeDate = new Date(System.currentTimeMillis() - ((long)zoneConfig.getAuditTrailKeepDays())*1000L*60L*60L*24L);
+        }
+        return purgeBeforeDate;
+    }
+
 	@Override
 	public List getAuditTrailEntries(final Long zoneId, final Date purgeBeforeDate) {
 		long begin = System.nanoTime();

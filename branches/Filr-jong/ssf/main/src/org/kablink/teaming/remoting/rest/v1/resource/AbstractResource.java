@@ -1203,6 +1203,18 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         if (binderIds.length==0) {
             return null;
         }
+        if (!recursive) {
+            triggerJitsIfNecessary(binderIds);
+        }
+        Criteria crit = getLibraryCriteria(binderIds, false, recursive);
+
+        Map resultsMap = getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, 0, 1);
+        SearchResultList<SearchableObject> results = new SearchResultList<SearchableObject>();
+        SearchResultBuilderUtil.buildSearchResults(results, new UniversalBuilder(Description.FORMAT_NONE), resultsMap, null, null, 0);
+        return results.getLastModified();
+    }
+
+    protected void triggerJitsIfNecessary(Long [] binderIds) {
         for (Long id : binderIds) {
             try {
                 Binder binder = getBinderModule().getBinder(id);
@@ -1212,12 +1224,6 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
             } catch (Exception e) {
             }
         }
-        Criteria crit = getLibraryCriteria(binderIds, false, recursive);
-
-        Map resultsMap = getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, 0, 1);
-        SearchResultList<SearchableObject> results = new SearchResultList<SearchableObject>();
-        SearchResultBuilderUtil.buildSearchResults(results, new UniversalBuilder(Description.FORMAT_NONE), resultsMap, null, null, 0);
-        return results.getLastModified();
     }
 
     protected LibraryInfo getLibraryInfo(Long [] binderIds) {
@@ -1321,15 +1327,8 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
             ids = new Long[] {getMyFilesFolderParent().getId()};
         } else if (SearchUtils.useHomeAsMyFiles(this)) {
             List<Long> homeFolderIds = SearchUtils.getHomeFolderIds(this, getLoggedInUser());
-            for (Long id : homeFolderIds) {
-            	try {
-                    Folder folder = getFolderModule().getFolder(id);
-                    getFolderModule().jitSynchronize(folder);
-            	}
-            	catch (Exception e) {
-            	}
-            }
             ids = homeFolderIds.toArray(new Long[homeFolderIds.size()]);
+            triggerJitsIfNecessary(ids);
         } else {
             List<Long> hiddenFolderIds = new ArrayList<Long>();
         	Long mfId = SearchUtils.getMyFilesFolderId(this, getLoggedInUser(), false);

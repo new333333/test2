@@ -200,4 +200,5 @@ public enum ApiErrorCode {
 
     NET_FOLDER_SERVER_NOT_FOUND, // No net folder server found with this name or id
 
+    CHANGES_PURGED, // No device found with this id
 }

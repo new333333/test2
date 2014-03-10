@@ -78,11 +78,11 @@ public class BinderUtils {
         return binder;
     }
 
-	public static void inheritAll(Long binderId) {
-		getBinderModule().setDefinitionsInherited(binderId, true);
-		getBinderModule().setBinderVersionsInherited(binderId, true);
-		getBinderModule().setBinderFileEncryptionInherited(binderId, true);
-		getBinderModule().setTeamMembershipInherited(binderId, true);
+	static void inheritAll(Long binderId) {
+		getBinderModule().setDefinitionsInherited(binderId, true, false);
+		getBinderModule().setBinderVersionsInherited(binderId, true, false);
+		getBinderModule().setBinderFileEncryptionInherited(binderId, true, false);
+		getBinderModule().setTeamMembershipInherited(binderId, true, false);
 	}
 
 	private static BinderModule getBinderModule() {

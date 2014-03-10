@@ -30,14 +30,23 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.util.stringcheck;
+package org.kablink.teaming.module.binder.impl;
 
-public interface StringCheck {
+import org.kablink.util.VibeRuntimeException;
+import org.kablink.util.api.ApiErrorCode;
 
-	public String check(String input) throws StringCheckException;
-	
-	public String check(String input, boolean checkOnly) throws StringCheckException;
-	
-	public String checkForQuotes(String input, boolean checkOnly) throws StringCheckException;
+public class AuditTrailPurgedException extends VibeRuntimeException {
+
+    public int getHttpStatusCode() {
+    	return 200; // Forbidden
+    }
+
+	/* (non-Javadoc)
+	 * @see org.kablink.teaming.exception.ApiErrorCodeSupport#getApiErrorCode()
+	 */
+	@Override
+	public ApiErrorCode getApiErrorCode() {
+		return ApiErrorCode.CHANGES_PURGED;
+	}
 
 }

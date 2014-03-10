@@ -190,11 +190,14 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
         	        workArea, workAreaOperation);
     }
 	
-	public boolean testOperation(User user,
-			WorkArea workArea, WorkAreaOperation workAreaOperation) {
+	public boolean testOperation(User user, WorkArea workArea, WorkAreaOperation workAreaOperation) {
+		return testOperation(user, workArea, workAreaOperation, true);
+	}
+	
+	public boolean testOperation(User user, WorkArea workArea, WorkAreaOperation workAreaOperation, boolean checkSharing) {
 		long begin = System.nanoTime();
 		
-		boolean result = testOperationRecursive(user, workArea, workArea, workAreaOperation);
+		boolean result = testOperationRecursive(user, workArea, workArea, workAreaOperation, checkSharing);
 
 		if(logger.isDebugEnabled()) {
 			double diff = (System.nanoTime() - begin)/1000000.0; // millisecond
@@ -256,7 +259,8 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
 	}
 	
 	//pass the original ownerId in.  Recursive calls need the original
-	private boolean testOperationRecursive(User user, WorkArea workAreaStart, WorkArea workArea, WorkAreaOperation workAreaOperation) {
+	private boolean testOperationRecursive(User user, WorkArea workAreaStart, WorkArea workArea, 
+			WorkAreaOperation workAreaOperation, boolean checkSharing) {
 		if(isAccessCheckTemporarilyDisabled())
 			return true;
 		
@@ -314,16 +318,24 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
 						"Cannot inherit function membership when it has no parent");
 			} else {
 				// use the original workArea owner
-				if (testOperationRecursive(user, workAreaStart, parentWorkArea, workAreaOperation)) {
+				if (testOperationRecursive(user, workAreaStart, parentWorkArea, workAreaOperation, checkSharing)) {
 					if (checkRootFolderAccess(user, workAreaStart, workAreaOperation)) {
 						//OK, this is accessible by this user
 						return true;
 					} else {
 						//See if this was shared. If so, we can ignore the rootFolderAccess check
-						return testRightGrantedBySharing(user, workAreaStart, workArea, workAreaOperation, null);
+						if (checkSharing) {
+							return testRightGrantedBySharing(user, workAreaStart, workArea, workAreaOperation, null);
+						} else {
+							return false;
+						}
 					}
 				} else {
-					return testRightGrantedBySharing(user, workAreaStart, workArea, workAreaOperation, null);
+					if (checkSharing) {
+						return testRightGrantedBySharing(user, workAreaStart, workArea, workAreaOperation, null);
+					} else {
+						return false;
+					}
 				}
 			}
 		} else {
@@ -423,13 +435,21 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
 					//OK, this is accessible by this user
 					return true;
 				} else {
-					//See if this was shared. If so, we can ignore the rootFolderAccess check
-					return testRightGrantedBySharing(user, workAreaStart, workArea, workAreaOperation, userApplicationLevelMembersToLookup);
+					if (checkSharing) {
+						//See if this was shared. If so, we can ignore the rootFolderAccess check
+						return testRightGrantedBySharing(user, workAreaStart, workArea, workAreaOperation, userApplicationLevelMembersToLookup);
+					} else {
+						return false;
+					}
 				}
 			}
 			
 			//It isn't available by normal ACLs, so check if shared
-			return testRightGrantedBySharing(user, workAreaStart, workArea, workAreaOperation, userApplicationLevelMembersToLookup);
+			if (checkSharing) {
+				return testRightGrantedBySharing(user, workAreaStart, workArea, workAreaOperation, userApplicationLevelMembersToLookup);
+			} else {
+				return false;
+			}
 		}
 	}
 	

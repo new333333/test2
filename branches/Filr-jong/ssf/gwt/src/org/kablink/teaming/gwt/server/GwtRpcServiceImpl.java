@@ -1057,6 +1057,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			CalendarAppointmentsRpcResponseData responseData = GwtCalendarHelper.getCalendarAppointments(
 				this,
 				getRequest( ri ),
+				gcaCmd.getBrowserTZOffset(),
 				gcaCmd.getFolderId(),
 				gcaCmd.getCalendarDisplayData(),
 				gcaCmd.getQuickFilter() );
@@ -1069,6 +1070,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			CalendarDisplayDataRpcResponseData responseData = GwtCalendarHelper.getCalendarDisplayData(
 				this,
 				getRequest( ri ),
+				gcddCmd.getBrowserTZOffset(),
 				gcddCmd.getFolderInfo() );
 			return new VibeRpcResponse( responseData );
 		}
@@ -1079,6 +1081,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			CalendarDisplayDataRpcResponseData responseData = GwtCalendarHelper.getCalendarDisplayDate(
 				this,
 				getRequest( ri ),
+				gcddCmd.getBrowserTZOffset(),
 				gcddCmd.getFolderId(),
 				gcddCmd.getCalendarDisplayData() );
 			return new VibeRpcResponse( responseData );
@@ -1090,6 +1093,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			CalendarDisplayDataRpcResponseData responseData = GwtCalendarHelper.getCalendarNextPreviousPeriod(
 				this,
 				getRequest( ri ),
+				gcnppCmd.getBrowserTZOffset(),
 				gcnppCmd.getFolderId(),
 				gcnppCmd.getCalendarDisplayData(),
 				gcnppCmd.getNext() );
@@ -3039,6 +3043,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			CalendarDisplayDataRpcResponseData result = GwtCalendarHelper.saveCalendarDayView(
 				this,
 				getRequest( ri ),
+				scdvCmd.getBrowserTZOffset(),
 				scdvCmd.getFolderInfo(),
 				scdvCmd.getDayView(),
 				scdvCmd.getDate() );
@@ -3049,7 +3054,11 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case SAVE_CALENDAR_HOURS:
 		{
 			SaveCalendarHoursCmd schCmd = ((SaveCalendarHoursCmd) cmd);
-			CalendarDisplayDataRpcResponseData result = GwtCalendarHelper.saveCalendarHours( this, getRequest( ri ), schCmd.getFolderInfo(), schCmd.getHours() );
+			CalendarDisplayDataRpcResponseData result = GwtCalendarHelper.saveCalendarHours(
+				this,
+				getRequest( ri ),
+				schCmd.getBrowserTZOffset(),
+				schCmd.getFolderInfo(), schCmd.getHours() );
 			response = new VibeRpcResponse( result );
 			return response;
 		}
@@ -3065,7 +3074,12 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case SAVE_CALENDAR_SHOW:
 		{
 			SaveCalendarShowCmd scsCmd = ((SaveCalendarShowCmd) cmd);
-			CalendarDisplayDataRpcResponseData result = GwtCalendarHelper.saveCalendarShow( this, getRequest( ri ), scsCmd.getFolderInfo(), scsCmd.getShow() );
+			CalendarDisplayDataRpcResponseData result = GwtCalendarHelper.saveCalendarShow(
+				this,
+				getRequest( ri ),
+				scsCmd.getBrowserTZOffset(),
+				scsCmd.getFolderInfo(),
+				scsCmd.getShow() );
 			response = new VibeRpcResponse( result );
 			return response;
 		}
@@ -3712,7 +3726,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case UPDATE_CALENDAR_EVENT:
 		{
 			UpdateCalendarEventCmd uceCmd = ((UpdateCalendarEventCmd) cmd);
-			Boolean result = GwtCalendarHelper.updateCalendarEvent( this, getRequest( ri ), uceCmd.getFolderId(), uceCmd.getEvent() );
+			Boolean result = GwtCalendarHelper.updateCalendarEvent( this, getRequest( ri ), uceCmd.getBrowserTZOffset(), uceCmd.getFolderId(), uceCmd.getEvent() );
 			response = new VibeRpcResponse( new BooleanRpcResponseData( result ));
 			return response;
 		}

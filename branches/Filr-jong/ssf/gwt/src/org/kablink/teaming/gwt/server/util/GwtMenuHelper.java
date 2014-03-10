@@ -488,9 +488,11 @@ public class GwtMenuHelper {
 		// Allocate the base ToolbarItem to return.
 		ToolbarItem reply = new ToolbarItem(tbKey);
 
-		// Is the current user the guest user?
-		if (!(GwtServerHelper.getCurrentUser().isShared())) {
-			// No!  Add a ToolbarItem for e-mail notification.
+		// Is the current user is not guest and they're entitled to
+		// read the folder for reasons other than sharing...
+		User user = GwtServerHelper.getCurrentUser();
+		if ((!(user.isShared())) && bs.getFolderModule().testReadAccess(user, folder, false)) {	// false -> Don't check access because of sharing.
+			// ...add a ToolbarItem for e-mail notification.
 			ToolbarItem emailTBI = new ToolbarItem(EMAIL);
 			markTBITitle(emailTBI, "toolbar.menu.subscribeToFolder"       );
 			markTBIHint( emailTBI, "toolbar.menu.title.emailSubscriptions");

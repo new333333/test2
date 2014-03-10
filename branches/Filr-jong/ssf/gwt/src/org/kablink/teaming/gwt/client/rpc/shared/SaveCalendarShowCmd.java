@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -42,32 +42,35 @@ import org.kablink.teaming.gwt.client.util.CalendarShow;
  * @author drfoster@novell.com
  */
 public class SaveCalendarShowCmd extends VibeRpcCmd {
-	private BinderInfo		m_folderInfo;	//
-	private CalendarShow	m_show;			//
+	private BinderInfo		m_folderInfo;		//
+	private CalendarShow	m_show;				//
+	private long			m_browserTZOffset;	//
 	
-	/**
+	/*
 	 * Constructor method.
 	 * 
 	 * For GWT serialization, must have a zero parameter constructor.
 	 */
-	public SaveCalendarShowCmd() {
+	private SaveCalendarShowCmd() {
 		// Initialize the super class.
 		super();
 	}
 	
 	/**
 	 * Constructor method
-	 * 
+	 *
+	 * @param browserTZOffset
 	 * @param folderInfo
 	 * @param show
 	 */
-	public SaveCalendarShowCmd(BinderInfo folderInfo, CalendarShow show) {
+	public SaveCalendarShowCmd(long browserTZOffset, BinderInfo folderInfo, CalendarShow show) {
 		// Initialize this object...
 		this();
 
 		// ...and save the parameters.
-		setFolderInfo(folderInfo);
-		setShow(      show      );
+		setBrowserTZOffset(browserTZOffset);
+		setFolderInfo(     folderInfo     );
+		setShow(           show           );
 	}
 	
 	/**
@@ -75,16 +78,18 @@ public class SaveCalendarShowCmd extends VibeRpcCmd {
 	 * 
 	 * @return
 	 */
-	public BinderInfo   getFolderInfo() {return m_folderInfo;}
-	public CalendarShow getShow()       {return m_show;      }
+	public BinderInfo   getFolderInfo()      {return m_folderInfo;     }
+	public CalendarShow getShow()            {return m_show;           }
+	public long         getBrowserTZOffset() {return m_browserTZOffset;}
 	
 	/**
 	 * Set'er methods.
 	 * 
 	 * @param
 	 */
-	public void setFolderInfo(BinderInfo   folderInfo) {m_folderInfo = folderInfo;}
-	public void setShow(      CalendarShow show)       {m_show       = show;      }
+	public void setFolderInfo(     BinderInfo   folderInfo)      {m_folderInfo      = folderInfo;     }
+	public void setShow(           CalendarShow show)            {m_show            = show;           }
+	public void setBrowserTZOffset(long         browserTZOffset) {m_browserTZOffset = browserTZOffset;}
 	
 	/**
 	 * Returns the command's enumeration value.

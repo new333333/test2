@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -55,9 +55,11 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
+
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Event;
@@ -72,12 +74,17 @@ import org.kablink.teaming.web.util.WebHelper;
 import org.kablink.util.cal.DayAndPosition;
 import org.kablink.util.search.Constants;
 
-
-@SuppressWarnings("unchecked")
+/**
+ * ?
+ * 
+ * @author ?
+ */
+@SuppressWarnings({"unchecked", "unused"})
 public class EventsViewHelper {
-
 	private static Log logger = LogFactory.getLog(EventsViewHelper.class);
-	
+
+	/**
+	 */
 	public static class Grid implements Serializable {
 		private static final long serialVersionUID = -7320034020584683226L;
 		public String type;
@@ -87,7 +94,17 @@ public class EventsViewHelper {
 			this.type = type;
 			this.size = size;
 		}
-		//need to implement this for hibernate equality
+		
+
+		/**
+		 * ?
+		 * 
+		 * Need to implement this for hibernate equality.
+		 * 
+		 * @param obj
+		 * 
+		 * @return
+		 */
 	    @Override
 		public boolean equals(Object obj) {
 	        if(this == obj)
@@ -124,17 +141,15 @@ public class EventsViewHelper {
 	};
 	
 	private static final String dayNames[] = new String[10];
-	
-	private static final String nums[] = new String[7];
-	
+	private static final String nums[]     = new String[ 7];
 	static {
-		dayNames[Calendar.SUNDAY] = "calendar.day.abbrevs.su";
-		dayNames[Calendar.MONDAY] = "calendar.day.abbrevs.mo";
-		dayNames[Calendar.TUESDAY] = "calendar.day.abbrevs.tu";
+		dayNames[Calendar.SUNDAY]    = "calendar.day.abbrevs.su";
+		dayNames[Calendar.MONDAY]    = "calendar.day.abbrevs.mo";
+		dayNames[Calendar.TUESDAY]   = "calendar.day.abbrevs.tu";
 		dayNames[Calendar.WEDNESDAY] = "calendar.day.abbrevs.we";
-		dayNames[Calendar.THURSDAY] = "calendar.day.abbrevs.th";
-		dayNames[Calendar.FRIDAY] = "calendar.day.abbrevs.fr";
-		dayNames[Calendar.SATURDAY] = "calendar.day.abbrevs.sa";
+		dayNames[Calendar.THURSDAY]  = "calendar.day.abbrevs.th";
+		dayNames[Calendar.FRIDAY]    = "calendar.day.abbrevs.fr";
+		dayNames[Calendar.SATURDAY]  = "calendar.day.abbrevs.sa";
 		
 		nums[1] = "calendar.first";
 		nums[2] = "calendar.second";
@@ -145,31 +160,31 @@ public class EventsViewHelper {
 	}
 	
 	public static final String EVENT_TYPE_CREATION = "creation";
-	
 	public static final String EVENT_TYPE_ACTIVITY = "activity";
+	public static final String EVENT_TYPE_EVENT    = "event";
+	public static final String EVENT_TYPE_VIRTUAL  = "virtual";
+	public static final String EVENT_TYPE_DEFAULT  = EVENT_TYPE_EVENT;
 	
-	public static final String EVENT_TYPE_EVENT = "event";
-
-	public static final String EVENT_TYPE_VIRTUAL = "virtual";
-	
-	public static final String EVENT_TYPE_DEFAULT = EVENT_TYPE_EVENT;
-
-	
-	public static final String GRID_DAY = "day";
-	
-	public static final String GRID_MONTH = "month";
-	
+	public static final String GRID_DAY     = "day";
+	public static final String GRID_MONTH   = "month";
 	public static final String GRID_DEFAULT = GRID_MONTH;
-	
 
-	public static final String DAY_VIEW_TYPE_WORK = "workday";
-	
-	public static final String DAY_VIEW_TYPE_FULL = "fullday";
-
+	public static final String DAY_VIEW_TYPE_WORK    = "workday";
+	public static final String DAY_VIEW_TYPE_FULL    = "fullday";
 	public static final String DAY_VIEW_TYPE_DEFAULT = DAY_VIEW_TYPE_WORK;
-	
-	public static Map getEntryEventsBeans( Binder folder,
-			List searchResults, RenderResponse response, PortletSession portletSession, boolean onlyTrueEvents) {
+
+	/**
+	 * ?
+	 * 
+	 * @param folder
+	 * @param searchResults
+	 * @param response
+	 * @param portletSession
+	 * @param onlyTrueEvents
+	 * 
+	 * @return
+	 */
+	public static Map getEntryEventsBeans(Binder folder, List searchResults, RenderResponse response, PortletSession portletSession, boolean onlyTrueEvents) {
 		Map result = new HashMap();
 		
 		List events = EventsViewHelper.getCalendarEventsBeans(searchResults,	null, onlyTrueEvents);
@@ -182,25 +197,48 @@ public class EventsViewHelper {
 		
 		return result;
 	}
-	
-	public static Map getEventsBeans(AllModulesInjected bs, Long userId, Long binderId, List searchResults, AbstractIntervalView calendarViewRangeDates, 
-			PortletSession portletSession, boolean onlyTrueEvents) {
-		return getEventsBeans(searchResults, calendarViewRangeDates, 
+
+	/**
+	 * ?
+	 * 
+	 * @param bs
+	 * @param userId
+	 * @param binderId
+	 * @param searchResults
+	 * @param calendarViewRangeDates
+	 * @param portletSession
+	 * @param onlyTrueEvents
+	 * 
+	 * @return
+	 */
+	public static Map getEventsBeans(AllModulesInjected bs, Long userId, Long binderId, List searchResults, AbstractIntervalView calendarViewRangeDates, PortletSession portletSession, boolean onlyTrueEvents) {
+		return
+			getEventsBeans(
+				searchResults,
+				calendarViewRangeDates,
 				getCalendarDisplayEventType(bs, userId, binderId), 
-				getCalendarDayViewType(portletSession), onlyTrueEvents);
+				getCalendarDayViewType(portletSession),
+				onlyTrueEvents);
 	}
-	
-	public static Map getEventsBeans(List searchResults, AbstractIntervalView intervalView, 
-			String eventType, String dayViewType, boolean onlyTrueEvents) {
+
+	/**
+	 * ?
+	 * 
+	 * @param searchResults
+	 * @param intervalView
+	 * @param eventType
+	 * @param dayViewType
+	 * @param onlyTrueEvents
+	 * 
+	 * @return
+	 */
+	public static Map getEventsBeans(List searchResults, AbstractIntervalView intervalView, String eventType, String dayViewType, boolean onlyTrueEvents) {
 		Map result = new HashMap();
 		
-		result.put(WebKeys.CALENDAR_CURRENT_VIEW_STARTDATE,
-				intervalView.getStart());
-		result.put(WebKeys.CALENDAR_CURRENT_VIEW_ENDDATE, 
-				intervalView.getEnd());
+		result.put(WebKeys.CALENDAR_CURRENT_VIEW_STARTDATE, intervalView.getStart());
+		result.put(WebKeys.CALENDAR_CURRENT_VIEW_ENDDATE,   intervalView.getEnd());
 
-		List events = EventsViewHelper.getCalendarEventsBeans(searchResults,
-				intervalView, onlyTrueEvents);
+		List events = EventsViewHelper.getCalendarEventsBeans(searchResults, intervalView, onlyTrueEvents);
 		
 		Map calendarViewBean = new HashMap();
 		calendarViewBean.put("monthInfo", intervalView.getCurrentDateMonthInfo());
@@ -214,7 +252,14 @@ public class EventsViewHelper {
 		
 		return result;
 	}
-	
+
+	/**
+	 * ?
+	 * 
+	 * @param events
+	 * 
+	 * @return
+	 */
 	public static Set getEventBinderIds(List<Map> events) {
 		Set<String> eventBinderIds = new TreeSet<String>();
 		for (Map e : events) {
@@ -224,9 +269,16 @@ public class EventsViewHelper {
 		return eventBinderIds;
 	}
 	
+	/**
+	 * ?
+	 * 
+	 * @param searchResults
+	 * @param intervalView
+	 * 
+	 * @return
+	 */
 	public static Map<Map, List<Event>> getEvents(List searchResults, AbstractIntervalView intervalView) {
 		Map<Map, List<Event>> results = new HashMap<Map, List<Event>>();
-		
 		Iterator entryIterator = searchResults.iterator();
 		while (entryIterator.hasNext()) {
 			Map entry = (HashMap) entryIterator.next();
@@ -237,6 +289,7 @@ public class EventsViewHelper {
 	}	
 
 	/**
+	 * ?
 	 * 
 	 * @param searchResults
 	 * @param viewRangeDates
@@ -244,9 +297,7 @@ public class EventsViewHelper {
 	 * 
 	 * @return
 	 */
-	public static List getCalendarEventsBeans(List searchResults,
-			AbstractIntervalView viewRangeDates, boolean onlyTrueEvents) {
-		
+	public static List getCalendarEventsBeans(List searchResults, AbstractIntervalView viewRangeDates, boolean onlyTrueEvents) {
 		List result = new ArrayList();
 		
 		User user = RequestContextHolder.getRequestContext().getUser();
@@ -262,8 +313,7 @@ public class EventsViewHelper {
 				if (creationDate != null && 
 						(viewRangeDates == null || viewRangeDates.dateInView(creationDate))) {
 					List events = new ArrayList();
-					events.add(createEvent(creationDate, timeZone, EVENT_TYPE_CREATION, 
-							(String)entry.get(Constants.DOCID_FIELD)));
+					events.add(createEvent(creationDate, timeZone, EVENT_TYPE_CREATION, ((String) entry.get(Constants.DOCID_FIELD))));
 					result.addAll(getEventsBeansByEvents(entry, events, EVENT_TYPE_CREATION));
 				}
 	
@@ -271,8 +321,7 @@ public class EventsViewHelper {
 				Date lastActivityDate = (Date) entry.get(Constants.LASTACTIVITY_FIELD);
 				if (lastActivityDate != null && (viewRangeDates == null || viewRangeDates.dateInView(lastActivityDate))) {
 					List events = new ArrayList();
-					events.add(createEvent(lastActivityDate, timeZone, EVENT_TYPE_ACTIVITY, 
-							(String)entry.get(Constants.DOCID_FIELD)));
+					events.add(createEvent(lastActivityDate, timeZone, EVENT_TYPE_ACTIVITY, ((String) entry.get(Constants.DOCID_FIELD))));
 					result.addAll(getEventsBeansByEvents(entry, events, EVENT_TYPE_ACTIVITY));
 				}
 			}
@@ -284,7 +333,7 @@ public class EventsViewHelper {
 		return result;
 	}
 	
-	/**
+	/*
 	 * One entry can contain many events.
 	 */
 	private static List<Event> parseSearchResultEntryToEvents(Map entry, AbstractIntervalView viewRangeDates) {
@@ -393,6 +442,8 @@ public class EventsViewHelper {
 		return events;
 	}
 
+	/*
+	 */
 	private static int parseEventsCount(String eventCountField) {
 		int count = 0;
 		if (eventCountField != null && !eventCountField.equals("")) {
@@ -401,7 +452,8 @@ public class EventsViewHelper {
 		return count;
 	}
 
-
+	/*
+	 */
 	private static List<Map> getEventsBeansByEvents(Map entry, List<Event> events, String eventType) {
 		List<Map> result = new ArrayList<Map>();
 		
@@ -448,6 +500,8 @@ public class EventsViewHelper {
 		return result;
 	}
 
+	/*
+	 */
 	private static Event createEvent(Date eventDate, TimeZone timeZone, String type, String entryId) {
 		Event event = new Event();
 		Calendar gcal = Calendar.getInstance();
@@ -460,16 +514,14 @@ public class EventsViewHelper {
 		return event;
 	}
 
-
-
-	
 	/**
 	 * CurrentDate is the date selected by the user; we make sure this date is in view.
 	 * Current date is always saved in session.
 	 * 
-	 * Dafault current date is today.
+	 * Default current date is today.
 	 *    
 	 * @param portletSession
+	 * 
 	 * @return
 	 */
 	public static Date getCalendarCurrentDate(PortletSession portletSession) {
@@ -486,7 +538,13 @@ public class EventsViewHelper {
 		
 		return currentDate;
 	}
-	
+
+	/**
+	 * ?
+	 * 
+	 * @param portletSession
+	 * @param currentDate
+	 */
 	public static void setCalendarCurrentDate(PortletSession portletSession, Date currentDate) {
 		if (currentDate == null) {
 			currentDate = new Date();
@@ -496,6 +554,12 @@ public class EventsViewHelper {
 
 	/**
 	 * Get calendar display event type.
+	 * 
+	 * @param bs
+	 * @param userId
+	 * @param binderId
+	 * 
+	 * @return
 	 */
 	public static String getCalendarDisplayEventType(AllModulesInjected bs, Long userId, Long binderId) {
 		UserProperties userProps = bs.getProfileModule().getUserProperties(userId, binderId);
@@ -510,6 +574,11 @@ public class EventsViewHelper {
 	
 	/**
 	 * Store calendar display event type.
+	 * 
+	 * @param bs
+	 * @param userId
+	 * @param binderId
+	 * @param eventType
 	 */
 	public static void setCalendarDisplayEventType(AllModulesInjected bs, Long userId, Long binderId, String eventType) {
 		if (eventType == null) {
@@ -524,14 +593,38 @@ public class EventsViewHelper {
 		bs.getProfileModule().setUserProperty(userId, binderId, WebKeys.CALENDAR_MODE_PREF, eventType);
 	}
 
+	/**
+	 * ?
+	 * 
+	 * @param request
+	 * @param userProperties
+	 * @param stickyComponentId
+	 * @param gridType
+	 * @param gridSize
+	 * 
+	 * @return
+	 */
 	public static Map setCalendarGrid(HttpServletRequest request, UserProperties userProperties, String stickyComponentId, String gridType, Integer gridSize) {
 		return setCalendarGridImpl(null, WebHelper.getRequiredSession(request), userProperties, stickyComponentId, gridType, gridSize);
 	}
-	
+
+	/**
+	 * ?
+	 * 
+	 * @param ps
+	 * @param userProperties
+	 * @param stickyComponentId
+	 * @param gridType
+	 * @param gridSize
+	 * 
+	 * @return
+	 */
 	public static Map setCalendarGrid(PortletSession ps, UserProperties userProperties, String stickyComponentId, String gridType, Integer gridSize) {
 		return setCalendarGridImpl(ps, null, userProperties, stickyComponentId, gridType, gridSize);
 	}
-	
+
+	/*
+	 */
 	private static Map setCalendarGridImpl(PortletSession ps, HttpSession hs, UserProperties userProperties, String stickyComponentId, String gridType, Integer gridSize) {
 		Grid currentGrid = getCalendarGridImpl(ps, hs, userProperties, stickyComponentId);
 		if (gridType == null || !(gridType.equals(GRID_DAY) ||
@@ -562,15 +655,34 @@ public class EventsViewHelper {
 		
 		return grids;
 	}
-	
+
+	/**
+	 * ?
+	 * 
+	 * @param request
+	 * @param userProperties
+	 * @param stickyComponentId
+	 * 
+	 * @return
+	 */
 	public static Grid getCalendarGrid(HttpServletRequest request, UserProperties userProperties, String stickyComponentId) {
 		return getCalendarGridImpl(null, WebHelper.getRequiredSession(request), userProperties, stickyComponentId);
 	}
-	
+
+	/**
+	 * ? 
+	 * @param ps
+	 * @param userProperties
+	 * @param stickyComponentId
+	 * 
+	 * @return
+	 */
 	public static Grid getCalendarGrid(PortletSession ps, UserProperties userProperties, String stickyComponentId) {
 		return getCalendarGridImpl(ps, null, userProperties, stickyComponentId);
 	}
 	
+	/*
+	 */
 	private static Grid getCalendarGridImpl(PortletSession ps, HttpSession hs, UserProperties userProperties, String stickyComponentId) {
 		Map grids = null;
 		if      (null != ps) grids = ((Map) ps.getAttribute(WebKeys.CALENDAR_CURRENT_GRID, PortletSession.APPLICATION_SCOPE));
@@ -586,7 +698,17 @@ public class EventsViewHelper {
 	
 		return null;
 	}
-		
+
+	/**
+	 * ?
+	 * 
+	 * @param year
+	 * @param month
+	 * @param dayOfMonth
+	 * @param defaultValue
+	 * 
+	 * @return
+	 */
 	public static Date getDate(int year, int month, int dayOfMonth, Date defaultValue) {
 		User user = RequestContextHolder.getRequestContext().getUser();
 		TimeZone timeZone = user.getTimeZone();
@@ -607,14 +729,30 @@ public class EventsViewHelper {
 		return calendar.getTime();
 	}
 
+	/**
+	 * ?
+	 * 
+	 * @param request
+	 * 
+	 * @return
+	 */
 	public static String getCalendarDayViewType(HttpServletRequest request) {
 		return getCalendarDayViewTypeImpl(null, WebHelper.getRequiredSession(request));
 	}
-	
+
+	/**
+	 * ?
+	 * 
+	 * @param ps
+	 * 
+	 * @return
+	 */
 	public static String getCalendarDayViewType(PortletSession ps) {
 		return getCalendarDayViewTypeImpl(ps, null);
 	}
 	
+	/*
+	 */
 	private static String getCalendarDayViewTypeImpl(PortletSession ps, HttpSession hs) {
 		String dayViewType = null;
 		if      (null != null) dayViewType = ((String) ps.getAttribute(WebKeys.CALENDAR_CURRENT_DAY_VIEW_TYPE, PortletSession.APPLICATION_SCOPE));
@@ -627,15 +765,29 @@ public class EventsViewHelper {
 		
 		return dayViewType;
 	}
-	
+
+	/**
+	 * ?
+	 * 
+	 * @param request
+	 * @param dayViewType
+	 */
 	public static void setCalendarDayViewType(HttpServletRequest request, String dayViewType) {
 		setCalendarDayViewTypeImpl(null, WebHelper.getRequiredSession(request), dayViewType);
 	}
-	
+
+	/**
+	 * ?
+	 * 
+	 * @param ps
+	 * @param dayViewType
+	 */
 	public static void setCalendarDayViewType(PortletSession ps, String dayViewType) {
 		setCalendarDayViewTypeImpl(ps, null, dayViewType);
 	}
 	
+	/*
+	 */
 	private static void setCalendarDayViewTypeImpl(PortletSession ps, HttpSession hs, String dayViewType) {
 		// If we weren't given a day view or we don't recognize it...
 		if ((null == dayViewType) ||
@@ -648,38 +800,44 @@ public class EventsViewHelper {
 		if      (null != ps) ps.setAttribute(WebKeys.CALENDAR_CURRENT_DAY_VIEW_TYPE, dayViewType, PortletSession.APPLICATION_SCOPE);
 		else if (null != hs) hs.setAttribute(WebKeys.CALENDAR_CURRENT_DAY_VIEW_TYPE, dayViewType                                  );
 	}
-	
-	public static String eventToRepeatHumanReadableString (Event event, Locale locale) {
-		@SuppressWarnings("unused")
+
+	/**
+	 * ?
+	 * 
+	 * @param event
+	 * @param locale
+	 * 
+	 * @return
+	 */
+	public static String eventToRepeatHumanReadableString(Event event, Locale locale) {
 		User user = RequestContextHolder.getRequestContext().getUser();
 		
-		// in addition to the raw event, we disintangle some of the
-		// recurrence stuff
-		// to make the jsp page less complex
+		// In addition to the raw event, we disintangle some of the
+		// recurrence stuff to make the jsp page less complex.
 		DayAndPosition dpa[] = event.getByDay();
-		int dpalen = 0;
-		// what we'll actually pass in is a list of ints representing the
-		// days
+		int dpalen = ((null == dpa) ? 0 : dpa.length);
+		
+		// What we'll actually pass in is a list of integers
+		// representing the days.
 		ArrayList bydays = new ArrayList();
 		Integer bynum = new Integer(0);
-		if (dpa != null) {
-			dpalen = dpa.length;
-		}
-		for (int i = 0; i < dpalen; i++) {
+		for (int i = 0; i < dpalen; i += 1) {
 			Integer dd = new Integer(event.getByDay()[i].getDayOfWeek());
 			Integer nn = new Integer(event.getByDay()[i].getDayPosition());
 			bydays.add(dd);
 			bynum = nn;
 		}
 		
-		String freqString = event.getFrequencyString();
-		String onString = "";
-		String untilString = "";
+		String freqString        = event.getFrequencyString();
+		String onString          = "";
+		String untilString       = "";
 		String onStringSeparator = "";
-		if (freqString == null) {
+		if (null == freqString) {
 			// freqString = "does not repeat";
 			// freqString = NLT.get("event.no_repeat", locale);
-		} else {
+		}
+		
+		else {
 			freqString = freqString.toLowerCase();
 			if (event.getInterval() > 1) {
 				freqString = NLT.get("event.every", locale) + " " + event.getInterval();
@@ -703,9 +861,9 @@ public class EventsViewHelper {
 					freqString = l10nFreq;
 				}
 			}
-			Iterator byDaysIt = bydays.listIterator();
 
-			// format weekly events as comma-separated list of ondays
+			// Format weekly events as comma-separated list of onDays.
+			Iterator byDaysIt = bydays.listIterator();
 			if (event.getFrequency() == Event.WEEKLY && byDaysIt.hasNext()) {
 				onString += NLT.get("event.occurson", locale) + " ";
 				while (byDaysIt.hasNext()) {
@@ -714,11 +872,11 @@ public class EventsViewHelper {
 					onStringSeparator = ", ";
 				}
 			}
-			// monthly events include the ondaycard stuff
-			// note that bydays will now only have one entry (it may be
-			// "weekday")
-			// and bynum will be meaningful here (again, it is a singleton,
-			// not a list)
+			
+			// Monthly events include the onDayCard stuff.  Note that
+			// byDays will now only have one entry (it may be weekday)
+			// and byNum will be meaningful here (again, it is a
+			// singleton, not a list.)
 			if (event.getFrequency() == Event.MONTHLY && byDaysIt.hasNext()) {
 				Integer ii = (Integer) byDaysIt.next();
 				onString += NLT.get("event.occurson", locale) + " " + NLT.get(nums[getNumsIndex(bynum.intValue())], locale) + " ";
@@ -745,46 +903,46 @@ public class EventsViewHelper {
 					}
 				}
 
-				if (byDaysIt.hasNext() && event.getByMonth() != null
-						&& event.getByMonth().length > 0) {
+				if (byDaysIt.hasNext() && (event.getByMonth() != null) && (event.getByMonth().length > 0)) {
 					Integer ii = (Integer) byDaysIt.next();
 					onString += NLT.get("event.occurson", locale) + " " + NLT.get(nums[getNumsIndex(bynum.intValue())], locale) + " ";
 					onString += NLT.get(dayNames[ii.intValue()], locale) + " ";
 
 					onString += "of ";
 					for (int i = 0; i < event.getByMonth().length; i++) {
-						onString += monthNames[event.getByMonth()[i]]
-								+ (i < (event.getByMonth().length - 1) ? ", "
-										: " ");
+						onString += monthNames[event.getByMonth()[i]] + (i < (event.getByMonth().length - 1) ? ", " : " ");
 					}
 				}
 			}
-
 		}
+
 		if (event.getFrequencyString() != null) {
-			// This is used by text mail, cannot add html untilString += "<br>";
+			// This is used by text mail, cannot add HTML
+			// untilString += "<br>";
 			if (event.getCount() == 0) {
 				untilString += NLT.get("event.repeat_forever", locale);
-			} else if (event.getCount() == -1) {
-				DateFormat dateFormat = DateFormat.getDateInstance(DateFormat.LONG,
-						locale);
+			}
+			else if (event.getCount() == -1) {
+				DateFormat dateFormat = DateFormat.getDateInstance(DateFormat.LONG, locale);
 				dateFormat.setTimeZone(TimeZoneHelper.getTimeZone("GMT"));
-
 				untilString += NLT.get("event.repeat_until", locale) + " " + dateFormat.format(event.getUntil().getTime());
-			} else {
+			}
+			else {
 				untilString += NLT.get("event.repeat", locale) + " " + event.getCount() + " " + NLT.get("event.times", locale);
 			}
 		}
 		
-		if ((freqString != null && !"".equals(freqString)) ||
-				(onString != null && !"".equals(onString)) ||
+		if (    (freqString  != null && !"".equals(freqString)) ||
+				(onString    != null && !"".equals(onString))   ||
 				(untilString != null && !"".equals(untilString))) {
-			return freqString + " " + onString + " " + untilString;	
+			return (freqString + " " + onString + " " + untilString);	
 		}
 		
 		return null;
 	}
 	
+	/*
+	 */
 	private static String getNumberSuffix(int i) {
 		if (i == 1) {
 			return "st";
@@ -796,6 +954,8 @@ public class EventsViewHelper {
 		return "th";
 	}
 
+	/*
+	 */
 	private static int getNumsIndex(int byNum) {
 		if ((-1) == byNum) {
 			byNum = 6;

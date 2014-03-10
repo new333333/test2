@@ -2344,8 +2344,13 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	// no transaction
 	@Override
 	public void setTeamMembershipInherited(Long binderId, final boolean inherit) {
+        setTeamMembershipInherited(binderId, inherit, true);
+    }
+	public void setTeamMembershipInherited(Long binderId, final boolean inherit, boolean doAccessCheck) {
 		final Binder binder = loadBinder(binderId);
-		checkAccess(binder, BinderOperation.manageTeamMembers);
+        if (doAccessCheck) {
+		    checkAccess(binder, BinderOperation.manageTeamMembers);
+        }
 		Boolean index = (Boolean) getTransactionTemplate().execute(
 				new TransactionCallback() {
 					@Override
@@ -3045,8 +3050,15 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	@Override
 	public void setBinderVersionsInherited(Long binderId, final Boolean binderVersionsInherited)
 			throws AccessControlException {
+        setBinderVersionsInherited(binderId, binderVersionsInherited, true);
+    }
+
+	public void setBinderVersionsInherited(Long binderId, final Boolean binderVersionsInherited, boolean doAccessCheck)
+			throws AccessControlException {
 		final Binder binder = loadBinder(binderId);
-		checkAccess(binder, BinderOperation.manageConfiguration);
+        if (doAccessCheck) {
+		    checkAccess(binder, BinderOperation.manageConfiguration);
+        }
 		if (binderVersionsInherited) {
 			getTransactionTemplate().execute(new TransactionCallback() {
 				@Override
@@ -3239,8 +3251,14 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	@Override
 	public void setBinderFileEncryptionInherited(Long binderId, final Boolean binderEncryptionInherited)
 			throws AccessControlException {
+        setBinderFileEncryptionInherited(binderId, binderEncryptionInherited, true);
+    }
+	public void setBinderFileEncryptionInherited(Long binderId, final Boolean binderEncryptionInherited, boolean doAccessCheck)
+			throws AccessControlException {
 		final Binder binder = loadBinder(binderId);
-		checkAccess(binder, BinderOperation.manageConfiguration);
+        if (doAccessCheck) {
+		    checkAccess(binder, BinderOperation.manageConfiguration);
+        }
 		if (binderEncryptionInherited) {
 			getTransactionTemplate().execute(new TransactionCallback() {
 				@Override
@@ -3714,6 +3732,11 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
         List<HKey> binderKeys = getHKeys(binderIds);
         if (binderKeys==null || binderKeys.size()==0) {
             return null;
+        }
+        Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
+        Date purgeDate = getCoreDao().getAuditTrailPurgeDate(zoneId);
+        if (purgeDate!=null && purgeDate.after(sinceDate)) {
+            throw new AuditTrailPurgedException();
         }
         if (haveAclsChangedSinceDate(binderKeys, sinceDate)) {
             throw new AclChangeException();

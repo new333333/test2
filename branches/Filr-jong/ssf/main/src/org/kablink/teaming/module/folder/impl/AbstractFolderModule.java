@@ -139,6 +139,7 @@ import org.kablink.teaming.search.QueryBuilder;
 import org.kablink.teaming.search.SearchObject;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.security.function.OperationAccessControlException;
+import org.kablink.teaming.security.function.WorkArea;
 import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ReflectHelper;
@@ -282,6 +283,11 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
     	} catch (Exception ex) {};
     	job.schedule(zone.getId(), minutes*60);
    }
+     
+     @Override
+     public boolean testReadAccess(User user, WorkArea workArea, boolean checkSharing) {
+    	 return getAccessControlManager().testOperation(user, workArea, WorkAreaOperation.CREATE_ENTRIES, checkSharing);
+     }
 
 	@Override
 	public boolean testAccess(Folder folder, FolderOperation operation) {
