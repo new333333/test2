@@ -60,7 +60,11 @@ import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.ResourceDriverConfig.DriverType;
 import org.kablink.teaming.fi.connection.ResourceDriver;
+import org.kablink.teaming.fi.connection.ResourceDriverManager;
 import org.kablink.teaming.fi.connection.ResourceDriverManagerUtil;
+import org.kablink.teaming.fi.connection.acl.AclResourceDriver;
+import org.kablink.teaming.fi.connection.acl.AclResourceDriver.ConnectionTestStatus;
+import org.kablink.teaming.fi.connection.acl.AclResourceDriver.ConnectionTestStatusCode;
 import org.kablink.teaming.jobs.MirroredFolderSynchronization;
 import org.kablink.teaming.jobs.NetFolderServerSynchronization;
 import org.kablink.teaming.jobs.Schedule;
@@ -386,188 +390,193 @@ public class NetFolderHelper
 																	resourceDriverModule,
 																	homeDirInfo );
 			}
-			else
-			{
-				// A net folder server already exists.  Is it fully configured?
-				if ( isNetFolderServerConfigured( rdConfig ) )
-				{
-					// Yes, this means we can sync the home directory net folder if we need to.
-					canSyncNetFolder = true;
-				}
-			}
 		}
 		
-		if ( rdConfig != null )
+		if ( rdConfig != null && isNetFolderServerConfigured( rdConfig ) )
 		{
+			ConnectionTestStatus status;
 			Binder homeDirNetFolderBinder;
 			NetFolderConfig nfc;
 			boolean syncNeeded = false;
 			
-			// Does a net folder already exist for this user's home directory
-			homeDirNetFolderBinder = NetFolderHelper.findHomeDirNetFolder(
-																binderModule,
-																user.getWorkspaceId() );
-			if ( homeDirNetFolderBinder == null )
+			// Test the connection
+			status = testNetFolderConnection(
+											rdConfig.getName(),
+											rdConfig.getDriverType(),
+											rdConfig.getRootPath(),
+											path,
+											rdConfig.getAccountName(),
+											rdConfig.getPassword() );
+			
+			// Only create the net folder if we can successfully make a connection
+			if ( status != null && status.getCode() == ConnectionTestStatusCode.NORMAL )
 			{
-				String folderName;
-				Long zoneId;
-				ScheduleInfo scheduleInfo;
-				Schedule schedule;
-	
-				// No, create one.
-				folderName = NLT.get( "netfolder.default.homedir.name" );
-				m_logger.info( "About to create a net folder called: " + folderName + ", for the users home directory for user: " + user.getName() );
-				
-				// Create a default schedule for syncing the net folder
-				// The schedule is disabled and configured to run every day at midnight
-				zoneId = RequestContextHolder.getRequestContext().getZoneId();
-				scheduleInfo = new ScheduleInfo( zoneId );
-				scheduleInfo.setEnabled( false );
-				schedule = new Schedule( "" );
-				schedule.setDaily( true );
-				// Set the schedule for midnight gmt
+				// Does a net folder already exist for this user's home directory
+				homeDirNetFolderBinder = NetFolderHelper.findHomeDirNetFolder(
+																	binderModule,
+																	user.getWorkspaceId() );
+				if ( homeDirNetFolderBinder == null )
 				{
-					User currentUser;
-					String hourStr;
+					String folderName;
+					Long zoneId;
+					ScheduleInfo scheduleInfo;
+					Schedule schedule;
+		
+					// No, create one.
+					folderName = NLT.get( "netfolder.default.homedir.name" );
+					m_logger.info( "About to create a net folder called: " + folderName + ", for the users home directory for user: " + user.getName() );
 					
-					currentUser = RequestContextHolder.getRequestContext().getUser();
-					if ( currentUser != null )
+					// Create a default schedule for syncing the net folder
+					// The schedule is disabled and configured to run every day at midnight
+					zoneId = RequestContextHolder.getRequestContext().getZoneId();
+					scheduleInfo = new ScheduleInfo( zoneId );
+					scheduleInfo.setEnabled( false );
+					schedule = new Schedule( "" );
+					schedule.setDaily( true );
+					// Set the schedule for midnight gmt
 					{
-						TimeZone tz;
-						Date now = new Date();
-						int offset;
-						int offsetHour;
-						int hour;
-
-						tz = currentUser.getTimeZone();
-						offset = tz.getOffset( now.getTime() );
-						offsetHour = offset / (1000*60*60);
-						hour = (0 - offsetHour) % 24;
-						hourStr = String.valueOf( hour );
-					}
-					else
-						hourStr = "0";
-					
-					schedule.setHours( hourStr );
-				}
-				schedule.setMinutes( "0" );
-				scheduleInfo.setSchedule( schedule );
-
-				// Create a net folder in the user's workspace
-				nfc = NetFolderHelper.createNetFolder(
-													templateModule,
-													binderModule,
-													folderModule,
-													netFolderModule,
-													adminModule,
-													user,
-													folderName,
-													rdConfig.getName(),
-													path,
-													scheduleInfo,
-													SyncScheduleOption.useNetFolderServerSchedule,
-													workspaceId,
-													true,
-													false,
-													new Boolean( true ),
-													null );
-
-				// As the fix for bug 831849 we must call getCoreDao().clear() before we call
-				// NetFolderHelper.saveJitsSettings().  If we don't, saveJitsSettings() throws
-				// a DuplicateKeyException.
-				{
-					CoreDao coreDao;
-					
-					coreDao = getCoreDao();
-					if ( coreDao != null )
-						coreDao.clear();
-				}
-				
-				// Save the jits settings
-				{
-					NetFolderHelper.saveJitsSettings(
-												binderModule,
-												nfc.getId(),
-												true,
-												true,
-												getDefaultJitsAclMaxAge(),
-												getDefaultJitsResultsMaxAge() );
-				}
-				
-				nfc = NetFolderUtil.getNetFolderConfig( homeDirNetFolderBinder.getNetFolderConfigId() ); 
-				syncNeeded = false;
-			}
-			else
-			{
-				nfc = NetFolderUtil.getNetFolderConfig( homeDirNetFolderBinder.getNetFolderConfigId() );
-				
-				// A home dir net folder already exists for this user.
-				// Are we supposed to try and update an existing net folder?
-				if ( updateExistingNetFolder )
-				{
-					String currentServerUNC = null;
-					
-					// Yes
-					// Get the server unc path that is currently being used by the user's home dir net folder.
-					{
-						ResourceDriver driver;
+						User currentUser;
+						String hourStr;
 						
-						driver = nfc.getResourceDriver();
-						if ( driver != null )
+						currentUser = RequestContextHolder.getRequestContext().getUser();
+						if ( currentUser != null )
 						{
-							ResourceDriverConfig currentRdConfig;
+							TimeZone tz;
+							Date now = new Date();
+							int offset;
+							int offsetHour;
+							int hour;
+	
+							tz = currentUser.getTimeZone();
+							offset = tz.getOffset( now.getTime() );
+							offsetHour = offset / (1000*60*60);
+							hour = (0 - offsetHour) % 24;
+							hourStr = String.valueOf( hour );
+						}
+						else
+							hourStr = "0";
+						
+						schedule.setHours( hourStr );
+					}
+					schedule.setMinutes( "0" );
+					scheduleInfo.setSchedule( schedule );
+	
+					// Create a net folder in the user's workspace
+					nfc = NetFolderHelper.createNetFolder(
+														templateModule,
+														binderModule,
+														folderModule,
+														netFolderModule,
+														adminModule,
+														user,
+														folderName,
+														rdConfig.getName(),
+														path,
+														scheduleInfo,
+														SyncScheduleOption.useNetFolderServerSchedule,
+														workspaceId,
+														true,
+														false,
+														new Boolean( true ),
+														null );
+	
+					// As the fix for bug 831849 we must call getCoreDao().clear() before we call
+					// NetFolderHelper.saveJitsSettings().  If we don't, saveJitsSettings() throws
+					// a DuplicateKeyException.
+					{
+						CoreDao coreDao;
+						
+						coreDao = getCoreDao();
+						if ( coreDao != null )
+							coreDao.clear();
+					}
+					
+					// Save the jits settings
+					{
+						NetFolderHelper.saveJitsSettings(
+													binderModule,
+													nfc.getId(),
+													true,
+													true,
+													getDefaultJitsAclMaxAge(),
+													getDefaultJitsResultsMaxAge() );
+					}
+					
+					nfc = NetFolderUtil.getNetFolderConfig( homeDirNetFolderBinder.getNetFolderConfigId() ); 
+					syncNeeded = false;
+				}
+				else
+				{
+					nfc = NetFolderUtil.getNetFolderConfig( homeDirNetFolderBinder.getNetFolderConfigId() );
+					
+					// A home dir net folder already exists for this user.
+					// Are we supposed to try and update an existing net folder?
+					if ( updateExistingNetFolder )
+					{
+						String currentServerUNC = null;
+						
+						// Yes
+						// Get the server unc path that is currently being used by the user's home dir net folder.
+						{
+							ResourceDriver driver;
 							
-							currentRdConfig = driver.getConfig();
-							if ( currentRdConfig != null )
-								currentServerUNC = currentRdConfig.getRootPath();
+							driver = nfc.getResourceDriver();
+							if ( driver != null )
+							{
+								ResourceDriverConfig currentRdConfig;
+								
+								currentRdConfig = driver.getConfig();
+								if ( currentRdConfig != null )
+									currentServerUNC = currentRdConfig.getRootPath();
+							}
+						}
+								
+						// Did any information about the home directory change?
+						if ( (serverUNC != null && serverUNC.equalsIgnoreCase( currentServerUNC ) == false) ||
+							 homeDirInfo.getPath().equalsIgnoreCase( nfc.getResourcePath() ) == false )
+						{
+							Set deleteAtts;
+							Map fileMap = null;
+							MapInputData mid;
+			   				Map formData = null;
+		
+							// Yes
+							deleteAtts = new HashSet();
+							fileMap = new HashMap();
+			   				formData = new HashMap();
+					   		formData.put( ObjectKeys.FIELD_BINDER_RESOURCE_DRIVER_NAME, rdConfig.getName() );
+					   		formData.put( ObjectKeys.FIELD_BINDER_RESOURCE_PATH, path );
+			   				mid = new MapInputData( formData );
+		
+			   				// Modify the existing net folder with the home directory information.
+				   			binderModule.modifyBinder( nfc.getId(), mid, fileMap, deleteAtts, null );
+				   			
+				   			syncNeeded = false;
 						}
 					}
-							
-					// Did any information about the home directory change?
-					if ( (serverUNC != null && serverUNC.equalsIgnoreCase( currentServerUNC ) == false) ||
-						 homeDirInfo.getPath().equalsIgnoreCase( nfc.getResourcePath() ) == false )
-					{
-						Set deleteAtts;
-						Map fileMap = null;
-						MapInputData mid;
-		   				Map formData = null;
-	
-						// Yes
-						deleteAtts = new HashSet();
-						fileMap = new HashMap();
-		   				formData = new HashMap();
-				   		formData.put( ObjectKeys.FIELD_BINDER_RESOURCE_DRIVER_NAME, rdConfig.getName() );
-				   		formData.put( ObjectKeys.FIELD_BINDER_RESOURCE_PATH, path );
-		   				mid = new MapInputData( formData );
-	
-		   				// Modify the existing net folder with the home directory information.
-			   			binderModule.modifyBinder( nfc.getId(), mid, fileMap, deleteAtts, null );
-			   			
-			   			syncNeeded = false;
-					}
 				}
-			}
-			
-			// Do we need to sync the home directory net folder?
-			if ( syncNeeded )
-			{
-				// Yes
-				// Can we sync the home directory net folder?
-				if ( canSyncNetFolder )
+				
+				// Do we need to sync the home directory net folder?
+				if ( syncNeeded )
 				{
-					// Yes, sync it.
-					try
+					// Yes
+					// Can we sync the home directory net folder?
+					if ( canSyncNetFolder )
 					{
-						final Long binderId;
-						
-						binderId = nfc.getFolderId();
-
-						m_logger.info( "About to sync home directory net folder: " + binderId );
-						folderModule.enqueueFullSynchronize( binderId );
-					}
-					catch ( Exception e )
-					{
-						m_logger.error( "Error syncing next net folder: " + nfc.getName() + ", " + e.toString() );
+						// Yes, sync it.
+						try
+						{
+							final Long binderId;
+							
+							binderId = nfc.getFolderId();
+	
+							m_logger.info( "About to sync home directory net folder: " + binderId );
+							folderModule.enqueueFullSynchronize( binderId );
+						}
+						catch ( Exception e )
+						{
+							m_logger.error( "Error syncing next net folder: " + nfc.getName() + ", " + e.toString() );
+						}
 					}
 				}
 			}
@@ -1414,4 +1423,59 @@ public class NetFolderHelper
         AdminHelper.setAssignedRights(ami, binder, roleTypes, roles);
     }
 
+    /**
+     * 
+     */
+    public static ConnectionTestStatus testNetFolderConnection(
+		String driverName,
+		DriverType driverType,
+		String rootPath,
+		String subPath,
+		String proxyName,
+		String proxyPwd )
+    {
+    	ConnectionTestStatus status = null;
+		String name;
+		ResourceDriverConfig rdConfig = null;
+		ResourceDriver resourceDriver;
+		ResourceDriverManager rdManager;
+    	
+		name = driverName;
+		if ( name != null )
+			name = "test-connection-" + name + "test-connection";
+		else
+			name = "test-connection-net-folder-root-test-connection";
+		
+		rdConfig = new ResourceDriverConfig();
+		rdConfig.setName( name );
+		rdConfig.setDriverType( driverType );
+		rdConfig.setZoneId( RequestContextHolder.getRequestContext().getZoneId() );
+		rdConfig.setRootPath( rootPath );
+   		rdConfig.setReadOnly( false );
+   		rdConfig.setSynchTopDelete( false );
+   		rdConfig.setAccountName( proxyName );
+   		rdConfig.setPassword( proxyPwd );
+		
+   		rdManager = ResourceDriverManagerUtil.getResourceDriverManager();
+		// Do not call initialize() method on the driver when we create a temporary one
+		// just for the purpose of testing a connection. Specifically, if we call initialize()
+		// on a FAMT resource driver, it may trigger building a rights cache which can take
+		// significant time and system resources which we do not need for this test.
+   		resourceDriver = rdManager.createResourceDriverWithoutInitialization( rdConfig );
+   		if ( resourceDriver != null && resourceDriver instanceof AclResourceDriver )
+   		{
+   			AclResourceDriver aclDriver;
+   			
+   			aclDriver = (AclResourceDriver) resourceDriver;
+   			status = aclDriver.testConnection(
+		   								proxyName,
+		   								proxyPwd,
+		   								subPath );
+
+   			// Do not call shutdown() on this temporary driver instance, since we don't call initialize() on it.
+   			// Otherwise, the ref count FAMT maintains can go incorrect.
+   		}
+
+   		return status;
+    }
 }
