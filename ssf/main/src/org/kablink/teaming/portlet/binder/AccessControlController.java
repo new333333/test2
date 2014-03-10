@@ -43,6 +43,7 @@ import java.util.Set;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
+import javax.portlet.PortletURL;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
@@ -53,6 +54,7 @@ import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.Entry;
+import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.ShareItem;
 import org.kablink.teaming.domain.TemplateBinder;
@@ -192,6 +194,7 @@ public class AccessControlController extends AbstractBinderController {
 		if (workAreaId == null) workAreaId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_WORKAREA_ID));				
 		String type = PortletRequestUtils.getStringParameter(request, WebKeys.URL_WORKAREA_TYPE);	
 		String operation = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");	
+		String operation2 = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION2, "");	
 		WorkArea wArea=null;
 		Map model = new HashMap();
 		Map formData = request.getParameterMap();
@@ -241,6 +244,18 @@ public class AccessControlController extends AbstractBinderController {
 				model.put(WebKeys.ACCESS_SUPER_USER, AccessUtils.getZoneSuperUser(binder.getZoneId()));
 				model.put(WebKeys.ACCESS_CONTROL_CONFIGURE_ALLOWED, 
 						getAdminModule().testAccess(binder, AdminOperation.manageFunctionMembership));
+								
+				//Gather net folder data if this is a net folder
+				if (binder.isAclExternallyControlled() && binder instanceof Folder) {
+					model.put(WebKeys.ACCESS_NET_FOLDER_MAP, getFolderModule().getNetFolderAccessData((Folder)binder));
+					model.put(WebKeys.URL_OPERATION2, operation2);
+					PortletURL url = response.createRenderURL();
+					url.setParameter(WebKeys.ACTION, WebKeys.ACTION_ACCESS_CONTROL);
+					url.setParameter(WebKeys.URL_WORKAREA_ID, binder.getWorkAreaId().toString());
+					url.setParameter(WebKeys.URL_WORKAREA_TYPE, binder.getWorkAreaType());
+					url.setParameter(WebKeys.URL_OPERATION2, "debug");
+					model.put(WebKeys.ACCESS_NET_FOLDER_URL, url);
+				}
 			}
 		} catch(AccessControlException e) {
 			model.put(WebKeys.ACCESS_CONTROL_EXCEPTION, Boolean.TRUE);
@@ -268,14 +283,22 @@ public class AccessControlController extends AbstractBinderController {
 			return new ModelAndView(WebKeys.VIEW_ERROR_RETURN, model);
 		}
 		if (operation.equals(WebKeys.OPERATION_VIEW_ACCESS)) {
-			return new ModelAndView(WebKeys.VIEW_ACCESS_TO_BINDER, model);
+			if (operation2.equals("debug")) {
+				return new ModelAndView(WebKeys.VIEW_ACCESS_TO_NET_FOLDER, model);
+			} else {
+				return new ModelAndView(WebKeys.VIEW_ACCESS_TO_BINDER, model);
+			}
 		} else if (operation.equals(WebKeys.OPERATION_MANAGE_ACCESS_SHARING)) {
 			return new ModelAndView(WebKeys.VIEW_ACCESS_CONTROL_SHARING, model);
 		} else {
 			if (wArea instanceof Entry) {
 				return new ModelAndView(WebKeys.VIEW_ACCESS_CONTROL_ENTRY, model);
 			} else {
-				return new ModelAndView(WebKeys.VIEW_ACCESS_CONTROL, model);
+				if (operation2.equals("debug")) {
+					return new ModelAndView(WebKeys.VIEW_ACCESS_TO_NET_FOLDER, model);
+				} else {
+					return new ModelAndView(WebKeys.VIEW_ACCESS_CONTROL, model);
+				}
 			}
 		}
 	}

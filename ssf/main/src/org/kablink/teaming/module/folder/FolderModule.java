@@ -718,4 +718,6 @@ public interface FolderModule {
     public void syncAclForNetFolderRoot(Folder netFolderRoot);
 
     public Folder createNetFolder(Long templateId, Long parentBinderId, String name, User owner, String rootName, String path, Boolean isHomeDir, boolean indexContent) throws AccessControlException, WriteFilesException, WriteEntryDataException;
+    
+    public Map getNetFolderAccessData(Folder netFolder);
 }

@@ -32,6 +32,9 @@
  */
 package org.kablink.teaming.module.folder.impl;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.kablink.teaming.UncheckedIOException;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.User;
@@ -107,6 +110,11 @@ public class BaseFolderModule extends AbstractFolderModule implements BaseFolder
 
 	@Override
 	public void syncAclForNetFolderRoot(Folder netFolderRoot) {
+	}
+
+	@Override
+	public Map getNetFolderAccessData(Folder netFolder) {
+		return new HashMap();
 	}
 
 	@Override
