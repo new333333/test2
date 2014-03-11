@@ -163,6 +163,7 @@ import org.kablink.teaming.web.tree.DomTreeBuilder;
 import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.ExportHelper;
 import org.kablink.teaming.web.util.GwtUIHelper;
+import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.TrashHelper;
 import org.kablink.teaming.web.util.WebHelper;
 import org.kablink.util.StringUtil;
@@ -1746,26 +1747,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 			}
     		//We must guard against invalid copy attempts (such as complex entries copied to mirrored folder)
     		if (!source.isAclExternallyControlled() && destinationParent.isAclExternallyControlled()) {
-    			//This type of request could have invalid entries, so check each one
-    			Map getEntriesOptions = new HashMap();
-				//Specify if this request is to copy children binders, too.
-    			getEntriesOptions.put(ObjectKeys.SEARCH_INCLUDE_NESTED_BINDERS, new Boolean(cascade));
-          		Map folderEntries = getFolderModule().getEntries(source.getId(), getEntriesOptions);
-    	      	List<Map> searchEntries = (List)folderEntries.get(ObjectKeys.SEARCH_ENTRIES);
-
-    			for (Map se : searchEntries) {
-    				String entryIdStr = (String)se.get(Constants.DOCID_FIELD);
-    				if (entryIdStr != null && !entryIdStr.equals("")) {
-        				Long entryId = Long.valueOf(entryIdStr);
-        				Entry entry = getFolderModule().getEntry(null, entryId);
-    					try {
-    						BinderHelper.copyEntryCheckMirrored(source, entry, destinationParent);
-    					} catch(Exception e) {
-    						//This entry cannot be copied, so don't copy this binder
-    						throw new NotSupportedException("errorcode.notsupported.copyEntry.complexEntryToMirrored." + (destinationParent.isAclExternallyControlled() ? "net" : "mirrored"));
-    					}
-    				}
-    			}
+    			copyFolderCheckMirrored(source, destinationParent, cascade);
     		}
 			Map params = new HashMap();
 			if (options != null)
@@ -1781,6 +1763,45 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 			return binder;
 		} else {
 			throw new NotSupportedException(NLT.get("quota.binder.exceeded"));
+		}
+	}
+	
+	private void copyFolderCheckMirrored(Binder source, Binder destination, boolean cascade) {
+		//This type of request could have invalid entries, so check each one
+		Map getEntriesOptions = new HashMap();
+		//Specify if this request is to copy children binders, too.
+		getEntriesOptions.put(ObjectKeys.SEARCH_INCLUDE_NESTED_BINDERS, new Boolean(cascade));
+  		Map folderEntries = getFolderModule().getEntries(source.getId(), getEntriesOptions);
+      	List<Map> searchEntries = (List)folderEntries.get(ObjectKeys.SEARCH_ENTRIES);
+
+		for (Map se : searchEntries) {
+			String entityIdStr   = ((String) se.get(Constants.DOCID_FIELD ));
+			String entityTypeStr = ((String) se.get(Constants.ENTITY_FIELD));
+			if (MiscUtil.hasString(entityIdStr) && MiscUtil.hasString(entityTypeStr)) {
+				if (entityTypeStr.equalsIgnoreCase(EntityType.folderEntry.name())) {
+					Long  entryId = Long.valueOf(entityIdStr);
+					Entry entry   = getFolderModule().getEntry(null, entryId);
+					try {
+						BinderHelper.copyEntryCheckMirrored(source, entry, destination);
+					} catch(Exception e) {
+						//This entry cannot be copied, so don't copy this binder
+						throw new NotSupportedException("errorcode.notsupported.copyEntry.complexEntryToMirrored." + (destination.isAclExternallyControlled() ? "net" : "mirrored"));
+					}
+				}
+				else if (entityTypeStr.equalsIgnoreCase(EntityType.folder.name())) {
+					Long   folderId = Long.valueOf(entityIdStr);
+					Folder folder   = getFolderModule().getFolder(folderId);
+					copyFolderCheckMirrored(folder, destination, cascade);
+				}
+				else {
+					//This entry cannot be copied, so don't copy this binder
+					throw new NotSupportedException("errorcode.notsupported.copyEntry.complexEntryToMirrored." + (destination.isAclExternallyControlled() ? "net" : "mirrored"));
+				}
+			}
+			else {
+				//This entry cannot be copied, so don't copy this binder
+				throw new NotSupportedException("errorcode.notsupported.copyEntry.complexEntryToMirrored." + (destination.isAclExternallyControlled() ? "net" : "mirrored"));
+			}
 		}
 	}
 
@@ -2346,6 +2367,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	public void setTeamMembershipInherited(Long binderId, final boolean inherit) {
         setTeamMembershipInherited(binderId, inherit, true);
     }
+	@Override
 	public void setTeamMembershipInherited(Long binderId, final boolean inherit, boolean doAccessCheck) {
 		final Binder binder = loadBinder(binderId);
         if (doAccessCheck) {
@@ -3053,6 +3075,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
         setBinderVersionsInherited(binderId, binderVersionsInherited, true);
     }
 
+	@Override
 	public void setBinderVersionsInherited(Long binderId, final Boolean binderVersionsInherited, boolean doAccessCheck)
 			throws AccessControlException {
 		final Binder binder = loadBinder(binderId);
@@ -3253,6 +3276,8 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 			throws AccessControlException {
         setBinderFileEncryptionInherited(binderId, binderEncryptionInherited, true);
     }
+	
+	@Override
 	public void setBinderFileEncryptionInherited(Long binderId, final Boolean binderEncryptionInherited, boolean doAccessCheck)
 			throws AccessControlException {
 		final Binder binder = loadBinder(binderId);
