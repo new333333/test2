@@ -1,5 +1,5 @@
 /**
-' * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+' * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -30,7 +30,6 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-
 package org.kablink.teaming.domain;
 
 import java.security.SecureRandom;
@@ -43,8 +42,9 @@ import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SPropsUtil;
 
 /**
- * @author jong
+ * ?
  * 
+ * @author jong
  */
 public class ShareItem extends PersistentLongIdObject implements EntityIdentifiable { 
 
@@ -203,10 +203,12 @@ public class ShareItem extends PersistentLongIdObject implements EntityIdentifia
 		this.partOfPublicShare = partOfPublicShare;
 	}
 	
+	@Override
 	public Long getId() {
 		return id;
 	}
 
+	@Override
 	public void setId(Long id) {
 		this.id = id;
 	}
@@ -369,8 +371,10 @@ public class ShareItem extends PersistentLongIdObject implements EntityIdentifia
 				WorkAreaOperation.CREATE_ENTRIES, 
 				WorkAreaOperation.CREATE_FOLDERS, 
 				WorkAreaOperation.DELETE_ENTRIES,
+				WorkAreaOperation.BINDER_ADMINISTRATION, 
 				WorkAreaOperation.ADD_COMMUNITY_TAGS, 
 				WorkAreaOperation.GENERATE_REPORTS, 
+				WorkAreaOperation.CHANGE_ACCESS_CONTROL
 				}),
 		NONE("share.role.title.none",
 				new WorkAreaOperation[] {}),
@@ -406,5 +410,4 @@ public class ShareItem extends PersistentLongIdObject implements EntityIdentifia
 			return workAreaOperations;
 		}
 	}
-
 }
