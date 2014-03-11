@@ -912,7 +912,19 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
         				lock.setExpirationDate(expirationDate);
         			}
         			else { // Lock id does not match
-        				throw new LockIdMismatchException();    				
+        				if(isLockExpired(lock)) { // The previous lock has expired
+        					// Commit any pending changes associated with the expired lock
+        					commitPendingChanges(binder, entity, fa, lock, newObjs); 
+        					// Set the new lock.
+        					fa.setFileLock(new FileLock(lockId, lockSubject, 
+        							user, expirationDate, lockOwnerInfo));
+        				}
+        				else { // The previous lock is still effective
+        					// This is unlikely scenario, but the only possibility I can think of is that
+        					// the same user opened the same file from two different editor processes.
+        					// We can't allow this since concurrent editing may clobber each other.
+        					throw new LockIdMismatchException();    					
+        				}			
         			}     		
     			}
     			else { // The lock is owned by another user
