@@ -20,6 +20,7 @@ import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.dao.util.ShareItemSelectSpec;
 import org.kablink.teaming.domain.Attachment;
 import org.kablink.teaming.domain.DefinableEntity;
+import org.kablink.teaming.domain.Description;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.NoShareItemByTheIdException;
@@ -28,12 +29,13 @@ import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.module.file.FileIndexData;
+import org.kablink.teaming.remoting.rest.v1.exc.InternalServerErrorException;
 import org.kablink.teaming.remoting.rest.v1.exc.NotModifiedException;
 import org.kablink.teaming.remoting.rest.v1.util.BinderBriefBuilder;
 import org.kablink.teaming.remoting.rest.v1.util.ResourceUtil;
 import org.kablink.teaming.remoting.rest.v1.util.SearchResultBuilderUtil;
-import org.kablink.teaming.remoting.rest.v1.util.UniversalBuilder;
 import org.kablink.teaming.rest.v1.model.Access;
+import org.kablink.teaming.rest.v1.model.BaseBinderChange;
 import org.kablink.teaming.rest.v1.model.BinderBrief;
 import org.kablink.teaming.rest.v1.model.BinderChanges;
 import org.kablink.teaming.rest.v1.model.BinderTree;
@@ -53,7 +55,7 @@ import org.kablink.teaming.rest.v1.model.SharedFolderEntryBrief;
 import org.kablink.teaming.rest.v1.model.Tag;
 import org.kablink.teaming.search.SearchUtils;
 import org.kablink.teaming.security.AccessControlException;
-import org.kablink.teaming.web.util.EmailHelper;
+import org.kablink.util.Pair;
 import org.kablink.util.VibeRuntimeException;
 import org.kablink.util.api.ApiErrorCode;
 import org.kablink.util.search.*;
@@ -63,7 +65,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.xml.bind.annotation.XmlTransient;
+import java.text.ParseException;
 import java.util.*;
 
 /**
@@ -322,7 +324,7 @@ public class ShareResource extends AbstractResource {
         SearchResultList<SearchableObject> results = _getLibraryEntities(ObjectKeys.SHARED_BY_ME_ID, null, recursive,
                 includeBinders, includeFolderEntries, includeFiles, includeReplies, includeParentPaths, keyword,
                 toDomainFormat(descriptionFormatStr), offset, maxCount, "/shares/by_user/" + userId + "/library_entities", spec,
-                showHidden, showUnhidden, true, true);
+                showHidden, showUnhidden, false, true, true);
         return results;
     }
 
@@ -477,7 +479,7 @@ public class ShareResource extends AbstractResource {
         SearchResultList<SearchableObject> results = _getLibraryEntities(ObjectKeys.SHARED_WITH_ME_ID, userId, recursive,
                 includeBinders, includeFolderEntries, includeFiles, includeReplies, includeParentPaths, keyword,
                 toDomainFormat(descriptionFormatStr), offset, maxCount, "/shares/with_user/" + userId + "/library_entities", spec,
-                showHidden, showUnhidden, false, true);
+                showHidden, showUnhidden, false, false, true);
         return results;
     }
 
@@ -782,7 +784,7 @@ public class ShareResource extends AbstractResource {
         SearchResultList<SearchableObject> results = _getLibraryEntities(ObjectKeys.PUBLIC_SHARES_ID, null, recursive,
                 includeBinders, includeFolderEntries, includeFiles, includeReplies, includeParentPaths, keyword,
                 toDomainFormat(descriptionFormatStr), offset, maxCount, "/shares/public/library_entities", spec,
-                showHidden, showUnhidden, true, false);
+                showHidden, showUnhidden, false, true, false);
         return results;
     }
 
@@ -835,12 +837,12 @@ public class ShareResource extends AbstractResource {
             EntityIdentifier entityId = shareItem.getSharedEntityIdentifier();
             if (entityId.getEntityType()== EntityIdentifier.EntityType.folderEntry) {
                 FolderEntry entry = (FolderEntry) getSharingModule().getSharedEntity(shareItem);
-                if (showToUser(entry, topId, showHidden, showUnhidden)) {
+                if (showToUser(entry, topId, showHidden, showUnhidden, false)) {
                     entryIds.add(entityId.getEntityId().toString());
                 }
             } else if (entityId.getEntityType()== EntityIdentifier.EntityType.folder || entityId.getEntityType()== EntityIdentifier.EntityType.workspace) {
                 Binder binder = (Binder) getSharingModule().getSharedEntity(shareItem);
-                if (showBinderToUser(binder, false, topId, showHidden, showUnhidden)) {
+                if (showBinderToUser(binder, false, topId, showHidden, showUnhidden, false)) {
                     binderIds.add(entityId.getEntityId().toString());
                 }
             }
@@ -916,7 +918,7 @@ public class ShareResource extends AbstractResource {
                                              boolean onlyLibrary, boolean showHidden, boolean showUnhidden)  {
         ShareItemSelectSpec spec = getSharedWithSpec(userId);
         return _getSharedChanges(since, descriptionFormatStr, maxCount, nextUrl, ObjectKeys.SHARED_WITH_ME_ID,
-                "/self/shared_with_me", spec, null, onlyLibrary, showHidden, showUnhidden, true, false);
+                "/self/shared_with_me", spec, null, onlyLibrary, showHidden, showUnhidden, false, true);
     }
 
     protected List<SearchableObject> getPublicChildren(boolean onlyLibrary, boolean replaceParent, boolean showHidden, boolean showUnhidden)  {
@@ -951,17 +953,26 @@ public class ShareResource extends AbstractResource {
                                             Long topId, String topHref, ShareItemSelectSpec spec, Long excludedSharerId, boolean includeParentPaths,
                                             boolean showHidden, boolean showUnhidden, boolean showPublic, boolean showNonPublic) {
         BinderChanges changes;
-        SharedBinderBrief [] binders = _getSharedBinders(topId, topHref, spec, excludedSharerId, includeParentPaths, showHidden, showUnhidden, showPublic, showNonPublic);
-        if (binders.length>0) {
-            List<Long> ids = new ArrayList<Long>(binders.length);
-            for (SharedBinderBrief binder : binders) {
-                ids.add(binder.getId());
+        // Include deleted shares
+        spec.deleted = null;
+        List<Pair<DefinableEntity, List<ShareItem>>> binders = _getSharedItems(topId, spec, excludedSharerId, false, showHidden, showUnhidden, true, showPublic, showNonPublic, true, false);
+        if (binders.size()>0) {
+            List<Long> ids = new ArrayList<Long>(binders.size());
+            for (Pair<DefinableEntity, List<ShareItem>> pair : binders) {
+                ids.add(pair.getB().get(0).getSharedEntityIdentifier().getEntityId());
             }
             changes = super.getBinderChanges(ids.toArray(new Long[ids.size()]), since, descriptionFormatStr, maxCount, nextUrl);
         } else {
             changes = new BinderChanges();
         }
-        return changes;
+        try {
+            BinderChanges changes2 = _getShareChanges(dateFormat.parse(since), topId, spec, excludedSharerId,
+                    includeParentPaths, showHidden, showUnhidden, showPublic, showNonPublic, true, Description.FORMAT_NONE);
+            return ResourceUtil.mergeBinderChanges(changes, changes2, maxCount);
+        } catch (ParseException e) {
+            // Shouldn't happen.  super.getBinderChanges() will also try to parse the date and throw an expection if it's invalid.
+            throw new InternalServerErrorException(ApiErrorCode.SERVER_ERROR, e.getMessage());
+        }
     }
 
     private SearchResultList<SharedFolderEntryBrief> _getSharedEntries(Long topId, String topHref, ShareItemSelectSpec spec, Long excludedSharerId, boolean includeParentPaths,
@@ -973,7 +984,7 @@ public class ShareResource extends AbstractResource {
             if (shareItem.getSharedEntityIdentifier().getEntityType()== EntityIdentifier.EntityType.folderEntry) {
                 try {
                     FolderEntry entry = (FolderEntry) getSharingModule().getSharedEntity(shareItem);
-                    if (showToUser(entry, topId, showHidden, showUnhidden)) {
+                    if (showToUser(entry, topId, showHidden, showUnhidden, false)) {
                         SharedFolderEntryBrief binderBrief = resultMap.get(entry.getId());
                         if (binderBrief!=null) {
                             binderBrief.addShare(ResourceUtil.buildShare(shareItem, entry, buildShareRecipient(shareItem), guestEnabled));
@@ -1022,66 +1033,148 @@ public class ShareResource extends AbstractResource {
         return results.toArray(new SharedFileProperties[results.size()]);
     }
 
-    protected List<SearchableObject> _getSharedEntities(Long topId, String topHref, ShareItemSelectSpec spec, Long excludedSharerId, boolean onlyLibrary,
-                                                      boolean showHidden, boolean showUnhidden, boolean showPublic, boolean showNonPublic,
-                                                      boolean folders, boolean entries, boolean files)  {
-        boolean guestEnabled = isGuestAccessEnabled();
-        Map<Object, SearchableObject> resultMap = new LinkedHashMap<Object, SearchableObject>();
-        List<ShareItem> shareItems = getShareItems(spec, excludedSharerId, topId==ObjectKeys.SHARED_BY_ME_ID, showPublic, showNonPublic);
+    protected BinderChanges _getShareChanges(Date since, Long topId, ShareItemSelectSpec spec, Long excludedSharerId, boolean onlyLibrary,
+                                                   boolean showHidden, boolean showUnhidden, boolean showPublic, boolean showNonPublic, boolean preferFile,
+                                                   int descriptionFormat) {
+
+        List<Pair<DefinableEntity, List<ShareItem>>> pairs = _getSharedItems(topId, spec, excludedSharerId, onlyLibrary, showHidden, showUnhidden, showHidden, showPublic, showNonPublic, true, true);
+
+        List<DefinableEntity> entities = new ArrayList<DefinableEntity>();
+        Map<Long, List<ShareItem>> resultMap = new LinkedHashMap<Long, List<ShareItem>>();
+        List<ShareItem> shareItems = getShareItems(spec, excludedSharerId, true, showPublic, showNonPublic);
         for (ShareItem shareItem : shareItems) {
             try {
-                if ((entries || files) && shareItem.getSharedEntityIdentifier().getEntityType()== EntityIdentifier.EntityType.folderEntry) {
+                DefinableEntity entity = null;
+                if (shareItem.getSharedEntityIdentifier().getEntityType()== EntityIdentifier.EntityType.folderEntry) {
                     FolderEntry entry = (FolderEntry) getSharingModule().getSharedEntity(shareItem);
-                    if (showToUser(entry, topId, showHidden, showUnhidden)) {
-                        if (entries) {
-                            SharedFolderEntryBrief entryBrief = (SharedFolderEntryBrief) resultMap.get(entry.getId());
-                            if (entryBrief!=null) {
-                                entryBrief.addShare(ResourceUtil.buildShare(shareItem, entry, buildShareRecipient(shareItem), guestEnabled));
-                            } else {
-                                entryBrief = ResourceUtil.buildSharedFolderEntryBrief(shareItem, buildShareRecipient(shareItem), entry, guestEnabled);
-                                if (topId!=null) {
-                                    entryBrief.setParentBinder(new ParentBinder(topId, topHref));
-                                }
-                                resultMap.put(entry.getId(), entryBrief);
-                            }
-                        }
-                        if (files) {
-                            Set<Attachment> attachments = entry.getAttachments();
-                            for (Attachment attachment : attachments) {
-                                if (attachment instanceof FileAttachment) {
-                                    SharedFileProperties fileProps = (SharedFileProperties) resultMap.get(attachment.getId());
-                                    if (fileProps!=null) {
-                                        fileProps.addShare(ResourceUtil.buildShare(shareItem, entry, buildShareRecipient(shareItem), guestEnabled));
-                                    } else {
-                                        fileProps = ResourceUtil.buildSharedFileProperties(shareItem, buildShareRecipient(shareItem), (FileAttachment) attachment, guestEnabled);
-                                        fileProps.setBinder(new ParentBinder(topId, topHref));
-                                        resultMap.put(attachment.getId(), fileProps);
-                                    }
-                                }
-                            }
-                        }
+                    if (showToUser(entry, topId, showHidden, showUnhidden, true)) {
+                        entity = entry;
                     }
-                } else if (folders && shareItem.getSharedEntityIdentifier().getEntityType().isBinder()) {
+                } else if (shareItem.getSharedEntityIdentifier().getEntityType().isBinder()) {
                     Binder binder = (Binder) getSharingModule().getSharedEntity(shareItem);
-                    if (showBinderToUser(binder, onlyLibrary, topId, showHidden, showUnhidden)) {
-                        SharedBinderBrief binderBrief = (SharedBinderBrief) resultMap.get(binder.getId());
-                        if (binderBrief!=null) {
-                            binderBrief.addShare(ResourceUtil.buildShare(shareItem, binder, buildShareRecipient(shareItem), guestEnabled));
-                        } else {
-                            binderBrief = ResourceUtil.buildSharedBinderBrief(shareItem, buildShareRecipient(shareItem), binder, guestEnabled);
-                            if (topId!=null) {
-                                binderBrief.setParentBinder(new ParentBinder(topId, topHref));
-                            }
-                            resultMap.put(binder.getId(), binderBrief);
-                        }
+                    if (showBinderToUser(binder, onlyLibrary, topId, showHidden, showUnhidden, true)) {
+                        entity = binder;
                     }
+                }
+                if (entity!=null) {
+                    List<ShareItem> shareList = resultMap.get(entity.getId());
+                    if (shareList==null) {
+                        shareList = new ArrayList<ShareItem>();
+                        resultMap.put(entity.getId(), shareList);
+                        entities.add(entity);
+                    }
+                    shareList.add(shareItem);
                 }
             } catch (AccessControlException e) {
                 logger.warn("User " + getLoggedInUserId() + " does not have permission to read an entity that was shared with him/her: " + shareItem.getEntityTypedId());
             }
         }
+
+        BinderChanges changes = new BinderChanges();
+        List<BaseBinderChange> changeList = new ArrayList<BaseBinderChange>();
+        for (Pair<DefinableEntity, List<ShareItem>> pair : pairs) {
+            boolean isNew = resultMap.size()>0;
+            boolean isDeleted = isNew;
+            Date createDate = null;
+            Date expireDate = null;
+            for (ShareItem item : pair.getB()) {
+                createDate = ResourceUtil.min(createDate, item.getStartDate());
+                expireDate = ResourceUtil.min(expireDate, item.getExpiredDate());
+                if (!item.createdSince(since)) {
+                    isNew = false;
+                }
+                if (!item.expiredSince(since)) {
+                    isDeleted = false;
+                }
+            }
+            if ((isNew && !isDeleted) || (!isNew && isDeleted)) {
+                DefinableEntity entity = pair.getA();
+                BaseBinderChange change = ResourceUtil.buildBinderChange(entity.getEntityIdentifier(),
+                        isNew ? org.kablink.teaming.domain.BinderChange.Action.add : org.kablink.teaming.domain.BinderChange.Action.delete,
+                        ResourceUtil.max(createDate, expireDate), null,
+                        entity, preferFile, descriptionFormat);
+                changeList.add(change);
+            }
+        }
+
+        Collections.sort(changeList, new Comparator<BaseBinderChange>() {
+            @Override
+            public int compare(BaseBinderChange o1, BaseBinderChange o2) {
+                return o1.getDate().compareTo(o2.getDate());
+            }
+        });
+
+        changes.appendAll(changeList);
+        if (changeList.size()>0) {
+            changes.setLastModified(changeList.get(changeList.size()-1).getDate());
+        }
+
+        return changes;
+    }
+
+    protected List<SearchableObject> _getSharedEntities(Long topId, String topHref, ShareItemSelectSpec spec, Long excludedSharerId, boolean onlyLibrary,
+                                                      boolean showHidden, boolean showUnhidden, boolean showPublic, boolean showNonPublic,
+                                                      boolean folders, boolean entries, boolean files)  {
+        boolean guestEnabled = isGuestAccessEnabled();
+
+        List<Pair<DefinableEntity, List<ShareItem>>> resultList = _getSharedItems(topId, spec, excludedSharerId, onlyLibrary,
+                showHidden, showUnhidden, false, showPublic, showNonPublic, folders, entries);
+
         List<SearchableObject> results = new ArrayList<SearchableObject>();
-        results.addAll(resultMap.values());
+        for (Pair<DefinableEntity, List<ShareItem>> entityShares : resultList) {
+            try {
+                DefinableEntity entity = entityShares.getA();
+                List<ShareItem> shares = entityShares.getB();
+                if (entity instanceof FolderEntry) {
+                    if (entries) {
+                        SharedFolderEntryBrief entryBrief = null;
+                        for (ShareItem shareItem : shares) {
+                            if (entryBrief!=null) {
+                                entryBrief.addShare(ResourceUtil.buildShare(shareItem, entity, buildShareRecipient(shareItem), guestEnabled));
+                            } else {
+                                entryBrief = ResourceUtil.buildSharedFolderEntryBrief(shareItem, buildShareRecipient(shareItem), (FolderEntry) entity, guestEnabled);
+                                if (topId!=null) {
+                                    entryBrief.setParentBinder(new ParentBinder(topId, topHref));
+                                }
+                                results.add(entryBrief);
+                            }
+                        }
+                    }
+                    if (files) {
+                        Set<Attachment> attachments = entity.getAttachments();
+                        for (Attachment attachment : attachments) {
+                            if (attachment instanceof FileAttachment) {
+                                SharedFileProperties fileProps = null;
+                                for (ShareItem shareItem : shares) {
+                                    if (fileProps!=null) {
+                                        fileProps.addShare(ResourceUtil.buildShare(shareItem, entity, buildShareRecipient(shareItem), guestEnabled));
+                                    } else {
+                                        fileProps = ResourceUtil.buildSharedFileProperties(shareItem, buildShareRecipient(shareItem), (FileAttachment) attachment, guestEnabled);
+                                        fileProps.setBinder(new ParentBinder(topId, topHref));
+                                        results.add(fileProps);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                } else if (entity instanceof Binder) {
+                    SharedBinderBrief binderBrief = null;
+                    for (ShareItem shareItem : shares) {
+                        if (binderBrief!=null) {
+                            binderBrief.addShare(ResourceUtil.buildShare(shareItem, entity, buildShareRecipient(shareItem), guestEnabled));
+                        } else {
+                            binderBrief = ResourceUtil.buildSharedBinderBrief(shareItem, buildShareRecipient(shareItem), (Binder) entity, guestEnabled);
+                            if (topId!=null) {
+                                binderBrief.setParentBinder(new ParentBinder(topId, topHref));
+                            }
+                            results.add(binderBrief);
+                        }
+                    }
+                }
+            } catch (AccessControlException e) {
+                logger.warn("User " + getLoggedInUserId() + " does not have permission to read an entity that was shared with him/her: " + entityShares.getA().getEntityTypedId());
+            }
+        }
         Collections.sort(results, new Comparator<SearchableObject>() {
             @Override
             public int compare(SearchableObject o1, SearchableObject o2) {
@@ -1095,8 +1188,46 @@ public class ShareResource extends AbstractResource {
         return results;
     }
 
-    private boolean showBinderToUser(Binder binder, boolean onlyLibrary, Long collectionId, boolean showHidden, boolean showUnhidden) {
-        if (isBinderPreDeleted(binder) || (onlyLibrary && binder.getEntityType() != EntityIdentifier.EntityType.workspace && !binder.isLibrary())) {
+    protected List<Pair<DefinableEntity, List<ShareItem>>> _getSharedItems(Long topId, ShareItemSelectSpec spec, Long excludedSharerId, boolean onlyLibrary,
+                                                      boolean showHidden, boolean showUnhidden, boolean showDeleted, boolean showPublic, boolean showNonPublic,
+                                                      boolean folders, boolean entries)  {
+        Map<Object, Pair<DefinableEntity, List<ShareItem>>> resultMap = new LinkedHashMap<Object, Pair<DefinableEntity, List<ShareItem>>>();
+
+        List<ShareItem> shareItems = getShareItems(spec, excludedSharerId, topId==ObjectKeys.SHARED_BY_ME_ID, showPublic, showNonPublic);
+        for (ShareItem shareItem : shareItems) {
+            try {
+                if (entries && shareItem.getSharedEntityIdentifier().getEntityType()== EntityIdentifier.EntityType.folderEntry) {
+                    FolderEntry entry = (FolderEntry) getSharingModule().getSharedEntity(shareItem);
+                    if (showToUser(entry, topId, showHidden, showUnhidden, showDeleted)) {
+                        Pair<DefinableEntity, List<ShareItem>> pair = resultMap.get(entry.getId());
+                        if (pair==null) {
+                            pair = new Pair<DefinableEntity, List<ShareItem>>(entry, new ArrayList<ShareItem>());
+                            resultMap.put(entry.getId(), pair);
+                        }
+                        pair.getB().add(shareItem);
+                    }
+                } else if (folders && shareItem.getSharedEntityIdentifier().getEntityType().isBinder()) {
+                    Binder binder = (Binder) getSharingModule().getSharedEntity(shareItem);
+                    if (showBinderToUser(binder, onlyLibrary, topId, showHidden, showUnhidden, showDeleted)) {
+                        Pair<DefinableEntity, List<ShareItem>> pair = resultMap.get(binder.getId());
+                        if (pair==null) {
+                            pair = new Pair<DefinableEntity, List<ShareItem>>(binder, new ArrayList<ShareItem>());
+                            resultMap.put(binder.getId(), pair);
+                        }
+                        pair.getB().add(shareItem);
+                    }
+                }
+            } catch (AccessControlException e) {
+                logger.warn("User " + getLoggedInUserId() + " does not have permission to read an entity that was shared with him/her: " + shareItem.getEntityTypedId());
+            }
+        }
+        List<Pair<DefinableEntity, List<ShareItem>>> results = new ArrayList<Pair<DefinableEntity, List<ShareItem>>>();
+        results.addAll(resultMap.values());
+        return results;
+    }
+
+    private boolean showBinderToUser(Binder binder, boolean onlyLibrary, Long collectionId, boolean showHidden, boolean showUnhidden, boolean showDeleted) {
+        if ((!showDeleted && isBinderPreDeleted(binder)) || (onlyLibrary && binder.getEntityType() != EntityIdentifier.EntityType.workspace && !binder.isLibrary())) {
             return false;
         }
         if (showHidden && showUnhidden) {
@@ -1115,8 +1246,8 @@ public class ShareResource extends AbstractResource {
         return showUnhidden;
     }
 
-    private boolean showToUser(FolderEntry entry, Long collectionId, boolean showHidden, boolean showUnhidden) {
-        if (entry.isPreDeleted()) {
+    private boolean showToUser(FolderEntry entry, Long collectionId, boolean showHidden, boolean showUnhidden, boolean showDeleted) {
+        if (!showDeleted && entry.isPreDeleted()) {
             return false;
         }
         if (showHidden && showUnhidden) {
@@ -1190,7 +1321,7 @@ public class ShareResource extends AbstractResource {
                                                                    boolean includeParentPaths, String keyword,
                                                                    int descriptionFormat, Integer offset,
                                                                    Integer maxCount, String nextUrl,
-                                                                   ShareItemSelectSpec spec, boolean showHidden, boolean showUnhidden,
+                                                                   ShareItemSelectSpec spec, boolean showHidden, boolean showUnhidden, boolean showDeleted,
                                                                    boolean showPublic, boolean showNonPublic) {
         List<ShareItem> shareItems = getShareItems(spec, excludedSharerId, topId==ObjectKeys.SHARED_BY_ME_ID, showPublic, showNonPublic);
         SearchResultList<SearchableObject> results;
@@ -1201,7 +1332,7 @@ public class ShareResource extends AbstractResource {
                 EntityIdentifier entityId = shareItem.getSharedEntityIdentifier();
                 if (entityId.getEntityType()==EntityIdentifier.EntityType.folderEntry) {
                     FolderEntry entry = (FolderEntry) getSharingModule().getSharedEntity(shareItem);
-                    if (showToUser(entry, topId, showHidden, showUnhidden)) {
+                    if (showToUser(entry, topId, showHidden, showUnhidden, showDeleted)) {
                         shareCrit.add(Restrictions.disjunction()
                                 .add(SearchUtils.buildEntryCriterion(entityId.getEntityId()))
                                 .add(SearchUtils.buildAttachmentCriterion(entityId.getEntityId()))
@@ -1210,7 +1341,7 @@ public class ShareResource extends AbstractResource {
                 } else if (entityId.getEntityType()==EntityIdentifier.EntityType.folder ||
                         entityId.getEntityType()==EntityIdentifier.EntityType.workspace) {
                     Binder binder = (Binder) getSharingModule().getSharedEntity(shareItem);
-                    if (showBinderToUser(binder, false, topId, showHidden, showUnhidden)) {
+                    if (showBinderToUser(binder, false, topId, showHidden, showUnhidden, showDeleted)) {
                         if (recursive) {
                             shareCrit.add(SearchUtils.buildSearchBinderCriterion(entityId.getEntityId(), true));
                         } else {

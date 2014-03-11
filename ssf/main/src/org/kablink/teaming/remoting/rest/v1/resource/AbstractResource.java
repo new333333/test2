@@ -1733,7 +1733,6 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
                 changes.add(ResourceUtil.buildBinderChange(change, definableEntity, true, toDomainFormat(descriptionFormatStr)));
             }
             BinderChanges results = ResourceUtil.buildBinderChanges(binderChanges, changes);
-            results.setLastChange(results.getLastModified());
             if (results.getTotal()>results.getCount()) {
                 HashMap<String, Object> nextParams = new HashMap<String, Object>();
                 nextParams.put("since", dateFormat.format(results.getLastChange()));
