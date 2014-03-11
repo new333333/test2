@@ -1775,7 +1775,7 @@ public class ModifyNetFolderRootDlg extends DlgBox
 		if ( GwtMainPage.m_requestInfo.getShowSyncOnlyDirStructureUI() )
 			m_fullSyncDirOnlyCB.setValue( false );
 		m_useDirectoryRightsCB.setValue( false );
-		m_cachedRightsRefreshIntervalTB.setValue( "" );
+		m_cachedRightsRefreshIntervalTB.setValue( "10" );
 		
 		// Forget about any list of LDAP servers.  The list may have
 		// changed since this dialog was last run and setting this to
