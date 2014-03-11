@@ -1004,15 +1004,15 @@ public class GwtClientHelper {
 	}
 	
 	/**
-	 * Returns true if the control key is currently pressed and false
+	 * Returns true if the requested key is currently pressed and false
 	 * otherwise.
 	 * 
 	 * @return
 	 */
-	public static boolean isControlKeyDown() {
-		GwtMainPage mp = GwtTeaming.getMainPage();
-		return ((null != mp) && mp.isControlKeyDown());
-	}
+	public static boolean isAltKeyDown()     {GwtMainPage mp = GwtTeaming.getMainPage(); return ((null != mp) && mp.isAltKeyDown());    }
+	public static boolean isControlKeyDown() {GwtMainPage mp = GwtTeaming.getMainPage(); return ((null != mp) && mp.isControlKeyDown());}
+	public static boolean isMetaKeyDown()    {GwtMainPage mp = GwtTeaming.getMainPage(); return ((null != mp) && mp.isMetaKeyDown());   }
+	public static boolean isShiftKeyDown()   {GwtMainPage mp = GwtTeaming.getMainPage(); return ((null != mp) && mp.isShiftKeyDown());  }
 	
 	/**
 	 * Returns true if the UI is in debug mode for the landing page

@@ -1816,7 +1816,7 @@ public class IcalModuleImpl extends CommonDependencyInjection implements IcalMod
 		if(end != null) {
 			java.util.Date endDate = end.getDate();
 			if (end.getParameter(Value.DATE.getName()) != null) {
-				// only date (no time) so it's all days event
+				// only date (no time) so it's all day event
 				// intern we store the date of last event's day - so get one day before
 	 			endDate = new org.joda.time.DateTime(endDate).minusDays(1).toDate();
 			}
@@ -1826,9 +1826,9 @@ public class IcalModuleImpl extends CommonDependencyInjection implements IcalMod
 		} else if (due != null) {
 			java.util.Date endDate = due.getDate();
 			if (due.getParameter(Value.DATE.getName()) != null) {
-				// only date (no time) so it's all days event
-				// intern we store the date of last event's day - so get one day before
-				endDate = new org.joda.time.DateTime(endDate).minusDays(1).toDate();
+				// Only date (no time) so it's an all day event.  It
+				// needs to end on the last second of the day.
+				endDate = new org.joda.time.DateTime(endDate).plusDays(1).minusSeconds(1).toDate();
 			}
 			GregorianCalendar endCal = new GregorianCalendar();
 			endCal.setTime(endDate);
@@ -2384,12 +2384,11 @@ public class IcalModuleImpl extends CommonDependencyInjection implements IcalMod
 			}
 		} else {
 			Date start = new Date(event.getLogicalStart().getTime());
-			Date end = (Date)start.clone();
+			Date due   = ((Date) start.clone());
 			if (event.getLogicalEnd() != null) {
-				end = new Date(event.getLogicalEnd().getTime());
+				due = new Date(event.getLogicalEnd().getTime());
 			}
-			end = new Date(new org.joda.time.DateTime(end).plusDays(1).toDate());
-			vToDo = new VToDo(start, end, entry.getTitle());
+			vToDo = new VToDo(start, due, entry.getTitle());
 			vToDo.getProperties().getProperty(Property.DTSTART).getParameters().add(Value.DATE);
 			vToDo.getProperties().getProperty(Property.DUE    ).getParameters().add(Value.DATE);
 			setComponentAllDays(vToDo);

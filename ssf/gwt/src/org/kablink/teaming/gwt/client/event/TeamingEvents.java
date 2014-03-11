@@ -280,6 +280,7 @@ public enum TeamingEvents implements IsSerializable {
 	DELETE_SELECTED_ENTITIES,						// Deletes the Selected Entities.
 	DELETE_SELECTED_MOBILE_DEVICES,					// Deletes the Selected Mobile Devices.
 	DELETE_SELECTED_USERS,							// Deletes the Selected Users.
+	DIALOG_CLOSED,									// Signals that a DlgBox has closed.
 	DISABLE_SELECTED_USERS,							// Disables the Selected Users.
 	DISABLE_SELECTED_USERS_ADHOC_FOLDERS,			// Disables adHoc folders for the Selected Users.
 	DISABLE_SELECTED_USERS_DOWNLOAD,				// Disables downloading of files for the Selected Users.

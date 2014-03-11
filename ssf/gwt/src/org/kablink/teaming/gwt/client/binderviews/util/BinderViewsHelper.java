@@ -103,6 +103,7 @@ import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.FormPanel;
 import com.google.gwt.user.client.ui.UIObject;
+import com.google.gwt.user.client.Window.Navigator;
 
 /**
  * Helper methods for binder views.
@@ -1241,7 +1242,7 @@ public class BinderViewsHelper {
 	 * facility.  For all others, that will be the Java Applet.
 	 * 
 	 * For browsers that support HTML5, the applet can still be used by
-	 * holding down the control key when this event is fired.
+	 * holding down the control or meta key when this event is fired.
 	 * Typically, the user would hold it down while click 'Add Files'
 	 * on the entry menu.
 	 * 
@@ -1250,8 +1251,8 @@ public class BinderViewsHelper {
 	 */
 	public static void invokeDropBox(final BinderInfo folderInfo, final UIObject showRelativeWidget) {
 		// Are we running in a browser that support file uploads using
-		// HTML5 and is the control key not pressed?
-		if (GwtClientHelper.jsBrowserSupportsHtml5FileAPIs() && (!(GwtClientHelper.isControlKeyDown()))) {
+		// HTML5 and is the user not overriding that by keystroke?
+		if (GwtClientHelper.jsBrowserSupportsHtml5FileAPIs() && (!(keyForcedAppletUpload()))) {
 			// Yes!  Have we instantiated an HTML5 add files popup yet?
 			if (null == m_addFilesHtml5Popup) {
 				// No!  Instantiate one now...
@@ -1363,6 +1364,29 @@ public class BinderViewsHelper {
 			// it with the given entry IDs.
 			showManageSharesDlgAsync(entityIds);
 		}
+	}
+
+	/*
+	 * Returns true if a key is pressed that forces us to use the
+	 * applet to upload files and false otherwise.
+	 */
+	private static boolean keyForcedAppletUpload() {
+		// Is the control key down?
+		boolean reply = GwtClientHelper.isControlKeyDown();
+		if (!reply) {
+			// No!  If this is a Mac, is the Apple/command key down?
+			String platform = Navigator.getPlatform();
+			if (null == platform)
+			     platform = "";
+			else platform = platform.toLowerCase();
+			boolean isMac = platform.contains("mac");
+			reply = (isMac && GwtClientHelper.isMetaKeyDown());
+		}
+		
+		// If we get here, reply contains true if there's a key pressed
+		// that forces us to use the applet and false otherwise.
+		// Return it.
+		return reply;
 	}
 	
 	/**
