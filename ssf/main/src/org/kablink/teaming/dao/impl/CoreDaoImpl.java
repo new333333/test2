@@ -58,6 +58,7 @@ import org.hibernate.ReplicationMode;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Criterion;
+import org.hibernate.criterion.Disjunction;
 import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
@@ -3215,11 +3216,11 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
                             if (parentBinderKeys.size()==1) {
                                 parentKeysExpr = Restrictions.like("owningBinderKey", parentBinderKeys.get(0).getSortKey() + "%");
                             } else {
-                                List<String> vals = new ArrayList<String>();
+                                Disjunction or = Restrictions.disjunction();
                                 for (HKey key : parentBinderKeys) {
-                                    vals.add(key.getSortKey());
+                                    or.add(Restrictions.like("owningBinderKey", key.getSortKey() + "%"));
                                 }
-                                parentKeysExpr = Restrictions.in("owningBinderKey", vals);
+                                parentKeysExpr = or;
                             }
                             return session.createCriteria(AuditTrail.class)
                                     .add(Restrictions.eq(ObjectKeys.FIELD_ZONE, zoneId))
