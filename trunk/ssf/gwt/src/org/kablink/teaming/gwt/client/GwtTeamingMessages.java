@@ -1396,9 +1396,9 @@ public interface GwtTeamingMessages extends Messages
 	// The following strings are used in the activity stream "share this entry" ui.
 	String addRecipient();
 	String commentsLabel();
-	String copyPublicLinkTheseItems( String product );
+	String copyPublicLinkTheseItems();
 	String defaultShareTitle( String title );
-	String emailPublicLinkTheseItems( String product );
+	String emailPublicLinkTheseItems();
 	String manageShares();
 	String noShareRecipients();
 	String noShareRecipientsOrTeams();
@@ -1448,7 +1448,7 @@ public interface GwtTeamingMessages extends Messages
 	String shareDlg_noTeamsToShareWith();
 	String shareDlg_noteLabel();
 	String shareDlg_notifyLabel();
-	String shareDlg_publicLinkTitle( String productName );
+	String shareDlg_publicLinkTitle();
 	String shareDlg_publicUrlLabel();
 	String shareDlg_readingShareInfo();
 	String shareDlg_reshareExternal();
@@ -1456,7 +1456,7 @@ public interface GwtTeamingMessages extends Messages
 	String shareDlg_reshareLabel();
 	String shareDlg_reshareNo();
 	String shareDlg_resharePublic();
-	String shareDlg_resharePublicLink( String productName );
+	String shareDlg_resharePublicLink();
 	String shareDlg_rightsLabel();
 	String shareDlg_savingShareInfo();
 	String shareDlg_selectMethodToFindShares();
@@ -2487,7 +2487,7 @@ public interface GwtTeamingMessages extends Messages
 	String editShareRightsDlg_CanShareInternalLabel();
 	String editShareRightsDlg_CanShareLabel();
 	String editShareRightsDlg_CanSharePublicLabel();
-	String editShareRightsDlg_CanSharePublicLinkLabel( String productName );
+	String editShareRightsDlg_CanSharePublicLinkLabel();
 	String editShareRightsDlg_caption();
 	String editShareRightsDlg_ContributorLabel();
 	String editShareRightsDlg_EditorLabel();
@@ -2501,8 +2501,8 @@ public interface GwtTeamingMessages extends Messages
 	String editShareDlg_canReshareExternalLabel();
 	String editShareDlg_canReshareInternalLabel();
 	String editShareDlg_canResharePublicLabel();
-	String editShareDlg_canResharePublicLinkLabel( String productName );
-	String editShareDlg_filrLinkDesc( String productName );
+	String editShareDlg_canResharePublicLinkLabel();
+	String editShareDlg_filrLinkDesc();
 	String editShareDlg_leaveUnchanged();
 	String editShareDlg_no();
 	String editShareDlg_publicLinkDesc();
@@ -2653,7 +2653,7 @@ public interface GwtTeamingMessages extends Messages
 	String userShareRightsDlgLabel_NoChange();
 	String userShareRightsDlgLabel_NoZoneSettings();
 	String userShareRightsDlgLabel_Public();
-	String userShareRightsDlgLabel_PublicLinks(String product);
+	String userShareRightsDlgLabel_PublicLinks();
 	String userShareRightsDlgProgress( int done, int total );
 
 	// Strings used to represent the different rights
@@ -2663,7 +2663,7 @@ public interface GwtTeamingMessages extends Messages
 	String internalRights();
 	String noRights();
 	String publicRights();
-	String shareLinkRights( String productName );
+	String shareLinkRights();
 	String shareWithAllExternalRights();
 	String shareWithAllInternalRights();
 
@@ -2677,7 +2677,7 @@ public interface GwtTeamingMessages extends Messages
 	String editNetFolderRightsDlg_ReShareLabel();
 	String editNetFolderRightsDlg_ShareInternalLabel();
 	String editNetFolderRightsDlg_ShareExternalLabel();
-	String editNetFolderRightsDlg_ShareLinkLabel( String productName );
+	String editNetFolderRightsDlg_ShareLinkLabel();
 	String editNetFolderRightsDlg_SharePublicLabel();
 
 	// Strings used for the empty collection view widget.
@@ -2907,7 +2907,7 @@ public interface GwtTeamingMessages extends Messages
 	String userPropertiesDlgSharing_Internal();
 	String userPropertiesDlgSharing_NoRights();
 	String userPropertiesDlgSharing_Public();
-	String userPropertiesDlgSharing_PublicLinks(String product);
+	String userPropertiesDlgSharing_PublicLinks();
 	String userPropertiesDlgSourceLDAP();
 	String userPropertiesDlgSourceLocal();
 	String userPropertiesDlgUnknown();
@@ -2948,7 +2948,7 @@ public interface GwtTeamingMessages extends Messages
 	String editUserZoneShareRightsDlg_ReShareLabel();
 	String editUserZoneShareRightsDlg_ShareExternalLabel();
 	String editUserZoneShareRightsDlg_ShareInternalLabel();
-	String editUserZoneShareRightsDlg_ShareLinkLabel( String productName );
+	String editUserZoneShareRightsDlg_ShareLinkLabel();
 	String editUserZoneShareRightsDlg_SharePublicLabel();
 	String editUserZoneShareRightsDlg_ShareWithAllExternalUsersLabel();
 	String editUserZoneShareRightsDlg_ShareWithAllInternalUsersLabel();
@@ -3214,19 +3214,19 @@ public interface GwtTeamingMessages extends Messages
 
 	// Strings used in the Email Public Link dialog
 	String emailPublicLinkDlg_EmailHint();
-	String emailPublicLinkDlg_Hint1( String productName );
+	String emailPublicLinkDlg_Hint1();
 	String emailPublicLinkDlg_MessageHint();
 	String emailPublicLinkDlg_NoEmailAddresses();
 	String emailPublicLinkDlg_SendBtn();
 	String emailPublicLinkDlg_SendingEmails();
 
 	// Strings used in the Copy Public Link dialog.
-	String copyPublicLink(String product);
+	String copyPublicLink();
 	String copyPublicLink_DownloadFileLink();
-	String copyPublicLink_Button(String product);
+	String copyPublicLink_Button();
 	String copyPublicLink_Error_ReadErrors();
-	String copyPublicLink_HintSingle(String product);
-	String copyPublicLink_HintMultiple(String product);
+	String copyPublicLink_HintSingle();
+	String copyPublicLink_HintMultiple();
 	String copyPublicLink_InternalError_NoEntries();
 	String copyPublicLink_InternalError_NotAnEntry();
 	String copyPublicLink_MultipleItems(int numItems);
@@ -3263,13 +3263,13 @@ public interface GwtTeamingMessages extends Messages
 	String manageMobileDevicesDlg_failureDeletingMobileDevices();
 
 	// Strings used in the Mail To Multiple Public Links Select dialog.
-	String mailToMultiplePublicLinksSelect(String product);
-	String mailToMultiplePublicLinksSelect_Caption(String product, int count);
+	String mailToMultiplePublicLinksSelect();
+	String mailToMultiplePublicLinksSelect_Caption(int count);
 	String mailToMultiplePublicLinksSelect_Column_Expires();
 	String mailToMultiplePublicLinksSelect_Column_Note();
 	String mailToMultiplePublicLinksSelect_Column_SharedOn();
-	String mailToMultiplePublicLinksSelect_HeaderTail(String product);
-	String mailToMultiplePublicLinksSelect_InternalError_NoLinks(String product);
+	String mailToMultiplePublicLinksSelect_HeaderTail();
+	String mailToMultiplePublicLinksSelect_InternalError_NoLinks();
 	String mailToMultiplePublicLinksSelect_Never();
 	String mailToMultiplePublicLinksSelect_NoNote();
 

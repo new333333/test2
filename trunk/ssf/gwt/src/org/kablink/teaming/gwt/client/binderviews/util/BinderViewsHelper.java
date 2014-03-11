@@ -1906,7 +1906,7 @@ public class BinderViewsHelper {
 	 */
 	private static void showCopyPublicLinkDlgNow(List<EntityId> entityIds) {
 		String caption = GwtClientHelper.patchMessage(
-			m_messages.copyPublicLinkTheseItems(GwtClientHelper.getProductName()),
+			m_messages.copyPublicLinkTheseItems(),
 			String.valueOf(entityIds.size()));
 		CopyPublicLinkDlg.initAndShow(m_copyPublicLinkDlg, caption, entityIds);
 	}
@@ -1927,15 +1927,10 @@ public class BinderViewsHelper {
 	 * Synchronously shows the email public link dialog.
 	 */
 	private static void showEmailPublicLinkDlgNow(List<EntityId> entityIds) {
-		if ( m_emailPublicLinkDlg != null )
-		{
-			String caption;
-
-			caption = GwtClientHelper.patchMessage(
-											m_messages.emailPublicLinkTheseItems(GwtClientHelper.getProductName()),
-											String.valueOf(entityIds.size()));
-			m_emailPublicLinkDlg.init( caption, entityIds );
-			m_emailPublicLinkDlg.show( true );
+		if (null != m_emailPublicLinkDlg) {
+			String caption = GwtClientHelper.patchMessage(m_messages.emailPublicLinkTheseItems(), String.valueOf(entityIds.size()));
+			m_emailPublicLinkDlg.init(caption, entityIds);
+			m_emailPublicLinkDlg.show(true);
 		}
 	}
 
