@@ -88,7 +88,6 @@ public class CopyPublicLinkDlg extends DlgBox {
 	private List<EntityId>				m_entityIds;		// List<EntityId> of the entities whose links are to be copied.
 	private ScrollPanel					m_linksScroller;	// The ScrollPanel that contains the links.
 	private String						m_imagesPath;		// Path to Vibe's images.
-	private String						m_product;			// The product we're running as (Filr or Vibe.)
 	private VibeFlowPanel				m_contentPanel;		// The panel containing the content of the dialog below the header.
 	private VibeVerticalPanel			m_linksPanel;		// The panel containing the links themselves.
 	
@@ -108,7 +107,6 @@ public class CopyPublicLinkDlg extends DlgBox {
 		m_filrImages = GwtTeaming.getFilrImageBundle();
 		m_images     = GwtTeaming.getImageBundle();
 		m_imagesPath = GwtClientHelper.getRequestInfo().getImagesPath();
-		m_product    = GwtClientHelper.getProductName();
 	
 		// ...and create the dialog's content.
 		createAllDlgContent(
@@ -494,10 +492,10 @@ public class CopyPublicLinkDlg extends DlgBox {
 			m_headerPathLabel.getElement().setInnerHTML("&nbsp;");
 			ImageResource imgResource = m_filrImages.entry_large();
 			m_headerImg.setUrl(imgResource.getSafeUri().asString());
-			hintTail = m_messages.copyPublicLink_HintMultiple(m_product);
+			hintTail = m_messages.copyPublicLink_HintMultiple();
 		}
 		else {
-			hintTail = m_messages.copyPublicLink_HintSingle(m_product);
+			hintTail = m_messages.copyPublicLink_HintSingle();
 		}
 		m_hintTail.getElement().setInnerText(hintTail);
 
@@ -588,7 +586,7 @@ public class CopyPublicLinkDlg extends DlgBox {
 		
 		else {
 			// ...otherwise, add the create links push button.
-			Button createLinksBtn = new Button(m_messages.copyPublicLink_Button(m_product));
+			Button createLinksBtn = new Button(m_messages.copyPublicLink_Button());
 			createLinksBtn.addClickHandler(new ClickHandler() {
 				@Override
 				public void onClick(ClickEvent event) {

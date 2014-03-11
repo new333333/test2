@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -31,7 +31,6 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 package org.kablink.teaming.gwt.client.widgets;
-
 
 import java.util.ArrayList;
 
@@ -64,9 +63,9 @@ import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
 /**
- * 
+ * ?
+ *  
  * @author jwootton
- *
  */
 public class EditShareWidget extends Composite
 	implements EditSuccessfulHandler
@@ -398,7 +397,7 @@ public class EditShareWidget extends Composite
 			hPanel.setVerticalAlignment( HasVerticalAlignment.ALIGN_MIDDLE );
 			hPanel.setSpacing( 4 );
 			hPanel.addStyleName( "marginleft1" );
-			m_canResharePublicLinkLabel = new Label( messages.editShareDlg_canResharePublicLinkLabel( GwtClientHelper.getProductName() ) );
+			m_canResharePublicLinkLabel = new Label( messages.editShareDlg_canResharePublicLinkLabel() );
 			hPanel.add( m_canResharePublicLinkLabel );
 			m_canResharePublicLinkListbox = new ListBox( false );
 			m_canResharePublicLinkListbox.setVisibleItemCount( 1 );
@@ -504,7 +503,7 @@ public class EditShareWidget extends Composite
 		rbPanel.add( tmpPanel );
 		
 		// Add the "allow share public link checkbox.
-		m_canResharePublicLinkCkbox = new CheckBox( messages.editShareRightsDlg_CanSharePublicLinkLabel( GwtClientHelper.getProductName() ) );
+		m_canResharePublicLinkCkbox = new CheckBox( messages.editShareRightsDlg_CanSharePublicLinkLabel() );
 		tmpPanel = new FlowPanel();
 		tmpPanel.add( m_canResharePublicLinkCkbox );
 		rbPanel.add( tmpPanel );
@@ -677,7 +676,7 @@ public class EditShareWidget extends Composite
 				recipientType = shareItem.getRecipientType();
 				if ( recipientType == GwtRecipientType.PUBLIC_LINK )
 				{
-					desc = GwtTeaming.getMessages().editShareDlg_filrLinkDesc( GwtClientHelper.getProductName() );
+					desc = GwtTeaming.getMessages().editShareDlg_filrLinkDesc();
 				}
 				else if ( recipientType == GwtRecipientType.PUBLIC_TYPE )
 				{
