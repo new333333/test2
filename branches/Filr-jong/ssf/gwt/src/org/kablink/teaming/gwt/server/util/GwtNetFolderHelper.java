@@ -246,7 +246,7 @@ public class GwtNetFolderHelper
 				if ( settings != null )
 				{
 					NetFolderHelper.saveJitsSettings(
-												ami.getBinderModule(),
+												ami.getNetFolderModule(),
 												nfc.getId(),
 												netFolder.getInheritJitsSettings(),
 												settings.getJitsEnabled(),
@@ -834,7 +834,6 @@ public class GwtNetFolderHelper
 		String name;
 		String displayName;
 		ResourceDriver rd;
-		Binder nfb;
 		
 		netFolder = new NetFolder();
 		netFolder.setId( nfc.getId() );
@@ -848,14 +847,16 @@ public class GwtNetFolderHelper
 		netFolder.setStatus( getNetFolderSyncStatus( nfc.getId() ) );
 		netFolder.setIsHomeDir( nfc.isHomeDir() );
 		
-		// Is this a home dir net folder?
-		nfb = NetFolderUtil.getNetFolderBinder( nfc );
-		name = nfb.getTitle();
+		name = nfc.getName();
 		displayName = name;
+		
+		// Is this a home dir net folder?
 		if ( nfc.isHomeDir() )
 		{
 			Principal owner;
 			
+			Binder nfb = NetFolderUtil.getNetFolderBinder( nfc );
+
 			// Yes
 			owner = nfb.getOwner();
 			if ( owner != null )
@@ -864,7 +865,7 @@ public class GwtNetFolderHelper
 				
 				title = owner.getTitle();
 				if ( title != null && title.length() > 0 )
-					displayName = nfb.getTitle() + " (" + title + ")";
+					displayName = name + " (" + title + ")";
 			}
 		}
 		
@@ -1344,7 +1345,7 @@ public class GwtNetFolderHelper
 				if ( settings != null )
 				{
 					NetFolderHelper.saveJitsSettings(
-												ami.getBinderModule(),
+												ami.getNetFolderModule(),
 												netFolder.getId(),
 												netFolder.getInheritJitsSettings(),
 												settings.getJitsEnabled(),

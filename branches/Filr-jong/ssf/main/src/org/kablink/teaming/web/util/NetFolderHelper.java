@@ -494,7 +494,7 @@ public class NetFolderHelper
 					// Save the jits settings
 					{
 						NetFolderHelper.saveJitsSettings(
-													binderModule,
+													netFolderModule,
 													nfc.getId(),
 													true,
 													true,
@@ -604,7 +604,6 @@ public class NetFolderHelper
 		Boolean inheritIndexContentOption,
 		Boolean fullSyncDirOnly ) throws WriteFilesException, WriteEntryDataException
 	{
-		Binder binder = null;
 		NetFolderConfig nfc = null;
 		Long templateId = null;
 		List<TemplateBinder> listOfTemplateBinders;
@@ -664,8 +663,8 @@ public class NetFolderHelper
 				if ( syncScheduleOption == SyncScheduleOption.useNetFolderServerSchedule )
 					scheduleInfo.setEnabled( false );
 				
-				scheduleInfo.setFolderId( binder.getId() );
-				folderModule.setSynchronizationSchedule( scheduleInfo, binder.getId() );
+				scheduleInfo.setFolderId( nfc.getFolderId() );
+				folderModule.setSynchronizationSchedule( scheduleInfo, nfc.getFolderId() );
 			}
 		}
 		else
@@ -1060,7 +1059,8 @@ public class NetFolderHelper
 	{
 		NetFolderConfig nfc = NetFolderUtil.getNetFolderConfig(id);
 		nfc.setName(netFolderName);
-		nfc.setNetFolderServerId(netFolderRootId);
+		if(netFolderRootId != null) // Actually this should have been passed in...
+			nfc.setNetFolderServerId(netFolderRootId);
 		nfc.setResourcePath(relativePath);
 		nfc.setIndexContent(indexContent);
 		nfc.setUseInheritedIndexContent(inheritIndexContent);
@@ -1077,7 +1077,7 @@ public class NetFolderHelper
 			if ( syncScheduleOption == SyncScheduleOption.useNetFolderServerSchedule )
 				scheduleInfo.setEnabled( false );
 			
-			scheduleInfo.setFolderId( id );
+			scheduleInfo.setFolderId( nfc.getFolderId() );
 			folderModule.setSynchronizationSchedule( scheduleInfo, nfc.getFolderId() );
 		}
 	}
@@ -1326,37 +1326,24 @@ public class NetFolderHelper
 	 */
 	@SuppressWarnings({ "unchecked" })
 	public static void saveJitsSettings(
-		BinderModule binderModule,
-		Long binderId,
+		NetFolderModule netFolderModule,
+		Long netFolderConfigId,
 		boolean inheritJitsSettings,
 		boolean jitsEnabled,
 		long aclMaxAge,
 		long resultsMaxAge )
 	{
-		if ( binderId != null )
+		if ( netFolderConfigId != null )
 		{
-			Set deleteAtts;
-			Map fileMap = null;
-			MapInputData mid;
-			Map formData = null;
-			
-			deleteAtts = new HashSet();
-			fileMap = new HashMap();
-			formData = new HashMap();
-
-			formData.put( ObjectKeys.FIELD_BINDER_USE_INHERITED_JITS_SETTINGS, Boolean.valueOf( inheritJitsSettings ) );
-
-			formData.put( ObjectKeys.FIELD_BINDER_JITS_ENABLED, Boolean.toString( jitsEnabled ) );
-			
-			formData.put( ObjectKeys.FIELD_BINDER_JITS_ACL_MAX_AGE, String.valueOf( aclMaxAge ) );
-
-			formData.put( ObjectKeys.FIELD_BINDER_JITS_RESULTS_MAX_AGE, String.valueOf( resultsMaxAge ) );
-
-			mid = new MapInputData( formData );
+			NetFolderConfig nfc = NetFolderUtil.getNetFolderConfig(netFolderConfigId);
+			nfc.setUseInheritedJitsSettings(inheritJitsSettings);
+			nfc.setJitsEnabled(jitsEnabled);
+			nfc.setJitsAclMaxAge(aclMaxAge);
+			nfc.setJitsMaxAge(resultsMaxAge);
 
 			try
 			{
-				binderModule.modifyBinder( binderId, mid, fileMap, deleteAtts, null );
+				netFolderModule.modifyNetFolder(nfc);
 			}
 			catch ( Exception ex )
 			{
