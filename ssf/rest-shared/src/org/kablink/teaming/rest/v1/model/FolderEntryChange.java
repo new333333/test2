@@ -27,6 +27,10 @@ public class FolderEntryChange extends BaseBinderChange {
     private Long id;
     private FolderEntry entry;
 
+    public FolderEntryChange() {
+        setType(Type.folder_entry.name());
+    }
+
     public Long getId() {
         return id;
     }
