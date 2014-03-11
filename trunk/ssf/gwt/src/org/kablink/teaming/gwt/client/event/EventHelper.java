@@ -661,6 +661,15 @@ public class EventHelper {
 				}
 				break;
 			
+			case DIALOG_CLOSED:
+				// A DialogClosedEvent!  Can the event handler we were
+				// given handle that?
+				if (eventHandler instanceof DialogClosedEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = DialogClosedEvent.registerEvent(eventBus, ((DialogClosedEvent.Handler) eventHandler));
+				}
+				break;
+			
 			case DISABLE_SELECTED_USERS:
 				// A DisableSelectedUsersEvent!  Can the event handler
 				// we were given handle that?
@@ -2871,6 +2880,7 @@ public class EventHelper {
 			case DELETE_SELECTED_ENTITIES:                     hasHandler = (eventHandler instanceof DeleteSelectedEntitiesEvent.Handler);                 break;
 			case DELETE_SELECTED_MOBILE_DEVICES:               hasHandler = (eventHandler instanceof DeleteSelectedMobileDevicesEvent.Handler);            break;
 			case DELETE_SELECTED_USERS:                        hasHandler = (eventHandler instanceof DeleteSelectedUsersEvent.Handler);                    break;
+			case DIALOG_CLOSED:                                hasHandler = (eventHandler instanceof DialogClosedEvent.Handler);                           break;
 			case DISABLE_SELECTED_USERS:                       hasHandler = (eventHandler instanceof DisableSelectedUsersEvent.Handler);                   break;
 			case DISABLE_SELECTED_USERS_ADHOC_FOLDERS:         hasHandler = (eventHandler instanceof DisableSelectedUsersAdHocFoldersEvent.Handler);       break;
 			case DISABLE_SELECTED_USERS_DOWNLOAD:              hasHandler = (eventHandler instanceof DisableSelectedUsersDownloadEvent.Handler);           break;

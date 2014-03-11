@@ -359,14 +359,15 @@ public class GwtServerHelper {
 	// The following are used to classify various binders based on
 	// their default view definition.  See getFolderType() and
 	// getWorkspaceType().
-	private static final String VIEW_FOLDER_GUESTBOOK      = "_guestbookFolder";
-	private static final String VIEW_FOLDER_MIRRORED_FILE  = "_mirroredFileFolder";	
-	private static final String VIEW_WORKSPACE_DISCUSSIONS = "_discussions";
-	private static final String VIEW_WORKSPACE_PROJECT     = "_projectWorkspace";
-	private static final String VIEW_WORKSPACE_TEAM        = "_team_workspace";
-	private static final String VIEW_WORKSPACE_USER        = "_userWorkspace";
-	private static final String VIEW_WORKSPACE_WELCOME     = "_welcomeWorkspace";
-	private static final String VIEW_WORKSPACE_GENERIC     = "_workspace";
+	private static final String VIEW_FOLDER_GUESTBOOK      		= "_guestbookFolder";
+	private static final String VIEW_FOLDER_MIRRORED_FILE  		= "_mirroredFileFolder";	
+	private static final String VIEW_FOLDER_MIRRORED_FILR_FILE  = "_mirroredFilrFileFolder";	
+	private static final String VIEW_WORKSPACE_DISCUSSIONS 		= "_discussions";
+	private static final String VIEW_WORKSPACE_PROJECT     		= "_projectWorkspace";
+	private static final String VIEW_WORKSPACE_TEAM        		= "_team_workspace";
+	private static final String VIEW_WORKSPACE_USER        		= "_userWorkspace";
+	private static final String VIEW_WORKSPACE_WELCOME     		= "_welcomeWorkspace";
+	private static final String VIEW_WORKSPACE_GENERIC     		= "_workspace";
 
 	// String used to recognize an '&' formatted URL vs. a '/'
 	// formatted permalink URL.
@@ -998,9 +999,20 @@ public class GwtServerHelper {
 	 */
 	private static void addTFIFromStringToList(AllModulesInjected bs, HttpServletRequest request, String s, List<TaskFolderInfo> tfiList) {
 		try {
-			// Access the folder.
+			// Can we access the folder?
 			Long folderId = Long.parseLong(s);
-			Folder folder = bs.getFolderModule().getFolder(folderId);
+			Folder folder;
+			try {
+				folder = bs.getFolderModule().getFolder(folderId);
+			}
+			catch (Exception ex) {
+				GwtLogHelper.error(m_logger, "GwtServerHelper.addTFIFromStringToList( Can't Access Folder ): " + s, ex);
+				folder = null;
+			}
+			if (null == folder) {
+				// No!  Bail.
+				return;
+			}
 
 			// Can we pull the statistics from the folder's custom
 			// attributes?
@@ -5692,7 +5704,8 @@ public class GwtServerHelper {
 			// We need to special case files because both a
 			// normal file folder and a mirrored file
 			// folder use 'file' for their family name.
-			if (MiscUtil.hasString(view) && view.equals(VIEW_FOLDER_MIRRORED_FILE)) {
+			if (MiscUtil.hasString(view) &&
+					(view.equals(VIEW_FOLDER_MIRRORED_FILE) || view.equals(VIEW_FOLDER_MIRRORED_FILR_FILE))) {
 				reply = FolderType.MIRROREDFILE;
 			}				
 			break;

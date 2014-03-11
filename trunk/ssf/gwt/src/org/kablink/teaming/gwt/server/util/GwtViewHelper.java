@@ -3478,7 +3478,6 @@ public class GwtViewHelper {
 						}
 						
 						// Scan the List<EntityId> again.
-						SharingModule sm = bs.getSharingModule();
 						for (EntityId eid:  entityIds) {
 							// Skipping any binders.
 							if (eid.isBinder()) {
@@ -3506,13 +3505,11 @@ public class GwtViewHelper {
 									entryRights.setCanTrash(      fm.testAccess(entry, FolderOperation.preDeleteEntry));
 									
 									ShareRight entryShareRight;
-									if (GwtShareHelper.isEntitySharable(bs, entry) || GwtShareHelper.isEntityPublicLinkSharable(bs, entry))
+									if (GwtShareHelper.isEntitySharable(bs, entry))
 									     entryShareRight = ShareRight.SHARABLE;
 									else entryShareRight = ShareRight.NOT_SHARABLE_RIGHTS_VIOLATION;
 									entryRights.setShareRight(entryShareRight);
-									if (entryShareRight.canShare()) {
-										entryRights.setCanPublicLink(sm.testAddShareEntityPublicLinks(entry));
-									}
+									entryRights.setCanPublicLink(GwtShareHelper.isEntityPublicLinkSharable(bs, entry));
 								}
 								
 								reply.setEntityRights(eid, entryRights);

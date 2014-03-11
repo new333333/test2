@@ -613,6 +613,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 				if (null != emp) {
 					// ...tell it to update the state of its items that
 					// ...require a selection.
+					checked = (0 < getSelectedEntityCount());
 					EntryMenuPanel.setEntriesSelected(emp,  checked                                   );
 					EntryMenuPanel.setEntrySelected(  emp, (checked && (1 == getSelectedEntryCount())));
 				}
@@ -644,6 +645,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 				if (null != emp) {
 					// ...tell it to update the state of its items that
 					// ...require a selection.
+					checked = (0 < getSelectedEntityCount());
 					EntryMenuPanel.setEntriesSelected(emp,  checked                                   );
 					EntryMenuPanel.setEntrySelected(  emp, (checked && (1 == getSelectedEntryCount())));
 				}
@@ -1241,6 +1243,15 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		// If we get here, reply refers to List<EntityId> of the entity
 		// IDs of the selected rows from the data table.  Return it.
 		return reply;
+	}
+
+	/*
+	 * Returns a count of the selected entries (i.e., folder entries,
+	 * or binders, ...)
+	 */
+	private int getSelectedEntityCount() {
+		List<EntityId> selectedEntities = getSelectedEntityIds();
+		return ((null == selectedEntities) ? 0 : selectedEntities.size());
 	}
 
 	/*

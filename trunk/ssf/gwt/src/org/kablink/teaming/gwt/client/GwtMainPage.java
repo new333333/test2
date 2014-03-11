@@ -57,6 +57,7 @@ import org.kablink.teaming.gwt.client.event.ContentChangedEvent.Change;
 import org.kablink.teaming.gwt.client.event.ContextChangedEvent;
 import org.kablink.teaming.gwt.client.event.ContextChangingEvent;
 import org.kablink.teaming.gwt.client.event.DeleteSelectedEntitiesEvent;
+import org.kablink.teaming.gwt.client.event.DialogClosedEvent;
 import org.kablink.teaming.gwt.client.event.EditCurrentBinderBrandingEvent;
 import org.kablink.teaming.gwt.client.event.EditPersonalPreferencesEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
@@ -184,6 +185,7 @@ import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.AnchorElement;
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.dom.client.SpanElement;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.dom.client.Style.Unit;
@@ -258,7 +260,6 @@ public class GwtMainPage extends ResizeComposite
 	public static RequestInfo m_requestInfo = jsGetRequestInfo();;
 	public static ContentControl m_contentCtrl;
 
-	private boolean m_controlKeyDown;
 	private AddNewFolderDlg m_addNewFolderDlg = null;
 	private VibeDockLayoutPanel m_mainPanel = null;
 	private DockLayoutPanel m_splitLayoutPanel = null;
@@ -270,6 +271,7 @@ public class GwtMainPage extends ResizeComposite
 	private EditBrandingDlg m_editBrandingDlg = null;
 	private PersonalPreferencesDlg m_personalPrefsDlg = null;
 	private LoginDlg m_loginDlg = null;
+	private KeyDownSet m_keyDownSet = null;
 	private TagThisDlg m_tagThisDlg = null;
 	private ChangePasswordDlg m_changePwdDlg = null;
 	private EditCanceledHandler m_editBrandingCancelHandler = null;
@@ -373,6 +375,59 @@ public class GwtMainPage extends ResizeComposite
 		// Set events.
 		TeamingEvents.SET_DESKTOP_DOWNLOAD_APP_CONTROL_VISIBILITY,
 	};
+
+	/*
+	 * Inner class used to track the state of various keys.
+	 */
+	private static class KeyDownSet
+	{
+		private boolean m_altKeyDown;		//
+		private boolean m_controlKeyDown;	//
+		private boolean m_metaKeyDown;		//
+		private boolean m_shiftKeyDown;		//
+
+		/**
+		 * Constructor method.
+		 */
+		public KeyDownSet()
+		{
+			super();
+		}
+
+		/**
+		 * Get'er methods.
+		 * 
+		 * @return
+		 */
+		public boolean isAltKeyDown()     {return m_altKeyDown;    }
+		public boolean isControlKeyDown() {return m_controlKeyDown;}
+		public boolean isMetaKeyDown()    {return m_metaKeyDown;   }
+		public boolean isShiftKeyDown()   {return m_shiftKeyDown;  }
+
+		/**
+		 * Set'er methods.
+		 * 
+		 * @param
+		 */
+		public void setAltKeyDown(     boolean altKeyDown )     { m_altKeyDown     = altKeyDown;     }
+		public void setControlKeyDown( boolean controlKeyDown ) { m_controlKeyDown = controlKeyDown; }
+		public void setMetaKeyDown(    boolean metaKeyDown )    { m_metaKeyDown    = metaKeyDown;    }
+		public void setShiftKeyDown(   boolean shiftKeyDown )   { m_shiftKeyDown   = shiftKeyDown;   }
+
+		/**
+		 * Set's the key state fields based on a native key event.
+		 * 
+		 * @param keyEvent
+		 */
+		public void setKeyStatesFromNativeEvent( NativeEvent keyEvent )
+		{
+			boolean hasKey = ( null != keyEvent );
+			setAltKeyDown(     hasKey && keyEvent.getAltKey()   );
+			setControlKeyDown( hasKey && keyEvent.getCtrlKey()  );
+			setMetaKeyDown(    hasKey && keyEvent.getMetaKey()  );
+			setShiftKeyDown(   hasKey && keyEvent.getShiftKey() );
+		}
+	}
 	
 	/*
 	 * Class constructor.
@@ -634,6 +689,7 @@ public class GwtMainPage extends ResizeComposite
 	 * various keyboard states, ...
 	 */
 	private void addNativePreviewHandler() {
+		m_keyDownSet = new KeyDownSet(); 
 		Event.addNativePreviewHandler(new Event.NativePreviewHandler() {
 			@Override
 			public void onPreviewNativeEvent(NativePreviewEvent event) {
@@ -644,14 +700,8 @@ public class GwtMainPage extends ResizeComposite
 					switch ( event.getTypeInt() )
 					{
 					case Event.ONKEYDOWN:
-						// A key down!  Is the control key down?
-						m_controlKeyDown = event.getNativeEvent().getCtrlKey();
-						break;
-						
 					case Event.ONKEYUP:
-						// A key up!  The control key can no longer be
-						// down.
-						m_controlKeyDown = false;
+						m_keyDownSet.setKeyStatesFromNativeEvent( event.getNativeEvent() );
 						break;
 					}
 				}
@@ -1078,6 +1128,17 @@ public class GwtMainPage extends ResizeComposite
 
 	/*
 	 * Called to create a JavaScript method that will be invoked from
+	 * the JSP based UI when a dialog closes.
+	 */
+	private native void initFireDialogClosedJS(GwtMainPage gwtMainPage) /*-{
+		$wnd.ss_dialogClosed = function()
+		{
+			gwtMainPage.@org.kablink.teaming.gwt.client.GwtMainPage::fireDialogClosed()();
+		}//end ss_dialogClosed()
+	}-*/;
+
+	/*
+	 * Called to create a JavaScript method that will be invoked from
 	 * JSP when file(s) are successfully dropped on an applet.
 	 */
 	private native void initFireFilesDroppedJS(GwtMainPage gwtMainPage) /*-{
@@ -1164,6 +1225,10 @@ public class GwtMainPage extends ResizeComposite
 		// files are successfully dropped on the file drag and drop
 		// applet.
 		initFireFilesDroppedJS( this );
+		
+		// Initialize the JavaScript function that gets called when a
+		// dialog is closed in JSP.
+		initFireDialogClosedJS( this );
 		
 		// Initialize the JavaScript function that gets called when we want to handle a page using
 		// GWT instead of in jsp.
@@ -4028,15 +4093,15 @@ public class GwtMainPage extends ResizeComposite
 	}// end isAdminActive()
 
 	/**
-	 * Returns true if the control key is currently pressed and false
+	 * Returns true if the requested key is currently pressed and false
 	 * otherwise.
 	 * 
 	 * @return
 	 */
-	public boolean isControlKeyDown()
-	{
-		return m_controlKeyDown;
-	}
+	public boolean isAltKeyDown()     { return ((null != m_keyDownSet) && m_keyDownSet.isAltKeyDown());     }
+	public boolean isControlKeyDown() { return ((null != m_keyDownSet) && m_keyDownSet.isControlKeyDown()); }
+	public boolean isMetaKeyDown()    { return ((null != m_keyDownSet) && m_keyDownSet.isMetaKeyDown());    }
+	public boolean isShiftKeyDown()   { return ((null != m_keyDownSet) && m_keyDownSet.isShiftKeyDown());   }
 	
 	/**
 	 * Returns true if we currently processing search results and false
@@ -4124,6 +4189,16 @@ public class GwtMainPage extends ResizeComposite
 	{
 		ContextChangingEvent.fireOne();
 	}// end fireContextChanging()
+
+	/*
+	 * Fires a DialogClosedEvent from the JSP based UI.
+	 */
+	private void fireDialogClosed()
+	{
+		DialogClosedEvent.fireOneAsync(
+			null,	// null -> A non-DlgBox dialog closed.
+			500 );	// We delay here to allow the JSP page to complete its action
+	}// end fireDialogClosed()
 
 	/*
 	 * Fires a FilesDroppedEvent from JSP.
