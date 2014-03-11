@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  *
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -18,7 +18,7 @@
  * (c) 1998-2009 Novell, Inc. All Rights Reserved.
  *
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -30,66 +30,35 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.domain;
-
-import java.util.Date;
-import java.util.Map;
+package org.kablink.util;
 
 /**
- * User: david
- * Date: 5/18/12
- * Time: 9:16 AM
+ * User: David
+ * Date: 3/10/14
+ * Time: 3:16 PM
  */
-public class BinderChange {
-    public enum Action {
-        add,
-        modify,
-        delete
+public class Pair<A,B> {
+    private A a;
+    private B b;
+
+    public Pair(A a, B b) {
+        this.a = a;
+        this.b = b;
     }
 
-    private EntityIdentifier entityId;
-    private String primaryFileId;
-    private Action action;
-    private Date date;
-    private Map searchMap;
-
-    public EntityIdentifier getEntityId() {
-        return entityId;
+    public A getA() {
+        return a;
     }
 
-    public void setEntityId(EntityIdentifier entityId) {
-        this.entityId = entityId;
+    public void setA(A a) {
+        this.a = a;
     }
 
-    public String getPrimaryFileId() {
-        return primaryFileId;
+    public B getB() {
+        return b;
     }
 
-    public void setPrimaryFileId(String primaryFileId) {
-        this.primaryFileId = primaryFileId;
-    }
-
-    public Action getAction() {
-        return action;
-    }
-
-    public void setAction(Action action) {
-        this.action = action;
-    }
-
-    public Date getDate() {
-        return date;
-    }
-
-    public void setDate(Date date) {
-        this.date = date;
-    }
-
-    public Map getSearchMap() {
-        return searchMap;
-    }
-
-    public void setSearchMap(Map searchMap) {
-        this.searchMap = searchMap;
+    public void setB(B b) {
+        this.b = b;
     }
 }

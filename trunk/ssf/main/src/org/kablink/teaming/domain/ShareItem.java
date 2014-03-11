@@ -346,6 +346,31 @@ public class ShareItem extends PersistentLongIdObject implements EntityIdentifia
 	public void setExpirationHandled(boolean expirationHandled) {
 		this.expirationHandled = expirationHandled;
 	}
+
+    public boolean createdSince(Date date) {
+        return startDate!=null && date.before(startDate);
+    }
+
+    public boolean expiredSince(Date date) {
+        Date expiredDate = getExpiredDate();
+        if (expiredDate!=null && date.before(expiredDate)) {
+            return true;
+        }
+        return false;
+    }
+
+    public Date getExpiredDate() {
+        if (endDate!=null && endDate.before(new Date())) {
+            if (deletedDate==null) {
+                return endDate;
+            }
+            else {
+                return endDate.before(deletedDate) ? endDate : deletedDate;
+            }
+        } else {
+            return deletedDate;
+        }
+    }
 	
 	//****IMPORTANT****
 	//These lists should be kept in sync with the fillFilrRoleViewer, fillFilrRoleEditor, 

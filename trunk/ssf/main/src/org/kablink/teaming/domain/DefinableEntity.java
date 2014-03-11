@@ -448,7 +448,20 @@ public abstract class DefinableEntity extends BaseEntity {
     	}
     	return null;
     }
-*/   
+*/
+
+    public String getPrimaryFileAttachmentId() {
+        Set atts = getAttachments();
+        Attachment att;
+        FileAttachment fatt;
+        for (Iterator iter=atts.iterator(); iter.hasNext();) {
+            att = (Attachment)iter.next();
+            if (att instanceof FileAttachment) {
+                return att.getId();
+            }
+        }
+        return null;
+    }
     /**
      * Return FileAttachment corresponding to the specified combination of 
      * repository service name and file name. In other words, file namespace

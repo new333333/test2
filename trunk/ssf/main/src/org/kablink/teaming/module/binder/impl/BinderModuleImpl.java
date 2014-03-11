@@ -3775,6 +3775,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
                     if (entityId!=null) {
                         BinderChange change = new BinderChange();
                         change.setEntityId(entityId);
+                        change.setPrimaryFileId(nextDelete.getFileId());
                         change.setAction(BinderChange.Action.delete);
                         change.setDate(nextDelete.getStartDate());
                         mergedResults.add(change);
