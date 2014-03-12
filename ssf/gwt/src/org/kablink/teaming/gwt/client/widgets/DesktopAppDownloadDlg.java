@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -52,8 +52,8 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.resources.client.ImageResource;
-import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Anchor;
@@ -63,7 +63,6 @@ import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.FlexTable.FlexCellFormatter;
-import com.google.gwt.user.client.ui.Widget;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 
 /**
@@ -71,7 +70,6 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
  *  
  * @author drfoster@novell.com
  */
-@SuppressWarnings("unused")
 public class DesktopAppDownloadDlg extends DlgBox {
 	private boolean									m_hasMac;					// true -> We have the MacOS desktop application information.  false -> We don't.
 	private boolean									m_hasWin32;					// true -> We have the Win32 desktop application information.  false -> We don't.
@@ -98,8 +96,9 @@ public class DesktopAppDownloadDlg extends DlgBox {
 	private final static int HEADER_ROW		= 0;
 	private final static int WINDOWS_ROW	= 1;
 	private final static int MAC_ROW		= 2;
-	private final static int ANDROID_ROW	= 3;
-	private final static int IOS_ROW		= 4;
+	private final static int MOBILE_ROW		= 3;
+	private final static int ANDROID_ROW	= 4;
+	private final static int IOS_ROW		= 5;
 
 	// The URLs to the quick start help for the desktop applications.
 	private final static String	MAC_QUICKSTART_URL_FILR		= "http://www.novell.com/documentation/novell-filr1/filr1_qs_desktopmac/data/filr1_qs_desktop.html";
@@ -155,6 +154,27 @@ public class DesktopAppDownloadDlg extends DlgBox {
 	private String createBoldLabelHTML(String label) {
 		// Always use the initial form of the method.
 		return createBoldLabelHTML(label, false);
+	}
+
+	/*
+	 * Creates a <DIV> for an application store.
+	 */
+	private void createAppStoreLabel(VibeFlowPanel fp, ImageResource appStoreImage, String appStoreLabel, String addedStyle) {
+		String s = createBoldLabelHTML(appStoreLabel);
+		Image  i = GwtClientHelper.buildImage(appStoreImage.getSafeUri().asString());
+		i.addStyleName("vibe-desktopAppPage-appStoreImage");
+		Label  l = new Label();
+		l.getElement().setInnerHTML(GwtClientHelper.getWidgetHTML(i) + s);
+		l.addStyleName("vibe-desktopAppPage-appStore");
+		if (GwtClientHelper.hasString(addedStyle)) {
+			l.addStyleName(addedStyle);
+		}
+		fp.add(l);
+	}
+	
+	private void createAppStoreLabel(VibeFlowPanel fp, ImageResource appStoreImage, String appStoreLabel) {
+		// Always use the initial form of the method.
+		createAppStoreLabel(fp, appStoreImage, appStoreLabel, null);
 	}
 	
 	/**
@@ -236,7 +256,14 @@ public class DesktopAppDownloadDlg extends DlgBox {
 		createLogoCell(            m_bodyTable, fcf, MAC_ROW, m_filrImages.logoMac(), m_messages.downloadAppDlgAlt_MacDownloads());
 		createDownloadsCell_Mac(   m_bodyTable, fcf);
 		createInstructionsCell_Mac(m_bodyTable, fcf);
+
+		// ...create the Mobile clients content...
+		createProductTitleCell(       m_bodyTable, fcf, MOBILE_ROW, m_messages.downloadAppDlgProductMobile(m_product));
+		createLogoCell(               m_bodyTable, fcf, MOBILE_ROW, m_filrImages.logoMobileDevice(), m_messages.downloadAppDlgAlt_MobileDownloads());
+		createDownloadsCell_Mobile(   m_bodyTable, fcf);
+		createInstructionsCell_Mobile(m_bodyTable, fcf);
 		
+/*
 		// ...create the Android client content...
 		createProductTitleCell(        m_bodyTable, fcf, ANDROID_ROW, m_messages.downloadAppDlgProductAndroid(m_product));
 		createLogoCell(                m_bodyTable, fcf, ANDROID_ROW, m_filrImages.logoAndroid(), m_messages.downloadAppDlgAlt_AndroidDownloads());
@@ -248,11 +275,13 @@ public class DesktopAppDownloadDlg extends DlgBox {
 		createLogoCell(            m_bodyTable, fcf, IOS_ROW, m_filrImages.logoIOS(), m_messages.downloadAppDlgAlt_IOSDownloads());
 		createDownloadsCell_IOS(   m_bodyTable, fcf);
 		createInstructionsCell_IOS(m_bodyTable, fcf);
+*/
 	}
 
 	/*
 	 * Creates the downloads cell content for Android.
 	 */
+	@SuppressWarnings("unused")
 	private void createDownloadsCell_Android(VibeFlexTable ft, FlexCellFormatter fcf) {
 		// Create a panel with a label...
 		VibeFlowPanel fp = new VibeFlowPanel();
@@ -269,6 +298,7 @@ public class DesktopAppDownloadDlg extends DlgBox {
 	/*
 	 * Creates the downloads cell content for iOS.
 	 */
+	@SuppressWarnings("unused")
 	private void createDownloadsCell_IOS(VibeFlexTable ft, FlexCellFormatter fcf) {
 		// Create a panel with a label...
 		VibeFlowPanel fp = new VibeFlowPanel();
@@ -307,6 +337,31 @@ public class DesktopAppDownloadDlg extends DlgBox {
 		// ...and add that to the table.
 		ft.setWidget(    MAC_ROW, DOWNLOADS_COL, fp);
 		fcf.addStyleName(MAC_ROW, DOWNLOADS_COL, "vibe-desktopAppPage-linksNoWrap bottom");
+	}
+	
+	/*
+	 * Creates the downloads cell content for Mobile devices.
+	 */
+	private void createDownloadsCell_Mobile(VibeFlexTable ft, FlexCellFormatter fcf) {
+		// Create a panel with a label...
+		VibeFlowPanel fp = new VibeFlowPanel();
+		fp.addStyleName("displayBlock gwtUI_wrapnormal");
+		InlineLabel il = new InlineLabel(m_messages.downloadAppDlgDownloadMobile(m_company, m_product));
+		il.addStyleName("vibe-desktopAppPage-linkError");
+		fp.add(il);
+
+		// ...add the various application stores to that panel...
+		createAppStoreLabel(fp, m_filrImages.logoAppStore_Amazon(),      m_messages.downloadAppDlgAppStore_Amazon(), "vibe-desktopAppPage-appStoreImage-first");
+		createAppStoreLabel(fp, m_filrImages.logoAppStore_Apple(),       m_messages.downloadAppDlgAppStore_Apple()                                            );
+		createAppStoreLabel(fp, m_filrImages.logoAppStore_Blackberry(),  m_messages.downloadAppDlgAppStore_Blackberry()                                       );
+		createAppStoreLabel(fp, m_filrImages.logoAppStore_Google(),      m_messages.downloadAppDlgAppStore_Google()                                           );
+		createAppStoreLabel(fp, m_filrImages.logoAppStore_Samsung(),     m_messages.downloadAppDlgAppStore_Samsung()                                          );
+		createAppStoreLabel(fp, m_filrImages.logoAppStore_SamsungKnox(), m_messages.downloadAppDlgAppStore_SamsungKnox()                                      );
+		createAppStoreLabel(fp, m_filrImages.logoAppStore_Windows(),     m_messages.downloadAppDlgAppStore_Windows()                                          );
+		
+		// ...and add the panel to the table.
+		ft.setWidget(    MOBILE_ROW, DOWNLOADS_COL, fp);
+		fcf.addStyleName(MOBILE_ROW, DOWNLOADS_COL, "vibe-desktopAppPage-linksWrap bottom");
 	}
 	
 	/*
@@ -384,6 +439,7 @@ public class DesktopAppDownloadDlg extends DlgBox {
 	/*
 	 * Creates the instructions cell content for Android.
 	 */
+	@SuppressWarnings("unused")
 	private void createInstructionsCell_Android(VibeFlexTable ft, FlexCellFormatter fcf) {
 		// Construct the strings to display in the first block...
 		String s1 = m_messages.downloadAppDlgInstructAndroid1(createBoldLabelHTML(m_messages.downloadAppDlgInstructAndroid2()));
@@ -399,8 +455,8 @@ public class DesktopAppDownloadDlg extends DlgBox {
 		Element rE = fcf.getElement(ANDROID_ROW, INSTRUCTIONS_COL);
 		rE.appendChild(l.getElement());
 
-		// ...and append the second string block to the cell.
-		l = new Label(m_messages.downloadAppDlgInstructAndroid4(m_company, m_product));
+		// ...and append the system minimum to the cell.
+		l = new Label(m_messages.downloadAppDlgMinimumAndroid(m_product));
 		l.addStyleName("marginTop10px");
 		rE.appendChild(l.getElement());
 	}
@@ -408,6 +464,7 @@ public class DesktopAppDownloadDlg extends DlgBox {
 	/*
 	 * Creates the instructions cell content for iOS.
 	 */
+	@SuppressWarnings("unused")
 	private void createInstructionsCell_IOS(VibeFlexTable ft, FlexCellFormatter fcf) {
 		// Construct the string to display in the first block...
 		String s1 = m_messages.downloadAppDlgInstructIOS1(
@@ -425,8 +482,8 @@ public class DesktopAppDownloadDlg extends DlgBox {
 		Element rE = fcf.getElement(IOS_ROW, INSTRUCTIONS_COL);
 		rE.appendChild(l.getElement());
 
-		// ...and append the second string block to the cell.
-		l = new Label(m_messages.downloadAppDlgInstructIOS4(m_company, m_product));
+		// ...and append the system minimum to the cell.
+		l = new Label(m_messages.downloadAppDlgMinimumIOS(m_product));
 		l.addStyleName("marginTop10px");
 		rE.appendChild(l.getElement());
 	}
@@ -444,7 +501,7 @@ public class DesktopAppDownloadDlg extends DlgBox {
 			a.setHref(m_isFilr ? MAC_QUICKSTART_URL_FILR : MAC_QUICKSTART_URL_VIBE);
 			a.getElement().setInnerText(m_messages.downloadAppDlgDownloadMac2(m_company, m_product));
 	
-			// ...and add the instructions.
+			// ...add the instructions...
 			String msg = m_messages.downloadAppDlgDownloadMac1(
 				m_product,
 				m_messages.downloadAppDlgUrlMac(),
@@ -452,9 +509,41 @@ public class DesktopAppDownloadDlg extends DlgBox {
 			Label l = new Label();
 			l.getElement().setInnerHTML(msg);
 			
-			ft.setWidget(    MAC_ROW, INSTRUCTIONS_COL, l);
 			fcf.addStyleName(MAC_ROW, INSTRUCTIONS_COL, "vibe-desktopAppPage-instructions bottom");
+			Element rE = fcf.getElement(MAC_ROW, INSTRUCTIONS_COL);
+			rE.appendChild(l.getElement());
+			
+			// ...and append the system minimum to the cell.
+			l = new Label(m_messages.downloadAppDlgMinimumMac(m_product));
+			l.addStyleName("marginTop10px");
+			rE.appendChild(l.getElement());
+			
 		}
+	}
+	
+	/*
+	 * Creates the instructions cell content for Mobile devices.
+	 */
+	private void createInstructionsCell_Mobile(VibeFlexTable ft, FlexCellFormatter fcf) {
+		// Construct the string to display...
+		String s = m_messages.downloadAppDlgInstructMobile(m_product, m_company.toLowerCase(), m_product.toLowerCase(), m_company);
+		Label l = new Label();
+		l.getElement().setInnerText(s);
+
+		// ...add it to the cell...
+		ft.setText(                 MOBILE_ROW, INSTRUCTIONS_COL, "");
+		fcf.addStyleName(           MOBILE_ROW, INSTRUCTIONS_COL, "vibe-desktopAppPage-instructions bottom");
+		Element rE = fcf.getElement(MOBILE_ROW, INSTRUCTIONS_COL);
+		rE.appendChild(l.getElement());
+
+		// ...and append the system minimum to the cell.
+		l = new Label(m_messages.downloadAppDlgMinimumAndroid(m_product));
+		l.addStyleName("marginTop10px");
+		rE.appendChild(l.getElement());
+		
+		// ...and append the second string block to the cell.
+		l = new Label(m_messages.downloadAppDlgMinimumIOS(m_product));
+		rE.appendChild(l.getElement());
 	}
 	
 	/*
@@ -470,7 +559,7 @@ public class DesktopAppDownloadDlg extends DlgBox {
 			a.setHref(m_isFilr ? WINDOWS_QUICKSTART_URL_FILR : WINDOWS_QUICKSTART_URL_VIBE);
 			a.getElement().setInnerText(m_messages.downloadAppDlgDownloadWindows2(m_company, m_product));
 
-			// ...and add the instructions.
+			// ...add the instructions...
 			String msg = m_messages.downloadAppDlgDownloadWindows1(
 				m_product,
 				m_messages.downloadAppDlgUrlWin32(),
@@ -479,8 +568,15 @@ public class DesktopAppDownloadDlg extends DlgBox {
 			Label l = new Label();
 			l.getElement().setInnerHTML(msg);
 			
-			ft.setWidget(    WINDOWS_ROW, INSTRUCTIONS_COL, l);
 			fcf.addStyleName(WINDOWS_ROW, INSTRUCTIONS_COL, "vibe-desktopAppPage-instructions bottom");
+			Element rE = fcf.getElement(WINDOWS_ROW, INSTRUCTIONS_COL);
+			rE.appendChild(l.getElement());
+			
+			// ...and append the system minimum to the cell.
+			l = new Label(m_messages.downloadAppDlgMinimumWindows(m_product));
+			l.addStyleName("marginTop10px");
+			rE.appendChild(l.getElement());
+			
 		}
 	}
 	
