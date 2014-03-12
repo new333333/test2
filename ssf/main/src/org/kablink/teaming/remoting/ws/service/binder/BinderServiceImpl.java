@@ -710,7 +710,8 @@ public class BinderServiceImpl extends BaseService implements BinderService, Bin
 	@SuppressWarnings("unchecked")
 	public void binder_uploadFileAsByteArray(String accessToken, long binderId,
 			String fileUploadDataItemName, String fileName, byte[] fileContent) {
-		if (Validator.isNull(fileUploadDataItemName)) fileUploadDataItemName="ss_attachFile1";
+		if (Validator.isNull(fileUploadDataItemName) || "ss_attachFile".equals(fileUploadDataItemName))
+			fileUploadDataItemName="ss_attachFile1";
 		File originalFile = new File(fileName);
 		fileName = originalFile.getName();
 
