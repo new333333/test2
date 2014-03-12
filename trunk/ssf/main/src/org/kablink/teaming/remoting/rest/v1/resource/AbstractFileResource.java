@@ -5,6 +5,7 @@ import org.joda.time.format.ISODateTimeFormat;
 import org.kablink.teaming.domain.*;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.file.WriteFilesException;
+import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.shared.EmptyInputData;
 import org.kablink.teaming.module.shared.FileUtils;
 import org.kablink.teaming.module.shared.FolderUtils;
@@ -12,6 +13,7 @@ import org.kablink.teaming.remoting.rest.v1.exc.BadRequestException;
 import org.kablink.teaming.remoting.rest.v1.exc.ConflictException;
 import org.kablink.teaming.remoting.rest.v1.exc.InternalServerErrorException;
 import org.kablink.teaming.remoting.rest.v1.exc.NotFoundException;
+import org.kablink.teaming.remoting.rest.v1.exc.NotModifiedException;
 import org.kablink.teaming.remoting.rest.v1.util.ResourceUtil;
 import org.kablink.teaming.rest.v1.model.FileProperties;
 import org.kablink.teaming.rest.v1.model.FileVersionProperties;
@@ -306,5 +308,27 @@ abstract public class AbstractFileResource extends AbstractResource {
             list.add(ResourceUtil.fileVersionFromFileAttachment(va));
         }
         return list;
+    }
+
+    protected org.kablink.teaming.domain.FolderEntry synchronizeFolderEntry(org.kablink.teaming.domain.FolderEntry entry) {
+        org.kablink.teaming.domain.FolderEntry retEntry = null;
+        Folder folder = entry.getParentFolder();
+        if (folder.isMirrored()) {
+            FolderModule.FileSyncStatus status = getFolderModule().fileSynchronize(entry);
+            if (status == FolderModule.FileSyncStatus.deleted) {
+                throw new NoFolderEntryByTheIdException(entry.getId());
+            } else {
+                return _getFolderEntry(entry.getId());
+            }
+        }
+        throw new NotModifiedException();
+    }
+
+    protected org.kablink.teaming.domain.FolderEntry _getFolderEntry(long id) {
+        org.kablink.teaming.domain.FolderEntry hEntry = getFolderModule().getEntry(null, id);
+        if (hEntry.isPreDeleted()) {
+            throw new NoFolderEntryByTheIdException(id);
+        }
+        return hEntry;
     }
 }

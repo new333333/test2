@@ -201,17 +201,8 @@ public class FolderEntryResource extends AbstractFolderEntryResource {
             throw new BadRequestException(ApiErrorCode.BAD_INPUT, "'synchronize' form parameter (true/false) is required");
         }
         if (Boolean.TRUE.equals(sync)) {
-            Folder folder = entry.getParentFolder();
-            if (folder.isMirrored()) {
-                FolderModule.FileSyncStatus status = getFolderModule().fileSynchronize(entry);
-                if (status == FolderModule.FileSyncStatus.deleted) {
-                    throw new NoFolderEntryByTheIdException(id);
-                } else if (status== FolderModule.FileSyncStatus.modified) {
-                    entry = _getFolderEntry(id);
-                    return ResourceUtil.buildFolderEntry(entry, true, toDomainFormat(descriptionFormatStr));
-                }
-            }
-            throw new NotModifiedException();
+            org.kablink.teaming.domain.FolderEntry retEntry = synchronizeFolderEntry(entry);
+            return ResourceUtil.buildFolderEntry(retEntry, true, toDomainFormat(descriptionFormatStr));
         }
         return null;
     }
