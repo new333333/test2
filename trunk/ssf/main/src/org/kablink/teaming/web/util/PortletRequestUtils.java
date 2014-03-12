@@ -38,6 +38,9 @@ import java.util.Set;
 
 import javax.portlet.PortletRequest;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.slide.util.logger.Logger;
 import org.springframework.web.portlet.bind.PortletRequestBindingException;
 
 public abstract class PortletRequestUtils {
@@ -496,7 +499,11 @@ public abstract class PortletRequestUtils {
 	 */
 	public static String getRequiredStringParameter(PortletRequest request, String name)
 			throws PortletRequestBindingException {
-		return STRING_PARSER.validateRequiredString(name, request.getParameter(name));
+		return getRequiredStringParameter(request, name, false);
+	}
+	public static String getRequiredStringParameter(PortletRequest request, String name, boolean xssCheck)
+			throws PortletRequestBindingException {
+		return STRING_PARSER.validateRequiredString(name, request.getParameter(name), xssCheck);
 	}
 
 	/**
@@ -670,6 +677,9 @@ public abstract class PortletRequestUtils {
 
 
 	private static class StringParser extends ParameterParser {
+		protected static Log logger = LogFactory.getLog(StringParser.class);
+
+		private static final String PATTERN_STR1 = "[\"]";
 
 		protected String getType() {
 			return "string";
@@ -679,9 +689,16 @@ public abstract class PortletRequestUtils {
 			return parameter;
 		}
 
-		public String validateRequiredString(String name, String value)
+		public String validateRequiredString(String name, String value, boolean xssCheck)
 				throws PortletRequestBindingException {
 			validateRequiredParameter(name, value);
+			if (xssCheck && value != null) {
+				if (value.contains("\"") || value.contains("'")) {
+					logger.error("Error: URL parameter contains illegal quotation characters. Possible XSS attack. (" + value + ")");
+					value = value.replaceAll("\"", "&#34;");	 //Replace all quotation marks. There should never be any quotation marks in these strings. 
+					value = value.replaceAll("'", "&#39;");		 //Replace all single quotation marks. This is intended to fix certain XSS attacks.
+				}
+			}
 			return value;
 		}
 

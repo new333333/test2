@@ -118,6 +118,7 @@ import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ReleaseInfo;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.feed.TeamingFeedCache;
+import org.kablink.teaming.util.stringcheck.StringCheckUtil;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.portlet.SAbstractControllerRetry;
 import org.kablink.teaming.web.tree.DomTreeBuilder;
@@ -580,6 +581,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 			BinderHelper.setupStandardBeans(bs, request, response, model, null, portletName);
 			BinderHelper.setupMobileSearchBeans(bs, request, response, model);
 			refererUrl = Http.getCompleteURL(((HttpServletRequestReachable) request).getHttpServletRequest());
+			refererUrl = StringCheckUtil.checkForQuotes(refererUrl, false);		//Prevent XSS attacks
 			if (Validator.isNotNull(refererUrl) && !refererUrl.contains("operation="+WebKeys.OPERATION_MOBILE_LOGIN)) {
 				model.put(WebKeys.URL, refererUrl);
 			} else {
