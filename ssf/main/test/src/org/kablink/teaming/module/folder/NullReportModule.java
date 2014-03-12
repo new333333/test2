@@ -293,4 +293,10 @@ public class NullReportModule implements ReportModule {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	@Override
+	public void addFileInfo(AuditType type, FileAttachment attachment,
+			User asUser) {
+		// TODO Auto-generated method stub		
+	}
 }
