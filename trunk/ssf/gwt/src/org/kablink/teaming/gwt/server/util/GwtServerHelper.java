@@ -376,12 +376,15 @@ public class GwtServerHelper {
 	// The following are used as URL components when constructing the
 	// URLs for accessing the desktop download application information.
 	private static final String JSON_TAIL		= "version.json";
+	private static final String JSON_XP_TAIL	= "version-winxp.json";
 	private static final String MACOS_TAIL_FILR	= "novellfilr/osx/x64/";
 	private static final String MACOS_TAIL_VIBE	= "novellvibedesktop/osx/x64/";
 	private static final String WIN32_TAIL_FILR	= "novellfilr/windows/x86/";
 	private static final String WIN32_TAIL_VIBE	= "novellvibedesktop/windows/x86/";
 	private static final String WIN64_TAIL_FILR	= "novellfilr/windows/x64/";
 	private static final String WIN64_TAIL_VIBE	= "novellvibedesktop/windows/x64/";
+	private static final String WINXP_TAIL_FILR	= "novellfilr/windows/x86/";
+	private static final String WINXP_TAIL_VIBE	= "novellvibedesktop/windows/x86/";
 	
 	// Relative path within the local file system where the desktop
 	// applications can be found for downloading.
@@ -1132,8 +1135,8 @@ public class GwtServerHelper {
 	 * Constructs a desktop application FileDownloadInfo object from
 	 * local files.
 	 */
-	private static FileDownloadInfo buildDesktopAppInfo_Local(String baseFilePath, String baseUrl, String platformTail) {
-		String jsonData = doFileGet(baseFilePath + "/" + platformTail + JSON_TAIL);
+	private static FileDownloadInfo buildDesktopAppInfo_Local(String baseFilePath, String baseUrl, String platformTail, String jsonTail) {
+		String jsonData = doFileGet(baseFilePath + "/" + platformTail + jsonTail);
 		return buildDesktopAppInfo_Common(jsonData, baseUrl, platformTail);
 	}
 	
@@ -1141,8 +1144,8 @@ public class GwtServerHelper {
 	 * Constructs a desktop application FileDownloadInfo object from a
 	 * remote URL.
 	 */
-	private static FileDownloadInfo buildDesktopAppInfo_Remote(String baseUrl, String platformTail) {
-		String jsonData = doHTTPGet((baseUrl + platformTail + JSON_TAIL));
+	private static FileDownloadInfo buildDesktopAppInfo_Remote(String baseUrl, String platformTail, String jsonTail) {
+		String jsonData = doHTTPGet((baseUrl + platformTail + jsonTail));
 		return buildDesktopAppInfo_Common(jsonData, baseUrl, platformTail);
 	}
 	
@@ -4607,9 +4610,10 @@ public class GwtServerHelper {
 			// ...and construct and store the desktop
 			// ...application information.
 			boolean isFilr = Utils.checkIfFilr();
-			appDownloadInfo.setMac(  buildDesktopAppInfo_Local(baseFilePath, baseUrl, (isFilr ? MACOS_TAIL_FILR : MACOS_TAIL_VIBE)));
-			appDownloadInfo.setWin32(buildDesktopAppInfo_Local(baseFilePath, baseUrl, (isFilr ? WIN32_TAIL_FILR : WIN32_TAIL_VIBE)));
-			appDownloadInfo.setWin64(buildDesktopAppInfo_Local(baseFilePath, baseUrl, (isFilr ? WIN64_TAIL_FILR : WIN64_TAIL_VIBE)));
+			appDownloadInfo.setMac(  buildDesktopAppInfo_Local(baseFilePath, baseUrl, (isFilr ? MACOS_TAIL_FILR : MACOS_TAIL_VIBE), JSON_TAIL)   );
+			appDownloadInfo.setWin32(buildDesktopAppInfo_Local(baseFilePath, baseUrl, (isFilr ? WIN32_TAIL_FILR : WIN32_TAIL_VIBE), JSON_TAIL)   );
+			appDownloadInfo.setWin64(buildDesktopAppInfo_Local(baseFilePath, baseUrl, (isFilr ? WIN64_TAIL_FILR : WIN64_TAIL_VIBE), JSON_TAIL)   );
+			appDownloadInfo.setWinXP(buildDesktopAppInfo_Local(baseFilePath, baseUrl, (isFilr ? WINXP_TAIL_FILR : WINXP_TAIL_VIBE), JSON_XP_TAIL));
 		}
 		catch (Exception ex) {
 			throw GwtLogHelper.getGwtClientException(m_logger, ex);
@@ -4630,9 +4634,10 @@ public class GwtServerHelper {
 				// ...and construct and store the desktop
 				// ...application information.
 				boolean isFilr = Utils.checkIfFilr();
-				appDownloadInfo.setMac(  buildDesktopAppInfo_Remote(baseUrl, (isFilr ? MACOS_TAIL_FILR : MACOS_TAIL_VIBE)));
-				appDownloadInfo.setWin32(buildDesktopAppInfo_Remote(baseUrl, (isFilr ? WIN32_TAIL_FILR : WIN32_TAIL_VIBE)));
-				appDownloadInfo.setWin64(buildDesktopAppInfo_Remote(baseUrl, (isFilr ? WIN64_TAIL_FILR : WIN64_TAIL_VIBE)));
+				appDownloadInfo.setMac(  buildDesktopAppInfo_Remote(baseUrl, (isFilr ? MACOS_TAIL_FILR : MACOS_TAIL_VIBE), JSON_TAIL)   );
+				appDownloadInfo.setWin32(buildDesktopAppInfo_Remote(baseUrl, (isFilr ? WIN32_TAIL_FILR : WIN32_TAIL_VIBE), JSON_TAIL)   );
+				appDownloadInfo.setWin64(buildDesktopAppInfo_Remote(baseUrl, (isFilr ? WIN64_TAIL_FILR : WIN64_TAIL_VIBE), JSON_TAIL)   );
+				appDownloadInfo.setWinXP(buildDesktopAppInfo_Remote(baseUrl, (isFilr ? WINXP_TAIL_FILR : WINXP_TAIL_VIBE), JSON_XP_TAIL));
 			}
 		}
 		catch (Exception ex) {
