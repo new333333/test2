@@ -2603,12 +2603,13 @@ public interface GwtTeamingMessages extends Messages
 	String downloadAppDlgDownloadMac2(String company, String product);
 	String downloadAppDlgDownloadMd5(String md5);
 	String downloadAppDlgDownloadMobile(String company, String product);
-	String downloadAppDlgDownloadWindows1(String product, String filename32, String filename64, String quickStart);
+	String downloadAppDlgDownloadWindows1(String product, String filename32, String filename64, String filenameXP, String quickStart);
 	String downloadAppDlgDownloadWindows2(String company, String product);
 	String downloadAppDlgError_NoMacUrl();
 	String downloadAppDlgError_NoUrls();
 	String downloadAppDlgError_NoWin32Url();
 	String downloadAppDlgError_NoWin64Url();
+	String downloadAppDlgError_NoWinXPUrl();
 	String downloadAppDlgHeader(String product);
 	String downloadAppDlgInstructAndroid1(String type);
 	String downloadAppDlgInstructAndroid2();
@@ -2620,7 +2621,9 @@ public interface GwtTeamingMessages extends Messages
 	String downloadAppDlgMinimumAndroid(String product);
 	String downloadAppDlgMinimumIOS(String product);
 	String downloadAppDlgMinimumMac(String product);
-	String downloadAppDlgMinimumWindows(String product);
+	String downloadAppDlgMinimumWindows32(String product);
+	String downloadAppDlgMinimumWindows64(String product);
+	String downloadAppDlgMinimumWindowsXP(String product);
 	String downloadAppDlgProductAndroid(String product);
 	String downloadAppDlgProductIOS(String product);
 	String downloadAppDlgProductMac(String product);
@@ -2630,6 +2633,7 @@ public interface GwtTeamingMessages extends Messages
 	String downloadAppDlgUrlMac();
 	String downloadAppDlgUrlWin32();
 	String downloadAppDlgUrlWin64();
+	String downloadAppDlgUrlWinXP();
 
 	// Strings used in the "Select Principals" widget
 	String selectPrincipalsWidget_CantSelectExternalUserPrompt();

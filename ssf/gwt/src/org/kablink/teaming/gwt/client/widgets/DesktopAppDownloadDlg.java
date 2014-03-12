@@ -74,6 +74,7 @@ public class DesktopAppDownloadDlg extends DlgBox {
 	private boolean									m_hasMac;					// true -> We have the MacOS desktop application information.  false -> We don't.
 	private boolean									m_hasWin32;					// true -> We have the Win32 desktop application information.  false -> We don't.
 	private boolean									m_hasWin64;					// true -> We have the Win64 desktop application information.  false -> We don't.
+	private boolean									m_hasWinXP;					// true -> We have the WinXP desktop application information.  false -> We don't.
 	private boolean									m_isFilr;					// true -> We're in Filr mode.  false -> We're in Vibe mode.
 	private DesktopAppDownloadInfoRpcResponseData	m_desktopAppDownloadInfo;	// Information about downloading the desktop application.  Read via a GWT RPC call when the dialog runs.
 	private GwtTeamingFilrImageBundle				m_filrImages;				// Access to Filr's images.
@@ -402,6 +403,22 @@ public class DesktopAppDownloadDlg extends DlgBox {
 		}
 		rE.appendChild(fp.getElement());
 
+		// ...add the WinXP link...
+		fp = new VibeFlowPanel();
+		fp.addStyleName("displayBlock vibe-desktopAppPage-link2nd");
+		if (m_hasWinXP) {
+			createDownloadLink(
+				m_desktopAppDownloadInfo.getWinXP(),
+				fp,
+				m_messages.downloadAppDlgUrlWinXP());
+		}
+		else {
+			InlineLabel il = new InlineLabel(m_messages.downloadAppDlgError_NoWinXPUrl());
+			il.addStyleName("vibe-desktopAppPage-linkError");
+			fp.add(il);
+		}
+		rE.appendChild(fp.getElement());
+
 		// ...and style the row.
 		fcf.addStyleName(WINDOWS_ROW, DOWNLOADS_COL, "vibe-desktopAppPage-linksNoWrap bottom");
 	}
@@ -536,6 +553,7 @@ public class DesktopAppDownloadDlg extends DlgBox {
 		Element rE = fcf.getElement(MOBILE_ROW, INSTRUCTIONS_COL);
 		rE.appendChild(l.getElement());
 
+/*
 		// ...and append the system minimum to the cell.
 		l = new Label(m_messages.downloadAppDlgMinimumAndroid(m_product));
 		l.addStyleName("marginTop10px");
@@ -544,14 +562,15 @@ public class DesktopAppDownloadDlg extends DlgBox {
 		// ...and append the second string block to the cell.
 		l = new Label(m_messages.downloadAppDlgMinimumIOS(m_product));
 		rE.appendChild(l.getElement());
+*/
 	}
 	
 	/*
 	 * Creates the instructions cell content for Windows.
 	 */
 	private void createInstructionsCell_Windows(VibeFlexTable ft, FlexCellFormatter fcf) {
-		// If we have a Win32 or Win64 client to download...
-		if (m_hasWin32 || m_hasWin64) {
+		// If we have a Win32, Win64 or WinXP client to download...
+		if (m_hasWin32 || m_hasWin64 || m_hasWinXP) {
 			// ...construct an Anchor for the quick start link...
 			Anchor a = new Anchor();
 			a.addStyleName("vibe-desktopAppPage-instructionAnchor");
@@ -564,6 +583,7 @@ public class DesktopAppDownloadDlg extends DlgBox {
 				m_product,
 				m_messages.downloadAppDlgUrlWin32(),
 				m_messages.downloadAppDlgUrlWin64(),
+				m_messages.downloadAppDlgUrlWinXP(),
 				GwtClientHelper.getWidgetHTML(a));
 			Label l = new Label();
 			l.getElement().setInnerHTML(msg);
@@ -572,11 +592,16 @@ public class DesktopAppDownloadDlg extends DlgBox {
 			Element rE = fcf.getElement(WINDOWS_ROW, INSTRUCTIONS_COL);
 			rE.appendChild(l.getElement());
 			
-			// ...and append the system minimum to the cell.
-			l = new Label(m_messages.downloadAppDlgMinimumWindows(m_product));
+			// ...and append the system minimums to the cell.
+			l = new Label(m_messages.downloadAppDlgMinimumWindows32(m_product));
 			l.addStyleName("marginTop10px");
 			rE.appendChild(l.getElement());
 			
+			l = new Label(m_messages.downloadAppDlgMinimumWindows64(m_product));
+			rE.appendChild(l.getElement());
+			
+			l = new Label(m_messages.downloadAppDlgMinimumWindowsXP(m_product));
+			rE.appendChild(l.getElement());
 		}
 	}
 	
@@ -676,7 +701,8 @@ public class DesktopAppDownloadDlg extends DlgBox {
 				m_hasMac   = (null != m_desktopAppDownloadInfo.getMac());
 				m_hasWin32 = (null != m_desktopAppDownloadInfo.getWin32());
 				m_hasWin64 = (null != m_desktopAppDownloadInfo.getWin64());
-				if ((!m_hasMac) && (!m_hasWin32) && (!m_hasWin64)) {
+				m_hasWinXP = (null != m_desktopAppDownloadInfo.getWinXP());
+				if ((!m_hasMac) && (!m_hasWin32) && (!m_hasWin64) && (!m_hasWinXP)) {
 					// No!  Then there's not much point running the
 					// dialog.  Hide it and tell the user about the
 					// problem.
