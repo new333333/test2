@@ -67,7 +67,8 @@ public class AttachmentUtilities {
 	}
 	public void uploadFolderFile(Long binderId, Long entryId, 
 				String fileUploadDataItemName, String fileName, String modifier, Calendar modificationDate, Map options) {
-		if (Validator.isNull(fileUploadDataItemName)) fileUploadDataItemName="ss_attachFile1";
+		if (Validator.isNull(fileUploadDataItemName) || "ss_attachFile".equals(fileUploadDataItemName))
+			fileUploadDataItemName="ss_attachFile1";
 		File originalFile = new File(fileName);
 		fileName = originalFile.getName();
 

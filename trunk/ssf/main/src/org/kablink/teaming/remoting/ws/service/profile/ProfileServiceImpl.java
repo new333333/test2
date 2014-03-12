@@ -436,7 +436,8 @@ public class ProfileServiceImpl extends BaseService implements ProfileService, P
 	public void profile_uploadFileAsByteArray(String accessToken,
 			long principalId, String fileUploadDataItemName, String fileName,
 			byte[] fileContent) {
-		if (Validator.isNull(fileUploadDataItemName)) fileUploadDataItemName="ss_attachFile1";
+		if (Validator.isNull(fileUploadDataItemName) || "ss_attachFile".equals(fileUploadDataItemName))
+			fileUploadDataItemName="ss_attachFile1";
 		File originalFile = new File(fileName);
 		fileName = originalFile.getName();
 

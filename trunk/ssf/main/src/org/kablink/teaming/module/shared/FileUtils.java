@@ -187,7 +187,7 @@ public class FileUtils {
 			String filename, InputStream is, Date modDate, String expectedMd5)
 			throws AccessControlException, ReservedByAnotherUserException,
 			WriteFilesException, WriteEntryDataException {
-		if (Validator.isNull(dataName))
+		if (Validator.isNull(dataName) || "ss_attachFile".equals(dataName))
 			dataName = "ss_attachFile1";
 		Map options = null;
 		MultipartFile mf;
@@ -210,7 +210,7 @@ public class FileUtils {
 			String filename, InputStream is)
 			throws AccessControlException, ReservedByAnotherUserException,
 			WriteFilesException, WriteEntryDataException {
-		if (Validator.isNull(dataName))
+		if (Validator.isNull(dataName) || "ss_attachFile".equals(dataName))
 			dataName = "ss_attachFile1";
 		MultipartFile mf = new SimpleMultipartFile(filename, is);
 		Map fileItems = new HashMap();

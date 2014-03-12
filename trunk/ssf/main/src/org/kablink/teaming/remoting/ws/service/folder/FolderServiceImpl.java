@@ -844,7 +844,8 @@ public void folder_deleteEntryWorkflow(String accessToken, long entryId, String 
 	public void folder_uploadAttachmentAsByteArray(String accessToken,
 			long entryId, String fileUploadDataItemName, String attachmentId,
 			byte[] fileContent) {
-		if (Validator.isNull(fileUploadDataItemName)) fileUploadDataItemName="ss_attachFile1";
+		if (Validator.isNull(fileUploadDataItemName) || "ss_attachFile".equals(fileUploadDataItemName))
+			fileUploadDataItemName="ss_attachFile1";
 		
 		FolderEntry entry = getFolderModule().getEntry(null, entryId);
 		FileAttachment fa = getFileAttachment(entry, attachmentId);
