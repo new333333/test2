@@ -382,7 +382,7 @@ public class SelfResource extends AbstractFileResource {
             throw new AccessControlException("Personal storage is not allowed.", null);
         }
         org.kablink.teaming.domain.Binder parent = getMyFilesFolderParent();
-        return getBinderChanges(new Long [] {parent.getId()}, since, descriptionFormatStr, maxCount, "/my_files/library_changes");
+        return getBinderChanges(new Long [] {parent.getId()}, null, since, descriptionFormatStr, maxCount, "/my_files/library_changes");
     }
 
     @GET

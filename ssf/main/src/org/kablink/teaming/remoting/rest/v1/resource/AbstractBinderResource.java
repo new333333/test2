@@ -222,7 +222,7 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
                                               @QueryParam("since") String since,
                                               @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr,
                                               @QueryParam ("count") @DefaultValue("500") Integer maxCount) {
-        return getBinderChanges(new Long [] {id}, since, descriptionFormatStr, maxCount, getBasePath() + id + "/library_changes");
+        return getBinderChanges(new Long [] {id}, null, since, descriptionFormatStr, maxCount, getBasePath() + id + "/library_changes");
     }
 
     @GET
