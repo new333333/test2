@@ -76,6 +76,7 @@ import org.kablink.teaming.util.ReleaseInfo;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.Utils;
+import org.kablink.teaming.util.stringcheck.StringCheckUtil;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.GwtUIHelper;
 import org.kablink.teaming.web.util.MiscUtil;
@@ -284,6 +285,7 @@ public class LoginFilter  implements Filter {
 		}
 		else {				
 			String currentURL = Http.getCompleteURL(req);
+			currentURL = StringCheckUtil.checkForQuotes(currentURL, false);		//Prevent XSS attacks
 			if(currentURL.contains("p_name=ss_mobile")) {
 				// Mobile interaction. Let it proceed as normal.
 				req.setAttribute(WebKeys.REFERER_URL, currentURL);
@@ -294,6 +296,7 @@ public class LoginFilter  implements Filter {
 							currentURL.contains("operation=mobile_login"))) {
 				// Request for login form. Let it proceed as normal.
 				String refererURL = req.getParameter("refererUrl");
+				refererURL = StringCheckUtil.checkForQuotes(refererURL, false);		//Prevent XSS attacks
 				if(Validator.isNotNull(refererURL))
 					req.setAttribute(WebKeys.REFERER_URL, refererURL);
 				chain.doFilter(req, res);										

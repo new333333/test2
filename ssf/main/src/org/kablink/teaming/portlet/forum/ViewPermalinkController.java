@@ -67,6 +67,7 @@ import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.Utils;
+import org.kablink.teaming.util.stringcheck.StringCheckUtil;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.portlet.SAbstractController;
 import org.kablink.teaming.web.util.BinderHelper;
@@ -220,6 +221,7 @@ public class ViewPermalinkController  extends SAbstractController {
 			response.setRenderParameter("accessException", "true");
 			
 			refererUrl = Http.getCompleteURL( WebHelper.getHttpServletRequest( request ) );
+			refererUrl = StringCheckUtil.checkForQuotes(refererUrl, false);		//Prevent XSS attacks
 			response.setRenderParameter( WebKeys.REFERER_URL, refererUrl );
 			
 			return;
@@ -675,6 +677,7 @@ public class ViewPermalinkController  extends SAbstractController {
 						// Remember the url the user is trying to go to.  When the user logs in
 						// we should take them to that url.
 						refererUrl = PortletRequestUtils.getStringParameter( request, WebKeys.REFERER_URL, "" );
+						refererUrl = StringCheckUtil.checkForQuotes(refererUrl, false);		//Prevent XSS attacks
 						model.put( "loginRefererUrl", refererUrl );
 					}
 					else

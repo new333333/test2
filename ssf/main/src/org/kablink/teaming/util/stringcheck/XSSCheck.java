@@ -178,7 +178,7 @@ public class XSSCheck implements StringCheck {
 	}
 	
 	public String checkForQuotes(String value, boolean checkOnly) throws StringCheckException {
-		if (value.contains("\"") || value.contains("'")) {
+		if (value != null && (value.contains("\"") || value.contains("'"))) {
 			value = value.replaceAll("\"", "&#34;");	 //Replace all quotation marks. There should never be any quotation marks in these strings. 
 			value = value.replaceAll("'", "&#39;");		 //Replace all single quotation marks. This is intended to fix certain XSS attacks.
 		}
