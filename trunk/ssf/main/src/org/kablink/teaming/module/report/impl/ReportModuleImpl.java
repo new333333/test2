@@ -308,7 +308,12 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 	}
 
 	public void addFileInfo(AuditTrail.AuditType type, FileAttachment attachment) {
-		AuditTrail audit = new AuditTrail(type, RequestContextHolder.getRequestContext().getUser(), attachment.getOwner().getEntity());
+		User user = RequestContextHolder.getRequestContext().getUser();
+		addFileInfo(type, attachment, user);
+	}
+
+	public void addFileInfo(AuditTrail.AuditType type, FileAttachment attachment, User asUser) {
+		AuditTrail audit = new AuditTrail(type, asUser, attachment.getOwner().getEntity());
 		audit.setDescription(attachment.getFileItem().getName());
 		audit.setFileId(attachment.getId());
 		addAuditTrail(audit);
