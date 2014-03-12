@@ -484,14 +484,13 @@
 
 	<!-- ============================ Indexing/Search Service =========================== -->
 	
+	<bean id="luceneProviderManager" class="org.kablink.teaming.lucene.LuceneProviderManager" depends-on="sPropsUtil" init-method="initialize" destroy-method="close">
+		<property name="indexRootDirPath"><value>${data.luceneindex.root.dir}/lucene</value></property>
+		<property name="mbeanNamePrefix"><value>Vibe:type=Indexing,</value></property>
+	</bean>
+	
 	<bean id="luceneSessionFactory" class = "org.kablink.teaming.search.local.LocalLuceneSessionFactory" depends-on="sPropsUtil">
-		<property name="luceneProviderManager">
-			<bean class="org.kablink.teaming.lucene.LuceneProviderManager" 
-				depends-on="sPropsUtil" init-method="initialize" destroy-method="close">
-				<property name="indexRootDirPath"><value>${data.luceneindex.root.dir}/lucene</value></property>
-				<property name="mbeanNamePrefix"><value>Vibe:type=Indexing,</value></property>
-			</bean>
-		</property>
+		<property name="luceneProviderManager"><ref bean="luceneProviderManager"/></property>
 	</bean>
 		
 	<bean id="indexSynchronizationManager" class="org.kablink.teaming.search.IndexSynchronizationManager">
