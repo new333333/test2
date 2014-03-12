@@ -955,13 +955,20 @@ public class ShareResource extends AbstractResource {
         BinderChanges changes;
         // Include deleted shares
         spec.deleted = null;
-        List<Pair<DefinableEntity, List<ShareItem>>> binders = _getSharedItems(topId, spec, excludedSharerId, false, showHidden, showUnhidden, true, showPublic, showNonPublic, true, false);
+        List<Pair<DefinableEntity, List<ShareItem>>> binders = _getSharedItems(topId, spec, excludedSharerId, false, showHidden, showUnhidden, true, showPublic, showNonPublic, true, true);
         if (binders.size()>0) {
-            List<Long> ids = new ArrayList<Long>(binders.size());
+            List<Long> binderIds = new ArrayList<Long>();
+            List<Long> entryIds = new ArrayList<Long>();
             for (Pair<DefinableEntity, List<ShareItem>> pair : binders) {
-                ids.add(pair.getB().get(0).getSharedEntityIdentifier().getEntityId());
+                EntityIdentifier id = pair.getB().get(0).getSharedEntityIdentifier();
+                if (id.getEntityType().isBinder()) {
+                    binderIds.add(id.getEntityId());
+                } else if (id.getEntityType()== EntityIdentifier.EntityType.folderEntry ) {
+                    entryIds.add(id.getEntityId());
+                }
             }
-            changes = super.getBinderChanges(ids.toArray(new Long[ids.size()]), since, descriptionFormatStr, maxCount, nextUrl);
+            changes = super.getBinderChanges(binderIds.toArray(new Long[binderIds.size()]), entryIds.toArray(new Long[entryIds.size()]),
+                    since, descriptionFormatStr, maxCount, nextUrl);
         } else {
             changes = new BinderChanges();
         }

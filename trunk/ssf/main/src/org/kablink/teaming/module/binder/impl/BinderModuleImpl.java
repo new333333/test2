@@ -35,6 +35,7 @@ package org.kablink.teaming.module.binder.impl;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -3753,9 +3754,9 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	}
 
     @Override
-	public BinderChanges searchForChanges(Long [] binderIds, Date sinceDate, int maxResults) {
+	public BinderChanges searchForChanges(Long [] binderIds, Long [] entryIds, Date sinceDate, int maxResults) {
         List<HKey> binderKeys = getHKeys(binderIds);
-        if (binderKeys==null || binderKeys.size()==0) {
+        if (binderKeys.size()==0 && (entryIds==null || entryIds.length==0)) {
             return null;
         }
         Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
@@ -3763,12 +3764,13 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
         if (purgeDate!=null && purgeDate.after(sinceDate)) {
             throw new AuditTrailPurgedException();
         }
-        if (haveAclsChangedSinceDate(binderKeys, sinceDate)) {
+        if (binderKeys.size()>0 && haveAclsChangedSinceDate(binderKeys, sinceDate)) {
             throw new AclChangeException();
         }
 
-        Map map = searchForChangedEntities(binderIds, sinceDate, true, true, true, false, maxResults);
-        List deleteEntries = getDeleteAuditTrailEntries(binderKeys, sinceDate, maxResults);
+        Map map = searchForChangedEntities(binderIds, entryIds, sinceDate, true, true, true, false, maxResults);
+        List entryList = entryIds==null ? null : Arrays.asList(entryIds);
+        List deleteEntries = getDeleteAuditTrailEntries(binderKeys, entryList, sinceDate, maxResults);
 
         Integer searchCount = (Integer)map.get(ObjectKeys.TOTAL_SEARCH_RECORDS_RETURNED);
         Integer searchTotal = (Integer)map.get(ObjectKeys.TOTAL_SEARCH_COUNT);
@@ -3851,7 +3853,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 
     private boolean haveAclsChangedSinceDate(List<HKey>  binderKeys, Date sinceDate) {
         Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
-        List aclChanges = getCoreDao().getAuditTrailEntries(zoneId, sinceDate, binderKeys,
+        List aclChanges = getCoreDao().getAuditTrailEntries(zoneId, sinceDate, binderKeys, null,
                 new AuditTrail.AuditType[]{AuditTrail.AuditType.acl}, 1);
         return aclChanges.size()>0;
     }
@@ -3869,17 +3871,24 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
         return keys;
     }
 
-    private List getDeleteAuditTrailEntries(List<HKey>  binderKeys, Date sinceDate, int maxResults) {
+    private List getDeleteAuditTrailEntries(List<HKey>  binderKeys, List<Long> entryIds, Date sinceDate, int maxResults) {
         Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
-        return getCoreDao().getAuditTrailEntries(zoneId, sinceDate, binderKeys,
+        return getCoreDao().getAuditTrailEntries(zoneId, sinceDate, binderKeys, entryIds,
                 new AuditTrail.AuditType[]{AuditTrail.AuditType.delete, AuditTrail.AuditType.preDelete}, maxResults);
     }
 
-    private Map searchForChangedEntities(Long [] binderIds, Date sinceDate, boolean libraryOnly, boolean binders, boolean entries, boolean attachments, int maxResults){
+    private Map searchForChangedEntities(Long [] binderIds, Long [] entryIds, Date sinceDate, boolean libraryOnly, boolean binders, boolean entries, boolean attachments, int maxResults){
         Criteria crit = new Criteria();
         Junction or = disjunction();
-        for (Long binderId : binderIds) {
-            or.add(org.kablink.teaming.search.SearchUtils.buildAncentryCriterion(binderId));
+        if (binderIds!=null) {
+            for (Long binderId : binderIds) {
+                or.add(org.kablink.teaming.search.SearchUtils.buildAncentryCriterion(binderId));
+            }
+        }
+        if (entryIds!=null) {
+            for (Long entryId : entryIds) {
+                or.add(org.kablink.teaming.search.SearchUtils.buildDocIdCriterion(entryId));
+            }
         }
         crit.add(or);
         crit.add(org.kablink.teaming.search.SearchUtils.buildDocTypeCriterion(binders, entries, attachments, false));

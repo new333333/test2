@@ -1713,13 +1713,13 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         return restrictions;
     }
 
-    protected BinderChanges getBinderChanges(Long [] binderIds, String since, String descriptionFormatStr, Integer maxCount, String nextUrl) {
+    protected BinderChanges getBinderChanges(Long [] binderIds, Long [] entryIds, String since, String descriptionFormatStr, Integer maxCount, String nextUrl) {
         if (since==null) {
             throw new BadRequestException(ApiErrorCode.BAD_INPUT, "Missing 'since' query parameter");
         }
         try {
             Date sinceDate = dateFormat.parse(since);
-            org.kablink.teaming.domain.BinderChanges binderChanges = getBinderModule().searchForChanges(binderIds, sinceDate, maxCount);
+            org.kablink.teaming.domain.BinderChanges binderChanges = getBinderModule().searchForChanges(binderIds, entryIds, sinceDate, maxCount);
             List<BaseBinderChange> changes = new ArrayList<BaseBinderChange>();
             for (BinderChange change : binderChanges.getChanges()) {
                 org.kablink.teaming.domain.DefinableEntity definableEntity = null;

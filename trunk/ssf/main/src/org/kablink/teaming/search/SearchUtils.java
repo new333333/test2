@@ -712,6 +712,10 @@ public class SearchUtils {
         return Restrictions.eq(Constants.ENTRY_ANCESTRY, id.toString());
     }
 
+    public static Criterion buildDocIdCriterion(Long id) {
+        return Restrictions.eq(Constants.DOCID_FIELD, id.toString());
+    }
+
     public static Criterion getFalseCriterion() {
         return Restrictions.eq(Constants.DOC_TYPE_FIELD, "_fake_");
     }

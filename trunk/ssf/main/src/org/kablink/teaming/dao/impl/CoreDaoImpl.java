@@ -3195,6 +3195,7 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
 
     @Override
     public List getAuditTrailEntries(final Long zoneId, final Date sinceDate, final List<HKey> parentBinderKeys,
+                                     final List<Long> entryIds,
                                      final AuditTrail.AuditType[] types, final int maxResults) {
         long begin = System.nanoTime();
         try {
@@ -3213,15 +3214,20 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
                                 typeExpr = Restrictions.in("transactionType", vals);
                             }
                             Criterion parentKeysExpr;
-                            if (parentBinderKeys.size()==1) {
-                                parentKeysExpr = Restrictions.like("owningBinderKey", parentBinderKeys.get(0).getSortKey() + "%");
-                            } else {
-                                Disjunction or = Restrictions.disjunction();
+                            Disjunction or = Restrictions.disjunction();
+                            if (parentBinderKeys!=null && parentBinderKeys.size()>0) {
                                 for (HKey key : parentBinderKeys) {
                                     or.add(Restrictions.like("owningBinderKey", key.getSortKey() + "%"));
                                 }
-                                parentKeysExpr = or;
                             }
+                            if (entryIds!=null && entryIds.size()>0) {
+                                if (entryIds.size()==1) {
+                                    or.add(Restrictions.eq("entityId", entryIds.get(0)));
+                                } else {
+                                    or.add(Restrictions.in("entityId", entryIds));
+                                }
+                            }
+                            parentKeysExpr = or;
                             return session.createCriteria(AuditTrail.class)
                                     .add(Restrictions.eq(ObjectKeys.FIELD_ZONE, zoneId))
                                     .add(Restrictions.isNotNull("startDate"))
