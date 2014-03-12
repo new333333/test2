@@ -332,6 +332,24 @@ public class FileResource extends AbstractFileResource {
         return ResourceUtil.buildFileProperties(fa);
     }
 
+    @POST
+    @Path("{id}/metadata")
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    public FileProperties synchronize(@PathParam("id") String fileId,
+                                      @FormParam("synchronize") Boolean sync,
+                                      @FormParam("description_format") @DefaultValue("text") String descriptionFormatStr) {
+        FileAttachment fa = findFileAttachment(fileId);
+        DefinableEntity entity = fa.getOwner().getEntity();
+        if (Boolean.TRUE.equals(sync)) {
+            if (entity instanceof FolderEntry) {
+                FolderEntry entry = synchronizeFolderEntry((FolderEntry) entity);
+                fa = (FileAttachment) entry.getAttachment(fileId);
+                return ResourceUtil.buildFileProperties(fa);
+            }
+        }
+        return null;
+    }
+
     @GET
     @Path("{id}/major_version")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})

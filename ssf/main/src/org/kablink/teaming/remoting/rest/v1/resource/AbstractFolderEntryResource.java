@@ -68,8 +68,6 @@ import java.util.Map;
  */
 abstract public class AbstractFolderEntryResource  extends AbstractDefinableEntityResource {
 
-    abstract org.kablink.teaming.domain.FolderEntry _getFolderEntry(long id);
-
 	// Delete folder entry
 	@DELETE
     @Path("{id}")
