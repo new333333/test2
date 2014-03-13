@@ -174,7 +174,7 @@ public interface AclResourceSession extends ResourceSession {
 	 * the session.
 	 * 
 	 * @param resourcePaths A map of a resource path to an indication of whether the resource refers to a directory or not
-	 * @return
+	 * @return A map of resource path to an indication of whether the resource is visible or not
 	 * @throws FIException
 	 * @throws UncheckedIOException
 	 */

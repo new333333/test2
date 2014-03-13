@@ -35,6 +35,7 @@ package org.kablink.teaming.module.shared;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -85,6 +86,7 @@ import org.kablink.teaming.search.filter.SearchFilter;
 import org.kablink.teaming.search.filter.SearchFilterKeys;
 import org.kablink.teaming.search.filter.SearchFilterToSearchBooleanConverter;
 import org.kablink.teaming.search.postfilter.PostFilterCallback;
+import org.kablink.teaming.search.postfilter.PostFilterCallback.PostFilteringStats;
 import org.kablink.teaming.security.AccessControlManager;
 import org.kablink.teaming.security.function.WorkArea;
 import org.kablink.teaming.security.function.WorkAreaOperation;
@@ -652,7 +654,8 @@ public class SearchUtils {
 			//    (i.e., sub-folder or file within).
 			return luceneSession.search(contextUserId, so.getNetFolderRootAclQueryStr(), null, mode, query, null, sort, offset, size,
 					new PostFilterCallback() {
-				public boolean doFilter(Map<String,Object> doc, boolean noIntrinsicAclStoredButAccessibleThroughFilrGrantedAcl) {
+				@Override
+				public boolean doFilter(PostFilterCallback.SessionHelper sessionHelper, Map<String,Object> doc, boolean noIntrinsicAclStoredButAccessibleThroughFilrGrantedAcl) {
 					// This filter implementation ignores the second arg.
 					String resourceDriverName = (String) doc.get(Constants.RESOURCE_DRIVER_NAME_FIELD);
 					if(resourceDriverName == null) 
@@ -660,11 +663,11 @@ public class SearchUtils {
 					String resourcePath = (String) doc.get(Constants.RESOURCE_PATH_FIELD);
 					if(resourcePath == null)
 						resourcePath = ""; // It is possible to define a net folder without specifying a sub-path.
+					/* As of Filr 1.2, we will not and can not support cloud folder since we have no place to store GUID for each file.
 					Long ownerId = Long.valueOf((String) doc.get(Constants.OWNERID_FIELD)); // Used only by cloud folder
-					AclResourceSession session = openAclResourceSession(resourceDriverName, ownerId);				
-					if(session == null)
-						return false; // cannot obtain session for the user
-					try {
+					*/
+					AclResourceSession session = sessionHelper.getSession(resourceDriverName);				
+					if(session != null) {
 						String docType = (String) doc.get(Constants.DOC_TYPE_FIELD);
 						// TODO JK 12/16/2013
 						// ACL checking against the data source makes sense only when the back-end data source provides such service.
@@ -679,9 +682,19 @@ public class SearchUtils {
 							return false; // fails the test
 						}
 					}
-					finally {
-						session.close();
+					else {
+						if(logger.isDebugEnabled())
+							logger.warn("Cannot check visibility on resource [" + resourcePath + "] due to problem obtaining session on resource driver '" + resourceDriverName + "'");
+						return false;
 					}
+				}
+				@Override
+				public boolean supportBatchFiltering() {
+					return false;
+				}
+				@Override
+				public Hits doBatchFilter(Hits hits, PostFilteringStats stats) {
+					throw new UnsupportedOperationException("This operation is not supported");
 				}
 			});
 			
@@ -803,10 +816,8 @@ public class SearchUtils {
 		}
 	}
 	
-	public static List<String> fieldNamesList(String fieldName) {
-		List<String> result = new ArrayList<String>();
-		result.add(fieldName);
-		return result;
+	public static List<String> fieldNamesList(String... fieldName) {
+		return Arrays.asList(fieldName);
 	}
 	
 	private static FolderModule getFolderModule() {
@@ -820,4 +831,5 @@ public class SearchUtils {
 	private static AccessControlManager getAccessControlManager() {
 		return (AccessControlManager) SpringContextUtil.getBean("accessControlManager");
 	}
+	
 }
