@@ -112,11 +112,20 @@ public class Hits implements Serializable {
     public int length() {
         return this.size;
     }
-    
-    public void setLength(int length) {
-    	this.size = length;
-    }
 
+    public void truncate(int newSize) {
+    	if(newSize > size)
+    		throw new IllegalArgumentException("New size bigger than existing size");
+    	// Adjust documents
+    	for(int i = size-1; i >= newSize; i--) {
+    		documents.remove(i);
+    	}
+    	// We are NOT going to adjust noIntrinsicAclStoredButAccessibleThroughFilrGrantedAcl
+    	// since there is no exposed interface with which caller can get hold on the entire
+    	// array at once (unlike documents).
+    	size = newSize;
+    }
+    
     public boolean noIntrinsicAclStoredButAccessibleThroughFilrGrantedAcl(int n) {
     	return noIntrinsicAclStoredButAccessibleThroughFilrGrantedAcl[n];
     }
