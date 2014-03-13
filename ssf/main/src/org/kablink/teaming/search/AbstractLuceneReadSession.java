@@ -183,7 +183,7 @@ public abstract class AbstractLuceneReadSession extends AbstractLuceneSession im
 			if(hits.isTotalHitsApproximate()) {
 				// The search total is approximate. Use look-ahead element to determine whether there's at least one more match.
 				if(hits.length() > origSize) {
-					hits.setLength(origSize); // Do not return the look-ahead element in this current result
+					hits.truncate(origSize); // Do not return the look-ahead element in this current result
 					hits.setThereIsMore(true); // Indicate that there is at least one more match
 				}				
 			}
