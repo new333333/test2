@@ -3860,7 +3860,7 @@ public class GwtViewHelper {
 				// Yes!
 				baseNameKey = "profiles.column.";
 				if (folderInfo.isBinderProfilesRootWSManagement()) {
-					if (ReleaseInfo.isLicenseRequiredEdition())
+					if (ReleaseInfo.isLicenseRequiredEdition() && LicenseChecker.showFilrFeatures())
 					     columnNames = getColumnsLHMFromAS(new String[]{"fullName", "userType", "emailAddress", "mobileDevices", "loginId"});
 					else columnNames = getColumnsLHMFromAS(new String[]{"fullName", "userType", "emailAddress",                  "loginId"});
 				}

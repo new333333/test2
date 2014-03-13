@@ -204,6 +204,12 @@ public class UserPropertiesDlg extends DlgBox
 	 * Adds information about the user's Home folder to the grid.
 	 */
 	private void addHomeInfo(FlexTable grid, FlexCellFormatter cf, RowFormatter rf, HomeInfo home, boolean addSectionHeader) {
+		// If we're not showing Filr features...
+		if (!(GwtClientHelper.showFilrFeatures())) {
+			// ...we don't show home folder information.
+			return;
+		}
+		
 		// Add a home section.
 		int row = getSectionRow(grid, rf, addSectionHeader);
 		boolean hasHome = (null != home);
@@ -381,6 +387,12 @@ public class UserPropertiesDlg extends DlgBox
 	 * Adds information about the user's Net Folders to the grid.
 	 */
 	private void addNetFoldersInfo(FlexTable grid, FlexCellFormatter cf, RowFormatter rf, NetFoldersInfo netFolders, boolean addSectionHeader) {
+		// If we're not showing Filr features...
+		if (!(GwtClientHelper.showFilrFeatures())) {
+			// ...we don't show net folder information.
+			return;
+		}
+		
 		// If the current user can manage net folders...
 		int row = getSectionRow(grid, rf, addSectionHeader);
 		rf.addStyleName(row, "vibe-userPropertiesDlg-nfRow");
