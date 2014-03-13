@@ -1350,10 +1350,7 @@ public class EditLdapServerConfigDlg extends DlgBox
 	 */
 	private String getProductName()
 	{
-		if ( GwtClientHelper.isLicenseFilr() )
-			return "Filr";
-		
-		return GwtClientHelper.getRequestInfo().getProductName();
+		return GwtClientHelper.getProductName();
 	}
 	
 	/**

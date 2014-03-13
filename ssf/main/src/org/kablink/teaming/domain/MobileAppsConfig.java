@@ -207,9 +207,9 @@ public class MobileAppsConfig
 	/**
 	 * 
 	 */
-	public void setMobileAppsSyncInterval( int intervalInMinutes )
+	public void setMobileAppsSyncInterval( Integer intervalInMinutes )
 	{
-		mobileAppsSyncInterval = Integer.valueOf( intervalInMinutes );
+		mobileAppsSyncInterval = intervalInMinutes;
 	}
 	
     /**
