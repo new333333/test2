@@ -33,25 +33,22 @@
 package org.kablink.teaming.search;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
 import org.apache.commons.logging.Log;
-import org.apache.lucene.document.Document;
-import org.apache.lucene.document.NumericField;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.Sort;
 import org.kablink.teaming.ConfigurationException;
-import org.kablink.teaming.UncheckedIOException;
-import org.kablink.teaming.fi.FIException;
-import org.kablink.teaming.fi.connection.acl.AclItemPrincipalMappingException;
 import org.kablink.teaming.fi.connection.acl.AclResourceSession;
 import org.kablink.teaming.lucene.Hits;
 import org.kablink.teaming.lucene.LuceneException;
 import org.kablink.teaming.module.shared.AccessUtils;
 import org.kablink.teaming.search.postfilter.PostFilterCallback;
+import org.kablink.teaming.search.postfilter.PostFilterCallback.PostFilteringStats;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SimpleProfiler;
 import org.kablink.util.Validator;
@@ -202,7 +199,8 @@ public abstract class AbstractLuceneReadSession extends AbstractLuceneSession im
 	
 	protected PostFilterCallback getPostFilterCallback() {
 		return new PostFilterCallback() {
-			public boolean doFilter(Map<String,Object> doc, boolean noIntrinsicAclStoredButAccessibleThroughFilrGrantedAcl) {
+			@Override
+			public boolean doFilter(PostFilterCallback.SessionHelper sessionHelper, Map<String,Object> doc, boolean noIntrinsicAclStoredButAccessibleThroughFilrGrantedAcl) {
 				if(noIntrinsicAclStoredButAccessibleThroughFilrGrantedAcl)
 					return true; // This doc represents an entry the user has access via sharing. Need not consult file system for access test.
 				Number entryAclParentId = (Number) doc.get(Constants.ENTRY_ACL_PARENT_ID_FIELD);
@@ -218,15 +216,15 @@ public abstract class AbstractLuceneReadSession extends AbstractLuceneSession im
 				String resourcePath = (String) doc.get(Constants.RESOURCE_PATH_FIELD);
 				if(resourcePath == null)
 					resourcePath = "";
+				/* As of Filr 1.2, we will not and can not support cloud folder since we have no place to store GUID for each file.
 				Long ownerId = null;
 				try {
 					ownerId = Long.valueOf((String)doc.get(Constants.OWNERID_FIELD)); // Used only by cloud folder
 				}
 				catch(NumberFormatException ignore) {}
-				AclResourceSession session = org.kablink.teaming.module.shared.SearchUtils.openAclResourceSession(resourceDriverName, ownerId);				
-				if(session == null)
-					return false; // can not perform access check on this
-				try {
+				*/
+				AclResourceSession session = sessionHelper.getSession(resourceDriverName);
+				if(session != null) {
 					String docType = (String) doc.get(Constants.DOC_TYPE_FIELD);
 					// TODO JK 12/16/2013
 					// ACL checking against the data source makes sense only when the back-end data source provides such service.
@@ -241,9 +239,108 @@ public abstract class AbstractLuceneReadSession extends AbstractLuceneSession im
 						return false; // fails the test
 					}
 				}
-				finally {
-					session.close();
+				else {
+					if(logger.isDebugEnabled())
+						logger.warn("Cannot check visibility on resource [" + resourcePath + "] due to problem obtaining session on resource driver '" + resourceDriverName + "'");
+					return false;
 				}
+			}
+			@Override
+			public boolean supportBatchFiltering() {
+				return true;
+			}
+			@Override
+			public Hits doBatchFilter(Hits hits, PostFilteringStats stats) {	
+				Map<String,Map<String,Boolean>> resourcesToCheckForAllResourceDrivers = new HashMap<String,Map<String,Boolean>>();
+				Map<String,Object> doc;
+				Number entryAclParentId;
+				String resourceDriverName;
+				String resourcePath;
+				String docType;
+				Map<String,Boolean> resourcesToCheckForOneResourceDriver;
+				boolean noIntrinsicAclStoredButAccessibleThroughFilrGrantedAcl;
+				for(int i = 0; i < hits.length(); i++) {
+					doc = hits.doc(i);
+					noIntrinsicAclStoredButAccessibleThroughFilrGrantedAcl = hits.noIntrinsicAclStoredButAccessibleThroughFilrGrantedAcl(i);
+					if(noIntrinsicAclStoredButAccessibleThroughFilrGrantedAcl) {
+						continue;// This doc represents an entry the user has access via sharing. Need not consult file system for access test.
+					}
+					entryAclParentId = (Number) doc.get(Constants.ENTRY_ACL_PARENT_ID_FIELD);
+					if(entryAclParentId == null || entryAclParentId.longValue() >= 0) {
+						continue;// doesn't require access check
+					}
+					resourceDriverName = (String) doc.get(Constants.RESOURCE_DRIVER_NAME_FIELD);
+					if(Validator.isNull(resourceDriverName)) {
+						continue; // cannot check ACL because resource driver is missing
+					}
+					resourcesToCheckForOneResourceDriver = resourcesToCheckForAllResourceDrivers.get(resourceDriverName);
+					if(resourcesToCheckForOneResourceDriver == null) {
+						resourcesToCheckForOneResourceDriver = new HashMap<String,Boolean>();
+						resourcesToCheckForAllResourceDrivers.put(resourceDriverName, resourcesToCheckForOneResourceDriver);
+					}
+					resourcePath = (String) doc.get(Constants.RESOURCE_PATH_FIELD);
+					if(resourcePath == null)
+						resourcePath = "";
+					docType = (String) doc.get(Constants.DOC_TYPE_FIELD);
+					resourcesToCheckForOneResourceDriver.put(resourcePath, (docType != null && docType.equals(Constants.DOC_TYPE_BINDER))? Boolean.TRUE : Boolean.FALSE);
+				}
+				Map<String,Map<String,Boolean>> aclCheckingResultsForAllResourceDrivers = new HashMap<String,Map<String,Boolean>>();
+				Map<String,Boolean> aclCheckingResultsForOneResourceDriver;
+				for(String driverName : resourcesToCheckForAllResourceDrivers.keySet()) {
+					resourcesToCheckForOneResourceDriver = resourcesToCheckForAllResourceDrivers.get(driverName);
+					if(resourcesToCheckForOneResourceDriver == null || resourcesToCheckForOneResourceDriver.isEmpty()) {
+						// Nothing to check against this resource driver.
+						continue;
+					}
+					AclResourceSession session = org.kablink.teaming.module.shared.SearchUtils.openAclResourceSession(driverName, null);				
+					if(session == null) {
+						// Cannot check against this resource driver
+						continue;
+					}
+					try {
+						try {
+							aclCheckingResultsForOneResourceDriver = session.areVisible(resourcesToCheckForOneResourceDriver, AccessUtils.getFileSystemGroupIds(driverName));
+							aclCheckingResultsForAllResourceDrivers.put(driverName, aclCheckingResultsForOneResourceDriver);
+						} catch (Exception e) {
+							logger.error("Error checking visibility on resources " + resourcesToCheckForOneResourceDriver + " against resource driver '" + driverName + "'", e);
+						}
+					}
+					finally {
+						session.close();
+					}
+				}
+				List<Map<String,Object>> resultDocs = new ArrayList<Map<String,Object>>();
+				for(int i = 0; i < hits.length(); i++) {
+					doc = hits.doc(i);
+					noIntrinsicAclStoredButAccessibleThroughFilrGrantedAcl = hits.noIntrinsicAclStoredButAccessibleThroughFilrGrantedAcl(i);
+					if(noIntrinsicAclStoredButAccessibleThroughFilrGrantedAcl) {
+						// This doc represents an entry the user has access via sharing. Need not consult file system for access test.
+						resultDocs.add(doc); 
+						continue;
+					}
+					entryAclParentId = (Number) doc.get(Constants.ENTRY_ACL_PARENT_ID_FIELD);
+					if(entryAclParentId == null || entryAclParentId.longValue() >= 0) {
+						resultDocs.add(doc); // doesn't require access check
+						continue;
+					}
+					resourceDriverName = (String) doc.get(Constants.RESOURCE_DRIVER_NAME_FIELD);
+					if(Validator.isNull(resourceDriverName)) {
+						continue; // cannot check ACL because resource driver is missing; this fails test
+					}
+					resourcePath = (String) doc.get(Constants.RESOURCE_PATH_FIELD);
+					if(resourcePath == null)
+						resourcePath = "";
+					aclCheckingResultsForOneResourceDriver = aclCheckingResultsForAllResourceDrivers.get(resourceDriverName);
+					if(aclCheckingResultsForOneResourceDriver != null && Boolean.TRUE.equals(aclCheckingResultsForOneResourceDriver.get(resourcePath))) {
+						resultDocs.add(doc); // ACL checking was successful on this item
+						continue;
+					}
+				}
+				Hits result = new Hits(resultDocs);
+				stats.sucessCount = result.length();
+				stats.failureCount = hits.length() - result.length();
+				stats.serviceCallCount = 1;
+				return result;
 			}
 		};
 	}
@@ -285,58 +382,78 @@ public abstract class AbstractLuceneReadSession extends AbstractLuceneSession im
 
 		SearchServiceIterator searchServiceIterator = new SearchServiceIterator(contextUserId, baseAclQueryStr, extendedAclQueryStr, mode, query, fieldNames, sort, offset, size, filterPredictedSuccessPercentage);
 		
-		// First, skip as many effective matches as offset
-		int skipCount = 0;
-		Hit hit;
-		while(skipCount < offset && searchServiceIterator.hasNext()) {
-			hit = searchServiceIterator.next();
-			if(callback.doFilter(hit.doc, hit.noIntrinsicAclStoredButAccessibleThroughFilrGrantedAcl)) {
-				// Effective match. This item counts;
-				skipCount++; 
-				filterSuccessCount++;
-			}
-			else {
-				// Ineffective match. This item doesn't count.
-				filterFailureCount++;
-			}
+		Hits hits;
+		if(offset == 0 && size == Integer.MAX_VALUE && callback.supportBatchFiltering() && SPropsUtil.getBoolean("allow.batch.filtering", true)) {
+			// The caller requested for entire search result in a single call and the callback supports batch filtering.
+			// In this case, we use optimized ACL checking.
+			hits = invokeSearch(contextUserId, baseAclQueryStr, extendedAclQueryStr, mode, query, fieldNames, sort, offset, size);
+			hits = callback.doBatchFilter(hits, stats);
 		}
-		if(skipCount < offset) {
-			// There are not enough matching items to even get to the offset point.
-			return new Hits(0);
-		}
+		else {
+			// The caller requested only a subset of the search result (e.g. one page full). 
+			// In this case, we use regular ACL checking.
+			
+			// First, skip as many effective matches as offset
+			int skipCount = 0;
+			Hit hit;
+			List<Map<String,Object>> result;
+			
+			PostFilterCallback.SessionHelper sessionHelper = new PostFilterCallback.SessionHelper();
+			try {
+				while(skipCount < offset && searchServiceIterator.hasNext()) {
+					hit = searchServiceIterator.next();
+					if(callback.doFilter(sessionHelper, hit.doc, hit.noIntrinsicAclStoredButAccessibleThroughFilrGrantedAcl)) {
+						// Effective match. This item counts;
+						skipCount++; 
+						filterSuccessCount++;
+					}
+					else {
+						// Ineffective match. This item doesn't count.
+						filterFailureCount++;
+					}
+				}
+				if(skipCount < offset) {
+					// There are not enough matching items to even get to the offset point.
+					return new Hits(0);
+				}
+				
+				result = new ArrayList<Map<String,Object>>();		
 		
-		List<Map<String,Object>> result = new ArrayList<Map<String,Object>>();		
-
-		// Second, gather as many effective matches as size
-		while(result.size() < size && searchServiceIterator.hasNext()) {
-			hit = searchServiceIterator.next();
-			if(callback.doFilter(hit.doc, hit.noIntrinsicAclStoredButAccessibleThroughFilrGrantedAcl)) {
-				// Effective match. Put it in the result.
-				result.add(hit.doc); 
-				filterSuccessCount++;
+				// Second, gather as many effective matches as size
+				while(result.size() < size && searchServiceIterator.hasNext()) {
+					hit = searchServiceIterator.next();
+					if(callback.doFilter(sessionHelper, hit.doc, hit.noIntrinsicAclStoredButAccessibleThroughFilrGrantedAcl)) {
+						// Effective match. Put it in the result.
+						result.add(hit.doc); 
+						filterSuccessCount++;
+					}
+					else {
+						// Ineffective match. Throw this out.
+						filterFailureCount++;
+					}
+				}
 			}
-			else {
-				// Ineffective match. Throw this out.
-				filterFailureCount++;
+			finally {
+				sessionHelper.close();
 			}
+			
+			hits = new Hits(result.size());
+			for(int i = 0; i < result.size(); i++)
+				hits.addDoc(result.get(i));
+			// Adjust the raw total hits count by subtracting the number of items that failed the post 
+			// filtering so far. In other word we factor in what we've learned by now. 
+			// This adjustment may not amount to much, but still better than nothing.
+			int adjustedTotalHits = searchServiceIterator.getTotalHits() - filterFailureCount;
+			if(adjustedTotalHits < 0)
+				adjustedTotalHits = 0;
+			if(result.size() > 0 && (adjustedTotalHits < offset + result.size()))
+				adjustedTotalHits = offset + result.size();
+			hits.setTotalHits(adjustedTotalHits);
+			
+			stats.sucessCount = filterSuccessCount;
+			stats.failureCount = filterFailureCount;
+			stats.serviceCallCount = searchServiceIterator.getServiceCallCount();
 		}
-		
-		Hits hits = new Hits(result.size());
-		for(int i = 0; i < result.size(); i++)
-			hits.addDoc(result.get(i));
-		// Adjust the raw total hits count by subtracting the number of items that failed the post 
-		// filtering so far. In other word we factor in what we've learned by now. 
-		// This adjustment may not amount to much, but still better than nothing.
-		int adjustedTotalHits = searchServiceIterator.getTotalHits() - filterFailureCount;
-		if(adjustedTotalHits < 0)
-			adjustedTotalHits = 0;
-		if(result.size() > 0 && (adjustedTotalHits < offset + result.size()))
-			adjustedTotalHits = offset + result.size();
-		hits.setTotalHits(adjustedTotalHits);
-		
-		stats.sucessCount = filterSuccessCount;
-		stats.failureCount = filterFailureCount;
-		stats.serviceCallCount = searchServiceIterator.getServiceCallCount();
 		
 		return hits;
 	}
@@ -497,9 +614,4 @@ public abstract class AbstractLuceneReadSession extends AbstractLuceneSession im
 		}
 	}
 
-	static class PostFilteringStats {
-		int sucessCount;
-		int failureCount;
-		int serviceCallCount;
-	}
 }
