@@ -185,6 +185,9 @@ public enum ApiErrorCode {
     LDAP_CONFIG_NOT_FOUND, // No ldap config object found with this name or id
 
     LDAP_SYNC_ERROR,
+    LDAP_READ_ERROR,
+    HOME_FOLDER_CREATE_ERROR,
+    HOME_FOLDER_DELETE_ERROR,
     NET_FOLDER_NOT_FOUND, // No net folder found with this name or id
 
 	// ShareItem errors

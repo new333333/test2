@@ -30,22 +30,35 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.security.authentication;
+package org.kablink.teaming.module.ldap.impl;
 
+import org.kablink.util.VibeRuntimeException;
+import org.kablink.util.api.ApiErrorCode;
 
-import java.util.Map;
+public class LdapReadException extends VibeRuntimeException {
 
-import org.kablink.teaming.domain.User;
-import org.kablink.teaming.module.authentication.AuthenticationServiceProvider;
-public interface AuthenticationManager {
+    private String userName;
 
-	public User authenticate(AuthenticationServiceProvider authenticationServiceProvider, String zoneName, String username, String password,
-			boolean createUser, boolean updateUser, boolean updateHomeFolder, boolean passwordAutoSynch, boolean ignorePassword,
-			Map updates, String authenticatorName)
-		throws PasswordDoesNotMatchException, UserDoesNotExistException, UserAccountNotActiveException;
+    public LdapReadException(Throwable cause, String userName) {
+        super(cause);
+        this.userName = userName;
+    }
 
-	public User authenticate(String zoneName, Long userId, String binderId, String privateDigest, 
-			String authenticatorName) throws DigestDoesNotMatchException, 
-			UserDoesNotExistException, UserAccountNotActiveException;
-	
+    @Override
+    public String getMessage() {
+        return "Unable to read home directory information for user: " + userName;
+    }
+
+    public int getHttpStatusCode() {
+    	return 500; // Forbidden
+    }
+
+	/* (non-Javadoc)
+	 * @see org.kablink.teaming.exception.ApiErrorCodeSupport#getApiErrorCode()
+	 */
+	@Override
+	public ApiErrorCode getApiErrorCode() {
+		return ApiErrorCode.LDAP_READ_ERROR;
+	}
+
 }

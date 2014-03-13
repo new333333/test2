@@ -272,7 +272,7 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 	@Override
 	public User authenticate(AuthenticationServiceProvider authenticationServiceProvider, 
 			String zoneName, String userName, String password,
-			boolean createUser, boolean updateUser, boolean passwordAutoSynch, boolean ignorePassword, 
+			boolean createUser, boolean updateUser, boolean updateHomeFolder, boolean passwordAutoSynch, boolean ignorePassword,
 			Map updates, String authenticatorName) 
 		throws PasswordDoesNotMatchException, UserDoesNotExistException, UserAccountNotActiveException, UserMismatchException
 	{
@@ -440,81 +440,18 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 		}
 		
 		// Are we running Filr and are we dealing with a user imported from ldap?
-		if ( createUser && Utils.checkIfFilr() && user.getIdentityInfo().isFromLdap() )
+		if ( updateHomeFolder && Utils.checkIfFilr() && user.getIdentityInfo().isFromLdap() )
 		{
-			HomeDirInfo homeDirInfo;
-			
 			// Yes
 			try
 			{
-				boolean logErrors = false;
-				
-				// We only want to log errors when the client is the browser.  Otherwise, we
-				// generate too many errors in the log.
-				if ( webClient )
-				{
-					logErrors = true;
-				}
-				
-				// Does this user have a home directory attribute in ldap?
-				homeDirInfo = ldapModule.getHomeDirInfo( user.getName(), userName, logErrors );
-				if ( homeDirInfo != null )
-				{
-					// Yes
-					// Create/update the home directory net folder for this user.
-					try
-					{
-						NetFolderHelper.createHomeDirNetFolder(
-															getProfileModule(),
-															getTemplateModule(),
-															getBinderModule(),
-															getFolderModule(),
-															getAdminModule(),
-															getResourceDriverModule(),
-															getRunAsyncManager(),
-															homeDirInfo,
-															user,
-															webClient );
-					}
-					catch ( Exception ex )
-					{
-						logger.error( "Unable to create home directory net folder, server: " + homeDirInfo.getServerAddr() + " error: " + ex.toString() );
-					}
-				}
-				else
-				{
-					// We only want to delete the home dir net folder if the web client is the one
-					// making the request.
-					if ( webClient )
-					{
-						Binder netFolderBinder;
-						
-						// The user does not have a home directory attribute.
-						// Does the user already have a home dir net folder?
-						// Does a net folder already exist for this user's home directory
-						netFolderBinder = NetFolderHelper.findHomeDirNetFolder(
-																			binderModule,
-																			user.getWorkspaceId() );
-						if ( netFolderBinder != null )
-						{
-							// Yes
-							// Delete the home net folder.
-							try
-							{
-								NetFolderHelper.deleteNetFolder( getFolderModule(), netFolderBinder.getId(), false );
-							}
-							catch ( Exception e )
-							{
-								logger.error( "Error deleting home net folder: " + netFolderBinder.getName(), e );
-							}
-						}
-					}
-				}
+                ldapModule.updateHomeDirectoryIfNecessary(user, userName, webClient);
 			}
-			catch ( NamingException ex )
-			{
-				logger.error( "Unable to read home directory information for user: " + user.getName() );
-			}
+			catch ( Exception ex )
+            {
+                logger.error( "Unable to create, update or delete home directory net folder for user " + userName + ": " + ex.toString() );
+                logger.debug(ex);
+            }
 		}
 
 		// If still here, it means that authentication was successful.

@@ -40,6 +40,9 @@ import javax.naming.NamingException;
 import org.kablink.teaming.domain.LdapConnectionConfig;
 import org.kablink.teaming.domain.LdapSyncException;
 import org.kablink.teaming.domain.NoUserByTheNameException;
+import org.kablink.teaming.domain.User;
+import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
+import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.ldap.impl.LdapModuleImpl.HomeDirInfo;
 
 
@@ -92,4 +95,5 @@ public interface LdapModule {
     public String getDefaultTimeZone();
     public void setDefaultLocale(String localeId);
     public void setDefaultTimeZone(String timeZoneId);
+    public void updateHomeDirectoryIfNecessary(User user, String userName, boolean logErrors);
 }
