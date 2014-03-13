@@ -7192,7 +7192,11 @@ public class GwtViewHelper {
 	public static boolean getUserViewSharedFiles(HttpServletRequest request, CollectionType collectionType) {
 		HttpSession session = WebHelper.getRequiredSession(request);
 		Boolean viewSharedFiles = ((Boolean) session.getAttribute(CACHED_VIEW_SHARED_FILES_BASE + collectionType.ordinal()));
-		return ((null == viewSharedFiles) || viewSharedFiles);
+		boolean reply;
+		if (null == viewSharedFiles)
+		     reply = (!LicenseChecker.showVibeFeatures());
+		else reply = viewSharedFiles;
+		return reply;
 	}
 
 	/*
