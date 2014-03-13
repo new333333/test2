@@ -109,6 +109,7 @@ import org.kablink.teaming.gwt.client.event.FullUIReloadEvent;
 import org.kablink.teaming.gwt.client.event.HideSelectedSharesEvent;
 import org.kablink.teaming.gwt.client.event.InvokeColumnResizerEvent;
 import org.kablink.teaming.gwt.client.event.InvokeDropBoxEvent;
+import org.kablink.teaming.gwt.client.event.InvokeEditInPlaceEvent;
 import org.kablink.teaming.gwt.client.event.InvokeSignGuestbookEvent;
 import org.kablink.teaming.gwt.client.event.LockSelectedEntitiesEvent;
 import org.kablink.teaming.gwt.client.event.MailToPublicLinkEntityEvent;
@@ -242,6 +243,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		HideSelectedSharesEvent.Handler,
 		InvokeColumnResizerEvent.Handler,
 		InvokeDropBoxEvent.Handler,
+		InvokeEditInPlaceEvent.Handler,
 		InvokeSignGuestbookEvent.Handler,
 		LockSelectedEntitiesEvent.Handler,
 		MailToPublicLinkEntityEvent.Handler,
@@ -334,6 +336,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		TeamingEvents.HIDE_SELECTED_SHARES,
 		TeamingEvents.INVOKE_COLUMN_RESIZER,
 		TeamingEvents.INVOKE_DROPBOX,
+		TeamingEvents.INVOKE_EDIT_IN_PLACE,
 		TeamingEvents.INVOKE_SIGN_GUESTBOOK,
 		TeamingEvents.LOCK_SELECTED_ENTITIES,
 		TeamingEvents.MAILTO_PUBLIC_LINK_ENTITY,
@@ -2768,6 +2771,23 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		BinderViewsHelper.invokeDropBox(
 			dropTarget,
 			getEntryMenuPanel().getAddFilesMenuItem());
+	}
+	
+	/**
+	 * Handles InvokeEditInPlaceEvent's received by this class.
+	 * 
+	 * Implements the InvokeEditInPlaceEvent.Handler.onInvokeEditInPlace() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onInvokeEditInPlace(InvokeEditInPlaceEvent event) {
+		// Is the event targeted to this folder?
+		Long eventFolderId = event.getFolderId();
+		if ((null != eventFolderId) && eventFolderId.equals(getFolderId())) {
+			// Yes!  Run the edit on it.
+			BinderViewsHelper.invokeEditInPlace(event);
+		}
 	}
 	
 	/**
