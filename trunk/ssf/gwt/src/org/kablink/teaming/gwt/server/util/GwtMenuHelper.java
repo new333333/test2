@@ -1313,10 +1313,12 @@ public class GwtMenuHelper {
 		markTBITitle(tbi, "toolbar.setUserDesktopSettings");
 		markTBIEvent(tbi, TeamingEvents.SET_SELECTED_USER_DESKTOP_SETTINGS);
 		moreTBI.addNestedItem(tbi);
-		tbi = new ToolbarItem("1_setMobileSettings");
-		markTBITitle(tbi, "toolbar.setUserMobileSettings");
-		markTBIEvent(tbi, TeamingEvents.SET_SELECTED_USER_MOBILE_SETTINGS);
-		moreTBI.addNestedItem(tbi);
+		if (LicenseChecker.showFilrFeatures()) {
+			tbi = new ToolbarItem("1_setMobileSettings");
+			markTBITitle(tbi, "toolbar.setUserMobileSettings");
+			markTBIEvent(tbi, TeamingEvents.SET_SELECTED_USER_MOBILE_SETTINGS);
+			moreTBI.addNestedItem(tbi);
+		}
 				
 		// Finally, if we added anything to the more toolbar...
 		if (!(moreTBI.getNestedItemsList().isEmpty())) {
