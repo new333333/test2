@@ -97,7 +97,7 @@ public class ConfigureLdapController extends  SAbstractController {
 
 				LinkedList<LdapConnectionConfig> configList = new LinkedList<LdapConnectionConfig>();
 				try {
-					Document doc = DocumentHelper.parseText(PortletRequestUtils.getStringParameter(request, "ldapConfigDoc", "<doc/>"));
+					Document doc = DocumentHelper.parseText(PortletRequestUtils.getStringParameter(request, "ldapConfigDoc", "<doc/>", false));
 					for(Object o : doc.selectNodes("//ldapConfig")) {
 						Node cNode = (Node) o;
 						String ldapGuidAttribute = null;
@@ -231,7 +231,7 @@ public class ConfigureLdapController extends  SAbstractController {
 				syncAllUsersAndGroups = PortletRequestUtils.getBooleanParameter(request, "runnow", false);
 
 				// Get the list of ldap configs that we need to sync the guid
-				listOfLdapConfigsToSyncGuid = PortletRequestUtils.getStringParameter( request, "listOfLdapConfigsToSyncGuid", "" );
+				listOfLdapConfigsToSyncGuid = PortletRequestUtils.getStringParameter( request, "listOfLdapConfigsToSyncGuid", "", false );
 				
 				// Do we need to start a sync?
 				if ( (listOfLdapConfigsToSyncGuid != null && listOfLdapConfigsToSyncGuid.length() > 0 ) ||
@@ -281,7 +281,7 @@ public class ConfigureLdapController extends  SAbstractController {
 			ArrayList<String> list;
 			
 			list = new ArrayList<String>();
-			commaSepList = PortletRequestUtils.getStringParameter( request,  "listOfLdapConfigsToSyncGuid", "" );
+			commaSepList = PortletRequestUtils.getStringParameter( request,  "listOfLdapConfigsToSyncGuid", "", false );
 			if ( commaSepList != null && commaSepList.length() > 0 )
 			{
 				String[] listOfLdapConfigsToSyncGuid;

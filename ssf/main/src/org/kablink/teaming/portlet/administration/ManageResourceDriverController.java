@@ -90,7 +90,7 @@ public class ManageResourceDriverController extends SAbstractController {
 				} else if (formData.containsKey("addBtn")) {
 					String name = PortletRequestUtils.getStringParameter(request, "driverName");
 					String driverType = PortletRequestUtils.getStringParameter(request, "driverType", DriverType.filesystem.name());
-					String rootPath = PortletRequestUtils.getStringParameter(request, "rootPath");
+					String rootPath = PortletRequestUtils.getStringParameter(request, "rootPath", false);
 					Map options = new HashMap();
 					
 					//Is this Read Only?
@@ -111,17 +111,17 @@ public class ManageResourceDriverController extends SAbstractController {
 					options.put(ObjectKeys.RESOURCE_DRIVER_SYNCH_TOP_DELETE, Boolean.FALSE);
 					
 					//Is there an account name 
-					String accountName = PortletRequestUtils.getStringParameter(request, "accountName_"+driverType, "");
+					String accountName = PortletRequestUtils.getStringParameter(request, "accountName_"+driverType, "", false);
 					options.put(ObjectKeys.RESOURCE_DRIVER_ACCOUNT_NAME, accountName);
 					
 					//Is there a password 
-					String password = PortletRequestUtils.getStringParameter(request, "password_"+driverType, "");
+					String password = PortletRequestUtils.getStringParameter(request, "password_"+driverType, "", false);
 					if (!password.equals("")) {
 						options.put(ObjectKeys.RESOURCE_DRIVER_PASSWORD, password);
 					}
 					
 					//Is there a server name 
-					String serverName = PortletRequestUtils.getStringParameter(request, "serverName_"+driverType, "");
+					String serverName = PortletRequestUtils.getStringParameter(request, "serverName_"+driverType, "", false);
 					options.put(ObjectKeys.RESOURCE_DRIVER_SERVER_NAME, serverName);
 					
 					//Is there a server IP address 
@@ -129,11 +129,11 @@ public class ManageResourceDriverController extends SAbstractController {
 					options.put(ObjectKeys.RESOURCE_DRIVER_SERVER_IP, serverIP);
 					
 					//Is there an share name 
-					String shareName = PortletRequestUtils.getStringParameter(request, "shareName_"+driverType, "");
+					String shareName = PortletRequestUtils.getStringParameter(request, "shareName_"+driverType, "", false);
 					options.put(ObjectKeys.RESOURCE_DRIVER_SHARE_NAME, shareName);
 					
 					//Is there an volume name 
-					String volume = PortletRequestUtils.getStringParameter(request, "volume_"+driverType, "");
+					String volume = PortletRequestUtils.getStringParameter(request, "volume_"+driverType, "", false);
 					options.put(ObjectKeys.RESOURCE_DRIVER_VOLUME, volume);
 					
 					//Get who is allowed to manage this 
@@ -155,7 +155,7 @@ public class ManageResourceDriverController extends SAbstractController {
 					//See if a selected driver needs to be modified
 					String name = PortletRequestUtils.getStringParameter(request, "nameToModify");
 					String driverType = PortletRequestUtils.getStringParameter(request, "driverType", DriverType.filesystem.name());
-					String rootPath = PortletRequestUtils.getStringParameter(request, "rootPath");
+					String rootPath = PortletRequestUtils.getStringParameter(request, "rootPath", false);
 					Map options = new HashMap();
 					
 					//Is this Read Only?
@@ -176,18 +176,18 @@ public class ManageResourceDriverController extends SAbstractController {
 					options.put(ObjectKeys.RESOURCE_DRIVER_SYNCH_TOP_DELETE, Boolean.FALSE);
 					
 					//Is there an account name 
-					String accountName = PortletRequestUtils.getStringParameter(request, "accountName_"+driverType, "");
+					String accountName = PortletRequestUtils.getStringParameter(request, "accountName_"+driverType, "", false);
 					options.put(ObjectKeys.RESOURCE_DRIVER_ACCOUNT_NAME, accountName);
 					
 					//Is there a password 
-					String password = PortletRequestUtils.getStringParameter(request, "password_"+driverType, "");
+					String password = PortletRequestUtils.getStringParameter(request, "password_"+driverType, "", false);
 					Boolean changePassword = PortletRequestUtils.getBooleanParameter(request, "changePassword_"+driverType, Boolean.FALSE);
 					if (changePassword) {
 						options.put(ObjectKeys.RESOURCE_DRIVER_PASSWORD, password);
 					}
 					
 					//Is there a server name 
-					String serverName = PortletRequestUtils.getStringParameter(request, "serverName_"+driverType, "");
+					String serverName = PortletRequestUtils.getStringParameter(request, "serverName_"+driverType, "", false);
 					options.put(ObjectKeys.RESOURCE_DRIVER_SERVER_NAME, serverName);
 					
 					//Is there a server IP address 
@@ -195,11 +195,11 @@ public class ManageResourceDriverController extends SAbstractController {
 					options.put(ObjectKeys.RESOURCE_DRIVER_SERVER_IP, serverIP);
 					
 					//Is there an share name 
-					String shareName = PortletRequestUtils.getStringParameter(request, "shareName_"+driverType, "");
+					String shareName = PortletRequestUtils.getStringParameter(request, "shareName_"+driverType, "", false);
 					options.put(ObjectKeys.RESOURCE_DRIVER_SHARE_NAME, shareName);
 					
 					//Is there an volume name 
-					String volume = PortletRequestUtils.getStringParameter(request, "volume_"+driverType, "");
+					String volume = PortletRequestUtils.getStringParameter(request, "volume_"+driverType, "", false);
 					options.put(ObjectKeys.RESOURCE_DRIVER_VOLUME, volume);
 					
 					//Get who is allowed to create file spaces using this driver

@@ -252,8 +252,8 @@ public class ViewPermalinkController  extends SAbstractController {
 		String binderId= PortletRequestUtils.getStringParameter(request, WebKeys.URL_BINDER_ID, "");
 		String entryId= PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_ID, "");
 		String fileId= PortletRequestUtils.getStringParameter(request, WebKeys.URL_FILE_ID, "");
-		String fileName= PortletRequestUtils.getStringParameter(request, WebKeys.URL_FILE_NAME, "");
-		String entryTitle = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_TITLE, "");
+		String fileName= PortletRequestUtils.getStringParameter(request, WebKeys.URL_FILE_NAME, "", false);
+		String entryTitle = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_TITLE, "", false);
 		String captive = PortletRequestUtils.getStringParameter(request, WebKeys.URL_CAPTIVE, null);
 		String showTrash = PortletRequestUtils.getStringParameter(request, WebKeys.URL_SHOW_TRASH, "");
 		String invokeShare = PortletRequestUtils.getStringParameter(request, WebKeys.URL_INVOKE_SHARE, "");

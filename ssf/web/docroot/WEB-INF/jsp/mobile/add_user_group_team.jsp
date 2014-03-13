@@ -75,7 +75,7 @@ function ss_submitSelectForm${ssElementName}(url) {
 		    <c:if test="${ss_type == 'team'}"><span class="ss_bold"><ssf:nlt tag="navigation.findTeam"/></span></c:if>
 		  </label>
 		  <input type="text" size="15" name="searchText" id="searchText" autocomplete="off"
-		    value="${ss_searchText}"/>
+		    value="<ssf:escapeQuotes>${ss_searchText}</ssf:escapeQuotes>"/>
 		  <input 
 		    type="submit" name="okBtn" value="<ssf:nlt tag="button.ok"/>"/>
 		  <input 
@@ -124,7 +124,7 @@ function ss_submitSelectForm${ssElementName}(url) {
 				value="${ssEntry.id}"/><ssf:param name="type"
 				value="${ss_type}"/><ssf:param name="element"
 				value="${ssElementName}"/><ssf:param 
-				name="searchText" value="${ss_searchText}"/><ssf:param 
+				name="searchText" useBody="true">${ss_searchText}</ssf:param><ssf:param 
 				name="pageNumber" value="${ss_prevPage}"/></ssf:url>"
 		><img border="0" src="<html:rootPath/>images/mobile/nl_left_20.png"/></a>
 	  </c:if>
@@ -142,7 +142,7 @@ function ss_submitSelectForm${ssElementName}(url) {
 				value="${ssEntry.id}"/><ssf:param name="type"
 				value="${ss_type}"/><ssf:param name="element"
 				value="${ssElementName}"/><ssf:param 
-				name="searchText" value="${ss_searchText}"/><ssf:param 
+				name="searchText" useBody="true">${ss_searchText}</ssf:param><ssf:param 
 				name="pageNumber" value="${ss_nextPage}"/></ssf:url>"
 		><img border="0" src="<html:rootPath/>images/mobile/nl_right_20.png"/></a>
 	  </c:if>

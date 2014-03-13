@@ -188,7 +188,7 @@
 							<a href="<ssf:url action="advanced_search" actionUrl="true"><ssf:param 
 								name="tabTitle" value=""/><ssf:param 
 								name="newTab" value="1"/><ssf:param 
-								name="searchText" value="${ss_filterMap.searchText}"/><ssf:param 
+								name="searchText" useBody="true">${ss_filterMap.searchText}</ssf:param><ssf:param 
 								name="operation" value="ss_searchResults"/><ssf:param 
 								name="showAdvancedSearchForm" value="true"/><ssf:param 
 								name="context" value="${ss_searchContext}"/><ssf:param 

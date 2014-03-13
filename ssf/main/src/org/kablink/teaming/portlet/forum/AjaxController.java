@@ -919,7 +919,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 				entry = getFolderModule().getEntry(binderId, entryId);
 			} catch(Exception ex) {}
 		}
-		String fileNames = PortletRequestUtils.getStringParameter(request, "fileNames", "");
+		String fileNames = PortletRequestUtils.getStringParameter(request, "fileNames", "", false);
 		List fileNameList = new ArrayList<String>();
 		String[] fns = fileNames.split(",");
 		for (int i = 0; i < fns.length; i++) {
@@ -1138,7 +1138,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 		syncId = PortletRequestUtils.getStringParameter( request, "ldapSyncResultsId", "" );
 		
 		// Get the list of ldap configs that we need to sync the guid.
-		listOfLdapConfigsToSyncGuid = PortletRequestUtils.getStringParameters( request, "listOfLdapConfigsToSyncGuid" );
+		listOfLdapConfigsToSyncGuid = PortletRequestUtils.getStringParameters( request, "listOfLdapConfigsToSyncGuid", false );
 		
 		// Get the flag that tells us whether we should sync all users and groups.
 		syncUsersAndGroups = PortletRequestUtils.getBooleanParameter( request, "syncUsersAndGroups", false );
@@ -1439,7 +1439,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 		Boolean disable = PortletRequestUtils.getBooleanParameter(request, "disable", false);
 		if (Boolean.TRUE.equals(disable)) styles.put(Subscription.DISABLE_ALL_NOTIFICATIONS, null);
 		for (int i=1; i<6; ++i) {
-			String[] address = PortletRequestUtils.getStringParameters(request, "_subscribe"+i);
+			String[] address = PortletRequestUtils.getStringParameters(request, "_subscribe"+i, false);
 			if (address == null || address.length ==0) continue;
 			else styles.put(Integer.valueOf(i), address);
 		}
@@ -1999,8 +1999,8 @@ public class AjaxController  extends SAbstractControllerRetry {
 		Map formData = request.getParameterMap();
 		if (formData.containsKey("applyBtn") || formData.containsKey("okBtn")) {
 			Long groupId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID);
-			String title = PortletRequestUtils.getStringParameter(request, "title", "");
-			String description = PortletRequestUtils.getStringParameter(request, "description", "");
+			String title = PortletRequestUtils.getStringParameter(request, "title", "", false);
+			String description = PortletRequestUtils.getStringParameter(request, "description", "", false);
 			Set ids = LongIdUtil.getIdsAsLongSet(request.getParameterValues("users"));
 			ids.addAll(LongIdUtil.getIdsAsLongSet(request.getParameterValues("groups")));
 			SortedSet principals = getProfileModule().getPrincipals(ids);
@@ -3076,7 +3076,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 	private ModelAndView ajaxCheckBinderTitle(RenderRequest request, RenderResponse response) throws Exception
 	{
 		Map model = new HashMap();
-		String title = PortletRequestUtils.getStringParameter(request, WebKeys.URL_AJAX_VALUE,"");
+		String title = PortletRequestUtils.getStringParameter(request, WebKeys.URL_AJAX_VALUE, "", false);
 		if(Validator.containsPathCharacters(title)) {
 			model.put(WebKeys.AJAX_ERROR_MESSAGE, NLT.get("errorcode.title.pathCharacters", new Object[]{title}));
 			model.put(WebKeys.AJAX_ERROR_MESSAGE_IS_TEXT, true);
@@ -3333,7 +3333,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 			status = "noSurvey";
 		}
 		
-		String guestEmail = PortletRequestUtils.getStringParameter(request, "guest_email", null);
+		String guestEmail = PortletRequestUtils.getStringParameter(request, "guest_email", null, false);
 		if (user.isShared() && guestEmail == null) {
 			status = "missingEmail";
 		}
