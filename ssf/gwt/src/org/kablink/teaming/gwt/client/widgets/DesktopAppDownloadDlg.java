@@ -579,7 +579,7 @@ public class DesktopAppDownloadDlg extends DlgBox {
 			a.getElement().setInnerText(m_messages.downloadAppDlgDownloadWindows2(m_company, m_product));
 
 			// ...add the instructions...
-			String msg = m_messages.downloadAppDlgDownloadWindows1(
+			String msg = m_messages.downloadAppDlgDownloadWindows3(
 				m_product,
 				m_messages.downloadAppDlgUrlWin32(),
 				m_messages.downloadAppDlgUrlWin64(),

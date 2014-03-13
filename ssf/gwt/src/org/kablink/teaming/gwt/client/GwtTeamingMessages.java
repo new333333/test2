@@ -2603,8 +2603,8 @@ public interface GwtTeamingMessages extends Messages
 	String downloadAppDlgDownloadMac2(String company, String product);
 	String downloadAppDlgDownloadMd5(String md5);
 	String downloadAppDlgDownloadMobile(String company, String product);
-	String downloadAppDlgDownloadWindows1(String product, String filename32, String filename64, String filenameXP, String quickStart);
 	String downloadAppDlgDownloadWindows2(String company, String product);
+	String downloadAppDlgDownloadWindows3(String product, String filename32, String filename64, String filenameXP, String quickStart);
 	String downloadAppDlgError_NoMacUrl();
 	String downloadAppDlgError_NoUrls();
 	String downloadAppDlgError_NoWin32Url();
