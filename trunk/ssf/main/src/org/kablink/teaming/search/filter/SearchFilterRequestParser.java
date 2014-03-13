@@ -194,7 +194,7 @@ public class SearchFilterRequestParser {
 				for (int i = 0; i < entryTypeIds.length; i++) {
 					String entryTypeId = entryTypeIds[i];
 					String entryFieldId = PortletRequestUtils.getStringParameter(request, SearchFilterKeys.FilterElementNameField.concat("_").concat(entryTypeId).concat("_" + j).concat("_hidden"), "");
-					String[] value = PortletRequestUtils.getStringParameters(request, SearchFilterKeys.FilterElementValueField.concat("_").concat(entryTypeId).concat("_" + j).concat("_hidden"));
+					String[] value = PortletRequestUtils.getStringParameters(request, SearchFilterKeys.FilterElementValueField.concat("_").concat(entryTypeId).concat("_" + j).concat("_hidden"), false);
 					String value2 = PortletRequestUtils.getStringParameter(request, SearchFilterKeys.FilterElementValueField.concat("0_").concat(entryTypeId).concat("_" + j).concat("_hidden"), null);
 					if (value != null && value2 != null) {
 						String[] allValues = new String[value.length + 1];
@@ -217,9 +217,9 @@ public class SearchFilterRequestParser {
 						entryTypeId = PortletRequestUtils.getStringParameter(request, SearchFilterKeys.FilterEntryDefIdField.concat(numbers[i]).concat("_initialized"), "");
 					}
 					String entryFieldId = PortletRequestUtils.getStringParameter(request, SearchFilterKeys.FilterElementNameField.concat(numbers[i].concat("_selected")), SearchFilter.AllEntries);
-					String[] value = PortletRequestUtils.getStringParameters(request, SearchFilterKeys.FilterElementValueField.concat(numbers[i]).concat("_selected"));
+					String[] value = PortletRequestUtils.getStringParameters(request, SearchFilterKeys.FilterElementValueField.concat(numbers[i]).concat("_selected"), false);
 					String value2 = PortletRequestUtils.getStringParameter(request, SearchFilterKeys.FilterElementValueField.concat(numbers[i]).concat("_selected").concat("0"), null);
-					String[] valueValue = PortletRequestUtils.getStringParameters(request, SearchFilterKeys.FilterElementValueValueField.concat(numbers[i]));
+					String[] valueValue = PortletRequestUtils.getStringParameters(request, SearchFilterKeys.FilterElementValueValueField.concat(numbers[i]), false);
 					if (valueValue != null) {
 						for (int j = 0; j < value.length; j++) {
 							if (j < valueValue.length) {
@@ -300,7 +300,7 @@ public class SearchFilterRequestParser {
 	private void parseAuthors(PortletRequest request, SearchFilter searchFilter, String[] types, String[] numbers) {
 		List<SearchFilter.Creator> creators = new ArrayList();
 		
-		String authors = PortletRequestUtils.getStringParameter(request, SearchFilterKeys.SearchAuthors, "");
+		String authors = PortletRequestUtils.getStringParameter(request, SearchFilterKeys.SearchAuthors, "", false);
 		if (authors!=null && !authors.equals("")) {
 			String[] authorsArr = authors.split(" ");
 			for (int i = 0; i < authorsArr.length; i++) {
@@ -309,7 +309,7 @@ public class SearchFilterRequestParser {
 		}
 		
 		if (!parseAdvancedOptions) {
-			String[] authorTitles = PortletRequestUtils.getStringParameters(request, SearchFilterKeys.SearchAuthors.concat("_hidden"));
+			String[] authorTitles = PortletRequestUtils.getStringParameters(request, SearchFilterKeys.SearchAuthors.concat("_hidden"), false);
 			String[] authorIds = PortletRequestUtils.getStringParameters(request, SearchFilterKeys.SearchAuthors.concat("_selected").concat("_hidden"));
 			for (int i = 0; i < authorIds.length; i++) {
 				String authorTitle = authorTitles[i];
@@ -323,7 +323,7 @@ public class SearchFilterRequestParser {
 		} else {
 			for (int i=0; i < types.length; i++) {
 				if (types[i].equals(SearchFilterToMapConverter.SearchBlockTypeAuthor)) {
-					String authorTitle = PortletRequestUtils.getStringParameter(request, SearchFilterKeys.SearchAuthors.concat(numbers[i]), "");
+					String authorTitle = PortletRequestUtils.getStringParameter(request, SearchFilterKeys.SearchAuthors.concat(numbers[i]), "", false);
 					String authorId = PortletRequestUtils.getStringParameter(request, SearchFilterKeys.SearchAuthors.concat(numbers[i]).concat("_selected"), "");
 					if (!authorId.equals("")) {
 						creators.add(new SearchFilter.Creator(authorId, authorTitle));
@@ -386,7 +386,7 @@ public class SearchFilterRequestParser {
 	}
 
 	private void parseFreeText(PortletRequest request, SearchFilter searchFilter) throws SearchWildCardException {
-		String searchText = PortletRequestUtils.getStringParameter(request, SearchFilterKeys.SearchText, "");
+		String searchText = PortletRequestUtils.getStringParameter(request, SearchFilterKeys.SearchText, "", false);
 		searchText = SearchUtils.validateSearchText(searchText);
 		Boolean searchCaseSensitive = false;
 		try {
@@ -410,11 +410,11 @@ public class SearchFilterRequestParser {
 	}
 
 	private void parseFilterName(PortletRequest request, SearchFilter searchFilter) {
-		String filterName = PortletRequestUtils.getStringParameter(request, SearchFilterKeys.FilterNameField, "");
+		String filterName = PortletRequestUtils.getStringParameter(request, SearchFilterKeys.FilterNameField, "", false);
 		if (filterName != null && !filterName.equals("")) {
 			searchFilter.addFilterName(filterName);
 		}
-		String global = PortletRequestUtils.getStringParameter(request, SearchFilterKeys.FilterGlobalField, "");
+		String global = PortletRequestUtils.getStringParameter(request, SearchFilterKeys.FilterGlobalField, "", false);
 		if (global != null && global.equals("on")) {
 			searchFilter.addGlobal();
 		}

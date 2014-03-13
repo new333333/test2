@@ -170,7 +170,7 @@ public class ModifyFileController extends SAbstractController {
 			} else if (op.equals(WebKeys.OPERATION_MODIFY_FILE_DESCRIPTION) && WebHelper.isMethodPost(request)) {
 				//The form was submitted. Go process it
 				if (fileAtt != null) {
-					String text = PortletRequestUtils.getStringParameter(request, WebKeys.URL_DESCRIPTION, "");
+					String text = PortletRequestUtils.getStringParameter(request, WebKeys.URL_DESCRIPTION, "", false);
 					getBinderModule().setFileVersionNote(entity, fileAtt, text);
 				}
 				

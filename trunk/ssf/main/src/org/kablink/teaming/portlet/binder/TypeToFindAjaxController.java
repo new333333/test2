@@ -441,7 +441,7 @@ public class TypeToFindAjaxController extends SAbstractController {
 	private ModelAndView ajaxWorkflowsListSearch(RenderRequest request, RenderResponse response) {
 		Map model = new HashMap();;
 		
-		String searchText = PortletRequestUtils.getStringParameter(request, "searchText", "");
+		String searchText = PortletRequestUtils.getStringParameter(request, "searchText", "", false);
 		int maxEntries = PortletRequestUtils.getIntParameter(request, "maxEntries", 10);
 		int pageNumber = PortletRequestUtils.getIntParameter(request, "pageNumber", 0);
 		
@@ -514,7 +514,7 @@ public class TypeToFindAjaxController extends SAbstractController {
 		String entryTypeId = PortletRequestUtils.getStringParameter(request,WebKeys.FILTER_ENTRY_DEF_ID, "");
 		String entryField = PortletRequestUtils.getStringParameter(request, SearchFilterKeys.FilterElementNameField, "");
 		
-		String searchText = PortletRequestUtils.getStringParameter(request, "searchText", "");
+		String searchText = PortletRequestUtils.getStringParameter(request, "searchText", "", false);
 		int maxEntries = PortletRequestUtils.getIntParameter(request, "maxEntries", 10);
 		int pageNumber = PortletRequestUtils.getIntParameter(request, "pageNumber", 0);
 		

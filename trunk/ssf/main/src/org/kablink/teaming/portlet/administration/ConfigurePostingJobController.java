@@ -83,8 +83,8 @@ public class ConfigurePostingJobController extends  SAbstractController  {
 			while (true) {
 				if (!formData.containsKey("alias" + pos))
 					break;
-				String alias = PortletRequestUtils.getStringParameter(request, "alias" + pos, "").trim().toLowerCase();
-				String password = PortletRequestUtils.getStringParameter(request, "password" + pos, null);
+				String alias = PortletRequestUtils.getStringParameter(request, "alias" + pos, "", false).trim().toLowerCase();
+				String password = PortletRequestUtils.getStringParameter(request, "password" + pos, null, false);
 				String aliasId=null;
 				try {
 					aliasId = PortletRequestUtils.getStringParameter(request, "aliasId" + pos);

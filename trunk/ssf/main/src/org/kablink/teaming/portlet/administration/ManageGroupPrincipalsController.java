@@ -112,8 +112,8 @@ public abstract class ManageGroupPrincipalsController extends  SAbstractControll
 				Map<Long,Principal> changes = new HashMap<Long,Principal>();
 				List<Principal> currentMembers = new ArrayList(((Group)group).getMembers());
 				
-				String title = PortletRequestUtils.getStringParameter(request, "title", "");
-				String description = PortletRequestUtils.getStringParameter(request, "description", "");
+				String title = PortletRequestUtils.getStringParameter(request, "title", "", false);
+				String description = PortletRequestUtils.getStringParameter(request, "description", "", false);
 				Set ids = LongIdUtil.getIdsAsLongSet(request.getParameterValues("users"));
 				Set groupIds = LongIdUtil.getIdsAsLongSet(request.getParameterValues("groups"));
 				ids.addAll(groupIds);

@@ -3251,9 +3251,9 @@ public class BinderHelper {
 			
 			if (!recipients.isEmpty()) {
 				try {
-					String title = PortletRequestUtils.getStringParameter(request, "title", "--no title--");
-					String body = PortletRequestUtils.getStringParameter(request, "_sendMail_body", "");
-					String subject = PortletRequestUtils.getStringParameter(request, "_sendMail_subject", "\"" + title + "\" entry notification");
+					String title = PortletRequestUtils.getStringParameter(request, "title", "--no title--", false);
+					String body = PortletRequestUtils.getStringParameter(request, "_sendMail_body", "", false);
+					String subject = PortletRequestUtils.getStringParameter(request, "_sendMail_subject", "\"" + title + "\" entry notification", false);
 					String includeAttachments = PortletRequestUtils.getStringParameter(request, "_sendMail_includeAttachments", "");
 					boolean incAtt = (!includeAttachments.equals(""));
 					Set emailAddress = new HashSet();
@@ -3383,7 +3383,7 @@ public class BinderHelper {
 		Map<Integer,String[]> styles = new HashMap();
 		for (int i=2; i<6; ++i) {
 			if (i == 4) continue;
-			String[] address = PortletRequestUtils.getStringParameters(request, "_subscribe"+i);
+			String[] address = PortletRequestUtils.getStringParameters(request, "_subscribe"+i, false);
 			if (address == null || address.length ==0) continue;
 			else styles.put(Integer.valueOf(i), address);
 		}
@@ -3480,7 +3480,7 @@ public class BinderHelper {
 	public static Map prepareSavedQueryResultData(AllModulesInjected bs, RenderRequest request, Tabs tabs, Map options) throws PortletRequestBindingException {
 		Map model = new HashMap();
 
-		String queryName = PortletRequestUtils.getStringParameter(request, WebKeys.URL_SEARCH_QUERY_NAME, "");
+		String queryName = PortletRequestUtils.getStringParameter(request, WebKeys.URL_SEARCH_QUERY_NAME, "", false);
 		User currentUser = RequestContextHolder.getRequestContext().getUser();
 		
 		// get query and options from tab		

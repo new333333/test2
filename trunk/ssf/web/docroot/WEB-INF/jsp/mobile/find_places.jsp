@@ -58,7 +58,7 @@
 	  <label for="searchText"><span class="ss_bold"><ssf:nlt tag="navigation.findPlace"/></span></label>
 	  <input type="hidden" name="scope" value="${ss_searchScope}" />
 	  <input type="text" size="15" name="searchText" id="searchText" autocomplete="off"
-	    value="${ss_searchText}"/><input 
+	    value="<ssf:escapeQuotes>${ss_searchText}</ssf:escapeQuotes>"/><input 
 	    type="submit" name="okBtn" value="<ssf:nlt tag="button.ok"/>"/>
 	  </form>
 	</div>

@@ -98,7 +98,7 @@ public class AddFolderController extends SAbstractController {
 			}
 			if (!createTestFolders){
 				newId = getTemplateModule().addBinder(cfgType, binderId, 
-					PortletRequestUtils.getStringParameter(request, "title", ""), null).getId();
+					PortletRequestUtils.getStringParameter(request, "title", "", false), null).getId();
 			}
 			Binder newBinder = getBinderModule().getBinder(newId);
 			
@@ -151,7 +151,7 @@ public class AddFolderController extends SAbstractController {
 					String permaLink = PermaLinkUtil.getPermalink(newBinder);
 					messageBody += permaLink;
 					messageBody += "\">" + newBinder.getTitle() + "</a><br/><br/>";
-					String announcementText = PortletRequestUtils.getStringParameter(request, "announcementText", "");
+					String announcementText = PortletRequestUtils.getStringParameter(request, "announcementText", "", false);
 					messageBody += announcementText;
 					Set emailAddress = new HashSet();
 					//See if this user wants to be BCC'd on all mail sent out
@@ -181,7 +181,7 @@ public class AddFolderController extends SAbstractController {
 		} else if (formData.containsKey("addBtn") && WebHelper.isMethodPost(request)) {
 			//This is the short form
 			String templateName = PortletRequestUtils.getRequiredStringParameter(request, WebKeys.URL_TEMPLATE_NAME);				
-			String title = PortletRequestUtils.getStringParameter(request, "title", "");
+			String title = PortletRequestUtils.getStringParameter(request, "title", "", false);
 			TemplateBinder binderTemplate = getTemplateModule().getTemplateByName(templateName);
 			Long newBinderId = null;
 			if (binderTemplate != null) {

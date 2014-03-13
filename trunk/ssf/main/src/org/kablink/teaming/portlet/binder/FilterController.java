@@ -73,8 +73,8 @@ public class FilterController extends AbstractBinderController {
 		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));	
 		@SuppressWarnings("unused")
 		String binderType = PortletRequestUtils.getRequiredStringParameter(request, WebKeys.URL_BINDER_TYPE);	
-		String filterNameOriginal = PortletRequestUtils.getStringParameter(request, "filterNameOriginal", "");
-		String globalOriginal = PortletRequestUtils.getStringParameter(request, "globalOriginal", "---");
+		String filterNameOriginal = PortletRequestUtils.getStringParameter(request, "filterNameOriginal", "", false);
+		String globalOriginal = PortletRequestUtils.getStringParameter(request, "globalOriginal", "---", false);
 		User user = RequestContextHolder.getRequestContext().getUser();
 		Binder binder = getBinderModule().getBinder(binderId);
 			
@@ -142,7 +142,7 @@ public class FilterController extends AbstractBinderController {
 		
 		} else if (formData.containsKey("deleteBtn") && WebHelper.isMethodPost(request)) {
 			//This is a request to delete a filter
-			String selectedSearchFilter = PortletRequestUtils.getStringParameter(request, "selectedSearchFilter", "");
+			String selectedSearchFilter = PortletRequestUtils.getStringParameter(request, "selectedSearchFilter", "", false);
 			if (!selectedSearchFilter.equals("")) {
 				UserProperties userForumProperties = getProfileModule().getUserProperties(user.getId(), binderId);
 				Map searchFilters = (Map)userForumProperties.getProperty(ObjectKeys.USER_PROPERTY_SEARCH_FILTERS);
@@ -159,7 +159,7 @@ public class FilterController extends AbstractBinderController {
 		} else if (formData.containsKey("deleteBtnGlobal") && WebHelper.isMethodPost(request)) {
 			//This is a request to delete a global filter
 			if (getBinderModule().testAccess(binder, BinderOperation.modifyBinder)) {
-				String selectedSearchFilter = PortletRequestUtils.getStringParameter(request, "selectedSearchFilterGlobal", "");
+				String selectedSearchFilter = PortletRequestUtils.getStringParameter(request, "selectedSearchFilterGlobal", "", false);
 				if (!selectedSearchFilter.equals("")) {
 					Map searchFilters = (Map)binder.getProperty(ObjectKeys.BINDER_PROPERTY_FILTERS);
 					if (searchFilters == null) searchFilters = new HashMap();
@@ -193,7 +193,7 @@ public class FilterController extends AbstractBinderController {
 		Map formData = request.getParameterMap();
 		
 		//Get the name of the selected filter (if one is selected)
-		String selectedSearchFilter = PortletRequestUtils.getStringParameter(request, "selectedSearchFilter", "");
+		String selectedSearchFilter = PortletRequestUtils.getStringParameter(request, "selectedSearchFilter", "", false);
 		if (!selectedSearchFilter.equals("")) model.put(WebKeys.FILTER_SELECTED_FILTER_NAME, selectedSearchFilter);
 		model.put(WebKeys.BINDER, binder);
 			
@@ -204,7 +204,7 @@ public class FilterController extends AbstractBinderController {
 		Map searchFilterData = new HashMap();
 		model.put(WebKeys.SEARCH_FILTER_MAP, searchFilterData);
 		
-		String selectedSearchFilterGlobal = PortletRequestUtils.getStringParameter(request, "selectedSearchFilterGlobal", "");
+		String selectedSearchFilterGlobal = PortletRequestUtils.getStringParameter(request, "selectedSearchFilterGlobal", "", false);
 		if (!selectedSearchFilterGlobal.equals("")) model.put(WebKeys.FILTER_SELECTED_FILTER_NAME, selectedSearchFilterGlobal);
 		Map globalSearchFilters = (Map)binder.getProperty(ObjectKeys.BINDER_PROPERTY_FILTERS);
 		if (globalSearchFilters == null || !getBinderModule().testAccess(binder, BinderOperation.modifyBinder)) {

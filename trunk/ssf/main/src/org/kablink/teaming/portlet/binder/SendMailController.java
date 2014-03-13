@@ -86,8 +86,8 @@ public class SendMailController extends SAbstractController {
 		//See if the form was submitted
 		if (formData.containsKey("okBtn") && WebHelper.isMethodPost(request) &&
 				!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
-			String subject = PortletRequestUtils.getStringParameter(request, "subject", "");	
-			String[] to = StringUtil.split(PortletRequestUtils.getStringParameter(request, "addresses", ""));
+			String subject = PortletRequestUtils.getStringParameter(request, "subject", "", false);	
+			String[] to = StringUtil.split(PortletRequestUtils.getStringParameter(request, "addresses", "", false));
 			Set emailAddress = new HashSet();
 			for (int i=0; i<to.length; ++i) {
 				emailAddress.add(to[i]);				
@@ -101,7 +101,7 @@ public class SendMailController extends SAbstractController {
 				}
 			}
 			boolean self = PortletRequestUtils.getBooleanParameter(request, "self", false);
-			String body = PortletRequestUtils.getStringParameter(request, "mailBody", "");
+			String body = PortletRequestUtils.getStringParameter(request, "mailBody", "", false);
 			Set memberIds = new HashSet();
 			if (self) memberIds.add(RequestContextHolder.getRequestContext().getUserId());
 			if (formData.containsKey("users")) memberIds.addAll(LongIdUtil.getIdsAsLongSet(request.getParameterValues("users")));

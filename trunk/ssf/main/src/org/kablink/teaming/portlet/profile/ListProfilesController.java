@@ -73,7 +73,7 @@ public class ListProfilesController extends   SAbstractController {
 			response.setRenderParameter(WebKeys.URL_NEW_TAB, "1");
 		} else if (op.equals(WebKeys.OPERATION_SELECT_FILTER)) {
 				getProfileModule().setUserProperty(user.getId(), binderId, ObjectKeys.USER_PROPERTY_USER_FILTER, 
-						PortletRequestUtils.getStringParameter(request, WebKeys.OPERATION_SELECT_FILTER,""));
+						PortletRequestUtils.getStringParameter(request, WebKeys.OPERATION_SELECT_FILTER,"", false));
 				response.setRenderParameter(WebKeys.URL_NEW_TAB, "1");
 		} else if (op.equals(WebKeys.OPERATION_SAVE_FOLDER_PAGE_INFO)) {
 			//Saves the folder page informaton when the user clicks on the page link			

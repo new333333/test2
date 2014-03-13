@@ -137,9 +137,9 @@ public class ConfigureConfigurationController extends  SAbstractController {
 					}
 				} else {
 					Map updates = new HashMap();
-					String sVal = PortletRequestUtils.getStringParameter(request, "title", null);
+					String sVal = PortletRequestUtils.getStringParameter(request, "title", null, false);
 					updates.put(ObjectKeys.FIELD_TEMPLATE_TITLE, sVal);
-					sVal = PortletRequestUtils.getStringParameter(request, "description", null);
+					sVal = PortletRequestUtils.getStringParameter(request, "description", null, false);
 					updates.put(ObjectKeys.FIELD_TEMPLATE_DESCRIPTION, new Description(Html.stripHtml(sVal)));
 					sVal = PortletRequestUtils.getStringParameter(request, "templateName", null);
 					if (sVal != null) updates.put(ObjectKeys.FIELD_BINDER_NAME, sVal);
@@ -217,9 +217,9 @@ public class ConfigureConfigurationController extends  SAbstractController {
 				Long configId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID);
 				//Get the function id from the form
 				Map updates = new HashMap();
-				String sVal = PortletRequestUtils.getStringParameter(request, "title", null);
+				String sVal = PortletRequestUtils.getStringParameter(request, "title", null, false);
 				updates.put(ObjectKeys.FIELD_TEMPLATE_TITLE, sVal);
-				sVal = PortletRequestUtils.getStringParameter(request, "description", null);
+				sVal = PortletRequestUtils.getStringParameter(request, "description", null, false);
 				updates.put(ObjectKeys.FIELD_TEMPLATE_DESCRIPTION, new Description(Html.stripHtml(sVal)));
 				sVal = PortletRequestUtils.getStringParameter(request, "templateName", null);
 				if (sVal != null) updates.put(ObjectKeys.FIELD_BINDER_NAME, Html.stripHtml(sVal)); //should only be present for root templates

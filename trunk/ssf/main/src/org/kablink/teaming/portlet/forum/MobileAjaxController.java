@@ -459,7 +459,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		//See if the add entry form was submitted
 		if (formData.containsKey("miniblogBtn") && WebHelper.isMethodPost(request)) {
 			//The miniblog form was submitted. Go process it
-			String text = PortletRequestUtils.getStringParameter(request, "miniblogText", "");
+			String text = PortletRequestUtils.getStringParameter(request, "miniblogText", "", false);
 			BinderHelper.addMiniBlogEntry(bs, text);
 		} else if (formData.containsKey("acceptBtn") && WebHelper.isMethodPost(request)) {
 			//User clicked "I Accept"
@@ -772,7 +772,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		Map formData = request.getParameterMap();
 	    Tabs tabs = Tabs.getTabs(request);
 		model.put(WebKeys.TABS, tabs);		
-		String searchText = PortletRequestUtils.getStringParameter(request, WebKeys.SEARCH_TEXT_FIELD, "");
+		String searchText = PortletRequestUtils.getStringParameter(request, WebKeys.SEARCH_TEXT_FIELD, "", false);
 		model.put(WebKeys.SEARCH_TEXT, searchText);
 	    if (formData.containsKey("searchBtn") || formData.containsKey("quickSearch")) {
 	    	SearchFilterRequestParser requestParser = new SearchFilterRequestParser(request, getDefinitionModule());
@@ -1396,7 +1396,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		}
 		if (entryId == null && binderId != null) {
 			String zoneUUID = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ZONE_UUID, "");
-			String title = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_TITLE, "");
+			String title = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_TITLE, "", false);
 			Set entries = getFolderModule().getFolderEntryByNormalizedTitle(binderId, title, zoneUUID);
 			if (entries.size() == 1) {
 				FolderEntry entry = (FolderEntry)entries.iterator().next();
@@ -1895,7 +1895,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		DefinitionHelper.getDefinition(entry.getEntryDefDoc(), model, "//item[@type='form']");
 		
 		Map formData = request.getParameterMap();
-		String searchText = PortletRequestUtils.getStringParameter(request, "searchText", "");
+		String searchText = PortletRequestUtils.getStringParameter(request, "searchText", "", false);
 		model.put(WebKeys.SEARCH_TEXT, searchText);
 		String maxEntries = PortletRequestUtils.getStringParameter(request, "maxEntries", "10");
 		String pageNumber = PortletRequestUtils.getStringParameter(request, "pageNumber", "0");
@@ -2039,7 +2039,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		Map formData = request.getParameterMap();
 		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
 		if (op.equals(WebKeys.OPERATION_MOBILE_FIND_PEOPLE) || op.equals(WebKeys.OPERATION_MOBILE_FIND_PLACES)) {
-			String searchText = PortletRequestUtils.getStringParameter(request, "searchText", "");
+			String searchText = PortletRequestUtils.getStringParameter(request, "searchText", "", false);
 			if (formData.containsKey("okBtn") || !searchText.equals("")) {
 				model.put(WebKeys.SEARCH_TEXT, searchText);
 				String maxEntries = PortletRequestUtils.getStringParameter(request, "maxEntries", "10");
