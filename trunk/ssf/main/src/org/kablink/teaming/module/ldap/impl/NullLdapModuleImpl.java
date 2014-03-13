@@ -39,6 +39,9 @@ import javax.naming.NamingException;
 import org.kablink.teaming.domain.LdapConnectionConfig;
 import org.kablink.teaming.domain.LdapSyncException;
 import org.kablink.teaming.domain.NoUserByTheNameException;
+import org.kablink.teaming.domain.User;
+import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
+import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.impl.CommonDependencyInjection;
 import org.kablink.teaming.module.ldap.LdapModule;
 import org.kablink.teaming.module.ldap.LdapSchedule;
@@ -133,6 +136,11 @@ public class NullLdapModuleImpl extends CommonDependencyInjection implements Lda
 
     @Override
     public void setDefaultTimeZone(String timeZoneId) {
+    }
+
+    @Override
+    public void updateHomeDirectoryIfNecessary(User user, String userName, boolean logErrors) {
+
     }
 
     @Override

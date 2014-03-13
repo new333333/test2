@@ -30,22 +30,37 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.security.authentication;
+package org.kablink.teaming.module.ldap.impl;
 
+import org.kablink.util.VibeRuntimeException;
+import org.kablink.util.api.ApiErrorCode;
 
-import java.util.Map;
+public class HomeFolderCreateException extends VibeRuntimeException {
 
-import org.kablink.teaming.domain.User;
-import org.kablink.teaming.module.authentication.AuthenticationServiceProvider;
-public interface AuthenticationManager {
+    private String userName;
+    private String serverAddress;
 
-	public User authenticate(AuthenticationServiceProvider authenticationServiceProvider, String zoneName, String username, String password,
-			boolean createUser, boolean updateUser, boolean updateHomeFolder, boolean passwordAutoSynch, boolean ignorePassword,
-			Map updates, String authenticatorName)
-		throws PasswordDoesNotMatchException, UserDoesNotExistException, UserAccountNotActiveException;
+    public HomeFolderCreateException(Throwable cause, String serverAddress, String userName) {
+        super(cause);
+        this.serverAddress = serverAddress;
+        this.userName = userName;
+    }
 
-	public User authenticate(String zoneName, Long userId, String binderId, String privateDigest, 
-			String authenticatorName) throws DigestDoesNotMatchException, 
-			UserDoesNotExistException, UserAccountNotActiveException;
-	
+    @Override
+    public String getMessage() {
+        return "Unable to create or update home directory net folder, server: " + serverAddress + ", user: " + userName;
+    }
+
+    public int getHttpStatusCode() {
+    	return 500; // Forbidden
+    }
+
+	/* (non-Javadoc)
+	 * @see org.kablink.teaming.exception.ApiErrorCodeSupport#getApiErrorCode()
+	 */
+	@Override
+	public ApiErrorCode getApiErrorCode() {
+		return ApiErrorCode.HOME_FOLDER_CREATE_ERROR;
+	}
+
 }

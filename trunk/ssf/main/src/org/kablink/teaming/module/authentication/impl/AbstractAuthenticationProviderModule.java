@@ -534,7 +534,8 @@ public abstract class AbstractAuthenticationProviderModule extends BaseAuthentic
 	     			boolean passwordAutoSynch = SPropsUtil.getBoolean("portal.password.auto.synchronize", true);
 	     			boolean ignorePassword = SPropsUtil.getBoolean("portal.password.ignore", true);
 	     			boolean updateUser = true; // No config setting exists for this
-	     			
+                    boolean updateHomeFolder = SPropsUtil.getBoolean("portal.user.home.folder.auto.create", true);
+
 	     			if(SPropsUtil.getBoolean("authenticator.synch." + getAuthenticator(), false)) {
 	     				// This authenticator is permitted to sync information from the identity source.
 	     				// So should simply honor the default settings.	     				
@@ -555,6 +556,9 @@ public abstract class AbstractAuthenticationProviderModule extends BaseAuthentic
 		     				// on existing user accounts. Profile updates on existing accounts should
 		     				// only be triggered by stateful client such as browser.
 		     				updateUser = false;
+                            // Set this to false to avoid incurring of overhead involved in creating
+                            // or updating the user's home folder.
+                            updateHomeFolder = false;
 		     			}
 		     			else {
 		     				// We will not allow sync.
@@ -579,7 +583,8 @@ public abstract class AbstractAuthenticationProviderModule extends BaseAuthentic
 	    					(String) credentials,
 	    					createUser,
 	    					updateUser,
-	    					passwordAutoSynch,
+                            updateHomeFolder,
+                            passwordAutoSynch,
 	    					ignorePassword,
 	    					(Map) result.getPrincipal(), 
 	    					getAuthenticator());
@@ -624,7 +629,8 @@ public abstract class AbstractAuthenticationProviderModule extends BaseAuthentic
     					(String) credentials,
     					false, 
     					false,
-    					false, 
+    					false,
+                        false,
     					true, 
     					(Map) result.getPrincipal(), getAuthenticator());			
      			SimpleProfiler.stop( "4a-system account: AuthenticationManagerUtil.authenticate()" );
