@@ -671,3 +671,8 @@
 	.vibe-deleteSelectedUsersDlg-warningSituation2     {}
 	.vibe-deleteSelectedUsersDlg-warningSituation3     {padding-left: 3px;}
 /* End:  Delete selected users dialog styles. */
+
+/* Start:  Edit-in-place frame styles. */
+	.vibe-editInPlaceInner {}
+	.vibe-editInPlaceOuter {visibility: visible; display: block; width: 0px; height: 0px;}
+/* End:  Edit-in-place frame styles. */

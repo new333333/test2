@@ -49,6 +49,7 @@ import org.kablink.teaming.gwt.client.datatable.AddFilesDlg.AddFilesDlgClient;
 import org.kablink.teaming.gwt.client.datatable.AddFilesHtml5Popup;
 import org.kablink.teaming.gwt.client.datatable.AddFilesHtml5Popup.AddFilesHtml5PopupClient;
 import org.kablink.teaming.gwt.client.event.FullUIReloadEvent;
+import org.kablink.teaming.gwt.client.event.InvokeEditInPlaceEvent;
 import org.kablink.teaming.gwt.client.event.VibeEventBase;
 import org.kablink.teaming.gwt.client.event.ViewForumEntryEvent;
 import org.kablink.teaming.gwt.client.mainmenu.EmailNotificationDlg;
@@ -85,6 +86,7 @@ import org.kablink.teaming.gwt.client.util.EntityRights.ShareRight;
 import org.kablink.teaming.gwt.client.util.PublicLinkInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.CopyPublicLinkDlg;
+import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 import org.kablink.teaming.gwt.client.widgets.CopyPublicLinkDlg.CopyPublicLinkDlgClient;
 import org.kablink.teaming.gwt.client.widgets.DeleteSelectedUsersDlg;
 import org.kablink.teaming.gwt.client.widgets.DeleteSelectedUsersDlg.DeleteSelectedUsersDlgClient;
@@ -102,6 +104,7 @@ import org.kablink.teaming.gwt.client.widgets.SpinnerPopup;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.FormPanel;
+import com.google.gwt.user.client.ui.NamedFrame;
 import com.google.gwt.user.client.ui.UIObject;
 import com.google.gwt.user.client.Window.Navigator;
 
@@ -125,6 +128,11 @@ public class BinderViewsHelper {
 	private static MailToMultiplePublicLinksSelectDlg	m_mailPLSelectDlg;						// An instance of the mail to multiple public links select dialog.
 	private static WhoHasAccessDlg						m_whaDlg;								// An instance of a who has access dialog used to view who has access to an entity. 
 
+	// The following is the ID/name of the <IFRAME> used to run the
+	// edit-in-place editor via an applet.
+	private final static String EDIT_IN_PLACE_DIV_ID	= "ss_div_fileopen_GWT";
+	private final static String EDIT_IN_PLACE_FRAME_ID	= "ss_iframe_fileopen_GWT";
+	
 	/*
 	 * Constructor method. 
 	 */
@@ -496,6 +504,40 @@ public class BinderViewsHelper {
 		copyEntries(entityIds, null);
 	}
 
+	/**
+	 * Creates and returns a flow panel create the IFRAME, ... required
+	 * to run the edit-in-place editor on a file using the applet.
+	 * 
+	 * @return
+	 */
+	public static VibeFlowPanel createEditInPlaceFrame() {
+		// Create the outer <DIV>...
+		VibeFlowPanel reply = new VibeFlowPanel();
+		reply.addStyleName("vibe-editInPlaceOuter");
+		reply.getElement().setId(               EDIT_IN_PLACE_DIV_ID);
+		reply.getElement().setAttribute("name", EDIT_IN_PLACE_DIV_ID);
+		
+		// ...create the inner <DIV>...
+		VibeFlowPanel inner = new VibeFlowPanel();
+		inner.addStyleName("vibe-editInPlaceInner");
+		inner.getElement().setAttribute("align", "right");
+
+		// ...create the <IFRAME>...
+		int eipFrameSize = (GwtClientHelper.jsIsIE() ? 1 : 0); 
+		NamedFrame eipFrame = new NamedFrame(EDIT_IN_PLACE_FRAME_ID);
+		eipFrame.getElement().setId(         EDIT_IN_PLACE_FRAME_ID);
+		eipFrame.setPixelSize(eipFrameSize, eipFrameSize);
+		eipFrame.setUrl(GwtClientHelper.getRequestInfo().getJSPath() + "forum/null.html");
+		eipFrame.setTitle(GwtClientHelper.isLicenseFilr() ? m_messages.novellFilr() : m_messages.novellTeaming());
+
+		// ...tie it all together...
+		inner.add(eipFrame);
+		reply.add(inner   );
+		
+		// ...and return the containing panel.
+		return reply;
+	}
+	
 	/**
 	 * Deletes the users based on a List<Long> of their IDs.
 	 *
@@ -1319,6 +1361,49 @@ public class BinderViewsHelper {
 		}
 	}
 	
+	/**
+	 * Asynchronously handles editing the folder entry based on an
+	 * InvokeEditInPlaceEvent.
+	 * 
+	 * @param event
+	 */
+	public static void invokeEditInPlace(final InvokeEditInPlaceEvent event) {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
+			@Override
+			public void execute() {
+				invokeEditInPlaceNow(event);
+			}
+		});
+	}
+	
+	/*
+	 * Synchronously handles editing the folder entry.
+	 */
+	private static void invokeEditInPlaceNow(InvokeEditInPlaceEvent event) {
+		// How are we launching the edit-in-place editor?
+		String   et  = event.getEditorType(); if (null == et) et = "";
+		EntityId eid = event.getEntityid();
+		if ("applet".equals(et)) {
+			// Via an applet!  Launch it.
+			GwtClientHelper.jsEditInPlace_Applet(
+				eid.getBinderId(),
+				eid.getEntityId(),
+				"_GWT",
+				event.getOperatingSystem(),
+				event.getAttachmentId());
+		}
+		
+		else if ("webdav".equals(et)) {
+			// Via a WebDAV URL!  Launch it.
+			GwtClientHelper.jsEditInPlace_WebDAV(event.getAttachmentUrl());
+		}
+		
+		else {
+			// Unknown!  Tell the user about the problem.
+			GwtClientHelper.deferredAlert(m_messages.eventHandling_UnknownEditInPlaceEditorType(et));
+		}
+	}
+
 	/**
 	 * Invokes the Share dialog in administrative mode based on a
 	 * List<EntityId> of the entries.
