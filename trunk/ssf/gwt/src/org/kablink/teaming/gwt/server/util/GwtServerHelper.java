@@ -10668,7 +10668,7 @@ public class GwtServerHelper {
 			mobileAppsConfig.setMobileAppsAllowCachePwd( gwtMobileAppsConfig.getAllowCachePwd() );
 			mobileAppsConfig.setMobileAppsAllowPlayWithOtherApps( gwtMobileAppsConfig.getAllowPlayWithOtherApps() );
 			mobileAppsConfig.setMobileAppsEnabled( gwtMobileAppsConfig.getMobileAppsEnabled() );
-			mobileAppsConfig.setMobileAppsSyncInterval( gwtMobileAppsConfig.getSyncInterval() );
+			mobileAppsConfig.setMobileAppsSyncInterval( new Integer( gwtMobileAppsConfig.getSyncInterval() ) );
 
 			// Save the various Mobile Application Management (MAM)
 			// settings.
