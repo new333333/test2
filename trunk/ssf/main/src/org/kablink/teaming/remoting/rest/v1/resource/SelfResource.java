@@ -132,7 +132,11 @@ public class SelfResource extends AbstractFileResource {
         user.setLink("/self");
         user.addAdditionalLink("mobile_devices", "/self/mobile_devices");
         user.addAdditionalLink("roots", "/self/roots");
-        getLdapModule().updateHomeDirectoryIfNecessary((org.kablink.teaming.domain.User)entry, entry.getName(), true);
+        try {
+            getLdapModule().updateHomeDirectoryIfNecessary((org.kablink.teaming.domain.User)entry, entry.getName(), true);
+        } catch (Exception e) {
+            logger.warn("An error occurred checking to see if the user's home folder needs to be updated", e);
+        }
         if (SearchUtils.userCanAccessMyFiles(this, getLoggedInUser())) {
             user.addAdditionalLink("my_files", "/self/my_files");
         }
