@@ -192,7 +192,9 @@ public class ResourceUtil {
                     if (fileAttachments.size()>0) {
                         FileAttachment attachment = fileAttachments.first();
                         fileId = attachment.getId();
-                        props = buildFileProperties(attachment);
+                        if (action!= org.kablink.teaming.domain.BinderChange.Action.delete) {
+                            props = buildFileProperties(attachment);
+                        }
                     }
                 }
                 if (fileId!=null) {
@@ -209,7 +211,7 @@ public class ResourceUtil {
                 model1.setId(entityId.getEntityId());
                 model1.setAction(action.name());
                 model1.setDate(changeDate);
-                if (entity!=null) {
+                if (entity!=null && action!=org.kablink.teaming.domain.BinderChange.Action.delete) {
                     model1.setEntry(buildFolderEntry((org.kablink.teaming.domain.FolderEntry) entity, false, descriptionFormat));
                 }
                 model = model1;
@@ -219,7 +221,7 @@ public class ResourceUtil {
             model1.setId(entityId.getEntityId());
             model1.setAction(action.name());
             model1.setDate(changeDate);
-            if (entity!=null) {
+            if (entity!=null && action != org.kablink.teaming.domain.BinderChange.Action.delete) {
                 model1.setBinder(buildBinder((org.kablink.teaming.domain.Binder) entity, false, descriptionFormat));
             }
             model = model1;
