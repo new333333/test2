@@ -1125,7 +1125,7 @@ public class ShareResource extends AbstractResource {
         boolean guestEnabled = isGuestAccessEnabled();
 
         List<Pair<DefinableEntity, List<ShareItem>>> resultList = _getSharedItems(topId, spec, excludedSharerId, onlyLibrary,
-                showHidden, showUnhidden, false, showPublic, showNonPublic, folders, entries);
+                showHidden, showUnhidden, false, showPublic, showNonPublic, folders, entries || files);
 
         List<SearchableObject> results = new ArrayList<SearchableObject>();
         for (Pair<DefinableEntity, List<ShareItem>> entityShares : resultList) {
