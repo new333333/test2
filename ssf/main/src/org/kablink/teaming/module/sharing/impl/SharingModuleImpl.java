@@ -1031,7 +1031,7 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 		DefinableEntity entity;
 		
 		try {
-			entity = loadDefinableEntity(entityIdentifier);
+			entity = loadDefinableEntity(entityIdentifier, true);
 		}
 		catch(Exception e) {
 			logger.warn("Error loading shared entity '" + entityIdentifier.toString() + "': " + e.toString());
@@ -1111,16 +1111,24 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 	 */
 	@Override
 	public DefinableEntity getSharedEntity(ShareItem shareItem) {
-		return loadDefinableEntity(shareItem.getSharedEntityIdentifier());
+		return loadDefinableEntity(shareItem.getSharedEntityIdentifier(), true);
 	}
 
-	private DefinableEntity loadDefinableEntity(EntityIdentifier entityIdentifier) {
+    public DefinableEntity getSharedEntityWithoutAccessCheck(ShareItem shareItem) {
+        return loadDefinableEntity(shareItem.getSharedEntityIdentifier(), false);
+    }
+
+	private DefinableEntity loadDefinableEntity(EntityIdentifier entityIdentifier, boolean accessCheck) {
 		EntityIdentifier.EntityType entityType = entityIdentifier.getEntityType();
 		if(entityType == EntityIdentifier.EntityType.folderEntry) {
-			return getFolderModule().getEntry(null, entityIdentifier.getEntityId());
+			return accessCheck ?
+                    getFolderModule().getEntry(null, entityIdentifier.getEntityId()) :
+                    getFolderModule().getEntryWithoutAccessCheck(null, entityIdentifier.getEntityId());
 		}
 		else if(entityType == EntityIdentifier.EntityType.folder || entityType == EntityIdentifier.EntityType.workspace) {
-			return getBinderModule().getBinder(entityIdentifier.getEntityId());
+			return accessCheck ?
+                    getBinderModule().getBinder(entityIdentifier.getEntityId()) :
+                    getBinderModule().getBinderWithoutAccessCheck(entityIdentifier.getEntityId());
 		}
 		else {
 			throw new IllegalArgumentException("Unsupported entity type '" + entityType.name() + "' for sharing");
