@@ -1704,7 +1704,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		BinderHelper.setupMobileSearchBeans(bs, request, response, model);
 
 		List<Long> teamIds = new ArrayList<Long>();
-		Collection myTeams = bs.getBinderModule().getTeamMemberships(user.getId());
+		Collection myTeams = bs.getBinderModule().getTeamMemberships(user.getId(), null);
 		model.put(WebKeys.MOBILE_TEAMS_LIST, myTeams);
 		
 		//Setup the actions menu list

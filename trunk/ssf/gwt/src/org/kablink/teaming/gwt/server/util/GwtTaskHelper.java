@@ -1095,7 +1095,7 @@ public class GwtTaskHelper {
 			groupsS.add( itG.next().toString() );
 		}
 		
-		teamMembershipsIt = ami.getBinderModule().getTeamMemberships( user.getId() ).iterator();
+		teamMembershipsIt = ami.getBinderModule().getTeamMemberships( user.getId(), org.kablink.teaming.module.shared.SearchUtils.fieldNamesList(Constants.DOCID_FIELD) ).iterator();
 		while ( teamMembershipsIt.hasNext() )
 		{
 			teams.add( ((Map)teamMembershipsIt.next()).get( Constants.DOCID_FIELD ) );

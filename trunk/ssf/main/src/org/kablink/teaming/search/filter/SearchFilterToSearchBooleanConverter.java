@@ -58,6 +58,7 @@ import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.lucene.util.LanguageTaster;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.definition.DefinitionModule;
+import org.kablink.teaming.module.shared.SearchUtils;
 import org.kablink.teaming.search.BasicIndexUtils;
 import org.kablink.teaming.task.TaskHelper;
 import org.kablink.teaming.util.SpringContextUtil;
@@ -252,7 +253,7 @@ public class SearchFilterToSearchBooleanConverter {
 				if (userId != null) {
 					usersGroups.addAll(profileDao.getApplicationLevelGroupMembership(userId, zoneId));
 				
-					Iterator teamMembershipsIt = binderModule.getTeamMemberships(userId).iterator();
+					Iterator teamMembershipsIt = binderModule.getTeamMemberships(userId, SearchUtils.fieldNamesList(Constants.DOCID_FIELD)).iterator();
 					while (teamMembershipsIt.hasNext()) {
 						usersAndGroupsTeams.add(((Map)teamMembershipsIt.next()).get(Constants.DOCID_FIELD));
 					}
@@ -273,7 +274,7 @@ public class SearchFilterToSearchBooleanConverter {
 					// ignore it...
 				}
 				if (groupId != null) {
-					Iterator teamMembershipsIt = binderModule.getTeamMemberships(groupId).iterator();
+					Iterator teamMembershipsIt = binderModule.getTeamMemberships(groupId, SearchUtils.fieldNamesList(Constants.DOCID_FIELD)).iterator();
 					while (teamMembershipsIt.hasNext()) {
 						usersAndGroupsTeams.add(((Map)teamMembershipsIt.next()).get(Constants.DOCID_FIELD));
 					}				

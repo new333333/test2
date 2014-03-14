@@ -198,9 +198,10 @@ public class Hits implements Serializable {
 				//TODO This hack needs to go.
 				if (isDateField(fld.name())) {
 					try {
-						map.put(fld.name(),DateTools.stringToDate(fld.stringValue()));
-	            		} catch (ParseException e) {map.put(fld.name(),new Date());
-	            	}	
+						map.put(fld.name(), DateTools.stringToDate(fld.stringValue()));
+					} catch (ParseException e) {
+						map.put(fld.name(), new Date());
+					}
 				} else if(fld instanceof NumericField) {
 					map.put(fld.name(), ((NumericField) fld).getNumericValue());
 	            } else if (!map.containsKey(fld.name())) {

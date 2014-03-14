@@ -2095,7 +2095,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 			RenderResponse response) throws Exception {
 	Map model = new HashMap();
 	User user = RequestContextHolder.getRequestContext().getUser();
-	Collection myTeams = getBinderModule().getTeamMemberships(user.getId());
+	Collection myTeams = getBinderModule().getTeamMemberships(user.getId(), null);
 	model.put(WebKeys.MY_TEAMS, myTeams);
 	String namespace = PortletRequestUtils.getStringParameter(request, WebKeys.URL_NAMESPACE, "");
 	model.put(WebKeys.NAMESPACE, namespace);

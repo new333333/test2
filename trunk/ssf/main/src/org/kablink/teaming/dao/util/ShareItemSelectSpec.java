@@ -45,6 +45,7 @@ import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.ShareItem;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.module.binder.BinderModule;
+import org.kablink.teaming.module.shared.SearchUtils;
 import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.util.StringUtil;
@@ -267,7 +268,7 @@ public class ShareItemSelectSpec {
 		userIds.add(userId);
 	    Set<Long> groupIds = getProfileDao().getApplicationLevelPrincipalIds(user);
 	    groupIds.remove(userId);
-		List<Map> myTeams = getBinderModule().getTeamMemberships(user.getId());
+		List<Map> myTeams = getBinderModule().getTeamMemberships(user.getId(), SearchUtils.fieldNamesList(Constants.DOCID_FIELD));
 		Set<Long> teamIds = new HashSet();
 		for(Map binder : myTeams) {
 			try {

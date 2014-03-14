@@ -58,6 +58,7 @@ import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.AuditTrail.AuditType;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.module.report.ReportModule.ActivityInfo;
+import org.kablink.teaming.module.shared.SearchUtils;
 import org.kablink.teaming.remoting.ws.BaseService;
 import org.kablink.teaming.remoting.ws.model.FolderEntryBrief;
 import org.kablink.teaming.remoting.ws.model.FolderEntryCollection;
@@ -166,7 +167,8 @@ public class SearchServiceImpl extends BaseService implements SearchService, Sea
 	public String search_getTeamsAsXML(String accessToken)
 	{
 		User user = RequestContextHolder.getRequestContext().getUser();
-		List<Map> myTeams = getBinderModule().getTeamMemberships(user.getId());
+		List<Map> myTeams = getBinderModule().getTeamMemberships(user.getId(), 
+				SearchUtils.fieldNamesList(Constants.TITLE_FIELD,Constants.DOCID_FIELD));
 		Document doc = DocumentHelper.createDocument();
 		Element teams = doc.addElement("teams");
 		teams.addAttribute("principalId", user.getId().toString());
