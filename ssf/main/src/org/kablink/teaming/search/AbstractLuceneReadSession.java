@@ -383,7 +383,7 @@ public abstract class AbstractLuceneReadSession extends AbstractLuceneSession im
 		SearchServiceIterator searchServiceIterator = new SearchServiceIterator(contextUserId, baseAclQueryStr, extendedAclQueryStr, mode, query, fieldNames, sort, offset, size, filterPredictedSuccessPercentage);
 		
 		Hits hits;
-		if(offset == 0 && size == Integer.MAX_VALUE && callback.supportBatchFiltering() && SPropsUtil.getBoolean("allow.batch.filtering", true)) {
+		if(offset == 0 && size == Integer.MAX_VALUE && callback.supportBatchFiltering() && SPropsUtil.getBoolean("allow.post.search.batch.filtering", true)) {
 			// The caller requested for entire search result in a single call and the callback supports batch filtering.
 			// In this case, we use optimized ACL checking.
 			hits = invokeSearch(contextUserId, baseAclQueryStr, extendedAclQueryStr, mode, query, fieldNames, sort, offset, size);

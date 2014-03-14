@@ -8136,15 +8136,16 @@ public class GwtServerHelper {
 		ArrayList<TeamInfo> reply = new ArrayList<TeamInfo>();
 
 		// Scan the teams the current user is a member of...
-		List<Map> myTeams = bs.getBinderModule().getTeamMemberships( userId );
+		List<Map> myTeams = bs.getBinderModule().getTeamMemberships( userId,
+				org.kablink.teaming.module.shared.SearchUtils.fieldNamesList(Constants.DOCID_FIELD,Constants.ENTITY_PATH,Constants.TITLE_FIELD,Constants.ENTITY_FIELD));
 		for (Iterator<Map> myTeamsIT = myTeams.iterator(); myTeamsIT.hasNext(); ) {
 			// ...adding a TeamInfo for each to the reply list.
 			Map myTeam = myTeamsIT.next();
 			TeamInfo ti = new TeamInfo();
-			ti.setBinderId(   ((String) myTeam.get(      "_docId"        )));
-			ti.setEntityPath( ((String) myTeam.get(      "_entityPath"   )));
+			ti.setBinderId(   ((String) myTeam.get(      Constants.DOCID_FIELD        )));
+			ti.setEntityPath( ((String) myTeam.get(      Constants.ENTITY_PATH   )));
 			ti.setPermalink(  PermaLinkUtil.getPermalink( request, myTeam ));
-			ti.setTitle(      ((String) myTeam.get(      "title"         )));
+			ti.setTitle(      ((String) myTeam.get(      Constants.TITLE_FIELD         )));
 			reply.add(ti);
 		}
 		

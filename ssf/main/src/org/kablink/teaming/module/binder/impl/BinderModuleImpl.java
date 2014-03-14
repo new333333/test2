@@ -2071,7 +2071,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		QueryBuilder qb = new QueryBuilder(!ignoreAcls, preDeleted);
 		SearchObject so = qb.buildQuery(query);
 
-		return executeSearchQuery(so, searchMode, offset, maxResults);
+		return _executeSearchQuery(so, searchMode, offset, maxResults, null);// $$$$$
 	}
 
 	@Override
@@ -2091,7 +2091,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		QueryBuilder qb = new QueryBuilder(!ignoreAcls, preDeleted, asUserId);
 		SearchObject so = qb.buildQuery(query);
 
-		return executeSearchQuery(so, searchMode, offset, maxResults);
+		return _executeSearchQuery(so, searchMode, offset, maxResults, null); // $$$$$
 	}
 
 	@Override
@@ -2130,11 +2130,11 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 				offset = (Integer) options.get(ObjectKeys.SEARCH_OFFSET);
 		}
 
-		return executeSearchQuery(so, searchMode, offset, maxResults);
+		return _executeSearchQuery(so, searchMode, offset, maxResults, null); // $$$$$
 	}
 
-	protected Map executeSearchQuery(SearchObject so, int searchMode, int offset, int maxResults) {
-		Hits hits = executeLuceneQuery(so, searchMode, offset, maxResults);
+	protected Map _executeSearchQuery(SearchObject so, int searchMode, int offset, int maxResults, List<String> fieldNames) {
+		Hits hits = executeLuceneQueryInternal(so, searchMode, offset, maxResults, fieldNames);
 		return returnSearchQuery(hits);
 	}
 
@@ -2159,7 +2159,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		return retMap;
 	}
 
-	private Hits executeLuceneQuery(SearchObject so, int searchMode, int offset, int maxResults) {
+	private Hits executeLuceneQueryInternal(SearchObject so, int searchMode, int offset, int maxResults, List<String> fieldNames) {
 		Hits hits = new Hits(0);
 
 		Query soQuery = so.getLuceneQuery(); // Get the query into a variable to avoid
@@ -2174,7 +2174,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 				.openReadSession();
 		try {
 			hits = luceneSession.search(RequestContextHolder.getRequestContext().getUserId(),
-					so.getBaseAclQueryStr(), so.getExtendedAclQueryStr(), searchMode, soQuery, null, so.getSortBy(), offset,
+					so.getBaseAclQueryStr(), so.getExtendedAclQueryStr(), searchMode, soQuery, fieldNames, so.getSortBy(), offset,
 					maxResults);
 		} catch (RuntimeException e) {
 			logger.error("Error searching index", e);
@@ -2466,7 +2466,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 
 	// return binders this user is a team_member of
 	@Override
-	public List<Map> getTeamMemberships(Long userId) {
+	public List<Map> getTeamMemberships(Long userId, List<String> fieldNames) {
 
 		// We use search engine to get the list of binders.
 		Criteria crit = new Criteria().add(
@@ -2491,7 +2491,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		QueryBuilder qb = new QueryBuilder(true, false);
 		SearchObject so = qb.buildQuery(crit.toQuery());
 
-		Hits hits = executeLuceneQuery(so, Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, 0, Integer.MAX_VALUE);
+		Hits hits = executeLuceneQueryInternal(so, Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, 0, Integer.MAX_VALUE, fieldNames);
 		if (hits == null)
 			return new ArrayList();
 		return SearchUtils.getSearchEntries(hits);

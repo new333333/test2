@@ -106,21 +106,8 @@ public class BinderIndexData {
 		creatorName = (String)doc.get(Constants.CREATOR_NAME_FIELD);
 		modifierId = Long.valueOf((String)doc.get(Constants.MODIFICATIONID_FIELD));
 		modifierName = (String)doc.get(Constants.MODIFICATION_NAME_FIELD);
-		String dateStr = (String)doc.get(Constants.CREATION_DATE_FIELD);
-		try {
-			createdDate =  DateTools.stringToDate(dateStr);
-		} catch (ParseException e) {
-			logger.warn("Error parsing creation date [" + dateStr 
-					+ "] for binder [" + id + "]. Setting it to current date");
-		}
-		dateStr = (String)doc.get(Constants.MODIFICATION_DATE_FIELD);
-		try {
-			modifiedDate =  DateTools.stringToDate(dateStr);
-		} catch (ParseException e) {
-			logger.warn("Error parsing modification date [" + dateStr 
-					+ "] for binder [" + id + "]. Setting it to current date");
-		}
-
+		createdDate = (Date)doc.get(Constants.CREATION_DATE_FIELD);
+		modifiedDate = (Date)doc.get(Constants.MODIFICATION_DATE_FIELD);
 	}
 	
 	public Long getId() {

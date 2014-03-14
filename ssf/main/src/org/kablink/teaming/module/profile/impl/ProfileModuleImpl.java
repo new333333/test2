@@ -116,6 +116,7 @@ import org.kablink.teaming.module.profile.processor.ProfileCoreProcessor;
 import org.kablink.teaming.module.shared.AccessUtils;
 import org.kablink.teaming.module.shared.InputDataAccessor;
 import org.kablink.teaming.module.shared.MapInputData;
+import org.kablink.teaming.module.shared.SearchUtils;
 import org.kablink.teaming.module.template.TemplateModule;
 import org.kablink.teaming.runas.RunasCallback;
 import org.kablink.teaming.runas.RunasTemplate;
@@ -2370,7 +2371,7 @@ public Map getUsers() {
 	    User user = getUser(userId, false);
 	    //get list of all groups user is a member of.
 	    Set<Long> accessIds = getProfileDao().getApplicationLevelPrincipalIds(user);
-		List<Map> myTeams = getBinderModule().getTeamMemberships(user.getId());
+		List<Map> myTeams = getBinderModule().getTeamMemberships(user.getId(), SearchUtils.fieldNamesList(Constants.DOCID_FIELD));
 		Set<Long>binderIds = new HashSet();
 		for(Map binder : myTeams) {
 			try {
@@ -2552,7 +2553,8 @@ public String[] getUsernameAndDecryptedPassword(String username) {
 
     @Override
 	public List<TeamInfo> getUserTeams(Long userId) {
-        List<Map> myTeams = getBinderModule().getTeamMemberships(userId);
+        List<Map> myTeams = getBinderModule().getTeamMemberships(userId,
+        		SearchUtils.fieldNamesList(Constants.DOCID_FIELD,Constants.IS_LIBRARY_FIELD,Constants.IS_MIRRORED_FIELD,Constants.IS_HOME_DIR_FIELD,Constants.IS_MYFILES_DIR_FIELD,Constants.CREATORID_FIELD,Constants.MODIFICATIONID_FIELD,Constants.BINDERS_PARENT_ID_FIELD,Constants.TITLE_FIELD,Constants.ENTITY_FIELD,Constants.FAMILY_FIELD,Constants.DEFINITION_TYPE_FIELD,Constants.ENTITY_PATH,Constants.CREATOR_NAME_FIELD,Constants.CREATORID_FIELD,Constants.CREATION_DATE_FIELD,Constants.MODIFICATION_NAME_FIELD,Constants.MODIFICATIONID_FIELD,Constants.MODIFICATION_DATE_FIELD));
 
         List<TeamInfo> teamList = new ArrayList<TeamInfo>();
         for(Map binder : myTeams) {

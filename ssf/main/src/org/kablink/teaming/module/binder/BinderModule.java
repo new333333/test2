@@ -488,7 +488,7 @@ public interface BinderModule {
 	 * @param id
 	 * @return search results
 	 */
-	public List<Map> getTeamMemberships(Long id);    
+	public List<Map> getTeamMemberships(Long id, List<String> fieldNames);    
 	/**
 	 * Index only the binder and its attachments.  Do not include entries or sub-binders
 	 * @param binderId

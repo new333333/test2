@@ -1036,7 +1036,7 @@ public class DefinitionHelper {
 	        				while (itG.hasNext()) {
 	        					groupsS.add(itG.next().toString());
 	        				}
-	        				Iterator teamMembershipsIt = bs.getBinderModule().getTeamMemberships(user.getId()).iterator();
+	        				Iterator teamMembershipsIt = bs.getBinderModule().getTeamMemberships(user.getId(), org.kablink.teaming.module.shared.SearchUtils.fieldNamesList(Constants.DOCID_FIELD)).iterator();
 	        				while (teamMembershipsIt.hasNext()) {
 	        					teams.add(((Map)teamMembershipsIt.next()).get(Constants.DOCID_FIELD));
 	        				}

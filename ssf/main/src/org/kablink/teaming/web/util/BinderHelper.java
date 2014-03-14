@@ -2945,7 +2945,7 @@ public class BinderHelper {
 			}
 			trackedPeopleIds = SearchUtils.getTrackedPeopleIds(bs, binder);
 		} else if (type.equals(ObjectKeys.MOBILE_WHATS_NEW_VIEW_TEAMS)) {
-			Collection myTeams = bs.getBinderModule().getTeamMemberships(user.getId());
+			Collection myTeams = bs.getBinderModule().getTeamMemberships(user.getId(), org.kablink.teaming.module.shared.SearchUtils.fieldNamesList(Constants.DOCID_FIELD));
 			Iterator itTeams = myTeams.iterator();
 			while (itTeams.hasNext()) {
 				Map team = (Map)itTeams.next();

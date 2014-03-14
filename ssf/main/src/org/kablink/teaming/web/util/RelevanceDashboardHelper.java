@@ -303,7 +303,7 @@ public class RelevanceDashboardHelper {
 		while (itG.hasNext()) {
 			groupsS.add(itG.next().toString());
 		}
-		Iterator teamMembershipsIt = binderModule.getTeamMemberships(binder.getOwnerId()).iterator();
+		Iterator teamMembershipsIt = binderModule.getTeamMemberships(binder.getOwnerId(), org.kablink.teaming.module.shared.SearchUtils.fieldNamesList(Constants.DOCID_FIELD)).iterator();
 		while (teamMembershipsIt.hasNext()) {
 			teams.add(((Map)teamMembershipsIt.next()).get(Constants.DOCID_FIELD));
 		}
@@ -471,7 +471,7 @@ public class RelevanceDashboardHelper {
 		int offset = ((Integer) options.get(ObjectKeys.SEARCH_OFFSET)).intValue();
 		int maxResults = ((Integer) options.get(ObjectKeys.SEARCH_MAX_HITS)).intValue();
 		
-		Collection myTeams = bs.getBinderModule().getTeamMemberships(user.getId());
+		Collection myTeams = bs.getBinderModule().getTeamMemberships(user.getId(), org.kablink.teaming.module.shared.SearchUtils.fieldNamesList(Constants.DOCID_FIELD));
 		List teamIds = new ArrayList();
 		Iterator itTeams = myTeams.iterator();
 		while (itTeams.hasNext()) {
@@ -772,7 +772,7 @@ public class RelevanceDashboardHelper {
 	
 	public static void setupMyTeamsBeans(AllModulesInjected bs, Map model) {
 		User user = RequestContextHolder.getRequestContext().getUser();
-		Collection myTeams = bs.getBinderModule().getTeamMemberships(user.getId());
+		Collection myTeams = bs.getBinderModule().getTeamMemberships(user.getId(), null);
 		model.put(WebKeys.MY_TEAMS, myTeams);
 	}
 	
