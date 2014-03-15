@@ -317,9 +317,9 @@ public interface BinderModule {
      * @param preDeleted
      * @return
      */
-    public Map executeSearchQuery(Criteria crit, int searchMode, int offset, int maxResults);
-    public Map executeSearchQuery(Criteria crit, int searchMode, int offset, int maxResults, boolean preDeleted);
-    public Map executeSearchQuery(Criteria crit, int searchMode, int offset, int maxResults, boolean preDeleted, boolean ignoreAcls);
+    public Map executeSearchQuery(Criteria crit, int searchMode, int offset, int maxResults, List<String> fieldNames);
+    public Map executeSearchQuery(Criteria crit, int searchMode, int offset, int maxResults, List<String> fieldNames, boolean preDeleted);
+    public Map executeSearchQuery(Criteria crit, int searchMode, int offset, int maxResults, List<String> fieldNames, boolean preDeleted, boolean ignoreAcls);
     /**
 	 * Execute a search query using a <code>Criteria</code>. Limit results to those of a different user
      * @param crit
@@ -329,9 +329,9 @@ public interface BinderModule {
      * @param preDeleted
      * @return
      */
-    public Map executeSearchQuery(Criteria crit, int searchMode, int offset, int maxResults, Long asUserId);
-    public Map executeSearchQuery(Criteria crit, int searchMode, int offset, int maxResults, Long asUserId, boolean preDeleted);
-    public Map executeSearchQuery(Criteria crit, int searchMode, int offset, int maxResults, Long asUserId, boolean preDeleted, boolean ignoreAcls);
+    public Map executeSearchQuery(Criteria crit, int searchMode, int offset, int maxResults, List<String> fieldNames, Long asUserId);
+    public Map executeSearchQuery(Criteria crit, int searchMode, int offset, int maxResults, List<String> fieldNames, Long asUserId, boolean preDeleted);
+    public Map executeSearchQuery(Criteria crit, int searchMode, int offset, int maxResults, List<String> fieldNames, Long asUserId, boolean preDeleted, boolean ignoreAcls);
     /**
 	 * Execute a search query using a <code>QueryBuilder</code>-ready <code>Document</code>.
      * @param query
@@ -340,9 +340,9 @@ public interface BinderModule {
      * @param preDeleted
      * @return
      */
-    public Map executeSearchQuery(Document query, int searchMode, int offset, int maxResults);
-    public Map executeSearchQuery(Document query, int searchMode, int offset, int maxResults, boolean preDeleted);
-    public Map executeSearchQuery(Document query, int searchMode, int offset, int maxResults, boolean preDeleted, boolean ignoreAcls);
+    public Map executeSearchQuery(Document query, int searchMode, int offset, int maxResults, List<String> fieldNames);
+    public Map executeSearchQuery(Document query, int searchMode, int offset, int maxResults, List<String> fieldNames, boolean preDeleted);
+    public Map executeSearchQuery(Document query, int searchMode, int offset, int maxResults, List<String> fieldNames, boolean preDeleted, boolean ignoreAcls);
     /**
 	 * Execute a search query using a <code>QueryBuilder</code>-ready <code>Document</code>.
      * @param query
@@ -352,9 +352,9 @@ public interface BinderModule {
      * @param preDeleted
      * @return
      */
-    public Map executeSearchQuery(Document query, int searchMode, int offset, int maxResults, Long asUserId);
-    public Map executeSearchQuery(Document query, int searchMode, int offset, int maxResults, Long asUserId, boolean preDeleted);
-    public Map executeSearchQuery(Document query, int searchMode, int offset, int maxResults, Long asUserId, boolean preDeleted, boolean ignoreAcls);
+    public Map executeSearchQuery(Document query, int searchMode, int offset, int maxResults, List<String> fieldNames, Long asUserId);
+    public Map executeSearchQuery(Document query, int searchMode, int offset, int maxResults, List<String> fieldNames, Long asUserId, boolean preDeleted);
+    public Map executeSearchQuery(Document query, int searchMode, int offset, int maxResults, List<String> fieldNames, Long asUserId, boolean preDeleted, boolean ignoreAcls);
     /**
  	 * Execute a search query using a <code>QueryBuilder</code>-ready <code>Document</code>.
      * Optionally provide additional searchOptions.

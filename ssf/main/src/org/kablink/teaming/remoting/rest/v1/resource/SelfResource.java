@@ -411,7 +411,7 @@ public class SelfResource extends AbstractFileResource {
                 idList.add(folder.getId().toString());
             }
             crit.add(Restrictions.in(Constants.ENTRY_ANCESTRY, idList));
-            Map resultMap = getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, 0, -1);
+            Map resultMap = getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, 0, -1, null);
             SearchResultBuilderUtil.buildSearchResultsTree(results, folders.getResults().toArray(new BinderBrief[folders.getCount()]),
                     new BinderBriefBuilder(descriptionFormat), resultMap);
             for (SearchResultTreeNode<BinderBrief> node : results.getChildren()) {
@@ -768,7 +768,7 @@ public class SelfResource extends AbstractFileResource {
             ids.add(Restrictions.eq(Constants.DOCID_FIELD, id.toString()));
         }
         root.add(ids);
-        Map map = getBinderModule().executeSearchQuery(root, Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, 0, -1);
+        Map map = getBinderModule().executeSearchQuery(root, Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, 0, -1, null);
         SearchResultList<BinderBrief> results = new SearchResultList<BinderBrief>();
         SearchResultBuilderUtil.buildSearchResults(results, new BinderBriefBuilder(), map);
         return results.getLastModified();

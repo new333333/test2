@@ -89,7 +89,7 @@ public class SearchServiceImpl extends BaseService implements SearchService, Sea
 		Document doc = DocumentHelper.createDocument();
 		Element folderElement = doc.addElement("searchResults");
 
-		Map folderEntries = getBinderModule().executeSearchQuery(queryDoc, Constants.SEARCH_MODE_NORMAL, offset, maxResults);
+		Map folderEntries = getBinderModule().executeSearchQuery(queryDoc, Constants.SEARCH_MODE_NORMAL, offset, maxResults, null);
 		List entrylist = (List)folderEntries.get(ObjectKeys.SEARCH_ENTRIES);
 		Iterator entryIterator = entrylist.listIterator();
 		while (entryIterator.hasNext()) {
@@ -233,7 +233,7 @@ public class SearchServiceImpl extends BaseService implements SearchService, Sea
 			queryRoot.add(((Element)it.next()).detach());
 		}
 		
-		Map folderEntries = getBinderModule().executeSearchQuery(queryDoc, Constants.SEARCH_MODE_NORMAL, offset, maxResults);
+		Map folderEntries = getBinderModule().executeSearchQuery(queryDoc, Constants.SEARCH_MODE_NORMAL, offset, maxResults, null);
 		List entrylist = (List)folderEntries.get(ObjectKeys.SEARCH_ENTRIES);
 		Iterator entryIterator = entrylist.listIterator();
 		while (entryIterator.hasNext()) {

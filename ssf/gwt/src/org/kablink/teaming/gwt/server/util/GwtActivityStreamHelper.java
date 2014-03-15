@@ -490,7 +490,7 @@ public class GwtActivityStreamHelper {
 
 			// Are there any comments posted to any of these entries?
 			Criteria searchCriteria = SearchUtils.entryReplies(topEntryIds, true);	// true -> All replies, at any level.
-			Map       searchResults = bs.getBinderModule().executeSearchQuery(searchCriteria, Constants.SEARCH_MODE_NORMAL, 0, (Integer.MAX_VALUE - 1));
+			Map       searchResults = bs.getBinderModule().executeSearchQuery(searchCriteria, Constants.SEARCH_MODE_NORMAL, 0, (Integer.MAX_VALUE - 1), null);
 			List<Map> searchEntries = ((List<Map>) searchResults.get(ObjectKeys.SEARCH_ENTRIES    ));
 			int       totalRecords  = ((Integer)   searchResults.get(ObjectKeys.SEARCH_COUNT_TOTAL)).intValue();
 			if ((0 >= totalRecords) || (null == searchEntries) || searchEntries.isEmpty()) {
@@ -1633,7 +1633,8 @@ public class GwtActivityStreamHelper {
 				crit,
 				Constants.SEARCH_MODE_NORMAL,
 				0,
-				ObjectKeys.SEARCH_MAX_HITS_SUB_BINDERS);
+				ObjectKeys.SEARCH_MAX_HITS_SUB_BINDERS,
+				null);
 			
 			List<Map> searchEntries = ((List<Map>) searchResults.get(ObjectKeys.SEARCH_ENTRIES));
 			for (Map entryMap:  searchEntries) {
@@ -1668,7 +1669,8 @@ public class GwtActivityStreamHelper {
 				crit,
 				Constants.SEARCH_MODE_NORMAL,
 				0,
-				ObjectKeys.SEARCH_MAX_HITS_SUB_BINDERS);
+				ObjectKeys.SEARCH_MAX_HITS_SUB_BINDERS,
+				null);
 			
 			List<Map> searchEntries = ((List<Map>) searchResults.get(ObjectKeys.SEARCH_ENTRIES));
 			for (Map entryMap:  searchEntries) {
@@ -2454,7 +2456,8 @@ public class GwtActivityStreamHelper {
 			searchCriteria,
 			Constants.SEARCH_MODE_NORMAL,
 			pageStart,
-			entriesPerPage);
+			entriesPerPage,
+			null);
 		
 		// ...and return an appropriate ASSearchResults.
 		List<Map> searchEntries = ((List<Map>) searchResults.get(ObjectKeys.SEARCH_ENTRIES    ));
@@ -2506,7 +2509,8 @@ public class GwtActivityStreamHelper {
 			searchCriteria,
 			Constants.SEARCH_MODE_NORMAL,
 			0,
-			Integer.MAX_VALUE);
+			Integer.MAX_VALUE,
+			null);
 
 		// ...and return an appropriate ASSearchResults.
 		List<Map> searchEntries = ((List<Map>) searchResults.get(ObjectKeys.SEARCH_ENTRIES    ));
@@ -2540,7 +2544,8 @@ public class GwtActivityStreamHelper {
 			searchCriteria,
 			Constants.SEARCH_MODE_NORMAL,
 			pageStart,
-			asp.getReadEntryMax());
+			asp.getReadEntryMax(),
+			null);
 
 		// Get the user's seen map...
 		SeenMap seen = bs.getProfileModule().getUserSeenMap(null);

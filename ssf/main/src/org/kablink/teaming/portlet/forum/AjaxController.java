@@ -2854,7 +2854,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 								interval.startDate, interval.endDate));
 					crit.addOrder(Order.asc(MODIFICATION_DATE_FIELD));
 		
-					Map searchResults = getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, 0, 1000);
+					Map searchResults = getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, 0, 1000, null);
 					
 					OrderedMap usersFreeBusyInfo = new LinkedMap();
 					OrderedMap allUsersDates = new LinkedMap();

@@ -330,7 +330,7 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
     protected SearchResultList<RecentActivityEntry> _getRecentActivity(boolean includeParentPaths, int descriptionFormat,
                                                                     Integer offset, Integer maxCount, Criteria criteria,
                                                                     String nextUrl, Map<String, Object> nextParams) {
-        Map resultsMap = getBinderModule().executeSearchQuery(criteria, Constants.SEARCH_MODE_NORMAL, offset, maxCount);
+        Map resultsMap = getBinderModule().executeSearchQuery(criteria, Constants.SEARCH_MODE_NORMAL, offset, maxCount, null);
         SearchResultList<RecentActivityEntry> results = new SearchResultList<RecentActivityEntry>(offset);
         SearchResultBuilderUtil.buildSearchResults(results, new RecentActivityFolderEntryBuilder(descriptionFormat), resultsMap,
                 nextUrl, nextParams, offset);
@@ -355,7 +355,7 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
 
         // Are there any comments posted to any of these entries?
         Criteria searchCriteria = SearchUtils.entryReplies(topEntryIds, true);	// true -> All replies, at any level.
-        Map       searchResults = getBinderModule().executeSearchQuery(searchCriteria, Constants.SEARCH_MODE_NORMAL, 0, (Integer.MAX_VALUE - 1));
+        Map       searchResults = getBinderModule().executeSearchQuery(searchCriteria, Constants.SEARCH_MODE_NORMAL, 0, (Integer.MAX_VALUE - 1), null);
         List<Map> searchEntries = ((List<Map>) searchResults.get(ObjectKeys.SEARCH_ENTRIES    ));
         int       totalRecords  = ((Integer)   searchResults.get(ObjectKeys.SEARCH_COUNT_TOTAL)).intValue();
         if ((0 >= totalRecords) || (null == searchEntries) || searchEntries.isEmpty()) {
@@ -958,7 +958,7 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         }
         crit.addOrder(new Order(Constants.ENTITY_FIELD, true));
         crit.addOrder(new Order(Constants.SORT_TITLE_FIELD, true));
-        Map resultMap = getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, offset, maxCount);
+        Map resultMap = getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, offset, maxCount, null);
         SearchResultList<SearchableObject> results = new SearchResultList<SearchableObject>(offset);
         results.setLastModified(lastModified);
         SearchResultBuilderUtil.buildSearchResults(results, new UniversalBuilder(descriptionFormat), resultMap, nextUrl, nextParams, offset);
@@ -973,7 +973,7 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
             maxCount = -1;
         }
         crit.add(SearchUtils.buildBindersCriterion());
-        Map resultMap = getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, offset, maxCount);
+        Map resultMap = getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, offset, maxCount, null);
         SearchResultList<BinderBrief> results = new SearchResultList<BinderBrief>(offset);
         results.setLastModified(lastModified);
         SearchResultBuilderUtil.buildSearchResults(results, new BinderBriefBuilder(descriptionFormat), resultMap, nextUrl, nextParams, offset);
@@ -988,7 +988,7 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
             maxCount = -1;
         }
         crit.add(SearchUtils.buildEntriesCriterion());
-        Map resultMap = getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, offset, maxCount);
+        Map resultMap = getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, offset, maxCount, null);
         SearchResultList<FolderEntryBrief> results = new SearchResultList<FolderEntryBrief>(offset);
         SearchResultBuilderUtil.buildSearchResults(results, new FolderEntryBriefBuilder(), resultMap, nextUrl, nextParams, offset);
         return results;
@@ -1002,7 +1002,7 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
             maxCount = -1;
         }
         //crit.add(buildAttachmentsCriterion());
-        Map resultMap = getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, offset, maxCount);
+        Map resultMap = getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, offset, maxCount, null);
         SearchResultList<FileProperties> results = new SearchResultList<FileProperties>(offset);
         results.setLastModified(lastModified);
         SearchResultBuilderUtil.buildSearchResults(results, new FilePropertiesBuilder(), resultMap, nextUrl, nextParams, offset);
@@ -1014,7 +1014,7 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
                 .add(SearchUtils.buildBindersCriterion()).add(criterion);
         Criteria crit = new Criteria();
         crit.add(outerCriterion);
-        return getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, 0, -1);
+        return getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, 0, -1, null);
     }
 
     protected void fillPathMap(Map<Long, String> binderPaths, Map resultMap) {
@@ -1208,7 +1208,7 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         }
         Criteria crit = getLibraryCriteria(binderIds, false, recursive);
 
-        Map resultsMap = getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, 0, 1);
+        Map resultsMap = getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, 0, 1, null);
         SearchResultList<SearchableObject> results = new SearchResultList<SearchableObject>();
         SearchResultBuilderUtil.buildSearchResults(results, new UniversalBuilder(Description.FORMAT_NONE), resultsMap, null, null, 0);
         return results.getLastModified();
@@ -1237,7 +1237,8 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         Set<Long> idSet = new HashSet<Long>(Arrays.asList(binderIds));
         Criteria crit = getLibraryCriteria(binderIds, true, true);
 
-        Map resultsMap = getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, 0, -1);
+        Map resultsMap = getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, 0, -1,
+        		org.kablink.teaming.module.shared.SearchUtils.fieldNamesList(Constants.DOC_TYPE_FIELD,Constants.FILE_SIZE_IN_BYTES_FIELD,Constants.DOCID_FIELD,Constants.MODIFICATION_DATE_FIELD));
         LibraryInfo info = new LibraryInfo();
         Date modDate = null;
         long diskSpace = 0;

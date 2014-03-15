@@ -116,7 +116,7 @@ public class FolderResource extends AbstractBinderResource {
             criterion.add(or);
         }
         Document queryDoc = buildQueryDocument("<query/>", criterion);
-        Map resultsMap = getBinderModule().executeSearchQuery(queryDoc, Constants.SEARCH_MODE_NORMAL, offset, maxCount);
+        Map resultsMap = getBinderModule().executeSearchQuery(queryDoc, Constants.SEARCH_MODE_NORMAL, offset, maxCount, null);
         SearchResultList<BinderBrief> results = new SearchResultList<BinderBrief>(offset);
         Map<String, Object> nextParams = new HashMap<String, Object>();
         nextParams.put("description_format", descriptionFormatStr);
@@ -133,7 +133,7 @@ public class FolderResource extends AbstractBinderResource {
    			                                        @QueryParam("count") @DefaultValue("100") Integer maxCount) {
         String query = getRawInputStreamAsString(request);
         Document queryDoc = buildQueryDocument(query, SearchUtils.buildFoldersCriterion());
-        Map resultsMap = getBinderModule().executeSearchQuery(queryDoc, Constants.SEARCH_MODE_NORMAL, offset, maxCount);
+        Map resultsMap = getBinderModule().executeSearchQuery(queryDoc, Constants.SEARCH_MODE_NORMAL, offset, maxCount, null);
         SearchResultList<BinderBrief> results = new SearchResultList<BinderBrief>(offset);
         Map<String, Object> nextParams = new HashMap<String, Object>();
         nextParams.put("description_format", descriptionFormatStr);

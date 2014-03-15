@@ -92,7 +92,8 @@ public abstract class AbstractDefinableEntityResource extends AbstractFileResour
         }
         Criteria crit = new Criteria();
         crit.add(criterion);
-        Map resultMap = getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, 0, 1);
+        Map resultMap = getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, 0, 1,
+        		org.kablink.teaming.module.shared.SearchUtils.fieldNamesList(Constants.ENTRY_ANCESTRY));
         List<Map> entries = (List<Map>)resultMap.get(ObjectKeys.SEARCH_ENTRIES);
         Map entry = entries.iterator().next();
         if (entry!=null) {

@@ -1301,14 +1301,15 @@ public class ListFolderHelper {
 		crit.add(in(Constants.DOC_TYPE_FIELD, new String[] {Constants.DOC_TYPE_BINDER}))
 			.add(in(Constants.ENTRY_ANCESTRY, folderIds));
 		crit.addOrder(Order.asc(Constants.SORT_TITLE_FIELD));
-		Map binderMap = bs.getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, 0, ObjectKeys.SEARCH_MAX_HITS_SUB_BINDERS);
+		Map binderMap = bs.getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, 0, ObjectKeys.SEARCH_MAX_HITS_SUB_BINDERS,
+				org.kablink.teaming.module.shared.SearchUtils.fieldNamesList(Constants.DOCID_FIELD));
 
 		List binderMapList = (List)binderMap.get(ObjectKeys.SEARCH_ENTRIES); 
 		List binderIdList = new ArrayList();
 
       	for (Iterator iter=binderMapList.iterator(); iter.hasNext();) {
       		Map entryMap = (Map) iter.next();
-      		binderIdList.add(new Long((String)entryMap.get("_docId")));
+      		binderIdList.add(new Long((String)entryMap.get(Constants.DOCID_FIELD)));
       	}
       	//Get sub-binder list including intermediate binders that may be inaccessible
       	SortedSet binderList = bs.getBinderModule().getBinders(binderIdList, Boolean.FALSE);
