@@ -738,12 +738,13 @@ public class ReadFileController extends AbstractReadFileController {
 			crit.add(in(org.kablink.util.search.Constants.DOC_TYPE_FIELD, new String[] {org.kablink.util.search.Constants.DOC_TYPE_BINDER}))
 				.add(in(org.kablink.util.search.Constants.BINDERS_PARENT_ID_FIELD, folderIds));
 			crit.addOrder(Order.asc(org.kablink.util.search.Constants.BINDER_ID_FIELD));
-			Map        sfMap  = bm.executeSearchQuery(crit, org.kablink.util.search.Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, 0, ObjectKeys.SEARCH_MAX_HITS_SUB_BINDERS);
+			Map        sfMap  = bm.executeSearchQuery(crit, org.kablink.util.search.Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, 0, ObjectKeys.SEARCH_MAX_HITS_SUB_BINDERS,
+					org.kablink.teaming.module.shared.SearchUtils.fieldNamesList(org.kablink.util.search.Constants.DOCID_FIELD));
 			List       sfMaps = ((List) sfMap.get(ObjectKeys.SEARCH_ENTRIES)); 
 			List<Long> sfIds  = new ArrayList<Long>();
 	      	for (Iterator iter = sfMaps.iterator(); iter.hasNext();) {
 	      		Map nextSFMap = ((Map) iter.next());
-      			sfIds.add(Long.parseLong((String) nextSFMap.get("_docId")));
+      			sfIds.add(Long.parseLong((String) nextSFMap.get(org.kablink.util.search.Constants.DOCID_FIELD)));
 	      	}
 
 	      	// Are there any sub-folders?

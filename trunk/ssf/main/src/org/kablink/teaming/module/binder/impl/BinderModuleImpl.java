@@ -2027,71 +2027,71 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	}
 
 	@Override
-	public Map executeSearchQuery(Criteria crit, int searchMode, int offset, int maxResults) {
-		return executeSearchQuery(crit, searchMode, offset, maxResults, false);
+	public Map executeSearchQuery(Criteria crit, int searchMode, int offset, int maxResults, List<String> fieldNames) {
+		return executeSearchQuery(crit, searchMode, offset, maxResults, fieldNames, false);
 	}
 	@Override
-	public Map executeSearchQuery(Criteria crit, int searchMode, int offset, int maxResults, boolean preDeleted) {
-		return executeSearchQuery(crit.toQuery(), searchMode, offset, maxResults, preDeleted);
-	}
-
-	@Override
-	public Map executeSearchQuery(Criteria crit, int searchMode, int offset, int maxResults, boolean preDeleted, boolean ignoreAcls) {
-		return executeSearchQuery(crit.toQuery(), searchMode, offset, maxResults, preDeleted, ignoreAcls);
+	public Map executeSearchQuery(Criteria crit, int searchMode, int offset, int maxResults, List<String> fieldNames, boolean preDeleted) {
+		return executeSearchQuery(crit.toQuery(), searchMode, offset, maxResults, fieldNames, preDeleted);
 	}
 
 	@Override
-	public Map executeSearchQuery(Criteria crit, int searchMode, int offset, int maxResults,
+	public Map executeSearchQuery(Criteria crit, int searchMode, int offset, int maxResults, List<String> fieldNames, boolean preDeleted, boolean ignoreAcls) {
+		return executeSearchQuery(crit.toQuery(), searchMode, offset, maxResults, fieldNames, preDeleted, ignoreAcls);
+	}
+
+	@Override
+	public Map executeSearchQuery(Criteria crit, int searchMode, int offset, int maxResults, List<String> fieldNames,
 			Long asUserId) {
-		return executeSearchQuery(crit, searchMode, offset, maxResults, asUserId, false);
+		return executeSearchQuery(crit, searchMode, offset, maxResults, fieldNames, asUserId, false);
 	}
 	@Override
-	public Map executeSearchQuery(Criteria crit, int searchMode, int offset, int maxResults,
+	public Map executeSearchQuery(Criteria crit, int searchMode, int offset, int maxResults, List<String> fieldNames,
 			Long asUserId, boolean preDeleted, boolean ignoreAcls) {
-		return executeSearchQuery(crit.toQuery(), searchMode, offset, maxResults, asUserId, preDeleted, ignoreAcls);
+		return executeSearchQuery(crit.toQuery(), searchMode, offset, maxResults, fieldNames, asUserId, preDeleted, ignoreAcls);
 	}
 
 	@Override
-	public Map executeSearchQuery(Criteria crit, int searchMode, int offset, int maxResults,
+	public Map executeSearchQuery(Criteria crit, int searchMode, int offset, int maxResults, List<String> fieldNames,
 			Long asUserId, boolean preDeleted) {
-		return executeSearchQuery(crit.toQuery(), searchMode, offset, maxResults, asUserId, preDeleted);
+		return executeSearchQuery(crit.toQuery(), searchMode, offset, maxResults, fieldNames, asUserId, preDeleted);
 	}
 
 	@Override
-	public Map executeSearchQuery(Document query, int searchMode, int offset, int maxResults) {
-		return executeSearchQuery(query, searchMode, offset, maxResults, false);
+	public Map executeSearchQuery(Document query, int searchMode, int offset, int maxResults, List<String> fieldNames) {
+		return executeSearchQuery(query, searchMode, offset, maxResults, fieldNames, false);
 	}
 	@Override
-	public Map executeSearchQuery(Document query, int searchMode, int offset, int maxResults, boolean preDeleted) {
-		return executeSearchQuery(query, searchMode, offset, maxResults, preDeleted, false);
+	public Map executeSearchQuery(Document query, int searchMode, int offset, int maxResults, List<String> fieldNames, boolean preDeleted) {
+		return executeSearchQuery(query, searchMode, offset, maxResults, fieldNames, preDeleted, false);
 	}
 	@Override
-	public Map executeSearchQuery(Document query, int searchMode, int offset, int maxResults, boolean preDeleted, boolean ignoreAcls) {
+	public Map executeSearchQuery(Document query, int searchMode, int offset, int maxResults, List<String> fieldNames, boolean preDeleted, boolean ignoreAcls) {
 		// Create the Lucene query
 		QueryBuilder qb = new QueryBuilder(!ignoreAcls, preDeleted);
 		SearchObject so = qb.buildQuery(query);
 
-		return _executeSearchQuery(so, searchMode, offset, maxResults, null);// $$$$$
+		return _executeSearchQuery(so, searchMode, offset, maxResults, fieldNames);
 	}
 
 	@Override
-	public Map executeSearchQuery(Document query, int searchMode, int offset, int maxResults,
+	public Map executeSearchQuery(Document query, int searchMode, int offset, int maxResults, List<String> fieldNames,
 			Long asUserId) {
-		return executeSearchQuery(query, searchMode, offset, maxResults, false);
+		return executeSearchQuery(query, searchMode, offset, maxResults, fieldNames, false);
 	}
 	@Override
-	public Map executeSearchQuery(Document query, int searchMode, int offset, int maxResults,
+	public Map executeSearchQuery(Document query, int searchMode, int offset, int maxResults, List<String> fieldNames,
 			Long asUserId, boolean preDeleted) {
-		return executeSearchQuery(query, searchMode, offset, maxResults, asUserId, preDeleted, false);
+		return executeSearchQuery(query, searchMode, offset, maxResults, fieldNames, asUserId, preDeleted, false);
 	}
 	@Override
-	public Map executeSearchQuery(Document query, int searchMode, int offset, int maxResults,
+	public Map executeSearchQuery(Document query, int searchMode, int offset, int maxResults, List<String> fieldNames,
 			Long asUserId, boolean preDeleted, boolean ignoreAcls) {
 		// Create the Lucene query
 		QueryBuilder qb = new QueryBuilder(!ignoreAcls, preDeleted, asUserId);
 		SearchObject so = qb.buildQuery(query);
 
-		return _executeSearchQuery(so, searchMode, offset, maxResults, null); // $$$$$
+		return _executeSearchQuery(so, searchMode, offset, maxResults, fieldNames);
 	}
 
 	@Override
@@ -2130,7 +2130,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 				offset = (Integer) options.get(ObjectKeys.SEARCH_OFFSET);
 		}
 
-		return _executeSearchQuery(so, searchMode, offset, maxResults, null); // $$$$$
+		return _executeSearchQuery(so, searchMode, offset, maxResults, null);
 	}
 
 	protected Map _executeSearchQuery(SearchObject so, int searchMode, int offset, int maxResults, List<String> fieldNames) {
@@ -3306,19 +3306,19 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		crit.add(in(Constants.DOC_TYPE_FIELD, new String[] {Constants.DOC_TYPE_BINDER}))
 			.add(in(Constants.ENTRY_ANCESTRY, folderIds));
 		crit.addOrder(Order.asc(Constants.SORTNUMBER_FIELD));
-		Map binderMap = executeSearchQuery(crit, Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, 0, ObjectKeys.SEARCH_MAX_HITS_SUB_BINDERS);
-		Map binderMapDeleted = executeSearchQuery(crit, Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, 0, ObjectKeys.SEARCH_MAX_HITS_SUB_BINDERS, true);
+		Map binderMap = executeSearchQuery(crit, Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, 0, ObjectKeys.SEARCH_MAX_HITS_SUB_BINDERS, SearchUtils.fieldNamesList(Constants.DOCID_FIELD));
+		Map binderMapDeleted = executeSearchQuery(crit, Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, 0, ObjectKeys.SEARCH_MAX_HITS_SUB_BINDERS, SearchUtils.fieldNamesList(Constants.DOCID_FIELD), true);
 
 		List binderMapList = (List)binderMap.get(ObjectKeys.SEARCH_ENTRIES); 
 		List binderMapListDeleted = (List)binderMapDeleted.get(ObjectKeys.SEARCH_ENTRIES); 
 		List binderIdList = new ArrayList();
       	for (Iterator iter=binderMapList.iterator(); iter.hasNext();) {
       		Map entryMap = (Map) iter.next();
-      		binderIdList.add(new Long((String)entryMap.get("_docId")));
+      		binderIdList.add(new Long((String)entryMap.get(Constants.DOCID_FIELD)));
       	}
       	for (Iterator iter=binderMapListDeleted.iterator(); iter.hasNext();) {
       		Map entryMap = (Map) iter.next();
-      		binderIdList.add(new Long((String)entryMap.get("_docId")));
+      		binderIdList.add(new Long((String)entryMap.get(Constants.DOCID_FIELD)));
       	}
       	SortedSet<Binder> binderList = getBinders(binderIdList);
       	List<Long> binderIds = new ArrayList<Long>();
@@ -3898,7 +3898,8 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
         crit.add(Restrictions.between(Constants.MODIFICATION_DATE_FIELD, DateTools.dateToString(sinceDate, DateTools.Resolution.SECOND),
                 DateTools.dateToString(new Date(), DateTools.Resolution.SECOND)));
         crit.addOrder(new Order(Constants.MODIFICATION_DATE_FIELD, true));
-        return executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, 0, maxResults);
+        return executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, 0, maxResults,
+        		SearchUtils.fieldNamesList(Constants.MODIFICATION_DATE_FIELD,Constants.DOCID_FIELD,Constants.ENTITY_FIELD,Constants.CREATION_DATE_FIELD));
     }
 	
 	class IndexHelper implements Runnable {

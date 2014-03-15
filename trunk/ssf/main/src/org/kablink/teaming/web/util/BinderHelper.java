@@ -919,7 +919,8 @@ public class BinderHelper {
 		} else if (type.equals(ObjectKeys.MOBILE_WHATS_NEW_VIEW_MICROBLOG)) {
 			List<Long> trackedPeople = RelevanceDashboardHelper.setupMiniblogsBean(bs, myWorkspaceBinder, model);
 			Criteria crit = SearchUtils.bindersForTrackedMiniBlogs(trackedPeople);
-			Map results = bs.getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, 0, 10000);
+			Map results = bs.getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, 0, 10000,
+					org.kablink.teaming.module.shared.SearchUtils.fieldNamesList(Constants.DOCID_FIELD));
 	    	List items = (List) results.get(ObjectKeys.SEARCH_ENTRIES);
 	    	if (items != null) {
 		    	Iterator it = items.iterator();
@@ -2975,7 +2976,7 @@ public class BinderHelper {
 		for (String s_id : trackedPlaces) trackedBinderIds.add(Long.valueOf(s_id));
 		if (!trackedPlaces.isEmpty() || !trackedPeopleIds.isEmpty()) {
 			Criteria crit = SearchUtils.entriesForTrackedPlacesAndPeople(bs, trackedPlaces, trackedPeopleIds);
-			Map results = bs.getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, offset, maxResults);
+			Map results = bs.getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, offset, maxResults, null);
 			model.put(WebKeys.WHATS_NEW_BINDER, results.get(ObjectKeys.SEARCH_ENTRIES));
 			model.put(WebKeys.SEARCH_TOTAL_HITS, results.get(ObjectKeys.SEARCH_COUNT_TOTAL));
 			
@@ -3055,7 +3056,8 @@ public class BinderHelper {
 		Criteria crit = SearchUtils.entriesForTrackedPlaces(bs, trackedPlaces);
 		crit.add(org.kablink.util.search.Restrictions.between(
 				Constants.MODIFICATION_DATE_FIELD, startDate, now));
-		Map results = bs.getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, offset, maxResults);
+		Map results = bs.getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, offset, maxResults,
+				org.kablink.teaming.module.shared.SearchUtils.fieldNamesList(Constants.DOCID_FIELD,Constants.LASTACTIVITY_FIELD,Constants.MODIFICATION_DATE_FIELD,Constants.BINDER_ID_FIELD));
 		List<Map> entries = (List<Map>) results.get(ObjectKeys.SEARCH_ENTRIES);
 		SeenMap seen = bs.getProfileModule().getUserSeenMap(null);
 		List<Map> unseenEntries = new ArrayList();
@@ -3173,7 +3175,8 @@ public class BinderHelper {
 					// gets removed.
 					Criteria crit = SearchUtils.entriesForTrackedMiniBlogs(new Long[]{user.getId()});
 					crit.add(Restrictions.eq(Constants.BINDER_ID_FIELD, folderId.toString()));
-					Map results   = binderModule.executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, 0, 1);
+					Map results   = binderModule.executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, 0, 1,
+							org.kablink.teaming.module.shared.SearchUtils.fieldNamesList(Constants.DESC_FIELD));
 			    	List<Map> items = (List) results.get(ObjectKeys.SEARCH_ENTRIES);
 			    	boolean found = false;
 			    	for (Map item: items) {
@@ -3546,7 +3549,8 @@ public class BinderHelper {
 				crit,
 				Constants.SEARCH_MODE_NORMAL,
 				0,
-				maxResults);
+				maxResults,
+				org.kablink.teaming.module.shared.SearchUtils.fieldNamesList(Constants.DOCID_FIELD,Constants.DOC_TYPE_FIELD));
 			
 			// Get the binder hits
 			List<Map> searchEntries = ((List<Map>) searchResults.get(ObjectKeys.SEARCH_ENTRIES));
@@ -3610,7 +3614,8 @@ public class BinderHelper {
 				crit,
 				Constants.SEARCH_MODE_NORMAL,
 				0,
-				maxResults);
+				maxResults,
+				org.kablink.teaming.module.shared.SearchUtils.fieldNamesList(Constants.DOCID_FIELD,Constants.DOC_TYPE_FIELD));
 			
 			// Get the binder hits
 			List<Map> searchEntries = ((List<Map>) searchResults.get(ObjectKeys.SEARCH_ENTRIES));
@@ -3635,7 +3640,8 @@ public class BinderHelper {
 				crit,
 				Constants.SEARCH_MODE_NORMAL,
 				0,
-				maxResults);
+				maxResults,
+				org.kablink.teaming.module.shared.SearchUtils.fieldNamesList(Constants.DOCID_FIELD,Constants.DOC_TYPE_FIELD));
 			
 			// Get the binder hits
 			List<Map> searchEntries = ((List<Map>) searchResults.get(ObjectKeys.SEARCH_ENTRIES));

@@ -733,7 +733,8 @@ public void folder_deleteEntryWorkflow(String accessToken, long entryId, String 
 		
 		Document query = crit.toQuery();
 		
-		Map folderEntries = getBinderModule().executeSearchQuery(query, Constants.SEARCH_MODE_NORMAL, 0, 0);
+		Map folderEntries = getBinderModule().executeSearchQuery(query, Constants.SEARCH_MODE_NORMAL, 0, 0,
+				org.kablink.teaming.module.shared.SearchUtils.fieldNamesList(Constants.DOCID_FIELD));
 		List<Map> entryList = (List) folderEntries.get(ObjectKeys.SEARCH_ENTRIES);
 		List<Long> ids = new ArrayList<Long>();
 		for(Map entry:entryList) {

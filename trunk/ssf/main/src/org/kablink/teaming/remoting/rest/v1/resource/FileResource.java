@@ -121,7 +121,7 @@ public class FileResource extends AbstractFileResource {
         }
         Criteria crit = new Criteria();
         crit.add(criterion);
-        Map resultsMap = getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, offset, maxCount);
+        Map resultsMap = getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, offset, maxCount, null);
         SearchResultList<FileProperties> results = new SearchResultList<FileProperties>(offset);
         SearchResultBuilderUtil.buildSearchResults(results, new FilePropertiesBuilder(), resultsMap, "/files", nextParams, offset);
         if (includeParentPaths) {

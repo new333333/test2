@@ -1259,7 +1259,7 @@ public class ShareResource extends AbstractResource {
             }
             crit.add(Restrictions.eq(Constants.DOC_TYPE_FIELD, Constants.DOC_TYPE_BINDER));
             crit.add(entryAncentryCriterion(sharedBinders));
-            Map resultMap = getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, 0, -1);
+            Map resultMap = getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, 0, -1, null);
             SearchResultBuilderUtil.buildSearchResultsTree(results, sharedBinders, new BinderBriefBuilder(descriptionFormat), resultMap);
             results.setItem(null);
             for (SearchResultTreeNode<BinderBrief> child : results.getChildren()) {

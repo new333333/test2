@@ -638,7 +638,7 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
         }
         crit.add(Restrictions.eq(Constants.DOC_TYPE_FIELD, Constants.DOC_TYPE_BINDER));
         crit.add(SearchUtils.buildAncentryCriterion(id));
-        Map resultMap = getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, 0, -1);
+        Map resultMap = getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, 0, -1, null);
         BinderTree results = new BinderTree();
         SearchResultBuilderUtil.buildSearchResultsTree(this, results, id, new BinderBriefBuilder(descriptionFormat), resultMap);
         results.setItem(null);
