@@ -735,6 +735,8 @@ public class ModifyGroupDlg extends DlgBox
 		m_descTextArea.setText( "" );
 		m_descTextArea.setEnabled( true );
 		
+		hideErrorPanel();
+		
 		// Are we modifying an existing group?
 		if ( m_groupInfo != null )
 		{
