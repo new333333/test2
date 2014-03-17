@@ -32,47 +32,18 @@
  */
 package org.kablink.teaming.search.postfilter;
 
-import java.util.HashMap;
 import java.util.Map;
-
-import org.kablink.teaming.fi.connection.acl.AclResourceSession;
-import org.kablink.teaming.lucene.Hits;
 
 public interface PostFilterCallback {
 
-	public boolean doFilter(SessionHelper sessionHelper, Map<String,Object> doc, boolean noIntrinsicAclStoredButAccessibleThroughFilrGrantedAcl);
-	public boolean supportBatchFiltering();
-	public Hits doBatchFilter(Hits hits, PostFilteringStats stats);
-
-	public static class PostFilteringStats {
-		public int sucessCount;
-		public int failureCount;
-		public int serviceCallCount;
-	}
-	
-	public static class SessionHelper {
-		Map<String,AclResourceSession> sessionMap;
-		public SessionHelper() {
-			sessionMap = new HashMap<String,AclResourceSession>();
-		}
-		public void close() {
-			for(AclResourceSession session : sessionMap.values()) {
-				try {
-					if(session != null)
-						session.close();
-				}
-				catch(Exception ignore) {}
-			}
-		}
-		public AclResourceSession getSession(String resourceDriverName) {
-			if(sessionMap.containsKey(resourceDriverName)) {
-				return sessionMap.get(resourceDriverName);
-			}
-			else {
-				AclResourceSession session = org.kablink.teaming.module.shared.SearchUtils.openAclResourceSession(resourceDriverName, null);
-				sessionMap.put(resourceDriverName, session);
-				return session;
-			}
-		}
-	}
+	/**
+	 * Perform pre-filtering.
+	 * 
+	 * @param doc
+	 * @param noIntrinsicAclStoredButAccessibleThroughFilrGrantedAcl
+	 * @return <code>Boolean.TRUE</code> if the document already passed access check
+	 *         <code>Boolean.FALSE</code> if the document already failed access check
+	 *         <code>null</code> if the document requires access check against file server
+	 */
+	public Boolean preFilter(Map<String,Object> doc, boolean noIntrinsicAclStoredButAccessibleThroughFilrGrantedAcl);
 }

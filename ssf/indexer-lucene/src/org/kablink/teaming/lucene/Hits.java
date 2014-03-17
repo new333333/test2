@@ -38,7 +38,6 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.BitSet;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -70,12 +69,6 @@ public class Hits implements Serializable {
     // Indicates whether the totalHits is approximate or exact.
     // This field is set on the server side.
     private boolean totalHitsApproximate = true;
-    // Indicates whether or not there is at least one more document in the search index
-    // that matches the search query (including ACL filter) that isn't returned in this
-    // object.
-    // This field is set on the client side.
-    private boolean thereIsMore = false;
-        
     // Matching documents. This field is set on the server side.
     private List<Map<String,Object>> documents;
     
@@ -86,7 +79,19 @@ public class Hits implements Serializable {
     // way. For example it may simply mean that the pertaining information is unknown.
     // This field is set on the server side.
     private boolean[] noIntrinsicAclStoredButAccessibleThroughFilrGrantedAcl; // all elements initialized to false
+
+    ///// THE FOLLOWING TWO FIELDS ARE CLIENT-SIDE FIELDS (that is, they are set on the client side) /////
+    ////  THESE FIELDS ARE FOR INTERNAL USE ONLY. APPLIATION MUST NOT RELY ON THIS.
     
+    // Indicates whether or not there is at least one more document in the search index
+    // that matches the search query (including ACL filter) that isn't returned in this
+    // object.
+    private boolean thereIsMore = false;
+    
+    // Indicates whether or not the user has access to each document in this object.
+    // This information is finalized after combining the information from the search
+    // index and the result of dynamic ACL checking if any.
+    private boolean[] aclCheckResult;      
     
     public Hits(int length) {
         this.size = length;
@@ -130,6 +135,10 @@ public class Hits implements Serializable {
     	return noIntrinsicAclStoredButAccessibleThroughFilrGrantedAcl[n];
     }
 
+    public boolean isVisible(int n) {
+    	return aclCheckResult[n];
+    }
+    
     public static Hits transfer(org.apache.lucene.search.IndexSearcher searcher, org.apache.lucene.search.TopDocs topDocs,
             int offset, 
             int maxSize, 
@@ -194,7 +203,7 @@ public class Hits implements Serializable {
 			fld = (Fieldable)flds.get(i);
 			// Include the field only if there's no restriction on fields or the field
 			// passes the restriction.
-			if(fieldNames == null || fieldNames.contains(fld.name())) {
+			if(fieldNames == null || fieldNames.contains(fld.name()) || isRequiredField(fld.name())) {
 				//TODO This hack needs to go.
 				if (isDateField(fld.name())) {
 					try {
@@ -222,6 +231,11 @@ public class Hits implements Serializable {
 			}
         }
 		return map;
+    }
+    
+    private static boolean isRequiredField(String name) {
+    	// The following fields are needed when the client conducts ACL checking
+    	return (Constants.ENTRY_ACL_PARENT_ID_FIELD.equals(name) || Constants.RESOURCE_DRIVER_NAME_FIELD.equals(name) || Constants.RESOURCE_PATH_FIELD.equals(name) || Constants.DOC_TYPE_FIELD.equals(name));
     }
     
 	private static boolean isDateField(String fieldName) {
@@ -293,6 +307,10 @@ public class Hits implements Serializable {
 
 	public void setTotalHitsApproximate(boolean totalHitsApproximate) {
 		this.totalHitsApproximate = totalHitsApproximate;
+	}
+
+	public void setAclCheckResult(boolean[] aclCheckResult) {
+		this.aclCheckResult = aclCheckResult;
 	}
 
 }

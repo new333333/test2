@@ -50,7 +50,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.document.Fieldable;
 import org.apache.lucene.document.DateTools;
-import org.apache.lucene.document.Document;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.Sort;
 import org.apache.lucene.search.SortField;
@@ -64,7 +63,6 @@ import org.kablink.teaming.dao.ProfileDao;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.Principal;
-import org.kablink.teaming.domain.ResourceDriverConfig;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserPrincipal;
 import org.kablink.teaming.fi.auth.AuthException;
@@ -86,7 +84,6 @@ import org.kablink.teaming.search.filter.SearchFilter;
 import org.kablink.teaming.search.filter.SearchFilterKeys;
 import org.kablink.teaming.search.filter.SearchFilterToSearchBooleanConverter;
 import org.kablink.teaming.search.postfilter.PostFilterCallback;
-import org.kablink.teaming.search.postfilter.PostFilterCallback.PostFilteringStats;
 import org.kablink.teaming.security.AccessControlManager;
 import org.kablink.teaming.security.function.WorkArea;
 import org.kablink.teaming.security.function.WorkAreaOperation;
@@ -655,46 +652,12 @@ public class SearchUtils {
 			return luceneSession.search(contextUserId, so.getNetFolderRootAclQueryStr(), null, mode, query, null, sort, offset, size,
 					new PostFilterCallback() {
 				@Override
-				public boolean doFilter(PostFilterCallback.SessionHelper sessionHelper, Map<String,Object> doc, boolean noIntrinsicAclStoredButAccessibleThroughFilrGrantedAcl) {
+				public Boolean preFilter(Map<String,Object> doc, boolean noIntrinsicAclStoredButAccessibleThroughFilrGrantedAcl) {
 					// This filter implementation ignores the second arg.
 					String resourceDriverName = (String) doc.get(Constants.RESOURCE_DRIVER_NAME_FIELD);
 					if(resourceDriverName == null) 
-						return false; // no resource driver
-					String resourcePath = (String) doc.get(Constants.RESOURCE_PATH_FIELD);
-					if(resourcePath == null)
-						resourcePath = ""; // It is possible to define a net folder without specifying a sub-path.
-					/* As of Filr 1.2, we will not and can not support cloud folder since we have no place to store GUID for each file.
-					Long ownerId = Long.valueOf((String) doc.get(Constants.OWNERID_FIELD)); // Used only by cloud folder
-					*/
-					AclResourceSession session = sessionHelper.getSession(resourceDriverName);				
-					if(session != null) {
-						String docType = (String) doc.get(Constants.DOC_TYPE_FIELD);
-						// TODO JK 12/16/2013
-						// ACL checking against the data source makes sense only when the back-end data source provides such service.
-						// When such service is not provided (e.g. with cloud folder), this filtering method is not supposed to be even invoked.
-						// Therefore, it's OK to pass null for resource handle, since it is only used by cloud folder at least for now.
-						// This may change in the future as we add 'handle' support for the most widely used back-end such as NCP/CIFS shares.
-						session.setPath(resourcePath, null, (docType != null && docType.equals(Constants.DOC_TYPE_BINDER))? Boolean.TRUE : Boolean.FALSE);
-						try {
-							return session.isVisible(AccessUtils.getFileSystemGroupIds(resourceDriverName));
-						} catch (Exception e) {
-							logger.error("Error checking visibility on resource [" + resourcePath + "]", e);
-							return false; // fails the test
-						}
-					}
-					else {
-						if(logger.isDebugEnabled())
-							logger.warn("Cannot check visibility on resource [" + resourcePath + "] due to problem obtaining session on resource driver '" + resourceDriverName + "'");
-						return false;
-					}
-				}
-				@Override
-				public boolean supportBatchFiltering() {
-					return false;
-				}
-				@Override
-				public Hits doBatchFilter(Hits hits, PostFilteringStats stats) {
-					throw new UnsupportedOperationException("This operation is not supported");
+						return Boolean.FALSE; // no resource driver
+					return null;
 				}
 			});
 			
