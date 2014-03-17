@@ -400,6 +400,21 @@ public class GwtShareHelper
 	}
 			
 	/**
+	 * See if the user can share the given entities using a File link
+	 * 
+	 * @param ami
+	 * @param listOfEntityids
+	 * 
+	 * @return
+	 */
+	public static boolean canShareUsingFileLink(
+		AllModulesInjected ami,
+		List<EntityId> listOfEntityIds )
+	{
+		return canShareWith( ami, listOfEntityIds, ShareOperation.SHARE_PUBLIC_LINK );
+	}
+
+	/**
 	 * See if the user can share the given entities with external users.
 	 * 
 	 * @param ami
@@ -2134,6 +2149,9 @@ public class GwtShareHelper
 			zoneConfig = ami.getZoneModule().getZoneConfig( RequestContextHolder.getRequestContext().getZoneId() );
 			sharingInfo.setCanShareWithLdapGroups( zoneConfig.isSharingWithLdapGroupsEnabled() );
 		}
+		
+		// See if the user has rights to share the given entities using a File link
+		sharingInfo.setCanShareUsingFileLink( canShareUsingFileLink( ami, listOfEntityIds ) );
 
 		return sharingInfo;
 	}
