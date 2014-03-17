@@ -569,7 +569,7 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 							// to log in successfully authenticated to the ldap directory
 							// but can't use Vibe because there is another user in Vibe with
 							// the same name.
-							throw new UserMismatchException( "The Vibe user account for the name, " + username + ", does not belong to the authenticated user" );
+							throw new UserMismatchException( "The user account for the name, " + username + ", does not belong to the authenticated user" );
 						}
 					}
 				}
