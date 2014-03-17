@@ -289,10 +289,10 @@ public class GwtSearchHelper
 				// Yes
 				searchTermFilter.addAndInternalFilter( true );
 			}
-			// Are we searching for external principals only?
-			else if ( searchCriteria.getSearchForInternalPrincipals() == false && searchCriteria.getSearchForExternalPrincipals() == true )
+			// Are we searching for internal principal?
+			else if ( searchCriteria.getSearchForInternalPrincipals() == false )
 			{
-				// Yes
+				// No
 				searchTermFilter.addAndInternalFilter( false );
 			}
 				

@@ -1407,6 +1407,7 @@ public interface GwtTeamingMessages extends Messages
 	String shareCaption();
 	String shareDlg_accessLabel();
 	String shareDlg_addExternalUserTitle();
+	String shareDlg_canShareWith( String shareWith );
 	String shareDlg_alreadySharedWithSelectedRecipient( String recipientName );
 	String shareDlg_cantShareWithAllExternalUsersGroup();
 	String shareDlg_cantShareWithAllInternalUsersGroup();

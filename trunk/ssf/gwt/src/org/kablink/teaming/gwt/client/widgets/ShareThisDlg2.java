@@ -166,6 +166,7 @@ public class ShareThisDlg2 extends DlgBox
 	private FindCtrl m_findCtrl;
 	private FindCtrl m_manageSharesFindCtrl;
 	private Image m_addExternalUserImg;
+	private Image m_shareRightsInfoImg;
 	private FlowPanel m_mainPanel;
 	private Label m_noShareItemsEnterNameHint;
 	private Label m_noShareItemsToManageHint;
@@ -818,6 +819,20 @@ public class ShareThisDlg2 extends DlgBox
 					}
 				};
 				m_addExternalUserImg.addClickHandler( clickHandler );
+			}
+			
+			// Add an info image that will display who the user can share with
+			{
+				ImageResource imageResource;
+				FlexCellFormatter findCellFormatter;
+				
+				imageResource = GwtTeaming.getImageBundle().info2();
+				m_shareRightsInfoImg = new Image( imageResource );
+				
+				m_shareRightsInfoImg.getElement().setAttribute( "title", "" );
+				findTable.setWidget( 0, 1, m_shareRightsInfoImg );
+				findCellFormatter = findTable.getFlexCellFormatter();
+				findCellFormatter.getElement( 0, 1 ).getStyle().setPaddingTop( 8, Unit.PX );
 			}
 			
 			// Add a "Share with teams" link
@@ -1655,6 +1670,43 @@ public class ShareThisDlg2 extends DlgBox
 			// Issue an rpc request to get the share information for the entities we are working with.
 			GwtClientHelper.executeCommand( cmd, m_getSharingInfoCallback );
 		}
+	}
+	
+	/**
+	 * Return a string that displays who the user can share with.
+	 */
+	private String getCanShareWithText( GwtSharingInfo sharingInfo )
+	{
+		String msg;
+		String shareWith;
+		GwtTeamingMessages messages;
+		
+		messages = GwtTeaming.getMessages();
+		
+		shareWith = "";
+		
+		if ( sharingInfo.getCanShareWithInternalUsers() )
+			shareWith = messages.editShareRightsDlg_CanShareInternalLabel();
+		
+		if ( sharingInfo.getCanShareWithExternalUsers() )
+		{
+			if ( shareWith.length() > 0 )
+				shareWith += ", ";
+			
+			shareWith += messages.editShareRightsDlg_CanShareExternalLabel();
+		}
+
+		if ( sharingInfo.getCanShareWithPublic() )
+		{
+			if ( shareWith.length() > 0 )
+				shareWith += ", ";
+			
+			shareWith += messages.editShareRightsDlg_CanSharePublicLabel();
+		}
+		
+		msg = messages.shareDlg_canShareWith( shareWith );
+		
+		return msg;
 	}
 	
 	/**
@@ -2862,6 +2914,7 @@ public class ShareThisDlg2 extends DlgBox
 	 */
 	private void updateSharingInfo( GwtSharingInfo sharingInfo )
 	{
+		m_shareRightsInfoImg.getElement().setAttribute( "title", "" );
 		m_sharingInfo = sharingInfo;
 		if ( sharingInfo != null )
 		{
@@ -2898,6 +2951,24 @@ public class ShareThisDlg2 extends DlgBox
 			listOfShareItems = sharingInfo.getListOfShareItems();
 			if ( listOfShareItems == null )
 				listOfShareItems = new ArrayList<GwtShareItem>();
+			
+			// Update the title of the "share rights" info image
+			{
+				String msg;
+				
+				msg = getCanShareWithText( m_sharingInfo );
+				m_shareRightsInfoImg.getElement().setTitle( msg );
+			}
+			
+			// Update the hint that tells the user what to do if nothing has been shared yet
+			if ( m_noShareItemsEnterNameHint.isVisible() )
+			{
+				String msg;
+				
+				msg = GwtTeaming.getMessages().shareDlg_noShareItemsHint() + "<br/>";
+				msg += getCanShareWithText( m_sharingInfo );
+				m_noShareItemsEnterNameHint.getElement().setInnerHTML( msg );
+			}
 			
 			// Sort the list of share items.
 			sortShareItems( listOfShareItems );
