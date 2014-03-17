@@ -102,10 +102,10 @@ public class DesktopAppDownloadDlg extends DlgBox {
 	private final static int IOS_ROW		= 5;
 
 	// The URLs to the quick start help for the desktop applications.
-	private final static String	MAC_QUICKSTART_URL_FILR		= "http://www.novell.com/documentation/novell-filr1/filr1_qs_desktopmac/data/filr1_qs_desktop.html";
-	private final static String	MAC_QUICKSTART_URL_VIBE		= "http://www.novell.com/documentation/novell-vibe1/vibe1_qs_desktopmac/data/vibe1_qs_desktop.html";
-	private final static String	WINDOWS_QUICKSTART_URL_FILR	= "http://www.novell.com/documentation/novell-filr1/filr1_qs_desktop/data/filr1_qs_desktop.html";
-	private final static String	WINDOWS_QUICKSTART_URL_VIBE	= "http://www.novell.com/documentation/novell-vibe1/vibe1_qs_desktop/data/vibe1_qs_desktop.html";
+	private final static String	MAC_QUICKSTART_URL_FILR		= "http://www.novell.com/documentation/beta/novell-filr-1-1/filr-1-1_qs_desktopmac/data/filr-1-1_qs_desktopmac.html";
+	private final static String	MAC_QUICKSTART_URL_VIBE		= "http://www.novell.com/documentation/beta/novell-vibe-1-1/vibe-1-1_qs_desktopmac/data/vibe-1-1_qs_desktopmac.html";
+	private final static String	WINDOWS_QUICKSTART_URL_FILR	= "http://www.novell.com/documentation/beta/novell-filr-1-1/filr-1-1_qs_desktop/data/filr-1-1_qs_desktop.html";
+	private final static String	WINDOWS_QUICKSTART_URL_VIBE	= "http://www.novell.com/documentation/beta/novell-vibe-1-1/vibe-1-1_qs_desktop/data/vibe-1-1_qs_desktop.html";
 	
 	// The following defines the TeamingEvents that are handled by
 	// this class.  See EventHelper.registerEventHandlers() for how
