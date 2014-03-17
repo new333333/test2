@@ -387,7 +387,8 @@ public class GwtBlogHelper
 	    		crit = crit.add( Restrictions.in( Constants.DOC_TYPE_FIELD, new String[] {Constants.DOC_TYPE_BINDER} ) );
 	    		crit.add( Restrictions.in( Constants.ENTRY_ANCESTRY, folderIds ) );
 	    		crit.addOrder( Order.asc( Constants.SORT_TITLE_FIELD ) );
-	    		binderMap = ami.getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, 0, ObjectKeys.SEARCH_MAX_HITS_SUB_BINDERS);
+	    		binderMap = ami.getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, 0, ObjectKeys.SEARCH_MAX_HITS_SUB_BINDERS,
+	    				org.kablink.teaming.module.shared.SearchUtils.fieldNamesList(Constants.DOCID_FIELD));
 
 	    		binderMapList = (List)binderMap.get( ObjectKeys.SEARCH_ENTRIES ); 
 	    		binderIdList = new ArrayList();
@@ -395,7 +396,7 @@ public class GwtBlogHelper
 	          	for (Iterator iter=binderMapList.iterator(); iter.hasNext();)
 	          	{
 	          		Map entryMap = (Map) iter.next();
-	          		binderIdList.add( new Long((String)entryMap.get("_docId")) );
+	          		binderIdList.add( new Long((String)entryMap.get(Constants.DOCID_FIELD)) );
 	          	}
 	            //Get sub-binder list including intermediate binders that may be inaccessible
 	          	binderList = ami.getBinderModule().getBinders( binderIdList, Boolean.FALSE );

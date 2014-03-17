@@ -42,7 +42,8 @@ public class SearchResultBuilderUtil {
         }
         crit.add(or);
         Map<Object, Map> keys = new HashMap<Object, Map>();
-        Map resultMap = ami.getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, 0, -1);
+        Map resultMap = ami.getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, 0, -1,
+        		org.kablink.teaming.module.shared.SearchUtils.fieldNamesList(Constants.BINDER_ID_FIELD));
         List<Map> entries = (List<Map>)resultMap.get(ObjectKeys.SEARCH_ENTRIES);
         for (Map entry : entries) {
             String parentIdStr = (String)entry.get(Constants.BINDER_ID_FIELD);
@@ -210,7 +211,7 @@ public class SearchResultBuilderUtil {
             outer.add(idJunction);
             crit = new Criteria();
             crit.add(outer);
-            resultMap = ami.getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, 0, -1);
+            resultMap = ami.getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, 0, -1, null);
             List<Map> entries = (List<Map>)resultMap.get(ObjectKeys.SEARCH_ENTRIES);
             List<T> binderList = new ArrayList<T>(entries.size());
             for (Map binderEntry : entries) {

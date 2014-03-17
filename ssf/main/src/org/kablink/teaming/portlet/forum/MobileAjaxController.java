@@ -118,6 +118,7 @@ import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ReleaseInfo;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.feed.TeamingFeedCache;
+import org.kablink.teaming.util.stringcheck.StringCheckUtil;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.portlet.SAbstractControllerRetry;
 import org.kablink.teaming.web.tree.DomTreeBuilder;
@@ -458,7 +459,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		//See if the add entry form was submitted
 		if (formData.containsKey("miniblogBtn") && WebHelper.isMethodPost(request)) {
 			//The miniblog form was submitted. Go process it
-			String text = PortletRequestUtils.getStringParameter(request, "miniblogText", "");
+			String text = PortletRequestUtils.getStringParameter(request, "miniblogText", "", false);
 			BinderHelper.addMiniBlogEntry(bs, text);
 		} else if (formData.containsKey("acceptBtn") && WebHelper.isMethodPost(request)) {
 			//User clicked "I Accept"
@@ -580,6 +581,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 			BinderHelper.setupStandardBeans(bs, request, response, model, null, portletName);
 			BinderHelper.setupMobileSearchBeans(bs, request, response, model);
 			refererUrl = Http.getCompleteURL(((HttpServletRequestReachable) request).getHttpServletRequest());
+			refererUrl = StringCheckUtil.checkForQuotes(refererUrl, false);		//Prevent XSS attacks
 			if (Validator.isNotNull(refererUrl) && !refererUrl.contains("operation="+WebKeys.OPERATION_MOBILE_LOGIN)) {
 				model.put(WebKeys.URL, refererUrl);
 			} else {
@@ -770,7 +772,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		Map formData = request.getParameterMap();
 	    Tabs tabs = Tabs.getTabs(request);
 		model.put(WebKeys.TABS, tabs);		
-		String searchText = PortletRequestUtils.getStringParameter(request, WebKeys.SEARCH_TEXT_FIELD, "");
+		String searchText = PortletRequestUtils.getStringParameter(request, WebKeys.SEARCH_TEXT_FIELD, "", false);
 		model.put(WebKeys.SEARCH_TEXT, searchText);
 	    if (formData.containsKey("searchBtn") || formData.containsKey("quickSearch")) {
 	    	SearchFilterRequestParser requestParser = new SearchFilterRequestParser(request, getDefinitionModule());
@@ -987,14 +989,15 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		crit.add(in(Constants.DOC_TYPE_FIELD, new String[] {Constants.DOC_TYPE_BINDER}))
 			.add(in(Constants.BINDERS_PARENT_ID_FIELD, folderIds));
 		crit.addOrder(Order.asc(Constants.SORT_TITLE_FIELD));
-		Map binderMap = bs.getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, 0, ObjectKeys.SEARCH_MAX_HITS_SUB_BINDERS);
+		Map binderMap = bs.getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, 0, ObjectKeys.SEARCH_MAX_HITS_SUB_BINDERS,
+				org.kablink.teaming.module.shared.SearchUtils.fieldNamesList(Constants.DOCID_FIELD));
 
 		List binderMapList = (List)binderMap.get(ObjectKeys.SEARCH_ENTRIES); 
 		List binderIdList = new ArrayList();
 
       	for (Iterator iter=binderMapList.iterator(); iter.hasNext();) {
       		Map entryMap = (Map) iter.next();
-      		binderIdList.add(new Long((String)entryMap.get("_docId")));
+      		binderIdList.add(new Long((String)entryMap.get(Constants.DOCID_FIELD)));
       	}
       	//Get the sub-folder list including itermediate folders that may be inaccessible
       	SortedSet binderList = bs.getBinderModule().getBinders(binderIdList, Boolean.FALSE);
@@ -1394,7 +1397,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		}
 		if (entryId == null && binderId != null) {
 			String zoneUUID = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ZONE_UUID, "");
-			String title = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_TITLE, "");
+			String title = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_TITLE, "", false);
 			Set entries = getFolderModule().getFolderEntryByNormalizedTitle(binderId, title, zoneUUID);
 			if (entries.size() == 1) {
 				FolderEntry entry = (FolderEntry)entries.iterator().next();
@@ -1702,7 +1705,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		BinderHelper.setupMobileSearchBeans(bs, request, response, model);
 
 		List<Long> teamIds = new ArrayList<Long>();
-		Collection myTeams = bs.getBinderModule().getTeamMemberships(user.getId());
+		Collection myTeams = bs.getBinderModule().getTeamMemberships(user.getId(), null);
 		model.put(WebKeys.MOBILE_TEAMS_LIST, myTeams);
 		
 		//Setup the actions menu list
@@ -1893,7 +1896,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		DefinitionHelper.getDefinition(entry.getEntryDefDoc(), model, "//item[@type='form']");
 		
 		Map formData = request.getParameterMap();
-		String searchText = PortletRequestUtils.getStringParameter(request, "searchText", "");
+		String searchText = PortletRequestUtils.getStringParameter(request, "searchText", "", false);
 		model.put(WebKeys.SEARCH_TEXT, searchText);
 		String maxEntries = PortletRequestUtils.getStringParameter(request, "maxEntries", "10");
 		String pageNumber = PortletRequestUtils.getStringParameter(request, "pageNumber", "0");
@@ -2037,7 +2040,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		Map formData = request.getParameterMap();
 		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
 		if (op.equals(WebKeys.OPERATION_MOBILE_FIND_PEOPLE) || op.equals(WebKeys.OPERATION_MOBILE_FIND_PLACES)) {
-			String searchText = PortletRequestUtils.getStringParameter(request, "searchText", "");
+			String searchText = PortletRequestUtils.getStringParameter(request, "searchText", "", false);
 			if (formData.containsKey("okBtn") || !searchText.equals("")) {
 				model.put(WebKeys.SEARCH_TEXT, searchText);
 				String maxEntries = PortletRequestUtils.getStringParameter(request, "maxEntries", "10");

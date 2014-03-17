@@ -408,6 +408,7 @@ public class ReadFileController extends AbstractReadFileController {
 						if (shareItem.getRecipientType().equals(RecipientType.publicLink) && 
 								shareItem.getPassKey().equals(passKey) && !passKey.equals("")) {
 							User sharer = getProfileModule().getUserDeadOrAlive(shareItem.getSharerId());
+							final User recipient = RequestContextHolder.getRequestContext().getUser();
 							if (sharer != null & sharer.isActive()) {
 								//OK, run this request under the account of the sharer to see if the access to the item is still allowed
 								final String fn = args[WebUrlUtil.FILE_URL_SHARED_PUBLIC_FILE_NAME];
@@ -456,7 +457,7 @@ public class ReadFileController extends AbstractReadFileController {
 													}
 													getFileModule().readFile(parent, entity, fa, response.getOutputStream());
 													//Report the file download in the audit trail
-													getReportModule().addFileInfo(AuditType.download, fa);
+													getReportModule().addFileInfo(AuditType.download, fa, recipient);
 												}
 												catch(Exception e) {
 													response.sendError(HttpServletResponse.SC_BAD_REQUEST, NLT.get("file.error") + ": " + e.getMessage());
@@ -481,7 +482,7 @@ public class ReadFileController extends AbstractReadFileController {
 														response.setHeader("Cache-Control", "private");
 														if (entity != null && parent != null) {
 															getConvertedFileModule().readCacheHtmlFile(request.getRequestURI(), shareItem, parent, entity, fa, response.getOutputStream());
-															getReportModule().addFileInfo(AuditType.download, fa);
+															getReportModule().addFileInfo(AuditType.download, fa, recipient);
 														}
 														return null;
 													}
@@ -612,10 +613,8 @@ public class ReadFileController extends AbstractReadFileController {
 								String.valueOf(FileHelper.getLength(parent, entity, fa)));
 						}
 						getFileModule().readFile(parent, entity, fa, response.getOutputStream());
-						if (args[WebUrlUtil.FILE_URL_VERSION].equals(WebKeys.READ_FILE_LAST_VIEW)) {
-							//This is a real file download, so mark it in the audit trail
-							getReportModule().addFileInfo(AuditType.download, fa);
-						}
+						//Mark it in the audit trail
+						getReportModule().addFileInfo(AuditType.download, fa);
 					}
 					catch(Exception e) {
 						response.sendError(HttpServletResponse.SC_BAD_REQUEST, NLT.get("file.error") + ": " + e.getMessage());
@@ -739,12 +738,13 @@ public class ReadFileController extends AbstractReadFileController {
 			crit.add(in(org.kablink.util.search.Constants.DOC_TYPE_FIELD, new String[] {org.kablink.util.search.Constants.DOC_TYPE_BINDER}))
 				.add(in(org.kablink.util.search.Constants.BINDERS_PARENT_ID_FIELD, folderIds));
 			crit.addOrder(Order.asc(org.kablink.util.search.Constants.BINDER_ID_FIELD));
-			Map        sfMap  = bm.executeSearchQuery(crit, org.kablink.util.search.Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, 0, ObjectKeys.SEARCH_MAX_HITS_SUB_BINDERS);
+			Map        sfMap  = bm.executeSearchQuery(crit, org.kablink.util.search.Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, 0, ObjectKeys.SEARCH_MAX_HITS_SUB_BINDERS,
+					org.kablink.teaming.module.shared.SearchUtils.fieldNamesList(org.kablink.util.search.Constants.DOCID_FIELD));
 			List       sfMaps = ((List) sfMap.get(ObjectKeys.SEARCH_ENTRIES)); 
 			List<Long> sfIds  = new ArrayList<Long>();
 	      	for (Iterator iter = sfMaps.iterator(); iter.hasNext();) {
 	      		Map nextSFMap = ((Map) iter.next());
-      			sfIds.add(Long.parseLong((String) nextSFMap.get("_docId")));
+      			sfIds.add(Long.parseLong((String) nextSFMap.get(org.kablink.util.search.Constants.DOCID_FIELD)));
 	      	}
 
 	      	// Are there any sub-folders?

@@ -38,6 +38,7 @@ import java.util.List;
 import org.kablink.teaming.gwt.client.EditCanceledHandler;
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.event.DialogClosedEvent;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HelpData;
 
@@ -740,6 +741,8 @@ public abstract class DlgBox extends TeamingPopupPanel
 			showDebugAlert( "hide: " + m_visibleDialogs.size() + " now visible." );
 		}
 		m_visible = false;
+		
+		DialogClosedEvent.fireOneAsync( this );
 	}// end hideImpl()
 	
 	/**

@@ -1591,31 +1591,10 @@ public class ModifyNetFolderDlg extends DlgBox
 			return false;
 		}
 		
-		// Has a relative path been entered?
-		relPath = getRelativePath();
-		if ( relPath == null || relPath.length() == 0 )
-		{
-			Scheduler.ScheduledCommand cmd;
-			
-			// No
-			Window.alert( GwtTeaming.getMessages().modifyNetFolderDlg_PleaseEnterRelativePath() );
-
-			cmd = new Scheduler.ScheduledCommand()
-			{
-				@Override
-				public void execute()
-				{
-					m_relativePathTxtBox.setFocus( true );
-				}
-			};
-			Scheduler.get().scheduleDeferred( cmd );
-			
-			return false;
-		}
-		
 		// Does the relative path have any '/' in it.
 		// A '/' in the relative path causes problems with OES-NCP when we do a test connection
 		// See bug, https://bugzilla.novell.com/show_bug.cgi?id=785315
+		relPath = getRelativePath();
 		if ( relPath.indexOf( '/' ) != -1 )
 		{
 			Scheduler.ScheduledCommand cmd;

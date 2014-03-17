@@ -43,7 +43,7 @@
 		operation="mobile_show_search_results" 
 		actionUrl="false" ><ssf:param 
 		name="quickSearch" value="true"/><ssf:param 
-		name="searchText" value="${ss_searchText}"/><ssf:param 
+		name="searchText" useBody="true">${ss_searchText}</ssf:param><ssf:param 
 		name="scope" value="${ss_searchScope}"/><ssf:param 
 		name="tabId" value="${ss_tab_id}"/><ssf:param 
 		name="pageNumber" value="${ss_pageNumber-1}"/><ssf:param 
@@ -62,7 +62,7 @@
 		operation="mobile_show_search_results" 
 		actionUrl="false" ><ssf:param 
 		name="quickSearch" value="true"/><ssf:param 
-		name="searchText" value="${ss_searchText}"/><ssf:param 
+		name="searchText" useBody="true">${ss_searchText}</ssf:param><ssf:param 
 		name="scope" value="${ss_searchScope}"/><ssf:param 
 		name="tabId" value="${ss_tab_id}"/><ssf:param 
 		name="pageNumber" value="${ss_pageNumber+1}"/><ssf:param 

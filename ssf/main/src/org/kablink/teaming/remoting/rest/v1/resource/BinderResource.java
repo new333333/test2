@@ -95,7 +95,7 @@ public class BinderResource extends AbstractResource {
         SearchResultList<BinderBrief> results = new SearchResultList<BinderBrief>(offset);
         if (!skipSearch) {
             Document queryDoc = buildQueryDocument("<query/>", criterion);
-            Map resultsMap = getBinderModule().executeSearchQuery(queryDoc, Constants.SEARCH_MODE_NORMAL, offset, maxCount);
+            Map resultsMap = getBinderModule().executeSearchQuery(queryDoc, Constants.SEARCH_MODE_NORMAL, offset, maxCount, null);
             SearchResultBuilderUtil.buildSearchResults(results, new BinderBriefBuilder(toDomainFormat(descriptionFormatStr)), resultsMap, "/binders", null, offset);
             Set<Long> foundIds = new HashSet<Long>();
             for (BinderBrief binder : results.getResults()) {
@@ -143,7 +143,7 @@ public class BinderResource extends AbstractResource {
                                                                   @QueryParam("count") @DefaultValue("100") Integer maxCount) {
         String query = getRawInputStreamAsString(request);
         Document queryDoc = buildQueryDocument(query, SearchUtils.buildBindersCriterion());
-        Map resultsMap = getBinderModule().executeSearchQuery(queryDoc, Constants.SEARCH_MODE_NORMAL, offset, maxCount);
+        Map resultsMap = getBinderModule().executeSearchQuery(queryDoc, Constants.SEARCH_MODE_NORMAL, offset, maxCount, null);
         SearchResultList<BinderBrief> results = new SearchResultList<BinderBrief>(offset);
         Map<String, Object> nextParams = new HashMap<String, Object>();
         nextParams.put("description_format", descriptionFormatStr);

@@ -56,7 +56,7 @@
 					operation="mobile_find_people" />">
 		  <label for="searchText"><span class="ss_bold"><ssf:nlt tag="navigation.findUser"/></span></label>
 		  <input type="text" size="15" name="searchText" id="searchText" autocomplete="off"
-		    value="${ss_searchText}"/><input 
+		    value="<ssf:escapeQuotes>${ss_searchText}</ssf:escapeQuotes>"/><input 
 		    type="submit" name="okBtn" value="<ssf:nlt tag="button.ok"/>"/>
 		  </form>
 		</div>

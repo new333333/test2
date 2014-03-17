@@ -50,6 +50,7 @@ public class AuthenticationManagerUtil {
 			final String password,
 			final boolean createUser,
 			final boolean updateUser,
+			final boolean updateHomeFolder,
 			final boolean passwordAutoSynch,
 			final boolean ignorePassword, 
 			final Map updates,
@@ -67,7 +68,7 @@ public class AuthenticationManagerUtil {
 				return getAuthenticationManager().authenticate(
 						authenticationServiceProvider,
 						zoneName,
-						username, password, createUser, updateUser, passwordAutoSynch,
+						username, password, createUser, updateUser, updateHomeFolder, passwordAutoSynch,
 						ignorePassword, updates, authenticatorName);
 			}
 		}, zoneName);
@@ -85,8 +86,10 @@ public class AuthenticationManagerUtil {
 			SPropsUtil.getBoolean("portal.password.ignore", true);
 		boolean createUser = 
 			SPropsUtil.getBoolean("portal.user.auto.create", true);
-		
-		return authenticate(AuthenticationServiceProvider.UNKNOWN, zoneName, username, password, createUser, true, passwordAutoSynch, ignorePassword, updates, authenticatorName);
+        boolean updateHomeFolder =
+            SPropsUtil.getBoolean("portal.user.home.folder.auto.create", true);
+
+		return authenticate(AuthenticationServiceProvider.UNKNOWN, zoneName, username, password, createUser, true, updateHomeFolder, passwordAutoSynch, ignorePassword, updates, authenticatorName);
 	}
 	
 	public static User authenticate(final String zoneName,

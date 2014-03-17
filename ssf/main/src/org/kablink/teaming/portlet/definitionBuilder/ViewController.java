@@ -164,7 +164,7 @@ public class ViewController extends SAbstractController {
 				} else if (operation.equals("copyDefinition")) {
 					//Add a new definition type
 					String name = PortletRequestUtils.getStringParameter(request,"propertyId_name", "");
-					String caption = PortletRequestUtils.getStringParameter(request, "propertyId_caption", "");
+					String caption = PortletRequestUtils.getStringParameter(request, "propertyId_caption", "", false);
 					if (Validator.isNull(caption)) caption = name;
 					Definition def;
 					if (Validator.isNotNull(name)) {

@@ -102,7 +102,6 @@ import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.NamedFrame;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.ResizeComposite;
 import com.google.gwt.user.client.ui.Widget;
@@ -187,11 +186,6 @@ public class FolderEntryComposite extends ResizeComposite
 	// - Sharing  Manager (within sidebar); and
 	// - Footer.
 	private final static int FOLDER_ENTRY_COMPONENTS = 7;	//
-	
-	// The following is the ID/name of the <IFRAME> used to run the
-	// edit-in-place editor via an applet.
-	private final String EDIT_IN_PLACE_DIV_ID	= "ss_div_fileopen_GWT";
-	private final String EDIT_IN_PLACE_FRAME_ID	= "ss_iframe_fileopen_GWT";
 	
 	// The following defines the TeamingEvents that are handled by
 	// this class.  See EventHelper.registerEventHandlers() for how
@@ -308,7 +302,7 @@ public class FolderEntryComposite extends ResizeComposite
 		// ...create the base content panels...
 		m_rootPanel = new VibeFlowPanel();
 		m_rootPanel.addStyleName("vibe-feComposite-rootPanel");
-		createEditInPlaceFrame(m_rootPanel);
+		m_rootPanel.add(BinderViewsHelper.createEditInPlaceFrame());
 		createCaption(m_rootPanel, ((null == dialog) ? null : dialog.getHeaderPanel()));
 		m_contentPanel = new VibeFlowPanel();
 		m_contentPanel.addStyleName("vibe-feComposite-contentPanel");
@@ -489,36 +483,6 @@ public class FolderEntryComposite extends ResizeComposite
 		createCaptionClose(m_captionRightPanel);
 	}
 
-	/*
-	 * Creates the IFRAME, ... required to run a edit-in-place editor
-	 * on a file using the applet.
-	 */
-	private void createEditInPlaceFrame(Panel container) {
-		// Create the outer <DIV>...
-		VibeFlowPanel outer = new VibeFlowPanel();
-		outer.addStyleName("vibe-feView-editInPlaceOuter");
-		outer.getElement().setId(               EDIT_IN_PLACE_DIV_ID);
-		outer.getElement().setAttribute("name", EDIT_IN_PLACE_DIV_ID);
-		
-		// ...create the inner <DIV>...
-		VibeFlowPanel inner = new VibeFlowPanel();
-		inner.addStyleName("vibe-feView-editInPlaceInner");
-		inner.getElement().setAttribute("align", "right");
-
-		// ...create the <IFRAME>...
-		int eipFrameSize = (GwtClientHelper.jsIsIE() ? 1 : 0); 
-		NamedFrame eipFrame = new NamedFrame(EDIT_IN_PLACE_FRAME_ID);
-		eipFrame.getElement().setId(         EDIT_IN_PLACE_FRAME_ID);
-		eipFrame.setPixelSize(eipFrameSize, eipFrameSize);
-		eipFrame.setUrl(GwtClientHelper.getRequestInfo().getJSPath() + "forum/null.html");
-		eipFrame.setTitle(GwtClientHelper.isLicenseFilr() ? m_messages.novellFilr() : m_messages.novellTeaming());
-
-		// ...and tie it all together.
-		inner.add(    eipFrame);
-		outer.add(    inner   );
-		container.add(outer   );
-	}
-	
 	/**
 	 * Navigate the entry viewer to the given ViewFolderEntryInfo.
 	 * 
@@ -1144,50 +1108,10 @@ public class FolderEntryComposite extends ResizeComposite
 		EntityId editThisEntity = event.getEntityid();
 		if (isCompositeEntry(editThisEntity)) {
 			// Yes!  Run the edit on it.
-			onInvokeEditInPlaceAsync(event);
+			BinderViewsHelper.invokeEditInPlace(event);
 		}
 	}
 	
-	/*
-	 * Asynchronously handles editing the folder entry.
-	 */
-	private void onInvokeEditInPlaceAsync(final InvokeEditInPlaceEvent event) {
-		GwtClientHelper.deferCommand(new ScheduledCommand() {
-			@Override
-			public void execute() {
-				onInvokeEditInPlaceNow(event);
-			}
-		});
-	}
-	
-	/*
-	 * Synchronously handles editing the folder entry.
-	 */
-	private void onInvokeEditInPlaceNow(InvokeEditInPlaceEvent event) {
-		// How are we launching the edit-in-place editor?
-		String		et  = event.getEditorType(); if (null == et) et = "";
-		EntityId	eid = event.getEntityid();
-		if ("applet".equals(et)) {
-			// Via an applet!  Launch it.
-			GwtClientHelper.jsEditInPlace_Applet(
-				eid.getBinderId(),
-				eid.getEntityId(),
-				"_GWT",
-				event.getOperatingSystem(),
-				event.getAttachmentId());
-		}
-		
-		else if ("webdav".equals(et)) {
-			// Via a WebDAV URL!  Launch it.
-			GwtClientHelper.jsEditInPlace_WebDAV(event.getAttachmentUrl());
-		}
-		
-		else {
-			// Unknown!  Tell the user about the problem.
-			GwtClientHelper.deferredAlert(m_messages.eventHandling_UnknownEditInPlaceEditorType(et));
-		}
-	}
-
 	/**
 	 * Handles LockSelectedEntitiesEvent's received by this class.
 	 * 

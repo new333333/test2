@@ -32,6 +32,9 @@
  */
 package org.kablink.teaming;
 
+import java.io.PrintStream;
+import java.io.PrintWriter;
+
 import org.kablink.util.api.ApiErrorCode;
 
 /**
@@ -40,11 +43,24 @@ import org.kablink.util.api.ApiErrorCode;
  */
 public class ZoneNameExistsException extends ObjectExistsException {
 
+	private static final long serialVersionUID = 1L;
+	
 	private static final String errorCode = "errorcode.zone.name.exists";
 
 	public ZoneNameExistsException(String zoneName) {
 		super(errorCode, new Object[]{zoneName});
 	}
+
+    //overload to prevent stack trace from appearing in the log file
+    //This is because springs DispatcherPortlet calls the logger.warn method with the exception
+    public void printStackTrace(PrintStream s) {
+    	s.print(this.getLocalizedMessage());
+    }
+    //overload to prevent stack trace from appearing in the log file
+    //This is because springs DispatcherPortlet calls the logger.warn method with the exception
+    public void printStackTrace(PrintWriter s) {
+    	s.print(this.getLocalizedMessage());    	
+    }
 
 	/*
 	 * (non-Javadoc)

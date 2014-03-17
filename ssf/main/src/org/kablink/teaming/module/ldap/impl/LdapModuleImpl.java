@@ -106,7 +106,9 @@ import org.kablink.teaming.domain.ZoneInfo;
 import org.kablink.teaming.jobs.LdapSynchronization;
 import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.module.binder.BinderModule;
+import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.definition.DefinitionModule;
+import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.impl.CommonDependencyInjection;
 import org.kablink.teaming.module.ldap.LdapModule;
@@ -6711,6 +6713,63 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 
         // Save the default time zone as a global property
         topWorkspace.setProperty( ObjectKeys.GLOBAL_PROPERTY_DEFAULT_TIME_ZONE, timeZoneId );
+    }
+
+    public void updateHomeDirectoryIfNecessary(User user, String userName, boolean logErrors) {
+        if (user.getIdentityInfo().isFromLdap()) {
+            try {
+                // Does this user have a home directory attribute in ldap?
+                HomeDirInfo homeDirInfo = getHomeDirInfo( user.getName(), userName, logErrors );
+                if ( homeDirInfo != null )
+                {
+                    try {
+                        // Yes
+                        // Create/update the home directory net folder for this user.
+                        NetFolderHelper.createHomeDirNetFolder(
+                                getProfileModule(),
+                                getTemplateModule(),
+                                getBinderModule(),
+                                getFolderModule(),
+                                getNetFolderModule(),
+                                getAdminModule(),
+                                getResourceDriverModule(),
+                                null,
+                                homeDirInfo,
+                                user,
+                                true );
+                    } catch (Exception e) {
+                        throw new HomeFolderCreateException(e, homeDirInfo.getServerAddr(), userName);
+                    }
+                }
+                else
+                {
+                    // We only want to delete the home dir net folder if the web client is the one
+                    // making the request.
+                    Binder netFolderBinder;
+
+                    // The user does not have a home directory attribute.
+                    // Does the user already have a home dir net folder?
+                    // Does a net folder already exist for this user's home directory
+                    netFolderBinder = NetFolderHelper.findHomeDirNetFolder(
+                            binderModule,
+                            user.getWorkspaceId() );
+                    if ( netFolderBinder != null )
+                    {
+                        // Yes
+                        // Delete the home net folder.
+                        try {
+                            NetFolderHelper.deleteNetFolder( getNetFolderModule(), netFolderBinder.getId(), false );
+                        } catch (Exception e) {
+                            throw new HomeFolderDeleteException(e, netFolderBinder.getName(), userName);
+                        }
+
+                    }
+                }
+            }
+            catch (NamingException e) {
+                throw new LdapReadException(e, userName);
+            }
+        }
     }
 
     protected String nameToId(String name) {

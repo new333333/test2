@@ -308,7 +308,12 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 	}
 
 	public void addFileInfo(AuditTrail.AuditType type, FileAttachment attachment) {
-		AuditTrail audit = new AuditTrail(type, RequestContextHolder.getRequestContext().getUser(), attachment.getOwner().getEntity());
+		User user = RequestContextHolder.getRequestContext().getUser();
+		addFileInfo(type, attachment, user);
+	}
+
+	public void addFileInfo(AuditTrail.AuditType type, FileAttachment attachment, User asUser) {
+		AuditTrail audit = new AuditTrail(type, asUser, attachment.getOwner().getEntity());
 		audit.setDescription(attachment.getFileItem().getName());
 		audit.setFileId(attachment.getId());
 		addAuditTrail(audit);
@@ -435,7 +440,8 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 		
 		if (userIds.length > 0) {
 			org.kablink.util.search.Criteria crit = SearchUtils.entriesForTrackedMiniBlogs(userIds);
-			Map results = getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, offset, maxResults);
+			Map results = getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, offset, maxResults,
+					org.kablink.teaming.module.shared.SearchUtils.fieldNamesList(Constants.CREATORID_FIELD,Constants.DESC_FIELD,Constants.MODIFICATION_DATE_FIELD));
 
 	    	List<Map> items = (List) results.get(ObjectKeys.SEARCH_ENTRIES);
 
@@ -887,7 +893,9 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 		int maxResults = ((Integer) options.get(ObjectKeys.SEARCH_MAX_HITS)).intValue();
 		
 		org.kablink.util.search.Criteria crit = SearchUtils.bindersByAccess(userId);
-		Map results = getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, offset, maxResults, userId);
+		Map results = getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, offset, maxResults, 
+				org.kablink.teaming.module.shared.SearchUtils.fieldNamesList(Constants.DOCID_FIELD,Constants.ENTITY_PATH,Constants.ENTITY_FIELD),
+				userId);
 
     	List<Map> items = (List) results.get(ObjectKeys.SEARCH_ENTRIES);
 
@@ -990,7 +998,9 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 			int maxResults = ((Integer) options.get(ObjectKeys.SEARCH_MAX_HITS)).intValue();
 			
 			org.kablink.util.search.Criteria crit = SearchUtils.entitiesByDateAndAncestor(binderIds, null, null);
-			Map results = getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, offset, maxResults, user.getId());
+			Map results = getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, offset, maxResults, 
+					org.kablink.teaming.module.shared.SearchUtils.fieldNamesList(Constants.DOCID_FIELD,Constants.ENTITY_FIELD,Constants.ENTITY_PATH,Constants.TITLE_FIELD,Constants.CREATORID_FIELD),
+					user.getId());
 			page++;
 	
 	    	List<Map> items = (List) results.get(ObjectKeys.SEARCH_ENTRIES);
@@ -1160,7 +1170,8 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 		int maxResults = ((Integer) options.get(ObjectKeys.SEARCH_MAX_HITS)).intValue();
 		
 		org.kablink.util.search.Criteria crit = SearchUtils.entries(entryIds);
-		Map results = getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, offset, maxResults);
+		Map results = getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, offset, maxResults,
+				org.kablink.teaming.module.shared.SearchUtils.fieldNamesList(Constants.DOCID_FIELD,Constants.CREATORID_FIELD));
 
     	List<Map> items = (List) results.get(ObjectKeys.SEARCH_ENTRIES);
 

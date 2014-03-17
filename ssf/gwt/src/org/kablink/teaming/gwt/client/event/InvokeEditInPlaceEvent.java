@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -48,6 +48,7 @@ public class InvokeEditInPlaceEvent extends VibeEventBase<InvokeEditInPlaceEvent
     public static Type<Handler> TYPE = new Type<Handler>();
     
     private EntityId	m_entityId;			//
+    private Long		m_folderId;			//
     private String		m_attachmentId;		//
     private String		m_attachmentUrl;	//
     private String		m_editorType;		//
@@ -63,7 +64,8 @@ public class InvokeEditInPlaceEvent extends VibeEventBase<InvokeEditInPlaceEvent
 	
 	/**
 	 * Class constructor.
-	 * 
+	 *
+	 * @param folderId
 	 * @param entityId
 	 * @param operatingSystem
 	 * @param openInEditor
@@ -71,17 +73,23 @@ public class InvokeEditInPlaceEvent extends VibeEventBase<InvokeEditInPlaceEvent
 	 * @param attachmentId
 	 * @param attachmentUrl
 	 */
-	public InvokeEditInPlaceEvent(EntityId entityId, String operatingSystem, String openInEditor, String editorType, String attachmentId, String attachmentUrl) {
+	public InvokeEditInPlaceEvent(Long folderId, EntityId entityId, String operatingSystem, String openInEditor, String editorType, String attachmentId, String attachmentUrl) {
 		// Initialize the super class...
 		super();
 		
 		// ...and store the parameters.
 		setEntityId(       entityId       );
+		setFolderId(       folderId       );
 		setOperatingSystem(operatingSystem);
 		setOpenInEditor(   openInEditor   );
 		setEditorType(     editorType     );
 		setAttachmentId(   attachmentId   );
 		setAttachmentUrl(  attachmentUrl  );
+	}
+	
+	public InvokeEditInPlaceEvent(EntityId entityId, String operatingSystem, String openInEditor, String editorType, String attachmentId, String attachmentUrl) {
+		// Always use the initial form of the constructor.
+		this(null, entityId, operatingSystem, openInEditor, editorType, attachmentId, attachmentUrl);
 	}
 
 	/**
@@ -90,6 +98,7 @@ public class InvokeEditInPlaceEvent extends VibeEventBase<InvokeEditInPlaceEvent
 	 * @return
 	 */
 	public EntityId getEntityid()        {return m_entityId;       }
+	public Long     getFolderId()        {return m_folderId;       }
 	public String   getAttachmentId()    {return m_attachmentId;   }
 	public String   getAttachmentUrl()   {return m_attachmentUrl;  }
 	public String   getEditorType()      {return m_editorType;     }
@@ -99,9 +108,10 @@ public class InvokeEditInPlaceEvent extends VibeEventBase<InvokeEditInPlaceEvent
 	/**
 	 * Set'er methods.
 	 * 
-	 * @param entityId
+	 * @param
 	 */
 	public void setEntityId(       EntityId entityId)        {m_entityId        = entityId;       }
+	public void setFolderId(       Long     folderId)        {m_folderId        = folderId;       }
 	public void setAttachmentId(   String   attachmentId)    {m_attachmentId    = attachmentId;   }
 	public void setAttachmentUrl(  String   attachmentUrl)   {m_attachmentUrl   = attachmentUrl;  }
 	public void setEditorType(     String   editorType)      {m_editorType      = editorType;     }

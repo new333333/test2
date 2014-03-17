@@ -573,10 +573,14 @@ public class MarkupUtil {
 							if (def != null) {
 								String dataType = DefinitionHelper.findAttributeType(dataName, def.getDefinition());
 								if ("date".equals(dataType) || "date_time".equals(dataType)) {
-									String dateString = (String)searchResults.get(dataName);
-									if (dateString != null) {
+									Object dateObj = searchResults.get(dataName);
+									Date date;
+									if(dateObj instanceof Date) {
+										date = (Date) dateObj;
+									}
+									else if(dateObj instanceof String) {
 										try {
-											Date date = DateTools.stringToDate(dateString);
+											date = DateTools.stringToDate((String)dateObj);
 											DateFormat df;
 											if ("date".equals(dataType)) {
 												df = DateFormat.getDateInstance(DateFormat.MEDIUM, user.getLocale());

@@ -97,7 +97,7 @@ public class AddEntryController extends SAbstractController {
 		Map formData = request.getParameterMap();
 		Long folderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
 		String action = PortletRequestUtils.getStringParameter(request, WebKeys.ACTION, "");
-		String blogReply = PortletRequestUtils.getStringParameter(request, WebKeys.URL_BLOG_REPLY, "");
+		String blogReply = PortletRequestUtils.getStringParameter(request, WebKeys.URL_BLOG_REPLY, "", false);
 		String addEntryFromIFrame = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ADD_DEFAULT_ENTRY_FROM_INFRAME, "");
 		String namespace = PortletRequestUtils.getStringParameter(request, WebKeys.URL_NAMESPACE, "");
 		//See if the add entry form was submitted
@@ -280,7 +280,7 @@ public class AddEntryController extends SAbstractController {
 	        	    	String strDecodedFileName = URLDecoder.decode(strEncodedFileName, "UTF-8"); 
 	        	    	
 	        	    	//Getting the file folder information
-	        	    	String fileFolderNameVal = PortletRequestUtils.getStringParameter(request, fileFolderName, "");
+	        	    	String fileFolderNameVal = PortletRequestUtils.getStringParameter(request, fileFolderName, "", false);
 	        	    	//Getting the list of folders as a arraylist
 	        	    	ArrayList folderArrayList = getFolderListWithDecodedValues(fileFolderNameVal);
 	        	    	
@@ -465,11 +465,11 @@ public class AddEntryController extends SAbstractController {
 		Map model = new HashMap();
 			
 		String action = PortletRequestUtils.getStringParameter(request, WebKeys.ACTION, "");
-		String title = PortletRequestUtils.getStringParameter(request, "title", "");
+		String title = PortletRequestUtils.getStringParameter(request, "title", "", false);
 		model.put(WebKeys.ENTRY_TITLE, title);
 		model.put(WebKeys.OPERATION, action);
 		
-		String blogReply = PortletRequestUtils.getStringParameter(request, WebKeys.URL_BLOG_REPLY, "");
+		String blogReply = PortletRequestUtils.getStringParameter(request, WebKeys.URL_BLOG_REPLY, "", false);
 		if (!blogReply.equals("")) model.put(WebKeys.FORM_STYLE_COMPACT, true);
 		
 		User user = RequestContextHolder.getRequestContext().getUser();

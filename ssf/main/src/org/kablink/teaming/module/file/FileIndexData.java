@@ -85,20 +85,8 @@ public class FileIndexData {
 		creatorName = (String)doc.get(Constants.CREATOR_NAME_FIELD);
 		modifierId = Long.valueOf((String)doc.get(Constants.MODIFICATIONID_FIELD));
 		modifierName = (String)doc.get(Constants.MODIFICATION_NAME_FIELD);
-		String dateStr = (String)doc.get(Constants.CREATION_DATE_FIELD);
-		try {
-			createdDate =  DateTools.stringToDate(dateStr);
-		} catch (ParseException e) {
-			logger.warn("Error parsing creation date [" + dateStr 
-					+ "] for file [" + id + "]. Setting it to current date");
-		}
-		dateStr = (String)doc.get(Constants.MODIFICATION_DATE_FIELD);
-		try {
-			modifiedDate =  DateTools.stringToDate(dateStr);
-		} catch (ParseException e) {
-			logger.warn("Error parsing modification date [" + dateStr 
-					+ "] for file [" + id + "]. Setting it to current date");
-		}
+        createdDate = getDate(id, doc, Constants.CREATION_DATE_FIELD);
+        modifiedDate = getDate(id, doc, Constants.MODIFICATION_DATE_FIELD);
 		String sizeStr = (String)doc.get(Constants.FILE_SIZE_IN_BYTES_FIELD);
 		if(sizeStr != null)
 			size = Long.valueOf(sizeStr);
@@ -121,6 +109,21 @@ public class FileIndexData {
             minorVersionNumber = null;
         md5 = (String)doc.get(Constants.FILE_MD5_FIELD);
 	}
+
+    private static Date getDate(String id, Map<String, Object> doc, String key) {
+        Object value = doc.get(key);
+        if (value instanceof Date) {
+            return (Date) value;
+        } else if (value instanceof String) {
+            try {
+                return DateTools.stringToDate((String) value);
+            } catch (ParseException e) {
+                logger.warn("Error parsing " + key + " date [" + value
+                        + "] for file [" + id + "]. Setting it to current date");
+            }
+        }
+        return null;
+    }
 
 	public String getName() {
 		return name;

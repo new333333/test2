@@ -128,7 +128,8 @@ public class SearchUtils {
 			crit,
 			Constants.SEARCH_MODE_NORMAL,
 			0,	// Starting index.
-			1);	// Hits requested.
+			1,	// Hits requested.
+			org.kablink.teaming.module.shared.SearchUtils.fieldNamesList());
 		int totalRecords = ((Integer) searchResults.get(ObjectKeys.SEARCH_COUNT_TOTAL)).intValue();
 		return (0 < totalRecords);
 	}
@@ -712,6 +713,10 @@ public class SearchUtils {
         return Restrictions.eq(Constants.ENTRY_ANCESTRY, id.toString());
     }
 
+    public static Criterion buildDocIdCriterion(Long id) {
+        return Restrictions.eq(Constants.DOCID_FIELD, id.toString());
+    }
+
     public static Criterion getFalseCriterion() {
         return Restrictions.eq(Constants.DOC_TYPE_FIELD, "_fake_");
     }
@@ -1064,7 +1069,8 @@ public class SearchUtils {
 		crit.add(in(Constants.IS_MYFILES_DIR_FIELD, new String[]{Constants.TRUE        }));
 
 		// Can we find any?
-		Map        searchResults = bs.getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, 0, Integer.MAX_VALUE);
+		Map        searchResults = bs.getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, 0, Integer.MAX_VALUE,
+				org.kablink.teaming.module.shared.SearchUtils.fieldNamesList(Constants.DOCID_FIELD));
 		List<Map>  searchEntries = ((List<Map>) searchResults.get(ObjectKeys.SEARCH_ENTRIES));
 		List<Long> reply         = new ArrayList<Long>();
 		if ((null != searchEntries) && (!(searchEntries.isEmpty()))) {

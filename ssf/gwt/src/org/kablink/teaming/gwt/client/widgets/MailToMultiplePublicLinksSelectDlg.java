@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -79,7 +79,6 @@ public class MailToMultiplePublicLinksSelectDlg extends DlgBox implements EditCa
 	private RowFormatter							m_linksRF;			// The RowFormatter for m_linksPanel.
 	private ScrollPanel								m_linksScroller;	// The ScrollPanel that contains the links.
 	private String									m_imagesPath;		// Path to Vibe's images.
-	private String									m_product;			// The product we're running as (Filr vs. Vibe.)
 	private VibeFlexTable							m_linksPanel;		// The panel containing the links themselves.
 	private VibeFlowPanel							m_contentPanel;		// The panel containing the content of the dialog below the header.
 
@@ -105,7 +104,6 @@ public class MailToMultiplePublicLinksSelectDlg extends DlgBox implements EditCa
 		// ...initialize everything that requires it...
 		m_messages   = GwtTeaming.getMessages();
 		m_imagesPath = GwtClientHelper.getRequestInfo().getImagesPath();
-		m_product    = GwtClientHelper.getProductName();
 	
 		// ...and create the dialog's content.
 		createAllDlgContent(
@@ -193,10 +191,10 @@ public class MailToMultiplePublicLinksSelectDlg extends DlgBox implements EditCa
 		VibeFlowPanel hintPanel = new VibeFlowPanel();
 		hintPanel.addStyleName("vibe-mailToMultiplePublicLinksSelectDlg-hintPanel");
 		mainPanel.add(hintPanel);
-		Label hintStart = new Label(m_messages.mailToMultiplePublicLinksSelect(m_product));
+		Label hintStart = new Label(m_messages.mailToMultiplePublicLinksSelect());
 		hintStart.addStyleName("vibe-mailToMultiplePublicLinksSelectDlg-hintStart");
 		hintPanel.add(hintStart);
-		Label hintTail = new Label(m_messages.mailToMultiplePublicLinksSelect_HeaderTail(m_product));
+		Label hintTail = new Label(m_messages.mailToMultiplePublicLinksSelect_HeaderTail());
 		hintTail.addStyleName("vibe-mailToMultiplePublicLinksSelectDlg-hintTail");
 		hintPanel.add(hintTail);
 	}
@@ -397,7 +395,7 @@ public class MailToMultiplePublicLinksSelectDlg extends DlgBox implements EditCa
 		if (0 == c) {
 			// No!  That should never happen.  Tell the user about the
 			// problem and bail.
-			GwtClientHelper.deferredAlert(m_messages.mailToMultiplePublicLinksSelect_InternalError_NoLinks(m_product));
+			GwtClientHelper.deferredAlert(m_messages.mailToMultiplePublicLinksSelect_InternalError_NoLinks());
 			m_mailToCallback.onCancel();
 			return;
 		}
@@ -411,7 +409,7 @@ public class MailToMultiplePublicLinksSelectDlg extends DlgBox implements EditCa
 
 		// If we get here, the public links we received are valid!
 		// Set the dialog's caption....
-		setCaption(m_messages.mailToMultiplePublicLinksSelect_Caption(m_product, c));
+		setCaption(m_messages.mailToMultiplePublicLinksSelect_Caption(c));
 
 		// ...and populate the dialog.
 		loadPart1Async();

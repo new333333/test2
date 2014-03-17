@@ -166,6 +166,15 @@ public interface SharingModule {
  	public DefinableEntity getSharedEntity(ShareItem shareItem);
  	
  	/**
+ 	 * Get a shared entity associated with the share item without checking ACLs.  Useful when we need to
+     * look up an entity for a user in order to provide share information after the share has expired.
+ 	 *
+ 	 * @param shareItem
+ 	 * @return
+ 	 */
+ 	public DefinableEntity getSharedEntityWithoutAccessCheck(ShareItem shareItem);
+
+ 	/**
  	 * Get the recipient associated with the share item.
  	 * 
  	 * @param shareItem

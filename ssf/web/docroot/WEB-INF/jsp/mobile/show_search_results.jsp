@@ -73,7 +73,8 @@
           </span>
         </label>
 	    <br/>
-	    <input type="text" size="20" name="searchText" id="searchText" value="${ss_searchText}"/><input 
+	    <input type="text" size="20" name="searchText" id="searchText" 
+	      value="<ssf:escapeQuotes>${ss_searchText}</ssf:escapeQuotes>"/><input 
 	      type="submit" name="searchBtn" value="<ssf:nlt tag="button.ok"/>"/>
 	    <input type="hidden" name="scope" value="${ss_searchScope}"/>
 	  </form>

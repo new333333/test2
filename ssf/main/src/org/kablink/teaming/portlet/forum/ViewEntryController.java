@@ -322,7 +322,7 @@ public class ViewEntryController extends  SAbstractController {
 				
 				entryId = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_TITLE, "");
 				if (!entryId.equals("")) {
-					model.put(WebKeys.ENTRY_TITLE, PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_PAGE_TITLE, ""));
+					model.put(WebKeys.ENTRY_TITLE, PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_PAGE_TITLE, "", false));
 					Set entries = getFolderModule().getFolderEntryByNormalizedTitle(folderId, entryId, zoneUUID);
 					if (entries.size() == 1) {
 						FolderEntry entry = (FolderEntry)entries.iterator().next();

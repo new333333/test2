@@ -733,7 +733,8 @@ public void folder_deleteEntryWorkflow(String accessToken, long entryId, String 
 		
 		Document query = crit.toQuery();
 		
-		Map folderEntries = getBinderModule().executeSearchQuery(query, Constants.SEARCH_MODE_NORMAL, 0, 0);
+		Map folderEntries = getBinderModule().executeSearchQuery(query, Constants.SEARCH_MODE_NORMAL, 0, 0,
+				org.kablink.teaming.module.shared.SearchUtils.fieldNamesList(Constants.DOCID_FIELD));
 		List<Map> entryList = (List) folderEntries.get(ObjectKeys.SEARCH_ENTRIES);
 		List<Long> ids = new ArrayList<Long>();
 		for(Map entry:entryList) {
@@ -844,7 +845,8 @@ public void folder_deleteEntryWorkflow(String accessToken, long entryId, String 
 	public void folder_uploadAttachmentAsByteArray(String accessToken,
 			long entryId, String fileUploadDataItemName, String attachmentId,
 			byte[] fileContent) {
-		if (Validator.isNull(fileUploadDataItemName)) fileUploadDataItemName="ss_attachFile1";
+		if (Validator.isNull(fileUploadDataItemName) || "ss_attachFile".equals(fileUploadDataItemName))
+			fileUploadDataItemName="ss_attachFile1";
 		
 		FolderEntry entry = getFolderModule().getEntry(null, entryId);
 		FileAttachment fa = getFileAttachment(entry, attachmentId);

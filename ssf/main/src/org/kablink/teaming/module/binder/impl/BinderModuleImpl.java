@@ -35,6 +35,7 @@ package org.kablink.teaming.module.binder.impl;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -163,6 +164,7 @@ import org.kablink.teaming.web.tree.DomTreeBuilder;
 import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.ExportHelper;
 import org.kablink.teaming.web.util.GwtUIHelper;
+import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.TrashHelper;
 import org.kablink.teaming.web.util.WebHelper;
 import org.kablink.util.StringUtil;
@@ -1746,26 +1748,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 			}
     		//We must guard against invalid copy attempts (such as complex entries copied to mirrored folder)
     		if (!source.isAclExternallyControlled() && destinationParent.isAclExternallyControlled()) {
-    			//This type of request could have invalid entries, so check each one
-    			Map getEntriesOptions = new HashMap();
-				//Specify if this request is to copy children binders, too.
-    			getEntriesOptions.put(ObjectKeys.SEARCH_INCLUDE_NESTED_BINDERS, new Boolean(cascade));
-          		Map folderEntries = getFolderModule().getEntries(source.getId(), getEntriesOptions);
-    	      	List<Map> searchEntries = (List)folderEntries.get(ObjectKeys.SEARCH_ENTRIES);
-
-    			for (Map se : searchEntries) {
-    				String entryIdStr = (String)se.get(Constants.DOCID_FIELD);
-    				if (entryIdStr != null && !entryIdStr.equals("")) {
-        				Long entryId = Long.valueOf(entryIdStr);
-        				Entry entry = getFolderModule().getEntry(null, entryId);
-    					try {
-    						BinderHelper.copyEntryCheckMirrored(source, entry, destinationParent);
-    					} catch(Exception e) {
-    						//This entry cannot be copied, so don't copy this binder
-    						throw new NotSupportedException("errorcode.notsupported.copyEntry.complexEntryToMirrored." + (destinationParent.isAclExternallyControlled() ? "net" : "mirrored"));
-    					}
-    				}
-    			}
+    			copyFolderCheckMirrored(source, destinationParent, cascade);
     		}
 			Map params = new HashMap();
 			if (options != null)
@@ -1781,6 +1764,45 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 			return binder;
 		} else {
 			throw new NotSupportedException(NLT.get("quota.binder.exceeded"));
+		}
+	}
+	
+	private void copyFolderCheckMirrored(Binder source, Binder destination, boolean cascade) {
+		//This type of request could have invalid entries, so check each one
+		Map getEntriesOptions = new HashMap();
+		//Specify if this request is to copy children binders, too.
+		getEntriesOptions.put(ObjectKeys.SEARCH_INCLUDE_NESTED_BINDERS, new Boolean(cascade));
+  		Map folderEntries = getFolderModule().getEntries(source.getId(), getEntriesOptions);
+      	List<Map> searchEntries = (List)folderEntries.get(ObjectKeys.SEARCH_ENTRIES);
+
+		for (Map se : searchEntries) {
+			String entityIdStr   = ((String) se.get(Constants.DOCID_FIELD ));
+			String entityTypeStr = ((String) se.get(Constants.ENTITY_FIELD));
+			if (MiscUtil.hasString(entityIdStr) && MiscUtil.hasString(entityTypeStr)) {
+				if (entityTypeStr.equalsIgnoreCase(EntityType.folderEntry.name())) {
+					Long  entryId = Long.valueOf(entityIdStr);
+					Entry entry   = getFolderModule().getEntry(null, entryId);
+					try {
+						BinderHelper.copyEntryCheckMirrored(source, entry, destination);
+					} catch(Exception e) {
+						//This entry cannot be copied, so don't copy this binder
+						throw new NotSupportedException("errorcode.notsupported.copyEntry.complexEntryToMirrored." + (destination.isAclExternallyControlled() ? "net" : "mirrored"));
+					}
+				}
+				else if (entityTypeStr.equalsIgnoreCase(EntityType.folder.name())) {
+					Long   folderId = Long.valueOf(entityIdStr);
+					Folder folder   = getFolderModule().getFolder(folderId);
+					copyFolderCheckMirrored(folder, destination, cascade);
+				}
+				else {
+					//This entry cannot be copied, so don't copy this binder
+					throw new NotSupportedException("errorcode.notsupported.copyEntry.complexEntryToMirrored." + (destination.isAclExternallyControlled() ? "net" : "mirrored"));
+				}
+			}
+			else {
+				//This entry cannot be copied, so don't copy this binder
+				throw new NotSupportedException("errorcode.notsupported.copyEntry.complexEntryToMirrored." + (destination.isAclExternallyControlled() ? "net" : "mirrored"));
+			}
 		}
 	}
 
@@ -2005,71 +2027,71 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	}
 
 	@Override
-	public Map executeSearchQuery(Criteria crit, int searchMode, int offset, int maxResults) {
-		return executeSearchQuery(crit, searchMode, offset, maxResults, false);
+	public Map executeSearchQuery(Criteria crit, int searchMode, int offset, int maxResults, List<String> fieldNames) {
+		return executeSearchQuery(crit, searchMode, offset, maxResults, fieldNames, false);
 	}
 	@Override
-	public Map executeSearchQuery(Criteria crit, int searchMode, int offset, int maxResults, boolean preDeleted) {
-		return executeSearchQuery(crit.toQuery(), searchMode, offset, maxResults, preDeleted);
-	}
-
-	@Override
-	public Map executeSearchQuery(Criteria crit, int searchMode, int offset, int maxResults, boolean preDeleted, boolean ignoreAcls) {
-		return executeSearchQuery(crit.toQuery(), searchMode, offset, maxResults, preDeleted, ignoreAcls);
+	public Map executeSearchQuery(Criteria crit, int searchMode, int offset, int maxResults, List<String> fieldNames, boolean preDeleted) {
+		return executeSearchQuery(crit.toQuery(), searchMode, offset, maxResults, fieldNames, preDeleted);
 	}
 
 	@Override
-	public Map executeSearchQuery(Criteria crit, int searchMode, int offset, int maxResults,
+	public Map executeSearchQuery(Criteria crit, int searchMode, int offset, int maxResults, List<String> fieldNames, boolean preDeleted, boolean ignoreAcls) {
+		return executeSearchQuery(crit.toQuery(), searchMode, offset, maxResults, fieldNames, preDeleted, ignoreAcls);
+	}
+
+	@Override
+	public Map executeSearchQuery(Criteria crit, int searchMode, int offset, int maxResults, List<String> fieldNames,
 			Long asUserId) {
-		return executeSearchQuery(crit, searchMode, offset, maxResults, asUserId, false);
+		return executeSearchQuery(crit, searchMode, offset, maxResults, fieldNames, asUserId, false);
 	}
 	@Override
-	public Map executeSearchQuery(Criteria crit, int searchMode, int offset, int maxResults,
+	public Map executeSearchQuery(Criteria crit, int searchMode, int offset, int maxResults, List<String> fieldNames,
 			Long asUserId, boolean preDeleted, boolean ignoreAcls) {
-		return executeSearchQuery(crit.toQuery(), searchMode, offset, maxResults, asUserId, preDeleted, ignoreAcls);
+		return executeSearchQuery(crit.toQuery(), searchMode, offset, maxResults, fieldNames, asUserId, preDeleted, ignoreAcls);
 	}
 
 	@Override
-	public Map executeSearchQuery(Criteria crit, int searchMode, int offset, int maxResults,
+	public Map executeSearchQuery(Criteria crit, int searchMode, int offset, int maxResults, List<String> fieldNames,
 			Long asUserId, boolean preDeleted) {
-		return executeSearchQuery(crit.toQuery(), searchMode, offset, maxResults, asUserId, preDeleted);
+		return executeSearchQuery(crit.toQuery(), searchMode, offset, maxResults, fieldNames, asUserId, preDeleted);
 	}
 
 	@Override
-	public Map executeSearchQuery(Document query, int searchMode, int offset, int maxResults) {
-		return executeSearchQuery(query, searchMode, offset, maxResults, false);
+	public Map executeSearchQuery(Document query, int searchMode, int offset, int maxResults, List<String> fieldNames) {
+		return executeSearchQuery(query, searchMode, offset, maxResults, fieldNames, false);
 	}
 	@Override
-	public Map executeSearchQuery(Document query, int searchMode, int offset, int maxResults, boolean preDeleted) {
-		return executeSearchQuery(query, searchMode, offset, maxResults, preDeleted, false);
+	public Map executeSearchQuery(Document query, int searchMode, int offset, int maxResults, List<String> fieldNames, boolean preDeleted) {
+		return executeSearchQuery(query, searchMode, offset, maxResults, fieldNames, preDeleted, false);
 	}
 	@Override
-	public Map executeSearchQuery(Document query, int searchMode, int offset, int maxResults, boolean preDeleted, boolean ignoreAcls) {
+	public Map executeSearchQuery(Document query, int searchMode, int offset, int maxResults, List<String> fieldNames, boolean preDeleted, boolean ignoreAcls) {
 		// Create the Lucene query
 		QueryBuilder qb = new QueryBuilder(!ignoreAcls, preDeleted);
 		SearchObject so = qb.buildQuery(query);
 
-		return executeSearchQuery(so, searchMode, offset, maxResults);
+		return _executeSearchQuery(so, searchMode, offset, maxResults, fieldNames);
 	}
 
 	@Override
-	public Map executeSearchQuery(Document query, int searchMode, int offset, int maxResults,
+	public Map executeSearchQuery(Document query, int searchMode, int offset, int maxResults, List<String> fieldNames,
 			Long asUserId) {
-		return executeSearchQuery(query, searchMode, offset, maxResults, false);
+		return executeSearchQuery(query, searchMode, offset, maxResults, fieldNames, false);
 	}
 	@Override
-	public Map executeSearchQuery(Document query, int searchMode, int offset, int maxResults,
+	public Map executeSearchQuery(Document query, int searchMode, int offset, int maxResults, List<String> fieldNames,
 			Long asUserId, boolean preDeleted) {
-		return executeSearchQuery(query, searchMode, offset, maxResults, asUserId, preDeleted, false);
+		return executeSearchQuery(query, searchMode, offset, maxResults, fieldNames, asUserId, preDeleted, false);
 	}
 	@Override
-	public Map executeSearchQuery(Document query, int searchMode, int offset, int maxResults,
+	public Map executeSearchQuery(Document query, int searchMode, int offset, int maxResults, List<String> fieldNames,
 			Long asUserId, boolean preDeleted, boolean ignoreAcls) {
 		// Create the Lucene query
 		QueryBuilder qb = new QueryBuilder(!ignoreAcls, preDeleted, asUserId);
 		SearchObject so = qb.buildQuery(query);
 
-		return executeSearchQuery(so, searchMode, offset, maxResults);
+		return _executeSearchQuery(so, searchMode, offset, maxResults, fieldNames);
 	}
 
 	@Override
@@ -2108,11 +2130,11 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 				offset = (Integer) options.get(ObjectKeys.SEARCH_OFFSET);
 		}
 
-		return executeSearchQuery(so, searchMode, offset, maxResults);
+		return _executeSearchQuery(so, searchMode, offset, maxResults, null);
 	}
 
-	protected Map executeSearchQuery(SearchObject so, int searchMode, int offset, int maxResults) {
-		Hits hits = executeLuceneQuery(so, searchMode, offset, maxResults);
+	protected Map _executeSearchQuery(SearchObject so, int searchMode, int offset, int maxResults, List<String> fieldNames) {
+		Hits hits = executeLuceneQueryInternal(so, searchMode, offset, maxResults, fieldNames);
 		return returnSearchQuery(hits);
 	}
 
@@ -2137,7 +2159,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		return retMap;
 	}
 
-	private Hits executeLuceneQuery(SearchObject so, int searchMode, int offset, int maxResults) {
+	private Hits executeLuceneQueryInternal(SearchObject so, int searchMode, int offset, int maxResults, List<String> fieldNames) {
 		Hits hits = new Hits(0);
 
 		Query soQuery = so.getLuceneQuery(); // Get the query into a variable to avoid
@@ -2152,7 +2174,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 				.openReadSession();
 		try {
 			hits = luceneSession.search(RequestContextHolder.getRequestContext().getUserId(),
-					so.getBaseAclQueryStr(), so.getExtendedAclQueryStr(), searchMode, soQuery, null, so.getSortBy(), offset,
+					so.getBaseAclQueryStr(), so.getExtendedAclQueryStr(), searchMode, soQuery, fieldNames, so.getSortBy(), offset,
 					maxResults);
 		} catch (RuntimeException e) {
 			logger.error("Error searching index", e);
@@ -2346,6 +2368,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	public void setTeamMembershipInherited(Long binderId, final boolean inherit) {
         setTeamMembershipInherited(binderId, inherit, true);
     }
+	@Override
 	public void setTeamMembershipInherited(Long binderId, final boolean inherit, boolean doAccessCheck) {
 		final Binder binder = loadBinder(binderId);
         if (doAccessCheck) {
@@ -2443,7 +2466,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 
 	// return binders this user is a team_member of
 	@Override
-	public List<Map> getTeamMemberships(Long userId) {
+	public List<Map> getTeamMemberships(Long userId, List<String> fieldNames) {
 
 		// We use search engine to get the list of binders.
 		Criteria crit = new Criteria().add(
@@ -2468,7 +2491,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		QueryBuilder qb = new QueryBuilder(true, false);
 		SearchObject so = qb.buildQuery(crit.toQuery());
 
-		Hits hits = executeLuceneQuery(so, Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, 0, Integer.MAX_VALUE);
+		Hits hits = executeLuceneQueryInternal(so, Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, 0, Integer.MAX_VALUE, fieldNames);
 		if (hits == null)
 			return new ArrayList();
 		return SearchUtils.getSearchEntries(hits);
@@ -3053,6 +3076,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
         setBinderVersionsInherited(binderId, binderVersionsInherited, true);
     }
 
+	@Override
 	public void setBinderVersionsInherited(Long binderId, final Boolean binderVersionsInherited, boolean doAccessCheck)
 			throws AccessControlException {
 		final Binder binder = loadBinder(binderId);
@@ -3253,6 +3277,8 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 			throws AccessControlException {
         setBinderFileEncryptionInherited(binderId, binderEncryptionInherited, true);
     }
+	
+	@Override
 	public void setBinderFileEncryptionInherited(Long binderId, final Boolean binderEncryptionInherited, boolean doAccessCheck)
 			throws AccessControlException {
 		final Binder binder = loadBinder(binderId);
@@ -3280,19 +3306,19 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		crit.add(in(Constants.DOC_TYPE_FIELD, new String[] {Constants.DOC_TYPE_BINDER}))
 			.add(in(Constants.ENTRY_ANCESTRY, folderIds));
 		crit.addOrder(Order.asc(Constants.SORTNUMBER_FIELD));
-		Map binderMap = executeSearchQuery(crit, Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, 0, ObjectKeys.SEARCH_MAX_HITS_SUB_BINDERS);
-		Map binderMapDeleted = executeSearchQuery(crit, Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, 0, ObjectKeys.SEARCH_MAX_HITS_SUB_BINDERS, true);
+		Map binderMap = executeSearchQuery(crit, Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, 0, ObjectKeys.SEARCH_MAX_HITS_SUB_BINDERS, SearchUtils.fieldNamesList(Constants.DOCID_FIELD));
+		Map binderMapDeleted = executeSearchQuery(crit, Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, 0, ObjectKeys.SEARCH_MAX_HITS_SUB_BINDERS, SearchUtils.fieldNamesList(Constants.DOCID_FIELD), true);
 
 		List binderMapList = (List)binderMap.get(ObjectKeys.SEARCH_ENTRIES); 
 		List binderMapListDeleted = (List)binderMapDeleted.get(ObjectKeys.SEARCH_ENTRIES); 
 		List binderIdList = new ArrayList();
       	for (Iterator iter=binderMapList.iterator(); iter.hasNext();) {
       		Map entryMap = (Map) iter.next();
-      		binderIdList.add(new Long((String)entryMap.get("_docId")));
+      		binderIdList.add(new Long((String)entryMap.get(Constants.DOCID_FIELD)));
       	}
       	for (Iterator iter=binderMapListDeleted.iterator(); iter.hasNext();) {
       		Map entryMap = (Map) iter.next();
-      		binderIdList.add(new Long((String)entryMap.get("_docId")));
+      		binderIdList.add(new Long((String)entryMap.get(Constants.DOCID_FIELD)));
       	}
       	SortedSet<Binder> binderList = getBinders(binderIdList);
       	List<Long> binderIds = new ArrayList<Long>();
@@ -3728,9 +3754,9 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	}
 
     @Override
-	public BinderChanges searchForChanges(Long [] binderIds, Date sinceDate, int maxResults) {
+	public BinderChanges searchForChanges(Long [] binderIds, Long [] entryIds, Date sinceDate, int maxResults) {
         List<HKey> binderKeys = getHKeys(binderIds);
-        if (binderKeys==null || binderKeys.size()==0) {
+        if (binderKeys.size()==0 && (entryIds==null || entryIds.length==0)) {
             return null;
         }
         Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
@@ -3738,12 +3764,13 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
         if (purgeDate!=null && purgeDate.after(sinceDate)) {
             throw new AuditTrailPurgedException();
         }
-        if (haveAclsChangedSinceDate(binderKeys, sinceDate)) {
+        if (binderKeys.size()>0 && haveAclsChangedSinceDate(binderKeys, sinceDate)) {
             throw new AclChangeException();
         }
 
-        Map map = searchForChangedEntities(binderIds, sinceDate, true, true, true, false, maxResults);
-        List deleteEntries = getDeleteAuditTrailEntries(binderKeys, sinceDate, maxResults);
+        Map map = searchForChangedEntities(binderIds, entryIds, sinceDate, true, true, true, false, maxResults);
+        List entryList = entryIds==null ? null : Arrays.asList(entryIds);
+        List deleteEntries = getDeleteAuditTrailEntries(binderKeys, entryList, sinceDate, maxResults);
 
         Integer searchCount = (Integer)map.get(ObjectKeys.TOTAL_SEARCH_RECORDS_RETURNED);
         Integer searchTotal = (Integer)map.get(ObjectKeys.TOTAL_SEARCH_COUNT);
@@ -3775,6 +3802,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
                     if (entityId!=null) {
                         BinderChange change = new BinderChange();
                         change.setEntityId(entityId);
+                        change.setPrimaryFileId(nextDelete.getFileId());
                         change.setAction(BinderChange.Action.delete);
                         change.setDate(nextDelete.getStartDate());
                         mergedResults.add(change);
@@ -3825,7 +3853,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 
     private boolean haveAclsChangedSinceDate(List<HKey>  binderKeys, Date sinceDate) {
         Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
-        List aclChanges = getCoreDao().getAuditTrailEntries(zoneId, sinceDate, binderKeys,
+        List aclChanges = getCoreDao().getAuditTrailEntries(zoneId, sinceDate, binderKeys, null,
                 new AuditTrail.AuditType[]{AuditTrail.AuditType.acl}, 1);
         return aclChanges.size()>0;
     }
@@ -3843,17 +3871,24 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
         return keys;
     }
 
-    private List getDeleteAuditTrailEntries(List<HKey>  binderKeys, Date sinceDate, int maxResults) {
+    private List getDeleteAuditTrailEntries(List<HKey>  binderKeys, List<Long> entryIds, Date sinceDate, int maxResults) {
         Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
-        return getCoreDao().getAuditTrailEntries(zoneId, sinceDate, binderKeys,
+        return getCoreDao().getAuditTrailEntries(zoneId, sinceDate, binderKeys, entryIds,
                 new AuditTrail.AuditType[]{AuditTrail.AuditType.delete, AuditTrail.AuditType.preDelete}, maxResults);
     }
 
-    private Map searchForChangedEntities(Long [] binderIds, Date sinceDate, boolean libraryOnly, boolean binders, boolean entries, boolean attachments, int maxResults){
+    private Map searchForChangedEntities(Long [] binderIds, Long [] entryIds, Date sinceDate, boolean libraryOnly, boolean binders, boolean entries, boolean attachments, int maxResults){
         Criteria crit = new Criteria();
         Junction or = disjunction();
-        for (Long binderId : binderIds) {
-            or.add(org.kablink.teaming.search.SearchUtils.buildAncentryCriterion(binderId));
+        if (binderIds!=null) {
+            for (Long binderId : binderIds) {
+                or.add(org.kablink.teaming.search.SearchUtils.buildAncentryCriterion(binderId));
+            }
+        }
+        if (entryIds!=null) {
+            for (Long entryId : entryIds) {
+                or.add(org.kablink.teaming.search.SearchUtils.buildDocIdCriterion(entryId));
+            }
         }
         crit.add(or);
         crit.add(org.kablink.teaming.search.SearchUtils.buildDocTypeCriterion(binders, entries, attachments, false));
@@ -3863,7 +3898,8 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
         crit.add(Restrictions.between(Constants.MODIFICATION_DATE_FIELD, DateTools.dateToString(sinceDate, DateTools.Resolution.SECOND),
                 DateTools.dateToString(new Date(), DateTools.Resolution.SECOND)));
         crit.addOrder(new Order(Constants.MODIFICATION_DATE_FIELD, true));
-        return executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, 0, maxResults);
+        return executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, 0, maxResults,
+        		SearchUtils.fieldNamesList(Constants.MODIFICATION_DATE_FIELD,Constants.DOCID_FIELD,Constants.ENTITY_FIELD,Constants.CREATION_DATE_FIELD));
     }
 	
 	class IndexHelper implements Runnable {

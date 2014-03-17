@@ -303,7 +303,7 @@ public class RelevanceDashboardHelper {
 		while (itG.hasNext()) {
 			groupsS.add(itG.next().toString());
 		}
-		Iterator teamMembershipsIt = binderModule.getTeamMemberships(binder.getOwnerId()).iterator();
+		Iterator teamMembershipsIt = binderModule.getTeamMemberships(binder.getOwnerId(), org.kablink.teaming.module.shared.SearchUtils.fieldNamesList(Constants.DOCID_FIELD)).iterator();
 		while (teamMembershipsIt.hasNext()) {
 			teams.add(((Map)teamMembershipsIt.next()).get(Constants.DOCID_FIELD));
 		}
@@ -319,7 +319,7 @@ public class RelevanceDashboardHelper {
 			crit = SearchUtils.tasksForUser(binder.getOwnerId(), 
 					(String[])groupsS.toArray(new String[groupsS.size()]), 
 					(String[])teams.toArray(new String[teams.size()]));
-			results = bs.getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, offset, maxResults);
+			results = bs.getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, offset, maxResults, null);
 		} else {
 			//Get the tasks due shortly
 			crit = SearchUtils.tasksForUser(binder.getOwnerId(), 
@@ -327,7 +327,7 @@ public class RelevanceDashboardHelper {
 													(String[])teams.toArray(new String[teams.size()]),
 													fromDate.toDate(),
 													future.toDate());
-			results = bs.getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, offset, maxResults);
+			results = bs.getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, offset, maxResults, null);
 		}
 
 		model.put(WebKeys.MY_TASKS, results.get(ObjectKeys.SEARCH_ENTRIES));
@@ -377,7 +377,7 @@ public class RelevanceDashboardHelper {
 		
 		Criteria crit = SearchUtils.entriesForUser(binder.getOwnerId());
 	
-		Map results = bs.getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, offset, maxResults);
+		Map results = bs.getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, offset, maxResults, null);
 
 		model.put(WebKeys.MY_DOCUMENTS, results.get(ObjectKeys.SEARCH_ENTRIES));
 
@@ -426,7 +426,7 @@ public class RelevanceDashboardHelper {
 		} catch(NoUserByTheIdException e) {}
 		if (trackedPlaces.size() > 0 || trackedPeopleIds.size() > 0) {
 			Criteria crit = SearchUtils.entriesForTrackedPlacesAndPeople(bs, trackedPlaces, trackedPeopleIds);
-			Map results = bs.getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, offset, maxResults);
+			Map results = bs.getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, offset, maxResults, null);
 
 			model.put(WebKeys.WHATS_NEW_TRACKED_PLACES, results.get(ObjectKeys.SEARCH_ENTRIES));
 
@@ -471,7 +471,7 @@ public class RelevanceDashboardHelper {
 		int offset = ((Integer) options.get(ObjectKeys.SEARCH_OFFSET)).intValue();
 		int maxResults = ((Integer) options.get(ObjectKeys.SEARCH_MAX_HITS)).intValue();
 		
-		Collection myTeams = bs.getBinderModule().getTeamMemberships(user.getId());
+		Collection myTeams = bs.getBinderModule().getTeamMemberships(user.getId(), org.kablink.teaming.module.shared.SearchUtils.fieldNamesList(Constants.DOCID_FIELD));
 		List teamIds = new ArrayList();
 		Iterator itTeams = myTeams.iterator();
 		while (itTeams.hasNext()) {
@@ -480,7 +480,7 @@ public class RelevanceDashboardHelper {
 		}
 		if (myTeams.size() > 0) {
 			Criteria crit = SearchUtils.entriesForTrackedPlaces(bs, teamIds);
-			Map results = bs.getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, offset, maxResults);
+			Map results = bs.getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, offset, maxResults, null);
 
 			model.put(WebKeys.WHATS_NEW_TEAM_PLACES, results.get(ObjectKeys.SEARCH_ENTRIES));
 
@@ -521,7 +521,7 @@ public class RelevanceDashboardHelper {
 			AbstractIntervalView calendarInterval = new OneDayView(new Date());
 			AbstractIntervalView.VisibleIntervalFormattedDates interval = calendarInterval.getVisibleIntervalInTZ();
 			Criteria crit = SearchUtils.entriesForTrackedCalendars(bs, trackedCalendars, interval.startDate, interval.endDate);
-			Map results = bs.getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, offset, maxResults);
+			Map results = bs.getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, offset, maxResults, null);
 
 			Date today = new Date();
 			model.put(WebKeys.WHATS_NEW_TRACKED_CALENDARS, results.get(ObjectKeys.SEARCH_ENTRIES));
@@ -575,7 +575,7 @@ public class RelevanceDashboardHelper {
 		
 		Criteria crit = SearchUtils.newEntries();
 	
-		Map results = bs.getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, offset, maxResults);
+		Map results = bs.getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, offset, maxResults, null);
 
 		model.put(WebKeys.WHATS_NEW, results.get(ObjectKeys.SEARCH_ENTRIES));
 
@@ -772,7 +772,7 @@ public class RelevanceDashboardHelper {
 	
 	public static void setupMyTeamsBeans(AllModulesInjected bs, Map model) {
 		User user = RequestContextHolder.getRequestContext().getUser();
-		Collection myTeams = bs.getBinderModule().getTeamMemberships(user.getId());
+		Collection myTeams = bs.getBinderModule().getTeamMemberships(user.getId(), null);
 		model.put(WebKeys.MY_TEAMS, myTeams);
 	}
 	

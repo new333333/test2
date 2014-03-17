@@ -80,7 +80,6 @@ public class UserShareRightsDlg extends DlgBox implements EditSuccessfulHandler 
 	private List<Long>								m_userIds;				// The List<Long> of user IDs whose sharing rights are being set.
 	private PerUserShareRightsInfo					m_singleUserRights;		// If the sharing rights are being set for a single user, this contains their current rights setting when the dialog is invoked. 
 	private ProgressBar								m_progressBar;			// Progress bar displayed while saving the share rights.
-	private String									m_product;				// The name of the product (Filr vs. Vibe.)	
 	private UIObject								m_showRelativeTo;		// UIObject to show the dialog relative to.  null -> Center the dialog.
 	private UserSharingRightsInfoRpcResponseData	m_rightsInfo;			// Information about sharing rights available and to be set.
 	private VibeFlowPanel							m_progressPanel;		// Panel containing the progress bar.
@@ -119,7 +118,6 @@ public class UserShareRightsDlg extends DlgBox implements EditSuccessfulHandler 
 
 		// ...initialize everything else...
 		m_messages = GwtTeaming.getMessages();
-		m_product  = GwtClientHelper.getProductName();
 	
 		// ...and create the dialog's content.
 		createAllDlgContent(
@@ -490,7 +488,7 @@ public class UserShareRightsDlg extends DlgBox implements EditSuccessfulHandler 
 		if (!hasZoneSetting) {
 			noZoneSettings += 1;
 		}
-		addRowHeaderCell(ft, fcf, ROW_PUBLIC_LINKS, COLUMN_HEADER, buildHeaderCellString(m_messages.userShareRightsDlgLabel_PublicLinks(m_product), hasZoneSetting));
+		addRowHeaderCell(ft, fcf, ROW_PUBLIC_LINKS, COLUMN_HEADER, buildHeaderCellString(m_messages.userShareRightsDlgLabel_PublicLinks(), hasZoneSetting));
 		addRadioCell(    ft, fcf, ROW_PUBLIC_LINKS, COLUMN_ALLOW, ((null != m_singleUserRights) &&    m_singleUserRights.isAllowPublicLinks())  );
 		addRadioCell(    ft, fcf, ROW_PUBLIC_LINKS, COLUMN_CLEAR, ((null != m_singleUserRights) && (!(m_singleUserRights.isAllowPublicLinks()))));
 		if (null == m_singleUserRights) {

@@ -88,8 +88,8 @@ public class EmailConfigController extends  AbstractBinderController  {
 			getFolderModule().setNotificationSchedule(config, folderId);			
 
 			if (formData.containsKey("alias")) {
-				String alias = PortletRequestUtils.getStringParameter(request, "alias", null);
-				String password = PortletRequestUtils.getStringParameter(request, "password", null);
+				String alias = PortletRequestUtils.getStringParameter(request, "alias", null, false);
+				String password = PortletRequestUtils.getStringParameter(request, "password", null, false);
 				try {
 					getBinderModule().setPosting(folderId, alias, password);
 				} catch (Exception ne) {

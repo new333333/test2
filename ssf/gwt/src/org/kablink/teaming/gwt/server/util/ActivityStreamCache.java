@@ -432,7 +432,9 @@ public class ActivityStreamCache {
 		String zoneName = RequestContextHolder.getRequestContext().getZoneName();
 		String adminUserName = SZoneConfig.getAdminUserName(zoneName);
 		User admin = bs.getProfileModule().getUser(adminUserName);
-		Map results = bs.getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, 0, GwtActivityStreamHelper.m_activityStreamParams.getMaxHits(), admin.getId(), false, true);
+		Map results = bs.getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, 0, GwtActivityStreamHelper.m_activityStreamParams.getMaxHits(), 
+				org.kablink.teaming.module.shared.SearchUtils.fieldNamesList(Constants.MODIFICATION_DATE_FIELD,Constants.BINDER_ID_FIELD,Constants.ENTRY_ANCESTRY,Constants.MODIFICATIONID_FIELD),
+				admin.getId(), false, true);
 		    		
 		// Did we find any changes that need to be cached?
     	List items = ((List) results.get(ObjectKeys.SEARCH_ENTRIES));

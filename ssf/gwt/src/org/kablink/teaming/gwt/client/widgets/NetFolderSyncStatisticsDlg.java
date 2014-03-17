@@ -88,6 +88,7 @@ public class NetFolderSyncStatisticsDlg extends DlgBox
 	private int m_startRow;
 	private int m_endRow;
 	private Timer m_timer;
+	private boolean m_showDirOnlyRow=false;
 	
 	/**
 	 * Callback interface to interact with the "Net Folder Sync Statistics" dialog
@@ -202,6 +203,7 @@ public class NetFolderSyncStatisticsDlg extends DlgBox
 			}
 			
 			// Create the controls for "Directory only"
+			if ( m_showDirOnlyRow )
 			{
 				m_dirOnlyRow = nextRow;
 				label.setText( messages.netFolderSyncStatisticsDlg_DirOnly() );
@@ -530,7 +532,8 @@ public class NetFolderSyncStatisticsDlg extends DlgBox
 			updateStringValue( m_nodeIpAddressRow, syncStatistics.getStatusIpv4Address() );
 			
 			// Directory only
-			updateBoolValue( m_dirOnlyRow, syncStatistics.getDirOnly() );
+			if ( m_showDirOnlyRow )
+				updateBoolValue( m_dirOnlyRow, syncStatistics.getDirOnly() );
 			
 			// Directory enumeration
 			updateBoolValue( m_dirEnumRow, syncStatistics.getEnumerationFailed() );

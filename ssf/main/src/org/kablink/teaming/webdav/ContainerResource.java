@@ -55,6 +55,7 @@ import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.file.FileIndexData;
 import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.shared.FolderUtils;
+import org.kablink.teaming.module.shared.SearchUtils;
 import org.kablink.teaming.search.LuceneReadSession;
 import org.kablink.teaming.search.LuceneSessionFactory;
 import org.kablink.teaming.search.QueryBuilder;
@@ -243,7 +244,7 @@ public abstract class ContainerResource extends WebdavCollectionResource impleme
 	        		so.getExtendedAclQueryStr(),
 	        		Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, 
 	        		soQuery, 
-	        		null,
+	        		SearchUtils.fieldNamesList(Constants.TITLE_FIELD,Constants.DOCID_FIELD,Constants.ENTITY_FIELD,Constants.BINDERS_PARENT_ID_FIELD,Constants.FAMILY_FIELD,Constants.ENTITY_PATH,Constants.IS_LIBRARY_FIELD,Constants.IS_MIRRORED_FIELD,Constants.IS_HOME_DIR_FIELD,Constants.IS_MYFILES_DIR_FIELD,Constants.OWNERID_FIELD,Constants.OWNER_NAME_FIELD,Constants.CREATORID_FIELD,Constants.CREATOR_NAME_FIELD,Constants.MODIFICATIONID_FIELD,Constants.MODIFICATION_NAME_FIELD,Constants.CREATION_DATE_FIELD,Constants.MODIFICATION_DATE_FIELD),
 	        		null, 
 	        		0, 
 	        		Integer.MAX_VALUE);

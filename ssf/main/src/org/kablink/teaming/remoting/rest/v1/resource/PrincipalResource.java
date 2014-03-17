@@ -143,7 +143,7 @@ public class PrincipalResource extends AbstractPrincipalResource {
         criteria.add(criterion);
         criteria.addOrder(new Order(Constants.SORT_TITLE_FIELD, true));
 
-        Map resultMap = getBinderModule().executeSearchQuery(criteria, Constants.SEARCH_MODE_NORMAL, offset, maxCount);
+        Map resultMap = getBinderModule().executeSearchQuery(criteria, Constants.SEARCH_MODE_NORMAL, offset, maxCount, null);
         SearchResultList<PrincipalBrief> results = new SearchResultList<PrincipalBrief>(offset);
         SearchResultBuilderUtil.buildSearchResults(results, new PrincipalBriefBuilder(toDomainFormat(descriptionFormatStr)), resultMap, "/principals", nextParams, offset);
 		return results;

@@ -111,7 +111,6 @@ public class MastHead extends Composite
 	private InlineLabel m_loginLink = null;
 	private InlineLabel m_userName = null;
 	private Label m_betaLabel = null;
-	private MastheadPopupMenu m_popupMenu = null;
 	private UserActionsPopup m_userActionsPopup = null;
 	private FilrActionsCtrl m_filrActionsCtrl;
 	private String m_personalWorkspacesUrl = null;
@@ -383,58 +382,6 @@ public class MastHead extends Composite
 			// Add login to the masthead.
 			addLoginAction();
 
-			// We only show the popup menu if we are not running Filr.
-			if ( m_requestInfo.isLicenseFilr() == false )
-			{
-				// Create the actions popup menu.
-				m_popupMenu = new MastheadPopupMenu( m_mastheadBinderId, m_requestInfo.isUserLoggedIn(), true, true );
-				
-				// Add an image for the user to click on to pop up the actions menu
-				{
-					ClickHandler clickHandler;
-					final FlowPanel panel;
-					Image img;
-					
-					// Add a separator
-					if ( m_requestInfo.isUserLoggedIn() == false )
-					{
-						InlineLabel separator;
-						
-						separator = new InlineLabel( "|" );
-						separator.addStyleName( "mastheadActionsSeparator" );
-						m_globalActionsPanel.add( separator );
-					}
-					
-					panel = new FlowPanel();
-					panel.addStyleName( "mastheadMenuPanel" );
-					panel.addStyleName( "brandingLink" );
-					
-					clickHandler = new ClickHandler()
-					{
-						/**
-						 * 
-						 */
-						@Override
-						public void onClick( ClickEvent event )
-						{
-							m_popupMenu.showRelativeToTarget( panel );
-						}
-					};
-	
-					img = new Image( GwtTeaming.getImageBundle().mastheadActions() );
-					img.addClickHandler( clickHandler );
-					img.getElement().setAttribute( "align", "absmiddle" );
-					panel.add( img );
-					
-					img = new Image( GwtTeaming.getImageBundle().mastheadActions2() );
-					img.addClickHandler( clickHandler );
-					img.getElement().setAttribute( "align", "absmiddle" );
-					panel.add( img );
-					
-					m_globalActionsPanel.add( panel );
-				}
-			}
-			
 			m_mainMastheadPanel.add( m_globalActionsPanel );
 		}
 		

@@ -27,6 +27,10 @@ public class BinderChange extends BaseBinderChange {
     private Long id;
     private Binder binder;
 
+    public BinderChange() {
+        setType(Type.binder.name());
+    }
+
     public Long getId() {
         return id;
     }

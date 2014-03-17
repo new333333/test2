@@ -1197,7 +1197,7 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 		Dashboard dashboard = getInstance().getDashboardObj(binder, scope);
 		Map updates = new HashMap();
 		updates.put(Dashboard.TITLE, 
-				PortletRequestUtils.getStringParameter(request, "title", ""));
+				PortletRequestUtils.getStringParameter(request, "title", "", false));
 		updates.put(Dashboard.INCLUDEBINDERTITLE, 
 				PortletRequestUtils.getBooleanParameter(request, "includeBinderTitle", false));
 		
@@ -1279,7 +1279,7 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 			if (key.startsWith(DashboardHelper.ElementNamePrefix)) {
 				String elementName = key.substring(DashboardHelper.ElementNamePrefix.length());
 				//Save this value as a string for use when displaying the component
-				List stringParams = Arrays.asList(PortletRequestUtils.getStringParameters(request, key));
+				List stringParams = Arrays.asList(PortletRequestUtils.getStringParameters(request, key, false));
 				if (stringParams != null && stringParams.size() == 1) {
 					componentData.put(elementName, stringParams.iterator().next());
 				} else {
@@ -1290,7 +1290,7 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 			
 		//Get the component title
 		String componentTitle = PortletRequestUtils.getStringParameter(request, 
-				Dashboard.COMPONENT_TITLE, "");
+				Dashboard.COMPONENT_TITLE, "", false);
 		String displayStyle = PortletRequestUtils.getStringParameter(request, 
 				Dashboard.DISPLAYSTYLE, DisplayStyleDefault);
 		
@@ -1339,7 +1339,7 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 						}
 					}
 					SearchFilter searchFilter = new SearchFilter(true);
-					String filterName = PortletRequestUtils.getStringParameter(request, SearchFilterKeys.FilterNameField, "");
+					String filterName = PortletRequestUtils.getStringParameter(request, SearchFilterKeys.FilterNameField, "", false);
 					searchFilter.addFilterName(filterName);
 
 					if (!folderIds.isEmpty()) {
