@@ -130,6 +130,7 @@ import org.kablink.teaming.module.profile.ProfileModule.ProfileOperation;
 import org.kablink.teaming.module.shared.ChangeLogUtils;
 import org.kablink.teaming.module.shared.FileUtils;
 import org.kablink.teaming.module.shared.FolderUtils;
+import org.kablink.teaming.module.shared.SearchUtils;
 import org.kablink.teaming.module.sharing.SharingModule;
 import org.kablink.teaming.relevance.Relevance;
 import org.kablink.teaming.repository.RepositoryServiceException;
@@ -912,7 +913,19 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
         				lock.setExpirationDate(expirationDate);
         			}
         			else { // Lock id does not match
-        				throw new LockIdMismatchException();    				
+        				if(isLockExpired(lock)) { // The previous lock has expired
+        					// Commit any pending changes associated with the expired lock
+        					commitPendingChanges(binder, entity, fa, lock, newObjs); 
+        					// Set the new lock.
+        					fa.setFileLock(new FileLock(lockId, lockSubject, 
+        							user, expirationDate, lockOwnerInfo));
+        				}
+        				else { // The previous lock is still effective
+        					// This is unlikely scenario, but the only possibility I can think of is that
+        					// the same user opened the same file from two different editor processes.
+        					// We can't allow this since concurrent editing may clobber each other.
+        					throw new LockIdMismatchException();    					
+        				}			
         			}     		
     			}
     			else { // The lock is owned by another user
@@ -1522,7 +1535,9 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
         Hits hits = null;
         try {
 	        hits = luceneSession.search(RequestContextHolder.getRequestContext().getUserId(),
-	        		so.getBaseAclQueryStr(), so.getExtendedAclQueryStr(), Constants.SEARCH_MODE_NORMAL, soQuery, null, null, offset, size);
+	        		so.getBaseAclQueryStr(), so.getExtendedAclQueryStr(), Constants.SEARCH_MODE_NORMAL, soQuery, 
+	        		SearchUtils.fieldNamesList(Constants.FILENAME_FIELD,Constants.FILE_ID_FIELD,Constants.TITLE_FIELD,Constants.BINDER_ID_FIELD,Constants.ENTITY_FIELD,Constants.DOCID_FIELD,Constants.CREATORID_FIELD,Constants.CREATOR_NAME_FIELD,Constants.MODIFICATIONID_FIELD,Constants.MODIFICATION_NAME_FIELD,Constants.CREATION_DATE_FIELD,Constants.MODIFICATION_DATE_FIELD,Constants.FILE_SIZE_IN_BYTES_FIELD,Constants.FILE_VERSION_FIELD,Constants.FILE_MAJOR_VERSION_FIELD,Constants.FILE_MINOR_VERSION_FIELD,Constants.FILE_MD5_FIELD),
+	        		null, offset, size);
         }
         finally {
             luceneSession.close();
@@ -1589,7 +1604,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
         try {
 	        hits = luceneSession.search(RequestContextHolder.getRequestContext().getUserId(),
 	        		so.getBaseAclQueryStr(), so.getExtendedAclQueryStr(), 
-	        		Constants.SEARCH_MODE_NORMAL, soQuery, Arrays.asList(Constants.FILENAME_FIELD, Constants.DOCID_FIELD), null, 0, Integer.MAX_VALUE);
+	        		Constants.SEARCH_MODE_NORMAL, soQuery, SearchUtils.fieldNamesList(Constants.FILENAME_FIELD, Constants.DOCID_FIELD), null, 0, Integer.MAX_VALUE);
         }
         finally {
             luceneSession.close();

@@ -157,7 +157,7 @@ public class MiscResource extends AbstractResource {
                                                          @QueryParam("count") @DefaultValue("100") Integer maxCount) {
         String query = getRawInputStreamAsString(request);
         Document queryDoc = buildQueryDocument(query, null);
-        Map resultsMap = getBinderModule().executeSearchQuery(queryDoc, Constants.SEARCH_MODE_NORMAL, offset, maxCount);
+        Map resultsMap = getBinderModule().executeSearchQuery(queryDoc, Constants.SEARCH_MODE_NORMAL, offset, maxCount, null);
         SearchResultList<SearchableObject> results = new SearchResultList<SearchableObject>(offset);
         Map<String, Object> nextParams = new HashMap<String, Object>();
         nextParams.put("description_format", descriptionFormatStr);

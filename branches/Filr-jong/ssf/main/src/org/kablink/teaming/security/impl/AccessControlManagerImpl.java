@@ -69,6 +69,7 @@ import org.kablink.teaming.module.authentication.AuthenticationModule;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.shared.AccessUtils;
+import org.kablink.teaming.module.shared.SearchUtils;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.security.AccessControlManager;
 import org.kablink.teaming.security.accesstoken.AccessToken;
@@ -676,7 +677,7 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
     	// Check if at least one entity in the ACL inheritance parentage chain grants the specified access to the user through team membership.
     	if(SPropsUtil.getBoolean("share.based.access.check.use.search.index.for.team.membership", false)) {
     		// Note: This implementation is used for testing/comparison purpose only.
-    		List<Map> myTeams = getBinderModule().getTeamMemberships(user.getId());
+    		List<Map> myTeams = getBinderModule().getTeamMemberships(user.getId(), SearchUtils.fieldNamesList(Constants.DOCID_FIELD));
     		Set<Long> teamBinderIds = new HashSet<Long>();
     		for(Map binder : myTeams) {
     			try {

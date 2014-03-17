@@ -1361,8 +1361,8 @@ public class GwtViewHelper {
 					break;
 					
 				case PUBLIC_LINK:
-					ai.setTitle(NLT.get("share.recipientType.title.productLink", new String[]{MiscUtil.getProductName()}));
-					ai.setHover(NLT.get("share.recipientType.hover.productLink", new String[]{MiscUtil.getProductName()}));
+					ai.setTitle(NLT.get("share.recipientType.title.productLink"));
+					ai.setHover(NLT.get("share.recipientType.hover.productLink"));
 					break;
 				}
 				
@@ -2761,8 +2761,8 @@ public class GwtViewHelper {
 			}
 			
 			// ...and setting each one's title and hover.
-			ai.setTitle(NLT.get("share.recipientType.title.productLink", new String[]{MiscUtil.getProductName()}));
-			ai.setHover(NLT.get("share.recipientType.hover.productLink", new String[]{MiscUtil.getProductName()}));
+			ai.setTitle(NLT.get("share.recipientType.title.productLink"));
+			ai.setHover(NLT.get("share.recipientType.hover.productLink"));
 		}
 	}
 	
@@ -3355,7 +3355,8 @@ public class GwtViewHelper {
 					crit,
 					Constants.SEARCH_MODE_NORMAL,
 					GwtUIHelper.getOptionInt(options, ObjectKeys.SEARCH_OFFSET,   0),
-					GwtUIHelper.getOptionInt(options, ObjectKeys.SEARCH_MAX_HITS, ObjectKeys.SEARCH_MAX_HITS_SUB_BINDERS));
+					GwtUIHelper.getOptionInt(options, ObjectKeys.SEARCH_MAX_HITS, ObjectKeys.SEARCH_MAX_HITS_SUB_BINDERS),
+					null);
 		}
 		
 		finally {
@@ -3478,7 +3479,6 @@ public class GwtViewHelper {
 						}
 						
 						// Scan the List<EntityId> again.
-						SharingModule sm = bs.getSharingModule();
 						for (EntityId eid:  entityIds) {
 							// Skipping any binders.
 							if (eid.isBinder()) {
@@ -3506,13 +3506,11 @@ public class GwtViewHelper {
 									entryRights.setCanTrash(      fm.testAccess(entry, FolderOperation.preDeleteEntry));
 									
 									ShareRight entryShareRight;
-									if (GwtShareHelper.isEntitySharable(bs, entry) || GwtShareHelper.isEntityPublicLinkSharable(bs, entry))
+									if (GwtShareHelper.isEntitySharable(bs, entry))
 									     entryShareRight = ShareRight.SHARABLE;
 									else entryShareRight = ShareRight.NOT_SHARABLE_RIGHTS_VIOLATION;
 									entryRights.setShareRight(entryShareRight);
-									if (entryShareRight.canShare()) {
-										entryRights.setCanPublicLink(sm.testAddShareEntityPublicLinks(entry));
-									}
+									entryRights.setCanPublicLink(GwtShareHelper.isEntityPublicLinkSharable(bs, entry));
 								}
 								
 								reply.setEntityRights(eid, entryRights);
@@ -3863,7 +3861,7 @@ public class GwtViewHelper {
 				// Yes!
 				baseNameKey = "profiles.column.";
 				if (folderInfo.isBinderProfilesRootWSManagement()) {
-					if (ReleaseInfo.isLicenseRequiredEdition())
+					if (ReleaseInfo.isLicenseRequiredEdition() && LicenseChecker.showFilrFeatures())
 					     columnNames = getColumnsLHMFromAS(new String[]{"fullName", "userType", "emailAddress", "mobileDevices", "loginId"});
 					else columnNames = getColumnsLHMFromAS(new String[]{"fullName", "userType", "emailAddress",                  "loginId"});
 				}
@@ -6392,7 +6390,7 @@ public class GwtViewHelper {
 				
 			case publicLink:
 				// Return a localized public link string.
-				reply = NLT.get("share.recipientType.title.productLink", new String[]{MiscUtil.getProductName()});
+				reply = NLT.get("share.recipientType.title.productLink");
 				break;
 			}
 		}
@@ -7195,7 +7193,11 @@ public class GwtViewHelper {
 	public static boolean getUserViewSharedFiles(HttpServletRequest request, CollectionType collectionType) {
 		HttpSession session = WebHelper.getRequiredSession(request);
 		Boolean viewSharedFiles = ((Boolean) session.getAttribute(CACHED_VIEW_SHARED_FILES_BASE + collectionType.ordinal()));
-		return ((null == viewSharedFiles) || viewSharedFiles);
+		boolean reply;
+		if (null == viewSharedFiles)
+		     reply = (!LicenseChecker.showVibeFeatures());
+		else reply = viewSharedFiles;
+		return reply;
 	}
 
 	/*

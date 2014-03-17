@@ -36,6 +36,7 @@ import java.util.Date;
 
 import org.kablink.teaming.module.definition.DefinitionUtils;
 import org.kablink.util.Validator;
+import org.kablink.util.search.Constants;
 
 /**
  * Provide auditting of significant events in the system.
@@ -122,6 +123,9 @@ public class AuditTrail extends ZonedObject {
         	String family = DefinitionUtils.getFamily(def);
         	if (Validator.isNotNull(family)) {
         		setDeletedFolderEntryFamily(family);
+                if (family.equals(Constants.FAMILY_FIELD_FILE)) {
+                    setFileId(entity.getPrimaryFileAttachmentId());
+                }
         	}
 		}
 		

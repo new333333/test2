@@ -1036,7 +1036,7 @@ public class DefinitionHelper {
 	        				while (itG.hasNext()) {
 	        					groupsS.add(itG.next().toString());
 	        				}
-	        				Iterator teamMembershipsIt = bs.getBinderModule().getTeamMemberships(user.getId()).iterator();
+	        				Iterator teamMembershipsIt = bs.getBinderModule().getTeamMemberships(user.getId(), org.kablink.teaming.module.shared.SearchUtils.fieldNamesList(Constants.DOCID_FIELD)).iterator();
 	        				while (teamMembershipsIt.hasNext()) {
 	        					teams.add(((Map)teamMembershipsIt.next()).get(Constants.DOCID_FIELD));
 	        				}
@@ -1045,7 +1045,8 @@ public class DefinitionHelper {
 	        				Criteria crit = SearchUtils.tasksForUser(user.getId(), 
 	        									(String[])groupsS.toArray(new String[groupsS.size()]), 
 	        									(String[])teams.toArray(new String[teams.size()]));
-	        				Map results = bs.getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, offset, maxResults);
+	        				Map results = bs.getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, offset, maxResults,
+	        						org.kablink.teaming.module.shared.SearchUtils.fieldNamesList(Constants.BINDER_ID_FIELD));
 
         					mashupMyTaskEntries.addAll((List)results.get(ObjectKeys.SEARCH_ENTRIES));
 

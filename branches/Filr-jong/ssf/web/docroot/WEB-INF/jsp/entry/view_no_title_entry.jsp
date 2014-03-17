@@ -68,7 +68,7 @@ function ss_setPageFormActionUrl2${renderResponse.namespace}() {
 </script>
 
 <form method="post" name="ss_createPageForm">
-<input type="hidden" name="title" value="${ssEntryTitle}"/>
+<input type="hidden" name="title" value="<ssf:escapeQuotes>${ssEntryTitle}</ssf:escapeQuotes>"/>
 <c:if test="${count == 1}">
   <c:forEach var="title" items="${ssAddEntryTitles}">
     <input type="submit" class="ss_linkButton" name="addBtn" value="<ssf:nlt tag="entry.createPage"/>"

@@ -27,6 +27,10 @@ public class FileChange extends BaseBinderChange {
     private String id;
     private FileProperties file;
 
+    public FileChange() {
+        setType(Type.file.name());
+    }
+
     public String getId() {
         return id;
     }

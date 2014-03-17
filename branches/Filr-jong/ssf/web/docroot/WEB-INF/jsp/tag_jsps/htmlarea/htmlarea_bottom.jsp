@@ -36,6 +36,7 @@
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 </div>
 <c:if test="${!empty wikiLinkBinderId && editor_toolbar != 'minimal'}">
+  <ssf:ifAuthorizedByLicense featureName="com.novell.teaming.Vibe">
    <div class="ss_editorHints">
      <ssf:nlt tag="editor.wikilink.tip1"/>
      <div style="padding-left:20px;">
@@ -48,4 +49,5 @@
      <ssf:nlt tag="editor.wikilink.tip3"/>
      </div>
    </div>
+  </ssf:ifAuthorizedByLicense>
 </c:if>

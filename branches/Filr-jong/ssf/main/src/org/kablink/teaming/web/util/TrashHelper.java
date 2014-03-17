@@ -1151,6 +1151,7 @@ public class TrashHelper {
 				Constants.SEARCH_MODE_SELF_CONTAINED_ONLY,
 				0,		// Start at index 0...
 				2,		// ...requesting a maximum of 2 hits.
+				org.kablink.teaming.module.shared.SearchUtils.fieldNamesList(), // None of the returned fields will be read, so...
 				false);	// false -> Ignore preDeleted entries.
 
 			if (null != visibleBindersMap) {
@@ -1292,6 +1293,7 @@ public class TrashHelper {
 					Constants.SEARCH_MODE_NORMAL,
 					GwtUIHelper.getOptionInt(options, ObjectKeys.SEARCH_OFFSET,   0),
 					GwtUIHelper.getOptionInt(options, ObjectKeys.SEARCH_MAX_HITS, ObjectKeys.SEARCH_MAX_HITS_SUB_BINDERS),
+					null,
 					true);	// true -> Search deleted entities.
 		}
 		

@@ -36,5 +36,14 @@ import java.util.Map;
 
 public interface PostFilterCallback {
 
-	public boolean doFilter(Map<String,Object> doc, boolean noIntrinsicAclStoredButAccessibleThroughFilrGrantedAcl);
+	/**
+	 * Perform pre-filtering.
+	 * 
+	 * @param doc
+	 * @param noIntrinsicAclStoredButAccessibleThroughFilrGrantedAcl
+	 * @return <code>Boolean.TRUE</code> if the document already passed access check
+	 *         <code>Boolean.FALSE</code> if the document already failed access check
+	 *         <code>null</code> if the document requires access check against file server
+	 */
+	public Boolean preFilter(Map<String,Object> doc, boolean noIntrinsicAclStoredButAccessibleThroughFilrGrantedAcl);
 }

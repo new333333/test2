@@ -280,14 +280,15 @@ public class ExportHelper {
 		crit.add(in(Constants.DOC_TYPE_FIELD, new String[] {Constants.DOC_TYPE_BINDER}))
 			.add(in(Constants.ENTRY_ANCESTRY, folderIds));
 		crit.addOrder(Order.asc(Constants.BINDER_ID_FIELD));
-		Map binderMap = binderModule.executeSearchQuery(crit, Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, 0, ObjectKeys.SEARCH_MAX_HITS_SUB_BINDERS);
+		Map binderMap = binderModule.executeSearchQuery(crit, Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, 0, ObjectKeys.SEARCH_MAX_HITS_SUB_BINDERS,
+				org.kablink.teaming.module.shared.SearchUtils.fieldNamesList(Constants.DOCID_FIELD,Constants.ENTRY_ANCESTRY));
 
 		List binderMapList = (List)binderMap.get(ObjectKeys.SEARCH_ENTRIES); 
 		List binderIdList = new ArrayList();
 
       	for (Iterator iter=binderMapList.iterator(); iter.hasNext();) {
       		Map entryMap = (Map) iter.next();
-      		Long docId = new Long((String)entryMap.get("_docId"));
+      		Long docId = new Long((String)entryMap.get(Constants.DOCID_FIELD));
       		binderIdList.add(docId);
 	        if (!noSubBinders && !binderIdsToExport.containsKey(docId)) {
 	        	binderIdsToExport.put(docId, false);

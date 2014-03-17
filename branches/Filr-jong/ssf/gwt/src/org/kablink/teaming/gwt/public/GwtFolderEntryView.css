@@ -4,11 +4,6 @@
 
 
 /* Start:  GWT folder entry view styles. */
-	/* Start:  Root composite styles. */
-		.vibe-feView-editInPlaceInner {}
-		.vibe-feView-editInPlaceOuter {visibility: visible; display: block; width: 0px; height: 0px;}
-	/* End:  Root composite styles. */
-	
 	/* Start:  Header styles. */
 		.vibe-feView-headerContentBCAnchor            {cursor: pointer; font-size: 10px; color: gray !important; white-space: nowrap; text-decoration: none;}
 		.vibe-feView-headerContentBCAnchor:hover      {color: #135c8f !important; cursor: pointer; background-color: #cce9ee; -moz-border-radius: 3px; border-radius: 3px; -webkit-border-radius: 3px; padding: 2px;}

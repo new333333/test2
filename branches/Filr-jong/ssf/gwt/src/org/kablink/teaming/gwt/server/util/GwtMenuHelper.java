@@ -244,7 +244,60 @@ public class GwtMenuHelper {
 		}
 		return false;
 	}
-	
+
+	/*
+	 * If a FolderEntry references a file that we support edit-in-place
+	 * on and the user has rights to edit the file, a ToolbarItem
+	 * referencing an edit-in-place action is returned.  Otherwise,
+	 * null is returned.
+	 */
+	private static ToolbarItem buildEditInPlaceToolbarItem(AllModulesInjected bs, HttpServletRequest request, FolderEntry fe, boolean isFilr) {
+		// Is the entry unlock and does the user have rights to
+		// modify it?
+		ToolbarItem		reply  = null;
+		HistoryStamp	lStamp = fe.getReservation();
+		boolean			locked = ((!isFilr) && (null != lStamp));	// We ignore locking in filr. 
+		if ((!locked) && bs.getFolderModule().testAccess(fe, FolderOperation.modifyEntry)) {
+			// Yes!  Is it a file entry with a file attached?
+			FileAttachment fa = GwtServerHelper.getFileEntrysFileAttachment(bs, fe);
+			if (null != fa) {
+				// Yes!  Did this user log in using OpenID?
+				if (!(WebHelper.isUserAuthenticatedViaOpenid())) {
+					// No!  Are there any applications defined to
+					// edit the file?
+					String operatingSystem  = BrowserSniffer.getOSInfo(request);
+					String relativeFilePath = fa.getFileItem().getName();
+					String strOpenInEditor  = SsfsUtil.openInEditor(relativeFilePath, operatingSystem, bs.getProfileModule().getUserProperties(null));
+					if (MiscUtil.hasString(strOpenInEditor)) {
+						String strEditorType;
+						if (BrowserSniffer.is_ie(request))
+						     strEditorType = SsfsUtil.attachmentEditTypeForIE();
+						else strEditorType = SsfsUtil.attachmentEditTypeForNonIE();
+						if (MiscUtil.hasString(strEditorType)) {
+							// Yes!  Add an edit-in-place toolbar
+							// item for it.
+							reply = new ToolbarItem(EDIT_IN_PLACE);
+							markTBITitle(   reply, "file.editFile"                   );
+							markTBIEvent(   reply, TeamingEvents.INVOKE_EDIT_IN_PLACE);
+							markTBIEntryIds(reply, fe                                );
+							markTBIEditInPlace(
+								reply,
+								operatingSystem,
+								strOpenInEditor,
+								strEditorType,
+								fa.getId(),
+								SsfsUtil.getInternalAttachmentUrl(request, fe.getParentFolder(), fe, fa));
+						}
+					}
+				}
+			}
+		}
+		
+		// If we get here, reply refers to an edit-in-place ToolbarItem
+		// if all the requirements for including it are met or is false
+		// otherwise.  Return it.
+		return reply;
+	}
 	/*
 	 * Adds the ToolBarItem's for a folder to the
 	 * List<ToolBarItem> of them.
@@ -1313,10 +1366,12 @@ public class GwtMenuHelper {
 		markTBITitle(tbi, "toolbar.setUserDesktopSettings");
 		markTBIEvent(tbi, TeamingEvents.SET_SELECTED_USER_DESKTOP_SETTINGS);
 		moreTBI.addNestedItem(tbi);
-		tbi = new ToolbarItem("1_setMobileSettings");
-		markTBITitle(tbi, "toolbar.setUserMobileSettings");
-		markTBIEvent(tbi, TeamingEvents.SET_SELECTED_USER_MOBILE_SETTINGS);
-		moreTBI.addNestedItem(tbi);
+		if (LicenseChecker.showFilrFeatures()) {
+			tbi = new ToolbarItem("1_setMobileSettings");
+			markTBITitle(tbi, "toolbar.setUserMobileSettings");
+			markTBIEvent(tbi, TeamingEvents.SET_SELECTED_USER_MOBILE_SETTINGS);
+			moreTBI.addNestedItem(tbi);
+		}
 				
 		// Finally, if we added anything to the more toolbar...
 		if (!(moreTBI.getNestedItemsList().isEmpty())) {
@@ -3074,9 +3129,19 @@ public class GwtMenuHelper {
 				// devices dialog either!
 				String eidType = entityId.getEntityType();
 				if (eidType.equals(EntityType.folderEntry.name())) {
-					FolderEntry fe       = bs.getFolderModule().getEntry(entityId.getBinderId(), entityId.getEntityId());
-					boolean     sharable = (GwtShareHelper.isEntitySharable(bs, fe) || GwtShareHelper.isEntityPublicLinkSharable(bs, fe));
+					// If the entry is a file we support edit-in-place on and
+					// the user has rights to edit the file...
+					FolderEntry fe      = bs.getFolderModule().getEntry(entityId.getBinderId(), entityId.getEntityId());
+					ToolbarItem editTBI = buildEditInPlaceToolbarItem(bs, request, fe, Utils.checkIfFilr());
+					if (null != editTBI) {
+						// ...add the edit-in-place toolbar item for it.
+						actionToolbar.addNestedItem(editTBI);
+					}
+
+					// If the user can share the entry...
+					boolean sharable = (GwtShareHelper.isEntitySharable(bs, fe) || GwtShareHelper.isEntityPublicLinkSharable(bs, fe));
 					if (sharable) {
+						// ...add the necessary share items.
 						constructEntryShareItem(
 							actionToolbar,
 							bs,
@@ -3790,49 +3855,15 @@ public class GwtMenuHelper {
 				markTBIUrl(  actionTBI, url                   );
 				reply.add(actionTBI);
 			}
-			
 
-			// Is the entry unlock and does the user have rights to
-			// modify it?
-			HistoryStamp	lStamp = fe.getReservation();
-			boolean			locked = ((!isFilr) && (null != lStamp));	// We ignore locking in filr. 
-			if ((!locked) && fm.testAccess(fe, FolderOperation.modifyEntry)) {
-				// Yes!  Is it a file entry with a file attached?
-				FileAttachment fa = GwtServerHelper.getFileEntrysFileAttachment(bs, fe);
-				if (null != fa) {
-					// Yes!  Did this user log in using OpenID?
-					if (!(WebHelper.isUserAuthenticatedViaOpenid())) {
-						// No!  Are there any applications defined to
-						// edit the file?
-						String operatingSystem  = BrowserSniffer.getOSInfo(request);
-						String relativeFilePath = fa.getFileItem().getName();
-						String strOpenInEditor  = SsfsUtil.openInEditor(relativeFilePath, operatingSystem, bs.getProfileModule().getUserProperties(null));
-						if (MiscUtil.hasString(strOpenInEditor)) {
-							String strEditorType;
-							if (BrowserSniffer.is_ie(request))
-							     strEditorType = SsfsUtil.attachmentEditTypeForIE();
-							else strEditorType = SsfsUtil.attachmentEditTypeForNonIE();
-							if (MiscUtil.hasString(strEditorType)) {
-								// Yes!  Add an edit-in-place toolbar
-								// item for it.
-								actionTBI = new ToolbarItem(EDIT_IN_PLACE);
-								markTBITitle(   actionTBI, "file.editFile"                   );
-								markTBIEvent(   actionTBI, TeamingEvents.INVOKE_EDIT_IN_PLACE);
-								markTBIEntryIds(actionTBI, fe                                );
-								markTBIEditInPlace(
-									actionTBI,
-									operatingSystem,
-									strOpenInEditor,
-									strEditorType,
-									fa.getId(),
-									SsfsUtil.getInternalAttachmentUrl(request, folder, fe, fa));
-								reply.add(actionTBI);
-							}
-						}
-					}
-				}
+			// If the entry is a file we support edit-in-place on and
+			// the user has rights to edit the file...
+			actionTBI = buildEditInPlaceToolbarItem(bs, request, fe, isFilr);
+			if (null != actionTBI) {
+				// ...add the edit-in-place toolbar item for it.
+				reply.add(actionTBI);
 			}
-
+			
 			// Can the user delete this entry?
 			if (canDeleteEntity(bs, fe)) {
 				// Yes!  Add a delete toolbar item for it.
@@ -3843,7 +3874,6 @@ public class GwtMenuHelper {
 				reply.add(actionTBI);
 			}
 			
-
 			// - - - //
 			// More  //
 			// - - - //
@@ -3853,6 +3883,8 @@ public class GwtMenuHelper {
 			markTBITitle(dropdownTBI, "toolbar.more");
 
 			// Is this other than the Filr Guest user?
+			HistoryStamp	lStamp = fe.getReservation();
+			boolean			locked = ((!isFilr) && (null != lStamp));	// We ignore locking in Filr. 
 			boolean isLockedByLoggedInUser = (locked && lStamp.getPrincipal().getId().equals(user.getId()));
 			if (!isFilrGuest) {
 				// Yes!  Can the user copy this entry?

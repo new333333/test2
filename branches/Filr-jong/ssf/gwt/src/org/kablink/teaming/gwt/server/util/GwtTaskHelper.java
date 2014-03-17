@@ -1095,7 +1095,7 @@ public class GwtTaskHelper {
 			groupsS.add( itG.next().toString() );
 		}
 		
-		teamMembershipsIt = ami.getBinderModule().getTeamMemberships( user.getId() ).iterator();
+		teamMembershipsIt = ami.getBinderModule().getTeamMemberships( user.getId(), org.kablink.teaming.module.shared.SearchUtils.fieldNamesList(Constants.DOCID_FIELD) ).iterator();
 		while ( teamMembershipsIt.hasNext() )
 		{
 			teams.add( ((Map)teamMembershipsIt.next()).get( Constants.DOCID_FIELD ) );
@@ -1111,7 +1111,7 @@ public class GwtTaskHelper {
 										 (String[])teams.toArray(new String[teams.size()]),
 										 fromDate.toDate(),
 										 future.toDate() );
-		results = ami.getBinderModule().executeSearchQuery( crit, Constants.SEARCH_MODE_NORMAL, offset, maxResults );
+		results = ami.getBinderModule().executeSearchQuery( crit, Constants.SEARCH_MODE_NORMAL, offset, maxResults, null );
 
 		// Create a TaskInfo object for every task we found
 		{

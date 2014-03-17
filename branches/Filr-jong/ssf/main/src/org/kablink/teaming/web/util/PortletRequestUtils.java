@@ -38,6 +38,9 @@ import java.util.Set;
 
 import javax.portlet.PortletRequest;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.slide.util.logger.Logger;
 import org.springframework.web.portlet.bind.PortletRequestBindingException;
 
 public abstract class PortletRequestUtils {
@@ -451,10 +454,14 @@ public abstract class PortletRequestUtils {
 	 */
 	public static String getStringParameter(PortletRequest request, String name)
 			throws PortletRequestBindingException {
+		return getStringParameter(request, name, true);		//By defaault, do the xss check
+	}
+	public static String getStringParameter(PortletRequest request, String name, boolean xssCheck)
+			throws PortletRequestBindingException {
 		if (request.getParameter(name) == null) {
 			return null;
 		}
-		return getRequiredStringParameter(request, name);
+		return getRequiredStringParameter(request, name, xssCheck);
 	}
 
 	/**
@@ -465,8 +472,11 @@ public abstract class PortletRequestUtils {
 	 * @param defaultVal the default value to use as fallback
 	 */
 	public static String getStringParameter(PortletRequest request, String name, String defaultVal) {
+		return getStringParameter(request, name, defaultVal, true);
+	}
+	public static String getStringParameter(PortletRequest request, String name, String defaultVal, boolean xssCheck) {
 		try {
-			return getRequiredStringParameter(request, name);
+			return getRequiredStringParameter(request, name, xssCheck);
 		}
 		catch (PortletRequestBindingException ex) {
 			return defaultVal;
@@ -479,6 +489,9 @@ public abstract class PortletRequestUtils {
 	 * @param name the name of the parameter with multiple possible values
 	 */
 	public static String[] getStringParameters(PortletRequest request, String name) {
+		return getStringParameters(request, name, true);
+	}
+	public static String[] getStringParameters(PortletRequest request, String name, boolean xssCheck) {
 		try {
 			return getRequiredStringParameters(request, name);
 		}
@@ -496,7 +509,11 @@ public abstract class PortletRequestUtils {
 	 */
 	public static String getRequiredStringParameter(PortletRequest request, String name)
 			throws PortletRequestBindingException {
-		return STRING_PARSER.validateRequiredString(name, request.getParameter(name));
+		return getRequiredStringParameter(request, name, true);	//By default, we check for XSS threats on string parameters
+	}
+	public static String getRequiredStringParameter(PortletRequest request, String name, boolean xssCheck)
+			throws PortletRequestBindingException {
+		return STRING_PARSER.validateRequiredString(name, request.getParameter(name), xssCheck);
 	}
 
 	/**
@@ -508,7 +525,11 @@ public abstract class PortletRequestUtils {
 	 */
 	public static String[] getRequiredStringParameters(PortletRequest request, String name)
 			throws PortletRequestBindingException {
-		return STRING_PARSER.validateRequiredStrings(name, request.getParameterValues(name));
+		return getRequiredStringParameters(request, name, true);
+	}
+	public static String[] getRequiredStringParameters(PortletRequest request, String name, boolean xssCheck)
+			throws PortletRequestBindingException {
+		return STRING_PARSER.validateRequiredStrings(name, request.getParameterValues(name), xssCheck);
 	}
 
 
@@ -670,6 +691,9 @@ public abstract class PortletRequestUtils {
 
 
 	private static class StringParser extends ParameterParser {
+		protected static Log logger = LogFactory.getLog(StringParser.class);
+
+		private static final String PATTERN_STR1 = "[\"]";
 
 		protected String getType() {
 			return "string";
@@ -679,17 +703,28 @@ public abstract class PortletRequestUtils {
 			return parameter;
 		}
 
-		public String validateRequiredString(String name, String value)
+		//This routine can check if a string has potential XSS threats. 
+		//  This check is mainly to see if there are any quotation marks that would confuse javascript should
+		//  the string ever get used to build some javascript code.
+		//Note, the strings passed in here have already been passed through the main XSScheck code to check for "<script>", etc
+		public String validateRequiredString(String name, String value, boolean xssCheck)
 				throws PortletRequestBindingException {
 			validateRequiredParameter(name, value);
+			if (xssCheck && value != null) {
+				if (value.contains("\"") || value.contains("'")) {
+					logger.error("Error: URL parameter contains illegal quotation characters. Possible XSS attack. (" + value + ")");
+					value = value.replaceAll("\"", "&#34;");	 //Replace all quotation marks. There should never be any quotation marks in these strings. 
+					value = value.replaceAll("'", "&#39;");		 //Replace all single quotation marks. This is intended to fix certain XSS attacks.
+				}
+			}
 			return value;
 		}
 
-		public String[] validateRequiredStrings(String name, String[] values)
+		public String[] validateRequiredStrings(String name, String[] values, boolean xssCheck)
 				throws PortletRequestBindingException {
 			validateRequiredParameter(name, values);
 			for (int i = 0; i < values.length; i++) {
-				validateRequiredParameter(name, values[i]);
+				validateRequiredString(name, values[i], xssCheck);
 			}
 			return values;
 		}

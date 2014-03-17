@@ -23,8 +23,23 @@ import java.util.Date;
  * Time: 11:38 AM
  */
 abstract public class BaseBinderChange {
+    protected static enum Type {
+        binder,
+        folder_entry,
+        file
+    }
+
     private String action;
+    private String type;
     private Date date;
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
 
     public String getAction() {
         return action;

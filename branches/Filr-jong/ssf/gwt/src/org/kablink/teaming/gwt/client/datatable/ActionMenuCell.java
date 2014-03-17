@@ -58,6 +58,7 @@ import org.kablink.teaming.gwt.client.event.EnableSelectedUsersAdHocFoldersEvent
 import org.kablink.teaming.gwt.client.event.EnableSelectedUsersDownloadEvent;
 import org.kablink.teaming.gwt.client.event.EnableSelectedUsersWebAccessEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
+import org.kablink.teaming.gwt.client.event.InvokeEditInPlaceEvent;
 import org.kablink.teaming.gwt.client.event.InvokeRenameEntityEvent;
 import org.kablink.teaming.gwt.client.event.InvokeShareBinderEvent;
 import org.kablink.teaming.gwt.client.event.InvokeUserPropertiesDlgEvent;
@@ -400,6 +401,18 @@ public class ActionMenuCell extends AbstractCell<EntryTitleInfo> {
 								Boolean.parseBoolean(simpleTBI.getQualifierValue("makeFavorite")));
 							break;
 						
+						case INVOKE_EDIT_IN_PLACE:
+							event = new InvokeEditInPlaceEvent(
+								binderId,
+								eid,
+								simpleTBI.getQualifierValue("operatingSystem"),
+								simpleTBI.getQualifierValue("openInEditor"   ),
+								simpleTBI.getQualifierValue("editorType"     ),
+								simpleTBI.getQualifierValue("attachmentId"   ),
+								simpleTBI.getQualifierValue("attachmentUrl"  ));
+							
+							break;
+
 						case INVOKE_SHARE_BINDER:
 							event = new InvokeShareBinderEvent(String.valueOf(eid.getEntityId()));
 							break;

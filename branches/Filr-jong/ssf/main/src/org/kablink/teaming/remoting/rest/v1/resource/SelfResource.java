@@ -132,6 +132,11 @@ public class SelfResource extends AbstractFileResource {
         user.setLink("/self");
         user.addAdditionalLink("mobile_devices", "/self/mobile_devices");
         user.addAdditionalLink("roots", "/self/roots");
+        try {
+            getLdapModule().updateHomeDirectoryIfNecessary((org.kablink.teaming.domain.User)entry, entry.getName(), true);
+        } catch (Exception e) {
+            logger.warn("An error occurred checking to see if the user's home folder needs to be updated", e);
+        }
         if (SearchUtils.userCanAccessMyFiles(this, getLoggedInUser())) {
             user.addAdditionalLink("my_files", "/self/my_files");
         }
@@ -141,11 +146,11 @@ public class SelfResource extends AbstractFileResource {
         if (getEffectivePublicCollectionSetting((org.kablink.teaming.domain.User) entry)) {
             user.addAdditionalLink("public_shares", "/self/public_shares");
         }
-        user.addAdditionalPermaLink("my_files", PermaLinkUtil.getUserPermalink(null, entry.getId().toString(), PermaLinkUtil.COLLECTION_MY_FILES));
-        user.addAdditionalPermaLink("net_folders", PermaLinkUtil.getUserPermalink(null, entry.getId().toString(), PermaLinkUtil.COLLECTION_NET_FOLDERS));
-        user.addAdditionalPermaLink("shared_with_me", PermaLinkUtil.getUserPermalink(null, entry.getId().toString(), PermaLinkUtil.COLLECTION_SHARED_WITH_ME));
-        user.addAdditionalPermaLink("shared_by_me", PermaLinkUtil.getUserPermalink(null, entry.getId().toString(), PermaLinkUtil.COLLECTION_SHARED_BY_ME));
-        user.addAdditionalPermaLink("recent_activity", PermaLinkUtil.getUserWhatsNewPermalink(null, entry.getId().toString()));
+//        user.addAdditionalPermaLink("my_files", PermaLinkUtil.getUserPermalink(null, entry.getId().toString(), PermaLinkUtil.COLLECTION_MY_FILES));
+//        user.addAdditionalPermaLink("net_folders", PermaLinkUtil.getUserPermalink(null, entry.getId().toString(), PermaLinkUtil.COLLECTION_NET_FOLDERS));
+//        user.addAdditionalPermaLink("shared_with_me", PermaLinkUtil.getUserPermalink(null, entry.getId().toString(), PermaLinkUtil.COLLECTION_SHARED_WITH_ME));
+//        user.addAdditionalPermaLink("shared_by_me", PermaLinkUtil.getUserPermalink(null, entry.getId().toString(), PermaLinkUtil.COLLECTION_SHARED_BY_ME));
+//        user.addAdditionalPermaLink("recent_activity", PermaLinkUtil.getUserWhatsNewPermalink(null, entry.getId().toString()));
         Long myFilesFolderId = SearchUtils.getMyFilesFolderId(this, (org.kablink.teaming.domain.User) entry, true);
         if (myFilesFolderId!=null) {
             user.setHiddenFilesFolder(new LongIdLinkPair(myFilesFolderId, LinkUriUtil.getFolderLinkUri(myFilesFolderId)));
@@ -271,7 +276,9 @@ public class SelfResource extends AbstractFileResource {
     @Path("/my_files")
    	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
     public BinderBrief getMyFiles(@QueryParam("library_info") @DefaultValue("false") boolean libraryInfo) {
-        if (!SearchUtils.userCanAccessMyFiles(this, getLoggedInUser())) {
+        org.kablink.teaming.domain.User loggedInUser = getLoggedInUser();
+
+        if (!SearchUtils.userCanAccessMyFiles(this, loggedInUser)) {
             throw new AccessControlException("Personal storage is not allowed.", null);
         }
         BinderBrief fakeMyFileFolders = getFakeMyFileFolders();
@@ -382,7 +389,7 @@ public class SelfResource extends AbstractFileResource {
             throw new AccessControlException("Personal storage is not allowed.", null);
         }
         org.kablink.teaming.domain.Binder parent = getMyFilesFolderParent();
-        return getBinderChanges(new Long [] {parent.getId()}, since, descriptionFormatStr, maxCount, "/my_files/library_changes");
+        return getBinderChanges(new Long [] {parent.getId()}, null, since, descriptionFormatStr, maxCount, "/my_files/library_changes");
     }
 
     @GET
@@ -404,7 +411,7 @@ public class SelfResource extends AbstractFileResource {
                 idList.add(folder.getId().toString());
             }
             crit.add(Restrictions.in(Constants.ENTRY_ANCESTRY, idList));
-            Map resultMap = getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, 0, -1);
+            Map resultMap = getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, 0, -1, null);
             SearchResultBuilderUtil.buildSearchResultsTree(results, folders.getResults().toArray(new BinderBrief[folders.getCount()]),
                     new BinderBriefBuilder(descriptionFormat), resultMap);
             for (SearchResultTreeNode<BinderBrief> node : results.getChildren()) {
@@ -761,7 +768,7 @@ public class SelfResource extends AbstractFileResource {
             ids.add(Restrictions.eq(Constants.DOCID_FIELD, id.toString()));
         }
         root.add(ids);
-        Map map = getBinderModule().executeSearchQuery(root, Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, 0, -1);
+        Map map = getBinderModule().executeSearchQuery(root, Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, 0, -1, null);
         SearchResultList<BinderBrief> results = new SearchResultList<BinderBrief>();
         SearchResultBuilderUtil.buildSearchResults(results, new BinderBriefBuilder(), map);
         return results.getLastModified();

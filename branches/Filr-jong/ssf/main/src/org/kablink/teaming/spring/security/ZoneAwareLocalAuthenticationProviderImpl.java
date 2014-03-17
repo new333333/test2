@@ -82,7 +82,8 @@ public class ZoneAwareLocalAuthenticationProviderImpl implements ZoneAwareLocalA
 					(String) authentication.getCredentials(),
 					false, 
 					false,
-					false, 
+					false,
+                    false,
 					false, 
 					new HashMap(), 
 					null);

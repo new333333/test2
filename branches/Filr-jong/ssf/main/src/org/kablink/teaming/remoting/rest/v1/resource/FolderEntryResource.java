@@ -103,7 +103,7 @@ public class FolderEntryResource extends AbstractFolderEntryResource {
             criterion.add(or);
         }
         Document queryDoc = buildQueryDocument("<query/>", criterion);
-        Map folderEntries = getBinderModule().executeSearchQuery(queryDoc, Constants.SEARCH_MODE_NORMAL, offset, maxCount);
+        Map folderEntries = getBinderModule().executeSearchQuery(queryDoc, Constants.SEARCH_MODE_NORMAL, offset, maxCount, null);
         SearchResultList<FolderEntryBrief> results = new SearchResultList<FolderEntryBrief>(offset);
         Map<String, Object> nextParams = new HashMap<String, Object>();
         nextParams.put("description_format", descriptionFormatStr);
@@ -119,7 +119,7 @@ public class FolderEntryResource extends AbstractFolderEntryResource {
 			                                             @QueryParam("count") @DefaultValue("100") Integer maxCount) {
         String query = getRawInputStreamAsString(request);
         Document queryDoc = buildQueryDocument(query, SearchUtils.buildEntriesCriterion());
-        Map folderEntries = getBinderModule().executeSearchQuery(queryDoc, Constants.SEARCH_MODE_NORMAL, offset, maxCount);
+        Map folderEntries = getBinderModule().executeSearchQuery(queryDoc, Constants.SEARCH_MODE_NORMAL, offset, maxCount, null);
         SearchResultList<FolderEntryBrief> results = new SearchResultList<FolderEntryBrief>(offset);
         Map<String, Object> nextParams = new HashMap<String, Object>();
         nextParams.put("description_format", descriptionFormatStr);
@@ -201,17 +201,8 @@ public class FolderEntryResource extends AbstractFolderEntryResource {
             throw new BadRequestException(ApiErrorCode.BAD_INPUT, "'synchronize' form parameter (true/false) is required");
         }
         if (Boolean.TRUE.equals(sync)) {
-            Folder folder = entry.getParentFolder();
-            if (folder.isMirrored()) {
-                FolderModule.FileSyncStatus status = getFolderModule().fileSynchronize(entry);
-                if (status == FolderModule.FileSyncStatus.deleted) {
-                    throw new NoFolderEntryByTheIdException(id);
-                } else if (status== FolderModule.FileSyncStatus.modified) {
-                    entry = _getFolderEntry(id);
-                    return ResourceUtil.buildFolderEntry(entry, true, toDomainFormat(descriptionFormatStr));
-                }
-            }
-            throw new NotModifiedException();
+            org.kablink.teaming.domain.FolderEntry retEntry = synchronizeFolderEntry(entry);
+            return ResourceUtil.buildFolderEntry(retEntry, true, toDomainFormat(descriptionFormatStr));
         }
         return null;
     }

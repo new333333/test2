@@ -39,6 +39,7 @@ import java.util.GregorianCalendar;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.SingletonViolationException;
 import org.kablink.teaming.license.LicenseManager;
+import org.kablink.teaming.util.Utils;
 
 /**
  * ?
@@ -119,20 +120,50 @@ public class LicenseChecker {
 	/**
 	 * Returns true if based on the license, Filr features should be
 	 * exposed to the user and false otherwise.
+	 *
+	 * Note that if the license doesn't include Vibe or Filr features,
+	 * the type of license is used to determine what features to show.
 	 * 
 	 * @return
 	 */
 	public static boolean showFilrFeatures() {
-		return isAuthorizedByLicense(ObjectKeys.LICENSE_OPTION_FILR);
+		// Are Filr features enabled by the license?
+		boolean reply = isAuthorizedByLicense(ObjectKeys.LICENSE_OPTION_FILR);
+		if (!reply) {
+			// No!  Are Vibe features enabled by the license?
+			if (!(isAuthorizedByLicense(ObjectKeys.LICENSE_OPTION_VIBE))) {
+				// No!  Is it a Filr license?
+				reply = Utils.checkIfFilr();
+			}
+		}
+		
+		// If we get here, reply is true if we should show Filr
+		// features and false otherwise.  Return it.
+		return reply;
 	}
 	
 	/**
 	 * Returns true if based on the license, Vibe features should be
 	 * exposed to the user and false otherwise.
+	 *
+	 * Note that if the license doesn't include Vibe or Filr features,
+	 * the type of license is used to determine what features to show.
 	 * 
 	 * @return
 	 */
 	public static boolean showVibeFeatures() {
-		return isAuthorizedByLicense(ObjectKeys.LICENSE_OPTION_VIBE);
+		// Are Vibe features enabled by the license?
+		boolean reply = isAuthorizedByLicense(ObjectKeys.LICENSE_OPTION_VIBE);
+		if (!reply) {
+			// No!  Are Filr features enabled by the license?
+			if (!(isAuthorizedByLicense(ObjectKeys.LICENSE_OPTION_FILR))) {
+				// No!  Is it a Vibe license?
+				reply = Utils.checkIfVibe();
+			}
+		}
+		
+		// If we get here, reply is true if we should show Vibe
+		// features and false otherwise.  Return it.
+		return reply;
 	}
 }

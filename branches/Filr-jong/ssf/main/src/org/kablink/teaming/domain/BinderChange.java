@@ -48,6 +48,7 @@ public class BinderChange {
     }
 
     private EntityIdentifier entityId;
+    private String primaryFileId;
     private Action action;
     private Date date;
     private Map searchMap;
@@ -58,6 +59,14 @@ public class BinderChange {
 
     public void setEntityId(EntityIdentifier entityId) {
         this.entityId = entityId;
+    }
+
+    public String getPrimaryFileId() {
+        return primaryFileId;
+    }
+
+    public void setPrimaryFileId(String primaryFileId) {
+        this.primaryFileId = primaryFileId;
     }
 
     public Action getAction() {

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -38,6 +38,7 @@ import java.util.List;
 import org.kablink.teaming.gwt.client.GwtConstants;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.binderviews.accessories.AccessoriesPanel;
+import org.kablink.teaming.gwt.client.binderviews.util.BinderViewsHelper;
 import org.kablink.teaming.gwt.client.binderviews.BreadCrumbPanel;
 import org.kablink.teaming.gwt.client.binderviews.DescriptionPanel;
 import org.kablink.teaming.gwt.client.binderviews.EntryMenuPanel;
@@ -67,7 +68,6 @@ import org.kablink.teaming.gwt.client.util.Html5UploadState;
 import org.kablink.teaming.gwt.client.widgets.Html5UploadPopup;
 import org.kablink.teaming.gwt.client.widgets.SpinnerPopup;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
-
 import org.vectomatic.dnd.DataTransferExt;
 import org.vectomatic.dnd.DropPanel;
 import org.vectomatic.file.File;
@@ -349,9 +349,12 @@ public abstract class FolderViewBase extends ViewBase
 			m_uploadPopup = new Html5UploadPopup();
 		}
 		
-		// ...and finally, tie everything together.
+		// ...tie everything together...
 		trackVerticalPanel(VIEW_CONTENT_PANEL_INDEX, m_flowPanel);
 		m_rootPanel.add(m_verticalFlowPanel);
+		
+		// ...and finally, add an edit-in-place frame.
+		m_rootPanel.add(BinderViewsHelper.createEditInPlaceFrame());
 		
 		return m_rootPanel;
 	}

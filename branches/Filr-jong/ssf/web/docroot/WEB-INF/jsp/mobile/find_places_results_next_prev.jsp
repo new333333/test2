@@ -41,7 +41,7 @@
 			action="__ajax_mobile" 
 			operation="mobile_find_places" 
 			actionUrl="false" ><ssf:param 
-			name="searchText" value="${ss_searchText}"/><ssf:param 
+			name="searchText" useBody="true">${ss_searchText}</ssf:param><ssf:param 
 			name="pageNumber" value="${ss_prevPage}"/></ssf:url>"
 		><img border="0" src="<html:rootPath/>images/mobile/nl_left_20.png"/></a>
 	</c:if>
@@ -55,7 +55,7 @@
 			action="__ajax_mobile" 
 			operation="mobile_find_places" 
 			actionUrl="false" ><ssf:param 
-			name="searchText" value="${ss_searchText}"/><ssf:param 
+			name="searchText" useBody="true">${ss_searchText}</ssf:param><ssf:param 
 			name="pageNumber" value="${ss_nextPage}"/></ssf:url>"
 		><img border="0" src="<html:rootPath/>images/mobile/nl_right_20.png"/></a>
 	</c:if>

@@ -196,7 +196,7 @@ public class ConfigureRolesController extends  SAbstractController {
 		} else if (formData.containsKey("addCondition") && WebHelper.isMethodPost(request)) {
 			//Define a new condition
 			String title = PortletRequestUtils.getStringParameter(request, "title", "???").trim();
-			String description = PortletRequestUtils.getStringParameter(request, "description", "").trim();
+			String description = PortletRequestUtils.getStringParameter(request, "description", "", false).trim();
 			List<ConditionalClause> conditions = new ArrayList<ConditionalClause>();
 			List<String> includeAddressExpressions = new ArrayList<String>();
 			List<String> excludeAddressExpressions = new ArrayList<String>();
@@ -229,7 +229,7 @@ public class ConfigureRolesController extends  SAbstractController {
 			//Define a new condition
 			Long id = PortletRequestUtils.getRequiredLongParameter(request, "id");
 			String title = PortletRequestUtils.getStringParameter(request, "title", "???").trim();
-			String description = PortletRequestUtils.getStringParameter(request, "description", "").trim();
+			String description = PortletRequestUtils.getStringParameter(request, "description", "", false).trim();
 			List<ConditionalClause> conditions = new ArrayList<ConditionalClause>();
 			List<String> includeAddressExpressions = new ArrayList<String>();
 			List<String> excludeAddressExpressions = new ArrayList<String>();

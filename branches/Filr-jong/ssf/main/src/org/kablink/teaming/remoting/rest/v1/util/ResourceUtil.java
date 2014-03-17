@@ -79,6 +79,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
@@ -117,6 +118,52 @@ public class ResourceUtil {
    		return cal;
    	}
 
+    public static BinderChanges mergeBinderChanges(BinderChanges changes1, BinderChanges changes2, Integer maxCount) {
+        if (changes1.getCount()==0) {
+            return changes2;
+        }
+        if (changes2.getCount()==0) {
+            return changes1;
+        }
+        BinderChanges model = new BinderChanges();
+        model.setTotal(changes1.getTotal() + changes2.getTotal());
+        ListIterator<BaseBinderChange> iter1 = changes1.getResults().listIterator();
+        ListIterator<BaseBinderChange> iter2 = changes2.getResults().listIterator();
+        boolean done = false;
+        BaseBinderChange change1 = null;
+        BaseBinderChange change2 = null;
+        while (!done) {
+            if (model.getCount()>=maxCount) {
+                done = true;
+            } else {
+                if (change1==null && iter1.hasNext()) {
+                    change1 = iter1.next();
+                }
+                if (change2==null && iter2.hasNext()) {
+                    change2 = iter2.next();
+                }
+                if (change1==null && change2==null) {
+                    done = true;
+                } else if (change1==null) {
+                    model.append(change2);
+                    change2 = null;
+                } else if (change2==null) {
+                    model.append(change1);
+                    change1 = null;
+                } else if (change1.getDate().before(change2.getDate())) {
+                    model.append(change1);
+                    change1 = null;
+                } else {
+                    model.append(change2);
+                    change2 = null;
+                }
+            }
+        }
+        model.setLastModified(model.getResults().get(model.getCount()-1).getDate());
+        model.setLastChange(model.getLastModified());
+        return model;
+    }
+
     public static BinderChanges buildBinderChanges(org.kablink.teaming.domain.BinderChanges changes, List<BaseBinderChange> changeList) {
         BinderChanges model = new BinderChanges();
         model.setCount(changes.getCount());
@@ -124,33 +171,47 @@ public class ResourceUtil {
         model.appendAll(changeList);
         if (changeList.size()>0) {
             model.setLastModified(changeList.get(changeList.size()-1).getDate());
+            model.setLastChange(model.getLastModified());
         }
         return model;
     }
 
     public static BaseBinderChange buildBinderChange(org.kablink.teaming.domain.BinderChange change, org.kablink.teaming.domain.DefinableEntity entity, boolean preferFile, int descriptionFormat) {
+        return buildBinderChange(change.getEntityId(), change.getAction(), change.getDate(), change.getPrimaryFileId(), entity, preferFile, descriptionFormat);
+    }
+
+    public static BaseBinderChange buildBinderChange(EntityIdentifier entityId, org.kablink.teaming.domain.BinderChange.Action action, Date changeDate,
+                                                     String fileId, org.kablink.teaming.domain.DefinableEntity entity, boolean preferFile, int descriptionFormat) {
         BaseBinderChange model = null;
-        EntityIdentifier entityId = change.getEntityId();
         EntityIdentifier.EntityType entityType = entityId.getEntityType();
         if (entityType == EntityIdentifier.EntityType.folderEntry) {
-            if (preferFile && entity!=null) {
-                SortedSet<FileAttachment> fileAttachments = entity.getFileAttachments();
-                if (fileAttachments.size()>0) {
-                    FileAttachment attachment = fileAttachments.first();
+            if (preferFile) {
+                FileProperties props = null;
+                if (fileId==null && entity!=null) {
+                    SortedSet<FileAttachment> fileAttachments = entity.getFileAttachments();
+                    if (fileAttachments.size()>0) {
+                        FileAttachment attachment = fileAttachments.first();
+                        fileId = attachment.getId();
+                        if (action!= org.kablink.teaming.domain.BinderChange.Action.delete) {
+                            props = buildFileProperties(attachment);
+                        }
+                    }
+                }
+                if (fileId!=null) {
                     FileChange model1 = new FileChange();
-                    model1.setAction(change.getAction().name());
-                    model1.setDate(change.getDate());
-                    model1.setId(attachment.getId());
-                    model1.setFile(buildFileProperties(attachment));
+                    model1.setAction(action.name());
+                    model1.setDate(changeDate);
+                    model1.setId(fileId);
+                    model1.setFile(props);
                     model = model1;
                 }
             }
             if (model==null) {
                 FolderEntryChange model1 = new FolderEntryChange();
                 model1.setId(entityId.getEntityId());
-                model1.setAction(change.getAction().name());
-                model1.setDate(change.getDate());
-                if (entity!=null) {
+                model1.setAction(action.name());
+                model1.setDate(changeDate);
+                if (entity!=null && action!=org.kablink.teaming.domain.BinderChange.Action.delete) {
                     model1.setEntry(buildFolderEntry((org.kablink.teaming.domain.FolderEntry) entity, false, descriptionFormat));
                 }
                 model = model1;
@@ -158,9 +219,9 @@ public class ResourceUtil {
         } else if (entityType.isBinder()) {
             BinderChange model1 = new BinderChange();
             model1.setId(entityId.getEntityId());
-            model1.setAction(change.getAction().name());
-            model1.setDate(change.getDate());
-            if (entity!=null) {
+            model1.setAction(action.name());
+            model1.setDate(changeDate);
+            if (entity!=null && action != org.kablink.teaming.domain.BinderChange.Action.delete) {
                 model1.setBinder(buildBinder((org.kablink.teaming.domain.Binder) entity, false, descriptionFormat));
             }
             model = model1;
@@ -995,6 +1056,20 @@ public class ResourceUtil {
             return d1;
         }
         if (d1.compareTo(d2)>=0) {
+            return d1;
+        } else {
+            return d2;
+        }
+    }
+
+    public static Date min(Date d1, Date d2) {
+        if (d1==null) {
+            return d2;
+        }
+        if (d2==null) {
+            return d1;
+        }
+        if (d1.compareTo(d2)<=0) {
             return d1;
         } else {
             return d2;

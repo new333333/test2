@@ -92,8 +92,8 @@ public class ManageApplicationsController extends  SAbstractController {
 			
 		} else if ((formData.containsKey("applyBtn") || formData.containsKey("okBtn")) && WebHelper.isMethodPost(request)) {
 			Long applicationId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID);
-			String title = PortletRequestUtils.getStringParameter(request, "title", "");
-			String description = PortletRequestUtils.getStringParameter(request, "description", "");
+			String title = PortletRequestUtils.getStringParameter(request, "title", "", false);
+			String description = PortletRequestUtils.getStringParameter(request, "description", "", false);
 			String postUrl = PortletRequestUtils.getStringParameter(request, "postUrl", "");
 			String timeout = PortletRequestUtils.getStringParameter(request, "timeout", SPropsUtil.getString("remoteapp.timeout"));
 			String trusted = PortletRequestUtils.getStringParameter(request, "trusted", "");

@@ -241,7 +241,7 @@ public class RelevanceAjaxController  extends SAbstractControllerRetry {
 			}
 			shortTitle = title;
 			if (entity.getParentBinder() != null) title = entity.getParentBinder().getPathName() + "/" + title;
-			String addedComments = PortletRequestUtils.getStringParameter(request, "mailBody", "");
+			String addedComments = PortletRequestUtils.getStringParameter(request, "mailBody", "", false);
 			// Do NOT use interactive context when constructing permalink for email. See Bug 536092.
 			Description body = new Description("<a href=\"" + PermaLinkUtil.getPermalinkForEmail(entity) +
 					"\">" + title + "</a>\n<br/><br/>\n" + addedComments);

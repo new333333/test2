@@ -41,6 +41,8 @@ import org.kablink.teaming.gwt.client.event.InvokeHelpEvent;
 import org.kablink.teaming.gwt.client.event.LoginEvent;
 import org.kablink.teaming.gwt.client.event.LogoutEvent;
 import org.kablink.teaming.gwt.client.event.VibeEventBase;
+import org.kablink.teaming.gwt.client.event.ViewResourceLibraryEvent;
+import org.kablink.teaming.gwt.client.event.ViewTeamingFeedEvent;
 import org.kablink.teaming.gwt.client.profile.DiskUsageInfo;
 import org.kablink.teaming.gwt.client.rpc.shared.GetDiskUsageInfoCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetSiteAdminUrlCmd;
@@ -283,6 +285,16 @@ public class UserActionsPopup extends TeamingPopupPanel
 												GwtTeaming.getImageBundle().userActionsPanel_Admin(),
 												new AdministrationEvent() );
 							m_contentPanel.insert( actionPanel, 0 );
+							
+							// Add the "Resource Library" menu item
+							if ( GwtClientHelper.isLicenseFilr() == false )
+							{
+								actionPanel = addAction(
+													GwtTeaming.getMessages().resourceLibMenuItem(),
+													GwtTeaming.getImageBundle().resourceLibMenuImg(),
+													new ViewResourceLibraryEvent() );
+								m_contentPanel.insert( actionPanel, m_contentPanel.getWidgetCount()-1 );
+							}
 						}
 					} );
 				}
@@ -326,6 +338,16 @@ public class UserActionsPopup extends TeamingPopupPanel
 							GwtTeaming.getImageBundle().userActionsPanel_PersonalPreferences(),
 							new EditPersonalPreferencesEvent() );
 		m_contentPanel.add( actionPanel );
+		
+		// Add the "News Feed" option
+		if ( GwtClientHelper.isLicenseFilr() == false )
+		{
+			actionPanel = addAction(
+							GwtTeaming.getMessages().newsFeedMenuItem(),
+							GwtTeaming.getImageBundle().newsFeedMenuImg(),
+							new ViewTeamingFeedEvent() );
+			m_contentPanel.add( actionPanel );
+		}
 		
 		// Add "Help"
 		actionPanel = addAction(

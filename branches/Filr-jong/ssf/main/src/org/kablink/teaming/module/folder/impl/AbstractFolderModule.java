@@ -807,7 +807,8 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
         	} catch (NoFolderByTheIdException nf) {} 
         }
         if (folders.size() > 0) {
-	        Hits hits = getRecentEntries(folders);
+        	
+	        Hits hits = getRecentEntries(folders, SearchUtils.fieldNamesList(Constants.BINDER_ID_FIELD,Constants.DOCID_FIELD,Constants.LASTACTIVITY_FIELD));
 	        if (hits != null) {
 	        	Map<String, Counter> unseenCounts = new HashMap();
 		        Date modifyDate = new Date();
@@ -818,9 +819,7 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
 					if (entryIdString != null && !entryIdString.equals("")) {
 						entryId = new Long(entryIdString);
 					}
-					try {
-						modifyDate = DateTools.stringToDate((String) hits.doc(i).get(Constants.LASTACTIVITY_FIELD));
-					} catch (ParseException pe) {} // no need to do anything
+					modifyDate = ((Date) hits.doc(i).get(Constants.LASTACTIVITY_FIELD));
 					Counter cnt = unseenCounts.get(folderIdString);
 					if (cnt == null) {
 						cnt = new Counter();
@@ -843,7 +842,7 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
         return results;
     }
  
-    protected Hits getRecentEntries(Collection<Folder> folders) {
+    protected Hits getRecentEntries(Collection<Folder> folders, List<String> fieldNames) {
 		ArrayList<String>ids = new ArrayList();
 		for (Folder f:folders) {
 			ids.add(f.getId().toString());
@@ -865,7 +864,7 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
         
         try {
         	results = luceneSession.search(RequestContextHolder.getRequestContext().getUserId(),
-        			so.getBaseAclQueryStr(), so.getExtendedAclQueryStr(), Constants.SEARCH_MODE_NORMAL, so.getLuceneQuery(), null, so.getSortBy(),0,0);
+        			so.getBaseAclQueryStr(), so.getExtendedAclQueryStr(), Constants.SEARCH_MODE_NORMAL, so.getLuceneQuery(), fieldNames, so.getSortBy(),0,0);
         	//results = instreamSession.search(so.getQueryString(),so.getSortBy(),0,0);
         } catch (Exception e) {
         	logger.warn("Exception throw while searching in getRecentEntries: " + e.toString());

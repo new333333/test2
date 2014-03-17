@@ -121,7 +121,7 @@ public class FileResource extends AbstractFileResource {
         }
         Criteria crit = new Criteria();
         crit.add(criterion);
-        Map resultsMap = getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, offset, maxCount);
+        Map resultsMap = getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, offset, maxCount, null);
         SearchResultList<FileProperties> results = new SearchResultList<FileProperties>(offset);
         SearchResultBuilderUtil.buildSearchResults(results, new FilePropertiesBuilder(), resultsMap, "/files", nextParams, offset);
         if (includeParentPaths) {
@@ -330,6 +330,24 @@ public class FileResource extends AbstractFileResource {
     public FileProperties getMetaData(@PathParam("id") String fileId) {
         FileAttachment fa = findFileAttachment(fileId);
         return ResourceUtil.buildFileProperties(fa);
+    }
+
+    @POST
+    @Path("{id}/metadata")
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    public FileProperties synchronize(@PathParam("id") String fileId,
+                                      @FormParam("synchronize") Boolean sync,
+                                      @FormParam("description_format") @DefaultValue("text") String descriptionFormatStr) {
+        FileAttachment fa = findFileAttachment(fileId);
+        DefinableEntity entity = fa.getOwner().getEntity();
+        if (Boolean.TRUE.equals(sync)) {
+            if (entity instanceof FolderEntry) {
+                FolderEntry entry = synchronizeFolderEntry((FolderEntry) entity);
+                fa = (FileAttachment) entry.getAttachment(fileId);
+                return ResourceUtil.buildFileProperties(fa);
+            }
+        }
+        return null;
     }
 
     @GET

@@ -94,7 +94,7 @@ public class EditLdapSearchDlg extends DlgBox
 	private TextBox m_baseDnTextBox;
 	private TextArea m_filterTextArea;
 	private CheckBox m_searchSubtreeCheckBox;
-	private FlowPanel m_homeDirInfoPanel;
+	private FlowPanel m_homeDirInfoPanel = null;
 
 	// The following data members are used to specify how a user's home dir net folder will be created.
 	private ListBox m_netFolderServersListBox;
@@ -263,6 +263,7 @@ public class EditLdapSearchDlg extends DlgBox
 		}
 		
 		// Add the panel that holds the controls that define how to create a home dir net folder
+		if ( GwtClientHelper.isLicenseFilr() )
 		{
 			Label label;
 			FlowPanel homeDirContentPanel;
@@ -508,7 +509,7 @@ public class EditLdapSearchDlg extends DlgBox
 			return null;
 		
 		// Is the home dir panel visible?
-		if ( m_homeDirInfoPanel.isVisible() )
+		if ( GwtClientHelper.isLicenseFilr() && m_homeDirInfoPanel != null && m_homeDirInfoPanel.isVisible() )
 		{
 			// Yes, get the information from the controls.
 			homeDirConfig = new GwtHomeDirConfig();
@@ -685,7 +686,8 @@ public class EditLdapSearchDlg extends DlgBox
 		m_filterTextArea.setValue( "" );
 		m_searchSubtreeCheckBox.setValue( false );
 
-		m_homeDirInfoPanel.setVisible( showHomeDirInfoControls );
+		if ( GwtClientHelper.isLicenseFilr() && m_homeDirInfoPanel != null )
+			m_homeDirInfoPanel.setVisible( showHomeDirInfoControls );
 
 		if ( ldapSearch == null )
 			return;
@@ -695,7 +697,7 @@ public class EditLdapSearchDlg extends DlgBox
 		m_searchSubtreeCheckBox.setValue( ldapSearch.getSearchSubtree() );
 
 		// Are we showing the home dir info controls?
-		if ( showHomeDirInfoControls )
+		if ( showHomeDirInfoControls && GwtClientHelper.isLicenseFilr() && m_homeDirInfoPanel != null )
 		{
 			GwtHomeDirConfig homeDirConfig;
 			

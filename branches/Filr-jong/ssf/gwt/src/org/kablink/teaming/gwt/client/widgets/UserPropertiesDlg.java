@@ -47,6 +47,7 @@ import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.InvokeEditNetFolderDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeManageNetFoldersDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeUserShareRightsDlgEvent;
+import org.kablink.teaming.gwt.client.event.DialogClosedEvent;
 import org.kablink.teaming.gwt.client.event.ReloadDialogContentEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.menu.PopupMenu;
@@ -68,7 +69,6 @@ import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
-import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -105,13 +105,14 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
 public class UserPropertiesDlg extends DlgBox
 	implements
 		// Event handlers implemented by this class.
+		DialogClosedEvent.Handler,
 		ReloadDialogContentEvent.Handler
 {
+	private boolean							m_showDialog;				// true -> Force the dialog to be (re)shown.  false -> Don't.
 	private GwtTeamingDataTableImageBundle	m_images;					// Access to the Vibe images resources we need for this cell.
 	private GwtTeamingMessages				m_messages;					// Access to Vibe's messages.
 	private List<HandlerRegistration>		m_registeredEventHandlers;	// Event handlers that are currently registered.
 	private Long							m_userId;					// The user we're dealing with.
-	private String							m_product;					// The name of the product (Filr vs. Vibe.)
 	private UIObject						m_showRelativeTo;			// UIObject to show the dialog relative to.  null -> Center it on the screen.
 	private UserPropertiesRpcResponseData	m_userProperties;			// Information about managing the user, once read from the server.
 	private VibeFlowPanel					m_fp;						// The panel holding the dialog's content.
@@ -122,6 +123,7 @@ public class UserPropertiesDlg extends DlgBox
 	// this class.  See EventHelper.registerEventHandlers() for how
 	// this array is used.
 	private final static TeamingEvents[] REGISTERED_EVENTS = new TeamingEvents[] {
+		TeamingEvents.DIALOG_CLOSED,
 		TeamingEvents.RELOAD_DIALOG_CONTENT,
 	};
 	
@@ -139,7 +141,6 @@ public class UserPropertiesDlg extends DlgBox
 		// ...initialize everything else...
 		m_images   = GwtTeaming.getDataTableImageBundle();
 		m_messages = GwtTeaming.getMessages();
-		m_product  = GwtClientHelper.getProductName();
 	
 		// ...and create the dialog's content.
 		createAllDlgContent(
@@ -203,6 +204,12 @@ public class UserPropertiesDlg extends DlgBox
 	 * Adds information about the user's Home folder to the grid.
 	 */
 	private void addHomeInfo(FlexTable grid, FlexCellFormatter cf, RowFormatter rf, HomeInfo home, boolean addSectionHeader) {
+		// If we're not showing Filr features...
+		if (!(GwtClientHelper.showFilrFeatures())) {
+			// ...we don't show home folder information.
+			return;
+		}
+		
 		// Add a home section.
 		int row = getSectionRow(grid, rf, addSectionHeader);
 		boolean hasHome = (null != home);
@@ -266,7 +273,7 @@ public class UserPropertiesDlg extends DlgBox
 				button.addClickHandler(new ClickHandler() {
 					@Override
 					public void onClick(ClickEvent event) {
-						GwtClientHelper.deferCommand(new Scheduler.ScheduledCommand() {
+						GwtClientHelper.deferCommand(new ScheduledCommand() {
 							@Override
 							public void execute() {
 								GwtTeaming.fireEventAsync(
@@ -380,6 +387,12 @@ public class UserPropertiesDlg extends DlgBox
 	 * Adds information about the user's Net Folders to the grid.
 	 */
 	private void addNetFoldersInfo(FlexTable grid, FlexCellFormatter cf, RowFormatter rf, NetFoldersInfo netFolders, boolean addSectionHeader) {
+		// If we're not showing Filr features...
+		if (!(GwtClientHelper.showFilrFeatures())) {
+			// ...we don't show net folder information.
+			return;
+		}
+		
 		// If the current user can manage net folders...
 		int row = getSectionRow(grid, rf, addSectionHeader);
 		rf.addStyleName(row, "vibe-userPropertiesDlg-nfRow");
@@ -751,7 +764,7 @@ public class UserPropertiesDlg extends DlgBox
 			if (share.isAllowPublicLinks()) {
 				if (needJoint) rightsBuf.append("+");
 				else           needJoint = true;
-				rightsBuf.append(m_messages.userPropertiesDlgSharing_PublicLinks(m_product));
+				rightsBuf.append(m_messages.userPropertiesDlgSharing_PublicLinks());
 			}
 			if (share.isAllowForwarding()) {
 				if (needJoint) rightsBuf.append("/");
@@ -858,13 +871,12 @@ public class UserPropertiesDlg extends DlgBox
 	 * Asynchronously loads the entry types the user can select from.
 	 */
 	private void loadPart1Async() {
-		ScheduledCommand doLoad = new ScheduledCommand() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
 				loadPart1Now();
 			}
-		};
-		Scheduler.get().scheduleDeferred(doLoad);
+		});
 	}
 	
 	/*
@@ -917,6 +929,26 @@ public class UserPropertiesDlg extends DlgBox
 	}
 
 	/**
+	 * Handles DialogClosedEvent's received by this class.
+	 * 
+	 * Implements the DialogClosedEvent.Handler.onDialogClosed() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onDialogClosed(DialogClosedEvent event) {
+		// If the dialog is not currently visible or its this dialog
+		// signaling it's closing...
+		if ((!(isVisible())) || (event.getDlgBox() == this)) {
+			// ...ignore this event.
+			return;
+		}
+		
+		// Otherwise, force the dialog to reload.
+		runDlgAsync(this, m_userId, m_showRelativeTo, false);
+	}
+
+	/**
 	 * Handles ReloadDialogContentEvent's received by this class.
 	 * 
 	 * Implements the ReloadDialogContentEvent.Handler.onReloadDialogContent() method.
@@ -928,7 +960,7 @@ public class UserPropertiesDlg extends DlgBox
 		// Is the event targeted to this dialog?
 		if (event.getDialog().equals(this)) {
 			// Yes!  Force the dialog to reload.
-			runDlgAsync(this, m_userId, m_showRelativeTo);
+			runDlgAsync(this, m_userId, m_showRelativeTo, false);
 		}
 	}
 
@@ -936,13 +968,12 @@ public class UserPropertiesDlg extends DlgBox
 	 * Asynchronously populates the contents of the dialog.
 	 */
 	private void populateDlgAsync() {
-		ScheduledCommand doPopulate = new ScheduledCommand() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
 				populateDlgNow();
 			}
-		};
-		Scheduler.get().scheduleDeferred(doPopulate);
+		});
 	}
 	
 	/*
@@ -972,9 +1003,11 @@ public class UserPropertiesDlg extends DlgBox
 		addNetFoldersInfo(     grid, cf, rf, m_userProperties.getNetFoldersInfo(), true );	// true  ->       Add with a section header.
 		
 		// ...and finally, show the dialog.
-		if (null == m_showRelativeTo)
-		     center();
-		else showRelativeTo(m_showRelativeTo);
+		if (m_showDialog) {
+			if (null == m_showRelativeTo)
+			     center();
+			else showRelativeTo(m_showRelativeTo);
+		}
 	}
 	
 	/*
@@ -1003,24 +1036,24 @@ public class UserPropertiesDlg extends DlgBox
 	 * Asynchronously runs the given instance of the user properties
 	 * dialog.
 	 */
-	private static void runDlgAsync(final UserPropertiesDlg upDlg, final Long userId, final UIObject showRelativeTo) {
-		ScheduledCommand doRun = new ScheduledCommand() {
+	private static void runDlgAsync(final UserPropertiesDlg upDlg, final Long userId, final UIObject showRelativeTo, final boolean showDialog) {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
-				upDlg.runDlgNow(userId, showRelativeTo);
+				upDlg.runDlgNow(userId, showRelativeTo, showDialog);
 			}
-		};
-		Scheduler.get().scheduleDeferred(doRun);
+		});
 	}
 	
 	/*
 	 * Synchronously runs the given instance of the user properties
 	 * dialog.
 	 */
-	private void runDlgNow(Long userId, UIObject showRelativeTo) {
+	private void runDlgNow(Long userId, UIObject showRelativeTo, boolean showDialog) {
 		// Store the parameters and populate the dialog.
 		m_userId         = userId;
 		m_showRelativeTo = showRelativeTo;
+		m_showDialog     = showDialog;
 		loadPart1Async();
 	}
 
@@ -1085,7 +1118,7 @@ public class UserPropertiesDlg extends DlgBox
 					// No, it's not a request to create a dialog!  It
 					// must be a request to run an existing one.  Run
 					// it.
-					runDlgAsync(upDlg, userId, showRelativeTo);
+					runDlgAsync(upDlg, userId, showRelativeTo, true);
 				}
 			}
 		});

@@ -1827,13 +1827,18 @@ function ss_onSubmit(obj, checkIfButtonClicked) {
 	// this to be non-blank.
     if (typeof obj.action != 'undefined' && obj.action == '') obj.action = self.location.href;
     
-    var result = true;
     if (ss_buttonSelected == "" && checkIfButtonClicked) {
     	// This must be IE. Don't let them submit using the Enter key since it
 		// doesn't submit the whole form that way.
     	alert(ss_clickOkToSubmit);
     	return false;
-    } else if (ss_buttonSelected == "cancelBtn" || ss_buttonSelected == "closeBtn") {
+    }
+    
+	// If there's a GWT UI ss_dialogClosed() function defined, call it.
+    if      (typeof self.opener.ss_dialogClosed != "undefined") self.opener.ss_dialogClosed();	// Handles dialog in a popup window.
+    else if (typeof window.top.ss_dialogClosed  != "undefined") window.top.ss_dialogClosed();	// Handles dialog being inline.
+    
+    if (ss_buttonSelected == "cancelBtn" || ss_buttonSelected == "closeBtn") {
 		if (self != self.parent) {
 			if (self.window.name == "ss_showpopupframe") {
 				// This is in the popup iframe
@@ -1857,6 +1862,7 @@ function ss_onSubmit(obj, checkIfButtonClicked) {
 		}
     	return true;
     }
+    var result = true;
     for (var i = 0; i < ss_onSubmitList.length; i++) {
         if (ss_onSubmitList[i].formName == obj.name) {
             if (!ss_onSubmitList[i].submitRoutine(obj)) {result = false;}

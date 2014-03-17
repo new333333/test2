@@ -161,7 +161,7 @@
 						actionUrl="false" ><ssf:param 
 				        name="operation2" value="${operation2}"/><ssf:param 
 						name="quickSearch" value="true"/><ssf:param 
-						name="searchText" value="${ss_searchText}"/><ssf:param 
+						name="searchText" useBody="true">${ss_searchText}</ssf:param><ssf:param 
 						name="tabId" value="${ss_tab_id}"/><ssf:param 
 						name="pageNumber" value="${ss_pageNumber-1}"/><ssf:param 
 						name="ss_queryName" value="${ss_queryName}" /></ssf:url>"
@@ -180,7 +180,7 @@
 						actionUrl="false" ><ssf:param 
 				        name="operation2" value="${operation2}"/><ssf:param 
 						name="quickSearch" value="true"/><ssf:param 
-						name="searchText" value="${ss_searchText}"/><ssf:param 
+						name="searchText" useBody="true">${ss_searchText}</ssf:param><ssf:param 
 						name="tabId" value="${ss_tab_id}"/><ssf:param 
 						name="pageNumber" value="${ss_pageNumber+1}"/><ssf:param 
 						name="ss_queryName" value="${ss_queryName}" /></ssf:url>"
@@ -304,7 +304,7 @@
 							actionUrl="false" ><ssf:param 
 				        	name="operation2" value="${operation2}"/><ssf:param 
 							name="quickSearch" value="true"/><ssf:param 
-							name="searchText" value="${ss_searchText}"/><ssf:param 
+							name="searchText" useBody="true">${ss_searchText}</ssf:param><ssf:param 
 							name="tabId" value="${ss_tab_id}"/><ssf:param 
 							name="pageNumber" value="${ss_pageNumber-1}"/><ssf:param 
 							name="ss_queryName" value="${ss_queryName}" /></ssf:url>"
@@ -323,7 +323,7 @@
 							actionUrl="false" ><ssf:param 
 				        	name="operation2" value="${operation2}"/><ssf:param 
 							name="quickSearch" value="true"/><ssf:param 
-							name="searchText" value="${ss_searchText}"/><ssf:param 
+							name="searchText" useBody="true">${ss_searchText}</ssf:param><ssf:param 
 							name="tabId" value="${ss_tab_id}"/><ssf:param 
 							name="pageNumber" value="${ss_pageNumber+1}"/><ssf:param 
 							name="ss_queryName" value="${ss_queryName}" /></ssf:url>"

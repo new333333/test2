@@ -128,7 +128,7 @@ public class UserResource extends AbstractPrincipalResource {
         String nextUrl = "/users";
         nextParams.put("description_format", descriptionFormatStr);
         Document queryDoc = buildQueryDocument("<query/>", criterion);
-        Map resultMap = getBinderModule().executeSearchQuery(queryDoc, Constants.SEARCH_MODE_NORMAL, offset, maxCount);
+        Map resultMap = getBinderModule().executeSearchQuery(queryDoc, Constants.SEARCH_MODE_NORMAL, offset, maxCount, null);
         SearchResultList<UserBrief> results = new SearchResultList<UserBrief>();
         SearchResultBuilderUtil.buildSearchResults(results, new UserBriefBuilder(toDomainFormat(descriptionFormatStr)), resultMap, nextUrl, nextParams, offset);
 		return results;

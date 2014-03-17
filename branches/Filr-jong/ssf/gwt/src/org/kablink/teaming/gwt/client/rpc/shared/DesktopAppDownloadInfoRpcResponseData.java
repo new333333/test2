@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -44,6 +44,7 @@ public class DesktopAppDownloadInfoRpcResponseData implements IsSerializable, Vi
 	private FileDownloadInfo	m_mac;		//
 	private FileDownloadInfo	m_win32;	//
 	private FileDownloadInfo	m_win64;	//
+	private FileDownloadInfo	m_winXP;	//
 	
 	/**
 	 * Inner class used to track filename/URL pairs.
@@ -53,12 +54,12 @@ public class DesktopAppDownloadInfoRpcResponseData implements IsSerializable, Vi
 		private String m_md5;		// The MD5 checksum for the file, if known.
 		private String m_url;		// The URL to download this file.
 
-		/**
+		/*
 		 * Constructor method.
 		 * 
 		 * Zero parameter constructor required for GWT serialization.
 		 */
-		public FileDownloadInfo() {
+		private FileDownloadInfo() {
 			// Initialize the super class.
 			super();
 		}
@@ -127,6 +128,7 @@ public class DesktopAppDownloadInfoRpcResponseData implements IsSerializable, Vi
 	public FileDownloadInfo getMac()   {return m_mac;  }
 	public FileDownloadInfo getWin32() {return m_win32;}
 	public FileDownloadInfo getWin64() {return m_win64;}
+	public FileDownloadInfo getWinXP() {return m_winXP;}
 	
 	/**
 	 * Set'er methods.
@@ -136,4 +138,5 @@ public class DesktopAppDownloadInfoRpcResponseData implements IsSerializable, Vi
 	public void setMac(  FileDownloadInfo mac)   {m_mac   = mac;  }
 	public void setWin32(FileDownloadInfo win32) {m_win32 = win32;}
 	public void setWin64(FileDownloadInfo win64) {m_win64 = win64;}
+	public void setWinXP(FileDownloadInfo winXP) {m_winXP = winXP;}
 }
