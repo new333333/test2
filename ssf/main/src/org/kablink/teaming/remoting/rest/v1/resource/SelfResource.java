@@ -56,11 +56,14 @@ import org.kablink.teaming.remoting.rest.v1.util.LinkUriUtil;
 import org.kablink.teaming.remoting.rest.v1.util.ResourceUtil;
 import org.kablink.teaming.remoting.rest.v1.util.SearchResultBuilderUtil;
 import org.kablink.teaming.rest.v1.model.BinderBrief;
+import org.kablink.teaming.rest.v1.model.BinderChange;
 import org.kablink.teaming.rest.v1.model.BinderChanges;
 import org.kablink.teaming.rest.v1.model.BinderTree;
 import org.kablink.teaming.rest.v1.model.DefinableEntity;
 import org.kablink.teaming.rest.v1.model.DefinableEntityBrief;
+import org.kablink.teaming.rest.v1.model.FileChange;
 import org.kablink.teaming.rest.v1.model.FileProperties;
+import org.kablink.teaming.rest.v1.model.FolderEntryChange;
 import org.kablink.teaming.rest.v1.model.LibraryInfo;
 import org.kablink.teaming.rest.v1.model.LongIdLinkPair;
 import org.kablink.teaming.rest.v1.model.MobileDevice;
@@ -389,7 +392,9 @@ public class SelfResource extends AbstractFileResource {
             throw new AccessControlException("Personal storage is not allowed.", null);
         }
         org.kablink.teaming.domain.Binder parent = getMyFilesFolderParent();
-        return getBinderChanges(new Long [] {parent.getId()}, null, since, descriptionFormatStr, maxCount, "/my_files/library_changes");
+        BinderChanges binderChanges = getBinderChanges(new Long[]{parent.getId()}, null, since, descriptionFormatStr, maxCount, "/my_files/library_changes");
+        setMyFilesParents(binderChanges);
+        return binderChanges;
     }
 
     @GET
@@ -736,13 +741,29 @@ public class SelfResource extends AbstractFileResource {
         List<Long> hiddenFolderIds = getEffectiveMyFilesFolderIds();
         Set<Long> allParentIds = new HashSet(hiddenFolderIds);
         allParentIds.add(getLoggedInUser().getWorkspaceId());
+        ParentBinder parent = new ParentBinder(ObjectKeys.MY_FILES_ID, "/self/my_files");
         for (Object obj : results.getResults()) {
             if (obj instanceof FileProperties && allParentIds.contains(((FileProperties)obj).getBinder().getId())) {
-                ((FileProperties)obj).setBinder(new ParentBinder(ObjectKeys.MY_FILES_ID, "/self/my_files"));
+                ((FileProperties)obj).setBinder(parent);
             } else if (obj instanceof DefinableEntity && allParentIds.contains(((DefinableEntity)obj).getParentBinder().getId())) {
-                ((DefinableEntity)obj).setParentBinder(new ParentBinder(ObjectKeys.MY_FILES_ID, "/self/my_files"));
+                ((DefinableEntity)obj).setParentBinder(parent);
             } else if (obj instanceof DefinableEntityBrief && allParentIds.contains(((DefinableEntityBrief)obj).getParentBinder().getId())) {
-                ((DefinableEntityBrief)obj).setParentBinder(new ParentBinder(ObjectKeys.MY_FILES_ID, "/self/my_files"));
+                ((DefinableEntityBrief)obj).setParentBinder(parent);
+            } else if (obj instanceof BinderChange) {
+                org.kablink.teaming.rest.v1.model.Binder binder = ((BinderChange)obj).getBinder();
+                if (allParentIds.contains(binder.getParentBinder().getId())) {
+                    binder.setParentBinder(parent);
+                }
+            } else if (obj instanceof FileChange) {
+                FileProperties file = ((FileChange)obj).getFile();
+                if (allParentIds.contains(file.getBinder().getId())) {
+                    file.setBinder(parent);
+                }
+            } else if (obj instanceof FolderEntryChange) {
+                org.kablink.teaming.rest.v1.model.FolderEntry entry = ((FolderEntryChange)obj).getEntry();
+                if (allParentIds.contains(entry.getParentBinder().getId())) {
+                    entry.setParentBinder(parent);
+                }
             }
         }
     }
