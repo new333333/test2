@@ -37,10 +37,15 @@ import org.kablink.teaming.remoting.rest.v1.util.SearchResultBuilderUtil;
 import org.kablink.teaming.rest.v1.model.Access;
 import org.kablink.teaming.rest.v1.model.BaseBinderChange;
 import org.kablink.teaming.rest.v1.model.BinderBrief;
+import org.kablink.teaming.rest.v1.model.BinderChange;
 import org.kablink.teaming.rest.v1.model.BinderChanges;
 import org.kablink.teaming.rest.v1.model.BinderTree;
+import org.kablink.teaming.rest.v1.model.DefinableEntityBrief;
 import org.kablink.teaming.rest.v1.model.EntityId;
+import org.kablink.teaming.rest.v1.model.FileChange;
 import org.kablink.teaming.rest.v1.model.FileProperties;
+import org.kablink.teaming.rest.v1.model.FolderEntryBrief;
+import org.kablink.teaming.rest.v1.model.FolderEntryChange;
 import org.kablink.teaming.rest.v1.model.LibraryInfo;
 import org.kablink.teaming.rest.v1.model.NotifyWarning;
 import org.kablink.teaming.rest.v1.model.ParentBinder;
@@ -974,9 +979,15 @@ public class ShareResource extends AbstractResource {
             changes = new BinderChanges();
         }
         try {
-            BinderChanges changes2 = _getShareChanges(dateFormat.parse(since), topId, spec, excludedSharerId,
-                    includeParentPaths, showHidden, showUnhidden, showPublic, showNonPublic, true, Description.FORMAT_NONE);
-            return ResourceUtil.mergeBinderChanges(changes, changes2, maxCount);
+            BinderChanges changes2 = _getShareChanges(binders, dateFormat.parse(since), true, Description.FORMAT_NONE);
+            changes = ResourceUtil.mergeBinderChanges(changes, changes2, maxCount);
+            setParents(changes, binders, new ParentBinder(topId, topHref));
+
+            if (includeParentPaths) {
+                populateParentBinderPaths(changes);
+            }
+
+            return changes;
         } catch (ParseException e) {
             // Shouldn't happen.  super.getBinderChanges() will also try to parse the date and throw an expection if it's invalid.
             throw new InternalServerErrorException(ApiErrorCode.SERVER_ERROR, e.getMessage());
@@ -1041,11 +1052,8 @@ public class ShareResource extends AbstractResource {
         return results.toArray(new SharedFileProperties[results.size()]);
     }
 
-    protected BinderChanges _getShareChanges(Date since, Long topId, ShareItemSelectSpec spec, Long excludedSharerId, boolean onlyLibrary,
-                                                   boolean showHidden, boolean showUnhidden, boolean showPublic, boolean showNonPublic, boolean preferFile,
-                                                   int descriptionFormat) {
-
-        List<Pair<DefinableEntity, List<ShareItem>>> pairs = _getSharedItems(topId, spec, excludedSharerId, onlyLibrary, showHidden, showUnhidden, true, true, showPublic, showNonPublic, true, true);
+    protected BinderChanges _getShareChanges(List<Pair<DefinableEntity, List<ShareItem>>> pairs, Date since,
+                                             boolean preferFile, int descriptionFormat) {
 
         BinderChanges changes = new BinderChanges();
         List<BaseBinderChange> changeList = new ArrayList<BaseBinderChange>();
@@ -1363,4 +1371,37 @@ public class ShareResource extends AbstractResource {
         }
         return share;
     }
+
+    private void setParents(SearchResultList results, List<Pair<DefinableEntity, List<ShareItem>>> shareList, ParentBinder parent) {
+        Set<Long> binderIds = new HashSet<Long>();
+        Set<Long> entryIds = new HashSet<Long>();
+        for (Pair<DefinableEntity, List<ShareItem>> pair : shareList) {
+            EntityIdentifier id = pair.getB().get(0).getSharedEntityIdentifier();
+            if (id.getEntityType().isBinder()) {
+                binderIds.add(id.getEntityId());
+            } else if (id.getEntityType()== EntityIdentifier.EntityType.folderEntry ) {
+                entryIds.add(id.getEntityId());
+            }
+        }
+        for (Object obj : results.getResults()) {
+            if (obj instanceof BinderChange) {
+                org.kablink.teaming.rest.v1.model.Binder binder = ((BinderChange)obj).getBinder();
+                if (binderIds.contains(binder.getId())) {
+                    binder.setParentBinder(parent);
+                }
+            } else if (obj instanceof FileChange) {
+                FileProperties file = ((FileChange)obj).getFile();
+                if (entryIds.contains(file.getOwningEntity().getId())) {
+                    file.setBinder(parent);
+                }
+            } else if (obj instanceof FolderEntryChange) {
+                org.kablink.teaming.rest.v1.model.FolderEntry entry = ((FolderEntryChange)obj).getEntry();
+                if (entryIds.contains(entry.getId())) {
+                    entry.setParentBinder(parent);
+                }
+            }
+        }
+    }
+
+
 }
