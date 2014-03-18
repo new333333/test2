@@ -51,7 +51,9 @@
 <c:if test="${!empty ssFolderEntryDescendants}">	
 <div class="ss_entryContent">
   <c:if test="${!empty property_caption}">
-    <span class="ss_topic_replies"><c:out value="${property_caption}"/></span>
+    <div class="ss_topic_replies">
+      <span><c:out value="${property_caption}"/></span>
+    </div>
   </c:if>
 	<div>
 	<c:forEach var="reply" items="${ssFolderEntryDescendants}">
