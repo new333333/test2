@@ -5326,19 +5326,6 @@ td.datePickerMonth {
 	padding: 3px 5px;
 }
 
-.userActionsPopup_ActionLabel:hover
-{
-	color: #135c8f;
-	background: #cce9ee;
-	border-radius: 2px;
-/*	background: -moz-linear-gradient(center bottom,  #a8d4dd 47%, #d5edf1 53%, #c8e4e9 100%); /* FF3.6+ */
-/*	background: -webkit-gradient(linear, left bottom, left top, color-stop(47%,#a8d4dd), color-stop(53%,#d5edf1), color-stop(100%,#c8e4e9)); /* Chrome,Safari4+ */
-/*	background: -webkit-linear-gradient(bottom,  #a8d4dd 47%, #d5edf1 53%, #c8e4e9 100%); /* Chrome10+,Safari5.1+ */
-/*	background: -o-linear-gradient(bottom,  #a8d4dd 47%, #d5edf1 53%, #c8e4e9 100%); /* Opera 11.10+ */
-/*	background: -ms-linear-gradient(bottom, #a8d4dd 47%, #d5edf1 53%, #c8e4e9 100%); /* IE10+ */
-/*	background: linear-gradient(bottom,  #a8d4dd 47%, #d5edf1 53%, #c8e4e9 100%); /* W3C */
-}
-
 .userActionsPopup_ActionPanel
 {
 	color: #505354;
@@ -5347,6 +5334,13 @@ td.datePickerMonth {
 	margin-left: 18px;
 	margin-right: 18px;
 	white-space: nowrap;
+}
+
+.userActionsPopup_ActionPanel:hover
+{
+	color: #135c8f;
+	background: #cce9ee;
+	border-radius: 2px;
 }
 
 .userActionsPopup_ActionsPanel:hover
