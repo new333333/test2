@@ -2024,6 +2024,10 @@ public class ShareThisDlg2 extends DlgBox
 		// Hide the search-results widget.
 		m_findCtrl.hideSearchResults();
 
+		emailAddress = m_findCtrl.getText();
+		if ( emailAddress == null || emailAddress.length() == 0 )
+			return;
+		
 		// Is sharing with an external user ok to do?
 		if ( m_sharingInfo.getCanShareWithExternalUsers() == false )
 		{
@@ -2032,8 +2036,6 @@ public class ShareThisDlg2 extends DlgBox
 			return;
 		}
 		
-		emailAddress = m_findCtrl.getText();
-
 		// Clear what the user has typed.
 		m_findCtrl.clearText();
 
