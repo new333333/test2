@@ -203,6 +203,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.GetSystemBinderPermalinkCmd.Sys
 import org.kablink.teaming.gwt.client.rpc.shared.GetJspHtmlCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ImportIcalByUrlRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ImportIcalByUrlRpcResponseData.FailureReason;
+import org.kablink.teaming.gwt.client.rpc.shared.IsAllUsersGroupRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveNameCompletionSettingsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.SavePrincipalFileSyncAppConfigRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.SavePrincipalMobileAppsConfigRpcResponseData;
@@ -9030,17 +9031,16 @@ public class GwtServerHelper {
 	 * @return
 	 */
 	public static boolean isAllExternalUsersGroup(AllModulesInjected bs, Group group) {
-		String  internalId    = group.getInternalId();
+		String  internalId = group.getInternalId();
 		return (MiscUtil.hasString(internalId) && internalId.equalsIgnoreCase(ObjectKeys.ALL_EXT_USERS_GROUP_INTERNALID));
 	}
 	
 	public static boolean isAllExternalUsersGroup(AllModulesInjected bs, Long groupId) throws GwtTeamingException {
 		boolean reply = false;
 		try {
-			Principal group = bs.getProfileModule().getEntry(groupId);
-			if ((null != group) && (group instanceof Group)) {
-				// Always use the initial form of the method.
-				reply = isAllExternalUsersGroup(bs, ((Group) group));
+			Long allUsersGroupId = Utils.getAllExtUsersGroupId();
+			if ((null != allUsersGroupId) && allUsersGroupId.equals(groupId)) {
+				reply = true;
 			}
 		}
 		
@@ -9049,7 +9049,8 @@ public class GwtServerHelper {
 			reply = false;
 		}
 		
-		// If we get here the group is not the "all users" group.
+		// If we get here the group is not the "all external users"
+		// group.
 		return reply;
 	}
 	
@@ -9064,17 +9065,11 @@ public class GwtServerHelper {
 	 * 
 	 * @throws GwtTeamingException
 	 */
-	public static boolean isAllUsersGroup(AllModulesInjected bs, Long groupId) throws GwtTeamingException {
+	public static boolean isAllInternalUsersGroup(AllModulesInjected bs, Long groupId) throws GwtTeamingException {
 		try {
-			// Get the group object.
-			Principal group = bs.getProfileModule().getEntry(groupId);
-			if ((null != group) && (group instanceof Group)) {
-				String internalId = group.getInternalId();
-				if ((null != internalId) &&
-						(internalId.equalsIgnoreCase(ObjectKeys.ALL_USERS_GROUP_INTERNALID) ||
-						 internalId.equalsIgnoreCase(ObjectKeys.ALL_EXT_USERS_GROUP_INTERNALID))) {
-					return true;
-				}
+			Long allUsersGroupId = Utils.getAllUsersGroupId();
+			if ((null != allUsersGroupId) && allUsersGroupId.equals(groupId)) {
+				return true;
 			}
 		}
 		
@@ -9082,9 +9077,24 @@ public class GwtServerHelper {
 			throw GwtLogHelper.getGwtClientException(m_logger, ex);
 		}
 		
-		// If we get here the group is not an 'all users' group.
-		// Return false.
+		// If we get here the group is not the 'all internal users'
+		// group.  Return false.
 		return false;
+	}
+	
+	/**
+	 * Returns true if the given ID is the 'all users' or 'all external
+	 * user' group and false otherwise.
+	 * 
+	 * @param bs
+	 * @param groupId
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public static IsAllUsersGroupRpcResponseData isAllUsersGroup(AllModulesInjected bs, Long groupId) throws GwtTeamingException {
+		return new IsAllUsersGroupRpcResponseData(isAllExternalUsersGroup(bs, groupId), isAllInternalUsersGroup(bs, groupId));
 	}
 	
 	/**

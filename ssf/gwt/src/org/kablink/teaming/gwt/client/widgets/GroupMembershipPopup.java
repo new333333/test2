@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -38,14 +38,14 @@ import org.kablink.teaming.gwt.client.GwtGroup;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingItem;
 import org.kablink.teaming.gwt.client.GwtUser;
-import org.kablink.teaming.gwt.client.rpc.shared.BooleanRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.GetGroupMembershipCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetGroupMembershipRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.IsAllUsersGroupCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.IsAllUsersGroupRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 
-import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.MouseOutEvent;
@@ -53,7 +53,6 @@ import com.google.gwt.event.dom.client.MouseOutHandler;
 import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.resources.client.ImageResource;
-import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlexTable;
@@ -67,8 +66,8 @@ import com.google.gwt.user.client.ui.FlexTable.FlexCellFormatter;
 
 /**
  * This class displays the membership of the given group.
- * @author jwootton
- *
+ * 
+ * @author jwootton@novell.com
  */
 public class GroupMembershipPopup extends TeamingPopupPanel
 {
@@ -219,17 +218,14 @@ public class GroupMembershipPopup extends TeamingPopupPanel
 					@Override
 					public void onClick( ClickEvent clickEvent )
 					{
-						Scheduler.ScheduledCommand cmd;
-						
-						cmd = new Scheduler.ScheduledCommand()
+						GwtClientHelper.deferCommand( new ScheduledCommand()
 						{
 							@Override
 							public void execute()
 							{
 								hide();
 							}
-						};
-						Scheduler.get().scheduleDeferred( cmd );
+						} );
 					}
 				};
 				closeImg.addClickHandler( clickHandler );
@@ -264,7 +260,7 @@ public class GroupMembershipPopup extends TeamingPopupPanel
 				// On IE calling m_cellFormatter.setWidth( 0, 2, "*" ); throws an exception.
 				// That is why we are calling DOM.setElementAttribute(...) instead.
 				//!!!m_cellFormatter.setWidth( 0, 2, "*" );
-				DOM.setElementAttribute( m_cellFormatter.getElement( 0, 2 ), "width", "*" );
+				m_cellFormatter.getElement( 0, 2 ).setAttribute( "width", "*" );
 				
 				m_cellFormatter.addStyleName( 0, 0, "oltBorderLeft" );
 				m_cellFormatter.addStyleName( 0, 0, "oltHeaderBorderTop" );
@@ -285,17 +281,14 @@ public class GroupMembershipPopup extends TeamingPopupPanel
 		
 		// Schedule an ajax request to get the group membership
 		{
-			Scheduler.ScheduledCommand cmd;
-			
-			cmd = new Scheduler.ScheduledCommand()
+			GwtClientHelper.deferCommand( new ScheduledCommand()
 			{
 				@Override
 				public void execute()
 				{
 					getGroupMembership();
 				}
-			};
-			Scheduler.get().scheduleDeferred( cmd );
+			} );
 		}
 		
 		setWidget( mainPanel );
@@ -364,9 +357,9 @@ public class GroupMembershipPopup extends TeamingPopupPanel
 	
 	/**
 	 * Add the text "The "All users" group contains a list of all registered users, not including the "Guest" user account" 
-	 * to the table that holds the list of group memembers.
+	 * to the table that holds the list of group members.
 	 */
-	private void addAllUsersGroupMessage()
+	private void addAllInternalUsersGroupMessage()
 	{
 		int row;
 		
@@ -378,6 +371,25 @@ public class GroupMembershipPopup extends TeamingPopupPanel
 		m_cellFormatter.addStyleName( row, 0, "oltLastRowBorderBottom" );
 
 		m_membersTable.setText( row, 0, GwtTeaming.getMessages().allUsersGroupDesc() );
+	}
+	
+	
+	/**
+	 * Add the text "The "All external users" group contains a list of all external users" 
+	 * to the table that holds the list of group members.
+	 */
+	private void addAllExternalUsersGroupMessage()
+	{
+		int row;
+		
+		row = 1;
+		m_cellFormatter.setColSpan( row, 0, 3 );
+		m_cellFormatter.addStyleName( row, 0, "oltBorderLeft" );
+		m_cellFormatter.addStyleName( row, 0, "oltBorderRight" );
+		m_cellFormatter.addStyleName( row, 0, "oltContentPadding" );
+		m_cellFormatter.addStyleName( row, 0, "oltLastRowBorderBottom" );
+
+		m_membersTable.setText( row, 0, GwtTeaming.getMessages().allExtUsersGroupDesc() );
 	}
 	
 	
@@ -405,9 +417,7 @@ public class GroupMembershipPopup extends TeamingPopupPanel
 	 */
 	private void adjustGroupMembershipTablePanelHeight()
 	{
-		Scheduler.ScheduledCommand cmd;
-		
-		cmd = new Scheduler.ScheduledCommand()
+		GwtClientHelper.deferCommand( new ScheduledCommand()
 		{
 			@Override
 			public void execute()
@@ -424,8 +434,7 @@ public class GroupMembershipPopup extends TeamingPopupPanel
 				else
 					m_membersTablePanel.removeStyleName( "groupMembershipTablePanelHeight" );
 			}
-		};
-		Scheduler.get().scheduleDeferred( cmd );
+		} );
 	}
 	
 	/**
@@ -510,19 +519,19 @@ public class GroupMembershipPopup extends TeamingPopupPanel
 				@Override
 				public void onSuccess( VibeRpcResponse result )
 				{
-					BooleanRpcResponseData responseData = ((BooleanRpcResponseData) result.getResponseData());
-					Boolean isAllUsersGroup = responseData.getBooleanValue();
-					
-					// Are we dealing with the "all users" group?
-					if ( isAllUsersGroup )
+					// Are we dealing with an "all users" group?
+					IsAllUsersGroupRpcResponseData responseData = ((IsAllUsersGroupRpcResponseData) result.getResponseData());
+					if ( responseData.isAllExternalUsersGroup() )
 					{
-						addAllUsersGroupMessage();
+						addAllExternalUsersGroupMessage();
+					}
+					else if ( responseData.isAllInternalUsersGroup() )
+					{
+						addAllInternalUsersGroupMessage();
 					}
 					else
 					{
-						Scheduler.ScheduledCommand cmd;
-						
-						cmd = new Scheduler.ScheduledCommand()
+						GwtClientHelper.deferCommand( new ScheduledCommand()
 						{
 							@Override
 							public void execute()
@@ -532,8 +541,7 @@ public class GroupMembershipPopup extends TeamingPopupPanel
 								GetGroupMembershipCmd cmd = new GetGroupMembershipCmd( m_groupId );
 								GwtClientHelper.executeCommand( cmd, m_getGroupMembershipCallback );
 							}// end execute()
-						};
-						Scheduler.get().scheduleDeferred( cmd );
+						} );
 					}
 				}// end onSuccess()			
 			}; 

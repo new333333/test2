@@ -1509,6 +1509,7 @@ public interface GwtTeamingMessages extends Messages
 	String shareWithTeamsDlg_Instructions();
 	
 	// The following strings are used in the Group Membership popup
+	String allExtUsersGroupDesc();
 	String allUsersGroupDesc();
 	String noGroupMembers();
 	String unknownGroupMemberType();

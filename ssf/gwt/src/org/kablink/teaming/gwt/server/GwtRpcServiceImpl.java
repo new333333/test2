@@ -2743,8 +2743,8 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case IS_ALL_USERS_GROUP:
 		{
 			String groupId = ((IsAllUsersGroupCmd) cmd).getGroupId();
-			Boolean result = GwtServerHelper.isAllUsersGroup( this, Long.parseLong( groupId ));	//Note, this checks for either allUsers or allExtUsers
-			response = new VibeRpcResponse( new BooleanRpcResponseData( result ) );
+			IsAllUsersGroupRpcResponseData result = GwtServerHelper.isAllUsersGroup( this, Long.parseLong( groupId ));	//Note, this checks for either allUsers or allExtUsers
+			response = new VibeRpcResponse( result );
 			return response;
 		}
 
