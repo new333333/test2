@@ -83,7 +83,6 @@ import org.springframework.security.web.authentication.AbstractAuthenticationPro
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.portlet.bind.PortletRequestBindingException;
 import org.springframework.web.portlet.ModelAndView;
-
 import org.kablink.teaming.NoObjectByTheIdException;
 import org.kablink.teaming.NotSupportedException;
 import org.kablink.teaming.ObjectKeys;
@@ -1097,8 +1096,14 @@ public class BinderHelper {
 				adapterUrl.setParameter(WebKeys.URL_ENTRY_ID, entryId.toString());
 			}
 			action.put("url", adapterUrl.toString());
-			//This has been turned off waiting for a future decision
-			//actions.add(action);
+			
+			HttpServletRequest req = WebHelper.getHttpServletRequest(request);
+			String userAgents = org.kablink.teaming.util.SPropsUtil.getString("mobile.userAgents", "");
+			String tabletUserAgents = org.kablink.teaming.util.SPropsUtil.getString("tablet.userAgentRegexp", "");
+			Boolean testForAndroid = org.kablink.teaming.util.SPropsUtil.getBoolean("tablet.useDefaultTestForAndroidTablets", false);
+			if (BrowserSniffer.is_mobile(req, userAgents) && !BrowserSniffer.is_tablet(req, tabletUserAgents, testForAndroid)) {
+				actions.add(action);
+			}
 		}
 	}
 
