@@ -530,44 +530,27 @@ public abstract class AbstractAuthenticationProviderModule extends BaseAuthentic
 	     			authenticationServiceProvider = getAuthenticationServiceProvider(result);
 	     			
 	     			// Get default settings first
-	     			boolean createUser = SPropsUtil.getBoolean("portal.user.auto.create", true);
 	     			boolean passwordAutoSynch = SPropsUtil.getBoolean("portal.password.auto.synchronize", true);
 	     			boolean ignorePassword = SPropsUtil.getBoolean("portal.password.ignore", true);
-	     			boolean updateUser = true; // No config setting exists for this
-                    boolean updateHomeFolder = SPropsUtil.getBoolean("portal.user.home.folder.auto.create", true);
-
-	     			if(SPropsUtil.getBoolean("authenticator.synch." + getAuthenticator(), false)) {
-	     				// This authenticator is permitted to sync information from the identity source.
-	     				// So should simply honor the default settings.	     				
-	     			}
-	     			else {
-		     			if(cacheUsingAuthenticators.contains(getAuthenticator())) {
-		     				// This authenticator is set up to utilize cached credential. In this case,
-		     				// we must allow caching of password (i.e, password sync). Otherwise,
-		     				// the authenticator will fail very soon when it tries to utilize cached
-		     				// credential in subsequent requests.
-		     				passwordAutoSynch = true;
-		     				// Set this to false to avoid incurring of overhead involved in updating
-		     				// user profile. Cache using authenticators tend to be stateless clients
-		     				// such as REST and SOAP clients. While we want them to be able to create
-		     				// new user account in Filr by initially sync'ing user profile information
-		     				// from the LDAP source in the same way web authenticator does, we do NOT
-		     				// want them to trigger frequent profile updates (e.g. every 30 seconds)
-		     				// on existing user accounts. Profile updates on existing accounts should
-		     				// only be triggered by stateful client such as browser.
-		     				updateUser = false;
-                            // Set this to false to avoid incurring of overhead involved in creating
-                            // or updating the user's home folder.
-                            updateHomeFolder = false;
-		     			}
-		     			else {
-		     				// We will not allow sync.
-		     				createUser = false;
-		     				passwordAutoSynch = false;
-		     				ignorePassword = true;
-		     			}
+	     			
+	     			boolean createUser = SPropsUtil.getBoolean("authenticator.create.user." + getAuthenticator(), false);
+                    boolean updateUser = SPropsUtil.getBoolean("authenticator.update.user." + getAuthenticator(), false);
+                    boolean updateHomeFolder = SPropsUtil.getBoolean("authenticator.update.homefolder" + getAuthenticator(), false);
+                    
+	     			if(cacheUsingAuthenticators.contains(getAuthenticator())) {
+	     				// This authenticator is set up to utilize cached credential. In this case,
+	     				// we must allow caching of password (i.e, password sync). Otherwise,
+	     				// the authenticator will fail very soon when it tries to utilize cached
+	     				// credential in subsequent requests.
+	     				passwordAutoSynch = true;
 	     			}
 	     			
+	     			if(!createUser) {
+	     				// If this authenticator is one that doesn't allow creation of user (e.g. rss, ical),
+	     				// then don't allow password synchronization either.
+	     				passwordAutoSynch = false;
+	     			}
+                    	     			
 	     			if(AuthenticationServiceProvider.OPENID == authenticationServiceProvider) {
 	     				// If OpenID, override the default settings. OpenID is applicable only with web authenticator.
 	     				// Don't allow OpenID user to self provision himself.
