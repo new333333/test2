@@ -2742,22 +2742,29 @@ public class IcalModuleImpl extends CommonDependencyInjection implements IcalMod
 	 * object.  Null is returned if the mapping can't be performed.
 	 * 
 	 * Note that the core algorithm used here was abstracted from the
-	 * original implementation of getTimeZone(), including the jodatime
+	 * original implementation of getTimeZone(), including the JodaTime
 	 * stuff.  What I added was if the initial stuff failed, it now
 	 * tries to map the time zone ID as if it were from the Linux
 	 * namespace to the Java namespace and tries to map that.
 	 */
 	private static TimeZone mapJavaTZToICal4jTZ(TimeZoneRegistry iCal4jTZRegistry, java.util.TimeZone javaTZ) {
 		TimeZone iCal4jTZ = null;
-		// use jodatime to convert 3-characters zone ids to ical names 
-		DateTimeZone dateTimeZone = DateTimeZone.forTimeZone(javaTZ);
-		if (null != dateTimeZone) {
-			String tzID = dateTimeZone.getID();
-			iCal4jTZ = iCal4jTZRegistry.getTimeZone(tzID);
-			if (iCal4jTZ == null) {
-				tzID = mapLinuxTZIDToJavaTZID(tzID);
-				if ((null != tzID) && (0 < tzID.length())) {
-					iCal4jTZ = iCal4jTZRegistry.getTimeZone(tzID);
+		if (javaTZ instanceof TimeZone) {
+			iCal4jTZ = ((TimeZone) javaTZ);
+		}
+		
+		else {
+			// Use JodaTime to convert 3-characters zone IDs to iCal
+			// names. 
+			DateTimeZone dateTimeZone = DateTimeZone.forTimeZone(javaTZ);
+			if (null != dateTimeZone) {
+				String tzID = dateTimeZone.getID();
+				iCal4jTZ = iCal4jTZRegistry.getTimeZone(tzID);
+				if (iCal4jTZ == null) {
+					tzID = mapLinuxTZIDToJavaTZID(tzID);
+					if ((null != tzID) && (0 < tzID.length())) {
+						iCal4jTZ = iCal4jTZRegistry.getTimeZone(tzID);
+					}
 				}
 			}
 		}
