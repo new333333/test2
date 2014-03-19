@@ -59,6 +59,7 @@ import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.ldap.LdapModule;
 import org.kablink.teaming.module.ldap.impl.LdapModuleImpl.HomeDirInfo;
+import org.kablink.teaming.module.netfolder.NetFolderModule;
 import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.profile.processor.ProfileCoreProcessor;
 import org.kablink.teaming.module.report.ReportModule;
@@ -109,6 +110,7 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 	private TemplateModule templateModule;
 	private BinderModule binderModule;
 	private FolderModule folderModule;
+	private NetFolderModule netFolderModule;
 	private ResourceDriverModule resourceDriverModule;
 	private ProcessorManager processorManager;
 	private RunAsyncManager runAsyncManager;
@@ -181,6 +183,14 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 	public void setFolderModule( FolderModule folderModule )
 	{
 		this.folderModule = folderModule;
+	}
+
+	public NetFolderModule getNetFolderModule() {
+		return netFolderModule;
+	}
+
+	public void setNetFolderModule(NetFolderModule netFolderModule) {
+		this.netFolderModule = netFolderModule;
 	}
 
 	/**
