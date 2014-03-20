@@ -6207,4 +6207,16 @@ td.datePickerMonth {
 
 /* End:  Styles used in the "Edit Share" widget. */
 
+
+/* Start: Styles used in the Net Folder Settings dialog. */
+
+.netFolderSettingsDlg_refreshCachedRightsInterval
+{
+	margin-top: 10px;
+	font-size: 13px;
+}
+
+/* End: Styles used in the Net Folder Settings dialog. */
+
+
 /* End Of File */

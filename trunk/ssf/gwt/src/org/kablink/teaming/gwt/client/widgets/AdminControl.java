@@ -47,7 +47,7 @@ import org.kablink.teaming.gwt.client.event.InvokeConfigureShareSettingsDlgEvent
 import org.kablink.teaming.gwt.client.event.InvokeConfigureUserAccessDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeEditLdapConfigDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeEditNetFolderDlgEvent;
-import org.kablink.teaming.gwt.client.event.InvokeJitsZoneConfigDlgEvent;
+import org.kablink.teaming.gwt.client.event.InvokeNetFolderGlobalSettingsDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeManageDatabasePruneDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeManageMobileDevicesDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeManageNetFolderRootsDlgEvent;
@@ -101,7 +101,7 @@ import org.kablink.teaming.gwt.client.widgets.ConfigureUserAccessDlg.ConfigureUs
 import org.kablink.teaming.gwt.client.widgets.ConfigureUserFileSyncAppDlg.ConfigureUserFileSyncAppDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ConfigureUserMobileAppsDlg.ConfigureUserMobileAppsDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ContentControl.ContentControlClient;
-import org.kablink.teaming.gwt.client.widgets.JitsZoneConfigDlg.JitsZoneConfigDlgClient;
+import org.kablink.teaming.gwt.client.widgets.NetFolderGlobalSettingsDlg.NetFolderGlobalSettingsDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ManageDatabasePruneDlg.ManageDatabasePruneDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ManageGroupsDlg.ManageGroupsDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ManageNetFolderRootsDlg.ManageNetFolderRootsDlgClient;
@@ -157,7 +157,7 @@ public class AdminControl extends TeamingPopupPanel
 		InvokeConfigureUserAccessDlgEvent.Handler,
 		InvokeEditLdapConfigDlgEvent.Handler,
 		InvokeEditNetFolderDlgEvent.Handler,
-		InvokeJitsZoneConfigDlgEvent.Handler,
+		InvokeNetFolderGlobalSettingsDlgEvent.Handler,
 		InvokeManageDatabasePruneDlgEvent.Handler,
 		InvokeManageNetFoldersDlgEvent.Handler,
 		InvokeManageNetFolderRootsDlgEvent.Handler,
@@ -198,7 +198,7 @@ public class AdminControl extends TeamingPopupPanel
 	private EditZoneShareSettingsDlg m_editZoneShareSettingsDlg = null;
 	private ModifyNetFolderDlg m_modifyNetFolderDlg = null;
 	private ShareThisDlg2 m_shareDlg = null;
-	private JitsZoneConfigDlg m_jitsDlg = null;
+	private NetFolderGlobalSettingsDlg m_nfGlobalSettingsDlg = null;
 	private EditBrandingDlg m_editSiteBrandingDlg = null;
 	private EditLdapConfigDlg m_editLdapConfigDlg = null;
 	private NameCompletionSettingsDlg m_nameCompletionSettingsDlg = null;
@@ -226,7 +226,7 @@ public class AdminControl extends TeamingPopupPanel
 		TeamingEvents.INVOKE_CONFIGURE_USER_ACCESS_DLG,
 		TeamingEvents.INVOKE_EDIT_LDAP_CONFIG_DLG,
 		TeamingEvents.INVOKE_EDIT_NET_FOLDER_DLG,
-		TeamingEvents.INVOKE_JITS_ZONE_CONFIG_DLG,
+		TeamingEvents.INVOKE_NET_FOLDER_GLOBAL_SETTINGS_DLG,
 		TeamingEvents.INVOKE_MANAGE_DATABASE_PRUNE_DLG,
 		TeamingEvents.INVOKE_MANAGE_NET_FOLDERS_DLG,
 		TeamingEvents.INVOKE_MANAGE_NET_FOLDER_ROOTS_DLG,
@@ -897,10 +897,10 @@ public class AdminControl extends TeamingPopupPanel
 			InvokeRunAReportDlgEvent.fireOne();
 		}
 		
-		else if ( adminAction.getActionType() == AdminAction.JITS_ZONE_CONFIG )
+		else if ( adminAction.getActionType() == AdminAction.NET_FOLDER_GLOBAL_SETTINGS )
 		{
-			// Fire the event to invoke the "Configure Jits" dialog.
-			InvokeJitsZoneConfigDlgEvent.fireOne();
+			// Fire the event to invoke the "Net Folder Global Settings" dialog.
+			InvokeNetFolderGlobalSettingsDlgEvent.fireOne();
 		}
 		else if ( adminAction.getActionType() == AdminAction.LDAP_CONFIG )
 		{
@@ -2201,13 +2201,13 @@ public class AdminControl extends TeamingPopupPanel
 	}
 	
 	/**
-	 * Handles the InvokeJitsZoneConfigDlgEvent received by this class.
+	 * Handles the InvokeNetFolderGlobalSettingsDlgEvent received by this class.
 	 * 
-	 * Implements the InvokeJitsZoneConfigDlgEvent.Handler.onInvokeJitsZoneConfigDlg() method.
+	 * Implements the InvokeNetFolderGlobalSettingsDlgEvent.Handler.onInvokeNetFolderGlobalSettingsDlg() method.
 	 *  
 	 */
 	@Override
-	public void onInvokeJitsZoneConfigDlg( InvokeJitsZoneConfigDlgEvent event )
+	public void onInvokeNetFolderGlobalSettingsDlg( InvokeNetFolderGlobalSettingsDlgEvent event )
 	{
 		int x;
 		int y;
@@ -2216,8 +2216,8 @@ public class AdminControl extends TeamingPopupPanel
 		x = m_contentControlX;
 		y = m_contentControlY;
 		
-		// Have we already created a Jits configuration" dialog?
-		if ( m_jitsDlg == null )
+		// Have we already created a net folder global settings dialog?
+		if ( m_nfGlobalSettingsDlg == null )
 		{
 			int width;
 			int height;
@@ -2225,14 +2225,14 @@ public class AdminControl extends TeamingPopupPanel
 			// No, create one.
 			height = m_dlgHeight;
 			width = m_dlgWidth;
-			JitsZoneConfigDlg.createAsync(
+			NetFolderGlobalSettingsDlg.createAsync(
 										true, 
 										false,
 										x, 
 										y,
 										width,
 										height,
-										new JitsZoneConfigDlgClient()
+										new NetFolderGlobalSettingsDlgClient()
 			{			
 				@Override
 				public void onUnavailable()
@@ -2241,17 +2241,17 @@ public class AdminControl extends TeamingPopupPanel
 				}
 				
 				@Override
-				public void onSuccess( final JitsZoneConfigDlg jzcDlg )
+				public void onSuccess( final NetFolderGlobalSettingsDlg jzcDlg )
 				{
 					GwtClientHelper.deferCommand( new ScheduledCommand()
 					{
 						@Override
 						public void execute() 
 						{
-							m_jitsDlg = jzcDlg;
+							m_nfGlobalSettingsDlg = jzcDlg;
 							
-							m_jitsDlg.init();
-							m_jitsDlg.show();
+							m_nfGlobalSettingsDlg.init();
+							m_nfGlobalSettingsDlg.show();
 						}
 					} );
 				}
@@ -2259,10 +2259,10 @@ public class AdminControl extends TeamingPopupPanel
 		}
 		else
 		{
-			m_jitsDlg.setPixelSize( m_dlgWidth, m_dlgHeight );
-			m_jitsDlg.init();
-			m_jitsDlg.setPopupPosition( x, y );
-			m_jitsDlg.show();
+			m_nfGlobalSettingsDlg.setPixelSize( m_dlgWidth, m_dlgHeight );
+			m_nfGlobalSettingsDlg.init();
+			m_nfGlobalSettingsDlg.setPopupPosition( x, y );
+			m_nfGlobalSettingsDlg.show();
 		}
 	}
 	

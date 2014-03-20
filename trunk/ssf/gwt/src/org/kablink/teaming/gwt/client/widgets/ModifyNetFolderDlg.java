@@ -517,7 +517,7 @@ public class ModifyNetFolderDlg extends DlgBox
 					m_jitsResultsMaxAge.setVisibleLength( 3 );
 					hPanel.add( m_jitsResultsMaxAge );
 					
-					intervalLabel = new Label( messages.jitsZoneConfigDlg_SecondsLabel() );
+					intervalLabel = new Label( messages.netFolderGlobalSettingsDlg_SecondsLabel() );
 					intervalLabel.addStyleName( "marginleft2px" );
 					intervalLabel.addStyleName( "gray3" );
 					hPanel.add( intervalLabel );
@@ -542,7 +542,7 @@ public class ModifyNetFolderDlg extends DlgBox
 					m_jitsAclMaxAge.setVisibleLength( 3 );
 					hPanel.add( m_jitsAclMaxAge );
 					
-					intervalLabel = new Label( messages.jitsZoneConfigDlg_SecondsLabel() );
+					intervalLabel = new Label( messages.netFolderGlobalSettingsDlg_SecondsLabel() );
 					intervalLabel.addStyleName( "marginleft2px" );
 					intervalLabel.addStyleName( "gray3" );
 					hPanel.add( intervalLabel );

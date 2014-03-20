@@ -39,23 +39,35 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 
 
 /**
- * This class is used to hold the Just-in-time Configuration data stored at the zone level.
+ * This class is used to hold the Net Folder settings stored at the zone level.
  * @author jwootton
  *
  */
-public class GwtJitsZoneConfig
+public class GwtNetFolderGlobalSettings
 	implements IsSerializable, VibeRpcResponseData
 {
 	private boolean m_jitsEnabled = true;
 	private long m_maxWaitTime = 15;
+	private Boolean m_useDirectoryRights;
+	private Integer m_cachedRightsRefreshInterval;
 	
 	/**
 	 * 
 	 */
-	public GwtJitsZoneConfig()
+	public GwtNetFolderGlobalSettings()
 	{
+		m_useDirectoryRights = null;
+		m_cachedRightsRefreshInterval = null;
 	}
 
+	/**
+	 * 
+	 */
+	public Integer getCachedRightsRefreshInterval()
+	{
+		return m_cachedRightsRefreshInterval;
+	}
+	
 	/**
 	 * 
 	 */
@@ -75,6 +87,22 @@ public class GwtJitsZoneConfig
 	/**
 	 * 
 	 */
+	public Boolean getUseDirectoryRights()
+	{
+		return m_useDirectoryRights;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setCachedRightsRefreshInterval( Integer value )
+	{
+		m_cachedRightsRefreshInterval = value;
+	}
+	
+	/**
+	 * 
+	 */
 	public void setJitsEnabled( boolean enabled )
 	{
 		m_jitsEnabled = enabled;
@@ -86,5 +114,13 @@ public class GwtJitsZoneConfig
 	public void setMaxWaitTime( long waitTimeInSeconds )
 	{
 		m_maxWaitTime = waitTimeInSeconds;
+	}
+
+	/**
+	 * 
+	 */
+	public void setUseDirectoryRights( Boolean value )
+	{
+		m_useDirectoryRights = value;
 	}
 }

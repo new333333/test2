@@ -581,5 +581,20 @@ update SS_Principals set domainName=LOWER(domainName);
 			<column name="right_allowSharingPublicLinks" type="BIT"/>
         </addColumn>
     </changeSet>
+
+    <changeSet author="jay" context="schema" failOnError="true" id="51">
+        <comment>Add useDirectoryRights to SS_ZoneConfig</comment>
+        <addColumn tableName="SS_ZoneConfig">
+			<column name="useDirectoryRights" type="BIT">
+			    <constraints nullable="true" />
+			</column>
+        </addColumn>
+        <comment>Add cachedRightsRefreshInterval to SS_ZoneConfig</comment>
+        <addColumn tableName="SS_ZoneConfig">
+            <column name="cachedRightsRefreshInterval" type="INT">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
     
 </databaseChangeLog>

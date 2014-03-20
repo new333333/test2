@@ -152,7 +152,7 @@ import org.kablink.teaming.gwt.client.GwtDynamicGroupMembershipCriteria;
 import org.kablink.teaming.gwt.client.GwtFileSyncAppConfiguration;
 import org.kablink.teaming.gwt.client.GwtFolder;
 import org.kablink.teaming.gwt.client.GwtGroup;
-import org.kablink.teaming.gwt.client.GwtJitsZoneConfig;
+import org.kablink.teaming.gwt.client.GwtNetFolderGlobalSettings;
 import org.kablink.teaming.gwt.client.GwtLocales;
 import org.kablink.teaming.gwt.client.GwtLoginInfo;
 import org.kablink.teaming.gwt.client.GwtNameCompletionSettings;
@@ -2824,7 +2824,7 @@ public class GwtServerHelper {
 					title = NLT.get( "administration.configure_jits_zone_config" );
 
 					adminAction = new GwtAdminAction();
-					adminAction.init( title, "", AdminAction.JITS_ZONE_CONFIG );
+					adminAction.init( title, "", AdminAction.NET_FOLDER_GLOBAL_SETTINGS );
 					
 					// Add this action to the "management" category
 					managementCategory.addAdminOption( adminAction );
@@ -6010,24 +6010,30 @@ public class GwtServerHelper {
 	 * 
 	 * @return
 	 */
-	public static GwtJitsZoneConfig getJitsZoneConfig( AllModulesInjected allModules )
+	public static GwtNetFolderGlobalSettings getNetFolderGlobalSettings( AllModulesInjected allModules )
 	{
-		GwtJitsZoneConfig gwtJitsZoneConfig;
+		GwtNetFolderGlobalSettings nfGlobalSettings;
 		ZoneConfig zoneConfig;
 		ZoneModule zoneModule;
 		
 		zoneModule = allModules.getZoneModule();
 		zoneConfig = zoneModule.getZoneConfig( RequestContextHolder.getRequestContext().getZoneId() );
 		
-		gwtJitsZoneConfig = new GwtJitsZoneConfig();
+		nfGlobalSettings = new GwtNetFolderGlobalSettings();
 		
 		// Get the whether jits is enabled.
-		gwtJitsZoneConfig.setJitsEnabled( zoneConfig.getJitsEnabled() );
+		nfGlobalSettings.setJitsEnabled( zoneConfig.getJitsEnabled() );
 		
 		// Get the max wait time.
-		gwtJitsZoneConfig.setMaxWaitTime( zoneConfig.getJitsWaitTimeout() / 1000 );
+		nfGlobalSettings.setMaxWaitTime( zoneConfig.getJitsWaitTimeout() / 1000 );
 		
-		return gwtJitsZoneConfig;
+		// Get the setting for "use directory rights"
+		nfGlobalSettings.setUseDirectoryRights( zoneConfig.getUseDirectoryRights() );
+		
+		// Get the "cached rights refresh interval"
+		nfGlobalSettings.setCachedRightsRefreshInterval( zoneConfig.getCachedRightsRefreshInterval() );
+		
+		return nfGlobalSettings;
 	}
 	
 	/**
@@ -9940,7 +9946,7 @@ public class GwtServerHelper {
 		case GET_INHERITED_LANDING_PAGE_PROPERTIES:
 		case GET_IS_USER_EXTERNAL:
 		case GET_IS_DYNAMIC_GROUP_MEMBERSHIP_ALLOWED:
-		case GET_JITS_ZONE_CONFIG:
+		case GET_NET_FOLDER_GLOBAL_SETTINGS:
 		case GET_LANDING_PAGE_DATA:
 		case GET_LDAP_CONFIG:
 		case GET_LDAP_SERVER_DATA:
@@ -10067,7 +10073,7 @@ public class GwtServerHelper {
 		case SAVE_FOLDER_ENTRY_DLG_POSITION:
 		case SAVE_FOLDER_PINNING_STATE:
 		case SAVE_FOLDER_SORT:
-		case SAVE_JITS_ZONE_CONFIG:
+		case SAVE_NET_FOLDER_GLOBAL_SETTINGS:
 		case SAVE_LDAP_CONFIG:
 		case SAVE_MANAGE_USERS_STATE:
 		case SAVE_MOBILE_APPS_CONFIGURATION:
@@ -10608,15 +10614,19 @@ public class GwtServerHelper {
 	/**
 	 * Save the given Jits zone config
 	 */
-	public static Boolean saveJitsZoneConfig(
+	public static Boolean saveNetFolderGlobalSettings(
 		AllModulesInjected allModules,
-		GwtJitsZoneConfig gwtJitsZoneConfig ) throws GwtTeamingException
+		GwtNetFolderGlobalSettings nfGlobalSettings ) throws GwtTeamingException
 	{
 		AdminModule adminModule;
 		
 		adminModule = allModules.getAdminModule();
-		adminModule.setJitsConfig( gwtJitsZoneConfig.getJitsEnabled(), gwtJitsZoneConfig.getMaxWaitTime() );
+		adminModule.setJitsConfig( nfGlobalSettings.getJitsEnabled(), nfGlobalSettings.getMaxWaitTime() );
 
+		adminModule.setUseDirectoryRightsEnabled( nfGlobalSettings.getUseDirectoryRights() );
+		
+		adminModule.setCachedRightsRefreshInterval( nfGlobalSettings.getCachedRightsRefreshInterval() );
+		
 		return Boolean.TRUE;
 	}
 	
