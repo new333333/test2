@@ -78,7 +78,7 @@ import org.kablink.teaming.gwt.client.BlogPages;
 import org.kablink.teaming.gwt.client.GroupMembershipInfo;
 import org.kablink.teaming.gwt.client.GwtDatabasePruneConfiguration;
 import org.kablink.teaming.gwt.client.GwtEmailPublicLinkResults;
-import org.kablink.teaming.gwt.client.GwtJitsZoneConfig;
+import org.kablink.teaming.gwt.client.GwtNetFolderGlobalSettings;
 import org.kablink.teaming.gwt.client.GwtLdapConfig;
 import org.kablink.teaming.gwt.client.GwtLdapSyncResults;
 import org.kablink.teaming.gwt.client.GwtLocales;
@@ -1761,12 +1761,12 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
-		case GET_JITS_ZONE_CONFIG:
+		case GET_NET_FOLDER_GLOBAL_SETTINGS:
 		{
-			GwtJitsZoneConfig jitsZoneConfig; 
+			GwtNetFolderGlobalSettings nfGlobalSettings; 
 
-			jitsZoneConfig = GwtServerHelper.getJitsZoneConfig( this );
-			response = new VibeRpcResponse( jitsZoneConfig );
+			nfGlobalSettings = GwtServerHelper.getNetFolderGlobalSettings( this );
+			response = new VibeRpcResponse( nfGlobalSettings );
 			return response;
 		}
 		
@@ -3174,13 +3174,13 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
-		case SAVE_JITS_ZONE_CONFIG:
+		case SAVE_NET_FOLDER_GLOBAL_SETTINGS:
 		{
-			SaveJitsZoneConfigCmd sjzcCmd;
+			SaveNetFolderGlobalSettingsCmd snfgsCmd;
 			Boolean result;
 			
-			sjzcCmd = ((SaveJitsZoneConfigCmd) cmd);
-			result = GwtServerHelper.saveJitsZoneConfig( this, sjzcCmd.getJitsZoneConfig() );
+			snfgsCmd = ((SaveNetFolderGlobalSettingsCmd) cmd);
+			result = GwtServerHelper.saveNetFolderGlobalSettings( this, snfgsCmd.getGlobalSettings() );
 			response = new VibeRpcResponse( new BooleanRpcResponseData( result ) );
 			return response;
 		}

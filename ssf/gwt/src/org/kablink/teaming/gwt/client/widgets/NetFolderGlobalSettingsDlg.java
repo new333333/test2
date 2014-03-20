@@ -33,11 +33,11 @@
 package org.kablink.teaming.gwt.client.widgets;
 
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
-import org.kablink.teaming.gwt.client.GwtJitsZoneConfig;
+import org.kablink.teaming.gwt.client.GwtNetFolderGlobalSettings;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
-import org.kablink.teaming.gwt.client.rpc.shared.GetJitsZoneConfigCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.SaveJitsZoneConfigCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetNetFolderGlobalSettingsCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.SaveNetFolderGlobalSettingsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HelpData;
@@ -46,6 +46,7 @@ import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.google.gwt.user.client.Window;
@@ -55,6 +56,7 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.TextBox;
@@ -65,19 +67,21 @@ import com.google.gwt.user.client.ui.TextBox;
  * @author jwootton
  *
  */
-public class JitsZoneConfigDlg extends DlgBox
+public class NetFolderGlobalSettingsDlg extends DlgBox
 	implements KeyPressHandler, EditSuccessfulHandler
 {
 	private CheckBox m_enableJitsCB;
 	private TextBox m_maxWaitTimeTextBox;
+	private CheckBox m_useDirectoryRightsCB;
+	private TextBox m_cachedRightsRefreshIntervalTB;
 	
 	/**
-	 * Callback interface to interact with the "Jits zone configuration" dialog
+	 * Callback interface to interact with the "Net Folder Global Settings" dialog
 	 * asynchronously after it loads. 
 	 */
-	public interface JitsZoneConfigDlgClient
+	public interface NetFolderGlobalSettingsDlgClient
 	{
-		void onSuccess( JitsZoneConfigDlg cmaDlg );
+		void onSuccess( NetFolderGlobalSettingsDlg cmaDlg );
 		void onUnavailable();
 	}
 
@@ -86,7 +90,7 @@ public class JitsZoneConfigDlg extends DlgBox
 	/**
 	 * 
 	 */
-	private JitsZoneConfigDlg(
+	private NetFolderGlobalSettingsDlg(
 		boolean autoHide,
 		boolean modal,
 		int xPos,
@@ -97,7 +101,7 @@ public class JitsZoneConfigDlg extends DlgBox
 		super( autoHide, modal, xPos, yPos, new Integer( width ), new Integer( height ), DlgButtonMode.OkCancel );
 
 		// Create the header, content and footer of this dialog box.
-		createAllDlgContent( GwtTeaming.getMessages().jitsZoneConfigDlg_Header(), this, null, null ); 
+		createAllDlgContent( GwtTeaming.getMessages().netFolderGlobalSettingsDlg_Header(), this, null, null ); 
 	}
 	
 
@@ -117,7 +121,7 @@ public class JitsZoneConfigDlg extends DlgBox
 		mainPanel.setStyleName( "teamingDlgBoxContent" );
 		
 		// Add the "enable jits" checkbox
-		m_enableJitsCB = new CheckBox( messages.jitsZoneConfigDlg_EnableJits() );
+		m_enableJitsCB = new CheckBox( messages.netFolderGlobalSettingsDlg_EnableJits() );
 		tmpPanel = new FlowPanel();
 		tmpPanel.add( m_enableJitsCB );
 		tmpPanel.addStyleName( "marginbottom1" );
@@ -132,7 +136,7 @@ public class JitsZoneConfigDlg extends DlgBox
 			hPanel.setVerticalAlignment( HasVerticalAlignment.ALIGN_MIDDLE );
 			hPanel.setSpacing( 0 );
 			
-			intervalLabel = new Label( messages.jitsZoneConfigDlg_MaxWaitLabel() );
+			intervalLabel = new Label( messages.netFolderGlobalSettingsDlg_MaxWaitLabel() );
 			intervalLabel.addStyleName( "marginleft3" );
 			intervalLabel.addStyleName( "marginright5px" );
 			hPanel.add( intervalLabel );
@@ -142,7 +146,7 @@ public class JitsZoneConfigDlg extends DlgBox
 			m_maxWaitTimeTextBox.setVisibleLength( 3 );
 			hPanel.add( m_maxWaitTimeTextBox );
 			
-			intervalLabel = new Label( messages.jitsZoneConfigDlg_SecondsLabel() );
+			intervalLabel = new Label( messages.netFolderGlobalSettingsDlg_SecondsLabel() );
 			intervalLabel.addStyleName( "marginleft2px" );
 			intervalLabel.addStyleName( "gray3" );
 			hPanel.add( intervalLabel );
@@ -150,6 +154,59 @@ public class JitsZoneConfigDlg extends DlgBox
 			mainPanel.add( hPanel );
 		}
 		
+		// Add some space
+		tmpPanel = new FlowPanel();
+		tmpPanel.getElement().getStyle().setMarginTop( 8, Unit.PX );
+		mainPanel.add( tmpPanel );
+		
+		// Add the controls for "Use directory rights"
+		{
+			tmpPanel = new FlowPanel();
+			m_useDirectoryRightsCB = new CheckBox( messages.modifyNetFolderServerDlg_UseDirectoryRightsCB() );
+			tmpPanel.add( m_useDirectoryRightsCB );
+			mainPanel.add( tmpPanel );
+		}
+		
+		// Add the controls for "Refresh cached rights information every: xxx minutes"
+		{
+			InlineLabel label;
+			
+			tmpPanel = new FlowPanel();
+			tmpPanel.addStyleName( "netFolderSettingsDlg_refreshCachedRightsInterval" );
+			
+			label = new InlineLabel( messages.modifyNetFolderServerDlg_RefreshRightsLabel() );
+			label.getElement().getStyle().setMarginRight( 6, Unit.PX );
+			tmpPanel.add( label );
+			
+			m_cachedRightsRefreshIntervalTB = new TextBox();
+			m_cachedRightsRefreshIntervalTB.addKeyPressHandler( new KeyPressHandler()
+			{
+				@Override
+				public void onKeyPress( KeyPressEvent event )
+				{
+			        int keyCode;
+
+			        // Get the key the user pressed
+			        keyCode = event.getNativeEvent().getKeyCode();
+			        
+			        if ( GwtClientHelper.isKeyValidForNumericField( event.getCharCode(), keyCode ) == false )
+			        {
+		        		// Suppress the current keyboard event.
+		        		m_cachedRightsRefreshIntervalTB.cancelKey();
+			        }
+				}
+			} );
+
+			m_cachedRightsRefreshIntervalTB.setVisibleLength( 3 );
+			tmpPanel.add( m_cachedRightsRefreshIntervalTB );
+			
+			label = new InlineLabel( messages.modifyNetFolderServerDlg_Minutes() );
+			label.getElement().getStyle().setMarginLeft( 6, Unit.PX );
+			tmpPanel.add( label );
+			
+			mainPanel.add( tmpPanel );
+		}
+
 		return mainPanel;
 	}
 	
@@ -160,8 +217,8 @@ public class JitsZoneConfigDlg extends DlgBox
 	public boolean editSuccessful( Object obj )
 	{
 		AsyncCallback<VibeRpcResponse> rpcSaveCallback = null;
-		GwtJitsZoneConfig jitsZoneConfig;
-		SaveJitsZoneConfigCmd cmd;
+		GwtNetFolderGlobalSettings globalSettings;
+		SaveNetFolderGlobalSettingsCmd cmd;
 
 		clearErrorPanel();
 		hideErrorPanel();
@@ -169,9 +226,9 @@ public class JitsZoneConfigDlg extends DlgBox
 		// Disable the Ok button.
 		setOkEnabled( false );
 
-		jitsZoneConfig = (GwtJitsZoneConfig) obj;
+		globalSettings = (GwtNetFolderGlobalSettings) obj;
 		
-		// Create the callback that will be used when we issue an ajax request to save the jits zone config.
+		// Create the callback that will be used when we issue an ajax request to save the global settings.
 		rpcSaveCallback = new AsyncCallback<VibeRpcResponse>()
 		{
 			/**
@@ -193,7 +250,7 @@ public class JitsZoneConfigDlg extends DlgBox
 				
 				if ( errMsg == null )
 				{
-					errMsg = GwtTeaming.getMessages().jitsZoneConfigDlg_OnSaveUnknownException( caught.toString() );
+					errMsg = GwtTeaming.getMessages().netFolderGlobalSettingsDlg_OnSaveUnknownException( caught.toString() );
 				}
 				
 				label = new Label( errMsg );
@@ -217,11 +274,11 @@ public class JitsZoneConfigDlg extends DlgBox
 			}
 		};
 
-		showStatusMsg( GwtTeaming.getMessages().jitsZoneConfigDlg_SavingConfig() );
+		showStatusMsg( GwtTeaming.getMessages().netFolderGlobalSettingsDlg_SavingConfig() );
 
-		// Issue an ajax request to save the jits zone configuration to the db.  rpcSaveCallback will
+		// Issue an ajax request to save the net folder global settings to the db.  rpcSaveCallback will
 		// be called when we get the response back.
-		cmd = new SaveJitsZoneConfigCmd( jitsZoneConfig );
+		cmd = new SaveNetFolderGlobalSettingsCmd( globalSettings );
 		GwtClientHelper.executeCommand( cmd, rpcSaveCallback );
 		
 		// Returning false will prevent the dialog from closing.  We will close the dialog
@@ -230,22 +287,43 @@ public class JitsZoneConfigDlg extends DlgBox
 	}
 
 	/**
-	 * Get the data from the controls in the dialog box and store the data in a GwtJitsZoneConfig object.
+	 * Returns the "cached rights refresh interval" entered by the user.
+	 */
+	private Integer getCachedRightsRefreshInterval()
+	{
+		String intervalStr;
+		Integer interval = null;
+		
+		intervalStr = m_cachedRightsRefreshIntervalTB.getValue();
+		if ( intervalStr != null && intervalStr.length() > 0 )
+			interval = Integer.valueOf( intervalStr );
+		
+		return interval;
+	}
+
+	/**
+	 * Get the data from the controls in the dialog box and store the data in a GwtNetFolderGlobalSettings object.
 	 */
 	@Override
 	public Object getDataFromDlg()
 	{
-		GwtJitsZoneConfig jitsZoneConfig;
+		GwtNetFolderGlobalSettings globalSettings;
 		
-		jitsZoneConfig = new GwtJitsZoneConfig();
+		globalSettings = new GwtNetFolderGlobalSettings();
 
 		// Get whether jits is enabled
-		jitsZoneConfig.setJitsEnabled( getJitsEnabled() );
+		globalSettings.setJitsEnabled( getJitsEnabled() );
 		
 		// Get the max wait time from the dialog.
-		jitsZoneConfig.setMaxWaitTime( getMaxWaitTimeInt() * 1000 );
+		globalSettings.setMaxWaitTime( getMaxWaitTimeInt() * 1000 );
 		
-		return jitsZoneConfig;
+		// Get the cached rights refresh interval
+		globalSettings.setCachedRightsRefreshInterval( getCachedRightsRefreshInterval() );
+		
+		// Get the setting for "use directory rights"
+		globalSettings.setUseDirectoryRights( getUseDirectoryRights() );
+	
+		return globalSettings;
 	}
 	
 	
@@ -300,6 +378,17 @@ public class JitsZoneConfigDlg extends DlgBox
 	}
 	
 	/**
+	 * Return the value of the "Use directory rights in addition to file system rights"
+	 */
+	public Boolean getUseDirectoryRights()
+	{
+		if ( m_useDirectoryRightsCB.isVisible() )
+			return m_useDirectoryRightsCB.getValue();
+		
+		return null;
+	}
+	
+	/**
 	 * 
 	 */
 	public void init()
@@ -311,7 +400,10 @@ public class JitsZoneConfigDlg extends DlgBox
 		hideStatusMsg();
 		setOkEnabled( true );
 
-		// Create a callback that will be called when we get the jits zone config.
+		m_useDirectoryRightsCB.setValue( false );
+		m_cachedRightsRefreshIntervalTB.setValue( "10" );
+
+		// Create a callback that will be called when we get the net folder global settings.
 		rpcReadCallback = new AsyncCallback<VibeRpcResponse>()
 		{
 			/**
@@ -322,28 +414,28 @@ public class JitsZoneConfigDlg extends DlgBox
 			{
 				GwtClientHelper.handleGwtRPCFailure(
 					t,
-					GwtTeaming.getMessages().rpcFailure_GetJitsZoneConfig() );
+					GwtTeaming.getMessages().rpcFailure_GetNetFolderGlobalSettings() );
 			}
 	
 			/**
-			 * We successfully retrieved the jits zone config.
+			 * We successfully retrieved the net folder global settings.
 			 */
 			@Override
 			public void onSuccess( VibeRpcResponse response )
 			{
-				if ( response.getResponseData() != null && response.getResponseData() instanceof GwtJitsZoneConfig )
+				if ( response.getResponseData() != null && response.getResponseData() instanceof GwtNetFolderGlobalSettings )
 				{
 					Scheduler.ScheduledCommand cmd;
-					final GwtJitsZoneConfig jitsZoneConfig;
+					final GwtNetFolderGlobalSettings globalSettings;
 					
-					jitsZoneConfig = (GwtJitsZoneConfig) response.getResponseData();
+					globalSettings = (GwtNetFolderGlobalSettings) response.getResponseData();
 					
 					cmd = new Scheduler.ScheduledCommand()
 					{
 						@Override
 						public void execute() 
 						{
-							init( jitsZoneConfig );
+							init( globalSettings );
 						}
 					};
 					Scheduler.get().scheduleDeferred( cmd );
@@ -351,12 +443,12 @@ public class JitsZoneConfigDlg extends DlgBox
 			}
 		};
 
-		// Issue an ajax request to get the jits zone config.
+		// Issue an ajax request to get the net folder global settings.
 		{
-			GetJitsZoneConfigCmd cmd;
+			GetNetFolderGlobalSettingsCmd cmd;
 			
-			// Issue an ajax request to get the jits zone config from the db.
-			cmd = new GetJitsZoneConfigCmd();
+			// Issue an ajax request to get the net folder global settings from the db.
+			cmd = new GetNetFolderGlobalSettingsCmd();
 			GwtClientHelper.executeCommand( cmd, rpcReadCallback );
 		}
 	}
@@ -364,17 +456,35 @@ public class JitsZoneConfigDlg extends DlgBox
 	/**
 	 * Initialize the controls in the dialog with the values from the given values.
 	 */
-	private void init( GwtJitsZoneConfig jitsZoneConfig )
+	private void init( GwtNetFolderGlobalSettings globalSettings )
 	{
 		long maxWaitTime;
 		
 		// Initialize whether jits is enabled.
-		m_enableJitsCB.setValue( jitsZoneConfig.getJitsEnabled() );
+		m_enableJitsCB.setValue( globalSettings.getJitsEnabled() );
 			
 		// Initialize the max wait time textbox
-		maxWaitTime = jitsZoneConfig.getMaxWaitTime();
+		maxWaitTime = globalSettings.getMaxWaitTime();
 		m_maxWaitTimeTextBox.setText( String.valueOf( maxWaitTime ) );
 		
+		// Initialize the "use directory rights in addition to file system rights" checkbox.
+		{
+			Boolean value;
+			
+			value = globalSettings.getUseDirectoryRights();
+			if ( value != null )
+				m_useDirectoryRightsCB.setValue( value );
+		}
+		
+		// Initialize the "cached rights refresh interval"
+		{
+			Integer value;
+			
+			value = globalSettings.getCachedRightsRefreshInterval();
+			if ( value != null )
+				m_cachedRightsRefreshIntervalTB.setValue( value.toString() );
+		}
+
 		hideErrorPanel();
 	}
 	
@@ -408,7 +518,7 @@ public class JitsZoneConfigDlg extends DlgBox
 	}
 
 	/**
-	 * Loads the JitsZoneConfigDlg split point and returns an instance
+	 * Loads the NetFolderGlobalSettingsDlg split point and returns an instance
 	 * of it via the callback.
 	 * 
 	 */
@@ -419,33 +529,33 @@ public class JitsZoneConfigDlg extends DlgBox
 							final int top,
 							final int width,
 							final int height,
-							final JitsZoneConfigDlgClient jzcDlgClient )
+							final NetFolderGlobalSettingsDlgClient nfgsDlgClient )
 	{
-		GWT.runAsync( JitsZoneConfigDlg.class, new RunAsyncCallback()
+		GWT.runAsync( NetFolderGlobalSettingsDlg.class, new RunAsyncCallback()
 		{
 			@Override
 			public void onFailure( Throwable reason )
 			{
-				Window.alert( GwtTeaming.getMessages().codeSplitFailure_JitsZoneConfigDlg() );
-				if ( jzcDlgClient != null )
+				Window.alert( GwtTeaming.getMessages().codeSplitFailure_NetFolderGlobalSettingsDlg() );
+				if ( nfgsDlgClient != null )
 				{
-					jzcDlgClient.onUnavailable();
+					nfgsDlgClient.onUnavailable();
 				}
 			}
 
 			@Override
 			public void onSuccess()
 			{
-				JitsZoneConfigDlg jzcDlg;
+				NetFolderGlobalSettingsDlg jzcDlg;
 				
-				jzcDlg = new JitsZoneConfigDlg(
+				jzcDlg = new NetFolderGlobalSettingsDlg(
 											autoHide,
 											modal,
 											left,
 											top,
 											width,
 											height );
-				jzcDlgClient.onSuccess( jzcDlg );
+				nfgsDlgClient.onSuccess( jzcDlg );
 			}
 		});
 	}

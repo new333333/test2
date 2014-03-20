@@ -62,7 +62,6 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.SAXReader;
-
 import org.kablink.teaming.ConfigurationException;
 import org.kablink.teaming.NoObjectByTheIdException;
 import org.kablink.teaming.NotSupportedException;
@@ -165,7 +164,6 @@ import org.kablink.teaming.web.util.EmailHelper.UrlNotificationType;
 import org.kablink.util.Html;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
-
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.mail.MailAuthenticationException;
@@ -826,6 +824,53 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
    		zoneConfig.setAllowShareWithLdapGroups( allow );
    	}
 
+   	/**
+   	 * 
+   	 */
+    @Override
+	public boolean isUseDirectoryRightsEnabled()
+    {
+   		ZoneConfig zoneConfig;
+
+   		zoneConfig = getCoreDao().loadZoneConfig( RequestContextHolder.getRequestContext().getZoneId() );
+   		return zoneConfig.getUseDirectoryRights(); 		
+    }
+    
+    /**
+     * 
+     */
+    @Override
+	public void setUseDirectoryRightsEnabled( Boolean enabled )
+    {
+   		ZoneConfig zoneConfig;
+
+   		zoneConfig = getCoreDao().loadZoneConfig( RequestContextHolder.getRequestContext().getZoneId() );
+   		zoneConfig.setUseDirectoryRights( enabled );
+    }
+    
+    /**
+     * 
+     */
+    @Override
+	public Integer getCachedRightsRefreshInterval()
+    {
+   		ZoneConfig zoneConfig;
+
+   		zoneConfig = getCoreDao().loadZoneConfig( RequestContextHolder.getRequestContext().getZoneId() );
+   		return zoneConfig.getCachedRightsRefreshInterval(); 		
+    }
+    
+    /**
+     * 
+     */
+    @Override
+	public void setCachedRightsRefreshInterval( Integer value )
+    {
+   		ZoneConfig zoneConfig;
+
+   		zoneConfig = getCoreDao().loadZoneConfig( RequestContextHolder.getRequestContext().getZoneId() );
+   		zoneConfig.setCachedRightsRefreshInterval( value ); 		
+    }
 
 	/**
      * Do actual work to either enable or disable digest notification.

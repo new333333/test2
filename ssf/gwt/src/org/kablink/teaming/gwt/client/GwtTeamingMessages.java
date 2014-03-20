@@ -408,7 +408,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_GetFooterToolbarItems();
 	String rpcFailure_GetGroupActionToolbarItems();
 	String rpcFailure_GetHtml5Specs();
-	String rpcFailure_GetJitsZoneConfig();
+	String rpcFailure_GetNetFolderGlobalSettings();
 	String rpcFailure_GetLandingPageData();
 	String rpcFailure_GetLdapConfig();
 	String rpcFailure_GetLdapServerData();
@@ -700,7 +700,7 @@ public interface GwtTeamingMessages extends Messages
 	String codeSplitFailure_ImportIcalByFileDlg();
 	String codeSplitFailure_ImportIcalByUrlDlg();
 	String codeSplitFailure_ImportProfilesDlg();
-	String codeSplitFailure_JitsZoneConfigDlg();
+	String codeSplitFailure_NetFolderGlobalSettingsDlg();
 	String codeSplitFailure_LandingPage();
 	String codeSplitFailure_LandingPageEditor();
 	String codeSplitFailure_LandingPageWidget();
@@ -3029,14 +3029,6 @@ public interface GwtTeamingMessages extends Messages
 	// String used in the main content control.
 	String contentControl_Warning_ShareNoRights();
 
-	// Strings used in the Jits zone config dialog
-	String jitsZoneConfigDlg_EnableJits();
-	String jitsZoneConfigDlg_Header();
-	String jitsZoneConfigDlg_MaxWaitLabel();
-	String jitsZoneConfigDlg_OnSaveUnknownException( String errMsg );
-	String jitsZoneConfigDlg_SavingConfig();
-	String jitsZoneConfigDlg_SecondsLabel();
-
 	// Strings used in the Net Folder Sync Statistics dialog
 	String netFolderSyncStatisticsDlg_CountFailure();
 	String netFolderSyncStatisticsDlg_DirEnum();
@@ -3298,5 +3290,14 @@ public interface GwtTeamingMessages extends Messages
 	String tourNext();
 	String tourPrev();
 	String tourSkip();
-	
+
+	// Strings used in the Net Folder Global Settings dialog
+	String netFolderGlobalSettingsDlg_EnableJits();
+	String netFolderGlobalSettingsDlg_Header();
+	String netFolderGlobalSettingsDlg_MaxWaitLabel();
+	String netFolderGlobalSettingsDlg_OnSaveUnknownException( String errMsg );
+	String netFolderGlobalSettingsDlg_SavingConfig();
+	String netFolderGlobalSettingsDlg_SecondsLabel();
+
+
 }// end GwtTeamingMessages

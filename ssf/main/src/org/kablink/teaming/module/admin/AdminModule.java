@@ -216,6 +216,10 @@ public interface AdminModule {
     public NameCompletionSettings getNameCompletionSettings();
     public void setNameCompletionSettings( NameCompletionSettings settings );
 
+    public boolean isUseDirectoryRightsEnabled();
+    public void setUseDirectoryRightsEnabled( Boolean enabled );
+    public Integer getCachedRightsRefreshInterval();
+    public void setCachedRightsRefreshInterval( Integer value );
 
     /**
      * Get system functions

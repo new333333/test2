@@ -32,23 +32,23 @@
  */
 package org.kablink.teaming.gwt.client.rpc.shared;
 
-import org.kablink.teaming.gwt.client.GwtJitsZoneConfig;
+import org.kablink.teaming.gwt.client.GwtNetFolderGlobalSettings;
 
 
 /**
- * This class holds all of the information necessary to execute the "Save Jits zone config" command.
+ * This class holds all of the information necessary to execute the "Save Net Folder Global Settings" command.
  * 
  * @author jwootton
  *
  */
-public class SaveJitsZoneConfigCmd extends VibeRpcCmd
+public class SaveNetFolderGlobalSettingsCmd extends VibeRpcCmd
 {
-	private GwtJitsZoneConfig m_jitsZoneConfig;
+	private GwtNetFolderGlobalSettings m_globalSettings;
 	
 	/**
 	 * For GWT serialization, must have a zero param contructor
 	 */
-	public SaveJitsZoneConfigCmd()
+	public SaveNetFolderGlobalSettingsCmd()
 	{
 		super();
 	}
@@ -56,18 +56,18 @@ public class SaveJitsZoneConfigCmd extends VibeRpcCmd
 	/**
 	 * 
 	 */
-	public SaveJitsZoneConfigCmd( GwtJitsZoneConfig jitsZoneConfig )
+	public SaveNetFolderGlobalSettingsCmd( GwtNetFolderGlobalSettings globalSettings )
 	{
 		this();
-		m_jitsZoneConfig = jitsZoneConfig;
+		m_globalSettings = globalSettings;
 	}
 	
 	/**
 	 * 
 	 */
-	public GwtJitsZoneConfig getJitsZoneConfig()
+	public GwtNetFolderGlobalSettings getGlobalSettings()
 	{
-		return m_jitsZoneConfig;
+		return m_globalSettings;
 	}
 	
 	
@@ -81,6 +81,6 @@ public class SaveJitsZoneConfigCmd extends VibeRpcCmd
 	@Override
 	public int getCmdType()
 	{
-		return VibeRpcCmdType.SAVE_JITS_ZONE_CONFIG.ordinal();
+		return VibeRpcCmdType.SAVE_NET_FOLDER_GLOBAL_SETTINGS.ordinal();
 	}
 }
