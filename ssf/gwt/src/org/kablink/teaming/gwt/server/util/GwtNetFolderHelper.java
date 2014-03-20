@@ -63,10 +63,6 @@ import org.kablink.teaming.domain.ResourceDriverConfig.AuthenticationType;
 import org.kablink.teaming.domain.ResourceDriverConfig.DriverType;
 import org.kablink.teaming.domain.TitleException;
 import org.kablink.teaming.domain.User;
-import org.kablink.teaming.fi.connection.ResourceDriver;
-import org.kablink.teaming.fi.connection.ResourceDriverManager;
-import org.kablink.teaming.fi.connection.ResourceDriverManagerUtil;
-import org.kablink.teaming.fi.connection.acl.AclResourceDriver;
 import org.kablink.teaming.fi.connection.acl.AclResourceDriver.ConnectionTestStatus;
 import org.kablink.teaming.gwt.client.GwtGroup;
 import org.kablink.teaming.gwt.client.GwtJitsNetFolderConfig;
@@ -331,8 +327,6 @@ public class GwtNetFolderHelper
 													netFolderRoot.getIsSharePointServer(),
 													netFolderRoot.getFullSyncDirOnly(),
 													authType,
-													netFolderRoot.getUseDirectoryRights(),
-													netFolderRoot.getCachedRightsRefreshInterval(),
 													netFolderRoot.getIndexContent(),
 													netFolderRoot.getJitsEnabled(),
 													netFolderRoot.getJitsResultsMaxAge(),
@@ -361,8 +355,6 @@ public class GwtNetFolderHelper
 			newRoot.setIsSharePointServer( rdConfig.isPutRequiresContentLength() );
 			newRoot.setSyncSchedule( netFolderRoot.getSyncSchedule() );
 			newRoot.setFullSyncDirOnly( rdConfig.getFullSyncDirOnly() );
-			newRoot.setUseDirectoryRights( rdConfig.getUseDirectoryRights() );
-			newRoot.setCachedRightsRefreshInterval( rdConfig.getCachedRightsRefreshInterval() );
 			newRoot.setIndexContent( rdConfig.getIndexContent() );
 			newRoot.setJitsEnabled( rdConfig.isJitsEnabled() );
 			newRoot.setJitsResultsMaxAge( rdConfig.getJitsMaxAge() );
@@ -550,8 +542,6 @@ public class GwtNetFolderHelper
 				nfRoot.setAllowSelfSignedCerts( driver.isAllowSelfSignedCertificate() );
 				nfRoot.setIsSharePointServer( driver.isPutRequiresContentLength() );
 				nfRoot.setFullSyncDirOnly( driver.getFullSyncDirOnly() );
-				nfRoot.setUseDirectoryRights( driver.getUseDirectoryRights() );
-				nfRoot.setCachedRightsRefreshInterval( driver.getCachedRightsRefreshInterval() );
 				nfRoot.setIndexContent( driver.getIndexContent() );
 				nfRoot.setJitsEnabled( driver.isJitsEnabled() );
 				nfRoot.setJitsResultsMaxAge( driver.getJitsMaxAge() );
@@ -1403,8 +1393,6 @@ public class GwtNetFolderHelper
 											netFolderRoot.getListOfPrincipalIds(),
 											netFolderRoot.getFullSyncDirOnly(),
 											authType,
-											netFolderRoot.getUseDirectoryRights(),
-											netFolderRoot.getCachedRightsRefreshInterval(),
 											netFolderRoot.getIndexContent(),
 											netFolderRoot.getJitsEnabled(),
 											netFolderRoot.getJitsResultsMaxAge(),

@@ -223,8 +223,6 @@ public class NetFolderHelper
 													false,
 													null,
 													null,
-													null,
-													null,
 													false,
 													new Boolean( true ),
 													NetFolderHelper.getDefaultJitsResultsMaxAge(),
@@ -681,8 +679,6 @@ public class NetFolderHelper
 		boolean isSharePointServer,
 		Boolean fullSyncDirOnly,
 		AuthenticationType authType,
-		Boolean useDirectoryRights,
-		Integer cachedRightsRefreshInterval,
 		Boolean indexContent,
 		Boolean enableJits,
 		Long jitsResultsMaxAge,
@@ -709,8 +705,6 @@ public class NetFolderHelper
 		options.put( ObjectKeys.RESOURCE_DRIVER_PASSWORD, proxyPwd );
 		options.put( ObjectKeys.RESOURCE_DRIVER_FULL_SYNC_DIR_ONLY, fullSyncDirOnly );
 		options.put( ObjectKeys.RESOURCE_DRIVER_AUTHENTICATION_TYPE, authType );
-		options.put( ObjectKeys.RESOURCE_DRIVER_USE_DIRECTORY_RIGHTS, useDirectoryRights );
-		options.put( ObjectKeys.RESOURCE_DRIVER_CACHED_RIGHTS_REFRESH_INTERVAL, cachedRightsRefreshInterval );
 		options.put( ObjectKeys.RESOURCE_DRIVER_INDEX_CONTENT, indexContent );
 		options.put( ObjectKeys.RESOURCE_DRIVER_JITS_ENABLED, enableJits );
 		options.put( ObjectKeys.RESOURCE_DRIVER_JITS_RESULTS_MAX_AGE, jitsResultsMaxAge );
@@ -1094,8 +1088,6 @@ public class NetFolderHelper
 		Set<Long> listOfPrincipals,
 		Boolean fullSyncDirOnly,
 		AuthenticationType authType,
-		Boolean useDirectoryRights,
-		Integer cachedRightsRefreshInterval,
 		Boolean indexContent,
 		Boolean enableJits,
 		Long jitsResultsMaxAge,
@@ -1128,8 +1120,6 @@ public class NetFolderHelper
 		options.put( ObjectKeys.RESOURCE_DRIVER_PASSWORD, proxyPwd );
 		options.put( ObjectKeys.RESOURCE_DRIVER_FULL_SYNC_DIR_ONLY, fullSyncDirOnly );
 		options.put( ObjectKeys.RESOURCE_DRIVER_AUTHENTICATION_TYPE, authType );
-		options.put( ObjectKeys.RESOURCE_DRIVER_USE_DIRECTORY_RIGHTS, useDirectoryRights );
-		options.put( ObjectKeys.RESOURCE_DRIVER_CACHED_RIGHTS_REFRESH_INTERVAL, cachedRightsRefreshInterval );
 		options.put( ObjectKeys.RESOURCE_DRIVER_INDEX_CONTENT, indexContent );
 		options.put( ObjectKeys.RESOURCE_DRIVER_JITS_ENABLED, enableJits );
 		options.put( ObjectKeys.RESOURCE_DRIVER_JITS_RESULTS_MAX_AGE, jitsResultsMaxAge );
