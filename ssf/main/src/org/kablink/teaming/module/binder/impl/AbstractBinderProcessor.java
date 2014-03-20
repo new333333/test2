@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -32,14 +32,7 @@
  */
 package org.kablink.teaming.module.binder.impl;
 
-import static org.kablink.util.search.Restrictions.conjunction;
-import static org.kablink.util.search.Restrictions.disjunction;
-import static org.kablink.util.search.Restrictions.eq;
-import static org.kablink.util.search.Restrictions.in;
-import static org.kablink.util.search.Restrictions.not;
-
 import java.io.IOException;
-import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
@@ -55,9 +48,10 @@ import java.util.SortedSet;
 
 import org.apache.lucene.document.Field;
 import org.apache.lucene.index.Term;
-import org.apache.lucene.search.Query;
 import org.apache.lucene.search.SortField;
+
 import org.dom4j.Element;
+
 import org.kablink.teaming.ConfigurationException;
 import org.kablink.teaming.IllegalCharacterInNameException;
 import org.kablink.teaming.NoObjectByTheIdException;
@@ -93,9 +87,6 @@ import org.kablink.teaming.fi.connection.ResourceDriverManager;
 import org.kablink.teaming.fi.connection.ResourceSession;
 import org.kablink.teaming.fi.connection.acl.AclResourceDriver;
 import org.kablink.teaming.jobs.BinderReindex;
-import org.kablink.teaming.jobs.DefaultMirroredFolderSynchronization;
-import org.kablink.teaming.jobs.MirroredFolderSynchronization;
-import org.kablink.teaming.jobs.ScheduleInfo;
 import org.kablink.teaming.lucene.Hits;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.binder.processor.BinderProcessor;
@@ -130,9 +121,7 @@ import org.kablink.teaming.search.QueryBuilder;
 import org.kablink.teaming.search.SearchObject;
 import org.kablink.teaming.search.filter.SearchFilter;
 import org.kablink.teaming.security.AccessControlException;
-import org.kablink.teaming.security.function.WorkArea;
 import org.kablink.teaming.security.function.WorkAreaFunctionMembership;
-import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.util.FileUploadItem;
 import org.kablink.teaming.util.LongIdUtil;
 import org.kablink.teaming.util.NLT;
@@ -149,7 +138,13 @@ import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
 import org.kablink.util.search.Criteria;
 import org.kablink.util.search.FieldFactory;
-import org.quartz.SchedulerException;
+
+import static org.kablink.util.search.Restrictions.conjunction;
+import static org.kablink.util.search.Restrictions.disjunction;
+import static org.kablink.util.search.Restrictions.eq;
+import static org.kablink.util.search.Restrictions.in;
+import static org.kablink.util.search.Restrictions.not;
+
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -1091,7 +1086,16 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         final Map ctx = new HashMap();
         if (options != null) ctx.putAll(options);
      	deleteBinder_setCtx(binder, ctx);
-     	
+
+     	// Bugzilla 686906:
+     	//    Moved from below deleteBinder_processFiles() call so that
+     	//    we delete the mirror information, if necessary first so
+     	//    in case that fails, we won't have removed all the
+     	//    metadata.
+        SimpleProfiler.start("deleteBinder_mirrored");
+        deleteBinder_mirrored(binder, deleteMirroredSource, ctx);
+        SimpleProfiler.stop("deleteBinder_mirrored");
+        
         SimpleProfiler.start("deleteBinder_indexDel");
         deleteBinder_indexDel(binder, ctx);
         SimpleProfiler.stop("deleteBinder_indexDel");
@@ -1103,10 +1107,6 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         SimpleProfiler.start("deleteBinder_processFiles");
         deleteBinder_processFiles(binder, ctx);
         SimpleProfiler.stop("deleteBinder_processFiles");
-        
-        SimpleProfiler.start("deleteBinder_mirrored");
-        deleteBinder_mirrored(binder, deleteMirroredSource, ctx);
-        SimpleProfiler.stop("deleteBinder_mirrored");
         
        	if (!binder.isRoot()) {
    			//delete reserved names for self which is registered in parent space
@@ -1204,10 +1204,12 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     		}
     		catch(NotSupportedException e) {
     			logger.warn(e.getLocalizedMessage());
+    			throw e;
     		}
     		catch(Exception e) {
-    			logger.error("Error deleting source resource for mirrored binder [" + binder.getPathName() + "]", e);
-    		}  	   		
+    			logger.error("Error deleting source resource for mirrored binder (2) [" + binder.getPathName() + "]", e);
+    			throw e;
+    		}
     	}
      }
     
