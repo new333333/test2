@@ -1066,6 +1066,7 @@
 
 	<!-- referenced internally when viewing files and sending mail -->
 	<bean id="mimeTypes" class="org.springframework.mail.javamail.ConfigurableMimeFileTypeMap">
+		<property name="mappingLocation"><value>/WEB-INF/etc/mime.types</value></property>
 		<property name="mappings"><value><![CDATA[
 application/vnd.oasis.opendocument.database               odb
 application/vnd.oasis.opendocument.chart                  odc
