@@ -535,7 +535,7 @@ public abstract class AbstractAuthenticationProviderModule extends BaseAuthentic
 	     			
 	     			boolean createUser = SPropsUtil.getBoolean("authenticator.create.user." + getAuthenticator(), false);
                     boolean updateUser = SPropsUtil.getBoolean("authenticator.update.user." + getAuthenticator(), false);
-                    boolean updateHomeFolder = SPropsUtil.getBoolean("authenticator.update.homefolder" + getAuthenticator(), false);
+                    boolean updateHomeFolder = SPropsUtil.getBoolean("authenticator.update.homefolder." + getAuthenticator(), false);
                     
 	     			if(cacheUsingAuthenticators.contains(getAuthenticator())) {
 	     				// This authenticator is set up to utilize cached credential. In this case,
