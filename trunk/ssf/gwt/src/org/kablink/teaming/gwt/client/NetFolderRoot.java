@@ -67,8 +67,6 @@ public class NetFolderRoot
 	private NetFolderRootStatus m_status;
 	private String m_statusTicketId;
 	private GwtAuthenticationType m_authType;
-	private Boolean m_useDirectoryRights;
-	private Integer m_cachedRightsRefreshInterval;
 	
 	// This information is specific to WebDAV
 	private boolean m_allowSelfSignedCerts = false;
@@ -175,8 +173,6 @@ public class NetFolderRoot
 		m_indexContent = null;
 		m_fullSyncDirOnly = null;
 		m_authType = null;
-		m_useDirectoryRights = null;
-		m_cachedRightsRefreshInterval = null;
 		m_jitsEnabled = null;
 		m_jitsResultsMaxAge = 0;
 		m_jitsAclMaxAge = 0;
@@ -209,8 +205,6 @@ public class NetFolderRoot
 		m_indexContent = root.getIndexContent();
 		m_fullSyncDirOnly = root.getFullSyncDirOnly();
 		m_authType = root.getAuthType();
-		m_useDirectoryRights = root.getUseDirectoryRights();
-		m_cachedRightsRefreshInterval = root.getCachedRightsRefreshInterval();
 		m_jitsEnabled = root.getJitsEnabled();
 		m_jitsResultsMaxAge = root.getJitsResultsMaxAge();
 		m_jitsAclMaxAge = root.getJitsAclMaxAge();
@@ -237,14 +231,6 @@ public class NetFolderRoot
 	public GwtAuthenticationType getAuthType()
 	{
 		return m_authType;
-	}
-	
-	/**
-	 * 
-	 */
-	public Integer getCachedRightsRefreshInterval()
-	{
-		return m_cachedRightsRefreshInterval;
 	}
 	
 	/**
@@ -403,14 +389,6 @@ public class NetFolderRoot
 	}
 
 	/**
-	 * 
-	 */
-	public Boolean getUseDirectoryRights()
-	{
-		return m_useDirectoryRights;
-	}
-	
-	/**
 	 * Is this net folder root fully configured with server path and proxy credentials.
 	 */
 	public boolean isConfigured()
@@ -444,14 +422,6 @@ public class NetFolderRoot
 	public void setAuthType( GwtAuthenticationType type )
 	{
 		m_authType = type;
-	}
-	
-	/**
-	 * 
-	 */
-	public void setCachedRightsRefreshInterval( Integer value )
-	{
-		m_cachedRightsRefreshInterval = value;
 	}
 	
 	/**
@@ -594,12 +564,4 @@ public class NetFolderRoot
 		m_syncSchedule = schedule;
 	}
 
-	/**
-	 * 
-	 */
-	public void setUseDirectoryRights( Boolean value )
-	{
-		m_useDirectoryRights = value;
-	}
-	
 }

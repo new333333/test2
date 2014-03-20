@@ -36,9 +36,12 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
+import org.kablink.teaming.context.request.RequestContextHolder;
+import org.kablink.teaming.module.zone.ZoneModule;
 import org.kablink.teaming.security.function.WorkArea;
 import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.util.SPropsUtil;
+import org.kablink.teaming.util.SpringContextUtil;
 
 public class ResourceDriverConfig extends ZonedObject implements WorkArea {
 
@@ -64,8 +67,6 @@ public class ResourceDriverConfig extends ZonedObject implements WorkArea {
 	private Date modifiedOn;
 	private ChangeDetectionMechanism changeDetectionMechanism;
 	private Short authenticationType;
-	private Boolean useDirectoryRights;
-	private Integer cachedRightsRefreshInterval;
 	private Boolean indexContent;
     protected Boolean jitsEnabled; // Applicable only to mirrored folders
     protected Long jitsMaxAge; // in milliseconds
@@ -228,12 +229,6 @@ public class ResourceDriverConfig extends ZonedObject implements WorkArea {
     	if ( !objectEquals( getAuthenticationType(), config.getAuthenticationType() ) )
     		return false;
 
-    	if ( !objectEquals( getUseDirectoryRights(), config.getUseDirectoryRights() ) )
-    		return false;
-    	
-    	if ( !objectEquals( getCachedRightsRefreshInterval(), config.getCachedRightsRefreshInterval() ) )
-    		return false;
-    	
     	if ( !objectEquals( indexContent, config.indexContent ) )
     		return false;
 
@@ -637,32 +632,43 @@ public class ResourceDriverConfig extends ZonedObject implements WorkArea {
 	 */
 	public Boolean getUseDirectoryRights()
 	{
-		return useDirectoryRights;
+		ZoneConfig zoneConfig;
+		ZoneModule zoneModule;
+		
+		zoneModule = getZoneModule();
+		
+		zoneConfig = zoneModule.getZoneConfig( RequestContextHolder.getRequestContext().getZoneId() );
+		
+		return zoneConfig.getUseDirectoryRights();
 	}
 
 	/**
 	 * 
 	 */
-	public void setUseDirectoryRights( Boolean value )
-	{
-		useDirectoryRights = value;
-	}
-	
-	/**
-	 * 
-	 */
 	public Integer getCachedRightsRefreshInterval()
 	{
-		return cachedRightsRefreshInterval;
+		ZoneConfig zoneConfig;
+		ZoneModule zoneModule;
+		
+		zoneModule = getZoneModule();
+		
+		zoneConfig = zoneModule.getZoneConfig( RequestContextHolder.getRequestContext().getZoneId() );
+		
+		return zoneConfig.getCachedRightsRefreshInterval();
 	}
 	
 	/**
 	 * 
 	 */
-	public void setCachedRightsRefreshInterval( Integer value )
+	private ZoneModule getZoneModule()
 	{
-		cachedRightsRefreshInterval = value;
+		ZoneModule zoneModule;
+		
+		zoneModule = ((ZoneModule) SpringContextUtil.getBean( "zoneModule" ) );
+
+		return zoneModule;
 	}
+	
 
 
 	// Used by application

@@ -105,7 +105,6 @@ public class AdminNetFolderServerResource extends AbstractAdminResource {
                 driverConfig.getName(), driverConfig.getRootPath(), driverConfig.getDriverType(),
                 driverConfig.getAccountName(), driverConfig.getPassword(), null, null, false, false,
                 driverConfig.getFullSyncDirOnly(), driverConfig.getAuthenticationType(),
-                driverConfig.getUseDirectoryRights(), driverConfig.getCachedRightsRefreshInterval(),
                 driverConfig.getIndexContent(),
                 driverConfig.isJitsEnabled(),
                 new Long( driverConfig.getJitsMaxAge() ),
@@ -137,7 +136,6 @@ public class AdminNetFolderServerResource extends AbstractAdminResource {
         newConfig = NetFolderHelper.modifyNetFolderRoot(getAdminModule(), getResourceDriverModule(), getProfileModule(), getBinderModule(),
                 getWorkspaceModule(), getFolderModule(), existingConfig.getName(), newConfig.getRootPath(), newConfig.getAccountName(), newConfig.getPassword(),
                 newConfig.getDriverType(), null, false, false, null, newConfig.getFullSyncDirOnly(), newConfig.getAuthenticationType(),
-                newConfig.getUseDirectoryRights(), newConfig.getCachedRightsRefreshInterval(),
                 newConfig.getIndexContent(),
                 newConfig.isJitsEnabled(),
                 new Long( newConfig.getJitsMaxAge() ),
@@ -208,8 +206,6 @@ public class AdminNetFolderServerResource extends AbstractAdminResource {
         model.setName(server.getName());
         model.setPassword(server.getPassword());
         model.setRootPath(server.getRootPath());
-        model.setCachedRightsRefreshInterval(server.getCachedRightsRefreshInterval());
-        model.setUseDirectoryRights(server.getUseDirectoryRights());
         model.setIndexContent(server.getIndexContent());
         if (server.getJitsEnabled()!=null) {
             model.setJitsEnabled(server.getJitsEnabled());
