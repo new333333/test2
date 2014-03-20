@@ -1534,18 +1534,44 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     //no transaction - should be overridden 
 	protected Binder copyBinder_create(Binder source, Binder destination, String title, Map ctx) {
 	   Binder sampleBinder = source;
+	   Definition sampleDef = sampleBinder.getEntryDef();
+	   List<Definition> sampleDefs = sampleBinder.getDefinitions();
+	   Class sampleBinderClass = sampleBinder.getClass();
 	   if (destination.isAclExternallyControlled() || destination.isMirrored()) {
 		   //When the destination is a remote disk folder, make the new binder the same type as the destination
 		   sampleBinder = destination;
+		   sampleBinderClass = sampleBinder.getClass();
+		   sampleDef = sampleBinder.getEntryDef();
+		   sampleDefs = sampleBinder.getDefinitions();
+	   }
+	   if (source.isAclExternallyControlled() && !destination.isAclExternallyControlled()) {
+		   //Copying from a net folder to a non-net folder, make the sample be a regular file folder
+		   if (destination.isLibrary()) {
+			   //The destination is a file folder, so use it as the sample
+			   sampleBinder = destination;
+			   sampleBinderClass = sampleBinder.getClass();
+			   sampleDef = sampleBinder.getEntryDef();
+			   sampleDefs = sampleBinder.getDefinitions();
+		   } else {
+			   //Copying this to a non-library folder, so we must use a file folder definition
+			   sampleBinder = destination;
+			   sampleBinderClass = Folder.class;
+			   sampleDef = getDefinitionModule().getDefinitionByReservedId(ObjectKeys.DEFAULT_LIBRARY_FOLDER_DEF);
+			   sampleDefs = sampleBinder.getDefinitions();
+			   TemplateBinder tb = getTemplateModule().getTemplateByName(ObjectKeys.DEFAULT_TEMPLATE_NAME_LIBRARY);
+			   if (tb != null) {
+				   sampleDefs = tb.getDefinitions();
+			   }
+		   }
 	   }
        Map data = new HashMap();
        data.put("title", title);
        InputDataAccessor inputData = new MapInputData(data);
        Binder binder = null;
        try {
-			binder = addBinder(destination, sampleBinder.getEntryDef(), sampleBinder.getClass(), inputData, null, null);
+			binder = addBinder(destination, sampleDef, sampleBinderClass, inputData, null, null);
 			//Also copy the configured definitions from the sample
-			binder.setDefinitions(sampleBinder.getDefinitions());
+			binder.setDefinitions(sampleDefs);
 			getCoreDao().flush();
        } catch (Exception e) {}
        
