@@ -2239,6 +2239,7 @@ public interface GwtTeamingMessages extends Messages
 	String modifyGroupDlgNameTooLong();
 	String modifyGroupDlgStaticLabel();
 	String modifyGroupDlgTitleLabel();
+	String modifyGroupDlgUserAlreadyExists();
 	String modifyGroupDlgViewGroupMembershipLabel();
 
 	// Strings used in the Modify static membership dialog

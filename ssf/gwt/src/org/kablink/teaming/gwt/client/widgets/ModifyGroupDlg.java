@@ -329,13 +329,22 @@ public class ModifyGroupDlg extends DlgBox
 				if ( caught instanceof GwtTeamingException )
 				{
 					GwtTeamingException ex;
+					ExceptionType exType;
 					
 					ex = (GwtTeamingException) caught;
-					if ( ex.getExceptionType() == ExceptionType.GROUP_ALREADY_EXISTS )
+					exType = ex.getExceptionType();
+					if ( exType == ExceptionType.GROUP_ALREADY_EXISTS )
 					{
 						String desc;
 						
 						desc = GwtTeaming.getMessages().modifyGroupDlgGroupAlreadyExists();
+						errMsg = GwtTeaming.getMessages().modifyGroupDlgErrorCreatingGroup( desc );
+					}
+					else if ( exType == ExceptionType.USER_ALREADY_EXISTS )
+					{
+						String desc;
+						
+						desc = GwtTeaming.getMessages().modifyGroupDlgUserAlreadyExists();
 						errMsg = GwtTeaming.getMessages().modifyGroupDlgErrorCreatingGroup( desc );
 					}
 					else

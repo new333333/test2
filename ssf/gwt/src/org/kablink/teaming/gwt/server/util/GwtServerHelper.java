@@ -97,6 +97,7 @@ import org.kablink.teaming.GroupExistsException;
 import org.kablink.teaming.IllegalCharacterInNameException;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.PasswordMismatchException;
+import org.kablink.teaming.UserExistsException;
 import org.kablink.teaming.calendar.TimeZoneHelper;
 import org.kablink.teaming.context.request.HttpSessionContext;
 import org.kablink.teaming.context.request.RequestContext;
@@ -1988,10 +1989,11 @@ public class GwtServerHelper {
 			
 			if ( ex instanceof GroupExistsException )
 			{
-				String[] args;
-				
-				args = new String[] { name };
-				gtEx.setAdditionalDetails( NLT.get( "group.duplicate.name", args ) );
+				gtEx.setExceptionType( ExceptionType.GROUP_ALREADY_EXISTS );
+			}
+			else if ( ex instanceof UserExistsException )
+			{
+				gtEx.setExceptionType( ExceptionType.USER_ALREADY_EXISTS );
 			}
 			else if ( ex instanceof IllegalCharacterInNameException )
 			{
