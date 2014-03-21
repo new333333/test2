@@ -346,7 +346,7 @@ public class NetFolderGlobalSettingsDlg extends DlgBox
 		
 		helpData = new HelpData();
 		helpData.setGuideName( HelpData.ADMIN_GUIDE );
-		helpData.setPageId( "netfolders_justintime" );
+		helpData.setPageId( "netfolders_global" );
 		
 		return helpData;
 	}
