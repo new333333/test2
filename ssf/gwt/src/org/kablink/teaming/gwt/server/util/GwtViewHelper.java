@@ -4190,6 +4190,7 @@ public class GwtViewHelper {
 					case FILE:
 					case MILESTONE:
 					case MINIBLOG:
+					case MIRROREDFILE:
 					case SURVEY:     sortBy = Constants.SORT_TITLE_FIELD;                     break;
 					case TASK:       sortBy = Constants.SORT_ORDER_FIELD;                     break;
 					case GUESTBOOK:  sortBy = Constants.SORT_CREATOR_TITLE_FIELD;             break;
