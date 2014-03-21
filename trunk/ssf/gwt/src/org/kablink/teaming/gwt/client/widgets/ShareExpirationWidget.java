@@ -47,6 +47,8 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.event.dom.client.KeyPressHandler;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.i18n.client.DateTimeFormat.PredefinedFormat;
 import com.google.gwt.resources.client.ImageResource;
@@ -171,6 +173,36 @@ public class ShareExpirationWidget extends Composite
 			
 			dateFormat = DateTimeFormat.getFormat( PredefinedFormat.DATE_SHORT );
 			m_dateBox = new TZDateBox( new DatePicker(), (-1), new DateBox.DefaultFormat( dateFormat ) );
+			m_dateBox.addValueChangeHandler( new ValueChangeHandler<Long>()
+			{
+				@Override
+				public void onValueChange( ValueChangeEvent<Long> event )
+				{
+					Long date;
+					Long today;
+					
+					date = event.getValue();
+
+					// Did the user enter a date from the past?
+					today = getToday();
+					if ( date < today )
+					{
+						Scheduler.ScheduledCommand cmd;
+						
+						cmd = new Scheduler.ScheduledCommand()
+						{
+							@Override
+							public void execute()
+							{
+								// Yes, tell them not to do that.
+								Window.alert( GwtTeaming.getMessages().shareExpirationDlg_cantEnterPriorDate() );
+								m_dateBox.setValue( getToday() );
+							}
+						};
+						Scheduler.get().scheduleDeferred( cmd );
+					}
+				}
+			});
 			offset = GwtTeaming.m_requestInfo.getTimeZoneOffsetHour() * 60 * 60 * 1000;
 			m_dateBox.setTZOffset( offset );
 			m_dateBox.getDateBox().getTextBox().setVisibleLength( 8 );
