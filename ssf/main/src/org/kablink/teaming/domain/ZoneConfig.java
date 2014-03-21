@@ -153,7 +153,7 @@ public class ZoneConfig extends ZonedObject implements WorkArea {
 	public boolean getUseDirectoryRights()
 	{
 		if ( useDirectoryRights == null )
-			return false;
+			return true;
 		
 		return useDirectoryRights.booleanValue();
 	}
