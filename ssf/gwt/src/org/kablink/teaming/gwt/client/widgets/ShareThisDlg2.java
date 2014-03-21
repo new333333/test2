@@ -1519,7 +1519,8 @@ public class ShareThisDlg2 extends DlgBox
 		{
 			// Yes
 			// The user may not have hit apply.  Tell the "edit share" widget to save its changes
-			m_editShareWidget.saveSettings();
+			if ( m_editShareWidget.saveSettings() == false )
+				return false;
 		}
 		
 		// Disable the Ok button.
@@ -2418,7 +2419,8 @@ public class ShareThisDlg2 extends DlgBox
 		{
 			// Yes
 			// Tell the "edit share" widget to save its changes
-			m_editShareWidget.saveSettings();
+			if ( m_editShareWidget.saveSettings() == false )
+				return;
 		}
 		
 		ShareRights highestRightsPossible;
