@@ -373,7 +373,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     	List<FolderEntry> replies = (List)ctx.get("this.replies");
      	for (FolderEntry reply: replies) {
      		try {
-     			super.deleteEntry_processFiles(parentBinder, reply, deleteMirroredSource, null);
+     			super.deleteEntry_processFiles(parentBinder, reply, deleteMirroredSource, ctx);
     		} catch(WriteFilesException e) {
     			//The files attached to this entry could not be deleted
     			//See if the error should be propagated
@@ -384,7 +384,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     		}
     	}
      	try {
-     		super.deleteEntry_processFiles(parentBinder, entry, deleteMirroredSource, null);
+     		super.deleteEntry_processFiles(parentBinder, entry, deleteMirroredSource, ctx);
 		} catch(WriteFilesException e) {
 			//The files attached to this entry could not be deleted
 			//See if the error should be propagated

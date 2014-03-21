@@ -64,9 +64,11 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
+
 import org.kablink.teaming.BinderQuotaException;
 import org.kablink.teaming.IllegalCharacterInNameException;
 import org.kablink.teaming.NotSupportedException;
@@ -595,8 +597,8 @@ public class GwtViewHelper {
 				String messageKey;
 				if      (e instanceof AccessControlException)          messageKey = "addNewFolderError.AccssControlException";
 				else if (e instanceof IllegalCharacterInNameException) messageKey = "addNewFolderError.IllegalCharacterInNameException";
-				else if (e instanceof WriteFilesException)             messageKey = "addNewFolderError.WriteFilesException";
 				else if (e instanceof TitleException)		           messageKey = "addNewFolderError.TitleException";
+				else if (e instanceof WriteFilesException)             messageKey = "addNewFolderError.WriteFilesException";
 				else                                                   messageKey = "addNewFolderError.OtherException";
 				reply.addError(NLT.get(messageKey, new String[]{folderName}));
 				
@@ -8671,8 +8673,8 @@ public class GwtViewHelper {
 						String messageKey;
 						if      (e instanceof AccessControlException)          messageKey = "renameEntityError.AccssControlException.";
 						else if (e instanceof IllegalCharacterInNameException) messageKey = "renameEntityError.IllegalCharacterInNameException.";
-						else if (e instanceof WriteFilesException)             messageKey = "renameEntityError.WriteFilesException.";
 						else if (e instanceof TitleException)		           messageKey = "renameEntityError.TitleException.";
+						else if (e instanceof WriteFilesException)             messageKey = "renameEntityError.WriteFilesException.";
 						else                                                   messageKey = "renameEntityError.OtherException.";
 						if (eid.isFolder())
 						     messageKey += "folder";
@@ -8782,8 +8784,8 @@ public class GwtViewHelper {
 						if      (e instanceof AccessControlException)          messageKey = "renameEntityError.AccssControlException.file";
 						else if (e instanceof IllegalCharacterInNameException) messageKey = "renameEntityError.IllegalCharacterInNameException.file";
 						else if (e instanceof ReservedByAnotherUserException)  messageKey = "renameEntityError.ReservedByAnotherUserException.file";
-						else if (e instanceof WriteFilesException)             messageKey = "renameEntityError.WriteFilesException.file";
 						else if (e instanceof WriteEntryDataException)         messageKey = "renameEntityError.WriteEntryDataException.file";
+						else if (e instanceof WriteFilesException)             messageKey = "renameEntityError.WriteFilesException.file";
 						else                                                   messageKey = "renameEntityError.OtherException.file";
 						reply.setStringValue(NLT.get(messageKey, new String[]{entityName}));
 					}

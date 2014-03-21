@@ -49,14 +49,13 @@ import java.util.SortedSet;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.SortField;
-
 import org.dom4j.Element;
-
 import org.kablink.teaming.ConfigurationException;
 import org.kablink.teaming.IllegalCharacterInNameException;
 import org.kablink.teaming.NoObjectByTheIdException;
 import org.kablink.teaming.NotSupportedException;
 import org.kablink.teaming.ObjectKeys;
+import org.kablink.teaming.UncheckedIOException;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.docconverter.ITextConverterManager;
 import org.kablink.teaming.docconverter.TextConverter;
@@ -1087,14 +1086,20 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         if (options != null) ctx.putAll(options);
      	deleteBinder_setCtx(binder, ctx);
 
-     	// Bugzilla 686906:
-     	//    Moved from below deleteBinder_processFiles() call so that
-     	//    we delete the mirror information, if necessary first so
-     	//    in case that fails, we won't have removed all the
-     	//    metadata.
-        SimpleProfiler.start("deleteBinder_mirrored");
-        deleteBinder_mirrored(binder, deleteMirroredSource, ctx);
-        SimpleProfiler.stop("deleteBinder_mirrored");
+     	{
+	     	// Bugzilla 686906:
+	     	//    Moved these calls from below deleteBinder_preDelete()
+     		//    call so that we delete the mirror information, if
+     		//    necessary first so in case that fails, we won't have
+     		//    removed all the metadata.
+	        SimpleProfiler.start("deleteBinder_processFiles");
+	        deleteBinder_processFiles(binder, ctx);
+	        SimpleProfiler.stop("deleteBinder_processFiles");
+	        
+	        SimpleProfiler.start("deleteBinder_mirrored");
+	        deleteBinder_mirrored(binder, deleteMirroredSource, ctx);
+	        SimpleProfiler.stop("deleteBinder_mirrored");
+     	}
         
         SimpleProfiler.start("deleteBinder_indexDel");
         deleteBinder_indexDel(binder, ctx);
@@ -1103,10 +1108,6 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     	SimpleProfiler.start("deleteBinder_preDelete");
         deleteBinder_preDelete(binder,ctx, skipDbLog);
         SimpleProfiler.stop("deleteBinder_preDelete");
-        
-        SimpleProfiler.start("deleteBinder_processFiles");
-        deleteBinder_processFiles(binder, ctx);
-        SimpleProfiler.stop("deleteBinder_processFiles");
         
        	if (!binder.isRoot()) {
    			//delete reserved names for self which is registered in parent space
@@ -1204,6 +1205,10 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     		}
     		catch(NotSupportedException e) {
     			logger.warn(e.getLocalizedMessage());
+    			throw e;
+    		}
+    		catch(UncheckedIOException e) {
+    			logger.error("Error deleting source resource for mirrored binder (1) [" + binder.getPathName() + "]", e);
     			throw e;
     		}
     		catch(Exception e) {
