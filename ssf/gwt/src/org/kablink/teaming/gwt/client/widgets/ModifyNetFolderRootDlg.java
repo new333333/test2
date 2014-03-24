@@ -1872,6 +1872,79 @@ public class ModifyNetFolderRootDlg extends DlgBox
 	}
 
 	/**
+	 * Check to see if all the of the information needed to test the connection has been entered.
+	 */
+	private boolean isDataValidNeededToTestConnection()
+	{
+		NetFolderRootType serverType;
+		String value;
+		Scheduler.ScheduledCommand cmd;
+		
+		serverType = getSelectedRootType();
+
+		// Is the server type "famt" or undefined?
+		if ( serverType == NetFolderRootType.FAMT )
+		{
+			// Yes, tell the user they need to pick a server type.
+			cmd = new Scheduler.ScheduledCommand()
+			{
+				@Override
+				public void execute()
+				{
+					Window.alert( GwtTeaming.getMessages().modifyNetFolderServerDlg_SelectServerTypePrompt() );
+					m_tabPanel.selectTab( 0 );
+				}
+			};
+			Scheduler.get().scheduleDeferred( cmd );
+
+			return false;
+		}
+		
+		// Did the user enter a proxy name?
+		value = getProxyName();
+		if ( value == null || value.length() == 0 )
+		{
+			// No
+			cmd = new Scheduler.ScheduledCommand()
+			{
+				@Override
+				public void execute()
+				{
+					Window.alert( GwtTeaming.getMessages().modifyNetFolderServerDlg_EnterProxyNamePrompt() );
+					m_tabPanel.selectTab( 1 );
+					m_proxyNameTxtBox.setFocus( true );
+				}
+			};
+			Scheduler.get().scheduleDeferred( cmd );
+
+			return false;
+		}
+		
+		// Did the user enter a proxy pwd?
+		value = getProxyPwd();
+		if ( value == null || value.length() == 0 )
+		{
+			// No
+			cmd = new Scheduler.ScheduledCommand()
+			{
+				@Override
+				public void execute()
+				{
+					Window.alert( GwtTeaming.getMessages().modifyNetFolderServerDlg_EnterProxyPwdPrompt() );
+					m_tabPanel.selectTab( 1 );
+					m_proxyPwdTxtBox.setFocus( true );
+				}
+			};
+			Scheduler.get().scheduleDeferred( cmd );
+
+			return false;
+		}
+	
+		// If we get here everything is ok
+		return true;
+	}
+	
+	/**
 	 * Is the host url entered by the user valid?
 	 */
 	private boolean isHostUrlValid()
@@ -2143,6 +2216,13 @@ public class ModifyNetFolderRootDlg extends DlgBox
 		if ( m_inProgressPanel.isVisible() )
 		{
 			// Yes, bail
+			return;
+		}
+		
+		// Is the data needed to test the connection valid?
+		if ( isDataValidNeededToTestConnection() == false )
+		{
+			// No, the user has already been told what to do.
 			return;
 		}
 		

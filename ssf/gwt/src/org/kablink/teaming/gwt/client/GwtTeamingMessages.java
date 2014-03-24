@@ -2337,6 +2337,8 @@ public interface GwtTeamingMessages extends Messages
 	String modifyNetFolderServerDlg_CreatingNetFolderServer();
 	String modifyNetFolderServerDlg_EditHeader( String name );
 	String modifyNetFolderServerDlg_EnableSyncScheduleLabel();
+	String modifyNetFolderServerDlg_EnterProxyNamePrompt();
+	String modifyNetFolderServerDlg_EnterProxyPwdPrompt();
 	String modifyNetFolderServerDlg_ErrorCreatingNetFolderServer( String err );
 	String modifyNetFolderServerDlg_ErrorModifyingNetFolderServer( String err );
 	String modifyNetFolderServerDlg_Group();
