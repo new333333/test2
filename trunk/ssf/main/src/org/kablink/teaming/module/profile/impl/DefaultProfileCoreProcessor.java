@@ -644,9 +644,11 @@ protected void modifyEntry_indexAdd(Binder binder, Entry entry,
 	       		p.setName(newName); //mark as deleted - change name incase re-added -unique key
 	      		p.setForeignName(newName); //clear name incase re-added - unique key
 	      	    p.setTitle(p.getTitle() + " (" + newName + ")");
+	      	    p.setLdapGuid( "" );
 	       		checkUserTitle(p, updatesCtx);
        		}
        	}
+       	
     	getProfileDao().delete((Principal)entry);   
     }
 
