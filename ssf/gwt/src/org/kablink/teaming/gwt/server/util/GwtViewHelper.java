@@ -64,15 +64,14 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
-
 import org.kablink.teaming.BinderQuotaException;
 import org.kablink.teaming.IllegalCharacterInNameException;
 import org.kablink.teaming.NotSupportedException;
 import org.kablink.teaming.ObjectKeys;
+import org.kablink.teaming.UncheckedIOException;
 import org.kablink.teaming.comparator.StringComparator;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.CoreDao;
@@ -1788,6 +1787,7 @@ public class GwtViewHelper {
 						else if (e instanceof BinderQuotaException)    messageKey = "copyEntryError.BinderQuotaException";
 						else if (e instanceof NotSupportedException)  {messageKey = "copyEntryError.NotSupportedException"; nse = ((NotSupportedException) e);}
 						else if (e instanceof TitleException)          messageKey = "copyEntryError.TitleException";
+						else if (e instanceof UncheckedIOException)    messageKey = "copyEntryError.UncheckedIOException";
 						else if (e instanceof WriteFilesException)     messageKey = "copyEntryError.WriteFilesException";
 						else                                           messageKey = "copyEntryError.OtherException";
 						String[] messageArgs;
@@ -8503,6 +8503,7 @@ public class GwtViewHelper {
 						else if (e instanceof BinderQuotaException)    messageKey = "moveEntryError.BinderQuotaException";
 						else if (e instanceof NotSupportedException)  {messageKey = "moveEntryError.NotSupportedException"; nse = ((NotSupportedException) e);}
 						else if (e instanceof TitleException)          messageKey = "moveEntryError.TitleException";
+						else if (e instanceof UncheckedIOException)    messageKey = "moveEntryError.UncheckedIOException";
 						else if (e instanceof WriteFilesException)     messageKey = "moveEntryError.WriteFilesException";
 						else                                           messageKey = "moveEntryError.OtherException";
 						String[] messageArgs;
