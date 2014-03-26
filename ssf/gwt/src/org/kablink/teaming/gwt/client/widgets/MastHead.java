@@ -72,6 +72,7 @@ import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style;
+import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Window;
@@ -799,16 +800,6 @@ public class MastHead extends Composite
 		if ( m_userActionsPopup == null )
 		{
 			m_userActionsPopup = new UserActionsPopup( m_userName.getText(), true, false );
-
-			// Set the position of the popup
-			{
-				int left;
-				int top;
-				
-				left = m_userNamePanel.getAbsoluteLeft() - (m_userNamePanel.getOffsetWidth() / 2);
-				top = m_userNamePanel.getAbsoluteTop() + m_userNamePanel.getOffsetHeight() + 12;
-				m_userActionsPopup.setPopupPosition( left, top );
-			}
 		}
 
 		m_userActionsPopup.setPopupPositionAndShow( new PopupPanel.PositionCallback()
@@ -816,17 +807,17 @@ public class MastHead extends Composite
 			@Override
 			public void setPosition(int offsetWidth, int offsetHeight)
 			{
-				int left;
+				int right;
 				int top;
+				Style style;
 				
-				// Align the right edge of the popup with the right edge of the user name
-				left = m_userNamePanel.getAbsoluteLeft();
-				left -= (offsetWidth - m_userNamePanel.getOffsetWidth());
-				left -= 20;
+				// Set the position of the popup
+				right = 20;
 				top = m_userNamePanel.getAbsoluteTop() + m_userNamePanel.getOffsetHeight() + 12;
-				m_userActionsPopup.setPopupPosition( left, top );
-				
-				m_userActionsPopup.setPopupPosition( left, top );
+				style = m_userActionsPopup.getElement().getStyle();
+				style.setRight( right, Unit.PX );
+				style.clearLeft();
+				style.setTop( top, Unit.PX );
 			}
 		} );
 	}
