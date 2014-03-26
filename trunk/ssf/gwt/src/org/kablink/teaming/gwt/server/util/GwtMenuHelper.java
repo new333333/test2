@@ -1091,7 +1091,7 @@ public class GwtMenuHelper {
 			moreTBI.addNestedItem(tbi);
 
 			// ...for non-shared collections...
-			if (!isSharedCollection) {
+			if ((!isSharedCollection) && ((null == folder) || bs.getFolderModule().testReadAccess(user, folder, false))) {	// false -> Don't check access because of sharing.
 				// ...add the move item....
 				tbi = new ToolbarItem("1_moveSelected");
 				markTBITitle(tbi, "toolbar.move");
