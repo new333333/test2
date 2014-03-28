@@ -43,6 +43,7 @@ import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.Description;
 import org.kablink.teaming.domain.FileAttachment;
+import org.kablink.teaming.domain.FileAttachment.FileLock;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.ReservedByAnotherUserException;
@@ -549,4 +550,5 @@ public interface FileModule {
     public FileAttachment _addNetFolderFileInSync(Folder folder, FolderEntry entry, FileUploadItem fui)
     throws UncheckedIOException;
     
+    public boolean isLockExpired(FileLock lock);
 }	
