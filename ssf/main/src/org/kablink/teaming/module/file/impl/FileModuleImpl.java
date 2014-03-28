@@ -3041,8 +3041,14 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 
 		FileLock lock = fa.getFileLock();
 		if(lock != null && !lock.getOwner().equals(user)) {
-			// The file is locked by another user.
-			throw new LockedByAnotherUserException(entity, fa, lock.getOwner());
+			if (ObjectKeys.FILE_SYNC_AGENT_INTERNALID.equals(user.getInternalId())) {
+				// The modification is being made by file syng agent. In this case, we ignore
+				// the lock held by end user, and let the sync to proceed.
+			}
+			else {
+				// The file is locked by regular user.
+				throw new LockedByAnotherUserException(entity, fa, lock.getOwner());
+			}
 		}
     }
     
