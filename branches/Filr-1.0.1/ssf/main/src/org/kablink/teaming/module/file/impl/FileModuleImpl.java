@@ -3046,7 +3046,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		}
     }
     
-    private boolean isLockExpired(FileLock lock) {
+    public boolean isLockExpired(FileLock lock) {
     	// Note that we take additional 
 		// "allowance" value into consideration when computing the
 		// expiration date used for the comparison. This is to 
