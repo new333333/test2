@@ -136,7 +136,7 @@ public class AdminNetFolderResource extends AbstractAdminResource {
     @Path("{id}/sync")
     public NetFolderSyncStatus getSyncStatus(@PathParam("id") Long id) {
         Folder netFolder = lookupNetFolder(id);
-        BinderState binderState = (BinderState) getCoreDao().load( BinderState.class, id );
+        BinderState binderState = getBinderState(id);
         if ( binderState != null ) {
             BinderState.FullSyncStats syncStats;
             syncStats = binderState.getFullSyncStats();
@@ -147,12 +147,31 @@ public class AdminNetFolderResource extends AbstractAdminResource {
         return null;
     }
 
+    private BinderState getBinderState(Long id) {
+        BinderState state = (BinderState) getCoreDao().load(BinderState.class, id);
+        getCoreDao().evict(state);
+        return state;
+    }
+
     @POST
     @Path("{id}/sync")
     @Consumes({"*/*"})
-    public NetFolderSyncStatus syncNetFolder(@PathParam("id") Long id) {
+    public NetFolderSyncStatus syncNetFolder(@PathParam("id") Long id,
+                                             @QueryParam("wait") @DefaultValue("false") boolean waitForCompletion)
+            throws InterruptedException {
         Folder netFolder = lookupNetFolder(id);
         getFolderModule().enqueueFullSynchronize(netFolder.getId());
+        while (waitForCompletion) {
+            BinderState state = getBinderState(id);
+            if (state!=null) {
+                waitForCompletion = !state.getFullSyncStats().getStatus().isCompleted();
+                if (waitForCompletion) {
+                    Thread.sleep(2000);
+                }
+            } else {
+                waitForCompletion = false;
+            }
+        }
         return getSyncStatus(id);
     }
 
