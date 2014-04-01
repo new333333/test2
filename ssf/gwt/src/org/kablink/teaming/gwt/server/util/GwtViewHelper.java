@@ -346,9 +346,11 @@ public class GwtViewHelper {
 	 * workspace, the folders should be targeted there, but entries
 	 * should be targeted to the contained 'My Files Storage' folder.
 	 */
-	private static class TargetIds {
-		private Long	m_binderTargetId;	// Target binder ID for binders being copied/moved.
-		private Long	m_entryTargetId;	// Target binder ID for entries being copied/moved.
+	private static class CopyMoveTarget {
+		private boolean	m_targetIsMyFilesStorage;		// true -> The target is a user's My Files Storage folder.  false -> It isn't.
+		private boolean m_targetMyFilesStorageDisabled;	// true -> The target is a My Files Storage folder where there user doesn't have personal storage.  false -> That's not the case.
+		private Long	m_binderTargetId;				// Target binder ID for binders being copied/moved.
+		private Long	m_entryTargetId;				// Target binder ID for entries being copied/moved.
 
 		/**
 		 * Constructor method.
@@ -356,7 +358,7 @@ public class GwtViewHelper {
 		 * @param bs
 		 * @param targetBinderId
 		 */
-		public TargetIds(AllModulesInjected bs, Long targetBinderId) {
+		public CopyMoveTarget(AllModulesInjected bs, Long targetBinderId) {
 			// Initialize the super class...
 			super();
 
@@ -372,6 +374,11 @@ public class GwtViewHelper {
 				// Yes! Then the binder target should be that folder's
 				// parent workspace.
 				setBinderTargetId(targetBinder.getParentBinder().getId());
+				setTargetIsMyFilesStorage(true);
+				setTargetMyFilesStorageDisabled(
+					isMyFilesStorageDisabled(
+						bs,
+						((Folder) targetBinder)));
 			}
 			
 			// No, the initial target binder isn't a 'My Files Storage'
@@ -383,6 +390,11 @@ public class GwtViewHelper {
 				if (null != mfId) {
 					// Yes!  Use it for the target for entries.
 					setEntryTargetId(mfId);
+					setTargetIsMyFilesStorage(
+						isMyFilesStorageDisabled(
+							bs,
+							((Folder) bs.getBinderModule().getBinderWithoutAccessCheck(
+								mfId))));
 				}
 			}
 		}
@@ -392,16 +404,20 @@ public class GwtViewHelper {
 		 * 
 		 * @return
 		 */
-		public Long getBinderTargetId() {return m_binderTargetId;}
-		public Long getEntryTargetId()  {return m_entryTargetId; }
+		public boolean isTargetMyFilesStorage()         {return m_targetIsMyFilesStorage;      }
+		public boolean isTargetMyFilesStorageDisabled() {return m_targetMyFilesStorageDisabled;}
+		public Long    getBinderTargetId()              {return m_binderTargetId;              }
+		public Long    getEntryTargetId()               {return m_entryTargetId;               }
 		
 		/**
 		 * Set'er methods.
 		 * 
 		 * @param
 		 */
-		public void setBinderTargetId(Long binderTargetId) {m_binderTargetId = binderTargetId;}
-		public void setEntryTargetId( Long entryTargetId)  {m_entryTargetId  = entryTargetId; }
+		public void setTargetIsMyFilesStorage(      boolean targetIsMyFilesStorage)       {m_targetIsMyFilesStorage       = targetIsMyFilesStorage;      }
+		public void setTargetMyFilesStorageDisabled(boolean targetMyFilesStorageDisabled) {m_targetMyFilesStorageDisabled = targetMyFilesStorageDisabled;}
+		public void setBinderTargetId(              Long    binderTargetId)               {m_binderTargetId               = binderTargetId;              }
+		public void setEntryTargetId(               Long    entryTargetId)                {m_entryTargetId                = entryTargetId;               }
 	}
 
 	/*
@@ -1756,7 +1772,11 @@ public class GwtViewHelper {
 			// Were we given the IDs of any entries to copy?
 			if (MiscUtil.hasItems(entityIds)) {
 				// Yes!  Decide on the actual target for the copy...
-				TargetIds tis = new TargetIds(bs, targetFolderId);
+				CopyMoveTarget cmt = new CopyMoveTarget(bs, targetFolderId);
+				if (cmt.isTargetMyFilesStorage() && cmt.isTargetMyFilesStorageDisabled()) {
+					reply.addError(NLT.get("copyEntryError.cantTargetMFS"));
+					return reply;
+				}
 				
 				// ...and scan the entries to be copied.
 				BinderModule bm = bs.getBinderModule();
@@ -1770,11 +1790,11 @@ public class GwtViewHelper {
 								reply.addError(NLT.get("copyEntryError.cantCopyHome", new String[]{entryTitle}));
 							}
 							else {
-								bm.copyBinder(entityId.getEntityId(), tis.getBinderTargetId(), true, null);
+								bm.copyBinder(entityId.getEntityId(), cmt.getBinderTargetId(), true, null);
 							}
 						}
 						else {
-							fm.copyEntry(entityId.getBinderId(), entityId.getEntityId(), tis.getEntryTargetId(), null, null);
+							fm.copyEntry(entityId.getBinderId(), entityId.getEntityId(), cmt.getEntryTargetId(), null, null);
 						}
 					}
 
@@ -1785,6 +1805,7 @@ public class GwtViewHelper {
 						NotSupportedException nse = null;
 						if      (e instanceof AccessControlException)  messageKey = "copyEntryError.AccssControlException";
 						else if (e instanceof BinderQuotaException)    messageKey = "copyEntryError.BinderQuotaException";
+						else if (e instanceof IllegalStateException)   messageKey = "copyEntryError.IllegalStateException";
 						else if (e instanceof NotSupportedException)  {messageKey = "copyEntryError.NotSupportedException"; nse = ((NotSupportedException) e);}
 						else if (e instanceof TitleException)          messageKey = "copyEntryError.TitleException";
 						else if (e instanceof UncheckedIOException)    messageKey = "copyEntryError.UncheckedIOException";
@@ -8341,6 +8362,30 @@ public class GwtViewHelper {
 		return (MiscUtil.hasString(qp) && qp.trim().equalsIgnoreCase(value.trim()));
 	}
 
+	/*
+	 * Returns true if the given folder is a My Files Storage folder
+	 * that should be disabled because the user's access to personal
+	 * storage has been turned off and returns false otherwise.
+	 */
+	private static boolean isMyFilesStorageDisabled(AllModulesInjected bs, Binder myFilesStorage) {
+		// Is the binder a My Files Storage folder?
+		boolean reply = ((null != myFilesStorage) && myFilesStorage.isMyFilesDir());
+		if (reply) {
+			// Yes!  Can we resolve the owner of the My Files Storage?
+			User mfsOwner = GwtServerHelper.getResolvedUser(myFilesStorage.getOwnerId(), true);
+			reply = (null != mfsOwner);
+			if (reply) {
+				// Yes!  Does that user have personal storage access?
+				reply = SearchUtils.useHomeAsMyFiles(bs, mfsOwner);
+			}
+		}
+		
+		// If we get here, reply is true if the binder is a My Files
+		// Storage folder that the user shouldn't have access to and
+		// false otherwise.  Return it.
+		return reply;
+	}
+	
 	/**
 	 * Returns true if the specified user is external and false otherwise.
 	 * 
@@ -8472,7 +8517,11 @@ public class GwtViewHelper {
 			// Were we given the IDs of any entries to move?
 			if (MiscUtil.hasItems(entityIds)) {
 				// Yes!  Decide on the actual target for the move...
-				TargetIds tis = new TargetIds(bs, targetFolderId);
+				CopyMoveTarget cmt = new CopyMoveTarget(bs, targetFolderId);
+				if (cmt.isTargetMyFilesStorage() && cmt.isTargetMyFilesStorageDisabled()) {
+					reply.addError(NLT.get("moveEntryError.cantTargetMFS"));
+					return reply;
+				}
 				
 				// ...and scan the entries to be moved.
 				BinderModule bm = bs.getBinderModule();
@@ -8486,21 +8535,22 @@ public class GwtViewHelper {
 								reply.addError(NLT.get("moveEntryError.cantMoveHome", new String[]{entryTitle}));
 							}
 							else {
-								bm.moveBinder(entityId.getEntityId(), tis.getBinderTargetId(), null);
+								bm.moveBinder(entityId.getEntityId(), cmt.getBinderTargetId(), null);
 							}
 						}
 						else {
-							fm.moveEntry(entityId.getBinderId(), entityId.getEntityId(), tis.getEntryTargetId(), null, null);
+							fm.moveEntry(entityId.getBinderId(), entityId.getEntityId(), cmt.getEntryTargetId(), null, null);
 						}
 					}
 
-					catch (Exception e) {
+					catch (Exception e) {	// java.lang.IllegalStateException
 						// No!  Add an error to the error list...
 						String entryTitle = GwtServerHelper.getEntityTitle(bs, entityId);
 						String messageKey;
 						NotSupportedException nse = null;
 						if      (e instanceof AccessControlException)  messageKey = "moveEntryError.AccssControlException";
 						else if (e instanceof BinderQuotaException)    messageKey = "moveEntryError.BinderQuotaException";
+						else if (e instanceof IllegalStateException)   messageKey = "moveEntryError.IllegalStateException";
 						else if (e instanceof NotSupportedException)  {messageKey = "moveEntryError.NotSupportedException"; nse = ((NotSupportedException) e);}
 						else if (e instanceof TitleException)          messageKey = "moveEntryError.TitleException";
 						else if (e instanceof UncheckedIOException)    messageKey = "moveEntryError.UncheckedIOException";
