@@ -372,11 +372,15 @@ public class ShareExpirationWidget extends Composite
 		
 		if ( value != null )
 		{
+			int hour;
+			
 			// Have the share expire at 23:59:59 on the selected day
 			value += (MILLISEC_IN_A_DAY - 1000);
 
-			// Convert the time to GMT
-			value += (GwtTeaming.m_requestInfo.getTimeZoneOffsetHour() * 60 * 60 * 1000);
+			// value represents the share expiring on the selected day at 23:59:59 GMT time
+			// We need to add the time zone offset so the share expires on 23:59:59 local time.
+			hour = GwtTeaming.m_requestInfo.getTimeZoneOffsetHour();
+			value += (hour * 60 * 60 * 1000);
 		}
 		
 		return value;
