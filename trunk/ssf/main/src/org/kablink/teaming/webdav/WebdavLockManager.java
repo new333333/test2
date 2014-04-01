@@ -220,6 +220,12 @@ public class WebdavLockManager implements LockManager {
 			// The file is not currently locked.
 			return null;
 		}
+		else if(getFileModule().isLockExpired(fileLock)) {
+			// The file is locked, but that lock is expired. In this case, return null as if the file wasn't locked at all.
+			// Otherwise, LibreOffice won't use another to edit the file (which, in my opinion, is a bug in LibreOffice)
+			// (See bug #869422)
+			return null;
+		}
 
 		// Get the previously stored timeout seconds value from the existing lock.
 		Long timeoutSeconds = parseSubjectFieldIntoTimeoutSeconds(fileLock.getSubject());
