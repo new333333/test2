@@ -808,18 +808,21 @@ public class GwtMenuHelper {
 	/*
 	 * Constructs a ToolbarItem to run the configure columns dialog.
 	 */
-	private static ToolbarItem constructEntryConfigureColumsItem(Binder binder) {
-		// Can the user configure columns on this binder?
-		String viewType = DefinitionUtils.getViewType(binder);
-		if (MiscUtil.hasString(viewType)) {
-			if (viewType.equalsIgnoreCase("folder") ||
-					viewType.equalsIgnoreCase("table") ||
-					viewType.equalsIgnoreCase("file")) {
-				// Yes!  Create a configure columns ToolbarItem.
-				ToolbarItem ccTBI = new ToolbarItem(CONFIGURE_COLUMNS);
-				markTBITitle(ccTBI, "misc.configureColumns"               );
-				markTBIEvent(ccTBI, TeamingEvents.INVOKE_CONFIGURE_COLUMNS);
-				return ccTBI;
+	private static ToolbarItem constructEntryConfigureColumsItem(Binder binder, boolean isBinderTrash) {
+		// If we're not in a trash view...
+		if (!isBinderTrash) {
+			// ...can the user configure columns on this binder?
+			String viewType = DefinitionUtils.getViewType(binder);
+			if (MiscUtil.hasString(viewType)) {
+				if (viewType.equalsIgnoreCase("folder") ||
+						viewType.equalsIgnoreCase("table") ||
+						viewType.equalsIgnoreCase("file")) {
+					// Yes!  Create a configure columns ToolbarItem.
+					ToolbarItem ccTBI = new ToolbarItem(CONFIGURE_COLUMNS);
+					markTBITitle(ccTBI, "misc.configureColumns"               );
+					markTBIEvent(ccTBI, TeamingEvents.INVOKE_CONFIGURE_COLUMNS);
+					return ccTBI;
+				}
 			}
 		}
 		return null;
@@ -3265,7 +3268,7 @@ public class GwtMenuHelper {
 			}
 
 			// If the binder supports column configuration...
-			ToolbarItem configureColumns = constructEntryConfigureColumsItem(binder);
+			ToolbarItem configureColumns = constructEntryConfigureColumsItem(binder, isBinderTrash);
 			if (null != configureColumns) {
 				// ...add the toolbar item to the configure list.
 				configureToolbarItems.add(configureColumns);
