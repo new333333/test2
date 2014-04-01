@@ -45,6 +45,7 @@ import org.kablink.teaming.domain.Description;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.ReservedByAnotherUserException;
 import org.kablink.teaming.domain.VersionAttachment;
+import org.kablink.teaming.domain.FileAttachment.FileLock;
 import org.kablink.teaming.domain.FileAttachment.FileStatus;
 import org.kablink.teaming.repository.RepositoryServiceException;
 import org.kablink.teaming.security.AccessControlException;
@@ -555,4 +556,6 @@ public interface FileModule {
 	 * @param correctLastModTime
 	 */
 	public void correctLastModTime(FileAttachment fa, Date correctLastModTime);
+	
+    public boolean isLockExpired(FileLock lock);
 }	
