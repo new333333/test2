@@ -387,21 +387,32 @@ public class NetFolderHelper
 		// Is the net folder server configured?
 		if ( rdConfig != null && isNetFolderServerConfigured( rdConfig ) )
 		{
-			ConnectionTestStatus status;
+			ConnectionTestStatus status = null;
 			Binder netFolderBinder;
 			boolean syncNeeded = false;
+			boolean doTestConnection;
 			
 			// Yes
 			canSyncNetFolder = true;
 			
+			doTestConnection = SPropsUtil.getBoolean( "test.connection.on.homedir.creation", true );
+			
 			// Test the connection
-			status = testNetFolderConnection(
-											rdConfig.getName(),
-											rdConfig.getDriverType(),
-											rdConfig.getRootPath(),
-											path,
-											rdConfig.getAccountName(),
-											rdConfig.getPassword() );
+			if ( doTestConnection )
+			{
+				status = testNetFolderConnection(
+												rdConfig.getName(),
+												rdConfig.getDriverType(),
+												rdConfig.getRootPath(),
+												path,
+												rdConfig.getAccountName(),
+												rdConfig.getPassword() );
+			}
+			else
+			{
+				// Pretend the connection was ok
+				status = new ConnectionTestStatus( ConnectionTestStatusCode.NORMAL, "artificial result" );
+			}
 			
 			// Only create the net folder if we can successfully make a connection
 			if ( status != null && status.getCode() == ConnectionTestStatusCode.NORMAL )
