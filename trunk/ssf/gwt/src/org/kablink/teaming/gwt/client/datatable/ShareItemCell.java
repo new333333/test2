@@ -602,12 +602,7 @@ public class ShareItemCell extends AbstractCell<GwtShareItem>
 
 			note = shareItem.getComments();
 
-			if ( note != null && note.length() > 24 )
-			{
-				note = note.substring( 0, 24 );
-				note += "...";
-			}
-			else if ( note == null || note.length() == 0 )
+			if ( note == null || note.length() == 0 )
 				note = "";
 
 			if ( note.length() > 0 )
