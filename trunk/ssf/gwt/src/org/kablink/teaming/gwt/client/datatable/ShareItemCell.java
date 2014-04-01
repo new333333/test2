@@ -494,6 +494,16 @@ public class ShareItemCell extends AbstractCell<GwtShareItem>
 				strBuff.append( shareItem.getId() );
 				break;
 				
+			case EXTERNAL_USER:
+				Long recipientId;
+				
+				recipientId = shareItem.getRecipientId();
+				if ( recipientId == null )
+					strBuff.append( shareItem.getRecipientName() );
+				else
+					strBuff.append( String.valueOf( recipientId ) );
+				break;
+				
 			default:
 				strBuff.append( String.valueOf( shareItem.getRecipientId() ) );
 				break;
