@@ -669,10 +669,16 @@ public class GwtSearchHelper
 					gwtUser = getGwtUser( ami, request, searchType, userId );
 					if ( gwtUser != null )
 					{
-						// We never want to return external users
+						// Is this an external user?
 						if ( gwtUser.isInternal() == false )
 						{
-							continue;
+							// Yes
+							// Should we return external users?
+							if ( searchCriteria.getSearchForExternalPrincipals() == false )
+							{
+								// No
+								continue;
+							}
 						}
 						
 						results.add( gwtUser );
