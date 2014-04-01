@@ -934,6 +934,9 @@
 	color: #666666;
 	font-size: 11px;
 	letter-spacing: .25px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
 }
 
 .shareItem_FileAccessRights
@@ -947,6 +950,9 @@
 	color: #353838;
 	font-size: 12px;
 	line-height: 18px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
 }
 
 .shareItem_PublicUrl:hover
