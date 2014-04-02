@@ -85,6 +85,7 @@ import org.kablink.teaming.module.binder.processor.EntryProcessor;
 import org.kablink.teaming.module.definition.DefinitionUtils;
 import org.kablink.teaming.module.file.FileModule;
 import org.kablink.teaming.module.impl.CommonDependencyInjection;
+import org.kablink.teaming.module.license.LicenseChecker;
 import org.kablink.teaming.module.rss.RssModule;
 import org.kablink.teaming.module.workflow.WorkflowModule;
 import org.kablink.teaming.module.workflow.WorkflowProcessUtils;
@@ -144,21 +145,26 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 	}
 	//called on zone delete
 	public void stopScheduledJobs(Workspace zone) {
-		WorkflowTimeout job =getProcessor(zone);
-   		job.remove(zone.getId());
+		if (!LicenseChecker.isAuthorizedByLicense(ObjectKeys.LICENSE_OPTION_FILR, true)) {
+			// Filr is not licensed, which implies that this is Vibe.
+			WorkflowTimeout job =getProcessor(zone);
+	   		job.remove(zone.getId());
+		}
 	}
 	//called on zone startup
    public void startScheduledJobs(Workspace zone) {
-	   if (zone.isDeleted()) return;
-		WorkflowTimeout job =getProcessor(zone);
-	   //make sure a timeout job is scheduled for the zone
-	   String secsString = (String)SZoneConfig.getString(zone.getName(), "workflowConfiguration/property[@name='" + WorkflowTimeout.TIMEOUT_SECONDS + "']");
-	   int seconds = 5*60;
-	   try {
-		   seconds = Integer.parseInt(secsString);
-	   } catch (Exception ex) {};
-	   job.schedule(zone.getId(), seconds);
-
+	   if (!LicenseChecker.isAuthorizedByLicense(ObjectKeys.LICENSE_OPTION_FILR, true)) {
+			// Filr is not licensed, which implies that this is Vibe.
+		   if (zone.isDeleted()) return;
+			WorkflowTimeout job =getProcessor(zone);
+		   //make sure a timeout job is scheduled for the zone
+		   String secsString = (String)SZoneConfig.getString(zone.getName(), "workflowConfiguration/property[@name='" + WorkflowTimeout.TIMEOUT_SECONDS + "']");
+		   int seconds = 5*60;
+		   try {
+			   seconds = Integer.parseInt(secsString);
+		   } catch (Exception ex) {};
+		   job.schedule(zone.getId(), seconds);
+	   }
     }
 
 	public void deleteProcessDefinition(String name) {
