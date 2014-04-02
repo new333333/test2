@@ -58,6 +58,7 @@ import org.kablink.teaming.module.authentication.LocalAuthentication;
 import org.kablink.teaming.module.authentication.UserAccountNotProvisionedException;
 import org.kablink.teaming.module.authentication.UserIdNotActiveException;
 import org.kablink.teaming.module.authentication.UserIdNotUniqueException;
+import org.kablink.teaming.module.ldap.LdapModule;
 import org.kablink.teaming.NoObjectByTheIdException;
 import org.kablink.teaming.security.authentication.AuthenticationManagerUtil;
 import org.kablink.teaming.security.authentication.UserAccountNotActiveException;
@@ -78,6 +79,7 @@ import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SZoneConfig;
 import org.kablink.teaming.util.SessionUtil;
 import org.kablink.teaming.util.SimpleProfiler;
+import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.WindowsUtil;
 import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.util.Validator;
@@ -222,7 +224,15 @@ public abstract class AbstractAuthenticationProviderModule extends BaseAuthentic
 		List<AuthenticationProvider> providers = new LinkedList<AuthenticationProvider>();
 		
 		// Build LDAP authentication providers.
-		for (LdapConnectionConfig config : getLdapConnectionConfigs(zoneId)) {
+		// Get the latest state of the ldap connection config objects from the database. Do NOT read it from the cache.
+		List<LdapConnectionConfig> configs = getLdapConnectionConfigs(zoneId);
+		// Disconnect the objects from the current session so that it can be used across many different sessions
+		// without the fear of application layer inadvertantly making modification to the objects and flush the
+		// changes to the database accidently.
+		getCoreDao().evict(configs);
+		// Update the cache with the latest state of the objects.
+		getLdapModule().setConfigsReadOnlyCache(zoneId, configs);
+		for (LdapConnectionConfig config : configs) {
 			String search = "(" + config.getUserIdAttribute() + "={0})";
 			if (config.getUserSearches().size() > 0) {
 				DefaultSpringSecurityContextSource contextSource = null;
@@ -819,5 +829,9 @@ public abstract class AbstractAuthenticationProviderModule extends BaseAuthentic
 		// authentication on an account that has no password).
 		if(authentication.getCredentials() == null || authentication.getCredentials().equals(""))
 			throw new BadCredentialsException("Password is required");
+	}
+	
+	private LdapModule getLdapModule() {
+		return (LdapModule) SpringContextUtil.getBean("ldapModule");
 	}
 }

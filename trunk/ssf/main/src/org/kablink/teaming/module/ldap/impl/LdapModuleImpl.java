@@ -53,6 +53,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -164,6 +165,8 @@ import org.springframework.transaction.support.TransactionTemplate;
  */
 public class LdapModuleImpl extends CommonDependencyInjection implements LdapModule {
 	protected Log logger = LogFactory.getLog(getClass());
+
+	private ConcurrentHashMap<Long,List<LdapConnectionConfig>> readOnlyCache = new ConcurrentHashMap<Long, List<LdapConnectionConfig>>();
 
 	public enum LdapDirType
 	{
@@ -1552,7 +1555,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		zoneId = zone.getId();
 
 		// Get the list of ldap configurations.
-		ldapConnectionConfigs = getCoreDao().loadLdapConnectionConfigs( zoneId );
+		ldapConnectionConfigs = this.getConfigsReadOnlyCache( zoneId );
 		
 		// Go through each ldap configuration
 		for( LdapConnectionConfig nextLdapConfig : ldapConnectionConfigs )
@@ -2165,7 +2168,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		
 		zone = RequestContextHolder.getRequestContext().getZone();
 
-		for( LdapConnectionConfig config : getCoreDao().loadLdapConnectionConfigs( zone.getZoneId() ) )
+		for( LdapConnectionConfig config : this.getConfigsReadOnlyCache( zone.getZoneId() ) )
 		{
 			LdapContext ctx;
 			String dn=null;
@@ -2446,7 +2449,8 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		
 		schedule = new LdapSchedule( getSyncObject( zoneName ).getScheduleInfo( zoneId ) );
 		String result;
-		for(LdapConnectionConfig config : getCoreDao().loadLdapConnectionConfigs( zoneId ))
+		List<LdapConnectionConfig> configs = this.getConfigsReadOnlyCache(zoneId);
+		for(LdapConnectionConfig config : configs)
 		{
 			result = readLdapGuidFromDirectory(userName, zoneId, config);
 			if(result != null)
@@ -2672,15 +2676,18 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		{
 			ZoneModule zoneModule;
 			
-			ldapConnectionConfig = (LdapConnectionConfig) getCoreDao().load(
-																		LdapConnectionConfig.class,
-																		ldapConfigId );
-			
 			zoneModule = (ZoneModule) SpringContextUtil.getBean( "zoneModule" );
 			if ( zoneModule != null )
 			{
 				zoneId = zoneModule.getZoneIdByVirtualHost( ZoneContextHolder.getServerName() );
 			}
+
+			if(zoneId != null)
+				ldapConnectionConfig = this.getConfigReadOnlyCache(zoneId, ldapConfigId);
+			else
+				ldapConnectionConfig = (LdapConnectionConfig) getCoreDao().load(
+					LdapConnectionConfig.class,
+					ldapConfigId );
 
 		}
 		catch( Exception e )
@@ -2715,7 +2722,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 
 		LdapSchedule schedule = new LdapSchedule(getSyncObject().getScheduleInfo(zone.getId()));
 		Map mods = new HashMap();
-		for(LdapConnectionConfig config : getCoreDao().loadLdapConnectionConfigs(zone.getZoneId())) {
+		for(LdapConnectionConfig config : this.getConfigsReadOnlyCache(zone.getZoneId())) {
 			LdapContext ctx = getUserContext(zone.getId(), config);
 			String dn=null;
 			Map userAttributes = config.getMappings();
@@ -7613,9 +7620,43 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		IndexSynchronizationManager.applyChanges();
     }
 
+ 	@Override
+ 	public List<LdapConnectionConfig> getConfigsReadOnlyCache(Long zoneId) {
+ 		List<LdapConnectionConfig> configs = readOnlyCache.get(zoneId);	
+		if(configs == null) {
+			// We don't need synchronization on this, since multiple threads executing
+			// this code at the same time won't result in data integrity issue. It will
+			// lose some efficiency, but that's better than having to synchronize this
+			// method which is called infrequently.
+			configs = getCoreDao().loadLdapConnectionConfigs( zoneId );
+			getCoreDao().evict(configs);
+			readOnlyCache.put(zoneId, configs);
+		}
+		return configs;
+ 	}
+
+ 	@Override
+ 	public void setConfigsReadOnlyCache(Long zoneId,
+ 			List<LdapConnectionConfig> configs) {
+ 		readOnlyCache.put(zoneId, configs);
+ 	}
+
+ 	@Override
+ 	public LdapConnectionConfig getConfigReadOnlyCache(Long zoneId, String configId) {
+ 		List<LdapConnectionConfig> configs = getConfigsReadOnlyCache(zoneId);
+ 		if(configs == null)
+ 			return null;
+ 		for(LdapConnectionConfig config:configs) {
+ 			if(configId.equals(config.getId()))
+ 				return config;
+ 		}
+ 		return null;
+ 	}
+
     private WorkspaceModule getWorkspaceModule() {
         WorkspaceModule workspaceModule;
         workspaceModule = (WorkspaceModule) SpringContextUtil.getBean("workspaceModule");
         return workspaceModule;
     }
+
 }
