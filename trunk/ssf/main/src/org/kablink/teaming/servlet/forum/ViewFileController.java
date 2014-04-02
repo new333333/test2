@@ -44,6 +44,7 @@ import javax.activation.FileTypeMap;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.CustomAttribute;
 import org.kablink.teaming.domain.DefinableEntity;
@@ -59,6 +60,7 @@ import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.TempFileUtil;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.servlet.SAbstractController;
+import org.kablink.teaming.web.util.AdminHelper;
 import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.WebHelper;
@@ -323,13 +325,21 @@ public class ViewFileController extends SAbstractController {
 					}
 				} else {
 					try {
-						if (!fa.isEncrypted()) {
-							//The file length may be wrong if the file is encrypted. Don't give the wrong length, it confuses the browser
-							response.setHeader("Content-Length", 
-								String.valueOf(FileHelper.getLength(parent, entity, fa)));
+						// Can the user download files?
+						boolean canDownload = AdminHelper.getEffectiveDownloadSetting(this, RequestContextHolder.getRequestContext().getUser());
+						if (canDownload) {
+							// Yes!
+							if (!fa.isEncrypted()) {
+								//The file length may be wrong if the file is encrypted. Don't give the wrong length, it confuses the browser
+								response.setHeader("Content-Length", 
+									String.valueOf(FileHelper.getLength(parent, entity, fa)));
+							}
+							getFileModule().readFile(parent, entity, fa, response.getOutputStream());
+							getReportModule().addFileInfo(AuditType.download, fa);
 						}
-						getFileModule().readFile(parent, entity, fa, response.getOutputStream());
-						getReportModule().addFileInfo(AuditType.download, fa);
+						else {
+							response.sendError(HttpServletResponse.SC_BAD_REQUEST, NLT.get("file.error.cantDownload"));
+						}
 					}
 					catch(Exception e) {
 						response.sendError(HttpServletResponse.SC_BAD_REQUEST, NLT.get("file.error") + ": " + e.getLocalizedMessage());
