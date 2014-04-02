@@ -4438,12 +4438,16 @@ public class GwtViewHelper {
 					reply.setHtmlView(vfi);
 				}
 				
-				reply.setDownloadUrl(
-					GwtServerHelper.getDownloadFileUrl(
-						request,
-						bs,
-						fe.getParentBinder().getId(),
-						fe.getId())); 
+				// ...if the user has rights to download the file...
+				if (AdminHelper.getEffectiveDownloadSetting(bs, user)) {
+					// ...add a download URL...
+					reply.setDownloadUrl(
+						GwtServerHelper.getDownloadFileUrl(
+							request,
+							bs,
+							fe.getParentBinder().getId(),
+							fe.getId()));
+				}
 			}
 			
 			else {
