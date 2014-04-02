@@ -2393,8 +2393,10 @@ public class GwtMenuHelper {
 			markTBIUrl(  permalinkTBI, permaLink    );
 			footerToolbar.addNestedItem(permalinkTBI);
 			
-			// If the entry has an attachment...
-			if (null != fa) {
+			// If the entry has an attachment and the user has rights
+			// to download it...
+			boolean canDownload = AdminHelper.getEffectiveDownloadSetting(bs, GwtServerHelper.getCurrentUser());
+			if ((null != fa) && canDownload) {
 				// ...and it's a file entry...
 				String family = GwtServerHelper.getFolderEntityFamily(bs, fe);
 				if (GwtServerHelper.isFamilyFile(family)) {
