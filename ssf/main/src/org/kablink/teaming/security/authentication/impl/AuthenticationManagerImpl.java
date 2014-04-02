@@ -726,7 +726,7 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 		
 		if(ldapConnectionConfigId != null) {
 			try {
-				ldapConnectionConfig = (LdapConnectionConfig) getCoreDao().load(LdapConnectionConfig.class, ldapConnectionConfigId);
+				ldapConnectionConfig = getLdapModule().getConfigReadOnlyCache(zoneId, ldapConnectionConfigId);
 			}
 			catch(Exception e) {
 				logger.warn("Error loading LDAP connection config object by ID [" + ldapConnectionConfigId + "]");

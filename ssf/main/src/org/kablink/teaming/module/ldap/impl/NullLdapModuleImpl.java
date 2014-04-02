@@ -33,6 +33,7 @@
 package org.kablink.teaming.module.ldap.impl;
 
 import java.util.HashSet;
+import java.util.List;
 
 import javax.naming.NamingException;
 
@@ -146,6 +147,22 @@ public class NullLdapModuleImpl extends CommonDependencyInjection implements Lda
     @Override
 	public String readLdapGuidFromDirectory(String userName, Long zoneId,
 			LdapConnectionConfig config) {
+		return null;
+	}
+
+	@Override
+	public List<LdapConnectionConfig> getConfigsReadOnlyCache(Long zoneId) {
+		return null;
+	}
+
+	@Override
+	public void setConfigsReadOnlyCache(Long zoneId,
+			List<LdapConnectionConfig> configs) {
+	}
+
+	@Override
+	public LdapConnectionConfig getConfigReadOnlyCache(Long zoneId,
+			String configId) {
 		return null;
 	}
 }
