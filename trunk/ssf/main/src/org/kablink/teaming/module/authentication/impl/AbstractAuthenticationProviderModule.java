@@ -133,7 +133,7 @@ public abstract class AbstractAuthenticationProviderModule extends BaseAuthentic
 		cacheUsingAuthenticators = new HashSet<String>();
 		for(String str:strs)
 			cacheUsingAuthenticators.add(str);
-		cacheUsingAuthenticatorTimeout = SPropsUtil.getInt("cache.using.authenticator.timeout", 30);
+		cacheUsingAuthenticatorTimeout = SPropsUtil.getInt("cache.using.authenticator.timeout", 60);
 		lastRegularAuthenticationTimes = new ConcurrentHashMap<String, Long>();
 	}
 

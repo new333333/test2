@@ -40,11 +40,9 @@ import org.kablink.teaming.rest.v1.model.BinderBrief;
 import org.kablink.teaming.rest.v1.model.BinderChange;
 import org.kablink.teaming.rest.v1.model.BinderChanges;
 import org.kablink.teaming.rest.v1.model.BinderTree;
-import org.kablink.teaming.rest.v1.model.DefinableEntityBrief;
 import org.kablink.teaming.rest.v1.model.EntityId;
 import org.kablink.teaming.rest.v1.model.FileChange;
 import org.kablink.teaming.rest.v1.model.FileProperties;
-import org.kablink.teaming.rest.v1.model.FolderEntryBrief;
 import org.kablink.teaming.rest.v1.model.FolderEntryChange;
 import org.kablink.teaming.rest.v1.model.LibraryInfo;
 import org.kablink.teaming.rest.v1.model.NotifyWarning;
@@ -142,14 +140,14 @@ public class ShareResource extends AbstractResource {
                              @QueryParam("notify") @DefaultValue("false") boolean notifyRecipient,
                              @QueryParam("notify_address") Set<String> notifyAddresses,
                              Share share) {
-        List<ShareItem> origItems;
+        List<Pair<ShareItem, DefinableEntity>> origItems;
         ShareItem item = _getShareItem(id);
         if (item.getIsPartOfPublicShare()) {
             origItems = getAllPublicShareParts(item);
             notifyRecipient = false;
         } else {
-            origItems = new ArrayList<ShareItem>(1);
-            origItems.add(item);
+            origItems = new ArrayList<Pair<ShareItem, DefinableEntity>>(1);
+            origItems.add(new Pair<ShareItem, DefinableEntity>(item, null));
         }
 
         validateNotifyParameters(notifyRecipient, notifyAddresses, item);
@@ -165,7 +163,8 @@ public class ShareResource extends AbstractResource {
         }
         ShareItem newShareItem = toShareItem(share);
         ShareItem shareItem = null;
-        for (ShareItem origItem : origItems) {
+        for (Pair<ShareItem, DefinableEntity> pair : origItems) {
+            ShareItem origItem = pair.getA();
             shareItem = new ShareItem(newShareItem);
             shareItem.setRecipientType(origItem.getRecipientType());
             shareItem.setRecipientId(origItem.getRecipientId());
@@ -182,29 +181,27 @@ public class ShareResource extends AbstractResource {
     @Path("/{id}")
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public void deleteShare(@PathParam("id") Long id) {
-        List<ShareItem> origItems;
+        List<Pair<ShareItem, DefinableEntity>> origItems;
         ShareItem item = _getShareItem(id);
         if (item.getIsPartOfPublicShare()) {
             origItems = getAllPublicShareParts(item);
         } else {
-            origItems = new ArrayList<ShareItem>(1);
-            origItems.add(item);
+            origItems = new ArrayList<Pair<ShareItem, DefinableEntity>>(1);
+            origItems.add(new Pair<ShareItem, DefinableEntity>(item, null));
         }
-        for (ShareItem origItem : origItems) {
-            getSharingModule().deleteShareItem(origItem.getId());
+        for (Pair<ShareItem, DefinableEntity> origItem : origItems) {
+            getSharingModule().deleteShareItem(origItem.getA().getId());
         }
     }
 
     @GET
     @Path("/by_user/{id}")
     public SearchResultList<Share> getSharedByUser(@PathParam("id") Long userId) {
-        _getUser(userId);
-        ShareItemSelectSpec spec = getSharedBySpec(userId);
         SearchResultList<Share> results = new SearchResultList<Share>();
-        List<ShareItem> shareItems = getShareItems(spec, true, true, true);
-        for (ShareItem shareItem : shareItems) {
-            results.append(ResourceUtil.buildShare(shareItem, findDefinableEntity(shareItem.getSharedEntityIdentifier()),
-                    buildShareRecipient(shareItem), isGuestAccessEnabled()));
+        List<Pair<ShareItem, DefinableEntity>> shareItems = getSharedByShareItems(userId);
+        for (Pair<ShareItem, DefinableEntity> pair : shareItems) {
+            results.append(ResourceUtil.buildShare(pair.getA(), getSharedEntity(pair.getA(), true),
+                    buildShareRecipient(pair.getA()), isGuestAccessEnabled()));
         }
         return results;
     }
@@ -214,8 +211,9 @@ public class ShareResource extends AbstractResource {
     public SearchResultList<SharedBinderBrief> getBindersSharedByUser(@PathParam("id") Long userId,
                                                                       @QueryParam("hidden") @DefaultValue("false") boolean showHidden,
                                                                       @QueryParam("unhidden") @DefaultValue("true") boolean showUnhidden) {
+        List<Pair<ShareItem, DefinableEntity>> shareItems = getSharedByShareItems(userId);
         SearchResultList<SharedBinderBrief> results = new SearchResultList<SharedBinderBrief>();
-        results.appendAll(getSharedByBinders(userId, false, true, showHidden, showUnhidden, true, true));
+        results.appendAll(getSharedByBinders(shareItems, false, true, showHidden, showUnhidden));
         return results;
     }
 
@@ -225,7 +223,8 @@ public class ShareResource extends AbstractResource {
                                                 @QueryParam("hidden") @DefaultValue("false") boolean showHidden,
                                                 @QueryParam("unhidden") @DefaultValue("true") boolean showUnhidden,
                                                 @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr) {
-        SharedBinderBrief [] sharedBinders = getSharedByBinders(userId, false, false, showHidden, showUnhidden, true, true);
+        List<Pair<ShareItem, DefinableEntity>> shareItems = getSharedByShareItems(userId);
+        SharedBinderBrief [] sharedBinders = getSharedByBinders(shareItems, false, false, showHidden, showUnhidden);
         return getSubBinderTree(ObjectKeys.SHARED_BY_ME_ID, "/self/shared_by_me", sharedBinders, null, toDomainFormat(descriptionFormatStr));
     }
 
@@ -235,13 +234,14 @@ public class ShareResource extends AbstractResource {
                                                                              @QueryParam("hidden") @DefaultValue("false") boolean showHidden,
                                                                              @QueryParam("unhidden") @DefaultValue("true") boolean showUnhidden,
                                                                              @Context HttpServletRequest request) {
-        Date lastModified = getSharedByLibraryModifiedDate(userId, false);
+        List<Pair<ShareItem, DefinableEntity>> shareItems = getSharedByShareItems(userId);
+        Date lastModified = getSharesLibraryModifiedDate(shareItems, false);
         Date ifModifiedSince = getIfModifiedSinceDate(request);
         if (ifModifiedSince!=null && !ifModifiedSince.before(lastModified)) {
             throw new NotModifiedException();
         }
         SearchResultList<SearchableObject> results = new SearchResultList<SearchableObject>();
-        results.appendAll(getSharedByChildren(userId, true, true, showHidden, showUnhidden, true, true));
+        results.appendAll(getSharedByChildren(shareItems, true, true, showHidden, showUnhidden));
         if (lastModified!=null) {
             return Response.ok(results).lastModified(lastModified).build();
         } else {
@@ -255,13 +255,14 @@ public class ShareResource extends AbstractResource {
                                                                              @QueryParam("hidden") @DefaultValue("false") boolean showHidden,
                                                                              @QueryParam("unhidden") @DefaultValue("true") boolean showUnhidden,
                                                                              @Context HttpServletRequest request) {
-        Date lastModified = getSharedByLibraryModifiedDate(userId, false);
+        List<Pair<ShareItem, DefinableEntity>> shareItems = getSharedByShareItems(userId);
+        Date lastModified = getSharesLibraryModifiedDate(shareItems, false);
         Date ifModifiedSince = getIfModifiedSinceDate(request);
         if (ifModifiedSince!=null && !ifModifiedSince.before(lastModified)) {
             throw new NotModifiedException();
         }
         SearchResultList<SharedBinderBrief> results = new SearchResultList<SharedBinderBrief>();
-        results.appendAll(getSharedByBinders(userId, true, true, showHidden, showUnhidden, true, true));
+        results.appendAll(getSharedByBinders(shareItems, true, true, showHidden, showUnhidden));
         if (lastModified!=null) {
             return Response.ok(results).lastModified(lastModified).build();
         } else {
@@ -275,9 +276,8 @@ public class ShareResource extends AbstractResource {
                                                                            @QueryParam("hidden") @DefaultValue("false") boolean showHidden,
                                                                            @QueryParam("unhidden") @DefaultValue("true") boolean showUnhidden,
                                                                            @QueryParam("parent_binder_paths") @DefaultValue("false") boolean includeParentPaths) {
-        _getUser(userId);
-        ShareItemSelectSpec spec = getSharedBySpec(userId);
-        return _getSharedEntries(ObjectKeys.SHARED_BY_ME_ID, "/self/shared_by_me", spec, null, includeParentPaths, showHidden, showUnhidden, true, true);
+        List<Pair<ShareItem, DefinableEntity>> shareItems = getSharedByShareItems(userId);
+        return _getSharedEntries(shareItems, ObjectKeys.SHARED_BY_ME_ID, "/self/shared_by_me", includeParentPaths, showHidden, showUnhidden);
     }
 
     @GET
@@ -289,15 +289,16 @@ public class ShareResource extends AbstractResource {
                                                                  @QueryParam("recursive") @DefaultValue("false") boolean recursive,
                                                                  @QueryParam("parent_binder_paths") @DefaultValue("false") boolean includeParentPaths,
                                                                  @Context HttpServletRequest request) {
-        Date lastModified = getSharedByLibraryModifiedDate(userId, false);
+        List<Pair<ShareItem, DefinableEntity>> shareItems = getSharedByShareItems(userId);
+        Date lastModified = getSharesLibraryModifiedDate(shareItems, recursive);
         Date ifModifiedSince = getIfModifiedSinceDate(request);
         if (ifModifiedSince!=null && !ifModifiedSince.before(lastModified)) {
             throw new NotModifiedException();
         }
         SearchResultList<FileProperties> results = new SearchResultList<FileProperties>();
-        results.appendAll(getSharedByFiles(userId, false, showHidden, showUnhidden, true, true));
+        results.appendAll(getSharedByFiles(shareItems, false, showHidden, showUnhidden));
         if (recursive) {
-            results.appendAll(getSubFiles(getSharedByBinders(userId, false, false, showHidden, showUnhidden, true, true), fileName, false));
+            results.appendAll(getSubFiles(getSharedByBinders(shareItems, false, false, showHidden, showUnhidden), fileName, false));
         }
         if (includeParentPaths) {
             populateParentBinderPaths(results);
@@ -335,21 +336,32 @@ public class ShareResource extends AbstractResource {
 
     @GET
     @Path("/by_user/{id}/library_files")
-    public SearchResultList<FileProperties> getLibraryFilesSharedByUser(@PathParam("id") Long userId,
+    public Response getLibraryFilesSharedByUser(@PathParam("id") Long userId,
                                                                         @QueryParam("hidden") @DefaultValue("false") boolean showHidden,
                                                                         @QueryParam("unhidden") @DefaultValue("true") boolean showUnhidden,
                                                                         @QueryParam("file_name") String fileName,
                                                                         @QueryParam("recursive") @DefaultValue("false") boolean recursive,
-                                                                        @QueryParam("parent_binder_paths") @DefaultValue("false") boolean includeParentPaths) {
+                                                                        @QueryParam("parent_binder_paths") @DefaultValue("false") boolean includeParentPaths,
+                                                                        @Context HttpServletRequest request) {
+        List<Pair<ShareItem, DefinableEntity>> shareItems = getSharedByShareItems(userId);
+        Date lastModified = getSharesLibraryModifiedDate(shareItems, recursive);
+        Date ifModifiedSince = getIfModifiedSinceDate(request);
+        if (ifModifiedSince!=null && !ifModifiedSince.before(lastModified)) {
+            throw new NotModifiedException();
+        }
         SearchResultList<FileProperties> results = new SearchResultList<FileProperties>();
-        results.appendAll(getSharedByFiles(userId, true, showHidden, showUnhidden, true, true));
+        results.appendAll(getSharedByFiles(shareItems, true, showHidden, showUnhidden));
         if (recursive) {
-            results.appendAll(getSubFiles(getSharedByBinders(userId, true, false, showHidden, showUnhidden, true, true), fileName, true));
+            results.appendAll(getSubFiles(getSharedByBinders(shareItems, true, false, showHidden, showUnhidden), fileName, false));
         }
         if (includeParentPaths) {
             populateParentBinderPaths(results);
         }
-        return results;
+        if (lastModified!=null) {
+            return Response.ok(results).lastModified(lastModified).build();
+        } else {
+            return Response.ok(results).build();
+        }
     }
 
     @GET
@@ -360,7 +372,8 @@ public class ShareResource extends AbstractResource {
                                                        @QueryParam ("count") @DefaultValue("500") Integer maxCount,
                                                        @QueryParam("hidden") @DefaultValue("false") boolean showHidden,
                                                        @QueryParam("unhidden") @DefaultValue("true") boolean showUnhidden) {
-        return getSharedByChanges(userId, since, descriptionFormatStr, maxCount, "/public/library_changes", true, showHidden, showUnhidden);
+        List<Pair<ShareItem, DefinableEntity>> shareItems = getSharedByShareItems(userId);
+        return getSharedByChanges(shareItems, since, descriptionFormatStr, maxCount, "/public/library_changes", true, showHidden, showUnhidden);
     }
 
     @GET
@@ -386,11 +399,10 @@ public class ShareResource extends AbstractResource {
     @GET
     @Path("/with_user/{id}")
     public SearchResultList<Share> getSharedWithUser(@PathParam("id") Long userId) {
-        _getUser(userId);
-        ShareItemSelectSpec spec = getSharedWithSpec(userId);
+        List<Pair<ShareItem, DefinableEntity>> shareItems = getSharedWithShareItems(userId);
         SearchResultList<Share> results = new SearchResultList<Share>();
-        List<ShareItem> shareItems = getShareItems(spec, userId, false, false, true);
-        for (ShareItem shareItem : shareItems) {
+        for (Pair<ShareItem, DefinableEntity> pair : shareItems) {
+            ShareItem shareItem = pair.getA();
             results.append(ResourceUtil.buildShare(shareItem, findDefinableEntity(shareItem.getSharedEntityIdentifier()),
                     buildShareRecipient(shareItem), isGuestAccessEnabled()));
         }
@@ -402,8 +414,9 @@ public class ShareResource extends AbstractResource {
     public SearchResultList<SharedBinderBrief> getBindersSharedWithUser(@PathParam("id") Long userId,
                                                                         @QueryParam("hidden") @DefaultValue("false") boolean showHidden,
                                                                         @QueryParam("unhidden") @DefaultValue("true") boolean showUnhidden) {
+        List<Pair<ShareItem, DefinableEntity>> shareItems = getSharedWithShareItems(userId);
         SearchResultList<SharedBinderBrief> results = new SearchResultList<SharedBinderBrief>();
-        results.appendAll(getSharedWithBinders(userId, false, true, showHidden, showUnhidden, false, true));
+        results.appendAll(getSharedWithBinders(shareItems, false, true, showHidden, showUnhidden));
         return results;
     }
 
@@ -413,7 +426,8 @@ public class ShareResource extends AbstractResource {
                                                   @QueryParam("hidden") @DefaultValue("false") boolean showHidden,
                                                   @QueryParam("unhidden") @DefaultValue("true") boolean showUnhidden,
                                                   @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr) {
-        SharedBinderBrief [] sharedBinders = getSharedWithBinders(userId, false, false, showHidden, showUnhidden, false, true);
+        List<Pair<ShareItem, DefinableEntity>> shareItems = getSharedWithShareItems(userId);
+        SharedBinderBrief [] sharedBinders = getSharedWithBinders(shareItems, false, false, showHidden, showUnhidden);
         return getSubBinderTree(ObjectKeys.SHARED_WITH_ME_ID, "/self/shared_with_me", sharedBinders, null, toDomainFormat(descriptionFormatStr));
     }
 
@@ -430,13 +444,14 @@ public class ShareResource extends AbstractResource {
                                                      @QueryParam("hidden") @DefaultValue("false") boolean showHidden,
                                                      @QueryParam("unhidden") @DefaultValue("true") boolean showUnhidden,
                                                      @Context HttpServletRequest request) {
-        Date lastModified = getSharedWithLibraryModifiedDate(userId, false);
+        List<Pair<ShareItem, DefinableEntity>> shareItems = getSharedWithShareItems(userId);
+        Date lastModified = getSharesLibraryModifiedDate(shareItems, false);
         Date ifModifiedSince = getIfModifiedSinceDate(request);
         if (ifModifiedSince!=null && !ifModifiedSince.before(lastModified)) {
             throw new NotModifiedException();
         }
         SearchResultList<SearchableObject> results = new SearchResultList<SearchableObject>();
-        results.appendAll(getSharedWithChildren(userId, true, true, showHidden, showUnhidden, false, true));
+        results.appendAll(getSharedWithChildren(shareItems, true, true, showHidden, showUnhidden));
         if (lastModified!=null) {
             return Response.ok(results).lastModified(lastModified).build();
         } else {
@@ -450,13 +465,14 @@ public class ShareResource extends AbstractResource {
                                                                                @QueryParam("hidden") @DefaultValue("false") boolean showHidden,
                                                                                @QueryParam("unhidden") @DefaultValue("true") boolean showUnhidden,
                                                                                @Context HttpServletRequest request) {
-        Date lastModified = getSharedWithLibraryModifiedDate(userId, false);
+        List<Pair<ShareItem, DefinableEntity>> shareItems = getSharedWithShareItems(userId);
+        Date lastModified = getSharesLibraryModifiedDate(shareItems, false);
         Date ifModifiedSince = getIfModifiedSinceDate(request);
         if (ifModifiedSince!=null && !ifModifiedSince.before(lastModified)) {
             throw new NotModifiedException();
         }
         SearchResultList<SharedBinderBrief> results = new SearchResultList<SharedBinderBrief>();
-        results.appendAll(getSharedWithBinders(userId, true, true, showHidden, showUnhidden, false, true));
+        results.appendAll(getSharedWithBinders(shareItems, true, true, showHidden, showUnhidden));
         if (lastModified!=null) {
             return Response.ok(results).lastModified(lastModified).build();
         } else {
@@ -494,9 +510,8 @@ public class ShareResource extends AbstractResource {
                                                                              @QueryParam("hidden") @DefaultValue("false") boolean showHidden,
                                                                              @QueryParam("unhidden") @DefaultValue("true") boolean showUnhidden,
                                                                              @QueryParam("parent_binder_paths") @DefaultValue("false") boolean includeParentPaths) {
-        _getUser(userId);
-        ShareItemSelectSpec spec = getSharedWithSpec(userId);
-        return _getSharedEntries(ObjectKeys.SHARED_WITH_ME_ID, "/self/shared_with_me", spec, userId, includeParentPaths, showHidden, showUnhidden, false, true);
+        List<Pair<ShareItem, DefinableEntity>> shareItems = getSharedWithShareItems(userId);
+        return _getSharedEntries(shareItems, ObjectKeys.SHARED_WITH_ME_ID, "/self/shared_with_me", includeParentPaths, showHidden, showUnhidden);
     }
 
     @GET
@@ -508,15 +523,16 @@ public class ShareResource extends AbstractResource {
                                                                    @QueryParam("recursive") @DefaultValue("false") boolean recursive,
                                                                    @QueryParam("parent_binder_paths") @DefaultValue("false") boolean includeParentPaths,
                                                                    @Context HttpServletRequest request) {
-        Date lastModified = getSharedWithLibraryModifiedDate(userId, false);
+        List<Pair<ShareItem, DefinableEntity>> shareItems = getSharedWithShareItems(userId);
+        Date lastModified = getSharesLibraryModifiedDate(shareItems, false);
         Date ifModifiedSince = getIfModifiedSinceDate(request);
         if (ifModifiedSince!=null && !ifModifiedSince.before(lastModified)) {
             throw new NotModifiedException();
         }
         SearchResultList<FileProperties> results = new SearchResultList<FileProperties>();
-        results.appendAll(getSharedWithFiles(userId, false, showHidden, showUnhidden, false, true));
+        results.appendAll(getSharedWithFiles(shareItems, false, showHidden, showUnhidden));
         if (recursive) {
-            results.appendAll(getSubFiles(getSharedWithBinders(userId, false, false, showHidden, showUnhidden, false, true),
+            results.appendAll(getSubFiles(getSharedWithBinders(shareItems, false, false, showHidden, showUnhidden),
                                           fileName, false));
         }
         if (includeParentPaths) {
@@ -538,15 +554,16 @@ public class ShareResource extends AbstractResource {
                                                                           @QueryParam("recursive") @DefaultValue("false") boolean recursive,
                                                                           @QueryParam("parent_binder_paths") @DefaultValue("false") boolean includeParentPaths,
                                                                           @Context HttpServletRequest request) {
-        Date lastModified = getSharedWithLibraryModifiedDate(userId, false);
+        List<Pair<ShareItem, DefinableEntity>> shareItems = getSharedWithShareItems(userId);
+        Date lastModified = getSharesLibraryModifiedDate(shareItems, false);
         Date ifModifiedSince = getIfModifiedSinceDate(request);
         if (ifModifiedSince!=null && !ifModifiedSince.before(lastModified)) {
             throw new NotModifiedException();
         }
         SearchResultList<FileProperties> results = new SearchResultList<FileProperties>();
-        results.appendAll(getSharedWithFiles(userId, true, showHidden, showUnhidden, false, true));
+        results.appendAll(getSharedWithFiles(shareItems, true, showHidden, showUnhidden));
         if (recursive) {
-            results.appendAll(getSubFiles(getSharedWithBinders(userId, true, false, showHidden, showUnhidden, false, true), fileName, true));
+            results.appendAll(getSubFiles(getSharedWithBinders(shareItems, true, false, showHidden, showUnhidden), fileName, true));
         }
         if (includeParentPaths) {
             populateParentBinderPaths(results);
@@ -564,7 +581,8 @@ public class ShareResource extends AbstractResource {
                                                    @QueryParam("hidden") @DefaultValue("false") boolean showHidden,
                                                    @QueryParam("unhidden") @DefaultValue("true") boolean showUnhidden,
                                                    @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr) {
-        SharedBinderBrief [] sharedBinders = getSharedWithBinders(userId, true, false, showHidden, showUnhidden, false, true);
+        List<Pair<ShareItem, DefinableEntity>> shareItems = getSharedWithShareItems(userId);
+        SharedBinderBrief [] sharedBinders = getSharedWithBinders(shareItems, true, false, showHidden, showUnhidden);
         return getSubBinderTree(ObjectKeys.SHARED_WITH_ME_ID, "/self/shared_with_me", sharedBinders,
                 SearchUtils.buildLibraryTreeCriterion(), toDomainFormat(descriptionFormatStr));
     }
@@ -577,7 +595,8 @@ public class ShareResource extends AbstractResource {
                                                          @QueryParam ("count") @DefaultValue("500") Integer maxCount,
                                                          @QueryParam("hidden") @DefaultValue("false") boolean showHidden,
                                                          @QueryParam("unhidden") @DefaultValue("true") boolean showUnhidden) {
-        return getSharedWithChanges(userId, since, descriptionFormatStr, maxCount, "/public/library_changes", true, showHidden, showUnhidden);
+        List<Pair<ShareItem, DefinableEntity>> shareItems = getSharedWithShareItems(userId);
+        return getSharedWithChanges(shareItems, since, descriptionFormatStr, maxCount, "/public/library_changes", true, showHidden, showUnhidden);
     }
 
     @GET
@@ -606,8 +625,9 @@ public class ShareResource extends AbstractResource {
     public SearchResultList<Share> getSharedWithUser() {
         ShareItemSelectSpec spec = getSharedWithSpec(getLoggedInUserId());
         SearchResultList<Share> results = new SearchResultList<Share>();
-        List<ShareItem> shareItems = getShareItems(spec, getLoggedInUserId(), false, true, false);
-        for (ShareItem shareItem : shareItems) {
+        List<Pair<ShareItem, DefinableEntity>> shareItems = getShareItems(spec, getLoggedInUserId(), false, true, false);
+        for (Pair<ShareItem, DefinableEntity> pair : shareItems) {
+            ShareItem shareItem = pair.getA();
             results.append(ResourceUtil.buildShare(shareItem, findDefinableEntity(shareItem.getSharedEntityIdentifier()),
                     buildShareRecipient(shareItem), isGuestAccessEnabled()));
         }
@@ -621,8 +641,9 @@ public class ShareResource extends AbstractResource {
         if (!getEffectivePublicCollectionSetting(getLoggedInUser())) {
             throw new AccessControlException("Access to the public collection is not allowed.", null);
         }
+        List<Pair<ShareItem, DefinableEntity>> shareItems = getPublicShareItems();
         SearchResultList<SharedBinderBrief> results = new SearchResultList<SharedBinderBrief>();
-        results.appendAll(getPublicBinders(false, true, showHidden, showUnhidden));
+        results.appendAll(getPublicBinders(shareItems, false, true, showHidden, showUnhidden));
         return results;
     }
 
@@ -634,7 +655,8 @@ public class ShareResource extends AbstractResource {
         if (!getEffectivePublicCollectionSetting(getLoggedInUser())) {
             throw new AccessControlException("Access to the public collection is not allowed.", null);
         }
-        SharedBinderBrief [] sharedBinders = getPublicBinders(false, false, showHidden, showUnhidden);
+        List<Pair<ShareItem, DefinableEntity>> shareItems = getPublicShareItems();
+        SharedBinderBrief [] sharedBinders = getPublicBinders(shareItems, false, false, showHidden, showUnhidden);
         return getSubBinderTree(ObjectKeys.PUBLIC_SHARES_ID, "/self/public_shares", sharedBinders, null, toDomainFormat(descriptionFormatStr));
     }
 
@@ -646,7 +668,8 @@ public class ShareResource extends AbstractResource {
         if (!getEffectivePublicCollectionSetting(getLoggedInUser())) {
             throw new AccessControlException("Access to the public collection is not allowed.", null);
         }
-        SharedBinderBrief [] sharedBinders = getPublicBinders(true, false, showHidden, showUnhidden);
+        List<Pair<ShareItem, DefinableEntity>> shareItems = getPublicShareItems();
+        SharedBinderBrief [] sharedBinders = getPublicBinders(shareItems, true, false, showHidden, showUnhidden);
         return getSubBinderTree(ObjectKeys.PUBLIC_SHARES_ID, "/self/public_shares", sharedBinders, null, toDomainFormat(descriptionFormatStr));
     }
 
@@ -658,13 +681,14 @@ public class ShareResource extends AbstractResource {
         if (!getEffectivePublicCollectionSetting(getLoggedInUser())) {
             throw new AccessControlException("Access to the public collection is not allowed.", null);
         }
-        Date lastModified = getPublicSharesLibraryModifiedDate(false);
+        List<Pair<ShareItem, DefinableEntity>> shareItems = getPublicShareItems();
+        Date lastModified = getSharesLibraryModifiedDate(shareItems, false);
         Date ifModifiedSince = getIfModifiedSinceDate(request);
         if (ifModifiedSince!=null && !ifModifiedSince.before(lastModified)) {
             throw new NotModifiedException();
         }
         SearchResultList<SearchableObject> results = new SearchResultList<SearchableObject>();
-        results.appendAll(getPublicChildren(true, true, showHidden, showUnhidden));
+        results.appendAll(getPublicChildren(shareItems, true, true, showHidden, showUnhidden));
         if (lastModified!=null) {
             return Response.ok(results).lastModified(lastModified).build();
         } else {
@@ -680,13 +704,14 @@ public class ShareResource extends AbstractResource {
         if (!getEffectivePublicCollectionSetting(getLoggedInUser())) {
             throw new AccessControlException("Access to the public collection is not allowed.", null);
         }
-        Date lastModified = getPublicSharesLibraryModifiedDate(false);
+        List<Pair<ShareItem, DefinableEntity>> shareItems = getPublicShareItems();
+        Date lastModified = getSharesLibraryModifiedDate(shareItems, false);
         Date ifModifiedSince = getIfModifiedSinceDate(request);
         if (ifModifiedSince!=null && !ifModifiedSince.before(lastModified)) {
             throw new NotModifiedException();
         }
         SearchResultList<SharedBinderBrief> results = new SearchResultList<SharedBinderBrief>();
-        results.appendAll(getPublicBinders(true, true, showHidden, showUnhidden));
+        results.appendAll(getPublicBinders(shareItems, true, true, showHidden, showUnhidden));
         if (lastModified!=null) {
             return Response.ok(results).lastModified(lastModified).build();
         } else {
@@ -702,8 +727,8 @@ public class ShareResource extends AbstractResource {
         if (!getEffectivePublicCollectionSetting(getLoggedInUser())) {
             throw new AccessControlException("Access to the public collection is not allowed.", null);
         }
-        ShareItemSelectSpec spec = getSharedWithSpec(getLoggedInUserId());
-        return _getSharedEntries(ObjectKeys.PUBLIC_SHARES_ID, "/self/public_shares", spec, null, includeParentPaths, showHidden, showUnhidden, true, false);
+        List<Pair<ShareItem, DefinableEntity>> shareItems = getPublicShareItems();
+        return _getSharedEntries(shareItems, ObjectKeys.PUBLIC_SHARES_ID, "/self/public_shares", includeParentPaths, showHidden, showUnhidden);
     }
 
     @GET
@@ -717,15 +742,16 @@ public class ShareResource extends AbstractResource {
         if (!getEffectivePublicCollectionSetting(getLoggedInUser())) {
             throw new AccessControlException("Access to the public collection is not allowed.", null);
         }
-        Date lastModified = getPublicSharesLibraryModifiedDate(false);
+        List<Pair<ShareItem, DefinableEntity>> shareItems = getPublicShareItems();
+        Date lastModified = getSharesLibraryModifiedDate(shareItems, false);
         Date ifModifiedSince = getIfModifiedSinceDate(request);
         if (ifModifiedSince!=null && !ifModifiedSince.before(lastModified)) {
             throw new NotModifiedException();
         }
         SearchResultList<FileProperties> results = new SearchResultList<FileProperties>();
-        results.appendAll(getPublicFiles(false, showHidden, showUnhidden));
+        results.appendAll(getPublicFiles(shareItems, false, showHidden, showUnhidden));
         if (recursive) {
-            results.appendAll(getSubFiles(getPublicBinders(false, false, showHidden, showUnhidden), fileName, false));
+            results.appendAll(getSubFiles(getPublicBinders(shareItems, false, false, showHidden, showUnhidden), fileName, false));
         }
         if (includeParentPaths) {
             populateParentBinderPaths(results);
@@ -748,15 +774,16 @@ public class ShareResource extends AbstractResource {
         if (!getEffectivePublicCollectionSetting(getLoggedInUser())) {
             throw new AccessControlException("Access to the public collection is not allowed.", null);
         }
-        Date lastModified = getPublicSharesLibraryModifiedDate(false);
+        List<Pair<ShareItem, DefinableEntity>> shareItems = getPublicShareItems();
+        Date lastModified = getSharesLibraryModifiedDate(shareItems, false);
         Date ifModifiedSince = getIfModifiedSinceDate(request);
         if (ifModifiedSince!=null && !ifModifiedSince.before(lastModified)) {
             throw new NotModifiedException();
         }
         SearchResultList<FileProperties> results = new SearchResultList<FileProperties>();
-        results.appendAll(getPublicFiles(true, showHidden, showUnhidden));
+        results.appendAll(getPublicFiles(shareItems, true, showHidden, showUnhidden));
         if (recursive) {
-            results.appendAll(getSubFiles(getPublicBinders(true, false, showHidden, showUnhidden), fileName, false));
+            results.appendAll(getSubFiles(getPublicBinders(shareItems, true, false, showHidden, showUnhidden), fileName, false));
         }
         if (includeParentPaths) {
             populateParentBinderPaths(results);
@@ -803,7 +830,8 @@ public class ShareResource extends AbstractResource {
         if (!getEffectivePublicCollectionSetting(getLoggedInUser())) {
             throw new AccessControlException("Access to the public collection is not allowed.", null);
         }
-        return getPublicChanges(since, descriptionFormatStr, maxCount, "/public/library_changes", true, showHidden, showUnhidden);
+        List<Pair<ShareItem, DefinableEntity>> shareItems = getPublicShareItems();
+        return getPublicChanges(shareItems, since, descriptionFormatStr, maxCount, "/public/library_changes", true, showHidden, showUnhidden);
     }
 
     @GET
@@ -834,21 +862,18 @@ public class ShareResource extends AbstractResource {
                                                                   boolean showHidden, boolean showUnhidden, boolean showPublic, boolean showNonPublic) {
         List<String> binderIds = new ArrayList<String>();
         List<String> entryIds = new ArrayList<String>();
-        List<ShareItem> shareItems = getShareItems(spec, excludedSharerId, topId==ObjectKeys.SHARED_BY_ME_ID, showPublic, showNonPublic);
+        List<Pair<ShareItem, DefinableEntity>> shareItems = getShareItems(spec, excludedSharerId, topId==ObjectKeys.SHARED_BY_ME_ID, showPublic, showNonPublic);
         if (shareItems.size()==0) {
             return new SearchResultList<RecentActivityEntry>();
         }
-        for (ShareItem shareItem : shareItems) {
-            EntityIdentifier entityId = shareItem.getSharedEntityIdentifier();
-            if (entityId.getEntityType()== EntityIdentifier.EntityType.folderEntry) {
-                FolderEntry entry = (FolderEntry) getSharedEntity(shareItem, true);
-                if (showToUser(entry, topId, showHidden, showUnhidden, false)) {
-                    entryIds.add(entityId.getEntityId().toString());
-                }
-            } else if (entityId.getEntityType()== EntityIdentifier.EntityType.folder || entityId.getEntityType()== EntityIdentifier.EntityType.workspace) {
-                Binder binder = (Binder) getSharedEntity(shareItem, true);
-                if (showBinderToUser(binder, false, topId, showHidden, showUnhidden, false)) {
-                    binderIds.add(entityId.getEntityId().toString());
+        for (Pair<ShareItem, DefinableEntity> pair : shareItems) {
+            DefinableEntity entity = getDefinableEntity(pair, true);
+            if (entity!=null) {
+                if (entity.getEntityType()== EntityIdentifier.EntityType.folderEntry &&
+                        showToUser((FolderEntry) entity, topId, showHidden, showUnhidden, false)) {
+                    entryIds.add(entity.getId().toString());
+                } else if (entity.getEntityType().isBinder() && showBinderToUser((Binder) entity, false, topId, showHidden, showUnhidden, false)) {
+                    binderIds.add(entity.getId().toString());
                 }
             }
         }
@@ -856,112 +881,89 @@ public class ShareResource extends AbstractResource {
         return _getRecentActivity(includeParentPaths, descriptionFormat, offset, maxCount, criteria, nextUrl, nextParams);
     }
 
-    protected List<SearchableObject> getSharedByChildren(Long userId, boolean onlyLibrary, boolean replaceParent, boolean showHidden, boolean showUnhidden,
-                                                      boolean showPublic, boolean showNonPublic)  {
-        _getUser(userId);
-        ShareItemSelectSpec spec = getSharedBySpec(userId);
+    protected List<SearchableObject> getSharedByChildren(List<Pair<ShareItem, DefinableEntity>> shareItems, boolean onlyLibrary,
+                                                         boolean replaceParent, boolean showHidden, boolean showUnhidden)  {
         if (replaceParent) {
-            return _getSharedEntities(ObjectKeys.SHARED_BY_ME_ID, "/self/shared_by_me", spec, null, onlyLibrary, showHidden,
-                    showUnhidden, showPublic, showNonPublic, true, false, true);
+            return _getSharedEntities(shareItems, ObjectKeys.SHARED_BY_ME_ID, "/self/shared_by_me", onlyLibrary, showHidden,
+                    showUnhidden, true, false, true);
         }
-        return _getSharedEntities(null, null, spec, null, onlyLibrary, showHidden, showUnhidden, showPublic, showNonPublic, true, false, true);
+        return _getSharedEntities(shareItems, null, null, onlyLibrary, showHidden, showUnhidden, true, false, true);
     }
 
-    protected SharedBinderBrief [] getSharedByBinders(Long userId, boolean onlyLibrary, boolean replaceParent, boolean showHidden, boolean showUnhidden,
-                                                      boolean showPublic, boolean showNonPublic)  {
-        _getUser(userId);
-        ShareItemSelectSpec spec = getSharedBySpec(userId);
+    protected SharedBinderBrief [] getSharedByBinders(List<Pair<ShareItem, DefinableEntity>> shareItems, boolean onlyLibrary, boolean replaceParent, boolean showHidden, boolean showUnhidden)  {
         if (replaceParent) {
-            return _getSharedBinders(ObjectKeys.SHARED_BY_ME_ID, "/self/shared_by_me", spec, null, onlyLibrary, showHidden, showUnhidden, showPublic, showNonPublic);
+            return _getSharedBinders(shareItems, ObjectKeys.SHARED_BY_ME_ID, "/self/shared_by_me", onlyLibrary, showHidden, showUnhidden);
         }
-        return _getSharedBinders(null, null, spec, null, onlyLibrary, showHidden, showUnhidden, showPublic, showNonPublic);
+        return _getSharedBinders(shareItems, null, null, onlyLibrary, showHidden, showUnhidden);
     }
 
-    protected SharedFileProperties[] getSharedByFiles(Long userId, boolean onlyLibrary, boolean showHidden, boolean showUnhidden,
-                                                       boolean showPublic, boolean showNonPublic)  {
-        _getUser(userId);
-        ShareItemSelectSpec spec = getSharedBySpec(userId);
-        return _getSharedFiles(ObjectKeys.SHARED_BY_ME_ID, "/self/shared_by_me", spec, null, onlyLibrary, showHidden, showUnhidden, showPublic, showNonPublic);
+    protected SharedFileProperties[] getSharedByFiles(List<Pair<ShareItem, DefinableEntity>> shareItems, boolean onlyLibrary, boolean showHidden, boolean showUnhidden)  {
+        return _getSharedFiles(shareItems, ObjectKeys.SHARED_BY_ME_ID, "/self/shared_by_me", onlyLibrary, showHidden, showUnhidden);
     }
 
-    protected BinderChanges getSharedByChanges(Long userId, String since, String descriptionFormatStr, Integer maxCount, String nextUrl,
+    protected BinderChanges getSharedByChanges(List<Pair<ShareItem, DefinableEntity>> shareItems, String since, String descriptionFormatStr, Integer maxCount, String nextUrl,
                                                boolean onlyLibrary, boolean showHidden, boolean showUnhidden)  {
-        ShareItemSelectSpec spec = getSharedBySpec(userId);
-        return _getSharedChanges(since, descriptionFormatStr, maxCount, nextUrl, ObjectKeys.SHARED_BY_ME_ID, "/self/shared_by_me",
-                spec, null, onlyLibrary, showHidden, showUnhidden, true, false);
+        return _getSharedChanges(shareItems, since, descriptionFormatStr, maxCount, nextUrl, ObjectKeys.SHARED_BY_ME_ID, "/self/shared_by_me",
+                onlyLibrary, showHidden, showUnhidden);
     }
 
-    protected List<SearchableObject> getSharedWithChildren(Long userId, boolean onlyLibrary, boolean replaceParent, boolean showHidden, boolean showUnhidden,
-                                                           boolean showPublic, boolean showNonPublic)  {
-        _getUser(userId);
-        ShareItemSelectSpec spec = getSharedWithSpec(userId);
+    protected List<SearchableObject> getSharedWithChildren(List<Pair<ShareItem, DefinableEntity>> shareItems, boolean onlyLibrary, boolean replaceParent, boolean showHidden, boolean showUnhidden)  {
         if (replaceParent) {
-            return _getSharedEntities(ObjectKeys.SHARED_WITH_ME_ID, "/self/shared_with_me", spec, null, onlyLibrary, showHidden,
-                    showUnhidden, showPublic, showNonPublic, true, false, true);
+            return _getSharedEntities(shareItems, ObjectKeys.SHARED_WITH_ME_ID, "/self/shared_with_me", onlyLibrary, showHidden,
+                    showUnhidden, true, false, true);
         }
-        return _getSharedEntities(null, null, spec, null, onlyLibrary, showHidden, showUnhidden, showPublic, showNonPublic, true, false, true);
+        return _getSharedEntities(shareItems, null, null, onlyLibrary, showHidden, showUnhidden, true, false, true);
     }
 
-    protected SharedBinderBrief [] getSharedWithBinders(Long userId, boolean onlyLibrary, boolean replaceParent, boolean showHidden, boolean showUnhidden,
-                                                        boolean showPublic, boolean showNonPublic)  {
-        _getUser(userId);
-        ShareItemSelectSpec spec = getSharedWithSpec(userId);
+    protected SharedBinderBrief [] getSharedWithBinders(List<Pair<ShareItem, DefinableEntity>> shareItems, boolean onlyLibrary, boolean replaceParent, boolean showHidden, boolean showUnhidden)  {
         if (replaceParent) {
-            return _getSharedBinders(ObjectKeys.SHARED_WITH_ME_ID, "/self/shared_with_me", spec, userId, onlyLibrary, showHidden, showUnhidden, showPublic, showNonPublic);
+            return _getSharedBinders(shareItems, ObjectKeys.SHARED_WITH_ME_ID, "/self/shared_with_me", onlyLibrary, showHidden, showUnhidden);
         }
-        return _getSharedBinders(null, null, spec, userId, onlyLibrary, showHidden, showUnhidden, showPublic, showNonPublic);
+        return _getSharedBinders(shareItems, null, null, onlyLibrary, showHidden, showUnhidden);
     }
 
-    protected SharedFileProperties [] getSharedWithFiles(Long userId, boolean onlyLibrary, boolean showHidden, boolean showUnhidden,
-                                                         boolean showPublic, boolean showNonPublic)  {
-        _getUser(userId);
-        ShareItemSelectSpec spec = getSharedWithSpec(userId);
-        return _getSharedFiles(ObjectKeys.SHARED_WITH_ME_ID, "/self/shared_with_me", spec, userId, onlyLibrary, showHidden, showUnhidden, showPublic, showNonPublic);
+    protected SharedFileProperties [] getSharedWithFiles(List<Pair<ShareItem, DefinableEntity>> shareItems, boolean onlyLibrary, boolean showHidden, boolean showUnhidden)  {
+        return _getSharedFiles(shareItems, ObjectKeys.SHARED_WITH_ME_ID, "/self/shared_with_me", onlyLibrary, showHidden, showUnhidden);
     }
 
-    protected BinderChanges getSharedWithChanges(Long userId, String since, String descriptionFormatStr, Integer maxCount, String nextUrl,
+    protected BinderChanges getSharedWithChanges(List<Pair<ShareItem, DefinableEntity>> shareItems, String since, String descriptionFormatStr, Integer maxCount, String nextUrl,
                                              boolean onlyLibrary, boolean showHidden, boolean showUnhidden)  {
-        ShareItemSelectSpec spec = getSharedWithSpec(userId);
-        return _getSharedChanges(since, descriptionFormatStr, maxCount, nextUrl, ObjectKeys.SHARED_WITH_ME_ID,
-                "/self/shared_with_me", spec, null, onlyLibrary, showHidden, showUnhidden, false, true);
+        return _getSharedChanges(shareItems, since, descriptionFormatStr, maxCount, nextUrl, ObjectKeys.SHARED_WITH_ME_ID,
+                "/self/shared_with_me", onlyLibrary, showHidden, showUnhidden);
     }
 
-    protected List<SearchableObject> getPublicChildren(boolean onlyLibrary, boolean replaceParent, boolean showHidden, boolean showUnhidden)  {
-        ShareItemSelectSpec spec = getSharedWithSpec(getLoggedInUserId());
+    protected List<SearchableObject> getPublicChildren(List<Pair<ShareItem, DefinableEntity>> shareItems, boolean onlyLibrary, boolean replaceParent,
+                                                       boolean showHidden, boolean showUnhidden)  {
         if (replaceParent) {
-            return _getSharedEntities(ObjectKeys.PUBLIC_SHARES_ID, "/self/public_shares", spec, null, onlyLibrary, showHidden, showUnhidden, true, false, true, false, true);
+            return _getSharedEntities(shareItems, ObjectKeys.PUBLIC_SHARES_ID, "/self/public_shares", onlyLibrary, showHidden, showUnhidden, true, false, true);
         }
-        return _getSharedEntities(null, null, spec, null, onlyLibrary, showHidden, showUnhidden, true, false, true, false, true);
+        return _getSharedEntities(shareItems, null, null, onlyLibrary, showHidden, showUnhidden, true, false, true);
     }
 
-    protected SharedBinderBrief [] getPublicBinders(boolean onlyLibrary, boolean replaceParent, boolean showHidden, boolean showUnhidden)  {
-        ShareItemSelectSpec spec = getSharedWithSpec(getLoggedInUserId());
+    protected SharedBinderBrief [] getPublicBinders(List<Pair<ShareItem, DefinableEntity>> shareItems, boolean onlyLibrary, boolean replaceParent, boolean showHidden, boolean showUnhidden)  {
         if (replaceParent) {
-            return _getSharedBinders(ObjectKeys.PUBLIC_SHARES_ID, "/self/public_shares", spec, null, onlyLibrary, showHidden, showUnhidden, true, false);
+            return _getSharedBinders(shareItems, ObjectKeys.PUBLIC_SHARES_ID, "/self/public_shares", onlyLibrary, showHidden, showUnhidden);
         }
-        return _getSharedBinders(null, null, spec, null, onlyLibrary, showHidden, showUnhidden, true, false);
+        return _getSharedBinders(shareItems, null, null, onlyLibrary, showHidden, showUnhidden);
     }
 
-    protected SharedFileProperties [] getPublicFiles(boolean onlyLibrary, boolean showHidden, boolean showUnhidden)  {
-        ShareItemSelectSpec spec = getSharedWithSpec(getLoggedInUserId());
-        return _getSharedFiles(ObjectKeys.PUBLIC_SHARES_ID, "/self/public_shares", spec, null, onlyLibrary, showHidden, showUnhidden, true, false);
+    protected SharedFileProperties [] getPublicFiles(List<Pair<ShareItem, DefinableEntity>> shareItems, boolean onlyLibrary, boolean showHidden, boolean showUnhidden)  {
+        return _getSharedFiles(shareItems, ObjectKeys.PUBLIC_SHARES_ID, "/self/public_shares", onlyLibrary, showHidden, showUnhidden);
     }
 
-    protected BinderChanges getPublicChanges(String since, String descriptionFormatStr, Integer maxCount, String nextUrl,
+    protected BinderChanges getPublicChanges(List<Pair<ShareItem, DefinableEntity>> shareItems, String since, String descriptionFormatStr, Integer maxCount, String nextUrl,
                                              boolean onlyLibrary, boolean showHidden, boolean showUnhidden)  {
-        ShareItemSelectSpec spec = getSharedWithSpec(getLoggedInUserId());
-        return _getSharedChanges(since, descriptionFormatStr, maxCount, nextUrl, ObjectKeys.PUBLIC_SHARES_ID,
-                "/self/public_shares", spec, null, onlyLibrary, showHidden, showUnhidden, true, false);
+        return _getSharedChanges(shareItems, since, descriptionFormatStr, maxCount, nextUrl, ObjectKeys.PUBLIC_SHARES_ID,
+                "/self/public_shares", onlyLibrary, showHidden, showUnhidden);
     }
 
-    private BinderChanges _getSharedChanges(String since, String descriptionFormatStr, Integer maxCount, String nextUrl,
-                                            Long topId, String topHref, ShareItemSelectSpec spec, Long excludedSharerId, boolean includeParentPaths,
-                                            boolean showHidden, boolean showUnhidden, boolean showPublic, boolean showNonPublic) {
+    private BinderChanges _getSharedChanges(List<Pair<ShareItem, DefinableEntity>> shareItems, String since, String descriptionFormatStr,
+                                            Integer maxCount, String nextUrl, Long topId, String topHref,
+                                            boolean includeParentPaths, boolean showHidden, boolean showUnhidden) {
         BinderChanges changes;
         // Include deleted shares
-        spec.deleted = null;
-        List<Pair<DefinableEntity, List<ShareItem>>> binders = _getSharedItems(topId, spec, excludedSharerId, false,
-                showHidden, showUnhidden, topId==ObjectKeys.SHARED_BY_ME_ID, true, showPublic, showNonPublic, true, true);
+        List<Pair<DefinableEntity, List<ShareItem>>> binders = _getSharedItems(shareItems, topId, false,
+                showHidden, showUnhidden, topId==ObjectKeys.SHARED_BY_ME_ID, true, true, true);
         if (binders.size()>0) {
             List<Long> binderIds = new ArrayList<Long>();
             List<Long> entryIds = new ArrayList<Long>();
@@ -994,15 +996,15 @@ public class ShareResource extends AbstractResource {
         }
     }
 
-    private SearchResultList<SharedFolderEntryBrief> _getSharedEntries(Long topId, String topHref, ShareItemSelectSpec spec, Long excludedSharerId, boolean includeParentPaths,
-                                                                       boolean showHidden, boolean showUnhidden, boolean showPublic, boolean showNonPublic) {
+    private SearchResultList<SharedFolderEntryBrief> _getSharedEntries(List<Pair<ShareItem, DefinableEntity>> shareItems, Long topId, String topHref, boolean includeParentPaths,
+                                                                       boolean showHidden, boolean showUnhidden) {
         boolean guestEnabled = isGuestAccessEnabled();
         Map<Long, SharedFolderEntryBrief> resultMap = new LinkedHashMap<Long, SharedFolderEntryBrief>();
-        List<ShareItem> shareItems = getShareItems(spec, excludedSharerId, topId == ObjectKeys.SHARED_BY_ME_ID, showPublic, showNonPublic);
-        for (ShareItem shareItem : shareItems) {
+        for (Pair<ShareItem, DefinableEntity> pair : shareItems) {
+            ShareItem shareItem = pair.getA();
             if (shareItem.getSharedEntityIdentifier().getEntityType()== EntityIdentifier.EntityType.folderEntry) {
                 try {
-                    FolderEntry entry = (FolderEntry) getSharedEntity(shareItem, true);
+                    FolderEntry entry = (FolderEntry) getDefinableEntity(pair, true);
                     if (showToUser(entry, topId, showHidden, showUnhidden, false)) {
                         SharedFolderEntryBrief binderBrief = resultMap.get(entry.getId());
                         if (binderBrief!=null) {
@@ -1026,10 +1028,10 @@ public class ShareResource extends AbstractResource {
         return results;
     }
 
-    protected SharedBinderBrief [] _getSharedBinders(Long topId, String topHref, ShareItemSelectSpec spec, Long excludedSharerId, boolean onlyLibrary,
-                                                     boolean showHidden, boolean showUnhidden, boolean showPublic, boolean showNonPublic)  {
-        List<SearchableObject> _results = _getSharedEntities(topId, topHref, spec, excludedSharerId, onlyLibrary, showHidden,
-                showUnhidden, showPublic, showNonPublic, true, false, false);
+    protected SharedBinderBrief [] _getSharedBinders(List<Pair<ShareItem, DefinableEntity>> shareItems, Long topId, String topHref, boolean onlyLibrary,
+                                                     boolean showHidden, boolean showUnhidden)  {
+        List<SearchableObject> _results = _getSharedEntities(shareItems, topId, topHref, onlyLibrary, showHidden,
+                showUnhidden, true, false, false);
         List<SharedBinderBrief> results = new ArrayList<SharedBinderBrief>();
         for (SearchableObject obj : _results) {
             if (obj instanceof SharedBinderBrief) {
@@ -1039,10 +1041,10 @@ public class ShareResource extends AbstractResource {
         return results.toArray(new SharedBinderBrief[results.size()]);
     }
 
-    protected SharedFileProperties [] _getSharedFiles(Long topId, String topHref, ShareItemSelectSpec spec, Long excludedSharerId, boolean onlyLibrary,
-                                                      boolean showHidden, boolean showUnhidden, boolean showPublic, boolean showNonPublic)  {
-        List<SearchableObject> _results = _getSharedEntities(topId, topHref, spec, excludedSharerId, onlyLibrary, showHidden,
-                showUnhidden, showPublic, showNonPublic, false, false, true);
+    protected SharedFileProperties [] _getSharedFiles(List<Pair<ShareItem, DefinableEntity>> shareItems, Long topId, String topHref, boolean onlyLibrary,
+                                                      boolean showHidden, boolean showUnhidden)  {
+        List<SearchableObject> _results = _getSharedEntities(shareItems, topId, topHref, onlyLibrary, showHidden,
+                showUnhidden, false, false, true);
         List<SharedFileProperties> results = new ArrayList<SharedFileProperties>();
         for (SearchableObject obj : _results) {
             if (obj instanceof SharedFileProperties) {
@@ -1097,13 +1099,13 @@ public class ShareResource extends AbstractResource {
         return changes;
     }
 
-    protected List<SearchableObject> _getSharedEntities(Long topId, String topHref, ShareItemSelectSpec spec, Long excludedSharerId, boolean onlyLibrary,
-                                                      boolean showHidden, boolean showUnhidden, boolean showPublic, boolean showNonPublic,
+    protected List<SearchableObject> _getSharedEntities(List<Pair<ShareItem, DefinableEntity>> shareItems, Long topId, String topHref, boolean onlyLibrary,
+                                                      boolean showHidden, boolean showUnhidden,
                                                       boolean folders, boolean entries, boolean files)  {
         boolean guestEnabled = isGuestAccessEnabled();
 
-        List<Pair<DefinableEntity, List<ShareItem>>> resultList = _getSharedItems(topId, spec, excludedSharerId, onlyLibrary,
-                showHidden, showUnhidden, topId==ObjectKeys.SHARED_BY_ME_ID, false, showPublic, showNonPublic, folders, entries || files);
+        List<Pair<DefinableEntity, List<ShareItem>>> resultList = _getSharedItems(shareItems, topId, onlyLibrary,
+                showHidden, showUnhidden, topId==ObjectKeys.SHARED_BY_ME_ID, false, folders, entries || files);
 
         List<SearchableObject> results = new ArrayList<SearchableObject>();
         for (Pair<DefinableEntity, List<ShareItem>> entityShares : resultList) {
@@ -1173,33 +1175,42 @@ public class ShareResource extends AbstractResource {
         return results;
     }
 
-    protected List<Pair<DefinableEntity, List<ShareItem>>> _getSharedItems(Long topId, ShareItemSelectSpec spec, Long excludedSharerId, boolean onlyLibrary,
-                                                      boolean showHidden, boolean showUnhidden, boolean showExpired, boolean showDeleted, boolean showPublic, boolean showNonPublic,
+    protected List<Pair<DefinableEntity, List<ShareItem>>> _getSharedItems(List<Pair<ShareItem, DefinableEntity>> shareItems, Long topId, boolean onlyLibrary,
+                                                      boolean showHidden, boolean showUnhidden, boolean showExpired, boolean showDeleted,
                                                       boolean folders, boolean entries)  {
         Map<Object, Pair<DefinableEntity, List<ShareItem>>> resultMap = new LinkedHashMap<Object, Pair<DefinableEntity, List<ShareItem>>>();
 
-        List<ShareItem> shareItems = getShareItems(spec, excludedSharerId, showExpired, showPublic, showNonPublic);
-        for (ShareItem shareItem : shareItems) {
+        for (Pair<ShareItem, DefinableEntity> pair : shareItems) {
+            ShareItem shareItem = pair.getA();
+            Pair<DefinableEntity, List<ShareItem>> sharesByEntity = resultMap.get(shareItem.getSharedEntityIdentifier().getEntityId());
             try {
                 if (entries && shareItem.getSharedEntityIdentifier().getEntityType()== EntityIdentifier.EntityType.folderEntry) {
-                    FolderEntry entry = (FolderEntry) getSharedEntity(shareItem, !showExpired && !showDeleted);
+                    FolderEntry entry;
+                    if (sharesByEntity!=null) {
+                        entry = (FolderEntry) sharesByEntity.getA();
+                    } else {
+                        entry = (FolderEntry) getDefinableEntity(pair, !showExpired && !showDeleted);
+                    }
                     if (showToUser(entry, topId, showHidden, showUnhidden, showDeleted)) {
-                        Pair<DefinableEntity, List<ShareItem>> pair = resultMap.get(entry.getId());
-                        if (pair==null) {
-                            pair = new Pair<DefinableEntity, List<ShareItem>>(entry, new ArrayList<ShareItem>());
-                            resultMap.put(entry.getId(), pair);
+                        if (sharesByEntity==null) {
+                            sharesByEntity = new Pair<DefinableEntity, List<ShareItem>>(entry, new ArrayList<ShareItem>());
+                            resultMap.put(entry.getId(), sharesByEntity);
                         }
-                        pair.getB().add(shareItem);
+                        sharesByEntity.getB().add(shareItem);
                     }
                 } else if (folders && shareItem.getSharedEntityIdentifier().getEntityType().isBinder()) {
-                    Binder binder = (Binder) getSharedEntity(shareItem, !showExpired && !showDeleted);
+                    Binder binder;
+                    if (sharesByEntity!=null) {
+                        binder = (Binder) sharesByEntity.getA();
+                    } else {
+                        binder = (Binder) getDefinableEntity(pair, !showExpired && !showDeleted);
+                    }
                     if (showBinderToUser(binder, onlyLibrary, topId, showHidden, showUnhidden, showDeleted)) {
-                        Pair<DefinableEntity, List<ShareItem>> pair = resultMap.get(binder.getId());
-                        if (pair==null) {
-                            pair = new Pair<DefinableEntity, List<ShareItem>>(binder, new ArrayList<ShareItem>());
-                            resultMap.put(binder.getId(), pair);
+                        if (sharesByEntity==null) {
+                            sharesByEntity = new Pair<DefinableEntity, List<ShareItem>>(binder, new ArrayList<ShareItem>());
+                            resultMap.put(binder.getId(), sharesByEntity);
                         }
-                        pair.getB().add(shareItem);
+                        sharesByEntity.getB().add(shareItem);
                     }
                 }
             } catch (AccessControlException e) {
@@ -1218,6 +1229,9 @@ public class ShareResource extends AbstractResource {
     }
 
     private boolean showBinderToUser(Binder binder, boolean onlyLibrary, Long collectionId, boolean showHidden, boolean showUnhidden, boolean showDeleted) {
+        if (binder==null) {
+            return false;
+        }
         if ((!showDeleted && isBinderPreDeleted(binder)) || (onlyLibrary && binder.getEntityType() != EntityIdentifier.EntityType.workspace && !binder.isLibrary())) {
             return false;
         }
@@ -1238,6 +1252,9 @@ public class ShareResource extends AbstractResource {
     }
 
     private boolean showToUser(FolderEntry entry, Long collectionId, boolean showHidden, boolean showUnhidden, boolean showDeleted) {
+        if (entry==null) {
+            return false;
+        }
         if (!showDeleted && entry.isPreDeleted()) {
             return false;
         }
@@ -1314,24 +1331,24 @@ public class ShareResource extends AbstractResource {
                                                                    Integer maxCount, String nextUrl,
                                                                    ShareItemSelectSpec spec, boolean showHidden, boolean showUnhidden, boolean showDeleted,
                                                                    boolean showPublic, boolean showNonPublic) {
-        List<ShareItem> shareItems = getShareItems(spec, excludedSharerId, topId==ObjectKeys.SHARED_BY_ME_ID, showPublic, showNonPublic);
+        List<Pair<ShareItem, DefinableEntity>> shareItems = getShareItems(spec, excludedSharerId, topId==ObjectKeys.SHARED_BY_ME_ID, showPublic, showNonPublic);
         SearchResultList<SearchableObject> results;
         if (shareItems.size()>0) {
             Junction searchContext = Restrictions.disjunction();
-            for (ShareItem shareItem : shareItems) {
+            for (Pair<ShareItem, DefinableEntity> pair : shareItems) {
+                ShareItem shareItem = pair.getA();
                 Junction shareCrit = Restrictions.conjunction();
                 EntityIdentifier entityId = shareItem.getSharedEntityIdentifier();
                 if (entityId.getEntityType()==EntityIdentifier.EntityType.folderEntry) {
-                    FolderEntry entry = (FolderEntry) getSharedEntity(shareItem, true);
+                    FolderEntry entry = (FolderEntry) getDefinableEntity(pair, true);
                     if (showToUser(entry, topId, showHidden, showUnhidden, showDeleted)) {
                         shareCrit.add(Restrictions.disjunction()
                                 .add(SearchUtils.buildEntryCriterion(entityId.getEntityId()))
                                 .add(SearchUtils.buildAttachmentCriterion(entityId.getEntityId()))
                         );
                     }
-                } else if (entityId.getEntityType()==EntityIdentifier.EntityType.folder ||
-                        entityId.getEntityType()==EntityIdentifier.EntityType.workspace) {
-                    Binder binder = (Binder) getSharedEntity(shareItem, true);
+                } else if (entityId.getEntityType().isBinder()) {
+                    Binder binder = (Binder) getDefinableEntity(pair, true);
                     if (showBinderToUser(binder, false, topId, showHidden, showUnhidden, showDeleted)) {
                         if (recursive) {
                             shareCrit.add(SearchUtils.buildSearchBinderCriterion(entityId.getEntityId(), true));
@@ -1350,12 +1367,12 @@ public class ShareResource extends AbstractResource {
         return results;
     }
 
-    private List<ShareItem> getAllPublicShareParts(ShareItem item) {
+    private List<Pair<ShareItem, DefinableEntity>> getAllPublicShareParts(ShareItem item) {
         ShareItemSelectSpec spec = new ShareItemSelectSpec();
         spec.setSharerId(item.getSharerId());
         spec.setLatest(true);
         spec.setSharedEntityIdentifier(item.getSharedEntityIdentifier());
-        List<ShareItem> allShareItems = getShareItems(spec, null, false, true, false, false);
+        List<Pair<ShareItem, DefinableEntity>> allShareItems = getShareItems(spec, null, false, true, false, false);
         if (allShareItems.size()==0) {
             throw new IllegalStateException("Could not find public shares corresponding to share with id: " + item.getId());
         }

@@ -1450,6 +1450,37 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
 
 	}
 	
+	@Override
+	public Long findTopWorkspaceId(final String zoneName) {
+		long begin = System.nanoTime();
+		try {
+	        return (Long)getHibernateTemplate().execute(
+	                new HibernateCallback() {
+	                    @Override
+						public Object doInHibernate(Session session) throws HibernateException {
+	                        List results = session.createCriteria(Workspace.class)
+                                        .setProjection(
+                                                Projections.projectionList()
+                                                    .add(Projections.property("id"), "id")
+                                        )
+	                             		.add(Expression.eq("internalId", ObjectKeys.TOP_WORKSPACE_INTERNALID))
+	                             		.add(Expression.eq("name", zoneName))
+	                             		.setCacheable(isBinderQueryCacheable())
+	                             		.list();
+	                        if (results.isEmpty()) {
+	                            throw new NoWorkspaceByTheNameException(zoneName);
+	                        }
+	                        return (Long)results.get(0);
+	                    }
+	                }
+	             );
+    	}
+    	finally {
+    		end(begin, "findTopWorkspace(String)");
+    	}
+
+	}
+
 	/**
 	 * Load binder and validate it belongs to the zone
 	 * @param binderId

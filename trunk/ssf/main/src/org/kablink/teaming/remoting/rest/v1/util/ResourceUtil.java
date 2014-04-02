@@ -303,7 +303,7 @@ public class ResourceUtil {
                 fa.getModification().getDate()));
         fp.setLength(fa.getFileItem().getLength());
         fp.setMd5(fa.getFileItem().getMd5());
-        fp.setVersionNumber(fa.getHighestVersionNumber());
+        fp.setVersionNumber(fa.getLastVersion());
         fp.setMajorVersion(fa.getMajorVersion());
         fp.setMinorVersion(fa.getMinorVersion());
         fp.setNote(fa.getFileItem().getDescription().getText());

@@ -87,6 +87,7 @@ import org.kablink.teaming.web.util.AdminHelper;
 import org.kablink.teaming.web.util.EmailHelper;
 import org.kablink.teaming.web.util.PermaLinkUtil;
 import org.kablink.util.HttpHeaders;
+import org.kablink.util.Pair;
 import org.kablink.util.api.ApiErrorCode;
 import org.kablink.util.search.*;
 
@@ -608,26 +609,28 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
             spec.recipientType = ShareItem.RecipientType.publicLink;
         }
 
-        List<ShareItem> shares = getShareItems(spec, true, true, true);
+        List<Pair<ShareItem, org.kablink.teaming.domain.DefinableEntity>> shares = getShareItems(spec, true, true, true);
         if (shares.size()==0) {
             return null;
         }
-        return shares.get(0);
+        return shares.get(0).getA();
     }
 
-    protected List<ShareItem> getShareItems(ShareItemSelectSpec spec, boolean includeExpired, boolean includePublic, boolean includeNonPublic) {
+    protected List<Pair<ShareItem, org.kablink.teaming.domain.DefinableEntity>> getShareItems(ShareItemSelectSpec spec,
+        boolean includeExpired, boolean includePublic, boolean includeNonPublic) {
         return getShareItems(spec, null, includeExpired, includePublic, includeNonPublic, true);
     }
 
-    protected List<ShareItem> getShareItems(ShareItemSelectSpec spec, Long excludedSharer, boolean includeExpired,
-                                            boolean includePublic, boolean includeNonPublic) {
+    protected List<Pair<ShareItem, org.kablink.teaming.domain.DefinableEntity>> getShareItems(ShareItemSelectSpec spec,
+            Long excludedSharer, boolean includeExpired, boolean includePublic, boolean includeNonPublic) {
         return getShareItems(spec, excludedSharer, includeExpired, includePublic, includeNonPublic, true);
     }
 
-    protected List<ShareItem> getShareItems(ShareItemSelectSpec spec, Long excludedSharer, boolean includeExpired,
-                                            boolean includePublic, boolean includeNonPublic, boolean mergePublicParts) {
+    protected List<Pair<ShareItem, org.kablink.teaming.domain.DefinableEntity>> getShareItems(ShareItemSelectSpec spec,
+            Long excludedSharer, boolean includeExpired, boolean includePublic, boolean includeNonPublic, boolean mergePublicParts) {
         List<ShareItem> shareItems = getSharingModule().getShareItems(spec);
-        List<ShareItem> filteredItems = new ArrayList<ShareItem>(shareItems.size());
+        List<Pair<ShareItem, org.kablink.teaming.domain.DefinableEntity>> filteredItems =
+                new ArrayList<Pair<ShareItem, org.kablink.teaming.domain.DefinableEntity>>(shareItems.size());
         Map<String, Boolean> publicIncludedMap = new HashMap<String, Boolean>();
         for (ShareItem item : shareItems) {
             if ((!item.isExpired() || includeExpired) && item.isLatest() &&
@@ -637,14 +640,14 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
                     if (mergePublicParts) {
                         Boolean publicIncluded = publicIncludedMap.get(item.getSharedEntityIdentifier().toString());
                         if (publicIncluded==null || !publicIncluded) {
-                            filteredItems.add(item);
+                            filteredItems.add(new Pair<ShareItem, org.kablink.teaming.domain.DefinableEntity>(item, null));
                             publicIncludedMap.put(item.getSharedEntityIdentifier().toString(), Boolean.TRUE);
                         }
                     } else {
-                        filteredItems.add(item);
+                        filteredItems.add(new Pair<ShareItem, org.kablink.teaming.domain.DefinableEntity>(item, null));
                     }
                 } else if (includeNonPublic && !partOfPublicShare) {
-                    filteredItems.add(item);
+                    filteredItems.add(new Pair<ShareItem, org.kablink.teaming.domain.DefinableEntity>(item, null));
                 }
             }
         }
@@ -1072,52 +1075,74 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         return spec;
     }
 
+    protected List<Pair<ShareItem, org.kablink.teaming.domain.DefinableEntity>> getSharedByShareItems(Long userId) {
+        _getUser(userId);
+        ShareItemSelectSpec spec = getSharedBySpec(userId);
+        spec.deleted = null;
+        return getShareItems(spec, null, true, false, true);
+    }
+
+    protected List<Pair<ShareItem, org.kablink.teaming.domain.DefinableEntity>> getSharedWithShareItems(Long userId) {
+        _getUser(userId);
+        ShareItemSelectSpec spec = getSharedWithSpec(userId);
+        spec.deleted = null;
+        return getShareItems(spec, userId, true, false, true);
+    }
+
+    protected List<Pair<ShareItem, org.kablink.teaming.domain.DefinableEntity>> getPublicShareItems() {
+        Long userId = getLoggedInUserId();
+        ShareItemSelectSpec spec = getSharedWithSpec(userId);
+        spec.deleted = null;
+        return getShareItems(spec, userId, true, true, false);
+    }
+
     protected Date getSharedByLibraryModifiedDate(Long userId, boolean recursive) {
-        return getSharesLibraryModifiedDate(null, recursive, getSharedBySpec(userId), true, true);
+        return getSharesLibraryModifiedDate(getSharedByShareItems(userId), recursive);
     }
 
     protected Date getSharedWithLibraryModifiedDate(Long userId, boolean recursive) {
-        return getSharesLibraryModifiedDate(userId, recursive, getSharedWithSpec(userId), false, true);
+        return getSharesLibraryModifiedDate(getSharedWithShareItems(userId), recursive);
     }
 
     protected Date getPublicSharesLibraryModifiedDate(boolean recursive) {
-        Long userId = getLoggedInUserId();
-        return getSharesLibraryModifiedDate(null, recursive, getSharedWithSpec(userId), true, false);
+        return getSharesLibraryModifiedDate(getPublicShareItems(), recursive);
     }
 
-    private Date getSharesLibraryModifiedDate(Long userId, boolean recursive, ShareItemSelectSpec spec, boolean includePublic, boolean includeNonPublic) {
+    protected Date getSharesLibraryModifiedDate(List<Pair<ShareItem, org.kablink.teaming.domain.DefinableEntity>> shareItems,
+                                                boolean recursive) {
         // Include deleted entries as well.
-        spec.deleted = null;
-        List<ShareItem> shareItems = getShareItems(spec, userId, true, includePublic, includeNonPublic);
         Date libraryModifiedDateForShareItems = getLibraryModifiedDateForShareItems(recursive, shareItems);
         Date hideDate = getSharingModule().getHiddenShareModTimeForCurrentUser(true);
         return ResourceUtil.max(hideDate, libraryModifiedDateForShareItems);
     }
 
-    protected Date getLibraryModifiedDateForShareItems(boolean recursive, List<ShareItem> shareItems) {
+    protected Date getLibraryModifiedDateForShareItems(boolean recursive, List<Pair<ShareItem, org.kablink.teaming.domain.DefinableEntity>> shareItems) {
         Date maxDate = new Date(0);
         List<Long> binderList = new ArrayList<Long>();
-        for (ShareItem item : shareItems) {
+        for (Pair<ShareItem, org.kablink.teaming.domain.DefinableEntity> pair : shareItems) {
+            ShareItem item = pair.getA();
             if (item.isExpired()) {
                 maxDate = ResourceUtil.max(maxDate, item.getEndDate());
             } else if (item.isDeleted()) {
                 maxDate = ResourceUtil.max(maxDate, item.getDeletedDate());
             } else {
                 maxDate = ResourceUtil.max(maxDate, item.getStartDate());
-                EntityIdentifier entityId = item.getSharedEntityIdentifier();
-                if (entityId.getEntityType()== EntityIdentifier.EntityType.folderEntry) {
-                    FolderEntry entry = (FolderEntry) getSharingModule().getSharedEntity(item);
-                    if (entry.isPreDeleted()) {
-                        maxDate = ResourceUtil.max(maxDate, new Date(entry.getPreDeletedWhen()));
-                    } else {
-                        maxDate = ResourceUtil.max(maxDate, entry.getModificationDate());
-                    }
-                } else if (entityId.getEntityType()== EntityIdentifier.EntityType.folder || entityId.getEntityType()== EntityIdentifier.EntityType.workspace) {
-                    Binder binder = (Binder) getSharingModule().getSharedEntity(item);
-                    if (isBinderPreDeleted(binder)) {
-                        maxDate = ResourceUtil.max(maxDate, getPreDeletedDate(binder));
-                    } else if (recursive) {
-                        binderList.add(binder.getId());
+                org.kablink.teaming.domain.DefinableEntity entity = getDefinableEntity(pair, true);
+                if (entity!=null) {
+                    if (entity.getEntityType()== EntityIdentifier.EntityType.folderEntry) {
+                        FolderEntry entry = (FolderEntry) entity;
+                        if (entry.isPreDeleted()) {
+                            maxDate = ResourceUtil.max(maxDate, new Date(entry.getPreDeletedWhen()));
+                        } else {
+                            maxDate = ResourceUtil.max(maxDate, entry.getModificationDate());
+                        }
+                    } else if (entity.getEntityType().isBinder()) {
+                        Binder binder = (Binder) entity;
+                        if (isBinderPreDeleted(binder)) {
+                            maxDate = ResourceUtil.max(maxDate, getPreDeletedDate(binder));
+                        } else if (recursive) {
+                            binderList.add(binder.getId());
+                        }
                     }
                 }
             }
@@ -1142,30 +1167,32 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
     protected LibraryInfo getSharesLibraryInfo(Long userId, ShareItemSelectSpec spec, boolean includePublic, boolean includeNonPublic) {
         // Include deleted entries as well.
         spec.deleted = null;
-        List<ShareItem> shareItems = getShareItems(spec, userId, true, includePublic, includeNonPublic);
+        List<Pair<ShareItem, org.kablink.teaming.domain.DefinableEntity>> shareItems =
+                getShareItems(spec, userId, true, includePublic, includeNonPublic);
         LibraryInfo info = getLibraryInfoForShareItems(shareItems);
         Date hideDate = getSharingModule().getHiddenShareModTimeForCurrentUser(true);
         info.setModifiedDate(ResourceUtil.max(hideDate, info.getModifiedDate()));
         return info;
     }
 
-    protected LibraryInfo getLibraryInfoForShareItems(List<ShareItem> shareItems) {
+    protected LibraryInfo getLibraryInfoForShareItems(List<Pair<ShareItem, org.kablink.teaming.domain.DefinableEntity>> shareItems) {
         Date maxDate = new Date(0);
         int files = 0;
         int folders = 0;
         long diskSpace = 0;
         List<Long> binderList = new ArrayList<Long>();
-        for (ShareItem item : shareItems) {
+        for (Pair<ShareItem, org.kablink.teaming.domain.DefinableEntity> pair : shareItems) {
+            ShareItem item = pair.getA();
             if (item.isExpired()) {
                 maxDate = ResourceUtil.max(maxDate, item.getEndDate());
             } else if (item.isDeleted()) {
                 maxDate = ResourceUtil.max(maxDate, item.getDeletedDate());
             } else {
                 maxDate = ResourceUtil.max(maxDate, item.getStartDate());
-                try {
-                    EntityIdentifier entityId = item.getSharedEntityIdentifier();
-                    if (entityId.getEntityType()== EntityIdentifier.EntityType.folderEntry) {
-                        FolderEntry entry = (FolderEntry) getSharingModule().getSharedEntity(item);
+                org.kablink.teaming.domain.DefinableEntity entity = getDefinableEntity(pair, true);
+                if (entity!=null) {
+                    if (entity.getEntityType()== EntityIdentifier.EntityType.folderEntry) {
+                        FolderEntry entry = (FolderEntry) entity;
                         if (entry.isPreDeleted()) {
                             maxDate = ResourceUtil.max(maxDate, new Date(entry.getPreDeletedWhen()));
                         } else {
@@ -1177,8 +1204,8 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
                                 diskSpace += ((FileAttachment)att).getFileItem().getLength();
                             }
                         }
-                    } else if (entityId.getEntityType()== EntityIdentifier.EntityType.folder || entityId.getEntityType()== EntityIdentifier.EntityType.workspace) {
-                        Binder binder = (Binder) getSharingModule().getSharedEntity(item);
+                    } else if (entity.getEntityType().isBinder()) {
+                        Binder binder = (Binder) entity;
                         if (isBinderPreDeleted(binder)) {
                             maxDate = ResourceUtil.max(maxDate, getPreDeletedDate(binder));
                         } else {
@@ -1186,8 +1213,6 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
                             folders++;
                         }
                     }
-                } catch (NoBinderByTheIdException e) {
-                } catch (NoFolderEntryByTheIdException e) {
                 }
             }
         }
@@ -1197,6 +1222,26 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         info.setFolderCount(info.getFolderCount() + folders);
         info.setFileCount(info.getFileCount() + files);
         return info;
+    }
+
+    protected org.kablink.teaming.domain.DefinableEntity getDefinableEntity(Pair<ShareItem, org.kablink.teaming.domain.DefinableEntity> pair,
+                                                                            boolean accessCheck) {
+        org.kablink.teaming.domain.DefinableEntity entity = pair.getB();
+        if (entity==null) {
+            ShareItem item = pair.getA();
+            if (accessCheck) {
+                try {
+                    entity = getSharingModule().getSharedEntity(item);
+                } catch (AccessControlException e) {
+                } catch (NoBinderByTheIdException e) {
+                } catch (NoFolderEntryByTheIdException e) {
+                }
+            } else {
+                entity = getSharingModule().getSharedEntityWithoutAccessCheck(item);
+            }
+            pair.setB(entity);
+        }
+        return entity;
     }
 
     protected Date getLibraryModifiedDate(Long [] binderIds, boolean recursive) {
