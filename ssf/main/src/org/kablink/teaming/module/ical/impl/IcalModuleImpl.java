@@ -2751,15 +2751,22 @@ public class IcalModuleImpl extends CommonDependencyInjection implements IcalMod
 	 */
 	private static TimeZone mapJavaTZToICal4jTZ(TimeZoneRegistry iCal4jTZRegistry, java.util.TimeZone javaTZ) {
 		TimeZone iCal4jTZ = null;
-		// use jodatime to convert 3-characters zone ids to ical names 
-		DateTimeZone dateTimeZone = DateTimeZone.forTimeZone(javaTZ);
-		if (null != dateTimeZone) {
-			String tzID = dateTimeZone.getID();
-			iCal4jTZ = iCal4jTZRegistry.getTimeZone(tzID);
-			if (iCal4jTZ == null) {
-				tzID = mapLinuxTZIDToJavaTZID(tzID);
-				if ((null != tzID) && (0 < tzID.length())) {
-					iCal4jTZ = iCal4jTZRegistry.getTimeZone(tzID);
+		if (javaTZ instanceof TimeZone) {
+			iCal4jTZ = ((TimeZone) javaTZ);
+		}
+		
+		else {
+			// Use JodaTime to convert 3-characters zone IDs to iCal
+			// names. 
+			DateTimeZone dateTimeZone = DateTimeZone.forTimeZone(javaTZ);
+			if (null != dateTimeZone) {
+				String tzID = dateTimeZone.getID();
+				iCal4jTZ = iCal4jTZRegistry.getTimeZone(tzID);
+				if (iCal4jTZ == null) {
+					tzID = mapLinuxTZIDToJavaTZID(tzID);
+					if ((null != tzID) && (0 < tzID.length())) {
+						iCal4jTZ = iCal4jTZRegistry.getTimeZone(tzID);
+					}
 				}
 			}
 		}
