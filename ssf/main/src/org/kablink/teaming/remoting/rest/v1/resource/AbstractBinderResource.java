@@ -44,6 +44,7 @@ import org.kablink.teaming.rest.v1.model.Tag;
 import org.kablink.teaming.rest.v1.model.TeamMember;
 import org.kablink.teaming.search.SearchUtils;
 import org.kablink.teaming.web.util.BinderHelper;
+import org.kablink.util.Pair;
 import org.kablink.util.api.ApiErrorCode;
 import org.kablink.util.search.Constants;
 import org.kablink.util.search.Criteria;
@@ -394,9 +395,10 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
         spec.setLatest(true);
         spec.setSharedEntityIdentifier(new EntityIdentifier(id, binder.getEntityType()));
         SearchResultList<Share> results = new SearchResultList<Share>();
-        List<ShareItem> shareItems = getShareItems(spec, true, true, true);
-        for (ShareItem shareItem : shareItems) {
-            results.append(ResourceUtil.buildShare(shareItem, findDefinableEntity(shareItem.getSharedEntityIdentifier()),
+        List<Pair<ShareItem,DefinableEntity>> shareItems = getShareItems(spec, true, true, true);
+        for (Pair<ShareItem, DefinableEntity> pair : shareItems) {
+            ShareItem shareItem = pair.getA();
+            results.append(ResourceUtil.buildShare(shareItem, getDefinableEntity(pair, true),
                     buildShareRecipient(shareItem), isGuestAccessEnabled()));
         }
         return results;

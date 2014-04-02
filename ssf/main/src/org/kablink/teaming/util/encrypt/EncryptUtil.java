@@ -40,6 +40,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jasypt.encryption.StringEncryptor;
 import org.kablink.teaming.ConfigurationException;
+import org.kablink.teaming.cache.impl.HashMapCache;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SpringContextUtil;
@@ -63,7 +64,9 @@ public class EncryptUtil {
 
     // Symmetric encryption algorithm used before Filr 1.0 (that is, up to Vibe 3.3/Granite release)
     private static final String SYMMETRIC_ENCRYPTION_ALGORITHM_PRE_FILR_1_0 = "PBEWithMD5AndDES";
-    
+
+    private static HashMapCache<Long, String> passwordCache = new HashMapCache<Long, String>(SPropsUtil.getLong("cache.decrypted.passwords", 60));
+
 	public static String encryptSHA1(String... input) {
 		long startTime = System.nanoTime();
 
@@ -124,41 +127,48 @@ public class EncryptUtil {
 
 		if(passwordToCheck == null)
 			return false;
-		
+
 		String alg = passwordEncryptionAlgorithmForMatching(user);
 		
-		boolean result;
-		
-		if(alg.equals(SYMMETRIC_ENCRYPTION_ALGORITHM)) {
-			// New symmetric encryption algorithm
-			if(logger.isTraceEnabled())
-				logger.trace("Checking password for user '" + user.getName() + "' using symmetric algorithm '" + alg + "'");
-			// Since encryption of the same password value doesn't necessarily result in the same encrypted value,
-			// we must decrypt the user's stored password and compare it with the user entered value.
-			result = passwordToCheck.equals(getStringEncryptor().decrypt(user.getPassword()));
-		}
-		else if(alg.equals(SYMMETRIC_ENCRYPTION_ALGORITHM_PRE_FILR_1_0)) {
-			// Old symmetric encryption algorithm
-			if(logger.isTraceEnabled())
-				logger.trace("Checking password for user '" + user.getName() + "' using symmetric algorithm '" + alg + "'");
-			result = passwordToCheck.equals(getStringEncryptor_PreFilr1_0().decrypt(user.getPassword()));			
-		}
-		else {
-			// Asymmetric encryption algorithm
-			for(String asymAlg : ASYMMETRIC_ENCRYPTION_ALGORITHMS) {
-				if(alg.equals(asymAlg)) {
-					if(logger.isTraceEnabled())
-						logger.trace("Checking password for user " + user.getName() + " using asymmetric algorithm " + alg);
-					// Apply the same algorithm to the user entered value and compare it with the user's 
-					// stored (encrypted) password.
-					return PasswordHashEncryptor.encrypt(alg, passwordToCheck).equals(user.getPassword());
-				}
-			}
-			result = false; // Unrecognized algorithm
-		}
-		
+		boolean result = false;
+
+        String decryptedPassword = passwordCache.get(user.getId());
+        if (decryptedPassword==null) {
+            if(alg.equals(SYMMETRIC_ENCRYPTION_ALGORITHM)) {
+                // New symmetric encryption algorithm
+                if(logger.isTraceEnabled())
+                    logger.trace("Checking password for user '" + user.getName() + "' using symmetric algorithm '" + alg + "'");
+                // Since encryption of the same password value doesn't necessarily result in the same encrypted value,
+                // we must decrypt the user's stored password and compare it with the user entered value.
+                decryptedPassword = getStringEncryptor().decrypt(user.getPassword());
+                passwordCache.put(user.getId(), decryptedPassword);
+            }
+            else if(alg.equals(SYMMETRIC_ENCRYPTION_ALGORITHM_PRE_FILR_1_0)) {
+                // Old symmetric encryption algorithm
+                if(logger.isTraceEnabled())
+                    logger.trace("Checking password for user '" + user.getName() + "' using symmetric algorithm '" + alg + "'");
+                decryptedPassword = getStringEncryptor_PreFilr1_0().decrypt(user.getPassword());
+                passwordCache.put(user.getId(), decryptedPassword);
+            }
+            else {
+                // Asymmetric encryption algorithm
+                for(String asymAlg : ASYMMETRIC_ENCRYPTION_ALGORITHMS) {
+                    if(alg.equals(asymAlg)) {
+                        if(logger.isTraceEnabled())
+                            logger.trace("Checking password for user " + user.getName() + " using asymmetric algorithm " + alg);
+                        // Apply the same algorithm to the user entered value and compare it with the user's
+                        // stored (encrypted) password.
+                        return PasswordHashEncryptor.encrypt(alg, passwordToCheck).equals(user.getPassword());
+                    }
+                }
+            }
+        }
+        if (decryptedPassword!=null) {
+            result = passwordToCheck.equals(decryptedPassword);
+        }
+
 		end(startTime, "checkPassword");
-		
+
 		return result;
 	}
 	
@@ -201,24 +211,28 @@ public class EncryptUtil {
 			return null;
 		}
 		
-		String result;
-		
-		String alg = passwordEncryptionAlgorithmForMatching(user);
-		if(alg.equals(SYMMETRIC_ENCRYPTION_ALGORITHM)) {
-			if(logger.isTraceEnabled())
-				logger.trace("Decrypting password for user '" + user.getName() + "' using symmetric algorithm '" + alg + "'");
-			result = getStringEncryptor().decrypt(user.getPassword());
-		}
-		else if(alg.equals(SYMMETRIC_ENCRYPTION_ALGORITHM_PRE_FILR_1_0)) {
-			if(logger.isTraceEnabled())
-				logger.trace("Decrypting password for user '" + user.getName() + "' using symmetric algorithm '" + alg + "'");
-			result = getStringEncryptor_PreFilr1_0().decrypt(user.getPassword());			
-		}
-		else {
-			if(logger.isTraceEnabled())
-				logger.trace("Cannot decrypt password for user '" + user.getName() + "' since it uses asymmetric algorithm '" + alg + "'");
-			result = null;
-		}
+		String result = passwordCache.get(user.getId());
+        if (result==null) {
+            String alg = passwordEncryptionAlgorithmForMatching(user);
+            if(alg.equals(SYMMETRIC_ENCRYPTION_ALGORITHM)) {
+                if(logger.isTraceEnabled())
+                    logger.trace("Decrypting password for user '" + user.getName() + "' using symmetric algorithm '" + alg + "'");
+                result = getStringEncryptor().decrypt(user.getPassword());
+            }
+            else if(alg.equals(SYMMETRIC_ENCRYPTION_ALGORITHM_PRE_FILR_1_0)) {
+                if(logger.isTraceEnabled())
+                    logger.trace("Decrypting password for user '" + user.getName() + "' using symmetric algorithm '" + alg + "'");
+                result = getStringEncryptor_PreFilr1_0().decrypt(user.getPassword());
+            }
+            else {
+                if(logger.isTraceEnabled())
+                    logger.trace("Cannot decrypt password for user '" + user.getName() + "' since it uses asymmetric algorithm '" + alg + "'");
+                result = null;
+            }
+            if (result!=null) {
+                passwordCache.put(user.getId(), result);
+            }
+        }
 		
 		end(startTime, "decryptPasswordForMatching");
 		

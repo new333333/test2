@@ -42,6 +42,7 @@ import org.kablink.teaming.domain.NoUserByTheIdException;
 import org.kablink.teaming.domain.NoUserByTheNameException;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.Workspace;
+import org.kablink.teaming.module.zone.ZoneModule;
 import org.kablink.teaming.security.accesstoken.AccessToken;
 import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.util.SpringContextUtil;
@@ -257,13 +258,13 @@ public class RequestContext {
     
 	private User fetchUser() throws NoContextUserException {
 		try {
+            if (zoneId==null && zoneName!=null) {
+                zoneId = getZoneModule().getZoneIdByZoneName(zoneName);
+            }
 			User u;
 			if(userId != null) {
 				if(zoneId != null) {
 					u = getProfileDao().loadUserDeadOrAlive(userId, zoneId);
-				}
-				else if(zoneName != null) {
-					u = getProfileDao().loadUser(userId, zoneName);					
 				}
 				else {
 					throw new IllegalStateException("Either zone id or zone name must be specified first");
@@ -272,9 +273,6 @@ public class RequestContext {
 			else if(userName != null) {
 				if(zoneId != null) {
 					u = getProfileDao().findUserByName(userName, zoneId);
-				}
-				else if(zoneName != null) {
-					u = getProfileDao().findUserByName(userName, zoneName);					
 				}
 				else {
 					throw new IllegalStateException("Either zone id or zone name must be specified first");
@@ -295,6 +293,10 @@ public class RequestContext {
 
 	private static ProfileDao getProfileDao() {
 		return (ProfileDao) SpringContextUtil.getBean("profileDao");
+	}
+
+	private static ZoneModule getZoneModule() {
+		return (ZoneModule) SpringContextUtil.getBean("zoneModule");
 	}
 
 	public String toString() {

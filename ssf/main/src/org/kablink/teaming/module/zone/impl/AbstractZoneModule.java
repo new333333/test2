@@ -46,6 +46,7 @@ import java.util.Set;
 import org.apache.commons.io.FileUtils;
 import org.kablink.teaming.NoObjectByTheIdException;
 import org.kablink.teaming.ObjectKeys;
+import org.kablink.teaming.cache.impl.HashMapCache;
 import org.kablink.teaming.context.request.RequestContext;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.context.request.RequestContextUtil;
@@ -92,12 +93,10 @@ import org.kablink.teaming.security.function.Function;
 import org.kablink.teaming.security.function.WorkArea;
 import org.kablink.teaming.security.function.WorkAreaFunctionMembership;
 import org.kablink.teaming.security.function.WorkAreaOperation;
-import org.kablink.teaming.security.function.WorkAreaOperation.RightSet;
 import org.kablink.teaming.security.impl.AccessControlManagerImpl;
 import org.kablink.teaming.util.FileStore;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ReflectHelper;
-import org.kablink.teaming.util.ReleaseInfo;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SZoneConfig;
 import org.kablink.teaming.util.SessionUtil;
@@ -115,6 +114,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 public abstract class AbstractZoneModule extends CommonDependencyInjection implements ZoneModule,InitializingBean {
 	protected TempFileUtil.OITTempCleanupThread m_oitTempCleanupThread;
 	protected DefinitionModule definitionModule;
+    private HashMapCache<String, Long> zoneIdCache = new HashMapCache<String, Long>(SPropsUtil.getLong("cache.zone.id", 300));
 	
 	/**
 	 * Setup by spring
@@ -268,8 +268,12 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
  	
 	@Override
 	public Long getZoneIdByZoneName(String zoneName) {
-		Workspace top = getCoreDao().findTopWorkspace(zoneName);
-		return top.getId();
+        Long id = zoneIdCache.get(zoneName);
+        if (id==null) {
+    		id = getCoreDao().findTopWorkspaceId(zoneName);
+            zoneIdCache.put(zoneName, id);
+        }
+        return id;
 	}
 	@Override
 	public ZoneConfig getZoneConfig(Long zoneId) throws ZoneException {
