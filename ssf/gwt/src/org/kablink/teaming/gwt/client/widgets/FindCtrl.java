@@ -870,10 +870,10 @@ public class FindCtrl extends Composite
 			m_txtBox.setVisibleLength( visibleLength );
 			m_txtBox.addKeyUpHandler( this );
 			m_txtBox.addKeyDownHandler( this );
-			m_txtBox.addKeyPressHandler( new KeyPressHandler()
+			m_txtBox.addKeyDownHandler( new KeyDownHandler()
 			{
 				@Override
-				public void onKeyPress( KeyPressEvent event )
+				public void onKeyDown( KeyDownEvent event )
 				{
 					// Hide the hint.
 					m_floatingHintLabel.setVisible( false );
