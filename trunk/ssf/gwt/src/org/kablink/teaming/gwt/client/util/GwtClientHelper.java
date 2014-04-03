@@ -1622,9 +1622,34 @@ public class GwtClientHelper {
 	 * 
 	 * @return
 	 */
+	public static boolean jsIsAnyIE() {
+		return (jsIsIE() || jsIsIE11());
+	}
+	
+	/**
+	 * Returns true if we're running in any flavor of IE other than
+	 * IE11 and false otherwise.
+	 * 
+	 * @return
+	 */
 	public static native boolean jsIsIE() /*-{
 		var agent = navigator.userAgent.toLowerCase();
 		if (agent.indexOf("msie") != (-1)) {
+			return true;
+		}
+		return false;
+	}-*/;
+	
+	/**
+	 * Returns true if we're running in IE11 and false otherwise.
+	 * 
+	 * Mimics the check in BrowserSniffer.is_ie_11().
+	 * 
+	 * @return
+	 */
+	public static native boolean jsIsIE11() /*-{
+		var agent = navigator.userAgent.toLowerCase();
+		if (agent.indexOf("like gecko") != (-1) && (agent.indexOf("rv:11.0") != (-1))) {
 			return true;
 		}
 		return false;
@@ -1969,26 +1994,27 @@ public class GwtClientHelper {
 	}
 
 	/**
-	 * Look for the given value in the given listbox
+	 * Look for the given value in the given ListBox.
+	 * 
+	 * @param listbox
+	 * @param value
+	 * 
+	 * @return
 	 */
-	public static int doesListboxContainValue( ListBox listbox, String value )
-	{
-		int i;
+	public static int doesListboxContainValue(ListBox listbox, String value) {
+		if ((null == listbox) || (null == value)) {
+			return (-1);
+		}
 		
-		if ( listbox == null || value == null )
-			return -1;
-		
-		for (i = 0; i < listbox.getItemCount(); ++i)
-		{
-			String nextValue;
-			
-			nextValue = listbox.getValue( i );
-			if ( value.equalsIgnoreCase( nextValue ) )
+		for (int i = 0; i < listbox.getItemCount(); i += 1) {
+			String nextValue = listbox.getValue(i);
+			if (value.equalsIgnoreCase(nextValue)) {
 				return i;
+			}
 		}
 		
 		// If we get here we did not find the value.
-		return -1;
+		return (-1);
 	}
 	
 	/**
@@ -1999,9 +2025,7 @@ public class GwtClientHelper {
 	 * @param value
 	 */
 	public static int selectListboxItemByValue(ListBox listbox, String value) {
-		int i;
-		
-		for (i = 0; i < listbox.getItemCount(); i += 1) {
+		for (int i = 0; i < listbox.getItemCount(); i += 1) {
 			String tmp = listbox.getValue(i);
 			if (tmp != null && tmp.equalsIgnoreCase(value)) {
 				listbox.setSelectedIndex(i);
@@ -2011,7 +2035,7 @@ public class GwtClientHelper {
 		
 		// If we get here it means we did not find an item in the
 		// list box with the given value.
-		return -1;
+		return (-1);
 	}
 	
 	/**
@@ -2253,7 +2277,8 @@ public class GwtClientHelper {
 	}
 
 	/**
-	 * 
+	 * ?
+	 *  
 	 * @param s
 	 * @param delimiter
 	 */
@@ -2283,7 +2308,7 @@ public class GwtClientHelper {
 		nodeValues = new ArrayList<String>();
 
 		pos = s.indexOf( delimiter, offset );
-		while ( pos != -1 )
+		while ( pos != (-1) )
 		{
 			nodeValues.add( s.substring( offset, pos ) );
 
