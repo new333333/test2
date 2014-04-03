@@ -513,6 +513,10 @@ public interface AdminModule {
     
     public void setLogTablePurgeSchedule(ScheduleInfo info);
     
+    public ScheduleInfo getTextConversionFilePurgeSchedule();
+    
+    public void setTextConversionFilePurgeSchedule(ScheduleInfo info);
+    
     public MobileAppsConfig getMobileAppsConfig();
     public MobileOpenInWhiteLists getMobileOpenInWhiteLists();
     

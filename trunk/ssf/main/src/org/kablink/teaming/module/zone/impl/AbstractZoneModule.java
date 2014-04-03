@@ -1041,26 +1041,10 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 			}
 		}
 
-		//See if it is time to purge the text conversion cache folder
-		maxDirSize = SPropsUtil.getLongObject("max.textConversion.cache.size", 0L);
-		if (maxDirSize > 0) {
-			//There is a limit for the text conversion cache. Go check if it is exceeded
-			FileStore cacheFileStoreText = new FileStore(SPropsUtil.getString("cache.file.store.dir"), ObjectKeys.CONVERTER_DIR_TEXT);
-			File cacheDir = new File(cacheFileStoreText.getRootPath() + File.separator + Utils.getZoneKey());
-			if (!Utils.getZoneKey().equals("") && cacheDir != null && cacheDir.exists()) {
-				//Get the dir size
-				long dirSize = FileUtils.sizeOfDirectory(cacheDir);
-				if (dirSize > maxDirSize) {
-					String cacheDirPath = cacheDir.getAbsolutePath();
-					try {
-						FileUtils.deleteDirectory(cacheDir);
-					} catch(Exception e) {
-						logger.warn("Could not delete text conversion cache directory ("+cacheDirPath+") - " + e.getMessage());
-					}
-				}
-			}
-		}
-}
+		//Turn on the text conversion file purging job
+		ScheduleInfo textConversionFilePurgeSchedInfo = getAdminModule().getTextConversionFilePurgeSchedule();
+		getAdminModule().setTextConversionFilePurgeSchedule(textConversionFilePurgeSchedInfo);
+ 	}
 
  	// Must be running inside a transaction set up by the caller
  	protected Workspace addZoneTx(String zoneName, String zoneAdminName, String virtualHost) {
