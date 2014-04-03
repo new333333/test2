@@ -105,6 +105,7 @@ import org.kablink.teaming.jobs.FileVersionAging;
 import org.kablink.teaming.jobs.IndexOptimization;
 import org.kablink.teaming.jobs.LogTablePurge;
 import org.kablink.teaming.jobs.ScheduleInfo;
+import org.kablink.teaming.jobs.TextConversionFilePurge;
 import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.module.admin.IndexOptimizationSchedule;
 import org.kablink.teaming.module.admin.ManageIndexException;
@@ -183,6 +184,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 	protected static String INDEX_OPTIMIZATION_JOB = "index.optimization.job"; // properties in xml file need a unique name
 	protected static String FILE_VERSION_AGING_JOB = "file.version.aging.job"; // properties in xml file need a unique name
 	protected static String LOG_TABLE_PURGE_JOB = "log.table.purge.job"; // properties in xml file need a unique name
+	protected static String TEXT_CONVERSION_FILE_PURGE_JOB = "text.conversion.file.purge.job"; // properties in xml file need a unique name
 	
 	protected MailModule mailModule;
 	/**
@@ -3497,14 +3499,10 @@ public List<ChangeLog> getWorkflowChanges(EntityIdentifier entityIdentifier, Str
     @Override
 	public ScheduleInfo getLogTablePurgeSchedule() {
     	ScheduleInfo info =  getLogTablePurgeObject().getScheduleInfo(RequestContextHolder.getRequestContext().getZoneId());
-		User user = RequestContextHolder.getRequestContext().getUser();
-		Date now = new Date();
-		int offsetHour = user.getTimeZone().getOffset(now.getTime()) / (60 * 60 * 1000);
 		String hours = SPropsUtil.getString("log.table.purge.schedule.hours", "0");
 		String minutes = SPropsUtil.getString("log.table.purge.schedule.minutes", "40");
 		try {
 			int iHours = Integer.valueOf(hours);
-			iHours -= offsetHour;
 			hours = String.valueOf((iHours + 24) % 24);
 		} catch(Exception e) {
 			//This must be trying to set "*" or some other fancy value, so just leave "hours" as it was
@@ -3579,6 +3577,50 @@ public List<ChangeLog> getWorkflowChanges(EntityIdentifier entityIdentifier, Str
 	//See if there is a custom scheduling job being specified
     protected String getLogTablePurgeProperty(String zoneName, String name) {
 		return SZoneConfig.getString(zoneName, "logTablePurgeConfiguration/property[@name='" + name + "']");
+	}
+
+    @Override
+	public ScheduleInfo getTextConversionFilePurgeSchedule() {
+    	ScheduleInfo info =  getTextConversionFilePurgeObject().getScheduleInfo(RequestContextHolder.getRequestContext().getZoneId());
+		String hours = SPropsUtil.getString("text.conversion.file.purge.schedule.hours", "0");
+		String minutes = SPropsUtil.getString("text.conversion.file.purge.schedule.minutes", "50");
+		try {
+			int iHours = Integer.valueOf(hours);
+			hours = String.valueOf((iHours + 24) % 24);
+		} catch(Exception e) {
+			//This must be trying to set "*" or some other fancy value, so just leave "hours" as it was
+		}
+		info.getSchedule().setDaily(true);
+		info.getSchedule().setHours(hours);
+		info.getSchedule().setMinutes(minutes);
+    	return info;
+    }
+    
+    @Override
+	public void setTextConversionFilePurgeSchedule(ScheduleInfo info) {
+  	   	checkAccess(AdminOperation.manageIndex);
+  	   	TextConversionFilePurge obj = getTextConversionFilePurgeObject();
+    	obj.setScheduleInfo(info);
+    	obj.enable(true, RequestContextHolder.getRequestContext().getZoneId());
+    }
+
+    private TextConversionFilePurge getTextConversionFilePurgeObject() {
+    	String zoneName = RequestContextHolder.getRequestContext().getZoneName();
+		String jobClass = getTextConversionFilePurgeProperty(zoneName, TEXT_CONVERSION_FILE_PURGE_JOB);
+    	if (Validator.isNotNull(jobClass)) {
+		   try {
+			   return  (TextConversionFilePurge)ReflectHelper.getInstance(jobClass);
+		   } catch (Exception ex) {
+			   logger.error("Cannot instantiate TextConversionFilePurge custom class", ex);
+		   }
+   		}
+   		return (TextConversionFilePurge)ReflectHelper.getInstance(
+   				org.kablink.teaming.jobs.DefaultTextConversionFilePurge.class);
+    }
+    
+	//See if there is a custom scheduling job being specified
+    protected String getTextConversionFilePurgeProperty(String zoneName, String name) {
+		return SZoneConfig.getString(zoneName, "textConversionFilePurgeConfiguration/property[@name='" + name + "']");
 	}
 
     //Routine to append AuditTrail entries to a log file before they get deleted
