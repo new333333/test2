@@ -411,6 +411,26 @@ public class ResourceUtil {
         return model;
     }
 
+    public static UserBrief buildUserBrief(LimitedUserView user) {
+        UserBrief model = new UserBrief();
+        model.setId(user.getId());
+        model.setEntityType(Constants.ENTRY_TYPE_USER);
+        model.setTitle(user.getTitle());
+        model.setAvatar(buildAvatar(user.getAvatarId()));
+        model.setLink(LinkUriUtil.getUserLinkUri(model.getId()));
+        return model;
+    }
+
+    public static User buildLimitedUser(LimitedUserView user) {
+        User model = new User();
+        model.setId(user.getId());
+        model.setEntityType(Constants.ENTRY_TYPE_USER);
+        model.setTitle(user.getTitle());
+        model.setAvatar(buildAvatar(user.getAvatarId()));
+        model.setLink(LinkUriUtil.getUserLinkUri(model.getId()));
+        return model;
+    }
+
     public static GroupBrief buildGroupBrief(org.kablink.teaming.domain.UserPrincipal group) {
         GroupBrief model = new GroupBrief();
         populatePrincipalBrief(model, group);
