@@ -1411,7 +1411,7 @@ public interface GwtTeamingMessages extends Messages
 	String shareDlg_alreadySharedWithSelectedRecipient( String recipientName );
 	String shareDlg_cantShareWithAllExternalUsersGroup();
 	String shareDlg_cantShareWithAllInternalUsersGroup();
-	String shareDlg_cantShareWithExternalUser();
+	String shareDlg_cantShareWithExternalUser( String emailAddr );
 	String shareDlg_cantShareWithPublic();
 	String shareDlg_cantShareWithYourself();
 	String shareDlg_clickToAddNote();
@@ -1419,10 +1419,10 @@ public interface GwtTeamingMessages extends Messages
 	String shareDlg_deleteButton();
 	String shareDlg_editButton();
 	String shareDlg_editor();
-	String shareDlg_emailAddressInvalidPrompt();
-	String shareDlg_emailAddressInvalid_blDomain();
-	String shareDlg_emailAddressInvalid_blEMA();
-	String shareDlg_emailAddressInvalid_wl();
+	String shareDlg_emailAddressInvalidPrompt( String emailAddr );
+	String shareDlg_emailAddressInvalid_blDomain( String emailAddr );
+	String shareDlg_emailAddressInvalid_blEMA( String emailAddr );
+	String shareDlg_emailAddressInvalid_wl( String emailAddr );
 	String shareDlg_expiresAfter( String after );
 	String shareDlg_expiresLabel();
 	String shareDlg_expiresNever();

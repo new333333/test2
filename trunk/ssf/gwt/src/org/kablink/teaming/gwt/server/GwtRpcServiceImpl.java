@@ -134,6 +134,8 @@ import org.kablink.teaming.gwt.client.profile.ProfileStats;
 import org.kablink.teaming.gwt.client.profile.UserStatus;
 import org.kablink.teaming.gwt.client.rpc.shared.*;
 import org.kablink.teaming.gwt.client.rpc.shared.GetGroupMembershipCmd.MembershipFilter;
+import org.kablink.teaming.gwt.client.rpc.shared.ValidateEmailAddressCmd.AddressField;
+import org.kablink.teaming.gwt.client.rpc.shared.ValidateEmailRpcResponseData.EmailAddressStatus;
 import org.kablink.teaming.gwt.client.service.GwtRpcService;
 import org.kablink.teaming.gwt.client.util.ActivityStreamData;
 import org.kablink.teaming.gwt.client.util.ActivityStreamData.PagingData;
@@ -774,20 +776,80 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 				@Override
 				public Object doAs()
 				{
-					GwtUser gwtUser;
-					String ema;
-
-					ema = fuCmd.getEmailAddress();
-					gwtUser = GwtSearchHelper.findUserByEmailAddress( ami, request, ema );
-					if ( fuCmd.isValidateExternalEMA() && ( null != gwtUser ) && gwtUser.getUserType().isExternal() )
+					FindUserByEmailAddressRpcResponseData responseData;
+					ArrayList<String> listOfEmailAddresses;
+					
+					responseData = new FindUserByEmailAddressRpcResponseData();
+					
+					listOfEmailAddresses = fuCmd.getListOfEmailAddresses();
+					if ( listOfEmailAddresses != null )
 					{
-						if ( ! getSharingModule().isExternalAddressValid( ema ))
+						for ( String ema : listOfEmailAddresses )
 						{
-							gwtUser = null;
+							GwtUser gwtUser;
+
+							gwtUser = GwtSearchHelper.findUserByEmailAddress( ami, request, ema );
+							
+							// Did we find a user?
+							if ( gwtUser != null )
+							{
+								// Yes
+								// Did we find an external user?
+								if ( gwtUser.getUserType().isExternal() )
+								{
+									// Yes
+									// Are we supposed to validate the email address?
+									if ( fuCmd.isValidateExternalEMA() )
+									{
+										EmailAddressStatus emaStatus = null;
+
+										// Yes
+										// Is the email address valid?
+										emaStatus = GwtServerHelper.validateEmailAddressImpl(
+																						ami,
+																						ema,
+																						true,
+																						AddressField.MAIL_TO );
+										if ( emaStatus != null && emaStatus.isInvalid() )
+										{
+											// No
+											gwtUser = null;
+											responseData.addEmailStatus( ema, emaStatus );
+										}
+									}
+								}
+							}
+							else
+							{
+								// We didn't find a user with the given email address
+								// Are we supposed to validate the email address?
+								if ( fuCmd.isValidateExternalEMA() )
+								{
+									EmailAddressStatus emaStatus = null;
+
+									// Yes
+									// Is the email address valid?
+									emaStatus = GwtServerHelper.validateEmailAddressImpl(
+																						ami,
+																						ema,
+																						true,
+																						AddressField.MAIL_TO );
+									if ( emaStatus != null )
+									{
+										// No
+										responseData.addEmailStatus( ema, emaStatus );
+									}
+								}
+							}
+							
+							if ( gwtUser != null )
+							{
+								responseData.addUser( ema, gwtUser );
+							}
 						}
 					}
 					
-					return new VibeRpcResponse( gwtUser );
+					return new VibeRpcResponse( responseData );
 				}
 			}; 
 

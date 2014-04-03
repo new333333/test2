@@ -32,6 +32,8 @@
  */
 package org.kablink.teaming.gwt.client.rpc.shared;
 
+import java.util.ArrayList;
+
 /**
  * This class holds all of the information necessary to execute the
  * 'find user by email address' command.
@@ -41,7 +43,7 @@ package org.kablink.teaming.gwt.client.rpc.shared;
 public class FindUserByEmailAddressCmd extends VibeRpcCmd 
 {
 	private boolean m_validateExternalEMA;
-	private String m_emailAddress;
+	private ArrayList<String> m_listOfEmailAddresses;
 	
 	/**
 	 * Class constructor.
@@ -56,28 +58,28 @@ public class FindUserByEmailAddressCmd extends VibeRpcCmd
 	/**
 	 * Class constructor.
 	 */
-	public FindUserByEmailAddressCmd( String emailAddress, boolean validateExternalEMA )
+	public FindUserByEmailAddressCmd( ArrayList<String> listOfEmailAddresses, boolean validateExternalEMA )
 	{
 		this();
 		
-		setEmailAddress( emailAddress );
+		setListOfEmailAddresses( listOfEmailAddresses );
 		setValidateExternalEMA( validateExternalEMA );
 	}
 	
 	/**
 	 * Class constructor.
 	 */
-	public FindUserByEmailAddressCmd( String emailAddress )
+	public FindUserByEmailAddressCmd( ArrayList<String> listOfEmailAddresses )
 	{
-		this( emailAddress, false );
+		this( listOfEmailAddresses, false );
 	}
 	
 	/**
 	 * 
 	 */
-	public String getEmailAddress()
+	public ArrayList<String> getListOfEmailAddresses()
 	{
-		return m_emailAddress;
+		return m_listOfEmailAddresses;
 	}
 	
 	/**
@@ -91,9 +93,9 @@ public class FindUserByEmailAddressCmd extends VibeRpcCmd
 	/**
 	 * 
 	 */
-	public void setEmailAddress( String emailAddress )
+	public void setListOfEmailAddresses( ArrayList<String> listOfEmailAddresses )
 	{
-		m_emailAddress = emailAddress;
+		m_listOfEmailAddresses = listOfEmailAddresses;
 	}
 	
 	/**

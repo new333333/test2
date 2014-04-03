@@ -11856,7 +11856,33 @@ public class GwtServerHelper {
 	 * 
 	 * @return
 	 */
-	public static ValidateEmailRpcResponseData validateEmailAddress(AllModulesInjected bs, String emailAddress, boolean externalEMA, ValidateEmailAddressCmd.AddressField addressField) {
+	public static ValidateEmailRpcResponseData validateEmailAddress(
+		AllModulesInjected bs,
+		String emailAddress,
+		boolean externalEMA,
+		ValidateEmailAddressCmd.AddressField addressField) {
+		EmailAddressStatus emaStatus;
+
+		emaStatus = validateEmailAddressImpl( bs, emailAddress, externalEMA, addressField );
+
+		return new ValidateEmailRpcResponseData(emaStatus);
+	}
+	
+	/**
+	 * Validate the given e-mail address.
+	 * 
+	 * @param emailAddress
+	 * @param externalEMA
+	 * @param addressField
+	 * 
+	 * @return
+	 */
+	public static EmailAddressStatus validateEmailAddressImpl(
+		AllModulesInjected bs,
+		String emailAddress,
+		boolean externalEMA,
+		ValidateEmailAddressCmd.AddressField addressField )
+	{
 		EmailAddressStatus emaStatus = null;
 		if (externalEMA) {
 			ExternalAddressStatus extEMAStatus = bs.getSharingModule().getExternalAddressStatus(emailAddress);
@@ -11885,7 +11911,7 @@ public class GwtServerHelper {
 			else emaStatus = EmailAddressStatus.failsFormat;
 		}
 		
-		return new ValidateEmailRpcResponseData(emaStatus);
+		return emaStatus;
 	}
 	
 	/**

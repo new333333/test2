@@ -940,7 +940,7 @@ public class ShareThisDlg extends DlgBox
 					if ( m_sharingInfo.getCanShareWithExternalUsers() == false )
 					{
 						// No, tell the user they can't do this.
-						Window.alert( GwtTeaming.getMessages().shareDlg_cantShareWithExternalUser() );
+						Window.alert( GwtTeaming.getMessages().shareDlg_cantShareWithExternalUser( "" ) );
 						return null;
 					}
 				}
@@ -2385,8 +2385,8 @@ public class ShareThisDlg extends DlgBox
 
 			// Issue an ajax request to see if the email address that was entered is associated
 			// with an internal user.
-			FindUserByEmailAddressCmd cmd = new FindUserByEmailAddressCmd( emailAddress, true );
-			GwtClientHelper.executeCommand( cmd, findUserCallback );
+//			FindUserByEmailAddressCmd cmd = new FindUserByEmailAddressCmd( emailAddress, true );
+//			GwtClientHelper.executeCommand( cmd, findUserCallback );
 		}
 	}
 	
@@ -3790,9 +3790,9 @@ public class ShareThisDlg extends DlgBox
 									String msg = null;
 									switch ( emaStatus )
 									{
-									case failsBlacklistDomain:  messages.shareDlg_emailAddressInvalid_blDomain(); break;
-									case failsBlacklistEMA:     messages.shareDlg_emailAddressInvalid_blEMA();    break;
-									case failsWhitelist:        messages.shareDlg_emailAddressInvalid_wl();       break;
+									case failsBlacklistDomain:  messages.shareDlg_emailAddressInvalid_blDomain(""); break;
+									case failsBlacklistEMA:     messages.shareDlg_emailAddressInvalid_blEMA("");    break;
+									case failsWhitelist:        messages.shareDlg_emailAddressInvalid_wl("");       break;
 									}
 									// Tell the user about the problem...
 									GwtClientHelper.deferredAlert( msg );
@@ -3804,7 +3804,7 @@ public class ShareThisDlg extends DlgBox
 								default:
 								case failsFormat:
 									// No, ask the user if they still want to share with this email address.
-									if ( Window.confirm( messages.shareDlg_emailAddressInvalidPrompt() ) == true )
+									if ( Window.confirm( messages.shareDlg_emailAddressInvalidPrompt("") ) == true )
 										addToRecipientList = true;
 									break;
 								}
