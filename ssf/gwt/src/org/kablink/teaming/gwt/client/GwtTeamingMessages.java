@@ -1999,6 +1999,7 @@ public interface GwtTeamingMessages extends Messages
 	String html5Uploader_InternalError_NoBrowserSupport();
 	String html5Uploader_InternalError_UploaderAlreadyActive();
 	String html5Uploader_Warning_NoFiles();
+	String html5Uploader_Warning_NoFilesIE();
 	
 	// Strings used in the "Child binders widget"
 	String workspacesHeader();
