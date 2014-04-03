@@ -270,6 +270,11 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 				if(logger.isTraceEnabled())
 					logTrace("Called purgeOldDocument on writer with uid term [" + purgeTerm.toString() + "]");
 				// Next, purge duplicate based on the path (i.e., enforce unique constraint on the path) 
+				/* (Bug 870523) Do NOT purge based on path information. This causes trouble when there are
+				 * one or more binders in the trash with the same path as the one that is being indexed.
+				 * In such case, we have to maintain all of them in the index. If this becomes an issue,
+				 * then we could modify this code so that it deletes only those binders that match the
+				 * path criteria AND _preDeleted=false. We shall see. 
 				Fieldable pathField = doc.getFieldable(Constants.SORT_ENTITY_PATH);
 				if(pathField != null) {
 					String path = pathField.stringValue();
@@ -280,6 +285,7 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 							logTrace("Called purgeOldDocument on writer with path term [" + purgeTerm2.toString() + "]");
 					}
 				}
+				*/
 			}
 		}
 	}
