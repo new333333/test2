@@ -3775,6 +3775,7 @@ public class GwtMenuHelper {
 			boolean				isGuest     = user.isShared();
 			boolean				isFilr      = Utils.checkIfFilr();
 			boolean				isFilrGuest = (isGuest && isFilr);
+			boolean				isTop		= fe.isTop();
 			Folder				folder      = fe.getParentFolder();
 			String				feId        = String.valueOf(fe.getId());
 			String				folderId    = String.valueOf(folder.getId());
@@ -3784,8 +3785,8 @@ public class GwtMenuHelper {
 
 			// Can the user share this entry?
 			SharingModule sm = bs.getSharingModule();
-			boolean canAddShare        = sm.testAddShareEntity(fe);
-			boolean canPublicLinkShare = sm.testAddShareEntityPublicLinks(fe);
+			boolean canAddShare        = (isTop && sm.testAddShareEntity(fe));
+			boolean canPublicLinkShare = (isTop && sm.testAddShareEntityPublicLinks(fe));
 			if ((!isGuest) && sm.isSharingEnabled() && sm.isSharingPublicLinksEnabled() && (canAddShare || canPublicLinkShare)) {
 				// Yes!  Is it a file entry?
 				if (GwtServerHelper.isFamilyFile(GwtServerHelper.getFolderEntityFamily(bs, fe))) {
@@ -4017,8 +4018,9 @@ public class GwtMenuHelper {
 				}
 			}
 
-			// Is this the guest user?
-			if (!isGuest) {
+			// Is this a non-comment entry for other than the guest
+			// user?
+			if (isTop && (!isGuest)) {
 				// No!  Add a separator if necessary...
 				needSeparator = addNestedSeparatorIfNeeded(dropdownTBI, needSeparator);
 				
@@ -4048,7 +4050,7 @@ public class GwtMenuHelper {
 				}
 
 				// Can the user export this entry?
-				if ((!isFilr) && fe.isTop() && bs.getBinderModule().testAccess(folder, BinderOperation.export)) {
+				if ((!isFilr) && bs.getBinderModule().testAccess(folder, BinderOperation.export)) {
 					// Yes!  Add an export toolbar item for it.
 					url = createActionUrl(request);
 					url.setParameter(WebKeys.ACTION,        WebKeys.ACTION_EXPORT_IMPORT);
