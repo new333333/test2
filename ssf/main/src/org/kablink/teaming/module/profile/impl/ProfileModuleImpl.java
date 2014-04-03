@@ -83,6 +83,7 @@ import org.kablink.teaming.domain.GroupPrincipal;
 import org.kablink.teaming.domain.HistoryStampBrief;
 import org.kablink.teaming.domain.IdentityInfo;
 import org.kablink.teaming.domain.IndividualPrincipal;
+import org.kablink.teaming.domain.LimitedUserView;
 import org.kablink.teaming.domain.MobileAppsConfig.MobileOpenInSetting;
 import org.kablink.teaming.domain.NoApplicationByTheNameException;
 import org.kablink.teaming.domain.NoBinderByTheIdException;
@@ -1734,6 +1735,28 @@ public Map getUsers() {
 	}
 	  
 	//RO transaction
+	@Override
+    public Set<LimitedUserView> getLimitedUserViews(Collection<Long> userIds) {
+		//does read check on Profiles binder
+        User user = RequestContextHolder.getRequestContext().getUser();
+       	Set<LimitedUserView> result = new HashSet<LimitedUserView>();
+       	try {
+            List<User> users = getProfileDao().loadUsers(userIds, user.getZoneId());
+            for (User u : users) {
+    	       	result.add(new LimitedUserView(u));
+            }
+       	} catch(AccessControlException ace) {}
+ 		return result;
+	}
+
+    @Override
+    public LimitedUserView getLimitedUserView(Long userId) {
+        User user = RequestContextHolder.getRequestContext().getUser();
+        User u = getProfileDao().loadUser(userId, user.getZoneId());
+        return new LimitedUserView(u);
+    }
+
+    //RO transaction
 	@Override
 	public SortedSet<User> getUsersFromPrincipals(Collection<Long> principalIds) {
 		//does read check
