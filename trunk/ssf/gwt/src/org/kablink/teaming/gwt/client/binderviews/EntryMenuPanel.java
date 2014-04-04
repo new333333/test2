@@ -152,7 +152,6 @@ public class EntryMenuPanel extends ToolPanelBase
 	private boolean							m_includeColumnResizer;		//
 	private boolean							m_isIE;						//
 	private boolean							m_panelInitialized;			// Set true after the panel has completed initializing.
-	private boolean							m_shareMenuIsDropdown;		//
 	private boolean							m_viewingPinnedEntries;		//
 	private boolean							m_viewingSharedFiles;		//
 	private List<HandlerRegistration>		m_registeredEventHandlers;	// Event handlers that are currently registered.
@@ -172,13 +171,20 @@ public class EntryMenuPanel extends ToolPanelBase
 	private VibeMenuItem					m_deleteMenu;				//
 	private VibeMenuItem					m_detailsMenu;				//
 	private VibeMenuItem					m_moreMenu;					//
+	private VibeMenuItem					m_moreSingleItem;			//
 	private VibeMenuItem					m_shareMenu;				//
+	private VibeMenuItem					m_shareSingleItem;			//
 	private VibeMenuItem					m_trashPurgeAllMenu;		//
 	private VibeMenuItem					m_trashPurgeSelectedMenu;	//
 	private VibeMenuItem					m_trashRestoreAllMenu;		//
 	private VibeMenuItem					m_trashRestoreSelectedMenu;	//
 	private VibeMenuItem					m_wipeMenu;					//
+	private VibeMenuItem					m_wipeSingleItem;			//
 
+	private final static String	TBI_MORE_NAME	= "1_more";
+	private final static String	TBI_SHARE_NAME	= "1_share";
+	private final static String TBI_WIPE_NAME	= "1_wipe";
+	
 	/**
 	 * Inner class used to encapsulate the manage users filter items.
 	 */
@@ -607,9 +613,18 @@ public class EntryMenuPanel extends ToolPanelBase
 				// ...rendering each of them.
 				List<ToolbarItem> nestedTBI = perEntryTBI.getNestedItemsList();
 				if (GwtClientHelper.hasItems(nestedTBI)) {
-					if (nestedTBI.size() == 1)
-					     renderSimpleTBI(    m_entryMenu, null, nestedTBI.get(0), false);
-					else renderStructuredTBI(m_entryMenu, null, perEntryTBI            );
+					if (nestedTBI.size() == 1) {
+						VibeMenuItem simpleTBI = renderSimpleTBI(m_entryMenu, null, nestedTBI.get(0), false);
+						String tbiName = perEntryTBI.getName();
+						if (null != tbiName) {
+							if      (tbiName.equals(TBI_MORE_NAME))  m_moreSingleItem  = simpleTBI;
+							else if (tbiName.equals(TBI_SHARE_NAME)) m_shareSingleItem = simpleTBI;
+							else if (tbiName.equals(TBI_WIPE_NAME))  m_wipeSingleItem  = simpleTBI;
+						}
+					}
+					else {
+						renderStructuredTBI(m_entryMenu, null, perEntryTBI);
+					}
 				}
 				
 				else if (perEntryTBI.isSeparator()) {
@@ -1061,7 +1076,7 @@ public class EntryMenuPanel extends ToolPanelBase
 	/*
 	 * Renders any simple (i.e., URL or event based) toolbar item.
 	 */
-	private void renderSimpleTBI(VibeMenuBar menuBar, PopupMenu popupMenu, final ToolbarItem simpleTBI, boolean contentsSelectable) {
+	private VibeMenuItem renderSimpleTBI(VibeMenuBar menuBar, PopupMenu popupMenu, final ToolbarItem simpleTBI, boolean contentsSelectable) {
 		final String        simpleTitle = simpleTBI.getTitle();
 		final TeamingEvents simpleEvent = simpleTBI.getTeamingEvent();
 
@@ -1130,7 +1145,7 @@ public class EntryMenuPanel extends ToolPanelBase
 		}
 
 		// ...and generate the menu item.
-		VibeMenuItem menuItem = new VibeMenuItem(menuText, menuTextIsHTML, new Command() {
+		VibeMenuItem reply = new VibeMenuItem(menuText, menuTextIsHTML, new Command() {
 			@Override
 			public void execute() {
 				// Does the simple toolbar item contain a URL to
@@ -1254,27 +1269,30 @@ public class EntryMenuPanel extends ToolPanelBase
 				}
 			}
 		});
-		menuItem.getElement().setId(simpleTBI.getName());
+		reply.getElement().setId(simpleTBI.getName());
 		switch (simpleTBI.getTeamingEvent()) {
-		case INVOKE_DROPBOX:                  m_addFilesMenu             = menuItem; break;
-		case DELETE_SELECTED_ENTITIES:        m_deleteMenu               = menuItem; break;
-		case DELETE_SELECTED_MOBILE_DEVICES:  m_deleteMenu               = menuItem; break;
-		case TRASH_PURGE_ALL:                 m_trashPurgeAllMenu        = menuItem; break;
-		case TRASH_PURGE_SELECTED_ENTITIES:   m_trashPurgeSelectedMenu   = menuItem; break;
-		case TRASH_RESTORE_ALL:               m_trashRestoreAllMenu      = menuItem; break;
-		case TRASH_RESTORE_SELECTED_ENTITIES: m_trashRestoreSelectedMenu = menuItem; break;
-		case VIEW_SELECTED_ENTRY:             m_detailsMenu              = menuItem; break;
+		case INVOKE_DROPBOX:                  m_addFilesMenu             = reply; break;
+		case DELETE_SELECTED_ENTITIES:        m_deleteMenu               = reply; break;
+		case DELETE_SELECTED_MOBILE_DEVICES:  m_deleteMenu               = reply; break;
+		case TRASH_PURGE_ALL:                 m_trashPurgeAllMenu        = reply; break;
+		case TRASH_PURGE_SELECTED_ENTITIES:   m_trashPurgeSelectedMenu   = reply; break;
+		case TRASH_RESTORE_ALL:               m_trashRestoreAllMenu      = reply; break;
+		case TRASH_RESTORE_SELECTED_ENTITIES: m_trashRestoreSelectedMenu = reply; break;
+		case VIEW_SELECTED_ENTRY:             m_detailsMenu              = reply; break;
 		case SHARE_SELECTED_ENTITIES:
-			if (null == m_shareMenu) {
-				m_shareMenu           = menuItem;
-				m_shareMenuIsDropdown = false;
+			if ((null == m_shareMenu) && (null == m_shareSingleItem)) {
+				m_shareSingleItem = reply;
 			}
 			break;
 		}
-		menuItem.addStyleName((menuBar == m_entryMenu) ? "vibe-entryMenuBarItem" : "vibe-entryMenuPopupItem");
+		reply.addStyleName((menuBar == m_entryMenu) ? "vibe-entryMenuBarItem" : "vibe-entryMenuPopupItem");
 		if (null != menuBar)
-		     menuBar.addItem(      menuItem);
-		else popupMenu.addMenuItem(menuItem);
+		     menuBar.addItem(      reply);
+		else popupMenu.addMenuItem(reply);
+
+		// If we get here, reply contains the simple ToolbarItem's
+		// menu item.  Return it.
+		return reply;
 	}
 
 	/*
@@ -1314,9 +1332,9 @@ public class EntryMenuPanel extends ToolPanelBase
 		
 		String structuredName = structuredTBI.getName();
 		if (GwtClientHelper.hasString(structuredName)) {
-			if      (structuredName.equals("1_more"))   m_moreMenu  = structuredMenuItem;
-			else if (structuredName.equals("1_share")) {m_shareMenu = structuredMenuItem; m_shareMenuIsDropdown = true;}
-			else if (structuredName.equals("1_wipe"))   m_wipeMenu  = structuredMenuItem;
+			if      (structuredName.equals(TBI_MORE_NAME))  m_moreMenu  = structuredMenuItem;
+			else if (structuredName.equals(TBI_SHARE_NAME)) m_shareMenu = structuredMenuItem;
+			else if (structuredName.equals(TBI_WIPE_NAME))  m_wipeMenu  = structuredMenuItem;
 		}
 		
 		// ...scan the nested items...
@@ -1360,19 +1378,13 @@ public class EntryMenuPanel extends ToolPanelBase
 		// If we have a trash purge all menu item...
 		if (null != m_trashPurgeAllMenu) {
 			// ...enable disable it.
-			m_trashPurgeAllMenu.setEnabled(dataAvailable);
-			if (dataAvailable)
-			     m_trashPurgeAllMenu.removeStyleName("vibe-menuDisabled");
-			else m_trashPurgeAllMenu.addStyleName(   "vibe-menuDisabled");
+			setMenuItemEnabled(m_trashPurgeAllMenu, dataAvailable);
 		}
 		
 		// If we have a trash restore all menu item...
 		if (null != m_trashRestoreAllMenu) {
 			// ...enable disable it.
-			m_trashRestoreAllMenu.setEnabled(dataAvailable);
-			if (dataAvailable)
-			     m_trashRestoreAllMenu.removeStyleName("vibe-menuDisabled");
-			else m_trashRestoreAllMenu.addStyleName(   "vibe-menuDisabled");
+			setMenuItemEnabled(m_trashRestoreAllMenu, dataAvailable);
 		}
 	}
 	
@@ -1381,84 +1393,58 @@ public class EntryMenuPanel extends ToolPanelBase
 	 * to be selected.
 	 */
 	private void setEntriesSelectedImpl(boolean enable) {
-		// If we have a share menu item...
+		// If we have a share popup menu item...
 		if (null != m_shareMenu) {
 			// ...enable disable it...
-			m_shareMenu.setEnabled(enable);
-			if (enable)
-			     m_shareMenu.removeStyleName("vibe-menuDisabled");
-			else m_shareMenu.addStyleName(   "vibe-menuDisabled");
-			
-			if (m_shareMenuIsDropdown) {
-				// ...and update its display to reflect the state of the
-				// ...menu item (in particular, the drop down image on the
-				// ...menu.)
-				m_shareMenu.setHTML(
-					renderStructuredItemHTML(
-						m_shareMenu.getText(),
-						enable));
-			}
+		    setMenuPopupEnabled(m_shareMenu, enable);
+		}
+
+		// If we have a share menu item...
+		if (null != m_shareSingleItem) {
+			// ...enable disable it...
+			setMenuItemEnabled(m_shareSingleItem, enable);
 		}
 
 		// If we have a delete menu item...
 		if (null != m_deleteMenu) {
 			// ...enable disable it.
-			m_deleteMenu.setEnabled(enable);
-			if (enable)
-			     m_deleteMenu.removeStyleName("vibe-menuDisabled");
-			else m_deleteMenu.addStyleName(   "vibe-menuDisabled");
+			setMenuItemEnabled(m_deleteMenu, enable);
 		}
 
-		// If we have a more menu item...
+		// If we have a more popup menu item...
 		if (null != m_moreMenu) {
 			// ...enable/disable it...
-			m_moreMenu.setEnabled(enable);
-			if (enable)
-			     m_moreMenu.removeStyleName("vibe-menuDisabled");
-			else m_moreMenu.addStyleName(   "vibe-menuDisabled");
+			setMenuPopupEnabled(m_moreMenu, enable);
+		}
+		
+		// If we have a more menu item...
+		if (null != m_moreSingleItem) {
+			// ...enable disable it...
+			setMenuItemEnabled(m_moreSingleItem, enable);
+		}
 
-			// ...and update its display to reflect the state of the
-			// ...menu item (in particular, the drop down image on the
-			// ...menu.)
-			m_moreMenu.setHTML(
-				renderStructuredItemHTML(
-					m_moreMenu.getText(),
-					enable));
+		// If we have a wipe popup menu item...
+		if (null != m_wipeMenu) {
+			// ...enable/disable it...
+			setMenuPopupEnabled(m_wipeMenu, enable);
 		}
 		
 		// If we have a wipe menu item...
-		if (null != m_wipeMenu) {
-			// ...enable/disable it...
-			m_wipeMenu.setEnabled(enable);
-			if (enable)
-			     m_wipeMenu.removeStyleName("vibe-menuDisabled");
-			else m_wipeMenu.addStyleName(   "vibe-menuDisabled");
-
-			// ...and update its display to reflect the state of the
-			// ...menu item (in particular, the drop down image on the
-			// ...menu.)
-			m_wipeMenu.setHTML(
-				renderStructuredItemHTML(
-					m_wipeMenu.getText(),
-					enable));
+		if (null != m_wipeSingleItem) {
+			// ...enable disable it...
+			setMenuItemEnabled(m_wipeSingleItem, enable);
 		}
-		
+
 		// If we have a trash purge selected menu item...
 		if (null != m_trashPurgeSelectedMenu) {
 			// ...enable disable it.
-			m_trashPurgeSelectedMenu.setEnabled(enable);
-			if (enable)
-			     m_trashPurgeSelectedMenu.removeStyleName("vibe-menuDisabled");
-			else m_trashPurgeSelectedMenu.addStyleName(   "vibe-menuDisabled");
+			setMenuItemEnabled(m_trashPurgeSelectedMenu, enable);
 		}
 		
 		// If we have a trash restore selected menu item...
 		if (null != m_trashRestoreSelectedMenu) {
 			// ...enable disable it.
-			m_trashRestoreSelectedMenu.setEnabled(enable);
-			if (enable)
-			     m_trashRestoreSelectedMenu.removeStyleName("vibe-menuDisabled");
-			else m_trashRestoreSelectedMenu.addStyleName(   "vibe-menuDisabled");
+			setMenuItemEnabled(m_trashRestoreSelectedMenu, enable);
 		}
 	}
 	
@@ -1475,6 +1461,35 @@ public class EntryMenuPanel extends ToolPanelBase
 			     m_detailsMenu.removeStyleName("vibe-menuDisabled");
 			else m_detailsMenu.addStyleName(   "vibe-menuDisabled");
 		}
+	}
+
+	/*
+	 * Enables/disables a VibeMenuItem that represents a simple menu
+	 * item.
+	 */
+	private void setMenuItemEnabled(VibeMenuItem mi, boolean enable) {
+		// Enabled/disable the menu item.
+		mi.setEnabled(enable);
+		if (enable)
+		     mi.removeStyleName("vibe-menuDisabled");
+		else mi.addStyleName(   "vibe-menuDisabled");
+	}
+	
+	/*
+	 * Enables/disables a VibeMenuItem that represents a popup menu
+	 * item.
+	 */
+	private void setMenuPopupEnabled(VibeMenuItem mp, boolean enable) {
+		// Enabled/disable the menu item...
+		setMenuItemEnabled(mp, enable);
+		
+		// ...and update its display to reflect the state of the
+		// ...menu item (in particular, the drop down image on the
+		// ...menu.)
+		mp.setHTML(
+			renderStructuredItemHTML(
+				mp.getText(),
+				enable));
 	}
 	
 	/*
