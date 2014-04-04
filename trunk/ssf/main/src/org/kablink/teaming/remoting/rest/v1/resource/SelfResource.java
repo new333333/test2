@@ -751,17 +751,17 @@ public class SelfResource extends AbstractFileResource {
                 ((DefinableEntityBrief)obj).setParentBinder(parent);
             } else if (obj instanceof BinderChange) {
                 org.kablink.teaming.rest.v1.model.Binder binder = ((BinderChange)obj).getBinder();
-                if (allParentIds.contains(binder.getParentBinder().getId())) {
+                if (binder!=null && allParentIds.contains(binder.getParentBinder().getId())) {
                     binder.setParentBinder(parent);
                 }
             } else if (obj instanceof FileChange) {
                 FileProperties file = ((FileChange)obj).getFile();
-                if (allParentIds.contains(file.getBinder().getId())) {
+                if (file!=null && allParentIds.contains(file.getBinder().getId())) {
                     file.setBinder(parent);
                 }
             } else if (obj instanceof FolderEntryChange) {
                 org.kablink.teaming.rest.v1.model.FolderEntry entry = ((FolderEntryChange)obj).getEntry();
-                if (allParentIds.contains(entry.getParentBinder().getId())) {
+                if (entry!=null && allParentIds.contains(entry.getParentBinder().getId())) {
                     entry.setParentBinder(parent);
                 }
             }
