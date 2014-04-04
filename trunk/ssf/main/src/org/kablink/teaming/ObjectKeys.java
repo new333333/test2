@@ -695,6 +695,7 @@ public interface ObjectKeys {
     public static final String FIELD_ENTITY_MODIFY_PRINCIPAL="modification.principal";
     public static final String FIELD_ENTITY_DELETED="deleted";
     public static final String FIELD_ENTITY_TEMPLATE_OWNING_BINDER_ID="templateOwningBinderId";
+    public static final String FIELD_ENTITY_GWT_COMMENT_ENTRY="*&*&*_gwtCommentEntry_*&*&*";
 
     public static final String FIELD_FILE_ID="_fileID";
     
