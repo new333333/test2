@@ -401,7 +401,7 @@ public class NetFolderGlobalSettingsDlg extends DlgBox
 		setOkEnabled( true );
 
 		m_useDirectoryRightsCB.setValue( false );
-		m_cachedRightsRefreshIntervalTB.setValue( "10" );
+		m_cachedRightsRefreshIntervalTB.setValue( "5" );
 
 		// Create a callback that will be called when we get the net folder global settings.
 		rpcReadCallback = new AsyncCallback<VibeRpcResponse>()
