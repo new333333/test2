@@ -136,12 +136,12 @@ public class SearchResultList<T> {
                         }
                         builder.append(URLEncoder.encode(entry.getKey(), "UTF-8"))
                                 .append("=")
-                                .append(URLEncoder.encode((String)v, "UTF-8"));
+                                .append(URLEncoder.encode(v.toString(), "UTF-8"));
                     }
                 } else {
                     builder.append(URLEncoder.encode(entry.getKey(), "UTF-8"))
                            .append("=")
-                           .append(URLEncoder.encode((String)entry.getValue(), "UTF-8"));
+                           .append(URLEncoder.encode(entry.getValue().toString(), "UTF-8"));
                 }
             } catch (UnsupportedEncodingException e) {
                 throw new RuntimeException(e);
