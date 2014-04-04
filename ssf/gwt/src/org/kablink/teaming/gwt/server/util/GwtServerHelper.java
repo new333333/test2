@@ -973,6 +973,7 @@ public class GwtServerHelper {
 		inputMap.put(ObjectKeys.FIELD_ENTITY_TITLE, title);
 		inputMap.put(ObjectKeys.FIELD_ENTITY_DESCRIPTION, desc);
 		inputMap.put(ObjectKeys.FIELD_ENTITY_DESCRIPTION_FORMAT, String.valueOf(Description.FORMAT_HTML));
+		inputMap.put(ObjectKeys.FIELD_ENTITY_GWT_COMMENT_ENTRY, String.valueOf(Boolean.TRUE));
 		MapInputData inputData = new MapInputData(inputMap);
 
     	return folderModule.addReply(binderIdL, entryIdL, replyDefId, inputData, new HashMap(), null);
