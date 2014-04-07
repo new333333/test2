@@ -3337,7 +3337,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		ShareItemSelectSpec	spec = new ShareItemSelectSpec();
 		EntityIdentifier ei = entity.getEntityIdentifier();
 		spec.setSharedEntityIdentifier(ei);
-		List<ShareItem> shareItems = getProfileDao().findShareItems(spec);
+		List<ShareItem> shareItems = getProfileDao().findShareItems(spec, RequestContextHolder.getRequestContext().getZoneId());
 		if (shareItems != null) {
 			for (ShareItem shareItem : shareItems) {
 				//See if there are any cached HTML files to be deleted

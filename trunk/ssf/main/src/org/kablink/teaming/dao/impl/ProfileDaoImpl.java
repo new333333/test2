@@ -555,7 +555,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
      * 
      */
  	@Override
-	public List<Group> findGroups( final GroupSelectSpec groupSelectSpec )
+	public List<Group> findGroups( final GroupSelectSpec groupSelectSpec, final Long zoneId)
 	{
 		long begin = System.nanoTime();
 		try
@@ -590,6 +590,8 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
                 	filter = groupSelectSpec.getFilter();
                 	if ( filter != null && filter.length() > 0 )
                 		crit.add( Restrictions.ilike( ObjectKeys.FIELD_ENTITY_TITLE, filter, MatchMode.ANYWHERE ) );
+                	
+                	crit.add(Restrictions.eq(ObjectKeys.FIELD_ZONE, zoneId));
 
                 	return crit.list();
                 }
@@ -2813,7 +2815,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
  	}
  	 	
 	@Override
- 	public Map<ShareItem.RecipientType, Set<Long>> getRecipientIdsWithGrantedRightToSharedEntity(final EntityIdentifier sharedEntityIdentifier, final String rightName) {
+ 	public Map<ShareItem.RecipientType, Set<Long>> getRecipientIdsWithGrantedRightToSharedEntity(final EntityIdentifier sharedEntityIdentifier, final String rightName, final Long zoneId) {
 		if(sharedEntityIdentifier == null)
 			throw new IllegalArgumentException("shared entity identifier must be specified");
 		long begin = System.nanoTime();
@@ -2829,6 +2831,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
                     				.setInteger("sharedEntityType", sharedEntityIdentifier.getEntityType().getValue())
                     				.setLong("sharedEntityId", sharedEntityIdentifier.getEntityId())
                     				.setBoolean("rightValue", true)
+                    				.setLong(ObjectKeys.FIELD_ZONE, zoneId)
                     				.list();
 	                    }
 	                }
@@ -2959,7 +2962,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 	}
 
  	@Override
-	public List<ShareItem> findShareItems(final ShareItemSelectSpec selectSpec) {
+	public List<ShareItem> findShareItems(final ShareItemSelectSpec selectSpec, final Long zoneId) {
  		// This method utilizes sub-criteria which requires relationship to be expressed using
  		// association rather than collection of values.
 		long begin = System.nanoTime();
@@ -3077,6 +3080,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 	                    			junction.add(Restrictions.eq("rightSet." + rightName, true));
 	                    		crit.add(junction);
 	                    	}
+	                    	crit.add(Restrictions.eq(ObjectKeys.FIELD_ZONE, zoneId));
 	                    	return crit.list();
 	                    }
 	                }

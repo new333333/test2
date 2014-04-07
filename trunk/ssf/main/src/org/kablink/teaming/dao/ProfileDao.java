@@ -308,7 +308,7 @@ public interface ProfileDao {
  	 * @param rightName
  	 * @return
  	 */
- 	public Map<ShareItem.RecipientType, Set<Long>> getRecipientIdsWithGrantedRightToSharedEntity(EntityIdentifier sharedEntityIdentifier, String rightName);
+ 	public Map<ShareItem.RecipientType, Set<Long>> getRecipientIdsWithGrantedRightToSharedEntity(EntityIdentifier sharedEntityIdentifier, String rightName, Long zoneId);
  	
  	/**
  	 * Return IDs of users, groups, and teams that are granted specified right to at least one of the specified entities.
@@ -334,7 +334,7 @@ public interface ProfileDao {
  	 * 
  	 * @return
  	 */
- 	public List<Group> findGroups( GroupSelectSpec groupSelectSpec );
+ 	public List<Group> findGroups( GroupSelectSpec groupSelectSpec, Long zoneId);
 
  	/** 
  	 * Find a list of <code>ShareItem</code> meeting the specified selection criteria.
@@ -342,7 +342,7 @@ public interface ProfileDao {
  	 * @param selectSpec
  	 * @return
  	 */
- 	public List<ShareItem> findShareItems(final ShareItemSelectSpec selectSpec);
+ 	public List<ShareItem> findShareItems(final ShareItemSelectSpec selectSpec, Long zoneId);
 
  	/**
  	 * Find a list <code>ShareItem</code> that have been expired but yet to be handled.
