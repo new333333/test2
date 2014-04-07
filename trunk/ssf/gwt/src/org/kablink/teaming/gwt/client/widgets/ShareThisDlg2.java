@@ -329,7 +329,7 @@ public class ShareThisDlg2 extends DlgBox
 					if ( m_sharingInfo.getCanShareWithExternalUsers() == false )
 					{
 						// No, tell the user they can't do this.
-						Window.alert( GwtTeaming.getMessages().shareDlg_cantShareWithExternalUser( user.getEmail() ) );
+						Window.alert( GwtTeaming.getMessages().shareDlg_cantShareWithExternalUser_Param( user.getEmail() ) );
 						return null;
 					}
 				}
@@ -2114,7 +2114,7 @@ public class ShareThisDlg2 extends DlgBox
 			if ( m_sharingInfo.getCanShareWithExternalUsers() == false )
 			{
 				// No, tell the user they can't do this.
-				Window.alert( GwtTeaming.getMessages().shareDlg_cantShareWithExternalUser( emailAddr ) );
+				Window.alert( GwtTeaming.getMessages().shareDlg_cantShareWithExternalUser_Param( emailAddr ) );
 				continue;
 			}
 
@@ -2141,15 +2141,15 @@ public class ShareThisDlg2 extends DlgBox
 						switch ( status )
 						{
 						case failsBlacklistDomain:
-							msg = messages.shareDlg_emailAddressInvalid_blDomain( emailAddr );
+							msg = messages.shareDlg_emailAddressInvalid_blDomain_Param( emailAddr );
 							break;
 						
 						case failsBlacklistEMA:
-							msg = messages.shareDlg_emailAddressInvalid_blEMA( emailAddr );
+							msg = messages.shareDlg_emailAddressInvalid_blEMA_Param( emailAddr );
 							break;
 							
 						case failsWhitelist:
-							msg = messages.shareDlg_emailAddressInvalid_wl( emailAddr );
+							msg = messages.shareDlg_emailAddressInvalid_wl_Param( emailAddr );
 							break;
 						}
 						
@@ -2165,7 +2165,7 @@ public class ShareThisDlg2 extends DlgBox
 					default:
 					case failsFormat:
 						// No, ask the user if they still want to share with this email address.
-						if ( Window.confirm( messages.shareDlg_emailAddressInvalidPrompt( emailAddr ) ) == true )
+						if ( Window.confirm( messages.shareDlg_emailAddressInvalidPrompt_Param( emailAddr ) ) == true )
 							addToRecipientList = true;
 						break;
 					}
@@ -3397,9 +3397,9 @@ public class ShareThisDlg2 extends DlgBox
 									String msg = null;
 									switch ( emaStatus )
 									{
-									case failsBlacklistDomain:  msg = messages.shareDlg_emailAddressInvalid_blDomain( emailAddress ); break;
-									case failsBlacklistEMA:     msg = messages.shareDlg_emailAddressInvalid_blEMA( emailAddress );    break;
-									case failsWhitelist:        msg = messages.shareDlg_emailAddressInvalid_wl( emailAddress );       break;
+									case failsBlacklistDomain:  msg = messages.shareDlg_emailAddressInvalid_blDomain_Param( emailAddress ); break;
+									case failsBlacklistEMA:     msg = messages.shareDlg_emailAddressInvalid_blEMA_Param( emailAddress );    break;
+									case failsWhitelist:        msg = messages.shareDlg_emailAddressInvalid_wl_Param( emailAddress );       break;
 									}
 									// Tell the user about the problem...
 									GwtClientHelper.deferredAlert( msg );
@@ -3411,7 +3411,7 @@ public class ShareThisDlg2 extends DlgBox
 								default:
 								case failsFormat:
 									// No, ask the user if they still want to share with this email address.
-									if ( Window.confirm( messages.shareDlg_emailAddressInvalidPrompt( emailAddress ) ) == true )
+									if ( Window.confirm( messages.shareDlg_emailAddressInvalidPrompt_Param( emailAddress ) ) == true )
 										addToRecipientList = true;
 									break;
 								}
