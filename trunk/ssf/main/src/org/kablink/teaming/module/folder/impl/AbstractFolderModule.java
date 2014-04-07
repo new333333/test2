@@ -54,10 +54,8 @@ import java.util.TreeSet;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.lucene.document.DateTools;
-
 import org.dom4j.Document;
 import org.dom4j.Element;
-
 import org.kablink.teaming.BinderQuotaException;
 import org.kablink.teaming.DataQuotaException;
 import org.kablink.teaming.FileSizeLimitException;
@@ -89,6 +87,7 @@ import org.kablink.teaming.domain.NoFolderEntryByTheIdException;
 import org.kablink.teaming.domain.Rating;
 import org.kablink.teaming.domain.ReservedByAnotherUserException;
 import org.kablink.teaming.domain.SeenMap;
+import org.kablink.teaming.domain.ShareItem;
 import org.kablink.teaming.domain.Subscription;
 import org.kablink.teaming.domain.Tag;
 import org.kablink.teaming.domain.User;
@@ -154,7 +153,6 @@ import org.kablink.teaming.web.util.TrashHelper;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
 import org.kablink.util.search.Criteria;
-
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -1144,6 +1142,12 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
         if ((folder.isMirrored() || destination.isMirrored())) {
 			//To move to and from mirrored folders, copy the entry to the destination folder then delete the original entry
 			newEntry = (FolderEntry) processor.copyEntry(folder, entry, destination, toFileNames, options);
+			//See if the original entity was shared
+			List<Long> shareItemIds = getProfileDao().getShareItemIdsByEntity(entry);
+			if (!shareItemIds.isEmpty()) {
+				//Move the share items over to the new entry
+				getProfileDao().changeSharedEntityId(shareItemIds, newEntry);
+			}
 			try {
 				processor.deleteEntry(folder, entry, true, options);
 			} catch(WriteFilesException e) {

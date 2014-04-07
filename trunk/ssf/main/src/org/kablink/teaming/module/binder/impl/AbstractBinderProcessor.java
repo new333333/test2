@@ -1579,6 +1579,14 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 			binder = addBinder(destination, sampleDef, sampleBinderClass, inputData, null, null);
 			//Also copy the configured definitions from the sample
 			binder.setDefinitions(sampleDefs);
+			//If moving share items, do that now
+			if (ctx.containsKey(ObjectKeys.INPUT_OPTION_MOVE_SHARE_ITEMS) && 
+					(Boolean)ctx.get(ObjectKeys.INPUT_OPTION_MOVE_SHARE_ITEMS)) {
+				List<Long> shareItemIds = getProfileDao().getShareItemIdsByEntity(source);
+				if (!shareItemIds.isEmpty()) {
+					getProfileDao().changeSharedEntityId(shareItemIds, binder);
+				}
+			}
 			getCoreDao().flush();
        } catch (Exception e) {}
        

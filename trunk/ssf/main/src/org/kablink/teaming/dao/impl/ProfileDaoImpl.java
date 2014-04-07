@@ -71,6 +71,7 @@ import org.kablink.teaming.domain.Application;
 import org.kablink.teaming.domain.ApplicationGroup;
 import org.kablink.teaming.domain.ApplicationPrincipal;
 import org.kablink.teaming.domain.Binder;
+import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.EmailAddress;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.Group;
@@ -2508,6 +2509,69 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
     	}	              	
     	
     }
+    
+    //get list representing entities that have been shared with ids and binderIds
+    @Override
+	public List<Long> getShareItemIdsByEntity(final DefinableEntity entity) {   	
+		long begin = System.nanoTime();
+		try {
+	      	List<Object> list = (List<Object>)getHibernateTemplate().execute(
+      			new HibernateCallback() {
+                    @Override
+					public Object doInHibernate(Session session) throws HibernateException {
+                    	// Don't use alias of the first table to refer to property/column name associated with entity, 
+                    	// since HQL won't treat it as nicely as it does without alias. 
+				   		return session.createQuery("select id from org.kablink.teaming.domain.ShareItem where sharedEntity_type=:sharedEntityType and sharedEntity_id=:sharedEntityId and zoneId=:zoneId")
+								.setInteger("sharedEntityType", entity.getEntityIdentifier().getEntityType().getValue())
+								.setLong("sharedEntityId", entity.getEntityIdentifier().getEntityId())
+								.setLong("zoneId", entity.getZoneId())
+								.list();
+                	}
+      			}
+      		);
+	      	return shareItemIdResultListToShareItemList(list);
+		}
+    	finally {
+    		end(begin, "getShareItemsByEntity");
+    	}	              	
+    }
+    
+	private  List<Long> shareItemIdResultListToShareItemList(List<Object> list) {
+      	List<Long> shareItemIds = new ArrayList<Long>();
+       	for(Object o:list) {
+       		Long shareItemId = (Long) o;
+       		shareItemIds.add(shareItemId);
+       	}
+      	
+       	return shareItemIds;
+	}
+
+	//Change shareItems to point to a new entity
+	@Override
+	public void changeSharedEntityId(final Collection<Long> shareItemIds, final DefinableEntity entity) {
+		long begin = System.nanoTime();
+		try {
+			if (shareItemIds.isEmpty()) return;
+			getHibernateTemplate().execute(
+					new HibernateCallback() {
+						@Override
+						public Object doInHibernate(Session session) throws HibernateException {
+							session.createQuery("Update org.kablink.teaming.domain.ShareItem set sharedEntity_id=:sharedEntityId where sharedEntity_type=:sharedEntityType and id in (:shareItemIds) and zoneId=:zoneId")
+							.setLong("sharedEntityId", entity.getId())
+							.setInteger("sharedEntityType", entity.getEntityIdentifier().getEntityType().getValue())
+							.setParameterList("shareItemIds", shareItemIds)
+							.setLong("zoneId", entity.getZoneId())
+							.executeUpdate();
+							return null;
+						}
+					}
+			);    		             		 
+    	}
+    	finally {
+    		end(begin, "markEntriesDeleted(ProfileBinder,Collection<Principal>)");
+    	}	        
+	}
+
     
  	private User findUserByNameDeadOrAlive(final String userName, final Long zoneId) 
 	throws NoUserByTheNameException {
