@@ -32,25 +32,51 @@
  */
 package org.kablink.teaming.rest.servlet;
 
+import javax.management.openmbean.CompositeData;
+import javax.management.openmbean.CompositeDataSupport;
+import javax.management.openmbean.CompositeDataView;
+import javax.management.openmbean.CompositeType;
+import javax.management.openmbean.OpenType;
+import javax.management.openmbean.SimpleType;
+import java.util.Date;
+import java.util.Map;
+
 /**
  * User: david
- * Date: 3/17/11
- * Time: 7:46 AM
+ * Date: 3/21/11
+ * Time: 2:45 PM
  */
-public class InvalidPriorityException extends RuntimeException {
-    public InvalidPriorityException() {
-    }
+public abstract class AbstractCompositeDataView implements CompositeDataView {
 
-    public InvalidPriorityException(String message) {
-        super(message);
-    }
+    protected abstract Map<String, Object> toMap();
 
-    public InvalidPriorityException(String message, Throwable cause) {
-        super(message, cause);
-    }
-
-    public InvalidPriorityException(Throwable cause) {
-        super(cause);
+    @Override
+    public CompositeData toCompositeData(CompositeType ct) {
+        Map<String, Object> values = toMap();
+        String [] itemNames = values.keySet().toArray(new String[values.size()]);
+        OpenType[] itemTypes = new OpenType[itemNames.length];
+        int i = 0;
+        for (String itemName : itemNames) {
+            OpenType type = SimpleType.VOID;
+            Object value = values.get(itemName);
+            if (value instanceof Integer) {
+                type = SimpleType.INTEGER;
+            } else if (value instanceof Long) {
+                type = SimpleType.LONG;
+            } else if (value instanceof String) {
+                type = SimpleType.STRING;
+            } else if (value instanceof Date) {
+                type = SimpleType.DATE;
+            } else if (value instanceof Double) {
+                type = SimpleType.DOUBLE;
+            }
+            itemTypes[i++] = type;
+        }
+        try {
+            CompositeType actualCt = new CompositeType(this.getClass().getName(), this.getClass().getName(), itemNames, itemNames, itemTypes);
+            return new CompositeDataSupport(actualCt, values);
+        } catch (Exception e) {
+            throw new IllegalArgumentException(ct.getTypeName(), e);
+        }
     }
 }
-
