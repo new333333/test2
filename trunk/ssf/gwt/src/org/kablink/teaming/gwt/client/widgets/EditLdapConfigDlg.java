@@ -1931,6 +1931,7 @@ public class EditLdapConfigDlg extends DlgBox
 											t,
 											GwtTeaming.getMessages().rpcFailure_StartLdapSync() );
 				
+				m_ldapSyncId = null;
 				hideStatusMsg();
 			}
 			

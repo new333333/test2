@@ -196,14 +196,23 @@ public class LdapSyncThread
 		HttpSession	session;
 
 		if ( id == null )
+		{
+			m_logger.info( "in LdapSyncThread.getLdapSyncThread(), id is null" );
 			return null;
+		}
 		
 		if ( servletRequest == null )
+		{
+			m_logger.info( "in LdapSyncThread.getLdapSyncThread(), servletRequest is null" );
 			return null;
+		}
 		
 		session = servletRequest.getSession( false );
 		if ( session == null )
+		{
+			m_logger.info( "in LdapSyncThread.getLdapSyncThread(), session is null" );
 			return null;
+		}
 
 		// Get the LdapSyncThread object that was stored on the session.
 		ldapSyncThread = (LdapSyncThread) session.getAttribute( id );
@@ -248,7 +257,7 @@ public class LdapSyncThread
 		if ( ldapSyncThread != null )
 			ldapSyncResults = ldapSyncThread.getLdapSyncResults();
 		else
-			m_logger.error( "-------> in LdapSyncThread.getLdapSyncResults(), getLdapSyncThread() returned null" );
+			m_logger.info( "-------> in LdapSyncThread.getLdapSyncResults(), getLdapSyncThread() returned null" );
 		
 		return ldapSyncResults;
 	}	
@@ -312,36 +321,63 @@ public class LdapSyncThread
 				syncResults.completed();
 			}
 		}
-		catch (LdapSyncException ldapSyncEx)
+		catch ( Exception ex )
 		{
-			LdapConnectionConfig	ldapConfig;
-			NamingException			ne;
-			String					errorDesc = null;
-			
-			// Get the ldap connection configuration that had the problem.
-			ldapConfig = ldapSyncEx.getLdapConfig();
+			String errorDesc = null;
+			String ldapConfigId = null;
 
-			ne = ldapSyncEx.getNamingException();
-			if ( ne instanceof CommunicationException )
+			if ( ex instanceof LdapSyncException )
 			{
-				if ( ne.getCause() != null && ne.getCause() instanceof UnknownHostException )
+				LdapConnectionConfig	ldapConfig;
+				NamingException			ne;
+				LdapSyncException ldapSyncEx;
+				
+				ldapSyncEx = (LdapSyncException) ex;
+				
+				// Get the ldap connection configuration that had the problem.
+				ldapConfig = ldapSyncEx.getLdapConfig();
+				if ( ldapConfig != null )
+					ldapConfigId = ldapConfig.getId();
+
+				ne = ldapSyncEx.getNamingException();
+				if ( ne instanceof CommunicationException )
 				{
-					UnknownHostException uhEx;
-					
-					uhEx = (UnknownHostException) ne.getCause();
-					errorDesc = NLT.get( "errorcode.ldap.unknown.host", new Object[] { uhEx.getMessage() } );
+					if ( ne.getCause() != null && ne.getCause() instanceof UnknownHostException )
+					{
+						UnknownHostException uhEx;
+						
+						uhEx = (UnknownHostException) ne.getCause();
+						errorDesc = NLT.get( "errorcode.ldap.unknown.host", new Object[] { uhEx.getMessage() } );
+					}
+				}
+				
+				if ( errorDesc == null )
+				{
+					if (ne.getCause() != null)
+						errorDesc = ne.getCause().getLocalizedMessage() != null ? ne.getCause().getLocalizedMessage() : ne.getCause().getMessage();
+					else
+						errorDesc = ne.getLocalizedMessage() != null ? ne.getLocalizedMessage() : ne.getMessage();
 				}
 			}
-			
-			if ( errorDesc == null )
+			else
 			{
-				if (ne.getCause() != null)
-					errorDesc = ne.getCause().getLocalizedMessage() != null ? ne.getCause().getLocalizedMessage() : ne.getCause().getMessage();
+				if ( ex.getCause() != null )
+				{
+					if ( ex.getCause().getLocalizedMessage() != null )
+						errorDesc = ex.getCause().getLocalizedMessage();
+					else
+						errorDesc = ex.getCause().getMessage(); 
+				}
 				else
-					errorDesc = ne.getLocalizedMessage() != null ? ne.getLocalizedMessage() : ne.getMessage();
+				{
+					if ( ex.getLocalizedMessage() != null )
+						errorDesc = ex.getLocalizedMessage();
+					else
+						errorDesc = ex.getMessage();
+				}
 			}
-			
-			syncResults.error( errorDesc, ldapConfig.getId() );
+
+			syncResults.error( errorDesc, ldapConfigId );
 		}
 		finally
 		{
