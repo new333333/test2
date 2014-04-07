@@ -5572,7 +5572,8 @@ public class BinderHelper {
  		   if (destination.isMirrored()) {
  			   //If the source is not mirroerd and the destination is mirrored, then check that the entry has one and only one file
  			   Set<Attachment> atts = entry.getAttachments();
- 			   if (atts.size() == 1) {
+ 			   if (atts.size() == 1 || (!entry.isTop() && atts.size() == 0)) {
+ 				   //This is either the top entry with one attached file or a reply with no attached files
  				   //Now check that all comments have no attached files
  				   List<FolderEntry>children = getFolderDao().loadEntryDescendants((FolderEntry)entry);
  				   for (FolderEntry child:children) {

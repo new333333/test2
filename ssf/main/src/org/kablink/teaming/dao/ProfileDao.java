@@ -45,6 +45,7 @@ import org.kablink.teaming.dao.util.ShareItemSelectSpec;
 import org.kablink.teaming.domain.Application;
 import org.kablink.teaming.domain.ApplicationGroup;
 import org.kablink.teaming.domain.ApplicationPrincipal;
+import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.GroupPrincipal;
@@ -300,6 +301,22 @@ public interface ProfileDao {
  	 * @return
  	 */
  	public List<ShareItem> loadShareItems(Collection<Long> shareItemIds); 
+ 	
+ 	/**
+ 	 * Get a list of <code>Long</code> shareItem ids for a specified entity.
+ 	 * 
+ 	 * @param entity
+ 	 * @return
+ 	 */
+ 	public List<Long> getShareItemIdsByEntity(DefinableEntity entity);
+ 	
+ 	/**
+ 	 * Change a list of <code>Long</code> shareItem ids to point to a new entity.
+ 	 * 
+ 	 * @param entity
+ 	 * @return
+ 	 */
+ 	public void changeSharedEntityId(final Collection<Long> shareItemIds, final DefinableEntity entity);
  	
  	/**
  	 * Return IDs of users, groups, and teams that are granted specified right to the specified entity.
