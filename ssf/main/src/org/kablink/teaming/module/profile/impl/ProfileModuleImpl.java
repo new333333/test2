@@ -1101,7 +1101,7 @@ public Map getGroups() {
    {
 	   List<Group> listOfGroups;
 
-	   listOfGroups = getProfileDao().findGroups( groupSelectSpec );
+	   listOfGroups = getProfileDao().findGroups( groupSelectSpec, RequestContextHolder.getRequestContext().getZoneId() );
 	   
 	   return listOfGroups;
    }

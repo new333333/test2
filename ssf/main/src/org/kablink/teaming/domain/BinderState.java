@@ -618,6 +618,20 @@ public class BinderState extends ZonedObject {
 			this.countFolderMaxQueue = countFolderMaxQueue;
 		}
 
-		
+		@Override
+		public String toString() {
+			StringBuilder sb = new StringBuilder();
+			sb.append("status=")
+			.append(status)
+			.append(",statusDate=")
+			.append(statusDate)
+			.append(",IP=")
+			.append(statusIpv4Address)
+			.append(",countFiles=")
+			.append(countFiles)
+			.append(",countFolders=")
+			.append(countFolders);
+			return sb.toString();
+		}
 	}
 }
