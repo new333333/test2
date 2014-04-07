@@ -2941,13 +2941,15 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		   		// Tell the ContainerCoordinator the type of ldap directory we are working with.
 				m_containerCoordinator.setLdapDirType( getLdapDirType( config.getLdapGuidAttribute() ) );
 
-		   		try {
+		   		try
+		   		{
 					ctx = getUserContext(zone.getId(), config);
+
 					logger.info( "ldap url used to search for users: " + config.getUrl() );
-					
 					syncUsers(zone, ctx, config, userCoordinator);
+					logger.info( "back from call to syncUsers()" );
 		  		}
-		  		catch (Exception ex)
+		  		catch ( Exception ex )
 		  		{
 	  				errorSyncingUsers = true;
 
@@ -3006,21 +3008,38 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				  		}
 					}
 				}
-			}
+			}// end for()
 
-			logger.info( "Starting userCoordinator.wrapUp()" );
-			doUserCleanup = false;
-			if ( errorSyncingUsers == false )
+			try
 			{
-				// If "Synchronize User Profiles" and "Register ldap User Profiles Automatically" are
-				// both turned off then don't disable or delete anyone because we never issued an ldap query which
-				// would have caused us to call userCoordinator.record() which would have updated
-				// notInLdap.
-				if ( userCoordinator.sync != false || userCoordinator.create != false )
-					doUserCleanup = true;
+				logger.info( "Starting userCoordinator.wrapUp()" );
+				doUserCleanup = false;
+				if ( errorSyncingUsers == false )
+				{
+					// If "Synchronize User Profiles" and "Register ldap User Profiles Automatically" are
+					// both turned off then don't disable or delete anyone because we never issued an ldap query which
+					// would have caused us to call userCoordinator.record() which would have updated
+					// notInLdap.
+					if ( userCoordinator.sync != false || userCoordinator.create != false )
+						doUserCleanup = true;
+				}
+				userCoordinator.wrapUp( doUserCleanup );
+				logger.info( "Finished userCoordinator.wrapUp()" );
 			}
-			userCoordinator.wrapUp( doUserCleanup );
-			logger.info( "Finished userCoordinator.wrapUp()" );
+			catch ( Exception ex )
+			{
+				logger.info( "userCoordinator.wrapUp() threw an exception: " + ex.toString() );
+  				
+	  			//!!! When we re-write the ldap config page in GWT, we need to collect all of these
+	  			//!!! errors and return them instead of just throwing an exception for the first
+	  			//!!! problem we find.
+	  			// Have we already encountered a problem?
+	  			if ( ldapSyncEx == null )
+	  			{
+	  				// No
+	  				ldapSyncEx = new LdapSyncException( null, new NamingException( ex.toString() ) );
+	  			}
+			}
 
 			errorSyncingGroups = false;
 	   		GroupCoordinator groupCoordinator = new GroupCoordinator(
@@ -3031,7 +3050,8 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	   															info.isGroupDelete(),
 	   															syncMode,
 	   															syncResults );
-	   		for(LdapConnectionConfig config : getCoreDao().loadLdapConnectionConfigs(zone.getId())) {
+	   		for(LdapConnectionConfig config : getCoreDao().loadLdapConnectionConfigs(zone.getId()))
+	   		{
 		   		LdapContext ctx=null;
 		  		try {
 
@@ -3039,28 +3059,50 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					m_containerCoordinator.setLdapDirType( getLdapDirType( config.getLdapGuidAttribute() ) );
 
 		  			ctx = getGroupContext(zone.getId(), config);
-					logger.info( "ldap url used to search for groups: " + config.getUrl() );
+				
+		  			logger.info( "ldap url used to search for groups: " + config.getUrl() );
 					syncGroups(zone, ctx, config, groupCoordinator, info.isMembershipSync());
+			   		logger.info( "Finished syncGroups()" );
 				}
-		  		catch (NamingException namingEx)
+		  		catch (Exception ex)
 		  		{
 		  			errorSyncingGroups = true;
-		  			logError(NLT.get("errorcode.ldap.context"), namingEx);
-		  			
-		  			//!!! When we re-write the ldap config page in GWT, we need to collect all of these
-		  			//!!! errors and return them instead of just throwing an exception for the first
-		  			//!!! problem we find.
-		  			// Have we already encountered a problem?
-		  			if ( ldapSyncEx == null )
+		  			logger.error( "syncGroups() threw an exception: " );
+
+	  				if ( ex instanceof NamingException )
 		  			{
-		  				// No
-		  				// Create an LdapSyncException.  We throw an LdapSyncException so we can return
-		  				// the LdapConnectionConfig object that was being used when the error happened.
-		  				// We will throw the exception after we have gone through all the ldap configs.
-		  				ldapSyncEx = new LdapSyncException( config, namingEx );
+			  			logError( NLT.get( "errorcode.ldap.context" ), ex );
+
+			  			//!!! When we re-write the ldap config page in GWT, we need to collect all of these
+			  			//!!! errors and return them instead of just throwing an exception for the first
+			  			//!!! problem we find.
+			  			// Have we already encountered a problem?
+			  			if ( ldapSyncEx == null )
+			  			{
+			  				// No
+				  			// Create an LdapSyncException.  We throw an LdapSyncException so we can return
+				  			// the LdapConnectionConfig object that was being used when the error happened.
+			  				// We will throw the exception after we have gone through all the ldap configs.
+				  			ldapSyncEx = new LdapSyncException( config, (NamingException)ex );
+			  			}
+		  			}
+		  			else
+		  			{
+		  				logger.error( "Unknown exception: " + ex.toString() );
+		  				
+			  			//!!! When we re-write the ldap config page in GWT, we need to collect all of these
+			  			//!!! errors and return them instead of just throwing an exception for the first
+			  			//!!! problem we find.
+			  			// Have we already encountered a problem?
+			  			if ( ldapSyncEx == null )
+			  			{
+			  				// No
+			  				ldapSyncEx = new LdapSyncException( config, new NamingException( ex.toString() ) );
+			  			}
 		  			}
 		  		}
-		  		finally {
+		  		finally
+		  		{
 					if (ctx != null) {
 						try
 						{
@@ -3082,15 +3124,36 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				  			}
 				  		}
 					}
-				}
-			}
-	   		logger.info( "Finished syncGroups()" );
-	   		if ( errorSyncingGroups == false )
-	   			groupCoordinator.deleteObsoleteGroups();
-	   		logger.info( "Finished groupCoordinator.deleteObsoleteGroups()" );
+		  		}
+			}// end for()
+	   		
+	   		try
+	   		{
+		   		if ( errorSyncingGroups == false )
+		   		{
+			   		logger.info( "About to call groupCoordinator.deleteObsoleteGroups()" );
+		   			groupCoordinator.deleteObsoleteGroups();
+			   		logger.info( "Finished groupCoordinator.deleteObsoleteGroups()" );
+		   		}
+	   		}
+	   		catch( Exception ex )
+	   		{
+  				logger.error( "groupCoordinator.deleteObsoleteGroups() threw exception: " + ex.toString() );
+  				
+	  			//!!! When we re-write the ldap config page in GWT, we need to collect all of these
+	  			//!!! errors and return them instead of just throwing an exception for the first
+	  			//!!! problem we find.
+	  			// Have we already encountered a problem?
+	  			if ( ldapSyncEx == null )
+	  			{
+	  				// No
+	  				ldapSyncEx = new LdapSyncException( null, new NamingException( ex.toString() ) );
+	  			}
+	   		}
 
 	   		// Find all groups that have dynamic membership and update the membership
 	   		// of those groups that are supposed to be updated during the ldap sync process
+	   		try
 	   		{
 	   			ArrayList<Long> listOfDynamicGroups;
 	   			
@@ -3107,17 +3170,51 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	   					updateDynamicGroupMembership( nextGroupId, syncMode, groupCoordinator.getLdapSyncResults() );
 	   				}
 	   			}
-	   			
+
 	   			logger.info( "Finished looking for dynamic groups." );
+	   		}
+	   		catch( Exception ex )
+	   		{
+  				logger.error( "updateDynamicGroupMembership() threw exception: " + ex.toString() );
+  				
+	  			//!!! When we re-write the ldap config page in GWT, we need to collect all of these
+	  			//!!! errors and return them instead of just throwing an exception for the first
+	  			//!!! problem we find.
+	  			// Have we already encountered a problem?
+	  			if ( ldapSyncEx == null )
+	  			{
+	  				// No
+	  				ldapSyncEx = new LdapSyncException( null, new NamingException( ex.toString() ) );
+	  			}
 	   		}
 	   		
 	   		// Finish creating / deleting containers.
-	   		delContainers = false;
-	   		if ( errorSyncingUsers == false && errorSyncingGroups == false )
-	   			delContainers = true;
-	   		m_containerCoordinator.wrapUp( delContainers );
+	   		try
+	   		{
+	   			logger.info( "About to call m_containerCoordinator.wrapUp()" );
+		   		delContainers = false;
+		   		if ( errorSyncingUsers == false && errorSyncingGroups == false )
+		   			delContainers = true;
+		   		m_containerCoordinator.wrapUp( delContainers );
+	   			logger.info( "Back from call to m_containerCoordinator.wrapUp();" );
+	   		}
+	   		catch ( Exception ex )
+	   		{
+  				logger.error( "m_containerCoordinator.wrapUp() threw exception: " + ex.toString() );
+  				
+	  			//!!! When we re-write the ldap config page in GWT, we need to collect all of these
+	  			//!!! errors and return them instead of just throwing an exception for the first
+	  			//!!! problem we find.
+	  			// Have we already encountered a problem?
+	  			if ( ldapSyncEx == null )
+	  			{
+	  				// No
+	  				ldapSyncEx = new LdapSyncException( null, new NamingException( ex.toString() ) );
+	  			}
+	   		}
 
 	   		// Remove the admin task to run an ldap sync to import typeless dn information
+	   		try
 	   		{
 	   	 		User superUser;
 	   			
@@ -3131,9 +3228,28 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 												ObjectKeys.USER_PROPERTY_UPGRADE_IMPORT_TYPELESS_DN,
 												"true" );
 	   		}
+	   		catch ( Exception ex )
+	   		{
+  				logger.error( "Removing admin task to run ldap sync threw exception: " + ex.toString() );
+  				
+	  			//!!! When we re-write the ldap config page in GWT, we need to collect all of these
+	  			//!!! errors and return them instead of just throwing an exception for the first
+	  			//!!! problem we find.
+	  			// Have we already encountered a problem?
+	  			if ( ldapSyncEx == null )
+	  			{
+	  				// No
+	  				ldapSyncEx = new LdapSyncException( null, new NamingException( ex.toString() ) );
+	  			}
+	   		}
 	   		
 	   		if ( ldapSyncEx != null )
+	   		{
+	   			logger.info( "Finished syncAll() with an exception" );
 	   			throw ldapSyncEx;
+	   		}
+	   		
+	   		logger.info( "Finished syncAll() with no exceptions" );
 	   		
 		}// end try
 		finally

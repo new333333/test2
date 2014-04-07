@@ -405,8 +405,8 @@ public class GwtLdapHelper
 		if ( syncResults == null )
 		{
 			gwtSyncResults.setSyncError( GwtLdapSyncError.INVALID_SYNC_ID );
-			gwtSyncResults.setSyncStatus( GwtLdapSyncStatus.STATUS_IN_PROGRESS );
-			m_logger.info( "-----> in getLdapSyncResults(), LdapSyncThread.getLdapSyncResults() returned null" );
+			gwtSyncResults.setSyncStatus( GwtLdapSyncStatus.STATUS_ABORTED_BY_ERROR );
+			m_logger.info( "in GwtLdapHelper.getLdapSyncResults(), LdapSyncThread.getLdapSyncResults() returned null" );
 			return gwtSyncResults;
 		}
 		
