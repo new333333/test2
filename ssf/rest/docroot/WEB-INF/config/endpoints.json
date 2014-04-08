@@ -1,0 +1,26 @@
+[{
+    "priority":"FILE",
+    "patterns":[{
+        "url":"^/files/.*$",
+        "methods":["GET","POST"]
+    },{
+        "url":".*/attachments$",
+        "methods":["POST"]
+    },{
+        "url":".*/library_files$",
+        "methods":["POST"]
+    },{
+        "url":"^/v1/file/.*$",
+        "methods":["POST"]
+    }]
+},{
+    "priority":"EXPENSIVE",
+    "patterns":[{
+        "url":"^/shares/.*$"
+    }]
+},{
+    "priority":"INEXPENSIVE",
+    "patterns":[{
+        "url":"^.*$"
+    }]
+}]

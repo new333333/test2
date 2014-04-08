@@ -32,6 +32,7 @@
  */
 package org.kablink.teaming.rest.servlet;
 
+import org.kablink.teaming.util.SPropsUtil;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
 import org.springframework.jmx.export.annotation.ManagedOperation;
@@ -42,6 +43,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * User: david
@@ -52,12 +54,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class PrioritizedRequestManager {
     private Map<String, PriorityInformation> requestsByPriority;
 
-    @Required
-    public void setAllowedRequestsByPriority(Map<String, Integer> allowedRequestsByPriority) {
+    public PrioritizedRequestManager() {
         requestsByPriority = new HashMap<String, PriorityInformation>();
-        for (Map.Entry<String, Integer> entry : allowedRequestsByPriority.entrySet()) {
-            requestsByPriority.put(entry.getKey(), new PriorityInformation(entry.getKey(), entry.getValue()));
-        }
+    }
+
+    public void setMaxRequests(String priority, int max) {
+        requestsByPriority.put(priority, new PriorityInformation(priority, max));
     }
 
     public boolean incrementInProgressOrFail(String priority) throws InvalidPriorityException {
@@ -65,7 +67,7 @@ public class PrioritizedRequestManager {
         if (priorityInfo==null) {
             throw new InvalidPriorityException(priority);
         }
-        Integer newCount = priorityInfo.requestsInProgress.incrementAndGet();
+        Long newCount = priorityInfo.requestsInProgress.incrementAndGet();
         if (newCount>priorityInfo.maxRequests) {
             priorityInfo.requestsInProgress.decrementAndGet();
             return false;
@@ -159,19 +161,19 @@ public class PrioritizedRequestManager {
 
     private static class PriorityInformation extends AbstractCompositeDataView {
         private String priority;
-        private int maxRequests;
-        private AtomicInteger requestsInProgress;
-        private AtomicInteger processedRequests;
-        private AtomicInteger rejectedRequests;
-        private AtomicInteger failedRequests;
+        private long maxRequests;
+        private AtomicLong requestsInProgress;
+        private AtomicLong processedRequests;
+        private AtomicLong rejectedRequests;
+        private AtomicLong failedRequests;
 
         private PriorityInformation(String priority, int maxRequests) {
             this.priority = priority;
-            this.maxRequests = maxRequests;
-            requestsInProgress = new AtomicInteger(0);
-            processedRequests = new AtomicInteger(0);
-            rejectedRequests = new AtomicInteger(0);
-            failedRequests = new AtomicInteger(0);
+            this.maxRequests = (long)maxRequests;
+            requestsInProgress = new AtomicLong(0);
+            processedRequests = new AtomicLong(0);
+            rejectedRequests = new AtomicLong(0);
+            failedRequests = new AtomicLong(0);
         }
 
         public Map<String, Object> toMap() {
