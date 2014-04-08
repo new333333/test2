@@ -114,6 +114,7 @@ import java.util.*;
 @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 @SuppressWarnings("unchecked")
 public class SelfResource extends AbstractFileResource {
+    private Map<Long, Long> homeDirCheckTime = new HashMap<Long, Long>();
 
     /**
      * Gets the User object representing the authenticated user.
@@ -136,7 +137,11 @@ public class SelfResource extends AbstractFileResource {
         user.addAdditionalLink("mobile_devices", "/self/mobile_devices");
         user.addAdditionalLink("roots", "/self/roots");
         try {
-            getLdapModule().updateHomeDirectoryIfNecessary((org.kablink.teaming.domain.User)entry, entry.getName(), true);
+            Long nextCheck = homeDirCheckTime.get(user.getId());
+            if (nextCheck==null || nextCheck<System.currentTimeMillis()) {
+                homeDirCheckTime.put(user.getId(), System.currentTimeMillis()+1000*60*60);
+                getLdapModule().updateHomeDirectoryIfNecessary((org.kablink.teaming.domain.User)entry, entry.getName(), true);
+            }
         } catch (Exception e) {
             logger.warn("An error occurred checking to see if the user's home folder needs to be updated", e);
         }
