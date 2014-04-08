@@ -50,6 +50,7 @@ import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
@@ -590,7 +591,14 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
                 	// Do we have a filter?
                 	filter = groupSelectSpec.getFilter();
                 	if ( filter != null && filter.length() > 0 )
-                		crit.add( Restrictions.ilike( ObjectKeys.FIELD_ENTITY_TITLE, filter, MatchMode.ANYWHERE ) );
+                	{
+                		Criterion criterion1;
+                		Criterion criterion2;
+                		
+                		criterion1 = Restrictions.ilike( ObjectKeys.FIELD_ENTITY_TITLE, filter, MatchMode.ANYWHERE );
+                		criterion2 = Restrictions.ilike( ObjectKeys.FIELD_PRINCIPAL_NAME, filter, MatchMode.ANYWHERE ); 
+                		crit.add( Restrictions.or( criterion1, criterion2 ) );
+                	}
                 	
                 	crit.add(Restrictions.eq(ObjectKeys.FIELD_ZONE, zoneId));
 
