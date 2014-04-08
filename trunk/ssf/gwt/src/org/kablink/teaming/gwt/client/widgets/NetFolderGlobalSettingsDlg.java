@@ -161,10 +161,18 @@ public class NetFolderGlobalSettingsDlg extends DlgBox
 		
 		// Add the controls for "Use directory rights"
 		{
+			Label hint;
+			
 			tmpPanel = new FlowPanel();
 			m_useDirectoryRightsCB = new CheckBox( messages.modifyNetFolderServerDlg_UseDirectoryRightsCB() );
 			tmpPanel.add( m_useDirectoryRightsCB );
 			mainPanel.add( tmpPanel );
+			
+			// Add a hint that tells the user that changing the value of "use directory rights" will
+			// take affect after the Filr server is restarted.
+			hint = new Label( messages.netFolderGlobalSettingsDlg_UseDirRightsHint() );
+			hint.addStyleName( "netFolderSettingsDlg_useDirRightsHint" );
+			mainPanel.add( hint );
 		}
 		
 		// Add the controls for "Refresh cached rights information every: xxx minutes"
