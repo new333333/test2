@@ -3302,6 +3302,6 @@ public interface GwtTeamingMessages extends Messages
 	String netFolderGlobalSettingsDlg_OnSaveUnknownException( String errMsg );
 	String netFolderGlobalSettingsDlg_SavingConfig();
 	String netFolderGlobalSettingsDlg_SecondsLabel();
-
+	String netFolderGlobalSettingsDlg_UseDirRightsHint();
 
 }// end GwtTeamingMessages

@@ -6222,6 +6222,17 @@ td.datePickerMonth {
 	font-size: 13px;
 }
 
+.netFolderSettingsDlg_useDirRightsHint
+{
+	color: #4D6D8B;
+	font-size: .85em;
+	margin-bottom: 0.5em;
+	margin-left: 44px;
+	margin-top: 4px;
+	width: 65%;
+}
+
+
 /* End: Styles used in the Net Folder Settings dialog. */
 
 
