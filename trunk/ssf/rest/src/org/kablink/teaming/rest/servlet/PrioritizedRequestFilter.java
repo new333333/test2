@@ -42,6 +42,7 @@ import org.springframework.beans.factory.annotation.Required;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
@@ -51,7 +52,9 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
@@ -64,7 +67,6 @@ public class PrioritizedRequestFilter implements Filter {
     private PrioritizedRequestManager prioritizedRequestManager;
     private List<PriorityEndpoints> priorityEndpoints;
 
-    @Required
     public void setEndpointConfig(File endpointConfig) {
         priorityEndpoints = new ArrayList<PriorityEndpoints>();
         FileReader reader = null;
@@ -86,22 +88,26 @@ public class PrioritizedRequestFilter implements Filter {
         }
     }
 
-    @Required
-    public void setPrioritizedRequestManager(PrioritizedRequestManager prioritizedRequestManager) {
-        this.prioritizedRequestManager = prioritizedRequestManager;
-    }
-
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
+        ServletContext servletContext = filterConfig.getServletContext();
+        String endpointsConfigLocation = servletContext.getInitParameter("endpointsConfigLocation");
+        File configPath = new File(servletContext.getRealPath(endpointsConfigLocation));
+        this.setEndpointConfig(configPath);
+        this.prioritizedRequestManager = new PrioritizedRequestManager();
+        this.prioritizedRequestManager.setMaxRequests("FILE", Integer.parseInt(filterConfig.getInitParameter("max.file.transfers")));
+        this.prioritizedRequestManager.setMaxRequests("EXPENSIVE", Integer.MAX_VALUE);
+        this.prioritizedRequestManager.setMaxRequests("INEXPENSIVE", Integer.MAX_VALUE);
     }
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         HttpServletRequest httpRequest = (HttpServletRequest)request;
         String path = httpRequest.getPathInfo();
+        String method = httpRequest.getMethod();
         String priority = null;
         for (PriorityEndpoints endpoints : priorityEndpoints) {
-            if (endpoints.matches(path)) {
+            if (endpoints.matches(path, method)) {
                 priority = endpoints.priority;
                 break;
             }
@@ -134,21 +140,44 @@ public class PrioritizedRequestFilter implements Filter {
     public void destroy() {
     }
 
-    private static class PriorityEndpoints {
-        private String priority;
-        private List<Pattern> patterns;
+    private static class PriorityEndpoint {
+        private Pattern pattern;
+        private Set<String> methods;
 
-        private PriorityEndpoints(String priority, JSONArray patternArray) throws JSONException, PatternSyntaxException {
-            this.priority = priority;
-            patterns = new ArrayList<Pattern>();
-            for (int i=0; i<patternArray.length(); i++) {
-                patterns.add(Pattern.compile(patternArray.getString(i)));
+        private PriorityEndpoint(String pattern, JSONArray methodsArray) {
+            this.pattern = Pattern.compile(pattern);
+            if (methodsArray!=null) {
+                this.methods = new HashSet<String>();
+                for (int i=0; i<methodsArray.length(); i++) {
+                    this.methods.add(methodsArray.getString(i));
+                }
             }
         }
 
-        public boolean matches(String path) {
-            for (Pattern pattern : patterns) {
-                if (pattern.matcher(path).matches()) {
+        public boolean matches(String path, String method) {
+            if ((methods==null || methods.contains(method)) && pattern.matcher(path).matches()) {
+                return true;
+            }
+            return false;
+        }
+    }
+
+    private static class PriorityEndpoints {
+        private String priority;
+        private List<PriorityEndpoint> endpoints;
+
+        private PriorityEndpoints(String priority, JSONArray patternArray) throws JSONException, PatternSyntaxException {
+            this.priority = priority;
+            endpoints = new ArrayList<PriorityEndpoint>();
+            for (int i=0; i<patternArray.length(); i++) {
+                JSONObject obj = patternArray.getJSONObject(i);
+                endpoints.add(new PriorityEndpoint(obj.getString("url"), obj.optJSONArray("methods")));
+            }
+        }
+
+        public boolean matches(String path, String method) {
+            for (PriorityEndpoint endpoint : endpoints) {
+                if (endpoint.matches(path, method)) {
                     return true;
                 }
             }
