@@ -1434,7 +1434,7 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
 	                        List results = session.createCriteria(Workspace.class)
 	                             		.add(Expression.eq("internalId", ObjectKeys.TOP_WORKSPACE_INTERNALID))
 	                             		.add(Expression.eq("name", zoneName))
-	                             		.setCacheable(isBinderQueryCacheable())
+	                             		.setCacheable(isReservedBinderQueryCacheable())
 	                             		.list();
 	                        if (results.isEmpty()) {
 	                            throw new NoWorkspaceByTheNameException(zoneName); 
@@ -1516,7 +1516,7 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
 	                        List results = session.createCriteria(Binder.class)
 	                             		.add(Expression.eq("internalId", reservedId))
 	                             		.add(Expression.eq(ObjectKeys.FIELD_ZONE, zoneId))
-	                             		.setCacheable(isBinderQueryCacheable())
+	                             		.setCacheable(isReservedBinderQueryCacheable())
 	                             		.list();
 	                        if (results.isEmpty()) {
 	                            throw new NoBinderByTheNameException(reservedId); 
