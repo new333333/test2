@@ -1403,17 +1403,17 @@ public class ShareResource extends AbstractResource {
         for (Object obj : results.getResults()) {
             if (obj instanceof BinderChange) {
                 org.kablink.teaming.rest.v1.model.Binder binder = ((BinderChange)obj).getBinder();
-                if (binderIds.contains(binder.getId())) {
+                if (binder!=null && binderIds.contains(binder.getId())) {
                     binder.setParentBinder(parent);
                 }
             } else if (obj instanceof FileChange) {
                 FileProperties file = ((FileChange)obj).getFile();
-                if (entryIds.contains(file.getOwningEntity().getId())) {
+                if (file!=null && entryIds.contains(file.getOwningEntity().getId())) {
                     file.setBinder(parent);
                 }
             } else if (obj instanceof FolderEntryChange) {
                 org.kablink.teaming.rest.v1.model.FolderEntry entry = ((FolderEntryChange)obj).getEntry();
-                if (entryIds.contains(entry.getId())) {
+                if (entry!=null && entryIds.contains(entry.getId())) {
                     entry.setParentBinder(parent);
                 }
             }
