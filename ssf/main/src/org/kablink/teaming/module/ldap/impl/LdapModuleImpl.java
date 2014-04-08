@@ -7228,11 +7228,19 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		Group group = null;
 		
 		// Get the Group object from the group id.
-		profileMod = getProfileModule();
-		tmp = (Object) profileMod.getEntry( groupId );
-		if ( tmp instanceof Group )
+		try
 		{
-			group = (Group) tmp; 
+			profileMod = getProfileModule();
+			tmp = (Object) profileMod.getEntry( groupId );
+			if ( tmp instanceof Group )
+			{
+				group = (Group) tmp; 
+			}
+		}
+		catch ( Exception ex )
+		{
+			logger.info( "In updateMembership(), call to profileModule.getEntry() failed for group id: " + groupId );
+			return;
 		}
 
 		// Add this group to the list of sync results if the group membership changed.
@@ -7287,17 +7295,28 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 
 					if ( principalId != null )
 					{
-						Principal nextPrincipal;
+						Principal nextPrincipal = null;
 
-						// Add this principal to the list of principals to be re-indexed.
-						nextPrincipal = getProfileModule().getEntry( principalId );
-						principalsToIndex.put( principalId, nextPrincipal );
+						try
+						{
+							nextPrincipal = getProfileModule().getEntry( principalId );
+						}
+						catch ( Exception ex )
+						{
+							logger.info( "In updateMembership(), call to profileModule.getEntry() failed for group member: " + principalId );
+						}
 						
-						// Keep track of the principals that were added to this group.
-						if ( (nextPrincipal instanceof UserPrincipal) || (nextPrincipal instanceof User) )
-							usersAddedToGroup.add( principalId );
-						else if ( (nextPrincipal instanceof GroupPrincipal) || (nextPrincipal instanceof Group) )
-							groupsAddedToGroup.add( principalId );
+						if ( nextPrincipal != null )
+						{
+							// Add this principal to the list of principals to be re-indexed.
+							principalsToIndex.put( principalId, nextPrincipal );
+							
+							// Keep track of the principals that were added to this group.
+							if ( (nextPrincipal instanceof UserPrincipal) || (nextPrincipal instanceof User) )
+								usersAddedToGroup.add( principalId );
+							else if ( (nextPrincipal instanceof GroupPrincipal) || (nextPrincipal instanceof Group) )
+								groupsAddedToGroup.add( principalId );
+						}
 					}
 				}
 			}
@@ -7328,17 +7347,28 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 
 					if ( principalId != null )
 					{
-						Principal nextPrincipal;
+						Principal nextPrincipal = null;
 
-						// Add this principal to the list of principals to be re-indexed.
-						nextPrincipal = getProfileModule().getEntry( principalId );
-						principalsToIndex.put( principalId, nextPrincipal );
+						try
+						{
+							nextPrincipal = getProfileModule().getEntry( principalId );
+						}
+						catch ( Exception ex )
+						{
+							logger.info( "In updateMembershipe(), profileModule.getEntry() failed for group member: " + principalId );
+						}
 						
-						// Keep track of the principals that were removed from this group.
-						if ( (nextPrincipal instanceof UserPrincipal) || (nextPrincipal instanceof User) )
-							usersRemovedFromGroup.add( principalId );
-						else if ( (nextPrincipal instanceof GroupPrincipal) || (nextPrincipal instanceof Group) )
-							groupsRemovedFromGroup.add( principalId );
+						if ( nextPrincipal != null )
+						{
+							// Add this principal to the list of principals to be re-indexed.
+							principalsToIndex.put( principalId, nextPrincipal );
+							
+							// Keep track of the principals that were removed from this group.
+							if ( (nextPrincipal instanceof UserPrincipal) || (nextPrincipal instanceof User) )
+								usersRemovedFromGroup.add( principalId );
+							else if ( (nextPrincipal instanceof GroupPrincipal) || (nextPrincipal instanceof Group) )
+								groupsRemovedFromGroup.add( principalId );
+						}
 					}
 				}
 			}
