@@ -1606,7 +1606,7 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
             SharingModule sharingModule = getSharingModule();
             sharing.setInternal(sharingModule.testAddShareEntityInternal(entity));
             sharing.setExternal(sharingModule.testAddShareEntityExternal(entity));
-            sharing.setPublic(sharingModule.testAddShareEntityPublic(entity));
+            sharing.setPublic(sharingModule.testAddShareEntityPublic(entity) && isGuestAccessEnabled());
             sharing.setPublicLink(sharingModule.testAddShareEntityPublicLinks(entity));
             sharing.setGrantReshare(sharingModule.testShareEntityForward(entity));
         } else {
