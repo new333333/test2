@@ -69,6 +69,7 @@ import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.shared.InputDataAccessor;
+import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.search.IndexErrors;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.util.PrincipalDesktopAppsConfig;
@@ -465,6 +466,8 @@ public interface ProfileModule {
 	 * @param entries
 	 */
 	public IndexErrors indexEntries( Collection<Principal> entries );
+	
+	public MapInputData validateUserAttributes(Long userId, Map formData);
 	
 	/**
 	 * Modify existing principal
