@@ -1537,14 +1537,24 @@ public class EditLdapConfigDlg extends DlgBox
 		}
 		else
 		{
-			// Run an async cmd to show the dialog.
-			LdapSyncResultsDlg.initAndShow(
-										m_ldapSyncResultsDlg,
-										m_listOfLdapServers,
-										m_ldapSyncId,
-										clearResults,
-										syncMode,
-										null );
+			ScheduledCommand cmd;
+			
+			cmd = new ScheduledCommand()
+			{
+				@Override
+				public void execute()
+				{
+					// Run an async cmd to show the dialog.
+					LdapSyncResultsDlg.initAndShow(
+												m_ldapSyncResultsDlg,
+												m_listOfLdapServers,
+												m_ldapSyncId,
+												clearResults,
+												syncMode,
+												null );
+				}
+			};
+			Scheduler.get().scheduleDeferred( cmd );
 		}
 	}
 	
@@ -1785,10 +1795,13 @@ public class EditLdapConfigDlg extends DlgBox
 				}
 				m_dataProvider.refresh();
 				break;
+
+			case STATUS_SYNC_ALREADY_IN_PROGRESS:
+				m_ldapSyncId = null;
+				break;
 				
 			case STATUS_IN_PROGRESS:
 			case STATUS_STOP_COLLECTING_RESULTS:
-			case STATUS_SYNC_ALREADY_IN_PROGRESS:
 				break;
 			}
 		}
