@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -32,14 +32,8 @@
  */
 package org.kablink.teaming.module.binder.impl;
 
-import static org.kablink.util.search.Restrictions.conjunction;
-import static org.kablink.util.search.Restrictions.disjunction;
-import static org.kablink.util.search.Restrictions.eq;
-import static org.kablink.util.search.Restrictions.in;
-import static org.kablink.util.search.Restrictions.not;
-
 import java.io.IOException;
-import java.lang.reflect.Constructor;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
@@ -55,9 +49,10 @@ import java.util.SortedSet;
 
 import org.apache.lucene.document.Field;
 import org.apache.lucene.index.Term;
-import org.apache.lucene.search.Query;
 import org.apache.lucene.search.SortField;
+
 import org.dom4j.Element;
+
 import org.kablink.teaming.ConfigurationException;
 import org.kablink.teaming.IllegalCharacterInNameException;
 import org.kablink.teaming.NoObjectByTheIdException;
@@ -66,6 +61,8 @@ import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.docconverter.ITextConverterManager;
 import org.kablink.teaming.docconverter.TextConverter;
+import org.kablink.teaming.docconverter.TextStreamConverterManager;
+import org.kablink.teaming.docconverter.TextStreamConverter;
 import org.kablink.teaming.domain.Attachment;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.BinderQuota;
@@ -83,7 +80,6 @@ import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.HistoryStamp;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.Tag;
-import org.kablink.teaming.domain.TemplateBinder;
 import org.kablink.teaming.domain.TitleException;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.VersionAttachment;
@@ -93,9 +89,6 @@ import org.kablink.teaming.fi.connection.ResourceDriverManager;
 import org.kablink.teaming.fi.connection.ResourceSession;
 import org.kablink.teaming.fi.connection.acl.AclResourceDriver;
 import org.kablink.teaming.jobs.BinderReindex;
-import org.kablink.teaming.jobs.DefaultMirroredFolderSynchronization;
-import org.kablink.teaming.jobs.MirroredFolderSynchronization;
-import org.kablink.teaming.jobs.ScheduleInfo;
 import org.kablink.teaming.lucene.Hits;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.binder.processor.BinderProcessor;
@@ -130,9 +123,7 @@ import org.kablink.teaming.search.QueryBuilder;
 import org.kablink.teaming.search.SearchObject;
 import org.kablink.teaming.search.filter.SearchFilter;
 import org.kablink.teaming.security.AccessControlException;
-import org.kablink.teaming.security.function.WorkArea;
 import org.kablink.teaming.security.function.WorkAreaFunctionMembership;
-import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.util.FileUploadItem;
 import org.kablink.teaming.util.LongIdUtil;
 import org.kablink.teaming.util.NLT;
@@ -149,7 +140,13 @@ import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
 import org.kablink.util.search.Criteria;
 import org.kablink.util.search.FieldFactory;
-import org.quartz.SchedulerException;
+
+import static org.kablink.util.search.Restrictions.conjunction;
+import static org.kablink.util.search.Restrictions.disjunction;
+import static org.kablink.util.search.Restrictions.eq;
+import static org.kablink.util.search.Restrictions.in;
+import static org.kablink.util.search.Restrictions.not;
+
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -250,6 +247,14 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     }
     public void setTextConverterManager(ITextConverterManager textConverterManager) {
     	this.textConverterManager = textConverterManager;
+    }
+
+    private TextStreamConverterManager textStreamConverterManager;
+    protected TextStreamConverterManager getTextStreamConverterManager() {
+    	return textStreamConverterManager;
+    }
+    public void setTextStreamConverterManager(TextStreamConverterManager textStreamConverterManager) {
+    	this.textStreamConverterManager = textStreamConverterManager;
     }
 
 	//***********************************************************************************************************	
@@ -2508,9 +2513,14 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 				(rootFolderIsNetFolder && rootFolder.getComputedIndexContent()))) {
 			//The file contents of files in this folder are to be added to the index
 			// Get the Text converter from manager
-	    	TextConverter converter = textConverterManager.getConverter();
+//!	    	TextConverter		converter = textConverterManager.getConverter();		// Uses Oracle OIT or OpenOffice.
+	    	TextStreamConverter	converter = textStreamConverterManager.getConverter();	// Uses Apache Tika.
 			try {
-				text = converter.convert(binder, entity, fa);
+//!				text = converter.convert(binder, entity, fa);
+				InputStream is = getFileModule().readFile(binder, entity, fa);
+				if (null != is) {
+					text = converter.convert(fa.getFileItem().getName(), is, "");
+				}
 			}
 			catch (Exception e) {
 				// Most likely conversion did not succeed, nothing client
