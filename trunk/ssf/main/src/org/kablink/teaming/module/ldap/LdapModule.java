@@ -35,6 +35,7 @@ package org.kablink.teaming.module.ldap;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 
 import javax.naming.NamingException;
 
@@ -79,6 +80,8 @@ public interface LdapModule {
 	public void setLdapSchedule(LdapSchedule schedule);
 
 	public HomeDirInfo getHomeDirInfo( String teamingUserName, String ldapUserName, boolean logErrors ) throws NamingException;
+	
+	public Map getLdapUserAttributes(User user) throws NamingException;
 	
     public String readLdapGuidFromDirectory( String userName, Long zoneId );
 

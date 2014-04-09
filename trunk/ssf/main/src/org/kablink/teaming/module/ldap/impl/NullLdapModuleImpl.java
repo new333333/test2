@@ -34,6 +34,7 @@ package org.kablink.teaming.module.ldap.impl;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 
 import javax.naming.NamingException;
 
@@ -84,6 +85,12 @@ public class NullLdapModuleImpl extends CommonDependencyInjection implements Lda
 	 */
 	@Override
 	public HomeDirInfo getHomeDirInfo( String teamingUserName, String ldapUserName, boolean logErrors ) throws NamingException
+	{
+		return null;
+	}
+	
+	@Override
+	public Map getLdapUserAttributes(User user) throws NamingException
 	{
 		return null;
 	}

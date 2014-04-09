@@ -47,6 +47,8 @@ import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
+import javax.naming.NamingException;
+
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
@@ -111,6 +113,7 @@ import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.definition.DefinitionModule;
 import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.impl.CommonDependencyInjection;
+import org.kablink.teaming.module.ldap.LdapModule;
 import org.kablink.teaming.module.mobiledevice.MobileDeviceModule;
 import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.profile.processor.ProfileCoreProcessor;
@@ -211,6 +214,10 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
     }
     public void setProfileModule(ProfileModule profileModule) {
     	this.profileModule = profileModule;
+    }
+
+    protected LdapModule getLdapModule() {
+    	return (LdapModule) SpringContextUtil.getBean("ldapModule");
     }
 
     protected MobileDeviceModule getMobileDeviceModule() {
@@ -1188,6 +1195,35 @@ public Map getGroups(Map options) {
         
         return processor.indexEntries( entries );
 	}
+	
+	//Validate that the inputData attributes are allowed to be modified
+	public MapInputData validateUserAttributes(Long userId, Map formData) {
+		User user = (User) getEntry(userId);
+		if (user == null || !user.getIdentityInfo().isFromLdap()) {
+			//We only need to validate users that are synced from Ldap
+			return new MapInputData(formData);
+		}
+		Map modifiableFormData = new HashMap(formData);
+		try {
+			Map<String, String> userAttributes = getLdapModule().getLdapUserAttributes(user);
+			for (String attributeName : userAttributes.values()) {
+				if (modifiableFormData.containsKey(attributeName)) {
+					//This attribute is not allowed to be changed
+					modifiableFormData.remove(attributeName);
+				}
+			}
+			//Also don't let them change the userId field ("name")
+			if (modifiableFormData.containsKey(ObjectKeys.FIELD_PRINCIPAL_NAME)) {
+				//This attribute is not allowed to be changed
+				modifiableFormData.remove(ObjectKeys.FIELD_PRINCIPAL_NAME);
+			}
+			
+		} catch (NamingException e) {
+			//Could not find the user, so assume no issues with the attributes
+		}
+		MapInputData newInputData = new MapInputData(modifiableFormData);
+		return newInputData;
+	}
 
     //NO transaction
     @Override
@@ -1197,9 +1233,9 @@ public Map getGroups(Map options) {
     }
     //NO transaction
    @Override
-public void modifyEntry(Long entryId, InputDataAccessor inputData, 
+   public void modifyEntry(Long entryId, InputDataAccessor inputData, 
 		   Map fileItems, Collection<String> deleteAttachments, Map<FileAttachment,String> fileRenamesTo, Map options) 
-   		throws AccessControlException, WriteFilesException, WriteEntryDataException {
+				   throws AccessControlException, WriteFilesException, WriteEntryDataException {
 	   Principal entry = getProfileDao().loadPrincipal(entryId, RequestContextHolder.getRequestContext().getZoneId(), false);              
        Binder binder = entry.getParentBinder();
        ProfileCoreProcessor processor=loadProcessor(binder);

@@ -2267,6 +2267,91 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		return null;
 	}
 	
+	/**
+	 * Create a HomeDirInfo object based on the HomeDirConfig defined in the ldap configuration.
+	 * @throws NamingException 
+	 */
+    @Override
+	public Map getLdapUserAttributes(User user) throws NamingException 
+	{
+		Workspace zone;
+		zone = RequestContextHolder.getRequestContext().getZone();
+
+		for( LdapConnectionConfig config : this.getConfigsReadOnlyCache( zone.getZoneId() ) )
+		{
+			LdapContext ctx;
+			Map userAttributes;
+			String [] userAttributeNames;
+	
+			ctx = getUserContext( zone.getId(), config );
+			userAttributes = config.getMappings();
+			userAttributeNames = (String[])(userAttributes.keySet().toArray(sample));
+
+			for ( LdapConnectionConfig.SearchInfo searchInfo : config.getUserSearches() ) 
+			{
+				try
+				{
+					int scope;
+					SearchControls sch;
+					String search;
+					String filter;
+					NamingEnumeration ctxSearch;
+					LdapDirType dirType;
+					
+					scope = (searchInfo.isSearchSubtree() ? SearchControls.SUBTREE_SCOPE : SearchControls.ONELEVEL_SCOPE);
+					sch = new SearchControls( scope, 1, 0, userAttributeNames, false, false );
+		
+					search = "(" + config.getUserIdAttribute() + "=" + user.getName() + ")";
+					filter = searchInfo.getFilterWithoutCRLF();
+					if ( !Validator.isNull( filter ) )
+					{
+						search = "(&"+search+filter+")";
+					}
+					
+					ctxSearch = ctx.search( searchInfo.getBaseDn(), search, sch );
+					if ( !hasMore( ctxSearch ) ) 
+					{
+						continue;
+					}
+					
+				}
+				finally
+				{
+					// Nothing to do.
+				}
+
+				if ( ctx != null )
+				{
+					try
+					{
+						ctx.close();
+					}
+					catch ( NamingException ex )
+					{
+						// Nothing to do
+					}
+				}
+
+				return userAttributes;
+			}
+			
+			if ( ctx != null )
+			{
+				try
+				{
+					ctx.close();
+				}
+				catch ( NamingException ex )
+				{
+					// Nothing to do
+				}
+			}
+		}
+		
+		// If we get here we did not find the user.
+		return null;
+	}
+	
     /**
      * Convert the fully-qualified dn to a typeless dn
      */
