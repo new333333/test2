@@ -145,6 +145,9 @@ public class LdapSyncResultsDlg extends DlgBox
 	private boolean m_showModifiedGroups = true;
 	private boolean m_showDeletedGroups = true;
 
+	private Timer m_initTimer = null;
+	private Timer m_getSyncStatusTimer = null;
+	
 	private QuickFilter m_quickFilter;
 	private String m_currentFilterStr = null;
 
@@ -771,9 +774,6 @@ public class LdapSyncResultsDlg extends DlgBox
 		if ( m_syncId == null || m_syncId.length() == 0 )
 			return;
 		
-		m_syncStatus = GwtLdapSyncStatus.STATUS_IN_PROGRESS;
-		updateSyncStatusLabel();
-		
 		hideErrorPanel();
 		
 		// Create the callback that will be used when we issue an ajax call
@@ -968,17 +968,19 @@ public class LdapSyncResultsDlg extends DlgBox
 			
 		case STATUS_IN_PROGRESS:
 		{
-			Timer timer;
+			if ( m_getSyncStatusTimer != null )
+				m_getSyncStatusTimer.cancel();
 			
-			timer = new Timer()
+			m_getSyncStatusTimer = new Timer()
 			{
 				@Override
 				public void run()
 				{
+					m_getSyncStatusTimer = null;
 					getLdapSyncResults();
 				}
 			};
-			timer.schedule( 3000 );
+			m_getSyncStatusTimer.schedule( 3000 );
 			break;
 		}
 			
@@ -1026,6 +1028,8 @@ public class LdapSyncResultsDlg extends DlgBox
 	{
 		GwtTeamingMessages messages;
 		Timer timer;
+		
+		hideErrorPanel();
 		
 		m_listOfLdapServers = listOfLdapServers;
 		
@@ -1075,19 +1079,23 @@ public class LdapSyncResultsDlg extends DlgBox
 			m_syncStatusImg.setVisible( false );
 			m_syncStatusLabel.setText( "" );
 		}
-		
-		// Wait for 1 second before we issue a request to get the ldap sync results.  We need to give the
+
+		// Wait for 2 second before we issue a request to get the ldap sync results.  We need to give the
 		// request to start the ldap sync time to create an LdapSyncThread and store that object in the
 		// session.
-		timer = new Timer()
+		if ( m_initTimer != null )
+			m_initTimer.cancel();
+		
+		m_initTimer = new Timer()
 		{
 			@Override
 			public void run()
 			{
+				m_initTimer = null;
 				getLdapSyncResults();
 			}
 		};
-		timer.schedule( 1000 );
+		m_initTimer.schedule( 2000 );
 	}
 
 	/**

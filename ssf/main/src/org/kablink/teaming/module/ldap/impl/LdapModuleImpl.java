@@ -4639,6 +4639,9 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		Matcher matcher;
 		HomeDirInfo homeDirInfo = null;
 		
+		if ( uncPath == null )
+			return null;
+		
 	    matcher = m_pattern_uncPath.matcher( uncPath );
 	    if ( matcher.find() && matcher.groupCount() == 2 )
 	    {
@@ -4688,7 +4691,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	    else
 	    {
 	    	if ( logErrors || logger.isDebugEnabled() )
-	    		logger.error( "\t\t\tCould not parse the home directory unc" );
+	    		logger.error( "\t\t\tCould not parse the home directory unc: " + uncPath );
 	    }
 	    
 	    return homeDirInfo;

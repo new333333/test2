@@ -421,6 +421,7 @@ public class GwtLdapHelper
 		{
 			switch ( syncStatus )
 			{
+			case STATUS_SYNC_ALREADY_IN_PROGRESS:
 			case STATUS_ABORTED_BY_ERROR:
 			case STATUS_COMPLETED:
 			{
@@ -436,7 +437,6 @@ public class GwtLdapHelper
 			}
 				
 			case STATUS_COLLECT_RESULTS:
-			case STATUS_SYNC_ALREADY_IN_PROGRESS:
 			case STATUS_STOP_COLLECTING_RESULTS:
 			default:
 				break;
