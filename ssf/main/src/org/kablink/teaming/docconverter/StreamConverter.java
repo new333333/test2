@@ -89,7 +89,7 @@ public abstract class StreamConverter<T> {
 	protected void end(long begin, String fileName) {
 		if(logger.isDebugEnabled()) {
 			double diff = (System.nanoTime() - begin)/1000000.0;
-			logger.debug(diff + " ms, converting " + fileName);
+			logger.debug("StreamConverter.end():  " + diff + " ms, converting " + fileName);
 		}	
 	}
 }
