@@ -34,6 +34,7 @@ package org.kablink.teaming.remoting.rest.provider;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.kablink.teaming.remoting.rest.jersey.filter.ContainerFilter;
 import org.kablink.teaming.rest.v1.model.ErrorInfo;
 import org.kablink.util.api.ApiErrorCode;
 
@@ -51,7 +52,7 @@ public class RuntimeMapper implements ExceptionMapper<RuntimeException> {
     protected static Log logger = LogFactory.getLog(RuntimeMapper.class);
 
 	public Response toResponse(RuntimeException ex) {
-        logger.error("An error occurred processing the REST request.", ex);
+        logger.error("An error occurred while processing a REST request (" + ContainerFilter.getCurrentEndpoint() + ")", ex);
 		return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new ErrorInfo(ApiErrorCode.SERVER_ERROR.name(), ex.getMessage())).build();
 	}
 }
