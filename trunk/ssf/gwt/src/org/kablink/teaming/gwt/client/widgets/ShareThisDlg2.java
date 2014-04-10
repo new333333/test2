@@ -528,11 +528,7 @@ public class ShareThisDlg2 extends DlgBox
 				@Override
 				public void execute()
 				{
-					InvokeEditShareRightsDlgEvent event;
-
-					// Fire an event to invoke the "edit share rights" dialog.
-					event = new InvokeEditShareRightsDlgEvent( listOfShareItems );
-					GwtTeaming.fireEvent( event );
+					editSingleShareItem( listOfShareItems.get( 0 ) );
 				}
 			};
 			Scheduler.get().scheduleDeferred( cmd );
@@ -1012,13 +1008,36 @@ public class ShareThisDlg2 extends DlgBox
 				sharedWithCol.setFieldUpdater( new FieldUpdater<GwtShareItem, GwtShareItem>()
 				{
 					@Override
-					public void update( int index, GwtShareItem shareItem, GwtShareItem value )
+					public void update( int index, final GwtShareItem shareItem, GwtShareItem value )
 					{
-						ArrayList<GwtShareItem> listOfShares;
+						Scheduler.ScheduledCommand cmd;
 						
-						listOfShares = new ArrayList<GwtShareItem>();
-						listOfShares.add( shareItem );
-						invokeEditShareDlg( listOfShares );
+						cmd = new Scheduler.ScheduledCommand()
+						{
+							@Override
+							public void execute()
+							{
+								Set<GwtShareItem> selectedShares;
+								
+								// Are there selected share items?
+								selectedShares = getSelectedShares();
+								if ( selectedShares != null && selectedShares.size() > 0 )
+								{
+									// Yes
+									// Tell the Edit Share widget to save its settings.
+									saveEditShareWidgetSettings();
+									
+									// Because there are selected share items we won't invoke the
+									// Edit Share widget on this share item.
+								}
+								else
+								{
+									// Invoke the Edit Share widget on this share item.
+									editSingleShareItem( shareItem );
+								}
+							}
+						};
+						Scheduler.get().scheduleDeferred( cmd );
 					}
 				} );
 				m_shareTable.addColumn( sharedWithCol, messages.shareDlg_sharedWithCol() );
@@ -1127,7 +1146,6 @@ public class ShareThisDlg2 extends DlgBox
 	 */
 	private void createStaticContent()
 	{
-		FlowPanel tmpPanel;
 		GwtTeamingMessages messages;
 		
 		messages = GwtTeaming.getMessages();
@@ -1271,7 +1289,8 @@ public class ShareThisDlg2 extends DlgBox
 			{
 				// Mark this share as "to be deleted"
 				m_sharingInfo.addToBeDeleted( nextShare );
-				
+
+				m_selectionModel.setSelected( nextShare, false );
 				m_listOfShares.remove( nextShare );
 			}
 			
@@ -1285,12 +1304,7 @@ public class ShareThisDlg2 extends DlgBox
 			Window.alert( GwtTeaming.getMessages().shareDlg_selectSharesToDelete() );
 		}
 		
-		// Is the "edit share" widget visible?
-		if ( m_editShareWidget != null && m_editShareWidget.isVisible() )
-		{
-			// Yes, close it.
-			m_editShareWidget.setVisible( false );
-		}
+		selectFirstShareItem();
 	}
 	
 	/**
@@ -1356,8 +1370,33 @@ public class ShareThisDlg2 extends DlgBox
 		}
 		else
 		{
-			m_editShareWidget.setVisible( false );
+			selectFirstShareItem();
 		}
+	}
+
+	/**
+	 * This method gets called to edit the given share item
+	 */
+	private void editSingleShareItem( GwtShareItem shareItem )
+	{
+		ArrayList<GwtShareItem> listOfShareItems;
+		InvokeEditShareRightsDlgEvent event;
+		
+		if ( shareItem == null )
+			return;
+
+		// Tell the Edit Share widget to save its settings.
+		saveEditShareWidgetSettings();
+
+		// Unselect any share items that are currently selected
+		unselectSelectedShareItems();
+		
+		listOfShareItems = new ArrayList<GwtShareItem>();
+		listOfShareItems.add( shareItem );
+		
+		// Fire an event to invoke the "edit share rights" dialog.
+		event = new InvokeEditShareRightsDlgEvent( listOfShareItems );
+		GwtTeaming.fireEvent( event );
 	}
 	
 	/**
@@ -1517,14 +1556,9 @@ public class ShareThisDlg2 extends DlgBox
 			return true;
 		}
 
-		// Is the "edit share" widget visible?
-		if ( m_editShareWidget != null && m_editShareWidget.isVisible() )
-		{
-			// Yes
-			// The user may not have hit apply.  Tell the "edit share" widget to save its changes
-			if ( m_editShareWidget.saveSettings() == false )
-				return false;
-		}
+		// The user may not have hit apply.  Tell the "edit share" widget to save its changes
+		if ( saveEditShareWidgetSettings() == false )
+			return false;
 		
 		// Disable the Ok button.
 		showStatusMsg( GwtTeaming.getMessages().shareDlg_savingShareInfo() );
@@ -2264,13 +2298,28 @@ public class ShareThisDlg2 extends DlgBox
 							addExternalUsers( findUserResponseData.getEmailAddrMap(), listOfShareItemsAdded );
 							
 							// Did we add a recipient
-							if ( listOfShareItemsAdded != null && listOfShareItemsAdded.size() > 1 )
+							if ( listOfShareItemsAdded != null && listOfShareItemsAdded.size() > 0 )
 							{
-								InvokeEditShareRightsDlgEvent event;
+								// Unselect any share items that are currently selected
+								unselectSelectedShareItems();
 
-								// Fire an event to invoke the "edit share rights" dialog.
-								event = new InvokeEditShareRightsDlgEvent( listOfShareItemsAdded );
-								GwtTeaming.fireEvent( event );
+								// Are we adding more than 1 recipient?
+								if ( listOfShareItemsAdded.size() > 1 )
+								{
+									// Yes
+									// Select each recipient
+									for ( GwtShareItem nextShareItem : listOfShareItemsAdded )
+									{
+										m_selectionModel.setSelected( nextShareItem, true );
+									}
+									
+									// Invoke the Edit Share widget for the share items that were just added
+									editSelectedShares();
+								}
+								else
+								{
+									editSingleShareItem( listOfShareItemsAdded.get( 0 ) );
+								}
 							}
 						}
 					}
@@ -2588,14 +2637,9 @@ public class ShareThisDlg2 extends DlgBox
 			};
 		}
 
-		// Is the "edit share" widget visible?
-		if ( m_editShareWidget != null && m_editShareWidget.isVisible() )
-		{
-			// Yes
-			// Tell the "edit share" widget to save its changes
-			if ( m_editShareWidget.saveSettings() == false )
-				return;
-		}
+		// Tell the "edit share" widget to save its changes
+		if ( saveEditShareWidgetSettings() == false )
+			return;
 		
 		ShareRights highestRightsPossible;
 		GwtShareItem shareItem;
@@ -2830,18 +2874,36 @@ public class ShareThisDlg2 extends DlgBox
 	}
 	
 	/**
+	 * If the EditShareWidget is visible, tell it to save its settings
+	 */
+	private boolean saveEditShareWidgetSettings()
+	{
+		// Is the EditShareWidget visible?
+		if ( m_editShareWidget != null && m_editShareWidget.isVisible() )
+		{
+			// Yes
+			// Tell the "edit share" widget to save its changes
+			if ( m_editShareWidget.saveSettings() == false )
+				return false;
+		}
+		
+		return true;
+	}
+	
+	/**
 	 * Select the first share item in the list (if there is one)
 	 */
 	private void selectFirstShareItem()
 	{
 		if ( m_listOfShares != null && m_listOfShares.size() > 0 )
 		{
-			ArrayList<GwtShareItem> listOfShares;
-			
-			listOfShares = new ArrayList<GwtShareItem>();
-			listOfShares.add( m_listOfShares.get( 0 ) );
-			invokeEditShareDlg( listOfShares );
+			editSingleShareItem( m_listOfShares.get( 0 ) );
 		}
+		else if ( m_editShareWidget != null )
+		{
+			m_editShareWidget.setVisible( false );
+		}
+			
 	}
 	
 	/**
@@ -3263,11 +3325,7 @@ public class ShareThisDlg2 extends DlgBox
 							@Override
 							public void execute()
 							{
-								InvokeEditShareRightsDlgEvent event;
-
-								// Fire an event to invoke the "edit share rights" dialog.
-								event = new InvokeEditShareRightsDlgEvent( listOfShareItems );
-								GwtTeaming.fireEvent( event );
+								editSingleShareItem( listOfShareItems.get( 0 ) );
 							}
 						};
 						Scheduler.get().scheduleDeferred( cmd );
@@ -3341,6 +3399,23 @@ public class ShareThisDlg2 extends DlgBox
 			// ...unregister them.  (Note that this will also empty the
 			// ...list.)
 			EventHelper.unregisterEventHandlers( m_registeredEventHandlers );
+		}
+	}
+	
+	/**
+	 * Unselect all share items that are currently selected
+	 */
+	private void unselectSelectedShareItems()
+	{
+		Set<GwtShareItem> shares;
+
+		shares = getSelectedShares();
+		if ( shares != null )
+		{
+			for ( GwtShareItem nextShareItem : shares )
+			{
+				m_selectionModel.setSelected( nextShareItem, false );
+			}
 		}
 	}
 	
@@ -3435,13 +3510,9 @@ public class ShareThisDlg2 extends DlgBox
 							
 							listOfShareItems = addShare( gwtUser );
 
-							if ( listOfShareItems != null )
+							if ( listOfShareItems != null && listOfShareItems.size() > 0 )
 							{
-								InvokeEditShareRightsDlgEvent event;
-
-								// Fire an event to invoke the "edit share rights" dialog.
-								event = new InvokeEditShareRightsDlgEvent( listOfShareItems );
-								GwtTeaming.fireEvent( event );
+								editSingleShareItem( listOfShareItems.get( 0 ) );
 							}
 						}
 					}
