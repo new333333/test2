@@ -38,6 +38,7 @@ import java.util.List;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.ZoneInfo;
 import org.kablink.teaming.module.zone.ZoneException;
+import org.kablink.teaming.module.zone.ZoneUtil;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SZoneConfig;
@@ -88,14 +89,14 @@ public class BaseZoneModule extends AbstractZoneModule {
 	}
 
 	public List<ZoneInfo> getZoneInfos() {
-		ZoneInfo info = getZoneInfo(getZoneIdByZoneName(SZoneConfig.getDefaultZoneName()));
+		ZoneInfo info = getZoneInfo(ZoneUtil.getZoneIdByZoneName(SZoneConfig.getDefaultZoneName()));
 		return Arrays.asList(new ZoneInfo[] {info});
 	}
 
 	public ZoneInfo getZoneInfo(Long zoneId) {
 		ZoneInfo info = new ZoneInfo();
 		info.setZoneName(SZoneConfig.getDefaultZoneName());
-		if(!zoneId.equals(getZoneIdByZoneName(info.getZoneName()))) {
+		if(!zoneId.equals(ZoneUtil.getZoneIdByZoneName(info.getZoneName()))) {
 			return null;
 		}
 		info.setZoneId(zoneId);

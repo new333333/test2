@@ -67,6 +67,7 @@ import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.module.template.TemplateModule;
 import org.kablink.teaming.module.zone.ZoneException;
 import org.kablink.teaming.module.zone.ZoneModule;
+import org.kablink.teaming.module.zone.ZoneUtil;
 import org.kablink.teaming.runasync.RunAsyncManager;
 import org.kablink.teaming.search.SearchUtils;
 import org.kablink.teaming.security.authentication.AuthenticationManager;
@@ -509,7 +510,7 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 		try {
 			String ldapGuid;
             // Get the zone id from the zone name.
-            Long zoneId = getZoneModule().getZoneIdByZoneName(zoneName);
+            Long zoneId = ZoneUtil.getZoneIdByZoneName(zoneName);
 
             ldapGuid = null;
 			
@@ -644,7 +645,7 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 	protected User fetchOpenidUser(String zoneName, String username) {
 		User user = null;
 		try {
-			user = getProfileDao().findUserByName(username, getZoneModule().getZoneIdByZoneName(zoneName));
+			user = getProfileDao().findUserByName(username, ZoneUtil.getZoneIdByZoneName(zoneName));
 		} catch (NoWorkspaceByTheNameException e) {
      		if (user == null) {
     			throw new UserDoesNotExistException("Unrecognized user [" 
