@@ -41,7 +41,6 @@ import org.kablink.teaming.asmodule.zonecontext.ZoneContextHolder;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.context.request.RequestContextUtil;
 import org.kablink.teaming.module.zone.ZoneModule;
-import org.kablink.teaming.util.SessionUtil;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.WindowsUtil;
 
@@ -51,18 +50,37 @@ import com.sun.jersey.spi.container.ContainerResponse;
 import com.sun.jersey.spi.container.ContainerResponseFilter;
 
 public class ContainerFilter implements ContainerRequestFilter, ContainerResponseFilter {
+    private static ThreadLocal<ContainerRequest> currentRequests = new ThreadLocal<ContainerRequest>();
 
-	// It is ok to use instance-level logger, since this class is instantiated only once (i.e., singleton).
+    public static String getCurrentEndpoint() {
+        String url = null;
+        ContainerRequest request = currentRequests.get();
+        if (request!=null) {
+            url = buildEndpoint(request);
+        }
+        return url==null ? "[unknown]" : url;
+    }
+
+    private static String buildEndpoint(ContainerRequest request) {
+        StringBuilder builder = new StringBuilder("REST request: (").append(request.getUserPrincipal().getName()).append(") ");
+        builder.append(request.getMethod()).append(" ");
+        String fullUri = request.getRequestUri().toString();
+        String baseUri = request.getBaseUri().toString();
+        builder.append(fullUri.substring(baseUri.length()-1));
+        return builder.toString();
+    }
+
+    // It is ok to use instance-level logger, since this class is instantiated only once (i.e., singleton).
 	private Log logger = LogFactory.getLog(getClass());
 	
 	@Override
 	public ContainerRequest filter(ContainerRequest request) {
 		// Check authentication
 		checkAuthentication(request);
-		
+
 		// Trace request
 		traceRequest(request);
-		
+
 		// Set up request context
 		setupRequestContext(request);
 
@@ -77,10 +95,10 @@ public class ContainerFilter implements ContainerRequestFilter, ContainerRespons
 			ContainerResponse response) {
 		// Clear request context
 		clearRequestContext(request);
-		
+
 		// Trace response
 		traceResponse(response);
-		
+
 		return response;
 	}
 
@@ -97,6 +115,8 @@ public class ContainerFilter implements ContainerRequestFilter, ContainerRespons
         String userName = request.getUserPrincipal().getName();
 		
 		RequestContextUtil.setThreadContext(zoneId, WindowsUtil.getSamaccountname(userName));
+
+        currentRequests.set(request);
 	}
 
 	private void resolveRequestContext(ContainerRequest request) {
@@ -105,19 +125,15 @@ public class ContainerFilter implements ContainerRequestFilter, ContainerRespons
 	
 	private void clearRequestContext(ContainerRequest request) {
 		RequestContextHolder.clear();
+        currentRequests.remove();
 	}
 	
 	private void traceRequest(ContainerRequest request) {
 		if(logger.isDebugEnabled()) {
-            StringBuilder builder = new StringBuilder("REST request: (").append(request.getUserPrincipal().getName()).append(") ");
-            builder.append(request.getMethod()).append(" ");
-            String fullUri = request.getRequestUri().toString();
-            String baseUri = request.getBaseUri().toString();
-            builder.append(fullUri.substring(baseUri.length()-1));
-			logger.debug(builder.toString());
+            logger.debug(buildEndpoint(request));
         }
 	}
-	
+
 	private void traceResponse(ContainerResponse response) {
 		//if(logger.isDebugEnabled())
 		//	logger.debug(response.toString());

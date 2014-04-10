@@ -33,6 +33,7 @@
 package org.kablink.teaming.remoting.rest.v1.resource;
 
 import org.kablink.teaming.domain.EntityIdentifier;
+import org.kablink.teaming.domain.NoFolderEntryByTheIdException;
 import org.kablink.teaming.domain.NoTagByTheIdException;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.file.WriteFilesException;
@@ -75,6 +76,13 @@ abstract public class AbstractFolderEntryResource  extends AbstractDefinableEnti
         org.kablink.teaming.domain.FolderEntry folderEntry = _getFolderEntry(id);
         if (purge || folderEntry.getParentBinder().isMirrored()) {
             getFolderModule().deleteEntry(folderEntry.getParentBinder().getId(), id);
+            getCoreDao().clear();
+            try {
+                folderEntry = _getFolderEntry(id);
+                logger.warn("Uh-oh, delete entry " + id + " seemed to succeed but the folder entry still exists in the DB.");
+            } catch (NoFolderEntryByTheIdException e) {
+                logger.info("Successfully deleted entry " + id + " from the DB.");
+            }
         } else {
             getFolderModule().preDeleteEntry(folderEntry.getParentBinder().getId(), id, getLoggedInUserId());
         }
