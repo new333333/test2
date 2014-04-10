@@ -1076,9 +1076,6 @@ public class GwtNetFolderHelper
     			syncStats = binderState.getFullSyncStats();
     			if ( syncStats != null )
     			{
-    				System.out.println("*****" + syncStats.toString());// TODO $$$$$$ TBR
-    				
-    				
     				Date date;
     				Long value;
     				
