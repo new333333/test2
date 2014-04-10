@@ -2596,6 +2596,19 @@ public class GwtShareHelper
 					// Yes
 					results.addSuccess( shareItem.getId(), nextGwtShareItem, sendEmail );
 				}
+				else
+				{
+					// No
+					// Are we supposed to send an email to all recipients?
+					if ( sendEmail == true )
+					{
+						// Yes
+						if ( shareItemId != null )
+						{
+							results.addSuccess( shareItemId, nextGwtShareItem, sendEmail );
+						}
+					}
+				}
 			}
 		}// end for()
 
