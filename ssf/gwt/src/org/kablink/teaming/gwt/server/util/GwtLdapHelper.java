@@ -389,7 +389,7 @@ public class GwtLdapHelper
 		GwtLdapSyncResults gwtSyncResults;
 		LdapSyncResults syncResults;
 		SyncStatus syncStatus;
-		
+
 		gwtSyncResults = new GwtLdapSyncResults();
 		if ( syncId == null || syncId.length() == 0 )
 		{
@@ -404,9 +404,9 @@ public class GwtLdapHelper
 		
 		if ( syncResults == null )
 		{
-			gwtSyncResults.setSyncError( GwtLdapSyncError.INVALID_SYNC_ID );
-			gwtSyncResults.setSyncStatus( GwtLdapSyncStatus.STATUS_ABORTED_BY_ERROR );
-			m_logger.info( "in GwtLdapHelper.getLdapSyncResults(), LdapSyncThread.getLdapSyncResults() returned null" );
+			// If we can't find a sync results it means that the ldap sync has finished.
+			gwtSyncResults.setSyncStatus( GwtLdapSyncStatus.STATUS_COMPLETED );
+			m_logger.info( "in GwtLdapHelper.getLdapSyncResults(), LdapSyncThread.getLdapSyncResults() returned null.  syncId: " + syncId );
 			return gwtSyncResults;
 		}
 		
