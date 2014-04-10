@@ -114,7 +114,6 @@ import org.springframework.transaction.support.TransactionTemplate;
 public abstract class AbstractZoneModule extends CommonDependencyInjection implements ZoneModule,InitializingBean {
 	protected TempFileUtil.OITTempCleanupThread m_oitTempCleanupThread;
 	protected DefinitionModule definitionModule;
-    private HashMapCache<String, Long> zoneIdCache = new HashMapCache<String, Long>(SPropsUtil.getLong("cache.zone.id", 300));
 	
 	/**
 	 * Setup by spring
@@ -266,15 +265,6 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
  		DefinitionCache.clear();
  	}
  	
-	@Override
-	public Long getZoneIdByZoneName(String zoneName) {
-        Long id = zoneIdCache.get(zoneName);
-        if (id==null) {
-    		id = getCoreDao().findTopWorkspaceId(zoneName);
-            zoneIdCache.put(zoneName, id);
-        }
-        return id;
-	}
 	@Override
 	public ZoneConfig getZoneConfig(Long zoneId) throws ZoneException {
 		return getCoreDao().loadZoneConfig(zoneId);

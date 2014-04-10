@@ -43,6 +43,7 @@ import org.kablink.teaming.domain.NoUserByTheNameException;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.module.zone.ZoneModule;
+import org.kablink.teaming.module.zone.ZoneUtil;
 import org.kablink.teaming.security.accesstoken.AccessToken;
 import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.util.SpringContextUtil;
@@ -259,7 +260,7 @@ public class RequestContext {
 	private User fetchUser() throws NoContextUserException {
 		try {
             if (zoneId==null && zoneName!=null) {
-                zoneId = getZoneModule().getZoneIdByZoneName(zoneName);
+                zoneId = ZoneUtil.getZoneIdByZoneName(zoneName);
             }
 			User u;
 			if(userId != null) {
