@@ -1206,9 +1206,11 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
     	}
 		checkAccess(workArea, AdminOperation.manageFunctionMembership);
 		final Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
-		
+			
 		//get list of current readers to compare for indexing
-		List<WorkAreaFunctionMembership>wfmsRead = 
+		boolean originalExtFunctionMembershipInherited = workArea.isExtFunctionMembershipInherited();
+		boolean originalFunctionMembershipInherited = workArea.isFunctionMembershipInherited();
+		List<WorkAreaFunctionMembership> wfmsRead = 
 	       		getWorkAreaFunctionMembershipManager().findWorkAreaFunctionMembershipsByOperation(zoneId, workArea, WorkAreaOperation.READ_ENTRIES);
        	TreeSet<Long> originalRead = new TreeSet();
         for (WorkAreaFunctionMembership wfm:wfmsRead) {
@@ -1313,6 +1315,8 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 				return null;
         	}});
 		//get new list of readers
+		boolean currentExtFunctionMembershipInherited = workArea.isExtFunctionMembershipInherited();
+		boolean currentFunctionMembershipInherited = workArea.isFunctionMembershipInherited();
       	wfmsRead = getWorkAreaFunctionMembershipManager().findWorkAreaFunctionMembershipsByOperation(zoneId, workArea, WorkAreaOperation.READ_ENTRIES);
       	TreeSet<Long> currentRead = new TreeSet();
       	for (WorkAreaFunctionMembership wfm:wfmsRead) {
@@ -1330,8 +1334,14 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
       	}
       	//only re-index if readers were affected.  Do outside transaction
       	boolean conditionsExist = checkIfConditionsExist(workArea);
-		if ((!originalRead.equals(currentRead) || !originalVBT.equals(currentVBT) || !originalNFA.equals(currentNFA) ||
-				conditionsExist || conditionsExistInOrigianl) && (workArea instanceof Binder)) {
+		if ((originalExtFunctionMembershipInherited != currentExtFunctionMembershipInherited || 
+				originalFunctionMembershipInherited != currentFunctionMembershipInherited || 
+				!originalRead.equals(currentRead) || 
+				!originalVBT.equals(currentVBT) || 
+				!originalNFA.equals(currentNFA) ||
+				conditionsExist || 
+				conditionsExistInOrigianl) && 
+				(workArea instanceof Binder)) {
 			Binder binder = (Binder)workArea;
 			loadBinderProcessor(binder).indexFunctionMembership(binder, true, false, true, skipFileContentIndexing);
 		} else if (!originalRead.equals(currentRead) && workArea instanceof Entry) {
