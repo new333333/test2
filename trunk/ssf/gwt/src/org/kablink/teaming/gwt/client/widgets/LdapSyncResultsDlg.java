@@ -145,8 +145,7 @@ public class LdapSyncResultsDlg extends DlgBox
 	private boolean m_showModifiedGroups = true;
 	private boolean m_showDeletedGroups = true;
 
-	private Timer m_initTimer = null;
-	private Timer m_getSyncStatusTimer = null;
+	private Timer m_getSyncResultsTimer = null;
 	
 	private QuickFilter m_quickFilter;
 	private String m_currentFilterStr = null;
@@ -764,9 +763,33 @@ public class LdapSyncResultsDlg extends DlgBox
 	}
 	
 	/**
+	 * 
+	 */
+	private void getLdapSyncResultsDelayed( int milliSeconds )
+	{
+		// Does a timer already exist for getting the ldap sync results?
+		if ( m_getSyncResultsTimer != null )
+		{
+			// Yes, nothing to do.
+			return;
+		}
+		
+		m_getSyncResultsTimer = new Timer()
+		{
+			@Override
+			public void run()
+			{
+				m_getSyncResultsTimer = null;
+				getLdapSyncResultsImpl();
+			}
+		};
+		m_getSyncResultsTimer.schedule( milliSeconds );
+	}
+	
+	/**
 	 * Issue an rpc request to get the ldap sync results
 	 */
-	private void getLdapSyncResults()
+	private void getLdapSyncResultsImpl()
 	{
 		GetLdapSyncResultsCmd cmd;
 		AsyncCallback<VibeRpcResponse> rpcCallback = null;
@@ -968,19 +991,17 @@ public class LdapSyncResultsDlg extends DlgBox
 			
 		case STATUS_IN_PROGRESS:
 		{
-			if ( m_getSyncStatusTimer != null )
-				m_getSyncStatusTimer.cancel();
+			Scheduler.ScheduledCommand cmd;
 			
-			m_getSyncStatusTimer = new Timer()
+			cmd = new Scheduler.ScheduledCommand()
 			{
 				@Override
-				public void run()
+				public void execute()
 				{
-					m_getSyncStatusTimer = null;
-					getLdapSyncResults();
+					getLdapSyncResultsDelayed( 3000 );
 				}
 			};
-			m_getSyncStatusTimer.schedule( 3000 );
+			Scheduler.get().scheduleDeferred( cmd );
 			break;
 		}
 			
@@ -1027,7 +1048,6 @@ public class LdapSyncResultsDlg extends DlgBox
 		GwtLdapSyncMode syncMode )
 	{
 		GwtTeamingMessages messages;
-		Timer timer;
 		
 		hideErrorPanel();
 		
@@ -1054,9 +1074,6 @@ public class LdapSyncResultsDlg extends DlgBox
 			m_groupStatsTable.getRowFormatter().setVisible( m_modifiedGroupsRow, false );
 		}
 		
-		// The sync id is what we use to find the sync results in the session.
-		m_syncId = syncId;
-		
 		// Should we start fresh?
 		if ( clearExistingResults )
 		{
@@ -1080,22 +1097,16 @@ public class LdapSyncResultsDlg extends DlgBox
 			m_syncStatusLabel.setText( "" );
 		}
 
-		// Wait for 2 second before we issue a request to get the ldap sync results.  We need to give the
-		// request to start the ldap sync time to create an LdapSyncThread and store that object in the
-		// session.
-		if ( m_initTimer != null )
-			m_initTimer.cancel();
-		
-		m_initTimer = new Timer()
+		if ( syncId != null && syncId.length() > 0 )
 		{
-			@Override
-			public void run()
-			{
-				m_initTimer = null;
-				getLdapSyncResults();
-			}
-		};
-		m_initTimer.schedule( 2000 );
+			// The sync id is what we use to find the sync results in the session.
+			m_syncId = syncId;
+			
+			// Wait for 1.5 second before we issue a request to get the ldap sync results.  We need to give the
+			// request to start the ldap sync time to create an LdapSyncThread and store that object in the
+			// session.
+			getLdapSyncResultsDelayed( 1500 );
+		}
 	}
 
 	/**
