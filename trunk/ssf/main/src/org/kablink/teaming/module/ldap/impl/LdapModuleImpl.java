@@ -7045,6 +7045,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		pf = getProfileDao().getProfileBinder(zoneId);
 		collections = new ArrayList();
 		collections.add( "customAttributes" );
+		collections.add( " emailAddresses" );
 	   	foundEntries = getCoreDao().loadObjects( users.keySet(), User.class, zoneId, collections );
 	   	entries = new HashMap();
 	   	originalUserNamesMap = new HashMap<Long,String>();
