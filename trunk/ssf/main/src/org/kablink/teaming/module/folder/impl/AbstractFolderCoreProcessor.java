@@ -313,9 +313,20 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     		Collection<FileAttachment> filesToIndex, Map ctx) {
   	   if (ctx != null && Boolean.TRUE.equals(ctx.get(ObjectKeys.INPUT_OPTION_NO_INDEX))) return;
   	   super.modifyEntry_indexAdd(binder, entry, inputData, fileUploadItems, filesToIndex, ctx);
-       	//Also re-index the top entry (to catch the change in lastActivity)
-    	FolderEntry fEntry = (FolderEntry)entry;
-    	if (!fEntry.isTop()) indexEntry(fEntry.getTopEntry());
+  	   
+  	   FolderEntry fEntry = (FolderEntry)entry;
+  	   if (!fEntry.isTop()) {
+  	       // Re-index the top entry (to catch the change in
+  	  	   // lastActivity for comments.)
+  		   indexEntry(fEntry.getTopEntry());
+  	   }
+  	   else if (fEntry.isAclExternallyControlled()) {
+  		   // Bugzilla 869821 (DRF):  For entries in Net Folders,
+  		   // re-index the parent binder for the path change.
+  		   // Otherwise, ACL checks through FAMT may not work after
+  		   // a rename.
+  		   indexBinder(fEntry.getParentBinder(), true);
+  	   }
     }
 
     //***********************************************************************************************************
