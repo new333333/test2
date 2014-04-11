@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -44,16 +44,19 @@ import org.kablink.teaming.fi.connection.ResourceDriver;
 import org.kablink.teaming.security.function.WorkArea;
 
 /**
+ * ?
+ * 
  * @hibernate.class table="SS_FolderEntries" dynamic-update="true" lazy="true"
  * @hibernate.mapping auto-import="false"
  * need auto-import = false so names don't collide with jbpm
  * <code>FolderEntry</code> represents a entry or a reply.
- *
+ * 
+ * @author ?
  */
+@SuppressWarnings("unchecked")
 public class FolderEntry extends WorkflowControlledEntry implements WorkflowSupport, Reservable {
-
     protected HistoryStamp reservation;
-    protected List replies;//initialized by hibernate access=field
+	protected List replies;//initialized by hibernate access=field
     protected HKey docHKey;
     protected int replyCount=0;
     protected int nextDescendant=1;
@@ -84,7 +87,8 @@ public class FolderEntry extends WorkflowControlledEntry implements WorkflowSupp
     	postedBy = entry.postedBy;
     	
     }
- 	public EntityIdentifier.EntityType getEntityType() {
+ 	@Override
+	public EntityIdentifier.EntityType getEntityType() {
 		return EntityIdentifier.EntityType.folderEntry;
 	}
  
@@ -111,18 +115,22 @@ public class FolderEntry extends WorkflowControlledEntry implements WorkflowSupp
     /**
      * @hibernate.component class="org.kablink.teaming.domain.HistoryStamp" prefix="reserved_"
      */
-    public HistoryStamp getReservation() {
+    @Override
+	public HistoryStamp getReservation() {
         return this.reservation;
     }
 
-    public void setReservation(HistoryStamp reservation) {
+    @Override
+	public void setReservation(HistoryStamp reservation) {
         this.reservation = reservation;
     }
-    public void setReservation(User owner) {
+    @Override
+	public void setReservation(User owner) {
         setReservation(new HistoryStamp(owner));
     }    
     
-    public void clearReservation() {
+    @Override
+	public void clearReservation() {
     	this.reservation = null;
     }
     
@@ -173,7 +181,8 @@ public class FolderEntry extends WorkflowControlledEntry implements WorkflowSupp
     		if (topEntry != null) topEntry.updateLastActivity(lastActivity);
     	}
     }
-    public void setWorkflowChange(HistoryStamp workflowChange) {
+    @Override
+	public void setWorkflowChange(HistoryStamp workflowChange) {
     	super.setWorkflowChange(workflowChange);
     	if (workflowChange == null) return;
     	updateLastActivity(workflowChange.getDate()); 
@@ -220,7 +229,8 @@ public class FolderEntry extends WorkflowControlledEntry implements WorkflowSupp
     public void setTopEntry(FolderEntry topEntry) {
         this.topEntry = topEntry;
     }
-    public boolean isTop() {
+    @Override
+	public boolean isTop() {
     	return topEntry == null;
     }
 
@@ -308,13 +318,14 @@ public class FolderEntry extends WorkflowControlledEntry implements WorkflowSupp
     	return changedReplies;
     }
     
-    protected void buildTotalReplyList(Map<FolderEntry,Integer> allReplies, FolderEntry reply) {
+    public void buildTotalReplyList(Map<FolderEntry,Integer> allReplies, FolderEntry reply) {
 		if (!allReplies.containsKey(reply)) allReplies.put(reply, 0);
     	List<FolderEntry> replies = reply.getReplies();
     	for (FolderEntry child : replies) {
     		buildTotalReplyList(allReplies, child);
     	}
     }
+    
     protected void addAncestor(Map<FolderEntry,Integer> allReplies) {
     	Integer count = allReplies.get(this);
     	if (!isPreDeleted()) {
@@ -398,11 +409,13 @@ public class FolderEntry extends WorkflowControlledEntry implements WorkflowSupp
 	
 	
     //*****************WorkArea interface stuff***********/
-    public WorkArea getParentWorkArea() {
+    @Override
+	public WorkArea getParentWorkArea() {
         //For replies, get the top entry as the parent
         return this.getTopEntry();
     }
-    public Set getChildWorkAreas() {
+    @Override
+	public Set getChildWorkAreas() {
     	Set<Entry> result = new HashSet<Entry>();
 		List<Entry> replies = this.getReplies();
 		for (Entry reply : replies) {
@@ -414,7 +427,8 @@ public class FolderEntry extends WorkflowControlledEntry implements WorkflowSupp
 	 * @hibernate.property not-null="true"
 	 * @return
 	 */
-    public boolean isFunctionMembershipInherited() {
+    @Override
+	public boolean isFunctionMembershipInherited() {
     	if (this.isTop()) {
     		//The top entry does not inherit
     		return false;
@@ -423,12 +437,15 @@ public class FolderEntry extends WorkflowControlledEntry implements WorkflowSupp
     		return true;
     	}
     }
-    public void setFunctionMembershipInherited(boolean functionMembershipInherited) {
+    @Override
+	public void setFunctionMembershipInherited(boolean functionMembershipInherited) {
     }
+	@Override
 	public boolean isFunctionMembershipInheritanceSupported() {
 		return true;
     }
-    public boolean isExtFunctionMembershipInherited() {
+    @Override
+	public boolean isExtFunctionMembershipInherited() {
     	if (this.isTop()) {
     		//The top entry does not inherit
     		return false;
@@ -437,9 +454,11 @@ public class FolderEntry extends WorkflowControlledEntry implements WorkflowSupp
     		return true;
     	}
     }
-    public void setExtFunctionMembershipInherited(boolean extFunctionMembershipInherited) {
+    @Override
+	public void setExtFunctionMembershipInherited(boolean extFunctionMembershipInherited) {
     }
-    public Long getOwnerId() {
+    @Override
+	public Long getOwnerId() {
     	Principal owner = getOwner();
     	if (owner == null)	return null;
     	return owner.getId();
@@ -450,7 +469,8 @@ public class FolderEntry extends WorkflowControlledEntry implements WorkflowSupp
       * Used in access management.
       * @hibernate.many-to-one
       */
-  	public Principal getOwner() {
+  	@Override
+	public Principal getOwner() {
  	   	HistoryStamp creation = getCreation();
      	if ((creation != null) && creation.getPrincipal() != null) {
      		return creation.getPrincipal();
@@ -458,7 +478,8 @@ public class FolderEntry extends WorkflowControlledEntry implements WorkflowSupp
      	return null;
  		
  	}
- 	public void setOwner(Principal owner) {
+ 	@Override
+	public void setOwner(Principal owner) {
  	}
      /*****************End WorkArea interface stuff***********/
  	
@@ -516,5 +537,4 @@ public class FolderEntry extends WorkflowControlledEntry implements WorkflowSupp
 	public void setResourceHandle(String resourceHandle) {
 		this.resourceHandle = resourceHandle;
 	}
-
 }
