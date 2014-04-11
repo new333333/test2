@@ -319,10 +319,13 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
   	  	   // lastActivity for comments.)
   		   indexEntry(fEntry.getTopEntry());
   	   }
-  	   if (fEntry.isAclExternallyControlled() || (isReply && fEntry.getTopEntry().isAclExternallyControlled())) {
-  		   // Bugzilla 869821 (DRF):  For entries in Net Folders,
-  		   // re-index their comments.  Otherwise, ACL checks
-  		   // through FAMT may not work after a rename.
+  	   
+  	   boolean isRename = ((ctx != null) && (!(ctx.get(ObjectKeys.FIELD_ENTITY_TITLE).equals(binder.getTitle()))));
+  	   if (isRename && (fEntry.isAclExternallyControlled() || (isReply && fEntry.getTopEntry().isAclExternallyControlled()))) {
+  		   // Bugzilla 869821 (DRF):  For entries in Net Folders that
+  		   // are being renamed, we need re-index their comments too.
+  		   // Otherwise, ACL checks on them through FAMT may not work
+  		   // after the rename.
   		   Map<FolderEntry, Integer> allReplies = new HashMap<FolderEntry, Integer>();
   		   fEntry.buildTotalReplyList(allReplies, fEntry);
   		   for (FolderEntry reply:  allReplies.keySet()) {
