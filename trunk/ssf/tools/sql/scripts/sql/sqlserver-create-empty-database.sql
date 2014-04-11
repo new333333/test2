@@ -1,3 +1,8 @@
 -- drop database sitescape;
-create database sitescape;
-go
+CREATE DATABASE sitescape;
+
+ALTER DATABASE sitescape
+
+SET READ_COMMITTED_SNAPSHOT ON
+
+GO
