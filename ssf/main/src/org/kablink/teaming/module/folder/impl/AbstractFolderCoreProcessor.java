@@ -45,7 +45,6 @@ import java.util.Set;
 
 import org.dom4j.Document;
 import org.dom4j.Element;
-
 import org.kablink.teaming.NotSupportedException;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
@@ -94,7 +93,6 @@ import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.ServerTaskLinkage;
 import org.kablink.util.Validator;
-
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
@@ -315,20 +313,24 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
   	   super.modifyEntry_indexAdd(binder, entry, inputData, fileUploadItems, filesToIndex, ctx);
   	   
   	   FolderEntry fEntry = (FolderEntry)entry;
-  	   if (!fEntry.isTop()) {
+  	   boolean isReply = (!(fEntry.isTop())); 
+  	   if (isReply) {
   	       // Re-index the top entry (to catch the change in
   	  	   // lastActivity for comments.)
   		   indexEntry(fEntry.getTopEntry());
   	   }
-  	   else if (fEntry.isAclExternallyControlled()) {
+  	   if (fEntry.isAclExternallyControlled() || (isReply && fEntry.getTopEntry().isAclExternallyControlled())) {
   		   // Bugzilla 869821 (DRF):  For entries in Net Folders,
-  		   // re-index the parent binder for the path change.
-  		   // Otherwise, ACL checks through FAMT may not work after
-  		   // a rename.
-  		   indexBinder(fEntry.getParentBinder(), true);
+  		   // re-index their comments.  Otherwise, ACL checks
+  		   // through FAMT may not work after a rename.
+  		   Map<FolderEntry, Integer> allReplies = new HashMap<FolderEntry, Integer>();
+  		   fEntry.buildTotalReplyList(allReplies, fEntry);
+  		   for (FolderEntry reply:  allReplies.keySet()) {
+  	  		   indexEntry(reply);
+  		   }
   	   }
     }
-
+    
     //***********************************************************************************************************
     //no write transaction    
     @Override
