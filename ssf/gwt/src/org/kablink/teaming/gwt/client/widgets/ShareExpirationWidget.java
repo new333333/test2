@@ -179,7 +179,7 @@ public class ShareExpirationWidget extends Composite
 				public void onValueChange( ValueChangeEvent<Long> event )
 				{
 					Long date;
-					Long today;
+					final Long today;
 					
 					date = event.getValue();
 
@@ -196,7 +196,7 @@ public class ShareExpirationWidget extends Composite
 							{
 								// Yes, tell them not to do that.
 								Window.alert( GwtTeaming.getMessages().shareExpirationDlg_cantEnterPriorDate() );
-								m_dateBox.setValue( getToday() );
+								m_dateBox.setValue( today );
 							}
 						};
 						Scheduler.get().scheduleDeferred( cmd );
@@ -457,6 +457,7 @@ public class ShareExpirationWidget extends Composite
 	/**
 	 * 
 	 */
+	@SuppressWarnings("deprecation")
 	private Long getToday()
 	{
 		Date today;
@@ -464,6 +465,15 @@ public class ShareExpirationWidget extends Composite
 		
 		today = new Date();
 		value = today.getTime();
+		
+		// Subtract off time to return to 12:00 am
+		value -= (today.getHours() * 60 * 60 * 1000);
+		value -= (today.getMinutes() * 60 * 1000);
+		value -= (today.getSeconds() * 1000);
+		
+		// Get rid of left over milliseconds.
+		value /= 1000;
+		value *= 1000;
 		
 		// Convert the time to GMT
 		value += (GwtTeaming.m_requestInfo.getTimeZoneOffsetHour() * 60 * 60 * 1000);
