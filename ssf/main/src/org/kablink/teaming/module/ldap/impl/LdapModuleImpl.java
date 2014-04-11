@@ -107,9 +107,7 @@ import org.kablink.teaming.domain.ZoneInfo;
 import org.kablink.teaming.jobs.LdapSynchronization;
 import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.module.binder.BinderModule;
-import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.definition.DefinitionModule;
-import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.impl.CommonDependencyInjection;
 import org.kablink.teaming.module.ldap.LdapModule;
@@ -175,6 +173,12 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		UNKNOWN
 	}
 	
+	private int m_numUsersCreated;
+	private long m_createUsersStartTime;
+	private long m_createUsersStartLapTime;
+	private long m_createGroupsStartTime;
+	private long m_ldapSyncStartTime;
+
 	private static final String GUID_ATTRIBUTE = "GUID";
 	private static final String OBJECT_SID_ATTRIBUTE = "objectSid";
 	private static final String OBJECT_GUID_ATTRIBUTE = "objectGUID";
@@ -3011,6 +3015,16 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			
 			errorSyncingUsers = false;
 			
+			{
+				Date now;
+				
+				now = new Date();
+				m_numUsersCreated = 0;
+				m_createUsersStartTime = now.getTime();
+				m_createUsersStartLapTime = m_createUsersStartTime;
+				m_ldapSyncStartTime = m_createUsersStartTime;
+			}
+			
 			LdapSchedule info = new LdapSchedule(getSyncObject().getScheduleInfo(zone.getId()));
 	    	UserCoordinator userCoordinator = new UserCoordinator(
 	    													zone,
@@ -3110,6 +3124,27 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				}
 				userCoordinator.wrapUp( doUserCleanup );
 				logger.info( "Finished userCoordinator.wrapUp()" );
+
+				{
+					boolean showTiming;
+					
+					showTiming = SPropsUtil.getBoolean( "ldap.sync.show.timings", false );
+					if ( showTiming )
+					{
+						long elapsedTimeInSeconds;
+						long minutes;
+						long seconds;
+						Date now;
+						
+						now = new Date();
+
+						elapsedTimeInSeconds = now.getTime() - m_createUsersStartTime;
+						elapsedTimeInSeconds /= 1000;
+						minutes = elapsedTimeInSeconds / 60;
+						seconds = elapsedTimeInSeconds - (minutes * 60);
+						logger.info( "ldap sync timing: ----------> Time taken to create " + m_numUsersCreated + " users: " + minutes + " minutes " + seconds + " seconds" );
+					}
+				}
 			}
 			catch ( Exception ex )
 			{
@@ -3126,6 +3161,13 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	  			}
 			}
 
+			{
+				Date now;
+				
+				now = new Date();
+				m_createGroupsStartTime = now.getTime();
+			}
+			
 			errorSyncingGroups = false;
 	   		GroupCoordinator groupCoordinator = new GroupCoordinator(
 	   															zone,
@@ -3212,6 +3254,27 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		  		}
 			}// end for()
 	   		
+			{
+				boolean showTiming;
+				
+				showTiming = SPropsUtil.getBoolean( "ldap.sync.show.timings", false );
+				if ( showTiming )
+				{
+					long elapsedTimeInSeconds;
+					long minutes;
+					long seconds;
+					Date now;
+					
+					now = new Date();
+
+					elapsedTimeInSeconds = now.getTime() - m_createGroupsStartTime;
+					elapsedTimeInSeconds /= 1000;
+					minutes = elapsedTimeInSeconds / 60;
+					seconds = elapsedTimeInSeconds - (minutes * 60);
+					logger.info( "ldap sync timing: ----------> Time taken to sync groups " + minutes + " minutes " + seconds + " seconds" );
+				}
+			}
+			
 	   		try
 	   		{
 		   		if ( errorSyncingGroups == false )
@@ -3336,6 +3399,26 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	   		
 	   		logger.info( "Finished syncAll() with no exceptions" );
 	   		
+			{
+				boolean showTiming;
+				
+				showTiming = SPropsUtil.getBoolean( "ldap.sync.show.timings", false );
+				if ( showTiming )
+				{
+					long elapsedTimeInSeconds;
+					long minutes;
+					long seconds;
+					Date now;
+					
+					now = new Date();
+
+					elapsedTimeInSeconds = now.getTime() - m_ldapSyncStartTime;
+					elapsedTimeInSeconds /= 1000;
+					minutes = elapsedTimeInSeconds / 60;
+					seconds = elapsedTimeInSeconds - (minutes * 60);
+					logger.info( "ldap sync timing: ----------> Total time taken for ldap sync: " + minutes + " minutes " + seconds + " seconds" );
+				}
+			}
 		}// end try
 		finally
 		{
@@ -7699,8 +7782,42 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				createHomeDirNetFolderServers( newUsers, homeDirInfoMap );
 			}
 
+			{
+				boolean showTiming;
+				
+				showTiming = SPropsUtil.getBoolean( "ldap.sync.show.timings", false );
+				if ( showTiming )
+				{
+					m_numUsersCreated += newUsers.size();
+					if ( (m_numUsersCreated % 500) == 0 )
+					{
+						long elapsedTimeInSeconds;
+						long minutes;
+						long seconds;
+						Date now;
+						
+						now = new Date();
+
+						elapsedTimeInSeconds = now.getTime() - m_createUsersStartLapTime;
+						elapsedTimeInSeconds /= 1000;
+						minutes = elapsedTimeInSeconds / 60;
+						seconds = elapsedTimeInSeconds - (minutes * 60);
+						logger.info( "ldap sync timing: ----------> Time to create last 500 users: " + minutes + " minutes " + seconds + " seconds" );
+						
+						m_createUsersStartLapTime = now.getTime();
+
+						elapsedTimeInSeconds = now.getTime() - m_createUsersStartTime;
+						elapsedTimeInSeconds /= 1000;
+						minutes = elapsedTimeInSeconds / 60;
+						seconds = elapsedTimeInSeconds - (minutes * 60);
+						logger.info( "ldap sync timing: ----------> Time taken to create " + m_numUsersCreated + " users: " + minutes + " minutes " + seconds + " seconds" );
+					}
+				}
+			}
+
 			if(logger.isDebugEnabled())
 				logger.debug("Applying index changes");
+			
 			IndexSynchronizationManager.applyChanges();  //apply now, syncNewEntries will commit
 			//SimpleProfiler.printProfiler();
 		   	//SimpleProfiler.clearProfiler();
