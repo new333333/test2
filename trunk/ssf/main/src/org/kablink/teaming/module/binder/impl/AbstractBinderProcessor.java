@@ -1011,26 +1011,56 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 		binder.setResourcePath(normalizedResourcePath);  			   	
     }
    		
-   //no transaction    
-   protected void modifyBinder_indexAdd(Binder binder, 
+    //no transaction    
+    protected void modifyBinder_indexAdd(Binder binder, 
     		InputDataAccessor inputData, List fileUploadItems,
     		Collection<FileAttachment> filesToIndex, Map ctx) {
-    	indexBinder(binder, fileUploadItems, filesToIndex, false,
-    			(ctx == null ? null : (List)ctx.get(ObjectKeys.INPUT_FIELD_TAGS )));
+    	// Do we need to index nested FolderEntry's?
+    	AbstractEntryProcessor aep          = null;
+    	boolean                isRename     = ((ctx != null) && (!(ctx.get(ObjectKeys.FIELD_ENTITY_TITLE).equals(binder.getTitle()))));
+    	boolean                indexEntries = (isRename && binder.isAclExternallyControlled());
+    	if (indexEntries) {
+    		// Bugzilla 872468 (DRF):  We do if we're renaming a binder
+    		// in Net Storage.  Otherwise, ACL checks on their comments
+    		// through FAMT may fail after the rename.  To index them,
+    		// we'll need an entry processor.
+			BinderProcessor processor = ((BinderProcessor) getProcessorManager().getProcessor(
+				binder,
+				binder.getProcessorKey(BinderProcessor.PROCESSOR_KEY)));
+
+			indexEntries = (processor instanceof AbstractEntryProcessor);
+			if (indexEntries) {
+				aep = ((AbstractEntryProcessor) processor);
+			}
+	   }
+	   
+	   List tags = (ctx == null ? null : ((List) ctx.get(ObjectKeys.INPUT_FIELD_TAGS)));
+	   indexBinder(binder, fileUploadItems, filesToIndex, false, tags);
+	   if (indexEntries) {
+		   aep.indexEntries(binder, true, true, true);
+		   IndexSynchronizationManager.applyChanges(0);	// Is this needed?  AbstractEntryProcessor.indexBinderIncremental() does it so I copied it here.
+	   }
     	
-    	//Also re-index all of the direct children binders to get the correct folder extended title indexed
-    	if (ctx != null && !ctx.get(ObjectKeys.FIELD_ENTITY_TITLE).equals(binder.getTitle())) {
-    		// If the title has changed for the binder, we must re-index all of children 
-    		// binders recursively so that their paths get updated in the index.
-    		List children = new ArrayList(binder.getBinders());
-    		while (!children.isEmpty()) {
-    			Binder child = (Binder)children.get(0);
-    			indexBinder(child, false);
-    			children.remove(0);
-    			children.addAll(child.getBinders());
-    		}
-    	}
+	   // Also re-index all of the direct children binders to get the
+	   // correct folder extended title indexed
+	   if (isRename) {
+		   // If the title has changed for the binder, we must re-index
+		   // all of the child binders recursively so that their paths
+		   // get updated in the index.
+		   List children = new ArrayList(binder.getBinders());
+		   while (!children.isEmpty()) {
+			   Binder child = (Binder)children.get(0);
+			   indexBinder(child, false);
+			   if (indexEntries) {
+				   aep.indexEntries(child, true, true, true);
+				   IndexSynchronizationManager.applyChanges(0);	// Is this needed?  AbstractEntryProcessor.indexBinderIncremental() does it so I copied it here.
+			   }
+			   children.remove(0);
+			   children.addAll(child.getBinders());
+		   }
+	   }
     }
+   
    //no transaction    
     protected void modifyBinder_indexRemoveFiles(Binder binder, Collection<FileAttachment> filesToDeindex, Map ctx) {
     	removeFilesIndex(binder, filesToDeindex);
