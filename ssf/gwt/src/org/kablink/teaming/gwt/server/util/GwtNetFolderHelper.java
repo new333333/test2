@@ -64,6 +64,7 @@ import org.kablink.teaming.domain.ResourceDriverConfig.AuthenticationType;
 import org.kablink.teaming.domain.ResourceDriverConfig.DriverType;
 import org.kablink.teaming.domain.TitleException;
 import org.kablink.teaming.domain.User;
+import org.kablink.teaming.fi.connection.ResourceDriver;
 import org.kablink.teaming.fi.connection.acl.AclResourceDriver.ConnectionTestStatus;
 import org.kablink.teaming.gwt.client.GwtGroup;
 import org.kablink.teaming.gwt.client.GwtJitsNetFolderConfig;
