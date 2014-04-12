@@ -35,6 +35,7 @@ package org.kablink.teaming.remoting.rest.v1.resource;
 import com.sun.jersey.spi.resource.Singleton;
 import org.dom4j.Document;
 import org.kablink.teaming.dao.util.ShareItemSelectSpec;
+import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.NoFolderEntryByTheIdException;
@@ -59,6 +60,7 @@ import org.kablink.teaming.rest.v1.model.SearchResultList;
 import org.kablink.teaming.rest.v1.model.Share;
 import org.kablink.teaming.search.SearchUtils;
 import org.kablink.teaming.util.SimpleProfiler;
+import org.kablink.util.Pair;
 import org.kablink.util.api.ApiErrorCode;
 import org.kablink.util.search.Constants;
 import org.kablink.util.search.Junction;
@@ -246,9 +248,10 @@ public class FolderEntryResource extends AbstractFolderEntryResource {
         spec.setLatest(true);
         spec.setSharedEntityIdentifier(new EntityIdentifier(id, EntityIdentifier.EntityType.folderEntry));
         SearchResultList<Share> results = new SearchResultList<Share>();
-        List<ShareItem> shareItems = getShareItems(spec, true, true, true);
-        for (ShareItem shareItem : shareItems) {
-            results.append(ResourceUtil.buildShare(shareItem, findDefinableEntity(shareItem.getSharedEntityIdentifier()),
+        List<Pair<ShareItem,DefinableEntity>> shareItems = getShareItems(spec, true, true, true);
+        for (Pair<ShareItem, DefinableEntity> pair : shareItems) {
+            ShareItem shareItem = pair.getA();
+            results.append(ResourceUtil.buildShare(shareItem, getDefinableEntity(pair, true),
                     buildShareRecipient(shareItem), isGuestAccessEnabled()));
         }
         return results;

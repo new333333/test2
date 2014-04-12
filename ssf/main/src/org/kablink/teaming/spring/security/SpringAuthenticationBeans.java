@@ -45,6 +45,7 @@ import org.kablink.teaming.ConfigurationException;
 import org.kablink.teaming.SingletonViolationException;
 import org.kablink.teaming.domain.ZoneInfo;
 import org.kablink.teaming.module.zone.ZoneModule;
+import org.kablink.teaming.module.zone.ZoneUtil;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.InitializingBean;
@@ -160,7 +161,7 @@ public class SpringAuthenticationBeans implements InitializingBean, ApplicationC
 				if(! getZoneModule().zoneExists(zoneName)) {
 					throw new ConfigurationException("No zone named " + zoneName + " exists while configuring SpringAuthenticationBeans");
 				}
-				Long zoneId = getZoneModule().getZoneIdByZoneName(zoneName);
+				Long zoneId = ZoneUtil.getZoneIdByZoneName(zoneName);
 				Map m = (Map) zoneSpecificProviders.get(o);
 				for(Object o2 : m.keySet()) {
 					String name = (String) o2;

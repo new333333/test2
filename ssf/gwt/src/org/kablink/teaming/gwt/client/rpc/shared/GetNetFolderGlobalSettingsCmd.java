@@ -33,16 +33,16 @@
 package org.kablink.teaming.gwt.client.rpc.shared;
 
 /**
- * This class holds all of the information necessary to execute the "Get Jits zone config" command.
+ * This class holds all of the information necessary to execute the "Get net folder global settings" command.
  * @author jwootton
  *
  */
-public class GetJitsZoneConfigCmd extends VibeRpcCmd
+public class GetNetFolderGlobalSettingsCmd extends VibeRpcCmd
 {
 	/**
 	 * For GWT serialization, must have a zero param contructor
 	 */
-	public GetJitsZoneConfigCmd()
+	public GetNetFolderGlobalSettingsCmd()
 	{
 		super();
 	}
@@ -57,6 +57,6 @@ public class GetJitsZoneConfigCmd extends VibeRpcCmd
 	@Override
 	public int getCmdType()
 	{
-		return VibeRpcCmdType.GET_JITS_ZONE_CONFIG.ordinal();
+		return VibeRpcCmdType.GET_NET_FOLDER_GLOBAL_SETTINGS.ordinal();
 	}
 }

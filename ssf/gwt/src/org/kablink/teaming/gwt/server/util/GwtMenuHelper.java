@@ -808,18 +808,21 @@ public class GwtMenuHelper {
 	/*
 	 * Constructs a ToolbarItem to run the configure columns dialog.
 	 */
-	private static ToolbarItem constructEntryConfigureColumsItem(Binder binder) {
-		// Can the user configure columns on this binder?
-		String viewType = DefinitionUtils.getViewType(binder);
-		if (MiscUtil.hasString(viewType)) {
-			if (viewType.equalsIgnoreCase("folder") ||
-					viewType.equalsIgnoreCase("table") ||
-					viewType.equalsIgnoreCase("file")) {
-				// Yes!  Create a configure columns ToolbarItem.
-				ToolbarItem ccTBI = new ToolbarItem(CONFIGURE_COLUMNS);
-				markTBITitle(ccTBI, "misc.configureColumns"               );
-				markTBIEvent(ccTBI, TeamingEvents.INVOKE_CONFIGURE_COLUMNS);
-				return ccTBI;
+	private static ToolbarItem constructEntryConfigureColumsItem(Binder binder, boolean isBinderTrash) {
+		// If we're not in a trash view...
+		if (!isBinderTrash) {
+			// ...can the user configure columns on this binder?
+			String viewType = DefinitionUtils.getViewType(binder);
+			if (MiscUtil.hasString(viewType)) {
+				if (viewType.equalsIgnoreCase("folder") ||
+						viewType.equalsIgnoreCase("table") ||
+						viewType.equalsIgnoreCase("file")) {
+					// Yes!  Create a configure columns ToolbarItem.
+					ToolbarItem ccTBI = new ToolbarItem(CONFIGURE_COLUMNS);
+					markTBITitle(ccTBI, "misc.configureColumns"               );
+					markTBIEvent(ccTBI, TeamingEvents.INVOKE_CONFIGURE_COLUMNS);
+					return ccTBI;
+				}
 			}
 		}
 		return null;
@@ -1091,7 +1094,7 @@ public class GwtMenuHelper {
 			moreTBI.addNestedItem(tbi);
 
 			// ...for non-shared collections...
-			if (!isSharedCollection) {
+			if ((!isSharedCollection) && ((null == folder) || bs.getFolderModule().testReadAccess(user, folder, false))) {	// false -> Don't check access because of sharing.
 				// ...add the move item....
 				tbi = new ToolbarItem("1_moveSelected");
 				markTBITitle(tbi, "toolbar.move");
@@ -2390,8 +2393,10 @@ public class GwtMenuHelper {
 			markTBIUrl(  permalinkTBI, permaLink    );
 			footerToolbar.addNestedItem(permalinkTBI);
 			
-			// If the entry has an attachment...
-			if (null != fa) {
+			// If the entry has an attachment and the user has rights
+			// to download it...
+			boolean canDownload = AdminHelper.getEffectiveDownloadSetting(bs, GwtServerHelper.getCurrentUser());
+			if ((null != fa) && canDownload) {
 				// ...and it's a file entry...
 				String family = GwtServerHelper.getFolderEntityFamily(bs, fe);
 				if (GwtServerHelper.isFamilyFile(family)) {
@@ -3265,7 +3270,7 @@ public class GwtMenuHelper {
 			}
 
 			// If the binder supports column configuration...
-			ToolbarItem configureColumns = constructEntryConfigureColumsItem(binder);
+			ToolbarItem configureColumns = constructEntryConfigureColumsItem(binder, isBinderTrash);
 			if (null != configureColumns) {
 				// ...add the toolbar item to the configure list.
 				configureToolbarItems.add(configureColumns);
@@ -3770,6 +3775,7 @@ public class GwtMenuHelper {
 			boolean				isGuest     = user.isShared();
 			boolean				isFilr      = Utils.checkIfFilr();
 			boolean				isFilrGuest = (isGuest && isFilr);
+			boolean				isTop		= fe.isTop();
 			Folder				folder      = fe.getParentFolder();
 			String				feId        = String.valueOf(fe.getId());
 			String				folderId    = String.valueOf(folder.getId());
@@ -3779,8 +3785,8 @@ public class GwtMenuHelper {
 
 			// Can the user share this entry?
 			SharingModule sm = bs.getSharingModule();
-			boolean canAddShare        = sm.testAddShareEntity(fe);
-			boolean canPublicLinkShare = sm.testAddShareEntityPublicLinks(fe);
+			boolean canAddShare        = (isTop && sm.testAddShareEntity(fe));
+			boolean canPublicLinkShare = (isTop && sm.testAddShareEntityPublicLinks(fe));
 			if ((!isGuest) && sm.isSharingEnabled() && sm.isSharingPublicLinksEnabled() && (canAddShare || canPublicLinkShare)) {
 				// Yes!  Is it a file entry?
 				if (GwtServerHelper.isFamilyFile(GwtServerHelper.getFolderEntityFamily(bs, fe))) {
@@ -4012,8 +4018,9 @@ public class GwtMenuHelper {
 				}
 			}
 
-			// Is this the guest user?
-			if (!isGuest) {
+			// Is this a non-comment entry for other than the guest
+			// user?
+			if (isTop && (!isGuest)) {
 				// No!  Add a separator if necessary...
 				needSeparator = addNestedSeparatorIfNeeded(dropdownTBI, needSeparator);
 				
@@ -4043,7 +4050,7 @@ public class GwtMenuHelper {
 				}
 
 				// Can the user export this entry?
-				if ((!isFilr) && fe.isTop() && bs.getBinderModule().testAccess(folder, BinderOperation.export)) {
+				if ((!isFilr) && bs.getBinderModule().testAccess(folder, BinderOperation.export)) {
 					// Yes!  Add an export toolbar item for it.
 					url = createActionUrl(request);
 					url.setParameter(WebKeys.ACTION,        WebKeys.ACTION_EXPORT_IMPORT);

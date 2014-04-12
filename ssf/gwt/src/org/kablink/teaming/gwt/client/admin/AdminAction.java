@@ -61,7 +61,7 @@ public enum AdminAction implements IsSerializable
 	CONFIGURE_USER_ACCESS( "Configure user access" ),
 	FORM_VIEW_DESIGNER( "Form/View Designer" ),
 	IMPORT_PROFILES( "Import profiles" ),
-	JITS_ZONE_CONFIG( "Jits zone configuration" ),
+	NET_FOLDER_GLOBAL_SETTINGS( "Net Folder Global Settings" ),
 	LDAP_CONFIG( "LDAP configuration" ),
 	MANAGE_APPLICATIONS( "Manage applications" ),
 	MANAGE_APPLICATION_GROUPS( "Manage application groups" ),

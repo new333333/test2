@@ -33,7 +33,12 @@
  */
 %>
 <% //Textarea form element %>
+<%@ page import="org.kablink.util.BrowserSniffer" %>
+<%@ page import="org.kablink.teaming.util.SPropsUtil" %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
+<%
+	if (!BrowserSniffer.is_TinyMCECapable(request, SPropsUtil.getString("TinyMCE.notSupportedUserAgents", ""))) {
+%>
 <c:if test="${property_required}"><c:set var="ss_someFieldsRequired" value="true" scope="request"/></c:if>
 <%
 	String elementName = (String) request.getAttribute("property_name");
@@ -77,3 +82,6 @@
 <input type="hidden" name="<%= elementName %>.format" value="${textFormat}">
 </c:if>
 </div>
+<%   } else {   %>
+<%@ include file="/WEB-INF/jsp/definition_elements/html_editor_textarea_form.jsp" %>
+<%   }   %>

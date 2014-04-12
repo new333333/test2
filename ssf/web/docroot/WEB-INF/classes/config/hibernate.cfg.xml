@@ -34,6 +34,8 @@
 		<property name="net.sf.ehcache.configurationResourceName">/config/ehcache-hibernate.xml</property>
 		<!-- memcached cache entry timeout in seconds -->
 		<property name="hibernate.memcached.cacheTimeSeconds">3600</property>
+		<property name="hibernate.memcached.org.hibernate.cache.UpdateTimestampsCache.cacheTimeSeconds">31536000</property>
+		<property name="hibernate.memcached.query.ReferenceQueryCache.cacheTimeSeconds">86400</property>
 		<!-- memcached operation timeout in milliseconds -->
 		<property name="hibernate.memcached.operationTimeout">2000</property>
 		<!-- Enable query cache -->

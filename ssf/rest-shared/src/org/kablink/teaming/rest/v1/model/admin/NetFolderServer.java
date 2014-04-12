@@ -39,8 +39,6 @@ public class NetFolderServer extends BaseRestObject {
     private Date modifiedOn;
     private String changeDetectionMechanism;
     private String authenticationType;
-    private Boolean useDirectoryRights;
-    private Integer cachedRightsRefreshInterval;
     private Schedule syncSchedule;
     private Boolean indexContent;
     private Boolean jitsEnabled;
@@ -57,8 +55,6 @@ public class NetFolderServer extends BaseRestObject {
         password = (password==null) ? server.password : password;
         changeDetectionMechanism = (changeDetectionMechanism==null) ? server.changeDetectionMechanism : changeDetectionMechanism;
         authenticationType = (authenticationType==null) ? server.authenticationType : authenticationType;
-        useDirectoryRights = (useDirectoryRights==null) ? server.useDirectoryRights : useDirectoryRights;
-        cachedRightsRefreshInterval = (cachedRightsRefreshInterval==null) ? server.cachedRightsRefreshInterval : cachedRightsRefreshInterval;
         indexContent = (indexContent==null) ? server.indexContent : indexContent;
         jitsEnabled = (jitsEnabled==null) ? server.jitsEnabled : jitsEnabled;
         jitsMaxAge = (jitsMaxAge==null) ? server.jitsMaxAge : jitsMaxAge;
@@ -151,24 +147,6 @@ public class NetFolderServer extends BaseRestObject {
 
     public void setAuthenticationType(String authenticationType) {
         this.authenticationType = authenticationType;
-    }
-
-    @XmlElement(name="use_directory_rights")
-    public Boolean getUseDirectoryRights() {
-        return useDirectoryRights==null ? Boolean.FALSE : useDirectoryRights;
-    }
-
-    public void setUseDirectoryRights(Boolean useDirectoryRights) {
-        this.useDirectoryRights = useDirectoryRights;
-    }
-
-    @XmlElement(name="cached_rights_refresh_interval")
-    public Integer getCachedRightsRefreshInterval() {
-        return cachedRightsRefreshInterval;
-    }
-
-    public void setCachedRightsRefreshInterval(Integer cachedRightsRefreshInterval) {
-        this.cachedRightsRefreshInterval = cachedRightsRefreshInterval;
     }
 
     @XmlElement(name="sync_schedule")

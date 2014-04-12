@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -30,61 +30,50 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.gwt.client;
-
-
-import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponseData;
+package org.kablink.teaming.gwt.client.rpc.shared;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
-
 /**
- * This class is used to hold the Just-in-time Configuration data stored at the zone level.
- * @author jwootton
- *
+ * This class holds the response data for the 'is all users group'
+ * command.
+ * 
+ * @author drfoster@novell.com
  */
-public class GwtJitsZoneConfig
-	implements IsSerializable, VibeRpcResponseData
-{
-	private boolean m_jitsEnabled = true;
-	private long m_maxWaitTime = 15;
+public class IsAllUsersGroupRpcResponseData implements IsSerializable, VibeRpcResponseData {
+	private boolean	m_allExternalUsersGroup;	//
+	private boolean	m_allInternalUsersGroup;	//
 	
-	/**
+	/*
+	 * Constructor method.
 	 * 
+	 * Zero parameter constructor as required for GWT serialization.
 	 */
-	public GwtJitsZoneConfig()
-	{
-	}
-
-	/**
-	 * 
-	 */
-	public boolean getJitsEnabled()
-	{
-		return m_jitsEnabled;
+	private IsAllUsersGroupRpcResponseData() {
+		super();
 	}
 	
 	/**
-	 * The max wait time in seconds.
-	 */
-	public long getMaxWaitTime()
-	{
-		return m_maxWaitTime;
-	}
-
-	/**
+	 * Constructor method.
 	 * 
+	 * @param allExternalUsersGroup
+	 * @param allInternalUsersGroup
 	 */
-	public void setJitsEnabled( boolean enabled )
-	{
-		m_jitsEnabled = enabled;
+	public IsAllUsersGroupRpcResponseData(boolean allExternalUserGroup, boolean allInternalUserGroup) {
+		this();
+		
+		setAllExternalUsersGroup(allExternalUserGroup);
+		setAllInternalUsersGroup(allInternalUserGroup);
 	}
 	
 	/**
+	 * Get'er methods.
 	 * 
+	 * @return
 	 */
-	public void setMaxWaitTime( long waitTimeInSeconds )
-	{
-		m_maxWaitTime = waitTimeInSeconds;
-	}
+	public boolean isAllExternalUsersGroup() {return m_allExternalUsersGroup;}
+	public boolean isAllInternalUsersGroup() {return m_allInternalUsersGroup;}
+	
+	public void setAllExternalUsersGroup(boolean allExternalUsersGroup) {m_allExternalUsersGroup = allExternalUsersGroup;}
+	public void setAllInternalUsersGroup(boolean allInternalUsersGroup) {m_allInternalUsersGroup = allInternalUsersGroup;}
 }

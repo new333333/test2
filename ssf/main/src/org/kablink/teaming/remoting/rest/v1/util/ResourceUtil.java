@@ -303,7 +303,7 @@ public class ResourceUtil {
                 fa.getModification().getDate()));
         fp.setLength(fa.getFileItem().getLength());
         fp.setMd5(fa.getFileItem().getMd5());
-        fp.setVersionNumber(fa.getHighestVersionNumber());
+        fp.setVersionNumber(fa.getLastVersion());
         fp.setMajorVersion(fa.getMajorVersion());
         fp.setMinorVersion(fa.getMinorVersion());
         fp.setNote(fa.getFileItem().getDescription().getText());
@@ -408,6 +408,26 @@ public class ResourceUtil {
         }
         model.setLink(LinkUriUtil.getUserLinkUri(model.getId()));
         LinkUriUtil.populateUserLinks(model.getId(), model);
+        return model;
+    }
+
+    public static UserBrief buildUserBrief(LimitedUserView user) {
+        UserBrief model = new UserBrief();
+        model.setId(user.getId());
+        model.setEntityType(Constants.ENTRY_TYPE_USER);
+        model.setTitle(user.getTitle());
+        model.setAvatar(buildAvatar(user.getAvatarId()));
+        model.setLink(LinkUriUtil.getUserLinkUri(model.getId()));
+        return model;
+    }
+
+    public static User buildLimitedUser(LimitedUserView user) {
+        User model = new User();
+        model.setId(user.getId());
+        model.setEntityType(Constants.ENTRY_TYPE_USER);
+        model.setTitle(user.getTitle());
+        model.setAvatar(buildAvatar(user.getAvatarId()));
+        model.setLink(LinkUriUtil.getUserLinkUri(model.getId()));
         return model;
     }
 

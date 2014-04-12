@@ -717,6 +717,8 @@
 				<prop key="setDownloadEnabled">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="setWebAccessEnabled">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="setNameCompletionSettings">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="setUseDirectoryRightsEnabled">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="setCachedRightsRefreshInterval">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 			</props>
 		</property>
 	</bean>
@@ -1087,6 +1089,7 @@
 
 	<!-- referenced internally when viewing files and sending mail -->
 	<bean id="mimeTypes" class="org.springframework.mail.javamail.ConfigurableMimeFileTypeMap">
+		<property name="mappingLocation"><value>/WEB-INF/etc/mime.types</value></property>
 		<property name="mappings"><value><![CDATA[
 application/vnd.oasis.opendocument.database               odb
 application/vnd.oasis.opendocument.chart                  odc

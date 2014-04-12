@@ -403,18 +403,6 @@
             <column name="AUTHENTICATIONTYPE" type="NUMBER(2,0)">
                 <constraints nullable="true" />
             </column>
-            <column name="USEDIRECTORYRIGHTS" type="NUMBER(1,0)">
-                <constraints nullable="true" />
-            </column>
-        </addColumn>
-    </changeSet>
-
-    <changeSet author="jay" context="schema" failOnError="true" id="33">
-        <comment>Cached rights refresh interval</comment>
-        <addColumn tableName="SS_RESOURCEDRIVER">
-            <column name="CACHEDRIGHTSREFRESHINTERVAL" type="NUMBER(10,0)">
-                <constraints nullable="true" />
-            </column>
         </addColumn>
     </changeSet>
 
@@ -533,6 +521,21 @@
     <changeSet author="dennis" context="schema" failOnError="true" id="44">
         <addColumn tableName="SS_SHAREITEM">
 			<column name="right_allowSharingPublicLinks" type="NUMBER(1,0)"/>
+        </addColumn>
+    </changeSet>
+    
+    <changeSet author="jay" context="schema" failOnError="true" id="45">
+        <comment>Add useDirectoryRights to SS_ZoneConfig</comment>
+        <addColumn tableName="SS_ZONECONFIG">
+            <column name="USEDIRECTORYRIGHTS" type="NUMBER(1,0)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+        <comment>Add cachedRightsRefreshInterval to SS_ZoneConfig</comment>
+        <addColumn tableName="SS_ZONECONFIG">
+            <column name="CACHEDRIGHTSREFRESHINTERVAL" type="NUMBER(10,0)">
+                <constraints nullable="true" />
+            </column>
         </addColumn>
     </changeSet>
     

@@ -68,6 +68,7 @@ import org.kablink.teaming.gwt.client.util.Html5UploadState;
 import org.kablink.teaming.gwt.client.widgets.Html5UploadPopup;
 import org.kablink.teaming.gwt.client.widgets.SpinnerPopup;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
+
 import org.vectomatic.dnd.DataTransferExt;
 import org.vectomatic.dnd.DropPanel;
 import org.vectomatic.file.File;
@@ -1386,7 +1387,11 @@ public abstract class FolderViewBase extends ViewBase
 				int files = ((null == fileList) ? 0 : fileList.getLength());
 				if (0 == files) {
 					// ...tell the user about the problem...
-					GwtClientHelper.deferredAlert(m_messages.html5Uploader_Warning_NoFiles());
+					String warning;
+					if (GwtClientHelper.jsIsAnyIE())
+					     warning = m_messages.html5Uploader_Warning_NoFilesIE();
+					else warning = m_messages.html5Uploader_Warning_NoFiles();
+					GwtClientHelper.deferredAlert(warning);
 				}
 				else {
 					// ...otherwise, process the files that were

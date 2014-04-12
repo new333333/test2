@@ -97,8 +97,6 @@ public class AdminResourceUtil {
             model.setPassword(config.getPassword());
         }
         model.setRootPath(config.getRootPath());
-        model.setCachedRightsRefreshInterval(config.getCachedRightsRefreshInterval());
-        model.setUseDirectoryRights(config.getUseDirectoryRights());
         model.setIndexContent(config.getIndexContent());
         model.setJitsEnabled(config.isJitsEnabled());
         model.setJitsMaxAge(config.getJitsMaxAge());

@@ -46,6 +46,7 @@ import java.util.Set;
 import org.apache.commons.io.FileUtils;
 import org.kablink.teaming.NoObjectByTheIdException;
 import org.kablink.teaming.ObjectKeys;
+import org.kablink.teaming.cache.impl.HashMapCache;
 import org.kablink.teaming.context.request.RequestContext;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.context.request.RequestContextUtil;
@@ -92,12 +93,10 @@ import org.kablink.teaming.security.function.Function;
 import org.kablink.teaming.security.function.WorkArea;
 import org.kablink.teaming.security.function.WorkAreaFunctionMembership;
 import org.kablink.teaming.security.function.WorkAreaOperation;
-import org.kablink.teaming.security.function.WorkAreaOperation.RightSet;
 import org.kablink.teaming.security.impl.AccessControlManagerImpl;
 import org.kablink.teaming.util.FileStore;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ReflectHelper;
-import org.kablink.teaming.util.ReleaseInfo;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SZoneConfig;
 import org.kablink.teaming.util.SessionUtil;
@@ -266,11 +265,6 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
  		DefinitionCache.clear();
  	}
  	
-	@Override
-	public Long getZoneIdByZoneName(String zoneName) {
-		Workspace top = getCoreDao().findTopWorkspace(zoneName);
-		return top.getId();
-	}
 	@Override
 	public ZoneConfig getZoneConfig(Long zoneId) throws ZoneException {
 		return getCoreDao().loadZoneConfig(zoneId);
@@ -1020,7 +1014,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		//See if it is time to purge the View as HMTL cache folder
 		Long maxDirSize = SPropsUtil.getLongObject("max.html.cache.size", 0L);
 		if (maxDirSize > 0) {
-			//There is  limit for the html cache. Go check if it is exceeded
+			//There is a limit for the html cache. Go check if it is exceeded
 			FileStore cacheFileStoreHtml = new FileStore(SPropsUtil.getString("cache.file.store.dir"), ObjectKeys.CONVERTER_DIR_HTML);
 			File cacheDir = new File(cacheFileStoreHtml.getRootPath() + File.separator + Utils.getZoneKey());
 			if (cacheDir != null && cacheDir.exists()) {
@@ -1036,7 +1030,11 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 				}
 			}
 		}
-	}
+
+		//Turn on the text conversion file purging job
+		ScheduleInfo textConversionFilePurgeSchedInfo = getAdminModule().getTextConversionFilePurgeSchedule();
+		getAdminModule().setTextConversionFilePurgeSchedule(textConversionFilePurgeSchedInfo);
+ 	}
 
  	// Must be running inside a transaction set up by the caller
  	protected Workspace addZoneTx(String zoneName, String zoneAdminName, String virtualHost) {

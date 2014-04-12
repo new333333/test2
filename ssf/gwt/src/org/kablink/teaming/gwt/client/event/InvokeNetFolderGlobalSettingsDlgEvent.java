@@ -39,11 +39,11 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
 import com.google.web.bindery.event.shared.SimpleEventBus;
 
 /**
- * The InvokeJitsZoneConfigDlgEvent is used to invoke the "Jits zone configuration" dialog.
+ * The InvokeNetFolderGlobalSettingsDlgEvent is used to invoke the "Net Folder Global Settings" dialog.
  * 
  * @author jwootton@novell.com
  */
-public class InvokeJitsZoneConfigDlgEvent extends VibeEventBase<InvokeJitsZoneConfigDlgEvent.Handler>
+public class InvokeNetFolderGlobalSettingsDlgEvent extends VibeEventBase<InvokeNetFolderGlobalSettingsDlgEvent.Handler>
 {
     public static Type<Handler> TYPE = new Type<Handler>();
     
@@ -52,13 +52,13 @@ public class InvokeJitsZoneConfigDlgEvent extends VibeEventBase<InvokeJitsZoneCo
 	 */
 	public interface Handler extends EventHandler
 	{
-		void onInvokeJitsZoneConfigDlg( InvokeJitsZoneConfigDlgEvent event );
+		void onInvokeNetFolderGlobalSettingsDlg( InvokeNetFolderGlobalSettingsDlgEvent event );
 	}
 	
 	/**
 	 * Class constructor.
 	 */
-	public InvokeJitsZoneConfigDlgEvent()
+	public InvokeNetFolderGlobalSettingsDlgEvent()
 	{
 		super();
 	}
@@ -73,7 +73,7 @@ public class InvokeJitsZoneConfigDlgEvent extends VibeEventBase<InvokeJitsZoneCo
     @Override
     protected void doDispatch( Handler handler )
     {
-        handler.onInvokeJitsZoneConfigDlg( this );
+        handler.onInvokeNetFolderGlobalSettingsDlg( this );
     }
 	
 	/**
@@ -81,7 +81,7 @@ public class InvokeJitsZoneConfigDlgEvent extends VibeEventBase<InvokeJitsZoneCo
 	 */
 	public static void fireOne()
 	{
-		GwtTeaming.fireEvent( new InvokeJitsZoneConfigDlgEvent() );
+		GwtTeaming.fireEvent( new InvokeNetFolderGlobalSettingsDlgEvent() );
 	}
     
 	/**
@@ -89,7 +89,7 @@ public class InvokeJitsZoneConfigDlgEvent extends VibeEventBase<InvokeJitsZoneCo
 	 */
 	public static void fireOneAsync()
 	{
-		GwtTeaming.fireEventAsync( new InvokeJitsZoneConfigDlgEvent() );
+		GwtTeaming.fireEventAsync( new InvokeNetFolderGlobalSettingsDlgEvent() );
 	}
     
 	/**
@@ -116,7 +116,7 @@ public class InvokeJitsZoneConfigDlgEvent extends VibeEventBase<InvokeJitsZoneCo
 	@Override
 	public TeamingEvents getEventEnum()
 	{
-		return TeamingEvents.INVOKE_JITS_ZONE_CONFIG_DLG;
+		return TeamingEvents.INVOKE_NET_FOLDER_GLOBAL_SETTINGS_DLG;
 	}
 
 	/**

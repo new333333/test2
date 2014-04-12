@@ -62,7 +62,6 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.SAXReader;
-
 import org.kablink.teaming.ConfigurationException;
 import org.kablink.teaming.NoObjectByTheIdException;
 import org.kablink.teaming.NotSupportedException;
@@ -106,6 +105,7 @@ import org.kablink.teaming.jobs.FileVersionAging;
 import org.kablink.teaming.jobs.IndexOptimization;
 import org.kablink.teaming.jobs.LogTablePurge;
 import org.kablink.teaming.jobs.ScheduleInfo;
+import org.kablink.teaming.jobs.TextConversionFilePurge;
 import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.module.admin.IndexOptimizationSchedule;
 import org.kablink.teaming.module.admin.ManageIndexException;
@@ -165,7 +165,6 @@ import org.kablink.teaming.web.util.EmailHelper.UrlNotificationType;
 import org.kablink.util.Html;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
-
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.mail.MailAuthenticationException;
@@ -185,6 +184,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 	protected static String INDEX_OPTIMIZATION_JOB = "index.optimization.job"; // properties in xml file need a unique name
 	protected static String FILE_VERSION_AGING_JOB = "file.version.aging.job"; // properties in xml file need a unique name
 	protected static String LOG_TABLE_PURGE_JOB = "log.table.purge.job"; // properties in xml file need a unique name
+	protected static String TEXT_CONVERSION_FILE_PURGE_JOB = "text.conversion.file.purge.job"; // properties in xml file need a unique name
 	
 	protected MailModule mailModule;
 	/**
@@ -826,6 +826,53 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
    		zoneConfig.setAllowShareWithLdapGroups( allow );
    	}
 
+   	/**
+   	 * 
+   	 */
+    @Override
+	public boolean isUseDirectoryRightsEnabled()
+    {
+   		ZoneConfig zoneConfig;
+
+   		zoneConfig = getCoreDao().loadZoneConfig( RequestContextHolder.getRequestContext().getZoneId() );
+   		return zoneConfig.getUseDirectoryRights(); 		
+    }
+    
+    /**
+     * 
+     */
+    @Override
+	public void setUseDirectoryRightsEnabled( Boolean enabled )
+    {
+   		ZoneConfig zoneConfig;
+
+   		zoneConfig = getCoreDao().loadZoneConfig( RequestContextHolder.getRequestContext().getZoneId() );
+   		zoneConfig.setUseDirectoryRights( enabled );
+    }
+    
+    /**
+     * 
+     */
+    @Override
+	public Integer getCachedRightsRefreshInterval()
+    {
+   		ZoneConfig zoneConfig;
+
+   		zoneConfig = getCoreDao().loadZoneConfig( RequestContextHolder.getRequestContext().getZoneId() );
+   		return zoneConfig.getCachedRightsRefreshInterval(); 		
+    }
+    
+    /**
+     * 
+     */
+    @Override
+	public void setCachedRightsRefreshInterval( Integer value )
+    {
+   		ZoneConfig zoneConfig;
+
+   		zoneConfig = getCoreDao().loadZoneConfig( RequestContextHolder.getRequestContext().getZoneId() );
+   		zoneConfig.setCachedRightsRefreshInterval( value ); 		
+    }
 
 	/**
      * Do actual work to either enable or disable digest notification.
@@ -1159,9 +1206,11 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
     	}
 		checkAccess(workArea, AdminOperation.manageFunctionMembership);
 		final Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
-		
+			
 		//get list of current readers to compare for indexing
-		List<WorkAreaFunctionMembership>wfmsRead = 
+		boolean originalExtFunctionMembershipInherited = workArea.isExtFunctionMembershipInherited();
+		boolean originalFunctionMembershipInherited = workArea.isFunctionMembershipInherited();
+		List<WorkAreaFunctionMembership> wfmsRead = 
 	       		getWorkAreaFunctionMembershipManager().findWorkAreaFunctionMembershipsByOperation(zoneId, workArea, WorkAreaOperation.READ_ENTRIES);
        	TreeSet<Long> originalRead = new TreeSet();
         for (WorkAreaFunctionMembership wfm:wfmsRead) {
@@ -1266,6 +1315,8 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 				return null;
         	}});
 		//get new list of readers
+		boolean currentExtFunctionMembershipInherited = workArea.isExtFunctionMembershipInherited();
+		boolean currentFunctionMembershipInherited = workArea.isFunctionMembershipInherited();
       	wfmsRead = getWorkAreaFunctionMembershipManager().findWorkAreaFunctionMembershipsByOperation(zoneId, workArea, WorkAreaOperation.READ_ENTRIES);
       	TreeSet<Long> currentRead = new TreeSet();
       	for (WorkAreaFunctionMembership wfm:wfmsRead) {
@@ -1283,8 +1334,14 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
       	}
       	//only re-index if readers were affected.  Do outside transaction
       	boolean conditionsExist = checkIfConditionsExist(workArea);
-		if ((!originalRead.equals(currentRead) || !originalVBT.equals(currentVBT) || !originalNFA.equals(currentNFA) ||
-				conditionsExist || conditionsExistInOrigianl) && (workArea instanceof Binder)) {
+		if ((originalExtFunctionMembershipInherited != currentExtFunctionMembershipInherited || 
+				originalFunctionMembershipInherited != currentFunctionMembershipInherited || 
+				!originalRead.equals(currentRead) || 
+				!originalVBT.equals(currentVBT) || 
+				!originalNFA.equals(currentNFA) ||
+				conditionsExist || 
+				conditionsExistInOrigianl) && 
+				(workArea instanceof Binder)) {
 			Binder binder = (Binder)workArea;
 			loadBinderProcessor(binder).indexFunctionMembership(binder, true, false, true, skipFileContentIndexing);
 		} else if (!originalRead.equals(currentRead) && workArea instanceof Entry) {
@@ -3452,14 +3509,10 @@ public List<ChangeLog> getWorkflowChanges(EntityIdentifier entityIdentifier, Str
     @Override
 	public ScheduleInfo getLogTablePurgeSchedule() {
     	ScheduleInfo info =  getLogTablePurgeObject().getScheduleInfo(RequestContextHolder.getRequestContext().getZoneId());
-		User user = RequestContextHolder.getRequestContext().getUser();
-		Date now = new Date();
-		int offsetHour = user.getTimeZone().getOffset(now.getTime()) / (60 * 60 * 1000);
 		String hours = SPropsUtil.getString("log.table.purge.schedule.hours", "0");
 		String minutes = SPropsUtil.getString("log.table.purge.schedule.minutes", "40");
 		try {
 			int iHours = Integer.valueOf(hours);
-			iHours -= offsetHour;
 			hours = String.valueOf((iHours + 24) % 24);
 		} catch(Exception e) {
 			//This must be trying to set "*" or some other fancy value, so just leave "hours" as it was
@@ -3534,6 +3587,50 @@ public List<ChangeLog> getWorkflowChanges(EntityIdentifier entityIdentifier, Str
 	//See if there is a custom scheduling job being specified
     protected String getLogTablePurgeProperty(String zoneName, String name) {
 		return SZoneConfig.getString(zoneName, "logTablePurgeConfiguration/property[@name='" + name + "']");
+	}
+
+    @Override
+	public ScheduleInfo getTextConversionFilePurgeSchedule() {
+    	ScheduleInfo info =  getTextConversionFilePurgeObject().getScheduleInfo(RequestContextHolder.getRequestContext().getZoneId());
+		String hours = SPropsUtil.getString("text.conversion.file.purge.schedule.hours", "0");
+		String minutes = SPropsUtil.getString("text.conversion.file.purge.schedule.minutes", "50");
+		try {
+			int iHours = Integer.valueOf(hours);
+			hours = String.valueOf((iHours + 24) % 24);
+		} catch(Exception e) {
+			//This must be trying to set "*" or some other fancy value, so just leave "hours" as it was
+		}
+		info.getSchedule().setDaily(true);
+		info.getSchedule().setHours(hours);
+		info.getSchedule().setMinutes(minutes);
+    	return info;
+    }
+    
+    @Override
+	public void setTextConversionFilePurgeSchedule(ScheduleInfo info) {
+  	   	checkAccess(AdminOperation.manageIndex);
+  	   	TextConversionFilePurge obj = getTextConversionFilePurgeObject();
+    	obj.setScheduleInfo(info);
+    	obj.enable(true, RequestContextHolder.getRequestContext().getZoneId());
+    }
+
+    private TextConversionFilePurge getTextConversionFilePurgeObject() {
+    	String zoneName = RequestContextHolder.getRequestContext().getZoneName();
+		String jobClass = getTextConversionFilePurgeProperty(zoneName, TEXT_CONVERSION_FILE_PURGE_JOB);
+    	if (Validator.isNotNull(jobClass)) {
+		   try {
+			   return  (TextConversionFilePurge)ReflectHelper.getInstance(jobClass);
+		   } catch (Exception ex) {
+			   logger.error("Cannot instantiate TextConversionFilePurge custom class", ex);
+		   }
+   		}
+   		return (TextConversionFilePurge)ReflectHelper.getInstance(
+   				org.kablink.teaming.jobs.DefaultTextConversionFilePurge.class);
+    }
+    
+	//See if there is a custom scheduling job being specified
+    protected String getTextConversionFilePurgeProperty(String zoneName, String name) {
+		return SZoneConfig.getString(zoneName, "textConversionFilePurgeConfiguration/property[@name='" + name + "']");
 	}
 
     //Routine to append AuditTrail entries to a log file before they get deleted

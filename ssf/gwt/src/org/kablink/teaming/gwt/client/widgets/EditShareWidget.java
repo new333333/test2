@@ -596,6 +596,9 @@ public class EditShareWidget extends Composite
 	@Override
 	public boolean editSuccessful( Object obj )
 	{
+		if ( m_expirationWidget.validateExpirationValue() == false )
+			return false;
+
 		// Do we have a share item we are working with?
 		if ( m_listOfShareItems != null )
 		{
@@ -994,9 +997,9 @@ public class EditShareWidget extends Composite
 	/**
 	 * 
 	 */
-	public void saveSettings()
+	public boolean saveSettings()
 	{
-		editSuccessful( Boolean.TRUE );
+		return editSuccessful( Boolean.TRUE );
 	}
 	
 	/**

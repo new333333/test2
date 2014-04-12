@@ -1057,7 +1057,8 @@ public class EditLdapServerConfigDlg extends DlgBox
 		// Get the selected directory type
 		dirType = getSelectedDirType();
 		
-		// Add or remove attribute names from the listbox depending on the selected dir type
+		// Add or remove attribute names from the "account name attribute" listbox
+		// depending on the selected dir type
 		{
 			int index;
 			
@@ -1089,6 +1090,56 @@ public class EditLdapServerConfigDlg extends DlgBox
 			{
 				// No, select the first attrib.
 				m_nameAttribLB.setItemSelected( 0, true );
+			}
+		}
+		
+		// Add or remove attribute names from the "Guid attribute" listbox depending on
+		// the selected dir type.
+		{
+			int index;
+			
+			index = GwtClientHelper.doesListboxContainValue( m_guidLB, AD_GUID_NAME );
+			
+			// Is AD selected?
+			if ( dirType.equalsIgnoreCase( DIR_TYPE_AD ) || dirType.equalsIgnoreCase( DIR_TYPE_OTHER ) )
+			{
+				// Yes
+				// Is "objectGUID" in the listbox?
+				if ( index == -1 )
+				{
+					int guidIndex;
+					
+					// No, add it
+					m_guidLB.insertItem( AD_GUID_NAME, AD_GUID_NAME, 0 );
+
+					// Remove "guid" as an option.
+					guidIndex = GwtClientHelper.doesListboxContainValue( m_guidLB, EDIR_GUID_NAME );
+					if ( guidIndex != -1 )
+					{
+						m_guidLB.removeItem( guidIndex );
+					}
+				}
+			}
+			else if ( dirType.equalsIgnoreCase( DIR_TYPE_EDIR ) )
+			{
+				int guidIndex;
+				
+				// Is "objectGUID" in the list box?
+				if ( index != -1 )
+				{
+					// Yes
+					// Remove it.
+					m_guidLB.removeItem( index );
+				}
+				
+				// Is "guid" in the list box?
+				guidIndex = GwtClientHelper.doesListboxContainValue( m_guidLB, EDIR_GUID_NAME );
+				if ( guidIndex == -1 )
+				{
+					// No
+					// Add it
+					m_guidLB.insertItem( EDIR_GUID_NAME, EDIR_GUID_NAME, 0 );
+				}
 			}
 		}
 	}

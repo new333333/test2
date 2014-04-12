@@ -98,6 +98,7 @@ public interface CoreDao {
 	public List<Workspace> findCompanies();
     public  Long findFileNameEntryId(Binder binder, String name);
 	public Workspace findTopWorkspace(String zoneName);
+    public Long findTopWorkspaceId(String zoneName);
 	public void flush();
 	public void evict(Object obj); 
 	public void executeUpdate(String update);

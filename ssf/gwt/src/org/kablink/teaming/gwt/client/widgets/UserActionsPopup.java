@@ -151,6 +151,11 @@ public class UserActionsPopup extends TeamingPopupPanel
 			
 			// Create a panel for the name to live in.
 			{
+				String quotaTitle;
+				String usedTitle;
+				Label quotaTitleLabel;
+				Label quotaUsedLabel;
+				
 				m_namePanel = new FlowPanel();
 				m_namePanel.addStyleName( "userActionsPopup_NamePanel" );
 				m_namePanel.getElement().setInnerText( userName );
@@ -163,10 +168,31 @@ public class UserActionsPopup extends TeamingPopupPanel
 				m_quotaTable.addStyleName( "statsTable" );
 				m_quotaTable.setVisible( false );
 				m_namePanel.add( m_quotaTable );
+
+				quotaTitle = GwtTeaming.getMessages().profileDataQuota();
+				quotaTitleLabel = new Label( quotaTitle );
+				m_quotaTable.setHTML( 0, 0, quotaTitleLabel.toString() );
 				
+				// Add the Quota used in the 2nd row.
+				usedTitle = GwtTeaming.getMessages().profileQuotaUsed();
+				quotaUsedLabel = new Label( usedTitle );
+				m_quotaTable.setHTML( 1, 0, quotaUsedLabel.toString() );
+				
+				final Image trashInfoButton = GwtClientHelper.buildImage(GwtTeaming.getImageBundle().info2().getSafeUri().asString());
+				trashInfoButton.addStyleName( "userActionsPopup_TrashInfoButton" );
+				trashInfoButton.addClickHandler( new ClickHandler() {
+					@Override
+					public void onClick( ClickEvent event )
+					{
+						showTrashInfoAsync( trashInfoButton );
+					}
+				} );
+				m_quotaTable.setWidget( 1, 2, trashInfoButton );
+				m_quotaTable.getFlexCellFormatter().addStyleName( 1, 2, "userActionsPopup_TrashInfoCell" );
+
 				table.setWidget( 0, 1, m_namePanel );
 			}
-
+			
 			topPanel.add( table );
 		}
 		
@@ -506,42 +532,20 @@ public class UserActionsPopup extends TeamingPopupPanel
 		// Are quotas enabled for this user?
 		if ( quotaInfo.isEnabled() )
 		{
-			String quotaTitle;
-			String usedTitle;
-			Label quotaTitleLabel;
-			Label quotaUsedLabel;
 			InlineLabel quotaValueLabel;
 			InlineLabel quotaUsedValueLabel;
 
 			// Yes, display the quota and how much has been used.
 			// Add the Data quota in the first row.
-			quotaTitle = GwtTeaming.getMessages().profileDataQuota();
-			quotaTitleLabel = new Label( quotaTitle );
 			quotaValueLabel = new InlineLabel( GwtTeaming.getMessages().profileQuotaMegaBytes( quotaInfo.getMaxQuota() ) );
 			quotaValueLabel.addStyleName( "bold" );
-			m_quotaTable.setHTML( 0, 0, quotaTitleLabel.toString() );
 			m_quotaTable.setHTML( 0, 1, quotaValueLabel.toString() );
 			
 			// Add the Quota used in the 2nd row.
-			usedTitle = GwtTeaming.getMessages().profileQuotaUsed();
-			quotaUsedLabel = new Label( usedTitle );
 			quotaUsedValueLabel = new InlineLabel( GwtTeaming.getMessages().profileQuotaMegaBytes( quotaInfo.getUsedQuota() ) );
 			quotaUsedValueLabel.addStyleName( "bold" );
-			m_quotaTable.setHTML( 1, 0, quotaUsedLabel.toString() );
 			m_quotaTable.setHTML( 1, 1, quotaUsedValueLabel.toString() );
 
-			final Image trashInfoButton = GwtClientHelper.buildImage(GwtTeaming.getImageBundle().info2().getSafeUri().asString());
-			trashInfoButton.addStyleName( "userActionsPopup_TrashInfoButton" );
-			trashInfoButton.addClickHandler( new ClickHandler() {
-				@Override
-				public void onClick( ClickEvent event )
-				{
-					showTrashInfoAsync( trashInfoButton );
-				}
-			} );
-			m_quotaTable.setWidget( 1, 2, trashInfoButton );
-			m_quotaTable.getFlexCellFormatter().addStyleName( 1, 2, "userActionsPopup_TrashInfoCell" );
-			
 			m_quotaTable.setVisible( true );
 		}
 		else

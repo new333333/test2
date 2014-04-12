@@ -53,6 +53,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -106,9 +107,7 @@ import org.kablink.teaming.domain.ZoneInfo;
 import org.kablink.teaming.jobs.LdapSynchronization;
 import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.module.binder.BinderModule;
-import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.definition.DefinitionModule;
-import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.impl.CommonDependencyInjection;
 import org.kablink.teaming.module.ldap.LdapModule;
@@ -166,6 +165,8 @@ import org.springframework.transaction.support.TransactionTemplate;
 public class LdapModuleImpl extends CommonDependencyInjection implements LdapModule {
 	protected Log logger = LogFactory.getLog(getClass());
 
+	private ConcurrentHashMap<Long,List<LdapConnectionConfig>> readOnlyCache = new ConcurrentHashMap<Long, List<LdapConnectionConfig>>();
+
 	public enum LdapDirType
 	{
 		EDIR,
@@ -173,6 +174,12 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		UNKNOWN
 	}
 	
+	private int m_numUsersCreated;
+	private long m_createUsersStartTime;
+	private long m_createUsersStartLapTime;
+	private long m_createGroupsStartTime;
+	private long m_ldapSyncStartTime;
+
 	private static final String GUID_ATTRIBUTE = "GUID";
 	private static final String OBJECT_SID_ATTRIBUTE = "objectSid";
 	private static final String OBJECT_GUID_ATTRIBUTE = "objectGUID";
@@ -1572,7 +1579,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		zoneId = zone.getId();
 
 		// Get the list of ldap configurations.
-		ldapConnectionConfigs = getCoreDao().loadLdapConnectionConfigs( zoneId );
+		ldapConnectionConfigs = this.getConfigsReadOnlyCache( zoneId );
 		
 		// Go through each ldap configuration
 		for( LdapConnectionConfig nextLdapConfig : ldapConnectionConfigs )
@@ -2185,7 +2192,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		
 		zone = RequestContextHolder.getRequestContext().getZone();
 
-		for( LdapConnectionConfig config : getCoreDao().loadLdapConnectionConfigs( zone.getZoneId() ) )
+		for( LdapConnectionConfig config : this.getConfigsReadOnlyCache( zone.getZoneId() ) )
 		{
 			LdapContext ctx;
 			String dn=null;
@@ -2265,6 +2272,91 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				}
 
 				return homeDirInfo;
+			}
+			
+			if ( ctx != null )
+			{
+				try
+				{
+					ctx.close();
+				}
+				catch ( NamingException ex )
+				{
+					// Nothing to do
+				}
+			}
+		}
+		
+		// If we get here we did not find the user.
+		return null;
+	}
+	
+	/**
+	 * Create a HomeDirInfo object based on the HomeDirConfig defined in the ldap configuration.
+	 * @throws NamingException 
+	 */
+    @Override
+	public Map getLdapUserAttributes(User user) throws NamingException 
+	{
+		Workspace zone;
+		zone = RequestContextHolder.getRequestContext().getZone();
+
+		for( LdapConnectionConfig config : this.getConfigsReadOnlyCache( zone.getZoneId() ) )
+		{
+			LdapContext ctx;
+			Map userAttributes;
+			String [] userAttributeNames;
+	
+			ctx = getUserContext( zone.getId(), config );
+			userAttributes = config.getMappings();
+			userAttributeNames = (String[])(userAttributes.keySet().toArray(sample));
+
+			for ( LdapConnectionConfig.SearchInfo searchInfo : config.getUserSearches() ) 
+			{
+				try
+				{
+					int scope;
+					SearchControls sch;
+					String search;
+					String filter;
+					NamingEnumeration ctxSearch;
+					LdapDirType dirType;
+					
+					scope = (searchInfo.isSearchSubtree() ? SearchControls.SUBTREE_SCOPE : SearchControls.ONELEVEL_SCOPE);
+					sch = new SearchControls( scope, 1, 0, userAttributeNames, false, false );
+		
+					search = "(" + config.getUserIdAttribute() + "=" + user.getName() + ")";
+					filter = searchInfo.getFilterWithoutCRLF();
+					if ( !Validator.isNull( filter ) )
+					{
+						search = "(&"+search+filter+")";
+					}
+					
+					ctxSearch = ctx.search( searchInfo.getBaseDn(), search, sch );
+					if ( !hasMore( ctxSearch ) ) 
+					{
+						continue;
+					}
+					
+				}
+				finally
+				{
+					// Nothing to do.
+				}
+
+				if ( ctx != null )
+				{
+					try
+					{
+						ctx.close();
+					}
+					catch ( NamingException ex )
+					{
+						// Nothing to do
+					}
+				}
+
+				return userAttributes;
 			}
 			
 			if ( ctx != null )
@@ -2466,7 +2558,8 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		
 		schedule = new LdapSchedule( getSyncObject( zoneName ).getScheduleInfo( zoneId ) );
 		String result;
-		for(LdapConnectionConfig config : getCoreDao().loadLdapConnectionConfigs( zoneId ))
+		List<LdapConnectionConfig> configs = this.getConfigsReadOnlyCache(zoneId);
+		for(LdapConnectionConfig config : configs)
 		{
 			result = readLdapGuidFromDirectory(userName, zoneId, config);
 			if(result != null)
@@ -2692,15 +2785,18 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		{
 			ZoneModule zoneModule;
 			
-			ldapConnectionConfig = (LdapConnectionConfig) getCoreDao().load(
-																		LdapConnectionConfig.class,
-																		ldapConfigId );
-			
 			zoneModule = (ZoneModule) SpringContextUtil.getBean( "zoneModule" );
 			if ( zoneModule != null )
 			{
 				zoneId = zoneModule.getZoneIdByVirtualHost( ZoneContextHolder.getServerName() );
 			}
+
+			if(zoneId != null)
+				ldapConnectionConfig = this.getConfigReadOnlyCache(zoneId, ldapConfigId);
+			else
+				ldapConnectionConfig = (LdapConnectionConfig) getCoreDao().load(
+					LdapConnectionConfig.class,
+					ldapConfigId );
 
 		}
 		catch( Exception e )
@@ -2735,7 +2831,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 
 		LdapSchedule schedule = new LdapSchedule(getSyncObject().getScheduleInfo(zone.getId()));
 		Map mods = new HashMap();
-		for(LdapConnectionConfig config : getCoreDao().loadLdapConnectionConfigs(zone.getZoneId())) {
+		for(LdapConnectionConfig config : this.getConfigsReadOnlyCache(zone.getZoneId())) {
 			LdapContext ctx = getUserContext(zone.getId(), config);
 			String dn=null;
 			Map userAttributes = config.getMappings();
@@ -2939,6 +3035,16 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			
 			errorSyncingUsers = false;
 			
+			{
+				Date now;
+				
+				now = new Date();
+				m_numUsersCreated = 0;
+				m_createUsersStartTime = now.getTime();
+				m_createUsersStartLapTime = m_createUsersStartTime;
+				m_ldapSyncStartTime = m_createUsersStartTime;
+			}
+			
 			LdapSchedule info = new LdapSchedule(getSyncObject().getScheduleInfo(zone.getId()));
 	    	UserCoordinator userCoordinator = new UserCoordinator(
 	    													zone,
@@ -2954,13 +3060,15 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		   		// Tell the ContainerCoordinator the type of ldap directory we are working with.
 				m_containerCoordinator.setLdapDirType( getLdapDirType( config.getLdapGuidAttribute() ) );
 
-		   		try {
+		   		try
+		   		{
 					ctx = getUserContext(zone.getId(), config);
+
 					logger.info( "ldap url used to search for users: " + config.getUrl() );
-					
 					syncUsers(zone, ctx, config, userCoordinator);
+					logger.info( "back from call to syncUsers()" );
 		  		}
-		  		catch (Exception ex)
+		  		catch ( Exception ex )
 		  		{
 	  				errorSyncingUsers = true;
 
@@ -3019,22 +3127,67 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				  		}
 					}
 				}
-			}
+			}// end for()
 
-			logger.info( "Starting userCoordinator.wrapUp()" );
-			doUserCleanup = false;
-			if ( errorSyncingUsers == false )
+			try
 			{
-				// If "Synchronize User Profiles" and "Register ldap User Profiles Automatically" are
-				// both turned off then don't disable or delete anyone because we never issued an ldap query which
-				// would have caused us to call userCoordinator.record() which would have updated
-				// notInLdap.
-				if ( userCoordinator.sync != false || userCoordinator.create != false )
-					doUserCleanup = true;
-			}
-			userCoordinator.wrapUp( doUserCleanup );
-			logger.info( "Finished userCoordinator.wrapUp()" );
+				logger.info( "Starting userCoordinator.wrapUp()" );
+				doUserCleanup = false;
+				if ( errorSyncingUsers == false )
+				{
+					// If "Synchronize User Profiles" and "Register ldap User Profiles Automatically" are
+					// both turned off then don't disable or delete anyone because we never issued an ldap query which
+					// would have caused us to call userCoordinator.record() which would have updated
+					// notInLdap.
+					if ( userCoordinator.sync != false || userCoordinator.create != false )
+						doUserCleanup = true;
+				}
+				userCoordinator.wrapUp( doUserCleanup );
+				logger.info( "Finished userCoordinator.wrapUp()" );
 
+				{
+					boolean showTiming;
+					
+					showTiming = SPropsUtil.getBoolean( "ldap.sync.show.timings", false );
+					if ( showTiming )
+					{
+						long elapsedTimeInSeconds;
+						long minutes;
+						long seconds;
+						Date now;
+						
+						now = new Date();
+
+						elapsedTimeInSeconds = now.getTime() - m_createUsersStartTime;
+						elapsedTimeInSeconds /= 1000;
+						minutes = elapsedTimeInSeconds / 60;
+						seconds = elapsedTimeInSeconds - (minutes * 60);
+						logger.info( "ldap sync timing: ----------> Time taken to create " + m_numUsersCreated + " users: " + minutes + " minutes " + seconds + " seconds" );
+					}
+				}
+			}
+			catch ( Exception ex )
+			{
+				logger.info( "userCoordinator.wrapUp() threw an exception: " + ex.toString() );
+  				
+	  			//!!! When we re-write the ldap config page in GWT, we need to collect all of these
+	  			//!!! errors and return them instead of just throwing an exception for the first
+	  			//!!! problem we find.
+	  			// Have we already encountered a problem?
+	  			if ( ldapSyncEx == null )
+	  			{
+	  				// No
+	  				ldapSyncEx = new LdapSyncException( null, new NamingException( ex.toString() ) );
+	  			}
+			}
+
+			{
+				Date now;
+				
+				now = new Date();
+				m_createGroupsStartTime = now.getTime();
+			}
+			
 			errorSyncingGroups = false;
 	   		GroupCoordinator groupCoordinator = new GroupCoordinator(
 	   															zone,
@@ -3044,7 +3197,8 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	   															info.isGroupDelete(),
 	   															syncMode,
 	   															syncResults );
-	   		for(LdapConnectionConfig config : getCoreDao().loadLdapConnectionConfigs(zone.getId())) {
+	   		for(LdapConnectionConfig config : getCoreDao().loadLdapConnectionConfigs(zone.getId()))
+	   		{
 		   		LdapContext ctx=null;
 		  		try {
 
@@ -3052,28 +3206,50 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					m_containerCoordinator.setLdapDirType( getLdapDirType( config.getLdapGuidAttribute() ) );
 
 		  			ctx = getGroupContext(zone.getId(), config);
-					logger.info( "ldap url used to search for groups: " + config.getUrl() );
+				
+		  			logger.info( "ldap url used to search for groups: " + config.getUrl() );
 					syncGroups(zone, ctx, config, groupCoordinator, info.isMembershipSync());
+			   		logger.info( "Finished syncGroups()" );
 				}
-		  		catch (NamingException namingEx)
+		  		catch (Exception ex)
 		  		{
 		  			errorSyncingGroups = true;
-		  			logError(NLT.get("errorcode.ldap.context"), namingEx);
-		  			
-		  			//!!! When we re-write the ldap config page in GWT, we need to collect all of these
-		  			//!!! errors and return them instead of just throwing an exception for the first
-		  			//!!! problem we find.
-		  			// Have we already encountered a problem?
-		  			if ( ldapSyncEx == null )
+		  			logger.error( "syncGroups() threw an exception: " );
+
+	  				if ( ex instanceof NamingException )
 		  			{
-		  				// No
-		  				// Create an LdapSyncException.  We throw an LdapSyncException so we can return
-		  				// the LdapConnectionConfig object that was being used when the error happened.
-		  				// We will throw the exception after we have gone through all the ldap configs.
-		  				ldapSyncEx = new LdapSyncException( config, namingEx );
+			  			logError( NLT.get( "errorcode.ldap.context" ), ex );
+
+			  			//!!! When we re-write the ldap config page in GWT, we need to collect all of these
+			  			//!!! errors and return them instead of just throwing an exception for the first
+			  			//!!! problem we find.
+			  			// Have we already encountered a problem?
+			  			if ( ldapSyncEx == null )
+			  			{
+			  				// No
+				  			// Create an LdapSyncException.  We throw an LdapSyncException so we can return
+				  			// the LdapConnectionConfig object that was being used when the error happened.
+			  				// We will throw the exception after we have gone through all the ldap configs.
+				  			ldapSyncEx = new LdapSyncException( config, (NamingException)ex );
+			  			}
+		  			}
+		  			else
+		  			{
+		  				logger.error( "Unknown exception: " + ex.toString() );
+		  				
+			  			//!!! When we re-write the ldap config page in GWT, we need to collect all of these
+			  			//!!! errors and return them instead of just throwing an exception for the first
+			  			//!!! problem we find.
+			  			// Have we already encountered a problem?
+			  			if ( ldapSyncEx == null )
+			  			{
+			  				// No
+			  				ldapSyncEx = new LdapSyncException( config, new NamingException( ex.toString() ) );
+			  			}
 		  			}
 		  		}
-		  		finally {
+		  		finally
+		  		{
 					if (ctx != null) {
 						try
 						{
@@ -3095,15 +3271,57 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				  			}
 				  		}
 					}
+		  		}
+			}// end for()
+	   		
+			{
+				boolean showTiming;
+				
+				showTiming = SPropsUtil.getBoolean( "ldap.sync.show.timings", false );
+				if ( showTiming )
+				{
+					long elapsedTimeInSeconds;
+					long minutes;
+					long seconds;
+					Date now;
+					
+					now = new Date();
+
+					elapsedTimeInSeconds = now.getTime() - m_createGroupsStartTime;
+					elapsedTimeInSeconds /= 1000;
+					minutes = elapsedTimeInSeconds / 60;
+					seconds = elapsedTimeInSeconds - (minutes * 60);
+					logger.info( "ldap sync timing: ----------> Time taken to sync groups " + minutes + " minutes " + seconds + " seconds" );
 				}
 			}
-	   		logger.info( "Finished syncGroups()" );
-	   		if ( errorSyncingGroups == false )
-	   			groupCoordinator.deleteObsoleteGroups();
-	   		logger.info( "Finished groupCoordinator.deleteObsoleteGroups()" );
+			
+	   		try
+	   		{
+		   		if ( errorSyncingGroups == false )
+		   		{
+			   		logger.info( "About to call groupCoordinator.deleteObsoleteGroups()" );
+		   			groupCoordinator.deleteObsoleteGroups();
+			   		logger.info( "Finished groupCoordinator.deleteObsoleteGroups()" );
+		   		}
+	   		}
+	   		catch( Exception ex )
+	   		{
+  				logger.error( "groupCoordinator.deleteObsoleteGroups() threw exception: " + ex.toString() );
+  				
+	  			//!!! When we re-write the ldap config page in GWT, we need to collect all of these
+	  			//!!! errors and return them instead of just throwing an exception for the first
+	  			//!!! problem we find.
+	  			// Have we already encountered a problem?
+	  			if ( ldapSyncEx == null )
+	  			{
+	  				// No
+	  				ldapSyncEx = new LdapSyncException( null, new NamingException( ex.toString() ) );
+	  			}
+	   		}
 
 	   		// Find all groups that have dynamic membership and update the membership
 	   		// of those groups that are supposed to be updated during the ldap sync process
+	   		try
 	   		{
 	   			ArrayList<Long> listOfDynamicGroups;
 	   			
@@ -3120,17 +3338,51 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	   					updateDynamicGroupMembership( nextGroupId, syncMode, groupCoordinator.getLdapSyncResults() );
 	   				}
 	   			}
-	   			
+
 	   			logger.info( "Finished looking for dynamic groups." );
+	   		}
+	   		catch( Exception ex )
+	   		{
+  				logger.error( "updateDynamicGroupMembership() threw exception: " + ex.toString() );
+  				
+	  			//!!! When we re-write the ldap config page in GWT, we need to collect all of these
+	  			//!!! errors and return them instead of just throwing an exception for the first
+	  			//!!! problem we find.
+	  			// Have we already encountered a problem?
+	  			if ( ldapSyncEx == null )
+	  			{
+	  				// No
+	  				ldapSyncEx = new LdapSyncException( null, new NamingException( ex.toString() ) );
+	  			}
 	   		}
 	   		
 	   		// Finish creating / deleting containers.
-	   		delContainers = false;
-	   		if ( errorSyncingUsers == false && errorSyncingGroups == false )
-	   			delContainers = true;
-	   		m_containerCoordinator.wrapUp( delContainers );
+	   		try
+	   		{
+	   			logger.info( "About to call m_containerCoordinator.wrapUp()" );
+		   		delContainers = false;
+		   		if ( errorSyncingUsers == false && errorSyncingGroups == false )
+		   			delContainers = true;
+		   		m_containerCoordinator.wrapUp( delContainers );
+	   			logger.info( "Back from call to m_containerCoordinator.wrapUp();" );
+	   		}
+	   		catch ( Exception ex )
+	   		{
+  				logger.error( "m_containerCoordinator.wrapUp() threw exception: " + ex.toString() );
+  				
+	  			//!!! When we re-write the ldap config page in GWT, we need to collect all of these
+	  			//!!! errors and return them instead of just throwing an exception for the first
+	  			//!!! problem we find.
+	  			// Have we already encountered a problem?
+	  			if ( ldapSyncEx == null )
+	  			{
+	  				// No
+	  				ldapSyncEx = new LdapSyncException( null, new NamingException( ex.toString() ) );
+	  			}
+	   		}
 
 	   		// Remove the admin task to run an ldap sync to import typeless dn information
+	   		try
 	   		{
 	   	 		User superUser;
 	   			
@@ -3144,10 +3396,49 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 												ObjectKeys.USER_PROPERTY_UPGRADE_IMPORT_TYPELESS_DN,
 												"true" );
 	   		}
+	   		catch ( Exception ex )
+	   		{
+  				logger.error( "Removing admin task to run ldap sync threw exception: " + ex.toString() );
+  				
+	  			//!!! When we re-write the ldap config page in GWT, we need to collect all of these
+	  			//!!! errors and return them instead of just throwing an exception for the first
+	  			//!!! problem we find.
+	  			// Have we already encountered a problem?
+	  			if ( ldapSyncEx == null )
+	  			{
+	  				// No
+	  				ldapSyncEx = new LdapSyncException( null, new NamingException( ex.toString() ) );
+	  			}
+	   		}
 	   		
 	   		if ( ldapSyncEx != null )
+	   		{
+	   			logger.info( "Finished syncAll() with an exception" );
 	   			throw ldapSyncEx;
+	   		}
 	   		
+	   		logger.info( "Finished syncAll() with no exceptions" );
+	   		
+			{
+				boolean showTiming;
+				
+				showTiming = SPropsUtil.getBoolean( "ldap.sync.show.timings", false );
+				if ( showTiming )
+				{
+					long elapsedTimeInSeconds;
+					long minutes;
+					long seconds;
+					Date now;
+					
+					now = new Date();
+
+					elapsedTimeInSeconds = now.getTime() - m_ldapSyncStartTime;
+					elapsedTimeInSeconds /= 1000;
+					minutes = elapsedTimeInSeconds / 60;
+					seconds = elapsedTimeInSeconds - (minutes * 60);
+					logger.info( "ldap sync timing: ----------> Total time taken for ldap sync: " + minutes + " minutes " + seconds + " seconds" );
+				}
+			}
 		}// end try
 		finally
 		{
@@ -4451,6 +4742,9 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		Matcher matcher;
 		HomeDirInfo homeDirInfo = null;
 		
+		if ( uncPath == null )
+			return null;
+		
 	    matcher = m_pattern_uncPath.matcher( uncPath );
 	    if ( matcher.find() && matcher.groupCount() == 2 )
 	    {
@@ -4500,7 +4794,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	    else
 	    {
 	    	if ( logErrors || logger.isDebugEnabled() )
-	    		logger.error( "\t\t\tCould not parse the home directory unc" );
+	    		logger.error( "\t\t\tCould not parse the home directory unc: " + uncPath );
 	    }
 	    
 	    return homeDirInfo;
@@ -6855,6 +7149,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		pf = getProfileDao().getProfileBinder(zoneId);
 		collections = new ArrayList();
 		collections.add( "customAttributes" );
+		collections.add( " emailAddresses" );
 	   	foundEntries = getCoreDao().loadObjects( users.keySet(), User.class, zoneId, collections );
 	   	entries = new HashMap();
 	   	originalUserNamesMap = new HashMap<Long,String>();
@@ -7126,11 +7421,19 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		Group group = null;
 		
 		// Get the Group object from the group id.
-		profileMod = getProfileModule();
-		tmp = (Object) profileMod.getEntry( groupId );
-		if ( tmp instanceof Group )
+		try
 		{
-			group = (Group) tmp; 
+			profileMod = getProfileModule();
+			tmp = (Object) profileMod.getEntry( groupId );
+			if ( tmp instanceof Group )
+			{
+				group = (Group) tmp; 
+			}
+		}
+		catch ( Exception ex )
+		{
+			logger.info( "In updateMembership(), call to profileModule.getEntry() failed for group id: " + groupId );
+			return;
 		}
 
 		// Add this group to the list of sync results if the group membership changed.
@@ -7185,17 +7488,28 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 
 					if ( principalId != null )
 					{
-						Principal nextPrincipal;
+						Principal nextPrincipal = null;
 
-						// Add this principal to the list of principals to be re-indexed.
-						nextPrincipal = getProfileModule().getEntry( principalId );
-						principalsToIndex.put( principalId, nextPrincipal );
+						try
+						{
+							nextPrincipal = getProfileModule().getEntry( principalId );
+						}
+						catch ( Exception ex )
+						{
+							logger.info( "In updateMembership(), call to profileModule.getEntry() failed for group member: " + principalId );
+						}
 						
-						// Keep track of the principals that were added to this group.
-						if ( (nextPrincipal instanceof UserPrincipal) || (nextPrincipal instanceof User) )
-							usersAddedToGroup.add( principalId );
-						else if ( (nextPrincipal instanceof GroupPrincipal) || (nextPrincipal instanceof Group) )
-							groupsAddedToGroup.add( principalId );
+						if ( nextPrincipal != null )
+						{
+							// Add this principal to the list of principals to be re-indexed.
+							principalsToIndex.put( principalId, nextPrincipal );
+							
+							// Keep track of the principals that were added to this group.
+							if ( (nextPrincipal instanceof UserPrincipal) || (nextPrincipal instanceof User) )
+								usersAddedToGroup.add( principalId );
+							else if ( (nextPrincipal instanceof GroupPrincipal) || (nextPrincipal instanceof Group) )
+								groupsAddedToGroup.add( principalId );
+						}
 					}
 				}
 			}
@@ -7226,17 +7540,28 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 
 					if ( principalId != null )
 					{
-						Principal nextPrincipal;
+						Principal nextPrincipal = null;
 
-						// Add this principal to the list of principals to be re-indexed.
-						nextPrincipal = getProfileModule().getEntry( principalId );
-						principalsToIndex.put( principalId, nextPrincipal );
+						try
+						{
+							nextPrincipal = getProfileModule().getEntry( principalId );
+						}
+						catch ( Exception ex )
+						{
+							logger.info( "In updateMembershipe(), profileModule.getEntry() failed for group member: " + principalId );
+						}
 						
-						// Keep track of the principals that were removed from this group.
-						if ( (nextPrincipal instanceof UserPrincipal) || (nextPrincipal instanceof User) )
-							usersRemovedFromGroup.add( principalId );
-						else if ( (nextPrincipal instanceof GroupPrincipal) || (nextPrincipal instanceof Group) )
-							groupsRemovedFromGroup.add( principalId );
+						if ( nextPrincipal != null )
+						{
+							// Add this principal to the list of principals to be re-indexed.
+							principalsToIndex.put( principalId, nextPrincipal );
+							
+							// Keep track of the principals that were removed from this group.
+							if ( (nextPrincipal instanceof UserPrincipal) || (nextPrincipal instanceof User) )
+								usersRemovedFromGroup.add( principalId );
+							else if ( (nextPrincipal instanceof GroupPrincipal) || (nextPrincipal instanceof Group) )
+								groupsRemovedFromGroup.add( principalId );
+						}
 					}
 				}
 			}
@@ -7479,8 +7804,42 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				createHomeDirNetFolderServers( newUsers, homeDirInfoMap );
 			}
 
+			{
+				boolean showTiming;
+				
+				showTiming = SPropsUtil.getBoolean( "ldap.sync.show.timings", false );
+				if ( showTiming )
+				{
+					m_numUsersCreated += newUsers.size();
+					if ( (m_numUsersCreated % 500) == 0 )
+					{
+						long elapsedTimeInSeconds;
+						long minutes;
+						long seconds;
+						Date now;
+						
+						now = new Date();
+
+						elapsedTimeInSeconds = now.getTime() - m_createUsersStartLapTime;
+						elapsedTimeInSeconds /= 1000;
+						minutes = elapsedTimeInSeconds / 60;
+						seconds = elapsedTimeInSeconds - (minutes * 60);
+						logger.info( "ldap sync timing: ----------> Time to create last 500 users: " + minutes + " minutes " + seconds + " seconds" );
+						
+						m_createUsersStartLapTime = now.getTime();
+
+						elapsedTimeInSeconds = now.getTime() - m_createUsersStartTime;
+						elapsedTimeInSeconds /= 1000;
+						minutes = elapsedTimeInSeconds / 60;
+						seconds = elapsedTimeInSeconds - (minutes * 60);
+						logger.info( "ldap sync timing: ----------> Time taken to create " + m_numUsersCreated + " users: " + minutes + " minutes " + seconds + " seconds" );
+					}
+				}
+			}
+
 			if(logger.isDebugEnabled())
 				logger.debug("Applying index changes");
+			
 			IndexSynchronizationManager.applyChanges();  //apply now, syncNewEntries will commit
 			//SimpleProfiler.printProfiler();
 		   	//SimpleProfiler.clearProfiler();
@@ -7635,9 +7994,43 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		IndexSynchronizationManager.applyChanges();
     }
 
+ 	@Override
+ 	public List<LdapConnectionConfig> getConfigsReadOnlyCache(Long zoneId) {
+ 		List<LdapConnectionConfig> configs = readOnlyCache.get(zoneId);	
+		if(configs == null) {
+			// We don't need synchronization on this, since multiple threads executing
+			// this code at the same time won't result in data integrity issue. It will
+			// lose some efficiency, but that's better than having to synchronize this
+			// method which is called infrequently.
+			configs = getCoreDao().loadLdapConnectionConfigs( zoneId );
+			getCoreDao().evict(configs);
+			readOnlyCache.put(zoneId, configs);
+		}
+		return configs;
+ 	}
+
+ 	@Override
+ 	public void setConfigsReadOnlyCache(Long zoneId,
+ 			List<LdapConnectionConfig> configs) {
+ 		readOnlyCache.put(zoneId, configs);
+ 	}
+
+ 	@Override
+ 	public LdapConnectionConfig getConfigReadOnlyCache(Long zoneId, String configId) {
+ 		List<LdapConnectionConfig> configs = getConfigsReadOnlyCache(zoneId);
+ 		if(configs == null)
+ 			return null;
+ 		for(LdapConnectionConfig config:configs) {
+ 			if(configId.equals(config.getId()))
+ 				return config;
+ 		}
+ 		return null;
+ 	}
+
     private WorkspaceModule getWorkspaceModule() {
         WorkspaceModule workspaceModule;
         workspaceModule = (WorkspaceModule) SpringContextUtil.getBean("workspaceModule");
         return workspaceModule;
     }
+
 }

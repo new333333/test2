@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -61,6 +61,7 @@ import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.LibraryEntry;
 import org.kablink.teaming.domain.NoBinderByTheIdException;
 import org.kablink.teaming.domain.NoFolderEntryByTheIdException;
+import org.kablink.teaming.domain.SeenMap;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.domain.Workspace;
@@ -71,6 +72,7 @@ import org.kablink.teaming.module.binder.processor.BinderProcessor;
 import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.folder.FolderModule.FolderOperation;
 import org.kablink.teaming.module.folder.processor.FolderCoreProcessor;
+import org.kablink.teaming.module.shared.InputDataAccessor;
 import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.search.SearchUtils;
 import org.kablink.teaming.security.AccessControlException;
@@ -1795,6 +1797,7 @@ public class TrashHelper {
      * @param de
      * @param rd
      */
+	@SuppressWarnings("unchecked")
     public static void registerAttachmentName(CoreDao cd, FileAttachment fa, Binder binder, DefinableEntity de, TrashRenameData rd) {
     	FileItem fi = fa.getFileItem();
 		String fName = fi.getName();
@@ -1830,9 +1833,60 @@ public class TrashHelper {
 		} while (true);
 
 		// If we get here, we've got a synthesized name for the file.
-		// Rename it...
+		// Rename it.
 		logger.debug("...putting synthesized name into effect.");
+		
+		// Is this is an entry where the entry's name matches the old
+		// file name?
+		boolean feSeen      = false;
+		boolean renameEntry = (de instanceof FolderEntry);
+		InputDataAccessor inputData = null;
+		if (renameEntry) {
+			String feTitle = de.getTitle();
+			String faName  = fa.getFileItem().getName();
+			renameEntry = faName.equals(feTitle);
+			if (renameEntry) {
+				// Yes!  We'll need to rename the entry to match the
+				// file.  Setup the appropriate input data.
+				Map data = new HashMap();
+				data.put(ObjectKeys.FIELD_ENTITY_TITLE, fName);
+				inputData = new MapInputData(data);
+				
+				// Has the user already seen this entry?
+				SeenMap seenMap = rd.m_bs.getProfileModule().getUserSeenMap(null);
+				feSeen = seenMap.checkIfSeen((FolderEntry) de);
+			}
+		}
+		
+		// Rename the file...
 		rd.m_bs.getFileModule().renameFile(binder, de, fa, fName);
+		
+		// ...and if we need to...
+		if (renameEntry) {
+			try {
+				// ...rename the entry...
+				rd.m_bs.getFolderModule().modifyEntry(
+					binder.getId(),	//
+					de.getId(),		//
+					inputData,		//
+					null,			// null -> No file items.
+					null,			// null -> No delete attachments.
+					null,			// null -> No file renames.
+					null);			// null -> No options.
+				
+				// ...and if the user saw the entry before we modified
+				// it...
+				if (feSeen) {
+					// ...retain that seen state.
+					rd.m_bs.getProfileModule().setSeen(null, ((FolderEntry) de));
+				}
+			}
+			catch (Exception e) {
+				// We don't consider it a disaster (or tell the user
+				// anything) if the entry can't be renamed.
+				logger.debug("...error renaming FolderEntry to match filename.");
+			}
+		}
 		
 		// ...and track what we renamed.
 		rd.addRename(

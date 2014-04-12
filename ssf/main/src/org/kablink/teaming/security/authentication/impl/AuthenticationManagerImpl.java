@@ -67,6 +67,8 @@ import org.kablink.teaming.module.resourcedriver.ResourceDriverModule;
 import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.module.template.TemplateModule;
 import org.kablink.teaming.module.zone.ZoneException;
+import org.kablink.teaming.module.zone.ZoneModule;
+import org.kablink.teaming.module.zone.ZoneUtil;
 import org.kablink.teaming.runasync.RunAsyncManager;
 import org.kablink.teaming.search.SearchUtils;
 import org.kablink.teaming.security.authentication.AuthenticationManager;
@@ -112,6 +114,7 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 	private FolderModule folderModule;
 	private NetFolderModule netFolderModule;
 	private ResourceDriverModule resourceDriverModule;
+    private ZoneModule zoneModule;
 	private ProcessorManager processorManager;
 	private RunAsyncManager runAsyncManager;
 
@@ -149,7 +152,15 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 		this.reportModule = reportModule;
 	}
 
-	/**
+    public ZoneModule getZoneModule() {
+        return zoneModule;
+    }
+
+    public void setZoneModule(ZoneModule zoneModule) {
+        this.zoneModule = zoneModule;
+    }
+
+    /**
 	 * 
 	 * @return
 	 */
@@ -297,7 +308,7 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 		ldapModule = getLdapModule();
 		syncUser = false;
 		
-		Long zoneId = getCoreDao().findTopWorkspace(zoneName).getZoneId();
+		Long zoneId = getZoneModule().getZoneIdByVirtualHost(zoneName);
 		boolean webClient = ( authenticatorName != null && authenticatorName.equalsIgnoreCase( "web" ) );
 		
 		try
@@ -508,19 +519,14 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 
 		try {
 			String ldapGuid;
+            // Get the zone id from the zone name.
+            Long zoneId = ZoneUtil.getZoneIdByZoneName(zoneName);
 
-			ldapGuid = null;
+            ldapGuid = null;
 			
 			if(AuthenticationServiceProvider.LOCAL != authenticationServiceProvider)
 			{
-				Binder top;
-				Long zoneId;
-
-				// No
-				// Get the zone id from the zone name.
-		    	top = getCoreDao().findTopWorkspace( zoneName );
-		    	zoneId = top.getZoneId();
-
+                // No
 		    	// Read this user's ldap guid from the ldap directory.
 				ldapGuid = readLdapGuidFromDirectory( username, zoneId );
 				
@@ -551,7 +557,7 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 			if ( user == null )
 			{
 				// No, try to find the user by their name.
-				user = getProfileDao().findUserByName(username, zoneName);
+				user = getProfileDao().findUserByName(username, zoneId);
 
 				// Did we find the user by name?
 				if ( user != null )
@@ -579,7 +585,7 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 							// to log in successfully authenticated to the ldap directory
 							// but can't use Vibe because there is another user in Vibe with
 							// the same name.
-							throw new UserMismatchException( "The Vibe user account for the name, " + username + ", does not belong to the authenticated user" );
+							throw new UserMismatchException( "The user account for the name, " + username + ", does not belong to the authenticated user" );
 						}
 					}
 				}
@@ -649,7 +655,7 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 	protected User fetchOpenidUser(String zoneName, String username) {
 		User user = null;
 		try {
-			user = getProfileDao().findUserByName(username, zoneName);
+			user = getProfileDao().findUserByName(username, ZoneUtil.getZoneIdByZoneName(zoneName));
 		} catch (NoWorkspaceByTheNameException e) {
      		if (user == null) {
     			throw new UserDoesNotExistException("Unrecognized user [" 
@@ -731,7 +737,7 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 		
 		if(ldapConnectionConfigId != null) {
 			try {
-				ldapConnectionConfig = (LdapConnectionConfig) getCoreDao().load(LdapConnectionConfig.class, ldapConnectionConfigId);
+				ldapConnectionConfig = getLdapModule().getConfigReadOnlyCache(zoneId, ldapConnectionConfigId);
 			}
 			catch(Exception e) {
 				logger.warn("Error loading LDAP connection config object by ID [" + ldapConnectionConfigId + "]");

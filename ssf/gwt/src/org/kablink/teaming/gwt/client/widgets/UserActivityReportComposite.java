@@ -169,6 +169,9 @@ public class UserActivityReportComposite extends ReportCompositeBase
 				// Store the find control...
 				m_userFinder = findCtrl;
 
+				m_userFinder.setSearchForExternalPrincipals( true );
+				m_userFinder.setSearchForInternalPrincipals( true );
+				
 				// ...style it...
 				m_userFinder.addStyleName("vibe-userActivityReportComposite-peopleFind");
 				FocusWidget fw = m_userFinder.getFocusWidget();

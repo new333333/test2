@@ -83,7 +83,6 @@ import org.springframework.security.web.authentication.AbstractAuthenticationPro
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.portlet.bind.PortletRequestBindingException;
 import org.springframework.web.portlet.ModelAndView;
-
 import org.kablink.teaming.NoObjectByTheIdException;
 import org.kablink.teaming.NotSupportedException;
 import org.kablink.teaming.ObjectKeys;
@@ -1097,8 +1096,14 @@ public class BinderHelper {
 				adapterUrl.setParameter(WebKeys.URL_ENTRY_ID, entryId.toString());
 			}
 			action.put("url", adapterUrl.toString());
-			//This has been turned off waiting for a future decision
-			//actions.add(action);
+			
+			HttpServletRequest req = WebHelper.getHttpServletRequest(request);
+			String userAgents = org.kablink.teaming.util.SPropsUtil.getString("mobile.userAgents", "");
+			String tabletUserAgents = org.kablink.teaming.util.SPropsUtil.getString("tablet.userAgentRegexp", "");
+			Boolean testForAndroid = org.kablink.teaming.util.SPropsUtil.getBoolean("tablet.useDefaultTestForAndroidTablets", false);
+			if (BrowserSniffer.is_mobile(req, userAgents) && !BrowserSniffer.is_tablet(req, tabletUserAgents, testForAndroid)) {
+				actions.add(action);
+			}
 		}
 	}
 
@@ -5567,7 +5572,8 @@ public class BinderHelper {
  		   if (destination.isMirrored()) {
  			   //If the source is not mirroerd and the destination is mirrored, then check that the entry has one and only one file
  			   Set<Attachment> atts = entry.getAttachments();
- 			   if (atts.size() == 1) {
+ 			   if (atts.size() == 1 || (!entry.isTop() && atts.size() == 0)) {
+ 				   //This is either the top entry with one attached file or a reply with no attached files
  				   //Now check that all comments have no attached files
  				   List<FolderEntry>children = getFolderDao().loadEntryDescendants((FolderEntry)entry);
  				   for (FolderEntry child:children) {

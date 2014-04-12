@@ -56,6 +56,7 @@ import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.GroupPrincipal;
 import org.kablink.teaming.domain.IdentityInfo;
 import org.kablink.teaming.domain.IndividualPrincipal;
+import org.kablink.teaming.domain.LimitedUserView;
 import org.kablink.teaming.domain.NoUserByTheNameException;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.ProfileBinder;
@@ -68,6 +69,7 @@ import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.shared.InputDataAccessor;
+import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.search.IndexErrors;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.util.PrincipalDesktopAppsConfig;
@@ -422,6 +424,13 @@ public interface ProfileModule {
 	 * @throws AccessControlException
 	 */
     public SortedSet<User> getUsers(Collection<Long> userIds);
+	/**
+	 * Return set of limited user views.  No access check is performed.
+	 * @param userIds
+	 * @return
+	 */
+    public Set<LimitedUserView> getLimitedUserViews(Collection<Long> userIds);
+    public LimitedUserView getLimitedUserView(Long userId);
     public User findUserByName(String username) throws NoUserByTheNameException;
     public User getReservedUser(String internalId) throws NoUserByTheNameException;
    
@@ -457,6 +466,8 @@ public interface ProfileModule {
 	 * @param entries
 	 */
 	public IndexErrors indexEntries( Collection<Principal> entries );
+	
+	public MapInputData validateUserAttributes(Long userId, Map formData);
 	
 	/**
 	 * Modify existing principal

@@ -216,6 +216,10 @@ public interface AdminModule {
     public NameCompletionSettings getNameCompletionSettings();
     public void setNameCompletionSettings( NameCompletionSettings settings );
 
+    public boolean isUseDirectoryRightsEnabled();
+    public void setUseDirectoryRightsEnabled( Boolean enabled );
+    public Integer getCachedRightsRefreshInterval();
+    public void setCachedRightsRefreshInterval( Integer value );
 
     /**
      * Get system functions
@@ -508,6 +512,10 @@ public interface AdminModule {
     public ScheduleInfo getLogTablePurgeSchedule();
     
     public void setLogTablePurgeSchedule(ScheduleInfo info);
+    
+    public ScheduleInfo getTextConversionFilePurgeSchedule();
+    
+    public void setTextConversionFilePurgeSchedule(ScheduleInfo info);
     
     public MobileAppsConfig getMobileAppsConfig();
     public MobileOpenInWhiteLists getMobileOpenInWhiteLists();

@@ -117,14 +117,6 @@ public interface ZoneModule {
 	public Long getZoneIdByVirtualHost(String virtualHost);
 	
 	/**
-	 * Returns the ID of the zone.
-	 * 
-	 * @param zoneName
-	 * @return
-	 */
-	public Long getZoneIdByZoneName(String zoneName);
-	
-	/**
 	 * Returns the virtual host name associated with the specified zone.
 	 * It returns <code>null</code> if the specified zone represents the default
 	 * zone in the system, or the zone does not exist, or the system does not
