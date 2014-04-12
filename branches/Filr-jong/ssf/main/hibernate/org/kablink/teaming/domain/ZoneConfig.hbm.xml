@@ -86,5 +86,7 @@
 	<component name="nameCompletionSettings" class="org.kablink.teaming.domain.NameCompletionSettings">
 		<property name="nameCompletionSettings" length="4000"/>
     </component>
+    <property name="useDirectoryRights" access="field" />
+    <property name="cachedRightsRefreshInterval" access="field" />
    </class>
 </hibernate-mapping>

@@ -45,6 +45,7 @@ import org.kablink.teaming.dao.util.ShareItemSelectSpec;
 import org.kablink.teaming.domain.Application;
 import org.kablink.teaming.domain.ApplicationGroup;
 import org.kablink.teaming.domain.ApplicationPrincipal;
+import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.GroupPrincipal;
@@ -302,13 +303,29 @@ public interface ProfileDao {
  	public List<ShareItem> loadShareItems(Collection<Long> shareItemIds); 
  	
  	/**
+ 	 * Get a list of <code>Long</code> shareItem ids for a specified entity.
+ 	 * 
+ 	 * @param entity
+ 	 * @return
+ 	 */
+ 	public List<Long> getShareItemIdsByEntity(DefinableEntity entity);
+ 	
+ 	/**
+ 	 * Change a list of <code>Long</code> shareItem ids to point to a new entity.
+ 	 * 
+ 	 * @param entity
+ 	 * @return
+ 	 */
+ 	public void changeSharedEntityId(final Collection<Long> shareItemIds, final DefinableEntity entity);
+ 	
+ 	/**
  	 * Return IDs of users, groups, and teams that are granted specified right to the specified entity.
  	 * 
  	 * @param sharedEntityIdentifier
  	 * @param rightName
  	 * @return
  	 */
- 	public Map<ShareItem.RecipientType, Set<Long>> getRecipientIdsWithGrantedRightToSharedEntity(EntityIdentifier sharedEntityIdentifier, String rightName);
+ 	public Map<ShareItem.RecipientType, Set<Long>> getRecipientIdsWithGrantedRightToSharedEntity(EntityIdentifier sharedEntityIdentifier, String rightName, Long zoneId);
  	
  	/**
  	 * Return IDs of users, groups, and teams that are granted specified right to at least one of the specified entities.
@@ -334,7 +351,7 @@ public interface ProfileDao {
  	 * 
  	 * @return
  	 */
- 	public List<Group> findGroups( GroupSelectSpec groupSelectSpec );
+ 	public List<Group> findGroups( GroupSelectSpec groupSelectSpec, Long zoneId);
 
  	/** 
  	 * Find a list of <code>ShareItem</code> meeting the specified selection criteria.
@@ -342,7 +359,7 @@ public interface ProfileDao {
  	 * @param selectSpec
  	 * @return
  	 */
- 	public List<ShareItem> findShareItems(final ShareItemSelectSpec selectSpec);
+ 	public List<ShareItem> findShareItems(final ShareItemSelectSpec selectSpec, Long zoneId);
 
  	/**
  	 * Find a list <code>ShareItem</code> that have been expired but yet to be handled.

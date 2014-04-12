@@ -128,8 +128,6 @@ public class ModifyNetFolderRootDlg extends DlgBox
 	private FlowPanel m_inProgressPanel;
 	private List<HandlerRegistration> m_registeredEventHandlers;
 	private CheckBox m_fullSyncDirOnlyCB = null;
-	private CheckBox m_useDirectoryRightsCB;
-	private TextBox m_cachedRightsRefreshIntervalTB;
 	private Label m_oesProxyNameHint;
 	private Label m_windowsProxyNameHint;
 	private TabPanel m_tabPanel;
@@ -757,7 +755,7 @@ public class ModifyNetFolderRootDlg extends DlgBox
 					m_jitsResultsMaxAge.setVisibleLength( 3 );
 					hPanel.add( m_jitsResultsMaxAge );
 					
-					intervalLabel = new Label( messages.jitsZoneConfigDlg_SecondsLabel() );
+					intervalLabel = new Label( messages.netFolderGlobalSettingsDlg_SecondsLabel() );
 					intervalLabel.addStyleName( "marginleft2px" );
 					intervalLabel.addStyleName( "gray3" );
 					hPanel.add( intervalLabel );
@@ -798,7 +796,7 @@ public class ModifyNetFolderRootDlg extends DlgBox
 					m_jitsAclMaxAge.setVisibleLength( 3 );
 					hPanel.add( m_jitsAclMaxAge );
 					
-					intervalLabel = new Label( messages.jitsZoneConfigDlg_SecondsLabel() );
+					intervalLabel = new Label( messages.netFolderGlobalSettingsDlg_SecondsLabel() );
 					intervalLabel.addStyleName( "marginleft2px" );
 					intervalLabel.addStyleName( "gray3" );
 					hPanel.add( intervalLabel );
@@ -817,51 +815,6 @@ public class ModifyNetFolderRootDlg extends DlgBox
 			tmpPanel = new FlowPanel();
 			m_fullSyncDirOnlyCB = new CheckBox( messages.modifyNetFolderServerDlg_SyncOnlyDirStructureCB() );
 			tmpPanel.add( m_fullSyncDirOnlyCB );
-			mainPanel.add( tmpPanel );
-		}
-		
-		tmpPanel = new FlowPanel();
-		m_useDirectoryRightsCB = new CheckBox( messages.modifyNetFolderServerDlg_UseDirectoryRightsCB() );
-		tmpPanel.add( m_useDirectoryRightsCB );
-		mainPanel.add( tmpPanel );
-		
-		// Add the controls for "Refresh cached rights information every: xxx minutes"
-		{
-			InlineLabel label;
-			
-			tmpPanel = new FlowPanel();
-			tmpPanel.getElement().getStyle().setMarginTop( 4, Unit.PX );
-			
-			label = new InlineLabel( messages.modifyNetFolderServerDlg_RefreshRightsLabel() );
-			label.getElement().getStyle().setMarginRight( 6, Unit.PX );
-			tmpPanel.add( label );
-			
-			m_cachedRightsRefreshIntervalTB = new TextBox();
-			m_cachedRightsRefreshIntervalTB.addKeyPressHandler( new KeyPressHandler()
-			{
-				@Override
-				public void onKeyPress( KeyPressEvent event )
-				{
-			        int keyCode;
-
-			        // Get the key the user pressed
-			        keyCode = event.getNativeEvent().getKeyCode();
-			        
-			        if ( GwtClientHelper.isKeyValidForNumericField( event.getCharCode(), keyCode ) == false )
-			        {
-		        		// Suppress the current keyboard event.
-		        		m_cachedRightsRefreshIntervalTB.cancelKey();
-			        }
-				}
-			} );
-
-			m_cachedRightsRefreshIntervalTB.setVisibleLength( 3 );
-			tmpPanel.add( m_cachedRightsRefreshIntervalTB );
-			
-			label = new InlineLabel( messages.modifyNetFolderServerDlg_Minutes() );
-			label.getElement().getStyle().setMarginLeft( 6, Unit.PX );
-			tmpPanel.add( label );
-			
 			mainPanel.add( tmpPanel );
 		}
 		
@@ -985,8 +938,6 @@ public class ModifyNetFolderRootDlg extends DlgBox
 				if ( m_isSharePointServerCkbox != null )
 					m_isSharePointServerCkbox.setVisible( visible );
 				
-				m_useDirectoryRightsCB.setVisible( false );
-				
 				// Do the following work:
 				//	- Update the server path and proxy name hint
 				//	- show/hide controls.
@@ -1012,8 +963,6 @@ public class ModifyNetFolderRootDlg extends DlgBox
 						m_windowsProxyNameHint.setVisible( false );
 						m_oesProxyNameHint.setVisible( true );
 						
-						m_useDirectoryRightsCB.setVisible( true );
-
 						m_authTypeLabel.setVisible( true );
 						m_authTypeListbox.setVisible( true );
 						
@@ -1317,21 +1266,6 @@ public class ModifyNetFolderRootDlg extends DlgBox
 	}
 
 	/**
-	 * Returns the "cached rights refresh interval" entered by the user.
-	 */
-	private Integer getCachedRightsRefreshInterval()
-	{
-		String intervalStr;
-		Integer interval = null;
-		
-		intervalStr = m_cachedRightsRefreshIntervalTB.getValue();
-		if ( intervalStr != null && intervalStr.length() > 0 )
-			interval = Integer.valueOf( intervalStr );
-		
-		return interval;
-	}
-	
-	/**
 	 * 
 	 */
 	private long getJitsAclMaxAge()
@@ -1612,8 +1546,6 @@ public class ModifyNetFolderRootDlg extends DlgBox
 		netFolderRoot.setProxyPwd( getProxyPwd() );
 		netFolderRoot.setAuthType( getAuthType() );
 		netFolderRoot.setFullSyncDirOnly( getFullSyncDirOnly() );
-		netFolderRoot.setUseDirectoryRights( getUseDirectoryRights() );
-		netFolderRoot.setCachedRightsRefreshInterval( getCachedRightsRefreshInterval() );
 		netFolderRoot.setIndexContent( getIndexContent() );
 		netFolderRoot.setJitsEnabled( getJitsEnabled() );
 		netFolderRoot.setJitsResultsMaxAge( getJitsResultsMaxAge() );
@@ -1704,17 +1636,6 @@ public class ModifyNetFolderRootDlg extends DlgBox
 	}
 
 	/**
-	 * Return the value of the "Use directory rights in addition to file system rights"
-	 */
-	public Boolean getUseDirectoryRights()
-	{
-		if ( m_useDirectoryRightsCB.isVisible() )
-			return m_useDirectoryRightsCB.getValue();
-		
-		return null;
-	}
-	
-	/**
 	 * This method gets called when the user selects the root type
 	 * Show/hide the appropriate controls based on the selected root type.
 	 */
@@ -1774,8 +1695,6 @@ public class ModifyNetFolderRootDlg extends DlgBox
 		m_indexContentCB.setValue( false );
 		if ( GwtMainPage.m_requestInfo.getShowSyncOnlyDirStructureUI() )
 			m_fullSyncDirOnlyCB.setValue( false );
-		m_useDirectoryRightsCB.setValue( false );
-		m_cachedRightsRefreshIntervalTB.setValue( "10" );
 		
 		// Forget about any list of LDAP servers.  The list may have
 		// changed since this dialog was last run and setting this to
@@ -1832,24 +1751,6 @@ public class ModifyNetFolderRootDlg extends DlgBox
 				value = m_netFolderRoot.getFullSyncDirOnly();
 				if ( value != null )
 					m_fullSyncDirOnlyCB.setValue( value );
-			}
-			
-			// Initialize the "use directory rights in addition to file system rights" checkbox.
-			{
-				Boolean value;
-				
-				value = m_netFolderRoot.getUseDirectoryRights();
-				if ( value != null )
-					m_useDirectoryRightsCB.setValue( value );
-			}
-			
-			// Initialize the "cached rights refresh interval"
-			{
-				Integer value;
-				
-				value = m_netFolderRoot.getCachedRightsRefreshInterval();
-				if ( value != null )
-					m_cachedRightsRefreshIntervalTB.setValue( value.toString() );
 			}
 		}
 		else
@@ -1970,6 +1871,79 @@ public class ModifyNetFolderRootDlg extends DlgBox
 		GwtClientHelper.selectListboxItemByValue( m_rootTypeListbox, serverType.toString() );
 	}
 
+	/**
+	 * Check to see if all the of the information needed to test the connection has been entered.
+	 */
+	private boolean isDataValidNeededToTestConnection()
+	{
+		NetFolderRootType serverType;
+		String value;
+		Scheduler.ScheduledCommand cmd;
+		
+		serverType = getSelectedRootType();
+
+		// Is the server type "famt" or undefined?
+		if ( serverType == NetFolderRootType.FAMT )
+		{
+			// Yes, tell the user they need to pick a server type.
+			cmd = new Scheduler.ScheduledCommand()
+			{
+				@Override
+				public void execute()
+				{
+					Window.alert( GwtTeaming.getMessages().modifyNetFolderServerDlg_SelectServerTypePrompt() );
+					m_tabPanel.selectTab( 0 );
+				}
+			};
+			Scheduler.get().scheduleDeferred( cmd );
+
+			return false;
+		}
+		
+		// Did the user enter a proxy name?
+		value = getProxyName();
+		if ( value == null || value.length() == 0 )
+		{
+			// No
+			cmd = new Scheduler.ScheduledCommand()
+			{
+				@Override
+				public void execute()
+				{
+					Window.alert( GwtTeaming.getMessages().modifyNetFolderServerDlg_EnterProxyNamePrompt() );
+					m_tabPanel.selectTab( 1 );
+					m_proxyNameTxtBox.setFocus( true );
+				}
+			};
+			Scheduler.get().scheduleDeferred( cmd );
+
+			return false;
+		}
+		
+		// Did the user enter a proxy pwd?
+		value = getProxyPwd();
+		if ( value == null || value.length() == 0 )
+		{
+			// No
+			cmd = new Scheduler.ScheduledCommand()
+			{
+				@Override
+				public void execute()
+				{
+					Window.alert( GwtTeaming.getMessages().modifyNetFolderServerDlg_EnterProxyPwdPrompt() );
+					m_tabPanel.selectTab( 1 );
+					m_proxyPwdTxtBox.setFocus( true );
+				}
+			};
+			Scheduler.get().scheduleDeferred( cmd );
+
+			return false;
+		}
+	
+		// If we get here everything is ok
+		return true;
+	}
+	
 	/**
 	 * Is the host url entered by the user valid?
 	 */
@@ -2242,6 +2216,13 @@ public class ModifyNetFolderRootDlg extends DlgBox
 		if ( m_inProgressPanel.isVisible() )
 		{
 			// Yes, bail
+			return;
+		}
+		
+		// Is the data needed to test the connection valid?
+		if ( isDataValidNeededToTestConnection() == false )
+		{
+			// No, the user has already been told what to do.
 			return;
 		}
 		

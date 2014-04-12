@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -40,7 +40,9 @@ import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.rpc.shared.ActivityStreamEntryRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.EntityRightsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.GetEntityRightsCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetUserAvatarCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ReplyToEntryCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.ActivityStreamEntry;
 import org.kablink.teaming.gwt.client.util.CommentAddedCallback;
@@ -88,6 +90,7 @@ public class ManageCommentsComposite extends ResizeComposite implements KeyDownH
 	private FlexTable						m_addCommentPanel;	//
 	private GwtTeamingDataTableImageBundle	m_images;			// Access to Vibe's images.
 	private GwtTeamingMessages				m_messages;			// Access to Vibe's messages.
+	private Image							m_userAvatarImg;	// Image containing the user's avatar to the left of m_addCommentTA.
 	private ManageCommentsCallback			m_manageCallback;	// Callback interface used to tell the callee about some management event within the composite.
 	private String							m_baseStyle;		// Base name used to construct the various styles used throughout the composite.
 	private TextArea						m_addCommentTA;		// The TextArea containing the comments being added.
@@ -203,13 +206,9 @@ public class ManageCommentsComposite extends ResizeComposite implements KeyDownH
 		if (!m_isIE) {
 			m_addCommentPanel.addStyleName(m_baseStyle + "-addCommentPanel-nonIE");
 		}
-		String avatarUrl = GwtClientHelper.getRequestInfo().getUserAvatarUrl();
-		if (!(GwtClientHelper.hasString(avatarUrl))) {
-			avatarUrl = m_images.userPhoto().getSafeUri().asString();
-		}
-		Image avatarImg = GwtClientHelper.buildImage(avatarUrl);
-		avatarImg.addStyleName(m_baseStyle + "-addCommentAvatar");
-		m_addCommentPanel.setWidget(0, 0, avatarImg);
+		m_userAvatarImg = GwtClientHelper.buildImage(m_images.userPhoto().getSafeUri().asString());
+		m_userAvatarImg.addStyleName(m_baseStyle + "-addCommentAvatar");
+		m_addCommentPanel.setWidget(0, 0, m_userAvatarImg);
 		m_addCommentTA = new TextArea();
 		m_addCommentTA.addStyleName(m_baseStyle + "-addCommentTextArea");
 		m_addCommentTA.addKeyDownHandler(this);
@@ -360,6 +359,9 @@ public class ManageCommentsComposite extends ResizeComposite implements KeyDownH
 				m_manageCallback.compositeReady();
 				scrollCommentsToBottomAsync();
 				
+				// ...force the user's avatar to be updated...
+				updateUserAvatarAsync();
+				
 				// ...and force the focus into the TextArea.
 				GwtClientHelper.setFocusDelayed(m_addCommentTA);
 			}
@@ -402,6 +404,46 @@ public class ManageCommentsComposite extends ResizeComposite implements KeyDownH
 		if (show) {
 			scrollCommentsToBottomAsync(0);
 		}
+	}
+	
+	/*
+	 * Asynchronously updates the user's avatar.
+	 */
+	private void updateUserAvatarAsync() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
+			@Override
+			public void execute() {
+				updateUserAvatarNow();
+			}
+		});
+	}
+	
+	/*
+	 * Synchronously updates the user's avatar.
+	 */
+	private void updateUserAvatarNow() {
+		final String defaultAvatarUrl = m_images.userPhoto().getSafeUri().asString();
+		GetUserAvatarCmd cmd = new GetUserAvatarCmd();
+		cmd.setUserId(Long.parseLong(GwtClientHelper.getRequestInfo().getUserId()));
+		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
+			@Override
+			public void onFailure(Throwable t) {
+				GwtClientHelper.handleGwtRPCFailure(
+					t,
+					m_messages.rpcFailure_GetUserAvatar());
+				m_userAvatarImg.setUrl(defaultAvatarUrl);
+			}
+
+			@Override
+			public void onSuccess(VibeRpcResponse result) {
+				String response = ((StringRpcResponseData) result.getResponseData()).getStringValue();
+				String avatarUrl;
+				if (GwtClientHelper.hasString(response))
+				     avatarUrl = response;
+				else avatarUrl = defaultAvatarUrl;
+				m_userAvatarImg.setUrl(avatarUrl);
+			}
+		});
 	}
 
 	/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */

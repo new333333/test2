@@ -43,6 +43,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.ObjectKeys;
+import org.kablink.teaming.UncheckedIOException;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.Folder;
@@ -60,6 +61,7 @@ import org.kablink.teaming.gwt.client.util.DeleteSelectionsMode;
 import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.TagInfo;
 import org.kablink.teaming.module.binder.BinderModule;
+import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.security.AccessControlException;
@@ -587,8 +589,10 @@ public class GwtDeleteHelper {
 					// purge.
 					String entryTitle = GwtServerHelper.getEntityTitle(bs, entityId);
 					String msgKey;
-					if (e instanceof AccessControlException) msgKey = "purgeEntryError.AccssControlException";
-					else                                     msgKey = "purgeEntryError.OtherException";
+					if      (e instanceof AccessControlException) msgKey = "purgeEntryError.AccssControlException";
+					else if (e instanceof UncheckedIOException)   msgKey = "purgeEntryError.UncheckedIOException";
+					else if (e instanceof WriteFilesException)    msgKey = "purgeEntryError.WriteFilesException";
+					else                                          msgKey = "purgeEntryError.OtherException";
 					reply.addError(NLT.get(msgKey, new String[]{entryTitle}));
 					
 					GwtLogHelper.error(m_logger, "GwtDeleteHelper.doPurgeSelections( EntryTitle:  '" + entryTitle + "', EXCEPTION ):  ", e);

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -31,8 +31,6 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 package org.kablink.teaming.servlet.forum;
-
-import static org.kablink.util.search.Restrictions.in;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -80,12 +78,15 @@ import org.kablink.teaming.util.FileHelper;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.web.WebKeys;
+import org.kablink.teaming.web.util.AdminHelper;
 import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.WebUrlUtil;
 import org.kablink.util.FileUtil;
 import org.kablink.util.Http;
 import org.kablink.util.search.Criteria;
 import org.kablink.util.search.Order;
+
+import static org.kablink.util.search.Restrictions.in;
 
 import org.springframework.mail.javamail.ConfigurableMimeFileTypeMap;
 import org.springframework.web.bind.ServletRequestUtils;
@@ -580,44 +581,56 @@ public class ReadFileController extends AbstractReadFileController {
 				}
 	
 				if (fa != null) {
-					String shortFileName = FileUtil.getShortFileName(fa.getFileItem().getName());	
-					String contentType = getFileTypeMap().getContentType(shortFileName);
-					
-					//Protect against XSS attacks if this is an HTML file
-					contentType = FileUtils.validateDownloadContentType(contentType);
-
-					if (!(contentType.toLowerCase().contains("charset"))) {
-						String encoding = SPropsUtil.getString("web.char.encoding", "UTF-8");
-						if (MiscUtil.hasString(encoding)) {
-							contentType += ("; charset=" + encoding);
+					// Can the user download files?
+					boolean canDownload = AdminHelper.getEffectiveDownloadSetting(this, RequestContextHolder.getRequestContext().getUser());
+					if (canDownload) {
+						// Yes!
+						String shortFileName = FileUtil.getShortFileName(fa.getFileItem().getName());	
+						String contentType = getFileTypeMap().getContentType(shortFileName);
+						
+						// Protect against XSS attacks if this is an
+						// HTML file.
+						contentType = FileUtils.validateDownloadContentType(contentType);
+						if (!(contentType.toLowerCase().contains("charset"))) {
+							String encoding = SPropsUtil.getString("web.char.encoding", "UTF-8");
+							if (MiscUtil.hasString(encoding)) {
+								contentType += ("; charset=" + encoding);
+							}
+						}
+						response.setContentType(contentType);
+						boolean isHttps = request.getScheme().equalsIgnoreCase("https");
+						String cacheControl = "private, max-age=86400";
+						if (isHttps) {
+							response.setHeader("Pragma", "public");
+							cacheControl += ", proxy-revalidate, s-maxage=0";
+						}
+						response.setHeader("Cache-Control", cacheControl);
+						String attachment = "";
+						if (FileHelper.checkIfAttachment(contentType)) attachment = "attachment; ";
+						response.setHeader("Content-Disposition",
+								attachment + "filename=\"" + FileHelper.encodeFileName(request, shortFileName) + "\"");
+						response.setHeader("Last-Modified", formatDate(fa.getModification().getDate()));	
+						try {
+							Binder parent = getBinder(entity);
+							if (!fa.isEncrypted()) {
+								// The file length cannot be guaranteed
+								// if the file is encrypted.  It is
+								// better to leave this field off in
+								// that case.
+								response.setHeader("Content-Length", 
+									String.valueOf(FileHelper.getLength(parent, entity, fa)));
+							}
+							getFileModule().readFile(parent, entity, fa, response.getOutputStream());
+							
+							// Mark it in the audit trail.
+							getReportModule().addFileInfo(AuditType.download, fa);
+						}
+						catch(Exception e) {
+							response.sendError(HttpServletResponse.SC_BAD_REQUEST, NLT.get("file.error") + ": " + e.getMessage());
 						}
 					}
-					response.setContentType(contentType);
-					boolean isHttps = request.getScheme().equalsIgnoreCase("https");
-					String cacheControl = "private, max-age=86400";
-					if (isHttps) {
-						response.setHeader("Pragma", "public");
-						cacheControl += ", proxy-revalidate, s-maxage=0";
-					}
-					response.setHeader("Cache-Control", cacheControl);
-					String attachment = "";
-					if (FileHelper.checkIfAttachment(contentType)) attachment = "attachment; ";
-					response.setHeader("Content-Disposition",
-							attachment + "filename=\"" + FileHelper.encodeFileName(request, shortFileName) + "\"");
-					response.setHeader("Last-Modified", formatDate(fa.getModification().getDate()));	
-					try {
-						Binder parent = getBinder(entity);
-						if (!fa.isEncrypted()) {
-							//The file length cannot be guaranteed if the file is encrypted. It is better to leave this field off in that case.
-							response.setHeader("Content-Length", 
-								String.valueOf(FileHelper.getLength(parent, entity, fa)));
-						}
-						getFileModule().readFile(parent, entity, fa, response.getOutputStream());
-						//Mark it in the audit trail
-						getReportModule().addFileInfo(AuditType.download, fa);
-					}
-					catch(Exception e) {
-						response.sendError(HttpServletResponse.SC_BAD_REQUEST, NLT.get("file.error") + ": " + e.getMessage());
+					else {
+						response.sendError(HttpServletResponse.SC_BAD_REQUEST, NLT.get("file.error.cantDownload"));
 					}
 				} else {
 					response.sendError(HttpServletResponse.SC_BAD_REQUEST, NLT.get("file.error.unknownFile"));

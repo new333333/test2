@@ -123,7 +123,7 @@ public enum TeamingEvents implements IsSerializable {
 	INVOKE_IMPORT_ICAL_FILE,						// Invokes the dialog to import an iCal by uploading  a file.
 	INVOKE_IMPORT_ICAL_URL,							// Invokes the dialog to import an iCal by specifying a URL.
 	INVOKE_IMPORT_PROFILES_DLG,						// Invokes the "Import Profiles" dialog.
-	INVOKE_JITS_ZONE_CONFIG_DLG,					// Invokes the "Jits zone configuration" dialog.
+	INVOKE_NET_FOLDER_GLOBAL_SETTINGS_DLG,			// Invokes the "Net Folder Global Settings" dialog.
 	INVOKE_LDAP_SYNC_RESULTS_DLG,					// Invokes the "Ldap sync results" dialog.
 	INVOKE_MANAGE_DATABASE_PRUNE_DLG,				// Invokes the "Manage database prune" dialog.
 	INVOKE_MANAGE_GROUPS_DLG,						// Invokes the "Manage groups" dialog.

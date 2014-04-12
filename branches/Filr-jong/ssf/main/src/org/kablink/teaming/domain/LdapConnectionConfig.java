@@ -35,6 +35,7 @@ package org.kablink.teaming.domain;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -61,7 +62,7 @@ public class LdapConnectionConfig extends ZonedObject {
 	protected String credentials;
 
 	protected int position;
-
+	
 	public LdapConnectionConfig() {
 
 	}
@@ -372,4 +373,5 @@ public class LdapConnectionConfig extends ZonedObject {
 	public void setGroupSearches(List<SearchInfo> groupSearches) {
 		this.groupSearches = groupSearches;
 	}
+
 }

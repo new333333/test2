@@ -527,7 +527,6 @@ public interface ObjectKeys {
 	
 	//Resource Drivers
 	public static final String RESOURCE_DRIVER_AUTHENTICATION_TYPE = "authenticationType";
-	public static final String RESOURCE_DRIVER_CACHED_RIGHTS_REFRESH_INTERVAL = "cachedRightsRefreshInterval";
 	public static final String RESOURCE_DRIVER_READ_ONLY = "readonly";
 	public static final String RESOURCE_DRIVER_SYNCH_TOP_DELETE = "synchTopDelete";
 	public static final String RESOURCE_DRIVER_PUT_REQUIRES_CONTENT_LENGTH = "putRequiresContentLength";
@@ -539,7 +538,6 @@ public interface ObjectKeys {
 	public static final String RESOURCE_DRIVER_SHARE_NAME = "shareName";
 	public static final String RESOURCE_DRIVER_SERVER_NAME = "serverName";
 	public static final String RESOURCE_DRIVER_SERVER_IP = "serverIP";
-	public static final String RESOURCE_DRIVER_USE_DIRECTORY_RIGHTS = "useDirectoryRights";
 	public static final String RESOURCE_DRIVER_VOLUME = "volume";
 	public static final String RESOURCE_DRIVER_MODIFIED_ON = "modifiedOn";
 	public static final String RESOURCE_DRIVER_INDEX_CONTENT = "indexContent";
@@ -668,6 +666,7 @@ public interface ObjectKeys {
     public static final String INPUT_OPTION_CREATION_ID="org.kablink.teaming.options.entity.creation.id";
     public static final String INPUT_OPTION_CREATION_DATE="org.kablink.teaming.options.entity.creation.timestamp";
     public static final String INPUT_OPTION_MODIFICATION_NAME="org.kablink.teaming.options.entity.modification.name";
+    public static final String INPUT_OPTION_MOVE_SHARE_ITEMS="org.kablink.teaming.options.entity.move.shareItems";
     public static final String INPUT_OPTION_MODIFICATION_ID="org.kablink.teaming.options.entity.modification.id";
     public static final String INPUT_OPTION_MODIFICATION_DATE="org.kablink.teaming.options.entity.modification.timestamp";
     public static final String INPUT_OPTION_FORCE_WORKFLOW_STATE="org.kablink.teaming.options.entity.workflow.state";
@@ -697,6 +696,7 @@ public interface ObjectKeys {
     public static final String FIELD_ENTITY_MODIFY_PRINCIPAL="modification.principal";
     public static final String FIELD_ENTITY_DELETED="deleted";
     public static final String FIELD_ENTITY_TEMPLATE_OWNING_BINDER_ID="templateOwningBinderId";
+    public static final String FIELD_ENTITY_GWT_COMMENT_ENTRY="*&*&*_gwtCommentEntry_*&*&*";
 
     public static final String FIELD_FILE_ID="_fileID";
     

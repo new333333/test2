@@ -408,7 +408,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_GetFooterToolbarItems();
 	String rpcFailure_GetGroupActionToolbarItems();
 	String rpcFailure_GetHtml5Specs();
-	String rpcFailure_GetJitsZoneConfig();
+	String rpcFailure_GetNetFolderGlobalSettings();
 	String rpcFailure_GetLandingPageData();
 	String rpcFailure_GetLdapConfig();
 	String rpcFailure_GetLdapServerData();
@@ -700,7 +700,7 @@ public interface GwtTeamingMessages extends Messages
 	String codeSplitFailure_ImportIcalByFileDlg();
 	String codeSplitFailure_ImportIcalByUrlDlg();
 	String codeSplitFailure_ImportProfilesDlg();
-	String codeSplitFailure_JitsZoneConfigDlg();
+	String codeSplitFailure_NetFolderGlobalSettingsDlg();
 	String codeSplitFailure_LandingPage();
 	String codeSplitFailure_LandingPageEditor();
 	String codeSplitFailure_LandingPageWidget();
@@ -1407,10 +1407,11 @@ public interface GwtTeamingMessages extends Messages
 	String shareCaption();
 	String shareDlg_accessLabel();
 	String shareDlg_addExternalUserTitle();
+	String shareDlg_canShareWith( String shareWith );
 	String shareDlg_alreadySharedWithSelectedRecipient( String recipientName );
 	String shareDlg_cantShareWithAllExternalUsersGroup();
 	String shareDlg_cantShareWithAllInternalUsersGroup();
-	String shareDlg_cantShareWithExternalUser();
+	String shareDlg_cantShareWithExternalUser_Param( String emailAddr );
 	String shareDlg_cantShareWithPublic();
 	String shareDlg_cantShareWithYourself();
 	String shareDlg_clickToAddNote();
@@ -1418,10 +1419,10 @@ public interface GwtTeamingMessages extends Messages
 	String shareDlg_deleteButton();
 	String shareDlg_editButton();
 	String shareDlg_editor();
-	String shareDlg_emailAddressInvalidPrompt();
-	String shareDlg_emailAddressInvalid_blDomain();
-	String shareDlg_emailAddressInvalid_blEMA();
-	String shareDlg_emailAddressInvalid_wl();
+	String shareDlg_emailAddressInvalidPrompt_Param( String emailAddr );
+	String shareDlg_emailAddressInvalid_blDomain_Param( String emailAddr );
+	String shareDlg_emailAddressInvalid_blEMA_Param( String emailAddr );
+	String shareDlg_emailAddressInvalid_wl_Param( String emailAddr );
 	String shareDlg_expiresAfter( String after );
 	String shareDlg_expiresLabel();
 	String shareDlg_expiresNever();
@@ -1508,6 +1509,7 @@ public interface GwtTeamingMessages extends Messages
 	String shareWithTeamsDlg_Instructions();
 	
 	// The following strings are used in the Group Membership popup
+	String allExtUsersGroupDesc();
 	String allUsersGroupDesc();
 	String noGroupMembers();
 	String unknownGroupMemberType();
@@ -1997,6 +1999,7 @@ public interface GwtTeamingMessages extends Messages
 	String html5Uploader_InternalError_NoBrowserSupport();
 	String html5Uploader_InternalError_UploaderAlreadyActive();
 	String html5Uploader_Warning_NoFiles();
+	String html5Uploader_Warning_NoFilesIE();
 	
 	// Strings used in the "Child binders widget"
 	String workspacesHeader();
@@ -2237,6 +2240,7 @@ public interface GwtTeamingMessages extends Messages
 	String modifyGroupDlgNameTooLong();
 	String modifyGroupDlgStaticLabel();
 	String modifyGroupDlgTitleLabel();
+	String modifyGroupDlgUserAlreadyExists();
 	String modifyGroupDlgViewGroupMembershipLabel();
 
 	// Strings used in the Modify static membership dialog
@@ -2334,6 +2338,8 @@ public interface GwtTeamingMessages extends Messages
 	String modifyNetFolderServerDlg_CreatingNetFolderServer();
 	String modifyNetFolderServerDlg_EditHeader( String name );
 	String modifyNetFolderServerDlg_EnableSyncScheduleLabel();
+	String modifyNetFolderServerDlg_EnterProxyNamePrompt();
+	String modifyNetFolderServerDlg_EnterProxyPwdPrompt();
 	String modifyNetFolderServerDlg_ErrorCreatingNetFolderServer( String err );
 	String modifyNetFolderServerDlg_ErrorModifyingNetFolderServer( String err );
 	String modifyNetFolderServerDlg_Group();
@@ -3027,14 +3033,6 @@ public interface GwtTeamingMessages extends Messages
 	// String used in the main content control.
 	String contentControl_Warning_ShareNoRights();
 
-	// Strings used in the Jits zone config dialog
-	String jitsZoneConfigDlg_EnableJits();
-	String jitsZoneConfigDlg_Header();
-	String jitsZoneConfigDlg_MaxWaitLabel();
-	String jitsZoneConfigDlg_OnSaveUnknownException( String errMsg );
-	String jitsZoneConfigDlg_SavingConfig();
-	String jitsZoneConfigDlg_SecondsLabel();
-
 	// Strings used in the Net Folder Sync Statistics dialog
 	String netFolderSyncStatisticsDlg_CountFailure();
 	String netFolderSyncStatisticsDlg_DirEnum();
@@ -3296,5 +3294,14 @@ public interface GwtTeamingMessages extends Messages
 	String tourNext();
 	String tourPrev();
 	String tourSkip();
-	
+
+	// Strings used in the Net Folder Global Settings dialog
+	String netFolderGlobalSettingsDlg_EnableJits();
+	String netFolderGlobalSettingsDlg_Header();
+	String netFolderGlobalSettingsDlg_MaxWaitLabel();
+	String netFolderGlobalSettingsDlg_OnSaveUnknownException( String errMsg );
+	String netFolderGlobalSettingsDlg_SavingConfig();
+	String netFolderGlobalSettingsDlg_SecondsLabel();
+	String netFolderGlobalSettingsDlg_UseDirRightsHint();
+
 }// end GwtTeamingMessages

@@ -58,6 +58,7 @@ import org.kablink.teaming.IllegalCharacterInNameException;
 import org.kablink.teaming.NoObjectByTheIdException;
 import org.kablink.teaming.NotSupportedException;
 import org.kablink.teaming.ObjectKeys;
+import org.kablink.teaming.UncheckedIOException;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.docconverter.ITextConverterManager;
 import org.kablink.teaming.docconverter.TextConverter;
@@ -1031,26 +1032,56 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 		binder.setResourcePath(normalizedResourcePath);  			   	
     }
    		
-   //no transaction    
-   protected void modifyBinder_indexAdd(Binder binder, 
+    //no transaction    
+    protected void modifyBinder_indexAdd(Binder binder, 
     		InputDataAccessor inputData, List fileUploadItems,
     		Collection<FileAttachment> filesToIndex, Map ctx) {
-    	indexBinder(binder, fileUploadItems, filesToIndex, false,
-    			(ctx == null ? null : (List)ctx.get(ObjectKeys.INPUT_FIELD_TAGS )));
+    	// Do we need to index nested FolderEntry's?
+    	AbstractEntryProcessor aep          = null;
+    	boolean                isRename     = ((ctx != null) && (!(ctx.get(ObjectKeys.FIELD_ENTITY_TITLE).equals(binder.getTitle()))));
+    	boolean                indexEntries = (isRename && binder.isAclExternallyControlled());
+    	if (indexEntries) {
+    		// Bugzilla 872468 (DRF):  We do if we're renaming a binder
+    		// in Net Storage.  Otherwise, ACL checks on their comments
+    		// through FAMT may fail after the rename.  To index them,
+    		// we'll need an entry processor.
+			BinderProcessor processor = ((BinderProcessor) getProcessorManager().getProcessor(
+				binder,
+				binder.getProcessorKey(BinderProcessor.PROCESSOR_KEY)));
+
+			indexEntries = (processor instanceof AbstractEntryProcessor);
+			if (indexEntries) {
+				aep = ((AbstractEntryProcessor) processor);
+			}
+	   }
+	   
+	   List tags = (ctx == null ? null : ((List) ctx.get(ObjectKeys.INPUT_FIELD_TAGS)));
+	   indexBinder(binder, fileUploadItems, filesToIndex, false, tags);
+	   if (indexEntries) {
+		   aep.indexEntries(binder, true, true, true);
+		   IndexSynchronizationManager.applyChanges(0);	// Is this needed?  AbstractEntryProcessor.indexBinderIncremental() does it so I copied it here.
+	   }
     	
-    	//Also re-index all of the direct children binders to get the correct folder extended title indexed
-    	if (ctx != null && !ctx.get(ObjectKeys.FIELD_ENTITY_TITLE).equals(binder.getTitle())) {
-    		// If the title has changed for the binder, we must re-index all of children 
-    		// binders recursively so that their paths get updated in the index.
-    		List children = new ArrayList(binder.getBinders());
-    		while (!children.isEmpty()) {
-    			Binder child = (Binder)children.get(0);
-    			indexBinder(child, false);
-    			children.remove(0);
-    			children.addAll(child.getBinders());
-    		}
-    	}
+	   // Also re-index all of the direct children binders to get the
+	   // correct folder extended title indexed
+	   if (isRename) {
+		   // If the title has changed for the binder, we must re-index
+		   // all of the child binders recursively so that their paths
+		   // get updated in the index.
+		   List children = new ArrayList(binder.getBinders());
+		   while (!children.isEmpty()) {
+			   Binder child = (Binder)children.get(0);
+			   indexBinder(child, false);
+			   if (indexEntries) {
+				   aep.indexEntries(child, true, true, true);
+				   IndexSynchronizationManager.applyChanges(0);	// Is this needed?  AbstractEntryProcessor.indexBinderIncremental() does it so I copied it here.
+			   }
+			   children.remove(0);
+			   children.addAll(child.getBinders());
+		   }
+	   }
     }
+   
    //no transaction    
     protected void modifyBinder_indexRemoveFiles(Binder binder, Collection<FileAttachment> filesToDeindex, Map ctx) {
     	removeFilesIndex(binder, filesToDeindex);
@@ -1105,7 +1136,22 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         final Map ctx = new HashMap();
         if (options != null) ctx.putAll(options);
      	deleteBinder_setCtx(binder, ctx);
-     	
+
+     	{
+	     	// Bugzilla 686906:
+	     	//    Moved these calls from below deleteBinder_preDelete()
+     		//    call so that we delete the mirror information, if
+     		//    necessary first so in case that fails, we won't have
+     		//    removed all the metadata.
+	        SimpleProfiler.start("deleteBinder_processFiles");
+	        deleteBinder_processFiles(binder, ctx);
+	        SimpleProfiler.stop("deleteBinder_processFiles");
+	        
+	        SimpleProfiler.start("deleteBinder_mirrored");
+	        deleteBinder_mirrored(binder, deleteMirroredSource, ctx);
+	        SimpleProfiler.stop("deleteBinder_mirrored");
+     	}
+        
         SimpleProfiler.start("deleteBinder_indexDel");
         deleteBinder_indexDel(binder, ctx);
         SimpleProfiler.stop("deleteBinder_indexDel");
@@ -1113,14 +1159,6 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     	SimpleProfiler.start("deleteBinder_preDelete");
         deleteBinder_preDelete(binder,ctx, skipDbLog);
         SimpleProfiler.stop("deleteBinder_preDelete");
-        
-        SimpleProfiler.start("deleteBinder_processFiles");
-        deleteBinder_processFiles(binder, ctx);
-        SimpleProfiler.stop("deleteBinder_processFiles");
-        
-        SimpleProfiler.start("deleteBinder_mirrored");
-        deleteBinder_mirrored(binder, deleteMirroredSource, ctx);
-        SimpleProfiler.stop("deleteBinder_mirrored");
         
        	if (!binder.isRoot()) {
    			//delete reserved names for self which is registered in parent space
@@ -1218,10 +1256,16 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     		}
     		catch(NotSupportedException e) {
     			logger.warn(e.getLocalizedMessage());
+    			throw e;
+    		}
+    		catch(UncheckedIOException e) {
+    			logger.error("Error deleting source resource for mirrored binder (1) [" + binder.getPathName() + "]", e);
+    			throw e;
     		}
     		catch(Exception e) {
-    			logger.error("Error deleting source resource for mirrored binder [" + binder.getPathName() + "]", e);
-    		}  	   		
+    			logger.error("Error deleting source resource for mirrored binder (2) [" + binder.getPathName() + "]", e);
+    			throw e;
+    		}
     	}
      }
     
@@ -1548,18 +1592,52 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     //no transaction - should be overridden 
 	protected Binder copyBinder_create(Binder source, Binder destination, String title, Map ctx) {
 	   Binder sampleBinder = source;
+	   Definition sampleDef = sampleBinder.getEntryDef();
+	   List<Definition> sampleDefs = sampleBinder.getDefinitions();
+	   Class sampleBinderClass = sampleBinder.getClass();
 	   if (destination.isAclExternallyControlled() || destination.isMirrored()) {
 		   //When the destination is a remote disk folder, make the new binder the same type as the destination
 		   sampleBinder = destination;
+		   sampleBinderClass = sampleBinder.getClass();
+		   sampleDef = sampleBinder.getEntryDef();
+		   sampleDefs = sampleBinder.getDefinitions();
+	   }
+	   if (source.isAclExternallyControlled() && !destination.isAclExternallyControlled()) {
+		   //Copying from a net folder to a non-net folder, make the sample be a regular file folder
+		   if (destination.isLibrary()) {
+			   //The destination is a file folder, so use it as the sample
+			   sampleBinder = destination;
+			   sampleBinderClass = sampleBinder.getClass();
+			   sampleDef = sampleBinder.getEntryDef();
+			   sampleDefs = sampleBinder.getDefinitions();
+		   } else {
+			   //Copying this to a non-library folder, so we must use a file folder definition
+			   sampleBinder = destination;
+			   sampleBinderClass = Folder.class;
+			   sampleDef = getDefinitionModule().getDefinitionByReservedId(ObjectKeys.DEFAULT_LIBRARY_FOLDER_DEF);
+			   sampleDefs = sampleBinder.getDefinitions();
+			   TemplateBinder tb = getTemplateModule().getTemplateByName(ObjectKeys.DEFAULT_TEMPLATE_NAME_LIBRARY);
+			   if (tb != null) {
+				   sampleDefs = tb.getDefinitions();
+			   }
+		   }
 	   }
        Map data = new HashMap();
        data.put("title", title);
        InputDataAccessor inputData = new MapInputData(data);
        Binder binder = null;
        try {
-			binder = addBinder(destination, sampleBinder.getEntryDef(), sampleBinder.getClass(), inputData, null, null);
+			binder = addBinder(destination, sampleDef, sampleBinderClass, inputData, null, null);
 			//Also copy the configured definitions from the sample
-			binder.setDefinitions(sampleBinder.getDefinitions());
+			binder.setDefinitions(sampleDefs);
+			//If moving share items, do that now
+			if (ctx.containsKey(ObjectKeys.INPUT_OPTION_MOVE_SHARE_ITEMS) && 
+					(Boolean)ctx.get(ObjectKeys.INPUT_OPTION_MOVE_SHARE_ITEMS)) {
+				List<Long> shareItemIds = getProfileDao().getShareItemIdsByEntity(source);
+				if (!shareItemIds.isEmpty()) {
+					getProfileDao().changeSharedEntityId(shareItemIds, binder);
+				}
+			}
 			getCoreDao().flush();
        } catch (Exception e) {}
        

@@ -336,26 +336,6 @@ public class ResourceDriverModuleImpl implements ResourceDriverModule {
 			   		newResourceDriver.setAuthenticationType( value );
 			   	}
 			   	
-			   	if ( options.containsKey( ObjectKeys.RESOURCE_DRIVER_USE_DIRECTORY_RIGHTS ) )
-			   	{
-			   		Boolean value = null;
-			   		
-			   		if ( options.get( ObjectKeys.RESOURCE_DRIVER_USE_DIRECTORY_RIGHTS ) != null )
-			   			value = (Boolean) options.get( ObjectKeys.RESOURCE_DRIVER_USE_DIRECTORY_RIGHTS );
-			   		
-			   		newResourceDriver.setUseDirectoryRights( value );
-			   	}
-			   	
-			   	if ( options.containsKey( ObjectKeys.RESOURCE_DRIVER_CACHED_RIGHTS_REFRESH_INTERVAL ) )
-			   	{
-			   		Integer value = null;
-			   		
-			   		if ( options.get( ObjectKeys.RESOURCE_DRIVER_CACHED_RIGHTS_REFRESH_INTERVAL ) != null )
-			   			value = (Integer) options.get( ObjectKeys.RESOURCE_DRIVER_CACHED_RIGHTS_REFRESH_INTERVAL );
-			   		
-			   		newResourceDriver.setCachedRightsRefreshInterval( value );
-			   	}
-			   	
 			   	if ( options.containsKey( ObjectKeys.RESOURCE_DRIVER_INDEX_CONTENT ) )
 			   	{
 			   		Boolean value = null;
@@ -515,26 +495,6 @@ public class ResourceDriverModuleImpl implements ResourceDriverModule {
 			   			value = (ResourceDriverConfig.AuthenticationType) options.get( ObjectKeys.RESOURCE_DRIVER_AUTHENTICATION_TYPE );
 			   		
 			   		rdc.setAuthenticationType( value );
-			   	}
-			   	
-			   	if ( options.containsKey( ObjectKeys.RESOURCE_DRIVER_USE_DIRECTORY_RIGHTS ) )
-			   	{
-			   		Boolean value = null;
-			   		
-			   		if ( options.get( ObjectKeys.RESOURCE_DRIVER_USE_DIRECTORY_RIGHTS ) != null )
-			   			value = (Boolean) options.get( ObjectKeys.RESOURCE_DRIVER_USE_DIRECTORY_RIGHTS );
-			   		
-			   		rdc.setUseDirectoryRights( value );
-			   	}
-
-			   	if ( options.containsKey( ObjectKeys.RESOURCE_DRIVER_CACHED_RIGHTS_REFRESH_INTERVAL ) )
-			   	{
-			   		Integer value = null;
-			   		
-			   		if ( options.get( ObjectKeys.RESOURCE_DRIVER_CACHED_RIGHTS_REFRESH_INTERVAL ) != null )
-			   			value = (Integer) options.get( ObjectKeys.RESOURCE_DRIVER_CACHED_RIGHTS_REFRESH_INTERVAL );
-			   		
-			   		rdc.setCachedRightsRefreshInterval( value );
 			   	}
 			   	
 			   	if ( options.containsKey( ObjectKeys.RESOURCE_DRIVER_INDEX_CONTENT ) )

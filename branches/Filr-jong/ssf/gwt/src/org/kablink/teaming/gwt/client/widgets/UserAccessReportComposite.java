@@ -193,6 +193,9 @@ public class UserAccessReportComposite extends ReportCompositeBase
 				// Store the find control...
 				m_userFinder = findCtrl;
 
+				m_userFinder.setSearchForExternalPrincipals( true );
+				m_userFinder.setSearchForInternalPrincipals( true );
+
 				// ...style it...
 				m_userFinder.addStyleName("vibe-userAccessReportComposite-userFind");
 				FocusWidget fw = m_userFinder.getFocusWidget();

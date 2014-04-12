@@ -504,7 +504,11 @@ public class EntryTitleCell extends AbstractCell<EntryTitleInfo> {
 				int files = ((null == fileList) ? 0 : fileList.getLength());
 				if (0 == files) {
 					// ...tell the user about the problem...
-					GwtClientHelper.deferredAlert(m_messages.html5Uploader_Warning_NoFiles());
+					String warning;
+					if (GwtClientHelper.jsIsAnyIE())
+					     warning = m_messages.html5Uploader_Warning_NoFilesIE();
+					else warning = m_messages.html5Uploader_Warning_NoFiles();
+					GwtClientHelper.deferredAlert(warning);
 				}
 				else {
 					// ...otherwise, process the files that were

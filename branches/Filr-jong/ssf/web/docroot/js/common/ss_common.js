@@ -1835,8 +1835,8 @@ function ss_onSubmit(obj, checkIfButtonClicked) {
     }
     
 	// If there's a GWT UI ss_dialogClosed() function defined, call it.
-    if      (typeof self.opener.ss_dialogClosed != "undefined") self.opener.ss_dialogClosed();	// Handles dialog in a popup window.
-    else if (typeof window.top.ss_dialogClosed  != "undefined") window.top.ss_dialogClosed();	// Handles dialog being inline.
+    if      (self.opener && (typeof self.opener.ss_dialogClosed != "undefined")) self.opener.ss_dialogClosed();	// Handles dialog in a popup window.
+    else if (                typeof window.top.ss_dialogClosed  != "undefined")  window.top.ss_dialogClosed();	// Handles dialog being inline.
     
     if (ss_buttonSelected == "cancelBtn" || ss_buttonSelected == "closeBtn") {
 		if (self != self.parent) {
@@ -8836,9 +8836,8 @@ function ss_saveCheckBoxValue(box, hiddenFieldId) {
 	// Did the user just check the notify assignee/attendee checkbox on
 	// a task/calendar entry?
 	if (cbChecked &&
-			((hiddenFieldId == "hidden_attendee_notify") ||		// Calendar
-																// entry.
-			 (hiddenFieldId == "hidden_assignment_notify"))) {	// Task entry.
+			((hiddenFieldId == "hidden_attendee_notify") ||		// Appointment.
+			 (hiddenFieldId == "hidden_assignment_notify"))) {	// Task.
 		// Yes! Can we access the subject, its default and the title?
 		var eSubject        = document.getElementById("_sendMail_subject");
 		var eSubjectDefault = document.getElementById("_sendMail_subject_default");

@@ -3144,12 +3144,18 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 
 		FileLock lock = fa.getFileLock();
 		if(lock != null && !lock.getOwner().equals(user)) {
-			// The file is locked by another user.
-			throw new LockedByAnotherUserException(entity, fa, lock.getOwner());
+			if (ObjectKeys.FILE_SYNC_AGENT_INTERNALID.equals(user.getInternalId())) {
+				// The modification is being made by file syng agent. In this case, we ignore
+				// the lock held by end user, and let the sync to proceed.
+			}
+			else {
+				// The file is locked by regular user.
+				throw new LockedByAnotherUserException(entity, fa, lock.getOwner());
+			}
 		}
     }
     
-    private boolean isLockExpired(FileLock lock) {
+    public boolean isLockExpired(FileLock lock) {
     	// Note that we take additional 
 		// "allowance" value into consideration when computing the
 		// expiration date used for the comparison. This is to 
@@ -3331,7 +3337,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		ShareItemSelectSpec	spec = new ShareItemSelectSpec();
 		EntityIdentifier ei = entity.getEntityIdentifier();
 		spec.setSharedEntityIdentifier(ei);
-		List<ShareItem> shareItems = getProfileDao().findShareItems(spec);
+		List<ShareItem> shareItems = getProfileDao().findShareItems(spec, RequestContextHolder.getRequestContext().getZoneId());
 		if (shareItems != null) {
 			for (ShareItem shareItem : shareItems) {
 				//See if there are any cached HTML files to be deleted

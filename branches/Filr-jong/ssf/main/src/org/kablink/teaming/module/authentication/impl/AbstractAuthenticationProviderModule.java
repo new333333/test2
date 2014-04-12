@@ -58,6 +58,7 @@ import org.kablink.teaming.module.authentication.LocalAuthentication;
 import org.kablink.teaming.module.authentication.UserAccountNotProvisionedException;
 import org.kablink.teaming.module.authentication.UserIdNotActiveException;
 import org.kablink.teaming.module.authentication.UserIdNotUniqueException;
+import org.kablink.teaming.module.ldap.LdapModule;
 import org.kablink.teaming.NoObjectByTheIdException;
 import org.kablink.teaming.security.authentication.AuthenticationManagerUtil;
 import org.kablink.teaming.security.authentication.UserAccountNotActiveException;
@@ -78,6 +79,7 @@ import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SZoneConfig;
 import org.kablink.teaming.util.SessionUtil;
 import org.kablink.teaming.util.SimpleProfiler;
+import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.WindowsUtil;
 import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.util.Validator;
@@ -133,7 +135,7 @@ public abstract class AbstractAuthenticationProviderModule extends BaseAuthentic
 		cacheUsingAuthenticators = new HashSet<String>();
 		for(String str:strs)
 			cacheUsingAuthenticators.add(str);
-		cacheUsingAuthenticatorTimeout = SPropsUtil.getInt("cache.using.authenticator.timeout", 30);
+		cacheUsingAuthenticatorTimeout = SPropsUtil.getInt("cache.using.authenticator.timeout", 60);
 		lastRegularAuthenticationTimes = new ConcurrentHashMap<String, Long>();
 	}
 
@@ -222,7 +224,15 @@ public abstract class AbstractAuthenticationProviderModule extends BaseAuthentic
 		List<AuthenticationProvider> providers = new LinkedList<AuthenticationProvider>();
 		
 		// Build LDAP authentication providers.
-		for (LdapConnectionConfig config : getLdapConnectionConfigs(zoneId)) {
+		// Get the latest state of the ldap connection config objects from the database. Do NOT read it from the cache.
+		List<LdapConnectionConfig> configs = getLdapConnectionConfigs(zoneId);
+		// Disconnect the objects from the current session so that it can be used across many different sessions
+		// without the fear of application layer inadvertantly making modification to the objects and flush the
+		// changes to the database accidently.
+		getCoreDao().evict(configs);
+		// Update the cache with the latest state of the objects.
+		getLdapModule().setConfigsReadOnlyCache(zoneId, configs);
+		for (LdapConnectionConfig config : configs) {
 			String search = "(" + config.getUserIdAttribute() + "={0})";
 			if (config.getUserSearches().size() > 0) {
 				DefaultSpringSecurityContextSource contextSource = null;
@@ -530,44 +540,27 @@ public abstract class AbstractAuthenticationProviderModule extends BaseAuthentic
 	     			authenticationServiceProvider = getAuthenticationServiceProvider(result);
 	     			
 	     			// Get default settings first
-	     			boolean createUser = SPropsUtil.getBoolean("portal.user.auto.create", true);
 	     			boolean passwordAutoSynch = SPropsUtil.getBoolean("portal.password.auto.synchronize", true);
 	     			boolean ignorePassword = SPropsUtil.getBoolean("portal.password.ignore", true);
-	     			boolean updateUser = true; // No config setting exists for this
-                    boolean updateHomeFolder = SPropsUtil.getBoolean("portal.user.home.folder.auto.create", true);
-
-	     			if(SPropsUtil.getBoolean("authenticator.synch." + getAuthenticator(), false)) {
-	     				// This authenticator is permitted to sync information from the identity source.
-	     				// So should simply honor the default settings.	     				
-	     			}
-	     			else {
-		     			if(cacheUsingAuthenticators.contains(getAuthenticator())) {
-		     				// This authenticator is set up to utilize cached credential. In this case,
-		     				// we must allow caching of password (i.e, password sync). Otherwise,
-		     				// the authenticator will fail very soon when it tries to utilize cached
-		     				// credential in subsequent requests.
-		     				passwordAutoSynch = true;
-		     				// Set this to false to avoid incurring of overhead involved in updating
-		     				// user profile. Cache using authenticators tend to be stateless clients
-		     				// such as REST and SOAP clients. While we want them to be able to create
-		     				// new user account in Filr by initially sync'ing user profile information
-		     				// from the LDAP source in the same way web authenticator does, we do NOT
-		     				// want them to trigger frequent profile updates (e.g. every 30 seconds)
-		     				// on existing user accounts. Profile updates on existing accounts should
-		     				// only be triggered by stateful client such as browser.
-		     				updateUser = false;
-                            // Set this to false to avoid incurring of overhead involved in creating
-                            // or updating the user's home folder.
-                            updateHomeFolder = false;
-		     			}
-		     			else {
-		     				// We will not allow sync.
-		     				createUser = false;
-		     				passwordAutoSynch = false;
-		     				ignorePassword = true;
-		     			}
+	     			
+	     			boolean createUser = SPropsUtil.getBoolean("authenticator.create.user." + getAuthenticator(), false);
+                    boolean updateUser = SPropsUtil.getBoolean("authenticator.update.user." + getAuthenticator(), false);
+                    boolean updateHomeFolder = SPropsUtil.getBoolean("authenticator.update.homefolder." + getAuthenticator(), false);
+                    
+	     			if(cacheUsingAuthenticators.contains(getAuthenticator())) {
+	     				// This authenticator is set up to utilize cached credential. In this case,
+	     				// we must allow caching of password (i.e, password sync). Otherwise,
+	     				// the authenticator will fail very soon when it tries to utilize cached
+	     				// credential in subsequent requests.
+	     				passwordAutoSynch = true;
 	     			}
 	     			
+	     			if(!createUser) {
+	     				// If this authenticator is one that doesn't allow creation of user (e.g. rss, ical),
+	     				// then don't allow password synchronization either.
+	     				passwordAutoSynch = false;
+	     			}
+                    	     			
 	     			if(AuthenticationServiceProvider.OPENID == authenticationServiceProvider) {
 	     				// If OpenID, override the default settings. OpenID is applicable only with web authenticator.
 	     				// Don't allow OpenID user to self provision himself.
@@ -836,5 +829,9 @@ public abstract class AbstractAuthenticationProviderModule extends BaseAuthentic
 		// authentication on an account that has no password).
 		if(authentication.getCredentials() == null || authentication.getCredentials().equals(""))
 			throw new BadCredentialsException("Password is required");
+	}
+	
+	private LdapModule getLdapModule() {
+		return (LdapModule) SpringContextUtil.getBean("ldapModule");
 	}
 }

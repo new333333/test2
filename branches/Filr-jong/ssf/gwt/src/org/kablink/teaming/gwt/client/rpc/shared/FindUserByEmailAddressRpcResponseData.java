@@ -32,55 +32,74 @@
  */
 package org.kablink.teaming.gwt.client.rpc.shared;
 
-import org.kablink.teaming.gwt.client.GwtJitsZoneConfig;
 
+
+import java.util.HashMap;
+
+import org.kablink.teaming.gwt.client.GwtUser;
+import org.kablink.teaming.gwt.client.rpc.shared.ValidateEmailRpcResponseData.EmailAddressStatus;
+
+import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
- * This class holds all of the information necessary to execute the "Save Jits zone config" command.
- * 
+ * This class holds the response data for the "find user by email address" rpc command
  * @author jwootton
  *
  */
-public class SaveJitsZoneConfigCmd extends VibeRpcCmd
+public class FindUserByEmailAddressRpcResponseData
+	implements IsSerializable, VibeRpcResponseData
 {
-	private GwtJitsZoneConfig m_jitsZoneConfig;
+	private HashMap<String,GwtUser> m_listOfUsers = null;
+	private HashMap<String,EmailAddressStatus> m_listOfEmailAddrStatus = null;
 	
 	/**
-	 * For GWT serialization, must have a zero param contructor
+	 * 
 	 */
-	public SaveJitsZoneConfigCmd()
+	public FindUserByEmailAddressRpcResponseData()
 	{
-		super();
+	}
+
+	/**
+	 * 
+	 */
+	public void addEmailStatus( String emailAddr, EmailAddressStatus emailAddrStatus )
+	{
+		if ( emailAddr == null || emailAddrStatus == null )
+			return;
+		
+		if ( m_listOfEmailAddrStatus == null )
+			m_listOfEmailAddrStatus = new HashMap<String,EmailAddressStatus>();
+		
+		m_listOfEmailAddrStatus.put( emailAddr, emailAddrStatus );
 	}
 	
 	/**
 	 * 
 	 */
-	public SaveJitsZoneConfigCmd( GwtJitsZoneConfig jitsZoneConfig )
+	public void addUser( String emailAddr, GwtUser gwtUser )
 	{
-		this();
-		m_jitsZoneConfig = jitsZoneConfig;
+		if ( emailAddr == null || gwtUser == null )
+			return;
+		
+		if ( m_listOfUsers == null )
+			m_listOfUsers = new HashMap<String,GwtUser>();
+		
+		m_listOfUsers.put( emailAddr, gwtUser );
 	}
 	
 	/**
 	 * 
 	 */
-	public GwtJitsZoneConfig getJitsZoneConfig()
+	public HashMap<String,EmailAddressStatus> getEmailAddrMap()
 	{
-		return m_jitsZoneConfig;
+		return m_listOfEmailAddrStatus;
 	}
 	
-	
 	/**
-	 * Returns the command's enumeration value.
 	 * 
-	 * Implements VibeRpcCmd.getCmdType()
-	 * 
-	 * @return
 	 */
-	@Override
-	public int getCmdType()
+	public HashMap<String,GwtUser> getListOfUsers()
 	{
-		return VibeRpcCmdType.SAVE_JITS_ZONE_CONFIG.ordinal();
+		return m_listOfUsers;
 	}
 }

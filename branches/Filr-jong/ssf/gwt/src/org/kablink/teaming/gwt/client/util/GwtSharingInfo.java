@@ -60,6 +60,7 @@ public class GwtSharingInfo
 	private boolean m_canShareWithAllExternalUsersGroup;
 	private boolean m_canShareWithAllInternalUsersGroup;
 	private boolean m_canShareWithLdapGroups;
+	private boolean m_canShareUsingFileLink;
 	
 	/**
 	 * 
@@ -77,6 +78,7 @@ public class GwtSharingInfo
 		m_canShareWithAllExternalUsersGroup = false;
 		m_canShareWithAllInternalUsersGroup = false;
 		m_canShareWithLdapGroups = false;
+		m_canShareUsingFileLink = false;
 		m_sendToValue = SendToValue.ALL_RECIPIENTS;
 	}
 	
@@ -157,6 +159,14 @@ public class GwtSharingInfo
 		
 		// If we get here we did not find the entityId
 		return null;
+	}
+	
+	/**
+	 * 
+	 */
+	public boolean getCanShareUsingFileLink()
+	{
+		return m_canShareUsingFileLink;
 	}
 	
 	/**
@@ -300,6 +310,14 @@ public class GwtSharingInfo
 		return m_sendToValue;
 	}
 
+	/**
+	 * 
+	 */
+	public void setCanShareUsingFileLink( boolean canShare )
+	{
+		m_canShareUsingFileLink = canShare;
+	}
+	
 	/**
 	 * 
 	 */

@@ -78,7 +78,7 @@ import org.kablink.teaming.gwt.client.BlogPages;
 import org.kablink.teaming.gwt.client.GroupMembershipInfo;
 import org.kablink.teaming.gwt.client.GwtDatabasePruneConfiguration;
 import org.kablink.teaming.gwt.client.GwtEmailPublicLinkResults;
-import org.kablink.teaming.gwt.client.GwtJitsZoneConfig;
+import org.kablink.teaming.gwt.client.GwtNetFolderGlobalSettings;
 import org.kablink.teaming.gwt.client.GwtLdapConfig;
 import org.kablink.teaming.gwt.client.GwtLdapSyncResults;
 import org.kablink.teaming.gwt.client.GwtLocales;
@@ -134,6 +134,8 @@ import org.kablink.teaming.gwt.client.profile.ProfileStats;
 import org.kablink.teaming.gwt.client.profile.UserStatus;
 import org.kablink.teaming.gwt.client.rpc.shared.*;
 import org.kablink.teaming.gwt.client.rpc.shared.GetGroupMembershipCmd.MembershipFilter;
+import org.kablink.teaming.gwt.client.rpc.shared.ValidateEmailAddressCmd.AddressField;
+import org.kablink.teaming.gwt.client.rpc.shared.ValidateEmailRpcResponseData.EmailAddressStatus;
 import org.kablink.teaming.gwt.client.service.GwtRpcService;
 import org.kablink.teaming.gwt.client.util.ActivityStreamData;
 import org.kablink.teaming.gwt.client.util.ActivityStreamData.PagingData;
@@ -774,20 +776,80 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 				@Override
 				public Object doAs()
 				{
-					GwtUser gwtUser;
-					String ema;
-
-					ema = fuCmd.getEmailAddress();
-					gwtUser = GwtSearchHelper.findUserByEmailAddress( ami, request, ema );
-					if ( fuCmd.isValidateExternalEMA() && ( null != gwtUser ) && gwtUser.getUserType().isExternal() )
+					FindUserByEmailAddressRpcResponseData responseData;
+					ArrayList<String> listOfEmailAddresses;
+					
+					responseData = new FindUserByEmailAddressRpcResponseData();
+					
+					listOfEmailAddresses = fuCmd.getListOfEmailAddresses();
+					if ( listOfEmailAddresses != null )
 					{
-						if ( ! getSharingModule().isExternalAddressValid( ema ))
+						for ( String ema : listOfEmailAddresses )
 						{
-							gwtUser = null;
+							GwtUser gwtUser;
+
+							gwtUser = GwtSearchHelper.findUserByEmailAddress( ami, request, ema );
+							
+							// Did we find a user?
+							if ( gwtUser != null )
+							{
+								// Yes
+								// Did we find an external user?
+								if ( gwtUser.getUserType().isExternal() )
+								{
+									// Yes
+									// Are we supposed to validate the email address?
+									if ( fuCmd.isValidateExternalEMA() )
+									{
+										EmailAddressStatus emaStatus = null;
+
+										// Yes
+										// Is the email address valid?
+										emaStatus = GwtServerHelper.validateEmailAddressImpl(
+																						ami,
+																						ema,
+																						true,
+																						AddressField.MAIL_TO );
+										if ( emaStatus != null && emaStatus.isInvalid() )
+										{
+											// No
+											gwtUser = null;
+											responseData.addEmailStatus( ema, emaStatus );
+										}
+									}
+								}
+							}
+							else
+							{
+								// We didn't find a user with the given email address
+								// Are we supposed to validate the email address?
+								if ( fuCmd.isValidateExternalEMA() )
+								{
+									EmailAddressStatus emaStatus = null;
+
+									// Yes
+									// Is the email address valid?
+									emaStatus = GwtServerHelper.validateEmailAddressImpl(
+																						ami,
+																						ema,
+																						true,
+																						AddressField.MAIL_TO );
+									if ( emaStatus != null )
+									{
+										// No
+										responseData.addEmailStatus( ema, emaStatus );
+									}
+								}
+							}
+							
+							if ( gwtUser != null )
+							{
+								responseData.addUser( ema, gwtUser );
+							}
 						}
 					}
 					
-					return new VibeRpcResponse( gwtUser );
+					return new VibeRpcResponse( responseData );
 				}
 			}; 
 
@@ -1760,12 +1822,12 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
-		case GET_JITS_ZONE_CONFIG:
+		case GET_NET_FOLDER_GLOBAL_SETTINGS:
 		{
-			GwtJitsZoneConfig jitsZoneConfig; 
+			GwtNetFolderGlobalSettings nfGlobalSettings; 
 
-			jitsZoneConfig = GwtServerHelper.getJitsZoneConfig( this );
-			response = new VibeRpcResponse( jitsZoneConfig );
+			nfGlobalSettings = GwtServerHelper.getNetFolderGlobalSettings( this );
+			response = new VibeRpcResponse( nfGlobalSettings );
 			return response;
 		}
 		
@@ -2742,8 +2804,8 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case IS_ALL_USERS_GROUP:
 		{
 			String groupId = ((IsAllUsersGroupCmd) cmd).getGroupId();
-			Boolean result = GwtServerHelper.isAllUsersGroup( this, Long.parseLong( groupId ));	//Note, this checks for either allUsers or allExtUsers
-			response = new VibeRpcResponse( new BooleanRpcResponseData( result ) );
+			IsAllUsersGroupRpcResponseData result = GwtServerHelper.isAllUsersGroup( this, Long.parseLong( groupId ));	//Note, this checks for either allUsers or allExtUsers
+			response = new VibeRpcResponse( result );
 			return response;
 		}
 
@@ -3173,13 +3235,13 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
-		case SAVE_JITS_ZONE_CONFIG:
+		case SAVE_NET_FOLDER_GLOBAL_SETTINGS:
 		{
-			SaveJitsZoneConfigCmd sjzcCmd;
+			SaveNetFolderGlobalSettingsCmd snfgsCmd;
 			Boolean result;
 			
-			sjzcCmd = ((SaveJitsZoneConfigCmd) cmd);
-			result = GwtServerHelper.saveJitsZoneConfig( this, sjzcCmd.getJitsZoneConfig() );
+			snfgsCmd = ((SaveNetFolderGlobalSettingsCmd) cmd);
+			result = GwtServerHelper.saveNetFolderGlobalSettings( this, snfgsCmd.getGlobalSettings() );
 			response = new VibeRpcResponse( new BooleanRpcResponseData( result ) );
 			return response;
 		}

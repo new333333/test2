@@ -956,12 +956,12 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 				addShareRightInheritingParents(entityIdentifier, copy);
 			}
 			selectSpec.sharedEntityIdentifiers = copy;
-			List<ShareItem> result = getProfileDao().findShareItems(selectSpec);
+			List<ShareItem> result = getProfileDao().findShareItems(selectSpec, RequestContextHolder.getRequestContext().getZoneId());
 			selectSpec.sharedEntityIdentifiers = orig; // Restore the original
 			return result;
 		}
 		else {
-			return getProfileDao().findShareItems(selectSpec);
+			return getProfileDao().findShareItems(selectSpec, RequestContextHolder.getRequestContext().getZoneId());
 		}
 	}
 

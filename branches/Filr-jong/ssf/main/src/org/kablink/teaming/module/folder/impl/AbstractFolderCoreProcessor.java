@@ -45,7 +45,6 @@ import java.util.Set;
 
 import org.dom4j.Document;
 import org.dom4j.Element;
-
 import org.kablink.teaming.NotSupportedException;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
@@ -94,7 +93,6 @@ import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.ServerTaskLinkage;
 import org.kablink.util.Validator;
-
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
@@ -313,11 +311,29 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     		Collection<FileAttachment> filesToIndex, Map ctx) {
   	   if (ctx != null && Boolean.TRUE.equals(ctx.get(ObjectKeys.INPUT_OPTION_NO_INDEX))) return;
   	   super.modifyEntry_indexAdd(binder, entry, inputData, fileUploadItems, filesToIndex, ctx);
-       	//Also re-index the top entry (to catch the change in lastActivity)
-    	FolderEntry fEntry = (FolderEntry)entry;
-    	if (!fEntry.isTop()) indexEntry(fEntry.getTopEntry());
+  	   
+  	   FolderEntry fEntry = (FolderEntry)entry;
+  	   boolean isReply = (!(fEntry.isTop())); 
+  	   if (isReply) {
+  	       // Re-index the top entry (to catch the change in
+  	  	   // lastActivity for comments.)
+  		   indexEntry(fEntry.getTopEntry());
+  	   }
+  	   
+  	   boolean isRename = ((ctx != null) && (!(ctx.get(ObjectKeys.FIELD_ENTITY_TITLE).equals(binder.getTitle()))));
+  	   if (isRename && (fEntry.isAclExternallyControlled() || (isReply && fEntry.getTopEntry().isAclExternallyControlled()))) {
+  		   // Bugzilla 869821 (DRF):  For entries in Net Folders that
+  		   // are being renamed, we need re-index their comments too.
+  		   // Otherwise, ACL checks on them through FAMT may not work
+  		   // after the rename.
+  		   Map<FolderEntry, Integer> allReplies = new HashMap<FolderEntry, Integer>();
+  		   fEntry.buildTotalReplyList(allReplies, fEntry);
+  		   for (FolderEntry reply:  allReplies.keySet()) {
+  	  		   indexEntry(reply);
+  		   }
+  	   }
     }
-
+    
     //***********************************************************************************************************
     //no write transaction    
     @Override
@@ -373,7 +389,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     	List<FolderEntry> replies = (List)ctx.get("this.replies");
      	for (FolderEntry reply: replies) {
      		try {
-     			super.deleteEntry_processFiles(parentBinder, reply, deleteMirroredSource, null);
+     			super.deleteEntry_processFiles(parentBinder, reply, deleteMirroredSource, ctx);
     		} catch(WriteFilesException e) {
     			//The files attached to this entry could not be deleted
     			//See if the error should be propagated
@@ -384,7 +400,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     		}
     	}
      	try {
-     		super.deleteEntry_processFiles(parentBinder, entry, deleteMirroredSource, null);
+     		super.deleteEntry_processFiles(parentBinder, entry, deleteMirroredSource, ctx);
 		} catch(WriteFilesException e) {
 			//The files attached to this entry could not be deleted
 			//See if the error should be propagated

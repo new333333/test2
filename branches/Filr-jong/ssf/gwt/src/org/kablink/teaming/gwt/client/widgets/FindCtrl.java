@@ -870,10 +870,10 @@ public class FindCtrl extends Composite
 			m_txtBox.setVisibleLength( visibleLength );
 			m_txtBox.addKeyUpHandler( this );
 			m_txtBox.addKeyDownHandler( this );
-			m_txtBox.addKeyPressHandler( new KeyPressHandler()
+			m_txtBox.addKeyDownHandler( new KeyDownHandler()
 			{
 				@Override
-				public void onKeyPress( KeyPressEvent event )
+				public void onKeyDown( KeyDownEvent event )
 				{
 					// Hide the hint.
 					m_floatingHintLabel.setVisible( false );
@@ -1202,20 +1202,23 @@ public class FindCtrl extends Composite
 	        	SearchResultItemWidget highlightedItem;
 	        	
 				// Yes
-	        	// Is there a search result item that is highlighted?
-	        	highlightedItem = m_searchResultsWidget.getHightlightedItem();
-	        	if ( highlightedItem != null )
+	        	if ( m_searchResultsWidget.isVisible() )
 	        	{
-					// Yes
-					// Kill the keystroke.
-		        	event.stopPropagation();
-		        	event.preventDefault();
-		        	
-		        	// Close the search results panel
-		        	hideSearchResults();
-	        		
-	        		// Put the selected item into affect.
-					setSelectedItemAsync( highlightedItem.getTeamingItem() );
+		        	// Is there a search result item that is highlighted?
+		        	highlightedItem = m_searchResultsWidget.getHightlightedItem();
+		        	if ( highlightedItem != null )
+		        	{
+						// Yes
+						// Kill the keystroke.
+			        	event.stopPropagation();
+			        	event.preventDefault();
+			        	
+			        	// Close the search results panel
+			        	hideSearchResults();
+		        		
+		        		// Put the selected item into affect.
+						setSelectedItemAsync( highlightedItem.getTeamingItem() );
+		        	}
 	        	}
 	        }
 		}
@@ -1236,18 +1239,10 @@ public class FindCtrl extends Composite
         // Did the user press Enter?
         if ( keyCode == KeyCodes.KEY_ENTER )
         {
-        	SearchResultItemWidget highlightedItem;
-        	
 			// Yes
-        	// Is there a search result item that is highlighted?
-        	highlightedItem = m_searchResultsWidget.getHightlightedItem();
-        	if ( highlightedItem != null )
-        	{
-				// Yes
-	        	event.stopPropagation();
-	        	event.preventDefault();
-	        	return;
-        	}
+        	event.stopPropagation();
+        	event.preventDefault();
+        	return;
         }
 
         // Get the search criteria the user entered.

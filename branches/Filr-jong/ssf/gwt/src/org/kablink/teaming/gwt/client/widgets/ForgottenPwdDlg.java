@@ -33,6 +33,9 @@
 package org.kablink.teaming.gwt.client.widgets;
 
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
@@ -40,8 +43,10 @@ import org.kablink.teaming.gwt.client.GwtUser;
 import org.kablink.teaming.gwt.client.GwtUser.ExtUserProvState;
 import org.kablink.teaming.gwt.client.SendForgottenPwdEmailRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.FindUserByEmailAddressCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.FindUserByEmailAddressRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.SendForgottenPwdEmailCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponseData;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 
@@ -190,6 +195,7 @@ public class ForgottenPwdDlg extends DlgBox
 	public boolean editSuccessful( Object obj )
 	{
 		final String emailAddress;
+		ArrayList<String> listOfEmailAddresses;
 		
 		emailAddress = m_emailAddressTxtBox.getValue();
 		if ( emailAddress == null || emailAddress.length() == 0 )
@@ -198,6 +204,9 @@ public class ForgottenPwdDlg extends DlgBox
 			Window.alert( GwtTeaming.getMessages().forgottenPwdDlg_EnterEmailAddress() );
 			return false;
 		}
+		
+		listOfEmailAddresses = new ArrayList<String>();
+		listOfEmailAddresses.add( emailAddress );
 		
 		// See if the email address the user entered is associated with an external user.
 		{
@@ -224,12 +233,21 @@ public class ForgottenPwdDlg extends DlgBox
 						public void execute()
 						{
 							final GwtUser gwtUser;
+							VibeRpcResponseData responseData;
 							
-							// Was the email associated with a user?
-							if ( vibeResult.getResponseData() != null )
+							responseData = vibeResult.getResponseData();
+							if ( responseData != null && responseData instanceof FindUserByEmailAddressRpcResponseData )
 							{
-								// Yes
-								gwtUser = (GwtUser) vibeResult.getResponseData();
+								FindUserByEmailAddressRpcResponseData findUserResponseData;
+								HashMap<String,GwtUser> listOfUsers;
+								
+								findUserResponseData = (FindUserByEmailAddressRpcResponseData) responseData;
+								
+								listOfUsers = findUserResponseData.getListOfUsers();
+								if ( listOfUsers != null && listOfUsers.size() == 1 )
+									gwtUser = listOfUsers.get( emailAddress );
+								else
+									gwtUser = null;
 							}
 							else
 								gwtUser = null;
@@ -288,7 +306,7 @@ public class ForgottenPwdDlg extends DlgBox
 
 			// Issue an ajax request to see if the email address that was entered is associated
 			// with an internal user.
-			FindUserByEmailAddressCmd cmd = new FindUserByEmailAddressCmd( emailAddress );
+			FindUserByEmailAddressCmd cmd = new FindUserByEmailAddressCmd( listOfEmailAddresses );
 			GwtClientHelper.executeCommand( cmd, findUserCallback );
 		}
 		

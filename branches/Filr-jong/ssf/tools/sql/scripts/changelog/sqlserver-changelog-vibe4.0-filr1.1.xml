@@ -402,18 +402,6 @@
             <column name="authenticationType" type="SMALLINT">
                 <constraints nullable="true" />
             </column>
-            <column name="useDirectoryRights" type="TINYINT">
-                <constraints nullable="true" />
-            </column>
-        </addColumn>
-    </changeSet>
-
-    <changeSet author="jay" context="schema" failOnError="true" id="33">
-        <comment>Cached rights refresh interval</comment>
-        <addColumn tableName="SS_ResourceDriver">
-            <column name="cachedRightsRefreshInterval" type="INT">
-                <constraints nullable="true" />
-            </column>
         </addColumn>
     </changeSet>
 
@@ -535,4 +523,19 @@
         </addColumn>
     </changeSet>
 
+    <changeSet author="jay" context="schema" failOnError="true" id="45">
+        <comment>Add useDirectoryRights to SS_ZoneConfig</comment>
+        <addColumn tableName="SS_ZoneConfig">
+            <column name="useDirectoryRights" type="TINYINT">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+        <comment>Add cachedRightsRefreshInterval to SS_ZoneConfig</comment>
+        <addColumn tableName="SS_ZoneConfig">
+            <column name="cachedRightsRefreshInterval" type="INT">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+    
 </databaseChangeLog>

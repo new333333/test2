@@ -2296,7 +2296,7 @@ public class BinderViewsHelper {
 		if (!hasEntries) {
 			// ...tell the user about the problem and return false.
 			GwtClientHelper.deferredAlert(
-				(requiresFiles                                           ?
+				((requiresFiles || GwtClientHelper.isLicenseFilr())      ?
 					m_messages.vibeEntryMenu_Warning_OnlyFolders_Files() :
 					m_messages.vibeEntryMenu_Warning_OnlyFolders_Entries()));
 			return false;

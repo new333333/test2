@@ -289,10 +289,10 @@ public class GwtSearchHelper
 				// Yes
 				searchTermFilter.addAndInternalFilter( true );
 			}
-			// Are we searching for external principals only?
-			else if ( searchCriteria.getSearchForInternalPrincipals() == false && searchCriteria.getSearchForExternalPrincipals() == true )
+			// Are we searching for internal principal?
+			else if ( searchCriteria.getSearchForInternalPrincipals() == false )
 			{
-				// Yes
+				// No
 				searchTermFilter.addAndInternalFilter( false );
 			}
 				
@@ -310,10 +310,10 @@ public class GwtSearchHelper
 				// Yes
 				searchTermFilter.addAndInternalFilter( true );
 			}
-			// Are we searching for external groups only?
-			else if ( searchCriteria.getSearchForInternalPrincipals() == false && searchCriteria.getSearchForExternalPrincipals() == true )
+			// Are we searching for internal principals?
+			else if ( searchCriteria.getSearchForInternalPrincipals() == false )
 			{
-				// Yes
+				// No
 				searchTermFilter.addAndInternalFilter( false );
 			}
 			
@@ -665,9 +665,24 @@ public class GwtSearchHelper
 
 					// Pull information about this user from the search results.
 					userId = entry.get( "_docId" );
+					
 					gwtUser = getGwtUser( ami, request, searchType, userId );
 					if ( gwtUser != null )
+					{
+						// Is this an external user?
+						if ( gwtUser.isInternal() == false )
+						{
+							// Yes
+							// Should we return external users?
+							if ( searchCriteria.getSearchForExternalPrincipals() == false )
+							{
+								// No
+								continue;
+							}
+						}
+						
 						results.add( gwtUser );
+					}
 				}
 				searchResults.setResults( results);
 				break;
@@ -721,9 +736,12 @@ public class GwtSearchHelper
 							EntityType entityType;
 							String principalId;
 							String internalId;
+							IdentityInfo identityInfo;
 							
 							principal = (Principal) it.next();
 							
+							identityInfo = principal.getIdentityInfo();
+
 							// Are we dealing with the _postingagent, _jobprocessingagent,
 							// _synchronizationagent, or _filesyncagent?
 							internalId = principal.getInternalId();
@@ -736,6 +754,17 @@ public class GwtSearchHelper
 								// Yes
 								if ( count != null )
 									--count;
+							
+								continue;
+							}
+
+							// Are we dealing with an external user/group?
+							if ( identityInfo != null && identityInfo.isInternal() == false )
+							{
+								// Yes, we never want to return an external user/group
+								if ( count != null )
+									--count;
+								
 								continue;
 							}
 							
@@ -745,11 +774,9 @@ public class GwtSearchHelper
 							if ( entityType == EntityType.group )
 							{
 								GwtGroup gwtGroup;
-								IdentityInfo identityInfo;
 								Description desc;
 
 								// Is this group from ldap?
-								identityInfo = principal.getIdentityInfo();
 								if ( identityInfo != null && identityInfo.isFromLdap() )
 								{
 									// Yes

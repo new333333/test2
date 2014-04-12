@@ -12,6 +12,11 @@
 		<param-value>/WEB-INF/context/rest-security.xml</param-value>
 	</context-param>
 	
+	<context-param>
+		<param-name>endpointsConfigLocation</param-name>
+		<param-value>/WEB-INF/config/endpoints.json</param-value>
+	</context-param>
+
 	<filter>
 		<filter-name>springSecurityFilterChain</filter-name>
 		<filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
@@ -19,6 +24,20 @@
 	
 	<filter-mapping>
 		<filter-name>springSecurityFilterChain</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+
+	<filter>
+		<filter-name>prioritizedRequestFilter</filter-name>
+		<filter-class>org.kablink.teaming.rest.servlet.PrioritizedRequestFilter</filter-class>
+        <init-param>
+            <param-name>max.file.transfers</param-name>
+            <param-value>50</param-value>
+        </init-param>
+	</filter>
+
+	<filter-mapping>
+		<filter-name>prioritizedRequestFilter</filter-name>
 		<url-pattern>/*</url-pattern>
 	</filter-mapping>
 

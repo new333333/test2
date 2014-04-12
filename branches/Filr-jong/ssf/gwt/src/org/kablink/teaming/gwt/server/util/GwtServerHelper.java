@@ -97,6 +97,7 @@ import org.kablink.teaming.GroupExistsException;
 import org.kablink.teaming.IllegalCharacterInNameException;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.PasswordMismatchException;
+import org.kablink.teaming.UserExistsException;
 import org.kablink.teaming.calendar.TimeZoneHelper;
 import org.kablink.teaming.context.request.HttpSessionContext;
 import org.kablink.teaming.context.request.RequestContext;
@@ -152,7 +153,7 @@ import org.kablink.teaming.gwt.client.GwtDynamicGroupMembershipCriteria;
 import org.kablink.teaming.gwt.client.GwtFileSyncAppConfiguration;
 import org.kablink.teaming.gwt.client.GwtFolder;
 import org.kablink.teaming.gwt.client.GwtGroup;
-import org.kablink.teaming.gwt.client.GwtJitsZoneConfig;
+import org.kablink.teaming.gwt.client.GwtNetFolderGlobalSettings;
 import org.kablink.teaming.gwt.client.GwtLocales;
 import org.kablink.teaming.gwt.client.GwtLoginInfo;
 import org.kablink.teaming.gwt.client.GwtNameCompletionSettings;
@@ -203,6 +204,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.GetSystemBinderPermalinkCmd.Sys
 import org.kablink.teaming.gwt.client.rpc.shared.GetJspHtmlCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ImportIcalByUrlRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ImportIcalByUrlRpcResponseData.FailureReason;
+import org.kablink.teaming.gwt.client.rpc.shared.IsAllUsersGroupRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveNameCompletionSettingsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.SavePrincipalFileSyncAppConfigRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.SavePrincipalMobileAppsConfigRpcResponseData;
@@ -971,6 +973,7 @@ public class GwtServerHelper {
 		inputMap.put(ObjectKeys.FIELD_ENTITY_TITLE, title);
 		inputMap.put(ObjectKeys.FIELD_ENTITY_DESCRIPTION, desc);
 		inputMap.put(ObjectKeys.FIELD_ENTITY_DESCRIPTION_FORMAT, String.valueOf(Description.FORMAT_HTML));
+		inputMap.put(ObjectKeys.FIELD_ENTITY_GWT_COMMENT_ENTRY, String.valueOf(Boolean.TRUE));
 		MapInputData inputData = new MapInputData(inputMap);
 
     	return folderModule.addReply(binderIdL, entryIdL, replyDefId, inputData, new HashMap(), null);
@@ -1987,10 +1990,11 @@ public class GwtServerHelper {
 			
 			if ( ex instanceof GroupExistsException )
 			{
-				String[] args;
-				
-				args = new String[] { name };
-				gtEx.setAdditionalDetails( NLT.get( "group.duplicate.name", args ) );
+				gtEx.setExceptionType( ExceptionType.GROUP_ALREADY_EXISTS );
+			}
+			else if ( ex instanceof UserExistsException )
+			{
+				gtEx.setExceptionType( ExceptionType.USER_ALREADY_EXISTS );
 			}
 			else if ( ex instanceof IllegalCharacterInNameException )
 			{
@@ -2823,7 +2827,7 @@ public class GwtServerHelper {
 					title = NLT.get( "administration.configure_jits_zone_config" );
 
 					adminAction = new GwtAdminAction();
-					adminAction.init( title, "", AdminAction.JITS_ZONE_CONFIG );
+					adminAction.init( title, "", AdminAction.NET_FOLDER_GLOBAL_SETTINGS );
 					
 					// Add this action to the "management" category
 					managementCategory.addAdminOption( adminAction );
@@ -6009,24 +6013,30 @@ public class GwtServerHelper {
 	 * 
 	 * @return
 	 */
-	public static GwtJitsZoneConfig getJitsZoneConfig( AllModulesInjected allModules )
+	public static GwtNetFolderGlobalSettings getNetFolderGlobalSettings( AllModulesInjected allModules )
 	{
-		GwtJitsZoneConfig gwtJitsZoneConfig;
+		GwtNetFolderGlobalSettings nfGlobalSettings;
 		ZoneConfig zoneConfig;
 		ZoneModule zoneModule;
 		
 		zoneModule = allModules.getZoneModule();
 		zoneConfig = zoneModule.getZoneConfig( RequestContextHolder.getRequestContext().getZoneId() );
 		
-		gwtJitsZoneConfig = new GwtJitsZoneConfig();
+		nfGlobalSettings = new GwtNetFolderGlobalSettings();
 		
 		// Get the whether jits is enabled.
-		gwtJitsZoneConfig.setJitsEnabled( zoneConfig.getJitsEnabled() );
+		nfGlobalSettings.setJitsEnabled( zoneConfig.getJitsEnabled() );
 		
 		// Get the max wait time.
-		gwtJitsZoneConfig.setMaxWaitTime( zoneConfig.getJitsWaitTimeout() / 1000 );
+		nfGlobalSettings.setMaxWaitTime( zoneConfig.getJitsWaitTimeout() / 1000 );
 		
-		return gwtJitsZoneConfig;
+		// Get the setting for "use directory rights"
+		nfGlobalSettings.setUseDirectoryRights( zoneConfig.getUseDirectoryRights() );
+		
+		// Get the "cached rights refresh interval"
+		nfGlobalSettings.setCachedRightsRefreshInterval( zoneConfig.getCachedRightsRefreshInterval() );
+		
+		return nfGlobalSettings;
 	}
 	
 	/**
@@ -9030,17 +9040,16 @@ public class GwtServerHelper {
 	 * @return
 	 */
 	public static boolean isAllExternalUsersGroup(AllModulesInjected bs, Group group) {
-		String  internalId    = group.getInternalId();
+		String  internalId = group.getInternalId();
 		return (MiscUtil.hasString(internalId) && internalId.equalsIgnoreCase(ObjectKeys.ALL_EXT_USERS_GROUP_INTERNALID));
 	}
 	
 	public static boolean isAllExternalUsersGroup(AllModulesInjected bs, Long groupId) throws GwtTeamingException {
 		boolean reply = false;
 		try {
-			Principal group = bs.getProfileModule().getEntry(groupId);
-			if ((null != group) && (group instanceof Group)) {
-				// Always use the initial form of the method.
-				reply = isAllExternalUsersGroup(bs, ((Group) group));
+			Long allUsersGroupId = Utils.getAllExtUsersGroupId();
+			if ((null != allUsersGroupId) && allUsersGroupId.equals(groupId)) {
+				reply = true;
 			}
 		}
 		
@@ -9049,7 +9058,8 @@ public class GwtServerHelper {
 			reply = false;
 		}
 		
-		// If we get here the group is not the "all users" group.
+		// If we get here the group is not the "all external users"
+		// group.
 		return reply;
 	}
 	
@@ -9064,17 +9074,11 @@ public class GwtServerHelper {
 	 * 
 	 * @throws GwtTeamingException
 	 */
-	public static boolean isAllUsersGroup(AllModulesInjected bs, Long groupId) throws GwtTeamingException {
+	public static boolean isAllInternalUsersGroup(AllModulesInjected bs, Long groupId) throws GwtTeamingException {
 		try {
-			// Get the group object.
-			Principal group = bs.getProfileModule().getEntry(groupId);
-			if ((null != group) && (group instanceof Group)) {
-				String internalId = group.getInternalId();
-				if ((null != internalId) &&
-						(internalId.equalsIgnoreCase(ObjectKeys.ALL_USERS_GROUP_INTERNALID) ||
-						 internalId.equalsIgnoreCase(ObjectKeys.ALL_EXT_USERS_GROUP_INTERNALID))) {
-					return true;
-				}
+			Long allUsersGroupId = Utils.getAllUsersGroupId();
+			if ((null != allUsersGroupId) && allUsersGroupId.equals(groupId)) {
+				return true;
 			}
 		}
 		
@@ -9082,9 +9086,24 @@ public class GwtServerHelper {
 			throw GwtLogHelper.getGwtClientException(m_logger, ex);
 		}
 		
-		// If we get here the group is not an 'all users' group.
-		// Return false.
+		// If we get here the group is not the 'all internal users'
+		// group.  Return false.
 		return false;
+	}
+	
+	/**
+	 * Returns true if the given ID is the 'all users' or 'all external
+	 * user' group and false otherwise.
+	 * 
+	 * @param bs
+	 * @param groupId
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public static IsAllUsersGroupRpcResponseData isAllUsersGroup(AllModulesInjected bs, Long groupId) throws GwtTeamingException {
+		return new IsAllUsersGroupRpcResponseData(isAllExternalUsersGroup(bs, groupId), isAllInternalUsersGroup(bs, groupId));
 	}
 	
 	/**
@@ -9930,7 +9949,7 @@ public class GwtServerHelper {
 		case GET_INHERITED_LANDING_PAGE_PROPERTIES:
 		case GET_IS_USER_EXTERNAL:
 		case GET_IS_DYNAMIC_GROUP_MEMBERSHIP_ALLOWED:
-		case GET_JITS_ZONE_CONFIG:
+		case GET_NET_FOLDER_GLOBAL_SETTINGS:
 		case GET_LANDING_PAGE_DATA:
 		case GET_LDAP_CONFIG:
 		case GET_LDAP_SERVER_DATA:
@@ -10057,7 +10076,7 @@ public class GwtServerHelper {
 		case SAVE_FOLDER_ENTRY_DLG_POSITION:
 		case SAVE_FOLDER_PINNING_STATE:
 		case SAVE_FOLDER_SORT:
-		case SAVE_JITS_ZONE_CONFIG:
+		case SAVE_NET_FOLDER_GLOBAL_SETTINGS:
 		case SAVE_LDAP_CONFIG:
 		case SAVE_MANAGE_USERS_STATE:
 		case SAVE_MOBILE_APPS_CONFIGURATION:
@@ -10598,15 +10617,19 @@ public class GwtServerHelper {
 	/**
 	 * Save the given Jits zone config
 	 */
-	public static Boolean saveJitsZoneConfig(
+	public static Boolean saveNetFolderGlobalSettings(
 		AllModulesInjected allModules,
-		GwtJitsZoneConfig gwtJitsZoneConfig ) throws GwtTeamingException
+		GwtNetFolderGlobalSettings nfGlobalSettings ) throws GwtTeamingException
 	{
 		AdminModule adminModule;
 		
 		adminModule = allModules.getAdminModule();
-		adminModule.setJitsConfig( gwtJitsZoneConfig.getJitsEnabled(), gwtJitsZoneConfig.getMaxWaitTime() );
+		adminModule.setJitsConfig( nfGlobalSettings.getJitsEnabled(), nfGlobalSettings.getMaxWaitTime() );
 
+		adminModule.setUseDirectoryRightsEnabled( nfGlobalSettings.getUseDirectoryRights() );
+		
+		adminModule.setCachedRightsRefreshInterval( nfGlobalSettings.getCachedRightsRefreshInterval() );
+		
 		return Boolean.TRUE;
 	}
 	
@@ -11834,7 +11857,33 @@ public class GwtServerHelper {
 	 * 
 	 * @return
 	 */
-	public static ValidateEmailRpcResponseData validateEmailAddress(AllModulesInjected bs, String emailAddress, boolean externalEMA, ValidateEmailAddressCmd.AddressField addressField) {
+	public static ValidateEmailRpcResponseData validateEmailAddress(
+		AllModulesInjected bs,
+		String emailAddress,
+		boolean externalEMA,
+		ValidateEmailAddressCmd.AddressField addressField) {
+		EmailAddressStatus emaStatus;
+
+		emaStatus = validateEmailAddressImpl( bs, emailAddress, externalEMA, addressField );
+
+		return new ValidateEmailRpcResponseData(emaStatus);
+	}
+	
+	/**
+	 * Validate the given e-mail address.
+	 * 
+	 * @param emailAddress
+	 * @param externalEMA
+	 * @param addressField
+	 * 
+	 * @return
+	 */
+	public static EmailAddressStatus validateEmailAddressImpl(
+		AllModulesInjected bs,
+		String emailAddress,
+		boolean externalEMA,
+		ValidateEmailAddressCmd.AddressField addressField )
+	{
 		EmailAddressStatus emaStatus = null;
 		if (externalEMA) {
 			ExternalAddressStatus extEMAStatus = bs.getSharingModule().getExternalAddressStatus(emailAddress);
@@ -11863,7 +11912,7 @@ public class GwtServerHelper {
 			else emaStatus = EmailAddressStatus.failsFormat;
 		}
 		
-		return new ValidateEmailRpcResponseData(emaStatus);
+		return emaStatus;
 	}
 	
 	/**

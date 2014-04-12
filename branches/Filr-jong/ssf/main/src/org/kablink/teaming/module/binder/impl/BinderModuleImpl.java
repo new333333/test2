@@ -1698,6 +1698,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		//See if moving from a regular folder to a mirrored folder
 		if (!source.isMirrored() && destination.isMirrored()) {
 			//This is a special case move. Do it by copying the folder then deleting it
+			options.put(ObjectKeys.INPUT_OPTION_MOVE_SHARE_ITEMS, Boolean.TRUE);	//Also move the share items to the new binder
 			newBinder = copyBinder(fromId, toId, true, options);
 			//Note that if the delete fails, the copied binder will still remain
 			//However, some of the original source binders may also be left behind
@@ -1759,7 +1760,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 			Binder binder = loadBinderProcessor(source).copyBinder(source,
 					destinationParent, params);
 			if (cascade)
-				doCopyChildren(source, binder);
+				doCopyChildren(source, binder, params);
 
 			return binder;
 		} else {
@@ -1806,10 +1807,14 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		}
 	}
 
-	private void doCopyChildren(Binder source, Binder destinationParent) {
+	private void doCopyChildren(Binder source, Binder destinationParent, Map options) {
 		Map params = new HashMap();
 		params.put(ObjectKeys.INPUT_OPTION_FORCE_LOCK, Boolean.FALSE);
 		params.put(ObjectKeys.INPUT_OPTION_PRESERVE_DOCNUMBER, Boolean.TRUE);
+		if (options.containsKey(ObjectKeys.INPUT_OPTION_MOVE_SHARE_ITEMS) && 
+				(Boolean)options.get(ObjectKeys.INPUT_OPTION_MOVE_SHARE_ITEMS)) {
+			params.put(ObjectKeys.INPUT_OPTION_MOVE_SHARE_ITEMS, (Boolean)options.get(ObjectKeys.INPUT_OPTION_MOVE_SHARE_ITEMS));
+		}
 		List<Binder> children = source.getBinders();
 		for (Binder child : children) {
 			// If the binder is not in the trash...
@@ -1817,7 +1822,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 				// ...recursively copy that too.
 				Binder binder = loadBinderProcessor(child).copyBinder(child,
 						destinationParent, params);
-				doCopyChildren(child, binder);
+				doCopyChildren(child, binder, params);
 			}
 		}
 	}

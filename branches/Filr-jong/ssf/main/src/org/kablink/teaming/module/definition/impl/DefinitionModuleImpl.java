@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -53,30 +53,22 @@ import java.util.TreeMap;
 import java.util.Locale;
 
 import javax.mail.internet.InternetAddress;
-import javax.portlet.ActionRequest;
 import javax.portlet.PortletSession;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.dom4j.Attribute;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.DocumentException;
-
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
-import org.jbpm.JbpmContext;
-import org.jbpm.graph.exe.Token;
+
 import org.kablink.teaming.DefinitionExistsException;
 import org.kablink.teaming.NotSupportedException;
-import org.kablink.teaming.ObjectExistsException;
 import org.kablink.teaming.ObjectKeys;
-import org.kablink.teaming.TextVerificationException;
 import org.kablink.teaming.calendar.TimeZoneHelper;
-import org.kablink.teaming.context.request.PortletSessionContext;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.context.request.SessionContext;
-import org.kablink.teaming.dao.ProfileDao;
 import org.kablink.teaming.dao.util.FilterControls;
 import org.kablink.teaming.dao.util.Restrictions;
 import org.kablink.teaming.domain.Application;
@@ -98,11 +90,9 @@ import org.kablink.teaming.domain.NoDefinitionByTheIdException;
 import org.kablink.teaming.domain.NoPrincipalByTheNameException;
 import org.kablink.teaming.domain.PackedValue;
 import org.kablink.teaming.domain.Principal;
-import org.kablink.teaming.domain.ProfileBinder;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.WorkflowState;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
-import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.binder.impl.EntryDataErrors;
 import org.kablink.teaming.module.binder.impl.EntryDataErrors.Problem;
@@ -112,13 +102,10 @@ import org.kablink.teaming.module.definition.DefinitionUtils;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.impl.CommonDependencyInjection;
 import org.kablink.teaming.module.profile.ProfileModule;
-import org.kablink.teaming.module.profile.ProfileModule.ProfileOperation;
 import org.kablink.teaming.module.shared.InputDataAccessor;
 import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.module.workflow.WorkflowModule;
 import org.kablink.teaming.module.workflow.WorkflowProcessUtils;
-import org.kablink.teaming.module.workflow.impl.WorkflowFactory;
-import org.kablink.teaming.portletadapter.portlet.HttpServletRequestReachable;
 import org.kablink.teaming.repository.RepositoryUtil;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.security.function.WorkAreaOperation;
@@ -136,25 +123,26 @@ import org.kablink.teaming.util.LocaleUtils;
 import org.kablink.teaming.util.cache.DefinitionCache;
 import org.kablink.teaming.util.stringcheck.StringCheckUtil;
 import org.kablink.teaming.web.WebKeys;
-import org.kablink.teaming.web.portlet.ParamsWrappedActionRequest;
 import org.kablink.teaming.web.tree.TreeHelper;
 import org.kablink.teaming.web.util.DefinitionHelper;
 import org.kablink.teaming.web.util.MarkupUtil;
-import org.kablink.teaming.web.util.WebHelper;
 import org.kablink.util.GetterUtil;
 import org.kablink.util.Html;
 import org.kablink.util.StringUtil;
 import org.kablink.util.Validator;
+
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.multipart.MultipartFile;
+
 import org.w3c.tidy.Tidy;
 import org.w3c.tidy.TidyMessage;
 
-
 /**
+ * ?
+ * 
  * @author hurley
- *
  */
+@SuppressWarnings({"deprecation", "unchecked", "unused"})
 public class DefinitionModuleImpl extends CommonDependencyInjection implements DefinitionModule, InitializingBean  {
 	private static String[] entryInputDataMap;
 	private static int      entryInputDataMapCount = (-1);
@@ -190,7 +178,8 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 	protected WorkflowModule getWorkflowModule() {
 		return workflowModule;
 	}
-    public void afterPropertiesSet() {
+    @Override
+	public void afterPropertiesSet() {
 		this.definitionConfig = definitionBuilderConfig.getAsMergedDom4jDocument();
 		this.configRoot = this.definitionConfig.getRootElement();
 
@@ -201,7 +190,8 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
  	 * Use operation so we can keep the logic out of application
      * @see org.kablink.teaming.module.definition.DefinitionModule#testAccess(java.lang.String)
      */
-   	public boolean testAccess(Binder binder, Integer type, DefinitionOperation operation) {
+   	@Override
+	public boolean testAccess(Binder binder, Integer type, DefinitionOperation operation) {
    		try {
    			checkAccess(binder, type, operation);
    			return true;
@@ -240,12 +230,14 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
    		else checkAccess(getCoreDao().loadBinder(def.getBinderId(), def.getZoneId()), def.getType(), operation);
    	}
 
-   	public Definition addDefinition(InputStream indoc, Binder binder, String name, String title, boolean replace) 
+   	@Override
+	public Definition addDefinition(InputStream indoc, Binder binder, String name, String title, boolean replace) 
 	throws AccessControlException,DocumentException {
    		List errors = new ArrayList();
    		return addDefinition(indoc, binder, name, title, replace, errors);
    	}
    	
+	@Override
 	public Definition addDefinition(InputStream indoc, Binder binder, String name, String title, boolean replace, List errors) 
 		throws AccessControlException,DocumentException {
 	/*The current xsd is really for the configuration file.  The export defintions don't follow all the rules,
@@ -267,12 +259,14 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
     	return doAddDefinition(doc, binder, name, title, replace, errors);
 
 	}
+	@Override
 	public Definition addDefinition(Document defDoc, Binder binder, boolean replace) {
 		String type = defDoc.getRootElement().attributeValue("type");
 	   	checkAccess(binder, Integer.valueOf(type), DefinitionOperation.manageDefinition);
     	return doAddDefinition(defDoc, binder, null, null, replace);
 	}
 
+	@Override
 	public Definition copyDefinition(String id, Binder binder, String name, String title) throws AccessControlException {
 		Definition srcDef = getDefinition(id);
 		Document doc = (Document)srcDef.getDefinitionForModificationPurpose();
@@ -282,6 +276,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 	   	checkAccess(binder, Integer.valueOf(type), DefinitionOperation.manageDefinition);
     	return doAddDefinition(doc, binder, name, title, false);
 	}
+	@Override
 	public Definition addDefinition(Binder binder, String name, String title, Integer type, InputDataAccessor inputData) throws AccessControlException {
 	   	checkAccess(binder, type, DefinitionOperation.manageDefinition);
 
@@ -430,7 +425,8 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
     	}
     }
     //should be called after all imports are done, to handle definition cross references
-    public void updateDefinitionReferences(String defId) {
+    @Override
+	public void updateDefinitionReferences(String defId) {
     	Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
     	Definition def = getCoreDao().loadDefinition(defId, zoneId);
     	Binder binder = null;
@@ -528,7 +524,8 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 
     }
 
-    public Document getDefinitionAsXml(Definition def) {
+    @Override
+	public Document getDefinitionAsXml(Definition def) {
     	//convert enty definitionId references to names
     	Document srcDoc = def.getDefinition();
     	Document outDoc;
@@ -595,15 +592,18 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		}
     	return outDoc;
     }
-    public Definition getDefinition(String id) {
+    @Override
+	public Definition getDefinition(String id) {
 		// Controllers need access to definitions.  Allow world read
  		return coreDao.loadDefinition(id, RequestContextHolder.getRequestContext().getZoneId());
 	}
+	@Override
 	public Definition getDefinitionByReservedId(String internalId) {
 		return getCoreDao().loadReservedDefinition(internalId, RequestContextHolder.getRequestContext().getZoneId());
 		
 	}
     //lookup definition by name going up tree including public
+	@Override
 	public Definition getDefinitionByName(Binder binder, Boolean includeAncestors, String name) {
 		List<Definition> defs;
 		if (binder == null) {
@@ -649,6 +649,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
     }
 
 
+	@Override
 	public void modifyVisibility(String id, Integer visibility, Long binderId) {
 		if (visibility == null) return;
 		Definition def = getDefinition(id);
@@ -694,6 +695,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 	}
 
 
+	@Override
 	public void modifyDefinitionProperties(String id, InputDataAccessor inputData) {
 		Definition def = getDefinition(id);
 	   	checkAccess(def, DefinitionOperation.manageDefinition);
@@ -766,6 +768,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		return defChanged;
 	}
 
+	@Override
 	public void setDefinitionLayout(String id, InputDataAccessor inputData) {
 		Definition def = getDefinition(id);
 	   	checkAccess(def, DefinitionOperation.manageDefinition);
@@ -807,6 +810,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		}
 	}
 
+	@Override
 	public void deleteDefinition(String id) {
 		Definition def = getDefinition(id);
 	   	checkAccess(def, DefinitionOperation.manageDefinition);
@@ -817,6 +821,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		}
 	}
 	
+	@Override
 	public boolean checkDefInUse(String id) {
 		Definition def = getDefinition(id);
 	   	checkAccess(def, DefinitionOperation.manageDefinition);
@@ -829,6 +834,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 	 * @param type
 	 * @return
 	 */
+	@Override
 	public Definition addDefaultDefinition(Integer type) {
 		// no access needed, just fills indefaults
 		Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
@@ -977,6 +983,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 
 		return newTree;
 	}
+	@Override
 	public Definition setDefaultBinderDefinition(Binder binder) {
 		//no access - fixing up stuff
 		//Create an empty binder definition
@@ -1005,6 +1012,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		}
 		return def;
 	}
+	@Override
 	public Definition setDefaultEntryDefinition(Entry entry) {
 		//no access - fixing up stuff
 		//Create an empty entry definition
@@ -1046,6 +1054,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 	 * @return the next element in the iteration.
 	 * @exception NoSuchElementException iteration has no more elements.
 	 */
+	@Override
 	public Element addItem(String defId, String itemId, String itemNameToAdd, InputDataAccessor inputData)
 			throws DefinitionInvalidException {
 		Definition def = getDefinition(defId);
@@ -1463,6 +1472,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		}
 	}
 
+	@Override
 	public void modifyItem(String defId, String itemId, InputDataAccessor inputData) throws DefinitionInvalidException {
 		Definition def = getDefinition(defId);
 	   	checkAccess(def, DefinitionOperation.manageDefinition);
@@ -1656,6 +1666,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		return false;
 	}
 
+	@Override
 	public void deleteItem(String defId, String itemId) throws DefinitionInvalidException {
 		Definition def = getDefinition(defId);
 	   	checkAccess(def, DefinitionOperation.manageDefinition);
@@ -1727,6 +1738,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		}
 	}
 
+	@Override
 	public void moveItem(String defId, String sourceItemId, String targetItemId, String position) throws DefinitionInvalidException {
 		Definition def = getDefinition(defId);
 	   	checkAccess(def, DefinitionOperation.manageDefinition);
@@ -1785,6 +1797,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		setDefinition(def, definitionTree);
 	}
 
+	@Override
 	public void copyItem(String defId, String sourceItemId, String targetItemId) throws DefinitionInvalidException {
 		Definition def = getDefinition(defId);
 	   	checkAccess(def, DefinitionOperation.manageDefinition);
@@ -2097,14 +2110,17 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 	}
 
 
-    public Document getDefinitionConfig() {
+    @Override
+	public Document getDefinitionConfig() {
     	return this.definitionConfig;
     }
 
-    public Map getEntryData(Document definitionTree, InputDataAccessor inputData, Map fileItems) {
+    @Override
+	public Map getEntryData(Document definitionTree, InputDataAccessor inputData, Map fileItems) {
     	return getEntryData(definitionTree, inputData, fileItems, false);
     }
-    public Map getEntryData(Document definitionTree, InputDataAccessor inputData, Map fileItems, boolean fieldsOnly) {
+    @Override
+	public Map getEntryData(Document definitionTree, InputDataAccessor inputData, Map fileItems, boolean fieldsOnly) {
 		//access check not needed = have tree already
         User user = RequestContextHolder.getRequestContext().getUser();
 
@@ -2538,7 +2554,11 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 	    				kaptchaResponse == null || 
 	    				!kaptchaExpected.equalsIgnoreCase( kaptchaResponse  ) ) {
 					// The text entered by the user did not match the text used to create the kaptcha image.
-					entryDataErrors.addProblem(new Problem(Problem.INVALID_CAPTCHA_RESPONSE, null));
+					String  gwtCommentNoCaptchaS = inputData.getSingleValue(ObjectKeys.FIELD_ENTITY_GWT_COMMENT_ENTRY);
+					boolean gwtCommentNoCaptcha  = ((null != gwtCommentNoCaptchaS) && gwtCommentNoCaptchaS.equals(String.valueOf(Boolean.TRUE)));
+					if (!gwtCommentNoCaptcha) {
+						entryDataErrors.addProblem(new Problem(Problem.INVALID_CAPTCHA_RESPONSE, null));
+					}
 				}
 			}
 		} else if (itemName.equals("selectbox")) {
@@ -2896,12 +2916,14 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		}
     }
     
-    public List<Definition> getAllDefinitions() {
+    @Override
+	public List<Definition> getAllDefinitions() {
 		// Controllers need access to definitions.  Allow world read
     	return coreDao.loadDefinitions(RequestContextHolder.getRequestContext().getZoneId());
     }
 
-    public List<Definition> getAllDefinitions(Integer type) {
+    @Override
+	public List<Definition> getAllDefinitions(Integer type) {
 		// Controllers need access to definitions.  Allow world read
     	Binder binder = null;
     	FilterControls filter = new FilterControls();
@@ -2910,7 +2932,8 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
     	return Utils.validateDefinitions(defs, binder);
      }
 
-    public List<Definition> getDefinitions(Long binderId, Boolean includeAncestors) {
+    @Override
+	public List<Definition> getDefinitions(Long binderId, Boolean includeAncestors) {
 		// Controllers need access to definitions.  Allow world read
        	if (binderId == null) {
        		Binder binder = null;
@@ -2944,7 +2967,8 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
     	}
     }
 
-    public List<Definition> getDefinitions(Long binderId, Boolean includeAncestors, Integer type) {
+    @Override
+	public List<Definition> getDefinitions(Long binderId, Boolean includeAncestors, Integer type) {
 		// Controllers need access to definitions.  Allow world read
     	if (binderId == null) {
     		Binder binder = null;
@@ -2988,7 +3012,8 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
     	return bs;
     }
 	//Routine to get the data elements for use in search queries
-    public Map getEntryDefinitionElements(String id) {
+    @Override
+	public Map getEntryDefinitionElements(String id) {
 		//Get a map for the results
 		//access doesn't seem needed
     	Map dataElements = new TreeMap();
@@ -3071,7 +3096,8 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
     	return dataElements;
     }
     
-    public List<Long> getBindersUsingEntryDef(String entryDefId, String sourceName) {
+    @Override
+	public List<Long> getBindersUsingEntryDef(String entryDefId, String sourceName) {
     	List results = new ArrayList();
     	Long binderId = Long.valueOf(2267);
     	results.add(binderId);
@@ -3079,7 +3105,8 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
     }
 
 	//Routine to get the data elements for use in search queries
-    public Map getWorkflowDefinitionStates(String id) {
+    @Override
+	public Map getWorkflowDefinitionStates(String id) {
 		//Get a map for the results
     	Map dataStates = new TreeMap();
     	Definition def=null;
@@ -3129,7 +3156,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
      */
     private void setDefinitionProperties(Element parent, final Element configItem)    {
     	Element properties = parent.addElement("properties");
-    	List<Element> propertyItems = propertyItems = configItem.selectNodes("properties/property");
+    	List<Element> propertyItems = configItem.selectNodes("properties/property");
 		for (Element configProperty:propertyItems)
 		{
 			Element property = properties.addElement("property");
@@ -3140,6 +3167,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		return;
     }
 
+	@Override
 	public void walkDefinition(DefinableEntity entry, DefinitionVisitor visitor, Map args) {
 		SimpleProfiler.start("DefinitionModuleImpl.walkDefinition");
 		//access check not needed = assumed okay from entry
@@ -3288,6 +3316,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 	
 	private class TidyMessageListener implements org.w3c.tidy.TidyMessageListener {
 		private int errorCount = 0;
+		@Override
 		public void messageReceived(TidyMessage message) {
 			message.toString();
 			errorCount++;
@@ -3298,7 +3327,8 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		}
 	}
 	
-    public Set<String> filterInputDataKeysByDataType(Document definitionTree, InputDataAccessor inputData, List<String> dataTypes) {
+    @Override
+	public Set<String> filterInputDataKeysByDataType(Document definitionTree, InputDataAccessor inputData, List<String> dataTypes) {
     	// IMPORTANT: This method MUST be kept in synch with getEntryData() method.
     	
     	Set<String> result = new HashSet<String>();

@@ -55,18 +55,21 @@ import org.dom4j.Document;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.Group;
+import org.kablink.teaming.domain.LimitedUserView;
 import org.kablink.teaming.domain.TeamInfo;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.shared.ChainedInputData;
 import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.remoting.rest.v1.exc.BadRequestException;
+import org.kablink.teaming.remoting.rest.v1.util.PrincipalBriefBuilder;
 import org.kablink.teaming.remoting.rest.v1.util.ResourceUtil;
 import org.kablink.teaming.remoting.rest.v1.util.RestModelInputData;
 import org.kablink.teaming.remoting.rest.v1.util.SearchResultBuilderUtil;
 import org.kablink.teaming.remoting.rest.v1.util.UserBriefBuilder;
 import org.kablink.teaming.rest.v1.model.BinderBrief;
 import org.kablink.teaming.rest.v1.model.GroupBrief;
+import org.kablink.teaming.rest.v1.model.PrincipalBrief;
 import org.kablink.teaming.rest.v1.model.SearchResultList;
 import org.kablink.teaming.rest.v1.model.TeamBrief;
 import org.kablink.teaming.rest.v1.model.User;
@@ -92,46 +95,54 @@ public class UserResource extends AbstractPrincipalResource {
             @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr,
             @QueryParam("first") @DefaultValue("0") Integer offset,
             @QueryParam("count") @DefaultValue("100") Integer maxCount) {
-
-        Map<String, Object> nextParams = new HashMap<String, Object>();
-        boolean allowExternal = false;
-        Junction criterion = Restrictions.conjunction();
-        if (ids!=null) {
-            Junction or = Restrictions.disjunction();
-            for (Long id : ids) {
-                or.add(Restrictions.eq(Constants.DOCID_FIELD, id.toString()));
-                allowExternal = true;
+        SearchResultList<UserBrief> results;
+        if (canViewUsers()) {
+            Map<String, Object> nextParams = new HashMap<String, Object>();
+            boolean allowExternal = false;
+            Junction criterion = Restrictions.conjunction();
+            if (ids!=null) {
+                Junction or = Restrictions.disjunction();
+                for (Long id : ids) {
+                    or.add(Restrictions.eq(Constants.DOCID_FIELD, id.toString()));
+                    allowExternal = true;
+                }
+                criterion.add(or);
+                nextParams.put("id", ids);
             }
-            criterion.add(or);
-            nextParams.put("id", ids);
-        }
-        criterion.add(SearchUtils.buildUsersCriterion(allowExternal));
-        if (name!=null) {
-            criterion.add(Restrictions.like(Constants.LOGINNAME_FIELD, name));
-            nextParams.put("name", name);
-        }
-        if (email!=null) {
-            criterion.add(Restrictions.like(Constants.EMAIL_FIELD, email.replace('@', '?')));
-            nextParams.put("email", email);
-        }
-        if (keyword!=null) {
-            Junction or = Restrictions.disjunction();
-            keyword = SearchUtils.modifyQuickFilter(keyword);
-            or.add(Restrictions.like(Constants.TITLE_FIELD, keyword));
-            or.add(Restrictions.like(Constants.EMAIL_FIELD, keyword));
-            or.add(Restrictions.like(Constants.EMAIL_DOMAIN_FIELD, keyword));
-            or.add(Restrictions.like(Constants.LOGINNAME_FIELD, keyword));
-            criterion.add(or);
-            nextParams.put("keyword", keyword);
-        }
+            criterion.add(SearchUtils.buildUsersCriterion(allowExternal));
+            if (name!=null) {
+                criterion.add(Restrictions.like(Constants.LOGINNAME_FIELD, name));
+                nextParams.put("name", name);
+            }
+            if (email!=null) {
+                criterion.add(Restrictions.like(Constants.EMAIL_FIELD, email.replace('@', '?')));
+                nextParams.put("email", email);
+            }
+            if (keyword!=null) {
+                Junction or = Restrictions.disjunction();
+                keyword = SearchUtils.modifyQuickFilter(keyword);
+                or.add(Restrictions.like(Constants.TITLE_FIELD, keyword));
+                or.add(Restrictions.like(Constants.EMAIL_FIELD, keyword));
+                or.add(Restrictions.like(Constants.EMAIL_DOMAIN_FIELD, keyword));
+                or.add(Restrictions.like(Constants.LOGINNAME_FIELD, keyword));
+                criterion.add(or);
+                nextParams.put("keyword", keyword);
+            }
 
-        String nextUrl = "/users";
-        nextParams.put("description_format", descriptionFormatStr);
-        Document queryDoc = buildQueryDocument("<query/>", criterion);
-        Map resultMap = getBinderModule().executeSearchQuery(queryDoc, Constants.SEARCH_MODE_NORMAL, offset, maxCount, null);
-        SearchResultList<UserBrief> results = new SearchResultList<UserBrief>();
-        SearchResultBuilderUtil.buildSearchResults(results, new UserBriefBuilder(toDomainFormat(descriptionFormatStr)), resultMap, nextUrl, nextParams, offset);
-		return results;
+            String nextUrl = "/users";
+            nextParams.put("description_format", descriptionFormatStr);
+            Document queryDoc = buildQueryDocument("<query/>", criterion);
+            Map resultMap = getBinderModule().executeSearchQuery(queryDoc, Constants.SEARCH_MODE_NORMAL, offset, maxCount, null);
+            results = new SearchResultList<UserBrief>();
+            SearchResultBuilderUtil.buildSearchResults(results, new UserBriefBuilder(toDomainFormat(descriptionFormatStr)), resultMap, nextUrl, nextParams, offset);
+        } else {
+            Set<LimitedUserView> views = searchForPrincipalsLimited(ids);
+            results = new SearchResultList<UserBrief>();
+            for (LimitedUserView view : views) {
+                results.append(ResourceUtil.buildUserBrief(view));
+            }
+        }
+        return results;
 	}
 	
 	// Create a new user.
@@ -178,7 +189,11 @@ public class UserResource extends AbstractPrincipalResource {
     public User getUser(@PathParam("id") long userId,
                         @QueryParam("include_attachments") @DefaultValue("true") boolean includeAttachments,
                         @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr) {
-        return ResourceUtil.buildUser(_getUser(userId), includeAttachments, toDomainFormat(descriptionFormatStr));
+        if (canViewUsers()) {
+            return ResourceUtil.buildUser(_getUser(userId), includeAttachments, toDomainFormat(descriptionFormatStr));
+        } else {
+            return ResourceUtil.buildLimitedUser(getLimitedUser(userId));
+        }
     }
 
     @PUT

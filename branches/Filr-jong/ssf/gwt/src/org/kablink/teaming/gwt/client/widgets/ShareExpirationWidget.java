@@ -47,6 +47,8 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.event.dom.client.KeyPressHandler;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.i18n.client.DateTimeFormat.PredefinedFormat;
 import com.google.gwt.resources.client.ImageResource;
@@ -171,6 +173,36 @@ public class ShareExpirationWidget extends Composite
 			
 			dateFormat = DateTimeFormat.getFormat( PredefinedFormat.DATE_SHORT );
 			m_dateBox = new TZDateBox( new DatePicker(), (-1), new DateBox.DefaultFormat( dateFormat ) );
+			m_dateBox.addValueChangeHandler( new ValueChangeHandler<Long>()
+			{
+				@Override
+				public void onValueChange( ValueChangeEvent<Long> event )
+				{
+					Long date;
+					final Long today;
+					
+					date = event.getValue();
+
+					// Did the user enter a date from the past?
+					today = getToday();
+					if ( date < today )
+					{
+						Scheduler.ScheduledCommand cmd;
+						
+						cmd = new Scheduler.ScheduledCommand()
+						{
+							@Override
+							public void execute()
+							{
+								// Yes, tell them not to do that.
+								Window.alert( GwtTeaming.getMessages().shareExpirationDlg_cantEnterPriorDate() );
+								m_dateBox.setValue( today );
+							}
+						};
+						Scheduler.get().scheduleDeferred( cmd );
+					}
+				}
+			});
 			offset = GwtTeaming.m_requestInfo.getTimeZoneOffsetHour() * 60 * 60 * 1000;
 			m_dateBox.setTZOffset( offset );
 			m_dateBox.getDateBox().getTextBox().setVisibleLength( 8 );
@@ -340,11 +372,15 @@ public class ShareExpirationWidget extends Composite
 		
 		if ( value != null )
 		{
+			int hour;
+			
 			// Have the share expire at 23:59:59 on the selected day
 			value += (MILLISEC_IN_A_DAY - 1000);
 
-			// Convert the time to GMT
-			value += (GwtTeaming.m_requestInfo.getTimeZoneOffsetHour() * 60 * 60 * 1000);
+			// value represents the share expiring on the selected day at 23:59:59 GMT time
+			// We need to add the time zone offset so the share expires on 23:59:59 local time.
+			hour = GwtTeaming.m_requestInfo.getTimeZoneOffsetHour();
+			value += (hour * 60 * 60 * 1000);
 		}
 		
 		return value;
@@ -421,6 +457,7 @@ public class ShareExpirationWidget extends Composite
 	/**
 	 * 
 	 */
+	@SuppressWarnings("deprecation")
 	private Long getToday()
 	{
 		Date today;
@@ -428,6 +465,15 @@ public class ShareExpirationWidget extends Composite
 		
 		today = new Date();
 		value = today.getTime();
+		
+		// Subtract off time to return to 12:00 am
+		value -= (today.getHours() * 60 * 60 * 1000);
+		value -= (today.getMinutes() * 60 * 1000);
+		value -= (today.getSeconds() * 1000);
+		
+		// Get rid of left over milliseconds.
+		value /= 1000;
+		value *= 1000;
 		
 		// Convert the time to GMT
 		value += (GwtTeaming.m_requestInfo.getTimeZoneOffsetHour() * 60 * 60 * 1000);

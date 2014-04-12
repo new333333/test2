@@ -86,7 +86,7 @@ JCR 1.0
 JDOM 1.0
 Jersey 1.12 (JAX-RS 1.1 JSR311 reference implementation; This includes client, core, json, server, servlet, apache client, and spring libraries)
 Jettison 1.1 (A JSON Streaming API for XML (StAX) implementation needed by Jersey)
-joda-time 2.1
+joda-time 2.3
 JPA 2.0 1.0.0.Final (from Hibernate distribution, needed by Hibernate)
 jQuery 1.2.6 (Javascript library)
 jQuery UI Tabs 1.5.2 (Javascript library)

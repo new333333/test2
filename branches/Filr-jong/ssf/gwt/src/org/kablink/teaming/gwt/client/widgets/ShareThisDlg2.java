@@ -34,6 +34,7 @@ package org.kablink.teaming.gwt.client.widgets;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
@@ -63,6 +64,7 @@ import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.GwtUser;
 import org.kablink.teaming.gwt.client.mainmenu.TeamInfo;
 import org.kablink.teaming.gwt.client.rpc.shared.FindUserByEmailAddressCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.FindUserByEmailAddressRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.GetEntryCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetFolderCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetMyTeamsCmd;
@@ -75,6 +77,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.ValidateEmailRpcResponseData.Em
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.rpc.shared.ShareEntryCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ShareEntryResultsRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponseData;
 import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.GwtPublicShareItem;
@@ -166,6 +169,7 @@ public class ShareThisDlg2 extends DlgBox
 	private FindCtrl m_findCtrl;
 	private FindCtrl m_manageSharesFindCtrl;
 	private Image m_addExternalUserImg;
+	private Image m_shareRightsInfoImg;
 	private FlowPanel m_mainPanel;
 	private Label m_noShareItemsEnterNameHint;
 	private Label m_noShareItemsToManageHint;
@@ -325,7 +329,7 @@ public class ShareThisDlg2 extends DlgBox
 					if ( m_sharingInfo.getCanShareWithExternalUsers() == false )
 					{
 						// No, tell the user they can't do this.
-						Window.alert( GwtTeaming.getMessages().shareDlg_cantShareWithExternalUser() );
+						Window.alert( GwtTeaming.getMessages().shareDlg_cantShareWithExternalUser_Param( user.getEmail() ) );
 						return null;
 					}
 				}
@@ -524,11 +528,7 @@ public class ShareThisDlg2 extends DlgBox
 				@Override
 				public void execute()
 				{
-					InvokeEditShareRightsDlgEvent event;
-
-					// Fire an event to invoke the "edit share rights" dialog.
-					event = new InvokeEditShareRightsDlgEvent( listOfShareItems );
-					GwtTeaming.fireEvent( event );
+					editSingleShareItem( listOfShareItems.get( 0 ) );
 				}
 			};
 			Scheduler.get().scheduleDeferred( cmd );
@@ -820,6 +820,20 @@ public class ShareThisDlg2 extends DlgBox
 				m_addExternalUserImg.addClickHandler( clickHandler );
 			}
 			
+			// Add an info image that will display who the user can share with
+			{
+				ImageResource imageResource;
+				FlexCellFormatter findCellFormatter;
+				
+				imageResource = GwtTeaming.getImageBundle().info2();
+				m_shareRightsInfoImg = new Image( imageResource );
+				
+				m_shareRightsInfoImg.getElement().setAttribute( "title", "" );
+				findTable.setWidget( 0, 1, m_shareRightsInfoImg );
+				findCellFormatter = findTable.getFlexCellFormatter();
+				findCellFormatter.getElement( 0, 1 ).getStyle().setPaddingTop( 8, Unit.PX );
+			}
+			
 			// Add a "Share with teams" link
 			{
 				// Are we running Filr?
@@ -994,13 +1008,36 @@ public class ShareThisDlg2 extends DlgBox
 				sharedWithCol.setFieldUpdater( new FieldUpdater<GwtShareItem, GwtShareItem>()
 				{
 					@Override
-					public void update( int index, GwtShareItem shareItem, GwtShareItem value )
+					public void update( int index, final GwtShareItem shareItem, GwtShareItem value )
 					{
-						ArrayList<GwtShareItem> listOfShares;
+						Scheduler.ScheduledCommand cmd;
 						
-						listOfShares = new ArrayList<GwtShareItem>();
-						listOfShares.add( shareItem );
-						invokeEditShareDlg( listOfShares );
+						cmd = new Scheduler.ScheduledCommand()
+						{
+							@Override
+							public void execute()
+							{
+								Set<GwtShareItem> selectedShares;
+								
+								// Are there selected share items?
+								selectedShares = getSelectedShares();
+								if ( selectedShares != null && selectedShares.size() > 0 )
+								{
+									// Yes
+									// Tell the Edit Share widget to save its settings.
+									saveEditShareWidgetSettings();
+									
+									// Because there are selected share items we won't invoke the
+									// Edit Share widget on this share item.
+								}
+								else
+								{
+									// Invoke the Edit Share widget on this share item.
+									editSingleShareItem( shareItem );
+								}
+							}
+						};
+						Scheduler.get().scheduleDeferred( cmd );
 					}
 				} );
 				m_shareTable.addColumn( sharedWithCol, messages.shareDlg_sharedWithCol() );
@@ -1109,7 +1146,6 @@ public class ShareThisDlg2 extends DlgBox
 	 */
 	private void createStaticContent()
 	{
-		FlowPanel tmpPanel;
 		GwtTeamingMessages messages;
 		
 		messages = GwtTeaming.getMessages();
@@ -1253,7 +1289,8 @@ public class ShareThisDlg2 extends DlgBox
 			{
 				// Mark this share as "to be deleted"
 				m_sharingInfo.addToBeDeleted( nextShare );
-				
+
+				m_selectionModel.setSelected( nextShare, false );
 				m_listOfShares.remove( nextShare );
 			}
 			
@@ -1267,12 +1304,7 @@ public class ShareThisDlg2 extends DlgBox
 			Window.alert( GwtTeaming.getMessages().shareDlg_selectSharesToDelete() );
 		}
 		
-		// Is the "edit share" widget visible?
-		if ( m_editShareWidget != null && m_editShareWidget.isVisible() )
-		{
-			// Yes, close it.
-			m_editShareWidget.setVisible( false );
-		}
+		selectFirstShareItem();
 	}
 	
 	/**
@@ -1338,8 +1370,33 @@ public class ShareThisDlg2 extends DlgBox
 		}
 		else
 		{
-			m_editShareWidget.setVisible( false );
+			selectFirstShareItem();
 		}
+	}
+
+	/**
+	 * This method gets called to edit the given share item
+	 */
+	private void editSingleShareItem( GwtShareItem shareItem )
+	{
+		ArrayList<GwtShareItem> listOfShareItems;
+		InvokeEditShareRightsDlgEvent event;
+		
+		if ( shareItem == null )
+			return;
+
+		// Tell the Edit Share widget to save its settings.
+		saveEditShareWidgetSettings();
+
+		// Unselect any share items that are currently selected
+		unselectSelectedShareItems();
+		
+		listOfShareItems = new ArrayList<GwtShareItem>();
+		listOfShareItems.add( shareItem );
+		
+		// Fire an event to invoke the "edit share rights" dialog.
+		event = new InvokeEditShareRightsDlgEvent( listOfShareItems );
+		GwtTeaming.fireEvent( event );
 	}
 	
 	/**
@@ -1499,13 +1556,9 @@ public class ShareThisDlg2 extends DlgBox
 			return true;
 		}
 
-		// Is the "edit share" widget visible?
-		if ( m_editShareWidget != null && m_editShareWidget.isVisible() )
-		{
-			// Yes
-			// The user may not have hit apply.  Tell the "edit share" widget to save its changes
-			m_editShareWidget.saveSettings();
-		}
+		// The user may not have hit apply.  Tell the "edit share" widget to save its changes
+		if ( saveEditShareWidgetSettings() == false )
+			return false;
 		
 		// Disable the Ok button.
 		showStatusMsg( GwtTeaming.getMessages().shareDlg_savingShareInfo() );
@@ -1655,6 +1708,43 @@ public class ShareThisDlg2 extends DlgBox
 			// Issue an rpc request to get the share information for the entities we are working with.
 			GwtClientHelper.executeCommand( cmd, m_getSharingInfoCallback );
 		}
+	}
+	
+	/**
+	 * Return a string that displays who the user can share with.
+	 */
+	private String getCanShareWithText( GwtSharingInfo sharingInfo )
+	{
+		String msg;
+		String shareWith;
+		GwtTeamingMessages messages;
+		
+		messages = GwtTeaming.getMessages();
+		
+		shareWith = "";
+		
+		if ( sharingInfo.getCanShareWithInternalUsers() )
+			shareWith = messages.editShareRightsDlg_CanShareInternalLabel();
+		
+		if ( sharingInfo.getCanShareWithExternalUsers() )
+		{
+			if ( shareWith.length() > 0 )
+				shareWith += ", ";
+			
+			shareWith += messages.editShareRightsDlg_CanShareExternalLabel();
+		}
+
+		if ( sharingInfo.getCanShareWithPublic() )
+		{
+			if ( shareWith.length() > 0 )
+				shareWith += ", ";
+			
+			shareWith += messages.editShareRightsDlg_CanSharePublicLabel();
+		}
+		
+		msg = messages.shareDlg_canShareWith( shareWith );
+		
+		return msg;
 	}
 	
 	/**
@@ -1954,11 +2044,201 @@ public class ShareThisDlg2 extends DlgBox
 	}
 	
 	/**
+	 * Return the email addresses entered by the user.
+	 */
+	private ArrayList<String> getEmailAddresses()
+	{
+		ArrayList<String> listOfEmailAddresses;
+		String text;
+		
+		listOfEmailAddresses = new ArrayList<String>();
+		
+		text = m_findCtrl.getText();
+		if ( text != null && text.length() > 0 )
+		{
+			String[] emailAddresses;
+			
+			// Separate the email addresses using ',' or ' ' as a delimiter
+			emailAddresses = text.split( "[, ]" );
+			if ( emailAddresses != null && emailAddresses.length > 0 )
+			{
+				for ( String nextEmailAddr : emailAddresses )
+				{
+					nextEmailAddr = nextEmailAddr.trim();
+					if ( nextEmailAddr.length() > 0 )
+						listOfEmailAddresses.add( nextEmailAddr );
+				}
+			}
+			else
+			{
+				text = text.trim();
+				if ( text.length() > 0 )
+					listOfEmailAddresses.add( text );
+			}
+		}
+		
+		return listOfEmailAddresses;
+	}
+	
+	/**
 	 * Return a list of selected shares.
 	 */
 	private Set<GwtShareItem> getSelectedShares()
 	{
 		return m_selectionModel.getSelectedSet();
+	}
+
+	/**
+	 * For each existing Filr user, add a share item.
+	 */
+	private void addExistingFilrUsers(
+		HashMap<String,GwtUser> listOfUsers,
+		ArrayList<GwtShareItem> listOfShareItemsAdded )
+	{
+		Set<String> keySet;
+		
+		if ( listOfUsers == null || listOfUsers.size() == 0 )
+			return;
+		
+		keySet = listOfUsers.keySet();
+		for ( String emailAddr : keySet )
+		{
+			GwtUser gwtUser;
+			
+			gwtUser = listOfUsers.get( emailAddr );
+			if ( gwtUser != null )
+			{
+				ArrayList<GwtShareItem> added;
+				
+				added = addShare( gwtUser );
+
+				if ( added != null && listOfShareItemsAdded != null )
+				{
+					for ( GwtShareItem shareItem : added )
+					{
+						listOfShareItemsAdded.add( shareItem );
+					}
+				}
+			}
+		}
+	}
+	
+	/**
+	 * For each valid email address in the given list, add a share item.
+	 * If we find invalid email addresses in the list, tell the user about it.
+	 */
+	private void addExternalUsers(
+			HashMap<String,EmailAddressStatus> emailAddrMap,
+			ArrayList<GwtShareItem> listOfShareItemsAdded )
+	{
+		Set<String> keySet;
+		StringBuffer invalidEmailAddresses;
+		
+		if ( emailAddrMap == null || emailAddrMap.size() == 0 )
+			return;
+		
+		invalidEmailAddresses = new StringBuffer();
+		
+		keySet = emailAddrMap.keySet();
+		for ( String emailAddr : keySet )
+		{
+			EmailAddressStatus status;
+			
+			// Is sharing with an external user allowed?
+			if ( m_sharingInfo.getCanShareWithExternalUsers() == false )
+			{
+				// No, tell the user they can't do this.
+				Window.alert( GwtTeaming.getMessages().shareDlg_cantShareWithExternalUser_Param( emailAddr ) );
+				continue;
+			}
+
+			status = emailAddrMap.get( emailAddr );
+			if ( status != null )
+			{
+				boolean addToRecipientList = false;
+				
+				if ( status.isValid() )
+				{
+					// Yes
+					addToRecipientList = true;
+				}
+				else
+				{
+					GwtTeamingMessages messages = GwtTeaming.getMessages();
+				
+					switch ( status )
+					{
+					case failsBlacklistDomain:
+					case failsBlacklistEMA:
+					case failsWhitelist:
+						String msg = null;
+						switch ( status )
+						{
+						case failsBlacklistDomain:
+							msg = messages.shareDlg_emailAddressInvalid_blDomain_Param( emailAddr );
+							break;
+						
+						case failsBlacklistEMA:
+							msg = messages.shareDlg_emailAddressInvalid_blEMA_Param( emailAddr );
+							break;
+							
+						case failsWhitelist:
+							msg = messages.shareDlg_emailAddressInvalid_wl_Param( emailAddr );
+							break;
+						}
+						
+						// Tell the user about the problem...
+						Window.alert( msg );
+
+						if ( invalidEmailAddresses.length() != 0 )
+							invalidEmailAddresses.append( ',' );
+
+						invalidEmailAddresses.append( emailAddr );
+						break;
+						
+					default:
+					case failsFormat:
+						// No, ask the user if they still want to share with this email address.
+						if ( Window.confirm( messages.shareDlg_emailAddressInvalidPrompt_Param( emailAddr ) ) == true )
+							addToRecipientList = true;
+						break;
+					}
+				}
+				
+				// Should we add the email address to the list of recipients?
+				if ( addToRecipientList )
+				{
+					GwtUser gwtUser;
+					Long userId = null;
+					ArrayList<GwtShareItem> added;
+
+					// Yes
+					gwtUser = new GwtUser();
+					gwtUser.setInternal( false );
+					gwtUser.setUserType( UserType.EXTERNAL_OTHERS );
+					gwtUser.setName( emailAddr );
+					gwtUser.setUserId( userId );
+					gwtUser.setEmail( emailAddr );
+					
+					added = addShare( gwtUser );
+					
+					if ( added != null && listOfShareItemsAdded != null )
+					{
+						for ( GwtShareItem shareItem : added )
+						{
+							listOfShareItemsAdded.add( shareItem );
+						}
+					}
+				}
+			}
+		}// end for
+		
+		// Did we find any invalid email addresses?
+		if ( invalidEmailAddresses.length() > 0 )
+		{
+			// Yes, put them back into the find control's text box
+			m_findCtrl.setInitialSearchString( invalidEmailAddresses.toString() );
+		}
 	}
 	
 	/**
@@ -1966,95 +2246,93 @@ public class ShareThisDlg2 extends DlgBox
 	 */
 	private void handleClickOnAddExternalUser()
 	{
-		final String emailAddress;
+		ArrayList<String> listOfEmailAddresses;
 		AsyncCallback<VibeRpcResponse> findUserCallback;
 
 		// Hide the search-results widget.
 		m_findCtrl.hideSearchResults();
 
-		// Is sharing with an external user ok to do?
-		if ( m_sharingInfo.getCanShareWithExternalUsers() == false )
-		{
-			// No, bail.
-			Window.alert( GwtTeaming.getMessages().shareDlg_cantShareWithExternalUser() );
+		listOfEmailAddresses = getEmailAddresses();
+		if ( listOfEmailAddresses == null || listOfEmailAddresses.size() == 0 )
 			return;
-		}
 		
-		emailAddress = m_findCtrl.getText();
-
 		// Clear what the user has typed.
 		m_findCtrl.clearText();
 
-		if ( emailAddress != null && emailAddress.length() > 0 )
+		findUserCallback = new AsyncCallback<VibeRpcResponse>()
 		{
-			findUserCallback = new AsyncCallback<VibeRpcResponse>()
+			@Override
+			public void onFailure( Throwable caught )
 			{
-				@Override
-				public void onFailure( Throwable caught )
-				{
-					GwtClientHelper.handleGwtRPCFailure(
-													caught,
-													GwtTeaming.getMessages().rpcFailure_FindUserByEmailAddress() );
-				}
+				GwtClientHelper.handleGwtRPCFailure(
+												caught,
+												GwtTeaming.getMessages().rpcFailure_FindUserByEmailAddress() );
+			}
 
-				@Override
-				public void onSuccess( final VibeRpcResponse vibeResult )
+			@Override
+			public void onSuccess( final VibeRpcResponse vibeResult )
+			{
+				Scheduler.ScheduledCommand cmd;
+				
+				cmd = new Scheduler.ScheduledCommand()
 				{
-					Scheduler.ScheduledCommand cmd;
-					
-					cmd = new Scheduler.ScheduledCommand()
+					@Override
+					public void execute()
 					{
-						@Override
-						public void execute()
+						VibeRpcResponseData responseData;
+						
+						responseData = vibeResult.getResponseData();
+						if ( responseData != null && responseData instanceof FindUserByEmailAddressRpcResponseData )
 						{
-							GwtUser gwtUser;
+							FindUserByEmailAddressRpcResponseData findUserResponseData;
+							ArrayList<GwtShareItem> listOfShareItemsAdded;
 							
-							// Was the email associated with an internal user?
-							if ( vibeResult.getResponseData() != null )
+							findUserResponseData = (FindUserByEmailAddressRpcResponseData) responseData;
+
+							listOfShareItemsAdded = new ArrayList<GwtShareItem>();
+
+							// Add the existing Filr users
+							addExistingFilrUsers( findUserResponseData.getListOfUsers(), listOfShareItemsAdded );
+							
+							// Add the external users.
+							addExternalUsers( findUserResponseData.getEmailAddrMap(), listOfShareItemsAdded );
+							
+							// Did we add a recipient
+							if ( listOfShareItemsAdded != null && listOfShareItemsAdded.size() > 0 )
 							{
-								final ArrayList<GwtShareItem> listOfShareItems; 
-								
-								// Yes
-								gwtUser = (GwtUser) vibeResult.getResponseData();
-								listOfShareItems = addShare( gwtUser );
+								// Unselect any share items that are currently selected
+								unselectSelectedShareItems();
 
-								if ( listOfShareItems != null )
+								// Are we adding more than 1 recipient?
+								if ( listOfShareItemsAdded.size() > 1 )
 								{
-									Scheduler.ScheduledCommand cmd;
-									
-									cmd = new Scheduler.ScheduledCommand()
+									// Yes
+									// Select each recipient
+									for ( GwtShareItem nextShareItem : listOfShareItemsAdded )
 									{
-										@Override
-										public void execute()
-										{
-											InvokeEditShareRightsDlgEvent event;
-
-											// Fire an event to invoke the "edit share rights" dialog.
-											event = new InvokeEditShareRightsDlgEvent( listOfShareItems );
-											GwtTeaming.fireEvent( event );
-										}
-									};
-									Scheduler.get().scheduleDeferred( cmd );
+										m_selectionModel.setSelected( nextShareItem, true );
+									}
+									
+									// Invoke the Edit Share widget for the share items that were just added
+									editSelectedShares();
+								}
+								else
+								{
+									editSingleShareItem( listOfShareItemsAdded.get( 0 ) );
 								}
 							}
-							else
-							{
-								// No
-								// Validate the mail address that was entered.  If the email address
-								// is valid then add it to the list of recipients
-								validateEmailAddress( emailAddress );
-							}
 						}
-					};
-					Scheduler.get().scheduleDeferred( cmd );
-				}				
-			};
+					}
+				};
+				Scheduler.get().scheduleDeferred( cmd );
+			}				
+		};
 
-			// Issue an ajax request to see if the email address that was entered is associated
-			// with an internal user.
-			FindUserByEmailAddressCmd cmd = new FindUserByEmailAddressCmd( emailAddress, true );
-			GwtClientHelper.executeCommand( cmd, findUserCallback );
-		}
+		// Issue an ajax request to see if the email address that was entered is associated
+		// with an internal user.  This request will also validate email addresses that are not
+		// associated with an existing user.
+		FindUserByEmailAddressCmd cmd = new FindUserByEmailAddressCmd( listOfEmailAddresses, true );
+		GwtClientHelper.executeCommand( cmd, findUserCallback );
 	}
 	
 	/**
@@ -2359,13 +2637,9 @@ public class ShareThisDlg2 extends DlgBox
 			};
 		}
 
-		// Is the "edit share" widget visible?
-		if ( m_editShareWidget != null && m_editShareWidget.isVisible() )
-		{
-			// Yes
-			// Tell the "edit share" widget to save its changes
-			m_editShareWidget.saveSettings();
-		}
+		// Tell the "edit share" widget to save its changes
+		if ( saveEditShareWidgetSettings() == false )
+			return;
 		
 		ShareRights highestRightsPossible;
 		GwtShareItem shareItem;
@@ -2600,18 +2874,36 @@ public class ShareThisDlg2 extends DlgBox
 	}
 	
 	/**
+	 * If the EditShareWidget is visible, tell it to save its settings
+	 */
+	private boolean saveEditShareWidgetSettings()
+	{
+		// Is the EditShareWidget visible?
+		if ( m_editShareWidget != null && m_editShareWidget.isVisible() )
+		{
+			// Yes
+			// Tell the "edit share" widget to save its changes
+			if ( m_editShareWidget.saveSettings() == false )
+				return false;
+		}
+		
+		return true;
+	}
+	
+	/**
 	 * Select the first share item in the list (if there is one)
 	 */
 	private void selectFirstShareItem()
 	{
 		if ( m_listOfShares != null && m_listOfShares.size() > 0 )
 		{
-			ArrayList<GwtShareItem> listOfShares;
-			
-			listOfShares = new ArrayList<GwtShareItem>();
-			listOfShares.add( m_listOfShares.get( 0 ) );
-			invokeEditShareDlg( listOfShares );
+			editSingleShareItem( m_listOfShares.get( 0 ) );
 		}
+		else if ( m_editShareWidget != null )
+		{
+			m_editShareWidget.setVisible( false );
+		}
+			
 	}
 	
 	/**
@@ -2862,6 +3154,7 @@ public class ShareThisDlg2 extends DlgBox
 	 */
 	private void updateSharingInfo( GwtSharingInfo sharingInfo )
 	{
+		m_shareRightsInfoImg.getElement().setAttribute( "title", "" );
 		m_sharingInfo = sharingInfo;
 		if ( sharingInfo != null )
 		{
@@ -2898,6 +3191,24 @@ public class ShareThisDlg2 extends DlgBox
 			listOfShareItems = sharingInfo.getListOfShareItems();
 			if ( listOfShareItems == null )
 				listOfShareItems = new ArrayList<GwtShareItem>();
+			
+			// Update the title of the "share rights" info image
+			{
+				String msg;
+				
+				msg = getCanShareWithText( m_sharingInfo );
+				m_shareRightsInfoImg.getElement().setTitle( msg );
+			}
+			
+			// Update the hint that tells the user what to do if nothing has been shared yet
+			if ( m_noShareItemsEnterNameHint.isVisible() )
+			{
+				String msg;
+				
+				msg = GwtTeaming.getMessages().shareDlg_noShareItemsHint() + "<br/>";
+				msg += getCanShareWithText( m_sharingInfo );
+				m_noShareItemsEnterNameHint.getElement().setInnerHTML( msg );
+			}
 			
 			// Sort the list of share items.
 			sortShareItems( listOfShareItems );
@@ -3014,11 +3325,7 @@ public class ShareThisDlg2 extends DlgBox
 							@Override
 							public void execute()
 							{
-								InvokeEditShareRightsDlgEvent event;
-
-								// Fire an event to invoke the "edit share rights" dialog.
-								event = new InvokeEditShareRightsDlgEvent( listOfShareItems );
-								GwtTeaming.fireEvent( event );
+								editSingleShareItem( listOfShareItems.get( 0 ) );
 							}
 						};
 						Scheduler.get().scheduleDeferred( cmd );
@@ -3096,6 +3403,23 @@ public class ShareThisDlg2 extends DlgBox
 	}
 	
 	/**
+	 * Unselect all share items that are currently selected
+	 */
+	private void unselectSelectedShareItems()
+	{
+		Set<GwtShareItem> shares;
+
+		shares = getSelectedShares();
+		if ( shares != null )
+		{
+			for ( GwtShareItem nextShareItem : shares )
+			{
+				m_selectionModel.setSelected( nextShareItem, false );
+			}
+		}
+	}
+	
+	/**
 	 * Validate the given email address.  If it is valid add it to the list of recipients
 	 */
 	private void validateEmailAddress( final String emailAddress )
@@ -3148,9 +3472,9 @@ public class ShareThisDlg2 extends DlgBox
 									String msg = null;
 									switch ( emaStatus )
 									{
-									case failsBlacklistDomain:  msg = messages.shareDlg_emailAddressInvalid_blDomain(); break;
-									case failsBlacklistEMA:     msg = messages.shareDlg_emailAddressInvalid_blEMA();    break;
-									case failsWhitelist:        msg = messages.shareDlg_emailAddressInvalid_wl();       break;
+									case failsBlacklistDomain:  msg = messages.shareDlg_emailAddressInvalid_blDomain_Param( emailAddress ); break;
+									case failsBlacklistEMA:     msg = messages.shareDlg_emailAddressInvalid_blEMA_Param( emailAddress );    break;
+									case failsWhitelist:        msg = messages.shareDlg_emailAddressInvalid_wl_Param( emailAddress );       break;
 									}
 									// Tell the user about the problem...
 									GwtClientHelper.deferredAlert( msg );
@@ -3162,7 +3486,7 @@ public class ShareThisDlg2 extends DlgBox
 								default:
 								case failsFormat:
 									// No, ask the user if they still want to share with this email address.
-									if ( Window.confirm( messages.shareDlg_emailAddressInvalidPrompt() ) == true )
+									if ( Window.confirm( messages.shareDlg_emailAddressInvalidPrompt_Param( emailAddress ) ) == true )
 										addToRecipientList = true;
 									break;
 								}
@@ -3186,13 +3510,9 @@ public class ShareThisDlg2 extends DlgBox
 							
 							listOfShareItems = addShare( gwtUser );
 
-							if ( listOfShareItems != null )
+							if ( listOfShareItems != null && listOfShareItems.size() > 0 )
 							{
-								InvokeEditShareRightsDlgEvent event;
-
-								// Fire an event to invoke the "edit share rights" dialog.
-								event = new InvokeEditShareRightsDlgEvent( listOfShareItems );
-								GwtTeaming.fireEvent( event );
+								editSingleShareItem( listOfShareItems.get( 0 ) );
 							}
 						}
 					}

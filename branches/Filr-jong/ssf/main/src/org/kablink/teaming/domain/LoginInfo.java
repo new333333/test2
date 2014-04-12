@@ -81,6 +81,10 @@ public class LoginInfo extends AuditTrail {
 	 * SOAP web services client with token-based authentication (message-level security)
 	 */
 	public static final String AUTHENTICATOR_REMOTING_T = "r_t";
+	/**
+	 * REST web services client with HTTP Basic authentication
+	 */
+	public static final String AUTHENTICATOR_REST_B = "rest_b";
 	
 	public LoginInfo() {
 	}

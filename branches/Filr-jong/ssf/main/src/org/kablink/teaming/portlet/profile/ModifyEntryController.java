@@ -121,7 +121,7 @@ public class ModifyEntryController extends SAbstractController {
 					}
 					
 				}
-				MapInputData inputData = new MapInputData(formData);
+				MapInputData inputData = getProfileModule().validateUserAttributes(entryId, formData);
 				
 				// Is there a password field on the page?
 	            if ( inputData.exists( WebKeys.USER_PROFILE_PASSWORD ) ) 

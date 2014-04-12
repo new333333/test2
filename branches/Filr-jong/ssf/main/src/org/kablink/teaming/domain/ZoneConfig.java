@@ -93,6 +93,8 @@ public class ZoneConfig extends ZonedObject implements WorkArea {
     private String shareListsBlob;
     private Boolean allowShareWithLdapGroups;
     private NameCompletionSettings nameCompletionSettings;
+	private Boolean useDirectoryRights;
+	private Integer cachedRightsRefreshInterval;
 
 	public ZoneConfig()
 	{
@@ -144,6 +146,41 @@ public class ZoneConfig extends ZonedObject implements WorkArea {
     public void setWeekendsAndHolidaysConfig(WeekendsAndHolidaysConfig weekendsAndHolidaysConfig) {
     	this.weekendsAndHolidaysConfig = weekendsAndHolidaysConfig;
     }
+
+	/**
+	 * 
+	 */
+	public boolean getUseDirectoryRights()
+	{
+		if ( useDirectoryRights == null )
+			return true;
+		
+		return useDirectoryRights.booleanValue();
+	}
+
+	/**
+	 * 
+	 */
+	public void setUseDirectoryRights( Boolean value )
+	{
+		useDirectoryRights = value;
+	}
+	
+	/**
+	 * 
+	 */
+	public Integer getCachedRightsRefreshInterval()
+	{
+		return cachedRightsRefreshInterval;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setCachedRightsRefreshInterval( Integer value )
+	{
+		cachedRightsRefreshInterval = value;
+	}
 
     /**
      * 
