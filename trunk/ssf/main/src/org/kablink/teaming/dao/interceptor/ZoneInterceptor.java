@@ -46,17 +46,61 @@ public class ZoneInterceptor extends EmptyInterceptor {
 
 	private static final long serialVersionUID = 1L;
 	
+	@Override
 	public boolean onFlushDirty(Object entity, Serializable id, 
 			Object[] currentState, Object[] previousState, String[] propertyNames,
 			Type[] types) throws CallbackException {
 		return injectZoneId(entity, id, currentState, propertyNames);
 	}
 
+	@Override
 	public boolean onSave(Object entity, Serializable id, Object[] state, 
 			String[] propertyNames, Type[] types) throws CallbackException {
 		return injectZoneId(entity, id, state, propertyNames);
 	}
 	
+	@Override
+	/*
+	 * This method is NOT related to zone injection. Just for the sake of expediency, I'm adding a 
+	 * non-related logic in this class, instead of creating a new class.
+	 */
+	public int[] findDirty(Object entity,
+			Serializable id,
+			Object[] currentState,
+			Object[] previousState,
+			String[] propertyNames,
+			Type[] types) {
+		if(entity instanceof org.kablink.teaming.domain.Definition) {
+			if(id != null && currentState != null && previousState == null) {
+				// This object represents a persistent definition object. However, for whatever reason
+				// we don't understand, the previous state doesn't exist at the time of this dirty
+				// checking. Consequently, Hibernate determines that dirty checking on this object
+				// is not possible, and therefore, blindly tries to flush this object out (i.e., 
+				// execute an SQL update). When that not-wanted flush works, we end up modifying
+				// the record in the database (hence increasing the lockVersion) for no good reason.
+				// When that doesn't work (almost always due to optimistic locking failure), 
+				// the damage is even greater, because it causes the application transaction to fail.
+				// For this reason, we're adding this hack(?) here and make the dirty checki decision
+				// ourselves so that we can short circuit the bad scenario before it does damage.
+				// From Hibernate point of view, there is nothing illegal about this, since they
+				// added this hook just so that application can make the decision. But for us, it
+				// still feels like a hack, since we're doing this without fully understanding WHY
+				// this problem occurred for definition objects in the first place. If this can be
+				// any comfort, we plan on getting rid of the entire definition facility in future
+				// versions of Filr, which is another reason why we don't want to spend TOO much
+				// time on this particular problem.
+				// (See BUG #873049)
+				return new int[0];
+			}
+			else {
+				return super.findDirty(entity, id, currentState, previousState, propertyNames, types);
+			}
+		}
+		else {
+			return super.findDirty(entity, id, currentState, previousState, propertyNames, types);
+		}
+	}
+
 	protected boolean injectZoneId(Object entity, Serializable id, Object[] state, String[] propertyNames) throws CallbackException {
 		for(int i = 0; i < propertyNames.length; i++) {
 			if(propertyNames[i].equals(ObjectKeys.FIELD_ZONE)) {
