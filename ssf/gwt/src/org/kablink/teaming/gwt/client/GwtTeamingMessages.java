@@ -1983,7 +1983,8 @@ public interface GwtTeamingMessages extends Messages
 	String addFilesHtml5PopupAbortAlt();
 	String addFilesHtml5PopupBrowse();
 	String addFilesHtml5PopupBrowseAlt();
-	String addFilesHtml5PopupBusy(String fileName, int thisOne, int total);
+	String addFilesHtml5PopupBusyPre();
+	String addFilesHtml5PopupBusyPost(int thisOne, int total);
 	String addFilesHtml5PopupClose();
 	String addFilesHtml5PopupCloseAlt();
 	String addFilesHtml5PopupDnDHint();

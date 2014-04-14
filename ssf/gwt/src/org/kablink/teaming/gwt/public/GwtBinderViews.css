@@ -394,6 +394,7 @@
 	.vibe-addFilesHtml5Popup-dndPanelHover               {}
 	.vibe-addFilesHtml5Popup-dupsList                    {}
 	.vibe-addFilesHtml5Popup-dupsName                    {}
+	.vibe-addFilesHtml5Popup-filename                    {max-width: 500px; text-overflow: ellipsis; overflow: hidden; display: inline-block; vertical-align: middle; margin-bottom: 3px; white-space: nowrap;}
 	.vibe-addFilesHtml5Popup-html5UploadPopup-glass      {background-color: #09f; filter: alpha(opacity=30); opacity: 0.3; overflow: hidden;}
 	.vibe-addFilesHtml5Popup-html5UploadPopup-panel      {color: white; font-size: 1.2em; text-align: center; padding: 15px; -moz-border-radius: 10px; border-radius: 10px; -webkit-border-radius: 10px; background: url("images/trans50_black.png") repeat;}
 	.vibe-addFilesHtml5Popup-html5UploadPopup-root       {}
