@@ -321,7 +321,7 @@ abstract public class AbstractFileResource extends AbstractResource {
                 return _getFolderEntry(entry.getId());
             }
         }
-        throw new NotModifiedException();
+        return entry;
     }
 
     protected org.kablink.teaming.domain.FolderEntry _getFolderEntry(long id) {
