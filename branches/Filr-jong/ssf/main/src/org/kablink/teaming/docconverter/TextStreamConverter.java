@@ -88,8 +88,9 @@ public abstract class TextStreamConverter extends StreamConverter<String> implem
 				}
 				eeBuf.append(additionalExclusions[i]);
 			}
-			m_excludedExtensions = eeBuf.toString();
+			excludedExtensions = eeBuf.toString();
 		}
+		m_excludedExtensions = excludedExtensions;
 	}
 	
 	/**
