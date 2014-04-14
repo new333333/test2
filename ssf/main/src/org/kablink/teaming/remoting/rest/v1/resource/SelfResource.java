@@ -55,6 +55,7 @@ import org.kablink.teaming.remoting.rest.v1.util.BinderBriefBuilder;
 import org.kablink.teaming.remoting.rest.v1.util.LinkUriUtil;
 import org.kablink.teaming.remoting.rest.v1.util.ResourceUtil;
 import org.kablink.teaming.remoting.rest.v1.util.SearchResultBuilderUtil;
+import org.kablink.teaming.rest.v1.model.BaseBinderChange;
 import org.kablink.teaming.rest.v1.model.BinderBrief;
 import org.kablink.teaming.rest.v1.model.BinderChange;
 import org.kablink.teaming.rest.v1.model.BinderChanges;
@@ -755,9 +756,17 @@ public class SelfResource extends AbstractFileResource {
             } else if (obj instanceof DefinableEntityBrief && allParentIds.contains(((DefinableEntityBrief)obj).getParentBinder().getId())) {
                 ((DefinableEntityBrief)obj).setParentBinder(parent);
             } else if (obj instanceof BinderChange) {
-                org.kablink.teaming.rest.v1.model.Binder binder = ((BinderChange)obj).getBinder();
-                if (binder!=null && allParentIds.contains(binder.getParentBinder().getId())) {
-                    binder.setParentBinder(parent);
+                BinderChange binderChange = (BinderChange) obj;
+                if (allParentIds.contains(binderChange.getId()) &&
+                        org.kablink.teaming.domain.BinderChange.Action.modify.name().equals(binderChange.getAction())) {
+                    BinderBrief fakeMyFileFolders = getFakeMyFileFolders();
+                    binderChange.setId(fakeMyFileFolders.getId());
+                    binderChange.setBinder(fakeMyFileFolders.asBinder());
+                } else {
+                    org.kablink.teaming.rest.v1.model.Binder binder = ((BinderChange)obj).getBinder();
+                    if (binder!=null && allParentIds.contains(binder.getParentBinder().getId())) {
+                        binder.setParentBinder(parent);
+                    }
                 }
             } else if (obj instanceof FileChange) {
                 FileProperties file = ((FileChange)obj).getFile();

@@ -48,6 +48,11 @@ public class Binder extends DefinableEntity {
         setDocType("binder");
     }
 
+    protected Binder(BinderBrief orig) {
+        super(orig);
+        this.path = orig.getPath();
+    }
+
     protected Binder(Binder orig) {
         super(orig);
         this.path = orig.path;
