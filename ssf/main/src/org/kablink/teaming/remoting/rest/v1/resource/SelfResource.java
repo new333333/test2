@@ -38,6 +38,7 @@ import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Attachment;
 import org.kablink.teaming.domain.Binder;
+import org.kablink.teaming.domain.BinderState;
 import org.kablink.teaming.domain.Description;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.Folder;
@@ -49,6 +50,7 @@ import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.shared.FolderUtils;
 import org.kablink.teaming.remoting.rest.v1.exc.BadRequestException;
 import org.kablink.teaming.remoting.rest.v1.exc.ConflictException;
+import org.kablink.teaming.remoting.rest.v1.exc.InternalServerErrorException;
 import org.kablink.teaming.remoting.rest.v1.exc.NotFoundException;
 import org.kablink.teaming.remoting.rest.v1.exc.NotModifiedException;
 import org.kablink.teaming.remoting.rest.v1.util.BinderBriefBuilder;
@@ -622,6 +624,29 @@ public class SelfResource extends AbstractFileResource {
                 offset, maxCount, criteria, "/self/my_files/recent_activity", nextParams);
         setMyFilesParents(resultList);
         return resultList;
+    }
+
+    @POST
+    @Path("/my_files/initial_sync")
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    public Response performInitialSync() {
+        if (!SearchUtils.userCanAccessMyFiles(this, getLoggedInUser())) {
+            throw new AccessControlException("Personal storage is not allowed.", null);
+        }
+        List<Long> homeFolderIds = SearchUtils.getHomeFolderIds(this, getLoggedInUser());
+        for (Long id : homeFolderIds) {
+            try {
+                lookupNetFolder(id);
+                if (getFolderModule().getLastFullSyncCompletionTime(id)==null) {
+                    getFolderModule().enqueueFullSynchronize(id);
+                }
+            } catch (Exception e) {
+                logger.error("Unable to trigger initial sync of the user's home folder: " + getLoggedInUser().getName(), e);
+                throw new InternalServerErrorException(ApiErrorCode.SERVER_ERROR, e.getMessage());
+            }
+        }
+        return Response.ok().build();
     }
 
     @GET

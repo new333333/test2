@@ -147,12 +147,6 @@ public class AdminNetFolderResource extends AbstractAdminResource {
         return null;
     }
 
-    private BinderState getBinderState(Long id) {
-        BinderState state = (BinderState) getCoreDao().load(BinderState.class, id);
-        getCoreDao().evict(state);
-        return state;
-    }
-
     @POST
     @Path("{id}/sync")
     @Consumes({"*/*"})
@@ -183,20 +177,4 @@ public class AdminNetFolderResource extends AbstractAdminResource {
         getFolderModule().requestNetFolderFullSyncStop(netFolder.getId());
     }
 
-    private Folder lookupNetFolder(Long id) {
-        Folder folder;
-        try {
-            Binder binder = getBinderModule().getBinder(id);
-            if (!(binder instanceof Folder)) {
-                throw new NoFolderByTheIdException(id);
-            }
-            folder = (Folder) binder;
-            if (!folder.isMirrored() || !folder.isTop()) {
-                throw new NoFolderByTheIdException(id);
-            }
-        } catch (NoBinderByTheIdException e) {
-            throw new NoFolderByTheIdException(id);
-        }
-        return folder;
-    }
 }
