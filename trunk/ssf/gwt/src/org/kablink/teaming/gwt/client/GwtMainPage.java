@@ -3953,7 +3953,8 @@ public class GwtMainPage extends ResizeComposite
 				if ( m_mainMenuCtrl != null && m_mainMenuCtrl.isVisible() )
 					panelHeight += m_mainMenuCtrl.getOffsetHeight();
 
-				m_mainPanel.setWidgetSize( m_headerPanel, panelHeight );
+				if ( m_headerPanel != null )
+					m_mainPanel.setWidgetSize( m_headerPanel, panelHeight );
 			}
 			
 			// Are we in administration mode?
