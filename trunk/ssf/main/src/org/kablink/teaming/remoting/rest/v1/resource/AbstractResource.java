@@ -1402,6 +1402,7 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         libraryInfo.setFolderCount(libraryInfo.getFolderCount() - hiddenFolders);
         if (homeFolderIds.size()>0) {
             populateMirroredLibraryInfo(libraryInfo, homeFolderIds);
+            libraryInfo.setAllowClientTriggeredSync(true);
         }
         return libraryInfo;
     }
@@ -1446,6 +1447,7 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         binder.addAdditionalLink("child_library_files", baseUri + "/library_files");
         binder.addAdditionalLink("child_library_folders", baseUri + "/library_folders");
         binder.addAdditionalLink("child_library_tree", baseUri + "/library_tree");
+        binder.addAdditionalLink("initial_sync", baseUri + "/initial_sync");
         binder.addAdditionalLink("library_changes", baseUri + "/library_changes");
         binder.addAdditionalLink("library_children", baseUri + "/library_children");
         binder.addAdditionalLink("recent_activity", baseUri + "/recent_activity");
@@ -1798,5 +1800,28 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
 
     protected static CoreDao getCoreDao() {
         return (CoreDao) SpringContextUtil.getBean("coreDao");
+    }
+
+    protected BinderState getBinderState(Long id) {
+        BinderState state = (BinderState) getCoreDao().load(BinderState.class, id);
+        getCoreDao().evict(state);
+        return state;
+    }
+
+    protected Folder lookupNetFolder(Long id) {
+        Folder folder;
+        try {
+            Binder binder = getBinderModule().getBinder(id);
+            if (!(binder instanceof Folder)) {
+                throw new NoFolderByTheIdException(id);
+            }
+            folder = (Folder) binder;
+            if (!folder.isMirrored() || !folder.isTop()) {
+                throw new NoFolderByTheIdException(id);
+            }
+        } catch (NoBinderByTheIdException e) {
+            throw new NoFolderByTheIdException(id);
+        }
+        return folder;
     }
 }
