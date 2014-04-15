@@ -1697,6 +1697,9 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
         Binder newBinder;
 		//See if moving from a regular folder to a mirrored folder
 		if (!source.isMirrored() && destination.isMirrored()) {
+            if (options==null) {
+                options = new HashMap();
+            }
 			//This is a special case move. Do it by copying the folder then deleting it
 			options.put(ObjectKeys.INPUT_OPTION_MOVE_SHARE_ITEMS, Boolean.TRUE);	//Also move the share items to the new binder
 			newBinder = copyBinder(fromId, toId, true, options);
