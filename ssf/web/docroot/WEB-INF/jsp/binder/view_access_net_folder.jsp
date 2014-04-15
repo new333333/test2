@@ -69,7 +69,38 @@ function handleCloseBtn()
 	
 }// end handleCloseBtn()
 
+function ss_treeShowIdAccessControl${renderResponse.namespace}(id, obj, action, namespace) {
+	action = 'configure_access_control';
+	if (typeof namespace == "undefined" || namespace == null) namespace = "";
+	var binderId = id;
+	// See if the id is formatted (e.g., "ss_favorites_xxx")
+	if (binderId.indexOf("_") >= 0) {
+		var binderData = id.substr(13).split("_");
+		binderId = binderData[binderData.length - 1];
+	}
+
+	// Try to find the base urls from this namespace
+	var url = "";
+	try {
+		eval("url = ss_baseBinderUrlNoWS" + namespace)
+	} catch(e) {}
+	
+	// Build a url to go to
+	if (url == "") url = ss_baseBinderUrlNoWS;
+	url = ss_replaceSubStr(url, "ssBinderIdPlaceHolder", binderId);
+	url = ss_replaceSubStr(url, "ssActionPlaceHolder", action);
+	url += "&operation2=debug";
+	// console.log(url);
+	ss_setSelfLocation(url);
+	return false;
+}
+
 </script>
+
+<c:set var="ss_breadcrumbsShowIdRoutine" 
+  value="ss_treeShowIdAccessControl${renderResponse.namespace}" 
+  scope="request" />
+<jsp:include page="/WEB-INF/jsp/definition_elements/navigation_links.jsp" />
 
 
 <div>
