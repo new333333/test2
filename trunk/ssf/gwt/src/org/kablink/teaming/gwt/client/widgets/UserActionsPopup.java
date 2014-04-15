@@ -78,6 +78,7 @@ public class UserActionsPopup extends TeamingPopupPanel
 	private FlexTable m_quotaTable;
 	private FlowPanel m_footerPanel;
 	private FlowPanel m_contentPanel;
+	private Image     m_avatarImg;
 
 	/**
 	 * 
@@ -135,17 +136,19 @@ public class UserActionsPopup extends TeamingPopupPanel
 			
 			// Create a panel for the avatar to live in
 			avatarUrl = GwtTeaming.m_requestInfo.getUserAvatarUrl();
-			if ( avatarUrl != null && avatarUrl.length() > 0 )
+			if ( avatarUrl == null || avatarUrl.length() == 0 )
+			{
+				avatarUrl = GwtTeaming.getImageBundle().userAvatar().getSafeUri().asString();
+			}
 			{
 				FlowPanel imgPanel;
-				Image img;
 				
 				imgPanel = new FlowPanel();
-				img = new Image( avatarUrl );
-				img.addStyleName( "userActionsPopup_AvatarImg" );
-				imgPanel.add( img );
+				m_avatarImg = new Image( avatarUrl );
+				m_avatarImg.addStyleName( "userActionsPopup_AvatarImg" );
+				imgPanel.add( m_avatarImg );
 				
-				table.setHTML( 0, 0, imgPanel.toString() );
+				table.setWidget(0, 0, imgPanel );
 				table.getFlexCellFormatter().setVerticalAlignment(0, 0, HasVerticalAlignment.ALIGN_TOP );
 			}
 			
@@ -651,6 +654,11 @@ public class UserActionsPopup extends TeamingPopupPanel
 				}
 			} );
 		}
+		
+		String avatarUrl = GwtTeaming.m_requestInfo.getUserAvatarUrl();
+		if ( avatarUrl == null || avatarUrl.length() == 0 )
+		     m_avatarImg.setUrl( GwtTeaming.getImageBundle().userAvatar().getSafeUri() );
+		else m_avatarImg.setUrl( avatarUrl );
 	}
 
 	/**
