@@ -37,6 +37,8 @@ import java.util.Date;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.dao.CoreDao;
 import org.kablink.teaming.module.zone.ZoneModule;
 import org.kablink.teaming.security.accesstoken.AccessTokenManager;
@@ -49,20 +51,28 @@ import org.springframework.transaction.support.TransactionTemplate;
 public class ContextListenerPostSpring implements ServletContextListener {
 
 	private static volatile boolean shutdownInProgress = false;
+	
+	private static Log logger = LogFactory.getLog(ContextListenerPostSpring.class);
 
 	@Override
 	public void contextInitialized(ServletContextEvent sce) {
-		// This should be the first thing in this method. Don't place anything before this.
-		initZones();
-
-		initAccessTokens();
-		
-		/// For simple profiler ///
-		boolean simpleProfilerEnable = SPropsUtil.getBoolean("simple.profiler.enable", false);
-		if(simpleProfilerEnable)
-			SimpleProfiler.enable();
-		else
-			SimpleProfiler.disable();
+		try {
+			// This should be the first thing in this method. Don't place anything before this.
+			initZones();
+	
+			initAccessTokens();
+			
+			/// For simple profiler ///
+			boolean simpleProfilerEnable = SPropsUtil.getBoolean("simple.profiler.enable", false);
+			if(simpleProfilerEnable)
+				SimpleProfiler.enable();
+			else
+				SimpleProfiler.disable();
+		}
+		catch(Throwable t) {
+			logger.error("Error during startup", t);
+			throw t;
+		}
 	}
 
 	@Override
