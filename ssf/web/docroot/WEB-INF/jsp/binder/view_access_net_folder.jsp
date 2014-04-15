@@ -145,6 +145,55 @@ function handleCloseBtn()
         </td>
       </tr>
     </table>
+    
+    <br/>
+    <br/>
+    
+    <div>
+    <span>Sub-Folders in "${ss_accessNetFolderMap['folder'].title}"</span>
+    </div>
+    <div style="padding-left:6px;">
+	    <table cellspacing="2" cellpadding="2" border="1">
+	    <th>Title</th>
+	    <th>Owner</th>
+	    <th>ACL Inherited</th>
+	      <c:forEach var="resourceItem" items="${ss_accessNetFolderMap['childrenDirList']}">
+		      <tr>
+		        <td>${resourceItem.name }</td>
+		        <td>${resourceItem.ownerId }</td>
+		        <td>
+		          <c:if test="${resourceItem.aclInherited }">True</c:if>
+		          <c:if test="${!resourceItem.aclInherited }">False</c:if>
+		        </td>
+		      </tr>
+	      </c:forEach>
+	    </table>
+    </div>
+
+    <br/>
+    <br/>
+    
+    <div>
+    <span>Files in "${ss_accessNetFolderMap['folder'].title}"</span>
+    </div>
+    <div style="padding-left:6px;">
+	    <table cellspacing="2" cellpadding="2" border="1">
+	    <th>Title</th>
+	    <th>Owner</th>
+	    <th>ACL Inherited</th>
+	      <c:forEach var="resourceItem" items="${ss_accessNetFolderMap['childrenFileList']}">
+		      <tr>
+		        <td>${resourceItem.name }</td>
+		        <td>${resourceItem.ownerId }</td>
+		        <td>
+		          <c:if test="${resourceItem.aclInherited }">True</c:if>
+		          <c:if test="${!resourceItem.aclInherited }">False</c:if>
+		        </td>
+		      </tr>
+	      </c:forEach>
+	    </table>
+	</div>
+    
   </ssf:box>
 </c:if>
 
