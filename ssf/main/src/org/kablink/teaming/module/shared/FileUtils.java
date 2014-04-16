@@ -283,18 +283,28 @@ public class FileUtils {
 				(lastMajorVersionNumber != null && lastMajorVersionNumber.intValue() >= 0) || 
 				(lastMinorVersionNumber != null && lastMinorVersionNumber.intValue() >= 0)) {
 			result = false;
+            Integer actualVersionNumber;
+            Integer actualMajorNumber;
+            Integer actualMinorNumber;
 			VersionAttachment va = fa.getHighestVersion();
 			if(va != null) {
-				if(lastVersionNumber != null && lastVersionNumber.intValue() >= 0) {
-					if(lastVersionNumber.intValue() == va.getVersionNumber())
-						result = true;
-				}
-				else if(lastMajorVersionNumber != null && lastMajorVersionNumber.intValue() >= 0 && lastMinorVersionNumber != null && lastMinorVersionNumber.intValue() >= 0) {
-					if(lastMajorVersionNumber.intValue() == va.getMajorVersion() && 
-						lastMinorVersionNumber.intValue() == va.getMinorVersion())
-						result = true;
-				}
-			}
+                actualVersionNumber = va.getVersionNumber();
+                actualMajorNumber = va.getMajorVersion();
+                actualMinorNumber = va.getMinorVersion();
+            } else {
+                actualVersionNumber = fa.getLastVersion();
+                actualMajorNumber = fa.getMajorVersion();
+                actualMinorNumber = fa.getMinorVersion();
+            }
+            if(lastVersionNumber != null && lastVersionNumber.intValue() >= 0) {
+                if(lastVersionNumber.intValue() == actualVersionNumber)
+                    result = true;
+            }
+            else if(lastMajorVersionNumber != null && lastMajorVersionNumber.intValue() >= 0 && lastMinorVersionNumber != null && lastMinorVersionNumber.intValue() >= 0) {
+                if(lastMajorVersionNumber.intValue() == actualMajorNumber &&
+                    lastMinorVersionNumber.intValue() == actualMinorNumber)
+                    result = true;
+            }
 		}
 		else {
 			result = true;
