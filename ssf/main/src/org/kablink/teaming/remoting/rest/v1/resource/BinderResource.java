@@ -187,11 +187,11 @@ public class BinderResource extends AbstractResource {
             } else if (id.equals(ObjectKeys.SHARED_BY_ME_ID)) {
                 info.setModifiedDate(getSharedByLibraryModifiedDate(getLoggedInUserId(), true));
             } else if (id.equals(ObjectKeys.MY_FILES_ID)) {
-                info.setModifiedDate(getMyFilesLibraryModifiedDate(true));
+                info.setModifiedDate(getMyFilesLibraryModifiedDate(true, false));
             } else if (id.equals(ObjectKeys.PUBLIC_SHARES_ID)) {
                 info.setModifiedDate(getPublicSharesLibraryModifiedDate(true));
             } else if (id>0) {
-                info.setModifiedDate(getLibraryModifiedDate(new Long[]{id}, true));
+                info.setModifiedDate(getLibraryModifiedDate(new Long[]{id}, true, false));
             }
             if (info.getModifiedDate()!=null) {
                 binder.setLibraryInfo(info);
