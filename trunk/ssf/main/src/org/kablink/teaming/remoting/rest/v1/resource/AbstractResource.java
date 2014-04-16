@@ -1148,7 +1148,7 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
                 }
             }
         }
-        maxDate = ResourceUtil.max(maxDate, getLibraryModifiedDate(binderList.toArray(new Long[binderList.size()]), recursive));
+        maxDate = ResourceUtil.max(maxDate, getLibraryModifiedDate(binderList.toArray(new Long[binderList.size()]), recursive, false));
         return maxDate;
     }
 
@@ -1245,11 +1245,11 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         return entity;
     }
 
-    protected Date getLibraryModifiedDate(Long [] binderIds, boolean recursive) {
+    protected Date getLibraryModifiedDate(Long [] binderIds, boolean recursive, boolean allowJits) {
         if (binderIds.length==0) {
             return null;
         }
-        if (!recursive) {
+        if (allowJits && !recursive) {
             triggerJitsIfNecessary(binderIds);
         }
         Criteria crit = getLibraryCriteria(binderIds, false, recursive);
@@ -1368,14 +1368,16 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         return or;
     }
 
-    protected Date getMyFilesLibraryModifiedDate(boolean recursive) {
+    protected Date getMyFilesLibraryModifiedDate(boolean recursive, boolean allowJits) {
         Long [] ids;
         if (recursive) {
             ids = new Long[] {getMyFilesFolderParent().getId()};
         } else if (SearchUtils.useHomeAsMyFiles(this)) {
             List<Long> homeFolderIds = SearchUtils.getHomeFolderIds(this, getLoggedInUser());
             ids = homeFolderIds.toArray(new Long[homeFolderIds.size()]);
-            triggerJitsIfNecessary(ids);
+            if (allowJits && !recursive) {
+                triggerJitsIfNecessary(ids);
+            }
         } else {
             List<Long> hiddenFolderIds = new ArrayList<Long>();
         	Long mfId = SearchUtils.getMyFilesFolderId(this, getLoggedInUser(), false);
@@ -1385,7 +1387,7 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
             hiddenFolderIds.add(getMyFilesFolderParent().getId());
             ids = hiddenFolderIds.toArray(new Long[hiddenFolderIds.size()]);
         }
-        return getLibraryModifiedDate(ids, recursive);
+        return getLibraryModifiedDate(ids, recursive, false);
     }
 
     protected LibraryInfo getMyFilesLibraryInfo() {

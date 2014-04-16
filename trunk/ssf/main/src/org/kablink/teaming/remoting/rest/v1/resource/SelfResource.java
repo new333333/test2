@@ -502,7 +502,7 @@ public class SelfResource extends AbstractFileResource {
         if (!SearchUtils.userCanAccessMyFiles(this, getLoggedInUser())) {
             throw new AccessControlException("Personal storage is not allowed.", null);
         }
-        Date lastModified = getMyFilesLibraryModifiedDate(recursive);
+        Date lastModified = getMyFilesLibraryModifiedDate(recursive, true);
         Date ifModifiedSince = getIfModifiedSinceDate(request);
         if (ifModifiedSince!=null && !ifModifiedSince.before(lastModified)) {
             throw new NotModifiedException();
@@ -754,7 +754,7 @@ public class SelfResource extends AbstractFileResource {
             throw new AccessControlException("Personal storage is not allowed.", null);
         }
 
-        Date lastModified = getMyFilesLibraryModifiedDate(false);
+        Date lastModified = getMyFilesLibraryModifiedDate(false, allowJits);
         if (ifModifiedSince!=null && lastModified!=null && !ifModifiedSince.before(lastModified)) {
             throw new NotModifiedException();
         }

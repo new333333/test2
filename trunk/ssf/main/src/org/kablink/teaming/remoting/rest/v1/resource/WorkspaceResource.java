@@ -140,7 +140,7 @@ public class WorkspaceResource extends AbstractBinderResource {
                                   @Context HttpServletRequest request) {
         Map<String, Object> nextParams = new HashMap<String, Object>();
         nextParams.put("description_format", descriptionFormatStr);
-        Date lastModified = getLibraryModifiedDate(new Long[]{id}, false);
+        Date lastModified = getLibraryModifiedDate(new Long[]{id}, false, true);
         Date ifModifiedSince = getIfModifiedSinceDate(request);
         if (ifModifiedSince!=null && !ifModifiedSince.before(lastModified)) {
             throw new NotModifiedException();
@@ -162,7 +162,7 @@ public class WorkspaceResource extends AbstractBinderResource {
                                 @Context HttpServletRequest request) {
         Map<String, Object> nextParams = new HashMap<String, Object>();
         nextParams.put("description_format", descriptionFormatStr);
-        Date lastModified = getLibraryModifiedDate(new Long[]{id}, false);
+        Date lastModified = getLibraryModifiedDate(new Long[]{id}, false, allowJits);
         Date ifModifiedSince = getIfModifiedSinceDate(request);
         if (ifModifiedSince!=null && !ifModifiedSince.before(lastModified)) {
             throw new NotModifiedException();
@@ -195,7 +195,7 @@ public class WorkspaceResource extends AbstractBinderResource {
         Map<String, Object> nextParams = new HashMap<String, Object>();
         nextParams.put("description_format", descriptionFormatStr);
 
-        Date lastModified = getLibraryModifiedDate(new Long[]{id}, false);
+        Date lastModified = getLibraryModifiedDate(new Long[]{id}, false, true);
         Date ifModifiedSince = getIfModifiedSinceDate(request);
         if (ifModifiedSince!=null && !ifModifiedSince.before(lastModified)) {
             throw new NotModifiedException();
@@ -234,7 +234,7 @@ public class WorkspaceResource extends AbstractBinderResource {
         Map<String, Object> nextParams = new HashMap<String, Object>();
         nextParams.put("description_format", descriptionFormatStr);
 
-        Date lastModified = getLibraryModifiedDate(new Long[]{id}, false);
+        Date lastModified = getLibraryModifiedDate(new Long[]{id}, false, true);
         Date ifModifiedSince = getIfModifiedSinceDate(request);
         if (ifModifiedSince!=null && !ifModifiedSince.before(lastModified)) {
             throw new NotModifiedException();

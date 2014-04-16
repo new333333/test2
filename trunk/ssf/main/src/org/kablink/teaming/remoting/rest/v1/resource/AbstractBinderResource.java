@@ -237,7 +237,7 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
                                        @Context HttpServletRequest request) {
         Map<String, Object> nextParams = new HashMap<String, Object>();
         nextParams.put("description_format", descriptionFormatStr);
-        Date lastModified = getLibraryModifiedDate(new Long[]{id}, false);
+        Date lastModified = getLibraryModifiedDate(new Long[]{id}, false, allowJits);
         Date ifModifiedSince = getIfModifiedSinceDate(request);
         if (ifModifiedSince!=null && !ifModifiedSince.before(lastModified)) {
             throw new NotModifiedException();
@@ -258,7 +258,7 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
                                          @Context HttpServletRequest request) {
         Map<String, Object> nextParams = new HashMap<String, Object>();
         nextParams.put("description_format", descriptionFormatStr);
-        Date lastModified = getLibraryModifiedDate(new Long[]{id}, false);
+        Date lastModified = getLibraryModifiedDate(new Long[]{id}, false, true);
         Date ifModifiedSince = getIfModifiedSinceDate(request);
         if (ifModifiedSince!=null && !ifModifiedSince.before(lastModified)) {
             throw new NotModifiedException();
@@ -324,7 +324,7 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
         }
         nextParams.put("recursive", Boolean.toString(recursive));
         nextParams.put("parent_binder_paths", Boolean.toString(includeParentPaths));
-        Date lastModified = getLibraryModifiedDate(new Long[]{id}, recursive);
+        Date lastModified = getLibraryModifiedDate(new Long[]{id}, recursive, true);
         Date ifModifiedSince = getIfModifiedSinceDate(request);
         if (ifModifiedSince!=null && !ifModifiedSince.before(lastModified)) {
             throw new NotModifiedException();
@@ -351,7 +351,7 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
         }
         nextParams.put("recursive", Boolean.toString(recursive));
         nextParams.put("parent_binder_paths", Boolean.toString(includeParentPaths));
-        Date lastModified = getLibraryModifiedDate(new Long[]{id}, recursive);
+        Date lastModified = getLibraryModifiedDate(new Long[]{id}, recursive, true);
         Date ifModifiedSince = getIfModifiedSinceDate(request);
         if (ifModifiedSince!=null && !ifModifiedSince.before(lastModified)) {
             throw new NotModifiedException();
