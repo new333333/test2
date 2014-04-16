@@ -598,6 +598,7 @@
 			<property name="templateModule"><ref bean="templateModule"/></property>
 			<property name="binderModule"><ref bean="binderModule"/></property>
 			<property name="folderModule"><ref bean="folderModule"/></property>
+			<property name="zoneModule"><ref bean="zoneModule"/></property>
 			<property name="netFolderModule"><ref bean="netFolderModule"/></property>
 			<property name="resourceDriverModule"><ref bean="resourceDriverModule"/></property>
 			<property name="processorManager"><ref bean="modelProcessorManager"/></property>				
