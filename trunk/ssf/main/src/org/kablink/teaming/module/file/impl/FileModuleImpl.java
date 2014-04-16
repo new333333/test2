@@ -2364,6 +2364,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
             fAtt.getFileItem().setMd5(fui.getMd5());
 			fAtt.setEncrypted(fui.getIsEncrypted());
 			fAtt.setEncryptionKey(fui.getEncryptionKey());
+            fAtt.setLastVersion(2);
 			createVersionAttachment(fAtt, versionName);	    		
 			if(logger.isDebugEnabled())
 				logger.debug("Updating existing file " + relativeFilePath + " with initial version");
@@ -2877,9 +2878,9 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		vAtt.setCreation(fAtt.getCreation());
 		vAtt.setModification(fAtt.getModification());
 		vAtt.setFileItem(fAtt.getFileItem());
-		vAtt.setVersionNumber(1);
-		vAtt.setMajorVersion(1);
-		vAtt.setMinorVersion(0);
+		vAtt.setVersionNumber(fAtt.getLastVersion());
+		vAtt.setMajorVersion(fAtt.getMajorVersion());
+		vAtt.setMinorVersion(fAtt.getMinorVersion());
 		vAtt.setAgingEnabled(Boolean.FALSE);
 		vAtt.setVersionName(versionName);
 		vAtt.setRepositoryName(fAtt.getRepositoryName());
