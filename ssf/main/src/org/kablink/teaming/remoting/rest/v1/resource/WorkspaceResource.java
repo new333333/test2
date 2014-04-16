@@ -145,8 +145,9 @@ public class WorkspaceResource extends AbstractBinderResource {
         if (ifModifiedSince!=null && !ifModifiedSince.before(lastModified)) {
             throw new NotModifiedException();
         }
-        SearchResultList<BinderBrief> subBinders = getSubBinders(id, null, offset, maxCount, "/workspaces/" + id + "/binders",
-                nextParams, toDomainFormat(descriptionFormatStr), ifModifiedSince);
+        SearchResultList<BinderBrief> subBinders = getSubBinders(id, null, true, offset, maxCount,
+                "/workspaces/" + id + "/binders", nextParams, toDomainFormat(descriptionFormatStr),
+                ifModifiedSince);
         return Response.ok(subBinders).lastModified(lastModified).build();
     }
 
@@ -154,6 +155,7 @@ public class WorkspaceResource extends AbstractBinderResource {
     @Path("{id}/children")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public Response getChildren(@PathParam("id") long id,
+                                @QueryParam("allow_jits") @DefaultValue("true") Boolean allowJits,
                                 @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr,
                                 @QueryParam("first") @DefaultValue("0") Integer offset,
                                 @QueryParam("count") @DefaultValue("100") Integer maxCount,
@@ -165,8 +167,8 @@ public class WorkspaceResource extends AbstractBinderResource {
         if (ifModifiedSince!=null && !ifModifiedSince.before(lastModified)) {
             throw new NotModifiedException();
         }
-        SearchResultList<SearchableObject> children = getChildren(id, null, true, false, true, offset, maxCount, "/workspaces/" + id + "/children",
-                nextParams, toDomainFormat(descriptionFormatStr), ifModifiedSince);
+        SearchResultList<SearchableObject> children = getChildren(id, null, true, false, true, allowJits, offset, maxCount,
+                "/workspaces/" + id + "/children", nextParams, toDomainFormat(descriptionFormatStr), ifModifiedSince);
         return Response.ok(children).lastModified(lastModified).build();
     }
 
@@ -199,7 +201,7 @@ public class WorkspaceResource extends AbstractBinderResource {
             throw new NotModifiedException();
         }
         SearchResultList<BinderBrief> subBinders = getSubBinders(id, Restrictions.eq(Constants.ENTITY_FIELD, Constants.ENTITY_TYPE_WORKSPACE),
-                offset, maxCount, "/workspaces/" + id + "/workspaces", nextParams, toDomainFormat(descriptionFormatStr), ifModifiedSince);
+                true, offset, maxCount, "/workspaces/" + id + "/workspaces", nextParams, toDomainFormat(descriptionFormatStr), ifModifiedSince);
         return Response.ok(subBinders).lastModified(lastModified).build();
 	}
 
@@ -238,7 +240,7 @@ public class WorkspaceResource extends AbstractBinderResource {
             throw new NotModifiedException();
         }
         SearchResultList<BinderBrief> subBinders = getSubBinders(id, Restrictions.eq(Constants.ENTITY_FIELD, Constants.ENTITY_TYPE_FOLDER),
-                offset, maxCount, "/workspaces/" + id + "/folders", nextParams, toDomainFormat(descriptionFormatStr), ifModifiedSince);
+                true, offset, maxCount, "/workspaces/" + id + "/folders", nextParams, toDomainFormat(descriptionFormatStr), ifModifiedSince);
         return Response.ok(subBinders).lastModified(lastModified).build();
 	}
 

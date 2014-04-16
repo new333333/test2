@@ -231,9 +231,9 @@ public class ShareResource extends AbstractResource {
     @GET
     @Path("/by_user/{id}/library_children")
     public Response getLibraryChildrenSharedByUser(@PathParam("id") Long userId,
-                                                                             @QueryParam("hidden") @DefaultValue("false") boolean showHidden,
-                                                                             @QueryParam("unhidden") @DefaultValue("true") boolean showUnhidden,
-                                                                             @Context HttpServletRequest request) {
+                                                   @QueryParam("hidden") @DefaultValue("false") boolean showHidden,
+                                                   @QueryParam("unhidden") @DefaultValue("true") boolean showUnhidden,
+                                                   @Context HttpServletRequest request) {
         List<Pair<ShareItem, DefinableEntity>> shareItems = getSharedByShareItems(userId);
         Date lastModified = getSharesLibraryModifiedDate(shareItems, false);
         Date ifModifiedSince = getIfModifiedSinceDate(request);

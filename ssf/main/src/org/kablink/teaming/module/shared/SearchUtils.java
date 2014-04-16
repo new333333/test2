@@ -598,7 +598,8 @@ public class SearchUtils {
 			int mode, 
 			int offset, 
 			int size, 
-			Binder parentBinder)
+			Binder parentBinder,
+            boolean allowJits)
 					throws LuceneException, AuthException {
 		if(so == null)
 			throw new IllegalArgumentException("Search object must be specifed");
@@ -613,7 +614,7 @@ public class SearchUtils {
     	}
 
 		try {
-			if(parentBinder.isMirrored() && parentBinder instanceof Folder) {			
+			if(allowJits && parentBinder.isMirrored() && parentBinder instanceof Folder) {
 				if(!getFolderModule().jitSynchronize((Folder)parentBinder)) {
 					// As result of JITS, the parent binder just disappeared from the system.
 					// We have to somehow notify the caller of this situation - 

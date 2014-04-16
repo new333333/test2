@@ -65,6 +65,7 @@ import org.kablink.teaming.module.shared.AccessUtils;
 import org.kablink.teaming.module.sharing.SharingModule;
 import org.kablink.teaming.remoting.rest.v1.exc.BadRequestException;
 import org.kablink.teaming.remoting.rest.v1.exc.NotFoundException;
+import org.kablink.teaming.remoting.rest.v1.exc.NotModifiedException;
 import org.kablink.teaming.remoting.rest.v1.exc.UnsupportedMediaTypeException;
 import org.kablink.teaming.remoting.rest.v1.util.*;
 import org.kablink.teaming.rest.v1.model.*;
@@ -1823,5 +1824,56 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
             throw new NoFolderByTheIdException(id);
         }
         return folder;
+    }
+
+    protected SearchResultList<SearchableObject> getChildren(long id, Criterion filter, boolean binders, boolean entries, boolean files,
+                                                             boolean allowJits, Integer offset, Integer maxCount,
+                                                          String nextUrl, Map<String, Object> nextParams, int descriptionFormat,
+                                                          Date modifiedSince) {
+        Binder binder = _getBinder(id);
+        if (offset==null) {
+            offset = 0;
+        }
+        if (maxCount==null) {
+            maxCount = -1;
+        }
+        Criteria crit = new Criteria();
+        if (filter!=null) {
+            crit.add(filter);
+        }
+        Junction or = Restrictions.disjunction();
+        if (binders) {
+            or.add(SearchUtils.buildBindersCriterion());
+        }
+        if (entries) {
+            or.add(SearchUtils.buildEntriesCriterion());
+        }
+        if (files) {
+            or.add(SearchUtils.buildAttachmentsCriterion());
+        }
+        crit.add(or);
+        crit.add(SearchUtils.buildParentBinderCriterion(id));
+        crit.addOrder(new Order(Constants.ENTITY_FIELD, true));
+        crit.addOrder(new Order(Constants.SORT_TITLE_FIELD, true));
+        Map resultMap = getBinderModule().searchFolderOneLevelWithInferredAccess(crit, Constants.SEARCH_MODE_NORMAL, offset, maxCount, binder, allowJits);
+        SearchResultList<SearchableObject> results = new SearchResultList<SearchableObject>(offset, binder.getModificationDate());
+        SearchResultBuilderUtil.buildSearchResults(results, new UniversalBuilder(descriptionFormat), resultMap, nextUrl, nextParams, offset);
+        if (modifiedSince!=null && !modifiedSince.before(results.getLastModified())) {
+            throw new NotModifiedException();
+        }
+        return results;
+    }
+
+    protected Binder _getBinder(long id) {
+        return _getBinderImpl(id);
+    }
+
+    protected Binder _getBinderImpl(long id) {
+        try{
+            return getBinderModule().getBinder(id, false, true);
+        } catch (NoBinderByTheIdException e) {
+            // Throw exception below.
+        }
+        throw new NotFoundException(ApiErrorCode.BINDER_NOT_FOUND, "NOT FOUND");
     }
 }
