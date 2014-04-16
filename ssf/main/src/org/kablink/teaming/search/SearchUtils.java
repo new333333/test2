@@ -274,24 +274,32 @@ public class SearchUtils {
 			List<String> trackedEntryIds, List<String> trackedPeopleIds, boolean entriesOnly, String searchDateField)
 	{
 		return entriesForTrackedPlacesEntriesAndPeople(bs, userWorkspaces, 
-				trackedEntryIds, trackedPeopleIds, entriesOnly, searchDateField, Boolean.TRUE, Boolean.FALSE);
+				trackedEntryIds, trackedPeopleIds, entriesOnly, searchDateField, Boolean.TRUE, Boolean.FALSE, Boolean.FALSE);
 	}
 
 	public static Criteria entriesForTrackedPlacesEntriesAndPeople(AllModulesInjected bs, List userWorkspaces, 
 			List<String> trackedEntryIds, List<String> trackedPeopleIds, boolean entriesOnly, String searchDateField, 
-			boolean searchSubFolders, boolean includeAttachments)
+			boolean searchSubFolders, boolean includeAttachments, boolean includeFolderNames)
 	{
-		String[] entryTypes;
-		if (entriesOnly)
-			 entryTypes = new String[] {Constants.ENTRY_TYPE_ENTRY                            };
-		else entryTypes = new String[] {Constants.ENTRY_TYPE_ENTRY, Constants.ENTRY_TYPE_REPLY};
-		
-		String[] docTypes;
-		if (includeAttachments) {
-			docTypes = new String[] {Constants.DOC_TYPE_ENTRY, Constants.DOC_TYPE_ATTACHMENT};
-		} else {
-			docTypes = new String[] {Constants.DOC_TYPE_ENTRY};
+		List entryTypesList = new ArrayList<String>();
+		entryTypesList.add(Constants.ENTRY_TYPE_ENTRY);
+		if (!entriesOnly) {
+			entryTypesList.add(Constants.ENTRY_TYPE_REPLY);
 		}
+		String[] entryTypes = new String[entryTypesList.size()];
+		entryTypesList.toArray(entryTypes);
+		
+		List docTypesList = new ArrayList<String>();
+		docTypesList.add(Constants.DOC_TYPE_ENTRY);
+		if (includeAttachments) {
+			docTypesList.add(Constants.DOC_TYPE_ATTACHMENT);
+		}
+		if (includeFolderNames) {
+			docTypesList.add(Constants.DOC_TYPE_BINDER);
+			entryTypes = new String[0];		//If including folder names, don't filter by entryTypes
+		}
+		String[] docTypes = new String[docTypesList.size()];
+		docTypesList.toArray(docTypes);
 		
 		Criteria crit = new Criteria();
 		crit.add(in(ENTRY_TYPE_FIELD, entryTypes))
@@ -1409,6 +1417,7 @@ public class SearchUtils {
 				entriesOnly,	// true -> Entries only (no replies.)
 				Constants.LASTACTIVITY_FIELD,
 				searchSubFolders,
+				Boolean.FALSE,
 				Boolean.FALSE);
 		
 		return reply;
