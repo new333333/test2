@@ -479,7 +479,13 @@ public abstract class AbstractLuceneReadSession extends AbstractLuceneSession im
 						aclCheckingResultsForOneResourceDriver = session.areVisible(resourcesToCheckForOneResourceDriver, AccessUtils.getFileSystemGroupIds(driverName));
 						aclCheckingResultsForAllResourceDrivers.put(driverName, aclCheckingResultsForOneResourceDriver);
 					} catch (Exception e) {
+						/*
 						logger.error("Error checking visibility on resources " + resourcesToCheckForOneResourceDriver + " against resource driver '" + driverName + "'", e);
+						*/
+						// (Bug 869900 & 865093) If there's an error during interaction with the back-end file server through FAMT (whatever
+						// the reason might be), propagate the error up the call stack instead of eating it up here. Otherwise, Filr clients
+						// may get incorrect interpretation of the result returned and end up mis-behaving.
+						throw e;
 					}
 				}
 				finally {

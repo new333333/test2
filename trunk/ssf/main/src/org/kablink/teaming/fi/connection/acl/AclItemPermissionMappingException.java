@@ -33,13 +33,13 @@
 package org.kablink.teaming.fi.connection.acl;
 
 /**
- * Checked exception thrown when a mapping of external system permission to Vibe
+ * Unchecked exception thrown when a mapping of external system permission to Vibe
  * role object fails.
  * 
  * @author jong
  *
  */
-public class AclItemPermissionMappingException extends Exception {
+public class AclItemPermissionMappingException extends RuntimeException {
 
 	private static final long serialVersionUID = 1L;
 

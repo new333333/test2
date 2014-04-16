@@ -33,13 +33,13 @@
 package org.kablink.teaming.fi.connection.acl;
 
 /**
- * Checked exception thrown when a mapping of external system principal ID to Vibe
+ * Unchecked exception thrown when a mapping of external system principal ID to Vibe
  * user/group object fails.
  * 
  * @author jong
  *
  */
-public class AclItemPrincipalMappingException extends Exception {
+public class AclItemPrincipalMappingException extends RuntimeException {
 
 	private static final long serialVersionUID = 1L;
 
