@@ -3305,4 +3305,9 @@ public interface GwtTeamingMessages extends Messages
 	String netFolderGlobalSettingsDlg_SecondsLabel();
 	String netFolderGlobalSettingsDlg_UseDirRightsHint();
 
+	// Strings used in the "Prompt for external users email address" dialog
+	String PromptForExternalUsersEmailAddressDlg_Header();
+	String PromptForExternalUsersEmailAddressDlg_Hint();
+	String PromptForExternalUsersEmailAddressDlg_NoEmailAddressesEntered();
+	
 }// end GwtTeamingMessages

@@ -40,8 +40,8 @@ import java.util.Set;
 
 import org.kablink.teaming.gwt.client.EditCanceledHandler;
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
+import org.kablink.teaming.gwt.client.datatable.ShareCellTable;
 import org.kablink.teaming.gwt.client.datatable.ShareItemCell;
-import org.kablink.teaming.gwt.client.datatable.VibeCellTable;
 import org.kablink.teaming.gwt.client.datatable.VibeCheckboxCell;
 import org.kablink.teaming.gwt.client.event.ContentChangedEvent;
 import org.kablink.teaming.gwt.client.event.ContentChangedEvent.Change;
@@ -92,6 +92,7 @@ import org.kablink.teaming.gwt.client.util.ShareRights.AccessRights;
 import org.kablink.teaming.gwt.client.util.UserType;
 import org.kablink.teaming.gwt.client.widgets.FindCtrl;
 import org.kablink.teaming.gwt.client.widgets.FindCtrl.FindCtrlClient;
+import org.kablink.teaming.gwt.client.widgets.PromptForExternalUsersEmailAddressDlg.PromptForExternalUsersEmailAddressDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ShareSendToWidget.SendToValue;
 import org.kablink.teaming.gwt.client.widgets.ShareWithTeamsDlg.ShareWithTeamsDlgClient;
 
@@ -194,9 +195,11 @@ public class ShareThisDlg2 extends DlgBox
 	private AsyncCallback<VibeRpcResponse> m_sendNotificationEmailCallback;
 	private ShareExpirationValue m_defaultShareExpirationValue;
 	private ShareWithTeamsDlg m_shareWithTeamsDlg;
+	private PromptForExternalUsersEmailAddressDlg m_promptForExternalUsersEmailAddressDlg;
 	private EditShareWidget m_editShareWidget;
 	private EditSuccessfulHandler m_editShareHandler;
 	private EditSuccessfulHandler m_editShareWithTeamsHandler;
+	private EditSuccessfulHandler m_promptForExternalUsersEmailAddressEditSuccessfulHandler;
 	
 	private static final String FIND_SHARES_BY_USER = "by-user";
 	private static final String FIND_SHARES_BY_FILE = "by-file";
@@ -262,6 +265,89 @@ public class ShareThisDlg2 extends DlgBox
 			null );
 	}
 
+	/**
+	 * 
+	 */
+	private void addRecipientsByEmailAddress( ArrayList<String> listOfEmailAddresses )
+	{
+		AsyncCallback<VibeRpcResponse> findUserCallback;
+
+		findUserCallback = new AsyncCallback<VibeRpcResponse>()
+		{
+			@Override
+			public void onFailure( Throwable caught )
+			{
+				GwtClientHelper.handleGwtRPCFailure(
+												caught,
+												GwtTeaming.getMessages().rpcFailure_FindUserByEmailAddress() );
+			}
+
+			@Override
+			public void onSuccess( final VibeRpcResponse vibeResult )
+			{
+				Scheduler.ScheduledCommand cmd;
+				
+				cmd = new Scheduler.ScheduledCommand()
+				{
+					@Override
+					public void execute()
+					{
+						VibeRpcResponseData responseData;
+						
+						responseData = vibeResult.getResponseData();
+						if ( responseData != null && responseData instanceof FindUserByEmailAddressRpcResponseData )
+						{
+							FindUserByEmailAddressRpcResponseData findUserResponseData;
+							ArrayList<GwtShareItem> listOfShareItemsAdded;
+							
+							findUserResponseData = (FindUserByEmailAddressRpcResponseData) responseData;
+
+							listOfShareItemsAdded = new ArrayList<GwtShareItem>();
+
+							// Add the existing Filr users
+							addExistingFilrUsers( findUserResponseData.getListOfUsers(), listOfShareItemsAdded );
+							
+							// Add the external users.
+							addExternalUsers( findUserResponseData.getEmailAddrMap(), listOfShareItemsAdded );
+							
+							// Did we add a recipient
+							if ( listOfShareItemsAdded != null && listOfShareItemsAdded.size() > 0 )
+							{
+								// Unselect any share items that are currently selected
+								unselectSelectedShareItems();
+
+								// Are we adding more than 1 recipient?
+								if ( listOfShareItemsAdded.size() > 1 )
+								{
+									// Yes
+									// Select each recipient
+									for ( GwtShareItem nextShareItem : listOfShareItemsAdded )
+									{
+										m_selectionModel.setSelected( nextShareItem, true );
+									}
+									
+									// Invoke the Edit Share widget for the share items that were just added
+									editSelectedShares();
+								}
+								else
+								{
+									editSingleShareItem( listOfShareItemsAdded.get( 0 ) );
+								}
+							}
+						}
+					}
+				};
+				Scheduler.get().scheduleDeferred( cmd );
+			}				
+		};
+
+		// Issue an ajax request to see if the email address that was entered is associated
+		// with an internal user.  This request will also validate email addresses that are not
+		// associated with an existing user.
+		FindUserByEmailAddressCmd cmd = new FindUserByEmailAddressCmd( listOfEmailAddresses, true );
+		GwtClientHelper.executeCommand( cmd, findUserCallback );
+	}
+	
 	/**
 	 * Add the given share to the end of the table that holds the list of shares
 	 */
@@ -714,6 +800,7 @@ public class ShareThisDlg2 extends DlgBox
 		{
 			HTMLTable.RowFormatter rowFormatter;
 			FlexTable findTable;
+			int col = 0;
 
 			// Add a KeyUpHandler to the find control
 			{
@@ -745,8 +832,10 @@ public class ShareThisDlg2 extends DlgBox
 						        // Did the user press Enter?
 						        if ( keyCode == KeyCodes.KEY_ENTER )
 						        {
-									// Yes, try to add an external user.
-									handleClickOnAddExternalUser();
+						        	// Yes
+									// Take the email addresses the user has entered into
+						        	// the name completion control and add them as recipients.
+									handleEnterKeyInFindControl();
 						        }
 							}
 						};
@@ -762,7 +851,8 @@ public class ShareThisDlg2 extends DlgBox
 			rowFormatter.setVerticalAlign( 0, HasVerticalAlignment.ALIGN_TOP );
 			m_findCtrl.setIsSendingEmail( true );
 			m_findCtrl.setFloatingHintText( messages.shareDlg_shareWithHint() );
-			findTable.setWidget( 0, 0, m_findCtrl );
+			findTable.setWidget( 0, col, m_findCtrl );
+			++col;
 			
 			m_addShareTable = new FlexTable();
 			m_addShareTable.setWidget( 0, 0, findTable );
@@ -784,17 +874,15 @@ public class ShareThisDlg2 extends DlgBox
 				ImageResource imageResource;
 				FlexCellFormatter findCellFormatter;
 				
-				imageResource = GwtTeaming.getImageBundle().add_btn();
+				imageResource = GwtTeaming.getFilrImageBundle().filrExternalUser16();
 				m_addExternalUserImg = new Image( imageResource );
 				m_addExternalUserImg.addStyleName( "cursorPointer" );
 				
-				// this style hides the + icon
-				m_addExternalUserImg.addStyleName( "displayNone" ); 
-				
 				m_addExternalUserImg.getElement().setAttribute( "title", messages.shareDlg_addExternalUserTitle() );
-				findTable.setWidget( 0, 1, m_addExternalUserImg );
+				findTable.setWidget( 0, col, m_addExternalUserImg );
 				findCellFormatter = findTable.getFlexCellFormatter();
-				findCellFormatter.getElement( 0, 1 ).getStyle().setPaddingTop( 8, Unit.PX );
+				findCellFormatter.getElement( 0, col ).getStyle().setPaddingTop( 8, Unit.PX );
+				++col;
 		
 				// Add a click handler to the "add external user" image.
 				clickHandler = new ClickHandler()
@@ -807,11 +895,8 @@ public class ShareThisDlg2 extends DlgBox
 							@Override
 							public void execute()
 							{
-								// Add the email address the user entered.
-								handleClickOnAddExternalUser();
-								
-								// Put the focus back in the find control.
-								m_findCtrl.getFocusWidget().setFocus( true );
+								// Invoke the Add External User dialog
+								invokeShareWithExternalUsersDlg();
 							}
 						};
 						Scheduler.get().scheduleDeferred( cmd );
@@ -829,9 +914,10 @@ public class ShareThisDlg2 extends DlgBox
 				m_shareRightsInfoImg = new Image( imageResource );
 				
 				m_shareRightsInfoImg.getElement().setAttribute( "title", "" );
-				findTable.setWidget( 0, 1, m_shareRightsInfoImg );
+				findTable.setWidget( 0, col, m_shareRightsInfoImg );
 				findCellFormatter = findTable.getFlexCellFormatter();
-				findCellFormatter.getElement( 0, 1 ).getStyle().setPaddingTop( 8, Unit.PX );
+				findCellFormatter.getElement( 0, col ).getStyle().setPaddingTop( 8, Unit.PX );
+				++col;
 			}
 			
 			// Add a "Share with teams" link
@@ -865,7 +951,8 @@ public class ShareThisDlg2 extends DlgBox
 					};
 					m_shareWithTeamsLabel.addClickHandler( clickHandler );
 
-					findTable.setWidget( 0, 2, m_shareWithTeamsLabel );
+					findTable.setWidget( 0, col, m_shareWithTeamsLabel );
+					++col;
 				}
 			}
 		}
@@ -874,8 +961,8 @@ public class ShareThisDlg2 extends DlgBox
 		{
 			CellTable.Resources cellTableResources;
 
-			// Create the CellTable that will display the list of Net Folders.
-			cellTableResources = GWT.create( VibeCellTable.VibeCellTableResources.class );
+			// Create the CellTable that will display the list shares.
+			cellTableResources = GWT.create( ShareCellTable.ShareCellTableResources.class );
 			m_shareTable = new CellTable<GwtShareItem>( 20, cellTableResources );
 			m_shareTable.setWidth( String.valueOf( tableWidth ) + "px" );
 			m_shareTable.addStyleName( "shareThisDlg_ListOfSharesTable" );
@@ -2046,14 +2133,12 @@ public class ShareThisDlg2 extends DlgBox
 	/**
 	 * Return the email addresses entered by the user.
 	 */
-	private ArrayList<String> getEmailAddresses()
+	private ArrayList<String> getEmailAddresses( String text )
 	{
 		ArrayList<String> listOfEmailAddresses;
-		String text;
 		
 		listOfEmailAddresses = new ArrayList<String>();
 		
-		text = m_findCtrl.getText();
 		if ( text != null && text.length() > 0 )
 		{
 			String[] emailAddresses;
@@ -2242,97 +2327,23 @@ public class ShareThisDlg2 extends DlgBox
 	}
 	
 	/**
-	 * 
+	 * This method gets called when the user presses the Enter key in the find control 
 	 */
-	private void handleClickOnAddExternalUser()
+	private void handleEnterKeyInFindControl()
 	{
 		ArrayList<String> listOfEmailAddresses;
-		AsyncCallback<VibeRpcResponse> findUserCallback;
 
 		// Hide the search-results widget.
 		m_findCtrl.hideSearchResults();
 
-		listOfEmailAddresses = getEmailAddresses();
+		listOfEmailAddresses = getEmailAddresses( m_findCtrl.getText() );
 		if ( listOfEmailAddresses == null || listOfEmailAddresses.size() == 0 )
 			return;
 		
 		// Clear what the user has typed.
 		m_findCtrl.clearText();
 
-		findUserCallback = new AsyncCallback<VibeRpcResponse>()
-		{
-			@Override
-			public void onFailure( Throwable caught )
-			{
-				GwtClientHelper.handleGwtRPCFailure(
-												caught,
-												GwtTeaming.getMessages().rpcFailure_FindUserByEmailAddress() );
-			}
-
-			@Override
-			public void onSuccess( final VibeRpcResponse vibeResult )
-			{
-				Scheduler.ScheduledCommand cmd;
-				
-				cmd = new Scheduler.ScheduledCommand()
-				{
-					@Override
-					public void execute()
-					{
-						VibeRpcResponseData responseData;
-						
-						responseData = vibeResult.getResponseData();
-						if ( responseData != null && responseData instanceof FindUserByEmailAddressRpcResponseData )
-						{
-							FindUserByEmailAddressRpcResponseData findUserResponseData;
-							ArrayList<GwtShareItem> listOfShareItemsAdded;
-							
-							findUserResponseData = (FindUserByEmailAddressRpcResponseData) responseData;
-
-							listOfShareItemsAdded = new ArrayList<GwtShareItem>();
-
-							// Add the existing Filr users
-							addExistingFilrUsers( findUserResponseData.getListOfUsers(), listOfShareItemsAdded );
-							
-							// Add the external users.
-							addExternalUsers( findUserResponseData.getEmailAddrMap(), listOfShareItemsAdded );
-							
-							// Did we add a recipient
-							if ( listOfShareItemsAdded != null && listOfShareItemsAdded.size() > 0 )
-							{
-								// Unselect any share items that are currently selected
-								unselectSelectedShareItems();
-
-								// Are we adding more than 1 recipient?
-								if ( listOfShareItemsAdded.size() > 1 )
-								{
-									// Yes
-									// Select each recipient
-									for ( GwtShareItem nextShareItem : listOfShareItemsAdded )
-									{
-										m_selectionModel.setSelected( nextShareItem, true );
-									}
-									
-									// Invoke the Edit Share widget for the share items that were just added
-									editSelectedShares();
-								}
-								else
-								{
-									editSingleShareItem( listOfShareItemsAdded.get( 0 ) );
-								}
-							}
-						}
-					}
-				};
-				Scheduler.get().scheduleDeferred( cmd );
-			}				
-		};
-
-		// Issue an ajax request to see if the email address that was entered is associated
-		// with an internal user.  This request will also validate email addresses that are not
-		// associated with an existing user.
-		FindUserByEmailAddressCmd cmd = new FindUserByEmailAddressCmd( listOfEmailAddresses, true );
-		GwtClientHelper.executeCommand( cmd, findUserCallback );
+		addRecipientsByEmailAddress( listOfEmailAddresses );
 	}
 	
 	/**
@@ -2589,6 +2600,95 @@ public class ShareThisDlg2 extends DlgBox
 		{
 			rpcCmd2 = new GetMyTeamsCmd();
 			GwtClientHelper.executeCommand( rpcCmd2, m_readTeamsCallback );
+		}
+	}
+	
+	/**
+	 * 
+	 */
+	private void invokeShareWithExternalUsersDlg()
+	{
+		int x;
+		int y;
+		
+		// Get the position of the "add external user" image.
+		x = m_addExternalUserImg.getAbsoluteLeft();
+		y = m_addExternalUserImg.getAbsoluteTop();
+		
+		if ( m_promptForExternalUsersEmailAddressDlg == null )
+		{
+			m_promptForExternalUsersEmailAddressEditSuccessfulHandler = new EditSuccessfulHandler()
+			{
+				@Override
+				public boolean editSuccessful( Object obj )
+				{
+					if ( obj != null && obj instanceof String )
+					{
+						final String emailAddresses;
+						Scheduler.ScheduledCommand cmd;
+						
+						emailAddresses = (String) obj;
+						cmd = new Scheduler.ScheduledCommand()
+						{
+							@Override
+							public void execute()
+							{
+								ArrayList<String> listOfEmailAddresses;
+								
+								listOfEmailAddresses = getEmailAddresses( emailAddresses );
+								addRecipientsByEmailAddress( listOfEmailAddresses );
+							}
+						};
+						Scheduler.get().scheduleDeferred( cmd );
+						
+						return true;
+					}
+					
+					return false;
+				}
+			};
+
+			// Run an async cmd to create the dialog.
+			PromptForExternalUsersEmailAddressDlg.createDlg(
+														false,
+														true,
+														new Integer( x ),
+														new Integer( y ),
+														m_promptForExternalUsersEmailAddressEditSuccessfulHandler,
+														new PromptForExternalUsersEmailAddressDlgClient()
+			{			
+				@Override
+				public void onUnavailable()
+				{
+					// Nothing to do.  Error handled in asynchronous provider.
+				}
+				
+				@Override
+				public void onSuccess( final PromptForExternalUsersEmailAddressDlg dlg )
+				{
+					m_promptForExternalUsersEmailAddressDlg = dlg;
+					
+					GwtClientHelper.deferCommand( new ScheduledCommand()
+					{
+						@Override
+						public void execute() 
+						{
+							invokeShareWithExternalUsersDlg();
+						}
+					} );
+				}
+			} );
+		}
+		else
+		{
+			PromptForExternalUsersEmailAddressDlgClient client = null;
+			
+			// Run an async cmd to show the dialog.
+			m_promptForExternalUsersEmailAddressDlg.initAndShow(
+															m_promptForExternalUsersEmailAddressDlg,
+															new Integer( x ),
+															new Integer( y ),
+															client );
 		}
 	}
 	
