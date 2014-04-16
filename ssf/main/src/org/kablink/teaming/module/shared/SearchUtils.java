@@ -732,9 +732,13 @@ public class SearchUtils {
 			return titles;
 		}
 		catch(Exception e) {
+			/*
 			logger.error("Error getting listing for folder [" + parentBinder.getPathName() + "] with resource path [" + 
 					parentBinder.getResourcePath() + "] through net folder server '" + parentBinder.getResourceDriverName() + "'");
 			return null;
+			*/
+			// (Bug #865093) Propagate the exception directly up the call stack
+			throw e; 
 		}
 		finally {
 			session.close();
