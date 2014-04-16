@@ -236,7 +236,7 @@ public abstract class ContainerResource extends WebdavCollectionResource impleme
     					Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, 
     					0,
     					Integer.MAX_VALUE, 
-    					parentBinder);
+    					parentBinder, true);
         	}
         	else {
         		hits = luceneSession.search(RequestContextHolder.getRequestContext().getUserId(),

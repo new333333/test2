@@ -214,7 +214,7 @@ public class FolderResource extends AbstractBinderResource {
         if (ifModifiedSince!=null && !ifModifiedSince.before(lastModified)) {
             throw new NotModifiedException();
         }
-        SearchResultList<BinderBrief> subBinders = getSubBinders(id, null, offset, maxCount, "/folders/" + id + "/binders",
+        SearchResultList<BinderBrief> subBinders = getSubBinders(id, null, true, offset, maxCount, "/folders/" + id + "/binders",
                 nextParams, toDomainFormat(descriptionFormatStr), ifModifiedSince);
         return Response.ok(subBinders).lastModified(lastModified).build();
     }
@@ -224,6 +224,7 @@ public class FolderResource extends AbstractBinderResource {
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public Response getChildren(@PathParam("id") long id,
                                 @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr,
+                                @QueryParam("allow_jits") @DefaultValue("true") Boolean allowJits,
                                 @QueryParam("first") @DefaultValue("0") Integer offset,
                                 @QueryParam("count") @DefaultValue("100") Integer maxCount,
                                 @Context HttpServletRequest request) {
@@ -234,8 +235,8 @@ public class FolderResource extends AbstractBinderResource {
         if (ifModifiedSince!=null && !ifModifiedSince.before(lastModified)) {
             throw new NotModifiedException();
         }
-        SearchResultList<SearchableObject> children = getChildren(id, null, true, false, true, offset, maxCount, "/folders/" + id + "/children",
-                nextParams, toDomainFormat(descriptionFormatStr), ifModifiedSince);
+        SearchResultList<SearchableObject> children = getChildren(id, null, true, false, true, allowJits, offset, maxCount,
+                "/folders/" + id + "/children", nextParams, toDomainFormat(descriptionFormatStr), ifModifiedSince);
         return Response.ok(children).lastModified(lastModified).build();
     }
 
@@ -256,7 +257,7 @@ public class FolderResource extends AbstractBinderResource {
             throw new NotModifiedException();
         }
         SearchResultList<BinderBrief> subBinders = getSubBinders(id, Restrictions.eq(Constants.ENTITY_FIELD, Constants.ENTITY_TYPE_FOLDER),
-                offset, maxCount, "/folders/" + id + "/folders", nextParams, toDomainFormat(descriptionFormatStr), ifModifiedSince);
+                true, offset, maxCount, "/folders/" + id + "/folders", nextParams, toDomainFormat(descriptionFormatStr), ifModifiedSince);
         return Response.ok(subBinders).lastModified(lastModified).build();
 	}
 

@@ -311,11 +311,12 @@ public class SelfResource extends AbstractFileResource {
    	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
     public Response getMyFileLibraryChildren(
             @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr,
+            @QueryParam("allow_jits") @DefaultValue("true") Boolean allowJits,
             @QueryParam("first") @DefaultValue("0") Integer offset,
             @QueryParam("count") @DefaultValue("100") Integer maxCount,
             @Context HttpServletRequest request) {
         SearchResultList<SearchableObject> results = _getMyFilesLibraryChildren(getIfModifiedSinceDate(request), true, false, true,
-                toDomainFormat(descriptionFormatStr), offset, maxCount, "/self/my_files/library_children");
+                allowJits, toDomainFormat(descriptionFormatStr), offset, maxCount, "/self/my_files/library_children");
         Date lastModified = results.getLastModified();
         if (lastModified!=null) {
             return Response.ok(results).lastModified(lastModified).build();
@@ -333,7 +334,7 @@ public class SelfResource extends AbstractFileResource {
             @QueryParam("count") @DefaultValue("100") Integer maxCount,
             @Context HttpServletRequest request) {
         SearchResultList<SearchableObject> results = _getMyFilesLibraryChildren(getIfModifiedSinceDate(request), true, false, false,
-                toDomainFormat(descriptionFormatStr), offset, maxCount, "/self/my_files/library_children");
+                true, toDomainFormat(descriptionFormatStr), offset, maxCount, "/self/my_files/library_children");
         Date lastModified = results.getLastModified();
         if (lastModified!=null) {
             return Response.ok(results).lastModified(lastModified).build();
@@ -746,9 +747,10 @@ public class SelfResource extends AbstractFileResource {
         return results;
     }
 
-    private SearchResultList<SearchableObject> _getMyFilesLibraryChildren(Date ifModifiedSince, boolean folders, boolean entries, boolean files,
+    private SearchResultList<SearchableObject> _getMyFilesLibraryChildren(Date ifModifiedSince, boolean folders, boolean entries, boolean files, boolean allowJits,
                                                                           int descriptionFormat, Integer offset, Integer maxCount, String nextUrl) {
-        if (!SearchUtils.userCanAccessMyFiles(this, getLoggedInUser())) {
+        org.kablink.teaming.domain.User user = getLoggedInUser();
+        if (!SearchUtils.userCanAccessMyFiles(this, user)) {
             throw new AccessControlException("Personal storage is not allowed.", null);
         }
 
@@ -762,8 +764,21 @@ public class SelfResource extends AbstractFileResource {
         } else {
             nextParams.put("description_format", "text");
         }
-        Criteria crit = SearchUtils.getMyFilesSearchCriteria(this, getLoggedInUser().getWorkspaceId(), folders, entries, false, files);
-        SearchResultList<SearchableObject> results = lookUpChildren(crit, descriptionFormat, offset, maxCount, nextUrl, nextParams, lastModified);
+        SearchResultList<SearchableObject> results = null;
+        if (SearchUtils.useHomeAsMyFiles(this, user)) {
+            Long homeId = SearchUtils.getHomeFolderId(this, user);
+            if (homeId!=null) {
+                // If we are listing the home folder, use this API because it could trigger JITS.
+                results = getChildren(homeId, SearchUtils.buildLibraryCriterion(true), folders, entries, files, allowJits,
+                                      offset, maxCount, nextUrl, nextParams, descriptionFormat, ifModifiedSince);
+                results.setLastModified(lastModified);
+            }
+        }
+        if (results==null) {
+            // In all other cases, this code will search across the various My Files locations.  JITS is irrelevant.
+            Criteria crit = SearchUtils.getMyFilesSearchCriteria(this, user.getWorkspaceId(), folders, entries, false, files);
+            results = lookUpChildren(crit, descriptionFormat, offset, maxCount, nextUrl, nextParams, lastModified);
+        }
         setMyFilesParents(results);
         return results;
     }

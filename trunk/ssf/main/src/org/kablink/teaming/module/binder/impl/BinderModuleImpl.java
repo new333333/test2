@@ -2194,7 +2194,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 
 	}
 
-	private Hits executeNetFolderLuceneQuery(SearchObject so, int searchMode, int offset, int maxResults, Binder parentBinder) {
+	private Hits executeNetFolderLuceneQuery(SearchObject so, int searchMode, int offset, int maxResults, Binder parentBinder, boolean allowJits) {
 		Hits hits = new Hits(0);
 
 		LuceneReadSession luceneSession = getLuceneSessionFactory()
@@ -2202,7 +2202,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		try {
 			hits = SearchUtils.searchFolderOneLevelWithInferredAccess(luceneSession, RequestContextHolder.getRequestContext().getUserId(),
 					so, searchMode, offset,
-					maxResults, parentBinder);
+					maxResults, parentBinder, allowJits);
 		} catch (RuntimeException e) {
 			logger.error("Error searching index", e);
 			throw e;
@@ -2946,7 +2946,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 				// the buckets
 				Hits testHits = SearchUtils.searchFolderOneLevelWithInferredAccess(luceneSession, RequestContextHolder.getRequestContext().getUserId(), 
 						searchObject, Constants.SEARCH_MODE_SELF_CONTAINED_ONLY,
-						0, maxBucketSize, top);
+						0, maxBucketSize, top, true);
 				totalHits = testHits.getTotalHits();
 				if (totalHits > maxBucketSize) {
 					skipLength = testHits.getTotalHits() / maxBucketSize;
@@ -2980,7 +2980,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 				SearchObject searchObject = qb.buildQuery(crit.toQuery());
 				hits = SearchUtils.searchFolderOneLevelWithInferredAccess
 						(luceneSession, RequestContextHolder.getRequestContext().getUserId(), searchObject, Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, 0,
-						-1, top);
+						-1, top, true);
 			}
 		} finally {
 			luceneSession.close();
@@ -3709,14 +3709,18 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		
 	@Override
     public Map searchFolderOneLevelWithInferredAccess(Criteria crit, int searchMode, int offset, int maxResults, Binder parentBinder) {
-		// No access checking in this method, because we expect the caller to check access on the parent binder before calling this method.	
+        return searchFolderOneLevelWithInferredAccess(crit, searchMode, offset, maxResults, parentBinder, true);
+    }
+
+    public Map searchFolderOneLevelWithInferredAccess(Criteria crit, int searchMode, int offset, int maxResults, Binder parentBinder, boolean allowJits) {
+		// No access checking in this method, because we expect the caller to check access on the parent binder before calling this method.
     	boolean preDeleted = false;
     	boolean ignoreAcls = false;
     	
 		QueryBuilder qb = new QueryBuilder(!ignoreAcls, preDeleted);
 		SearchObject so = qb.buildQuery(crit.toQuery());
 		
-		Hits hits = executeNetFolderLuceneQuery(so, searchMode, offset, maxResults, parentBinder);
+		Hits hits = executeNetFolderLuceneQuery(so, searchMode, offset, maxResults, parentBinder, allowJits);
 
 		return returnSearchQuery(hits);
     }
