@@ -36,36 +36,45 @@ package org.kablink.teaming.module.simplefile;
  * @author jong
  *
  */
-public class SimpleFileUtil {
+public class NetFileId extends SimpleFileId {
 
-	/**
-	 * Produces 32-bit hash code suitable for persistent storage (in other word, the value of hash code
-	 * should never change for the same string value).
-	 * 
-	 * IMPLEMENTATION NOTE:
-	 * 
-	 * This implementation is copied from String.hashCode() implementation from Sun JDK 1.7.0.
-	 * We cannot just call String.hashCode() because the specification doesn't guarantee that
-	 * the hashCode method will produce the same value across different JVM versions and vendors.
-	 * 
-	 * Although it is known that the JDK hashCode is subject to collision, the collision rate
-	 * should remain acceptably low when hash value is obtained on random file path strings.
-	 * For example, according to my experiment with the random file/folder path names on my
-	 * laptop computer, the number of hash collisions were less than 200 out of a million. 
-	 *
-	 * @param str
-	 * @return
+	private static final long serialVersionUID = 1L;
+
+	/*
+	 * ID of a NetFolderConfig object
 	 */
-	public static int persistentHashCode(String path) {
-		if(path == null)
-			throw new IllegalArgumentException("String must be specified");
-			
-		char[] value = path.toCharArray();		
-        int h = 0;
-        for (int i = 0; i < value.length; i++) {
-            h = 31 * h + value[i];
-        }
-        return h;
+	private Long netFolderConfigId;
+
+	/*
+	 * File system resource path relative to the NetFolderConfig object.
+	 * This value is required and meaningful only if netFolderConfigId is greater than zero.
+	 */
+	private String resourcePath;
+
+	public NetFileId(Long netFolderConfigId, String resourcePath, boolean directory, Long entityId) {
+		super(directory, entityId);
+		if(netFolderConfigId == null)
+			throw new IllegalArgumentException("Net folder config ID must be specified");
+		if(resourcePath == null)
+			throw new IllegalArgumentException("Resource path must be specified");
+		this.netFolderConfigId = netFolderConfigId;
+		this.resourcePath = resourcePath;
 	}
 
+	public Long getNetFolderConfigId() {
+		return netFolderConfigId;
+	}
+
+	public void setNetFolderConfigId(Long netFolderConfigId) {
+		this.netFolderConfigId = netFolderConfigId;
+	}
+
+	public String getResourcePath() {
+		return resourcePath;
+	}
+
+	public void setResourcePath(String resourcePath) {
+		this.resourcePath = resourcePath;
+	}
+	
 }
