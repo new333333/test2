@@ -921,10 +921,24 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
         							user, expirationDate, lockOwnerInfo));
         				}
         				else { // The previous lock is still effective
-        					// This is unlikely scenario, but the only possibility I can think of is that
-        					// the same user opened the same file from two different editor processes.
-        					// We can't allow this since concurrent editing may clobber each other.
-        					throw new LockIdMismatchException();    					
+        					if("timeout-seconds:180".equals(lock.getSubject())) {
+        						// (Bug #870934) WARNING: THIS IS A MAJOR HACK!!
+        						// To work around the problem reported in the bug entry, I'm adding this crazy code here 
+        						// so that it can help detect a situation where LibreOffice (and OpenOffice as well?) 
+        						// craps out when it finds a non-expired left-over lock from the previous editing
+        						// session with the same user. The bottom line is LibreOffice is so fundamentally broken
+        						// in terms of WebDAV lock management that we're forced to clean up the mess that it
+        						// created by adding this hack.
+            					// Set the new lock.
+            					fa.setFileLock(new FileLock(lockId, lockSubject, 
+            							user, expirationDate, lockOwnerInfo));
+        					}
+        					else {
+	        					// This is unlikely scenario, but the only possibility I can think of is that
+	        					// the same user opened the same file from two different editor processes.
+	        					// We can't allow this since concurrent editing may clobber each other.
+	        					throw new LockIdMismatchException();   
+        					}
         				}			
         			}     		
     			}
