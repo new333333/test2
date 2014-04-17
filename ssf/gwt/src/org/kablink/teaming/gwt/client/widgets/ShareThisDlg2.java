@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -91,6 +91,8 @@ import org.kablink.teaming.gwt.client.util.ShareRights;
 import org.kablink.teaming.gwt.client.util.ShareRights.AccessRights;
 import org.kablink.teaming.gwt.client.util.UserType;
 import org.kablink.teaming.gwt.client.widgets.FindCtrl;
+import org.kablink.teaming.gwt.client.widgets.AlertDlg;
+import org.kablink.teaming.gwt.client.widgets.AlertDlg.AlertDlgClient;
 import org.kablink.teaming.gwt.client.widgets.FindCtrl.FindCtrlClient;
 import org.kablink.teaming.gwt.client.widgets.PromptForExternalUsersEmailAddressDlg.PromptForExternalUsersEmailAddressDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ShareSendToWidget.SendToValue;
@@ -116,7 +118,6 @@ import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.cellview.client.CellTable;
 import com.google.gwt.user.cellview.client.Column;
-import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Anchor;
@@ -163,6 +164,7 @@ public class ShareThisDlg2 extends DlgBox
 	private SelectAllHeader m_selectAllHeader;
 	private ArrayList<GwtShareItem> m_listOfShares;
 
+	private AlertDlg m_shareRightsInfoDlg;
 	private ShareThisDlgMode m_mode;
 	private Image m_headerImg;
 	private Label m_headerNameLabel;
@@ -865,7 +867,7 @@ public class ShareThisDlg2 extends DlgBox
 				FlexCellFormatter mainCellFormatter;
 
 				mainCellFormatter = m_addShareTable.getFlexCellFormatter();
-				DOM.setElementAttribute( mainCellFormatter.getElement( 0, 0 ), "width", "*" );
+				mainCellFormatter.getElement( 0, 0 ).setAttribute( "width", "*" );
 			}
 			
 			// Add an "add external user" image.
@@ -912,6 +914,16 @@ public class ShareThisDlg2 extends DlgBox
 				
 				imageResource = GwtTeaming.getImageBundle().info2();
 				m_shareRightsInfoImg = new Image( imageResource );
+				m_shareRightsInfoImg.addStyleName("cursorPointer");
+				m_shareRightsInfoImg.addClickHandler( new ClickHandler() {
+					@Override
+					public void onClick( ClickEvent event )
+					{
+						showShareRightsInfoAsync(
+							m_shareRightsInfoImg,
+							getCanShareWithText( m_sharingInfo ) );
+					}
+				} );
 				
 				m_shareRightsInfoImg.getElement().setAttribute( "title", "" );
 				findTable.setWidget( 0, col, m_shareRightsInfoImg );
@@ -2684,7 +2696,7 @@ public class ShareThisDlg2 extends DlgBox
 			PromptForExternalUsersEmailAddressDlgClient client = null;
 			
 			// Run an async cmd to show the dialog.
-			m_promptForExternalUsersEmailAddressDlg.initAndShow(
+			PromptForExternalUsersEmailAddressDlg.initAndShow(
 															m_promptForExternalUsersEmailAddressDlg,
 															new Integer( x ),
 															new Integer( y ),
@@ -3297,7 +3309,7 @@ public class ShareThisDlg2 extends DlgBox
 				String msg;
 				
 				msg = getCanShareWithText( m_sharingInfo );
-				m_shareRightsInfoImg.getElement().setTitle( msg );
+				m_shareRightsInfoImg.setTitle( msg );
 			}
 			
 			// Update the hint that tells the user what to do if nothing has been shared yet
@@ -3317,6 +3329,81 @@ public class ShareThisDlg2 extends DlgBox
 			
 			selectFirstShareItem();
 		}
+	}
+	
+	/*
+	 * Asynchronously shows the share rights information when the share
+	 * rights image is clicked.
+	 */
+	private void showShareRightsInfoAsync( final Widget shareRightsInfoImg, final String shareRightsInfoMsg )
+	{
+		GwtClientHelper.deferCommand( new ScheduledCommand()
+		{
+			@Override
+			public void execute()
+			{
+				showShareRightsInfoNow( shareRightsInfoImg, shareRightsInfoMsg );
+			}
+		} );
+	}
+	
+	/*
+	 * Synchronously shows the share rights information when the share
+	 * rights image is clicked.
+	 */
+	private void showShareRightsInfoNow( final Widget shareRightsInfoImg, final String shareRightsInfoMsg )
+	{
+		// Have we created the trash information dialog yet?
+		if ( null == m_shareRightsInfoDlg )
+		{
+			// No!  Create it now...
+			AlertDlg.createAsync( new AlertDlgClient()
+			{
+				@Override
+				public void onUnavailable()
+				{
+					// Nothing to do.  Error handled in asynchronous
+					// provider.
+				}
+				
+				@Override
+				public void onSuccess( AlertDlg aDlg )
+				{
+					// ...and show it.
+					m_shareRightsInfoDlg = aDlg;
+					m_shareRightsInfoDlg.addStyleName( "userActionsPopup_TrashInfoDlg" );
+					showShareRightsInfoImpl( shareRightsInfoImg, shareRightsInfoMsg );
+				}
+			},
+			true,		// true  -> Auto hide the dialog. 
+			false );	// false -> The dialog is not modal.
+		}
+		
+		else
+		{
+			// Yes, we've already created the trash information dialog!
+			// Simply show it.
+			showShareRightsInfoImpl( shareRightsInfoImg, shareRightsInfoMsg );
+		}
+	}
+
+	/*
+	 * Implementation method that shows the share rights information
+	 * dialog.
+	 */
+	private void showShareRightsInfoImpl( final Widget shareRightsInfoImg, final String shareRightsInfoMsg )
+	{
+		GwtClientHelper.deferCommand( new ScheduledCommand()
+		{
+			@Override
+			public void execute()
+			{
+				AlertDlg.initAndShow(
+					m_shareRightsInfoDlg,
+					shareRightsInfoMsg,
+					shareRightsInfoImg );
+			}
+		});
 	}
 	
 	/**
@@ -3522,6 +3609,7 @@ public class ShareThisDlg2 extends DlgBox
 	/**
 	 * Validate the given email address.  If it is valid add it to the list of recipients
 	 */
+	@SuppressWarnings("unused")
 	private void validateEmailAddress( final String emailAddress )
 	{
 		AsyncCallback<VibeRpcResponse> validationCallback;
