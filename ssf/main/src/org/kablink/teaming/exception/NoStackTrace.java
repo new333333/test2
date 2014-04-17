@@ -32,71 +32,13 @@
  */
 package org.kablink.teaming.exception;
 
-import java.io.PrintStream;
-import java.io.PrintWriter;
-
 /**
- * This class overrides the default behavior of <code>Exception</code> such that
- * handling of stack trace is ignored.
+ * Marker interface indicating that implementing exception classes do not support
+ * printing of stack trace. This interface defines no method.
  * 
- * This wrapper is used to work around the situation where some framework code that we don't have
- * direct control over attempts to print (big and ugly) stack trace when it is not desirable in
- * our application.
- *  
  * @author jong
  *
  */
-public class NoStackTraceWrapperException extends Exception {
-
-	private Exception wrappedException;
-	
-	public NoStackTraceWrapperException(Exception wrappedException) {
-		this.wrappedException = wrappedException;
-	}
-
-    public String getMessage() {
-        return wrappedException.getMessage();
-    }
-
-    public String getLocalizedMessage() {
-        return wrappedException.getLocalizedMessage();
-    }
-
-    public Throwable getCause() {
-        return wrappedException.getCause();
-    }
-
-    public Throwable initCause(Throwable cause) {
-    	return wrappedException.initCause(cause);
-    }
-
-    public String toString() {
-    	return wrappedException.toString();
-    }
-
-    public void printStackTrace() { 
-    	// This is noop!
-    }
-
-    public void printStackTrace(PrintStream s) {
-    	// This is noop!
-    }
-
-    public void printStackTrace(PrintWriter s) { 
-    	// This is noop!
-    }
-
-    public Throwable fillInStackTrace() {
-    	// Don't fill in, since this is merely to wrap a real one.
-    	return this;
-    }
-
-    public StackTraceElement[] getStackTrace() {
-    	return wrappedException.getStackTrace();
-    }
-
-    public void setStackTrace(StackTraceElement[] stackTrace) {
-    	wrappedException.setStackTrace(stackTrace);
-    }
+public interface NoStackTrace {
 
 }

@@ -39,6 +39,7 @@ import org.aopalliance.intercept.MethodInvocation;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.InternalException;
+import org.kablink.teaming.exception.NoStackTrace;
 import org.kablink.teaming.search.IndexSynchronizationManager;
 
 
@@ -76,12 +77,30 @@ public class IndexSynchronizationManagerInterceptor implements MethodInterceptor
 			// Upon RuntimeException, we rollback user transaction.
 			// This is consistent with the way we decide whether to
 			// rollback database transaction or not. 
+			if(logger.isTraceEnabled()) {
+				if(e instanceof NoStackTrace)
+					logger.trace("Unchecked exception during (" + invocation.toString() + "): " +  e.toString());
+				else
+					logger.trace("Unchecked exception during (" + invocation.toString() + ")", e);				
+			}
+			else if(logger.isDebugEnabled()) {
+				logger.debug("Unchecked exception during (" + invocation.toString() + "): " +  e.toString());
+			}
 			throw e;
 		}
 		catch(Exception e) {
 			// Non RuntimeException does not cause database transaction
 			// to rollback. Keep the same policy for user transaction as well.
 			successful = true;
+			if(logger.isTraceEnabled()) {
+				if(e instanceof NoStackTrace)
+					logger.trace("Checked exception during (" + invocation.toString() + "): " +  e.toString());
+				else
+					logger.trace("Checked exception during (" + invocation.toString() + ")", e);				
+			}
+			else if(logger.isDebugEnabled()) {
+				logger.debug("Unchecked exception during (" + invocation.toString() + "): " +  e.toString());
+			}
 			throw e;
 		}
 		finally {
@@ -96,7 +115,9 @@ public class IndexSynchronizationManagerInterceptor implements MethodInterceptor
 				}
 				else {
 					if(logger.isTraceEnabled())
-						logger.trace("Discard index-synchronization session for the thread");
+						logger.trace("Discard index-synchronization session for the thread", new Exception("Just to show where we are in the code"));
+					else if(logger.isDebugEnabled())
+						logger.debug("Discard index-synchronization session for the thread");
 					
 					IndexSynchronizationManager.discardChanges();					
 				}

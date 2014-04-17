@@ -35,11 +35,12 @@ package org.kablink.teaming.module.binder.impl;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 
+import org.kablink.teaming.exception.NoStackTrace;
 import org.kablink.util.HttpStatusCodeSupport;
 import org.kablink.util.api.ApiErrorCode;
 import org.kablink.util.api.ApiErrorCodeSupport;
 
-public class WriteEntryDataException extends Exception implements ApiErrorCodeSupport, HttpStatusCodeSupport {
+public class WriteEntryDataException extends Exception implements ApiErrorCodeSupport, HttpStatusCodeSupport, NoStackTrace {
 	
 	private EntryDataErrors errors;
 	private Long entityId;
