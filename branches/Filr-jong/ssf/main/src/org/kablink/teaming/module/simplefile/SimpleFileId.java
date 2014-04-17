@@ -32,40 +32,46 @@
  */
 package org.kablink.teaming.module.simplefile;
 
+import java.io.Serializable;
+
 /**
  * @author jong
  *
  */
-public class SimpleFileUtil {
+public abstract class SimpleFileId implements Serializable {
 
-	/**
-	 * Produces 32-bit hash code suitable for persistent storage (in other word, the value of hash code
-	 * should never change for the same string value).
-	 * 
-	 * IMPLEMENTATION NOTE:
-	 * 
-	 * This implementation is copied from String.hashCode() implementation from Sun JDK 1.7.0.
-	 * We cannot just call String.hashCode() because the specification doesn't guarantee that
-	 * the hashCode method will produce the same value across different JVM versions and vendors.
-	 * 
-	 * Although it is known that the JDK hashCode is subject to collision, the collision rate
-	 * should remain acceptably low when hash value is obtained on random file path strings.
-	 * For example, according to my experiment with the random file/folder path names on my
-	 * laptop computer, the number of hash collisions were less than 200 out of a million. 
-	 *
-	 * @param str
-	 * @return
+	private static final long serialVersionUID = 1L;
+
+	/*
+	 * Indicates whether this object represents a directory or a file
 	 */
-	public static int persistentHashCode(String path) {
-		if(path == null)
-			throw new IllegalArgumentException("String must be specified");
-			
-		char[] value = path.toCharArray();		
-        int h = 0;
-        for (int i = 0; i < value.length; i++) {
-            h = 31 * h + value[i];
-        }
-        return h;
+	protected boolean directory;
+
+	/*
+	 * Entity ID (= internal database ID) of the Filr object representing this file.
+	 * The Filr object, if present, is either of type Folder (if directory) or of type FolderEntry (if file).
+	 */
+	protected Long entityId;
+
+	protected SimpleFileId(boolean directory, Long entityId) {
+		this.directory = directory;
+		this.entityId = entityId;
 	}
 
+	public boolean isDirectory() {
+		return directory;
+	}
+
+	public void setDirectory(boolean directory) {
+		this.directory = directory;
+	}
+
+	public Long getEntityId() {
+		return entityId;
+	}
+
+	public void setEntityId(Long entityId) {
+		this.entityId = entityId;
+	}
+	
 }

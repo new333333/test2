@@ -36,36 +36,14 @@ package org.kablink.teaming.module.simplefile;
  * @author jong
  *
  */
-public class SimpleFileUtil {
+public class LocalFileId extends SimpleFileId {
 
-	/**
-	 * Produces 32-bit hash code suitable for persistent storage (in other word, the value of hash code
-	 * should never change for the same string value).
-	 * 
-	 * IMPLEMENTATION NOTE:
-	 * 
-	 * This implementation is copied from String.hashCode() implementation from Sun JDK 1.7.0.
-	 * We cannot just call String.hashCode() because the specification doesn't guarantee that
-	 * the hashCode method will produce the same value across different JVM versions and vendors.
-	 * 
-	 * Although it is known that the JDK hashCode is subject to collision, the collision rate
-	 * should remain acceptably low when hash value is obtained on random file path strings.
-	 * For example, according to my experiment with the random file/folder path names on my
-	 * laptop computer, the number of hash collisions were less than 200 out of a million. 
-	 *
-	 * @param str
-	 * @return
-	 */
-	public static int persistentHashCode(String path) {
-		if(path == null)
-			throw new IllegalArgumentException("String must be specified");
-			
-		char[] value = path.toCharArray();		
-        int h = 0;
-        for (int i = 0; i < value.length; i++) {
-            h = 31 * h + value[i];
-        }
-        return h;
+	private static final long serialVersionUID = 1L;
+	
+	public LocalFileId(Long entityId, boolean directory) {
+		super(directory, entityId);
+		if(entityId == null)
+			throw new IllegalArgumentException("Entity ID must be specified");
 	}
 
 }
