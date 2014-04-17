@@ -921,7 +921,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
         							user, expirationDate, lockOwnerInfo));
         				}
         				else { // The previous lock is still effective
-        					if("timeout-seconds:180".equals(lock.getSubject())) {
+        					if("timeout-seconds:180".equals(lock.getSubject()) && "timeout-seconds:180".equals(lockSubject)) {
         						// (Bug #870934) WARNING: THIS IS A MAJOR HACK!!
         						// To work around the problem reported in the bug entry, I'm adding this crazy code here 
         						// so that it can help detect a situation where LibreOffice (and OpenOffice as well?) 
