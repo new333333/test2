@@ -318,23 +318,14 @@ public class ShareThisDlg2 extends DlgBox
 								// Unselect any share items that are currently selected
 								unselectSelectedShareItems();
 
-								// Are we adding more than 1 recipient?
-								if ( listOfShareItemsAdded.size() > 1 )
+								// Select each recipient
+								for ( GwtShareItem nextShareItem : listOfShareItemsAdded )
 								{
-									// Yes
-									// Select each recipient
-									for ( GwtShareItem nextShareItem : listOfShareItemsAdded )
-									{
-										m_selectionModel.setSelected( nextShareItem, true );
-									}
-									
-									// Invoke the Edit Share widget for the share items that were just added
-									editSelectedShares();
+									m_selectionModel.setSelected( nextShareItem, true );
 								}
-								else
-								{
-									editSingleShareItem( listOfShareItemsAdded.get( 0 ) );
-								}
+								
+								// Invoke the Edit Share widget for the share items that were just added
+								editSelectedShares();
 							}
 						}
 					}
@@ -616,7 +607,16 @@ public class ShareThisDlg2 extends DlgBox
 				@Override
 				public void execute()
 				{
-					editSingleShareItem( listOfShareItems.get( 0 ) );
+					unselectSelectedShareItems();
+					
+					// Select each recipient
+					for ( GwtShareItem nextShareItem : listOfShareItems )
+					{
+						m_selectionModel.setSelected( nextShareItem, true );
+					}
+					
+					// Invoke the Edit Share widget for the share items that were just added
+					editSelectedShares();
 				}
 			};
 			Scheduler.get().scheduleDeferred( cmd );
@@ -3512,7 +3512,15 @@ public class ShareThisDlg2 extends DlgBox
 							@Override
 							public void execute()
 							{
-								editSingleShareItem( listOfShareItems.get( 0 ) );
+								unselectSelectedShareItems();
+								
+								// Select each recipient
+								for ( GwtShareItem nextShareItem : listOfShareItems )
+								{
+									m_selectionModel.setSelected( nextShareItem, true );
+								}
+								
+								editSelectedShares();
 							}
 						};
 						Scheduler.get().scheduleDeferred( cmd );
