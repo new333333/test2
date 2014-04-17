@@ -36,6 +36,7 @@ package org.kablink.teaming.domain;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 
+import org.kablink.teaming.exception.NoStackTrace;
 import org.kablink.teaming.exception.UncheckedCodedException;
 import org.kablink.util.Validator;
 import org.kablink.util.api.ApiErrorCode;
@@ -44,7 +45,7 @@ import org.kablink.util.api.ApiErrorCode;
  * @author Janet McCann
  *
  */
-public class TitleException extends UncheckedCodedException {
+public class TitleException extends UncheckedCodedException implements NoStackTrace {
 	private static final String TitleExistsException_ErrorCode = "errorcode.title.exists";
     public TitleException(String title) {
     	super(TitleExistsException_ErrorCode, new Object[]{title});
