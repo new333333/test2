@@ -4252,8 +4252,8 @@ public class GwtViewHelper {
 			// Does the current user own this folder?
 			boolean folderOwnedByCurrentUser; 
 			try {
-				Folder f = bs.getFolderModule().getFolder(folderId);
-				folderOwnedByCurrentUser = f.getOwnerId().equals(userId);
+				Binder binder = bs.getBinderModule().getBinder(folderId);
+				folderOwnedByCurrentUser = binder.getOwnerId().equals(userId);
 			}
 			catch (Exception ex) {
 				folderOwnedByCurrentUser = false;
