@@ -95,13 +95,28 @@ function ss_treeShowIdAccessControl${renderResponse.namespace}(id, obj, action, 
 	return false;
 }
 
+function goBackToAccessControlForm(binderId) {
+	action = 'configure_access_control';
+
+	// Try to find the base urls from this namespace
+	var url = ss_baseBinderUrlNoWS;
+	url = ss_replaceSubStr(url, "ssBinderIdPlaceHolder", binderId);
+	url = ss_replaceSubStr(url, "ssActionPlaceHolder", action);
+	// console.log(url);
+	ss_setSelfLocation(url);
+	return false;
+}
+
 </script>
+
+<div style="padding:4px 0px 6px 10px;">
+<a href="javascript:" onClick="goBackToAccessControlForm('${ss_accessNetFolderMap['folder'].id}');">View the Access Control Form...</a>
+</div>
 
 <c:set var="ss_breadcrumbsShowIdRoutine" 
   value="ss_treeShowIdAccessControl${renderResponse.namespace}" 
   scope="request" />
 <jsp:include page="/WEB-INF/jsp/definition_elements/navigation_links.jsp" />
-
 
 <div>
 <c:if test="${operation2 == 'debug' && !empty ss_accessNetFolderMap}">
