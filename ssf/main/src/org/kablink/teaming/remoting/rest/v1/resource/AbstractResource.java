@@ -46,6 +46,7 @@ import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.kablink.teaming.InvalidEmailAddressException;
+import org.kablink.teaming.NoObjectByTheIdException;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.UncheckedIOException;
 import org.kablink.teaming.context.request.RequestContextHolder;
@@ -248,11 +249,18 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         if (ei==null) {
             return null;
         }
-        return findDefinableEntity(ei.getEntityType(), ei.getEntityId());
+        try {
+            return findDefinableEntity(ei.getEntityType(), ei.getEntityId());
+        } catch (NoObjectByTheIdException e) {
+            // Ignore
+        } catch (AccessControlException e) {
+            // Ignore
+        }
+        return null;
     }
 
     protected org.kablink.teaming.domain.DefinableEntity findDefinableEntity(EntityIdentifier.EntityType et, long entityId)
-            throws BadRequestException, NotFoundException {
+            throws BadRequestException {
         org.kablink.teaming.domain.DefinableEntity entity;
         if (et == EntityIdentifier.EntityType.folderEntry) {
             entity = getFolderModule().getEntry(null, entityId);
