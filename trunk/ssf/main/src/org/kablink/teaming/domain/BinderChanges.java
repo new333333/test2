@@ -32,6 +32,7 @@
  */
 package org.kablink.teaming.domain;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -61,6 +62,9 @@ public class BinderChanges {
     }
 
     public List<BinderChange> getChanges() {
+        if (changes==null) {
+            changes = new ArrayList<BinderChange>(0);
+        }
         return changes;
     }
 

@@ -3769,7 +3769,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	public BinderChanges searchForChanges(Long [] binderIds, Long [] entryIds, Date sinceDate, int maxResults) {
         List<HKey> binderKeys = getHKeys(binderIds);
         if (binderKeys.size()==0 && (entryIds==null || entryIds.length==0)) {
-            return null;
+            return new BinderChanges();
         }
         Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
         Date purgeDate = getCoreDao().getAuditTrailPurgeDate(zoneId);
@@ -3876,6 +3876,8 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
             try {
                 Binder binder = getBinder(id);
                 keys.add(binder.getBinderKey());
+            } catch (AccessControlException e) {
+                // Ignore
             } catch (NoBinderByTheIdException e) {
                 // Ignore
             }
