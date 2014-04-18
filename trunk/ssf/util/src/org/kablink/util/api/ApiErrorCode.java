@@ -118,6 +118,7 @@ public enum ApiErrorCode {
 	MIRRORED_READONLY_DRIVER, // Cannot create/update/delete mirrored file through read-only driver
 	MIRRORED_ACCESS_DENIED, // Access to mirrored file/folder denied
 	MIRRORED_ERROR, // Error with mirrored folder/file
+	MIRRORED_SERVER_DOWN, // The back-end file server is down or unreachable
 
 	// Miscellaneous errors
 	LIBRARY_ENTRY_NOT_FOUND, // No library entry object found with this name or id
