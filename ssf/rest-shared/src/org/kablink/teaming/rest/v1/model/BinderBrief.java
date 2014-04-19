@@ -123,4 +123,8 @@ public class BinderBrief extends DefinableEntityBrief {
     public Object clone() throws CloneNotSupportedException {
         return new BinderBrief(this);
     }
+
+    public Binder asBinder() {
+        return new Binder(this);
+    }
 }

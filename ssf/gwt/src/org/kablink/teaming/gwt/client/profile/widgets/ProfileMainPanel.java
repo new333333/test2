@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -102,6 +102,14 @@ public class ProfileMainPanel extends Composite implements SubmitCompleteHandler
 	private ProfileAvatarArea		m_profileAvatarArea;		//
 	private ProfileFollowingWidget	m_followingAnchor;			//
 
+	private final static String[] FIXUP_AVATAR_URL_CHANGE_THESE = new String[] {
+		// The follow define URL parts used to 'fixup' an avatar URL so
+		// that we use a scaled image instead of a full image.
+		"readFile",
+		"readScaled",
+	};
+	private final static String FIXUP_AVATAR_URL_TO_THIS = "readThumbnail";	// Other option:  "readScaledFile"
+	
 	/**
 	 * Constructor
 	 * 
@@ -707,45 +715,60 @@ public class ProfileMainPanel extends Composite implements SubmitCompleteHandler
 							ProfileAttribute attr;
 							
 							attr = (ProfileAttribute) response.getResponseData();
+							String globalAvatarUrl = "";
 							
 							try {
 								m_profileAvatarArea.createWidget(attr);
 
 								//replace the image on sidebar with the current image
 								List<ProfileAttributeListElement> value = (List<ProfileAttributeListElement>)attr.getValue();
+								String avatarUrl;
 								if(value != null && value.size() > 0){
 									ProfileAttributeListElement valItem = value.get(0);
-									String sval = valItem.getValue().toString();
+									avatarUrl       = 
+									globalAvatarUrl = valItem.getValue().toString();
+								}
+								
+								else {
+									avatarUrl       = GwtTeaming.getImageBundle().userAvatar().getSafeUri().asString();
+									globalAvatarUrl = "";
+								}
 											
-									Image img = new Image(sval);
-			
-									// Find the element that this RootPanel will wrap.
-									Element elem = Document.get().getElementById("profilePhoto");
-									Element oldChild = null;
-									Element anchor = null;
-									
-									NodeList alist = (NodeList) elem.getElementsByTagName("a");
-									if(alist!=null && alist.getLength() > 0){
-										anchor = (Element) alist.getItem(0);
+								Image img = new Image(avatarUrl);
+		
+								// Find the element that this RootPanel will wrap.
+								Element elem = Document.get().getElementById("profilePhoto");
+								Element oldChild = null;
+								Element anchor = null;
+								
+								NodeList alist = (NodeList) elem.getElementsByTagName("a");
+								if(alist!=null && alist.getLength() > 0){
+									anchor = (Element) alist.getItem(0);
+								}
+								NodeList imgList = (NodeList) elem.getElementsByTagName("img");
+								if(imgList!=null && imgList.getLength() > 0){
+									oldChild = (Element) imgList.getItem(0);
+								}
+								
+								if(anchor != null) {
+									anchor.removeChild(oldChild);
+									if(img.getElement() != null){
+										img.getElement().removeAttribute("width");
+										img.getElement().removeAttribute("height");
+										anchor.appendChild(img.getElement());
 									}
-									NodeList imgList = (NodeList) elem.getElementsByTagName("img");
-									if(imgList!=null && imgList.getLength() > 0){
-										oldChild = (Element) imgList.getItem(0);
-									}
-									
-									if(anchor != null) {
-										anchor.removeChild(oldChild);
-										if(img.getElement() != null){
-											img.getElement().removeAttribute("width");
-											img.getElement().removeAttribute("height");
-											anchor.appendChild(img.getElement());
-										}
-									}
-									
-									updateQuota();
-								}	
+								}
+								
+								updateQuota();
 							} catch (Exception e) {
 								Window.alert("Error modifying avatar" + e.getMessage());
+							}
+							
+							// Tell the rest of the system that the
+							// user's avatar has been modified.
+							profileRequestInfo.setUserAvatarUrl(globalAvatarUrl);
+							if (profileRequestInfo.getBinderId().equals(profileRequestInfo.getCurrentUserWorkspaceId())) {
+								patchTopAvatarUrl(fixupAvatarUrl(globalAvatarUrl));
 							}
 						}
 					};
@@ -759,6 +782,35 @@ public class ProfileMainPanel extends Composite implements SubmitCompleteHandler
 		}
 		
 		return m_editAvatarSuccessHandler;
+	}
+	
+	/*
+	 * Updates the user's avatar URL in the top level request info.
+	 */
+	private native String patchTopAvatarUrl(String avatarUrl) /*-{
+		$wnd.top.m_requestInfo.userAvatarUrl = avatarUrl;
+	}-*/;
+	
+	/*
+	 * Given an avatar URL from a user's profile, patches it so
+	 * that it renders from a thumbnail instead of the full image.
+	 */
+	private static String fixupAvatarUrl(String url) {
+		// Do we have a URL to fixup?
+		if (GwtClientHelper.hasString(url)) {
+			// Yes!  Change it so that it renders from a thumbnail
+			// instead of the full image.							
+			for (int i = 0; i < FIXUP_AVATAR_URL_CHANGE_THESE.length; i += 1) {
+				if (url.contains(FIXUP_AVATAR_URL_CHANGE_THESE[i])) {
+					url = GwtClientHelper.replace(url, FIXUP_AVATAR_URL_CHANGE_THESE[i], FIXUP_AVATAR_URL_TO_THIS);
+					break;
+				}
+			}
+		}
+		
+		// If we get here, URL refers to the fixed up avatar URL.
+		// Return it.
+		return url;
 	}
 	
 	private void updateQuota() {

@@ -23,6 +23,8 @@ import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.Description;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.FileAttachment;
+import org.kablink.teaming.domain.NoBinderByTheIdException;
+import org.kablink.teaming.domain.NoFolderEntryByTheIdException;
 import org.kablink.teaming.domain.NoShareItemByTheIdException;
 import org.kablink.teaming.domain.ShareItem;
 import org.kablink.teaming.domain.User;
@@ -30,6 +32,7 @@ import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.module.file.FileIndexData;
 import org.kablink.teaming.remoting.rest.v1.exc.InternalServerErrorException;
+import org.kablink.teaming.remoting.rest.v1.exc.NotFoundException;
 import org.kablink.teaming.remoting.rest.v1.exc.NotModifiedException;
 import org.kablink.teaming.remoting.rest.v1.util.BinderBriefBuilder;
 import org.kablink.teaming.remoting.rest.v1.util.ResourceUtil;
@@ -130,7 +133,11 @@ public class ShareResource extends AbstractResource {
     @Path("/{id}")
     public Share getShare(@PathParam("id") Long id) {
         ShareItem share = _getShareItem(id);
-        return ResourceUtil.buildShare(share, findDefinableEntity(share.getSharedEntityIdentifier()), buildShareRecipient(share), isGuestAccessEnabled());
+        DefinableEntity definableEntity = findDefinableEntity(share.getSharedEntityIdentifier());
+        if (definableEntity!=null) {
+            throw new NoShareItemByTheIdException(id);
+        }
+        return ResourceUtil.buildShare(share, definableEntity, buildShareRecipient(share), isGuestAccessEnabled());
     }
 
     @POST
@@ -170,7 +177,16 @@ public class ShareResource extends AbstractResource {
             shareItem.setRecipientId(origItem.getRecipientId());
             shareItem = getSharingModule().modifyShareItem(shareItem, origItem.getId());
         }
-        DefinableEntity entity = findDefinableEntity(shareItem.getSharedEntityIdentifier());
+        EntityIdentifier sharedEntityId = shareItem.getSharedEntityIdentifier();
+        DefinableEntity entity = findDefinableEntity(sharedEntityId);
+        if (entity==null) {
+            if (sharedEntityId.getEntityType()== EntityIdentifier.EntityType.folderEntry) {
+                throw new NoFolderEntryByTheIdException(sharedEntityId.getEntityId());
+            } else if (sharedEntityId.getEntityType().isBinder()) {
+                throw new NoBinderByTheIdException(sharedEntityId.getEntityId());
+            }
+            throw new NotFoundException(ApiErrorCode.BAD_INPUT, "The shared entity could not be found.");
+        }
         if (notifyRecipient) {
             notifyShareRecipients(shareItem, entity, false, notifyAddresses);
         }
@@ -231,9 +247,9 @@ public class ShareResource extends AbstractResource {
     @GET
     @Path("/by_user/{id}/library_children")
     public Response getLibraryChildrenSharedByUser(@PathParam("id") Long userId,
-                                                                             @QueryParam("hidden") @DefaultValue("false") boolean showHidden,
-                                                                             @QueryParam("unhidden") @DefaultValue("true") boolean showUnhidden,
-                                                                             @Context HttpServletRequest request) {
+                                                   @QueryParam("hidden") @DefaultValue("false") boolean showHidden,
+                                                   @QueryParam("unhidden") @DefaultValue("true") boolean showUnhidden,
+                                                   @Context HttpServletRequest request) {
         List<Pair<ShareItem, DefinableEntity>> shareItems = getSharedByShareItems(userId);
         Date lastModified = getSharesLibraryModifiedDate(shareItems, false);
         Date ifModifiedSince = getIfModifiedSinceDate(request);
@@ -403,8 +419,11 @@ public class ShareResource extends AbstractResource {
         SearchResultList<Share> results = new SearchResultList<Share>();
         for (Pair<ShareItem, DefinableEntity> pair : shareItems) {
             ShareItem shareItem = pair.getA();
-            results.append(ResourceUtil.buildShare(shareItem, findDefinableEntity(shareItem.getSharedEntityIdentifier()),
-                    buildShareRecipient(shareItem), isGuestAccessEnabled()));
+            DefinableEntity definableEntity = findDefinableEntity(shareItem.getSharedEntityIdentifier());
+            if (definableEntity!=null) {
+                results.append(ResourceUtil.buildShare(shareItem, definableEntity,
+                        buildShareRecipient(shareItem), isGuestAccessEnabled()));
+            }
         }
         return results;
     }
@@ -628,8 +647,11 @@ public class ShareResource extends AbstractResource {
         List<Pair<ShareItem, DefinableEntity>> shareItems = getShareItems(spec, getLoggedInUserId(), false, true, false);
         for (Pair<ShareItem, DefinableEntity> pair : shareItems) {
             ShareItem shareItem = pair.getA();
-            results.append(ResourceUtil.buildShare(shareItem, findDefinableEntity(shareItem.getSharedEntityIdentifier()),
-                    buildShareRecipient(shareItem), isGuestAccessEnabled()));
+            DefinableEntity definableEntity = findDefinableEntity(shareItem.getSharedEntityIdentifier());
+            if (definableEntity!=null) {
+                results.append(ResourceUtil.buildShare(shareItem, definableEntity,
+                        buildShareRecipient(shareItem), isGuestAccessEnabled()));
+            }
         }
         return results;
     }

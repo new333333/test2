@@ -1983,7 +1983,8 @@ public interface GwtTeamingMessages extends Messages
 	String addFilesHtml5PopupAbortAlt();
 	String addFilesHtml5PopupBrowse();
 	String addFilesHtml5PopupBrowseAlt();
-	String addFilesHtml5PopupBusy(String fileName, int thisOne, int total);
+	String addFilesHtml5PopupBusyPre();
+	String addFilesHtml5PopupBusyPost(int thisOne, int total);
 	String addFilesHtml5PopupClose();
 	String addFilesHtml5PopupCloseAlt();
 	String addFilesHtml5PopupDnDHint();
@@ -3304,4 +3305,9 @@ public interface GwtTeamingMessages extends Messages
 	String netFolderGlobalSettingsDlg_SecondsLabel();
 	String netFolderGlobalSettingsDlg_UseDirRightsHint();
 
+	// Strings used in the "Prompt for external users email address" dialog
+	String PromptForExternalUsersEmailAddressDlg_Header();
+	String PromptForExternalUsersEmailAddressDlg_Hint();
+	String PromptForExternalUsersEmailAddressDlg_NoEmailAddressesEntered();
+	
 }// end GwtTeamingMessages

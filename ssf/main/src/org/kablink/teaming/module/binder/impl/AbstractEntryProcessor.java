@@ -1665,7 +1665,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 	        //Make sure to get inaccessible sub-folders that have visible folders further down the tree
         	hits = SearchUtils.searchFolderOneLevelWithInferredAccess(luceneSession, RequestContextHolder.getRequestContext().getUserId(),
 	        		so, searchMode.intValue(), searchOffset, 
-	        		maxResults, binder);
+	        		maxResults, binder, true);
         }
         finally {
             luceneSession.close();

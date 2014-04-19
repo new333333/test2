@@ -312,6 +312,7 @@ public class NetFolderHelper
 	{
 		Long workspaceId;
 		String netFolderServerName = null;
+		String serverName = null;
 		String serverAddr = null;
 		String volume = null;
 		String path = null;
@@ -330,6 +331,7 @@ public class NetFolderHelper
 		if ( homeDirInfo != null )
 		{
 			netFolderServerName = homeDirInfo.getNetFolderServerName();
+            serverName = homeDirInfo.getServerHostName();
 			serverAddr = homeDirInfo.getServerAddr();
 			volume = homeDirInfo.getVolume();
 			path = homeDirInfo.getPath();
@@ -340,7 +342,8 @@ public class NetFolderHelper
 			notEnoughInfo = true;
 		
 		if ( (netFolderServerName == null || netFolderServerName.length() == 0) &&
-			 (serverAddr == null || serverAddr.length() == 0 ||
+             (((serverAddr == null || serverAddr.length() == 0) &&
+                     (serverName == null || serverName.length() == 0)) ||
 			 volume == null || volume.length() == 0) )
 		{
 			notEnoughInfo = true;
@@ -377,8 +380,7 @@ public class NetFolderHelper
 		else
 		{
 			// Does a net folder root exists with a unc path to the given server address / volume?
-			serverUNC = "\\\\" + serverAddr + "\\" + volume;
-			rdConfig = findNetFolderRootByUNC( adminModule, resourceDriverModule, serverUNC );
+			rdConfig = findNetFolderRootByHostAndVolume( adminModule, resourceDriverModule, serverName, serverAddr, volume);
 			if ( rdConfig == null )
 			{
 				// No, create one
@@ -388,6 +390,7 @@ public class NetFolderHelper
 																	resourceDriverModule,
 																	homeDirInfo );
 			}
+            serverUNC = rdConfig.getRootPath();
 		}
 		
 		if ( rdConfig != null && isNetFolderServerConfigured( rdConfig ) )
@@ -856,6 +859,20 @@ public class NetFolderHelper
 		// If we get here we did not find a net folder root with the given id.
 		return null;
 	}
+
+    public static ResourceDriverConfig findNetFolderRootByHostAndVolume(
+            AdminModule adminModule,
+            ResourceDriverModule resourceDriverModule,
+            String hostName,
+            String hostAddress,
+            String volume)
+    {
+        ResourceDriverConfig config = findNetFolderRootByUNC(adminModule, resourceDriverModule, "\\\\" + hostName + "\\" + volume);
+        if (config==null) {
+            config = findNetFolderRootByUNC(adminModule, resourceDriverModule, "\\\\" + hostAddress + "\\" + volume);
+        }
+        return config;
+    }
 
 	/**
 	 * 

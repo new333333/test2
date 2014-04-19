@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -30,25 +30,34 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.fi.connection.acl;
+package org.kablink.teaming.fi;
 
-/**
- * Unchecked exception thrown when a mapping of external system principal ID to Vibe
- * user/group object fails.
- * 
- * @author jong
- *
- */
-public class AclItemPrincipalMappingException extends RuntimeException {
+import org.kablink.util.api.ApiErrorCode;
+
+public class ServerDownException extends FIException {
 
 	private static final long serialVersionUID = 1L;
 
-	public AclItemPrincipalMappingException(String message) {
-		super(message);
+	private static final String ERROR_CODE = "fi.error.server.down";
+
+	/**
+	 * Constructor.
+	 * 
+	 * @param resourcePath a path identifying the resource
+	 * @param operationName name of the operation that failed due to downed or unreachable server
+	 */
+	public ServerDownException(String resourcePath, String operationName) {
+		super(ERROR_CODE, new Object[] {operationName, resourcePath});
 	}
 	
-	public AclItemPrincipalMappingException(String message, Throwable cause) {
-		super(message, cause);
+	@Override
+    public int getHttpStatusCode() {
+    	return 503; // Service Unavailable
+    }
+
+	@Override
+	public ApiErrorCode getApiErrorCode() {
+		return ApiErrorCode.MIRRORED_SERVER_DOWN;
 	}
-	
+
 }

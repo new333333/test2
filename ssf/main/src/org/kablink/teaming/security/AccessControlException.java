@@ -35,6 +35,7 @@ package org.kablink.teaming.security;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 
+import org.kablink.teaming.exception.NoStackTrace;
 import org.kablink.teaming.exception.UncheckedCodedException;
 import org.kablink.util.api.ApiErrorCode;
 
@@ -43,7 +44,7 @@ import org.kablink.util.api.ApiErrorCode;
  * 
  * @author Jong Kim
  */
-public class AccessControlException extends UncheckedCodedException {
+public class AccessControlException extends UncheckedCodedException implements NoStackTrace {
 	private static final String AccessControlException_ErrorCode = "errorcode.access.denied";
 
 	public AccessControlException() {

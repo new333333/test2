@@ -6236,4 +6236,17 @@ td.datePickerMonth {
 /* End: Styles used in the Net Folder Settings dialog. */
 
 
+/* Start: Prompt for external users email address dialog */
+
+.promptForExternalUsersEmailAddressDlg_Hint
+{
+	color: #4D6D8B;
+	font-size: .9em;
+	margin-bottom: 6px;
+}
+
+/* End: Name Completion Settings dialog */
+
+
+
 /* End Of File */
