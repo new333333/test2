@@ -75,6 +75,7 @@ import org.kablink.teaming.domain.NoFolderEntryByTheIdException;
 import org.kablink.teaming.domain.Tag;
 import org.kablink.teaming.domain.WorkflowState;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
+import org.kablink.teaming.module.simplefile.NetFileId;
 import org.kablink.teaming.util.Constants;
 import org.springframework.dao.DataAccessException;
 import org.springframework.orm.hibernate3.HibernateCallback;
@@ -1285,6 +1286,66 @@ public void delete(final Folder folder) {
     		end(begin, "loadFolderByResourcePath()");
     	}
 	}
-
+	
+	@Override
+	public Long findFolderId(final NetFileId netFileId, final Long zoneId) {
+		long begin = System.nanoTime();
+		try {
+			List<Long> result = (List<Long>) getHibernateTemplate().execute(new HibernateCallback() {
+				@Override
+				public Object doInHibernate(Session session) throws HibernateException {
+					return session.createCriteria(Folder.class)
+						.setProjection(Projections.property("id"))
+							.add(Restrictions.eq(ObjectKeys.FIELD_ZONE, zoneId))
+							.add(Restrictions.eq(ObjectKeys.FIELD_NET_FOLDER_CONFIG_ID, netFileId.getNetFolderConfigId()))
+							.add(Restrictions.eq(ObjectKeys.FIELD_BINDER_RESOURCE_PATH, netFileId.getResourcePath()))
+							.setCacheable(isBinderQueryCacheable())
+							.list();
+				}});
+			if(result.isEmpty()) {
+				return null; // not found
+			}
+			else {
+				if(result.size() > 1)
+					logger.warn("More than one folder object found for net file " + netFileId);
+				return (Long) result.get(0);
+			}
+		}
+		finally {
+			end(begin, "findFolderId()");
+		}
+	}
+	
+	@Override
+	public Long findFolderEntryId(final NetFileId netFileId, final Long zoneId) {
+		// This query uses inner join
+		long begin = System.nanoTime();
+		try {
+			List<Long> result = (List<Long>) getHibernateTemplate().execute(new HibernateCallback() {
+				@Override
+				public Object doInHibernate(Session session) throws HibernateException {
+					return session.createCriteria(FolderEntry.class, "folderEntryAlias")
+							.add(Restrictions.eq("folderEntryAlias." + ObjectKeys.FIELD_ZONE, zoneId))
+							.add(Restrictions.eq("folderEntryAlias." + ObjectKeys.FIELD_ENTITY_TITLE, netFileId.getResourceName()))
+						    .createCriteria("folderEntryAlias.parentBinder", "folderAlias")							
+							.add(Restrictions.eq("folderAlias." + ObjectKeys.FIELD_NET_FOLDER_CONFIG_ID, netFileId.getNetFolderConfigId()))
+							.add(Restrictions.eq("folderAlias." + ObjectKeys.FIELD_BINDER_RESOURCE_PATH, netFileId.getParentResourcePath()))
+							.setProjection(Projections.property("folderEntryAlias.id"))
+							.setCacheable(false)
+							.list();
+				}});
+			if(result.isEmpty()) {
+				return null; // not found
+			}
+			else {
+				if(result.size() > 1)
+					logger.warn("More than one folder entry object found for net file " + netFileId);
+				return (Long) result.get(0);
+			}
+		}
+		finally {
+			end(begin, "findFolderEntryId()");
+		}
+	}
 
 }

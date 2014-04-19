@@ -32,13 +32,14 @@
  */
 package org.kablink.teaming.module.simplefile;
 
+import org.kablink.teaming.fi.connection.ResourceDriver;
+import org.kablink.teaming.module.netfolder.NetFolderUtil;
+
 /**
  * @author jong
  *
  */
 public class NetFileId extends SimpleFileId {
-
-	private static final long serialVersionUID = 1L;
 
 	/*
 	 * ID of a NetFolderConfig object
@@ -50,9 +51,13 @@ public class NetFileId extends SimpleFileId {
 	 * This value is required and meaningful only if netFolderConfigId is greater than zero.
 	 */
 	private String resourcePath;
+	
+	// Cache fields
+	private String parentPath;
+	private String name;
 
-	public NetFileId(Long netFolderConfigId, String resourcePath, boolean directory, Long entityId) {
-		super(directory, entityId);
+	public NetFileId(Long netFolderConfigId, String resourcePath, boolean directory) {
+		super(directory);
 		if(netFolderConfigId == null)
 			throw new IllegalArgumentException("Net folder config ID must be specified");
 		if(resourcePath == null)
@@ -61,6 +66,16 @@ public class NetFileId extends SimpleFileId {
 		this.resourcePath = resourcePath;
 	}
 
+	public String getResourceName() {
+		readyName();
+		return name;
+	}
+	
+	public String getParentResourcePath() {
+		readyName();
+		return parentPath;
+	}
+	
 	public Long getNetFolderConfigId() {
 		return netFolderConfigId;
 	}
@@ -75,6 +90,28 @@ public class NetFileId extends SimpleFileId {
 
 	public void setResourcePath(String resourcePath) {
 		this.resourcePath = resourcePath;
+	}
+	
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("(")
+		.append("netFolderConfigId=")
+		.append(netFolderConfigId)
+		.append(",resourcePath=")
+		.append(resourcePath)
+		.append(",directory=")
+		.append(directory)
+		.append(")");
+		return sb.toString();
+	}
+	
+	private void readyName() {
+		if(name == null) {
+			ResourceDriver driver = NetFolderUtil.getResourceDriverByNetFolderConfigId(netFolderConfigId);
+			name = driver.getResourceName(resourcePath);
+			parentPath = driver.getParentResourcePath(resourcePath);
+		}
 	}
 	
 }
