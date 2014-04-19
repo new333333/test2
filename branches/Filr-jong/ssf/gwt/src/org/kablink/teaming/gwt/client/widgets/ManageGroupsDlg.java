@@ -37,6 +37,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.kablink.teaming.gwt.client.GwtPersonalPreferences;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.binderviews.QuickFilter;
@@ -60,6 +61,7 @@ import org.kablink.teaming.gwt.client.menu.PopupMenu;
 import org.kablink.teaming.gwt.client.rpc.shared.DeleteGroupsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetAllGroupsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetGroupsRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.GetPersonalPrefsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GroupType;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
@@ -114,6 +116,7 @@ public class ManageGroupsDlg extends DlgBox implements
 	private ModifyGroupDlg m_modifyGroupDlg;
 	private QuickFilter m_quickFilter;
 	private int m_width;
+	private int m_pageSize;
 	private GwtTeamingMessages m_messages;
 
 	// The following defines the TeamingEvents that are handled by
@@ -206,6 +209,7 @@ public class ManageGroupsDlg extends DlgBox implements
 				height), DlgButtonMode.Close);
 
 		m_messages = GwtTeaming.getMessages();
+		m_pageSize = 20;
 
 		// Register the events to be handled by this class.
 		EventHelper.registerEventHandlers(GwtTeaming.getEventBus(),
@@ -335,7 +339,7 @@ public class ManageGroupsDlg extends DlgBox implements
 
 		// Create the CellTable that will display the list of groups.
 		cellTableResources = GWT.create( VibeCellTable.VibeCellTableResources.class );
-		m_groupsTable = new CellTable<GroupInfoPlus>(20, cellTableResources);
+		m_groupsTable = new CellTable<GroupInfoPlus>(m_pageSize, cellTableResources);
 		m_groupsTable.setWidth(String.valueOf(m_width - 20) + "px");
 
 		// Set the widget that will be displayed when there are no groups
@@ -730,7 +734,72 @@ public class ManageGroupsDlg extends DlgBox implements
 		return null;
 	}
 
-	/**
+	/*
+	 * Asynchronously loads the first piece of information to run the
+	 * dialog.
+	 */
+	private void loadPart1Async( final String filter )
+	{
+		GwtClientHelper.deferCommand( new ScheduledCommand()
+		{
+			@Override
+			public void execute()
+			{
+				loadPart1Now( filter );
+			}
+		} );
+	}
+	
+	/*
+	 * Asynchronously loads the first piece of information to run the
+	 * dialog.
+	 */
+	private void loadPart1Now( final String filter )
+	{
+		GwtClientHelper.executeCommand(
+			new GetPersonalPrefsCmd(),
+			new AsyncCallback<VibeRpcResponse>() {
+				@Override
+				public void onFailure( Throwable caught )
+				{
+					GwtClientHelper.handleGwtRPCFailure(
+						caught,
+						GwtTeaming.getMessages().rpcFailure_GetPersonalPreferences());
+					loadPart2Async( filter );
+				}
+
+				@Override
+				public void onSuccess( VibeRpcResponse result )
+				{
+					GwtPersonalPreferences prefs = ( (GwtPersonalPreferences) result.getResponseData() );
+					int pageSize = ((null == prefs) ? 0 : prefs.getNumEntriesPerPage());
+					if ((0 < pageSize) && (pageSize != m_pageSize))
+					{
+						m_pageSize = pageSize;
+						m_groupsTable.setPageSize( m_pageSize );
+					}
+					loadPart2Async( filter );
+				}
+			} );
+	}
+	
+	/*
+	 * Asynchronously loads the next piece of information to run the
+	 * dialog.
+	 */
+	private void loadPart2Async( final String filter )
+	{
+		GwtClientHelper.deferCommand( new ScheduledCommand()
+		{
+			@Override
+			public void execute()
+			{
+				getAllGroupsFromServer( filter );
+			}
+		} );
+	}
+	
+	/*
 	 * Issue an ajax request to get a list of all the groups.
 	 */
 	private void getAllGroupsFromServer( String filter )
@@ -826,8 +895,8 @@ public class ManageGroupsDlg extends DlgBox implements
 	 */
 	public void init()
 	{
-		// Issue an ajax request to get a list of all the groups
-		getAllGroupsFromServer( null );
+		// Begin the process of loading the contents of the dialog.
+		loadPart1Async( null );
 	}
 
 	/**

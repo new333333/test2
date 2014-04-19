@@ -38,6 +38,7 @@ import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Attachment;
 import org.kablink.teaming.domain.Binder;
+import org.kablink.teaming.domain.BinderState;
 import org.kablink.teaming.domain.Description;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.Folder;
@@ -49,12 +50,14 @@ import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.shared.FolderUtils;
 import org.kablink.teaming.remoting.rest.v1.exc.BadRequestException;
 import org.kablink.teaming.remoting.rest.v1.exc.ConflictException;
+import org.kablink.teaming.remoting.rest.v1.exc.InternalServerErrorException;
 import org.kablink.teaming.remoting.rest.v1.exc.NotFoundException;
 import org.kablink.teaming.remoting.rest.v1.exc.NotModifiedException;
 import org.kablink.teaming.remoting.rest.v1.util.BinderBriefBuilder;
 import org.kablink.teaming.remoting.rest.v1.util.LinkUriUtil;
 import org.kablink.teaming.remoting.rest.v1.util.ResourceUtil;
 import org.kablink.teaming.remoting.rest.v1.util.SearchResultBuilderUtil;
+import org.kablink.teaming.rest.v1.model.BaseBinderChange;
 import org.kablink.teaming.rest.v1.model.BinderBrief;
 import org.kablink.teaming.rest.v1.model.BinderChange;
 import org.kablink.teaming.rest.v1.model.BinderChanges;
@@ -308,11 +311,12 @@ public class SelfResource extends AbstractFileResource {
    	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
     public Response getMyFileLibraryChildren(
             @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr,
+            @QueryParam("allow_jits") @DefaultValue("true") Boolean allowJits,
             @QueryParam("first") @DefaultValue("0") Integer offset,
             @QueryParam("count") @DefaultValue("100") Integer maxCount,
             @Context HttpServletRequest request) {
         SearchResultList<SearchableObject> results = _getMyFilesLibraryChildren(getIfModifiedSinceDate(request), true, false, true,
-                toDomainFormat(descriptionFormatStr), offset, maxCount, "/self/my_files/library_children");
+                allowJits, toDomainFormat(descriptionFormatStr), offset, maxCount, "/self/my_files/library_children");
         Date lastModified = results.getLastModified();
         if (lastModified!=null) {
             return Response.ok(results).lastModified(lastModified).build();
@@ -330,7 +334,7 @@ public class SelfResource extends AbstractFileResource {
             @QueryParam("count") @DefaultValue("100") Integer maxCount,
             @Context HttpServletRequest request) {
         SearchResultList<SearchableObject> results = _getMyFilesLibraryChildren(getIfModifiedSinceDate(request), true, false, false,
-                toDomainFormat(descriptionFormatStr), offset, maxCount, "/self/my_files/library_children");
+                true, toDomainFormat(descriptionFormatStr), offset, maxCount, "/self/my_files/library_children");
         Date lastModified = results.getLastModified();
         if (lastModified!=null) {
             return Response.ok(results).lastModified(lastModified).build();
@@ -498,7 +502,7 @@ public class SelfResource extends AbstractFileResource {
         if (!SearchUtils.userCanAccessMyFiles(this, getLoggedInUser())) {
             throw new AccessControlException("Personal storage is not allowed.", null);
         }
-        Date lastModified = getMyFilesLibraryModifiedDate(recursive);
+        Date lastModified = getMyFilesLibraryModifiedDate(recursive, true);
         Date ifModifiedSince = getIfModifiedSinceDate(request);
         if (ifModifiedSince!=null && !ifModifiedSince.before(lastModified)) {
             throw new NotModifiedException();
@@ -623,6 +627,29 @@ public class SelfResource extends AbstractFileResource {
         return resultList;
     }
 
+    @POST
+    @Path("/my_files/initial_sync")
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    public Response performInitialSync() {
+        if (!SearchUtils.userCanAccessMyFiles(this, getLoggedInUser())) {
+            throw new AccessControlException("Personal storage is not allowed.", null);
+        }
+        List<Long> homeFolderIds = SearchUtils.getHomeFolderIds(this, getLoggedInUser());
+        for (Long id : homeFolderIds) {
+            try {
+                lookupNetFolder(id);
+                if (getFolderModule().getLastFullSyncCompletionTime(id)==null) {
+                    getFolderModule().enqueueFullSynchronize(id);
+                }
+            } catch (Exception e) {
+                logger.error("Unable to trigger initial sync of the user's home folder: " + getLoggedInUser().getName(), e);
+                throw new InternalServerErrorException(ApiErrorCode.SERVER_ERROR, e.getMessage());
+            }
+        }
+        return Response.ok().build();
+    }
+
     @GET
     @Path("mobile_devices")
     public SearchResultList<MobileDevice> getMobileDevices() {
@@ -720,13 +747,14 @@ public class SelfResource extends AbstractFileResource {
         return results;
     }
 
-    private SearchResultList<SearchableObject> _getMyFilesLibraryChildren(Date ifModifiedSince, boolean folders, boolean entries, boolean files,
+    private SearchResultList<SearchableObject> _getMyFilesLibraryChildren(Date ifModifiedSince, boolean folders, boolean entries, boolean files, boolean allowJits,
                                                                           int descriptionFormat, Integer offset, Integer maxCount, String nextUrl) {
-        if (!SearchUtils.userCanAccessMyFiles(this, getLoggedInUser())) {
+        org.kablink.teaming.domain.User user = getLoggedInUser();
+        if (!SearchUtils.userCanAccessMyFiles(this, user)) {
             throw new AccessControlException("Personal storage is not allowed.", null);
         }
 
-        Date lastModified = getMyFilesLibraryModifiedDate(false);
+        Date lastModified = getMyFilesLibraryModifiedDate(false, allowJits);
         if (ifModifiedSince!=null && lastModified!=null && !ifModifiedSince.before(lastModified)) {
             throw new NotModifiedException();
         }
@@ -736,8 +764,21 @@ public class SelfResource extends AbstractFileResource {
         } else {
             nextParams.put("description_format", "text");
         }
-        Criteria crit = SearchUtils.getMyFilesSearchCriteria(this, getLoggedInUser().getWorkspaceId(), folders, entries, false, files);
-        SearchResultList<SearchableObject> results = lookUpChildren(crit, descriptionFormat, offset, maxCount, nextUrl, nextParams, lastModified);
+        SearchResultList<SearchableObject> results = null;
+        if (SearchUtils.useHomeAsMyFiles(this, user)) {
+            Long homeId = SearchUtils.getHomeFolderId(this, user);
+            if (homeId!=null) {
+                // If we are listing the home folder, use this API because it could trigger JITS.
+                results = getChildren(homeId, SearchUtils.buildLibraryCriterion(true), folders, entries, files, allowJits,
+                                      offset, maxCount, nextUrl, nextParams, descriptionFormat, ifModifiedSince);
+                results.setLastModified(lastModified);
+            }
+        }
+        if (results==null) {
+            // In all other cases, this code will search across the various My Files locations.  JITS is irrelevant.
+            Criteria crit = SearchUtils.getMyFilesSearchCriteria(this, user.getWorkspaceId(), folders, entries, false, files);
+            results = lookUpChildren(crit, descriptionFormat, offset, maxCount, nextUrl, nextParams, lastModified);
+        }
         setMyFilesParents(results);
         return results;
     }
@@ -755,9 +796,17 @@ public class SelfResource extends AbstractFileResource {
             } else if (obj instanceof DefinableEntityBrief && allParentIds.contains(((DefinableEntityBrief)obj).getParentBinder().getId())) {
                 ((DefinableEntityBrief)obj).setParentBinder(parent);
             } else if (obj instanceof BinderChange) {
-                org.kablink.teaming.rest.v1.model.Binder binder = ((BinderChange)obj).getBinder();
-                if (binder!=null && allParentIds.contains(binder.getParentBinder().getId())) {
-                    binder.setParentBinder(parent);
+                BinderChange binderChange = (BinderChange) obj;
+                if (allParentIds.contains(binderChange.getId()) &&
+                        org.kablink.teaming.domain.BinderChange.Action.modify.name().equals(binderChange.getAction())) {
+                    BinderBrief fakeMyFileFolders = getFakeMyFileFolders();
+                    binderChange.setId(fakeMyFileFolders.getId());
+                    binderChange.setBinder(fakeMyFileFolders.asBinder());
+                } else {
+                    org.kablink.teaming.rest.v1.model.Binder binder = ((BinderChange)obj).getBinder();
+                    if (binder!=null && allParentIds.contains(binder.getParentBinder().getId())) {
+                        binder.setParentBinder(parent);
+                    }
                 }
             } else if (obj instanceof FileChange) {
                 FileProperties file = ((FileChange)obj).getFile();

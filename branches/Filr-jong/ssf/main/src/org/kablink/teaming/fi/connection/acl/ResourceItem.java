@@ -197,6 +197,9 @@ public class ResourceItem {
 	public Boolean isAclInherited() {
 		return aclInherited;
 	}
+	public Boolean getAclInherited() {
+		return aclInherited;
+	}
 	public void setAclInherited(Boolean aclInherited) {
 		this.aclInherited = aclInherited;
 	}

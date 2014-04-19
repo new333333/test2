@@ -67,6 +67,8 @@ public abstract class DefinableEntity extends SearchableObject {
         super();
     }
 
+
+
     protected DefinableEntity(DefinableEntity orig) {
         super(orig);
         this.id = orig.id;
@@ -84,6 +86,21 @@ public abstract class DefinableEntity extends SearchableObject {
         this.eventAsIcalString = orig.eventAsIcalString;
         this.attachments = orig.attachments;
         this.customFields = orig.customFields;
+    }
+
+    public DefinableEntity(DefinableEntityBrief orig) {
+        super(orig);
+        this.id = orig.getId();
+        this.parentBinder = orig.getParentBinder();
+        this.title = orig.getTitle();
+        this.definition = orig.getDefinition();
+        this.description = orig.getDescription();
+        this.entityType = orig.getEntityType();
+        this.family = orig.getFamily();
+        this.icon = orig.getIcon();
+        this.permaLink = orig.getPermaLink();
+        this.creation = orig.getCreation();
+        this.modification = orig.getModification();
     }
 
     @XmlElement(name="average_rating")

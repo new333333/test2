@@ -50,7 +50,6 @@ import org.kablink.teaming.gwt.client.util.Html5UploadCallback;
 import org.kablink.teaming.gwt.client.util.Html5UploadState;
 import org.kablink.teaming.gwt.client.widgets.ProgressBar;
 import org.kablink.teaming.gwt.client.widgets.VibeFlexTable;
-
 import org.vectomatic.dnd.DataTransferExt;
 import org.vectomatic.dnd.DropPanel;
 import org.vectomatic.file.FileList;
@@ -126,6 +125,10 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 	// Padding on the left/right and top/bottom of the popup.
 	private static int LEFT_RIGHT_PAD	= 50;	// This number of pixels on the left and right.
 	private static int TOP_BOTTOM_PAD	= 50;	// This number of pixels on the top  and bottom.
+	
+	// Template used to generate the filename widgets while uploading a
+	// file.
+	private final static UploadTemplate UPLOAD_TEMPLATE = GWT.create(UploadTemplate.class);
 	
 	// The following defines the TeamingEvents that are handled by
 	// this class.  See EventHelper.registerEventHandlers() for how
@@ -789,7 +792,9 @@ public class AddFilesHtml5Popup extends TeamingPopupPanel
 	 */
 	@Override
 	public void uploadingNextFile(String fileName, int thisFile, int totalFiles) {
-		m_hintLabel.setText(m_messages.addFilesHtml5PopupBusy(fileName, thisFile, totalFiles));
+		String preText  = m_messages.addFilesHtml5PopupBusyPre();
+		String postText = m_messages.addFilesHtml5PopupBusyPost(thisFile, totalFiles);
+		m_hintLabel.getElement().setInnerSafeHtml(UPLOAD_TEMPLATE.uploadHtml(preText, fileName, postText));
 	}
 	
 	/**

@@ -3573,7 +3573,7 @@ public class BinderHelper {
 				binderIds.add("xxx");
 			}
 			crit = SearchUtils.entriesForTrackedPlacesEntriesAndPeople(bs, binderIds, null, null, false, 
-					Constants.LASTACTIVITY_FIELD, true, true);
+					Constants.LASTACTIVITY_FIELD, true, true, true);
 			options.put(ObjectKeys.SEARCH_CRITERIA_AND, crit);
 		} else if (ObjectKeys.SEARCH_SCOPE_NET_FOLDERS.equals(options.get(ObjectKeys.SEARCH_SCOPE))) {
 			//Search just the user's net folders
@@ -3606,7 +3606,7 @@ public class BinderHelper {
 				//Make sure there is some binderId to search for or the search returns everything
 				binderIds.add("xxx");
 			}
-			crit = SearchUtils.entriesForTrackedPlacesEntriesAndPeople(bs, binderIds, null, null, false, Constants.LASTACTIVITY_FIELD, true, true);
+			crit = SearchUtils.entriesForTrackedPlacesEntriesAndPeople(bs, binderIds, null, null, false, Constants.LASTACTIVITY_FIELD, true, true, true);
 			options.put(ObjectKeys.SEARCH_CRITERIA_AND, crit);
 		} else if (ObjectKeys.SEARCH_SCOPE_SHARED_WITH_ME.equals(options.get(ObjectKeys.SEARCH_SCOPE))) {
 			//Search the user's "shared with me" files
@@ -3673,7 +3673,7 @@ public class BinderHelper {
 				includeSubFolders = (Boolean)options.get(ObjectKeys.SEARCH_INCLUDE_NESTED_BINDERS);
 			}
 			Criteria crit = SearchUtils.entriesForTrackedPlacesEntriesAndPeople(bs, binderIds, null, null, false, 
-					Constants.LASTACTIVITY_FIELD, includeSubFolders, true);
+					Constants.LASTACTIVITY_FIELD, includeSubFolders, true, true);
 			options.put(ObjectKeys.SEARCH_CRITERIA_AND, crit);
 		}
 		

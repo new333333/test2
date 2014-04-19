@@ -46,6 +46,7 @@ import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.kablink.teaming.InvalidEmailAddressException;
+import org.kablink.teaming.NoObjectByTheIdException;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.UncheckedIOException;
 import org.kablink.teaming.context.request.RequestContextHolder;
@@ -65,6 +66,7 @@ import org.kablink.teaming.module.shared.AccessUtils;
 import org.kablink.teaming.module.sharing.SharingModule;
 import org.kablink.teaming.remoting.rest.v1.exc.BadRequestException;
 import org.kablink.teaming.remoting.rest.v1.exc.NotFoundException;
+import org.kablink.teaming.remoting.rest.v1.exc.NotModifiedException;
 import org.kablink.teaming.remoting.rest.v1.exc.UnsupportedMediaTypeException;
 import org.kablink.teaming.remoting.rest.v1.util.*;
 import org.kablink.teaming.rest.v1.model.*;
@@ -247,11 +249,18 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         if (ei==null) {
             return null;
         }
-        return findDefinableEntity(ei.getEntityType(), ei.getEntityId());
+        try {
+            return findDefinableEntity(ei.getEntityType(), ei.getEntityId());
+        } catch (NoObjectByTheIdException e) {
+            // Ignore
+        } catch (AccessControlException e) {
+            // Ignore
+        }
+        return null;
     }
 
     protected org.kablink.teaming.domain.DefinableEntity findDefinableEntity(EntityIdentifier.EntityType et, long entityId)
-            throws BadRequestException, NotFoundException {
+            throws BadRequestException {
         org.kablink.teaming.domain.DefinableEntity entity;
         if (et == EntityIdentifier.EntityType.folderEntry) {
             entity = getFolderModule().getEntry(null, entityId);
@@ -1147,7 +1156,7 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
                 }
             }
         }
-        maxDate = ResourceUtil.max(maxDate, getLibraryModifiedDate(binderList.toArray(new Long[binderList.size()]), recursive));
+        maxDate = ResourceUtil.max(maxDate, getLibraryModifiedDate(binderList.toArray(new Long[binderList.size()]), recursive, false));
         return maxDate;
     }
 
@@ -1244,11 +1253,11 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         return entity;
     }
 
-    protected Date getLibraryModifiedDate(Long [] binderIds, boolean recursive) {
+    protected Date getLibraryModifiedDate(Long [] binderIds, boolean recursive, boolean allowJits) {
         if (binderIds.length==0) {
             return null;
         }
-        if (!recursive) {
+        if (allowJits && !recursive) {
             triggerJitsIfNecessary(binderIds);
         }
         Criteria crit = getLibraryCriteria(binderIds, false, recursive);
@@ -1367,14 +1376,16 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         return or;
     }
 
-    protected Date getMyFilesLibraryModifiedDate(boolean recursive) {
+    protected Date getMyFilesLibraryModifiedDate(boolean recursive, boolean allowJits) {
         Long [] ids;
         if (recursive) {
             ids = new Long[] {getMyFilesFolderParent().getId()};
         } else if (SearchUtils.useHomeAsMyFiles(this)) {
             List<Long> homeFolderIds = SearchUtils.getHomeFolderIds(this, getLoggedInUser());
             ids = homeFolderIds.toArray(new Long[homeFolderIds.size()]);
-            triggerJitsIfNecessary(ids);
+            if (allowJits && !recursive) {
+                triggerJitsIfNecessary(ids);
+            }
         } else {
             List<Long> hiddenFolderIds = new ArrayList<Long>();
         	Long mfId = SearchUtils.getMyFilesFolderId(this, getLoggedInUser(), false);
@@ -1384,7 +1395,7 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
             hiddenFolderIds.add(getMyFilesFolderParent().getId());
             ids = hiddenFolderIds.toArray(new Long[hiddenFolderIds.size()]);
         }
-        return getLibraryModifiedDate(ids, recursive);
+        return getLibraryModifiedDate(ids, recursive, false);
     }
 
     protected LibraryInfo getMyFilesLibraryInfo() {
@@ -1402,6 +1413,7 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         libraryInfo.setFolderCount(libraryInfo.getFolderCount() - hiddenFolders);
         if (homeFolderIds.size()>0) {
             populateMirroredLibraryInfo(libraryInfo, homeFolderIds);
+            libraryInfo.setAllowClientTriggeredSync(true);
         }
         return libraryInfo;
     }
@@ -1446,6 +1458,7 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         binder.addAdditionalLink("child_library_files", baseUri + "/library_files");
         binder.addAdditionalLink("child_library_folders", baseUri + "/library_folders");
         binder.addAdditionalLink("child_library_tree", baseUri + "/library_tree");
+        binder.addAdditionalLink("initial_sync", baseUri + "/initial_sync");
         binder.addAdditionalLink("library_changes", baseUri + "/library_changes");
         binder.addAdditionalLink("library_children", baseUri + "/library_children");
         binder.addAdditionalLink("recent_activity", baseUri + "/recent_activity");
@@ -1798,5 +1811,79 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
 
     protected static CoreDao getCoreDao() {
         return (CoreDao) SpringContextUtil.getBean("coreDao");
+    }
+
+    protected BinderState getBinderState(Long id) {
+        BinderState state = (BinderState) getCoreDao().load(BinderState.class, id);
+        getCoreDao().evict(state);
+        return state;
+    }
+
+    protected Folder lookupNetFolder(Long id) {
+        Folder folder;
+        try {
+            Binder binder = getBinderModule().getBinder(id);
+            if (!(binder instanceof Folder)) {
+                throw new NoFolderByTheIdException(id);
+            }
+            folder = (Folder) binder;
+            if (!folder.isMirrored() || !folder.isTop()) {
+                throw new NoFolderByTheIdException(id);
+            }
+        } catch (NoBinderByTheIdException e) {
+            throw new NoFolderByTheIdException(id);
+        }
+        return folder;
+    }
+
+    protected SearchResultList<SearchableObject> getChildren(long id, Criterion filter, boolean binders, boolean entries, boolean files,
+                                                             boolean allowJits, Integer offset, Integer maxCount,
+                                                          String nextUrl, Map<String, Object> nextParams, int descriptionFormat,
+                                                          Date modifiedSince) {
+        Binder binder = _getBinder(id);
+        if (offset==null) {
+            offset = 0;
+        }
+        if (maxCount==null) {
+            maxCount = -1;
+        }
+        Criteria crit = new Criteria();
+        if (filter!=null) {
+            crit.add(filter);
+        }
+        Junction or = Restrictions.disjunction();
+        if (binders) {
+            or.add(SearchUtils.buildBindersCriterion());
+        }
+        if (entries) {
+            or.add(SearchUtils.buildEntriesCriterion());
+        }
+        if (files) {
+            or.add(SearchUtils.buildAttachmentsCriterion());
+        }
+        crit.add(or);
+        crit.add(SearchUtils.buildParentBinderCriterion(id));
+        crit.addOrder(new Order(Constants.ENTITY_FIELD, true));
+        crit.addOrder(new Order(Constants.SORT_TITLE_FIELD, true));
+        Map resultMap = getBinderModule().searchFolderOneLevelWithInferredAccess(crit, Constants.SEARCH_MODE_NORMAL, offset, maxCount, binder, allowJits);
+        SearchResultList<SearchableObject> results = new SearchResultList<SearchableObject>(offset, binder.getModificationDate());
+        SearchResultBuilderUtil.buildSearchResults(results, new UniversalBuilder(descriptionFormat), resultMap, nextUrl, nextParams, offset);
+        if (modifiedSince!=null && !modifiedSince.before(results.getLastModified())) {
+            throw new NotModifiedException();
+        }
+        return results;
+    }
+
+    protected Binder _getBinder(long id) {
+        return _getBinderImpl(id);
+    }
+
+    protected Binder _getBinderImpl(long id) {
+        try{
+            return getBinderModule().getBinder(id, false, true);
+        } catch (NoBinderByTheIdException e) {
+            // Throw exception below.
+        }
+        throw new NotFoundException(ApiErrorCode.BINDER_NOT_FOUND, "NOT FOUND");
     }
 }

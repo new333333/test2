@@ -1697,6 +1697,9 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
         Binder newBinder;
 		//See if moving from a regular folder to a mirrored folder
 		if (!source.isMirrored() && destination.isMirrored()) {
+            if (options==null) {
+                options = new HashMap();
+            }
 			//This is a special case move. Do it by copying the folder then deleting it
 			options.put(ObjectKeys.INPUT_OPTION_MOVE_SHARE_ITEMS, Boolean.TRUE);	//Also move the share items to the new binder
 			newBinder = copyBinder(fromId, toId, true, options);
@@ -2191,7 +2194,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 
 	}
 
-	private Hits executeNetFolderLuceneQuery(SearchObject so, int searchMode, int offset, int maxResults, Binder parentBinder) {
+	private Hits executeNetFolderLuceneQuery(SearchObject so, int searchMode, int offset, int maxResults, Binder parentBinder, boolean allowJits) {
 		Hits hits = new Hits(0);
 
 		LuceneReadSession luceneSession = getLuceneSessionFactory()
@@ -2199,7 +2202,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		try {
 			hits = SearchUtils.searchFolderOneLevelWithInferredAccess(luceneSession, RequestContextHolder.getRequestContext().getUserId(),
 					so, searchMode, offset,
-					maxResults, parentBinder);
+					maxResults, parentBinder, allowJits);
 		} catch (RuntimeException e) {
 			logger.error("Error searching index", e);
 			throw e;
@@ -2943,7 +2946,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 				// the buckets
 				Hits testHits = SearchUtils.searchFolderOneLevelWithInferredAccess(luceneSession, RequestContextHolder.getRequestContext().getUserId(), 
 						searchObject, Constants.SEARCH_MODE_SELF_CONTAINED_ONLY,
-						0, maxBucketSize, top);
+						0, maxBucketSize, top, true);
 				totalHits = testHits.getTotalHits();
 				if (totalHits > maxBucketSize) {
 					skipLength = testHits.getTotalHits() / maxBucketSize;
@@ -2977,7 +2980,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 				SearchObject searchObject = qb.buildQuery(crit.toQuery());
 				hits = SearchUtils.searchFolderOneLevelWithInferredAccess
 						(luceneSession, RequestContextHolder.getRequestContext().getUserId(), searchObject, Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, 0,
-						-1, top);
+						-1, top, true);
 			}
 		} finally {
 			luceneSession.close();
@@ -3706,14 +3709,18 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		
 	@Override
     public Map searchFolderOneLevelWithInferredAccess(Criteria crit, int searchMode, int offset, int maxResults, Binder parentBinder) {
-		// No access checking in this method, because we expect the caller to check access on the parent binder before calling this method.	
+        return searchFolderOneLevelWithInferredAccess(crit, searchMode, offset, maxResults, parentBinder, true);
+    }
+
+    public Map searchFolderOneLevelWithInferredAccess(Criteria crit, int searchMode, int offset, int maxResults, Binder parentBinder, boolean allowJits) {
+		// No access checking in this method, because we expect the caller to check access on the parent binder before calling this method.
     	boolean preDeleted = false;
     	boolean ignoreAcls = false;
     	
 		QueryBuilder qb = new QueryBuilder(!ignoreAcls, preDeleted);
 		SearchObject so = qb.buildQuery(crit.toQuery());
 		
-		Hits hits = executeNetFolderLuceneQuery(so, searchMode, offset, maxResults, parentBinder);
+		Hits hits = executeNetFolderLuceneQuery(so, searchMode, offset, maxResults, parentBinder, allowJits);
 
 		return returnSearchQuery(hits);
     }
@@ -3762,7 +3769,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	public BinderChanges searchForChanges(Long [] binderIds, Long [] entryIds, Date sinceDate, int maxResults) {
         List<HKey> binderKeys = getHKeys(binderIds);
         if (binderKeys.size()==0 && (entryIds==null || entryIds.length==0)) {
-            return null;
+            return new BinderChanges();
         }
         Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
         Date purgeDate = getCoreDao().getAuditTrailPurgeDate(zoneId);
@@ -3869,6 +3876,8 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
             try {
                 Binder binder = getBinder(id);
                 keys.add(binder.getBinderKey());
+            } catch (AccessControlException e) {
+                // Ignore
             } catch (NoBinderByTheIdException e) {
                 // Ignore
             }

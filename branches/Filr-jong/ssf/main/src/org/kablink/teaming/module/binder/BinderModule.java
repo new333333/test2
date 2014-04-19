@@ -834,7 +834,7 @@ public interface BinderModule {
 	 * Return immediate children entities (entries and binders) of the specified 
 	 * parent binder where those entities are accessible/visible because the user
 	 * has either direct/explicit access or inferred/implicit access to those.
-	 * 
+	 *
 	 * @param crit
 	 * @param searchMode
 	 * @param offset
@@ -844,6 +844,21 @@ public interface BinderModule {
 	 * @return
 	 */
     public Map searchFolderOneLevelWithInferredAccess(Criteria crit, int searchMode, int offset, int maxResults, Binder parentBinder);
+
+    /**
+     * Return immediate children entities (entries and binders) of the specified
+     * parent binder where those entities are accessible/visible because the user
+     * has either direct/explicit access or inferred/implicit access to those.
+     *
+     * @param crit
+     * @param searchMode
+     * @param offset
+     * @param maxResults
+     * @param parentBinder
+     * @param allowJits
+     * @return
+     */
+    public Map searchFolderOneLevelWithInferredAccess(Criteria crit, int searchMode, int offset, int maxResults, Binder parentBinder, boolean allowJits);
 
     /**
      * Return whether or not the calling user can gain inferred access to the specified

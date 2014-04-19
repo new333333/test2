@@ -1732,10 +1732,14 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
         
         //Merge the two sets of memberships with deference to the external ACLs
         for (WorkAreaFunctionMembership wfm : filteredExtMemberships) {
-        	if (memberships.contains(wfm)) {
-        		//Remove the wrong membership 
-        		memberships.remove(wfm);
+        	List<WorkAreaFunctionMembership> itemsToRemove = new ArrayList<WorkAreaFunctionMembership>();
+        	for (WorkAreaFunctionMembership w : memberships) {
+        		if (w.getFunctionId().equals(wfm.getFunctionId())) {
+	        		//Remove the wrong membership 
+        			itemsToRemove.add(w);
+        		}
         	}
+        	memberships.removeAll(itemsToRemove);
         	//Add in the setting from the external ACL
         	memberships.add(wfm);
         }

@@ -600,7 +600,8 @@ public class SearchUtils {
 			int mode, 
 			int offset, 
 			int size, 
-			final Binder parentBinder)
+			final Binder parentBinder,
+            boolean allowJits)
 					throws LuceneException, AuthException {
 		if(so == null)
 			throw new IllegalArgumentException("Search object must be specifed");
@@ -615,7 +616,7 @@ public class SearchUtils {
     	}
 
 		try {
-			if(parentBinder.isMirrored() && parentBinder instanceof Folder) {			
+			if(allowJits && parentBinder.isMirrored() && parentBinder instanceof Folder) {
 				if(!getFolderModule().jitSynchronize((Folder)parentBinder)) {
 					// As result of JITS, the parent binder just disappeared from the system.
 					// We have to somehow notify the caller of this situation - 
@@ -751,9 +752,13 @@ public class SearchUtils {
 			return result;
 		}
 		catch(Exception e) {
+			/*
 			logger.error("Error getting listing for folder [" + parentBinder.getPathName() + "] with resource path [" + 
 					parentBinder.getResourcePath() + "] through net folder server '" + parentBinder.getResourceDriverName() + "'");
 			return null;
+			*/
+			// (Bug #865093) Propagate the exception directly up the call stack
+			throw e; 
 		}
 		finally {
 			session.close();

@@ -35,11 +35,12 @@ package org.kablink.teaming.module.file;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 
+import org.kablink.teaming.exception.NoStackTrace;
 import org.kablink.util.HttpStatusCodeSupport;
 import org.kablink.util.api.ApiErrorCode;
 import org.kablink.util.api.ApiErrorCodeSupport;
 
-public class WriteFilesException extends Exception implements ApiErrorCodeSupport, HttpStatusCodeSupport {
+public class WriteFilesException extends Exception implements ApiErrorCodeSupport, HttpStatusCodeSupport, NoStackTrace {
 	
 	private FilesErrors errors;
 	private Long entityId;

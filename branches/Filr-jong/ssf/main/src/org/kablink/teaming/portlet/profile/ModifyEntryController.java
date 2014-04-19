@@ -181,29 +181,31 @@ public class ModifyEntryController extends SAbstractController {
 				getProfileModule().modifyEntry(entryId, inputData, fileMap, deleteAtts, null, null);
 				
 				//Now look to see if there were groups specified (but only if allowed to manage these
-				ProfileBinder binder = getProfileModule().getProfileBinder();
-				if (getProfileModule().testAccess(binder, ProfileOperation.manageEntries)) {
-					Principal p = getProfileModule().getEntry(entryId);
-					Document def = p.getEntryDefDoc();
-					if (def != null) {
-						Element manageGroupEle = (Element) def.getRootElement().selectSingleNode("//item[@name='profileManageGroups']");
-						if (manageGroupEle != null) {
-							String[] idList = new String[0];
-							if (PortletRequestUtils.getStringParameter(request, WebKeys.URL_USER_GROUPS_LIST) != null) {
-								idList = PortletRequestUtils.getStringParameter(request, WebKeys.URL_USER_GROUPS_LIST).split(" ");
-								for (String uid : idList) {
-									try {
-										Long id = Long.valueOf(uid.trim());
-										Principal group = getProfileModule().getEntry(id); 
-										if (group instanceof GroupPrincipal && group.getIdentityInfo().isFromLocal()) {
-											((GroupPrincipal) group).addMember(p);
-										}
-									} catch(Exception e) {}
+				try {
+					ProfileBinder binder = getProfileModule().getProfileBinder();
+					if (getProfileModule().testAccess(binder, ProfileOperation.manageEntries)) {
+						Principal p = getProfileModule().getEntry(entryId);
+						Document def = p.getEntryDefDoc();
+						if (def != null) {
+							Element manageGroupEle = (Element) def.getRootElement().selectSingleNode("//item[@name='profileManageGroups']");
+							if (manageGroupEle != null) {
+								String[] idList = new String[0];
+								if (PortletRequestUtils.getStringParameter(request, WebKeys.URL_USER_GROUPS_LIST) != null) {
+									idList = PortletRequestUtils.getStringParameter(request, WebKeys.URL_USER_GROUPS_LIST).split(" ");
+									for (String uid : idList) {
+										try {
+											Long id = Long.valueOf(uid.trim());
+											Principal group = getProfileModule().getEntry(id); 
+											if (group instanceof GroupPrincipal && group.getIdentityInfo().isFromLocal()) {
+												((GroupPrincipal) group).addMember(p);
+											}
+										} catch(Exception e) {}
+									}
 								}
 							}
 						}
 					}
-				}
+				} catch(Exception e) {}
 	
 				//See if there was a request to reorder the graphic files
 				@SuppressWarnings("unused")

@@ -169,7 +169,7 @@ public abstract class FolderViewBase extends ViewBase
 
 	private final static int MINIMUM_CONTENT_HEIGHT		= 150;	// The minimum height (in pixels) of a the data table widget.
 	private final static int NO_VSCROLL_ADJUST			=  20;	// Height adjustment required so there's no vertical scroll bar by default.
-
+	
 	/*
 	 * Enumeration that identifies the various optional panels that
 	 * make up a folder view.
@@ -1690,7 +1690,7 @@ public abstract class FolderViewBase extends ViewBase
 				// We're waiting for user input!  Restore the upload
 				// popup to its initial state.
 				m_uploadPopup.setAbortVisible(       true                               );
-				m_uploadPopup.setHintText(           m_messages.addFilesHtml5PopupHint());
+				m_uploadPopup.setUploadHint(         m_messages.addFilesHtml5PopupHint());
 				m_uploadPopup.setProgressBarsVisible(false                              );
 				m_uploadPopup.setActive(             false                              );
 				break;
@@ -1699,7 +1699,7 @@ public abstract class FolderViewBase extends ViewBase
 				// We're validating the user's selections before
 				// uploading them!
 				m_uploadPopup.setAbortVisible(false                                    );
-				m_uploadPopup.setHintText(    m_messages.addFilesHtml5PopupValidating());
+				m_uploadPopup.setUploadHint(  m_messages.addFilesHtml5PopupValidating());
 				break;
 			}
 		}
@@ -1799,11 +1799,7 @@ public abstract class FolderViewBase extends ViewBase
 		// If we have an HTML5 upload popup...
 		if (null != m_uploadPopup) {
 			// ...set its hint.
-			m_uploadPopup.setHintText(
-				m_messages.addFilesHtml5PopupBusy(
-					fileName,
-					thisFile,
-					totalFiles));
+			m_uploadPopup.setUploadHint(fileName, thisFile, totalFiles);
 		}
 	}
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -35,9 +35,11 @@ package org.kablink.teaming.gwt.client.widgets;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingDataTableImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
+import org.kablink.teaming.gwt.client.datatable.UploadTemplate;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.Html5UploadHelper;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.Button;
@@ -63,6 +65,10 @@ public class Html5UploadPopup extends TeamingPopupPanel {
 	private ProgressBar						m_pbPerItem;	// A 'per item' progress bar.
 	private ProgressBar						m_pbTotal;		// A 'total uploads' progress bar.
 
+	// Template used to generate the filename widgets while uploading a
+	// file.
+	private final static UploadTemplate UPLOAD_TEMPLATE = GWT.create(UploadTemplate.class);
+	
 	/**
 	 * Constructor method.
 	 */
@@ -193,15 +199,6 @@ public class Html5UploadPopup extends TeamingPopupPanel {
 	}
 
 	/**
-	 * Sets the hint label to a specific string.
-	 * 
-	 * @param hint
-	 */
-	public void setHintText(String hint) {
-		m_hintLabel.setText(hint);
-	}
-
-	/**
 	 * Stores an HTML5 helper in the panel.
 	 * 
 	 * @param uploadHelper
@@ -265,5 +262,27 @@ public class Html5UploadPopup extends TeamingPopupPanel {
 	 */
 	public void setTotalProgressBarVisible(boolean visible) {
 		m_pbPanel.getRowFormatter().setVisible(1, visible);
+	}
+	
+	/**
+	 * Sets the hint label to a specific string.
+	 * 
+	 * @param hint
+	 */
+	public void setUploadHint(String hint) {
+		m_hintLabel.setText(hint);
+	}
+	
+	/**
+	 * Sets the hint label for uploading a file.
+	 * 
+	 * @param fileName
+	 * @param thisFile
+	 * @param totalFiles
+	 */
+	public void setUploadHint(String fileName, int thisFile, int totalFiles) {
+		String preText  = m_messages.addFilesHtml5PopupBusyPre();
+		String postText = m_messages.addFilesHtml5PopupBusyPost(thisFile, totalFiles);
+		m_hintLabel.getElement().setInnerSafeHtml(UPLOAD_TEMPLATE.uploadHtml(preText, fileName, postText));
 	}
 }

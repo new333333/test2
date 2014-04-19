@@ -69,8 +69,54 @@ function handleCloseBtn()
 	
 }// end handleCloseBtn()
 
+function ss_treeShowIdAccessControl${renderResponse.namespace}(id, obj, action, namespace) {
+	action = 'configure_access_control';
+	if (typeof namespace == "undefined" || namespace == null) namespace = "";
+	var binderId = id;
+	// See if the id is formatted (e.g., "ss_favorites_xxx")
+	if (binderId.indexOf("_") >= 0) {
+		var binderData = id.substr(13).split("_");
+		binderId = binderData[binderData.length - 1];
+	}
+
+	// Try to find the base urls from this namespace
+	var url = "";
+	try {
+		eval("url = ss_baseBinderUrlNoWS" + namespace)
+	} catch(e) {}
+	
+	// Build a url to go to
+	if (url == "") url = ss_baseBinderUrlNoWS;
+	url = ss_replaceSubStr(url, "ssBinderIdPlaceHolder", binderId);
+	url = ss_replaceSubStr(url, "ssActionPlaceHolder", action);
+	url += "&operation2=debug";
+	// console.log(url);
+	ss_setSelfLocation(url);
+	return false;
+}
+
+function goBackToAccessControlForm(binderId) {
+	action = 'configure_access_control';
+
+	// Try to find the base urls from this namespace
+	var url = ss_baseBinderUrlNoWS;
+	url = ss_replaceSubStr(url, "ssBinderIdPlaceHolder", binderId);
+	url = ss_replaceSubStr(url, "ssActionPlaceHolder", action);
+	// console.log(url);
+	ss_setSelfLocation(url);
+	return false;
+}
+
 </script>
 
+<div style="padding:4px 0px 6px 10px;">
+<a href="javascript:" onClick="goBackToAccessControlForm('${ss_accessNetFolderMap['folder'].id}');">View the Access Control Form...</a>
+</div>
+
+<c:set var="ss_breadcrumbsShowIdRoutine" 
+  value="ss_treeShowIdAccessControl${renderResponse.namespace}" 
+  scope="request" />
+<jsp:include page="/WEB-INF/jsp/definition_elements/navigation_links.jsp" />
 
 <div>
 <c:if test="${operation2 == 'debug' && !empty ss_accessNetFolderMap}">
@@ -145,6 +191,55 @@ function handleCloseBtn()
         </td>
       </tr>
     </table>
+    
+    <br/>
+    <br/>
+    
+    <div>
+    <span>Sub-Folders in "${ss_accessNetFolderMap['folder'].title}"</span>
+    </div>
+    <div style="padding-left:6px;">
+	    <table cellspacing="2" cellpadding="2" border="1">
+	    <th>Title</th>
+	    <th>Owner</th>
+	    <th>ACL Inherited</th>
+	      <c:forEach var="resourceItem" items="${ss_accessNetFolderMap['childrenDirList']}">
+		      <tr>
+		        <td>${resourceItem.name }</td>
+		        <td>${resourceItem.ownerId }</td>
+		        <td>
+		          <c:if test="${resourceItem.aclInherited }">True</c:if>
+		          <c:if test="${!resourceItem.aclInherited }">False</c:if>
+		        </td>
+		      </tr>
+	      </c:forEach>
+	    </table>
+    </div>
+
+    <br/>
+    <br/>
+    
+    <div>
+    <span>Files in "${ss_accessNetFolderMap['folder'].title}"</span>
+    </div>
+    <div style="padding-left:6px;">
+	    <table cellspacing="2" cellpadding="2" border="1">
+	    <th>Title</th>
+	    <th>Owner</th>
+	    <th>ACL Inherited</th>
+	      <c:forEach var="resourceItem" items="${ss_accessNetFolderMap['childrenFileList']}">
+		      <tr>
+		        <td>${resourceItem.name }</td>
+		        <td>${resourceItem.ownerId }</td>
+		        <td>
+		          <c:if test="${resourceItem.aclInherited }">True</c:if>
+		          <c:if test="${!resourceItem.aclInherited }">False</c:if>
+		        </td>
+		      </tr>
+	      </c:forEach>
+	    </table>
+	</div>
+    
   </ssf:box>
 </c:if>
 
