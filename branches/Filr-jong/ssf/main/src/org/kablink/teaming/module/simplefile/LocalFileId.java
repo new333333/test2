@@ -37,13 +37,38 @@ package org.kablink.teaming.module.simplefile;
  *
  */
 public class LocalFileId extends SimpleFileId {
-
-	private static final long serialVersionUID = 1L;
 	
+	/*
+	 * Entity ID (= internal database ID) of the Filr object representing this local file.
+	 * The object is either of type Folder (if directory) or of type FolderEntry (if file).
+	 */
+	private Long entityId;
+
 	public LocalFileId(Long entityId, boolean directory) {
-		super(directory, entityId);
+		super(directory);
 		if(entityId == null)
 			throw new IllegalArgumentException("Entity ID must be specified");
+		this.entityId = entityId;
+	}
+
+	public Long getEntityId() {
+		return entityId;
+	}
+
+	public void setEntityId(Long entityId) {
+		this.entityId = entityId;
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("(")
+		.append("entityId=")
+		.append(entityId)
+		.append(",directory=")
+		.append(directory)
+		.append(")");
+		return sb.toString();
 	}
 
 }

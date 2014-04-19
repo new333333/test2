@@ -32,6 +32,8 @@
  */
 package org.kablink.teaming.module.simplefile;
 
+import java.security.MessageDigest;
+
 /**
  * @author jong
  *
@@ -58,8 +60,8 @@ public class SimpleFileUtil {
 	 */
 	public static int persistentHashCode(String path) {
 		if(path == null)
-			throw new IllegalArgumentException("String must be specified");
-			
+			throw new IllegalArgumentException("String must be specified");	
+		
 		char[] value = path.toCharArray();		
         int h = 0;
         for (int i = 0; i < value.length; i++) {
@@ -67,5 +69,41 @@ public class SimpleFileUtil {
         }
         return h;
 	}
+	
+	private static final char[] hex = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f' };
 
+	public static String byteArray2Hex(byte[] bytes) {
+	    StringBuffer sb = new StringBuffer(bytes.length * 2);
+	    for(final byte b : bytes) {
+	        sb.append(hex[(b & 0xF0) >> 4]);
+	        sb.append(hex[b & 0x0F]);
+	    }
+	    return sb.toString();
+	}
+	
+	public static void main(String[] args) throws Exception {
+		long begin = System.nanoTime();
+		MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");
+		for(int i = 0; i < 1000; i++) {
+			String input = "asdfaoinoinoaiwnoeifnawiuetwyebry";
+			
+			messageDigest.update(input.getBytes("UTF-8"));
+			String digest = byteArray2Hex(messageDigest.digest());
+		}
+		double diff = System.nanoTime() - begin;
+		
+		System.out.println("Digest time: Total=" + diff/1000000 + " ms, Avg=" + diff/1000000000 + " ms");
+		
+		begin = System.nanoTime();
+		for(int i = 0; i < 1000; i++) {
+			String input = "asdfaoinoinoaiwnoeifnawiuetwyebry";
+			
+			messageDigest = MessageDigest.getInstance("SHA-256");
+			messageDigest.update(input.getBytes("UTF-8"));
+			String digest = byteArray2Hex(messageDigest.digest());
+		}
+		diff = System.nanoTime() - begin;
+		
+		System.out.println("Digest time: Total=" + diff/1000000 + " ms, Avg=" + diff/1000000000 + " ms");
+	}
 }

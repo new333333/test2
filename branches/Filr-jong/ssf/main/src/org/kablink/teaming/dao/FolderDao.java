@@ -50,6 +50,7 @@ import org.kablink.teaming.domain.NetFolderConfig;
 import org.kablink.teaming.domain.NoFolderByTheIdException;
 import org.kablink.teaming.domain.NoFolderEntryByTheIdException;
 import org.kablink.teaming.domain.Tag;
+import org.kablink.teaming.module.simplefile.NetFileId;
 import org.springframework.dao.DataAccessException;
 
 /**
@@ -187,5 +188,21 @@ public interface FolderDao {
 	public int getNumberOfNetFolders( final NetFolderSelectSpec selectSpec, final long zoneId );
 	
 	public Folder loadFolderByResourcePath(String ancestorSortKey, final String resourcePath, final Long zoneId);
+
+	/**
+	 * Return ID of the folder object corresponding to the net file id or <code>null</code> if not found.
+	 * 
+	 * @param netFileId
+	 * @return
+	 */
+	public Long findFolderId(NetFileId netFileId, Long zoneId);
+
+	/**
+	 * Return ID of the folder entry object corresponding to the net file id or <code>null</code> if not found.
+	 * 
+	 * @param netFileId
+	 * @return
+	 */
+	public Long findFolderEntryId(NetFileId netFileId, Long zoneId);
 
 }

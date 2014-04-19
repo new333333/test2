@@ -32,30 +32,18 @@
  */
 package org.kablink.teaming.module.simplefile;
 
-import java.io.Serializable;
-
 /**
  * @author jong
  *
  */
-public abstract class SimpleFileId implements Serializable {
-
-	private static final long serialVersionUID = 1L;
-
+public abstract class SimpleFileId {
 	/*
 	 * Indicates whether this object represents a directory or a file
 	 */
 	protected boolean directory;
 
-	/*
-	 * Entity ID (= internal database ID) of the Filr object representing this file.
-	 * The Filr object, if present, is either of type Folder (if directory) or of type FolderEntry (if file).
-	 */
-	protected Long entityId;
-
-	protected SimpleFileId(boolean directory, Long entityId) {
+	protected SimpleFileId(boolean directory) {
 		this.directory = directory;
-		this.entityId = entityId;
 	}
 
 	public boolean isDirectory() {
@@ -66,12 +54,4 @@ public abstract class SimpleFileId implements Serializable {
 		this.directory = directory;
 	}
 
-	public Long getEntityId() {
-		return entityId;
-	}
-
-	public void setEntityId(Long entityId) {
-		this.entityId = entityId;
-	}
-	
 }
