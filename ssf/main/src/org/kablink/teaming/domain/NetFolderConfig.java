@@ -483,4 +483,43 @@ public class NetFolderConfig {
 		return ResourceDriverManagerUtil.findResourceDriver(getNetFolderServerId());
 	}
 	
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("{")
+		.append("id=")
+		.append(id)
+		.append(",name=")
+		.append(name)
+		.append(",folderId=")
+		.append(folderId)
+		.append(",netFolderServerId=")
+		.append(netFolderServerId)
+		.append(",resourcePath")
+		.append(resourcePath)
+		.append(",homeDir=")
+		.append(homeDir)
+		.append(",allowDesktopAppToSyncData=")
+		.append(allowDesktopAppToSyncData)
+		.append(",allowMobileAppsToSyncData")
+		.append(allowMobileAppsToSyncData)
+		.append(",indexContent=")
+		.append(indexContent)
+		.append(",jitsEnabled=")
+		.append(jitsEnabled)
+		.append(",jitsMaxAge=")
+		.append(jitsMaxAge)
+		.append(",jitsAclMaxAge")
+		.append(jitsAclMaxAge)
+		.append(",fullSyncDirOnly=")
+		.append(fullSyncDirOnly)
+		.append(",syncScheduleOption=")
+		.append(syncScheduleOption)
+		.append(",useInheritedIndexContent=")
+		.append(useInheritedIndexContent)
+		.append(",useInheritedJitsSettings=")
+		.append(useInheritedJitsSettings)
+		.append("}");
+		return sb.toString();
+	}
 }

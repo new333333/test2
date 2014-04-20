@@ -105,7 +105,7 @@
 		<property name="licenseModule"><ref bean="licenseModule"/></property>
 		<property name="zoneModule"><ref bean="zoneModule"/></property>
 		<property name="sharingModule"><ref bean="sharingModule"/></property>
-		<property name="simpleFileModule"><ref bean="simpleFileModule"/></property>
+		<!-- <property name="simpleFileModule"><ref bean="simpleFileModule"/></property>-->
 	</bean>
 
 	<!-- Default lob handler.  Override this in applicationContext-ext.xml for specific databases -->
@@ -990,19 +990,19 @@
 		</property>
 	</bean>			
 
+<!--  
 	<bean id="simpleFileModule"  parent="moduleTransactionProxy" depends-on="sPropsUtil">
-		<!--  dependences prevent inheriting from dependOnCommonServicesTemplate -->
 		<property name="target">
 			<bean class="org.kablink.teaming.module.simplefile.impl.simpleFileModule">
 				<property name="coreDao"><ref bean="coreDao"/></property>
 			</bean>
 		</property>
-		<!-- Transaction is managed using transactionTemplate -->
 		<property name="transactionAttributes">
 			<props>
 			</props>
 		</property>
-	</bean>			
+	</bean>	
+	-->		
 
 	<bean id="netFolderModule"  parent="moduleTransactionProxy" depends-on="sPropsUtil">
 		<!--  dependences prevent inheriting from dependOnCommonServicesTemplate -->

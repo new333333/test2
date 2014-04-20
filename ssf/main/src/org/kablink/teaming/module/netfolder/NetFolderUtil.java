@@ -55,28 +55,9 @@ import org.kablink.teaming.util.SpringContextUtil;
  *
  */
 public class NetFolderUtil {
+	
+	// DEFINITION: Net Folder Server == Resource Driver Config
 
-	public static NetFolderConfig getNetFolderConfig(Long netFolderConfigId) throws NoNetFolderConfigByTheIdException {
-		return getCoreDao().loadNetFolderConfig(netFolderConfigId);
-	}
-	
-	public static NetFolderConfig getNetFolderConfigByName(String netFolderName) throws NoNetFolderConfigByTheNameException {
-		return getCoreDao().loadNetFolderConfigByName(netFolderName);
-	}
-	
-	public static ResourceDriver getResourceDriverByNetFolderConfigId(Long netFolderConfigId) throws NoNetFolderConfigByTheIdException, FIException {
-		NetFolderConfig nf = getNetFolderConfig(netFolderConfigId);
-		return getResourceDriverByNetFolderServerId(nf.getNetFolderServerId());
-	}
-	
-	public static ResourceDriver getResourceDriverByNetFolderConfigName(String netFolderConfigName) throws NoNetFolderConfigByTheIdException, FIException {
-		NetFolderConfig nf = getNetFolderConfigByName(netFolderConfigName);
-		return getResourceDriverByNetFolderServerId(nf.getNetFolderServerId());
-	}
-	
-	/**
-	 * Return the Net Folder binder associated with the NetFolderConfig
-	 */
 	public static Binder getNetFolderBinder( NetFolderConfig nfc ) throws NoBinderByTheIdException
 	{
 		return getCoreDao().loadBinder(nfc.getFolderId(), RequestContextHolder.getRequestContext().getZoneId());
@@ -94,12 +75,34 @@ public class NetFolderUtil {
 		return getNetFolderFolder(getNetFolderConfig(netFolderConfigId));
 	}
 	
+	public static NetFolderConfig getNetFolderConfig(Long netFolderConfigId) throws NoNetFolderConfigByTheIdException {
+		return getCoreDao().loadNetFolderConfig(netFolderConfigId);
+	}
+	
+	public static NetFolderConfig getNetFolderConfigByName(String netFolderName) throws NoNetFolderConfigByTheNameException {
+		return getCoreDao().loadNetFolderConfigByName(netFolderName);
+	}
+	
 	public static ResourceDriverConfig getNetFolderServerById(Long netFolderServerId) throws NoNetFolderServerByTheIdException {
 		return getCoreDao().loadNetFolderServer(netFolderServerId);
 	}
 	
 	public static ResourceDriverConfig getNetFolderServerByName(String netFolderServerName) throws NoNetFolderServerByTheNameException {
 		return getCoreDao().loadNetFolderServerByName(netFolderServerName);
+	}
+	
+	public static ResourceDriverConfig getNetFolderServerByNetFolderConfigId(Long netFolderConfigId) throws NoNetFolderConfigByTheIdException, NoNetFolderServerByTheIdException {
+		return getNetFolderServerById(getNetFolderConfig(netFolderConfigId).getNetFolderServerId());
+	}
+	
+	public static ResourceDriver getResourceDriverByNetFolderConfigId(Long netFolderConfigId) throws NoNetFolderConfigByTheIdException, FIException {
+		NetFolderConfig nf = getNetFolderConfig(netFolderConfigId);
+		return getResourceDriverByNetFolderServerId(nf.getNetFolderServerId());
+	}
+	
+	public static ResourceDriver getResourceDriverByNetFolderConfigName(String netFolderConfigName) throws NoNetFolderConfigByTheIdException, FIException {
+		NetFolderConfig nf = getNetFolderConfigByName(netFolderConfigName);
+		return getResourceDriverByNetFolderServerId(nf.getNetFolderServerId());
 	}
 	
 	public static ResourceDriver getResourceDriverByNetFolderServerId(Long netFolderServerId) throws NoNetFolderConfigByTheIdException, FIException {
