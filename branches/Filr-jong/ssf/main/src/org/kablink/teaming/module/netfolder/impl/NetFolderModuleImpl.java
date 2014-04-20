@@ -38,6 +38,7 @@ import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.NetFolderConfig;
+import org.kablink.teaming.domain.NoNetFolderConfigByTheIdException;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.NetFolderConfig.SyncScheduleOption;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
@@ -61,35 +62,42 @@ public class NetFolderModuleImpl extends CommonDependencyInjection implements Ne
 
 	private Log logger  = LogFactory.getLog(getClass());
 	
+	private static final String NET_FOLDER_NAME_PREFIX = "_netfolder_";
+	
 	@Override
     public NetFolderConfig createNetFolder(Long templateId, Long parentBinderId, final String name, User owner, final String rootName, final String path, final Boolean isHomeDir, final boolean indexContent, final Boolean inheritIndexContent, final SyncScheduleOption syncScheduleOption, final Boolean fullSyncDirOnly ) 
     		throws AccessControlException, WriteFilesException, WriteEntryDataException {
     	
-    	// Create and save a new net folder
+    	// Create and save a new net folder config object        		
+		final NetFolderConfig nfc = new NetFolderConfig();
+    	nfc.setName(name);
+    	nfc.setFolderId(0L); // temporary value
+    	nfc.setNetFolderServerId(NetFolderUtil.getNetFolderServerByName(rootName).getId());
+    	nfc.setResourcePath(path);
+    	nfc.setHomeDir(isHomeDir);
+    	nfc.setIndexContent(indexContent);
+    	nfc.setUseInheritedIndexContent(inheritIndexContent);
+    	nfc.setSyncScheduleOption(syncScheduleOption);
+    	nfc.setFullSyncDirOnly(fullSyncDirOnly);		
+		if(logger.isDebugEnabled())
+			logger.debug("Creating new net folder config object " + nfc.toString());
 		final NetFolderConfig netFolderConfig = (NetFolderConfig) getTransactionTemplate().execute(new TransactionCallback<Object>() {
         	@Override
 			public Object doInTransaction(final TransactionStatus status) {
-        		NetFolderConfig nfc = new NetFolderConfig();
-            	nfc.setName(name);
-            	nfc.setFolderId(0L); // temporary value
-            	nfc.setNetFolderServerId(NetFolderUtil.getNetFolderServerByName(rootName).getId());
-            	nfc.setResourcePath(path);
-            	nfc.setHomeDir(isHomeDir);
-            	nfc.setIndexContent(indexContent);
-            	nfc.setUseInheritedIndexContent(inheritIndexContent);
-            	nfc.setSyncScheduleOption(syncScheduleOption);
-            	nfc.setFullSyncDirOnly(fullSyncDirOnly);
         		getCoreDao().save(nfc);
-            	//getCoreDao().saveNewSessionWithoutUpdate(nfc);
 				return nfc;
         	}
         });
 
-		// Create top-level folder corresponding to the net folder.
-   		String folderName = "_netfolder_" + netFolderConfig.getId();
-    	final Folder folder = getFolderModule().createNetFolder(netFolderConfig.getId(), templateId, parentBinderId, folderName, owner, rootName, path, isHomeDir, indexContent, inheritIndexContent, syncScheduleOption, fullSyncDirOnly);
+		// Create top-level folder corresponding to the net folder as data.
+   		String folderName = NET_FOLDER_NAME_PREFIX + netFolderConfig.getId();
+		if(logger.isDebugEnabled())
+			logger.debug("Creating new folder object (name='" + folderName + "') representing the top of the net folder");
+    	final Folder folder = getFolderModule().createNetFolder(netFolderConfig.getId(), templateId, parentBinderId, folderName, owner, rootName, isHomeDir, indexContent, inheritIndexContent, syncScheduleOption, fullSyncDirOnly);
     	
-    	// Finish linking them
+    	// Finish linking them (Note: This association is managed by application rather than by database foreign key constraint)
+    	if(logger.isDebugEnabled())
+    		logger.debug("Linking net folder config object (id=" + netFolderConfig.getId() + ") with folder object (id=" + folder.getId() + ")");
         getTransactionTemplate().execute(new TransactionCallback<Object>() {
         	@Override
 			public Object doInTransaction(final TransactionStatus status) {
@@ -98,51 +106,13 @@ public class NetFolderModuleImpl extends CommonDependencyInjection implements Ne
         	}
         });
 
-        /* TODO $$$$$$ It is unclear whether we still need scheduled sync job with 1.2
-   		if(Boolean.FALSE.equals(inheritIndexContent)) {
-   			// This net folder does not inherit file content indexing setting from the parent net folder server
-   			if(indexContent) {
-   				// Make sure that a background job exists for this net folder
-   				netFolderContentIndexingJobSchedule(folderId);
-   			}
-   			else {
-   				// We don't have to try to remove the background job, if any, for this net folder at this point.
-   				// It will self-destruct itself at next run.
-   				//netFolderContentIndexingUnschedule(folderId);
-   			}
-   		}
-   		else {
-   			// Either this net folder inherits file content indexing setting from the parent net folder server
-   			// or the setting is unspecified (which is equivalent to 'on' by default). In this case, whether
-   			// or not file content indexing job should exist for this net folder depends on how the setting
-   			// is defined on the net folder server. 
-   	   		Boolean indexContentNFS = null;
-   	   		Binder netFolder = getBinderModule().getBinder(folderId);
-   	   		ResourceDriver driver = netFolder.getResourceDriver();
-   	   		if(driver != null) {
-   	   			ResourceDriverConfig config = driver.getConfig();
-   	   			indexContentNFS = config.getIndexContent();
-   	   		}
-   			if(Boolean.TRUE.equals(indexContentNFS)) {
-   				// File content indexing is 'on' on the net folder server.
-   				// Make sure that a background job exists for this net folder
-   				netFolderContentIndexingJobSchedule(folderId);
-   			}
-   			else {
-   				// File content indexing is either 'off' or unspecified (which is equivalent to 'off'
-   				// by default) on this net folder server. In this case, we don't have to try to remove
-   				// the background job, if any, for this net folder at this point. It will self-destruct
-   				// itself at next run.
-   				//netFolderContentIndexingUnschedule(folderId);
-   			}
-   		}
-   		*/
-
    		return netFolderConfig;
     }
     
 	@Override
-    public void modifyNetFolder(final NetFolderConfig netFolderConfig) {
+    public void modifyNetFolder(final NetFolderConfig netFolderConfig) throws AccessControlException, WriteFilesException, WriteEntryDataException {
+		if(logger.isDebugEnabled())
+			logger.debug("Updating net folder config object " + netFolderConfig.toString());
         getTransactionTemplate().execute(new TransactionCallback<Object>() {
         	@Override
 			public Object doInTransaction(final TransactionStatus status) {
@@ -150,41 +120,35 @@ public class NetFolderModuleImpl extends CommonDependencyInjection implements Ne
 				return null;
         	}
         });
+        
+        if(logger.isDebugEnabled())
+        	logger.debug("Updating folder object (id=" + netFolderConfig.getFolderId() + ")");
+        getFolderModule().modifyNetFolder(netFolderConfig.getFolderId(), netFolderConfig.getId(), netFolderConfig.getIndexContent(), netFolderConfig.getUseInheritedIndexContent());
     }
-    
-	/*
-	@Override
-    public void modifyNetFolder(Long netFolderConfigId, final String name, final Long netFolderServerId, final String path, final Boolean isHomeDir, final boolean indexContent, final Boolean inheritIndexContent, final SyncScheduleOption syncScheduleOption, final Boolean fullSyncDirOnly ) throws AccessControlException, WriteFilesException, WriteEntryDataException {
-    	final NetFolderConfig nfc = getCoreDao().loadNetFolderConfig(netFolderConfigId);
-        getTransactionTemplate().execute(new TransactionCallback<Object>() {
-        	@Override
-			public Object doInTransaction(final TransactionStatus status) {
-            	nfc.setName(name);
-            	nfc.setNetFolderServerId(netFolderServerId);
-            	nfc.setResourcePath(path);
-            	nfc.setHomeDir(isHomeDir);
-            	nfc.setIndexContent(indexContent);
-            	nfc.setUseInheritedIndexContent(inheritIndexContent);
-            	nfc.setSyncScheduleOption(syncScheduleOption);
-            	nfc.setFullSyncDirOnly(fullSyncDirOnly);
-				return null;
-        	}
-        });
-    }*/
     
 	@Override
     public void deleteNetFolder(Long netFolderConfigId, boolean deleteSource) {
-    	final NetFolderConfig nfc = getCoreDao().loadNetFolderConfig(netFolderConfigId);
-
-    	getFolderModule().deleteNetFolder(nfc.getFolderId(), deleteSource);
-    	
-        getTransactionTemplate().execute(new TransactionCallback<Object>() {
-        	@Override
-			public Object doInTransaction(final TransactionStatus status) {
-        		getCoreDao().delete(nfc);
-				return null;
-        	}
-        });
+		try {
+	    	final NetFolderConfig nfc = getCoreDao().loadNetFolderConfig(netFolderConfigId);
+	
+	    	if(logger.isDebugEnabled())
+	    		logger.debug("Deleting net folder config object " + nfc.toString());
+	        getTransactionTemplate().execute(new TransactionCallback<Object>() {
+	        	@Override
+				public Object doInTransaction(final TransactionStatus status) {
+	        		getCoreDao().delete(nfc);
+					return null;
+	        	}
+	        });
+	
+	        if(logger.isDebugEnabled())
+	        	logger.debug("Deleting folder object (id=" + nfc.getFolderId() + ") and everything in it");
+	        getFolderModule().deleteNetFolder(nfc.getFolderId(), deleteSource);
+		}
+		catch(NoNetFolderConfigByTheIdException e) {
+			if(logger.isDebugEnabled())
+				logger.debug("Net folder config object (id=" + netFolderConfigId + ") not found. Nothing to delete.");
+		}
     }
     
 	/*

@@ -70,4 +70,21 @@
             </column>
         </addColumn>
 	</changeSet>
+	
+	<changeSet author="jong" context="schema" failOnError="true" id="4">
+        <comment>These columns are no longer needed because net_folder_config table assumes the role</comment>
+        <dropColumn tableName="SS_Forums" columnName="resourceDriverName"/>
+        <dropColumn tableName="SS_Forums" columnName="homeDir"/>
+        <dropColumn tableName="SS_Forums" columnName="allowDesktopAppToSyncData"/>
+        <dropColumn tableName="SS_Forums" columnName="allowMobileAppsToSyncData"/>
+        <dropColumn tableName="SS_Forums" columnName="indexContent"/>
+        <dropColumn tableName="SS_Forums" columnName="jitsEnabled"/>
+        <dropColumn tableName="SS_Forums" columnName="jitsMaxAge"/>
+        <dropColumn tableName="SS_Forums" columnName="jitsAclMaxAge"/>
+        <dropColumn tableName="SS_Forums" columnName="fullSyncDirOnly"/>
+        <dropColumn tableName="SS_Forums" columnName="syncScheduleOption"/>
+        <dropColumn tableName="SS_Forums" columnName="useInheritedIndexContent"/>
+        <dropColumn tableName="SS_Forums" columnName="useInheritedJitsSettings"/>
+    </changeSet>
+	
 </databaseChangeLog>

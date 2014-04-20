@@ -50,8 +50,9 @@ public interface NetFolderModule {
 	/**
 	 * Create a net folder from the supplied configuration settings.
 	 * This creates a new <code>NetFolderConfig</code> object and persists it in the database.
-	 * It also creates a new persistent <code>Folder</code> object representing the top of the net folder 
-	 * hierarchy and these two pieces of information are linked together.
+	 * It also creates a new persistent <code>Folder</code> object representing the top of the
+	 * net folder hierarchy as data. These two pieces of information are linked together and
+	 * comprise a net folder.
 	 * 
 	 * @param templateId
 	 * @param parentBinderId
@@ -72,11 +73,11 @@ public interface NetFolderModule {
     public NetFolderConfig createNetFolder(Long templateId, Long parentBinderId, String name, User owner, String rootName, String path, Boolean isHomeDir, boolean indexContent, Boolean inheritIndexContent, SyncScheduleOption syncScheduleOption, Boolean fullSyncDirOnly ) throws AccessControlException, WriteFilesException, WriteEntryDataException;
 	
     /**
-     * Persists the net folder config object containing modified configuration settings.
+     * Update the net folder with the modified configuration settings.
      * 
      * @param netFolderConfig
      */
-    public void modifyNetFolder(NetFolderConfig netFolderConfig);
+    public void modifyNetFolder(NetFolderConfig netFolderConfig)throws AccessControlException, WriteFilesException, WriteEntryDataException;
 	
     /**
      * Delete the net folder. This deletes BOTH the configuration/definition of the net folder AND the entire data associated with it.
