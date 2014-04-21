@@ -190,7 +190,10 @@
 
 .activityStreamCtrlHeader2
 {
+	overflow: hidden;
 	padding-right: 250px;
+	text-overflow: ellipsis;
+	white-space: nowrap;
 }
 
 .activityStreamCtrlHeaderTitle
