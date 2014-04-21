@@ -2807,15 +2807,9 @@ public class GwtMainPage extends ResizeComposite
 			@Override
 			public void onSuccess( VibeRpcResponse response )
 			{
-				int x;
-				int y;
 				GwtPersonalPreferences personalPrefs;
 
 				personalPrefs = (GwtPersonalPreferences) response.getResponseData();
-				
-				// Get the position of the content control.
-				x = m_contentLayoutPanel.getAbsoluteLeft();
-				y = m_contentLayoutPanel.getAbsoluteTop();
 				
 				// Create a handler that will be called when the user presses the ok button in the dialog.
 				if ( m_editPersonalPrefsSuccessHandler == null )
@@ -2908,13 +2902,25 @@ public class GwtMainPage extends ResizeComposite
 				if ( m_personalPrefsDlg == null )
 				{
 					// No, create one.
-					m_personalPrefsDlg = new PersonalPreferencesDlg( m_editPersonalPrefsSuccessHandler, null, false, true, x, y );
+					m_personalPrefsDlg = new PersonalPreferencesDlg( m_editPersonalPrefsSuccessHandler, null, false, true );
 				}
-				
+
 				m_personalPrefsDlg.init( personalPrefs );
-				m_personalPrefsDlg.setPopupPosition( x, y );
-				m_personalPrefsDlg.show();
-				
+
+				// Center the dialog horizontially
+				m_personalPrefsDlg.setPopupPositionAndShow( new PopupPanel.PositionCallback()
+				{
+					@Override
+					public void setPosition(int offsetWidth, int offsetHeight)
+					{
+						int y = m_contentLayoutPanel.getAbsoluteTop();
+					    int x = (Window.getClientWidth() - offsetWidth) >> 1;
+						
+						// Set the position of the popup
+						m_personalPrefsDlg.setPopupPosition( x, y );
+					}
+				} );
+
 			}// end onSuccess()
 		};
 
