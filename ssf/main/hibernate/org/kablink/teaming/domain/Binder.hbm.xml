@@ -19,7 +19,7 @@
     <property name="mirrored"/>
     <property name="binderCount"/>
     <property name="type" update="false" insert="false"/> 
-    <property name="resourcePath" length="1024" access="field"/>
+    <property name="relRscPath" length="1024" access="field"/>
     <property name="myFilesDir" access="field"/>
     <property name="resourceHandle" length="128" />
     <property name="netFolderConfigId"/>

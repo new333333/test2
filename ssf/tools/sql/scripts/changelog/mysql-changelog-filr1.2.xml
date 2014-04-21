@@ -69,11 +69,17 @@
                 <constraints nullable="true" />
             </column>
         </addColumn>
+        <addColumn tableName="SS_Forums">
+            <column name="relRscPath" type="VARCHAR(1024)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
 	</changeSet>
 	
 	<changeSet author="jong" context="schema" failOnError="true" id="4">
         <comment>These columns are no longer needed because net_folder_config table assumes the role</comment>
         <dropColumn tableName="SS_Forums" columnName="resourceDriverName"/>
+        <dropColumn tableName="SS_Forums" columnName="resourcePath"/>
         <dropColumn tableName="SS_Forums" columnName="homeDir"/>
         <dropColumn tableName="SS_Forums" columnName="allowDesktopAppToSyncData"/>
         <dropColumn tableName="SS_Forums" columnName="allowMobileAppsToSyncData"/>

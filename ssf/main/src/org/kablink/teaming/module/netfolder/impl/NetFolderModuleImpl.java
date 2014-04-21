@@ -65,14 +65,14 @@ public class NetFolderModuleImpl extends CommonDependencyInjection implements Ne
 	private static final String NET_FOLDER_NAME_PREFIX = "_netfolder_";
 	
 	@Override
-    public NetFolderConfig createNetFolder(Long templateId, Long parentBinderId, final String name, User owner, final String rootName, final String path, final Boolean isHomeDir, final boolean indexContent, final Boolean inheritIndexContent, final SyncScheduleOption syncScheduleOption, final Boolean fullSyncDirOnly ) 
+    public NetFolderConfig createNetFolder(Long templateId, Long parentBinderId, final String name, User owner, final String netFolderServerName, final String path, final Boolean isHomeDir, final boolean indexContent, final Boolean inheritIndexContent, final SyncScheduleOption syncScheduleOption, final Boolean fullSyncDirOnly ) 
     		throws AccessControlException, WriteFilesException, WriteEntryDataException {
     	
     	// Create and save a new net folder config object        		
 		final NetFolderConfig nfc = new NetFolderConfig();
     	nfc.setName(name);
     	nfc.setFolderId(0L); // temporary value
-    	nfc.setNetFolderServerId(NetFolderUtil.getNetFolderServerByName(rootName).getId());
+    	nfc.setNetFolderServerId(NetFolderUtil.getNetFolderServerByName(netFolderServerName).getId());
     	nfc.setResourcePath(path);
     	nfc.setHomeDir(isHomeDir);
     	nfc.setIndexContent(indexContent);
@@ -93,7 +93,7 @@ public class NetFolderModuleImpl extends CommonDependencyInjection implements Ne
    		String folderName = NET_FOLDER_NAME_PREFIX + netFolderConfig.getId();
 		if(logger.isDebugEnabled())
 			logger.debug("Creating new folder object (name='" + folderName + "') representing the top of the net folder");
-    	final Folder folder = getFolderModule().createNetFolder(netFolderConfig.getId(), templateId, parentBinderId, folderName, owner, rootName, isHomeDir, indexContent, inheritIndexContent, syncScheduleOption, fullSyncDirOnly);
+    	final Folder folder = getFolderModule().createNetFolder(netFolderConfig.getId(), templateId, parentBinderId, name, folderName, owner, isHomeDir, indexContent, inheritIndexContent, syncScheduleOption, fullSyncDirOnly);
     	
     	// Finish linking them (Note: This association is managed by application rather than by database foreign key constraint)
     	if(logger.isDebugEnabled())
@@ -128,27 +128,35 @@ public class NetFolderModuleImpl extends CommonDependencyInjection implements Ne
     
 	@Override
     public void deleteNetFolder(Long netFolderConfigId, boolean deleteSource) {
+		NetFolderConfig nfc;
 		try {
-	    	final NetFolderConfig nfc = getCoreDao().loadNetFolderConfig(netFolderConfigId);
-	
-	    	if(logger.isDebugEnabled())
-	    		logger.debug("Deleting net folder config object " + nfc.toString());
-	        getTransactionTemplate().execute(new TransactionCallback<Object>() {
-	        	@Override
-				public Object doInTransaction(final TransactionStatus status) {
-	        		getCoreDao().delete(nfc);
-					return null;
-	        	}
-	        });
-	
-	        if(logger.isDebugEnabled())
-	        	logger.debug("Deleting folder object (id=" + nfc.getFolderId() + ") and everything in it");
-	        getFolderModule().deleteNetFolder(nfc.getFolderId(), deleteSource);
+	    	nfc = getCoreDao().loadNetFolderConfig(netFolderConfigId);
 		}
 		catch(NoNetFolderConfigByTheIdException e) {
 			if(logger.isDebugEnabled())
 				logger.debug("Net folder config object (id=" + netFolderConfigId + ") not found. Nothing to delete.");
+			return;
 		}
+		
+		try {
+	        if(logger.isDebugEnabled())
+	        	logger.debug("Deleting folder object (id=" + nfc.getFolderId() + ") and everything in it");
+	        getFolderModule().deleteNetFolder(nfc.getFolderId(), deleteSource);
+		}
+		catch(Exception e) {
+			logger.warn("Error deleting folder object (id=" + nfc.getFolderId() + ") and everything in it", e);
+		}
+		
+    	if(logger.isDebugEnabled())
+    		logger.debug("Deleting net folder config object " + nfc.toString());
+    	final NetFolderConfig nfcRef = nfc;
+        getTransactionTemplate().execute(new TransactionCallback<Object>() {
+        	@Override
+			public Object doInTransaction(final TransactionStatus status) {
+        		getCoreDao().delete(nfcRef);
+				return null;
+        	}
+        });
     }
     
 	/*

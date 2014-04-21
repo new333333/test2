@@ -96,7 +96,9 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
     //wikis which link to titles
     protected boolean uniqueTitles=false;
     protected boolean mirrored = false;
-    protected String resourcePath;
+    // Path relative to the path information specified in the net folder configuration object 
+    // (rather than the path information specified in the net folder server object)
+    protected String relRscPath; // access=field
     protected int binderCount=0;
     protected HKey binderKey;
     protected int nextBinderNumber=1;
@@ -141,7 +143,7 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
 		 if (source.properties != null) properties = new HashMap(source.properties);
 		 owner = source.owner;
 		 mirrored = source.mirrored;
-		 resourcePath = source.resourcePath;
+		 relRscPath = source.relRscPath;
 		 branding = source.branding;
 		 brandingExt = source.brandingExt;
 		 //don't copy postingDef, notificationDef, internalId, binders, or pathName
@@ -681,18 +683,62 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
 	public void setMirrored(boolean mirrored) {
 		this.mirrored = mirrored;
 	}
+	
+	/**
+	 * Return resource path that is relative to the net folder server (= resource driver config),
+	 * NOT to the net folder config.
+	 */
 	public String getResourcePath() {
-		if(resourcePath != null && resourcePath.equals("/"))
-			return "";
-		else
-			return resourcePath;
-	}
-	public void setResourcePath(String resourcePath) {
-		if(resourcePath != null && resourcePath.equals("")) {
-			// bugzilla 513609 - To workaround problem with Oracle
-			resourcePath = "/";
+		if(netFolderConfigId == null)
+			return null;
+		NetFolderConfig nfc = this.getNetFolderConfig();
+		if(nfc.getResourcePath() == null || nfc.getResourcePath().equals("")) {
+			return relRscPath;
 		}
-		this.resourcePath = resourcePath;
+		else {
+			if(relRscPath == null || relRscPath.equals("")) {
+				return nfc.getResourcePath();
+			}
+			else {
+				ResourceDriver driver = NetFolderUtil.getResourceDriverByNetFolderConfigId(netFolderConfigId);				
+				return driver.normalizedResourcePath(nfc.getResourcePath(), relRscPath);				
+			}
+		}
+	}
+	
+	/**
+	 * 
+	 * @param resourcePath This resource path is relative to the net folder server 
+	 * (= resource driver config), NOT to the net folder config.
+	 */
+	public void setResourcePath(String resourcePath) {
+		if(netFolderConfigId == null)
+			throw new IllegalStateException("Cannot set resource path [" + resourcePath + "] on binder (id=" + this.getId() + ") because net folder config id is null");
+		if(resourcePath == null) {
+			relRscPath = null;
+			return;
+		}
+		if("".equals(resourcePath)) {
+			relRscPath = "";
+			return;
+		}
+		NetFolderConfig nfc = this.getNetFolderConfig();
+		if(nfc.getResourcePath() == null || nfc.getResourcePath().equals("")) {
+			relRscPath = resourcePath;
+		}
+		else {
+			if(resourcePath.startsWith(nfc.getResourcePath())) {
+				if(resourcePath.length() <= nfc.getResourcePath().length()+1) {
+					relRscPath = "";
+				}
+				else {
+					relRscPath = resourcePath.substring(nfc.getResourcePath().length()+1);
+				}
+			}
+			else {
+				throw new IllegalArgumentException("Cannot set resource path [" + resourcePath + "] on binder (id=" + this.getId() + ") because it doesn't start with net folder config path [" + nfc.getResourcePath() + "]");
+			}
+		}
 	}
 	
 	public ResourceDriver getResourceDriver() {
@@ -1030,7 +1076,7 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
 		this.netFolderConfigId = netFolderConfigId;
 	}
     
-	public NetFolderConfig getNetFolder() {
+	public NetFolderConfig getNetFolderConfig() {
 		if(netFolderConfigId == null)
 			return null;
 		return NetFolderUtil.getNetFolderConfig(netFolderConfigId);
@@ -1038,7 +1084,7 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
 	
 	///// BEGIN: EVERY METHODS BETWEEN BEGIN & END MUST GO AS SOON AS WE CAN FIND TIME TO CLEAN UP
     public boolean getAllowDesktopAppToSyncData() {
-    	NetFolderConfig nf = this.getNetFolder();
+    	NetFolderConfig nf = this.getNetFolderConfig();
     	if(nf != null)
     		return nf.getAllowDesktopAppToSyncData();
     	else
@@ -1046,7 +1092,7 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
     }
 	
     public boolean getAllowMobileAppsToSyncData() {
-    	NetFolderConfig nf = this.getNetFolder();
+    	NetFolderConfig nf = this.getNetFolderConfig();
     	if(nf != null)
     		return nf.getAllowMobileAppsToSyncData();
     	else
@@ -1054,7 +1100,7 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
     }
     
     public boolean getComputedIndexContent() {
-    	NetFolderConfig nf = this.getNetFolder();
+    	NetFolderConfig nf = this.getNetFolderConfig();
     	if(nf != null)
     		return nf.getComputedIndexContent();
     	else
@@ -1062,7 +1108,7 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
     }
     
     public boolean getComputedIsJitsEnabled() {
-    	NetFolderConfig nf = this.getNetFolder();
+    	NetFolderConfig nf = this.getNetFolderConfig();
     	if(nf != null)
     		return nf.getComputedIsJitsEnabled();
     	else
@@ -1070,7 +1116,7 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
     }
     
     public long getComputedJitsAclMaxAge() {
-    	NetFolderConfig nf = this.getNetFolder();
+    	NetFolderConfig nf = this.getNetFolderConfig();
     	if(nf != null)
     		return nf.getComputedJitsAclMaxAge();
     	else
@@ -1078,7 +1124,7 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
     }
     
     public long getComputedJitsMaxAge() {
-    	NetFolderConfig nf = this.getNetFolder();
+    	NetFolderConfig nf = this.getNetFolderConfig();
     	if(nf != null)
     		return nf.getComputedJitsMaxAge();
     	else
@@ -1086,7 +1132,7 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
     }
     
 	public Boolean getFullSyncDirOnly() {
-    	NetFolderConfig nf = this.getNetFolder();
+    	NetFolderConfig nf = this.getNetFolderConfig();
     	if(nf != null)
     		return nf.getFullSyncDirOnly();
     	else
@@ -1094,7 +1140,7 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
 	}
 	
     public boolean getIndexContent() {
-    	NetFolderConfig nf = this.getNetFolder();
+    	NetFolderConfig nf = this.getNetFolderConfig();
     	if(nf != null)
     		return nf.getIndexContent();
     	else
@@ -1102,7 +1148,7 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
     }
     
 	public long getJitsAclMaxAge() {
-    	NetFolderConfig nf = this.getNetFolder();
+    	NetFolderConfig nf = this.getNetFolderConfig();
     	if(nf != null)
     		return nf.getJitsAclMaxAge();
     	else
@@ -1110,7 +1156,7 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
 	}
 	
 	public long getJitsMaxAge() {
-    	NetFolderConfig nf = this.getNetFolder();
+    	NetFolderConfig nf = this.getNetFolderConfig();
     	if(nf != null)
     		return nf.getJitsMaxAge();
     	else
@@ -1118,7 +1164,7 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
 	}
 	
     public boolean isJitsEnabled() {
-    	NetFolderConfig nf = this.getNetFolder();
+    	NetFolderConfig nf = this.getNetFolderConfig();
     	if(nf != null)
     		return nf.isJitsEnabled();
     	else
@@ -1126,7 +1172,7 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
     }
     
     public SyncScheduleOption getSyncScheduleOption() {
-    	NetFolderConfig nf = this.getNetFolder();
+    	NetFolderConfig nf = this.getNetFolderConfig();
     	if(nf != null)
     		return nf.getSyncScheduleOption();
     	else
@@ -1134,7 +1180,7 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
     }
 
     public boolean getUseInheritedIndexContent() {
-    	NetFolderConfig nf = this.getNetFolder();
+    	NetFolderConfig nf = this.getNetFolderConfig();
     	if(nf != null)
     		return nf.getUseInheritedIndexContent();
     	else
@@ -1142,7 +1188,7 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
     }
     
     public boolean getUseInheritedJitsSettings() {
-    	NetFolderConfig nf = this.getNetFolder();
+    	NetFolderConfig nf = this.getNetFolderConfig();
     	if(nf != null)
     		return nf.getUseInheritedJitsSettings();
     	else
@@ -1150,7 +1196,7 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
     }
     
 	public boolean isFullSyncDirOnly() {
-    	NetFolderConfig nf = this.getNetFolder();
+    	NetFolderConfig nf = this.getNetFolderConfig();
     	if(nf != null)
     		return nf.isFullSyncDirOnly();
     	else
@@ -1158,7 +1204,7 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
 	}
 	
     public boolean isHomeDir() {
-    	NetFolderConfig nf = this.getNetFolder();
+    	NetFolderConfig nf = this.getNetFolderConfig();
     	if(nf != null)
     		return nf.isHomeDir();
     	else
