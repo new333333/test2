@@ -700,6 +700,9 @@
 	font-size: 13px;
 	line-height: 16px;
 	margin-top: 3px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
 }
 
 .shareThisDlg_NoteLabel

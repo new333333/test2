@@ -1918,6 +1918,7 @@ public class ShareThisDlg2 extends DlgBox
 								
 								// Update the name of the entity in the header.
 								m_headerNameLabel.setText( gwtFolderEntry.getEntryName() );
+								m_headerNameLabel.setTitle( gwtFolderEntry.getEntryName() );
 								m_headerPathLabel.setText( gwtFolderEntry.getParentBinderName() );
 								m_headerPathLabel.setTitle( gwtFolderEntry.getParentBinderName() );
 								
