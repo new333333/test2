@@ -1291,6 +1291,8 @@ public void delete(final Folder folder) {
 	public Long findFolderId(final NetFileId netFileId, final Long zoneId) {
 		long begin = System.nanoTime();
 		try {
+			if(!netFileId.isDirectory())
+				throw new IllegalArgumentException("Net file ID " + netFileId + " doesn't represent a folder");
 			List<Long> result = (List<Long>) getHibernateTemplate().execute(new HibernateCallback() {
 				@Override
 				public Object doInHibernate(Session session) throws HibernateException {
@@ -1298,7 +1300,7 @@ public void delete(final Folder folder) {
 						.setProjection(Projections.property("id"))
 							.add(Restrictions.eq(ObjectKeys.FIELD_ZONE, zoneId))
 							.add(Restrictions.eq(ObjectKeys.FIELD_NET_FOLDER_CONFIG_ID, netFileId.getNetFolderConfigId()))
-							.add(Restrictions.eq(ObjectKeys.FIELD_BINDER_RESOURCE_PATH, netFileId.getResourcePath()))
+							.add(Restrictions.eq(ObjectKeys.FIELD_BINDER_REL_RSC_PATH, netFileId.getResourcePath()))
 							.setCacheable(isBinderQueryCacheable())
 							.list();
 				}});
@@ -1321,6 +1323,8 @@ public void delete(final Folder folder) {
 		// This query uses inner join
 		long begin = System.nanoTime();
 		try {
+			if(netFileId.isDirectory())
+				throw new IllegalArgumentException("Net file ID " + netFileId + " doesn't represent a file");
 			List<Long> result = (List<Long>) getHibernateTemplate().execute(new HibernateCallback() {
 				@Override
 				public Object doInHibernate(Session session) throws HibernateException {
@@ -1329,7 +1333,7 @@ public void delete(final Folder folder) {
 							.add(Restrictions.eq("folderEntryAlias." + ObjectKeys.FIELD_ENTITY_TITLE, netFileId.getResourceName()))
 						    .createCriteria("folderEntryAlias.parentBinder", "folderAlias")							
 							.add(Restrictions.eq("folderAlias." + ObjectKeys.FIELD_NET_FOLDER_CONFIG_ID, netFileId.getNetFolderConfigId()))
-							.add(Restrictions.eq("folderAlias." + ObjectKeys.FIELD_BINDER_RESOURCE_PATH, netFileId.getParentResourcePath()))
+							.add(Restrictions.eq("folderAlias." + ObjectKeys.FIELD_BINDER_REL_RSC_PATH, netFileId.getParentResourcePath()))
 							.setProjection(Projections.property("folderEntryAlias.id"))
 							.setCacheable(false)
 							.list();

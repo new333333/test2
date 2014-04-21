@@ -53,8 +53,8 @@ public class NetFileId extends SimpleFileId {
 	private String resourcePath;
 	
 	// Cache fields
-	private String parentPath;
-	private String name;
+	private String parentPath; // Parent path portion of resource path
+	private String name; // Name portion of resource path
 
 	public NetFileId(Long netFolderConfigId, String resourcePath, boolean directory) {
 		super(directory);
