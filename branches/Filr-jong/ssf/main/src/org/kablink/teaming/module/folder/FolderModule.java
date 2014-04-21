@@ -743,7 +743,7 @@ public interface FolderModule {
 	
     public void syncAclForNetFolderRoot(Folder netFolderRoot);
 
-    public Folder createNetFolder(Long netFolderConfigId, Long templateId, Long parentBinderId, String folderName, User owner, String rootName, Boolean isHomeDir, boolean indexContent, Boolean inheritIndexContent, SyncScheduleOption syncScheduleOption, Boolean fullSyncDirOnly ) throws AccessControlException, WriteFilesException, WriteEntryDataException;
+    public Folder createNetFolder(Long netFolderConfigId, Long templateId, Long parentBinderId, String folderTitle, String folderName, User owner, Boolean isHomeDir, boolean indexContent, Boolean inheritIndexContent, SyncScheduleOption syncScheduleOption, Boolean fullSyncDirOnly ) throws AccessControlException, WriteFilesException, WriteEntryDataException;
     
     public Map getNetFolderAccessData(Folder netFolder);
     

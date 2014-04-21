@@ -120,7 +120,7 @@ public class BaseFolderModule extends AbstractFolderModule implements BaseFolder
 
 	@Override
 	public Folder createNetFolder(Long netFolderConfigId, Long templateId, Long parentBinderId,
-			String name, User owner, String rootName,
+			String folderTitle, String folderName, User owner,
 			Boolean isHomeDir, boolean indexContent, Boolean inheritIndexContent, SyncScheduleOption syncScheduleOption,
 			Boolean fullSyncDirOnly ) throws AccessControlException, WriteFilesException, WriteEntryDataException {
 		return null;
