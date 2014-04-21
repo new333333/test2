@@ -34,6 +34,7 @@ package org.kablink.teaming.domain;
 
 import org.kablink.teaming.fi.connection.ResourceDriver;
 import org.kablink.teaming.fi.connection.ResourceDriverManagerUtil;
+import org.kablink.teaming.module.netfolder.NetFolderUtil;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.web.util.NetFolderHelper;
 
@@ -115,6 +116,17 @@ public class NetFolderConfig {
     protected Boolean useInheritedIndexContent = Boolean.TRUE;
     protected Boolean useInheritedJitsSettings = Boolean.TRUE;
 
+    // Used by application
+    public NetFolderConfig(Long netFolderServerId) {
+    	if(netFolderServerId == null)
+    		throw new IllegalArgumentException("Net folder server ID must be specified");
+    	this.netFolderServerId = netFolderServerId;
+    }
+    
+    // Used by Hibernate
+    private NetFolderConfig() {
+    }
+    
 	public Long getId() {
 		return id;
 	}
@@ -152,6 +164,19 @@ public class NetFolderConfig {
 	}
 
 	public void setResourcePath(String resourcePath) {
+		if("".equals(resourcePath)) {
+			// Oracle converts "" to null, which could result in lots of pointless updates because persistent value and in-memory value are different.
+			// To avoid this issue altogether, we map empty string in application tier to null value in data access tier for all database types.
+			resourcePath = null; 
+		}
+		
+		if(resourcePath != null) {
+			ResourceDriver driver = NetFolderUtil.getResourceDriverByNetFolderServerId(netFolderServerId);
+			if(driver == null)
+				throw new IllegalStateException("Cannot set resource path [" + resourcePath + "] on net folder config (name=" + this.getName() + ") due to missing resource driver");			
+			resourcePath = driver.normalizedResourcePath(resourcePath);
+		}
+		
 		this.resourcePath = resourcePath;
 	}
 

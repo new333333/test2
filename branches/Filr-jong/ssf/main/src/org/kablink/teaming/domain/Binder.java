@@ -687,21 +687,23 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
 	/**
 	 * Return resource path that is relative to the net folder server (= resource driver config),
 	 * NOT to the net folder config.
+	 * 
+	 * NOTE: This method is guaranteed to return non-null value.
 	 */
 	public String getResourcePath() {
 		if(netFolderConfigId == null)
-			return null;
+			return ""; // Is this right?
 		NetFolderConfig nfc = this.getNetFolderConfig();
-		if(nfc.getResourcePath() == null || nfc.getResourcePath().equals("")) {
-			return relRscPath;
+		if("".equals(nfc.getResourcePath())) {
+			return getRelRscPath();
 		}
 		else {
-			if(relRscPath == null || relRscPath.equals("")) {
+			if("".equals(getRelRscPath())) {
 				return nfc.getResourcePath();
 			}
 			else {
 				ResourceDriver driver = NetFolderUtil.getResourceDriverByNetFolderConfigId(netFolderConfigId);				
-				return driver.normalizedResourcePath(nfc.getResourcePath(), relRscPath);				
+				return driver.normalizedResourcePath(nfc.getResourcePath(), getRelRscPath());				
 			}
 		}
 	}
@@ -721,29 +723,29 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
 		if(nfc == null)
 			throw new IllegalStateException("Cannot set resource path [" + resourcePath + "] on binder (id=" + this.getId() + ") due to missing net folder config");
 		
-		if(resourcePath == null) {
-			relRscPath = null;
-			return;
-		}
-		if("".equals(resourcePath)) {
-			relRscPath = "";
-			return;
-		}
-		if(nfc.getResourcePath() == null || nfc.getResourcePath().equals("")) {
-			relRscPath = resourcePath;
+		if(resourcePath == null || resourcePath.equals("")) {
+			if("".equals(nfc.getResourcePath()))
+				this.setRelRscPath("");
+			else
+				throw new IllegalArgumentException("Cannot set resource path [" + resourcePath + "] on binder (id=" + this.getId() + ") since it doesn't start with net folder config path");	
 		}
 		else {
-			if(resourcePath.startsWith(nfc.getResourcePath())) {
-				if(resourcePath.length() <= nfc.getResourcePath().length()+1) {
-					relRscPath = "";
-				}
-				else {
-					relRscPath = resourcePath.substring(nfc.getResourcePath().length()+1);
-				}
+			if("".equals(nfc.getResourcePath())) {
+				this.setRelRscPath(resourcePath);
 			}
 			else {
-				throw new IllegalArgumentException("Cannot set resource path [" + resourcePath + "] on binder (id=" + this.getId() + ") because it doesn't start with net folder config path [" + nfc.getResourcePath() + "]");
-			}
+				if(resourcePath.startsWith(nfc.getResourcePath())) {
+					if(resourcePath.length() <= nfc.getResourcePath().length()+1) {
+						this.setRelRscPath("");
+					}
+					else {
+						this.setRelRscPath(resourcePath.substring(nfc.getResourcePath().length()+1));
+					}
+				}
+				else {
+					throw new IllegalArgumentException("Cannot set resource path [" + resourcePath + "] on binder (id=" + this.getId() + ") because it doesn't start with net folder config path [" + nfc.getResourcePath() + "]");
+				}
+			}			
 		}
 	}
 	
@@ -1088,13 +1090,23 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
 		return NetFolderUtil.getNetFolderConfig(netFolderConfigId);
 	}
 	
-	/*
 	public void setRelRscPath(String relRscPath) {
-		ResourceDriver driver = getResourceDriver();
-		if(driver == null)
-			throw new IllegalStateException("Cannot set relative resource path [" + relRscPath + "] on binder (id=" + this.getId() + ") due to missing resource driver");
+		if("".equals(relRscPath)) {
+			// Oracle converts "" to null, which could result in lots of pointless updates because persistent value and in-memory value are different.
+			// To avoid this issue altogether, we map empty string in application tier to null value in data access tier for all database types.
+			relRscPath = null; 
+		}
 		
-		relRscPath = driver.normalizedResourcePath(relRscPath);
+		/* Since this method is called only from setResourcePath which performs normalization on the path
+		 * before passing it to this method, we don't have to normalize it again in this method.
+		 
+		if(relRscPath != null) {
+			ResourceDriver driver = getResourceDriver();
+			if(driver == null)
+				throw new IllegalStateException("Cannot set relative resource path [" + relRscPath + "] on binder (id=" + this.getId() + ") due to missing resource driver");			
+			relRscPath = driver.normalizedResourcePath(relRscPath);
+		}
+		*/
 
 		this.relRscPath = relRscPath;
 	}
@@ -1102,7 +1114,6 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
 	public String getRelRscPath() {
 		return relRscPath;
 	}
-	*/
 	
 	///// BEGIN: EVERY METHODS BETWEEN BEGIN & END MUST GO AS SOON AS WE CAN FIND TIME TO CLEAN UP
     public boolean getAllowDesktopAppToSyncData() {

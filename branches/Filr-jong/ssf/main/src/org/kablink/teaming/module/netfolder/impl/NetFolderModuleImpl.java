@@ -69,10 +69,9 @@ public class NetFolderModuleImpl extends CommonDependencyInjection implements Ne
     		throws AccessControlException, WriteFilesException, WriteEntryDataException {
     	
     	// Create and save a new net folder config object        		
-		final NetFolderConfig nfc = new NetFolderConfig();
+		final NetFolderConfig nfc = new NetFolderConfig(NetFolderUtil.getNetFolderServerByName(netFolderServerName).getId());
     	nfc.setName(name);
     	nfc.setFolderId(0L); // temporary value
-    	nfc.setNetFolderServerId(NetFolderUtil.getNetFolderServerByName(netFolderServerName).getId());
     	nfc.setResourcePath(path);
     	nfc.setHomeDir(isHomeDir);
     	nfc.setIndexContent(indexContent);
