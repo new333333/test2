@@ -1432,6 +1432,9 @@ public class ModifyNetFolderDlg extends DlgBox
 			// Only allow the user to search for internal users.
 			m_selectPrincipalsWidget.setSearchForExternalPrincipals( false );
 			m_selectPrincipalsWidget.setSearchForInternalPrincipals( true );
+			
+			// Allow the user to search for ldap containers
+			m_selectPrincipalsWidget.setSearchForLdapContainers( true );
 		}
 		else
 		{

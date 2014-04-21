@@ -296,8 +296,9 @@ public class GwtSearchHelper
 				searchTermFilter.addAndInternalFilter( false );
 			}
 				
-			// Don't ever return "ldap container" groups.
-			searchTermFilter.addAndLdapContainerFilter( false );
+			// Should we search for ldap containers?
+			if ( searchCriteria.getSearchForLdapContainers() == false )
+				searchTermFilter.addAndLdapContainerFilter( false );
 			break;
 
 		case GROUP:
@@ -317,8 +318,9 @@ public class GwtSearchHelper
 				searchTermFilter.addAndInternalFilter( false );
 			}
 			
-			// Don't ever return "ldap container" groups.
-			searchTermFilter.addAndLdapContainerFilter( false );
+			// Should we search for ldap containers?
+			if ( searchCriteria.getSearchForLdapContainers() == false )
+				searchTermFilter.addAndLdapContainerFilter( false );
 			break;
 			
 		default:

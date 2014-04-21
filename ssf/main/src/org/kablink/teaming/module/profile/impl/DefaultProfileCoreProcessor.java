@@ -971,8 +971,11 @@ protected void modifyEntry_indexAdd(Binder binder, Entry entry,
 	
     protected void addEntry_indexAdd(Binder binder, Entry entry, 
     		InputDataAccessor inputData, List fileUploadItems, Map ctx){
-    	if((entry instanceof Group) && ((Group)entry).isLdapContainer())
-    		return; // Do NOT index container group
+    	// As part of the fix for bug 874784, we need to index container groups because we need to
+    	// be able to assign a container rights to a net folder.
+//    	if((entry instanceof Group) && ((Group)entry).isLdapContainer())
+//    		return; // Do NOT index container group
+    	
     	super.addEntry_indexAdd(binder, entry, inputData, fileUploadItems, ctx);
     }
     
