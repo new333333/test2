@@ -968,6 +968,15 @@ public class SelectPrincipalsWidget extends Composite
 	}
 	
 	/**
+	 * Set the flag that determines if we are going to look for ldap container objects.
+	 */
+	public void setSearchForLdapContainers( boolean search )
+	{
+		if ( m_findCtrl != null )
+			m_findCtrl.setSearchForLdapContainers( search );
+	}
+	
+	/**
 	 * Unhighlight the given row in the table that holds the list of principals
 	 */
 	private void unhighlightPrincipal( int row )

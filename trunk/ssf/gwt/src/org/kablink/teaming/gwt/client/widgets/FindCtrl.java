@@ -1375,6 +1375,14 @@ public class FindCtrl extends Composite
 		m_searchCriteria.setSearchForInternalPrincipals( internal );
 	}
 	
+	/*
+	 * When searching for groups or principals, should we include ldap containers
+	 */
+	public void setSearchForLdapContainers( boolean search )
+	{
+		m_searchCriteria.setSearchForLdapContainers( search );
+	}
+	
 	/**
 	 * Set when searching for principals, should we include ldap groups.
 	 */
