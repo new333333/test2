@@ -534,7 +534,6 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 				//If the binder is not mirrored, force it to be mirrored since only mirrored folders are allowed in a mirrored folder.
 				binder.setMirrored(true);
 			}
-	    	normalizeResourcePathIfInInput(binder, inputData);
 	    	binder.setNetFolderConfigId(parent.getNetFolderConfigId());
 						
 	    	if(binder.getResourceDriverName() != null) {
@@ -545,7 +544,6 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 						session = getResourceDriverManager().getSession(driver, ResourceDriverManager.FileOperation.CREATE_FOLDER, parent);
 						session.setPath(parent.getResourcePath(), parent.getResourceHandle(), binder.getTitle(), binder.getResourceHandle(), Boolean.TRUE);
 						binder.setResourcePath(session.getPath());
-						normalizeResourcePath(binder);
 					}
 					
 					// Perform outward synchronization, if requested and possible.
@@ -690,6 +688,9 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
    			}
    			if (inputData.exists(ObjectKeys.FIELD_BINDER_RESOURCE_PATH) && !entryData.containsKey(ObjectKeys.FIELD_BINDER_RESOURCE_PATH)) {
    				entryData.put(ObjectKeys.FIELD_BINDER_RESOURCE_PATH, inputData.getSingleValue(ObjectKeys.FIELD_BINDER_RESOURCE_PATH));
+   			}
+   			if (inputData.exists(ObjectKeys.FIELD_BINDER_REL_RSC_PATH) && !entryData.containsKey(ObjectKeys.FIELD_BINDER_REL_RSC_PATH)) {
+   				entryData.put(ObjectKeys.FIELD_BINDER_REL_RSC_PATH, inputData.getSingleValue(ObjectKeys.FIELD_BINDER_REL_RSC_PATH));
    			}
    			if (inputData.exists(ObjectKeys.FIELD_RESOURCE_HANDLE) && !entryData.containsKey(ObjectKeys.FIELD_RESOURCE_HANDLE)) {
    				entryData.put(ObjectKeys.FIELD_RESOURCE_HANDLE, inputData.getSingleValue(ObjectKeys.FIELD_RESOURCE_HANDLE));
@@ -997,9 +998,6 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     
     //inside write transaction    
    protected void modifyBinder_mirrored(Binder binder, String oldTitle, String newTitle, InputDataAccessor inputData) {
-    	if(binder.isMirrored())
-    		normalizeResourcePathIfInInput(binder, inputData);
-    	
     	if(isMirroredAndNotTopLevel(binder) && !oldTitle.equals(newTitle)) {
 			ResourceDriver driver = getResourceDriverManager().getDriver(binder.getResourceDriverName());
     		
@@ -1022,17 +1020,6 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     	}
     }
 
-    private void normalizeResourcePathIfInInput(Binder binder, InputDataAccessor inputData) {
-   		if (inputData.exists(ObjectKeys.FIELD_BINDER_RESOURCE_PATH)) {
-   			normalizeResourcePath(binder);
-   		}
-    }
-    
-    private void normalizeResourcePath(Binder binder) {
-		String normalizedResourcePath = getResourceDriverManager().normalizedResourcePath(binder.getResourceDriverName(), binder.getResourcePath());
-		binder.setResourcePath(normalizedResourcePath);  			   	
-    }
-   		
     //no transaction    
     protected void modifyBinder_indexAdd(Binder binder, 
     		InputDataAccessor inputData, List fileUploadItems,

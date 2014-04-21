@@ -553,15 +553,10 @@ public class NetFolderHelper
 			   				Map formData = null;
 		
 							// Yes
-							deleteAtts = new HashSet();
-							fileMap = new HashMap();
-			   				formData = new HashMap();
-					   		formData.put( ObjectKeys.FIELD_BINDER_RESOURCE_DRIVER_NAME, rdConfig.getName() );
-					   		formData.put( ObjectKeys.FIELD_BINDER_RESOURCE_PATH, path );
-			   				mid = new MapInputData( formData );
-		
+			   				nfc.setNetFolderServerId(rdConfig.getId());
+			   				nfc.setResourcePath(path);
 			   				// Modify the existing net folder with the home directory information.
-				   			binderModule.modifyBinder( nfc.getId(), mid, fileMap, deleteAtts, null );
+			   				netFolderModule.modifyNetFolder(nfc);
 				   			
 				   			syncNeeded = false;
 						}
