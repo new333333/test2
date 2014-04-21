@@ -140,11 +140,11 @@ public class ManageMobileDevicesDlg extends DlgBox
 	 * splitting.  All instantiations of this object must be done
 	 * through its createAsync().
 	 */
-	private ManageMobileDevicesDlg(ManageMobileDevicesDlgClient mmdDlgClient, int x, int y, Integer cx, Integer cy) {
+	private ManageMobileDevicesDlg(ManageMobileDevicesDlgClient mmdDlgClient, boolean autoHide, boolean modal, int x, int y, Integer cx, Integer cy) {
 		// Initialize the superclass...
 		super(
-			false,					// false -> Not auto hide.
-			true,					// true  -> Modal.
+			autoHide,
+			modal,
 			x, y, cx, cy,			// Will be 0, 0, null, null for a floating dialog. 
 			DlgButtonMode.Close);	// We only need a close button.
 
@@ -655,11 +655,11 @@ public class ManageMobileDevicesDlg extends DlgBox
 	 * Asynchronously runs the given instance of the manage mobile
 	 * devices dialog.
 	 */
-	private static void runDlgAsync(final ManageMobileDevicesDlg mmdDlg, final MobileDevicesInfo ci, final UIObject showRelativeTo, final int x, final int y, final Integer cx, final Integer cy, final MobileDeviceRemovedCallback removedCallback) {
+	private static void runDlgAsync(final ManageMobileDevicesDlg mmdDlg, final MobileDevicesInfo ci, final UIObject showRelativeTo, final boolean autoHide, final boolean modal, final int x, final int y, final Integer cx, final Integer cy, final MobileDeviceRemovedCallback removedCallback) {
 		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
-				mmdDlg.runDlgNow(ci, showRelativeTo, x, y, cx, cy, removedCallback);
+				mmdDlg.runDlgNow(ci, showRelativeTo, autoHide, modal, x, y, cx, cy, removedCallback);
 			}
 		});
 	}
@@ -668,7 +668,7 @@ public class ManageMobileDevicesDlg extends DlgBox
 	 * Synchronously runs the given instance of the manage mobile
 	 * devices dialog.
 	 */
-	private void runDlgNow(MobileDevicesInfo mdInfo, UIObject showRelativeTo, int x, int y, Integer cx, Integer cy, MobileDeviceRemovedCallback removedCallback) {
+	private void runDlgNow(MobileDevicesInfo mdInfo, UIObject showRelativeTo, boolean autoHide, boolean modal, int x, int y, Integer cx, Integer cy, MobileDeviceRemovedCallback removedCallback) {
 		// Store the parameters...
 		m_mdInfo          = mdInfo;
 		m_showRelativeTo  = showRelativeTo;
@@ -826,6 +826,9 @@ public class ManageMobileDevicesDlg extends DlgBox
 			// createAsync() parameters.
 			final ManageMobileDevicesDlgClient	mmdDlgClient,
 			
+			final boolean autoHide,
+			final boolean modal,
+			
 			// ...used by both createAsync() and initAndShow()...
 			final int							x,
 			final int							y,
@@ -854,14 +857,14 @@ public class ManageMobileDevicesDlg extends DlgBox
 					// construction flow will call the appropriate
 					// method off the ManageMobileDevicesDlgClient
 					// object.
-					new ManageMobileDevicesDlg(mmdDlgClient, x, y, cx, cy);
+					new ManageMobileDevicesDlg(mmdDlgClient, autoHide, modal, x, y, cx, cy);
 				}
 				
 				else {
 					// No, it's not a request to create a dialog!  It
 					// must be a request to run an existing one.  Run
 					// it.
-					runDlgAsync(mmdDlg, mdInfo, showRelativeTo, x, y, cx, cy, removedCallback);
+					runDlgAsync(mmdDlg, mdInfo, showRelativeTo, autoHide, modal, x, y, cx, cy, removedCallback);
 				}
 			}
 		});
@@ -873,12 +876,12 @@ public class ManageMobileDevicesDlg extends DlgBox
 	 * 
 	 * @param mmdDlgClient
 	 */
-	public static void createAsync(ManageMobileDevicesDlgClient mmdDlgClient, int x, int y, Integer cx, Integer cy) {
-		doAsyncOperation(mmdDlgClient, x, y, cx, cy, null, null, null, null);
+	public static void createAsync(ManageMobileDevicesDlgClient mmdDlgClient, boolean autoHide, boolean modal, int x, int y, Integer cx, Integer cy) {
+		doAsyncOperation(mmdDlgClient, autoHide, modal, x, y, cx, cy, null, null, null, null);
 	}
 	
 	public static void createAsync(ManageMobileDevicesDlgClient mmdDlgClient) {
-		doAsyncOperation(mmdDlgClient, 0, 0, null, null, null, null, null, null);
+		doAsyncOperation(mmdDlgClient, false, true, 0, 0, null, null, null, null, null, null);
 	}
 	
 	/**
@@ -891,15 +894,15 @@ public class ManageMobileDevicesDlg extends DlgBox
 	 * @param removedCallback
 	 */
 	public static void initAndShow(ManageMobileDevicesDlg mmdDlg, MobileDevicesInfo mdInfo, UIObject showRelativeTo, MobileDeviceRemovedCallback removedCallback) {
-		doAsyncOperation(null, 0, 0, null, null, mmdDlg, mdInfo, showRelativeTo, removedCallback);
+		doAsyncOperation(null, false, true, 0, 0, null, null, mmdDlg, mdInfo, showRelativeTo, removedCallback);
 	}
 	
 	public static void initAndShow(ManageMobileDevicesDlg mmdDlg, MobileDevicesInfo mdInfo, int x, int y, Integer cx, Integer cy,  MobileDeviceRemovedCallback removedCallback) {
-		doAsyncOperation(null, x, y, cx, cy, mmdDlg, mdInfo, null, removedCallback);
+		doAsyncOperation(null, false, true, x, y, cx, cy, mmdDlg, mdInfo, null, removedCallback);
 	}
 	
 	public static void initAndShow(ManageMobileDevicesDlg mmdDlg, MobileDevicesInfo mdInfo, MobileDeviceRemovedCallback removedCallback) {
-		doAsyncOperation(null, 0, 0, null, null, mmdDlg, mdInfo, null, removedCallback);
+		doAsyncOperation(null, false, true, 0, 0, null, null, mmdDlg, mdInfo, null, removedCallback);
 	}
 	
 	public static void initAndShow(ManageMobileDevicesDlg mmdDlg, MobileDevicesInfo mdInfo, UIObject showRelativeTo) {
