@@ -1088,6 +1088,7 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
 		return NetFolderUtil.getNetFolderConfig(netFolderConfigId);
 	}
 	
+	/*
 	public void setRelRscPath(String relRscPath) {
 		ResourceDriver driver = getResourceDriver();
 		if(driver == null)
@@ -1098,6 +1099,11 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
 		this.relRscPath = relRscPath;
 	}
     
+	public String getRelRscPath() {
+		return relRscPath;
+	}
+	*/
+	
 	///// BEGIN: EVERY METHODS BETWEEN BEGIN & END MUST GO AS SOON AS WE CAN FIND TIME TO CLEAN UP
     public boolean getAllowDesktopAppToSyncData() {
     	NetFolderConfig nf = this.getNetFolderConfig();
@@ -1235,9 +1241,5 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
     		return null;
     }
     
-	public String getRelRscPath() {
-		return relRscPath;
-	}
-	
 	///// END: EVERY METHODS BETWEEN BEGIN & END MUST GO AS SOON AS WE CAN FIND TIME TO CLEAN UP
 }
