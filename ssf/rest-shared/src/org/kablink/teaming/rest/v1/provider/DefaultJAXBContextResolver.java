@@ -76,6 +76,7 @@ public class DefaultJAXBContextResolver implements ContextResolver<JAXBContext> 
     		DiskQuotasConfig.class,
     		EntityId.class,
     		ErrorInfo.class,
+    		FileBrief.class,
     		FileChange.class,
     		FileProperties.class,
     		FileVersionProperties.class,

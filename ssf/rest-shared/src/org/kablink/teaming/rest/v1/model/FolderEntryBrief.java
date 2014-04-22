@@ -11,6 +11,8 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement
 public class FolderEntryBrief extends BaseFolderEntryBrief {
+    private FileBrief primaryFile;
+
     public FolderEntryBrief() {
         super();
     }
@@ -22,5 +24,14 @@ public class FolderEntryBrief extends BaseFolderEntryBrief {
     @Override
     public Object clone() throws CloneNotSupportedException {
         return new FolderEntryBrief(this);
+    }
+
+    @XmlElement(name="primary_file")
+    public FileBrief getPrimaryFile() {
+        return primaryFile;
+    }
+
+    public void setPrimaryFile(FileBrief primaryFile) {
+        this.primaryFile = primaryFile;
     }
 }
