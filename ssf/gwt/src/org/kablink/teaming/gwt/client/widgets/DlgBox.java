@@ -113,6 +113,18 @@ public abstract class DlgBox extends TeamingPopupPanel
 	private final static int DIALOG_BASE_Z_INDEX      = 1001;
 	private final static int MODAL_GLASS_BASE_Z_INDEX = 1000;
 	
+	// Bugzilla 871077 (DRF):
+	//    For the Filr 1.1 release, we will remove the X close button
+	//    in the upper right corner of all GWT dialogs.  We are doing
+	//    this because currently, the GWT dialog cannot determine
+	//    whether anything has changed in the dialog. Once code has
+	//    been added (future) to know whether the dialog has changed,
+	//    then we can replace the X button.
+	//
+	//    By removing the X, the user will have to choose between OK
+	//    or Cancel (only at the bottom of each dialog).
+	private final static boolean	SHOW_X_CLOSER				= false;	//
+	
 	public enum DlgButtonMode {
 		Cancel,
 		Close,
@@ -322,6 +334,9 @@ public abstract class DlgBox extends TeamingPopupPanel
 			m_closeImg.addClickHandler( this );
 			m_closePanel.add( m_closeImg );
 			panel.add( m_closePanel );
+			if (!(SHOW_X_CLOSER)) {
+				hideCloseImg();
+			}
 		}
 		
 		// Add the header.
