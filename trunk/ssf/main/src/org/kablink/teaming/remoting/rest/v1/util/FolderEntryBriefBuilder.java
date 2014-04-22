@@ -24,6 +24,7 @@ public class FolderEntryBriefBuilder extends BaseFolderEntryBriefBuilder impleme
     public FolderEntryBrief build(Map entry) {
         FolderEntryBrief model = new FolderEntryBrief();
         populateBaseFolderEntryBrief(model, entry, Constants.BINDER_ID_FIELD);
+        populateFileBrief(model, entry);
         LinkUriUtil.populateFolderEntryLinks(model, model.getId());
         return model;
     }
