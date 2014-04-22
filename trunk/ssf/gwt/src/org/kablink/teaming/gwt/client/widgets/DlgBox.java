@@ -123,7 +123,7 @@ public abstract class DlgBox extends TeamingPopupPanel
 	//
 	//    By removing the X, the user will have to choose between OK
 	//    or Cancel (only at the bottom of each dialog).
-	private final static boolean	SHOW_X_CLOSER				= false;	//
+	private final static boolean	SHOW_X_CLOSER				= true;	//
 	
 	public enum DlgButtonMode {
 		Cancel,
