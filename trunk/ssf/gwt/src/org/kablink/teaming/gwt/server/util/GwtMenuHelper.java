@@ -2579,7 +2579,7 @@ public class GwtMenuHelper {
 		ToolbarItem manageGroupTBI;
 		if (Utils.checkIfFilr()) {
 			// Yes!  Add whether adHoc folders are accessible.
-			Boolean adHocFlag = AdminHelper.getAdhocFolderSettingFromUserOrGroup(bs, groupId);
+			Boolean adHocFlag = AdminHelper.getAdhocFolderSettingFromUserOrGroup(bs, groupId, false);
 			if (null == adHocFlag) {
 				adHocFlag = AdminHelper.getAdhocFolderSettingFromZone(bs);
 			}

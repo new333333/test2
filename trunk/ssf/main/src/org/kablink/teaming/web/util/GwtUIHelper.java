@@ -614,11 +614,12 @@ public class GwtUIHelper {
 	 * 
 	 * @param bs
 	 * @param upId
+	 * @param idIsUser
 	 * 
 	 * @return
 	 */
-	public static Boolean getAdhocFolderSettingFromUserOrGroup(AllModulesInjected bs, Long upId) {
-		return AdminHelper.getAdhocFolderSettingFromUserOrGroup(bs, upId);
+	public static Boolean getAdhocFolderSettingFromUserOrGroup(AllModulesInjected bs, Long upId, boolean idIsUser) {
+		return AdminHelper.getAdhocFolderSettingFromUserOrGroup(bs, upId, idIsUser);
 	}
 
 	/**
