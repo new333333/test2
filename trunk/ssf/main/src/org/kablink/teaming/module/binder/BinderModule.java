@@ -79,6 +79,7 @@ public interface BinderModule {
 		restoreBinder,
 		preDeleteBinder,
 		deleteBinder,
+		renameBinder,
 		indexBinder,
 		indexTree,
 		manageConfiguration,

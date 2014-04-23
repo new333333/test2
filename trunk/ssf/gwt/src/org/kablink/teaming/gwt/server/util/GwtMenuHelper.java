@@ -1389,7 +1389,7 @@ public class GwtMenuHelper {
 	private static void constructEntryRenameFolder(ToolbarItem entryToolbar, AllModulesInjected bs, HttpServletRequest request, Folder folder) {
 		// Does the user have rights to rename this folder?  Note that
 		// even with rights, they can't rename a 'Home' folder.
-		if (bs.getBinderModule().testAccess(folder, BinderOperation.modifyBinder) && (!(BinderHelper.isBinderHomeFolder(folder)))) {
+		if (bs.getBinderModule().testAccess(folder, BinderOperation.renameBinder) && (!(BinderHelper.isBinderHomeFolder(folder)))) {
 			// Yes!  Add a Rename ToolbarItem.
 			ToolbarItem renameTBI = new ToolbarItem(RENAME);
 			markTBITitle(renameTBI, "toolbar.menu.rename_folder"      );
@@ -2021,45 +2021,49 @@ public class GwtMenuHelper {
 		}
 		
 		// Does the user have rights modify this binder?
-		if (bm.testAccess(binder, BinderOperation.modifyBinder)) {
+		if (bm.testAccess(binder, BinderOperation.modifyBinder) || bm.testAccess(binder, BinderOperation.renameBinder)) {
 			// Yes!  Add the ToolBarItem's for it.
 			adminMenuCreated  =
 			configMenuCreated = true;
 
-			// First, a rename ToolbarItem...
-			actionTBI = new ToolbarItem(RENAME);
-			markTBITitle(actionTBI, (isFolder ? "toolbar.menu.rename_folder" : "toolbar.menu.rename_workspace"));
-			markTBIEvent(actionTBI, TeamingEvents.INVOKE_RENAME_ENTITY                                         );
-			configTBI.addNestedItem(actionTBI);
-
-			// ...if we're not in Filr mode...
-			if (!isFilr) {
-				// ...then a modify ToolbarItem...
-				url = createActionUrl(request);
-				url.setParameter(WebKeys.ACTION,          WebKeys.ACTION_MODIFY_BINDER);
-				url.setParameter(WebKeys.URL_BINDER_ID,   binderIdS                   );
-				url.setParameter(WebKeys.URL_BINDER_TYPE, binderType.name()           );
-				url.setParameter(WebKeys.URL_OPERATION,   WebKeys.OPERATION_MODIFY    );
-				
-				actionTBI = new ToolbarItem(MODIFY);
-				markTBIPopup(actionTBI                                                                             );
-				markTBITitle(actionTBI, (isFolder ? "toolbar.menu.modify_folder" : "toolbar.menu.modify_workspace"));
-				markTBIUrl(  actionTBI, url                                                                        );
-				
+			if (bm.testAccess(binder, BinderOperation.renameBinder)) {
+				// First, a rename ToolbarItem...
+				actionTBI = new ToolbarItem(RENAME);
+				markTBITitle(actionTBI, (isFolder ? "toolbar.menu.rename_folder" : "toolbar.menu.rename_workspace"));
+				markTBIEvent(actionTBI, TeamingEvents.INVOKE_RENAME_ENTITY                                         );
 				configTBI.addNestedItem(actionTBI);
+			}
 
-				// ...then a configure ToolbarItem.
-				url = createActionUrl(request);
-				url.setParameter(WebKeys.ACTION,          WebKeys.ACTION_CONFIGURE_DEFINITIONS);
-				url.setParameter(WebKeys.URL_BINDER_ID,   binderIdS                           );
-				url.setParameter(WebKeys.URL_BINDER_TYPE, binderType.name()                   );
-				
-				actionTBI = new ToolbarItem(CONFIGURE_DEFINITIONS);
-				markTBIPopup(actionTBI                              );
-				markTBITitle(actionTBI, "toolbar.menu.configuration");
-				markTBIUrl(  actionTBI, url                         );
-				
-				configTBI.addNestedItem(actionTBI);
+			if (bm.testAccess(binder, BinderOperation.modifyBinder)) {
+				// ...if we're not in Filr mode...
+				if (!isFilr) {
+					// ...then a modify ToolbarItem...
+					url = createActionUrl(request);
+					url.setParameter(WebKeys.ACTION,          WebKeys.ACTION_MODIFY_BINDER);
+					url.setParameter(WebKeys.URL_BINDER_ID,   binderIdS                   );
+					url.setParameter(WebKeys.URL_BINDER_TYPE, binderType.name()           );
+					url.setParameter(WebKeys.URL_OPERATION,   WebKeys.OPERATION_MODIFY    );
+					
+					actionTBI = new ToolbarItem(MODIFY);
+					markTBIPopup(actionTBI                                                                             );
+					markTBITitle(actionTBI, (isFolder ? "toolbar.menu.modify_folder" : "toolbar.menu.modify_workspace"));
+					markTBIUrl(  actionTBI, url                                                                        );
+					
+					configTBI.addNestedItem(actionTBI);
+	
+					// ...then a configure ToolbarItem.
+					url = createActionUrl(request);
+					url.setParameter(WebKeys.ACTION,          WebKeys.ACTION_CONFIGURE_DEFINITIONS);
+					url.setParameter(WebKeys.URL_BINDER_ID,   binderIdS                           );
+					url.setParameter(WebKeys.URL_BINDER_TYPE, binderType.name()                   );
+					
+					actionTBI = new ToolbarItem(CONFIGURE_DEFINITIONS);
+					markTBIPopup(actionTBI                              );
+					markTBITitle(actionTBI, "toolbar.menu.configuration");
+					markTBIUrl(  actionTBI, url                         );
+					
+					configTBI.addNestedItem(actionTBI);
+				}
 			}
 		}
 

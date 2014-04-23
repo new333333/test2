@@ -76,6 +76,7 @@ import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.util.FilterControls;
 import org.kablink.teaming.dao.util.ObjectControls;
 import org.kablink.teaming.dao.util.SFQuery;
+import org.kablink.teaming.dao.util.ShareItemSelectSpec;
 import org.kablink.teaming.domain.Attachment;
 import org.kablink.teaming.domain.AuditTrail;
 import org.kablink.teaming.domain.Binder;
@@ -100,6 +101,7 @@ import org.kablink.teaming.domain.NotificationDef;
 import org.kablink.teaming.domain.PostingDef;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.ProfileBinder;
+import org.kablink.teaming.domain.ShareItem;
 import org.kablink.teaming.domain.SimpleName;
 import org.kablink.teaming.domain.Subscription;
 import org.kablink.teaming.domain.Tag;
@@ -137,6 +139,7 @@ import org.kablink.teaming.module.shared.FolderUtils;
 import org.kablink.teaming.module.shared.InputDataAccessor;
 import org.kablink.teaming.module.shared.ObjectBuilder;
 import org.kablink.teaming.module.shared.SearchUtils;
+import org.kablink.teaming.module.sharing.SharingModule;
 import org.kablink.teaming.module.workflow.WorkflowModule;
 import org.kablink.teaming.runasync.RunAsyncCallback;
 import org.kablink.teaming.runasync.RunAsyncManager;
@@ -242,6 +245,11 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	protected WorkflowModule getWorkflowModule() {
 		// Can't use IoC due to circular dependency
 		return (WorkflowModule) SpringContextUtil.getBean("workflowModule");
+	}
+
+	protected SharingModule getSharingModule() {
+		// Can't use IoC due to circular dependency
+		return (SharingModule) SpringContextUtil.getBean("sharingModule");
 	}
 
 	/*
@@ -360,6 +368,45 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 			case deleteBinder:
 				if(binder.isAclExternallyControlled()) { // Net Folder or its sub-folder
 					getAccessControlManager().checkOperation(user, binder.getParentBinder(), WorkAreaOperation.DELETE_ENTRIES);
+				}
+				else { // Legacy Vibe folder
+					getAccessControlManager().checkOperation(user, binder, WorkAreaOperation.BINDER_ADMINISTRATION);
+				}
+				break;				
+			case renameBinder:
+				if(binder.isAclExternallyControlled()) { // Net Folder or its sub-folder
+					if (!binder.getParentBinder().isAclExternallyControlled() || binder.isHomeDir() || binder.isRoot()) {
+						//We don't allow renaming the top net folder
+						throw new AccessControlException(operation.toString(), new Object[] {});
+					}
+		        	// This is renaming of a Net Folder (or its sub-folder), which means that the user is attempting to rename a directory.
+					// Do the checking in a way that is consistent with the file system semantic.				
+		        	// Renaming a directory (a -> b) is like deleting a directory (a) and then adding another with a different name
+		        	// (b) when looking at it from the directory membership point of view. So, we require the user to
+		        	// have CREATE_FOLDERS right on the parent folder to allow for this operation.
+					getAccessControlManager().checkOperation(binder.getParentBinder(), WorkAreaOperation.CREATE_FOLDERS);
+					
+					//OK, now check if this access right is due to sharing alone
+					//TODO How do we make this not be a performance issue? Checking a right is supposed to be light weight.
+					/**
+					if (!getFolderModule().testFolderRenameAccess(user, binder.getParentBinder(), false)) {
+						//This is a sharing right, so check if this is the top folder in a share
+						boolean isTopSharedItem = false;
+						ShareItemSelectSpec spec = new ShareItemSelectSpec();
+						spec.setSharedEntityIdentifier( binder.getEntityIdentifier() );
+						spec.setLatest( true );
+						List<ShareItem> listOfShareItems = null;
+						try {
+							listOfShareItems = getSharingModule().getShareItems( spec );
+						} catch ( Exception ex ) {
+						}
+
+						if (isTopSharedItem) {
+							//We don't allow sharees to rename the top shared folder
+							throw new AccessControlException(operation.toString(), new Object[] {});
+						}
+					}
+					*/
 				}
 				else { // Legacy Vibe folder
 					getAccessControlManager().checkOperation(user, binder, WorkAreaOperation.BINDER_ADMINISTRATION);
