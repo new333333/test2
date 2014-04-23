@@ -35,6 +35,7 @@ package org.kablink.teaming.security;
 import java.util.Set;
 
 import org.kablink.teaming.domain.User;
+import org.kablink.teaming.security.function.AccessCheckable;
 import org.kablink.teaming.security.function.WorkArea;
 import org.kablink.teaming.security.function.WorkAreaOperation;
 
@@ -64,9 +65,9 @@ public interface AccessControlManager {
      * @param workAreaOperation
      * @return
      */
-    public boolean testOperation(WorkArea workArea,
+    public boolean testOperation(AccessCheckable accessCheckable,
             WorkAreaOperation workAreaOperation);
-    public boolean testOperation(User user, WorkArea workArea, 
+    public boolean testOperation(User user, AccessCheckable accessCheckable, 
     		WorkAreaOperation workAreaOperation, boolean checkSharing);    
     
     /**
@@ -79,7 +80,7 @@ public interface AccessControlManager {
      * @param workAreaOperation
      * @return
      */
-    public boolean testOperation(User user, WorkArea workArea,
+    public boolean testOperation(User user, AccessCheckable accessCheckable,
             WorkAreaOperation workAreaOperation);
 
     /**
@@ -90,7 +91,7 @@ public interface AccessControlManager {
      * @param workAreaOperation
      * @throws AccessControlException
      */
-    public void checkOperation(WorkArea workArea,
+    public void checkOperation(AccessCheckable accessCheckable,
             WorkAreaOperation workAreaOperation) throws AccessControlException;
         
     /**
@@ -108,7 +109,7 @@ public interface AccessControlManager {
      * @param workAreaOperation
      * @throws AccessControlException
      */
-    public void checkOperation(User user, WorkArea workArea,
+    public void checkOperation(User user, AccessCheckable accessCheckable,
             WorkAreaOperation workAreaOperation) throws AccessControlException;
     
     /**

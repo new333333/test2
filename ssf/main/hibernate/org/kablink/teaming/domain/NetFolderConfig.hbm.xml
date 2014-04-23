@@ -9,10 +9,11 @@
       	<param name="sequence">ss_net_folder_id_sequence</param>
       </generator>
     </id>
+    <version unsaved-value="undefined" name="lockVersion" column="lockVersion" type="long"/>
     <property name="name" length="64" not-null="true" index="name_netFolderConfig"/>
     <property name="folderId" not-null="true"/>
     <property name="netFolderServerId" not-null="true"/>
-    <property name="resourcePath" length="1024" not-null="true"/>
+    <property name="resourcePath" length="1024" access="field"/>
     <property name="homeDir" access="field"/>
     <property name="allowDesktopAppToSyncData" access="field"/>
     <property name="allowMobileAppsToSyncData" access="field"/>

@@ -68,6 +68,7 @@ import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.module.license.LicenseChecker;
 import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.security.AccessControlManager;
+import org.kablink.teaming.security.function.AccessCheckable;
 import org.kablink.teaming.security.function.WorkArea;
 import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.web.util.MiscUtil;
@@ -349,6 +350,18 @@ public class Utils {
 			parent = parent.getParentWorkArea();
 		}
 		return false;
+	}
+	
+	public static boolean isWorkareaInProfilesTree(AccessCheckable accessCheckable) {
+		if(accessCheckable instanceof WorkArea) {
+			// This object persists its ACL in the database. Proceed with checking.
+			return isWorkareaInProfilesTree((WorkArea)accessCheckable);
+		}
+		else {
+			// This object does not persist its ACL in the database, which implies that it is a net file.
+			// Net file/folder never lives below profiles binder.
+			return false;
+		}
 	}
 	
 	public static Long getAllUsersGroupId() {

@@ -38,6 +38,7 @@ import java.util.Set;
 
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.module.zone.ZoneModule;
+import org.kablink.teaming.security.function.AccessCheckable;
 import org.kablink.teaming.security.function.WorkArea;
 import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.util.SPropsUtil;
@@ -469,6 +470,11 @@ public class ResourceDriverConfig extends ZonedObject implements WorkArea {
 	}
 
 	@Override
+	public AccessCheckable getParentAccessCheckable() {
+		return getParentWorkArea();
+	}
+
+	@Override
 	public boolean isFunctionMembershipInheritanceSupported() {
 		return false;
 	}
@@ -524,6 +530,17 @@ public class ResourceDriverConfig extends ZonedObject implements WorkArea {
 		return null;
 	}
 	
+ 	@Override
+ 	public boolean noAclDredged() {
+ 		return false;
+ 	}
+	
+  	@Override
+    public WorkArea asShareableWorkArea() {
+  		// Resource driver config is not shareable
+    	return null;
+    }
+
 	//Routine to determine if this resource driver handles its own acls
 	public boolean isAclAware() {
 		if (ResourceDriverConfig.DriverType.famt == this.getDriverType() ||

@@ -39,17 +39,10 @@ import org.kablink.teaming.domain.Principal;
  * 
  * 
  */
-public interface WorkArea {
+public interface WorkArea extends AccessCheckable {
     
     public Long getWorkAreaId();
     
-    /**
-     * The type of the work area. 
-     * The value must be between 1 and 16 characters long.
-     * 
-     * @return
-     */
-    public String getWorkAreaType();
     /**
      * Return parent workArea or <code>null</code> if top
      * @return
@@ -60,41 +53,18 @@ public interface WorkArea {
      * @return
      */
     public boolean isFunctionMembershipInheritanceSupported();
-    /**
-     * Return true if workArea is currently inheritting function membership.
-     * @return
-     */
-    public boolean isFunctionMembershipInherited();
     
     public void setFunctionMembershipInherited(boolean functionMembershipInherited);
-    /**
-     * Return true if workArea is currently inheritting external function membership.
-     * @return
-     */
-    public boolean isExtFunctionMembershipInherited();
     
     public void setExtFunctionMembershipInherited(boolean extFunctionMembershipInherited);
-    /**
-     * Return the id of the owner of the workArea
-     * @return
-     */
-    public Long getOwnerId();
-    /**
-     * Return the principal that is the owner of the workArea
-     * @return
-     */
-    public Principal getOwner();
+
     public void setOwner(Principal owner);
     /**
      * Return true if currently inheritty team membership
      * @return
      */
     public boolean isTeamMembershipInherited();
-    /**
-     * Return the team members ids
-     * @return
-     */
-    public Set<Long> getTeamMemberIds();
+
     public void setTeamMemberIds(Set<Long> memberIds);
     /**
      * Return the ids of child workAreas
@@ -102,18 +72,6 @@ public interface WorkArea {
      */
     public Set<Long> getChildWorkAreas();
 
-    /**
-     * Return true if this workarea has ACL controlled externally (such as Filr)
-     * @return
-     */
-    public boolean isAclExternallyControlled();
-    
-    /**
-     * Return an immutable list of the rights being controlled by the external device
-     * @return
-     */
-    public List<WorkAreaOperation> getExternallyControlledRights();
-    
     /**
      * Return the role type of the external device (if any)
      * @return

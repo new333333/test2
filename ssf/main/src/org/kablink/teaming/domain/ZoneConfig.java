@@ -36,6 +36,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.HashSet;
 
+import org.kablink.teaming.security.function.AccessCheckable;
 import org.kablink.teaming.security.function.WorkArea;
 import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.util.ShareLists;
@@ -307,6 +308,10 @@ public class ZoneConfig extends ZonedObject implements WorkArea {
 	public WorkArea getParentWorkArea() {
     	return null;
     }
+	@Override
+	public AccessCheckable getParentAccessCheckable() {
+		return getParentWorkArea();
+	}
     @Override
 	public boolean isFunctionMembershipInheritanceSupported() {
     	return false;
@@ -317,16 +322,16 @@ public class ZoneConfig extends ZonedObject implements WorkArea {
    }
   
    @Override
-public void setFunctionMembershipInherited(boolean functionMembershipInherited) {
+   public void setFunctionMembershipInherited(boolean functionMembershipInherited) {
    	
    }
    @Override
-public boolean isExtFunctionMembershipInherited() {
+   public boolean isExtFunctionMembershipInherited() {
   	return false;
   }
  
   @Override
-public void setExtFunctionMembershipInherited(boolean extFunctionMembershipInherited) {
+  public void setExtFunctionMembershipInherited(boolean extFunctionMembershipInherited) {
   	
   }
     @Override
@@ -369,10 +374,20 @@ public void setExtFunctionMembershipInherited(boolean extFunctionMembershipInher
 	public String getRegisteredRoleType() {
     	return "";
     }
+ 	@Override
+ 	public boolean noAclDredged() {
+ 		return false;
+ 	}
     
-/**
- * The following methods deal with the settings used by the desktop application (file sync app)
- */
+  	@Override
+    public WorkArea asShareableWorkArea() {
+  		// Zone config is not shareable
+    	return null;
+    }
+
+	/**
+	 * The following methods deal with the settings used by the desktop application (file sync app)
+	 */
     
 	public boolean getFsaEnabled() {
 		if(fsaEnabled == null)
@@ -715,4 +730,13 @@ public void setExtFunctionMembershipInherited(boolean extFunctionMembershipInher
 	public void setShareLists(ShareLists shareLists) {
 		setShareListsBlob(shareLists.getShareListsBlob());
 	}
+	
+	@Override
+	public String toString() {
+		if(zoneId != null)
+			return zoneId.toString();
+		else
+			return "";
+	}
+
 }

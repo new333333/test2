@@ -54,6 +54,7 @@ import org.kablink.teaming.fi.connection.acl.AclResourceDriver;
 import org.kablink.teaming.modelprocessor.InstanceLevelProcessorSupport;
 import org.kablink.teaming.module.definition.DefinitionModule;
 import org.kablink.teaming.module.netfolder.NetFolderUtil;
+import org.kablink.teaming.security.function.AccessCheckable;
 import org.kablink.teaming.security.function.WorkArea;
 import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.util.LongIdUtil;
@@ -691,21 +692,11 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
 	 * NOTE: This method is guaranteed to return non-null value.
 	 */
 	public String getResourcePath() {
-		if(netFolderConfigId == null)
-			return ""; // Is this right?
 		NetFolderConfig nfc = this.getNetFolderConfig();
-		if("".equals(nfc.getResourcePath())) {
-			return getRelRscPath();
-		}
-		else {
-			if("".equals(getRelRscPath())) {
-				return nfc.getResourcePath();
-			}
-			else {
-				ResourceDriver driver = NetFolderUtil.getResourceDriverByNetFolderConfigId(netFolderConfigId);				
-				return driver.normalizedResourcePath(nfc.getResourcePath(), getRelRscPath());				
-			}
-		}
+		if(nfc != null)
+			return nfc.buildResourcePathRelativeToNetFolderServer(getRelRscPath());
+		else
+			return "";
 	}
 	
 	/**
@@ -755,17 +746,6 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
 			driver = NetFolderUtil.getResourceDriverByNetFolderConfigId(netFolderConfigId);
 		}
 		return driver;
-	}
-	
-	public boolean noAclDredgedWithEntries() {
-		ResourceDriver driver = getResourceDriver();
-		if (driver != null) {
-			ResourceDriverConfig config = driver.getConfig();
-			if (config != null) {
-				return config.isAclAware();
-			}
-		}
-		return false;
 	}
 	
 	public boolean isMirroredAndReadOnly() {
@@ -888,6 +868,10 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
         return this.getParentBinder();
     }
     @Override
+	public AccessCheckable getParentAccessCheckable() {
+        return getParentWorkArea();
+    }
+    @Override
 	public Set getChildWorkAreas() {
     	return new HashSet(getBinders());
     }
@@ -978,8 +962,36 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
     	 this.extFunctionMembershipInherited = Boolean.valueOf(extFunctionMembershipInherited);
      }
      
+  	@Override
+  	public boolean noAclDredged() {
+ 		ResourceDriver driver = this.getResourceDriver();
+ 		if (driver != null) {
+ 			ResourceDriverConfig config = driver.getConfig();
+ 			if (config != null) {
+ 				return config.isAclAware();
+ 			}
+ 		}
+ 		return false;
+  	}
+	
+  	@Override
+    public WorkArea asShareableWorkArea() {
+    	return this;
+    }
+    
      /*****************End WorkArea interface stuff***********/
     
+	public boolean noAclDredgedWithEntries() {
+		ResourceDriver driver = getResourceDriver();
+		if (driver != null) {
+			ResourceDriverConfig config = driver.getConfig();
+			if (config != null) {
+				return config.isAclAware();
+			}
+		}
+		return false;
+	}
+	
      /**
       * Return acl index string representing team membership
       * @return
@@ -1112,7 +1124,10 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
 	}
     
 	public String getRelRscPath() {
-		return relRscPath;
+		if(relRscPath != null)
+			return relRscPath;
+		else
+			return "";
 	}
 	
 	///// BEGIN: EVERY METHODS BETWEEN BEGIN & END MUST GO AS SOON AS WE CAN FIND TIME TO CLEAN UP

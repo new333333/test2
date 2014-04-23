@@ -44,9 +44,9 @@ import org.kablink.teaming.domain.User;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.security.AccessControlManager;
 import org.kablink.teaming.security.acl.AccessType;
-import org.kablink.teaming.security.acl.AclAccessControlException;
 import org.kablink.teaming.security.acl.AclContainer;
 import org.kablink.teaming.security.acl.AclControlled;
+import org.kablink.teaming.security.function.AccessCheckable;
 import org.kablink.teaming.security.function.Function;
 import org.kablink.teaming.security.function.WorkArea;
 import org.kablink.teaming.security.function.WorkAreaOperation;
@@ -81,35 +81,35 @@ public class NullAccessControlManager implements AccessControlManager {
 		}
 		return groups;
 	}
-    public void checkOperation(WorkArea workArea, WorkAreaOperation workAreaOperation) throws AccessControlException {
+    public void checkOperation(AccessCheckable accessCheckable, WorkAreaOperation workAreaOperation) throws AccessControlException {
     }
 
-    public boolean testOperation(WorkArea workArea, WorkAreaOperation workAreaOperation) {
+    public boolean testOperation(AccessCheckable accessCheckable, WorkAreaOperation workAreaOperation) {
         return true; // Permission granted with no checking. 
     }
     
-    public boolean testOperation(User user, WorkArea workArea, WorkAreaOperation workAreaOperation, boolean checkSharing) {
+    public boolean testOperation(User user, AccessCheckable accessCheckable, WorkAreaOperation workAreaOperation, boolean checkSharing) {
     	return true;
     }
 
-    public void checkOperation(User user, WorkArea workArea, WorkAreaOperation workAreaOperation) throws AccessControlException {
+    public void checkOperation(User user, AccessCheckable accessCheckable, WorkAreaOperation workAreaOperation) throws AccessControlException {
     }
 
-    public boolean testOperation(User user, WorkArea workArea, WorkAreaOperation workAreaOperation) {
+    public boolean testOperation(User user, AccessCheckable accessCheckable, WorkAreaOperation workAreaOperation) {
         return true; // Permission granted with no checking. 
     }
 
-	public void checkFunction(WorkArea workArea, Function function) 
+	public void checkFunction(AccessCheckable accessCheckable, Function function) 
 		throws AccessControlException {
 	}
-	public void checkFunction(User user, WorkArea workArea, Function function) 
+	public void checkFunction(User user, AccessCheckable accessCheckable, Function function) 
 		throws AccessControlException {
 	}
      
-	public boolean testFunction(WorkArea workArea, Function function) {
+	public boolean testFunction(AccessCheckable accessCheckable, Function function) {
 		return true;
 	}
-	public boolean testFunction(User user,	WorkArea workArea, Function function) {
+	public boolean testFunction(User user,	AccessCheckable accessCheckable, Function function) {
 		return true;
 	}   
 	public void checkAcl(AclContainer parent, AclControlled aclControlledObj, AccessType accessType) throws AccessControlException {
