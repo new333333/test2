@@ -229,6 +229,7 @@ public interface GwtTeamingMessages extends Messages
 	String cantAccessEntry();
 	String cantAccessFolder();
 	String change();
+	String confirmChangesWillBeLost();
 	String edit();
 	String find();
 	String helpDlg();
