@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -77,6 +77,8 @@ public class CommentsWidget extends Composite
 	private boolean m_showTitle;
 	
 	private static final BigDecimal DELTA = BigDecimal.valueOf( 1, 1 );
+	
+	private static final boolean DUMP_DOC_NUMBERS	= false;	// DRF (20140423):  Debug only, leave false on checkin. 
 	
 
 	/**
@@ -167,9 +169,28 @@ public class CommentsWidget extends Composite
 			m_commentAddedCallback.commentAdded( m_commentsInfo );
 	}
 
+	/*
+	 * If enabled, dumps document numbers as they're analyzed via an
+	 * alert.
+	 */
+	private void dumpDocNumbers(String start, String baseDocNum, String docNum)
+	{
+		if ( DUMP_DOC_NUMBERS )
+		{
+			if ( null == start )      start      = "";
+			if ( null == baseDocNum ) baseDocNum = "";
+			if ( null == docNum )     docNum     = "";
+			
+			GwtClientHelper.deferredAlert(start + ": baseDocNum: " + baseDocNum + ", docNum: " + docNum);
+		}
+	}
+	
 	/**
-	 * Return the base doc number.  For example, if the given ActivityStreamEntry has a
-	 * doc number of "4.1.x", we will return "4"
+	 * Return the base doc number.
+	 * 
+	 * Examples:
+	 * 1) If the given ActivityStreamEntry has a doc number of '4.x',   it returns '4'.
+	 * 2) If the given ActivityStreamEntry has a doc number of '4.x.y', it returns '4.x'/
 	 */
 	private String getBaseDocNum( ActivityStreamEntry activityStreamEntry )
 	{
@@ -181,7 +202,7 @@ public class CommentsWidget extends Composite
 			int index;
 			
 			entryDocNum = activityStreamEntry.getEntryDocNum();
-			index = entryDocNum.indexOf( '.' );
+			index = entryDocNum.lastIndexOf( '.' );
 			if ( index > 0 )
 				baseDocNum = entryDocNum.substring( 0, index );
 		}
@@ -317,12 +338,17 @@ public class CommentsWidget extends Composite
 					 docNum.indexOf( '.', baseDocNumLen ) < 0 )
 				{
 					// No, comment is a child comment
+					dumpDocNumbers("CommentsWidget.getListOfChildComments( Matched )", baseDocNum, docNum);
 					listOfChildComments.add( nextComment );
 					
 					// Remove the comment from the list of comments so we don't include it when
 					// we are searching for sub comments.
 					listOfComments.remove( i );
 					--i;
+				}
+				else
+				{
+					dumpDocNumbers("CommentsWidget.getListOfChildComments( Not matched )", baseDocNum, docNum);
 				}
 			}
 		}
