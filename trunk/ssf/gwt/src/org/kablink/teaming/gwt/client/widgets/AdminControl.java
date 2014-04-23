@@ -115,6 +115,7 @@ import org.kablink.teaming.gwt.client.widgets.ShareThisDlg2.ShareThisDlg2Client;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -134,6 +135,7 @@ import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.TeamingPopupPanel;
 import com.google.gwt.user.client.ui.UIObject;
 import com.google.web.bindery.event.shared.HandlerRegistration;
@@ -181,6 +183,7 @@ public class AdminControl extends TeamingPopupPanel
 	private int m_contentControlHeight;
 	private int m_dlgWidth;
 	private int m_dlgHeight;
+	private AdminControlGlassPanel m_glassPanel;
 	private AdminConsoleHomePage m_homePage = null;
 	private ConfigureFileSyncAppDlg m_configureFileSyncAppDlg = null;
 	private ConfigureMobileAppsDlg m_configureMobileAppsDlg = null;
@@ -211,6 +214,9 @@ public class AdminControl extends TeamingPopupPanel
 	private Timer				m_onLayoutEventTimer;
 	private VibeEventBase<?>	m_onLayoutEvent;
 	private final static int	ON_LAYOUT_EVENT_DELAY = 250;
+
+	private final static int CONTENT_CONTROL_Z_INDEX = 1010;
+	private final static int GLASS_PANEL_Z_INDEX = 1000;
 
 	// The following defines the TeamingEvents that are handled by
 	// this class.  See EventHelper.registerEventHandlers() for how
@@ -246,6 +252,26 @@ public class AdminControl extends TeamingPopupPanel
 		TeamingEvents.SIDEBAR_HIDE,
 		TeamingEvents.SIDEBAR_SHOW,
 	};
+
+	/**
+	 * 
+	 */
+	private class AdminControlGlassPanel extends PopupPanel
+	{
+		AdminControlGlassPanel()
+		{
+			super( false, false );
+		}
+		
+		/**
+		 * 
+		 */
+		@Override
+		public Element getGlassElement()
+		{
+			return super.getGlassElement();
+		}
+	}
 	
 	/**
 	 * Class used for the ui for an administration action.
@@ -782,6 +808,7 @@ public class AdminControl extends TeamingPopupPanel
 			public void onSuccess( ContentControl contentCtrl )
 			{
 				m_contentControl = contentCtrl;
+				m_contentControl.getElement().getStyle().setZIndex( CONTENT_CONTROL_Z_INDEX );
 				m_contentControl.setVisible( false );
 				m_contentControl.addStyleName( "adminContentControl" );
 				mainPanel.add( m_contentControl );
@@ -798,6 +825,23 @@ public class AdminControl extends TeamingPopupPanel
 				updateHomePage();
 			}
 		} );
+		
+		// Create a glass panel that will be used when a jsp implementation of a dialog is used
+		{
+			Style style;
+			
+			m_glassPanel = new AdminControlGlassPanel();
+			m_glassPanel.getElement().setId( "AdminControlGlassPanel" );
+			m_glassPanel.setGlassStyleName( "teamingDlgBox_Glass" );
+
+			style = m_glassPanel.getElement().getStyle();
+			style.setZIndex( GLASS_PANEL_Z_INDEX + 2);
+			style.setOpacity( 0 );
+			style.setLeft( 0, Unit.PX );
+			style.setTop( 0, Unit.PX );
+			style.setHeight( 0, Unit.PX );
+			style.setWidth( 0, Unit.PX );
+		}
 		
 		setWidget( mainPanel );
 	}// end AdminControl()
@@ -1586,6 +1630,20 @@ public class AdminControl extends TeamingPopupPanel
 		if ( !m_contentControl.isVisible() )
 		{
 			m_contentControl.setVisible( true );
+			
+			// Show the glass panel
+			if ( m_glassPanel != null )
+			{
+				Element glassElement;
+
+				m_glassPanel.setGlassEnabled( true );
+				
+				glassElement = m_glassPanel.getGlassElement();
+				if ( glassElement != null )
+					glassElement.getStyle().setZIndex( GLASS_PANEL_Z_INDEX );
+				
+				m_glassPanel.show();
+			}
 		}
 	}// end showContentPanel()
 	
@@ -1661,6 +1719,10 @@ public class AdminControl extends TeamingPopupPanel
 			m_contentControl.setVisible( false );
 			m_homePage.setVisible( true );
 		}
+		
+		// Hide the glass panel
+		if ( m_glassPanel != null )
+			m_glassPanel.hide();
 	}
 	
 	/**
