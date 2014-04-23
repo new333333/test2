@@ -280,12 +280,18 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
     		minutes = Integer.parseInt(minutesString);
     	} catch (Exception ex) {};
     	job.schedule(zone.getId(), minutes*60);
-   }
+	}
      
-     @Override
-     public boolean testReadAccess(User user, WorkArea workArea, boolean checkSharing) {
-    	 return getAccessControlManager().testOperation(user, workArea, WorkAreaOperation.CREATE_ENTRIES, checkSharing);
-     }
+	@Override
+	public boolean testReadAccess(User user, WorkArea workArea, boolean checkSharing) {
+		return getAccessControlManager().testOperation(user, workArea, WorkAreaOperation.CREATE_ENTRIES, checkSharing);
+	}
+
+	@Override
+	public boolean testFolderRenameAccess(User user, Binder binder, boolean checkSharing) {
+		WorkArea workArea = (WorkArea)binder;
+		return getAccessControlManager().testOperation(user, workArea, WorkAreaOperation.RENAME_ENTRIES, checkSharing);
+	}
 
 	@Override
 	public boolean testAccess(Folder folder, FolderOperation operation) {

@@ -655,6 +655,13 @@ public interface FolderModule {
      */
     public boolean testReadAccess(User user, WorkArea workArea, boolean checkSharing);
     /**
+     * 	Test rename access to a binder. 
+     * @param folder
+     * @param checkSharing
+     * @return
+     */
+    public boolean testFolderRenameAccess(User user, Binder binder, boolean checkSharing);
+    /**
      * 	Test access to a binder. 
      * @param folder
      * @param operation
