@@ -99,11 +99,13 @@ public class NetFolderConfig {
 		}
 	}
 
+    long lockVersion;
+
 	protected Long id;
 	protected String name;
 	protected Long folderId;
 	protected Long netFolderServerId;
-	protected String resourcePath;
+	protected String resourcePath; // Resource path relative to net folder server (= resource driver config)
     protected Boolean homeDir = Boolean.FALSE;
     protected Boolean allowDesktopAppToSyncData = Boolean.TRUE;
     protected Boolean allowMobileAppsToSyncData = Boolean.TRUE;
@@ -127,6 +129,13 @@ public class NetFolderConfig {
     private NetFolderConfig() {
     }
     
+    public long getLockVersion() {
+        return this.lockVersion;
+    }
+    public void setLockVersion(long lockVersion) {
+        this.lockVersion = lockVersion;
+    }
+
 	public Long getId() {
 		return id;
 	}
@@ -160,7 +169,10 @@ public class NetFolderConfig {
 	}
 
     public String getResourcePath() {
-		return resourcePath;
+    	if(resourcePath != null)
+    		return resourcePath;
+    	else
+    		return "";
 	}
 
 	public void setResourcePath(String resourcePath) {
@@ -506,6 +518,22 @@ public class NetFolderConfig {
     
 	public ResourceDriver getResourceDriver() {
 		return ResourceDriverManagerUtil.findResourceDriver(getNetFolderServerId());
+	}
+	
+	public String buildResourcePathRelativeToNetFolderServer(String resourcePathRelativeToNetFolderConfig) {
+		if(resourcePathRelativeToNetFolderConfig == null)
+			resourcePathRelativeToNetFolderConfig = "";
+		if("".equals(this.getResourcePath())) {
+			return resourcePathRelativeToNetFolderConfig;
+		}
+		else {
+			if("".equals(resourcePathRelativeToNetFolderConfig)) {
+				return this.getResourcePath();
+			}
+			else {			
+				return this.getResourceDriver().normalizedResourcePath(this.getResourcePath(), resourcePathRelativeToNetFolderConfig);				
+			}
+		}
 	}
 	
 	@Override

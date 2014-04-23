@@ -37,6 +37,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.kablink.teaming.fi.connection.acl.AclResourceDriver;
+import org.kablink.teaming.security.function.AccessCheckable;
 import org.kablink.teaming.security.function.WorkArea;
 import org.kablink.teaming.security.function.WorkAreaOperation;
 
@@ -142,6 +143,9 @@ public abstract class Entry extends DefinableEntity implements WorkArea {
         //This is the top entry. There is no inheritance from the parent binder.
         return null;
     }
+    public AccessCheckable getParentAccessCheckable() {
+    	return getParentWorkArea();
+    }
     public Set getChildWorkAreas() {
     	return new HashSet();
     }
@@ -212,5 +216,16 @@ public abstract class Entry extends DefinableEntity implements WorkArea {
     }
      public void setTeamMemberIds(Set<Long> memberIds) {
      }
+     
+ 	@Override
+ 	public boolean noAclDredged() {
+ 		return false;
+ 	}
+ 	
+  	@Override
+    public WorkArea asShareableWorkArea() {
+    	return this;
+    }
+
      /*****************End WorkArea interface stuff***********/
 }

@@ -519,6 +519,7 @@ public class FolderEntry extends WorkflowControlledEntry implements WorkflowSupp
 		this.folderEntryStats = folderEntryStats;
 	}
     
+	@Override
 	public boolean noAclDredged() {
 		ResourceDriver driver = getParentFolder().getResourceDriver();
 		if (driver != null) {

@@ -72,6 +72,8 @@ import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.folder.FolderModule.FolderOperation;
+import org.kablink.teaming.module.netfolder.NetFileHandle;
+import org.kablink.teaming.module.netfolder.NetFolderUtil;
 import org.kablink.teaming.module.workflow.WorkflowProcessUtils;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.security.AccessControlManager;
@@ -1065,23 +1067,21 @@ public class AccessUtils  {
 	 * @param netFolderFile
 	 * @return
 	 */
-	public static Long askExternalSystemForRoleId(FolderEntry netFolderFile) {
-		Folder parentFolder = netFolderFile.getParentFolder();
-		if(!parentFolder.noAclDredgedWithEntries())
-			throw new IllegalArgumentException("Invalid entry '" + netFolderFile.getId() + "' for this method");
-		AclResourceDriver driver = (AclResourceDriver) parentFolder.getResourceDriver();
-		AclResourceSession session = SearchUtils.openAclResourceSession(parentFolder.getResourceDriver(), FolderUtils.getNetFolderOwnerId(parentFolder));
+	public static Long askExternalSystemForRoleId(NetFileHandle netFileHandle) {
+		//Folder parentFolder = netFolderFile.getParentFolder();
+		AclResourceDriver driver = NetFolderUtil.getResourceDriverByNetFolderConfigId(netFileHandle.getNetFolderConfigId());
+		AclResourceSession session = SearchUtils.openAclResourceSession(driver, NetFolderUtil.getNetFolderOwnerId(netFileHandle.getNetFolderConfigId()));
 		if(session == null)
 			return null; // cannot obtain session for the user
 		try {
 			Map<String, List<String>> groupIds = getFileSystemGroupIds(driver);
-			session.setPath(parentFolder.getResourcePath(), parentFolder.getResourceHandle(), netFolderFile.getTitle(), netFolderFile.getResourceHandle(), Boolean.FALSE);
+			session.setPath(netFileHandle.getResourcePath(), null, netFileHandle.isDirectory());
 			String permissionName = null;
 			try {
 				permissionName = session.getPermissionName(groupIds);
 			}
 			catch(Exception e) {
-				logger.error("Error getting permission name on file '" + netFolderFile.getTitle() + "' in folder [" + parentFolder.getPathName() + "]", e);
+				logger.error("Error getting permission name on file " + netFileHandle, e);
 			}
 			if(permissionName == null)
 				return null;
@@ -1089,11 +1089,11 @@ public class AccessUtils  {
 			return permissionMapper.toVibeRoleId(permissionName);
 		}
 		catch (AclItemPrincipalMappingException e) {
-			logger.error("Error mapping principal on file '" + netFolderFile.getTitle() + "' in folder [" + parentFolder.getPathName() + "]", e);
+			logger.error("Error mapping principal on file " + netFileHandle, e);
 			return null;
 		}
 		catch (AclItemPermissionMappingException e) {
-			logger.error("Error mapping permission on file '" + netFolderFile.getTitle() + "' in folder [" + parentFolder.getPathName() + "]", e);
+			logger.error("Error mapping permission on file " + netFileHandle, e);
 			return null;
 		} 
 		finally {

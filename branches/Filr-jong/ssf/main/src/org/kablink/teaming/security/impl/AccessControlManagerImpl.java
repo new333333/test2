@@ -32,7 +32,6 @@
  */
 package org.kablink.teaming.security.impl;
 
-import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -44,9 +43,7 @@ import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.InternalException;
-import org.kablink.teaming.NotSupportedException;
 import org.kablink.teaming.ObjectKeys;
-import org.kablink.teaming.asmodule.zonecontext.ZoneContextHolder;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.CoreDao;
 import org.kablink.teaming.dao.ProfileDao;
@@ -63,16 +60,16 @@ import org.kablink.teaming.domain.ShareItem;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.domain.ZoneConfig;
-import org.kablink.teaming.fi.connection.acl.AclResourceDriver;
 import org.kablink.teaming.license.LicenseManager;
 import org.kablink.teaming.module.authentication.AuthenticationModule;
 import org.kablink.teaming.module.binder.BinderModule;
-import org.kablink.teaming.module.profile.ProfileModule;
+import org.kablink.teaming.module.netfolder.NetFileHandle;
 import org.kablink.teaming.module.shared.AccessUtils;
 import org.kablink.teaming.module.shared.SearchUtils;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.security.AccessControlManager;
 import org.kablink.teaming.security.accesstoken.AccessToken;
+import org.kablink.teaming.security.function.AccessCheckable;
 import org.kablink.teaming.security.function.Function;
 import org.kablink.teaming.security.function.FunctionManager;
 import org.kablink.teaming.security.function.OperationAccessControlException;
@@ -164,41 +161,42 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
 		authenticationModule = (AuthenticationModule) SpringContextUtil.getBean("authenticationModule");
 		return authenticationModule;
 	}
+	
     public Set getWorkAreaAccessControl(WorkArea workArea, WorkAreaOperation workAreaOperation) {
-         if(workArea.isFunctionMembershipInherited()) {
-            WorkArea parentWorkArea = workArea.getParentWorkArea();
-            if(parentWorkArea == null)
-                return new HashSet();  //possible for templates
-            else
-                return getWorkAreaAccessControl(parentWorkArea, workAreaOperation);
-        }
-        else {
+        if(workArea.isFunctionMembershipInherited()) {
+           WorkArea parentWorkArea = workArea.getParentWorkArea();
+           if(parentWorkArea == null)
+               return new HashSet();  //possible for templates
+           else
+               return getWorkAreaAccessControl(parentWorkArea, workAreaOperation);
+       }
+       else {
 	        Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
-        	List<WorkAreaFunctionMembership>wfms = getWorkAreaFunctionMembershipManager().findWorkAreaFunctionMembershipsByOperation(zoneId, workArea, workAreaOperation);
-          	Set ids = new HashSet();
-            for (WorkAreaFunctionMembership wfm:wfms) {
-            	ids.addAll(wfm.getMemberIds());
-        	}
+       	List<WorkAreaFunctionMembership>wfms = getWorkAreaFunctionMembershipManager().findWorkAreaFunctionMembershipsByOperation(zoneId, workArea, workAreaOperation);
+         	Set ids = new HashSet();
+           for (WorkAreaFunctionMembership wfm:wfms) {
+           	ids.addAll(wfm.getMemberIds());
+       	}
 	        return ids;
 	        
-        }    	
+       }    	
     }
     
-    public boolean testOperation(WorkArea workArea, WorkAreaOperation workAreaOperation) 
+    public boolean testOperation(AccessCheckable accessCheckable, WorkAreaOperation workAreaOperation) 
     	throws AccessControlException {
         return testOperation
         	(RequestContextHolder.getRequestContext().getUser(), 
-        	        workArea, workAreaOperation);
+        			accessCheckable, workAreaOperation);
     }
 	
-	public boolean testOperation(User user, WorkArea workArea, WorkAreaOperation workAreaOperation) {
-		return testOperation(user, workArea, workAreaOperation, true);
+	public boolean testOperation(User user, AccessCheckable accessCheckable, WorkAreaOperation workAreaOperation) {
+		return testOperation(user, accessCheckable, workAreaOperation, true);
 	}
 	
-	public boolean testOperation(User user, WorkArea workArea, WorkAreaOperation workAreaOperation, boolean checkSharing) {
+	public boolean testOperation(User user, AccessCheckable accessCheckable, WorkAreaOperation workAreaOperation, boolean checkSharing) {
 		long begin = System.nanoTime();
 		
-		boolean result = testOperationRecursive(user, workArea, workArea, workAreaOperation, checkSharing);
+		boolean result = testOperationRecursive(user, accessCheckable, accessCheckable, workAreaOperation, checkSharing);
 
 		if(logger.isDebugEnabled()) {
 			double diff = (System.nanoTime() - begin)/1000000.0; // millisecond
@@ -206,22 +204,24 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
 					" operation=" + workAreaOperation.getName() +
 					" time=" + diff + 
 					" user=" + user.getName() +
-					" wa-type=" + workArea.getClass().getSimpleName() +
-					" wa-id=" + workArea.getWorkAreaId());
+					" ac-type=" + accessCheckable.getClass().getSimpleName() +
+					" ac-str=" + accessCheckable.toString());
 		}
 		
 		return result;
 	}
 	
-	private boolean checkRootFolderAccess(User user, WorkArea workArea, WorkAreaOperation workAreaOperation) {
+	private boolean checkRootFolderAccess(User user, AccessCheckable accessCheckable, WorkAreaOperation workAreaOperation) {
 		//See if this is a net folder
-		if (workArea.isAclExternallyControlled() && !WorkAreaOperation.ALLOW_ACCESS_NET_FOLDER.equals(workAreaOperation)) {
+		if (accessCheckable.isAclExternallyControlled() && !WorkAreaOperation.ALLOW_ACCESS_NET_FOLDER.equals(workAreaOperation)) {
 			//We must also check that the user has the right to access this net folder
 			Binder topFolder = null;
-			if (workArea instanceof FolderEntry) {
-				topFolder = ((FolderEntry)workArea).getParentBinder();
-			} else if (workArea instanceof Folder) {
-				topFolder = (Folder)workArea;
+			if (accessCheckable instanceof FolderEntry) {
+				topFolder = ((FolderEntry)accessCheckable).getParentBinder();
+			} else if (accessCheckable instanceof Folder) {
+				topFolder = (Folder)accessCheckable;
+			} else if(accessCheckable instanceof NetFileHandle) {
+				topFolder = ((NetFileHandle)accessCheckable).getTopNetFolder(); // This one already returns the top level folder
 			}
 			while (topFolder != null) {
 				if (topFolder.getParentBinder() != null &&
@@ -260,7 +260,7 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
 	}
 	
 	//pass the original ownerId in.  Recursive calls need the original
-	private boolean testOperationRecursive(User user, WorkArea workAreaStart, WorkArea workArea, 
+	private boolean testOperationRecursive(User user, AccessCheckable accessCheckableStart, AccessCheckable accessCheckable, 
 			WorkAreaOperation workAreaOperation, boolean checkSharing) {
 		if(isAccessCheckTemporarilyDisabled())
 			return true;
@@ -304,36 +304,36 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
 				return false;
 			}
 		}
-		boolean isExternalAclControlledOperation = isExternalAclControlledOperation(workArea, workAreaOperation);
+		boolean isExternalAclControlledOperation = isExternalAclControlledOperation(accessCheckable, workAreaOperation);
 		if ((!isExternalAclControlledOperation && 
-					(workArea.isFunctionMembershipInherited() || 
-					(workArea instanceof FolderEntry && !((FolderEntry)workArea).hasEntryAcl()))) || 
-				(isExternalAclControlledOperation && workArea.isExtFunctionMembershipInherited())) {
-			WorkArea parentWorkArea = workArea.getParentWorkArea();
-			if (workArea instanceof FolderEntry) {
+					(accessCheckable.isFunctionMembershipInherited() || 
+					(accessCheckable instanceof FolderEntry && !((FolderEntry)accessCheckable).hasEntryAcl()))) || 
+				(isExternalAclControlledOperation && accessCheckable.isExtFunctionMembershipInherited())) {
+			AccessCheckable parentAccessCheckable = accessCheckable.getParentAccessCheckable();
+			if (accessCheckable instanceof FolderEntry) {
 				//For folder entries, get the parent folder instead of the top entry
-				parentWorkArea = ((FolderEntry)workArea).getParentBinder();
+				parentAccessCheckable = ((FolderEntry)accessCheckable).getParentBinder();
 			}
-			if (parentWorkArea == null) {
+			if (parentAccessCheckable == null) {
 				throw new InternalException(
 						"Cannot inherit function membership when it has no parent");
 			} else {
-				// use the original workArea owner
-				if (testOperationRecursive(user, workAreaStart, parentWorkArea, workAreaOperation, checkSharing)) {
-					if (checkRootFolderAccess(user, workAreaStart, workAreaOperation)) {
+				// use the original accessCheckable owner
+				if (testOperationRecursive(user, accessCheckableStart, parentAccessCheckable, workAreaOperation, checkSharing)) {
+					if (checkRootFolderAccess(user, accessCheckableStart, workAreaOperation)) {
 						//OK, this is accessible by this user
 						return true;
 					} else {
 						//See if this was shared. If so, we can ignore the rootFolderAccess check
 						if (checkSharing) {
-							return testRightGrantedBySharing(user, workAreaStart, workArea, workAreaOperation, null);
+							return testRightGrantedBySharing(user, accessCheckableStart.asShareableWorkArea(), accessCheckable.asShareableWorkArea(), workAreaOperation, null);
 						} else {
 							return false;
 						}
 					}
 				} else {
 					if (checkSharing) {
-						return testRightGrantedBySharing(user, workAreaStart, workArea, workAreaOperation, null);
+						return testRightGrantedBySharing(user, accessCheckableStart.asShareableWorkArea(), accessCheckable.asShareableWorkArea(), workAreaOperation, null);
 					} else {
 						return false;
 					}
@@ -352,7 +352,7 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
 				}
 				// First test passed. Now test against the specified work area.
 				if(!checkWorkAreaFunctionMembership(user.getZoneId(),
-								workArea, 
+								accessCheckable, 
 								workAreaOperation, 
 								applicationMembersToLookup)) {
 					return false;
@@ -361,15 +361,15 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
 			Set<Long> userApplicationLevelMembersToLookup = getProfileDao().getApplicationLevelPrincipalIds(user);
 			Long allUsersId = Utils.getAllUsersGroupId();
 			Long allExtUsersId = Utils.getAllExtUsersGroupId();
-			if (allUsersId != null && !workArea.getWorkAreaType().equals(ZoneConfig.WORKAREA_TYPE) 
+			if (allUsersId != null && !accessCheckable.getWorkAreaType().equals(ZoneConfig.WORKAREA_TYPE) 
 					&& userApplicationLevelMembersToLookup.contains(allUsersId) && 
 					Utils.canUserOnlySeeCommonGroupMembers(user)) {
-				if (Utils.isWorkareaInProfilesTree(workAreaStart) && !user.getId().equals(workAreaStart.getOwnerId())) {
+				if (Utils.isWorkareaInProfilesTree(accessCheckableStart) && !user.getId().equals(accessCheckableStart.getOwnerId())) {
 					//If this user does not share a group with the binder owner, remove the "All Users" group.
 					boolean remove = true;
-					if (workArea.getWorkAreaType().equals(EntityType.workspace.name()) ||
-							workArea.getWorkAreaType().equals(EntityType.folder.name())) {
-						List<Group> groups = workArea.getOwner().getMemberOf();
+					if (accessCheckable.getWorkAreaType().equals(EntityType.workspace.name()) ||
+							accessCheckable.getWorkAreaType().equals(EntityType.folder.name())) {
+						List<Group> groups = accessCheckable.getOwner().getMemberOf();
 						for (Group g : groups) {
 							//See if this group is not the allExtUsers group and is shared with the user
 							//Being in the allExtUsers group does not count as a "common" group
@@ -380,7 +380,7 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
 						}
 						if (remove) {
 							//There wasn't a direct match of groups, go look in the exploded list
-							Set<Long> userGroupIds = getProfileDao().getApplicationLevelGroupMembership(workArea.getOwner().getId(), zoneId);
+							Set<Long> userGroupIds = getProfileDao().getApplicationLevelGroupMembership(accessCheckable.getOwner().getId(), zoneId);
 							for (Long gId : userGroupIds) {
 								if (!gId.equals(allExtUsersId) && userApplicationLevelMembersToLookup.contains(gId)) {
 									remove = false;
@@ -397,13 +397,13 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
 					}
 				}
 			}
-			//if current user is the workArea owner, add special Id to is membership
-			if (user.getId().equals(workArea.getOwnerId())) userApplicationLevelMembersToLookup.add(ObjectKeys.OWNER_USER_ID);
+			//if current user is the accessCheckable owner, add special Id to is membership
+			if (user.getId().equals(accessCheckable.getOwnerId())) userApplicationLevelMembersToLookup.add(ObjectKeys.OWNER_USER_ID);
 			Set<Long> teamMembers = null;
-			if (workAreaStart instanceof FolderEntry) {
-				teamMembers = ((FolderEntry)workAreaStart).getParentBinder().getTeamMemberIds();
+			if (accessCheckableStart instanceof FolderEntry) {
+				teamMembers = ((FolderEntry)accessCheckableStart).getParentBinder().getTeamMemberIds();
 			} else {
-				teamMembers = workAreaStart.getTeamMemberIds();
+				teamMembers = accessCheckableStart.getTeamMemberIds();
 			}
 			if (teamMembers != null && !Collections.disjoint(teamMembers, userApplicationLevelMembersToLookup)) {
 				userApplicationLevelMembersToLookup.add(ObjectKeys.TEAM_MEMBER_ID);
@@ -420,25 +420,24 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
 			// Regular ACL checking must take container groups into consideration. 
 			// However, sharing-granted ACL checking must not because sharing can never take
 			// place against a container group.
-			if (workArea.isAclExternallyControlled() && 
-					workArea instanceof FolderEntry && 
-					((FolderEntry)workArea).noAclDredged()) {
+			if (accessCheckable.isAclExternallyControlled() && 
+					accessCheckable.noAclDredged()) {
 				//See if this is an operation controlled externally
 				if (isExternalAclControlledOperation) {
-					//This entry has no ACL set up, so it has to get it from the file system 
-					if (testRightGrantedByDredgedAcl(user, (FolderEntry)workArea, workAreaOperation)) {
+					//This object has no ACL set up, so it has to get it from the file system 
+					if (testRightGrantedByDredgedAcl(user, accessCheckable, workAreaOperation)) {
 						return true;
 					}
 				}
 			} else if (checkWorkAreaFunctionMembership(user.getZoneId(),
-							workArea, workAreaOperation, userAllMembersToLookup)) {
-				if (checkRootFolderAccess(user, workAreaStart, workAreaOperation)) {
+							accessCheckable, workAreaOperation, userAllMembersToLookup)) {
+				if (checkRootFolderAccess(user, accessCheckableStart, workAreaOperation)) {
 					//OK, this is accessible by this user
 					return true;
 				} else {
 					if (checkSharing) {
 						//See if this was shared. If so, we can ignore the rootFolderAccess check
-						return testRightGrantedBySharing(user, workAreaStart, workArea, workAreaOperation, userApplicationLevelMembersToLookup);
+						return testRightGrantedBySharing(user, accessCheckableStart.asShareableWorkArea(), accessCheckable.asShareableWorkArea(), workAreaOperation, userApplicationLevelMembersToLookup);
 					} else {
 						return false;
 					}
@@ -447,26 +446,26 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
 			
 			//It isn't available by normal ACLs, so check if shared
 			if (checkSharing) {
-				return testRightGrantedBySharing(user, workAreaStart, workArea, workAreaOperation, userApplicationLevelMembersToLookup);
+				return testRightGrantedBySharing(user, accessCheckableStart.asShareableWorkArea(), accessCheckable.asShareableWorkArea(), workAreaOperation, userApplicationLevelMembersToLookup);
 			} else {
 				return false;
 			}
 		}
 	}
 	
-    public void checkOperation(WorkArea workArea, 
+    public void checkOperation(AccessCheckable accessCheckable, 
             WorkAreaOperation workAreaOperation) throws AccessControlException {
         checkOperation(RequestContextHolder.getRequestContext().getUser(),
-                workArea, workAreaOperation);
+                accessCheckable, workAreaOperation);
     }
 
-	public void checkOperation(User user, WorkArea workArea, 
+	public void checkOperation(User user, AccessCheckable accessCheckable, 
 			WorkAreaOperation workAreaOperation) 
     	throws AccessControlException {
-        if (!testOperation(user, workArea, workAreaOperation)) {
-        	if (workArea instanceof Entry && ((Entry)workArea).hasEntryAcl() && ((Entry)workArea).isIncludeFolderAcl()) {
+        if (!testOperation(user, accessCheckable, workAreaOperation)) {
+        	if (accessCheckable instanceof Entry && ((Entry)accessCheckable).hasEntryAcl() && ((Entry)accessCheckable).isIncludeFolderAcl()) {
         		//See if the parent or the entry is allowing access
-        		if (testOperation(user, ((Entry)workArea).getParentBinder(), workAreaOperation)) {
+        		if (testOperation(user, ((Entry)accessCheckable).getParentBinder(), workAreaOperation)) {
         			return;
         		}
         	}
@@ -477,7 +476,7 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
         		
         		// Yes
         		// Throw an exception that indicates the user is not logged in.
-        		errorArgs = new Object[] { user.getName(), workAreaOperation.toString(), workArea.toString() };
+        		errorArgs = new Object[] { user.getName(), workAreaOperation.toString(), accessCheckable.toString() };
         		throw new AccessControlException( "errorcode.operation.denied.sessionTimeout", errorArgs );
         	}
         	
@@ -488,10 +487,10 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
         		throw new OperationAccessControlExceptionNoName(user.getName(), 
             			workAreaOperation.toString());
         	}
-        	if (testOperation(user, workArea, WorkAreaOperation.READ_ENTRIES) ||
-        			testOperation(user, workArea, WorkAreaOperation.VIEW_BINDER_TITLE)) {
+        	if (testOperation(user, accessCheckable, WorkAreaOperation.READ_ENTRIES) ||
+        			testOperation(user, accessCheckable, WorkAreaOperation.VIEW_BINDER_TITLE)) {
         		throw new OperationAccessControlException(user.getName(), 
-        			workAreaOperation.toString(), workArea.toString());
+        			workAreaOperation.toString(), accessCheckable.toString());
         	} else {
         		//This user shouldn't see anything about this workarea
         		throw new OperationAccessControlExceptionNoName(user.getName(), 
@@ -544,7 +543,7 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
 			(fileSyncAgentRights.get(workAreaOperation.getName()) != null);
 	}
 
-    private boolean checkWorkAreaFunctionMembership(Long zoneId, WorkArea workArea, 
+    private boolean checkWorkAreaFunctionMembership(Long zoneId, AccessCheckable accessCheckable, 
             WorkAreaOperation workAreaOperation, Set membersToLookup) {
     	List<WorkAreaOperation> increaseByRights = RequestContextHolder.getRequestContext().getIncreaseByRights();
     	List<WorkAreaOperation> decreaseByRights = RequestContextHolder.getRequestContext().getDecreaseByRights();
@@ -554,10 +553,15 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
     	
     	if(decreaseByRights != null && decreaseByRights.contains(workAreaOperation))
     		return false; // denied due to temporary setback
-    	
-    	// normal check
-    	return getWorkAreaFunctionMembershipManager().checkWorkAreaFunctionMembership
-    	(zoneId, workArea, workAreaOperation, membersToLookup);
+    
+    	if(accessCheckable instanceof WorkArea) {
+	    	// normal check
+	    	return getWorkAreaFunctionMembershipManager().checkWorkAreaFunctionMembership
+	    	(zoneId, (WorkArea)accessCheckable, workAreaOperation, membersToLookup);
+    	}
+    	else {
+    		return false;
+    	}
     }
 
     @Override
@@ -604,38 +608,6 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
 				return testOperation(guest, workArea, workAreaOperation);
 			}
     	}
-    }
-    
-    private boolean testRightGrantedByDredgedAcl(User user, FolderEntry workArea, WorkAreaOperation workAreaOperation) {
-    	// This entry has to get its ACL role from the file system
-    	if (user.equals(RequestContextHolder.getRequestContext().getUser())) {
-    		//We can only do this for the current user
-	    	Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
-	    	Long roleId = AccessUtils.askExternalSystemForRoleId(workArea);
-	    	if (roleId != null) {
-		    	Function f = getFunctionManager().getFunction(zoneId, roleId);
-		    	for (WorkAreaOperation wao : (Set<WorkAreaOperation>)f.getOperations()) {
-		    		if (wao.equals(workAreaOperation)) {
-		    			//This function includes the desired operation.
-		    			return true;
-		    		}
-		    	}
-	    	}
-    	}
-    	return false;
-    }
-
-    private boolean isExternalAclControlledOperation(WorkArea workArea, WorkAreaOperation workAreaOperation) {
-		boolean isExternalAclControlledOperation = false;
-		if (workArea.isAclExternallyControlled()) {
-			//This is a workarea with external ACLs
-			List<WorkAreaOperation> ardWaos = workArea.getExternallyControlledRights();
-			if (ardWaos.contains(workAreaOperation)) {
-				//This right is controlled externally
-				isExternalAclControlledOperation = true;
-			}
-		}
-		return isExternalAclControlledOperation;
     }
     
     private boolean testRightGrantedBySharing(User user, WorkArea workArea, WorkAreaOperation workAreaOperation, Set<Long> userMembers) {
@@ -699,6 +671,43 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
     		}
     		return false;
     	}
+    }
+    
+    private boolean testRightGrantedByDredgedAcl(User user, AccessCheckable accessCheckable, WorkAreaOperation workAreaOperation) {
+    	if(accessCheckable instanceof NetFileHandle) {
+	    	// This entry has to get its ACL role from the file system
+	    	if (user.equals(RequestContextHolder.getRequestContext().getUser())) {
+	    		//We can only do this for the current user
+		    	Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
+		    	Long roleId = AccessUtils.askExternalSystemForRoleId((NetFileHandle)accessCheckable);
+		    	if (roleId != null) {
+			    	Function f = getFunctionManager().getFunction(zoneId, roleId);
+			    	for (WorkAreaOperation wao : (Set<WorkAreaOperation>)f.getOperations()) {
+			    		if (wao.equals(workAreaOperation)) {
+			    			//This function includes the desired operation.
+			    			return true;
+			    		}
+			    	}
+		    	}
+	    	}
+	    	return false;
+    	}
+    	else {
+    		return false;
+    	}
+    }
+
+    private boolean isExternalAclControlledOperation(AccessCheckable accessCheckable, WorkAreaOperation workAreaOperation) {
+		boolean isExternalAclControlledOperation = false;
+		if (accessCheckable.isAclExternallyControlled()) {
+			//This is a workarea with external ACLs
+			List<WorkAreaOperation> ardWaos = accessCheckable.getExternallyControlledRights();
+			if (ardWaos.contains(workAreaOperation)) {
+				//This right is controlled externally
+				isExternalAclControlledOperation = true;
+			}
+		}
+		return isExternalAclControlledOperation;
     }
     
     private BinderModule getBinderModule() {
