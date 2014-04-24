@@ -585,4 +585,12 @@ update SS_Principals set domainName=LOWER(domainName);
         </addColumn>
     </changeSet>
     
+    <changeSet author="jong" context="schema" failOnError="true" id="52">
+        <preConditions onFail="MARK_RAN">
+            <indexExists indexName="templateOwningBinderId_Binder"/>
+        </preConditions>
+        <comment>Drop templateOwningBinderId_Binder index from SS_Forums table</comment>
+        <dropIndex indexName="templateOwningBinderId_Binder" tableName="SS_Forums"/>        
+    </changeSet>
+    
 </databaseChangeLog>

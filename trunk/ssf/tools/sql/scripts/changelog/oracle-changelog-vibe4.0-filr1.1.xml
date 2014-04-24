@@ -539,4 +539,12 @@
         </addColumn>
     </changeSet>
     
+    <changeSet author="jong" context="schema" failOnError="true" id="46">
+        <preConditions onFail="MARK_RAN">
+            <indexExists indexName="TEMPLATEOWNINGBINDERID_BINDER"/>
+        </preConditions>
+        <comment>Drop templateOwningBinderId_Binder index from SS_Forums table</comment>
+        <dropIndex indexName="TEMPLATEOWNINGBINDERID_BINDER" tableName="SS_FORUMS"/>        
+    </changeSet>
+
 </databaseChangeLog>
