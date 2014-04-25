@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -43,6 +43,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.dom4j.Element;
+
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.util.FilterControls;
@@ -58,9 +59,13 @@ import org.kablink.teaming.util.LongIdUtil;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.util.Validator;
 
-
+/**
+ * ?
+ * 
+ * @author ?
+ */
+@SuppressWarnings("unchecked")
 public class XmlUtils {
-
 	public static Element addDefinitionReference(Element parent, Definition def) {
 		Element e = parent.addElement(ObjectKeys.XTAG_ELEMENT_TYPE_DEFINITION);
 		e.addAttribute(ObjectKeys.XTAG_ATTRIBUTE_NAME, def.getName());
@@ -71,11 +76,12 @@ public class XmlUtils {
 	public static Element addProperty(Element parent, String name, String value) {
 		Element prop = parent.addElement(ObjectKeys.XTAG_ELEMENT_TYPE_PROPERTY);
 		prop.addAttribute(ObjectKeys.XTAG_ATTRIBUTE_NAME, name);
-		if (!Validator.isNull(value)) prop.addText(value);
+		if (!Validator.isEmptyString(value)) prop.addText(value);
 		return prop;
 	}
 	//force comman date format.  This is a problem cause hibernate returns sql Timestamps which format
 	//differently then java.util.date
+	@SuppressWarnings("deprecation")
 	public static Element addProperty(Element parent, String name, Date value) {
 		if (value != null) return addProperty(parent, name, value.toGMTString());
 		return addProperty(parent, name, (Object)null);
@@ -94,7 +100,7 @@ public class XmlUtils {
 
 	//attributes are available through the definintion builder
 	public static Element addCustomAttribute(Element parent, String name, String type, String value) {
-		if (Validator.isNull(value)) return null;
+		if (Validator.isEmptyString(value)) return null;
 		Element prop = parent.addElement(ObjectKeys.XTAG_ELEMENT_TYPE_ATTRIBUTE);
 		prop.addAttribute(ObjectKeys.XTAG_ATTRIBUTE_NAME, name);
 		prop.addAttribute(ObjectKeys.XTAG_ATTRIBUTE_TYPE, type);

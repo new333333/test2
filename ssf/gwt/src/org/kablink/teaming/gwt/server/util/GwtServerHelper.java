@@ -88,11 +88,13 @@ import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.document.DateTools;
+
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.Node;
 import org.dom4j.io.OutputFormat;
+
 import org.kablink.teaming.GroupExistsException;
 import org.kablink.teaming.IllegalCharacterInNameException;
 import org.kablink.teaming.ObjectKeys;
@@ -514,7 +516,7 @@ public class GwtServerHelper {
 	/*
 	 * Inner class used to compare two Principal object.
 	 */
-	public static class PrincipalComparator implements Comparator<Principal> {
+	private static class PrincipalComparator implements Comparator<Principal> {
 		private boolean	m_ascending;	//
 		
 		/**
@@ -539,8 +541,8 @@ public class GwtServerHelper {
 			String title2 = principal2.getTitle();
 			int reply;
 			if (m_ascending)
-			     reply = MiscUtil.safeSColatedCompare(title1, title2);
-			else reply = MiscUtil.safeSColatedCompare(title2, title1);
+			     reply = MiscUtil.safeSColatedCompare(title2, title1);
+			else reply = MiscUtil.safeSColatedCompare(title1, title2);
 
 			// If we get here, reply contains the appropriate value for
 			// the compare.  Return it.
@@ -548,7 +550,7 @@ public class GwtServerHelper {
 		}
 	}
 
-	/**
+	/*
 	 * Inner class used compare two SavedSearchInfo objects.
 	 */
 	private static class SavedSearchInfoComparator implements Comparator<SavedSearchInfo> {

@@ -1125,7 +1125,7 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
 		long begin = System.nanoTime();
 		try {
 	    	//Folderentries or binders only
-	        if (Validator.isNull(name)) throw new TitleException("");
+	        if (Validator.isEmptyString(name)) throw new TitleException("");
 	  		LibraryEntry le = new LibraryEntry(binder.getId(), LibraryEntry.FILE, name);
 			if (!(entity instanceof Binder)) le.setEntityId(entity.getId());
 	  		registerLibraryEntry(le);
@@ -1212,14 +1212,14 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
 		long begin = System.nanoTime();
 		try {
 	    	//Folderentries or binders only
-	       if (Validator.isNotNull(newName) && newName.equalsIgnoreCase(oldName)) return;
+	       if (Validator.isNotEmptyString(newName) && newName.equalsIgnoreCase(oldName)) return;
 	 		if (oldName != null) {
 		        LibraryEntry oldLe = new LibraryEntry(binder.getId(), LibraryEntry.FILE, oldName);
 				if (!(entity instanceof Binder)) oldLe.setEntityId(entity.getId());
 		        removeOldName(oldLe, entity);
 	 		}
 	 		//this was a remove
-			if (Validator.isNull(newName)) return;
+			if (Validator.isEmptyString(newName)) return;
 			//register new name
 			LibraryEntry le = new LibraryEntry(binder.getId(), LibraryEntry.FILE, newName);
 			if (!(entity instanceof Binder)) le.setEntityId(entity.getId());
@@ -1235,7 +1235,7 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
 		long begin = System.nanoTime();
 		try {
 	    	//Folderentries or binders only
-	       if (Validator.isNotNull(newName) && newName.equalsIgnoreCase(oldName)) return;
+	       if (Validator.isNotEmptyString(newName) && newName.equalsIgnoreCase(oldName)) return;
 	        if (entity instanceof Entry) {
 	        	//replies are not registered
 	        	if (!((Entry)entity).isTop()) return;
@@ -1246,7 +1246,7 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
 		        removeOldName(oldLe, entity);
 	 		}
 			//this was a remove
-			if (Validator.isNull(newName)) return;
+			if (Validator.isEmptyString(newName)) return;
 			//register new name
 			LibraryEntry le = new LibraryEntry(binder.getId(), LibraryEntry.TITLE, newName);
 			if (!(entity instanceof Binder)) le.setEntityId(entity.getId());
