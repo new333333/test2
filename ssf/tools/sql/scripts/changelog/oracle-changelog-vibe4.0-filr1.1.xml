@@ -430,6 +430,11 @@
     </changeSet>
 
     <changeSet author="jong" context="schema" failOnError="true" id="37">
+        <preConditions onFail="MARK_RAN">
+            <not>
+            	<indexExists indexName="INTERNALID_BINDER"/>
+            </not>
+        </preConditions>
         <comment>Create index on internalId column in SS_Forums table</comment>
         <createIndex indexName="INTERNALID_BINDER" tableName="SS_FORUMS" unique="false">
             <column name="INTERNALID"/>
