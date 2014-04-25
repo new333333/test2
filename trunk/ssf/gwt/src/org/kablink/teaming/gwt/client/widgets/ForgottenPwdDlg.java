@@ -255,7 +255,7 @@ public class ForgottenPwdDlg extends DlgBox
 							// Did we find an external user with the given email address?
 							if ( gwtUser != null &&
 								 gwtUser.isInternal() == false &&
-								 gwtUser.getExtUserProvState() == ExtUserProvState.VERIFIED )
+								 (gwtUser.getExtUserProvState() == ExtUserProvState.VERIFIED || gwtUser.getExtUserProvState() == ExtUserProvState.PWD_RESET_REQUESTED)  )
 							{
 								Scheduler.ScheduledCommand cmd;
 								

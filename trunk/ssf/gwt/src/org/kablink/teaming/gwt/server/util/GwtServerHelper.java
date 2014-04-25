@@ -7080,7 +7080,7 @@ public class GwtServerHelper {
 					// Is this an external user that has already been verified?
 					user = ((User) ami.getProfileModule().getEntry( gwtUser.getIdLong() ));
 					if ( user.getIdentityInfo().isInternal() == false &&
-						 user.getExtProvState() == ExtProvState.verified )
+						 (user.getExtProvState() == ExtProvState.verified || user.getExtProvState() == ExtProvState.pwdResetRequested) )
 					{
 						String token;
 						String url;
