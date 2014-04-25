@@ -440,6 +440,8 @@ public abstract class AbstractAuthenticationProviderModule extends BaseAuthentic
 				throw e;
 			}
 			catch(AuthenticationException e) {
+				String ipAddr;
+				
 				unsuccessfulAuthentication(authentication);
 				String exDesc;				
 				Long zone = getZoneModule().getZoneIdByVirtualHost(ZoneContextHolder.getServerName());
@@ -447,7 +449,12 @@ public abstract class AbstractAuthenticationProviderModule extends BaseAuthentic
 					exDesc = e.getCause().toString();
 				else
 					exDesc = e.toString();
-				logger.warn("Authentication failure for [" + authentication.getName() + "] " + exDesc );
+				
+				ipAddr = ZoneContextHolder.getClientAddr();
+				if ( ipAddr == null || ipAddr.length() == 0 )
+					ipAddr = "unknown";
+				
+				logger.warn( "[client " + ipAddr + "] user " + authentication.getName() + ": authentication failure: " + exDesc );
 				throw e;
 			}
 			catch(RuntimeException e) {
