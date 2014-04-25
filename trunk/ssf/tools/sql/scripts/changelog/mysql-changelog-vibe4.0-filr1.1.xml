@@ -460,6 +460,11 @@ update SS_Principals set domainName=LOWER(domainName);
     </changeSet>
 
     <changeSet author="jong" context="schema" failOnError="true" id="42">
+        <preConditions onFail="MARK_RAN">
+            <not>
+            	<indexExists indexName="internalId_Binder"/>
+            </not>
+        </preConditions>
         <comment>Create index on internalId column in SS_Forums table</comment>
         <createIndex indexName="internalId_Binder" tableName="SS_Forums" unique="false">
             <column name="internalId"/>
