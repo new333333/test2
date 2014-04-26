@@ -715,7 +715,7 @@ public class SelfResource extends AbstractFileResource {
 
     @DELETE
     @Path("mobile_devices/{id}")
-    public void deleteMobileDevice(@PathParam("id") String id, MobileDevice newDevice) {
+    public void deleteMobileDevice(@PathParam("id") String id) {
         org.kablink.teaming.domain.MobileDevice mobileDevice = getMobileDeviceModule().getMobileDevice(getLoggedInUserId(), id);
         if (mobileDevice!=null) {
             getMobileDeviceModule().deleteMobileDevice(getLoggedInUserId(), id);
