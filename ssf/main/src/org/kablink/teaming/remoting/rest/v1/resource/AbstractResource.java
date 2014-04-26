@@ -1084,37 +1084,37 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         return spec;
     }
 
-    protected List<Pair<ShareItem, org.kablink.teaming.domain.DefinableEntity>> getSharedByShareItems(Long userId) {
+    protected List<Pair<ShareItem, org.kablink.teaming.domain.DefinableEntity>> getSharedByShareItems(Long userId, Boolean deleted) {
         _getUser(userId);
         ShareItemSelectSpec spec = getSharedBySpec(userId);
-        spec.deleted = null;
-        return getShareItems(spec, null, true, false, true);
+        spec.deleted = deleted;
+        return getShareItems(spec, null, true, true, true);
     }
 
-    protected List<Pair<ShareItem, org.kablink.teaming.domain.DefinableEntity>> getSharedWithShareItems(Long userId) {
+    protected List<Pair<ShareItem, org.kablink.teaming.domain.DefinableEntity>> getSharedWithShareItems(Long userId, Boolean deleted) {
         _getUser(userId);
         ShareItemSelectSpec spec = getSharedWithSpec(userId);
-        spec.deleted = null;
+        spec.deleted = deleted;
         return getShareItems(spec, userId, true, false, true);
     }
 
-    protected List<Pair<ShareItem, org.kablink.teaming.domain.DefinableEntity>> getPublicShareItems() {
+    protected List<Pair<ShareItem, org.kablink.teaming.domain.DefinableEntity>> getPublicShareItems(Boolean deleted) {
         Long userId = getLoggedInUserId();
         ShareItemSelectSpec spec = getSharedWithSpec(userId);
-        spec.deleted = null;
+        spec.deleted = deleted;
         return getShareItems(spec, userId, true, true, false);
     }
 
     protected Date getSharedByLibraryModifiedDate(Long userId, boolean recursive) {
-        return getSharesLibraryModifiedDate(getSharedByShareItems(userId), recursive);
+        return getSharesLibraryModifiedDate(getSharedByShareItems(userId, null), recursive);
     }
 
     protected Date getSharedWithLibraryModifiedDate(Long userId, boolean recursive) {
-        return getSharesLibraryModifiedDate(getSharedWithShareItems(userId), recursive);
+        return getSharesLibraryModifiedDate(getSharedWithShareItems(userId, null), recursive);
     }
 
     protected Date getPublicSharesLibraryModifiedDate(boolean recursive) {
-        return getSharesLibraryModifiedDate(getPublicShareItems(), recursive);
+        return getSharesLibraryModifiedDate(getPublicShareItems(null), recursive);
     }
 
     protected Date getSharesLibraryModifiedDate(List<Pair<ShareItem, org.kablink.teaming.domain.DefinableEntity>> shareItems,
