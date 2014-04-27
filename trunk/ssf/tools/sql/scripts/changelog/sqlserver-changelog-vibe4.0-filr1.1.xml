@@ -773,4 +773,15 @@
         <dropIndex indexName="templateOwningBinderId_Binder" tableName="SS_Forums"/>        
     </changeSet>
 
+    <changeSet author="jong" context="schema" failOnError="true" id="67">
+        <preConditions onFail="MARK_RAN">
+            <not>
+            	<indexExists indexName="parentEntry_fEntry"/>
+            </not>
+        </preConditions>
+        <createIndex indexName="parentEntry_fEntry" schemaName="dbo" tableName="SS_FolderEntries" unique="false">
+            <column name="parentEntry"/>
+        </createIndex>
+    </changeSet>
+    
 </databaseChangeLog>
