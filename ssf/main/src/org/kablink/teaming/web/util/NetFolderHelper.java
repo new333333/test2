@@ -227,6 +227,7 @@ public class NetFolderHelper
 													new Boolean( true ),
 													NetFolderHelper.getDefaultJitsResultsMaxAge(),
 													NetFolderHelper.getDefaultJitsAclMaxAge(),
+													Boolean.TRUE,
 													scheduleInfo );
 		
 		// Add a task for the administrator to enter the proxy credentials for this server.
@@ -486,7 +487,9 @@ public class NetFolderHelper
 																true,
 																false,
 																new Boolean( true ),
-																null );
+																null,
+																Boolean.FALSE,
+																Boolean.TRUE );
 	
 					// As the fix for bug 831849 we must call getCoreDao().clear() before we call
 					// NetFolderHelper.saveJitsSettings().  If we don't, saveJitsSettings() throws
@@ -606,7 +609,9 @@ public class NetFolderHelper
 		boolean isHomeDir,
 		boolean indexContent,
 		Boolean inheritIndexContentOption,
-		Boolean fullSyncDirOnly ) throws WriteFilesException, WriteEntryDataException
+		Boolean fullSyncDirOnly,
+		Boolean allowDesktopAppToTriggerSync,
+		Boolean inheritAllowDesktopAppToTriggerSync ) throws WriteFilesException, WriteEntryDataException
 	{
 		Binder binder = null;
 		Long templateId = null;
@@ -655,7 +660,9 @@ public class NetFolderHelper
 											indexContent,
 											inheritIndexContentOption,
 											syncScheduleOption,
-											fullSyncDirOnly );
+											fullSyncDirOnly,
+											allowDesktopAppToTriggerSync,
+											inheritAllowDesktopAppToTriggerSync );
 			
 			// Set the net folder's sync schedule
 			if ( scheduleInfo != null )
@@ -697,6 +704,7 @@ public class NetFolderHelper
 		Boolean enableJits,
 		Long jitsResultsMaxAge,
 		Long jitsAclMaxAge,
+		Boolean allowDesktopAppToTriggerInitialHomeFolderSync,
 		ScheduleInfo scheduleInfo ) throws RDException
 	{
 		Map options;
@@ -723,6 +731,7 @@ public class NetFolderHelper
 		options.put( ObjectKeys.RESOURCE_DRIVER_JITS_ENABLED, enableJits );
 		options.put( ObjectKeys.RESOURCE_DRIVER_JITS_RESULTS_MAX_AGE, jitsResultsMaxAge );
 		options.put( ObjectKeys.RESOURCE_DRIVER_JITS_ACL_MAX_AGE, jitsAclMaxAge );
+		options.put( ObjectKeys.RESOURCE_DRIVER_ALLOW_DESKTOP_APP_TO_TRIGGER_HOME_FOLDER_SYNC, allowDesktopAppToTriggerInitialHomeFolderSync );
 		
 		// Is the root type WebDAV?
 		if ( driverType == DriverType.webdav )
@@ -1067,7 +1076,9 @@ public class NetFolderHelper
 		SyncScheduleOption syncScheduleOption,
 		boolean indexContent,
 		Boolean inheritIndexContent,
-		Boolean fullSyncDirOnly ) throws AccessControlException, WriteFilesException, WriteEntryDataException
+		Boolean fullSyncDirOnly,
+		Boolean allowDesktopAppToTriggerSync,
+		Boolean inheritAllowDesktopAppToTriggerSync ) throws AccessControlException, WriteFilesException, WriteEntryDataException
 	{
 		// Modify the binder with the net folder information.
 		folderModule.modifyNetFolder(
@@ -1079,7 +1090,9 @@ public class NetFolderHelper
 									indexContent,
 									inheritIndexContent,
 									syncScheduleOption,
-									fullSyncDirOnly );
+									fullSyncDirOnly,
+									allowDesktopAppToTriggerSync,
+									inheritAllowDesktopAppToTriggerSync );
 
 		// Set the net folder's sync schedule
 		if ( scheduleInfo != null )
@@ -1120,6 +1133,7 @@ public class NetFolderHelper
 		Boolean enableJits,
 		Long jitsResultsMaxAge,
 		Long jitsAclMaxAge,
+		Boolean allowDesktopAppToTriggerInitialHomeFolderSync,
 		ScheduleInfo scheduleInfo )
 	{
 		Map options;
@@ -1152,6 +1166,7 @@ public class NetFolderHelper
 		options.put( ObjectKeys.RESOURCE_DRIVER_JITS_ENABLED, enableJits );
 		options.put( ObjectKeys.RESOURCE_DRIVER_JITS_RESULTS_MAX_AGE, jitsResultsMaxAge );
 		options.put( ObjectKeys.RESOURCE_DRIVER_JITS_ACL_MAX_AGE, jitsAclMaxAge );
+		options.put( ObjectKeys.RESOURCE_DRIVER_ALLOW_DESKTOP_APP_TO_TRIGGER_HOME_FOLDER_SYNC, allowDesktopAppToTriggerInitialHomeFolderSync );
 
 		// Always prevent the top level folder from being deleted
 		// This is forced so that the folder could not accidentally be deleted if the 

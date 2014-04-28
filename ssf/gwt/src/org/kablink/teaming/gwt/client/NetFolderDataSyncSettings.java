@@ -47,7 +47,9 @@ public class NetFolderDataSyncSettings
 {
 	private boolean m_allowDesktopAppToSyncData = true;
 	private boolean m_allowMobileAppsToSyncData = true;
-	
+	private Boolean m_allowDesktopAppToTriggerSync;
+	private Boolean m_inheritAllowDesktopAppToTriggerSync;
+
 	/**
 	 * Constructor method. 
 	 * 
@@ -55,7 +57,8 @@ public class NetFolderDataSyncSettings
 	 */
 	public NetFolderDataSyncSettings()
 	{
-		// Nothing to do.
+		m_allowDesktopAppToTriggerSync = Boolean.FALSE;
+		m_inheritAllowDesktopAppToTriggerSync = Boolean.TRUE;
 	}	
 	
 	/**
@@ -67,6 +70,8 @@ public class NetFolderDataSyncSettings
 		{
 			m_allowDesktopAppToSyncData = settings.getAllowDesktopAppToSyncData();
 			m_allowMobileAppsToSyncData = settings.getAllowMobileAppsToSyncData();
+			m_allowDesktopAppToTriggerSync = settings.getAllowDesktopAppToTriggerSync();
+			m_inheritAllowDesktopAppToTriggerSync = settings.getInheritAllowDesktopAppToTriggerSync();
 		}
 	}
 	
@@ -81,9 +86,25 @@ public class NetFolderDataSyncSettings
 	/**
 	 * 
 	 */
+	public Boolean getAllowDesktopAppToTriggerSync()
+	{
+		return m_allowDesktopAppToTriggerSync;
+	}
+	
+	/**
+	 * 
+	 */
 	public boolean getAllowMobileAppsToSyncData()
 	{
 		return m_allowMobileAppsToSyncData;
+	}
+	
+	/**
+	 * 
+	 */
+	public Boolean getInheritAllowDesktopAppToTriggerSync()
+	{
+		return m_inheritAllowDesktopAppToTriggerSync;
 	}
 	
 	/**
@@ -97,8 +118,25 @@ public class NetFolderDataSyncSettings
 	/**
 	 * 
 	 */
+	public void setAllowDesktopAppToTriggerSync( Boolean allow )
+	{
+		m_allowDesktopAppToTriggerSync = allow;
+	}
+	
+	/**
+	 * 
+	 */
 	public void setAllowMobileAppsToSyncData( boolean allow )
 	{
 		m_allowMobileAppsToSyncData = allow;
 	}
+
+	/**
+	 * 
+	 */
+	public void setInheritAllowDesktopAppToTriggerSync( Boolean inherit )
+	{
+		m_inheritAllowDesktopAppToTriggerSync = inherit;
+	}
+	
 }

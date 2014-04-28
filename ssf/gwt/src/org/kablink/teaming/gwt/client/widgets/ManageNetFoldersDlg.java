@@ -1251,8 +1251,8 @@ public class ManageNetFoldersDlg extends DlgBox
 		{
 			// No, create it.
 			ModifyNetFolderDlg.createDlg(
-										true,
 										false,
+										true,
 										x,
 										y,
 										new ModifyNetFolderDlgClient()

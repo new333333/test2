@@ -109,6 +109,7 @@ public class AdminNetFolderServerResource extends AbstractAdminResource {
                 driverConfig.isJitsEnabled(),
                 new Long( driverConfig.getJitsMaxAge() ),
                 new Long( driverConfig.getJitsAclMaxAge() ),
+                driverConfig.getAllowDesktopAppToTriggerInitialHomeFolderSync(),
                 toScheduleInfo(netFolderServer.getSyncSchedule()));
         return AdminResourceUtil.buildNetFolderServer(driverConfig, true, false);
    	}
@@ -140,6 +141,7 @@ public class AdminNetFolderServerResource extends AbstractAdminResource {
                 newConfig.isJitsEnabled(),
                 new Long( newConfig.getJitsMaxAge() ),
                 new Long( newConfig.getJitsAclMaxAge() ),
+                newConfig.getAllowDesktopAppToTriggerInitialHomeFolderSync(),
                 toScheduleInfo(newServer.getSyncSchedule()));
         return AdminResourceUtil.buildNetFolderServer(newConfig, true, false);
     }

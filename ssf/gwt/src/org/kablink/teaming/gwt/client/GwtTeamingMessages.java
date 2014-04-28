@@ -2329,6 +2329,7 @@ public interface GwtTeamingMessages extends Messages
 
 	// Strings used in the modify Net Folder Server dialog
 	String modifyNetFolderServerDlg_AddHeader();
+	String modifyNetFolderServerDlg_AllowDesktopAppToTriggerSync();
 	String modifyNetFolderServerDlg_AllowSelfSignedCertsLabel();
 	String modifyNetFolderServerDlg_AuthenticationTab();
 	String modifyNetFolderServerDlg_AuthTypeLabel();
@@ -2431,6 +2432,7 @@ public interface GwtTeamingMessages extends Messages
 	String modifyNetFolderDlg_AddHeader();
 	String modifyNetFolderDlg_AllowDataSyncBy();
 	String modifyNetFolderDlg_AllowDesktopAppToSyncLabel();
+	String modifyNetFolderDlg_AllowDesktopAppTriggerSync();
 	String modifyNetFolderDlg_AllowMobileAppsToSyncLabel();
 	String modifyNetFolderDlg_ConfigTab();
 	String modifyNetFolderDlg_CreateNetFolderServerLabel();
@@ -2465,8 +2467,10 @@ public interface GwtTeamingMessages extends Messages
 	String modifyNetFolderDlg_SyncScheduleCaption();
 	String modifyNetFolderDlg_UseJistsSettingsFromNetFolderRbLabel();
 	String modifyNetFolderDlg_UseJitsSettingsFromNetFolderServerRbLabel();
+	String modifyNetFolderDlg_UseNetFolderDesktopAppTriggerSync();
 	String modifyNetFolderDlg_UseNetFolderIndexContentOptionRbLabel();
 	String modifyNetFolderDlg_UseNetFolderScheduleRbLabel();
+	String modifyNetFolderDlg_UseNetFolderServerDesktopAppTriggerSync();
 	String modifyNetFolderDlg_UseNetFolderServerIndexContentOptionRbLabel();
 	String modifyNetFolderDlg_UseNetFolderServerScheduleRbLabel();
 	String modifyNetFolderDlg_UseNetFolderServerSyncOptionRbLabel();

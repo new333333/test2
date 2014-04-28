@@ -801,6 +801,33 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
    					
    				entryData.put( ObjectKeys.FIELD_BINDER_USE_INHERITED_JITS_SETTINGS, inherit );
    			}
+
+   			if ( inputData.exists( ObjectKeys.FIELD_BINDER_USE_INHERITED_DESKTOP_APP_TRIGGER_SETTING ) &&
+   				 !entryData.containsKey( ObjectKeys.FIELD_BINDER_USE_INHERITED_DESKTOP_APP_TRIGGER_SETTING ) )
+   			{
+   				Boolean inherit = null;
+   				Object value;
+   				
+   				value = inputData.getSingleObject( ObjectKeys.FIELD_BINDER_USE_INHERITED_DESKTOP_APP_TRIGGER_SETTING );
+   				if ( value != null && value instanceof Boolean )
+   	   				inherit = (Boolean)value;
+   					
+   				entryData.put( ObjectKeys.FIELD_BINDER_USE_INHERITED_DESKTOP_APP_TRIGGER_SETTING, inherit );
+   			}
+
+   			if ( inputData.exists( ObjectKeys.FIELD_BINDER_ALLOW_DESKTOP_APP_TO_TRIGGER_INITIAL_HOME_FOLDER_SYNC ) &&
+   				 !entryData.containsKey( ObjectKeys.FIELD_BINDER_ALLOW_DESKTOP_APP_TO_TRIGGER_INITIAL_HOME_FOLDER_SYNC ) )
+   			{
+   				Boolean allow = null;
+   				Object value;
+   				
+   				value = inputData.getSingleObject( ObjectKeys.FIELD_BINDER_ALLOW_DESKTOP_APP_TO_TRIGGER_INITIAL_HOME_FOLDER_SYNC );
+   				if ( value != null && value instanceof Boolean )
+   					allow = (Boolean) value;
+   				
+   				entryData.put( ObjectKeys.FIELD_BINDER_ALLOW_DESKTOP_APP_TO_TRIGGER_INITIAL_HOME_FOLDER_SYNC, allow );
+   			}
+
    		}
    		Boolean library = null;
 		if (inputData.exists(ObjectKeys.FIELD_BINDER_LIBRARY) && !entryData.containsKey(ObjectKeys.FIELD_BINDER_LIBRARY))

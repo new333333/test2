@@ -52,6 +52,8 @@ public class NetFolder extends BaseRestObject {
     private Boolean inheritSyncSchedule;
     private Schedule syncSchedule;
     private List<AssignedRight> assignedRights;
+    private Boolean allowDesktopAppToTriggerSync;
+    private Boolean inheritAllowDesktopAppToTriggerSync;
 
     public void replaceNullValues(NetFolder folder) {
         id = (id==null) ? folder.id : id;
@@ -67,6 +69,7 @@ public class NetFolder extends BaseRestObject {
         fullSyncDirOnly = (fullSyncDirOnly==null) ? folder.fullSyncDirOnly : fullSyncDirOnly;
         allowDesktopSync = (allowDesktopSync==null) ? folder.allowDesktopSync : allowDesktopSync;
         inheritSyncSchedule = (inheritSyncSchedule==null) ? folder.inheritSyncSchedule : inheritSyncSchedule;
+        allowDesktopAppToTriggerSync = (allowDesktopAppToTriggerSync==null) ? folder.allowDesktopAppToTriggerSync : allowDesktopAppToTriggerSync;
     }
 
     public Long getId() {
@@ -209,5 +212,37 @@ public class NetFolder extends BaseRestObject {
 
     public void setAssignedRights(List<AssignedRight> assignedRights) {
         this.assignedRights = assignedRights;
+    }
+    
+    /**
+     * 
+     */
+    public Boolean getAllowDesktopAppToTriggerSync()
+    {
+    	return allowDesktopAppToTriggerSync;
+    }
+    
+    /**
+     * 
+     */
+    public void setAllowDesktopAppToTriggerSync( Boolean allow )
+    {
+    	allowDesktopAppToTriggerSync = allow;
+    }
+    
+    /**
+     * 
+     */
+    public Boolean getInheritAllowDesktopAppToTriggerSync()
+    {
+    	return inheritAllowDesktopAppToTriggerSync;
+    }
+    
+    /**
+     * 
+     */
+    public void setInheritAllowDesktopAppToTriggerSync( Boolean inherit )
+    {
+    	inheritAllowDesktopAppToTriggerSync = inherit;
     }
 }

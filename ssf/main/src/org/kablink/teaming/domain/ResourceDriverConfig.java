@@ -71,6 +71,7 @@ public class ResourceDriverConfig extends ZonedObject implements WorkArea {
     protected Boolean jitsEnabled; // Applicable only to mirrored folders
     protected Long jitsMaxAge; // in milliseconds
     protected Long jitsAclMaxAge; // in milliseconds
+    protected Boolean allowDesktopAppToTriggerInitialHomeFolderSync;
 		
 	public enum DriverType {
 		filesystem (0),
@@ -240,6 +241,9 @@ public class ResourceDriverConfig extends ZonedObject implements WorkArea {
 
     	if ( !objectEquals( jitsAclMaxAge, config.jitsAclMaxAge ) )
     		return false;
+    	
+    	if ( !objectEquals( allowDesktopAppToTriggerInitialHomeFolderSync, config.allowDesktopAppToTriggerInitialHomeFolderSync ) )
+    		return false;
 
     	return true;
     }
@@ -282,6 +286,25 @@ public class ResourceDriverConfig extends ZonedObject implements WorkArea {
 	}
 	public void setDriverType(DriverType type) {
 		this.driverType = type;
+	}
+
+	/**
+	 * 
+	 */
+	public Boolean getAllowDesktopAppToTriggerInitialHomeFolderSync()
+	{
+		if ( allowDesktopAppToTriggerInitialHomeFolderSync == null )
+			return new Boolean( true );
+		
+		return allowDesktopAppToTriggerInitialHomeFolderSync;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setAllowDesktopAppToTriggerInitialHomeFolderSync( Boolean allow )
+	{
+		this.allowDesktopAppToTriggerInitialHomeFolderSync = allow;
 	}
 	
 	/**
