@@ -36,6 +36,7 @@ import org.apache.commons.io.IOUtils;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
+import org.kablink.teaming.asmodule.bridge.SPropsUtilBridge;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.annotation.Required;
 
@@ -94,14 +95,22 @@ public class PrioritizedRequestFilter implements Filter {
         String endpointsConfigLocation = servletContext.getInitParameter("endpointsConfigLocation");
         File configPath = new File(servletContext.getRealPath(endpointsConfigLocation));
         this.setEndpointConfig(configPath);
-        this.prioritizedRequestManager = new PrioritizedRequestManager();
-        this.prioritizedRequestManager.setMaxRequests("FILE", Integer.parseInt(filterConfig.getInitParameter("max.file.transfers")));
-        this.prioritizedRequestManager.setMaxRequests("EXPENSIVE", Integer.MAX_VALUE);
-        this.prioritizedRequestManager.setMaxRequests("INEXPENSIVE", Integer.MAX_VALUE);
+    }
+
+    private synchronized void initRequestManager() {
+        if (this.prioritizedRequestManager==null) {
+            this.prioritizedRequestManager = new PrioritizedRequestManager();
+            this.prioritizedRequestManager.setMaxRequests("FILE", SPropsUtilBridge.getInt("rest.max.file.transfers", 50));
+            this.prioritizedRequestManager.setMaxRequests("EXPENSIVE", Integer.MAX_VALUE);
+            this.prioritizedRequestManager.setMaxRequests("INEXPENSIVE", Integer.MAX_VALUE);
+        }
     }
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+        if (this.prioritizedRequestManager==null) {
+            initRequestManager();
+        }
         HttpServletRequest httpRequest = (HttpServletRequest)request;
         String path = httpRequest.getPathInfo();
         String method = httpRequest.getMethod();
