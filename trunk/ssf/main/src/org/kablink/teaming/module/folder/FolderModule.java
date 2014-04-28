@@ -46,7 +46,6 @@ import org.kablink.teaming.UncheckedIOException;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Binder.SyncScheduleOption;
 import org.kablink.teaming.domain.BinderState.FullSyncStats;
-import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.Entry;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.Folder;
@@ -741,14 +740,38 @@ public interface FolderModule {
      */
     public void indexFileContentForNetFolder(Folder netFolderRoot);
 
-	public void modifyNetFolder(Long folderId, String netFolderName, String rootName, String path, Boolean isHomeDir, boolean indexContent, Boolean inheritIndexContent, SyncScheduleOption syncScheduleOption, Boolean fullSyncDirOnly )
+	public void modifyNetFolder(
+						Long folderId,
+						String netFolderName,
+						String rootName,
+						String path,
+						Boolean isHomeDir,
+						boolean indexContent,
+						Boolean inheritIndexContent,
+						SyncScheduleOption syncScheduleOption,
+						Boolean fullSyncDirOnly,
+    					Boolean allowDesktopAppToTriggerSync,
+    					Boolean inheritAllowDesktopAppToTriggerSync )
 			throws AccessControlException, WriteFilesException, WriteEntryDataException;
 
 	public void deleteNetFolder(Long folderId, boolean deleteSource);
 	
     public void syncAclForNetFolderRoot(Folder netFolderRoot);
 
-    public Folder createNetFolder(Long templateId, Long parentBinderId, String name, User owner, String rootName, String path, Boolean isHomeDir, boolean indexContent, Boolean inheritIndexContent, SyncScheduleOption syncScheduleOption, Boolean fullSyncDirOnly ) throws AccessControlException, WriteFilesException, WriteEntryDataException;
+    public Folder createNetFolder(
+    					Long templateId,
+    					Long parentBinderId,
+    					String name,
+    					User owner,
+    					String rootName,
+    					String path,
+    					Boolean isHomeDir,
+    					boolean indexContent,
+    					Boolean inheritIndexContent,
+    					SyncScheduleOption syncScheduleOption,
+    					Boolean fullSyncDirOnly,
+    					Boolean allowDesktopAppToTriggerSync,
+    					Boolean inheritAllowDesktopAppToTriggerSync ) throws AccessControlException, WriteFilesException, WriteEntryDataException;
     
     public Map getNetFolderAccessData(Folder netFolder);
     

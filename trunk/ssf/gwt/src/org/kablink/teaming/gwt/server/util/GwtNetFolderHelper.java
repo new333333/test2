@@ -187,12 +187,15 @@ public class GwtNetFolderHelper
 			Binder binder;
 			ScheduleInfo scheduleInfo = null;
 			SyncScheduleOption syncScheduleOption = null;
+			NetFolderDataSyncSettings dataSyncSettings;
 			
 			// Create the net folder in the global "net folder roots" workspace.
 			parentBinder = getCoreDao().loadReservedBinder(
 													ObjectKeys.NET_FOLDERS_ROOT_INTERNALID, 
 													RequestContextHolder.getRequestContext().getZoneId() );
 
+			dataSyncSettings = netFolder.getDataSyncSettings();
+			
 			// Get the schedule information
 			{
 				GwtNetFolderSyncScheduleConfig config;
@@ -221,13 +224,15 @@ public class GwtNetFolderHelper
 												false,
 												netFolder.getIndexContent(),
 												netFolder.getInheritIndexContentSetting(),
-												netFolder.getFullSyncDirOnly() );
+												netFolder.getFullSyncDirOnly(),
+												dataSyncSettings.getAllowDesktopAppToTriggerSync(),
+												dataSyncSettings.getInheritAllowDesktopAppToTriggerSync() );
 			
 			// Set the rights on the net folder
 			setNetFolderRights( ami, binder.getId(), netFolder.getRoles() );
 			
 			// Set the data sync settings on the net folder
-			saveDataSyncSettings( ami, binder.getId(), netFolder.getDataSyncSettings() );
+			saveDataSyncSettings( ami, binder.getId(), dataSyncSettings );
 			
 			// Save the jits settings
 			{
@@ -261,6 +266,7 @@ public class GwtNetFolderHelper
 			newNetFolder.setIndexContent( netFolder.getIndexContent() );
 			newNetFolder.setInheritIndexContentSetting( netFolder.getInheritIndexContentSetting() );
 			newNetFolder.setInheritJitsSettings( netFolder.getInheritJitsSettings() );
+			newNetFolder.setDataSyncSettings( dataSyncSettings );
 		}
 		catch ( Exception ex )
 		{
@@ -331,6 +337,7 @@ public class GwtNetFolderHelper
 													netFolderRoot.getJitsEnabled(),
 													netFolderRoot.getJitsResultsMaxAge(),
 													netFolderRoot.getJitsAclMaxAge(),
+													netFolderRoot.getAllowDesktopAppToTriggerInitialHomeFolderSync(),
 													scheduleInfo );
 		}
 		catch ( RDException ex )
@@ -546,6 +553,8 @@ public class GwtNetFolderHelper
 				nfRoot.setJitsEnabled( driver.isJitsEnabled() );
 				nfRoot.setJitsResultsMaxAge( driver.getJitsMaxAge() );
 				nfRoot.setJitsAclMaxAge( driver.getJitsAclMaxAge() );
+				nfRoot.setAllowDesktopAppToTriggerInitialHomeFolderSync( driver.getAllowDesktopAppToTriggerInitialHomeFolderSync() );
+				nfRoot.setAllowDesktopAppToTriggerInitialHomeFolderSync( driver.getAllowDesktopAppToTriggerInitialHomeFolderSync() );
 				
 				{
 					AuthenticationType authType;
@@ -615,8 +624,11 @@ public class GwtNetFolderHelper
 		NetFolderDataSyncSettings settings;
 		
 		settings = new NetFolderDataSyncSettings();
+		
 		settings.setAllowDesktopAppToSyncData( binder.getAllowDesktopAppToSyncData() );
 		settings.setAllowMobileAppsToSyncData( binder.getAllowMobileAppsToSyncData() );
+		settings.setAllowDesktopAppToTriggerSync( binder.getAllowDesktopAppToTriggerInitialHomeFolderSync() );
+		settings.setInheritAllowDesktopAppToTriggerSync( binder.getUseInheritedDesktopAppTriggerSetting() );
 		
 		return settings;
 	}
@@ -848,6 +860,14 @@ public class GwtNetFolderHelper
 		netFolder.setInheritIndexContentSetting( binder.getUseInheritedIndexContent() );
 		netFolder.setInheritJitsSettings( binder.getUseInheritedJitsSettings() );
 		netFolder.setFullSyncDirOnly( binder.getFullSyncDirOnly() );
+		
+		// Get the data sync settings.
+		{
+			NetFolderDataSyncSettings dataSyncSettings;
+
+			dataSyncSettings = getDataSyncSettings( ami, binder );
+			netFolder.setDataSyncSettings( dataSyncSettings );
+		}
 
 		return netFolder;
 	}
@@ -912,10 +932,6 @@ public class GwtNetFolderHelper
 		// Get the rights associated with this net folder.
 		listOfRoles = getNetFolderRights( ami, binder );
 		netFolder.setRoles( listOfRoles );
-		
-		// Get the data sync settings
-		dataSyncSettings = getDataSyncSettings( ami, binder );
-		netFolder.setDataSyncSettings( dataSyncSettings );
 		
 		// Get the jits settings
 		jitsSettings = getJitsSettings( binder );
@@ -1274,6 +1290,7 @@ public class GwtNetFolderHelper
 		{
 			ScheduleInfo scheduleInfo = null;
 			SyncScheduleOption syncScheduleOption = null;
+			NetFolderDataSyncSettings dataSyncSettings;
 			
 			// Get the schedule information
 			{
@@ -1288,6 +1305,8 @@ public class GwtNetFolderHelper
 				}
 			}
 			
+			dataSyncSettings = netFolder.getDataSyncSettings();
+			
 			NetFolderHelper.modifyNetFolder(
 										ami.getBinderModule(),
 										ami.getFolderModule(),
@@ -1299,14 +1318,16 @@ public class GwtNetFolderHelper
 										syncScheduleOption,
 										netFolder.getIndexContent(),
 										netFolder.getInheritIndexContentSetting(),
-										netFolder.getFullSyncDirOnly() );
+										netFolder.getFullSyncDirOnly(),
+										dataSyncSettings.getAllowDesktopAppToTriggerSync(),
+										dataSyncSettings.getInheritAllowDesktopAppToTriggerSync() );
 
 			// Set the rights on the net folder
 			if ( netFolder.getIsHomeDir() == false )
 				setNetFolderRights( ami, netFolder.getId(), netFolder.getRoles() );
 			
 			// Save the data sync settings.
-			saveDataSyncSettings( ami, netFolder.getId(), netFolder.getDataSyncSettings() );
+			saveDataSyncSettings( ami, netFolder.getId(), dataSyncSettings );
 			
 			// Save the jits settings
 			{
@@ -1397,6 +1418,7 @@ public class GwtNetFolderHelper
 											netFolderRoot.getJitsEnabled(),
 											netFolderRoot.getJitsResultsMaxAge(),
 											netFolderRoot.getJitsAclMaxAge(),
+											netFolderRoot.getAllowDesktopAppToTriggerInitialHomeFolderSync(),
 											scheduleInfo );
 		}
 		catch ( Exception ex )
@@ -1433,6 +1455,14 @@ public class GwtNetFolderHelper
 	   		formData.put(
 	   					ObjectKeys.FIELD_BINDER_ALLOW_DESKTOP_APP_TO_SYNC_DATA,
 	   					Boolean.toString( settings.getAllowDesktopAppToSyncData() ) );
+	   		
+			formData.put(
+						ObjectKeys.FIELD_BINDER_ALLOW_DESKTOP_APP_TO_TRIGGER_INITIAL_HOME_FOLDER_SYNC,
+						settings.getAllowDesktopAppToTriggerSync() );
+			formData.put(
+						ObjectKeys.FIELD_BINDER_USE_INHERITED_DESKTOP_APP_TRIGGER_SETTING,
+						settings.getInheritAllowDesktopAppToTriggerSync() );
+			
 	   		if ( false )
 	   		{
 	   			// Not writing anything as per bug 816823.
@@ -1440,6 +1470,7 @@ public class GwtNetFolderHelper
 	   					ObjectKeys.FIELD_BINDER_ALLOW_MOBILE_APPS_TO_SYNC_DATA,
 	   					Boolean.toString( settings.getAllowMobileAppsToSyncData() ) );
 	   		}
+	   		
 			mid = new MapInputData( formData );
 
 			try

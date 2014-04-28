@@ -544,6 +544,7 @@ public interface ObjectKeys {
 	public static final String RESOURCE_DRIVER_JITS_ENABLED = "jitsEnabled";
     public static final String RESOURCE_DRIVER_JITS_ACL_MAX_AGE = "jitsAclMaxAge";
     public static final String RESOURCE_DRIVER_JITS_RESULTS_MAX_AGE = "jitsMaxAge";
+    public static final String RESOURCE_DRIVER_ALLOW_DESKTOP_APP_TO_TRIGGER_HOME_FOLDER_SYNC = "allowDesktopAppToTriggerHomeFolderSync";
 	
     //User and Principal objects
     public static final int USER_STATUS_DATABASE_FIELD_LENGTH = 256;
@@ -715,6 +716,7 @@ public interface ObjectKeys {
     public static final String FIELD_APPLICATION_MAX_IDLE_TIME="maxIdleTime";
     public static final String FIELD_APPLICATION_SAME_ADDR_POLICY="sameAddrPolicy";
     public static final String FIELD_BINDER_ALLOW_DESKTOP_APP_TO_SYNC_DATA = "allowDesktopAppToSyncData";
+    public static final String FIELD_BINDER_ALLOW_DESKTOP_APP_TO_TRIGGER_INITIAL_HOME_FOLDER_SYNC = "allowDesktopAppToTriggerInitialHomeFolderSync";
     public static final String FIELD_BINDER_ALLOW_MOBILE_APPS_TO_SYNC_DATA = "allowMobileAppsToSyncData";
     public static final String FIELD_BINDER_INDEX_CONTENT = "indexContent";
     public static final String FIELD_BINDER_JITS_ACL_MAX_AGE = "jitsAclMaxAge";
@@ -736,6 +738,7 @@ public interface ObjectKeys {
 	public static final String FIELD_BINDER_FULL_SYNC_DIR_ONLY = "fullSyncDirOnly";
     public static final String FIELD_BINDER_USE_INHERITED_INDEX_CONTENT = "useInheritedIndexContent";
     public static final String FIELD_BINDER_USE_INHERITED_JITS_SETTINGS = "useInheritedJitsSettings";
+    public static final String FIELD_BINDER_USE_INHERITED_DESKTOP_APP_TRIGGER_SETTING = "useInheritedDesktopAppTriggerSetting";
 	
 	public static final String FIELD_RESOURCE_DRIVER_TYPE = "type";
 	public static final String FIELD_RESOURCE_HANDLE = "resourceHandle"; 

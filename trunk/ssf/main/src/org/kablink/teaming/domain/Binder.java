@@ -175,10 +175,12 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
     protected Long jitsMaxAge; // in milliseconds
     protected Long jitsAclMaxAge; // in milliseconds
     protected Boolean fullSyncDirOnly; // Applicable only to mirrored folders
+    protected Boolean allowDesktopAppToTriggerInitialHomeFolderSync;
     protected Short syncScheduleOption;	// SyncScheduleOption
     protected String resourceHandle;
     protected Boolean useInheritedIndexContent = Boolean.TRUE;
     protected Boolean useInheritedJitsSettings = Boolean.TRUE;
+    protected Boolean useInheritedDesktopAppTriggerSetting = Boolean.TRUE;
 
     
     public Binder() {
@@ -218,9 +220,11 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
 		 jitsMaxAge = source.jitsMaxAge;
 		 jitsAclMaxAge = source.jitsAclMaxAge;
 		 fullSyncDirOnly = source.fullSyncDirOnly;
+		 allowDesktopAppToTriggerInitialHomeFolderSync = source.allowDesktopAppToTriggerInitialHomeFolderSync;
 		 syncScheduleOption = source.syncScheduleOption;
 		 useInheritedIndexContent = source.useInheritedIndexContent;
 		 useInheritedJitsSettings = source.useInheritedJitsSettings;
+		 useInheritedDesktopAppTriggerSetting = source.useInheritedDesktopAppTriggerSetting;
      }
     /**
      * Return the zone id
@@ -847,6 +851,26 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
     
     
     /**
+     * Return whether the desktop app can trigger initial home folder sync
+     * @return
+     */
+    public boolean getAllowDesktopAppToTriggerInitialHomeFolderSync()
+    {
+    	if ( allowDesktopAppToTriggerInitialHomeFolderSync == null )
+    		return false;
+    	else
+    		return allowDesktopAppToTriggerInitialHomeFolderSync.booleanValue();
+    }
+    
+    /**
+     * 
+     */
+    public void setAllowDesktopAppToTriggerInitialHomeFolderSync( boolean allow )
+    {
+   		allowDesktopAppToTriggerInitialHomeFolderSync = new Boolean( allow );
+    }
+    
+    /**
      * Return whether the desktop app can sync data from this binder
      * @return
      */
@@ -878,6 +902,58 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
     public void setAllowMobileAppsToSyncData( boolean allow )
     {
    		allowMobileAppsToSyncData = new Boolean( allow );
+    }
+    
+    /**
+     * Return the computed value of "allow desktop app to trigger initial home folder sync".
+     * If this binder is inheriting the value of "allow desktop app to trigger initial home folder sync"
+     * then we will get the value of "allow desktop app to trigger initial home folder sync"
+     * from the net folder server this binder is pointing to.  Otherwise, we will use the value
+     * of "allow desktop app to trigger initial home folder sync" from this binder.
+     */
+    public boolean getComputedAllowDesktopAppToTriggerInitialHomeFolderSync()
+    {
+    	ResourceDriver resourceDriver;
+    	
+    	if ( getUseInheritedDesktopAppTriggerSetting() == false )
+    		return getAllowDesktopAppToTriggerInitialHomeFolderSync();
+    	
+    	resourceDriver = getResourceDriver();
+    	if ( resourceDriver != null )
+    	{
+    		ResourceDriverConfig rdConfig;
+    		
+    		rdConfig = resourceDriver.getConfig();
+    		if ( rdConfig != null )
+    			return rdConfig.getAllowDesktopAppToTriggerInitialHomeFolderSync();
+    	}
+    	
+    	return false;
+    }
+    
+    /**
+     * Return whether the the "allow desktop app to trigger initial home folder sync" setting
+     * should be inherited from the net folder server.
+     * @return
+     */
+    public boolean getUseInheritedDesktopAppTriggerSetting()
+    {
+    	boolean useInherited;
+    	
+    	if ( useInheritedDesktopAppTriggerSetting == null )
+   			useInherited = true;
+    	else
+    		useInherited = useInheritedDesktopAppTriggerSetting.booleanValue();
+    	
+    	return useInherited;
+    }
+
+    /**
+     * 
+     */
+    public void setUseInheritedDesktopAppTriggerSetting( boolean inherit )
+    {
+   		useInheritedDesktopAppTriggerSetting = new Boolean( inherit );
     }
     
     /**

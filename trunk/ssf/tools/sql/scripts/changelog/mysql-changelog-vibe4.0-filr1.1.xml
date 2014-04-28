@@ -598,4 +598,25 @@ update SS_Principals set domainName=LOWER(domainName);
         <dropIndex indexName="templateOwningBinderId_Binder" tableName="SS_Forums"/>        
     </changeSet>
     
+    <changeSet author="jay" context="schema" failOnError="true" id="53">
+        <comment>Add allowDesktopAppToTriggerInitialHomeFolderSync field to SS_Forums table</comment>
+        <addColumn tableName="SS_Forums">
+            <column name="allowDesktopAppToTriggerInitialHomeFolderSync" type="BIT">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+        <comment>Add useInheritedDesktopAppTriggerSetting field to SS_Forums table</comment>
+        <addColumn tableName="SS_Forums">
+            <column name="useInheritedDesktopAppTriggerSetting" type="BIT">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+        <comment>Add allowDesktopAppToTriggerInitialHomeFolderSync field to SS_ResourceDriver table</comment>
+        <addColumn tableName="SS_ResourceDriver">
+            <column name="allowDesktopAppToTriggerInitialHomeFolderSync" type="BIT">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+    
 </databaseChangeLog>

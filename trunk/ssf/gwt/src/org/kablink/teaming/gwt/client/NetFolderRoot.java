@@ -63,6 +63,7 @@ public class NetFolderRoot
 	private long m_jitsResultsMaxAge = 0;
 	private long m_jitsAclMaxAge = 0;
 	private Boolean m_fullSyncDirOnly;
+	private Boolean m_allowDesktopAppToTriggerInitialHomeFolderSync;
 	private ArrayList<GwtPrincipal> m_principals;
 	private NetFolderRootStatus m_status;
 	private String m_statusTicketId;
@@ -176,6 +177,7 @@ public class NetFolderRoot
 		m_jitsEnabled = null;
 		m_jitsResultsMaxAge = 0;
 		m_jitsAclMaxAge = 0;
+		m_allowDesktopAppToTriggerInitialHomeFolderSync = null;
 	}	
 	
 	/**
@@ -208,6 +210,7 @@ public class NetFolderRoot
 		m_jitsEnabled = root.getJitsEnabled();
 		m_jitsResultsMaxAge = root.getJitsResultsMaxAge();
 		m_jitsAclMaxAge = root.getJitsAclMaxAge();
+		m_allowDesktopAppToTriggerInitialHomeFolderSync = root.getAllowDesktopAppToTriggerInitialHomeFolderSync();
 
 		m_statusTicketId = root.getStatusTicketId();
 
@@ -215,6 +218,14 @@ public class NetFolderRoot
 		m_allowSelfSignedCerts = root.getAllowSelfSignedCerts();
 		m_isSharePointServer = root.getIsSharePointServer();
 		m_hostUrl = root.getHostUrl();
+	}
+	
+	/**
+	 * 
+	 */
+	public Boolean getAllowDesktopAppToTriggerInitialHomeFolderSync()
+	{
+		return m_allowDesktopAppToTriggerInitialHomeFolderSync;
 	}
 	
 	/**
@@ -406,6 +417,14 @@ public class NetFolderRoot
 			return false;
 		
 		return true;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setAllowDesktopAppToTriggerInitialHomeFolderSync( Boolean allow )
+	{
+		m_allowDesktopAppToTriggerInitialHomeFolderSync = allow;
 	}
 	
 	/**

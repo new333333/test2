@@ -783,5 +783,26 @@
             <column name="parentEntry"/>
         </createIndex>
     </changeSet>
+
+    <changeSet author="jay" context="schema" failOnError="true" id="68">
+        <comment>Add allowDesktopAppToTriggerInitialHomeFolderSync field to SS_Forums table</comment>
+        <addColumn tableName="SS_Forums">
+            <column name="allowDesktopAppToTriggerInitialHomeFolderSync" type="TINYINT">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+        <comment>Add useInheritedDesktopAppTriggerSetting field to SS_Forums table</comment>
+        <addColumn tableName="SS_Forums">
+            <column name="useInheritedDesktopAppTriggerSetting" type="TINYINT">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+        <comment>Add allowDesktopAppToTriggerInitialHomeFolderSync field to SS_ResourceDriver table</comment>
+        <addColumn tableName="SS_ResourceDriver">
+            <column name="allowDesktopAppToTriggerInitialHomeFolderSync" type="TINYINT">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+	</changeSet>
     
 </databaseChangeLog>
