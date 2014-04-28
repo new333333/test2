@@ -3624,6 +3624,9 @@ a.ss_new_thread {
 	top: 9px;
 	left: 15px;
 }
+.qView-avatar-btn {
+	width: 200px;
+}
 .presenceImgA {
 	cursor: pointer;
 	padding-right: 5px;
