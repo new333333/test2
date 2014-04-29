@@ -433,7 +433,7 @@ public class NetFolderHelper
 					Schedule schedule;
 		
 					// No, create one.
-					folderName = NLT.get( "netfolder.default.homedir.name" );
+					folderName = NLT.get( "netfolder.default.homedir.name", user.getLocale() );
 					m_logger.info( "About to create a net folder called: " + folderName + ", for the users home directory for user: " + user.getName() );
 					
 					// Create a default schedule for syncing the net folder
