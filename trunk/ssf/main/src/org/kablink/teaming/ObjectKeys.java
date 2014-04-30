@@ -232,6 +232,8 @@ public interface ObjectKeys {
 	public static final String SESSION_ACL_CACHE="aclCache";
 	public static final String SESSION_ACL_CACHE_USER_ID="aclCacheUserId";
 	public static final int SESSION_ACL_CACHE_TIMEOUT=60*1000; //Only use cache if time is within 1 minute
+	public static final String SESSION_DREDGED_ROLE_ID_CACHE="dredgedRoleIdCache";
+	public static final long SESSION_DREDGED_ROLE_ID_CACHE_TIMEOUT=3L; //Only use cache if time is within 3 seconds
 
     //map keys returned from modules
     public static final String BINDER="binder";
