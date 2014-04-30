@@ -1413,7 +1413,7 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         libraryInfo.setFolderCount(libraryInfo.getFolderCount() - hiddenFolders);
         if (homeFolderIds.size()>0) {
             populateMirroredLibraryInfo(libraryInfo, homeFolderIds);
-            libraryInfo.setAllowClientTriggeredSync(true);
+            libraryInfo.setAllowClientInitiatedSync(true);
         }
         return libraryInfo;
     }
