@@ -143,6 +143,19 @@ public class PersonalWorkspacesView extends DataTableFolderViewBase {
 	}
 	
 	/**
+	 * Returns the adjustment to used for a folder view's content so
+	 * that it doesn't get a vertical scroll bar.
+	 * 
+	 * Overrides the FolderViewBase.getNoVScrollAdjustment() method.
+	 * 
+	 * @return
+	 */
+	@Override
+	public int getNoVScrollAdjustment() {
+		return (super.getNoVScrollAdjustment() + 10);
+	}
+
+	/**
 	 * Returns true for panels that are to be included and false
 	 * otherwise.
 	 * 
