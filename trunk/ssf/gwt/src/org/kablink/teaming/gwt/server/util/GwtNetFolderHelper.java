@@ -1190,7 +1190,7 @@ public class GwtNetFolderHelper
     						status = NetFolderSyncStatus.DELETE_IN_PROGRESS;
     						break;
 
-    					case interrupted:
+    					case aborted:
     						status = NetFolderSyncStatus.UNKNOWN;
     						break;
     					}

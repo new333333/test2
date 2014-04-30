@@ -42,7 +42,7 @@ public class BinderState extends ZonedObject {
 
 	public enum FullSyncStatus {
 		/**
-		 * Full synchronization is ready to run and is waiting to be assigned to a thread for execution.
+		 * Full synchronization is ready to run and is waiting in a queue to be assigned to a thread for execution.
 		 */
 		ready (false),
 		/**
@@ -54,7 +54,7 @@ public class BinderState extends ZonedObject {
 		 */
 		started (false),
 		/**
-		 * Full synchronization that was in started state has stopped due to explicit request by admin to stop it.
+		 * Full synchronization that was in taken or started state has stopped due to explicit request by admin to stop it.
 		 */
 		stopped (true), // in idle because it was stopped
 		/**
@@ -62,9 +62,10 @@ public class BinderState extends ZonedObject {
 		 */
 		finished (true), // in idle because it was finished
 		/**
-		 * Full synchronization that was in started or taken state has been interrupted due to system termination (gracious shutdown, abrupt termination, crash, etc.).
+		 * Full synchronization that was in taken or started state has been aborted due to system termination 
+		 * (gracious shutdown, abrupt termination, crash) or non-intermittent error such as unreachable file server.
 		 */
-		interrupted (true), // in idle because it was interrupted
+		aborted (true), // in idle because it was aborted
 		/**
 		 * Full synchronization that was in ready state has been canceled due to explicit request by admin to cancel it.
 		 */
