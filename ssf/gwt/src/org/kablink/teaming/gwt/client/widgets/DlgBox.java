@@ -294,7 +294,54 @@ public abstract class DlgBox extends TeamingPopupPanel
 		
 		setPopupPosition( xPos, yPos );
 	}// end DlgBox()
+
+	/*
+	 * If the dialog is a fixed size, adjusts the internal sizing based
+	 * on current settings.
+	 */
+	private void adjustFixedSizingAsync()
+	{
+		GwtClientHelper.deferCommand( new ScheduledCommand()
+		{
+			@Override
+			public void execute()
+			{
+				adjustFixedSizingNow();
+			}
+		} );
+	}
 	
+	/*
+	 * If the dialog is a fixed size, adjusts the internal sizing based
+	 * on current settings.
+	 */
+	private void adjustFixedSizingNow()
+	{
+		if ( m_fixedSize )
+		{
+			int spaceNeeded;
+			int contentPanelHeight;
+			
+			// Yes, make sure the content panel takes up all the room minus the room
+			// needed by the header and footer.
+			spaceNeeded = 0;
+			if ( m_headerPanel != null )
+				spaceNeeded += m_headerPanel.getOffsetHeight();
+			
+			if ( m_errorPanel != null )
+				spaceNeeded += m_errorPanel.getOffsetHeight();
+			
+			if ( m_footerPanel != null )
+				spaceNeeded += m_footerPanel.getOffsetHeight();
+			
+			spaceNeeded += 20;
+			
+			contentPanelHeight = m_height - spaceNeeded;
+			m_bodyPanel.setHeight( String.valueOf( contentPanelHeight ) + "px" );
+			if ( m_useOverflowAutoOnContent )
+				m_bodyPanel.getElement().getStyle().setOverflow( Overflow.AUTO );
+		}
+	}
 	
 	/**
 	 * 
@@ -880,32 +927,7 @@ public abstract class DlgBox extends TeamingPopupPanel
 			public void execute()
 			{
 				makeDraggableNow( String.valueOf( m_id ), draggable );
-				
-				// Are we dealing with a fixed sized dialog?
-				if ( m_fixedSize )
-				{
-					int spaceNeeded;
-					int contentPanelHeight;
-					
-					// Yes, make sure the content panel takes up all the room minus the room
-					// needed by the header and footer.
-					spaceNeeded = 0;
-					if ( m_headerPanel != null )
-						spaceNeeded += m_headerPanel.getOffsetHeight();
-					
-					if ( m_errorPanel != null )
-						spaceNeeded += m_errorPanel.getOffsetHeight();
-					
-					if ( m_footerPanel != null )
-						spaceNeeded += m_footerPanel.getOffsetHeight();
-					
-					spaceNeeded += 20;
-					
-					contentPanelHeight = m_height - spaceNeeded;
-					m_bodyPanel.setHeight( String.valueOf( contentPanelHeight ) + "px" );
-					if ( m_useOverflowAutoOnContent )
-						m_bodyPanel.getElement().getStyle().setOverflow( Overflow.AUTO );
-				}
+				adjustFixedSizingNow();				
 			}
 		} );
 	}// end makeDraggableAsync()
@@ -1194,7 +1216,17 @@ public abstract class DlgBox extends TeamingPopupPanel
 		setAutoHideEnabled( ( autoHide && (!modal) ));
 		m_modal = modal;
 	}
-	
+
+	@Override
+	public void setPixelSize(int width, int height) {
+		super.setPixelSize(width, height);
+		if (m_fixedSize)
+		{
+			m_height = height;
+			adjustFixedSizingAsync();
+		}
+	}
+
 	/**
 	 * 
 	 */
