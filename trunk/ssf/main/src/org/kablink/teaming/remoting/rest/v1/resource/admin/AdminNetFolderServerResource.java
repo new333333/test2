@@ -197,27 +197,30 @@ public class AdminNetFolderServerResource extends AbstractAdminResource {
             validateMandatoryField(server, "getPassword");
         }
 
-        ResourceDriverConfig model = new ResourceDriverConfig();
-        model.setAccountName(server.getAccountName());
-        model.setAuthenticationType(toEnum(ResourceDriverConfig.AuthenticationType.class, "auth_type", server.getAuthenticationType()));
-        model.setChangeDetectionMechanism(toEnum(ResourceDriverConfig.ChangeDetectionMechanism.class, "change_detection_mechanism", server.getChangeDetectionMechanism()));
-        model.setDriverType(toEnum(ResourceDriverConfig.DriverType.class, "driver_type", server.getDriverType()));
-        model.setFullSyncDirOnly(server.getFullSyncDirOnly());
-        model.setId(server.getId());
-        model.setModifiedOn(server.getModifiedOn());
-        model.setName(server.getName());
-        model.setPassword(server.getPassword());
-        model.setRootPath(server.getRootPath());
-        model.setIndexContent(server.getIndexContent());
+        ResourceDriverConfig resourceDriverConfig = new ResourceDriverConfig();
+        resourceDriverConfig.setAccountName(server.getAccountName());
+        resourceDriverConfig.setAuthenticationType(toEnum(ResourceDriverConfig.AuthenticationType.class, "auth_type", server.getAuthenticationType()));
+        resourceDriverConfig.setChangeDetectionMechanism(toEnum(ResourceDriverConfig.ChangeDetectionMechanism.class, "change_detection_mechanism", server.getChangeDetectionMechanism()));
+        resourceDriverConfig.setDriverType(toEnum(ResourceDriverConfig.DriverType.class, "driver_type", server.getDriverType()));
+        resourceDriverConfig.setFullSyncDirOnly(server.getFullSyncDirOnly());
+        resourceDriverConfig.setId(server.getId());
+        resourceDriverConfig.setModifiedOn(server.getModifiedOn());
+        resourceDriverConfig.setName(server.getName());
+        resourceDriverConfig.setPassword(server.getPassword());
+        resourceDriverConfig.setRootPath(server.getRootPath());
+        resourceDriverConfig.setIndexContent(server.getIndexContent());
         if (server.getJitsEnabled()!=null) {
-            model.setJitsEnabled(server.getJitsEnabled());
+            resourceDriverConfig.setJitsEnabled(server.getJitsEnabled());
         }
         if (server.getJitsMaxAge()!=null) {
-            model.setJitsMaxAge(server.getJitsMaxAge());
+            resourceDriverConfig.setJitsMaxAge(server.getJitsMaxAge());
         }
         if (server.getJitsMaxACLAge()!=null) {
-            model.setJitsAclMaxAge(server.getJitsMaxACLAge());
+            resourceDriverConfig.setJitsAclMaxAge(server.getJitsMaxACLAge());
         }
-        return model;
+        if (server.getAllowClientInitiatedSync()!=null) {
+            resourceDriverConfig.setAllowDesktopAppToTriggerInitialHomeFolderSync(server.getAllowClientInitiatedSync());
+        }
+        return resourceDriverConfig;
     }
 }

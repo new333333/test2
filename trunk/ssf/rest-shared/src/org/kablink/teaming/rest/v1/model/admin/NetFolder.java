@@ -49,11 +49,11 @@ public class NetFolder extends BaseRestObject {
     private Long jitsMaxACLAge;
     private Boolean fullSyncDirOnly;
     private Boolean allowDesktopSync;
+    private Boolean inheritClientSyncSettings;
+    private Boolean allowClientInitiatedSync;
     private Boolean inheritSyncSchedule;
     private Schedule syncSchedule;
     private List<AssignedRight> assignedRights;
-    private Boolean allowDesktopAppToTriggerSync;
-    private Boolean inheritAllowDesktopAppToTriggerSync;
 
     public void replaceNullValues(NetFolder folder) {
         id = (id==null) ? folder.id : id;
@@ -68,8 +68,9 @@ public class NetFolder extends BaseRestObject {
         jitsMaxACLAge = (jitsMaxACLAge==null) ? folder.jitsMaxACLAge : jitsMaxACLAge;
         fullSyncDirOnly = (fullSyncDirOnly==null) ? folder.fullSyncDirOnly : fullSyncDirOnly;
         allowDesktopSync = (allowDesktopSync==null) ? folder.allowDesktopSync : allowDesktopSync;
+        inheritClientSyncSettings = (inheritClientSyncSettings==null) ? folder.inheritClientSyncSettings : inheritClientSyncSettings;
+        allowClientInitiatedSync = (allowClientInitiatedSync==null) ? folder.allowClientInitiatedSync : allowClientInitiatedSync;
         inheritSyncSchedule = (inheritSyncSchedule==null) ? folder.inheritSyncSchedule : inheritSyncSchedule;
-        allowDesktopAppToTriggerSync = (allowDesktopAppToTriggerSync==null) ? folder.allowDesktopAppToTriggerSync : allowDesktopAppToTriggerSync;
     }
 
     public Long getId() {
@@ -186,6 +187,24 @@ public class NetFolder extends BaseRestObject {
         this.allowDesktopSync = allowDesktopSync;
     }
 
+    @XmlElement(name="inherit_client_sync_settings")
+    public Boolean getInheritClientSyncSettings() {
+        return inheritClientSyncSettings==null ? Boolean.TRUE : inheritClientSyncSettings;
+    }
+
+    public void setInheritClientSyncSettings(Boolean inheritClientSyncSettings) {
+        this.inheritClientSyncSettings = inheritClientSyncSettings;
+    }
+
+    @XmlElement(name="allow_client_initiated_sync")
+    public Boolean getAllowClientInitiatedSync() {
+        return allowClientInitiatedSync;
+    }
+
+    public void setAllowClientInitiatedSync(Boolean allowClientInitiatedSync) {
+        this.allowClientInitiatedSync = allowClientInitiatedSync;
+    }
+
     @XmlElement(name="inherit_sync_schedule")
     public Boolean getInheritSyncSchedule() {
         return inheritSyncSchedule==null ? Boolean.FALSE : inheritSyncSchedule;
@@ -212,37 +231,5 @@ public class NetFolder extends BaseRestObject {
 
     public void setAssignedRights(List<AssignedRight> assignedRights) {
         this.assignedRights = assignedRights;
-    }
-    
-    /**
-     * 
-     */
-    public Boolean getAllowDesktopAppToTriggerSync()
-    {
-    	return allowDesktopAppToTriggerSync;
-    }
-    
-    /**
-     * 
-     */
-    public void setAllowDesktopAppToTriggerSync( Boolean allow )
-    {
-    	allowDesktopAppToTriggerSync = allow;
-    }
-    
-    /**
-     * 
-     */
-    public Boolean getInheritAllowDesktopAppToTriggerSync()
-    {
-    	return inheritAllowDesktopAppToTriggerSync;
-    }
-    
-    /**
-     * 
-     */
-    public void setInheritAllowDesktopAppToTriggerSync( Boolean inherit )
-    {
-    	inheritAllowDesktopAppToTriggerSync = inherit;
     }
 }

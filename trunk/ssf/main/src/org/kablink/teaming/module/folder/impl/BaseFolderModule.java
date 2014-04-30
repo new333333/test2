@@ -213,4 +213,9 @@ public class BaseFolderModule extends AbstractFolderModule implements BaseFolder
 	@Override
 	public void netFolderContentIndexingJobDelete(Long folderId) {
 	}
+
+    @Override
+    public boolean enqueueInitialNetFolderSync(Long folderId) {
+        return false;
+    }
 }
