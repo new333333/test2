@@ -6170,7 +6170,15 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		String socketFactory = getLdapProperty(zone.getName(), "java.naming.ldap.factory.socket"); 
 		if (!Validator.isNull(socketFactory))
 			env.put("java.naming.ldap.factory.socket", socketFactory);
-	
+
+		// Set the default timeout
+		{
+			String timeout;
+			
+			timeout = SPropsUtil.getString( "com.sun.jndi.ldap.connect.timeout", "60000" );
+			env.put( "com.sun.jndi.ldap.connect.timeout", timeout );
+		}
+		
 		return new InitialLdapContext(env, null);
 	}
 
