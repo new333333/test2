@@ -99,6 +99,7 @@ public class AdminResourceUtil {
         model.setJitsEnabled(config.isJitsEnabled());
         model.setJitsMaxAge(config.getJitsMaxAge());
         model.setJitsMaxACLAge(config.getJitsAclMaxAge());
+        model.setAllowClientInitiatedSync(config.getAllowDesktopAppToTriggerInitialHomeFolderSync());
         if (fullDetails) {
             model.setSyncSchedule(buildSchedule(NetFolderHelper.getNetFolderServerSynchronizationSchedule(model.getId())));
         }
@@ -135,6 +136,9 @@ public class AdminResourceUtil {
         }
 
         model.setAllowDesktopSync(folder.getAllowDesktopAppToSyncData());
+        model.setInheritClientSyncSettings(folder.getUseInheritedDesktopAppTriggerSetting());
+        model.setAllowClientInitiatedSync(folder.getAllowDesktopAppToTriggerInitialHomeFolderSync());
+
         model.setFullSyncDirOnly(folder.getFullSyncDirOnly());
 
         model.setLink(AdminLinkUriUtil.getNetFolderLinkUri(folder.getId()));

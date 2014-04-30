@@ -175,7 +175,7 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
     protected Long jitsMaxAge; // in milliseconds
     protected Long jitsAclMaxAge; // in milliseconds
     protected Boolean fullSyncDirOnly; // Applicable only to mirrored folders
-    protected Boolean allowDesktopAppToTriggerInitialHomeFolderSync;
+    protected Boolean allowDesktopAppToTriggerInitialHomeFolderSync = Boolean.FALSE;
     protected Short syncScheduleOption;	// SyncScheduleOption
     protected String resourceHandle;
     protected Boolean useInheritedIndexContent = Boolean.TRUE;

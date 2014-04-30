@@ -38,7 +38,6 @@ import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Attachment;
 import org.kablink.teaming.domain.Binder;
-import org.kablink.teaming.domain.BinderState;
 import org.kablink.teaming.domain.Description;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.Folder;
@@ -57,7 +56,6 @@ import org.kablink.teaming.remoting.rest.v1.util.BinderBriefBuilder;
 import org.kablink.teaming.remoting.rest.v1.util.LinkUriUtil;
 import org.kablink.teaming.remoting.rest.v1.util.ResourceUtil;
 import org.kablink.teaming.remoting.rest.v1.util.SearchResultBuilderUtil;
-import org.kablink.teaming.rest.v1.model.BaseBinderChange;
 import org.kablink.teaming.rest.v1.model.BinderBrief;
 import org.kablink.teaming.rest.v1.model.BinderChange;
 import org.kablink.teaming.rest.v1.model.BinderChanges;
@@ -81,7 +79,6 @@ import org.kablink.teaming.rest.v1.model.ZoneConfig;
 import org.kablink.teaming.search.SearchUtils;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.web.util.BinderHelper;
-import org.kablink.teaming.web.util.PermaLinkUtil;
 import org.kablink.util.api.ApiErrorCode;
 import org.kablink.util.search.Constants;
 import org.kablink.util.search.Criteria;
@@ -639,9 +636,7 @@ public class SelfResource extends AbstractFileResource {
         for (Long id : homeFolderIds) {
             try {
                 lookupNetFolder(id);
-                if (getFolderModule().getLastFullSyncCompletionTime(id)==null) {
-                    getFolderModule().enqueueFullSynchronize(id);
-                }
+                getFolderModule().enqueueInitialNetFolderSync(id);
             } catch (Exception e) {
                 logger.error("Unable to trigger initial sync of the user's home folder: " + getLoggedInUser().getName(), e);
                 throw new InternalServerErrorException(ApiErrorCode.SERVER_ERROR, e.getMessage());

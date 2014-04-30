@@ -869,4 +869,6 @@ public interface FolderModule {
 	 * Delete background job, if any, for file content indexing for the specified net folder.
 	 */
 	public void netFolderContentIndexingJobUnschedule(Long folderId);
+
+    public boolean enqueueInitialNetFolderSync(Long folderId);
 }
