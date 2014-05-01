@@ -163,7 +163,6 @@ public class LoginFilter  implements Filter {
 					}
 					req.setAttribute("referer", url);
 					chain.doFilter(request, response);
-					
 				}
 			}
 		}
@@ -280,6 +279,23 @@ public class LoginFilter  implements Filter {
 		boolean isReadFileWithGuestAccess   = (isReadFile && readFileWithGuestAccessFlag);
 		
 		if (isReadFileWithGuestAccess || isPathPermittedUnauthenticated(req.getPathInfo()) || isActionPermittedUnauthenticated(req.getParameter("action"))) {
+			String action;
+			
+			action = req.getParameter( "action" );
+			
+			// Is this a view permalink request?
+			if ( action != null && action.equalsIgnoreCase( WebKeys.ACTION_VIEW_PERMALINK ) )
+			{
+				String currentURL;
+				
+				// Yes
+				// Set the referrer url so we know where to go after the user logs in.
+				currentURL = Http.getCompleteURL( req );
+				currentURL = StringCheckUtil.checkForQuotes( currentURL, false );		//Prevent XSS attacks
+				if ( Validator.isNotNull( currentURL ) )
+					req.setAttribute( WebKeys.REFERER_URL, currentURL);
+			}
+			
 			chain.doFilter(req, res);										
 		}
 		else {				
