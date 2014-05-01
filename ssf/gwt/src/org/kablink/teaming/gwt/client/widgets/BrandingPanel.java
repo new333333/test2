@@ -90,6 +90,7 @@ public class BrandingPanel extends Composite
 		public BrandingContentPanel()
 		{
 			ImageResource imageResource;
+			boolean addDimensions = false;
 			
 			m_panel = new FlowPanel();
 			m_panel.addStyleName( "brandingContentPanel" );
@@ -107,18 +108,24 @@ public class BrandingPanel extends Composite
 				// Yes
 				// Create a Novell Teaming image that will be used in case there is no branding.
 				imageResource = GwtTeaming.getImageBundle().mastHeadNovellGraphic();
+				addDimensions = true;
 			}
 			else
 			{
 				// No
 				// Create a Kablink Teaming image that will be used in case there is no branding.
 				imageResource = GwtTeaming.getImageBundle().mastHeadKablinkGraphic();
+				addDimensions = true;
 			}
 
 			m_teamingImg = new Image( imageResource );
 			m_teamingImg.addStyleName( "brandingDefaultImg" );
-			m_teamingImg.setWidth( "500" );
-			m_teamingImg.setHeight( "75" );
+			
+			if ( addDimensions )
+			{
+				m_teamingImg.setWidth( "500" );
+				m_teamingImg.setHeight( "75" );
+			}
 
 			// All composites must call initWidget() in their constructors.
 			initWidget( m_panel );
