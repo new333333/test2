@@ -32,7 +32,6 @@
  */
 package org.kablink.teaming.security.impl;
 
-import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -44,9 +43,7 @@ import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.InternalException;
-import org.kablink.teaming.NotSupportedException;
 import org.kablink.teaming.ObjectKeys;
-import org.kablink.teaming.asmodule.zonecontext.ZoneContextHolder;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.CoreDao;
 import org.kablink.teaming.dao.ProfileDao;
@@ -63,13 +60,13 @@ import org.kablink.teaming.domain.ShareItem;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.domain.ZoneConfig;
-import org.kablink.teaming.fi.connection.acl.AclResourceDriver;
 import org.kablink.teaming.license.LicenseManager;
 import org.kablink.teaming.module.authentication.AuthenticationModule;
 import org.kablink.teaming.module.binder.BinderModule;
-import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.shared.AccessUtils;
 import org.kablink.teaming.module.shared.SearchUtils;
+import org.kablink.teaming.runas.RunasCallback;
+import org.kablink.teaming.runas.RunasTemplate;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.security.AccessControlManager;
 import org.kablink.teaming.security.accesstoken.AccessToken;
@@ -606,11 +603,11 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
     	}
     }
     
-    private boolean testRightGrantedByDredgedAcl(User user, FolderEntry workArea, WorkAreaOperation workAreaOperation) {
+    private boolean testRightGrantedByDredgedAcl(User user, final FolderEntry workArea, final WorkAreaOperation workAreaOperation) {
     	// This entry has to get its ACL role from the file system
+    	final long zoneId = RequestContextHolder.getRequestContext().getZoneId();
     	if (user.equals(RequestContextHolder.getRequestContext().getUser())) {
     		//We can only do this for the current user
-	    	Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
 	    	Long roleId = AccessUtils.askExternalSystemForRoleId(workArea);
 	    	if (roleId != null) {
 		    	Function f = getFunctionManager().getFunction(zoneId, roleId);
@@ -621,6 +618,26 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
 		    		}
 		    	}
 	    	}
+    	} else {
+    		//Since the current user is not the same as the user being checked, we must do this in a "runas"
+			try {
+				boolean result = (boolean)RunasTemplate.runas(new RunasCallback() {
+					public Object doAs() {
+				    	Long roleId = AccessUtils.askExternalSystemForRoleId(workArea);
+				    	if (roleId != null) {
+					    	Function f = getFunctionManager().getFunction(zoneId, roleId);
+					    	for (WorkAreaOperation wao : (Set<WorkAreaOperation>)f.getOperations()) {
+					    		if (wao.equals(workAreaOperation)) {
+					    			//This function includes the desired operation.
+					    			return true;
+					    		}
+					    	}
+				    	}
+				    	return false;
+					}
+				}, zoneId, user.getId());
+				return result;
+			} catch (Exception ex) {}
     	}
     	return false;
     }
