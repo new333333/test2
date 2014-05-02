@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -84,7 +84,9 @@ public class RunAReportDlg extends DlgBox
 		// Event handlers implemented by this class.
 		AdministrationExitEvent.Handler
 {
-	public static final boolean	SHOW_JSP_ADMIN_REPORTS	= false;	// DRF:  Leave false on checkin.  Used to bring back the JSP versions for testing.
+	public static final boolean	SHOW_JSP_ADMIN_REPORTS	= false;	//! DRF (20140501):  Leave false on checkin.  Used to bring back the JSP versions for testing.
+	
+	private static final boolean SHOW_GWT_CHANGE_LOG	= false;	//! DRF (20140501):  Leave false on checkin until it's working.
 	
 	private GwtTeamingMessages			m_messages;					// Access to Vibe's messages.
 	private int							m_showX;					// The x and...
@@ -216,6 +218,14 @@ public class RunAReportDlg extends DlgBox
 	 *		- find.js
 	 */
 	private void buildChangeLogReport() {
+		if (SHOW_GWT_CHANGE_LOG) {
+			ChangeLogReportComposite clrc = new ChangeLogReportComposite();
+			m_reportScrollPanel.setWidget(clrc);
+			m_reportWidgets.put(AdminAction.REPORT_VIEW_CHANGELOG, clrc);
+			
+			return;
+		}
+		
 		GwtClientHelper.executeCommand(
 				new GetJspHtmlCmd(VibeJspHtmlType.ADMIN_REPORT_CHANGELOG),
 				new AsyncCallback<VibeRpcResponse>() {
@@ -234,19 +244,6 @@ public class RunAReportDlg extends DlgBox
 				buildAndSetHtmlContent(AdminAction.REPORT_VIEW_CHANGELOG, responseData.getHtml());
 			}
 		});
-		
-//!		...this needs to be implemented...
-		// Need to get this working in Vibe.  Currently, the find
-		// widget doesn't work.  Other than that, the report functions
-		// as it should (i.e., if you manually enter the binder and/or
-		// entry IDs.
-		
-//!		...this needs to be implemented...
-/*
-		ChangeLogReportComposite clrc = new ChangeLogReportComposite();
-		m_reportScrollPanel.setWidget(clrc);
-		m_reportWidgets.put(AdminAction.REPORT_VIEW_CHANGELOG, clrc);
-*/
 	}
 	
 	/*

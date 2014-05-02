@@ -3314,5 +3314,42 @@ public interface GwtTeamingMessages extends Messages
 	String PromptForExternalUsersEmailAddressDlg_Header();
 	String PromptForExternalUsersEmailAddressDlg_Hint();
 	String PromptForExternalUsersEmailAddressDlg_NoEmailAddressesEntered();
-	
+
+	// String used by the 'Change Log Report' composite.
+	String changeLogBinderId();
+	String changeLogDescription();
+	String changeLogEntityId();
+	String changeLogEntityType();
+	String changeLogEntityType_folder();
+	String changeLogEntityType_folderEntry();
+	String changeLogEntityType_group();
+	String changeLogEntityType_profiles();
+	String changeLogEntityType_select();
+	String changeLogEntityType_user();
+	String changeLogEntityType_workspace();
+	String changeLogFilterByOperation();
+	String changeLogFilter_addBinder();
+	String changeLogFilter_addEntry();
+	String changeLogFilter_addFile();
+	String changeLogFilter_addWorkflowResponse();
+	String changeLogFilter_deleteAccess();
+	String changeLogFilter_deleteBinder();
+	String changeLogFilter_deleteEntry();
+	String changeLogFilter_deleteFile();
+	String changeLogFilter_deleteVersion();
+	String changeLogFilter_modifyAccess();
+	String changeLogFilter_modifyBinder();
+	String changeLogFilter_modifyEntry();
+	String changeLogFilter_modifyFile();
+	String changeLogFilter_modifyWorkflowState();
+	String changeLogFilter_moveBinder();
+	String changeLogFilter_moveEntry();
+	String changeLogFilter_renameFile();
+	String changeLogFilter_showAll();
+	String changeLogFilter_startWorkflow();
+	String changeLogFindEntry();
+	String changeLogFindFolder();
+	String changeLogRunReport();
+	String changeLogSelectFolder();
+	String changeLogShowAllChanges();
 }// end GwtTeamingMessages
