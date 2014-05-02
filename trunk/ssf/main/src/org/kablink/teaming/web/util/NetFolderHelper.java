@@ -543,22 +543,12 @@ public class NetFolderHelper
 						if ( (serverUNC != null && serverUNC.equalsIgnoreCase( currentServerUNC ) == false) ||
 							 homeDirInfo.getPath().equalsIgnoreCase( netFolderBinder.getResourcePath() ) == false )
 						{
-							Set deleteAtts;
-							Map fileMap = null;
-							MapInputData mid;
-			   				Map formData = null;
-		
-							// Yes
-							deleteAtts = new HashSet();
-							fileMap = new HashMap();
-			   				formData = new HashMap();
-					   		formData.put( ObjectKeys.FIELD_BINDER_RESOURCE_DRIVER_NAME, rdConfig.getName() );
-					   		formData.put( ObjectKeys.FIELD_BINDER_RESOURCE_PATH, path );
-			   				mid = new MapInputData( formData );
-		
-			   				// Modify the existing net folder with the home directory information.
-				   			binderModule.modifyBinder( netFolderBinder.getId(), mid, fileMap, deleteAtts, null );
-				   			
+							// Update the folder's resource driver name and relative path.
+							folderModule.modifyNetFolder(
+													netFolderBinder.getId(),
+													rdConfig.getName(),
+													path );
+							
 				   			syncNeeded = false;
 						}
 					}
