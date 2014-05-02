@@ -740,6 +740,11 @@ public interface FolderModule {
      */
     public void indexFileContentForNetFolder(Folder netFolderRoot);
 
+    public void modifyNetFolder(
+    					Long folderId,
+    					String rootName,
+    					String path ) throws AccessControlException, WriteFilesException, WriteEntryDataException;
+    
 	public void modifyNetFolder(
 						Long folderId,
 						String netFolderName,
