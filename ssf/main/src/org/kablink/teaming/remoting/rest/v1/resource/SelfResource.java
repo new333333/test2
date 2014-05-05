@@ -501,7 +501,7 @@ public class SelfResource extends AbstractFileResource {
         }
         Date lastModified = getMyFilesLibraryModifiedDate(recursive, true);
         Date ifModifiedSince = getIfModifiedSinceDate(request);
-        if (ifModifiedSince!=null && !ifModifiedSince.before(lastModified)) {
+        if (ifModifiedSince!=null && lastModified!=null && !ifModifiedSince.before(lastModified)) {
             throw new NotModifiedException();
         }
         SearchResultList<FileProperties> resultList = _getMyFilesLibraryFiles(fileName, recursive, includeParentPaths, offset, maxCount);

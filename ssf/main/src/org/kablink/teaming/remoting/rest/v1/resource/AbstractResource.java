@@ -1868,7 +1868,7 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         Map resultMap = getBinderModule().searchFolderOneLevelWithInferredAccess(crit, Constants.SEARCH_MODE_NORMAL, offset, maxCount, binder, allowJits);
         SearchResultList<SearchableObject> results = new SearchResultList<SearchableObject>(offset, binder.getModificationDate());
         SearchResultBuilderUtil.buildSearchResults(results, new UniversalBuilder(descriptionFormat), resultMap, nextUrl, nextParams, offset);
-        if (modifiedSince!=null && !modifiedSince.before(results.getLastModified())) {
+        if (modifiedSince!=null && results.getLastModified()!=null && !modifiedSince.before(results.getLastModified())) {
             throw new NotModifiedException();
         }
         return results;
