@@ -253,7 +253,7 @@ public class ShareResource extends AbstractResource {
         List<Pair<ShareItem, DefinableEntity>> shareItems = getSharedByShareItems(userId, null);
         Date lastModified = getSharesLibraryModifiedDate(shareItems, false);
         Date ifModifiedSince = getIfModifiedSinceDate(request);
-        if (ifModifiedSince!=null && !ifModifiedSince.before(lastModified)) {
+        if (ifModifiedSince!=null && lastModified!=null && !ifModifiedSince.before(lastModified)) {
             throw new NotModifiedException();
         }
         SearchResultList<SearchableObject> results = new SearchResultList<SearchableObject>();
@@ -274,7 +274,7 @@ public class ShareResource extends AbstractResource {
         List<Pair<ShareItem, DefinableEntity>> shareItems = getSharedByShareItems(userId, null);
         Date lastModified = getSharesLibraryModifiedDate(shareItems, false);
         Date ifModifiedSince = getIfModifiedSinceDate(request);
-        if (ifModifiedSince!=null && !ifModifiedSince.before(lastModified)) {
+        if (ifModifiedSince!=null && lastModified!=null && !ifModifiedSince.before(lastModified)) {
             throw new NotModifiedException();
         }
         SearchResultList<SharedBinderBrief> results = new SearchResultList<SharedBinderBrief>();
@@ -308,7 +308,7 @@ public class ShareResource extends AbstractResource {
         List<Pair<ShareItem, DefinableEntity>> shareItems = getSharedByShareItems(userId, null);
         Date lastModified = getSharesLibraryModifiedDate(shareItems, recursive);
         Date ifModifiedSince = getIfModifiedSinceDate(request);
-        if (ifModifiedSince!=null && !ifModifiedSince.before(lastModified)) {
+        if (ifModifiedSince!=null && lastModified!=null && !ifModifiedSince.before(lastModified)) {
             throw new NotModifiedException();
         }
         SearchResultList<FileProperties> results = new SearchResultList<FileProperties>();
@@ -362,7 +362,7 @@ public class ShareResource extends AbstractResource {
         List<Pair<ShareItem, DefinableEntity>> shareItems = getSharedByShareItems(userId, null);
         Date lastModified = getSharesLibraryModifiedDate(shareItems, recursive);
         Date ifModifiedSince = getIfModifiedSinceDate(request);
-        if (ifModifiedSince!=null && !ifModifiedSince.before(lastModified)) {
+        if (ifModifiedSince!=null && lastModified!=null && !ifModifiedSince.before(lastModified)) {
             throw new NotModifiedException();
         }
         SearchResultList<FileProperties> results = new SearchResultList<FileProperties>();
@@ -466,7 +466,7 @@ public class ShareResource extends AbstractResource {
         List<Pair<ShareItem, DefinableEntity>> shareItems = getSharedWithShareItems(userId, null);
         Date lastModified = getSharesLibraryModifiedDate(shareItems, false);
         Date ifModifiedSince = getIfModifiedSinceDate(request);
-        if (ifModifiedSince!=null && !ifModifiedSince.before(lastModified)) {
+        if (ifModifiedSince!=null && lastModified!=null && !ifModifiedSince.before(lastModified)) {
             throw new NotModifiedException();
         }
         SearchResultList<SearchableObject> results = new SearchResultList<SearchableObject>();
@@ -487,7 +487,7 @@ public class ShareResource extends AbstractResource {
         List<Pair<ShareItem, DefinableEntity>> shareItems = getSharedWithShareItems(userId, null);
         Date lastModified = getSharesLibraryModifiedDate(shareItems, false);
         Date ifModifiedSince = getIfModifiedSinceDate(request);
-        if (ifModifiedSince!=null && !ifModifiedSince.before(lastModified)) {
+        if (ifModifiedSince!=null && lastModified!=null && !ifModifiedSince.before(lastModified)) {
             throw new NotModifiedException();
         }
         SearchResultList<SharedBinderBrief> results = new SearchResultList<SharedBinderBrief>();
@@ -545,7 +545,7 @@ public class ShareResource extends AbstractResource {
         List<Pair<ShareItem, DefinableEntity>> shareItems = getSharedWithShareItems(userId, null);
         Date lastModified = getSharesLibraryModifiedDate(shareItems, false);
         Date ifModifiedSince = getIfModifiedSinceDate(request);
-        if (ifModifiedSince!=null && !ifModifiedSince.before(lastModified)) {
+        if (ifModifiedSince!=null && lastModified!=null && !ifModifiedSince.before(lastModified)) {
             throw new NotModifiedException();
         }
         SearchResultList<FileProperties> results = new SearchResultList<FileProperties>();
@@ -576,7 +576,7 @@ public class ShareResource extends AbstractResource {
         List<Pair<ShareItem, DefinableEntity>> shareItems = getSharedWithShareItems(userId, null);
         Date lastModified = getSharesLibraryModifiedDate(shareItems, false);
         Date ifModifiedSince = getIfModifiedSinceDate(request);
-        if (ifModifiedSince!=null && !ifModifiedSince.before(lastModified)) {
+        if (ifModifiedSince!=null && lastModified!=null && !ifModifiedSince.before(lastModified)) {
             throw new NotModifiedException();
         }
         SearchResultList<FileProperties> results = new SearchResultList<FileProperties>();
@@ -706,7 +706,7 @@ public class ShareResource extends AbstractResource {
         List<Pair<ShareItem, DefinableEntity>> shareItems = getPublicShareItems(null);
         Date lastModified = getSharesLibraryModifiedDate(shareItems, false);
         Date ifModifiedSince = getIfModifiedSinceDate(request);
-        if (ifModifiedSince!=null && !ifModifiedSince.before(lastModified)) {
+        if (ifModifiedSince!=null && lastModified!=null && !ifModifiedSince.before(lastModified)) {
             throw new NotModifiedException();
         }
         SearchResultList<SearchableObject> results = new SearchResultList<SearchableObject>();
@@ -729,7 +729,7 @@ public class ShareResource extends AbstractResource {
         List<Pair<ShareItem, DefinableEntity>> shareItems = getPublicShareItems(null);
         Date lastModified = getSharesLibraryModifiedDate(shareItems, false);
         Date ifModifiedSince = getIfModifiedSinceDate(request);
-        if (ifModifiedSince!=null && !ifModifiedSince.before(lastModified)) {
+        if (ifModifiedSince!=null && lastModified!=null && !ifModifiedSince.before(lastModified)) {
             throw new NotModifiedException();
         }
         SearchResultList<SharedBinderBrief> results = new SearchResultList<SharedBinderBrief>();
@@ -767,7 +767,7 @@ public class ShareResource extends AbstractResource {
         List<Pair<ShareItem, DefinableEntity>> shareItems = getPublicShareItems(null);
         Date lastModified = getSharesLibraryModifiedDate(shareItems, false);
         Date ifModifiedSince = getIfModifiedSinceDate(request);
-        if (ifModifiedSince!=null && !ifModifiedSince.before(lastModified)) {
+        if (ifModifiedSince!=null && lastModified!=null && !ifModifiedSince.before(lastModified)) {
             throw new NotModifiedException();
         }
         SearchResultList<FileProperties> results = new SearchResultList<FileProperties>();
@@ -799,7 +799,7 @@ public class ShareResource extends AbstractResource {
         List<Pair<ShareItem, DefinableEntity>> shareItems = getPublicShareItems(null);
         Date lastModified = getSharesLibraryModifiedDate(shareItems, false);
         Date ifModifiedSince = getIfModifiedSinceDate(request);
-        if (ifModifiedSince!=null && !ifModifiedSince.before(lastModified)) {
+        if (ifModifiedSince!=null && lastModified!=null && !ifModifiedSince.before(lastModified)) {
             throw new NotModifiedException();
         }
         SearchResultList<FileProperties> results = new SearchResultList<FileProperties>();
