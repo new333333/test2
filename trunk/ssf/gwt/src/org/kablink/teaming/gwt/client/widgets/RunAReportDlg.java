@@ -84,15 +84,13 @@ public class RunAReportDlg extends DlgBox
 		// Event handlers implemented by this class.
 		AdministrationExitEvent.Handler
 {
-	public static final boolean	SHOW_JSP_ADMIN_REPORTS	= false;	//! DRF (20140501):  Leave false on checkin.  Used to bring back the JSP versions for testing.
-	
-	private static final boolean SHOW_GWT_CHANGE_LOG	= false;	//! DRF (20140501):  Leave false on checkin until it's working.
+	public static final boolean	SHOW_JSP_ADMIN_REPORTS	= false;	//! DRF (20121130):  Leave false on checkin.  Used to bring back the JSP versions for testing.
 	
 	private GwtTeamingMessages			m_messages;					// Access to Vibe's messages.
 	private int							m_showX;					// The x and...
-	private int							m_showY;					// ...y position and...
+	private int							m_showY;					// ...y position to show the dialog.
 	private List<HandlerRegistration>	m_registeredEventHandlers;	// Event handlers that are currently registered.
-	private Map<AdminAction, Widget>	m_reportWidgets;			// Map of report widgets, as they get created.
+	private Map<AdminAction, Widget>	m_reportWidgets;			// Map of the report widgets, as they get created.
 	private ReportsInfoRpcResponseData	m_reportsInfo;				// Information about the available reports obtained via a GWT RPC request to the server.
 	private ScrollPanel					m_reportScrollPanel;		// The scroll panel that holds the the report's contents.
 	private VibeFlowPanel				m_rootPanel;				// The panel that holds the dialog's contents.
@@ -173,7 +171,7 @@ public class RunAReportDlg extends DlgBox
 			modal,
 			x, y, cx, cy,
 			DlgButtonMode.Close,
-			false );
+			false);	// false -> Don't use overflow auto on the content.
 
 		// ...store the parameters...
 		m_showX = x;
@@ -209,41 +207,13 @@ public class RunAReportDlg extends DlgBox
 	}
 	
 	/*
-	 * Reads the change log report HTML from the server and stores it
-	 * in the report panel.
-	 * 
-	 * JSP/JavaScript files used:
-	 * - changeLog.jap
-	 * 		- single.jsp (via a find tag)
-	 *		- find.js
+	 * Constructs a widget for running a change log report and stores
+	 * it in the report panel.
 	 */
 	private void buildChangeLogReport() {
-		if (SHOW_GWT_CHANGE_LOG) {
-			ChangeLogReportComposite clrc = new ChangeLogReportComposite();
-			m_reportScrollPanel.setWidget(clrc);
-			m_reportWidgets.put(AdminAction.REPORT_VIEW_CHANGELOG, clrc);
-			
-			return;
-		}
-		
-		GwtClientHelper.executeCommand(
-				new GetJspHtmlCmd(VibeJspHtmlType.ADMIN_REPORT_CHANGELOG),
-				new AsyncCallback<VibeRpcResponse>() {
-			@Override
-			public void onFailure(Throwable t) {
-				GwtClientHelper.handleGwtRPCFailure(
-					t,
-					m_messages.rpcFailure_GetChangeLogsHtml());
-			}
-			
-			@Override
-			public void onSuccess(VibeRpcResponse response) {
-				// Display the change log report HTML in the report's
-				// content panel.
-				JspHtmlRpcResponseData responseData = ((JspHtmlRpcResponseData) response.getResponseData());
-				buildAndSetHtmlContent(AdminAction.REPORT_VIEW_CHANGELOG, responseData.getHtml());
-			}
-		});
+		ChangeLogReportComposite clrc = new ChangeLogReportComposite();
+		m_reportScrollPanel.setWidget(clrc);
+		m_reportWidgets.put(AdminAction.REPORT_VIEW_CHANGELOG, clrc);
 	}
 	
 	/*
@@ -523,16 +493,15 @@ public class RunAReportDlg extends DlgBox
 			}
 		});
 
-		HorizontalPanel hPanel;
-		Label warningLabel;
-		
-		hPanel = new HorizontalPanel();
-		hPanel.setVerticalAlignment( HasVerticalAlignment.ALIGN_MIDDLE );
-		hPanel.setSpacing( 6 );
+		// Add a message about reports possibly being truncated if
+		// they're too large.
+		HorizontalPanel hPanel = new HorizontalPanel();
+		hPanel.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
+		hPanel.setSpacing(6);
 		hPanel.addStyleName("vibe-runAReportDlg-reportMaxSizePanel");
-		warningLabel = new Label( m_messages.runAReportDlgMaxSize() );
-		hPanel.add( warningLabel );
-		m_rootPanel.add( hPanel );
+		Label warningLabel = new Label(m_messages.runAReportDlgMaxSize());
+		hPanel.add(warningLabel);
+		m_rootPanel.add(hPanel);
 
 		// Create the panels to hold the selected report.
 		m_reportScrollPanel = new ScrollPanel();
@@ -567,17 +536,17 @@ public class RunAReportDlg extends DlgBox
 	}
 
 	/**
+	 * Returns a HelpData object for the dialog's help.
 	 * 
+	 * Overrides the DlgBox.getHelpData() method.
+	 * 
+	 * @return
 	 */
 	@Override
-	public HelpData getHelpData()
-	{
-		HelpData helpData;
-		
-		helpData = new HelpData();
-		helpData.setGuideName( HelpData.ADMIN_GUIDE );
-		helpData.setPageId( "reports_generate" );
-		
+	public HelpData getHelpData() {
+		HelpData helpData = new HelpData();
+		helpData.setGuideName(HelpData.ADMIN_GUIDE);
+		helpData.setPageId("reports_generate");
 		return helpData;
 	}
 

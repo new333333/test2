@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -62,7 +62,6 @@ import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.KeyDownHandler;
-import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.dom.client.KeyUpHandler;
@@ -1005,16 +1004,21 @@ public class FindCtrl extends Composite
 	/**
 	 * Allow the user to specify the scope of the search
 	 */
-	public void enableScope( String binderId )
+	public void enableScope( String binderId, boolean scopePanelVisible )
 	{
 		if ( m_searchCriteria.getSearchScope() == SearchScope.SEARCH_LOCAL )
 			m_searchBinderRb.setValue( true );
 		else
 			m_searchSiteRb.setValue( true );
 		
-		m_scopePanel.setVisible( true );
+		m_scopePanel.setVisible( scopePanelVisible );
 		m_searchCriteria.setBinderId( binderId );
 		m_searchCriteria.setSearchSubfolders( true );
+	}
+	
+	public void enableScope( String binderId )
+	{
+		enableScope( binderId, true );
 	}
 	
 	

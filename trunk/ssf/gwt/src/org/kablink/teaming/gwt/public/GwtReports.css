@@ -124,8 +124,10 @@
 		.vibe-changeLogReportComposite-binderFind     {}
 		.vibe-changeLogReportComposite-entityFind     {}
 		.vibe-changeLogReportComposite-entityTypeList {background-color: white;}
-		.vibe-changeLogReportComposite-filterList     {background-color: white;}
 		.vibe-changeLogReportComposite-label          {font-size: 13px;}
+		.vibe-changeLogReportComposite-operationList  {background-color: white;}
+		.vibe-changeLogReportComposite-reportPanel    {width: 99%; display: block; border: 1px solid #ccc; -moz-border-radius: 3px; border-radius: 3px; -webkit-border-radius: 3px; margin-top: 10px;}
+		.vibe-changeLogReportComposite-reportTable    {border: 0 none; width: 100%;}
 		.vibe-changeLogReportComposite-widgetsPanel   {margin-top: 15px !important;}
 	/* End:  Change modification log report composite styles. */
 /* End:  GWT reports styles. */
