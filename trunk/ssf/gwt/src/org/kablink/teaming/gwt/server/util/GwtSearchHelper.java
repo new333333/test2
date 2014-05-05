@@ -474,36 +474,42 @@ public class GwtSearchHelper
 								
 								group = groupPrincipals.first();
 								
-								// Does this group come from ldap?
 								identityInfo = group.getIdentityInfo();
-								if ( identityInfo != null && identityInfo.isFromLdap() )
+								if ( identityInfo != null  )
 								{
-									// Yes
 									// Are we suppose to include groups from ldap?
-									if ( searchCriteria.getSearchForLdapGroups() == true )
+									if ( searchCriteria.getSearchForLdapGroups() == false )
 									{
-										Description desc;
-										
-										// Yes
-										// Create a GwtGroup item for this group.
-										gwtGroup = new GwtGroup();
-										
-										if ( group instanceof UserPrincipal )
-											gwtGroup.setInternal( identityInfo.isInternal() );
-										
-										gwtGroup.setId( id );
-										gwtGroup.setName( group.getName() );
-										gwtGroup.setTitle( group.getTitle() );
-										gwtGroup.setDn( group.getForeignName() );
-										desc = group.getDescription();
-										if ( desc != null )
-											gwtGroup.setDesc( desc.getText() );
-										gwtGroup.setGroupType( GwtServerHelper.getGroupType( group ) );
-										
-										results.add( gwtGroup );
+										// No
+										// Is this group from ldap?
+										if ( identityInfo.isFromLdap() == true )
+											useGroup = false;
 									}
-									else
-										--searchHits;
+								}
+								else
+									useGroup = false;
+								
+								if ( useGroup )
+								{
+									Description desc;
+									
+									// Yes
+									// Create a GwtGroup item for this group.
+									gwtGroup = new GwtGroup();
+									
+									if ( group instanceof UserPrincipal )
+										gwtGroup.setInternal( identityInfo.isInternal() );
+									
+									gwtGroup.setId( id );
+									gwtGroup.setName( group.getName() );
+									gwtGroup.setTitle( group.getTitle() );
+									gwtGroup.setDn( group.getForeignName() );
+									desc = group.getDescription();
+									if ( desc != null )
+										gwtGroup.setDesc( desc.getText() );
+									gwtGroup.setGroupType( GwtServerHelper.getGroupType( group ) );
+									
+									results.add( gwtGroup );
 								}
 								else
 								{
