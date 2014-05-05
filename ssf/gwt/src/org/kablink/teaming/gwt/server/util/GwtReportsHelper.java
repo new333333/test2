@@ -60,9 +60,13 @@ import org.dom4j.Node;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.kablink.teaming.calendar.TimeZoneHelper;
+import org.kablink.teaming.domain.ChangeLog;
+import org.kablink.teaming.domain.EntityIdentifier;
+import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.domain.LicenseStats;
 import org.kablink.teaming.gwt.client.GwtTeamingException;
 import org.kablink.teaming.gwt.client.admin.AdminAction;
+import org.kablink.teaming.gwt.client.rpc.shared.ChangeLogReportRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.CreateEmailReportCmd.EmailType;
 import org.kablink.teaming.gwt.client.rpc.shared.EmailReportRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.EmailReportRpcResponseData.EmailItem;
@@ -146,6 +150,71 @@ public class GwtReportsHelper {
 		// Nothing to do.
 	}
 
+	/**
+	 * Creates a change log report and returns the data via a
+	 * ChangeLogReportRpcResponseData object.
+	 * 
+	 * @param bs
+	 * @param request
+	 * @param binderId
+	 * @param entityId
+	 * @param entityType
+	 * @param operation
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public static ChangeLogReportRpcResponseData createChangeLogReport(AllModulesInjected bs, HttpServletRequest request, Long binderId, Long entityId, String entityType, String operation) throws GwtTeamingException {
+		try {
+			// Allocate a ChangeLogReportRpcResponseData we can collect
+			// change logs in.
+			ChangeLogReportRpcResponseData reply = new ChangeLogReportRpcResponseData();
+
+			// What changes are being asked for?
+			AdminModule am = bs.getAdminModule();
+			List<ChangeLog>	changes = null;
+			if ((null != binderId) && (null == entityId)) {
+				// Changes for a binder!
+				changes = am.getChanges(binderId, operation);
+			}
+			
+			else if (null != entityId) {
+				// Changes for an entity!
+				if (!(MiscUtil.hasString(entityType))) {
+					entityType = EntityType.folderEntry.name();
+				}
+				EntityIdentifier entityIdentifier = new EntityIdentifier(entityId, EntityType.valueOf(entityType));
+				if (null != entityIdentifier) {
+					changes = am.getChanges(entityIdentifier, operation);
+				}
+			}
+
+			// Do we have any changes to return?
+			if (MiscUtil.hasItems(changes)) {
+				// Yes!  Scan them...
+				for (ChangeLog change:  changes) {
+					// ...adding their XML to the change log response.
+					reply.addChangeLog(change.getXmlNoHeader());
+				}
+			}
+			
+			// If we get here, reply refers to the
+			// ChangeLogReportRpcResponseData object containing the
+			// results of the report.  Return it.
+			return reply;
+		}
+		
+		catch (Exception ex) {
+			// Convert the exception to a GwtTeamingException and throw
+			// that.
+			if ((!(GwtLogHelper.isDebugEnabled())) && GwtLogHelper.isDebugEnabled(m_logger)) {
+			     GwtLogHelper.debug(m_logger, "GwtReportsHelper.createChangeLogReport( SOURCE EXCEPTION ):  ", ex);
+			}
+			throw GwtLogHelper.getGwtClientException(ex);
+		}		
+	}
+	
 	/**
 	 * Creates an email report and returns the results via an
 	 * EmailResportRpcResponseData object.

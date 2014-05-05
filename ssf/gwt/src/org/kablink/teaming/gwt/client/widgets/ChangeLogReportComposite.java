@@ -32,6 +32,8 @@
  */
 package org.kablink.teaming.gwt.client.widgets;
 
+import java.util.List;
+
 import org.kablink.teaming.gwt.client.GwtFolder;
 import org.kablink.teaming.gwt.client.GwtFolderEntry;
 import org.kablink.teaming.gwt.client.GwtGroup;
@@ -41,25 +43,30 @@ import org.kablink.teaming.gwt.client.GwtTeamingItem;
 import org.kablink.teaming.gwt.client.GwtUser;
 import org.kablink.teaming.gwt.client.event.SearchFindResultsEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
+import org.kablink.teaming.gwt.client.rpc.shared.ChangeLogReportRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.CreateChangeLogReportCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.FindCtrl.FindCtrlClient;
 
-import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.event.dom.client.KeyPressHandler;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.ListBox;
+import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
- * Composite that runs a change log report.
+ * Composite that runs the change log report.
  * 
  * @author drfoster@novell.com
  */
@@ -68,14 +75,21 @@ public class ChangeLogReportComposite extends ReportCompositeBase
 		// Event handlers implemented by this class.
 		SearchFindResultsEvent.Handler
 {
-	private FindCtrl	m_binderFinder;			// The FindCtrl to select the binder to report on.
-	private FindCtrl	m_entityFinder;			// The FindCtrl to select the entity to report on.
-	private InlineLabel	m_binderFinderLabel;	// The label on the binder FindCtrl.
-	private InlineLabel	m_entityFinderLabel;	// The label on the entity FindCtrl.
-	private ListBox		m_entityTypeLB;			// The <SELECT> for the entity type.
-	private ListBox		m_filterLB;				// The <SELECT> for the filter.
-	private TextBox		m_binderIdTB;			// The <INPUT>  for the binder ID.
-	private TextBox		m_entityIdTB;			// The <INPUT>  for the entity ID.
+	private FindCtrl		m_binderFinder;			// The FindCtrl to select the binder to report on.
+	private FindCtrl		m_entityFinder;			// The FindCtrl to select the entity to report on.
+	private InlineLabel		m_binderFinderLabel;	// The label on the binder FindCtrl.
+	private InlineLabel		m_entityFinderLabel;	// The label on the entity FindCtrl.
+	private List<String>	m_changes;				// List<String> of the changes read from the server.
+	private ListBox			m_entityTypeLB;			// The <SELECT> for the entity type.
+	private ListBox			m_operationLB;			// The <SELECT> for the operation.
+	private TextArea		m_reportTable;			// The <TextArea> containing the generated report.
+	private TextBox			m_binderIdTB;			// The <INPUT>  for the binder ID.
+	private TextBox			m_entityIdTB;			// The <INPUT>  for the entity ID.
+	private VibeFlowPanel	m_reportPanel;			// The <DIV> containing m_reportTable.
+
+	private static final int MAX_ID_LENGTH			=  8;	// Maximum number of characters that can be typed into an ID entry field.
+	private static final int VISIBLE_ID_LENGTH		=  5;	// Number of characters visible in an ID entry field.
+	private static final int VISIBLE_REPORT_LINES	= 25;	// Number of lines that are visible in the report table.
 	
 	// The following defines the TeamingEvents that are handled by
 	// this class.  See EventHelper.registerEventHandlers() for how
@@ -120,7 +134,7 @@ public class ChangeLogReportComposite extends ReportCompositeBase
 		fp.add(ft);
 
 		// ...add the selector for the folder or workspace...
-		m_binderFinderLabel = buildInlineLabel(m_messages.changeLogFindFolder(), "vibe-changeLogReportComposite-label");
+		m_binderFinderLabel = buildInlineLabel(m_messages.changeLogFindBinder(), "vibe-changeLogReportComposite-label");
 		ft.setWidget(0, 0, m_binderFinderLabel);
 		
 		FindCtrl.createAsync(m_binderFinderLabel, SearchType.PLACES, new FindCtrlClient() {			
@@ -160,25 +174,25 @@ public class ChangeLogReportComposite extends ReportCompositeBase
 		m_binderIdTB.addChangeHandler(new ChangeHandler() {
 			@Override
 			public void onChange(ChangeEvent event) {
-				String id = m_binderIdTB.getText();
-				if (null != id) {
-					id = id.trim();
-					if (0 == id.length()) {
-						id = null;
+				String idS = m_binderIdTB.getText();
+				if (null != idS) {
+					idS = idS.trim();
+					if (0 == idS.length()) {
+						idS = null;
 					}
 				}
-				m_entityFinder.enableScope(id);
+				m_entityFinder.enableScope(idS, false);	// false -> Even if scope is enabled, don't show the scope select widgets.
 			}
 		});
-		m_binderIdTB.setVisibleLength(5);
-		m_binderIdTB.setMaxLength(8);
+		m_binderIdTB.setVisibleLength(VISIBLE_ID_LENGTH);
+		m_binderIdTB.setMaxLength(MAX_ID_LENGTH);
 		ft.setWidget(1, 1, m_binderIdTB);
 		
-		// ...add the selector for the entry...
-		m_entityFinderLabel = buildInlineLabel(m_messages.changeLogFindEntry(), "vibe-changeLogReportComposite-label");
+		// ...add the selector for the entity...
+		m_entityFinderLabel = buildInlineLabel(m_messages.changeLogFindEntity(), "vibe-changeLogReportComposite-label");
 		ft.setWidget(2, 0, m_entityFinderLabel);
 		
-		FindCtrl.createAsync(m_entityFinderLabel, SearchType.PLACES, new FindCtrlClient() {			
+		FindCtrl.createAsync(m_entityFinderLabel, SearchType.ENTRIES, new FindCtrlClient() {			
 			@Override
 			public void onUnavailable() {
 				// Nothing to do.  Error handled in asynchronous
@@ -198,7 +212,6 @@ public class ChangeLogReportComposite extends ReportCompositeBase
 				FocusWidget fw = m_entityFinder.getFocusWidget();
 				if ((null != fw) && (fw instanceof TextBox)) {
 					fw.addStyleName("vibe-changeLogReportComposite-entityFind");
-					fw.setEnabled(false);	// Disabled until we have a type to search.
 				}
 				
 				// ...and add it to the layout table.
@@ -213,8 +226,8 @@ public class ChangeLogReportComposite extends ReportCompositeBase
 		m_entityIdTB = new TextBox();
 		m_entityIdTB.addStyleName("vibe-reportCompositeBase-textEntry");
 		m_entityIdTB.addKeyPressHandler(this);
-		m_entityIdTB.setVisibleLength(5);
-		m_entityIdTB.setMaxLength(8);
+		m_entityIdTB.setVisibleLength(VISIBLE_ID_LENGTH);
+		m_entityIdTB.setMaxLength(MAX_ID_LENGTH);
 		ft.setWidget(3, 1, m_entityIdTB);
 		
 		// ...add the selector field for the entity type...
@@ -224,35 +237,21 @@ public class ChangeLogReportComposite extends ReportCompositeBase
 		m_entityTypeLB = new ListBox();
 		m_entityTypeLB.addStyleName("vibe-changeLogReportComposite-entityTypeList");
 		ft.setWidget(5, 1, m_entityTypeLB);
-		m_entityTypeLB.addItem(m_messages.changeLogEntityType_select(),      ""           );
 		m_entityTypeLB.addItem(m_messages.changeLogEntityType_folderEntry(), "folderEntry");
 		m_entityTypeLB.addItem(m_messages.changeLogEntityType_user(),        "user"       );
 		m_entityTypeLB.addItem(m_messages.changeLogEntityType_group(),       "group"      );
 		m_entityTypeLB.addItem(m_messages.changeLogEntityType_folder(),      "folder"     );
 		m_entityTypeLB.addItem(m_messages.changeLogEntityType_workspace(),   "workspace"  );
-		m_entityTypeLB.addItem(m_messages.changeLogEntityType_profiles(),    "profiles"   );
+//		m_entityTypeLB.addItem(m_messages.changeLogEntityType_profiles(),    "profiles"   );	// Not sure what this was in the JSP.  I don't see the need for it.
 		m_entityTypeLB.setSelectedIndex(0);
 		m_entityTypeLB.addChangeHandler(new ChangeHandler() {
 			@Override
 			public void onChange(ChangeEvent event) {
-				// If the user has somehow selected the select an
-				// entity type option...
+				// Set the FindCtrl to search for the selected type of
+				// entity.
 				int		si   = m_entityTypeLB.getSelectedIndex();
 				String	type = m_entityTypeLB.getValue(si);
-				if (0 == type.length()) {
-					// ...ignore it.
-					return;
-				}
-
-				// ...and if the first item in the <SELECT> is the
-				// ...select an entity type option... 
-				if ((0 < si) && (0 == m_entityTypeLB.getValue(0).length())) {
-					// ...remove it...
-					m_entityTypeLB.removeItem(0);
-				}
-
-				// ...and set the FindCtrl to search for the selected
-				// ...type.
+				
 				SearchType st;
 				if      (type.equals("folderEntry")) st = SearchType.ENTRIES;
 				else if (type.equals("user"))        st = SearchType.USER;
@@ -260,65 +259,38 @@ public class ChangeLogReportComposite extends ReportCompositeBase
 				else if (type.equals("folder"))      st = SearchType.FOLDERS;
 				else if (type.equals("workspace"))   st = SearchType.FOLDERS;
 				else if (type.equals("profiles"))    st = SearchType.PERSON;
-				else                                 st = null;
-				boolean enable = (null != st);
-				if (enable) {
-					m_entityFinder.setSearchType(st);
-				}
-				FocusWidget fw = m_entityFinder.getFocusWidget();
-				if ((null != fw) && (fw instanceof TextBox)) {
-					fw.setEnabled(enable);
-				}
+				else                                 st = SearchType.ENTRIES;
+				m_entityFinder.setSearchType(st);
 			}
 		});
 		
 		
-		// ...add the selector field for the filter...
-		il = buildInlineLabel(m_messages.changeLogFilterByOperation(), "vibe-changeLogReportComposite-label");
+		// ...add the selector field for the operation...
+		il = buildInlineLabel(m_messages.changeLogOperation(), "vibe-changeLogReportComposite-label");
 		ft.setWidget(6, 0, il);
 		
-		m_filterLB = new ListBox();
-		m_filterLB.addStyleName("vibe-changeLogReportComposite-filterList");
-		ft.setWidget(7, 0, m_filterLB);
-		m_filterLB.addItem(m_messages.changeLogFilter_showAll(),             ""                   );
-		m_filterLB.addItem(m_messages.changeLogFilter_addEntry(),            "addEntry"           );
-		m_filterLB.addItem(m_messages.changeLogFilter_modifyEntry(),         "modifyEntry"        );
-		m_filterLB.addItem(m_messages.changeLogFilter_deleteEntry(),         "deletetEntry"       );
-		m_filterLB.addItem(m_messages.changeLogFilter_startWorkflow(),       "startWorkflow"      );
-		m_filterLB.addItem(m_messages.changeLogFilter_modifyWorkflowState(), "modifyWorkflowState");
-		m_filterLB.addItem(m_messages.changeLogFilter_addWorkflowResponse(), "addWorkflowResponse");
-		m_filterLB.addItem(m_messages.changeLogFilter_moveEntry(),           "moveEntry"          );
-		m_filterLB.addItem(m_messages.changeLogFilter_addFile(),             "addFile"            );
-		m_filterLB.addItem(m_messages.changeLogFilter_modifyFile(),          "modifyFile"         );
-		m_filterLB.addItem(m_messages.changeLogFilter_deleteFile(),          "deleteFile"         );
-		m_filterLB.addItem(m_messages.changeLogFilter_deleteVersion(),       "deleteVersion"      );
-		m_filterLB.addItem(m_messages.changeLogFilter_renameFile(),          "renameFile"         );
-		m_filterLB.addItem(m_messages.changeLogFilter_addBinder(),           "addBinder"          );
-		m_filterLB.addItem(m_messages.changeLogFilter_modifyBinder(),        "modifyBinder"       );
-		m_filterLB.addItem(m_messages.changeLogFilter_deleteBinder(),        "deleteBinder"       );
-		m_filterLB.addItem(m_messages.changeLogFilter_moveBinder(),          "moveBinder"         );
-		m_filterLB.addItem(m_messages.changeLogFilter_modifyAccess(),        "modifyAccess"       );
-		m_filterLB.addItem(m_messages.changeLogFilter_deleteAccess(),        "deleteAccess"       );
-		m_filterLB.addChangeHandler(new ChangeHandler() {
-			@Override
-			public void onChange(ChangeEvent event) {
-				// If the user has somehow selected the show all
-				// changes option...
-				int		si     = m_filterLB.getSelectedIndex();
-				String	filter = m_filterLB.getValue(si);
-				if (0 == filter.length()) {
-					// ...ignore it.
-					return;
-				}
-
-				// ...and if the first item in the <SELECT> is the
-				// ...show all changes option... 
-				if ((0 < si) && (0 == m_filterLB.getValue(0).length())) {
-					// ...remove it...
-					m_filterLB.removeItem(0);
-				}
-			}
-		});
+		m_operationLB = new ListBox();
+		m_operationLB.addStyleName("vibe-changeLogReportComposite-operationList");
+		ft.setWidget(7, 0, m_operationLB);
+		m_operationLB.addItem(m_messages.changeLogOperation_showAll(),             ""                   );
+		m_operationLB.addItem(m_messages.changeLogOperation_addEntry(),            "addEntry"           );
+		m_operationLB.addItem(m_messages.changeLogOperation_modifyEntry(),         "modifyEntry"        );
+		m_operationLB.addItem(m_messages.changeLogOperation_deleteEntry(),         "deletetEntry"       );
+		m_operationLB.addItem(m_messages.changeLogOperation_startWorkflow(),       "startWorkflow"      );
+		m_operationLB.addItem(m_messages.changeLogOperation_modifyWorkflowState(), "modifyWorkflowState");
+		m_operationLB.addItem(m_messages.changeLogOperation_addWorkflowResponse(), "addWorkflowResponse");
+		m_operationLB.addItem(m_messages.changeLogOperation_moveEntry(),           "moveEntry"          );
+		m_operationLB.addItem(m_messages.changeLogOperation_addFile(),             "addFile"            );
+		m_operationLB.addItem(m_messages.changeLogOperation_modifyFile(),          "modifyFile"         );
+		m_operationLB.addItem(m_messages.changeLogOperation_deleteFile(),          "deleteFile"         );
+		m_operationLB.addItem(m_messages.changeLogOperation_deleteVersion(),       "deleteVersion"      );
+		m_operationLB.addItem(m_messages.changeLogOperation_renameFile(),          "renameFile"         );
+		m_operationLB.addItem(m_messages.changeLogOperation_addBinder(),           "addBinder"          );
+		m_operationLB.addItem(m_messages.changeLogOperation_modifyBinder(),        "modifyBinder"       );
+		m_operationLB.addItem(m_messages.changeLogOperation_deleteBinder(),        "deleteBinder"       );
+		m_operationLB.addItem(m_messages.changeLogOperation_moveBinder(),          "moveBinder"         );
+		m_operationLB.addItem(m_messages.changeLogOperation_modifyAccess(),        "modifyAccess"       );
+		m_operationLB.addItem(m_messages.changeLogOperation_deleteAccess(),        "deleteAccess"       );
 		
 		// ...add the 'Run Report' push button...
 		Button runReportBtn = new Button(m_messages.changeLogRunReport());
@@ -330,14 +302,25 @@ public class ChangeLogReportComposite extends ReportCompositeBase
 			}
 		});
 		fp.add(runReportBtn);
+		
+		// ...add the panel containing the output of the report...
+		m_reportPanel = new VibeFlowPanel();
+		m_reportPanel.addStyleName("vibe-changeLogReportComposite-reportPanel");
+		m_reportPanel.setVisible(false);	// Initially hidden, shown once a report is created.
+		m_rootContent.add(m_reportPanel);
+		
+		// ...and create the TextArea to hold the report.
+		m_reportTable = new TextArea();
+		m_reportTable.addStyleName("vibe-changeLogReportComposite-reportTable");
+		m_reportTable.setVisibleLines(VISIBLE_REPORT_LINES);
+		m_reportPanel.add(m_reportTable);
 	}
 	
 	/*
 	 * Creates a report and downloads it.
 	 */
 	private void createReport() {
-//!		...this needs to be implemented...
-		GwtClientHelper.deferredAlert("ChangeLogReportComposite.createReport():  ...this needs to be implemented...");
+		getReportDataAsync();
 	}
 
 	/*
@@ -354,6 +337,21 @@ public class ChangeLogReportComposite extends ReportCompositeBase
 		else                                          reply = null;
 		return reply;
 	}
+
+	/*
+	 * Returns a Long from a numeric value contained in a TextBox.
+	 */
+	private static Long getLFromTB(TextBox tb) {
+		String value = tb.getValue();
+		if (null == value)
+		     value = "";
+		else value = value.trim();
+		Long reply;
+		if (0 == value.length())
+			 reply = null;
+		else reply = Long.parseLong(value);
+		return reply;
+	}
 	
 	/**
 	 * Returns a TeamingEvents[] of the events to be registered for the
@@ -366,6 +364,72 @@ public class ChangeLogReportComposite extends ReportCompositeBase
 	@Override
 	public TeamingEvents[] getRegisteredEvents() {
 		return REGISTERED_EVENTS;
+	}
+	
+	/*
+	 * Asynchronously retrieves the change log report for the
+	 * selections.
+	 */
+	private void getReportDataAsync() {
+		GwtClientHelper.deferCommand(
+			new ScheduledCommand() {
+				@Override
+				public void execute() {
+					getReportDataNow();
+				}
+			});
+	}
+	
+	/*
+	 * Synchronously retrieves the change log report for the
+	 * selections.
+	 */
+	private void getReportDataNow() {
+		// Get and validate the values from the report widgets...
+		Long binderId = getLFromTB(m_binderIdTB);
+		Long entityId = getLFromTB(m_entityIdTB);
+		if ((null == binderId) && (null == entityId)) {
+			GwtClientHelper.deferredAlert(m_messages.changeLogError_NoIds());
+			return;
+		}
+		String entityType = getSFromLB(m_entityTypeLB);
+		if ((null != entityId) && (!(GwtClientHelper.hasString(entityType)))) {
+			entityType = "folderEntry";
+		}
+		
+		// ...create the report...
+		m_busySpinner.center();
+		GwtClientHelper.executeCommand(
+				new CreateChangeLogReportCmd(binderId, entityId, entityType, getSFromLB(m_operationLB)),
+				new AsyncCallback<VibeRpcResponse>() {
+			@Override
+			public void onFailure(Throwable t) {
+				GwtClientHelper.handleGwtRPCFailure(
+					t,
+					m_messages.rpcFailure_CreateChangeLogReport());
+				m_busySpinner.hide();
+			}
+			
+			@Override
+			public void onSuccess(VibeRpcResponse response) {
+				// ...and display the results.
+				ChangeLogReportRpcResponseData responseData = ((ChangeLogReportRpcResponseData) response.getResponseData());
+				m_changes = responseData.getChangeLogs();
+				populateReportResultsAsync();
+			}
+		});
+	}
+	
+	/*
+	 * Returns a String value from a ListBox.
+	 */
+	private static String getSFromLB(ListBox lb) {
+		int i = lb.getSelectedIndex();
+		String reply = null;
+		if (0 <= i) {
+			reply = lb.getValue(i);
+		}
+		return reply;
 	}
 	
 	/**
@@ -408,7 +472,7 @@ public class ChangeLogReportComposite extends ReportCompositeBase
 		if (findLabel.equals(m_binderFinderLabel)) {
 			// Process the find results.
 			GwtClientHelper.deferCommand(
-				new Scheduler.ScheduledCommand() {
+				new ScheduledCommand() {
 					@Override
 					public void execute() {
 						// Hide the search results...
@@ -418,7 +482,7 @@ public class ChangeLogReportComposite extends ReportCompositeBase
 							// ...the corresponding ID entry widget.
 							m_binderIdTB.setText(idS);
 						}
-						m_entityFinder.enableScope(idS);
+						m_entityFinder.enableScope(idS, false);	// false -> Although scope is enabled, don't show the scope select widgets.
 					}
 				});
 		}
@@ -426,7 +490,7 @@ public class ChangeLogReportComposite extends ReportCompositeBase
 		else if (findLabel.equals(m_entityFinderLabel)) {
 			// Process the find results.
 			GwtClientHelper.deferCommand(
-				new Scheduler.ScheduledCommand() {
+				new ScheduledCommand() {
 					@Override
 					public void execute() {
 						// Hide the search results...
@@ -441,6 +505,41 @@ public class ChangeLogReportComposite extends ReportCompositeBase
 		}
 	}
 	
+	/*
+	 * Asynchronously populates the results of a report.
+	 */
+	private void populateReportResultsAsync() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
+			@Override
+			public void execute() {
+				populateReportResultsNow();
+			}
+		});
+	}
+	
+	/*
+	 * Synchronously populates the results of a report.
+	 */
+	private void populateReportResultsNow() {
+		// Reset the report table...
+		resetReportTable(true);	// true -> Show the report panel.
+
+		// ...and display the report.
+		StringBuffer sb = new StringBuffer();
+		if (GwtClientHelper.hasItems(m_changes)) {
+			for (String change:  m_changes) {
+				sb.append(change);
+			}
+		}
+		else {
+			sb.append(m_messages.changeLogWarning_NoChanges());
+		}
+		m_reportTable.setValue(sb.toString());
+		
+		// Finally, hide any busy spinner that may be showing.
+		m_busySpinner.hide();
+	}
+
 	/**
 	 * Resets the reports content.
 	 * 
@@ -448,6 +547,17 @@ public class ChangeLogReportComposite extends ReportCompositeBase
 	 */
 	@Override
 	public void resetReport() {
-//!		...this needs to be implemented...
+		resetReportTable(false);
+	}
+	
+	/*
+	 * Resets the table holding the output of a report.
+	 */
+	private void resetReportTable(boolean visible) {
+		// Hide/show the report panel...
+		m_reportPanel.setVisible(visible);
+
+		// ...and empty the report table.
+		m_reportTable.setValue("");
 	}
 }
