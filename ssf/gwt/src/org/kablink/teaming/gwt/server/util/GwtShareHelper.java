@@ -2643,6 +2643,18 @@ public class GwtShareHelper
 	}
 
 	/**
+	 * Returns true if share forwarding is currently enabled and false
+	 * otherwise.
+	 * 
+	 * @param bs
+	 * 
+	 * @return
+	 */
+	public static boolean isShareForwardingEnabled(AllModulesInjected bs) {
+		return bs.getSharingModule().isShareForwardingEnabled();
+	}
+
+	/**
 	 * Returns true if sharing is currently enabled and false
 	 * otherwise.
 	 * 

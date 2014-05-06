@@ -95,6 +95,7 @@ public interface SharingModule {
 	public boolean testAddShareEntityPublicLinks(DefinableEntity de);
 	public boolean testShareEntityForward(DefinableEntity de);
 
+	public boolean isShareForwardingEnabled();
 	public boolean isSharingEnabled();
 	public boolean isSharingPublicLinksEnabled();
 

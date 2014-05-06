@@ -1493,46 +1493,51 @@ public class GwtMenuHelper {
 	 * Constructs the ToolbarItems for the share menu on a entry menu
 	 * bar.
 	 */
-	private static void constructEntryShareItems(ToolbarItem entryToolbar, AllModulesInjected bs, HttpServletRequest request, boolean isFileEntity) {
+	private static void constructEntryShareItems(ToolbarItem entryToolbar, AllModulesInjected bs, HttpServletRequest request, boolean isSWM, boolean isFileEntity) {
 		// Are we logged in as Guest?
 		boolean isGuest = GwtServerHelper.getCurrentUser().isShared();
 		if (!isGuest) {
 			// No!  Are we constructing share items for a file entity?
 			if (isFileEntity) {
-				// Yes!  Create the share toolbar...
-				ToolbarItem shareItemsTBI = new ToolbarItem("1_share");
-				markTBITitle(shareItemsTBI, "toolbar.share");
-
-				ToolbarItem shareTBI;
-				if (GwtShareHelper.isSharingEnabled(bs)) {
-					// ...add the share item...
-					shareTBI = new ToolbarItem(SHARE);
-					markTBITitle(shareTBI, "toolbar.shareSelected");
-					markTBIEvent(shareTBI, TeamingEvents.SHARE_SELECTED_ENTITIES);
-					shareItemsTBI.addNestedItem(shareTBI);
-				}
-				
-				if (GwtShareHelper.isSharingPublicLinksEnabled(bs)) {
-					// ...add the e-mail public link item...
-					String keyTail;
-					if (Utils.checkIfFilr())
-					     keyTail = "filr";
-					else keyTail = "vibe";
-					shareTBI = new ToolbarItem(EMAIL_PUBLIC_LINK);
-					markTBITitle(shareTBI, "toolbar.emailPublicLinkSelected." + keyTail);
-					markTBIEvent(shareTBI, TeamingEvents.EMAIL_PUBLIC_LINK_SELECTED_ENTITIES);
-					shareItemsTBI.addNestedItem(shareTBI);
+				// Yes!  Is it for other than a Shared with Me view or
+				// does the user have share forwarding rights?
+				if ((!isSWM) || GwtShareHelper.isShareForwardingEnabled(bs)) {
+					// Yes!  Create the share toolbar...
+					ToolbarItem shareItemsTBI = new ToolbarItem("1_share");
+					markTBITitle(shareItemsTBI, "toolbar.share");
+	
+					ToolbarItem shareTBI;
+					if (GwtShareHelper.isSharingEnabled(bs)) {
+						// ...add the share item...
+						shareTBI = new ToolbarItem(SHARE);
+						markTBITitle(shareTBI, "toolbar.shareSelected");
+						markTBIEvent(shareTBI, TeamingEvents.SHARE_SELECTED_ENTITIES);
+						shareItemsTBI.addNestedItem(shareTBI);
+					}
 					
-					// ...add the copy public link item...
-					shareTBI = new ToolbarItem(COPY_PUBLIC_LINK);
-					markTBITitle(shareTBI, "toolbar.copyPublicLinkSelected." + keyTail);
-					markTBIEvent(shareTBI, TeamingEvents.COPY_PUBLIC_LINK_SELECTED_ENTITIES);
-					shareItemsTBI.addNestedItem(shareTBI);
-				}
-				
-				if (shareItemsTBI.hasNestedToolbarItems()) {
-					// ...and the share toolbar to the entry toolbar.
-					entryToolbar.addNestedItem(shareItemsTBI);
+					if (GwtShareHelper.isSharingPublicLinksEnabled(bs)) {
+						// ...add the e-mail public link item...
+						String keyTail;
+						if (Utils.checkIfFilr())
+						     keyTail = "filr";
+						else keyTail = "vibe";
+						shareTBI = new ToolbarItem(EMAIL_PUBLIC_LINK);
+						markTBITitle(shareTBI, "toolbar.emailPublicLinkSelected." + keyTail);
+						markTBIEvent(shareTBI, TeamingEvents.EMAIL_PUBLIC_LINK_SELECTED_ENTITIES);
+						shareItemsTBI.addNestedItem(shareTBI);
+						
+						// ...add the copy public link item...
+						shareTBI = new ToolbarItem(COPY_PUBLIC_LINK);
+						markTBITitle(shareTBI, "toolbar.copyPublicLinkSelected." + keyTail);
+						markTBIEvent(shareTBI, TeamingEvents.COPY_PUBLIC_LINK_SELECTED_ENTITIES);
+						shareItemsTBI.addNestedItem(shareTBI);
+					}
+					
+					if (shareItemsTBI.hasNestedToolbarItems()) {
+						// ...and the share toolbar to the entry
+						// ...toolbar.
+						entryToolbar.addNestedItem(shareItemsTBI);
+					}
 				}
 			}
 			
@@ -3148,7 +3153,10 @@ public class GwtMenuHelper {
 					}
 
 					// If the user can share the entry...
-					boolean sharable = (GwtShareHelper.isEntitySharable(bs, fe) || GwtShareHelper.isEntityPublicLinkSharable(bs, fe));
+					boolean isSWM    = (binderInfo.isBinderCollection() && binderInfo.getCollectionType().isSharedWithMe());
+					boolean sharable =
+						(((!isSWM) || GwtShareHelper.isShareForwardingEnabled(bs)) &&
+						(GwtShareHelper.isEntitySharable(bs, fe) || GwtShareHelper.isEntityPublicLinkSharable(bs, fe)));
 					if (sharable) {
 						// ...add the necessary share items.
 						constructEntryShareItem(
@@ -3325,7 +3333,7 @@ public class GwtMenuHelper {
 						constructEntryAddFileFolderItem(   entryToolbar, bs, request,                                                  ws, homeFolderTargetId         );
 					}
 					if ((isCollectionMyFiles || isCollectionSharedByMe || isCollectionSharedWithMe)) {
-					    constructEntryShareItems(          entryToolbar, bs, request, true                                                                            );
+					    constructEntryShareItems(          entryToolbar, bs, request, isCollectionSharedWithMe, true                                                  );
 					}
 					if (((isCollectionMyFiles && (!useHomeAsMyFiles) && (!isCollectionNetFolders))) || (isCollectionShared && (!isCollectionSharedPublic))) {
 						constructEntryDeleteItem(          entryToolbar, bs, request,                           (isCollectionMyFiles ? ws : null), isCollectionMyFiles);
@@ -3382,8 +3390,8 @@ public class GwtMenuHelper {
 					// Constructs the items for sharing and deleting
 					// the selected entries.
 					boolean isFileFolder = GwtServerHelper.isFamilyFile(GwtServerHelper.getFolderEntityFamily(bs, folder));
-					constructEntryShareItems(entryToolbar, bs, request, isFileFolder    );
-					constructEntryDeleteItem(entryToolbar, bs, request, viewType, folder);
+					constructEntryShareItems(entryToolbar, bs, request, false,    isFileFolder);
+					constructEntryDeleteItem(entryToolbar, bs, request, viewType, folder      );
 		
 					// Can we determine the folder's view type?
 					if (hasVT) {

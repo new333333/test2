@@ -657,6 +657,18 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 	
     
 	@Override
+	public boolean isShareForwardingEnabled() {
+    	Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
+    	ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(zoneId);
+		AccessControlManager accessControlManager = getAccessControlManager();
+		if (accessControlManager == null) {
+			accessControlManager = ((AccessControlManager) SpringContextUtil.getBean("accessControlManager"));
+		}
+		
+		return accessControlManager.testOperation(zoneConfig, WorkAreaOperation.ENABLE_SHARING_FORWARD);
+	}
+
+	@Override
 	public boolean isSharingEnabled() {
     	Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
     	ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(zoneId);
