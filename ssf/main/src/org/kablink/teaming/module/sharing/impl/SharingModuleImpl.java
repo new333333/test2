@@ -72,6 +72,7 @@ import org.kablink.teaming.util.TagUtil;
 import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.util.api.ApiErrorCode;
+
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -314,7 +315,7 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 				else if ( shareItem.getRecipientType().equals( RecipientType.publicLink ) )
 				{
 					// Is sharing with the public enabled?
-					if ( folderModule.testAccess( fe, FolderOperation.allowSharingPublic ) )
+					if ( folderModule.testAccess( fe, FolderOperation.allowSharingPublicLinks ) )
 					{
 						// Yes
 						return;
@@ -1114,7 +1115,8 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 		return loadDefinableEntity(shareItem.getSharedEntityIdentifier(), true);
 	}
 
-    public DefinableEntity getSharedEntityWithoutAccessCheck(ShareItem shareItem) {
+    @Override
+	public DefinableEntity getSharedEntityWithoutAccessCheck(ShareItem shareItem) {
         return loadDefinableEntity(shareItem.getSharedEntityIdentifier(), false);
     }
 
