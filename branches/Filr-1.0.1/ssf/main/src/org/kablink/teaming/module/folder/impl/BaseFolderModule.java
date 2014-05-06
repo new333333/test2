@@ -100,6 +100,14 @@ public class BaseFolderModule extends AbstractFolderModule implements BaseFolder
 	}
 
 	@Override
+	public void modifyNetFolder(
+		Long folderId,
+		String rootName,
+		String path ) throws AccessControlException, WriteFilesException, WriteEntryDataException
+	{
+	}
+
+	@Override
 	public void modifyNetFolder(Long folderId, String netFolderName, String rootName, String path, Boolean isHomeDir, boolean indexContent)
 			throws AccessControlException, WriteFilesException, WriteEntryDataException {
 	}
