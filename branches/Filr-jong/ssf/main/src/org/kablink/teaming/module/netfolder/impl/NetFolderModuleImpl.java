@@ -162,8 +162,7 @@ public class NetFolderModuleImpl extends CommonDependencyInjection implements Ne
 	 * @see org.kablink.teaming.module.netfolder.NetFolderModule#obtainFolderEntry(java.lang.String, java.lang.String, boolean)
 	 */
 	@Override
-	public FolderEntry obtainFolderEntry(Long netFolderId, String filePath,
-			boolean create) {
+	public FolderEntry obtainFolderEntry(Long netFolderConfigId, String filePath, boolean create) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -172,8 +171,7 @@ public class NetFolderModuleImpl extends CommonDependencyInjection implements Ne
 	 * @see org.kablink.teaming.module.netfolder.NetFolderModule#obtainFolder(java.lang.String, java.lang.String, boolean)
 	 */
 	@Override
-	public Folder obtainFolder(Long netFolderId, String folderPath,
-			boolean create) {
+	public Folder obtainFolder(Long netFolderConfigId, String folderPath, boolean create) {
 		// TODO Auto-generated method stub
 		return null;
 	}
