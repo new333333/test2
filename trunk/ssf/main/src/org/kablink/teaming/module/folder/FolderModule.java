@@ -353,7 +353,7 @@ public interface FolderModule {
 	 * @throws AccessControlException
 	 */
     public FolderEntry getEntry(Long parentFolderId, Long entryId) 
-    	throws AccessControlException;
+    	throws NoFolderEntryByTheIdException, AccessControlException;
     
     public FolderEntry getEntryWithoutAccessCheck(Long parentFolderId, Long entryId) 
     	throws NoFolderEntryByTheIdException;
