@@ -573,4 +573,16 @@
         </addColumn>
     </changeSet>
 
+    <changeSet author="jong" context="schema" failOnError="true" id="48">
+        <preConditions onFail="MARK_RAN">
+            <not>
+            	<indexExists indexName="OWNINGBINDERID_NOTIFYSTATUS"/>
+            </not>
+        </preConditions>
+        <comment>Create index on owningBinderId column in SS_NotifyStatus table</comment>
+        <createIndex indexName="OWNINGBINDERID_NOTIFYSTATUS" tableName="SS_NOTIFYSTATUS" unique="false">
+            <column name="OWNINGBINDERID"/>
+        </createIndex>
+    </changeSet>
+    
 </databaseChangeLog>

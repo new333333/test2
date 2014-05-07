@@ -619,4 +619,16 @@ update SS_Principals set domainName=LOWER(domainName);
         </addColumn>
     </changeSet>
     
+    <changeSet author="jong" context="schema" failOnError="true" id="54">
+        <preConditions onFail="MARK_RAN">
+            <not>
+            	<indexExists indexName="owningBinderId_notifyStatus"/>
+            </not>
+        </preConditions>
+        <comment>Create index on owningBinderId column in SS_NotifyStatus table</comment>
+        <createIndex indexName="owningBinderId_notifyStatus" tableName="SS_NotifyStatus" unique="false">
+            <column name="owningBinderId"/>
+        </createIndex>
+    </changeSet>
+    
 </databaseChangeLog>
