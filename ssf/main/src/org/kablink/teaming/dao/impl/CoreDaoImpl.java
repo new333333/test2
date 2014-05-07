@@ -3144,12 +3144,21 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
 			   					
 			   			if(includeEntryShares && EntityIdentifier.EntityType.folder == binder.getEntityType()) {
 		 		   			//delete share items whose shared entities are entries in the specified binder
-		 		   			session.createQuery("Delete org.kablink.teaming.domain.ShareItem where sharedEntity_id in " + 
-		 			   				"(select p.id from org.kablink.teaming.domain.FolderEntry p where " +
-				   			  			" p.parentBinder=:folder) and sharedEntity_type=:sharedEntityType")
-				   			  	.setEntity("folder", binder)
-				   			  	.setParameter("sharedEntityType", EntityIdentifier.EntityType.folderEntry.getValue())
-				   				.executeUpdate(); 	
+			   				// (Bug #875322) Do NOT use nested select statement, as it tends to cause deadlock.
+			   				
+			   				// First, get the IDs of the entries in the binder
+	    	   				List<Long> folderEntryIds = getFolderEntryIds(binder);
+	    	   				
+	    	   				// Second, delete all share items where shared entity matches one of the entries.
+	    	   				// Break list into chunks as necessary.
+	    	   				List<Long> idList;
+	    	   				for(int i = 0; i < folderEntryIds.size(); i += inClauseLimit) {
+	    	   					idList = folderEntryIds.subList(i, Math.min(folderEntryIds.size(), i + inClauseLimit));
+			 		   			session.createQuery("Delete org.kablink.teaming.domain.ShareItem where sharedEntity_type=:sharedEntityType and sharedEntity_id in (:idList)")
+			 		   			.setParameter("sharedEntityType", EntityIdentifier.EntityType.folderEntry.getValue())
+			 		   			.setParameterList("idList", idList)
+			 		   			.executeUpdate();
+	    	   				}
 			   			}
 
 			   			return null;
