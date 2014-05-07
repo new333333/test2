@@ -32,13 +32,24 @@
  */
 package org.kablink.teaming.module.netfolder;
 
+import java.util.List;
+import java.util.Set;
+
+import org.kablink.teaming.client.ws.model.FolderEntry;
 import org.kablink.teaming.context.request.RequestContextHolder;
+import org.kablink.teaming.dao.CoreDao;
 import org.kablink.teaming.dao.FolderDao;
+import org.kablink.teaming.dao.util.FilterControls;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.NetFolderConfig;
 import org.kablink.teaming.domain.NoFolderByTheIdException;
+import org.kablink.teaming.domain.Principal;
+import org.kablink.teaming.domain.ResourceDriverConfig;
 import org.kablink.teaming.fi.connection.ResourceDriver;
+import org.kablink.teaming.fi.connection.acl.AclResourceDriver;
 import org.kablink.teaming.security.function.AccessCheckable;
+import org.kablink.teaming.security.function.WorkArea;
+import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.util.SpringContextUtil;
 
 /**
@@ -46,6 +57,8 @@ import org.kablink.teaming.util.SpringContextUtil;
  *
  */
 public class NetFileHandle implements AccessCheckable {
+
+	public static final String WORKAREA_TYPE = "netFileHandle";
 
 	/*
 	 * ID of a NetFolderConfig object
@@ -159,5 +172,69 @@ public class NetFileHandle implements AccessCheckable {
 
 	private FolderDao getFolderDao() {
 		return (FolderDao) SpringContextUtil.getBean("folderDao");
+	}
+
+	@Override
+	public String getWorkAreaType() {
+		return WORKAREA_TYPE;
+	}
+
+	@Override
+	public boolean isFunctionMembershipInherited() {
+		return false;
+	}
+
+	@Override
+	public boolean isExtFunctionMembershipInherited() {
+		return false;
+	}
+
+	@Override
+	public Long getOwnerId() {
+		return null;
+	}
+
+	@Override
+	public Principal getOwner() {
+		return null;
+	}
+
+	@Override
+	public Set<Long> getTeamMemberIds() {
+		return null;
+	}
+
+	@Override
+	public AccessCheckable getParentAccessCheckable() {
+		return null;
+	}
+
+	@Override
+	public boolean isAclExternallyControlled() {
+		return true;
+	}
+
+	@Override
+	public List<WorkAreaOperation> getExternallyControlledRights() {
+		AclResourceDriver driver = NetFolderUtil.getResourceDriverByNetFolderConfigId(netFolderConfigId);
+		return driver.getExternallyControlledlRights();
+	}
+
+	@Override
+	public boolean noAclDredged() {
+		ResourceDriverConfig rdc = NetFolderUtil.getNetFolderServerByNetFolderConfigId(netFolderConfigId);
+		return rdc.isAclAware();
+	}
+
+	@Override
+	public WorkArea asShareableWorkArea() {
+		if(isDirectory())
+			return getNetFolderModule().obtainFolder(netFolderConfigId, getRelRscPath(), false);
+		else
+			return getNetFolderModule().obtainFolderEntry(netFolderConfigId, getRelRscPath(), false);
+	}
+	
+	private NetFolderModule getNetFolderModule() {
+		return (NetFolderModule) SpringContextUtil.getBean("netFolderModule");
 	}
 }
