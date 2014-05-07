@@ -99,7 +99,7 @@ public interface NetFolderModule {
 	 * or to comment on the file).
 	 * 
 	 * @param netFolderConfigId
-	 * @param filePath
+	 * @param filePath path relative to the net folder config
 	 * @param create
 	 * @return
 	 */
@@ -117,7 +117,7 @@ public interface NetFolderModule {
 	 * should be used ONLY WHEN it is absolutely necessary (e.g. to share the folder).
 	 * 
 	 * @param netFolderConfigId
-	 * @param folderPath
+	 * @param folderPath path relative to the net folder config
 	 * @param create
 	 * @return
 	 */
