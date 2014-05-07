@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -60,6 +60,7 @@ import org.kablink.teaming.context.request.RequestContextUtil;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.Description;
 import org.kablink.teaming.domain.EmailLog;
+import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.Principal;
@@ -82,9 +83,14 @@ import org.kablink.teaming.util.stringcheck.StringCheckUtil;
 import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.util.Html;
 import org.kablink.util.Validator;
+
 import org.springframework.util.FileCopyUtils;
 
-
+/**
+ * ?
+ * 
+ * @author ?
+ */
 @SuppressWarnings("unchecked")
 public class DefaultEmailPoster  extends CommonDependencyInjection implements EmailPoster {
 	/*
@@ -190,6 +196,7 @@ public class DefaultEmailPoster  extends CommonDependencyInjection implements Em
 	public void setReportModule(ReportModule reportModule) {
 		this.reportModule = reportModule;
 	}
+	@Override
 	public List postMessages(Folder folder, String recipient, Message[] msgs, Session session, User postAsUser) {
 		//initialize collections
 		Map fileItems = new HashMap();
@@ -325,14 +332,43 @@ public class DefaultEmailPoster  extends CommonDependencyInjection implements Em
 		if (!iCalendars.isEmpty()) {
 			entryIdsFromICalendars.addAll(processICalInline(folder, def, inputData, fileItems, iCalendars));
 		}
-//DEBUG		java.io.ByteArrayOutputStream buf = new java.io.ByteArrayOutputStream();
+//DEBUG	java.io.ByteArrayOutputStream buf = new java.io.ByteArrayOutputStream();
 //		msg.writeTo(buf);
 //		inputData.put("description", buf.toString());
 		//IF attachments left or message didn't contain ICALs; add as an entry
 		if (!fileItems.isEmpty() || entryIdsFromICalendars.isEmpty()) {
-			FolderEntry entry = folderModule.addEntry(folder.getId(), def == null? null:def.getId(), new MapInputData(inputData), fileItems, null);
+			// Did we process a single iCal attachment?
+			FolderEntry entry;
+			int iCalEntries = ((null == entryIdsFromICalendars) ? 0 : entryIdsFromICalendars.getTotalCount());
+			if (1 == iCalEntries) {
+				// Yes!  Then we'll use the rest of the information to
+				// simply modify that.
+				Long id;
+				if (1 == entryIdsFromICalendars.getAddedCount()) id = ((Long) entryIdsFromICalendars.added.get(   0));
+				else                                             id = ((Long) entryIdsFromICalendars.modified.get(0));
+				entry = folderModule.getEntry(null, id);
+				folderModule.modifyEntry(
+					folder.getId(),
+					id,
+					new MapInputData(inputData), 
+			    	fileItems,
+			    	new ArrayList<String>(),
+			    	new HashMap<FileAttachment,String>(),
+			    	new HashMap());				
+			}
+			else {
+				// No, we didn't we process a single iCal attachment!
+				// Add a new entry for the message.
+				entry = folderModule.addEntry(
+					folder.getId(),
+					((null == def) ? null : def.getId()),
+					new MapInputData(inputData),
+					fileItems,
+					null);
+			}
 			if(entry != null) {
-				//If we just added a MiniBlog entry, update the user's status
+				// If we just added a MiniBlog entry, update the user's
+				// status.
 				Principal folderOwner = folder.getOwner();
 				if (folderOwner instanceof User) {
 					BinderHelper.updateUserStatus(folder.getId(), entry.getId(), (User)folderOwner);
@@ -655,6 +691,7 @@ public class DefaultEmailPoster  extends CommonDependencyInjection implements Em
 		 * Return the name of the parameter in the multipart form.
 		 * @return the name of the parameter
 		 */
+		@Override
 		public String getName() {return "attachment";}
 
 		/**
@@ -662,6 +699,7 @@ public class DefaultEmailPoster  extends CommonDependencyInjection implements Em
 		 * no file has been chosen in the multipart form.
 		 * @return whether the uploaded file is empty
 		 */
+		@Override
 		public boolean isEmpty() {return false;}
 		
 		/**
@@ -670,6 +708,7 @@ public class DefaultEmailPoster  extends CommonDependencyInjection implements Em
 		 * but it typically will not with any other than Opera.
 		 * @return the original filename, or null if empty
 		 */
+		@Override
 		public String getOriginalFilename() {return fileName;}
 		
 		
@@ -677,12 +716,14 @@ public class DefaultEmailPoster  extends CommonDependencyInjection implements Em
 		 * Return the content type of the file.
 		 * @return the content type, or null if empty or not defined
 		 */
+		@Override
 		public String getContentType() {return type;}
 
 		/**
 		 * Return the size of the file in bytes.
 		 * @return the size of the file, or 0 if empty
 		 */
+		@Override
 		public long getSize() {return size;}
 		
 		/**
@@ -692,6 +733,7 @@ public class DefaultEmailPoster  extends CommonDependencyInjection implements Em
 		 * @throws IOException in case of access errors
 		 * (if the temporary store fails)
 		 */
+		@Override
 		public byte[] getBytes() throws IOException {
 			byte [] results = new byte[size];
 			try {
@@ -710,6 +752,7 @@ public class DefaultEmailPoster  extends CommonDependencyInjection implements Em
 		 * @throws IOException in case of access errors
 		 * (if the temporary store fails)
 		 */
+		@Override
 		public InputStream getInputStream() throws IOException {
 			try {
 				return part.getInputStream();
@@ -731,6 +774,7 @@ public class DefaultEmailPoster  extends CommonDependencyInjection implements Em
 		 * @throws java.lang.IllegalStateException if the file has already been moved
 		 * in the filesystem as is not available anymore for another transfer
 		*/
+		@Override
 		public void transferTo(File dest) throws IOException, IllegalStateException {
 			//copied from org.springframework.web.multipart.commons.CommonsMultiPart
 //			if (!isAvailable()) {
