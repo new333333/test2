@@ -373,6 +373,8 @@ public interface FolderModule {
      * @return
      */
     public SortedSet<FolderEntry>getEntries(Collection<Long>ids);
+    public SortedSet<FolderEntry>getEntries(Collection<Long>ids, boolean doAccessCheck);
+    
     /**
      * Extend the  <code>FolderEntries</code> to include principal objects
      * @param ids

@@ -258,4 +258,34 @@ public interface SharingModule {
      * @param shareLists
      */
     public void setShareLists(ShareLists shareLists);
+    
+    /**
+     * Validates that the ShareItem's in a List<ShareItem> refer to a
+     * valid definable entity.  If they don't, they are deleted from
+     * the SS_ShareItem table and removed from the list.
+     * 
+     * Will Optionally:
+     * 1) Populate a List<DefinableEntity> of the valid shared
+     *    entities.
+     * 2) Validate the user has access to the shared entities
+     *    that the List<DefinableEntity> is populated with.
+     * 
+     * @param shares
+     * @param sharedEntities (optional)
+     */
+    public void validateShareItems(                  List<ShareItem> shares);
+    public void validateShareItems(                  List<ShareItem> shares, List<DefinableEntity> sharedEntities);
+    public void validateShareItemsWithoutAccessCheck(List<ShareItem> shares, List<DefinableEntity> sharedEntities);
+
+    /**
+     * Scans a List<DefinableEntity> for the one matching an
+     * EntityIdentifier.  If found, it's returned.  Otherwise, null is
+     * returned.
+     * 
+     * @param sharedEntities
+     * @param eid
+     * 
+     * @return
+     */
+    public DefinableEntity findSharedEntityInList(List<DefinableEntity> sharedEntities, EntityIdentifier eid);
 }

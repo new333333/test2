@@ -925,13 +925,19 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
     }
     @Override
 	public SortedSet<FolderEntry>getEntries(Collection<Long>ids) {
+    	return getEntries(ids, Boolean.TRUE);
+    }
+    @Override
+	public SortedSet<FolderEntry>getEntries(Collection<Long>ids, boolean doCheckAccess) {
         User user = RequestContextHolder.getRequestContext().getUser();
         Comparator c = new EntryComparator(user.getLocale(), EntryComparator.SortByField.pathName);
        	TreeSet<FolderEntry> sEntries = new TreeSet<FolderEntry>(c);
        	List<FolderEntry>entries = getCoreDao().loadObjects(ids, FolderEntry.class, RequestContextHolder.getRequestContext().getZoneId());
     	for (FolderEntry e:entries) {
             try {
-            	AccessUtils.readCheck(e);
+            	if (doCheckAccess) {
+            		AccessUtils.readCheck(e);
+            	}
             	sEntries.add(e);
             } catch (Exception ignoreMe) {};
     	}
