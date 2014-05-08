@@ -79,6 +79,7 @@ import org.kablink.teaming.rest.v1.model.ZoneConfig;
 import org.kablink.teaming.search.SearchUtils;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.web.util.BinderHelper;
+import org.kablink.teaming.web.util.PermaLinkUtil;
 import org.kablink.util.api.ApiErrorCode;
 import org.kablink.util.search.Constants;
 import org.kablink.util.search.Criteria;
@@ -136,6 +137,7 @@ public class SelfResource extends AbstractFileResource {
         user.setLink("/self");
         user.addAdditionalLink("mobile_devices", "/self/mobile_devices");
         user.addAdditionalLink("roots", "/self/roots");
+        user.setPermaLink(PermaLinkUtil.getPermalink(entry));
         try {
             Long nextCheck = homeDirCheckTime.get(user.getId());
             if (nextCheck==null || nextCheck<System.currentTimeMillis()) {

@@ -190,6 +190,7 @@ public enum ApiErrorCode {
     HOME_FOLDER_CREATE_ERROR,
     HOME_FOLDER_DELETE_ERROR,
     NET_FOLDER_NOT_FOUND, // No net folder found with this name or id
+    NET_FOLDER_SERVER_IN_USE, // No net folder found with this name or id
 
 	// ShareItem errors
 	SHAREITEM_NOT_FOUND, // No share found with this name or id

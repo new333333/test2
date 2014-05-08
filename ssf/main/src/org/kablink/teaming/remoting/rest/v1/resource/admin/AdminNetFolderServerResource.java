@@ -46,6 +46,7 @@ import org.kablink.teaming.exception.UncheckedCodedException;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.remoting.rest.v1.exc.BadRequestException;
+import org.kablink.teaming.remoting.rest.v1.exc.ForbiddenException;
 import org.kablink.teaming.remoting.rest.v1.resource.AbstractResource;
 import org.kablink.teaming.remoting.rest.v1.util.AdminLinkUriUtil;
 import org.kablink.teaming.remoting.rest.v1.util.AdminResourceUtil;
@@ -149,6 +150,13 @@ public class AdminNetFolderServerResource extends AbstractAdminResource {
     @DELETE
     @Path("{id}")
     public void deleteNetFolderServer(@PathParam("id") Long id) {
+        ResourceDriverConfig resourceDriverConfig = getResourceDriverModule().getResourceDriverConfig(id);
+        NetFolderSelectSpec selectSpec = new NetFolderSelectSpec();
+        selectSpec.setRootName(resourceDriverConfig.getName());
+        List<Folder> folderList = NetFolderHelper.getAllNetFolders2(getBinderModule(), getWorkspaceModule(), selectSpec);
+        if (folderList.size()>0) {
+            throw new ForbiddenException(ApiErrorCode.NET_FOLDER_SERVER_IN_USE, "Cannot delete the net folder server because it is being referenced by one or more net folders.  You must delete the net folders before attempting to delete the net folder server.");
+        }
         getResourceDriverModule().deleteResourceDriverConfig(id);
     }
 
