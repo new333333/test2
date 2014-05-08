@@ -6897,127 +6897,191 @@ public class GwtViewHelper {
 	 */
 	@SuppressWarnings("unchecked")
 	public static UserPropertiesRpcResponseData getUserProperties(final AllModulesInjected bs, final HttpServletRequest request, final Long userId) throws GwtTeamingException {
+		SimpleProfiler.start("GwtViewHelper.getUserProperties()");
 		try {
-			// Construct a user properties response containing the
-			// user's profile that we can return...
-			final UserPropertiesRpcResponseData reply = new UserPropertiesRpcResponseData(
-				getProfileEntryInfo(
-					bs,
-					request,
-					userId));
+			SimpleProfiler.start("GwtViewHelper.getUserProperties( Get profile information )");
+			final UserPropertiesRpcResponseData reply;
+			try {
+				// Construct a user properties response containing the
+				// user's profile that we can return...
+				reply = new UserPropertiesRpcResponseData(
+					getProfileEntryInfo(
+						bs,
+						request,
+						userId));
+			}
+			finally {
+				SimpleProfiler.stop("GwtViewHelper.getUserProperties( Get profile information )");
+			}
 
-			// ...add information about what the user's account...
-			ProfileModule	pm     = bs.getProfileModule();
-			final User		user   = ((User) pm.getEntry(userId));
-			IdentityInfo	userII = user.getIdentityInfo();
-			AccountInfo		ai     = new AccountInfo();
-			reply.setAccountInfo(ai);
-			ai.setLoginId(user.getName());
-			ai.setFromOpenId(userII.isFromOpenid());
-			ai.setUserType(getUserType(user));
+			SimpleProfiler.start("GwtViewHelper.getUserProperties( Get basic account information )");
+			final User   user;
+			IdentityInfo userII;
+			AccountInfo  ai;
+			try {
+				// ...add information about what the user's account...
+				user   = ((User) bs.getProfileModule().getEntry(userId));
+				userII = user.getIdentityInfo();
+				ai     = new AccountInfo();
+				reply.setAccountInfo(ai);
+				ai.setLoginId(user.getName());
+				ai.setFromOpenId(userII.isFromOpenid());
+				ai.setUserType(getUserType(user));
+			}
+			finally {
+				SimpleProfiler.stop("GwtViewHelper.getUserProperties( Gather basic account information )");
+			}
 
 			// ...if the user's from LDAP...
 			if (userII.isFromLdap()) {
 				// ...add their LDAP DN and eDirectory container, if
 				// ...available...
-				String ldapDN = user.getForeignName();
-				ai.setLdapDN(                            ldapDN );
-				ai.setLdapContainer(getParentContainerDN(ldapDN));
+				SimpleProfiler.start("GwtViewHelper.getUserProperties( Get LDAP information )");
+				try {
+					String ldapDN = user.getForeignName();
+					ai.setLdapDN(                            ldapDN );
+					ai.setLdapContainer(getParentContainerDN(ldapDN));
+				}
+				finally {
+					SimpleProfiler.stop("GwtViewHelper.getUserProperties( Get LDAP information )");
+				}
 			}
 
-			// ...if we can determine the last time the user logged
-			// ...in...
-			Date lastLogin = getLastUserLogin(bs, userId);
-			if (null != lastLogin) {
-				// ...add that to the reply.
-				ai.setLastLogin(GwtServerHelper.getDateTimeString(lastLogin));
+			SimpleProfiler.start("GwtViewHelper.getUserProperties( Get last login )");
+			try {
+				// ...if we can determine the last time the user logged
+				// ...in...
+				Date lastLogin = getLastUserLogin(bs, userId);
+				if (null != lastLogin) {
+					// ...add that to the reply.
+					ai.setLastLogin(GwtServerHelper.getDateTimeString(lastLogin));
+				}
 			}
-			
-			// ...add whether the user has adHoc folder access...
-			boolean hasAdHocFolders = ((!user.isShared()) && user.getIdentityInfo().isInternal() && user.isPerson());
-			boolean perUserAdHoc    = false;
-			if (hasAdHocFolders) {
-				hasAdHocFolders = (!(GwtServerHelper.useHomeAsMyFiles(bs, user)));
-				perUserAdHoc    = (null != user.isAdHocFoldersEnabled());
+			finally {
+				SimpleProfiler.stop("GwtViewHelper.getUserProperties( Get last login )");
 			}
-			ai.setHasAdHocFolders(hasAdHocFolders);
-			ai.setPerUserAdHoc(   perUserAdHoc   );
 
-			// ...add whether the user can download files...
-			boolean canDownload     = user.isPerson();
-			boolean perUserDownload = false;
-			if (canDownload) {
-				canDownload     = AdminHelper.getEffectiveDownloadSetting(bs, user);
-				perUserDownload = (null != user.isDownloadEnabled());
+			SimpleProfiler.start("GwtViewHelper.getUserProperties( Get adHoc setting )");
+			try {
+				// ...add whether the user has adHoc folder access...
+				boolean hasAdHocFolders = ((!user.isShared()) && user.getIdentityInfo().isInternal() && user.isPerson());
+				boolean perUserAdHoc    = false;
+				if (hasAdHocFolders) {
+					hasAdHocFolders = (!(GwtServerHelper.useHomeAsMyFiles(bs, user)));
+					perUserAdHoc    = (null != user.isAdHocFoldersEnabled());
+				}
+				ai.setHasAdHocFolders(hasAdHocFolders);
+				ai.setPerUserAdHoc(   perUserAdHoc   );
 			}
-			ai.setCanDownload(    canDownload    );
-			ai.setPerUserDownload(perUserDownload);
-
-			// ...add whether the user can use web access...
-			boolean hasWebAccess = user.isPerson();
-			boolean perUserWebAccess = false;
-			if (hasWebAccess) {
-				hasWebAccess     = AdminHelper.getEffectiveWebAccessSetting(bs, user);
-				perUserWebAccess = (null != user.isWebAccessEnabled());
+			finally {
+				SimpleProfiler.stop("GwtViewHelper.getUserProperties( Get adHoc setting )");
 			}
-			ai.setHasWebAccess(    hasWebAccess    );
-			ai.setPerUserWebAccess(perUserWebAccess);
 
-			// ...add the user's current workspace sharing rights...
-			List<Long> userIds = new ArrayList<Long>();
-			userIds.add(userId);
-			UserSharingRightsInfoRpcResponseData sharingRights = GwtServerHelper.getUserSharingRightsInfo(bs, request, userIds);
-			reply.setSharingRights(sharingRights.getUserRights(userId));
+			SimpleProfiler.start("GwtViewHelper.getUserProperties( Get download setting )");
+			try {
+				// ...add whether the user can download files...
+				boolean canDownload     = user.isPerson();
+				boolean perUserDownload = false;
+				if (canDownload) {
+					canDownload     = AdminHelper.getEffectiveDownloadSetting(bs, user);
+					perUserDownload = (null != user.isDownloadEnabled());
+				}
+				ai.setCanDownload(    canDownload    );
+				ai.setPerUserDownload(perUserDownload);
+			}
+			finally {
+				SimpleProfiler.stop("GwtViewHelper.getUserProperties( Get download setting )");
+			}
+
+			SimpleProfiler.start("GwtViewHelper.getUserProperties( Get web access setting )");
+			try {
+				// ...add whether the user can use web access...
+				boolean hasWebAccess = user.isPerson();
+				boolean perUserWebAccess = false;
+				if (hasWebAccess) {
+					hasWebAccess     = AdminHelper.getEffectiveWebAccessSetting(bs, user);
+					perUserWebAccess = (null != user.isWebAccessEnabled());
+				}
+				ai.setHasWebAccess(    hasWebAccess    );
+				ai.setPerUserWebAccess(perUserWebAccess);
+			}
+			finally {
+				SimpleProfiler.stop("GwtViewHelper.getUserProperties( Get web access setting )");
+			}
+
+			SimpleProfiler.start("GwtViewHelper.getUserProperties( Get workspace sharing information )");
+			try {
+				// ...add the user's current workspace sharing rights...
+				List<Long> userIds = new ArrayList<Long>();
+				userIds.add(userId);
+				UserSharingRightsInfoRpcResponseData sharingRights = GwtServerHelper.getUserSharingRightsInfo(bs, request, userIds);
+				reply.setSharingRights(sharingRights.getUserRights(userId));
+			}
+			finally {
+				SimpleProfiler.stop("GwtViewHelper.getUserProperties( Get workspace sharing information )");
+			}
 
 			// ...if quotas are enabled...
 			final AdminModule am = bs.getAdminModule();
 			if (am.isQuotaEnabled()) {
-				QuotaInfo qi = new QuotaInfo();
-				if (am.testAccess(AdminOperation.manageFunction)) {
-					// ...add the manage quotas URL if the user has
-					// ...rights to manage them...
-					AdaptedPortletURL url = new AdaptedPortletURL(request, "ss_forum", false);
-					url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MANAGE_QUOTAS);
-					qi.setManageQuotasUrl(url.toString());
-				}
-				
-				long userQuota = user.getDiskQuota();
-				if (0 == userQuota) {
-					userQuota = user.getMaxGroupsQuota();
+				SimpleProfiler.start("GwtViewHelper.getUserProperties( Get quota information )");
+				try {
+					QuotaInfo qi = new QuotaInfo();
+					if (am.testAccess(AdminOperation.manageFunction)) {
+						// ...add the manage quotas URL if the user has
+						// ...rights to manage them...
+						AdaptedPortletURL url = new AdaptedPortletURL(request, "ss_forum", false);
+						url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MANAGE_QUOTAS);
+						qi.setManageQuotasUrl(url.toString());
+					}
+					
+					long userQuota = user.getDiskQuota();
 					if (0 == userQuota) {
-						ZoneConfig zc = getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
-						userQuota = zc.getDiskQuotaUserDefault();
-						if (0 < userQuota) {
-							qi.setZoneQuota(true);	// true -> The user quota came from the default zone assignment.
+						userQuota = user.getMaxGroupsQuota();
+						if (0 == userQuota) {
+							ZoneConfig zc = getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
+							userQuota = zc.getDiskQuotaUserDefault();
+							if (0 < userQuota) {
+								qi.setZoneQuota(true);	// true -> The user quota came from the default zone assignment.
+							}
+						}
+						else {
+							qi.setGroupQuota(true);	// true -> The user quota came from a group assignment.
 						}
 					}
-					else {
-						qi.setGroupQuota(true);	// true -> The user quota came from a group assignment.
-					}
+					
+					// ...add information about their quota...
+					qi.setUserQuota(userQuota);
+					reply.setQuotaInfo(qi);
 				}
-				
-				// ...add information about their quota...
-				qi.setUserQuota(userQuota);
-				reply.setQuotaInfo(qi);
+				finally {
+					SimpleProfiler.stop("GwtViewHelper.getUserProperties( Get quota information )");
+				}
 			}
 
-			// ...add a NetFolderInfo...
+			SimpleProfiler.start("GwtViewHelper.getUserProperties( Get manage net folder information )");
 			final NetFoldersInfo nfi = new NetFoldersInfo();
-			reply.setNetFoldersInfo(nfi);
-			if (am.testAccess(AdminOperation.manageFunction)) {
-				// ...including whether the user can manage net
-				// ...folders...
-				try {
-					Binder netFoldersParentBinder = SearchUtils.getNetFoldersRootBinder();
-					nfi.setCanManageNetFolders(
-						(null != netFoldersParentBinder) &&
-						LicenseChecker.isAuthorizedByLicense("com.novell.teaming.module.folder.MirroredFolder") &&
-						bs.getBinderModule().testAccess(netFoldersParentBinder, BinderOperation.modifyBinder));
+			try {
+				// ...add a NetFolderInfo...
+				reply.setNetFoldersInfo(nfi);
+				if (am.testAccess(AdminOperation.manageFunction)) {
+					// ...including whether the user can manage net
+					// ...folders...
+					try {
+						Binder netFoldersParentBinder = SearchUtils.getNetFoldersRootBinder();
+						nfi.setCanManageNetFolders(
+							(null != netFoldersParentBinder) &&
+							LicenseChecker.isAuthorizedByLicense("com.novell.teaming.module.folder.MirroredFolder") &&
+							bs.getBinderModule().testAccess(netFoldersParentBinder, BinderOperation.modifyBinder));
+					}
+					catch (Exception ex) {
+						// Ignore.  If we can't access it, the user can't
+						// manage net folders.
+					}
 				}
-				catch (Exception ex) {
-					// Ignore.  If we can't access it, the user can't
-					// manage net folders.
-				}
+			}
+			finally {
+				SimpleProfiler.stop("GwtViewHelper.getUserProperties( Get manage net folder information )");
 			}
 
 			// ...some of the information required has to be done as
@@ -7026,61 +7090,79 @@ public class GwtViewHelper {
 				new RunasCallback() {
 					@Override
 					public Object doAs() {
-						// ...if the user has a home folder...
-						Long homeId = GwtServerHelper.getHomeFolderId(bs, user);
-						if (null != homeId) {
-							String			rootPath = null;
-							Folder			home     = bs.getFolderModule().getFolder(homeId);
-							ResourceDriver	rd       = home.getResourceDriver();
-							if (null != rd) {
-								String dc = rd.getClass().getName();
-								if (MiscUtil.hasString(dc) && dc.equals("com.novell.teaming.fi.connection.file.FileResourceDriver")) {
-									rootPath = rd.getRootPath();
-								}
-								else {
-									ResourceDriverConfig rdConfig = rd.getConfig();
-									if (null != rdConfig) {
-										rootPath = rdConfig.getRootPath();
+						SimpleProfiler.start("GwtViewHelper.getUserProperties( Get home folder information )");
+						try {
+							// ...if the user has a home folder...
+							Long homeId = GwtServerHelper.getHomeFolderId(bs, user);
+							if (null != homeId) {
+								String			rootPath = null;
+								Folder			home     = bs.getFolderModule().getFolder(homeId);
+								ResourceDriver	rd       = home.getResourceDriver();
+								if (null != rd) {
+									String dc = rd.getClass().getName();
+									if (MiscUtil.hasString(dc) && dc.equals("com.novell.teaming.fi.connection.file.FileResourceDriver")) {
+										rootPath = rd.getRootPath();
+									}
+									else {
+										ResourceDriverConfig rdConfig = rd.getConfig();
+										if (null != rdConfig) {
+											rootPath = rdConfig.getRootPath();
+										}
 									}
 								}
+	
+								// ...add information about the home folder...
+								HomeInfo hi = new HomeInfo();
+								hi.setId(          homeId                );
+								hi.setRelativePath(home.getResourcePath());
+								hi.setRootPath(    rootPath              );
+								reply.setHomeInfo(hi);
 							}
-
-							// ...add information about the home folder...
-							HomeInfo hi = new HomeInfo();
-							hi.setId(          homeId                );
-							hi.setRelativePath(home.getResourcePath());
-							hi.setRootPath(    rootPath              );
-							reply.setHomeInfo(hi);
+						}
+						finally {
+							SimpleProfiler.stop("GwtViewHelper.getUserProperties( Get home folder information )");
 						}
 
-						Map			nfSearch = getCollectionEntries(bs, request, null, null, new HashMap(), CollectionType.NET_FOLDERS, null);
-						List<Map>	nfList   = ((List<Map>) nfSearch.get(ObjectKeys.SEARCH_ENTRIES));
-						if (MiscUtil.hasItems(nfList)) {
-							Long nfBinderId = SearchUtils.getNetFoldersRootBinder().getId();
-							for (Map nfMap:  nfList) {
-								// ...adding an EntryTitleInfo for each
-								// ...to the reply.
-								Long			docId  = Long.parseLong(GwtServerHelper.getStringFromEntryMap(nfMap, Constants.DOCID_FIELD));
-								String			title  = GwtServerHelper.getStringFromEntryMap(nfMap, Constants.TITLE_FIELD);
-								EntryTitleInfo	eti = new EntryTitleInfo();
-								eti.setSeen(true);
-								eti.setTitle(MiscUtil.hasString(title) ? title : ("--" + NLT.get("entry.noTitle") + "--"));
-								eti.setEntityId(new EntityId(nfBinderId, docId, EntityId.FOLDER));
-								String description = getEntryDescriptionFromMap(request, nfMap);
-								if (MiscUtil.hasString(description)) {
-									eti.setDescription(description);
-									String descriptionFormat = GwtServerHelper.getStringFromEntryMap(nfMap, Constants.DESC_FORMAT_FIELD);
-									eti.setDescriptionIsHtml(MiscUtil.hasString(descriptionFormat) && descriptionFormat.equals(String.valueOf(Description.FORMAT_HTML)));
-								}
-								else {
-									description = GwtServerHelper.getStringFromEntryMap(nfMap, Constants.ENTITY_PATH);
-									if (MiscUtil.hasString(description)) {
-										eti.setDescription(      description);
-										eti.setDescriptionIsHtml(false      );
+						SimpleProfiler.start("GwtViewHelper.getUserProperties( Get per net folder information )");
+						try {
+							Map			nfSearch = getCollectionEntries(bs, request, null, null, new HashMap(), CollectionType.NET_FOLDERS, null);
+							List<Map>	nfList   = ((List<Map>) nfSearch.get(ObjectKeys.SEARCH_ENTRIES));
+							if (MiscUtil.hasItems(nfList)) {
+								Long nfBinderId = SearchUtils.getNetFoldersRootBinder().getId();
+								for (Map nfMap:  nfList) {
+									// ...adding an EntryTitleInfo for each
+									// ...to the reply.
+									Long   docId = Long.parseLong(GwtServerHelper.getStringFromEntryMap(nfMap, Constants.DOCID_FIELD));
+									String title = GwtServerHelper.getStringFromEntryMap(nfMap, Constants.TITLE_FIELD);
+									SimpleProfiler.start("GwtViewHelper.getUserProperties( Get per net folder " + title + " information )");
+									try {
+										EntryTitleInfo	eti = new EntryTitleInfo();
+										eti.setSeen(true);
+										eti.setTitle(MiscUtil.hasString(title) ? title : ("--" + NLT.get("entry.noTitle") + "--"));
+										eti.setEntityId(new EntityId(nfBinderId, docId, EntityId.FOLDER));
+										String description = getEntryDescriptionFromMap(request, nfMap);
+										if (MiscUtil.hasString(description)) {
+											eti.setDescription(description);
+											String descriptionFormat = GwtServerHelper.getStringFromEntryMap(nfMap, Constants.DESC_FORMAT_FIELD);
+											eti.setDescriptionIsHtml(MiscUtil.hasString(descriptionFormat) && descriptionFormat.equals(String.valueOf(Description.FORMAT_HTML)));
+										}
+										else {
+											description = GwtServerHelper.getStringFromEntryMap(nfMap, Constants.ENTITY_PATH);
+											if (MiscUtil.hasString(description)) {
+												eti.setDescription(      description);
+												eti.setDescriptionIsHtml(false      );
+											}
+										}
+										nfi.addNetFolder(eti);
+									}
+									finally {
+										SimpleProfiler.stop("GwtViewHelper.getUserProperties( Get per net folder " + title + " information )");
 									}
 								}
-								nfi.addNetFolder(eti);
 							}
+						}
+						finally {
+							SimpleProfiler.stop("GwtViewHelper.getUserProperties( Get per net folder information )");
 						}
 						return null;	// Not used.  Doesn't matter what we return.
 					}
@@ -7102,6 +7184,10 @@ public class GwtViewHelper {
 					m_logger,
 					e,
 					"GwtViewHelper.getUserProperties( SOURCE EXCEPTION ):  ");
+		}
+		
+		finally {
+			SimpleProfiler.stop("GwtViewHelper.getUserProperties()");
 		}
 	}
 
