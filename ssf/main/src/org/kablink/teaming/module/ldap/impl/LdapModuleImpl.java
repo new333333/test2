@@ -4072,10 +4072,10 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				
 				parentDn = dn.substring( index+1 );
 				
-				// Does the parent dn start with "ou=" or "o=" or "l=" or "c=" or "dc="?
+				// Does the parent dn start with "ou=" or "o=" or "l=" or "c=" or "dc=" or "st="?
 				if ( parentDn.startsWith( "ou=" ) || parentDn.startsWith( "o=" ) ||
 					 parentDn.startsWith( "l=" ) || parentDn.startsWith( "c=" ) ||
-					 parentDn.startsWith( "dc=" ) )
+					 parentDn.startsWith( "dc=" ) || parentDn.startsWith( "st=" ) )
 				{
 					// Yes
 					return parentDn;
