@@ -2644,21 +2644,25 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	}
 	
 	private void checkDataQuota(Binder binder, FileUploadItem fui) throws IOException {
-		if (!ObjectKeys.FI_ADAPTER.equalsIgnoreCase(fui.getRepositoryName())) { 
-			Long fileSize = fui.makeReentrant().getSize();
-			
-			//Check that the user is not over the user quota
-			checkQuota(RequestContextHolder.getRequestContext().getUser(),
-					fileSize,
-					fui.getOriginalFilename());
-			
-			//Check that the binder and its parents aren't over quota
-			checkBinderQuota(binder, fileSize, fui.getOriginalFilename());
-			
-			//Check if not too big
-			checkFileSizeLimit(binder, fileSize, fui.getOriginalFilename());			
-		}
-	}
+        User user = RequestContextHolder.getRequestContext().getUser();
+        if (ObjectKeys.FILE_SYNC_AGENT_INTERNALID.equals(user.getInternalId())) {
+            // Skip data quota checks for the file sync agent.
+        } else {
+            Long fileSize = fui.makeReentrant().getSize();
+            if (!ObjectKeys.FI_ADAPTER.equalsIgnoreCase(fui.getRepositoryName())) {
+                //Check that the user is not over the user quota
+                checkQuota(RequestContextHolder.getRequestContext().getUser(),
+                        fileSize,
+                        fui.getOriginalFilename());
+
+                //Check that the binder and its parents aren't over quota
+                checkBinderQuota(binder, fileSize, fui.getOriginalFilename());
+
+            }
+            //Check if not too big
+            checkFileSizeLimit(binder, fileSize, fui.getOriginalFilename());
+        }
+    }
 	
 	@Override
 	public boolean checkIfQuotaWouldBeExceeded(Binder binder, long fileSize, String fileName) {
