@@ -579,9 +579,21 @@
             	<indexExists indexName="OWNINGBINDERID_NOTIFYSTATUS"/>
             </not>
         </preConditions>
-        <comment>Create index on owningBinderId column in SS_NotifyStatus table</comment>
+        <comment>Create index owningBinderId_notifyStatus on owningBinderId column in SS_NotifyStatus table</comment>
         <createIndex indexName="OWNINGBINDERID_NOTIFYSTATUS" tableName="SS_NOTIFYSTATUS" unique="false">
             <column name="OWNINGBINDERID"/>
+        </createIndex>
+    </changeSet>
+    
+    <changeSet author="jong" context="schema" failOnError="true" id="49">
+        <preConditions onFail="MARK_RAN">
+            <not>
+            	<indexExists indexName="BINDERID_USERPROPERTIES"/>
+            </not>
+        </preConditions>
+        <comment>Create index binderId_userProperties on binderId column in SS_UserProperties table</comment>
+        <createIndex indexName="BINDERID_USERPROPERTIES" tableName="SS_USERPROPERTIES" unique="false">
+            <column name="BINDERID"/>
         </createIndex>
     </changeSet>
     
