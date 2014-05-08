@@ -6179,6 +6179,10 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			
 			timeout = SPropsUtil.getString( "com.sun.jndi.ldap.connect.timeout", "60000" );
 			env.put( "com.sun.jndi.ldap.connect.timeout", timeout );
+			
+			// Part of fix for bug 875689
+			timeout = SPropsUtil.getString( "com.sun.jndi.ldap.read.timeout", "10000" );
+			env.put( "com.sun.jndi.ldap.read.timeout", timeout );
 		}
 		
 		return new InitialLdapContext(env, null);
