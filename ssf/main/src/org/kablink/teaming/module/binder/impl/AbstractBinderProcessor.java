@@ -2975,18 +2975,33 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 		//name must be unique within DefinableEntity
 		for (int i=0; i<fileUploadItems.size(); ++i) {
 			FileUploadItem fui1 = (FileUploadItem)fileUploadItems.get(i);
-			for (int j=i+1; j<fileUploadItems.size(); ) {
-				FileUploadItem fui2 = (FileUploadItem)fileUploadItems.get(j);
-				if (fui1.getOriginalFilename().equalsIgnoreCase(fui2.getOriginalFilename()) &&
-						!fui1.getRepositoryName().equals(fui2.getRepositoryName())) {
-					fileUploadItems.remove(j);
-					errors.addProblem(new FilesErrors.Problem(null, 
-							fui1.getOriginalFilename(), FilesErrors.Problem.PROBLEM_FILE_EXISTS));
-				} else ++j;
-			}
+            if (Validator.containsPathCharacters(fui1.getOriginalFilename())) {
+                errors.addProblem(new FilesErrors.Problem(null,
+                        fui1.getOriginalFilename(), FilesErrors.Problem.PROBLEM_ILLEGAL_CHARACTER));
+            } else {
+                for (int j=i+1; j<fileUploadItems.size(); ) {
+                    FileUploadItem fui2 = (FileUploadItem)fileUploadItems.get(j);
+                    if (fui1.getOriginalFilename().equalsIgnoreCase(fui2.getOriginalFilename()) &&
+                            !fui1.getRepositoryName().equals(fui2.getRepositoryName())) {
+                        fileUploadItems.remove(j);
+                        errors.addProblem(new FilesErrors.Problem(null,
+                                fui1.getOriginalFilename(), FilesErrors.Problem.PROBLEM_FILE_EXISTS));
+                    } else ++j;
+                }
+            }
 		}
 	}
-	protected void processCreationTimestamp(DefinableEntity entity, Map options) {
+    protected void checkRenameFileNames(Map<FileAttachment, String> fileRenamesTo) {
+        if (fileRenamesTo!=null) {
+            for (String newName : fileRenamesTo.values()) {
+                if (Validator.containsPathCharacters(newName)) {
+                    throw new IllegalCharacterInNameException("errorcode.illegalCharacterInName", new Object[]{newName});
+                }
+            }
+        }
+    }
+
+    protected void processCreationTimestamp(DefinableEntity entity, Map options) {
 		User user;
 		if (options != null && (
 				options.containsKey(ObjectKeys.INPUT_OPTION_CREATION_DATE) ||
