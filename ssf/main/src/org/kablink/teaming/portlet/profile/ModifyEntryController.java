@@ -269,6 +269,9 @@ public class ModifyEntryController extends SAbstractController {
 			model.put(WebKeys.BINDER, entry.getParentBinder());
 			return new ModelAndView(WebKeys.VIEW_CONFIRM_DISABLE_USER_ACCOUNT, model);
 		} else {
+	       if (!RequestContextHolder.getRequestContext().getUserId().equals(entryId)) {
+	    	   getProfileModule().checkAccess(entry, ProfileOperation.modifyEntry);
+	       }
 			model.put(WebKeys.ENTRY, entry);
 			model.put(WebKeys.FOLDER, entry.getParentBinder());
 			model.put(WebKeys.BINDER, entry.getParentBinder());
