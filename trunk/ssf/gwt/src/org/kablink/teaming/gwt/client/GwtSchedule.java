@@ -92,6 +92,7 @@ public class GwtSchedule
 	public GwtSchedule()
 	{
 		// Nothing to do.
+		m_dayFrequency = DayFrequency.EVERY_DAY;
 	}	
 
 	/**

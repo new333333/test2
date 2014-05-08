@@ -7536,6 +7536,14 @@ public class GwtServerHelper {
 				gwtSchedule.setOnFriday( schedule.isOnFriday() );
 				gwtSchedule.setOnSaturday( schedule.isOnSaturday() );
 				gwtSchedule.setOnSunday( schedule.isOnSunday() );
+				
+				if ( schedule.isOnMonday() == false && schedule.isOnTuesday() == false &&
+					 schedule.isOnWednesday() == false && schedule.isOnThursday() == false &&
+					 schedule.isOnFriday() == false && schedule.isOnSaturday() == false &&
+					 schedule.isOnSunday() == false )
+				{
+					gwtSchedule.setDayFrequency( DayFrequency.EVERY_DAY );
+				}
 			}
 			
 			if ( schedule.isRepeatMinutes() )
