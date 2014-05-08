@@ -625,9 +625,21 @@ update SS_Principals set domainName=LOWER(domainName);
             	<indexExists indexName="owningBinderId_notifyStatus"/>
             </not>
         </preConditions>
-        <comment>Create index on owningBinderId column in SS_NotifyStatus table</comment>
+        <comment>Create index owningBinderId_notifyStatus on owningBinderId column in SS_NotifyStatus table</comment>
         <createIndex indexName="owningBinderId_notifyStatus" tableName="SS_NotifyStatus" unique="false">
             <column name="owningBinderId"/>
+        </createIndex>
+    </changeSet>
+    
+    <changeSet author="jong" context="schema" failOnError="true" id="55">
+        <preConditions onFail="MARK_RAN">
+            <not>
+            	<indexExists indexName="binderId_userProperties"/>
+            </not>
+        </preConditions>
+        <comment>Create index binderId_userProperties on binderId column in SS_UserProperties table</comment>
+        <createIndex indexName="binderId_userProperties" tableName="SS_UserProperties" unique="false">
+            <column name="binderId"/>
         </createIndex>
     </changeSet>
     
