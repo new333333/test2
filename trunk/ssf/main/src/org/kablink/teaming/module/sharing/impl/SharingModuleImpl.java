@@ -593,16 +593,13 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
                     if (accessControlManager.testOperation(zoneConfig, op.workAreaOperation) &&
                             folderModule.testAccess(fe, op.folderOperation)) {
                         // Yes!
-                        //In addition, if this is an entry in a Net Folder, we must test the root folder level permissions.
+                        reply = true;
+                    } else {
+                    	//Cannot get at the entry directly, so try its parent folder
                         if (parentBinderToTest != null) {
-                            //But first check if the entry was shared and is allowing the request
-                            reply = accessControlManager.testRightGrantedBySharing(user, (WorkArea)de, WorkAreaOperation.ALLOW_SHARING_INTERNAL);
-                            if (!reply) {
-                                reply = binderModule.testAccess(parentBinderToTest, op.binderOperation);
-                            }
-                        } else {
-                            reply = true;
+                            reply = binderModule.testAccess(parentBinderToTest, op.binderOperation);
                         }
+                    	
                     }
                     if (reply) {
                         break;
