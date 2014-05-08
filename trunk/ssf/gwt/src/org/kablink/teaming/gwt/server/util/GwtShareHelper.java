@@ -1539,6 +1539,13 @@ public class GwtShareHelper
 		{
 			// Get the list of ShareItem objects for the given entity
 			listOfShareItems = ami.getSharingModule().getShareItems( spec );
+			
+			if ( entityId == null )
+			{
+				// Bug 876900, we need to validate that the entity that each share item is referencing
+				// still exists.
+				ami.getSharingModule().validateShareItems( listOfShareItems );
+			}
 		}
 		catch ( Exception ex )
 		{
