@@ -238,6 +238,7 @@ public abstract class AbstractAuthenticationProviderModule extends BaseAuthentic
 				DefaultSpringSecurityContextSource contextSource = null;
 				try {
 					String url;
+					String timeout;
 					Map<String,String> baseEnvironmentProperties; 
 					
 					// The call to new DefaultSpringSecurityContextSource() will fail if
@@ -261,6 +262,11 @@ public abstract class AbstractAuthenticationProviderModule extends BaseAuthentic
 					// Set the property that tells ldap whether or not to dereference aliases.
 					baseEnvironmentProperties = new HashMap<String, String>();
 					baseEnvironmentProperties.put( "java.naming.ldap.derefAliases", SPropsUtil.getString( "java.naming.ldap.derefAliases", "never" ) );
+
+					// Part of fix for bug 875689
+					timeout = SPropsUtil.getString( "com.sun.jndi.ldap.read.timeout", "10000" );
+					baseEnvironmentProperties.put( "com.sun.jndi.ldap.read.timeout", timeout );
+					
 					contextSource.setBaseEnvironmentProperties( baseEnvironmentProperties );
 					
 				} catch(Exception e) {
