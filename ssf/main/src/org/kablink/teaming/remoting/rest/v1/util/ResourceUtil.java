@@ -66,6 +66,7 @@ import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.PermaLinkUtil;
 import org.dom4j.Element;
+import org.kablink.teaming.web.util.WebUrlUtil;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
 
@@ -525,7 +526,11 @@ public class ResourceUtil {
 
     private static DesktopAppConfig buildDesktopAppConfig(org.kablink.teaming.domain.ZoneConfig config) {
         DesktopAppConfig desktopAppConfig = new DesktopAppConfig();
-        desktopAppConfig.setAutoUpdateUrl(config.getFsaAutoUpdateUrl());
+        if (config.getFsaDeployLocalApps()) {
+            desktopAppConfig.setAutoUpdateUrl(WebUrlUtil.getLocalDesktopDeploymentURL());
+        } else {
+            desktopAppConfig.setAutoUpdateUrl(config.getFsaAutoUpdateUrl());
+        }
         desktopAppConfig.setEnabled(config.getFsaEnabled());
         desktopAppConfig.setSyncInterval(config.getFsaSynchInterval());
         desktopAppConfig.setMaxFileSize(((long)config.getFsaMaxFileSize()) * 1024 * 1024);
