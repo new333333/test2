@@ -54,6 +54,7 @@ import org.kablink.teaming.module.folder.FolderModule.FolderOperation;
 import org.kablink.teaming.module.folder.processor.FolderCoreProcessor;
 import org.kablink.teaming.module.impl.CommonDependencyInjection;
 import org.kablink.teaming.module.profile.ProfileModule;
+import org.kablink.teaming.module.shared.AccessUtils;
 import org.kablink.teaming.module.sharing.SharingModule;
 import org.kablink.teaming.remoting.rest.v1.exc.BadRequestException;
 import org.kablink.teaming.runas.RunasCallback;
@@ -70,9 +71,9 @@ import org.kablink.teaming.util.ShareLists;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.TagUtil;
 import org.kablink.teaming.util.Utils;
+import org.kablink.teaming.web.util.ListUtil;
 import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.util.api.ApiErrorCode;
-
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -887,9 +888,22 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
         }
     }
 
+    /**
+     * Deletes a share item with access checking.
+     * 
+     * @param shareItemId
+     */
     //NO transaction
 	@Override
 	public void deleteShareItem(Long shareItemId) {
+		// Always use the implementation form of the method.
+		deleteShareItemImpl(shareItemId, true);
+	}
+	
+    /*
+     * Implements the deleteShareItem() method.
+     */
+	private void deleteShareItemImpl(Long shareItemId, boolean doCheckAccess) {
 		final ShareItem shareItem;
 		try {
 			shareItem = getProfileDao().loadShareItem(shareItemId);
@@ -898,9 +912,11 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 			// already gone, ok
 			return;
 		}
-		
-		// Access check (throws error if not allowed)
-		checkAccess(shareItem, SharingOperation.deleteShareItem);
+
+		if (doCheckAccess) {
+			// Access check (throws error if not allowed)
+			checkAccess(shareItem, SharingOperation.deleteShareItem);
+		}
 		
 		//Now delete the shareItem
 		getTransactionTemplate().execute(new TransactionCallback<Object>() {
@@ -930,6 +946,7 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 			}
 		}
 	}
+	
 	/* (non-Javadoc)
 	 * @see org.kablink.teaming.module.profile.ProfileModule#getShareItem(java.lang.Long)
 	 */
@@ -1437,5 +1454,172 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 		
   		ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
   		zoneConfig.setShareLists(shareLists);
+    }
+    
+    /**
+     * Validates that the ShareItem's in a List<ShareItem> refer to a
+     * valid definable entity.  If they don't, they are deleted from
+     * the SS_ShareItem table and removed from the list.
+     * 
+     * Will Optionally:
+     * 1) Populate a List<DefinableEntity> of the valid shared
+     *    entities.
+     * 2) Validate the user has access to the shared entities
+     *    that the List<DefinableEntity> is populated with.
+     * 
+     * @param shares
+     * @param sharedEntities (optional)
+     */
+    @Override
+    public void validateShareItems(List<ShareItem> shares) {
+    	// Always use the implementation form of the method.
+    	validateShareItemsImpl(shares, null, true);
+    }
+    @Override
+    public void validateShareItems(List<ShareItem> shares, List<DefinableEntity> sharedEntities) {
+    	// Always use the implementation form of the method.
+    	validateShareItemsImpl(shares, sharedEntities, true);
+    }
+    @Override
+    public void validateShareItemsWithoutAccessCheck(List<ShareItem> shares, List<DefinableEntity> sharedEntities) {
+    	// Always use the implementation form of the method.
+    	validateShareItemsImpl(shares, sharedEntities, false);
+    }
+    
+    /*
+     * Implements the various validateShareItems() methods.
+     */
+    private void validateShareItemsImpl(List<ShareItem> shares, List<DefinableEntity> sharedEntities, boolean doCheckAccess) {
+    	// If we weren't given any shares...
+    	int c = ((null == shares) ? 0 : shares.size());
+    	if (0 == c) {
+    		// ...there's nothing to validate.
+    		return;
+    	}
+
+    	// Collect the shared entity IDs from the shares.
+    	List<Long> binderIds = new ArrayList<Long>();
+    	List<Long> entryIds  = new ArrayList<Long>();
+    	for (ShareItem share:  shares) {
+    		EntityIdentifier eid = share.getSharedEntityIdentifier();
+    		Long             id  = eid.getEntityId();
+    		if (eid.getEntityType().equals(EntityType.folderEntry))
+    		     ListUtil.addLongToListLongIfUnique(entryIds,  id);
+    		else ListUtil.addLongToListLongIfUnique(binderIds, id);
+    	}
+
+    	// Access the referenced Binder's WITHOUT access checks...
+    	Set<Binder> binderSet;
+    	if (binderIds.isEmpty())
+    	     binderSet = null;
+    	else binderSet = getBinderModule().getBinders(binderIds, false);
+    	if (null == binderSet) {
+    		binderSet = new HashSet<Binder>();
+    	}
+    	
+    	// ...and FolderEntry's WIHTOUT access checks.
+    	Set<FolderEntry> entrySet;
+    	if (entryIds.isEmpty())
+    	     entrySet = null;
+    	else entrySet = getFolderModule().getEntries(entryIds, false);
+    	if (null == entrySet) {
+    		entrySet = new HashSet<FolderEntry>();
+    	}
+
+    	// Scan the shares again.
+    	User user = RequestContextHolder.getRequestContext().getUser();
+    	for (int i = (c - 1); i >= 0; i -= 1) {
+    		// Were we able to find this share's DefinableEntity?
+    		ShareItem        share = shares.get(i);
+    		EntityIdentifier eid   = share.getSharedEntityIdentifier();
+    		Long             id    = eid.getEntityId();
+    		DefinableEntity  de;
+    		boolean          isEntry = eid.getEntityType().equals(EntityType.folderEntry);
+    		if (isEntry)
+    		     de = findEntryById( entrySet,  id);
+    		else de = findBinderById(binderSet, id);
+    		if (null == de) {
+    			// No!  Then we consider it invalid.  Remove it from
+    			// the share list and database.
+    			Long shareId = share.getId();
+				logger.error("SharingModuleImpl.validateShareItemsImpl():  The " + (isEntry ? "Entry" : "Binder") + " (id=" + id + ") referenced by ShareItem (id:" + shareId + ") is missing.  The ShareItem is being deleted.");
+    			shares.remove(i);
+    		    deleteShareItemImpl(shareId, false);
+    		}
+
+    		else if (null != sharedEntities) {
+        		// Yes, it's valid and the caller wants it returned!
+    			// Are we tracking it yet?
+            	if (null == findSharedEntityInList(sharedEntities, eid)) {
+        			// No!  Access check it if requested and add it to
+        			// the shared entity list.
+	                try {
+	                	if (doCheckAccess) {
+	                		AccessUtils.readCheck(user, de);
+	                	}
+	               		sharedEntities.add(de);
+	                } catch (Exception ignoreMe) {};
+            	}
+    		}
+    	}
+    }
+    
+    /*
+     * Scans a Set<Binder> for a Binder with the given ID.  If one is
+     * found, it's returned.  Otherwise, null is returned.
+     */
+    private static Binder findBinderById(Set<Binder> binderSet, Long id) {
+    	if ((null != binderSet) && (null != id)) {
+	    	for (Binder binder:  binderSet) {
+	    		if (binder.getId().equals(id)) {
+	    			return binder;
+	    		}
+	    	}
+    	}
+    	return null;
+    }
+    
+    /*
+     * Scans a Set<FolderEntry> for a FolderEntry with the given ID.
+     * If one is found, it's returned.  Otherwise, null is returned.
+     */
+    private static FolderEntry findEntryById(Set<FolderEntry> entrySet, Long id) {
+    	if ((null != entrySet) && (null != id)) {
+	    	for (FolderEntry fe:  entrySet) {
+	    		if (fe.getId().equals(id)) {
+	    			return fe;
+	    		}
+	    	}
+    	}
+    	return null;
+    }
+    
+    /**
+     * Scans a List<DefinableEntity> for the one matching an
+     * EntityIdentifier.  If found, it's returned.  Otherwise, null is
+     * returned.
+     * 
+     * @param sharedEntities
+     * @param eid
+     * 
+     * @return
+     */
+    @Override
+    public DefinableEntity findSharedEntityInList(List<DefinableEntity> sharedEntities, EntityIdentifier eid) {
+    	// Do we have list and an identifier to search for?
+    	if ((null != sharedEntities) && (null != eid)) {
+    		// Yes!  Scan the entities.
+    		for (DefinableEntity sharedEntity:  sharedEntities) {
+    			// Is this the entity in question?
+    			if (sharedEntity.getEntityType().equals(eid.getEntityType()) && sharedEntity.getId().equals(eid.getEntityId())) {
+    				// Yes!  Return it.
+    				return sharedEntity;
+    			}
+    		}
+    	}
+    	
+    	// If we get here, we couldn't find the entity request.  Return
+    	// null.
+		return null;
     }
 }
