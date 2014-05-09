@@ -918,7 +918,7 @@ public class ManageGroupsDlg extends DlgBox implements
 		y = getAbsoluteTop() + 50;
 
 		if (m_modifyGroupDlg == null) {
-			ModifyGroupDlg.createAsync(true, false, x, y,
+			ModifyGroupDlg.createAsync( false, true, x, y,
 					new ModifyGroupDlgClient() {
 						@Override
 						public void onUnavailable() {

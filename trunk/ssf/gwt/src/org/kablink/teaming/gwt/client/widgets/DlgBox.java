@@ -962,7 +962,9 @@ public abstract class DlgBox extends TeamingPopupPanel
     {
 		Object props;
 		
-		// Yes
+		// Disable the ok button until we are finished doing whatever needs to be done
+		okBtnProcessingStarted();
+		
 		// Get the data from the controls in the dialog box.
 		props = getDataFromDlg();
 		
@@ -980,6 +982,28 @@ public abstract class DlgBox extends TeamingPopupPanel
 					hide();
 			}
 		}
+		
+		// Enable the ok button again
+		okBtnProcessingEnded();
+    }
+    
+    /**
+     * 
+     */
+    protected void okBtnProcessingEnded()
+    {
+    	if ( m_okBtn != null )
+    		m_okBtn.setEnabled( true );
+    }
+    
+    /**
+     * 
+     */
+    protected void okBtnProcessingStarted()
+    {
+    	// Disable the ok button
+    	if ( m_okBtn != null )
+    		m_okBtn.setEnabled( false );
     }
     
     /*
