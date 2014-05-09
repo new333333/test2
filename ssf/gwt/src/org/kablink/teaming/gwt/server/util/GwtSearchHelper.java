@@ -57,6 +57,7 @@ import org.kablink.teaming.gwt.client.GwtFolder;
 import org.kablink.teaming.gwt.client.GwtFolderEntry;
 import org.kablink.teaming.gwt.client.GwtGroup;
 import org.kablink.teaming.gwt.client.GwtSearchCriteria;
+import org.kablink.teaming.gwt.client.GwtSearchCriteria.SearchType;
 import org.kablink.teaming.gwt.client.GwtSearchResults;
 import org.kablink.teaming.gwt.client.GwtTag;
 import org.kablink.teaming.gwt.client.GwtTeamingException;
@@ -240,7 +241,7 @@ public class GwtSearchHelper
 		searchTermFilter = new SearchFilter();
 		
 	    // Set up the search filter.
-		switch ( searchCriteria.getSearchType() )
+		switch ( searchType )
 		{
 		case ENTRIES:
 			String binderId = null;
@@ -278,11 +279,20 @@ public class GwtSearchHelper
 		case USER:
 		case PRINCIPAL:
 			searchTermFilter.addTitleFilter( searchText );
-			searchTermFilter.addLoginNameFilter( searchText );
-			if ( GwtSearchCriteria.SearchType.PERSON == searchType ) {
-				searchTermFilter.addAndPersonFlagFilter( true );
+			
+			if ( searchType == SearchType.PERSON || searchType == SearchType.USER )
+			{
+				searchTermFilter.addLoginNameFilter( searchText );
+				
+				if ( searchType == SearchType.PERSON )
+					searchTermFilter.addAndPersonFlagFilter( true );
 			}
-
+			else if ( searchType == SearchType.PRINCIPAL )
+			{
+				searchTermFilter.addLoginNameFilter( searchText );
+				searchTermFilter.addGroupNameFilter( searchText );
+			}
+			
 			// Are we searching for internal principals only?
 			if ( searchCriteria.getSearchForInternalPrincipals() == true && searchCriteria.getSearchForExternalPrincipals() == false )
 			{
@@ -303,7 +313,7 @@ public class GwtSearchHelper
 
 		case GROUP:
 			searchTermFilter.addTitleFilter( searchText );
-			searchTermFilter.addLoginNameFilter( searchText );
+			searchTermFilter.addGroupNameFilter( searchText );
 
 			// Are we searching for internal groups only?
 			if ( searchCriteria.getSearchForInternalPrincipals() == true && searchCriteria.getSearchForExternalPrincipals() == false )
