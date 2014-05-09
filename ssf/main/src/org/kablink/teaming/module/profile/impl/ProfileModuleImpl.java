@@ -56,6 +56,7 @@ import org.dom4j.Element;
 import org.kablink.teaming.ApplicationExistsException;
 import org.kablink.teaming.ApplicationGroupExistsException;
 import org.kablink.teaming.GroupExistsException;
+import org.kablink.teaming.IllegalCharacterInNameException;
 import org.kablink.teaming.NotSupportedException;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.PasswordMismatchException;
@@ -1258,6 +1259,11 @@ public Map getGroups(Map options) {
     	   }
        }
 
+       String name = inputData.getSingleValue( "name" );
+       if (name!=null && Validator.containsPathCharacters(name)) {
+           throw new IllegalCharacterInNameException("errorcode.title.pathCharacters", new Object[]{name});
+       }
+
        processor.modifyEntry(binder, entry, inputData, fileItems, atts, fileRenamesTo, options);
        
        // If we're modifying a User object...
@@ -2165,6 +2171,10 @@ public Map getUsers() {
         		}
 
         	}
+
+            if (Validator.containsPathCharacters(name)) {
+                throw new IllegalCharacterInNameException("errorcode.title.pathCharacters", new Object[]{name});
+            }
         	
         	Entry newEntry = loadProcessor(binder).addEntry(binder, definition, clazz, inputData, fileItems, options);
 
