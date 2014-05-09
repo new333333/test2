@@ -104,6 +104,7 @@ public class AddFileAttachmentDlg extends DlgBox
 			/**
 			 * 
 			 */
+			@Override
 			public void onFailure( Throwable t )
 			{
 				GwtClientHelper.handleGwtRPCFailure(
@@ -116,6 +117,7 @@ public class AddFileAttachmentDlg extends DlgBox
 			 * 
 			 * @param result
 			 */
+			@Override
 			public void onSuccess( VibeRpcResponse response )
 			{
 				String modifyBinderUrl;
@@ -170,6 +172,7 @@ public class AddFileAttachmentDlg extends DlgBox
 				/**
 				 * Invoke the remove the corresponding FileUpload control from this dialog
 				 */
+				@Override
 				public void onClick( ClickEvent event )
 				{
 					Widget anchor;
@@ -216,6 +219,7 @@ public class AddFileAttachmentDlg extends DlgBox
 	/**
 	 * Create all the controls that make up the dialog box.
 	 */
+	@Override
 	public Panel createContent( Object props )
 	{
 		FlowPanel mainPanel = null;
@@ -234,8 +238,12 @@ public class AddFileAttachmentDlg extends DlgBox
 			/**
 			 * 
 			 */
+			@Override
 			public void onSubmitComplete( SubmitCompleteEvent event )
 			{
+				// Tell the dialog box we are finished doing are work
+				finishedUploadingFiles();
+
 				// When the form submission is successfully completed, this event is
 		        // fired. Assuming the service returned a response of type text/html,
 		        // we can get the result text here (see the FormPanel documentation for
@@ -318,7 +326,6 @@ public class AddFileAttachmentDlg extends DlgBox
 						}
 					}
 				}
-
 			}
 	    }); 
 
@@ -361,6 +368,7 @@ public class AddFileAttachmentDlg extends DlgBox
 				/**
 				 * Add a FileUpload control to this dialog
 				 */
+				@Override
 				public void onClick( ClickEvent event )
 				{
 					addFileUploadControl();
@@ -374,6 +382,7 @@ public class AddFileAttachmentDlg extends DlgBox
 				/**
 				 * 
 				 */
+				@Override
 				public void onMouseOver( MouseOverEvent event )
 				{
 					Widget widget;
@@ -391,6 +400,7 @@ public class AddFileAttachmentDlg extends DlgBox
 				/**
 				 * 
 				 */
+				@Override
 				public void onMouseOut( MouseOutEvent event )
 				{
 					Widget widget;
@@ -418,6 +428,7 @@ public class AddFileAttachmentDlg extends DlgBox
 	/**
 	 * This method gets called when user user presses ok.
 	 */
+	@Override
 	public boolean editSuccessful( Object obj )
 	{
 		boolean noFilesSelected = true;
@@ -464,8 +475,17 @@ public class AddFileAttachmentDlg extends DlgBox
 
 	
 	/**
+	 * This gets called after we have finished all our work uploading files
+	 */
+	private void finishedUploadingFiles()
+	{
+		super.okBtnProcessingEnded();
+	}
+	
+	/**
 	 * Return a list of the file names that were selected by the user.
 	 */
+	@Override
 	public Object getDataFromDlg()
 	{
 		ArrayList<String> listOfFileNames;
@@ -488,6 +508,7 @@ public class AddFileAttachmentDlg extends DlgBox
 	/**
 	 * We don't have a widget to give the focus to. 
 	 */
+	@Override
 	public FocusWidget getFocusWidget()
 	{
 		return null;
@@ -516,6 +537,15 @@ public class AddFileAttachmentDlg extends DlgBox
 	}// end init()
 	
 	
+    /**
+     * 
+     */
+    @Override
+	protected void okBtnProcessingEnded()
+    {
+    	// We don't need to do anything yet because we aren't finished doing what we need to do.
+    }
+    
 	/**
 	 * Given a "remove file" anchor, find the corresponding FileUpload control and remove it from the dialog.
 	 */
