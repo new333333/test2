@@ -1516,4 +1516,9 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
         limited.title = this.title;
         return limited;
     }
+    
+    @Override
+    public boolean supportsCustomFields() {
+    	return !this.isAclExternallyControlled();
+    }
 }
