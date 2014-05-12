@@ -39,12 +39,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.servlet.http.HttpSession;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.slide.util.logger.Logger;
 import org.dom4j.Element;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.SingletonViolationException;
+import org.kablink.teaming.cache.impl.HashMapCache;
+import org.kablink.teaming.context.request.RequestContext;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.CoreDao;
 import org.kablink.teaming.dao.ProfileDao;
@@ -70,8 +73,6 @@ import org.kablink.teaming.fi.connection.acl.AclResourceDriver;
 import org.kablink.teaming.fi.connection.acl.AclResourceSession;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
-import org.kablink.teaming.module.folder.FolderModule;
-import org.kablink.teaming.module.folder.FolderModule.FolderOperation;
 import org.kablink.teaming.module.netfolder.NetFileHandle;
 import org.kablink.teaming.module.netfolder.NetFolderUtil;
 import org.kablink.teaming.module.workflow.WorkflowProcessUtils;
@@ -90,6 +91,7 @@ import org.kablink.teaming.security.function.ConditionalClause;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.Utils;
+import org.kablink.teaming.web.util.WebHelper;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
 
@@ -1074,6 +1076,35 @@ public class AccessUtils  {
 		if(session == null)
 			return null; // cannot obtain session for the user
 		try {
+			//See if the answer has been cached
+			HttpSession httpSession = WebHelper.getCurrentHttpSession();
+			if (httpSession != null) {
+				//This must be coming from a web client. So, use the httpSession to store the cache
+				HashMapCache<String, Long> dredgedAclCache = (HashMapCache<String, Long>)httpSession.getAttribute(ObjectKeys.SESSION_DREDGED_ROLE_ID_CACHE);
+				if (dredgedAclCache != null) {
+					Long vibeRoleId = dredgedAclCache.get(netFileHandle.getIdKey());
+					if (vibeRoleId != null) {
+						//Return the cached value
+						//logger.warn("Using cached roleId ("+vibeRoleId+") for file: "+netFolderFile.getTitle()+", at time "+String.valueOf(System.currentTimeMillis()));
+						return vibeRoleId;
+					}
+				}
+			} else {
+				//This must be a REST call. So use the request context to hold the cache
+				RequestContext context = RequestContextHolder.getRequestContext();
+				if (context != null) {
+					HashMapCache<String, Long> dredgedAclCache = (HashMapCache<String, Long>)context.getCacheEntry(ObjectKeys.SESSION_DREDGED_ROLE_ID_CACHE);
+					if (dredgedAclCache != null) {
+						Long vibeRoleId = dredgedAclCache.get(netFileHandle.getIdKey());
+						if (vibeRoleId != null) {
+							//Return the cached value
+							//logger.warn("Using REST cached roleId ("+vibeRoleId+") for file: "+netFolderFile.getTitle()+", at time "+String.valueOf(System.currentTimeMillis()));
+							return vibeRoleId;
+						}
+					}
+				}
+			}
+			
 			Map<String, List<String>> groupIds = getFileSystemGroupIds(driver);
 			session.setPath(netFileHandle.getResourcePath(), null, netFileHandle.isDirectory());
 			String permissionName = null;
@@ -1086,7 +1117,32 @@ public class AccessUtils  {
 			if(permissionName == null)
 				return null;
 			AclItemPermissionMapper permissionMapper = driver.getAclItemPermissionMapper();
-			return permissionMapper.toVibeRoleId(permissionName);
+			Long vibeRoleId = permissionMapper.toVibeRoleId(permissionName);
+			
+			//Cache this answer if needed again within a few seconds
+			if (httpSession != null) {
+				HashMapCache<String, Long> dredgedAclCache = (HashMapCache<String, Long>)httpSession.getAttribute(ObjectKeys.SESSION_DREDGED_ROLE_ID_CACHE);
+				if (dredgedAclCache == null) {
+					dredgedAclCache = new HashMapCache<String, Long>(ObjectKeys.SESSION_DREDGED_ROLE_ID_CACHE_TIMEOUT);
+				}
+				dredgedAclCache.put(netFileHandle.getIdKey(), vibeRoleId);
+				httpSession.setAttribute(ObjectKeys.SESSION_DREDGED_ROLE_ID_CACHE, dredgedAclCache);
+				//logger.warn("Setting cached roleId ("+vibeRoleId+") for file: "+netFolderFile.getTitle()+", at time "+String.valueOf(System.currentTimeMillis()));
+			} else {
+				//This must be a REST call. So use the request context to hold the cache
+				RequestContext context = RequestContextHolder.getRequestContext();
+				if (context != null) {
+					HashMapCache<String, Long> dredgedAclCache = (HashMapCache<String, Long>)context.getCacheEntry(ObjectKeys.SESSION_DREDGED_ROLE_ID_CACHE);
+					if (dredgedAclCache == null) {
+						dredgedAclCache = new HashMapCache<String, Long>(ObjectKeys.SESSION_DREDGED_ROLE_ID_CACHE_TIMEOUT);
+					}
+					dredgedAclCache.put(netFileHandle.getIdKey(), vibeRoleId);
+					context.setCacheEntry(ObjectKeys.SESSION_DREDGED_ROLE_ID_CACHE, dredgedAclCache);
+					//logger.warn("Setting REST cached roleId ("+vibeRoleId+") for file: "+netFolderFile.getTitle()+", at time "+String.valueOf(System.currentTimeMillis()));
+				}
+			}
+
+			return vibeRoleId;
 		}
 		catch (AclItemPrincipalMappingException e) {
 			logger.error("Error mapping principal on file " + netFileHandle, e);

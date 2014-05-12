@@ -46,7 +46,6 @@ import org.kablink.teaming.UncheckedIOException;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.NetFolderConfig.SyncScheduleOption;
 import org.kablink.teaming.domain.BinderState.FullSyncStats;
-import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.Entry;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.Folder;
@@ -356,7 +355,7 @@ public interface FolderModule {
 	 * @throws AccessControlException
 	 */
     public FolderEntry getEntry(Long parentFolderId, Long entryId) 
-    	throws AccessControlException;
+    	throws NoFolderEntryByTheIdException, AccessControlException;
     
     public FolderEntry getEntryWithoutAccessCheck(Long parentFolderId, Long entryId) 
     	throws NoFolderEntryByTheIdException;
@@ -376,6 +375,8 @@ public interface FolderModule {
      * @return
      */
     public SortedSet<FolderEntry>getEntries(Collection<Long>ids);
+    public SortedSet<FolderEntry>getEntries(Collection<Long>ids, boolean doAccessCheck);
+    
     /**
      * Extend the  <code>FolderEntries</code> to include principal objects
      * @param ids
@@ -657,6 +658,13 @@ public interface FolderModule {
      */
     public boolean testReadAccess(User user, WorkArea workArea, boolean checkSharing);
     /**
+     * 	Test rename access to a binder. 
+     * @param folder
+     * @param checkSharing
+     * @return
+     */
+    public boolean testFolderRenameAccess(User user, Binder binder, boolean checkSharing);
+    /**
      * 	Test access to a binder. 
      * @param folder
      * @param operation
@@ -743,7 +751,21 @@ public interface FolderModule {
 	
     public void syncAclForNetFolderRoot(Folder netFolderRoot);
 
-    public Folder createNetFolder(Long netFolderConfigId, Long templateId, Long parentBinderId, String folderTitle, String folderName, User owner, Boolean isHomeDir, boolean indexContent, Boolean inheritIndexContent, SyncScheduleOption syncScheduleOption, Boolean fullSyncDirOnly ) throws AccessControlException, WriteFilesException, WriteEntryDataException;
+    public Folder createNetFolder(
+        	Long netFolderConfigId,
+        	Long templateId,
+        	Long parentBinderId,
+        	String folderTitle,
+        	String folderName,
+        	User owner,
+        	Boolean isHomeDir,
+        	boolean indexContent,
+        	Boolean inheritIndexContent,
+        	SyncScheduleOption syncScheduleOption,
+        	Boolean fullSyncDirOnly,
+        	Boolean allowDesktopAppToTriggerSync,
+        	Boolean inheritAllowDesktopAppToTriggerSync ) 
+        		throws AccessControlException, WriteFilesException, WriteEntryDataException;
     
     public Map getNetFolderAccessData(Folder netFolder);
     
@@ -844,4 +866,6 @@ public interface FolderModule {
 	
 	public Long getUserIdForOwner(AclItemPrincipalMapper principalMapper, ResourceItem resourceItem);
 
+
+    public boolean enqueueInitialNetFolderSync(Long folderId);
 }

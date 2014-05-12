@@ -98,6 +98,7 @@ public class GwtSearchCriteria
 	private boolean m_searchForInternalPrincipals = false;	// When searching for users/groups should we search for internal users/groups?
 	private boolean m_searchForExternalPrincipals = false;	// When searching for users/groups should we search for external users/groups?
 	private boolean m_searchForLdapGroups = true;			// When search for groups should we include ldap groups.
+	private boolean m_searchForLdapContainers = false;		// When searching for groups should we include ldap containers.
 
 	/**
 	 * 
@@ -186,6 +187,14 @@ public class GwtSearchCriteria
 	public boolean getSearchForInternalPrincipals()
 	{
 		return m_searchForInternalPrincipals;
+	}
+	
+	/**
+	 * 
+	 */
+	public boolean getSearchForLdapContainers()
+	{
+		return m_searchForLdapContainers;
 	}
 	
 	/**
@@ -309,6 +318,14 @@ public class GwtSearchCriteria
 	public void setSearchForInternalPrincipals( boolean internal )
 	{
 		m_searchForInternalPrincipals = internal;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setSearchForLdapContainers( boolean search )
+	{
+		m_searchForLdapContainers = search;
 	}
 	
 	/**

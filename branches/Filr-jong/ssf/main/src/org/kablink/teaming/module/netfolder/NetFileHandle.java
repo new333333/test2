@@ -159,6 +159,10 @@ public class NetFileHandle implements AccessCheckable {
 		return sb.toString();
 	}
 
+	public String getIdKey() {
+		return netFolderConfigId + "-" + relRscPath;
+	}
+	
 	private void computePath() {
 		if(!pathComputed) {
 			NetFolderConfig nfc = NetFolderUtil.getNetFolderConfig(netFolderConfigId);

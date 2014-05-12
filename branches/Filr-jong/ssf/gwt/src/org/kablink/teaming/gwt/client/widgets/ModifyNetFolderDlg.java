@@ -137,6 +137,9 @@ public class ModifyNetFolderDlg extends DlgBox
 	private RadioButton m_useNFServerSyncOptionRB;
 	private RadioButton m_useNFSyncOptionRB;
 	private CheckBox m_fullSyncDirOnlyCB = null;
+	private RadioButton m_useNFServerAllowDesktopAppToTriggerSyncRB;
+	private RadioButton m_useNFAllowDesktopAppToTriggerSyncRB;
+	private CheckBox m_allowDesktopAppToTriggerSyncCB;
 	private Panel m_rightsPanel;
 	private ModifyNetFolderRootDlg m_modifyNetFolderRootDlg;
 	private List<NetFolderRoot> m_listOfNetFolderRoots;
@@ -624,6 +627,28 @@ public class ModifyNetFolderDlg extends DlgBox
 			panel.add( m_fullSyncDirOnlyCB );
 			mainPanel.add( panel );
 		}
+		
+		// Create the controls for "allow desktop app to trigger initial home folder sync"
+		{
+			FlowPanel panel;
+			
+			m_useNFServerAllowDesktopAppToTriggerSyncRB = new RadioButton( "desktopTriggerSync", messages.modifyNetFolderDlg_UseNetFolderServerDesktopAppTriggerSync() );
+			panel = new FlowPanel();
+			panel.addStyleName( "margintop3" );
+			panel.add( m_useNFServerAllowDesktopAppToTriggerSyncRB );
+			mainPanel.add( panel );
+
+			m_useNFAllowDesktopAppToTriggerSyncRB = new RadioButton( "desktopTriggerSync", messages.modifyNetFolderDlg_UseNetFolderDesktopAppTriggerSync() );
+			panel = new FlowPanel();
+			panel.add( m_useNFAllowDesktopAppToTriggerSyncRB );
+			mainPanel.add( panel );
+			
+			m_allowDesktopAppToTriggerSyncCB = new CheckBox( messages.modifyNetFolderDlg_AllowDesktopAppTriggerSync() );
+			panel = new FlowPanel();
+			panel.getElement().getStyle().setMarginLeft( 30, Unit.PX );
+			panel.add( m_allowDesktopAppToTriggerSyncCB );
+			mainPanel.add( panel );
+		}
 
 		return mainPanel;
 	}
@@ -873,6 +898,17 @@ public class ModifyNetFolderDlg extends DlgBox
 	}
 	
 	/**
+	 * 
+	 */
+	private boolean getAllowDesktopAppToTriggerSync()
+	{
+		if ( m_allowDesktopAppToTriggerSyncCB.isVisible() == false )
+			return false;
+		
+		return m_allowDesktopAppToTriggerSyncCB.getValue();
+	}
+	
+	/**
 	 * Get whether mobile apps can sync data from this net folder.
 	 */
 	private boolean getAllowMobileAppsToSyncData()
@@ -898,9 +934,13 @@ public class ModifyNetFolderDlg extends DlgBox
 		NetFolderDataSyncSettings settings;
 		
 		settings = new NetFolderDataSyncSettings();
+		
 		settings.setAllowDesktopAppToSyncData( getAllowDesktopAppToSyncData() );
 		settings.setAllowMobileAppsToSyncData( getAllowMobileAppsToSyncData() );
-
+		
+		settings.setAllowDesktopAppToTriggerSync( getAllowDesktopAppToTriggerSync() );
+		settings.setInheritAllowDesktopAppToTriggerSync( getInheritAllowDesktopAppToTriggerSync() );
+		
 		return settings;
 	}
 	
@@ -952,6 +992,17 @@ public class ModifyNetFolderDlg extends DlgBox
 	private boolean getIndexContent()
 	{
 		return m_indexContentCkbox.getValue();
+	}
+	
+	/**
+	 * 
+	 */
+	private Boolean getInheritAllowDesktopAppToTriggerSync()
+	{
+		if ( m_useNFAllowDesktopAppToTriggerSyncRB.isVisible() == false )
+			return Boolean.TRUE;
+		
+		return m_useNFServerAllowDesktopAppToTriggerSyncRB.getValue();
 	}
 	
 	/**
@@ -1132,7 +1183,7 @@ public class ModifyNetFolderDlg extends DlgBox
 		netFolder.setDataSyncSettings( getDataSyncSettings() );
 		netFolder.setJitsConfig( getJitsSettings() );
 		netFolder.setFullSyncDirOnly( getFullSyncDirOnly() );
-		
+
 		if ( m_netFolder != null )
 		{
 			netFolder.setId( m_netFolder.getId() );
@@ -1332,8 +1383,17 @@ public class ModifyNetFolderDlg extends DlgBox
 	 */
 	private void initDataSync()
 	{
+		boolean isHomeDir = false;
+		
 		m_allowDesktopAppToSync.setValue( true );
 		m_allowMobileAppsToSync.setValue( true );
+		
+		// Initialize the controls dealing with "allow the desktop app to trigger initial home folder sync".
+		{
+			m_useNFServerAllowDesktopAppToTriggerSyncRB.setValue( true );
+			m_useNFAllowDesktopAppToTriggerSyncRB.setValue( false );
+			m_allowDesktopAppToTriggerSyncCB.setValue( false );
+		}
 		
 		if ( GwtMainPage.m_requestInfo.getShowSyncOnlyDirStructureUI() )
 		{
@@ -1346,12 +1406,28 @@ public class ModifyNetFolderDlg extends DlgBox
 		{
 			NetFolderDataSyncSettings settings;
 			Boolean dirOnly;
-			
+		
+			isHomeDir = m_netFolder.getIsHomeDir();
+
 			settings = m_netFolder.getDataSyncSettings();
 			if ( settings != null )
 			{
 				m_allowDesktopAppToSync.setValue( settings.getAllowDesktopAppToSyncData() );
 				m_allowMobileAppsToSync.setValue( settings.getAllowMobileAppsToSyncData() );
+
+				// Set the controls dealing with "allow the desktop app to trigger initial home folder sync"
+				{
+					Boolean inherit;
+					
+					inherit = settings.getInheritAllowDesktopAppToTriggerSync();
+					if ( inherit == false )
+					{
+						m_useNFServerAllowDesktopAppToTriggerSyncRB.setValue( false );
+						m_useNFAllowDesktopAppToTriggerSyncRB.setValue( true );
+					}
+					
+					m_allowDesktopAppToTriggerSyncCB.setValue( settings.getAllowDesktopAppToTriggerSync() );
+				}
 			}
 			
 			if ( GwtMainPage.m_requestInfo.getShowSyncOnlyDirStructureUI() )
@@ -1367,6 +1443,11 @@ public class ModifyNetFolderDlg extends DlgBox
 				}
 			}
 		}
+
+		// Enable/disable controls dealing with "allow desktop app to trigger initial home folder sync"
+		m_useNFServerAllowDesktopAppToTriggerSyncRB.setVisible( isHomeDir );
+		m_useNFAllowDesktopAppToTriggerSyncRB.setVisible( isHomeDir );
+		m_allowDesktopAppToTriggerSyncCB.setVisible( isHomeDir );
 	}
 	
 	/**
@@ -1432,6 +1513,9 @@ public class ModifyNetFolderDlg extends DlgBox
 			// Only allow the user to search for internal users.
 			m_selectPrincipalsWidget.setSearchForExternalPrincipals( false );
 			m_selectPrincipalsWidget.setSearchForInternalPrincipals( true );
+			
+			// Allow the user to search for ldap containers
+			m_selectPrincipalsWidget.setSearchForLdapContainers( true );
 		}
 		else
 		{

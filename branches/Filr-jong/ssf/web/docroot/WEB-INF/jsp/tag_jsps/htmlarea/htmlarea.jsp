@@ -94,6 +94,7 @@ var ss_imageSelections${element_id} = "<select name='srcUrl' id='srcUrl'><%--
 	<c:when test="${ssUser.locale.language == 'da'}"><c:set var="ss_user_lang" value="da" /></c:when>
 	<c:when test="${ssUser.locale.language == 'de'}"><c:set var="ss_user_lang" value="de" /></c:when>
 	<c:when test="${ssUser.locale.language == 'es'}"><c:set var="ss_user_lang" value="es" /></c:when>
+	<c:when test="${ssUser.locale.language == 'fi'}"><c:set var="ss_user_lang" value="fi" /></c:when>
 	<c:when test="${ssUser.locale.language == 'fr'}"><c:set var="ss_user_lang" value="fr" /></c:when>
 	<c:when test="${ssUser.locale.language == 'hu'}"><c:set var="ss_user_lang" value="hu" /></c:when>
 	<c:when test="${ssUser.locale.language == 'it'}"><c:set var="ss_user_lang" value="it" /></c:when>

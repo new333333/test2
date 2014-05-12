@@ -88,11 +88,13 @@ import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.document.DateTools;
+
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.Node;
 import org.dom4j.io.OutputFormat;
+
 import org.kablink.teaming.GroupExistsException;
 import org.kablink.teaming.IllegalCharacterInNameException;
 import org.kablink.teaming.ObjectKeys;
@@ -514,7 +516,7 @@ public class GwtServerHelper {
 	/*
 	 * Inner class used to compare two Principal object.
 	 */
-	public static class PrincipalComparator implements Comparator<Principal> {
+	private static class PrincipalComparator implements Comparator<Principal> {
 		private boolean	m_ascending;	//
 		
 		/**
@@ -539,8 +541,8 @@ public class GwtServerHelper {
 			String title2 = principal2.getTitle();
 			int reply;
 			if (m_ascending)
-			     reply = MiscUtil.safeSColatedCompare(title1, title2);
-			else reply = MiscUtil.safeSColatedCompare(title2, title1);
+			     reply = MiscUtil.safeSColatedCompare(title2, title1);
+			else reply = MiscUtil.safeSColatedCompare(title1, title2);
 
 			// If we get here, reply contains the appropriate value for
 			// the compare.  Return it.
@@ -548,7 +550,7 @@ public class GwtServerHelper {
 		}
 	}
 
-	/**
+	/*
 	 * Inner class used compare two SavedSearchInfo objects.
 	 */
 	private static class SavedSearchInfoComparator implements Comparator<SavedSearchInfo> {
@@ -7078,7 +7080,7 @@ public class GwtServerHelper {
 					// Is this an external user that has already been verified?
 					user = ((User) ami.getProfileModule().getEntry( gwtUser.getIdLong() ));
 					if ( user.getIdentityInfo().isInternal() == false &&
-						 user.getExtProvState() == ExtProvState.verified )
+						 (user.getExtProvState() == ExtProvState.verified || user.getExtProvState() == ExtProvState.pwdResetRequested) )
 					{
 						String token;
 						String url;
@@ -7534,6 +7536,14 @@ public class GwtServerHelper {
 				gwtSchedule.setOnFriday( schedule.isOnFriday() );
 				gwtSchedule.setOnSaturday( schedule.isOnSaturday() );
 				gwtSchedule.setOnSunday( schedule.isOnSunday() );
+				
+				if ( schedule.isOnMonday() == false && schedule.isOnTuesday() == false &&
+					 schedule.isOnWednesday() == false && schedule.isOnThursday() == false &&
+					 schedule.isOnFriday() == false && schedule.isOnSaturday() == false &&
+					 schedule.isOnSunday() == false )
+				{
+					gwtSchedule.setDayFrequency( DayFrequency.EVERY_DAY );
+				}
 			}
 			
 			if ( schedule.isRepeatMinutes() )
@@ -9839,6 +9849,7 @@ public class GwtServerHelper {
 		case COLLAPSE_SUBTASKS:
 		case COMPLETE_EXTERNAL_USER_SELF_REGISTRATION:
 		case COPY_ENTRIES:
+		case CREATE_CHANGE_LOG_REPORT:
 		case CREATE_DUMMY_MOBILE_DEVICES:
 		case CREATE_EMAIL_REPORT:
 		case CREATE_LICENSE_REPORT:

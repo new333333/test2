@@ -101,6 +101,7 @@ public class AdminResourceUtil {
         model.setJitsEnabled(config.isJitsEnabled());
         model.setJitsMaxAge(config.getJitsMaxAge());
         model.setJitsMaxACLAge(config.getJitsAclMaxAge());
+        model.setAllowClientInitiatedSync(config.getAllowDesktopAppToTriggerInitialHomeFolderSync());
         if (fullDetails) {
             model.setSyncSchedule(buildSchedule(NetFolderHelper.getNetFolderServerSynchronizationSchedule(model.getId())));
         }
@@ -137,6 +138,9 @@ public class AdminResourceUtil {
         }
 
         model.setAllowDesktopSync(nfc.getAllowDesktopAppToSyncData());
+        model.setInheritClientSyncSettings(nfc.getUseInheritedDesktopAppTriggerSetting());
+        model.setAllowClientInitiatedSync(nfc.getAllowDesktopAppToTriggerInitialHomeFolderSync());
+
         model.setFullSyncDirOnly(nfc.getFullSyncDirOnly());
 
         model.setLink(AdminLinkUriUtil.getNetFolderLinkUri(nfc.getId()));

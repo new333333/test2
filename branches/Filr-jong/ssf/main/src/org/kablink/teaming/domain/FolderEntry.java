@@ -538,4 +538,10 @@ public class FolderEntry extends WorkflowControlledEntry implements WorkflowSupp
 	public void setResourceHandle(String resourceHandle) {
 		this.resourceHandle = resourceHandle;
 	}
+	
+    @Override
+    public boolean supportsCustomFields() {
+    	return !this.isAclExternallyControlled();
+    }
+
 }

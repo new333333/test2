@@ -5,11 +5,14 @@ import org.kablink.teaming.lucene.util.SearchFieldResult;
 import org.kablink.teaming.rest.v1.model.BaseFolderEntryBrief;
 import org.kablink.teaming.rest.v1.model.DefinableEntityBrief;
 import org.kablink.teaming.rest.v1.model.EntryBrief;
+import org.kablink.teaming.rest.v1.model.FileBrief;
 import org.kablink.teaming.rest.v1.model.FolderEntryBrief;
 import org.kablink.teaming.rest.v1.model.LongIdLinkPair;
 import org.kablink.teaming.rest.v1.model.SearchResultTreeNode;
 import org.kablink.util.search.Constants;
 
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.Map;
 
 /**
@@ -23,6 +26,25 @@ abstract public class BaseFolderEntryBriefBuilder extends DefinableEntityBriefBu
 
     public BaseFolderEntryBriefBuilder(int descriptionFormat) {
         super(descriptionFormat);
+    }
+
+    protected void populateFileBrief(FolderEntryBrief model, Map entry) {
+        FileBrief fileModel = new FileBrief();
+        fileModel.setId((String) entry.get(Constants.PRIMARY_FILE_ID_FIELD));
+        if (fileModel.getId()!=null) {
+            fileModel.setLength(SearchResultBuilderUtil.getLong(entry, Constants.FILE_SIZE_IN_BYTES_FIELD));
+            fileModel.setMd5((String) entry.get(Constants.FILE_MD5_FIELD));
+            Long millis = SearchResultBuilderUtil.getLong(entry, Constants.FILE_TIME_FIELD);
+            if (millis!=null) {
+                Calendar cal = new GregorianCalendar();
+                cal.setTimeInMillis(millis);
+                fileModel.setModifiedDate(cal);
+            }
+            fileModel.setName((String) entry.get(Constants.FILENAME_FIELD));
+            fileModel.setVersion(SearchResultBuilderUtil.getLong(entry, Constants.FILE_VERSION_FIELD));
+            fileModel.setLink(LinkUriUtil.getFilePropertiesLinkUri(fileModel.getId()));
+            model.setPrimaryFile(fileModel);
+        }
     }
 
     protected void populateBaseFolderEntryBrief(BaseFolderEntryBrief model, Map entry, String parentBinderField) {

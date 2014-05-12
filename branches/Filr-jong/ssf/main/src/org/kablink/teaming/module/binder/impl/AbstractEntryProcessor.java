@@ -48,6 +48,7 @@ import org.apache.lucene.search.SortField;
 import org.dom4j.Element;
 
 import org.kablink.teaming.ConfigurationException;
+import org.kablink.teaming.IllegalCharacterInNameException;
 import org.kablink.teaming.NotSupportedException;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
@@ -614,8 +615,10 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         	//An error occurred processing the entry Data
         	throw new WriteEntryDataException(entryDataErrors);
         }
-        
-	    try {	    	
+
+        checkRenameFileNames(fileRenamesTo);
+
+        try {
 	    	SimpleProfiler.start("modifyEntry_transactionExecute1");
 	    	// The following part requires update database transaction.
 	    	//ctx can be used by sub-classes to pass info

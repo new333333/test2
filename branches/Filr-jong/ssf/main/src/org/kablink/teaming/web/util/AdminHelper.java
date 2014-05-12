@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -40,10 +40,8 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
-import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.User;
@@ -219,10 +217,11 @@ public class AdminHelper {
 	 * 
 	 * @param bs
 	 * @param upId
+	 * @param idIsUser
 	 * 
 	 * @return
 	 */
-	public static Boolean getAdhocFolderSettingFromUserOrGroup(AllModulesInjected bs, Long upId) {
+	public static Boolean getAdhocFolderSettingFromUserOrGroup(AllModulesInjected bs, Long upId, boolean idIsUser) {
 		// Are we running Filr?
 		if (Utils.checkIfFilr()) {
 			// Yes!  If we have an ID...
@@ -231,7 +230,7 @@ public class AdminHelper {
 				// ...UserPrincipal. Did we find it?
 				ProfileModule pm = bs.getProfileModule();
 				Boolean reply = pm.getAdHocFoldersEnabled(upId);
-				if (null == reply) {
+				if ((null == reply) && idIsUser) {
 					try {
 						// No!  Assume upId is that of a user and look
 						// in their properties.  Can we find it there?
@@ -301,7 +300,7 @@ public class AdminHelper {
 			if (null !=  user) {
 				// Yes!  Do they have an adHoc override?
 				Long userId = user.getId();
-				reply = getAdhocFolderSettingFromUserOrGroup(bs, userId);
+				reply = getAdhocFolderSettingFromUserOrGroup(bs, userId, true);
 				if (null == reply) {
 					// No!  Is the user the member of any groups?
 					List<Group> groups = GwtUIHelper.getGroups(userId);
@@ -310,7 +309,7 @@ public class AdminHelper {
 						for (Group group:  groups) {
 							// Does this group have an adHoc folder
 							// override?
-							Boolean gAdHoc = getAdhocFolderSettingFromUserOrGroup(bs, group.getId());
+							Boolean gAdHoc = group.isAdHocFoldersEnabled();
 							if (null != gAdHoc) {
 								// Yes!  Use it as the override and if
 								// it's true...
@@ -847,6 +846,7 @@ public class AdminHelper {
 		return getWebAccessSettingFromZone(bs.getAdminModule());
 	}
 
+    @SuppressWarnings("unchecked")
     public static List<AssignedRole> getAssignedRights(
             AllModulesInjected ami,
             WorkArea workArea,
@@ -861,7 +861,7 @@ public class AdminHelper {
         {
             WorkAreaFunctionMembership membership;
             Set<Long> memberIds;
-            List principals = null;
+			List principals = null;
 
             // Get the Function id for the given role
             String internalId = nextRole.getInternalId();

@@ -1973,6 +1973,7 @@ public class ActivityStreamCtrl extends ResizeComposite
 		{
 			srcName = m_activityStreamInfo.getTitle();
 			m_sourceName.setText( srcName );
+			m_sourceName.setTitle( srcName );
 		}
 	}
 

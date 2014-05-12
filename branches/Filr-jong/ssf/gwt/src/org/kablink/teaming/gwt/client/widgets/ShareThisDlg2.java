@@ -518,6 +518,7 @@ public class ShareThisDlg2 extends DlgBox
 			
 			if ( shareItem != null )
 			{
+				shareItem.setIsDirty( true );
 				shareItem.setSharedById( Long.valueOf( GwtTeaming.m_requestInfo.getUserId() ) );
 				
 				returnValue.add( shareItem );
@@ -1418,6 +1419,19 @@ public class ShareThisDlg2 extends DlgBox
 	@Override
 	public boolean editCanceled()
 	{
+		boolean isDirty;
+		
+		isDirty = isDirty();
+		if ( isDirty )
+		{
+			if ( Window.confirm( GwtTeaming.getMessages().confirmChangesWillBeLost() ) )
+				return true;
+			
+			return false;
+		}
+		
+		return true;
+		
 		//!!!
 	/*
 		int i;
@@ -1439,9 +1453,6 @@ public class ShareThisDlg2 extends DlgBox
 			}
 		}
 	*/
-		
-		// Simply return true to allow the dialog to close.
-		return true;
 	}
 
 	/**
@@ -1918,6 +1929,7 @@ public class ShareThisDlg2 extends DlgBox
 								
 								// Update the name of the entity in the header.
 								m_headerNameLabel.setText( gwtFolderEntry.getEntryName() );
+								m_headerNameLabel.setTitle( gwtFolderEntry.getEntryName() );
 								m_headerPathLabel.setText( gwtFolderEntry.getParentBinderName() );
 								m_headerPathLabel.setTitle( gwtFolderEntry.getParentBinderName() );
 								
@@ -2949,6 +2961,45 @@ public class ShareThisDlg2 extends DlgBox
 		}
 	}
 
+	/**
+	 * 
+	 */
+	private boolean isDirty()
+	{
+		ArrayList<GwtShareItem> listOfShareItems;
+		
+		// Is the table that holds the list of share items visible?
+		if ( m_shareTable == null || m_shareTable.isVisible() == false )
+		{
+			// No, nothing to do.
+			return false;
+		}
+
+		// Tell the "edit share" widget to save its changes
+		saveEditShareWidgetSettings();
+		
+		// Are there any shares to be deleted?
+		listOfShareItems = m_sharingInfo.getListOfToBeDeletedShareItems();
+		if ( listOfShareItems != null && listOfShareItems.size() > 0 )
+			return true;
+
+		// Check to see if there are any share items that are dirty.
+		listOfShareItems = getListOfShareItemsFromDlg();
+		if ( listOfShareItems != null )
+		{
+			for ( GwtShareItem nextShareItem : listOfShareItems )
+			{
+				if ( nextShareItem.isDirty() )
+				{
+					return true;
+				}
+			}
+		}
+		
+		// If we get there, nothing has been modified
+		return false;
+	}
+	
 	/**
 	 * Refresh the ui that displays the list of shares.
 	 */

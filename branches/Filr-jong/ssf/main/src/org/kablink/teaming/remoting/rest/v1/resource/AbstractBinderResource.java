@@ -239,7 +239,7 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
         nextParams.put("description_format", descriptionFormatStr);
         Date lastModified = getLibraryModifiedDate(new Long[]{id}, false, allowJits);
         Date ifModifiedSince = getIfModifiedSinceDate(request);
-        if (ifModifiedSince!=null && !ifModifiedSince.before(lastModified)) {
+        if (ifModifiedSince!=null && lastModified!=null && !ifModifiedSince.before(lastModified)) {
             throw new NotModifiedException();
         }
         SearchResultList<SearchableObject> children = getChildren(id, SearchUtils.buildLibraryCriterion(true), true, false, true,
@@ -260,7 +260,7 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
         nextParams.put("description_format", descriptionFormatStr);
         Date lastModified = getLibraryModifiedDate(new Long[]{id}, false, true);
         Date ifModifiedSince = getIfModifiedSinceDate(request);
-        if (ifModifiedSince!=null && !ifModifiedSince.before(lastModified)) {
+        if (ifModifiedSince!=null && lastModified!=null && !ifModifiedSince.before(lastModified)) {
             throw new NotModifiedException();
         }
         SearchResultList<BinderBrief> subBinders = getSubBinders(id, SearchUtils.libraryFolders(), true, offset, maxCount,
@@ -326,7 +326,7 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
         nextParams.put("parent_binder_paths", Boolean.toString(includeParentPaths));
         Date lastModified = getLibraryModifiedDate(new Long[]{id}, recursive, true);
         Date ifModifiedSince = getIfModifiedSinceDate(request);
-        if (ifModifiedSince!=null && !ifModifiedSince.before(lastModified)) {
+        if (ifModifiedSince!=null && lastModified!=null && !ifModifiedSince.before(lastModified)) {
             throw new NotModifiedException();
         }
         SearchResultList<FileProperties> subFiles = getSubFiles(id, fileName, recursive, true, includeParentPaths,
@@ -353,7 +353,7 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
         nextParams.put("parent_binder_paths", Boolean.toString(includeParentPaths));
         Date lastModified = getLibraryModifiedDate(new Long[]{id}, recursive, true);
         Date ifModifiedSince = getIfModifiedSinceDate(request);
-        if (ifModifiedSince!=null && !ifModifiedSince.before(lastModified)) {
+        if (ifModifiedSince!=null && lastModified!=null && !ifModifiedSince.before(lastModified)) {
             throw new NotModifiedException();
         }
         SearchResultList<FileProperties> subFiles = getSubFiles(id, fileName, recursive, false, includeParentPaths,
@@ -572,7 +572,7 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
             results.updateLastModified(file.getModifiedDate());
         }
 
-        if (modifiedSince!=null && !modifiedSince.before(results.getLastModified())) {
+        if (modifiedSince!=null && results.getLastModified()!=null && !modifiedSince.before(results.getLastModified())) {
             throw new NotModifiedException();
         }
 

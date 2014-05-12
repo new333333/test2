@@ -37,6 +37,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -96,6 +97,7 @@ import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.binder.processor.BinderProcessor;
 import org.kablink.teaming.module.definition.DefinitionModule;
 import org.kablink.teaming.module.definition.DefinitionUtils;
+import org.kablink.teaming.module.definition.index.FieldBuilderDescription;
 import org.kablink.teaming.module.definition.index.FieldBuilderUtil;
 import org.kablink.teaming.module.file.FileModule;
 import org.kablink.teaming.module.file.FilesErrors;
@@ -2727,38 +2729,48 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
                	EntityIndexUtils.addFolderFileTime( indexDoc, (Folder) entity, fieldsOnly );
         	}
         }
-        
-        // Add data fields driven by the entry's definition object. 
-		DefinitionModule.DefinitionVisitor visitor = new DefinitionModule.DefinitionVisitor() {
-			@Override
-			public void visit(Element entryElement, Element flagElement, Map args)
-			{
-                if (flagElement.attributeValue("apply").equals("true")) {
-                	String fieldBuilder = flagElement.attributeValue("fieldBuilder");
-                	String excludeFromSearchIndex = DefinitionUtils.getPropertyValue(entryElement, "excludeFromSearchIndex");
-                	if (excludeFromSearchIndex == null || !excludeFromSearchIndex.equals("true")) {
-						String nameValue = DefinitionUtils.getPropertyValue(entryElement, "name");									
-						if (Validator.isNull(nameValue)) {nameValue = entryElement.attributeValue("name");}
-						args.put(DefinitionModule.DEFINITION_ELEMENT, entryElement);
-	                	Field[] fields = FieldBuilderUtil.buildField(entity,
-	                         nameValue, fieldBuilder, args);
-	                	if (fields != null) {
-	                		for (int i = 0; i < fields.length; i++) {
-	                			indexDoc.add(fields[i]);
-	                		}
-	                    }
-                	}
-                }
+                
+        if(entity.supportsCustomFields()) {
+	        // Add data fields driven by the entry's definition object. 
+			DefinitionModule.DefinitionVisitor visitor = new DefinitionModule.DefinitionVisitor() {
+				@Override
+				public void visit(Element entryElement, Element flagElement, Map args)
+				{
+	                if (flagElement.attributeValue("apply").equals("true")) {
+	                	String fieldBuilder = flagElement.attributeValue("fieldBuilder");
+	                	String excludeFromSearchIndex = DefinitionUtils.getPropertyValue(entryElement, "excludeFromSearchIndex");
+	                	if (excludeFromSearchIndex == null || !excludeFromSearchIndex.equals("true")) {
+							String nameValue = DefinitionUtils.getPropertyValue(entryElement, "name");									
+							if (Validator.isNull(nameValue)) {nameValue = entryElement.attributeValue("name");}
+							args.put(DefinitionModule.DEFINITION_ELEMENT, entryElement);
+		                	Field[] fields = FieldBuilderUtil.buildField(entity,
+		                         nameValue, fieldBuilder, args);
+		                	if (fields != null) {
+		                		for (int i = 0; i < fields.length; i++) {
+		                			indexDoc.add(fields[i]);
+		                		}
+		                    }
+	                	}
+	                }
+				}
+				@Override
+				public String getFlagElementName() { return "index"; }
+			};
+			if (!fieldsOnly) {
+				getDefinitionModule().walkDefinition(entity, visitor, null);
+			} else {
+				getDefinitionModule().walkDefinition(entity, visitor, fieldsOnlyIndexArgs);			
 			}
-			@Override
-			public String getFlagElementName() { return "index"; }
-		};
-		if (!fieldsOnly) {
-			getDefinitionModule().walkDefinition(entity, visitor, null);
-		} else {
-			getDefinitionModule().walkDefinition(entity, visitor, fieldsOnlyIndexArgs);			
-		}
-        
+        }
+        else {
+        	// Short circuit the use of definition facility which is slow and expensive.
+        	// No need to process title here since it is handled somewhere else.
+        	// Process description field.
+        	Field[] descFields = FieldBuilderUtil.buildField(entity, ObjectKeys.FIELD_ENTITY_DESCRIPTION, "org.kablink.teaming.module.definition.index.FieldBuilderDescription", Collections.EMPTY_MAP);
+        	if(descFields != null)
+        		for(Field descField:descFields)
+        			indexDoc.add(descField);
+        }
     }
     	
     /*
@@ -2962,18 +2974,33 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 		//name must be unique within DefinableEntity
 		for (int i=0; i<fileUploadItems.size(); ++i) {
 			FileUploadItem fui1 = (FileUploadItem)fileUploadItems.get(i);
-			for (int j=i+1; j<fileUploadItems.size(); ) {
-				FileUploadItem fui2 = (FileUploadItem)fileUploadItems.get(j);
-				if (fui1.getOriginalFilename().equalsIgnoreCase(fui2.getOriginalFilename()) &&
-						!fui1.getRepositoryName().equals(fui2.getRepositoryName())) {
-					fileUploadItems.remove(j);
-					errors.addProblem(new FilesErrors.Problem(null, 
-							fui1.getOriginalFilename(), FilesErrors.Problem.PROBLEM_FILE_EXISTS));
-				} else ++j;
-			}
+            if (Validator.containsPathCharacters(fui1.getOriginalFilename())) {
+                errors.addProblem(new FilesErrors.Problem(null,
+                        fui1.getOriginalFilename(), FilesErrors.Problem.PROBLEM_ILLEGAL_CHARACTER));
+            } else {
+                for (int j=i+1; j<fileUploadItems.size(); ) {
+                    FileUploadItem fui2 = (FileUploadItem)fileUploadItems.get(j);
+                    if (fui1.getOriginalFilename().equalsIgnoreCase(fui2.getOriginalFilename()) &&
+                            !fui1.getRepositoryName().equals(fui2.getRepositoryName())) {
+                        fileUploadItems.remove(j);
+                        errors.addProblem(new FilesErrors.Problem(null,
+                                fui1.getOriginalFilename(), FilesErrors.Problem.PROBLEM_FILE_EXISTS));
+                    } else ++j;
+                }
+            }
 		}
 	}
-	protected void processCreationTimestamp(DefinableEntity entity, Map options) {
+    protected void checkRenameFileNames(Map<FileAttachment, String> fileRenamesTo) {
+        if (fileRenamesTo!=null) {
+            for (String newName : fileRenamesTo.values()) {
+                if (Validator.containsPathCharacters(newName)) {
+                    throw new IllegalCharacterInNameException("errorcode.illegalCharacterInName", new Object[]{newName});
+                }
+            }
+        }
+    }
+
+    protected void processCreationTimestamp(DefinableEntity entity, Map options) {
 		User user;
 		if (options != null && (
 				options.containsKey(ObjectKeys.INPUT_OPTION_CREATION_DATE) ||

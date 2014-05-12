@@ -38,7 +38,6 @@ import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Attachment;
 import org.kablink.teaming.domain.Binder;
-import org.kablink.teaming.domain.BinderState;
 import org.kablink.teaming.domain.Description;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.Folder;
@@ -57,7 +56,6 @@ import org.kablink.teaming.remoting.rest.v1.util.BinderBriefBuilder;
 import org.kablink.teaming.remoting.rest.v1.util.LinkUriUtil;
 import org.kablink.teaming.remoting.rest.v1.util.ResourceUtil;
 import org.kablink.teaming.remoting.rest.v1.util.SearchResultBuilderUtil;
-import org.kablink.teaming.rest.v1.model.BaseBinderChange;
 import org.kablink.teaming.rest.v1.model.BinderBrief;
 import org.kablink.teaming.rest.v1.model.BinderChange;
 import org.kablink.teaming.rest.v1.model.BinderChanges;
@@ -139,6 +137,7 @@ public class SelfResource extends AbstractFileResource {
         user.setLink("/self");
         user.addAdditionalLink("mobile_devices", "/self/mobile_devices");
         user.addAdditionalLink("roots", "/self/roots");
+        user.setPermaLink(PermaLinkUtil.getPermalink(entry));
         try {
             Long nextCheck = homeDirCheckTime.get(user.getId());
             if (nextCheck==null || nextCheck<System.currentTimeMillis()) {
@@ -504,7 +503,7 @@ public class SelfResource extends AbstractFileResource {
         }
         Date lastModified = getMyFilesLibraryModifiedDate(recursive, true);
         Date ifModifiedSince = getIfModifiedSinceDate(request);
-        if (ifModifiedSince!=null && !ifModifiedSince.before(lastModified)) {
+        if (ifModifiedSince!=null && lastModified!=null && !ifModifiedSince.before(lastModified)) {
             throw new NotModifiedException();
         }
         SearchResultList<FileProperties> resultList = _getMyFilesLibraryFiles(fileName, recursive, includeParentPaths, offset, maxCount);
@@ -639,9 +638,7 @@ public class SelfResource extends AbstractFileResource {
         for (Long id : homeFolderIds) {
             try {
                 lookupNetFolder(id);
-                if (getFolderModule().getLastFullSyncCompletionTime(id)==null) {
-                    getFolderModule().enqueueFullSynchronize(id);
-                }
+                getFolderModule().enqueueInitialNetFolderSync(id);
             } catch (Exception e) {
                 logger.error("Unable to trigger initial sync of the user's home folder: " + getLoggedInUser().getName(), e);
                 throw new InternalServerErrorException(ApiErrorCode.SERVER_ERROR, e.getMessage());
@@ -715,7 +712,7 @@ public class SelfResource extends AbstractFileResource {
 
     @DELETE
     @Path("mobile_devices/{id}")
-    public void deleteMobileDevice(@PathParam("id") String id, MobileDevice newDevice) {
+    public void deleteMobileDevice(@PathParam("id") String id) {
         org.kablink.teaming.domain.MobileDevice mobileDevice = getMobileDeviceModule().getMobileDevice(getLoggedInUserId(), id);
         if (mobileDevice!=null) {
             getMobileDeviceModule().deleteMobileDevice(getLoggedInUserId(), id);

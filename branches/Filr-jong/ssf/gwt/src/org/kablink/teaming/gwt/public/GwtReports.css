@@ -55,6 +55,7 @@
 		.vibe-reportCompositeBase-caption      {font-weight: bold; font-size: 13px; margin-top: 10px; white-space: nowrap;}
 		.vibe-reportCompositeBase-rootPanel    {margin-top: 20px;}
 		.vibe-reportCompositeBase-runButton    {margin-right:3px; margin-top: 20px; margin-left: 0.5em; margin-bottom: 10px;}
+		.vibe-reportCompositeBase-textEntry    {}
 		.vibe-reportCompositeBase-widgetsPanel {display: block; margin-top: 10px; -moz-border-radius: 3px; border-radius: 3px; -webkit-border-radius: 3px; border: 1px solid #cccccc; padding: 5px; background-color: #ededed;}
 		.vibe-reportCompositeBase-buttonBase   {
 			color:#1f1f1f;
@@ -84,7 +85,7 @@
 		.vibe-runAReportDlg-reportHtmltPanel   {}
 		.vibe-runAReportDlg-reportMaxSizePanel {margin-top: 6px; font-size: 8px; font-style: italic;}
 		.vibe-runAReportDlg-reportScrollPanel  {border-top: 1px solid #cccccc; margin-top: 10px;}
-.vibe-runAReportDlg-rootPanel          {background-color: white; padding: 10px;}
+		.vibe-runAReportDlg-rootPanel          {background-color: white; padding: 10px;}
 		.vibe-runAReportDlg-systemLogsLink     {}
 	/* End:  Run a report dialog styles. */
 	
@@ -118,4 +119,15 @@
 		.vibe-userActivityReportComposite-typePanel    {}
 		.vibe-userActivityReportComposite-typeRadio    {white-space: nowrap; margin-top: 15px;}
 	/* End:  User activity report composite styles. */
+	
+	/* Start:  Change modification log report composite styles. */
+		.vibe-changeLogReportComposite-binderFind     {}
+		.vibe-changeLogReportComposite-entityFind     {}
+		.vibe-changeLogReportComposite-entityTypeList {background-color: white;}
+		.vibe-changeLogReportComposite-label          {font-size: 13px;}
+		.vibe-changeLogReportComposite-operationList  {background-color: white;}
+		.vibe-changeLogReportComposite-reportPanel    {width: 99%; display: block; border: 1px solid #ccc; -moz-border-radius: 3px; border-radius: 3px; -webkit-border-radius: 3px; margin-top: 10px;}
+		.vibe-changeLogReportComposite-reportTable    {border: 0 none; width: 100%;}
+		.vibe-changeLogReportComposite-widgetsPanel   {margin-top: 15px !important;}
+	/* End:  Change modification log report composite styles. */
 /* End:  GWT reports styles. */

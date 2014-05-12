@@ -2054,7 +2054,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
    		   	if ((entry.getParentBinder() != null) && entry.getParentBinder().isUniqueTitles()) getCoreDao().updateTitle(entry.getParentBinder(), entry, oldTitle, entry.getNormalTitle());
 		} 
    		//add file name so not null
-    	if (Validator.isNull(entry.getTitle())) entry.setTitle(fAtt.getFileItem().getName());
+    	if (Validator.isEmptyString(entry.getTitle())) entry.setTitle(fAtt.getFileItem().getName());
     	
     	if(versionCreated) {
     		// The content was committed creating a new version. Increment disk usage for the user.
@@ -2644,21 +2644,25 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	}
 	
 	private void checkDataQuota(Binder binder, FileUploadItem fui) throws IOException {
-		if (!ObjectKeys.FI_ADAPTER.equalsIgnoreCase(fui.getRepositoryName())) { 
-			Long fileSize = fui.makeReentrant().getSize();
-			
-			//Check that the user is not over the user quota
-			checkQuota(RequestContextHolder.getRequestContext().getUser(),
-					fileSize,
-					fui.getOriginalFilename());
-			
-			//Check that the binder and its parents aren't over quota
-			checkBinderQuota(binder, fileSize, fui.getOriginalFilename());
-			
-			//Check if not too big
-			checkFileSizeLimit(binder, fileSize, fui.getOriginalFilename());			
-		}
-	}
+        User user = RequestContextHolder.getRequestContext().getUser();
+        if (ObjectKeys.FILE_SYNC_AGENT_INTERNALID.equals(user.getInternalId())) {
+            // Skip data quota checks for the file sync agent.
+        } else {
+            Long fileSize = fui.makeReentrant().getSize();
+            if (!ObjectKeys.FI_ADAPTER.equalsIgnoreCase(fui.getRepositoryName())) {
+                //Check that the user is not over the user quota
+                checkQuota(RequestContextHolder.getRequestContext().getUser(),
+                        fileSize,
+                        fui.getOriginalFilename());
+
+                //Check that the binder and its parents aren't over quota
+                checkBinderQuota(binder, fileSize, fui.getOriginalFilename());
+
+            }
+            //Check if not too big
+            checkFileSizeLimit(binder, fileSize, fui.getOriginalFilename());
+        }
+    }
 	
 	@Override
 	public boolean checkIfQuotaWouldBeExceeded(Binder binder, long fileSize, String fileName) {
@@ -3170,7 +3174,8 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		}
     }
     
-    public boolean isLockExpired(FileLock lock) {
+    @Override
+	public boolean isLockExpired(FileLock lock) {
     	// Note that we take additional 
 		// "allowance" value into consideration when computing the
 		// expiration date used for the comparison. This is to 
@@ -3178,11 +3183,11 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		// or data update request following initial lock request is
 		// delayed significantly that it actually arrives at the server
 		// after the initial lock has expired. Although expected to be
-		// rare, this situation can occur by environmental flunctuations
+		// rare, this situation can occur by environmental fluctuations
 		// such as unusual network latency or extremely high system 
 		// load, etc. To prevent undesired version proliferation from
-		// occuring as result, we give each lock some reasonable 
-		// allowance (ie, extended life).
+		// occurring as result, we give each lock some reasonable 
+		// allowance (i.e., extended life).
     	
     	return (lock.getExpirationDate().getTime() + 
     			this.getLockExpirationAllowanceMilliseconds() <= System.currentTimeMillis());

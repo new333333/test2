@@ -70,7 +70,18 @@ public interface NetFolderModule {
 	 * @throws WriteFilesException
 	 * @throws WriteEntryDataException
 	 */
-    public NetFolderConfig createNetFolder(Long templateId, Long parentBinderId, String name, User owner, String rootName, String path, Boolean isHomeDir, boolean indexContent, Boolean inheritIndexContent, SyncScheduleOption syncScheduleOption, Boolean fullSyncDirOnly ) throws AccessControlException, WriteFilesException, WriteEntryDataException;
+    public NetFolderConfig createNetFolder(Long templateId, 
+    		Long parentBinderId, 
+    		String name, User owner, 
+    		String rootName, 
+    		String path, 
+    		Boolean isHomeDir, 
+    		boolean indexContent, 
+    		Boolean inheritIndexContent, 
+    		SyncScheduleOption syncScheduleOption, 
+    		Boolean fullSyncDirOnly,
+    		Boolean allowDesktopAppToTriggerSync,
+    		Boolean inheritAllowDesktopAppToTriggerSync) throws AccessControlException, WriteFilesException, WriteEntryDataException;
 	
     /**
      * Update the net folder with the modified configuration settings.

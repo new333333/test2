@@ -109,6 +109,7 @@ public class NetFolderConfig {
     protected Boolean homeDir = Boolean.FALSE;
     protected Boolean allowDesktopAppToSyncData = Boolean.TRUE;
     protected Boolean allowMobileAppsToSyncData = Boolean.TRUE;
+    protected Boolean allowDesktopAppToTriggerInitialHomeFolderSync = Boolean.FALSE;
     protected Boolean indexContent = Boolean.TRUE;
     protected Boolean jitsEnabled; // Applicable only to mirrored folders
     protected Long jitsMaxAge; // in milliseconds
@@ -117,6 +118,7 @@ public class NetFolderConfig {
     protected Short syncScheduleOption;	// SyncScheduleOption
     protected Boolean useInheritedIndexContent = Boolean.TRUE;
     protected Boolean useInheritedJitsSettings = Boolean.TRUE;
+    protected Boolean useInheritedDesktopAppTriggerSetting = Boolean.TRUE;
 
     // Used by application
     public NetFolderConfig(Long netFolderServerId) {
@@ -536,6 +538,78 @@ public class NetFolderConfig {
 		}
 	}
 	
+    /**
+     * Return the computed value of "allow desktop app to trigger initial home folder sync".
+     * If this binder is inheriting the value of "allow desktop app to trigger initial home folder sync"
+     * then we will get the value of "allow desktop app to trigger initial home folder sync"
+     * from the net folder server this binder is pointing to.  Otherwise, we will use the value
+     * of "allow desktop app to trigger initial home folder sync" from this binder.
+     */
+    public boolean getComputedAllowDesktopAppToTriggerInitialHomeFolderSync()
+    {
+    	ResourceDriver resourceDriver;
+    	
+    	if ( getUseInheritedDesktopAppTriggerSetting() == false )
+    		return getAllowDesktopAppToTriggerInitialHomeFolderSync();
+    	
+    	resourceDriver = getResourceDriver();
+    	if ( resourceDriver != null )
+    	{
+    		ResourceDriverConfig rdConfig;
+    		
+    		rdConfig = resourceDriver.getConfig();
+    		if ( rdConfig != null )
+    			return rdConfig.getAllowDesktopAppToTriggerInitialHomeFolderSync();
+    	}
+    	
+    	return false;
+    }
+
+    /**
+     * Return whether the desktop app can trigger initial home folder sync
+     * @return
+     */
+    public boolean getAllowDesktopAppToTriggerInitialHomeFolderSync()
+    {
+    	if ( allowDesktopAppToTriggerInitialHomeFolderSync == null )
+    		return false;
+    	else
+    		return allowDesktopAppToTriggerInitialHomeFolderSync.booleanValue();
+    }
+    
+    /**
+     * 
+     */
+    public void setAllowDesktopAppToTriggerInitialHomeFolderSync( boolean allow )
+    {
+   		allowDesktopAppToTriggerInitialHomeFolderSync = new Boolean( allow );
+    }
+    
+    /**
+     * Return whether the the "allow desktop app to trigger initial home folder sync" setting
+     * should be inherited from the net folder server.
+     * @return
+     */
+    public boolean getUseInheritedDesktopAppTriggerSetting()
+    {
+    	boolean useInherited;
+    	
+    	if ( useInheritedDesktopAppTriggerSetting == null )
+   			useInherited = true;
+    	else
+    		useInherited = useInheritedDesktopAppTriggerSetting.booleanValue();
+    	
+    	return useInherited;
+    }
+
+    /**
+     * 
+     */
+    public void setUseInheritedDesktopAppTriggerSetting( boolean inherit )
+    {
+   		useInheritedDesktopAppTriggerSetting = new Boolean( inherit );
+    }
+
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();

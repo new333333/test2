@@ -1319,4 +1319,10 @@ public class WebUrlUtil {
 		}
 		return map;
 	}
+
+    public static String getLocalDesktopDeploymentURL() {
+        StringBuffer url =  getHostAndPort(null, (HttpServletRequest) null, null, WEB_PROTOCOL_CONTEXT_HTTPS, UrlType.unspecified, false);
+        url.append("/desktopapp");
+        return url.toString();
+    }
 }

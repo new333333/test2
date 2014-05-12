@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -32,18 +32,14 @@
  */
 package org.kablink.teaming.domain;
 
-import org.dom4j.DocumentHelper;
-import org.dom4j.Element;
-import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.util.Validator;
-
 
 /**
  * This is used as a component class of FileAttachment
  * May also be used independently, but does not have
  * any persistent characteristics in that case.
+ * 
  * @author Jong Kim
- *
  */
 public class FileItem  {
     private String name;
@@ -66,7 +62,7 @@ public class FileItem  {
         return name;
     }
     public void setName(String name) {
-    	if (Validator.isNull(name)) throw new IllegalArgumentException("null name");
+    	if (Validator.isEmptyString(name)) throw new IllegalArgumentException("null name");
        this.name = name;
     }
     /**
@@ -116,7 +112,9 @@ public class FileItem  {
     public long getLengthKB() {
         return (this.length + 1023)/1024;
     }
-    public boolean equals(Object obj) {
+    
+    @Override
+	public boolean equals(Object obj) {
    	 
     	if (obj == null) return false;
     	if (obj instanceof FileItem) {
@@ -125,11 +123,14 @@ public class FileItem  {
     	}
     	return false;
     }
-    public int hashCode() {
+    
+    @Override
+	public int hashCode() {
        	return  name.hashCode();
     }
-    public String toString() {
+    
+    @Override
+	public String toString() {
     	return name;
     }
- 
 }

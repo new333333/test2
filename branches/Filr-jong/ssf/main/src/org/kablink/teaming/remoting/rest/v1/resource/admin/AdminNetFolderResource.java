@@ -146,7 +146,9 @@ public class AdminNetFolderResource extends AbstractAdminResource {
                 return AdminResourceUtil.buildNetFolderSyncStatus(syncStats);
             }
         }
-        return null;
+        NetFolderSyncStatus status = new NetFolderSyncStatus();
+        status.setStatus("none");
+        return status;
     }
 
     @POST
@@ -157,6 +159,27 @@ public class AdminNetFolderResource extends AbstractAdminResource {
             throws InterruptedException {
         Folder netFolder = lookupNetFolder(id);
         getFolderModule().enqueueFullSynchronize(netFolder.getId());
+        if (waitForCompletion) {
+            waitForSyncToComplete(id);
+        }
+        return getSyncStatus(id);
+    }
+
+    @DELETE
+    @Path("{id}/sync")
+    @Consumes({"*/*"})
+    public NetFolderSyncStatus cancelNetFolderSync(@PathParam("id") Long id,
+                                                   @QueryParam("wait") @DefaultValue("false") boolean waitForCompletion) throws InterruptedException {
+        Folder netFolder = lookupNetFolder(id);
+        getFolderModule().requestNetFolderFullSyncStop(netFolder.getId());
+        if (waitForCompletion) {
+            waitForSyncToComplete(id);
+        }
+        return getSyncStatus(id);
+    }
+
+    private void waitForSyncToComplete(Long id) throws InterruptedException {
+        boolean waitForCompletion = true;
         while (waitForCompletion) {
             BinderState state = getBinderState(id);
             if (state!=null) {
@@ -168,15 +191,6 @@ public class AdminNetFolderResource extends AbstractAdminResource {
                 waitForCompletion = false;
             }
         }
-        return getSyncStatus(id);
-    }
-
-    @DELETE
-    @Path("{id}/sync")
-    @Consumes({"*/*"})
-    public void cancelNetFolderSync(@PathParam("id") Long id) {
-        Folder netFolder = lookupNetFolder(id);
-        getFolderModule().requestNetFolderFullSyncStop(netFolder.getId());
     }
 
 }

@@ -280,12 +280,18 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
     		minutes = Integer.parseInt(minutesString);
     	} catch (Exception ex) {};
     	job.schedule(zone.getId(), minutes*60);
-   }
+	}
      
-     @Override
-     public boolean testReadAccess(User user, WorkArea workArea, boolean checkSharing) {
-    	 return getAccessControlManager().testOperation(user, workArea, WorkAreaOperation.CREATE_ENTRIES, checkSharing);
-     }
+	@Override
+	public boolean testReadAccess(User user, WorkArea workArea, boolean checkSharing) {
+		return getAccessControlManager().testOperation(user, workArea, WorkAreaOperation.CREATE_ENTRIES, checkSharing);
+	}
+
+	@Override
+	public boolean testFolderRenameAccess(User user, Binder binder, boolean checkSharing) {
+		WorkArea workArea = (WorkArea)binder;
+		return getAccessControlManager().testOperation(user, workArea, WorkAreaOperation.RENAME_ENTRIES, checkSharing);
+	}
 
 	@Override
 	public boolean testAccess(Folder folder, FolderOperation operation) {
@@ -919,13 +925,19 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
     }
     @Override
 	public SortedSet<FolderEntry>getEntries(Collection<Long>ids) {
+    	return getEntries(ids, Boolean.TRUE);
+    }
+    @Override
+	public SortedSet<FolderEntry>getEntries(Collection<Long>ids, boolean doCheckAccess) {
         User user = RequestContextHolder.getRequestContext().getUser();
         Comparator c = new EntryComparator(user.getLocale(), EntryComparator.SortByField.pathName);
        	TreeSet<FolderEntry> sEntries = new TreeSet<FolderEntry>(c);
        	List<FolderEntry>entries = getCoreDao().loadObjects(ids, FolderEntry.class, RequestContextHolder.getRequestContext().getZoneId());
     	for (FolderEntry e:entries) {
             try {
-            	AccessUtils.readCheck(e);
+            	if (doCheckAccess) {
+            		AccessUtils.readCheck(e);
+            	}
             	sEntries.add(e);
             } catch (Exception ignoreMe) {};
     	}
@@ -1783,7 +1795,7 @@ public void modifyWorkflowState(Long folderId, Long entryId, Long stateId, Strin
 		ObjectControls objs = new ObjectControls(Folder.class, new String[] {"id"});
 		List<Object> folders = getCoreDao().loadObjects(objs, fc, RequestContextHolder.getRequestContext().getZoneId());
 		if(traceEnabled)
-			logger.trace("checking for deleted folders");
+			logger.trace("Checking for folders marked as deleted to clean up");
 		int success = 0;
 		int fail = 0;
 		for (Object obj: folders) {
@@ -1806,8 +1818,13 @@ public void modifyWorkflowState(Long folderId, Long entryId, Long stateId, Strin
 				logger.error(ex);
 			}
 		}
-		if(debugEnabled && folders != null && folders.size() > 0)
-			logger.debug("Folders cleaned up: success=" + success + ", fail=" + fail);
+		if(folders != null && folders.size() > 0) {
+			logger.info("Folders cleaned up: success=" + success + ", fail=" + fail);
+		}
+		else {
+			if(debugEnabled)
+				logger.debug("No folders to clean up");
+		}
 	}
 
 

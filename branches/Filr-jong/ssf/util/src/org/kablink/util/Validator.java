@@ -1,25 +1,35 @@
 /**
- * Copyright (c) 2000-2005 Liferay, LLC. All rights reserved.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
+ * 
+ * This work is governed by the Common Public Attribution License Version 1.0 (the
+ * "CPAL"); you may not use this file except in compliance with the CPAL. You may
+ * obtain a copy of the CPAL at http://www.opensource.org/licenses/cpal_1.0. The
+ * CPAL is based on the Mozilla Public License Version 1.1 but Sections 14 and 15
+ * have been added to cover use of software over a computer network and provide
+ * for limited attribution for the Original Developer. In addition, Exhibit A has
+ * been modified to be consistent with Exhibit B.
+ * 
+ * Software distributed under the CPAL is distributed on an "AS IS" basis, WITHOUT
+ * WARRANTY OF ANY KIND, either express or implied. See the CPAL for the specific
+ * language governing rights and limitations under the CPAL.
+ * 
+ * The Original Code is ICEcore, now called Kablink. The Original Developer is
+ * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * 
+ * Attribution Information:
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
+ * Attribution URL: [www.kablink.org]
+ * Graphic Image as provided in the Covered Code
+ * [ssf/images/pics/powered_by_icecore.png].
+ * Display of Attribution Information is required in Larger Works which are
+ * defined in the CPAL as a work which combines Covered Code or portions thereof
+ * with code not governed by the terms of the CPAL.
+ * 
+ * NOVELL and the Novell logo are registered trademarks and Kablink and the
+ * Kablink logos are trademarks of Novell, Inc.
  */
-
 package org.kablink.util;
 
 import org.kablink.util.cal.CalendarUtil;
@@ -30,7 +40,6 @@ import org.kablink.util.cal.CalendarUtil;
  * @author  Brian Wing Shun Chan
  * @author  Alysa Carver
  * @version $Revision: 1.11 $
- *
  */
 public class Validator {
 
@@ -282,10 +291,22 @@ public class Validator {
 	/**
 	 * @deprecated Use <code>isEmailAddress</code>.
 	 */
+	@Deprecated
 	public static boolean isValidEmailAddress(String ea) {
 		return isEmailAddress(ea);
 	}
 
+	public static boolean isEmptyString(String s) {
+		if (null != s) {
+			s = s.trim();
+		}
+		return ((null == s) || (0 == s.length()));
+	}
+	
+	public static boolean isNotEmptyString(String s) {
+		return (!(isEmptyString(s)));
+	}
+	
 	public static boolean isName(String name) {
 		if (isNull(name)) {
 			return false;

@@ -119,10 +119,21 @@ public class BaseFolderModule extends AbstractFolderModule implements BaseFolder
 	}
 
 	@Override
-	public Folder createNetFolder(Long netFolderConfigId, Long templateId, Long parentBinderId,
-			String folderTitle, String folderName, User owner,
-			Boolean isHomeDir, boolean indexContent, Boolean inheritIndexContent, SyncScheduleOption syncScheduleOption,
-			Boolean fullSyncDirOnly ) throws AccessControlException, WriteFilesException, WriteEntryDataException {
+    public Folder createNetFolder(
+        	Long netFolderConfigId,
+        	Long templateId,
+        	Long parentBinderId,
+        	String folderTitle,
+        	String folderName,
+        	User owner,
+        	Boolean isHomeDir,
+        	boolean indexContent,
+        	Boolean inheritIndexContent,
+        	SyncScheduleOption syncScheduleOption,
+        	Boolean fullSyncDirOnly,
+        	Boolean allowDesktopAppToTriggerSync,
+        	Boolean inheritAllowDesktopAppToTriggerSync ) 
+        		throws AccessControlException, WriteFilesException, WriteEntryDataException {
 		return null;
 	}
 
@@ -208,4 +219,9 @@ public class BaseFolderModule extends AbstractFolderModule implements BaseFolder
 			ResourceItem resourceItem) {
 		return null;
 	}
+
+    @Override
+    public boolean enqueueInitialNetFolderSync(Long folderId) {
+        return false;
+    }
 }

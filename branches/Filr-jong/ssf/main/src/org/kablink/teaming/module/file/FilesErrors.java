@@ -95,6 +95,7 @@ public class FilesErrors implements Serializable {
 		public static int PROBLEM_MIRRORED_FILE_READONLY_DRIVER		= 10;
 		public static int PROBLEM_ENCRYPTION_FAILED					= 11;
 		public static int PROBLEM_CHECKSUM_MISMATCH                 = 12;
+        public static int PROBLEM_ILLEGAL_CHARACTER  				= 13;
 
 		// Message codes corresponding to each regular problem type.
 		public static String[] typeCodes = {
@@ -111,6 +112,7 @@ public class FilesErrors implements Serializable {
 			"file.error.mirrored.file.readonly.driver",
 			"file.error.encryption.failed",
 			"file.error.checksum.mismatch",
+			"errorcode.illegalCharacterInName",
 		};
 		
 		// API error codes corresponding to each regular problem type.
@@ -128,6 +130,7 @@ public class FilesErrors implements Serializable {
 			ApiErrorCode.MIRRORED_READONLY_DRIVER,
 			ApiErrorCode.FILE_ENCRYPTION_FAILED,
 			ApiErrorCode.FILE_CHECKSUM_FAILED,
+			ApiErrorCode.ILLEGAL_CHARACTER,
 		};
 		
 		// HTTP status codes corresponding to each regular problem type.
@@ -145,6 +148,7 @@ public class FilesErrors implements Serializable {
 			400,
 			500,
 			400,
+            400,
 		};
 
 		private String repositoryName; // required

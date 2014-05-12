@@ -40,6 +40,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
+import org.kablink.teaming.gwt.client.EditCanceledHandler;
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtLdapConfig;
 import org.kablink.teaming.gwt.client.GwtLdapConnectionConfig;
@@ -110,6 +111,7 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
 public class EditLdapConfigDlg extends DlgBox
 	implements
 		EditSuccessfulHandler,
+		EditCanceledHandler,
 		LdapSyncStatusEvent.Handler,
 		InvokeLdapSyncResultsDlgEvent.Handler
 {
@@ -192,7 +194,7 @@ public class EditLdapConfigDlg extends DlgBox
 		super( autoHide, modal, xPos, yPos, new Integer( width ), new Integer( height ), DlgButtonMode.OkCancel );
 		
 		// Create the header, content and footer of this dialog box.
-		createAllDlgContent( GwtTeaming.getMessages().editLdapConfigDlg_Header(), this, null, null );
+		createAllDlgContent( GwtTeaming.getMessages().editLdapConfigDlg_Header(), this, this, null );
 		
 		m_lastSyncMode = GwtLdapSyncMode.PERFORM_SYNC;
 	}
@@ -805,6 +807,32 @@ public class EditLdapConfigDlg extends DlgBox
 		}
 	}
 	
+	/**
+	 * This method gets called when user user presses the Cancel push
+	 * button.
+	 * 
+	 * Implements the EditCanceledHandler.editCanceled() interface
+	 * method.
+	 * 
+	 * @return
+	 */
+	@Override
+	public boolean editCanceled()
+	{
+		boolean isDirty;
+		
+		isDirty = isDirty();
+		if ( isDirty )
+		{
+			if ( Window.confirm( GwtTeaming.getMessages().confirmChangesWillBeLost() ) )
+				return true;
+			
+			return false;
+		}
+		
+		return true;
+	}
+
 	/**
 	 * This gets called when the user presses ok.  Issue an rpc request to save the
 	 * "allow adhoc folders" setting

@@ -421,6 +421,20 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case CREATE_CHANGE_LOG_REPORT:
+		{
+			CreateChangeLogReportCmd cclrCmd = ((CreateChangeLogReportCmd) cmd);
+			ChangeLogReportRpcResponseData responseData = GwtReportsHelper.createChangeLogReport(
+				this,
+				getRequest( ri ),
+				cclrCmd.getBinderId(),
+				cclrCmd.getEntityId(),
+				cclrCmd.getEntityType(),
+				cclrCmd.getOperation() );
+			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
 		case CREATE_DUMMY_MOBILE_DEVICES:
 		{
 			CreateDummyMobileDevicesCmd cdmdCmd = ((CreateDummyMobileDevicesCmd) cmd);
@@ -926,7 +940,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			gafsCmd = (GetAdhocFolderSettingCmd) cmd;
 			upId = gafsCmd.getUserPrincipalId();
 			if ( upId != null )
-				result = GwtUIHelper.getAdhocFolderSettingFromUserOrGroup( this, upId );
+				result = GwtUIHelper.getAdhocFolderSettingFromUserOrGroup( this, upId, true );
 			else
 				result = GwtUIHelper.getAdhocFolderSettingFromZone( this );
 			

@@ -4092,8 +4092,10 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				
 				parentDn = dn.substring( index+1 );
 				
-				// Does the parent dn start with "ou=" or "o="?
-				if ( parentDn.startsWith( "ou=" ) || parentDn.startsWith( "o=" ) )
+				// Does the parent dn start with "ou=" or "o=" or "l=" or "c=" or "dc=" or "st="?
+				if ( parentDn.startsWith( "ou=" ) || parentDn.startsWith( "o=" ) ||
+					 parentDn.startsWith( "l=" ) || parentDn.startsWith( "c=" ) ||
+					 parentDn.startsWith( "dc=" ) || parentDn.startsWith( "st=" ) )
 				{
 					// Yes
 					return parentDn;
@@ -6190,7 +6192,19 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		String socketFactory = getLdapProperty(zone.getName(), "java.naming.ldap.factory.socket"); 
 		if (!Validator.isNull(socketFactory))
 			env.put("java.naming.ldap.factory.socket", socketFactory);
-	
+
+		// Set the default timeout
+		{
+			String timeout;
+			
+			timeout = SPropsUtil.getString( "com.sun.jndi.ldap.connect.timeout", "60000" );
+			env.put( "com.sun.jndi.ldap.connect.timeout", timeout );
+			
+			// Part of fix for bug 875689
+			timeout = SPropsUtil.getString( "com.sun.jndi.ldap.read.timeout", "10000" );
+			env.put( "com.sun.jndi.ldap.read.timeout", timeout );
+		}
+		
 		return new InitialLdapContext(env, null);
 	}
 

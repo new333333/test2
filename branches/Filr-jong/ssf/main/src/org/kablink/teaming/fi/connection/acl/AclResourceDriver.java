@@ -138,11 +138,13 @@ public interface AclResourceDriver extends ResourceDriver {
 	 * 
 	 * @param proxyUsername username of the proxy account
 	 * @param proxyPassword password of the proxy account
+	 * @param properties A map of optional properties or <code>null</code>. The actual semantics of the properties
+	 * are specific to each driver implementation.
 	 * @return ACL resource session
 	 * @throws FIException
 	 * @throws UncheckedIOException
 	 */
-	public AclResourceSession openSessionProxyMode(String proxyUsername, String proxyPassword) throws FIException, UncheckedIOException;
+	public AclResourceSession openSessionProxyMode(String proxyUsername, String proxyPassword, Map<String,Object> properties) throws FIException, UncheckedIOException;
 
 	/**
 	 * Opens a session in user mode.

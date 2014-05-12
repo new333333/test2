@@ -80,11 +80,9 @@ public class PersonalPreferencesDlg extends DlgBox
 		EditSuccessfulHandler editSuccessfulHandler,	// We will call this handler when the user presses the ok button
 		EditCanceledHandler editCanceledHandler, 		// This gets called when the user presses the Cancel button
 		boolean autoHide,
-		boolean modal,
-		int xPos,
-		int yPos )
+		boolean modal )
 	{
-		super( autoHide, modal, xPos, yPos );
+		super( autoHide, modal );
 		
 		m_isFilr = GwtClientHelper.isLicenseFilr();
 		
@@ -142,6 +140,7 @@ public class PersonalPreferencesDlg extends DlgBox
 			m_numEntriesPerPageTxtBox = new TextBox();
 			m_numEntriesPerPageTxtBox.addKeyPressHandler( this );
 			m_numEntriesPerPageTxtBox.setVisibleLength( 3 );
+			m_numEntriesPerPageTxtBox.setMaxLength( 6 );
 			table.setWidget( nextRow, 1, m_numEntriesPerPageTxtBox );
 			++nextRow;
 		}

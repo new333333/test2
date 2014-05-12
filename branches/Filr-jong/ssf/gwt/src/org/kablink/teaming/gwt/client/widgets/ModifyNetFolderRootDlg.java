@@ -136,6 +136,7 @@ public class ModifyNetFolderRootDlg extends DlgBox
 	private CheckBox m_jitsEnabledCkbox;
 	private TextBox m_jitsResultsMaxAge;
 	private TextBox m_jitsAclMaxAge;
+	private CheckBox m_allowDesktopAppToTriggerSyncCB;
 	
 	private List<LdapBrowseSpec> m_ldapServerList;	// List of LDAP servers obtained the first time m_browseProxyDnBtn is clicked.
 	
@@ -810,6 +811,16 @@ public class ModifyNetFolderRootDlg extends DlgBox
 			mainPanel.add( jitsPanel );
 		}
 		
+		// Add the control for "allow desktop app to trigger initial home folder sync
+		{
+			tmpPanel = new FlowPanel();
+			
+			m_allowDesktopAppToTriggerSyncCB = new CheckBox( messages.modifyNetFolderServerDlg_AllowDesktopAppToTriggerSync() );
+			
+			tmpPanel.add( m_allowDesktopAppToTriggerSyncCB );
+			mainPanel.add( tmpPanel );
+		}
+		
 		if ( GwtMainPage.m_requestInfo.getShowSyncOnlyDirStructureUI() )
 		{
 			tmpPanel = new FlowPanel();
@@ -1268,6 +1279,14 @@ public class ModifyNetFolderRootDlg extends DlgBox
 	/**
 	 * 
 	 */
+	private Boolean getAllowDesktopAppToTriggerSync()
+	{
+		return m_allowDesktopAppToTriggerSyncCB.getValue();
+	}
+	
+	/**
+	 * 
+	 */
 	private long getJitsAclMaxAge()
 	{
 		String maxAgeStr;
@@ -1550,6 +1569,7 @@ public class ModifyNetFolderRootDlg extends DlgBox
 		netFolderRoot.setJitsEnabled( getJitsEnabled() );
 		netFolderRoot.setJitsResultsMaxAge( getJitsResultsMaxAge() );
 		netFolderRoot.setJitsAclMaxAge( getJitsAclMaxAge() );
+		netFolderRoot.setAllowDesktopAppToTriggerInitialHomeFolderSync( getAllowDesktopAppToTriggerSync() );
 		
 		if ( m_showPrivilegedUsersUI && m_selectPrincipalsWidget != null )
 			netFolderRoot.setListOfPrincipals( getListOfPrivilegedPrincipals() );
@@ -1696,6 +1716,8 @@ public class ModifyNetFolderRootDlg extends DlgBox
 		if ( GwtMainPage.m_requestInfo.getShowSyncOnlyDirStructureUI() )
 			m_fullSyncDirOnlyCB.setValue( false );
 		
+		m_allowDesktopAppToTriggerSyncCB.setValue( true );
+		
 		// Forget about any list of LDAP servers.  The list may have
 		// changed since this dialog was last run and setting this to
 		// null will cause it to be reloaded when needed.
@@ -1751,6 +1773,15 @@ public class ModifyNetFolderRootDlg extends DlgBox
 				value = m_netFolderRoot.getFullSyncDirOnly();
 				if ( value != null )
 					m_fullSyncDirOnlyCB.setValue( value );
+			}
+			
+			// Initialize the "allow desktop app to trigger initial home folder sync" control
+			{
+				Boolean value;
+				
+				value = m_netFolderRoot.getAllowDesktopAppToTriggerInitialHomeFolderSync();
+				if ( value != null )
+					m_allowDesktopAppToTriggerSyncCB.setValue( value );
 			}
 		}
 		else

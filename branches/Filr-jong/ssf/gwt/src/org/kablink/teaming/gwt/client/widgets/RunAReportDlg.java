@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -84,13 +84,13 @@ public class RunAReportDlg extends DlgBox
 		// Event handlers implemented by this class.
 		AdministrationExitEvent.Handler
 {
-	public static final boolean	SHOW_JSP_ADMIN_REPORTS	= false;	// DRF:  Leave false on checkin.  Used to bring back the JSP versions for testing.
+	public static final boolean	SHOW_JSP_ADMIN_REPORTS	= false;	//! DRF (20121130):  Leave false on checkin.  Used to bring back the JSP versions for testing.
 	
 	private GwtTeamingMessages			m_messages;					// Access to Vibe's messages.
 	private int							m_showX;					// The x and...
-	private int							m_showY;					// ...y position and...
+	private int							m_showY;					// ...y position to show the dialog.
 	private List<HandlerRegistration>	m_registeredEventHandlers;	// Event handlers that are currently registered.
-	private Map<AdminAction, Widget>	m_reportWidgets;			// Map of report widgets, as they get created.
+	private Map<AdminAction, Widget>	m_reportWidgets;			// Map of the report widgets, as they get created.
 	private ReportsInfoRpcResponseData	m_reportsInfo;				// Information about the available reports obtained via a GWT RPC request to the server.
 	private ScrollPanel					m_reportScrollPanel;		// The scroll panel that holds the the report's contents.
 	private VibeFlowPanel				m_rootPanel;				// The panel that holds the dialog's contents.
@@ -171,7 +171,7 @@ public class RunAReportDlg extends DlgBox
 			modal,
 			x, y, cx, cy,
 			DlgButtonMode.Close,
-			false );
+			false);	// false -> Don't use overflow auto on the content.
 
 		// ...store the parameters...
 		m_showX = x;
@@ -207,46 +207,13 @@ public class RunAReportDlg extends DlgBox
 	}
 	
 	/*
-	 * Reads the change log report HTML from the server and stores it
-	 * in the report panel.
-	 * 
-	 * JSP/JavaScript files used:
-	 * - changeLog.jap
-	 * 		- single.jsp (via a find tag)
-	 *		- find.js
+	 * Constructs a widget for running a change log report and stores
+	 * it in the report panel.
 	 */
 	private void buildChangeLogReport() {
-		GwtClientHelper.executeCommand(
-				new GetJspHtmlCmd(VibeJspHtmlType.ADMIN_REPORT_CHANGELOG),
-				new AsyncCallback<VibeRpcResponse>() {
-			@Override
-			public void onFailure(Throwable t) {
-				GwtClientHelper.handleGwtRPCFailure(
-					t,
-					m_messages.rpcFailure_GetChangeLogsHtml());
-			}
-			
-			@Override
-			public void onSuccess(VibeRpcResponse response) {
-				// Display the change log report HTML in the report's
-				// content panel.
-				JspHtmlRpcResponseData responseData = ((JspHtmlRpcResponseData) response.getResponseData());
-				buildAndSetHtmlContent(AdminAction.REPORT_VIEW_CHANGELOG, responseData.getHtml());
-			}
-		});
-		
-//!		...this needs to be implemented...
-		// Need to get this working in Vibe.  Currently, the find
-		// widget doesn't work.  Other than that, the report functions
-		// as it should (i.e., if you manually enter the binder and/or
-		// entry IDs.
-		
-//!		...this needs to be implemented...
-/*
 		ChangeLogReportComposite clrc = new ChangeLogReportComposite();
 		m_reportScrollPanel.setWidget(clrc);
 		m_reportWidgets.put(AdminAction.REPORT_VIEW_CHANGELOG, clrc);
-*/
 	}
 	
 	/*
@@ -526,16 +493,15 @@ public class RunAReportDlg extends DlgBox
 			}
 		});
 
-		HorizontalPanel hPanel;
-		Label warningLabel;
-		
-		hPanel = new HorizontalPanel();
-		hPanel.setVerticalAlignment( HasVerticalAlignment.ALIGN_MIDDLE );
-		hPanel.setSpacing( 6 );
+		// Add a message about reports possibly being truncated if
+		// they're too large.
+		HorizontalPanel hPanel = new HorizontalPanel();
+		hPanel.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
+		hPanel.setSpacing(6);
 		hPanel.addStyleName("vibe-runAReportDlg-reportMaxSizePanel");
-		warningLabel = new Label( m_messages.runAReportDlgMaxSize() );
-		hPanel.add( warningLabel );
-		m_rootPanel.add( hPanel );
+		Label warningLabel = new Label(m_messages.runAReportDlgMaxSize());
+		hPanel.add(warningLabel);
+		m_rootPanel.add(hPanel);
 
 		// Create the panels to hold the selected report.
 		m_reportScrollPanel = new ScrollPanel();
@@ -570,17 +536,17 @@ public class RunAReportDlg extends DlgBox
 	}
 
 	/**
+	 * Returns a HelpData object for the dialog's help.
 	 * 
+	 * Overrides the DlgBox.getHelpData() method.
+	 * 
+	 * @return
 	 */
 	@Override
-	public HelpData getHelpData()
-	{
-		HelpData helpData;
-		
-		helpData = new HelpData();
-		helpData.setGuideName( HelpData.ADMIN_GUIDE );
-		helpData.setPageId( "reports_generate" );
-		
+	public HelpData getHelpData() {
+		HelpData helpData = new HelpData();
+		helpData.setGuideName(HelpData.ADMIN_GUIDE);
+		helpData.setPageId("reports_generate");
 		return helpData;
 	}
 

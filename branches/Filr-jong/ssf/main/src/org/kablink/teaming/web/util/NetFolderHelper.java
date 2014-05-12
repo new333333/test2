@@ -230,6 +230,7 @@ public class NetFolderHelper
 													new Boolean( true ),
 													NetFolderHelper.getDefaultJitsResultsMaxAge(),
 													NetFolderHelper.getDefaultJitsAclMaxAge(),
+													Boolean.TRUE,
 													scheduleInfo );
 		
 		// Add a task for the administrator to enter the proxy credentials for this server.
@@ -401,6 +402,9 @@ public class NetFolderHelper
 			boolean syncNeeded = false;
 			boolean doTestConnection;
 			
+			// Yes
+			canSyncNetFolder = true;
+			
 			doTestConnection = SPropsUtil.getBoolean( "test.connection.on.homedir.creation", true );
 			
 			// Test the connection
@@ -435,7 +439,7 @@ public class NetFolderHelper
 					Schedule schedule;
 		
 					// No, create one.
-					folderName = NLT.get( "netfolder.default.homedir.name" );
+					folderName = NLT.get( "netfolder.default.homedir.name", user.getLocale() );
 					m_logger.info( "About to create a net folder called: " + folderName + ", for the users home directory for user: " + user.getName() );
 					
 					// Create a default schedule for syncing the net folder
@@ -490,7 +494,9 @@ public class NetFolderHelper
 														true,
 														false,
 														new Boolean( true ),
-														null );
+														null,
+																Boolean.FALSE,
+																Boolean.TRUE );
 	
 					// As the fix for bug 831849 we must call getCoreDao().clear() before we call
 					// NetFolderHelper.saveJitsSettings().  If we don't, saveJitsSettings() throws
@@ -609,7 +615,9 @@ public class NetFolderHelper
 		boolean isHomeDir,
 		boolean indexContent,
 		Boolean inheritIndexContentOption,
-		Boolean fullSyncDirOnly ) throws WriteFilesException, WriteEntryDataException
+		Boolean fullSyncDirOnly,
+		Boolean allowDesktopAppToTriggerSync,
+		Boolean inheritAllowDesktopAppToTriggerSync ) throws WriteFilesException, WriteEntryDataException
 	{
 		NetFolderConfig nfc = null;
 		Long templateId = null;
@@ -658,7 +666,9 @@ public class NetFolderHelper
 											indexContent,
 											inheritIndexContentOption,
 											syncScheduleOption,
-											fullSyncDirOnly );
+											fullSyncDirOnly,
+											allowDesktopAppToTriggerSync,
+											inheritAllowDesktopAppToTriggerSync );
 			
 			//binder = binderModule.getBinder(nfc.getFolderId());
 			
@@ -702,6 +712,7 @@ public class NetFolderHelper
 		Boolean enableJits,
 		Long jitsResultsMaxAge,
 		Long jitsAclMaxAge,
+		Boolean allowDesktopAppToTriggerInitialHomeFolderSync,
 		ScheduleInfo scheduleInfo ) throws RDException
 	{
 		Map options;
@@ -728,6 +739,7 @@ public class NetFolderHelper
 		options.put( ObjectKeys.RESOURCE_DRIVER_JITS_ENABLED, enableJits );
 		options.put( ObjectKeys.RESOURCE_DRIVER_JITS_RESULTS_MAX_AGE, jitsResultsMaxAge );
 		options.put( ObjectKeys.RESOURCE_DRIVER_JITS_ACL_MAX_AGE, jitsAclMaxAge );
+		options.put( ObjectKeys.RESOURCE_DRIVER_ALLOW_DESKTOP_APP_TO_TRIGGER_HOME_FOLDER_SYNC, allowDesktopAppToTriggerInitialHomeFolderSync );
 		
 		// Is the root type WebDAV?
 		if ( driverType == DriverType.webdav )
@@ -1072,7 +1084,9 @@ public class NetFolderHelper
 		SyncScheduleOption syncScheduleOption,
 		boolean indexContent,
 		Boolean inheritIndexContent,
-		Boolean fullSyncDirOnly ) throws AccessControlException, WriteFilesException, WriteEntryDataException
+		Boolean fullSyncDirOnly,
+		Boolean allowDesktopAppToTriggerSync,
+		Boolean inheritAllowDesktopAppToTriggerSync ) throws AccessControlException, WriteFilesException, WriteEntryDataException
 	{
 		NetFolderConfig nfc = NetFolderUtil.getNetFolderConfig(id);
 		nfc.setName(netFolderName);
@@ -1125,6 +1139,7 @@ public class NetFolderHelper
 		Boolean enableJits,
 		Long jitsResultsMaxAge,
 		Long jitsAclMaxAge,
+		Boolean allowDesktopAppToTriggerInitialHomeFolderSync,
 		ScheduleInfo scheduleInfo )
 	{
 		Map options;
@@ -1157,6 +1172,7 @@ public class NetFolderHelper
 		options.put( ObjectKeys.RESOURCE_DRIVER_JITS_ENABLED, enableJits );
 		options.put( ObjectKeys.RESOURCE_DRIVER_JITS_RESULTS_MAX_AGE, jitsResultsMaxAge );
 		options.put( ObjectKeys.RESOURCE_DRIVER_JITS_ACL_MAX_AGE, jitsAclMaxAge );
+		options.put( ObjectKeys.RESOURCE_DRIVER_ALLOW_DESKTOP_APP_TO_TRIGGER_HOME_FOLDER_SYNC, allowDesktopAppToTriggerInitialHomeFolderSync );
 
 		// Always prevent the top level folder from being deleted
 		// This is forced so that the folder could not accidentally be deleted if the 

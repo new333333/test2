@@ -229,6 +229,7 @@ public interface GwtTeamingMessages extends Messages
 	String cantAccessEntry();
 	String cantAccessFolder();
 	String change();
+	String confirmChangesWillBeLost();
 	String edit();
 	String find();
 	String helpDlg();
@@ -325,6 +326,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_CreateApplicationAlreadyExists();
 	String rpcFailure_CreateApplicationGroupAlreadyExists();
 	String rpcFailure_CreateBlogPage();
+	String rpcFailure_CreateChangeLogReport();
 	String rpcFailure_CreateDummyMobileDevices();
 	String rpcFailure_CreateEmailReport();
 	String rpcFailure_CreateGroup();
@@ -2328,6 +2330,7 @@ public interface GwtTeamingMessages extends Messages
 
 	// Strings used in the modify Net Folder Server dialog
 	String modifyNetFolderServerDlg_AddHeader();
+	String modifyNetFolderServerDlg_AllowDesktopAppToTriggerSync();
 	String modifyNetFolderServerDlg_AllowSelfSignedCertsLabel();
 	String modifyNetFolderServerDlg_AuthenticationTab();
 	String modifyNetFolderServerDlg_AuthTypeLabel();
@@ -2430,6 +2433,7 @@ public interface GwtTeamingMessages extends Messages
 	String modifyNetFolderDlg_AddHeader();
 	String modifyNetFolderDlg_AllowDataSyncBy();
 	String modifyNetFolderDlg_AllowDesktopAppToSyncLabel();
+	String modifyNetFolderDlg_AllowDesktopAppTriggerSync();
 	String modifyNetFolderDlg_AllowMobileAppsToSyncLabel();
 	String modifyNetFolderDlg_ConfigTab();
 	String modifyNetFolderDlg_CreateNetFolderServerLabel();
@@ -2464,8 +2468,10 @@ public interface GwtTeamingMessages extends Messages
 	String modifyNetFolderDlg_SyncScheduleCaption();
 	String modifyNetFolderDlg_UseJistsSettingsFromNetFolderRbLabel();
 	String modifyNetFolderDlg_UseJitsSettingsFromNetFolderServerRbLabel();
+	String modifyNetFolderDlg_UseNetFolderDesktopAppTriggerSync();
 	String modifyNetFolderDlg_UseNetFolderIndexContentOptionRbLabel();
 	String modifyNetFolderDlg_UseNetFolderScheduleRbLabel();
+	String modifyNetFolderDlg_UseNetFolderServerDesktopAppTriggerSync();
 	String modifyNetFolderDlg_UseNetFolderServerIndexContentOptionRbLabel();
 	String modifyNetFolderDlg_UseNetFolderServerScheduleRbLabel();
 	String modifyNetFolderDlg_UseNetFolderServerSyncOptionRbLabel();
@@ -3309,5 +3315,41 @@ public interface GwtTeamingMessages extends Messages
 	String PromptForExternalUsersEmailAddressDlg_Header();
 	String PromptForExternalUsersEmailAddressDlg_Hint();
 	String PromptForExternalUsersEmailAddressDlg_NoEmailAddressesEntered();
-	
+
+	// String used by the 'Change Log Report' composite.
+	String changeLogBinderId();
+	String changeLogDescription();
+	String changeLogEntityId();
+	String changeLogEntityType();
+	String changeLogEntityType_folder();
+	String changeLogEntityType_folderEntry();
+	String changeLogEntityType_group();
+	String changeLogEntityType_profiles();
+	String changeLogEntityType_user();
+	String changeLogEntityType_workspace();
+	String changeLogError_NoIds();
+	String changeLogFindBinder();
+	String changeLogFindEntity();
+	String changeLogOperation();
+	String changeLogOperation_addBinder();
+	String changeLogOperation_addEntry();
+	String changeLogOperation_addFile();
+	String changeLogOperation_addWorkflowResponse();
+	String changeLogOperation_deleteAccess();
+	String changeLogOperation_deleteBinder();
+	String changeLogOperation_deleteEntry();
+	String changeLogOperation_deleteFile();
+	String changeLogOperation_deleteVersion();
+	String changeLogOperation_modifyAccess();
+	String changeLogOperation_modifyBinder();
+	String changeLogOperation_modifyEntry();
+	String changeLogOperation_modifyFile();
+	String changeLogOperation_modifyWorkflowState();
+	String changeLogOperation_moveBinder();
+	String changeLogOperation_moveEntry();
+	String changeLogOperation_renameFile();
+	String changeLogOperation_showAll();
+	String changeLogOperation_startWorkflow();
+	String changeLogRunReport();
+	String changeLogWarning_NoChanges();
 }// end GwtTeamingMessages
