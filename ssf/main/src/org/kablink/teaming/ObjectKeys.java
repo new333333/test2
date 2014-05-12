@@ -232,6 +232,8 @@ public interface ObjectKeys {
 	public static final String SESSION_ACL_CACHE="aclCache";
 	public static final String SESSION_ACL_CACHE_USER_ID="aclCacheUserId";
 	public static final int SESSION_ACL_CACHE_TIMEOUT=60*1000; //Only use cache if time is within 1 minute
+	public static final String SESSION_DREDGED_ROLE_ID_CACHE="dredgedRoleIdCache";
+	public static final long SESSION_DREDGED_ROLE_ID_CACHE_TIMEOUT=3L; //Only use cache if time is within 3 seconds
 
     //map keys returned from modules
     public static final String BINDER="binder";
@@ -544,6 +546,7 @@ public interface ObjectKeys {
 	public static final String RESOURCE_DRIVER_JITS_ENABLED = "jitsEnabled";
     public static final String RESOURCE_DRIVER_JITS_ACL_MAX_AGE = "jitsAclMaxAge";
     public static final String RESOURCE_DRIVER_JITS_RESULTS_MAX_AGE = "jitsMaxAge";
+    public static final String RESOURCE_DRIVER_ALLOW_DESKTOP_APP_TO_TRIGGER_HOME_FOLDER_SYNC = "allowDesktopAppToTriggerHomeFolderSync";
 	
     //User and Principal objects
     public static final int USER_STATUS_DATABASE_FIELD_LENGTH = 256;
@@ -715,6 +718,7 @@ public interface ObjectKeys {
     public static final String FIELD_APPLICATION_MAX_IDLE_TIME="maxIdleTime";
     public static final String FIELD_APPLICATION_SAME_ADDR_POLICY="sameAddrPolicy";
     public static final String FIELD_BINDER_ALLOW_DESKTOP_APP_TO_SYNC_DATA = "allowDesktopAppToSyncData";
+    public static final String FIELD_BINDER_ALLOW_DESKTOP_APP_TO_TRIGGER_INITIAL_HOME_FOLDER_SYNC = "allowDesktopAppToTriggerInitialHomeFolderSync";
     public static final String FIELD_BINDER_ALLOW_MOBILE_APPS_TO_SYNC_DATA = "allowMobileAppsToSyncData";
     public static final String FIELD_BINDER_INDEX_CONTENT = "indexContent";
     public static final String FIELD_BINDER_JITS_ACL_MAX_AGE = "jitsAclMaxAge";

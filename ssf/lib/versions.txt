@@ -126,6 +126,7 @@ MINA (Apache) mina-core.jar 1.1.6
 MINA (Apache) mina-filter-ssl.jar 1.1.6
 MINA (Apache) mina-integration-jmx.jar 1.1.3
 md5crypt.jar 1.0
+Mockito 1.9.5
 MySQL Connector/J 5.1.29 (mysql-connector-java-5.1.29-bin.jar)
 opencmis 0.8.0 (implementation of cmis standard for accessing content management systems)
     This set of libraries is used in the Sharepoint resource driver for accessing the sharepoint
@@ -158,6 +159,7 @@ SubEthaSMTP subethasmtp.jar 3.1.3
 swfobject 2.1 (Javascript library)
 tcllib 1.11.1 (for installer)
 tika 1.5
+TestNG 6.8
 Tomcat 7.0.42 (Also includes catalina.jar and tomcat-dbcp.jar)
 Trove 3.0.1
 unoil.jar (from OpenOffice 2.0)

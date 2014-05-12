@@ -46,7 +46,6 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.document.DateTools;
-
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.GroupPrincipal;
 import org.kablink.teaming.domain.Principal;
@@ -56,6 +55,7 @@ import org.kablink.teaming.gwt.client.presence.GwtPresenceInfo;
 import org.kablink.teaming.gwt.client.util.AssignmentInfo;
 import org.kablink.teaming.gwt.client.util.AssignmentInfo.AssigneeType;
 import org.kablink.teaming.lucene.util.SearchFieldResult;
+import org.kablink.teaming.module.shared.AccessUtils;
 import org.kablink.teaming.search.BasicIndexUtils;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.DateComparer;
@@ -461,10 +461,16 @@ public class GwtEventHelper {
 						if (MiscUtil.hasString(ema)) {
 							principalEMAs.put(pId, ema);
 						}
-						String avatarUrl = GwtServerHelper.getUserAvatarUrl(bs, request, user);
-						if (MiscUtil.hasString(avatarUrl)) {
-							avatarUrls.put(pId, avatarUrl);
-						}
+				    	try {
+				    		AccessUtils.readCheck(user);
+							String avatarUrl = GwtServerHelper.getUserAvatarUrl(bs, request, user);
+							if (MiscUtil.hasString(avatarUrl)) {
+								avatarUrls.put(pId, avatarUrl);
+							}
+				    	}
+				    	catch (Exception e) {
+				    		// No access to user -> No avatar URL.
+				    	}
 						userExternal.put(pId, new Boolean(!(user.getIdentityInfo().isInternal())));
 					}
 				}

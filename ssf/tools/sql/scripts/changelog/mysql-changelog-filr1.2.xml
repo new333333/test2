@@ -54,6 +54,12 @@
             <column name="useInheritedJitsSettings" type="BIT">
                 <constraints nullable="true" />
             </column>
+            <column name="allowDesktopAppToTriggerInitialHomeFolderSync" type="BIT">
+                <constraints nullable="true" />
+            </column>
+            <column name="useInheritedDesktopAppTriggerSetting" type="BIT">
+                <constraints nullable="true" />
+            </column>
         </createTable>
         <modifySql dbms="mysql">
             <append value=" engine innodb"/>
@@ -94,6 +100,8 @@
         <dropColumn tableName="SS_Forums" columnName="syncScheduleOption"/>
         <dropColumn tableName="SS_Forums" columnName="useInheritedIndexContent"/>
         <dropColumn tableName="SS_Forums" columnName="useInheritedJitsSettings"/>
+        <dropColumn tableName="SS_Forums" columnName="allowDesktopAppToTriggerInitialHomeFolderSync"/>
+        <dropColumn tableName="SS_Forums" columnName="useInheritedDesktopAppTriggerSetting"/>
     </changeSet>
 	
 </databaseChangeLog>

@@ -23,6 +23,7 @@ public class RecentActivityFolderEntryBuilder extends BaseFolderEntryBriefBuilde
     public RecentActivityEntry build(Map entry) {
         RecentActivityEntry model = new RecentActivityEntry();
         populateBaseFolderEntryBrief(model, entry, Constants.BINDER_ID_FIELD);
+        populateFileBrief(model, entry);
         LinkUriUtil.populateFolderEntryLinks(model, model.getId());
         return model;
     }

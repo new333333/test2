@@ -1730,6 +1730,16 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
         memberships = getWorkAreaFunctionMembershipManager()
         		.findWorkAreaFunctionMemberships(RequestContextHolder.getRequestContext().getZoneId(), source);
         
+		//Filter out any functions that are the external role type
+        List<WorkAreaFunctionMembership> filteredMemberships = new ArrayList<WorkAreaFunctionMembership>();
+		for (WorkAreaFunctionMembership wfm : memberships) {
+			Function f = getFunction(wfm.getFunctionId());
+			if (f.getScope().equals(workArea.getRegisteredRoleType())) {
+				filteredMemberships.add(wfm);
+			}
+		}
+		memberships.removeAll(filteredMemberships);
+		
         //Merge the two sets of memberships with deference to the external ACLs
         for (WorkAreaFunctionMembership wfm : filteredExtMemberships) {
         	List<WorkAreaFunctionMembership> itemsToRemove = new ArrayList<WorkAreaFunctionMembership>();

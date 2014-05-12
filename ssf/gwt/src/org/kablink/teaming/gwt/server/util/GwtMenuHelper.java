@@ -1389,7 +1389,7 @@ public class GwtMenuHelper {
 	private static void constructEntryRenameFolder(ToolbarItem entryToolbar, AllModulesInjected bs, HttpServletRequest request, Folder folder) {
 		// Does the user have rights to rename this folder?  Note that
 		// even with rights, they can't rename a 'Home' folder.
-		if (bs.getBinderModule().testAccess(folder, BinderOperation.modifyBinder) && (!(BinderHelper.isBinderHomeFolder(folder)))) {
+		if (bs.getBinderModule().testAccess(folder, BinderOperation.renameBinder) && (!(BinderHelper.isBinderHomeFolder(folder)))) {
 			// Yes!  Add a Rename ToolbarItem.
 			ToolbarItem renameTBI = new ToolbarItem(RENAME);
 			markTBITitle(renameTBI, "toolbar.menu.rename_folder"      );
@@ -1493,46 +1493,51 @@ public class GwtMenuHelper {
 	 * Constructs the ToolbarItems for the share menu on a entry menu
 	 * bar.
 	 */
-	private static void constructEntryShareItems(ToolbarItem entryToolbar, AllModulesInjected bs, HttpServletRequest request, boolean isFileEntity) {
+	private static void constructEntryShareItems(ToolbarItem entryToolbar, AllModulesInjected bs, HttpServletRequest request, boolean isSWM, boolean isFileEntity) {
 		// Are we logged in as Guest?
 		boolean isGuest = GwtServerHelper.getCurrentUser().isShared();
 		if (!isGuest) {
 			// No!  Are we constructing share items for a file entity?
 			if (isFileEntity) {
-				// Yes!  Create the share toolbar...
-				ToolbarItem shareItemsTBI = new ToolbarItem("1_share");
-				markTBITitle(shareItemsTBI, "toolbar.share");
-
-				ToolbarItem shareTBI;
-				if (GwtShareHelper.isSharingEnabled(bs)) {
-					// ...add the share item...
-					shareTBI = new ToolbarItem(SHARE);
-					markTBITitle(shareTBI, "toolbar.shareSelected");
-					markTBIEvent(shareTBI, TeamingEvents.SHARE_SELECTED_ENTITIES);
-					shareItemsTBI.addNestedItem(shareTBI);
-				}
-				
-				if (GwtShareHelper.isSharingPublicLinksEnabled(bs)) {
-					// ...add the e-mail public link item...
-					String keyTail;
-					if (Utils.checkIfFilr())
-					     keyTail = "filr";
-					else keyTail = "vibe";
-					shareTBI = new ToolbarItem(EMAIL_PUBLIC_LINK);
-					markTBITitle(shareTBI, "toolbar.emailPublicLinkSelected." + keyTail);
-					markTBIEvent(shareTBI, TeamingEvents.EMAIL_PUBLIC_LINK_SELECTED_ENTITIES);
-					shareItemsTBI.addNestedItem(shareTBI);
+				// Yes!  Is it for other than a Shared with Me view or
+				// does the user have share forwarding rights?
+				if ((!isSWM) || GwtShareHelper.isShareForwardingEnabled(bs)) {
+					// Yes!  Create the share toolbar...
+					ToolbarItem shareItemsTBI = new ToolbarItem("1_share");
+					markTBITitle(shareItemsTBI, "toolbar.share");
+	
+					ToolbarItem shareTBI;
+					if (GwtShareHelper.isSharingEnabled(bs)) {
+						// ...add the share item...
+						shareTBI = new ToolbarItem(SHARE);
+						markTBITitle(shareTBI, "toolbar.shareSelected");
+						markTBIEvent(shareTBI, TeamingEvents.SHARE_SELECTED_ENTITIES);
+						shareItemsTBI.addNestedItem(shareTBI);
+					}
 					
-					// ...add the copy public link item...
-					shareTBI = new ToolbarItem(COPY_PUBLIC_LINK);
-					markTBITitle(shareTBI, "toolbar.copyPublicLinkSelected." + keyTail);
-					markTBIEvent(shareTBI, TeamingEvents.COPY_PUBLIC_LINK_SELECTED_ENTITIES);
-					shareItemsTBI.addNestedItem(shareTBI);
-				}
-				
-				if (shareItemsTBI.hasNestedToolbarItems()) {
-					// ...and the share toolbar to the entry toolbar.
-					entryToolbar.addNestedItem(shareItemsTBI);
+					if (GwtShareHelper.isSharingPublicLinksEnabled(bs)) {
+						// ...add the e-mail public link item...
+						String keyTail;
+						if (Utils.checkIfFilr())
+						     keyTail = "filr";
+						else keyTail = "vibe";
+						shareTBI = new ToolbarItem(EMAIL_PUBLIC_LINK);
+						markTBITitle(shareTBI, "toolbar.emailPublicLinkSelected." + keyTail);
+						markTBIEvent(shareTBI, TeamingEvents.EMAIL_PUBLIC_LINK_SELECTED_ENTITIES);
+						shareItemsTBI.addNestedItem(shareTBI);
+						
+						// ...add the copy public link item...
+						shareTBI = new ToolbarItem(COPY_PUBLIC_LINK);
+						markTBITitle(shareTBI, "toolbar.copyPublicLinkSelected." + keyTail);
+						markTBIEvent(shareTBI, TeamingEvents.COPY_PUBLIC_LINK_SELECTED_ENTITIES);
+						shareItemsTBI.addNestedItem(shareTBI);
+					}
+					
+					if (shareItemsTBI.hasNestedToolbarItems()) {
+						// ...and the share toolbar to the entry
+						// ...toolbar.
+						entryToolbar.addNestedItem(shareItemsTBI);
+					}
 				}
 			}
 			
@@ -2021,45 +2026,49 @@ public class GwtMenuHelper {
 		}
 		
 		// Does the user have rights modify this binder?
-		if (bm.testAccess(binder, BinderOperation.modifyBinder)) {
+		if (bm.testAccess(binder, BinderOperation.modifyBinder) || bm.testAccess(binder, BinderOperation.renameBinder)) {
 			// Yes!  Add the ToolBarItem's for it.
 			adminMenuCreated  =
 			configMenuCreated = true;
 
-			// First, a rename ToolbarItem...
-			actionTBI = new ToolbarItem(RENAME);
-			markTBITitle(actionTBI, (isFolder ? "toolbar.menu.rename_folder" : "toolbar.menu.rename_workspace"));
-			markTBIEvent(actionTBI, TeamingEvents.INVOKE_RENAME_ENTITY                                         );
-			configTBI.addNestedItem(actionTBI);
-
-			// ...if we're not in Filr mode...
-			if (!isFilr) {
-				// ...then a modify ToolbarItem...
-				url = createActionUrl(request);
-				url.setParameter(WebKeys.ACTION,          WebKeys.ACTION_MODIFY_BINDER);
-				url.setParameter(WebKeys.URL_BINDER_ID,   binderIdS                   );
-				url.setParameter(WebKeys.URL_BINDER_TYPE, binderType.name()           );
-				url.setParameter(WebKeys.URL_OPERATION,   WebKeys.OPERATION_MODIFY    );
-				
-				actionTBI = new ToolbarItem(MODIFY);
-				markTBIPopup(actionTBI                                                                             );
-				markTBITitle(actionTBI, (isFolder ? "toolbar.menu.modify_folder" : "toolbar.menu.modify_workspace"));
-				markTBIUrl(  actionTBI, url                                                                        );
-				
+			if (bm.testAccess(binder, BinderOperation.renameBinder)) {
+				// First, a rename ToolbarItem...
+				actionTBI = new ToolbarItem(RENAME);
+				markTBITitle(actionTBI, (isFolder ? "toolbar.menu.rename_folder" : "toolbar.menu.rename_workspace"));
+				markTBIEvent(actionTBI, TeamingEvents.INVOKE_RENAME_ENTITY                                         );
 				configTBI.addNestedItem(actionTBI);
+			}
 
-				// ...then a configure ToolbarItem.
-				url = createActionUrl(request);
-				url.setParameter(WebKeys.ACTION,          WebKeys.ACTION_CONFIGURE_DEFINITIONS);
-				url.setParameter(WebKeys.URL_BINDER_ID,   binderIdS                           );
-				url.setParameter(WebKeys.URL_BINDER_TYPE, binderType.name()                   );
-				
-				actionTBI = new ToolbarItem(CONFIGURE_DEFINITIONS);
-				markTBIPopup(actionTBI                              );
-				markTBITitle(actionTBI, "toolbar.menu.configuration");
-				markTBIUrl(  actionTBI, url                         );
-				
-				configTBI.addNestedItem(actionTBI);
+			if (bm.testAccess(binder, BinderOperation.modifyBinder)) {
+				// ...if we're not in Filr mode...
+				if (!isFilr) {
+					// ...then a modify ToolbarItem...
+					url = createActionUrl(request);
+					url.setParameter(WebKeys.ACTION,          WebKeys.ACTION_MODIFY_BINDER);
+					url.setParameter(WebKeys.URL_BINDER_ID,   binderIdS                   );
+					url.setParameter(WebKeys.URL_BINDER_TYPE, binderType.name()           );
+					url.setParameter(WebKeys.URL_OPERATION,   WebKeys.OPERATION_MODIFY    );
+					
+					actionTBI = new ToolbarItem(MODIFY);
+					markTBIPopup(actionTBI                                                                             );
+					markTBITitle(actionTBI, (isFolder ? "toolbar.menu.modify_folder" : "toolbar.menu.modify_workspace"));
+					markTBIUrl(  actionTBI, url                                                                        );
+					
+					configTBI.addNestedItem(actionTBI);
+	
+					// ...then a configure ToolbarItem.
+					url = createActionUrl(request);
+					url.setParameter(WebKeys.ACTION,          WebKeys.ACTION_CONFIGURE_DEFINITIONS);
+					url.setParameter(WebKeys.URL_BINDER_ID,   binderIdS                           );
+					url.setParameter(WebKeys.URL_BINDER_TYPE, binderType.name()                   );
+					
+					actionTBI = new ToolbarItem(CONFIGURE_DEFINITIONS);
+					markTBIPopup(actionTBI                              );
+					markTBITitle(actionTBI, "toolbar.menu.configuration");
+					markTBIUrl(  actionTBI, url                         );
+					
+					configTBI.addNestedItem(actionTBI);
+				}
 			}
 		}
 
@@ -2579,7 +2588,7 @@ public class GwtMenuHelper {
 		ToolbarItem manageGroupTBI;
 		if (Utils.checkIfFilr()) {
 			// Yes!  Add whether adHoc folders are accessible.
-			Boolean adHocFlag = AdminHelper.getAdhocFolderSettingFromUserOrGroup(bs, groupId);
+			Boolean adHocFlag = AdminHelper.getAdhocFolderSettingFromUserOrGroup(bs, groupId, false);
 			if (null == adHocFlag) {
 				adHocFlag = AdminHelper.getAdhocFolderSettingFromZone(bs);
 			}
@@ -3144,7 +3153,10 @@ public class GwtMenuHelper {
 					}
 
 					// If the user can share the entry...
-					boolean sharable = (GwtShareHelper.isEntitySharable(bs, fe) || GwtShareHelper.isEntityPublicLinkSharable(bs, fe));
+					boolean isSWM    = (binderInfo.isBinderCollection() && binderInfo.getCollectionType().isSharedWithMe());
+					boolean sharable =
+						(((!isSWM) || GwtShareHelper.isShareForwardingEnabled(bs)) &&
+						(GwtShareHelper.isEntitySharable(bs, fe) || GwtShareHelper.isEntityPublicLinkSharable(bs, fe)));
 					if (sharable) {
 						// ...add the necessary share items.
 						constructEntryShareItem(
@@ -3321,7 +3333,7 @@ public class GwtMenuHelper {
 						constructEntryAddFileFolderItem(   entryToolbar, bs, request,                                                  ws, homeFolderTargetId         );
 					}
 					if ((isCollectionMyFiles || isCollectionSharedByMe || isCollectionSharedWithMe)) {
-					    constructEntryShareItems(          entryToolbar, bs, request, true                                                                            );
+					    constructEntryShareItems(          entryToolbar, bs, request, isCollectionSharedWithMe, true                                                  );
 					}
 					if (((isCollectionMyFiles && (!useHomeAsMyFiles) && (!isCollectionNetFolders))) || (isCollectionShared && (!isCollectionSharedPublic))) {
 						constructEntryDeleteItem(          entryToolbar, bs, request,                           (isCollectionMyFiles ? ws : null), isCollectionMyFiles);
@@ -3378,8 +3390,8 @@ public class GwtMenuHelper {
 					// Constructs the items for sharing and deleting
 					// the selected entries.
 					boolean isFileFolder = GwtServerHelper.isFamilyFile(GwtServerHelper.getFolderEntityFamily(bs, folder));
-					constructEntryShareItems(entryToolbar, bs, request, isFileFolder    );
-					constructEntryDeleteItem(entryToolbar, bs, request, viewType, folder);
+					constructEntryShareItems(entryToolbar, bs, request, false,    isFileFolder);
+					constructEntryDeleteItem(entryToolbar, bs, request, viewType, folder      );
 		
 					// Can we determine the folder's view type?
 					if (hasVT) {

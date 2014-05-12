@@ -429,6 +429,11 @@
     </changeSet>
 
     <changeSet author="jong" context="schema" failOnError="true" id="37">
+        <preConditions onFail="MARK_RAN">
+            <not>
+            	<indexExists indexName="internalId_Binder"/>
+            </not>
+        </preConditions>
         <comment>Create index on internalId column in SS_Forums table</comment>
         <createIndex indexName="internalId_Binder" schemaName="dbo" tableName="SS_Forums" unique="false">
             <column name="internalId"/>
@@ -538,4 +543,290 @@
         </addColumn>
     </changeSet>
     
+    <changeSet author="jong" context="schema" failOnError="true" id="46">
+        <preConditions onFail="MARK_RAN">
+            <not>
+            	<indexExists indexName="ownerBinder_Att"/>
+            </not>
+        </preConditions>
+        <createIndex indexName="ownerBinder_Att" schemaName="dbo" tableName="SS_Attachments" unique="false">
+            <column name="binder"/>
+        </createIndex>
+    </changeSet>
+    
+    <changeSet author="jong" context="schema" failOnError="true" id="47">
+        <preConditions onFail="MARK_RAN">
+            <not>
+            	<indexExists indexName="ownerFolderEntry_Att"/>
+            </not>
+        </preConditions>
+        <createIndex indexName="ownerFolderEntry_Att" schemaName="dbo" tableName="SS_Attachments" unique="false">
+            <column name="folderEntry"/>
+        </createIndex>
+    </changeSet>
+    
+    <changeSet author="jong" context="schema" failOnError="true" id="48">
+        <preConditions onFail="MARK_RAN">
+            <not>
+            	<indexExists indexName="ownerPrincipal_Att"/>
+            </not>
+        </preConditions>
+        <createIndex indexName="ownerPrincipal_Att" schemaName="dbo" tableName="SS_Attachments" unique="false">
+            <column name="principal"/>
+        </createIndex>
+    </changeSet>
+    
+    <changeSet author="jong" context="schema" failOnError="true" id="49">
+        <preConditions onFail="MARK_RAN">
+            <not>
+            	<indexExists indexName="owningAttachment_Att"/>
+            </not>
+        </preConditions>
+        <createIndex indexName="owningAttachment_Att" schemaName="dbo" tableName="SS_Attachments" unique="false">
+            <column name="parentAttachment"/>
+        </createIndex>
+    </changeSet>
+    
+    <changeSet author="jong" context="schema" failOnError="true" id="50">
+        <preConditions onFail="MARK_RAN">
+            <not>
+            	<indexExists indexName="ownerBinder_cAtt"/>
+            </not>
+        </preConditions>
+        <createIndex indexName="ownerBinder_cAtt" schemaName="dbo" tableName="SS_CustomAttributes" unique="false">
+            <column name="binder"/>
+        </createIndex>
+    </changeSet>
+    
+    <changeSet author="jong" context="schema" failOnError="true" id="51">
+        <preConditions onFail="MARK_RAN">
+            <not>
+            	<indexExists indexName="ownerFolderEntry_cAtt"/>
+            </not>
+        </preConditions>
+        <createIndex indexName="ownerFolderEntry_cAtt" schemaName="dbo" tableName="SS_CustomAttributes" unique="false">
+            <column name="folderEntry"/>
+        </createIndex>
+    </changeSet>
+    
+    <changeSet author="jong" context="schema" failOnError="true" id="52">
+        <preConditions onFail="MARK_RAN">
+            <not>
+            	<indexExists indexName="ownerPrincipal_cAtt"/>
+            </not>
+        </preConditions>
+        <createIndex indexName="ownerPrincipal_cAtt" schemaName="dbo" tableName="SS_CustomAttributes" unique="false">
+            <column name="principal"/>
+        </createIndex>
+    </changeSet>
+    
+    <changeSet author="jong" context="schema" failOnError="true" id="53">
+        <preConditions onFail="MARK_RAN">
+            <not>
+            	<indexExists indexName="owningAttribute_cAtt"/>
+            </not>
+        </preConditions>
+        <createIndex indexName="owningAttribute_cAtt" schemaName="dbo" tableName="SS_CustomAttributes" unique="false">
+            <column name="parent"/>
+        </createIndex>
+    </changeSet>
+    
+    <changeSet author="jong" context="schema" failOnError="true" id="54">
+        <preConditions onFail="MARK_RAN">
+            <not>
+            	<indexExists indexName="ownerBinder_Event"/>
+            </not>
+        </preConditions>
+        <createIndex indexName="ownerBinder_Event" schemaName="dbo" tableName="SS_Events" unique="false">
+            <column name="binder"/>
+        </createIndex>
+    </changeSet>
+    
+    <changeSet author="jong" context="schema" failOnError="true" id="55">
+        <preConditions onFail="MARK_RAN">
+            <not>
+            	<indexExists indexName="ownerFolderEntry_Event"/>
+            </not>
+        </preConditions>
+        <createIndex indexName="ownerFolderEntry_Event" schemaName="dbo" tableName="SS_Events" unique="false">
+            <column name="folderEntry"/>
+        </createIndex>
+    </changeSet>
+    
+    <changeSet author="jong" context="schema" failOnError="true" id="56">
+        <preConditions onFail="MARK_RAN">
+            <not>
+            	<indexExists indexName="ownerPrincipal_Event"/>
+            </not>
+        </preConditions>
+        <createIndex indexName="ownerPrincipal_Event" schemaName="dbo" tableName="SS_Events" unique="false">
+            <column name="principal"/>
+        </createIndex>
+    </changeSet>
+    
+    <changeSet author="jong" context="schema" failOnError="true" id="57">
+        <preConditions onFail="MARK_RAN">
+            <not>
+            	<indexExists indexName="owningEntry_fEntry"/>
+            </not>
+        </preConditions>
+        <createIndex indexName="owningEntry_fEntry" schemaName="dbo" tableName="SS_FolderEntries" unique="false">
+            <column name="topEntry"/>
+        </createIndex>
+    </changeSet>
+    
+    <changeSet author="jong" context="schema" failOnError="true" id="58">
+        <preConditions onFail="MARK_RAN">
+            <not>
+            	<indexExists indexName="owningFolder_fEntry"/>
+            </not>
+        </preConditions>
+        <createIndex indexName="owningFolder_fEntry" schemaName="dbo" tableName="SS_FolderEntries" unique="false">
+            <column name="parentBinder"/>
+        </createIndex>
+    </changeSet>
+    
+    <changeSet author="jong" context="schema" failOnError="true" id="59">
+        <preConditions onFail="MARK_RAN">
+            <not>
+            	<indexExists indexName="owningBinder_Binder"/>
+            </not>
+        </preConditions>
+        <createIndex indexName="owningBinder_Binder" schemaName="dbo" tableName="SS_Forums" unique="false">
+            <column name="parentBinder"/>
+        </createIndex>
+    </changeSet>
+
+    <!-- Do not add templateOwningBinderId_Binder index on templateOwningBinderId column in SS_Forums table. It shouldn't have been there. -->
+        
+    <changeSet author="jong" context="schema" failOnError="true" id="60">
+        <preConditions onFail="MARK_RAN">
+            <not>
+            	<indexExists indexName="ownerBinder"/>
+            </not>
+        </preConditions>
+        <createIndex indexName="ownerBinder" schemaName="dbo" tableName="SS_WorkflowResponses" unique="false">
+            <column name="binder"/>
+        </createIndex>
+    </changeSet>
+    
+    <changeSet author="jong" context="schema" failOnError="true" id="61">
+        <preConditions onFail="MARK_RAN">
+            <not>
+            	<indexExists indexName="ownerFolderEntry"/>
+            </not>
+        </preConditions>
+        <createIndex indexName="ownerFolderEntry" schemaName="dbo" tableName="SS_WorkflowResponses" unique="false">
+            <column name="folderEntry"/>
+        </createIndex>
+    </changeSet>
+    
+    <changeSet author="jong" context="schema" failOnError="true" id="62">
+        <preConditions onFail="MARK_RAN">
+            <not>
+            	<indexExists indexName="ownerPrincipal"/>
+            </not>
+        </preConditions>
+        <createIndex indexName="ownerPrincipal" schemaName="dbo" tableName="SS_WorkflowResponses" unique="false">
+            <column name="principal"/>
+        </createIndex>
+    </changeSet>
+    
+    <changeSet author="jong" context="schema" failOnError="true" id="63">
+        <preConditions onFail="MARK_RAN">
+            <not>
+            	<indexExists indexName="ownerBinder_wState"/>
+            </not>
+        </preConditions>
+        <createIndex indexName="ownerBinder_wState" schemaName="dbo" tableName="SS_WorkflowStates" unique="false">
+            <column name="binder"/>
+        </createIndex>
+    </changeSet>
+    
+    <changeSet author="jong" context="schema" failOnError="true" id="64">
+        <preConditions onFail="MARK_RAN">
+            <not>
+            	<indexExists indexName="ownerFolderEntry_wState"/>
+            </not>
+        </preConditions>
+        <createIndex indexName="ownerFolderEntry_wState" schemaName="dbo" tableName="SS_WorkflowStates" unique="false">
+            <column name="folderEntry"/>
+        </createIndex>
+    </changeSet>
+    
+    <changeSet author="jong" context="schema" failOnError="true" id="65">
+        <preConditions onFail="MARK_RAN">
+            <not>
+            	<indexExists indexName="ownerPrincipal_wState"/>
+            </not>
+        </preConditions>
+        <createIndex indexName="ownerPrincipal_wState" schemaName="dbo" tableName="SS_WorkflowStates" unique="false">
+            <column name="principal"/>
+        </createIndex>
+    </changeSet>
+    
+    <changeSet author="jong" context="schema" failOnError="true" id="66">
+        <preConditions onFail="MARK_RAN">
+            <indexExists indexName="templateOwningBinderId_Binder"/>
+        </preConditions>
+        <comment>Drop templateOwningBinderId_Binder index from SS_Forums table</comment>
+        <dropIndex indexName="templateOwningBinderId_Binder" tableName="SS_Forums"/>        
+    </changeSet>
+
+    <changeSet author="jong" context="schema" failOnError="true" id="67">
+        <preConditions onFail="MARK_RAN">
+            <not>
+            	<indexExists indexName="parentEntry_fEntry"/>
+            </not>
+        </preConditions>
+        <createIndex indexName="parentEntry_fEntry" schemaName="dbo" tableName="SS_FolderEntries" unique="false">
+            <column name="parentEntry"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet author="jay" context="schema" failOnError="true" id="68">
+        <comment>Add allowDesktopAppToTriggerInitialHomeFolderSync field to SS_Forums table</comment>
+        <addColumn tableName="SS_Forums">
+            <column name="allowDesktopAppToTriggerInitialHomeFolderSync" type="TINYINT">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+        <comment>Add useInheritedDesktopAppTriggerSetting field to SS_Forums table</comment>
+        <addColumn tableName="SS_Forums">
+            <column name="useInheritedDesktopAppTriggerSetting" type="TINYINT">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+        <comment>Add allowDesktopAppToTriggerInitialHomeFolderSync field to SS_ResourceDriver table</comment>
+        <addColumn tableName="SS_ResourceDriver">
+            <column name="allowDesktopAppToTriggerInitialHomeFolderSync" type="TINYINT">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+	</changeSet>
+    
+    <changeSet author="jong" context="schema" failOnError="true" id="69">
+        <preConditions onFail="MARK_RAN">
+            <not>
+            	<indexExists indexName="owningBinderId_notifyStatus"/>
+            </not>
+        </preConditions>
+        <comment>Create index owningBinderId_notifyStatus on owningBinderId column in SS_NotifyStatus table</comment>
+        <createIndex indexName="owningBinderId_notifyStatus" schemaName="dbo" tableName="SS_NotifyStatus" unique="false">
+            <column name="owningBinderId"/>
+        </createIndex>
+    </changeSet>
+    
+    <changeSet author="jong" context="schema" failOnError="true" id="70">
+        <preConditions onFail="MARK_RAN">
+            <not>
+            	<indexExists indexName="binderId_userProperties"/>
+            </not>
+        </preConditions>
+        <comment>Create index binderId_userProperties on binderId column in SS_UserProperties table</comment>
+        <createIndex indexName="binderId_userProperties" schemaName="dbo" tableName="SS_UserProperties" unique="false">
+            <column name="binderId"/>
+        </createIndex>
+    </changeSet>
+
 </databaseChangeLog>

@@ -51,7 +51,9 @@ public class AbstractAdminResource extends AbstractResource {
         
         NetFolderConfig nfc = NetFolderHelper.createNetFolder(getTemplateModule(), getBinderModule(), getFolderModule(), getNetFolderModule(), getAdminModule(), getLoggedInUser(),
                 netFolder.getName(), resourceDriverConfig.getName(), netFolder.getRelativePath(), toScheduleInfo(netFolder.getSyncSchedule()),
-                syncScheduleOption, parentBinder.getId(), false, netFolder.getIndexContent(), netFolder.getInheritIndexContent(), netFolder.getFullSyncDirOnly());
+                syncScheduleOption, parentBinder.getId(), false, netFolder.getIndexContent(), netFolder.getInheritIndexContent(), netFolder.getFullSyncDirOnly(),
+                netFolder.getAllowClientInitiatedSync(),
+                netFolder.getInheritClientSyncSettings() );
 
         Binder binder = getBinderModule().getBinder(nfc.getFolderId());
         
@@ -71,7 +73,9 @@ public class AbstractAdminResource extends AbstractResource {
 
         NetFolderHelper.modifyNetFolder(getBinderModule(), getFolderModule(), getNetFolderModule(), netFolder.getId(),
                 netFolder.getName(), resourceDriverConfig.getId(), netFolder.getRelativePath(), toScheduleInfo(netFolder.getSyncSchedule()),
-                syncScheduleOption, netFolder.getIndexContent(), netFolder.getInheritIndexContent(), netFolder.getFullSyncDirOnly());
+                syncScheduleOption, netFolder.getIndexContent(), netFolder.getInheritIndexContent(), netFolder.getFullSyncDirOnly(),
+                netFolder.getAllowClientInitiatedSync(),
+                netFolder.getInheritClientSyncSettings() );
 
         if (roles!=null) {
             NetFolderHelper.setNetFolderRights(this, netFolder.getId(), roles);

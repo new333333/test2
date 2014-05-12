@@ -57,6 +57,7 @@ import org.kablink.teaming.gwt.client.GwtFolder;
 import org.kablink.teaming.gwt.client.GwtFolderEntry;
 import org.kablink.teaming.gwt.client.GwtGroup;
 import org.kablink.teaming.gwt.client.GwtSearchCriteria;
+import org.kablink.teaming.gwt.client.GwtSearchCriteria.SearchType;
 import org.kablink.teaming.gwt.client.GwtSearchResults;
 import org.kablink.teaming.gwt.client.GwtTag;
 import org.kablink.teaming.gwt.client.GwtTeamingException;
@@ -240,7 +241,7 @@ public class GwtSearchHelper
 		searchTermFilter = new SearchFilter();
 		
 	    // Set up the search filter.
-		switch ( searchCriteria.getSearchType() )
+		switch ( searchType )
 		{
 		case ENTRIES:
 			String binderId = null;
@@ -278,11 +279,20 @@ public class GwtSearchHelper
 		case USER:
 		case PRINCIPAL:
 			searchTermFilter.addTitleFilter( searchText );
-			searchTermFilter.addLoginNameFilter( searchText );
-			if ( GwtSearchCriteria.SearchType.PERSON == searchType ) {
-				searchTermFilter.addAndPersonFlagFilter( true );
+			
+			if ( searchType == SearchType.PERSON || searchType == SearchType.USER )
+			{
+				searchTermFilter.addLoginNameFilter( searchText );
+				
+				if ( searchType == SearchType.PERSON )
+					searchTermFilter.addAndPersonFlagFilter( true );
 			}
-
+			else if ( searchType == SearchType.PRINCIPAL )
+			{
+				searchTermFilter.addLoginNameFilter( searchText );
+				searchTermFilter.addGroupNameFilter( searchText );
+			}
+			
 			// Are we searching for internal principals only?
 			if ( searchCriteria.getSearchForInternalPrincipals() == true && searchCriteria.getSearchForExternalPrincipals() == false )
 			{
@@ -296,13 +306,14 @@ public class GwtSearchHelper
 				searchTermFilter.addAndInternalFilter( false );
 			}
 				
-			// Don't ever return "ldap container" groups.
-			searchTermFilter.addAndLdapContainerFilter( false );
+			// Should we search for ldap containers?
+			if ( searchCriteria.getSearchForLdapContainers() == false )
+				searchTermFilter.addAndLdapContainerFilter( false );
 			break;
 
 		case GROUP:
 			searchTermFilter.addTitleFilter( searchText );
-			searchTermFilter.addLoginNameFilter( searchText );
+			searchTermFilter.addGroupNameFilter( searchText );
 
 			// Are we searching for internal groups only?
 			if ( searchCriteria.getSearchForInternalPrincipals() == true && searchCriteria.getSearchForExternalPrincipals() == false )
@@ -317,8 +328,9 @@ public class GwtSearchHelper
 				searchTermFilter.addAndInternalFilter( false );
 			}
 			
-			// Don't ever return "ldap container" groups.
-			searchTermFilter.addAndLdapContainerFilter( false );
+			// Should we search for ldap containers?
+			if ( searchCriteria.getSearchForLdapContainers() == false )
+				searchTermFilter.addAndLdapContainerFilter( false );
 			break;
 			
 		default:
@@ -472,36 +484,42 @@ public class GwtSearchHelper
 								
 								group = groupPrincipals.first();
 								
-								// Does this group come from ldap?
 								identityInfo = group.getIdentityInfo();
-								if ( identityInfo != null && identityInfo.isFromLdap() )
+								if ( identityInfo != null  )
 								{
-									// Yes
 									// Are we suppose to include groups from ldap?
-									if ( searchCriteria.getSearchForLdapGroups() == true )
+									if ( searchCriteria.getSearchForLdapGroups() == false )
 									{
-										Description desc;
-										
-										// Yes
-										// Create a GwtGroup item for this group.
-										gwtGroup = new GwtGroup();
-										
-										if ( group instanceof UserPrincipal )
-											gwtGroup.setInternal( identityInfo.isInternal() );
-										
-										gwtGroup.setId( id );
-										gwtGroup.setName( group.getName() );
-										gwtGroup.setTitle( group.getTitle() );
-										gwtGroup.setDn( group.getForeignName() );
-										desc = group.getDescription();
-										if ( desc != null )
-											gwtGroup.setDesc( desc.getText() );
-										gwtGroup.setGroupType( GwtServerHelper.getGroupType( group ) );
-										
-										results.add( gwtGroup );
+										// No
+										// Is this group from ldap?
+										if ( identityInfo.isFromLdap() == true )
+											useGroup = false;
 									}
-									else
-										--searchHits;
+								}
+								else
+									useGroup = false;
+								
+								if ( useGroup )
+								{
+									Description desc;
+									
+									// Yes
+									// Create a GwtGroup item for this group.
+									gwtGroup = new GwtGroup();
+									
+									if ( group instanceof UserPrincipal )
+										gwtGroup.setInternal( identityInfo.isInternal() );
+									
+									gwtGroup.setId( id );
+									gwtGroup.setName( group.getName() );
+									gwtGroup.setTitle( group.getTitle() );
+									gwtGroup.setDn( group.getForeignName() );
+									desc = group.getDescription();
+									if ( desc != null )
+										gwtGroup.setDesc( desc.getText() );
+									gwtGroup.setGroupType( GwtServerHelper.getGroupType( group ) );
+									
+									results.add( gwtGroup );
 								}
 								else
 								{

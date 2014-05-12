@@ -49,7 +49,7 @@ public class LibraryInfo {
     private Long diskSpace;
     private Boolean mirrored;
     private Date lastMirroredSyncDate;
-    private Boolean allowClientTriggeredSync;
+    private Boolean allowClientInitiatedSync;
 
     public LibraryInfo() {
     }
@@ -115,12 +115,12 @@ public class LibraryInfo {
     }
 
 
-    @XmlElement(name = "allow_client_triggered_sync")
-    public Boolean getAllowClientTriggeredSync() {
-        return allowClientTriggeredSync;
+    @XmlElement(name = "allow_client_initiated_sync")
+    public Boolean getAllowClientInitiatedSync() {
+        return allowClientInitiatedSync;
     }
 
-    public void setAllowClientTriggeredSync(Boolean allowClientTriggeredSync) {
-        this.allowClientTriggeredSync = allowClientTriggeredSync;
+    public void setAllowClientInitiatedSync(Boolean allowClientInitiatedSync) {
+        this.allowClientInitiatedSync = allowClientInitiatedSync;
     }
 }

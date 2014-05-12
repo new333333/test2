@@ -460,6 +460,11 @@ update SS_Principals set domainName=LOWER(domainName);
     </changeSet>
 
     <changeSet author="jong" context="schema" failOnError="true" id="42">
+        <preConditions onFail="MARK_RAN">
+            <not>
+            	<indexExists indexName="internalId_Binder"/>
+            </not>
+        </preConditions>
         <comment>Create index on internalId column in SS_Forums table</comment>
         <createIndex indexName="internalId_Binder" tableName="SS_Forums" unique="false">
             <column name="internalId"/>
@@ -583,6 +588,59 @@ update SS_Principals set domainName=LOWER(domainName);
                 <constraints nullable="true" />
             </column>
         </addColumn>
+    </changeSet>
+    
+    <changeSet author="jong" context="schema" failOnError="true" id="52">
+        <preConditions onFail="MARK_RAN">
+            <indexExists indexName="templateOwningBinderId_Binder"/>
+        </preConditions>
+        <comment>Drop templateOwningBinderId_Binder index from SS_Forums table</comment>
+        <dropIndex indexName="templateOwningBinderId_Binder" tableName="SS_Forums"/>        
+    </changeSet>
+    
+    <changeSet author="jay" context="schema" failOnError="true" id="53">
+        <comment>Add allowDesktopAppToTriggerInitialHomeFolderSync field to SS_Forums table</comment>
+        <addColumn tableName="SS_Forums">
+            <column name="allowDesktopAppToTriggerInitialHomeFolderSync" type="BIT">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+        <comment>Add useInheritedDesktopAppTriggerSetting field to SS_Forums table</comment>
+        <addColumn tableName="SS_Forums">
+            <column name="useInheritedDesktopAppTriggerSetting" type="BIT">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+        <comment>Add allowDesktopAppToTriggerInitialHomeFolderSync field to SS_ResourceDriver table</comment>
+        <addColumn tableName="SS_ResourceDriver">
+            <column name="allowDesktopAppToTriggerInitialHomeFolderSync" type="BIT">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+    
+    <changeSet author="jong" context="schema" failOnError="true" id="54">
+        <preConditions onFail="MARK_RAN">
+            <not>
+            	<indexExists indexName="owningBinderId_notifyStatus"/>
+            </not>
+        </preConditions>
+        <comment>Create index owningBinderId_notifyStatus on owningBinderId column in SS_NotifyStatus table</comment>
+        <createIndex indexName="owningBinderId_notifyStatus" tableName="SS_NotifyStatus" unique="false">
+            <column name="owningBinderId"/>
+        </createIndex>
+    </changeSet>
+    
+    <changeSet author="jong" context="schema" failOnError="true" id="55">
+        <preConditions onFail="MARK_RAN">
+            <not>
+            	<indexExists indexName="binderId_userProperties"/>
+            </not>
+        </preConditions>
+        <comment>Create index binderId_userProperties on binderId column in SS_UserProperties table</comment>
+        <createIndex indexName="binderId_userProperties" tableName="SS_UserProperties" unique="false">
+            <column name="binderId"/>
+        </createIndex>
     </changeSet>
     
 </databaseChangeLog>

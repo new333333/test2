@@ -1539,6 +1539,13 @@ public class GwtShareHelper
 		{
 			// Get the list of ShareItem objects for the given entity
 			listOfShareItems = ami.getSharingModule().getShareItems( spec );
+			
+			if ( entityId == null )
+			{
+				// Bug 876900, we need to validate that the entity that each share item is referencing
+				// still exists.
+				ami.getSharingModule().validateShareItems( listOfShareItems );
+			}
 		}
 		catch ( Exception ex )
 		{
@@ -2640,6 +2647,18 @@ public class GwtShareHelper
 	public static boolean isEntityPublicLinkSharable(AllModulesInjected bs, DefinableEntity de) {
 		SharingModule sm = bs.getSharingModule();
 		return sm.testAddShareEntityPublicLinks(de);
+	}
+
+	/**
+	 * Returns true if share forwarding is currently enabled and false
+	 * otherwise.
+	 * 
+	 * @param bs
+	 * 
+	 * @return
+	 */
+	public static boolean isShareForwardingEnabled(AllModulesInjected bs) {
+		return bs.getSharingModule().isShareForwardingEnabled();
 	}
 
 	/**

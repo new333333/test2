@@ -214,7 +214,7 @@ public class ShareResource extends AbstractResource {
     @Path("/by_user/{id}")
     public SearchResultList<Share> getSharedByUser(@PathParam("id") Long userId) {
         SearchResultList<Share> results = new SearchResultList<Share>();
-        List<Pair<ShareItem, DefinableEntity>> shareItems = getSharedByShareItems(userId);
+        List<Pair<ShareItem, DefinableEntity>> shareItems = getSharedByShareItems(userId, Boolean.FALSE);
         for (Pair<ShareItem, DefinableEntity> pair : shareItems) {
             results.append(ResourceUtil.buildShare(pair.getA(), getSharedEntity(pair.getA(), true),
                     buildShareRecipient(pair.getA()), isGuestAccessEnabled()));
@@ -227,7 +227,7 @@ public class ShareResource extends AbstractResource {
     public SearchResultList<SharedBinderBrief> getBindersSharedByUser(@PathParam("id") Long userId,
                                                                       @QueryParam("hidden") @DefaultValue("false") boolean showHidden,
                                                                       @QueryParam("unhidden") @DefaultValue("true") boolean showUnhidden) {
-        List<Pair<ShareItem, DefinableEntity>> shareItems = getSharedByShareItems(userId);
+        List<Pair<ShareItem, DefinableEntity>> shareItems = getSharedByShareItems(userId, Boolean.FALSE);
         SearchResultList<SharedBinderBrief> results = new SearchResultList<SharedBinderBrief>();
         results.appendAll(getSharedByBinders(shareItems, false, true, showHidden, showUnhidden));
         return results;
@@ -239,7 +239,7 @@ public class ShareResource extends AbstractResource {
                                                 @QueryParam("hidden") @DefaultValue("false") boolean showHidden,
                                                 @QueryParam("unhidden") @DefaultValue("true") boolean showUnhidden,
                                                 @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr) {
-        List<Pair<ShareItem, DefinableEntity>> shareItems = getSharedByShareItems(userId);
+        List<Pair<ShareItem, DefinableEntity>> shareItems = getSharedByShareItems(userId, Boolean.FALSE);
         SharedBinderBrief [] sharedBinders = getSharedByBinders(shareItems, false, false, showHidden, showUnhidden);
         return getSubBinderTree(ObjectKeys.SHARED_BY_ME_ID, "/self/shared_by_me", sharedBinders, null, toDomainFormat(descriptionFormatStr));
     }
@@ -250,10 +250,10 @@ public class ShareResource extends AbstractResource {
                                                    @QueryParam("hidden") @DefaultValue("false") boolean showHidden,
                                                    @QueryParam("unhidden") @DefaultValue("true") boolean showUnhidden,
                                                    @Context HttpServletRequest request) {
-        List<Pair<ShareItem, DefinableEntity>> shareItems = getSharedByShareItems(userId);
+        List<Pair<ShareItem, DefinableEntity>> shareItems = getSharedByShareItems(userId, null);
         Date lastModified = getSharesLibraryModifiedDate(shareItems, false);
         Date ifModifiedSince = getIfModifiedSinceDate(request);
-        if (ifModifiedSince!=null && !ifModifiedSince.before(lastModified)) {
+        if (ifModifiedSince!=null && lastModified!=null && !ifModifiedSince.before(lastModified)) {
             throw new NotModifiedException();
         }
         SearchResultList<SearchableObject> results = new SearchResultList<SearchableObject>();
@@ -271,10 +271,10 @@ public class ShareResource extends AbstractResource {
                                                                              @QueryParam("hidden") @DefaultValue("false") boolean showHidden,
                                                                              @QueryParam("unhidden") @DefaultValue("true") boolean showUnhidden,
                                                                              @Context HttpServletRequest request) {
-        List<Pair<ShareItem, DefinableEntity>> shareItems = getSharedByShareItems(userId);
+        List<Pair<ShareItem, DefinableEntity>> shareItems = getSharedByShareItems(userId, null);
         Date lastModified = getSharesLibraryModifiedDate(shareItems, false);
         Date ifModifiedSince = getIfModifiedSinceDate(request);
-        if (ifModifiedSince!=null && !ifModifiedSince.before(lastModified)) {
+        if (ifModifiedSince!=null && lastModified!=null && !ifModifiedSince.before(lastModified)) {
             throw new NotModifiedException();
         }
         SearchResultList<SharedBinderBrief> results = new SearchResultList<SharedBinderBrief>();
@@ -292,7 +292,7 @@ public class ShareResource extends AbstractResource {
                                                                            @QueryParam("hidden") @DefaultValue("false") boolean showHidden,
                                                                            @QueryParam("unhidden") @DefaultValue("true") boolean showUnhidden,
                                                                            @QueryParam("parent_binder_paths") @DefaultValue("false") boolean includeParentPaths) {
-        List<Pair<ShareItem, DefinableEntity>> shareItems = getSharedByShareItems(userId);
+        List<Pair<ShareItem, DefinableEntity>> shareItems = getSharedByShareItems(userId, Boolean.FALSE);
         return _getSharedEntries(shareItems, ObjectKeys.SHARED_BY_ME_ID, "/self/shared_by_me", includeParentPaths, showHidden, showUnhidden);
     }
 
@@ -305,10 +305,10 @@ public class ShareResource extends AbstractResource {
                                                                  @QueryParam("recursive") @DefaultValue("false") boolean recursive,
                                                                  @QueryParam("parent_binder_paths") @DefaultValue("false") boolean includeParentPaths,
                                                                  @Context HttpServletRequest request) {
-        List<Pair<ShareItem, DefinableEntity>> shareItems = getSharedByShareItems(userId);
+        List<Pair<ShareItem, DefinableEntity>> shareItems = getSharedByShareItems(userId, null);
         Date lastModified = getSharesLibraryModifiedDate(shareItems, recursive);
         Date ifModifiedSince = getIfModifiedSinceDate(request);
-        if (ifModifiedSince!=null && !ifModifiedSince.before(lastModified)) {
+        if (ifModifiedSince!=null && lastModified!=null && !ifModifiedSince.before(lastModified)) {
             throw new NotModifiedException();
         }
         SearchResultList<FileProperties> results = new SearchResultList<FileProperties>();
@@ -359,10 +359,10 @@ public class ShareResource extends AbstractResource {
                                                                         @QueryParam("recursive") @DefaultValue("false") boolean recursive,
                                                                         @QueryParam("parent_binder_paths") @DefaultValue("false") boolean includeParentPaths,
                                                                         @Context HttpServletRequest request) {
-        List<Pair<ShareItem, DefinableEntity>> shareItems = getSharedByShareItems(userId);
+        List<Pair<ShareItem, DefinableEntity>> shareItems = getSharedByShareItems(userId, null);
         Date lastModified = getSharesLibraryModifiedDate(shareItems, recursive);
         Date ifModifiedSince = getIfModifiedSinceDate(request);
-        if (ifModifiedSince!=null && !ifModifiedSince.before(lastModified)) {
+        if (ifModifiedSince!=null && lastModified!=null && !ifModifiedSince.before(lastModified)) {
             throw new NotModifiedException();
         }
         SearchResultList<FileProperties> results = new SearchResultList<FileProperties>();
@@ -388,7 +388,7 @@ public class ShareResource extends AbstractResource {
                                                        @QueryParam ("count") @DefaultValue("500") Integer maxCount,
                                                        @QueryParam("hidden") @DefaultValue("false") boolean showHidden,
                                                        @QueryParam("unhidden") @DefaultValue("true") boolean showUnhidden) {
-        List<Pair<ShareItem, DefinableEntity>> shareItems = getSharedByShareItems(userId);
+        List<Pair<ShareItem, DefinableEntity>> shareItems = getSharedByShareItems(userId, null);
         return getSharedByChanges(shareItems, since, descriptionFormatStr, maxCount, "/public/library_changes", true, showHidden, showUnhidden);
     }
 
@@ -415,7 +415,7 @@ public class ShareResource extends AbstractResource {
     @GET
     @Path("/with_user/{id}")
     public SearchResultList<Share> getSharedWithUser(@PathParam("id") Long userId) {
-        List<Pair<ShareItem, DefinableEntity>> shareItems = getSharedWithShareItems(userId);
+        List<Pair<ShareItem, DefinableEntity>> shareItems = getSharedWithShareItems(userId, Boolean.FALSE);
         SearchResultList<Share> results = new SearchResultList<Share>();
         for (Pair<ShareItem, DefinableEntity> pair : shareItems) {
             ShareItem shareItem = pair.getA();
@@ -433,7 +433,7 @@ public class ShareResource extends AbstractResource {
     public SearchResultList<SharedBinderBrief> getBindersSharedWithUser(@PathParam("id") Long userId,
                                                                         @QueryParam("hidden") @DefaultValue("false") boolean showHidden,
                                                                         @QueryParam("unhidden") @DefaultValue("true") boolean showUnhidden) {
-        List<Pair<ShareItem, DefinableEntity>> shareItems = getSharedWithShareItems(userId);
+        List<Pair<ShareItem, DefinableEntity>> shareItems = getSharedWithShareItems(userId, Boolean.FALSE);
         SearchResultList<SharedBinderBrief> results = new SearchResultList<SharedBinderBrief>();
         results.appendAll(getSharedWithBinders(shareItems, false, true, showHidden, showUnhidden));
         return results;
@@ -445,7 +445,7 @@ public class ShareResource extends AbstractResource {
                                                   @QueryParam("hidden") @DefaultValue("false") boolean showHidden,
                                                   @QueryParam("unhidden") @DefaultValue("true") boolean showUnhidden,
                                                   @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr) {
-        List<Pair<ShareItem, DefinableEntity>> shareItems = getSharedWithShareItems(userId);
+        List<Pair<ShareItem, DefinableEntity>> shareItems = getSharedWithShareItems(userId, Boolean.FALSE);
         SharedBinderBrief [] sharedBinders = getSharedWithBinders(shareItems, false, false, showHidden, showUnhidden);
         return getSubBinderTree(ObjectKeys.SHARED_WITH_ME_ID, "/self/shared_with_me", sharedBinders, null, toDomainFormat(descriptionFormatStr));
     }
@@ -463,10 +463,10 @@ public class ShareResource extends AbstractResource {
                                                      @QueryParam("hidden") @DefaultValue("false") boolean showHidden,
                                                      @QueryParam("unhidden") @DefaultValue("true") boolean showUnhidden,
                                                      @Context HttpServletRequest request) {
-        List<Pair<ShareItem, DefinableEntity>> shareItems = getSharedWithShareItems(userId);
+        List<Pair<ShareItem, DefinableEntity>> shareItems = getSharedWithShareItems(userId, null);
         Date lastModified = getSharesLibraryModifiedDate(shareItems, false);
         Date ifModifiedSince = getIfModifiedSinceDate(request);
-        if (ifModifiedSince!=null && !ifModifiedSince.before(lastModified)) {
+        if (ifModifiedSince!=null && lastModified!=null && !ifModifiedSince.before(lastModified)) {
             throw new NotModifiedException();
         }
         SearchResultList<SearchableObject> results = new SearchResultList<SearchableObject>();
@@ -484,10 +484,10 @@ public class ShareResource extends AbstractResource {
                                                                                @QueryParam("hidden") @DefaultValue("false") boolean showHidden,
                                                                                @QueryParam("unhidden") @DefaultValue("true") boolean showUnhidden,
                                                                                @Context HttpServletRequest request) {
-        List<Pair<ShareItem, DefinableEntity>> shareItems = getSharedWithShareItems(userId);
+        List<Pair<ShareItem, DefinableEntity>> shareItems = getSharedWithShareItems(userId, null);
         Date lastModified = getSharesLibraryModifiedDate(shareItems, false);
         Date ifModifiedSince = getIfModifiedSinceDate(request);
-        if (ifModifiedSince!=null && !ifModifiedSince.before(lastModified)) {
+        if (ifModifiedSince!=null && lastModified!=null && !ifModifiedSince.before(lastModified)) {
             throw new NotModifiedException();
         }
         SearchResultList<SharedBinderBrief> results = new SearchResultList<SharedBinderBrief>();
@@ -529,7 +529,7 @@ public class ShareResource extends AbstractResource {
                                                                              @QueryParam("hidden") @DefaultValue("false") boolean showHidden,
                                                                              @QueryParam("unhidden") @DefaultValue("true") boolean showUnhidden,
                                                                              @QueryParam("parent_binder_paths") @DefaultValue("false") boolean includeParentPaths) {
-        List<Pair<ShareItem, DefinableEntity>> shareItems = getSharedWithShareItems(userId);
+        List<Pair<ShareItem, DefinableEntity>> shareItems = getSharedWithShareItems(userId, Boolean.FALSE);
         return _getSharedEntries(shareItems, ObjectKeys.SHARED_WITH_ME_ID, "/self/shared_with_me", includeParentPaths, showHidden, showUnhidden);
     }
 
@@ -542,10 +542,10 @@ public class ShareResource extends AbstractResource {
                                                                    @QueryParam("recursive") @DefaultValue("false") boolean recursive,
                                                                    @QueryParam("parent_binder_paths") @DefaultValue("false") boolean includeParentPaths,
                                                                    @Context HttpServletRequest request) {
-        List<Pair<ShareItem, DefinableEntity>> shareItems = getSharedWithShareItems(userId);
+        List<Pair<ShareItem, DefinableEntity>> shareItems = getSharedWithShareItems(userId, null);
         Date lastModified = getSharesLibraryModifiedDate(shareItems, false);
         Date ifModifiedSince = getIfModifiedSinceDate(request);
-        if (ifModifiedSince!=null && !ifModifiedSince.before(lastModified)) {
+        if (ifModifiedSince!=null && lastModified!=null && !ifModifiedSince.before(lastModified)) {
             throw new NotModifiedException();
         }
         SearchResultList<FileProperties> results = new SearchResultList<FileProperties>();
@@ -573,10 +573,10 @@ public class ShareResource extends AbstractResource {
                                                                           @QueryParam("recursive") @DefaultValue("false") boolean recursive,
                                                                           @QueryParam("parent_binder_paths") @DefaultValue("false") boolean includeParentPaths,
                                                                           @Context HttpServletRequest request) {
-        List<Pair<ShareItem, DefinableEntity>> shareItems = getSharedWithShareItems(userId);
+        List<Pair<ShareItem, DefinableEntity>> shareItems = getSharedWithShareItems(userId, null);
         Date lastModified = getSharesLibraryModifiedDate(shareItems, false);
         Date ifModifiedSince = getIfModifiedSinceDate(request);
-        if (ifModifiedSince!=null && !ifModifiedSince.before(lastModified)) {
+        if (ifModifiedSince!=null && lastModified!=null && !ifModifiedSince.before(lastModified)) {
             throw new NotModifiedException();
         }
         SearchResultList<FileProperties> results = new SearchResultList<FileProperties>();
@@ -600,7 +600,7 @@ public class ShareResource extends AbstractResource {
                                                    @QueryParam("hidden") @DefaultValue("false") boolean showHidden,
                                                    @QueryParam("unhidden") @DefaultValue("true") boolean showUnhidden,
                                                    @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr) {
-        List<Pair<ShareItem, DefinableEntity>> shareItems = getSharedWithShareItems(userId);
+        List<Pair<ShareItem, DefinableEntity>> shareItems = getSharedWithShareItems(userId, Boolean.FALSE);
         SharedBinderBrief [] sharedBinders = getSharedWithBinders(shareItems, true, false, showHidden, showUnhidden);
         return getSubBinderTree(ObjectKeys.SHARED_WITH_ME_ID, "/self/shared_with_me", sharedBinders,
                 SearchUtils.buildLibraryTreeCriterion(), toDomainFormat(descriptionFormatStr));
@@ -614,7 +614,7 @@ public class ShareResource extends AbstractResource {
                                                          @QueryParam ("count") @DefaultValue("500") Integer maxCount,
                                                          @QueryParam("hidden") @DefaultValue("false") boolean showHidden,
                                                          @QueryParam("unhidden") @DefaultValue("true") boolean showUnhidden) {
-        List<Pair<ShareItem, DefinableEntity>> shareItems = getSharedWithShareItems(userId);
+        List<Pair<ShareItem, DefinableEntity>> shareItems = getSharedWithShareItems(userId, null);
         return getSharedWithChanges(shareItems, since, descriptionFormatStr, maxCount, "/public/library_changes", true, showHidden, showUnhidden);
     }
 
@@ -663,7 +663,7 @@ public class ShareResource extends AbstractResource {
         if (!getEffectivePublicCollectionSetting(getLoggedInUser())) {
             throw new AccessControlException("Access to the public collection is not allowed.", null);
         }
-        List<Pair<ShareItem, DefinableEntity>> shareItems = getPublicShareItems();
+        List<Pair<ShareItem, DefinableEntity>> shareItems = getPublicShareItems(Boolean.FALSE);
         SearchResultList<SharedBinderBrief> results = new SearchResultList<SharedBinderBrief>();
         results.appendAll(getPublicBinders(shareItems, false, true, showHidden, showUnhidden));
         return results;
@@ -677,7 +677,7 @@ public class ShareResource extends AbstractResource {
         if (!getEffectivePublicCollectionSetting(getLoggedInUser())) {
             throw new AccessControlException("Access to the public collection is not allowed.", null);
         }
-        List<Pair<ShareItem, DefinableEntity>> shareItems = getPublicShareItems();
+        List<Pair<ShareItem, DefinableEntity>> shareItems = getPublicShareItems(Boolean.FALSE);
         SharedBinderBrief [] sharedBinders = getPublicBinders(shareItems, false, false, showHidden, showUnhidden);
         return getSubBinderTree(ObjectKeys.PUBLIC_SHARES_ID, "/self/public_shares", sharedBinders, null, toDomainFormat(descriptionFormatStr));
     }
@@ -690,7 +690,7 @@ public class ShareResource extends AbstractResource {
         if (!getEffectivePublicCollectionSetting(getLoggedInUser())) {
             throw new AccessControlException("Access to the public collection is not allowed.", null);
         }
-        List<Pair<ShareItem, DefinableEntity>> shareItems = getPublicShareItems();
+        List<Pair<ShareItem, DefinableEntity>> shareItems = getPublicShareItems(Boolean.FALSE);
         SharedBinderBrief [] sharedBinders = getPublicBinders(shareItems, true, false, showHidden, showUnhidden);
         return getSubBinderTree(ObjectKeys.PUBLIC_SHARES_ID, "/self/public_shares", sharedBinders, null, toDomainFormat(descriptionFormatStr));
     }
@@ -703,10 +703,10 @@ public class ShareResource extends AbstractResource {
         if (!getEffectivePublicCollectionSetting(getLoggedInUser())) {
             throw new AccessControlException("Access to the public collection is not allowed.", null);
         }
-        List<Pair<ShareItem, DefinableEntity>> shareItems = getPublicShareItems();
+        List<Pair<ShareItem, DefinableEntity>> shareItems = getPublicShareItems(null);
         Date lastModified = getSharesLibraryModifiedDate(shareItems, false);
         Date ifModifiedSince = getIfModifiedSinceDate(request);
-        if (ifModifiedSince!=null && !ifModifiedSince.before(lastModified)) {
+        if (ifModifiedSince!=null && lastModified!=null && !ifModifiedSince.before(lastModified)) {
             throw new NotModifiedException();
         }
         SearchResultList<SearchableObject> results = new SearchResultList<SearchableObject>();
@@ -726,10 +726,10 @@ public class ShareResource extends AbstractResource {
         if (!getEffectivePublicCollectionSetting(getLoggedInUser())) {
             throw new AccessControlException("Access to the public collection is not allowed.", null);
         }
-        List<Pair<ShareItem, DefinableEntity>> shareItems = getPublicShareItems();
+        List<Pair<ShareItem, DefinableEntity>> shareItems = getPublicShareItems(null);
         Date lastModified = getSharesLibraryModifiedDate(shareItems, false);
         Date ifModifiedSince = getIfModifiedSinceDate(request);
-        if (ifModifiedSince!=null && !ifModifiedSince.before(lastModified)) {
+        if (ifModifiedSince!=null && lastModified!=null && !ifModifiedSince.before(lastModified)) {
             throw new NotModifiedException();
         }
         SearchResultList<SharedBinderBrief> results = new SearchResultList<SharedBinderBrief>();
@@ -749,7 +749,7 @@ public class ShareResource extends AbstractResource {
         if (!getEffectivePublicCollectionSetting(getLoggedInUser())) {
             throw new AccessControlException("Access to the public collection is not allowed.", null);
         }
-        List<Pair<ShareItem, DefinableEntity>> shareItems = getPublicShareItems();
+        List<Pair<ShareItem, DefinableEntity>> shareItems = getPublicShareItems(Boolean.FALSE);
         return _getSharedEntries(shareItems, ObjectKeys.PUBLIC_SHARES_ID, "/self/public_shares", includeParentPaths, showHidden, showUnhidden);
     }
 
@@ -764,10 +764,10 @@ public class ShareResource extends AbstractResource {
         if (!getEffectivePublicCollectionSetting(getLoggedInUser())) {
             throw new AccessControlException("Access to the public collection is not allowed.", null);
         }
-        List<Pair<ShareItem, DefinableEntity>> shareItems = getPublicShareItems();
+        List<Pair<ShareItem, DefinableEntity>> shareItems = getPublicShareItems(null);
         Date lastModified = getSharesLibraryModifiedDate(shareItems, false);
         Date ifModifiedSince = getIfModifiedSinceDate(request);
-        if (ifModifiedSince!=null && !ifModifiedSince.before(lastModified)) {
+        if (ifModifiedSince!=null && lastModified!=null && !ifModifiedSince.before(lastModified)) {
             throw new NotModifiedException();
         }
         SearchResultList<FileProperties> results = new SearchResultList<FileProperties>();
@@ -796,10 +796,10 @@ public class ShareResource extends AbstractResource {
         if (!getEffectivePublicCollectionSetting(getLoggedInUser())) {
             throw new AccessControlException("Access to the public collection is not allowed.", null);
         }
-        List<Pair<ShareItem, DefinableEntity>> shareItems = getPublicShareItems();
+        List<Pair<ShareItem, DefinableEntity>> shareItems = getPublicShareItems(null);
         Date lastModified = getSharesLibraryModifiedDate(shareItems, false);
         Date ifModifiedSince = getIfModifiedSinceDate(request);
-        if (ifModifiedSince!=null && !ifModifiedSince.before(lastModified)) {
+        if (ifModifiedSince!=null && lastModified!=null && !ifModifiedSince.before(lastModified)) {
             throw new NotModifiedException();
         }
         SearchResultList<FileProperties> results = new SearchResultList<FileProperties>();
@@ -852,7 +852,7 @@ public class ShareResource extends AbstractResource {
         if (!getEffectivePublicCollectionSetting(getLoggedInUser())) {
             throw new AccessControlException("Access to the public collection is not allowed.", null);
         }
-        List<Pair<ShareItem, DefinableEntity>> shareItems = getPublicShareItems();
+        List<Pair<ShareItem, DefinableEntity>> shareItems = getPublicShareItems(null);
         return getPublicChanges(shareItems, since, descriptionFormatStr, maxCount, "/public/library_changes", true, showHidden, showUnhidden);
     }
 
@@ -1204,39 +1204,45 @@ public class ShareResource extends AbstractResource {
 
         for (Pair<ShareItem, DefinableEntity> pair : shareItems) {
             ShareItem shareItem = pair.getA();
-            Pair<DefinableEntity, List<ShareItem>> sharesByEntity = resultMap.get(shareItem.getSharedEntityIdentifier().getEntityId());
-            try {
-                if (entries && shareItem.getSharedEntityIdentifier().getEntityType()== EntityIdentifier.EntityType.folderEntry) {
-                    FolderEntry entry;
-                    if (sharesByEntity!=null) {
-                        entry = (FolderEntry) sharesByEntity.getA();
-                    } else {
-                        entry = (FolderEntry) getDefinableEntity(pair, !showExpired && !showDeleted);
-                    }
-                    if (showToUser(entry, topId, showHidden, showUnhidden, showDeleted)) {
-                        if (sharesByEntity==null) {
-                            sharesByEntity = new Pair<DefinableEntity, List<ShareItem>>(entry, new ArrayList<ShareItem>());
-                            resultMap.put(entry.getId(), sharesByEntity);
+            if (shareItem.isDeleted() && !showDeleted) {
+                // Ignore this share
+            } else if (shareItem.isExpired() && !showExpired) {
+                // Ignore this share
+            } else {
+                Pair<DefinableEntity, List<ShareItem>> sharesByEntity = resultMap.get(shareItem.getSharedEntityIdentifier().getEntityId());
+                try {
+                    if (entries && shareItem.getSharedEntityIdentifier().getEntityType()== EntityIdentifier.EntityType.folderEntry) {
+                        FolderEntry entry;
+                        if (sharesByEntity!=null) {
+                            entry = (FolderEntry) sharesByEntity.getA();
+                        } else {
+                            entry = (FolderEntry) getDefinableEntity(pair, !showExpired && !showDeleted);
                         }
-                        sharesByEntity.getB().add(shareItem);
-                    }
-                } else if (folders && shareItem.getSharedEntityIdentifier().getEntityType().isBinder()) {
-                    Binder binder;
-                    if (sharesByEntity!=null) {
-                        binder = (Binder) sharesByEntity.getA();
-                    } else {
-                        binder = (Binder) getDefinableEntity(pair, !showExpired && !showDeleted);
-                    }
-                    if (showBinderToUser(binder, onlyLibrary, topId, showHidden, showUnhidden, showDeleted)) {
-                        if (sharesByEntity==null) {
-                            sharesByEntity = new Pair<DefinableEntity, List<ShareItem>>(binder, new ArrayList<ShareItem>());
-                            resultMap.put(binder.getId(), sharesByEntity);
+                        if (showToUser(entry, topId, showHidden, showUnhidden, showDeleted)) {
+                            if (sharesByEntity==null) {
+                                sharesByEntity = new Pair<DefinableEntity, List<ShareItem>>(entry, new ArrayList<ShareItem>());
+                                resultMap.put(entry.getId(), sharesByEntity);
+                            }
+                            sharesByEntity.getB().add(shareItem);
                         }
-                        sharesByEntity.getB().add(shareItem);
+                    } else if (folders && shareItem.getSharedEntityIdentifier().getEntityType().isBinder()) {
+                        Binder binder;
+                        if (sharesByEntity!=null) {
+                            binder = (Binder) sharesByEntity.getA();
+                        } else {
+                            binder = (Binder) getDefinableEntity(pair, !showExpired && !showDeleted);
+                        }
+                        if (showBinderToUser(binder, onlyLibrary, topId, showHidden, showUnhidden, showDeleted)) {
+                            if (sharesByEntity==null) {
+                                sharesByEntity = new Pair<DefinableEntity, List<ShareItem>>(binder, new ArrayList<ShareItem>());
+                                resultMap.put(binder.getId(), sharesByEntity);
+                            }
+                            sharesByEntity.getB().add(shareItem);
+                        }
                     }
+                } catch (AccessControlException e) {
+                    logger.warn("User " + getLoggedInUserId() + " does not have permission to read an entity that was shared with him/her: " + shareItem.getEntityTypedId());
                 }
-            } catch (AccessControlException e) {
-                logger.warn("User " + getLoggedInUserId() + " does not have permission to read an entity that was shared with him/her: " + shareItem.getEntityTypedId());
             }
         }
         List<Pair<DefinableEntity, List<ShareItem>>> results = new ArrayList<Pair<DefinableEntity, List<ShareItem>>>();

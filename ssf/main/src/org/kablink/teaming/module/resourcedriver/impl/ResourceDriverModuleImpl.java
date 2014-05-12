@@ -384,7 +384,17 @@ public class ResourceDriverModuleImpl implements ResourceDriverModule {
 			   		else
 				   		newResourceDriver.setJitsAclMaxAge( 0 );
 			   	}
-			   	
+
+			   	if ( options.containsKey( ObjectKeys.RESOURCE_DRIVER_ALLOW_DESKTOP_APP_TO_TRIGGER_HOME_FOLDER_SYNC ) )
+			   	{
+			   		Boolean value = null;
+			   		
+			   		if ( options.get( ObjectKeys.RESOURCE_DRIVER_ALLOW_DESKTOP_APP_TO_TRIGGER_HOME_FOLDER_SYNC ) != null )
+			   			value = (Boolean) options.get( ObjectKeys.RESOURCE_DRIVER_ALLOW_DESKTOP_APP_TO_TRIGGER_HOME_FOLDER_SYNC );
+			   		
+			   		newResourceDriver.setAllowDesktopAppToTriggerInitialHomeFolderSync( value );
+			   	}
+
 			   	newResourceDriver.setModifiedOn(new Date());	//Set the date of last modification to "now"
 				getCoreDao().save(newResourceDriver);
 				
@@ -546,6 +556,16 @@ public class ResourceDriverModuleImpl implements ResourceDriverModule {
 			   			rdc.setJitsAclMaxAge( 0 );
 			   	}
 			   	
+			   	if ( options.containsKey( ObjectKeys.RESOURCE_DRIVER_ALLOW_DESKTOP_APP_TO_TRIGGER_HOME_FOLDER_SYNC ) )
+			   	{
+			   		Boolean value = null;
+			   		
+			   		if ( options.get( ObjectKeys.RESOURCE_DRIVER_ALLOW_DESKTOP_APP_TO_TRIGGER_HOME_FOLDER_SYNC ) != null )
+			   			value = (Boolean) options.get( ObjectKeys.RESOURCE_DRIVER_ALLOW_DESKTOP_APP_TO_TRIGGER_HOME_FOLDER_SYNC );
+			   		
+			   		rdc.setAllowDesktopAppToTriggerInitialHomeFolderSync( value );
+			   	}
+
 			   	rdc.setModifiedOn(new Date());	//Set the date of last modification to "now"
 				getCoreDao().save(rdc);
     			return null;

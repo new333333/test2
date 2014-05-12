@@ -598,14 +598,22 @@ public class EntityIndexUtils {
     }
         
     public static void addFamily(Document doc, DefinableEntity entry, boolean fieldsOnly) {
-        if (entry.getEntryDefId() != null) {
-        	org.dom4j.Document def = entry.getEntryDefDoc();
-        	String family = DefinitionUtils.getFamily(def);
-        	if (Validator.isNotNull(family)) {
-      			Field eField = FieldFactory.createFieldStoredNotAnalyzed(FAMILY_FIELD, family);
-    	       	doc.add(eField);	
-        	}
-        }
+    	String family = null;
+    	if(entry.supportsCustomFields()) {
+            if (entry.getEntryDefId() != null) {
+            	org.dom4j.Document def = entry.getEntryDefDoc();
+            	family = DefinitionUtils.getFamily(def);
+            }    		
+    	}
+    	else {
+    		// The only entities not support custom fields are net folders and files. 
+    		// Short circuit the use of definition facility for better efficiency.
+    		family = Constants.FAMILY_FIELD_FILE;
+    	}
+    	if (Validator.isNotNull(family)) {
+  			Field eField = FieldFactory.createFieldStoredNotAnalyzed(FAMILY_FIELD, family);
+	       	doc.add(eField);	
+    	}	
     }
 
 

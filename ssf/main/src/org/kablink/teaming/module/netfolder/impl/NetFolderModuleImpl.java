@@ -65,11 +65,22 @@ public class NetFolderModuleImpl extends CommonDependencyInjection implements Ne
 	private static final String NET_FOLDER_NAME_PREFIX = "_netfolder_";
 	
 	@Override
-    public NetFolderConfig createNetFolder(Long templateId, Long parentBinderId, final String name, User owner, final String netFolderServerName, final String path, final Boolean isHomeDir, final boolean indexContent, final Boolean inheritIndexContent, final SyncScheduleOption syncScheduleOption, final Boolean fullSyncDirOnly ) 
-    		throws AccessControlException, WriteFilesException, WriteEntryDataException {
+    public NetFolderConfig createNetFolder(Long templateId, 
+    		Long parentBinderId, 
+    		String name, 
+    		User owner, 
+    		String rootName, 
+    		String path, 
+    		Boolean isHomeDir, 
+    		boolean indexContent, 
+    		Boolean inheritIndexContent, 
+    		SyncScheduleOption syncScheduleOption, 
+    		Boolean fullSyncDirOnly,
+    		Boolean allowDesktopAppToTriggerSync,
+    		Boolean inheritAllowDesktopAppToTriggerSync) throws AccessControlException, WriteFilesException, WriteEntryDataException {
     	
     	// Create and save a new net folder config object        		
-		final NetFolderConfig nfc = new NetFolderConfig(NetFolderUtil.getNetFolderServerByName(netFolderServerName).getId());
+		final NetFolderConfig nfc = new NetFolderConfig(NetFolderUtil.getNetFolderServerByName(rootName).getId());
     	nfc.setName(name);
     	nfc.setFolderId(0L); // temporary value
     	nfc.setResourcePath(path);
@@ -77,7 +88,9 @@ public class NetFolderModuleImpl extends CommonDependencyInjection implements Ne
     	nfc.setIndexContent(indexContent);
     	nfc.setUseInheritedIndexContent(inheritIndexContent);
     	nfc.setSyncScheduleOption(syncScheduleOption);
-    	nfc.setFullSyncDirOnly(fullSyncDirOnly);		
+    	nfc.setFullSyncDirOnly(fullSyncDirOnly);	
+    	nfc.setAllowDesktopAppToTriggerInitialHomeFolderSync(allowDesktopAppToTriggerSync);
+    	nfc.setUseInheritedDesktopAppTriggerSetting(inheritAllowDesktopAppToTriggerSync);
 		if(logger.isDebugEnabled())
 			logger.debug("Creating new net folder config object " + nfc.toString());
 		final NetFolderConfig netFolderConfig = (NetFolderConfig) getTransactionTemplate().execute(new TransactionCallback<Object>() {
@@ -92,7 +105,20 @@ public class NetFolderModuleImpl extends CommonDependencyInjection implements Ne
    		String folderName = NET_FOLDER_NAME_PREFIX + netFolderConfig.getId();
 		if(logger.isDebugEnabled())
 			logger.debug("Creating new folder object (name='" + folderName + "') representing the top of the net folder");
-    	final Folder folder = getFolderModule().createNetFolder(netFolderConfig.getId(), templateId, parentBinderId, name, folderName, owner, isHomeDir, indexContent, inheritIndexContent, syncScheduleOption, fullSyncDirOnly);
+    	final Folder folder = getFolderModule().createNetFolder(
+    			netFolderConfig.getId(), 
+    			templateId, 
+    			parentBinderId, 
+    			name, 
+    			folderName, 
+    			owner, 
+    			isHomeDir, 
+    			indexContent, 
+    			inheritIndexContent, 
+    			syncScheduleOption, 
+    			fullSyncDirOnly,
+    			allowDesktopAppToTriggerSync,
+    			inheritAllowDesktopAppToTriggerSync);
     	
     	// Finish linking them (Note: This association is managed by application rather than by database foreign key constraint)
     	if(logger.isDebugEnabled())

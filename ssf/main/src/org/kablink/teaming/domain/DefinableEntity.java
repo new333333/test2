@@ -615,4 +615,8 @@ public abstract class DefinableEntity extends BaseEntity {
     public String toString() {
     	return title;
     }
+    
+    public boolean supportsCustomFields() {
+    	return true;
+    }
 }

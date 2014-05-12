@@ -155,7 +155,7 @@
    	   <property name="HDescription" column="tDescription_text" type="org.kablink.teaming.dao.util.SSClobStringType"/>
    	   <property name="HFormat" column="tDescription_format"/>
    	  </component>
-   	  <property name="templateOwningBinderId" index="templateOwningBinderId_Binder"/>
+   	  <property name="templateOwningBinderId"/>
    	  <property name="templateEntrySourceBinderId"/>
    	  <property name="templateHidden"/>
     </subclass>

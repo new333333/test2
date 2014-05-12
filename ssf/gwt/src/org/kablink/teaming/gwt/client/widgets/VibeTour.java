@@ -58,11 +58,11 @@ public class VibeTour extends Tour {
 	
 		// ...initialize the tour's localized strings...
 		GwtTeamingMessages messages = GwtTeaming.getMessages();
-		setCloseTooltipText(messages.tourCloseAlt());
-		setDoneBtnText(     messages.tourDone()    );
-		setNextBtnText(     messages.tourNext()    );
-		setPrevBtnText(     messages.tourPrev()    );
-		setSkipButtonText(  messages.tourSkip()    );
+		setCloseTooltipTextText(messages.tourCloseAlt());
+		setDoneBtnText(         messages.tourDone()    );
+		setNextBtnText(         messages.tourNext()    );
+		setPrevBtnText(         messages.tourPrev()    );
+		setSkiptBtnText(        messages.tourSkip()    );
 
 		// ...and initialize everything else.
 		setShowPrevButton(true);

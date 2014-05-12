@@ -113,6 +113,18 @@ public abstract class DlgBox extends TeamingPopupPanel
 	private final static int DIALOG_BASE_Z_INDEX      = 1001;
 	private final static int MODAL_GLASS_BASE_Z_INDEX = 1000;
 	
+	// Bugzilla 871077 (DRF):
+	//    For the Filr 1.1 release, we will remove the X close button
+	//    in the upper right corner of all GWT dialogs.  We are doing
+	//    this because currently, the GWT dialog cannot determine
+	//    whether anything has changed in the dialog. Once code has
+	//    been added (future) to know whether the dialog has changed,
+	//    then we can replace the X button.
+	//
+	//    By removing the X, the user will have to choose between OK
+	//    or Cancel (only at the bottom of each dialog).
+	private final static boolean	SHOW_X_CLOSER				= true;	//
+	
 	public enum DlgButtonMode {
 		Cancel,
 		Close,
@@ -282,7 +294,54 @@ public abstract class DlgBox extends TeamingPopupPanel
 		
 		setPopupPosition( xPos, yPos );
 	}// end DlgBox()
+
+	/*
+	 * If the dialog is a fixed size, adjusts the internal sizing based
+	 * on current settings.
+	 */
+	private void adjustFixedSizingAsync()
+	{
+		GwtClientHelper.deferCommand( new ScheduledCommand()
+		{
+			@Override
+			public void execute()
+			{
+				adjustFixedSizingNow();
+			}
+		} );
+	}
 	
+	/*
+	 * If the dialog is a fixed size, adjusts the internal sizing based
+	 * on current settings.
+	 */
+	private void adjustFixedSizingNow()
+	{
+		if ( m_fixedSize )
+		{
+			int spaceNeeded;
+			int contentPanelHeight;
+			
+			// Yes, make sure the content panel takes up all the room minus the room
+			// needed by the header and footer.
+			spaceNeeded = 0;
+			if ( m_headerPanel != null )
+				spaceNeeded += m_headerPanel.getOffsetHeight();
+			
+			if ( m_errorPanel != null )
+				spaceNeeded += m_errorPanel.getOffsetHeight();
+			
+			if ( m_footerPanel != null )
+				spaceNeeded += m_footerPanel.getOffsetHeight();
+			
+			spaceNeeded += 20;
+			
+			contentPanelHeight = m_height - spaceNeeded;
+			m_bodyPanel.setHeight( String.valueOf( contentPanelHeight ) + "px" );
+			if ( m_useOverflowAutoOnContent )
+				m_bodyPanel.getElement().getStyle().setOverflow( Overflow.AUTO );
+		}
+	}
 	
 	/**
 	 * 
@@ -322,6 +381,9 @@ public abstract class DlgBox extends TeamingPopupPanel
 			m_closeImg.addClickHandler( this );
 			m_closePanel.add( m_closeImg );
 			panel.add( m_closePanel );
+			if (!(SHOW_X_CLOSER)) {
+				hideCloseImg();
+			}
 		}
 		
 		// Add the header.
@@ -865,32 +927,7 @@ public abstract class DlgBox extends TeamingPopupPanel
 			public void execute()
 			{
 				makeDraggableNow( String.valueOf( m_id ), draggable );
-				
-				// Are we dealing with a fixed sized dialog?
-				if ( m_fixedSize )
-				{
-					int spaceNeeded;
-					int contentPanelHeight;
-					
-					// Yes, make sure the content panel takes up all the room minus the room
-					// needed by the header and footer.
-					spaceNeeded = 0;
-					if ( m_headerPanel != null )
-						spaceNeeded += m_headerPanel.getOffsetHeight();
-					
-					if ( m_errorPanel != null )
-						spaceNeeded += m_errorPanel.getOffsetHeight();
-					
-					if ( m_footerPanel != null )
-						spaceNeeded += m_footerPanel.getOffsetHeight();
-					
-					spaceNeeded += 20;
-					
-					contentPanelHeight = m_height - spaceNeeded;
-					m_bodyPanel.setHeight( String.valueOf( contentPanelHeight ) + "px" );
-					if ( m_useOverflowAutoOnContent )
-						m_bodyPanel.getElement().getStyle().setOverflow( Overflow.AUTO );
-				}
+				adjustFixedSizingNow();				
 			}
 		} );
 	}// end makeDraggableAsync()
@@ -925,7 +962,9 @@ public abstract class DlgBox extends TeamingPopupPanel
     {
 		Object props;
 		
-		// Yes
+		// Disable the ok button until we are finished doing whatever needs to be done
+		okBtnProcessingStarted();
+		
 		// Get the data from the controls in the dialog box.
 		props = getDataFromDlg();
 		
@@ -943,6 +982,28 @@ public abstract class DlgBox extends TeamingPopupPanel
 					hide();
 			}
 		}
+		
+		// Enable the ok button again
+		okBtnProcessingEnded();
+    }
+    
+    /**
+     * 
+     */
+    protected void okBtnProcessingEnded()
+    {
+    	if ( m_okBtn != null )
+    		m_okBtn.setEnabled( true );
+    }
+    
+    /**
+     * 
+     */
+    protected void okBtnProcessingStarted()
+    {
+    	// Disable the ok button
+    	if ( m_okBtn != null )
+    		m_okBtn.setEnabled( false );
     }
     
     /*
@@ -1179,7 +1240,17 @@ public abstract class DlgBox extends TeamingPopupPanel
 		setAutoHideEnabled( ( autoHide && (!modal) ));
 		m_modal = modal;
 	}
-	
+
+	@Override
+	public void setPixelSize(int width, int height) {
+		super.setPixelSize(width, height);
+		if (m_fixedSize)
+		{
+			m_height = height;
+			adjustFixedSizingAsync();
+		}
+	}
+
 	/**
 	 * 
 	 */

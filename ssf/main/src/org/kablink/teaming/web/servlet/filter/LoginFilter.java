@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -45,13 +45,13 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.asmodule.zonecontext.ZoneContextHolder;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.AuthenticationConfig;
 import org.kablink.teaming.domain.Binder;
+import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.HomePageConfig;
 import org.kablink.teaming.domain.UserProperties;
@@ -83,7 +83,6 @@ import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.PermaLinkUtil;
 import org.kablink.teaming.web.util.WebHelper;
 import org.kablink.teaming.web.util.WebUrlUtil;
-import org.kablink.util.BrowserSniffer;
 import org.kablink.util.Http;
 import org.kablink.util.Validator;
 
@@ -164,7 +163,6 @@ public class LoginFilter  implements Filter {
 					}
 					req.setAttribute("referer", url);
 					chain.doFilter(request, response);
-					
 				}
 			}
 		}
@@ -281,6 +279,23 @@ public class LoginFilter  implements Filter {
 		boolean isReadFileWithGuestAccess   = (isReadFile && readFileWithGuestAccessFlag);
 		
 		if (isReadFileWithGuestAccess || isPathPermittedUnauthenticated(req.getPathInfo()) || isActionPermittedUnauthenticated(req.getParameter("action"))) {
+			String action;
+			
+			action = req.getParameter( "action" );
+			
+			// Is this a view permalink request?
+			if ( action != null && action.equalsIgnoreCase( WebKeys.ACTION_VIEW_PERMALINK ) )
+			{
+				String currentURL;
+				
+				// Yes
+				// Set the referrer url so we know where to go after the user logs in.
+				currentURL = Http.getCompleteURL( req );
+				currentURL = StringCheckUtil.checkForQuotes( currentURL, false );		//Prevent XSS attacks
+				if ( Validator.isNotNull( currentURL ) )
+					req.setAttribute( WebKeys.REFERER_URL, currentURL);
+			}
+			
 			chain.doFilter(req, res);										
 		}
 		else {				
@@ -533,9 +548,28 @@ public class LoginFilter  implements Filter {
 			//This is probably a share with public link. Let it go through. It will get checked by the readFile controller
 			reply = true;
 		} else if (path.startsWith("/" + WebKeys.SERVLET_READ_FILE + "/")) {
-			// Yes!  Can we find the folderEntry marker within it?
+			// Yes!  We'll need the zoneName and userId to validate
+			// things.
+			String zoneName = WebHelper.getRequiredZoneName(req);
+			Long   userId   = WebHelper.getRequiredUserId(  req);
+			
+			// Can we find a folderEntry marker within it?
 			String feIdMarker = (WebKeys.URL_FOLDER_ENTRY + "/");
 			int    feIdPos    = path.indexOf(feIdMarker);
+			
+			// Can we find a folderId marker within it?
+			String fIdMarker = (WebKeys.URL_FOLDER_ID + "/");
+			int    fIdPos    = path.indexOf(fIdMarker);
+			
+			// Can we find a folderEntryList marker within it?
+			String feListIdMarker = (WebKeys.URL_FOLDER_ENTRY_LIST + "/");
+			int    feListIdPos    = path.indexOf(feListIdMarker);
+			
+			// Can we find a folderList marker within it?
+			String fListIdMarker = (WebKeys.URL_FOLDER_LIST + "/");
+			int    fListIdPos    = path.indexOf(fListIdMarker);
+
+			// Did we find a folderEntry marker?
 			if (0 < feIdPos) {
 				FolderEntry fe;
 				try {
@@ -549,8 +583,8 @@ public class LoginFilter  implements Filter {
 									return getFolderModule().getEntry(null, feId);
 								}
 							},
-							WebHelper.getRequiredZoneName(req),
-							WebHelper.getRequiredUserId(  req)));
+							zoneName,
+							userId));
 				}
 				catch (Exception ex) {
 					// Failure possibilities:  AccessControlException,
@@ -561,6 +595,111 @@ public class LoginFilter  implements Filter {
 				// Return true if Guest can access the entry and false
 				// otherwise.
 				reply = new Boolean(null != fe);
+			}
+			
+			// No, we didn't find a folderEntry marker!  Did we find a
+			// folderId marker?
+			else if (0 < fIdPos) {
+				Folder	f;
+				try {
+					// Yes!  Try to access the folder as Guest.
+					final String fPart = path.substring(fIdPos + fIdMarker.length());
+					final Long   fId   = Long.parseLong(fPart.substring(0, fPart.indexOf('/')));
+						f = ((Folder) RunasTemplate.runas(
+							new RunasCallback() {
+								@Override
+								public Object doAs() {
+									return getFolderModule().getFolder(fId);
+								}
+							},
+							zoneName,
+							userId));
+				}
+				catch (Exception ex) {
+					// Failure possibilities:  AccessControlException,
+					// NumericFormatException, ...
+					f = null;
+				}
+					
+				// Return true if Guest can access the entry and false
+				// otherwise.
+				reply = new Boolean(null != f);
+			}
+			
+			// No, we didn't find a folderId marker either!  Did we
+			// find both a folderEntryList and folderList marker?
+			else if ((0 < feListIdPos) && (0 < fListIdPos)) {
+				// Yes!  Validate the folderEntryList...
+				String feListPart = path.substring(feListIdPos + feListIdMarker.length());
+				feListPart = feListPart.substring(0, feListPart.indexOf('/'));
+				boolean feListValid = ((0 == feListPart.length()) || "-".equals(feListPart));
+				if (!feListValid) {
+					feListValid = true;
+					String[] feList = feListPart.split(":");
+					for (String feId:  feList) {
+						FolderEntry fe;
+						try {
+							// Yes!  Try to access the entry as Guest.
+							final String feIdFinal = feId;
+							fe = ((FolderEntry) RunasTemplate.runas(
+								new RunasCallback() {
+									@Override
+									public Object doAs() {
+										return getFolderModule().getEntry(null, Long.parseLong(feIdFinal));
+									}
+								},
+								zoneName,
+								userId));
+							feListValid = (null != fe);
+						}
+						catch (Exception ex) {
+							// Failure possibilities:  AccessControlException,
+							// NumericFormatException, ...
+							feListValid = false;
+						}
+						if (!feListValid) {
+							break;
+						}
+					}
+				}
+				
+				// ...and the folderList.
+				String fListPart = path.substring(fListIdPos + fListIdMarker.length());
+				fListPart = fListPart.substring(0, fListPart.indexOf('/'));
+				boolean fListValid = ((0 == fListPart.length()) || "-".equals(fListPart));
+				if (!fListValid) {
+					fListValid = true;
+					String[] fList = fListPart.split(":");
+					for (String fId:  fList) {
+						Folder	f;
+						try {
+							// Yes!  Try to access the folder as Guest.
+							final String fIdFinal = fId;
+							f = ((Folder) RunasTemplate.runas(
+								new RunasCallback() {
+									@Override
+									public Object doAs() {
+										return getFolderModule().getFolder(Long.parseLong(fIdFinal));
+									}
+								},
+								zoneName,
+								userId));
+							fListValid = (null != f);
+						}
+						catch (Exception ex) {
+							// Failure possibilities:  AccessControlException,
+							// NumericFormatException, ...
+							fListValid = false;
+						}
+						if (!fListValid) {
+							break;
+						}
+					}
+				}
+
+				// Return true if Guest can access all the entries and
+				// folders and false otherwise.
+				reply = new Boolean(feListValid && fListValid);
 			}
 			
 			else {

@@ -35,5 +35,6 @@
     <property name="jitsEnabled" access="field"/>
     <property name="jitsMaxAge" access="field"/>
     <property name="jitsAclMaxAge" access="field"/>
+	<property name="allowDesktopAppToTriggerInitialHomeFolderSync" access="field"/>
   </class>
 </hibernate-mapping>

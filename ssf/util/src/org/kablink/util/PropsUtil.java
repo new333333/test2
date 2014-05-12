@@ -206,6 +206,10 @@ public class PropsUtil {
     private Properties getProps() {
     	return props;
     }
+
+    public String getValue(String key) {
+        return getProps().getProperty(key);
+    }
     
 	//Property comma-separated lists
 	//Routine to get a combined String[] array

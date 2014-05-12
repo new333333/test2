@@ -190,7 +190,10 @@
 
 .activityStreamCtrlHeader2
 {
+	overflow: hidden;
 	padding-right: 250px;
+	text-overflow: ellipsis;
+	white-space: nowrap;
 }
 
 .activityStreamCtrlHeaderTitle
@@ -700,6 +703,9 @@
 	font-size: 13px;
 	line-height: 16px;
 	margin-top: 3px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
 }
 
 .shareThisDlg_NoteLabel
@@ -855,7 +861,7 @@
 }
 .shareThisDlg_findTable input
 {
-	width: 300px;
+	width: 380px;
 	border: 1px solid #c4c4c4;
 }
 
@@ -3617,6 +3623,9 @@ a.ss_new_thread {
 	position: absolute;
 	top: 9px;
 	left: 15px;
+}
+.qView-avatar-btn {
+	width: 200px;
 }
 .presenceImgA {
 	cursor: pointer;

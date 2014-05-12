@@ -666,19 +666,37 @@ public class ViewPermalinkController  extends SAbstractController {
 					userName = NLT.get( "administration.initial.guestTitle" );
 					model.put( "userFullName", userName );
 
-					// Does Guest have rights to view the permalink?
-					if ( accessException != null && accessException.equalsIgnoreCase( "true" ) )
+					// Add a referrer url if needed
 					{
 						String refererUrl;
 						
+						refererUrl = PortletRequestUtils.getStringParameter( request, WebKeys.REFERER_URL, "" );
+						if ( refererUrl == null || refererUrl.length() == 0 )
+						{
+							Object obj;
+							
+							obj = request.getAttribute( WebKeys.REFERER_URL );
+							if ( obj != null && obj instanceof String )
+								refererUrl = (String) obj; 
+						}
+						
+						if ( refererUrl != null && refererUrl.length() > 0 )
+						{
+							// Remember the url the user is trying to go to.  When the user logs in
+							// we should take them to that url.
+							refererUrl = StringCheckUtil.checkForQuotes(refererUrl, false);		//Prevent XSS attacks
+							model.put( "loginRefererUrl", refererUrl );
+						}
+					}
+
+					// The following if/else statements both do the same thing.  We used to only prompt for
+					// login if the guest user did not have rights.  We now prompt for login all the time.
+					
+					// Does Guest have rights to view the permalink?
+					if ( accessException != null && accessException.equalsIgnoreCase( "true" ) )
+					{
 						// No, add a flag that tells us to prompt for login.
 						model.put( "promptForLogin", "true" );
-						
-						// Remember the url the user is trying to go to.  When the user logs in
-						// we should take them to that url.
-						refererUrl = PortletRequestUtils.getStringParameter( request, WebKeys.REFERER_URL, "" );
-						refererUrl = StringCheckUtil.checkForQuotes(refererUrl, false);		//Prevent XSS attacks
-						model.put( "loginRefererUrl", refererUrl );
 					}
 					else
 					{

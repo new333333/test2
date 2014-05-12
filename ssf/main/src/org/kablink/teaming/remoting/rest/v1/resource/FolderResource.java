@@ -211,7 +211,7 @@ public class FolderResource extends AbstractBinderResource {
         nextParams.put("description_format", descriptionFormatStr);
         Date lastModified = getLibraryModifiedDate(new Long[]{id}, false, true);
         Date ifModifiedSince = getIfModifiedSinceDate(request);
-        if (ifModifiedSince!=null && !ifModifiedSince.before(lastModified)) {
+        if (ifModifiedSince!=null && lastModified!=null && !ifModifiedSince.before(lastModified)) {
             throw new NotModifiedException();
         }
         SearchResultList<BinderBrief> subBinders = getSubBinders(id, null, true, offset, maxCount, "/folders/" + id + "/binders",
@@ -232,7 +232,7 @@ public class FolderResource extends AbstractBinderResource {
         nextParams.put("description_format", descriptionFormatStr);
         Date lastModified = getLibraryModifiedDate(new Long[]{id}, false, allowJits);
         Date ifModifiedSince = getIfModifiedSinceDate(request);
-        if (ifModifiedSince!=null && !ifModifiedSince.before(lastModified)) {
+        if (ifModifiedSince!=null && lastModified!=null && !ifModifiedSince.before(lastModified)) {
             throw new NotModifiedException();
         }
         SearchResultList<SearchableObject> children = getChildren(id, null, true, false, true, allowJits, offset, maxCount,
@@ -253,7 +253,7 @@ public class FolderResource extends AbstractBinderResource {
         nextParams.put("description_format", descriptionFormatStr);
         Date lastModified = getLibraryModifiedDate(new Long[]{id}, false, true);
         Date ifModifiedSince = getIfModifiedSinceDate(request);
-        if (ifModifiedSince!=null && !ifModifiedSince.before(lastModified)) {
+        if (ifModifiedSince!=null && lastModified!=null && !ifModifiedSince.before(lastModified)) {
             throw new NotModifiedException();
         }
         SearchResultList<BinderBrief> subBinders = getSubBinders(id, Restrictions.eq(Constants.ENTITY_FIELD, Constants.ENTITY_TYPE_FOLDER),

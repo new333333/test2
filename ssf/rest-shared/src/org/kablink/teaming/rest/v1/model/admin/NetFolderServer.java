@@ -44,6 +44,7 @@ public class NetFolderServer extends BaseRestObject {
     private Boolean jitsEnabled;
     private Long jitsMaxAge;
     private Long jitsMaxACLAge;
+    private Boolean allowClientInitiatedSync;
 
     public void replaceNullValues(NetFolderServer server) {
         id = (id==null) ? server.id : id;
@@ -194,4 +195,12 @@ public class NetFolderServer extends BaseRestObject {
         this.jitsMaxACLAge = jitsMaxACLAge;
     }
 
+    @XmlElement(name="allow_client_initiated_sync")
+    public Boolean getAllowClientInitiatedSync() {
+        return allowClientInitiatedSync;
+    }
+
+    public void setAllowClientInitiatedSync(Boolean allowClientInitiatedSync) {
+        this.allowClientInitiatedSync = allowClientInitiatedSync;
+    }
 }

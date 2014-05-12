@@ -190,12 +190,15 @@ public class GwtNetFolderHelper
 			NetFolderConfig nfc;
 			ScheduleInfo scheduleInfo = null;
 			SyncScheduleOption syncScheduleOption = null;
+			NetFolderDataSyncSettings dataSyncSettings;
 			
 			// Create the net folder in the global "net folder roots" workspace.
 			parentBinder = getCoreDao().loadReservedBinder(
 													ObjectKeys.NET_FOLDERS_ROOT_INTERNALID, 
 													RequestContextHolder.getRequestContext().getZoneId() );
 
+			dataSyncSettings = netFolder.getDataSyncSettings();
+			
 			// Get the schedule information
 			{
 				GwtNetFolderSyncScheduleConfig config;
@@ -225,7 +228,9 @@ public class GwtNetFolderHelper
 												false,
 												netFolder.getIndexContent(),
 												netFolder.getInheritIndexContentSetting(),
-												netFolder.getFullSyncDirOnly() );
+												netFolder.getFullSyncDirOnly(),
+												dataSyncSettings.getAllowDesktopAppToTriggerSync(),
+												dataSyncSettings.getInheritAllowDesktopAppToTriggerSync() );
 			
 			//binder = ami.getBinderModule().getBinder(nfc.getFolderId());
 			
@@ -267,6 +272,7 @@ public class GwtNetFolderHelper
 			newNetFolder.setIndexContent( netFolder.getIndexContent() );
 			newNetFolder.setInheritIndexContentSetting( netFolder.getInheritIndexContentSetting() );
 			newNetFolder.setInheritJitsSettings( netFolder.getInheritJitsSettings() );
+			newNetFolder.setDataSyncSettings( dataSyncSettings );
 		}
 		catch ( Exception ex )
 		{
@@ -337,6 +343,7 @@ public class GwtNetFolderHelper
 													netFolderRoot.getJitsEnabled(),
 													netFolderRoot.getJitsResultsMaxAge(),
 													netFolderRoot.getJitsAclMaxAge(),
+													netFolderRoot.getAllowDesktopAppToTriggerInitialHomeFolderSync(),
 													scheduleInfo );
 		}
 		catch ( RDException ex )
@@ -557,6 +564,8 @@ public class GwtNetFolderHelper
 				nfRoot.setJitsEnabled( driver.isJitsEnabled() );
 				nfRoot.setJitsResultsMaxAge( driver.getJitsMaxAge() );
 				nfRoot.setJitsAclMaxAge( driver.getJitsAclMaxAge() );
+				nfRoot.setAllowDesktopAppToTriggerInitialHomeFolderSync( driver.getAllowDesktopAppToTriggerInitialHomeFolderSync() );
+				nfRoot.setAllowDesktopAppToTriggerInitialHomeFolderSync( driver.getAllowDesktopAppToTriggerInitialHomeFolderSync() );
 				
 				{
 					AuthenticationType authType;
@@ -626,8 +635,11 @@ public class GwtNetFolderHelper
 		NetFolderDataSyncSettings settings;
 		
 		settings = new NetFolderDataSyncSettings();
+		
 		settings.setAllowDesktopAppToSyncData( nfc.getAllowDesktopAppToSyncData() );
 		settings.setAllowMobileAppsToSyncData( nfc.getAllowMobileAppsToSyncData() );
+		settings.setAllowDesktopAppToTriggerSync( nfc.getAllowDesktopAppToTriggerInitialHomeFolderSync() );
+		settings.setInheritAllowDesktopAppToTriggerSync( nfc.getUseInheritedDesktopAppTriggerSetting() );
 		
 		return settings;
 	}
@@ -867,6 +879,14 @@ public class GwtNetFolderHelper
 		netFolder.setInheritIndexContentSetting( nfc.getUseInheritedIndexContent() );
 		netFolder.setInheritJitsSettings( nfc.getUseInheritedJitsSettings() );
 		netFolder.setFullSyncDirOnly( nfc.getFullSyncDirOnly() );
+		
+		// Get the data sync settings.
+		{
+			NetFolderDataSyncSettings dataSyncSettings;
+
+			dataSyncSettings = getDataSyncSettings( ami, nfc );
+			netFolder.setDataSyncSettings( dataSyncSettings );
+		}
 
 		return netFolder;
 	}
@@ -1193,7 +1213,7 @@ public class GwtNetFolderHelper
     						status = NetFolderSyncStatus.DELETE_IN_PROGRESS;
     						break;
 
-    					case interrupted:
+    					case aborted:
     						status = NetFolderSyncStatus.UNKNOWN;
     						break;
     					}
@@ -1293,6 +1313,7 @@ public class GwtNetFolderHelper
 		{
 			ScheduleInfo scheduleInfo = null;
 			SyncScheduleOption syncScheduleOption = null;
+			NetFolderDataSyncSettings dataSyncSettings;
 			
 			// Get the schedule information
 			{
@@ -1307,6 +1328,8 @@ public class GwtNetFolderHelper
 				}
 			}
 			
+			dataSyncSettings = netFolder.getDataSyncSettings();
+			
 			NetFolderHelper.modifyNetFolder(
 										ami.getBinderModule(),
 										ami.getFolderModule(),
@@ -1319,14 +1342,16 @@ public class GwtNetFolderHelper
 										syncScheduleOption,
 										netFolder.getIndexContent(),
 										netFolder.getInheritIndexContentSetting(),
-										netFolder.getFullSyncDirOnly() );
+										netFolder.getFullSyncDirOnly(),
+										dataSyncSettings.getAllowDesktopAppToTriggerSync(),
+										dataSyncSettings.getInheritAllowDesktopAppToTriggerSync() );
 
 			// Set the rights on the net folder
 			if ( netFolder.getIsHomeDir() == false )
 				setNetFolderRights( ami, NetFolderUtil.getNetFolderBinder(netFolder.getId()), netFolder.getRoles() );
 			
 			// Save the data sync settings.
-			saveDataSyncSettings( ami, netFolder.getId(), netFolder.getDataSyncSettings() );
+			saveDataSyncSettings( ami, netFolder.getId(), dataSyncSettings );
 			
 			// Save the jits settings
 			{
@@ -1417,6 +1442,7 @@ public class GwtNetFolderHelper
 											netFolderRoot.getJitsEnabled(),
 											netFolderRoot.getJitsResultsMaxAge(),
 											netFolderRoot.getJitsAclMaxAge(),
+											netFolderRoot.getAllowDesktopAppToTriggerInitialHomeFolderSync(),
 											scheduleInfo );
 		}
 		catch ( Exception ex )
@@ -1450,12 +1476,15 @@ public class GwtNetFolderHelper
 			NetFolderConfig nfc = NetFolderUtil.getNetFolderConfig(netFolderConfigId);
 			
 			nfc.setAllowDesktopAppToSyncData(settings.getAllowDesktopAppToSyncData());
+			nfc.setAllowDesktopAppToTriggerInitialHomeFolderSync(settings.getAllowDesktopAppToTriggerSync());
+			nfc.setUseInheritedDesktopAppTriggerSetting(settings.getInheritAllowDesktopAppToTriggerSync());
 			
 	   		if ( false )
 	   		{
 	   			// Not writing anything as per bug 816823.
 	   			nfc.setAllowMobileAppsToSyncData(settings.getAllowMobileAppsToSyncData());
 	   		}
+	   		
 
 			try
 			{

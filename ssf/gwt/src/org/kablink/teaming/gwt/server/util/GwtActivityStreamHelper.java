@@ -657,7 +657,7 @@ public class GwtActivityStreamHelper {
 				// them...
 				SortedSet<Principal> authorPrincipals;
 				try {
-					authorPrincipals = bs.getProfileModule().getPrincipals(authorIds);
+					authorPrincipals = bs.getProfileModule().getPrincipals(authorIds, false);
 				}
 				catch (Exception ex) {
 					m_logger.debug("GwtActivityStreamHelper.readUsers( 1:EXCEPTION ):  ", ex);
@@ -857,7 +857,7 @@ public class GwtActivityStreamHelper {
 			if (!(userIds.isEmpty())) {
 				SortedSet<Principal> authorPrincipals;
 				try {
-					authorPrincipals = bs.getProfileModule().getPrincipals(userIds);
+					authorPrincipals = bs.getProfileModule().getPrincipals(userIds, false);
 				}
 				catch (Exception ex) {
 					m_logger.debug("GwtActivityStreamHelper.readUsers( 2:EXCEPTION ):  ", ex);

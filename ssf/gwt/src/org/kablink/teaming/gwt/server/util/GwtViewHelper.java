@@ -1522,46 +1522,21 @@ public class GwtViewHelper {
 		catch (Exception ex) {svs = new SharedViewState(true, false);                                                 }
 
 		// Scan the share items.
-		boolean			sharedFiles = getUserViewSharedFiles(request, CollectionType.SHARED_BY_ME);
-		SharingModule	sm          = bs.getSharingModule();
+		boolean			      sharedFiles    = getUserViewSharedFiles(request, CollectionType.SHARED_BY_ME);
+		SharingModule	      sm             = bs.getSharingModule();
+		List<DefinableEntity> sharedEntities = new ArrayList<DefinableEntity>();
+		sm.validateShareItems(shareItems, sharedEntities);
 		for (ShareItem si:  shareItems) {
-			// Is this share item not the latest share for the entity?
-			if (!(si.isLatest())) {
-				// Yes!  Skip it.
+			// Is the shared entity still accessible?
+			EntityIdentifier eid = si.getSharedEntityIdentifier();
+			DefinableEntity	siEntity = sm.findSharedEntityInList(sharedEntities, eid); 
+			if ((null == siEntity) || GwtDeleteHelper.isEntityPreDeleted(siEntity)) {
+				// No!  We'll simply skip it.  This can happen if
+				// somebody revokes the user's right to an item they
+				// previously shared.
 				continue;
 			}
 
-			// Can we access the shared entity?
-			DefinableEntity	siEntity;
-			try {
-				siEntity = sm.getSharedEntity(si);
-			}
-			catch (Exception e) {
-				// No!  If it was because of an access control
-				// exception...
-				if (e instanceof AccessControlException) {
-					// ...we'll simply skip it.  This can happen if
-					// ...somebody revokes the users right to an
-					// ...item they previously shared.
-					siEntity = null;
-				}
-				
-				else {
-					// ...otherwise, propagate the exception.
-					throw e;
-				}
-			}
-			if (null == siEntity) {
-				// No!  Skip it
-				continue;
-			}
-
-			// Is this share item's entity in the trash?
-			if (GwtDeleteHelper.isEntityPreDeleted(siEntity)) {
-				// Yes!  Skip it.
-				continue;
-			}
-			
 			// Are we showing everything?
 			boolean showHidden     = svs.isShowHidden();
 			boolean showNonHidden  = svs.isShowNonHidden();
@@ -1642,16 +1617,11 @@ public class GwtViewHelper {
 			catch (Exception ex) {svs = new SharedViewState(true, false);                        }
 	
 			// Scan the share items.
-			boolean			sharedFiles = getUserViewSharedFiles(request, ct);
-			SharingModule	sm          = bs.getSharingModule();
+			boolean			      sharedFiles    = getUserViewSharedFiles(request, ct);
+			SharingModule	      sm             = bs.getSharingModule();
+			List<DefinableEntity> sharedEntities = new ArrayList<DefinableEntity>();
+			sm.validateShareItems(shareItems, sharedEntities);
 			for (ShareItem si:  shareItems) {
-				// Is this share item expired or not the latest share
-				// for the entity?
-				if (si.isExpired() || (!(si.isLatest()))) {
-					// Yes!  Skip it.
-					continue;
-				}
-				
 				// Are we looking for public shares and this isn't
 				// public or vice versa?
 				if (isPublic != si.getIsPartOfPublicShare()) {
@@ -1666,10 +1636,11 @@ public class GwtViewHelper {
 					continue;
 				}
 				
-				// Is this share item's entity in the trash?
-				DefinableEntity siEntity = sm.getSharedEntity(si);
-				if (GwtDeleteHelper.isEntityPreDeleted(siEntity)) {
-					// Yes!  Skip it.
+				// Is this share item's entity still accessible?
+				EntityIdentifier eid = si.getSharedEntityIdentifier();
+				DefinableEntity	siEntity = sm.findSharedEntityInList(sharedEntities, eid); 
+				if ((null == siEntity) || GwtDeleteHelper.isEntityPreDeleted(siEntity)) {
+					// No!  Skip it.
 					continue;
 				}
 	
@@ -3265,6 +3236,31 @@ public class GwtViewHelper {
 	}
 
 	/*
+	 * Returns the requested List<ShareItem> removing those that are
+	 * not the latest, have been deleted and those that are expired
+	 * when requested.
+	 */
+	private static List<ShareItem> getCleanShareList(SharingModule sm, ShareItemSelectSpec spec, boolean removeExpired) {
+		// Query the shares...
+		List<ShareItem> reply = sm.getShareItems(spec);
+		int c = ((null == reply) ? 0 : reply.size());
+		
+		// ...and scan them.
+		for (int i = (c - 1); i >= 0; i -= 1) {
+			// Should this share be returned?
+			ShareItem si = reply.get(i);
+			if ((!(si.isLatest())) || si.isDeleted() || (si.isExpired() && removeExpired)) {
+				// No!  Remove it from the list.
+				reply.remove(i);
+			}
+		}
+		
+		// If we get here, reply refers to the cleaned list.  Return
+		// it.
+		return reply;
+	}
+	
+	/*
 	 * Returns a String[] of the names of the columns to display in a
 	 * given collection type.
 	 */
@@ -4381,9 +4377,9 @@ public class GwtViewHelper {
 
 			// ...if it's a file...
 			if (null != fa) {
-				// ...that's locked...
+				// ...that's locked with a still valid lock...
 				FileLock fl = fa.getFileLock();
-				if (null != fl) {
+				if ((null != fl) && fa.isCurrentlyLocked()) {
 					// ...set the file's locker...
 					Long lockerId = fl.getOwner().getId();
 					reply.setFileLocker(buildFolderEntryUser(bs, request, fl.getExpirationDate(), lockerId));
@@ -4539,10 +4535,8 @@ public class GwtViewHelper {
 		// Get the List<ShareItem> of the shares of this item with the
 		// current user.
 		ShareItemSelectSpec	spec = new ShareItemSelectSpec();
-		
-		EntityIdentifier ei = new EntityIdentifier(fed.getEntityId().getEntityId(), EntityType.folderEntry);
-		spec.setSharedEntityIdentifier(ei);
-		
+		spec.setLatest(true);
+		spec.setSharedEntityIdentifier(new EntityIdentifier(fed.getEntityId().getEntityId(), EntityType.folderEntry));
 		Long userId = GwtServerHelper.getCurrentUserId();
 		List<Long>	groups = GwtServerHelper.getGroupIds(request, bs, userId);
 		List<Long>	teams  = GwtServerHelper.getTeamIds( request, bs, userId);
@@ -4550,16 +4544,10 @@ public class GwtViewHelper {
 		spec.setRecipients(users, groups, teams);
 		
 		// Can we find any shares?
-		List<ShareItem> shareItems = bs.getSharingModule().getShareItems(spec);
+		List<ShareItem> shareItems = getCleanShareList(bs.getSharingModule(), spec, true);
 		if (MiscUtil.hasItems(shareItems)) {
 			// Yes!  Scan them.
 			for (ShareItem si:  shareItems) {
-				// If this share is expired or deleted...
-				if (si.isExpired() || si.isDeleted() || (!(si.isLatest()))) {
-					// ...skip it.  We don't show these.
-					continue;
-				}
-				
 				// If this share was created by the current user...
 				if (si.getSharerId().equals(userId)) {
 					// ...skip it.  We don't show these.  (Will
@@ -4608,27 +4596,17 @@ public class GwtViewHelper {
 		// Get the List<ShareItem> of the shares of this item the
 		// current user has issued.
 		ShareItemSelectSpec	spec = new ShareItemSelectSpec();
-		
-		EntityIdentifier ei = new EntityIdentifier(fed.getEntityId().getEntityId(), EntityType.folderEntry);
-		spec.setSharedEntityIdentifier(ei);
-		
+		spec.setLatest(true);
+		spec.setSharedEntityIdentifier(new EntityIdentifier(fed.getEntityId().getEntityId(), EntityType.folderEntry));
 		spec.setSharerId(GwtServerHelper.getCurrentUserId());
 
-		// Can we find any shares?
-		List<ShareItem> shareItems = bs.getSharingModule().getShareItems(spec);
+		// Can we find any shares?  (Should we show shares the user
+		// made that have expired?  I think so.  Hence, the false to
+		// not skip them like in the 'Shared by' handler above.)
+		List<ShareItem> shareItems = getCleanShareList(bs.getSharingModule(), spec, false);
 		if (MiscUtil.hasItems(shareItems)) {
 			// Yes!  Scan them.
 			for (ShareItem si:  shareItems) {
-				// If this share is deleted...
-				if (si.isDeleted() || (!(si.isLatest()))) {
-					// ...skip it.  We don't show these.
-					continue;
-				}
-				
-				// Should we show shares the user made that have
-				// expired?  I think so.  Hence, no check here to skip
-				// them like in the 'Shared by' handler above.
-
 				// Is this a public share?
 				boolean isPublic = si.getIsPartOfPublicShare();
 				if (isPublic) {
@@ -6677,8 +6655,9 @@ public class GwtViewHelper {
 			// ...get the List<ShareItem> of those things shared by the
 			// ...user...
 			ShareItemSelectSpec	spec = new ShareItemSelectSpec();
+			spec.setLatest(true);
 			spec.setSharerIds(users);
-			List<ShareItem> shareItems = bs.getSharingModule().getShareItems(spec);
+			List<ShareItem> shareItems = getCleanShareList(bs.getSharingModule(), spec, false);
 	
 			// ...and finally, convert the List<ShareItem> into a
 			// ...List<GwtShareMeItem> and return that.
@@ -6711,8 +6690,9 @@ public class GwtViewHelper {
 			// ...get the List<ShareItem> of those things shared with
 			// ...the user...
 			ShareItemSelectSpec	spec = new ShareItemSelectSpec();
+			spec.setLatest(true);
 			spec.setRecipients(users, groups, teams);
-			List<ShareItem> shareItems = bs.getSharingModule().getShareItems(spec);
+			List<ShareItem> shareItems = getCleanShareList(bs.getSharingModule(), spec, true);
 	
 			// ...and finally, convert the List<ShareItem> into a
 			// ...List<GwtShareMeItem> and return that.
@@ -6917,127 +6897,191 @@ public class GwtViewHelper {
 	 */
 	@SuppressWarnings("unchecked")
 	public static UserPropertiesRpcResponseData getUserProperties(final AllModulesInjected bs, final HttpServletRequest request, final Long userId) throws GwtTeamingException {
+		SimpleProfiler.start("GwtViewHelper.getUserProperties()");
 		try {
-			// Construct a user properties response containing the
-			// user's profile that we can return...
-			final UserPropertiesRpcResponseData reply = new UserPropertiesRpcResponseData(
-				getProfileEntryInfo(
-					bs,
-					request,
-					userId));
+			SimpleProfiler.start("GwtViewHelper.getUserProperties( Get profile information )");
+			final UserPropertiesRpcResponseData reply;
+			try {
+				// Construct a user properties response containing the
+				// user's profile that we can return...
+				reply = new UserPropertiesRpcResponseData(
+					getProfileEntryInfo(
+						bs,
+						request,
+						userId));
+			}
+			finally {
+				SimpleProfiler.stop("GwtViewHelper.getUserProperties( Get profile information )");
+			}
 
-			// ...add information about what the user's account...
-			ProfileModule	pm     = bs.getProfileModule();
-			final User		user   = ((User) pm.getEntry(userId));
-			IdentityInfo	userII = user.getIdentityInfo();
-			AccountInfo		ai     = new AccountInfo();
-			reply.setAccountInfo(ai);
-			ai.setLoginId(user.getName());
-			ai.setFromOpenId(userII.isFromOpenid());
-			ai.setUserType(getUserType(user));
+			SimpleProfiler.start("GwtViewHelper.getUserProperties( Get basic account information )");
+			final User   user;
+			IdentityInfo userII;
+			AccountInfo  ai;
+			try {
+				// ...add information about what the user's account...
+				user   = ((User) bs.getProfileModule().getEntry(userId));
+				userII = user.getIdentityInfo();
+				ai     = new AccountInfo();
+				reply.setAccountInfo(ai);
+				ai.setLoginId(user.getName());
+				ai.setFromOpenId(userII.isFromOpenid());
+				ai.setUserType(getUserType(user));
+			}
+			finally {
+				SimpleProfiler.stop("GwtViewHelper.getUserProperties( Gather basic account information )");
+			}
 
 			// ...if the user's from LDAP...
 			if (userII.isFromLdap()) {
 				// ...add their LDAP DN and eDirectory container, if
 				// ...available...
-				String ldapDN = user.getForeignName();
-				ai.setLdapDN(                            ldapDN );
-				ai.setLdapContainer(getParentContainerDN(ldapDN));
+				SimpleProfiler.start("GwtViewHelper.getUserProperties( Get LDAP information )");
+				try {
+					String ldapDN = user.getForeignName();
+					ai.setLdapDN(                            ldapDN );
+					ai.setLdapContainer(getParentContainerDN(ldapDN));
+				}
+				finally {
+					SimpleProfiler.stop("GwtViewHelper.getUserProperties( Get LDAP information )");
+				}
 			}
 
-			// ...if we can determine the last time the user logged
-			// ...in...
-			Date lastLogin = getLastUserLogin(bs, userId);
-			if (null != lastLogin) {
-				// ...add that to the reply.
-				ai.setLastLogin(GwtServerHelper.getDateTimeString(lastLogin));
+			SimpleProfiler.start("GwtViewHelper.getUserProperties( Get last login )");
+			try {
+				// ...if we can determine the last time the user logged
+				// ...in...
+				Date lastLogin = getLastUserLogin(bs, userId);
+				if (null != lastLogin) {
+					// ...add that to the reply.
+					ai.setLastLogin(GwtServerHelper.getDateTimeString(lastLogin));
+				}
 			}
-			
-			// ...add whether the user has adHoc folder access...
-			boolean hasAdHocFolders = ((!user.isShared()) && user.getIdentityInfo().isInternal() && user.isPerson());
-			boolean perUserAdHoc    = false;
-			if (hasAdHocFolders) {
-				hasAdHocFolders = (!(GwtServerHelper.useHomeAsMyFiles(bs, user)));
-				perUserAdHoc    = (null != user.isAdHocFoldersEnabled());
+			finally {
+				SimpleProfiler.stop("GwtViewHelper.getUserProperties( Get last login )");
 			}
-			ai.setHasAdHocFolders(hasAdHocFolders);
-			ai.setPerUserAdHoc(   perUserAdHoc   );
 
-			// ...add whether the user can download files...
-			boolean canDownload     = user.isPerson();
-			boolean perUserDownload = false;
-			if (canDownload) {
-				canDownload     = AdminHelper.getEffectiveDownloadSetting(bs, user);
-				perUserDownload = (null != user.isDownloadEnabled());
+			SimpleProfiler.start("GwtViewHelper.getUserProperties( Get adHoc setting )");
+			try {
+				// ...add whether the user has adHoc folder access...
+				boolean hasAdHocFolders = ((!user.isShared()) && user.getIdentityInfo().isInternal() && user.isPerson());
+				boolean perUserAdHoc    = false;
+				if (hasAdHocFolders) {
+					hasAdHocFolders = (!(GwtServerHelper.useHomeAsMyFiles(bs, user)));
+					perUserAdHoc    = (null != user.isAdHocFoldersEnabled());
+				}
+				ai.setHasAdHocFolders(hasAdHocFolders);
+				ai.setPerUserAdHoc(   perUserAdHoc   );
 			}
-			ai.setCanDownload(    canDownload    );
-			ai.setPerUserDownload(perUserDownload);
-
-			// ...add whether the user can use web access...
-			boolean hasWebAccess = user.isPerson();
-			boolean perUserWebAccess = false;
-			if (hasWebAccess) {
-				hasWebAccess     = AdminHelper.getEffectiveWebAccessSetting(bs, user);
-				perUserWebAccess = (null != user.isWebAccessEnabled());
+			finally {
+				SimpleProfiler.stop("GwtViewHelper.getUserProperties( Get adHoc setting )");
 			}
-			ai.setHasWebAccess(    hasWebAccess    );
-			ai.setPerUserWebAccess(perUserWebAccess);
 
-			// ...add the user's current workspace sharing rights...
-			List<Long> userIds = new ArrayList<Long>();
-			userIds.add(userId);
-			UserSharingRightsInfoRpcResponseData sharingRights = GwtServerHelper.getUserSharingRightsInfo(bs, request, userIds);
-			reply.setSharingRights(sharingRights.getUserRights(userId));
+			SimpleProfiler.start("GwtViewHelper.getUserProperties( Get download setting )");
+			try {
+				// ...add whether the user can download files...
+				boolean canDownload     = user.isPerson();
+				boolean perUserDownload = false;
+				if (canDownload) {
+					canDownload     = AdminHelper.getEffectiveDownloadSetting(bs, user);
+					perUserDownload = (null != user.isDownloadEnabled());
+				}
+				ai.setCanDownload(    canDownload    );
+				ai.setPerUserDownload(perUserDownload);
+			}
+			finally {
+				SimpleProfiler.stop("GwtViewHelper.getUserProperties( Get download setting )");
+			}
+
+			SimpleProfiler.start("GwtViewHelper.getUserProperties( Get web access setting )");
+			try {
+				// ...add whether the user can use web access...
+				boolean hasWebAccess = user.isPerson();
+				boolean perUserWebAccess = false;
+				if (hasWebAccess) {
+					hasWebAccess     = AdminHelper.getEffectiveWebAccessSetting(bs, user);
+					perUserWebAccess = (null != user.isWebAccessEnabled());
+				}
+				ai.setHasWebAccess(    hasWebAccess    );
+				ai.setPerUserWebAccess(perUserWebAccess);
+			}
+			finally {
+				SimpleProfiler.stop("GwtViewHelper.getUserProperties( Get web access setting )");
+			}
+
+			SimpleProfiler.start("GwtViewHelper.getUserProperties( Get workspace sharing information )");
+			try {
+				// ...add the user's current workspace sharing rights...
+				List<Long> userIds = new ArrayList<Long>();
+				userIds.add(userId);
+				UserSharingRightsInfoRpcResponseData sharingRights = GwtServerHelper.getUserSharingRightsInfo(bs, request, userIds);
+				reply.setSharingRights(sharingRights.getUserRights(userId));
+			}
+			finally {
+				SimpleProfiler.stop("GwtViewHelper.getUserProperties( Get workspace sharing information )");
+			}
 
 			// ...if quotas are enabled...
 			final AdminModule am = bs.getAdminModule();
 			if (am.isQuotaEnabled()) {
-				QuotaInfo qi = new QuotaInfo();
-				if (am.testAccess(AdminOperation.manageFunction)) {
-					// ...add the manage quotas URL if the user has
-					// ...rights to manage them...
-					AdaptedPortletURL url = new AdaptedPortletURL(request, "ss_forum", false);
-					url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MANAGE_QUOTAS);
-					qi.setManageQuotasUrl(url.toString());
-				}
-				
-				long userQuota = user.getDiskQuota();
-				if (0 == userQuota) {
-					userQuota = user.getMaxGroupsQuota();
+				SimpleProfiler.start("GwtViewHelper.getUserProperties( Get quota information )");
+				try {
+					QuotaInfo qi = new QuotaInfo();
+					if (am.testAccess(AdminOperation.manageFunction)) {
+						// ...add the manage quotas URL if the user has
+						// ...rights to manage them...
+						AdaptedPortletURL url = new AdaptedPortletURL(request, "ss_forum", false);
+						url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MANAGE_QUOTAS);
+						qi.setManageQuotasUrl(url.toString());
+					}
+					
+					long userQuota = user.getDiskQuota();
 					if (0 == userQuota) {
-						ZoneConfig zc = getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
-						userQuota = zc.getDiskQuotaUserDefault();
-						if (0 < userQuota) {
-							qi.setZoneQuota(true);	// true -> The user quota came from the default zone assignment.
+						userQuota = user.getMaxGroupsQuota();
+						if (0 == userQuota) {
+							ZoneConfig zc = getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId());
+							userQuota = zc.getDiskQuotaUserDefault();
+							if (0 < userQuota) {
+								qi.setZoneQuota(true);	// true -> The user quota came from the default zone assignment.
+							}
+						}
+						else {
+							qi.setGroupQuota(true);	// true -> The user quota came from a group assignment.
 						}
 					}
-					else {
-						qi.setGroupQuota(true);	// true -> The user quota came from a group assignment.
-					}
+					
+					// ...add information about their quota...
+					qi.setUserQuota(userQuota);
+					reply.setQuotaInfo(qi);
 				}
-				
-				// ...add information about their quota...
-				qi.setUserQuota(userQuota);
-				reply.setQuotaInfo(qi);
+				finally {
+					SimpleProfiler.stop("GwtViewHelper.getUserProperties( Get quota information )");
+				}
 			}
 
-			// ...add a NetFolderInfo...
+			SimpleProfiler.start("GwtViewHelper.getUserProperties( Get manage net folder information )");
 			final NetFoldersInfo nfi = new NetFoldersInfo();
-			reply.setNetFoldersInfo(nfi);
-			if (am.testAccess(AdminOperation.manageFunction)) {
-				// ...including whether the user can manage net
-				// ...folders...
-				try {
-					Binder netFoldersParentBinder = SearchUtils.getNetFoldersRootBinder();
-					nfi.setCanManageNetFolders(
-						(null != netFoldersParentBinder) &&
-						LicenseChecker.isAuthorizedByLicense("com.novell.teaming.module.folder.MirroredFolder") &&
-						bs.getBinderModule().testAccess(netFoldersParentBinder, BinderOperation.modifyBinder));
+			try {
+				// ...add a NetFolderInfo...
+				reply.setNetFoldersInfo(nfi);
+				if (am.testAccess(AdminOperation.manageFunction)) {
+					// ...including whether the user can manage net
+					// ...folders...
+					try {
+						Binder netFoldersParentBinder = SearchUtils.getNetFoldersRootBinder();
+						nfi.setCanManageNetFolders(
+							(null != netFoldersParentBinder) &&
+							LicenseChecker.isAuthorizedByLicense("com.novell.teaming.module.folder.MirroredFolder") &&
+							bs.getBinderModule().testAccess(netFoldersParentBinder, BinderOperation.modifyBinder));
+					}
+					catch (Exception ex) {
+						// Ignore.  If we can't access it, the user can't
+						// manage net folders.
+					}
 				}
-				catch (Exception ex) {
-					// Ignore.  If we can't access it, the user can't
-					// manage net folders.
-				}
+			}
+			finally {
+				SimpleProfiler.stop("GwtViewHelper.getUserProperties( Get manage net folder information )");
 			}
 
 			// ...some of the information required has to be done as
@@ -7046,61 +7090,79 @@ public class GwtViewHelper {
 				new RunasCallback() {
 					@Override
 					public Object doAs() {
-						// ...if the user has a home folder...
-						Long homeId = GwtServerHelper.getHomeFolderId(bs, user);
-						if (null != homeId) {
-							String			rootPath = null;
-							Folder			home     = bs.getFolderModule().getFolder(homeId);
-							ResourceDriver	rd       = home.getResourceDriver();
-							if (null != rd) {
-								String dc = rd.getClass().getName();
-								if (MiscUtil.hasString(dc) && dc.equals("com.novell.teaming.fi.connection.file.FileResourceDriver")) {
-									rootPath = rd.getRootPath();
-								}
-								else {
-									ResourceDriverConfig rdConfig = rd.getConfig();
-									if (null != rdConfig) {
-										rootPath = rdConfig.getRootPath();
+						SimpleProfiler.start("GwtViewHelper.getUserProperties( Get home folder information )");
+						try {
+							// ...if the user has a home folder...
+							Long homeId = GwtServerHelper.getHomeFolderId(bs, user);
+							if (null != homeId) {
+								String			rootPath = null;
+								Folder			home     = bs.getFolderModule().getFolder(homeId);
+								ResourceDriver	rd       = home.getResourceDriver();
+								if (null != rd) {
+									String dc = rd.getClass().getName();
+									if (MiscUtil.hasString(dc) && dc.equals("com.novell.teaming.fi.connection.file.FileResourceDriver")) {
+										rootPath = rd.getRootPath();
+									}
+									else {
+										ResourceDriverConfig rdConfig = rd.getConfig();
+										if (null != rdConfig) {
+											rootPath = rdConfig.getRootPath();
+										}
 									}
 								}
+	
+								// ...add information about the home folder...
+								HomeInfo hi = new HomeInfo();
+								hi.setId(          homeId                );
+								hi.setRelativePath(home.getResourcePath());
+								hi.setRootPath(    rootPath              );
+								reply.setHomeInfo(hi);
 							}
-
-							// ...add information about the home folder...
-							HomeInfo hi = new HomeInfo();
-							hi.setId(          homeId                );
-							hi.setRelativePath(home.getResourcePath());
-							hi.setRootPath(    rootPath              );
-							reply.setHomeInfo(hi);
+						}
+						finally {
+							SimpleProfiler.stop("GwtViewHelper.getUserProperties( Get home folder information )");
 						}
 
-						Map			nfSearch = getCollectionEntries(bs, request, null, null, new HashMap(), CollectionType.NET_FOLDERS, null);
-						List<Map>	nfList   = ((List<Map>) nfSearch.get(ObjectKeys.SEARCH_ENTRIES));
-						if (MiscUtil.hasItems(nfList)) {
-							Long nfBinderId = SearchUtils.getNetFoldersRootBinder().getId();
-							for (Map nfMap:  nfList) {
-								// ...adding an EntryTitleInfo for each
-								// ...to the reply.
-								Long			docId  = Long.parseLong(GwtServerHelper.getStringFromEntryMap(nfMap, Constants.DOCID_FIELD));
-								String			title  = GwtServerHelper.getStringFromEntryMap(nfMap, Constants.TITLE_FIELD);
-								EntryTitleInfo	eti = new EntryTitleInfo();
-								eti.setSeen(true);
-								eti.setTitle(MiscUtil.hasString(title) ? title : ("--" + NLT.get("entry.noTitle") + "--"));
-								eti.setEntityId(new EntityId(nfBinderId, docId, EntityId.FOLDER));
-								String description = getEntryDescriptionFromMap(request, nfMap);
-								if (MiscUtil.hasString(description)) {
-									eti.setDescription(description);
-									String descriptionFormat = GwtServerHelper.getStringFromEntryMap(nfMap, Constants.DESC_FORMAT_FIELD);
-									eti.setDescriptionIsHtml(MiscUtil.hasString(descriptionFormat) && descriptionFormat.equals(String.valueOf(Description.FORMAT_HTML)));
-								}
-								else {
-									description = GwtServerHelper.getStringFromEntryMap(nfMap, Constants.ENTITY_PATH);
-									if (MiscUtil.hasString(description)) {
-										eti.setDescription(      description);
-										eti.setDescriptionIsHtml(false      );
+						SimpleProfiler.start("GwtViewHelper.getUserProperties( Get per net folder information )");
+						try {
+							Map			nfSearch = getCollectionEntries(bs, request, null, null, new HashMap(), CollectionType.NET_FOLDERS, null);
+							List<Map>	nfList   = ((List<Map>) nfSearch.get(ObjectKeys.SEARCH_ENTRIES));
+							if (MiscUtil.hasItems(nfList)) {
+								Long nfBinderId = SearchUtils.getNetFoldersRootBinder().getId();
+								for (Map nfMap:  nfList) {
+									// ...adding an EntryTitleInfo for each
+									// ...to the reply.
+									Long   docId = Long.parseLong(GwtServerHelper.getStringFromEntryMap(nfMap, Constants.DOCID_FIELD));
+									String title = GwtServerHelper.getStringFromEntryMap(nfMap, Constants.TITLE_FIELD);
+									SimpleProfiler.start("GwtViewHelper.getUserProperties( Get per net folder " + title + " information )");
+									try {
+										EntryTitleInfo	eti = new EntryTitleInfo();
+										eti.setSeen(true);
+										eti.setTitle(MiscUtil.hasString(title) ? title : ("--" + NLT.get("entry.noTitle") + "--"));
+										eti.setEntityId(new EntityId(nfBinderId, docId, EntityId.FOLDER));
+										String description = getEntryDescriptionFromMap(request, nfMap);
+										if (MiscUtil.hasString(description)) {
+											eti.setDescription(description);
+											String descriptionFormat = GwtServerHelper.getStringFromEntryMap(nfMap, Constants.DESC_FORMAT_FIELD);
+											eti.setDescriptionIsHtml(MiscUtil.hasString(descriptionFormat) && descriptionFormat.equals(String.valueOf(Description.FORMAT_HTML)));
+										}
+										else {
+											description = GwtServerHelper.getStringFromEntryMap(nfMap, Constants.ENTITY_PATH);
+											if (MiscUtil.hasString(description)) {
+												eti.setDescription(      description);
+												eti.setDescriptionIsHtml(false      );
+											}
+										}
+										nfi.addNetFolder(eti);
+									}
+									finally {
+										SimpleProfiler.stop("GwtViewHelper.getUserProperties( Get per net folder " + title + " information )");
 									}
 								}
-								nfi.addNetFolder(eti);
 							}
+						}
+						finally {
+							SimpleProfiler.stop("GwtViewHelper.getUserProperties( Get per net folder information )");
 						}
 						return null;	// Not used.  Doesn't matter what we return.
 					}
@@ -7122,6 +7184,10 @@ public class GwtViewHelper {
 					m_logger,
 					e,
 					"GwtViewHelper.getUserProperties( SOURCE EXCEPTION ):  ");
+		}
+		
+		finally {
+			SimpleProfiler.stop("GwtViewHelper.getUserProperties()");
 		}
 	}
 
@@ -7817,9 +7883,10 @@ public class GwtViewHelper {
 
 			// Has this entity been shared?
 			ShareItemSelectSpec	spec = new ShareItemSelectSpec();
+			spec.setLatest(true);
 			spec.setSharedEntityIdentifier(GwtShareHelper.getEntityIdentifierFromEntityId(entityId));
 			spec.setAccountForInheritance(true);
-			List<ShareItem> shareItems = bs.getSharingModule().getShareItems(spec);
+			List<ShareItem> shareItems = getCleanShareList(bs.getSharingModule(), spec, true);
 			if (MiscUtil.hasItems(shareItems)) {
 				// Yes!  Scan the shares.
 				List<Long> shareGroupIds = new ArrayList<Long>();

@@ -9,7 +9,7 @@
     <property name="zoneId" access="field" index="notifyStatus_full,notifyStatus_digest"/>
 	<property name="ownerType" length="16"/>
     <property name="owningBinderKey" length="255"/>
-    <property name="owningBinderId"/>
+    <property name="owningBinderId" index="owningBinderId_notifyStatus"/>
 	<property name="lastModified" index="notifyStatus_full,notifyStatus_digest"/>
 	<property name="lastDigestSent" index="notifyStatus_digest"/>
 	<property name="lastFullSent" index="notifyStatus_full"/>

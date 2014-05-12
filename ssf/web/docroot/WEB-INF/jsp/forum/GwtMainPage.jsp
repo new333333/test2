@@ -352,7 +352,7 @@
 				<tr>
 					<td align="right"></td>
 					<td>
-						<div class="gwt-Label loginFailedMsg" style="display: none;" id="loginFailedMsgDiv"></div>
+						<div class="gwt-Label loginFailedMsg" style="display: none; width: 250px;" id="loginFailedMsgDiv"></div>
 					</td>
 				</tr>
 				<tr>
