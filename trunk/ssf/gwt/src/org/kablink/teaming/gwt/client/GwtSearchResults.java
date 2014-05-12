@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -30,7 +30,6 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-
 package org.kablink.teaming.gwt.client;
 
 import java.util.ArrayList;
@@ -41,57 +40,41 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
  * This class is used to hold the results of a search.
+ * 
  * @author jwootton
- *
  */
 public class GwtSearchResults
 	implements IsSerializable, VibeRpcResponseData
 {
-	private int m_countTotal = 0;	// The total number of items found by the search.
-	private ArrayList<GwtTeamingItem> m_results = null;
+	private int							m_countTotal = 0;	// The total number of items found by the search.
+	private long						m_searchSequence;	// The sequence number from the issued search.
+	private ArrayList<GwtTeamingItem>	m_results = null;
 	
 	/**
 	 * 
 	 */
 	public GwtSearchResults()
 	{
+		super();
 	}// end GwtSearchResults()
 	
 	
 	/**
-	 * Return the total number of items found by the search.
-	 */
-	public int getCountTotal()
-	{
-		return m_countTotal;
-	}// end getCountTotal()
-	
-	
-	/**
-	 * Return the list of items found by the search.
-	 */
-	public ArrayList<GwtTeamingItem> getResults()
-	{
-		return m_results;
-	}// end getResults()
-	
-	
-	/**
+	 * Get'er methods.
 	 * 
+	 * @return
 	 */
-	public void setCountTotal( int total )
-	{
-		m_countTotal = total;
-	}// end setCountTotal()
+	public int                       getCountTotal()     {return m_countTotal;    }
+	public long                      getSearchSequence() {return m_searchSequence;}
+	public ArrayList<GwtTeamingItem> getResults()        {return m_results;       }
 	
 	
 	/**
+	 * Set'er methods.
 	 * 
+	 * @param
 	 */
-	public void setResults( ArrayList<GwtTeamingItem> results )
-	{
-		// Save away the results of a search.
-		m_results = results;
-	}// end setResults()
-	
+	public void setCountTotal(     int                       total )          {m_countTotal     = total;         }
+	public void setSearchSequence( long                      searchSequence ) {m_searchSequence = searchSequence;}
+	public void setResults(        ArrayList<GwtTeamingItem> results )        {m_results        = results;       }
 }// end GwtSearchResults
