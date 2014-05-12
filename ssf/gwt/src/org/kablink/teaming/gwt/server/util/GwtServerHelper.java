@@ -88,13 +88,11 @@ import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.document.DateTools;
-
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.Node;
 import org.dom4j.io.OutputFormat;
-
 import org.kablink.teaming.GroupExistsException;
 import org.kablink.teaming.IllegalCharacterInNameException;
 import org.kablink.teaming.ObjectKeys;
@@ -359,6 +357,9 @@ import org.kablink.util.servlet.StringServletResponse;
 @SuppressWarnings("unchecked")
 public class GwtServerHelper {
 	protected static Log m_logger = LogFactory.getLog(GwtServerHelper.class);
+	
+	private static final boolean GROUP_DEBUG_ENABLED = SPropsUtil.getBoolean("groups.debug.enabled", false);
+	private static final String  GROUP_MAGIC_TITLE   = "create.groups.";
 	
 	// The following are used to classify various binders based on
 	// their default view definition.  See getFolderType() and
@@ -1837,118 +1838,87 @@ public class GwtServerHelper {
 	}
 	
 	/**
-	 * Create a group from the given information
-	 * @throws WriteEntryDataException 
-	 * @throws WriteFilesException 
-	 * @throws AccessControlException 
+	 * Create a group from the given information.
+	 * 
+	 * @param bs
+	 * @param name
+	 * @param title
+	 * @param desc
+	 * @param isMembershipDynamic
+	 * @param externalMembersAllowed
+	 * @param membership
+	 * @param membershipCriteria
+	 * 
+	 * @throws GwtTeamingException 
 	 */
-	public static Group createGroup(
-								AllModulesInjected ami,
-								String name,
-								String title,
-								String desc,
-								boolean isMembershipDynamic,
-								boolean externalMembersAllowed,
-								List<GwtTeamingItem> membership,
-								GwtDynamicGroupMembershipCriteria membershipCriteria ) throws GwtTeamingException
-	{
-		MapInputData inputData;
-		HashMap<String, Object> inputMap;
-		HashMap<String, Object> fileMap;
-		Group newGroup = null;
-		String ldapQuery = null;
-		HashSet<Long> membershipIds;
-		SortedSet<Principal> principals;
-
-		// Create an empty file map.
-		fileMap = new HashMap<String, Object>();
+	public static Group createGroup(AllModulesInjected bs, String name, String title, String desc, boolean isMembershipDynamic, boolean externalMembersAllowed, List<GwtTeamingItem> membership, GwtDynamicGroupMembershipCriteria membershipCriteria) throws GwtTeamingException {
+		HashMap<String, Object> inputMap = new HashMap<String, Object>();
+		inputMap.put(ObjectKeys.FIELD_PRINCIPAL_NAME, name);
+		inputMap.put(ObjectKeys.FIELD_ENTITY_TITLE, title);
+		inputMap.put(ObjectKeys.FIELD_ENTITY_DESCRIPTION, desc);
+		inputMap.put(ObjectKeys.FIELD_ENTITY_DESCRIPTION_FORMAT, String.valueOf(Description.FORMAT_NONE));  
+		inputMap.put(ObjectKeys.FIELD_GROUP_DYNAMIC, isMembershipDynamic);
 		
-		membershipIds = new HashSet<Long>();
-		
-		inputMap = new HashMap<String, Object>();
-		inputMap.put( ObjectKeys.FIELD_PRINCIPAL_NAME, name );
-		inputMap.put( ObjectKeys.FIELD_ENTITY_TITLE, title );
-		inputMap.put( ObjectKeys.FIELD_ENTITY_DESCRIPTION, desc );
-		inputMap.put( ObjectKeys.FIELD_ENTITY_DESCRIPTION_FORMAT, String.valueOf( Description.FORMAT_NONE ) );  
-		inputMap.put( ObjectKeys.FIELD_GROUP_DYNAMIC, isMembershipDynamic );
-		
-		// Add identity information
-		{
-			IdentityInfo identityInfo;
-			
-			identityInfo = new IdentityInfo();
-			identityInfo.setFromLocal( true );
-			identityInfo.setInternal( !externalMembersAllowed );
-			inputMap.put( ObjectKeys.FIELD_USER_PRINCIPAL_IDENTITY_INFO, identityInfo );
-		}
+		// Add the identity information.
+		IdentityInfo identityInfo = new IdentityInfo();
+		identityInfo.setFromLocal(true);
+		identityInfo.setInternal(!externalMembersAllowed);
+		inputMap.put(ObjectKeys.FIELD_USER_PRINCIPAL_IDENTITY_INFO, identityInfo);
 	
 		// Is group membership dynamic?
-		if ( isMembershipDynamic == false )
-		{
-			// No
-			// Get a list of all the membership ids
-			if ( membership != null )
-			{
-				for (GwtTeamingItem nextMember : membership)
-				{
-					Long id;
-	
-					id = null;
-					if ( nextMember instanceof GwtUser )
-						id = Long.valueOf( ((GwtUser) nextMember).getUserId() );
-					else if ( nextMember instanceof GwtGroup )
-						id = Long.valueOf( ((GwtGroup) nextMember).getId() );
+		HashSet<Long> membershipIds = new HashSet<Long>();
+		String ldapQuery = null;
+		if (!isMembershipDynamic) {
+			// No!  Get a list of all the membership IDs.
+			if (null != membership) {
+				for (GwtTeamingItem nextMember:  membership) {
+					Long id = null;
+					if (nextMember instanceof GwtUser) {
+						id = Long.valueOf(((GwtUser) nextMember).getUserId());
+					}
+					else if (nextMember instanceof GwtGroup) {
+						id = Long.valueOf(((GwtGroup) nextMember).getId());
+					}
 								
-					if ( id != null )
-						membershipIds.add( id );
+					if (null != id) {
+						membershipIds.add(id);
+					}
 				}
 			}
 		}
 		else
 		{
-			// Yes
-			if ( membershipCriteria != null )
-			{
+			// Yes!
+			if (null != membershipCriteria) {
 				// Execute the ldap query and get the list of members from the results.
 				try
 				{
-					int maxCount;
-					HashSet<Long> potentialMemberIds;
-					
-					potentialMemberIds = ami.getLdapModule().getDynamicGroupMembers(
-																		membershipCriteria.getBaseDn(),
-																		membershipCriteria.getLdapFilterWithoutCRLF(),
-																		membershipCriteria.getSearchSubtree() );
+					HashSet<Long> potentialMemberIds = bs.getLdapModule().getDynamicGroupMembers(
+						membershipCriteria.getBaseDn(),
+						membershipCriteria.getLdapFilterWithoutCRLF(),
+						membershipCriteria.getSearchSubtree());
 
 					// Get the maximum number of users that can be in a group.
-					maxCount = SPropsUtil.getInt( "dynamic.group.membership.limit", 50000 ); 					
+					int maxCount = SPropsUtil.getInt("dynamic.group.membership.limit", 50000); 					
 					
 					// Is the number of potential members greater than the max number of group members?
-					if ( potentialMemberIds.size() > maxCount )
-					{
-						int count;
-
+					if (potentialMemberIds.size() > maxCount) {
 						// Yes, only take the max number of users.
-						count = 0;
-						for (Long userId : potentialMemberIds)
-						{
-							membershipIds.add( userId );
-							++count;
-							
-							if ( count >= maxCount )
-							{
+						int count = 0;
+						for (Long userId:  potentialMemberIds) {
+							membershipIds.add(userId);
+							count += 1;
+							if (count >= maxCount) {
 								break;
 							}
 						}
 					}
-					else
-					{
+					else {
 						// No
 						membershipIds = potentialMemberIds;
 					}
 				}
-				catch (Exception ex)
-				{
+				catch (Exception ex) {
 					// !!! What to do.
 					membershipIds = new HashSet<Long>();
 				}
@@ -1957,61 +1927,101 @@ public class GwtServerHelper {
 			}
 		}
 		
-		principals = ami.getProfileModule().getPrincipals( membershipIds );
-		inputMap.put( ObjectKeys.FIELD_GROUP_PRINCIPAL_MEMBERS, principals );
+		SortedSet<Principal> principals = bs.getProfileModule().getPrincipals(membershipIds);
+		inputMap.put(ObjectKeys.FIELD_GROUP_PRINCIPAL_MEMBERS, principals);
+		inputMap.put(ObjectKeys.FIELD_GROUP_LDAP_QUERY, ldapQuery);
+		MapInputData inputData = new MapInputData(inputMap);
 
-		inputMap.put( ObjectKeys.FIELD_GROUP_LDAP_QUERY, ldapQuery );
-
-		inputData = new MapInputData( inputMap );
-
-		try
-		{
-			// Create the new group
-			newGroup = ami.getProfileModule().addGroup( null, inputData, fileMap, null );
-			
-			// Reindex all the members of this group.
-			if ( principals != null )
-			{
-				Map<Long, Principal> principalsToIndex;
-				
-				// Create a list of the members of the group.
-				principalsToIndex = new HashMap<Long,Principal>();
-				for (Principal principal : principals)
-				{
-					principalsToIndex.put( principal.getId(), principal );
+		HashMap<String, Object> emptyFileMap = new HashMap<String, Object>();
+		Group newGroup = null;
+		try {
+			// Create the new group.  Is this a debug request to create multiple groups?
+			boolean createSingleGroup = true;
+			ProfileModule pm = bs.getProfileModule();
+			if (GROUP_DEBUG_ENABLED && MiscUtil.hasString(title) && title.startsWith(GROUP_MAGIC_TITLE)) {
+				// Yes!  We recognize names of the form:
+				//		create.groups.nnn
+				//			Where nnn is the count of groups to create.
+				//			In this case, we create nnn groups named
+				//			group.1, group.2, ... group.nnn; and
+				//		create.groups.abc.nnn
+				//			Where nnn is the count of groups to create.
+				//			In this case, we create nnn groups named
+				//			abc.group.1, abc.group.2, ... abc.group.nnn.
+				// Is there a name component to it besides the count?
+				String magicInfo = title.substring(GROUP_MAGIC_TITLE.length());
+				int    pPos      = magicInfo.indexOf('.');
+				String countS;
+				String namePart;
+				if (0 > pPos) {
+					// No!  Use the magicInfo as the count.
+					namePart = "";
+					countS   = magicInfo;
+				}
+				else {
+					// Yes, there's a name component!  Parse it...
+					namePart = magicInfo.substring(0, pPos);
+					if (0 < pPos) {
+						namePart += ".";
+					}
+					
+					// ...and the count out from the magicInfo.
+					countS = magicInfo.substring(pPos + 1);
 				}
 				
-				Utils.reIndexPrincipals( ami.getProfileModule(), principalsToIndex );
+				// Are we being asked to create 1 or more groups?
+				int count;
+				try                  {count = Integer.parseInt(countS);}
+				catch (Exception ex) {count = 0;}
+				if (0 < count) {
+					// Yes!  Create them.
+					createSingleGroup = false;
+					m_logger.info("GwtServerHelper.createGroup():  Creating " + count + " groups.");
+					for (int i = 1; i <= count; i += 1) {
+						m_logger.info("...creating group " + i + " of " + count);
+						String titleAndName = (namePart + "group." + i);
+						inputMap.put(ObjectKeys.FIELD_PRINCIPAL_NAME, titleAndName);
+						inputMap.put(ObjectKeys.FIELD_ENTITY_TITLE, titleAndName);
+						newGroup = pm.addGroup(null, inputData, emptyFileMap, null);	// The last group created will be the one we'll return.
+					}
+				}
+			}
+			
+			if (createSingleGroup) {
+				// No, this isn't a debug request to create multiple
+				// groups!  Simply create the single group.
+				newGroup = pm.addGroup(null, inputData, emptyFileMap, null);
+			}
+			
+			// Re-index all the members of this group.
+			if (principals != null) {
+				// Create a list of the members of the group...
+				Map<Long, Principal> principalsToIndex = new HashMap<Long, Principal>();
+				for (Principal principal:  principals) {
+					principalsToIndex.put(principal.getId(), principal);
+				}
+
+				// ...and re-index them.
+				Utils.reIndexPrincipals(pm, principalsToIndex);
 			}
 		}
-		catch( Exception ex)
-		{
-			GwtTeamingException gtEx;
-			
-			gtEx = GwtLogHelper.getGwtClientException();
-			
-			if ( ex instanceof GroupExistsException )
-			{
-				gtEx.setExceptionType( ExceptionType.GROUP_ALREADY_EXISTS );
+		
+		catch(Exception ex) {
+			GwtTeamingException gtEx = GwtLogHelper.getGwtClientException();
+			if (ex instanceof GroupExistsException) {
+				gtEx.setExceptionType(ExceptionType.GROUP_ALREADY_EXISTS);
 			}
-			else if ( ex instanceof UserExistsException )
-			{
-				gtEx.setExceptionType( ExceptionType.USER_ALREADY_EXISTS );
+			else if (ex instanceof UserExistsException) {
+				gtEx.setExceptionType(ExceptionType.USER_ALREADY_EXISTS);
 			}
-			else if ( ex instanceof IllegalCharacterInNameException )
-			{
-				gtEx.setAdditionalDetails( NLT.get( "group.name.illegal.characters" ) );
+			else if (ex instanceof IllegalCharacterInNameException) {
+				gtEx.setAdditionalDetails(NLT.get("group.name.illegal.characters"));
 			}
-			else
-			{
-				String[] args;
-				
-				args = new String[] { ex.toString() };
-				gtEx.setAdditionalDetails( NLT.get( "group.create.unknown.error", args ) );
+			else {
+				String[] args = new String[] {ex.toString()};
+				gtEx.setAdditionalDetails(NLT.get("group.create.unknown.error", args));
 			}
-			
-			GwtLogHelper.error( m_logger, "Error creating group: " + name, ex );
-			
+			GwtLogHelper.error(m_logger, "GwtServerHelper.createGroup():  Error creating group: " + name, ex);
 			throw gtEx;				
 		}
 		
