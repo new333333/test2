@@ -39,6 +39,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 import java.util.SortedSet;
 
@@ -728,11 +729,23 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			GwtSearchResults searchResults;
 			GwtSearchCriteria searchCriteria;
 			
-			searchCriteria = ((ExecuteSearchCmd) cmd).getSearchCriteria();
+			ExecuteSearchCmd esCmd = ((ExecuteSearchCmd) cmd);
+			searchCriteria = esCmd.getSearchCriteria();
+
+			if (ExecuteSearchCmd.DEBUG_SEARCH_SEQUENCE)
+			{ 
+				// This try/catch is used for debug purposes to
+				// randomize how long a search might take.  It invokes
+				// a random delay between 0 and 5 seconds before
+				// performing the search.
+				try {Thread.sleep( new Random().nextInt( 5000 ) );}
+				catch ( Exception e ) {}
+			}
 			
 			try
 			{
 				searchResults = GwtSearchHelper.executeSearch( this, req, searchCriteria );
+				searchResults.setSearchSequence(esCmd.getSearchSequence());
 			}
 			catch (Exception ex)
 			{

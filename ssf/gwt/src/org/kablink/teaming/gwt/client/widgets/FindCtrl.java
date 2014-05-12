@@ -93,6 +93,9 @@ import com.google.gwt.user.client.ui.Widget;
 public class FindCtrl extends Composite
 	implements ClickHandler, Event.NativePreviewHandler, KeyUpHandler, KeyDownHandler
 {
+	private long	m_searchSequence		= 1L;	// Used to track issued searches...
+	private long	m_lastResultsSequence	= 0L;	// ...and responses.
+	
 	/**
 	 * This widget is used to hold an item from a search result.
 	 */
@@ -956,15 +959,32 @@ public class FindCtrl extends Composite
 				gwtSearchResults = (GwtSearchResults)response.getResponseData();
 				
 				m_searchResultsWidget.hideSearchingText();
-
+				
 				if ( gwtSearchResults != null )
 				{
 					// Yes
 					// Show the search-results widget.
 					showSearchResults();
 
-					// Add the search results to the search results widget.
-					m_searchResultsWidget.addSearchResults( m_searchCriteria, gwtSearchResults );
+					// Is this a newer set of search results than the
+					// last ones we processed?
+					long searchSequence = gwtSearchResults.getSearchSequence();
+					if ( searchSequence > m_lastResultsSequence )
+					{
+						// Yes!  We need to process them.
+						m_lastResultsSequence = searchSequence;
+						
+						// Add the search results to the search results widget.
+						m_searchResultsWidget.addSearchResults( m_searchCriteria, gwtSearchResults );
+					}
+					else {
+						// No, we've processed newer results than
+						// these!  Ignore them.
+						if ( ExecuteSearchCmd.DEBUG_SEARCH_SEQUENCE )
+						{ 
+							GwtClientHelper.deferredAlert( "FindCtrl.m_searchResultsCallback:  Ignored out of sequence search results.  Sequence number:  " + searchSequence );
+						}
+					}
 				}
 				
 				m_searchInProgress = false;
@@ -1035,8 +1055,8 @@ public class FindCtrl extends Composite
 			ExecuteSearchCmd cmd;
 			
 			m_searchInProgress = true;
-			
-			cmd = new ExecuteSearchCmd( m_searchCriteria );
+			cmd = new ExecuteSearchCmd( m_searchSequence, m_searchCriteria );
+			m_searchSequence += 1;	// Bump the search sequence number so we can properly sequence the responses.
 			GwtClientHelper.executeCommand( cmd, m_searchResultsCallback );
 		}
 

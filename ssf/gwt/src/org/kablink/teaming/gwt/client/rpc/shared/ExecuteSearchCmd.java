@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -30,26 +30,27 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-
 package org.kablink.teaming.gwt.client.rpc.shared;
 
 import org.kablink.teaming.gwt.client.GwtSearchCriteria;
 
-
 /**
- * This class holds all of the information necessary to execute the "Execute Search" command.
+ * This class holds all of the information necessary to execute the
+ * "Execute Search" command.
  * 
  * @author jwootton
- *
  */
 public class ExecuteSearchCmd extends VibeRpcCmd
 {
-	private GwtSearchCriteria m_searchCriteria;
+	public final static boolean	DEBUG_SEARCH_SEQUENCE	= false;	//! DRF (20140512):  Leave false on checkin.  For debug testing search sequence handling only.
 	
-	/**
-	 * For GWT serialization, must have a zero param contructor
+	private GwtSearchCriteria	m_searchCriteria;
+	private long				m_searchSequence;
+	
+	/*
+	 * For GWT serialization, must have a zero parameter constructor.
 	 */
-	public ExecuteSearchCmd()
+	private ExecuteSearchCmd()
 	{
 		super();
 	}
@@ -57,19 +58,29 @@ public class ExecuteSearchCmd extends VibeRpcCmd
 	/**
 	 * 
 	 */
-	public ExecuteSearchCmd( GwtSearchCriteria searchCriteria )
+	public ExecuteSearchCmd( long searchSequence, GwtSearchCriteria searchCriteria )
 	{
 		this();
-		m_searchCriteria = searchCriteria;
+		
+		setSearchSequence( searchSequence );
+		setSearchCriteria( searchCriteria );
 	}
 	
 	/**
+	 * Get'er methods.
 	 * 
+	 * @return
 	 */
-	public GwtSearchCriteria getSearchCriteria()
-	{
-		return m_searchCriteria;
-	}
+	public GwtSearchCriteria getSearchCriteria() {return m_searchCriteria;}
+	public long              getSearchSequence() {return m_searchSequence;}
+	
+	/**
+	 * Set'er methods.
+	 * 
+	 * @param
+	 */
+	public void setSearchCriteria( GwtSearchCriteria searchCriteria ) {m_searchCriteria = searchCriteria;}
+	public void setSearchSequence( long              searchSequence ) {m_searchSequence = searchSequence;}
 	
 	/**
 	 * Returns the command's enumeration value.
