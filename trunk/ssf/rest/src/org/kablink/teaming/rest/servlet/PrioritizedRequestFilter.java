@@ -37,8 +37,11 @@ import net.sf.json.JSONArray;
 import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
 import org.kablink.teaming.asmodule.bridge.SPropsUtilBridge;
+import org.kablink.teaming.util.SpringContextUtil;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.annotation.Required;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -67,6 +70,7 @@ import java.util.regex.PatternSyntaxException;
 public class PrioritizedRequestFilter implements Filter {
     private PrioritizedRequestManager prioritizedRequestManager;
     private List<PriorityEndpoints> priorityEndpoints;
+    private WebApplicationContext springContext;
 
     public void setEndpointConfig(File endpointConfig) {
         priorityEndpoints = new ArrayList<PriorityEndpoints>();
@@ -92,6 +96,11 @@ public class PrioritizedRequestFilter implements Filter {
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
         ServletContext servletContext = filterConfig.getServletContext();
+        try {
+            springContext = WebApplicationContextUtils.getWebApplicationContext(servletContext);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         String endpointsConfigLocation = servletContext.getInitParameter("endpointsConfigLocation");
         File configPath = new File(servletContext.getRealPath(endpointsConfigLocation));
         this.setEndpointConfig(configPath);
@@ -99,7 +108,7 @@ public class PrioritizedRequestFilter implements Filter {
 
     private synchronized void initRequestManager() {
         if (this.prioritizedRequestManager==null) {
-            this.prioritizedRequestManager = new PrioritizedRequestManager();
+            this.prioritizedRequestManager = (PrioritizedRequestManager)springContext.getBean("prioritizedRequestManager");
             this.prioritizedRequestManager.setMaxRequests("FILE", SPropsUtilBridge.getInt("rest.max.file.transfers", 50));
             this.prioritizedRequestManager.setMaxRequests("EXPENSIVE", Integer.MAX_VALUE);
             this.prioritizedRequestManager.setMaxRequests("INEXPENSIVE", Integer.MAX_VALUE);

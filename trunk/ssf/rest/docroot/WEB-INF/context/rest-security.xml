@@ -30,5 +30,17 @@
         <security:anonymous enabled="false" />
         <security:http-basic entry-point-ref="basicAuthEntryPoint"/>
     </security:http>
-    
+
+    <bean id="prioritizedRequestManager" class="org.kablink.teaming.rest.servlet.PrioritizedRequestManager"/>
+
+    <!-- ================================  JMX/MBean Support =============================== -->
+    <bean id="exporter" class="org.springframework.jmx.export.MBeanExporter">
+        <property name="beans">
+            <map>
+                <entry key="Vibe:type=Manager,name=prioritizedRequestManager">
+                    <ref bean="prioritizedRequestManager"/>
+                </entry>
+            </map>
+        </property>
+    </bean>
 </beans>

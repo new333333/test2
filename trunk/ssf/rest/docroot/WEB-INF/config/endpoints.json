@@ -1,7 +1,7 @@
 [{
     "priority":"FILE",
     "patterns":[{
-        "url":"^/files/.*$",
+        "url":"^/files/[a-zA-Z0-9]*$",
         "methods":["GET","POST"]
     },{
         "url":".*/attachments$",
@@ -10,8 +10,8 @@
         "url":".*/library_files$",
         "methods":["POST"]
     },{
-        "url":"^/v1/file/.*$",
-        "methods":["POST"]
+        "url":"^/v1/file/[a-zA-Z0-9]*$",
+        "methods":["GET","POST"]
     }]
 },{
     "priority":"EXPENSIVE",
