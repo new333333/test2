@@ -589,6 +589,9 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
         SearchResultList<SearchableObject> results = getChildren(id, filter, true, false, false, allowJits, offset,
                 maxCount, nextUrl, nextParams, descriptionFormat, modifiedSince);
         SearchResultList<BinderBrief> binderResults = new SearchResultList<BinderBrief>(offset, results.getLastModified());
+        binderResults.setFirst(results.getFirst());
+        binderResults.setTotal(results.getTotal());
+        binderResults.setNext(results.getNext());
         for (SearchableObject obj : results.getResults()) {
             if (obj instanceof BinderBrief) {
                 binderResults.append((BinderBrief) obj);
