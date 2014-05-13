@@ -156,13 +156,13 @@ public class LinkUriUtil {
         model.addAdditionalLink("access", model.getLink() + "/access");
         model.addAdditionalLink("reservation", model.getLink() + "/reservation");
         model.addAdditionalLink("shares", model.getLink() + "/shares");
-        if (model instanceof FolderEntry) {
-            ((FolderEntry)model).addAdditionalPermaLink("subscribe", PermaLinkUtil.getSubscribePermalink(((FolderEntry) model).getId(), EntityIdentifier.EntityType.folderEntry, null));
-            ((FolderEntry)model).addAdditionalPermaLink("share", PermaLinkUtil.getSharePermalink(((FolderEntry) model).getId(), EntityIdentifier.EntityType.folderEntry, null));
-        } else if (model instanceof FolderEntryBrief) {
-            ((FolderEntryBrief)model).addAdditionalPermaLink("subscribe", PermaLinkUtil.getSubscribePermalink(((FolderEntryBrief) model).getId(), EntityIdentifier.EntityType.folderEntry, null));
-            ((FolderEntryBrief)model).addAdditionalPermaLink("share", PermaLinkUtil.getSharePermalink(((FolderEntryBrief) model).getId(), EntityIdentifier.EntityType.folderEntry, null));
-        }
+//        if (model instanceof FolderEntry) {
+//            ((FolderEntry)model).addAdditionalPermaLink("subscribe", PermaLinkUtil.getSubscribePermalink(((FolderEntry) model).getId(), EntityIdentifier.EntityType.folderEntry, null));
+//            ((FolderEntry)model).addAdditionalPermaLink("share", PermaLinkUtil.getSharePermalink(((FolderEntry) model).getId(), EntityIdentifier.EntityType.folderEntry, null));
+//        } else if (model instanceof FolderEntryBrief) {
+//            ((FolderEntryBrief)model).addAdditionalPermaLink("subscribe", PermaLinkUtil.getSubscribePermalink(((FolderEntryBrief) model).getId(), EntityIdentifier.EntityType.folderEntry, null));
+//            ((FolderEntryBrief)model).addAdditionalPermaLink("share", PermaLinkUtil.getSharePermalink(((FolderEntryBrief) model).getId(), EntityIdentifier.EntityType.folderEntry, null));
+//        }
     }
 
     public static void populateUserLinks(Long id, BaseRestObject model) {
@@ -205,26 +205,26 @@ public class LinkUriUtil {
         populateBinderLinks(model);
         model.addAdditionalLink("child_workspaces", model.getLink() + "/workspaces");
         model.addAdditionalLink("child_folders", model.getLink() + "/folders");
-        if (model instanceof Workspace) {
-            ((Workspace)model).addAdditionalPermaLink("subscribe", PermaLinkUtil.getSubscribePermalink(((Workspace) model).getId(), EntityIdentifier.EntityType.workspace, null));
-            ((Workspace)model).addAdditionalPermaLink("share", PermaLinkUtil.getSharePermalink(((Workspace) model).getId(), EntityIdentifier.EntityType.workspace, null));
-        } else if (model instanceof BinderBrief) {
-            ((BinderBrief)model).addAdditionalPermaLink("subscribe", PermaLinkUtil.getSubscribePermalink(((BinderBrief) model).getId(), EntityIdentifier.EntityType.workspace, null));
-            ((BinderBrief)model).addAdditionalPermaLink("share", PermaLinkUtil.getSharePermalink(((BinderBrief) model).getId(), EntityIdentifier.EntityType.workspace, null));
-        }
+//        if (model instanceof Workspace) {
+//            ((Workspace)model).addAdditionalPermaLink("subscribe", PermaLinkUtil.getSubscribePermalink(((Workspace) model).getId(), EntityIdentifier.EntityType.workspace, null));
+//            ((Workspace)model).addAdditionalPermaLink("share", PermaLinkUtil.getSharePermalink(((Workspace) model).getId(), EntityIdentifier.EntityType.workspace, null));
+//        } else if (model instanceof BinderBrief) {
+//            ((BinderBrief)model).addAdditionalPermaLink("subscribe", PermaLinkUtil.getSubscribePermalink(((BinderBrief) model).getId(), EntityIdentifier.EntityType.workspace, null));
+//            ((BinderBrief)model).addAdditionalPermaLink("share", PermaLinkUtil.getSharePermalink(((BinderBrief) model).getId(), EntityIdentifier.EntityType.workspace, null));
+//        }
     }
 
     public static void populateFolderLinks(BaseRestObject model) {
         populateBinderLinks(model);
         model.addAdditionalLink("child_entries", model.getLink() + "/entries");
         model.addAdditionalLink("child_folders", model.getLink() + "/folders");
-        if (model instanceof Folder) {
-            ((Folder)model).addAdditionalPermaLink("subscribe", PermaLinkUtil.getSubscribePermalink(((Folder) model).getId(), EntityIdentifier.EntityType.folder, null));
-            ((Folder)model).addAdditionalPermaLink("share", PermaLinkUtil.getSharePermalink(((Folder) model).getId(), EntityIdentifier.EntityType.folder, null));
-        } else if (model instanceof BinderBrief) {
-            ((BinderBrief)model).addAdditionalPermaLink("subscribe", PermaLinkUtil.getSubscribePermalink(((BinderBrief) model).getId(), EntityIdentifier.EntityType.folder, null));
-            ((BinderBrief)model).addAdditionalPermaLink("share", PermaLinkUtil.getSharePermalink(((BinderBrief) model).getId(), EntityIdentifier.EntityType.folder, null));
-        }
+//        if (model instanceof Folder) {
+//            ((Folder)model).addAdditionalPermaLink("subscribe", PermaLinkUtil.getSubscribePermalink(((Folder) model).getId(), EntityIdentifier.EntityType.folder, null));
+//            ((Folder)model).addAdditionalPermaLink("share", PermaLinkUtil.getSharePermalink(((Folder) model).getId(), EntityIdentifier.EntityType.folder, null));
+//        } else if (model instanceof BinderBrief) {
+//            ((BinderBrief)model).addAdditionalPermaLink("subscribe", PermaLinkUtil.getSubscribePermalink(((BinderBrief) model).getId(), EntityIdentifier.EntityType.folder, null));
+//            ((BinderBrief)model).addAdditionalPermaLink("share", PermaLinkUtil.getSharePermalink(((BinderBrief) model).getId(), EntityIdentifier.EntityType.folder, null));
+//        }
     }
 
     public static void populateFileLinks(FileProperties fp, Long owningEntityId, EntityIdentifier.EntityType owningEntityType) {

@@ -711,7 +711,7 @@ public class ResourceUtil {
             model.setFamily(DefinitionUtils.getFamily(def));
         }
         model.setIcon(LinkUriUtil.getIconLinkUri(entity.getIconName(), model.getEntityType()));
-        model.setPermaLink(PermaLinkUtil.getPermalink(entity));
+        //model.setPermaLink(PermaLinkUtil.getPermalink(entity));
         if (includeAttachments) {
             Set<Attachment> attachments = entity.getAttachments();
             List<BaseFileProperties> props = new ArrayList<BaseFileProperties>(attachments.size());
