@@ -122,6 +122,7 @@ public class ManageNetFoldersDlg extends DlgBox
     private MultiSelectionModel<NetFolder> m_selectionModel;
 	private AsyncDataProvider<NetFolder> m_dataProvider;
 	private VibeSimplePager m_pager;
+	private int m_totalCount;
 	private QuickFilter m_quickFilter;
 	private PopupMenu m_filterPopupMenu;
 	private VibeMenuItem m_showHomeDirsMenuItem;
@@ -134,6 +135,7 @@ public class ManageNetFoldersDlg extends DlgBox
 	private int m_width;
 	private Timer m_timer;
 	private boolean m_firstTime = true;
+	private Long m_idOfNetFolderToSelect = null;
 	
 	// The following defines the TeamingEvents that are handled by
 	// this class.  See EventHelper.registerEventHandlers() for how
@@ -195,6 +197,25 @@ public class ManageNetFoldersDlg extends DlgBox
 		m_selectionModel.clear();
 		
 		m_dataProvider.updateRowData( startIndex, listOfNetFolders );
+		
+		// Do we have a net folder we should select?
+		if ( m_idOfNetFolderToSelect != null )
+		{
+			// Yes
+			if ( m_listOfNetFolders != null )
+			{
+				for ( NetFolder nextNetFolder : m_listOfNetFolders )
+				{
+					if ( m_idOfNetFolderToSelect.equals( nextNetFolder.getId() ) )
+					{
+						m_selectionModel.setSelected( nextNetFolder, true );
+						break;
+					}
+				}
+			}
+			
+			m_idOfNetFolderToSelect = null;
+		}
 	}
 
 	/**
@@ -788,6 +809,8 @@ public class ManageNetFoldersDlg extends DlgBox
 						@Override
 						public void execute()
 						{
+							int numDeleted = 0;
+
 							if ( response != null &&
 								 response.getResponseData() instanceof DeleteNetFolderRpcResponseData )
 							{
@@ -837,7 +860,10 @@ public class ManageNetFoldersDlg extends DlgBox
 											
 											case SUCCESS:
 												if ( ourNetFolder != null )
+												{
 													m_listOfNetFolders.remove( ourNetFolder );
+													++numDeleted;
+												}
 												
 												break;
 											}
@@ -853,8 +879,39 @@ public class ManageNetFoldersDlg extends DlgBox
 							// Clear all selections.
 							m_selectionModel.clear();
 							
-							// Update the table to reflect the fact that we deleted a net folder.
-							refresh();
+							if ( numDeleted > 0 )
+							{
+								boolean refreshCurrentPage = true;
+								
+								// Do we have any net folders left on this page?
+								if ( m_listOfNetFolders.size() == 0 )
+								{
+									// No
+									// Are we on the last page?
+									if ( m_pager.getPage() == (m_pager.getPageCount()-1) )
+									{
+										// Yes
+										// Are we on the first page?
+										if ( m_pager.getPage() > 0 )
+										{
+											// No, move to the previous page.
+											refreshCurrentPage = false;
+											m_pager.previousPage();
+										}
+									}
+								}
+								
+								if ( refreshCurrentPage )
+								{
+									boolean showHomeDir;
+									int start;
+									
+									// Get a fresh list starting with our current page #.
+									start = m_netFoldersTable.getPageStart();
+									showHomeDir = m_showHomeDirsMenuItem.isChecked();
+									getPageOfNetFoldersFromServer( m_currentFilterStr, showHomeDir, start );
+								}
+							}
 						}
 					};
 					Scheduler.get().scheduleDeferred( cmd );
@@ -932,11 +989,10 @@ public class ManageNetFoldersDlg extends DlgBox
 						if ( responseData != null )
 						{
 							List<NetFolder> listOfNetFolders;
-							int count;
 
-							count = responseData.getTotalCount();
-							m_netFoldersTable.setRowCount( count, true );
-							
+							m_totalCount = responseData.getTotalCount();
+							m_dataProvider.updateRowCount( m_totalCount, true );
+
 							listOfNetFolders = responseData.getListOfNetFolders();
 							addNetFolders( startIndex, listOfNetFolders );
 						}
@@ -1385,15 +1441,6 @@ public class ManageNetFoldersDlg extends DlgBox
 				@Override
 				public void execute()
 				{
-					// Add the net folder as the first item in the list.
-					m_listOfNetFolders.add( 0, netFolder );
-					
-					// Select the newly created folder.
-					m_selectionModel.setSelected( netFolder, true );
-
-					// Update the table to reflect the new folder we just created.
-					refresh();
-					
 					// Ask the user if they want to sync the newly created net folder.
 					if ( Window.confirm( GwtTeaming.getMessages().manageNetFoldersDlg_PromptForSync() ) )
 					{
@@ -1402,6 +1449,43 @@ public class ManageNetFoldersDlg extends DlgBox
 						folders = new HashSet<NetFolder>();
 						folders.add( netFolder );
 						syncNetFolders( folders );
+					}
+
+					// Request the last page of data because that is where the newly created net folder will be
+					{
+						// Remember the id of the net folder we should select after we refresh
+						// the list of net folders.
+						m_idOfNetFolderToSelect = netFolder.getId();
+						
+						++m_totalCount;
+						m_dataProvider.updateRowCount( m_totalCount, true );
+
+						// Are we on the last page?
+						if ( m_pager.getPage() == (m_pager.getPageCount() -1) ) 
+						{
+							boolean showHomeDir;
+							int start;
+							
+							// Yes
+							// Get a fresh list starting with our current page #.
+							start = m_netFoldersTable.getPageStart();
+							
+							// Is our current page full?
+							if ( m_listOfNetFolders.size() == m_pager.getPageSize() )
+							{
+								// Yes, we have a new last page.
+								start += m_pager.getPageSize();
+							}
+							
+							showHomeDir = m_showHomeDirsMenuItem.isChecked();
+							getPageOfNetFoldersFromServer( m_currentFilterStr, showHomeDir, start );
+							m_pager.lastPage();
+						}
+						else
+						{
+							// No, move there.
+							m_pager.lastPage();
+						}
 					}
 				}
 			};
@@ -1477,8 +1561,7 @@ public class ManageNetFoldersDlg extends DlgBox
 	 */
 	private void refresh()
 	{
-		m_dataProvider.updateRowData( 0, m_listOfNetFolders );
-		m_dataProvider.updateRowCount( m_listOfNetFolders.size(), true );
+		m_dataProvider.updateRowData( m_netFoldersTable.getVisibleRange().getStart(), m_listOfNetFolders );
 	}
 
 	/**
