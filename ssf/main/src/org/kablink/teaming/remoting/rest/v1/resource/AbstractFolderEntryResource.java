@@ -32,6 +32,7 @@
  */
 package org.kablink.teaming.remoting.rest.v1.resource;
 
+import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.NoFolderEntryByTheIdException;
 import org.kablink.teaming.domain.NoTagByTheIdException;
@@ -72,10 +73,12 @@ abstract public class AbstractFolderEntryResource  extends AbstractDefinableEnti
 	// Delete folder entry
 	@DELETE
     @Path("{id}")
-	public void deleteFolderEntry(@PathParam("id") long id, @QueryParam("purge") @DefaultValue("false") boolean purge) {
+	public void deleteFolderEntry(@PathParam("id") long id, @QueryParam("purge") @DefaultValue("false") boolean purge) throws WriteFilesException {
         org.kablink.teaming.domain.FolderEntry folderEntry = _getFolderEntry(id);
         if (purge || folderEntry.getParentBinder().isMirrored()) {
-            getFolderModule().deleteEntry(folderEntry.getParentBinder().getId(), id);
+            Map options = new HashMap();
+            options.put(ObjectKeys.INPUT_OPTION_PROPAGATE_ERRORS, true);
+            getFolderModule().deleteEntry(folderEntry.getParentBinder().getId(), id, true, options);
             getCoreDao().clear();
             try {
                 folderEntry = _getFolderEntry(id);
