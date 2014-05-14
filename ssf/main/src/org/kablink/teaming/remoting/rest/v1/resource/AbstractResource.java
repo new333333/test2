@@ -1102,7 +1102,7 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         Long userId = getLoggedInUserId();
         ShareItemSelectSpec spec = getSharedWithSpec(userId);
         spec.deleted = deleted;
-        return getShareItems(spec, userId, true, true, false);
+        return getShareItems(spec, null, true, true, false);
     }
 
     protected Date getSharedByLibraryModifiedDate(Long userId, boolean recursive) {
