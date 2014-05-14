@@ -555,9 +555,10 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
      *
      * @return
      */
+    @SuppressWarnings("unused")
     private boolean _testAddShareEntity(DefinableEntity de, ShareOp [] ops) {
         boolean reply = false;
-        User user = RequestContextHolder.getRequestContext().getUser();
+		User user = RequestContextHolder.getRequestContext().getUser();
 
         try {
             // Is sharing enabled at the zone level for this type of user.
@@ -894,13 +895,16 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 	@Override
 	public void deleteShareItem(Long shareItemId) {
 		// Always use the implementation form of the method.
-		deleteShareItemImpl(shareItemId, true);
+		deleteShareItemImpl(
+			shareItemId,	// ShareItem to delete.
+			true,			// true -> Perform access checking.
+			true);			// true -> Shared entity is valid.
 	}
 	
     /*
      * Implements the deleteShareItem() method.
      */
-	private void deleteShareItemImpl(Long shareItemId, boolean doCheckAccess) {
+	private void deleteShareItemImpl(Long shareItemId, boolean doCheckAccess, final boolean sharedEntityIsValid) {
 		final ShareItem shareItem;
 		try {
 			shareItem = getProfileDao().loadShareItem(shareItemId);
@@ -921,25 +925,31 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 			public Object doInTransaction(TransactionStatus status) {
                 shareItem.setDeletedDate(new Date());
 				getCoreDao().update(shareItem);
-				
-				//Log this share action in the change log
-				addShareItemChangeLogEntry(shareItem, ChangeLog.SHARE_DELETE);
+
+				// If the shared entity is valid...
+				if (sharedEntityIsValid) {
+					// ...log this share action in the change log.
+					addShareItemChangeLogEntry(shareItem, ChangeLog.SHARE_DELETE);
+				}
 				
 				return null;
 			}
 		});
 
-		//Index the entity that is being shared
-		indexSharedEntity(shareItem);
+		// Is the shared entity is valid?
+		if (sharedEntityIsValid) {
+			//Yes!  Index the entity that is being shared
+			indexSharedEntity(shareItem);
 		
-		//See if there are any cached HTML files to be deleted
-		if (shareItem.getRecipientType().equals(ShareItem.RecipientType.publicLink)) {
-			DefinableEntity entity = getSharedEntity(shareItem);
-			Binder binder = entity.getParentBinder();
-			if (entity instanceof Binder) binder = (Binder) entity;
-			Set<FileAttachment> atts = entity.getFileAttachments();
-			for (FileAttachment fa : atts) {
-				getConvertedFileModule().deleteCacheHtmlFile(shareItem, binder, entity, fa);
+			//See if there are any cached HTML files to be deleted
+			if (shareItem.getRecipientType().equals(ShareItem.RecipientType.publicLink)) {
+				DefinableEntity entity = getSharedEntity(shareItem);
+				Binder binder = entity.getParentBinder();
+				if (entity instanceof Binder) binder = (Binder) entity;
+				Set<FileAttachment> atts = entity.getFileAttachments();
+				for (FileAttachment fa : atts) {
+					getConvertedFileModule().deleteCacheHtmlFile(shareItem, binder, entity, fa);
+				}
 			}
 		}
 	}
@@ -1541,7 +1551,10 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
     			Long shareId = share.getId();
 				logger.error("SharingModuleImpl.validateShareItemsImpl():  The " + (isEntry ? "Entry" : "Binder") + " (id=" + id + ") referenced by ShareItem (id:" + shareId + ") is missing.  The ShareItem is being deleted.");
     			shares.remove(i);
-    		    deleteShareItemImpl(shareId, false);
+    		    deleteShareItemImpl(
+    		    	shareId,	// ShareItem to delete.
+    		    	false,		// false -> Don't perform access checking.
+    		    	false);		// false -> Shared entity is invalid.
     		}
 
     		else if (null != sharedEntities) {
