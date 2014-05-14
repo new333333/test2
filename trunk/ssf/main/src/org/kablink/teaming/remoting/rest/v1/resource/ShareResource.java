@@ -641,10 +641,10 @@ public class ShareResource extends AbstractResource {
 
     @GET
     @Path("/public")
-    public SearchResultList<Share> getSharedWithUser() {
+    public SearchResultList<Share> getPublicShares() {
         ShareItemSelectSpec spec = getSharedWithSpec(getLoggedInUserId());
         SearchResultList<Share> results = new SearchResultList<Share>();
-        List<Pair<ShareItem, DefinableEntity>> shareItems = getShareItems(spec, getLoggedInUserId(), false, true, false);
+        List<Pair<ShareItem, DefinableEntity>> shareItems = getShareItems(spec, null, false, true, false);
         for (Pair<ShareItem, DefinableEntity> pair : shareItems) {
             ShareItem shareItem = pair.getA();
             DefinableEntity definableEntity = findDefinableEntity(shareItem.getSharedEntityIdentifier());
