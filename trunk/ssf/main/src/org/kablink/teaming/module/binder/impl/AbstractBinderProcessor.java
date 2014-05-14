@@ -50,7 +50,9 @@ import java.util.SortedSet;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.SortField;
+
 import org.dom4j.Element;
+
 import org.kablink.teaming.ConfigurationException;
 import org.kablink.teaming.IllegalCharacterInNameException;
 import org.kablink.teaming.NoObjectByTheIdException;
@@ -286,11 +288,11 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 	    		}
 	    	}
 	        String title = (String)entryData.get("title");
-	        if (Validator.isNull(title)) {
+	        if (Validator.isEmptyString(title)) {
 	        	title = (String)inputData.getSingleValue("title");
 	        	entryData.put("title", title);
 	        }
-	        if (Validator.isNull(title)) throw new TitleException("");
+	        if (Validator.isEmptyString(title)) throw new TitleException("");
     		if (Validator.containsPathCharacters(title)) throw new IllegalCharacterInNameException("errorcode.title.pathCharacters", new Object[]{title}); 
 	        
 	        binder.setPathName(parent.getPathName() + "/" + title);
