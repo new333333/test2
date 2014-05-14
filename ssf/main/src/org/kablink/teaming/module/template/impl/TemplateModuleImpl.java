@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -39,11 +39,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Collections;
+
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
+
 import org.kablink.teaming.ConfigurationException;
 import org.kablink.teaming.NoObjectByTheIdException;
 import org.kablink.teaming.NotSupportedException;
@@ -104,7 +106,12 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
-
+/**
+ * ?
+ * 
+ * @author ?
+ */
+@SuppressWarnings("unchecked")
 public class TemplateModuleImpl extends CommonDependencyInjection implements
 		TemplateModule {
 	private static final String[] defaultDefAttrs = new String[]{ObjectKeys.FIELD_INTERNALID, ObjectKeys.FIELD_ENTITY_DEFTYPE};
@@ -181,6 +188,7 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 		return (BinderProcessor)getProcessorManager().getProcessor(binder, binder.getProcessorKey(BinderProcessor.PROCESSOR_KEY));
 	}
 
+	@Override
 	public boolean updateDefaultTemplates(Long topId, boolean replace) {
 		Workspace top = (Workspace)getCoreDao().loadBinder(topId, topId);
 		boolean result = true;
@@ -227,6 +235,7 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 		return result;
 	}
     //These should be created when the zone is created, but just incase provide minimum backup
+	@Override
 	public TemplateBinder addDefaultTemplate(int type) {
 	   	//This is called as a side effect to bootstrap
 		Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
@@ -314,7 +323,8 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 		return config;
 	 }
 	//add template
-	 public TemplateBinder addTemplate(Binder localBinderParent, int type, Map updates) {
+	 @Override
+	public TemplateBinder addTemplate(Binder localBinderParent, int type, Map updates) {
 	    checkAccess(TemplateOperation.manageTemplate);
 		TemplateBinder template = new TemplateBinder();
 		String name = (String)updates.get(ObjectKeys.FIELD_BINDER_NAME);
@@ -349,14 +359,16 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 		doAddTemplate(template, type, updates);
 	    return template;
 	 }
-	 public TemplateBinder addTemplate(Binder localBinderParent, InputStream indoc, boolean replace) 
+	 @Override
+	public TemplateBinder addTemplate(Binder localBinderParent, InputStream indoc, boolean replace) 
 	 	throws AccessControlException, DocumentException {
 		 SAXReader xIn = new SAXReader(false);
 		 Document doc = xIn.read(indoc);
 		 return addTemplate(localBinderParent, doc, replace);
 	 }
 		//add top level template
-	 public TemplateBinder addTemplate(Binder localBinderParent, Document doc, boolean replace) {
+	 @Override
+	public TemplateBinder addTemplate(Binder localBinderParent, Document doc, boolean replace) {
 		 if (localBinderParent == null) {
 			 //This is a zone wide template
 			 checkAccess(TemplateOperation.manageTemplate);
@@ -481,7 +493,8 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 	 }
 
 	 //clone a top level template as a child of another template
-	 public TemplateBinder addTemplate(Long parentId, Long srcConfigId) {
+	 @Override
+	public TemplateBinder addTemplate(Long parentId, Long srcConfigId) {
 		 checkAccess(TemplateOperation.manageTemplate);
 	    TemplateBinder parentConfig = (TemplateBinder)getCoreDao().loadBinder(parentId, RequestContextHolder.getRequestContext().getZoneId());
 	    TemplateBinder srcConfig = (TemplateBinder)getCoreDao().loadBinder(srcConfigId, RequestContextHolder.getRequestContext().getZoneId());
@@ -554,7 +567,8 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 			} catch (Exception ex) {};
 		 return false;
 	 }
-	   public TemplateBinder addTemplateFromBinder(Binder localParentBinder, Long binderId) throws AccessControlException, WriteFilesException {
+	   @Override
+	public TemplateBinder addTemplateFromBinder(Binder localParentBinder, Long binderId) throws AccessControlException, WriteFilesException {
 		   checkAccess(TemplateOperation.manageTemplate);
 		   Long zoneId =  RequestContextHolder.getRequestContext().getZoneId();
 		   Binder binder = (Binder)getCoreDao().loadBinder(binderId, zoneId);
@@ -614,6 +628,7 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 			return config;
 			
 	}
+	@Override
 	public void modifyTemplate(Long id, Map updates) {
 		checkAccess(TemplateOperation.manageTemplate);
 		TemplateBinder config = getCoreDao().loadTemplate(id, RequestContextHolder.getRequestContext().getZoneId());
@@ -647,6 +662,7 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 
 		ObjectBuilder.updateObject(config, updates);
 	}
+	@Override
 	public Document getTemplateAsXml(TemplateBinder binder) {
 		Document doc = DocumentHelper.createDocument();
 		Element element = doc.addElement(ObjectKeys.XTAG_ELEMENT_TYPE_TEMPLATE);
@@ -749,37 +765,45 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 		}
 
 	}
+	@Override
 	public TemplateBinder getTemplate(Long id) {
 		//public
 		TemplateBinder binder = getCoreDao().loadTemplate(id, RequestContextHolder.getRequestContext().getZoneId());
 		return Utils.validateTemplateBinder(binder);
 	}
+	@Override
 	public TemplateBinder getTemplateByName(String name) {
 		//public
 		TemplateBinder binder =  getCoreDao().loadTemplateByName(name, RequestContextHolder.getRequestContext().getZoneId());
 		return Utils.validateTemplateBinder(binder);
 	}
+	@Override
 	public List<TemplateBinder> getTemplates() {
 		return getTemplates(Boolean.FALSE);
 	}
+	@Override
 	public List<TemplateBinder> getTemplates(boolean includeHiddenTemplates) {
 		//world read
 		List<TemplateBinder> binders = getCoreDao().loadTemplates(RequestContextHolder.getRequestContext().getZoneId());
 		return Utils.validateTemplateBinders(binders, includeHiddenTemplates);
 	}
+	@Override
 	public List<TemplateBinder> getTemplates(Binder binder) {
 		//world read
 		List<TemplateBinder> binders = getCoreDao().loadTemplates(binder, RequestContextHolder.getRequestContext().getZoneId(), false);
 		return Utils.validateTemplateBinders(binders);
 	}
+	@Override
 	public List<TemplateBinder> getTemplates(int type) {
 		//world read
 		List<TemplateBinder> binders = getCoreDao().loadTemplates( RequestContextHolder.getRequestContext().getZoneId(), type);
 		return Utils.validateTemplateBinders(binders);
 	}
+	@Override
 	public List<TemplateBinder> getTemplates(int type, Binder binder, boolean includeAncestors) {
 		return getTemplates(type, binder, includeAncestors, Boolean.FALSE);
 	}
+	@Override
 	public List<TemplateBinder> getTemplates(int type, Binder binder, boolean includeAncestors, 
 			boolean includeHiddenTemplates) {
 		List<TemplateBinder> binders = getCoreDao().loadTemplates(binder, RequestContextHolder.getRequestContext().getZoneId(), type, includeAncestors);
@@ -787,12 +811,14 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 	}
 	//no transaction - Adding the top binder can lead to optimisitic lock exceptions.
 	//In order to reduce the risk, we try to shorten the transaction time by managing it ourselves
+	@Override
 	public Binder addBinder(final Long configId, final Long parentBinderId, final String title, final String name) 
 			throws AccessControlException {
 		return addBinder(configId, parentBinderId, title, name, null, null);
 	}
 	//no transaction - Adding the top binder can lead to optimisitic lock exceptions.
 	//In order to reduce the risk, we try to shorten the transaction time by managing it ourselves
+	@Override
 	public Binder addBinder(final Long configId, final Long parentBinderId, final String title, final String name, final Map overrideInputData, final Map options) 
 			throws AccessControlException {
 		//The first add is independent of the others.  In this case the transaction is short 
@@ -819,6 +845,7 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 			//it - there shouldn't be any contention here since the binder is new and doesn't need to reference its parent
 			SimpleProfiler.start("TemplateModule.addBinder.trans");
 			getTransactionTemplate().execute(new TransactionCallback() {
+				@Override
 				public Object doInTransaction(TransactionStatus status) {
 			        //need to reload in case addFolder/workspace used retry loop where session cache is flushed by exception
 					SimpleProfiler.start("TemplateModule.addBinder.part2");
@@ -899,8 +926,8 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 	   Map fileItems = new HashMap();
 	   Map entryData = new HashMap();
 	   InputDataAccessor inputData = new MapInputData(entryData);
-	   if (Validator.isNull(title)) title = NLT.getDef(cfg.getTitle());
-	   if (Validator.isNull(title)) title = NLT.getDef(cfg.getTemplateTitle());
+	   if (Validator.isEmptyString(title)) title = NLT.getDef(cfg.getTitle());
+	   if (Validator.isEmptyString(title)) title = NLT.getDef(cfg.getTemplateTitle());
 	   entryData.put(ObjectKeys.FIELD_ENTITY_TITLE, title);
 	   String description=null;
 	   if (cfg.getDescription() != null) description = NLT.getDef(cfg.getDescription().getText());
@@ -957,7 +984,8 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
    	 * Use operation so we can keep the logic out of application
 	 * and easisly change the required rights
 	 */
-   	public boolean testAccess(TemplateOperation operation) {
+   	@Override
+	public boolean testAccess(TemplateOperation operation) {
    		try {
    			checkAccess(operation);
    			return true;
@@ -965,7 +993,8 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
    			return false;
    		}
    	}
-   	public void checkAccess(TemplateOperation operation) {
+   	@Override
+	public void checkAccess(TemplateOperation operation) {
    		switch (operation) {
    		case manageTemplate:
    			getAccessControlManager().checkOperation(getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId()), WorkAreaOperation.ZONE_ADMINISTRATION);
@@ -977,7 +1006,8 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
    	}
    	
    	//Check if this binder can be copied into a template
-   	public boolean checkIfBinderValidForTemplate(Binder binder, String[] errors) {
+   	@Override
+	public boolean checkIfBinderValidForTemplate(Binder binder, String[] errors) {
 		List<Binder>binders = new ArrayList();
 		binders.add(binder);
 		while (!binders.isEmpty()) {
@@ -1027,6 +1057,7 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 		//now that we have registered the sortKey in the parent binder, we use a longer transaction to complete 
 		//it - there shouldn't be any contention here since the binder is new and doesn't need to reference its parent
 		getTransactionTemplate().execute(new TransactionCallback() {
+			@Override
 			public Object doInTransaction(TransactionStatus status) {
 		        //need to reload in case addFolder/workspace used retry loop where session cache is flushed by exception
 		        TemplateBinder cfg = getCoreDao().loadTemplate(templateId, RequestContextHolder.getRequestContext().getZoneId());
@@ -1040,5 +1071,4 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 		
 		return result;
 	}
-	
 }
