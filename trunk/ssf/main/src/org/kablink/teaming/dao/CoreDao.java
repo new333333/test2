@@ -57,6 +57,7 @@ import org.kablink.teaming.domain.LibraryEntry;
 import org.kablink.teaming.domain.NotifyStatus;
 import org.kablink.teaming.domain.OpenIDProvider;
 import org.kablink.teaming.domain.PostingDef;
+import org.kablink.teaming.domain.ShareItem;
 import org.kablink.teaming.domain.SimpleName;
 import org.kablink.teaming.domain.Subscription;
 import org.kablink.teaming.domain.Tag;
@@ -64,6 +65,7 @@ import org.kablink.teaming.domain.TemplateBinder;
 import org.kablink.teaming.domain.UserDashboard;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.ZoneConfig;
+
 import org.springframework.dao.DataAccessException;
 
 /**
@@ -297,4 +299,11 @@ public interface CoreDao {
 	 * @return
 	 */
 	public Map findMobileDevices(final MobileDeviceSelectSpec selectSpec, final Long zoneId);
+	
+	/**
+	 * Purges a ShareItem from the database.
+	 * 
+	 * @param shareItem
+	 */
+	public void purgeShares(ShareItem shareItem);
 }
