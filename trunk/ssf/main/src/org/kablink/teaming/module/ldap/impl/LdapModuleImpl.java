@@ -5676,16 +5676,8 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 								Enumeration members = null;
 								if(att != null) {
 									members = att.getAll();
-								} else {
-									NamingEnumeration<NameClassPair> e = ctx.list( fixedUpGroupName );
-			
-									LinkedList membersList = new LinkedList();
-									while(e.hasMore()) {
-										NameClassPair pair = e.next();
-										membersList.add(pair.getNameInNamespace());
-									}
-									members = Collections.enumeration(membersList);
 								}
+								
 								if(members != null) {
 									groupCoordinator.syncMembership(groupId, members);
 								}
