@@ -49,6 +49,7 @@ import java.util.TreeSet;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.hibernate.Criteria;
 import org.hibernate.FetchMode;
 import org.hibernate.HibernateException;
@@ -67,6 +68,7 @@ import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.engine.SessionFactoryImplementor;
 import org.hibernate.exception.ConstraintViolationException;
+
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.comparator.LongIdComparator;
 import org.kablink.teaming.context.request.RequestContextHolder;
@@ -140,6 +142,7 @@ import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.util.Validator;
 import org.kablink.util.dao.hibernate.DynamicDialect;
+
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.orm.hibernate3.HibernateCallback;
 
@@ -3551,5 +3554,33 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
     	}	              	
 
       	return result;   	
+	}
+	
+	/**
+	 * Purges a ShareItem from the database.
+	 * 
+	 * @param shareItem
+	 */
+	@Override
+	public void purgeShares(final ShareItem shareItem) {
+	   	getHibernateTemplate().execute(
+    	   	new HibernateCallback() {
+    	   		@Override
+				public Object doInHibernate(Session session) throws HibernateException {
+	   				// Delete ShareItem's whose shared entities are
+    	   			// this ShareItem's entity.
+    	   			EntityIdentifier sharedEID = shareItem.getSharedEntityIdentifier();
+    	   			List<Long>       sharedIds = new ArrayList<Long>();
+    	   			sharedIds.add(sharedEID.getEntityId());
+    	   			
+   		   			session.createQuery("Delete org.kablink.teaming.domain.ShareItem where sharedEntity_id in (:pList) and sharedEntity_type=:sharedEntityType")
+   		   				.setParameterList("pList", sharedIds)
+   		   				.setParameter("sharedEntityType", sharedEID.getEntityType().getValue())
+   		   				.executeUpdate();
+   		   			
+					return null;
+				}
+			}
+		);
 	}
  }

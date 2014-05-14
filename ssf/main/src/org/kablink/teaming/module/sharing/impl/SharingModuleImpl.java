@@ -38,6 +38,7 @@ import org.kablink.teaming.InvalidEmailAddressException;
 import org.kablink.teaming.NotSupportedException;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
+import org.kablink.teaming.dao.CoreDao;
 import org.kablink.teaming.dao.util.ShareItemSelectSpec;
 import org.kablink.teaming.domain.*;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
@@ -894,17 +895,6 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
     //NO transaction
 	@Override
 	public void deleteShareItem(Long shareItemId) {
-		// Always use the implementation form of the method.
-		deleteShareItemImpl(
-			shareItemId,	// ShareItem to delete.
-			true,			// true -> Perform access checking.
-			true);			// true -> Shared entity is valid.
-	}
-	
-    /*
-     * Implements the deleteShareItem() method.
-     */
-	private void deleteShareItemImpl(Long shareItemId, boolean doCheckAccess, final boolean sharedEntityIsValid) {
 		final ShareItem shareItem;
 		try {
 			shareItem = getProfileDao().loadShareItem(shareItemId);
@@ -914,10 +904,8 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
 			return;
 		}
 
-		if (doCheckAccess) {
-			// Access check (throws error if not allowed)
-			checkAccess(shareItem, SharingOperation.deleteShareItem);
-		}
+		//Access check (throws error if not allowed)
+		checkAccess(shareItem, SharingOperation.deleteShareItem);
 		
 		//Now delete the shareItem
 		getTransactionTemplate().execute(new TransactionCallback<Object>() {
@@ -926,30 +914,24 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
                 shareItem.setDeletedDate(new Date());
 				getCoreDao().update(shareItem);
 
-				// If the shared entity is valid...
-				if (sharedEntityIsValid) {
-					// ...log this share action in the change log.
-					addShareItemChangeLogEntry(shareItem, ChangeLog.SHARE_DELETE);
-				}
+				//Log this share action in the change log
+				addShareItemChangeLogEntry(shareItem, ChangeLog.SHARE_DELETE);
 				
 				return null;
 			}
 		});
 
-		// Is the shared entity is valid?
-		if (sharedEntityIsValid) {
-			//Yes!  Index the entity that is being shared
-			indexSharedEntity(shareItem);
-		
-			//See if there are any cached HTML files to be deleted
-			if (shareItem.getRecipientType().equals(ShareItem.RecipientType.publicLink)) {
-				DefinableEntity entity = getSharedEntity(shareItem);
-				Binder binder = entity.getParentBinder();
-				if (entity instanceof Binder) binder = (Binder) entity;
-				Set<FileAttachment> atts = entity.getFileAttachments();
-				for (FileAttachment fa : atts) {
-					getConvertedFileModule().deleteCacheHtmlFile(shareItem, binder, entity, fa);
-				}
+		//Index the entity that is being shared
+		indexSharedEntity(shareItem);
+	
+		//See if there are any cached HTML files to be deleted
+		if (shareItem.getRecipientType().equals(ShareItem.RecipientType.publicLink)) {
+			DefinableEntity entity = getSharedEntity(shareItem);
+			Binder binder = entity.getParentBinder();
+			if (entity instanceof Binder) binder = (Binder) entity;
+			Set<FileAttachment> atts = entity.getFileAttachments();
+			for (FileAttachment fa : atts) {
+				getConvertedFileModule().deleteCacheHtmlFile(shareItem, binder, entity, fa);
 			}
 		}
 	}
@@ -1534,27 +1516,24 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
     	}
 
     	// Scan the shares again.
+    	CoreDao cd = getCoreDao();
     	User user = RequestContextHolder.getRequestContext().getUser();
     	for (int i = (c - 1); i >= 0; i -= 1) {
     		// Were we able to find this share's DefinableEntity?
     		ShareItem        share = shares.get(i);
     		EntityIdentifier eid   = share.getSharedEntityIdentifier();
+    		EntityType       eit   = eid.getEntityType();
     		Long             id    = eid.getEntityId();
     		DefinableEntity  de;
-    		boolean          isEntry = eid.getEntityType().equals(EntityType.folderEntry);
-    		if (isEntry)
+    		if (eit.equals(EntityType.folderEntry))
     		     de = findEntryById( entrySet,  id);
     		else de = findBinderById(binderSet, id);
     		if (null == de) {
     			// No!  Then we consider it invalid.  Remove it from
     			// the share list and database.
-    			Long shareId = share.getId();
-				logger.error("SharingModuleImpl.validateShareItemsImpl():  The " + (isEntry ? "Entry" : "Binder") + " (id=" + id + ") referenced by ShareItem (id:" + shareId + ") is missing.  The ShareItem is being deleted.");
+				logger.error("SharingModuleImpl.validateShareItemsImpl():  The " + eit.name() + " (id:" + id + ") referenced by ShareItem (id:" + share.getId() + ") is missing.  The ShareItem is being deleted.");
     			shares.remove(i);
-    		    deleteShareItemImpl(
-    		    	shareId,	// ShareItem to delete.
-    		    	false,		// false -> Don't perform access checking.
-    		    	false);		// false -> Shared entity is invalid.
+    			cd.purgeShares(share);
     		}
 
     		else if (null != sharedEntities) {
