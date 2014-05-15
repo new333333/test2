@@ -74,15 +74,12 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.document.DateTools;
+
 import org.dom4j.Attribute;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
-import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.portlet.bind.PortletRequestBindingException;
-import org.springframework.web.portlet.ModelAndView;
+
 import org.kablink.teaming.NoObjectByTheIdException;
 import org.kablink.teaming.NotSupportedException;
 import org.kablink.teaming.ObjectKeys;
@@ -155,7 +152,6 @@ import org.kablink.teaming.util.SimpleMultipartFile;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.util.XmlFileUtil;
-import org.kablink.util.search.Restrictions;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.tree.DomTreeBuilder;
@@ -169,6 +165,13 @@ import org.kablink.util.BrowserSniffer;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
 import org.kablink.util.search.Criteria;
+import org.kablink.util.search.Restrictions;
+
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.portlet.bind.PortletRequestBindingException;
+import org.springframework.web.portlet.ModelAndView;
 
 /**
  * ?
@@ -3273,7 +3276,7 @@ public class BinderHelper {
 							emailAddress.add(bccEmailAddress.trim());
 						}
 					}
-					bs.getAdminModule().sendMail(entry, recipients, emailAddress, null, null, null, subject, 
+					bs.getAdminModule().sendMail(entry, recipients, null, emailAddress, null, null, subject, 
 							new Description(body, Description.FORMAT_HTML), incAtt);
 				} catch (Exception e) {
 					logger.debug("BinderHelper.sendMailOnCreate(Exception:  '" + MiscUtil.exToString(e) + "'):  Ignored");
@@ -5570,7 +5573,7 @@ public class BinderHelper {
  	   }
  	   else {
  		   if (destination.isMirrored()) {
- 			   //If the source is not mirroerd and the destination is mirrored, then check that the entry has one and only one file
+ 			   //If the source is not mirrored and the destination is mirrored, then check that the entry has one and only one file
  			   Set<Attachment> atts = entry.getAttachments();
  			   if (atts.size() == 1 || (!entry.isTop() && atts.size() == 0)) {
  				   //This is either the top entry with one attached file or a reply with no attached files
