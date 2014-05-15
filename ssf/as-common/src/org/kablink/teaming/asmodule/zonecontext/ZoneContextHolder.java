@@ -32,6 +32,9 @@
  */
 package org.kablink.teaming.asmodule.zonecontext;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class ZoneContextHolder {
 	
     private static final ThreadLocal<String> SERVER_NAME = new ThreadLocal<String>();
@@ -40,6 +43,9 @@ public class ZoneContextHolder {
     private static final ThreadLocal<String> CLIENT_ADDR = new ThreadLocal<String>();
     private static final ThreadLocal<String> WEBAPP_NAME = new ThreadLocal<String>();
     private static final ThreadLocal<Boolean> USE_RUNTIME_CONTEXT = new ThreadLocal<Boolean>();
+    // Used by application to set arbitrary properties. The properties can be set any time during the life cycle
+    // of the request, and cleared at the very end of the request.
+    private static final ThreadLocal<Map<Object,Object>> PROPERTIES = new ThreadLocal<Map<Object,Object>>();
 
     public static void setServerName(String serverName) {
     	SERVER_NAME.set(serverName.toLowerCase());
@@ -89,6 +95,23 @@ public class ZoneContextHolder {
     	return USE_RUNTIME_CONTEXT.get();
     }
     
+    public static Object getProperty(Object key) {
+    	Map<Object,Object> properties = PROPERTIES.get();
+    	if(properties == null)
+    		return null;
+    	else
+    		return properties.get(key);
+    }
+    
+    public static void setProperty(Object key, Object value) {
+    	Map<Object,Object> properties = PROPERTIES.get();
+    	if(properties == null) {
+    		properties = new HashMap<Object,Object>();
+    		PROPERTIES.set(properties);
+    	}
+    	properties.put(key, value);
+    }
+    
     public static void clear() {
     	SERVER_NAME.set(null);
     	SERVER_PORT.set(null);
@@ -96,5 +119,8 @@ public class ZoneContextHolder {
     	CLIENT_ADDR.set(null);
     	WEBAPP_NAME.set(null);
     	USE_RUNTIME_CONTEXT.set(null);
+    	Map<Object,Object> properties = PROPERTIES.get();
+    	if(properties != null)
+    		properties.clear();
     }
 }

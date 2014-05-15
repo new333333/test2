@@ -35,6 +35,7 @@ package org.kablink.teaming.asmodule.spring.security.config;
 import java.util.List;
 
 import org.kablink.teaming.asmodule.security.authentication.AuthenticationContextHolder;
+import org.kablink.teaming.asmodule.zonecontext.ZoneContextHolder;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.core.Authentication;
@@ -61,11 +62,16 @@ public class TeamingAuthenticationManager extends ProviderManager {
 	@Override
 	public Authentication authenticate(Authentication authentication) throws AuthenticationException {
 		AuthenticationContextHolder.setAuthenticationContext(authenticator, enableKey);
+		// Additionally, store the authenticator information in the zone context holder so that the
+		// information be available to application during the entire life cycle of the request, not 
+		// just during authentication phase.
+		ZoneContextHolder.setProperty("authenticator", authenticator);
 		try {
 			return super.authenticate(authentication);
 		}
 		finally {
 			AuthenticationContextHolder.clear();
+			// Do not clear zone context holder. It will be cleared by another component.
 		}
     }
     

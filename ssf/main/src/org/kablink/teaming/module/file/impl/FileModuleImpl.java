@@ -71,6 +71,8 @@ import org.kablink.teaming.InternalException;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.UncheckedIOException;
 import org.kablink.teaming.UserQuotaException;
+import org.kablink.teaming.asmodule.security.authentication.AuthenticationContextHolder;
+import org.kablink.teaming.asmodule.zonecontext.ZoneContextHolder;
 import org.kablink.teaming.context.request.RequestContext;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.util.FilterControls;
@@ -90,6 +92,7 @@ import org.kablink.teaming.domain.FileItem;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.HistoryStamp;
+import org.kablink.teaming.domain.LoginInfo;
 import org.kablink.teaming.domain.NoUserByTheIdException;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.Reservable;
@@ -3162,14 +3165,34 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		User user = RequestContextHolder.getRequestContext().getUser();
 
 		FileLock lock = fa.getFileLock();
-		if(lock != null && !lock.getOwner().equals(user)) {
-			if (ObjectKeys.FILE_SYNC_AGENT_INTERNALID.equals(user.getInternalId())) {
-				// The modification is being made by file syng agent. In this case, we ignore
-				// the lock held by end user, and let the sync to proceed.
+		if(lock != null) {
+			if(lock.getOwner().equals(user)) {
+				if(LoginInfo.AUTHENTICATOR_WEBDAV.equals(ZoneContextHolder.getProperty("authenticator"))) { // WebDAV client
+					// Most WebDAV clients (at least those important to us) use locking mechanism, and do not attempt to
+					// "put" file content unless the lock they pass in during "put" request matches the lock they 
+					// previously issued. Unfortunately, this lock information is not passed to application layer by
+					// the "milton" library. However, the fact that it is a WebDAV client making the request is nearly
+					// enough to ensure that proper lock comparison has already been made. So, in this case, we can
+					// safely allow the user request to proceed.
+				}
+				else {
+					// It is a non-WebDAV client attempting to modify the file. Since the file is currently locked by
+					// another WebDAV client, it is desirable to deny the request even though the request is made by the
+					// same user to avoid one client overwriting another client's changes. 
+					// (See bug #875430)
+					// Since we don't have a LockedBySameUserException, simply re-use LockedByAnotherUserException class.
+					throw new LockedByAnotherUserException(entity, fa, lock.getOwner());
+				}
 			}
 			else {
-				// The file is locked by regular user.
-				throw new LockedByAnotherUserException(entity, fa, lock.getOwner());
+				if (ObjectKeys.FILE_SYNC_AGENT_INTERNALID.equals(user.getInternalId())) {
+					// The modification is being made by file syng agent. In this case, we ignore
+					// the lock held by end user, and let the sync to proceed.
+				}
+				else {
+					// The file is locked by regular user.
+					throw new LockedByAnotherUserException(entity, fa, lock.getOwner());
+				}
 			}
 		}
     }
