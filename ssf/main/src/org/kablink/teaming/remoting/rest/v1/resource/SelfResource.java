@@ -185,7 +185,7 @@ public class SelfResource extends AbstractFileResource {
             user.setMobileDevices(devices);
         }
 
-        if (includeGroups) {
+        if (includeGroups && entry.getIdentityInfo().isInternal()) {
             List<Group> groups = getProfileModule().getUserGroups(getLoggedInUserId());
             List<LongIdLinkPair> ids = new ArrayList<LongIdLinkPair>(groups.size());
             for (Group group : groups) {
