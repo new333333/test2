@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -47,9 +47,11 @@ import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
 import org.dom4j.Element;
+
 import org.joda.time.DateMidnight;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
+
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.calendar.AbstractIntervalView;
 import org.kablink.teaming.calendar.EventsViewHelper;
@@ -78,10 +80,13 @@ import org.kablink.util.search.Criteria;
 
 import static org.kablink.util.search.Constants.*;
 
-
-@SuppressWarnings("unchecked")
+/**
+ * ?
+ * 
+ * @author ?
+ */
+@SuppressWarnings({"unchecked", "deprecation"})
 public class RelevanceDashboardHelper {
-	
 	public static void setupRelevanceDashboardBeans(AllModulesInjected bs, RenderRequest request, 
 			RenderResponse response, Long binderId, String type, Map model) {
 		model.put("ssRDCurrentTab", type);
@@ -98,6 +103,12 @@ public class RelevanceDashboardHelper {
 		if (binderId != null) {
 			UserProperties userForumProperties = bs.getProfileModule().getUserProperties(user.getId(), binderId);
 			String relevanceTab = (String)userForumProperties.getProperty(ObjectKeys.USER_PROPERTY_RELEVANCE_TAB);
+			if ((null != relevanceTab) && relevanceTab.equalsIgnoreCase(ObjectKeys.RELEVANCE_DASHBOARD_MINIBLOGS)) {
+				// Bug 876024:  Got rid of the 'Mini-Blogs and Shared
+				// Items' tab in Vibe Hudson since it was showing the
+				// new shares.
+				relevanceTab = null;	// Forces default below.
+			}
 			if (!(MiscUtil.hasString(relevanceTab))) {
 				if (Utils.checkIfFilr()) {
 					relevanceTab = ObjectKeys.RELEVANCE_DASHBOARD_FILESPACES;  //not implemented
@@ -838,5 +849,4 @@ public class RelevanceDashboardHelper {
 	private static CoreDao getCoreDao() {
 		return (CoreDao) SpringContextUtil.getBean("coreDao");
 	}
-
 }
