@@ -1159,6 +1159,10 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
 			if (!shareItemIds.isEmpty()) {
 				//Move the share items over to the new entry
 				getProfileDao().changeSharedEntityId(shareItemIds, newEntry);
+				//After changing the shareItems, we must re-index to get the new share ACLs correct
+				Set<Entry> entriesToIndex = newEntry.getChildWorkAreas();
+				entriesToIndex.add(newEntry);
+				processor.indexEntries(entriesToIndex);
 			}
 			try {
 				processor.deleteEntry(folder, entry, true, options);
