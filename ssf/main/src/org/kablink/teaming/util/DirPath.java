@@ -57,6 +57,9 @@ public class DirPath {
 	public static String getWebinfClassesDirPath() {
 		return getWebinfDirPath() + File.separator + "classes";
 	}
+	public static String getWebinfTmpDirPath() {
+		return getWebinfDirPath() + File.separator + "tmp";
+	}
 	public static String getDTDDirPath() {
 		return getWebinfClassesDirPath() + File.separator + "dtd";
 	}
