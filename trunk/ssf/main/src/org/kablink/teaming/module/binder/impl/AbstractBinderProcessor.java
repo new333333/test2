@@ -32,7 +32,11 @@
  */
 package org.kablink.teaming.module.binder.impl;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
@@ -125,9 +129,12 @@ import org.kablink.teaming.search.SearchObject;
 import org.kablink.teaming.search.filter.SearchFilter;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.security.function.WorkAreaFunctionMembership;
+import org.kablink.teaming.util.DirPath;
+import org.kablink.teaming.util.FileHelper;
 import org.kablink.teaming.util.FileUploadItem;
 import org.kablink.teaming.util.LongIdUtil;
 import org.kablink.teaming.util.NLT;
+import org.kablink.teaming.util.NetworkUtil;
 import org.kablink.teaming.util.ReflectHelper;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SimpleProfiler;
@@ -2164,18 +2171,41 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 		params.put("deleted", false);
    		List<Long> ids = getCoreDao().loadObjects("select x.id from org.kablink.teaming.domain.Binder x where x.binderKey.sortKey like '" +
 				binder.getBinderKey().getSortKey() + "%' and x.deleted=:deleted order by x.binderKey.sortKey", params);
+   		if(logger.isDebugEnabled())
+   	   		logger.debug("Identified " + ids.size() + " binders to index: " + ids.toString());
+   		else
+   			logger.info("Identified " + ids.size() + " binders to index");
 		int inClauseLimit=SPropsUtil.getInt("db.clause.limit", 1000);
 		if (exclusions != null) ids.removeAll(exclusions);
 		int bindersIndexed = 0;
+		Long lastProcessedBinderId = null;
 		params.clear();
+		
+		boolean supportsReindexingContinuation = SPropsUtil.getBoolean("supports.reindexing.continuation", false);
+		if(supportsReindexingContinuation) {
+			// This is not an officially supported option. Nevertheless we have it as a last resort tool primarily to aid our support colleagues.
+			Long lastCheckpointBinderId = readLastCheckpointBinderIdForReindexing();
+			if(lastCheckpointBinderId != null) {
+				// This means that last reindexing didn't complete. Skip over past the last checkpoint binder id.
+				for(int i = 0; i < ids.size(); i++) {
+					if(lastCheckpointBinderId.equals(ids.get(i))) {
+						ids = ids.subList(i+1, ids.size());
+						break;
+					}
+				}
+				logger.info("Continuing past last checkpoint binder ID of " + lastCheckpointBinderId + ": After adjustment there are " + ids.size() + " remaining binders to index");
+			}
+		}
+		
 		for (int i=0; i<ids.size(); i+=inClauseLimit) {
-			List subList = ids.subList(i, Math.min(ids.size(), i+inClauseLimit));
+			List<Long> subList = ids.subList(i, Math.min(ids.size(), i+inClauseLimit));
 			params.put("pList", subList);
 			if(logger.isDebugEnabled())
-				logger.debug("Loading " + subList.size() + " binder objects");
+				logger.debug("Loading " + subList.size() + " binder objects. The ID of the first binder in this batch is " + subList.get(0));
 			List<Binder> binders = getCoreDao().loadObjects("from org.kablink.teaming.domain.Binder x where x.id in (:pList) order by x.binderKey.sortKey", params);
 			if(logger.isDebugEnabled())
 				logger.debug("Bulk loading collections for " + binders.size() + " binders");
+			// Bulk load associated collections for better performance
 			getCoreDao().bulkLoadCollections(binders);
 			List<EntityIdentifier> folderIds = new ArrayList();
 			List<EntityIdentifier> workspaceIds = new ArrayList();
@@ -2205,26 +2235,45 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 	   	    	statusTicket.setStatus(NLT.get("index.indexingBinder", new Object[] {String.valueOf(bindersIndexed), String.valueOf(ids.size())}));
 	   	   		
 				if(logger.isDebugEnabled())
-					logger.debug("Indexing binder [" + b.getPathName() + "]");
+					logger.debug("(" + (bindersIndexed+1) + ") Indexing binder [" + b.getPathName() + "] (id=" + b.getId() + ")");
 	   	    	IndexErrors binderErrors = processor.indexBinder(b, true, false, tags);
 	   	    	errors.add(binderErrors);
 	   	    	
-				if(logger.isDebugEnabled())
-					logger.debug("Evicting tags and binder");
+				if(logger.isTraceEnabled())
+					logger.trace("Evicting tags and binder");
+				
 	   	    	getCoreDao().evict(tags);
 	   	    	getCoreDao().evict(b);
 	   	    	bindersIndexed++;
+	   	    	lastProcessedBinderId = b.getId();
 			}
-   	    	statusTicket.setStatus(NLT.get("index.finished") + "<br/><br/>" + NLT.get("index.indexingBinder", new Object[] {String.valueOf(bindersIndexed), String.valueOf(ids.size())}));
-   	    	statusTicket.setState(WebKeys.AJAX_STATUS_STATE_COMPLETED);
+						
+			logger.info("Processed " + bindersIndexed + " binders so far. The ID of the last processed binder is " + lastProcessedBinderId);
+			
+			if(logger.isDebugEnabled())
+				logger.debug("Writing checkpoint binder ID of " + lastProcessedBinderId);
+			writeLastCheckpointBinderIdForReindexing(lastProcessedBinderId);
+			
+			// Periodically (i.e., after processing each batch) clear the entire session to avoid OutOfMemory error
+			// caused by objects kept accumulating in the Hibernate session. It appears that evicting tags and binders
+			// aren't enough for long running reindexing task.
+			getCoreDao().clear();
+			
 			if(logger.isDebugEnabled())
 				logger.debug("Applying changes to index");
 	  		IndexSynchronizationManager.applyChanges(SPropsUtil.getInt("lucene.flush.threshold", 100));
 		}
+		
+    	statusTicket.setStatus(NLT.get("index.finished") + "<br/><br/>" + NLT.get("index.indexingBinder", new Object[] {String.valueOf(bindersIndexed), String.valueOf(ids.size())}));
+    	statusTicket.setState(WebKeys.AJAX_STATUS_STATE_COMPLETED);
+    	
+    	// Now that the entire processing completed successfully, there's no need for checkpoint. Remove it.
+    	removeLastCheckpointForReindexing();
+    	
 		if(logger.isDebugEnabled())
-			logger.debug("Processed " + ids.size() + " binders");
+			logger.debug("Processed all " + ids.size() + " binders");
+		
    		return ids;
-
    	}
 
    	private IndexErrors loadIndexTreeIncremental(Binder binder, boolean includeEntries, boolean skipFileContentIndexing) {
@@ -3082,4 +3131,46 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 			indexBinder(parentBinder, false);
 		}
 	}
+    
+    private Long readLastCheckpointBinderIdForReindexing() {
+    	try {
+	    	File file = getLastCheckpointFile();
+	    	if(!file.exists()) 
+	    		return null;
+	    	String str = FileHelper.readFile(file.getPath(), Charset.forName("UTF-8"));
+	    	if(Validator.isNull(str))
+	    		return null;
+	    	return Long.valueOf(str);
+    	}
+    	catch(Exception e) {
+    		return null;
+    	}
+    }
+    
+    private void writeLastCheckpointBinderIdForReindexing(Long binderId) {
+    	File file = getLastCheckpointFile();
+    	try (PrintWriter out = new PrintWriter(file)) {
+    		out.print(binderId.toString());
+    	} catch (Exception e) {
+    		logger.warn("Failed to write last checkpoint binder ID of " + binderId, e);
+    	}
+    }
+    
+    private void removeLastCheckpointForReindexing() {
+    	try {
+	    	File file = getLastCheckpointFile();
+	    	if(!file.exists())
+	    		return;
+	    	FileHelper.delete(file);
+    	}
+    	catch(Exception e) {
+    		logger.warn("Failed to remove last checkpoint", e);
+    	}
+    }
+    
+    private File getLastCheckpointFile() {
+    	String filePath = DirPath.getWebinfTmpDirPath() + File.separator + "reindexing_" + NetworkUtil.getLocalHostIPv4Address() + "_" + RequestContextHolder.getRequestContext().getZoneId();
+    	return new File(filePath);
+    }
+
 }
