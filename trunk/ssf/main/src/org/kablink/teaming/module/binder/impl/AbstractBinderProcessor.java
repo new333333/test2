@@ -2181,6 +2181,15 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 		Long lastProcessedBinderId = null;
 		params.clear();
 		
+		/*
+		 * In order to use this hidden setting/capability, the following conditions must be met.
+		 * 1) Reindexing continuation is node-specific capability. It is managed on a per node basis.
+		 *    Therefore, all subsequent reindexing attempts after initial crash must execute on the same Filr Appliance.
+		 * 2) Reindexing continuation can be used only in conjunction with site wide reindexing.
+		 *    It should not be used for partial reindexing.
+		 * 3) The system will not automatically pick up incomplete reindexing work after restart and continue.
+		 *    Instead, site wide reindexing must be kicked off again from the admin console.
+		 */
 		boolean supportsReindexingContinuation = SPropsUtil.getBoolean("supports.reindexing.continuation", false);
 		if(supportsReindexingContinuation) {
 			// This is not an officially supported option. Nevertheless we have it as a last resort tool primarily to aid our support colleagues.
