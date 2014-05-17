@@ -94,7 +94,10 @@ public class WebStatusTicket implements StatusTicket {
 	}
 	
 	public synchronized void done() {
-		session.removeAttribute(id);
+		try {
+			session.removeAttribute(id);
+		}
+		catch(Exception ignore) {}
 		doneFlag = true;
 	}
 	
