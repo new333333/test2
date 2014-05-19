@@ -2,7 +2,9 @@ package org.kablink.teaming.remoting.rest.v1.resource;
 
 import org.joda.time.DateTime;
 import org.joda.time.format.ISODateTimeFormat;
+import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.*;
+import org.kablink.teaming.fi.FileNotFoundException;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.folder.FolderModule;
@@ -17,6 +19,9 @@ import org.kablink.teaming.remoting.rest.v1.exc.NotModifiedException;
 import org.kablink.teaming.remoting.rest.v1.util.ResourceUtil;
 import org.kablink.teaming.rest.v1.model.FileProperties;
 import org.kablink.teaming.rest.v1.model.FileVersionProperties;
+import org.kablink.teaming.runas.RunasCallback;
+import org.kablink.teaming.runas.RunasTemplate;
+import org.kablink.teaming.security.AccessControlException;
 import org.kablink.util.HttpHeaders;
 import org.kablink.util.Validator;
 import org.kablink.util.api.ApiErrorCode;
@@ -221,8 +226,8 @@ abstract public class AbstractFileResource extends AbstractResource {
     protected Response readFileContent(String entityType, long entityId, String filename, Date ifModifiedSinceDate, FileType type)
             throws BadRequestException {
         EntityIdentifier.EntityType et = entityTypeFromString(entityType);
-        Binder binder;
-        DefinableEntity entity;
+        final Binder binder;
+        final DefinableEntity entity;
         FileAttachment fa;
         if (et == EntityIdentifier.EntityType.folderEntry) {
             entity = getFolderModule().getEntry(null, entityId);
@@ -261,7 +266,30 @@ abstract public class AbstractFileResource extends AbstractResource {
             is = getConvertedFileModule().getScaledInputStream(binder, entity, fa);
             mt = "image/jpeg";
         } else {
-            is = getFileModule().readFile(binder, entity, fa);
+            try {
+                is = getFileModule().readFile(binder, entity, fa);
+            } catch (FileNotFoundException e) {
+                if (et == EntityIdentifier.EntityType.folderEntry && binder.isMirrored()) {
+                    try {
+                        RunasCallback callback = new RunasCallback()
+                        {
+                            @Override
+                            public Object doAs()
+                            {
+                                getFolderModule().deleteEntry(binder.getId(), entity.getId());
+                                return null;
+                            }
+                        };
+
+                        RunasTemplate.runasAdmin(
+                                callback,
+                                RequestContextHolder.getRequestContext().getZoneName());
+
+                    } catch (AccessControlException e1) {
+                    }
+                }
+                throw e;
+            }
             mt = new MimetypesFileTypeMap().getContentType(filename);
         }
         return Response.ok(is, mt).lastModified(lastModDate).build();
