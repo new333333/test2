@@ -366,6 +366,7 @@ public class ShareExpirationWidget extends Composite
 	{
 		Long value;
 		
+		// m_dateBox.getValue() returns GMT
 		value = m_dateBox.getValue();
 		if ( value == -1 )
 			value = null;
@@ -377,8 +378,10 @@ public class ShareExpirationWidget extends Composite
 			// Have the share expire at 23:59:59 on the selected day
 			value += (MILLISEC_IN_A_DAY - 1000);
 
-			// value represents the share expiring on the selected day at 23:59:59 GMT time
 			// We need to add the time zone offset so the share expires on 23:59:59 local time.
+			// For example, if the user selected 5-21-2014 we want the share to expire on
+			// 5-21-2014 23:59:59 local time.  So we will add 23:59:59 plus the timezone offset.
+			// If the timezone offset is +6, the result is the share will expire 5-22-2014 05:59:59 GMT 
 			hour = GwtTeaming.m_requestInfo.getTimeZoneOffsetHour();
 			value += (hour * 60 * 60 * 1000);
 		}
@@ -502,6 +505,8 @@ public class ShareExpirationWidget extends Composite
 		
 		if ( expirationValue != null )
 		{
+			Long value;
+			
 			expirationType = expirationValue.getExpirationType();
 			
 			// Select the appropriate expiration type.
@@ -510,15 +515,17 @@ public class ShareExpirationWidget extends Composite
 			switch (expirationType)
 			{
 			case AFTER_DAYS:
-				Long value;
-				
 				value = expirationValue.getValue();
 				if ( value != null )
 					m_expiresAfterTextBox.setText( value.toString() );
 				break;
 			
 			case ON_DATE:
-				m_dateBox.setValue( expirationValue.getValue() );
+				// Subtract the timezone offset because the expiration date was stored
+				// in the db taking into account the sharer's timezone offset.
+				value = expirationValue.getValue();
+				value -= (GwtTeaming.m_requestInfo.getTimeZoneOffsetHour() * 60 * 60 * 1000);
+				m_dateBox.setValue( value );
 				break;
 			
 			case NEVER:
