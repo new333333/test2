@@ -58,6 +58,7 @@ import org.hibernate.Query;
 import org.hibernate.ReplicationMode;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Conjunction;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Disjunction;
 import org.hibernate.criterion.Expression;
@@ -143,6 +144,7 @@ import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.util.Validator;
 import org.kablink.util.dao.hibernate.DynamicDialect;
 
+import org.kablink.util.search.Junction;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.orm.hibernate3.HibernateCallback;
 
@@ -3230,22 +3232,30 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
     @Override
     public List getAuditTrailEntries(final Long zoneId, final Date sinceDate, final List<HKey> parentBinderKeys,
                                      final List<Long> entryIds,
-                                     final AuditTrail.AuditType[] types, final int maxResults) {
+                                     final AuditTrail.AuditType[] types,
+                                     final EntityType [] entityTypes, final int maxResults) {
         long begin = System.nanoTime();
         try {
             List results = (List) getHibernateTemplate().execute(
                     new HibernateCallback() {
                         @Override
 						public Object doInHibernate(Session session) throws HibernateException {
-                            Criterion typeExpr;
+                            Conjunction typeExpr = Restrictions.conjunction();
                             if (types.length==1) {
-                                typeExpr = Restrictions.eq("transactionType", types[0].name());
+                                typeExpr.add(Restrictions.eq("transactionType", types[0].name()));
                             } else {
                                 List<String> vals = new ArrayList<String>();
                                 for (AuditTrail.AuditType type : types) {
                                     vals.add(type.name());
                                 }
-                                typeExpr = Restrictions.in("transactionType", vals);
+                                typeExpr.add(Restrictions.in("transactionType", vals));
+                            }
+                            if (entityTypes!=null) {
+                                List<String> vals = new ArrayList<String>();
+                                for (EntityType type : entityTypes) {
+                                    vals.add(type.name());
+                                }
+                                typeExpr.add(Restrictions.in("entityType", vals));
                             }
                             Criterion parentKeysExpr;
                             Disjunction or = Restrictions.disjunction();

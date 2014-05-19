@@ -3913,7 +3913,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
     private boolean haveAclsChangedSinceDate(List<HKey>  binderKeys, Date sinceDate) {
         Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
         List aclChanges = getCoreDao().getAuditTrailEntries(zoneId, sinceDate, binderKeys, null,
-                new AuditTrail.AuditType[]{AuditTrail.AuditType.acl}, 1);
+                new AuditTrail.AuditType[]{AuditTrail.AuditType.acl}, null, 1);
         return aclChanges.size()>0;
     }
 
@@ -3935,7 +3935,8 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
     private List getDeleteAuditTrailEntries(List<HKey>  binderKeys, List<Long> entryIds, Date sinceDate, int maxResults) {
         Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
         return getCoreDao().getAuditTrailEntries(zoneId, sinceDate, binderKeys, entryIds,
-                new AuditTrail.AuditType[]{AuditTrail.AuditType.delete, AuditTrail.AuditType.preDelete}, maxResults);
+                new AuditTrail.AuditType[]{AuditTrail.AuditType.delete, AuditTrail.AuditType.preDelete},
+                new EntityType[] {EntityType.folderEntry,EntityType.folderEntry,EntityType.workspace}, maxResults);
     }
 
     private Map searchForChangedEntities(Long [] binderIds, Long [] entryIds, Date sinceDate, boolean libraryOnly, boolean binders, boolean entries, boolean attachments, int maxResults){

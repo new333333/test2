@@ -1789,7 +1789,10 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
                 } catch (Exception e) {
                     logger.warn("Unable to look up entity: " + change.getEntityId(), e);
                 }
-                changes.add(ResourceUtil.buildBinderChange(change, definableEntity, true, toDomainFormat(descriptionFormatStr)));
+                BaseBinderChange binderChange = ResourceUtil.buildBinderChange(change, definableEntity, true, toDomainFormat(descriptionFormatStr));
+                if (binderChange!=null) {
+                    changes.add(binderChange);
+                }
             }
             BinderChanges results = ResourceUtil.buildBinderChanges(binderChanges, changes);
             if (results.getTotal()>results.getCount()) {
