@@ -1666,7 +1666,7 @@ public class ShareThisDlg2 extends DlgBox
 			return true;
 		}
 
-		// The user may not have hit apply.  Tell the "edit share" widget to save its changes
+		// Tell the "edit share" widget to save its changes
 		if ( saveEditShareWidgetSettings() == false )
 			return false;
 		
