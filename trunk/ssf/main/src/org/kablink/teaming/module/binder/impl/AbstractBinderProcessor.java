@@ -2266,7 +2266,12 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 			// Periodically (i.e., after processing each batch) clear the entire session to avoid OutOfMemory error
 			// caused by objects kept accumulating in the Hibernate session. It appears that evicting tags and binders
 			// aren't enough for long running reindexing task.
-			getCoreDao().clear();
+			if(StatusTicket.NULL_TICKET != statusTicket) {
+				// Clear the session ONLY IF this method is being called from administrative reindexing task.
+				// This is clumsy hack, but a quickest work around for the problem reported in bug #878377.
+				// If this hack turns out to be insufficient, we will think about a better solution then.
+				getCoreDao().clear();
+			}
 			
 			if(logger.isDebugEnabled())
 				logger.debug("Applying changes to index");
