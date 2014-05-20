@@ -121,6 +121,10 @@ public class EncryptUtil {
 			return new StringBuffer().toString();
 		}
 	}
+
+    public static void clearCachedPassword(Long userId) {
+        passwordCache.remove(userId);
+    }
 	
 	public static boolean checkPassword(String passwordToCheck, User user) {
 		long startTime = System.nanoTime();

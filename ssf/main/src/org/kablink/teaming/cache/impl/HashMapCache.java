@@ -61,4 +61,12 @@ public class HashMapCache<K, V> {
         cache.remove(key);
         return null;
     }
+
+    public void remove(K key) {
+        cache.remove(key);
+    }
+
+    public void clear() {
+        cache.clear();
+    }
 }
