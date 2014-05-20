@@ -32,6 +32,7 @@
  */
 package org.kablink.teaming.web.util;
 
+import java.io.UnsupportedEncodingException;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -46,6 +47,7 @@ import java.util.SortedSet;
 import java.util.TimeZone;
 
 import javax.mail.Address;
+import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 
 import org.apache.commons.logging.Log;
@@ -63,6 +65,8 @@ import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserPrincipal;
 import org.kablink.teaming.module.admin.SendMailErrorWrapper;
 import org.kablink.teaming.module.binder.BinderModule;
+import org.kablink.teaming.module.mail.JavaMailSender;
+import org.kablink.teaming.module.mail.MailModule;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.NLT;
@@ -277,6 +281,74 @@ public class EmailHelper {
 	public static boolean canSendToAllUsers() {
 		return SPropsUtil.getBoolean("mail.allowSendToAllUsers", false);
 	}
+
+	/**
+	 * Returns the default JavaMailSender for the zone.
+	 * 
+	 * @return
+	 */
+	public static JavaMailSender getDefaultMailSender() {
+		return getMailModule().getMailSender(RequestContextHolder.getRequestContext().getZone());
+	}
+	
+	/**
+	 * Returns the email address to use as the from address for the
+	 * given user.
+	 * 
+	 * @param user
+	 * 
+	 * @return
+	 */
+	public static String getFromEMA(User user) {
+		// Is there a system wide from email address override defined?
+   		String reply = MiscUtil.getFromOverride();
+   		if (!(MiscUtil.hasString(reply))) {
+   			// No!  Does the user have an email address?
+   			reply = user.getEmailAddress();
+   	   		if (!(MiscUtil.hasString(reply))) {
+   	   			// No!  Use the system default.
+   	   			reply = getSystemFromEMA();
+   	   		}
+   		}
+   		
+   		// If we get here, reply refers to the email address to use as
+   		// the from for emails from the given user.  Return it.
+   		return reply;
+	}
+	
+	/**
+	 * Returns the InternetAddress to use as the from address for the
+	 * given user.
+	 * 
+	 * @param user
+	 * 
+	 * @return
+	 * 
+	 * @throws AddressException
+	 */
+	public static InternetAddress getFromIA(User user) throws AddressException {
+		// Construct an InternalAddress to return.
+   		InternetAddress reply = new InternetAddress();
+   		reply.setAddress(getFromEMA(user));
+
+   		// Should we add the user's personal name to the
+   		// InternetAddress?
+   		boolean addFromUserName = (!(user.isShared()));	// We don't include the user's name in the InternetAddress for Guest.
+   		String userName = (addFromUserName ? Utils.getUserTitle(user) : null);
+   		if (MiscUtil.hasString(userName)) {
+   			// Yes!  Add it.
+   			try {reply.setPersonal(userName);}
+   			catch (UnsupportedEncodingException uee) {
+   				// Ignored.  We just won't include the user's name as
+   				// part of the email address.
+   			}
+   		}
+   		
+   		// If we get here, reply refers to the InternetAddress object
+   		// to use as the from for emails from the given user.  Return
+   		// it.
+   		return reply;
+	}
 	
 	/*
 	 * Returns a Set<Long> of the IDs of the members of a group.
@@ -324,6 +396,14 @@ public class EmailHelper {
 		}
 		return reply;
 	}
+	
+	/*
+	 * Returns access to the mail module.
+	 */
+	private static MailModule getMailModule() {
+		return ((MailModule) SpringContextUtil.getBean( "mailModule" ));
+	}
+	
 	
     /**
      * Returns the localized string to display for a share expiration.
@@ -376,6 +456,60 @@ public class EmailHelper {
     	return getShareExpiration(locale, tz, false, share);	// false -> Don't include TZ in the expiration.
     }
     
+	/**
+	 * Returns the email address to use as the from address for
+	 * emails sent by the system.
+	 * 
+	 * @param mailSender
+	 * 
+	 * @return
+	 */
+	public static String getSystemFromEMA(JavaMailSender mailSender) {
+		// Is there a system wide from email address override defined?
+   		String reply = MiscUtil.getFromOverride();
+   		if (!(MiscUtil.hasString(reply))) {
+   			// No!  Use the mail sender's default.
+   			reply = mailSender.getDefaultFrom();
+   		}
+   		
+   		// If we get here, reply refers to the email address to use as
+   		// the from for emails from the system.  Return it.
+   		return reply;
+	}
+	
+	public static String getSystemFromEMA() {
+		// Always use the initial form of the method.
+		return getSystemFromEMA(getDefaultMailSender());
+	}
+	
+	/**
+	 * Returns the InternetAddress to use as the from address for
+	 * emails sent by the system.
+	 * 
+	 * @param mailSender
+	 * 
+	 * @return
+	 * 
+	 * @throws AddressException
+	 */
+	public static InternetAddress getSystemFromIA(JavaMailSender mailSender) throws AddressException {
+		// Construct an InternetAddress to return.
+   		InternetAddress reply = new InternetAddress();
+   		reply.setAddress(getSystemFromEMA(mailSender));
+
+   		// We don't include a personal name in the from InternetAddress
+   		// for the system.
+   		
+   		// If we get here, reply refers to the InternetAddress object
+   		// to use as the from for emails from the system.  Return it.
+   		return reply;
+	}
+	
+	public static InternetAddress getSystemFromIA() throws AddressException {
+		// Always use the initial form of the method.
+		return getSystemFromIA(getDefaultMailSender());
+	}
+	
 	/**
 	 * Returns a List<Locale> of the unique Locale's stored in a
 	 * collection of Map<Locale, List<InternetAddress>>'s.
