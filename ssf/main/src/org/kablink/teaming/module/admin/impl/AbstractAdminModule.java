@@ -57,11 +57,13 @@ import javax.mail.SendFailedException;
 import javax.mail.internet.InternetAddress;
 
 import org.apache.velocity.VelocityContext;
+
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.SAXReader;
+
 import org.kablink.teaming.ConfigurationException;
 import org.kablink.teaming.NoObjectByTheIdException;
 import org.kablink.teaming.NotSupportedException;
@@ -165,6 +167,7 @@ import org.kablink.teaming.web.util.EmailHelper.UrlNotificationType;
 import org.kablink.util.Html;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
+
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.mail.MailAuthenticationException;
@@ -2199,7 +2202,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 			StringWriter	writer  = new StringWriter();
 			Notify			notify  = new Notify(NotifyType.summary, locale, targetTZ, now);
            	NotifyVisitor	visitor = new NotifyVisitor(sharedEntity, notify, null, writer, NotifyVisitor.WriterType.HTML, null);
-		    VelocityContext	ctx     = getShareVelocityContext(visitor, share, sharedEntity);
+		    VelocityContext	ctx     = getShareVelocityContext(visitor, share, sharedEntity, false);
 			visitor.processTemplate(template, ctx);
 			EmailUtil.putHTML(mailMap, MailModule.HTML_MSG, writer.toString());
 			
@@ -2207,7 +2210,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 			writer  = new StringWriter();
 			notify  = new Notify(NotifyType.summary, locale, targetTZ, now);
            	visitor = new NotifyVisitor(sharedEntity, notify, null, writer, NotifyVisitor.WriterType.TEXT, null);
-		    ctx     = getShareVelocityContext(visitor, share, sharedEntity);
+		    ctx     = getShareVelocityContext(visitor, share, sharedEntity, false);
 			visitor.processTemplate(template, ctx);
 			EmailUtil.putText(mailMap, MailModule.TEXT_MSG, writer.toString());
 
@@ -2860,7 +2863,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 			StringWriter	writer  = new StringWriter();
 			Notify			notify  = new Notify(NotifyType.summary, locale, targetTZ, now);
            	NotifyVisitor	visitor = new NotifyVisitor(sharedEntity, notify, null, writer, NotifyVisitor.WriterType.HTML, null);
-		    VelocityContext	ctx     = getShareVelocityContext(visitor, share, sharedEntity, encodedExternalUserId);
+		    VelocityContext	ctx     = getShareVelocityContext(visitor, share, sharedEntity, encodedExternalUserId, true);
 			visitor.processTemplate(template, ctx);
 			EmailUtil.putHTML(mailMap, MailModule.HTML_MSG, writer.toString());
 			
@@ -2868,7 +2871,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 			writer  = new StringWriter();
 			notify  = new Notify(NotifyType.summary, locale, targetTZ, now);
            	visitor = new NotifyVisitor(sharedEntity, notify, null, writer, NotifyVisitor.WriterType.TEXT, null);
-		    ctx     = getShareVelocityContext(visitor, share, sharedEntity, encodedExternalUserId);
+		    ctx     = getShareVelocityContext(visitor, share, sharedEntity, encodedExternalUserId, true);
 			visitor.processTemplate(template, ctx);
 			EmailUtil.putText(mailMap, MailModule.TEXT_MSG, writer.toString());
 
@@ -2969,7 +2972,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 	/*
 	 * Returns a VelocityContext to use for share notification emails. 
 	 */
-	private static VelocityContext getShareVelocityContext(NotifyVisitor visitor, ShareItem share, DefinableEntity sharedEntity, String encodedExternalUserId) {
+	private static VelocityContext getShareVelocityContext(NotifyVisitor visitor, ShareItem share, DefinableEntity sharedEntity, String encodedExternalUserId, boolean includeTZInExpiration) {
 		// Create the context...
 	    VelocityContext	reply = NotifyBuilderUtil.getVelocityContext();
 	    
@@ -2979,7 +2982,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 		reply.put("ssVisitor",   	 	visitor                                                                                                     );
 		reply.put("ssShare",        	share                                                                                                       );
 		reply.put("ssSharedEntity",		sharedEntity                                                                                                );
-		reply.put("ssShareExpiration",	EmailHelper.getShareExpiration(notify.getLocale(), notify.getTimeZone(), share)                             );
+		reply.put("ssShareExpiration",	EmailHelper.getShareExpiration(notify.getLocale(), notify.getTimeZone(), includeTZInExpiration, share)      );
 		reply.put("ssSharer",        	NLT.get("share.notify.sharer", new String[]{visitor.getUserTitle(user)}, visitor.getNotifyDef().getLocale()));
 		reply.put("ssProduct",       	(Utils.checkIfFilr() ? "Filr" : "Vibe")                                                                     );
 		reply.put("user",           	user                                                                                                        );
@@ -2993,9 +2996,9 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 		return reply;
 	}
 	
-	private static VelocityContext getShareVelocityContext(NotifyVisitor visitor, ShareItem share, DefinableEntity sharedEntity) {
+	private static VelocityContext getShareVelocityContext(NotifyVisitor visitor, ShareItem share, DefinableEntity sharedEntity, boolean includeTZInExpiration) {
 		// Always use the initial form of the method.
-		return getShareVelocityContext(visitor, share, sharedEntity, null);
+		return getShareVelocityContext(visitor, share, sharedEntity, null, includeTZInExpiration);
 	}
 
 	/*
