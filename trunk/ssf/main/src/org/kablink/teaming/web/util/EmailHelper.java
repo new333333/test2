@@ -329,12 +329,13 @@ public class EmailHelper {
      * Returns the localized string to display for a share expiration.
      * 
      * @param locale
-     * @param share
      * @param tz
+     * @param includeTZInExpiration
+     * @param share
      * 
      * @return
      */
-    public static String getShareExpiration(Locale locale, TimeZone tz, ShareItem share) {
+    public static String getShareExpiration(Locale locale, TimeZone tz, boolean includeTZInExpiration, ShareItem share) {
     	// Does the share have an expiration date?
     	String reply;
 		Date expiration = share.getEndDate();
@@ -358,6 +359,9 @@ public class EmailHelper {
 				DateFormat dateFmt = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT, locale);
 				dateFmt.setTimeZone(tz);
 				String dateText = dateFmt.format(expiration);
+				if (includeTZInExpiration) {
+					dateText += (" (" + tz.getID() + ")");
+				}
 				reply = NLT.get("share.expires.on", new Object[]{dateText}, locale);
 			}
 		}
@@ -365,6 +369,11 @@ public class EmailHelper {
 		// If we get here, reply refers to the share expiration message
 		// in the given locale.  Return it.
 		return reply;
+    }
+    
+    public static String getShareExpiration(Locale locale, TimeZone tz, ShareItem share) {
+    	// Always use the initial form of the method.
+    	return getShareExpiration(locale, tz, false, share);	// false -> Don't include TZ in the expiration.
     }
     
 	/**
