@@ -162,8 +162,8 @@ import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.util.XmlFileUtil;
 import org.kablink.teaming.web.util.DefinitionHelper;
 import org.kablink.teaming.web.util.EmailHelper;
-import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.EmailHelper.UrlNotificationType;
+import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.util.Html;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
@@ -2021,26 +2021,19 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 			return result;			
 		}
     	Map message = new HashMap();
-   		String fromEMA = null;
        	try {
-       		fromEMA = MiscUtil.getFromOverride();
-       		if (!(MiscUtil.hasString(fromEMA))) {
-       			fromEMA = user.getEmailAddress();
-       		}
-       		InternetAddress ia = new InternetAddress(fromEMA);
-       		if ((null != userName) && (0 < userName.length())) {
-       			ia.setPersonal(userName);
-       		}
+       		InternetAddress ia = EmailHelper.getFromIA(user);
     		message.put(MailModule.FROM, ia);
     	} catch (Exception ex) {
 			String errorMsg = ex.getLocalizedMessage();
-			String emailAddr = fromEMA;
+			String emailAddr = EmailHelper.getFromEMA(user);
 			if (emailAddr == null || emailAddr.equals("")) {
 				emailAddr = "";
 				errorMsg = NLT.get("sendMail.noEmailAddress");
 			}
+			
+			// Cannot send without valid from address.
 			errors.add(0, new SendMailErrorWrapper(ex, NLT.get("errorcode.badFromAddress", new Object[] {Utils.getUserTitle(user), emailAddr, errorMsg}))); 
-			//cannot send without valid from address
 			return result;
     	}
    		EmailUtil.putHTML(message, MailModule.HTML_MSG, body.getText());
@@ -2144,16 +2137,26 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - //
 
 		// Get what we need from the zone for sending email.
-		Workspace		zone       = RequestContextHolder.getRequestContext().getZone();
-		MailModule		mm         = getMailModule();
-		String			mailSender = mm.getNotificationMailSenderName(zone);
-		String			defaultEMA = mm.getNotificationDefaultFrom(   zone); 
+		Workspace	zone       = RequestContextHolder.getRequestContext().getZone();
+		MailModule	mm         = getMailModule();
+		String		mailSender = mm.getNotificationMailSenderName(zone);
 
 		// Get what we need about the sending user for sending email.
-		Date			now         = new Date();
-		InternetAddress	sendingIA   = new InternetAddress();
-		String			sendersEMA  = sendingUser.getEmailAddress();
-		sendingIA.setAddress(MiscUtil.hasString(sendersEMA) ? sendersEMA : defaultEMA);
+		InternetAddress sendingIA;
+       	try {
+       		sendingIA = EmailHelper.getFromIA(sendingUser);
+    	} catch (Exception ex) {
+			String errorMsg = ex.getLocalizedMessage();
+			String emailAddr = EmailHelper.getFromEMA(sendingUser);
+			if (emailAddr == null || emailAddr.equals("")) {
+				emailAddr = "";
+				errorMsg = NLT.get("sendMail.noEmailAddress");
+			}
+			
+			// Cannot send without valid from address.
+			errors.add(0, new SendMailErrorWrapper(ex, NLT.get("errorcode.badFromAddress", new Object[] {Utils.getUserTitle(sendingUser), emailAddr, errorMsg})));
+			return result;
+    	}
 
 		// What Velocity template should we use for this share?
 		String template;
@@ -2163,6 +2166,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 		
 		// Scan the unique Locale's we need to localize the share
 		// notification email into.
+		Date			now           = new Date();
 		boolean			notifyAsBCC   = SPropsUtil.getBoolean("mail.notifyAsBCC", true);
 		List<Locale>	targetLocales = MiscUtil.validateLL(EmailHelper.getTargetLocales(toIAsMap, ccIAsMap, bccIAsMap));
 		for (Locale locale:  targetLocales) {
@@ -2314,22 +2318,33 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - //
 
 		// Get what we need from the zone for sending email.
-		Workspace		zone       = RequestContextHolder.getRequestContext().getZone();
-		MailModule		mm         = getMailModule();
-		String			mailSender = mm.getNotificationMailSenderName(zone);
-		String			defaultEMA = mm.getNotificationDefaultFrom(   zone); 
+		Workspace	zone       = RequestContextHolder.getRequestContext().getZone();
+		MailModule	mm         = getMailModule();
+		String		mailSender = mm.getNotificationMailSenderName(zone);
 
 		// Get what we need about the sending user for sending email.
-		Date			now         = new Date();
-		InternetAddress	sendingIA   = new InternetAddress();
-		String			sendersEMA  = sendingUser.getEmailAddress();
-		sendingIA.setAddress(MiscUtil.hasString(sendersEMA) ? sendersEMA : defaultEMA);
+		InternetAddress sendingIA;
+       	try {
+       		sendingIA = EmailHelper.getFromIA(sendingUser);
+    	} catch (Exception ex) {
+			String errorMsg = ex.getLocalizedMessage();
+			String emailAddr = EmailHelper.getFromEMA(sendingUser);
+			if (emailAddr == null || emailAddr.equals("")) {
+				emailAddr = "";
+				errorMsg = NLT.get("sendMail.noEmailAddress");
+			}
+			
+			// Cannot send without valid from address.
+			errors.add(0, new SendMailErrorWrapper(ex, NLT.get("errorcode.badFromAddress", new Object[] {Utils.getUserTitle(sendingUser), emailAddr, errorMsg})));
+			return result;
+    	}
 
 		// What Velocity template should we use for this share?
 		String template = "publicLinkNotification.vm";
 		
 		// Scan the unique Locale's we need to localize the share
 		// notification email into.
+		Date			now           = new Date();
 		boolean			notifyAsBCC   = SPropsUtil.getBoolean("mail.notifyAsBCC", true);
 		List<Locale>	targetLocales = MiscUtil.validateLL(EmailHelper.getTargetLocales(toIAsMap, bccIAsMap));
 		for (Locale locale:  targetLocales) {
@@ -2484,17 +2499,27 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - //
 
 		// Get what we need from the zone for sending email.
-		Workspace		zone       = RequestContextHolder.getRequestContext().getZone();
-		MailModule		mm         = getMailModule();
-		String			mailSender = mm.getNotificationMailSenderName(zone);
-		String			defaultEMA = mm.getNotificationDefaultFrom(   zone); 
+		Workspace	zone       = RequestContextHolder.getRequestContext().getZone();
+		MailModule	mm         = getMailModule();
+		String		mailSender = mm.getNotificationMailSenderName(zone);
 
 		// Get what we need about the sending user for sending email.
-		Date			now         = new Date();
-		InternetAddress	sendingIA   = new InternetAddress();
-		String			sendersEMA  = sendingUser.getEmailAddress();
-		sendingIA.setAddress(MiscUtil.hasString(sendersEMA) ? sendersEMA : defaultEMA);
-
+		InternetAddress sendingIA;
+       	try {
+       		sendingIA = EmailHelper.getFromIA(sendingUser);
+    	} catch (Exception ex) {
+			String errorMsg = ex.getLocalizedMessage();
+			String emailAddr = EmailHelper.getFromEMA(sendingUser);
+			if (emailAddr == null || emailAddr.equals("")) {
+				emailAddr = "";
+				errorMsg = NLT.get("sendMail.noEmailAddress");
+			}
+			
+			// Cannot send without valid from address.
+			errors.add(0, new SendMailErrorWrapper(ex, NLT.get("errorcode.badFromAddress", new Object[] {Utils.getUserTitle(sendingUser), emailAddr, errorMsg})));
+			return result;
+    	}
+       	
 		// What Velocity template should we use for this URL?
 		String purposeKey;
 		String subjectKey;
@@ -2508,6 +2533,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 		
 		// Scan the unique Locale's we need to localize the
 		// notification email into.
+		Date			now           = new Date();
 		boolean			notifyAsBCC   = false;	// SPropsUtil.getBoolean("mail.notifyAsBCC", true);
 		List<Locale>	targetLocales = MiscUtil.validateLL(EmailHelper.getTargetLocales(toIAsMap, ccIAsMap, bccIAsMap));
 		for (Locale locale:  targetLocales) {
@@ -2655,19 +2681,30 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - //
 
 		// Get what we need from the zone for sending email.
-		Workspace		zone       = RequestContextHolder.getRequestContext().getZone();
-		MailModule		mm         = getMailModule();
-		String			mailSender = mm.getNotificationMailSenderName(zone);
-		String			defaultEMA = mm.getNotificationDefaultFrom(   zone); 
+		Workspace	zone       = RequestContextHolder.getRequestContext().getZone();
+		MailModule	mm         = getMailModule();
+		String		mailSender = mm.getNotificationMailSenderName(zone);
 
 		// Get what we need about the sending user for sending email.
-		Date			now         = new Date();
-		InternetAddress	sendingIA   = new InternetAddress();
-		String			sendersEMA  = sendingUser.getEmailAddress();
-		sendingIA.setAddress(MiscUtil.hasString(sendersEMA) ? sendersEMA : defaultEMA);
-
+		InternetAddress sendingIA;
+       	try {
+       		sendingIA = EmailHelper.getFromIA(sendingUser);
+    	} catch (Exception ex) {
+			String errorMsg = ex.getLocalizedMessage();
+			String emailAddr = EmailHelper.getFromEMA(sendingUser);
+			if (emailAddr == null || emailAddr.equals("")) {
+				emailAddr = "";
+				errorMsg = NLT.get("sendMail.noEmailAddress");
+			}
+			
+			// Cannot send without valid from address.
+			errors.add(0, new SendMailErrorWrapper(ex, NLT.get("errorcode.badFromAddress", new Object[] {Utils.getUserTitle(sendingUser), emailAddr, errorMsg})));
+			return result;
+    	}
+    	
 		// Scan the unique Locale's we need to localize the
 		// notification email into.
+		Date			now           = new Date();
 		List<Locale>	targetLocales = MiscUtil.validateLL(EmailHelper.getTargetLocales(toIAsMap, ccIAsMap, bccIAsMap));
 		for (Locale locale:  targetLocales) {
 			// Extract the TO:, CC: and BCC: lists for this Locale.
@@ -2807,17 +2844,27 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - //
 
 		// Get what we need from the zone for sending email.
-		Workspace		zone       = RequestContextHolder.getRequestContext().getZone();
-		MailModule		mm         = getMailModule();
-		String			mailSender = mm.getNotificationMailSenderName(zone);
-		String			defaultEMA = mm.getNotificationDefaultFrom(   zone); 
+		Workspace	zone       = RequestContextHolder.getRequestContext().getZone();
+		MailModule	mm         = getMailModule();
+		String		mailSender = mm.getNotificationMailSenderName(zone);
 
 		// Get what we need about the sending user for sending email.
-		Date			now         = new Date();
-		InternetAddress	sendingIA   = new InternetAddress();
-		String			sendersEMA  = sendingUser.getEmailAddress();
-		sendingIA.setAddress(MiscUtil.hasString(sendersEMA) ? sendersEMA : defaultEMA);
-
+		InternetAddress sendingIA;
+       	try {
+       		sendingIA = EmailHelper.getFromIA(sendingUser);
+    	} catch (Exception ex) {
+			String errorMsg = ex.getLocalizedMessage();
+			String emailAddr = EmailHelper.getFromEMA(sendingUser);
+			if (emailAddr == null || emailAddr.equals("")) {
+				emailAddr = "";
+				errorMsg = NLT.get("sendMail.noEmailAddress");
+			}
+			
+			// Cannot send without valid from address.
+			errors.add(0, new SendMailErrorWrapper(ex, NLT.get("errorcode.badFromAddress", new Object[] {Utils.getUserTitle(sendingUser), emailAddr, errorMsg})));
+			return result;
+    	}
+       	
 		// What Velocity template should we use for this mail?
 		String template;
 		if (sharedEntity instanceof FolderEntry)
@@ -2826,6 +2873,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 		
 		// Scan the unique Locale's we need to localize the share
 		// notification email into.
+		Date			now           = new Date();
 		List<Locale>	targetLocales = MiscUtil.validateLL(EmailHelper.getTargetLocales(toIAsMap, ccIAsMap, bccIAsMap));
 		for (Locale locale:  targetLocales) {
 			// Extract the TO:, CC: and BCC: lists for this Locale.
