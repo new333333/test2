@@ -2539,6 +2539,7 @@ public void changePassword(Long userId, String oldPassword, String newPassword) 
       }
       
       user.setPassword(newPassword);
+      EncryptUtil.clearCachedPassword(userId);
   }
   
   @Override
