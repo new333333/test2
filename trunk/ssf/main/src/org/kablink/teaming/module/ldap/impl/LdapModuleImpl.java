@@ -2967,6 +2967,9 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		Boolean syncInProgress;
 		LdapSyncException ldapSyncEx = null;
 
+//		if ( testPaging() )
+//			return;
+		
 		// Is an ldap sync currently going on for the zone?
 		syncInProgress = m_zoneSyncInProgressMap.get( zone.getId() );
 		if ( syncInProgress != null && syncInProgress )
@@ -4782,6 +4785,112 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	    return homeDirInfo;
 	}
 
+	private boolean testPaging()
+	{
+	    Hashtable<String, Object> env = new Hashtable<String, Object>(11);
+	    env.put( Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
+
+	    /* Specify host and port to use for directory service */
+//	    env.put( Context.PROVIDER_URL, "ldap://164.99.119.34:389");
+	    env.put( Context.PROVIDER_URL, "ldap://151.155.137.65:389" );
+//		env.put( Context.INITIAL_CONTEXT_FACTORY, getLdapProperty(zone.getName(), Context.INITIAL_CONTEXT_FACTORY ) );
+		env.put( Context.SECURITY_PRINCIPAL, "cn=admin,o=novell" );
+//		env.put( Context.SECURITY_PRINCIPAL, "cn=admin,o=novell,l=blr,s=kar,c=in" );
+		env.put( Context.SECURITY_CREDENTIALS, "novell" );		
+//		env.put( Context.SECURITY_AUTHENTICATION, getLdapProperty(zone.getName(), Context.SECURITY_AUTHENTICATION));
+		env.put( Context.REFERRAL, "follow" );
+
+	    try
+	    {
+	    	LdapContext ctx = new InitialLdapContext(env, null);
+
+			// Activate paged results
+			int pageSize = 10; 
+			int times = 1;
+			byte[] cookie = null;
+
+			ctx.setRequestControls(new Control[]{ new PagedResultsControl(pageSize, Control.CRITICAL) });
+			int total;
+
+			do
+			{
+			    /* perform the search */
+				logger.info( "about to call ctx.search(): " + times );
+				++times;
+				
+	            NamingEnumeration results = ctx.search(
+	            									"ou=1000-users,ou=Users,o=novell",
+	            									//"ou=5k,o=Test",
+	            									"(|(objectClass=Person)(objectClass=orgPerson)(objectClass=inetOrgPerson))",
+	            									new SearchControls() );
+	
+	            /* for each entry print out name + all attrs and values */
+		        while (results != null && results.hasMore())
+		        {
+		        	SearchResult entry = (SearchResult) results.next();
+		        	logger.info( entry.getName() );
+			    }
+	
+			    // Examine the paged results control response
+			    Control[] controls = ctx.getResponseControls();
+			    if (controls != null)
+			    {
+					for (int i = 0; i < controls.length; i++)
+					{
+					    if (controls[i] instanceof PagedResultsResponseControl)
+					    {
+							PagedResultsResponseControl prrc = (PagedResultsResponseControl)controls[i];
+							total = prrc.getResultSize();
+							if (total != 0)
+							{
+							    logger.info("***************** END-OF-PAGE " + "(total : " + total + ") *****************\n");
+							}
+							else
+							{
+							    logger.info("***************** END-OF-PAGE " + "(total: unknown) ***************\n" );
+							}
+							cookie = prrc.getCookie();
+							
+							if ( cookie == null )
+							{
+								logger.info( "*************** cookie is null *************" );
+								cookie = new byte[0];
+							}
+					    }
+					}
+			    }
+			    else
+			    {
+			    	logger.info( "No controls were sent from the server" );
+			    }
+
+			    // Re-activate paged results
+		        ctx.setRequestControls( new Control[]{ new PagedResultsControl(pageSize, cookie, Control.CRITICAL) });
+	
+			} while ( cookie != null && cookie.length != 0 );
+
+			ctx.close();
+
+	    }
+	    catch (NamingException e)
+	    {
+	        logger.info( "PagedSearch failed." );
+	        e.printStackTrace();
+	    }
+	    catch (IOException ie)
+	    {
+	        logger.info( "PagedSearch failed." );
+	        ie.printStackTrace();
+	    }
+	    catch ( Exception e )
+	    {
+	    	logger.info( "PagedSearch failed." );
+	    	e.printStackTrace();
+	    }
+	    
+	    return true;
+	}
+	
 	protected void syncUsers(Binder zone, LdapContext ctx, LdapConnectionConfig config, UserCoordinator userCoordinator) 
 		throws NamingException
 	{
@@ -4858,6 +4967,8 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				{
 					NamingEnumeration results;
 
+					logger.debug( "\t\tAbout to call ctx.search()" );
+					
 					// Issue an ldap search for users in the given base dn.
 					results = ctx.search( searchInfo.getBaseDn(), filter, sch );
 					
