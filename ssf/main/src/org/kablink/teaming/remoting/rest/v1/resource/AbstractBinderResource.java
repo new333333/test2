@@ -172,7 +172,7 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
             }
         }
 
-        org.kablink.teaming.domain.Binder parentBinder = _getBinder(newBinderId);
+        org.kablink.teaming.domain.Binder parentBinder = _getBinderImpl(newBinderId);
         org.kablink.teaming.domain.Binder newBinder = getBinderModule().moveBinder(binder.getId(), parentBinder.getId(), null);
 
         Binder modifiedBinder = ResourceUtil.buildBinder(newBinder, includeAttachments, toDomainFormat(descriptionFormatStr));
