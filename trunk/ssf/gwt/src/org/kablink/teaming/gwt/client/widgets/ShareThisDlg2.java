@@ -2347,6 +2347,7 @@ public class ShareThisDlg2 extends DlgBox
 		{
 			// Yes, put them back into the find control's text box
 			m_findCtrl.setInitialSearchString( invalidEmailAddresses.toString() );
+			m_findCtrl.hideFloatingHint();
 		}
 	}
 	
