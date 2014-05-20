@@ -541,10 +541,13 @@ public class GwtMenuHelper {
 		// Allocate the base ToolbarItem to return.
 		ToolbarItem reply = new ToolbarItem(tbKey);
 
-		// Is the current user is not guest and they're entitled to
-		// read the folder for reasons other than sharing...
+		// If the current user is not guest, they have an email address
+		// and they're entitled to read the folder for reasons other
+		// than sharing...
 		User user = GwtServerHelper.getCurrentUser();
-		if ((!(user.isShared())) && bs.getFolderModule().testReadAccess(user, folder, false)) {	// false -> Don't check access because of sharing.
+		if ((!(user.isShared())) &&
+				GwtEmailHelper.userHasEmailAddress(user) &&
+				bs.getFolderModule().testReadAccess(user, folder, false)) {	// false -> Don't check access because of sharing.
 			// ...add a ToolbarItem for e-mail notification.
 			ToolbarItem emailTBI = new ToolbarItem(EMAIL);
 			markTBITitle(emailTBI, "toolbar.menu.subscribeToFolder"       );
@@ -1700,8 +1703,9 @@ public class GwtMenuHelper {
 	 * Constructs a ToolbarItem for subscribing to an item.
 	 */
 	private static void constructEntrySubscribeItem(ToolbarItem entryToolbar, AllModulesInjected bs, HttpServletRequest request, boolean separatorBefore) {
-		boolean isGuest = GwtServerHelper.getCurrentUser().isShared();
-		if (!isGuest) {
+		User user = GwtServerHelper.getCurrentUser();
+		boolean isGuest = user.isShared();
+		if ((!isGuest) && GwtEmailHelper.userHasEmailAddress(user)) {
 			// ...add the subscribe item.
 			if (separatorBefore) {
 				entryToolbar.addNestedItem(ToolbarItem.constructSeparatorTBI());
@@ -4036,12 +4040,16 @@ public class GwtMenuHelper {
 				// No!  Add a separator if necessary...
 				needSeparator = addNestedSeparatorIfNeeded(dropdownTBI, needSeparator);
 				
-				// ...and add a subscribe toolbar item.
-				actionTBI = new ToolbarItem(SUBSCRIBE);
-				markTBITitle(   actionTBI, "toolbar.menu.subscribeToEntrySelected"  );
-				markTBIEvent(   actionTBI, TeamingEvents.SUBSCRIBE_SELECTED_ENTITIES);
-				markTBIEntryIds(actionTBI, fe                                       );
-				dropdownTBI.addNestedItem(actionTBI);
+				// ...and if the user has any email addresses
+				// ...defined...
+				if (GwtEmailHelper.userHasEmailAddress(user)) {
+					// ...add a subscribe toolbar item.
+					actionTBI = new ToolbarItem(SUBSCRIBE);
+					markTBITitle(   actionTBI, "toolbar.menu.subscribeToEntrySelected"  );
+					markTBIEvent(   actionTBI, TeamingEvents.SUBSCRIBE_SELECTED_ENTITIES);
+					markTBIEntryIds(actionTBI, fe                                       );
+					dropdownTBI.addNestedItem(actionTBI);
+				}
 
 				// Does the user have an e-mail address?
 				if (MiscUtil.hasString(user.getEmailAddress())) {
