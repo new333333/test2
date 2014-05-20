@@ -878,7 +878,7 @@ public class FindCtrl extends Composite
 				public void onKeyDown( KeyDownEvent event )
 				{
 					// Hide the hint.
-					m_floatingHintLabel.setVisible( false );
+					hideFloatingHint();
 				}
 			} );
 			panel.add( m_txtBox );
@@ -1107,6 +1107,14 @@ public class FindCtrl extends Composite
 	public String getText()
 	{
 		return m_txtBox.getText();
+	}
+	
+	/**
+	 * 
+	 */
+	public void hideFloatingHint()
+	{
+		m_floatingHintLabel.setVisible( false );
 	}
 	
 	/**
