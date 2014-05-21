@@ -853,11 +853,19 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
             if (!recipient.isActive()) {
                 throw new NoUserByTheIdException(shareItem.getRecipientId());
             }
-            if (!recipient.getIdentityInfo().isInternal()) {
-                String email = recipient.getEmailAddress();
-                if (!isExternalAddressValid(email)) {
-                    throw new InvalidEmailAddressException(email);
-                }
+            if (!recipient.getIdentityInfo().isInternal() ) {
+            	Long guestId;
+            	
+            	// Are we dealing with the guest user?
+        		guestId = Utils.getGuestId( getProfileModule() );
+        		if ( recipient.getId().equals( guestId ) == false )
+        		{
+        			// No
+                    String email = recipient.getEmailAddress();
+                    if (!isExternalAddressValid(email)) {
+                        throw new InvalidEmailAddressException(email);
+                    }
+        		}
             }
         } else if (shareItem.getRecipientType()==RecipientType.group) {
             Principal recipient = getProfileModule().getEntry(shareItem.getRecipientId());
