@@ -64,9 +64,11 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
+
 import org.kablink.teaming.BinderQuotaException;
 import org.kablink.teaming.IllegalCharacterInNameException;
 import org.kablink.teaming.NotSupportedException;
@@ -3217,7 +3219,10 @@ public class GwtViewHelper {
 		try {
 			// Does the user have this region state defined?
 			UserProperties userBinderProperties = bs.getProfileModule().getUserProperties(GwtServerHelper.getCurrentUserId(), binderId);
-			String regionState = ((String) userBinderProperties.getProperty(ObjectKeys.USER_PROPERTY_REGION_VIEW + "." + regionId));
+			String regionState;
+			if (null == userBinderProperties)
+			     regionState = null;
+			else regionState = ((String) userBinderProperties.getProperty(ObjectKeys.USER_PROPERTY_REGION_VIEW + "." + regionId));
 
 			// Use the data we obtained to create a
 			// StringRpcResponseData and return it.
