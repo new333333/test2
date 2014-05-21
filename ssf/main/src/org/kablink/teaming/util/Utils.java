@@ -376,15 +376,23 @@ public class Utils {
 	/**
 	 * 
 	 */
-	public static Long getGuestId( AllModulesInjected ami )
+	public static Long getGuestId( ProfileModule profileModule )
 	{
 		Long id;
 		User guestUser;
 		
-		guestUser = ami.getProfileModule().getGuestUser();
+		guestUser = profileModule.getGuestUser();
 		id = guestUser.getId();
 		
 		return id;
+	}
+	
+	/**
+	 * 
+	 */
+	public static Long getGuestId( AllModulesInjected ami )
+	{
+		return getGuestId( ami.getProfileModule() );
 	}
 	
 	public static void end(Log logger, long startTimeInNanoseconds, String methodName) {
