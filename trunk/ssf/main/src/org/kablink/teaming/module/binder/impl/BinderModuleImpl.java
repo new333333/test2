@@ -3957,8 +3957,8 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 				RequestContextHolder.setRequestContext(parentRequestContext);
 				try {
 					int indexFlushThreshold = SPropsUtil.getInt("lucene.flush.threshold", 100);
-					if(logger.isDebugEnabled())
-						logger.debug("Setting index flush threshold to " + indexFlushThreshold + " with IndexSynchronizationManagerInterceptor");
+					if(logger.isTraceEnabled())
+						logger.trace("Setting index flush threshold to " + indexFlushThreshold + " with IndexSynchronizationManagerInterceptor");
 					IndexSynchronizationManagerInterceptor.setThreshold(indexFlushThreshold);
 					try {
 						if(logger.isDebugEnabled())
