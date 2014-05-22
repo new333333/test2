@@ -106,6 +106,7 @@ import org.kablink.teaming.module.sharing.SharingModule;
 import org.kablink.teaming.module.template.TemplateModule;
 import org.kablink.teaming.portletadapter.AdaptedPortletURL;
 import org.kablink.teaming.security.AccessControlManager;
+import org.kablink.teaming.security.function.WorkArea;
 import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.ssfs.util.SsfsUtil;
 import org.kablink.teaming.util.AllModulesInjected;
@@ -547,7 +548,7 @@ public class GwtMenuHelper {
 		User user = GwtServerHelper.getCurrentUser();
 		if ((!(user.isShared())) &&
 				GwtEmailHelper.userHasEmailAddress(user) &&
-				bs.getFolderModule().testReadAccess(user, folder, false)) {	// false -> Don't check access because of sharing.
+				visibleWithoutShares(bs, user, folder)) {
 			// ...add a ToolbarItem for e-mail notification.
 			ToolbarItem emailTBI = new ToolbarItem(EMAIL);
 			markTBITitle(emailTBI, "toolbar.menu.subscribeToFolder"       );
@@ -1073,7 +1074,7 @@ public class GwtMenuHelper {
 	 * Constructs a ToolbarItem for miscellaneous operations against
 	 * the selected entries.
 	 */
-	private static void constructEntryMoreItems(ToolbarItem entryToolbar, AllModulesInjected bs, HttpServletRequest request, Long folderId, String viewType, Folder folder, Workspace ws, CollectionType ct) {
+	private static void constructEntryMoreItems(ToolbarItem entryToolbar, AllModulesInjected bs, HttpServletRequest request, WorkArea wa, Long folderId, String viewType, Folder folder, Workspace ws, CollectionType ct) {
 		User    user                = GwtServerHelper.getCurrentUser();
 		boolean isGuest             = user.isShared();
 		boolean isFilr              = Utils.checkIfFilr();
@@ -1097,7 +1098,7 @@ public class GwtMenuHelper {
 			moreTBI.addNestedItem(tbi);
 
 			// ...for non-shared collections...
-			if ((!isSharedCollection) && ((null == folder) || bs.getFolderModule().testReadAccess(user, folder, false))) {	// false -> Don't check access because of sharing.
+			if ((!isSharedCollection) && ((null == folder) || visibleWithoutShares(bs, user, folder))) {
 				// ...add the move item....
 				tbi = new ToolbarItem("1_moveSelected");
 				markTBITitle(tbi, "toolbar.move");
@@ -1180,7 +1181,7 @@ public class GwtMenuHelper {
 			}
 	
 			// ...add the subscribe item...
-			constructEntrySubscribeItem(moreTBI, bs, request, false);
+			constructEntrySubscribeItem(moreTBI, bs, request, wa, false);
 			
 			// ...and add the 'Manage Shares...' menu item.  This will
 			// ...only be available for the admin users.
@@ -1702,10 +1703,10 @@ public class GwtMenuHelper {
 	/*
 	 * Constructs a ToolbarItem for subscribing to an item.
 	 */
-	private static void constructEntrySubscribeItem(ToolbarItem entryToolbar, AllModulesInjected bs, HttpServletRequest request, boolean separatorBefore) {
+	private static void constructEntrySubscribeItem(ToolbarItem entryToolbar, AllModulesInjected bs, HttpServletRequest request, WorkArea wa, boolean separatorBefore) {
 		User user = GwtServerHelper.getCurrentUser();
 		boolean isGuest = user.isShared();
-		if ((!isGuest) && GwtEmailHelper.userHasEmailAddress(user)) {
+		if ((!isGuest) && GwtEmailHelper.userHasEmailAddress(user) && visibleWithoutShares(bs, user, wa)) {
 			// ...add the subscribe item.
 			if (separatorBefore) {
 				entryToolbar.addNestedItem(ToolbarItem.constructSeparatorTBI());
@@ -3182,7 +3183,7 @@ public class GwtMenuHelper {
 					constructEntryViewHtmlItem(    actionToolbar, bs, request, fe                    );
 					constructEntryViewWhoHasAccess(actionToolbar, bs, request                        );
 					constructEntryRenameFile(      actionToolbar, bs, request, fe                    );
-					constructEntrySubscribeItem(   actionToolbar, bs, request, true                  );
+					constructEntrySubscribeItem(   actionToolbar, bs, request, fe, true              );
 					
 					if (sharable) {
 						constructEntryManageSharesItem(actionToolbar, bs);
@@ -3211,9 +3212,9 @@ public class GwtMenuHelper {
 						}
 						constructEntryFavoriteItem(actionToolbar, bs, request, isFavorite);
 					}
-					constructEntryViewWhoHasAccess(actionToolbar, bs, request         );
-					constructEntryRenameFolder(    actionToolbar, bs, request, folder );
-					constructEntrySubscribeItem(   actionToolbar, bs, request, true   );
+					constructEntryViewWhoHasAccess(actionToolbar, bs, request              );
+					constructEntryRenameFolder(    actionToolbar, bs, request, folder      );
+					constructEntrySubscribeItem(   actionToolbar, bs, request, folder, true);
 					
 					if (sharable) {
 						constructEntryManageSharesItem(actionToolbar, bs);
@@ -3345,7 +3346,7 @@ public class GwtMenuHelper {
 					if (isCollectionMyFiles && supportsApplets && (null != GwtServerHelper.getMyFilesContainerId(bs)) && isAddEntryAllowed()) {
 						constructEntryDropBoxItem(         entryToolbar                                                                                               );
 					}
-					constructEntryMoreItems(               entryToolbar, bs, request, folderId, viewType, null, (isCollectionMyFiles ? ws : null), ct                 );
+					constructEntryMoreItems(               entryToolbar, bs, request, binder, folderId, viewType, null, (isCollectionMyFiles ? ws : null), ct         );
 				}
 			}
 
@@ -3426,6 +3427,7 @@ public class GwtMenuHelper {
 							entryToolbar,
 							bs,
 							request,
+							folder,
 							folderId,
 							viewType,
 							folder,
@@ -4042,7 +4044,7 @@ public class GwtMenuHelper {
 				
 				// ...and if the user has any email addresses
 				// ...defined...
-				if (GwtEmailHelper.userHasEmailAddress(user)) {
+				if (GwtEmailHelper.userHasEmailAddress(user) && visibleWithoutShares(bs, user, fe)) {
 					// ...add a subscribe toolbar item.
 					actionTBI = new ToolbarItem(SUBSCRIBE);
 					markTBITitle(   actionTBI, "toolbar.menu.subscribeToEntrySelected"  );
@@ -4481,5 +4483,13 @@ public class GwtMenuHelper {
 	private static void markTBIUrlAsTargetedAnchor(ToolbarItem tbi, AdaptedPortletURL url) {
 		// Always use the initial form of the method.
 		markTBIUrlAsTargetedAnchor(tbi, url.toString(), null);
+	}
+
+	/*
+	 * Returns true if the user can access the given WorkArea without
+	 * factoring in shares and false otherwise.
+	 */
+	private static boolean visibleWithoutShares(AllModulesInjected bs, User user, WorkArea wa) {
+		return bs.getFolderModule().testReadAccess(user, wa, false);	// false -> Don't check access because of sharing.
 	}
 }
