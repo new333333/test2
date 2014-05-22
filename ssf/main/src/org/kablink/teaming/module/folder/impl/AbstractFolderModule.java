@@ -32,10 +32,6 @@
  */
 package org.kablink.teaming.module.folder.impl;
 
-import static org.kablink.util.search.Restrictions.between;
-import static org.kablink.util.search.Restrictions.eq;
-import static org.kablink.util.search.Restrictions.in;
-
 import java.io.InputStream;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -54,8 +50,10 @@ import java.util.TreeSet;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.lucene.document.DateTools;
+
 import org.dom4j.Document;
 import org.dom4j.Element;
+
 import org.kablink.teaming.BinderQuotaException;
 import org.kablink.teaming.DataQuotaException;
 import org.kablink.teaming.FileSizeLimitException;
@@ -153,6 +151,11 @@ import org.kablink.teaming.web.util.TrashHelper;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
 import org.kablink.util.search.Criteria;
+
+import static org.kablink.util.search.Restrictions.between;
+import static org.kablink.util.search.Restrictions.eq;
+import static org.kablink.util.search.Restrictions.in;
+
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -1012,8 +1015,7 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
         		processor.indexEntry(entry);
         		getRssModule().updateRssFeed(entry); 
         	}
-        	
-        	processor.updateParentModTime(folder, options);
+        	processor.updateParentModTime(folder, options, reindex);
         }
     }
     
@@ -1068,8 +1070,7 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
         		processor.indexEntry(entry);
         	}
         	getRssModule().updateRssFeed(entry);
-        	
-        	processor.updateParentModTime(folder, options);
+        	processor.updateParentModTime(folder, options, reindex);
         }
     }
     

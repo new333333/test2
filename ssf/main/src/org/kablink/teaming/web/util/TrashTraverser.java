@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -38,6 +38,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
+
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.DefinableEntity;
@@ -226,16 +227,44 @@ public class TrashTraverser {
 		return true;
 	}
 
+	/**
+	 * Given a Binder's ID, adds its parent Binder to the additional
+	 * traversals list.
+	 * 
+	 * @param binderId
+	 */
+	public void addAdditionalBinderParentTraversal(Long binderId) {
+		try {
+			addAdditionalEntityParentTraversal(
+				m_bs.getBinderModule().getBinder(binderId));
+		}
+		catch (Exception ex) {
+			// Ignored.
+		}
+	}
+	
+	/**
+	 * Given a DefinableEntity, adds its parent Binder to the
+	 * additional traversals list.
+	 * 
+	 * @param de
+	 */
+	public void addAdditionalEntityParentTraversal(DefinableEntity de) {
+		if (null != de) {
+			addAdditionalTraversal(de.getParentBinder());
+		}
+	}
+	
 	/*
 	 * Adds a DefinableEntity to the additional traversals ArrayList if
 	 * it is not already there.
 	 */
-	private void addAdditionalTraversals(DefinableEntity de) {
-		if (!(m_additionalTraversalsAL.contains(de))) {
+	private void addAdditionalTraversal(DefinableEntity de) {
+		if ((null != de) && (!(m_additionalTraversalsAL.contains(de)))) {
 			m_additionalTraversalsAL.add(de);
 		}
 	}
-	
+
 	/*
 	 * Called to recursively ascend a binder.
 	 */
@@ -295,7 +324,7 @@ public class TrashTraverser {
 			else          isPreDeleted = ((Workspace) binder).isPreDeleted();
 			if (isPreDeleted) {
 				// Yes!  Handle it...
-				addAdditionalTraversals(binder);
+				addAdditionalTraversal(binder);
 				if (!(m_cb.binder(m_bs, binder.getId(), m_cbData))) {
 					return false;
 				}
@@ -353,7 +382,7 @@ public class TrashTraverser {
 		for (Iterator ancestorsIT=ancestorsList.iterator(); ancestorsIT.hasNext();) {
 			// ...and ascend them.
 			FolderEntry ancestorFE = ((FolderEntry) ancestorsIT.next());
-			addAdditionalTraversals(ancestorFE);
+			addAdditionalTraversal(ancestorFE);
 			if (!(m_cb.entry(m_bs, folderId, ancestorFE.getId(), m_cbData))) {
 				return false;
 			}
