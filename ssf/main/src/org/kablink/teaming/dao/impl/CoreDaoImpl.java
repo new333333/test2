@@ -3593,4 +3593,29 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
 			}
 		);
 	}
+	
+	@Override
+	public List<Long> getSubBinderIds(final Binder binder) {
+		// Return a list of IDs of binders whose parents are the specified binder
+		long begin = System.nanoTime();
+		try {
+	    	List<Long> result = (List<Long>)getHibernateTemplate().execute(
+	                new HibernateCallback() {
+	                    @Override
+						public Object doInHibernate(Session session) throws HibernateException {
+	                    	Criteria crit = session.createCriteria(Binder.class)
+	                    			.setProjection(Projections.property("id"))
+	                    			.add(Restrictions.eq(ObjectKeys.FIELD_ENTITY_PARENTBINDER, binder))
+	                    			.add(Restrictions.eq(ObjectKeys.FIELD_ENTITY_DELETED, Boolean.FALSE))
+	                    			.setCacheable(false);
+	                    	return crit.list();
+	                    }
+	                }
+	            );  
+	    	return result;
+    	}
+    	finally {
+    		end(begin, "getSubBinderIds(binder)");
+    	}	        
+	}
  }

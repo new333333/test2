@@ -129,6 +129,7 @@ import org.kablink.teaming.search.SearchObject;
 import org.kablink.teaming.search.filter.SearchFilter;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.security.function.WorkAreaFunctionMembership;
+import org.kablink.teaming.util.ConcurrentStatusTicket;
 import org.kablink.teaming.util.DirPath;
 import org.kablink.teaming.util.FileHelper;
 import org.kablink.teaming.util.FileUploadItem;
@@ -2166,31 +2167,46 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
    	private Collection loadIndexTree(Binder binder, Collection exclusions, StatusTicket statusTicket, IndexErrors errors) {
    		//get all the ids of child binders. order for statusTicket to make some sense
    		if(logger.isDebugEnabled())
-   			logger.debug("Fetching IDs of all binders at or below [" + binder.getPathName() + "]");
+   			logger.debug("Fetching IDs of all binders at or below this branch [" + binder.getPathName() + "] (id=" + binder.getId() + ")");
 		Map params = new HashMap();
 		params.put("deleted", false);
    		List<Long> ids = getCoreDao().loadObjects("select x.id from org.kablink.teaming.domain.Binder x where x.binderKey.sortKey like '" +
 				binder.getBinderKey().getSortKey() + "%' and x.deleted=:deleted order by x.binderKey.sortKey", params);
    		if(logger.isDebugEnabled())
-   	   		logger.debug("Identified " + ids.size() + " binders to index: " + ids.toString());
+   	   		logger.debug("Identified " + ids.size() + " binders to index within the branch: " + ids.toString());
    		else
-   			logger.info("Identified " + ids.size() + " binders to index");
+   			logger.info("Identified " + ids.size() + " binders to index within the branch");
 		int inClauseLimit=SPropsUtil.getInt("db.clause.limit", 1000);
-		if (exclusions != null) ids.removeAll(exclusions);
+		if (exclusions != null) {
+			synchronized(exclusions) {
+				ids.removeAll(exclusions);
+			}
+		}
 		int bindersIndexed = 0;
 		Long lastProcessedBinderId = null;
 		params.clear();
 		
+    	if(statusTicket instanceof ConcurrentStatusTicket)
+    		((ConcurrentStatusTicket)statusTicket).incrementTotalCount(ids.size());
+				
 		/*
-		 * In order to use this hidden setting/capability, the following conditions must be met.
-		 * 1) Reindexing continuation is node-specific capability. It is managed on a per node basis.
+		 * In order to use this hidden setting/capability, the following conditions must be understood and met.
+		 * 1) Reindexing must be single threaded. If reindexing is performed by concurrent threads (which is
+		 *    the default), then this capability can NOT be used.
+		 * 2) Reindexing continuation is node-specific capability. It is managed on a per node basis.
 		 *    Therefore, all subsequent reindexing attempts after initial crash must execute on the same Filr Appliance.
-		 * 2) Reindexing continuation can be used only in conjunction with site wide reindexing.
-		 *    It should not be used for partial reindexing.
-		 * 3) The system will not automatically pick up incomplete reindexing work after restart and continue.
+		 * 3) Reindexing continuation can be used only in conjunction with site wide reindexing.
+		 *    It should not and can not be used for partial reindexing.
+		 * 4) In order to be able to continue previously aborted reindexing, BOTH the previous and current runs
+		 *    must be configured with this capability. In other word, you can't pick up failed previous reindexing
+		 *    task that was performed with this capability disabled.
+		 * 5) The system will not automatically pick up incomplete reindexing work after restart and continue.
 		 *    Instead, site wide reindexing must be kicked off again from the admin console.
 		 */
-		boolean supportsReindexingContinuation = SPropsUtil.getBoolean("supports.reindexing.continuation", false);
+		boolean supportsReindexingContinuation = false;
+		if(!(statusTicket instanceof ConcurrentStatusTicket))
+			supportsReindexingContinuation = SPropsUtil.getBoolean("supports.reindexing.continuation", false);
+		
 		if(supportsReindexingContinuation) {
 			// This is not an officially supported option. Nevertheless we have it as a last resort tool primarily to aid our support colleagues.
 			Long lastCheckpointBinderId = readLastCheckpointBinderIdForReindexing();
@@ -2205,15 +2221,15 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 				logger.info("Continuing past last checkpoint binder ID of " + lastCheckpointBinderId + ": After adjustment there are " + ids.size() + " remaining binders to index");
 			}
 		}
-		
+
 		for (int i=0; i<ids.size(); i+=inClauseLimit) {
 			List<Long> subList = ids.subList(i, Math.min(ids.size(), i+inClauseLimit));
 			params.put("pList", subList);
 			if(logger.isDebugEnabled())
-				logger.debug("Loading " + subList.size() + " binder objects. The ID of the first binder in this batch is " + subList.get(0));
+				logger.debug("Loading " + subList.size() + " binder objects in a batch. The ID of the first binder in this batch is " + subList.get(0));
 			List<Binder> binders = getCoreDao().loadObjects("from org.kablink.teaming.domain.Binder x where x.id in (:pList) order by x.binderKey.sortKey", params);
-			if(logger.isDebugEnabled())
-				logger.debug("Bulk loading collections for " + binders.size() + " binders");
+			if(logger.isTraceEnabled())
+				logger.trace("Bulk loading collections for " + binders.size() + " binders");
 			// Bulk load associated collections for better performance
 			getCoreDao().bulkLoadCollections(binders);
 			List<EntityIdentifier> folderIds = new ArrayList();
@@ -2239,12 +2255,18 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 
 			for (Binder b:binders) {
 	   	    	BinderProcessor processor = (BinderProcessor)getProcessorManager().getProcessor(b, b.getProcessorKey(BinderProcessor.PROCESSOR_KEY));
+	   	    	if(statusTicket instanceof ConcurrentStatusTicket) {
+	   	    		((ConcurrentStatusTicket)statusTicket).incrementCurrentCount();
+					if(logger.isDebugEnabled())
+						logger.debug("(" + (bindersIndexed+1) + ") Indexing binder [" + b.getPathName() + "] (id=" + b.getId() + ") - Progress (global estimate): " + statusTicket);	    
+	   	    	}
+	   	    	else {
+	   	    		statusTicket.setStatus(NLT.get("index.indexingBinder", new Object[] {String.valueOf(bindersIndexed), String.valueOf(ids.size())}));		
+					if(logger.isDebugEnabled())
+						logger.debug("(" + (bindersIndexed+1) + ") Indexing binder [" + b.getPathName() + "] (id=" + b.getId() + ")");
+	   	    	}
 				
 	   	    	Collection tags = (Collection)tagMap.get(b.getEntityIdentifier());
-	   	    	statusTicket.setStatus(NLT.get("index.indexingBinder", new Object[] {String.valueOf(bindersIndexed), String.valueOf(ids.size())}));
-	   	   		
-				if(logger.isDebugEnabled())
-					logger.debug("(" + (bindersIndexed+1) + ") Indexing binder [" + b.getPathName() + "] (id=" + b.getId() + ")");
 	   	    	IndexErrors binderErrors = processor.indexBinder(b, true, false, tags);
 	   	    	errors.add(binderErrors);
 	   	    	
@@ -2257,11 +2279,13 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 	   	    	lastProcessedBinderId = b.getId();
 			}
 						
-			logger.info("Processed " + bindersIndexed + " binders so far. The ID of the last processed binder is " + lastProcessedBinderId);
+			logger.info("Indexed " + bindersIndexed + " binders in the batch. The ID of the last processed binder is " + lastProcessedBinderId);
 			
-			if(logger.isDebugEnabled())
-				logger.debug("Writing checkpoint binder ID of " + lastProcessedBinderId);
-			writeLastCheckpointBinderIdForReindexing(lastProcessedBinderId);
+			if(supportsReindexingContinuation) {
+				if(logger.isDebugEnabled())
+					logger.debug("Writing checkpoint binder ID of " + lastProcessedBinderId);
+				writeLastCheckpointBinderIdForReindexing(lastProcessedBinderId);
+			}
 			
 			// Periodically (i.e., after processing each batch) clear the entire session to avoid OutOfMemory error
 			// caused by objects kept accumulating in the Hibernate session. It appears that evicting tags and binders
@@ -2273,19 +2297,27 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 				getCoreDao().clear();
 			}
 			
-			if(logger.isDebugEnabled())
-				logger.debug("Applying changes to index");
+			if(logger.isTraceEnabled())
+				logger.trace("Applying changes to index");
 	  		IndexSynchronizationManager.applyChanges(SPropsUtil.getInt("lucene.flush.threshold", 100));
 		}
 		
-    	statusTicket.setStatus(NLT.get("index.finished") + "<br/><br/>" + NLT.get("index.indexingBinder", new Object[] {String.valueOf(bindersIndexed), String.valueOf(ids.size())}));
-    	statusTicket.setState(WebKeys.AJAX_STATUS_STATE_COMPLETED);
-    	
-    	// Now that the entire processing completed successfully, there's no need for checkpoint. Remove it.
-    	removeLastCheckpointForReindexing();
-    	
 		if(logger.isDebugEnabled())
-			logger.debug("Processed all " + ids.size() + " binders");
+			logger.debug("Applying remaining changes to index if any");
+		IndexSynchronizationManager.applyChanges();
+		
+		if(!(statusTicket instanceof ConcurrentStatusTicket)) {
+	    	statusTicket.setStatus(NLT.get("index.finished") + "<br/><br/>" + NLT.get("index.indexingBinder", new Object[] {String.valueOf(bindersIndexed), String.valueOf(ids.size())}));
+	    	statusTicket.setState(WebKeys.AJAX_STATUS_STATE_COMPLETED);
+		}
+    	
+		if(supportsReindexingContinuation) {
+	    	// Now that the entire processing completed successfully, there's no need for checkpoint. Remove it.
+	    	removeLastCheckpointForReindexing();
+		}
+		
+    	if(logger.isDebugEnabled())
+			logger.debug("Indexed " + ids.size() + " binders in the branch");
 		
    		return ids;
    	}

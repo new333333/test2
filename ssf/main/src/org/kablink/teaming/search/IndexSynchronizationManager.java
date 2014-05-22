@@ -182,7 +182,8 @@ public class IndexSynchronizationManager {
     	if(logger.isTraceEnabled())
     		logger.trace("applyChanges(" + threshold + ")");
     	
-    	if (getRequests().size() >= threshold) applyChanges();
+    	if (getRequests().size() >= threshold) 
+    		applyChanges();
     }
 
     public static int applyChanges() {
