@@ -306,4 +306,6 @@ public interface CoreDao {
 	 * @param shareItem
 	 */
 	public void purgeShares(ShareItem shareItem);
+	
+	public List<Long> getSubBinderIds(Binder binder);
 }

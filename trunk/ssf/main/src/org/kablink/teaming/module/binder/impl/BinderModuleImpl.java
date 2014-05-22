@@ -48,9 +48,11 @@ import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 import javax.servlet.http.HttpSession;
 
@@ -155,6 +157,7 @@ import org.kablink.teaming.search.SearchObject;
 import org.kablink.teaming.search.interceptor.IndexSynchronizationManagerInterceptor;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.security.function.WorkAreaOperation;
+import org.kablink.teaming.util.ConcurrentStatusTicket;
 import org.kablink.teaming.util.LongIdUtil;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SPropsUtil;
@@ -764,13 +767,14 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	public Set<Long> indexTree(Collection binderIds, StatusTicket statusTicket,
 			String[] nodeNames, IndexErrors errors, boolean allowUseOfHelperThreads) {
 		if(allowUseOfHelperThreads && SPropsUtil.getBoolean("index.tree.helper.threads.allow", true))
-			return indexTreeWithHelper(binderIds, statusTicket, nodeNames, errors);
+			allowUseOfHelperThreads = true;
 		else
-			return indexTreeWithoutHelper(binderIds, statusTicket, nodeNames, errors);				
+			allowUseOfHelperThreads = false;
+		return indexTreeWithHelper(binderIds, statusTicket, nodeNames, errors, allowUseOfHelperThreads);				
 	}
 
-	private Set<Long> indexTreeWithoutHelper(Collection binderIds, StatusTicket statusTicket,
-			String[] nodeNames, IndexErrors errors) {
+	private Set<Long> indexTreeWithHelper(Collection binderIds, StatusTicket statusTicket,
+			String[] nodeNames, IndexErrors errors, boolean canUseHelperThreads) {
 		long startTime = System.nanoTime();
 		getCoreDao().flush(); // just incase
 		try {
@@ -828,8 +832,20 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 						}
 					}
 					for (Binder binder : checked) {
-						done.addAll(loadBinderProcessor(binder).indexTree(binder,
-								done, statusTicket, errors));
+						if(binder.isZone()) {
+							if(canUseHelperThreads) {
+								// Currently, the use of helper threads is limited only to the site-wide reindexing.
+								done.addAll(indexSite(binder, done, statusTicket, nodeNames, errors));
+							}
+							else {
+								done.addAll(loadBinderProcessor(binder).indexTree(binder,
+										done, statusTicket, errors));		
+							}
+						}
+						else {
+							done.addAll(loadBinderProcessor(binder).indexTree(binder,
+									done, statusTicket, errors));
+						}
 					}
 					// Normally, all updates to the index are managed by the
 					// framework so that
@@ -869,14 +885,14 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 						} finally {
 							luceneSession.close();
 						}
-					}					
+					}	
 				} finally {
 					if(logger.isDebugEnabled())
 						logger.debug("Unsetting indexers");
 					IndexSynchronizationManager.clearNodeNames();
 				}
 			}
-			logger.info("indexTree took " + (System.nanoTime()-startTime)/1000000.0 + " ms");
+			logger.info("Completed indexing of tree with " + done.size() + " binders. Time taken for indexing is " + (System.nanoTime()-startTime)/1000000.0 + " ms");
 			return done;
 		} finally {
 			// It is important to call this at the end of the processing no
@@ -886,195 +902,136 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		}
 	}
 
-	private Set<Long> indexTreeWithHelper(Collection binderIds, StatusTicket statusTicket, String[] nodeNames, IndexErrors errors) {
-		long startTime = System.nanoTime();
-		getCoreDao().flush(); // just in case
-		
-		CacheMode cacheModeOrig = SessionUtil.getCacheMode();
-		CacheMode cacheMode = CacheMode.parse(SPropsUtil.getString("index.tree.producer.secondlevel.cache.mode", "normal").toUpperCase());
+	private void indexOneBinder(Binder binder, ConcurrentStatusTicket concurrentStatusTicket, IndexErrors errors, List<Long> done) {
+	    BinderProcessor processor = loadBinderProcessor(binder);
+		concurrentStatusTicket.incrementCurrentAndTotalCounts();
 		if(logger.isDebugEnabled())
-			logger.debug("Changing cache mode from " + cacheModeOrig + " to " + cacheMode);
-		SessionUtil.setCacheMode(cacheMode);
-		
-		try {
-			// make list of binders we have access to first
-			if(logger.isDebugEnabled())
-				logger.debug("Validating binders " + binderIds);
-			boolean clearAll = false;
-			List<Binder> binders = getCoreDao().loadObjects(binderIds,
-					Binder.class,
-					RequestContextHolder.getRequestContext().getZoneId());
-			List<Binder> checked = new ArrayList<Binder>();
-			for (Binder binder : binders) {
-				try {
-					checkAccess(binder, BinderOperation.indexTree);
-					if (binder.isDeleted())
-						continue;
-					if (binder.isZone())
-						clearAll = true;
-					checked.add(binder);
-				} catch (AccessControlException ex) {
-					// Skip the ones we cannot access
-				} catch (Exception ex) {
-					logger.error("Error indexing binder " + binder, ex);
-					errors.addError(binder);
-				}
-
-			}
-			Set<Long> done = new HashSet<Long>();
-			if (!checked.isEmpty()) {
-				if(logger.isDebugEnabled())
-					logger.debug("Setting indexers to " + StringUtil.toString(nodeNames));
-				IndexSynchronizationManager.setNodeNames(nodeNames);
-				try {
-					if (clearAll) {
-						if(logger.isDebugEnabled())
-							logger.debug("Purging indexes on " + StringUtil.toString(nodeNames));
-						LuceneWriteSession luceneSession = getLuceneSessionFactory()
-								.openWriteSession(nodeNames);
-						try {
-							luceneSession.clearIndex();
-						} catch (Exception e) {
-							logger.warn("Exception:" + e);
-						} finally {
-							luceneSession.close();
-						}
-					} else {
-						// delete all sub-binders - walk the ancestry list
-						// and delete all the entries under each folderid.
-						if(logger.isDebugEnabled())
-							logger.debug("Deleting from indexes all binders at or below " + checked);
-						for (Binder binder : checked) {
-							IndexSynchronizationManager.deleteDocuments(new Term(
-									Constants.ENTRY_ANCESTRY, binder.getId()
-											.toString()));
-						}
-						if(logger.isDebugEnabled())
-							logger.debug("Applying changes to index");
-						IndexSynchronizationManager.applyChanges();
-					}
-					
-					int queueSize = SPropsUtil.getInt("index.tree.helper.threads.queue.size", 100000);
-					BinderToIndexQueue queue = new BinderToIndexQueue(queueSize);
-					
-					int threadsSize = SPropsUtil.getInt("index.tree.helper.threads.size", 4);
-					Thread[] helperThreads = new Thread[threadsSize];
-					Thread helperThread;
-					long now = System.currentTimeMillis();
-					if(logger.isDebugEnabled())
-						logger.debug("Creating a queue with size " + queueSize + " and " + threadsSize + " helper threads");
-					CacheMode consumerCacheMode = CacheMode.parse(SPropsUtil.getString("index.tree.consumer.secondlevel.cache.mode", "normal").toUpperCase());
-					for(int i = 0; i < threadsSize; i++) {
-						helperThread = new Thread(new IndexHelper(statusTicket, nodeNames, consumerCacheMode, errors, queue, RequestContextHolder.getRequestContext()),
-								Thread.currentThread().getName() + "-(" + (i+1) + "-" + now + ")");
-						helperThreads[i] = helperThread;
-						helperThread.start();
-					}
-					
-					if(logger.isDebugEnabled())
-						logger.debug("Producing work items for helper threads to consume");
-					for (Binder binder : checked) {
-						done.addAll(indexBinderTree(binder, done, statusTicket, errors, queue));
-					}
-
-					if(logger.isDebugEnabled())
-						logger.debug("No more work items to produce for helper threads");
-					Long poisonPill = Long.valueOf(-1L);
-					for(int i = 0; i < threadsSize; i++) {
-						try {
-							queue.put(poisonPill);
-						} catch (InterruptedException e) {}
-					}
-					if(logger.isDebugEnabled())
-						logger.debug("Waiting for helper threads to terminate");
-					for(int i = 0; i < threadsSize; i++) {
-						try {
-							helperThreads[i].join();
-						} catch (InterruptedException e) {}
-					}
-
-					// Normally, all updates to the index are managed by the
-					// framework so that
-					// the index update won't be made until after the related
-					// database transaction
-					// has committed successfully. This is to avoid the index going
-					// out of synch
-					// with the database under rollback situation. However, in this
-					// particular
-					// case, we need to take an exception and flush out all index
-					// changes before
-					// returning from the method so that the select node ids set
-					// above can be
-					// applied during the flush. This does not violate the original
-					// design intention
-					// because, unlike other business operations, this operation is
-					// specifically
-					// written for index update only, and there is no corresponding
-					// update transaction
-					// on the database.
-					if(logger.isDebugEnabled())
-						logger.debug("Applying index changes if any");
-					IndexSynchronizationManager.applyChanges();
-					
-					// If complete re-indexing, put the index files in an optimized
-					// state for subsequent searches. It will also help cut down on
-					// the number of file descriptors opened during the indexing.
-					if (clearAll) {
-						if(logger.isDebugEnabled())
-							logger.debug("Optimizing indexes");
-						LuceneWriteSession luceneSession = getLuceneSessionFactory()
-								.openWriteSession(nodeNames);
-						try {
-							luceneSession.optimize();
-						} catch (Exception e) {
-							logger.warn("Exception:" + e);
-						} finally {
-							luceneSession.close();
-						}
-					}					
-				} finally {
-					if(logger.isDebugEnabled())
-						logger.debug("Unsetting indexers");
-					IndexSynchronizationManager.clearNodeNames();
-				}
-			}
-			logger.info("indexTreeWithHelper took " + (System.nanoTime()-startTime)/1000000.0 + " ms");
-			return done;
-		} finally {
-			// It is important to call this at the end of the processing no matter how it went.
-			if (statusTicket != null)
-				statusTicket.done();
-			if(logger.isDebugEnabled())
-				logger.debug("Restoring cache mode from " + cacheMode + " back to " + cacheModeOrig);
-			SessionUtil.setCacheMode(cacheModeOrig);
-		}
+			logger.debug("Indexing binder [" + binder.getPathName() + "] (id=" + binder.getId() + ") - Progress (global estimate): " + concurrentStatusTicket);	    
+		IndexErrors binderErrors = processor.indexBinder(binder, true, false, null);
+	    errors.add(binderErrors);
+		done.add(binder.getId());
+		if(logger.isTraceEnabled())
+			logger.trace("Applying changes to index");
+  		IndexSynchronizationManager.applyChanges(SPropsUtil.getInt("lucene.flush.threshold", 100));
 	}
 	
-   	private List<Long> indexBinderTree(Binder binder, Set<Long> exclusions, StatusTicket statusTicket, IndexErrors errors, BinderToIndexQueue queue) {
-   		//get all the ids of child binders. order for statusTicket to make some sense
-   		if(logger.isDebugEnabled())
-   			logger.debug("Fetching IDs of all binders at or below [" + binder.getPathName() + "]");
-		Map<String, Object> params = new HashMap<String, Object>();
-		params.put("deleted", false);
-   		List<Long> ids = getCoreDao().loadObjects("select x.id from org.kablink.teaming.domain.Binder x where x.binderKey.sortKey like '" +
-				binder.getBinderKey().getSortKey() + "%' and x.deleted=:deleted order by x.binderKey.sortKey", params);
-		if (exclusions != null) 
-			ids.removeAll(exclusions);
-		queue.incrementTotalExpectedCount(ids.size());
-		for(Long id:ids) {
-			try {
-				if(logger.isTraceEnabled())
-					logger.trace("Calling put() on queue " + queue.toString() + " with value " + id);
-				queue.put(id);
-			} catch (InterruptedException e) {
-				Thread.currentThread().interrupt(); // Restore the interrupt
+	private Collection indexSite(Binder binder, Collection exclusions, StatusTicket statusTicket, String[] nodeNames, IndexErrors errors) {
+		// Wrap the status ticket so that we can use thread-unsafe data structure in thread safe way.
+		ConcurrentStatusTicket concurrentStatusTicket = new ConcurrentStatusTicket(statusTicket);
+		ArrayList<Long> done = new ArrayList<Long>();
+		
+		// Index the very top workspace (= /Home Workspace)
+		indexOneBinder(binder, concurrentStatusTicket, errors, done);
+		
+		List<Long> netFolderIds = null;
+		List<Long> personalWorkspaceIds = null;
+		List<Long> remainingIds = null;
+		List<Binder> subBinders = binder.getBinders();
+		BinderProcessor processor;
+		
+		for(Binder subBinder:subBinders) {
+			if(ObjectKeys.NET_FOLDERS_ROOT_INTERNALID.equals(subBinder.getInternalId())) {
+				// Index "/Home Workspace/Net Folders" workspace (one level only)/ This workspace has no entries to index.
+	   	    	indexOneBinder(subBinder, concurrentStatusTicket, errors, done);
+				netFolderIds = getCoreDao().getSubBinderIds(subBinder);
+				if(logger.isDebugEnabled())
+					logger.debug("Identified " + netFolderIds.size() + " net folders to index: " + netFolderIds.toString());
+				else
+					logger.info("Identified " + netFolderIds.size() + " net folders to index");
 			}
-		}				
+			else if(ObjectKeys.PROFILE_ROOT_INTERNALID.equals(subBinder.getInternalId())) {
+				// Index "/Home Workspace/Personal Workspaces" workspace (one level only).
+				// This is a special workspace in which all principal objects (users and groups)
+				// reside. So this will synchronously index all users and groups right here
+				// rather than delegating the work to an asynchronous thread.
+				// However, because this is one-level only indexing, it will NOT index users' 
+				// personal workspaces (which include home folders).
+	   	    	indexOneBinder(subBinder, concurrentStatusTicket, errors, done);
+				logger.info("Indexed all principals (users and groups) - Progress (global estimate): " + concurrentStatusTicket);	    
+				personalWorkspaceIds = getCoreDao().getSubBinderIds(subBinder);
+				if(logger.isDebugEnabled())
+					logger.debug("Identified " + personalWorkspaceIds.size() + " personal workspaces to index: " + personalWorkspaceIds.toString());
+				else
+					logger.info("Identified " + personalWorkspaceIds.size() + " personal workspaces to index");
+			}
+			else {
+				if(remainingIds == null)
+					remainingIds = new ArrayList<Long>();
+				remainingIds.add(subBinder.getId());
+			}
+		}
+		
+		// Flush all remaining index changes associated with this main thread.
 		if(logger.isDebugEnabled())
-			logger.debug("Identified " + ids.size() + " binders to be indexed");
-   		return ids;
-   	}
+			logger.debug("Applying remaining changes to index if any");
+  		IndexSynchronizationManager.applyChanges();
 
+		// We want to arrange the order in which binders are indexed such that 
+		// 1) users' personal workspaces (including home folders)
+		// 2) net folders
+		// 3) the rest
+		List<Long> binderIds = new ArrayList<Long>();
+		if(personalWorkspaceIds != null) {
+			 binderIds.addAll(personalWorkspaceIds);
+		}
+		if(netFolderIds != null) {
+			binderIds.addAll(netFolderIds);
+		}
+		if(remainingIds != null) {
+			binderIds.addAll(remainingIds);
+		}
+
+		int threadsSize = SPropsUtil.getInt("index.tree.helper.threads.size", 5);
+		
+		if(logger.isDebugEnabled())
+			logger.debug("Identified " + binderIds.size() + " branches to index independently: " + binderIds.toString());
+		else
+			logger.info("Identified " + binderIds.size() + " branches to index independently");
+			
+		// Set up a queue and pre-populate it fully.
+		BinderToIndexQueue queue = new BinderToIndexQueue(binderIds.size() + threadsSize);
+		for(Long id:binderIds) {
+			try {
+				queue.put(id);
+			} catch (InterruptedException e) {}
+		}
+		// Append poison pills to the queue.
+		Long poisonPill = Long.valueOf(-1L);
+		for(int i = 0; i < threadsSize; i++) {
+			try {
+				queue.put(poisonPill);
+			} catch (InterruptedException e) {}
+		}
+
+		// Set up and start helper threads.
+		Thread[] helperThreads = new Thread[threadsSize];
+		Thread helperThread;
+		long now = System.currentTimeMillis();
+		if(logger.isDebugEnabled())
+			logger.debug("Creating a queue with size " + queue.getPutCount() + " and " + threadsSize + " helper threads");
+		for(int i = 0; i < threadsSize; i++) {
+			helperThread = new Thread(new IndexHelper(concurrentStatusTicket, nodeNames, errors, queue, RequestContextHolder.getRequestContext(), done),
+					Thread.currentThread().getName() + "-(" + (i+1) + "-" + now + ")");
+			helperThreads[i] = helperThread;
+			helperThread.start();
+		}
+
+		if(logger.isDebugEnabled())
+			logger.debug("Waiting for helper threads to terminate");
+		for(int i = 0; i < threadsSize; i++) {
+			try {
+				helperThreads[i].join();
+			} catch (InterruptedException e) {}
+		}
+			
+		if(logger.isDebugEnabled())
+			logger.debug("All helper threads terminated: Total number of binders indexed is " + done.size());
+		
+		concurrentStatusTicket.indexingCompleted();
+
+		return done;
+	}
+	
 	@Override
 	public IndexErrors indexBinder(Long binderId) {
 		return indexBinder(binderId, false);
@@ -3968,23 +3925,24 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
         return executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, 0, maxResults,
         		SearchUtils.fieldNamesList(Constants.MODIFICATION_DATE_FIELD,Constants.DOCID_FIELD,Constants.ENTITY_FIELD,Constants.CREATION_DATE_FIELD));
     }
-	
+    
 	class IndexHelper implements Runnable {
 		
-		private StatusTicket statusTicket;
+		private ConcurrentStatusTicket statusTicket;
 		String[] nodeNames;
-		CacheMode cacheMode;
 		private IndexErrors errors;
 		private BinderToIndexQueue queue;
 		private RequestContext parentRequestContext;
+		// This must be guarded by itself.
+		private List<Long> done;
 		
-		IndexHelper(StatusTicket statusTicket, String[] nodeNames, CacheMode cacheMode, IndexErrors errors, BinderToIndexQueue queue, RequestContext parentRequestContext) {
+		IndexHelper(ConcurrentStatusTicket statusTicket, String[] nodeNames, IndexErrors errors, BinderToIndexQueue queue, RequestContext parentRequestContext, List<Long> done) {
 			this.statusTicket = statusTicket;
 			this.nodeNames = nodeNames;
-			this.cacheMode = cacheMode;
 			this.errors = errors;
 			this.queue = queue;
 			this.parentRequestContext = parentRequestContext;
+			this.done = done;
 		}
 
 		@Override
@@ -4007,95 +3965,33 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 							logger.debug("Setting indexers to " + StringUtil.toString(nodeNames));
 						IndexSynchronizationManager.setNodeNames(nodeNames);
 						try {
-							CacheMode cacheModeOrig = SessionUtil.getCacheMode();
-							if(logger.isDebugEnabled())
-								logger.debug("Changing cache mode from " + cacheModeOrig + " to " + cacheMode);
-							SessionUtil.setCacheMode(cacheMode);
-	
-							int batchSize = SPropsUtil.getInt("index.tree.helper.threads.batch.size", 1000);
-							int inClauseLimit = SPropsUtil.getInt("db.clause.limit", 1000);
-							batchSize = Math.min(batchSize, inClauseLimit);
-							boolean poisonPillEncountered = false;
-							List<Long> subList;
 							Long binderId;
-							Map<String, Object> params = new HashMap<String, Object>();
-							while(!poisonPillEncountered) {
-								subList = new ArrayList<Long>();
-								for(int i = 0; i < batchSize; i++) {
-									try {
-										if(logger.isTraceEnabled())
-											logger.trace("Calling take() on queue " + queue.toString());
-										binderId = queue.take();
-										if(binderId.longValue() != -1L) {
-											subList.add(binderId);
+							Binder binder;
+							Collection result;
+							while(true) {
+								try {
+									binderId = queue.take();
+									if(binderId.longValue() != -1L) {
+										binder = loadBinder(binderId);
+										result = loadBinderProcessor(binder).indexTree(binder, done, statusTicket, errors);
+										synchronized(done) {
+											done.addAll(result);
 										}
-										else {
-											if(logger.isDebugEnabled())
-												logger.debug("Encountered poison pill");
-											poisonPillEncountered = true;
-											break;
-										}
-									} catch (InterruptedException e1) {
-										Thread.currentThread().interrupt(); // Restore the interrupt
 									}
+									else {
+										// Poison pill encountered
+										break;
+									}
+								} catch(NoBinderByTheIdException e) {
+									logger.warn(e.toString());
+								} catch (InterruptedException e1) {
+									Thread.currentThread().interrupt(); // Restore the interrupt
 								}
-								if(subList.size() == 0)
-									continue;								
-								params.put("pList", subList);
-								if(logger.isDebugEnabled())
-									logger.debug("Loading " + subList.size() + " binder objects");
-								else if(logger.isTraceEnabled())
-									logger.trace("Loading " + subList.size() + " binder objects: " + subList);
-								List<Binder> binders = getCoreDao().loadObjects("from org.kablink.teaming.domain.Binder x where x.id in (:pList) order by x.binderKey.sortKey", params);
-								if(logger.isDebugEnabled())
-									logger.debug("Bulk loading collections for " + binders.size() + " binders");
-								getCoreDao().bulkLoadCollections(binders);
-								List<EntityIdentifier> folderIds = new ArrayList();
-								List<EntityIdentifier> workspaceIds = new ArrayList();
-								List<EntityIdentifier> otherIds = new ArrayList();
-								for (Binder e: binders) {
-									if(EntityIdentifier.EntityType.folder.equals(e.getEntityType()))
-										folderIds.add(e.getEntityIdentifier());
-									else if(EntityIdentifier.EntityType.workspace.equals(e.getEntityType()))
-										workspaceIds.add(e.getEntityIdentifier());
-									else 
-										otherIds.add(e.getEntityIdentifier());
-								}
-								if(logger.isDebugEnabled())
-									logger.debug("Loading tags for " + folderIds.size() + " folders");
-								Map<EntityIdentifier,List<Tag>> tagMap = getCoreDao().loadAllTagsByEntity(folderIds);
-								if(logger.isDebugEnabled())
-									logger.debug("Loading tags for " + workspaceIds.size() + " workspaces");
-								tagMap.putAll(getCoreDao().loadAllTagsByEntity(workspaceIds));
-								if(logger.isDebugEnabled())
-									logger.debug("Loading tags for " + otherIds.size() + " others");
-								tagMap.putAll(getCoreDao().loadAllTagsByEntity(otherIds));
-
-								for (Binder b:binders) {
-						   	    	statusTicket.setStatus(NLT.get("index.indexingBinder", new Object[] {String.valueOf(queue.incrementProcessedCount()), String.valueOf(queue.getTotalExpectedCount())}));				   	   		
-						   	    	BinderProcessor processor = (BinderProcessor)getProcessorManager().getProcessor(b, b.getProcessorKey(BinderProcessor.PROCESSOR_KEY));									
-						   	    	Collection<Tag> tags = tagMap.get(b.getEntityIdentifier());						   	   		
-									if(logger.isDebugEnabled())
-										logger.debug("Indexing binder [" + b.getPathName() + "] (id=" + b.getId() + ")");
-						   	    	IndexErrors binderErrors = processor.indexBinder(b, true, false, tags, false, false);
-						   	    	errors.add(binderErrors);						   	    	
-									if(logger.isDebugEnabled())
-										logger.debug("Evicting tags and binder");
-						   	    	getCoreDao().evict(tags);
-						   	    	getCoreDao().evict(b);
-									if(logger.isDebugEnabled())
-										logger.debug("Applying changes to index if applicable");
-							  		IndexSynchronizationManager.applyChanges(indexFlushThreshold);
-								}
-							} // end while
-							
+							}
+	
 							if(logger.isDebugEnabled())
 								logger.debug("Applying remaining changes to index if any");
 							IndexSynchronizationManager.applyChanges();
-							
-							if(logger.isDebugEnabled())
-								logger.debug("Restoring cache mode from " + cacheMode + " back to " + cacheModeOrig);
-							SessionUtil.setCacheMode(cacheModeOrig);
 						}
 						finally {
 							if(logger.isDebugEnabled())
@@ -4121,7 +4017,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		}	
 	}
 
-	static class BinderToIndexQueue extends LinkedBlockingQueue<Long> {
+	static class BinderToIndexQueue extends ArrayBlockingQueue<Long> {
 		private static final long serialVersionUID = 1L;
 		
 		// Number of items put into the queue so far since creation of the queue
@@ -4137,10 +4033,10 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		// number of items processed trail the number of items taken off the queue.
 		private AtomicInteger processedCount = new AtomicInteger();
 		
-	    public BinderToIndexQueue(int capacity) {
-	    	super(capacity);
-	    }
-	    
+		public BinderToIndexQueue(int capacity) {
+			super(capacity);
+		}
+		
 		@Override
 	    public void put(Long binderId) throws InterruptedException {
 	    	super.put(binderId);
@@ -4155,7 +4051,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 				 takenCount.incrementAndGet();
 			 return binderId;
 		}
-		
+	    
 		int getPutCount() {
 			return putCount.intValue();
 		}

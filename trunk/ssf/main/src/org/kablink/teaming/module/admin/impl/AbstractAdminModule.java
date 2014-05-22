@@ -3841,7 +3841,7 @@ public List<ChangeLog> getWorkflowChanges(EntityIdentifier entityIdentifier, Str
     	setStateReindexStart(nodeNames);
     	
     	try {
-        	logger.info("Reindexing started on binders " + binderIds + ((includeUsersAndGroups)? " and users and groups" : ""));
+        	logger.info("Administrative reindexing started on binders " + binderIds + ((includeUsersAndGroups)? " and users and groups" : ""));
         	
 	    	Collection<Long> idsIndexed = getBinderModule().indexTree(binderIds, statusTicket, nodeNames, errors, true);
 			//if people selected and not yet index; index content only, not the whole ws tree
@@ -3859,7 +3859,7 @@ public List<ChangeLog> getWorkflowChanges(EntityIdentifier entityIdentifier, Str
     	finally {
     		getCoreDao().clear(); // without this, we seem to get the notorious NonUniqueObjectException on Definition object.
     		setStateReindexEnd(nodeNames);
-        	logger.info("Reindexing completed on binders " + binderIds + ((includeUsersAndGroups)? " and users and groups" : ""));
+        	logger.info("Administrative reindexing completed on binders " + binderIds + ((includeUsersAndGroups)? " and users and groups" : ""));
     	}
     }
     
