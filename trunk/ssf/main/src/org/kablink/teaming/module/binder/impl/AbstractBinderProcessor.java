@@ -3135,16 +3135,24 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 	}
 	
     @Override
-	public void updateParentModTime(final Binder parentBinder, Map options) {
+	public void updateParentModTime(final Binder parentBinder, Map options, boolean reindex) {
 		if(parentBinder != null && 
 				parentBinder.getInternalId() == null &&
 				!(options != null && Boolean.TRUE.equals(options.get(ObjectKeys.INPUT_OPTION_SKIP_PARENT_MODTIME_UPDATE)))) {
     		// Set the modification time to the "current" time.
 			parentBinder.getModification().setDate(new Date());
-			// Reindex
-			indexBinder(parentBinder, false);
+			if (reindex) {
+				// Reindex
+				indexBinder(parentBinder, false);
+			}
 		}
 	}
+    
+    @Override
+	public void updateParentModTime(final Binder parentBinder, Map options) {
+    	// Always use the initial form of the method.
+    	updateParentModTime(parentBinder, options, true);
+    }
     
     private Long readLastCheckpointBinderIdForReindexing() {
     	try {

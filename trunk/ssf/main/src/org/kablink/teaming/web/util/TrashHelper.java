@@ -47,6 +47,7 @@ import javax.portlet.RenderResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.CoreDao;
@@ -89,6 +90,7 @@ import org.kablink.util.StringUtil;
 import org.kablink.util.search.Constants;
 import org.kablink.util.search.Criteria;
 import org.kablink.util.search.Order;
+
 import org.springframework.web.portlet.ModelAndView;
 import org.springframework.web.portlet.bind.PortletRequestBindingException;
 
@@ -1190,8 +1192,8 @@ public class TrashHelper {
 				}
 				else {
 					logger.debug("TrashHelper.doAdditionalIndexing(" + de.getParentBinder().getId() + ", " + deId + "):  Re-indexing entry");
-					reindexEntry(  bs, ((FolderEntry) de));
-					refreshRssFeed(bs, ((FolderEntry) de));
+					reindexTopEntry(bs, ((FolderEntry) de));
+					refreshRssFeed( bs, ((FolderEntry) de));
 				}
 			}
 			catch (AccessControlException e) {
@@ -1415,14 +1417,16 @@ public class TrashHelper {
 		tt.doTraverse(TraversalMode.DESCENDING, binderId);
 		if (!(tr.isError())) {
 			// ...and if they pass, perform the predelete.
+			tt.resetAdditionalTraversalsAL();
 			tt.setCallback(new TrashPreDelete());
 			tt.doTraverse(TraversalMode.DESCENDING, binderId);
 
 			// After predeleting a binder hierarchy, we need to
-			// re-index the binder and everything below.
+			// re-index the binder and everything below...
 			try {
 				logger.debug("TrashHelper.preDeleteBinder(" + binderId + "):  Re-indexing binder (binder tree)");
 				bs.getBinderModule().indexTree(binderId);
+				tt.addAdditionalBinderParentTraversal(binderId);	// Need to make sure the binder's parent gets indexed because its modification date was changed.
 				refreshRssFeed(bs, binderId);
 			}
 			catch (AccessControlException e) {
@@ -1430,6 +1434,9 @@ public class TrashHelper {
 					tr.setACLViolation(binderId);
 				}
 			}
+			
+			// ...and index any additional objects that require it. 
+			doAdditionalIndexing(bs, tr, tt.getAdditionalTraversalsAL());
 		}
 
 		
@@ -1457,21 +1464,26 @@ public class TrashHelper {
 		tt.doTraverse(TraversalMode.DESCENDING, folderId, entryId);
 		if (!(tr.isError())) {
 			// ...and if they pass, perform the predelete.
+			tt.resetAdditionalTraversalsAL();
 			tt.setCallback(new TrashPreDelete());
 			tt.doTraverse(TraversalMode.DESCENDING, folderId, entryId);
 			
-			// After predeleting an entry, we need to re-index it.
+			// After predeleting an entry, we need to re-index it...
 			try {
 				logger.debug("TrashHelper.preDeleteEntry(" + folderId + "," + entryId + "):  Re-indexing entry");
 				FolderEntry fe = bs.getFolderModule().getEntry(folderId, entryId);
-				reindexEntry(  bs, fe);
-				refreshRssFeed(bs, fe);
+				tt.addAdditionalEntityParentTraversal(fe);	// Need to make sure the entry's folder gets indexed because its modification date was change.
+				reindexTopEntry(bs, fe);
+				refreshRssFeed( bs, fe);
 			}
 			catch (AccessControlException e) {
 				if (!(tr.isError())) {
 					tr.setACLViolation(folderId, entryId);
 				}
 			}
+			
+			// ...and index any additional objects that require it. 
+			doAdditionalIndexing(bs, tr, tt.getAdditionalTraversalsAL());
 		}
 		
 		// For any error...
@@ -1996,7 +2008,7 @@ public class TrashHelper {
      * Re-indexes a FolderEntry.  If the given FolderEntry is NOT a top
      * entry, the top entry is indexed instead.
      */
-    private static void reindexEntry(AllModulesInjected bs, FolderEntry fe) {
+    private static void reindexTopEntry(AllModulesInjected bs, FolderEntry fe) {
     	FolderEntry feTop       = fe.getTopEntry();
     	FolderEntry feToReindex = ((null == feTop) ? fe : feTop);
 		bs.getFolderModule().indexEntry(feToReindex, true);
@@ -2052,6 +2064,7 @@ public class TrashHelper {
 			try {
 				logger.debug("TrashHelper.restoreBinder(" + binderId + "):  Re-indexing binder (binder tree)");
 				bs.getBinderModule().indexTree(binderId);
+				tt.addAdditionalBinderParentTraversal(binderId);	// Need to make sure the binder's parent gets indexed because its modification date was changed.
 				refreshRssFeed(bs, binderId);
 			}
 			catch (AccessControlException e) {
@@ -2060,8 +2073,9 @@ public class TrashHelper {
 				}
 			}
 			
-			// ...and any parent binders that had to get restored to
-			// ...restore the binder.
+			// ...and index any additional objects that require it. 
+			// ...This includes parent binders that had to get restored
+			// ...to restore the binder, ...
 			doAdditionalIndexing(bs, tr, tt.getAdditionalTraversalsAL());
 		}
 	}
@@ -2085,8 +2099,9 @@ public class TrashHelper {
 			try {
 				logger.debug("TrashHelper.restoreEntry(" + folderId + ", " + entryId + "):  Re-indexing entry");
 				FolderEntry fe = bs.getFolderModule().getEntry(folderId, entryId);
-				reindexEntry(  bs, fe);
-				refreshRssFeed(bs, fe);
+				tt.addAdditionalEntityParentTraversal(fe);	// Need to make sure the entry's folder gets indexed because its modification date was change.
+				reindexTopEntry(bs, fe);
+				refreshRssFeed( bs, fe);
 			}
 			catch (AccessControlException e) {
 				if (!(tr.isError())) {
@@ -2094,8 +2109,9 @@ public class TrashHelper {
 				}
 			}
 			
-			// ...and any parent binders that had to get restored to
-			// ...restore the entry.
+			// ...and index any additional objects that require it. 
+			// ...This includes any parent binders that had to get
+			// ...restored to restore the entry, ...
 			doAdditionalIndexing(bs, tr, tt.getAdditionalTraversalsAL());
 		}
 		

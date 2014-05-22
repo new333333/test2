@@ -58,11 +58,14 @@ import org.apache.lucene.document.DateTools;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.SortField;
+
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
+
 import org.hibernate.CacheMode;
 import org.hibernate.NonUniqueObjectException;
+
 import org.kablink.teaming.ConfigurationException;
 import org.kablink.teaming.InternalException;
 import org.kablink.teaming.NoObjectByTheIdException;
@@ -177,17 +180,18 @@ import org.kablink.util.search.Criteria;
 import org.kablink.util.search.Junction;
 import org.kablink.util.search.Order;
 import org.kablink.util.search.Restrictions;
-import org.springframework.orm.hibernate3.HibernateSystemException;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.transaction.support.TransactionTemplate;
-import org.springframework.web.multipart.MultipartFile;
 
 import static org.kablink.util.search.Restrictions.between;
 import static org.kablink.util.search.Restrictions.conjunction;
 import static org.kablink.util.search.Restrictions.disjunction;
 import static org.kablink.util.search.Restrictions.eq;
 import static org.kablink.util.search.Restrictions.in;
+
+import org.springframework.orm.hibernate3.HibernateSystemException;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * ?
@@ -1384,7 +1388,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 			        // ...re-index the Binder.
 		        	processor.indexBinder(binder, true);
 		        }
-		        processor.updateParentModTime(binder.getParentBinder(), options);
+		        processor.updateParentModTime(binder.getParentBinder(), options, reindex);
 			}
 		}
 	}
@@ -1667,7 +1671,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		        if (reindex) {
 		        	processor.indexBinder(binder, true);
 		        }
-		        processor.updateParentModTime(parentBinder, options);
+		        processor.updateParentModTime(parentBinder, options, reindex);
 			}
 		}
 	}
@@ -3759,6 +3763,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
         return searchFolderOneLevelWithInferredAccess(crit, searchMode, offset, maxResults, parentBinder, true);
     }
 
+	@Override
     public Map searchFolderOneLevelWithInferredAccess(Criteria crit, int searchMode, int offset, int maxResults, Binder parentBinder, boolean allowJits) {
 		// No access checking in this method, because we expect the caller to check access on the parent binder before calling this method.
     	boolean preDeleted = false;
