@@ -1480,7 +1480,13 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 		for (Entry e: entries) {
 			ids.add(e.getEntityIdentifier());
 		}
-		return getCoreDao().loadAllTagsByEntity(ids);
+		try {
+			return getCoreDao().loadAllTagsByEntity(ids);
+		}
+		catch(Exception e) {
+			logger.error("Error loading tags", e);
+			return new HashMap();
+		}
 	}
  
     //***********************************************************************************************************

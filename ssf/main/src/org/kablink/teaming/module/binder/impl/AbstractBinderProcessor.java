@@ -2243,15 +2243,32 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 				else 
 					otherIds.add(e.getEntityIdentifier());
 			}
+			
+			Map tagMap = new HashMap();
 			if(logger.isDebugEnabled())
 				logger.debug("Loading tags for " + folderIds.size() + " folders");
-			Map tagMap = getCoreDao().loadAllTagsByEntity(folderIds);
+			try {
+				tagMap.putAll(getCoreDao().loadAllTagsByEntity(folderIds));
+			}
+			catch(Exception e) {
+				logger.error("Error loading tags for folders", e);
+			}
 			if(logger.isDebugEnabled())
 				logger.debug("Loading tags for " + workspaceIds.size() + " workspaces");
-			tagMap.putAll(getCoreDao().loadAllTagsByEntity(workspaceIds));
+			try {
+				tagMap.putAll(getCoreDao().loadAllTagsByEntity(workspaceIds));
+			}
+			catch(Exception e) {
+				logger.error("Error loading tags for workspaces", e);
+			}			
 			if(logger.isDebugEnabled())
 				logger.debug("Loading tags for " + otherIds.size() + " others");
-			tagMap.putAll(getCoreDao().loadAllTagsByEntity(otherIds));
+			try {
+				tagMap.putAll(getCoreDao().loadAllTagsByEntity(otherIds));
+			}
+			catch(Exception e) {
+				logger.error("Error loading tags for others", e);
+			}
 
 			for (Binder b:binders) {
 	   	    	BinderProcessor processor = (BinderProcessor)getProcessorManager().getProcessor(b, b.getProcessorKey(BinderProcessor.PROCESSOR_KEY));
