@@ -57,6 +57,7 @@ import org.apache.lucene.search.SortField;
 
 import org.dom4j.Element;
 
+import org.hibernate.exception.LockAcquisitionException;
 import org.kablink.teaming.ConfigurationException;
 import org.kablink.teaming.IllegalCharacterInNameException;
 import org.kablink.teaming.NoObjectByTheIdException;
@@ -156,6 +157,7 @@ import static org.kablink.util.search.Restrictions.eq;
 import static org.kablink.util.search.Restrictions.in;
 import static org.kablink.util.search.Restrictions.not;
 
+import org.springframework.dao.CannotAcquireLockException;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -307,26 +309,47 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 	        
 	        SimpleProfiler.start("addBinder_transactionExecute");
 	        // The following part requires update database transaction.
-	        getTransactionTemplate().execute(new TransactionCallback() {
-	        	@Override
-				public Object doInTransaction(TransactionStatus status) {
-	                //need to set entry/binder information before generating file attachments
-	                //Attachments/Events need binder info for AnyOwner
-	                addBinder_fillIn(parent, binder, inputData, entryData, ctx);
-	                
-	                addBinder_mirrored(parent, binder, inputData, entryData, ctx);
-	                
-	                addBinder_preSave(parent, binder, inputData, entryData, ctx);      
-	
-	                addBinder_save(parent, binder, inputData, entryData, ctx);      
-	                
-	                addBinder_postSave(parent, binder, inputData, entryData, ctx);
-	                //register title for uniqueness for webdav; always ensure binder titles are unique in parent
-	                getCoreDao().updateFileName(binder.getParentBinder(), binder, null, binder.getTitle());
-	                if (binder.getParentBinder().isUniqueTitles()) getCoreDao().updateTitle(binder.getParentBinder(), binder, null, binder.getNormalTitle());
-	                return null;
+	        int tryMaxCount = 1 + SPropsUtil.getInt("select.database.transaction.retry.max.count", 2);
+	        int tryCount = 0;
+	        while(true) {
+	        	tryCount++;
+	        	try {
+			        getTransactionTemplate().execute(new TransactionCallback() {
+			        	@Override
+						public Object doInTransaction(TransactionStatus status) {
+			                //need to set entry/binder information before generating file attachments
+			                //Attachments/Events need binder info for AnyOwner
+			                addBinder_fillIn(parent, binder, inputData, entryData, ctx);
+			                
+			                addBinder_mirrored(parent, binder, inputData, entryData, ctx);
+			                
+			                addBinder_preSave(parent, binder, inputData, entryData, ctx);      
+			
+			                addBinder_save(parent, binder, inputData, entryData, ctx);      
+			                
+			                addBinder_postSave(parent, binder, inputData, entryData, ctx);
+			                //register title for uniqueness for webdav; always ensure binder titles are unique in parent
+			                getCoreDao().updateFileName(binder.getParentBinder(), binder, null, binder.getTitle());
+			                if (binder.getParentBinder().isUniqueTitles()) getCoreDao().updateTitle(binder.getParentBinder(), binder, null, binder.getNormalTitle());
+			                return null;
+			        	}
+			        });
+			        break; // successful transaction
 	        	}
-	        });
+	        	catch(LockAcquisitionException | CannotAcquireLockException e) {
+	        		if(tryCount < tryMaxCount) {
+	        			if(logger.isDebugEnabled())
+	        				logger.warn("'add binder' failed due to lock error", e);
+	        			else 
+	        				logger.warn("'add binder' failed due to lock error: " + e.toString());
+	        			logger.warn("Retrying 'add binder' in new transaction");
+	        			getCoreDao().refresh(parent);        		
+	        		}
+	        		else {
+	        			throw e;
+	        		}
+	        	}
+	        }
 	        SimpleProfiler.stop("addBinder_transactionExecute");
 	           
 	        SimpleProfiler.start("addBinder_filterFiles");

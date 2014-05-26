@@ -45,6 +45,7 @@ import java.util.Set;
 
 import org.dom4j.Document;
 import org.dom4j.Element;
+import org.hibernate.exception.LockAcquisitionException;
 import org.kablink.teaming.NotSupportedException;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
@@ -89,10 +90,12 @@ import org.kablink.teaming.module.shared.InputDataAccessor;
 import org.kablink.teaming.module.shared.XmlUtils;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.util.CollectionUtil;
+import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.ServerTaskLinkage;
 import org.kablink.util.Validator;
+import org.springframework.dao.CannotAcquireLockException;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
@@ -148,26 +151,83 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
                
     	final Map ctx = new HashMap();
         if (options != null) ctx.putAll(options);
+        ctx.put(ObjectKeys.INPUT_OPTION_SKIP_PARENT_MODTIME_UPDATE, Boolean.TRUE);
 
     	Map entryDataAll = addReply_toEntryData(parent, def, inputData, fileItems, ctx);
         final Map entryData = (Map) entryDataAll.get(ObjectKeys.DEFINITION_ENTRY_DATA);
         List fileData = (List) entryDataAll.get(ObjectKeys.DEFINITION_FILE_DATA);
         List allUploadItems = new ArrayList(fileData);
-	FolderEntry newEntry = null;
+        FolderEntry newEntry = null;
         try {
          	final FolderEntry entry = addReply_create(def, ctx);
-		newEntry = entry;
+         	newEntry = entry;
         	// The following part requires update database transaction.
-        	getTransactionTemplate().execute(new TransactionCallback() {
-        	@Override
-			public Object doInTransaction(TransactionStatus status) {
-        		addReply_fillIn(parent, entry, inputData, entryData, ctx);
-        		addReply_preSave(parent, entry, inputData, entryData, ctx);
-        		addReply_save(parent, entry, inputData, entryData, ctx);
-               	addReply_startWorkflow(entry, ctx);
-           		addReply_postSave(parent, entry, inputData, entryData, ctx);
-           	return null;
-        	}});
+	        int tryMaxCount = 1 + SPropsUtil.getInt("select.database.transaction.retry.max.count", 2);
+	        int tryCount = 0;
+	        while(true) {
+	        	tryCount++;
+	        	try {
+		        	getTransactionTemplate().execute(new TransactionCallback() {
+		        	@Override
+					public Object doInTransaction(TransactionStatus status) {
+		        		addReply_fillIn(parent, entry, inputData, entryData, ctx);
+		        		addReply_preSave(parent, entry, inputData, entryData, ctx);
+		        		addReply_save(parent, entry, inputData, entryData, ctx);
+		               	addReply_startWorkflow(entry, ctx);
+		           		addReply_postSave(parent, entry, inputData, entryData, ctx);
+		           		return null;
+		        	}});
+			        break; // successful transaction
+	        	}
+	        	catch(LockAcquisitionException | CannotAcquireLockException e) {
+	        		if(tryCount < tryMaxCount) {
+	        			if(logger.isDebugEnabled())
+	        				logger.warn("'add reply' failed due to lock error", e);
+	        			else 
+	        				logger.warn("'add reply' failed due to lock error: " + e.toString());
+	        			logger.warn("Retrying 'add reply' in new transaction");
+	        			getCoreDao().refresh(parent.getParentBinder());        		
+	        		}
+	        		else {
+	        			throw e;
+	        		}
+	        	}
+	        }
+	        
+	        // (Bug #879800) JK - Separated the process of updating parent binder's mod time from the above main
+	        // transaction to eliminate or significantly reduce the possibility of dead lock around the binder.
+	        // Because the above main transaction is lengthier and involves a few other rows within the 
+	        // transaction, there is much higher chance of failing to obtain a lock on the parent binder by
+	        // the time it attempts to modify the binder record. Instead, we separated binder update in its
+	        // own shorter transaction here which doesn't require obtaining previous lock on any other rows,
+	        // hence avoiding deadlock.
+	        tryCount = 0;
+	        while(true) {
+	        	tryCount++;
+	        	try {
+		        	getTransactionTemplate().execute(new TransactionCallback() {
+		        	@Override
+					public Object doInTransaction(TransactionStatus status) {
+		    	        updateParentModTime(parent.getParentBinder(), null);
+		    	        return null;
+		        	}});
+			        break; // successful transaction
+	        	}
+	        	catch(LockAcquisitionException | CannotAcquireLockException e) {
+	        		if(tryCount < tryMaxCount) {
+	        			if(logger.isDebugEnabled())
+	        				logger.warn("'update parent mod time' failed due to lock error", e);
+	        			else 
+	        				logger.warn("'update parent mod time' failed due to lock error: " + e.toString());
+	        			logger.warn("Retrying 'update parent mod time' in new transaction");
+	        			getCoreDao().refresh(parent.getParentBinder());        		
+	        		}
+	        		else {
+	        			throw e;
+	        		}
+	        	}
+	        }
+	        
            	// Need entry id before filtering 
             FilesErrors filesErrors = addReply_filterFiles(parent.getParentFolder(), entry, entryData, fileData, ctx);
         	filesErrors = addReply_processFiles(parent, entry, fileData, filesErrors, ctx);
