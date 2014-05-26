@@ -234,6 +234,7 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
 	}
 	@Override
 	public void refresh(Object obj) {
+		if(obj == null) return;
 		long begin = System.nanoTime();
 		try {
 			getSession().refresh(obj);

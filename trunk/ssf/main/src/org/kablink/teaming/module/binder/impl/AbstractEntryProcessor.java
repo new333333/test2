@@ -47,6 +47,7 @@ import org.apache.lucene.search.SortField;
 
 import org.dom4j.Element;
 
+import org.hibernate.exception.LockAcquisitionException;
 import org.kablink.teaming.ConfigurationException;
 import org.kablink.teaming.IllegalCharacterInNameException;
 import org.kablink.teaming.NotSupportedException;
@@ -108,6 +109,7 @@ import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
 import org.kablink.util.search.FieldFactory;
 
+import org.springframework.dao.CannotAcquireLockException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -159,26 +161,47 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         
         	SimpleProfiler.start("addEntry_transactionExecute");
         	// 	The following part requires update database transaction.
-        	getTransactionTemplate().execute(new TransactionCallback() {
-        		@Override
-				public Object doInTransaction(TransactionStatus status) {
-        			//need to set entry/binder information before generating file attachments
-        			//Attachments/Events need binder info for AnyOwner
-                	SimpleProfiler.start("addEntry_fillIn");
-        			addEntry_fillIn(binder, entry, inputData, entryData, ctx);
-                	SimpleProfiler.stop("addEntry_fillIn");
-                	SimpleProfiler.start("addEntry_preSave");
-        			addEntry_preSave(binder, entry, inputData, entryData, ctx);
-                	SimpleProfiler.stop("addEntry_preSave");
-                	SimpleProfiler.start("addEntry_save");
-        			addEntry_save(binder, entry, inputData, entryData,ctx);
-        			SimpleProfiler.stop("addEntry_save");
-                	SimpleProfiler.start("addEntry_postSave");
-         			addEntry_postSave(binder, entry, inputData, entryData, ctx);
-                	SimpleProfiler.stop("addEntry_postSave");
-       			return null;
-        		}
-        	});
+	        int tryMaxCount = 1 + SPropsUtil.getInt("select.database.transaction.retry.max.count", 2);
+	        int tryCount = 0;
+	        while(true) {
+	        	tryCount++;
+	        	try {
+		        	getTransactionTemplate().execute(new TransactionCallback() {
+		        		@Override
+						public Object doInTransaction(TransactionStatus status) {
+		        			//need to set entry/binder information before generating file attachments
+		        			//Attachments/Events need binder info for AnyOwner
+		                	SimpleProfiler.start("addEntry_fillIn");
+		        			addEntry_fillIn(binder, entry, inputData, entryData, ctx);
+		                	SimpleProfiler.stop("addEntry_fillIn");
+		                	SimpleProfiler.start("addEntry_preSave");
+		        			addEntry_preSave(binder, entry, inputData, entryData, ctx);
+		                	SimpleProfiler.stop("addEntry_preSave");
+		                	SimpleProfiler.start("addEntry_save");
+		        			addEntry_save(binder, entry, inputData, entryData,ctx);
+		        			SimpleProfiler.stop("addEntry_save");
+		                	SimpleProfiler.start("addEntry_postSave");
+		         			addEntry_postSave(binder, entry, inputData, entryData, ctx);
+		                	SimpleProfiler.stop("addEntry_postSave");
+		       			return null;
+		        		}
+		        	});
+		        	break; // successful transaction
+	        	}
+	        	catch(LockAcquisitionException | CannotAcquireLockException e) {
+	        		if(tryCount < tryMaxCount) {
+	        			if(logger.isDebugEnabled())
+	        				logger.warn("'add entry' failed due to lock error", e);
+	        			else 
+	        				logger.warn("'add entry' failed due to lock error: " + e.toString());
+	        			logger.warn("Retrying 'add entry' in new transaction");
+	        			getCoreDao().refresh(binder);        		
+	        		}
+	        		else {
+	        			throw e;
+	        		}
+	        	}
+	        }
         	SimpleProfiler.stop("addEntry_transactionExecute");
         	
            	// We must save the entry before processing files because it makes use
