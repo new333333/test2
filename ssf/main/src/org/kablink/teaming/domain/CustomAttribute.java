@@ -37,6 +37,8 @@
  * Window - Preferences - Java - Code Style - Code Templates
  */
 package org.kablink.teaming.domain;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -56,6 +58,7 @@ import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.module.shared.XmlUtils;
 import org.kablink.teaming.survey.Survey;
 import org.kablink.teaming.util.XmlFileUtil;
+import org.kablink.teaming.web.util.DefinitionHelper;
 import org.kablink.util.Validator;
 
 /**
@@ -735,4 +738,89 @@ public class CustomAttribute extends ZonedObject {
     public boolean multivalued() {
         return getValueType()==ORDEREDSET || getValueType()==SET;
     }
+    
+    public String toString() {
+    	try {
+	    	//Get the definition being used
+	    	DefinableEntity entity = owner.getEntity();
+	    	Document defDoc = entity.getEntryDefDoc();
+	    	Element attrDefEle = DefinitionHelper.findAttribute(name, defDoc);
+	    	String attrType = attrDefEle.attributeValue("name");
+		    if (getValueType() == SET ) {
+		    	StringBuffer result = new StringBuffer();
+		    	boolean firstItem = true;
+		    	DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+	    		for (Iterator iter=values.iterator(); iter.hasNext();) {
+	    			if (!firstItem) {
+	    				result.append(", ");
+	    			}
+	    			firstItem = false;
+		    		Object value = iter.next();
+		    		if (value instanceof String) {
+			    		switch (attrType) {
+		    				case "user_list":
+		    				case "external_user_list":
+		    				case "group_list":
+		    					Long id = Long.valueOf((String)value);
+			    				break;
+			    			default:
+			    				result.append((String)value);
+			    				break;
+			    		}
+		    			
+		    		} else if (value instanceof Boolean) {
+		    			result.append(String.valueOf((Boolean)value));
+		    		} else if (value instanceof Long) {
+		    			result.append(String.valueOf((Long)value));
+		    		} else if (value instanceof Date) {
+		    			result.append(dateFormatter.format((Date)value));
+		    		} else if (value instanceof Event) {
+		    			result.append(((Event)value).toString().replaceAll("'", ";"));
+		    		}
+	      	    }
+	    		return result.toString();
+	 	    } else {
+		    	switch(getValueType()) {
+	       			case STRING:
+	       				if (!Validator.isNull(stringValue))
+	       					return stringValue;
+	       				else if (description != null)
+	       					return description.getText();
+	       				break;
+	       			case DESCRIPTION:
+	       				return description.getText();
+	       			case COMMASEPARATEDSTRING:
+	       				if (!Validator.isNull(stringValue))
+	       					return stringValue;
+	       				else if (description != null)
+	       					return description.getText();
+	       				break;
+	       			case BOOLEAN:		
+	       				return booleanValue.toString();    	
+	       			case LONG:
+	       				return longValue.toString();  
+	       			case DATE:
+	       				return dateValue.toString();  
+	       			case SERIALIZED:
+	       				return serializedValue.toBase64String();
+	        		case XML:
+	        			return xmlValue.getText(); 
+	       			case EVENT:
+	       				Event e = (Event)getValue();
+	       				return e.toCsvString();
+	       			case SURVEY:
+	       				if (!Validator.isNull(stringValue))
+	       					return stringValue;
+	       				else if (description != null)
+	       					return description.getText();
+	       				break;     				
+	       			case ATTACHMENT:
+	       				//attachments aren't handled
+	      				break;
+	      	    }
+	    	}
+    	} catch(Exception e) {}
+	    return "";
+    }
+ 
 }

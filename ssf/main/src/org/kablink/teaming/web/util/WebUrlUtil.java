@@ -73,6 +73,12 @@ import org.kablink.util.Validator;
  */
 @SuppressWarnings("unchecked")
 public class WebUrlUtil {
+	
+    //ReadFile operation types
+    public static final String FILE_URL_TYPE_ZIP="zip";
+    public static final String FILE_URL_TYPE_SHARE="share";
+    public static final String FILE_URL_TYPE_FOLDER_CSV="folderCsv";
+
 	public static final int FILE_URL_ACTION = 1;
 	public static final int FILE_URL_ENTITY_TYPE = 2;
 	public static final int FILE_URL_ENTITY_ID = 3;
@@ -96,13 +102,19 @@ public class WebUrlUtil {
 	public static final int FILE_URL_ZIPLIST_RECURSIVE_OPERAND	=  9;
 	public static final int FILE_URL_ZIPLIST_RECURSIVE			= 10;
 	
-	// Used the parse the URL returned by getFolderZipUrl().
+	// Used to parse the URL returned by getFolderZipUrl().
 	public static final int FILE_URL_ZIPFOLDER_ARG_LENGTH			= 9;
 	public static final int FILE_URL_ZIPFOLDER_ZIP					= 6;
 	public static final int FILE_URL_ZIPFOLDER_FOLDER_ID			= 5;
 	public static final int FILE_URL_ZIPFOLDER_OPERATION			= 3;
 	public static final int FILE_URL_ZIPFOLDER_RECURSIVE_OPERAND	= 7;
 	public static final int FILE_URL_ZIPFOLDER_RECURSIVE			= 8;
+	
+	// Used to parse the URL returned by getFolderZipUrl().
+	public static final int FILE_URL_CSVFOLDER_ARG_LENGTH			= 7;
+	public static final int FILE_URL_CSVFOLDER_FOLDER_CSV			= 6;
+	public static final int FILE_URL_CSVFOLDER_FOLDER_ID			= 5;
+	public static final int FILE_URL_CSVFOLDER_OPERATION			= 3;
 	
 	// Used the parse the URL returned by getSharedPublicFileUrl().
 	public static final int FILE_URL_SHARED_PUBLIC_FILE_ARG_LENGTH	= 7;

@@ -32,6 +32,8 @@
  */
 package org.kablink.teaming;
 
+import org.kablink.teaming.domain.DefinableEntity;
+
 /**
  * Defines symbols that the core is aware of.
  * 
@@ -1040,4 +1042,27 @@ public interface ObjectKeys {
     public final static String CHANGE_LOG_OWNING_BINDER_ID = "owningBinderId";
     public final static String CHANGE_LOG_VERSION = "version";
     public final static String CHANGE_LOG_DOC_NUMBER = "docNumber";
+    
+    //CSV entry file constants
+    public final static String CSV_DEF_ID = "defId";
+    public final static String CSV_DATA = "data";
+    public final static String CSV_ATTR = "attr";
+    public final static String CSV_ATTR_ENTRY_ID = "_entryId";
+    public final static String CSV_ATTR_DOC_NUM = "_docNum";
+    public final static String CSV_ATTR_TITLE = "title";
+    public final static String CSV_ATTR_DESCRITION = "description";
+    public final static String CSV_ATTR_AUTHOR = "_author";
+    public final static String CSV_ATTR_AUTHOR_TITLE = "_authorTitle";
+    public final static String CSV_ATTR_CREATION_DATE = "_creationDate";
+    public final static String CSV_ATTR_MODIFICATION_DATE = "_modificationDate";
+    
+    public final static String CSV_COL_HEADER = "colHeader";
+    public final static String CSV_TYPE = "type";
+    public final static String CSV_TYPE_TEXT = "text";
+    public final static String CSV_TYPE_NLT = "nlt";
+    public final static String CSV_TYPE_DATE = "date";
+    public final static String CSV_TYPE_PRINCIPAL = "principal";
+    public final static String CSV_TYPE_EMAIL = "email";
+    
+    public final static String CSV_OPTIONS_ATTRS_TO_SKIP = "attrsToSkip";
 }
