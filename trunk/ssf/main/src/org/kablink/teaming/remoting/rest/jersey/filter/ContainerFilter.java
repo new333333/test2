@@ -62,7 +62,7 @@ public class ContainerFilter implements ContainerRequestFilter, ContainerRespons
     }
 
     private static String buildEndpoint(ContainerRequest request) {
-        StringBuilder builder = new StringBuilder("REST request: (").append(request.getUserPrincipal().getName()).append(") ");
+        StringBuilder builder = new StringBuilder("REST request: (").append(request.getUserPrincipal().getName()).append("@").append(ZoneContextHolder.getClientAddr()).append(") ");
         builder.append(request.getMethod()).append(" ");
         String fullUri = request.getRequestUri().toString();
         String baseUri = request.getBaseUri().toString();
