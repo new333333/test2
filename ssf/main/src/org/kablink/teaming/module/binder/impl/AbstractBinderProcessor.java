@@ -2176,7 +2176,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     @Override
 	public Collection indexTree(Binder binder, Collection exclusions) {
    		IndexErrors errors = new IndexErrors();
-    	return loadIndexTree(binder, exclusions, StatusTicket.NULL_TICKET, errors);
+    	return loadIndexTree(binder, exclusions, StatusTicket.NULL_TICKET, errors, false);
     }
    	@Override
 	public Collection indexTree(Binder binder, Collection exclusions, StatusTicket statusTicket) {
@@ -2185,9 +2185,13 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
    	}
    	@Override
 	public Collection indexTree(Binder binder, Collection exclusions, StatusTicket statusTicket, IndexErrors errors) {
-   		return loadIndexTree(binder, exclusions, statusTicket, errors);
+   		return indexTree(binder, exclusions, statusTicket, errors, false);
    	}
-   	private Collection loadIndexTree(Binder binder, Collection exclusions, StatusTicket statusTicket, IndexErrors errors) {
+   	@Override
+	public Collection indexTree(Binder binder, Collection exclusions, StatusTicket statusTicket, IndexErrors errors, boolean skipFileContentIndexing) {
+   		return loadIndexTree(binder, exclusions, statusTicket, errors, skipFileContentIndexing);
+   	}
+   	private Collection loadIndexTree(Binder binder, Collection exclusions, StatusTicket statusTicket, IndexErrors errors, boolean skipFileContentIndexing) {
    		//get all the ids of child binders. order for statusTicket to make some sense
    		if(logger.isDebugEnabled())
    			logger.debug("Fetching IDs of all binders at or below this branch [" + binder.getPathName() + "] (id=" + binder.getId() + ")");
@@ -2228,7 +2232,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 		 */
 		boolean supportsReindexingContinuation = false;
 		if(!(statusTicket instanceof ConcurrentStatusTicket))
-			supportsReindexingContinuation = SPropsUtil.getBoolean("supports.reindexing.continuation", false);
+			supportsReindexingContinuation = SPropsUtil.getBoolean("index.tree.supports.continuation", false);
 		
 		if(supportsReindexingContinuation) {
 			// This is not an officially supported option. Nevertheless we have it as a last resort tool primarily to aid our support colleagues.
@@ -2307,7 +2311,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 	   	    	}
 				
 	   	    	Collection tags = (Collection)tagMap.get(b.getEntityIdentifier());
-	   	    	IndexErrors binderErrors = processor.indexBinder(b, true, false, tags);
+	   	    	IndexErrors binderErrors = processor.indexBinder(b, true, false, tags, skipFileContentIndexing, true);
 	   	    	errors.add(binderErrors);
 	   	    	
 				if(logger.isTraceEnabled())
