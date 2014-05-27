@@ -34,9 +34,12 @@ package org.kablink.teaming.web.util;
 
 import java.io.File;
 import java.io.InputStream;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -61,6 +64,7 @@ import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.Node;
+import org.dom4j.io.OutputFormat;
 import org.dom4j.io.SAXReader;
 import org.joda.time.DateMidnight;
 import org.joda.time.DateTime;
@@ -71,17 +75,21 @@ import org.kablink.teaming.comparator.StringComparator;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.ProfileDao;
 import org.kablink.teaming.domain.Binder;
+import org.kablink.teaming.domain.CommaSeparatedValue;
 import org.kablink.teaming.domain.CustomAttribute;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.DefinitionInvalidException;
 import org.kablink.teaming.domain.Description;
 import org.kablink.teaming.domain.Entry;
+import org.kablink.teaming.domain.Event;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.NoDefinitionByTheIdException;
 import org.kablink.teaming.domain.Principal;
+import org.kablink.teaming.domain.SSBlobSerializable;
+import org.kablink.teaming.domain.SSClobString;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.domain.Workspace;
@@ -106,6 +114,7 @@ import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SZoneConfig;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.Utils;
+import org.kablink.teaming.util.XmlFileUtil;
 import org.kablink.teaming.util.stringcheck.StringCheckUtil;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.tree.DomTreeBuilder;
@@ -1688,6 +1697,115 @@ public class DefinitionHelper {
 		BinderModule bm = (BinderModule) SpringContextUtil.getBean("binderModule");
 		Binder binder = bm.getBinder(binderId);
 		return getTextualInputDataKeys(binder.getEntryDef().getId(), inputData);
+	}
+	
+	public static String GetCustomAttrAsString(CustomAttribute attr) {
+    	try {
+	    	//Get the definition being used
+	    	DefinableEntity entity = attr.getOwner().getEntity();
+	    	Document defDoc = entity.getEntryDefDoc();
+	    	Element attrDefEle = DefinitionHelper.findAttribute(attr.getName(), defDoc);
+	    	String attrType = attrDefEle.attributeValue("name");
+		    if (attr.getValueType() == CustomAttribute.SET ) {
+		    	StringBuffer result = new StringBuffer();
+		    	boolean firstItem = true;
+		    	DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+	    		for (Iterator iter=attr.getValueSet().iterator(); iter.hasNext();) {
+	    			if (!firstItem) {
+	    				result.append(", ");
+	    			}
+	    			firstItem = false;
+		    		Object value = iter.next();
+		    		if (value instanceof String) {
+		    			result.append(getAttrString(attrType, (String) value));
+		    			
+		    		} else if (value instanceof Boolean) {
+		    			result.append(String.valueOf((Boolean)value));
+		    		} else if (value instanceof Long) {
+		    			result.append(String.valueOf((Long)value));
+		    		} else if (value instanceof Date) {
+		    			result.append(dateFormatter.format((Date)value));
+		    		} else if (value instanceof Event) {
+		    			result.append(((Event)value).toString().replaceAll("'", ";"));
+		    		}
+	      	    }
+	    		return result.toString();
+	 	    } else {
+		    	switch(attr.getValueType()) {
+	       			case CustomAttribute.STRING:
+	       				String textStr = "";
+	       				if (attr.getValue() instanceof String && !Validator.isNull((String)attr.getValue())) {
+	       					textStr = (String)attr.getValue();
+	       				} else if (attr.getValue() instanceof Description && !Validator.isNull(((Description)attr.getValue()).getText())) {
+	       					textStr = ((Description)attr.getValue()).getText();
+	       				}
+	       				return getAttrString(attrType, textStr);
+	       			case CustomAttribute.DESCRIPTION:
+	       				if (!Validator.isNull(((Description)attr.getValue()).getText())) {
+	       					return((Description)attr.getValue()).getText();
+	       				}
+	       			case CustomAttribute.COMMASEPARATEDSTRING:
+	       				CommaSeparatedValue textCSV = (CommaSeparatedValue)attr.getValue();
+	       				return getAttrString(attrType, textCSV.getValueString());
+	       			case CustomAttribute.BOOLEAN:		
+	       				return ((Boolean)attr.getValue()).toString();    	
+	       			case CustomAttribute.LONG:
+	       				return ((Long)attr.getValue()).toString();  
+	       			case CustomAttribute.DATE:
+	       				return ((Date)attr.getValue()).toString();  
+	       			case CustomAttribute.SERIALIZED:
+	       				SSBlobSerializable serializedValue = new SSBlobSerializable(attr.getValue());
+	       				return serializedValue.toBase64String();
+	        		case CustomAttribute.XML:
+	        			SSClobString xmlValue = new SSClobString(XmlFileUtil.writeString((Document)attr.getValue(), OutputFormat.createPrettyPrint()));
+	        			return xmlValue.getText(); 
+	       			case CustomAttribute.EVENT:
+	       				Event e = (Event)attr.getValue();
+	       				return e.toCsvString();
+	       			case CustomAttribute.SURVEY:
+	       				if (attr.getValue() instanceof String && !Validator.isNull((String)attr.getValue())) {
+	       					return (String)attr.getValue();
+	       				} else if (attr.getValue() instanceof Description && !Validator.isNull(((Description)attr.getValue()).getText())) {
+	       					return ((Description)attr.getValue()).getText();
+	       				}
+	       				break;     				
+	       			case CustomAttribute.ATTACHMENT:
+	       				//attachments aren't handled
+	      				break;
+	      			default:
+	      				break;	
+	      	    }
+	    	}
+    	} catch(Exception e) {}
+	    return "";
+	}
+	
+	public static String getAttrString(String attrType, String text) {
+		try {
+			Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
+			if (!text.equals("")) {
+	    		switch (attrType) {
+					case "user_list":
+					case "external_user_list":
+					case "group_list":
+						String[] ids = text.trim().split(",");
+						StringBuffer buf = new StringBuffer();
+						for (int i = 0; i < ids.length; i++) {
+							Long id = Long.valueOf(ids[i]);
+							ProfileDao profileDao = (ProfileDao)SpringContextUtil.getBean("profileDao");
+							Principal p = profileDao.loadPrincipal(id, zoneId, true);
+							if (buf.length() > 0) {
+								buf.append(", ");
+							}
+							buf.append(p.getName());
+						}
+						return buf.toString();
+	    			default:
+	    				return text;
+	    		}
+			}
+		} catch(Exception e) {}
+		return text;
 	}
 
 }

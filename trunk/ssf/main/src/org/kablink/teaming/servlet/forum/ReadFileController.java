@@ -73,12 +73,14 @@ import org.kablink.teaming.module.shared.EntityIndexUtils;
 import org.kablink.teaming.module.shared.FileUtils;
 import org.kablink.teaming.runas.RunasCallback;
 import org.kablink.teaming.runas.RunasTemplate;
+import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.util.Constants;
 import org.kablink.teaming.util.FileHelper;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.AdminHelper;
+import org.kablink.teaming.web.util.EntryCsvHelper;
 import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.WebUrlUtil;
 import org.kablink.util.FileUtil;
@@ -134,7 +136,7 @@ public class ReadFileController extends AbstractReadFileController {
 		//fileTime is present for browser caching
 		//filename is present for browser handling of relative files
 		if (args.length == WebUrlUtil.FILE_URL_ZIP_ARG_LENGTH && 
-				String.valueOf(args[WebUrlUtil.FILE_URL_FILE_ID]).equals("zip")) {
+				String.valueOf(args[WebUrlUtil.FILE_URL_FILE_ID]).equals(WebUrlUtil.FILE_URL_TYPE_ZIP)) {
 			//The user wants a zip file of all attachments
 			try {
 				DefinableEntity entity = getEntity(args[WebUrlUtil.FILE_URL_ENTITY_TYPE], Long.valueOf(args[WebUrlUtil.FILE_URL_ENTITY_ID]));
@@ -191,7 +193,7 @@ public class ReadFileController extends AbstractReadFileController {
 			return null;
 		
 		} else if (args.length == WebUrlUtil.FILE_URL_ZIP_SINGLE_ARG_LENGTH && 
-				String.valueOf(args[WebUrlUtil.FILE_URL_FILE_ID]).equals("zip")) {
+				String.valueOf(args[WebUrlUtil.FILE_URL_FILE_ID]).equals(WebUrlUtil.FILE_URL_TYPE_ZIP)) {
 			//The user wants a zip file of a single attachment
 			String faId = args[WebUrlUtil.FILE_URL_ZIP_SINGLE_FILE_ID];
 			try {
@@ -396,8 +398,55 @@ public class ReadFileController extends AbstractReadFileController {
 			return null;
 		}
 
+		else if ((WebUrlUtil.FILE_URL_CSVFOLDER_ARG_LENGTH == args.length) && 
+				String.valueOf(args[WebUrlUtil.FILE_URL_CSVFOLDER_FOLDER_CSV       ]).equals(WebUrlUtil.FILE_URL_TYPE_FOLDER_CSV) &&
+				String.valueOf(args[WebUrlUtil.FILE_URL_CSVFOLDER_OPERATION        ]).equals(WebKeys.OPERATION_READ_FOLDER)) {
+			try {
+				// What folder are we outputting as CSV?
+				Long folderId = Long.parseLong(String.valueOf(args[WebUrlUtil.FILE_URL_CSVFOLDER_FOLDER_ID]));
+				Folder folder = getFolderModule().getFolder(folderId);
+				if (folder != null) {
+					String shortFileName = folder.getNormalTitle() + ".csv";
+					String contentType = getFileTypeMap().getContentType(shortFileName);
+					contentType = FileUtils.validateDownloadContentType(contentType);
+					if (!(contentType.toLowerCase().contains("charset"))) {
+						String encoding = SPropsUtil.getString("web.char.encoding", "UTF-8");
+						if (MiscUtil.hasString(encoding)) {
+							contentType += ("; charset=" + encoding);
+						}
+					}
+					response.setContentType(contentType);
+					boolean isHttps = request.getScheme().equalsIgnoreCase("https");
+					String cacheControl = "private, max-age=86400";
+					if (isHttps) {
+						response.setHeader("Pragma", "public");
+						cacheControl += ", proxy-revalidate, s-maxage=0";
+					}
+					response.setHeader("Cache-Control", cacheControl);
+					String attachment = "";
+					if (FileHelper.checkIfAttachment(contentType)) attachment = "attachment; ";
+					response.setHeader("Content-Disposition",
+							attachment + "filename=\"" + FileHelper.encodeFileName(request, shortFileName) + "\"");
+				} else {
+					// Bad format of url; just return null.
+					response.sendError(HttpServletResponse.SC_BAD_REQUEST, NLT.get("file.error.unknownFolder"));
+				}
+
+				OutputStream out = response.getOutputStream();
+				EntryCsvHelper.folderToCsv(this, folder, null, out);
+				response.getOutputStream().flush();
+			} catch(AccessControlException e) {
+				// No access to the folder.
+				response.sendError(HttpServletResponse.SC_BAD_REQUEST, e.getMessage());				
+			} catch(Exception e) {
+				// Something else failed.
+				response.sendError(HttpServletResponse.SC_BAD_REQUEST, e.getMessage());				
+			}
+			
+		}
+
 		else if ((WebUrlUtil.FILE_URL_SHARED_PUBLIC_FILE_ARG_LENGTH == args.length) && 
-				String.valueOf(args[WebUrlUtil.FILE_URL_ENTITY_TYPE]).equals("share")) {
+				String.valueOf(args[WebUrlUtil.FILE_URL_ENTITY_TYPE]).equals(WebUrlUtil.FILE_URL_TYPE_SHARE)) {
 			// Shared File Link
 			try {
 				Long shareItemId = Long.parseLong(String.valueOf(args[WebUrlUtil.FILE_URL_SHARED_PUBLIC_FILE_SHARE_ID]));

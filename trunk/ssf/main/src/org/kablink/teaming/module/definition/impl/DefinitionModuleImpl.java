@@ -3169,12 +3169,17 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 
 	@Override
 	public void walkDefinition(DefinableEntity entry, DefinitionVisitor visitor, Map args) {
-		SimpleProfiler.start("DefinitionModuleImpl.walkDefinition");
-		//access check not needed = assumed okay from entry
 		if(entry.getEntryDefId() == null)
 			return;
-        String flagElementPath = "./" + visitor.getFlagElementName();
         Document definitionTree = entry.getEntryDefDoc();
+		walkDefinition(definitionTree, visitor, args);
+	}
+	
+	@Override
+	public void walkDefinition(Document definitionTree, DefinitionVisitor visitor, Map args) {
+		SimpleProfiler.start("DefinitionModuleImpl.walkDefinition");
+		//access check not needed = assumed okay from entry
+        String flagElementPath = "./" + visitor.getFlagElementName();
         if (definitionTree != null) {
             Element root = definitionTree.getRootElement();
 

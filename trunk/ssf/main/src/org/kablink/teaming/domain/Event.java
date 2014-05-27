@@ -64,7 +64,9 @@ package org.kablink.teaming.domain;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Method;
+import java.text.DateFormat;
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -88,9 +90,12 @@ import org.dom4j.Element;
 import org.joda.time.DateTime;
 import org.joda.time.YearMonthDay;
 import org.kablink.teaming.ObjectKeys;
+import org.kablink.teaming.calendar.EventsViewHelper;
 import org.kablink.teaming.calendar.TimeZoneHelper;
+import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.module.ical.impl.IcalModuleImpl;
 import org.kablink.teaming.module.shared.XmlUtils;
+import org.kablink.teaming.util.NLT;
 import org.kablink.util.cal.CalendarUtil;
 import org.kablink.util.cal.DayAndPosition;
 import org.kablink.util.cal.Duration;
@@ -3084,6 +3089,58 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 
 		return buffer.toString();
 	}
+
+	public String toCsvString() {
+		User user = RequestContextHolder.getRequestContext().getUser();
+		DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+
+		StringBuffer buffer = new StringBuffer();
+
+		buffer.append(NLT.get("event.start") + ": ");
+		buffer.append(dtStart != null ? dateFormatter.format(dtStart.getTime()) : "");
+		buffer.append("; ");
+		buffer.append(NLT.get("event.end") + ": ");
+		buffer.append(dtEnd != null ? dateFormatter.format(dtEnd.getTime()) : "");
+		buffer.append("; ");
+		buffer.append(NLT.get("event.duration_days") + ": ");
+		buffer.append(duration != null ? durationToCsvString(duration) : "");
+		buffer.append("; ");
+		buffer.append(NLT.get("event.frequency") + ": ");
+		String freqStr = EventsViewHelper.eventToRepeatHumanReadableString(this, user.getLocale());
+		if (freqStr != null) {
+			buffer.append(freqStr);
+		}
+
+		return buffer.toString();
+	}
+	
+	  public String durationToCsvString(Duration duration)
+	  {
+	    StringBuffer buf = new StringBuffer();
+	  
+	     if (duration.getWeeks() != 0) {
+	      buf.append(duration.getWeeks());
+	      buf.append(" " + NLT.get("smallWords.weeks") + " ");
+	    }
+	    if (duration.getDays() != 0) {
+	      buf.append(duration.getDays());
+	      buf.append(" " + NLT.get("smallWords.days") + " ");
+	    }
+	    if (duration.getHours() != 0) {
+	      buf.append(duration.getHours());
+	      buf.append(" " + NLT.get("smallWords.hours") + " ");
+	    }
+	    if (duration.getMinutes() != 0) {
+	      buf.append(duration.getMinutes());
+	      buf.append(" " + NLT.get("smallWords.minutes") + " ");
+	    }
+	    if (duration.getSeconds() != 0) {
+	      buf.append(duration.getSeconds());
+	      buf.append(" " + NLT.get("smallWords.seconds") + " ");
+	    }
+	    return buf.toString();
+	  }
+
 
 	public String stringizeIntArray(int[] a) {
 		if (a == null) {
