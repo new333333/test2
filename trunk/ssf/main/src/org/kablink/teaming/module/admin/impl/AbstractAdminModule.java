@@ -3843,7 +3843,11 @@ public List<ChangeLog> getWorkflowChanges(EntityIdentifier entityIdentifier, Str
     	try {
         	logger.info("Administrative reindexing started on binders " + binderIds + ((includeUsersAndGroups)? " and users and groups" : ""));
         	
-	    	Collection<Long> idsIndexed = getBinderModule().indexTree(binderIds, statusTicket, nodeNames, errors, true);
+        	boolean allowUseOfHelperThreads = SPropsUtil.getBoolean("index.tree.helper.threads.allow", true);
+
+   	    	boolean skipFileContentIndexing = SPropsUtil.getBoolean("index.tree.defer.file.content.indexing", true);
+
+	    	Collection<Long> idsIndexed = getBinderModule().indexTree(binderIds, statusTicket, nodeNames, errors, allowUseOfHelperThreads, skipFileContentIndexing);
 			//if people selected and not yet index; index content only, not the whole ws tree
 	    	if(includeUsersAndGroups) {				
 				ProfileBinder pf = getProfileModule().getProfileBinder();

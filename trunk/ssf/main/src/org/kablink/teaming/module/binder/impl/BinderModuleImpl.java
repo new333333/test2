@@ -760,21 +760,17 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	public Set<Long> indexTree(Collection binderIds, StatusTicket statusTicket,
 			String[] nodeNames) {
 		IndexErrors errors = new IndexErrors();
-		return indexTree(binderIds, statusTicket, nodeNames, errors, false);
+		return indexTree(binderIds, statusTicket, nodeNames, errors, false, false);
 	}
 
 	@Override
 	public Set<Long> indexTree(Collection binderIds, StatusTicket statusTicket,
-			String[] nodeNames, IndexErrors errors, boolean allowUseOfHelperThreads) {
-		if(allowUseOfHelperThreads && SPropsUtil.getBoolean("index.tree.helper.threads.allow", true))
-			allowUseOfHelperThreads = true;
-		else
-			allowUseOfHelperThreads = false;
-		return indexTreeWithHelper(binderIds, statusTicket, nodeNames, errors, allowUseOfHelperThreads);				
+			String[] nodeNames, IndexErrors errors, boolean allowUseOfHelperThreads, boolean skipFileContentIndexing) {
+		return indexTreeWithHelper(binderIds, statusTicket, nodeNames, errors, allowUseOfHelperThreads, skipFileContentIndexing);				
 	}
 
 	private Set<Long> indexTreeWithHelper(Collection binderIds, StatusTicket statusTicket,
-			String[] nodeNames, IndexErrors errors, boolean canUseHelperThreads) {
+			String[] nodeNames, IndexErrors errors, boolean canUseHelperThreads, boolean skipFileContentIndexing) {
 		long startTime = System.nanoTime();
 		getCoreDao().flush(); // just incase
 		try {
@@ -835,16 +831,16 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 						if(binder.isZone()) {
 							if(canUseHelperThreads) {
 								// Currently, the use of helper threads is limited only to the site-wide reindexing.
-								done.addAll(indexSite(binder, done, statusTicket, nodeNames, errors));
+								done.addAll(indexSite(binder, done, statusTicket, nodeNames, errors, skipFileContentIndexing));
 							}
 							else {
 								done.addAll(loadBinderProcessor(binder).indexTree(binder,
-										done, statusTicket, errors));		
+										done, statusTicket, errors, skipFileContentIndexing));		
 							}
 						}
 						else {
 							done.addAll(loadBinderProcessor(binder).indexTree(binder,
-									done, statusTicket, errors));
+									done, statusTicket, errors, skipFileContentIndexing));
 						}
 					}
 					// Normally, all updates to the index are managed by the
@@ -915,7 +911,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
   		IndexSynchronizationManager.applyChanges(SPropsUtil.getInt("lucene.flush.threshold", 100));
 	}
 	
-	private Collection indexSite(Binder binder, Collection exclusions, StatusTicket statusTicket, String[] nodeNames, IndexErrors errors) {
+	private Collection indexSite(Binder binder, Collection exclusions, StatusTicket statusTicket, String[] nodeNames, IndexErrors errors, boolean skipFileContentIndexing) {
 		// Wrap the status ticket so that we can use thread-unsafe data structure in thread safe way.
 		ConcurrentStatusTicket concurrentStatusTicket = new ConcurrentStatusTicket(statusTicket);
 		ArrayList<Long> done = new ArrayList<Long>();
@@ -1010,7 +1006,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		if(logger.isDebugEnabled())
 			logger.debug("Creating a queue with size " + queue.getPutCount() + " and " + threadsSize + " helper threads");
 		for(int i = 0; i < threadsSize; i++) {
-			helperThread = new Thread(new IndexHelper(concurrentStatusTicket, nodeNames, errors, queue, RequestContextHolder.getRequestContext(), done),
+			helperThread = new Thread(new IndexHelper(concurrentStatusTicket, nodeNames, errors, queue, RequestContextHolder.getRequestContext(), done, skipFileContentIndexing),
 					Thread.currentThread().getName() + "-(" + (i+1) + "-" + now + ")");
 			helperThreads[i] = helperThread;
 			helperThread.start();
@@ -3935,14 +3931,16 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		private RequestContext parentRequestContext;
 		// This must be guarded by itself.
 		private List<Long> done;
+		private boolean skipFileContentIndexing;
 		
-		IndexHelper(ConcurrentStatusTicket statusTicket, String[] nodeNames, IndexErrors errors, BinderToIndexQueue queue, RequestContext parentRequestContext, List<Long> done) {
+		IndexHelper(ConcurrentStatusTicket statusTicket, String[] nodeNames, IndexErrors errors, BinderToIndexQueue queue, RequestContext parentRequestContext, List<Long> done, boolean skipFileContentIndexing) {
 			this.statusTicket = statusTicket;
 			this.nodeNames = nodeNames;
 			this.errors = errors;
 			this.queue = queue;
 			this.parentRequestContext = parentRequestContext;
 			this.done = done;
+			this.skipFileContentIndexing = skipFileContentIndexing;
 		}
 
 		@Override
@@ -3973,7 +3971,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 									binderId = queue.take();
 									if(binderId.longValue() != -1L) {
 										binder = loadBinder(binderId);
-										result = loadBinderProcessor(binder).indexTree(binder, done, statusTicket, errors);
+										result = loadBinderProcessor(binder).indexTree(binder, done, statusTicket, errors, skipFileContentIndexing);
 										synchronized(done) {
 											done.addAll(result);
 										}
