@@ -100,6 +100,8 @@ import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.jobs.DefaultFolderNotification;
 import org.kablink.teaming.jobs.FolderDelete;
 import org.kablink.teaming.jobs.FolderNotification;
+import org.kablink.teaming.jobs.NetFolderContentIndexing;
+import org.kablink.teaming.jobs.NonNetFolderContentIndexing;
 import org.kablink.teaming.jobs.ScheduleInfo;
 import org.kablink.teaming.jobs.ZoneSchedule;
 import org.kablink.teaming.lucene.Hits;
@@ -248,6 +250,11 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
  	   String className = SPropsUtil.getString("job.folder.delete.class", "org.kablink.teaming.jobs.DefaultFolderDelete");
  	   return (FolderDelete)ReflectHelper.getInstance(className);
   	}
+ 	
+	protected NonNetFolderContentIndexing getNonNetFolderContentIndexingObject() {
+		String className = SPropsUtil.getString("job.non.net.folder.content.indexing.class", "org.kablink.teaming.jobs.DefaultNonNetFolderContentIndexing");
+		return (NonNetFolderContentIndexing)ReflectHelper.getInstance(className);
+    }    
 
 	@Override
 	public ScheduleInfo getNotificationSchedule(Long zoneId, Long folderId) {
@@ -270,6 +277,8 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
 	public void stopScheduledJobs(Workspace zone) {
 		FolderDelete job = getDeleteProcessor(zone);
 		job.remove(zone.getId());
+    	NonNetFolderContentIndexing nonNetFolderContentIndexingObj = getNonNetFolderContentIndexingObject();
+    	nonNetFolderContentIndexingObj.remove(zone.getId());
 	}
  	//called on zone startup
      @Override
@@ -283,6 +292,9 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
     		minutes = Integer.parseInt(minutesString);
     	} catch (Exception ex) {};
     	job.schedule(zone.getId(), minutes*60);
+    	// make sure content indexing job for adhoc files is scheduled 
+    	NonNetFolderContentIndexing nonNetFolderContentIndexingObj = getNonNetFolderContentIndexingObject();
+    	nonNetFolderContentIndexingObj.schedule(zone.getId(), SPropsUtil.getInt("job.non.net.folder.content.indexing.interval.minutes", 10));
 	}
      
 	@Override
