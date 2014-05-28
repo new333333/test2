@@ -1717,7 +1717,7 @@ public class DefinitionHelper {
 	    			firstItem = false;
 		    		Object value = iter.next();
 		    		if (value instanceof String) {
-		    			result.append(getAttrString(attrType, (String) value));
+		    			result.append(getAttrString(attrDefEle, attrType, (String) value));
 		    			
 		    		} else if (value instanceof Boolean) {
 		    			result.append(String.valueOf((Boolean)value));
@@ -1739,14 +1739,14 @@ public class DefinitionHelper {
 	       				} else if (attr.getValue() instanceof Description && !Validator.isNull(((Description)attr.getValue()).getText())) {
 	       					textStr = ((Description)attr.getValue()).getText();
 	       				}
-	       				return getAttrString(attrType, textStr);
+	       				return getAttrString(attrDefEle, attrType, textStr);
 	       			case CustomAttribute.DESCRIPTION:
 	       				if (!Validator.isNull(((Description)attr.getValue()).getText())) {
 	       					return((Description)attr.getValue()).getText();
 	       				}
 	       			case CustomAttribute.COMMASEPARATEDSTRING:
 	       				CommaSeparatedValue textCSV = (CommaSeparatedValue)attr.getValue();
-	       				return getAttrString(attrType, textCSV.getValueString());
+	       				return getAttrString(attrDefEle, attrType, textCSV.getValueString());
 	       			case CustomAttribute.BOOLEAN:		
 	       				return ((Boolean)attr.getValue()).toString();    	
 	       			case CustomAttribute.LONG:
@@ -1780,7 +1780,7 @@ public class DefinitionHelper {
 	    return "";
 	}
 	
-	public static String getAttrString(String attrType, String text) {
+	public static String getAttrString(Element attrDefEle, String attrType, String text) {
 		try {
 			Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
 			if (!text.equals("")) {
@@ -1800,6 +1800,23 @@ public class DefinitionHelper {
 							buf.append(p.getName());
 						}
 						return buf.toString();
+						
+					case "selectbox":
+						Map<String,String> selections = findSelectboxSelectionsAsMap(attrDefEle);
+						String s1 = text;
+						if (selections.containsKey(text)) {
+							s1 = selections.get(text);
+						}
+						return NLT.get(s1);
+						
+					case "radio":
+						Map<String,String> radioButtons = findRadioSelectionsAsMap(attrDefEle);
+						String s2 = text;
+						if (radioButtons.containsKey(text)) {
+							s2 = radioButtons.get(text);
+						}
+						return NLT.get(s2);
+						
 	    			default:
 	    				return text;
 	    		}
