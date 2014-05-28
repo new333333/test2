@@ -56,9 +56,11 @@ import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.User;
+import org.kablink.teaming.domain.WorkflowState;
 import org.kablink.teaming.module.definition.DefinitionModule;
 import org.kablink.teaming.module.definition.DefinitionUtils;
 import org.kablink.teaming.module.definition.index.FieldBuilderUtil;
+import org.kablink.teaming.module.workflow.WorkflowUtils;
 import org.kablink.teaming.security.function.WorkArea;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.NLT;
@@ -75,6 +77,7 @@ public class EntryCsvHelper {
 			List<String> attrsToSkip = new ArrayList<String>();
 			options.put(ObjectKeys.CSV_OPTIONS_ATTRS_TO_SKIP, attrsToSkip);
 			attrsToSkip.add("guestName");
+			attrsToSkip.add("captcha");
 		}
 		Map folderEntries = null;
 		Long folderId = folder.getId();
@@ -82,6 +85,7 @@ public class EntryCsvHelper {
 		
 		//Get the entry definitions that this folder can add
 		List<Definition> entryDefList = folder.getEntryDefinitions();
+		List<Definition> workflowDefList = folder.getWorkflowDefinitions();
 		
 		//Build the list of columns for the CSV file
 		List<Map<String,Object>> columnTemplate = new ArrayList<Map<String,Object>>();
@@ -139,6 +143,15 @@ public class EntryCsvHelper {
 		//Now add the elements from each definition
 		for (Definition def : entryDefList) {
 			addDefinitionElementsToTemplate(bs, def, columnTemplate, options);
+		}
+		
+		//Finally, add the workflow column
+		if (workflowDefList.size() > 0) {
+			colMap = new HashMap<String,Object>();
+			colMap.put(ObjectKeys.CSV_TYPE, ObjectKeys.CSV_TYPE_TEXT);
+			colMap.put(ObjectKeys.CSV_COL_HEADER, NLT.get("csv.workflowState"));
+			colMap.put(ObjectKeys.CSV_ATTR, ObjectKeys.CSV_ATTR_WORKFLOW);
+			columnTemplate.add(colMap);		//Workflow
 		}
 		
 		//Output the Header row CSV
@@ -281,6 +294,8 @@ public class EntryCsvHelper {
 						}
 					} else if (attrName.equals(ObjectKeys.CSV_ATTR_DESCRITION)) {
 						out.write(CsvHelper.checkText(entry.getDescription().getText()).getBytes("UTF-8"));
+					} else if (attrName.equals(ObjectKeys.CSV_ATTR_WORKFLOW)) {
+						out.write(CsvHelper.checkText(getWorkflowCsvText(entry)).getBytes("UTF-8"));
 					} else {
 						//This is a custom attribute. Figure out its type and output the value
 						Element attrDefEle = DefinitionHelper.findAttribute(attrName, defDoc);
@@ -301,6 +316,28 @@ public class EntryCsvHelper {
 		} catch(Exception e) {
 			//An error occurred trying to output the EOL. This must mean that the output stream is closed.
 		}
+	}
+	
+	private static String getWorkflowCsvText(FolderEntry entry) {
+		Document defDoc = entry.getEntryDefDoc();
+		Set<WorkflowState> workflows = entry.getWorkflowStates();
+		boolean isFirst = true;
+		if (workflows.size() > 0) {
+			StringBuffer buf = new StringBuffer();
+			for (WorkflowState ws : workflows) {
+				String workflowCaption = WorkflowUtils.getStateCaption(ws.getDefinition(), ws.getState());
+				if (workflowCaption == null || workflowCaption.equals("")) {
+					workflowCaption = ws.getState();
+				}
+				if (!isFirst) {
+					buf.append(", ");
+				}
+				isFirst = false;
+				buf.append(workflowCaption);
+			}
+			return buf.toString();
+		}
+		return "";
 	}
 	
 }

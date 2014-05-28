@@ -1706,7 +1706,7 @@ public class DefinitionHelper {
 	    	Document defDoc = entity.getEntryDefDoc();
 	    	Element attrDefEle = DefinitionHelper.findAttribute(attr.getName(), defDoc);
 	    	String attrType = attrDefEle.attributeValue("name");
-		    if (attr.getValueType() == CustomAttribute.SET ) {
+		    if (attr.getValueType() == CustomAttribute.SET || attr.getValueType() == CustomAttribute.ORDEREDSET) {
 		    	StringBuffer result = new StringBuffer();
 		    	boolean firstItem = true;
 		    	DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
@@ -1786,6 +1786,7 @@ public class DefinitionHelper {
 			if (!text.equals("")) {
 	    		switch (attrType) {
 					case "user_list":
+					case "userListSelectbox":
 					case "external_user_list":
 					case "group_list":
 						String[] ids = text.trim().split(",");
