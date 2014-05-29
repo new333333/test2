@@ -39,7 +39,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -47,7 +46,6 @@ import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -59,7 +57,6 @@ import java.util.regex.Pattern;
 
 import javax.naming.Binding;
 import javax.naming.Context;
-import javax.naming.NameClassPair;
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
 import javax.naming.directory.Attribute;
@@ -4118,6 +4115,57 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		}
 		
 		/**
+		 * 
+		 */
+		@SuppressWarnings({ "rawtypes", "unchecked" })
+		public void updateExistingContainers()
+		{
+			// Are we in "preview" mode?
+			if ( m_syncMode == LdapSyncMode.PREVIEW_ONLY )
+			{
+				// Yes, nothing to do.
+				return;
+			}
+			
+			if ( Utils.checkIfFilr() )
+			{
+				// Go through the list of existing containers and update the typelessDN field
+				// for those containers that are still being referenced.  The only reason we
+				// need to do this is because ldap container objects may have been created
+				// without the typelessDN field being set.
+				// See bug 880589
+				for ( Map.Entry<String, ContainerInfo> mapEntry : m_existingContainers.entrySet() )
+				{
+					ContainerInfo containerInfo;
+					
+					// Is this container still referenced?
+					containerInfo = mapEntry.getValue();
+					if ( containerInfo != null && containerInfo.isReferenced() )
+					{
+						Map updates;
+						String typelessDN;
+						
+						logger.info( "\tAbout to update container: " + containerInfo.getDn() );
+						
+						typelessDN = getTypelessDN( containerInfo.getDn() );
+						
+						updates = new HashMap();
+						updates.put( ObjectKeys.FIELD_PRINCIPAL_TYPELESS_DN, typelessDN );
+
+						try
+						{
+							getProfileModule().modifyEntry( containerInfo.getId(), new MapInputData( updates ) );
+						}
+			   			catch ( Exception ex )
+			   			{
+			   				logger.error( "\tError updating typelessDN for container: " + containerInfo.getDn() );
+			   			}
+					}
+				}
+			}
+		}
+		
+		/**
 		 * Create any new containers and delete any obsolete container.
 		 */
 		public void wrapUp( boolean deleteObsoleteContainers )
@@ -4130,6 +4178,9 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				
 				// Create new containers.
 				createNewContainers();
+				
+				// Update existing containers
+				updateExistingContainers();
 				
 				// Clear everything out.
 				clear();
