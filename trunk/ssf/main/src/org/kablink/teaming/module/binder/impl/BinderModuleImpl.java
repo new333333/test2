@@ -773,6 +773,12 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 			String[] nodeNames, IndexErrors errors, boolean canUseHelperThreads, boolean skipFileContentIndexing) {
 		long startTime = System.nanoTime();
 		getCoreDao().flush(); // just incase
+		if(statusTicket != null && canUseHelperThreads) {
+			// Wrap the status ticket so that we can use thread-unsafe data structure in thread safe way.
+			// This doesn't necessarily mean that the areas being reindexed can be processed in parallel though.
+			// This also signals lower level code that this code is being executed in the context of reindexing.
+			statusTicket = new ConcurrentStatusTicket(statusTicket); 
+		}
 		try {
 			// make list of binders we have access to first
 			if(logger.isDebugEnabled())
@@ -826,23 +832,45 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 									Constants.ENTRY_ANCESTRY, binder.getId()
 											.toString()));
 						}
+				  		IndexSynchronizationManager.applyChanges();
 					}
-					for (Binder binder : checked) {
-						if(binder.isZone()) {
-							if(canUseHelperThreads) {
-								// Currently, the use of helper threads is limited only to the site-wide reindexing.
-								done.addAll(indexSite(binder, done, statusTicket, nodeNames, errors, skipFileContentIndexing));
+					
+					List<Long> concurrentBinderIds = new ArrayList<Long>();
+					if(canUseHelperThreads) {
+						List<Binder> nonConcurrentBinders = new ArrayList<Binder>();
+						for (Binder binder : checked) {
+							if(binder.isZone()) {
+								concurrentBinderIds.addAll(obtainConcurrentBinderIdsFromSite(binder, done, (ConcurrentStatusTicket)statusTicket, errors));
+							}
+							else if(ObjectKeys.NET_FOLDERS_ROOT_INTERNALID.equals(binder.getInternalId())) {
+								concurrentBinderIds.addAll(obtainConcurrentBinderIdsFromNetFolders(binder, done, (ConcurrentStatusTicket)statusTicket, errors));
+							}
+							else if(ObjectKeys.PROFILE_ROOT_INTERNALID.equals(binder.getInternalId())) {
+								concurrentBinderIds.addAll(obtainConcurrentBinderIdsFromPersonalWorkspaces(binder, done, (ConcurrentStatusTicket)statusTicket, errors));								
 							}
 							else {
-								done.addAll(loadBinderProcessor(binder).indexTree(binder,
-										done, statusTicket, errors, skipFileContentIndexing));		
+								nonConcurrentBinders.add(binder);
 							}
 						}
-						else {
-							done.addAll(loadBinderProcessor(binder).indexTree(binder,
-									done, statusTicket, errors, skipFileContentIndexing));
-						}
+						checked = nonConcurrentBinders;
 					}
+					
+					// Flush all remaining index changes associated with this main thread.
+					if(logger.isDebugEnabled())
+						logger.debug("Applying remaining changes to index if any");
+			  		IndexSynchronizationManager.applyChanges();
+
+			  		// If there are branches that we can process in parallel, try executing them as concurrently as we can.
+					if(!concurrentBinderIds.isEmpty()) {
+						done.addAll(indexTreeConcurrent(concurrentBinderIds, done, (ConcurrentStatusTicket) statusTicket, nodeNames, errors, skipFileContentIndexing));
+					}
+					
+					// The rest of the binders must be processed synchronously and sequentially.
+					for (Binder binder : checked) {
+						done.addAll(loadBinderProcessor(binder).indexTree(binder,
+								done, statusTicket, errors, skipFileContentIndexing));
+					}
+					
 					// Normally, all updates to the index are managed by the
 					// framework so that
 					// the index update won't be made until after the related
@@ -881,7 +909,15 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 						} finally {
 							luceneSession.close();
 						}
-					}	
+					}
+					
+					if(statusTicket instanceof ConcurrentStatusTicket) {
+						((ConcurrentStatusTicket)statusTicket).indexingCompleted();
+					}
+					else {
+				    	statusTicket.setStatus(NLT.get("index.finished") + "<br/><br/>" + NLT.get("index.indexingBinder", new Object[] {String.valueOf(done.size()), String.valueOf(done.size())}));
+				    	statusTicket.setState(WebKeys.AJAX_STATUS_STATE_COMPLETED);
+					}
 				} finally {
 					if(logger.isDebugEnabled())
 						logger.debug("Unsetting indexers");
@@ -898,7 +934,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		}
 	}
 
-	private void indexOneBinder(Binder binder, ConcurrentStatusTicket concurrentStatusTicket, IndexErrors errors, List<Long> done) {
+	private void indexOneBinder(Binder binder, ConcurrentStatusTicket concurrentStatusTicket, IndexErrors errors, Collection<Long> done) {
 	    BinderProcessor processor = loadBinderProcessor(binder);
 		concurrentStatusTicket.incrementCurrentAndTotalCounts();
 		if(logger.isDebugEnabled())
@@ -911,44 +947,56 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
   		IndexSynchronizationManager.applyChanges(SPropsUtil.getInt("lucene.flush.threshold", 100));
 	}
 	
-	private Collection indexSite(Binder binder, Collection exclusions, StatusTicket statusTicket, String[] nodeNames, IndexErrors errors, boolean skipFileContentIndexing) {
-		// Wrap the status ticket so that we can use thread-unsafe data structure in thread safe way.
-		ConcurrentStatusTicket concurrentStatusTicket = new ConcurrentStatusTicket(statusTicket);
-		ArrayList<Long> done = new ArrayList<Long>();
-		
+	private List<Long> obtainConcurrentBinderIdsFromNetFolders(Binder netFoldersWorkspace, Collection<Long> done, ConcurrentStatusTicket statusTicket, IndexErrors errors) {
+		// Index "/Home Workspace/Net Folders" workspace (one level only)/ This workspace has no entries to index.
+	    indexOneBinder(netFoldersWorkspace, statusTicket, errors, done);
+		List<Long> netFolderIds = getCoreDao().getSubBinderIds(netFoldersWorkspace);
+		if(logger.isDebugEnabled())
+			logger.debug("Identified " + netFolderIds.size() + " net folders to index: " + netFolderIds.toString());
+		else
+			logger.info("Identified " + netFolderIds.size() + " net folders to index");
+		if(logger.isTraceEnabled())
+			logger.trace("Applying changes to index");
+  		IndexSynchronizationManager.applyChanges(SPropsUtil.getInt("lucene.flush.threshold", 100));
+		return netFolderIds;
+	}
+	
+	private List<Long> obtainConcurrentBinderIdsFromPersonalWorkspaces(Binder personalWorkspaces, Collection<Long> done, ConcurrentStatusTicket statusTicket, IndexErrors errors) {		
+		// Index "/Home Workspace/Personal Workspaces" workspace (one level only).
+		// This is a special workspace in which all principal objects (users and groups)
+		// reside. So this will synchronously index all users and groups right here
+		// rather than delegating the work to an asynchronous thread.
+		// However, because this is one-level only indexing, it will NOT index users' 
+		// personal workspaces (which include home folders).
+	    indexOneBinder(personalWorkspaces, statusTicket, errors, done);
+		logger.info("Indexed all principals (users and groups) - Progress (global estimate): " + statusTicket);	    
+		List<Long> personalWorkspaceIds = getCoreDao().getSubBinderIds(personalWorkspaces);
+		if(logger.isDebugEnabled())
+			logger.debug("Identified " + personalWorkspaceIds.size() + " personal workspaces to index: " + personalWorkspaceIds.toString());
+		else
+			logger.info("Identified " + personalWorkspaceIds.size() + " personal workspaces to index");
+		if(logger.isTraceEnabled())
+			logger.trace("Applying changes to index");
+  		IndexSynchronizationManager.applyChanges(SPropsUtil.getInt("lucene.flush.threshold", 100));
+		return personalWorkspaceIds;
+	}
+	
+	private List<Long> obtainConcurrentBinderIdsFromSite(Binder siteWorkspace, Collection<Long> done, ConcurrentStatusTicket statusTicket, IndexErrors errors) {
 		// Index the very top workspace (= /Home Workspace)
-		indexOneBinder(binder, concurrentStatusTicket, errors, done);
+		indexOneBinder(siteWorkspace, statusTicket, errors, done);
 		
 		List<Long> netFolderIds = null;
 		List<Long> personalWorkspaceIds = null;
 		List<Long> remainingIds = null;
-		List<Binder> subBinders = binder.getBinders();
+		List<Binder> subBinders = siteWorkspace.getBinders();
 		BinderProcessor processor;
 		
 		for(Binder subBinder:subBinders) {
 			if(ObjectKeys.NET_FOLDERS_ROOT_INTERNALID.equals(subBinder.getInternalId())) {
-				// Index "/Home Workspace/Net Folders" workspace (one level only)/ This workspace has no entries to index.
-	   	    	indexOneBinder(subBinder, concurrentStatusTicket, errors, done);
-				netFolderIds = getCoreDao().getSubBinderIds(subBinder);
-				if(logger.isDebugEnabled())
-					logger.debug("Identified " + netFolderIds.size() + " net folders to index: " + netFolderIds.toString());
-				else
-					logger.info("Identified " + netFolderIds.size() + " net folders to index");
+				netFolderIds = obtainConcurrentBinderIdsFromNetFolders(subBinder, done, statusTicket, errors);
 			}
 			else if(ObjectKeys.PROFILE_ROOT_INTERNALID.equals(subBinder.getInternalId())) {
-				// Index "/Home Workspace/Personal Workspaces" workspace (one level only).
-				// This is a special workspace in which all principal objects (users and groups)
-				// reside. So this will synchronously index all users and groups right here
-				// rather than delegating the work to an asynchronous thread.
-				// However, because this is one-level only indexing, it will NOT index users' 
-				// personal workspaces (which include home folders).
-	   	    	indexOneBinder(subBinder, concurrentStatusTicket, errors, done);
-				logger.info("Indexed all principals (users and groups) - Progress (global estimate): " + concurrentStatusTicket);	    
-				personalWorkspaceIds = getCoreDao().getSubBinderIds(subBinder);
-				if(logger.isDebugEnabled())
-					logger.debug("Identified " + personalWorkspaceIds.size() + " personal workspaces to index: " + personalWorkspaceIds.toString());
-				else
-					logger.info("Identified " + personalWorkspaceIds.size() + " personal workspaces to index");
+				personalWorkspaceIds = obtainConcurrentBinderIdsFromPersonalWorkspaces(subBinder, done, statusTicket, errors);
 			}
 			else {
 				if(remainingIds == null)
@@ -957,10 +1005,9 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 			}
 		}
 		
-		// Flush all remaining index changes associated with this main thread.
-		if(logger.isDebugEnabled())
-			logger.debug("Applying remaining changes to index if any");
-  		IndexSynchronizationManager.applyChanges();
+		if(logger.isTraceEnabled())
+			logger.trace("Applying changes to index");
+  		IndexSynchronizationManager.applyChanges(SPropsUtil.getInt("lucene.flush.threshold", 100));
 
 		// We want to arrange the order in which binders are indexed such that 
 		// 1) users' personal workspaces (including home folders)
@@ -977,13 +1024,17 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 			binderIds.addAll(remainingIds);
 		}
 
-		int threadsSize = SPropsUtil.getInt("index.tree.helper.threads.size", 5);
-		
 		if(logger.isDebugEnabled())
 			logger.debug("Identified " + binderIds.size() + " branches to index independently: " + binderIds.toString());
 		else
 			logger.info("Identified " + binderIds.size() + " branches to index independently");
 			
+		return binderIds;
+	}
+	
+	private Collection<Long> indexTreeConcurrent(List<Long> binderIds, Collection<Long> done, ConcurrentStatusTicket statusTicket, String[] nodeNames, IndexErrors errors, boolean skipFileContentIndexing) {
+		int threadsSize = SPropsUtil.getInt("index.tree.helper.threads.size", 5);
+		
 		// Set up a queue and pre-populate it fully.
 		BinderToIndexQueue queue = new BinderToIndexQueue(binderIds.size() + threadsSize);
 		for(Long id:binderIds) {
@@ -1006,7 +1057,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		if(logger.isDebugEnabled())
 			logger.debug("Creating a queue with size " + queue.getPutCount() + " and " + threadsSize + " helper threads");
 		for(int i = 0; i < threadsSize; i++) {
-			helperThread = new Thread(new IndexHelper(concurrentStatusTicket, nodeNames, errors, queue, RequestContextHolder.getRequestContext(), done, skipFileContentIndexing),
+			helperThread = new Thread(new IndexHelper(statusTicket, nodeNames, errors, queue, RequestContextHolder.getRequestContext(), done, skipFileContentIndexing),
 					Thread.currentThread().getName() + "-(" + (i+1) + "-" + now + ")");
 			helperThreads[i] = helperThread;
 			helperThread.start();
@@ -1023,8 +1074,6 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		if(logger.isDebugEnabled())
 			logger.debug("All helper threads terminated: Total number of binders indexed is " + done.size());
 		
-		concurrentStatusTicket.indexingCompleted();
-
 		return done;
 	}
 	
@@ -1065,7 +1114,8 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 			Set<Long> done = new HashSet();
 			done.addAll(loadBinderProcessor(binder).validateBinderQuotasTree(binder,
 								statusTicket, errorIds));
-			logger.info("validateBinderQuotasTree took " + (System.nanoTime()-startTime)/1000000.0 + " ms");
+			if(logger.isDebugEnabled())
+				logger.debug("validateBinderQuotasTree took " + (System.nanoTime()-startTime)/1000000.0 + " ms");
 			return done;
 		} finally {
 			// It is important to call this at the end of the processing no
@@ -3930,10 +3980,10 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		private BinderToIndexQueue queue;
 		private RequestContext parentRequestContext;
 		// This must be guarded by itself.
-		private List<Long> done;
+		private Collection<Long> done;
 		private boolean skipFileContentIndexing;
 		
-		IndexHelper(ConcurrentStatusTicket statusTicket, String[] nodeNames, IndexErrors errors, BinderToIndexQueue queue, RequestContext parentRequestContext, List<Long> done, boolean skipFileContentIndexing) {
+		IndexHelper(ConcurrentStatusTicket statusTicket, String[] nodeNames, IndexErrors errors, BinderToIndexQueue queue, RequestContext parentRequestContext, Collection<Long> done, boolean skipFileContentIndexing) {
 			this.statusTicket = statusTicket;
 			this.nodeNames = nodeNames;
 			this.errors = errors;
