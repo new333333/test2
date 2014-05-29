@@ -42,6 +42,8 @@ import java.util.TreeMap;
 import java.util.Set;
 import java.util.HashSet;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.kablink.teaming.ObjectKeys;
@@ -73,6 +75,9 @@ import org.kablink.util.search.Constants;
  */
 @SuppressWarnings("unchecked")
 public abstract class Binder extends DefinableEntity implements WorkArea, InstanceLevelProcessorSupport  {
+	
+	private static Log logger = LogFactory.getLog(Binder.class);
+	
 	/**
 	 * Different values for the sync schedule option 
 	 */
@@ -784,10 +789,12 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
 	public ResourceDriver getResourceDriver() {
 		// Just a convenience method
 		ResourceDriver rd = null;
-		if (getResourceDriverName() != null) {
+		if (getResourceDriverName() != null && getResourceDriverName().length() > 0) {
 			try {
 				rd = ResourceDriverManagerUtil.findResourceDriver(getResourceDriverName());
-			} catch(FIException e) {}
+			} catch(FIException e) {
+				logger.warn("Cannot find resource driver by name '" + getResourceDriverName() + "' on binder '" + this.getId() + "'", e);
+			}
 			return rd;
 		} else {
 			return null;

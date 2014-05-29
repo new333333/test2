@@ -2350,11 +2350,6 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 			logger.debug("Applying remaining changes to index if any");
 		IndexSynchronizationManager.applyChanges();
 		
-		if(!(statusTicket instanceof ConcurrentStatusTicket)) {
-	    	statusTicket.setStatus(NLT.get("index.finished") + "<br/><br/>" + NLT.get("index.indexingBinder", new Object[] {String.valueOf(bindersIndexed), String.valueOf(ids.size())}));
-	    	statusTicket.setState(WebKeys.AJAX_STATUS_STATE_COMPLETED);
-		}
-    	
 		if(supportsReindexingContinuation) {
 	    	// Now that the entire processing completed successfully, there's no need for checkpoint. Remove it.
 	    	removeLastCheckpointForReindexing();
