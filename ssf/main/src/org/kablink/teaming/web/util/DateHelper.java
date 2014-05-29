@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -36,8 +36,6 @@
  */
 package org.kablink.teaming.web.util;
 
-
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -50,6 +48,7 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
+
 import org.kablink.teaming.ConfigurationException;
 import org.kablink.teaming.calendar.TimeZoneHelper;
 import org.kablink.teaming.context.request.RequestContextHolder;
@@ -58,12 +57,12 @@ import org.kablink.teaming.module.shared.InputDataAccessor;
 import org.kablink.teaming.util.NLT;
 
 /**
+ * ?
+ * 
  * @author billmers
- *
  */
 public class DateHelper {
-	
-	public static final int MILIS_IN_THE_DAY = (1000 * 60 * 60 * 24) - 1;
+	public static final int MILIS_IN_THE_DAY = ((1000 * 60 * 60 * 24) - 1000);	// Bugzilla 878940:  -1000 (1 second) vs. -1 (1 millisecond) to account for SQLServer's datetime inaccuracies.
     
 
  /*
@@ -342,6 +341,7 @@ public class DateHelper {
     		return "";
     	}    		
     }
+    
     // map day of week numbers into strings representing two letter abbrevs
     static public String getDayAbbrevString (int dayNum) {
     	switch (dayNum) {
@@ -364,4 +364,3 @@ public class DateHelper {
     	}    		
     }
 }
-
