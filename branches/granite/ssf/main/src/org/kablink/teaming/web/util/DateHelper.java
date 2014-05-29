@@ -63,7 +63,7 @@ import org.kablink.teaming.util.NLT;
  */
 public class DateHelper {
 	
-	public static final int MILIS_IN_THE_DAY = (1000 * 60 * 60 * 24) - 1;
+	public static final int MILIS_IN_THE_DAY = ((1000 * 60 * 60 * 24) - 1000);	// Bugzilla 878940:  -1000 (1 second) vs. -1 (1 millisecond) to account for SQLServer's datetime inaccuracies.
     
 
  /*
