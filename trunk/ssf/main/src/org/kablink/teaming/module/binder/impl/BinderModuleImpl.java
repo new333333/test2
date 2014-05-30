@@ -3822,16 +3822,32 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 
     @Override
 	public BinderChanges searchForChanges(Long [] binderIds, Long [] entryIds, Date sinceDate, int maxResults) {
-        List<HKey> binderKeys = getHKeys(binderIds);
-        if (binderKeys.size()==0 && (entryIds==null || entryIds.length==0)) {
-            return new BinderChanges();
+        List<Binder> binders = getBinders(binderIds);
+        if (binders.size()==0 && (entryIds==null || entryIds.length==0)) {
+            throw new AclChangeException();
         }
+        List<HKey> binderKeys = getHKeys(binders);
         Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
         Date purgeDate = getCoreDao().getAuditTrailPurgeDate(zoneId);
         if (purgeDate!=null && purgeDate.after(sinceDate)) {
             throw new AuditTrailPurgedException();
         }
         if (binderKeys.size()>0 && haveAclsChangedSinceDate(binderKeys, sinceDate)) {
+            throw new AclChangeException();
+        }
+
+        Set<Long> rootNetFolders = new HashSet<Long>();
+        for (Binder binder : binders) {
+            if (binder.isMirrored()) {
+                if (((Folder)binder).isTop()) {
+                    rootNetFolders.add(binder.getId());
+                } else {
+                    rootNetFolders.add(((Folder)binder).getTopFolder().getId());
+                }
+            }
+        }
+
+        if (rootNetFolders.size()>0 && haveNetFolderRightsChangedSinceDate(rootNetFolders, sinceDate)) {
             throw new AclChangeException();
         }
 
@@ -3925,19 +3941,34 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
         return aclChanges.size()>0;
     }
 
-    private List<HKey> getHKeys(Long[] binderIds) {
-        List<HKey> keys = new ArrayList<HKey>(binderIds.length);
+    private boolean haveNetFolderRightsChangedSinceDate(Set<Long> folderIds, Date sinceDate) {
+        Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
+        List aclChanges = getCoreDao().getAuditTrailEntries(zoneId, sinceDate, null, new ArrayList<Long>(folderIds),
+                new AuditTrail.AuditType[]{AuditTrail.AuditType.acl}, null, 1);
+        return aclChanges.size()>0;
+    }
+
+    private List<HKey> getHKeys(List<Binder> binders) {
+        List<HKey> keys = new ArrayList<HKey>(binders.size());
+        for (Binder binder : binders) {
+            keys.add(binder.getBinderKey());
+        }
+        return keys;
+    }
+
+    private List<Binder> getBinders(Long[] binderIds) {
+        List<Binder> binders = new ArrayList<Binder>(binderIds.length);
         for (Long id : binderIds) {
             try {
                 Binder binder = getBinder(id);
-                keys.add(binder.getBinderKey());
+                binders.add(binder);
             } catch (AccessControlException e) {
                 // Ignore
             } catch (NoBinderByTheIdException e) {
                 // Ignore
             }
         }
-        return keys;
+        return binders;
     }
 
     private List getDeleteAuditTrailEntries(List<HKey>  binderKeys, List<Long> entryIds, Date sinceDate, int maxResults) {

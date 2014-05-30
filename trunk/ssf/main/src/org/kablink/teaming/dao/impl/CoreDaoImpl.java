@@ -3232,7 +3232,7 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
 
     @Override
     public List getAuditTrailEntries(final Long zoneId, final Date sinceDate, final List<HKey> parentBinderKeys,
-                                     final List<Long> entryIds,
+                                     final List<Long> entityIds,
                                      final AuditTrail.AuditType[] types,
                                      final EntityType [] entityTypes, final int maxResults) {
         long begin = System.nanoTime();
@@ -3265,11 +3265,11 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
                                     or.add(Restrictions.like("owningBinderKey", key.getSortKey() + "%"));
                                 }
                             }
-                            if (entryIds!=null && entryIds.size()>0) {
-                                if (entryIds.size()==1) {
-                                    or.add(Restrictions.eq("entityId", entryIds.get(0)));
+                            if (entityIds!=null && entityIds.size()>0) {
+                                if (entityIds.size()==1) {
+                                    or.add(Restrictions.eq("entityId", entityIds.get(0)));
                                 } else {
-                                    or.add(Restrictions.in("entityId", entryIds));
+                                    or.add(Restrictions.in("entityId", entityIds));
                                 }
                             }
                             parentKeysExpr = or;

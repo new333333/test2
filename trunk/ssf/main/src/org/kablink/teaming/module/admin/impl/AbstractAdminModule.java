@@ -83,6 +83,7 @@ import org.kablink.teaming.domain.Description;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.Entry;
 import org.kablink.teaming.domain.ExtensionInfo;
+import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.HistoryStamp;
 import org.kablink.teaming.domain.HomePageConfig;
@@ -1569,7 +1570,8 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 		if (null == memberIds) {
 			memberIds = new HashSet<Long>();
 		}
-		
+
+        final boolean modified;
 		// Is there currently a member set stored on the function?
 		Set<Long> wafmMemberIds = wafm.getMemberIds();
 		if (null == wafmMemberIds) {
@@ -1577,9 +1579,11 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 			// were given.
 			wafmMemberIds = new HashSet<Long>(memberIds);
 			wafm.setMemberIds(wafmMemberIds);
+            modified = true;
 		}
 		
 		else {
+            modified = !wafmMemberIds.containsAll(memberIds) || !memberIds.containsAll(wafmMemberIds);
 			// Yes, there is a member set on the function!  Clear its
 			// contents and store the new member list.
 			wafmMemberIds.clear();
@@ -1589,12 +1593,16 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 		// Reset the membership on the WorkArea Function.
 		final boolean						finalHasMembers = MiscUtil.hasItems(wafmMemberIds);
 		final WorkAreaFunctionMembership	finalWAFM       = wafm;
+        final WorkArea finalWa = wa;
 		getTransactionTemplate().execute(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				if      ( finalNewWAFM)    getWorkAreaFunctionMembershipManager().addWorkAreaFunctionMembership(   finalWAFM);
 				else if (!finalHasMembers) getWorkAreaFunctionMembershipManager().deleteWorkAreaFunctionMembership(finalWAFM);
 				else                       getWorkAreaFunctionMembershipManager().updateWorkAreaFunctionMembership(finalWAFM);
+                if (modified && finalWa instanceof Folder && ((Folder)finalWa).isMirrored() && ((Folder)finalWa).isTop()) {
+                    getReportModule().addAuditTrail(AuditTrail.AuditType.acl, (Folder)finalWa);
+                }
 				return null;
 			}
 		});
