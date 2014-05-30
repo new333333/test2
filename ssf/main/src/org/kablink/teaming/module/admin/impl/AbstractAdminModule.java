@@ -2220,7 +2220,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 
 			// ...create the mime helper... 
 			MimeSharePreparator helper = new MimeSharePreparator(mailMap, logger);
-			helper.setDefaultFrom(sendingUser.getEmailAddress());
+			helper.setDefaultFrom(sendingIA.getAddress());
 			
 			try {
 				// ...and send the email.
@@ -2396,7 +2396,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 
 			// ...create the mime helper... 
 			MimeSharePreparator helper = new MimeSharePreparator(mailMap, logger);
-			helper.setDefaultFrom(sendingUser.getEmailAddress());
+			helper.setDefaultFrom(sendingIA.getAddress());
 			
 			try {
 				// ...and send the email.
@@ -2583,7 +2583,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 
 			// ...create the mime helper... 
 			MimeSharePreparator helper = new MimeSharePreparator(mailMap, logger);
-			helper.setDefaultFrom(sendingUser.getEmailAddress());
+			helper.setDefaultFrom(sendingIA.getAddress());
 			
 			try {
 				// ...and send the email.
@@ -2745,7 +2745,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 
 			// ...create the mime helper... 
 			MimeSharePreparator helper = new MimeSharePreparator(mailMap, logger);
-			helper.setDefaultFrom(sendingUser.getEmailAddress());
+			helper.setDefaultFrom(sendingIA.getAddress());
 			
 			try {
 				// ...and send the email.
@@ -2925,7 +2925,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 
 			// ...create the mime helper... 
 			MimeSharePreparator helper = new MimeSharePreparator(mailMap, logger);
-			helper.setDefaultFrom(sendingUser.getEmailAddress());
+			helper.setDefaultFrom(sendingIA.getAddress());
 			
 			try {
 				// ...and send the email.

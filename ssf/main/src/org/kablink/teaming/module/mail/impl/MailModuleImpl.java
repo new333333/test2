@@ -699,7 +699,7 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 								currentFolder = entry.getRootFolder();
 								processor = ((EmailFormatter) processorManager.getProcessor(currentFolder,EmailFormatter.PROCESSOR_KEY));
 								mHelper = new MimeNotifyPreparator(processor, currentFolder, begin, logger, sendVTODO);
-								mHelper.setDefaultFrom(mailSender.getDefaultFrom());		
+								mHelper.setDefaultFrom(getDefaultFrom(mailSender));		
 								mHelper.setTimeZone(timeZone);
 							}
 
@@ -1017,7 +1017,7 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 						List<Object[]> digestResultsRedacted = processor.buildDistributionList(currentFolder, entries, folderSubscriptions, Subscription.DIGEST_STYLE_EMAIL_NOTIFICATION, true );
 						
 						mHelper = new MimeNotifyPreparator(processor, currentFolder, begin, logger, sendVTODO);
-						mHelper.setDefaultFrom(mailSender.getDefaultFrom());		
+						mHelper.setDefaultFrom(getDefaultFrom(mailSender));		
 						mHelper.setTimeZone(timeZone);
 						
 						for (int i = 0; i < digestResults.size(); ++i) {
@@ -1171,7 +1171,7 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
     @Override
 	public void sendMail(String mailSenderName, MimeMessagePreparator mHelper) {
     	JavaMailSender mailSender = getMailSender(mailSenderName);
-		mHelper.setDefaultFrom(mailSender.getDefaultFrom());
+		mHelper.setDefaultFrom(getDefaultFrom(mailSender));
 		
 		// Use spring callback to wrap exceptions into something more
 		// useful than Java's.  Add an entry into the email log for
@@ -1278,7 +1278,7 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 			currentMessage.put(MailModule.BCC, subList);
 	 		MimeMessagePreparator helper = new MimeMapPreparator(currentMessage, logger, sendVTODO);
 	 		try {
-	 			helper.setDefaultFrom(mailSender.getDefaultFrom());		
+	 			helper.setDefaultFrom(getDefaultFrom(mailSender));		
 	 			mailSender.send(helper);
 	 		}
 	 		catch (MailSendException sx) {
@@ -1384,7 +1384,7 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 			List subList = rcpts.subList(i, Math.min(rcpts.size(), i + rcptToLimit));
 			currentMessage.put(MailModule.BCC, subList);
 			MimeEntryPreparator helper = new MimeEntryPreparator(processor, entry, currentMessage, logger, sendVTODO);
-	 		helper.setDefaultFrom(mailSender.getDefaultFrom());		
+	 		helper.setDefaultFrom(getDefaultFrom(mailSender));		
 	 		helper.setTimeZone(user.getTimeZone().getID());
 	 		helper.setLocale(user.getLocale());
 	 		helper.setType(Notify.NotifyType.interactive);
@@ -1481,7 +1481,7 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 			List subList = rcpts.subList(i, Math.min(rcpts.size(), i + rcptToLimit));
 			currentMessage.put(MailModule.BCC, subList);
 	 		MimeMessagePreparator helper = new MimeMapPreparator(currentMessage, logger, sendVTODO);
-	 		helper.setDefaultFrom(mailSender.getDefaultFrom());
+	 		helper.setDefaultFrom(getDefaultFrom(message, mailSender));
 	 		MimeMessage msg = mailSender.createMimeMessage();
 			helper.prepare(msg);
 			job.schedule(mailSender, msg, comment, getMailDirPath(binder), true);
@@ -1489,6 +1489,24 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 		}
 		getReportModule().addEmailLog(emailLog);
 	}
+    
+    /*
+     * Returns the default from email address to use for the given
+     * email.
+     */
+    private static String getDefaultFrom(Map message, JavaMailSender mailSender) {
+ 		InternetAddress defaultFromIA = ((null != message) ? ((InternetAddress) message.get(MailModule.FROM)) : null);
+ 		String reply;
+ 		if (null == defaultFromIA)
+ 		     reply = mailSender.getDefaultFrom();
+ 		else reply = defaultFromIA.getAddress();
+ 		return reply;
+    }
+    
+    private static String getDefaultFrom(JavaMailSender mailSender) {
+    	// Always use the initial form of the method.
+    	return getDefaultFrom(null, mailSender);
+    }
 
     /*
      * Inner class used to ...

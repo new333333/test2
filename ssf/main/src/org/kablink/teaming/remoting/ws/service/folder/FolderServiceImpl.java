@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -31,9 +31,6 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 package org.kablink.teaming.remoting.ws.service.folder;
-
-import static org.kablink.util.search.Restrictions.between;
-import static org.kablink.util.search.Restrictions.eq;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -56,9 +53,11 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
 import org.apache.lucene.document.DateTools;
+
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
+
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Attachment;
@@ -99,6 +98,8 @@ import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SimpleProfiler;
 import org.kablink.teaming.util.stringcheck.StringCheckUtil;
 import org.kablink.teaming.web.util.BinderHelper;
+import org.kablink.teaming.web.util.EmailHelper;
+import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.TrashHelper;
 import org.kablink.util.Validator;
 import org.kablink.util.api.ApiErrorCode;
@@ -106,6 +107,9 @@ import org.kablink.util.api.ApiErrorCodeSupport;
 import org.kablink.util.search.Constants;
 import org.kablink.util.search.Criteria;
 import org.kablink.util.search.Order;
+
+import static org.kablink.util.search.Restrictions.between;
+import static org.kablink.util.search.Restrictions.eq;
 
 /**
  * ?
@@ -387,10 +391,13 @@ public void folder_deleteEntryWorkflow(String accessToken, long entryId, String 
  		UserPrincipal creator = entry.getCreation().getPrincipal();
  		String from = null;
  		try {
- 			InternetAddress addr = new InternetAddress(creator.getEmailAddress(), creator.getTitle());
+ 			InternetAddress addr = new InternetAddress(EmailHelper.getFromEMA(creator), creator.getTitle());
  			from = addr.toString();
  		} catch(Exception ex) {
- 			from = entry.getPostedBy();
+ 			from = (MiscUtil.isFromOverrideForAll() ? MiscUtil.getFromOverride() : null);
+ 			if (!(MiscUtil.hasString(from))) {
+ 				from = entry.getPostedBy();
+ 			}
  		}
 		helper.setDefaultFrom(from);		
  		helper.setTimeZone(user.getTimeZone().getID());
