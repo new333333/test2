@@ -629,6 +629,48 @@ public final class MiscUtil
 	}// end getFromOverride()
 	
 	/**
+	 * Called to determine whether a from override should be applied to
+	 * all out bound email or only those from the system.
+	 * 
+	 * @return
+	 */
+	public static boolean isFromOverrideForAll()
+	{
+		// Can we access the current zone name?
+		ZoneInfo zoneInfo = getCurrentZone();
+		String value = zoneInfo.getZoneName();
+		if ( hasString( value ) )
+		{
+			// Yes!  Check for a zone specific setting.
+			value = SPropsUtil.getString( (SPropsUtil.FROM_EMAIL_GLOBAL_OVERRIDE_ALL + "." + value), "" ); 
+		}
+
+		// Do we have a zone specific setting?
+		if ( ! ( hasString( value ) ) )
+		{
+			// No!  Check for a global setting.
+			value = SPropsUtil.getString( SPropsUtil.FROM_EMAIL_GLOBAL_OVERRIDE_ALL, "" );
+		}
+
+		// Do we have a global setting?
+		boolean reply;
+		if ( ! ( hasString( value ) ) )
+		{
+			// No!  Then ensure we return false.
+			reply = false;
+		}
+		else
+		{
+			// Otherwise, return true if the setting is true.
+			reply = value.equalsIgnoreCase("true");
+		}
+
+		// If we get here, reply is true of the from override should
+		// apply to all outgoing email and false otherwise.  Return it.
+		return reply;
+	}// end isFromOverrideForAll()
+	
+	/**
 	 * Validates a Collection<InternetAddress> as containing valid
 	 * InternetAddress's.
 	 * 

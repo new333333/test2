@@ -755,7 +755,7 @@ public class EnterExitEvent extends AbstractActionHandler {
 			hMsg.append("</p>");
 		}
 		try {
-			String email = MiscUtil.getFromOverride();
+			String email = (MiscUtil.isFromOverrideForAll() ? MiscUtil.getFromOverride() : null);
 			boolean usingOverride = MiscUtil.hasString(email);
 			if (!usingOverride) {
 				email = getProfileDao().loadUser(wEntry.getOwnerId(), entry.getZoneId()).getEmailAddress();

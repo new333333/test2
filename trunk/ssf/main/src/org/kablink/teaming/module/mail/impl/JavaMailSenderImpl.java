@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -31,8 +31,6 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 package org.kablink.teaming.module.mail.impl;
-import java.io.IOException;
-import java.util.Date;
 
 import javax.mail.AuthenticationFailedException;
 import javax.mail.MessagingException;
@@ -42,27 +40,29 @@ import javax.mail.internet.MimeMessage;
 
 import org.kablink.teaming.module.mail.ConnectionCallback;
 import org.kablink.teaming.util.SPropsUtil;
+import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.util.Validator;
+
 import org.springframework.mail.MailAuthenticationException;
 import org.springframework.mail.MailException;
 import org.springframework.mail.MailParseException;
 import org.springframework.mail.MailPreparationException;
 import org.springframework.mail.MailSendException;
-import org.springframework.mail.javamail.MimeMessagePreparator;
 
 /**
  * This class extends the spring JavaMailSenderImpl.  It adds the bean name, so
  * we can locate the sender when mail is resent after an error.  The resend occurs
  * as a scheduled job.  It also caches the coneection so we can send lots of messages without
  * reconnecting and without holding lots of messages in memory
+ * 
  * @author Janet McCann
- *
  */
 public class JavaMailSenderImpl extends
 		org.springframework.mail.javamail.JavaMailSenderImpl
 		implements org.kablink.teaming.module.mail.JavaMailSender {
 	private String name="";
 
+	@Override
 	public void setSession(Session session) {
 		//using either bean properties or jndi properties for host, port, userName
 		super.setSession(session);
@@ -95,21 +95,35 @@ public class JavaMailSenderImpl extends
 			setUsername(user); 
 		}
 	}
+	
+	@Override
 	public void setSession(Session session, String userName, String password) {
 		super.setSession(session);
 		setUsername(userName);
 		setPassword(password);
 		
 	}
+	
+	@Override
 	public String getDefaultFrom() {
-		return getUsername();
+		String from = MiscUtil.getFromOverride();
+		if (!(MiscUtil.hasString(from))) {
+			from = getUsername(); 
+		}
+		return from;
 	}
+	
+	@Override
 	public void setName(String name) {
 		this.name = name;
 	}
+	
+	@Override
 	public String getName() {
 		return name;
 	}
+	
+	@Override
 	public void send(Transport transport, MimeMessage mimeMessage) throws MailException {
 		validate(transport);
 
@@ -128,6 +142,8 @@ public class JavaMailSenderImpl extends
 			throw new MailPreparationException(ex);
 		}
 	}
+	
+	@Override
 	public Object send(ConnectionCallback callback) throws MailException {
 		Transport transport;
 		try {
@@ -145,6 +161,7 @@ public class JavaMailSenderImpl extends
 			try {transport.close();} catch (Exception ignore) {};
 		}
 	}
+	
 	private void validate(Transport transport) {
 		try {
 			if (!transport.isConnected()) transport.connect(getHost(), getPort(), getUsername(), getPassword());

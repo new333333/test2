@@ -299,9 +299,9 @@ public class EmailHelper {
 	 * 
 	 * @return
 	 */
-	public static String getFromEMA(User user) {
+	public static String getFromEMA(UserPrincipal user) {
 		// Is there a system wide from email address override defined?
-   		String reply = MiscUtil.getFromOverride();
+   		String reply = (MiscUtil.isFromOverrideForAll() ? MiscUtil.getFromOverride() : null);
    		if (!(MiscUtil.hasString(reply))) {
    			// No!  Does the user have an email address?
    			reply = user.getEmailAddress();
