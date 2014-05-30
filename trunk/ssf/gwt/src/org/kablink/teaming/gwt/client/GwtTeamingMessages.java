@@ -589,6 +589,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_SendNotificationEmail();
 	String rpcFailure_SetDesktopAppDownloadVisibility();
 	String rpcFailure_SetEntriesPinState();
+	String rpcFailure_SetHasSeenOesWarning();
 	String rpcFailure_SetMobileDevicesWipeScheduledState();
 	String rpcFailure_SetSeen();
 	String rpcFailure_SetStatus();
@@ -2320,6 +2321,7 @@ public interface GwtTeamingMessages extends Messages
 	String manageNetFolderServersDlg_Header();
 	String manageNetFolderServersDlg_NameCol();
 	String manageNetFolderServersDlg_NoNetFolderServersLabel();
+	String manageNetFolderServersDlg_OesWarning();
 	String manageNetFolderServersDlg_ServerPathCol();
 	String manageNetFolderServersDlg_SelectServersToDelete();
 	String manageNetFolderServersDlg_SelectServersToSync();

@@ -10129,6 +10129,7 @@ public class GwtServerHelper {
 		case SEND_SHARE_NOTIFICATION_EMAIL:
 		case SET_DESKTOP_APP_DOWNLOAD_VISIBILITY:
 		case SET_ENTRIES_PIN_STATE:
+		case SET_HAS_SEEN_OES_WARNING:
 		case SET_MOBILE_DEVICES_WIPE_SCHEDULED_STATE:
 		case SET_SEEN:
 		case SET_UNSEEN:
@@ -11488,6 +11489,21 @@ public class GwtServerHelper {
 			expandedBindersList);
 	}
 
+	/**
+	 * Sets the value of the user property for has the user seen the oes warning.
+	 * 
+	 * @return
+	 */
+	public static Boolean setHasSeenOesWarning( AllModulesInjected ami, boolean hasSeen )
+	{
+		ami.getProfileModule().setUserProperty(
+											null,
+											ObjectKeys.USER_PROPERTY_HAS_SEEN_OES_WARNING,
+											String.valueOf( hasSeen ) );
+		
+		return Boolean.TRUE;
+	}
+	
 	/**
 	 * Sets the sharing rights information on user workspaces for a
 	 * collection of users. 

@@ -1020,6 +1020,21 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			
 			result = GwtNetFolderHelper.getAllNetFolderRoots( this );
 			responseData = new GetNetFolderRootsRpcResponseData( result );
+			
+			// Get the flag that indicates whether the admin has seen the oes warning
+			{
+				UserProperties userProperties;
+				String value;
+				boolean hasSeenWarning = false;
+
+				userProperties = getProfileModule().getUserProperties( null );
+				value = (String) userProperties.getProperty( ObjectKeys.USER_PROPERTY_HAS_SEEN_OES_WARNING );
+				if ( MiscUtil.hasString( value ) )
+				     hasSeenWarning = Boolean.parseBoolean( value );
+				
+				responseData.setHasSeenOesNetFolderServerWarning( hasSeenWarning );
+			}
+			
 			response = new VibeRpcResponse( responseData );
 			return response;
 		}
@@ -3595,6 +3610,17 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		{
 			SetEntriesPinStateCmd sepsCmd = ((SetEntriesPinStateCmd) cmd);
 			Boolean result = GwtServerHelper.setEntriesPinState( this, getRequest( ri ), sepsCmd.getEntryIds(), sepsCmd.getPinned() );
+			response = new VibeRpcResponse( new BooleanRpcResponseData( result ) );
+			return response;
+		}
+		
+		case SET_HAS_SEEN_OES_WARNING:
+		{
+			Boolean result;
+			SetHasSeenOesWarningCmd shsowCmd;
+			
+			shsowCmd = (SetHasSeenOesWarningCmd) cmd;
+			result = GwtServerHelper.setHasSeenOesWarning( this, shsowCmd.hasSeen() );
 			response = new VibeRpcResponse( new BooleanRpcResponseData( result ) );
 			return response;
 		}

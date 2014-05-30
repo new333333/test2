@@ -53,6 +53,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.DeleteNetFolderRootsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.DeleteNetFolderServersRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.GetNetFolderRootsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetNetFolderRootsRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.SetHasSeenOesWarningCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SyncNetFolderRootsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.SyncNetFolderServerCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
@@ -60,6 +61,7 @@ import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HelpData;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import org.kablink.teaming.gwt.client.widgets.ModifyNetFolderRootDlg.ModifyNetFolderRootDlgClient;
+import org.kablink.teaming.gwt.client.widgets.ModifyNetFolderRootDlg.NetFolderRootType;
 
 import com.google.gwt.cell.client.CheckboxCell;
 import com.google.gwt.cell.client.FieldUpdater;
@@ -104,6 +106,7 @@ public class ManageNetFolderRootsDlg extends DlgBox
 	private List<NetFolderRoot> m_listOfNetFolderRoots;
 	private ModifyNetFolderRootDlg m_modifyNetFolderRootDlg;
     private int m_width;
+    private boolean m_hasSeenOesWarning = false;
 	
 	// The following defines the TeamingEvents that are handled by
 	// this class.  See EventHelper.registerEventHandlers() for how
@@ -672,7 +675,11 @@ public class ManageNetFolderRootsDlg extends DlgBox
 						
 						// Add the net folder roots to the ui
 						if ( responseData != null )
+						{
 							addNetFolderRoots( responseData.getListOfNetFolderRoots() );
+							
+							m_hasSeenOesWarning = responseData.getHasSeenOesNetFolderServerWarning();
+						}
 					}
 				};
 				Scheduler.get().scheduleDeferred( cmd );
@@ -826,6 +833,8 @@ public class ManageNetFolderRootsDlg extends DlgBox
 
 			// Tell the table how many roots we have.
 			m_netFolderRootsTable.setRowCount( m_listOfNetFolderRoots.size(), true );
+			
+			showOesWarningIfNeeded( root );
 		}
 	}
 	
@@ -857,6 +866,8 @@ public class ManageNetFolderRootsDlg extends DlgBox
 				
 				// Update the table to reflect the fact that this root has been modified.
 				m_dataProvider.refresh();
+				
+				showOesWarningIfNeeded( existingRoot );
 			}
 		}
 	}
@@ -874,6 +885,53 @@ public class ManageNetFolderRootsDlg extends DlgBox
 	}
 	
 
+	/**
+	 * If the user has not seen the oes warning and the server type is oes show the warning
+	 * about the OES server needs to be fully patched.
+	 */
+	private void showOesWarningIfNeeded( NetFolderRoot root )
+	{
+		if ( root != null )
+		{
+			// Is the server type OES?
+			if ( root.getRootType() == NetFolderRootType.OES )
+			{
+				// Yes
+				// Has the user seen the oes warning before?
+				if ( m_hasSeenOesWarning == false )
+				{
+					SetHasSeenOesWarningCmd cmd;
+					AsyncCallback<VibeRpcResponse> rpcCallback = null;
+
+					// No, show it.
+					Window.alert( GwtTeaming.getMessages().manageNetFolderServersDlg_OesWarning() );
+					
+					// Create the callback that will be used when we issue an ajax call
+					// to set the value of the "has seen oes warning" user property.
+					rpcCallback = new AsyncCallback<VibeRpcResponse>()
+					{
+						@Override
+						public void onFailure( final Throwable t )
+						{
+							GwtClientHelper.handleGwtRPCFailure(
+													t,
+													GwtTeaming.getMessages().rpcFailure_SetHasSeenOesWarning() );
+						}
+				
+						@Override
+						public void onSuccess( final VibeRpcResponse response )
+						{
+							m_hasSeenOesWarning = true;
+						}
+					};
+					
+					// Remember that the user has seen the OES warning
+					cmd = new SetHasSeenOesWarningCmd( true );
+					GwtClientHelper.executeCommand( cmd, rpcCallback );				}
+			}
+		}
+	}
+	
 	/**
 	 * Sync the given net folder roots
 	 */
