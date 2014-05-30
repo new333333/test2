@@ -2995,9 +2995,11 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 						metadataDirty = true;
 		            	// add the size of the file to the users disk usage
 		            	incrementDiskSpaceUsed(fa);
-		            	ChangeLog changes = new ChangeLog(entity, ChangeLog.FILEMODIFY);
-		            	ChangeLogUtils.buildLog(changes, fa);
-		            	newObjs.add(changes);
+		            	if(newObjs != null) {
+			            	ChangeLog changes = new ChangeLog(entity, ChangeLog.FILEMODIFY);
+			            	ChangeLogUtils.buildLog(changes, fa);
+			            	newObjs.add(changes);
+		            	}
 					}
 				}  
 			}
