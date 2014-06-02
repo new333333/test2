@@ -1163,11 +1163,6 @@ a, a:visited, a:hover {
 	margin-bottom: 5px;
 }
 
-.adminInfoIcon 
-{
-	display: none;
-}
-
 /* Style used for the table that holds all the administration categories. */
 .adminCategoriesTable
 {
