@@ -504,7 +504,7 @@
 /* Start:  Manage devices dialog styles. */
 	.vibe-manageMobileDevicesDlg                    {}
 	.vibe-manageMobileDevicesDlg .popupContent      {background-color: white !important;}
-	.vibe-manageMobileDevicesDlg-captionCount       {position: absolute; top: 8px; right: 0px; padding-left: 10px; padding-right: 20px; font-size: 13px;}
+	.vibe-manageMobileDevicesDlg-captionCount       {position: absolute; top: 11px; right: 40px; padding-left: 10px; padding-right: 10px; font-size: 13px;}
 	.vibe-manageMobileDevicesDlg-headerCaption-user {display: inline-block; overflow: hidden; text-overflow: ellipsis; max-width: 600px;}
 	.vibe-manageMobileDevicesDlg-panel              {}
 	.vibe-manageMobileDevicesDlg-system             {}
