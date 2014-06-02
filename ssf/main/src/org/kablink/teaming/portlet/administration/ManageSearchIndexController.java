@@ -33,6 +33,7 @@
 package org.kablink.teaming.portlet.administration;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Collection;
@@ -88,6 +89,7 @@ public class ManageSearchIndexController extends  SAbstractController {
 				//Get the binders to be indexed
 				Collection<Long> ids = TreeHelper.getSelectedIds(formData);
 				if (indexAll) {
+					ids = new HashSet();
 					ids.add(topBinder.getId());
 				}
 				
