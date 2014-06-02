@@ -7700,8 +7700,9 @@ public class GwtViewHelper {
 		else if (action.equals(WebKeys.ACTION_VIEW_FOLDER_ENTRY)) {
 			// A view folder entry!  Construct a ViewFolderEntryInfo
 			// for it...
-			FolderEntry	fe      = null;
-			Long		entryId = getQueryParameterLong(nvMap, WebKeys.URL_ENTRY_ID );
+			FolderEntry	fe                 = null;
+			Long		entryId            = getQueryParameterLong(nvMap, WebKeys.URL_ENTRY_ID );
+			boolean		createFromWikiLink = false;
 			if (null == entryId) {
 				String entryTitle = getQueryParameterString(nvMap, WebKeys.URL_ENTRY_TITLE);
 				if (MiscUtil.hasString(entryTitle)) {
@@ -7711,36 +7712,43 @@ public class GwtViewHelper {
 						fe      = ((FolderEntry) entries.iterator().next());
 						entryId = fe.getId();
 					}
+					else {
+						vi.setViewType(ViewType.CREATE_FROM_WIKI_LINK);
+						createFromWikiLink = true;
+					}
 				}
 			}
 			else {
 				fe = GwtUIHelper.getEntrySafely(bs.getFolderModule(), null, entryId);
 			}
-			
-			boolean				hasAccess = (null != fe);
-			Long				binderId  = (hasAccess ? fe.getParentBinder().getId() : getQueryParameterLong(nvMap, WebKeys.URL_BINDER_ID));
-			ViewFolderEntryInfo	vfei      = buildViewFolderEntryInfo(bs, request, binderId, entryId);
-			
-			// ...mark the ViewInfo as such...
-			vi.setViewFolderEntryInfo(vfei                 );
-			vi.setViewType(           ViewType.FOLDER_ENTRY);
-			
-			// ...if we're supposed to invoke the share dialog on this
-			// ...entry...
-			boolean invokeShare = isQueryParamSet(nvMap, WebKeys.URL_INVOKE_SHARE, "1");
-			if (invokeShare) {
-				// ...mark the ViewInfo accordingly...
-				boolean invokeShareEnabled = (hasAccess && (GwtShareHelper.isEntitySharable(bs, fe) || GwtShareHelper.isEntityPublicLinkSharable(bs, fe)));
-				vi.setInvokeShare(       hasAccess         );
-				vi.setInvokeShareEnabled(invokeShareEnabled);
-			}
-			
-			// ...if we're supposed to invoke the subscribe dialog on
-			// ...this entry...
-			boolean invokeSubscribe = isQueryParamSet(nvMap, WebKeys.URL_INVOKE_SUBSCRIBE, "1");
-			if (invokeSubscribe) {
-				// ...mark the ViewInfo accordingly.
-				vi.setInvokeSubscribe(true);
+
+			// ...and if it isn't a request to create a WIKI page...
+			if (!createFromWikiLink) {
+				boolean				hasAccess = (null != fe);
+				Long				binderId  = (hasAccess ? fe.getParentBinder().getId() : getQueryParameterLong(nvMap, WebKeys.URL_BINDER_ID));
+				ViewFolderEntryInfo	vfei      = buildViewFolderEntryInfo(bs, request, binderId, entryId);
+				
+				// ...mark the ViewInfo as such...
+				vi.setViewFolderEntryInfo(vfei                 );
+				vi.setViewType(           ViewType.FOLDER_ENTRY);
+				
+				// ...if we're supposed to invoke the share dialog on this
+				// ...entry...
+				boolean invokeShare = isQueryParamSet(nvMap, WebKeys.URL_INVOKE_SHARE, "1");
+				if (invokeShare) {
+					// ...mark the ViewInfo accordingly...
+					boolean invokeShareEnabled = (hasAccess && (GwtShareHelper.isEntitySharable(bs, fe) || GwtShareHelper.isEntityPublicLinkSharable(bs, fe)));
+					vi.setInvokeShare(       hasAccess         );
+					vi.setInvokeShareEnabled(invokeShareEnabled);
+				}
+				
+				// ...if we're supposed to invoke the subscribe dialog on
+				// ...this entry...
+				boolean invokeSubscribe = isQueryParamSet(nvMap, WebKeys.URL_INVOKE_SUBSCRIBE, "1");
+				if (invokeSubscribe) {
+					// ...mark the ViewInfo accordingly.
+					vi.setInvokeSubscribe(true);
+				}
 			}
 		}
 		
