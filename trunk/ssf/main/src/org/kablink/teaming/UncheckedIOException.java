@@ -45,9 +45,14 @@ import org.kablink.util.api.ApiErrorCode;
  */
 public class UncheckedIOException extends UncheckedCodedException {
 	private static final String UncheckedIOException_ErrorCode = "errorcode.io";
+	private static final String UncheckedIOException_ErrorCode2 = "errorcode.io.on";
 
     public UncheckedIOException(IOException cause) {
         super(UncheckedIOException_ErrorCode, new Object[]{(cause==null)?  "" : cause.getLocalizedMessage()}, cause);
+    }
+    
+    public UncheckedIOException(String resourcePath, IOException cause) {
+        super(UncheckedIOException_ErrorCode2, new Object[]{resourcePath, (cause==null)?  "" : cause.getLocalizedMessage()}, cause);
     }
     
     public int getHttpStatusCode() {
