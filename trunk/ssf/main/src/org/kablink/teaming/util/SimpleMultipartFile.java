@@ -58,6 +58,8 @@ public class SimpleMultipartFile implements MultipartFile {
 	protected String fileName;
     protected String md5;
     protected Long contentLength; // optional
+    
+    private boolean deferCloseTilForced = false;
 	
 	// Only one of the following two is set per instance.
 	protected InputStream content;
@@ -178,18 +180,8 @@ public class SimpleMultipartFile implements MultipartFile {
 	 * Releases resources associated with this object.
 	 */
 	public void close() {
-		if(content != null) {
-			try {
-				// The content may have already been closed. 
-				// But closing it multiple times shouldn't cause a trouble.
-				content.close();
-			}
-			catch(IOException ignore) {}
-		}
-		
-		if(file != null && deleteOnClose) {
-			file.delete();
-		}
+		if(!deferCloseTilForced)
+			_close();
 	}
 
 	/*
@@ -204,5 +196,28 @@ public class SimpleMultipartFile implements MultipartFile {
 	 */
 	public InputStream getCallerSpecifiedContent() {
 		return content;
+	}
+	
+	public void setDeferCloseTilForced(boolean deferCloseTilForced) {
+		this.deferCloseTilForced = deferCloseTilForced;
+	}
+	
+	public void forceClose() {
+		_close();
+	}
+	
+	private void _close() {
+		if(content != null) {
+			try {
+				// The content may have already been closed. 
+				// But closing it multiple times shouldn't cause a trouble.
+				content.close();
+			}
+			catch(IOException ignore) {}
+		}
+		
+		if(file != null && deleteOnClose) {
+			file.delete();
+		}
 	}
 }
