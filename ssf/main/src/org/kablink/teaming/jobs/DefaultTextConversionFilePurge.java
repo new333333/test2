@@ -74,6 +74,7 @@ public class DefaultTextConversionFilePurge extends SSCronTriggerJob implements 
 				long dirSize = FileUtils.sizeOfDirectory(cacheDir);
 				if (dirSize > maxDirSize) {
 					String cacheDirPath = cacheDir.getAbsolutePath();
+					logger.info("Deleting text conversion cache directory ("+cacheDirPath+") - current cache directory size: " + String.valueOf(dirSize));
 					try {
 						FileUtils.deleteDirectory(cacheDir);
 					} catch(Exception e) {
