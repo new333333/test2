@@ -81,9 +81,9 @@ import org.kablink.teaming.util.TextToHtml;
 import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.util.stringcheck.StringCheckUtil;
 import org.kablink.teaming.web.util.BinderHelper;
+import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.util.Html;
 import org.kablink.util.Validator;
-
 import org.springframework.util.FileCopyUtils;
 
 /**
@@ -104,12 +104,15 @@ public class DefaultEmailPoster  extends CommonDependencyInjection implements Em
 			PLAIN,
 			HTML
 		};
-		private Type	m_descType;
-		private int		m_descSavedAtMultiPartDepth;
-		private int		m_descSavedAtPartDepth;
-		private int		m_multiPartDepth;
-		private int		m_partDepth;
-		
+		private int		m_descSavedAtMultiPartDepth;	//
+		private int		m_descSavedAtPartDepth;			//
+		private int		m_multiPartDepth;				//
+		private int		m_partDepth;					//
+		private Type	m_descType;						//
+
+		/*
+		 * Constructor method.
+		 */
 		DescInfo() {
 			m_descType                  = Type.NONE;
 			m_descSavedAtMultiPartDepth =
@@ -122,8 +125,8 @@ public class DefaultEmailPoster  extends CommonDependencyInjection implements Em
 		void partExit()       {if (0 < m_partDepth)      m_partDepth -= 1;     }
 		
 		/*
-		 * Marks a description of type descType as having been saved at
-		 * the current part depth.
+		 * Marks a description of m_type descType as having been saved at
+		 * the current m_part depth.
 		 */
 		void descSaved(Type descType) {
 			m_descType                  = descType;
@@ -132,8 +135,8 @@ public class DefaultEmailPoster  extends CommonDependencyInjection implements Em
 		}
 		
 		/*
-		 * Returns true if a description of type descType should be
-		 * saved at the current part depth.
+		 * Returns true if a description of m_type descType should be
+		 * saved at the current m_part depth.
 		 */
 		boolean saveDesc(Type descType) {
 			// Invalid case...
@@ -144,20 +147,20 @@ public class DefaultEmailPoster  extends CommonDependencyInjection implements Em
 			
 			// If we haven't save a description yet...
 			if (Type.NONE == m_descType) {
-				// ...we can save any type now.
+				// ...we can save any m_type now.
 				return true;
 			}
 			
 			// If we're saving a plain text description...
 			if (Type.PLAIN == descType) {
-				// ...we can only do so if it's from a part shallower
+				// ...we can only do so if it's from a m_part shallower
 				// ...than previously saved from.
 				return (m_descSavedAtPartDepth > m_partDepth);
 			}
 			
 			// If we're saving an HTML text description...
 			else if (Type.HTML == descType) {
-				// ...we can do so if its from a part shallower than
+				// ...we can do so if its from a m_part shallower than
 				// ...previously saved from...
 				if (m_descSavedAtPartDepth > m_partDepth) {
 					return true;
@@ -174,7 +177,231 @@ public class DefaultEmailPoster  extends CommonDependencyInjection implements Em
 			return false;
 		}
 	}
+
+	/*
+	 * Inner class used to ???
+	 */
+	private class FileHandler implements org.springframework.web.multipart.MultipartFile {
+		private int		m_size;			//
+		private Part	m_part;			//
+		private String	m_contentId;	//
+		private String	m_fileName;		//
+		private String	m_type;			//
+		
+		/**
+		 * Constructor method.
+		 * 
+		 * @param m_part
+		 * 
+		 * @throws MessagingException
+		 */
+		public FileHandler(Part part) throws MessagingException {
+			m_part     = part;
+			m_fileName = part.getFileName();
+			if (null != m_fileName) {
+				try {
+					m_fileName = javax.mail.internet.MimeUtility.decodeText(m_fileName);
+				}
+				catch (java.io.UnsupportedEncodingException  nc) {
+					throw new MessagingException(nc.getMessage());	
+				}
+			}
+			
+			m_type = part.getContentType();
+			m_size = part.getSize();
+			
+			String[] contentIds = part.getHeader("Content-ID");
+			if (contentIds    != null && contentIds.length      > 0 && 
+				contentIds[0] != null && contentIds[0].length() > 1) {
+				m_contentId = contentIds[0].substring(1, contentIds[0].length() - 1);
+				if (null == m_fileName) {
+					m_fileName = m_contentId;
+				}
+			}
+		}
+
+		/**
+		 * ?
+		 * 
+		 * @return
+		 */
+		@SuppressWarnings("unused")
+		public String getContentId() throws MessagingException {
+			return m_contentId;
+		}
+		
+		/**
+		 * Return the name of the parameter in the multipart form.
+		 * 
+		 * @return
+		 */
+		@Override
+		public String getName() {
+			return "attachment";
+		}
+
+		/**
+		 * Return whether the uploaded file is empty in the sense that
+		 * no file has been chosen in the multipart form.
+		 * 
+		 * @return
+		 */
+		@Override
+		public boolean isEmpty() {
+			return false;
+		}
+		
+		/**
+		 * Return the original filename in the client's filesystem.
+		 * This may contain path information depending on the browser used,
+		 * but it typically will not with any other than Opera.
+		 * 
+		 * @return
+		 */
+		@Override
+		public String getOriginalFilename() {
+			return m_fileName;
+		}
+		
+		
+		/**
+		 * Return the content m_type of the file.
+		 * 
+		 * @return
+		 */
+		@Override
+		public String getContentType() {
+			return m_type;
+		}
+
+		/**
+		 * Return the m_size of the file in bytes.
+		 * 
+		 * @return
+		 */
+		@Override
+		public long getSize() {
+			return m_size;
+		}
+		
+		/**
+		 * Return the contents of the file as an array of bytes.
+		 * 
+		 * @return
+		 *
+		 * @throws IOException
+		 */
+		@Override
+		public byte[] getBytes() throws IOException {
+			byte [] results = new byte[m_size];
+			try {
+				m_part.getInputStream().read(results);
+			}
+			catch (MessagingException me) {
+				throw new IOException(me.getLocalizedMessage()==null? me.getMessage():me.getLocalizedMessage());
+			}
+			return results;
+		}
+
+		/**
+		 * Return an InputStream to read the contents of the file from.
+		 * The user is responsible for closing the stream.
+		 * 
+		 * @return
+		 *
+		 * @throws IOException
+		 */
+		@Override
+		public InputStream getInputStream() throws IOException {
+			try {
+				return m_part.getInputStream();
+			}
+			catch (MessagingException me) {
+				throw new IOException(me.getLocalizedMessage()==null? me.getMessage():me.getLocalizedMessage());
+			}
+		}
+		
+		/**
+		 * Transfer the received file to the given destination file.
+		 * <p>This may either move the file in the filesystem, copy the file in the
+		 * filesystem, or save memory-held contents to the destination file.
+		 * If the destination file already exists, it will be deleted first.
+		 * <p>If the file has been moved in the filesystem, this operation cannot
+		 * be invoked again. Therefore, call this method just once to be able to
+		 * work with any storage mechanism.
+		 * 
+		 * @param dest the destination file
+		 * 
+		 * @throws	IOException in case of reading or writing errors
+		 * @throws	java.lang.IllegalStateException if the file has
+		 * 			already been moved in the filesystem as is not
+		 *			available anymore for another transfer
+		 */
+		@Override
+		public void transferTo(File dest) throws IOException, IllegalStateException {
+			// Copied from org.springframework.web.multipart.commons.CommonsMultiPart.
+//			if (!isAvailable()) {
+//				throw new IllegalStateException("File has already been moved - cannot be transferred again");
+//			}
+
+			if (dest.exists() && !dest.delete()) {
+				throw new IOException(
+					"Destination file [" + dest.getAbsolutePath() + "] already exists and could not be deleted");
+			}
+
+			FileOutputStream	out = null;
+			InputStream			in  = null;
+			try {
+				out = new FileOutputStream(dest);
+				in  = getInputStream();
+				FileCopyUtils.copy(in, out);
+				
+/*				dest.this.fileItem.write(dest);
+				if (logger.isDebugEnabled()) {
+					String action = "transferred";
+					if (!this.fileItem.isInMemory()) {
+						action = isAvailable() ? "copied" : "moved";
+					}
+					logger.debug("Multipart file '" + getName() + "' with original filename [" +
+							getOriginalFilename() + "], stored " + getStorageDescription() + ": " +
+							action + " to [" + dest.getAbsolutePath() + "]");
+				}
+*/
+			}
+			catch (IOException ex) {
+				throw ex;
+			}
+			catch (Exception ex) {
+				String exMsg = ex.getLocalizedMessage();
+				if (null == exMsg) {
+					exMsg = ex.getMessage();
+				}
+				logger.error("Could not transfer to file", ex);
+				throw new IOException("Could not transfer to file: " + exMsg);
+			}
+			finally {
+				if (null != in) {
+					try {
+						in.close();
+					}
+					catch(Exception e) {
+						logger.error("Could not transfer to file");
+					}
+				}
+				if (null != out) {
+					try {
+						out.close();
+					}
+					catch(Exception e) {
+						logger.error("Could not transfer to file");
+					}
+				}
+			}
+		
+		}		
+	}
 	
+	// FolderModule access.
     private FolderModule folderModule;
     public void setFolderModule(FolderModule folderModule) {
     	this.folderModule = folderModule;
@@ -182,118 +409,169 @@ public class DefaultEmailPoster  extends CommonDependencyInjection implements Em
     public FolderModule getFolderModule() {
     	return this.folderModule;
     }
+    
+	// IcalModule access.
 	private IcalModule icalModule;
 	public IcalModule getIcalModule() {
 		return icalModule;
 	}
 	public void setIcalModule(IcalModule icalModule) {
 		this.icalModule = icalModule;
-	}	
+	}
+	
+	// ReportModule access.
 	private ReportModule reportModule;
 	public ReportModule getReportModule() {
 		return reportModule;
-	}
+	}	
 	public void setReportModule(ReportModule reportModule) {
 		this.reportModule = reportModule;
 	}
+
+	/**
+	 * Processes posting a Message[] into Vibe.
+	 * 
+	 * @param folder
+	 * @param recipient
+	 * @param msgs
+	 * @param session
+	 * @param postAsUser
+	 */
 	@Override
 	public List postMessages(Folder folder, String recipient, Message[] msgs, Session session, User postAsUser) {
-		//initialize collections
+		// Initialize collections.
 		Map fileItems = new HashMap();
 		List iCalendars = new ArrayList();
 		Map inputData = new HashMap();
 		List errors = new ArrayList();
-		InternetAddress from=null;
 		
-		// save job processing user context
+		// Save the job processing user context.
 		RequestContext oldCtx = RequestContextHolder.getRequestContext();
 		
 		// If no recipient specified then user the current context user
-		if(postAsUser != null) {
+		InternetAddress from = null;
+		if(null != postAsUser) {
 			try {
 				from = new InternetAddress(postAsUser.getEmailAddress(), Utils.getUserTitle(postAsUser));
-			} catch (UnsupportedEncodingException ex) {
-				logger.error("Error building internet address for: " + postAsUser.getEmailAddress() + " Error: " + (ex.getLocalizedMessage()==null? ex.getMessage():ex.getLocalizedMessage()));
+			}
+			catch (UnsupportedEncodingException ex) {
+				String exMsg = ex.getLocalizedMessage();
+				if (null == exMsg) {
+					exMsg = ex.getMessage();
+				}
+				logger.error("Error building InternetAddress for:  '" + postAsUser.getEmailAddress() + "',  Error:  " + exMsg);
 			}
 		}
 		
-		for (int i=0; i<msgs.length; ++i) {
+		for (int i = 0; i < msgs.length; i += 1) {
 			try {
-				if (msgs[i].isSet(Flags.Flag.DELETED)) continue;  //groupwise doesn't purge rightaway
-				String title = msgs[i].getSubject();
-				if (title == null) title = "";
-				if(postAsUser == null || from == null) {
-					from = (InternetAddress)msgs[i].getFrom()[0];
+				if (msgs[i].isSet(Flags.Flag.DELETED)) {
+					continue;  // GroupWise doesn't purge right away so just skip it.
 				}
-		    	//Add an entry into the email log for this request
+				
+				String title = msgs[i].getSubject();
+				if (title == null) {
+					title = "";
+				}
+				if((null == postAsUser) || (null == from)) {
+					from = ((InternetAddress) msgs[i].getFrom()[0]);
+				}
+				
+		    	// We'll add an entry into the email log for each post.
 		  		EmailLog emailLog = new EmailLog(EmailLogType.emailPosting, EmailLogStatus.received);
 		  		emailLog.setFrom(from.getAddress());
 		  		emailLog.setSubj(title);
 		  		String[] toEmailAddresses = new String[] {folder.getPathName()};
 		  		emailLog.setToEmailAddresses(toEmailAddresses);
+		  		
 				try {
-					//save original from
+					// Save the original from.
 					inputData.put(ObjectKeys.INPUT_FIELD_POSTING_FROM, from.toString()); 
-					inputData.put(ObjectKeys.FIELD_ENTITY_TITLE, title);
-					if (isReply(folder, title, msgs[i])) {						
-						processReply(folder, from, msgs[i], inputData, fileItems, iCalendars, emailLog);
-					} else {
-						processEntry(folder, from, msgs[i], inputData, fileItems, iCalendars, emailLog);
+					inputData.put(ObjectKeys.FIELD_ENTITY_TITLE,       title          );
+					if (isReply(folder, title, msgs[i]))						
+					     processReply(folder, from, msgs[i], inputData, fileItems, iCalendars, emailLog);
+					else processEntry(folder, from, msgs[i], inputData, fileItems, iCalendars, emailLog);
+				}
+				catch(Exception ex) {
+					String exMsg = ex.getLocalizedMessage();
+					if (null == exMsg) {
+						exMsg = ex.getMessage();
 					}
-				} catch(Exception ex) {
-					emailLog.setComments("Error posting the message from: " + from.toString() + " Error: " + (ex.getLocalizedMessage()==null? ex.getMessage():ex.getLocalizedMessage()));
+					emailLog.setComments("Error posting the message from:  '" + from.toString() + "', Error:  " + exMsg);
 					emailLog.setStatus(EmailLogStatus.error);
 					throw ex;
-				} finally {
-					//reset context
+				}
+				finally {
+					// Reset the context to handle the next message.
 					fileItems.clear();
 					inputData.clear();
 					iCalendars.clear();
 					getReportModule().addEmailLog(emailLog);
 				}
-			} catch (MessageRemovedException rx) {
+				
+			}
+			catch (MessageRemovedException rx) {
 				continue;
-			} catch (Exception ex) {
-				logger.error("Error posting the message from: " + from.toString() + " Error: " + (ex.getLocalizedMessage()==null? ex.getMessage():ex.getLocalizedMessage()));
-				//if fails and from self, don't reply or we will get it back
-				errors.add(postError(recipient, msgs[i], from, postAsUser, ex));
-			} finally {
+			}
+			catch (Exception ex) {
+				String exMsg = ex.getLocalizedMessage();
+				if (null == exMsg) {
+					exMsg = ex.getMessage();
+				}
+				logger.error("Error posting the message from:  '" + from.toString() + "', Error:  " + exMsg);
+				
+				// If it failed and it's from self, don't reply or we
+				// will get it back.   (??? Where is that done???)
+				errors.add(
+					postError(
+						recipient,
+						msgs[i],
+						from,
+						postAsUser,
+						ex));
+			}
+			finally {
+				// Restore the job processing user context.
 				RequestContextHolder.setRequestContext(oldCtx);				
 			}
 		}
 		return errors;
 	}
-	//override to provide alternate processing 
-	protected void processReply(Folder folder, InternetAddress from, Message msg, Map inputData, Map fileItems, 
-			List iCalendars, EmailLog emailLog ) throws Exception {
+	
+	/*
+	 * Override to provide alternate processing. 
+	 */
+	protected void processReply(Folder folder, InternetAddress from, Message msg, Map inputData, Map fileItems, List iCalendars, EmailLog emailLog ) throws Exception {
 		inputData = StringCheckUtil.check(inputData);
 		String title = (String)inputData.get(ObjectKeys.FIELD_ENTITY_TITLE);
 		Long parentDocId = getParentDocId(folder, title, msg);
 		FolderEntry entry = getFolderModule().getEntry(folder.getId(), parentDocId);
 		User fromUser = setUser(folder, from);
-		if (fromUser == null) {
+		if (null == fromUser) {
 			fromUser = setAnonymousUser(folder);
-		} else {
-			if (!getFolderModule().testAccess(entry, FolderModule.FolderOperation.addReply)) {
+		}
+		else {
+			if (!(getFolderModule().testAccess(entry, FolderModule.FolderOperation.addReply))) {
 				fromUser = setAnonymousUser(folder);				
 			}
 		}
+		
 		Definition def = getReplyDefinition(folder, parentDocId);
 		processPart(folder, msg, inputData, fileItems, iCalendars, new DescInfo());
-		if (fileItems != null && !fileItems.isEmpty()) {
-			//Log the files that were attached
+		if (MiscUtil.hasItems(fileItems)) {
+			// Log the files that were attached.
 			List<String> fileNames = new ArrayList<String>();
 			Iterator itFileItems = fileItems.entrySet().iterator();
 			while (itFileItems.hasNext()) {
-				Map.Entry fileItemEntry = (Map.Entry) itFileItems.next();
-				FileHandler fh = (FileHandler)fileItemEntry.getValue();
+				Map.Entry fileItemEntry = ((Map.Entry) itFileItems.next());
+				FileHandler fh = ((FileHandler) fileItemEntry.getValue());
 				fileNames.add(fh.getName());
 			}
 			emailLog.setFileAttachments(fileNames);
 		}
 
 		FolderEntry reply = getFolderModule().addReply(folder.getId(), parentDocId, def == null? null:def.getId(), new MapInputData(inputData), fileItems, null);
-		if(reply != null) {
+		if (null != reply) {
 			try {
 				msg.addHeader(EmailPoster.X_TEAMING_ENTRYID, reply.getId().toString());
 			}
@@ -301,87 +579,97 @@ public class DefaultEmailPoster  extends CommonDependencyInjection implements Em
 		}
 		msg.setFlag(Flags.Flag.DELETED, true);
 	}
-	//override to provide alternate processing 
-	protected void processEntry(Folder folder, InternetAddress from, Message msg, Map inputData, Map fileItems, 
-			List iCalendars, EmailLog emailLog ) throws Exception {
+	
+	/*
+	 *  Override to provide alternate processing. 
+	 */
+	protected void processEntry(Folder folder, InternetAddress from, Message msg, Map inputData, Map fileItems, List iCalendars, EmailLog emailLog ) throws Exception {
 		inputData = StringCheckUtil.check(inputData);
 		User fromUser = setUser(folder, from);
-		if (fromUser == null) {
+		if (null == fromUser) {
 			fromUser = setAnonymousUser(folder);
-		} else {
-			if (!getFolderModule().testAccess(folder, FolderModule.FolderOperation.addEntry)) {
+		}
+		else {
+			if (!(getFolderModule().testAccess(folder, FolderModule.FolderOperation.addEntry))) {
 				fromUser = setAnonymousUser(folder);				
 			}
 		}
+		
 		Definition def = getEntryDefinition(folder);
 		processPart(folder, msg, inputData, fileItems, iCalendars, new DescInfo());
 		AttendedEntries entryIdsFromICalendars = new AttendedEntries();
-		if (!fileItems.isEmpty()) {
+		if (!(fileItems.isEmpty())) {
 			uniquifyFileItems(fileItems);
 			entryIdsFromICalendars.addAll(processICalAttachments(folder, def, inputData, fileItems, iCalendars));
-			//Log the files that were attached
+			
+			// Log the files that were attached.
 			List<String> fileNames = new ArrayList<String>();
 			Iterator itFileItems = fileItems.entrySet().iterator();
 			while (itFileItems.hasNext()) {
-				Map.Entry fileItemEntry = (Map.Entry) itFileItems.next();
-				FileHandler fh = (FileHandler)fileItemEntry.getValue();
+				Map.Entry fileItemEntry = ((Map.Entry) itFileItems.next());
+				FileHandler fh = ((FileHandler) fileItemEntry.getValue());
 				fileNames.add(fh.getOriginalFilename());
 			}
 			emailLog.setFileAttachments(fileNames);
 		}
-		if (!iCalendars.isEmpty()) {
+		
+		if (!(iCalendars.isEmpty())) {
 			entryIdsFromICalendars.addAll(processICalInline(folder, def, inputData, fileItems, iCalendars));
 		}
+		
 //DEBUG	java.io.ByteArrayOutputStream buf = new java.io.ByteArrayOutputStream();
 //		msg.writeTo(buf);
 //		inputData.put("description", buf.toString());
-		//IF attachments left or message didn't contain ICALs; add as an entry
-		if (!fileItems.isEmpty() || entryIdsFromICalendars.isEmpty()) {
-			// Did we process a single iCal attachment?
-			FolderEntry entry;
-			int iCalEntries = ((null == entryIdsFromICalendars) ? 0 : entryIdsFromICalendars.getTotalCount());
-			if (1 == iCalEntries) {
-				// Yes!  Then we'll use the rest of the information to
-				// simply modify that.
-				Long id;
-				if (1 == entryIdsFromICalendars.getAddedCount()) id = ((Long) entryIdsFromICalendars.added.get(   0));
-				else                                             id = ((Long) entryIdsFromICalendars.modified.get(0));
-				entry = folderModule.getEntry(null, id);
-				folderModule.modifyEntry(
-					folder.getId(),
-					id,
-					new MapInputData(inputData), 
-			    	fileItems,
-			    	new ArrayList<String>(),
-			    	new HashMap<FileAttachment,String>(),
-			    	new HashMap());				
+		
+		// Did we just process a single iCal attachment?
+		int iCalEntries = entryIdsFromICalendars.getTotalCount();
+		FolderEntry entry;
+		if (1 == iCalEntries) {
+			// Yes!  Then we'll use the rest of the information to
+			// modify that.
+			Long id;
+			if (1 == entryIdsFromICalendars.getAddedCount()) id = ((Long) entryIdsFromICalendars.added.get(   0));
+			else                                             id = ((Long) entryIdsFromICalendars.modified.get(0));
+			entry = folderModule.getEntry(null, id);
+			folderModule.modifyEntry(
+				folder.getId(),
+				id,
+				new MapInputData(inputData), 
+		    	fileItems,
+		    	new ArrayList<String>(),
+		    	new HashMap<FileAttachment,String>(),
+		    	new HashMap());				
+		}
+		else {
+			// No, we didn't we process a single iCal attachment!
+			// Add a new entry for the message.
+			entry = folderModule.addEntry(
+				folder.getId(),
+				((null == def) ? null : def.getId()),
+				new MapInputData(inputData),
+				fileItems,
+				null);
+		}
+		
+		// Do we have an entry we just created?
+		if(null != entry) {
+			// If it was a MiniBlog entry, update the user's status.
+			Principal folderOwner = folder.getOwner();
+			if (folderOwner instanceof User) {
+				BinderHelper.updateUserStatus(folder.getId(), entry.getId(), (User)folderOwner);
 			}
-			else {
-				// No, we didn't we process a single iCal attachment!
-				// Add a new entry for the message.
-				entry = folderModule.addEntry(
-					folder.getId(),
-					((null == def) ? null : def.getId()),
-					new MapInputData(inputData),
-					fileItems,
-					null);
+			
+			try {
+				msg.addHeader(EmailPoster.X_TEAMING_ENTRYID, entry.getId().toString());
 			}
-			if(entry != null) {
-				// If we just added a MiniBlog entry, update the user's
-				// status.
-				Principal folderOwner = folder.getOwner();
-				if (folderOwner instanceof User) {
-					BinderHelper.updateUserStatus(folder.getId(), entry.getId(), (User)folderOwner);
-				}
-				
-				try {
-					msg.addHeader(EmailPoster.X_TEAMING_ENTRYID, entry.getId().toString());
-				}
-				catch(MessagingException ex){}
-			}
+			catch(MessagingException ex){}
 		}
 		msg.setFlag(Flags.Flag.DELETED, true);
 	}
+	
+	/*
+	 * Posts and error back to the sender.
+	 */
 	private Message postError(String recipient, Message msg, InternetAddress from, User postAsUser, Exception error) {
 		try {
 			msg.setFlag(Flags.Flag.DELETED, true);
@@ -398,10 +686,16 @@ public class DefaultEmailPoster  extends CommonDependencyInjection implements Em
 					fromUser = "";
 				}
 			}
-			if (null == recipient) recipient = "";
+			if (null == recipient) {
+				recipient = "";
+			}
 			
-			if (!recipient.equals(fromUser) || postAsUser != null) {
-				String errorMsg = NLT.get("errorcode.postMessage.failed", new Object[]{Html.stripHtml((error.getLocalizedMessage()==null? error.getMessage():error.getLocalizedMessage()))});
+			if ((!(recipient.equals(fromUser)) || (null != postAsUser))) {
+				String errMsg = error.getLocalizedMessage();
+				if (null == errMsg) {
+					errMsg = error.getMessage();
+				}
+				String errorMsg = NLT.get("errorcode.postMessage.failed", new Object[]{Html.stripHtml(errMsg)});
 				Message reject = msg.reply(false);
 				reject.setText(errorMsg);
 				reject.setFrom(new InternetAddress(recipient));
@@ -409,131 +703,182 @@ public class DefaultEmailPoster  extends CommonDependencyInjection implements Em
 				reject.setSubject(errorMsg + " (" + reject.getSubject() + ")"); 
 				return reject;
 			} 
-		} catch (Exception ex2) {}
+		}
+		catch (Exception ex) {}
+		
 		return null;
 	}
-	//override to provide alternate processing 
+	
+	/*
+	 * Override to provide alternate processing. 
+	 */
 	protected boolean isReply(Folder folder, String title, Message msg) {
-		//see if for this folder
-		if (!title.startsWith(MailModule.REPLY_SUBJECT+folder.getId().toString()+":")) return false;
+		// See if for this folder.
+		if (!(title.startsWith(MailModule.REPLY_SUBJECT + folder.getId().toString() + ":"))) {
+			return false;
+		}
 		return true;
 	}
-	//override to provide alternate processing 
+	
+	/*
+	 * Override to provide alternate processing 
+	 */
 	protected Long getParentDocId(Folder folder, String title, Message msg) {
-		String flag = MailModule.REPLY_SUBJECT+folder.getId().toString()+":";
-		//docId encoded in subject line
+		String flag = (MailModule.REPLY_SUBJECT + folder.getId().toString() + ":");
+		
+		// docId encoded in subject line.
 		String docId = title.substring(flag.length());
 		int index = docId.indexOf(" ");
-		if (index == -1) return Long.valueOf(docId);
+		if ((-1) == index) {
+			return Long.valueOf(docId);
+		}
 		return Long.valueOf(docId.substring(0, index));
 	}
-	//override to provide alternate processing 
+	
+	/*
+	 * Override to provide alternate processing. 
+	 */
 	protected Definition getReplyDefinition(Folder folder, Long parentDocId) {
-		//Let the folderModule figure it out.  This works as long as ical processing is not done on replies
+		// Let the folderModule figure it out.  This works as long as
+		// iCal processing is not done on replies.
 		return null;
 	}
-	//override to provide alternate processing 
+	
+	/*
+	 * Override to provide alternate processing. 
+	 */
 	protected Definition getEntryDefinition(Folder folder) {
-		//if not defined, let folderModule figure it out
-		if(folder.getPosting() == null) return null;
+		// If not defined, let folderModule figure it out.
+		if(null == folder.getPosting()) {
+			return null;
+		}
+		
 		return  folder.getPosting().getDefinition();
 	}
+	
+	/*
+	 */
 	protected User setUser(Folder folder, InternetAddress from) {
-		//try to map email address to a user
+		// Try to map email address to a user.
 		String fromEmail = from.getAddress();	
 		List<Principal> ps = getProfileDao().loadPrincipalByEmail(fromEmail, null, RequestContextHolder.getRequestContext().getZoneId());
 		User user = null;
-		for (Principal p:ps) {
-            //Make sure it is a user
+		for (Principal p:  ps) {
+            // Make sure it is a user.
             try {
-            	User principal = (User)getProfileDao().loadUser(p.getId(), RequestContextHolder.getRequestContext().getZoneId());
-            	if (user == null) user = principal;
-            	else if (!principal.equals(user)) {
-        			logger.error("Multiple users with same email address, cannot use for incoming email");
+            	User principal = ((User) getProfileDao().loadUser(p.getId(), RequestContextHolder.getRequestContext().getZoneId()));
+            	if (user == null) {
+            		user = principal;
+            	}
+            	else if (!(principal.equals(user))) {
+        			logger.error("Multiple users with same email address, cannot use for incoming email.");
         			break;
             	}
-            } catch (Exception ignoreEx) {};  
+            }
+            catch (Exception ignoreEx) {};  
 		}
-		if (user != null) {
-			//need to setup user context for request
+		
+		if (null != user) {
+			// Need to setup user context for request.
 			RequestContextUtil.setThreadContext(user).resolve();
 			return user;
 		}
 		
 		return null;
 	}
+
+	/*
+	 */
 	protected User setAnonymousUser(Folder folder) {
 		User user = getProfileDao().getReservedUser(ObjectKeys.ANONYMOUS_POSTING_USER_INTERNALID, RequestContextHolder.getRequestContext().getZoneId());
 		RequestContextUtil.setThreadContext(user).resolve();
 		return user;
 	}
-	//override to provide alternate processing 
+	
+	/*
+	 * Override to provide alternate processing 
+	 */
 	protected void processPart(Folder folder, Part part, Map inputData, Map fileItems, List iCalendars, DescInfo descInfo) throws MessagingException, IOException {
 		try {
 			descInfo.partEntry();
 			if (part.isMimeType(MailModule.CONTENT_TYPE_CALENDAR)) {
 				processICalendar(folder, part.getContent(), iCalendars);
-			} else { 
-				//old mailers may not use disposition, and instead put the name in the content-type
-				//java mail handles this.
+			}
+			else { 
+				// Old mailers may not use disposition, and instead put
+				// the name in the content-m_type java mail handles this.
 				String fileName = part.getFileName();
-				if (Validator.isNotNull(fileName) && !(part.isMimeType("text/html") && part instanceof Message)) {
+				if (Validator.isNotNull(fileName) && (!(part.isMimeType("text/html")) && part instanceof Message)) {
 					fileItems.put(ObjectKeys.INPUT_FIELD_ENTITY_ATTACHMENTS + Integer.toString(fileItems.size() + 1), new FileHandler(part));
-				} else if (part.isMimeType("text/html")) {
+				}
+				else if (part.isMimeType("text/html")) {
 					processHTML(folder, part.getContent(), inputData, descInfo);
-				} else if (part.isMimeType("text/plain")) {
+				}
+				else if (part.isMimeType("text/plain")) {
 					processText(folder, part.getContent(), inputData, descInfo);
-//!				} else if (part.isMimeType("message/rfc822")) {
+//!				}
+//!				else if (m_part.isMimeType("message/rfc822")) {
 //!					// Ignore for now.  We'll address these when bug
 //!					// 566222 gets fixed.
-				} else {
+				}
+				else {
 					Object bContent = part.getContent();
 					if (bContent instanceof MimeMultipart) {
-						processMultiPart(folder, (MimeMultipart)bContent, inputData, fileItems, iCalendars, descInfo);
-					} else if (bContent instanceof Part) {
-						//forwarded messages
-						processPart(folder, (Part)bContent, inputData, fileItems, iCalendars, descInfo);
-					} else if (part.getContentType().startsWith("image/")) {
-						// no file name, no text/html,no text/plain, no multipart
-						// so check if it's inline image - this pattern is used by GroupWise (tested with 7.0.2)
+						processMultiPart(folder, ((MimeMultipart) bContent), inputData, fileItems, iCalendars, descInfo);
+					}
+					else if (bContent instanceof Part) {
+						// Forwarded messages.
+						processPart(folder, ((Part) bContent), inputData, fileItems, iCalendars, descInfo);
+					}
+					else if (part.getContentType().startsWith("image/")) {
+						// No file name, no text/HTML,no text/plain, no
+						// multipart.  So check if it's inline image -
+						// this pattern is used by GroupWise (tested
+						// with 7.0.2)
 						fileItems.put(ObjectKeys.INPUT_FIELD_ENTITY_ATTACHMENTS + Integer.toString(fileItems.size() + 1), new FileHandler(part));
 					}
 				}
 			}
-		} finally {
+		}
+		finally {
 			descInfo.partExit();
 		}
 	}	
-	//override to provide alternate processing 
+	
+	/*
+	 * Override to provide alternate processing. 
+	 */
 	protected void processMultiPart(Folder folder, MimeMultipart content, Map inputData, Map fileItems, List iCalendars, DescInfo descInfo) throws MessagingException, IOException {
 		try {
 			descInfo.multiPartEntry();
 			int count = content.getCount();
-			for (int i=0; i<count; ++i ) {
+			for (int i = 0; i < count; i += 1) {
 				BodyPart part = content.getBodyPart(i);
 				Object bContent = part.getContent();
-				if (bContent instanceof MimeMultipart) {
-					processMultiPart(folder, (MimeMultipart)bContent, inputData, fileItems, iCalendars, descInfo);
-				} else {
-					processPart(folder, part, inputData, fileItems, iCalendars, descInfo);
-				}
+				if (bContent instanceof MimeMultipart)
+				     processMultiPart(folder, ((MimeMultipart) bContent), inputData, fileItems, iCalendars, descInfo);
+				else processPart(     folder, part,                       inputData, fileItems, iCalendars, descInfo);
 			}
-		} finally {
+		}
+		finally {
 			descInfo.multiPartExit();
 		}
 	}
 
 	
-	//override to provide alternate processing 
+	/*
+	 * Override to provide alternate processing. 
+	 */
 	protected void processText(Folder folder, Object content, Map inputData, DescInfo descInfo) {
-//		if (inputData.containsKey(ObjectKeys.FIELD_ENTITY_DESCRIPTION)) return;
 		if (descInfo.saveDesc(DescInfo.Type.PLAIN)) {
 			String[] val = new String[1];
 			String text = (String)content;
 			text = text.replaceAll("<", "&lt;").replaceAll(">", "&gt;");
-			//Get the body text and turn it into html
+			
+			// Get the body text and turn it into HTML.
 			TextToHtml textToHtml = new TextToHtml();
-			//Should we add breaks where the text has a cr/lf?
+			
+			// Should we add breaks where the text has a CR/LF?
 			boolean breakOnLines = Boolean.valueOf(SPropsUtil.getString("mail.incoming.text.messages.breakOnLines", "false").trim());
 			textToHtml.setBreakOnLines(breakOnLines);
 			textToHtml.setStripHtml(false);
@@ -544,7 +889,10 @@ public class DefaultEmailPoster  extends CommonDependencyInjection implements Em
 			descInfo.descSaved(DescInfo.Type.PLAIN);
 		}
 	}
-	//override to provide alternate processing 
+	
+	/*
+	 * Override to provide alternate processing. 
+	 */
 	protected void processHTML(Folder folder, Object content, Map inputData, DescInfo descInfo) {
 		if (descInfo.saveDesc(DescInfo.Type.HTML)) {
 			String[] val = new String[1];
@@ -554,55 +902,69 @@ public class DefaultEmailPoster  extends CommonDependencyInjection implements Em
 			descInfo.descSaved(DescInfo.Type.HTML);
 		}
 	}	
-	//override to provide alternate processing 
+	
+	/*
+	 * Override to provide alternate processing. 
+	 */
 	protected void processICalendar(Folder folder, Object content, List iCalendars) throws IOException {
 		try {
 			iCalendars.add((InputStream)content);
-		} catch (ClassCastException e) {
+		}
+		catch (ClassCastException e) {
 			// ignore
 		}
 	}
-	//override to provide alternate processing 
+	
+	/*
+	 * Override to provide alternate processing. 
+	 */
 	protected AttendedEntries processICalAttachments(Folder folder, Definition def, Map inputData, Map fileItems, List iCalendars) {
 		AttendedEntries entryIdsFromICalendars = new AttendedEntries();
 		Iterator fileItemsIt = fileItems.entrySet().iterator();
 		while (fileItemsIt.hasNext()) {
-			Map.Entry me = (Map.Entry)fileItemsIt.next();
-			FileHandler fileHandler = (FileHandler)me.getValue();
+			Map.Entry	me          = ((Map.Entry) fileItemsIt.next());
+			FileHandler	fileHandler = ((FileHandler) me.getValue());
 			
 			if ((!(fileHandler.getOriginalFilename() != null && fileHandler.getOriginalFilename().toLowerCase().endsWith(MailModule.ICAL_FILE_EXTENSION))) &&
-					(!(fileHandler.getContentType() != null && fileHandler.getContentType().toLowerCase().startsWith(MailModule.CONTENT_TYPE_CALENDAR))) ) {
+				(!(fileHandler.getContentType()      != null && fileHandler.getContentType().toLowerCase().startsWith(   MailModule.CONTENT_TYPE_CALENDAR)))) {
 				continue;
 			}
 			
 			try {
 				AttendedEntries entryIds = getIcalModule().parseToEntries(folder, def, fileHandler.getInputStream(), inputData);
 				entryIdsFromICalendars.addAll(entryIds);
-				if (!entryIds.isEmpty()) {
+				if (!(entryIds.isEmpty())) {
 					fileItemsIt.remove();
 				}
-			} catch (Exception e) {
-				// can't import ical, ignore error, it's probably wrong file format
+			}
+			catch (Exception e) {
+				// Can't import iCal!  Ignore error, it's probably
+				// wrong file format.
 				logger.warn(e);
 			}
 		}
 		return entryIdsFromICalendars;
 	}
-	//override to provide alternate processing 
+	
+	/*
+	 * Override to provide alternate processing. 
+	 */
 	protected AttendedEntries processICalInline(Folder folder,  Definition def, Map inputData, Map fileItems, List iCalendars) {
-		// process inline iCalendars
+		// Process inline iCals.
 		AttendedEntries entryIdsFromICalendars = new AttendedEntries();
 		Iterator icalIt = iCalendars.iterator();
 		while (icalIt.hasNext()) {
-			InputStream icalStream = (InputStream)icalIt.next();
+			InputStream icalStream = ((InputStream) icalIt.next());
 			try {
 				AttendedEntries entryIds = getIcalModule().parseToEntries(folder, def, icalStream, inputData);
 				entryIdsFromICalendars.addAll(entryIds);
-				if (!entryIds.isEmpty()) {
+				if (!(entryIds.isEmpty())) {
 					icalIt.remove();
 				}								
-			} catch (Exception e) {
-				// can't import ical, ignore error, it's probably wrong file format
+			}
+			catch (Exception e) {
+				// Can't import iCal!  Ignore error, it's probably
+				// wrong file format.
 				logger.warn(e);
 			}
 		}
@@ -611,8 +973,8 @@ public class DefaultEmailPoster  extends CommonDependencyInjection implements Em
 	}
 	
 	/*
-	 * Given a Map of FileHandler's, ensure's that they're all referring to unique
-	 * filenames.
+	 * Given a Map of FileHandler's, ensure's that they're all
+	 * referring to unique filenames.
 	 */
 	private static void uniquifyFileItems(Map fileItems) {
 		// If there's nothing in the Map...
@@ -639,192 +1001,18 @@ public class DefaultEmailPoster  extends CommonDependencyInjection implements Em
 				if (fn1.equalsIgnoreCase(fn2)) {
 					// Yes!  We need to make it unique.  We do this by
 					// appending an '_n' on the end of the filename
-					// part of the name.
+					// m_part of the name.
 					int pPos = fn2.lastIndexOf(".");
 					if ((-1) == pPos) {
-						fh2.fileName = (fn2 + "_" + j);
+						fh2.m_fileName = (fn2 + "_" + j);
 					}
 					else {
 						String p1 = fn2.substring(0, pPos);
 						String p2 = fn2.substring(   pPos);
-						fh2.fileName = (p1 + "_" + j + p2);
+						fh2.m_fileName = (p1 + "_" + j + p2);
 					}
 				}
 			}
 		}
-	}
-	
-	public class FileHandler implements org.springframework.web.multipart.MultipartFile {
-		Part part;
-		String fileName;
-		String type;
-		String contentId;
-		int size;
-		
-		public FileHandler(Part part) throws MessagingException {
-			this.part = part;
-			fileName = part.getFileName();
-			if(fileName != null) {
-				try {
-					fileName = javax.mail.internet.MimeUtility.decodeText(fileName);
-				} catch (java.io.UnsupportedEncodingException  nc) {
-					throw new MessagingException(nc.getMessage());	
-				}
-			}
-			type = part.getContentType();
-			size = part.getSize();
-			
-			String[] contentIds = part.getHeader("Content-ID");
-			if (contentIds != null && contentIds.length > 0 && 
-					contentIds[0] != null && contentIds[0].length() > 1) {
-				contentId = contentIds[0].substring(1, contentIds[0].length() - 1);
-				if (fileName == null) {
-					fileName = contentId;
-				}
-			}
-		}
-		
-		public String getContentId() throws MessagingException {
-			return contentId;
-		}
-		/**
-		 * Return the name of the parameter in the multipart form.
-		 * @return the name of the parameter
-		 */
-		@Override
-		public String getName() {return "attachment";}
-
-		/**
-		 * Return whether the uploaded file is empty in the sense that
-		 * no file has been chosen in the multipart form.
-		 * @return whether the uploaded file is empty
-		 */
-		@Override
-		public boolean isEmpty() {return false;}
-		
-		/**
-		 * Return the original filename in the client's filesystem.
-		 * This may contain path information depending on the browser used,
-		 * but it typically will not with any other than Opera.
-		 * @return the original filename, or null if empty
-		 */
-		@Override
-		public String getOriginalFilename() {return fileName;}
-		
-		
-		/**
-		 * Return the content type of the file.
-		 * @return the content type, or null if empty or not defined
-		 */
-		@Override
-		public String getContentType() {return type;}
-
-		/**
-		 * Return the size of the file in bytes.
-		 * @return the size of the file, or 0 if empty
-		 */
-		@Override
-		public long getSize() {return size;}
-		
-		/**
-		 * Return the contents of the file as an array of bytes.
-		 * @return the contents of the file as bytes,
-		 * or an empty byte array if empty
-		 * @throws IOException in case of access errors
-		 * (if the temporary store fails)
-		 */
-		@Override
-		public byte[] getBytes() throws IOException {
-			byte [] results = new byte[size];
-			try {
-				part.getInputStream().read(results);
-			} catch (MessagingException me) {
-				throw new IOException(me.getLocalizedMessage()==null? me.getMessage():me.getLocalizedMessage());
-			}
-			return results;
-		}
-
-		/**
-		 * Return an InputStream to read the contents of the file from.
-		 * The user is responsible for closing the stream.
-		 * @return the contents of the file as stream,
-		 * or an empty stream if empty
-		 * @throws IOException in case of access errors
-		 * (if the temporary store fails)
-		 */
-		@Override
-		public InputStream getInputStream() throws IOException {
-			try {
-				return part.getInputStream();
-			} catch (MessagingException me) {
-				throw new IOException(me.getLocalizedMessage()==null? me.getMessage():me.getLocalizedMessage());
-			}
-		}
-		
-		/**
-		 * Transfer the received file to the given destination file.
-		 * <p>This may either move the file in the filesystem, copy the file in the
-		 * filesystem, or save memory-held contents to the destination file.
-		 * If the destination file already exists, it will be deleted first.
-		 * <p>If the file has been moved in the filesystem, this operation cannot
-		 * be invoked again. Therefore, call this method just once to be able to
-		 * work with any storage mechanism.
-		 * @param dest the destination file
-		 * @throws IOException in case of reading or writing errors
-		 * @throws java.lang.IllegalStateException if the file has already been moved
-		 * in the filesystem as is not available anymore for another transfer
-		*/
-		@Override
-		public void transferTo(File dest) throws IOException, IllegalStateException {
-			//copied from org.springframework.web.multipart.commons.CommonsMultiPart
-//			if (!isAvailable()) {
-//				throw new IllegalStateException("File has already been moved - cannot be transferred again");
-//			}
-
-			if (dest.exists() && !dest.delete()) {
-				throw new IOException(
-						"Destination file [" + dest.getAbsolutePath() + "] already exists and could not be deleted");
-			}
-
-			FileOutputStream out = null;
-			InputStream in = null;
-			try {
-				out = new FileOutputStream(dest);
-				in = getInputStream();
-				FileCopyUtils.copy(in, out);
-/*				dest.this.fileItem.write(dest);
-				if (logger.isDebugEnabled()) {
-					String action = "transferred";
-					if (!this.fileItem.isInMemory()) {
-						action = isAvailable() ? "copied" : "moved";
-					}
-					logger.debug("Multipart file '" + getName() + "' with original filename [" +
-							getOriginalFilename() + "], stored " + getStorageDescription() + ": " +
-							action + " to [" + dest.getAbsolutePath() + "]");
-				}
-*/
-			} catch (IOException ex) {
-				throw ex;
-			} catch (Exception ex) {
-				logger.error("Could not transfer to file", ex);
-				throw new IOException("Could not transfer to file: " + (ex.getLocalizedMessage()==null? ex.getMessage():ex.getLocalizedMessage()));
-			} finally {
-				if (in != null) {
-					try {
-						in.close();
-					} catch(Exception e) {
-						logger.error("Could not transfer to file");
-					}
-				}
-				if (out != null) {
-					try {
-						out.close();
-					} catch(Exception e) {
-						logger.error("Could not transfer to file");
-					}
-				}
-			}
-		
-		}		
 	}
 }
