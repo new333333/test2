@@ -178,10 +178,12 @@ public class DefaultEmailPoster  extends CommonDependencyInjection implements Em
 		}
 	}
 
-	/*
+	/**
 	 * Inner class used to ???
+	 * 
+	 * @author ?
 	 */
-	private class FileHandler implements org.springframework.web.multipart.MultipartFile {
+	public class FileHandler implements org.springframework.web.multipart.MultipartFile {
 		private int		m_size;			//
 		private Part	m_part;			//
 		private String	m_contentId;	//
