@@ -1219,6 +1219,7 @@ public class ContentControl extends Composite
 				case ADD_PROFILE_ENTRY:
 				case ADVANCED_SEARCH:
 				case BUILD_FILTER:
+				case CREATE_FROM_WIKI_LINK:
 				case MODIFY_BINDER:
 				case SHOW_TEAM_MEMBERS:
 				case VIEW_PROFILE_ENTRY:
