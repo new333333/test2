@@ -108,6 +108,8 @@ import org.kablink.teaming.lucene.Hits;
 import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
+import org.kablink.teaming.module.binder.impl.EntryDataErrors;
+import org.kablink.teaming.module.binder.impl.EntryDataErrors.Problem;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.definition.DefinitionModule;
 import org.kablink.teaming.module.definition.DefinitionUtils;
@@ -158,6 +160,7 @@ import static org.kablink.util.search.Restrictions.between;
 import static org.kablink.util.search.Restrictions.eq;
 import static org.kablink.util.search.Restrictions.in;
 
+import org.springframework.orm.hibernate3.HibernateOptimisticLockingFailureException;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -711,8 +714,68 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
    				if (a != null) delAtts.add(a);
     		}
     	}
-    	processor.modifyEntry(folder, entry, inputData, fileItems, delAtts, fileRenamesTo, options);
-        end(begin, "modifyEntry");
+    	
+    	// (Bug #880839) JK - With the added logic for retrying the request upon failure due to
+    	// optimistic locking error, we now have to ensure that the supplied input stream can
+    	// be read multiple times across multiple retries and database transaction. 
+    	// We accomplish it by delaying the close of input stream in the lower level code. 
+    	// We instruct the SimpleMultipartFile object to not close associated input stream
+    	// in the usual place.
+    	if(fileItems != null) {
+    		for(Object fileItem:fileItems.values()) {
+    			if(fileItem instanceof SimpleMultipartFile)
+    				((SimpleMultipartFile)fileItem).setDeferCloseTilForced(true);
+    		}
+    	}
+    	
+    	try {
+	        int tryMaxCount = 1 + SPropsUtil.getInt("select.database.transaction.retry.max.count", 2);
+	        int tryCount = 0;
+	        while(true) {
+	        	tryCount++;
+	        	try {
+	        	   	processor.modifyEntry(folder, entry, inputData, fileItems, delAtts, fileRenamesTo, options);
+	        	   	break; // successful transaction
+	        	}
+	        	catch(WriteEntryDataException e) {
+	        		try {
+		        		Exception cause = e.getErrors().getProblems().get(0).getException();
+		        		if(cause instanceof HibernateOptimisticLockingFailureException) {
+			        		if(tryCount < tryMaxCount) {
+			        			if(logger.isDebugEnabled())
+			        				logger.warn("'modify entry' failed due to optimistic locking failure", cause);
+			        			else 
+			        				logger.warn("'modify entry' failed due to optimistic locking failure: " + cause.toString());
+			        			logger.warn("Retrying 'modify entry' in new transaction");
+			        			getCoreDao().refresh(folder);
+			        			getCoreDao().refresh(entry);
+			        		}
+			        		else {
+			        			throw e;
+			        		}
+		        		}
+		        		else {
+		        			throw e;
+		        		}
+	        		}
+	        		catch(Exception exc) {
+	        			throw e; // Re-throw the original exception.
+	        		}
+	        	}
+	        }    
+    	}
+    	finally {
+    		// Now, we must close the input stream associated with the client request,
+    		// which has been delayed in order to accommodate retry logic.
+        	if(fileItems != null) {
+        		for(Object fileItem:fileItems.values()) {
+        			if(fileItem instanceof SimpleMultipartFile)
+        				((SimpleMultipartFile)fileItem).forceClose();
+        		}
+        	}
+    	}
+    	
+    	end(begin, "modifyEntry");
     }   
     
     //no transaction
