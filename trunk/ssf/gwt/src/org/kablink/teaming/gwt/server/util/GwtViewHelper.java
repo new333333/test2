@@ -3947,6 +3947,17 @@ public class GwtViewHelper {
 							getColumnsLHMFromAS(
 								getFolderColumnNames(
 									folderType));
+
+						// Are we configuring columns for a file or
+						// mirrored file folder in Vibe?
+						if (includeConfigurationInfo && (!(Utils.checkIfFilr())) && (folderType.equals(FolderType.FILE) || folderType.equals(FolderType.MIRROREDFILE))) {
+							// Yes!  Is the 'rating' column available?
+							Set<String> keySet = columnNames.keySet();
+							if (!(keySet.contains("rating"))) {
+								// No!  Add it. 
+								columnNames.put("rating", null);	// null -> The column is not currently visible.
+							}
+						}
 					}
 					
 					else {
