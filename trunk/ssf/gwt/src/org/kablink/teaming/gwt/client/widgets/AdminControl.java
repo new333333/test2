@@ -552,44 +552,6 @@ public class AdminControl extends TeamingPopupPanel
 				table.setWidget( 0, 0, header );
 				cellFormatter.setWordWrap( 0, 0, false );
 				
-				// Add an image the user can click on to get administration information
-				{
-					ImageResource imgResource;
-					Image img;
-
-					imgResource = GwtTeaming.getImageBundle().info2();
-					img = new Image( imgResource );
-					img.addStyleName( "cursorPointer" );
-					if ( GwtClientHelper.jsIsIE() )
-						img.addStyleName( "margin-right-22" );
-					else
-						img.addStyleName( "margin-right-5" );
-					img.addClickHandler( new ClickHandler()
-					{
-						@Override
-						public void onClick( ClickEvent event  )
-						{
-							GwtClientHelper.deferCommand( new ScheduledCommand()
-							{
-								/**
-								 * 
-								 */
-								@Override
-								public void execute()
-								{
-									// Issue an ajax request to get the upgrade information from the server.
-									// When we get the response the callback will open the AdminInfoDlg.
-									getUpgradeInfoFromServer( m_rpcGetUpgradeInfoCallback2 );
-								}
-							} );
-						}// end onClick()
-					}
-					);
-					table.setWidget( 0, 1, img );
-					cellFormatter.setHorizontalAlignment( 0, 1, HasHorizontalAlignment.ALIGN_LEFT );
-					cellFormatter.setWidth( 0, 1, "100%" );
-				}
-				
 				// Add a close button
 				if ( GwtTeaming.m_requestInfo.isLicenseFilr() )
 				{
