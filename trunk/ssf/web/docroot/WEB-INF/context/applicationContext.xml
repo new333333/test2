@@ -818,7 +818,6 @@
 			<props>
 				<prop key="setSubscription">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="get*">PROPAGATION_REQUIRED,readOnly,+org.kablink.teaming.security.AccessControlException,+org.kablink.teaming.exception.UncheckedCodedException</prop>
-				<prop key="index*">PROPAGATION_REQUIRED,readOnly,+org.kablink.teaming.security.AccessControlException</prop>
 				<prop key="modifyNotification">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="modifyPosting">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="modifyTag">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
