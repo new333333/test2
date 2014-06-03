@@ -1449,7 +1449,8 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 			SimpleProfiler.start("indexEntries_load");
 			indexEntries_load(binder, batch);
 			SimpleProfiler.stop("indexEntries_load");
-			logger.info("Indexing at " + total + "(" + binder.getPathName() + ")");
+			if(logger.isDebugEnabled())
+				logger.debug("Indexing " + batch.size() + " entries at " + total + " in binder [" + binder.getPathName() + "]");
 			SimpleProfiler.start("indexEntries_loadTags");
 			Map tags = indexEntries_loadTags(binder, batch);
 			SimpleProfiler.stop("indexEntries_loadTags");
@@ -1480,8 +1481,9 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
    	   		IndexSynchronizationManager.applyChanges(threshhold);
       			SimpleProfiler.stop("indexEntries_applyChanges");
 			}
-	 	            	            
-			logger.info("Indexing done at " + total + "("+ binder.getPathName() + ")");
+	 	            
+			if(logger.isDebugEnabled())
+				logger.debug("Indexing of " + batch.size() + " entries at " + total + " done in binder ["+ binder.getPathName() + "]");
     }
     
     protected void indexEntries_preIndex(Binder binder) {

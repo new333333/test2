@@ -32,39 +32,43 @@
  */
 package org.kablink.teaming.util;
 
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.kablink.teaming.web.WebKeys;
 
 public class ConcurrentStatusTicket implements StatusTicket {
-	private AtomicInteger totalCount = new AtomicInteger();
-	private AtomicInteger currentCount = new AtomicInteger();
+	private long estimatedTotalNumberOfBindersToIndex;
+	private AtomicLong totalCount = new AtomicLong();
+	private AtomicLong currentCount = new AtomicLong();
 	private StatusTicket statusTicket; // delegatee
 	
 	public ConcurrentStatusTicket(StatusTicket statusTicket) {
 		this.statusTicket = statusTicket;
 	}
+	private String getTotalCountForDisplay() {
+		return (getTotalCount() > estimatedTotalNumberOfBindersToIndex)? String.valueOf(getTotalCount())+"+" : String.valueOf(estimatedTotalNumberOfBindersToIndex);
+	}
 	public void incrementCurrentAndTotalCounts() {
 		currentCount.incrementAndGet();
 		totalCount.incrementAndGet();
-	    statusTicket.setStatus(NLT.get("index.indexingBinder", new Object[] {String.valueOf(getCurrentCount()), String.valueOf(getTotalCount())+"+"}));
+	    statusTicket.setStatus(NLT.get("index.indexingBinder", new Object[] {String.valueOf(getCurrentCount()), getTotalCountForDisplay()}));
 	}
 	public void incrementTotalCount(int delta) {
 		totalCount.addAndGet(delta);
-	    statusTicket.setStatus(NLT.get("index.indexingBinder", new Object[] {String.valueOf(getCurrentCount()), String.valueOf(getTotalCount())+"+"}));
+	    statusTicket.setStatus(NLT.get("index.indexingBinder", new Object[] {String.valueOf(getCurrentCount()), getTotalCountForDisplay()}));
 	}
 	public void incrementCurrentCount() {
 		currentCount.incrementAndGet();
-	    statusTicket.setStatus(NLT.get("index.indexingBinder", new Object[] {String.valueOf(getCurrentCount()), String.valueOf(getTotalCount())+"+"}));
+	    statusTicket.setStatus(NLT.get("index.indexingBinder", new Object[] {String.valueOf(getCurrentCount()), getTotalCountForDisplay()}));
 	}
 	public void indexingCompleted() {
     	statusTicket.setStatus(NLT.get("index.finished") + "<br/><br/>" + NLT.get("index.indexingBinder",  new Object[] {String.valueOf(getCurrentCount()), String.valueOf(getTotalCount())}));
     	statusTicket.setState(WebKeys.AJAX_STATUS_STATE_COMPLETED);
 	}
-	public int getTotalCount() {
+	public long getTotalCount() {
 		return totalCount.get();
 	}
-	public int getCurrentCount() {
+	public long getCurrentCount() {
 		return currentCount.get();
 	}
 	public StatusTicket getStatusTicket() {
@@ -72,7 +76,7 @@ public class ConcurrentStatusTicket implements StatusTicket {
 	}
 	@Override
 	public String toString() {
-		return "(currentCount=" + getCurrentCount() + ", totalCount=" + getTotalCount() + "+)";
+		return "(currentCount=" + getCurrentCount() + ", totalCount=" + getTotalCountForDisplay() + ")";
 	}
 	public String getId() {
 		return statusTicket.getId();
@@ -95,5 +99,7 @@ public class ConcurrentStatusTicket implements StatusTicket {
 	public boolean isDone() {
 		return statusTicket.isDone();
 	}
-
+	public void setEstimatedTotalNumberOfBindersToIndex(long estimatedTotalNumberOfBindersToIndex) {
+		this.estimatedTotalNumberOfBindersToIndex = estimatedTotalNumberOfBindersToIndex;
+	}
 }
