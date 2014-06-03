@@ -2176,7 +2176,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     @Override
 	public Collection indexTree(Binder binder, Collection exclusions) {
    		IndexErrors errors = new IndexErrors();
-    	return loadIndexTree(binder, exclusions, StatusTicket.NULL_TICKET, errors, false);
+    	return loadIndexTree(binder, exclusions, StatusTicket.NULL_TICKET, errors, false, true);
     }
    	@Override
 	public Collection indexTree(Binder binder, Collection exclusions, StatusTicket statusTicket) {
@@ -2189,9 +2189,13 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
    	}
    	@Override
 	public Collection indexTree(Binder binder, Collection exclusions, StatusTicket statusTicket, IndexErrors errors, boolean skipFileContentIndexing) {
-   		return loadIndexTree(binder, exclusions, statusTicket, errors, skipFileContentIndexing);
+   		return loadIndexTree(binder, exclusions, statusTicket, errors, skipFileContentIndexing, true);
    	}
-   	private Collection loadIndexTree(Binder binder, Collection exclusions, StatusTicket statusTicket, IndexErrors errors, boolean skipFileContentIndexing) {
+   	@Override
+	public Collection indexTree(Binder binder, Collection exclusions, StatusTicket statusTicket, IndexErrors errors, boolean skipFileContentIndexing, boolean useScrollForEntries) {
+   		return loadIndexTree(binder, exclusions, statusTicket, errors, skipFileContentIndexing, useScrollForEntries);
+   	}
+   	private Collection loadIndexTree(Binder binder, Collection exclusions, StatusTicket statusTicket, IndexErrors errors, boolean skipFileContentIndexing, boolean useScrollForEntries) {
    		//get all the ids of child binders. order for statusTicket to make some sense
    		if(logger.isDebugEnabled())
    			logger.debug("Fetching IDs of all binders at or below this branch [" + binder.getPathName() + "] (id=" + binder.getId() + ")");
@@ -2200,9 +2204,9 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
    		List<Long> ids = getCoreDao().loadObjects("select x.id from org.kablink.teaming.domain.Binder x where x.binderKey.sortKey like '" +
 				binder.getBinderKey().getSortKey() + "%' and x.deleted=:deleted order by x.binderKey.sortKey", params);
    		if(logger.isDebugEnabled())
-   	   		logger.debug("Identified " + ids.size() + " binders to index within the branch: " + ids.toString());
+   	   		logger.debug("Identified " + ids.size() + " binders to index within the branch [" + binder.getPathName() + "] (id=" + binder.getId() + "): " + ids.toString());
    		else
-   			logger.info("Identified " + ids.size() + " binders to index within the branch");
+   			logger.info("Identified " + ids.size() + " binders to index within the branch [" + binder.getPathName() + "] (id=" + binder.getId() + ")");
 		int inClauseLimit=SPropsUtil.getInt("db.clause.limit", 1000);
 		if (exclusions != null) {
 			synchronized(exclusions) {
@@ -2272,24 +2276,24 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 			}
 			
 			Map tagMap = new HashMap();
-			if(logger.isDebugEnabled())
-				logger.debug("Loading tags for " + folderIds.size() + " folders");
+			if(logger.isTraceEnabled())
+				logger.trace("Loading tags for " + folderIds.size() + " folders");
 			try {
 				tagMap.putAll(getCoreDao().loadAllTagsByEntity(folderIds));
 			}
 			catch(Exception e) {
 				logger.error("Error loading tags for folders", e);
 			}
-			if(logger.isDebugEnabled())
-				logger.debug("Loading tags for " + workspaceIds.size() + " workspaces");
+			if(logger.isTraceEnabled())
+				logger.trace("Loading tags for " + workspaceIds.size() + " workspaces");
 			try {
 				tagMap.putAll(getCoreDao().loadAllTagsByEntity(workspaceIds));
 			}
 			catch(Exception e) {
 				logger.error("Error loading tags for workspaces", e);
 			}			
-			if(logger.isDebugEnabled())
-				logger.debug("Loading tags for " + otherIds.size() + " others");
+			if(logger.isTraceEnabled())
+				logger.trace("Loading tags for " + otherIds.size() + " others");
 			try {
 				tagMap.putAll(getCoreDao().loadAllTagsByEntity(otherIds));
 			}
@@ -2311,7 +2315,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 	   	    	}
 				
 	   	    	Collection tags = (Collection)tagMap.get(b.getEntityIdentifier());
-	   	    	IndexErrors binderErrors = processor.indexBinder(b, true, false, tags, skipFileContentIndexing, true);
+	   	    	IndexErrors binderErrors = processor.indexBinder(b, true, false, tags, skipFileContentIndexing, useScrollForEntries);
 	   	    	errors.add(binderErrors);
 	   	    	
 				if(logger.isTraceEnabled())
@@ -2323,7 +2327,8 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 	   	    	lastProcessedBinderId = b.getId();
 			}
 						
-			logger.info("Indexed " + bindersIndexed + " binders in the batch. The ID of the last processed binder is " + lastProcessedBinderId);
+			logger.info("Indexed " + bindersIndexed + " binders so far. The ID of the last processed binder is " + lastProcessedBinderId +
+					((statusTicket instanceof ConcurrentStatusTicket)? " - Progress (global estimate): " + statusTicket : ""));	
 			
 			if(supportsReindexingContinuation) {
 				if(logger.isDebugEnabled())
@@ -2356,7 +2361,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 		}
 		
     	if(logger.isDebugEnabled())
-			logger.debug("Indexed " + ids.size() + " binders in the branch");
+			logger.debug("Indexed " + ids.size() + " binders in the branch [" + binder.getPathName() + "] (id=" + binder.getId() + ")");
 		
    		return ids;
    	}

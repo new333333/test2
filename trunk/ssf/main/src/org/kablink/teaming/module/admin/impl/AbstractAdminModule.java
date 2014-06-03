@@ -3860,6 +3860,7 @@ public List<ChangeLog> getWorkflowChanges(EntityIdentifier entityIdentifier, Str
 	    	if(includeUsersAndGroups) {				
 				ProfileBinder pf = getProfileModule().getProfileBinder();
 				if (!idsIndexed.contains(pf.getId())) {
+					logger.info("Indexing users and groups");
 					errors.add(getBinderModule().indexBinder(pf.getId(), true)); 
 				}
 	    	}

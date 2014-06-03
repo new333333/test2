@@ -804,6 +804,24 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 				}
 
 			}
+			
+			if (!checked.isEmpty() && statusTicket instanceof ConcurrentStatusTicket) {
+				FilterControls filterControls = new FilterControls();
+				filterControls.add(org.kablink.teaming.dao.util.Restrictions.eq("deleted", Boolean.FALSE));
+				StringBuffer filterClauses = new StringBuffer();
+				filterClauses.append(" and (");
+				for(int i = 0; i < checked.size(); i++) {	
+					if(i > 0)
+						filterClauses.append(" or ");
+					filterClauses.append("x.binderKey.sortKey like '")
+					.append(checked.get(i).getBinderKey().getSortKey())
+					.append("%'");
+				}
+				filterClauses.append(")");
+				long estimatedTotalNumberOfBindersToIndex = getCoreDao().countObjects(Binder.class, filterControls, RequestContextHolder.getRequestContext().getZoneId(), filterClauses);
+				((ConcurrentStatusTicket)statusTicket).setEstimatedTotalNumberOfBindersToIndex(estimatedTotalNumberOfBindersToIndex);
+			}
+			
 			Set<Long> done = new HashSet();
 			if (!checked.isEmpty()) {
 				if(logger.isDebugEnabled())
@@ -952,9 +970,9 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	    indexOneBinder(netFoldersWorkspace, statusTicket, errors, done);
 		List<Long> netFolderIds = getCoreDao().getSubBinderIds(netFoldersWorkspace);
 		if(logger.isDebugEnabled())
-			logger.debug("Identified " + netFolderIds.size() + " net folders to index: " + netFolderIds.toString());
+			logger.debug("Identified " + netFolderIds.size() + " net folders to index independently: " + netFolderIds.toString());
 		else
-			logger.info("Identified " + netFolderIds.size() + " net folders to index");
+			logger.info("Identified " + netFolderIds.size() + " net folders to index independently");
 		if(logger.isTraceEnabled())
 			logger.trace("Applying changes to index");
   		IndexSynchronizationManager.applyChanges(SPropsUtil.getInt("lucene.flush.threshold", 100));
@@ -972,9 +990,9 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		logger.info("Indexed all principals (users and groups) - Progress (global estimate): " + statusTicket);	    
 		List<Long> personalWorkspaceIds = getCoreDao().getSubBinderIds(personalWorkspaces);
 		if(logger.isDebugEnabled())
-			logger.debug("Identified " + personalWorkspaceIds.size() + " personal workspaces to index: " + personalWorkspaceIds.toString());
+			logger.debug("Identified " + personalWorkspaceIds.size() + " personal workspaces to index independently: " + personalWorkspaceIds.toString());
 		else
-			logger.info("Identified " + personalWorkspaceIds.size() + " personal workspaces to index");
+			logger.info("Identified " + personalWorkspaceIds.size() + " personal workspaces to index independently");
 		if(logger.isTraceEnabled())
 			logger.trace("Applying changes to index");
   		IndexSynchronizationManager.applyChanges(SPropsUtil.getInt("lucene.flush.threshold", 100));
@@ -4052,7 +4070,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 									binderId = queue.take();
 									if(binderId.longValue() != -1L) {
 										binder = loadBinder(binderId);
-										result = loadBinderProcessor(binder).indexTree(binder, done, statusTicket, errors, skipFileContentIndexing);
+										result = loadBinderProcessor(binder).indexTree(binder, done, statusTicket, errors, skipFileContentIndexing, false);
 										synchronized(done) {
 											done.addAll(result);
 										}

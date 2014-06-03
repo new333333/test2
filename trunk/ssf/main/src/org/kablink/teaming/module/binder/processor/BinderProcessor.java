@@ -77,6 +77,7 @@ public interface BinderProcessor {
     public Collection indexTree(Binder binder, Collection exclusions, StatusTicket statusTicket);
     public Collection indexTree(Binder binder, Collection exclusions, StatusTicket statusTicket, IndexErrors errors);
     public Collection indexTree(Binder binder, Collection exclusions, StatusTicket statusTicket, IndexErrors errors, boolean skipFileContentIndexing);
+    public Collection indexTree(Binder binder, Collection exclusions, StatusTicket statusTicket, IndexErrors errors, boolean skipFileContentIndexing, boolean useScrollForEntries);
     public Collection validateBinderQuotasTree(Binder binder, StatusTicket statusTicket, List<Long> errors);
     public void setFileAgingDates(Binder binder);
     public boolean isFolderEmpty(final Binder binder);
