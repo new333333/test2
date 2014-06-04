@@ -45,6 +45,7 @@ import org.kablink.teaming.gwt.client.event.ChangeEntryTypeSelectedEntitiesEvent
 import org.kablink.teaming.gwt.client.event.CopyPublicLinkSelectedEntitiesEvent;
 import org.kablink.teaming.gwt.client.event.CopySelectedEntitiesEvent;
 import org.kablink.teaming.gwt.client.event.DeleteSelectedEntitiesEvent;
+import org.kablink.teaming.gwt.client.event.EditPublicLinkSelectedEntitiesEvent;
 import org.kablink.teaming.gwt.client.event.EmailPublicLinkSelectedEntitiesEvent;
 import org.kablink.teaming.gwt.client.event.ForceFilesUnlockEvent;
 import org.kablink.teaming.gwt.client.event.InvokeEditInPlaceEvent;
@@ -231,6 +232,7 @@ public class FolderEntryMenu extends VibeFlowPanel {
 					case COPY_PUBLIC_LINK_SELECTED_ENTITIES:   event = new CopyPublicLinkSelectedEntitiesEvent( eid.getBinderId(), eid      );      break;
 					case COPY_SELECTED_ENTITIES:               event = new CopySelectedEntitiesEvent(           eid.getBinderId(), eid      );      break;
 					case DELETE_SELECTED_ENTITIES:             event = new DeleteSelectedEntitiesEvent(         eid.getBinderId(), eid      );      break;
+					case EDIT_PUBLIC_LINK_SELECTED_ENTITIES:   event = new EditPublicLinkSelectedEntitiesEvent( eid.getBinderId(), eid      );      break;
 					case EMAIL_PUBLIC_LINK_SELECTED_ENTITIES:  event = new EmailPublicLinkSelectedEntitiesEvent(eid.getBinderId(), eid      );      break;
 					case FORCE_FILES_UNLOCK:                   event = new ForceFilesUnlockEvent(               eid.getBinderId(), eid      );      break;
 					case INVOKE_SEND_EMAIL_TO_TEAM:            event = new InvokeSendEmailToTeamEvent(          simpleUrl); fireWithSource = false; break;

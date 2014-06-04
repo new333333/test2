@@ -3292,6 +3292,7 @@ public class GwtShareHelper
 							// ...the reply.
 							reply.addPublicLink(
 								eid,
+								si.getId(),
 								feTitle,
 								fe.getParentBinder().getPathName(),
 								FileIconsHelper.getFileIconFromFileName(
@@ -3454,6 +3455,7 @@ public class GwtShareHelper
 					// ...and add the mail to public link information
 					// ...to the reply.
 					PublicLinkInfo plLink = new PublicLinkInfo(
+						plShare.getId(),
 						feTitle,
 						fe.getParentBinder().getPathName(),
 						FileIconsHelper.getFileIconFromFileName(
@@ -3625,4 +3627,18 @@ public class GwtShareHelper
 		return shareRights;
 	}
 
+	/**
+	 * Returns true if the given sharer has any public links defined on
+	 * the entity and false otherwise.
+	 * 
+	 * @param bs
+	 * @param sharerId
+	 * @param entityId
+	 * 
+	 * @return
+	 */
+	public static boolean hasPublicLinks( AllModulesInjected bs, Long sharerId, EntityId entityId ) {
+		List<ShareItem> publicLinks = getPublicLinkShareItems( bs, sharerId, entityId );
+		return MiscUtil.hasItems(publicLinks);
+	}
 }

@@ -285,6 +285,7 @@ public enum TeamingEvents implements IsSerializable {
 	DISABLE_SELECTED_USERS_ADHOC_FOLDERS,			// Disables adHoc folders for the Selected Users.
 	DISABLE_SELECTED_USERS_DOWNLOAD,				// Disables downloading of files for the Selected Users.
 	DISABLE_SELECTED_USERS_WEBACCESS,				// Disables web access for the Selected Users.
+	EDIT_PUBLIC_LINK_SELECTED_ENTITIES,				// Edits the Public Link of the Selected Entities.
 	EMAIL_PUBLIC_LINK_SELECTED_ENTITIES,			// Emails the Public Link of the Selected Entities.
 	ENABLE_SELECTED_USERS,							// Enables the Selected Users.
 	ENABLE_SELECTED_USERS_ADHOC_FOLDERS,			// Enables adHoc folders for the the Selected Users.

@@ -6025,6 +6025,30 @@ td.datePickerMonth {
 	.vibe-copyPublicLinkDlg-scrollLimit          {height: 175px;}
 /* End:  Copy Public Link dialog styles. */
 
+/* Start:  Edit Public Link dialog styles. */
+	.vibe-editPublicLinkDlg-contentPanel         {margin-top: 10px;}
+	.vibe-editPublicLinkDlg-headerNamePanel      {margin-left: 55px; width: 550px;}
+	.vibe-editPublicLinkDlg-headerNameLabel      {font-size: 1.15em; line-height: 1.3em; color: #1f1f1f;}
+	.vibe-editPublicLinkDlg-headerPanel          {position: relative; margin-bottom: 15px;}
+	.vibe-editPublicLinkDlg-headerPanel img      {position: absolute; top: 0px; left: 1px;}
+	.vibe-editPublicLinkDlg-headerPathLabel      {color: #505354; font-size: 13px; line-height: 16px; overflow: hidden;}
+	.vibe-editPublicLinkDlg-hintPanel            {color: #353838; display: block; width: 600px; white-space: normal; margin-top: 10px;}
+	.vibe-editPublicLinkDlg-hintTail             {display: inline; font-weight: normal; font-size: 14px;}
+	.vibe-editPublicLinkDlg-linksHeaderNamePanel {margin-left: 30px; width: 540px;}
+	.vibe-editPublicLinkDlg-linksHeaderNameLabel {font-size: 1.15em; line-height: 1.3em; color: #1f1f1f;}
+	.vibe-editPublicLinkDlg-linksHeaderPanel     {position: relative; margin-bottom: 5px; margin-left: 8px; margin-top: 10px;}
+	.vibe-editPublicLinkDlg-linksHeaderPanel img {position: absolute; top: 2px; left: 0px;}
+	.vibe-editPublicLinkDlg-linksHeaderPathLabel {color: #505354; font-size: 13px; line-height: 16px; overflow: hidden;}
+	.vibe-editPublicLinkDlg-linksInput           {width: 95%; background-color: #fff; color: #1f1f1f; overflow: hidden; padding: 2px !important; border: 1px solid #ccc; margin-left: 10px;}
+	.vibe-editPublicLinkDlg-linksLabel           {display: block; position: relative; margin-left: 10px; margin-top: 10px;}
+	.vibe-editPublicLinkDlg-linksLabel2          {margin-top: 10px;}
+	.vibe-editPublicLinkDlg-linksPanel           {color: #505354; font-size: 12px;}
+	.vibe-editPublicLinkDlg-mainPanel            {margin: 10px 10px 10px 13px;}
+	.vibe-editPublicLinkDlg-scrollLimit          {height: 175px;}
+	.vibe-editPublicLinkDlg-scrollPanel          {overflow: auto !important; border: 1px solid #C4C4C4;}
+	
+/* End:  Edit Public Link dialog styles. */
+
 /* Start:  Email Public Link dialog styles. */
 	.vibe-emailPublicLinkDlg-content {margin: 10px 13px;}
 	

@@ -733,6 +733,15 @@ public class EventHelper {
 				}
 				break;
 			
+			case EDIT_PUBLIC_LINK_SELECTED_ENTITIES:
+				// A EditPublicLinkSelectedEntitiesEvent!  Can the
+				// event handler we were given handle that?
+				if (eventHandler instanceof EditPublicLinkSelectedEntitiesEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = EditPublicLinkSelectedEntitiesEvent.registerEvent(eventBus, ((EditPublicLinkSelectedEntitiesEvent.Handler) eventHandler));
+				}
+				break;
+			
 			case EDIT_SITE_BRANDING:
 				// A EditSiteBrandingEvent!  Can the event handler we
 				// were given handle that?
@@ -2885,6 +2894,7 @@ public class EventHelper {
 			case DISABLE_SELECTED_USERS_ADHOC_FOLDERS:         hasHandler = (eventHandler instanceof DisableSelectedUsersAdHocFoldersEvent.Handler);       break;
 			case DISABLE_SELECTED_USERS_DOWNLOAD:              hasHandler = (eventHandler instanceof DisableSelectedUsersDownloadEvent.Handler);           break;
 			case DISABLE_SELECTED_USERS_WEBACCESS:             hasHandler = (eventHandler instanceof DisableSelectedUsersWebAccessEvent.Handler);          break;
+			case EDIT_PUBLIC_LINK_SELECTED_ENTITIES:           hasHandler = (eventHandler instanceof EditPublicLinkSelectedEntitiesEvent.Handler);         break;
 			case EMAIL_PUBLIC_LINK_SELECTED_ENTITIES:          hasHandler = (eventHandler instanceof EmailPublicLinkSelectedEntitiesEvent.Handler);        break;
 			case ENABLE_SELECTED_USERS:                        hasHandler = (eventHandler instanceof EnableSelectedUsersEvent.Handler);                    break;
 			case ENABLE_SELECTED_USERS_ADHOC_FOLDERS:          hasHandler = (eventHandler instanceof EnableSelectedUsersAdHocFoldersEvent.Handler);        break;

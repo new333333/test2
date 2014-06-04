@@ -99,6 +99,7 @@ import org.kablink.teaming.gwt.client.event.DisableSelectedUsersEvent;
 import org.kablink.teaming.gwt.client.event.DisableSelectedUsersAdHocFoldersEvent;
 import org.kablink.teaming.gwt.client.event.DisableSelectedUsersDownloadEvent;
 import org.kablink.teaming.gwt.client.event.DisableSelectedUsersWebAccessEvent;
+import org.kablink.teaming.gwt.client.event.EditPublicLinkSelectedEntitiesEvent;
 import org.kablink.teaming.gwt.client.event.EmailPublicLinkSelectedEntitiesEvent;
 import org.kablink.teaming.gwt.client.event.EnableSelectedUsersEvent;
 import org.kablink.teaming.gwt.client.event.EnableSelectedUsersAdHocFoldersEvent;
@@ -235,6 +236,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		DisableSelectedUsersAdHocFoldersEvent.Handler,
 		DisableSelectedUsersDownloadEvent.Handler,
 		DisableSelectedUsersWebAccessEvent.Handler,
+		EditPublicLinkSelectedEntitiesEvent.Handler,
 		EmailPublicLinkSelectedEntitiesEvent.Handler,
 		EnableSelectedUsersEvent.Handler,
 		EnableSelectedUsersAdHocFoldersEvent.Handler,
@@ -328,6 +330,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		TeamingEvents.DISABLE_SELECTED_USERS_ADHOC_FOLDERS,
 		TeamingEvents.DISABLE_SELECTED_USERS_DOWNLOAD,
 		TeamingEvents.DISABLE_SELECTED_USERS_WEBACCESS,
+		TeamingEvents.EDIT_PUBLIC_LINK_SELECTED_ENTITIES,
 		TeamingEvents.EMAIL_PUBLIC_LINK_SELECTED_ENTITIES,
 		TeamingEvents.ENABLE_SELECTED_USERS,
 		TeamingEvents.ENABLE_SELECTED_USERS_ADHOC_FOLDERS,
@@ -918,6 +921,27 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		onResize();
 	}
 	
+	/*
+	 * Asynchronously runs the edit public link dialog on the selected
+	 * entities.
+	 */
+	private void editSelectedEntitiesPublicLinkAsync(final List<EntityId> selectedEntities) {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
+			@Override
+			public void execute() {
+				editSelectedEntitiesPublicLinkNow(selectedEntities);
+			}
+		});
+	}
+	
+	/*
+	 * Synchronously runs the edit public link dialog on the selected
+	 * entities.
+	 */
+	private void editSelectedEntitiesPublicLinkNow(List<EntityId> selectedEntities) {
+		BinderViewsHelper.editEntitiesPublicLink(selectedEntities);
+	}
+
 	/*
 	 * Asynchronously runs the email public link dialog on the selected
 	 * entities.
@@ -2416,6 +2440,151 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	}
 	
 	/**
+	 * Handles EditPublicLinkSelectedEntitiesEvent's received by this class.
+	 * 
+	 * Implements the EditPublicLinkSelectedEntitiesEvent.Handler.onEditPublicLinkSelectedEntities() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onEditPublicLinkSelectedEntities(EditPublicLinkSelectedEntitiesEvent event) {
+		// Is the event targeted to this folder?
+		Long eventFolderId = event.getFolderId();
+		if (eventFolderId.equals(getFolderId())) {
+			// Yes!  Does the user have rights to share everything
+			// they've selected?
+			List<EntityId> seList = event.getSelectedEntities();
+			final boolean validateSelectedRows = (!(GwtClientHelper.hasItems(seList)));
+			if (validateSelectedRows) {
+				seList = getSelectedEntityIds();
+			}
+			
+			final List<EntityId> selectedEntities = seList;
+			GwtClientHelper.executeCommand(
+					new GetEntityRightsCmd(selectedEntities),
+					new AsyncCallback<VibeRpcResponse>() {
+				@Override
+				public void onFailure(Throwable caught) {
+					GwtClientHelper.handleGwtRPCFailure(
+						caught,
+						GwtTeaming.getMessages().rpcFailure_GetEntityRights());
+				}
+
+				@Override
+				public void onSuccess(VibeRpcResponse response) {
+					EntityRightsRpcResponseData responseData = ((EntityRightsRpcResponseData) response.getResponseData());
+					onEditPublicLinkSelectedEntitiesAsync(selectedEntities, responseData.getEntityRightsMap(), validateSelectedRows);
+				}
+			});
+		}
+	}
+
+	/*
+	 * Asynchronously processes the share request on the selected
+	 * entries, given the current user's rights to them.
+	 */
+	private void onEditPublicLinkSelectedEntitiesAsync(final List<EntityId> selectedEntities, final Map<String, EntityRights> entityRightsMap, final boolean validateSelectedRows) {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
+			@Override
+			public void execute() {
+				onEditPublicLinkSelectedEntitiesNow(selectedEntities, entityRightsMap, validateSelectedRows);
+			}
+		});
+	}
+	
+	/*
+	 * Synchronously processes the share request on the selected
+	 * entries, given the current user's rights to them.
+	 */
+	private void onEditPublicLinkSelectedEntitiesNow(final List<EntityId> selectedEntities, final Map<String, EntityRights> entityRightsMap, boolean validateSelectedRows) {
+		// Are there any invalid rows?
+		final List<FolderRow> invalidRows = (validateSelectedRows ? validateSelectedRows_PublicLink(entityRightsMap) : null);
+		if (!(GwtClientHelper.hasItems(invalidRows))) {
+			// Yes!  Invoke the share.
+			editSelectedEntitiesPublicLinkAsync(selectedEntities);
+		}
+		
+		else {
+			// No, they don't have rights to share everything!  What
+			// type of share failures are we dealing with?
+			int totalPLFailures    = invalidRows.size();
+			int plFolderFailures   = BinderViewsHelper.getFolderPublicLinkFailureCount(selectedEntities);
+			int plNonFileFailures  = countNonFileEntryRows(invalidRows);
+			int otherShareFailures = (totalPLFailures - (plFolderFailures + plNonFileFailures));
+			if (0 > otherShareFailures) {
+				otherShareFailures = 0;
+			}
+			boolean hasPLFolderFailures  = (0 < plFolderFailures  );
+			boolean hasPLNonFileFailures = (0 < plNonFileFailures );
+			boolean hasOtherPLFailures   = (0 < otherShareFailures);
+			
+			// Can they share any of them?
+			if (selectedEntities.size() == totalPLFailures) {
+				// No!  Tell them about the problem and bail.
+				String shareAlert;
+				if      (hasPLFolderFailures && hasPLNonFileFailures && hasOtherPLFailures) shareAlert = m_messages.vibeDataTable_Warning_CantEditPublicLink_3();
+				else if (hasPLFolderFailures && hasPLNonFileFailures)                       shareAlert = m_messages.vibeDataTable_Warning_CantEditPublicLink_2a();
+				else if (                       hasPLNonFileFailures && hasOtherPLFailures) shareAlert = m_messages.vibeDataTable_Warning_CantEditPublicLink_2b();
+				else if (hasPLFolderFailures &&                         hasOtherPLFailures) shareAlert = m_messages.vibeDataTable_Warning_CantEditPublicLink_2c();
+ 				else if (hasPLFolderFailures)                                               shareAlert = m_messages.vibeDataTable_Warning_CantEditPublicLink_1a();
+				else if (                       hasPLNonFileFailures)                       shareAlert = m_messages.vibeDataTable_Warning_CantEditPublicLink_1b();
+				else                                                                        shareAlert = m_messages.vibeDataTable_Warning_CantEditPublicLink_1c();
+				GwtClientHelper.deferredAlert(shareAlert);
+				return;
+			}
+			
+			// Is the user sure they want to share the selections
+			// they have rights to share?
+			final String confirmPrompt;
+			if      (hasPLFolderFailures && hasPLNonFileFailures && hasOtherPLFailures) confirmPrompt = m_messages.vibeDataTable_Confirm_CantEditPublicLink_3();
+			else if (hasPLFolderFailures && hasPLNonFileFailures)                       confirmPrompt = m_messages.vibeDataTable_Confirm_CantEditPublicLink_2a();
+			else if (                       hasPLNonFileFailures && hasOtherPLFailures) confirmPrompt = m_messages.vibeDataTable_Confirm_CantEditPublicLink_2b();
+			else if (hasPLFolderFailures &&                         hasOtherPLFailures) confirmPrompt = m_messages.vibeDataTable_Confirm_CantEditPublicLink_2c();
+			else if (hasPLFolderFailures)                                               confirmPrompt = m_messages.vibeDataTable_Confirm_CantEditPublicLink_1a();
+			else if (                       hasPLNonFileFailures)                       confirmPrompt = m_messages.vibeDataTable_Confirm_CantEditPublicLink_1b();
+			else                                                                        confirmPrompt = m_messages.vibeDataTable_Confirm_CantEditPublicLink_1c();
+			ConfirmDlg.createAsync(new ConfirmDlgClient() {
+				@Override
+				public void onUnavailable() {
+					// Nothing to do.  Error handled in
+					// asynchronous provider.
+				}
+				
+				@Override
+				public void onSuccess(ConfirmDlg cDlg) {
+					ConfirmDlg.initAndShow(
+						cDlg,
+						new ConfirmCallback() {
+							@Override
+							public void dialogReady() {
+								// Ignored.  We don't really care when the
+								// dialog is ready.
+							}
+
+							@Override
+							public void accepted() {
+								// Yes, they're sure!  Remove the
+								// selection from the entries they
+								// don't have rights to share and
+								// perform the edit public link on the
+								// rest.
+								removeRowEntities(                  selectedEntities, invalidRows);
+								deselectRows(                                         invalidRows);
+								editSelectedEntitiesPublicLinkAsync(selectedEntities             );
+							}
+
+							@Override
+							public void rejected() {
+								// No, they're not sure!
+							}
+						},
+						confirmPrompt);
+				}
+			});
+		}
+	}
+	
+	/**
 	 * Handles EmailPublicLinkSelectedEntitiesEvent's received by this class.
 	 * 
 	 * Implements the EmailPublicLinkSelectedEntitiesEvent.Handler.onEmailPublicLinkSelectedEntities() method.
@@ -2542,7 +2711,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 								// Yes, they're sure!  Remove the
 								// selection from the entries they
 								// don't have rights to share and
-								// perform the copy public link on the
+								// perform the email public link on the
 								// rest.
 								removeRowEntities(                   selectedEntities, invalidRows);
 								deselectRows(                                          invalidRows);

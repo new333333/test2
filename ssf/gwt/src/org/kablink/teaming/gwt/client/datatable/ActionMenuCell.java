@@ -53,6 +53,7 @@ import org.kablink.teaming.gwt.client.event.DeleteSelectedMobileDevicesEvent;
 import org.kablink.teaming.gwt.client.event.DisableSelectedUsersAdHocFoldersEvent;
 import org.kablink.teaming.gwt.client.event.DisableSelectedUsersDownloadEvent;
 import org.kablink.teaming.gwt.client.event.DisableSelectedUsersWebAccessEvent;
+import org.kablink.teaming.gwt.client.event.EditPublicLinkSelectedEntitiesEvent;
 import org.kablink.teaming.gwt.client.event.EmailPublicLinkSelectedEntitiesEvent;
 import org.kablink.teaming.gwt.client.event.EnableSelectedUsersAdHocFoldersEvent;
 import org.kablink.teaming.gwt.client.event.EnableSelectedUsersDownloadEvent;
@@ -377,6 +378,7 @@ public class ActionMenuCell extends AbstractCell<EntryTitleInfo> {
 						case DISABLE_SELECTED_USERS_ADHOC_FOLDERS:          event = new DisableSelectedUsersAdHocFoldersEvent(       binderId,     eid      ); break;
 						case DISABLE_SELECTED_USERS_DOWNLOAD:               event = new DisableSelectedUsersDownloadEvent(           binderId,     eid      ); break;
 						case DISABLE_SELECTED_USERS_WEBACCESS:              event = new DisableSelectedUsersWebAccessEvent(          binderId,     eid      ); break;
+						case EDIT_PUBLIC_LINK_SELECTED_ENTITIES:            event = new EditPublicLinkSelectedEntitiesEvent(         binderId,     eid      ); break;
 						case EMAIL_PUBLIC_LINK_SELECTED_ENTITIES:           event = new EmailPublicLinkSelectedEntitiesEvent(        binderId,     eid      ); break;
 						case ENABLE_SELECTED_USERS_ADHOC_FOLDERS:           event = new EnableSelectedUsersAdHocFoldersEvent(        binderId,     eid      ); break;
 						case ENABLE_SELECTED_USERS_DOWNLOAD:                event = new EnableSelectedUsersDownloadEvent(            binderId,     eid      ); break;
