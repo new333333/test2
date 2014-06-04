@@ -840,11 +840,17 @@ public class EditShareWidget extends Composite
 					GwtClientHelper.selectListboxItemByValue( m_canResharePublicListbox, LEAVE_UNCHANGED );
 
 				// Show/hide the "share public link" listbox depending on whether the user has "share public link" rights.
-				canShare = highestRightsPossible.getCanSharePublicLink();
-				m_canResharePublicLinkLabel.setVisible( canShare );
-				m_canResharePublicLinkListbox.setVisible( canShare );
-				if ( canShare )
-					GwtClientHelper.selectListboxItemByValue( m_canResharePublicLinkListbox, LEAVE_UNCHANGED );
+				{
+					if ( entityIsBinder == true )
+						canShare = false;
+					else
+						canShare = highestRightsPossible.getCanSharePublicLink();
+					
+					m_canResharePublicLinkLabel.setVisible( canShare );
+					m_canResharePublicLinkListbox.setVisible( canShare );
+					if ( canShare )
+						GwtClientHelper.selectListboxItemByValue( m_canResharePublicLinkListbox, LEAVE_UNCHANGED );
+				}
 			}
 		}
 	}
@@ -933,7 +939,7 @@ public class EditShareWidget extends Composite
 		m_canResharePublicCkbox.setValue( shareRights.getCanShareWithPublic() );
 		
 		// Show/hide the "share public link" checkbox depending on whether the user has "share public link" rights.
-		m_canResharePublicLinkCkbox.setVisible( canShareForward && highestRightsPossible.getCanSharePublicLink() );
+		m_canResharePublicLinkCkbox.setVisible( canShareForward && highestRightsPossible.getCanSharePublicLink() && entityIsBinder == false );
 		m_canResharePublicLinkCkbox.setValue( shareRights.getCanSharePublicLink() );
 	}
 	
