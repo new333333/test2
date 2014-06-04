@@ -22,7 +22,7 @@
 		.vibe-emailReportComposite-reportTableCell-toAddresses   {}
 		.vibe-emailReportComposite-reportTableCell-type          { white-space: nowrap;}
 		.vibe-emailReportComposite-reportTableHeaderCell         {font-size: 11px;}
-		.vibe-emailReportComposite-reportTableHeaderRow          {font-family: arial, sans-serif; color: #666; font-size: 0.6em; padding-top: 0.2em; padding-bottom: 0.2em; padding-left: 0; padding-right: .7em; border-bottom: 1px solid #D2D5D1; white-space: nowrap; background:url(images/blends/gray_blend8_28.png) repeat-x; background-position:bottom; border-collapse: separate; border-spacing: 0px; color: #333; background-color: transparent;}
+		.vibe-emailReportComposite-reportTableHeaderRow          {font-family: arial, sans-serif; color: #949494; font-size: 0.6em; padding-top: 0.2em; padding-bottom: 0.2em; padding-left: 0; padding-right: .7em; border-bottom: 1px solid #c4c4c4; white-space: nowrap; background: #fff; border-collapse: separate; border-spacing: 0px; background-color: transparent;}
 		.vibe-emailReportComposite-typesPanel                    {display: block; white-space: nowrap; margin-top: 5px;}
 		.vibe-emailReportComposite-typeRadio                     {white-space: nowrap; margin-right: 10px;}
 	/* End:  Email report composite styles. */
