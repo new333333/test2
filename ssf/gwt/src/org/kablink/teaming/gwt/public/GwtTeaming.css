@@ -369,7 +369,7 @@
 
 .activityStreamShowHideDescLabel
 {
-	color: #135C8F !important;
+	color: #036f9f !important;
 	font-size: 10px;
 	white-space: nowrap;
 }
@@ -469,14 +469,14 @@
 .activityStreamTopEntryTitle
 {
 	text-decoration: none;
-	color: #135c8f;
+	color: #036f9f;
 	font-size: 14px;
 	line-height: 15px;
 }
 
 .activityStreamCommentTitle
 {
-	color: #135c8f;
+	color: #036f9f;
 	font-size: 14px;
 	line-height: 15px;
 }
@@ -515,7 +515,7 @@
 .activityStreamNumCommentsPanel
 {
     background: url(images/comments_25.png) no-repeat scroll center center transparent;
-    color: #135c8f;
+    color: #036f9f;
     cursor: pointer;
     font-size: 12px;
     font-weight: bold;
@@ -665,7 +665,7 @@
 
 .shareThisDlg_ExpiresLabel, .shareThisDlg_DefaultExpiresLabel
 {
-	color: #135c8f;
+	color: #036f9f;
 	padding-left: 4px;
 }
 
@@ -710,7 +710,7 @@
 
 .shareThisDlg_NoteLabel
 {
-	color: #135c8f;
+	color: #036f9f;
 	padding-left: 4px;
 }
 
@@ -764,7 +764,7 @@
 
 .shareThisDlg_RightsLabel, .shareThisDlg_PublicRecipientTypeImage
 {
-	color: #135c8f;
+	color: #036f9f;
 	padding-left: 4px;
 }
 
@@ -796,7 +796,7 @@
 
 .shareThisDlg_shareWithTeamsLink
 {
-	color: #135c8f;
+	color: #036f9f;
 	margin-left: 30px;
 }
 
@@ -1096,7 +1096,7 @@
 /* general styles to override the GWT standard.css file */
 
 a, a:visited, a:hover {
-	color: #135c8f !important;
+	color: #036f9f !important;
 	}
 	
 /* Style used for the AdminActionControl. */
@@ -1521,7 +1521,7 @@ body, table td, select
 /* Style used for links in the "edit branding" dialog. */
 .editBrandingLink, .editorOverridesLink2, .selfRegLink2, .landingPagePropertiesLink
 {
-	color: #135c8f;
+	color: #036f9f;
 	cursor: pointer;
 	margin-left: 4px;
 	text-decoration: none;
@@ -2456,7 +2456,7 @@ body, table td, select
 }
 .breadCrumb_ContentNode_Filr
 {
-	color: #135c8f  !important;
+	color: #036f9f  !important;
 	cursor: default !important;
 }
 .breadCrumb_ContentNode_Anchor
@@ -2484,7 +2484,7 @@ body, table td, select
 
 .breadCrumb_TrashLabel
 {
-	color: #135C8F;
+	color: #036f9f;
 	font-size: large;
 	margin-top: 0px;
 	margin-right: 8px;
@@ -2735,7 +2735,7 @@ body, table td, select
 
 .tagThisDlg_TagName
 {
-	color: #135C8F;
+	color: #036f9f;
 }
 
 .tagThisDlg_TagName:hover
@@ -3469,7 +3469,7 @@ body, table td, select
 /* general CSS styes */
 
 a.ss_new_thread {
-	color: #135c8f;
+	color: #036f9f;
 	text-decoration: none;
 	}
 	
@@ -3590,7 +3590,7 @@ a.ss_new_thread {
 	-webkit-border-radius: 5px;
 }
 .qView-action2 {
-	color: #135c8f;
+	color: #036f9f;
 	background: #cce9ee;
 	border:1px solid #81b2bd;
 }
@@ -4317,7 +4317,7 @@ td.datePickerMonth {
 /* End:  Calendar settings dialog styles. */
 
 /* Start:  Cliboard dialog styles. */
-	.vibe-cbDlg_Anchor          {color: #135c8f; text-decoration: none;}
+	.vibe-cbDlg_Anchor          {color: #036f9f; text-decoration: none;}
 	.vibe-cbDlg_Anchor:hover    {color: #135c8f; cursor: pointer; background: #cce9ee; border-radius: 5px; -moz-border-radius: 5px; -webkit-border-radius: 5px;}
 	.vibe-cbDlg_Checkbox        {margin-left: 5px;}
 	.vibe-cbDlg_ClearAll        {margin-left: 10px;}
@@ -4660,7 +4660,7 @@ td.datePickerMonth {
 
 .groupTitle, .netFolderRoot_Name, .netFolder_Name, .ldapSource_ServerUrl, .ldapSearch_BaseDn
 {
-	color: #135C8F;
+	color: #036f9f;
 	cursor: pointer;
 	padding-right: 10px;
 }
@@ -4860,13 +4860,13 @@ td.datePickerMonth {
 
 .blogArchiveCtrlFolderLabel
 {
-	color: #135C8F;
+	color: #036f9f;
 	margin-left: 12px;
 }
 
 .blogArchiveCtrlMonthLabel
 {
-	color: #135C8F;
+	color: #036f9f;
 }
 
 .blogArchiveCtrlMonthLabel:hover, .blogArchiveCtrlFolderLabel:hover
@@ -4917,7 +4917,7 @@ td.datePickerMonth {
  
  .blogGlobalTagsCtrlTagLabel
  {
-	color: #135C8F;
+	color: #036f9f;
  }
  
  .blogGlobalTagsCtrlTagLabel:hover
@@ -4950,7 +4950,7 @@ td.datePickerMonth {
  
  .blogPageCtrl_newPageLink
  {
-	color: #135C8F;
+	color: #036f9f;
  }
  
  .blogPageCtrl_newPageLink:hover
@@ -5061,7 +5061,7 @@ td.datePickerMonth {
  */
 .shareSendToWidget_mainLabel
 {
-	color: #135c8f;
+	color: #036f9f;
 	display: inline-block;
 	padding-left: 5px;
 }
@@ -5331,7 +5331,7 @@ td.datePickerMonth {
 
 .userActionsPopup_ActionLabel
 {
-	color: #135C8F;
+	color: #036f9f;
 	padding: 3px 5px;
 }
 
@@ -5418,7 +5418,7 @@ td.datePickerMonth {
 {
 	display: inline-block;
 	border: 1px solid #b8b8b8;
-	color: #135c8f;
+	color: #036f9f;
 	font-size: 14px;
 	margin-right: 5px;
 	padding: 5px 10px;
@@ -5462,7 +5462,7 @@ td.datePickerMonth {
 	.vibe-desktopAppCtrl-closeImg            {}
 	.vibe-desktopAppCtrl-closePanel          {display: block; position: absolute; top: 1px; right: 6px; cursor: pointer;}
 	.vibe-desktopAppCtrl-control             {display: block; position: relative; background-color: #EBECA5; border-color: #BABDB6; border-style: solid; border-width: 1px; font-size: 12px; margin: 5px 10px; padding: 5px 10px; -moz-border-radius: 5px; border-radius: 5px; -webkit-border-radius: 5px;}
-	.vibe-desktopAppCtrl-dontShowLabel       {color: #135C8F;}
+	.vibe-desktopAppCtrl-dontShowLabel       {color: #036f9f;}
 	.vibe-desktopAppCtrl-dontShowLabel:hover {background: #cce9ee; -moz-border-radius: 5px; border-radius: 5px; -webkit-border-radius: 5px;}
 	.vibe-desktopAppCtrl-dontShowPanel       {display: block; position: absolute; top: 10px; right: 40px; text-decoration: none; cursor: pointer;}
 	.vibe-desktopAppCtrl-hintLabel           {}
@@ -5476,7 +5476,7 @@ td.datePickerMonth {
 
 /* Start:  Import profiles dialog styles. */
 	.vibe-importProfilesDlg-content    {text-align: left; width: 100%; margin-bottom: 10px; margin-top: 10px; padding: 3px 10px;}
-	.vibe-importProfilesDlg-hint       {color: #135c8f; text-decoration: none; margin: 8px 0px 8px 0px; font-size: 11px !important; cursor: pointer; margin: 3px 10px; font-size: 1em !important;}
+	.vibe-importProfilesDlg-hint       {color: #036f9f; text-decoration: none; margin: 8px 0px 8px 0px; font-size: 11px !important; cursor: pointer; margin: 3px 10px; font-size: 1em !important;}
 	.vibe-importProfilesDlg-hint:hover {color: #135c8f; cursor: pointer; background: #cce9ee; -moz-border-radius: 5px; border-radius: 5px; -webkit-border-radius: 5px;}
 	.vibe-importProfilesDlg-input      {width: 250px;}
 	.vibe-importProfilesDlg-panel      {}
@@ -5554,7 +5554,7 @@ td.datePickerMonth {
 /* Start: Net Folder Rights widget styles */
 .netFolderRightsWidget_RightsLabel
 {
-	color: #135c8f;
+	color: #036f9f;
 	padding-left: 4px;
 }
 
@@ -5643,7 +5643,7 @@ td.datePickerMonth {
 
 .AdminConsoleInfoWidget_filrApplianceInfo
 {
-	color: #135C8F !important;
+	color: #036f9f !important;
 }
 
 .AdminConsoleInfoWidget_info
@@ -5656,7 +5656,7 @@ td.datePickerMonth {
 
 .AdminConsoleInfoWidget_adminGuideLink
 {
-	color: #135C8F;
+	color: #036f9f;
 	text-decoration: none;
 	display: inline-block;
 	padding-left: 6px
@@ -5725,7 +5725,7 @@ td.datePickerMonth {
 
 .zoneShareRightsWidget_RightsLabel
 {
-	color: #135c8f;
+	color: #036f9f;
 	padding-left: 4px;
 }
 
@@ -5872,7 +5872,7 @@ td.datePickerMonth {
 
 .adminInfoDlg_docLink
 {
-	color: #135c8f;
+	color: #036f9f;
 	cursor: pointer;
 	text-decoration: none;
 }
