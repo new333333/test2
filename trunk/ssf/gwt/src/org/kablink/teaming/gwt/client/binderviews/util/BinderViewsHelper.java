@@ -86,12 +86,13 @@ import org.kablink.teaming.gwt.client.util.EntityRights.ShareRight;
 import org.kablink.teaming.gwt.client.util.PublicLinkInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.CopyPublicLinkDlg;
-import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 import org.kablink.teaming.gwt.client.widgets.CopyPublicLinkDlg.CopyPublicLinkDlgClient;
 import org.kablink.teaming.gwt.client.widgets.DeleteSelectedUsersDlg;
 import org.kablink.teaming.gwt.client.widgets.DeleteSelectedUsersDlg.DeleteSelectedUsersDlgClient;
 import org.kablink.teaming.gwt.client.widgets.DeleteSelectionsDlg;
 import org.kablink.teaming.gwt.client.widgets.DeleteSelectionsDlg.DeleteSelectionsDlgClient;
+import org.kablink.teaming.gwt.client.widgets.EditPublicLinkDlg;
+import org.kablink.teaming.gwt.client.widgets.EditPublicLinkDlg.EditPublicLinkDlgClient;
 import org.kablink.teaming.gwt.client.widgets.EmailPublicLinkDlg;
 import org.kablink.teaming.gwt.client.widgets.EmailPublicLinkDlg.EmailPublicLinkDlgClient;
 import org.kablink.teaming.gwt.client.widgets.MailToMultiplePublicLinksSelectDlg;
@@ -100,6 +101,7 @@ import org.kablink.teaming.gwt.client.widgets.MailToMultiplePublicLinksSelectDlg
 import org.kablink.teaming.gwt.client.widgets.ShareThisDlg2;
 import org.kablink.teaming.gwt.client.widgets.ShareThisDlg2.ShareThisDlg2Client;
 import org.kablink.teaming.gwt.client.widgets.SpinnerPopup;
+import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -121,6 +123,7 @@ public class BinderViewsHelper {
 	private static CopyPublicLinkDlg					m_copyPublicLinkDlg;					// An instance of a copy public link dialog.
 	private static DeleteSelectedUsersDlg				m_dsuDlg;								// An instance of a delete selected users dialog.
 	private static DeleteSelectionsDlg					m_dsDlg;								// An instance of a delete selections dialog.
+	private static EditPublicLinkDlg					m_editPublicLinkDlg;					// An instance of a edit public link dialog.
 	private static EmailNotificationDlg					m_enDlg;								// An instance of an email notification dialog used to subscribe to subscribe to the entries in a List<EntityId>. 
 	private static EmailPublicLinkDlg					m_emailPublicLinkDlg;					// An instance of an email public link dialog.
 	private static GwtTeamingMessages					m_messages = GwtTeaming.getMessages();	// Access to the GWT localized strings.
@@ -853,6 +856,57 @@ public class BinderViewsHelper {
 	public static void disableUsersWebAccess(final Long userId) {
 		// Always use the previous form of the method.
 		disableUsersWebAccess(userId, null);
+	}
+
+	/**
+	 * Invokes the appropriate UI to edit the public link of the
+	 * entities based on a List<EntityId> of the entries.
+	 *
+	 * @param entityIds
+	 */
+	public static void editEntitiesPublicLink(final List<EntityId> entityIds) {
+		// If we weren't given any entity IDs to be shared...
+		if (!(GwtClientHelper.hasItems(entityIds))) {
+			// ...bail.
+			return;
+		}
+
+		// Have we created a edit public link dialog yet?
+		if (null == m_editPublicLinkDlg) {
+			// No!  Create one now...
+			EditPublicLinkDlg.createAsync(new EditPublicLinkDlgClient() {
+				@Override
+				public void onUnavailable() {
+					// Nothing to do.  Error handled in
+					// asynchronous provider.
+				}
+				
+				@Override
+				public void onSuccess(EditPublicLinkDlg cplDlg) {
+					// ...and show it with the given entity IDs.
+					m_editPublicLinkDlg = cplDlg;
+					showEditPublicLinkDlgAsync(entityIds);
+				}
+			});
+		}
+		
+		else {
+			// Yes, we've already create a edit public link dialog!
+			// Simply show it with the given entry IDs.
+			showEditPublicLinkDlgAsync(entityIds);
+		}
+	}
+	
+	/**
+	 * Invokes the appropriate UI to edit the public link of an entity
+	 * based on an EntityId.
+	 *
+	 * @param entityId
+	 */
+	public static void editEntityPublicLink(EntityId entityId) {
+		List<EntityId> entityIds = new ArrayList<EntityId>();
+		entityIds.add(entityId);
+		editEntitiesPublicLink(entityIds);
 	}
 
 	/**
@@ -1994,6 +2048,28 @@ public class BinderViewsHelper {
 			m_messages.copyPublicLinkTheseItems(),
 			String.valueOf(entityIds.size()));
 		CopyPublicLinkDlg.initAndShow(m_copyPublicLinkDlg, caption, entityIds);
+	}
+
+	/*
+	 * Asynchronously shows the edit public link dialog.
+	 */
+	private static void showEditPublicLinkDlgAsync(final List<EntityId> entityIds) {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
+			@Override
+			public void execute() {
+				showEditPublicLinkDlgNow(entityIds);
+			}
+		});
+	}
+	
+	/*
+	 * Synchronously shows the edit public link dialog.
+	 */
+	private static void showEditPublicLinkDlgNow(List<EntityId> entityIds) {
+		String caption = GwtClientHelper.patchMessage(
+			m_messages.editPublicLinkTheseItems(),
+			String.valueOf(entityIds.size()));
+		EditPublicLinkDlg.initAndShow(m_editPublicLinkDlg, caption, entityIds);
 	}
 
 	/*

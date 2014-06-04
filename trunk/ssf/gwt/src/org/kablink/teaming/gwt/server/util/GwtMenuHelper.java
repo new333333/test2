@@ -46,7 +46,6 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.calendar.EventsViewHelper;
 import org.kablink.teaming.context.request.RequestContextHolder;
@@ -92,6 +91,7 @@ import org.kablink.teaming.gwt.client.util.CollectionType;
 import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.FolderType;
 import org.kablink.teaming.gwt.client.util.ViewFileInfo;
+import org.kablink.teaming.gwt.client.widgets.EditPublicLinkDlg;
 import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.module.admin.AdminModule.AdminOperation;
 import org.kablink.teaming.module.binder.BinderModule;
@@ -163,6 +163,7 @@ public class GwtMenuHelper {
 	private final static String DELETE					= "delete";
 	private final static String DISPLAY_STYLES			= "display_styles";
 	private final static String EDIT_IN_PLACE			= "editInPlace";
+	private final static String EDIT_PUBLIC_LINK		= "editPublicLink";
 	private final static String EMAIL					= "email";
 	private final static String EMAIL_PUBLIC_LINK		= "emailPublicLink";
 	private final static String	FILE_DOWNLOAD			= "fileDownload";
@@ -1475,10 +1476,20 @@ public class GwtMenuHelper {
 				     keyTail = "filr";
 				else keyTail = "vibe";
 				
-				shareTBI = new ToolbarItem("1_copyPublicLinkSelected");
-				markTBITitle(shareTBI, "toolbar.copyPublicLinkSelected." + keyTail);
-				markTBIEvent(shareTBI, TeamingEvents.COPY_PUBLIC_LINK_SELECTED_ENTITIES);
-				entryToolbar.addNestedItem(shareTBI);
+				FolderEntry fe  = ((FolderEntry) de);
+				EntityId    eid = new EntityId(fe.getParentFolder().getId(), fe.getId(), EntityType.folderEntry.name());
+				if (EditPublicLinkDlg.SHOW_EDIT_PUBLIC_LINKS_DIALOG && GwtShareHelper.hasPublicLinks(bs, GwtServerHelper.getCurrentUserId(), eid)) {
+					shareTBI = new ToolbarItem("1_editPublicLinkSelected");
+					markTBITitle(shareTBI, "toolbar.editPublicLinkSelected." + keyTail);
+					markTBIEvent(shareTBI, TeamingEvents.EDIT_PUBLIC_LINK_SELECTED_ENTITIES);
+					entryToolbar.addNestedItem(shareTBI);
+				}
+				else {
+					shareTBI = new ToolbarItem("1_copyPublicLinkSelected");
+					markTBITitle(shareTBI, "toolbar.copyPublicLinkSelected." + keyTail);
+					markTBIEvent(shareTBI, TeamingEvents.COPY_PUBLIC_LINK_SELECTED_ENTITIES);
+					entryToolbar.addNestedItem(shareTBI);
+				}
 				
 				shareTBI = new ToolbarItem("1_mailtoPublicLink");
 				markTBITitle(shareTBI, "toolbar.mailtoPublicLink." + keyTail);
@@ -1520,20 +1531,20 @@ public class GwtMenuHelper {
 					}
 					
 					if (GwtShareHelper.isSharingPublicLinksEnabled(bs)) {
-						// ...add the e-mail public link item...
+						// ...add the copy public link item...
 						String keyTail;
 						if (Utils.checkIfFilr())
 						     keyTail = "filr";
 						else keyTail = "vibe";
-						shareTBI = new ToolbarItem(EMAIL_PUBLIC_LINK);
-						markTBITitle(shareTBI, "toolbar.emailPublicLinkSelected." + keyTail);
-						markTBIEvent(shareTBI, TeamingEvents.EMAIL_PUBLIC_LINK_SELECTED_ENTITIES);
-						shareItemsTBI.addNestedItem(shareTBI);
-						
-						// ...add the copy public link item...
 						shareTBI = new ToolbarItem(COPY_PUBLIC_LINK);
 						markTBITitle(shareTBI, "toolbar.copyPublicLinkSelected." + keyTail);
 						markTBIEvent(shareTBI, TeamingEvents.COPY_PUBLIC_LINK_SELECTED_ENTITIES);
+						shareItemsTBI.addNestedItem(shareTBI);
+						
+						// ...add the e-mail public link item...
+						shareTBI = new ToolbarItem(EMAIL_PUBLIC_LINK);
+						markTBITitle(shareTBI, "toolbar.emailPublicLinkSelected." + keyTail);
+						markTBIEvent(shareTBI, TeamingEvents.EMAIL_PUBLIC_LINK_SELECTED_ENTITIES);
 						shareItemsTBI.addNestedItem(shareTBI);
 					}
 					
@@ -3829,12 +3840,22 @@ public class GwtMenuHelper {
 						if (isFilr)
 						     keyTail = "filr";
 						else keyTail = "vibe";
-						
-						actionTBI = new ToolbarItem(COPY_PUBLIC_LINK);
-						markTBITitle(   actionTBI, "toolbar.copyPublicLinkSelected." + keyTail);
-						markTBIEvent(   actionTBI, TeamingEvents.COPY_PUBLIC_LINK_SELECTED_ENTITIES);
-						markTBIEntryIds(actionTBI, fe);
-						shareItemsTBI.addNestedItem(actionTBI);
+
+						EntityId eid = new EntityId(fe.getParentFolder().getId(), fe.getId(), EntityType.folderEntry.name());
+						if (EditPublicLinkDlg.SHOW_EDIT_PUBLIC_LINKS_DIALOG && GwtShareHelper.hasPublicLinks(bs, user.getId(), eid)) {
+							actionTBI = new ToolbarItem(EDIT_PUBLIC_LINK);
+							markTBITitle(   actionTBI, "toolbar.editPublicLinkSelected." + keyTail);
+							markTBIEvent(   actionTBI, TeamingEvents.EDIT_PUBLIC_LINK_SELECTED_ENTITIES);
+							markTBIEntryIds(actionTBI, fe);
+							shareItemsTBI.addNestedItem(actionTBI);
+						}
+						else {
+							actionTBI = new ToolbarItem(COPY_PUBLIC_LINK);
+							markTBITitle(   actionTBI, "toolbar.copyPublicLinkSelected." + keyTail);
+							markTBIEvent(   actionTBI, TeamingEvents.COPY_PUBLIC_LINK_SELECTED_ENTITIES);
+							markTBIEntryIds(actionTBI, fe);
+							shareItemsTBI.addNestedItem(actionTBI);
+						}
 						
 						actionTBI = new ToolbarItem(MAILTO_PUBLIC_LINK);
 						markTBITitle(   actionTBI, "toolbar.mailtoPublicLink." + keyTail);

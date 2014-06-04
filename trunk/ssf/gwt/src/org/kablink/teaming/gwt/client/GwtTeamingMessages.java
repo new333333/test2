@@ -676,6 +676,7 @@ public interface GwtTeamingMessages extends Messages
 	String codeSplitFailure_EditLdapSearchDlg();
 	String codeSplitFailure_EditLdapServerConfigDlg();
 	String codeSplitFailure_EditNetFolderRightsDlg();
+	String codeSplitFailure_EditPublicLinkDlg();
 	String codeSplitFailure_EditShareDlg();
 	String codeSplitFailure_EditShareNoteDlg();
 	String codeSplitFailure_EditShareRightsDlg();
@@ -1401,6 +1402,7 @@ public interface GwtTeamingMessages extends Messages
 	String commentsLabel();
 	String copyPublicLinkTheseItems();
 	String defaultShareTitle( String title );
+	String editPublicLinkTheseItems();
 	String emailPublicLinkTheseItems();
 	String manageShares();
 	String noShareRecipients();
@@ -1886,6 +1888,13 @@ public interface GwtTeamingMessages extends Messages
 	String vibeDataTable_Confirm_CantCopyPublicLink_2b();
 	String vibeDataTable_Confirm_CantCopyPublicLink_2c();
 	String vibeDataTable_Confirm_CantCopyPublicLink_3();
+	String vibeDataTable_Confirm_CantEditPublicLink_1a();
+	String vibeDataTable_Confirm_CantEditPublicLink_1b();
+	String vibeDataTable_Confirm_CantEditPublicLink_1c();
+	String vibeDataTable_Confirm_CantEditPublicLink_2a();
+	String vibeDataTable_Confirm_CantEditPublicLink_2b();
+	String vibeDataTable_Confirm_CantEditPublicLink_2c();
+	String vibeDataTable_Confirm_CantEditPublicLink_3();
 	String vibeDataTable_Confirm_CantEmailPublicLink_1a();
 	String vibeDataTable_Confirm_CantEmailPublicLink_1b();
 	String vibeDataTable_Confirm_CantEmailPublicLink_1c();
@@ -1927,6 +1936,13 @@ public interface GwtTeamingMessages extends Messages
 	String vibeDataTable_Warning_CantCopyPublicLink_2b();
 	String vibeDataTable_Warning_CantCopyPublicLink_2c();
 	String vibeDataTable_Warning_CantCopyPublicLink_3();
+	String vibeDataTable_Warning_CantEditPublicLink_1a();
+	String vibeDataTable_Warning_CantEditPublicLink_1b();
+	String vibeDataTable_Warning_CantEditPublicLink_1c();
+	String vibeDataTable_Warning_CantEditPublicLink_2a();
+	String vibeDataTable_Warning_CantEditPublicLink_2b();
+	String vibeDataTable_Warning_CantEditPublicLink_2c();
+	String vibeDataTable_Warning_CantEditPublicLink_3();
 	String vibeDataTable_Warning_CantEmailPublicLink_1a();
 	String vibeDataTable_Warning_CantEmailPublicLink_1b();
 	String vibeDataTable_Warning_CantEmailPublicLink_1c();
@@ -3256,6 +3272,14 @@ public interface GwtTeamingMessages extends Messages
 	String copyPublicLink_MultipleItems(int numItems);
 	String copyPublicLink_Reading();
 	String copyPublicLink_ViewFileLink();
+
+	// Strings used in the Edit Public Link dialog.
+	String editPublicLink_DeleteLink();
+	String editPublicLink_DownloadFileLink();
+	String editPublicLink_InternalError_NoEntries();
+	String editPublicLink_InternalError_NotAnEntry();
+	String editPublicLink_InternalError_MoreThanOneEntry();
+	String editPublicLink_ViewFileLink();
 
 	// LDAP browser dialog strings.
 	String ldapBrowser_Caption();
