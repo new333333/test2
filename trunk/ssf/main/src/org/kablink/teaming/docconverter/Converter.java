@@ -126,12 +126,18 @@ public abstract class Converter<T>
 			logger.debug(getClass().getName() + " conversion required because last conversion occurred before the current version of the file.");
 			return true; // The conversion took place "unambiguously" before the current version
 		}
+		/*
+		 * 06042014 JK - Testing can no longer reproduce the condition that the following block of
+		 * code was written to deal with. Instead, this code only seems to get executed for files
+		 * added via non-WebDAV clients. For that reason, I'm declaring that this block of code
+		 * is no longer needed and I'm commenting it out.
 		// This additional check takes care of the subtle edge condition reported in bug #715463.
 		if(convertedFile.length() == 0 &&
 				Integer.valueOf(1).equals(fa.getLastVersion())) {
 			logger.debug(getClass().getName() + " conversion required because of webdav mapped folder edge case (bug #715463).");
 			return true;
 		}
+		*/
 		return false;
 	}
 	
