@@ -599,7 +599,8 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
                     } else {
                     	//Cannot get at the entry directly, so try its parent folder
                         if (parentBinderToTest != null) {
-                            reply = binderModule.testAccess(parentBinderToTest, op.binderOperation);
+                            reply = accessControlManager.testOperation(zoneConfig, op.workAreaOperation) &&
+                                    binderModule.testAccess(parentBinderToTest, op.binderOperation);
                         }
                     	
                     }
