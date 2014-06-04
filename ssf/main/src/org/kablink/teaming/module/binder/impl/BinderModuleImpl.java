@@ -2582,6 +2582,8 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	public void setMyFilesDir(Long binderId, boolean value) {
 		//getBinder does read check
 		Binder binder = getBinder(binderId);
+		// (Bug #879737) - To minimize the possibility of optimistic locking failure
+		getCoreDao().refresh(binder);
 		binder.setMyFilesDir(value);
 	}
 	

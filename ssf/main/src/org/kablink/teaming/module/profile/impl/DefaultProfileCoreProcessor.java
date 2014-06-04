@@ -45,6 +45,7 @@ import java.util.TimeZone;
 import java.util.Locale;
 
 import org.dom4j.Element;
+import org.hibernate.exception.LockAcquisitionException;
 import org.kablink.teaming.NotSupportedException;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.calendar.TimeZoneHelper;
@@ -93,6 +94,8 @@ import org.kablink.teaming.util.SZoneConfig;
 import org.kablink.teaming.util.SimpleProfiler;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
+import org.springframework.dao.CannotAcquireLockException;
+import org.springframework.orm.hibernate3.HibernateOptimisticLockingFailureException;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
@@ -698,16 +701,39 @@ protected void modifyEntry_indexAdd(Binder binder, Entry entry,
 	    final Map entryData = (Map) entryDataAll.get(ObjectKeys.DEFINITION_ENTRY_DATA);
 	        
         // The following part requires update database transaction.
-        Boolean changed = (Boolean)getTransactionTemplate().execute(new TransactionCallback() {
-        	@Override
-			public Object doInTransaction(TransactionStatus status) {
-        		boolean result1 = syncEntry_fillIn(entry, inputData, entryData, ctx);
-	                
-        		boolean result2 = syncEntry_postFillIn(entry, inputData, entryData, ctx);
-        		if (result1 || result2) return Boolean.TRUE;
-        		return Boolean.FALSE;
-        	}});
-	    if (changed.equals(Boolean.TRUE)) modifyEntry_indexAdd(entry.getParentBinder(), entry, inputData, null, null, ctx);		
+	    Boolean changed = null;
+        int tryMaxCount = 1 + SPropsUtil.getInt("select.database.transaction.retry.max.count", 2);
+        int tryCount = 0;
+        while(true) {
+        	tryCount++;
+        	try {
+		        changed = (Boolean)getTransactionTemplate().execute(new TransactionCallback() {
+		        	@Override
+					public Object doInTransaction(TransactionStatus status) {
+		        		boolean result1 = syncEntry_fillIn(entry, inputData, entryData, ctx);
+			                
+		        		boolean result2 = syncEntry_postFillIn(entry, inputData, entryData, ctx);
+		        		if (result1 || result2) return Boolean.TRUE;
+		        		return Boolean.FALSE;
+		        	}});
+		        break; // successful transaction
+        	}
+        	catch(HibernateOptimisticLockingFailureException e) {
+        		if(tryCount < tryMaxCount) {
+        			if(logger.isDebugEnabled())
+        				logger.warn("'sync entry' failed due to optimistic locking failure", e);
+        			else 
+        				logger.warn("'sync entry' failed due to optimistic locking failure: " + e.toString());
+        			logger.warn("Retrying 'sync entry' in new transaction");
+        			getCoreDao().refresh(entry);        		
+        		}
+        		else {
+        			throw e;
+        		}
+        	}
+        }
+        if(Boolean.TRUE.equals(changed)) 
+	    	modifyEntry_indexAdd(entry.getParentBinder(), entry, inputData, null, null, ctx);		
 		
 	}
 	protected void syncEntry_setCtx(Entry entry, Map ctx) {
