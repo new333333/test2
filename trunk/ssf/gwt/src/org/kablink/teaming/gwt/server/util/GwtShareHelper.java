@@ -180,6 +180,83 @@ public class GwtShareHelper
 	
 		return rightSet1.greaterOrEqual( rightSet2 );
 	}
+
+	/*
+	 * Returns a GWT EntityId based on an EntitiyIdentifier. 
+	 */
+	private static EntityId buildEntityIdFromEntityIdentifier( AllModulesInjected bs, EntityIdentifier eid )
+	{
+		EntityId reply = new EntityId();
+		
+		switch ( eid.getEntityType() )
+		{
+		case folderEntry:
+			FolderEntry entry = bs.getFolderModule().getEntry( null, eid.getEntityId() );
+			reply.setEntityId( eid.getEntityId() );
+			reply.setBinderId( entry.getParentBinder().getId() );
+			reply.setEntityType( EntityId.FOLDER_ENTRY );
+			break;
+			
+		case folder:
+			reply.setEntityId( eid.getEntityId() );
+			reply.setEntityType( EntityId.FOLDER );
+			break;
+			
+		case workspace:
+			reply.setEntityId( eid.getEntityId() );
+			reply.setEntityType( EntityId.WORKSPACE );
+			break;
+			
+		default:
+			m_logger.error( "GwtShareHelper.buildEntityIdFromEntityIdentifier():  Unknown entity type: " + eid.getEntityType() );
+			reply = null;
+			break;
+		}
+		
+		return reply;
+	}
+	
+	/*
+	 * Constructs and returns a ShareExpirationValue from a ShareItem. 
+	 */
+	private static ShareExpirationValue buildShareExpiratioNValueFromShareItem( ShareItem si )
+	{
+		ShareExpirationValue reply = new ShareExpirationValue();
+		reply.setType( ShareExpirationType.NEVER );
+		
+		// Is there an expiration specified?
+		Date endDate = si.getEndDate();
+		if ( endDate != null )
+		{
+			int expiresAfterDays;
+			
+			// Do we have an "expires after" value?
+			expiresAfterDays = si.getDaysToExpire();
+			if ( expiresAfterDays > 0 )
+			{
+				long milliSecLeft;
+				
+				// Yes
+				// Calculate how many days are left before the share expires.
+				milliSecLeft = endDate.getTime() - new Date().getTime();
+				expiresAfterDays = (int)(milliSecLeft / MILLISEC_IN_A_DAY);
+				if ( expiresAfterDays >= 0 )
+				{
+					if ( (milliSecLeft % MILLISEC_IN_A_DAY) > 0 )
+						++expiresAfterDays;
+				}
+				reply.setType( ShareExpirationType.AFTER_DAYS );
+				reply.setValue( Long.valueOf( expiresAfterDays ) );
+			}
+			else
+			{
+				// We are dealing with "expires on"
+				reply.setType( ShareExpirationType.ON_DATE );
+				reply.setValue( endDate.getTime() );
+			}
+		}
+		return reply;
+	}
 	
 	/**
 	 * See if the user has rights to share with the "all external users" group.
@@ -1555,11 +1632,7 @@ public class GwtShareHelper
 		// Do we have a list of ShareItem objects for the given entity?
 		if ( listOfShareItems != null )
 		{
-			Date today;
-
 			// Yes
-			today = new Date();
-
 			for ( ShareItem nextShareItem : listOfShareItems )
 			{
 				GwtShareItem gwtShareItem;
@@ -1581,35 +1654,7 @@ public class GwtShareHelper
 					entityIdentifier = nextShareItem.getSharedEntityIdentifier();
 					if ( entityIdentifier != null )
 					{
-						nextEntityId = new EntityId();
-
-						switch ( entityIdentifier.getEntityType() )
-						{
-						case folderEntry:
-							FolderEntry entry;
-
-							entry = ami.getFolderModule().getEntry( null, entityIdentifier.getEntityId() );
-							
-							nextEntityId.setEntityId( entityIdentifier.getEntityId() );
-							nextEntityId.setBinderId( entry.getParentBinder().getId() );
-							nextEntityId.setEntityType( EntityId.FOLDER_ENTRY );
-							break;
-							
-						case folder:
-							nextEntityId.setEntityId( entityIdentifier.getEntityId() );
-							nextEntityId.setEntityType( EntityId.FOLDER );
-							break;
-							
-						case workspace:
-							nextEntityId.setEntityId( entityIdentifier.getEntityId() );
-							nextEntityId.setEntityType( EntityId.WORKSPACE );
-							break;
-							
-						default:
-							m_logger.error( "sharingModule.getListOfGwtShareItems(), unknown entity type: " + entityIdentifier.getEntityType() );
-							nextEntityId = null;
-							break;
-						}
+						nextEntityId = buildEntityIdFromEntityIdentifier( ami, entityIdentifier );
 					}
 				}
 				else
@@ -1708,44 +1753,7 @@ public class GwtShareHelper
 				
 				// Set the expiration value
 				{
-					ShareExpirationValue expirationValue;
-					Date endDate;
-					
-					expirationValue = new ShareExpirationValue();
-					expirationValue.setType( ShareExpirationType.NEVER );
-					
-					// Is there an expiration specified?
-					endDate = nextShareItem.getEndDate();
-					if ( endDate != null )
-					{
-						int expiresAfterDays;
-						
-						// Do we have an "expires after" value?
-						expiresAfterDays = nextShareItem.getDaysToExpire();
-						if ( expiresAfterDays > 0 )
-						{
-							long milliSecLeft;
-							
-							// Yes
-							// Calculate how many days are left before the share expires.
-							milliSecLeft = endDate.getTime() - today.getTime();
-							expiresAfterDays = (int)(milliSecLeft / MILLISEC_IN_A_DAY);
-							if ( expiresAfterDays >= 0 )
-							{
-								if ( (milliSecLeft % MILLISEC_IN_A_DAY) > 0 )
-									++expiresAfterDays;
-							}
-							expirationValue.setType( ShareExpirationType.AFTER_DAYS );
-							expirationValue.setValue( Long.valueOf( expiresAfterDays ) );
-						}
-						else
-						{
-							// We are dealing with "expires on"
-							expirationValue.setType( ShareExpirationType.ON_DATE );
-							expirationValue.setValue( endDate.getTime() );
-						}
-					}
-					
+					ShareExpirationValue expirationValue = buildShareExpiratioNValueFromShareItem( nextShareItem );
 					gwtShareItem.setShareExpirationValue( expirationValue );
 				}
 				
@@ -2590,7 +2598,7 @@ public class GwtShareHelper
 						
 						// Modify the share by marking existing snapshot as not being the latest
 						// and persisting the new snapshot. 
-						sharingModule.modifyShareItem(shareItem, shareItemId);
+						sharingModule.modifyShareItem( shareItem, shareItemId );
 
 						if ( sharingData.getNotifyRecipients() && sharingData.getSendToValue() == SendToValue.ONLY_MODIFIED_RECIPIENTS )
 							sendEmail = true;
@@ -2857,6 +2865,66 @@ public class GwtShareHelper
 		}
 	}
 
+	/**
+	 * Saves the expiration value of a share.
+	 * 
+	 * @param bs
+	 * @param request
+	 * @param shareId
+	 * @param expirationValue
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public static BooleanRpcResponseData saveShareExpirationValue( AllModulesInjected bs, HttpServletRequest request, Long shareId, ShareExpirationValue expirationValue ) throws GwtTeamingException
+	{
+		GwtServerProfiler gsp = GwtServerProfiler.start( m_logger, "GwtShareHelper.saveShareExpirationValue()" );
+		try
+		{
+			boolean reply = false;
+
+			// Do we have what we need to modify the share's
+			// expiration?
+			if ( ( null != shareId ) && ( null != expirationValue ) && expirationValue.isValid() )
+			{
+				// Yes!  Can we access the ShareItem?
+				SharingModule sm = bs.getSharingModule();
+				ShareItem si = sm.getShareItem( shareId );
+				if ( null != si )
+				{
+					// Yes!  Create a modified ShareItem...
+					EntityId eid = buildEntityIdFromEntityIdentifier( bs, si.getSharedEntityIdentifier() );
+					ShareItem newSI = buildPublicLinkShareItem( bs, GwtServerHelper.getCurrentUserId(), eid, expirationValue, si.getComment() );
+					newSI.setStartDate( si.getStartDate() );
+					
+					// ...and write out the change.
+					sm.modifyShareItem( newSI, shareId );
+					reply = true;
+				}
+			}
+			
+			// ...and return a BooleanRpcResponseData containing true.
+			return new BooleanRpcResponseData( reply );
+		}
+		
+		catch ( Exception e )
+		{
+			// Convert the exception to a GwtTeamingException and throw
+			// that.
+			throw
+				GwtLogHelper.getGwtClientException(
+					m_logger,
+					e,
+					"GwtShareHelper.saveShareExpirationValue( SOURCE EXCEPTION ):  " );
+		}
+		
+		finally
+		{
+			gsp.stop();
+		}
+	}
+	
 	/**
 	 * Saves the current state of the share whitelist/blacklist.
 	 * 
@@ -3287,7 +3355,7 @@ public class GwtShareHelper
 							if ( null == expirationDate )
 							     expiration = null;
 							else expiration = GwtServerHelper.getDateTimeString( expirationDate, DateFormat.MEDIUM, DateFormat.SHORT );
-	
+							
 							// ...and add the public link information to
 							// ...the reply.
 							reply.addPublicLink(
@@ -3303,7 +3371,8 @@ public class GwtShareHelper
 								si.getComment(),
 								sharedOn,
 								si.isExpired(),
-								expiration );
+								expiration,
+								buildShareExpiratioNValueFromShareItem( si ) );
 						}
 					}
 					
@@ -3466,7 +3535,8 @@ public class GwtShareHelper
 						plShare.getComment(),
 						sharedOn,
 						plShare.isExpired(),
-						expiration );
+						expiration,
+						buildShareExpiratioNValueFromShareItem( plShare ) );
 					reply.addMailToPublicLink( plLink );
 				}
 			}

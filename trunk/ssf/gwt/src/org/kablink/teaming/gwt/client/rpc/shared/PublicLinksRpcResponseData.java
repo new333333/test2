@@ -40,6 +40,7 @@ import java.util.Map;
 import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData.ErrorInfo;
 import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.PublicLinkInfo;
+import org.kablink.teaming.gwt.client.util.ShareExpirationValue;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
@@ -87,9 +88,9 @@ public class PublicLinksRpcResponseData implements IsSerializable, VibeRpcRespon
 	 * 
 	 * @param
 	 */
-	public void addError(     String   error)                                                                                                                                                                  {m_errors.addError(  error  );                                                                                                        }
-	public void addWarning(   String   warning)                                                                                                                                                                {m_errors.addWarning(warning);                                                                                                        }
-	public void addPublicLink(EntityId eid, Long shareId, String title, String path, String imageUrl, String downloadUrl, String viewUrl, String comment, String sharedOn, boolean expired, String expiration) {addPublicLink(eid, new PublicLinkInfo(shareId, title, path, imageUrl, downloadUrl, viewUrl, comment, sharedOn, expired, expiration));}
+	public void addError(     String   error)                                                                                                                                                                                                        {m_errors.addError(  error  );                                                                                                                         }
+	public void addWarning(   String   warning)                                                                                                                                                                                                      {m_errors.addWarning(warning);                                                                                                                         }
+	public void addPublicLink(EntityId eid, Long shareId, String title, String path, String imageUrl, String downloadUrl, String viewUrl, String comment, String sharedOn, boolean expired, String expiration, ShareExpirationValue expirationValue) {addPublicLink(eid, new PublicLinkInfo(shareId, title, path, imageUrl, downloadUrl, viewUrl, comment, sharedOn, expired, expiration, expirationValue));}
 	public void addPublicLink(EntityId eid, PublicLinkInfo pl) {
 		String eidKey = eid.getEntityIdString();
 		List<PublicLinkInfo> plList = m_publicLinks.get(eidKey);

@@ -3365,6 +3365,14 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case SAVE_SHARE_EXPIRATION_VALUE:
+		{
+			SaveShareExpirationValueCmd ssevCmd = ((SaveShareExpirationValueCmd) cmd);
+			BooleanRpcResponseData result = GwtShareHelper.saveShareExpirationValue( this, getRequest( ri ), ssevCmd.getShareId(), ssevCmd.getExpirationValue() );
+			response = new VibeRpcResponse( result );
+			return response;
+		}
+		
 		case SAVE_SHARE_LISTS:
 		{
 			SaveShareListsCmd sslCmd = ((SaveShareListsCmd) cmd);
