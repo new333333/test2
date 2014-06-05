@@ -56,7 +56,6 @@ import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlexTable;
-import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.TextBox;
@@ -273,6 +272,25 @@ public class ShareExpirationWidget extends Composite
 			m_expiresAfterTextBox.setVisibleLength( 4 );
 			m_expiresAfterTextBox.addStyleName( "shareExpirationWidget_expiresAfterTextBox" );
 			m_expiresAfterTextBox.addKeyPressHandler( this );
+			m_expiresAfterTextBox.addValueChangeHandler( new ValueChangeHandler<String>()
+			{
+				@Override
+				public void onValueChange( ValueChangeEvent<String> event )
+				{
+			    	Scheduler.ScheduledCommand cmd;
+			    	
+			    	cmd = new Scheduler.ScheduledCommand()
+			    	{
+						@Override
+						public void execute()
+						{
+							// Fire an event so those who care will know the value changed
+							fireShareExpirationValueChangedEvent();
+						}
+					};
+					Scheduler.get().scheduleDeferred( cmd );
+				}
+			});
 			table.setWidget( 0, 0, m_expiresAfterTextBox );
 			table.setText( 0, 1, GwtTeaming.getMessages().shareExpirationDlg_days() );
 			m_expiresAfterPanel.add( table );
@@ -621,23 +639,8 @@ public class ShareExpirationWidget extends Composite
         		txtBox.cancelKey();
         	}
         }
-        else
-        {
-        	Scheduler.ScheduledCommand cmd;
-        	
-        	cmd = new Scheduler.ScheduledCommand()
-        	{
-				@Override
-				public void execute()
-				{
-					// Fire an event so those who care will know the value changed
-					fireShareExpirationValueChangedEvent();
-				}
-			};
-			Scheduler.get().scheduleDeferred( cmd );
-        }
 	}
-
+	
 	/**
 	 * Validate the expiration value entered by the user.
 	 */
