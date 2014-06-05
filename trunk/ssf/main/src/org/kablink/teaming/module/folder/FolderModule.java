@@ -728,6 +728,8 @@ public interface FolderModule {
 	public void setNotificationSchedule(ScheduleInfo config, Long folderId);
 	
 	public Long getZoneEntryId(Long entryId, String zoneUUID);
+
+    public FolderEntry refreshFromRepository(FolderEntry fileEntry);
 	
     public boolean jitSynchronize(Folder folder) throws AuthException;
     

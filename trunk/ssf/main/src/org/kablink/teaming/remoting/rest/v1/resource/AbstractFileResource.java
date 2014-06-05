@@ -338,18 +338,31 @@ abstract public class AbstractFileResource extends AbstractResource {
         return list;
     }
 
-    protected org.kablink.teaming.domain.FolderEntry synchronizeFolderEntry(org.kablink.teaming.domain.FolderEntry entry) {
-        org.kablink.teaming.domain.FolderEntry retEntry = null;
+    protected org.kablink.teaming.domain.FolderEntry synchronizeFolderEntry(final org.kablink.teaming.domain.FolderEntry entry) {
+        org.kablink.teaming.domain.FolderEntry retEntry;
         Folder folder = entry.getParentFolder();
         if (folder.isMirrored()) {
             FolderModule.FileSyncStatus status = getFolderModule().fileSynchronize(entry);
             if (status == FolderModule.FileSyncStatus.deleted) {
                 throw new NoFolderEntryByTheIdException(entry.getId());
             } else {
-                return _getFolderEntry(entry.getId());
+                retEntry = _getFolderEntry(entry.getId());
             }
+        } else {
+            RunasCallback callback = new RunasCallback()
+            {
+                @Override
+                public org.kablink.teaming.domain.FolderEntry doAs()
+                {
+                    return getFolderModule().refreshFromRepository(entry);
+            }
+            };
+
+            retEntry = (FolderEntry) RunasTemplate.runasAdmin(
+                    callback,
+                    RequestContextHolder.getRequestContext().getZoneName());
         }
-        return entry;
+        return retEntry;
     }
 
     protected org.kablink.teaming.domain.FolderEntry _getFolderEntry(long id) {

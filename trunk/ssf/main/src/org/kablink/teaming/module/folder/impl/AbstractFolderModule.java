@@ -147,6 +147,7 @@ import org.kablink.teaming.util.ReflectHelper;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SZoneConfig;
 import org.kablink.teaming.util.SimpleMultipartFile;
+import org.kablink.teaming.util.SizeMd5Pair;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.TagUtil;
 import org.kablink.teaming.web.util.BinderHelper;
@@ -161,6 +162,8 @@ import static org.kablink.util.search.Restrictions.eq;
 import static org.kablink.util.search.Restrictions.in;
 
 import org.springframework.orm.hibernate3.HibernateOptimisticLockingFailureException;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -1977,7 +1980,33 @@ public void modifyWorkflowState(Long folderId, Long entryId, Long stateId, Strin
 	public int getAddReplyCount() {
 		return arCount.get();
 	}
-	@Override
+
+    public FolderEntry refreshFromRepository(FolderEntry fileEntry) {
+        if (!fileEntry.getParentFolder().isMirrored()) {
+            for (Attachment attachment : fileEntry.getAttachments()) {
+                if (attachment instanceof FileAttachment) {
+                    FileAttachment fa = (FileAttachment) attachment;
+                    SizeMd5Pair sizeMd5 = getFileModule().getFileInfoFromRepository(null, fileEntry, fa);
+                    if (sizeMd5!=null) {
+                        fa.getFileItem().setLength(sizeMd5.getSize());
+                        fa.getFileItem().setMd5(sizeMd5.getMd5());
+                    }
+                }
+            }
+
+            // Trigger Hibernate to commit the modified FileItem to the database.
+            getTransactionTemplate().execute(new TransactionCallback<Object>() {
+                @Override
+                public Object doInTransaction(final TransactionStatus status) {
+                    return null;
+                }
+            });
+            indexEntry(fileEntry, false);
+        }
+        return fileEntry;
+    }
+
+    @Override
 	public Long getZoneEntryId(Long entryId, String zoneUUID) {
 		if (Validator.isNull(zoneUUID)) return entryId;
 		List<Long> ids = getCoreDao().findZoneEntityIds(entryId, zoneUUID, EntityType.folderEntry.name());

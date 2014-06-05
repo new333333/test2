@@ -199,6 +199,11 @@ public class RepositoryUtil {
 		}
 	}
 
+    public static RepositorySession openSession(Binder binder, DefinableEntity entry, FileAttachment fa) {
+        String repositoryName = fa.getRepositoryName();
+        return RepositorySessionFactoryUtil.openSession(repositoryName, binder.getResourceDriverName(), ResourceDriverManager.FileOperation.READ, entry);
+    }
+
 	public static InputStream readVersionedFile(FileAttachment fa, Binder binder, 
 			DefinableEntity entry, String versionName, String latestVersionName)
 			throws RepositoryServiceException, UncheckedIOException {
@@ -209,24 +214,37 @@ public class RepositoryUtil {
 			DefinableEntity entry, String versionName, String latestVersionName, boolean readRawFile)
 			throws RepositoryServiceException, UncheckedIOException {
 		String repositoryName = fa.getRepositoryName();
-		String relativeFilePath = fa.getFileItem().getName();
 		RepositorySession session = RepositorySessionFactoryUtil.openSession(repositoryName, binder.getResourceDriverName(), ResourceDriverManager.FileOperation.READ, entry);
 
 		InputStream in = null;
 		try {
-			in = session.readVersioned(binder, entry, relativeFilePath, versionName, latestVersionName);
-			if (!readRawFile && fa.isEncrypted()) {
-				CryptoFileEncryption cfe = new CryptoFileEncryption(fa.getEncryptionKey());
-				in = cfe.getEncryptionInputDecryptedStream(in);
-			}
-			return new SessionWrappedInputStream(in, session);
+            in = getVersionedInputStream(session, binder, entry, fa, versionName, latestVersionName, readRawFile);
 		} finally {
 			if(in == null)
 				session.close();
 		}
+        return in;
 	}
 
-	public static void readUnversionedFile(String repositoryName, Binder binder, 
+    public static InputStream getVersionedInputStream(RepositorySession session, Binder binder, DefinableEntity entry, FileAttachment fa, String versionName, String latestVersionName, boolean readRawFile) {
+        String relativeFilePath = fa.getFileItem().getName();
+        InputStream in;
+        in = session.readVersioned(binder, entry, relativeFilePath, versionName, latestVersionName);
+        if (!readRawFile && fa.isEncrypted()) {
+            CryptoFileEncryption cfe = new CryptoFileEncryption(fa.getEncryptionKey());
+            in = cfe.getEncryptionInputDecryptedStream(in);
+        }
+        return new SessionWrappedInputStream(in, session);
+    }
+
+    public static InputStream getUnversionedInputStream(RepositorySession session, Binder binder, DefinableEntity entry, FileAttachment fa) {
+        String relativeFilePath = fa.getFileItem().getName();
+        InputStream in;
+        in = session.readUnversioned(binder, entry, relativeFilePath);
+        return new SessionWrappedInputStream(in, session);
+    }
+
+    public static void readUnversionedFile(String repositoryName, Binder binder,
 			DefinableEntity entry, String relativeFilePath, OutputStream out)
 			throws RepositoryServiceException, UncheckedIOException {
 		RepositorySession session = RepositorySessionFactoryUtil.openSession(repositoryName, binder.getResourceDriverName(), ResourceDriverManager.FileOperation.READ, entry);
