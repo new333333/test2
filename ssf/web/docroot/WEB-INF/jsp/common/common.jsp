@@ -65,6 +65,6 @@ if (org.kablink.teaming.context.request.RequestContextHolder.getRequestContext()
 --%><% // what language we are running in. %><%--
 --%><% request.setAttribute( "teamingLang", org.kablink.teaming.util.NLT.get( "Teaming.Lang" ) ); %><%--
 
---%><% // Set up the path to the directory that holds the help html files. %><%--
---%><c:set var="helpDocPath" value="${pageContext.request.contextPath}/help_doc/${teamingLang}" scope="application"/><%--
+--%><% // helpDocPath is no longer needed because all help is online. %><%--
+--%><c:set var="helpDocPath" value="no-longer-used" scope="application"/><%--
 --%>

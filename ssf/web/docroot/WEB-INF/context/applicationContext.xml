@@ -1556,7 +1556,6 @@ text/calendar											  ics
     <security:http pattern="/static/**" security="none" />
     <security:http pattern="/ext/**" security="none" />
     <security:http pattern="/help/**" security="none" />
-    <security:http pattern="/help_doc/**" security="none" />
     <security:http pattern="/validate/**" security="none" />        
     <security:http pattern="/redirect/**" security="none" />
     <security:http pattern="/bitbucket/**" security="none" />
