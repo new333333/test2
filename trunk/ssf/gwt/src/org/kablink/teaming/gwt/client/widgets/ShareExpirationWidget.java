@@ -36,6 +36,7 @@ import java.util.Date;
 
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
+import org.kablink.teaming.gwt.client.event.ShareExpirationValueChangedEvent;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.ShareExpirationValue;
 import org.kablink.teaming.gwt.client.util.ShareExpirationValue.ShareExpirationType;
@@ -142,6 +143,9 @@ public class ShareExpirationWidget extends Composite
 						public void execute()
 						{
 							handleExpirationTypeSelected();
+							
+							// Fire an event so those who care will know the value changed
+							fireShareExpirationValueChangedEvent();
 						}
 					};
 					Scheduler.get().scheduleDeferred( cmd );
@@ -197,6 +201,21 @@ public class ShareExpirationWidget extends Composite
 								// Yes, tell them not to do that.
 								Window.alert( GwtTeaming.getMessages().shareExpirationDlg_cantEnterPriorDate() );
 								m_dateBox.setValue( today );
+							}
+						};
+						Scheduler.get().scheduleDeferred( cmd );
+					}
+					else
+					{
+						Scheduler.ScheduledCommand cmd;
+						
+						cmd = new Scheduler.ScheduledCommand()
+						{
+							@Override
+							public void execute()
+							{
+								// Fire an event so those who care will know the value changed
+								fireShareExpirationValueChangedEvent();
 							}
 						};
 						Scheduler.get().scheduleDeferred( cmd );
@@ -340,6 +359,20 @@ public class ShareExpirationWidget extends Composite
 				}
 			}
 		}
+	}
+	
+	/**
+	 * Fire the ShareExpirationValueChangedEvent so those who care will know the value changed. 
+	 */
+	private void fireShareExpirationValueChangedEvent()
+	{
+		ShareExpirationValueChangedEvent vcEvent;
+		ShareExpirationValue value;
+		
+		value = getExpirationValue();
+		
+		vcEvent = new ShareExpirationValueChangedEvent( value, ShareExpirationWidget.this );
+		GwtTeaming.fireEvent( vcEvent );
 	}
 	
 	/**
@@ -577,6 +610,21 @@ public class ShareExpirationWidget extends Composite
         		// Suppress the current keyboard event.
         		txtBox.cancelKey();
         	}
+        }
+        else
+        {
+        	Scheduler.ScheduledCommand cmd;
+        	
+        	cmd = new Scheduler.ScheduledCommand()
+        	{
+				@Override
+				public void execute()
+				{
+					// Fire an event so those who care will know the value changed
+					fireShareExpirationValueChangedEvent();
+				}
+			};
+			Scheduler.get().scheduleDeferred( cmd );
         }
 	}
 
