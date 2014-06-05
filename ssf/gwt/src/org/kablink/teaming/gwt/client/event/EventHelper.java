@@ -1867,6 +1867,15 @@ public class EventHelper {
 				}
 				break;
 				
+			case SHARE_EXPIRATION_VALUE_CHANGED:
+				// An ShareExpirationValueChangedEvent!  Can the event handler we were given handle that?
+				if ( eventHandler instanceof ShareExpirationValueChangedEvent.Handler )
+				{
+					handlerNotDefined = false;
+					registrationHandler = ShareExpirationValueChangedEvent.registerEvent( eventBus, ((ShareExpirationValueChangedEvent.Handler) eventHandler));
+				}
+				break;
+				
 			case SHARE_SELECTED_ENTITIES:
 				// A ShareSelectedEntitiesEvent!  Can the event handler
 				// we were given handle that?
@@ -2797,6 +2806,8 @@ public class EventHelper {
 			case SEARCH_TAG:                        	       hasHandler = (eventHandler instanceof SearchTagEvent.Handler);                              break;
 
 			case SET_SHARE_RIGHTS:						       hasHandler = (eventHandler instanceof SetShareRightsEvent.Handler);                         break;
+
+			case SHARE_EXPIRATION_VALUE_CHANGED:           	   hasHandler = (eventHandler instanceof ShareExpirationValueChangedEvent.Handler);            break;
 
 			case SHOW_BLOG_FOLDER:						       hasHandler = (eventHandler instanceof ShowBlogFolderEvent.Handler);		   		           break;
 			case SHOW_CALENDAR_FOLDER:					       hasHandler = (eventHandler instanceof ShowCalendarFolderEvent.Handler);		               break;

@@ -189,6 +189,8 @@ public enum TeamingEvents implements IsSerializable {
 	
 	SET_SHARE_RIGHTS,								// Set the share rights
 	
+	SHARE_EXPIRATION_VALUE_CHANGED,					// Notification that the share expiration value changed.
+	
 	SHOW_BLOG_FOLDER,								// Show a blog folder.
 	SHOW_CALENDAR_FOLDER,							// Shows a calendar folder.
 	SHOW_COLLECTION,								// Show a given collection point
