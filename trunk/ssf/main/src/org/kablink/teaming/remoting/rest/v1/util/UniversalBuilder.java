@@ -66,13 +66,16 @@ public class UniversalBuilder implements SearchResultBuilder<SearchableObject> {
             buildersByEntryType.put(Constants.ENTRY_TYPE_APPLICATION_GROUP, ApplicationGroupBriefBuilder.class);
         }
 
-        public SearchResultBuilder<SearchableObject> factoryBuilder(Map objectMap) {
+        public SearchResultBuilder<SearchableObject> factoryBuilder(Map objectMap, boolean preferFileOverEntry) {
             Class<? extends SearchResultBuilder> clss = null;
             String docType = (String) objectMap.get(Constants.DOC_TYPE_FIELD);
             if(Constants.DOC_TYPE_ENTRY.equals(docType)) {
                 clss = buildersByEntryType.get((String) objectMap.get(Constants.ENTRY_TYPE_FIELD));
             } else {
                 clss = buildersByDocType.get(docType);
+            }
+            if (clss.equals(FolderEntryBriefBuilder.class) && preferFileOverEntry) {
+                clss = FilePropertiesBuilder.class;
             }
             if (clss!=null) {
                 try {
@@ -87,9 +90,11 @@ public class UniversalBuilder implements SearchResultBuilder<SearchableObject> {
     private static BuilderFactory builderFactory = new BuilderFactory();
 
     private int descriptionFormat;
+    private boolean preferFileOverEntry;
 
-    public UniversalBuilder(int descriptionFormat) {
+    public UniversalBuilder(int descriptionFormat, boolean preferFileOverEntry) {
         this.descriptionFormat = descriptionFormat;
+        this.preferFileOverEntry = preferFileOverEntry;
     }
 
     public void setDescriptionFormat(int descriptionFormat) {
@@ -97,7 +102,7 @@ public class UniversalBuilder implements SearchResultBuilder<SearchableObject> {
     }
 
     public SearchableObject build(Map objectMap) {
-        SearchResultBuilder<SearchableObject> builder = builderFactory.factoryBuilder(objectMap);
+        SearchResultBuilder<SearchableObject> builder = builderFactory.factoryBuilder(objectMap, preferFileOverEntry);
         if (builder!=null) {
             builder.setDescriptionFormat(descriptionFormat);
             return builder.build(objectMap);
