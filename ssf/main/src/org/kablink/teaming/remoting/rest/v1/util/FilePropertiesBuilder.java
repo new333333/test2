@@ -70,7 +70,13 @@ public class FilePropertiesBuilder implements SearchResultBuilder<FileProperties
                 createdDate));
 
         Long modifierId = Long.valueOf((String) doc.get(Constants.MODIFICATIONID_FIELD));
-        Date modifiedDate = (Date) doc.get(Constants.MODIFICATION_DATE_FIELD);
+        Long modTime = this.getLong(doc, Constants.FILE_TIME_FIELD);
+        Date modifiedDate;
+        if (modTime!=null) {
+            modifiedDate = new Date(modTime);
+        } else {
+            modifiedDate = (Date) doc.get(Constants.MODIFICATION_DATE_FIELD);
+        }
         fp.setModification(new HistoryStamp(new LongIdLinkPair(modifierId, LinkUriUtil.getUserLinkUri(modifierId)),
                 modifiedDate));
         String sizeStr = (String) doc.get(Constants.FILE_SIZE_IN_BYTES_FIELD);
@@ -93,6 +99,16 @@ public class FilePropertiesBuilder implements SearchResultBuilder<FileProperties
         Integer version;
         if(versionStr != null)
             version = Integer.valueOf(versionStr);
+        else
+            version = null;
+        return version;
+    }
+
+    private Long getLong(Map doc, String fieldName) {
+        String versionStr = (String) doc.get(fieldName);
+        Long version;
+        if(versionStr != null)
+            version = Long.valueOf(versionStr);
         else
             version = null;
         return version;

@@ -329,7 +329,7 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
 
         Map resultsMap = getBinderModule().executeSearchQuery(searchFilter.getFilter(), Constants.SEARCH_MODE_NORMAL, options);
         SearchResultList<SearchableObject> results = new SearchResultList<SearchableObject>(offset);
-        SearchResultBuilderUtil.buildSearchResults(results, new UniversalBuilder(descriptionFormat), resultsMap,
+        SearchResultBuilderUtil.buildSearchResults(results, new UniversalBuilder(descriptionFormat, false), resultsMap,
                 nextUrl, nextParams, offset);
         if (includeParentPaths) {
             populateParentBinderPaths(results);
@@ -973,7 +973,7 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         Map resultMap = getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, offset, maxCount, null);
         SearchResultList<SearchableObject> results = new SearchResultList<SearchableObject>(offset);
         results.setLastModified(lastModified);
-        SearchResultBuilderUtil.buildSearchResults(results, new UniversalBuilder(descriptionFormat), resultMap, nextUrl, nextParams, offset);
+        SearchResultBuilderUtil.buildSearchResults(results, new UniversalBuilder(descriptionFormat, false), resultMap, nextUrl, nextParams, offset);
         return results;
     }
 
@@ -1264,7 +1264,7 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
 
         Map resultsMap = getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, 0, 1, null);
         SearchResultList<SearchableObject> results = new SearchResultList<SearchableObject>();
-        SearchResultBuilderUtil.buildSearchResults(results, new UniversalBuilder(Description.FORMAT_NONE), resultsMap, null, null, 0);
+        SearchResultBuilderUtil.buildSearchResults(results, new UniversalBuilder(Description.FORMAT_NONE, false), resultsMap, null, null, 0);
         return results.getLastModified();
     }
 
@@ -1289,7 +1289,7 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
             return new LibraryInfo(0L, 0, 0, null);
         }
         Set<Long> idSet = new HashSet<Long>(Arrays.asList(binderIds));
-        Criteria crit = getLibraryCriteria(binderIds, true, true);
+        Criteria crit = getLibraryCriteria(binderIds, false, true);
 
         Map resultsMap = getBinderModule().executeSearchQuery(crit, Constants.SEARCH_MODE_NORMAL, 0, -1,
         		org.kablink.teaming.module.shared.SearchUtils.fieldNamesList(Constants.DOC_TYPE_FIELD,Constants.FILE_SIZE_IN_BYTES_FIELD,Constants.DOCID_FIELD,Constants.MODIFICATION_DATE_FIELD));
@@ -1302,15 +1302,7 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         if (entries!=null) {
             for (Map entry : entries) {
                 String docType = (String) entry.get(Constants.DOC_TYPE_FIELD);
-                if (Constants.DOC_TYPE_ATTACHMENT.equals(docType)) {
-                    files++;
-                    String sizeStr = (String) entry.get(Constants.FILE_SIZE_IN_BYTES_FIELD);
-                    if(sizeStr != null)
-                        try {
-                            diskSpace += Long.valueOf(sizeStr);
-                        } catch (NumberFormatException e) {
-                        }
-                } else if (Constants.DOC_TYPE_BINDER.equals(docType)) {
+                if (Constants.DOC_TYPE_BINDER.equals(docType)) {
                     String binderIdStr = (String) entry.get(Constants.DOCID_FIELD);
                     Long binderId = (binderIdStr != null)? Long.valueOf(binderIdStr) : null;
                     if (!idSet.contains(binderId)) {
@@ -1318,6 +1310,13 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
                     }
                     modDate = ResourceUtil.max(modDate, (Date) entry.get(Constants.MODIFICATION_DATE_FIELD));
                 } else if (Constants.DOC_TYPE_ENTRY.equals(docType)) {
+                    files++;
+                    String sizeStr = (String) entry.get(Constants.FILE_SIZE_IN_BYTES_FIELD);
+                    if(sizeStr != null)
+                        try {
+                            diskSpace += Long.valueOf(sizeStr);
+                        } catch (NumberFormatException e) {
+                        }
                     modDate = ResourceUtil.max(modDate, (Date) entry.get(Constants.MODIFICATION_DATE_FIELD));
                 }
             }
@@ -1858,19 +1857,19 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         if (binders) {
             or.add(SearchUtils.buildBindersCriterion());
         }
-        if (entries) {
+        if (entries || files) {
             or.add(SearchUtils.buildEntriesCriterion());
         }
-        if (files) {
-            or.add(SearchUtils.buildAttachmentsCriterion());
-        }
+//        if (files) {
+//            or.add(SearchUtils.buildAttachmentsCriterion());
+//        }
         crit.add(or);
         crit.add(SearchUtils.buildParentBinderCriterion(id));
         crit.addOrder(new Order(Constants.ENTITY_FIELD, true));
         crit.addOrder(new Order(Constants.SORT_TITLE_FIELD, true));
-        Map resultMap = getBinderModule().searchFolderOneLevelWithInferredAccess(crit, Constants.SEARCH_MODE_NORMAL, offset, maxCount, binder, allowJits);
+        Map resultMap = getBinderModule().searchFolderOneLevelWithInferredAccess(crit, Constants.SEARCH_MODE_PREAPPROVED_PARENTS, offset, maxCount, binder, allowJits);
         SearchResultList<SearchableObject> results = new SearchResultList<SearchableObject>(offset, binder.getModificationDate());
-        SearchResultBuilderUtil.buildSearchResults(results, new UniversalBuilder(descriptionFormat), resultMap, nextUrl, nextParams, offset);
+        SearchResultBuilderUtil.buildSearchResults(results, new UniversalBuilder(descriptionFormat, files), resultMap, nextUrl, nextParams, offset);
         if (modifiedSince!=null && results.getLastModified()!=null && !modifiedSince.before(results.getLastModified())) {
             throw new NotModifiedException();
         }
