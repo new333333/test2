@@ -35,15 +35,16 @@ package org.kablink.teaming.module.file.impl;
 import static org.kablink.util.search.Restrictions.conjunction;
 import static org.kablink.util.search.Restrictions.eq;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
@@ -58,6 +59,8 @@ import java.util.regex.Pattern;
 
 import javax.crypto.SecretKey;
 
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.output.NullOutputStream;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.search.Query;
@@ -71,7 +74,6 @@ import org.kablink.teaming.InternalException;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.UncheckedIOException;
 import org.kablink.teaming.UserQuotaException;
-import org.kablink.teaming.asmodule.security.authentication.AuthenticationContextHolder;
 import org.kablink.teaming.asmodule.zonecontext.ZoneContextHolder;
 import org.kablink.teaming.context.request.RequestContext;
 import org.kablink.teaming.context.request.RequestContextHolder;
@@ -111,7 +113,6 @@ import org.kablink.teaming.lucene.Hits;
 import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
-import org.kablink.teaming.module.binder.impl.EntryDataErrors.Problem;
 import org.kablink.teaming.module.definition.DefinitionUtils;
 import org.kablink.teaming.module.file.ChecksumMismatchException;
 import org.kablink.teaming.module.file.ContentFilter;
@@ -124,7 +125,6 @@ import org.kablink.teaming.module.file.FilesErrors;
 import org.kablink.teaming.module.file.FilterException;
 import org.kablink.teaming.module.file.LockIdMismatchException;
 import org.kablink.teaming.module.file.LockedByAnotherUserException;
-import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.folder.FolderModule.FolderOperation;
 import org.kablink.teaming.module.impl.CommonDependencyInjection;
@@ -142,10 +142,12 @@ import org.kablink.teaming.repository.RepositorySessionFactory;
 import org.kablink.teaming.repository.RepositorySessionFactoryUtil;
 import org.kablink.teaming.repository.RepositoryUtil;
 import org.kablink.teaming.repository.archive.ArchiveStore;
+import org.kablink.teaming.repository.file.FileRepositorySession;
 import org.kablink.teaming.search.LuceneReadSession;
 import org.kablink.teaming.search.QueryBuilder;
 import org.kablink.teaming.search.SearchObject;
 import org.kablink.teaming.security.AccessControlException;
+import org.kablink.teaming.util.DigestOutputStream;
 import org.kablink.teaming.util.ExtendedMultipartFile;
 import org.kablink.teaming.util.FileHelper;
 import org.kablink.teaming.util.FilePathUtil;
@@ -480,52 +482,28 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	@Override
 	public void readFile(Binder binder, DefinableEntity entry, FileAttachment fa, 
 			OutputStream out) {
-		String versionName = null;
-		String latestVersionName = null;
-		
-		if(fa instanceof VersionAttachment) {
-			versionName = ((VersionAttachment) fa).getVersionName();
-		}
-		else {
-			if(fa.getHighestVersion() != null) {
-				if(fa.getFileLock() == null)
-					versionName = fa.getHighestVersion().getVersionName();
-				else
-					latestVersionName = fa.getHighestVersion().getVersionName();				
-			}
-			else {
-				// There is no content to read.
-				return;
-			}
+        VersionName vn = getLatestVersionName(fa);
+
+        if (vn==null) {
+            // There is no content to read.
+            return;
 		}
 		
-		RepositoryUtil.readVersionedFile(fa, binder, entry, versionName, latestVersionName, out);	
+		RepositoryUtil.readVersionedFile(fa, binder, entry, vn.versionName, vn.latestVersionName, out);
 		
 		GangliaMonitoring.incrementFileReads();
 	}
 	
 	@Override
-	public InputStream readFile(Binder binder, DefinableEntity entry, FileAttachment fa) { 
-		String versionName = null;
-		String latestVersionName = null;
-		
-		if(fa instanceof VersionAttachment) {
-			versionName = ((VersionAttachment) fa).getVersionName();
+	public InputStream readFile(Binder binder, DefinableEntity entry, FileAttachment fa) {
+        VersionName vn = getLatestVersionName(fa);
+
+        if (vn==null) {
+            // There is no content to read.
+            return new ByteArrayInputStream(new byte[0]);
 		}
-		else {
-			if(fa.getHighestVersion() != null) {
-				if(fa.getFileLock() == null)
-					versionName = fa.getHighestVersion().getVersionName();
-				else
-					latestVersionName = fa.getHighestVersion().getVersionName();
-			}
-			else {
-				// There is no content to read.
-				return new ByteArrayInputStream(new byte[0]);
-			}
-		}
-		
-		InputStream result = RepositoryUtil.readVersionedFile(fa, binder, entry, versionName, latestVersionName, false);
+
+		InputStream result = RepositoryUtil.readVersionedFile(fa, binder, entry, vn.versionName, vn.latestVersionName, false);
 		
 		GangliaMonitoring.incrementFileReads();
 		
@@ -3233,6 +3211,45 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     	}
     	return fa;
     }
+
+    public SizeMd5Pair getFileInfoFromRepository(Binder binder, DefinableEntity entry, FileAttachment fa) {
+        if (binder==null) {
+            binder = entry.getParentBinder();
+        }
+        RepositorySession session = RepositoryUtil.openSession(binder, entry, fa);
+        InputStream is = null;
+        try {
+            String relativeFilePath = fa.getFileItem().getName();
+            long fileLength;
+            int fileType = session.fileInfo(binder, entry, relativeFilePath);
+            if (fileType == FileRepositorySession.VERSIONED_FILE) {
+                VersionName vn = getLatestVersionName(fa);
+                if (vn==null) {
+                    // No content
+                    return null;
+                }
+                fileLength = session.getContentLengthVersioned(binder, entry, relativeFilePath, vn.getVersionName());
+                is = RepositoryUtil.getVersionedInputStream(session, binder, entry, fa, vn.versionName, vn.latestVersionName, false);
+            } else if (fileType == FileRepositorySession.UNVERSIONED_FILE) {
+                fileLength = session.getContentLengthUnversioned(binder, entry, relativeFilePath);
+                is = RepositoryUtil.getUnversionedInputStream(session, binder, entry, fa);
+            }
+            else {
+                return null;
+            }
+
+            DigestOutputStream os = new DigestOutputStream(new NullOutputStream());
+            FileCopyUtils.copy(is, os);
+            return new SizeMd5Pair(fileLength, os.getDigest());
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        } finally {
+            if (is!=null) {
+                IOUtils.closeQuietly(is);
+            }
+            session.close();
+        }
+    }
     
 	private void setCustomAttribute(DefinableEntity entry, FileUploadItem fui, FileAttachment fAtt, boolean addToFront) {
     	// Is the FileUploadItem named?
@@ -3399,4 +3416,32 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 			}
 		}
 	}
+
+    private VersionName getLatestVersionName(FileAttachment fa) {
+        VersionName vn = null;
+
+        if(fa instanceof VersionAttachment) {
+            vn = new VersionName();
+            vn.versionName = ((VersionAttachment) fa).getVersionName();
+        }
+        else {
+            if(fa.getHighestVersion() != null) {
+                vn = new VersionName();
+                if(fa.getFileLock() == null)
+                    vn.versionName = fa.getHighestVersion().getVersionName();
+                else
+                    vn.latestVersionName = fa.getHighestVersion().getVersionName();
+            }
+        }
+        return vn;
+    }
+
+    private static class VersionName {
+        String versionName = null;
+        String latestVersionName = null;
+
+        public String getVersionName() {
+            return versionName!=null ? versionName : latestVersionName;
+        }
+    }
 }

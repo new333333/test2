@@ -50,6 +50,7 @@ import org.kablink.teaming.domain.FileAttachment.FileStatus;
 import org.kablink.teaming.repository.RepositoryServiceException;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.util.FileUploadItem;
+import org.kablink.teaming.util.SizeMd5Pair;
 import org.kablink.util.search.Criteria;
 
 /**
@@ -558,4 +559,13 @@ public interface FileModule {
 	public void correctLastModTime(FileAttachment fa, Date correctLastModTime);
 	
     public boolean isLockExpired(FileLock lock);
+
+    /**
+     * Check the repository for the latest size and md5 for the specified file.
+     * @param binder
+     * @param entry
+     * @param fa
+     * @return
+     */
+    public SizeMd5Pair getFileInfoFromRepository(Binder binder, DefinableEntity entry, FileAttachment fa);
 }	
