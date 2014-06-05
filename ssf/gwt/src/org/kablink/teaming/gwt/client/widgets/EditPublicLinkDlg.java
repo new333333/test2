@@ -32,6 +32,7 @@
  */
 package org.kablink.teaming.gwt.client.widgets;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -40,15 +41,25 @@ import org.kablink.teaming.gwt.client.GwtFolderEntry;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingFilrImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
+import org.kablink.teaming.gwt.client.event.ContentChangedEvent;
+import org.kablink.teaming.gwt.client.event.EventHelper;
+import org.kablink.teaming.gwt.client.event.ShareExpirationValueChangedEvent;
+import org.kablink.teaming.gwt.client.event.TeamingEvents;
+import org.kablink.teaming.gwt.client.event.ContentChangedEvent.Change;
+import org.kablink.teaming.gwt.client.rpc.shared.BooleanRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.DeleteSharesCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetEntryCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetPublicLinksCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.PublicLinksRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.SaveShareExpirationValueCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.PublicLinkInfo;
+import org.kablink.teaming.gwt.client.util.ShareExpirationValue;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
+import org.kablink.teaming.gwt.client.widgets.ConfirmDlg.ConfirmDlgClient;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
@@ -59,32 +70,50 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.FocusWidget;
+import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.TextBox;
+import com.google.web.bindery.event.shared.HandlerRegistration;
 
 /**
  * Implements a Edit Public Link dialog.
  *  
  * @author drfoster@novell.com
  */
-public class EditPublicLinkDlg extends DlgBox {
-	public final static boolean SHOW_EDIT_PUBLIC_LINKS_DIALOG	= false;	//! DRF (20140604):  Leave false on checkin until it all works.
+public class EditPublicLinkDlg extends DlgBox
+	implements
+		// Event handlers implemented by this class.
+		ShareExpirationValueChangedEvent.Handler
+{
+	private GwtTeamingFilrImageBundle	m_filrImages;				// Access to Filr's images.
+	private GwtTeamingMessages			m_messages;					// Access to Vibe's messages.
+	private EntityId					m_entityId;					// EntityId of the entity whose link is being edited.
+	private Image						m_headerImg;				// Image in the dialog's header representing what we're editing the links for. 
+	private Label						m_headerNameLabel;			// Name of what we're editing the links for.
+	private Label						m_headerPathLabel;			// Path to what we're editing links for, if there's only a single item.
+	private Label						m_hintTail;					// Label that makes up the end of the hint just below the dialogs header. 
+	private List<HandlerRegistration>	m_registeredEventHandlers;	// Event handlers that are currently registered.
+	private ScrollPanel					m_linksScroller;			// The ScrollPanel that contains the links.
+	private String						m_imagesPath;				// Path to Vibe's images.
+	private ShareExpirationWidget		m_expWidget;				// The ShareExpirationWidget for this dialog.
+	private VibeFlowPanel				m_contentPanel;				// The panel containing the content of the dialog below the header.
+	private VibeVerticalPanel			m_linksPanel;				// The panel containing the links themselves.
+
+	// Used as the attribute name on a ShareExpirationWidget to
+	// identify the share.
+	private final static String EXPIRATION_SHARE_ID_ATTR	= "n-shareId";
 	
-	private GwtTeamingFilrImageBundle	m_filrImages;		// Access to Filr's images.
-	private GwtTeamingMessages			m_messages;			// Access to Vibe's messages.
-	private EntityId					m_entityId;			// EntityId of the entity whose link is being edited.
-	private Image						m_headerImg;		// Image in the dialog's header representing what we're editing the links for. 
-	private Label						m_headerNameLabel;	// Name of what we're editing the links for.
-	private Label						m_headerPathLabel;	// Path to what we're editing links for, if there's only a single item.
-	private Label						m_hintTail;			// Label that makes up the end of the hint just below the dialogs header. 
-	private ScrollPanel					m_linksScroller;	// The ScrollPanel that contains the links.
-	private String						m_imagesPath;		// Path to Vibe's images.
-	private VibeFlowPanel				m_contentPanel;		// The panel containing the content of the dialog below the header.
-	private VibeVerticalPanel			m_linksPanel;		// The panel containing the links themselves.
+	// The following defines the TeamingEvents that are handled by
+	// this class.  See EventHelper.registerEventHandlers() for how
+	// this array is used.
+	private static final TeamingEvents[] REGISTERED_EVENTS = new TeamingEvents[] {
+		TeamingEvents.SHARE_EXPIRATION_VALUE_CHANGED,
+	};
 	
 	/*
 	 * Class constructor.
@@ -191,9 +220,84 @@ public class EditPublicLinkDlg extends DlgBox {
 	}
 
 	/*
+	 * Asynchronously confirms and deletes the file link.
+	 */
+	private void deleteShareAsync(final PublicLinkInfo pl) {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
+			@Override
+			public void execute() {
+				deleteShareNow(pl);
+			}
+		});
+	}
+	
+	/*
+	 * Synchronously confirms and deletes the file link.
+	 */
+	private void deleteShareNow(final PublicLinkInfo pl) {
+		ConfirmDlg.createAsync(new ConfirmDlgClient() {
+			@Override
+			public void onUnavailable() {
+				// Nothing to do.  Error handled in
+				// asynchronous provider.
+			}
+			
+			@Override
+			public void onSuccess(ConfirmDlg cDlg) {
+				ConfirmDlg.initAndShow(
+					cDlg,
+					new ConfirmCallback() {
+						@Override
+						public void dialogReady() {
+							// Ignored.  We don't really care when the
+							// dialog is ready.
+						}
+
+						@Override
+						public void accepted() {
+							// Yes, they're sure!  Delete it.
+							GwtClientHelper.deferCommand(new ScheduledCommand() {
+								@Override
+								public void execute() {
+									List<Long> shareIds = new ArrayList<Long>();
+									shareIds.add(pl.getShareId());
+									DeleteSharesCmd cmd = new DeleteSharesCmd(shareIds);
+									GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
+										@Override
+										public void onFailure(Throwable t) {
+											GwtClientHelper.handleGwtRPCFailure(
+												t,
+												m_messages.rpcFailure_DeleteShares());
+										}
+								
+										@Override
+										public void onSuccess(VibeRpcResponse response) {
+											// The share has been
+											// deleted, fire an event
+											// telling everybody and
+											// hide the dialog.
+											GwtTeaming.fireEventAsync(new ContentChangedEvent(Change.SHARING));
+											hide();
+										}
+									});
+								}
+							});
+						}
+
+						@Override
+						public void rejected() {
+							// No, they're not sure!
+						}
+					},
+					m_messages.editPublicLink_ConfirmDelete());
+			}
+		});
+	}
+	
+	/*
 	 * Displays an individual link in the list.
 	 */
-	private void displayPublicLink(PublicLinkInfo pl, boolean showFileInfo) {
+	private void displayPublicLink(final PublicLinkInfo pl, boolean showFileInfo) {
 		// Do we need to show per file information?  (We do processing
 		// multiple entities.  We don't with a single entity.)
 		if (showFileInfo) {
@@ -244,6 +348,28 @@ public class EditPublicLinkDlg extends DlgBox {
 				url,
 				((!showFileInfo) && (!hasView)));	// true -> Display a spacer above the URL.  false -> Don't.
 		}
+		
+		// Finally, add a delete button...
+		VibeHorizontalPanel hp = new VibeHorizontalPanel(null, null);
+		hp.addStyleName("vibe-editPublicLinkDlg-actionsPanel");
+		hp.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
+		m_linksPanel.add(hp);
+		Button delButton = new Button(m_messages.editPublicLink_DeleteLink());
+		delButton.addStyleName("vibe-editPublicLinkDlg-deleteButton");
+		delButton.addClickHandler(new ClickHandler() {
+			@Override
+			public void onClick(ClickEvent event) {
+				deleteShareAsync(pl);
+			}
+		});
+		hp.add(delButton);
+		
+		// ...and an expiration widget.
+		m_expWidget = new ShareExpirationWidget("vibe-editPublicLinkDlg-shareExpirationTable");
+		m_expWidget.addStyleName("vibe-editPublicLinkDlg-shareExpirationWidget");
+		hp.add(m_expWidget);
+		m_expWidget.getElement().setAttribute(EXPIRATION_SHARE_ID_ATTR, String.valueOf(pl.getShareId()));
+		m_expWidget.init(pl.getExpirationValue());
 	}
 	
 	/*
@@ -442,6 +568,72 @@ public class EditPublicLinkDlg extends DlgBox {
 		});
 	}
 	
+	/**
+	 * Called when the data table is attached.
+	 * 
+	 * Overrides the Widget.onAttach() method.
+	 */
+	@Override
+	public void onAttach() {
+		// Let the widget attach and then register our event handlers.
+		super.onAttach();
+		registerEvents();
+	}
+	
+	/**
+	 * Called when the data table is detached.
+	 * 
+	 * Overrides the Widget.onDetach() method.
+	 */
+	@Override
+	public void onDetach() {
+		// Let the widget detach and then unregister our event
+		// handlers.
+		super.onDetach();
+		unregisterEvents();
+	}
+	
+	/**
+	 * Handles ShareExpirationValueChangedEvent's received by this class.
+	 * 
+	 * Implements the ShareExpirationValueChangedEvent.Handler.onShareExpirationValueChanged() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onShareExpirationValueChanged(ShareExpirationValueChangedEvent event) {
+		// Is the expiration change targeted to this dialog share
+		// expiration widget?
+		if (event.getWidget() == m_expWidget) {
+			// Yes!  Does the event contain a valid expiration value?
+			ShareExpirationValue expirationValue = event.getValue();
+			if ((null != expirationValue) && expirationValue.isValid()) {
+				// Yes!  Update the share with the expiration change.
+				Long shareId = Long.parseLong(m_expWidget.getElement().getAttribute(EXPIRATION_SHARE_ID_ATTR));
+				SaveShareExpirationValueCmd cmd = new SaveShareExpirationValueCmd(shareId, expirationValue);
+				GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
+					@Override
+					public void onFailure(Throwable t) {
+						GwtClientHelper.handleGwtRPCFailure(
+							t,
+							m_messages.rpcFailure_SaveShareExpirationValue());
+					}
+			
+					@Override
+					public void onSuccess(VibeRpcResponse response) {
+						// If the expiration change was saved...
+						boolean expirationChanged = ((BooleanRpcResponseData) response.getResponseData()).getBooleanValue();
+						if (expirationChanged) {
+							// ...fire an event telling everybody it
+							// ...changed.
+							GwtTeaming.fireEventAsync(new ContentChangedEvent(Change.SHARING));
+						}
+					}
+				});
+			}
+		}
+	}
+	
 	/*
 	 * Asynchronously populates the contents of the dialog.
 	 */
@@ -459,6 +651,28 @@ public class EditPublicLinkDlg extends DlgBox {
 	 */
 	private void populateDlgNow() {
 	    loadPart1Async();
+	}
+
+	/*
+	 * Registers any global event handlers that need to be registered.
+	 */
+	private void registerEvents() {
+		// If we having allocated a list to track events we've
+		// registered yet...
+		if (null == m_registeredEventHandlers) {
+			// ...allocate one now.
+			m_registeredEventHandlers = new ArrayList<HandlerRegistration>();
+		}
+
+		// If the list of registered events is empty...
+		if (m_registeredEventHandlers.isEmpty()) {
+			// ...register the events.
+			EventHelper.registerEventHandlers(
+				GwtTeaming.getEventBus(),
+				REGISTERED_EVENTS,
+				this,
+				m_registeredEventHandlers);
+		}
 	}
 
 	/*
@@ -511,6 +725,18 @@ public class EditPublicLinkDlg extends DlgBox {
 		// If we get here, the entity we received is valid!  Populate
 		// the dialog.
 		populateDlgAsync();
+	}
+	
+	/*
+	 * Unregisters any global event handlers that may be registered.
+	 */
+	private void unregisterEvents() {
+		// If we have a non-empty list of registered events...
+		if (GwtClientHelper.hasItems(m_registeredEventHandlers)) {
+			// ...unregister them.  (Note that this will also empty the
+			// ...list.)
+			EventHelper.unregisterEventHandlers(m_registeredEventHandlers);
+		}
 	}
 
 	

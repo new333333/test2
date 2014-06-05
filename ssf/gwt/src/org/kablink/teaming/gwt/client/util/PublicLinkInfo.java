@@ -40,16 +40,17 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * @author drfoster@novell.com
  */
 public class PublicLinkInfo implements IsSerializable {
-	private boolean	m_expired;		//
-	private Long	m_shareId;		//
-	private String	m_comment;		//
-	private String	m_downloadUrl;	//
-	private String	m_expiration;	//
-	private String	m_imageUrl;		//
-	private String	m_path;			//
-	private String	m_sharedOn;		//
-	private String	m_title;		//
-	private String	m_viewUrl;		//
+	private boolean					m_expired;			//
+	private Long					m_shareId;			//
+	private ShareExpirationValue	m_expirationValue;	//
+	private String					m_comment;			//
+	private String					m_downloadUrl;		//
+	private String					m_expiration;		//
+	private String					m_imageUrl;			//
+	private String					m_path;				//
+	private String					m_sharedOn;			//
+	private String					m_title;			//
+	private String					m_viewUrl;			//
 
 	/**
 	 * Constructor method.
@@ -75,22 +76,24 @@ public class PublicLinkInfo implements IsSerializable {
 	 * @param sharedOn
 	 * @param expired
 	 * @param expiration
+	 * @param expirationValue
 	 */
-	public PublicLinkInfo(Long shareId, String title, String path, String imageUrl, String downloadUrl, String viewUrl, String comment, String sharedOn, boolean expired, String expiration) {
+	public PublicLinkInfo(Long shareId, String title, String path, String imageUrl, String downloadUrl, String viewUrl, String comment, String sharedOn, boolean expired, String expiration, ShareExpirationValue expirationValue) {
 		// Initialize the this object...
 		this();
 		
 		// ...and store the parameters.
-		setShareId(    shareId    );
-		setTitle(      title      );
-		setPath(       path       );
-		setImageUrl   (imageUrl   );
-		setDownloadUrl(downloadUrl);
-		setViewUrl(    viewUrl    );
-		setComment(    comment    );
-		setSharedOn(   sharedOn   );
-		setExpired(    expired    );
-		setExpiration( expiration );
+		setShareId(        shareId        );
+		setTitle(          title          );
+		setPath(           path           );
+		setImageUrl   (    imageUrl       );
+		setDownloadUrl(    downloadUrl    );
+		setViewUrl(        viewUrl        );
+		setComment(        comment        );
+		setSharedOn(       sharedOn       );
+		setExpired(        expired        );
+		setExpiration(     expiration     );
+		setExpirationValue(expirationValue);
 	}
 	
 	/**
@@ -98,30 +101,32 @@ public class PublicLinkInfo implements IsSerializable {
 	 * 
 	 * @return
 	 */
-	public boolean isExpired()      {return m_expired;    }
-	public Long    getShareId()     {return m_shareId;    }
-	public String  getComment()     {return m_comment;    }
-	public String  getDownloadUrl() {return m_downloadUrl;}
-	public String  getExpiration()  {return m_expiration; }
-	public String  getImageUrl()    {return m_imageUrl;   }
-	public String  getTitle()       {return m_title;      }
-	public String  getPath()        {return m_path;       }
-	public String  getSharedOn()    {return m_sharedOn;   }
-	public String  getViewUrl()     {return m_viewUrl;    }
+	public boolean              isExpired()          {return m_expired;        }
+	public Long                 getShareId()         {return m_shareId;        }
+	public ShareExpirationValue getExpirationValue() {return m_expirationValue;}
+	public String               getComment()         {return m_comment;        }
+	public String               getDownloadUrl()     {return m_downloadUrl;    }
+	public String               getExpiration()      {return m_expiration;     }
+	public String               getImageUrl()        {return m_imageUrl;       }
+	public String               getTitle()           {return m_title;          }
+	public String               getPath()            {return m_path;           }
+	public String               getSharedOn()        {return m_sharedOn;       }
+	public String               getViewUrl()         {return m_viewUrl;        }
 	
 	/**
 	 * Set'er methods.
 	 * 
 	 * @param
 	 */
-	public void setExpired(    boolean expired)     {m_expired     = expired;    }
-	public void setShareId(    Long    shareId)     {m_shareId     = shareId;    }
-	public void setComment(    String  comment)     {m_comment     = comment;    }
-	public void setDownloadUrl(String  downloadUrl) {m_downloadUrl = downloadUrl;}
-	public void setExpiration( String  expiration)  {m_expiration  = expiration; }
-	public void setImageUrl(   String  imageUrl)    {m_imageUrl    = imageUrl;   }
-	public void setPath(       String  path)        {m_path        = path;       }
-	public void setSharedOn(   String  sharedOn)    {m_sharedOn    = sharedOn;   }
-	public void setTitle(      String  title)       {m_title       = title;      }
-	public void setViewUrl(    String  viewUrl)     {m_viewUrl     = viewUrl;    }
+	public void setExpired(        boolean              expired)         {m_expired         = expired;        }
+	public void setShareId(        Long                 shareId)         {m_shareId         = shareId;        }
+	public void setExpirationValue(ShareExpirationValue expirationValue) {m_expirationValue = expirationValue;}
+	public void setComment(        String               comment)         {m_comment         = comment;        }
+	public void setDownloadUrl(    String               downloadUrl)     {m_downloadUrl     = downloadUrl;    }
+	public void setExpiration(     String               expiration)      {m_expiration      = expiration;     }
+	public void setImageUrl(       String               imageUrl)        {m_imageUrl        = imageUrl;       }
+	public void setPath(           String               path)            {m_path            = path;           }
+	public void setSharedOn(       String               sharedOn)        {m_sharedOn        = sharedOn;       }
+	public void setTitle(          String               title)           {m_title           = title;          }
+	public void setViewUrl(        String               viewUrl)         {m_viewUrl         = viewUrl;        }
 }

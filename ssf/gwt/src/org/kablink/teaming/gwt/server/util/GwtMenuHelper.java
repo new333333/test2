@@ -91,7 +91,6 @@ import org.kablink.teaming.gwt.client.util.CollectionType;
 import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.FolderType;
 import org.kablink.teaming.gwt.client.util.ViewFileInfo;
-import org.kablink.teaming.gwt.client.widgets.EditPublicLinkDlg;
 import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.module.admin.AdminModule.AdminOperation;
 import org.kablink.teaming.module.binder.BinderModule;
@@ -1478,7 +1477,7 @@ public class GwtMenuHelper {
 				
 				FolderEntry fe  = ((FolderEntry) de);
 				EntityId    eid = new EntityId(fe.getParentFolder().getId(), fe.getId(), EntityType.folderEntry.name());
-				if (EditPublicLinkDlg.SHOW_EDIT_PUBLIC_LINKS_DIALOG && GwtShareHelper.hasPublicLinks(bs, GwtServerHelper.getCurrentUserId(), eid)) {
+				if (GwtShareHelper.hasPublicLinks(bs, GwtServerHelper.getCurrentUserId(), eid)) {
 					shareTBI = new ToolbarItem("1_editPublicLinkSelected");
 					markTBITitle(shareTBI, "toolbar.editPublicLinkSelected." + keyTail);
 					markTBIEvent(shareTBI, TeamingEvents.EDIT_PUBLIC_LINK_SELECTED_ENTITIES);
@@ -3842,7 +3841,7 @@ public class GwtMenuHelper {
 						else keyTail = "vibe";
 
 						EntityId eid = new EntityId(fe.getParentFolder().getId(), fe.getId(), EntityType.folderEntry.name());
-						if (EditPublicLinkDlg.SHOW_EDIT_PUBLIC_LINKS_DIALOG && GwtShareHelper.hasPublicLinks(bs, user.getId(), eid)) {
+						if (GwtShareHelper.hasPublicLinks(bs, user.getId(), eid)) {
 							actionTBI = new ToolbarItem(EDIT_PUBLIC_LINK);
 							markTBITitle(   actionTBI, "toolbar.editPublicLinkSelected." + keyTail);
 							markTBIEvent(   actionTBI, TeamingEvents.EDIT_PUBLIC_LINK_SELECTED_ENTITIES);

@@ -569,6 +569,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_SavePersonalPreferences();
 	String rpcFailure_SaveSearch();
 	String rpcFailure_SaveSharedFilesState();
+	String rpcFailure_SaveShareExpirationValue();
 	String rpcFailure_SaveShareLists();
 	String rpcFailure_SaveSharedViewState();
 	String rpcFailure_SaveSubscriptionData();
@@ -3274,6 +3275,7 @@ public interface GwtTeamingMessages extends Messages
 	String copyPublicLink_ViewFileLink();
 
 	// Strings used in the Edit Public Link dialog.
+	String editPublicLink_ConfirmDelete();
 	String editPublicLink_DeleteLink();
 	String editPublicLink_DownloadFileLink();
 	String editPublicLink_InternalError_NoEntries();
