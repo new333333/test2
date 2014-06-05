@@ -760,17 +760,17 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	public Set<Long> indexTree(Collection binderIds, StatusTicket statusTicket,
 			String[] nodeNames) {
 		IndexErrors errors = new IndexErrors();
-		return indexTree(binderIds, statusTicket, nodeNames, errors, false, false);
+		return indexTree(binderIds, statusTicket, nodeNames, errors, false, false, true);
 	}
 
 	@Override
 	public Set<Long> indexTree(Collection binderIds, StatusTicket statusTicket,
-			String[] nodeNames, IndexErrors errors, boolean allowUseOfHelperThreads, boolean skipFileContentIndexing) {
-		return indexTreeWithHelper(binderIds, statusTicket, nodeNames, errors, allowUseOfHelperThreads, skipFileContentIndexing);				
+			String[] nodeNames, IndexErrors errors, boolean allowUseOfHelperThreads, boolean skipFileContentIndexing, boolean useScrollForEntries) {
+		return indexTreeWithHelper(binderIds, statusTicket, nodeNames, errors, allowUseOfHelperThreads, skipFileContentIndexing, useScrollForEntries);				
 	}
 
 	private Set<Long> indexTreeWithHelper(Collection binderIds, StatusTicket statusTicket,
-			String[] nodeNames, IndexErrors errors, boolean canUseHelperThreads, boolean skipFileContentIndexing) {
+			String[] nodeNames, IndexErrors errors, boolean canUseHelperThreads, boolean skipFileContentIndexing, boolean useScrollForEntries) {
 		long startTime = System.nanoTime();
 		getCoreDao().flush(); // just incase
 		if(statusTicket != null && canUseHelperThreads) {
@@ -858,13 +858,13 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 						List<Binder> nonConcurrentBinders = new ArrayList<Binder>();
 						for (Binder binder : checked) {
 							if(binder.isZone()) {
-								concurrentBinderIds.addAll(obtainConcurrentBinderIdsFromSite(binder, done, (ConcurrentStatusTicket)statusTicket, errors));
+								concurrentBinderIds.addAll(obtainConcurrentBinderIdsFromSite(binder, done, (ConcurrentStatusTicket)statusTicket, errors, skipFileContentIndexing, useScrollForEntries));
 							}
 							else if(ObjectKeys.NET_FOLDERS_ROOT_INTERNALID.equals(binder.getInternalId())) {
-								concurrentBinderIds.addAll(obtainConcurrentBinderIdsFromNetFolders(binder, done, (ConcurrentStatusTicket)statusTicket, errors));
+								concurrentBinderIds.addAll(obtainConcurrentBinderIdsFromNetFolders(binder, done, (ConcurrentStatusTicket)statusTicket, errors, skipFileContentIndexing, useScrollForEntries));
 							}
 							else if(ObjectKeys.PROFILE_ROOT_INTERNALID.equals(binder.getInternalId())) {
-								concurrentBinderIds.addAll(obtainConcurrentBinderIdsFromPersonalWorkspaces(binder, done, (ConcurrentStatusTicket)statusTicket, errors));								
+								concurrentBinderIds.addAll(obtainConcurrentBinderIdsFromPersonalWorkspaces(binder, done, (ConcurrentStatusTicket)statusTicket, errors, skipFileContentIndexing, useScrollForEntries));								
 							}
 							else {
 								nonConcurrentBinders.add(binder);
@@ -952,12 +952,12 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		}
 	}
 
-	private void indexOneBinder(Binder binder, ConcurrentStatusTicket concurrentStatusTicket, IndexErrors errors, Collection<Long> done) {
+	private void indexOneBinder(Binder binder, ConcurrentStatusTicket concurrentStatusTicket, IndexErrors errors, Collection<Long> done, boolean skipFileContentIndexing, boolean useScrollForEntries) {
 	    BinderProcessor processor = loadBinderProcessor(binder);
 		concurrentStatusTicket.incrementCurrentAndTotalCounts();
 		if(logger.isDebugEnabled())
 			logger.debug("Indexing binder [" + binder.getPathName() + "] (id=" + binder.getId() + ") - Progress (global estimate): " + concurrentStatusTicket);	    
-		IndexErrors binderErrors = processor.indexBinder(binder, true, false, null);
+		IndexErrors binderErrors = processor.indexBinder(binder, true, false, null, skipFileContentIndexing, useScrollForEntries);
 	    errors.add(binderErrors);
 		done.add(binder.getId());
 		if(logger.isTraceEnabled())
@@ -965,9 +965,9 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
   		IndexSynchronizationManager.applyChanges(SPropsUtil.getInt("lucene.flush.threshold", 100));
 	}
 	
-	private List<Long> obtainConcurrentBinderIdsFromNetFolders(Binder netFoldersWorkspace, Collection<Long> done, ConcurrentStatusTicket statusTicket, IndexErrors errors) {
+	private List<Long> obtainConcurrentBinderIdsFromNetFolders(Binder netFoldersWorkspace, Collection<Long> done, ConcurrentStatusTicket statusTicket, IndexErrors errors, boolean skipFileContentIndexing, boolean useScrollForEntries) {
 		// Index "/Home Workspace/Net Folders" workspace (one level only)/ This workspace has no entries to index.
-	    indexOneBinder(netFoldersWorkspace, statusTicket, errors, done);
+	    indexOneBinder(netFoldersWorkspace, statusTicket, errors, done, skipFileContentIndexing, useScrollForEntries);
 		List<Long> netFolderIds = getCoreDao().getSubBinderIds(netFoldersWorkspace);
 		if(logger.isDebugEnabled())
 			logger.debug("Identified " + netFolderIds.size() + " net folders to index independently: " + netFolderIds.toString());
@@ -979,14 +979,14 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		return netFolderIds;
 	}
 	
-	private List<Long> obtainConcurrentBinderIdsFromPersonalWorkspaces(Binder personalWorkspaces, Collection<Long> done, ConcurrentStatusTicket statusTicket, IndexErrors errors) {		
+	private List<Long> obtainConcurrentBinderIdsFromPersonalWorkspaces(Binder personalWorkspaces, Collection<Long> done, ConcurrentStatusTicket statusTicket, IndexErrors errors, boolean skipFileContentIndexing, boolean useScrollForEntries) {		
 		// Index "/Home Workspace/Personal Workspaces" workspace (one level only).
 		// This is a special workspace in which all principal objects (users and groups)
 		// reside. So this will synchronously index all users and groups right here
 		// rather than delegating the work to an asynchronous thread.
 		// However, because this is one-level only indexing, it will NOT index users' 
 		// personal workspaces (which include home folders).
-	    indexOneBinder(personalWorkspaces, statusTicket, errors, done);
+	    indexOneBinder(personalWorkspaces, statusTicket, errors, done, skipFileContentIndexing, useScrollForEntries);
 		logger.info("Indexed all principals (users and groups) - Progress (global estimate): " + statusTicket);	    
 		List<Long> personalWorkspaceIds = getCoreDao().getSubBinderIds(personalWorkspaces);
 		if(logger.isDebugEnabled())
@@ -999,9 +999,9 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		return personalWorkspaceIds;
 	}
 	
-	private List<Long> obtainConcurrentBinderIdsFromSite(Binder siteWorkspace, Collection<Long> done, ConcurrentStatusTicket statusTicket, IndexErrors errors) {
+	private List<Long> obtainConcurrentBinderIdsFromSite(Binder siteWorkspace, Collection<Long> done, ConcurrentStatusTicket statusTicket, IndexErrors errors, boolean skipFileContentIndexing, boolean useScrollForEntries) {
 		// Index the very top workspace (= /Home Workspace)
-		indexOneBinder(siteWorkspace, statusTicket, errors, done);
+		indexOneBinder(siteWorkspace, statusTicket, errors, done, skipFileContentIndexing, useScrollForEntries);
 		
 		List<Long> netFolderIds = null;
 		List<Long> personalWorkspaceIds = null;
@@ -1011,10 +1011,10 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		
 		for(Binder subBinder:subBinders) {
 			if(ObjectKeys.NET_FOLDERS_ROOT_INTERNALID.equals(subBinder.getInternalId())) {
-				netFolderIds = obtainConcurrentBinderIdsFromNetFolders(subBinder, done, statusTicket, errors);
+				netFolderIds = obtainConcurrentBinderIdsFromNetFolders(subBinder, done, statusTicket, errors, skipFileContentIndexing, useScrollForEntries);
 			}
 			else if(ObjectKeys.PROFILE_ROOT_INTERNALID.equals(subBinder.getInternalId())) {
-				personalWorkspaceIds = obtainConcurrentBinderIdsFromPersonalWorkspaces(subBinder, done, statusTicket, errors);
+				personalWorkspaceIds = obtainConcurrentBinderIdsFromPersonalWorkspaces(subBinder, done, statusTicket, errors, skipFileContentIndexing, useScrollForEntries); 
 			}
 			else {
 				if(remainingIds == null)
