@@ -654,9 +654,8 @@ public class FileResource extends WebdavResource implements FileAttachmentResour
 	            			try {
 	            				// Update the file metadata. No changes to the enclosing entry
 	            				getFileModule().correctLastModTime(fa, lastModDate);
-	            				// Reindex the enclosing entry (hence, a bit of inefficiency). We don't have to reindex the
-	            				// file content since it hasn't changed.
-	            				getFolderModule().indexEntry((FolderEntry)owningEntity, false, true);
+	            				// Reindex the enclosing entry (hence, a bit of inefficiency).
+	            				getFolderModule().indexEntry((FolderEntry)owningEntity, false, false);
 							} catch (Exception e) {
 								logger.error("Error updating last mod time on file '" + FileResource.this.toString() + "' owned by " + owningEntity.getEntityIdentifier().toString(), e);
 							}        				
