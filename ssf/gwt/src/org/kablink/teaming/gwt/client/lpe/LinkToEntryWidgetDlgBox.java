@@ -44,7 +44,6 @@ import org.kablink.teaming.gwt.client.GwtTeamingItem;
 import org.kablink.teaming.gwt.client.rpc.shared.GetEntryCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
-import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import org.kablink.teaming.gwt.client.widgets.FindCtrl;
 import org.kablink.teaming.gwt.client.widgets.FindCtrl.FindCtrlClient;
@@ -435,7 +434,8 @@ public class LinkToEntryWidgetDlgBox extends DlgBox
 	private void hideFindControl()
 	{
 		m_findPanel.setVisible( false );
-		m_findCtrl.hideSearchResults();
+		if ( m_findCtrl != null )
+			m_findCtrl.hideSearchResults();
 	}
 	
 	
@@ -475,11 +475,14 @@ public class LinkToEntryWidgetDlgBox extends DlgBox
 		// Show the edit button.
 		m_editBtn.setVisible( true );
 		 
-		// Hide the search-results widget.
-		m_findCtrl.hideSearchResults();
-
-		// Populate the find control's text box with the name of the selected entry.
-		m_findCtrl.setInitialSearchString( "" );
+		if ( m_findCtrl != null )
+		{
+			// Hide the search-results widget.
+			m_findCtrl.hideSearchResults();
+	
+			// Populate the find control's text box with the name of the selected entry.
+			m_findCtrl.setInitialSearchString( "" );
+		}
 		
 		tmp = properties.getTitle();
 		if ( tmp == null )
@@ -495,11 +498,13 @@ public class LinkToEntryWidgetDlgBox extends DlgBox
 	 */
 	private void showFindControl()
 	{
-		FocusWidget focusWidget;
+		FocusWidget focusWidget = null;
 
 		m_findPanel.setVisible( true );
 
-		focusWidget = m_findCtrl.getFocusWidget();
+		if ( m_findCtrl != null )
+			focusWidget = m_findCtrl.getFocusWidget();
+		
 		if ( focusWidget != null )
 			focusWidget.setFocus( true );
 	}

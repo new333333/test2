@@ -294,6 +294,7 @@ public class LandingPageEditor extends Composite
 	/**
 	 * Method to add mouse up handlers to this landing page editor.
 	 */
+	@Override
 	public HandlerRegistration addMouseUpHandler( MouseUpHandler handler )
 	{
 		return addDomHandler( handler, MouseUpEvent.getType() );
@@ -357,6 +358,7 @@ public class LandingPageEditor extends Composite
 	/**
 	 * This method gets called when the user presses cancel in a DropWidget's properties dialog.
 	 */
+	@Override
 	public boolean editCanceled()
 	{
 		m_selectedDropZone = null;
@@ -368,6 +370,7 @@ public class LandingPageEditor extends Composite
 	/**
 	 * This method gets called when the user presses the Ok button in a DropWidget's properties dialog.
 	 */
+	@Override
 	public boolean editSuccessful( Object obj )
 	{
 		if ( m_selectedDropZone != null && (obj instanceof DropWidget) )
@@ -671,6 +674,7 @@ public class LandingPageEditor extends Composite
 				/**
 				 * This method gets called when user user presses ok in the "Edit Landing Page Properties" dialog.
 				 */
+				@Override
 				public boolean editSuccessful( Object obj )
 				{
 					if ( obj instanceof LandingPageProperties )
@@ -692,6 +696,7 @@ public class LandingPageEditor extends Composite
 			/**
 			 * 
 			 */
+			@Override
 			public void setPosition( int offsetWidth, int offsetHeight )
 			{
 				int x;
@@ -760,6 +765,7 @@ public class LandingPageEditor extends Composite
 					/**
 					 * 
 					 */
+					@Override
 					public void onFailure( Throwable caught )
 					{
 						GwtClientHelper.handleGwtRPCFailure(
@@ -771,12 +777,14 @@ public class LandingPageEditor extends Composite
 					/**
 					 * 
 					 */
+					@Override
 					public void onSuccess( final VibeRpcResponse result )
 					{
 						Scheduler.ScheduledCommand cmd;
 						
 						cmd = new Scheduler.ScheduledCommand()
 						{
+							@Override
 							public void execute()
 							{
 								String url;
@@ -901,6 +909,7 @@ public class LandingPageEditor extends Composite
 	 * 
 	 * @param event
 	 */
+	@Override
 	public void onEditLPProperties( EditLandingPagePropertiesEvent event )
 	{
 		invokeEditLandingPagePropertiesDlg();
@@ -911,6 +920,7 @@ public class LandingPageEditor extends Composite
 	 * 
 	 * Implements the PreviewLandingPageEvent.Handler.onPreviewLandingPage() method.
 	 */
+	@Override
 	public void onPreviewLandingPage( PreviewLandingPageEvent event )
 	{
 		invokePreview();
@@ -919,6 +929,7 @@ public class LandingPageEditor extends Composite
 	/**
 	 * Handles the MouseDownEvent.  This will initiate the dragging of an item from the palette.
 	 */
+	@Override
 	public void onMouseDown( MouseDownEvent event )
 	{
 		Object	eventSender;
@@ -939,6 +950,7 @@ public class LandingPageEditor extends Composite
 			
 			cmd = new Scheduler.ScheduledCommand()
 			{
+				@Override
 				public void execute()
 				{
 					startDragPaletteItem( paletteItem, x, y );
@@ -959,22 +971,35 @@ public class LandingPageEditor extends Composite
 	 * Handle the MouseUpEvent.  If the user is dragging an item from the palette, we will drop the item
 	 * on a drop target.
 	 */
+	@Override
 	public void onMouseUp( MouseUpEvent event )
 	{
 		Scheduler.ScheduledCommand cmd1;
 		final int clientX;
 		final int clientY;
 		final LandingPageEditor lpe;
+		final DropZone selectedDropZone;
 
 		clientX = event.getClientX();
 		clientY = event.getClientY();
 		lpe = this;
+
+		if ( m_selectedDropZone == null )
+		{
+			GWT.log( "In onMouseUp(), m_selectedDropZone is null" );
+			return;
+		}
 		
+		// We need to assign the selected drop zone to a local variable because in some browsers
+		// m_selectedDropZone will be set to null after this event is finished.
+		selectedDropZone = m_selectedDropZone;
+
 		cmd1 = new Scheduler.ScheduledCommand()
 		{
 			/**
 			 * 
 			 */
+			@Override
 			public void execute()
 			{
 				// Is the user currently dragging an item from the palette?
@@ -1004,16 +1029,14 @@ public class LandingPageEditor extends Composite
 					// Clear the stack of drop zones.
 					m_enteredDropZones.clear();
 					
-					// Did the user drop the palette item on a drop zone?
-					if ( m_selectedDropZone != null )
 					{
 						DropWidget	dropWidget;
 						
 						// Yes, hide the drop clue.
-						m_selectedDropZone.hideDropClue();
+						selectedDropZone.hideDropClue();
 						
 						// Let the drop zone figure out where to insert the dropped widget.
-						m_selectedDropZone.setDropLocation( clientX, clientY );
+						selectedDropZone.setDropLocation( clientX, clientY );
 						
 						// Create a DropWidget that will be added to the drop zone.
 						dropWidget = m_paletteItemBeingDragged.createDropWidget( lpe );
@@ -1023,6 +1046,7 @@ public class LandingPageEditor extends Composite
 						// our editSuccessful() will be called and we will add the DropWidget to the
 						// selected DropZone.  If the user pressed cancel, our editCanceled() method
 						// will be called.
+						m_selectedDropZone = selectedDropZone;
 						dropWidget.editProperties( lpe, lpe, clientX, clientY );
 					}
 				}
@@ -1054,18 +1078,18 @@ public class LandingPageEditor extends Composite
 					m_enteredDropZones.clear();
 					
 					// Did the user drop the existing item on a drop zone?
-					if ( m_selectedDropZone != null )
+					if ( selectedDropZone != null )
 					{
 						Scheduler.ScheduledCommand cmd;
 						
 						// Yes, hide the drop clue.
-						m_selectedDropZone.hideDropClue();
+						selectedDropZone.hideDropClue();
 						
 						// Let the drop zone figure out where to insert the dropped widget.
-						m_selectedDropZone.setDropLocation( clientX, clientY );
+						selectedDropZone.setDropLocation( clientX, clientY );
 						
 						// Add the DropWidget to the DropZone it was dropped on.
-						m_selectedDropZone.addWidgetToDropZone( m_existingItemBeingDragged );
+						selectedDropZone.addWidgetToDropZone( m_existingItemBeingDragged );
 						
 						// Did we just drop a Google Gadget widget?
 						if ( m_existingItemBeingDragged instanceof GoogleGadgetDropWidget )
@@ -1078,6 +1102,7 @@ public class LandingPageEditor extends Composite
 						// Adjust the height of things to make sure everything fits.
 						cmd = new Scheduler.ScheduledCommand()
 						{
+							@Override
 							public void execute()
 							{
 								m_canvas.adjustHeightOfAllTableWidgets();
@@ -1096,6 +1121,7 @@ public class LandingPageEditor extends Composite
 	/**
 	 * 
 	 */
+	@Override
 	public void onPreviewNativeEvent( Event.NativePreviewEvent previewEvent )
 	{
 		int eventType;
@@ -1156,6 +1182,7 @@ public class LandingPageEditor extends Composite
 			
 			cmd = new Scheduler.ScheduledCommand()
 			{
+				@Override
 				public void execute()
 				{
 					handleMouseMove( x, y );
@@ -1344,6 +1371,7 @@ public class LandingPageEditor extends Composite
 		
 		cmd = new Scheduler.ScheduledCommand()
 		{
+			@Override
 			public void execute()
 			{
 				String msg1;

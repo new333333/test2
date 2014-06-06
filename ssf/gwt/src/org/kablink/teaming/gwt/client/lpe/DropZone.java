@@ -105,6 +105,7 @@ public class DropZone extends Composite
 	/**
 	 * 
 	 */
+	@Override
 	public HandlerRegistration addMouseOutHandler( MouseOutHandler handler )
 	{
 		return addDomHandler( handler, MouseOutEvent.getType() );
@@ -114,6 +115,7 @@ public class DropZone extends Composite
 	/**
 	 * 
 	 */
+	@Override
 	public HandlerRegistration addMouseOverHandler( MouseOverHandler handler )
 	{
 		return addDomHandler( handler, MouseOverEvent.getType() );
@@ -440,6 +442,7 @@ public class DropZone extends Composite
 	/**
 	 * 
 	 */
+	@Override
 	public void onMouseOut( MouseOutEvent event )
 	{
 		// Is the user currently dragging an item?
@@ -454,6 +457,7 @@ public class DropZone extends Composite
 	/**
 	 * 
 	 */
+	@Override
 	public void onMouseOver( MouseOverEvent event )
 	{
 		// Because of a problem with IE we need to handle the on-mouse-over event in the
@@ -506,6 +510,7 @@ public class DropZone extends Composite
 	/**
 	 * Set the height of this drop zone.
 	 */
+	@Override
 	public void setHeight( String cssHeight )
 	{
 		Element element;

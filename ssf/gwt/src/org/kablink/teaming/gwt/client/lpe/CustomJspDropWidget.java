@@ -80,6 +80,7 @@ public class CustomJspDropWidget extends DropWidget
 	/**
 	 * Create a configuration string that represents this widget and that can be stored in the db.
 	 */
+	@Override
 	public String createConfigString()
 	{
 		return m_properties.createConfigString();
@@ -89,6 +90,7 @@ public class CustomJspDropWidget extends DropWidget
 	/**
 	 * Return the drag proxy object that should be displayed when the user drags this item.
 	 */
+	@Override
 	public DragProxy getDragProxy()
 	{
 		if ( m_dragProxy == null )
@@ -104,6 +106,7 @@ public class CustomJspDropWidget extends DropWidget
 	/**
 	 * Return the dialog box used to edit the properties of this widget.
 	 */
+	@Override
 	public void getPropertiesDlgBox( int xPos, int yPos, DlgBoxClient dBoxClient )
 	{
 		// Have we already created a dialog?
@@ -192,6 +195,7 @@ public class CustomJspDropWidget extends DropWidget
 	/**
 	 * Create the appropriate ui based on the given properties.
 	 */
+	@Override
 	public void updateWidget( Object props )
 	{
 		String jspName;

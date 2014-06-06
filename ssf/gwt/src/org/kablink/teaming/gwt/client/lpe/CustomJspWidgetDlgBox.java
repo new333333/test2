@@ -830,7 +830,8 @@ public class CustomJspWidgetDlgBox extends DlgBox
 	private void hideEntryFindControl()
 	{
 		m_entryFindPanel.setVisible( false );
-		m_entryFindCtrl.hideSearchResults();
+		if ( m_entryFindCtrl != null )
+			m_entryFindCtrl.hideSearchResults();
 	}
 	
 	
@@ -840,7 +841,8 @@ public class CustomJspWidgetDlgBox extends DlgBox
 	private void hideFolderFindControl()
 	{
 		m_folderFindPanel.setVisible( false );
-		m_folderFindCtrl.hideSearchResults();
+		if ( m_folderFindCtrl != null )
+			m_folderFindCtrl.hideSearchResults();
 	}
 	
 	
@@ -931,12 +933,18 @@ public class CustomJspWidgetDlgBox extends DlgBox
 		m_entryEditBtn.setVisible( true );
 		
 		// Hide the search-results widget.
-		m_folderFindCtrl.hideSearchResults();
-		m_folderFindCtrl.setInitialSearchString( "" );
+		if ( m_folderFindCtrl != null )
+		{
+			m_folderFindCtrl.hideSearchResults();
+			m_folderFindCtrl.setInitialSearchString( "" );
+		}
 
 		// Hide the search-results widget.
-		m_entryFindCtrl.hideSearchResults();
-		m_entryFindCtrl.setInitialSearchString( "" );
+		if ( m_entryFindCtrl != null )
+		{
+			m_entryFindCtrl.hideSearchResults();
+			m_entryFindCtrl.setInitialSearchString( "" );
+		}
 		
 		// Hide/show the appropriate controls on the page based on which checkbox is checked,
 		// "Associate with folder" or "Associate with entry"
