@@ -49,10 +49,7 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
 
 import javax.servlet.http.HttpSession;
 
@@ -65,7 +62,6 @@ import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 
-import org.hibernate.CacheMode;
 import org.hibernate.NonUniqueObjectException;
 
 import org.kablink.teaming.ConfigurationException;
@@ -73,7 +69,6 @@ import org.kablink.teaming.InternalException;
 import org.kablink.teaming.NoObjectByTheIdException;
 import org.kablink.teaming.NotSupportedException;
 import org.kablink.teaming.ObjectKeys;
-import org.kablink.teaming.UncheckedIOException;
 import org.kablink.teaming.comparator.BinderComparator;
 import org.kablink.teaming.comparator.PrincipalComparator;
 import org.kablink.teaming.context.request.RequestContext;
@@ -81,7 +76,6 @@ import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.util.FilterControls;
 import org.kablink.teaming.dao.util.ObjectControls;
 import org.kablink.teaming.dao.util.SFQuery;
-import org.kablink.teaming.dao.util.ShareItemSelectSpec;
 import org.kablink.teaming.domain.Attachment;
 import org.kablink.teaming.domain.AuditTrail;
 import org.kablink.teaming.domain.Binder;
@@ -106,7 +100,6 @@ import org.kablink.teaming.domain.NotificationDef;
 import org.kablink.teaming.domain.PostingDef;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.ProfileBinder;
-import org.kablink.teaming.domain.ShareItem;
 import org.kablink.teaming.domain.SimpleName;
 import org.kablink.teaming.domain.Subscription;
 import org.kablink.teaming.domain.Tag;
@@ -120,9 +113,6 @@ import org.kablink.teaming.domain.ZoneConfig;
 import org.kablink.teaming.domain.ZoneInfo;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.domain.FileAttachment.FileStatus;
-import org.kablink.teaming.fi.FIException;
-import org.kablink.teaming.fi.connection.ResourceSession;
-import org.kablink.teaming.fi.connection.acl.AclItemPrincipalMappingException;
 import org.kablink.teaming.fi.connection.acl.AclResourceSession;
 import org.kablink.teaming.lucene.Hits;
 import org.kablink.teaming.lucene.util.TagObject;
@@ -3841,8 +3831,16 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		}
 	}
 
+    public BinderChanges searchOneLevelForChanges(Long binderId, Date sinceDate, int maxResults) {
+        return searchForChanges(new Long[] {binderId}, null, sinceDate, false, maxResults);
+    }
+
     @Override
-	public BinderChanges searchForChanges(Long [] binderIds, Long [] entryIds, Date sinceDate, int maxResults) {
+	public BinderChanges searchSubTreeForChanges(Long[] binderIds, Long[] entryIds, Date sinceDate, int maxResults) {
+        return searchForChanges(binderIds, entryIds, sinceDate, true, maxResults);
+    }
+
+    private BinderChanges searchForChanges(Long[] binderIds, Long[] entryIds, Date sinceDate, boolean recursive, int maxResults) {
         List<Binder> binders = getBinders(binderIds);
         if (binders.size()==0 && (entryIds==null || entryIds.length==0)) {
             throw new AclChangeException();
@@ -3853,8 +3851,13 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
         if (purgeDate!=null && purgeDate.after(sinceDate)) {
             throw new AuditTrailPurgedException();
         }
-        if (binderKeys.size()>0 && haveAclsChangedSinceDate(binderKeys, sinceDate)) {
-            throw new AclChangeException();
+
+        if (binderKeys.size()>0) {
+            if (recursive && haveAclsChangedSinceDate(binderKeys, sinceDate)) {
+                throw new AclChangeException();
+            } else if (!recursive && haveFolderRightsChangedSinceDate(new HashSet<Long>(Arrays.asList(binderIds)), sinceDate)) {
+                throw new AclChangeException();
+            }
         }
 
         Set<Long> rootNetFolders = new HashSet<Long>();
@@ -3867,14 +3870,13 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
                 }
             }
         }
-
-        if (rootNetFolders.size()>0 && haveNetFolderRightsChangedSinceDate(rootNetFolders, sinceDate)) {
+        if (rootNetFolders.size()>0 && haveFolderRightsChangedSinceDate(rootNetFolders, sinceDate)) {
             throw new AclChangeException();
         }
 
-        Map map = searchForChangedEntities(binderIds, entryIds, sinceDate, true, true, true, false, maxResults);
+        Map map = searchForChangedEntities(binderIds, entryIds, sinceDate, recursive, true, true, true, false, maxResults);
         List entryList = entryIds==null ? null : Arrays.asList(entryIds);
-        List deleteEntries = getDeleteAuditTrailEntries(binderKeys, entryList, sinceDate, maxResults);
+        List deleteEntries = getDeleteAuditTrailEntries(binderKeys, recursive, entryList, sinceDate, maxResults);
 
         Integer searchCount = (Integer)map.get(ObjectKeys.TOTAL_SEARCH_RECORDS_RETURNED);
         Integer searchTotal = (Integer)map.get(ObjectKeys.TOTAL_SEARCH_COUNT);
@@ -3955,16 +3957,16 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
         return (Date) entry.get(Constants.MODIFICATION_DATE_FIELD);
     }
 
-    private boolean haveAclsChangedSinceDate(List<HKey>  binderKeys, Date sinceDate) {
+    private boolean haveAclsChangedSinceDate(List<HKey> binderKeys, Date sinceDate) {
         Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
-        List aclChanges = getCoreDao().getAuditTrailEntries(zoneId, sinceDate, binderKeys, null,
+        List aclChanges = getCoreDao().getAuditTrailEntries(zoneId, sinceDate, binderKeys, true, null,
                 new AuditTrail.AuditType[]{AuditTrail.AuditType.acl}, null, 1);
         return aclChanges.size()>0;
     }
 
-    private boolean haveNetFolderRightsChangedSinceDate(Set<Long> folderIds, Date sinceDate) {
+    private boolean haveFolderRightsChangedSinceDate(Set<Long> folderIds, Date sinceDate) {
         Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
-        List aclChanges = getCoreDao().getAuditTrailEntries(zoneId, sinceDate, null, new ArrayList<Long>(folderIds),
+        List aclChanges = getCoreDao().getAuditTrailEntries(zoneId, sinceDate, null, false, new ArrayList<Long>(folderIds),
                 new AuditTrail.AuditType[]{AuditTrail.AuditType.acl}, null, 1);
         return aclChanges.size()>0;
     }
@@ -3992,28 +3994,47 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
         return binders;
     }
 
-    private List getDeleteAuditTrailEntries(List<HKey>  binderKeys, List<Long> entryIds, Date sinceDate, int maxResults) {
+    private List getDeleteAuditTrailEntries(List<HKey>  binderKeys, boolean recursive, List<Long> entryIds, Date sinceDate, int maxResults) {
         Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
-        return getCoreDao().getAuditTrailEntries(zoneId, sinceDate, binderKeys, entryIds,
+        return getCoreDao().getAuditTrailEntries(zoneId, sinceDate, binderKeys, recursive, entryIds,
                 new AuditTrail.AuditType[]{AuditTrail.AuditType.delete, AuditTrail.AuditType.preDelete},
                 new EntityType[] {EntityType.folderEntry,EntityType.folderEntry,EntityType.workspace}, maxResults);
     }
 
-    private Map searchForChangedEntities(Long [] binderIds, Long [] entryIds, Date sinceDate, boolean libraryOnly, boolean binders, boolean entries, boolean attachments, int maxResults){
+    private Map searchForChangedEntities(Long [] binderIds, Long [] entryIds, Date sinceDate, boolean recursive, boolean libraryOnly, boolean binders, boolean entries, boolean attachments, int maxResults){
         Criteria crit = new Criteria();
         Junction or = disjunction();
         if (binderIds!=null) {
-            for (Long binderId : binderIds) {
-                or.add(org.kablink.teaming.search.SearchUtils.buildAncentryCriterion(binderId));
+            if (recursive) {
+                for (Long binderId : binderIds) {
+                    or.add(org.kablink.teaming.search.SearchUtils.buildAncentryCriterion(binderId));
+                }
+            } else {
+                for (Long binderId : binderIds) {
+                    or.add(org.kablink.teaming.search.SearchUtils.buildParentBinderCriterion(binderId));
+                }
+                Junction and = conjunction();
+                and.add(org.kablink.teaming.search.SearchUtils.buildBindersCriterion());
+                List<String> idStrs = new ArrayList<String>(entryIds.length);
+                for (Long binderId : binderIds) {
+                    idStrs.add(binderId.toString());
+                }
+                and.add(in(Constants.DOCID_FIELD, idStrs));
+                or.add(and);
             }
         }
         if (entryIds!=null) {
+            Junction and = conjunction();
+            and.add(org.kablink.teaming.search.SearchUtils.buildEntriesCriterion());
+            List<String> idStrs = new ArrayList<String>(entryIds.length);
             for (Long entryId : entryIds) {
-                or.add(org.kablink.teaming.search.SearchUtils.buildDocIdCriterion(entryId));
+                idStrs.add(entryId.toString());
             }
+            and.add(in(Constants.DOCID_FIELD, idStrs));
+            or.add(and);
         }
         crit.add(or);
-        crit.add(org.kablink.teaming.search.SearchUtils.buildDocTypeCriterion(binders, entries, attachments, false));
+        crit.add(org.kablink.teaming.search.SearchUtils.buildDocTypeCriterion(binders, entries || attachments, false, false));
         if (libraryOnly) {
             crit.add(org.kablink.teaming.search.SearchUtils.buildLibraryCriterion(true));
         }

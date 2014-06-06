@@ -384,12 +384,13 @@ public class ShareResource extends AbstractResource {
     @Path("/by_user/{id}/library_changes")
     public BinderChanges getSharedByUserLibraryChanges(@PathParam("id") Long userId,
                                                        @QueryParam("since") String since,
+                                                       @QueryParam("recursive") @DefaultValue("true") boolean recursive,
                                                        @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr,
                                                        @QueryParam ("count") @DefaultValue("500") Integer maxCount,
                                                        @QueryParam("hidden") @DefaultValue("false") boolean showHidden,
                                                        @QueryParam("unhidden") @DefaultValue("true") boolean showUnhidden) {
         List<Pair<ShareItem, DefinableEntity>> shareItems = getSharedByShareItems(userId, null);
-        return getSharedByChanges(shareItems, since, descriptionFormatStr, maxCount, "/public/library_changes", true, showHidden, showUnhidden);
+        return getSharedByChanges(shareItems, since, recursive, descriptionFormatStr, maxCount, "/public/library_changes", true, showHidden, showUnhidden);
     }
 
     @GET
@@ -610,12 +611,13 @@ public class ShareResource extends AbstractResource {
     @Path("/with_user/{id}/library_changes")
     public BinderChanges getSharedWithUserLibraryChanges(@PathParam("id") Long userId,
                                                          @QueryParam("since") String since,
+                                                         @QueryParam("recursive") @DefaultValue("true") boolean recursive,
                                                          @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr,
                                                          @QueryParam ("count") @DefaultValue("500") Integer maxCount,
                                                          @QueryParam("hidden") @DefaultValue("false") boolean showHidden,
                                                          @QueryParam("unhidden") @DefaultValue("true") boolean showUnhidden) {
         List<Pair<ShareItem, DefinableEntity>> shareItems = getSharedWithShareItems(userId, null);
-        return getSharedWithChanges(shareItems, since, descriptionFormatStr, maxCount, "/public/library_changes", true, showHidden, showUnhidden);
+        return getSharedWithChanges(shareItems, since, recursive, descriptionFormatStr, maxCount, "/public/library_changes", true, showHidden, showUnhidden);
     }
 
     @GET
@@ -845,6 +847,7 @@ public class ShareResource extends AbstractResource {
     @GET
     @Path("/public/library_changes")
     public BinderChanges getPublicSharesLibraryChanges(@QueryParam("since") String since,
+                                                       @QueryParam("recursive") @DefaultValue("true") boolean recursive,
                                                   @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr,
                                                   @QueryParam ("count") @DefaultValue("500") Integer maxCount,
                                                   @QueryParam("hidden") @DefaultValue("false") boolean showHidden,
@@ -853,7 +856,7 @@ public class ShareResource extends AbstractResource {
             throw new AccessControlException("Access to the public collection is not allowed.", null);
         }
         List<Pair<ShareItem, DefinableEntity>> shareItems = getPublicShareItems(null);
-        return getPublicChanges(shareItems, since, descriptionFormatStr, maxCount, "/public/library_changes", true, showHidden, showUnhidden);
+        return getPublicChanges(shareItems, since, recursive, descriptionFormatStr, maxCount, "/public/library_changes", true, showHidden, showUnhidden);
     }
 
     @GET
@@ -923,9 +926,9 @@ public class ShareResource extends AbstractResource {
         return _getSharedFiles(shareItems, ObjectKeys.SHARED_BY_ME_ID, "/self/shared_by_me", onlyLibrary, showHidden, showUnhidden);
     }
 
-    protected BinderChanges getSharedByChanges(List<Pair<ShareItem, DefinableEntity>> shareItems, String since, String descriptionFormatStr, Integer maxCount, String nextUrl,
+    protected BinderChanges getSharedByChanges(List<Pair<ShareItem, DefinableEntity>> shareItems, String since, boolean recursive, String descriptionFormatStr, Integer maxCount, String nextUrl,
                                                boolean onlyLibrary, boolean showHidden, boolean showUnhidden)  {
-        return _getSharedChanges(shareItems, since, descriptionFormatStr, maxCount, nextUrl, ObjectKeys.SHARED_BY_ME_ID, "/self/shared_by_me",
+        return _getSharedChanges(shareItems, since, recursive, descriptionFormatStr, maxCount, nextUrl, ObjectKeys.SHARED_BY_ME_ID, "/self/shared_by_me",
                 onlyLibrary, showHidden, showUnhidden);
     }
 
@@ -948,9 +951,9 @@ public class ShareResource extends AbstractResource {
         return _getSharedFiles(shareItems, ObjectKeys.SHARED_WITH_ME_ID, "/self/shared_with_me", onlyLibrary, showHidden, showUnhidden);
     }
 
-    protected BinderChanges getSharedWithChanges(List<Pair<ShareItem, DefinableEntity>> shareItems, String since, String descriptionFormatStr, Integer maxCount, String nextUrl,
+    protected BinderChanges getSharedWithChanges(List<Pair<ShareItem, DefinableEntity>> shareItems, String since, boolean recursive, String descriptionFormatStr, Integer maxCount, String nextUrl,
                                              boolean onlyLibrary, boolean showHidden, boolean showUnhidden)  {
-        return _getSharedChanges(shareItems, since, descriptionFormatStr, maxCount, nextUrl, ObjectKeys.SHARED_WITH_ME_ID,
+        return _getSharedChanges(shareItems, since, recursive, descriptionFormatStr, maxCount, nextUrl, ObjectKeys.SHARED_WITH_ME_ID,
                 "/self/shared_with_me", onlyLibrary, showHidden, showUnhidden);
     }
 
@@ -973,23 +976,23 @@ public class ShareResource extends AbstractResource {
         return _getSharedFiles(shareItems, ObjectKeys.PUBLIC_SHARES_ID, "/self/public_shares", onlyLibrary, showHidden, showUnhidden);
     }
 
-    protected BinderChanges getPublicChanges(List<Pair<ShareItem, DefinableEntity>> shareItems, String since, String descriptionFormatStr, Integer maxCount, String nextUrl,
+    protected BinderChanges getPublicChanges(List<Pair<ShareItem, DefinableEntity>> shareItems, String since, boolean recursive, String descriptionFormatStr, Integer maxCount, String nextUrl,
                                              boolean onlyLibrary, boolean showHidden, boolean showUnhidden)  {
-        return _getSharedChanges(shareItems, since, descriptionFormatStr, maxCount, nextUrl, ObjectKeys.PUBLIC_SHARES_ID,
+        return _getSharedChanges(shareItems, since, recursive, descriptionFormatStr, maxCount, nextUrl, ObjectKeys.PUBLIC_SHARES_ID,
                 "/self/public_shares", onlyLibrary, showHidden, showUnhidden);
     }
 
-    private BinderChanges _getSharedChanges(List<Pair<ShareItem, DefinableEntity>> shareItems, String since, String descriptionFormatStr,
-                                            Integer maxCount, String nextUrl, Long topId, String topHref,
+    private BinderChanges _getSharedChanges(List<Pair<ShareItem, DefinableEntity>> shareItems, String since, boolean recursive,
+                                            String descriptionFormatStr, Integer maxCount, String nextUrl, Long topId, String topHref,
                                             boolean includeParentPaths, boolean showHidden, boolean showUnhidden) {
         BinderChanges changes;
         // Include deleted shares
-        List<Pair<DefinableEntity, List<ShareItem>>> binders = _getSharedItems(shareItems, topId, false,
-                showHidden, showUnhidden, topId==ObjectKeys.SHARED_BY_ME_ID, true, true, true);
-        if (binders.size()>0) {
+        List<Pair<DefinableEntity, List<ShareItem>>> sharedItems = _getSharedItems(shareItems, topId, false,
+                showHidden, showUnhidden, topId==ObjectKeys.SHARED_BY_ME_ID, true, recursive, true);
+        if (sharedItems.size()>0) {
             List<Long> binderIds = new ArrayList<Long>();
             List<Long> entryIds = new ArrayList<Long>();
-            for (Pair<DefinableEntity, List<ShareItem>> pair : binders) {
+            for (Pair<DefinableEntity, List<ShareItem>> pair : sharedItems) {
                 EntityIdentifier id = pair.getB().get(0).getSharedEntityIdentifier();
                 if (id.getEntityType().isBinder()) {
                     binderIds.add(id.getEntityId());
@@ -998,14 +1001,14 @@ public class ShareResource extends AbstractResource {
                 }
             }
             changes = super.getBinderChanges(binderIds.toArray(new Long[binderIds.size()]), entryIds.toArray(new Long[entryIds.size()]),
-                    since, descriptionFormatStr, maxCount, nextUrl);
+                    since, recursive, descriptionFormatStr, maxCount, nextUrl);
         } else {
             changes = new BinderChanges();
         }
         try {
-            BinderChanges changes2 = _getShareChanges(binders, dateFormat.parse(since), true, Description.FORMAT_NONE);
+            BinderChanges changes2 = _getShareChanges(sharedItems, dateFormat.parse(since), true, Description.FORMAT_NONE);
             changes = ResourceUtil.mergeBinderChanges(changes, changes2, maxCount);
-            setParents(changes, binders, new ParentBinder(topId, topHref));
+            setParents(changes, sharedItems, new ParentBinder(topId, topHref));
 
             if (includeParentPaths) {
                 populateParentBinderPaths(changes);

@@ -395,12 +395,18 @@ public class SelfResource extends AbstractFileResource {
     @Path ("/my_files/library_changes")
     public BinderChanges getMyFilesChanges(@QueryParam("since") String since,
                                            @QueryParam("description_format") @DefaultValue("text") String descriptionFormatStr,
+                                           @QueryParam("recursive") @DefaultValue("true") boolean recursive,
                                            @QueryParam ("count") @DefaultValue("500") Integer maxCount) {
         if (!SearchUtils.userCanAccessMyFiles(this, getLoggedInUser())) {
             throw new AccessControlException("Personal storage is not allowed.", null);
         }
-        org.kablink.teaming.domain.Binder parent = getMyFilesFolderParent();
-        BinderChanges binderChanges = getBinderChanges(new Long[]{parent.getId()}, null, since, descriptionFormatStr, maxCount, "/my_files/library_changes");
+        org.kablink.teaming.domain.Binder parent;
+        if (recursive) {
+            parent = getMyFilesFolderParent();
+        } else {
+            parent = getMyFilesFileParent();
+        }
+        BinderChanges binderChanges = getBinderChanges(new Long[]{parent.getId()}, null, since, recursive, descriptionFormatStr, maxCount, "/my_files/library_changes");
         setMyFilesParents(binderChanges);
         return binderChanges;
     }

@@ -3231,7 +3231,8 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
 	}
 
     @Override
-    public List getAuditTrailEntries(final Long zoneId, final Date sinceDate, final List<HKey> parentBinderKeys,
+    public List getAuditTrailEntries(final Long zoneId, final Date sinceDate,
+                                     final List<HKey> parentBinderKeys, final boolean recursive,
                                      final List<Long> entityIds,
                                      final AuditTrail.AuditType[] types,
                                      final EntityType [] entityTypes, final int maxResults) {
@@ -3262,7 +3263,11 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
                             Disjunction or = Restrictions.disjunction();
                             if (parentBinderKeys!=null && parentBinderKeys.size()>0) {
                                 for (HKey key : parentBinderKeys) {
-                                    or.add(Restrictions.like("owningBinderKey", key.getSortKey() + "%"));
+                                    if (recursive) {
+                                        or.add(Restrictions.like("owningBinderKey", key.getSortKey() + "%"));
+                                    } else {
+                                        or.add(Restrictions.eq("owningBinderKey", key.getSortKey()));
+                                    }
                                 }
                             }
                             if (entityIds!=null && entityIds.size()>0) {
