@@ -986,8 +986,9 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		// rather than delegating the work to an asynchronous thread.
 		// However, because this is one-level only indexing, it will NOT index users' 
 		// personal workspaces (which include home folders).
+		logger.info("Started indexing of all principals (users and groups) - Progress (global estimate): " + statusTicket);	    
 	    indexOneBinder(personalWorkspaces, statusTicket, errors, done, skipFileContentIndexing, useScrollForEntries);
-		logger.info("Indexed all principals (users and groups) - Progress (global estimate): " + statusTicket);	    
+		logger.info("Completed indexing of all principals (users and groups) - Progress (global estimate): " + statusTicket);	    
 		List<Long> personalWorkspaceIds = getCoreDao().getSubBinderIds(personalWorkspaces);
 		if(logger.isDebugEnabled())
 			logger.debug("Identified " + personalWorkspaceIds.size() + " personal workspaces to index independently: " + personalWorkspaceIds.toString());

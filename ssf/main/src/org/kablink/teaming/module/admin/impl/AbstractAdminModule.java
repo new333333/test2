@@ -157,6 +157,7 @@ import org.kablink.teaming.util.ReflectHelper;
 import org.kablink.teaming.util.RuntimeStatistics;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SZoneConfig;
+import org.kablink.teaming.util.SessionUtil;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.StatusTicket;
 import org.kablink.teaming.util.Utils;
@@ -166,6 +167,7 @@ import org.kablink.teaming.web.util.EmailHelper;
 import org.kablink.teaming.web.util.EmailHelper.UrlNotificationType;
 import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.util.Html;
+import org.kablink.util.StringUtil;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
 
@@ -3845,12 +3847,14 @@ public List<ChangeLog> getWorkflowChanges(EntityIdentifier entityIdentifier, Str
     }
     
     @Override
-    public void reindexDestructive(Collection<Long> binderIds, StatusTicket statusTicket, String[] nodeNames, IndexErrors errors, boolean includeUsersAndGroups) throws AccessControlException {
+    public void reindexDestructive(Collection<Long> binderIds, StatusTicket statusTicket, final String[] nodeNames, IndexErrors errors, boolean includeUsersAndGroups) throws AccessControlException {
+    	logger.info("Administrative reindexing requested on binders " + binderIds + ((includeUsersAndGroups)? " and users and groups" : ""));
+    	
+    	if(logger.isDebugEnabled())
+    		logger.debug("Marking in the database beginning of reindexing" + ((nodeNames != null)? " on " + StringUtil.toString(nodeNames) : ""));
     	setStateReindexStart(nodeNames);
     	
     	try {
-        	logger.info("Administrative reindexing started on binders " + binderIds + ((includeUsersAndGroups)? " and users and groups" : ""));
-        	
         	boolean allowUseOfHelperThreads = SPropsUtil.getBoolean("index.tree.helper.threads.allow", true);
 
    	    	boolean skipFileContentIndexing = SPropsUtil.getBoolean("index.tree.defer.file.content.indexing", true);
@@ -3870,8 +3874,38 @@ public List<ChangeLog> getWorkflowChanges(EntityIdentifier entityIdentifier, Str
     		errors.addError(NLT.get("error.indexing.string", new String[] {e.getMessage()}));
     	}
     	finally {
-    		getCoreDao().clear(); // without this, we seem to get the notorious NonUniqueObjectException on Definition object.
-    		setStateReindexEnd(nodeNames);
+    		//getCoreDao().clear(); // without this, we seem to get the notorious NonUniqueObjectException on Definition object.
+        	if(logger.isDebugEnabled())
+        		logger.debug("Marking in the database end of reindexing" + ((nodeNames != null)? " on " + StringUtil.toString(nodeNames) : ""));
+    		final RequestContext parentRequestContext = RequestContextHolder.getRequestContext();
+    		// (Bug #881633) JK - With the helper threads actually performing reindexing work, this main thread can be
+    		// put into a idle state for extended period of time, which causes its thread bound database connection to
+    		// be timed out. When that happens, any attempt to further use the connection throws an error. To avoid
+    		// that situation, we're delegating the state change method execution to a separate thread with its own
+    		// Hibernate session and associated database connection.
+    		Runnable stateChange = new Runnable() {
+    			@Override
+    			public void run() {
+    				SessionUtil.sessionStartup();
+    				try {
+    					RequestContextHolder.setRequestContext(parentRequestContext);
+    					try {
+    						setStateReindexEnd(nodeNames);
+    					}
+    					finally {
+    						RequestContextHolder.clear();
+    					}
+    				}
+    				finally {
+    					SessionUtil.sessionStop();
+    				}
+    			}
+    		};
+    		Thread stateChangeThread = new Thread(stateChange);
+    		stateChangeThread.start();
+    		try {
+				stateChangeThread.join();
+			} catch (InterruptedException ignore) {}
         	logger.info("Administrative reindexing completed on binders " + binderIds + ((includeUsersAndGroups)? " and users and groups" : ""));
     	}
     }
