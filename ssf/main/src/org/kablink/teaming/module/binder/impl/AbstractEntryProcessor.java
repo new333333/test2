@@ -1450,7 +1450,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 			indexEntries_load(binder, batch);
 			SimpleProfiler.stop("indexEntries_load");
 			if(logger.isDebugEnabled())
-				logger.debug("Indexing " + batch.size() + " entries at " + total + " in binder [" + binder.getPathName() + "]");
+				logger.debug("Indexing " + batch.size() + " entries at " + total + " in binder [" + binder.getPathName() + "]: skipFileContentIndexing=" + String.valueOf(skipFileContentIndexing));
 			SimpleProfiler.start("indexEntries_loadTags");
 			Map tags = indexEntries_loadTags(binder, batch);
 			SimpleProfiler.stop("indexEntries_loadTags");
@@ -1483,7 +1483,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 			}
 	 	            
 			if(logger.isDebugEnabled())
-				logger.debug("Indexing of " + batch.size() + " entries at " + total + " done in binder ["+ binder.getPathName() + "]");
+				logger.debug("Indexing of " + batch.size() + " entries at " + total + " done in binder ["+ binder.getPathName() + "]: skipFileContentIndexing=" + String.valueOf(skipFileContentIndexing));
     }
     
     protected void indexEntries_preIndex(Binder binder) {
