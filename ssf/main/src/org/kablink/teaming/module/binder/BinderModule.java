@@ -875,5 +875,6 @@ public interface BinderModule {
      */
     public boolean testInferredAccessToBinder(User user, Binder binder);
 
-    public BinderChanges searchForChanges(Long [] binderIds, Long [] entryIds, Date sinceDate, int maxResults);
+    public BinderChanges searchOneLevelForChanges(Long binderId, Date sinceDate, int maxResults);
+    public BinderChanges searchSubTreeForChanges(Long[] binderIds, Long[] entryIds, Date sinceDate, int maxResults);
 }
