@@ -1,6 +1,6 @@
 <%
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -16,10 +16,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -413,7 +413,7 @@
 							<input
 								class="ss_submit"
 								type="submit"
-								onclick="ss_clearStartEnd(); return false;"
+								onclick="${prefix}_ss_clearStartEnd(); return false;"
 								value="<ssf:nlt tag="event.clear.startEnd" />"
 								name="clearBtn" />
 						</div>
@@ -715,15 +715,15 @@
 		/*
 		 * Clears the start/end date/time entry widgets.
 		 */
-		function ss_clearStartEnd() {
+		function ${prefix}_ss_clearStartEnd() {
 			var e;
-			if (null != document.getElementById("event_end_${prefix}"       )) ss_clearOneByDijitId("event_end_${prefix}"       ); 
-			if (null != document.getElementById("event_end_time_${prefix}"  )) ss_clearOneByDijitId("event_end_time_${prefix}"  ); 
-			if (null != document.getElementById("event_start_${prefix}"     )) ss_clearOneByDijitId("event_start_${prefix}"     ); 
-			if (null != document.getElementById("event_start_time_${prefix}")) ss_clearOneByDijitId("event_start_time_${prefix}"); 
+			if (null != document.getElementById("event_end_${prefix}"       )) ${prefix}_ss_clearOneByDijitId("event_end_${prefix}"       ); 
+			if (null != document.getElementById("event_end_time_${prefix}"  )) ${prefix}_ss_clearOneByDijitId("event_end_time_${prefix}"  ); 
+			if (null != document.getElementById("event_start_${prefix}"     )) ${prefix}_ss_clearOneByDijitId("event_start_${prefix}"     ); 
+			if (null != document.getElementById("event_start_time_${prefix}")) ${prefix}_ss_clearOneByDijitId("event_start_time_${prefix}"); 
 		}
 		
-		function ss_clearOneByDijitId(dijitId) {
+		function ${prefix}_ss_clearOneByDijitId(dijitId) {
 			var e = dijit.byId(dijitId);
 			e.reset();
 			e.attr('value',null);
