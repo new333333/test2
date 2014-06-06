@@ -412,7 +412,7 @@
 						<div class="marginleft1">
 							<input
 								class="ss_submit"
-								type="submit"
+								type="button"
 								onclick="${prefix}_ss_clearStartEnd(); return false;"
 								value="<ssf:nlt tag="event.clear.startEnd" />"
 								name="clearBtn" />
