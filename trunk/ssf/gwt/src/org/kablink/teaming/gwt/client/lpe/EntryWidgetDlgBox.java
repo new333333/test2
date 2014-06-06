@@ -490,7 +490,8 @@ public class EntryWidgetDlgBox extends DlgBox
 	private void hideFindControl()
 	{
 		m_findPanel.setVisible( false );
-		m_findCtrl.hideSearchResults();
+		if ( m_findCtrl != null )
+			m_findCtrl.hideSearchResults();
 	}
 	
 	
@@ -534,10 +535,13 @@ public class EntryWidgetDlgBox extends DlgBox
 
 		m_showTitleCkBox.setValue( properties.getShowTitleValue() );
 		
-		// Hide the search-results widget.
-		m_findCtrl.hideSearchResults();
-		
-		m_findCtrl.setInitialSearchString( "" );
+		if ( m_findCtrl != null )
+		{
+			// Hide the search-results widget.
+			m_findCtrl.hideSearchResults();
+			
+			m_findCtrl.setInitialSearchString( "" );
+		}
 	}// end init()
 	
 	/**
@@ -545,11 +549,13 @@ public class EntryWidgetDlgBox extends DlgBox
 	 */
 	private void showFindControl()
 	{
-		FocusWidget focusWidget;
+		FocusWidget focusWidget = null;
 
 		m_findPanel.setVisible( true );
 
-		focusWidget = m_findCtrl.getFocusWidget();
+		if ( m_findCtrl != null )
+			focusWidget = m_findCtrl.getFocusWidget();
+		
 		if ( focusWidget != null )
 			focusWidget.setFocus( true );
 	}

@@ -1047,7 +1047,8 @@ public class EnhancedViewWidgetDlgBox extends DlgBox
 	private void hideEntryFindControl()
 	{
 		m_entryFindPanel.setVisible( false );
-		m_entryFindCtrl.hideSearchResults();
+		if ( m_entryFindCtrl != null )
+			m_entryFindCtrl.hideSearchResults();
 	}
 	
 	
@@ -1057,7 +1058,8 @@ public class EnhancedViewWidgetDlgBox extends DlgBox
 	private void hideFolderFindControl()
 	{
 		m_folderFindPanel.setVisible( false );
-		m_folderFindCtrl.hideSearchResults();
+		if ( m_folderFindCtrl != null )
+			m_folderFindCtrl.hideSearchResults();
 	}
 	
 	
@@ -1114,8 +1116,11 @@ public class EnhancedViewWidgetDlgBox extends DlgBox
 			}
 
 			// Hide the search-results widget.
-			m_folderFindCtrl.hideSearchResults();
-			m_folderFindCtrl.setInitialSearchString( "" );
+			if ( m_folderFindCtrl != null )
+			{
+				m_folderFindCtrl.hideSearchResults();
+				m_folderFindCtrl.setInitialSearchString( "" );
+			}
 
 			hideFolderFindControl();
 			
@@ -1144,8 +1149,11 @@ public class EnhancedViewWidgetDlgBox extends DlgBox
 			}
 
 			// Hide the search-results widget.
-			m_entryFindCtrl.hideSearchResults();
-			m_entryFindCtrl.setInitialSearchString( "" );
+			if ( m_entryFindCtrl != null )
+			{
+				m_entryFindCtrl.hideSearchResults();
+				m_entryFindCtrl.setInitialSearchString( "" );
+			}
 			
 			// Hide the find control.
 			hideEntryFindControl();
@@ -1225,11 +1233,13 @@ public class EnhancedViewWidgetDlgBox extends DlgBox
 	 */
 	private void showEntryFindControl()
 	{
-		FocusWidget focusWidget;
+		FocusWidget focusWidget = null;
 
 		m_entryFindPanel.setVisible( true );
 
-		focusWidget = m_entryFindCtrl.getFocusWidget();
+		if ( m_entryFindCtrl != null )
+			focusWidget = m_entryFindCtrl.getFocusWidget();
+		
 		if ( focusWidget != null )
 			focusWidget.setFocus( true );
 	}
@@ -1239,11 +1249,13 @@ public class EnhancedViewWidgetDlgBox extends DlgBox
 	 */
 	private void showFolderFindControl()
 	{
-		FocusWidget focusWidget;
+		FocusWidget focusWidget = null;
 
 		m_folderFindPanel.setVisible( true );
 
-		focusWidget = m_folderFindCtrl.getFocusWidget();
+		if ( m_folderFindCtrl != null )
+			focusWidget = m_folderFindCtrl.getFocusWidget();
+		
 		if ( focusWidget != null )
 			focusWidget.setFocus( true );
 	}

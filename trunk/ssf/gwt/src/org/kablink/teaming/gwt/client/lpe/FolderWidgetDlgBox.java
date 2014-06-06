@@ -569,7 +569,8 @@ public class FolderWidgetDlgBox extends DlgBox
 	private void hideFindControl()
 	{
 		m_findPanel.setVisible( false );
-		m_findCtrl.hideSearchResults();
+		if ( m_findCtrl != null )
+			m_findCtrl.hideSearchResults();
 	}
 	
 	
@@ -617,11 +618,14 @@ public class FolderWidgetDlgBox extends DlgBox
 		m_showDescCkBox.setValue( properties.getShowDescValue() );
 		m_showEntriesOpenedCkBox.setValue( properties.getShowEntriesOpenedValue() );
 		
-		// Hide the search-results widget.
-		m_findCtrl.hideSearchResults();
-		
-		// Populate the find control's text box with the name of the selected folder.
-		m_findCtrl.setInitialSearchString( "" );
+		if ( m_findCtrl != null )
+		{
+			// Hide the search-results widget.
+			m_findCtrl.hideSearchResults();
+			
+			// Populate the find control's text box with the name of the selected folder.
+			m_findCtrl.setInitialSearchString( "" );
+		}
 		
 		num = properties.getNumEntriesToBeShownValue();
 		m_numEntriesToShowTxtBox.setText( String.valueOf( num ) );
@@ -665,11 +669,13 @@ public class FolderWidgetDlgBox extends DlgBox
 	 */
 	private void showFindControl()
 	{
-		FocusWidget focusWidget;
+		FocusWidget focusWidget = null;
 
 		m_findPanel.setVisible( true );
 
-		focusWidget = m_findCtrl.getFocusWidget();
+		if ( m_findCtrl != null )
+			focusWidget = m_findCtrl.getFocusWidget();
+		
 		if ( focusWidget != null )
 			focusWidget.setFocus( true );
 	}

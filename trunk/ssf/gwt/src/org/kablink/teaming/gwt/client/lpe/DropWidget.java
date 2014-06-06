@@ -78,6 +78,7 @@ public abstract class DropWidget extends Composite
 	/**
 	 * This method is called when the user presses the cancel button in the properties dialog box.
 	 */
+	@Override
 	public boolean editCanceled()
 	{
 		boolean retVal = true;
@@ -105,7 +106,7 @@ public abstract class DropWidget extends Composite
 	{
 		m_editSuccessfulHandler = onSuccess;
 		m_editCanceledHandler = onCancel;
-		
+
 		// Get the dialog box that is used to edit properties for this widget.
 		getPropertiesDlgBox( xPos, yPos, new DlgBoxClient()
 		{			
@@ -132,6 +133,7 @@ public abstract class DropWidget extends Composite
 						/**
 						 * 
 						 */
+						@Override
 						public void setPosition( int offsetWidth, int offsetHeight )
 						{
 							int canvasRightEdge;
@@ -191,6 +193,7 @@ public abstract class DropWidget extends Composite
 	/**
 	 * This method is called when the user presses the ok button in the properties dialog box.
 	 */
+	@Override
 	public boolean editSuccessful( Object propertiesObj )
 	{
 		boolean retVal = true;
@@ -284,6 +287,7 @@ public abstract class DropWidget extends Composite
 	/**
 	 * This method gets called when the user clicks on the "delete" link.
 	 */
+	@Override
 	public void onDelete()
 	{
 		// Ask the user if they really want to delete this widget.
@@ -301,6 +305,7 @@ public abstract class DropWidget extends Composite
 	/**
 	 * This method gets called when the user clicks on the "edit" link.
 	 */
+	@Override
 	public void onEdit( int x, int y )
 	{
 		editProperties( null, null, x, y );
@@ -310,6 +315,7 @@ public abstract class DropWidget extends Composite
 	/**
 	 * Handles the MouseDownEvent.  This will initiate the dragging of this item.
 	 */
+	@Override
 	public void onMouseDown( MouseDownEvent event )
 	{
 		Object	eventSender;
@@ -329,6 +335,7 @@ public abstract class DropWidget extends Composite
 			
 			cmd = new Scheduler.ScheduledCommand()
 			{
+				@Override
 				public void execute()
 				{
 					// Yes
