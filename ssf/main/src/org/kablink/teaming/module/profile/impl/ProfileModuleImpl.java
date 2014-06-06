@@ -53,6 +53,7 @@ import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
+
 import org.kablink.teaming.ApplicationExistsException;
 import org.kablink.teaming.ApplicationGroupExistsException;
 import org.kablink.teaming.GroupExistsException;
@@ -148,6 +149,7 @@ import org.kablink.teaming.web.util.PermaLinkUtil;
 import org.kablink.util.StringUtil;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
+
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -1197,7 +1199,15 @@ public Map getGroups(Map options) {
         return processor.indexEntries( entries );
 	}
 	
-	//Validate that the inputData attributes are allowed to be modified
+	/**
+	 * Validate that the inputData attributes are allowed to be modified.
+	 *  
+	 * @param userId
+	 * @param formData
+	 * 
+	 * @return
+	 */
+	@Override
 	public MapInputData validateUserAttributes(Long userId, Map formData) {
 		User user = (User) getEntry(userId);
 		if (user == null || !user.getIdentityInfo().isFromLdap()) {
@@ -1207,6 +1217,9 @@ public Map getGroups(Map options) {
 		Map modifiableFormData = new HashMap(formData);
 		try {
 			Map<String, String> userAttributes = getLdapModule().getLdapUserAttributes(user);
+			if (null == userAttributes) {
+				userAttributes = new HashMap<String, String>();
+			}
 			for (String attributeName : userAttributes.values()) {
 				if (modifiableFormData.containsKey(attributeName)) {
 					//This attribute is not allowed to be changed
