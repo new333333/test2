@@ -1074,10 +1074,21 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 
 		if(logger.isDebugEnabled())
 			logger.debug("Waiting for helper threads to terminate");
+		long dbConnHearbeatInterval = SPropsUtil.getLong("database.connection.heartbeat.interval", 180000);
+		String dbConnHearbeatQuery = SPropsUtil.getString("database.connection.heartbeat.query", "SELECT 1");
+		long lastHeartbeatTime = System.currentTimeMillis();
 		for(int i = 0; i < threadsSize; i++) {
-			try {
-				helperThreads[i].join();
-			} catch (InterruptedException e) {}
+			while(helperThreads[i].isAlive()) {
+				try {
+					helperThreads[i].join(dbConnHearbeatInterval);
+					if(System.currentTimeMillis() - lastHeartbeatTime >= dbConnHearbeatInterval) {
+						if(logger.isDebugEnabled())
+							logger.debug("Executing heartbeat query on the connection");
+						getCoreDao().executeHeartbeatQuery(dbConnHearbeatQuery);
+						lastHeartbeatTime = System.currentTimeMillis();
+					}
+				} catch (InterruptedException e) {}
+			}
 		}
 			
 		if(logger.isDebugEnabled())

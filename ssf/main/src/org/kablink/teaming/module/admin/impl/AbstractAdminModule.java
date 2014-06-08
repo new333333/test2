@@ -3874,38 +3874,10 @@ public List<ChangeLog> getWorkflowChanges(EntityIdentifier entityIdentifier, Str
     		errors.addError(NLT.get("error.indexing.string", new String[] {e.getMessage()}));
     	}
     	finally {
-    		//getCoreDao().clear(); // without this, we seem to get the notorious NonUniqueObjectException on Definition object.
+    		getCoreDao().clear(); // without this, we seem to get the notorious NonUniqueObjectException on Definition object.
         	if(logger.isDebugEnabled())
         		logger.debug("Marking in the database end of reindexing" + ((nodeNames != null)? " on " + StringUtil.toString(nodeNames) : ""));
-    		final RequestContext parentRequestContext = RequestContextHolder.getRequestContext();
-    		// (Bug #881633) JK - With the helper threads actually performing reindexing work, this main thread can be
-    		// put into a idle state for extended period of time, which causes its thread bound database connection to
-    		// be timed out. When that happens, any attempt to further use the connection throws an error. To avoid
-    		// that situation, we're delegating the state change method execution to a separate thread with its own
-    		// Hibernate session and associated database connection.
-    		Runnable stateChange = new Runnable() {
-    			@Override
-    			public void run() {
-    				SessionUtil.sessionStartup();
-    				try {
-    					RequestContextHolder.setRequestContext(parentRequestContext);
-    					try {
-    						setStateReindexEnd(nodeNames);
-    					}
-    					finally {
-    						RequestContextHolder.clear();
-    					}
-    				}
-    				finally {
-    					SessionUtil.sessionStop();
-    				}
-    			}
-    		};
-    		Thread stateChangeThread = new Thread(stateChange);
-    		stateChangeThread.start();
-    		try {
-				stateChangeThread.join();
-			} catch (InterruptedException ignore) {}
+    		setStateReindexEnd(nodeNames);
         	logger.info("Administrative reindexing completed on binders " + binderIds + ((includeUsersAndGroups)? " and users and groups" : ""));
     	}
     }

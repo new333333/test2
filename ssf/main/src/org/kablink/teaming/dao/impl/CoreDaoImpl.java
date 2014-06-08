@@ -3624,4 +3624,23 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
     		end(begin, "getSubBinderIds(binder)");
     	}	        
 	}
+	
+	@Override
+	public void executeHeartbeatQuery(final String heartbeatQuery) {
+		long begin = System.nanoTime();
+		try {
+			getHibernateTemplate().execute(
+					new HibernateCallback() {
+						@Override
+						public Object doInHibernate(Session session) throws HibernateException {
+							session.createSQLQuery(heartbeatQuery).list();
+							return null;
+						}
+					}
+			);    		             		 
+    	}
+    	finally {
+    		end(begin, "executeHearbeatQuery(String)");
+    	}	        
+	}
  }
