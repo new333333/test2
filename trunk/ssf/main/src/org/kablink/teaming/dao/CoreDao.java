@@ -308,4 +308,6 @@ public interface CoreDao {
 	public void purgeShares(ShareItem shareItem);
 	
 	public List<Long> getSubBinderIds(Binder binder);
+	
+	public void executeHeartbeatQuery(String heartbeatQuery);
 }
