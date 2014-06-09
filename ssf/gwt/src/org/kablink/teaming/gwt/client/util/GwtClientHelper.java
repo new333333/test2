@@ -174,6 +174,43 @@ public class GwtClientHelper {
 			lList.add(l);
 		}
 	}
+
+	/**
+	 * Displays an alert using a GWT alert dialog.
+	 * 
+	 * @param
+	 */
+	public static void alertViaDlg(final String msg) {
+		// Have we created an instance of an AlertDlg yet?
+		if (null == m_alertDlg) {
+			// No!  Create one now...
+			AlertDlg.createAsync(new AlertDlgClient() {
+				@Override
+				public void onUnavailable() {
+					// Nothing to do.  Error handled in asynchronous
+					// provider.
+				}
+				
+				@Override
+				public void onSuccess(AlertDlg aDlg) {
+					// ...save it and use it to display the message.
+					m_alertDlg = aDlg;
+					alertViaDlg(msg);
+				}
+			});
+		}
+		
+		else {
+			// Yes, we've created an instance of an AlertDlg!  Use it
+			// to display the message.
+			deferCommand(new ScheduledCommand() {
+				@Override
+				public void execute() {
+					AlertDlg.initAndShow(m_alertDlg, msg);
+				}
+			});
+		}
+	}
 	
 	/**
 	 * Appends a <br /> to the HTML of a Widget.
@@ -406,40 +443,13 @@ public class GwtClientHelper {
 	private static void deferredAlertImpl(final String msg) {
 		// If we're supposed to use a JavaScript.alert()...
 		if (USE_JAVASCRIPT_ALERT) {
-			// ...use it and bail.
+			// ...use it and bail...
 			Window.alert(msg);
 			return;
 		}
 
-		// Have we created an instance of an AlertDlg yet?
-		if (null == m_alertDlg) {
-			// No!  Create one now...
-			AlertDlg.createAsync(new AlertDlgClient() {
-				@Override
-				public void onUnavailable() {
-					// Nothing to do.  Error handled in asynchronous
-					// provider.
-				}
-				
-				@Override
-				public void onSuccess(AlertDlg aDlg) {
-					// ...save it and use it to display the message.
-					m_alertDlg = aDlg;
-					deferredAlertImpl(msg);
-				}
-			});
-		}
-		
-		else {
-			// Yes, we've created an instance of an AlertDlg!  Use it
-			// to display the message.
-			deferCommand(new ScheduledCommand() {
-				@Override
-				public void execute() {
-					AlertDlg.initAndShow(m_alertDlg, msg);
-				}
-			});
-		}
+		// ...otherwise use the GWT dialog for it.
+		alertViaDlg(msg);
 	}
 
 	/**
