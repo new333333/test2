@@ -738,27 +738,37 @@ public abstract class AbstractAuthenticationProviderModule extends BaseAuthentic
 	 */
 	@Override
 	public boolean supports(Class authentication) {
-		Long zone = getZoneModule().getZoneIdByVirtualHost(
-				ZoneContextHolder.getServerName());
-    	try {
-    		ensureZoneIsConfigured(zone);
-    	} catch(Exception e) {
-    		logger.error("Unable to configure authentication for zone " + zone, e);
-    		throw new AuthenticationServiceException("Unable to configure authentication for zone " + zone, e);
-    	}
-		if (nonLocalAuthenticators.containsKey(zone)) {
-			ProviderManager pm = nonLocalAuthenticators.get(zone);
-			if(pm != null) {
-				for (Object o : pm.getProviders()) {
-					AuthenticationProvider p = (AuthenticationProvider) o;
-					if (p.supports(authentication)) {
-						return true;
+		if(SPropsUtil.getBoolean("authentication.supports.compute.dynamically", false)) {
+			// Compute the result dynamically.
+			Long zone = getZoneModule().getZoneIdByVirtualHost(
+					ZoneContextHolder.getServerName());
+	    	try {
+	    		ensureZoneIsConfigured(zone);
+	    	} catch(Exception e) {
+	    		logger.error("Unable to configure authentication for zone " + zone, e);
+	    		throw new AuthenticationServiceException("Unable to configure authentication for zone " + zone, e);
+	    	}
+			if (nonLocalAuthenticators.containsKey(zone)) {
+				ProviderManager pm = nonLocalAuthenticators.get(zone);
+				if(pm != null) {
+					for (Object o : pm.getProviders()) {
+						AuthenticationProvider p = (AuthenticationProvider) o;
+						if (p.supports(authentication)) {
+							return true;
+						}
 					}
 				}
+				return (localProviders.get(zone).supports(authentication));
 			}
-			return (localProviders.get(zone).supports(authentication));
+			return false;
 		}
-		return false;
+		else {
+			// Do not compute the result dynamically. Instead, just return true based on the observation
+			// that this call never returns false in the context of our application. The reason for this
+			// shortcut is to avoid the cost of repeating the same computation (which we repeat again 
+			// in the doAuthenticate() method).
+			return true;
+		}
 	}
 
 	private Authentication performAuthentication(Long zoneId, Authentication authentication) throws AuthenticationException {
