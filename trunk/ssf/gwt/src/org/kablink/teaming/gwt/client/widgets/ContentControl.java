@@ -74,6 +74,7 @@ import org.kablink.teaming.gwt.client.event.CopySelectedEntitiesEvent;
 import org.kablink.teaming.gwt.client.event.DeleteSelectedEntitiesEvent;
 import org.kablink.teaming.gwt.client.event.FullUIReloadEvent;
 import org.kablink.teaming.gwt.client.event.GetCurrentViewInfoEvent;
+import org.kablink.teaming.gwt.client.event.GotoMyWorkspaceEvent;
 import org.kablink.teaming.gwt.client.event.GotoUrlEvent;
 import org.kablink.teaming.gwt.client.event.InvokeEmailNotificationEvent;
 import org.kablink.teaming.gwt.client.event.InvokeShareBinderEvent;
@@ -1099,11 +1100,23 @@ public class ContentControl extends Composite
 						}
 						break;
 					
+					case OTHER:
 					default:
+						// If we're navigating to a binder that's not accessible...
+						boolean binderInaccessible = ( ! ( bi.isBinderAccessible() ) );
+						if ( ViewType.BINDER.equals( vt ) && binderInaccessible )
+						{
+							// ...tell the user and navigate to their
+							// ...workspace instead.
+							GwtClientHelper.alertViaDlg( GwtTeaming.getMessages().cantAccessFolder() );
+							GwtTeaming.fireEventAsync(  new GotoMyWorkspaceEvent() );
+							return;
+						}
+
 						// If we're viewing an entry and don't have
 						// access to the binder, we don't want to
 						// display an error.  Otherwise...
-						boolean noError = ( ViewType.BINDER_WITH_ENTRY_VIEW.equals( vt ) && ( ! ( bi.isBinderAccessible() ) ) );
+						boolean noError = ( ViewType.BINDER_WITH_ENTRY_VIEW.equals( vt ) && binderInaccessible );
 						if ( ! noError )
 						{
 							// ...it's something we don't know how to
