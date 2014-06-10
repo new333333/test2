@@ -961,6 +961,20 @@ public class GwtMainPage extends ResizeComposite
 	}
 	
 	/**
+	 * Returns the height of the content area.
+	 * 
+	 * @return
+	 */
+	public int getContentControlHeight()
+	{
+		int reply;
+		if ( isAdminActive() )
+		     reply = m_adminControl.getContentControlHeight();
+		else reply = m_contentLayoutPanel.getOffsetHeight();
+		return reply;
+	}
+	
+	/**
 	 * Get the collection point data and then after the rpc request
 	 * returns show the collection point.
 	 */
@@ -4275,7 +4289,7 @@ public class GwtMainPage extends ResizeComposite
 	{
 		AddNewFolderDlg.initAndShow( m_addNewFolderDlg, binderId, folderTemplateId, allowCloudFolder );
 	}// end showAddNewFolderDlgNow()
-	
+
 	/**
 	 * Callback interface to interact with the main page asynchronously
 	 * after it loads. 
