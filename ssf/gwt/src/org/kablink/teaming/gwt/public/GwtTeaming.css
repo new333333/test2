@@ -2388,6 +2388,9 @@ body, table td, select
 }
 
 /* Styles used by the bread crumb navigator. */
+.breadCrumbTreePopup {
+	overflow: auto !important;
+}
 .mainBreadCrumb_Tree
 {
 	padding: 5px;

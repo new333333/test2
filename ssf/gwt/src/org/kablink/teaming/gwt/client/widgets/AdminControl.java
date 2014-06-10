@@ -512,6 +512,7 @@ public class AdminControl extends TeamingPopupPanel
 	{
 		// m_rpcGetAdminActionsCallback is our callback that gets called when the ajax request to get the administration actions completes.
 		private AsyncCallback<VibeRpcResponse> m_rpcGetAdminActionsCallback = null;
+		@SuppressWarnings("unused")
 		private AsyncCallback<VibeRpcResponse> m_rpcGetUpgradeInfoCallback2 = null;
 		private FlexTable m_mainTable;
 		
@@ -970,6 +971,14 @@ public class AdminControl extends TeamingPopupPanel
 	public int getContentHeight()
 	{
 		return m_dlgHeight;
+	}
+	
+	/**
+	 * 
+	 */
+	public int getContentControlHeight()
+	{
+		return (m_contentControlHeight + 20);
 	}
 	
 	/**
