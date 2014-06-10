@@ -220,6 +220,10 @@ public class TopFrame extends JApplet implements Runnable {
            if (null == paramValue) {
                paramValue = "";
            }
+       if (paramName.equals("isAppletChunkedStreamingModeSupported"))
+           if (null == paramValue) {
+               paramValue = "yes";
+           }       
        if (paramName.equals("appletFileName"))
            if (null == paramValue) {
                paramValue = "ss_attachFile";
