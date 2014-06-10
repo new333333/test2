@@ -36,8 +36,8 @@
 		<property name="hibernate.memcached.cacheTimeSeconds">3600</property>
 		<!-- memcached operation timeout in milliseconds -->
 		<property name="hibernate.memcached.operationTimeout">2000</property>
-		<!-- Enable query cache -->
- 		<property name="hibernate.cache.use_query_cache">true</property>
+		<!-- Disable query cache -->
+ 		<property name="hibernate.cache.use_query_cache">false</property>
  		<!-- Enable second-level cache -->
  		<property name="hibernate.cache.use_second_level_cache">true</property>
  		<property name="hibernate.cache.use_minimal_puts">true</property>
