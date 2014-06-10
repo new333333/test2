@@ -35,6 +35,7 @@ package org.kablink.teaming.gwt.client.lpe;
 
 import java.util.ArrayList;
 
+import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.HasMouseOutHandlers;
 import com.google.gwt.event.dom.client.HasMouseOverHandlers;
 import com.google.gwt.event.dom.client.MouseEvent;
@@ -508,24 +509,28 @@ public class DropZone extends Composite
 	
 	
 	/**
-	 * Set the height of this drop zone.
-	 */
-	@Override
-	public void setHeight( String cssHeight )
-	{
-		Element element;
-		
-		element = m_panel.getElement();
-		DOM.setStyleAttribute( element, "height", cssHeight );
-	}// end setHeight()
-	
-	
-	/**
 	 * Set the DropZone this DropZone lives in.
 	 */
 	public void setParentDropZone( DropZone dropZone )
 	{
 		m_parentDropZone = dropZone;
+	}
+	
+	/**
+	 * Set the height of this drop zone.
+	 */
+	public void setZoneHeight( int height, Unit unit )
+	{
+		m_panel.getElement().getStyle().setHeight( height, unit );
+	}// end setHeight()
+	
+	
+	/**
+	 * Set the width of this drop zone
+	 */
+	public void setZoneWidth( int width, Unit unit )
+	{
+		m_panel.getElement().getStyle().setWidth( width, unit );
 	}
 	
 	
