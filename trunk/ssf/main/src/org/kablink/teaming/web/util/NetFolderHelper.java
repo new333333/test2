@@ -294,14 +294,14 @@ public class NetFolderHelper
 	 */
 	@SuppressWarnings("unchecked")
 	public static void createHomeDirNetFolder(
-		ProfileModule profileModule,
+		final ProfileModule profileModule,
 		TemplateModule templateModule,
 		BinderModule binderModule,
 		final FolderModule folderModule,
-		AdminModule adminModule,
-		ResourceDriverModule resourceDriverModule,
+		final AdminModule adminModule,
+		final ResourceDriverModule resourceDriverModule,
 		RunAsyncManager asyncManager,
-		HomeDirInfo homeDirInfo,
+		final HomeDirInfo homeDirInfo,
 		User user,
 		boolean updateExistingNetFolder ) throws WriteFilesException, WriteEntryDataException
 	{
@@ -378,12 +378,20 @@ public class NetFolderHelper
 			rdConfig = findNetFolderRootByHostAndVolume( adminModule, resourceDriverModule, serverName, serverAddr, volume);
 			if ( rdConfig == null )
 			{
-				// No, create one
-				rdConfig = NetFolderHelper.createHomeDirNetFolderServer(
-																	profileModule,
-																	adminModule,
-																	resourceDriverModule,
-																	homeDirInfo );
+                // No, create one
+                rdConfig = (ResourceDriverConfig) RunasTemplate.runasAdmin(
+                        new RunasCallback() {
+                            @Override
+                            public Object doAs() {
+                                return NetFolderHelper.createHomeDirNetFolderServer(
+                                        profileModule,
+                                        adminModule,
+                                        resourceDriverModule,
+                                        homeDirInfo );
+                            }
+                        },
+                        RequestContextHolder.getRequestContext().getZoneName()
+                );
 			}
             serverUNC = rdConfig.getRootPath();
 		}
