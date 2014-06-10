@@ -141,8 +141,8 @@ public class SelfResource extends AbstractFileResource {
         try {
             Long nextCheck = homeDirCheckTime.get(user.getId());
             if (nextCheck==null || nextCheck<System.currentTimeMillis()) {
-                homeDirCheckTime.put(user.getId(), System.currentTimeMillis()+1000*60*60);
                 getLdapModule().updateHomeDirectoryIfNecessary((org.kablink.teaming.domain.User)entry, entry.getName(), true);
+                homeDirCheckTime.put(user.getId(), System.currentTimeMillis()+1000*60*60);
             }
         } catch (Exception e) {
             logger.warn("An error occurred checking to see if the user's home folder needs to be updated", e);
