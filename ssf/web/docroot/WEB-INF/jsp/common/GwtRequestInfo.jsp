@@ -140,6 +140,7 @@
 		userId:								'${ssUser.id}',
 		userLoginId:						'${ssUser.name}',
 		vibeProduct:						'${vibeProduct}',
+		showWSTreeControl:					'${showWSTreeControl}',
 				
 		<c:if test="${gwtPage == 'main'}">
 			adaptedUrl:						'${adaptedUrl}',

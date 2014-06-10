@@ -496,6 +496,15 @@ public class RequestInfo extends JavaScriptObject
 	}-*/;
 	
 	/**
+	 * Return whether the UI should initially show the workspace tree control
+	 */
+	public final native boolean getShouldShowWSTreeControl()
+	/*-{
+		return this.getBFromS( this.showWSTreeControl );
+	}-*/;
+	
+	
+	/**
 	 * Return the language that the tinyMCE editor should use.
 	 * 
 	 * @return
