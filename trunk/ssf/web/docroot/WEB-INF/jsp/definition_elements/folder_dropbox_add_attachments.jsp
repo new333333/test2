@@ -197,6 +197,7 @@ function ss_hideFolderLibNonLibHelpTextDiv${ssBinderId}${ss_namespace}() {
 			    <PARAM NAME = "uploadErrorFileTooLarge" value="<ssf:escapeQuotes><ssf:nlt tag="applet.errorFileTooLarge" /></ssf:escapeQuotes>" />
 			    <PARAM NAME = "fileUploadMaxSize" value="${ss_binder_file_max_file_size}" />
 			    <PARAM NAME = "fileUploadSizeExceeded" value="<ssf:escapeQuotes><ssf:nlt tag="file.maxSizeExceeded" /></ssf:escapeQuotes>" />
+			    <PARAM NAME = "isAppletChunkedStreamingModeSupported" value="${ss_isAppletChunkedStreamingModeSupported}" />
 			    <PARAM NAME = "appletFileName" value="<ssf:appletFileName />" />
 			    <PARAM NAME = "strYes" value="<ssf:escapeQuotes><ssf:nlt tag="button.Yes" /></ssf:escapeQuotes>" />
 			    <PARAM NAME = "strNo" value="<ssf:escapeQuotes><ssf:nlt tag="button.No" /></ssf:escapeQuotes>" />

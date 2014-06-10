@@ -1090,6 +1090,7 @@ public class WebKeys {
     public static final String IMAGE_FILE_URL="ssImageFileUrl";
     public static final String INHERIT_FROM_PARENT="ssInheritFromParent";
     public static final String INLINE_NO_IMAGE="ssInlineNoImage";
+    public static final String IS_APPLET_CHUNKED_STREAMING_MODE_SUPPORTED="ss_isAppletChunkedStreamingModeSupported";
     public static final String IS_ACCESSIBLE="ss_isAccessible";
     public static final String IS_REFRESH="ssRefresh";
     public static final String IS_BINDER_ADMIN="ss_isBinderAdmin";

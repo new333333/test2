@@ -2246,6 +2246,13 @@ public class AjaxController  extends SAbstractControllerRetry {
 		model.put(WebKeys.ENTRY_ID, entryId);
 		model.put(WebKeys.ENTRY_ATTACHMENT_FILE_RECEIVER_URL, strURL);
 		model.put(WebKeys.ENTRY_ATTACHMENT_FILE_CHECK_EXISTS_URL, strURL2);
+		model.put(WebKeys.IS_APPLET_CHUNKED_STREAMING_MODE_SUPPORTED, 
+				SPropsUtil.getString("applet.is.chunked.streaming.mode.supported", "yes"));
+		if (SPropsUtil.getBoolean("preauthentication.by.iis.enable", false)) {
+			//If running in IIS, always turn off chunked mode.
+			model.put(WebKeys.IS_APPLET_CHUNKED_STREAMING_MODE_SUPPORTED, "no");
+		}
+
 		if (binder != null) {
 			Long maxFileSize = getBinderModule().getBinderMaxFileSize(binder);
 			Long maxUserFileSize = getAdminModule().getUserFileSizeLimit();
@@ -2389,6 +2396,12 @@ public class AjaxController  extends SAbstractControllerRetry {
 		model.put(WebKeys.FOLDER_ATTACHMENT_FILE_RECEIVER_URL, strURL);
 		model.put(WebKeys.FOLDER_ATTACHMENT_FILE_CHECK_EXISTS_URL, strURL2);
 		model.put(WebKeys.FOLDER_ATTACHMENT_APPLET_REFRESH_URL, strRefreshURL);
+		model.put(WebKeys.IS_APPLET_CHUNKED_STREAMING_MODE_SUPPORTED, 
+				SPropsUtil.getString("applet.is.chunked.streaming.mode.supported", "yes"));
+		if (SPropsUtil.getBoolean("preauthentication.by.iis.enable", false)) {
+			//If running in IIS, always turn off chunked mode.
+			model.put(WebKeys.IS_APPLET_CHUNKED_STREAMING_MODE_SUPPORTED, "no");
+		}
 		if (binder != null) {
 			Long maxFileSize = getBinderModule().getBinderMaxFileSize(binder);
 			Long maxUserFileSize = getAdminModule().getUserFileSizeLimit();
