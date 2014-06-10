@@ -2978,6 +2978,10 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	// Build a list of buckets (or get the final page)
 	protected Map buildBinderVirtualTree(Element current, Binder top,
 			DomTreeBuilder domTreeHelper, int totalHits, int maxBucketSize) {
+		boolean debugLogging = logger.isDebugEnabled();
+		if (debugLogging) {
+			logger.debug("buildBinderVirtualTree(entry): totalHits=" + totalHits + ", maxBucketSize=" + maxBucketSize);
+		}
 		Element next;
 		int skipLength = maxBucketSize;
 		if (totalHits > maxBucketSize) {
@@ -3006,6 +3010,9 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		Hits hits = null;
 		LuceneReadSession luceneSession = getLuceneSessionFactory()
 				.openReadSession();
+		if (debugLogging) {
+			logger.debug("buildBinderVirtualTree(building search criteria): tuple1=" + tuple1 + ", tuple2=" + tuple2);
+		}
 		try {
 			Criteria crit = new Criteria().add(
 					eq(Constants.BINDERS_PARENT_ID_FIELD, top.getId()
@@ -3029,6 +3036,9 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 					if (skipLength < maxBucketSize)
 						skipLength = maxBucketSize;
 				}
+				if (debugLogging) {
+					logger.debug("buildBinderVirtualTree(post pool size calculation): totalHits=" + totalHits + ", skipLength=" + skipLength);
+				}
 			}
 			if (totalHits > skipLength) {
 				SearchObject searchObject = qb.buildQuery(crit.toQuery());
@@ -3040,20 +3050,29 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 					logger.trace("Query in buildBinderVirtualTree: " + searchObject.toString());
 				}
 				// no order here
+				if (debugLogging) {
+					logger.debug("buildBinderVirtualTree(calling luceneSession.getSortedTitles()): bucketSortKey=" + bucketSortKey + ", tuple1=" + tuple1 + ", tuple2=" + tuple2 + ", skipLength=" + skipLength + ", searchObject=" + searchObject.getLuceneQuery().toString());
+				}
 				results = luceneSession.getSortedTitles(query, bucketSortKey, tuple1, tuple2,
 						skipLength);
 			}
 			if (results == null || results.size() <= 1) {
 				// We must be at the end of the buckets; now get the real
 				// entries
+				String tuples = null;
 				if ("".equals(tuple1) && "".equals(tuple2)) {
 					crit.addOrder(new Order(straightSortKey, true));
+					if (debugLogging) tuples = "*no tuples*"; 
 				} else {
 					crit.add(between(straightSortKey, tuple1, tuple2))
 							.addOrder(new Order(straightSortKey, true));
+					if (debugLogging) tuples = ("tuple1=" + tuple1 + ", tuple2=" + tuple2);
 
 				}
 				SearchObject searchObject = qb.buildQuery(crit.toQuery());
+				if (debugLogging) {
+					logger.debug("buildBinderVirtualTree(end of buckets, get real entries): " + tuples + ", searchObject=" + searchObject.getLuceneQuery().toString());
+				}
 				hits = SearchUtils.searchFolderOneLevelWithInferredAccess
 						(luceneSession, RequestContextHolder.getRequestContext().getUserId(), searchObject, Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, 0,
 						-1, top, true);
@@ -3080,6 +3099,9 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		String page = domTreeHelper.getPage();
 		if (!page.equals(""))
 			page += ".";
+		if (debugLogging) {
+			logger.debug("buildBinderVirtualTree(virtual tree): page=" + ((0 == page.length()) ? "*no page*" : page));
+		}
 		for (int i = 0; i < results.size(); i++) {
 			List result = (List) results.get(i);
 			Map skipMap = new HashMap();
@@ -3087,9 +3109,13 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 			skipMap.put(DomTreeBuilder.SKIP_PAGE, page + String.valueOf(i));
 			skipMap.put(DomTreeBuilder.SKIP_BINDER_ID, top.getId().toString());
 			next = current.addElement(DomTreeBuilder.NODE_CHILD);
-			if (domTreeHelper.setupDomElement(DomTreeBuilder.TYPE_SKIPLIST,
-					skipMap, next) == null)
+			Element e = domTreeHelper.setupDomElement(DomTreeBuilder.TYPE_SKIPLIST, skipMap, next);
+			if (debugLogging) {
+				logger.debug("...next Element:  " + ((null == e) ? "*no element*" : e.asXML()));
+			}
+			if (e == null) {
 				current.remove(next);
+			}
 		}
 		return null;
 	}
@@ -3842,7 +3868,8 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		}
 	}
 
-    public BinderChanges searchOneLevelForChanges(Long binderId, Date sinceDate, int maxResults) {
+    @Override
+	public BinderChanges searchOneLevelForChanges(Long binderId, Date sinceDate, int maxResults) {
         return searchForChanges(new Long[] {binderId}, null, sinceDate, false, maxResults);
     }
 
