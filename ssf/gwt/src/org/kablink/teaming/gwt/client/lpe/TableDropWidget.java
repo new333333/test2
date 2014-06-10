@@ -38,7 +38,8 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.widgets.DlgBox.DlgBoxClient;
 import org.kablink.teaming.gwt.client.widgets.PropertiesObj;
 
-import com.google.gwt.user.client.Element;
+import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -240,7 +241,7 @@ public class TableDropWidget extends DropWidget
 					
 					// Yes, set the height of the drop zone.
 					dropZone = (DropZone) widget;
-					dropZone.setHeight( "100%" );
+					dropZone.setZoneHeight( 100, Unit.PCT );
 				}
 			}
 		}
@@ -291,7 +292,7 @@ public class TableDropWidget extends DropWidget
 					
 					// Yes, set the height of the drop zone.
 					dropZone = (DropZone) widget;
-					dropZone.setHeight( String.valueOf( maxHeight ) + "px" );
+					dropZone.setZoneHeight( maxHeight, Unit.PX );
 				}
 			}
 		}
@@ -513,6 +514,28 @@ public class TableDropWidget extends DropWidget
 	
 
 	/**
+	 * 
+	 */
+	@Override
+	public void onAttach()
+	{
+		Scheduler.ScheduledCommand cmd;
+		
+		super.onAttach();
+		
+		cmd = new Scheduler.ScheduledCommand()
+		{
+			@Override
+			public void execute()
+			{
+				setTableWidth();
+			}
+		};
+		Scheduler.get().scheduleDeferred( cmd );
+	}
+	
+
+	/**
 	 * Set the DropZone this widget lives in.
 	 */
 	@Override
@@ -552,20 +575,73 @@ public class TableDropWidget extends DropWidget
 				}
 			}// end for()
 		}
+		
+		// Adjust the width of each column so the table fits into the new drop zone
+		setTableWidth();
 	}
-	
-	
+
+	/**
+	 * Set the width of the table and adjust the width of each column
+	 */
+	private void setTableWidth()
+	{
+		int row;
+		int colWidth;
+		int width;
+		String colWidthStr;
+		CellFormatter cellFormatter;
+		
+		if ( isAttached() == false )
+			return;
+		
+		width = getOffsetWidth() - 19;
+		m_flexTable.getElement().setAttribute( "width", String.valueOf( width ) );
+		
+		// Set the width of each column.
+		cellFormatter = m_flexTable.getFlexCellFormatter();
+		colWidth = width / m_properties.getNumColumnsInt();
+		colWidthStr = String.valueOf( colWidth );
+		for (row = 0; row < m_flexTable.getRowCount(); ++row)
+		{
+			int i;
+			
+			for (i = 0; i < m_flexTable.getCellCount( row ); ++i )
+			{
+				cellFormatter.setWidth( row, i, colWidthStr );
+
+				// Set the width of the drop zone for this cell
+				{
+					Widget widget;
+
+					// Get the DropZone for this cell.
+					widget = m_flexTable.getWidget( row, i );
+					
+					// Is this widget a DropZone?
+					if ( widget instanceof DropZone )
+					{
+						DropZone dropZone;
+						
+						// Yes, set the width of the drop zone.
+						dropZone = (DropZone) widget;
+						dropZone.setZoneWidth( colWidth, Unit.PX );
+					}
+				}
+				
+				// Set the vertical alignment of this cell to "top".
+				cellFormatter.setVerticalAlignment( row, i, HasVerticalAlignment.ALIGN_TOP );
+			}
+		}
+	}
+		
 	/**
 	 * Create the appropriate ui based on the given properties.
 	 */
 	@Override
 	public void updateWidget( Object props )
 	{
-		int i;
 		int numColumns;
 		int numRows;
 		int row;
-		CellFormatter cellFormatter;
 		
 		// Save the properties that were passed to us.
 		if ( props instanceof PropertiesObj )
@@ -583,7 +659,6 @@ public class TableDropWidget extends DropWidget
 			m_flexTable = new FlexTable();
 			m_flexTable.setCellSpacing( 0 );
 			m_flexTable.addStyleName( "lpeTable" );
-			m_flexTable.setWidth( "100%" );
 			
 			m_mainPanel.add( m_flexTable );
 			
@@ -673,56 +748,8 @@ public class TableDropWidget extends DropWidget
 			}
 		}
 		
-		// Set the width of each column.
-		for (row = 0; row < m_flexTable.getRowCount(); ++row)
-		{
-			cellFormatter = m_flexTable.getFlexCellFormatter();
-			for (i = 0; i < m_flexTable.getCellCount( row ); ++i )
-			{
-				ColWidthUnit unit;
-				Element tdElement;
-				int width;
-				String widthStr;
-				
-				// Get the width unit for this column.
-				unit = m_properties.getColWidthUnit( i );
-				
-				// Get the width of this column.
-				widthStr = m_properties.getColWidth( i );
-				
-				// Are we dealing with percentage?
-				if ( unit == ColWidthUnit.PERCENTAGE )
-				{
-					// Yes
-					try
-					{
-						width = Integer.parseInt( widthStr );
-					}
-					catch (Exception ex)
-					{
-						// Error parsing the width, default to 25%
-						width = 25;
-					}
-					
-					// IE does not allow a width of 0%.  If the width is 0 set it to 1.
-					if ( width == 0 )
-						width = 1;
-					
-					widthStr = String.valueOf( width );
-				}
-				
-				widthStr = widthStr + unit.getHtmlUnit();
-
-				// IE chokes if we call cellFormatter.setWidth(...) and pass in "*" for the width.
-				// That is why we call tdElement.setAttribute(...)
-				//cellFormatter.setWidth( 0, i, widthStr );
-				tdElement = cellFormatter.getElement( row, i );
-				tdElement.setAttribute( "width", widthStr );
-				
-				// Set the vertical alignment of this cell to "top".
-				cellFormatter.setVerticalAlignment( row, i, HasVerticalAlignment.ALIGN_TOP );
-			}
-		}
+		// Set the width of the table
+		setTableWidth();
 	}// end updateWidget()
 	
 }// end TableDropWidget

@@ -2135,6 +2135,7 @@ body, table td, select
 	background-color: #E5E5E5;
 	border: 1px solid #AEAEAE;
 	padding: 6px;
+	overflow: hidden;
 }
 
 /* Styles for the "Html" widget. */
@@ -2308,6 +2309,7 @@ body, table td, select
 {
 	border: 0px;
 	border-collapse: collapse !important;
+	table-layout: fixed;
 }
 
 /* Styles used for a drop zone found in a table. */
@@ -2316,7 +2318,7 @@ body, table td, select
 	background-color: #FFFFFF;
 	border: 1px solid #999999;
 	height: 100%;
-	width: 100%;
+	overflow: hidden;
 }
 
 /* Styles used for a drop zone found in a table. */

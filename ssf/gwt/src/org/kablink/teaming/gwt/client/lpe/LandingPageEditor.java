@@ -245,7 +245,7 @@ public class LandingPageEditor extends Composite
 				}// end run()
 			};
 			
-			timer.schedule( 250 );
+			timer.schedule( 500 );
 		}
 	}// end LandingPageEditor()
 	
