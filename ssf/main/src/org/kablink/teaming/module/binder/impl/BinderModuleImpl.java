@@ -4009,7 +4009,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
         Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
         return getCoreDao().getAuditTrailEntries(zoneId, sinceDate, binderKeys, recursive, entryIds,
                 new AuditTrail.AuditType[]{AuditTrail.AuditType.delete, AuditTrail.AuditType.preDelete},
-                new EntityType[] {EntityType.folderEntry,EntityType.folderEntry,EntityType.workspace}, maxResults);
+                new EntityType[] {EntityType.folderEntry,EntityType.folder,EntityType.workspace}, maxResults);
     }
 
     private Map searchForChangedEntities(Long [] binderIds, Long [] entryIds, Date sinceDate, boolean recursive, boolean libraryOnly, boolean binders, boolean entries, boolean attachments, int maxResults){
