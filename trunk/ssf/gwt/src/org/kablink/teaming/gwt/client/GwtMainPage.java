@@ -811,9 +811,12 @@ public class GwtMainPage extends ResizeComposite
 		
 		// Create the WorkspaceTree control.
 		m_wsTreeCtrl.addStyleName( "mainWorkspaceTreeControl" );
+		m_wsTreeCtrl.setVisible( m_requestInfo.getShouldShowWSTreeControl() );
 		m_splitLayoutPanel.addWest( m_wsTreeCtrl, GwtConstants.SIDEBAR_TREE_WIDTH );
 		
 		// Create the content control.
+		if ( m_requestInfo.getShouldShowWSTreeControl() == false )
+			m_contentCtrl.addStyleName( "mainWorkspaceTreeControl" );
 		m_contentCtrl.addStyleName( "mainContentControl" );
 		
 		m_activityStreamCtrl.hide();
@@ -1858,7 +1861,7 @@ public class GwtMainPage extends ResizeComposite
 
 			// No
 			// Save the current ui state so we can restore it when the user moves to another page.
-			saveUIState();
+			//!!!saveUIState();
 			
 			// Hide or show the sidebar.
 			if ( hideSidebar )

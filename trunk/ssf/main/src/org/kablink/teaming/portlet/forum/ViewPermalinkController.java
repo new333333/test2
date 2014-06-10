@@ -33,6 +33,8 @@
 package org.kablink.teaming.portlet.forum;
 
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import javax.portlet.ActionRequest;
@@ -42,10 +44,13 @@ import javax.portlet.RenderResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.dom4j.Document;
+import org.dom4j.Node;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.asmodule.zonecontext.ZoneContextHolder;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Binder;
+import org.kablink.teaming.domain.CustomAttribute;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.domain.FileAttachment;
@@ -57,6 +62,7 @@ import org.kablink.teaming.domain.NoFolderEntryByTheIdException;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.module.binder.BinderModule;
+import org.kablink.teaming.module.definition.DefinitionModule;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.shared.AccessUtils;
 import org.kablink.teaming.portletadapter.AdaptedPortletURL;
@@ -71,6 +77,7 @@ import org.kablink.teaming.util.stringcheck.StringCheckUtil;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.portlet.SAbstractController;
 import org.kablink.teaming.web.util.BinderHelper;
+import org.kablink.teaming.web.util.DefinitionHelper;
 import org.kablink.teaming.web.util.GwtUIHelper;
 import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.PermaLinkUtil;
@@ -738,6 +745,81 @@ public class ViewPermalinkController  extends SAbstractController {
 				
 				// ...and setup the standard beans
 				BinderHelper.setupStandardBeans( this, request, response, model );
+
+				// Figure out if we are dealing with a landing page?
+				{
+					Binder binder;
+				   	boolean showWSTreeControl = true;
+					
+					try
+					{
+						binder = getBinderModule().getBinder( Long.parseLong( binderId ) );
+
+						if ( binder != null )
+						{
+							Map<String,Object> tmpModel = new HashMap<String,Object>();
+							Document configDocument;
+							
+							// Get the binder's definition
+							DefinitionHelper.getDefinitions( binder, tmpModel );
+							configDocument = (Document) tmpModel.get( WebKeys.CONFIG_DEFINITION );
+							
+							if ( configDocument != null )
+							{
+								@SuppressWarnings("rawtypes")
+								List nodes;
+								
+						    	nodes = configDocument.selectNodes( "//item[@type='form']//item[@type='data' and @name='mashupCanvas']/properties/property[@name='name']/@value" );
+						    	if ( nodes != null )
+						    	{
+						        	@SuppressWarnings("rawtypes")
+									Iterator it;
+
+						        	it = nodes.iterator();
+						        	if ( it.hasNext() )
+						        	{
+						        		Node node;
+							    		CustomAttribute attr;
+							    		String attrName;
+						        		
+							    		// We are working with a landing page.
+							    		// See if we can determine whether the side bar should be hidden
+						        		node = (Node)it.next();
+							    		attrName = node.getStringValue();
+
+							    		if ( attrName == null )
+							    			attrName = "mashup";
+							    		
+							    		attr = binder.getCustomAttribute( attrName + DefinitionModule.MASHUP_HIDE_SIDEBAR );
+							    		if ( attr != null )
+							    		{
+							    			Object value;
+							    			
+							    			value = attr.getValue();
+							    			if ( value != null && value instanceof Boolean )
+							    			{
+							    				Boolean boolValue;
+							    				
+							    				boolValue = (Boolean) value;
+							    				if ( boolValue == false )
+							    					showWSTreeControl = true;
+							    				else
+							    					showWSTreeControl = false;
+							    			}
+							    		}
+						        	}
+						        }
+							}
+						}
+					}
+					catch ( Exception ex )
+					{
+						// Nothing to do
+					}
+
+					model.put( "showWSTreeControl", Boolean.toString( showWSTreeControl ) );
+				}
+
 				return new ModelAndView( "forum/GwtMainPage", model );
 			}
 		}
