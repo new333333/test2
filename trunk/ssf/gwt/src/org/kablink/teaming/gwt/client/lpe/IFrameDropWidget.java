@@ -79,6 +79,7 @@ public class IFrameDropWidget extends DropWidget
 	/**
 	 * Create a configuration string that represents this widget and that can be stored in the db.
 	 */
+	@Override
 	public String createConfigString()
 	{
 		return m_properties.createConfigString();
@@ -88,6 +89,7 @@ public class IFrameDropWidget extends DropWidget
 	/**
 	 * Return the drag proxy object that should be displayed when the user drags this item.
 	 */
+	@Override
 	public DragProxy getDragProxy()
 	{
 		if ( m_dragProxy == null )
@@ -103,6 +105,7 @@ public class IFrameDropWidget extends DropWidget
 	/**
 	 * Return the dialog box used to edit the properties of this widget.
 	 */
+	@Override
 	public void getPropertiesDlgBox( int x, int y, DlgBoxClient dBoxClient )
 	{
 		// Have we already created a dialog?
@@ -182,6 +185,7 @@ public class IFrameDropWidget extends DropWidget
 	/**
 	 * Create the appropriate ui based on the given properties.
 	 */
+	@Override
 	public void updateWidget( Object props )
 	{
 		if ( props instanceof IFrameProperties )
@@ -218,7 +222,14 @@ public class IFrameDropWidget extends DropWidget
 					iframeElement.setScrolling( value );
 				
 				iframeElement.setAttribute( "height", iframeProps.getHeightAsString() );
-				iframeElement.setAttribute( "width", iframeProps.getWidthAsString() );
+
+				// Set the width on the <iframe> element.
+				value = iframeProps.getWidthAsString();
+				if ( value != null && value.length() > 0 )
+					iframeElement.setAttribute( "width", value );
+				else
+					iframeElement.setAttribute( "width", "100%" );
+				
 				iframeElement.setSrc( iframeProps.getUrl() );
 			}
 		}
