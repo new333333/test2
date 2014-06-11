@@ -2976,9 +2976,6 @@ public class ShareThisDlg2 extends DlgBox
 			return false;
 		}
 
-		// Tell the "edit share" widget to save its changes
-		saveEditShareWidgetSettings();
-		
 		// Are there any shares to be deleted?
 		listOfShareItems = m_sharingInfo.getListOfToBeDeletedShareItems();
 		if ( listOfShareItems != null && listOfShareItems.size() > 0 )
