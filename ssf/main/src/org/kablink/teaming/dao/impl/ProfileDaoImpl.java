@@ -2688,6 +2688,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 		u.setDescription("");
 		u.setEntryDefId(p.getEntryDefId());
 		u.setWorkspaceId(p.getWorkspaceId());
+		u.setInternalId(p.getInternalId());
 		return u;
 	}
 	
