@@ -107,12 +107,15 @@ public class IFrameWidget extends VibeWidget
 		// Set the width of the panel
 		{
 			Style style;
-			int width;
+			Long width;
 			
 			style = mainPanel.getElement().getStyle();
 			
-			width = m_properties.getWidth();
-			style.setWidth( width, Unit.PX );
+			width = m_properties.getWidthLong();
+			if ( width != null )
+				style.setWidth( width, Unit.PX );
+			else
+				style.setWidth( 98, Unit.PCT );
 		}
 		
 		// Is there a title?
@@ -161,7 +164,18 @@ public class IFrameWidget extends VibeWidget
 				iframeElement.setScrolling( value );
 			
 			iframeElement.setAttribute( "height", m_properties.getHeightAsString() );
-			iframeElement.setAttribute( "width", m_properties.getWidthAsString() );
+			
+			// If a width has not been specified, make the iframe width 100%
+			{
+				Long width;
+				
+				width = m_properties.getWidthLong();
+				if ( width != null )
+					iframeElement.setAttribute( "width", m_properties.getWidthAsString() );
+				else
+					iframeElement.setAttribute( "width", "100%" );
+			}
+			
 			iframeElement.setSrc( m_properties.getUrl() );
 		}
 		
