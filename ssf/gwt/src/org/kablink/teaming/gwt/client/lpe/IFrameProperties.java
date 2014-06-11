@@ -55,7 +55,7 @@ public class IFrameProperties
 	private String m_name;
 	private String m_title;
 	private int m_height;
-	private int m_width;
+	private Long m_width;
 	private boolean m_showBorder;
 	private ScrollbarValue m_scrollbarValue;
 	
@@ -68,7 +68,7 @@ public class IFrameProperties
 		m_name = "";
 		m_title = null;
 		m_height = 200;
-		m_width = 400;
+		m_width = null;
 		m_showBorder = false;
 		m_scrollbarValue = ScrollbarValue.AUTO;
 	}
@@ -88,7 +88,7 @@ public class IFrameProperties
 			setUrl( iframeProps.getUrl() );
 			setName( iframeProps.getName() );
 			setHeight( iframeProps.getHeight() );
-			setWidth( iframeProps.getWidth() );
+			setWidthLong( iframeProps.getWidthLong() );
 			setShowBorder( iframeProps.getShowBorder() );
 			setScrollbarValue( iframeProps.getScrollbarValue() );
 			setTitle( iframeProps.getTitle() );
@@ -113,7 +113,9 @@ public class IFrameProperties
 			str += ",name=" + m_name;
 		
 		str += ",height=" + String.valueOf( m_height );
-		str += ",width=" + String.valueOf( m_width );
+		str += ",width=";
+		if ( m_width != null )
+			str += String.valueOf( m_width );
 		
 		if ( m_title != null && m_title.length() > 0 )
 		{
@@ -212,7 +214,7 @@ public class IFrameProperties
 	/**
 	 * 
 	 */
-	public int getWidth()
+	public Long getWidthLong()
 	{
 		return m_width;
 	}
@@ -222,7 +224,10 @@ public class IFrameProperties
 	 */
 	public String getWidthAsString()
 	{
-		return String.valueOf( m_width );
+		if ( m_width != null )
+			return String.valueOf( m_width );
+		
+		return "";
 	}
 	
 	/**
@@ -327,7 +332,7 @@ public class IFrameProperties
 	/**
 	 * 
 	 */
-	public void setWidth( int width )
+	public void setWidthLong( Long width )
 	{
 		m_width = width;
 	}
@@ -337,13 +342,19 @@ public class IFrameProperties
 	 */
 	public void setWidth( String width )
 	{
+		if ( width == null || width.length() == 0 )
+		{
+			setWidthLong( null );
+			return;
+		}
+		
 		try
 		{
-			setWidth( Integer.parseInt( width ) );
+			setWidthLong( Long.parseLong( width ) );
 		}
 		catch ( Exception ex )
 		{
-			setWidth( 400 );
+			setWidthLong( null );
 		}
 	}
 	
