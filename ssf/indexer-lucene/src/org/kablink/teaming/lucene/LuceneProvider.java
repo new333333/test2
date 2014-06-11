@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -81,6 +81,7 @@ import org.apache.lucene.store.MMapDirectory;
 import org.apache.lucene.store.NIOFSDirectory;
 import org.apache.lucene.store.RAMDirectory;
 import org.apache.lucene.store.SimpleFSDirectory;
+
 import org.kablink.teaming.lucene.analyzer.VibeIndexAnalyzer;
 import org.kablink.teaming.lucene.util.LanguageTaster;
 import org.kablink.teaming.lucene.util.TagObject;
@@ -90,8 +91,13 @@ import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
 import org.kablink.util.search.QueryParserFactory;
 
+/**
+ * ?
+ * 
+ * @author ?
+ */
+@SuppressWarnings({"deprecation", "unchecked"})
 public class LuceneProvider extends IndexSupport implements LuceneProviderMBean {
-	
 	private static final int UNSPECIFIED_INT = -1;
 	
 	private static final String FIND_TYPE_PERSONAL_TAGS = "personalTags";
@@ -197,6 +203,7 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 		logInfo("Lucene provider initialized");
 	}
 	
+	@Override
 	public String getIndexDirPath() {
 		return this.indexDirPath;
 	}
@@ -1054,9 +1061,16 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 	public String[] getSortedTitles(Query query, String sortTitleFieldName, String start, String end, int skipsize)
 			throws LuceneException {
 		long startTime = System.nanoTime();
+
+		boolean debugLogging = logger.isDebugEnabled();
+		if (debugLogging) {
+			String title  = ((null == sortTitleFieldName) ? "*no sortTitleFieldName*" : sortTitleFieldName);
+			String tuple1 = ((null == start) ? "*no start*" : start);
+			String tuple2 = ((null == end  ) ? "*no end*"   : end  );
+			logDebug("getSortedTitles(entry): startTitleFieldName=" + title + ", start=" + tuple1 + ", end=" + tuple2 + ", skipsize=" + skipsize + ", query=" + query.toString());
+		}
 		
 		ArrayList<String> titles = new ArrayList<String>();
-		ArrayList<ArrayList> resultTitles = new ArrayList<ArrayList>();
 		int count = 0;
 		String lastTerm = "";
 
@@ -1121,11 +1135,16 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 						}
 					}
 				} while (enumerator.next());
+				
+				int tsize = titles.size();
+				if (debugLogging) {
+					logDebug("getSortedTitles(post search): tsize=" + tsize);
+				}
+				
 				// if the size is odd, then add the final term to the end of the list
 				// if the final range is just the last term itself, then drop 
 				// the final range, and modify the previous range to include the final
 				// term.
-				int tsize = titles.size();
 				if ((tsize%2 ==1) && (tsize > 1)) {
 					if (lastTerm.equals(titles.get(tsize-1))) {
 						titles.set(tsize-2, lastTerm);
@@ -1150,6 +1169,13 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 
 		String[] retArray = new String[titles.size()];
 		retArray = titles.toArray(retArray);
+		
+		if (debugLogging) {
+			logDebug("getSortedTitles(complete): retArray.length=" + retArray.length);
+			for (int i = 0; i < retArray.length; i += 1) {
+				logDebug("...retArray[" + i + "]=" + retArray[i]);
+			}
+		}
 	    
 	    end(startTime, "getSortedTitles(Query,String,String,int)", query, retArray.length);
 		
@@ -1159,6 +1185,14 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 	
 	public ArrayList getSortedTitlesAsList(Query query, String sortTitleFieldName, String start, String end,
 			int skipsize) throws LuceneException {
+		boolean debugLogging = logger.isDebugEnabled();
+		if (debugLogging) {
+			String title  = ((null == sortTitleFieldName) ? "*no sortTitleFieldName*" : sortTitleFieldName);
+			String tuple1 = ((null == start) ? "*no start*" : start);
+			String tuple2 = ((null == end  ) ? "*no end*"   : end  );
+			logDebug("getSortedTitlesAsList(entry): startTitleFieldName=" + title + ", start=" + tuple1 + ", end=" + tuple2 + ", skipsize=" + skipsize + ", query=" + query.toString());
+		}
+		
 		String[] normResults = getSortedTitles(query, sortTitleFieldName, start, end, skipsize);
 		
 		ArrayList<ArrayList> resultTitles = new ArrayList<ArrayList>();
@@ -1173,7 +1207,18 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 				break;
 			tuple.add((String) iter.next());
 			resultTitles.add(tuple);
-		}	
+		}
+		
+		if (debugLogging) {
+			logDebug("getSortedTitlesAsList(complete): resultTitles.size()=" + resultTitles.size());
+			for (int i = 0; i < resultTitles.size(); i += 1) {
+				ArrayList al = resultTitles.get(i);
+				String tuple1 = ((String) al.get(0));
+				String tuple2 = ((String) al.get(1));
+				logDebug("...resultTitles.get(" + i + "): tuple1=" + tuple1 + ", tuple2=" + tuple2);
+			}
+		}
+		
 		return resultTitles;
 	}
 	
@@ -1322,6 +1367,7 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 		}
 	}
 	
+	@SuppressWarnings("unused")
 	private void end(long begin, String methodName, Query query, String tagBefore, String tagAfter, int length) {
 		endStat(begin, methodName);
 		if(logger.isTraceEnabled()) {
@@ -1398,7 +1444,8 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 		}
 		
 	    // requires monitor so that the copy contains consistent values between the two variables. 
-	    private synchronized CommitStat copy() {
+	    @SuppressWarnings("unused")
+		private synchronized CommitStat copy() {
 	    	CommitStat copy = new CommitStat();
 	    	copy.firstOpTimeSinceLastCommit = this.firstOpTimeSinceLastCommit;
 	    	copy.numberOfOpsSinceLastCommit = this.numberOfOpsSinceLastCommit;
@@ -1784,7 +1831,5 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 		} catch (ParseException e) {
 			throw newLuceneException("Error parsing query", e);
 		}
-		
-
 	}
 }
