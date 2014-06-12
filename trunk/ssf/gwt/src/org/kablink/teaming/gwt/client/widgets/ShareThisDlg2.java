@@ -413,6 +413,14 @@ public class ShareThisDlg2 extends DlgBox
 					}
 				}
 				
+				// Is this user disabled?
+				if ( user.isDisabled() )
+				{
+					// Yes, can't share with a disabled user
+					Window.alert( GwtTeaming.getMessages().shareDlg_cantShareWithDisabledUser( user.getName() ) );
+					return null;
+				}
+				
 				shareItem = new GwtShareItem();
 				title = user.getTitle();
 				if ( title == null || title.length() == 0 )
@@ -2280,6 +2288,7 @@ public class ShareThisDlg2 extends DlgBox
 					case failsBlacklistDomain:
 					case failsBlacklistEMA:
 					case failsWhitelist:
+					case disabledUser:
 						String msg = null;
 						switch ( status )
 						{
@@ -2293,6 +2302,10 @@ public class ShareThisDlg2 extends DlgBox
 							
 						case failsWhitelist:
 							msg = messages.shareDlg_emailAddressInvalid_wl_Param( emailAddr );
+							break;
+						
+						case disabledUser:
+							msg = messages.shareDlg_cantShareWithDisabledUser( emailAddr );
 							break;
 						}
 						

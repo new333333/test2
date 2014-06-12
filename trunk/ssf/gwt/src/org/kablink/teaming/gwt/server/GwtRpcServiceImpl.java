@@ -49,6 +49,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.tools.ant.taskdefs.email.EmailAddress;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.ProfileDao;
@@ -821,27 +822,38 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 							if ( gwtUser != null )
 							{
 								// Yes
-								// Did we find an external user?
-								if ( gwtUser.getUserType().isExternal() )
+								// Is the user disabled?
+								if ( gwtUser.isDisabled() )
 								{
 									// Yes
-									// Are we supposed to validate the email address?
-									if ( fuCmd.isValidateExternalEMA() )
+									gwtUser = null;
+									responseData.addEmailStatus( ema, EmailAddressStatus.disabledUser );
+								}
+								else
+								{
+									// No
+									// Did we find an external user?
+									if ( gwtUser.getUserType().isExternal() )
 									{
-										EmailAddressStatus emaStatus = null;
-
 										// Yes
-										// Is the email address valid?
-										emaStatus = GwtServerHelper.validateEmailAddressImpl(
-																						ami,
-																						ema,
-																						true,
-																						AddressField.MAIL_TO );
-										if ( emaStatus != null && emaStatus.isInvalid() )
+										// Are we supposed to validate the email address?
+										if ( fuCmd.isValidateExternalEMA() )
 										{
-											// No
-											gwtUser = null;
-											responseData.addEmailStatus( ema, emaStatus );
+											EmailAddressStatus emaStatus = null;
+	
+											// Yes
+											// Is the email address valid?
+											emaStatus = GwtServerHelper.validateEmailAddressImpl(
+																							ami,
+																							ema,
+																							true,
+																							AddressField.MAIL_TO );
+											if ( emaStatus != null && emaStatus.isInvalid() )
+											{
+												// No
+												gwtUser = null;
+												responseData.addEmailStatus( ema, emaStatus );
+											}
 										}
 									}
 								}
