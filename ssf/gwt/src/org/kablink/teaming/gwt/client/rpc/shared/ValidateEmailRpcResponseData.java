@@ -52,6 +52,8 @@ public class ValidateEmailRpcResponseData implements IsSerializable, VibeRpcResp
 		failsWhitelist,
 		
 		failsFormat,
+		
+		disabledUser,
 
 		valid;
 
@@ -60,6 +62,7 @@ public class ValidateEmailRpcResponseData implements IsSerializable, VibeRpcResp
 		 * 
 		 * @return
 		 */
+		public boolean disabledUser()         {return disabledUser.equals(        this);                        }
 		public boolean failsBlackListDomain() {return failsBlacklistDomain.equals(this);                        }
 		public boolean failsBlackListEMA()    {return failsBlacklistEMA.equals(   this);                        }
 		public boolean failsBlackList()       {return (this.failsBlackListDomain() || this.failsBlackListEMA());}

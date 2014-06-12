@@ -55,6 +55,7 @@ public class GwtUser extends GwtPrincipal
 	private String m_avatarUrl;
 	private ExtUserProvState m_extUserProvState;
 	private UserType m_userType = UserType.UNKNOWN;
+	private boolean m_disabled = false;
 	
 	/**
 	 * This represents the provisioned state of an external user.
@@ -242,9 +243,25 @@ public class GwtUser extends GwtPrincipal
 	/**
 	 * 
 	 */
+	public boolean isDisabled()
+	{
+		return m_disabled;
+	}
+	
+	/**
+	 * 
+	 */
 	public void setAvatarUrl( String url )
 	{
 		m_avatarUrl = url;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setDisabled( boolean disabled )
+	{
+		m_disabled = disabled;
 	}
 	
 	/**

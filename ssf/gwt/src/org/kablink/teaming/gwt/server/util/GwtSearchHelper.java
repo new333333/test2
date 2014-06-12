@@ -39,6 +39,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
+import java.util.TreeSet;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -50,6 +51,8 @@ import org.kablink.teaming.domain.Description;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.domain.IdentityInfo;
+import org.kablink.teaming.domain.NoUserByTheIdException;
+import org.kablink.teaming.domain.NoUserByTheNameException;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserPrincipal;
@@ -132,7 +135,8 @@ public class GwtSearchHelper
 	
 	
 	/**
-	 * Try to find a user with the given email address
+	 * Try to find a user with the given email address.
+	 * --- WARNING --- This method will return disabled users.
 	 */
 	public static GwtUser findUserByEmailAddress(
 		AllModulesInjected ami,
@@ -154,6 +158,29 @@ public class GwtSearchHelper
 				// Didn't find a user
 				// Try to find the user by their text email address
 				users = ami.getProfileModule().getUsersByEmail( emailAddress, Principal.TEXT_EMAIL );
+			}
+		}
+		
+		// Did we find a user with the given email address?
+		if ( users == null || users.size() == 0 )
+		{
+			User user = null;
+			
+			// No
+			// Try to find the user by name.
+			try
+			{
+				user = ami.getProfileModule().getUserDeadOrAlive( emailAddress );
+
+				if ( user != null && user.isDeleted() == false )
+				{
+					users = new TreeSet<User>();
+					users.add( user );
+				}
+			}
+			catch ( NoUserByTheNameException ex )
+			{
+				// We can ignore this.
 			}
 		}
 		
@@ -881,19 +908,19 @@ public class GwtSearchHelper
 			userIdL = new Long( userId );
 			if ( userIdL != null )
 			{
-				ArrayList<Long> userAL;
-				Set<User> userSet;
-				User[] users;
+				try
+				{
+					user = pm.getUserDeadOrAlive( userIdL );
+				}
+				catch ( NoUserByTheIdException ex )
+				{
+					// Nothing to do
+				}
 				
-				userAL = new ArrayList<Long>();
-				userAL.add( userIdL );
-				userSet = pm.getUsers( userAL );
-				users = userSet.toArray( new User[0] );
-				if ( 1 <= users.length )
+				if ( user != null && user.isDeleted() == false )
 				{
 					// If we are searching for a person and this user
 					// is not a person...
-					user = users[0];
 					if ( ( searchType == GwtSearchCriteria.SearchType.PERSON ) && ( ! ( user.isPerson() ) ) )
 					{
 						// ...ignore it.
@@ -943,6 +970,7 @@ public class GwtSearchHelper
 				reply.setWorkspaceTitle( user.getWSTitle() );
 				reply.setEmail( user.getEmailAddress() );
 				reply.setAvatarUrl( GwtServerHelper.getUserAvatarUrl( ami, request, user ) );
+				reply.setDisabled( user.isDisabled() );
 				
 				GwtServerHelper.setExtUserProvState( reply, user );
 				
