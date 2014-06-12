@@ -1057,6 +1057,14 @@ public class EditLdapServerConfigDlg extends DlgBox
 		// Get the selected directory type
 		dirType = getSelectedDirType();
 		
+		danceDlg( dirType );
+	}
+	
+	/**
+	 * 
+	 */
+	private void danceDlg( String dirType )
+	{
 		// Add or remove attribute names from the "account name attribute" listbox
 		// depending on the selected dir type
 		{
@@ -1469,6 +1477,23 @@ public class EditLdapServerConfigDlg extends DlgBox
 		return m_userSearchesSelectionModel.getSelectedSet();
 	}
 
+	/**
+	 * Return the directory type as found in the ldap configuration 
+	 */
+	private String getDirTypeFromConfig( GwtLdapConnectionConfig config )
+	{
+		String dirType;
+		String guidValue;
+
+		guidValue = config.getLdapGuidAttribute();
+		if ( guidValue == null || guidValue.length() == 0 )
+			dirType = DIR_TYPE_EDIR;
+		else
+			dirType = guidValue;
+		
+		return dirType;
+	}
+	
 	/*
 	 * Returns a DirectoryServer object the LDAP browser can use to
 	 * authenticate to the tree.
@@ -1622,6 +1647,8 @@ public class EditLdapServerConfigDlg extends DlgBox
 	 */
 	public void init( GwtLdapConnectionConfig config, String defaultUserFilter, String defaultGroupFilter )
 	{
+		String dirType;
+		
 		// Add all the possible attribute names to the listbox
 		{
 			GwtTeamingMessages messages;
@@ -1646,6 +1673,9 @@ public class EditLdapServerConfigDlg extends DlgBox
 		if ( config == null )
 			return;
 		
+		dirType = getDirTypeFromConfig( config );
+		danceDlg( dirType );
+
 		m_serverUrlTextBox.setValue( config.getServerUrl() );
 		m_proxyDnTextBox.setValue( config.getProxyDn() );
 		m_proxyPwdTextBox.setValue( config.getProxyPwd() );
@@ -1660,8 +1690,6 @@ public class EditLdapServerConfigDlg extends DlgBox
 
 		if ( m_serverConfig.isDirty() == false )
 			m_serverConfig.setIsDirtySearchInfo( false );
-		
-		danceDlg();
 	}
 
 	/**
@@ -1878,16 +1906,8 @@ public class EditLdapServerConfigDlg extends DlgBox
 		
 		if ( config == null )
 			return;
-		
-		{
-			String guidValue;
 
-			guidValue = config.getLdapGuidAttribute();
-			if ( guidValue == null || guidValue.length() == 0 )
-				dirType = DIR_TYPE_EDIR;
-			else
-				dirType = guidValue;
-		}
+		dirType = getDirTypeFromConfig( config );
 
 		if ( dirType.equalsIgnoreCase( DIR_TYPE_EDIR ) == false && dirType.equalsIgnoreCase( DIR_TYPE_AD ) == false )
 		{
