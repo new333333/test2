@@ -36,6 +36,8 @@ import org.apache.commons.io.IOUtils;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.asmodule.bridge.SPropsUtilBridge;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.springframework.beans.factory.BeanInitializationException;
@@ -71,6 +73,8 @@ public class PrioritizedRequestFilter implements Filter {
     private PrioritizedRequestManager prioritizedRequestManager;
     private List<PriorityEndpoints> priorityEndpoints;
     private WebApplicationContext springContext;
+    // It is ok to use instance-level logger, since this class is instantiated only once (i.e., singleton).
+    private Log logger = LogFactory.getLog(getClass());
 
     public void setEndpointConfig(File endpointConfig) {
         priorityEndpoints = new ArrayList<PriorityEndpoints>();
@@ -137,6 +141,7 @@ public class PrioritizedRequestFilter implements Filter {
         try {
             if (!prioritizedRequestManager.incrementInProgressOrFail(priority)) {
                 prioritizedRequestManager.incrementRejected(priority);
+                logger.info("Cannot serve request for '" + method + " " + path + "' right now because there are too many requests in progress.  Returning HTTP 503.");
                 ((HttpServletResponse)response).sendError(HttpServletResponse.SC_SERVICE_UNAVAILABLE);
             } else {
                 try {
