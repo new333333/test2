@@ -79,6 +79,9 @@ public class GangliaMonitoring {
 	private AtomicLong filePreviewConversions = new AtomicLong();
 	private AtomicInteger filePreviewConversionsSince = new AtomicInteger();
 	
+	private AtomicLong deferredUpdateLog = new AtomicLong();
+	private AtomicInteger deferredUpdateLogSince = new AtomicInteger();
+	
 	private Thread task;
 	
 	public GangliaMonitoring() {
@@ -142,6 +145,12 @@ public class GangliaMonitoring {
 		return instance.filePreviewConversions.addAndGet(1);
 	}
 	
+	public static long incrementDeferredUpdateLog() {
+		if(instance == null) return 0; // not ready
+		instance.deferredUpdateLogSince.addAndGet(1);
+		return instance.deferredUpdateLog.addAndGet(1);
+	}
+		
 	void dump() throws IOException {
 		File gangliaDir = new File(DirPath.getWebappRootDirPath() + "/../../var/ganglia");
 		if(!gangliaDir.exists()) {
@@ -241,6 +250,19 @@ public class GangliaMonitoring {
 			 * Number of actual file "preview" conversions (via Stellent) since the last time the information was dumped.
 			 */
 			writeProperty(writer, "filePreviewConversionsSince", String.valueOf(instance.filePreviewConversionsSince));
+			/*
+			 * Number of deferred update logs generated for any index node since this server started.
+			 * Note that this number is specific to the Filr Appliance executing this code, but is NOT
+			 * specific to any one Search Appliance.
+			 */
+			writeProperty(writer, "deferredUpdateLog", String.valueOf(instance.deferredUpdateLog));
+			/*
+			 * Number of deferred update logs generated for any index node since the last time the
+			 * information was dumped.
+			 * Note that this number is specific to the Filr Appliance executing this code, but is NOT
+			 * specific to any one Search Appliance.
+			 */
+			writeProperty(writer, "deferredUpdateLogSince", String.valueOf(instance.deferredUpdateLogSince));
 		}
 		finally {
 			// Reset/clear variables as appropriate.
@@ -253,6 +275,7 @@ public class GangliaMonitoring {
 			instance.failedLoginsSince.set(0);
 			instance.filePreviewRequestsSince.set(0);
 			instance.filePreviewConversionsSince.set(0);
+			instance.deferredUpdateLogSince.set(0);
 			// Close the output file.
 			writer.close();
 		}
