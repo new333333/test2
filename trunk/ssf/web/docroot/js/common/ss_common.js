@@ -7155,17 +7155,17 @@ function ssEditAppConfig(menuDIV) {
 	
 	// ...define the extension/application mappings for Open Office...
 	this.ooMap			= new Array();
-	this.ooMap['.odf']	= "ooffice";
-	this.ooMap['.odg']	= "ooffice";
-	this.ooMap['.odp']	= "ooffice";
-	this.ooMap['.ods']	= "ooffice";
-	this.ooMap['.odt']	= "ooffice";
-	this.ooMap['.sxw']	= "ooffice";
-	this.ooMap['.doc']	= "ooffice";
-	this.ooMap['.xls']	= "ooffice";
-	this.ooMap['.ppt']	= "ooffice";
-	this.ooMap['.rtf']	= "ooffice";
-	this.ooMap['.txt']	= "ooffice";
+	this.ooMap['.odf']	= "soffice";
+	this.ooMap['.odg']	= "soffice";
+	this.ooMap['.odp']	= "soffice";
+	this.ooMap['.ods']	= "soffice";
+	this.ooMap['.odt']	= "soffice";
+	this.ooMap['.sxw']	= "soffice";
+	this.ooMap['.doc']	= "soffice";
+	this.ooMap['.xls']	= "soffice";
+	this.ooMap['.ppt']	= "soffice";
+	this.ooMap['.rtf']	= "soffice";
+	this.ooMap['.txt']	= "soffice";
 	
 	// ...define the extension/application mappings for Star Office...
 	this.soMap			= new Array();
