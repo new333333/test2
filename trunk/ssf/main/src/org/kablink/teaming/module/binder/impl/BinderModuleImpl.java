@@ -908,13 +908,38 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 					if (clearAll) {
 						if(logger.isDebugEnabled())
 							logger.debug("Optimizing indexes");
-						LuceneWriteSession luceneSession = getLuceneSessionFactory()
+						final LuceneWriteSession luceneSession = getLuceneSessionFactory()
 								.openWriteSession(nodeNames);
 						try {
-							luceneSession.optimize();
-						} catch (Exception e) {
-							logger.warn("Exception:" + e);
-						} finally {
+							long dbConnHearbeatInterval = SPropsUtil.getLong("database.connection.heartbeat.interval", 180000);
+							String dbConnHearbeatQuery = SPropsUtil.getString("database.connection.heartbeat.query", "SELECT 1");
+							Runnable optimizeTask = new Runnable() {
+								@Override
+								public void run() {
+									if(logger.isDebugEnabled())
+										logger.debug("Executing index optimize in a separate thread");
+									try {
+										luceneSession.optimize();
+									}
+									catch(Exception e) {
+										logger.error("Error during index optimize", e);
+									}
+									if(logger.isDebugEnabled())
+										logger.debug("Completed index optimize in a separate thread");
+								}
+							};
+							Thread optimizeThread = new Thread(optimizeTask, Thread.currentThread().getName() + "-optimize");
+							optimizeThread.start();
+							do {
+								if(logger.isDebugEnabled())
+									logger.debug("Executing heartbeat query on the connection during optimize");
+								getCoreDao().executeHeartbeatQuery(dbConnHearbeatQuery);
+								try {
+									optimizeThread.join(dbConnHearbeatInterval);
+								} catch (InterruptedException e) {}
+							} while(optimizeThread.isAlive());
+						}
+						finally {
 							luceneSession.close();
 						}
 					}
@@ -1083,7 +1108,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 					helperThreads[i].join(dbConnHearbeatInterval);
 					if(System.currentTimeMillis() - lastHeartbeatTime >= dbConnHearbeatInterval) {
 						if(logger.isDebugEnabled())
-							logger.debug("Executing heartbeat query on the connection");
+							logger.debug("Executing heartbeat query on the connection during indexing");
 						getCoreDao().executeHeartbeatQuery(dbConnHearbeatQuery);
 						lastHeartbeatTime = System.currentTimeMillis();
 					}
