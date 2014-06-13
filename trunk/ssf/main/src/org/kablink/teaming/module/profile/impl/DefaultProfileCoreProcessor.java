@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -45,11 +45,11 @@ import java.util.TimeZone;
 import java.util.Locale;
 
 import org.dom4j.Element;
-import org.hibernate.exception.LockAcquisitionException;
 import org.kablink.teaming.NotSupportedException;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.calendar.TimeZoneHelper;
 import org.kablink.teaming.context.request.RequestContextHolder;
+import org.kablink.teaming.dao.CoreDao;
 import org.kablink.teaming.dao.util.FilterControls;
 import org.kablink.teaming.dao.util.SFQuery;
 import org.kablink.teaming.domain.Application;
@@ -59,6 +59,7 @@ import org.kablink.teaming.domain.ChangeLog;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.EntityIdentifier;
+import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.domain.Entry;
 import org.kablink.teaming.domain.Event;
 import org.kablink.teaming.domain.FileAttachment;
@@ -94,7 +95,6 @@ import org.kablink.teaming.util.SZoneConfig;
 import org.kablink.teaming.util.SimpleProfiler;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
-import org.springframework.dao.CannotAcquireLockException;
 import org.springframework.orm.hibernate3.HibernateOptimisticLockingFailureException;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -995,7 +995,8 @@ protected void modifyEntry_indexAdd(Binder binder, Entry entry,
 		return changes;
 	}    
 	
-    protected void addEntry_indexAdd(Binder binder, Entry entry, 
+    @Override
+	protected void addEntry_indexAdd(Binder binder, Entry entry, 
     		InputDataAccessor inputData, List fileUploadItems, Map ctx){
     	// As part of the fix for bug 874784, we need to index container groups because we need to
     	// be able to assign a container rights to a net folder.
@@ -1012,6 +1013,32 @@ protected void modifyEntry_indexAdd(Binder binder, Entry entry,
     
     @Override
     protected List<Entry> indexEntries_loadEntries(List<Long> ids, Long zoneId) {
-    	return getCoreDao().loadObjects(ids, Principal.class, zoneId);
+    	CoreDao cd = getCoreDao();
+    	List<Entry> reply = cd.loadObjects(ids, Principal.class, zoneId);
+    	if ((null != reply) && (!(reply.isEmpty()))) {
+			// Resolve any proxies.
+    		List<Entry> resolved = new ArrayList<Entry>();
+    		for (Entry entry:  reply) {
+    			if (entry instanceof UserPrincipal) {
+    				Long entryId = entry.getId();
+    				EntityType et = entry.getEntityType();
+	    			if (et.equals(EntityType.user) && (!(entry instanceof User))) {
+	    				entry = ((User) cd.load(User.class, entryId));
+	    			}
+	    			else if (et.equals(EntityType.group) && (!(entry instanceof Group))) {
+	    				entry = ((Group) cd.load(Group.class, entryId));
+	    			}
+	    			else if (et.equals(EntityType.application) && (!(entry instanceof Application))) {
+	    				entry = ((Application) cd.load(Application.class, entryId));
+	    			}
+	    			else if (et.equals(EntityType.applicationGroup) && (!(entry instanceof ApplicationGroup))) {
+	    				entry = ((ApplicationGroup) cd.load(ApplicationGroup.class, entryId));
+	    			}
+    			}
+    			resolved.add(entry);
+    		}
+    		reply = resolved;
+    	}
+    	return reply;
     }
 }
