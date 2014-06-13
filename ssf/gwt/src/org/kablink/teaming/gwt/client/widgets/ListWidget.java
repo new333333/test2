@@ -42,6 +42,7 @@ import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
@@ -73,15 +74,18 @@ public class ListWidget extends VibeWidget
 			
 			table = new FlexTable();
 			table.setCellSpacing( 0 );
+			table.getRowFormatter().setVerticalAlign( 0, HasVerticalAlignment.ALIGN_TOP );
 
-			imageResource = GwtTeaming.getImageBundle().breadSpace();
+			imageResource = GwtTeaming.getImageBundle().listItemArrow();
 			img = new Image( imageResource );
 			
 			table.setWidget( 0, 0, img );
 			table.setWidget( 0, 1, child );
 			child.addStyleName( "fontSizeMedium" );
 			table.getFlexCellFormatter().setWidth( 0, 1, "100%" );
-			
+
+			table.getCellFormatter().getElement( 0, 0 ).getStyle().setPaddingTop( .5, Unit.EM );
+
 			flowPanel = new VibeFlowPanel();
 			flowPanel.add( table );
 			
