@@ -45,6 +45,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
@@ -71,6 +72,8 @@ import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.WebKeys;
+import org.kablink.util.BrowserSniffer;
+import org.kablink.util.HttpHeaders;
 
 import org.springframework.web.multipart.MultipartFile;
 
@@ -89,6 +92,35 @@ public final class MiscUtil
 	public final static int COMPARE_GREATER	=   1;
 	public final static int COMPARE_LESS	= (-1);
 	
+	// The following string is used to recognize Chrome's user agent string.
+	private final static String CHROME_AGENT_MARKER		= "chrome/";
+	private final static int	CHROME_VERSION_PARTS	= 4;
+	
+	// The following is use as the key into the session cache where we
+	// store whether the user's browser supports NPAPI.
+	private final static String	BROWSER_SUPPORTS_NPAPI	= "browserSupportsNPAPI";
+	
+	/*
+	 * Enumeration type to specific the platform the browser is running
+	 * on.
+	 */
+	@SuppressWarnings("unused")
+	private enum BrowserPlatform {
+		LINUX,
+		MAC,
+		WINDOWS,
+		
+		UNKNOWN;
+		
+		boolean isLinux()   {return    this.equals(LINUX  );  }
+		boolean isMac()     {return    this.equals(MAC    );  }
+		boolean isWindows() {return    this.equals(WINDOWS);  }
+		boolean isValid()   {return (!(this.equals(UNKNOWN)));}
+	}
+
+	/**
+	 * Inner class...
+	 */
 	public static class IdTriple {
 		public Long		m_binderId;		//
 		public Long		m_entryId;		//
@@ -490,7 +522,7 @@ public final class MiscUtil
 	 * @return
 	 */
 	public static String getStaticPath() {
-		return ObjectKeys.STATIC_DIR + "/" + SPropsUtil.getString(ObjectKeys.STATIC_DIR_PROPERTY, "xxx") + "/";
+		return ObjectKeys.STATIC_DIR + "/" + SPropsUtil.getString(ObjectKeys.STATIC_DIR_PROPERTY, "repair") + "/";
 	}
 	
 	/**
@@ -502,7 +534,7 @@ public final class MiscUtil
 		String contextPath = request.getContextPath();
 		if (contextPath.endsWith("/")) contextPath = contextPath.substring(0,contextPath.length()-1);
 		return request.getContextPath() + "/" + ObjectKeys.STATIC_DIR + "/" + 
-				SPropsUtil.getString(ObjectKeys.STATIC_DIR_PROPERTY, "xxx") + "/";
+				SPropsUtil.getString(ObjectKeys.STATIC_DIR_PROPERTY, "repair") + "/";
 	}
 	
 	/**
@@ -887,7 +919,7 @@ public final class MiscUtil
 	private static final String ADMIN_GUIDE = "admin";
 
 	/**
-	 * Return the url that points to the appropriate help documentation.
+	 * Return the url that repairs to the appropriate help documentation.
 	 */
 	public static String getHelpUrl( String guideName, String pageId, String sectionId )
 	{
@@ -1342,4 +1374,150 @@ public final class MiscUtil
         return isPdf;
     }
 
+	/*
+	 * Returns true if the NPAPIs are supported in the current browser
+	 * and false otherwise.  Without NPAPI, there can be no Java
+	 * applets.
+	 */
+	private static boolean isNPAPISupportedImpl(HttpServletRequest req) {
+		// Are we running on Chrome?
+		if (BrowserSniffer.is_chrome(req)) {
+			// Yes!  Can we find the Chrome agent marker so we can
+			// split out its version and platform?
+			String userAgent = req.getHeader(HttpHeaders.USER_AGENT).toLowerCase();
+			int chromePos = userAgent.indexOf(CHROME_AGENT_MARKER);
+			if (0 < chromePos) {
+				// Yes!  Is there a space following the Chrome agent
+				// marker?  
+				String chromePart = userAgent.substring(chromePos + CHROME_AGENT_MARKER.length());
+				int spacePos = chromePart.indexOf(' ');
+				if (0 < spacePos) {
+					// Yes!  Can we parse it as a Chrome version
+					// string?
+					int[] vsn = parseChromeVersion(chromePart.substring(0, spacePos));
+					if (null != vsn) {
+						// Yes!  Can we find the platform information
+						// in the user agent string?
+						int prenPos = userAgent.indexOf('(');
+						int nerpPos = userAgent.indexOf(')');
+						int semiPos = userAgent.indexOf(';');
+						if (    (prenPos < chromePos) && (0       < prenPos) &&		// If there's a '(' before the 'Chrome/' and before the first ')'...
+								(nerpPos < chromePos) && (nerpPos > prenPos) &&		// ...and the ')' is before the 'Chrome/' and after the first '('...
+								(semiPos > prenPos)   && (semiPos < nerpPos)) {		// ...and there's a ';' between the '(' and ')'...
+							// Yes!  Can we determine the version NPAPI				// ...it should be the osString.
+							// support was dropped from Chrome on that
+							// platform?
+							String platformS = userAgent.substring((prenPos + 1), nerpPos);
+							BrowserPlatform platform;
+							if      (platformS.contains("linux"    )) platform = BrowserPlatform.LINUX;
+							else if (platformS.contains("macintosh")) platform = BrowserPlatform.MAC;
+							else if (platformS.contains("windows"  )) platform = BrowserPlatform.WINDOWS;
+							else                                      platform = BrowserPlatform.UNKNOWN;
+							int[] npapiDropped = getChromeNPAPIDroppedVersion(platform);
+							if (null != npapiDropped) {
+								// Yes!  Given Chrome's version and the
+								// version NPAPI was support was
+								// dropped on the platform, does this
+								// Chrome version support NPAPI?
+								return isNPAPISupportedInChrome(vsn, npapiDropped);
+							}
+						}
+					}
+				}
+			}
+		}
+		
+		// If we get here, we assume the NPAPIs are supported.  Return
+		// true.
+		return true;
+	}
+	
+	/**
+	 * Returns true if the NPAPIs are supported in the current browser
+	 * and false otherwise.  Without NPAPI, there can be no Java
+	 * applets.
+	 * 
+	 * @param req
+	 * 
+	 * @return
+	 */
+	public static boolean isNPAPISupported(HttpServletRequest req) {
+		// Do have whether NPAPI's are supported cached in the session?
+		HttpSession session = req.getSession();
+		Boolean npapiSupported = ((Boolean) session.getAttribute(BROWSER_SUPPORTS_NPAPI));
+		if (null == npapiSupported) {
+			// No!  Determine whether they are...
+			npapiSupported = Boolean.valueOf(isNPAPISupportedImpl(req));
+			
+			// ...and cache that value.
+			session.setAttribute(BROWSER_SUPPORTS_NPAPI, npapiSupported);
+		}
+		
+		// If we get here, npapiSupported is true if the NPAPI's are
+		// supported and false otherwise.  Return it.
+		return npapiSupported.booleanValue();
+	}
+
+
+	/*
+	 * Parses and returns the constituent parts of a Chrome version
+	 * string.
+	 */
+	private static int[] parseChromeVersion(String version) {
+		String[] versionParts = version.split(Pattern.quote("."));
+		if ((null != versionParts) && (CHROME_VERSION_PARTS == versionParts.length)) {
+			int[] reply = new int[CHROME_VERSION_PARTS];
+			for (int i = 0; i < CHROME_VERSION_PARTS; i += 1) {
+				try {reply[i] = Integer.parseInt(versionParts[i]);}
+				catch (Exception e) {return null;}
+			}
+			return reply;
+		}
+		return null;
+	}
+	
+	/*
+	 * Given the current version of Chrome and the version NPAPI
+	 * support was dropped in Chrome, returns true if NPAPIs are
+	 * supported and false otherwise. 
+	 */
+	private static boolean isNPAPISupportedInChrome(int[] currentVersion, int[] npapiDroppedVersion) {
+		int currentMajor  = currentVersion[0];
+		int currentMinor  = currentVersion[1];
+		int currentPoint  = currentVersion[2];
+		int currentRepair = currentVersion[3];
+		
+		int droppedMajor  = npapiDroppedVersion[0];
+		int droppedMinor  = npapiDroppedVersion[1];
+		int droppedPoint  = npapiDroppedVersion[2];
+		int droppedRepair = npapiDroppedVersion[3];
+		
+		if (currentMajor  > droppedMajor)  return false;	// Current major > dropped:  No NPAPI.   
+		if (currentMajor  < droppedMajor)  return true;		// Current major < dropped:  NPAPI should be there.
+		if (currentMinor  > droppedMinor)  return false;	// Current major = dropped, current minor > dropped:  No NPAPI.
+		if (currentMinor  < droppedMinor)  return true;		// Current major = dropped, current minor < dropped:  NPAPI should be there.
+		if (currentPoint  > droppedPoint)  return false;	// Current major = dropped, current minor = dropped, current point > dropped:  No NPAPI
+		if (currentPoint  < droppedPoint)  return false;	// Current major = dropped, current minor = dropped, current point < dropped:  NPAPI should be there.
+		if (currentRepair > droppedRepair) return false;	// Current major = dropped, current minor = dropped, current point = dropped, current repair > dropped:  No NPAPI
+		if (currentRepair < droppedRepair) return false;	// Current major = dropped, current minor = dropped, current point = dropped, current repair < dropped:  NPAPI should be there.
+
+		// Current major = dropped, current minor  = dropped,
+		// current point = dropped, current repair = dropped:  No NPAPI. 
+		return false;
+	}
+
+	/*
+	 * Returns the appropriate version of Chrome in which NPAPI support
+	 * was dropped for the given platform.
+	 */
+	private static int[] getChromeNPAPIDroppedVersion(BrowserPlatform platform) {
+		String key = "chrome.version.npapi.dropped.";
+		switch (platform) {
+		case LINUX:    key += "linux";   break;
+		case MAC:      key += "mac";     break;
+		case WINDOWS:  key += "windows"; break;
+		default:       return null;
+		}
+		return parseChromeVersion(SPropsUtil.getString(key, ""));
+	}
 }// end MiscUtil
