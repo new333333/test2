@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -43,6 +43,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * @author drfoster@novell.com
  */
 public class MainPageInfoRpcResponseData implements IsSerializable, VibeRpcResponseData {
+	private boolean		m_browserSupportsNPAPI;		//
 	private boolean		m_desktopAppEnabled;		//
 	private boolean		m_showDesktopAppDownloader;	//
 	private boolean		m_useHomeForMyFiles;		// true -> As user's Home folder serves as their My Files repository.  false -> It doesn't.
@@ -66,17 +67,19 @@ public class MainPageInfoRpcResponseData implements IsSerializable, VibeRpcRespo
 	 *
 	 * @param binderInfo
 	 * @param userAvatarUrl
+	 * @param browserSupportsNPAPI
 	 * @param desktopAppEnabled
 	 * @param showDesktopAppDownloader
 	 * @param useHomeAsMyFiles
 	 */
-	public MainPageInfoRpcResponseData(BinderInfo binderInfo, String userAvatarUrl, boolean desktopAppEnabled, boolean showDesktopAppDownloader, boolean useHomeAsMyFiles, boolean firstLogin, boolean superUser) {
+	public MainPageInfoRpcResponseData(BinderInfo binderInfo, String userAvatarUrl, boolean browserSupportsNPAPI, boolean desktopAppEnabled, boolean showDesktopAppDownloader, boolean useHomeAsMyFiles, boolean firstLogin, boolean superUser) {
 		// Initialize this object...
 		this();
 
 		// ...and store the parameters.
 		setBinderInfo(              binderInfo              );
 		setUserAvatarUrl(           userAvatarUrl           );
+		setBrowserSupportsNPAPI(    browserSupportsNPAPI    );
 		setDesktopAppEnabled(       desktopAppEnabled       );
 		setShowDesktopAppDownloader(showDesktopAppDownloader);
 		setUseHomeAsMyFiles(        useHomeAsMyFiles        );
@@ -89,6 +92,7 @@ public class MainPageInfoRpcResponseData implements IsSerializable, VibeRpcRespo
 	 * 
 	 * @return
 	 */
+	public boolean    browserSupportsNPAPI()       {return m_browserSupportsNPAPI;    }
 	public boolean    isDesktopAppEnabled()        {return m_desktopAppEnabled;       }
 	public boolean	  isFirstLogin()			   {return m_firstLogin;			  }
 	public boolean    isShowDesktopAppDownloader() {return m_showDesktopAppDownloader;}
@@ -102,6 +106,7 @@ public class MainPageInfoRpcResponseData implements IsSerializable, VibeRpcRespo
 	 * 
 	 * @param
 	 */
+	public void setBrowserSupportsNPAPI(    boolean    browserSupportsNPAPI)     {m_browserSupportsNPAPI     = browserSupportsNPAPI;    }
 	public void setDesktopAppEnabled(       boolean    desktopAppEnabled)        {m_desktopAppEnabled        = desktopAppEnabled;       }
 	public void setIsFirstLogin(			boolean	   firstLogin )				 {m_firstLogin				 = firstLogin;				}
 	public void setIsSuperUser(				boolean	   superUser )				 {m_isSuperUser				 = superUser;				}

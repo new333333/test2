@@ -49,6 +49,7 @@ import org.kablink.teaming.gwt.client.event.WindowTitleSetEvent;
 import org.kablink.teaming.gwt.client.lpe.LandingPageEditor;
 import org.kablink.teaming.gwt.client.profile.widgets.GwtProfilePage;
 import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData.ErrorInfo;
+import org.kablink.teaming.gwt.client.rpc.shared.MainPageInfoRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.tasklisting.TaskListing;
@@ -60,6 +61,7 @@ import org.kablink.teaming.gwt.client.widgets.DlgBox.DlgButtonMode;
 import org.kablink.teaming.gwt.client.widgets.MultiErrorAlertDlg.MultiErrorAlertDlgClient;
 import org.kablink.teaming.gwt.client.widgets.WidgetStyles;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Document;
@@ -277,6 +279,28 @@ public class GwtClientHelper {
 		return bFromS(s, false);
 	}
 
+	/**
+	 * Returns true if the browser supports NPAPI's and false
+	 * otherwise.
+	 * 
+	 * @return
+	 */
+	public static boolean browserSupportsNPAPI() {
+		// Can we access GwtMainPage?
+		GwtMainPage mainPage = GwtTeaming.getMainPage();
+		if (null != mainPage) {
+			// Yes!  Can we get it's information object?
+			MainPageInfoRpcResponseData mpData = mainPage.getMainPageInfo();
+			if (null != mpData) {
+				// Yes!  That contains the NPAPI flag.
+				return mpData.browserSupportsNPAPI();
+			}
+		}
+		
+		// If we get here, we just assume NPAPI support.
+		return true;
+	}
+	
 	/**
 	 * Returns a base Anchor widget.
 	 * 
@@ -1379,6 +1403,29 @@ public class GwtClientHelper {
 				}
 			});
 	}
+
+	/**
+	 * Asynchronously dumps the current agent information via an alert
+	 * dialog.
+	 */
+	public static void jsDumpAgentInfoAsync() {
+		if (isDebugUI()) {
+			deferCommand(new ScheduledCommand() {
+				@Override
+				public void execute() {
+					AgentBase agent        = GWT.create(Agent.class);
+					String    gwtAgent     = agent.getAgentName();
+					String    browserAgent = jsDumpAgentInfo();
+					
+					alertViaDlg("Browser Agent: " + browserAgent + ", GWT agent: " + gwtAgent);
+				}
+			});
+		}
+	}
+	
+	public static native String jsDumpAgentInfo() /*-{
+		return navigator.userAgent;
+	}-*/;
 	
 	/**
 	 * Invokes edit-in-place on a file using the applet.
