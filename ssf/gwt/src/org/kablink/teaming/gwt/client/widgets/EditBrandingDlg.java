@@ -1531,16 +1531,26 @@ public class EditBrandingDlg extends DlgBox
 	 */
 	private void updateSampleTextBgColor()
 	{
-		Element element;
-		Style style;
 		String color;
-		
-		element = m_sampleText.getElement();
-		style = element.getStyle();
 		
 		// Get the background color
 		color = m_backgroundColorTextbox.getText();
+		updateSampleTextBgColor( color );
+	}// end updateSampleTextBgColor()
+	
+	
+	/**
+	 * Update the background color of the sample text with the color that is found in the textbox.
+	 */
+	private void updateSampleTextBgColor( String color )
+	{
+		Element element;
+		Style style;
+		
+		element = m_sampleText.getElement();
+		style = element.getStyle();
 		style.clearBackgroundColor();
+		
 		if ( color != null && color.length() > 0 )
 		{
 			try
@@ -1563,6 +1573,7 @@ public class EditBrandingDlg extends DlgBox
 		Element element;
 		Style style;
 		String color;
+		String bgColor;
 		
 		element = m_sampleText.getElement();
 		style = element.getStyle();
@@ -1570,16 +1581,26 @@ public class EditBrandingDlg extends DlgBox
 		// Set the text color
 		color = m_textColorTextbox.getText();
 		style.clearColor();
-		if ( color != null && color.length() > 0 )
+
+		// Default text color is white
+		if ( color == null || color.length() == 0 )
+			color = "white";
+		
+		// Did the user specify a background color?
+		bgColor = m_backgroundColorTextbox.getText();
+		if ( bgColor == null || bgColor.length() == 0 )
 		{
-			try
-			{
-				style.setColor( color );
-			}
-			catch( Exception ex )
-			{
-				// Nothing to do.
-			}
+			// No, use a grey background
+			updateSampleTextBgColor( "grey" );
+		}
+		
+		try
+		{
+			style.setColor( color );
+		}
+		catch( Exception ex )
+		{
+			// Nothing to do.
 		}
 	}// end updateSampleTextColor()
 
