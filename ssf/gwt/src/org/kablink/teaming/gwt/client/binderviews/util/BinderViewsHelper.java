@@ -1510,6 +1510,12 @@ public class BinderViewsHelper {
 	 * applet to upload files and false otherwise.
 	 */
 	private static boolean keyForcedAppletUpload() {
+		// If the browser can't run Java applets...
+		if (!(GwtClientHelper.browserSupportsNPAPI())) {
+			// ...we never let a keystroke force it to be invoked.
+			return false;
+		}
+		
 		// Is the control key down?
 		boolean reply = GwtClientHelper.isControlKeyDown();
 		if (!reply) {
