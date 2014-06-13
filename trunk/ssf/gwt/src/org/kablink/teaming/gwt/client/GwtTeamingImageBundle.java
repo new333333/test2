@@ -816,5 +816,9 @@ public interface GwtTeamingImageBundle extends ClientBundle
 	@Source("org/kablink/teaming/gwt/public/images/UserPhoto.png")
 	public ImageResource userAvatar();
 	
+	@ImageOptions(repeatStyle = RepeatStyle.Both)
+	@Source("org/kablink/teaming/gwt/public/images/list-item-arrow.gif")
+	public ImageResource listItemArrow();
+	
 
 }// end GwtTeamingImageBundle
