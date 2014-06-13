@@ -2734,10 +2734,15 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 		if(rootFolder != null && rootFolder.isMirrored() && rootFolder.getResourceDriver() instanceof AclResourceDriver)
 			rootFolderIsNetFolder = true;
 		Field contentIndexTypeField;
-		if (!skipFileContentIndexing && 
+		// We include file content in the index here IF AND ONLY IF
+		// 	1. The file is associated with an entity that is not a folder entry (e.g. user or binder)
+		//		OR
+		//	2. The caller specifies to include file content AND (The file is adhoc file OR (The file is net folder file AND The net folder has content indexing enabled))   
+		if(!(entity instanceof FolderEntry) ||
+				(!skipFileContentIndexing && 
 				(rootFolder == null || 
 				!rootFolderIsNetFolder ||
-				(rootFolderIsNetFolder && rootFolder.getComputedIndexContent()))) {
+				(rootFolderIsNetFolder && rootFolder.getComputedIndexContent())))) {
 			//The file contents of files in this folder are to be added to the index
 			// Get the Text converter from manager
 	    	TextConverter converter = textConverterManager.getConverter();
