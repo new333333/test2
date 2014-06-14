@@ -3923,8 +3923,7 @@ public List<ChangeLog> getWorkflowChanges(EntityIdentifier entityIdentifier, Str
 		}
 		else {
 			if(indexNode.isReindexingInProgress()) {
-				if(logger.isDebugEnabled())
-					logger.debug("Can not start another reindexing because one already started at " + indexNode.getReindexingStartDate());
+				logger.warn("Can not start another reindexing because one already started at " + indexNode.getReindexingStartDate());
 				throw new ManageIndexException("errorcode.reindexing.in.progress.cannot.start");
 			}
 			else {
