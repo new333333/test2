@@ -100,6 +100,7 @@ import org.kablink.teaming.domain.Event;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
+import org.kablink.teaming.domain.FolderEntryStats;
 import org.kablink.teaming.domain.HKey;
 import org.kablink.teaming.domain.IndexNode;
 import org.kablink.teaming.domain.LdapConnectionConfig;
@@ -548,9 +549,8 @@ public class CoreDaoImpl extends KablinkDao implements CoreDao {
 				   				.executeUpdate();
 			   				
 		    	   			//delete folderentrystats associated with those affected entries
-		    	   			String sql = SPropsUtil.getString("delete.folderentrystats.query." + DynamicDialect.getDatabaseType().name(), 
-		    	   					"DELETE fes FROM SS_FolderEntryStats fes INNER JOIN SS_FolderEntries fe ON fes.id=fe.id WHERE fe.parentBinder=:binderId");
-		    	   			session.createSQLQuery(sql).setParameter("binderId", binder.getId()).executeUpdate();
+		    	   			List<Long> entryIds = getFolderEntryIds(binder);
+		    	   			delete(FolderEntryStats.class, ObjectKeys.FIELD_ID, entryIds);
 		    	   			
 			   				//finally delete the entries
 		    	   			try {		    	   				
@@ -1900,6 +1900,36 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
     	finally {
     		end(begin, "delete(Definition)");
     	}	        
+	}
+	
+	@Override
+	public void delete(final Class clazz, final String idPropertyName, final List<Long> ids) {
+		long begin = System.nanoTime();
+		try {
+			getHibernateTemplate().execute(
+			        new HibernateCallback() {
+			            @Override
+						public Object doInHibernate(Session session) throws HibernateException {
+			            	delete(session, clazz, idPropertyName, ids);
+			            	return null;
+			            }
+			        }
+			     );
+    	}
+    	finally {
+    		end(begin, "delete(Class,String,List)");
+    	}	        
+	}
+	
+	private void delete(Session session, Class clazz, String idPropertyName, List<Long> ids) {
+		String queryStr = "Delete " + clazz.getName() + " where " + idPropertyName + " in (:idList)";
+		Query query = session.createQuery(queryStr);
+		List<Long> idList;
+		for(int i = 0; i < ids.size(); i += inClauseLimit) {
+			idList = ids.subList(i, Math.min(ids.size(), i + inClauseLimit));
+			query.setParameterList("idList", idList)
+			.executeUpdate();
+		}		
 	}
 	
 	@Override
