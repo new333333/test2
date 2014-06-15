@@ -90,6 +90,7 @@ public interface CoreDao {
 	public void delete(Binder binder);
 	public void delete(Binder binder, Class entryClass);
 	public void delete(Definition def);
+	public void delete(Class clazz, String idPropertyName, List<Long> ids);
 	public void deleteEntityAssociations(String whereClause);
 	public List<Workspace> findCompanies();
     public  Long findFileNameEntryId(Binder binder, String name);
