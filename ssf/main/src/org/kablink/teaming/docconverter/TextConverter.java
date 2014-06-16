@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -41,6 +41,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.StringWriter;
 import java.util.Locale;
+import java.util.zip.GZIPOutputStream;
 
 import javax.xml.transform.Source;
 import javax.xml.transform.Templates;
@@ -53,6 +54,7 @@ import javax.xml.transform.stream.StreamSource;
 import org.dom4j.DocumentException;
 import org.dom4j.io.DocumentSource;
 import org.dom4j.io.SAXReader;
+
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.DefinableEntity;
@@ -62,9 +64,11 @@ import org.kablink.teaming.module.shared.EntityIndexUtils;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SimpleProfiler;
+
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.util.FileCopyUtils;
+
 import org.xml.sax.SAXException;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
@@ -74,36 +78,87 @@ import org.xml.sax.InputSource;
  * 
  * @author ?
  */
-public abstract class TextConverter extends Converter<String> implements EntityResolver, InitializingBean
-{
-	protected String _nullTransform = "";
-	protected String excludedExtensions = "";
-	protected static final String TEXT_SUBDIR = "text",
-		   TEXT_FILE_SUFFIX = ".txt";
+public abstract class TextConverter extends Converter<String> implements EntityResolver, InitializingBean {
+	private boolean		m_compressCachedFiles;			//
+	private File		m_nullTransformFile  = null;	//
+	private String 		m_nullTransform      = "";		//
+	private String 		m_excludedExtensions = "";		//
+	private String		m_textFileSuffix; 				//
+	private String[]	m_additionalExclusions = null;	//
 
+	private static final String TEXT_SUBDIR					= "text";
+	private static final String FILE_SUFFIX_TEXT			= ".txt";
+	private static final String FILE_SUFFIX_TEXT_COMPRESSED	= ".bin";
+	
+	/**
+	 * Constructor method.
+	 */
 	public TextConverter() {
 		super(ObjectKeys.CONVERTER_DIR_TEXT);
+		
+		m_compressCachedFiles = SPropsUtil.getBoolean("conversion.compress.cached.files.text", false);
+		if (m_compressCachedFiles)
+		     m_textFileSuffix = FILE_SUFFIX_TEXT_COMPRESSED;
+		else m_textFileSuffix = FILE_SUFFIX_TEXT;
 	}
 
-	private String[] m_additionalExclusions = null;
-	
-	private File nullTransformFile = null;
-	
+	/**
+	 * Returns the ConverterType of this converter.
+	 * 
+	 * @return
+	 */
 	@Override
-	public void afterPropertiesSet() throws Exception {
-		nullTransformFile = new ClassPathResource(_nullTransform).getFile();
+	public ConverterType getConverterType() {
+		return ConverterType.TEXT;
 	}
 	
+	/**
+	 * Returns the suffix to use for cached files.
+	 * 
+	 * @return
+	 */
+	@Override public String getBaseFileSuffix()       {return FILE_SUFFIX_TEXT;           }
+	@Override public String getCompressedFileSuffix() {return FILE_SUFFIX_TEXT_COMPRESSED;}
+	@Override public String getCachedFileSuffix()     {return m_textFileSuffix;           }	// Returns the one currently in use.
+
+	/**
+	 * Returns true if cached files are compressed and false otherwise.
+	 * 
+	 * @return
+	 */
+	@Override public boolean compressCachedFiles()           {return m_compressCachedFiles;}
+	@Override public boolean supportsCompressedCachedFiles() {return true;                 }
+
+	/**
+	 * Called to complete initializations after the bean's properties
+	 * have been set.
+	 */
+	@Override
+	public void afterPropertiesSet()
+			throws Exception {
+		m_nullTransformFile = new ClassPathResource(m_nullTransform).getFile();
+	}
+
+	/**
+	 * ?
+	 * 
+	 * @param binder
+	 * @param entry
+	 * @param fa
+	 * 
+	 * @return
+	 * 
+	 * @throws IOException
+	 */
 	public String convert(Binder binder, DefinableEntity entry, FileAttachment fa)
-		throws IOException
-	{
+			throws IOException {
 		long startTime = System.nanoTime();
 
 		String result = "";
-		String tmp = "," + excludedExtensions + ",";
-		if(! tmp.contains("," + EntityIndexUtils.getFileExtension(fa.getFileItem().getName()).toLowerCase() + ",")) {
+		String tmp = "," + m_excludedExtensions + ",";
+		if (!tmp.contains("," + EntityIndexUtils.getFileExtension(fa.getFileItem().getName()).toLowerCase() + ",")) {
 			SimpleProfiler.start("TextConverter.convert");
-			InputStream textStream = super.convert(binder, entry, fa, null, TEXT_SUBDIR, TEXT_FILE_SUFFIX);
+			InputStream textStream = super.convert(binder, entry, fa, null, TEXT_SUBDIR, getCachedFileSuffix());
 			StringWriter textWriter = new StringWriter();
 			FileCopyUtils.copy(new InputStreamReader(textStream), textWriter);
 			result = textWriter.toString();
@@ -111,18 +166,28 @@ public abstract class TextConverter extends Converter<String> implements EntityR
 		}
 		
 		end(startTime, fa.getFileItem().getName());
-		
 		return result;
-		
 	}
 	
+	/**
+	 * ?
+	 * 
+	 * @param convertedFile
+	 * @param binder
+	 * @param entry
+	 * @param fa
+	 * @param filePath
+	 * @param relativeFilePath
+	 * @param parameters
+	 * 
+	 * @throws IOException
+	 */
+	@SuppressWarnings("resource")
 	@Override
-	protected void createCachedFile(File convertedFile, Binder binder, DefinableEntity entry, FileAttachment fa,
-			String filePath, String relativeFilePath, String parameters)
-		throws IOException
-	{
+	protected void createCachedFile(File convertedFile, Binder binder, DefinableEntity entry, FileAttachment fa, String filePath, String relativeFilePath, String parameters)
+			throws IOException {
 		String iPath = filePath + "._convert_.xml";
-		File intermediateFile = cacheFileStore.getFile(iPath);
+		File intermediateFile = getCacheFileStore().getFile(iPath);
 		try {
 			super.createCachedFile(intermediateFile, binder, entry, fa, filePath, relativeFilePath, parameters);
 			OutputStream fos = new FileOutputStream(convertedFile);
@@ -130,41 +195,55 @@ public abstract class TextConverter extends Converter<String> implements EntityR
 				CryptoFileEncryption cfe = new CryptoFileEncryption(fa.getEncryptionKey());
 				fos = cfe.getEncryptionOutputEncryptedStream(fos);
 			}
+			if (compressCachedFiles()) {
+				fos = new GZIPOutputStream(fos, getGZipBufferSize());
+			}
 			try {
 				getTextFromXML(intermediateFile, getNullTransformFile(), fos);
 			}
 			finally {
 				fos.close();
 			}
-		} catch (DocumentException de) {
-			String deMsg = de.toString();
-			logger.warn("Failed to convert file: " + fa.getFileItem().getName() + " in Binder: " + binder.getPathName() + ":  " + deMsg);
-			if (logger.isDebugEnabled()) {
-				logger.debug("Failed to convert file: " + fa.getFileItem().getName() + " in Binder: " + binder.getPathName() + ":EXCEPTION", de);
-			}
 		}
-		finally
-		{
-			if(intermediateFile != null && intermediateFile.exists()) {
+		catch (DocumentException de) {
+			if (logger.isDebugEnabled())
+			     logger.debug("Failed to convert file '" + fa.getFileItem().getName() + "' in Binder '" + binder.getPathName() + "':  EXCEPTION:  ", de);
+			else logger.warn( "Failed to convert file '" + fa.getFileItem().getName() + "' in Binder '" + binder.getPathName() + "':  " + de.toString());
+		}
+		finally {
+			if (intermediateFile != null && intermediateFile.exists()) {
 				intermediateFile.delete();
 			}
 		}
 	}
 
-	// Bugzilla 480931:  View and Edit Buttons for documents are not working.
-	// Bugzilla 524410:  Depending on version of OO, XHTML sometimes cannot be parsed.
-	//
-	// In researching these issues, I found the following web site:
-	//      http://forums.java.net/jive/thread.jspa?threadID=38493
-	// which describes one solution which is to always replace the
-	// DTD's with references to an empty XML document.
+	/**
+	 */
 	@Override
-	public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException {
+	public InputSource resolveEntity(String publicId, String systemId)
+			throws SAXException, IOException {
+		// Bugzilla 480931:  View and Edit Buttons for documents are not working.
+		// Bugzilla 524410:  Depending on version of OO, XHTML sometimes cannot be parsed.
+		//
+		// In researching these issues, I found the following web site:
+		//      http://forums.java.net/jive/thread.jspa?threadID=38493
+		// which describes one solution which is to always replace the
+		// DTD's with references to an empty XML document.
 		return new InputSource(new ByteArrayInputStream("<?xml version='1.0' encoding='UTF-8'?>".getBytes()));
 	}
-	
-	protected org.dom4j.Document getDomDocument(File textFile) throws DocumentException {
-    	// open the file with an xml reader
+
+	/**
+	 * ?
+	 * 
+	 * @param textFile
+	 * 
+	 * @return
+	 * 
+	 * @throws DocumentException
+	 */
+	protected org.dom4j.Document getDomDocument(File textFile)
+			throws DocumentException {
+    	// Open the file with an XML reader.
 		SAXReader reader = new SAXReader();
 		
 		// Bugzilla 480931:  View and Edit Buttons for documents are not working.
@@ -174,40 +253,58 @@ public abstract class TextConverter extends Converter<String> implements EntityR
 		reader.setEntityResolver(this);
 		return reader.read(textFile);	
 	}
-	
-	protected void getTextFromXML(File ofile, File transformFile, OutputStream out) throws DocumentException
-    {	
+
+	/**
+	 * ? 
+	 * @param ofile
+	 * @param transformFile
+	 * @param out
+	 * 
+	 * @throws DocumentException
+	 */
+	protected void getTextFromXML(File ofile, File transformFile, OutputStream out)
+			throws DocumentException {	
     	Locale l = NLT.getTeamingLocale();
 		Templates trans;
 		Transformer tranny = null;
 		org.dom4j.Document tempfile = null;
-		if(ofile.exists()) { 
+		if (ofile.exists()) { 
 			tempfile = getDomDocument(ofile);
 		}
-		if(tempfile != null) {
+		if (tempfile != null) {
 			try {
 				TransformerFactory transFactory = TransformerFactory.newInstance();
 
 				Source s = new StreamSource(transformFile);
 				trans = transFactory.newTemplates(s);
 				tranny =  trans.newTransformer();
-			} catch (TransformerConfigurationException tce) {}
+			}
+			catch (TransformerConfigurationException tce) {}
 
 			StreamResult result = new StreamResult(out);
 			try {
 				tranny.setParameter("Lang", l);
 				tranny.transform(new DocumentSource(tempfile), result);
-			} catch (Exception ex) {
 			}
+			catch (Exception ex) {}
 		}
 	}
 
-	public String getExcludedExtensions()
-	{
-		return excludedExtensions;
+	/**
+	 * ?
+	 * 
+	 * @return
+	 */
+	public String getExcludedExtensions() {
+		return m_excludedExtensions;
 	}
-	public void setExcludedExtensions(String excludedExtensions)
-	{
+
+	/**
+	 * ?
+	 * 
+	 * @param excludedExtensions
+	 */
+	public void setExcludedExtensions(String excludedExtensions) {
 		// Are there any additional exclusions specified in the
 		// ssf*.properties files?
 		String[] additionalExclusions = getAdditionalExclusions();
@@ -224,49 +321,80 @@ public abstract class TextConverter extends Converter<String> implements EntityR
 			}
 			excludedExtensions = eeBuf.toString();
 		}
-		this.excludedExtensions = excludedExtensions;
+		m_excludedExtensions = excludedExtensions;
 	}
 	
 	/**
 	 * @return Returns the nullTransform.
 	 */
 	public String getNullTransform() {
-		return _nullTransform;
+		return m_nullTransform;
 	}
 
 	/**
 	 * @param nullTransform The nullTransform to set.
 	 */
 	public void setNullTransform(String nullTransform) {
-		_nullTransform = nullTransform;
+		m_nullTransform = nullTransform;
 	}
 
 	/**
 	 * @return Returns the nullTransform file.
 	 */
 	protected File getNullTransformFile() {
-		return nullTransformFile;
+		return m_nullTransformFile;
 	}
-	
+
+	/**
+	 * ?
+	 * 
+	 * @param convertedFile
+	 * 
+	 * @throws IOException
+	 */
 	@Override
-	protected void createConvertedFileWithDefaultContent(File convertedFile) throws IOException {
-		// simply create an empty file
+	protected void createConvertedFileWithDefaultContent(File convertedFile)
+			throws IOException {
+		// Simply create an empty file.
 		convertedFile.createNewFile();
+		if (compressCachedFiles()) {
+			FileOutputStream fos = null;
+			GZIPOutputStream gos = null;
+			try {
+				// When compressing, we need to write an empty GZIP
+				// file.
+				fos = new FileOutputStream(convertedFile);
+				gos = new GZIPOutputStream(fos);
+				gos.write(new byte[0], 0, 0);
+			}
+			finally {
+				if (null != gos) {
+					gos.close();
+					gos = null;
+				}
+				if (null != fos) {
+					fos.close();
+					fos = null;
+				}
+			}
+		}
 	}
 
 	/**
 	 * By default, there are no additional exclusions.  Each class that
-	 * extends this class this may define one, however.
+	 * extends this class this may define some, however.
 	 * 
 	 * @return
 	 */
 	public String getAdditionalExclusionsKey() {
 		return null;
 	}
-	
-	// Returns a String[] of any additional file extensions that are to
-	// be excluded from OpenOffice text conversions specified in the
-	// ssf*.properties files.
+
+	/*
+	 * Returns a String[] of any additional file extensions that are to
+	 * be excluded from text conversions specified in the ssf*.properties
+	 * files.
+	 */
 	private String[] getAdditionalExclusions() {
 		initAdditionalExclusions();
 		return m_additionalExclusions;

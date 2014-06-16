@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -30,8 +30,7 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-
-/**
+/*
  * Created on Jun 24, 2005
  */
 package org.kablink.teaming.docconverter.impl;
@@ -52,7 +51,6 @@ import com.sun.star.uri.ExternalUriReferenceTranslator;
 import com.sun.star.connection.NoConnectException;
 
 import org.kablink.teaming.UncheckedIOException;
-import org.kablink.teaming.docconverter.HtmlConverter;
 import org.kablink.teaming.docconverter.TextConverter;
 import org.kablink.teaming.docconverter.util.OpenOfficeHelper;
 import org.kablink.teaming.domain.Binder;
@@ -65,11 +63,10 @@ import org.kablink.teaming.web.util.MiscUtil;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
-
 /**
  * Performs file conversions to search index text using OpenOffice.
  * 
- * The <code>Converter</code> class uses the {@link Export Export} 
+ * The <code>Converter</code> class uses the {@link Export Export}
  * technology according to the properties provided in a given 
  * configuration file.  The configuration file is assumed to be 
  * correctly formatted.
@@ -85,44 +82,90 @@ public class TextOpenOfficeConverter
 	extends TextConverter
 	implements TextOpenOfficeConverterMBean, InitializingBean, DisposableBean
 {
-	private int _port = 0;
-	private String _host = null,
-				   _configFileName = null;
-	
-	public TextOpenOfficeConverter()
-	{
+	private int		m_port				= 0;	//
+	private String	m_host				= null;	//
+	private String	m_configFileName	= null;	//
+
+	/**
+	 * Constructor method.
+	 */
+	public TextOpenOfficeConverter() {
 		super();
 	}
 	
-	public void afterPropertiesSet() throws Exception {
+	/**
+	 * ?
+	 * 
+	 * @throws Exception
+	 */
+	@Override
+	public void afterPropertiesSet()
+			throws Exception {
 		super.afterPropertiesSet();
 	}	
 	
-	public void destroy() throws Exception 
-	{	
-		// Close the socket connection that you established in afterPropertiesSet.
-		// Do any other cleanup stuff as necessary. 
+	/**
+	 * Close the socket connection that you established in
+	 * afterPropertiesSet().  Do any other cleanup stuff as necessary.
+	 * 
+	 * @throws Exception
+	 */
+	@Override
+	public void destroy()
+			throws Exception {	
 	}
-	
+
+	/**
+	 * ?
+	 * 
+	 * @return
+	 */
+	@Override
 	public String getHost() {
-		return _host;
+		return m_host;
 	}
 
+	/**
+	 * ?
+	 * 
+	 * @param host_in
+	 */
 	public void setHost(String host_in) {
-		_host = host_in;
+		m_host = host_in;
 	}
-	
+
+	/**
+	 * ?
+	 * 
+	 * @return
+	 */
+	@Override
 	public int getPort() {
-		return _port;
+		return m_port;
 	}
 
+	/**
+	 * ?
+	 * 
+	 * @param port_in
+	 */
 	public void setPort(int port_in) {
-		_port = port_in;
+		m_port = port_in;
 	}
 
+	/**
+	 * ?
+	 * 
+	 * @param f
+	 * @param xComponentContext
+	 * 
+	 * @return
+	 * 
+	 * @throws java.net.MalformedURLException
+	 */
+	@SuppressWarnings("deprecation")
 	public String convertToUrl(File f, XComponentContext xComponentContext)
-		throws java.net.MalformedURLException 
-	{
+		throws java.net.MalformedURLException {
 		String returnUrl = null;
 		
 		java.net.URL u = f.toURL();
@@ -138,11 +181,14 @@ public class TextOpenOfficeConverter
 	 *  @param ifp     Input path.
 	 *  @param ofp     Output path.
 	 *  @param timeout Export process timeout in milliseconds.
+	 *  
 	 *  @return <code>true</code> if successful, <code>false</code> otherwise
+	 *  
+	 *  @throws Exception
 	 */
+	@Override
 	public void convert(String origFileName, String ifp, String ofp, long timeout, String parameters)
-		throws Exception
-	{
+		throws Exception {
 		XStorable xstorable = null;
 		XComponent xcomponent = null;
 		XUnoUrlResolver xurlresolver = null;
@@ -150,22 +196,21 @@ public class TextOpenOfficeConverter
 		XComponentLoader xcomponentloader = null;
 		XPropertySet xpropertysetMultiComponentFactory = null;
 		XMultiComponentFactory xmulticomponentfactory = null;
-		File ifile = null,
-			 ofile = null;
-		Object objectUrlResolver = null,
-			   objectInitial = null,
-			   objectDocumentToStore = null,
-			   objectDefaultContext = null;
-		String url = "",
-			   convertType = "";
+		File ifile = null;
+		File ofile = null;
+		Object objectUrlResolver = null;
+		Object objectInitial = null;
+		Object objectDocumentToStore = null;
+		Object objectDefaultContext = null;
+		String url = "";
+		String convertType = "";
 	    
 		// If the output file exists and has a modified date equal or
 		// greater than the incoming file do not perform any conversion. 
 		ifile = new File(ifp);
 		ofile = new File(ofp);
 
-		try
-		{
+		try {
 			/* Bootstraps a component context with the jurt base components
 			 * registered. Component context to be granted to a component for running.
 			 * Arbitrary values can be retrieved from the context.
@@ -185,7 +230,7 @@ public class TextOpenOfficeConverter
 	      
 			// Resolves an object that is specified as follow:
 			// uno:<connection description>;<protocol description>;<initial object name>
-			objectInitial = xurlresolver.resolve("uno:socket,host=" + _host + ",port=" + _port + ";urp;StarOffice.ServiceManager");
+			objectInitial = xurlresolver.resolve("uno:socket,host=" + m_host + ",port=" + m_port + ";urp;StarOffice.ServiceManager");
 	      
 			// Create a service manager from the initial object
 			xmulticomponentfactory = (XMultiComponentFactory)UnoRuntime.queryInterface(XMultiComponentFactory.class, objectInitial);
@@ -207,7 +252,8 @@ public class TextOpenOfficeConverter
 
 			// Preparing properties for loading the document
 			PropertyValue propertyValues[] = new PropertyValue[1];
-			// Setting the flag for hidding the open document
+			
+			// Setting the flag for hiding the open document
 			propertyValues[0] = new PropertyValue();
 			propertyValues[0].Name = "Hidden";
 			propertyValues[0].Value = new Boolean(true);
@@ -215,8 +261,7 @@ public class TextOpenOfficeConverter
 			// Loading the wanted document
 			url = convertToUrl(ifile, xcomponentcontext);
 			objectDocumentToStore = xcomponentloader.loadComponentFromURL(url, "_blank", 0, propertyValues);
-			if (objectDocumentToStore == null)
-			{
+			if (objectDocumentToStore == null) {
 				logger.error("TextOpenOfficeConverter.convert( \"Could not load file '" + url + "'\" )");
 				return;
 			}
@@ -241,10 +286,12 @@ public class TextOpenOfficeConverter
 			
 			// Preparing properties for converting the document
 			propertyValues = new PropertyValue[2];
+			
 			// Setting the flag for overwriting
 			propertyValues[0] = new PropertyValue();
 			propertyValues[0].Name = "Overwrite";
 			propertyValues[0].Value = new Boolean(true);
+			
 			// Setting the filter name
 			propertyValues[1] = new PropertyValue();
 			propertyValues[1].Name = "FilterName";
@@ -254,27 +301,24 @@ public class TextOpenOfficeConverter
 			url = convertToUrl(ofile, xcomponentcontext);
 			xstorable.storeToURL(url, propertyValues);
 		}
-		catch (Exception e)
-		{
+		catch (Exception e) {
 			// Create empty file if exception is for unable to transform the document
-			if (!(e instanceof NoConnectException))
-			{
-				if (!ofile.exists())
+			if (!(e instanceof NoConnectException)) {
+				if (!ofile.exists()) {
 					ofile.createNewFile();
+				}
 			}
-				
 			throw e;
 		}
-		finally
-		{
+		finally {
 			// Getting the method dispose() for closing the document
-			if (xstorable != null)
-			{
-				xcomponent = (XComponent) UnoRuntime.queryInterface(XComponent.class, xstorable);
+			if (xstorable != null) {
+				xcomponent = ((XComponent) UnoRuntime.queryInterface(XComponent.class, xstorable));
 				
 				// Closing the converted document
-				if (xcomponent != null)
+				if (xcomponent != null) {
 					xcomponent.dispose();
+				}
 			}
 		}
 	  }
@@ -283,35 +327,55 @@ public class TextOpenOfficeConverter
 	 * @return Returns the configFileName.
 	 */
 	public String getConfigFileName() {
-		return _configFileName;
+		return m_configFileName;
 	}
 
 	/**
 	 * @param configFileName The configFileName to set.
 	 */
 	public void setConfigFileName(String configFileName) {
-		_configFileName = configFileName;
+		m_configFileName = configFileName;
 	}
 
 	/**
 	 * Return the ssf*properties key used to look for additional
 	 * extensions to be excluded from text conversions.
 	 */
+	@Override
 	public String getAdditionalExclusionsKey() {
 		return "exclude.from.openoffice.indexing.extensions";
 	}
 
+	/**
+	 * ?
+	 * 
+	 * @param binder
+	 * @param entry
+	 * @param fa
+	 * 
+	 * @throws UncheckedIOException
+	 * @throws RepositoryServiceException
+	 */
 	@Override
-	public void deleteConvertedFile(Binder binder, DefinableEntity entry,
-			FileAttachment fa) throws UncheckedIOException,
-			RepositoryServiceException {
-		super.deleteConvertedFile(binder, entry, fa, TextConverter.TEXT_SUBDIR, TextConverter.TEXT_FILE_SUFFIX);
+	public void deleteConvertedFile(Binder binder, DefinableEntity entry, FileAttachment fa)
+			throws UncheckedIOException, RepositoryServiceException {
+		super.deleteConvertedFile(binder, entry, fa, getCacheSubDir(), getCachedFileSuffix());
 	}
 	
+	/**
+	 * ?
+	 *
+	 * @param shareItem
+	 * @param binder
+	 * @param entry
+	 * @param fa
+	 * 
+	 * @throws UncheckedIOException
+	 * @throws RepositoryServiceException
+	 */
 	@Override
-	public void deleteConvertedFile(ShareItem shareItem, Binder binder, DefinableEntity entry,
-			FileAttachment fa) throws UncheckedIOException,
-			RepositoryServiceException {
+	public void deleteConvertedFile(ShareItem shareItem, Binder binder, DefinableEntity entry, FileAttachment fa)
+			throws UncheckedIOException, RepositoryServiceException {
 		// Only used for HTML conversions.
 	}
 }
