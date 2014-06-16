@@ -30,11 +30,11 @@ import org.kablink.teaming.domain.ShareItem;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.FolderEntry;
-import org.kablink.teaming.module.file.FileIndexData;
 import org.kablink.teaming.remoting.rest.v1.exc.InternalServerErrorException;
 import org.kablink.teaming.remoting.rest.v1.exc.NotFoundException;
 import org.kablink.teaming.remoting.rest.v1.exc.NotModifiedException;
 import org.kablink.teaming.remoting.rest.v1.util.BinderBriefBuilder;
+import org.kablink.teaming.remoting.rest.v1.util.FilePropertiesBuilder;
 import org.kablink.teaming.remoting.rest.v1.util.ResourceUtil;
 import org.kablink.teaming.remoting.rest.v1.util.SearchResultBuilderUtil;
 import org.kablink.teaming.rest.v1.model.Access;
@@ -1326,11 +1326,10 @@ public class ShareResource extends AbstractResource {
     }
 
     protected List<FileProperties> getSubFiles(SharedBinderBrief [] sharedBinders, String fileName, boolean onlyLibraryFiles) {
-        List<FileProperties> results = new ArrayList<FileProperties>();
+        List<FileProperties> results;
         if (sharedBinders.length>0) {
-            Junction criterion = Restrictions.conjunction()
-                    .add(Restrictions.eq(Constants.DOC_TYPE_FIELD, Constants.DOC_TYPE_ATTACHMENT));
-
+            Junction criterion = Restrictions.conjunction();
+            criterion.add(SearchUtils.buildEntriesCriterion());
             criterion.add(entryAncentryCriterion(sharedBinders));
             if (onlyLibraryFiles) {
                 criterion.add(Restrictions.eq(Constants.IS_LIBRARY_FIELD, ((Boolean) onlyLibraryFiles).toString()));
@@ -1338,10 +1337,13 @@ public class ShareResource extends AbstractResource {
             if (fileName!=null) {
                 criterion.add(SearchUtils.buildFileNameCriterion(fileName));
             }
-            List<FileIndexData> files = getFileModule().getFileDataFromIndex(new Criteria().add(criterion));
-            for (FileIndexData file : files) {
-                results.add(ResourceUtil.buildFileProperties(file));
-            }
+
+            Map resultsMap = getBinderModule().executeSearchQuery(new Criteria().add(criterion), Constants.SEARCH_MODE_NORMAL, 0, -1, null);
+            SearchResultList<FileProperties> searchresults = new SearchResultList<FileProperties>();
+            SearchResultBuilderUtil.buildSearchResults(searchresults, new FilePropertiesBuilder(), resultsMap);
+            results = searchresults.getResults();
+        } else {
+            results = new ArrayList<FileProperties>();
         }
         return results;
     }

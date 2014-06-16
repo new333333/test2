@@ -102,7 +102,7 @@ public class FileResource extends AbstractFileResource {
         nextParams.put("library", Boolean.toString(onlyLibraryFiles));
 
         Junction criterion = Restrictions.conjunction()
-            .add(SearchUtils.buildAttachmentsCriterion());
+            .add(SearchUtils.buildEntriesCriterion());
 
         if (ids!=null && ids.size()>0) {
             Junction or = Restrictions.disjunction();

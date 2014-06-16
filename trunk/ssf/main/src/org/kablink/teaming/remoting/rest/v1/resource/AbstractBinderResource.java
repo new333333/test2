@@ -10,8 +10,6 @@ import org.kablink.teaming.domain.NoTagByTheIdException;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.ShareItem;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
-import org.kablink.teaming.module.file.FileIndexData;
-import org.kablink.teaming.module.file.FileList;
 import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.shared.BinderUtils;
 import org.kablink.teaming.module.shared.FolderUtils;
@@ -21,6 +19,7 @@ import org.kablink.teaming.remoting.rest.v1.exc.BadRequestException;
 import org.kablink.teaming.remoting.rest.v1.exc.NotFoundException;
 import org.kablink.teaming.remoting.rest.v1.exc.NotModifiedException;
 import org.kablink.teaming.remoting.rest.v1.util.BinderBriefBuilder;
+import org.kablink.teaming.remoting.rest.v1.util.FilePropertiesBuilder;
 import org.kablink.teaming.remoting.rest.v1.util.ResourceUtil;
 import org.kablink.teaming.remoting.rest.v1.util.RestModelInputData;
 import org.kablink.teaming.remoting.rest.v1.util.SearchResultBuilderUtil;
@@ -546,9 +545,9 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
                                                            Integer offset, Integer maxCount, String nextUrl, Map<String, Object> nextParams,
                                                            Date modifiedSince) {
         org.kablink.teaming.domain.Binder binder = _getBinder(id);
-        Junction criterion = Restrictions.conjunction()
-            .add(Restrictions.eq(Constants.DOC_TYPE_FIELD, Constants.DOC_TYPE_ATTACHMENT));
 
+        Junction criterion = Restrictions.conjunction();
+        criterion.add(SearchUtils.buildEntriesCriterion());
         criterion.add(SearchUtils.buildSearchBinderCriterion(id, recursive));
         if (onlyLibraryFiles) {
             criterion.add(SearchUtils.buildLibraryCriterion(onlyLibraryFiles));
@@ -562,16 +561,9 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
         if (maxCount==null) {
             maxCount = Integer.MAX_VALUE;
         }
-        FileList files = getFileModule().getFileDataFromIndex(new Criteria().add(criterion), offset, maxCount);
+        Map resultsMap = getBinderModule().executeSearchQuery(new Criteria().add(criterion), Constants.SEARCH_MODE_NORMAL, offset, maxCount, null);
         SearchResultList<FileProperties> results = new SearchResultList<FileProperties>(0, binder.getModificationDate());
-        results.setFirst(offset);
-        results.setCount(files.getCount());
-        results.setTotal(files.getTotal());
-        results.setNextIfNecessary(nextUrl, nextParams);
-        for (FileIndexData file : files.getFiles()) {
-            results.append(ResourceUtil.buildFileProperties(file));
-            results.updateLastModified(file.getModifiedDate());
-        }
+        SearchResultBuilderUtil.buildSearchResults(results, new FilePropertiesBuilder(), resultsMap, nextUrl, nextParams, offset);
 
         if (modifiedSince!=null && results.getLastModified()!=null && !modifiedSince.before(results.getLastModified())) {
             throw new NotModifiedException();
