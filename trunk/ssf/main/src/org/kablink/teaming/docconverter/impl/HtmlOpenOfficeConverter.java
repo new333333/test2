@@ -30,8 +30,7 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-
-/**
+/*
  * Created on Jun 24, 2005
  */
 package org.kablink.teaming.docconverter.impl;
@@ -80,8 +79,8 @@ import org.springframework.beans.factory.InitializingBean;
  * @see Export Export
  */
 public class HtmlOpenOfficeConverter extends HtmlConverter implements HtmlOpenOfficeConverterMBean, InitializingBean, DisposableBean {
-	private int		_port = 0;		//
-	private String	_host = null;	//
+	private int		m_port = 0;		//
+	private String	m_host = null;	//
 
 	/**
 	 * Constructor method.
@@ -96,7 +95,8 @@ public class HtmlOpenOfficeConverter extends HtmlConverter implements HtmlOpenOf
 	 * @throws Exception.
 	 */
 	@Override
-	public void afterPropertiesSet() throws Exception {
+	public void afterPropertiesSet()
+			throws Exception {
 	}	
 
 	/**
@@ -105,9 +105,8 @@ public class HtmlOpenOfficeConverter extends HtmlConverter implements HtmlOpenOf
 	 * @throws Exception
 	 */
 	@Override
-	public void destroy() throws Exception {	
-		// Close the socket connection that you established in afterPropertiesSet.
-		// Do any other cleanup stuff as necessary. 
+	public void destroy()
+			throws Exception {	
 	}
 
 	/**
@@ -117,7 +116,7 @@ public class HtmlOpenOfficeConverter extends HtmlConverter implements HtmlOpenOf
 	 */
 	@Override
 	public String getHost() {
-		return _host;
+		return m_host;
 	}
 
 	/**
@@ -126,7 +125,7 @@ public class HtmlOpenOfficeConverter extends HtmlConverter implements HtmlOpenOf
 	 * @param host_in
 	 */
 	public void setHost(String host_in) {
-		_host = host_in;
+		m_host = host_in;
 	}
 
 	/**
@@ -136,7 +135,7 @@ public class HtmlOpenOfficeConverter extends HtmlConverter implements HtmlOpenOf
 	 */
 	@Override
 	public int getPort() {
-		return _port;
+		return m_port;
 	}
 
 	/**
@@ -145,7 +144,7 @@ public class HtmlOpenOfficeConverter extends HtmlConverter implements HtmlOpenOf
 	 * @param port_in
 	 */
 	public void setPort(int port_in) {
-		_port = port_in;
+		m_port = port_in;
 	}
 
 	/**
@@ -158,8 +157,8 @@ public class HtmlOpenOfficeConverter extends HtmlConverter implements HtmlOpenOf
 	 * 
 	 * @throws java.net.MalformedURLException
 	 */
-	public String convertToUrl(File f, XComponentContext xComponentContext) throws java.net.MalformedURLException 
-	{
+	public String convertToUrl(File f, XComponentContext xComponentContext)
+			throws java.net.MalformedURLException {
 		String returnUrl = null;
 	
 		@SuppressWarnings("deprecation")
@@ -179,7 +178,8 @@ public class HtmlOpenOfficeConverter extends HtmlConverter implements HtmlOpenOf
 	 *  @return <code>true</code> if successful, <code>false</code> otherwise
 	 */
 	@Override
-	public void convert(String origFileName, String ifp, String ofp, long timeout, String parameters) throws Exception {
+	public void convert(String origFileName, String ifp, String ofp, long timeout, String parameters)
+			throws Exception {
 		XStorable xstorable = null;
 		XComponent xcomponent = null;
 		XUnoUrlResolver xurlresolver = null;
@@ -187,17 +187,16 @@ public class HtmlOpenOfficeConverter extends HtmlConverter implements HtmlOpenOf
 		XComponentLoader xcomponentloader = null;
 		XPropertySet xpropertysetMultiComponentFactory = null;
 		XMultiComponentFactory xmulticomponentfactory = null;
-		File ofile = null,
-			 ifile = null;
-		Object objectUrlResolver = null,
-			   objectInitial = null,
-			   objectDocumentToStore = null,
-			   objectDefaultContext = null;
-		String url = "",
-			   convertType = "";
+		File ofile = null;
+		File ifile = null;
+		Object objectUrlResolver = null;
+		Object objectInitial = null;
+		Object objectDocumentToStore = null;
+		Object objectDefaultContext = null;
+		String url = "";
+		String convertType = "";
 	    
-		try
-		{
+		try {
 			ifile = new File(ifp);
 			ofile = new File(ofp);
 			
@@ -233,7 +232,7 @@ public class HtmlOpenOfficeConverter extends HtmlConverter implements HtmlOpenOf
 	      
 			// Resolves an object that is specified as follow:
 			// uno:<connection description>;<protocol description>;<initial object name>
-			objectInitial = xurlresolver.resolve("uno:socket,host=" + _host + ",port=" + _port + ";urp;StarOffice.ServiceManager");
+			objectInitial = xurlresolver.resolve("uno:socket,host=" + m_host + ",port=" + m_port + ";urp;StarOffice.ServiceManager");
 	      
 			// Create a service manager from the initial object
 			xmulticomponentfactory = (XMultiComponentFactory)UnoRuntime.queryInterface( XMultiComponentFactory.class, objectInitial);
@@ -255,7 +254,8 @@ public class HtmlOpenOfficeConverter extends HtmlConverter implements HtmlOpenOf
 	      
 			// Preparing properties for loading the document
 			PropertyValue propertyValues[] = new PropertyValue[1];
-			// Setting the flag for hidding the open document
+			
+			// Setting the flag for hiding the open document
 			propertyValues[0] = new PropertyValue();
 			propertyValues[0].Name = "Hidden";
 			propertyValues[0].Value = new Boolean(true);
@@ -263,8 +263,7 @@ public class HtmlOpenOfficeConverter extends HtmlConverter implements HtmlOpenOf
 			// Loading the wanted document
 			url = convertToUrl(ifile, xcomponentcontext);
 			objectDocumentToStore = xcomponentloader.loadComponentFromURL(url, "_blank", 0, propertyValues);
-			if (objectDocumentToStore == null)
-			{
+			if (objectDocumentToStore == null) {
 				logger.error("HtmlOpenOfficeConverter.convert( \"Could not load file '" + url + "'\" )");
 				return;
 			}
@@ -289,10 +288,12 @@ public class HtmlOpenOfficeConverter extends HtmlConverter implements HtmlOpenOf
 			
 			// Preparing properties for converting the document
 			propertyValues = new PropertyValue[2];
+			
 			// Setting the flag for overwriting
 			propertyValues[0] = new PropertyValue();
 			propertyValues[0].Name = "Overwrite";
 			propertyValues[0].Value = new Boolean(true);
+			
 			// Setting the filter name
 			propertyValues[1] = new PropertyValue();
 			propertyValues[1].Name = "FilterName";
@@ -302,16 +303,15 @@ public class HtmlOpenOfficeConverter extends HtmlConverter implements HtmlOpenOf
 			url = convertToUrl(ofile, xcomponentcontext);
 			xstorable.storeToURL(url, propertyValues);
 		}
-		finally
-		{
+		finally {
 			//	Getting the method dispose() for closing the document
-			if (xstorable != null)
-			{
-				xcomponent = (XComponent) UnoRuntime.queryInterface(XComponent.class, xstorable);
+			if (xstorable != null) {
+				xcomponent = ((XComponent) UnoRuntime.queryInterface(XComponent.class, xstorable));
 				
 				// Closing the converted document
-				if (xcomponent != null)
+				if (xcomponent != null) {
 					xcomponent.dispose();
+				}
 			}
 		}
 	    
@@ -331,8 +331,9 @@ public class HtmlOpenOfficeConverter extends HtmlConverter implements HtmlOpenOf
 	 * @throws RepositoryServiceException
 	 */
 	@Override
-	public void deleteConvertedFile(Binder binder, DefinableEntity entry, FileAttachment fa) throws UncheckedIOException, RepositoryServiceException {
-		super.deleteConvertedFile(binder, entry, fa, HtmlConverter.HTML_SUBDIR, HtmlConverter.HTML_FILE_SUFFIX);
+	public void deleteConvertedFile(Binder binder, DefinableEntity entry, FileAttachment fa)
+			throws UncheckedIOException, RepositoryServiceException {
+		super.deleteConvertedFile(binder, entry, fa, getCacheSubDir(), getCachedFileSuffix());
 	}
 
 	/**
@@ -347,8 +348,9 @@ public class HtmlOpenOfficeConverter extends HtmlConverter implements HtmlOpenOf
 	 * @throws RepositoryServiceException
 	 */
 	@Override
-	public void deleteConvertedFile(ShareItem shareItem, Binder binder, DefinableEntity entry, FileAttachment fa) throws UncheckedIOException, RepositoryServiceException {
-		String subDir = HTML_PUBLIC_SUBDIR + String.valueOf(shareItem.getId());
-		super.deleteConvertedFile(binder, entry, fa, subDir, HtmlConverter.HTML_FILE_SUFFIX);
+	public void deleteConvertedFile(ShareItem shareItem, Binder binder, DefinableEntity entry, FileAttachment fa)
+			throws UncheckedIOException, RepositoryServiceException {
+		String subDir = (HTML_PUBLIC_SUBDIR + String.valueOf(shareItem.getId()));
+		super.deleteConvertedFile(binder, entry, fa, subDir, getCachedFileSuffix());
 	}
 }
