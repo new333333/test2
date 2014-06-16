@@ -876,7 +876,7 @@ public class SelfResource extends AbstractFileResource {
         nextParams.put("recursive", Boolean.toString(recursive));
         nextParams.put("parent_binder_paths", Boolean.toString(includeParentPaths));
         Criteria crit = new Criteria();
-        crit.add(SearchUtils.buildAttachmentsCriterion());
+        crit.add(SearchUtils.buildEntriesCriterion());
         crit.add(SearchUtils.buildLibraryCriterion(true));
         Junction searchContexts = null;
         if (recursive) {
@@ -888,7 +888,7 @@ public class SelfResource extends AbstractFileResource {
                 }
             }
         }
-        Criteria myFiles = SearchUtils.getMyFilesSearchCriteria(this, getLoggedInUser().getWorkspaceId(), false, false, false, true);
+        Criteria myFiles = SearchUtils.getMyFilesSearchCriteria(this, getLoggedInUser().getWorkspaceId(), false, true, false, false);
         if (searchContexts!=null) {
             searchContexts.add(myFiles.asJunction());
             crit.add(searchContexts);
