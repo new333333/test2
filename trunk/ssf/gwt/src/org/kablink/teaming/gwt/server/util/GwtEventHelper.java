@@ -439,7 +439,7 @@ public class GwtEventHelper {
 		// and membership counts.
 		if (hasPrincipals) {
 			List principals = null;
-			try {principals = ResolveIds.getPrincipals(principalIds);}
+			try {principals = ResolveIds.getPrincipals(principalIds, false);}	// false -> Don't check active (i.e., allow disabled) users.
 			catch (Exception ex) {/* Ignored. */}
 			if ((null != principals) && (!(principals.isEmpty()))) {
 				boolean isPresenceEnabled = GwtServerHelper.isPresenceEnabled();
