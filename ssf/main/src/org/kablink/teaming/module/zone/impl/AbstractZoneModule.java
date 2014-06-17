@@ -1011,7 +1011,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 			Workspace netFoldersRoot = addNetFoldersRoot(top, stamp);
 		}
 		//Make sure resource driver map is initialized
-		getResourceDriverManager().resetResourceDriverList();
+		getResourceDriverManager().initializeResourceDriverList();
 		
 		//See if it is time to purge the View as HMTL cache folder
 		Long maxDirSize = SPropsUtil.getLongObject("max.html.cache.size", 0L);

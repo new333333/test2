@@ -58,12 +58,14 @@ public interface ResourceDriverManager {
 		MOVE_FOLDER
 	}
 	
-	public List<ResourceDriver> getAllowedResourceDrivers();
-	public List<ResourceDriver> getAllResourceDrivers();
 	public List<ResourceDriverConfig> getAllResourceDriverConfigs();
 	public List<ResourceDriverConfig> getAllNetFolderResourceDriverConfigs();
 	public List<ResourceDriverConfig> getAllCloudFolderResourceDriverConfigs();
-	public void resetResourceDriverList();
+	
+	/**
+	 * Load and initialize resource driver list. Used during server start.
+	 */
+	public void initializeResourceDriverList();
 	
 	public ResourceDriver getDriver(String driverName) throws FIException;
 	public ResourceDriverConfig getDriverConfig(String driverName);
@@ -125,4 +127,10 @@ public interface ResourceDriverManager {
 	
 	public AclResourceSession openSessionUserMode(AclResourceDriver driver)  throws AclItemPrincipalMappingException;
 
+	/**
+	 * Inform system cluster-wide of the fact that some sort of resource driver change was made 
+	 * from the node executing this method.
+	 * Any code that adds/deletes/modifies resource driver (= net folder server) MUST call this method.
+	 */
+	public void informResourceDriverChangeFromThisNode();
 }

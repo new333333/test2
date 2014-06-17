@@ -249,6 +249,7 @@
  		<class-cache class="org.kablink.teaming.security.function.WorkAreaFunctionMembership" usage="read-write"/>
  		<class-cache class="org.kablink.teaming.domain.OpenIDProvider" usage="read-write"/>
  		<class-cache class="org.kablink.teaming.domain.BinderState" usage="read-write"/>
+ 		<class-cache class="org.kablink.teaming.domain.ResourceDriver" usage="read-write"/>
  		
  		<collection-cache collection="org.kablink.teaming.domain.FileAttachment.fileVersions" usage="read-write"/>
  		<collection-cache collection="org.kablink.teaming.domain.Binder.binders" usage="read-write"/>

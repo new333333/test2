@@ -424,7 +424,7 @@ public class ResourceDriverModuleImpl implements ResourceDriverModule {
     	SimpleProfiler.stop("addResourceDriverConfig");
 
 		//Add this new resource driver to the list of drivers
-		getResourceDriverManager().resetResourceDriverList();
+		getResourceDriverManager().informResourceDriverChangeFromThisNode();
 		
 		ResourceDriverConfig rdc = getResourceDriverManager().getDriverConfig(name);
 		return rdc;
@@ -619,7 +619,7 @@ public class ResourceDriverModuleImpl implements ResourceDriverModule {
 		
 
 		//Add this new resource driver to the list of drivers
-		getResourceDriverManager().resetResourceDriverList();
+		getResourceDriverManager().informResourceDriverChangeFromThisNode();
 		
 		return rdc;
 	}
@@ -668,7 +668,7 @@ public class ResourceDriverModuleImpl implements ResourceDriverModule {
         SimpleProfiler.stop("deleteResourceDriverConfig");
 
         //Remove this resource driver from the list of drivers
-        getResourceDriverManager().resetResourceDriverList();
+        getResourceDriverManager().informResourceDriverChangeFromThisNode();
 
         // Finally, delete the background job associated with this driver
 
