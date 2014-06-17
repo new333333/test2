@@ -1398,7 +1398,7 @@ public class GwtViewHelper {
 	 * including the PrincipalInfo's and MobileDevicesInfo's for each
 	 * row.
 	 */
-	private static void completeUserInfo(AllModulesInjected bs, HttpServletRequest request, List<FolderRow> frList, boolean isManageUsers, boolean isFilr) {
+	private static void completeUserInfo(AllModulesInjected bs, HttpServletRequest request, List<FolderRow> frList, boolean isProfilesRootWS, boolean isManageUsers, boolean isFilr) {
 		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtViewHelper.completeUserInfo()");
 		try {
 			// If we don't have any FolderRow's to complete...
@@ -1433,7 +1433,12 @@ public class GwtViewHelper {
 					List<MobileDevicesInfo> mdList = (isManageUsers ? new ArrayList<MobileDevicesInfo>() : null);
 					getUserInfoFromPIds(bs, request, piList, mdList, principalIds);
 					for (PrincipalInfo pi:  piList) {
-						if (pi.isUserPerson() || isManageUsers || (!isFilr)) {
+						boolean includeIt = 							// Include it in...
+							((!isFilr)                              ||	// ...Vibe...
+							isManageUsers                           ||	// ...or the administration console's Manage User's page...
+							(isProfilesRootWS && pi.isUserPerson()) ||	// ...or if it's a person in the View User's page...
+							(!isProfilesRootWS));						// ...or it is's any non-user's page.
+						if (includeIt) {
 							continue;
 						}
 						piList.remove(pi);
@@ -5471,7 +5476,7 @@ public class GwtViewHelper {
 			
 			// Walk the List<FolderRow>'s performing any remaining
 			// fixups on each as necessary.
-			completeUserInfo(bs, request, folderRows, isManageUsers, isFilr);
+			completeUserInfo(bs, request, folderRows, isProfilesRootWS, isManageUsers, isFilr);
 
 			// Is the user viewing pinned entries?
 			if (viewPinnedEntries) {
