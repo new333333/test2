@@ -52,18 +52,6 @@ import org.kablink.teaming.fi.connection.acl.AclResourceSession;
  * @author ?
  */
 public class NullResourceDriverManager implements ResourceDriverManager {
-	public List<ResourceDriver> getResourceDrivers() {
-		return new ArrayList<ResourceDriver>();
-	}
-
-	@Override
-	public List<ResourceDriver> getAllowedResourceDrivers() {
-		return new ArrayList<ResourceDriver>();
-	}
-	@Override
-	public List<ResourceDriver> getAllResourceDrivers() {
-		return new ArrayList<ResourceDriver>();
-	}
 	@Override
 	public List<ResourceDriverConfig> getAllResourceDriverConfigs() {
 		return new ArrayList<ResourceDriverConfig>();
@@ -77,7 +65,7 @@ public class NullResourceDriverManager implements ResourceDriverManager {
 		return new ArrayList<ResourceDriverConfig>();
 	}
 	@Override
-	public void resetResourceDriverList() {}
+	public void initializeResourceDriverList() {}
 
 	@Override
 	public String normalizedResourcePath(String driverName, String parentResourcePath, String resourceName) throws FIException {
@@ -145,5 +133,9 @@ public class NullResourceDriverManager implements ResourceDriverManager {
 	public ResourceDriver createResourceDriverWithoutInitialization(
 			ResourceDriverConfig config) {
 		return null;
+	}
+
+	@Override
+	public void informResourceDriverChangeFromThisNode() {
 	}
 }

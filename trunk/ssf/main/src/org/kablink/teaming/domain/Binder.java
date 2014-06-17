@@ -187,6 +187,7 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
     protected Boolean useInheritedJitsSettings = Boolean.TRUE;
     protected Boolean useInheritedDesktopAppTriggerSetting = Boolean.TRUE;
 
+    private ResourceDriver resolvedDriver; // To avoid having to resolve multiple times for same binder instance
     
     public Binder() {
     }
@@ -788,17 +789,16 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
 
 	public ResourceDriver getResourceDriver() {
 		// Just a convenience method
-		ResourceDriver rd = null;
-		if (getResourceDriverName() != null && getResourceDriverName().length() > 0) {
-			try {
-				rd = ResourceDriverManagerUtil.findResourceDriver(getResourceDriverName());
-			} catch(FIException e) {
-				logger.warn("Cannot find resource driver by name '" + getResourceDriverName() + "' on binder '" + this.getId() + "'", e);
-			}
-			return rd;
-		} else {
-			return null;
+		if(resolvedDriver == null) {
+			if (getResourceDriverName() != null && getResourceDriverName().length() > 0) {
+				try {
+					resolvedDriver = ResourceDriverManagerUtil.findResourceDriver(getResourceDriverName());
+				} catch(FIException e) {
+					logger.warn("Cannot find resource driver by name '" + getResourceDriverName() + "' on binder '" + this.getId() + "'", e);
+				}
+			}			
 		}
+		return resolvedDriver;
 	}
 	
 	public DriverType getResourceDriverType() {
