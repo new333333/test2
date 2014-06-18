@@ -911,7 +911,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 	        		modifyBinder_postFillIn(binder, inputData, entryData, ctx);
 	        		//if title changed, must update path info for all child folders
 	        		String newTitle = binder.getTitle();
-	        		if (Validator.isNull(newTitle)) throw new TitleException("");
+	        		if (Validator.isEmptyString(newTitle)) throw new TitleException("");
 	        		if (Validator.containsPathCharacters(newTitle)) throw new IllegalCharacterInNameException("errorcode.title.pathCharacters", new Object[]{newTitle});
 	        		modifyBinder_mirrored(binder, oldTitle, newTitle, inputData);
 	        		//case matters here
