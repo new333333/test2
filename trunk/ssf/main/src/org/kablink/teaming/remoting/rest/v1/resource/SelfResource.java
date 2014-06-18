@@ -379,7 +379,7 @@ public class SelfResource extends AbstractFileResource {
                 }
             } catch (AccessControlException e1) {
             }
-            throw new RestExceptionWrapper(e, data);
+            throw new RestExceptionWrapper(e, e, e, data);
         }
     }
 
@@ -414,7 +414,7 @@ public class SelfResource extends AbstractFileResource {
                 }
             } catch (AccessControlException e1) {
             }
-            throw new RestExceptionWrapper(e, data);
+            throw new RestExceptionWrapper(e, e, e, data);
         }
 
    	}

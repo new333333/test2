@@ -304,7 +304,7 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
                 }
             } catch (AccessControlException e1) {
             }
-            throw new RestExceptionWrapper(e, data);
+            throw new RestExceptionWrapper(e, e, e, data);
         }
     }
 
@@ -546,7 +546,7 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
                 }
             } catch (AccessControlException e1) {
             }
-            throw new RestExceptionWrapper(e, data);
+            throw new RestExceptionWrapper(e, e, e, data);
         }
     }
 
