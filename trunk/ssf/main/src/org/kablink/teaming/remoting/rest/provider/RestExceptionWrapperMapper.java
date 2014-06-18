@@ -30,31 +30,21 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.rest.v1.model;
+package org.kablink.teaming.remoting.rest.provider;
 
-import javax.xml.bind.annotation.XmlRootElement;
+import org.kablink.teaming.remoting.rest.v1.exc.RestExceptionWrapper;
+import org.kablink.teaming.rest.v1.model.ErrorInfo;
+import org.kablink.util.VibeRuntimeException;
 
-/**
- * @author jong
- *
- */
-@XmlRootElement (name = "error_info")
-public class ErrorInfo {
+import javax.ws.rs.core.Response;
+import javax.ws.rs.ext.ExceptionMapper;
+import javax.ws.rs.ext.Provider;
 
-	public String code;
-	public String message;
-    public Object data;
-	
-	private ErrorInfo() {}
-	
-	public ErrorInfo(String code, String message) {
-		this.code = code;
-		this.message = message;
+@Provider
+public class RestExceptionWrapperMapper implements ExceptionMapper<RestExceptionWrapper> {
+	public Response toResponse(RestExceptionWrapper ex) {
+		return Response.status(ex.getHttpStatusCode()).entity(
+                new ErrorInfo(ex.getApiErrorCode().name(), ex.getLocalizedMessage(), ex.getData())).build();
 	}
 
-    public ErrorInfo(String code, String message, Object data) {
-        this.code = code;
-        this.message = message;
-        this.data = data;
-    }
 }

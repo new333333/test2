@@ -30,31 +30,56 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.rest.v1.model;
+package org.kablink.teaming.remoting.rest.v1.exc;
 
-import javax.xml.bind.annotation.XmlRootElement;
+import org.kablink.teaming.rest.v1.model.ErrorInfo;
+import org.kablink.util.HttpStatusCodeSupport;
+import org.kablink.util.VibeRuntimeException;
+import org.kablink.util.api.ApiErrorCode;
+import org.kablink.util.api.ApiErrorCodeSupport;
+
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Response;
 
 /**
  * @author jong
  *
  */
-@XmlRootElement (name = "error_info")
-public class ErrorInfo {
+public class RestExceptionWrapper extends RuntimeException implements HttpStatusCodeSupport, ApiErrorCodeSupport {
 
-	public String code;
-	public String message;
-    public Object data;
-	
-	private ErrorInfo() {}
-	
-	public ErrorInfo(String code, String message) {
-		this.code = code;
-		this.message = message;
+	private static final long serialVersionUID = 1L;
+
+    private Object data;
+    private VibeRuntimeException rootCause;
+
+	public RestExceptionWrapper(VibeRuntimeException root, Object data) {
+		super(root);
+        rootCause = root;
+        this.data = data;
 	}
 
-    public ErrorInfo(String code, String message, Object data) {
-        this.code = code;
-        this.message = message;
-        this.data = data;
+    @Override
+    public ApiErrorCode getApiErrorCode() {
+        return rootCause.getApiErrorCode();
+    }
+
+    @Override
+    public int getHttpStatusCode() {
+        return rootCause.getHttpStatusCode();
+    }
+
+    @Override
+    public String getLocalizedMessage() {
+        return rootCause.getLocalizedMessage();
+    }
+
+    @Override
+    public String getMessage() {
+        return rootCause.getMessage();
+    }
+
+    public Object getData() {
+        return data;
     }
 }
+

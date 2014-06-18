@@ -44,6 +44,7 @@ import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.TeamInfo;
+import org.kablink.teaming.domain.TitleException;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.shared.FolderUtils;
@@ -52,6 +53,7 @@ import org.kablink.teaming.remoting.rest.v1.exc.ConflictException;
 import org.kablink.teaming.remoting.rest.v1.exc.InternalServerErrorException;
 import org.kablink.teaming.remoting.rest.v1.exc.NotFoundException;
 import org.kablink.teaming.remoting.rest.v1.exc.NotModifiedException;
+import org.kablink.teaming.remoting.rest.v1.exc.RestExceptionWrapper;
 import org.kablink.teaming.remoting.rest.v1.util.BinderBriefBuilder;
 import org.kablink.teaming.remoting.rest.v1.util.LinkUriUtil;
 import org.kablink.teaming.remoting.rest.v1.util.ResourceUtil;
@@ -365,8 +367,20 @@ public class SelfResource extends AbstractFileResource {
         }
         Map options = new HashMap();
         options.put(ObjectKeys.INPUT_OPTION_REQUIRED_TITLE, title);
-        org.kablink.teaming.domain.Binder binder = getBinderModule().copyBinder(sourceId, parent.getId(), true, options);
-        return (org.kablink.teaming.rest.v1.model.Folder) ResourceUtil.buildBinder(binder, true, toDomainFormat(descriptionFormatStr));
+        try {
+            org.kablink.teaming.domain.Binder binder = getBinderModule().copyBinder(sourceId, parent.getId(), true, options);
+            return (org.kablink.teaming.rest.v1.model.Folder) ResourceUtil.buildBinder(binder, true, toDomainFormat(descriptionFormatStr));
+        } catch (TitleException e) {
+            org.kablink.teaming.rest.v1.model.Binder data = null;
+            try {
+                org.kablink.teaming.domain.Binder binder = getBinderModule().getBinderByParentAndTitle(parent.getId(), title);
+                if (binder!=null) {
+                    data = ResourceUtil.buildBinder(binder, true, toDomainFormat(descriptionFormatStr));
+                }
+            } catch (AccessControlException e1) {
+            }
+            throw new RestExceptionWrapper(e, data);
+        }
     }
 
     @POST
@@ -384,11 +398,25 @@ public class SelfResource extends AbstractFileResource {
         if (newBinder.getTitle()==null) {
             throw new BadRequestException(ApiErrorCode.BAD_INPUT, "No folder title was supplied in the POST data.");
         }
-        org.kablink.teaming.domain.Binder binder = FolderUtils.createLibraryFolder(parent, newBinder.getTitle());
-        org.kablink.teaming.rest.v1.model.Folder folder =
-                (org.kablink.teaming.rest.v1.model.Folder) ResourceUtil.buildBinder(binder, true, toDomainFormat(descriptionFormatStr));
-        folder.setParentBinder(new ParentBinder(ObjectKeys.MY_FILES_ID, "/self/my_files"));
-        return folder;
+        try {
+            org.kablink.teaming.domain.Binder binder = FolderUtils.createLibraryFolder(parent, newBinder.getTitle());
+            org.kablink.teaming.rest.v1.model.Folder folder =
+                    (org.kablink.teaming.rest.v1.model.Folder) ResourceUtil.buildBinder(binder, true, toDomainFormat(descriptionFormatStr));
+            folder.setParentBinder(new ParentBinder(ObjectKeys.MY_FILES_ID, "/self/my_files"));
+            return folder;
+        } catch (TitleException e) {
+            org.kablink.teaming.rest.v1.model.Binder data = null;
+            try {
+                org.kablink.teaming.domain.Binder binder = getBinderModule().getBinderByParentAndTitle(parent.getId(), newBinder.getTitle());
+                if (binder!=null) {
+                    data = ResourceUtil.buildBinder(binder, true, toDomainFormat(descriptionFormatStr));
+                    data.setParentBinder(new ParentBinder(ObjectKeys.MY_FILES_ID, "/self/my_files"));
+                }
+            } catch (AccessControlException e1) {
+            }
+            throw new RestExceptionWrapper(e, data);
+        }
+
    	}
 
     @GET
