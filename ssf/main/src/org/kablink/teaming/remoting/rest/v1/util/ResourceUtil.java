@@ -287,8 +287,11 @@ public class ResourceUtil {
     }
 
     public static FileProperties buildFileProperties(FileAttachment fa) {
-        FileProperties fp = new FileProperties();
-        populateFileProperties(fp, fa);
+        FileProperties fp = null;
+        if (fa!=null) {
+            fp = new FileProperties();
+            populateFileProperties(fp, fa);
+        }
         return fp;
     }
 
