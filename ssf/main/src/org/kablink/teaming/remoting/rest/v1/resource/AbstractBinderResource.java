@@ -9,6 +9,7 @@ import org.kablink.teaming.domain.NoBinderByTheIdException;
 import org.kablink.teaming.domain.NoTagByTheIdException;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.ShareItem;
+import org.kablink.teaming.domain.TitleException;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.shared.BinderUtils;
@@ -18,6 +19,7 @@ import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.remoting.rest.v1.exc.BadRequestException;
 import org.kablink.teaming.remoting.rest.v1.exc.NotFoundException;
 import org.kablink.teaming.remoting.rest.v1.exc.NotModifiedException;
+import org.kablink.teaming.remoting.rest.v1.exc.RestExceptionWrapper;
 import org.kablink.teaming.remoting.rest.v1.util.BinderBriefBuilder;
 import org.kablink.teaming.remoting.rest.v1.util.FilePropertiesBuilder;
 import org.kablink.teaming.remoting.rest.v1.util.ResourceUtil;
@@ -42,6 +44,7 @@ import org.kablink.teaming.rest.v1.model.Share;
 import org.kablink.teaming.rest.v1.model.Tag;
 import org.kablink.teaming.rest.v1.model.TeamMember;
 import org.kablink.teaming.search.SearchUtils;
+import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.util.Pair;
 import org.kablink.util.api.ApiErrorCode;
@@ -289,8 +292,20 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
         }
         Map options = new HashMap();
         options.put(ObjectKeys.INPUT_OPTION_REQUIRED_TITLE, title);
-        org.kablink.teaming.domain.Binder binder = getBinderModule().copyBinder(sourceId, parentId, true, options);
-        return (Folder) ResourceUtil.buildBinder(binder, true, toDomainFormat(descriptionFormatStr));
+        try {
+            org.kablink.teaming.domain.Binder binder = getBinderModule().copyBinder(sourceId, parentId, true, options);
+            return (Folder) ResourceUtil.buildBinder(binder, true, toDomainFormat(descriptionFormatStr));
+        } catch (TitleException e) {
+            Binder data = null;
+            try {
+                org.kablink.teaming.domain.Binder binder = getBinderModule().getBinderByParentAndTitle(parentId, title);
+                if (binder!=null) {
+                    data = ResourceUtil.buildBinder(binder, true, toDomainFormat(descriptionFormatStr));
+                }
+            } catch (AccessControlException e1) {
+            }
+            throw new RestExceptionWrapper(e, data);
+        }
     }
 
     @POST
@@ -519,8 +534,20 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
         if (newBinder.getTitle()==null) {
             throw new BadRequestException(ApiErrorCode.BAD_INPUT, "No folder title was supplied in the POST data.");
         }
-        org.kablink.teaming.domain.Binder binder = FolderUtils.createLibraryFolder(parent, newBinder.getTitle());
-        return ResourceUtil.buildBinder(binder, true, descriptionFormat);
+        try {
+            org.kablink.teaming.domain.Binder binder = FolderUtils.createLibraryFolder(parent, newBinder.getTitle());
+            return ResourceUtil.buildBinder(binder, true, descriptionFormat);
+        } catch (TitleException e) {
+            Binder data = null;
+            try {
+                org.kablink.teaming.domain.Binder binder = getBinderModule().getBinderByParentAndTitle(parentId, newBinder.getTitle());
+                if (binder!=null) {
+                    data = ResourceUtil.buildBinder(binder, true, descriptionFormat);
+                }
+            } catch (AccessControlException e1) {
+            }
+            throw new RestExceptionWrapper(e, data);
+        }
     }
 
     protected Binder createBinder(long parentId, Binder newBinder, Long templateId, int descriptionFormat) throws WriteFilesException, WriteEntryDataException {
