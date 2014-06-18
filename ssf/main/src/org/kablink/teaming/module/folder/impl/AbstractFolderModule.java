@@ -1245,8 +1245,15 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
 			}
 			try {
 				processor.deleteEntry(folder, entry, true, options);
-			} catch(WriteFilesException e) {
+			} catch(WriteFilesException wfe) {
 				//The files attached to this entry could not be deleted
+				if (options.containsKey(ObjectKeys.INPUT_OPTION_PROPAGATE_ERRORS) && 
+						(boolean)options.get(ObjectKeys.INPUT_OPTION_PROPAGATE_ERRORS)) {
+		        	// Since the new entry was created, delete it.
+	        		try {deleteEntry(destinationId, newEntry.getId(), true, new HashMap());}
+	        		catch(Exception e) {/* Ignored. */}	// Any further errors while trying to delete the entry are ignored
+					throw wfe;
+				}
 			}
 		} else {
 			processor.moveEntry(folder, entry, destination, toFileNames, options);

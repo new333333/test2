@@ -204,6 +204,8 @@ import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.file.FileModule;
+import org.kablink.teaming.module.file.FilesErrors;
+import org.kablink.teaming.module.file.FilesErrors.Problem;
 import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.folder.FilesLockedByOtherUsersException;
 import org.kablink.teaming.module.folder.FolderModule;
@@ -8609,6 +8611,7 @@ public class GwtViewHelper {
 	 * 
 	 * @throws GwtTeamingException
 	 */
+	@SuppressWarnings("unchecked")
 	public static ErrorListRpcResponseData moveEntries(AllModulesInjected bs, HttpServletRequest request, Long targetFolderId, List<EntityId> entityIds) throws GwtTeamingException {
 		try {
 			// Allocate an error list response we can return.
@@ -8639,7 +8642,9 @@ public class GwtViewHelper {
 							}
 						}
 						else {
-							fm.moveEntry(entityId.getBinderId(), entityId.getEntityId(), cmt.getEntryTargetId(), null, null);
+							Map options = new HashMap();
+							options.put(ObjectKeys.INPUT_OPTION_PROPAGATE_ERRORS, Boolean.TRUE);	// We want any errors from the move propagate back up to us.
+							fm.moveEntry(entityId.getBinderId(), entityId.getEntityId(), cmt.getEntryTargetId(), null, options);
 						}
 					}
 
@@ -8648,13 +8653,39 @@ public class GwtViewHelper {
 						String entryTitle = GwtServerHelper.getEntityTitle(bs, entityId);
 						String messageKey;
 						NotSupportedException nse = null;
-						if      (e instanceof AccessControlException)  messageKey = "moveEntryError.AccssControlException";
+						if (e instanceof WriteFilesException) {
+							// ...we can get a WriteFilesException in
+							// ...two scenarios - writing the target
+							// ...or deleting the source when the move
+							// ...degrades to a copy/delete as it does
+							// ...with mirrored folders - for the
+							// ...later...
+							messageKey = "moveEntryError.WriteFilesException";
+							WriteFilesException wfe = ((WriteFilesException) e);
+							FilesErrors errors = wfe.getErrors();
+							if (null != errors) {
+								List<Problem> problems = errors.getProblems();
+								if (MiscUtil.hasItems(problems)) {
+									Problem problem = problems.get(0);
+									int problemType = problem.getType();
+									if (Problem.PROBLEM_DELETING_PRIMARY_FILE == problemType) {
+										// ...the WriteFilesException
+										// ...error is inappropriate in
+										// ...this case since it refers
+										// ...to not being able to
+										// ...write to the
+										// ...destination...
+										messageKey = "moveEntryError.UncheckedIOException";
+									}
+								}
+							}
+						}
+						else if (e instanceof AccessControlException)  messageKey = "moveEntryError.AccssControlException";
 						else if (e instanceof BinderQuotaException)    messageKey = "moveEntryError.BinderQuotaException";
 						else if (e instanceof IllegalStateException)   messageKey = "moveEntryError.IllegalStateException";
 						else if (e instanceof NotSupportedException)  {messageKey = "moveEntryError.NotSupportedException"; nse = ((NotSupportedException) e);}
 						else if (e instanceof TitleException)          messageKey = "moveEntryError.TitleException";
 						else if (e instanceof UncheckedIOException)    messageKey = "moveEntryError.UncheckedIOException";
-						else if (e instanceof WriteFilesException)     messageKey = "moveEntryError.WriteFilesException";
 						else                                           messageKey = "moveEntryError.OtherException";
 						String[] messageArgs;
 						if (null == nse) {
