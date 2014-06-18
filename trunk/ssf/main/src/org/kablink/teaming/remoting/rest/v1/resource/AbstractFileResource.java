@@ -16,6 +16,7 @@ import org.kablink.teaming.remoting.rest.v1.exc.ConflictException;
 import org.kablink.teaming.remoting.rest.v1.exc.InternalServerErrorException;
 import org.kablink.teaming.remoting.rest.v1.exc.NotFoundException;
 import org.kablink.teaming.remoting.rest.v1.exc.NotModifiedException;
+import org.kablink.teaming.remoting.rest.v1.exc.RestExceptionWrapper;
 import org.kablink.teaming.remoting.rest.v1.util.ResourceUtil;
 import org.kablink.teaming.rest.v1.model.FileProperties;
 import org.kablink.teaming.rest.v1.model.FileVersionProperties;
@@ -33,6 +34,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -68,7 +70,7 @@ abstract public class AbstractFileResource extends AbstractResource {
 
         if(entry != null) {
             if (!replaceExisting) {
-                throw new ConflictException(ApiErrorCode.FILE_EXISTS, "A file with the name already exists.");
+                throw new ConflictException(ApiErrorCode.FILE_EXISTS, "A file with the name already exists.", ResourceUtil.buildFileProperties(entry.getPrimaryFileAttachment()));
             }
             // An entry containing a file with this name exists.
             if(logger.isDebugEnabled())
@@ -99,7 +101,7 @@ abstract public class AbstractFileResource extends AbstractResource {
         DefinableEntity entity = findDefinableEntity(entityType, entityId);
         FileAttachment fa = entity.getFileAttachment(filename);
         if (fa!=null) {
-            throw new ConflictException(ApiErrorCode.FILE_EXISTS, "A file named " + filename + " already exists in the " + entityType + ".");
+            throw new ConflictException(ApiErrorCode.FILE_EXISTS, "A file named " + filename + " already exists in the " + entityType + ".", ResourceUtil.buildFileProperties(fa));
         }
         modifyDefinableEntityWithFile(entity, dataName, filename, is, modDate, expectedMd5);
         fa = entity.getFileAttachment(filename);
@@ -151,7 +153,7 @@ abstract public class AbstractFileResource extends AbstractResource {
         FileAttachment fa = entity.getFileAttachment(filename);
         if (fa != null) {
             if (update!=null && !update) {
-                throw new ConflictException(ApiErrorCode.FILE_EXISTS, "A file named " + filename + " already exists in the " + entityType.name() + ".");
+                throw new ConflictException(ApiErrorCode.FILE_EXISTS, "A file named " + filename + " already exists in the " + entityType.name() + ".", ResourceUtil.buildFileProperties(fa));
             }
             if (FileUtils.matchesTopMostVersion(fa, lastVersionNumber, lastMajorVersionNumber, lastMinorVersionNumber)) {
                 modifyDefinableEntityWithFile(entity, dataName, filename, is, modDate, expectedMd5);

@@ -50,4 +50,8 @@ public class ConflictException extends WebApplicationException {
 	public ConflictException(ApiErrorCode apiErrorCode, String message) {
 		super(Response.status(Response.Status.CONFLICT).entity(new ErrorInfo(apiErrorCode.name(), message)).build());
 	}
+
+	public ConflictException(ApiErrorCode apiErrorCode, String message, Object data) {
+		super(Response.status(Response.Status.CONFLICT).entity(new ErrorInfo(apiErrorCode.name(), message, data)).build());
+	}
 }

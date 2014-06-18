@@ -50,22 +50,26 @@ public class RestExceptionWrapper extends RuntimeException implements HttpStatus
 	private static final long serialVersionUID = 1L;
 
     private Object data;
-    private VibeRuntimeException rootCause;
+    private Exception rootCause;
+    private HttpStatusCodeSupport http;
+    private ApiErrorCodeSupport api;
 
-	public RestExceptionWrapper(VibeRuntimeException root, Object data) {
+	public RestExceptionWrapper(Exception root, HttpStatusCodeSupport http, ApiErrorCodeSupport api, Object data) {
 		super(root);
         rootCause = root;
+        this.http = http;
+        this.api = api;
         this.data = data;
 	}
 
     @Override
     public ApiErrorCode getApiErrorCode() {
-        return rootCause.getApiErrorCode();
+        return api.getApiErrorCode();
     }
 
     @Override
     public int getHttpStatusCode() {
-        return rootCause.getHttpStatusCode();
+        return http.getHttpStatusCode();
     }
 
     @Override
