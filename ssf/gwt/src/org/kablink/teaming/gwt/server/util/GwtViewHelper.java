@@ -1515,91 +1515,117 @@ public class GwtViewHelper {
 	 * representing the 'Shared by Me' items.
 	 */
 	private static List<GwtSharedMeItem> convertItemListToByMeList(AllModulesInjected bs, HttpServletRequest request, List<ShareItem> shareItems, Long userId, String sortBy, boolean sortDescend) throws Exception {
-		// Allocate a List<GwtSharedMeItem> to hold the converted
-		// List<ShareItem> information.
-		List<GwtSharedMeItem> reply = new ArrayList<GwtSharedMeItem>();
+		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtViewHelper.convertItemListToByMeList()");
+		try {
+			// Allocate a List<GwtSharedMeItem> to hold the converted
+			// List<ShareItem> information.
+			List<GwtSharedMeItem> reply = new ArrayList<GwtSharedMeItem>();
+			
+			// If we don't have any share items to convert...
+			if (!(MiscUtil.hasItems(shareItems))) {
+				// ...return the empty reply list.
+				return reply;
+			}
+			
+			// Get the state of the shared view.
+			boolean         sharedFiles;
+			SharedViewState svs;
+			SimpleProfiler.start("GwtViewHelper.convertItemListToByMeList(Setup)");
+			try {
+				try                  {svs = getSharedViewState(bs, request, CollectionType.SHARED_BY_ME).getSharedViewState();}
+				catch (Exception ex) {svs = new SharedViewState(true, false);                                                 }
+				sharedFiles = getUserViewSharedFiles(request, CollectionType.SHARED_BY_ME);
+			}
+			finally {
+				SimpleProfiler.stop("GwtViewHelper.convertItemListToByMeList(Setup)");
+			}
+	
+			// Scan the share items.
+			SharingModule	      sm             = bs.getSharingModule();
+			List<DefinableEntity> sharedEntities = new ArrayList<DefinableEntity>();
+			sm.validateShareItems(shareItems, sharedEntities);
+			SimpleProfiler.start("GwtViewHelper.convertItemListToByMeList(Processing shares)");
+			try {
+				for (ShareItem si:  shareItems) {
+					// Is the shared entity still accessible?
+					EntityIdentifier eid = si.getSharedEntityIdentifier();
+					DefinableEntity	siEntity = sm.findSharedEntityInList(sharedEntities, eid); 
+					if ((null == siEntity) || GwtDeleteHelper.isEntityPreDeleted(siEntity)) {
+						// No!  We'll simply skip it.  This can happen if
+						// somebody revokes the user's right to an item they
+						// previously shared.
+						continue;
+					}
 		
-		// If we don't have any share items to convert...
-		if (!(MiscUtil.hasItems(shareItems))) {
-			// ...return the empty reply list.
+					// Are we showing everything?
+					boolean showHidden     = svs.isShowHidden();
+					boolean showNonHidden  = svs.isShowNonHidden();
+					boolean isEntityHidden = sm.isSharedEntityHidden(siEntity, false);	// false -> Check hidden in Shared by Me list.
+					if ((!showHidden) || (!showNonHidden)) {
+						// No!  Are we supposed to show entities in this hide
+						// state?
+						boolean showIt = ((isEntityHidden && showHidden) || ((!isEntityHidden) && showNonHidden));
+						if (!showIt) {
+							// Yes!  Skip it.
+							continue;
+						}
+					}
+		
+					// Is this entity other than a file entity while we're only
+					// showing files in the collection?
+					String siEntityFamily = GwtServerHelper.getFolderEntityFamily(bs, siEntity);
+					if (sharedFiles && (!(GwtServerHelper.isFamilyFile(siEntityFamily)))) {
+						// Yes!  Skip it.
+						continue;
+					}
+		
+					// Is this an additional share item on an existing
+					// GwtSharedMeItem?
+					GwtSharedMeItem meItem = GwtSharedMeItem.findShareMeInList(siEntity, reply);
+					if (null == meItem) {
+						// No!  Create a new GwtSharedMeItem for it...
+						meItem = new GwtSharedMeItem(
+							isEntityHidden,		// true -> The entity is hidden.  false -> It isn't.
+							siEntity,			// The entity being shared.
+							siEntityFamily);	// The family of the entity.
+						
+						// ...and add it to the reply list.
+						reply.add(meItem);
+					}
+		
+					// Add information about this share item as a
+					String recipientTitle;
+					if (si.getIsPartOfPublicShare())
+					     recipientTitle = NLT.get("share.recipientType.title.public");
+					else recipientTitle = getRecipientTitle(bs, si.getRecipientType(), si.getRecipientId());
+					meItem.addPerShareInfo(
+						si,
+						recipientTitle,
+						getRecipientTitle(bs, RecipientType.user, si.getSharerId()));
+				}
+			}
+			finally {
+				SimpleProfiler.stop("GwtViewHelper.convertItemListToByMeList(Processing shares)");
+			}
+	
+			// Sort the GwtPerShareInfo's attached to the
+			// List<GwtSharedMeItem> we're going to return.
+			SimpleProfiler.start("GwtViewHelper.convertItemListToByMeList(Sorting shares)");
+			try {
+				PerShareInfoComparator.sortPerShareInfoLists(bs, CollectionType.SHARED_BY_ME, reply, sortBy, sortDescend);
+			}
+			finally {
+				SimpleProfiler.stop("GwtViewHelper.convertItemListToByMeList(Sorting shares)");
+			}
+			
+			// If we get here, reply refers to the List<GwtSharedMeItem>
+			// built from condensing the List<ShareItem>.  Return it.
 			return reply;
 		}
 		
-		// Get the state of the shared view.
-		SharedViewState svs;
-		try                  {svs = getSharedViewState(bs, request, CollectionType.SHARED_BY_ME).getSharedViewState();}
-		catch (Exception ex) {svs = new SharedViewState(true, false);                                                 }
-
-		// Scan the share items.
-		boolean			      sharedFiles    = getUserViewSharedFiles(request, CollectionType.SHARED_BY_ME);
-		SharingModule	      sm             = bs.getSharingModule();
-		List<DefinableEntity> sharedEntities = new ArrayList<DefinableEntity>();
-		sm.validateShareItems(shareItems, sharedEntities);
-		for (ShareItem si:  shareItems) {
-			// Is the shared entity still accessible?
-			EntityIdentifier eid = si.getSharedEntityIdentifier();
-			DefinableEntity	siEntity = sm.findSharedEntityInList(sharedEntities, eid); 
-			if ((null == siEntity) || GwtDeleteHelper.isEntityPreDeleted(siEntity)) {
-				// No!  We'll simply skip it.  This can happen if
-				// somebody revokes the user's right to an item they
-				// previously shared.
-				continue;
-			}
-
-			// Are we showing everything?
-			boolean showHidden     = svs.isShowHidden();
-			boolean showNonHidden  = svs.isShowNonHidden();
-			boolean isEntityHidden = sm.isSharedEntityHidden(siEntity, false);	// false -> Check hidden in Shared by Me list.
-			if ((!showHidden) || (!showNonHidden)) {
-				// No!  Are we supposed to show entities in this hide
-				// state?
-				boolean showIt = ((isEntityHidden && showHidden) || ((!isEntityHidden) && showNonHidden));
-				if (!showIt) {
-					// Yes!  Skip it.
-					continue;
-				}
-			}
-
-			// Is this entity other than a file entity while we're only
-			// showing files in the collection?
-			String siEntityFamily = GwtServerHelper.getFolderEntityFamily(bs, siEntity);
-			if (sharedFiles && (!(GwtServerHelper.isFamilyFile(siEntityFamily)))) {
-				// Yes!  Skip it.
-				continue;
-			}
-
-			// Is this an additional share item on an existing
-			// GwtSharedMeItem?
-			GwtSharedMeItem meItem = GwtSharedMeItem.findShareMeInList(siEntity, reply);
-			if (null == meItem) {
-				// No!  Create a new GwtSharedMeItem for it...
-				meItem = new GwtSharedMeItem(
-					isEntityHidden,		// true -> The entity is hidden.  false -> It isn't.
-					siEntity,			// The entity being shared.
-					siEntityFamily);	// The family of the entity.
-				
-				// ...and add it to the reply list.
-				reply.add(meItem);
-			}
-
-			// Add information about this share item as a
-			String recipientTitle;
-			if (si.getIsPartOfPublicShare())
-			     recipientTitle = NLT.get("share.recipientType.title.public");
-			else recipientTitle = getRecipientTitle(bs, si.getRecipientType(), si.getRecipientId());
-			meItem.addPerShareInfo(
-				si,
-				recipientTitle,
-				getRecipientTitle(bs, RecipientType.user, si.getSharerId()));
+		finally {
+			gsp.stop();
 		}
-
-		// Sort the GwtPerShareInfo's attached to the
-		// List<GwtSharedMeItem> we're going to return.
-		PerShareInfoComparator.sortPerShareInfoLists(bs, CollectionType.SHARED_BY_ME, reply, sortBy, sortDescend);
-		
-		// If we get here, reply refers to the List<GwtSharedMeItem>
-		// built from condensing the List<ShareItem>.  Return it.
-		return reply;
 	}
 	
 	/*
