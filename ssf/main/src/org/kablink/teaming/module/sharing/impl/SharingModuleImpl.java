@@ -69,12 +69,14 @@ import org.kablink.teaming.util.GangliaMonitoring;
 import org.kablink.teaming.util.ReflectHelper;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.ShareLists;
+import org.kablink.teaming.util.SimpleProfiler;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.TagUtil;
 import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.util.ListUtil;
 import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.util.api.ApiErrorCode;
+
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -1488,77 +1490,108 @@ public class SharingModuleImpl extends CommonDependencyInjection implements Shar
      * Implements the various validateShareItems() methods.
      */
     private void validateShareItemsImpl(List<ShareItem> shares, List<DefinableEntity> sharedEntities, boolean doCheckAccess) {
-    	// If we weren't given any shares...
-    	int c = ((null == shares) ? 0 : shares.size());
-    	if (0 == c) {
-    		// ...there's nothing to validate.
-    		return;
-    	}
-
-    	// Collect the shared entity IDs from the shares.
-    	List<Long> binderIds = new ArrayList<Long>();
-    	List<Long> entryIds  = new ArrayList<Long>();
-    	for (ShareItem share:  shares) {
-    		EntityIdentifier eid = share.getSharedEntityIdentifier();
-    		Long             id  = eid.getEntityId();
-    		if (eid.getEntityType().equals(EntityType.folderEntry))
-    		     ListUtil.addLongToListLongIfUnique(entryIds,  id);
-    		else ListUtil.addLongToListLongIfUnique(binderIds, id);
-    	}
-
-    	// Access the referenced Binder's WITHOUT access checks...
-    	Set<Binder> binderSet;
-    	if (binderIds.isEmpty())
-    	     binderSet = null;
-    	else binderSet = getBinderModule().getBinders(binderIds, false);
-    	if (null == binderSet) {
-    		binderSet = new HashSet<Binder>();
+		SimpleProfiler.start("SharingModuleImpl.validateShareItemsImpl()");
+    	try {
+	    	// If we weren't given any shares...
+	    	int c = ((null == shares) ? 0 : shares.size());
+	    	if (0 == c) {
+	    		// ...there's nothing to validate.
+	    		return;
+	    	}
+	
+	    	// Collect the shared entity IDs from the shares.
+	    	List<Long> binderIds = new ArrayList<Long>();
+	    	List<Long> entryIds  = new ArrayList<Long>();
+			SimpleProfiler.start("SharingModuleImpl.validateShareItemsImpl(Collect IDs)");
+	    	try {
+		    	for (ShareItem share:  shares) {
+		    		EntityIdentifier eid = share.getSharedEntityIdentifier();
+		    		Long             id  = eid.getEntityId();
+		    		if (eid.getEntityType().equals(EntityType.folderEntry))
+		    		     ListUtil.addLongToListLongIfUnique(entryIds,  id);
+		    		else ListUtil.addLongToListLongIfUnique(binderIds, id);
+		    	}
+	    	}
+	    	finally {
+				SimpleProfiler.stop("SharingModuleImpl.validateShareItemsImpl(Collect IDs)");
+	    	}
+	
+	    	// Access the referenced Binder's WITHOUT access checks...
+	    	Set<Binder> binderSet;
+			SimpleProfiler.start("SharingModuleImpl.validateShareItemsImpl(Resolve binders)");
+	    	try {
+		    	if (binderIds.isEmpty())
+		    	     binderSet = null;
+		    	else binderSet = getBinderModule().getBinders(binderIds, false);
+		    	if (null == binderSet) {
+		    		binderSet = new HashSet<Binder>();
+		    	}
+	    	}
+	    	finally {
+				SimpleProfiler.stop("SharingModuleImpl.validateShareItemsImpl(Resolve binders)");
+	    	}
+	    	
+	    	// ...and FolderEntry's WIHTOUT access checks.
+	    	Set<FolderEntry> entrySet;
+			SimpleProfiler.start("SharingModuleImpl.validateShareItemsImpl(Resolve entries)");
+	    	try {
+		    	if (entryIds.isEmpty())
+		    	     entrySet = null;
+		    	else entrySet = getFolderModule().getEntries(entryIds, false);
+		    	if (null == entrySet) {
+		    		entrySet = new HashSet<FolderEntry>();
+		    	}
+	    	}
+		    finally {
+				SimpleProfiler.stop("SharingModuleImpl.validateShareItemsImpl(Resolve entries)");
+		    }
+	
+			SimpleProfiler.start("SharingModuleImpl.validateShareItemsImpl(Validate shares)");
+	    	try {
+		    	// Scan the shares again.
+		    	CoreDao cd = getCoreDao();
+		    	User user = RequestContextHolder.getRequestContext().getUser();
+		    	for (int i = (c - 1); i >= 0; i -= 1) {
+		    		// Were we able to find this share's DefinableEntity?
+		    		ShareItem        share = shares.get(i);
+		    		EntityIdentifier eid   = share.getSharedEntityIdentifier();
+		    		EntityType       eit   = eid.getEntityType();
+		    		Long             id    = eid.getEntityId();
+		    		DefinableEntity  de;
+		    		if (eit.equals(EntityType.folderEntry))
+		    		     de = findEntryById( entrySet,  id);
+		    		else de = findBinderById(binderSet, id);
+		    		if (null == de) {
+		    			// No!  Then we consider it invalid.  Remove it from
+		    			// the share list and database.
+						logger.error("SharingModuleImpl.validateShareItemsImpl():  The " + eit.name() + " (id:" + id + ") referenced by ShareItem (id:" + share.getId() + ") is missing.  The ShareItem is being deleted.");
+		    			shares.remove(i);
+		    			cd.purgeShares(share);
+		    		}
+		
+		    		else if (null != sharedEntities) {
+		        		// Yes, it's valid and the caller wants it returned!
+		    			// Are we tracking it yet?
+		            	if (null == findSharedEntityInList(sharedEntities, eid)) {
+		        			// No!  Access check it if requested and add it to
+		        			// the shared entity list.
+			                try {
+			                	if (doCheckAccess) {
+			                		AccessUtils.readCheck(user, de);
+			                	}
+			               		sharedEntities.add(de);
+			                } catch (Exception ignoreMe) {/* Ignored. */};
+		            	}
+		    		}
+		    	}
+	    	}
+	    	finally {
+				SimpleProfiler.stop("SharingModuleImpl.validateShareItemsImpl(Validate shares)");
+	    	}
     	}
     	
-    	// ...and FolderEntry's WIHTOUT access checks.
-    	Set<FolderEntry> entrySet;
-    	if (entryIds.isEmpty())
-    	     entrySet = null;
-    	else entrySet = getFolderModule().getEntries(entryIds, false);
-    	if (null == entrySet) {
-    		entrySet = new HashSet<FolderEntry>();
-    	}
-
-    	// Scan the shares again.
-    	CoreDao cd = getCoreDao();
-    	User user = RequestContextHolder.getRequestContext().getUser();
-    	for (int i = (c - 1); i >= 0; i -= 1) {
-    		// Were we able to find this share's DefinableEntity?
-    		ShareItem        share = shares.get(i);
-    		EntityIdentifier eid   = share.getSharedEntityIdentifier();
-    		EntityType       eit   = eid.getEntityType();
-    		Long             id    = eid.getEntityId();
-    		DefinableEntity  de;
-    		if (eit.equals(EntityType.folderEntry))
-    		     de = findEntryById( entrySet,  id);
-    		else de = findBinderById(binderSet, id);
-    		if (null == de) {
-    			// No!  Then we consider it invalid.  Remove it from
-    			// the share list and database.
-				logger.error("SharingModuleImpl.validateShareItemsImpl():  The " + eit.name() + " (id:" + id + ") referenced by ShareItem (id:" + share.getId() + ") is missing.  The ShareItem is being deleted.");
-    			shares.remove(i);
-    			cd.purgeShares(share);
-    		}
-
-    		else if (null != sharedEntities) {
-        		// Yes, it's valid and the caller wants it returned!
-    			// Are we tracking it yet?
-            	if (null == findSharedEntityInList(sharedEntities, eid)) {
-        			// No!  Access check it if requested and add it to
-        			// the shared entity list.
-	                try {
-	                	if (doCheckAccess) {
-	                		AccessUtils.readCheck(user, de);
-	                	}
-	               		sharedEntities.add(de);
-	                } catch (Exception ignoreMe) {};
-            	}
-    		}
+    	finally {
+    		SimpleProfiler.stop("SharingModuleImpl.validateShareItemsImpl()");
     	}
     }
     
