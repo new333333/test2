@@ -78,6 +78,7 @@ public enum ApiErrorCode {
 	FILE_EXISTS, // This folder requires that all uploaded files have unique filenames. A file with this name already exists.
 	FILE_NOT_FOUND, // No file found with this name or id
 	FILE_VERSION_NOT_FOUND, // No file version found with this id
+	FILE_PATH_TOO_LONG, // File path too long
 
 	// Folder errors
 	FOLDER_NOT_FOUND, // No folder found with this name or id
