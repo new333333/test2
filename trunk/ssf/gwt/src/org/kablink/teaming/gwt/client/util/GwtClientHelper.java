@@ -73,6 +73,8 @@ import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.logical.shared.CloseEvent;
 import com.google.gwt.event.logical.shared.CloseHandler;
+import com.google.gwt.i18n.client.DateTimeFormat;
+import com.google.gwt.i18n.client.DateTimeFormat.PredefinedFormat;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
@@ -662,6 +664,38 @@ public class GwtClientHelper {
 		return reply;
 	}
 
+	/**
+	 * Returns the DateTimeFormat to use to format a date in short form
+	 * based on the user's locale.
+	 * 
+	 * @return
+	 */
+	public static DateTimeFormat getShortDateFormat() {
+		RequestInfo ri = getRequestInfo();
+		String pattern = ((null == ri) ? null : getRequestInfo().getShortDatePattern());
+		DateTimeFormat reply;
+		if (hasString(pattern))
+		     reply = DateTimeFormat.getFormat(pattern);
+		else reply = DateTimeFormat.getFormat(PredefinedFormat.DATE_SHORT);
+		return reply;
+	}
+	
+	/**
+	 * Returns the DateTimeFormat to use to format a date in short form
+	 * based on the user's locale.
+	 * 
+	 * @return
+	 */
+	public static DateTimeFormat getShortTimeFormat() {
+		RequestInfo ri = getRequestInfo();
+		String pattern = ((null == ri) ? null : getRequestInfo().getShortTimePattern());
+		DateTimeFormat reply;
+		if (hasString(pattern))
+		     reply = DateTimeFormat.getFormat(pattern);
+		else reply = DateTimeFormat.getFormat(PredefinedFormat.TIME_SHORT);
+		return reply;
+	}
+	
 	/**
      * Returns the client's timezone offset.
 	 * 

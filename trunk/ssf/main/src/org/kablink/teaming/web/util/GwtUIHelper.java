@@ -32,12 +32,15 @@
  */
 package org.kablink.teaming.web.util;
 
+import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -49,8 +52,10 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.dom4j.Document;
 import org.dom4j.Element;
+
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.CoreDao;
@@ -87,6 +92,7 @@ import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.Toolbar;
 import org.kablink.teaming.web.util.WebHelper;
 import org.kablink.util.BrowserSniffer;
+
 import org.springframework.web.portlet.ModelAndView;
 
 /**
@@ -1532,6 +1538,20 @@ public class GwtUIHelper {
 		// Put out flags indicating if the user is Guest or an external user.
 		model.put("isGuestUser",       currentUser.isShared()                      );
 		model.put("isExternalUser", (!(currentUser.getIdentityInfo().isInternal())));
+
+		// Put out the localized short date/time formats to use.
+		Locale locale = currentUser.getLocale();
+		if (null == locale) {
+			locale = NLT.getTeamingLocale();
+		}
+		SimpleDateFormat sdfDate = ((SimpleDateFormat) DateFormat.getDateInstance(DateFormat.SHORT, locale));
+		SimpleDateFormat sdfTime = ((SimpleDateFormat) DateFormat.getTimeInstance(DateFormat.SHORT, locale));
+		model.put("shortDatePattern", sdfDate.toLocalizedPattern());
+		model.put("shortTimePattern", sdfTime.toLocalizedPattern());
+		
+		// Put out the user's locale and language.
+		model.put("ssUserLocale",         locale.toString()   );
+		model.put("ssUserLocaleLanguage", locale.getLanguage());
 		
 		// Put out a flag indicating if the user should see a 'Public'
 		// collection.

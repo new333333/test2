@@ -51,7 +51,6 @@ import com.google.gwt.event.dom.client.KeyPressHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
-import com.google.gwt.i18n.client.DateTimeFormat.PredefinedFormat;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
@@ -61,8 +60,6 @@ import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.datepicker.client.DateBox;
 import com.google.gwt.user.datepicker.client.DatePicker;
-
-
 
 /**
  * This widget is used to define when a share expires
@@ -179,7 +176,7 @@ public class ShareExpirationWidget extends Composite
 			table.addStyleName( "shareExpirationWidget_expiresOnTable" );
 			m_expiresOnPanel.add( table );
 			
-			dateFormat = DateTimeFormat.getFormat( PredefinedFormat.DATE_SHORT );
+			dateFormat = GwtClientHelper.getShortDateFormat();
 			m_dateBox = new TZDateBox( new DatePicker(), (-1), new DateBox.DefaultFormat( dateFormat ) );
 			m_dateBox.addValueChangeHandler( new ValueChangeHandler<Long>()
 			{
