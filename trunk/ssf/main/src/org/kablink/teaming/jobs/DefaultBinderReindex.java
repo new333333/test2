@@ -71,8 +71,7 @@ public class DefaultBinderReindex extends SimpleTriggerJob implements BinderRein
 				//gone, skip it
 			} catch (Exception ex) {
 				//try again
-				logger.error(NLT.get("profile.titlechange.index.error") + " (binder " + id.toString() + ") " +
-						ex.getLocalizedMessage());
+				logger.error(NLT.get("profile.titlechange.index.error") + " (binder " + id.toString() + ") ", ex);
 				retryBinderIds.add(id);
 			}
     	}
