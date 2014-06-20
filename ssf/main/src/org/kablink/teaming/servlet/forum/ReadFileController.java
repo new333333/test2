@@ -39,6 +39,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -50,6 +51,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
+
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Attachment;
@@ -826,7 +828,10 @@ public class ReadFileController extends AbstractReadFileController {
 		FolderModule fm = getFolderModule();
 		
 		// Get the entries from the folder...
-		List<Long>       feIds = getEntryIdsFromFolder(fm, folderId, null);
+		Map options = new HashMap();
+		options.put(ObjectKeys.SEARCH_OFFSET,   new Integer(0)                    );
+		options.put(ObjectKeys.SEARCH_MAX_HITS, new Integer(Integer.MAX_VALUE - 1));
+		List<Long>       feIds = getEntryIdsFromFolder(fm, folderId, options);
 		Set<FolderEntry> feSet = fm.getEntries(feIds);
 
 		// ...and add their primary files to the zip.
