@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -62,7 +62,6 @@ import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
-import com.google.gwt.i18n.client.DateTimeFormat.PredefinedFormat;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FlexTable;
@@ -656,7 +655,7 @@ public class TaskDueDateDlg extends DlgBox
 		m_taskDueDateTable.setWidget(row, 0, new DlgLabel(label));
 		HorizontalPanel hp = new HorizontalPanel();
 		hp.addStyleName("taskDispositionDlg_DateTimeTable");
-		DateTimeFormat dateFormat = DateTimeFormat.getFormat(PredefinedFormat.DATE_SHORT);
+		DateTimeFormat dateFormat = GwtClientHelper.getShortDateFormat();
 		TZDateBox dateBox = new TZDateBox(new DatePicker(), (-1), new DateBox.DefaultFormat(dateFormat));
 		dateBox.setTZOffset(0);
 		if (null != pickerDate) {
@@ -681,7 +680,7 @@ public class TaskDueDateDlg extends DlgBox
 		hp.add(datePickerButton);
 		
 		// ...define the TimePicker...
-		String  myTime   = (DateTimeFormat.getFormat(PredefinedFormat.TIME_SHORT).format(new Date())).toLowerCase();
+		String  myTime   = (GwtClientHelper.getShortTimeFormat().format(new Date())).toLowerCase();
 		boolean is24Hour = ((0 > myTime.indexOf("am")) && (0 > myTime.indexOf("pm")));
 		TimePicker tp = new TimePicker(
 			pickerDate,	// Initial date.

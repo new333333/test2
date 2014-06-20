@@ -363,6 +363,26 @@ public class RequestInfo extends JavaScriptObject
 	}-*/;
 
 	/**
+	 * Return the user's short date pattern.
+	 * 
+	 * @return
+	 */
+	public final native String getShortDatePattern()
+	/*-{
+		return this.shortDatePattern;
+	}-*/;
+
+	/**
+	 * Return the user's short time pattern.
+	 * 
+	 * @return
+	 */
+	public final native String getShortTimePattern()
+	/*-{
+		return this.shortTimePattern;
+	}-*/;
+
+	/**
 	 * Return the flag that tells us if we should show the "Synchronize only the directory structure"
 	 * ui in the net folder and net folder server dialogs.
 	 */
