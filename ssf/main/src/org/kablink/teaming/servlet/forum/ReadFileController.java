@@ -51,7 +51,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
-
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Attachment;
@@ -69,7 +68,6 @@ import org.kablink.teaming.domain.User;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
 import org.kablink.teaming.module.file.FileModule;
-import org.kablink.teaming.module.file.FilesErrors;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.shared.EntityIndexUtils;
 import org.kablink.teaming.module.shared.FileUtils;
@@ -119,6 +117,36 @@ public class ReadFileController extends AbstractReadFileController {
 	// translation of the file.zipFolderDownload.fileName string in the
 	// messages.properties file.
 	private final static String ZIPFOLDER_DEFAULT_FILENAME = "folder.zip";
+
+	/*
+	 * Inner class used to count files and folders added to a zip.
+	 */
+	private class ZipCounter {
+		private int	m_fileCount;	//
+		private int	m_folderCount;	//
+
+		/*
+		 * Constructor method.
+		 */
+		private ZipCounter() {
+			super();
+			
+			m_fileCount   =
+			m_folderCount = 0;
+		}
+		
+		/*
+		 * Get'er methods.
+		 */
+		private int getFileCount()   {return m_fileCount;  }
+		private int getFolderCount() {return m_folderCount;}
+		
+		/*
+		 * Set'er method.
+		 */
+		private void incrFiles(  int increment) {m_fileCount   += increment;}
+		private void incrFolders(int increment) {m_folderCount += increment;}
+	}
 	
 	@Override
 	protected ModelAndView handleRequestAfterValidation(final HttpServletRequest request,
@@ -340,7 +368,8 @@ public class ReadFileController extends AbstractReadFileController {
 				if (MiscUtil.hasItems(folderSet)) {
 					// ...scan them...
 					boolean recursive = Boolean.parseBoolean(String.valueOf(args[WebUrlUtil.FILE_URL_ZIPLIST_RECURSIVE]));
-					int folderCounter = 1;
+					int topFolderCount = 1;
+					ZipCounter runningZipCount = new ZipCounter();
 					for (Folder folder:  folderSet) {
 						// ...generate a name for the zip for each.
 	    				String folderName = folder.getTitle();	// Note: do not translate this name.
@@ -348,18 +377,28 @@ public class ReadFileController extends AbstractReadFileController {
 		    				if (!ZIP_ENCODED_FILENAMES) {
 		    					folderName = getBinderModule().filename8BitSingleByteOnly(
 		    						folderName,
-		    						("__folder" + String.valueOf(folderCounter)),	// For folder names that are invalid for a zip.
+		    						("__folder" + String.valueOf(topFolderCount)),	// For folder names that are invalid for a zip.
 		    						singleByte);									// Note: do not translate this name.	
 		    				}
 	    				}
 	    				else {
-	    					folderName = ("__folder" + String.valueOf(folderCounter));
+	    					folderName = ("__folder" + String.valueOf(topFolderCount));
 	    				}
-	    				folderCounter += 1;
+	    				
+	    				// ...count this folder...
+	    				topFolderCount += 1;
+	    				runningZipCount.incrFolders(1);
 	    				
 						// ...and add them and their contents to the
 						// ...zip...
-						addFolderContentsToZip(zipOut, folderName, folder.getId(), recursive, singleByte);
+						addFolderContentsToZip(
+							response,
+							zipOut,
+							folderName,
+							folder.getId(),
+							runningZipCount,
+							recursive,
+							singleByte);
 					}
 				}
 				
@@ -399,7 +438,16 @@ public class ReadFileController extends AbstractReadFileController {
 				ZipArchiveOutputStream zipOut = buildZipAndSetupResponse(response, fileName);
 
 				// ...add the folder's contents to it...
-				addFolderContentsToZip(zipOut, null, folderId, recursive, singleByte);
+				ZipCounter runningZipCount = new ZipCounter();
+				runningZipCount.incrFolders(1);	// Count this folder.
+				addFolderContentsToZip(
+					response,
+					zipOut,
+					null,
+					folderId,
+					runningZipCount,
+					recursive,
+					singleByte);
 
 				// ...and finish it. 
 				zipOut.finish();
@@ -822,16 +870,23 @@ public class ReadFileController extends AbstractReadFileController {
 	 * Traverses the contents of a folder and adds it to a zip file.
 	 */
 	@SuppressWarnings("unchecked")
-	private void addFolderContentsToZip(ZipArchiveOutputStream zipOut, String folderPath, Long folderId, boolean recursive, boolean singleByte) {
+	private boolean addFolderContentsToZip(HttpServletResponse response, ZipArchiveOutputStream zipOut, String folderPath, Long folderId, ZipCounter runningZipCount, boolean recursive, boolean singleByte) throws IOException {
+		// What are the maximums we read?
+		int maxFiles = SPropsUtil.getInt("folder.zip.max.files", ObjectKeys.SEARCH_MAX_ZIP_FOLDER_FILES);	// Default is 1000.
+		
 		// Get the modules we need to do the work.
 		BinderModule bm = getBinderModule();
 		FolderModule fm = getFolderModule();
 		
 		// Get the entries from the folder...
-		Map options = new HashMap();
-		options.put(ObjectKeys.SEARCH_OFFSET,   new Integer(0)                    );
-		options.put(ObjectKeys.SEARCH_MAX_HITS, new Integer(Integer.MAX_VALUE - 1));
-		List<Long>       feIds = getEntryIdsFromFolder(fm, folderId, options);
+		int remainingFiles = (maxFiles - runningZipCount.getFileCount());	// Number of files left before exceeding the maximum.
+		List<Long> feIds = getEntryIdsFromFolder(fm, folderId, remainingFiles);
+		if (null == feIds) {
+			logger.error("ReadFileController.addFolderContentsToZip( Too many files in folder to zip )");
+			response.sendError(HttpServletResponse.SC_BAD_REQUEST, NLT.get("zipDownloadUrlError.TooManyFilesInFolderToZip"));
+			return false;
+		}
+		runningZipCount.incrFiles(feIds.size());
 		Set<FolderEntry> feSet = fm.getEntries(feIds);
 
 		// ...and add their primary files to the zip.
@@ -846,14 +901,19 @@ public class ReadFileController extends AbstractReadFileController {
 			crit.add(in(org.kablink.util.search.Constants.DOC_TYPE_FIELD, new String[] {org.kablink.util.search.Constants.DOC_TYPE_BINDER}))
 				.add(in(org.kablink.util.search.Constants.BINDERS_PARENT_ID_FIELD, folderIds));
 			crit.addOrder(Order.asc(org.kablink.util.search.Constants.BINDER_ID_FIELD));
-			Map        sfMap  = bm.executeSearchQuery(crit, org.kablink.util.search.Constants.SEARCH_MODE_SELF_CONTAINED_ONLY, 0, ObjectKeys.SEARCH_MAX_HITS_SUB_BINDERS,
-					org.kablink.teaming.module.shared.SearchUtils.fieldNamesList(org.kablink.util.search.Constants.DOCID_FIELD));
+			Map sfMap = bm.executeSearchQuery(
+				crit,
+				org.kablink.util.search.Constants.SEARCH_MODE_SELF_CONTAINED_ONLY,
+				0,
+				(Integer.MAX_VALUE - 1),	// We process all the sub-folders regardless of how many.
+				org.kablink.teaming.module.shared.SearchUtils.fieldNamesList(org.kablink.util.search.Constants.DOCID_FIELD));
 			List       sfMaps = ((List) sfMap.get(ObjectKeys.SEARCH_ENTRIES)); 
 			List<Long> sfIds  = new ArrayList<Long>();
 	      	for (Iterator iter = sfMaps.iterator(); iter.hasNext();) {
 	      		Map nextSFMap = ((Map) iter.next());
       			sfIds.add(Long.parseLong((String) nextSFMap.get(org.kablink.util.search.Constants.DOCID_FIELD)));
 	      	}
+			runningZipCount.incrFolders(sfIds.size());
 
 	      	// Are there any sub-folders?
 	      	if (!(sfIds.isEmpty())) {
@@ -884,11 +944,29 @@ public class ReadFileController extends AbstractReadFileController {
 	    				if (MiscUtil.hasString(folderPath))
 	    					 subFolderPath = (folderPath + "/" + subFolderName);
 	    				else subFolderPath = subFolderName;
-	    				addFolderContentsToZip(zipOut, subFolderPath, subFolder.getId(), recursive, singleByte);
+	    				if (!(addFolderContentsToZip(response, zipOut, subFolderPath, subFolder.getId(), runningZipCount, recursive, singleByte))) {
+	    					// The recursive call will have logged the
+	    					// error and stored it in the response.
+	    					// Simply return to indicate the failure.
+	    					return false;
+	    				}
 	      			}
 	      		}
 	      	}
 		}
+		
+		return true;
+	}
+
+	/*
+	 * Returns the name of a folder to use for logging an error.
+	 */
+	private String getFolderNameForError(FolderModule fm, Long folderId) {
+		Folder folder;
+		try {folder = fm.getFolder(folderId);}
+		catch (Exception e) {folder = null;}
+		String fName = ((null == folder) ? String.valueOf(folderId) : folder.getTitle());
+		return fName;
 	}
 	
 	/*
@@ -920,11 +998,21 @@ public class ReadFileController extends AbstractReadFileController {
 	/*
 	 * Returns a List<Long> of the IDs of the entries contained in a
 	 * folder.
+	 * 
+	 * If the number of remaining entries exceeds maxEntries, null is
+	 * returned.
 	 */
 	@SuppressWarnings("unchecked")
-	private List<Long> getEntryIdsFromFolder(FolderModule fm, Long folderId, Map options) {
-		Map        folderEntries = fm.getEntries(folderId, options);
-		List       searchEntries = ((List) folderEntries.get("search_entries"));
+	private List<Long> getEntryIdsFromFolder(FolderModule fm, Long folderId, int maxEntries) {
+		Map options = new HashMap();
+		options.put(ObjectKeys.SEARCH_OFFSET,   new Integer(0)           );
+		options.put(ObjectKeys.SEARCH_MAX_HITS, new Integer(maxEntries + 1));				// We ask for 1 more than requested...
+		Map        folderEntries = fm.getEntries(folderId, options);						// ...
+		Integer    total  = ((Integer) folderEntries.get(ObjectKeys.SEARCH_COUNT_TOTAL));	// ...
+		if (total > maxEntries) {															// ...so we can detect when there are too many.
+			return null;
+		}
+		List       searchEntries = ((List) folderEntries.get(ObjectKeys.SEARCH_ENTRIES));
 		List<Long> entryIds      = new ArrayList<Long>();
 		int c = searchEntries.size();
 		for (int i = 0; i < c; i += 1) {

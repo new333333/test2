@@ -64,11 +64,9 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
-
 import org.kablink.teaming.BinderQuotaException;
 import org.kablink.teaming.IllegalCharacterInNameException;
 import org.kablink.teaming.NotSupportedException;
@@ -279,6 +277,7 @@ import org.kablink.util.search.Constants;
 import org.kablink.util.search.Criteria;
 import org.kablink.util.search.Order;
 
+import static org.kablink.util.search.Restrictions.in;
 import static org.kablink.util.search.Restrictions.like;
 
 /**
@@ -4375,6 +4374,47 @@ public class GwtViewHelper {
 		}
 	}
 	
+	/*
+	 * Returns a count of the number of entries in the given folder.
+	 */
+	@SuppressWarnings("unchecked")
+	private static int getFolderEntryCount(AllModulesInjected bs, Long folderId, boolean recursive) {
+		// How many entries are in this folder?
+		Map options = new HashMap();
+		options.put(ObjectKeys.SEARCH_OFFSET,   new Integer(0));
+		options.put(ObjectKeys.SEARCH_MAX_HITS, new Integer(1));	// All we're looking for is the total.
+		Map folderEntries = bs.getFolderModule().getEntries(folderId, options);
+		int entryCount = ((Integer) folderEntries.get(ObjectKeys.SEARCH_COUNT_TOTAL));
+		
+		// Are we counting this recursively?
+		if (recursive) {
+			// Yes!  Get the the IDs of the sub-folders...
+			List<String> folderIds = new ArrayList<String>();
+			folderIds.add(String.valueOf(folderId));
+			Criteria crit = new Criteria();
+			crit.add(in(Constants.DOC_TYPE_FIELD, new String[] {Constants.DOC_TYPE_BINDER}))
+				.add(in(Constants.BINDERS_PARENT_ID_FIELD, folderIds));
+			crit.addOrder(Order.asc(Constants.BINDER_ID_FIELD));
+			Map sfMap = bs.getBinderModule().executeSearchQuery(
+				crit,
+				org.kablink.util.search.Constants.SEARCH_MODE_SELF_CONTAINED_ONLY,
+				0,
+				(Integer.MAX_VALUE - 1),	// We process all the sub-folders regardless of how many.
+				org.kablink.teaming.module.shared.SearchUtils.fieldNamesList(Constants.DOCID_FIELD));
+
+			// ...scan the sub-folders...
+			List sfMaps = ((List) sfMap.get(ObjectKeys.SEARCH_ENTRIES));
+	      	for (Iterator iter = sfMaps.iterator(); iter.hasNext();) {
+	      		// ...adding the files they contain to the count.
+	      		Map nextSFMap = ((Map) iter.next());
+      			entryCount += getFolderEntryCount(bs, Long.parseLong((String) nextSFMap.get(Constants.DOCID_FIELD)), recursive);
+	      	}
+		}
+
+		// If we get here, fileCount contains the count of files in the folder.
+		return entryCount;
+	}
+	
 	/**
 	 * Constructs and returns a FolderEntryDetails that wraps the given
 	 * entityId.
@@ -4771,7 +4811,7 @@ public class GwtViewHelper {
 			}
 		}
 	}
-	
+
 	/**
 	 * Reads the row data from a folder and returns it as a
 	 * FolderRowsRpcResponseData.
@@ -8143,6 +8183,10 @@ public class GwtViewHelper {
 	 */
 	private static ZipDownloadUrlRpcResponseData getZipDownloadUrlImpl(AllModulesInjected bs, HttpServletRequest request, List<EntityId> entityIds, Long folderId, boolean recursive) throws GwtTeamingException {
 		try {
+			// What's the maximum number of files in folders that we
+			// can download in a zip?
+			int maxFolderFiles = SPropsUtil.getInt("folder.zip.max.files", ObjectKeys.SEARCH_MAX_ZIP_FOLDER_FILES);	// Default is 1000.
+			
 			// Allocate a ZipDownloadUrlRpcResponseData to return the
 			// URL to request downloading the files.
 			ZipDownloadUrlRpcResponseData reply = new ZipDownloadUrlRpcResponseData();
@@ -8188,7 +8232,6 @@ public class GwtViewHelper {
 					// Can we get the folders for the IDs?
 					Set<Folder> folderSet = bs.getFolderModule().getFolders(folderIds);
 					
-					
 					// Are we only downloading a single file? 
 					int fileDownloads   = feAttachmentMap.size();
 					int folderDownloads = folderSet.size();
@@ -8230,6 +8273,23 @@ public class GwtViewHelper {
 						// an error to the reply.
 						reply.addError(NLT.get("zipDownloadUrlError.NoEntities"));
 					}
+
+					// Are there any folders selected to download?
+					if (0 < folderDownloads) {
+						// Yes!  Scan them...
+						int totalFileCount = 0;
+						for (Folder folder:  folderSet) {
+							// ...counting their files...
+							totalFileCount += getFolderEntryCount(bs, folder.getId(), recursive);
+							
+							// ...and if there are too many...
+							if (totalFileCount > maxFolderFiles) {
+								// ...generate an error.
+								reply.addError(NLT.get("zipDownloadUrlError.TooManyFilesInFolderToZip"));
+								break;
+							}
+						}
+					}
 				}
 				
 				else {
@@ -8240,8 +8300,15 @@ public class GwtViewHelper {
 			}
 			
 			else {
-				// A folder!  Generate a URL to download the files from
-				// that folder.
+				// A folder!  If there are too many files in that
+				// folder to download...
+				if (getFolderEntryCount(bs, folderId, recursive) > maxFolderFiles) {
+					// ...generate an error.
+					reply.addError(NLT.get("zipDownloadUrlError.TooManyFilesInFolderToZip"));
+				}
+				
+				// ...generate a URL to download the files from that
+				// ...folder.
 				url = WebUrlUtil.getFolderZipUrl(
 					request,
 					folderId,
