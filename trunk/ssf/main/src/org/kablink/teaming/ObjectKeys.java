@@ -32,8 +32,6 @@
  */
 package org.kablink.teaming;
 
-import org.kablink.teaming.domain.DefinableEntity;
-
 /**
  * Defines symbols that the core is aware of.
  * 
@@ -480,6 +478,7 @@ public interface ObjectKeys {
     public static final int SEARCH_MAX_HITS_FOLDER_ENTRIES_EXPORT = 100000;
     public static final int SEARCH_MAX_HITS_ALL_USERS = 1000;
     public static final int SEARCH_MAX_HITS_LIMIT = 1000000;
+    public static final int SEARCH_MAX_ZIP_FOLDER_FILES = 1000;
     public static final int SEARCH_RESULTS_TO_CREATE_STATISTICS = 200;
     public static final String SEARCH_SEARCH_FILTER = "searchFilter";
     public static final String SEARCH_SEARCH_DYNAMIC_FILTER = "searchDynamicFilter";
