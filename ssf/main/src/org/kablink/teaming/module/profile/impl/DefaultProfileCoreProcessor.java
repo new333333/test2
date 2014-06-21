@@ -596,10 +596,6 @@ protected void modifyEntry_indexAdd(Binder binder, Entry entry,
     //***********************************************************************************************************
     
    	@Override
-	protected SFQuery indexEntries_getQuery(Binder binder) {
-   		return getProfileDao().queryAllPrincipals(new FilterControls(), binder.getZoneId(), true);	// true -> Include disabled.
-   	}
-   	@Override
 	protected boolean indexEntries_validate(Binder binder, Entry entry) {
    		Principal p = (Principal)entry;
    		//don't index job processor

@@ -70,14 +70,13 @@ public interface BinderProcessor {
     public void indexOwner(Collection<Binder>binders, Long ownerId);
 	public IndexErrors indexBinder(Binder binder, boolean includeEntries);	
 	public IndexErrors indexBinder(Binder binder, boolean includeEntries, boolean deleteIndex, Collection tags);
-	public IndexErrors indexBinder(Binder binder, boolean includeEntries, boolean deleteIndex, Collection tags, boolean skipFileContentIndexing, boolean useScrollForEntries);
+	public IndexErrors indexBinder(Binder binder, boolean includeEntries, boolean deleteIndex, Collection tags, boolean skipFileContentIndexing);
 	public IndexErrors indexBinderIncremental(Binder binder, boolean includeEntries);
 	public IndexErrors indexBinderIncremental(Binder binder, boolean includeEntries, boolean skipFileContentIndexing);
 	public Collection indexTree(Binder binder, Collection exclusions);
     public Collection indexTree(Binder binder, Collection exclusions, StatusTicket statusTicket);
     public Collection indexTree(Binder binder, Collection exclusions, StatusTicket statusTicket, IndexErrors errors);
     public Collection indexTree(Binder binder, Collection exclusions, StatusTicket statusTicket, IndexErrors errors, boolean skipFileContentIndexing);
-    public Collection indexTree(Binder binder, Collection exclusions, StatusTicket statusTicket, IndexErrors errors, boolean skipFileContentIndexing, boolean useScrollForEntries);
     public Collection validateBinderQuotasTree(Binder binder, StatusTicket statusTicket, List<Long> errors);
     public void setFileAgingDates(Binder binder);
     public boolean isFolderEmpty(final Binder binder);

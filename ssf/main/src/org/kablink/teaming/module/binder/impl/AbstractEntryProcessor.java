@@ -49,11 +49,9 @@ import org.dom4j.Element;
 
 import org.hibernate.exception.LockAcquisitionException;
 import org.kablink.teaming.ConfigurationException;
-import org.kablink.teaming.IllegalCharacterInNameException;
 import org.kablink.teaming.NotSupportedException;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
-import org.kablink.teaming.dao.util.SFQuery;
 import org.kablink.teaming.domain.Attachment;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.ChangeLog;
@@ -1306,31 +1304,15 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
      */
     @Override
 	public IndexErrors indexBinder(Binder binder, boolean includeEntries, boolean deleteIndex, Collection tags) {
-    	return indexBinder(binder, includeEntries, deleteIndex, tags, false, true);
+    	return indexBinder(binder, includeEntries, deleteIndex, tags, false);
     }
     
     @Override
-	public IndexErrors indexBinder(Binder binder, boolean includeEntries, boolean deleteIndex, Collection tags, boolean skipFileContentIndexing, boolean useScrollForEntries) {
+	public IndexErrors indexBinder(Binder binder, boolean includeEntries, boolean deleteIndex, Collection tags, boolean skipFileContentIndexing) {
     	IndexErrors errors = super.indexBinder(binder, includeEntries, deleteIndex, tags);
     	if (includeEntries == false) return errors;
     	IndexErrors entryErrors;
-    	if(useScrollForEntries) {
-    		// This method uses Hibernate's scroll (wrapper for cursor) to handle potentially
-    		// large number of entries without bringing them all at once into memory.
-    		// This was the only mode of operation in Filr 1.0 and still used for some
-    		// other use cases in Filr 1.1.
-    		entryErrors = indexEntries(binder, deleteIndex, false, skipFileContentIndexing);
-    	}
-    	else {
-    		// This method doesn't use Hibernate's scroll and instead read all IDs of the
-    		// entries into memory at once. And then it loads one batch worth of entries
-    		// into memory and process them before continuing to the next batch, etc.
-    		// The reason why we add this in Filr 1.1 is because the scroll-based approach
-    		// doesn't work when we use helper threads for admin-triggered re-indexing
-    		// task. For some unknown reason, we get "Operation not allowed after ResultSet closed"
-    		// error if we use scroll in conjunction with helper threads (see bug #846126).
-    		entryErrors = indexEntriesNoScroll(binder, deleteIndex, false, skipFileContentIndexing);
-    	}
+    	entryErrors = indexEntries(binder, deleteIndex, false, skipFileContentIndexing);
     	errors.add(entryErrors);
     	return errors;
     }
@@ -1350,60 +1332,21 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     protected IndexErrors indexEntries(Binder binder, boolean deleteIndex, boolean deleteEntries) {
     	return indexEntries(binder, deleteIndex, deleteEntries, false);
     }
-    
-    //If called from write transaction, make sure session is flushed cause this bypasses
-    //hibernate loading of collections and goes to database directly.
-    protected IndexErrors indexEntries(Binder binder, boolean deleteIndex, boolean deleteEntries, boolean skipFileContentIndexing) {
-    	IndexErrors errors = new IndexErrors();
-    	SimpleProfiler.start("indexEntries");
-    	//may already have been handled with an optimized query
-    	if (deleteIndex && !deleteEntries) {
-        	SimpleProfiler.start("indexEntries_preIndex");
-    		indexEntries_preIndex(binder);
-        	SimpleProfiler.stop("indexEntries_preIndex");
-    	}
-  		//flush any changes so any exiting changes don't get lost on the evict
- //   	SimpleProfiler.startProfiler("indexEntries_flush");
- //   	getCoreDao().flush();
- //   	SimpleProfiler.stopProfiler("indexEntries_flush");
-  		SFQuery query = indexEntries_getQuery(binder);
-  		int threshhold = SPropsUtil.getInt("lucene.flush.threshold", 100);
-       	try {       
-       		List batch = new ArrayList();
-  			int total=0;
-      		while (query.hasNext()) {
-       			int count=0;
-       			batch.clear();
-       			// get 1000 entries, then build collections by hand 
-       			//for performance
-       			while (query.hasNext() && (count < SPropsUtil.getInt("index.entries.batch.size", 1000))) {
-       				Object obj = query.next();
-       				if (obj instanceof Object[])
-       					obj = ((Object [])obj)[0];
-       				batch.add(obj);
-       				++count;
-       			}
-       			
-       			total += count;
-       			
-       			indexEntryBatch(binder, batch, deleteEntries, skipFileContentIndexing, errors, total, threshhold);
-        	}
-        	
-        } finally {
-        	//clear out anything remaining
-        	query.close();
-        	SimpleProfiler.stop("indexEntries");
-        }
-        return errors;
-    }
-    
+        
     protected abstract List<Long> indexEntries_getEntryIds(Binder binder);
     
     protected abstract List<Entry> indexEntries_loadEntries(List<Long> ids, Long zoneId);
     
     //If called from write transaction, make sure session is flushed cause this bypasses
     //hibernate loading of collections and goes to database directly.
-    protected IndexErrors indexEntriesNoScroll(Binder binder, boolean deleteIndex, boolean deleteEntries, boolean skipFileContentIndexing) {
+	// This method doesn't use Hibernate's scroll and instead read all IDs of the entries
+	// into memory at once. And then it loads one batch worth of entries into memory and 
+    // process them before continuing to the next batch, etc.
+	// The reason why we add this in Filr 1.1 is because the scroll-based approach doesn't
+    // work when we use helper threads for admin-triggered re-indexing task. When using scroll 
+    // in extended period of time, we get "Operation not allowed after ResultSet closed" error
+    // if we use scroll in conjunction with helper threads (see bug #846126).
+    protected IndexErrors indexEntries(Binder binder, boolean deleteIndex, boolean deleteEntries, boolean skipFileContentIndexing) {
     	IndexErrors errors = new IndexErrors();
     	SimpleProfiler.start("indexEntries");
     	//may already have been handled with an optimized query
@@ -1490,7 +1433,6 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     	indexDeleteEntries(binder); 
     }
  
-   	protected abstract SFQuery indexEntries_getQuery(Binder binder);
    	protected boolean indexEntries_validate(Binder binder, Entry entry) {
    		return true;
    	}
