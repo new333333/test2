@@ -821,10 +821,6 @@ public Entry copyEntry(Binder binder, Entry source, Binder destination, String[]
     
     //***********************************************************************************************************
        
-    @Override
-	protected SFQuery indexEntries_getQuery(Binder binder) {
-        return getFolderDao().queryEntries((Folder)binder, null);
-   	}
  	@Override
 	protected void indexEntries_postIndex(Binder binder, Entry entry) {
  		super.indexEntries_postIndex(binder, entry);

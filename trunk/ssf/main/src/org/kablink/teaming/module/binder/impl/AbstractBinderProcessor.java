@@ -2166,9 +2166,8 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     }
     
     @Override
-	public IndexErrors indexBinder(Binder binder, boolean includeEntries, boolean deleteIndex, Collection tags, boolean skipFileContentIndexing, boolean useScrollForEntries) {
+	public IndexErrors indexBinder(Binder binder, boolean includeEntries, boolean deleteIndex, Collection tags, boolean skipFileContentIndexing) {
     	// Ignore skipFileContentIndexing arg
-    	// Ignore useScrollForEntries
     	return indexBinder(binder, includeEntries, deleteIndex, tags);
     }
     //***********************************************************************************************************
@@ -2176,7 +2175,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     @Override
 	public Collection indexTree(Binder binder, Collection exclusions) {
    		IndexErrors errors = new IndexErrors();
-    	return loadIndexTree(binder, exclusions, StatusTicket.NULL_TICKET, errors, false, true);
+    	return loadIndexTree(binder, exclusions, StatusTicket.NULL_TICKET, errors, false);
     }
    	@Override
 	public Collection indexTree(Binder binder, Collection exclusions, StatusTicket statusTicket) {
@@ -2189,13 +2188,9 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
    	}
    	@Override
 	public Collection indexTree(Binder binder, Collection exclusions, StatusTicket statusTicket, IndexErrors errors, boolean skipFileContentIndexing) {
-   		return loadIndexTree(binder, exclusions, statusTicket, errors, skipFileContentIndexing, true);
+   		return loadIndexTree(binder, exclusions, statusTicket, errors, skipFileContentIndexing);
    	}
-   	@Override
-	public Collection indexTree(Binder binder, Collection exclusions, StatusTicket statusTicket, IndexErrors errors, boolean skipFileContentIndexing, boolean useScrollForEntries) {
-   		return loadIndexTree(binder, exclusions, statusTicket, errors, skipFileContentIndexing, useScrollForEntries);
-   	}
-   	private Collection loadIndexTree(Binder binder, Collection exclusions, StatusTicket statusTicket, IndexErrors errors, boolean skipFileContentIndexing, boolean useScrollForEntries) {
+   	private Collection loadIndexTree(Binder binder, Collection exclusions, StatusTicket statusTicket, IndexErrors errors, boolean skipFileContentIndexing) {
    		//get all the ids of child binders. order for statusTicket to make some sense
    		if(logger.isDebugEnabled())
    			logger.debug("Fetching IDs of all binders at or below this branch [" + binder.getPathName() + "] (id=" + binder.getId() + ")");
@@ -2315,7 +2310,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 	   	    	}
 				
 	   	    	Collection tags = (Collection)tagMap.get(b.getEntityIdentifier());
-	   	    	IndexErrors binderErrors = processor.indexBinder(b, true, false, tags, skipFileContentIndexing, useScrollForEntries);
+	   	    	IndexErrors binderErrors = processor.indexBinder(b, true, false, tags, skipFileContentIndexing);
 	   	    	errors.add(binderErrors);
 	   	    	
 				if(logger.isTraceEnabled())
