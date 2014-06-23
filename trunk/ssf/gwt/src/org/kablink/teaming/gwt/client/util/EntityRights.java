@@ -44,6 +44,7 @@ public class EntityRights implements IsSerializable {
 	private boolean		m_canModify;		//
 	private boolean		m_canPublicLink;	//
 	private boolean		m_canPurge;			//
+	private boolean		m_canSubscribe;		//
 	private boolean		m_canTrash;			//
 	private ShareRight	m_shareRight;		//
 
@@ -78,6 +79,7 @@ public class EntityRights implements IsSerializable {
 	public boolean    isCanPublicLink() {return m_canPublicLink;                                    }
 	public boolean    isCanPurge()      {return m_canPurge;                                         }
 	public boolean    isCanShare()      {return ((null != m_shareRight) && m_shareRight.canShare());}
+	public boolean    isCanSubscribe()  {return m_canSubscribe;                                     }
 	public boolean    isCanTrash()      {return m_canTrash;                                         }
 	public ShareRight getShareRight()   {return m_shareRight;                                       }
 	
@@ -90,6 +92,7 @@ public class EntityRights implements IsSerializable {
 	public void setCanModify(    boolean    canModify)     {m_canModify     = canModify;    }
 	public void setCanPublicLink(boolean    canPublicLink) {m_canPublicLink = canPublicLink;}
 	public void setCanPurge(     boolean    canPurge)      {m_canPurge      = canPurge;     }
+	public void setCanSubscribe( boolean    canSubscribe)  {m_canSubscribe  = canSubscribe; }
 	public void setCanTrash(     boolean    canTrash)      {m_canTrash      = canTrash;     }
 	public void setShareRight(   ShareRight shareRight)    {m_shareRight    = shareRight;   }
 	

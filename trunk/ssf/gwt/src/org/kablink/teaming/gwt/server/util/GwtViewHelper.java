@@ -3562,6 +3562,7 @@ public class GwtViewHelper {
 
 			try {
 				// Do we have any FolderEntry rights to query?
+				User user = GwtServerHelper.getCurrentUser();
 				if (!(entryIds.isEmpty())) {
 					SimpleProfiler.start("GwtViewHelper.getEntityRights(Get entry rights)");
 					try {
@@ -3601,6 +3602,7 @@ public class GwtViewHelper {
 									entryRights.setCanModify(     fm.testAccess(entry, FolderOperation.modifyEntry   ));
 									entryRights.setCanPurge(      fm.testAccess(entry, FolderOperation.deleteEntry   ));
 									entryRights.setCanTrash(      fm.testAccess(entry, FolderOperation.preDeleteEntry));
+									entryRights.setCanSubscribe(GwtShareHelper.visibleWithoutShares(bs, user, entry));
 									
 									ShareRight entryShareRight;
 									if (GwtShareHelper.isEntitySharable(bs, entry))
@@ -3652,6 +3654,7 @@ public class GwtViewHelper {
 								binderRights.setCanModify(bm.testAccess(binder, BinderOperation.modifyBinder   ));
 								binderRights.setCanPurge( bm.testAccess(binder, BinderOperation.deleteBinder   ));
 								binderRights.setCanTrash( bm.testAccess(binder, BinderOperation.preDeleteBinder));
+								binderRights.setCanSubscribe(GwtShareHelper.visibleWithoutShares(bs, user, binder));
 								
 								ShareRight binderShareRight;
 								if (GwtShareHelper.isEntitySharable(bs, binder)) {

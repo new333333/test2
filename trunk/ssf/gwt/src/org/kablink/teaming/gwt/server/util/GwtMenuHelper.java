@@ -554,7 +554,7 @@ public class GwtMenuHelper {
 		User user = GwtServerHelper.getCurrentUser();
 		if ((!(user.isShared())) &&
 				GwtEmailHelper.userHasEmailAddress(user) &&
-				visibleWithoutShares(bs, user, folder)) {
+				GwtShareHelper.visibleWithoutShares(bs, user, folder)) {
 			// ...add a ToolbarItem for e-mail notification.
 			ToolbarItem emailTBI = new ToolbarItem(EMAIL);
 			markTBITitle(emailTBI, "toolbar.menu.subscribeToFolder"       );
@@ -1104,7 +1104,7 @@ public class GwtMenuHelper {
 			moreTBI.addNestedItem(tbi);
 
 			// ...for non-shared collections...
-			if ((!isSharedCollection) && ((null == folder) || visibleWithoutShares(bs, user, folder))) {
+			if ((!isSharedCollection) && ((null == folder) || GwtShareHelper.visibleWithoutShares(bs, user, folder))) {
 				// ...add the move item....
 				tbi = new ToolbarItem("1_moveSelected");
 				markTBITitle(tbi, "toolbar.move");
@@ -1722,7 +1722,7 @@ public class GwtMenuHelper {
 	private static void constructEntrySubscribeItem(ToolbarItem entryToolbar, AllModulesInjected bs, HttpServletRequest request, WorkArea wa, boolean separatorBefore) {
 		User user = GwtServerHelper.getCurrentUser();
 		boolean isGuest = user.isShared();
-		if ((!isGuest) && GwtEmailHelper.userHasEmailAddress(user) && visibleWithoutShares(bs, user, wa)) {
+		if ((!isGuest) && GwtEmailHelper.userHasEmailAddress(user) && GwtShareHelper.visibleWithoutShares(bs, user, wa)) {
 			// ...add the subscribe item.
 			if (separatorBefore) {
 				entryToolbar.addNestedItem(ToolbarItem.constructSeparatorTBI());
@@ -4070,7 +4070,7 @@ public class GwtMenuHelper {
 				
 				// ...and if the user has any email addresses
 				// ...defined...
-				if (GwtEmailHelper.userHasEmailAddress(user) && visibleWithoutShares(bs, user, fe)) {
+				if (GwtEmailHelper.userHasEmailAddress(user) && GwtShareHelper.visibleWithoutShares(bs, user, fe)) {
 					// ...add a subscribe toolbar item.
 					actionTBI = new ToolbarItem(SUBSCRIBE);
 					markTBITitle(   actionTBI, "toolbar.menu.subscribeToEntrySelected"  );
@@ -4509,13 +4509,5 @@ public class GwtMenuHelper {
 	private static void markTBIUrlAsTargetedAnchor(ToolbarItem tbi, AdaptedPortletURL url) {
 		// Always use the initial form of the method.
 		markTBIUrlAsTargetedAnchor(tbi, url.toString(), null);
-	}
-
-	/*
-	 * Returns true if the user can access the given WorkArea without
-	 * factoring in shares and false otherwise.
-	 */
-	private static boolean visibleWithoutShares(AllModulesInjected bs, User user, WorkArea wa) {
-		return bs.getFolderModule().testReadAccess(user, wa, false);	// false -> Don't check access because of sharing.
 	}
 }
