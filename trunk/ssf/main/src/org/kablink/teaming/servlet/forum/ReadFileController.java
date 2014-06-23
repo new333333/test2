@@ -871,8 +871,14 @@ public class ReadFileController extends AbstractReadFileController {
 	 */
 	@SuppressWarnings("unchecked")
 	private boolean addFolderContentsToZip(HttpServletResponse response, ZipArchiveOutputStream zipOut, String folderPath, Long folderId, ZipCounter runningZipCount, boolean recursive, boolean singleByte) throws IOException {
-		// What are the maximums we read?
-		int maxFiles = SPropsUtil.getInt("folder.zip.max.files", ObjectKeys.SEARCH_MAX_ZIP_FOLDER_FILES);	// Default is 1000.
+		// What are the maximum number of files we can zip?
+		//
+		// Note:  We don't impose a maximum here as it's checked
+		//    already in the UI.  I decided to not do it here to so
+		//    that if a few files are added between the UI check and
+		//    this call, the download will still work.
+		int maxFiles = (Integer.MAX_VALUE - 2);
+//		int maxFiles = SPropsUtil.getInt("folder.zip.max.files", ObjectKeys.SEARCH_MAX_ZIP_FOLDER_FILES);	// Default is 1000.
 		
 		// Get the modules we need to do the work.
 		BinderModule bm = getBinderModule();

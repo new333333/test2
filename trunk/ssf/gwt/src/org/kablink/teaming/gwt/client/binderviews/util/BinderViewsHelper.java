@@ -2552,7 +2552,7 @@ public class BinderViewsHelper {
 				
 				// Did we get any actual errors (not just warnings)?
 				if (!hasErrors) {
-					// Yes!  If we get the URL to download the zip...
+					// No!  If we get the URL to download the zip...
 					String zipDownloadUrl = zipDownloadInfo.getUrl();
 					if (GwtClientHelper.hasString(zipDownloadUrl)) {
 						// ...start it downloading...
@@ -2603,17 +2603,22 @@ public class BinderViewsHelper {
 				ErrorListRpcResponseData		errorList       = zipDownloadInfo.getErrors();
 				List<ErrorInfo>					errors          = errorList.getErrorList();
 				int count = ((null == errors) ? 0 : errors.size());
-				if (0 < count) {
+				boolean hasErrors = (0 < count);
+				if (hasErrors) {
 					// ...tell the user.
 					GwtClientHelper.displayMultipleErrors(m_messages.zipDownloadUrlError(), errors);
+					hasErrors = (0 < errorList.getErrorCount());	// The error list has errors and warnings.  Did we find any actual errors?
 				}
 
-				// If we get the URL to download the zip...
-				String zipDownloadUrl = zipDownloadInfo.getUrl();
-				if (GwtClientHelper.hasString(zipDownloadUrl)) {
-					// ...start it downloading...
-					downloadForm.setAction(zipDownloadUrl);
-					downloadForm.submit();
+				// Did we get any actual errors (not just warnings)?
+				if (!hasErrors) {
+					// No!  If we get the URL to download the zip...
+					String zipDownloadUrl = zipDownloadInfo.getUrl();
+					if (GwtClientHelper.hasString(zipDownloadUrl)) {
+						// ...start it downloading...
+						downloadForm.setAction(zipDownloadUrl);
+						downloadForm.submit();
+					}
 				}
 			}
 		});
