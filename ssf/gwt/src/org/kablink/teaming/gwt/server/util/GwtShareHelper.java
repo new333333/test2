@@ -3711,4 +3711,17 @@ public class GwtShareHelper
 		List<ShareItem> publicLinks = getPublicLinkShareItems( bs, sharerId, entityId );
 		return MiscUtil.hasItems(publicLinks);
 	}
+	
+	/**
+	 * Returns true if the user can access the given WorkArea without
+	 * factoring in shares and false otherwise.
+	 * 
+	 * @param bs
+	 * @param user
+	 * @param wa
+	 */
+	public static boolean visibleWithoutShares( AllModulesInjected bs, User user, WorkArea wa )
+	{
+		return bs.getFolderModule().testReadAccess( user, wa, false );	// false -> Don't check access because of sharing.
+	}
 }
