@@ -56,7 +56,7 @@ public class ConfigData
 	private boolean m_hideNavPanel;
 	private boolean m_hideFooter;
 	private boolean m_isPreviewMode;
-	private LandingPageProperties m_lpProperties;
+	private GwtLandingPageProperties m_lpProperties;
 	private String m_lpStyle;		// The current values for this are mashup_dark.css or mashup.css
 	
 
@@ -503,7 +503,7 @@ public class ConfigData
 	/**
 	 * 
 	 */
-	public LandingPageProperties getLandingPageProperties()
+	public GwtLandingPageProperties getLandingPageProperties()
 	{
 		return m_lpProperties;
 	}
@@ -511,9 +511,9 @@ public class ConfigData
 	/**
 	 * Initialize the landing page properties from the given xml
 	 */
-	public LandingPageProperties initLandingPageProperties( String xml )
+	public GwtLandingPageProperties initLandingPageProperties( String xml )
 	{
-		m_lpProperties = new LandingPageProperties( xml );
+		m_lpProperties = new GwtLandingPageProperties( xml );
 		
 		return m_lpProperties;
 	}
@@ -521,7 +521,7 @@ public class ConfigData
 	/**
 	 * Initialize the landing page properties from the given landing page properties
 	 */
-	public void initLandingPageProperties( LandingPageProperties lpProperties )
+	public void initLandingPageProperties( GwtLandingPageProperties lpProperties )
 	{
 		m_lpProperties.copy( lpProperties );
 	}
@@ -554,7 +554,7 @@ public class ConfigData
 		m_configStr = null;
 		m_hideFooter = false;
 		m_hideMasthead = false;
-		m_lpProperties = new LandingPageProperties();
+		m_lpProperties = new GwtLandingPageProperties();
 		m_hideNavPanel = false;
 		m_isPreviewMode = false;
 	}

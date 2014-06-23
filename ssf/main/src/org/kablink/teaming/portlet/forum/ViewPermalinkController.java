@@ -45,12 +45,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.dom4j.Document;
-import org.dom4j.Node;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.asmodule.zonecontext.ZoneContextHolder;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Binder;
-import org.kablink.teaming.domain.CustomAttribute;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.domain.FileAttachment;
@@ -62,7 +60,6 @@ import org.kablink.teaming.domain.NoFolderEntryByTheIdException;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.module.binder.BinderModule;
-import org.kablink.teaming.module.definition.DefinitionModule;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.shared.AccessUtils;
 import org.kablink.teaming.portletadapter.AdaptedPortletURL;
@@ -79,6 +76,7 @@ import org.kablink.teaming.web.portlet.SAbstractController;
 import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.DefinitionHelper;
 import org.kablink.teaming.web.util.GwtUIHelper;
+import org.kablink.teaming.web.util.LandingPageProperties;
 import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.PermaLinkUtil;
 import org.kablink.teaming.web.util.PortletRequestUtils;
@@ -778,35 +776,11 @@ public class ViewPermalinkController  extends SAbstractController {
 						        	it = nodes.iterator();
 						        	if ( it.hasNext() )
 						        	{
-						        		Node node;
-							    		CustomAttribute attr;
-							    		String attrName;
+						        		LandingPageProperties lpProperties;
 						        		
-							    		// We are working with a landing page.
-							    		// See if we can determine whether the side bar should be hidden
-						        		node = (Node)it.next();
-							    		attrName = node.getStringValue();
-
-							    		if ( attrName == null )
-							    			attrName = "mashup";
-							    		
-							    		attr = binder.getCustomAttribute( attrName + DefinitionModule.MASHUP_HIDE_SIDEBAR );
-							    		if ( attr != null )
-							    		{
-							    			Object value;
-							    			
-							    			value = attr.getValue();
-							    			if ( value != null && value instanceof Boolean )
-							    			{
-							    				Boolean boolValue;
-							    				
-							    				boolValue = (Boolean) value;
-							    				if ( boolValue == false )
-							    					showWSTreeControl = true;
-							    				else
-							    					showWSTreeControl = false;
-							    			}
-							    		}
+						        		lpProperties = DefinitionHelper.getLandingPageProperties( request, binder );
+						        		if ( lpProperties != null && lpProperties.getHideSidebar() )
+						        			showWSTreeControl = false;
 						        	}
 						        }
 							}

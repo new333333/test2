@@ -112,7 +112,7 @@ public class LandingPageEditor extends Composite
 	private ArrayList<DropZone> m_dropZones = null;
 	private LandingPageConfig m_lpeConfig = null;
 	private AbstractTinyMCEConfiguration m_tinyMCEConfig = null;
-	private LandingPageProperties m_landingPageProperties;
+	private GwtLandingPageProperties m_landingPageProperties;
 	private LandingPagePropertiesDlgBox m_lpPropertiesDlg = null;
 	private PreviewLandingPageDlg m_previewDlg = null;
 	
@@ -287,6 +287,7 @@ public class LandingPageEditor extends Composite
 			xmlStr = m_landingPageProperties.getPropertiesAsXMLString();
 			if ( xmlStr == null )
 				xmlStr = "";
+
 			m_propertiesHiddenInput.setValue( xmlStr );
 		}
 	}
@@ -677,9 +678,9 @@ public class LandingPageEditor extends Composite
 				@Override
 				public boolean editSuccessful( Object obj )
 				{
-					if ( obj instanceof LandingPageProperties )
+					if ( obj instanceof GwtLandingPageProperties )
 					{
-						m_landingPageProperties.copy( (LandingPageProperties) obj );
+						m_landingPageProperties.copy( (GwtLandingPageProperties) obj );
 					}
 					
 					return true;

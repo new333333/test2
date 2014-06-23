@@ -39,7 +39,7 @@ import org.kablink.teaming.gwt.client.binderviews.LandingPageView;
 import org.kablink.teaming.gwt.client.binderviews.ViewBase;
 import org.kablink.teaming.gwt.client.binderviews.ViewBase.ViewClient;
 import org.kablink.teaming.gwt.client.lpe.ConfigData;
-import org.kablink.teaming.gwt.client.lpe.LandingPageProperties;
+import org.kablink.teaming.gwt.client.lpe.GwtLandingPageProperties;
 import org.kablink.teaming.gwt.client.rpc.shared.GetInheritedLandingPagePropertiesCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
@@ -167,9 +167,9 @@ public class PreviewLandingPageDlg extends DlgBox
 				@Override
 				public void onSuccess( VibeRpcResponse response )
 				{
-					final LandingPageProperties lpProperties;
+					final GwtLandingPageProperties lpProperties;
 					
-					lpProperties = (LandingPageProperties) response.getResponseData();
+					lpProperties = (GwtLandingPageProperties) response.getResponseData();
 					
 					if ( lpProperties != null )
 					{

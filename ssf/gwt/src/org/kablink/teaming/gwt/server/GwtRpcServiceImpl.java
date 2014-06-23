@@ -120,7 +120,7 @@ import org.kablink.teaming.gwt.client.admin.GwtSelectNetFolderServerTypeTask;
 import org.kablink.teaming.gwt.client.admin.GwtUpgradeInfo;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderColumn;
 import org.kablink.teaming.gwt.client.lpe.ConfigData;
-import org.kablink.teaming.gwt.client.lpe.LandingPageProperties;
+import org.kablink.teaming.gwt.client.lpe.GwtLandingPageProperties;
 import org.kablink.teaming.gwt.client.mainmenu.FavoriteInfo;
 import org.kablink.teaming.gwt.client.mainmenu.GroupInfo;
 import org.kablink.teaming.gwt.client.mainmenu.RecentPlaceInfo;
@@ -1849,7 +1849,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case GET_INHERITED_LANDING_PAGE_PROPERTIES:
 		{
 			GetInheritedLandingPagePropertiesCmd gilppCmd;
-			LandingPageProperties lpProperties;
+			GwtLandingPageProperties lpProperties;
 			
 			gilppCmd = (GetInheritedLandingPagePropertiesCmd) cmd;
 			lpProperties = GwtServerHelper.getInheritedLandingPageProperties( this, gilppCmd.getBinderId(), getRequest( ri ) );
