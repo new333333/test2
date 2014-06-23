@@ -1907,6 +1907,7 @@ public interface GwtTeamingMessages extends Messages
 	String vibeDataTable_Confirm_CantShareNetFolders();
 	String vibeDataTable_Confirm_CantShareNoRights();
 	String vibeDataTable_Confirm_CantShareNoRightsAndNetFolders();
+	String vibeDataTable_Confirm_CantSubscribe();
 	String vibeDataTable_Download();
 	String vibeDataTable_Error_MirroredDriverNotConfigured();
 	String vibeDataTable_Empty();
@@ -1952,6 +1953,7 @@ public interface GwtTeamingMessages extends Messages
 	String vibeDataTable_Warning_CantEmailPublicLink_2b();
 	String vibeDataTable_Warning_CantEmailPublicLink_2c();
 	String vibeDataTable_Warning_CantEmailPublicLink_3();
+	String vibeDataTable_Warning_CantSubscribe();
 	String vibeDataTable_Warning_NoEntryActions();
 	String vibeDataTable_Warning_ShareNetFolders();
 	String vibeDataTable_Warning_ShareNoRights();

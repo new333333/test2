@@ -2136,7 +2136,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		// Are there any invalid rows?
 		final List<FolderRow> invalidRows = (validateSelectedRows ? validateSelectedRows_PublicLink(entityRightsMap) : null);
 		if (!(GwtClientHelper.hasItems(invalidRows))) {
-			// Yes!  Invoke the share.
+			// No!  Invoke the share.
 			copySelectedEntitiesPublicLinkAsync(selectedEntities);
 		}
 		
@@ -2500,7 +2500,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		// Are there any invalid rows?
 		final List<FolderRow> invalidRows = (validateSelectedRows ? validateSelectedRows_PublicLink(entityRightsMap) : null);
 		if (!(GwtClientHelper.hasItems(invalidRows))) {
-			// Yes!  Invoke the share.
+			// No!  Invoke the share.
 			editSelectedEntitiesPublicLinkAsync(selectedEntities);
 		}
 		
@@ -2645,7 +2645,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		// Are there any invalid rows?
 		final List<FolderRow> invalidRows = (validateSelectedRows ? validateSelectedRows_PublicLink(entityRightsMap) : null);
 		if (!(GwtClientHelper.hasItems(invalidRows))) {
-			// Yes!  Invoke the share.
+			// No!  Invoke the share.
 			emailSelectedEntitiesPublicLinkAsync(selectedEntities);
 		}
 		
@@ -3460,7 +3460,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		// Are there any invalid rows?
 		final List<FolderRow> invalidRows = (validateSelectedRows ? validateSelectedRows_Sharing(entityRightsMap) : null);
 		if (!(GwtClientHelper.hasItems(invalidRows))) {
-			// Yes!  Invoke the share.
+			// No!  Invoke the share.
 			shareSelectedEntitiesAsync(selectedEntities);
 		}
 		
@@ -3568,12 +3568,109 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		// Is the event targeted to this folder?
 		Long eventFolderId = event.getFolderId();
 		if (eventFolderId.equals(getFolderId())) {
-			// Yes!  Invoke the subscribe to.
-			List<EntityId> selectedEntityIds = event.getSelectedEntities();
-			if (!(GwtClientHelper.hasItems(selectedEntityIds))) {
-				selectedEntityIds = getSelectedEntityIds();
+			// Yes!  Get the user's rights to the selected entities...
+			List<EntityId> seList = event.getSelectedEntities();
+			final boolean validateSelectedRows = (!(GwtClientHelper.hasItems(seList)));
+			if (validateSelectedRows) {
+				seList = getSelectedEntityIds();
 			}
-			BinderViewsHelper.subscribeToEntries(selectedEntityIds);
+			
+			final List<EntityId> selectedEntities = seList;
+			GwtClientHelper.executeCommand(
+					new GetEntityRightsCmd(selectedEntities),
+					new AsyncCallback<VibeRpcResponse>() {
+				@Override
+				public void onFailure(Throwable caught) {
+					GwtClientHelper.handleGwtRPCFailure(
+						caught,
+						GwtTeaming.getMessages().rpcFailure_GetEntityRights());
+				}
+
+				@Override
+				public void onSuccess(VibeRpcResponse response) {
+					// ...and invoke the subscribe to on them.
+					EntityRightsRpcResponseData responseData = ((EntityRightsRpcResponseData) response.getResponseData());
+					onSubscribeSelectedEntitiesAsync(selectedEntities, responseData.getEntityRightsMap(), validateSelectedRows);
+				}
+			});
+		}
+	}
+	
+	/*
+	 * Asynchronously processes the subscribe request on the selected
+	 * entries, given the current user's rights to them.
+	 */
+	private void onSubscribeSelectedEntitiesAsync(final List<EntityId> selectedEntities, final Map<String, EntityRights> entityRightsMap, final boolean validateSelectedRows) {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
+			@Override
+			public void execute() {
+				onSubscribeSelectedEntitiesNow(selectedEntities, entityRightsMap, validateSelectedRows);
+			}
+		});
+	}
+	
+	/*
+	 * Synchronously processes the subscribe request on the selected
+	 * entries, given the current user's rights to them.
+	 */
+	private void onSubscribeSelectedEntitiesNow(final List<EntityId> selectedEntities, final Map<String, EntityRights> entityRightsMap, boolean validateSelectedRows) {
+		// Are there any invalid rows?
+		final List<FolderRow> invalidRows = (validateSelectedRows ? validateSelectedRows_Subscribe(entityRightsMap) : null);
+		if (!(GwtClientHelper.hasItems(invalidRows))) {
+			// No!  Invoke the subscribe.
+			subscribeToSelectedEntitiesAsync(selectedEntities);
+		}
+		
+		else {
+			// No, they don't have rights to subscribe to everything!
+			// Can they subscribe to any of them?
+			int totalSubFailures = invalidRows.size();
+			if (selectedEntities.size() == totalSubFailures) {
+				// No!  Tell them about the problem and bail.
+				GwtClientHelper.deferredAlert(m_messages.vibeDataTable_Warning_CantSubscribe());
+				return;
+			}
+			
+			// Is the user sure they want to subscribe to the
+			// selections they have rights to subscribe to?
+			ConfirmDlg.createAsync(new ConfirmDlgClient() {
+				@Override
+				public void onUnavailable() {
+					// Nothing to do.  Error handled in
+					// asynchronous provider.
+				}
+				
+				@Override
+				public void onSuccess(ConfirmDlg cDlg) {
+					ConfirmDlg.initAndShow(
+						cDlg,
+						new ConfirmCallback() {
+							@Override
+							public void dialogReady() {
+								// Ignored.  We don't really care when the
+								// dialog is ready.
+							}
+
+							@Override
+							public void accepted() {
+								// Yes, they're sure!  Remove the
+								// selection from the entries they
+								// don't have rights to subscribe to
+								// and perform the subscribe on the
+								// rest.
+								removeRowEntities(               selectedEntities, invalidRows);
+								deselectRows(                                      invalidRows);
+								subscribeToSelectedEntitiesAsync(selectedEntities);
+							}
+
+							@Override
+							public void rejected() {
+								// No, they're not sure!
+							}
+						},
+						m_messages.vibeDataTable_Confirm_CantSubscribe());
+				}
+			});
 		}
 	}
 	
@@ -4332,6 +4429,27 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	public void signGuestbook() {
 		GwtClientHelper.deferredAlert(m_messages.vibeDataTable_GuestbookInternalErrorOverrideMissing());
 	}
+
+	/*
+	 * Asynchronously runs the subscribe to dialog on the selected
+	 * entities.
+	 */
+	private final static void subscribeToSelectedEntitiesAsync(final List<EntityId> selectedEntities) {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
+			@Override
+			public void execute() {
+				subscribeToSelectedEntitiesNow(selectedEntities);
+			}
+		});
+	}
+	
+	/*
+	 * Synchronously runs the subscribe to dialog on the selected
+	 * entities.
+	 */
+	private final static void subscribeToSelectedEntitiesNow(final List<EntityId> selectedEntities) {
+		BinderViewsHelper.subscribeToEntries(selectedEntities);
+	}
 	
 	/**
 	 * Purges all the entries from the trash.
@@ -4375,6 +4493,47 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	
 	/*
 	 * Returns a List<FolderRow> of the selected rows that the user
+	 * can't share the public link from.
+	 */
+	private List<FolderRow> validateSelectedRows_PublicLink(final Map<String, EntityRights> entityRightsMap) {
+		// Are there any selected rows in the table?
+		List<FolderRow> reply = new ArrayList<FolderRow>();
+		List<FolderRow> rows  = m_dataTable.getVisibleItems();
+		if (GwtClientHelper.hasItems(rows)) {
+			// Yes!  Scan them
+			FolderRowSelectionModel fsm = ((FolderRowSelectionModel) m_dataTable.getSelectionModel());
+			for (FolderRow row : rows) {
+				// Is this row selected?
+				if (fsm.isSelected(row)) {
+					// Yes!  Can it be public linked?
+					EntityRights er = entityRightsMap.get(EntityRights.getEntityRightsKey(row.getEntityId()));
+					if ((null == er) || (!(er.isCanPublicLink()))) {
+						// No!  Track it as invalid.
+						reply.add(row);
+					}
+					
+					// Yes, it can be public linked!  Is it an entry?
+					else if (row.getEntityId().isBinder()) {
+						// No!  Track it as invalid.
+						reply.add(row);
+					}
+					
+					// Yes, it's an entry!  Is it a file entry?
+					else if (!(row.isRowFile(GwtClientHelper.isLicenseFilr()))) {
+						// No!  Track it as invalid.
+						reply.add(row);
+					}
+				}
+			}
+		}
+		
+		// If we get here, reply refers to List<FolderRow> of the rows
+		// the user doesn't have rights to share.  Return it.
+		return reply;
+	}
+
+	/*
+	 * Returns a List<FolderRow> of the selected rows that the user
 	 * can't share.
 	 */
 	private List<FolderRow> validateSelectedRows_Sharing(final Map<String, EntityRights> entityRightsMap) {
@@ -4404,9 +4563,9 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 
 	/*
 	 * Returns a List<FolderRow> of the selected rows that the user
-	 * can't share the public link from.
+	 * can't subscribe to.
 	 */
-	private List<FolderRow> validateSelectedRows_PublicLink(final Map<String, EntityRights> entityRightsMap) {
+	private List<FolderRow> validateSelectedRows_Subscribe(final Map<String, EntityRights> entityRightsMap) {
 		// Are there any selected rows in the table?
 		List<FolderRow> reply = new ArrayList<FolderRow>();
 		List<FolderRow> rows  = m_dataTable.getVisibleItems();
@@ -4416,21 +4575,9 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 			for (FolderRow row : rows) {
 				// Is this row selected?
 				if (fsm.isSelected(row)) {
-					// Yes!  Is it be public linked?
+					// Yes!  Can it be subscribed to?
 					EntityRights er = entityRightsMap.get(EntityRights.getEntityRightsKey(row.getEntityId()));
-					if ((null == er) || (!(er.isCanPublicLink()))) {
-						// No!  Track it as invalid.
-						reply.add(row);
-					}
-					
-					// Yes, it can be public linked!  Is it an entry?
-					else if (row.getEntityId().isBinder()) {
-						// No!  Track it as invalid.
-						reply.add(row);
-					}
-					
-					// Yes, it's an entry!  Is it a file entry?
-					else if (!(row.isRowFile(GwtClientHelper.isLicenseFilr()))) {
+					if ((null == er) || (!(er.isCanSubscribe()))) {
 						// No!  Track it as invalid.
 						reply.add(row);
 					}
