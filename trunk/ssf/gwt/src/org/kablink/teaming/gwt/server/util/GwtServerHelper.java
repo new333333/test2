@@ -88,13 +88,11 @@ import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.document.DateTools;
-
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.Node;
 import org.dom4j.io.OutputFormat;
-
 import org.kablink.teaming.GroupExistsException;
 import org.kablink.teaming.IllegalCharacterInNameException;
 import org.kablink.teaming.ObjectKeys;
@@ -184,7 +182,7 @@ import org.kablink.teaming.gwt.client.admin.GwtAdminCategory;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.FolderColumn;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.lpe.ConfigData;
-import org.kablink.teaming.gwt.client.lpe.LandingPageProperties;
+import org.kablink.teaming.gwt.client.lpe.GwtLandingPageProperties;
 import org.kablink.teaming.gwt.client.mainmenu.FavoriteInfo;
 import org.kablink.teaming.gwt.client.mainmenu.GroupInfo;
 import org.kablink.teaming.gwt.client.mainmenu.SavedSearchInfo;
@@ -337,6 +335,7 @@ import org.kablink.teaming.web.util.FavoritesLimitExceededException;
 import org.kablink.teaming.web.util.GwtUIHelper;
 import org.kablink.teaming.web.util.GwtUISessionData;
 import org.kablink.teaming.web.util.EmailHelper.UrlNotificationType;
+import org.kablink.teaming.web.util.LandingPageProperties;
 import org.kablink.teaming.web.util.ListFolderHelper.ModeType;
 import org.kablink.teaming.web.util.CloudFolderHelper;
 import org.kablink.teaming.web.util.DefinitionHelper;
@@ -5993,11 +5992,11 @@ public class GwtServerHelper {
 	 * the given binder.
 	 * @throws GwtTeamingException 
 	 */
-	public static LandingPageProperties getInheritedLandingPageProperties( AllModulesInjected ami, String binderId, HttpServletRequest request ) throws GwtTeamingException
+	public static GwtLandingPageProperties getInheritedLandingPageProperties( AllModulesInjected ami, String binderId, HttpServletRequest request ) throws GwtTeamingException
 	{
-		LandingPageProperties lpProperties = null;
+		GwtLandingPageProperties lpProperties = null;
 		
-		lpProperties = new LandingPageProperties();
+		lpProperties = new GwtLandingPageProperties();
 		lpProperties.setInheritProperties( true );
 		
 		try
@@ -6124,21 +6123,6 @@ public class GwtServerHelper {
     			configData.setConfigStr( configStr );
     		}
     		
-			// Get the value of the "hide the masthead" setting.
-    		customAttr = binder.getCustomAttribute( "mashup" + DefinitionModule.MASHUP_HIDE_MASTHEAD );
-    		if ( customAttr != null && customAttr.getValueType() == CustomAttribute.BOOLEAN )
-    			configData.setHideMasthead( ((Boolean) customAttr.getValue()).booleanValue() );
-			
-			// Get the value of the "hide the navigation panel" setting.
-    		customAttr = binder.getCustomAttribute( "mashup" + DefinitionModule.MASHUP_HIDE_SIDEBAR );
-    		if ( customAttr != null && customAttr.getValueType() == CustomAttribute.BOOLEAN )
-    			configData.setHideNavPanel( ((Boolean) customAttr.getValue()).booleanValue() );
-			
-			// Get the value of the "hide the footer" setting.
-    		customAttr = binder.getCustomAttribute( "mashup" + DefinitionModule.MASHUP_HIDE_FOOTER );
-    		if ( customAttr != null && customAttr.getValueType() == CustomAttribute.BOOLEAN )
-    			configData.setHideFooter( ((Boolean) customAttr.getValue()).booleanValue() );
-    		
     		// Get the value of the "landing page style" setting.
     		style = "mashup_dark.css";
     		customAttr = binder.getCustomAttribute( "mashup" + DefinitionModule.MASHUP_STYLE );
@@ -6166,11 +6150,11 @@ public class GwtServerHelper {
 	 * the given binder.
 	 * @throws GwtTeamingException 
 	 */
-	public static LandingPageProperties getLandingPageProperties( AllModulesInjected ami, String binderId, HttpServletRequest request ) throws GwtTeamingException
+	public static GwtLandingPageProperties getLandingPageProperties( AllModulesInjected ami, String binderId, HttpServletRequest request ) throws GwtTeamingException
 	{
-		LandingPageProperties lpProperties = null;
+		GwtLandingPageProperties lpProperties = null;
 		
-		lpProperties = new LandingPageProperties();
+		lpProperties = new GwtLandingPageProperties();
 		lpProperties.setInheritProperties( true );
 		
 		try
@@ -6178,6 +6162,7 @@ public class GwtServerHelper {
 			Binder binder;
 			Binder sourceBinder;
 			Document doc;
+			LandingPageProperties lpProps;
 			
 			binder = ami.getBinderModule().getBinder( Long.parseLong( binderId ) );
 			
@@ -6193,15 +6178,10 @@ public class GwtServerHelper {
 			}
 			
 			// Get the landing page properties from the binder we inherit from.
-			doc = sourceBinder.getLandingPageProperties();
-			if ( doc != null )
+			lpProps = DefinitionHelper.getLandingPageProperties( request, sourceBinder );
+
+			if ( lpProps != null )
 			{
-				Element bgElement;
-				Element pgLayoutElement;
-				Element headerElement;
-				Element contentElement;
-				Element borderElement;
-				
 				// Did we inherit the properties from another landing page.
 				if ( sourceBinder == binder )
 				{
@@ -6209,96 +6189,19 @@ public class GwtServerHelper {
 					lpProperties.setInheritProperties( false );
 				}
 				
-				// Get the <background ...> element.
-				bgElement = (Element) doc.selectSingleNode( "//landingPageData/background" );
-				if ( bgElement != null )
-				{
-					String bgColor;
-					String bgImgName;
-					
-					bgColor = bgElement.attributeValue( "color" );
-					if ( bgColor != null )
-						lpProperties.setBackgroundColor( bgColor );
-					
-					bgImgName = bgElement.attributeValue( "imgName");
-					if ( bgImgName != null && bgImgName.length() > 0 )
-					{
-						String fileUrl;
-						String webPath;
-						
-						webPath = WebUrlUtil.getServletRootURL( request );
-						fileUrl = WebUrlUtil.getFileUrl( webPath, WebKeys.ACTION_READ_FILE, sourceBinder, bgImgName );
-						lpProperties.setBackgroundImgUrl( fileUrl );
-						
-						// Get the background image repeat value.
-						{
-							String repeat;
-							
-							repeat = bgElement.attributeValue( "repeat" );
-							if ( repeat != null )
-								lpProperties.setBackgroundRepeat( repeat );
-						}
-					}
-				}
-				
-				// Get the <pageLayout hideMenu="true | false" /> element.
-				pgLayoutElement = (Element) doc.selectSingleNode( "//landingPageData/pageLayout" );
-				if ( pgLayoutElement != null )
-				{
-					String hideMenu;
-					
-					hideMenu = pgLayoutElement.attributeValue( "hideMenu" );
-					if ( hideMenu != null )
-					{
-						boolean value;
-						
-						value = Boolean.parseBoolean( hideMenu );
-						lpProperties.setHideMenu( value );
-					}
-				}
-
-				// Get the <header bgColor="" textColor="" /> element.
-				headerElement = (Element) doc.selectSingleNode( "//landingPageData/header" );
-				if ( headerElement != null )
-				{
-					String bgColor;
-					String textColor;
-					
-					bgColor = headerElement.attributeValue( "bgColor" );
-					if ( bgColor != null )
-						lpProperties.setHeaderBgColor( bgColor );
-					
-					textColor = headerElement.attributeValue( "textColor" );
-					if ( textColor != null )
-						lpProperties.setHeaderTextColor( textColor );
-				}
-				
-				// Get the <content textColor="" /> element.
-				contentElement = (Element) doc.selectSingleNode( "//landingPageData/content" );
-				if ( contentElement != null )
-				{
-					String textColor;
-					
-					textColor = contentElement.attributeValue( "textColor" );
-					if ( textColor != null )
-						lpProperties.setContentTextColor( textColor );
-				}
-				
-				// Get the <border color="" width="" /> element
-				borderElement = (Element) doc.selectSingleNode( "//landingPageData/border" );
-				if ( borderElement != null )
-				{
-					String borderColor;
-					String width;
-					
-					borderColor = borderElement.attributeValue( "color" );
-					if ( borderColor != null )
-						lpProperties.setBorderColor( borderColor );
-					
-					width = borderElement.attributeValue( "width" );
-					if ( width != null )
-						lpProperties.setBorderWidth( width );
-				}
+				lpProperties.setBackgroundColor( lpProps.getBackgroundColor() );
+				lpProperties.setBackgroundImgName( lpProps.getBackgroundImageName() );
+				lpProperties.setBackgroundImgUrl( lpProps.getBackgroundImageUrl() );
+				lpProperties.setBackgroundRepeat( lpProps.getBackgroundRepeat() );
+				lpProperties.setBorderColor( lpProps.getBorderColor() );
+				lpProperties.setBorderWidth( lpProps.getBorderWidth() );
+				lpProperties.setContentTextColor( lpProps.getContentTextColor() );
+				lpProperties.setHeaderBgColor( lpProps.getHeaderBgColor() );
+				lpProperties.setHeaderTextColor( lpProps.getHeaderTextColor() );
+				lpProperties.setHideFooter( lpProps.getHideFooter() );
+				lpProperties.setHideMasthead( lpProps.getHideMasthead() );
+				lpProperties.setHideMenu( lpProps.getHideMenu() );
+				lpProperties.setHideSidebar( lpProps.getHideSidebar() );
 			}
 		}
 		catch (Exception ex)
@@ -6316,7 +6219,7 @@ public class GwtServerHelper {
 	 */
 	public static void getLandingPageProperties( AllModulesInjected ami, String binderId, ConfigData lpConfigData, HttpServletRequest request ) throws GwtTeamingException
 	{
-		LandingPageProperties lpProperties;
+		GwtLandingPageProperties lpProperties;
 		
 		// Get the landing page properties for the given binder.
 		lpProperties = getLandingPageProperties( ami, binderId, request );

@@ -49,7 +49,7 @@ import com.google.gwt.xml.client.impl.DOMParseException;
  * @author jwootton
  *
  */
-public class LandingPageProperties
+public class GwtLandingPageProperties
 	implements IsSerializable, VibeRpcResponseData
 {
 	transient public final String ROOT_ELEMENT_NAME = "landingPageData";
@@ -61,6 +61,9 @@ public class LandingPageProperties
 	transient public final String COLOR_ATTRIBUTE_NAME = "color";
 	transient public final String IMAGE_NAME_ATTRIBUTE_NAME = "imgName";
 	transient public final String REPEAT_ATTRIBUTE_NAME = "repeat";
+	transient public final String HIDE_MASTHEAD_ATTRIBUTE_NAME = "hideMasthead";
+	transient public final String HIDE_SIDEBAR_ATTRIBUTE_NAME = "hideSidebar";
+	transient public final String HIDE_FOOTER_ATTRIBUTE_NAME = "hideFooter";
 	transient public final String HIDE_MENU_ATTRIBUTE_NAME = "hideMenu";
 	transient public final String BG_COLOR_ATTRIBUTE_NAME = "bgColor";
 	transient public final String TEXT_COLOR_ATTRIBUTE_NAME = "textColor";
@@ -70,6 +73,9 @@ public class LandingPageProperties
 	private String m_backgroundImageName;
 	private String m_backgroundImageUrl;
 	private String m_backgroundRepeat;
+	private boolean m_hideMasthead;
+	private boolean m_hideSidebar;
+	private boolean m_hideFooter;
 	private boolean m_hideMenu;
 	private boolean m_inheritProperties;
 	private WidgetStyles m_widgetStyles;
@@ -77,13 +83,16 @@ public class LandingPageProperties
 	/**
 	 * 
 	 */
-	public LandingPageProperties()
+	public GwtLandingPageProperties()
 	{
 		m_backgroundColor = null;
 		m_backgroundImageName = null;
 		m_backgroundImageUrl = null;
 		m_backgroundRepeat = null;
 		m_widgetStyles = new WidgetStyles();
+		m_hideMasthead = false;
+		m_hideSidebar = false;
+		m_hideFooter = false;
 		m_hideMenu = false;
 		m_inheritProperties = true;
 	}
@@ -91,13 +100,16 @@ public class LandingPageProperties
 	/**
 	 * 
 	 */
-	public LandingPageProperties( String propertiesXML )
+	public GwtLandingPageProperties( String propertiesXML )
 	{
 		m_backgroundColor = null;
 		m_backgroundImageName = null;
 		m_backgroundImageUrl = null;
 		m_backgroundRepeat = null;
 		m_widgetStyles = new WidgetStyles();
+		m_hideMasthead = false;
+		m_hideSidebar = false;
+		m_hideFooter = false;
 		m_hideMenu = false;
 		m_inheritProperties = true;
 		
@@ -107,7 +119,7 @@ public class LandingPageProperties
 	/**
 	 * 
 	 */
-	public void copy( LandingPageProperties lpProperties )
+	public void copy( GwtLandingPageProperties lpProperties )
 	{
 		m_backgroundColor = lpProperties.getBackgroundColor();
 		m_backgroundImageName = lpProperties.getBackgroundImageName();
@@ -118,6 +130,9 @@ public class LandingPageProperties
 		m_widgetStyles.setContentTextColor( lpProperties.getContentTextColor() );
 		m_widgetStyles.setBorderColor( lpProperties.getBorderColor() );
 		m_widgetStyles.setBorderWidth( lpProperties.getBorderWidth() );
+		m_hideMasthead = lpProperties.getHideMasthead();
+		m_hideSidebar = lpProperties.getHideSidebar();
+		m_hideFooter = lpProperties.getHideFooter();
 		m_hideMenu = lpProperties.getHideMenu();
 		m_inheritProperties = lpProperties.getInheritProperties();
 	}
@@ -197,9 +212,33 @@ public class LandingPageProperties
 	/**
 	 * 
 	 */
+	public boolean getHideFooter()
+	{
+		return m_hideFooter;
+	}
+	
+	/**
+	 * 
+	 */
+	public boolean getHideMasthead()
+	{
+		return m_hideMasthead;
+	}
+	
+	/**
+	 * 
+	 */
 	public boolean getHideMenu()
 	{
 		return m_hideMenu;
+	}
+	
+	/**
+	 * 
+	 */
+	public boolean getHideSidebar()
+	{
+		return m_hideSidebar;
 	}
 	
 	/**
@@ -214,7 +253,7 @@ public class LandingPageProperties
 	 * Return the properties as an xml string that looks like the following:
 	 *	<landingPageData>
 	 * 		<background color="" imgName="" />
-	 * 		<pageLayout hideMenu="true | false" />
+	 * 		<pageLayout hideMasthead="true | false" hideSidebar="true | false" hideFooter="true | false" hideMenu="true | false" />
 	 * 		<header bgColor="" textColor="" />
 	 * 		<content textColor="" />
 	 * 		<border color="" width="" />
@@ -258,12 +297,15 @@ public class LandingPageProperties
 			rootElement.appendChild( backgroundElement );
 		}
 		
-		// Add the <pageLayout hideMenu="true | false" /> element
+		// Add the <pageLayout /> element
 		{
 			Element pgLayoutElement;
 			
 			pgLayoutElement = doc.createElement( PAGE_LAYOUT_ELEMENT_NAME );
 			
+			pgLayoutElement.setAttribute( HIDE_MASTHEAD_ATTRIBUTE_NAME, String.valueOf( m_hideMasthead ) );
+			pgLayoutElement.setAttribute( HIDE_SIDEBAR_ATTRIBUTE_NAME, String.valueOf( m_hideSidebar ) );
+			pgLayoutElement.setAttribute( HIDE_FOOTER_ATTRIBUTE_NAME, String.valueOf( m_hideFooter ) );
 			pgLayoutElement.setAttribute( HIDE_MENU_ATTRIBUTE_NAME, String.valueOf( m_hideMenu ) );
 			
 			rootElement.appendChild( pgLayoutElement );
@@ -360,10 +402,25 @@ public class LandingPageProperties
 				if ( nodeList != null && nodeList.getLength() == 1 )
 				{
 					Element pageLayoutElement;
+					String value;
 					
 					pageLayoutElement = (Element) nodeList.item( 0 );
-					
-					m_hideMenu = Boolean.parseBoolean( pageLayoutElement.getAttribute( HIDE_MENU_ATTRIBUTE_NAME ) );
+
+					value = pageLayoutElement.getAttribute( HIDE_MASTHEAD_ATTRIBUTE_NAME );
+					if ( value != null && value.length() > 0 )
+						m_hideMasthead = Boolean.parseBoolean( value );
+
+					value = pageLayoutElement.getAttribute( HIDE_SIDEBAR_ATTRIBUTE_NAME );
+					if ( value != null && value.length() > 0 )
+						m_hideSidebar = Boolean.parseBoolean( value );
+
+					value = pageLayoutElement.getAttribute( HIDE_FOOTER_ATTRIBUTE_NAME );
+					if ( value != null && value.length() > 0 )
+						m_hideFooter = Boolean.parseBoolean( value );
+
+					value = pageLayoutElement.getAttribute( HIDE_MENU_ATTRIBUTE_NAME );
+					if ( value != null && value.length() > 0 )
+						m_hideMenu = Boolean.parseBoolean( value );
 				}
 				
 				// Get the <header...> element
@@ -484,9 +541,33 @@ public class LandingPageProperties
 	/**
 	 * 
 	 */
+	public void setHideFooter( boolean hide )
+	{
+		m_hideFooter = hide;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setHideMasthead( boolean hide )
+	{
+		m_hideMasthead = hide;
+	}
+	
+	/**
+	 * 
+	 */
 	public void setHideMenu( boolean hide )
 	{
 		m_hideMenu = hide;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setHideSidebar( boolean hide )
+	{
+		m_hideSidebar = hide;
 	}
 	
 	/**

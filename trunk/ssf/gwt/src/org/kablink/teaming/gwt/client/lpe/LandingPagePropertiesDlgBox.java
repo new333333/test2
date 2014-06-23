@@ -97,7 +97,7 @@ public class LandingPagePropertiesDlgBox extends DlgBox
 	private ColorCtrl m_contentTextColorCtrl;
 	private ColorCtrl m_borderColorCtrl;
 	private TextBox m_borderWidthCtrl;
-	private LandingPageProperties m_origLPProperties;
+	private GwtLandingPageProperties m_origLPProperties;
 	private AddFileAttachmentDlg m_addFileAttachmentDlg = null;
 	private String m_selectedBgImgName;
 	private VibeGlassPanel m_glassPanel = null; 
@@ -448,12 +448,12 @@ public class LandingPagePropertiesDlgBox extends DlgBox
 	@Override
 	public Object getDataFromDlg()
 	{
-		LandingPageProperties lpProperties;
+		GwtLandingPageProperties lpProperties;
 		String imgName;
 		String color;
 		int index;
 		
-		lpProperties = new LandingPageProperties( null );
+		lpProperties = new GwtLandingPageProperties( null );
 		
 		// Save the "inherit properties" selection
 		lpProperties.setInheritProperties( m_inheritPropertiesCb.getValue() );
@@ -603,7 +603,7 @@ public class LandingPagePropertiesDlgBox extends DlgBox
 	/**
 	 * Initialize the controls in the dialog with the values from the landing page properties.
 	 */
-	public void init( LandingPageProperties lpProperties, String binderId )
+	public void init( GwtLandingPageProperties lpProperties, String binderId )
 	{
 		int index;
 		

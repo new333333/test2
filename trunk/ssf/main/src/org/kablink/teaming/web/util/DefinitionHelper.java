@@ -1155,70 +1155,30 @@ public class DefinitionHelper {
     		if (attr != null) model.put(WebKeys.MASHUP_HIDE_TOOLBAR, attr.getValue());
     		attr = entity.getCustomAttribute(attrName + DefinitionModule.MASHUP_HIDE_FOOTER);
     		if (attr != null) model.put(WebKeys.MASHUP_HIDE_FOOTER, attr.getValue());
-    		
-    		attr = entity.getCustomAttribute( attrName + DefinitionModule.MASHUP_PROPERTIES );
-    		if ( attr != null )
-    		{
-    			Document doc;
-    			
-    			if ( attr.getValue() instanceof Document )
-    			{
-    				doc = (Document) attr.getValue();
-    				if ( doc != null )
-    				{
-    					Element bgElement;
-    					Element pgLayoutElement;
-    					
-    					model.put( WebKeys.MASHUP_PROPERTIES, doc.asXML() );
 
-    					// Get the <background ...> element.
-    					bgElement = (Element) doc.selectSingleNode( "//landingPageData/background" );
-    					if ( bgElement != null )
-    					{
-    						String bgColor;
-    						String bgImgName;
-    						
-    						bgColor = bgElement.attributeValue( "color" );
-    						if ( bgColor != null )
-    							model.put( WebKeys.MASHUP_BACKGROUND_COLOR, bgColor );
-    						
-    						bgImgName = bgElement.attributeValue( "imgName");
-    						if ( bgImgName != null )
-    						{
-    							String fileUrl;
-    							String webPath;
-    							
-    							webPath = WebUrlUtil.getServletRootURL( request );
-		    					fileUrl = WebUrlUtil.getFileUrl( webPath, WebKeys.ACTION_READ_FILE, entity, bgImgName );
-    							model.put( WebKeys.MASHUP_BACKGROUND_IMAGE, fileUrl );
-    							
-    							// Get the background image repeat value.
-    							{
-    								String repeat;
-    								
-    								repeat = bgElement.attributeValue( "repeat" );
-    								if ( repeat != null )
-    									model.put( WebKeys.MASHUP_BACKGROUND_IMAGE_REPEAT, repeat );
-    							}
-    						}
-    					}
-    					
-    					// Get the <pageLayout hideMenu="true | false" /> element.
-    					pgLayoutElement = (Element) doc.selectSingleNode( "//landingPageData/pageLayout" );
-    					if ( pgLayoutElement != null )
-    					{
-    						String hideMenu;
-    						
-    						hideMenu = pgLayoutElement.attributeValue( "hideMenu" );
-    						if ( hideMenu != null )
-    						{
-    							boolean value;
-    							
-    							value = Boolean.parseBoolean( hideMenu );
-    							model.put( WebKeys.MASHUP_HIDE_MENU, value );
-    						}
-    					}
-    				}
+    		// Handle the mashup properties.
+    		{
+    			LandingPageProperties lpProperties;
+    			
+    			lpProperties = getLandingPageProperties( request, entity );
+    			
+    			if ( lpProperties != null )
+    			{
+        			String value;
+
+        			value = lpProperties.getBackgroundColor(); 
+	    			if ( value != null )
+	    				model.put( WebKeys.MASHUP_BACKGROUND_COLOR, value );
+	
+	    			value = lpProperties.getBackgroundImageUrl();
+	    			if ( value != null )
+	    				model.put( WebKeys.MASHUP_BACKGROUND_IMAGE, value );
+	
+	    			value = lpProperties.getBackgroundRepeat();
+	    			if ( value != null )
+						model.put( WebKeys.MASHUP_BACKGROUND_IMAGE_REPEAT, value );
+	    				
+					model.put( WebKeys.MASHUP_PROPERTIES, lpProperties.getPropertiesAsXMLString() );
     			}
     		}
     		
@@ -1261,6 +1221,226 @@ public class DefinitionHelper {
     		//Force the css style to "light" for displaying the form so we only have one style for viewing the form
     		model.put(WebKeys.MASHUP_CSS, "css/mashup.css");
     	}
+	}
+	
+	/**
+	 * 
+	 */
+	public static LandingPageProperties getLandingPageProperties(
+			PortletRequest request,
+			DefinableEntity entity )
+	{
+		HttpServletRequest servletRequest;
+		
+		servletRequest = WebHelper.getHttpServletRequest( request );
+	
+		return getLandingPageProperties( servletRequest, entity );
+	}
+	
+	/**
+	 * Read the custom attribute named "mashup__properties".  The xml for this looks like the following 
+		<landingPageData>
+		  <background color="black" imgName="" repeat="repeat"/>
+		  <pageLayout hideMasthead="true" hideSidebar="true" hideFooter="true" hideMenu="true" />
+		  <header bgColor="green" textColor=""/>
+		  <content textColor=""/>
+		  <border color="" width=""/>
+		</landingPageData>
+	 */
+	public static LandingPageProperties getLandingPageProperties(
+		HttpServletRequest request,
+		DefinableEntity entity )
+	{
+		LandingPageProperties lpProperties = null;
+		CustomAttribute attr;
+		
+		
+		attr = entity.getCustomAttribute( "mashup__properties" );
+		if ( attr != null )
+		{
+			Document doc;
+			
+			if ( attr.getValue() instanceof Document )
+			{
+				doc = (Document) attr.getValue();
+				if ( doc != null )
+				{
+					Element bgElement;
+					Element pgLayoutElement;
+					Element headerElement;
+					Element contentElement;
+					Element borderElement;
+					
+					lpProperties = new LandingPageProperties();
+
+					// Get the <background ...> element.
+					bgElement = (Element) doc.selectSingleNode( "//landingPageData/background" );
+					if ( bgElement != null )
+					{
+						String bgColor;
+						String bgImgName;
+						
+						bgColor = bgElement.attributeValue( "color" );
+						lpProperties.setBackgroundColor( bgColor );
+						
+						bgImgName = bgElement.attributeValue( "imgName" );
+						if ( bgImgName != null && bgImgName.length() > 0 )
+						{
+							String fileUrl;
+							String webPath;
+							
+							lpProperties.setBackgroundImgName( bgImgName );
+
+							webPath = WebUrlUtil.getServletRootURL( request );
+	    					fileUrl = WebUrlUtil.getFileUrl( webPath, WebKeys.ACTION_READ_FILE, entity, bgImgName );
+	    					lpProperties.setBackgroundImgUrl( fileUrl );
+						}
+
+						// Get the background image repeat value.
+						{
+							String repeat;
+							
+							repeat = bgElement.attributeValue( "repeat" );
+							if ( repeat != null )
+								lpProperties.setBackgroundRepeat( repeat );
+						}
+					}
+					
+					// Get the <pageLayout /> element.
+					// The values for "hide masthead", "hide sidebar" and "hide footer"
+					// used to be stored as individual custom attributes.  They are now stored as part
+					// of the "mashup_properties" custom attribute.
+					// We need to read these values from the individual custom attributes if they are
+					// not already part of the the "mashup_properties" custom attribute.
+					pgLayoutElement = (Element) doc.selectSingleNode( "//landingPageData/pageLayout" );
+					if ( pgLayoutElement != null )
+					{
+						String value;
+						Boolean boolValue;
+						
+						// Get the value of "hide menu"
+						{
+							boolValue = null;
+							
+    						value = pgLayoutElement.attributeValue( "hideMenu" );
+    						if ( value != null )
+    						{
+    							boolValue = new Boolean( value );
+    							lpProperties.setHideMenu( boolValue );
+    						}
+						}
+						
+						// Get the value of "hide masthead"
+						{
+							boolValue = null;
+						
+							// Does the "hideMasthead" attribute exist?
+							value = pgLayoutElement.attributeValue( "hideMasthead" );
+							if ( value == null || value.length() == 0 )
+							{
+								// No, read it as a custom attribute.
+					    		attr = entity.getCustomAttribute( "mashup" + DefinitionModule.MASHUP_HIDE_MASTHEAD );
+					    		if ( attr != null )
+					    			boolValue = (Boolean)attr.getValue();
+							}
+							else
+								boolValue = new Boolean( value );
+							
+							if ( boolValue != null )
+								lpProperties.setHideMasthead( boolValue );
+						}
+						
+						// Get the value of "hide sidebar"
+						{
+							boolValue = null;
+							
+							// Does the "hideSidebar" attribute exist?
+							value = pgLayoutElement.attributeValue( "hideSidebar" );
+							if ( value == null || value.length() == 0 )
+							{
+								// No, read it as a custom attribute.
+					    		attr = entity.getCustomAttribute( "mashup" + DefinitionModule.MASHUP_HIDE_SIDEBAR );
+					    		if ( attr != null )
+					    			boolValue = (Boolean)attr.getValue();
+							}
+							else
+								boolValue = new Boolean( value );
+							
+							if ( boolValue != null )
+								lpProperties.setHideSidebar( boolValue );
+						}
+						
+						// Get the value of "hide footer"
+						{
+							boolValue = null;
+							
+							// Does the "hideFooter" attribute exist?
+							value = pgLayoutElement.attributeValue( "hideFooter" );
+							if ( value == null || value.length() == 0 )
+							{
+								// No, read it as a custom attribute.
+					    		attr = entity.getCustomAttribute( "mashup" + DefinitionModule.MASHUP_HIDE_FOOTER );
+					    		if ( attr != null )
+					    			boolValue = (Boolean)attr.getValue();
+							}
+							else
+								boolValue = new Boolean( value );
+							
+							lpProperties.setHideFooter( boolValue );
+						}
+					}
+
+					// Get the <header...> element.
+					headerElement = (Element) doc.selectSingleNode( "//landingPageData/header" );
+					if ( headerElement != null )
+					{
+						String color;
+						
+						// Get the header background color
+						color = headerElement.attributeValue( "bgColor" );
+						if ( color != null && color.length() > 0 )
+							lpProperties.setHeaderBgColor( color );
+						
+						// Get the header text color
+						color = headerElement.attributeValue( "textColor" );
+						if ( color != null && color.length() > 0 )
+							lpProperties.setHeaderTextColor( color );
+					}
+					
+					// Get the <content ...> element
+					contentElement = (Element) doc.selectSingleNode( "//landingPageData/content" );
+					if ( contentElement != null )
+					{
+						String color;
+						
+						// Get the text color
+						color = headerElement.attributeValue( "textColor" );
+						if ( color != null && color.length() > 0 )
+							lpProperties.setContentTextColor( color );
+					}
+					
+					// Get the <border ...> element
+					borderElement = (Element) doc.selectSingleNode( "//landingPageData/border" );
+					if ( borderElement != null )
+					{
+						String color;
+						String width;
+						
+						// Get the border color
+						color = borderElement.attributeValue( "color" );
+						if ( color != null && color.length() > 0 )
+							lpProperties.setBorderColor( color );
+						
+						// Get the border width
+						width = borderElement.attributeValue( "width" );
+						if ( width != null && width.length() > 0 )
+							lpProperties.setBorderWidth( width );
+					}
+				}
+			}
+		}
+
+		return lpProperties;
 	}
 	
     //Routine to perform any translations on the mashup config string
