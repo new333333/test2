@@ -2744,10 +2744,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 				Boolean showBranding = false;
 				Boolean showFavoritesAndTeams = false;
 				Boolean showNavigation = false;
-				Boolean hideMasthead = false;
-				Boolean hideSidebar = false;
 				Boolean hideToolbar = false;
-				Boolean hideFooter = false;
 				String mashupStyle = "";
 				String value = "";
 				Document propertiesDoc = null;
@@ -2785,24 +2782,9 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 					if (!val.toLowerCase().equals("false")) showNavigation = true;
 				}
 				
-				if (inputData.exists(nameValue + MASHUP_HIDE_MASTHEAD)) {
-					String val = inputData.getSingleValue( nameValue + MASHUP_HIDE_MASTHEAD );
-					if (!val.toLowerCase().equals("false")) hideMasthead = true;
-				}
-				
-				if (inputData.exists(nameValue + MASHUP_HIDE_SIDEBAR)) {
-					String val = inputData.getSingleValue( nameValue + MASHUP_HIDE_SIDEBAR );
-					if (!val.toLowerCase().equals("false")) hideSidebar = true;
-				}
-				
 				if (inputData.exists(nameValue + MASHUP_HIDE_TOOLBAR)) {
 					String val = inputData.getSingleValue( nameValue + MASHUP_HIDE_TOOLBAR );
 					if (!val.toLowerCase().equals("false")) hideToolbar = true;
-				}
-				
-				if (inputData.exists(nameValue + MASHUP_HIDE_FOOTER)) {
-					String val = inputData.getSingleValue( nameValue + MASHUP_HIDE_FOOTER );
-					if (!val.toLowerCase().equals("false")) hideFooter = true;
 				}
 				
 				if (inputData.exists(nameValue + MASHUP_STYLE)) {
@@ -2822,10 +2804,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 					entryData.put(nameValue + DefinitionModule.MASHUP_SHOW_BRANDING, showBranding);
 					entryData.put(nameValue + DefinitionModule.MASHUP_SHOW_FAVORITES_AND_TEAMS, showFavoritesAndTeams);
 					entryData.put(nameValue + DefinitionModule.MASHUP_SHOW_NAVIGATION, showNavigation);
-					entryData.put(nameValue + DefinitionModule.MASHUP_HIDE_MASTHEAD, hideMasthead);
-					entryData.put(nameValue + DefinitionModule.MASHUP_HIDE_SIDEBAR, hideSidebar);
 					entryData.put(nameValue + DefinitionModule.MASHUP_HIDE_TOOLBAR, hideToolbar);
-					entryData.put(nameValue + DefinitionModule.MASHUP_HIDE_FOOTER, hideFooter);
 					entryData.put(nameValue + DefinitionModule.MASHUP_STYLE, StringCheckUtil.check(mashupStyle));
 					entryData.put( nameValue + DefinitionModule.MASHUP_PROPERTIES, propertiesDoc );
 				}

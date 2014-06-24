@@ -67,10 +67,11 @@ import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.HTMLTable;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
-import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.PopupPanel;
+import com.google.gwt.user.client.ui.RadioButton;
+import com.google.gwt.user.client.ui.TabPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -89,6 +90,10 @@ public class LandingPagePropertiesDlgBox extends DlgBox
 	private AsyncCallback<VibeRpcResponse> m_rpcReadCallback;
 	private String m_binderId;
 	private CheckBox m_inheritPropertiesCb;
+	private CheckBox m_hideMastheadCB;
+	private CheckBox m_hideSidebarCB;
+	private CheckBox m_hideFooterCB;
+	private CheckBox m_hideMenuCB;
 	private ListBox m_bgImgListbox;
 	private ListBox m_bgImgRepeatListbox;
 	private ColorCtrl m_bgColorCtrl;
@@ -100,7 +105,10 @@ public class LandingPagePropertiesDlgBox extends DlgBox
 	private GwtLandingPageProperties m_origLPProperties;
 	private AddFileAttachmentDlg m_addFileAttachmentDlg = null;
 	private String m_selectedBgImgName;
-	private VibeGlassPanel m_glassPanel = null; 
+	private VibeGlassPanel m_glassPanel = null;
+	private RadioButton m_lightRB;
+	private RadioButton m_darkRB;
+	private TabPanel m_tabPanel;
 	
 	/**
 	 * 
@@ -136,6 +144,7 @@ public class LandingPagePropertiesDlgBox extends DlgBox
 			/**
 			 * 
 			 */
+			@Override
 			public void onFailure( Throwable t )
 			{
 				GwtClientHelper.handleGwtRPCFailure(
@@ -151,6 +160,7 @@ public class LandingPagePropertiesDlgBox extends DlgBox
 			 * 
 			 * @param result
 			 */
+			@Override
 			public void onSuccess( VibeRpcResponse response )
 			{
 				ArrayList<String> listOfFileAttachments;
@@ -169,52 +179,30 @@ public class LandingPagePropertiesDlgBox extends DlgBox
 	}
 
 	/**
-	 * 
+	 * Create a panel that holds the controls used for defining background properties
 	 */
-	public Panel createContent( Object propertiesObj )
+	private Panel createBackgroundPanel()
 	{
-		FlowPanel mainPanel = null;
-		Label spacer;
-		int nextRow;
-		FlexTable table = null;
+		FlowPanel panel;
+		FlexTable table;
 		HTMLTable.CellFormatter cellFormatter;
-		FlowPanel propertiesPanel;
-
-		mainPanel = new FlowPanel();
-		mainPanel.setStyleName( "teamingDlgBoxContent" );
+		int row;
 		
-		m_inheritPropertiesCb = new CheckBox( GwtTeaming.getMessages().inheritPropertiesLabel() );
-		m_inheritPropertiesCb.addClickHandler( new ClickHandler()
-		{
-			public void onClick( ClickEvent event )
-			{
-				// Enable/disable the property controls based on whether "inherit properties" checkbox is checked.
-				dancePropertyControls();
-			}
-		});
-		mainPanel.add( m_inheritPropertiesCb );
+		panel = new FlowPanel();
 		
-		propertiesPanel = new FlowPanel();
-		propertiesPanel.addStyleName ( "lpPropertiesPanel" );
-		mainPanel.add( propertiesPanel );
-		
-		// Create a glass panel that will be used to disable the properties control.
-		m_glassPanel = new VibeGlassPanel();
-		m_glassPanel.setVisible( false );
-		propertiesPanel.add( m_glassPanel );
-
 		table = new FlexTable();
 		table.setCellSpacing( 4 );
-		table.addStyleName( "dlgContent" );
+		panel.add( table );
+		
 		cellFormatter = table.getCellFormatter();
 		
-		nextRow = 0;
+		row = 0;
 		
 		// Add the controls for "Background Image"
 		{
 			HorizontalPanel hPanel;
 			
-			table.setText( nextRow, 0, GwtTeaming.getMessages().backgroundImgLabel() );
+			table.setText( row, 0, GwtTeaming.getMessages().backgroundImgLabel() );
 
 			// Create a list box to hold the list of attachments for the given binder.
 			// User can select one of these files to use as the background image.
@@ -260,6 +248,7 @@ public class LandingPagePropertiesDlgBox extends DlgBox
 					/**
 					 * Invoke the "add file" dialog
 					 */
+					@Override
 					public void onClick( ClickEvent event )
 					{
 						Widget anchor;
@@ -281,6 +270,7 @@ public class LandingPagePropertiesDlgBox extends DlgBox
 					/**
 					 * 
 					 */
+					@Override
 					public void onMouseOver( MouseOverEvent event )
 					{
 						Widget widget;
@@ -297,6 +287,7 @@ public class LandingPagePropertiesDlgBox extends DlgBox
 					/**
 					 * 
 					 */
+					@Override
 					public void onMouseOut( MouseOutEvent event )
 					{
 						Widget widget;
@@ -310,15 +301,15 @@ public class LandingPagePropertiesDlgBox extends DlgBox
 				hPanel.add( flowPanel );
 			}
 			
-			table.setWidget( nextRow, 1, hPanel );
-			++nextRow;
+			table.setWidget( row, 1, hPanel );
+			++row;
 		}
 		
 		// Add the controls for "Background Image Repeat"
 		{
-			cellFormatter.setWordWrap( nextRow, 0, false );
+			cellFormatter.setWordWrap( row, 0, false );
 			
-			table.setText( nextRow, 0, GwtTeaming.getMessages().backgroundRepeatLabel() );
+			table.setText( row, 0, GwtTeaming.getMessages().backgroundRepeatLabel() );
 
 			// Create a list box to hold the possible values for the background image repeat
 			m_bgImgRepeatListbox = new ListBox( false );
@@ -330,108 +321,258 @@ public class LandingPagePropertiesDlgBox extends DlgBox
 			m_bgImgRepeatListbox.addItem( GwtTeaming.getMessages().backgroundRepeatY(), "repeat-y" );
 			m_bgImgRepeatListbox.addItem( GwtTeaming.getMessages().backgroundNoRepeat(), "no-repeat" );
 			
-			table.setWidget( nextRow, 1, m_bgImgRepeatListbox );
-			++nextRow;
+			table.setWidget( row, 1, m_bgImgRepeatListbox );
+			++row;
 		}
 		
 		// Add a color control for the background color.
 		{
-			table.setText( nextRow, 0, GwtTeaming.getMessages().backgroundColorLabel() );
+			table.setText( row, 0, GwtTeaming.getMessages().backgroundColorLabel() );
 			
 			m_bgColorCtrl = new ColorCtrl();
-			table.setWidget( nextRow, 1, m_bgColorCtrl );
-			++nextRow;
+			table.setWidget( row, 1, m_bgColorCtrl );
+			++row;
 		}
 		
-		// Add an empty row to add some space
-		spacer = new Label( " " );
-		spacer.addStyleName( "marginTop10px" );
-		table.setWidget( nextRow, 0, spacer );
-		++nextRow;
+		return panel;
+	}
+	
+	/**
+	 * Create a panel for the controls used to set background properties
+	 */
+	private Panel createBorderPanel()
+	{
+		FlowPanel panel;
+		FlexTable table;
+		int row;
 		
-		// Add the controls for the header background color and text color
-		{
-			table.setText( nextRow, 0, GwtTeaming.getMessages().headerBackgroundColorLabel() );
-			m_headerBgColorCtrl = new ColorCtrl();
-			table.setWidget( nextRow, 1, m_headerBgColorCtrl );
-			++nextRow;
-
-			table.setText( nextRow, 0, GwtTeaming.getMessages().headerTextColorLabel() );
-			m_headerTextColorCtrl = new ColorCtrl();
-			table.setWidget( nextRow, 1, m_headerTextColorCtrl );
-			++nextRow;
-		}
+		panel = new FlowPanel();
 		
-		// Add an empty row to add some space
-		spacer = new Label( " " );
-		spacer.addStyleName( "marginTop10px" );
-		table.setWidget( nextRow, 0, spacer );
-		++nextRow;
-
-		// Add the controls for content text color
-		{
-			table.setText( nextRow, 0, GwtTeaming.getMessages().contentTextColorLabel() );
-			m_contentTextColorCtrl = new ColorCtrl();
-			table.setWidget( nextRow, 1, m_contentTextColorCtrl );
-			++nextRow;
-		}
-
-		// Add an empty row to add some space
-		spacer = new Label( " " );
-		spacer.addStyleName( "marginTop10px" );
-		table.setWidget( nextRow, 0, spacer );
-		++nextRow;
-
+		table = new FlexTable();
+		table.setCellSpacing( 4 );
+		panel.add( table );
+		
+		row = 0;
+		
 		// Add the controls for border width and color
+		table.setText( row, 0, GwtTeaming.getMessages().borderColorLabel() );
+		m_borderColorCtrl = new ColorCtrl();
+		table.setWidget( row, 1, m_borderColorCtrl );
+		++row;
+
+		// Add the label and controls for the width
 		{
-			table.setText( nextRow, 0, GwtTeaming.getMessages().borderColorLabel() );
-			m_borderColorCtrl = new ColorCtrl();
-			table.setWidget( nextRow, 1, m_borderColorCtrl );
-			++nextRow;
-
-			// Add the label and controls for the width
+			table.setText( row, 0, GwtTeaming.getMessages().borderWidthLabel() );
+			
+			m_borderWidthCtrl = new TextBox();
+			m_borderWidthCtrl.addKeyPressHandler( new KeyPressHandler()
 			{
-				table.setText( nextRow, 0, GwtTeaming.getMessages().borderWidthLabel() );
-				
-				m_borderWidthCtrl = new TextBox();
-				m_borderWidthCtrl.addKeyPressHandler( new KeyPressHandler()
+				@Override
+				public void onKeyPress(KeyPressEvent event)
 				{
-					public void onKeyPress(KeyPressEvent event)
-					{
-				        int keyCode;
+			        int keyCode;
 
-				        // Get the key the user pressed
-				        keyCode = event.getNativeEvent().getKeyCode();
-				        
-				        if ( (!Character.isDigit(event.getCharCode())) && (keyCode != KeyCodes.KEY_TAB) && (keyCode != KeyCodes.KEY_BACKSPACE)
-				            && (keyCode != KeyCodes.KEY_DELETE) && (keyCode != KeyCodes.KEY_ENTER) && (keyCode != KeyCodes.KEY_HOME)
-				            && (keyCode != KeyCodes.KEY_END) && (keyCode != KeyCodes.KEY_LEFT) && (keyCode != KeyCodes.KEY_UP)
-				            && (keyCode != KeyCodes.KEY_RIGHT) && (keyCode != KeyCodes.KEY_DOWN))
-				        {
-				        	TextBox txtBox;
-				        	Object source;
-				        	
-				        	// Make sure we are dealing with a text box.
-				        	source = event.getSource();
-				        	if ( source instanceof TextBox )
-				        	{
-				        		// Suppress the current keyboard event.
-				        		txtBox = (TextBox) source;
-				        		txtBox.cancelKey();
-				        	}
-				        }
-					}
-				} );
-				m_borderWidthCtrl.setVisibleLength( 3 );
-				table.setWidget( nextRow, 1, m_borderWidthCtrl );
-			}
+			        // Get the key the user pressed
+			        keyCode = event.getNativeEvent().getKeyCode();
+			        
+			        if ( (!Character.isDigit(event.getCharCode())) && (keyCode != KeyCodes.KEY_TAB) && (keyCode != KeyCodes.KEY_BACKSPACE)
+			            && (keyCode != KeyCodes.KEY_DELETE) && (keyCode != KeyCodes.KEY_ENTER) && (keyCode != KeyCodes.KEY_HOME)
+			            && (keyCode != KeyCodes.KEY_END) && (keyCode != KeyCodes.KEY_LEFT) && (keyCode != KeyCodes.KEY_UP)
+			            && (keyCode != KeyCodes.KEY_RIGHT) && (keyCode != KeyCodes.KEY_DOWN))
+			        {
+			        	TextBox txtBox;
+			        	Object source;
+			        	
+			        	// Make sure we are dealing with a text box.
+			        	source = event.getSource();
+			        	if ( source instanceof TextBox )
+			        	{
+			        		// Suppress the current keyboard event.
+			        		txtBox = (TextBox) source;
+			        		txtBox.cancelKey();
+			        	}
+			        }
+				}
+			} );
+			m_borderWidthCtrl.setVisibleLength( 3 );
+			table.setWidget( row, 1, m_borderWidthCtrl );
 		}
 
-		propertiesPanel.add( table );
+		return panel;
+	}
+	
+	/**
+	 * 
+	 */
+	@Override
+	public Panel createContent( Object propertiesObj )
+	{
+		FlowPanel mainPanel = null;
+		FlowPanel propertiesPanel;
+
+		mainPanel = new FlowPanel();
+		mainPanel.setStyleName( "teamingDlgBoxContent" );
 		
+		m_inheritPropertiesCb = new CheckBox( GwtTeaming.getMessages().inheritPropertiesLabel() );
+		m_inheritPropertiesCb.addClickHandler( new ClickHandler()
+		{
+			@Override
+			public void onClick( ClickEvent event )
+			{
+				// Enable/disable the property controls based on whether "inherit properties" checkbox is checked.
+				dancePropertyControls();
+			}
+		});
+		mainPanel.add( m_inheritPropertiesCb );
+		
+		propertiesPanel = new FlowPanel();
+		propertiesPanel.addStyleName ( "lpPropertiesPanel" );
+		mainPanel.add( propertiesPanel );
+		
+		// Create a glass panel that will be used to disable the properties control.
+		m_glassPanel = new VibeGlassPanel();
+		m_glassPanel.setVisible( false );
+		propertiesPanel.add( m_glassPanel );
+		
+		m_tabPanel = new TabPanel();
+		m_tabPanel.addStyleName( "vibe-tabPanel" );
+
+		propertiesPanel.add( m_tabPanel );
+
+		// Create a panel to hold misc information
+		{
+			Panel panel;
+			
+			panel = createMiscPanel();
+			m_tabPanel.add( panel, GwtTeaming.getMessages().landingPagePropertiesDlg_MiscTab() );
+		}
+
+		// Create a panel to hold the background information
+		{
+			Panel panel;
+			
+			panel = createBackgroundPanel();
+			m_tabPanel.add( panel, GwtTeaming.getMessages().landingPagePropertiesDlg_BackgroundTab() );
+		}
+		
+		// Create a panel to hold the header information
+		{
+			Panel panel;
+			
+			panel = createHeaderPanel();
+			m_tabPanel.add( panel, GwtTeaming.getMessages().landingPagePropertiesDlg_HeaderTab() );
+		}
+		
+		// Create a panel to hold the border information
+		{
+			Panel panel;
+			
+			panel = createBorderPanel();
+			m_tabPanel.add( panel, GwtTeaming.getMessages().landingPagePropertiesDlg_BorderTab() );
+		}
+
+		// Select the misc tab
+		m_tabPanel.selectTab( 0 );
+
 		return mainPanel;
 	}
 
+	/**
+	 * Create a panel used to hold the controls to set the header properties
+	 */
+	private Panel createHeaderPanel()
+	{
+		FlowPanel panel;
+		FlexTable table;
+		int row;
+		
+		panel = new FlowPanel();
+		
+		table = new FlexTable();
+		table.setCellSpacing( 4 );
+		panel.add( table );
+		
+		row = 0;
+		
+		// Add the controls for the header background color and text color
+		table.setText( row, 0, GwtTeaming.getMessages().headerBackgroundColorLabel() );
+		m_headerBgColorCtrl = new ColorCtrl();
+		table.setWidget( row, 1, m_headerBgColorCtrl );
+		++row;
+
+		table.setText( row, 0, GwtTeaming.getMessages().headerTextColorLabel() );
+		m_headerTextColorCtrl = new ColorCtrl();
+		table.setWidget( row, 1, m_headerTextColorCtrl );
+		++row;
+		
+		return panel;
+	}
+	
+	/**
+	 * Create a panel used to hold the controls to set misc landing page properties
+	 */
+	private Panel createMiscPanel()
+	{
+		FlowPanel panel;
+		FlexTable table;
+		int row;
+		
+		panel = new FlowPanel();
+		
+		table = new FlexTable();
+		table.setCellSpacing( 4 );
+		panel.add( table );
+		
+		row = 0;
+		
+		// Add the controls for hiding masthead, sidebar, footer and menu
+		{
+			m_hideMastheadCB = new CheckBox( GwtTeaming.getMessages().hideMasthead() );
+			table.setWidget( row, 0, m_hideMastheadCB );
+			
+			m_hideSidebarCB = new CheckBox( GwtTeaming.getMessages().hideSidebar() );
+			table.setWidget( row, 1, m_hideSidebarCB );
+			++row;
+			
+			m_hideFooterCB = new CheckBox( GwtTeaming.getMessages().hideFooter() );
+			table.setWidget( row, 0, m_hideFooterCB );
+			
+			m_hideMenuCB = new CheckBox( GwtTeaming.getMessages().hideMenu() );
+			table.setWidget( row, 1, m_hideMenuCB );
+			++row;
+		}
+		
+		// Add the controls for content text color
+		{
+			table = new FlexTable();
+			table.setCellSpacing( 4 );
+			panel.add( table );
+			row = 0;
+			
+			table.setText( row, 0, GwtTeaming.getMessages().contentTextColorLabel() );
+			m_contentTextColorCtrl = new ColorCtrl();
+			table.setWidget( row, 1, m_contentTextColorCtrl );
+			++row;
+		}
+		
+		// Add the controls for landing page style
+		{
+			FlowPanel tmpPanel;
+			
+			table.setText( row, 0, GwtTeaming.getMessages().landingPagePropertiesDlg_PageStyle() );
+			
+			tmpPanel = new FlowPanel();
+			m_lightRB = new RadioButton( "pageStyle", GwtTeaming.getMessages().landingPagePropertiesDlg_PageStyleLight() );
+			tmpPanel.add( m_lightRB );
+			m_darkRB = new RadioButton( "pageStyle", GwtTeaming.getMessages().landingPagePropertiesDlg_PageStyleDark() );
+			tmpPanel.add( m_darkRB );
+			table.setWidget( row, 1, tmpPanel );
+			++row;
+		}
+
+		return panel;
+	}
+	
 	/**
 	 * Enable/disable the controls used to set the various property values based on whether
 	 * the "inherit properties" checkbox is checked.
@@ -457,6 +598,11 @@ public class LandingPagePropertiesDlgBox extends DlgBox
 		
 		// Save the "inherit properties" selection
 		lpProperties.setInheritProperties( m_inheritPropertiesCb.getValue() );
+		
+		lpProperties.setHideMasthead( m_hideMastheadCB.getValue() );
+		lpProperties.setHideSidebar( m_hideSidebarCB.getValue() );
+		lpProperties.setHideFooter( m_hideFooterCB.getValue() );
+		lpProperties.setHideMenu( m_hideMenuCB.getValue() );
 		
 		// Get the selected background image.
 		{
@@ -613,6 +759,11 @@ public class LandingPagePropertiesDlgBox extends DlgBox
 		m_binderId = binderId;
 		
 		m_inheritPropertiesCb.setValue( m_origLPProperties.getInheritProperties() );
+
+		m_hideMastheadCB.setValue( m_origLPProperties.getHideMasthead() );
+		m_hideSidebarCB.setValue( m_origLPProperties.getHideSidebar() );
+		m_hideFooterCB.setValue( m_origLPProperties.getHideFooter() );
+		m_hideMenuCB.setValue( m_origLPProperties.getHideMenu() );
 		
 		// Issue an ajax request to get the list of file attachments for this binder.
 		// When we get the response, updateListOfFileAttachments() will be called.
@@ -672,6 +823,7 @@ public class LandingPagePropertiesDlgBox extends DlgBox
 				/**
 				 * This method gets called when user user presses ok in the "Add File Attachment" dialog.
 				 */
+				@Override
 				public boolean editSuccessful( Object obj )
 				{
 					m_addFileAttachmentDlg.hide();
@@ -704,6 +856,7 @@ public class LandingPagePropertiesDlgBox extends DlgBox
 				/**
 				 * This method gets called when the user presses cancel in the "Add file attachment" dialog.
 				 */
+				@Override
 				public boolean editCanceled()
 				{
 					m_addFileAttachmentDlg.hide();
@@ -728,6 +881,7 @@ public class LandingPagePropertiesDlgBox extends DlgBox
 			/**
 			 * 
 			 */
+			@Override
 			public void setPosition( int offsetWidth, int offsetHeight )
 			{
 				m_addFileAttachmentDlg.setPopupPosition( x - offsetWidth + 100, y );

@@ -1724,11 +1724,22 @@ public interface GwtTeamingMessages extends Messages
 	String contentTextColorLabel();
 	String headerBackgroundColorLabel();
 	String headerTextColorLabel();
+	String hideFooter();
+	String hideMasthead();
+	String hideMenu();
+	String hideSidebar();
 	String inheritPropertiesLabel();
 	String invalidBorderColor( String color );
 	String invalidContentTextColor( String color );
 	String invalidHeaderBgColor( String color );
 	String invalidHeaderTextColor( String color );
+	String landingPagePropertiesDlg_BackgroundTab();
+	String landingPagePropertiesDlg_BorderTab();
+	String landingPagePropertiesDlg_HeaderTab();
+	String landingPagePropertiesDlg_MiscTab();
+	String landingPagePropertiesDlg_PageStyle();
+	String landingPagePropertiesDlg_PageStyleDark();
+	String landingPagePropertiesDlg_PageStyleLight();
 
 	// Strings used in the Novell Desktop App dialog (File Sync)
 	String fileSyncAppAllowAccess( String productName );

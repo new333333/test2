@@ -52,9 +52,6 @@ public class ConfigData
 	private transient TopLevelConfig m_topLevelConfig;	// Holds all of the ConfigItems that make up the landing page.
 	private String m_binderId;
 	private String m_configStr;
-	private boolean m_hideMasthead;
-	private boolean m_hideNavPanel;
-	private boolean m_hideFooter;
 	private boolean m_isPreviewMode;
 	private GwtLandingPageProperties m_lpProperties;
 	private String m_lpStyle;		// The current values for this are mashup_dark.css or mashup.css
@@ -463,7 +460,7 @@ public class ConfigData
 	 */
 	public boolean getHideFooter()
 	{
-		return m_hideFooter;
+		return m_lpProperties.getHideFooter();
 	}
 	
 	
@@ -472,7 +469,7 @@ public class ConfigData
 	 */
 	public boolean getHideMasthead()
 	{
-		return m_hideMasthead;
+		return m_lpProperties.getHideMasthead();
 	}
 	
 	
@@ -489,7 +486,7 @@ public class ConfigData
 	 */
 	public boolean getHideNavPanel()
 	{
-		return m_hideNavPanel;
+		return m_lpProperties.getHideSidebar();
 	}
 	
 	/**
@@ -552,10 +549,7 @@ public class ConfigData
 
 		m_binderId = null;
 		m_configStr = null;
-		m_hideFooter = false;
-		m_hideMasthead = false;
 		m_lpProperties = new GwtLandingPageProperties();
-		m_hideNavPanel = false;
 		m_isPreviewMode = false;
 	}
 	
@@ -629,33 +623,9 @@ public class ConfigData
 	/**
 	 * 
 	 */
-	public void setHideFooter( boolean hideFooter )
-	{
-		m_hideFooter = hideFooter;
-	}
-	
-	/**
-	 * 
-	 */
-	public void setHideMasthead( boolean hideMasthead )
-	{
-		m_hideMasthead = hideMasthead;
-	}
-	
-	/**
-	 * 
-	 */
 	public void setHideMenu( boolean hideMenu )
 	{
 		m_lpProperties.setHideMenu( hideMenu );
-	}
-	
-	/**
-	 * 
-	 */
-	public void setHideNavPanel( boolean hideNavPanel )
-	{
-		m_hideNavPanel = hideNavPanel;
 	}
 	
 	/**

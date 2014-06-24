@@ -157,27 +157,12 @@ function addLandingPageEditorDataToFormOnSubmit()
   <table style="padding: 20px 0px 20px 0px;">
   	<tr>
 		<td style="vertical-align:top; padding-right: 40px;">
+		<% if (!(GwtUIHelper.isGwtUIActive(request))) { %>
 			<span class="ss_bold">${property_caption}</span>
+		<% } %>
 		
 			<!-- This div holds the checkboxes for hiding/showing the various parts of the page, masthead, sidebar, etc. -->
 			<div style="padding:6px 0px 6px 20px;">
-				<div class="ss_nowrap">
-				  <input type="checkbox" name="${ss_mashupPropertyName}__hideMasthead"
-					id="${ss_mashupPropertyName}__hideMasthead"
-					<c:if test="${ss_mashupHideMasthead}">checked</c:if> >
-				  <label for="${ss_mashupPropertyName}__hideMasthead">
-					<span class="ss_labelRight ss_nowrap"><ssf:nlt tag="mashup.hideMasthead"/></span>
-				  </label>
-				</div>
-				<div class="ss_nowrap">
-				  <input type="checkbox" name="${ss_mashupPropertyName}__hideSidebar"
-					id="${ss_mashupPropertyName}__hideSidebar"
-					<c:if test="${ss_mashupHideSidebar}">checked</c:if> >
-				  <label for="${ss_mashupPropertyName}__hideSidebar">
-					<span class="ss_labelRight ss_nowrap"><ssf:nlt tag="mashup.hideSidebar"/></span>
-				  </label>
-				</div>
-		
 		<% if (!(GwtUIHelper.isGwtUIActive(request))) { %>
 				<div>
 				  <input type="checkbox" name="${ss_mashupPropertyName}__hideToolbar"
@@ -188,24 +173,6 @@ function addLandingPageEditorDataToFormOnSubmit()
 				  </label>
 				</div>
 		<% } %>
-				<div class="ss_nowrap">
-				  <input type="checkbox" name="${ss_mashupPropertyName}__hideFooter"
-					id="${ss_mashupPropertyName}__hideFooter"
-					<c:if test="${ss_mashupHideFooter}">checked</c:if> >
-				  <label for="${ss_mashupPropertyName}__hideFooter">
-					<span class="ss_labelRight"><ssf:nlt tag="mashup.hideFooter"/></span>
-				  </label>
-				</div>
-		
-				<div class="ss_nowrap">
-				  <input type="checkbox" name="${ss_mashupPropertyName}__hideMenu"
-					id="${ss_mashupPropertyName}__hideMenu"
-					<c:if test="${ss_mashupHideMenu}">checked</c:if> >
-				  <label for="${ss_mashupPropertyName}__hideMenu">
-					<span class="ss_labelRight"><ssf:nlt tag="mashup.hideMenu"/></span>
-				  </label>
-				</div>
-		
 		<% if (!(GwtUIHelper.isGwtUIActive(request))) { %>
 				<div>
 				  <input type="checkbox" name="${ss_mashupPropertyName}__showBranding"
@@ -233,22 +200,6 @@ function addLandingPageEditorDataToFormOnSubmit()
 				</div>
 		<% } %>
 		    </div>
-	</td>
-	<td style="vertical-align:top;">	
-		  <span class="ss_labelAbove" style="padding-top: 0px;"><ssf:nlt tag="mashup.style"/></span>
-		  <div class="margintop2 marginleft1">
-			  <input type="radio" name="${ss_mashupPropertyName}__style" value="mashup.css"
-				id="${ss_mashupPropertyName}__style"
-				<c:if test="${ss_mashupStyle == 'mashup.css'}">checked</c:if> >
-				<span class="ss_labelRight"><ssf:nlt tag="mashup.style_light"/></span>
-		  </div>
-		  <div class="margintop1 marginleft1">
-			  <input type="radio" name="${ss_mashupPropertyName}__style" value="mashup_dark.css"
-				id="${ss_mashupPropertyName}__style_dark"
-				<c:if test="${ss_mashupStyle == 'mashup_dark.css'}">checked</c:if> >
-				<span class="ss_labelRight"><ssf:nlt tag="mashup.style_dark"/></span>
-		  </div>
-    </div>
 	</td>
 	</tr>
   </table>	
