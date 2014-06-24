@@ -2524,6 +2524,14 @@ public class GwtMainPage extends ResizeComposite
 			// Hide any popup entry iframe divs...
 			GwtClientHelper.jsHideEntryPopupDiv();
 			
+			// ...if we have an activity stream control...
+			if ( null != m_activityStreamCtrl )
+			{
+				// ...stop if from updating while we're in the
+				// ...administration console...
+				m_activityStreamCtrl.cancelCheckForChangesTimer();
+			}
+			
 			// ...and show the admin control.
 			showAdminControl( event );
 		}
@@ -2553,6 +2561,14 @@ public class GwtMainPage extends ResizeComposite
 		
 		// Hide any popup entry iframe divs...
 		GwtClientHelper.jsHideEntryPopupDiv();
+
+		// ...if we have an activity stream control...
+		if ( null != m_activityStreamCtrl )
+		{
+			// ...stop if from updating while we're in the
+			// ...administration console...
+			m_activityStreamCtrl.cancelCheckForChangesTimer();
+		}
 		
 		// ...and show the admin control.
 		showAdminControl( null );
