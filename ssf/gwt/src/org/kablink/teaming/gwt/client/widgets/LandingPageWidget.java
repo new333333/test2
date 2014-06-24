@@ -142,7 +142,14 @@ public class LandingPageWidget  extends VibeWidget
 			
 			// Handle the various landing page options such as hiding the masthead, hiding the menu, etc.
 			if ( binderId != null )
-				GwtTeaming.getMainPage().handleLandingPageOptions( binderId, configData.getHideMasthead(), configData.getHideNavPanel(), false, configData.getHideMenu() );
+			{
+				GwtTeaming.getMainPage().handleLandingPageOptions(
+																binderId,
+																configData.getHideMasthead(),
+																configData.getHideNavPanel(),
+																false,
+																configData.getHideMenu() );
+			}
 		}
 		
 		// Is a background color specified?
