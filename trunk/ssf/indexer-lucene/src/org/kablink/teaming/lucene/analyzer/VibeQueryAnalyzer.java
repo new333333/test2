@@ -56,6 +56,7 @@ public class VibeQueryAnalyzer extends VibeAnalyzer {
 	private static boolean queryFallbackToLegacy;
 	private static boolean queryTokenDecomposition = false; // applicable only if queryUseStandard is true
 	private static boolean queryUseStandard;
+	private static boolean queryStemmingInAdditionToOriginal;
 
 	protected VibeQueryAnalyzer(Set stopWords,
 			String stemmerName, boolean foldToAscii, boolean decomposeToken, boolean useStandard) {
@@ -89,7 +90,7 @@ public class VibeQueryAnalyzer extends VibeAnalyzer {
 		if (stopSet != null && stopSet.size() > 0)
 			result = new StopFilter(true, result, stopSet);
 		if(stemmerName != null && !stemmerName.equals(""))
-			result = new VibeSnowballFilter(result, stemmerName, false);
+			result = new VibeSnowballFilter(result, stemmerName, queryStemmingInAdditionToOriginal);
 		return result;
 	}
 
@@ -113,7 +114,7 @@ public class VibeQueryAnalyzer extends VibeAnalyzer {
 			if (stopSet != null && stopSet.size() > 0)
 				streams.result = new StopFilter(true, (streams.result == null)? streams.source : streams.result, stopSet);
 			if(stemmerName != null && !stemmerName.equals(""))
-				streams.result = new VibeSnowballFilter((streams.result == null)? streams.source : streams.result, stemmerName, false);
+				streams.result = new VibeSnowballFilter((streams.result == null)? streams.source : streams.result, stemmerName, queryStemmingInAdditionToOriginal);
 			setPreviousTokenStream(streams);
 		} else {
 			streams.source.reset(reader);
@@ -173,6 +174,12 @@ public class VibeQueryAnalyzer extends VibeAnalyzer {
 				logger.info("Stemming is disabled for searching");
 			}
 			
+			queryStemmingInAdditionToOriginal = PropsUtil.getBoolean("lucene.searching.stemming.in.addition.to.original", true);
+			if(queryStemmingInAdditionToOriginal)
+				logger.info("Stemming is in addition to the original for searching");
+			else
+				logger.info("Stemming is in place of the original for searching");
+							
 			queryFoldToAscii = PropsUtil.getBoolean("lucene.searching.asciifolding.enable", true);
 			logger.info("ASCII folding is " + ((queryFoldToAscii)? "enabled":"disabled") + " for searching");
 			
