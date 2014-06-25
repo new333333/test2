@@ -143,7 +143,12 @@ function ss_getOperationStatus()
 	}
 }
 
+var alreadySubmitted = false;
 function ss_submitIndexingForm( indexing, formName, callbackName ) {
+	if (alreadySubmitted) {
+		//Don't ever resubmit this form
+		return false;
+	}
 	var formObj = document.forms[formName];
 	formObj.btnClicked.value = ss_buttonSelected;
 	if (ss_buttonSelected == 'okBtn') {
@@ -179,8 +184,15 @@ function ss_submitIndexingForm( indexing, formName, callbackName ) {
 		}
 		
 		formObj.action = '<ssf:url adapter="true" portletName="ss_administration" action="configure_index" actionUrl="true"></ssf:url>&ss_statusId='+ss_indexStatusTicket
+		alreadySubmitted = true;
 		ss_submitFormViaAjax(formName, callbackName );
 		ss_indexTimeout = setTimeout(ss_getOperationStatus, 1000);
+		for (var i = 0; i < formObj.length; i++) {
+			if (formObj.elements[i].name = "okBtn") {
+				formObj.elements[i].disabled = "true";
+			}
+		}
+
 		return false;
 	} else {
 		if(ss_indexTimeout) { clearTimeout(ss_indexTimeout); }
