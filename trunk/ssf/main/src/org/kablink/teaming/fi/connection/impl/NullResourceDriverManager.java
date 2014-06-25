@@ -138,4 +138,9 @@ public class NullResourceDriverManager implements ResourceDriverManager {
 	@Override
 	public void informResourceDriverChangeFromThisNode() {
 	}
+	
+	@Override
+	public List<ResourceDriver> getAllowedResourceDrivers() {
+		return null;
+	}
 }

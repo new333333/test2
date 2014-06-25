@@ -41,11 +41,9 @@ import org.kablink.teaming.util.SpringContextUtil;
 
 public class ResourceDriverManagerUtil {
 
-	/*
 	public static List<ResourceDriver> getAllowedResourceDrivers() {
 		return getResourceDriverManager().getAllowedResourceDrivers();
 	}
-	*/
 	
 	public static ResourceDriver findResourceDriver(String driverName) {
 		return getResourceDriverManager().getDriver(driverName);
