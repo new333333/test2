@@ -317,6 +317,12 @@ function <%= wsTreeName %>_showId(id, obj, action) {
 	 value="<ssf:nlt tag="button.close" text="Close"/>" onClick="return handleCloseBtn();">
 	</div>
 </c:if>
+<c:if test="${!ssSearchSafeToIndex && empty ssSearchNodes}">
+	<div class="margintop3 ss_buttonBarRight">
+	<input type="submit" class="ss_submit" name="closeBtn" 
+	 value="<ssf:nlt tag="button.close" text="Close"/>" onClick="return handleCloseBtn();">
+	</div>
+</c:if>
 <input type="hidden" name="btnClicked"/>
 </form>
 <br>
