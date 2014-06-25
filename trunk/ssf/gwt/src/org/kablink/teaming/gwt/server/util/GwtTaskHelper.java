@@ -133,6 +133,7 @@ import com.sitescape.team.domain.Statistics;
  *
  * @author drfoster@novell.com
  */
+@SuppressWarnings("deprecation")
 public class GwtTaskHelper {
 	protected static Log m_logger = LogFactory.getLog(GwtTaskHelper.class);
 
@@ -1893,7 +1894,7 @@ public class GwtTaskHelper {
 				if (null == searchFilter) {
 					User user = GwtServerHelper.getCurrentUser();
 					UserProperties userFolderProperties = bs.getProfileModule().getUserProperties(user.getId(), binder.getId());
-					GwtServerHelper.addSearchFiltersToOptions(bs, binder, userFolderProperties, true, options);
+					BinderHelper.addSearchFiltersToOptions(bs, binder, userFolderProperties, true, options);
 				}
 			}
 	

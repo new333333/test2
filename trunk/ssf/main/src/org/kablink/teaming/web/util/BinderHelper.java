@@ -138,6 +138,7 @@ import org.kablink.teaming.portletadapter.support.PortletAdapterUtil;
 import org.kablink.teaming.runas.RunasCallback;
 import org.kablink.teaming.runas.RunasTemplate;
 import org.kablink.teaming.search.SearchUtils;
+import org.kablink.teaming.search.filter.SearchFilter;
 import org.kablink.teaming.search.filter.SearchFilterRequestParser;
 import org.kablink.teaming.search.filter.SearchFilterToMapConverter;
 import org.kablink.teaming.security.AccessControlException;
@@ -311,7 +312,7 @@ public class BinderHelper {
 			displayType = getDisplayType(request);
 		}
 			
-		BinderHelper.getBinderAccessibleUrl(bs, null, null, request, response, model);
+		getBinderAccessibleUrl(bs, null, null, request, response, model);
 
 		if (FORUM_PORTLET.equals(displayType)) {
 			//This is the portlet view; get the configured list of folders to show
@@ -495,11 +496,11 @@ public class BinderHelper {
 			model.put(WebKeys.LOGIN_POST_URL, loginPostUrl);
 			model.put(WebKeys.IS_BINDER_MIRRORED_FOLDER, false);
 			if (binderId == null) {
-				BinderHelper.getBinderAccessibleUrl(bs, null, null, request, response, model);
+				getBinderAccessibleUrl(bs, null, null, request, response, model);
 			} else {
 				try {
 					Binder binder = bs.getBinderModule().getBinder(binderId);
-					BinderHelper.getBinderAccessibleUrl(bs, binder, null, request, response, model);
+					getBinderAccessibleUrl(bs, binder, null, request, response, model);
 					if (binder instanceof Folder) {
 						model.put(WebKeys.IS_BINDER_MIRRORED_FOLDER, ((Folder)binder).isMirrored());
 					}
@@ -509,7 +510,7 @@ public class BinderHelper {
 					}
 				} catch(Exception e) {
 					logger.debug("BinderHelper.setupStandardBeans(Exception:  '" + MiscUtil.exToString(e) + "')");
-					BinderHelper.getBinderAccessibleUrl(bs, null, null, request, response, model);
+					getBinderAccessibleUrl(bs, null, null, request, response, model);
 				}
 			}
 		}
@@ -531,7 +532,7 @@ public class BinderHelper {
         		model.put(WebKeys.USER_PROPERTIES_OBJ, userProperties);
     		}
         }
-		model.put(WebKeys.PORTAL_URL, BinderHelper.getPortalUrl(bs));
+		model.put(WebKeys.PORTAL_URL, getPortalUrl(bs));
 		if (binderId != null) {
 			model.put(WebKeys.BINDER_ID, binderId.toString());
 			if (user != null) {
@@ -684,7 +685,7 @@ public class BinderHelper {
 
 	protected static ModelAndView setupMobilePortlet(AllModulesInjected bs, RenderRequest request, 
 			RenderResponse response, PortletPreferences prefs, Map model, String view) {
-		view = BinderHelper.setupMobileFrontPageBeans(bs, request, response, model, view);
+		view = setupMobileFrontPageBeans(bs, request, response, model, view);
 
 		return new ModelAndView(view, model);
 	}
@@ -720,7 +721,7 @@ public class BinderHelper {
 		Binder topBinder = bs.getWorkspaceModule().getTopWorkspace();
 		Binder myWorkspaceBinder = bs.getBinderModule().getBinder(user.getWorkspaceId());
 		Binder binder = bs.getBinderModule().getBinder(binderId);
-		BinderHelper.setupStandardBeans(bs, request, response, model, binderId, "ss_mobile");
+		setupStandardBeans(bs, request, response, model, binderId, "ss_mobile");
 		model.put(WebKeys.BINDER, binder);
 		model.put(WebKeys.TOP_WORKSPACE, topBinder);
 		
@@ -748,7 +749,7 @@ public class BinderHelper {
 				type.equals(ObjectKeys.MOBILE_WHATS_NEW_VIEW_FAVORITES) ||
 				type.equals(ObjectKeys.MOBILE_WHATS_NEW_VIEW_TEAMS) ||
 				type.equals(ObjectKeys.MOBILE_WHATS_NEW_VIEW_SITE)) {
-			BinderHelper.setupWhatsNewBinderBeans(bs, myWorkspaceBinder, topBinder.getId(), model, 
+			setupWhatsNewBinderBeans(bs, myWorkspaceBinder, topBinder.getId(), model, 
 					String.valueOf(pageNumber), Integer.valueOf(pageSize), type);
 		} else if (type.equals(ObjectKeys.MOBILE_WHATS_NEW_VIEW_MICROBLOG)) {
 			RelevanceDashboardHelper.setupMiniblogsBean(bs, myWorkspaceBinder, model);
@@ -778,7 +779,7 @@ public class BinderHelper {
 		addActionsRecentPlaces(request, actions, user.getWorkspaceId());
 		addActionsSpacer(request, actions);
 		addActionsLogout(request, actions);
-		BinderHelper.addActionsFullView(bs, request, actions, binderId, null);
+		addActionsFullView(bs, request, actions, binderId, null);
 		model.put("ss_actions", actions);
 		
 		return view;
@@ -794,7 +795,7 @@ public class BinderHelper {
 			Binder binder = bs.getBinderModule().getBinder(binderId);
 			Tabs.TabEntry tab;
 			try {
-				tab = BinderHelper.initTabs(request, binder);
+				tab = initTabs(request, binder);
 				model.put(WebKeys.TABS, tab.getTabs());		
 			} catch (Exception e1) {}
 		} catch(Exception e) {}
@@ -805,7 +806,7 @@ public class BinderHelper {
 		}
 		model.put("ss_UserQueries", userQueries);
 
-		Map accessControlMap = BinderHelper.getAccessControlMapBean(model);
+		Map accessControlMap = getAccessControlMapBean(model);
 		ProfileBinder profileBinder = null;
 		try {
 			profileBinder = bs.getProfileModule().getProfileBinder();
@@ -885,7 +886,7 @@ public class BinderHelper {
 		try {
 			if (binderId != null) binder = bs.getBinderModule().getBinder(binderId);
 		} catch(AccessControlException e) {}
-		BinderHelper.setupStandardBeans(bs, request, response, model, binderId, "ss_forum");
+		setupStandardBeans(bs, request, response, model, binderId, "ss_forum");
 		model.put(WebKeys.BINDER, binder);
 		model.put(WebKeys.TOP_WORKSPACE, topBinder);
 
@@ -911,7 +912,7 @@ public class BinderHelper {
 		if (type.equals(ObjectKeys.MOBILE_WHATS_NEW_VIEW_TRACKED) || 
 				type.equals(ObjectKeys.MOBILE_WHATS_NEW_VIEW_TEAMS) || 
 				type.equals(ObjectKeys.MOBILE_WHATS_NEW_VIEW_SITE)) {
-			List<Long> tbs = BinderHelper.setupWhatsNewBinderBeans(bs, myWorkspaceBinder, topBinderId, model, 
+			List<Long> tbs = setupWhatsNewBinderBeans(bs, myWorkspaceBinder, topBinderId, model, 
 					String.valueOf(pageNumber), Integer.valueOf(pageSize), type);
 			for (Long bId : tbs) {
 				if (!trackedBinders.contains(bId)) {
@@ -1072,7 +1073,7 @@ public class BinderHelper {
 		if(MiscUtil.isNativeMobileApp(request)) 
 			return;
 		
-		BinderHelper.addActionsSpacer(request, actions);
+		addActionsSpacer(request, actions);
 		
 		Map action = new HashMap();
 		action.put("title", NLT.get("logout"));
@@ -1493,7 +1494,7 @@ public class BinderHelper {
 		if (replies != null)  {
 			for (int i=0; i<replies.size(); i++) {
 				FolderEntry reply = (FolderEntry)replies.get(i);
-				Map accessControlEntryMap = BinderHelper.getAccessControlEntityMapBean(model, reply);
+				Map accessControlEntryMap = getAccessControlEntityMapBean(model, reply);
 				boolean reserveAccessCheck = false;
 				boolean isUserBinderAdministrator = false;
 				boolean isEntryReserved = false;
@@ -3419,7 +3420,7 @@ public class BinderHelper {
 	public static void setAccessControlForAttachmentList(AllModulesInjected bs, 
 			Map model, FolderEntry entry, User user) {
 
-		Map accessControlEntryMap = BinderHelper.getAccessControlEntityMapBean(model, entry);
+		Map accessControlEntryMap = getAccessControlEntityMapBean(model, entry);
 
 		boolean reserveAccessCheck = false;
 		boolean isUserBinderAdministrator = false;
@@ -3944,14 +3945,14 @@ public class BinderHelper {
 		extendEntriesInfo(entries, folders);
 
 		// TODO check and make it better, copied from SearchController
-		List entryCommunityTags = BinderHelper.sortCommunityTags(entries);
-		List entryPersonalTags = BinderHelper.sortPersonalTags(entries);
-		int intMaxHitsForCommunityTags = BinderHelper.getMaxHitsPerTag(entryCommunityTags);
-		int intMaxHitsForPersonalTags = BinderHelper.getMaxHitsPerTag(entryPersonalTags);
+		List entryCommunityTags = sortCommunityTags(entries);
+		List entryPersonalTags = sortPersonalTags(entries);
+		int intMaxHitsForCommunityTags = getMaxHitsPerTag(entryCommunityTags);
+		int intMaxHitsForPersonalTags = getMaxHitsPerTag(entryPersonalTags);
 		int intMaxHits = intMaxHitsForCommunityTags;
 		if (intMaxHitsForPersonalTags > intMaxHitsForCommunityTags) intMaxHits = intMaxHitsForPersonalTags;
-		entryCommunityTags = BinderHelper.rateCommunityTags(entryCommunityTags, intMaxHits);
-		entryPersonalTags = BinderHelper.ratePersonalTags(entryPersonalTags, intMaxHits);
+		entryCommunityTags = rateCommunityTags(entryCommunityTags, intMaxHits);
+		entryPersonalTags = ratePersonalTags(entryPersonalTags, intMaxHits);
 
 		model.put(WebKeys.FOLDER_ENTRYTAGS, entryCommunityTags);
 		model.put(WebKeys.FOLDER_ENTRYPERSONALTAGS, entryPersonalTags);
@@ -4819,19 +4820,45 @@ public class BinderHelper {
 		List applications = (List) searchResults.get(ObjectKeys.SEARCH_ENTRIES);
 		return applications;
 	}
-	
+
+	/**
+	 * Returns the ID of the next/previous item in the given folder.
+	 * 
+	 * @param bs
+	 * @param folder
+	 * @param entryId
+	 * @param next
+	 * @param options
+	 * 
+	 * @return
+	 */
 	public static Long getNextPrevEntry(AllModulesInjected bs, Folder folder, Long entryId, boolean next, Map options) {
+		// If we don't have a folder...
 		if (folder == null) {
+			// ...there can be no next.
 			return null; 
 		}
-		if (null == options) {
-			options = new HashMap();
-		}
-      	options.put(ObjectKeys.SEARCH_MAX_HITS, Integer.valueOf(ObjectKeys.SEARCH_MAX_HITS_FOLDER_ENTRIES));
-      	options.put(ObjectKeys.SEARCH_OFFSET, Integer.valueOf(0));
+
+		// We need to provide the next/previous in the context of the
+		// folder's current filter.  If we weren't given the filter as
+		// part of the options Map, read it and add it there.  
 		User user = RequestContextHolder.getRequestContext().getUser();
 		UserProperties userFolderProperties = bs.getProfileModule().getUserProperties(user.getId(), folder.getId());
-      	BinderHelper.initSortOrder(bs, userFolderProperties, options, BinderHelper.getViewType(bs, folder.getId()));
+		Document searchFilter;
+		if (null == options) {
+			options = new HashMap();
+			searchFilter = null;
+		}
+		else {
+			searchFilter = ((Document) options.get(ObjectKeys.SEARCH_SEARCH_FILTER));
+		}
+		if (null == searchFilter) {
+			addSearchFiltersToOptions(bs, folder, userFolderProperties, true, options);
+		}
+		
+      	options.put(ObjectKeys.SEARCH_MAX_HITS, Integer.valueOf(ObjectKeys.SEARCH_MAX_HITS_FOLDER_ENTRIES));
+      	options.put(ObjectKeys.SEARCH_OFFSET, Integer.valueOf(0));
+      	initSortOrder(bs, userFolderProperties, options, getViewType(bs, folder.getId()));
 
       	Map searchResults = bs.getFolderModule().getEntries(folder.getId(), options);
 		List folderEntries = (List) searchResults.get(ObjectKeys.SEARCH_ENTRIES);
@@ -4858,6 +4885,181 @@ public class BinderHelper {
 	
 	public static Long getNextPrevEntry(AllModulesInjected bs, Folder folder, Long entryId, boolean next) {
 		return getNextPrevEntry(bs, folder, entryId, next, null);
+	}
+
+	/**
+	 * Adds the user's search filters as a single Document to an
+	 * options Map.
+	 * 
+	 * @param bs
+	 * @param binder
+	 * @param userFolderProperties
+	 * @param unescapeName
+	 * @param options
+	 */
+	public static void addSearchFiltersToOptions(AllModulesInjected bs, Binder binder, UserProperties userFolderProperties, boolean unescapeName, Map options) {
+		// Does the user have any search filters defined on this binder?
+		Document searchFilters = getBinderSearchFilter(bs, binder, userFolderProperties, unescapeName);
+		if (null != searchFilters) {
+			// Yes!  Stuff them into the options Map.
+			options.put(ObjectKeys.SEARCH_SEARCH_FILTER, searchFilters);
+		}
+	}
+	
+	/**
+	 * Returns the user's search filters as a single Document.
+	 * 
+	 * @param bs
+	 * @param binder
+	 * @param userFolderProperties
+	 * @param unescapeName
+	 */
+	public static Document getBinderSearchFilter(AllModulesInjected bs, Binder binder, UserProperties userFolderProperties, boolean unescapeName) {
+		// Convert any existing V1 filters.
+		convertV1Filters(bs, userFolderProperties);
+
+		// Does the user have any filters selected on this folder?
+		List<String> currentFilters = getCurrentUserFilters(userFolderProperties);
+		if (!(currentFilters.isEmpty())) {
+			// Yes!  Get the personal and global filters from the
+			// binder properties.
+			Map personalFilters = ((Map) userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_SEARCH_FILTERS));
+			Map globalFilters   = ((Map) binder.getProperty(              ObjectKeys.BINDER_PROPERTY_FILTERS)     );
+
+			// Scan the user's filters...
+			SearchFilter searchFilter = new SearchFilter(true);
+			for (String filterSpec: currentFilters) {
+				// ...extracting the name...
+				String filterName  = getFilterNameFromSpec(filterSpec);
+				if (unescapeName) {
+					filterName = MiscUtil.replace(filterName, "+", " ");
+				}
+				
+				// ...scope...
+				String  filterScope = getFilterScopeFromSpec(filterSpec);
+				boolean isGlobal    = filterScope.equals(ObjectKeys.USER_PROPERTY_USER_FILTER_GLOBAL);
+				
+				// ...and filter XML for each.
+				String searchFilterXml;
+				if (isGlobal)
+				     searchFilterXml = ((String) globalFilters.get(  filterName));
+				else searchFilterXml = ((String) personalFilters.get(filterName));
+
+				// Do we have XML for this filter?
+				if (MiscUtil.hasString(searchFilterXml)) {
+					Document searchFilterDoc;
+					try {
+						// Yes!  Parse it and append it to the search
+						// filter.
+						searchFilterDoc = DocumentHelper.parseText(searchFilterXml);
+						searchFilter.appendFilter(searchFilterDoc);
+					}
+					
+					catch (Exception ignore) {
+						// Log the exception...
+						logger.error("BinderHelper.addSearchFiltersToOptions(Exception:  '" + MiscUtil.exToString(ignore) + "')", ignore);
+						
+						// ...get rid of the bogus filter.
+						if (isGlobal) {
+							globalFilters.remove(  searchFilterXml);
+							bs.getBinderModule().setProperty(
+								binder.getId(),
+								ObjectKeys.BINDER_PROPERTY_FILTERS,
+								globalFilters);
+						}
+						
+						else {
+							personalFilters.remove(searchFilterXml);
+							bs.getProfileModule().setUserProperty(
+								userFolderProperties.getId().getPrincipalId(),
+								userFolderProperties.getId().getBinderId(),
+								ObjectKeys.USER_PROPERTY_SEARCH_FILTERS,
+								personalFilters);
+						}
+					}
+				}
+			}
+
+			// If we get here, searchFilter contains the combined
+			// filters that the user has selected.  Stuff the Document
+			// into the options Map.
+			return searchFilter.getFilter();
+		}
+		
+		else {
+			return null;
+		}
+	}
+	
+	/*
+	 * Given a filter specification, returns the name component.
+	 */
+	private static String getFilterNameFromSpec(String filterSpec) {
+		String reply = null;
+		if (null != filterSpec) {
+			int cPos = filterSpec.indexOf(':');
+			if (0 < cPos) {
+				reply = filterSpec.substring(cPos + 1);
+			}
+		}
+		return reply;
+	}
+	
+	/*
+	 * Given a filter specification, returns the scope component.
+	 */
+	private static String getFilterScopeFromSpec(String filterSpec) {
+		String reply = null;
+		if (null != filterSpec) {
+			int cPos = filterSpec.indexOf(':');
+			if (0 < cPos) {
+				reply = filterSpec.substring(0, cPos);
+			}
+		}
+		return reply;
+	}
+	
+	/*
+	 * Constructs a string used as a filter specification that combines
+	 * for the filter's name and scope.
+	 */
+	private static String buildFilterSpec(String filterName, String filterScope) {
+		return (filterScope + ":" + filterName);
+	}
+	
+	/**
+	 * Returns a List<String> of the user's current filters from their
+	 * properties on a folder.
+	 * 
+	 * @param userFolderProperties
+	 * 
+	 * @return
+	 */
+	public static List<String> getCurrentUserFilters(UserProperties userFolderProperties, boolean unescapeName) {
+		List<String> currentFilters = ((List<String>) userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_USER_FILTERS));
+		if (null == currentFilters) {
+			currentFilters = new ArrayList<String>();
+		}
+		String filterName = ((String) userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_USER_FILTER));
+		if (MiscUtil.hasString(filterName)) {
+			String filterScope = ((String) userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_USER_FILTER_SCOPE));
+			if (!(MiscUtil.hasString(filterScope))) {
+				filterScope = ObjectKeys.USER_PROPERTY_USER_FILTER_PERSONAL;
+			}
+			if (unescapeName) {
+				filterName = MiscUtil.replace(filterName, "+", " ");
+			}
+			String filterSpec = buildFilterSpec(filterName, filterScope);
+			if (!(currentFilters.contains(filterSpec))) {
+				currentFilters.add(filterSpec);
+			}
+		}
+		return currentFilters;
+	}
+	
+	public static List<String> getCurrentUserFilters(UserProperties userFolderProperties) {
+		// Always use the initial form of the method.
+		return getCurrentUserFilters(userFolderProperties, false);
 	}
 
 	public static void initSortOrder(AllModulesInjected bs, 
@@ -5505,7 +5707,7 @@ public class BinderHelper {
 		if (binder.getEntityType().name().equals(EntityType.workspace.name())) {
 			// Yes!  Is it the guest user's workspace?
 			Long binderId = binder.getId();
-			if (BinderHelper.isBinderGuestWorkspaceId(binderId)) {
+			if (isBinderGuestWorkspaceId(binderId)) {
 				// Yes!  Return true.
 				reply = true;
 			}

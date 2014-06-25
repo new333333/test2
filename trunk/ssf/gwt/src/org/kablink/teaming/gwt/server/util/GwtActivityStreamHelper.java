@@ -1527,7 +1527,7 @@ public class GwtActivityStreamHelper {
 			Folder			folder               = bs.getFolderModule().getFolder(sfId);
 			User			user                 = GwtServerHelper.getCurrentUser();
 			UserProperties	userFolderProperties = bs.getProfileModule().getUserProperties(user.getId(), sfId);
-			Document searchFilters = GwtServerHelper.getBinderSearchFilter(bs, folder, userFolderProperties, true);
+			Document searchFilters = BinderHelper.getBinderSearchFilter(bs, folder, userFolderProperties, true);
 			if (null != searchFilters) {
 				// Yes!  Add them to the search filter.
 				sf.appendFilter(searchFilters);

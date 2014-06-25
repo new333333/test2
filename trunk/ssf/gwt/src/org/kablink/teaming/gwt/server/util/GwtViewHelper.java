@@ -3184,7 +3184,7 @@ public class GwtViewHelper {
 			
 			// Store the current filters, if any, that the user
 			// currently has selected on this binder.
-			reply.setCurrentFilters(GwtServerHelper.getCurrentUserFilters(userBinderProperties, true));
+			reply.setCurrentFilters(BinderHelper.getCurrentUserFilters(userBinderProperties, true));
 
 			// Store a URL to turn off filtering on the binder.
 			url = new AdaptedPortletURL(request, "ss_forum", true);
@@ -5667,7 +5667,7 @@ public class GwtViewHelper {
 	@SuppressWarnings("unchecked")
 	private static Map getFolderSearchFilter(AllModulesInjected bs, Binder binder, UserProperties userFolderProperties, String searchTitle) {
 		Map result = new HashMap();
-		GwtServerHelper.addSearchFiltersToOptions(bs, binder, userFolderProperties, true, result);
+		BinderHelper.addSearchFiltersToOptions(bs, binder, userFolderProperties, true, result);
 		if (MiscUtil.hasString(searchTitle)) {
 			result.put(ObjectKeys.SEARCH_TITLE, searchTitle);
 		}
