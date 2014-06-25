@@ -6109,7 +6109,6 @@ public class GwtServerHelper {
 		{
 			Binder binder;
 			CustomAttribute customAttr;
-			String style;
 			
 			binder = allModules.getBinderModule().getBinder( Long.parseLong( binderId ) );
 			
@@ -6123,17 +6122,6 @@ public class GwtServerHelper {
     			configData.setConfigStr( configStr );
     		}
     		
-    		// Get the value of the "landing page style" setting.
-    		style = "mashup_dark.css";
-    		customAttr = binder.getCustomAttribute( "mashup" + DefinitionModule.MASHUP_STYLE );
-    		if ( customAttr != null && customAttr.getValueType() == CustomAttribute.STRING )
-    		{
-    			style = (String) customAttr.getValue();
-    			if ( style == null || style.length() == 0 )
-    				style = "mashup_dark.css";
-    		}
-    		configData.setLandingPageStyle( style );
-			
 			// Get the other settings that are stored in the "mashup__properties" custom attribute
    			getLandingPageProperties( allModules, binderId, configData, request );
 		}
@@ -6152,10 +6140,10 @@ public class GwtServerHelper {
 	 */
 	public static GwtLandingPageProperties getLandingPageProperties( AllModulesInjected ami, String binderId, HttpServletRequest request ) throws GwtTeamingException
 	{
-		GwtLandingPageProperties lpProperties = null;
+		GwtLandingPageProperties gwtLpProperties = null;
 		
-		lpProperties = new GwtLandingPageProperties();
-		lpProperties.setInheritProperties( true );
+		gwtLpProperties = new GwtLandingPageProperties();
+		gwtLpProperties.setInheritProperties( true );
 		
 		try
 		{
@@ -6186,22 +6174,23 @@ public class GwtServerHelper {
 				if ( sourceBinder == binder )
 				{
 					// No
-					lpProperties.setInheritProperties( false );
+					gwtLpProperties.setInheritProperties( false );
 				}
 				
-				lpProperties.setBackgroundColor( lpProps.getBackgroundColor() );
-				lpProperties.setBackgroundImgName( lpProps.getBackgroundImageName() );
-				lpProperties.setBackgroundImgUrl( lpProps.getBackgroundImageUrl() );
-				lpProperties.setBackgroundRepeat( lpProps.getBackgroundRepeat() );
-				lpProperties.setBorderColor( lpProps.getBorderColor() );
-				lpProperties.setBorderWidth( lpProps.getBorderWidth() );
-				lpProperties.setContentTextColor( lpProps.getContentTextColor() );
-				lpProperties.setHeaderBgColor( lpProps.getHeaderBgColor() );
-				lpProperties.setHeaderTextColor( lpProps.getHeaderTextColor() );
-				lpProperties.setHideFooter( lpProps.getHideFooter() );
-				lpProperties.setHideMasthead( lpProps.getHideMasthead() );
-				lpProperties.setHideMenu( lpProps.getHideMenu() );
-				lpProperties.setHideSidebar( lpProps.getHideSidebar() );
+				gwtLpProperties.setBackgroundColor( lpProps.getBackgroundColor() );
+				gwtLpProperties.setBackgroundImgName( lpProps.getBackgroundImageName() );
+				gwtLpProperties.setBackgroundImgUrl( lpProps.getBackgroundImageUrl() );
+				gwtLpProperties.setBackgroundRepeat( lpProps.getBackgroundRepeat() );
+				gwtLpProperties.setBorderColor( lpProps.getBorderColor() );
+				gwtLpProperties.setBorderWidth( lpProps.getBorderWidth() );
+				gwtLpProperties.setContentTextColor( lpProps.getContentTextColor() );
+				gwtLpProperties.setHeaderBgColor( lpProps.getHeaderBgColor() );
+				gwtLpProperties.setHeaderTextColor( lpProps.getHeaderTextColor() );
+				gwtLpProperties.setHideFooter( lpProps.getHideFooter() );
+				gwtLpProperties.setHideMasthead( lpProps.getHideMasthead() );
+				gwtLpProperties.setHideMenu( lpProps.getHideMenu() );
+				gwtLpProperties.setHideSidebar( lpProps.getHideSidebar() );
+				gwtLpProperties.setStyle( lpProps.getStyle() );
 			}
 		}
 		catch (Exception ex)
@@ -6209,7 +6198,7 @@ public class GwtServerHelper {
 			throw GwtLogHelper.getGwtClientException(m_logger, ex);
 		}
 		
-		return lpProperties;
+		return gwtLpProperties;
 	}
 	
 	/**

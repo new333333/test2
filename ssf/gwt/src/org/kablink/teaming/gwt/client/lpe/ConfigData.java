@@ -54,7 +54,6 @@ public class ConfigData
 	private String m_configStr;
 	private boolean m_isPreviewMode;
 	private GwtLandingPageProperties m_lpProperties;
-	private String m_lpStyle;		// The current values for this are mashup_dark.css or mashup.css
 	
 
 	/**
@@ -536,7 +535,7 @@ public class ConfigData
 	 */
 	public String getLandingPageStyle()
 	{
-		return m_lpStyle;
+		return m_lpProperties.getStyle();
 	}
 	
 	
@@ -626,14 +625,6 @@ public class ConfigData
 	public void setHideMenu( boolean hideMenu )
 	{
 		m_lpProperties.setHideMenu( hideMenu );
-	}
-	
-	/**
-	 * 
-	 */
-	public void setLandingPageStyle( String style )
-	{
-		m_lpStyle = style;
 	}
 	
 	/**
