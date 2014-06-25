@@ -58,6 +58,7 @@ public interface ResourceDriverManager {
 		MOVE_FOLDER
 	}
 	
+	public List<ResourceDriver> getAllowedResourceDrivers();
 	public List<ResourceDriverConfig> getAllResourceDriverConfigs();
 	public List<ResourceDriverConfig> getAllNetFolderResourceDriverConfigs();
 	public List<ResourceDriverConfig> getAllCloudFolderResourceDriverConfigs();
