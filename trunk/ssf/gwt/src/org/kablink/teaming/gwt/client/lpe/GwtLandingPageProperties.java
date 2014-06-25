@@ -68,6 +68,7 @@ public class GwtLandingPageProperties
 	transient public final String BG_COLOR_ATTRIBUTE_NAME = "bgColor";
 	transient public final String TEXT_COLOR_ATTRIBUTE_NAME = "textColor";
 	transient public final String WIDTH_ATTRIBUTE_NAME = "width";
+	transient public final String PAGE_STYLE_ATTRIBUTE_NAME = "pageStyle";
 	
 	private String m_backgroundColor;
 	private String m_backgroundImageName;
@@ -79,6 +80,7 @@ public class GwtLandingPageProperties
 	private boolean m_hideMenu;
 	private boolean m_inheritProperties;
 	private WidgetStyles m_widgetStyles;
+	private String m_style;
 	
 	/**
 	 * 
@@ -95,6 +97,7 @@ public class GwtLandingPageProperties
 		m_hideFooter = false;
 		m_hideMenu = false;
 		m_inheritProperties = true;
+		m_style = "mashup_dark.css";
 	}
 
 	/**
@@ -112,6 +115,7 @@ public class GwtLandingPageProperties
 		m_hideFooter = false;
 		m_hideMenu = false;
 		m_inheritProperties = true;
+		m_style = "mashup_dark.css";
 		
 		init( propertiesXML );
 	}
@@ -135,6 +139,7 @@ public class GwtLandingPageProperties
 		m_hideFooter = lpProperties.getHideFooter();
 		m_hideMenu = lpProperties.getHideMenu();
 		m_inheritProperties = lpProperties.getInheritProperties();
+		m_style = lpProperties.getStyle();
 	}
 	
 	/**
@@ -253,7 +258,7 @@ public class GwtLandingPageProperties
 	 * Return the properties as an xml string that looks like the following:
 	 *	<landingPageData>
 	 * 		<background color="" imgName="" />
-	 * 		<pageLayout hideMasthead="true | false" hideSidebar="true | false" hideFooter="true | false" hideMenu="true | false" />
+	 * 		<pageLayout hideMasthead="true | false" hideSidebar="true | false" hideFooter="true | false" hideMenu="true | false" pageStyle="mashup_dark.css | mashup_light.css" />
 	 * 		<header bgColor="" textColor="" />
 	 * 		<content textColor="" />
 	 * 		<border color="" width="" />
@@ -307,6 +312,7 @@ public class GwtLandingPageProperties
 			pgLayoutElement.setAttribute( HIDE_SIDEBAR_ATTRIBUTE_NAME, String.valueOf( m_hideSidebar ) );
 			pgLayoutElement.setAttribute( HIDE_FOOTER_ATTRIBUTE_NAME, String.valueOf( m_hideFooter ) );
 			pgLayoutElement.setAttribute( HIDE_MENU_ATTRIBUTE_NAME, String.valueOf( m_hideMenu ) );
+			pgLayoutElement.setAttribute( PAGE_STYLE_ATTRIBUTE_NAME, m_style );
 			
 			rootElement.appendChild( pgLayoutElement );
 		}
@@ -360,6 +366,14 @@ public class GwtLandingPageProperties
 		}
 		
 		return doc.toString();
+	}
+	
+	/**
+	 * 
+	 */
+	public String getStyle()
+	{
+		return m_style;
 	}
 	
 	/**
@@ -421,6 +435,10 @@ public class GwtLandingPageProperties
 					value = pageLayoutElement.getAttribute( HIDE_MENU_ATTRIBUTE_NAME );
 					if ( value != null && value.length() > 0 )
 						m_hideMenu = Boolean.parseBoolean( value );
+
+					value = pageLayoutElement.getAttribute( PAGE_STYLE_ATTRIBUTE_NAME );
+					if ( value != null && value.length() > 0 )
+						m_style = value;
 				}
 				
 				// Get the <header...> element
@@ -576,5 +594,13 @@ public class GwtLandingPageProperties
 	public void setInheritProperties( boolean inherit )
 	{
 		m_inheritProperties = inherit;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setStyle( String style )
+	{
+		m_style = style;
 	}
 }

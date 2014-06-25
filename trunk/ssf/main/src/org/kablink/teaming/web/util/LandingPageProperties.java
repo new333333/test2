@@ -59,6 +59,7 @@ public class LandingPageProperties
 	private final String BG_COLOR_ATTRIBUTE_NAME = "bgColor";
 	private final String TEXT_COLOR_ATTRIBUTE_NAME = "textColor";
 	private final String WIDTH_ATTRIBUTE_NAME = "width";
+	private final String PAGE_STYLE_ATTRIBUTE_NAME = "pageStyle";
 
 	private String m_backgroundColor;
 	private String m_backgroundImageName;
@@ -73,6 +74,7 @@ public class LandingPageProperties
 	private String m_contentTextColor;
 	private String m_borderColor;
 	private String m_borderWidth;
+	private String m_style;
 
 	/**
 	 * 
@@ -92,6 +94,7 @@ public class LandingPageProperties
 		m_contentTextColor = null;
 		m_borderColor = null;
 		m_borderWidth = null;
+		m_style = "mashup_dark.css"; 
 	}
 
 	/**
@@ -202,7 +205,7 @@ public class LandingPageProperties
 	 * Return the properties as an xml string that looks like the following:
 	 *	<landingPageData>
 	 * 		<background color="" imgName="" />
-	 * 		<pageLayout hideMasthead="true | false" hideSidebar="true | false" hideFooter="true | false" hideMenu="true | false" />
+	 * 		<pageLayout hideMasthead="true | false" hideSidebar="true | false" hideFooter="true | false" hideMenu="true | false" pageStyle="mashup_dark.css | mashup_light.css" />
 	 * 		<header bgColor="" textColor="" />
 	 * 		<content textColor="" />
 	 * 		<border color="" width="" />
@@ -243,6 +246,7 @@ public class LandingPageProperties
 			pgLayoutElement.addAttribute( HIDE_SIDEBAR_ATTRIBUTE_NAME, String.valueOf( m_hideSidebar ) );
 			pgLayoutElement.addAttribute( HIDE_FOOTER_ATTRIBUTE_NAME, String.valueOf( m_hideFooter ) );
 			pgLayoutElement.addAttribute( HIDE_MENU_ATTRIBUTE_NAME, String.valueOf( m_hideMenu ) );
+			pgLayoutElement.addAttribute( PAGE_STYLE_ATTRIBUTE_NAME, m_style );
 		}
 		
 		// Add the <header bgColor="" textColor="" /> element
@@ -282,6 +286,14 @@ public class LandingPageProperties
 		}
 		
 		return doc.asXML();
+	}
+	
+	/**
+	 * 
+	 */
+	public String getStyle()
+	{
+		return m_style;
 	}
 	
 	/**
@@ -385,5 +397,13 @@ public class LandingPageProperties
 	public void setHideSidebar( boolean hide )
 	{
 		m_hideSidebar = hide;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setStyle( String style )
+	{
+		m_style = style;
 	}
 }

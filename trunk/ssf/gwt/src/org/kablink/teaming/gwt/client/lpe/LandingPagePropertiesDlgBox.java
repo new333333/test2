@@ -720,6 +720,18 @@ public class LandingPagePropertiesDlgBox extends DlgBox
 			lpProperties.setBorderWidth( width );
 		}
 		
+		// Get the style
+		{
+			String style = "mashup_dark.css";
+			Boolean value;
+			
+			value = m_lightRB.getValue();
+			if ( value != null && value == true )
+				style = "mashup_light.css";
+			
+			lpProperties.setStyle( style );
+		}
+		
 		return lpProperties;
 	}
 
@@ -764,6 +776,20 @@ public class LandingPagePropertiesDlgBox extends DlgBox
 		m_hideSidebarCB.setValue( m_origLPProperties.getHideSidebar() );
 		m_hideFooterCB.setValue( m_origLPProperties.getHideFooter() );
 		m_hideMenuCB.setValue( m_origLPProperties.getHideMenu() );
+		
+		// Initialize the style
+		{
+			String style;
+			
+			m_lightRB.setValue( false );
+			m_darkRB.setValue( false );
+			
+			style = m_origLPProperties.getStyle();
+			if ( style != null && style.equalsIgnoreCase( "mashup_light.css" ) )
+				m_lightRB.setValue( true );
+			else
+				m_darkRB.setValue( true );
+		}
 		
 		// Issue an ajax request to get the list of file attachments for this binder.
 		// When we get the response, updateListOfFileAttachments() will be called.

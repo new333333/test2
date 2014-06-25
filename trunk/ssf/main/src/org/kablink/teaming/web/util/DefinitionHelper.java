@@ -1147,14 +1147,8 @@ public class DefinitionHelper {
     		if (attr != null) model.put(WebKeys.MASHUP_SHOW_NAVIGATION, attr.getValue());
     		attr = entity.getCustomAttribute(attrName + DefinitionModule.MASHUP_SHOW_FAVORITES_AND_TEAMS);
     		if (attr != null) model.put(WebKeys.MASHUP_SHOW_FAVORITES_AND_TEAMS, attr.getValue());
-    		attr = entity.getCustomAttribute(attrName + DefinitionModule.MASHUP_HIDE_MASTHEAD);
-    		if (attr != null) model.put(WebKeys.MASHUP_HIDE_MASTHEAD, attr.getValue());
-    		attr = entity.getCustomAttribute(attrName + DefinitionModule.MASHUP_HIDE_SIDEBAR);
-    		if (attr != null) model.put(WebKeys.MASHUP_HIDE_SIDEBAR, attr.getValue());
     		attr = entity.getCustomAttribute(attrName + DefinitionModule.MASHUP_HIDE_TOOLBAR);
     		if (attr != null) model.put(WebKeys.MASHUP_HIDE_TOOLBAR, attr.getValue());
-    		attr = entity.getCustomAttribute(attrName + DefinitionModule.MASHUP_HIDE_FOOTER);
-    		if (attr != null) model.put(WebKeys.MASHUP_HIDE_FOOTER, attr.getValue());
 
     		// Handle the mashup properties.
     		{
@@ -1163,34 +1157,11 @@ public class DefinitionHelper {
     			lpProperties = getLandingPageProperties( request, entity );
     			
     			if ( lpProperties != null )
-    			{
-        			String value;
-
-        			value = lpProperties.getBackgroundColor(); 
-	    			if ( value != null )
-	    				model.put( WebKeys.MASHUP_BACKGROUND_COLOR, value );
-	
-	    			value = lpProperties.getBackgroundImageUrl();
-	    			if ( value != null )
-	    				model.put( WebKeys.MASHUP_BACKGROUND_IMAGE, value );
-	
-	    			value = lpProperties.getBackgroundRepeat();
-	    			if ( value != null )
-						model.put( WebKeys.MASHUP_BACKGROUND_IMAGE_REPEAT, value );
-	    				
 					model.put( WebKeys.MASHUP_PROPERTIES, lpProperties.getPropertiesAsXMLString() );
-    			}
     		}
     		
     		// Add the language the tinyMCE editor should use.
     		model.put( "tinyMCELang", GwtUIHelper.getTinyMCELanguage() );
-
-        	attr = entity.getCustomAttribute(attrName + DefinitionModule.MASHUP_STYLE);
-    		if (attr == null || attr.equals("")) {
-    			model.put(WebKeys.MASHUP_STYLE, "mashup_dark.css");
-    		} else {
-    			model.put(WebKeys.MASHUP_STYLE, attr.getValue());
-    		}
     	}
     	if (entity instanceof Binder && 
     			bs.getBinderModule().testAccess((Binder)entity, BinderOperation.manageConfiguration)) {
@@ -1211,12 +1182,6 @@ public class DefinitionHelper {
     	model.put(WebKeys.MASHUP_MY_TASK_BINDERS, mashupMyTaskBinders);
     	model.put(WebKeys.MASHUP_ENTRIES, mashupEntries);
     	model.put(WebKeys.MASHUP_ENTRY_REPLIES, mashupEntryReplies);
-    	String style = (String) model.get(WebKeys.MASHUP_STYLE);
-    	if (style == null || style.equals("")) {
-    		model.put(WebKeys.MASHUP_CSS, "css/mashup_dark.css");
-    	} else {
-    		model.put(WebKeys.MASHUP_CSS, "css/" + style);
-    	}
     	if ("form".equals(model.get(WebKeys.CONFIG_JSP_STYLE))) {
     		//Force the css style to "light" for displaying the form so we only have one style for viewing the form
     		model.put(WebKeys.MASHUP_CSS, "css/mashup.css");
@@ -1387,6 +1352,29 @@ public class DefinitionHelper {
 								boolValue = new Boolean( value );
 							
 							lpProperties.setHideFooter( boolValue );
+						}
+						
+						// Get the value of "style"
+						{
+							String style = "mashup_dark.css";
+							
+							// Does the "style" attribute exist?
+							value = pgLayoutElement.attributeValue( "pageStyle" );
+							if ( value == null || value.length() == 0 )
+							{
+								// No, read it as a custom attribute
+					    		attr = entity.getCustomAttribute( "mashup" + DefinitionModule.MASHUP_STYLE );
+					    		if ( attr != null && attr.getValueType() == CustomAttribute.STRING )
+					    		{
+					    			style = (String) attr.getValue();
+					    			if ( style == null || style.length() == 0 )
+					    				style = "mashup_dark.css";
+					    		}
+							}
+							else
+								style= value;
+							
+							lpProperties.setStyle( style );
 						}
 					}
 
