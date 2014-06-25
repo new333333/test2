@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -36,7 +36,6 @@ import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponseData;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
-
 /**
  * Class used to communicate information about filters between the
  * client and server.
@@ -49,12 +48,10 @@ public class BinderFilter implements IsSerializable, VibeRpcResponseData {
 	private String	m_filterAddUrl;		//
 	private String	m_filterClearUrl;	//
 	
-	/**
+	/*
 	 * Constructor method.
-	 * 
-	 * No parameters as per GWT serialization requirements.
 	 */
-	public BinderFilter() {
+	private BinderFilter() {
 		// Simply initialize the super class.
 		super();
 	}
@@ -112,41 +109,5 @@ public class BinderFilter implements IsSerializable, VibeRpcResponseData {
 	 */
 	public static String buildFilterSpec(String filterName, String filterScope) {
 		return (filterScope + ":" + filterName);
-	}
-
-	/**
-	 * Given a filter specification, returns the name component.
-	 * 
-	 * @param filterSpec
-	 * 
-	 * @return
-	 */
-	public static String getFilterNameFromSpec(String filterSpec) {
-		String reply = null;
-		if (null != filterSpec) {
-			int cPos = filterSpec.indexOf(':');
-			if (0 < cPos) {
-				reply = filterSpec.substring(cPos + 1);
-			}
-		}
-		return reply;
-	}
-	
-	/**
-	 * Given a filter specification, returns the scope component.
-	 * 
-	 * @param filterSpec
-	 * 
-	 * @return
-	 */
-	public static String getFilterScopeFromSpec(String filterSpec) {
-		String reply = null;
-		if (null != filterSpec) {
-			int cPos = filterSpec.indexOf(':');
-			if (0 < cPos) {
-				reply = filterSpec.substring(0, cPos);
-			}
-		}
-		return reply;
 	}
 }
