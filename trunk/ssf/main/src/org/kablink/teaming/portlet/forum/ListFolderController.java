@@ -87,20 +87,29 @@ public class ListFolderController extends  SAbstractController {
 		boolean showTrash = PortletRequestUtils.getBooleanParameter(request, WebKeys.URL_SHOW_TRASH, false);
         User user = RequestContextHolder.getRequestContext().getUser();
 		Map formData = request.getParameterMap();
+		
+		// Get the entry...
 		Long entryId= PortletRequestUtils.getLongParameter(request, WebKeys.URL_ENTRY_ID);
-		//Get the binder id from the entry
+		
+		// ...and the binder IDs.
 		Long binderId;
-		try {
-			FolderEntry entry = getFolderModule().getEntry(null, entryId);
-			binderId = entry.getParentBinder().getId();
-		} catch(Exception e) {
-			//Can't get it from the entry.  Is one in the request?
+		if (null == entryId) {
 			binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
-			if (null == binderId) {
-				//No!  Just fall through to the render phase.
-				return;
+		}
+		else {
+			try {
+				FolderEntry entry = getFolderModule().getEntry(null, entryId);
+				binderId = entry.getParentBinder().getId();
+			} catch(Exception e) {
+				// Can't get it from the entry.  Is one in the request?
+				binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
+				if (null == binderId) {
+					// No!  Just fall through to the render phase.
+					return;
+				}
 			}
 		}
+		
 		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
 		String op2 = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION2, "");
 		response.setRenderParameters(request.getParameterMap());
@@ -253,34 +262,47 @@ public class ListFolderController extends  SAbstractController {
         User user = RequestContextHolder.getRequestContext().getUser();
 		String displayType = BinderHelper.getDisplayType(request);
 
-		if ( response instanceof PortletResponseImpl )
-		{
-			HttpServletResponse httpServletResponse;
-			
-			// Set the http response header to no-cache so this page won't get cached.
-			httpServletResponse = ((PortletResponseImpl)response).getHttpServletResponse();
-			httpServletResponse.setHeader( "Pragma", "no-cache" );
-			httpServletResponse.setHeader( "Cache-Control", "no-cache" );
-			httpServletResponse.setDateHeader( "Expires", 0 );
+		if (response instanceof PortletResponseImpl) {
+			// Set the HTTP response header to no-cache so this page
+			// won't get cached.
+			HttpServletResponse httpServletResponse = ((PortletResponseImpl)response).getHttpServletResponse();
+			httpServletResponse.setHeader(    "Pragma", "no-cache"       );
+			httpServletResponse.setHeader(    "Cache-Control", "no-cache");
+			httpServletResponse.setDateHeader("Expires", 0               );
 		}
 
 		if (request.getWindowState().equals(WindowState.NORMAL) &&
-				!BinderHelper.WORKAREA_PORTLET.equals(displayType)) 
+				!BinderHelper.WORKAREA_PORTLET.equals(displayType)) { 
 			return prepBeans(request, BinderHelper.CommonPortletDispatch(this, request, response));
+		}
 		
-		Long entryId = null;
-		try {
-			entryId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_ENTRY_ID);
-		} catch(Exception e) {}
 		String zoneUUID = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ZONE_UUID, "");
-		//Get the binder id from the entryId (if specified)
-		Long binderId = null;
-		try {
-			FolderEntry entry = getFolderModule().getEntry(null, entryId);
-			binderId = entry.getParentBinder().getId();
-		} catch(Exception e) {}
-		//If no binder, Default to the user's workspace
-		if (binderId == null) binderId = user.getWorkspaceId();
+		
+		// Get the entry...
+		Long entryId;
+		try                {entryId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_ENTRY_ID);}
+		catch(Exception e) {entryId = null;}
+		
+		// ...and binder IDs.
+		Long binderId;
+		if (null == entryId) {
+			binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
+		}
+		else {
+			try {
+				FolderEntry entry = getFolderModule().getEntry(null, entryId);
+				binderId = entry.getParentBinder().getId();
+			}
+			catch(Exception e) {
+				// Can't get it from the entry.  Is one in the request?
+				binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
+				if (binderId == null) {
+					// No!  Default to the user's workspace.
+					binderId = user.getWorkspaceId();
+				}
+			}
+		}
+		
 		PortletSession portletSession = WebHelper.getRequiredPortletSession(request);
 		String namespace = response.getNamespace();
         if (PortletAdapterUtil.isRunByAdapter(request)) {
