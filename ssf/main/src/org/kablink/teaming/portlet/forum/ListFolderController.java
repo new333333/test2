@@ -88,10 +88,8 @@ public class ListFolderController extends  SAbstractController {
         User user = RequestContextHolder.getRequestContext().getUser();
 		Map formData = request.getParameterMap();
 		
-		// Get the entry...
+		// Get the entry and binder IDs.
 		Long entryId= PortletRequestUtils.getLongParameter(request, WebKeys.URL_ENTRY_ID);
-		
-		// ...and the binder IDs.
 		Long binderId;
 		if (null == entryId) {
 			binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
@@ -278,12 +276,8 @@ public class ListFolderController extends  SAbstractController {
 		
 		String zoneUUID = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ZONE_UUID, "");
 		
-		// Get the entry...
-		Long entryId;
-		try                {entryId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_ENTRY_ID);}
-		catch(Exception e) {entryId = null;}
-		
-		// ...and binder IDs.
+		// Get the entry and binder IDs.
+		Long entryId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_ENTRY_ID);
 		Long binderId;
 		if (null == entryId) {
 			binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
@@ -296,7 +290,7 @@ public class ListFolderController extends  SAbstractController {
 			catch(Exception e) {
 				// Can't get it from the entry.  Is one in the request?
 				binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
-				if (binderId == null) {
+				if (null == binderId) {
 					// No!  Default to the user's workspace.
 					binderId = user.getWorkspaceId();
 				}

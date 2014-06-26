@@ -1,6 +1,6 @@
 <%
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -16,10 +16,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -35,9 +35,15 @@
 <%@ page import="org.kablink.teaming.util.NLT" %>
 <%@ page import="org.dom4j.Document" %>
 <%@ page import="org.dom4j.Element" %>
+<%@ page import="org.kablink.teaming.web.util.MiscUtil" %>
 <%@ page import="org.kablink.teaming.util.ResolveIds" %>
 <%@ page import="org.kablink.teaming.domain.Principal" %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
+
+<c:set var="entryId" value="${ss_entityId}" />
+<jsp:useBean id="entryId" type="java.lang.Long" />
+<% boolean entryInTrash = MiscUtil.isEntryPreDeleted(entryId); %>
+
 <c:set var="ss_useExplicitFileVersionNumbers" value="true" scope="request" />
 <ssf:ifadapter>
 <body>
@@ -361,6 +367,7 @@ function ss_resizeIframeArea() {
 			</td>		
 			<td colspan="2">
 			<c:if test="${ss_accessControlMap['modifyEntry']}">
+			  <% if (!entryInTrash) { %>
 			  <a class="ss_tinyButton"
 				href="<ssf:url><ssf:param 
 				name="action" value="view_editable_history"/><ssf:param 
@@ -370,6 +377,7 @@ function ss_resizeIframeArea() {
 				alt="<ssf:nlt tag="entry.comparison.revert"/>"
 				title="<ssf:nlt tag="entry.comparison.revert"/>"
 				><ssf:nlt tag="entry.revert"/></a>
+			  <% } %>
 			</c:if>
 			</td>
 		  </tr>

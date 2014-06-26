@@ -1520,4 +1520,25 @@ public final class MiscUtil
 		}
 		return parseChromeVersion(SPropsUtil.getString(key, ""));
 	}
+	
+	/**
+	 * Returns true if the entity by the given ID is in the trash and
+	 * false otherwise.
+	 * 
+	 * @param entryId
+	 * 
+	 * @return
+	 */
+	public static boolean isEntryPreDeleted( Long entryId )
+	{
+		boolean reply = false; 
+		FolderModule fm = ( (FolderModule) SpringContextUtil.getBean( "folderModule" ) );
+		try
+		{
+			FolderEntry fe = fm.getEntry( null, entryId );
+			reply = fe.isPreDeleted();
+		}
+		catch ( Exception e ) {/* Ignore. */}
+		return reply;
+	}
 }// end MiscUtil
