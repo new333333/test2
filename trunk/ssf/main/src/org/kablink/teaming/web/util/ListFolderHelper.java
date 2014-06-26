@@ -1358,10 +1358,6 @@ public class ListFolderHelper {
 			//Check if this is a valid page
 			try {
 				wikiHomePage = bs.getFolderModule().getEntry(binder.getId(), Long.valueOf(entryIdToBeShown));
-				if ((null != wikiHomePage) && wikiHomePage.isPreDeleted()) {
-					wikiHomePageId = null;
-					wikiHomePage = null;
-				}
 			} catch(Exception e) {
 				wikiHomePageId = null;
 				wikiHomePage = null;
