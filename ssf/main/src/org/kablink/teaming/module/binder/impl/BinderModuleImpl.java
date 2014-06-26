@@ -4138,6 +4138,9 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 				logger.error("Error in index helper", e);
 				throw e;
 			}
+			finally {
+				logger.info("Terminating");
+			}
 		}	
 		
 		private void doRun() {
