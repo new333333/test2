@@ -4132,6 +4132,8 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		@Override
 		public void run() {
 			try {
+				if(logger.isDebugEnabled())
+					logger.debug("Starting");
 				doRun();
 			}
 			catch(final Exception e) {
