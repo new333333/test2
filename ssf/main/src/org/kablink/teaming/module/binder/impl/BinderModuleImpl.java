@@ -4131,6 +4131,16 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 
 		@Override
 		public void run() {
+			try {
+				doRun();
+			}
+			catch(final Exception e) {
+				logger.error("Error in index helper", e);
+				throw e;
+			}
+		}	
+		
+		private void doRun() {
 			if(logger.isTraceEnabled())
 				logger.trace("Setting up Hibernate session");
 			SessionUtil.sessionStartup();	// Set up Hibernate session (for database)
