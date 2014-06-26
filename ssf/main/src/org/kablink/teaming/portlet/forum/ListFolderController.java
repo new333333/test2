@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -72,29 +72,32 @@ import org.kablink.teaming.web.util.Tabs;
 import org.kablink.teaming.web.util.TrashHelper;
 import org.kablink.teaming.web.util.WebHelper;
 import org.kablink.teaming.web.util.WorkspaceTreeHelper;
+
 import org.springframework.web.portlet.ModelAndView;
 
-
 /**
+ * ?
+ * 
  * @author Peter Hurley
- *
  */
+@SuppressWarnings({ "unchecked", "unused" })
 public class ListFolderController extends  SAbstractController {
-	
-	@SuppressWarnings("unchecked")
+	@Override
 	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) throws Exception {
 		boolean showTrash = PortletRequestUtils.getBooleanParameter(request, WebKeys.URL_SHOW_TRASH, false);
         User user = RequestContextHolder.getRequestContext().getUser();
 		Map formData = request.getParameterMap();
-		Long binderId= PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
 		Long entryId= PortletRequestUtils.getLongParameter(request, WebKeys.URL_ENTRY_ID);
-		if (binderId == null) {
-			//Get the binder id from the entry
-			try {
-				FolderEntry entry = getFolderModule().getEntry(null, entryId);
-				binderId = entry.getParentBinder().getId();
-			} catch(Exception e) {
-				//Can't get the binderId, so just fall through to the render phase
+		//Get the binder id from the entry
+		Long binderId;
+		try {
+			FolderEntry entry = getFolderModule().getEntry(null, entryId);
+			binderId = entry.getParentBinder().getId();
+		} catch(Exception e) {
+			//Can't get it from the entry.  Is one in the request?
+			binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
+			if (null == binderId) {
+				//No!  Just fall through to the render phase.
 				return;
 			}
 		}
@@ -243,6 +246,7 @@ public class ListFolderController extends  SAbstractController {
 		try {response.setWindowState(request.getWindowState());} catch(Exception e){};
 	}
 	
+	@Override
 	public ModelAndView handleRenderRequestAfterValidation(RenderRequest request, 
 			RenderResponse response) throws Exception {
 		boolean showTrash = PortletRequestUtils.getBooleanParameter(request, WebKeys.URL_SHOW_TRASH, false);
@@ -264,13 +268,13 @@ public class ListFolderController extends  SAbstractController {
 				!BinderHelper.WORKAREA_PORTLET.equals(displayType)) 
 			return prepBeans(request, BinderHelper.CommonPortletDispatch(this, request, response));
 		
-		Long binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
 		Long entryId = null;
 		try {
 			entryId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_ENTRY_ID);
 		} catch(Exception e) {}
 		String zoneUUID = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ZONE_UUID, "");
 		//Get the binder id from the entryId (if specified)
+		Long binderId = null;
 		try {
 			FolderEntry entry = getFolderModule().getEntry(null, entryId);
 			binderId = entry.getParentBinder().getId();

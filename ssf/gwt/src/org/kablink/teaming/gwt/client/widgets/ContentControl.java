@@ -155,6 +155,7 @@ public class ContentControl extends Composite
 		// Event handlers implemented by this class.
 		ContributorIdsRequestEvent.Handler,
 		ChangeContextEvent.Handler,
+		ContextChangedEvent.Handler,
 		CopySelectedEntitiesEvent.Handler,
 		DeleteSelectedEntitiesEvent.Handler,
 		GetCurrentViewInfoEvent.Handler,
@@ -203,6 +204,7 @@ public class ContentControl extends Composite
 	{
 		// Context events.
 		TeamingEvents.CHANGE_CONTEXT,
+		TeamingEvents.CONTEXT_CHANGED,
 		TeamingEvents.GOTO_URL,
 		
 		// Contributor events.
@@ -1445,6 +1447,21 @@ public class ContentControl extends Composite
 				BinderViewsHelper.copyEntries(selectedEntityIds );
 			}
 		}
+	}
+	
+	
+	/**
+	 * Handles ContextChangedEvent's received by this class.
+	 * 
+	 * Implements the ContextChangedEvent.Handler.onContextChanged() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onContextChanged( ContextChangedEvent event )
+	{
+		// We currently don't have anything to do after the context has
+		// changed.
 	}
 	
 	

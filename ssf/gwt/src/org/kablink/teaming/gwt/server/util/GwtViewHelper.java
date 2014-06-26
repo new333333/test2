@@ -64,9 +64,11 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
+
 import org.kablink.teaming.BinderQuotaException;
 import org.kablink.teaming.IllegalCharacterInNameException;
 import org.kablink.teaming.NotSupportedException;
@@ -7703,14 +7705,27 @@ public class GwtViewHelper {
 						// view...
 						boolean entryViewIgnore = GwtClientHelper.hasString(getQueryParameterString(nvMap, WebKeys.URL_ENTRY_VIEW_IGNORE));
 						if (!entryViewIgnore) {
-							// ...adjust the ViewInfo accordingly.
+							// ...adjust the ViewInfo accordingly.  If
+							// ...the binder ID we're tracking doesn't
+							// ...match that from the entry...
+							Long entryIdL = Long.parseLong(entryId);
+							FolderEntry fe = bs.getFolderModule().getEntry(null, entryIdL);
+							Long feBinderId = fe.getParentBinder().getId();
+							if ((null == binderId) || (!(binderId.equals(feBinderId)))) {
+								// ...use the one from the entry.
+								binderId = feBinderId;
+								BinderInfo actualBI = GwtServerHelper.getBinderInfo(bs, request, String.valueOf(binderId));
+								if (null != actualBI) {
+									vi.setBinderInfo(actualBI);
+								}
+							}
 							vi.setViewType(ViewType.BINDER_WITH_ENTRY_VIEW);
 							vi.setEntryViewUrl(
 								GwtServerHelper.getViewFolderEntryUrl(
 									bs,
 									request,
 									binderId,
-									Long.parseLong(entryId),
+									entryIdL,
 									isQueryParamSet(nvMap, WebKeys.URL_INVOKE_SHARE,     "1"),
 									isQueryParamSet(nvMap, WebKeys.URL_INVOKE_SUBSCRIBE, "1")));
 							vi.setInvokeShare(       false);	// We'll invoke any share     on the entry, not the binder.
