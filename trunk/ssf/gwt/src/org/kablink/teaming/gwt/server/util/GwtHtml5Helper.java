@@ -40,6 +40,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -60,6 +61,7 @@ import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.ZoneConfig;
+import org.kablink.teaming.domain.ZoneInfo;
 import org.kablink.teaming.gwt.client.GwtTeamingException;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.FileBlob;
 import org.kablink.teaming.gwt.client.binderviews.folderdata.FileBlob.ReadType;
@@ -84,6 +86,7 @@ import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.TempFileUtil;
 import org.kablink.teaming.web.util.BinderHelper;
+import org.kablink.teaming.web.util.DefinitionHelper;
 import org.kablink.teaming.web.util.Html5Helper;
 import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.WebHelper;
@@ -405,10 +408,11 @@ public class GwtHtml5Helper {
 			if ((null == reply) && lastBlob) {
 				// Yes!  We need to create the entry for the file in
 				// the target folder.
-				FolderModule	fm     = bs.getFolderModule();
-				ProfileModule	pm     = bs.getProfileModule();
-    	    	Folder			folder = fm.getFolder(folderInfo.getBinderIdAsLong());
-    	    	FileInputStream fi     = new FileInputStream(tempFile);
+				FolderModule	fm       = bs.getFolderModule();
+				ProfileModule	pm       = bs.getProfileModule();
+				Long			folderId = folderInfo.getBinderIdAsLong();
+    	    	Folder			folder   = fm.getFolder(folderId);
+    	    	FileInputStream fi       = new FileInputStream(tempFile);
     	    	try {
     	    		// What do we know about the file?
     				String	fileName  = fileBlob.getFileName();
@@ -436,27 +440,47 @@ public class GwtHtml5Helper {
         	    	}
         	    	else {
             	    	// No, we aren't creating an entry in a library
-        	    		// folder!  Get the definition to use for the
-        	    		// entry...
-        	        	Definition fileDef   = folder.getDefaultFileEntryDef();
-        	        	String     fileDefId = ((fileDef != null) ? fileDef.getId() : null); 
-        	        	
-        	        	// ...setup and input data map using the file's
-        	        	// ...name as the title...
+        	    		// folder!  Setup an input data map using the
+        	    		// file's name as the title...
 						Map entryNameOnly = new HashMap();
 	        	    	entryNameOnly.put(ObjectKeys.FIELD_ENTITY_TITLE, fileName);
 	        	    	MapInputData inputData = new MapInputData(entryNameOnly);
 
+            	    	// ...if there's an existing entry, we'll
+	        	    	// ...modify it, otherwise, we'll create a new
+	        	    	// ...one...
+	    				Long		zoneId   = RequestContextHolder.getRequestContext().getZoneId();
+	    				ZoneInfo	zi       = bs.getZoneModule().getZoneInfo(zoneId);
+	    				String		zoneUUID = zi.getId();
+						Set<FolderEntry> feSet = fm.getFolderEntryByNormalizedTitle(folderId, WebHelper.getNormalizedTitle(fileName), zoneUUID);
+						FolderEntry existingEntry;
+						if (MiscUtil.hasItems(feSet))
+						     existingEntry = feSet.iterator().next();
+						else existingEntry = null;
+						boolean useExisting = (null != existingEntry);
+						
+            	    	// ...get the definition to use for the
+						// ...entry and file...
+        	        	Definition fileDef;
+						if (useExisting)
+						     fileDef = DefinitionHelper.getDefinition(existingEntry.getEntryDefId());
+						else fileDef = folder.getDefaultFileEntryDef();
+        	        	String fileDefId = ((fileDef != null) ? fileDef.getId() : null);
+        	        	
 	        			// ...wrap the input stream in a data structure
-	        	    	// suitable for the business module...
+	        	    	// ...suitable for the business module...
 	        			MultipartFile mf          = new ExtendedMultipartFile(fileName, fi, modDate);
 	        			Map           oneFileMap  = new HashMap();
 	        			String        elementName = FolderUtils.getDefinitionElementNameForNonMirroredFile(fileDef);
 	        			oneFileMap.put(elementName, mf);
-	        			
-	        			// ...and create the entry.
-        	    		FolderEntry fe = fm.addEntry(folder.getId(), fileDefId, inputData, oneFileMap, null);
-	    				pm.setSeen(null, fe);
+
+	        			// ...modify or create the entry...
+						if (useExisting)
+						                     fm.modifyEntry(folderId, existingEntry.getId(), inputData, oneFileMap, null, null, null);
+						else existingEntry = fm.addEntry(   folderId, fileDefId,             inputData, oneFileMap,             null);
+
+						// ...and mark it read.
+	    				pm.setSeen(null, existingEntry);
         	    	}
     	    	}
     	    	
@@ -536,9 +560,13 @@ public class GwtHtml5Helper {
 				AdminModule		am                  = bs.getAdminModule();
 				BinderModule	bm                  = bs.getBinderModule();
 				FolderModule	fm                  = bs.getFolderModule();
-				Folder			folder              = fm.getFolder(folderInfo.getBinderIdAsLong());
+				Long			folderId			= folderInfo.getBinderIdAsLong();
+				Folder			folder              = fm.getFolder(folderId);
 				Long			userFileSizeLimit   = am.getUserFileSizeLimit();
 				Long			userFileSizeLimitMB = null;
+				Long			zoneId              = RequestContextHolder.getRequestContext().getZoneId();
+				ZoneInfo		zi                  = bs.getZoneModule().getZoneInfo(zoneId);
+				String			zoneUUID            = zi.getId();
 				
 				// What do we need to check?
 				boolean	enforceQuotas          = ((!(folder.isMirrored())) && (!(folder.isAclExternallyControlled())));
@@ -642,11 +670,29 @@ public class GwtHtml5Helper {
 					
 					// Does the folder contain an entry with this name?
 					String uploadFName = upload.getName();
-					FolderEntry fe = fm.getLibraryFolderEntryByFileName((Folder) folder, uploadFName);
-					if (null != fe) {
-						// Yes!  Track it as a duplicate.
-						reply.addDuplicate(upload);
-						continue;
+					
+					// Do we care about unique file names?
+					if (folder.isLibrary()) {
+						// Yes!  Does an entry with this file name
+						// already exist?
+						FolderEntry fe = fm.getLibraryFolderEntryByFileName(folder, uploadFName);
+						if (null != fe) {
+							// Yes!  Track it as a duplicate.
+							reply.addDuplicate(upload);
+							continue;
+						}
+					}
+					
+					// Do we care about unique titles?
+					if (folder.isUniqueTitles()) {
+						// Yes!  Does an entry with this title already
+						// exist?
+						Set<FolderEntry> feSet = fm.getFolderEntryByNormalizedTitle(folderId, WebHelper.getNormalizedTitle(uploadFName), zoneUUID);
+						if (MiscUtil.hasItems(feSet)) {
+							// Yes!  Track it as a duplicate.
+							reply.addDuplicate(upload);
+							continue;
+						}
 					}
 					
 					// Scan the files attached to the folder.
@@ -661,9 +707,10 @@ public class GwtHtml5Helper {
 				}
 			}
 			
-			// If we get here, reply refers to an
+			// If we get here, reply refers to a
 			// ValidateUploadsRpcResponseData containing any errors and
-			// information duplicates that we encountered.  Return it.
+			// information about any duplicates that we encountered.
+			// Return it.
 			return reply;
 		}
 		
