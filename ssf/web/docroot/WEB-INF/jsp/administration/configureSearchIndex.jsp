@@ -133,6 +133,7 @@ function ss_getOperationStatus()
 	ss_setupStatusMessageDiv();
 	var ajaxRequest = new ss_AjaxRequest(ss_checkStatusUrl); //Create AjaxRequest object
 	ajaxRequest.addKeyValue("ss_statusId",ss_indexStatusTicket);
+	ajaxRequest.addKeyValue("ss_style","background:#cecece;padding:10px;border: 2px solid #ababab;-moz-border-radius: 5px;border-radius: 5px;-webkit-border-radius: 5px;");
 	ajaxRequest.sendRequest();  //Send the request
 	ss_indexTimeout = setTimeout(ss_getOperationStatus, 1000);
 	var statusMessage = ss_getStatusMessage();
