@@ -4662,6 +4662,16 @@ function ss_hideEntryDiv() {
     ss_showSpannedAreas();
 }
 
+// Pops the View Details URL from the GWT ContentControl's content
+// history.
+function ss_popEntryUrl() {
+	// If the history popping method is defined...
+	if (window.top.ss_popUrlFromContentHistory) {
+		// ...call it.
+		window.top.ss_popUrlFromContentHistory();
+	}
+}
+
 function ss_hideEntryDivImpl(eDIV) {
 	if (eDIV != null) {
     	eDIV.style.visibility = "hidden";
