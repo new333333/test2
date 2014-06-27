@@ -482,10 +482,19 @@ public class ContentControl extends Composite
 			// No!  Define them now.
 			$wnd.top.ss_contentHistoryDepth = contentHistoryDepth;
 			$wnd.top.ss_contentHistory = new Array();
+			
 			$wnd.top.ss_getUrlFromContentHistory = function( index )
 			{
 				return @org.kablink.teaming.gwt.client.widgets.ContentControl::jsGetContentHistoryUrl(Ljava/lang/Integer;)( index );
 			}//end ss_getUrlFromContentHistory()
+			
+			$wnd.top.ss_popUrlFromContentHistory = function()
+			{
+				if ( $wnd.top.ss_contentHistory && ( 1 < $wnd.top.ss_contentHistory.length ) )
+				{
+					$wnd.top.ss_contentHistory.shift();
+				}
+			}//end ss_popUrlFromContentHistory()
 		}
 	}-*/;
 
