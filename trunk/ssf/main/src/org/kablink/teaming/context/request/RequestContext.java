@@ -36,6 +36,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.kablink.teaming.asmodule.zonecontext.ZoneContextHolder;
 import org.kablink.teaming.dao.ProfileDao;
 import org.kablink.teaming.domain.Application;
 import org.kablink.teaming.domain.NoUserByTheIdException;
@@ -89,6 +90,8 @@ public class RequestContext {
     
     private List<WorkAreaOperation> increaseByRights;
     private List<WorkAreaOperation> decreaseByRights;
+    
+    private String lastSearchNodeName;
     
     // IMPORTANT: This object is designed to contain only those properties that
     //            are needed to fetch corresponding user, application, or zone object. 
@@ -330,4 +333,15 @@ public class RequestContext {
 		this.decreaseByRights = decreaseByRights;
 	}
 
+	public String getLastSearchNodeName() {
+		return lastSearchNodeName;
+	}
+
+	public void setLastSearchNodeName(String lastSearchNodeName) {
+		this.lastSearchNodeName = lastSearchNodeName;
+	}
+
+	public String getClientIdentity() {
+		return getUserName() + "@" + ZoneContextHolder.getClientAddr();
+	}
 }
