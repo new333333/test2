@@ -44,6 +44,9 @@ public class SessionWrappedInputStream extends InputStream {
 	private RepositorySession session;
 
 	public SessionWrappedInputStream(InputStream in, RepositorySession session) {
+		if(in == null)
+			throw new IllegalArgumentException("Input stream must be specified");
+
 		this.target = in;
 		this.session = session;
 	}

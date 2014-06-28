@@ -52,6 +52,9 @@ public class TraceableInputStreamWrapper extends InputStream implements Comparab
 	private String path; // Some sort of path representing the original resource.
 	
 	public TraceableInputStreamWrapper(InputStream original, String path) {
+		if(original == null)
+			throw new IllegalArgumentException("Input stream must be specified");
+		
 		logger.debug("calling constructor() on [" + path + "]");
 		
 		this.original = original;
