@@ -463,8 +463,8 @@ public abstract class Converter<T> {
 				convertedFile.getParentFile(),
 				false);
 			
-			// Correct encoding here.
-			if (getConverterType().isText() && filePath.endsWith(getCachedFileSuffix())) {
+			// Correct text file encoding here.
+			if (getConverterType().isText() && filePath.endsWith(getBaseFileSuffix())) {
 				checkAndConvertEncoding(copyOfOriginalFile);
 			}
 			
@@ -554,10 +554,6 @@ public abstract class Converter<T> {
 	 */
 	protected void checkAndConvertEncoding(File origFile)
 			throws IOException {
-		if (compressCachedFiles()) {
-			return;
-		}
-		
 		// Get the encoding of the input stream.
 		String encoding = FileCharsetDetectorUtil.charDetect(origFile);
 		String timestamp = getTimestamp();
