@@ -44,7 +44,11 @@
 <div id="ss_indexing_done_div" class="teamingDlgBox" style="position:absolute;display:none;">
 	<div class="popupContent" style="padding: 20px;">
 		<span class="ss_bold"><ssf:nlt tag="index.finished"/></span>
-		<div class="margintop1"><ssf:nlt tag="index.errorsFound"><ssf:param name="value" value="${ssErrorIndexingCount}"/></ssf:nlt></div>
+		<div class="margintop1">
+		  <c:if test="${!empty ssErrorIndexingCount}">
+			<ssf:nlt tag="index.errorsFound"><ssf:param name="value" value="${ssErrorIndexingCount}"/></ssf:nlt>
+		  </c:if>
+		</div>
 		<c:if test="${!empty ssErrorIndexingStrings}">
 			<div class="margintop1" style="padding-left:12px;">
 			    <span class="ss_bold"><ssf:nlt tag="index.generalErrors"/></span>
