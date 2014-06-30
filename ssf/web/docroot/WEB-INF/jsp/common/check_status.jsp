@@ -40,7 +40,7 @@
 <%@ include file="/WEB-INF/jsp/common/ajax_status.jsp" %>
 
 	<taconite-replace contextNodeID="ss_operation_status" parseInBrowser="true">
-		<div id="ss_operation_status"><span class="statusMessage">${ss_operation_status}</span></div>
+		<div id="ss_operation_status" style="${ss_style}"><span class="statusMessage">${ss_operation_status}</span></div>
 	</taconite-replace>
 
 </taconite-root>
