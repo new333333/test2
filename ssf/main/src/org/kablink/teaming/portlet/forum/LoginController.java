@@ -216,7 +216,6 @@ public class LoginController  extends SAbstractControllerRetry {
     	{
     		if ( sessionObj instanceof ExternalUserRespondingToInvitationException )
     		{
-    			if ( Utils.checkIfFilr() || Utils.checkIfFilrAndVibe() )
     			{
 	    			ExternalUserRespondingToInvitationException ex;
 	    			String providerName;
