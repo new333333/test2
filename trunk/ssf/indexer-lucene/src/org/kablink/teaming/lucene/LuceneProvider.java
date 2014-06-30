@@ -84,6 +84,7 @@ import org.apache.lucene.store.SimpleFSDirectory;
 
 import org.kablink.teaming.lucene.analyzer.VibeIndexAnalyzer;
 import org.kablink.teaming.lucene.util.LanguageTaster;
+import org.kablink.teaming.lucene.util.LuceneSearchUtil;
 import org.kablink.teaming.lucene.util.TagObject;
 import org.kablink.util.EventsStatistics;
 import org.kablink.util.PropsUtil;
@@ -351,6 +352,12 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 
 	public void addDeleteDocuments(ArrayList docsToAddOrDelete) throws LuceneException {
 		long startTime = System.nanoTime();
+		
+		if(PropsUtil.getBoolean("lucene.log.effective.deletes", false)) {
+			List effectiveDeletes = LuceneSearchUtil.getEffectiveDeletes(docsToAddOrDelete);
+			for(Object obj : effectiveDeletes)
+				logger.info("Request to delete from index - [" + obj + "]");
+		}
 
 		for(Object obj : docsToAddOrDelete) {
 			if(obj instanceof Document) {
