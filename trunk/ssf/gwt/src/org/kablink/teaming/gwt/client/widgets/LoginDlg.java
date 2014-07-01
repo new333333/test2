@@ -143,7 +143,6 @@ public class LoginDlg extends DlgBox
 	private FlowPanel m_selfRegPanel;
 	private Button m_registerBtn;
 	private Button m_pwdResetBtn;
-	private FlowPanel m_externalUserSelfRegOpenIdPanel;
 	private ForgottenPwdDlg m_forgottenPwdDlg = null;
 
 	private String m_loginUrl = null;
@@ -152,7 +151,6 @@ public class LoginDlg extends DlgBox
 	private GwtSelfRegistrationInfo m_selfRegInfo = null;
 	private boolean m_requestedLoginInfo = false;
 	private LoginStatus m_loginStatus;
-	private String m_openIdProviderUrl;
 	private boolean m_useOpenIdAuth = false;
 	private boolean m_initialized = false;
 	private int m_numAttempts = 0;
@@ -740,11 +738,6 @@ public class LoginDlg extends DlgBox
 	 */
 	private void danceExternalUserRegistrationControls( boolean openIdAuthAllowed )
 	{
-		if ( m_externalUserSelfRegOpenIdPanel != null )
-		{
-			// Show/hide the openID panel in the external user self registration ui
-			m_externalUserSelfRegOpenIdPanel.setVisible( openIdAuthAllowed );
-		}
 	}
 	
 	/**
@@ -1400,7 +1393,6 @@ public class LoginDlg extends DlgBox
 	 */
 	private void showExternalUserRegistrationUI()
 	{
-		String openIdProviderName;
 		GwtTeamingMessages messages;
 		FlowPanel panel;
 		
@@ -1541,87 +1533,6 @@ public class LoginDlg extends DlgBox
 				table.setWidget( row, 1, m_pwd2TxtBox );
 				++row;
 			}
-		}
-		
-		// Get the name of the OpenID provider the user can use to complete the registration.
-		openIdProviderName = GwtTeaming.getMainPage().getLoginOpenIdProviderName();
-
-		// Get the url of the OpenID provider
-		m_openIdProviderUrl = GwtTeaming.getMainPage().getLoginOpenIdProviderUrl();
-		
-		// Does the user have the option of completing the registration using OpenID? 
-		if ( openIdProviderName != null && openIdProviderName.length() > 0 &&
-			 m_openIdProviderUrl != null && m_openIdProviderUrl.length() > 0 )
-		{
-			FlexTable table;
-			FlexCellFormatter cellFormatter;
-			Label label;
-			Image providerImg;
-
-			// Yes
-
-			m_externalUserSelfRegOpenIdPanel = new FlowPanel();
-			m_externalUserSelfRegOpenIdPanel.setVisible( false );
-			
-			// Add the word "Or"
-			{
-				Label orLabel;
-				
-				orLabel = new Label( messages.loginDlg_OrLabel() );
-				orLabel.addStyleName( "loginDlg_OrText" );
-				m_externalUserSelfRegOpenIdPanel.add( orLabel );
-			}
-			
-			// Create an image for the openId provider
-			{
-				final GwtOpenIDAuthenticationProvider provider;
-				
-				provider = new GwtOpenIDAuthenticationProvider();
-				provider.setName( openIdProviderName );
-				provider.setTitle( openIdProviderName );
-				provider.setUrl( m_openIdProviderUrl );
-				
-				providerImg = new OpenIDAuthProviderImg( provider );
-				providerImg = new Image( providerImg.getUrl() );
-				providerImg.addStyleName( "loginDlg_openIdProviderImg" );
-				providerImg.setPixelSize( 50, 30 );
-				
-				providerImg.addClickHandler( new ClickHandler() 
-				{
-					@Override
-					public void onClick( ClickEvent event )
-					{
-						Scheduler.ScheduledCommand cmd;
-						
-						cmd = new Scheduler.ScheduledCommand()
-						{
-							@Override
-							public void execute() 
-							{
-								m_useOpenIdAuth = true;
-								handleOpenIDAuthProviderSelected( provider );
-							}
-						};
-						Scheduler.get().scheduleDeferred( cmd );
-					}
-				} );
-			}
-
-			// Add some space
-			m_externalUserSelfRegOpenIdPanel.add( new FlowPanel() );
-			
-			table = new FlexTable();
-			m_externalUserSelfRegOpenIdPanel.add( table );
-			
-			label = new Label( messages.loginDlg_AuthenticateUsingOpenID( openIdProviderName ) );
-			label.getElement().getStyle().setWidth( 290, Unit.PX );
-			table.setWidget( 0, 0, label );
-			
-			table.setWidget( 0, 1, providerImg );
-			cellFormatter = table.getFlexCellFormatter();
-			cellFormatter.setVerticalAlignment( 0, 1, HasVerticalAlignment.ALIGN_TOP );
-			
-			panel.add( m_externalUserSelfRegOpenIdPanel );
 		}
 		
 		// Hide the user name and password controls that are used for regular authentication
