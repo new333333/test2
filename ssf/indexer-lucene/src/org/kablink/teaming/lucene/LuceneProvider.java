@@ -356,7 +356,7 @@ public class LuceneProvider extends IndexSupport implements LuceneProviderMBean 
 		if(PropsUtil.getBoolean("lucene.log.effective.deletes", false)) {
 			List effectiveDeletes = LuceneSearchUtil.getEffectiveDeletes(docsToAddOrDelete);
 			for(Object obj : effectiveDeletes)
-				logger.info("Request to delete from index - [" + obj + "]");
+				logger.warn("Request to delete from index - [" + obj + "]");
 		}
 
 		for(Object obj : docsToAddOrDelete) {

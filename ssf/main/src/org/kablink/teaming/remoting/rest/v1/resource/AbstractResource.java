@@ -49,6 +49,7 @@ import org.kablink.teaming.InvalidEmailAddressException;
 import org.kablink.teaming.NoObjectByTheIdException;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.UncheckedIOException;
+import org.kablink.teaming.asmodule.zonecontext.ZoneContextHolder;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.CoreDao;
 import org.kablink.teaming.dao.util.ShareItemSelectSpec;
@@ -81,6 +82,7 @@ import org.kablink.teaming.security.AccessControlManager;
 import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.util.AbstractAllModulesInjected;
 import org.kablink.teaming.util.InvokeException;
+import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.ShareLists;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.Utils;
@@ -974,6 +976,17 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         SearchResultList<SearchableObject> results = new SearchResultList<SearchableObject>(offset);
         results.setLastModified(lastModified);
         SearchResultBuilderUtil.buildSearchResults(results, new UniversalBuilder(descriptionFormat, false), resultMap, nextUrl, nextParams, offset);
+        
+        if(results.getCount() == 0 && SPropsUtil.getBoolean("rest.api.log.zero.size.search.results", false)) {
+        	StringBuilder sb = new StringBuilder("REST response: (")
+					.append(RequestContextHolder.getRequestContext().getClientIdentity())
+        			.append(") ")
+        			.append("Empty result from lookUpChildren using node '")
+        			.append(RequestContextHolder.getRequestContext().getLastSearchNodeName())
+        			.append("'");
+        	logger.warn(sb.toString());
+        }
+
         return results;
     }
 
@@ -1879,6 +1892,19 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         if (modifiedSince!=null && results.getLastModified()!=null && !modifiedSince.before(results.getLastModified())) {
             throw new NotModifiedException();
         }
+        
+        if(results.getCount() == 0 && SPropsUtil.getBoolean("rest.api.log.zero.size.search.results", false)) {
+        	StringBuilder sb = new StringBuilder("REST response: (")
+        			.append(RequestContextHolder.getRequestContext().getClientIdentity())
+        			.append(") ")
+        			.append("Empty result from getChildren under binder ")
+        			.append(id)
+        			.append(" using node '")
+        			.append(RequestContextHolder.getRequestContext().getLastSearchNodeName())
+        			.append("'");
+        	logger.warn(sb.toString());
+        }
+        
         return results;
     }
 
