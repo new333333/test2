@@ -1,6 +1,6 @@
 <%
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -16,10 +16,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -59,8 +59,17 @@
 		multipleAllowed = true;
 	}
 	String folderId = null;
+	
+	// We use propertyName to construct JavaScript methods, ... so that
+	// can't contain '-'s as that would generate an invalid name.  If
+	// propertyName contains '-'s...
+	String propertyName4Tree = propertyName;
+	if ((null != propertyName) && (0 < propertyName.length() && propertyName.contains("-"))) {
+		// ...replace them with somthing that would constitute a valid
+		// ...name than we'll use instead.
+		propertyName4Tree = org.kablink.util.StringUtil.replace(propertyName, '-', "_dash_");
+	}
 %>
-
 
 <c:if test="${! empty ssDefinitionEntry}">
 	<c:set var="places_entry" value="${ssDefinitionEntry}"/>
@@ -80,6 +89,7 @@
 	%>
 </c:if>
 <c:set var="propertyName" value="<%= propertyName %>"/>
+<c:set var="propertyName4Tree" value="<%= propertyName4Tree %>"/>
 <c:set var="multipleAllowed" value="<%= multipleAllowed %>"/>
 <c:set var="folderId" value="<%= folderId %>"/>
 <c:set var="folderIds" value="<%= folderIds %>"/>
@@ -89,7 +99,7 @@
   
   	<c:choose>
 		<c:when test="${!empty ssDomTree}">
-			<c:set var="treeName" value="t_searchForm_wsTree${response.namespace}${propertyName}" />
+			<c:set var="treeName" value="t_searchForm_wsTree${response.namespace}${propertyName4Tree}" />
 			<script type="text/javascript">
 				/* check/uncheck checkboxes in tree on click place name */
 				function ${treeName}_showId(forum, obj) {
