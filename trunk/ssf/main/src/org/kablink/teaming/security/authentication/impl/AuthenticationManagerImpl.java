@@ -680,6 +680,7 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 		Map updates = new HashMap();
 		updates.put("password", password);
 		getProfileModule().modifyUserFromPortal(user.getId(), updates, null);
+        EncryptUtil.clearCachedPassword(user.getId());
 	}
 	
 	@Override
