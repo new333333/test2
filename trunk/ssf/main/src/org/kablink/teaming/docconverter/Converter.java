@@ -70,6 +70,7 @@ public abstract class Converter<T> {
 	private int			m_conversionTimeoutMS = 30000;	//
 	private int			m_GZipBufferSize;				//
 	private long		m_emptyCachedFileLength;		//
+	private long		m_maxTextEncodeThreshold;		//
 	private long		m_maxTextLength;				//
 	private String		m_cacheSubDir;					//
 	
@@ -99,9 +100,13 @@ public abstract class Converter<T> {
 	 * @param subDir
 	 */
 	public Converter(String subDir) {
-		m_cacheSubDir    = subDir;
-		m_cacheFileStore = new FileStore(SPropsUtil.getString("cache.file.store.dir"),                  m_cacheSubDir);
-		m_maxTextLength  =               SPropsUtil.getLong(  "doc.max.text.extraction.size.threshold", 1048576      );
+		m_cacheSubDir            = subDir;
+		m_cacheFileStore         = new FileStore(SPropsUtil.getString("cache.file.store.dir"),                  m_cacheSubDir);
+		m_maxTextLength          =               SPropsUtil.getLong(  "doc.max.text.extraction.size.threshold", 1048576L     );
+		m_maxTextEncodeThreshold =               SPropsUtil.getLong(  "doc.max.txt.encode.size.threshold",      1048576L     );
+		if (0 >= m_maxTextEncodeThreshold) {
+			m_maxTextEncodeThreshold = Long.MAX_VALUE;
+		}
 		
 		if (compressCachedFiles())
 		     m_emptyCachedFileLength = 20l;
@@ -361,6 +366,9 @@ public abstract class Converter<T> {
 				if (!parentDir.exists())
 					parentDir.mkdirs();
 				createConvertedFileWithDefaultContent(convertedFile);
+				if(logger.isDebugEnabled()) {
+					logger.debug("Conversion Skipped, file exceeds 'doc.conversion.size.threshold'! " + fa.getFileItem().getName());
+				}
 			}
 			else {
 				createCachedFile(convertedFile, binder, entry, fa, filePath, relativeFilePath, parameters);
@@ -465,7 +473,7 @@ public abstract class Converter<T> {
 			
 			// Correct text file encoding here.
 			if (getConverterType().isText() && filePath.endsWith(getBaseFileSuffix())) {
-				checkAndConvertEncoding(copyOfOriginalFile);
+				checkAndConvertEncoding(copyOfOriginalFile, fa.getFileItem().getName());
 			}
 			
     		long begin = System.nanoTime();
@@ -552,8 +560,17 @@ public abstract class Converter<T> {
 	 * 
 	 * @throws IOException
 	 */
-	protected void checkAndConvertEncoding(File origFile)
-			throws IOException {
+	protected void checkAndConvertEncoding(File origFile, String baseFileName) throws IOException {
+		// If the file is larger than our maximum plain text encoding
+		// size...
+		if (origFile.length() > m_maxTextEncodeThreshold) {
+			// ...simply bail and don't mess with the file's encoding.
+			if(logger.isDebugEnabled()) {
+				logger.debug("Text Encoding Skipped, file exceeds 'doc.max.txt.encode.size.threshold'! " + baseFileName);
+			}
+			return;
+		}
+		
 		// Get the encoding of the input stream.
 		String encoding = FileCharsetDetectorUtil.charDetect(origFile);
 		String timestamp = getTimestamp();
