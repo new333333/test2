@@ -786,8 +786,9 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 					if (binder.isZone())
 						clearAll = true;
 					checked.add(binder);
-				} catch (AccessControlException ex) {
+				} catch (AccessControlException ex) {					
 					// Skip the ones we cannot access
+					logger.warn("Skipping binder [" + binder.getPathName() + "] (id=" + binder.getId() + ") from indexing because user '" + RequestContextHolder.getRequestContext().getUserName() + "' has no rights");
 				} catch (Exception ex) {
 					logger.error("Error indexing binder " + binder, ex);
 					errors.addError(binder);
