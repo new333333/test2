@@ -70,12 +70,12 @@ public class XSSCheck implements StringCheck {
 	private static final String PATTERN_STR1a = "(?i)(<[\\s]*/?[\\s]*(?:script|embed|object|applet|style|html|head|body|meta|xml|blink|link|iframe|frame|frameset|form|ilayer|layer|bgsound|base)(?:[\\s]+[^>]*$|$))";
 	private static final String PATTERN_STR1_FILEa = "(?i)(<[\\s]*/?[\\s]*(?:script|embed|object|applet|blink|iframe|frame|frameset|form|ilayer|layer|bgsound|base)(?:[\\s]+[^>]*$|$))";
 
-	private static final String PATTERN_STR2 = "(?i)(<[\\s]*(?:a|img|iframe|area|base|frame|frameset|input|link|xml|meta|blockquote|del|ins|q)[\\s]+[^>]*)((?:href|src|cite|scheme)[\\s]*=[\\s]*(?:([\"'])[\\s]*[^\\s]*script[\\s]*:[^>]*\\2|[^>\\s]*script[\\s]*:[^>\\s]*))([^>]*>)";
-	private static final String PATTERN_STR2_FILE = "(?i)(<[\\s]*(?:a|img|iframe|area|base|frame|frameset|input|link|xml|meta|blockquote|del|ins|q)[\\s]+[^>]*)((?:href|src|cite|scheme)[\\s]*=[\\s]*(?:([\"'])[\\s]*[^\\s]*https?[\\s]*:[^>]*\\2|[^>\\s]*https?[\\s]*:[^>\\s]*))([^>]*>)";
-	private static final String PATTERN_STR2a = "(?i)((?:href|src|cite|scheme)[\\s]*=[\\s]*(?:([\"'])[\\s]*[^\\s]*script[\\s]*:[^>]*\\2|[^>\\s]*script[\\s]*:[^>\\s]*))";
-	private static final String PATTERN_STR2b1 = "(?i)(<[\\s]*(?:a|img|iframe|area|base|frame|frameset|input|link|xml|meta|blockquote|del|ins|q)[\\s]+[^>]*)((?:href|src|cite|scheme)[\\s]*=[\\s]*(?:([\"'])[\\s]*[^\\s]data[\\s]*:[^>]*\\2|[^>\\s]data[\\s]*:[^>\\s]*))([^>]*>)";
-	private static final String PATTERN_STR2b2 = "(?i)((?:href|src|cite|scheme)[\\s]*=[\\s]*(?:([\"'])[\\s]*[^\\s]data[\\s]*:[^>]*\\2|[^>\\s]data[\\s]*:[^>\\s]*))";
-	private static final String PATTERN_STR2b3 = "(?i)((?:href|src|cite|scheme)[\\s]*=[\\s]*(?:([\"'])[\\s]*[^\\s]data:image[^>]*\\2|[^>\\s]data:image[^>\\s]*))";
+	private static final String PATTERN_STR2 = "(?i)(<[\\s]*(?:a|button|img|iframe|area|base|frame|frameset|input|link|xml|math|maction|meta|blockquote|del|ins|q)[\\s]+[^>]*)((?:href|xlink:href|src|cite|scheme|formaction|actiontype)[\\s]*=[\\s]*(?:([\"'])[\\s]*[^\\s]*script[\\s]*:[^>]*\\2|[^>\\s]*script[\\s]*:[^>\\s]*))([^>]*>)";
+	private static final String PATTERN_STR2_FILE = "(?i)(<[\\s]*(?:a|button|img|iframe|area|base|frame|frameset|input|link|xml|math|maction|meta|blockquote|del|ins|q)[\\s]+[^>]*)((?:href|xlink:href|src|cite|scheme|formaction|actiontype)[\\s]*=[\\s]*(?:([\"'])[\\s]*[^\\s]*https?[\\s]*:[^>]*\\2|[^>\\s]*https?[\\s]*:[^>\\s]*))([^>]*>)";
+	private static final String PATTERN_STR2a = "(?i)((?:href|xlink:href|src|cite|scheme|formaction|actiontype)[\\s]*=[\\s]*(?:([\"'])[\\s]*[^\\s]*script[\\s]*:[^>]*\\2|[^>\\s]*script[\\s]*:[^>\\s]*))";
+	private static final String PATTERN_STR2b1 = "(?i)(<[\\s]*(?:a|button|img|iframe|area|base|frame|frameset|input|link|xml|math|maction|meta|blockquote|del|ins|q)[\\s]+[^>]*)((?:href|xlink:href|src|cite|scheme|formaction|actiontype)[\\s]*=[\\s]*(?:([\"'])[\\s]*[^\\s]data[\\s]*:[^>]*\\2|[^>\\s]data[\\s]*:[^>\\s]*))([^>]*>)";
+	private static final String PATTERN_STR2b2 = "(?i)((?:href|xlink:href|src|cite|scheme|formaction|actiontype)[\\s]*=[\\s]*(?:([\"'])[\\s]*[^\\s]data[\\s]*:[^>]*\\2|[^>\\s]data[\\s]*:[^>\\s]*))";
+	private static final String PATTERN_STR2b3 = "(?i)((?:href|xlink:href|src|cite|scheme|formaction|actiontype)[\\s]*=[\\s]*(?:([\"'])[\\s]*[^\\s]data:image[^>]*\\2|[^>\\s]data:image[^>\\s]*))";
 
 	private static final String PATTERN_STR3 = "(?i)<[\\s]*[^>]+[\\s]*([^>]*)>";
 	private static final String PATTERN_STR4 = "(?i)(?:style[\\s]*=[\\s]*\"[^\">]*\"|style[\\s]*=[\\s]*'[^'>]*'|style[\\s]*=[^<>\\s\"']*)";
