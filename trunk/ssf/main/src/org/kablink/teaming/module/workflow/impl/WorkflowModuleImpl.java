@@ -100,6 +100,10 @@ import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.util.Validator;
 import org.kablink.util.VibeRuntimeException;
 import org.kablink.util.api.ApiErrorCode;
+import org.quartz.Scheduler;
+import org.quartz.SchedulerException;
+import org.quartz.SimpleTrigger;
+import org.quartz.Trigger;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.orm.hibernate3.SessionFactoryUtils;
 import org.springframework.transaction.TransactionStatus;
@@ -164,7 +168,40 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 			   seconds = Integer.parseInt(secsString);
 		   } catch (Exception ex) {};
 		   job.schedule(zone.getId(), seconds);
-	   }
+		   
+		   Scheduler scheduler = (Scheduler)SpringContextUtil.getBean("scheduler");
+		   try {
+				Trigger trigger = scheduler.getTrigger(zone.getId().toString(), WorkflowTimeout.WORKFLOW_TIMER_GROUP);
+				if (trigger != null) {
+					int timesFired = 0;
+					int triggerState = scheduler.getTriggerState(zone.getId().toString(), WorkflowTimeout.WORKFLOW_TIMER_GROUP);
+					if (trigger instanceof SimpleTrigger) {
+						timesFired = ((SimpleTrigger)trigger).getTimesTriggered();
+					}
+					Date now = new Date();
+					Date lastFire = trigger.getPreviousFireTime();
+					if (timesFired > 0 && triggerState == Trigger.STATE_BLOCKED && lastFire != null) {
+						//This trigger may be stalled
+						Date lastFirePlus10Min = new Date();
+						lastFirePlus10Min.setTime(lastFire.getTime() + 10*60*1000);
+						if (now.after(lastFirePlus10Min)) {
+							job.remove(zone.getId());
+							job.schedule(zone.getId(), seconds);
+						}
+					}
+				}
+		   } catch (Exception e) {}
+	   	} else {
+	   		//Filr is running. Turn off the workflow timer job if it is running
+	   		try {
+		   		if (zone.isDeleted()) return;
+		   		WorkflowTimeout job = getProcessor(zone);
+		   		//make sure a timeout job is removed for the zone
+		   		if (job != null) {
+		   			job.remove(zone.getId());
+		   		}
+	   		} catch (Exception e) {}
+	   	}
     }
 
 	public void deleteProcessDefinition(String name) {
