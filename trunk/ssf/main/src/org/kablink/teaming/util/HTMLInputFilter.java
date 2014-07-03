@@ -148,6 +148,7 @@ public class HTMLInputFilter
   
   //Patterns 
   private static final String PATTERN_ESCAPE_COMMENTS = "<!--(.*?)-->";
+  private static final String PATTERN_ESCAPE_COMMENTS2 = "<[\\s]*comment[\\s]*[^>]*>(.*?)<[\\s]*/comment[\\s]*[^>]*>";
   private static final String PATTERN_CHECK_TAGS = "<(.*?)>";
   private static final String PATTERN_REGEXP_REPLACE1 = "<(.*?)>";
   private static final String PATTERN_REGEXP_REPLACE2 = "<([^>]*?)(?=<|$)";
@@ -164,6 +165,7 @@ public class HTMLInputFilter
   private static final String PATTERN_VALIDATE_ENTITIES2 = "(>|^)([^<]+?)(<|$)";
   
   private Pattern pattern_escape_comments;
+  private Pattern pattern_escape_comments2;
   private Pattern pattern_check_tags;
   private Pattern pattern_regexp_replace1;
   private Pattern pattern_regexp_replace2;
@@ -187,6 +189,7 @@ public class HTMLInputFilter
   public HTMLInputFilter( boolean debug )
   {
 	pattern_escape_comments = Pattern.compile(PATTERN_ESCAPE_COMMENTS, Pattern.DOTALL);
+	pattern_escape_comments2 = Pattern.compile(PATTERN_ESCAPE_COMMENTS2, Pattern.DOTALL);
 	pattern_check_tags = Pattern.compile( PATTERN_CHECK_TAGS, Pattern.DOTALL );
 	pattern_regexp_replace1 = Pattern.compile( PATTERN_REGEXP_REPLACE1 );
 	pattern_regexp_replace2 = Pattern.compile( PATTERN_REGEXP_REPLACE2 );
@@ -305,6 +308,7 @@ public class HTMLInputFilter
     debug( "              INPUT: " + input );
     
     s = escapeComments(s);
+    s = escapeComments2(s);
     debug( "     escapeComments: " + s );
     
     s = balanceHTML(s);
@@ -334,6 +338,19 @@ public class HTMLInputFilter
     if (m.find()) {
       String match = m.group( 1 ); //(.*?)
       m.appendReplacement( buf, Matcher.quoteReplacement("<!--" + htmlSpecialChars( match ) + "-->" ));
+    }
+    m.appendTail( buf );
+    
+    return buf.toString();
+  }
+  
+  protected String escapeComments2( String s )
+  {
+    Matcher m = pattern_escape_comments2.matcher( s );
+    StringBuffer buf = new StringBuffer();
+    if (m.find()) {
+      String match = m.group( 1 ); //(.*?)
+      m.appendReplacement( buf, Matcher.quoteReplacement("<comment>" + htmlSpecialChars( match ) + "</comment>" ));
     }
     m.appendTail( buf );
     
