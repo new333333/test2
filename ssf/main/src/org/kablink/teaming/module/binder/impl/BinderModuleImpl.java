@@ -907,8 +907,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 					// state for subsequent searches. It will also help cut down on
 					// the number of file descriptors opened during the indexing.
 					if (clearAll) {
-						if(logger.isDebugEnabled())
-							logger.debug("Optimizing indexes");
+						logger.info("Optimizing indexes");
 						final LuceneWriteSession luceneSession = getLuceneSessionFactory()
 								.openWriteSession(nodeNames);
 						try {
