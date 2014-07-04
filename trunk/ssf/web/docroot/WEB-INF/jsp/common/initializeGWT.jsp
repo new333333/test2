@@ -35,7 +35,7 @@
 <%@ page import="org.kablink.teaming.util.NLT"         %>
 <%@ page import="org.kablink.teaming.util.ReleaseInfo" %>
 
-<meta name="gwt:property" content="locale=${ssUserLocale}">
+<meta name="gwt:property" content="locale=<%= NLT.get( "Teaming.Lang" ) %>">
 
 <link href="<html:rootPath/>js/gwt/gwtteaming/GwtTeaming.css"                rel="stylesheet" type="text/css" />
 <link href="<html:rootPath/>js/gwt/gwtteaming/GwtProfile.css"                rel="stylesheet" type="text/css" />
