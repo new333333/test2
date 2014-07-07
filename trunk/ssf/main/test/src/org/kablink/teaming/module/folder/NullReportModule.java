@@ -39,6 +39,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.AuditTrail;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.ChangeLog;
@@ -228,6 +229,15 @@ public class NullReportModule implements ReportModule {
 			Date startDate) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	public void addAuditTrail(AuditType type, DefinableEntity entity,
+			Date startDate, String description) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void addAuditTrail(AuditType type, DefinableEntity entity, String description) {
 	}
 
 	/* (non-Javadoc)
