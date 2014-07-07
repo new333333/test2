@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -131,8 +131,7 @@ import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.event.shared.EventHandler;
 import com.google.gwt.resources.client.ImageResource;
-import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.Element;
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Anchor;
@@ -160,7 +159,7 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
  */
 public class TaskTable extends Composite
 	implements
-	// Event handlers implemented by this class.
+		// Event handlers implemented by this class.
 		ChangeEntryTypeSelectedEntitiesEvent.Handler,
 		CopySelectedEntitiesEvent.Handler,
 		DeleteSelectedEntitiesEvent.Handler,
@@ -466,7 +465,7 @@ public class TaskTable extends Composite
 			FlowPanel fp = m_processActiveWidgets.getProcessActiveDIV();
 			int width = getWidget().getOffsetWidth();
 			int left  = (((width - fp.getOffsetWidth()) / 2) - 40);
-			DOM.setStyleAttribute(fp.getElement(), "left", Integer.toString(left) + "px");
+			fp.getElement().getStyle().setProperty("left", (Integer.toString(left) + "px"));
 			
 			// ...and show it.
 			fp.setVisible(true);
@@ -755,7 +754,7 @@ public class TaskTable extends Composite
 		final TaskInfo ti = selectedTask.getTask();
 		final Long entryId = ti.getTaskId().getEntityId();
 		SaveTaskDueDateCmd cmd = new SaveTaskDueDateCmd(ti.getTaskId(), newDueDate);
-		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
+		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
 			@Override
 			public void onFailure(Throwable caught) {
 				GwtClientHelper.handleGwtRPCFailure(
@@ -769,7 +768,8 @@ public class TaskTable extends Composite
 				// Store the new event, as modified by the RPC call, in
 				// the task...
 				TaskEventRpcResponseData responseData = ((TaskEventRpcResponseData) result.getResponseData());
-				ti.setEvent(responseData.getTaskEvent());
+				ti.setEvent(  responseData.getTaskEvent());
+				ti.setOverdue(responseData.isOverdue()   );
 				
 				// ...force the due date column to redraw...
 				UIData uid = getUIData(selectedTask);
