@@ -3428,8 +3428,8 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case SAVE_TASK_DUE_DATE:
 		{
 			SaveTaskDueDateCmd stddCmd = ((SaveTaskDueDateCmd) cmd);
-			TaskEvent result = saveTaskDueDate( ri, stddCmd.getTaskId(), stddCmd.getDueDate() );
-			response = new VibeRpcResponse( new TaskEventRpcResponseData( result ));
+			TaskEventRpcResponseData result = saveTaskDueDate( ri, stddCmd.getTaskId(), stddCmd.getDueDate() );
+			response = new VibeRpcResponse( result );
 			return response;
 		}
 		
@@ -5070,7 +5070,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 	/*
 	 * Stores a due date on the specified task.
 	 */
-	private TaskEvent saveTaskDueDate( HttpRequestInfo ri, EntityId taskId, TaskEvent taskEvent ) throws GwtTeamingException {
+	private TaskEventRpcResponseData saveTaskDueDate( HttpRequestInfo ri, EntityId taskId, TaskEvent taskEvent ) throws GwtTeamingException {
 		SimpleProfiler.start("GwtRpcServiceImpl.saveTaskDueDate()");
 		try {
 			return GwtTaskHelper.saveTaskDueDate( this, taskId, taskEvent );

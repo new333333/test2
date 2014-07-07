@@ -83,6 +83,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.BooleanRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData.ErrorInfo;
 import org.kablink.teaming.gwt.client.rpc.shared.TaskDisplayDataRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.TaskEventRpcResponseData;
 import org.kablink.teaming.gwt.client.util.AssignmentInfo;
 import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.TaskBundle;
@@ -108,6 +109,7 @@ import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.task.TaskHelper;
 import org.kablink.teaming.task.TaskHelper.FilterType;
 import org.kablink.teaming.util.AllModulesInjected;
+import org.kablink.teaming.util.DateComparer;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ResolveIds;
 import org.kablink.teaming.util.SPropsUtil;
@@ -2094,7 +2096,7 @@ public class GwtTaskHelper {
 	 * @throws GwtTeamingException
 	 */
 	@SuppressWarnings("unchecked")
-	public static TaskEvent saveTaskDueDate(AllModulesInjected bs, EntityId taskId, TaskEvent taskEvent) throws GwtTeamingException {
+	public static TaskEventRpcResponseData saveTaskDueDate(AllModulesInjected bs, EntityId taskId, TaskEvent taskEvent) throws GwtTeamingException {
 		TaskEvent reply = null;
 		try {
 			// - - - - - - - - - - - - - //
@@ -2178,9 +2180,14 @@ public class GwtTaskHelper {
 				}
 			}
 			
-			// If we get here, reply refers to the modified TaskEvent or is
-			// null.  Return it.
-			return reply;			
+			// Is the modified task overdue?
+			TaskDate endTD   = reply.getLogicalEnd();
+			Date     endDate = ((null == endTD)   ? null  : endTD.getDate()                );
+			boolean  overdue = ((null == endDate) ? false : DateComparer.isOverdue(endDate));
+
+			// If we get here, reply refers to the modified TaskEvent.
+			// Return it wrapped in a TaskEventRpcResponseData.
+			return new TaskEventRpcResponseData(reply, overdue);			
 		}
 		
 		catch (Exception ex) {
