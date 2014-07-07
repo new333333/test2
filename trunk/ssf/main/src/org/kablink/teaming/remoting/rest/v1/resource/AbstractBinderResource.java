@@ -561,6 +561,10 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
 
     protected void _deleteBinder(long id, boolean purge) {
         org.kablink.teaming.domain.Binder binder = _getBinder(id);
+        if (binder.isMirrored() && (binder instanceof org.kablink.teaming.domain.Folder) &&
+                ((org.kablink.teaming.domain.Folder)binder).isTop()) {
+            throw new BadRequestException(ApiErrorCode.NOT_SUPPORTED, "The folder is a top-level net or home folder and cannot be deleted in this manner.");
+        }
         if (purge || binder.isMirrored()) {
             getBinderModule().deleteBinder(id);
         } else {
