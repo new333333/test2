@@ -295,6 +295,16 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 	public void addAuditTrail(AuditType type, DefinableEntity entity, Date startDate) {
 		addAuditTrail(new AuditTrail(type, RequestContextHolder.getRequestContext().getUser(), entity, startDate));	
 	}
+	public void addAuditTrail(AuditType type, DefinableEntity entity, Date startDate, String description) {
+		AuditTrail auditTrail = new AuditTrail(type, RequestContextHolder.getRequestContext().getUser(), entity, startDate);
+		auditTrail.setDescription(description);
+		addAuditTrail(auditTrail);	
+	}
+	public void addAuditTrail(AuditType type, DefinableEntity entity, String description) {
+		AuditTrail auditTrail = new AuditTrail(type, RequestContextHolder.getRequestContext().getUser(), entity);
+		auditTrail.setDescription(description);
+		addAuditTrail(auditTrail);
+	}
 	public void addLoginInfo(LoginInfo loginInfo) {
 		addAuditTrail(loginInfo);		
 	}

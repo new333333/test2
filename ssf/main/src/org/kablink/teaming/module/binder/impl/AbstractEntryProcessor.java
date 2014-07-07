@@ -243,7 +243,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         	getTransactionTemplate().execute(new TransactionCallback() {
         		@Override
 				public Object doInTransaction(TransactionStatus status) {
-                    	//After the entry is successfully added, start up any associated workflows
+                    //After the entry is successfully added, start up any associated workflows
         			SimpleProfiler.start("addEntry_startWorkflow");
                 	addEntry_startWorkflow(entry, ctx);
                 	SimpleProfiler.stop("addEntry_startWorkflow");
@@ -955,7 +955,13 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     	reorderFiles(entry, inputData, entryData);
     	editFileComments(entry, inputData);
     	processChangeLog(entry, ChangeLog.MODIFYENTRY, false, skipNotifyStatus);
-    	getReportModule().addAuditTrail(AuditType.modify, entry);
+    	String description = (String)ctx.get(ObjectKeys.FIELD_ENTITY_TITLE);
+    	if (description == null || entry.getTitle().equals(description)) {
+    		getReportModule().addAuditTrail(AuditType.modify, entry);
+    	} else {
+    		//The original title of this entry has changed. So, store that old title in the description field
+    		getReportModule().addAuditTrail(AuditType.modify, entry, description);
+    	}
 
     	if(fileRenamesTo != null)
 	    	for(FileAttachment fa : fileRenamesTo.keySet()) {
@@ -1084,7 +1090,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
    		if (entry.isTop() && parentBinder.isUniqueTitles()) 
    			getCoreDao().updateTitle(parentBinder, entry, entry.getNormalTitle(), null);		
    		// Make sure that the audit trail's timestamp is identical to the modification time of the entry. 
-    	getReportModule().addAuditTrail(AuditType.delete, entry, entry.getModification().getDate());
+    	getReportModule().addAuditTrail(AuditType.delete, entry, entry.getModification().getDate(), entry.getTitle());
     }
         
     //inside write transaction

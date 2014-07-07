@@ -54,9 +54,7 @@ import java.util.SortedSet;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.SortField;
-
 import org.dom4j.Element;
-
 import org.hibernate.exception.LockAcquisitionException;
 import org.kablink.teaming.ConfigurationException;
 import org.kablink.teaming.IllegalCharacterInNameException;
@@ -1032,7 +1030,13 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     	//create history - using timestamp and version from fillIn
     	reorderFiles(binder, inputData, entryData);
     	processChangeLog(binder, ChangeLog.MODIFYBINDER);
-    	getReportModule().addAuditTrail(AuditType.modify, binder);
+    	String description = (String)ctx.get(ObjectKeys.FIELD_ENTITY_TITLE);
+    	if (description == null || binder.getTitle().equals(description)) {
+    		getReportModule().addAuditTrail(AuditType.modify, binder);
+    	} else {
+    		//We use the description field to hold the original title in case this is needed at report time
+    		getReportModule().addAuditTrail(AuditType.modify, binder, description);
+    	}
    }
     
     //inside write transaction    
@@ -1224,6 +1228,8 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     }
     //inside write transaction    
     protected void deleteBinder_setCtx(Binder binder, Map ctx) {
+    	//save title before changes
+		ctx.put(ObjectKeys.FIELD_ENTITY_TITLE, binder.getTitle());
     }
     
     //inside write transaction    
@@ -1235,7 +1241,8 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     	processChangeLog(binder, ChangeLog.DELETEBINDER, skipDbLog);
         if(!skipDbLog) {
         	// Make sure that the audit trail's timestamp is identical to the modification time of the binder. 
-        	getReportModule().addAuditTrail(AuditType.delete, binder, binder.getModification().getDate());
+        	//We use the description field to hold the title of the deleted binder so it is available when reports are made
+        	getReportModule().addAuditTrail(AuditType.delete, binder, binder.getModification().getDate(), binder.getTitle());
         }
     	if ((binder.getDefinitionType() != null) &&
     			(binder.getDefinitionType() == Definition.USER_WORKSPACE_VIEW ||
