@@ -48,6 +48,7 @@ import org.kablink.teaming.gwt.client.event.AdministrationEvent;
 import org.kablink.teaming.gwt.client.event.AdministrationExitEvent;
 import org.kablink.teaming.gwt.client.event.AdministrationUpgradeCheckEvent;
 import org.kablink.teaming.gwt.client.event.BrowseHierarchyEvent;
+import org.kablink.teaming.gwt.client.event.BrowseHierarchyExitEvent;
 import org.kablink.teaming.gwt.client.event.ChangeContextEvent;
 import org.kablink.teaming.gwt.client.event.ChangeFavoriteStateEvent;
 import org.kablink.teaming.gwt.client.event.CheckManageUsersActiveEvent;
@@ -2665,7 +2666,8 @@ public class GwtMainPage extends ResizeComposite
 		// If we're already running a bread crumb browser...
 		if (( m_breadCrumbBrowser != null ) && m_breadCrumbBrowser.isShowing() )
 		{
-			// ...we simply ignore requests to open one.
+			// ...we simply hide it.
+			BrowseHierarchyExitEvent.fireOneAsync();
 			return;
 		}
 		
@@ -2692,7 +2694,7 @@ public class GwtMainPage extends ResizeComposite
 				// bread crumb browser.  Create one...
 				breadCrumbTree = wsTreeCtrl;
 				breadCrumbTree.addStyleName( "mainBreadCrumb_Tree" );
-				m_breadCrumbBrowser = new BreadcrumbTreePopup(true);
+				m_breadCrumbBrowser = new BreadcrumbTreePopup( true );	// true -> Auto hide.
 				GwtClientHelper.scrollUIForPopup( m_breadCrumbBrowser );
 				GwtClientHelper.rollDownPopup(    m_breadCrumbBrowser );
 				m_breadCrumbBrowser.addStyleName( "mainBreadCrumb_Browser roundcornerSM-bottom" );
@@ -2700,10 +2702,11 @@ public class GwtMainPage extends ResizeComposite
 				
 				// ...position it as per the browse hierarchy request...
 				bhi = event.getOnBrowseHierarchyInfo();
-				m_breadCrumbBrowser.setPopupPosition(bhi.getLeft(), bhi.getTop());
+				m_breadCrumbBrowser.setPopupPosition( bhi.getLeft(), bhi.getTop() );
 
 				// ...and play the opening effect.
 				m_breadCrumbBrowser.show();
+				m_breadCrumbBrowser.addAutoHidePartner( bhi.getBrowseHierarchyElement() );
 			}// end onSuccess()
 		} );
 	}// end onBrowseHierarchy()
