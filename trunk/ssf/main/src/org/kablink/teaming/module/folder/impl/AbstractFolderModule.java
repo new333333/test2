@@ -1888,6 +1888,7 @@ public void modifyWorkflowState(Long folderId, Long entryId, Long stateId, Strin
 			logger.trace("Checking for folders marked as deleted to clean up");
 		int success = 0;
 		int fail = 0;
+		int invalid = 0;
 		for (Object obj: folders) {
 			Long folderId;
 			if (obj instanceof Long) {
@@ -1898,18 +1899,37 @@ public void modifyWorkflowState(Long folderId, Long entryId, Long stateId, Strin
 			try {
 				Folder f = getFolderDao().loadFolder(folderId, RequestContextHolder.getRequestContext()
 						.getZoneId());
-				FolderCoreProcessor processor = loadProcessor(f);
-				// (Bug 815697) Don't add change log for entry deletion when it is caused by deletion of parent folder
-				processor.deleteBinder(f, true, null, true);
+				if(f.isDeleted()) {
+					FolderCoreProcessor processor = loadProcessor(f);
+					// (Bug 815697) Don't add change log for entry deletion when it is caused by deletion of parent folder
+					// (Bug #885763) When Fir client requests folder deletion, it is the first phase that goes and deletes
+					// mirrored source if requested. Therefore, there is NO reason to ever do it during the second phase.
+					processor.deleteBinder(f, false, null, true);
+					success++;
+				}
+				else {
+					// Basically, the object loaded from the database is showing different data than the where
+					// clause specified for the initial match. This is impossible unless that database value
+					// was changed between the time the query was executed and the time the matching object was
+					// subsequently loaded. I'm not aware of any code execution path in Filr that would change 
+					// the delete column value from TRUE (1) back to FALSE (0). Another possibility would be
+					// that something is wrong with the first or second level cache that it returned incorrect
+					// or stale information.
+					// So while I have no clue how and why this can happen, apparently and to our amusement,
+					// this problem was observed at least twice from two different customers. So I'm adding
+					// precautionary check that should help avoid executing the wrong code path.
+					// See (Bug #885763) for more details.
+					logger.warn("Cannot clean up folder [" + f.getPathName() + "] (id=" + folderId + ") because it is in invalid state");
+					invalid++;
+				}
 				getCoreDao().evict(f);
-				success++;
 			} catch (Exception ex) {
 				fail++;
-				logger.error(ex);
+				logger.error("Error cleaning up folder " + folderId, ex);
 			}
 		}
 		if(folders != null && folders.size() > 0) {
-			logger.info("Folders cleaned up: success=" + success + ", fail=" + fail);
+			logger.info("Folders cleaned up: success=" + success + ", fail=" + fail + ", invalid=" + invalid);
 		}
 		else {
 			if(debugEnabled)
