@@ -934,7 +934,7 @@ public class GwtViewHelper {
 			// ...set the user's selected view style... 
 			String viewStyle = GwtServerHelper.getPersonalPreferences(bs, request).getDisplayStyle();
 			if (!(MiscUtil.hasString(viewStyle))) {
-				viewStyle = ObjectKeys.USER_DISPLAY_STYLE_NEWPAGE;
+				viewStyle = ObjectKeys.USER_DISPLAY_STYLE_DEFAULT;
 			}
 			reply.setViewStyle(viewStyle);
 	
