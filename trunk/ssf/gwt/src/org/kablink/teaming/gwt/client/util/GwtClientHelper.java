@@ -1840,6 +1840,15 @@ public class GwtClientHelper {
 	}-*/;
 
 	/**
+	 * Invokes the ss_onLoadInit() method from ss_common.js.
+	 */
+	public static native void jsOnLoadInit() /*-{
+		if ($wnd.ss_onLoadInit) {
+			$wnd.ss_onLoadInit();
+		}
+	}-*/;
+
+	/**
 	 * Called to force the GWT UI content area to resize itself based
 	 * on its current content.
 	 * 
