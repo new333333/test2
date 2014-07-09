@@ -310,7 +310,7 @@ public class Html {
 		
 		// TODO:  This needs to be implemented with a real
 		//         implementation.
-		return ("<pre>" + plainText + "</pre>");
+		return ("<pre>" + StringEscapeUtils.escapeHtml(plainText) + "</pre>");
 	}
 
 	public static String plainTextToHTML2(String plainText) {
