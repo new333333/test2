@@ -2554,11 +2554,14 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 	    				kaptchaResponse == null || 
 	    				!kaptchaExpected.equalsIgnoreCase( kaptchaResponse  ) ) {
 					// The text entered by the user did not match the text used to create the kaptcha image.
-					String  gwtCommentNoCaptchaS = inputData.getSingleValue(ObjectKeys.FIELD_ENTITY_GWT_COMMENT_ENTRY);
-					boolean gwtCommentNoCaptcha  = ((null != gwtCommentNoCaptchaS) && gwtCommentNoCaptchaS.equals(String.valueOf(Boolean.TRUE)));
-					if (!gwtCommentNoCaptcha) {
-						entryDataErrors.addProblem(new Problem(Problem.INVALID_CAPTCHA_RESPONSE, null));
-					}
+	    			boolean ignoreCaptcha = ((null == kaptchaExpected) && (null == kaptchaResponse));
+	    			if (!ignoreCaptcha) {
+						String gwtCommentNoCaptchaS = inputData.getSingleValue(ObjectKeys.FIELD_ENTITY_GWT_COMMENT_ENTRY);
+						ignoreCaptcha = ((null != gwtCommentNoCaptchaS) && gwtCommentNoCaptchaS.equals(String.valueOf(Boolean.TRUE)));
+						if (!ignoreCaptcha) {
+							entryDataErrors.addProblem(new Problem(Problem.INVALID_CAPTCHA_RESPONSE, null));
+						}
+	    			}
 				}
 			}
 		} else if (itemName.equals("selectbox")) {
