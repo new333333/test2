@@ -4188,6 +4188,8 @@ function ss_addDashboardEvent(componentId,
 		when = "onAfterHide";
 	}
 	
+	//alert("ss_addDashboardEvent(componentId=" + componentId + ", when=" + when);
+	
 	if (!window.ss_dashboardCallbacks) {
 		ss_dashboardCallbacks = new Object();
 	}
@@ -4212,7 +4214,9 @@ function ss_callDashboardEvent(componentId,
 		when = "onAfterShow";
 	} else if (when == "onHide") {
 		when = "onAfterHide";
-	}	
+	}
+	
+	//alert("ss_callDashboardEvent(componentId=" + componentId + ", when=" + when);
 	
 	if (!window.ss_dashboardCallbacks) {
 		return false;
