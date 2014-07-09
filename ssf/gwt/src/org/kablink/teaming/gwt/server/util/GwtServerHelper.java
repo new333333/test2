@@ -7441,7 +7441,7 @@ public class GwtServerHelper {
 				// No!  Get the user's display style preference.
 				String displayStyle;
 				if (Utils.checkIfFilr())
-				     displayStyle = ObjectKeys.USER_DISPLAY_STYLE_NEWPAGE;
+				     displayStyle = ObjectKeys.USER_DISPLAY_STYLE_DEFAULT;
 				else displayStyle = user.getDisplayStyle();
 				personalPrefs.setDisplayStyle(displayStyle);
 				
@@ -7482,6 +7482,7 @@ public class GwtServerHelper {
 			}
 			
 			else {
+				personalPrefs.setDisplayStyle(ObjectKeys.USER_DISPLAY_STYLE_DEFAULT);
 				GwtLogHelper.warn(m_logger, "GwtServerHelper.getPersonalPreferences():  User is guest.");
 			}
 		}
