@@ -183,14 +183,21 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 					if (timesFired > 0 && triggerState == Trigger.STATE_BLOCKED && lastFire != null) {
 						//This trigger may be stalled
 						Date lastFirePlus10Min = new Date();
-						lastFirePlus10Min.setTime(lastFire.getTime() + 10*60*1000);
+						int fire10Min = 10;
+						String lastFireMin = SPropsUtil.getString("workflow.timer.check_for_stalled_timer", "10");
+					    try {
+						    fire10Min = Integer.parseInt(lastFireMin);
+					    } catch (Exception ex) {};
+						lastFirePlus10Min.setTime(lastFire.getTime() + fire10Min);
 						if (now.after(lastFirePlus10Min)) {
 							job.remove(zone.getId());
 							job.schedule(zone.getId(), seconds);
 						}
 					}
 				}
-		   } catch (Exception e) {}
+		   } catch (Exception e) {
+			   logger.error("Cannot remove stalled Workflow timer.", e);
+		   }
 	   	} else {
 	   		//Filr is running. Turn off the workflow timer job if it is running
 	   		try {
@@ -200,7 +207,9 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 		   		if (job != null) {
 		   			job.remove(zone.getId());
 		   		}
-	   		} catch (Exception e) {}
+	   		} catch (Exception e) {
+	   			logger.error("Cannot remove Workflow timer.", e);
+	   		}
 	   	}
     }
 
