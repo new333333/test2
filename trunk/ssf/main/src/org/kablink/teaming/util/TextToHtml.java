@@ -37,6 +37,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.SingletonViolationException;
@@ -67,6 +68,8 @@ public class TextToHtml {
 		
 		//Break the text into a list of lines
 		String s = inputText;
+		//Make sure there aren't any "<" or ">" chars that might turn into bogus HTML
+		s = StringEscapeUtils.escapeHtml(s);
 		if (stripHtml) {
 			s = Html.stripHtml(s);
 		}
