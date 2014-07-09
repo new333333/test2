@@ -1271,6 +1271,9 @@ public class GwtMainPage extends ResizeComposite
 		// Initializes the callback method used to load a content URL. 
 		initGotoContentUrlJS( this );
 		
+		// Initializes the callback methods used to do UI reloads. 
+		initReloadUIJS( this );
+		
 		// Initialize JavaScript to perform Popup for User Profile
 		initSimpleUserProfileJS( this );
 		
@@ -1317,6 +1320,22 @@ public class GwtMainPage extends ResizeComposite
 		}
 	}-*/;
 
+	/*
+	 * Creates the native JavaScript methods used to perform UI
+	 * reloads.
+	 */
+	private native void initReloadUIJS( GwtMainPage gwtMainPage ) /*-{
+		$wnd.ss_fullUIReload = function()
+		{
+			gwtMainPage.@org.kablink.teaming.gwt.client.GwtMainPage::fullUIReload_FromJSP()();
+		}//end ss_fullUIReload
+		
+		$wnd.ss_windowLocationReload = function()
+		{
+			gwtMainPage.@org.kablink.teaming.gwt.client.GwtMainPage::windowLocationReload_FromJSP()();
+		}//end ss_windowLocationReload
+	}-*/;
+	
 	/*
 	 * Invoke the Simple User Profile or Quick View
 	 */
@@ -2311,14 +2330,38 @@ public class GwtMainPage extends ResizeComposite
 		// Always use the initial form of the method.
 		viewForumEntry( url );
 	}
-	
+
+	/*
+	 * Called from the JSP code to perform a full UI reload.
+	 */
+	private void fullUIReload_FromJSP()
+	{
+		FullUIReloadEvent.fireOneAsync();
+	}//end fullUIReload_FromJSP()
+
+	/*
+	 * Called from the JSP code to perform a window reload.
+	 */
+	private void windowLocationReload_FromJSP()
+	{
+		GwtClientHelper.deferCommand( new ScheduledCommand()
+		{
+			@Override
+			public void execute()
+			{
+				Window.Location.reload();
+			}// end execute()
+		} );
+	}//end windowLocationReload_FromJSP()
+
 	/*
 	 * This method will be called asynchronously goto a URL,
 	 * permalink or otherwise, received as a parameter.
 	 */
 	private void gotoUrlAsync( final String url, final boolean historyAction )
 	{
-		GwtClientHelper.deferCommand( new ScheduledCommand() {
+		GwtClientHelper.deferCommand( new ScheduledCommand()
+		{
 			@Override
 			public void execute()
 			{

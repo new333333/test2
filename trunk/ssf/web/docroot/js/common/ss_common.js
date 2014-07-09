@@ -4319,16 +4319,18 @@ function ss_hideComponentCallback(s, data) {
 	// data = {"divId" : divId, "componentId" : componentId}
 	ss_callDashboardEvent(data.componentId, "onAfterHide");
 }
+
 function ss_deleteComponentCallback() {
-	if (window.top.ss_getUrlFromContentHistory) {
-		var url = window.top.ss_getUrlFromContentHistory(0);
-		if (url && (0 < url.length)) {
-			setTimeout(window.top.ss_gotoContentUrl(url), 100);
-			return;
-		}
-	}
-	setTimeout("document.location.reload();", 100);
+	// When a dashboard compopnent is deleted, we now perform a full
+	// reload of the topmost window location.
+	//
+	// In the JSP days, we simply refreshed the content area.  With
+	// the GWT views, since they DON'T run in an <IFRAME>, we must make
+	// sure every vestiage of the component gets removed, including
+	// those calls added to the JavaScript onLoad handlers, ...
+	setTimeout(window.top.ss_windowLocationReload(), 100);
 }
+
 function ss_confirmDeleteComponent(obj, componentId, divId, divId2, idStr, namespace, scope) {
 	var formObj = ss_getContainingForm(obj)
 	var confirmText = "";
