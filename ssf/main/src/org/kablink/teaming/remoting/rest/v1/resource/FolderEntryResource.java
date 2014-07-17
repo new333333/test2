@@ -268,10 +268,10 @@ public class FolderEntryResource extends AbstractFolderEntryResource {
 
     protected org.kablink.teaming.domain.FolderEntry _getFolderEntry(long id) {
         org.kablink.teaming.domain.FolderEntry hEntry = getFolderModule().getEntry(null, id);
-        if (hEntry.isPreDeleted()) {
+        if (!hEntry.isTop()) {
             throw new NoFolderEntryByTheIdException(id);
         }
-        if (!hEntry.isTop()) {
+        if (_isPreDeleted(hEntry)) {
             throw new NoFolderEntryByTheIdException(id);
         }
         return hEntry;
