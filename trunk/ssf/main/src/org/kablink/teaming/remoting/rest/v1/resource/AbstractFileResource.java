@@ -197,14 +197,11 @@ abstract public class AbstractFileResource extends AbstractResource {
         else {
             DefinableEntity entity = fa.getOwner().getEntity();
             if (entity instanceof FolderEntry) {
-                if (((FolderEntry)entity).isPreDeleted()) {
+                if (_isPreDeleted((FolderEntry)entity)) {
                     throw new NoFileByTheIdException(fileId);
                 }
             } else if (entity instanceof Binder) {
-                if (entity instanceof Folder && ((Folder)entity).isPreDeleted()) {
-                    throw new NoFileByTheIdException(fileId);
-                }
-                if (entity instanceof Workspace && ((Workspace)entity).isPreDeleted()) {
+                if (_isPreDeleted((Binder)entity)) {
                     throw new NoFileByTheIdException(fileId);
                 }
             }
@@ -369,7 +366,7 @@ abstract public class AbstractFileResource extends AbstractResource {
 
     protected org.kablink.teaming.domain.FolderEntry _getFolderEntry(long id) {
         org.kablink.teaming.domain.FolderEntry hEntry = getFolderModule().getEntry(null, id);
-        if (hEntry.isPreDeleted()) {
+        if (_isPreDeleted(hEntry)) {
             throw new NoFolderEntryByTheIdException(id);
         }
         return hEntry;
