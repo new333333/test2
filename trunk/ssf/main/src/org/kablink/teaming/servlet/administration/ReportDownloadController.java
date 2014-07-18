@@ -363,7 +363,7 @@ public class ReportDownloadController extends  SAbstractController {
 				if (row.get(ReportModule.ENTITY).equals("folderEntry")) 
 					entryIds.add((Long)row.get(ReportModule.ENTRY_ID));
 			}
-			if (row.containsKey(ReportModule.DESCRIPTION) && !row.get(ReportModule.DESCRIPTION).equals("")) {
+			if (row.containsKey(ReportModule.DESCRIPTION) && row.get(ReportModule.DESCRIPTION) != null && !"".equals(row.get(ReportModule.DESCRIPTION))) {
 				if (row.get(ReportModule.ENTITY).equals("folderEntry")) {
 					deletedEntryTitles.put((Long)row.get(ReportModule.ENTRY_ID), (String)row.get(ReportModule.DESCRIPTION));
 				}
