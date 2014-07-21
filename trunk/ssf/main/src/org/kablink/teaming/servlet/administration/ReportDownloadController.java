@@ -366,6 +366,17 @@ public class ReportDownloadController extends  SAbstractController {
 			if (row.containsKey(ReportModule.DESCRIPTION) && row.get(ReportModule.DESCRIPTION) != null && !"".equals(row.get(ReportModule.DESCRIPTION))) {
 				if (row.get(ReportModule.ENTITY).equals("folderEntry")) {
 					deletedEntryTitles.put((Long)row.get(ReportModule.ENTRY_ID), (String)row.get(ReportModule.DESCRIPTION));
+				} else if (row.get(ReportModule.ENTITY).equals("folder") || row.get(ReportModule.ENTITY).equals("workspace")) {
+					String description = (String)row.get(ReportModule.DESCRIPTION);
+					String title = description;
+					String path = description;
+					if (description.contains("/")) {
+						title = title.substring(title.lastIndexOf("/")+1, title.length());
+					} else {
+						path = "";
+					}
+					deletedBinderTitles.put((Long)row.get(ReportModule.BINDER_ID), title);
+					deletedBinderPaths.put((Long)row.get(ReportModule.BINDER_ID), path);
 				}
 			}
 		}
