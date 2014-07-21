@@ -601,6 +601,8 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 					boolean fullAccess = _checkAccess(null, binder, BinderOperation.viewBinderTitle, thisLevelOnly);
                     if (!fullAccess && returnLimitedBinderIfInferredAccess) {
                         binder = binder.asLimitedBinder(true);
+                    } else {
+                    	throw ace;
                     }
 				} catch(AccessControlException ace2) {
 					throw ace;
