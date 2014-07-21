@@ -81,7 +81,7 @@ function ss_addInitializedWorkflow(wfIdValue, stepsValue, stepTitles) {
 }
 
 function ss_addInitializedEntry(entryId, fieldName, value, valueLabel, valueType, fieldNameTitle, entryType, entryTypeTitle) {
-	ss_debug("ss_addInitializedEntry: " + entryType + ", " + entryTypeTitle)
+	ss_debug("ss_addInitializedEntry: " + entryType + ", " + entryTypeTitle + ', ' + value + ', ' + valueLabel)
 	if (typeof fieldNameTitle == "undefined") {
 		fieldNameTitle = fieldName;
 	}
@@ -458,7 +458,7 @@ function ss_addEntry(orderNo, entryId, fieldName, value, valueLabel, valueType, 
 							dateValue = new Date(value);
 						}
 						addDateTimeField(orderNo, fieldValueDiv, fieldValue2Div, currentFieldId, fieldName, dateValue);
-					} else if (fieldType == "user_list") {
+					} else if (fieldType == "user_list" || fieldType == "userListSelectbox") {
 						var idToSet = false;
 						var labelToSet = false;
 						if (entryId && fieldName && entryTypeId == entryId && fieldName == currentFieldId) {
