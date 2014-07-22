@@ -117,8 +117,10 @@ public class ConfigureController extends AbstractBinderController {
 					break;
 				}
 			}
-			if (!prefix.equals("") && !prefixIsGlobalKeyword && 
-					!prefix.toLowerCase().equals(user.getUrlSafeName().toLowerCase())) {
+			
+			if (!prefix.equals("") && !prefixIsGlobalKeyword &&
+					!prefix.toLowerCase().equals(user.getUrlSafeName().toLowerCase()) &&
+					!prefix.toLowerCase().equals(binder.getOwner().getUrlSafeName().toLowerCase())) {
 				response.setRenderParameter(WebKeys.SIMPLE_URL_NAME_NOT_ALLOWED_ERROR, "true");
 				return;
 			}
