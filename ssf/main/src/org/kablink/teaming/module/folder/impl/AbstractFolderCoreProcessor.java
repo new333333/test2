@@ -676,7 +676,7 @@ public Entry copyEntry(Binder binder, Entry source, Binder destination, String[]
 		getCoreDao().evict(tags);
 		
 		//If moving share items, do that now
-		if (copyOptions.containsKey(ObjectKeys.INPUT_OPTION_MOVE_SHARE_ITEMS) && 
+		if (copyOptions != null && copyOptions.containsKey(ObjectKeys.INPUT_OPTION_MOVE_SHARE_ITEMS) && 
 				(Boolean)copyOptions.get(ObjectKeys.INPUT_OPTION_MOVE_SHARE_ITEMS)) {
 			List<Long> shareItemIds = getProfileDao().getShareItemIdsByEntity(source);
 			if (!shareItemIds.isEmpty()) {
