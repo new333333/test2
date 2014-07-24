@@ -850,31 +850,39 @@ public void setUserDiskQuotas(Collection<Long> userIds, long megabytes) {
 					group.setDiskQuota(newQuotaMegabytes);
 					List gIds = new ArrayList();
 					gIds.add(group.getId());
-					Set memberIds = getProfileDao().explodeGroups(gIds, zoneId);
-					List memberList = getProfileDao().loadUserPrincipals(memberIds, zoneId, false);
-					Iterator itUsers = memberList.iterator();
-					while (itUsers.hasNext()) {
-						Principal member = (Principal) itUsers.next();
-						if (member.getEntityType().equals(EntityIdentifier.EntityType.user)) {
-							User user = (User)member;
-							//See if this new quota is bigger than what the user already has
-							Long currentUserMaxGroupQuota = user.getMaxGroupsQuota();	//This returns 0 if no quota was set
-							//If the current user max group quota didn't exist (i.e., 0) or is lower than the new quota, 
-							//  then just set it to the new group quota 
-							if (currentUserMaxGroupQuota < newQuotaMegabytes) {
-								user.setMaxGroupsQuota(newQuotaMegabytes);
-							
-							//If the user was using this group's quota and that quota is being made smaller, 
-							//  then we have to calculate the new maximum
-							} else if (currentUserMaxGroupQuota <= originalGroupQuota &&
-									newQuotaMegabytes < originalGroupQuota) {
-								Set<Long> userGroupIds = getProfileDao().getApplicationLevelGroupMembership(user.getId(), zoneId);
-								List<Group> groups = getProfileDao().loadGroups(userGroupIds, zoneId);
-								Long maxGroupQuota = 0L;
-								for (Group g : groups) {
-									if (g.getDiskQuota() > maxGroupQuota) maxGroupQuota = g.getDiskQuota();
+					Set<Long> memberIds = getProfileDao().explodeGroups(gIds, zoneId);
+					while (!memberIds.isEmpty()) {
+						List<Long> memberIdsToLoad = new ArrayList<Long>();
+						for (Long id : memberIds) {
+							memberIdsToLoad.add(id);
+							if (memberIdsToLoad.size() >= 1000) break;
+						}
+						memberIds.removeAll(memberIdsToLoad);
+						List memberList = getProfileDao().loadUserPrincipals(memberIdsToLoad, zoneId, false);
+						Iterator itUsers = memberList.iterator();
+						while (itUsers.hasNext()) {
+							Principal member = (Principal) itUsers.next();
+							if (member.getEntityType().equals(EntityIdentifier.EntityType.user)) {
+								User user = (User)member;
+								//See if this new quota is bigger than what the user already has
+								Long currentUserMaxGroupQuota = user.getMaxGroupsQuota();	//This returns 0 if no quota was set
+								//If the current user max group quota didn't exist (i.e., 0) or is lower than the new quota, 
+								//  then just set it to the new group quota 
+								if (currentUserMaxGroupQuota < newQuotaMegabytes) {
+									user.setMaxGroupsQuota(newQuotaMegabytes);
+								
+								//If the user was using this group's quota and that quota is being made smaller, 
+								//  then we have to calculate the new maximum
+								} else if (currentUserMaxGroupQuota <= originalGroupQuota &&
+										newQuotaMegabytes < originalGroupQuota) {
+									Set<Long> userGroupIds = getProfileDao().getApplicationLevelGroupMembership(user.getId(), zoneId);
+									List<Group> groups = getProfileDao().loadGroups(userGroupIds, zoneId);
+									Long maxGroupQuota = 0L;
+									for (Group g : groups) {
+										if (g.getDiskQuota() > maxGroupQuota) maxGroupQuota = g.getDiskQuota();
+									}
+									user.setMaxGroupsQuota(maxGroupQuota);
 								}
-								user.setMaxGroupsQuota(maxGroupQuota);
 							}
 						}
 					}
