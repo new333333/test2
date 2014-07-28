@@ -108,7 +108,7 @@ public abstract class SimpleTriggerJob extends SSStatefulJob {
 		SimpleJobDescription(Long zoneId) {
 			this.zoneId = zoneId;
 		}
-		SimpleJobDescription(Long zoneId, String jobName, String jobGroup, String jobDescription, int seconds) {
+		public SimpleJobDescription(Long zoneId, String jobName, String jobGroup, String jobDescription, int seconds) {
 			this.zoneId = zoneId;
 			this.jobName = jobName;
 			this.jobGroup = jobGroup;
@@ -116,11 +116,11 @@ public abstract class SimpleTriggerJob extends SSStatefulJob {
 
 			this.seconds = seconds;
 		}
-		SimpleJobDescription(Long zoneId, String jobName, String jobGroup, String jobDescription, int seconds, boolean durability) {
+		public SimpleJobDescription(Long zoneId, String jobName, String jobGroup, String jobDescription, int seconds, boolean durability) {
 			this(zoneId, jobName, jobGroup, jobDescription, seconds);
 			this.durability = durability;
 		}
-		SimpleJobDescription(Long zoneId, String jobName, String jobGroup, String jobDescription, int seconds, boolean durability, int priority) {
+		public SimpleJobDescription(Long zoneId, String jobName, String jobGroup, String jobDescription, int seconds, boolean durability, int priority) {
 			this(zoneId, jobName, jobGroup, jobDescription, seconds);
 			this.durability = durability;
 			this.priority = priority;
