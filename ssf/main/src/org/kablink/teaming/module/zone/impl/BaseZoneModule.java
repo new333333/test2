@@ -32,9 +32,11 @@
  */
 package org.kablink.teaming.module.zone.impl;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.kablink.teaming.domain.NoWorkspaceByTheNameException;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.ZoneInfo;
 import org.kablink.teaming.module.zone.ZoneException;
@@ -89,8 +91,13 @@ public class BaseZoneModule extends AbstractZoneModule {
 	}
 
 	public List<ZoneInfo> getZoneInfos() {
-		ZoneInfo info = getZoneInfo(ZoneUtil.getZoneIdByZoneName(SZoneConfig.getDefaultZoneName()));
-		return Arrays.asList(new ZoneInfo[] {info});
+		try {
+			ZoneInfo info = getZoneInfo(ZoneUtil.getZoneIdByZoneName(SZoneConfig.getDefaultZoneName()));
+			return Arrays.asList(new ZoneInfo[] {info});
+		}
+		catch(NoWorkspaceByTheNameException e) {
+			return new ArrayList<ZoneInfo>();
+		}
 	}
 
 	public ZoneInfo getZoneInfo(Long zoneId) {

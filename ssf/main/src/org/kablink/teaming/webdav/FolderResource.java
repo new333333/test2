@@ -87,7 +87,6 @@ implements PropFindableResource, GetableResource, CollectionResource, PutableRes
 	
 	private static final boolean FOLDER_DELETION_ALLOW_DEFAULT = true;
 	private static final boolean FOLDER_DELETION_PURGE_IMMEDIATELY = false;
-	private static final boolean FOLDER_DELETION_REMOVE_SOURCE_CONTENTS_FOR_MIRRORED_FOLDER = false;
 	private static final boolean FOLDER_COPY_ALLOW_DEFAULT = true;
 	private static final boolean FOLDER_MOVE_ALLOW_DEFAULT = true;
 
@@ -221,8 +220,7 @@ implements PropFindableResource, GetableResource, CollectionResource, PutableRes
 		Folder folder = resolveFolder();
 		boolean purgeImmediately = SPropsUtil.getBoolean("wd.folder.deletion.purge.immediately", FOLDER_DELETION_PURGE_IMMEDIATELY);
 		if(folder.isMirrored() || purgeImmediately) {
-			boolean deleteSourceForMirroredFolder = SPropsUtil.getBoolean("wd.folder.deletion.remove.source.contents.for.mirrored.folder", FOLDER_DELETION_REMOVE_SOURCE_CONTENTS_FOR_MIRRORED_FOLDER);
-			getBinderModule().deleteBinder(id, deleteSourceForMirroredFolder, null);
+			getBinderModule().deleteBinder(id, true, null);
 		}
 		else {
 			try {
