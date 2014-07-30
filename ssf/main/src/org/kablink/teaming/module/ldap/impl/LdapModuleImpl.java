@@ -7639,18 +7639,6 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	        		for (Iterator iter=remM.iterator(); iter.hasNext();) {
 	        			Membership c = (Membership)iter.next();
 	       				getCoreDao().delete(c);
-	       				
-	       				if ( logger.isDebugEnabled() )
-	       				{
-	       					Long memberId;
-	       					
-	       					memberId = c.getUserId();
-	       					if ( memberId == null )
-	       						memberId = c.getGroupId();
-	       					
-	       					if ( memberId != null )
-	       						logger.debug( "Removed group member: " + memberId + " from group: " + groupId );
-	       				}
 	        		}
 			
 	        		getCoreDao().save(newM);
