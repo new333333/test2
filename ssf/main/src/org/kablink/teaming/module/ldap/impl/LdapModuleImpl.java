@@ -361,6 +361,61 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		}
 	}
 
+	/**
+	 * Holds information about an AD group that needs its membership sync'd.
+	 */
+	private class ADGroup
+	{
+		private String m_guid;
+		private String m_objectSid;
+		private String m_name;
+		private Long m_dbId;
+		
+		/**
+		 * 
+		 */
+		public ADGroup( String guid, String objectSid, String name, Long dbId )
+		{
+			m_guid = guid;
+			m_objectSid = objectSid;
+			m_name = name;
+			m_dbId = dbId;
+		}
+		
+		/**
+		 * 
+		 */
+		public Long getDbId()
+		{
+			return m_dbId;
+		}
+		
+		/**
+		 * 
+		 */
+		public String getGuid()
+		{
+			return m_guid;
+		}
+
+		/**
+		 * 
+		 */
+		public String getName()
+		{
+			return m_name;
+		}
+		
+		/**
+		 * 
+		 */
+		public String getObjectSid()
+		{
+			return m_objectSid;
+		}
+	}
+	
+
 	
 	public LdapModuleImpl () {
 		defaultProps.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
@@ -5168,7 +5223,6 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		Map groupAttributes;
 		String [] groupAttributeNames;
 		
-
 		Long zoneId;
 		Map dnUsers;
 		boolean sync;
@@ -5661,6 +5715,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		boolean workingWithAD = false;
 		String ldapGuidAttribute;
 		int pageSize = 500;
+		ArrayList<ADGroup> listOfADGroupsToSyncMembership;
 		
 		// Get the name of the ldap attribute we will use to get a guid from the ldap directory.
 		ldapGuidAttribute = config.getLdapGuidAttribute();
@@ -5669,6 +5724,10 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			workingWithAD = true;
 
 		logger.info( "Starting to sync groups, syncGroups()" );
+
+		// Create a list that is used to hold the list of groups from AD that we need to
+		// sync their membership
+		listOfADGroupsToSyncMembership = new ArrayList<ADGroup>();
 
 		for(LdapConnectionConfig.SearchInfo searchInfo : config.getGroupSearches())
 		{
@@ -5681,6 +5740,8 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				byte[] cookie = null;
 				
 				logger.info( "\tSearching for groups in base dn: " + searchInfo.getBaseDn() );
+				
+				listOfADGroupsToSyncMembership.clear();
 				
 				// Get the mapping of attributes for a group.
 				Map groupAttributes = (Map) getZoneMap(zone.getName()).get(GROUP_ATTRIBUTES);
@@ -5846,9 +5907,9 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 							}
 							else
 							{
-								Enumeration members;
 								String guid;
 								String objectSid;
+								ADGroup group;
 
 								// Get the ldap guid that was read from the ldap directory for this user.
 								guid = getLdapGuid( lAttrs, ldapGuidAttribute );
@@ -5856,9 +5917,8 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 								// Get the group's object sid
 								objectSid = getObjectSid( lAttrs );
 								
-								members = getGroupMembershipFromAD( guid, objectSid, zone, config, searchInfo );
-								if ( members != null )
-									groupCoordinator.syncMembership( groupId, members );
+								group = new ADGroup( guid, objectSid, teamingName, groupId );
+								listOfADGroupsToSyncMembership.add( group );
 							}
 						}
 					}
@@ -5881,6 +5941,26 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					}
 
 				} while ( (cookie != null) && (cookie.length != 0) );
+				
+				// Do we have any AD groups that we need to sync their membership?
+				if ( syncMembership && listOfADGroupsToSyncMembership != null )
+				{
+					for ( ADGroup nextADGroup : listOfADGroupsToSyncMembership )
+					{
+						Enumeration members;
+						
+						members = getGroupMembershipFromAD(
+														nextADGroup.getGuid(),
+														nextADGroup.getObjectSid(),
+														nextADGroup.getName(),
+														zone,
+														config,
+														searchInfo );
+						
+						if ( members != null )
+							groupCoordinator.syncMembership( nextADGroup.getDbId(), members );
+					}
+				}
 			}
 		}
 	}
@@ -5891,6 +5971,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	private Enumeration getGroupMembershipFromAD(
 		String guid,
 		String objectSid,
+		String name,
 		Binder zone,
 		LdapConnectionConfig ldapConfig,
 		LdapConnectionConfig.SearchInfo searchInfo )
@@ -5901,6 +5982,9 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		if ( guid == null || zone == null || ldapConfig == null || searchInfo == null )
 			return null;
 
+		if ( name != null )
+			logger.info( "Reading membership for group: " + name );
+		
 		listOfMembers = new Hashtable();
 		
 		try
@@ -6035,6 +6119,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		}
 		catch ( Exception ex )
 		{
+			listOfMembers = null;
 			logger.error( "In getGroupMembershipFromAD(), exception: " + ex.toString() );
 		}
 		finally
@@ -6051,7 +6136,8 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		}
 		
 		// Get the members of this group where this group is their primary group
-		getPrimaryGroupMembershipFromAD( listOfMembers, zone.getId(), guid, objectSid, ldapConfig );
+		if ( listOfMembers != null )
+			getPrimaryGroupMembershipFromAD( listOfMembers, zone.getId(), guid, objectSid, ldapConfig );
 		
 		return listOfMembers.keys();
 	}
@@ -7528,7 +7614,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 
 
     protected void updateMembership(
-    	Long groupId,
+    	final Long groupId,
     	Collection newMembers,
     	LdapSyncMode syncMode,
     	PartialLdapSyncResults syncResults )
@@ -7553,6 +7639,18 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	        		for (Iterator iter=remM.iterator(); iter.hasNext();) {
 	        			Membership c = (Membership)iter.next();
 	       				getCoreDao().delete(c);
+	       				
+	       				if ( logger.isDebugEnabled() )
+	       				{
+	       					Long memberId;
+	       					
+	       					memberId = c.getUserId();
+	       					if ( memberId == null )
+	       						memberId = c.getGroupId();
+	       					
+	       					if ( memberId != null )
+	       						logger.debug( "Removed group member: " + memberId + " from group: " + groupId );
+	       				}
 	        		}
 			
 	        		getCoreDao().save(newM);
