@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+
+<project name="ssr" basedir="." default="war">
+	<import file="../build-common.xml" />
+    <import file="../deploy-support.xml" />
+
+	<property name="jar.file" value="kablink-teaming-ssr.jar" />
+	<property name="war.name" value="ssr" />
+	<property name="war.file" value="${war.name}.war" />
+	<property name="temp.dir" value="temp" />
+
+	<target name="clean" depends="build-common.clean">
+		<delete>
+			<fileset dir="." includes="${jar.file}" />
+			<fileset dir="." includes="${war.file}" />
+		</delete>
+		<delete includeEmptyDirs="true" failonerror="false">
+			<fileset dir="${temp.dir}" />
+		</delete>
+	</target>
+		
+	<target name="war" depends="clean,jar">
+		<copy todir="${temp.dir}/WEB-INF/lib">
+			<fileset dir="." includes="${jar.file}"/>
+		</copy>
+		<copy todir="${temp.dir}">
+			<fileset dir="${web.dir}" includes="**/*"/>
+		</copy>
+		<war
+			basedir="${temp.dir}"
+			destfile="${war.file}"
+			webxml="${temp.dir}/WEB-INF/web.xml"
+		/>
+	</target>
+	
+	<target name="build"  depends="war"/>
+
+    <target name="deploy">
+        <antcall target="deploy-war">
+        	<param name="deploy-support.war.name" value="${war.name}" />
+        </antcall>
+	</target>
+</project>

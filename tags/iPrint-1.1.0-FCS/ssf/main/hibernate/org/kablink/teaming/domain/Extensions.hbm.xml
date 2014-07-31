@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping auto-import="false">
+	<class dynamic-update="true" table="SS_Extensions" name="org.kablink.teaming.domain.ExtensionInfo">
+	<!--<cache usage="read-write"/>-->
+	<id unsaved-value="null" name="id" node="@id">
+      <column name="id" sql-type="char(32)"/>
+      <generator class="uuid.hex"/>
+    </id>
+    <version unsaved-value="undefined" name="lockVersion" column="lockVersion" type="long"/>
+    <property name="name" length="64"/>
+    <property name="description" length="256"/>
+    <property name="title"/>
+    <property name="version"/>
+    <property name="type"/>
+    <property name="author"/>
+    <property name="authorEmail"/>
+    <property name="authorSite"/>
+    <property name="dateCreated"/>
+    <property name="dateDeployed"/>
+    <property name="zoneId" access="field"/>
+    <properties name="nameKey" unique="true" update="false" insert="false">
+		<property name="zoneId" update="false" insert="false"/>
+		<property name="name" update="false" insert="false"/>
+	</properties>
+   </class>
+</hibernate-mapping>

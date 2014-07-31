@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+
+<project name="applets" basedir="." default="compile">
+	<property environment="env" />
+	<property file="../build.${user.name}.properties" />
+	<property file="../build.properties" />
+	
+	<target name="library">
+	</target>
+	
+	<target name="clean">
+		<ant dir="workflow-viewer" target="clean" />
+		<ant dir="droptarget" target="clean" />
+		<ant dir="fileopen" target="clean" />
+	</target>
+
+	<target name="compile" depends="library">
+		<ant dir="workflow-viewer" target="compile" />
+		<ant dir="droptarget" target="compile" />
+		<ant dir="fileopen" target="compile" />
+	</target>
+
+	<target name="jar">
+		<ant dir="workflow-viewer" target="jar" />
+		<ant dir="droptarget" target="jar" />
+		<ant dir="fileopen" target="jar" />
+	</target>
+
+	<target name="java2html">
+		<ant dir="workflow-viewer" target="java2html" />
+		<ant dir="droptarget" target="java2html" />
+		<ant dir="fileopen" target="java2html" />
+	</target>
+
+	<target name="javadoc">
+		<ant dir="workflow-viewer" target="javadoc" />
+		<ant dir="droptarget" target="javadoc" />
+		<ant dir="fileopen" target="javadoc" />
+	</target>
+
+	<target name="deploy">
+		<ant dir="workflow-viewer" target="deploy" />
+		<ant dir="droptarget" target="deploy" />
+		<ant dir="fileopen" target="deploy" />
+	</target>
+</project>

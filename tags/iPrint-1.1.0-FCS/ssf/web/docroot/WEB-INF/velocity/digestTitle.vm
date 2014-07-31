@@ -1,0 +1,87 @@
+#*
+ * The contents of this file are subject to the Common Public Attribution License Version 1.0 (the "CPAL");
+ * you may not use this file except in compliance with the CPAL. You may obtain a copy of the CPAL at
+ * http://www.opensource.org/licenses/cpal_1.0. The CPAL is based on the Mozilla Public License Version 1.1
+ * but Sections 14 and 15 have been added to cover use of software over a computer network and provide for
+ * limited attribution for the Original Developer. In addition, Exhibit A has been modified to be
+ * consistent with Exhibit B.
+ * 
+ * Software distributed under the CPAL is distributed on an "AS IS" basis, WITHOUT WARRANTY OF ANY KIND,
+ * either express or implied. See the CPAL for the specific language governing rights and limitations
+ * under the CPAL.
+ * 
+ * The Original Code is ICEcore. The Original Developer is SiteScape, Inc. All portions of the code
+ * written by SiteScape, Inc. are Copyright (c) 1998-2007 SiteScape, Inc. All Rights Reserved.
+ * 
+ * 
+ * Attribution Information
+ * Attribution Copyright Notice: Copyright (c) 1998-2007 SiteScape, Inc. All Rights Reserved.
+ * Attribution Phrase (not exceeding 10 words): [Powered by ICEcore]
+ * Attribution URL: [www.icecore.com]
+ * Graphic Image as provided in the Covered Code [web/docroot/images/pics/powered_by_icecore.png].
+ * Display of Attribution Information is required in Larger Works which are defined in the CPAL as a
+ * work which combines Covered Code or portions thereof with code not governed by the terms of the CPAL.
+ * 
+ * 
+ * SITESCAPE and the SiteScape logo are registered trademarks and ICEcore and the ICEcore logos
+ * are trademarks of SiteScape, Inc.
+ *#
+#set ($ssElement = ${ssVisitor.getParam('ssElement')})
+#if ($ssVisitor.isHtml())
+  <div style="#ss_entryContent()">
+    <a href="#toc">${ssVisitor.getNLT("notify.TOC")}</a>
+    <br>
+    <table border="0" width="100%">
+    <tr>
+    <td align="left">
+      #if ($ssVisitor.getDocNumber())
+	    ${ssVisitor.getDocNumber()}.&nbsp;
+      #end
+      <a name="$ssVisitor.Entity.Id" style="text-decoration:underline;" href="$ssVisitor.getPermaLink($ssVisitor.Entity)"
+        #if ($ssVisitor.Entity.Title)
+	      ><span style="#ss_eTitle()">$esc.html($ssVisitor.Entity.Title)</span></a>
+        #else
+          ><span style="#ss_eTitle() #ss_light()">--$ssVisitor.getNLT("entry.noTitle")--</span></a>
+        #end
+      #if (${ssElement.attributeValue("hasChanges")} == 'true')
+        <span class="e-title-new">(${ssVisitor.getNLT(${ssElement.attributeValue("notifyType")})} , $esc.html(${ssElement.attributeValue("notifyBy")}))</span>
+      #end
+
+    </tr>
+    </table>
+    <br/>
+    <div>
+      <span style="#ss_labelLeft()">${ssVisitor.getNLT("notify.forum.label")}</span>
+	  <span style="#ss_eFolderLink()">
+        #if ($ssVisitor.Entity.ParentBinder.ParentBinder)
+	      <a href="$ssVisitor.getPermaLink($ssVisitor.Entity.ParentBinder.ParentBinder)"
+	        title="$esc.html(${ssVisitor.Entity.ParentBinder.ParentBinder.PathName})"
+	      >$esc.html(${ssVisitor.Entity.ParentBinder.ParentBinder.Title})</a>
+	      / 
+	    #end
+	    <a href="$ssVisitor.getPermaLink($ssVisitor.Entity.ParentBinder)">
+	      $esc.html(${ssVisitor.Entity.ParentBinder.Title})
+	    </a>
+	  </span>
+    </div>
+    <span style="#ss_labelLeft()">${ssVisitor.getNLT("notify.fromLabel")}</span>&nbsp;$esc.html(${ssElement.attributeValue('notifyFrom')})<br/>
+    <span style="#ss_labelLeft()">${ssVisitor.getNLT("notify.date")}</span>&nbsp;${ssElement.attributeValue('notifyDate')}<br/>
+
+  </div>
+  
+#else
+  #if ($ssVisitor.Entity.DocNumber)
+    #ss_print("${ssVisitor.Entity.DocNumber}. ") 
+  #end
+  #if ($ssVisitor.Entity.Title)
+    #ss_print($ssVisitor.Entity.Title)
+  #else
+    #ss_print("--$ssVisitor.getNLT('entry.noTitle')--")
+  #end
+  #if (${ssElement.attributeValue("hasChanges")} == 'true')
+    #ss_print(" (${ssVisitor.getNLT(${ssElement.attributeValue('notifyType')})} , $esc.html(${ssElement.attributeValue('notifyBy')}))")
+  #end
+  #ss_printLn("")
+  #ss_printLn("${ssVisitor.getNLT('notify.fromLabel')} $esc.html(${ssElement.attributeValue('notifyFrom')})")
+  #ss_printLn("${ssVisitor.getNLT('notify.date')} ${ssElement.attributeValue('notifyDate')}")
+#end
