@@ -1241,8 +1241,8 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     	processChangeLog(binder, ChangeLog.DELETEBINDER, skipDbLog);
         if(!skipDbLog) {
         	// Make sure that the audit trail's timestamp is identical to the modification time of the binder. 
-        	//We use the description field to hold the path/title of the deleted binder so it is available when reports are made
-        	getReportModule().addAuditTrail(AuditType.delete, binder, binder.getModification().getDate(), binder.getPathName());
+        	//We use the description field to hold the title of the deleted binder so it is available when reports are made
+        	getReportModule().addAuditTrail(AuditType.delete, binder, binder.getModification().getDate(), binder.getTitle());
         }
     	if ((binder.getDefinitionType() != null) &&
     			(binder.getDefinitionType() == Definition.USER_WORKSPACE_VIEW ||

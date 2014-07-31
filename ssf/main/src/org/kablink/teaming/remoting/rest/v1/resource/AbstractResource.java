@@ -266,9 +266,6 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         org.kablink.teaming.domain.DefinableEntity entity;
         if (et == EntityIdentifier.EntityType.folderEntry) {
             entity = getFolderModule().getEntry(null, entityId);
-            if (!((FolderEntry)entity).isTop() || _isPreDeleted((FolderEntry)entity)) {
-                entity = null;
-            }
         } else if (et == EntityIdentifier.EntityType.user) {
             entity = getProfileModule().getEntry(entityId);
             if (!(entity instanceof User))
@@ -279,27 +276,10 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
                 throw new BadRequestException(ApiErrorCode.NOT_GROUP, "Entity ID '" + entityId + "' does not represent a group");
         } else if (et == EntityIdentifier.EntityType.workspace || et == EntityIdentifier.EntityType.folder || et == EntityIdentifier.EntityType.profiles) {
             entity = getBinderModule().getBinder(entityId, false, true);
-            if (_isPreDeleted((Binder)entity)) {
-                entity = null;
-            }
         } else {
             throw new BadRequestException(ApiErrorCode.INVALID_ENTITY_TYPE, "Entity type '" + et.name() + "' is unknown or not supported by this method");
         }
         return entity;
-    }
-
-    protected boolean _isPreDeleted(FolderEntry entry) {
-        return entry.isPreDeleted();
-    }
-
-    protected boolean _isPreDeleted(Binder binder) {
-        if (binder instanceof Folder) {
-            return ((Folder)binder).isPreDeleted();
-        }
-        else if (binder instanceof Workspace) {
-            return ((Workspace)binder).isPreDeleted();
-        }
-        return false;
     }
 
     protected SearchResultList<SearchableObject> searchForLibraryEntities(String keyword, Criterion searchContext,

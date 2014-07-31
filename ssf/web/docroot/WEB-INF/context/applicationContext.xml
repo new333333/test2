@@ -427,7 +427,6 @@
 				<prop key="org.kablink.teaming.context.request.NoContextUserException">common/noContextUserError</prop>
 				<prop key="javax.portlet.PortletSecurityException">common/notAuthorized</prop>
 				<prop key="javax.portlet.UnavailableException">common/notAvailable</prop>
-				<prop key="com.novell.teaming.search.journal.JournalException">common/defCodedError</prop>
 			</props>
 		</property>  
 	</bean>

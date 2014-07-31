@@ -1286,7 +1286,7 @@ public class ShareResource extends AbstractResource {
         if (entry==null) {
             return false;
         }
-        if (!showDeleted && _isPreDeleted(entry)) {
+        if (!showDeleted && entry.isPreDeleted()) {
             return false;
         }
         if (showHidden && showUnhidden) {

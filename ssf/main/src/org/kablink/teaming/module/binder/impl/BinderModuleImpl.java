@@ -601,8 +601,6 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 					boolean fullAccess = _checkAccess(null, binder, BinderOperation.viewBinderTitle, thisLevelOnly);
                     if (!fullAccess && returnLimitedBinderIfInferredAccess) {
                         binder = binder.asLimitedBinder(true);
-                    } else {
-                    	throw ace;
                     }
 				} catch(AccessControlException ace2) {
 					throw ace;
@@ -3857,10 +3855,6 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 
 	@Override
 	public boolean testInferredAccessToBinder(User user, Binder binder) {
-		if (binder.isAclExternallyControlled()) { 		// Net Folder or its sub-folder
-			//We must ensure the user has the net folder access right to view this net folder
-			getAccessControlManager().checkOperation(user, binder, WorkAreaOperation.ALLOW_ACCESS_NET_FOLDER);
-		}
 		if(binder.noAclDredgedWithEntries()) {
 			// This binder is a net folder which does not store file ACLs in the search index.
 			// Consequently inferred access computation is not always possible with the information

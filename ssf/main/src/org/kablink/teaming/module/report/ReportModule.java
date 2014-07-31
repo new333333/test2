@@ -106,7 +106,6 @@ public interface ReportModule {
 	public static final Integer ACTIVITY_BINDER_ID_INDEX = 4;
 	public static final Integer ACTIVITY_ENTRY_ID_INDEX = 5;
 	public static final Integer ACTIVITY_ENTITY_TYPE_INDEX = 6;
-	public static final Integer ACTIVITY_ENTITY_DESCRIPTION_INDEX = 7;
 	
 	public static final String REPORT_TYPE_SUMMARY = "summary";
 

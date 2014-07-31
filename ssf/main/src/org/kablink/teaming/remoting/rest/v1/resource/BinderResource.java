@@ -36,7 +36,6 @@ import com.sun.jersey.spi.resource.Singleton;
 import org.dom4j.Document;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.domain.NoBinderByTheIdException;
-import org.kablink.teaming.fi.AccessDeniedException;
 import org.kablink.teaming.remoting.rest.v1.exc.NotFoundException;
 import org.kablink.teaming.remoting.rest.v1.util.BinderBriefBuilder;
 import org.kablink.teaming.remoting.rest.v1.util.ResourceUtil;
@@ -46,7 +45,6 @@ import org.kablink.teaming.rest.v1.model.BinderBrief;
 import org.kablink.teaming.rest.v1.model.LibraryInfo;
 import org.kablink.teaming.rest.v1.model.SearchResultList;
 import org.kablink.teaming.search.SearchUtils;
-import org.kablink.teaming.security.AccessControlException;
 import org.kablink.util.api.ApiErrorCode;
 import org.kablink.util.search.Constants;
 import org.kablink.util.search.Criterion;
@@ -112,7 +110,6 @@ public class BinderResource extends AbstractResource {
                         results.append(ResourceUtil.buildBinderBrief(binder));
                     }
                 } catch (NoBinderByTheIdException e) {
-                } catch (AccessControlException e) {
                 }
             }
         }

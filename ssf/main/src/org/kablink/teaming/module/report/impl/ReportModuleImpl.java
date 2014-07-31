@@ -845,8 +845,7 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 						proj.add(Projections.alias(Projections.rowCount(), "hits"))
 									.add(Projections.groupProperty("owningBinderId"))
 									.add(Projections.groupProperty("entityId"))
-									.add(Projections.groupProperty("entityType"))
-									.add(Projections.groupProperty("description"));
+									.add(Projections.groupProperty("entityType"));
 					}
 					Criteria crit = session.createCriteria(AuditTrail.class)
 						.setProjection(proj)
@@ -1445,7 +1444,6 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 				row.put(ReportModule.BINDER_ID, cols[ReportModule.ACTIVITY_BINDER_ID_INDEX]);
 				row.put(ReportModule.ENTRY_ID, cols[ReportModule.ACTIVITY_ENTRY_ID_INDEX]);
 				row.put(ReportModule.ENTITY, cols[ReportModule.ACTIVITY_ENTITY_TYPE_INDEX]);
-				row.put(ReportModule.DESCRIPTION, cols[ReportModule.ACTIVITY_ENTITY_DESCRIPTION_INDEX]);
 				
 				// Add the count of how many times this activity happened.
 				row.put( ReportModule.COUNT, cols[ReportModule.ACTIVITY_COUNT_INDEX] );

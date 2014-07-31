@@ -675,15 +675,6 @@ public Entry copyEntry(Binder binder, Entry source, Binder destination, String[]
     	processChangeLog(entry, ChangeLog.ADDENTRY);
 		getCoreDao().evict(tags);
 		
-		//If moving share items, do that now
-		if (copyOptions != null && copyOptions.containsKey(ObjectKeys.INPUT_OPTION_MOVE_SHARE_ITEMS) && 
-				(Boolean)copyOptions.get(ObjectKeys.INPUT_OPTION_MOVE_SHARE_ITEMS)) {
-			List<Long> shareItemIds = getProfileDao().getShareItemIdsByEntity(source);
-			if (!shareItemIds.isEmpty()) {
-				getProfileDao().changeSharedEntityId(shareItemIds, entry);
-			}
-		}
-
 		//Add any workflows
 		if (copyOptions != null && copyOptions.containsKey(ObjectKeys.WORKFLOW_START_WORKFLOW) && 
 				(ObjectKeys.WORKFLOW_START_WORKFLOW_START.equals(copyOptions.get(ObjectKeys.WORKFLOW_START_WORKFLOW)) ||

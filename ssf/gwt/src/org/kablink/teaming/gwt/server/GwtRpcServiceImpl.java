@@ -1068,7 +1068,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		{
 			GwtBrandingData brandingData;
 			
-			brandingData = GwtServerHelper.getBinderBrandingData( this, ((GetBinderBrandingCmd) cmd).getBinderId(), req, getServletContext( ri ) );
+			brandingData = GwtServerHelper.getBinderBrandingData( this, ((GetBinderBrandingCmd) cmd).getBinderId(), req );
 
 			response = new VibeRpcResponse( brandingData );
 			return response;
@@ -4962,7 +4962,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 				
 					// Get the branding data from the top workspace.
 					binderId = topWorkspace.getId().toString();
-					siteBrandingData = GwtServerHelper.getBinderBrandingData( allModules, binderId, getRequest( ri ), getServletContext( ri ) );
+					siteBrandingData = GwtServerHelper.getBinderBrandingData( allModules, binderId, getRequest( ri ) );
 				}
 				catch (Exception e)
 				{

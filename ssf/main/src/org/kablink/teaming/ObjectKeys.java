@@ -666,8 +666,6 @@ public interface ObjectKeys {
 	//migration flags
 	public static final String INPUT_OPTION_NO_INDEX="org.kablink.teaming.options.no_indexing";
 	public static final String INPUT_OPTION_NO_FILE_CONTENT_INDEX="org.kablink.teaming.options.no_file_content_indexing";
-    public static final String INPUT_OPTION_DELAY_WORKFLOW="org.kablink.teaming.options.delay_workflow_processing";
-    public static final String INPUT_OPTION_DO_WORKFLOW="org.kablink.teaming.options.do_workflow_processing";
     public static final String INPUT_OPTION_NO_WORKFLOW="org.kablink.teaming.options.no_workflow_processing";
     public static final String INPUT_OPTION_CREATION_NAME="org.kablink.teaming.options.entity.creation.name";
     public static final String INPUT_OPTION_CREATION_ID="org.kablink.teaming.options.entity.creation.id";
@@ -993,7 +991,6 @@ public interface ObjectKeys {
     public static final String LICENSE_OPTION_IPRINT = "com.novell.teaming.iPrint";
     public static final String LICENSE_OPTION_IPRINT_DESKTOP = "com.novell.teaming.iPrintDesktop";
     public static final String LICENSE_OPTION_IPRINT_MOBILE = "com.novell.teaming.iPrintMobile";
-    public static final String LICENSE_OPTION_IPRINT_PRINTER = "com.novell.teaming.iPrintPrinter";
     public static final String LICENSE_OPTION_EXT_USERS = "com.novell.teaming.ExtUsers";
     
     //License Activity

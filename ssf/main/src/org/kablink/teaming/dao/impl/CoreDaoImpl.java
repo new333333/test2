@@ -3163,7 +3163,7 @@ public long countObjects(final Class clazz, FilterControls filter, Long zoneId, 
 				    new HibernateCallback() {
 				        @Override
 						public Object doInHibernate(Session session) throws HibernateException {
-                            Query q = session.createQuery("from org.kablink.teaming.domain.Binder x where x.parentBinder.id=:parentId and lower(x.title)=:title and x.zoneId=:zoneId and x.preDeletedWhen is null");
+                            Query q = session.createQuery("from org.kablink.teaming.domain.Binder x where x.parentBinder.id=:parentId and lower(x.title)=:title and x.zoneId=:zoneId");
                             q.setParameter("parentId", parentBinderId)
                             .setParameter("title", title.toLowerCase())
                             .setParameter("zoneId", zoneId)

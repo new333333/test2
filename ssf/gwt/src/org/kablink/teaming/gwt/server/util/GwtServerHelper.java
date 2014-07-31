@@ -35,7 +35,6 @@ package org.kablink.teaming.gwt.server.util;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -309,7 +308,6 @@ import org.kablink.teaming.ssfs.util.SsfsUtil;
 import org.kablink.teaming.task.TaskHelper.FilterType;
 import org.kablink.teaming.util.AbstractAllModulesInjected;
 import org.kablink.teaming.util.AllModulesInjected;
-import org.kablink.teaming.util.FileHelper;
 import org.kablink.teaming.util.FileLinkAction;
 import org.kablink.teaming.util.IconSize;
 import org.kablink.teaming.util.NLT;
@@ -350,7 +348,6 @@ import org.kablink.teaming.web.util.WorkspaceTreeHelper.Counter;
 import org.kablink.util.search.Constants;
 import org.kablink.util.search.Criteria;
 import org.kablink.util.servlet.StringServletResponse;
-import org.springframework.util.FileCopyUtils;
 
 /**
  * Helper methods for the GWT UI server code.
@@ -3590,88 +3587,11 @@ public class GwtServerHelper {
 		}
 		return reply;
 	}
-
-	/**
-	 * Copy the given image from the given binder into the /ssf/static/xxx/images/some-directory
-	 * We do this so that all users (including the guest user) can see the images used for branding.
-	 */
-	private static String copyBrandingImgToStaticDir(
-		AbstractAllModulesInjected allModules,
-		ServletContext servletContext,
-		Binder brandingSourceBinder,
-		String imgName,
-		String subDirFSPath,
-		String subDirUrlPath )
-	{
-		String fileUrl = null;
 		
-		try
-		{
-			FileAttachment fa;
-			InputStream in;
-			FileOutputStream out;
-			String realPathToStaticDir;
-			String path;
-			String pathToBrandingDir;
-			File dir;
-			File brandingImgFile;
-
-			// Get the image as a FileAttachment.
-			fa = brandingSourceBinder.getFileAttachment( imgName );
-			if ( fa == null )
-				throw new IOException( "Unable to get file attachment for branding image." );
-			
-			// Get the image's input stream
-			in = allModules.getFileModule().readFile( brandingSourceBinder, brandingSourceBinder, fa );
-			if ( in == null )
-				throw new IOException( "Unable to get input stream for branding image." );
-
-			// Find the file system path to /ssf/static/xxx/images/
-			path = "/" + ObjectKeys.STATIC_DIR + "/" + SPropsUtil.getString( "release.static.dir", "xxx" ) + "/images/";
-			realPathToStaticDir = servletContext.getRealPath( path );
-			if ( realPathToStaticDir == null || realPathToStaticDir.length() == 0 )
-				throw new IOException( "Unable to get real path to static directory." );
-			
-			// Append the sub-directory name
-			pathToBrandingDir = realPathToStaticDir + File.separator + subDirFSPath;
-			
-			// Create the directory where the branding image will be copied to.
-			dir = new File( pathToBrandingDir );
-			FileHelper.mkdirsIfNecessary( dir );
-			
-			// Create the branding image file.
-			brandingImgFile = new File( dir.getAbsolutePath() + File.separator + imgName );
-			brandingImgFile.createNewFile();
-			out = new FileOutputStream( brandingImgFile );
-			
-			// Copy the branding image from the binder into the given directory
-			FileCopyUtils.copy( in, out );
-			
-			fileUrl = WebUrlUtil.getStaticFilesSSFContextRootURL() + "images/" + subDirUrlPath + "/" + imgName;
-
-			in.close();
-			out.close();
-		}
-		catch ( IOException ioEx )
-		{
-			m_logger.error( "Error copying branding image: " + imgName + " error: " + ioEx.getMessage() );
-		}
-		catch ( Exception ex )
-		{
-			m_logger.error( "Unknown error copying branding image: " + imgName );
-		}
-
-		return fileUrl;
-	}
-
 	/**
 	 * Return the branding data for the given binder.
 	 */
-	public static GwtBrandingData getBinderBrandingData(
-		AbstractAllModulesInjected allModules,
-		String binderId,
-		HttpServletRequest request,
-		ServletContext servletContext ) throws GwtTeamingException
+	public static GwtBrandingData getBinderBrandingData( AbstractAllModulesInjected allModules, String binderId, HttpServletRequest request ) throws GwtTeamingException
 	{
 		BinderModule binderModule;
 		Binder binder;
@@ -3811,29 +3731,14 @@ public class GwtServerHelper {
 			    					// These are special names that don't represent a real image file name.
 			    					if ( !imgName.equalsIgnoreCase( "__no image__" ) && !imgName.equalsIgnoreCase( "__default teaming image__" ) )
 			    					{
-			    						String tmpUrl;
-			    						
 			    						// No, Get a url to the file.
 				    					fileUrl = WebUrlUtil.getFileUrl( webPath, WebKeys.ACTION_READ_FILE, brandingSourceBinder, imgName );
-
-			    						// Copy the image file to a location where all users (including guest) can see it.
-				    					tmpUrl = copyBrandingImgToStaticDir(
-				    													allModules,
-				    													servletContext,
-				    													brandingSourceBinder,
-				    													imgName,
-				    													"branding" + File.separator + "binder" + File.separator + brandingSourceBinder.getId(),
-				    													"branding/binder/" + brandingSourceBinder.getId() );
-				    					
-				    					if ( tmpUrl != null && tmpUrl.length() > 0 )
-				    						fileUrl = tmpUrl;
-			    						
 				    					brandingExt.setBrandingImgUrl( fileUrl );
 			    					}
 			    				}
 			    			}
 			    			
-			    			// Get the name of the branding image for the login dialog
+			    			// Get the name of the branding image
 			    			attrNode = node.selectSingleNode( "@loginDlgImgName" );
 			    			if ( attrNode != null )
 			    			{
@@ -3847,23 +3752,8 @@ public class GwtServerHelper {
 			    					// These are special names that don't represent a real image file name.
 			    					if ( !imgName.equalsIgnoreCase( "__no image__" ) && !imgName.equalsIgnoreCase( "__default teaming image__" ) )
 			    					{
-			    						String tmpUrl;
-			    						
-			    						// No
+			    						// No, Get a url to the file.
 				    					fileUrl = WebUrlUtil.getFileUrl( webPath, WebKeys.ACTION_READ_FILE, brandingSourceBinder, imgName );
-
-			    						// Copy the image file to a location where all users (including guest) can see it.
-				    					tmpUrl = copyBrandingImgToStaticDir(
-				    													allModules,
-				    													servletContext,
-				    													brandingSourceBinder,
-				    													imgName,
-				    													"branding" + File.separator + "login-dialog",
-				    													"branding/login-dialog" );
-				    					
-				    					if ( tmpUrl != null && tmpUrl.length() > 0 )
-				    						fileUrl = tmpUrl;
-			    						
 				    					brandingExt.setLoginDlgImgUrl( fileUrl );
 			    					}
 			    				}
@@ -3922,23 +3812,8 @@ public class GwtServerHelper {
 
 				    				if ( imgName != null && imgName.length() > 0 )
 				    				{
-				    					String tmpUrl;
-				    					
 				    					// Get a url to the file.
 				    					fileUrl = WebUrlUtil.getFileUrl( webPath, WebKeys.ACTION_READ_FILE, brandingSourceBinder, imgName );
-
-			    						// Copy the image file to a location where all users (including guest) can see it.
-				    					tmpUrl = copyBrandingImgToStaticDir(
-				    													allModules,
-				    													servletContext,
-				    													brandingSourceBinder,
-				    													imgName,
-				    													"branding" + File.separator + "binder" + File.separator + brandingSourceBinder.getId(),
-				    													"branding/binder/" + brandingSourceBinder.getId() );
-				    					
-				    					if ( tmpUrl != null && tmpUrl.length() > 0 )
-				    						fileUrl = tmpUrl;
-			    						
 				    					brandingExt.setBackgroundImgUrl( fileUrl );
 				    					
 				    					brandingExt.setBackgroundImgName( imgName );
