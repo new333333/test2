@@ -35,6 +35,7 @@ package org.kablink.teaming.gwt.server.util;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -308,6 +309,7 @@ import org.kablink.teaming.ssfs.util.SsfsUtil;
 import org.kablink.teaming.task.TaskHelper.FilterType;
 import org.kablink.teaming.util.AbstractAllModulesInjected;
 import org.kablink.teaming.util.AllModulesInjected;
+import org.kablink.teaming.util.FileHelper;
 import org.kablink.teaming.util.FileLinkAction;
 import org.kablink.teaming.util.IconSize;
 import org.kablink.teaming.util.NLT;
@@ -348,6 +350,7 @@ import org.kablink.teaming.web.util.WorkspaceTreeHelper.Counter;
 import org.kablink.util.search.Constants;
 import org.kablink.util.search.Criteria;
 import org.kablink.util.servlet.StringServletResponse;
+import org.springframework.util.FileCopyUtils;
 
 /**
  * Helper methods for the GWT UI server code.
@@ -3587,11 +3590,15 @@ public class GwtServerHelper {
 		}
 		return reply;
 	}
-		
+	
 	/**
 	 * Return the branding data for the given binder.
 	 */
-	public static GwtBrandingData getBinderBrandingData( AbstractAllModulesInjected allModules, String binderId, HttpServletRequest request ) throws GwtTeamingException
+	public static GwtBrandingData getBinderBrandingData(
+		AbstractAllModulesInjected allModules,
+		String binderId,
+		HttpServletRequest request,
+		ServletContext servletContext ) throws GwtTeamingException
 	{
 		BinderModule binderModule;
 		Binder binder;
@@ -3752,8 +3759,66 @@ public class GwtServerHelper {
 			    					// These are special names that don't represent a real image file name.
 			    					if ( !imgName.equalsIgnoreCase( "__no image__" ) && !imgName.equalsIgnoreCase( "__default teaming image__" ) )
 			    					{
-			    						// No, Get a url to the file.
+			    						// No
 				    					fileUrl = WebUrlUtil.getFileUrl( webPath, WebKeys.ACTION_READ_FILE, brandingSourceBinder, imgName );
+
+			    						// Copy the image file to a location where all users (including guest) can see it.
+			    						{
+	    									try
+	    									{
+				    							FileAttachment fa;
+			    								InputStream in;
+			    								FileOutputStream out;
+					    						String realPathToStaticDir;
+		    									String path;
+		    									String pathToBrandingDir;
+		    									File dir;
+		    									File brandingImgFile;
+
+		    									// Get the image as a FileAttachment.
+				    							fa = brandingSourceBinder.getFileAttachment( imgName );
+				    							if ( fa == null )
+				    								throw new IOException( "Unable to get file attachment for login dialog branding image." );
+				    							
+				    							// Get the image's input stream
+			    								in = allModules.getFileModule().readFile( brandingSourceBinder, brandingSourceBinder, fa );
+			    								if ( in == null )
+			    									throw new IOException( "Unable to get input stream for login dialog branding image." );
+
+		    									// Find the file system path to /ssf/static/xxx/images/
+		    									path = "/" + ObjectKeys.STATIC_DIR + "/" + SPropsUtil.getString( "release.static.dir", "xxx" ) + "/images/";
+					    						realPathToStaticDir = servletContext.getRealPath( path );
+					    						if ( realPathToStaticDir == null || realPathToStaticDir.length() == 0 )
+					    							throw new IOException( "Unable to get real path to static directory." );
+					    						
+		    									// Append /branding/login-dialog
+				    							pathToBrandingDir = realPathToStaticDir + File.separator + "branding" + File.separator + "login-dialog";
+				    							
+				    							dir = new File( pathToBrandingDir );
+			    								FileHelper.mkdirsIfNecessary( dir );
+			    								
+			    								brandingImgFile = new File( dir.getAbsolutePath() + File.separator + imgName );
+		    									brandingImgFile.createNewFile();
+		    									out = new FileOutputStream( brandingImgFile );
+			    								
+			    								// Copy the login branding image to static/xxx/images/branding/login-dialog/
+			    								FileCopyUtils.copy( in, out );
+			    								
+			    								fileUrl = WebUrlUtil.getStaticFilesSSFContextRootURL() + "images/branding/login-dialog/" + imgName;
+
+			    								in.close();
+			    								out.close();
+	    									}
+	    									catch ( IOException ioEx )
+	    									{
+	    										m_logger.error( "Error copying login dialog branding image: " + ioEx.getMessage() );
+	    									}
+	    									catch ( Exception ex )
+	    									{
+	    										m_logger.error( "Unknown error copying login dialog branding image." );
+	    									}
+			    						}
+			    						
 				    					brandingExt.setLoginDlgImgUrl( fileUrl );
 			    					}
 			    				}
