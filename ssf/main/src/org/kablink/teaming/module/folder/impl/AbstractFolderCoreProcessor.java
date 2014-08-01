@@ -45,7 +45,9 @@ import java.util.Set;
 
 import org.dom4j.Document;
 import org.dom4j.Element;
+
 import org.hibernate.exception.LockAcquisitionException;
+
 import org.kablink.teaming.NotSupportedException;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
@@ -95,6 +97,7 @@ import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.ServerTaskLinkage;
 import org.kablink.util.Validator;
+
 import org.springframework.dao.CannotAcquireLockException;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -380,7 +383,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
   		   indexEntry(fEntry.getTopEntry());
   	   }
   	   
-  	   boolean isRename = ((ctx != null) && (!(ctx.get(ObjectKeys.FIELD_ENTITY_TITLE).equals(binder.getTitle()))));
+  	   boolean isRename = ((ctx != null) && (!(ctx.get(ObjectKeys.FIELD_ENTITY_TITLE).equals(entry.getTitle()))));
   	   if (isRename && (fEntry.isAclExternallyControlled() || (isReply && fEntry.getTopEntry().isAclExternallyControlled()))) {
   		   // Bugzilla 869821 (DRF):  For entries in Net Folders that
   		   // are being renamed, we need re-index their comments too.
