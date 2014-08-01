@@ -235,6 +235,7 @@ public class CalendarFolderView extends FolderViewBase
 					// event.
 					GwtClientHelper.deferredAlert(m_messages.calendarView_Error_CantTrash());
 					event.setCancelled(true);
+					FullUIReloadEvent.fireOneAsync();
 					return;					
 				}
 				
@@ -349,6 +350,7 @@ public class CalendarFolderView extends FolderViewBase
 					// the user about the problem and cancel the event.
 					GwtClientHelper.deferredAlert(m_messages.calendarView_Error_CantUpdateWhenViewByDate());
 					event.setCancelled(true);
+					FullUIReloadEvent.fireOneAsync();
 					return;					
 				}
 
@@ -359,6 +361,7 @@ public class CalendarFolderView extends FolderViewBase
 					// event.
 					GwtClientHelper.deferredAlert(m_messages.calendarView_Error_CantModify());
 					event.setCancelled(true);
+					FullUIReloadEvent.fireOneAsync();
 					return;					
 				}
 				
@@ -377,6 +380,7 @@ public class CalendarFolderView extends FolderViewBase
 						// it.  Tell the user about the problem and
 						// bail.
 						GwtClientHelper.deferredAlert(m_messages.calendarView_Error_CantUpdateRecurrence());
+						FullUIReloadEvent.fireOneAsync();
 						return;					
 					}
 				}
