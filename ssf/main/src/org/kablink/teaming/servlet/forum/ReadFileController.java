@@ -200,10 +200,7 @@ public class ReadFileController extends AbstractReadFileController {
 							FileUtil.copy(fileStream, zipOut);
 							zipOut.closeArchiveEntry();
 						} catch (Exception e) {
-							if(logger.isDebugEnabled())
-								logger.error("Error reading file", e);
-							else
-								logger.error(e);
+							logger.error("Error reading file", e);
 						}
 						finally {
 							try {
@@ -221,10 +218,7 @@ public class ReadFileController extends AbstractReadFileController {
 				return null;
 			} catch(Exception e) {
 				//Bad format of url; just return null
-				if(logger.isDebugEnabled())
-					logger.error("Error reading file", e);
-				else
-					logger.error(e);
+				logger.error("Error reading file", e);
 				response.sendError(HttpServletResponse.SC_BAD_REQUEST, NLT.get("file.error.unknownFile"));
 			}
 			return null;
@@ -285,10 +279,7 @@ public class ReadFileController extends AbstractReadFileController {
 						*/
 						zipOut.closeArchiveEntry();
 					} catch (Exception e) {
-						if(logger.isDebugEnabled())
-							logger.error("Error reading file", e);
-						else
-							logger.error(e);
+						logger.error("Error reading file", e);
 					}
 					finally {
 						try {
@@ -305,10 +296,7 @@ public class ReadFileController extends AbstractReadFileController {
 				return null;
 			} catch(Exception e) {
 				//Bad format of url; just return null
-				if(logger.isDebugEnabled())
-					logger.error("Error reading file", e);
-				else
-					logger.error(e);
+				logger.error("Error reading file", e);
 				response.sendError(HttpServletResponse.SC_BAD_REQUEST, NLT.get("file.error.unknownFile"));
 			}
 			return null;
@@ -504,10 +492,7 @@ public class ReadFileController extends AbstractReadFileController {
 				response.sendError(HttpServletResponse.SC_BAD_REQUEST, e.getMessage());				
 			} catch(Exception e) {
 				// Something else failed.
-				if(logger.isDebugEnabled())
-					logger.error("Error reading file", e);
-				else
-					logger.error(e);
+				logger.error("Error reading file", e);
 				response.sendError(HttpServletResponse.SC_BAD_REQUEST, e.getMessage());				
 			}
 			
@@ -578,10 +563,7 @@ public class ReadFileController extends AbstractReadFileController {
 													getReportModule().addFileInfo(AuditType.download, fa, recipient);
 												}
 												catch(Exception e) {
-													if(logger.isDebugEnabled())
-														logger.error("Error reading file", e);
-													else
-														logger.error(e);
+													logger.error("Error reading file", e);
 													response.sendError(HttpServletResponse.SC_BAD_REQUEST, NLT.get("file.error") + ": " + e.getMessage());
 												}
 												
@@ -609,10 +591,7 @@ public class ReadFileController extends AbstractReadFileController {
 														return null;
 													}
 													catch(Exception e) {
-														if(logger.isDebugEnabled())
-															logger.error("Error reading file", e);
-														else
-															logger.error(e);
+														logger.error("Error reading file", e);
 														String url = WebUrlUtil.getServletRootURL(request);
 														url += "errorHandler";
 														String eMsg = e.getLocalizedMessage();
@@ -645,10 +624,7 @@ public class ReadFileController extends AbstractReadFileController {
 														}
 													}
 													catch(Exception e) {
-														if(logger.isDebugEnabled())
-															logger.error("Error reading file", e);
-														else
-															logger.error(e);
+														logger.error("Error reading file", e);
 														response.getOutputStream().print(NLT.get("file.error") + ": " + e.getLocalizedMessage());
 													}
 													
@@ -755,10 +731,7 @@ public class ReadFileController extends AbstractReadFileController {
 							getReportModule().addFileInfo(AuditType.download, fa);
 						}
 						catch(Exception e) {
-							if(logger.isDebugEnabled())
-								logger.error("Error reading file", e);
-							else
-								logger.error(e);
+							logger.error("Error reading file", e);
 							response.sendError(HttpServletResponse.SC_BAD_REQUEST, NLT.get("file.error") + ": " + e.getMessage());
 						}
 					}
@@ -775,10 +748,7 @@ public class ReadFileController extends AbstractReadFileController {
 	
 			} catch(Exception e) {
 				//Bad format of url; Tell user that
-				if(logger.isDebugEnabled())
-					logger.error("Error reading file", e);
-				else
-					logger.error(e);
+				logger.error("Error reading file", e);
 				response.sendError(HttpServletResponse.SC_BAD_REQUEST, NLT.get("file.error.unknownFile"));
 
 				// Don't cache the response to this request
@@ -849,10 +819,7 @@ public class ReadFileController extends AbstractReadFileController {
 					*/
 					zipOut.closeArchiveEntry();
 				} catch (Exception e) {
-					if(logger.isDebugEnabled())
-						logger.error("Error reading file", e);
-					else
-						logger.error(e);
+					logger.error("Error reading file", e);
 				}
 				finally {
 					try {
