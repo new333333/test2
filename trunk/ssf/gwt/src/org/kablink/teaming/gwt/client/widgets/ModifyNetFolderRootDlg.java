@@ -128,6 +128,7 @@ public class ModifyNetFolderRootDlg extends DlgBox
 	private FlowPanel m_inProgressPanel;
 	private List<HandlerRegistration> m_registeredEventHandlers;
 	private CheckBox m_fullSyncDirOnlyCB = null;
+	private Label m_oesProxyNameHint1;
 	private Label m_oesProxyNameHint;
 	private Label m_windowsProxyNameHint;
 	private TabPanel m_tabPanel;
@@ -269,8 +270,8 @@ public class ModifyNetFolderRootDlg extends DlgBox
 				panel.addStyleName( "modifyNetFolderServerDlg_ProxyNameHint" );
 
 				// Add a hint that describes the unc syntax
-				label = new Label( messages.modifyNetFolderServerDlg_ProxyNameHint1() );
-				panel.add( label );
+				m_oesProxyNameHint1 = new Label( messages.modifyNetFolderServerDlg_ProxyNameHint1() );
+				panel.add( m_oesProxyNameHint1 );
 				m_oesProxyNameHint = new Label( messages.modifyNetFolderServerDlg_ProxyNameHint2() );
 				panel.add( m_oesProxyNameHint );
 				m_windowsProxyNameHint = new Label( messages.modifyNetFolderServerDlg_ProxyNameHint3() );
@@ -972,6 +973,7 @@ public class ModifyNetFolderRootDlg extends DlgBox
 						m_serverPathHintPanel.add( label );
 						
 						m_windowsProxyNameHint.setVisible( false );
+						m_oesProxyNameHint1.setVisible( true );
 						m_oesProxyNameHint.setVisible( true );
 						
 						m_authTypeLabel.setVisible( true );
@@ -1034,6 +1036,7 @@ public class ModifyNetFolderRootDlg extends DlgBox
 						m_serverPathHintPanel.add( label );
 						
 						m_windowsProxyNameHint.setVisible( true );
+						m_oesProxyNameHint1.setVisible( false );
 						m_oesProxyNameHint.setVisible( false );
 						m_authTypeLabel.setVisible( true );
 						m_authTypeListbox.setVisible( true );
@@ -1095,6 +1098,7 @@ public class ModifyNetFolderRootDlg extends DlgBox
 						
 					case FAMT:
 						m_windowsProxyNameHint.setVisible( false );
+						m_oesProxyNameHint1.setVisible( false );
 						m_oesProxyNameHint.setVisible( false );
 						m_authTypeLabel.setVisible( false );
 						m_authTypeListbox.setVisible( false );
@@ -1106,6 +1110,7 @@ public class ModifyNetFolderRootDlg extends DlgBox
 						m_serverPathHintPanel.add( label );
 						
 						m_windowsProxyNameHint.setVisible( true );
+						m_oesProxyNameHint1.setVisible( false );
 						m_oesProxyNameHint.setVisible( false );
 						m_authTypeLabel.setVisible( false );
 						m_authTypeListbox.setVisible( false );
