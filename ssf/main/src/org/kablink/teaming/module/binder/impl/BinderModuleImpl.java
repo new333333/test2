@@ -602,7 +602,8 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
                     if (!fullAccess && returnLimitedBinderIfInferredAccess) {
                         binder = binder.asLimitedBinder(true);
                     } else {
-                    	throw ace;
+                    	//If the caller does not want a limited binder, return the full one
+                    	return binder;
                     }
 				} catch(AccessControlException ace2) {
 					throw ace;
