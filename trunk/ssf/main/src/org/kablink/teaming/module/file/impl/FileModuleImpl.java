@@ -635,7 +635,9 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
         				//This version is over the number to be kept, so delete it
         				try {
         					deleteVersion(binder, entry, va);
-        				} catch(Exception e) {}
+        				} catch(Exception e) {
+        					logger.error("Error pruning file version", e);
+        				}
         			}
         			minorVersionsSeen++;
 				}
