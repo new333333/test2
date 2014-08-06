@@ -58,6 +58,8 @@
 		allExternalUsersGroupId:			'${allExternalUsersGroupId}',
 		allInternalUsersGroupId:			'${allInternalUsersGroupId}',
 		allowSharePointAsAServerType:		'${allowSharePointAsAServerType}',
+		allowSharePoint2013AsAServerType:	'${allowSharePoint2013AsAServerType}',
+		allowSharePoint2010AsAServerType:	'${allowSharePoint2010AsAServerType}',
 		allowShowPeople:					'${allowShowPeople}',
 		showSyncOnlyDirStructureUI:			'${showSyncOnlyDirStructureUI}',
 		baseVibeUrl:						'<ssf:escapeJavaScript><ssf:url></ssf:url></ssf:escapeJavaScript>',
