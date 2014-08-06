@@ -2458,6 +2458,8 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 			fAtt.setLastVersion(new Integer(versionNumber));
 			fAtt.setMinorVersion(fAtt.getMinorVersion() + 1);
 			
+			commitChangesToDb();
+			
 			VersionAttachment vAtt = new VersionAttachment();
 			// Creation time is always current real time, whereas modification
 			// time could be anything that the caller specified it to be
@@ -2471,7 +2473,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 			vAtt.setVersionName(versionName);
 			vAtt.setRepositoryName(fAtt.getRepositoryName());
 			vAtt.setEncrypted(fAtt.getEncrypted());
-			vAtt.setEncryptionKey(fAtt.getEncryptionKey());
+			vAtt.setEncryptionKey(fAtt.getEncryptionKey());			
 			fAtt.addFileVersion(vAtt);
 			// Do this only if a new version has actually been created.
 			FileUtils.setFileVersionAging(fAtt.getOwner().getEntity());
@@ -3384,10 +3386,15 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 				hv.getModification().setDate(correctLastModTime);
 		}
 		// Trigger db transaction
+		commitChangesToDb();
+	}
+	
+	private void commitChangesToDb() {
+		// Commit changes in Hibernate session to the database by triggering a transaction.
 		getTransactionTemplate().execute(new TransactionCallback<Object>() {
         	@Override
 			public Object doInTransaction(TransactionStatus status) {
-        		return null;
+        		return null; // Empty body
         	}
         });	
 	}
