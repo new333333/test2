@@ -478,13 +478,19 @@ public class ModifyNetFolderRootDlg extends DlgBox
 
 			if ( GwtMainPage.m_requestInfo.getAllowSharePointAsAServerType() == true )
 			{
-				m_rootTypeListbox.addItem(
-						GwtTeaming.getMessages().modifyNetFolderServerDlg_Type_SharePoint2010(),
-						NetFolderRootType.SHARE_POINT_2010.toString() );
+				if ( GwtMainPage.m_requestInfo.getAllowSharePoint2010AsAServerType() == true )
+				{
+					m_rootTypeListbox.addItem(
+							GwtTeaming.getMessages().modifyNetFolderServerDlg_Type_SharePoint2010(),
+							NetFolderRootType.SHARE_POINT_2010.toString() );
+				}
 			
-				m_rootTypeListbox.addItem(
-						GwtTeaming.getMessages().modifyNetFolderServerDlg_Type_SharePoint2013(),
-						NetFolderRootType.SHARE_POINT_2013.toString() );
+				if ( GwtMainPage.m_requestInfo.getAllowSharePoint2013AsAServerType() == true )
+				{
+					m_rootTypeListbox.addItem(
+							GwtTeaming.getMessages().modifyNetFolderServerDlg_Type_SharePoint2013(),
+							NetFolderRootType.SHARE_POINT_2013.toString() );
+				}
 			}
 			
 			m_rootTypeListbox.setSelectedIndex( 0 );
