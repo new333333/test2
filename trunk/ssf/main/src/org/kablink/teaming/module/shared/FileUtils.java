@@ -59,6 +59,7 @@ import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.file.FileModule;
 import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.folder.FolderModule;
+import org.kablink.teaming.module.license.LicenseChecker;
 import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.security.AccessControlManager;
@@ -116,7 +117,15 @@ public class FileUtils {
     				//If the binder aging was explicitly turned off, then no aging should occur in this binder
     				if (versionAgingEnabled && (va.getAgingEnabled() == null || !va.isAgingEnabled())) {
     					//The current agingEnabled value was wrong, so make it correct.
-    					va.setAgingEnabled(Boolean.TRUE);
+    					if (!LicenseChecker.isAuthorizedByLicense(ObjectKeys.LICENSE_OPTION_FILR, true)) {
+    						// (Bug #888672) Don't do this if running under Filr license. Filr doesn't support
+    						// versioning yet and this logic isn't needed. This to avoid the version record to
+    						// be updated in the database unnecessary since it is going to be shortly deleted
+    						// any way. This hack needs to be removed and correct solution has to be implemented
+    						// - Probably the right thing to do is to combine the two transactions into one so
+    						// that all update to the attachment meta data to be flushed out in a single transaction.
+    						va.setAgingEnabled(Boolean.TRUE);
+    					}
     				} else if (!versionAgingEnabled && va.getAgingEnabled() != null && va.getAgingEnabled()) {
     					//Aging for this folder was turned off. So, make the enabled flag false (if it isn't already)
     					va.setAgingEnabled(Boolean.FALSE);
