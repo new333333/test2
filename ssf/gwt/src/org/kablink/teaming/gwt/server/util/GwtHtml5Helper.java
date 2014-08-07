@@ -44,8 +44,8 @@ import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import javax.xml.bind.DatatypeConverter;
 
-import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -338,13 +338,15 @@ public class GwtHtml5Helper {
 			}
 
 			// Get the data for the blob as a byte[].
+			String blobDataString;
 			byte[] blobDataBytes;
 			ReadType blobReadType = fileBlob.getReadType();
 			if (blobReadType.isArrayBuffer()) {
-				 blobDataBytes = fileBlob.getBlobDataBytes();
+				blobDataString = null;
+				blobDataBytes  = fileBlob.getBlobDataBytes();
 			}
 			else {
-				String blobDataString = fileBlob.getBlobDataString();
+				blobDataString = fileBlob.getBlobDataString();
 				if      (null == blobDataString)   blobDataString = "";
 				else if (blobReadType.isDataUrl()) blobDataString = FileBlob.fixDataUrlString(blobDataString);
 				blobDataBytes = blobDataString.getBytes();
@@ -374,7 +376,10 @@ public class GwtHtml5Helper {
 					// base64 encoded...
 					if (fileBlob.isBlobBase64()) {
 						// ...decode it...
-						blobDataBytes = Base64.decodeBase64(blobDataBytes);
+						if (null == blobDataString) {
+							blobDataString = new String(blobDataBytes);
+						}
+						blobDataBytes = DatatypeConverter.parseBase64Binary(blobDataString);
 					}
 					
 					// ...and write it to the file.
