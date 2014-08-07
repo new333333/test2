@@ -3107,6 +3107,8 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		  		{
 	  				errorSyncingUsers = true;
 
+	  				logger.error( "syncUsers() threw an exception: " + ex.toString() );
+	  				
 	  				if ( ex instanceof NamingException )
 		  			{
 			  			logError(NLT.get("errorcode.ldap.context"), ex);
@@ -3147,6 +3149,8 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 						}
 						catch (NamingException namingEx)
 				  		{
+							logger.error( "closing user context threw an exception: " + namingEx.toString() );
+							
 				  			//!!! When we re-write the ldap config page in GWT, we need to collect all of these
 				  			//!!! errors and return them instead of just throwing an exception for the first
 				  			//!!! problem we find.
@@ -3216,6 +3220,21 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	  			}
 			}
 
+			// Did we encounter an error syncing users?
+			if ( errorSyncingUsers )
+			{
+				logger.error( "An error was encountered syncing users.  Ldap sync will not continue." );
+				
+				if ( ldapSyncEx != null )
+				{
+					logger.error( "Exception encountered while syncing users: " + ldapSyncEx.toString() );
+		   			throw ldapSyncEx;
+				}
+
+				logger.error( "Unknown error syncing users" );
+				return;
+			}
+			
 			{
 				Date now;
 				
@@ -3249,7 +3268,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		  		catch (Exception ex)
 		  		{
 		  			errorSyncingGroups = true;
-		  			logger.error( "syncGroups() threw an exception: " );
+		  			logger.error( "syncGroups() threw an exception: " + ex.toString() );
 
 	  				if ( ex instanceof NamingException )
 		  			{
@@ -3292,6 +3311,8 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 						}
 						catch (NamingException namingEx)
 				  		{
+							logger.error( "closing group context threw an exception: " + namingEx.toString() );
+							
 				  			//!!! When we re-write the ldap config page in GWT, we need to collect all of these
 				  			//!!! errors and return them instead of just throwing an exception for the first
 				  			//!!! problem we find.
@@ -3448,7 +3469,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	   		
 	   		if ( ldapSyncEx != null )
 	   		{
-	   			logger.info( "Finished syncAll() with an exception" );
+	   			logger.info( "Finished syncAll() with an exception: " + ldapSyncEx.toString() );
 	   			throw ldapSyncEx;
 	   		}
 	   		
@@ -7716,7 +7737,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 						
 						nextGroupId = nextMembership.getGroupId();
 						nextUserId = nextMembership.getUserId();
-						logger.debug( "In updateMemberhsip(), next principal added to group, nextGroupId: " + String.valueOf( nextGroupId ) + "  nextUserId: " + String.valueOf( nextUserId ) );
+						logger.debug( "In updateMembership(), next principal added to group, nextGroupId: " + String.valueOf( nextGroupId ) + "  nextUserId: " + String.valueOf( nextUserId ) );
 					}
 
 					if ( principalId != null )
@@ -7768,7 +7789,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 						
 						nextGroupId = nextMembership.getGroupId();
 						nextUserId = nextMembership.getUserId();
-						logger.debug( "In updateMemberhsip() next principal removed from group, nextGroupId: " + String.valueOf( nextGroupId ) + "  nextUserId: " + String.valueOf( nextUserId ) );
+						logger.info( "In updateMemberhsip() next principal removed from group, nextGroupId: " + String.valueOf( nextGroupId ) + "  nextUserId: " + String.valueOf( nextUserId ) );
 					}
 
 					if ( principalId != null )
@@ -7781,7 +7802,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 						}
 						catch ( Exception ex )
 						{
-							logger.info( "In updateMembershipe(), profileModule.getEntry() failed for group member: " + principalId );
+							logger.info( "In updateMembership(), profileModule.getEntry() failed for group member: " + principalId );
 						}
 						
 						if ( nextPrincipal != null )
