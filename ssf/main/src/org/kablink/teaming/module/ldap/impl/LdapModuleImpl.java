@@ -1562,12 +1562,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
     }	
 	
     private void logError(String msg, Exception e) {
-    	logger.error(msg + ": " + e.toString());
-    	if(e.getCause() != null)
-    		logger.error(e.getCause().toString());
-    	// print stack dump only if debug logging is enabled
-    	if(logger.isDebugEnabled())
-    		logger.error("", e);
+    	logger.error(msg, e);
     }
     
     protected Map getZoneMap(String zoneName)
