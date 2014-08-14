@@ -34,6 +34,8 @@
 		<property name="net.sf.ehcache.configurationResourceName">/config/ehcache-hibernate.xml</property>
 		<!-- memcached cache entry timeout in seconds -->
 		<property name="hibernate.memcached.cacheTimeSeconds">3600</property>
+		<!-- memcached cache entry timeout in seconds for the org.kablink.teaming.domain.Principal region -->
+		<property name="hibernate.memcached.org.kablink.teaming.domain.Principal.cacheTimeSeconds">300</property>
 		<!-- memcached operation timeout in milliseconds -->
 		<property name="hibernate.memcached.operationTimeout">2000</property>
 		<!-- Disable query cache -->
@@ -233,7 +235,7 @@
  		<class-cache class="org.kablink.teaming.domain.Membership" usage="read-write"/>
  		<class-cache class="org.kablink.teaming.domain.MobileDevice" usage="read-write"/>
  		<class-cache class="org.kablink.teaming.domain.PostingDef" usage="read-write"/>
- 		<class-cache class="org.kablink.teaming.domain.Principal" usage="read-write"/>
+ 		<class-cache class="org.kablink.teaming.domain.Principal" usage="nonstrict-read-write"/>
  		<class-cache class="org.kablink.teaming.domain.ShareItem" usage="read-write"/>
  		<class-cache class="org.kablink.teaming.domain.SimpleName" usage="read-write"/>
  		<class-cache class="org.kablink.teaming.domain.Subscription" usage="read-write"/>
