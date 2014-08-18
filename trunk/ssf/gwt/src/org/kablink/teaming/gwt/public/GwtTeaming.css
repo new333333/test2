@@ -29,6 +29,7 @@
 .padding5R  {padding-right:  5px;           }
 .padding15R {padding-right: 15px;           }
 .padding2L  {padding-left:   2px;           }
+.padding10T {padding-top:   10px;           }
 
 .vibe-fullScroll       {overflow:   auto;}
 .vibe-horizontalScroll {overflow-x: auto; overflow-y: hidden;}

@@ -310,6 +310,7 @@ public class GwtHtml5Helper {
 			debugTraceBlob(fileBlob, "uploadFileBlob", "Uploaded", lastBlob);
 
 			// Is this the first blob of a file?
+			StringRpcResponseData reply = null;
 			HttpSession session = WebHelper.getRequiredSession(request);
 			boolean firstBlob = (0l == fileBlob.getBlobStart());
 			File tempFile;
@@ -328,81 +329,91 @@ public class GwtHtml5Helper {
 			}
 			
 			else {
-				// No, this isn't the first blob of a file!  Access the
-				// temporary file from the handle stored in the session
-				// cache.
-				tempFile = TempFileUtil.getTempFileByName((String) session.getAttribute(uploadFName));
-				if (lastBlob) {
+				// No, this isn't the first blob of a file!  Can we
+				// access the temporary file from the handle stored
+				// in the session cache.
+				String tempFName = ((String) session.getAttribute(uploadFName));
+				boolean hasTempFName = MiscUtil.hasString(tempFName);
+				tempFile = (hasTempFName ? TempFileUtil.getTempFileByName(tempFName) : null);
+				if (null == tempFile) {
+					// No!  Generate an error to that affect.
+					reply = new StringRpcResponseData();
+					reply.setStringValue(NLT.get("binder.add.files.html5.upload.noTempAccess", new String[]{fileBlob.getFileName()}));
+					lastBlob = true;	// Set true so things get properly cleaned up.
+				}
+				if (lastBlob && hasTempFName) {
 					session.removeAttribute(uploadFName);
 				}
 			}
 
-			// Get the data for the blob as a byte[].
-			String blobDataString;
-			byte[] blobDataBytes;
-			ReadType blobReadType = fileBlob.getReadType();
-			if (blobReadType.isArrayBuffer()) {
-				blobDataString = null;
-				blobDataBytes  = fileBlob.getBlobDataBytes();
-			}
-			else {
-				blobDataString = fileBlob.getBlobDataString();
-				if      (null == blobDataString)   blobDataString = "";
-				else if (blobReadType.isDataUrl()) blobDataString = FileBlob.fixDataUrlString(blobDataString);
-				blobDataBytes = blobDataString.getBytes();
-			}
-			
-			// Does the MD5 hash calculated on the blob we just
-			// received match the MD5 hash that came with it? 
-			StringRpcResponseData reply = null;
-			String blobHashReceived = fileBlob.getBlobMD5Hash();
-			boolean blobHashValid = (null == blobHashReceived);
-			if (!blobHashValid) {
-				String blobHashCalculated = MiscUtil.getMD5Hash(blobDataBytes);
-				blobHashValid = blobHashCalculated.equals(blobHashReceived);
-			}
-			if (!blobHashValid) {
-				// No!  Then the data is corrupt.  Return the error to
-				// the user.
-				reply = new StringRpcResponseData();
-				reply.setStringValue(NLT.get("binder.add.files.html5.upload.corrupt"));
-				try {tempFile.delete();}
-				catch (Throwable t) {/* Ignored. */}
-			}
-			else {
-				FileOutputStream fo = null;
-				try {
-					// Yes!  The MD5 hashes match!  If the data is
-					// base64 encoded...
-					if (fileBlob.isBlobBase64()) {
-						// ...decode it...
-						if (null == blobDataString) {
-							blobDataString = new String(blobDataBytes);
-						}
-						blobDataBytes = DatatypeConverter.parseBase64Binary(blobDataString);
-					}
-					
-					// ...and write it to the file.
-					fo = new FileOutputStream(tempFile, (!firstBlob));
-					fo.write(blobDataBytes);
+			// Have we generated an error yet?
+			if (null == reply) {
+				// No!  Get the data for the blob as a byte[].
+				String blobDataString;
+				byte[] blobDataBytes;
+				ReadType blobReadType = fileBlob.getReadType();
+				if (blobReadType.isArrayBuffer()) {
+					blobDataString = null;
+					blobDataBytes  = fileBlob.getBlobDataBytes();
+				}
+				else {
+					blobDataString = fileBlob.getBlobDataString();
+					if      (null == blobDataString)   blobDataString = "";
+					else if (blobReadType.isDataUrl()) blobDataString = FileBlob.fixDataUrlString(blobDataString);
+					blobDataBytes = blobDataString.getBytes();
 				}
 				
-				catch (Exception e) {
-					// Return the error to the user...
+				// Does the MD5 hash calculated on the blob we just
+				// received match the MD5 hash that came with it? 
+				String blobHashReceived = fileBlob.getBlobMD5Hash();
+				boolean blobHashValid = (null == blobHashReceived);
+				if (!blobHashValid) {
+					String blobHashCalculated = MiscUtil.getMD5Hash(blobDataBytes);
+					blobHashValid = blobHashCalculated.equals(blobHashReceived);
+				}
+				if (!blobHashValid) {
+					// No!  Then the data is corrupt.  Return the error
+					// to the user.
 					reply = new StringRpcResponseData();
-					reply.setStringValue(NLT.get("binder.add.files.html5.upload.error", new String[]{e.getLocalizedMessage()}));
+					reply.setStringValue(NLT.get("binder.add.files.html5.upload.corrupt"));
 					try {tempFile.delete();}
 					catch (Throwable t) {/* Ignored. */}
-					
-					// ...and log it.
-					GwtLogHelper.error(m_logger, "GwtHtml5Helper.uploadFileBlob( File name:  '" + fileBlob.getFileName() + "', EXCEPTION:1 ):  ", e);
 				}
-				
-				finally {
-					// Ensure we've closed the stream.
-					if (null != fo) {
-						fo.close();
-						fo = null;
+				else {
+					FileOutputStream fo = null;
+					try {
+						// Yes!  The MD5 hashes match!  If the data is
+						// base64 encoded...
+						if (fileBlob.isBlobBase64()) {
+							// ...decode it...
+							if (null == blobDataString) {
+								blobDataString = new String(blobDataBytes);
+							}
+							blobDataBytes = DatatypeConverter.parseBase64Binary(blobDataString);
+						}
+						
+						// ...and write it to the file.
+						fo = new FileOutputStream(tempFile, (!firstBlob));
+						fo.write(blobDataBytes);
+					}
+					
+					catch (Exception e) {
+						// Return the error to the user...
+						reply = new StringRpcResponseData();
+						reply.setStringValue(NLT.get("binder.add.files.html5.upload.error", new String[]{e.getLocalizedMessage()}));
+						try {tempFile.delete();}
+						catch (Throwable t) {/* Ignored. */}
+						
+						// ...and log it.
+						GwtLogHelper.error(m_logger, "GwtHtml5Helper.uploadFileBlob( File name:  '" + fileBlob.getFileName() + "', EXCEPTION:1 ):  ", e);
+					}
+					
+					finally {
+						// Ensure we've closed the stream.
+						if (null != fo) {
+							fo.close();
+							fo = null;
+						}
 					}
 				}
 			}

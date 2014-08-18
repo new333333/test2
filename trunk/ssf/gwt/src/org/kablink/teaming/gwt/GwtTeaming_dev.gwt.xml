@@ -12,7 +12,6 @@
 	<set-property name="log_GWTLogger"     value="ENABLED"  /> 
 	<set-property name="log_SystemLogger"  value="ENABLED"  />   
 	<set-property name="log_DivLogger"     value="DISABLED" />  
-	<set-property name="log_FirebugLogger" value="DISABLED" />  
 	<set-property name="log_RemoteLogger"  value="ENABLED"  />  
 	<set-property name="log_WindowLogger"  value="DISABLED" />
        

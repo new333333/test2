@@ -50,11 +50,13 @@ import org.kablink.teaming.gwt.client.binderviews.ViewBase;
 import org.kablink.teaming.gwt.client.binderviews.ViewReady;
 import org.kablink.teaming.gwt.client.event.FullUIReloadEvent;
 import org.kablink.teaming.gwt.client.event.VibeEventBase;
+import org.kablink.teaming.gwt.client.rpc.shared.BooleanRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.CanAddEntitiesRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData.ErrorInfo;
 import org.kablink.teaming.gwt.client.rpc.shared.FolderDisplayDataRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.GetCanAddEntitiesCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetFolderDisplayDataCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetFolderHasUserListCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetMyFilesContainerInfoCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
@@ -115,8 +117,9 @@ public abstract class FolderViewBase extends ViewBase
 	private BinderInfo							m_folderInfo;					// A BinderInfo object that describes the folder being viewed.
 	private boolean								m_allowColumnSizing;			// true -> Add the column sizing entry menu item.  false -> Don't.
 	private boolean								m_viewReady;					// Set true once the view and all its components are ready.
-	private boolean								m_pinning;						// true -> We're showing pinned items.              false -> We're not.
-	private boolean								m_sharedFiles;					// true -> We're showing shared only shared files.  false -> We're not.
+	private boolean								m_pinning;						// true -> We're showing pinned items.                   false -> We're not.
+	private boolean								m_sharedFiles;					// true -> We're showing shared only shared files.       false -> We're not.
+	private boolean								m_showUserList;					// true -> We're showing the UserListPanel in the view.  false -> We're not.
 	private CalendarDisplayDataProvider			m_calendarDisplayDataProvider;	// A CalendarDisplayDataProvider to use to obtain a CalendarDisplayDataRpcResponseData object.
 	private CanAddEntitiesRpcResponseData		m_canAddEntities;				// Contains information about the user's rights to add entities to the current folder.
 	private DropPanel							m_dndPanel;						// A DropPanel used for HTML5 based file uploads.
@@ -162,10 +165,11 @@ public abstract class FolderViewBase extends ViewBase
 	public final static int TASK_GRAPHS_PANEL_INDEX			=  5;
 	public final static int FILTER_PANEL_INDEX				=  6;
 	public final static int BINDER_OWNER_AVATAR_PANEL_INDEX	=  7;
-	public final static int ENTRY_MENU_PANEL_INDEX			=  8;
-	public final static int CALENDAR_NAVIGATION_PANEL_INDEX	=  9;
-	public final static int VIEW_CONTENT_PANEL_INDEX		= 10;
-	public final static int FOOTER_PANEL_INDEX				= 12;
+	public final static int USER_LIST_PANEL_INDEX			=  8;
+	public final static int ENTRY_MENU_PANEL_INDEX			=  9;
+	public final static int CALENDAR_NAVIGATION_PANEL_INDEX	= 10;
+	public final static int VIEW_CONTENT_PANEL_INDEX		= 11;
+	public final static int FOOTER_PANEL_INDEX				= 13;
 
 	private final static int MINIMUM_CONTENT_HEIGHT		= 150;	// The minimum height (in pixels) of a the data table widget.
 	private final static int NO_VSCROLL_ADJUST			=  20;	// Height adjustment required so there's no vertical scroll bar by default.
@@ -183,6 +187,7 @@ public abstract class FolderViewBase extends ViewBase
 		TASK_GRAPHS,
 		FILTER,
 		BINDER_OWNER_AVATAR,
+		USER_LIST,
 		ENTRY_MENU,
 		CALENDAR_NAVIGATION,
 		FOOTER,
@@ -646,8 +651,9 @@ public abstract class FolderViewBase extends ViewBase
 		case MAILTO:
 		case BINDER_OWNER_AVATAR:
 		case CALENDAR_NAVIGATION:
-		case TASK_GRAPHS:  reply = false; break;
-		default:           reply = true;  break;
+		case TASK_GRAPHS:  reply = false;          break;
+		case USER_LIST:    reply = m_showUserList; break;
+		default:           reply = true;           break;
 		}
 		return reply;
 	}
@@ -783,8 +789,28 @@ public abstract class FolderViewBase extends ViewBase
 		// Are we loading a calendar folder?
 		if (FolderType.CALENDAR == m_folderInfo.getFolderType()) {
 			// Yes!  Then we don't need the folder display data as
-			// pertains to data table based views.
-			loadPart4Async();
+			// it pertains to data on table based views.  We do,
+			// however, need to know if we should show the
+			// UserListPanel in the view.
+			GwtClientHelper.executeCommand(
+					new GetFolderHasUserListCmd(m_folderInfo),
+					new AsyncCallback<VibeRpcResponse>() {
+				@Override
+				public void onFailure(Throwable t) {
+					GwtClientHelper.handleGwtRPCFailure(
+						t,
+						m_messages.rpcFailure_GetFolderDisplayData(),
+						m_folderInfo.getBinderIdAsLong());
+				}
+				
+				@Override
+				public void onSuccess(VibeRpcResponse response) {
+					// Store the show user list flag and tell the view
+					// to construct itself.
+					m_showUserList = ((BooleanRpcResponseData) response.getResponseData()).getBooleanValue();
+					loadPart4Async();
+				}
+			});
 		}
 		
 		else {
@@ -808,6 +834,7 @@ public abstract class FolderViewBase extends ViewBase
 					m_folderDisplayData = ((FolderDisplayDataRpcResponseData) response.getResponseData());
 					m_pinning           = m_folderDisplayData.getViewPinnedEntries();
 					m_sharedFiles       = m_folderDisplayData.getViewSharedFiles();
+					m_showUserList      = m_folderDisplayData.getShowUserList();
 					loadPart4Async();
 				}
 			});
@@ -1255,10 +1282,10 @@ public abstract class FolderViewBase extends ViewBase
 	 */
 	private void loadPart14Async() {
 		// For classes that don't want it...
-		if (!(includePanel(FolderPanels.CALENDAR_NAVIGATION))) {
+		if (!(includePanel(FolderPanels.USER_LIST))) {
 			// ...we don't show the calendar navigation panel.
-			insertToolPanelPlaceholder(CALENDAR_NAVIGATION_PANEL_INDEX);
-			constructViewAsync();
+			insertToolPanelPlaceholder(USER_LIST_PANEL_INDEX);
+			loadPart15Async();
 			return;
 		}
 		
@@ -1274,6 +1301,45 @@ public abstract class FolderViewBase extends ViewBase
 	 * Synchronously loads the next part of the view.
 	 */
 	private void loadPart14Now() {
+		UserListPanel.createAsync(this, getFolderInfo(), this, new ToolPanelClient() {			
+			@Override
+			public void onUnavailable() {
+				// Nothing to do.  Error handled in asynchronous
+				// provider.
+			}
+			
+			@Override
+			public void onSuccess(ToolPanelBase tpb) {
+				insertToolPanel(tpb, FolderViewBase.USER_LIST_PANEL_INDEX);
+				loadPart15Async();
+			}
+		});
+	}
+
+	/*
+	 * Asynchronously loads the next part of the view.
+	 */
+	private void loadPart15Async() {
+		// For classes that don't want it...
+		if (!(includePanel(FolderPanels.CALENDAR_NAVIGATION))) {
+			// ...we don't show the calendar navigation panel.
+			insertToolPanelPlaceholder(CALENDAR_NAVIGATION_PANEL_INDEX);
+			constructViewAsync();
+			return;
+		}
+		
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
+			@Override
+			public void execute() {
+				loadPart15Now();
+			}
+		});
+	}
+	
+	/*
+	 * Synchronously loads the next part of the view.
+	 */
+	private void loadPart15Now() {
 		CalendarNavigationPanel.createAsync(this, m_calendarDisplayDataProvider, getFolderInfo(), this, new ToolPanelClient() {			
 			@Override
 			public void onUnavailable() {

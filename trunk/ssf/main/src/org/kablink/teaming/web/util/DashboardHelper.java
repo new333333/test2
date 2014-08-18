@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -32,11 +32,9 @@
  */
 package org.kablink.teaming.web.util;
 
-import java.awt.font.NumericShaper;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -44,17 +42,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedMap;
-import java.util.SortedSet;
 import java.util.TreeMap;
 
 import javax.portlet.ActionRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.taglibs.standard.tag.common.core.SetSupport;
+
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
+
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.SingletonViolationException;
 import org.kablink.teaming.context.request.RequestContextHolder;
@@ -76,7 +74,6 @@ import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
 import org.kablink.teaming.module.definition.DefinitionUtils;
 import org.kablink.teaming.module.shared.SearchUtils;
-import org.kablink.teaming.portlet.binder.AdvancedSearchController;
 import org.kablink.teaming.search.filter.SearchFilter;
 import org.kablink.teaming.search.filter.SearchFilterKeys;
 import org.kablink.teaming.search.filter.SearchFilterRequestParser;
@@ -85,12 +82,10 @@ import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.task.TaskHelper;
 import org.kablink.teaming.util.AbstractAllModulesInjected;
 import org.kablink.teaming.util.LongIdUtil;
-import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ResolveIds;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.stringcheck.StringCheckUtil;
 import org.kablink.teaming.web.WebKeys;
-import org.kablink.teaming.web.tree.DomTreeHelper;
 import org.kablink.teaming.web.tree.FolderConfigHelper;
 import org.kablink.teaming.web.tree.TreeHelper;
 import org.kablink.teaming.web.tree.WorkspaceConfigHelper;
@@ -99,7 +94,12 @@ import org.kablink.util.GetterUtil;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
 
-
+/**
+ * ?
+ *  
+ * @author ?
+ */
+@SuppressWarnings("unchecked")
 public class DashboardHelper extends AbstractAllModulesInjected {
 	protected static final Log logger = LogFactory.getLog(Dashboard.class);
 	
@@ -395,7 +395,7 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 	}
 	//penlets
 	static public Map getDashboardMap(Binder binder, Map userProperties, Map model, String scope, String componentId, boolean isConfig) {
-		return getDashboardMap(binder, userProperties, model, DashboardHelper.Local, componentId, false, true);
+		return getDashboardMap(binder, userProperties, model, scope, componentId, false, true);
 	}
 	//penlets
 	static public Map getDashboardMap(Binder binder, Map userProperties, Map model, String scope, 
@@ -1862,6 +1862,7 @@ public class DashboardHelper extends AbstractAllModulesInjected {
     	}
     	Map idData = new HashMap();
     	beans.put(id, idData);
+		@SuppressWarnings("unused")
 		User user = RequestContextHolder.getRequestContext().getUser();
 		idData.put(WebKeys.APPLICATIONS, getProfileModule().getApplications((Collection) null));
 	}

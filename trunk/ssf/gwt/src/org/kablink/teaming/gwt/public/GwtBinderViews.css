@@ -81,7 +81,7 @@
 		.vibe-entryMenu-quickFilters-filter {padding-top: 1px;}
 		.vibe-entryMenu-quickFilters-panel  {vertical-align: top; padding: 0 5px; margin-top: 1px; border-left: none; height: 19px; white-space: nowrap; background-color: #fff; border: 1px solid #b8b8b8; -moz-border-radius: 15px; border-radius: 15px; -webkit-border-radius: 15px;}
 		.vibe-entryMenu-rightPanel          {padding-right: 5px; margin-right: 3px; margin-top: 3px;}
-/* ...End:  Entry menu panel styles. */
+	/* ...End:  Entry menu panel styles. */
 	
 	/* ...Start:  Filter panel styles. */
 		.vibe-filterAnchor                 {cursor: pointer;}
@@ -125,6 +125,18 @@
 		.vibe-footerDataLinksText               {}
 		.vibe-footerDataPanel                   {background-color: #eaebe8; padding: 10px; margin: 20px; display: block; -moz-border-radius: 5px; border-radius: 5px; -webkit-border-radius: 5px;}
 	/* ...End:  Footer panel styles. */
+	
+	/* ...Start:  User list panel styles. */
+		.vibe-userListPanel                    {padding-left: 10px;}
+		.vibe-userListPerUserLabel             {font-weight: bold; font-size: 12px; display: inline-block; padding-right: 5px; padding-top: 10px;}
+		.vibe-userListPerUserPanel             {margin: 0px; font-style: normal !important;}
+		.vibe-userListPerUserPrincipalPanel    {cursor: pointer;}
+		.vibe-userListPerUserPresence-control  {vertical-align: text-bottom;}
+		.vibe-userListPerUserPresence-image    {width: 25px; height: 25px; border-radius: 2px; margin-right: 3px;}
+		.vibe-userListPerUserPresence-label    {display: inline; font-size: 12px; font-weight: bold; padding-left: 2px !important;}
+		.vibe-userListPerUserPresence-disabled {color: #c4c4c4;}
+		.vibe-userListPerUserPresence-enabled  {color: #353838;}
+	/* ...End:  User list panel styles. */
 	
 	/* ...Start:  Generic folder view styles. */
 		.vibe-folderViewBase               {border: 8px solid transparent;}
@@ -231,7 +243,7 @@
 		.vibe-dataTableGroupType-image            {}
 		.vibe-dataTableUserType-panel             {text-align: center; display: block;}
 		.vibe-dataTableGroupType-panel            {text-align: center; display: block;}
-/* ...End:  Data table cell styles. */
+	/* ...End:  Data table cell styles. */
 
 	/* ...Start:  Calendar folder view styles. */
 		.vibe-calendarFolder-appointment {}
@@ -324,10 +336,7 @@
 		.vibe-blogFolderVerticalPanel {}
 		.vibe-blogFolderView          {}
 	/* ...End:  Task folder view styles. */
-	
 /* End:  GWT folder view styles. */
-
-
 
 /* Start:  GWT workspace view styles. */
 	.vibe-discussionWSView_AccessoriesPanel, .vibe-teamWSView_AccessoriesPanel, .vibe-genericWSView_AccessoriesPanel, .vibe-projectManagementWSView_AccessoriesPanel, .vibe-personalWorkspacesView_AccessoriesPanel, .vibe-netFoldersWSView_AccessoriesPanel
