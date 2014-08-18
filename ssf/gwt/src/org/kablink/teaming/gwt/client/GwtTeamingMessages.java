@@ -404,6 +404,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_GetFolderDisplayData();
 	String rpcFailure_GetFolderEntries();
 	String rpcFailure_GetFolderEntryDetails();
+	String rpcFailure_GetFolderHasUserList();
 	String rpcFailure_GetFolderRows();
 	String rpcFailure_GetFolderSortSetting();
 	String rpcFailure_GetFolderToolbarItems();
@@ -512,6 +513,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_GetUserAccessInfo();
 	String rpcFailure_GetUserAvatar();
 	String rpcFailure_GetUserFileSyncAppConfig();
+	String rpcFailure_GetUserListInfo();
 	String rpcFailure_GetUserMobileAppsConfiguration();
 	String rpcFailure_GetUserPermalink();
 	String rpcFailure_GetUserProperties();
@@ -765,6 +767,7 @@ public interface GwtTeamingMessages extends Messages
 	String codeSplitFailure_TinyMCEDlg();
 	String codeSplitFailure_TrashView();
 	String codeSplitFailure_UserPropertiesDlg();
+	String codeSplitFailure_UserListPanel();
 	String codeSplitFailure_UserShareRightsDlg();
 	String codeSplitFailure_UserStatusControl();
 	String codeSplitFailure_ViewsMenuPopup();

@@ -1673,6 +1673,14 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case GET_FOLDER_HAS_USER_LIST:
+		{
+			GetFolderHasUserListCmd gfhulCmd = ((GetFolderHasUserListCmd) cmd);
+			boolean result = GwtViewHelper.getFolderHasUserList( this, getRequest( ri ) , gfhulCmd.getFolderInfo() );
+			response = new VibeRpcResponse( new BooleanRpcResponseData( result ) );
+			return response;
+		}
+		
 		case GET_FOLDER_ROWS:
 		{
 			GetFolderRowsCmd gfrCmd = ((GetFolderRowsCmd) cmd);
@@ -2678,6 +2686,14 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 
 			responseData = new StringRpcResponseData( url );
 			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
+		case GET_USER_LIST_INFO:
+		{
+			GetUserListInfoCmd guliCmd = ((GetUserListInfoCmd) cmd);
+			UserListInfoRpcResponseData result = GwtViewHelper.getFolderUserListInfo( this, getRequest( ri ) , guliCmd.getFolderInfo() );
+			response = new VibeRpcResponse( result );
 			return response;
 		}
 		

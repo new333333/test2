@@ -51,12 +51,12 @@ ezmorph 1.0.1
 firebug-lite 1.2
 groovy 1.8.5
 Guice 3.0 (used by openid4java)
-gQuery 1.4.0 (jQuery port to GWT)
-gwt 2.6.0 (Google Web Toolkit)
-gwt-cal 0.9.3 (GWT Calendar widget)
+gQuery 1.4.2 (jQuery port to GWT)
+gwt 2.6.1 (Google Web Toolkit)
+gwt-cal 0.9.4 (GWT Calendar widget)
 gwt-crypto 2.3.0-20110518.123759-2 (Crypto module for the Google Web Toolkit)
-gwt-dnd 3.2.3 (GWT drag-and-drop support - Patched for GWT 2.6)
-gwt-log 3.1.8 (GWT logging facility)
+gwt-dnd 3.3.1 (GWT drag-and-drop support)
+gwt-log 3.3.1 (GWT logging facility)
 gwt-tour 0.1 (GWT "Tour" facility)
 Hibernate 3.6.0.Final
 hibernate memcached 1.2.2 (Apache License 2.0; http://code.google.com/p/hibernate-memcached)

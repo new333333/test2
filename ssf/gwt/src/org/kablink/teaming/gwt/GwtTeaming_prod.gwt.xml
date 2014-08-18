@@ -22,7 +22,7 @@
 	<extend-property name="locale" values="pt_BR" />			<!-- Portuguese.                         -->
 	<extend-property name="locale" values="tr_TR" />			<!-- Turkish (not officially supported.) -->
 	<extend-property name="locale" values="ru_RU" />			<!-- Russian.                            -->
-	<extend-property name="locale" values="sv"    />			<!-- Sweedish.                           -->
+	<extend-property name="locale" values="sv"    />			<!-- Swedish.                            -->
 	<extend-property name="locale" values="cs_CZ" />			<!-- Czech.                              -->
 	<extend-property name="locale" values="uk_UA" />			<!-- Ukrainian.                          -->
 	<extend-property name="locale" values="zh_CN" />			<!-- Chinese - Simplified.               -->

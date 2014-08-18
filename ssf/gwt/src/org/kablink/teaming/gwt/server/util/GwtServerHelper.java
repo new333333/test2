@@ -89,11 +89,13 @@ import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.document.DateTools;
+
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.Node;
 import org.dom4j.io.OutputFormat;
+
 import org.kablink.teaming.GroupExistsException;
 import org.kablink.teaming.IllegalCharacterInNameException;
 import org.kablink.teaming.ObjectKeys;
@@ -5735,10 +5737,13 @@ public class GwtServerHelper {
 		return reply;
 	}
 	
-	/*
+	/**
 	 * Returns the FolderType of a folder based on its current view.
+	 * 
+	 * @param bs
+	 * @param folder
 	 */
-	private static FolderType getFolderTypeFromViewDef(AllModulesInjected bs, Folder folder) {
+	public static FolderType getFolderTypeFromViewDef(AllModulesInjected bs, Folder folder) {
 		// Does the user have a view definition selected for this
 		// folder?
 		Definition def = BinderHelper.getFolderDefinitionFromView(bs, folder);
@@ -9836,6 +9841,7 @@ public class GwtServerHelper {
 		case GET_FOLDER_DISPLAY_DATA:
 		case GET_FOLDER_ENTRIES:
 		case GET_FOLDER_ENTRY_DETAILS:
+		case GET_FOLDER_HAS_USER_LIST:
 		case GET_FOLDER_ROWS:
 		case GET_FOLDER_SORT_SETTING:
 		case GET_FOLDER_TOOLBAR_ITEMS:
@@ -9928,6 +9934,7 @@ public class GwtServerHelper {
 		case GET_UPGRADE_INFO:
 		case GET_USER_ACCESS_CONFIG:
 		case GET_USER_AVATAR:
+		case GET_USER_LIST_INFO:
 		case GET_USER_PERMALINK:
 		case GET_USER_PROPERTIES:
 		case GET_USER_SHARING_RIGHTS_INFO:

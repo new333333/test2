@@ -46,6 +46,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.calendar.EventsViewHelper;
 import org.kablink.teaming.context.request.RequestContextHolder;
@@ -1205,9 +1206,9 @@ public class GwtMenuHelper {
 	 * Constructs a ToolbarItem for viewing pinned vs. non-pinned
 	 * entries.
 	 */
-	private static void constructEntryPinnedItem(ToolbarItem entryToolbar, AllModulesInjected bs, HttpServletRequest request, String viewType, Folder folder) {
+	private static void constructEntryPinnedItem(ToolbarItem entryToolbar, AllModulesInjected bs, HttpServletRequest request, Folder folder) {
 		// Is this a folder that supports pinning entries?
-		if ((null != folder) && folderSupportsPinning(folder, viewType)) {
+		if ((null != folder) && folderSupportsPinning(bs, folder)) {
 			// Yes!  Add the pinned item.
 			ToolbarItem pinnedTBI = new ToolbarItem("1_viewPinned");
 			markTBIEvent(pinnedTBI, TeamingEvents.VIEW_PINNED_ENTRIES);
@@ -3023,14 +3024,9 @@ public class GwtMenuHelper {
 	 * Returns true if a folder (including its view type) supports
 	 * pinning and false otherwise.
 	 */
-	private static boolean folderSupportsPinning(Folder folder, String viewType) {
-		boolean reply = ((null != folder) && MiscUtil.hasString(viewType));
-		if (reply) {
-			reply =
-				(viewType.equals(Definition.VIEW_STYLE_DISCUSSION) ||	// Discussion - Standard View.
-				 viewType.equals(Definition.VIEW_STYLE_TABLE));			// Discussion - Movable Columns.
-		}
-		return reply;
+	private static boolean folderSupportsPinning(AllModulesInjected bs, Folder folder) {
+		FolderType ft = GwtServerHelper.getFolderTypeFromViewDef(bs, folder);
+		return GwtViewHelper.getFolderTypeSupportsPinning(ft);
 	}
 	
 	/*
@@ -3284,7 +3280,7 @@ public class GwtMenuHelper {
 
 			// Construct the item for viewing pinned vs. non-pinned
 			// items.
-			constructEntryPinnedItem(entryToolbar, bs, request, viewType, folder);
+			constructEntryPinnedItem(entryToolbar, bs, request, folder);
 
 			// Are we returning the toolbar items for other than a
 			// trash or collections view and are we in other than Filr
