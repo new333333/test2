@@ -1,0 +1,93 @@
+<!DOCTYPE liferay-portlet-app PUBLIC "-//Liferay//DTD Portlet Application 4.3.0//EN" "http://www.liferay.com/dtd/liferay-portlet-app_4_3_0.dtd">
+
+<liferay-portlet-app>
+	<portlet>
+		<portlet-name>ss_presence</portlet-name>
+		<restore-current-view>false</restore-current-view>
+		<maximize-edit>true</maximize-edit>
+		<instanceable>true</instanceable>
+	</portlet>
+	<portlet>
+		<portlet-name>ss_forum</portlet-name>
+		<restore-current-view>false</restore-current-view>
+		<maximize-edit>true</maximize-edit>
+		<instanceable>true</instanceable>
+	</portlet>
+	<portlet>
+		<portlet-name>ss_administration</portlet-name>
+		<restore-current-view>false</restore-current-view>
+		<maximize-edit>true</maximize-edit>
+		<instanceable>true</instanceable>
+	</portlet>
+	<portlet>
+		<portlet-name>ss_workspacetree</portlet-name>
+		<restore-current-view>false</restore-current-view>
+		<maximize-edit>true</maximize-edit>
+		<instanceable>true</instanceable>
+	</portlet>
+		
+	<portlet>
+		<portlet-name>ss_toolbar</portlet-name>
+		<restore-current-view>false</restore-current-view>
+		<maximize-edit>true</maximize-edit>
+		<instanceable>true</instanceable>
+	</portlet>
+	<portlet>
+		<portlet-name>ss_blog</portlet-name>
+		<restore-current-view>false</restore-current-view>
+		<maximize-edit>true</maximize-edit>
+		<instanceable>true</instanceable>
+	</portlet >
+	<portlet>
+		<portlet-name>ss_guestbook</portlet-name>
+		<restore-current-view>false</restore-current-view>
+		<maximize-edit>true</maximize-edit>
+		<instanceable>true</instanceable>
+	</portlet>
+	<portlet>
+		<portlet-name>ss_wiki</portlet-name>
+		<restore-current-view>false</restore-current-view>
+		<maximize-edit>true</maximize-edit>
+		<instanceable>true</instanceable>
+	</portlet>
+	<portlet>
+		<portlet-name>ss_search</portlet-name>
+		<restore-current-view>false</restore-current-view>
+		<maximize-edit>true</maximize-edit>
+		<instanceable>true</instanceable>
+	</portlet>
+	<portlet>
+		<portlet-name>ss_gallery</portlet-name>
+		<restore-current-view>false</restore-current-view>
+		<maximize-edit>true</maximize-edit>
+		<instanceable>true</instanceable>
+	</portlet>
+
+	<portlet>
+		<portlet-name>ss_task</portlet-name>
+		<restore-current-view>false</restore-current-view>
+		<maximize-edit>true</maximize-edit>
+		<instanceable>true</instanceable>
+	</portlet>
+	<portlet>
+		<portlet-name>ss_relevance_dashboard</portlet-name>
+		<restore-current-view>false</restore-current-view>
+		<maximize-edit>true</maximize-edit>
+		<instanceable>true</instanceable>
+	</portlet>
+	<portlet>
+		<portlet-name>ss_welcome</portlet-name>
+		<restore-current-view>false</restore-current-view>
+		<maximize-edit>true</maximize-edit>
+		<instanceable>true</instanceable>
+	</portlet>
+
+<!--
+	<portlet>
+		<portlet-name>ss_exception</portlet-name>
+		<restore-current-view>false</restore-current-view>
+		<maximize-edit>true</maximize-edit>
+		<instanceable>true</instanceable>
+	</portlet>
+-->
+</liferay-portlet-app>

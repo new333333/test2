@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping auto-import="false">
+  <class dynamic-update="true" table="SS_EmailAddresses" lazy="false" name="org.kablink.teaming.domain.EmailAddress">
+    <!--<cache usage="read-write"/>-->
+    <composite-id >
+     <key-many-to-one name="principal"/>
+     <key-property name="type" length="64"/>
+    </composite-id>
+    <property name="zoneId" access="field" not-null="true"/>
+    <property name="address" type="string"  length="256" index="address_email"/>
+</class>
+</hibernate-mapping>
