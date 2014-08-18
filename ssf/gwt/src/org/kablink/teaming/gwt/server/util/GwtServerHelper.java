@@ -35,7 +35,6 @@ package org.kablink.teaming.gwt.server.util;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -311,7 +310,6 @@ import org.kablink.teaming.ssfs.util.SsfsUtil;
 import org.kablink.teaming.task.TaskHelper.FilterType;
 import org.kablink.teaming.util.AbstractAllModulesInjected;
 import org.kablink.teaming.util.AllModulesInjected;
-import org.kablink.teaming.util.FileHelper;
 import org.kablink.teaming.util.FileLinkAction;
 import org.kablink.teaming.util.IconSize;
 import org.kablink.teaming.util.NLT;
@@ -331,6 +329,7 @@ import org.kablink.teaming.web.tree.DomTreeBuilder;
 import org.kablink.teaming.web.tree.WsDomTreeBuilder;
 import org.kablink.teaming.web.util.AdminHelper;
 import org.kablink.teaming.web.util.BinderHelper;
+import org.kablink.teaming.web.util.BrandingUtil;
 import org.kablink.teaming.web.util.Clipboard;
 import org.kablink.teaming.web.util.EmailHelper;
 import org.kablink.teaming.web.util.Favorites;
@@ -352,7 +351,6 @@ import org.kablink.teaming.web.util.WorkspaceTreeHelper.Counter;
 import org.kablink.util.search.Constants;
 import org.kablink.util.search.Criteria;
 import org.kablink.util.servlet.StringServletResponse;
-import org.springframework.util.FileCopyUtils;
 
 /**
  * Helper methods for the GWT UI server code.
@@ -1837,85 +1835,34 @@ public class GwtServerHelper {
 	 * 
 	 * @throws GwtTeamingException 
 	 */
-	public static Group createGroup(AllModulesInjected bs, String name, String title, String desc, boolean isMembershipDynamic, boolean externalMembersAllowed, List<GwtTeamingItem> membership, GwtDynamicGroupMembershipCriteria membershipCriteria) throws GwtTeamingException {
+	public static Group createGroup(
+		AllModulesInjected bs,
+		String name,
+		String title,
+		String desc,
+		boolean isMembershipDynamic,
+		boolean externalMembersAllowed,
+		GwtDynamicGroupMembershipCriteria membershipCriteria ) throws GwtTeamingException
+	{
+		String ldapQuery=null;
 		HashMap<String, Object> inputMap = new HashMap<String, Object>();
+		
+		if ( isMembershipDynamic && membershipCriteria != null )
+			ldapQuery = membershipCriteria.getAsXml();
+
 		inputMap.put(ObjectKeys.FIELD_PRINCIPAL_NAME, name);
 		inputMap.put(ObjectKeys.FIELD_ENTITY_TITLE, title);
 		inputMap.put(ObjectKeys.FIELD_ENTITY_DESCRIPTION, desc);
 		inputMap.put(ObjectKeys.FIELD_ENTITY_DESCRIPTION_FORMAT, String.valueOf(Description.FORMAT_NONE));  
 		inputMap.put(ObjectKeys.FIELD_GROUP_DYNAMIC, isMembershipDynamic);
-		
+		inputMap.put(ObjectKeys.FIELD_GROUP_LDAP_QUERY, ldapQuery);
+
 		// Add the identity information.
 		IdentityInfo identityInfo = new IdentityInfo();
 		identityInfo.setFromLocal(true);
 		identityInfo.setInternal(!externalMembersAllowed);
 		inputMap.put(ObjectKeys.FIELD_USER_PRINCIPAL_IDENTITY_INFO, identityInfo);
 	
-		// Is group membership dynamic?
-		HashSet<Long> membershipIds = new HashSet<Long>();
-		String ldapQuery = null;
-		if (!isMembershipDynamic) {
-			// No!  Get a list of all the membership IDs.
-			if (null != membership) {
-				for (GwtTeamingItem nextMember:  membership) {
-					Long id = null;
-					if (nextMember instanceof GwtUser) {
-						id = Long.valueOf(((GwtUser) nextMember).getUserId());
-					}
-					else if (nextMember instanceof GwtGroup) {
-						id = Long.valueOf(((GwtGroup) nextMember).getId());
-					}
-								
-					if (null != id) {
-						membershipIds.add(id);
-					}
-				}
-			}
-		}
-		else
-		{
-			// Yes!
-			if (null != membershipCriteria) {
-				// Execute the ldap query and get the list of members from the results.
-				try
-				{
-					HashSet<Long> potentialMemberIds = bs.getLdapModule().getDynamicGroupMembers(
-						membershipCriteria.getBaseDn(),
-						membershipCriteria.getLdapFilterWithoutCRLF(),
-						membershipCriteria.getSearchSubtree());
-
-					// Get the maximum number of users that can be in a group.
-					int maxCount = SPropsUtil.getInt("dynamic.group.membership.limit", 50000); 					
-					
-					// Is the number of potential members greater than the max number of group members?
-					if (potentialMemberIds.size() > maxCount) {
-						// Yes, only take the max number of users.
-						int count = 0;
-						for (Long userId:  potentialMemberIds) {
-							membershipIds.add(userId);
-							count += 1;
-							if (count >= maxCount) {
-								break;
-							}
-						}
-					}
-					else {
-						// No
-						membershipIds = potentialMemberIds;
-					}
-				}
-				catch (Exception ex) {
-					// !!! What to do.
-					membershipIds = new HashSet<Long>();
-				}
-
-				ldapQuery = membershipCriteria.getAsXml();
-			}
-		}
-		
-		SortedSet<Principal> principals = bs.getProfileModule().getPrincipals(membershipIds);
-		inputMap.put(ObjectKeys.FIELD_GROUP_PRINCIPAL_MEMBERS, principals);
-		inputMap.put(ObjectKeys.FIELD_GROUP_LDAP_QUERY, ldapQuery);
 		MapInputData inputData = new MapInputData(inputMap);
 
 		HashMap<String, Object> emptyFileMap = new HashMap<String, Object>();
@@ -1977,18 +1924,6 @@ public class GwtServerHelper {
 				// No, this isn't a debug request to create multiple
 				// groups!  Simply create the single group.
 				newGroup = pm.addGroup(null, inputData, emptyFileMap, null);
-			}
-			
-			// Re-index all the members of this group.
-			if (principals != null) {
-				// Create a list of the members of the group...
-				Map<Long, Principal> principalsToIndex = new HashMap<Long, Principal>();
-				for (Principal principal:  principals) {
-					principalsToIndex.put(principal.getId(), principal);
-				}
-
-				// ...and re-index them.
-				Utils.reIndexPrincipals(pm, principalsToIndex);
 			}
 		}
 		
@@ -3594,90 +3529,15 @@ public class GwtServerHelper {
 	}
 
 	/**
-	 * Copy the given image from the given binder into the /ssf/branding/ directory
-	 * We do this so that all users (including the guest user) can see the images used for branding.
+	 * Return the "raw" branding data for the given binder.  We will not fixup any image urls.
 	 */
-	private static String copyBrandingImgToBrandingDir(
-		AbstractAllModulesInjected allModules,
-		HttpServletRequest httpReq,
-		ServletContext servletContext,
-		Binder brandingSourceBinder,
-		String imgName,
-		String subDirFSPath,
-		String subDirUrlPath )
-	{
-		String fileUrl = null;
-		
-		try
-		{
-			FileAttachment fa;
-			InputStream in;
-			FileOutputStream out;
-			String realPathToRootDir;
-			String path;
-			String pathToBrandingDir;
-			File dir;
-			File brandingImgFile;
-
-			// Get the image as a FileAttachment.
-			fa = brandingSourceBinder.getFileAttachment( imgName );
-			if ( fa == null )
-				throw new IOException( "Unable to get file attachment for branding image." );
-			
-			// Get the image's input stream
-			in = allModules.getFileModule().readFile( brandingSourceBinder, brandingSourceBinder, fa );
-			if ( in == null )
-				throw new IOException( "Unable to get input stream for branding image." );
-
-			// Find the file system path to /ssf/
-			path = "/";
-			realPathToRootDir = servletContext.getRealPath( path );
-			if ( realPathToRootDir == null || realPathToRootDir.length() == 0 )
-				throw new IOException( "Unable to get real path to static directory." );
-			
-			// Append the sub-directory name
-			pathToBrandingDir = realPathToRootDir + "branding" + File.separator + subDirFSPath;
-			
-			// Create the directory where the branding image will be copied to.
-			dir = new File( pathToBrandingDir );
-			FileHelper.mkdirsIfNecessary( dir );
-			
-			// Create the branding image file.
-			brandingImgFile = new File( dir.getAbsolutePath() + File.separator + imgName );
-			brandingImgFile.createNewFile();
-			out = new FileOutputStream( brandingImgFile );
-			
-			// Copy the branding image from the binder into the given directory
-			FileCopyUtils.copy( in, out );
-			
-			fileUrl = WebUrlUtil.getSSFContextRootURL( httpReq ) + "branding/" + subDirUrlPath + "/" + imgName;
-
-			in.close();
-			out.close();
-		}
-		catch ( IOException ioEx )
-		{
-			m_logger.error( "Error copying branding image: " + imgName + " error: " + ioEx.getMessage() );
-		}
-		catch ( Exception ex )
-		{
-			m_logger.error( "Unknown error copying branding image: " + imgName );
-		}
-
-		return fileUrl;
-	}
-
-	/**
-	 * Return the branding data for the given binder.
-	 */
-	public static GwtBrandingData getBinderBrandingData(
+	public static GwtBrandingData getRawBinderBrandingData(
 		AbstractAllModulesInjected allModules,
 		String binderId,
 		HttpServletRequest request,
 		ServletContext servletContext ) throws GwtTeamingException
 	{
 		BinderModule binderModule;
-		Binder binder;
 		Long binderIdL;
 		GwtBrandingData brandingData;
 		
@@ -3695,40 +3555,26 @@ public class GwtServerHelper {
 			{
 				String branding;
 				GwtBrandingDataExt brandingExt;
-				Binder brandingSourceBinder;
-				String brandingSourceBinderId;
+				Binder binder;
 				
 				binder = binderModule.getBinder( binderIdL );
 				
-				// Get the binder where branding comes from.
-				brandingSourceBinder = binder.getBrandingSource();
-				
 				// Does the user have rights to the binder where the branding is coming from?
-				if ( !binderModule.testAccess( brandingSourceBinder, BinderOperation.readEntries ) )
+				if ( !binderModule.testAccess( binder, BinderOperation.readEntries ) )
 				{
-					// No, don't use inherited branding.
-					brandingSourceBinderId = binderId;
-					brandingSourceBinder = binder;
-				}
-				else
-				{
-					brandingSourceBinderId = brandingSourceBinder.getId().toString();
+					return brandingData;
 				}
 				
-				brandingData.setBinderId( brandingSourceBinderId );
+				brandingData.setBinderId( binderId );
 
-				// Get the branding that should be applied for this binder.
-				branding = brandingSourceBinder.getBranding();
+				// Get the advanced branding that should be applied for this binder.
+				branding = binder.getBranding();
 				
 				// For some unknown reason, if there is no branding in the db the string we get back
 				// will contain only a \n.  We don't want that.
 				if ( branding != null && branding.length() == 1 && branding.charAt( 0 ) == '\n' )
 					branding = "";
 				
-				// Parse the branding and replace any markup with the appropriate url.  For example,
-				// replace {{atachmentUrl: somename.png}} with a url that looks like http://somehost/ssf/s/readFile/.../somename.png
-				branding = MarkupUtil.markupStringReplacement( null, null, request, null, brandingSourceBinder, branding, "view" );
-	
 				// Remove mce_src as an attribute from all <img> tags.  See bug 766415.
 				// There was a bug that caused the mce_src attribute to be included in the <img>
 				// tag and written to the db.  We want to remove it.
@@ -3746,7 +3592,7 @@ public class GwtServerHelper {
 					// 	<brandingData fontColor="" brandingImgName="some name" brandingType="image/advanced">
 					// 		<background color="" imgName="" />
 					// 	</brandingData>
-					xmlStr = brandingSourceBinder.getBrandingExt();
+					xmlStr = binder.getBrandingExt();
 					
 					// Is there old-style branding?
 					if ( branding != null && branding.length() > 0 )
@@ -3779,11 +3625,7 @@ public class GwtServerHelper {
 			    			Node node;
 			    			Node attrNode;
 		        			String imgName;
-							String fileUrl;
-							String webPath;
 							
-							webPath = WebUrlUtil.getServletRootURL( request );
-
 							// Parse the xml string into an xml document.
 							doc = DocumentHelper.parseText( xmlStr );
 			    			
@@ -3809,31 +3651,6 @@ public class GwtServerHelper {
 			    				if ( imgName != null && imgName.length() > 0 )
 			    				{
 			    					brandingExt.setBrandingImgName( imgName );
-
-			    					// Is the image name "__no image__" or "__default teaming image__"?
-			    					// These are special names that don't represent a real image file name.
-			    					if ( !imgName.equalsIgnoreCase( "__no image__" ) && !imgName.equalsIgnoreCase( "__default teaming image__" ) )
-			    					{
-			    						String tmpUrl;
-			    						
-			    						// No, Get a url to the file.
-				    					fileUrl = WebUrlUtil.getFileUrl( webPath, WebKeys.ACTION_READ_FILE, brandingSourceBinder, imgName );
-
-			    						// Copy the image file to a location where all users (including guest) can see it.
-				    					tmpUrl = copyBrandingImgToBrandingDir(
-				    													allModules,
-				    													request,
-				    													servletContext,
-				    													brandingSourceBinder,
-				    													imgName,
-				    													"binder" + File.separator + brandingSourceBinder.getId(),
-				    													"binder/" + brandingSourceBinder.getId() );
-				    					
-				    					if ( tmpUrl != null && tmpUrl.length() > 0 )
-				    						fileUrl = tmpUrl;
-			    						
-				    					brandingExt.setBrandingImgUrl( fileUrl );
-			    					}
 			    				}
 			    			}
 			    			
@@ -3846,31 +3663,6 @@ public class GwtServerHelper {
 			    				if ( imgName != null && imgName.length() > 0 )
 			    				{
 			    					brandingExt.setLoginDlgImgName( imgName );
-
-			    					// Is the image name "__no image__" or "__default teaming image__"?
-			    					// These are special names that don't represent a real image file name.
-			    					if ( !imgName.equalsIgnoreCase( "__no image__" ) && !imgName.equalsIgnoreCase( "__default teaming image__" ) )
-			    					{
-			    						String tmpUrl;
-			    						
-			    						// No
-				    					fileUrl = WebUrlUtil.getFileUrl( webPath, WebKeys.ACTION_READ_FILE, brandingSourceBinder, imgName );
-
-			    						// Copy the image file to a location where all users (including guest) can see it.
-				    					tmpUrl = copyBrandingImgToBrandingDir(
-				    													allModules,
-				    													request,
-				    													servletContext,
-				    													brandingSourceBinder,
-				    													imgName,
-				    													"login-dialog",
-				    													"login-dialog" );
-				    					
-				    					if ( tmpUrl != null && tmpUrl.length() > 0 )
-				    						fileUrl = tmpUrl;
-			    						
-				    					brandingExt.setLoginDlgImgUrl( fileUrl );
-			    					}
 			    				}
 			    			}
 			    			
@@ -3927,26 +3719,6 @@ public class GwtServerHelper {
 
 				    				if ( imgName != null && imgName.length() > 0 )
 				    				{
-				    					String tmpUrl;
-				    					
-				    					// Get a url to the file.
-				    					fileUrl = WebUrlUtil.getFileUrl( webPath, WebKeys.ACTION_READ_FILE, brandingSourceBinder, imgName );
-
-			    						// Copy the image file to a location where all users (including guest) can see it.
-				    					tmpUrl = copyBrandingImgToBrandingDir(
-				    													allModules,
-				    													request,
-				    													servletContext,
-				    													brandingSourceBinder,
-				    													imgName,
-				    													"binder" + File.separator + brandingSourceBinder.getId(),
-				    													"binder/" + brandingSourceBinder.getId() );
-				    					
-				    					if ( tmpUrl != null && tmpUrl.length() > 0 )
-				    						fileUrl = tmpUrl;
-			    						
-				    					brandingExt.setBackgroundImgUrl( fileUrl );
-				    					
 				    					brandingExt.setBackgroundImgName( imgName );
 				    				}
 			    				}
@@ -3985,6 +3757,175 @@ public class GwtServerHelper {
 					{
 						// Yes
 						brandingData.setIsSiteBranding( true );
+					}
+				}
+			}
+		}
+		catch (NoBinderByTheIdException nbEx)
+		{
+			// Nothing to do
+		}
+		catch (AccessControlException acEx)
+		{
+			// Nothing to do
+		}
+		catch (Exception e)
+		{
+			// Nothing to do
+		}
+		
+		return brandingData;
+	}
+
+	/**
+	 * Return the branding data for the given binder.
+	 */
+	public static GwtBrandingData getBinderBrandingData(
+		AbstractAllModulesInjected allModules,
+		String binderId,
+		boolean useInheritance,
+		HttpServletRequest request,
+		ServletContext servletContext ) throws GwtTeamingException
+	{
+		BinderModule binderModule;
+		Binder binder;
+		Long binderIdL;
+		GwtBrandingData brandingData;
+		
+		brandingData = new GwtBrandingData();
+		brandingData.setBrandingType( GwtBrandingDataExt.BRANDING_TYPE_IMAGE );
+		
+		try
+		{
+			binderModule = allModules.getBinderModule();
+	
+			binderIdL = new Long( binderId );
+			
+			// Get the binder object.
+			if ( binderIdL != null )
+			{
+				String imgName;
+				String branding;
+				Binder brandingSourceBinder;
+				String brandingSourceBinderId;
+				
+				binder = binderModule.getBinder( binderIdL );
+				
+				// Are we supposed to use inheritance to get the branding?
+				if ( useInheritance )
+				{
+					// Yes
+					// Get the binder where branding comes from.
+					brandingSourceBinder = binder.getBrandingSource();
+					
+					// Does the user have rights to the binder where the branding is coming from?
+					if ( !binderModule.testAccess( brandingSourceBinder, BinderOperation.readEntries ) )
+					{
+						// No, don't use inherited branding.
+						brandingSourceBinderId = binderId;
+						brandingSourceBinder = binder;
+					}
+					else
+					{
+						brandingSourceBinderId = brandingSourceBinder.getId().toString();
+					}
+				}
+				else
+				{
+					// No
+					// Get the branding from the given binder.
+					brandingSourceBinderId = binderId;
+					brandingSourceBinder = binder;
+				}
+				
+				brandingData.setBinderId( brandingSourceBinderId );
+
+				brandingData = GwtServerHelper.getRawBinderBrandingData(
+																	allModules,
+																	brandingSourceBinderId,
+																	request,
+																	servletContext );
+				
+				// Get the advanced branding that should be applied for this binder.
+				branding = brandingSourceBinder.getBranding();
+				
+				// Parse the advanced branding and replace all <img src="{{attachmentUrl: image-name}}" with a url
+				// to the image that is visible to all users (including the guest user).
+				// For example, <img src="http://somehost/ssf/branding/binder/binderId/imgName" />
+				branding = MarkupUtil.fixupImgUrls(
+												allModules,
+												request,
+												servletContext,
+												brandingSourceBinder,
+												branding );
+												
+				// Parse the advanced branding and replace any markup with the appropriate url.  For example,
+				// replace {{atachmentUrl: somename.png}} with a url that looks like http://somehost/ssf/s/readFile/.../somename.png
+				branding = MarkupUtil.markupStringReplacement( null, null, request, null, brandingSourceBinder, branding, "view" );
+	
+				brandingData.setBranding( branding );
+				
+				// Do we have a branding image?
+				imgName = brandingData.getBrandingImageName();
+				if ( imgName != null && imgName.length() > 0 )
+				{
+					// Yes
+					// Is the image name "__no image__" or "__default teaming image__"?
+					// These are special names that don't represent a real image file name.
+					if ( !imgName.equalsIgnoreCase( "__no image__" ) && !imgName.equalsIgnoreCase( "__default teaming image__" ) )
+					{
+						String fileUrl;
+						
+						// No, Get a url to the file.
+						fileUrl = BrandingUtil.getUrlToBinderBrandingImg(
+			    													allModules,
+			    													request,
+			    													servletContext,
+			    													brandingSourceBinder,
+			    													imgName );
+						
+						brandingData.setBrandingImageUrl( fileUrl );
+					}
+				}
+				
+				// Do we have a background image?
+				imgName = brandingData.getBgImageName();
+				if ( imgName != null && imgName.length() > 0 )
+				{
+					String fileUrl;
+					
+					// Yes
+					// Get a url to the file.
+					fileUrl = BrandingUtil.getUrlToBinderBrandingImg(
+		    													allModules,
+		    													request,
+		    													servletContext,
+		    													brandingSourceBinder,
+		    													imgName );
+					
+					brandingData.setBgImageUrl( fileUrl );
+				}
+				
+				// Do we have a branding image for the login dialog?
+				imgName = brandingData.getLoginDlgImageName();
+				if ( imgName != null && imgName.length() > 0 )
+				{
+					// Yes
+					// Is the image name "__no image__" or "__default teaming image__"?
+					// These are special names that don't represent a real image file name.
+					if ( !imgName.equalsIgnoreCase( "__no image__" ) && !imgName.equalsIgnoreCase( "__default teaming image__" ) )
+					{
+						String fileUrl;
+						
+						// No, get a url to the file
+    					fileUrl = BrandingUtil.getUrlToLoginBrandingImg(
+			    													allModules,
+			    													request,
+			    													servletContext,
+			    													brandingSourceBinder,
+			    													imgName );
+
+    					brandingData.setLoginDlgImageUrl( fileUrl );
 					}
 				}
 			}
@@ -9302,7 +9243,58 @@ public class GwtServerHelper {
 	/**
 	 * Modify the given group
 	 */
-	public static void modifyGroup( AllModulesInjected ami, Long groupId, String title, String desc, boolean isMembershipDynamic, List<GwtTeamingItem> membership, GwtDynamicGroupMembershipCriteria membershipCriteria ) throws GwtTeamingException
+	public static void modifyGroup(
+		AllModulesInjected ami,
+		Long groupId,
+		String title,
+		String desc,
+		boolean isMembershipDynamic,
+		GwtDynamicGroupMembershipCriteria membershipCriteria ) throws GwtTeamingException
+	{
+		Principal principal;
+		GwtServerProfiler gsp;
+
+		principal = ami.getProfileModule().getEntry( groupId );
+		if ( principal != null && principal instanceof Group )
+		{
+			Map updates;
+			String ldapQuery = null;
+
+			if ( isMembershipDynamic && membershipCriteria != null )
+				ldapQuery = membershipCriteria.getAsXml();
+
+			updates = new HashMap();
+			updates.put( ObjectKeys.FIELD_ENTITY_TITLE, title );
+			updates.put( ObjectKeys.FIELD_ENTITY_DESCRIPTION, desc );
+			updates.put( ObjectKeys.FIELD_ENTITY_DESCRIPTION_FORMAT, String.valueOf( Description.FORMAT_NONE ) );  
+			updates.put( ObjectKeys.FIELD_GROUP_DYNAMIC, isMembershipDynamic );
+			updates.put( ObjectKeys.FIELD_GROUP_LDAP_QUERY, ldapQuery );
+			
+			gsp = GwtServerProfiler.start( m_logger, "GwtServerHelper.modifyGroup() - getProfileModule().modifyEntry()" );
+			try
+			{
+				ami.getProfileModule().modifyEntry( groupId, new MapInputData( updates ) );
+			}
+   			catch ( Exception ex )
+   			{
+   				throw GwtLogHelper.getGwtClientException(m_logger, ex);
+   			}
+   			finally
+   			{
+   				gsp.stop();
+   			}
+		}
+	}
+
+	/**
+	 * Modify the membership of the given group
+	 */
+	public static void modifyGroupMembership(
+		AllModulesInjected ami,
+		Long groupId,
+		boolean isMembershipDynamic,
+		List<GwtTeamingItem> membership,
+		GwtDynamicGroupMembershipCriteria membershipCriteria ) throws GwtTeamingException
 	{
 		Principal principal;
 		GwtServerProfiler gsp;
@@ -9333,7 +9325,7 @@ public class GwtServerHelper {
 				{
 					currentMembers.add( ami.getProfileModule().getEntry( nextMember.getId() ) );
 				}
-				GwtLogHelper.debug(m_logger, "GwtServerHelper.modifyGroup(), number of members in current group membership: " + String.valueOf( currentMembers.size() ) );
+				GwtLogHelper.debug( m_logger, "GwtServerHelper.modifyGroupMembership(), number of members in current group membership: " + String.valueOf( currentMembers.size() ) );
 			}
 			
 			// Is the group membership dynamic?
@@ -9344,7 +9336,7 @@ public class GwtServerHelper {
 				if ( membershipCriteria != null )
 				{
 					// Execute the ldap query and get the list of members from the results.
-					gsp = GwtServerProfiler.start( m_logger, "GwtServerHelper.modifyGroup() - get list of dynamic group members" );
+					gsp = GwtServerProfiler.start( m_logger, "GwtServerHelper.modifyGroupMembership() - get list of dynamic group members" );
 					try
 					{
 						int maxCount;
@@ -9419,23 +9411,20 @@ public class GwtServerHelper {
 				}
 			}
 
-			// Modify the group.
+			// Modify the group's membership.
 			{
 				Map updates;
 
 				principals = ami.getProfileModule().getPrincipals( membershipIds );
 
-				GwtLogHelper.debug(m_logger, "GwtServerHelper.modifyGroup(), number of members in new group membership: " + String.valueOf( principals.size() ) );
+				GwtLogHelper.debug(m_logger, "GwtServerHelper.modifyGroupMembership(), number of members in new group membership: " + String.valueOf( principals.size() ) );
 			
 				updates = new HashMap();
-				updates.put( ObjectKeys.FIELD_ENTITY_TITLE, title );
-				updates.put( ObjectKeys.FIELD_ENTITY_DESCRIPTION, desc );
-				updates.put( ObjectKeys.FIELD_ENTITY_DESCRIPTION_FORMAT, String.valueOf( Description.FORMAT_NONE ) );  
 				updates.put( ObjectKeys.FIELD_GROUP_DYNAMIC, isMembershipDynamic );
 				updates.put( ObjectKeys.FIELD_GROUP_PRINCIPAL_MEMBERS, principals );
 				updates.put( ObjectKeys.FIELD_GROUP_LDAP_QUERY, ldapQuery );
 				
-				gsp = GwtServerProfiler.start( m_logger, "GwtServerHelper.modifyGroup() - getProfileModule().modifyEntry()" );
+				gsp = GwtServerProfiler.start( m_logger, "GwtServerHelper.modifyGroupMembership() - getProfileModule().modifyEntry()" );
 				try
 				{
 					ami.getProfileModule().modifyEntry( groupId, new MapInputData( updates ) );
@@ -9465,7 +9454,7 @@ public class GwtServerHelper {
 				changes = new HashMap<Long,Principal>();
 
 				// Get a list of the users and groups that were removed from the group.
-				gsp = GwtServerProfiler.start( m_logger, "GwtServerHelper.modifyGroup() - create list of users removed from the group." );
+				gsp = GwtServerProfiler.start( m_logger, "GwtServerHelper.modifyGroupMembership() - create list of users removed from the group." );
 				try
 				{
 					for (Principal p : currentMembers)
@@ -9504,12 +9493,12 @@ public class GwtServerHelper {
 				finally
 				{
 					gsp.stop();
-					GwtLogHelper.debug(m_logger, "GwtServerHelper.modifyGroup(), number of users removed from group: " + String.valueOf( usersRemovedFromGroup.size() ) );
-					GwtLogHelper.debug(m_logger, "GwtServerHelper.modifyGroup(), number of groups removed from group: " + String.valueOf( groupsRemovedFromGroup.size() ) );
+					GwtLogHelper.debug(m_logger, "GwtServerHelper.modifyGroupMembership(), number of users removed from group: " + String.valueOf( usersRemovedFromGroup.size() ) );
+					GwtLogHelper.debug(m_logger, "GwtServerHelper.modifyGroupMembership(), number of groups removed from group: " + String.valueOf( groupsRemovedFromGroup.size() ) );
 				}
 				
 				// Get a list of the users and groups that were added to the group.
-				gsp = GwtServerProfiler.start( m_logger, "GwtServerHelper.modifyGroup() - create list of users added to the group." );
+				gsp = GwtServerProfiler.start( m_logger, "GwtServerHelper.modifyGroupMembership() - create list of users added to the group." );
 				try
 				{
 					for (Principal p : principals)
@@ -9548,11 +9537,11 @@ public class GwtServerHelper {
 				finally
 				{
 					gsp.stop();
-					GwtLogHelper.debug( m_logger, "GwtServerHelper.modifyGroup(), number of users added to group: " + String.valueOf( usersAddedToGroup.size() ) );
-					GwtLogHelper.debug( m_logger, "GwtServerHelper.modifyGroup(), number of groups added to group: " + String.valueOf( groupsAddedToGroup.size() ) );
+					GwtLogHelper.debug( m_logger, "GwtServerHelper.modifyGroupMembership(), number of users added to group: " + String.valueOf( usersAddedToGroup.size() ) );
+					GwtLogHelper.debug( m_logger, "GwtServerHelper.modifyGroupMembership(), number of groups added to group: " + String.valueOf( groupsAddedToGroup.size() ) );
 				}
 
-				GwtLogHelper.debug( m_logger, "GwtServerHelper.modifyGroup(), number of changes to the group: " + String.valueOf( changes.size() ) );
+				GwtLogHelper.debug( m_logger, "GwtServerHelper.modifyGroupMembership(), number of changes to the group: " + String.valueOf( changes.size() ) );
 
 				// Update the disk quotas and file size limits for users that were added
 				// or removed from the group.
@@ -9569,7 +9558,7 @@ public class GwtServerHelper {
 			}
 		}
 	}
-
+	
 	/*
 	 * Opens a URL connection, optionally ignoring any SSL
 	 * certificates.
@@ -9958,6 +9947,7 @@ public class GwtServerHelper {
 		case HIDE_SHARES:
 		case LDAP_AUTHENTICATE_USER:
 		case LOCK_ENTRIES:
+		case MODIFY_GROUP_MEMBERSHIP:
 		case MODIFY_NET_FOLDER:
 		case MODIFY_NET_FOLDER_ROOT:
 		case MOVE_ENTRIES:

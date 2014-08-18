@@ -45,6 +45,9 @@ import org.kablink.teaming.gwt.client.GwtTeamingItem;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.GwtTeamingException.ExceptionType;
 import org.kablink.teaming.gwt.client.event.GroupCreatedEvent;
+import org.kablink.teaming.gwt.client.event.GroupMembershipModificationFailedEvent;
+import org.kablink.teaming.gwt.client.event.GroupMembershipModificationStartedEvent;
+import org.kablink.teaming.gwt.client.event.GroupMembershipModifiedEvent;
 import org.kablink.teaming.gwt.client.event.GroupModificationFailedEvent;
 import org.kablink.teaming.gwt.client.event.GroupModificationStartedEvent;
 import org.kablink.teaming.gwt.client.event.GroupModifiedEvent;
@@ -59,6 +62,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.GetIsDynamicGroupMembershipAllo
 import org.kablink.teaming.gwt.client.rpc.shared.GetNumberOfMembersCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.IntegerRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ModifyGroupCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.ModifyGroupMembershipCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HelpData;
@@ -368,7 +372,8 @@ public class ModifyGroupDlg extends DlgBox
 			public void onSuccess( VibeRpcResponse result )
 			{
 				GroupCreatedEvent event;
-				GroupInfo groupInfo;
+				final GroupInfo groupInfo;
+				Scheduler.ScheduledCommand cmd;
 				
 				hideStatusMsg();
 				setOkEnabled( true );
@@ -379,8 +384,22 @@ public class ModifyGroupDlg extends DlgBox
 				event = new GroupCreatedEvent( groupInfo );
 				GwtTeaming.fireEvent( event );
 
-				// Close this dialog.
-				hide();
+				cmd = new Scheduler.ScheduledCommand()
+				{
+					@Override
+					public void execute()
+					{
+						modifyGroupMembership(
+								groupInfo,
+								getIsMembershipDynamic(),
+								getGroupMembership(),
+								getDynamicMembershipCriteria() );
+
+						// Close this dialog.
+						hide();
+					}
+				};
+				Scheduler.get().scheduleDeferred( cmd );
 			}						
 		};
 		
@@ -395,7 +414,6 @@ public class ModifyGroupDlg extends DlgBox
 							getGroupDesc(),
 							getIsMembershipDynamic(),
 							m_externalMembersAllowed,
-							m_groupMembership,
 							m_dynamicMembershipCriteria );
 		GwtClientHelper.executeCommand( cmd, rpcCallback );
 	}
@@ -449,9 +467,17 @@ public class ModifyGroupDlg extends DlgBox
 	
 	
 	/**
+	 * 
+	 */
+	private GwtDynamicGroupMembershipCriteria getDynamicMembershipCriteria()
+	{
+		return m_dynamicMembershipCriteria;
+	}
+	
+	/**
 	 * Issue an ajax request to get the ldap query of the group we are working with.
 	 */
-	private void getDynamicMembershipCriteria()
+	private void getDynamicMembershipCriteriaFromServer()
 	{
 		if ( m_groupInfo != null )
 		{
@@ -524,9 +550,17 @@ public class ModifyGroupDlg extends DlgBox
 	}
 	
 	/**
+	 * 
+	 */
+	private List<GwtTeamingItem> getGroupMembership()
+	{
+		return m_groupMembership;
+	}
+	
+	/**
 	 * Issue an ajax request to get the membership of the group we are working with.
 	 */
-	private void getGroupMembership()
+	private void getGroupMembershipFromServer()
 	{
 		if ( m_groupInfo != null )
 		{
@@ -604,7 +638,7 @@ public class ModifyGroupDlg extends DlgBox
 	 * Issue an ajax request to get the membership information for the group
 	 * we are working with.
 	 */
-	private void getMembershipInfo()
+	private void getMembershipInfoFromServer()
 	{
 		if ( m_groupInfo != null )
 		{
@@ -647,8 +681,8 @@ public class ModifyGroupDlg extends DlgBox
 								@Override
 								public void execute()
 								{
-									getDynamicMembershipCriteria();
-									getNumberOfMembers();
+									getDynamicMembershipCriteriaFromServer();
+									getNumberOfMembersFromServer();
 								}
 							};
 							Scheduler.get().scheduleDeferred( cmd );
@@ -669,7 +703,7 @@ public class ModifyGroupDlg extends DlgBox
 								@Override
 								public void execute()
 								{
-									getGroupMembership();
+									getGroupMembershipFromServer();
 								}
 							};
 							Scheduler.get().scheduleDeferred( cmd );
@@ -686,7 +720,7 @@ public class ModifyGroupDlg extends DlgBox
 	/**
 	 * Issue an ajax request to get the number of members in this group.
 	 */
-	private void getNumberOfMembers()
+	private void getNumberOfMembersFromServer()
 	{
 		if ( m_groupInfo != null )
 		{
@@ -762,7 +796,7 @@ public class ModifyGroupDlg extends DlgBox
 					@Override
 					public void execute()
 					{
-						getMembershipInfo();
+						getMembershipInfoFromServer();
 					}
 				};
 				Scheduler.get().scheduleDeferred( cmd );
@@ -886,7 +920,7 @@ public class ModifyGroupDlg extends DlgBox
 				externalAllowed = m_externalMembersAllowed;
 			}
 			
-			m_staticMembershipDlg.init( getGroupName(), m_groupMembership, externalAllowed, groupExistsInDb );
+			m_staticMembershipDlg.init( getGroupName(), getGroupMembership(), externalAllowed, groupExistsInDb );
 			m_staticMembershipDlg.setPopupPosition( x, y );
 			m_staticMembershipDlg.show();
 		}
@@ -1044,16 +1078,31 @@ public class ModifyGroupDlg extends DlgBox
 			public void onSuccess( VibeRpcResponse result )
 			{
 				GroupModifiedEvent event;
+				Scheduler.ScheduledCommand cmd;
 				
 				// Fire an event that lets everyone know this group was modified.
 				event = new GroupModifiedEvent( newGroupInfo );
 				GwtTeaming.fireEvent( event );
+
+				cmd = new Scheduler.ScheduledCommand()
+				{
+					@Override
+					public void execute()
+					{
+						modifyGroupMembership(
+											newGroupInfo,
+											getIsMembershipDynamic(),
+											getGroupMembership(),
+											getDynamicMembershipCriteria() );
+
+						// Close this dialog.
+						hide();
+					}
+				};
+				Scheduler.get().scheduleDeferred( cmd );
 			}						
 		};
 		
-		// Close this dialog.
-		hide();
-
 		// Fire an event that indicates we have started the group modification
 		{
 			GroupModificationStartedEvent event;
@@ -1063,7 +1112,64 @@ public class ModifyGroupDlg extends DlgBox
 		}
 		
 		// Issue an rpc request to update the group.
-		cmd = new ModifyGroupCmd( m_groupInfo.getId(), getGroupTitle(), getGroupDesc(), getIsMembershipDynamic(), m_groupMembership, m_dynamicMembershipCriteria );
+		cmd = new ModifyGroupCmd(
+								m_groupInfo.getId(),
+								getGroupTitle(),
+								getGroupDesc(),
+								getIsMembershipDynamic(),
+								getDynamicMembershipCriteria() );
+		GwtClientHelper.executeCommand( cmd, rpcCallback );
+	}
+
+	/**
+	 * Issue an rpc request to update the group membership.
+	 */
+	private void modifyGroupMembership(
+		final GroupInfo groupInfo,
+		boolean isMembershipDynamic,
+		List<GwtTeamingItem> groupMembership,
+		GwtDynamicGroupMembershipCriteria membershipCriteria )
+	{
+		ModifyGroupMembershipCmd cmd;
+		AsyncCallback<VibeRpcResponse> rpcCallback;
+
+		rpcCallback = new AsyncCallback<VibeRpcResponse>()
+		{
+			@Override
+			public void onFailure( Throwable caught )
+			{
+				GroupMembershipModificationFailedEvent event;
+				
+				// Fire an event that lets everyone know the group modification failed.
+				event = new GroupMembershipModificationFailedEvent( groupInfo, caught );
+				GwtTeaming.fireEvent( event );
+			}
+
+			@Override
+			public void onSuccess( VibeRpcResponse result )
+			{
+				GroupMembershipModifiedEvent event;
+				
+				// Fire an event that lets everyone know this group's membership was modified.
+				event = new GroupMembershipModifiedEvent( groupInfo );
+				GwtTeaming.fireEvent( event );
+			}						
+		};
+		
+		// Fire an event that indicates we have started the group membership modification
+		{
+			GroupMembershipModificationStartedEvent event;
+			
+			event = new GroupMembershipModificationStartedEvent( groupInfo );
+			GwtTeaming.fireEvent( event );
+		}
+		
+		// Issue an rpc request to update the group membership.
+		cmd = new ModifyGroupMembershipCmd(
+										groupInfo.getId(),
+										isMembershipDynamic,
+										groupMembership,
+										membershipCriteria );
 		GwtClientHelper.executeCommand( cmd, rpcCallback );
 	}
 

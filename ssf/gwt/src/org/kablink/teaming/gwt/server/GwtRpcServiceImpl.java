@@ -467,7 +467,6 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 											cgCmd.getDesc(),
 											cgCmd.getIsMembershipDynamic(),
 											cgCmd.getExternalMembersAllowed(),
-											cgCmd.getMembership(),
 											cgCmd.getMembershipCriteria() );
 			groupInfo = new GroupInfo();
 			if ( group != null )
@@ -1067,8 +1066,15 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case GET_BINDER_BRANDING:
 		{
 			GwtBrandingData brandingData;
+			GetBinderBrandingCmd gbbCmd;
 			
-			brandingData = GwtServerHelper.getBinderBrandingData( this, ((GetBinderBrandingCmd) cmd).getBinderId(), req, getServletContext( ri ) );
+			gbbCmd = (GetBinderBrandingCmd) cmd;
+			brandingData = GwtServerHelper.getBinderBrandingData(
+																this,
+																gbbCmd.getBinderId(),
+																gbbCmd.getUseInheritance(),
+																req,
+																getServletContext( ri ) );
 
 			response = new VibeRpcResponse( brandingData );
 			return response;
@@ -2934,7 +2940,29 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			ModifyGroupCmd mgCmd;
 			
 			mgCmd = (ModifyGroupCmd) cmd;
-			GwtServerHelper.modifyGroup( this, mgCmd.getId(), mgCmd.getTitle(), mgCmd.getDesc(), mgCmd.getIsMembershipDynamic(), mgCmd.getMembership(), mgCmd.getMembershipCriteria() );
+			GwtServerHelper.modifyGroup(
+									this,
+									mgCmd.getId(),
+									mgCmd.getTitle(),
+									mgCmd.getDesc(),
+									mgCmd.getIsMembershipDynamic(),
+									mgCmd.getMembershipCriteria() );
+			response = new VibeRpcResponse( new BooleanRpcResponseData( Boolean.TRUE ) );
+			
+			return response;
+		}
+		
+		case MODIFY_GROUP_MEMBERSHIP:
+		{
+			ModifyGroupMembershipCmd mgmCmd;
+			
+			mgmCmd = (ModifyGroupMembershipCmd) cmd;
+			GwtServerHelper.modifyGroupMembership(
+												this,
+												mgmCmd.getId(),
+												mgmCmd.getIsMembershipDynamic(),
+												mgmCmd.getMembership(),
+												mgmCmd.getMembershipCriteria() );
 			response = new VibeRpcResponse( new BooleanRpcResponseData( Boolean.TRUE ) );
 			
 			return response;
@@ -4978,7 +5006,12 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 				
 					// Get the branding data from the top workspace.
 					binderId = topWorkspace.getId().toString();
-					siteBrandingData = GwtServerHelper.getBinderBrandingData( allModules, binderId, getRequest( ri ), getServletContext( ri ) );
+					siteBrandingData = GwtServerHelper.getBinderBrandingData(
+																			allModules,
+																			binderId,
+																			false,
+																			getRequest( ri ),
+																			getServletContext( ri ) );
 				}
 				catch (Exception e)
 				{
@@ -6618,17 +6651,18 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 				branding = brandingData.getBranding();
 				if ( branding == null )
 					branding = "";
+				
+				// Remove mce_src as an attribute from all <img> tags.  See bug 766415.
+				// There was a bug that caused the mce_src attribute to be included in the <img>
+				// tag and written to the db.  We want to remove it.
+				branding = MarkupUtil.removeMceSrc( branding );
+
 				hashMap.put( "branding", branding );
 
 				// Add the extended branding data to the map.
 				branding = brandingData.getBrandingAsXmlString();
 				if ( branding == null )
 					branding = "";
-
-				// Remove mce_src as an attribute from all <img> tags.  See bug 766415.
-				// There was a bug that caused the mce_src attribute to be included in the <img>
-				// tag and written to the db.  We want to remove it.
-				branding = MarkupUtil.removeMceSrc( branding );
 
 				hashMap.put( "brandingExt", branding );
 				
