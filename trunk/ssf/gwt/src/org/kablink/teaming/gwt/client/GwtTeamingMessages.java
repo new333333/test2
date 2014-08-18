@@ -536,6 +536,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_LockEntries();
 	String rpcFailure_markupStringReplacement();
 	String rpcFailure_ModifyGroup();
+	String rpcFailure_ModifyGroupMembership();
 	String rpcFailure_MoveEntries();
 	String rpcFailure_PersistActivityStreamSelection();
 	String rpcFailure_PersistExpansionState();
@@ -2259,6 +2260,7 @@ public interface GwtTeamingMessages extends Messages
 	String manageGroupsDlgTitleCol();
 	String manageGroupsDlgTypeCol();
 	String manageGroupsDlgUnknownStatus();
+	String manageGroupsDlgUpdatingMembership();
 	String manageGroupsDlgWebAccess_Clear();
 	String manageGroupsDlgWebAccess_Disable();
 	String manageGroupsDlgWebAccess_Enable();

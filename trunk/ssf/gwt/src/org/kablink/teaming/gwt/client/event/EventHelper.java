@@ -933,6 +933,39 @@ public class EventHelper {
 				}
 				break;
 				
+			case GROUP_MEMBERSHIP_MODIFICATION_FAILED:
+				// A GroupMembershipModificationFailedEvent  Can the event handler we  were given handle that?
+				if ( eventHandler instanceof GroupMembershipModificationFailedEvent.Handler )
+				{
+					handlerNotDefined = false;
+					registrationHandler = GroupMembershipModificationFailedEvent.registerEvent(
+																			eventBus,
+																			((GroupMembershipModificationFailedEvent.Handler) eventHandler ) );
+				}
+				break;
+				
+			case GROUP_MEMBERSHIP_MODIFICATION_STARTED:
+				// A GroupMembershipModificationStartedEvent  Can the event handler we  were given handle that?
+				if ( eventHandler instanceof GroupMembershipModificationStartedEvent.Handler )
+				{
+					handlerNotDefined = false;
+					registrationHandler = GroupMembershipModificationStartedEvent.registerEvent(
+																			eventBus,
+																			((GroupMembershipModificationStartedEvent.Handler) eventHandler ) );
+				}
+				break;
+				
+			case GROUP_MEMBERSHIP_MODIFIED:
+				// A GroupMembershipModifiedEvent  Can the event handler we  were given handle that?
+				if ( eventHandler instanceof GroupMembershipModifiedEvent.Handler )
+				{
+					handlerNotDefined = false;
+					registrationHandler = GroupMembershipModifiedEvent.registerEvent(
+																			eventBus,
+																			((GroupMembershipModifiedEvent.Handler) eventHandler ) );
+				}
+				break;
+				
 			case GROUP_MODIFICATION_FAILED:
 				// A GroupModificationFailedEvent  Can the event handler we  were given handle that?
 				if ( eventHandler instanceof GroupModificationFailedEvent.Handler )
@@ -2721,6 +2754,9 @@ public class EventHelper {
 			case GOTO_URL:                  			       hasHandler = (eventHandler instanceof GotoUrlEvent.Handler);                	               break;
 						
 			case GROUP_CREATED:                			       hasHandler = (eventHandler instanceof GroupCreatedEvent.Handler);             	           break;
+			case GROUP_MEMBERSHIP_MODIFICATION_FAILED:	       hasHandler = (eventHandler instanceof GroupMembershipModificationFailedEvent.Handler);      break;
+			case GROUP_MEMBERSHIP_MODIFICATION_STARTED:	       hasHandler = (eventHandler instanceof GroupMembershipModificationStartedEvent.Handler);     break;
+			case GROUP_MEMBERSHIP_MODIFIED:	       			   hasHandler = (eventHandler instanceof GroupMembershipModifiedEvent.Handler);     		   break;
 			case GROUP_MODIFICATION_FAILED:       		       hasHandler = (eventHandler instanceof GroupModificationFailedEvent.Handler);                break;
 			case GROUP_MODIFICATION_STARTED:       		       hasHandler = (eventHandler instanceof GroupModificationStartedEvent.Handler);               break;
 			case GROUP_MODIFIED:                		       hasHandler = (eventHandler instanceof GroupModifiedEvent.Handler);             	           break;
@@ -2749,7 +2785,7 @@ public class EventHelper {
 			case INVOKE_IMPORT_ICAL_FILE:           	       hasHandler = (eventHandler instanceof InvokeImportIcalFileEvent.Handler);                   break;
 			case INVOKE_IMPORT_ICAL_URL:            	       hasHandler = (eventHandler instanceof InvokeImportIcalUrlEvent.Handler);                    break;
 			case INVOKE_IMPORT_PROFILES_DLG:				   hasHandler = (eventHandler instanceof InvokeImportProfilesDlgEvent.Handler);		           break;
-			case INVOKE_NET_FOLDER_GLOBAL_SETTINGS_DLG:			       hasHandler = (eventHandler instanceof InvokeNetFolderGlobalSettingsDlgEvent.Handler); 	           break;
+			case INVOKE_NET_FOLDER_GLOBAL_SETTINGS_DLG:		   hasHandler = (eventHandler instanceof InvokeNetFolderGlobalSettingsDlgEvent.Handler); 	   break;
 			case INVOKE_LDAP_SYNC_RESULTS_DLG:			       hasHandler = (eventHandler instanceof InvokeLdapSyncResultsDlgEvent.Handler); 	           break;
 			case INVOKE_MANAGE_DATABASE_PRUNE_DLG:			   hasHandler = (eventHandler instanceof InvokeManageDatabasePruneDlgEvent.Handler); 	       break;
 			case INVOKE_MANAGE_NET_FOLDERS_DLG:			       hasHandler = (eventHandler instanceof InvokeManageNetFoldersDlgEvent.Handler); 	           break;

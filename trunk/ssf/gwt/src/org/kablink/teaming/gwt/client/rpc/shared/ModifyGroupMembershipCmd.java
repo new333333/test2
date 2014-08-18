@@ -33,43 +33,47 @@
 
 package org.kablink.teaming.gwt.client.rpc.shared;
 
+import java.util.List;
+
+import org.kablink.teaming.gwt.client.GwtDynamicGroupMembershipCriteria;
+import org.kablink.teaming.gwt.client.GwtTeamingItem;
+
+
 
 /**
- * This class holds all of the information necessary to execute the "Get Branding" command.
+ * This class holds all of the information necessary to execute the "modify group membership" command.
  * 
  * @author jwootton
  *
  */
-public class GetBinderBrandingCmd extends VibeRpcCmd
+public class ModifyGroupMembershipCmd extends VibeRpcCmd
 {
-	private String m_binderId;
-	private boolean m_useInheritance;
+	private Long m_id;
+	private boolean m_isMembershipDynamic;
+	private List<GwtTeamingItem> m_membership;
+	private GwtDynamicGroupMembershipCriteria m_membershipCriteria;
 	
 	/**
 	 * For GWT serialization, must have a zero param contructor
 	 */
-	public GetBinderBrandingCmd()
+	public ModifyGroupMembershipCmd()
 	{
 		super();
-		m_binderId = null;
-		m_useInheritance = true;
 	}
 	
 	/**
 	 * 
 	 */
-	public GetBinderBrandingCmd( String binderId )
+	public ModifyGroupMembershipCmd(
+		Long id,
+		boolean isMembershipDynamic,
+		List<GwtTeamingItem> membership,
+		GwtDynamicGroupMembershipCriteria membershipCriteria )
 	{
-		this();
-		m_binderId = binderId;
-	}
-	
-	/**
-	 * 
-	 */
-	public String getBinderId()
-	{
-		return m_binderId;
+		m_id = id;
+		m_isMembershipDynamic = isMembershipDynamic;
+		m_membership = membership;
+		m_membershipCriteria = membershipCriteria;
 	}
 	
 	/**
@@ -80,23 +84,48 @@ public class GetBinderBrandingCmd extends VibeRpcCmd
 	 * @return
 	 */
 	@Override
-	public int getCmdType() {
-		return VibeRpcCmdType.GET_BINDER_BRANDING.ordinal();
+	public int getCmdType()
+	{
+		return VibeRpcCmdType.MODIFY_GROUP_MEMBERSHIP.ordinal();
+	}
+
+	/**
+	 * 
+	 */
+	public Long getId()
+	{
+		return m_id;
 	}
 	
 	/**
 	 * 
 	 */
-	public boolean getUseInheritance()
+	public boolean getIsMembershipDynamic()
 	{
-		return m_useInheritance;
+		return m_isMembershipDynamic;
 	}
 	
 	/**
 	 * 
 	 */
-	public void setUseInheritance( boolean useInheritance )
+	public List<GwtTeamingItem> getMembership()
 	{
-		m_useInheritance = useInheritance;
+		return m_membership;
+	}
+	
+	/**
+	 * 
+	 */
+	public GwtDynamicGroupMembershipCriteria getMembershipCriteria()
+	{
+		return m_membershipCriteria;
+	}
+	
+	/**
+	 * 
+	 */
+	public void setIsMembershipDynamic( boolean isMembershipDynamic )
+	{
+		m_isMembershipDynamic = isMembershipDynamic;
 	}
 }
