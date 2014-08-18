@@ -108,6 +108,7 @@ import org.kablink.teaming.domain.ZoneConfig;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.domain.FileAttachment.FileLock;
 import org.kablink.teaming.domain.FileAttachment.FileStatus;
+import org.kablink.teaming.exception.NoStackTrace;
 import org.kablink.teaming.fi.connection.ResourceDriverManager;
 import org.kablink.teaming.lucene.Hits;
 import org.kablink.teaming.module.admin.AdminModule;
@@ -636,7 +637,10 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
         				try {
         					deleteVersion(binder, entry, va);
         				} catch(Exception e) {
-        					logger.error("Error pruning file version", e);
+        					if(e instanceof NoStackTrace)
+        						logger.error("Error pruning file version: " + e);
+        					else 
+        						logger.error("Error pruning file version", e);
         				}
         			}
         			minorVersionsSeen++;
