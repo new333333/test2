@@ -52,6 +52,7 @@ import javax.mail.MessagingException;
 import javax.mail.Session;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMultipart;
+import javax.mail.internet.MimeBodyPart;
 
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContext;
@@ -441,7 +442,7 @@ public class DefaultEmailPoster  extends CommonDependencyInjection implements Em
 				//old mailers may not use disposition, and instead put the name in the content-type
 				//java mail handles this.
 				String fileName = part.getFileName();
-				if (Validator.isNotNull(fileName) && !(part.isMimeType("text/html") && part instanceof Message)) {
+				if (Validator.isNotNull(fileName) && (!(part.isMimeType("text/html")) && (part instanceof Message || part instanceof MimeBodyPart))) {
 					fileItems.put(ObjectKeys.INPUT_FIELD_ENTITY_ATTACHMENTS + Integer.toString(fileItems.size() + 1), new FileHandler(part));
 				} else if (part.isMimeType("text/html")) {
 					processHTML(folder, part.getContent(), inputData, descInfo);
