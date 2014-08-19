@@ -1846,7 +1846,10 @@ public class GwtViewHelper {
 							}
 						}
 						else {
-							fm.copyEntry(entityId.getBinderId(), entityId.getEntityId(), cmt.getEntryTargetId(), null, null);
+							//Bug: 859044 (pmh) - when copying, start the workflow at the same state
+							Map options = new HashMap();
+							options.put(ObjectKeys.WORKFLOW_START_WORKFLOW, ObjectKeys.WORKFLOW_START_WORKFLOW_COPY);
+							fm.copyEntry(entityId.getBinderId(), entityId.getEntityId(), cmt.getEntryTargetId(), null, options);
 						}
 					}
 

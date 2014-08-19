@@ -241,7 +241,10 @@ public class ModifyEntryController extends SAbstractController {
 					PortletSession portletSession = WebHelper.getRequiredPortletSession(request);
 					portletSession.setAttribute(ObjectKeys.SESSION_SAVE_LOCATION_ID, destinationId);
 					try {
-						getFolderModule().copyEntry(folderId, entryId, destinationId, null, null);
+						//Bug: 859044 (pmh) - when copying, start the workflow at the same state
+						Map options = new HashMap();
+						options.put(ObjectKeys.WORKFLOW_START_WORKFLOW, ObjectKeys.WORKFLOW_START_WORKFLOW_COPY);
+						getFolderModule().copyEntry(folderId, entryId, destinationId, null, options);
 					} catch(Exception e) {
 			    		response.setRenderParameter(WebKeys.ENTRY_DATA_PROCESSING_ERRORS, e.getMessage());
 			    		response.setRenderParameter(WebKeys.URL_BINDER_ID, folderId.toString());
