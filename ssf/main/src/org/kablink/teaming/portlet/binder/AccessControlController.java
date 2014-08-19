@@ -81,6 +81,7 @@ import org.kablink.teaming.security.function.WorkAreaFunctionMembership;
 import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.NLT;
+import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SimpleProfiler;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.Utils;
@@ -124,7 +125,10 @@ public class AccessControlController extends AbstractBinderController {
 		response.setRenderParameter(WebKeys.URL_WORKAREA_ID, workArea.getWorkAreaId().toString());
 		response.setRenderParameter(WebKeys.URL_WORKAREA_TYPE, workArea.getWorkAreaType());
 		//The form is only used in Vibe. But we allow it for informational purposes only in Filr (i.e., no changes allowed).
-		if (Utils.checkIfVibe()) {
+		if (Utils.checkIfVibe() || SPropsUtil.getBoolean("keepFilrRolesAndRightsInVibe", false)) {
+			//Note: setting "keepFilrRolesAndRightsInVibe" to true in ssf-ext.properties will also allow the Vibe access control form to be 
+			//  used to change access settings. But only if you know the access control page URL. Caution, this means that regular users 
+			//  could then set various sharing rights on their owned folders
 			//See if the form was submitted
 			if (formData.containsKey("okBtn") && WebHelper.isMethodPost(request)) {
 				if (!(workArea instanceof FolderEntry) || ((FolderEntry)workArea).isTop()) {
