@@ -250,7 +250,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 			return ajaxMobileDeleteEntry(this, request, response);
 			
 		} else if (op.equals(WebKeys.OPERATION_MOBILE_ADD_USER_GROUP_TEAM)) {
-			return ajaxMobileAddUserGroupTeam(this, request, response);
+			return ajaxMobileAddUserGroupTeam(this, request, response, null);
 			
 		} else if (op.equals(WebKeys.OPERATION_MOBILE_FIND_USER_GROUP_TEAM)) {
 			return ajaxMobileFindUserGroupTeam(this, request, response);
@@ -322,12 +322,20 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		Long folderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
 		//See if the add entry form was submitted
 		Long entryId=null;
-		if (formData.containsKey("okBtn") && WebHelper.isMethodPost(request)) {
+		if ((formData.containsKey("okBtn") || formData.containsKey("addUGTBtn")) && WebHelper.isMethodPost(request)) {
 			//The form was submitted. Go process it
 			String entryType = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_TYPE, "");
+			Map options = new HashMap();
+			String delayWorkflow = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_DELAY_WORKFLOW, "");
+			String entryOperationType = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_OPERATION_TYPE, "");
+			if (formData.containsKey("addUGTBtn")) {
+				//This request is about to add a user or group. Delay starting the workflow if any
+				options.put(ObjectKeys.INPUT_OPTION_DELAY_WORKFLOW, "true");
+				response.setRenderParameter(WebKeys.URL_ENTRY_DELAY_WORKFLOW, "true");
+			}
 			Map fileMap = new HashMap();
 			MapInputData inputData = new MapInputData(formData);
-			entryId = getFolderModule().addEntry(folderId, entryType, inputData, fileMap, null).getId();
+			entryId = getFolderModule().addEntry(folderId, entryType, inputData, fileMap, options).getId();
 			response.setRenderParameter(WebKeys.URL_ENTRY_ID, entryId.toString());
 			
 			//If we just added a MiniBlog entry, update the user's status
@@ -346,8 +354,10 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		//Modify an entry
 		Map formData = request.getParameterMap();
 		Long entryId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));				
+		String entryOperationType = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_OPERATION_TYPE, "");
+		String delayWorkflow = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_DELAY_WORKFLOW, "");
 		//See if the modify entry form was submitted
-		if (formData.containsKey("okBtn") && WebHelper.isMethodPost(request)) {
+		if ((formData.containsKey("okBtn") || formData.containsKey("addUGTBtn")) && WebHelper.isMethodPost(request)) {
 			//The form was submitted. Go process it
 			Map fileMap = new HashMap();
 			Set deleteAtts = new HashSet();
@@ -360,8 +370,13 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 			}
 			FolderEntry entry = getFolderModule().getEntry(null, entryId);
 			Long folderId = entry.getParentFolder().getId();
+			Map options = new HashMap();
+			if (delayWorkflow.equals("true") && formData.containsKey("okBtn")) {
+				//If delaying workflow starts and we are not going to add a new user, group or team, then start the delayed workflow
+				options.put(ObjectKeys.INPUT_OPTION_DO_WORKFLOW, "true");
+			}
 			getFolderModule().modifyEntry(folderId, entryId, 
-					new MapInputData(formData), fileMap, deleteAtts, null, null);
+					new MapInputData(formData), fileMap, deleteAtts, null, options);
 			
 			//See if the user wants to subscribe to this entry
 			BinderHelper.subscribeToThisEntry(this, request, folderId, entryId);
@@ -394,6 +409,8 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		Long entryId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));				
 		Long id = PortletRequestUtils.getLongParameter(request, WebKeys.URL_ID);				
 		String type = new String(PortletRequestUtils.getStringParameter(request, WebKeys.URL_TYPE, "user"));		
+		String entryOperationType = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_OPERATION_TYPE, "");
+		String delayWorkflow = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_DELAY_WORKFLOW, "");
 		String elementName = new String(PortletRequestUtils.getStringParameter(request, WebKeys.URL_ELEMENT, ""));		
 		FolderEntry entry = getFolderModule().getEntry(null, entryId);
 		//See if the modify entry form was submitted
@@ -421,6 +438,8 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 			adapterUrl.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_MOBILE_MODIFY_ENTRY);
 			adapterUrl.setParameter(WebKeys.URL_BINDER_ID, String.valueOf(entry.getParentBinder().getId()));
 			adapterUrl.setParameter(WebKeys.URL_ENTRY_ID, String.valueOf(entryId));
+			adapterUrl.setParameter(WebKeys.URL_ENTRY_DELAY_WORKFLOW, delayWorkflow);
+			adapterUrl.setParameter(WebKeys.URL_ENTRY_OPERATION_TYPE, entryOperationType);
 			response.sendRedirect(adapterUrl.toString());
 			
 		} else {
@@ -1771,12 +1790,14 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		//Adding an entry; get the specific definition
 		Map folderEntryDefs = DefinitionHelper.getEntryDefsAsMap(folder);
 		String entryType = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_TYPE, "");
+		String delayWorkflow = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_DELAY_WORKFLOW, "");
     	request.setAttribute(WebKeys.URL_ENTRY_TYPE, entryType);
 		model.put(WebKeys.FOLDER, folder);
 		model.put(WebKeys.BINDER, folder);
 		model.put(WebKeys.ENTRY_DEFINITION_MAP, folderEntryDefs);
 		model.put(WebKeys.CONFIG_JSP_STYLE, Definition.JSP_STYLE_MOBILE);
 		model.put(WebKeys.DEFINITION_ID, entryType);
+		model.put(WebKeys.OPERATION_TYPE, WebKeys.OPERATION_MOBILE_ADD_ENTRY);
 		//Make sure the requested definition is legal
 		if (folderEntryDefs.containsKey(entryType)) {
 			DefinitionHelper.getDefinition((Definition)folderEntryDefs.get(entryType), model, "//item[@type='form']");
@@ -1784,11 +1805,11 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 			DefinitionHelper.getDefinition((Document) null, model, "//item[@name='entryForm']");
 		}
 		Map formData = request.getParameterMap();
-		if (entryType.equals("") || formData.containsKey("okBtn") || formData.containsKey("cancelBtn")) {
-			String addUGT = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_UGT, "");
-			if (!addUGT.equals("")) {
+		if (entryType.equals("") || formData.containsKey("okBtn") || formData.containsKey("addUGTBtn") || formData.containsKey("cancelBtn")) {
+			if (formData.containsKey("addUGTBtn")) {
 				//This is a request to get a user, group or team name
-				return ajaxMobileAddUserGroupTeam(bs, request, response);
+				model.put(WebKeys.ENTRY_DELAY_WORKFLOW, delayWorkflow);
+				return ajaxMobileAddUserGroupTeam(bs, request, response, model);
 			} else {
 				return ajaxMobileShowFolder(bs, request, response);
 			}
@@ -1801,20 +1822,23 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 			RenderResponse response) throws Exception {
 		Map model = new HashMap();
 		Long entryId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));		
+		String entryOperationType = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_OPERATION_TYPE, "");
+		String delayWorkflow = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_DELAY_WORKFLOW, "");
 		FolderEntry entry = getFolderModule().getEntry(null, entryId);
 		//Adding an entry; get the specific definition
 		model.put(WebKeys.FOLDER, entry.getParentFolder());
 		model.put(WebKeys.BINDER, entry.getParentFolder());
 		model.put(WebKeys.ENTRY, entry);
 		model.put(WebKeys.CONFIG_JSP_STYLE, Definition.JSP_STYLE_MOBILE);
+		model.put(WebKeys.OPERATION_TYPE, entryOperationType);
+		model.put(WebKeys.ENTRY_DELAY_WORKFLOW, delayWorkflow);
 		DefinitionHelper.getDefinition(entry.getEntryDefDoc(), model, "//item[@type='form']");
 		
 		Map formData = request.getParameterMap();
-		if (formData.containsKey("okBtn") || formData.containsKey("cancelBtn")) {
-			String addUGT = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_UGT, "");
-			if (!addUGT.equals("")) {
+		if (formData.containsKey("okBtn") || formData.containsKey("addUGTBtn") || formData.containsKey("cancelBtn")) {
+			if (formData.containsKey("addUGTBtn")) {
 				//This is a request to get a user, group or team name
-				return ajaxMobileAddUserGroupTeam(bs, request, response);
+				return ajaxMobileAddUserGroupTeam(bs, request, response, model);
 			}
 			return ajaxMobileShowEntry(bs, request, response);
 		} else {
@@ -1849,12 +1873,16 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 	}	
 
 	private ModelAndView ajaxMobileAddUserGroupTeam(AllModulesInjected bs, RenderRequest request, 
-			RenderResponse response) throws Exception {
-		Map model = new HashMap();
+			RenderResponse response, Map model) throws Exception {
+		if (model == null) {
+			model = new HashMap();
+		}
 		Long entryId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));		
 		String type = new String(PortletRequestUtils.getStringParameter(request, WebKeys.URL_TYPE, "user"));		
 		String elementName = new String(PortletRequestUtils.getStringParameter(request, WebKeys.URL_ELEMENT, ""));		
 		String addUGT = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_UGT, "");
+		String entryOperationType = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_OPERATION_TYPE, "");
+		String delayWorkflow = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_DELAY_WORKFLOW, "");
 		if (!addUGT.equals("")) {
 			//This is a request from the add or modify form
 			String[] ugtData = addUGT.split(",");
@@ -1869,6 +1897,8 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		model.put(WebKeys.TYPE, type);
 		model.put(WebKeys.ELEMENT_NAME, elementName);
 		model.put(WebKeys.CONFIG_JSP_STYLE, Definition.JSP_STYLE_MOBILE);
+		model.put(WebKeys.ENTRY_DELAY_WORKFLOW, delayWorkflow);
+		model.put(WebKeys.OPERATION_TYPE, entryOperationType);
 		DefinitionHelper.getDefinition(entry.getEntryDefDoc(), model, "//item[@type='form']");
 		
 		Map formData = request.getParameterMap();
@@ -1885,6 +1915,8 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		Long entryId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));		
 		String type = new String(PortletRequestUtils.getStringParameter(request, WebKeys.URL_TYPE, "user"));		
 		String elementName = new String(PortletRequestUtils.getStringParameter(request, WebKeys.URL_ELEMENT, ""));		
+		String entryOperationType = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_OPERATION_TYPE, "");
+		String delayWorkflow = new String(PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_DELAY_WORKFLOW, ""));		
 		FolderEntry entry = getFolderModule().getEntry(null, entryId);
 		//Adding an entry; get the specific definition
 		model.put(WebKeys.FOLDER, entry.getParentBinder());
@@ -1893,6 +1925,8 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		model.put(WebKeys.TYPE, type);
 		model.put(WebKeys.ELEMENT_NAME, elementName);
 		model.put(WebKeys.CONFIG_JSP_STYLE, Definition.JSP_STYLE_MOBILE);
+		model.put(WebKeys.ENTRY_DELAY_WORKFLOW, delayWorkflow);
+		model.put(WebKeys.ENTRY_OPERATION_TYPE, entryOperationType);
 		DefinitionHelper.getDefinition(entry.getEntryDefDoc(), model, "//item[@type='form']");
 		
 		Map formData = request.getParameterMap();
@@ -2010,11 +2044,10 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		}
 		
 		Map formData = request.getParameterMap();
-		if (entryType.equals("") || formData.containsKey("okBtn") || formData.containsKey("cancelBtn")) {
-			String addUGT = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_UGT, "");
-			if (!addUGT.equals("")) {
+		if (entryType.equals("") || formData.containsKey("okBtn") || formData.containsKey("addUGTBtn") || formData.containsKey("cancelBtn")) {
+			if (formData.containsKey("addUGTBtn")) {
 				//This is a request to get a user, group or team name
-				return ajaxMobileAddUserGroupTeam(bs, request, response);
+				return ajaxMobileAddUserGroupTeam(bs, request, response, null);
 			} else {
 				return ajaxMobileShowEntry(bs, request, response);
 			}
