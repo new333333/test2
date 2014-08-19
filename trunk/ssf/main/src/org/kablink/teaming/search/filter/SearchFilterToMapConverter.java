@@ -365,14 +365,16 @@ public class SearchFilterToMapConverter {
 				} else if (valueType.equals("entryAttributes")) {
 					parsedValue = value;
 					formattedValue = value.substring(value.indexOf(",")+1).replace(",", ": ");
-				} else if (valueType.equals("user_list")) {
+				} else if (valueType.equals("user_list") || valueType.equals("userListSelectbox")) {
 					if (SearchFilterKeys.CurrentUserId.equals(value.toString())) {
 						formattedValue = NLT.get("searchForm.currentUserTitle");
 					} else {
-						Iterator users = bs.getProfileModule().getUsers(Collections.singleton(Long.parseLong(value))).iterator();
-						if (users.hasNext()) {
-							formattedValue = ((User)users.next()).getTitle();
-						}
+						try {
+							Iterator users = bs.getProfileModule().getUsers(Collections.singleton(Long.parseLong(value))).iterator();
+							if (users.hasNext()) {
+								formattedValue = ((User)users.next()).getTitle();
+							}
+						} catch(Exception e) {}
 					}
 				} else if (valueType.equals("group_list")) {
 					Iterator groups = bs.getProfileModule().getGroups(Collections.singleton(Long.parseLong(value))).iterator();
