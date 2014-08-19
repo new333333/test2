@@ -548,7 +548,13 @@ public class WorkflowProcessUtils extends CommonDependencyInjection {
 			Element item = (Element)onEntryList.get(i);
    			String name = item.attributeValue("name","");
    			if ("copyEntry".equals(name)) {
-   				return true;
+   				//Now check if the workflow wouldn't be started on a copy (which would be OK)
+   				//Bug 879724 (pmh)
+   				Element startWorkflow = (Element)item.selectSingleNode("./properties/property[@name='startWorkflow']");
+   				if (startWorkflow != null && !"startThisNot".equals(startWorkflow.attributeValue("value"))) {
+   					//Starting this workflow on a copy would be bad
+   					return true;
+   				}
    			}
 		}
 		//None found

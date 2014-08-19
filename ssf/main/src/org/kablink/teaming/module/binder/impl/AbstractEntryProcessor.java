@@ -244,9 +244,12 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         		@Override
 				public Object doInTransaction(TransactionStatus status) {
                     //After the entry is successfully added, start up any associated workflows
-        			SimpleProfiler.start("addEntry_startWorkflow");
-                	addEntry_startWorkflow(entry, ctx);
-                	SimpleProfiler.stop("addEntry_startWorkflow");
+        			if (!ctx.containsKey(ObjectKeys.INPUT_OPTION_DELAY_WORKFLOW) || 
+        					!"true".equals(ctx.get(ObjectKeys.INPUT_OPTION_DELAY_WORKFLOW))) {
+	        			SimpleProfiler.start("addEntry_startWorkflow");
+	                	addEntry_startWorkflow(entry, ctx);
+	                	SimpleProfiler.stop("addEntry_startWorkflow");
+        			}
        			return null;
         		}
         	});
@@ -707,16 +710,34 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 	    	SimpleProfiler.stop("modifyEntry_indexRemoveFiles");
 
 	    	//After all parts of the modification process has finished, see if there is a workflow to be added or changed.
-	    	SimpleProfiler.start("modifyEntry_transactionExecute3");
-	    	getTransactionTemplate().execute(new TransactionCallback() {
-	    		@Override
-				public Object doInTransaction(TransactionStatus status) {
-	    			SimpleProfiler.start("modifyEntry_startWorkflow");
-	    			modifyEntry_startWorkflow(entry, ctx);
-	    			SimpleProfiler.stop("modifyEntry_startWorkflow");
-	    			return null;
-	    		}});
-	    	SimpleProfiler.stop("modifyEntry_transactionExecute3");
+	    	if (ctx.containsKey(ObjectKeys.INPUT_OPTION_DO_WORKFLOW) && !ctx.get(ObjectKeys.INPUT_OPTION_DO_WORKFLOW).equals("")) {
+	        	// 	Starting the initial workflow was delayed. So do it now.
+	        	getTransactionTemplate().execute(new TransactionCallback() {
+	        		@Override
+					public Object doInTransaction(TransactionStatus status) {
+	                    //After the entry is successfully added, start up any associated workflows
+	        			if (!ctx.containsKey(ObjectKeys.INPUT_OPTION_DELAY_WORKFLOW) || 
+	        					!"true".equals(ctx.get(ObjectKeys.INPUT_OPTION_DELAY_WORKFLOW))) {
+		        			SimpleProfiler.start("addEntry_startWorkflow");
+		                	addEntry_startWorkflow(entry, ctx);
+		                	SimpleProfiler.stop("addEntry_startWorkflow");
+	        			}
+	       			return null;
+	        		}
+	        	});
+	        	
+	    	} else {
+		    	SimpleProfiler.start("modifyEntry_transactionExecute3");
+		    	getTransactionTemplate().execute(new TransactionCallback() {
+		    		@Override
+					public Object doInTransaction(TransactionStatus status) {
+		    			SimpleProfiler.start("modifyEntry_startWorkflow");
+		    			modifyEntry_startWorkflow(entry, ctx);
+		    			SimpleProfiler.stop("modifyEntry_startWorkflow");
+		    			return null;
+		    		}});
+		    	SimpleProfiler.stop("modifyEntry_transactionExecute3");
+	    	}
 
 	    	// Can the entry be running a workflow?
 	    	if (entry instanceof WorkflowSupport) {
