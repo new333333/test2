@@ -80,7 +80,7 @@
     <property name="name" value="_libraryFolder"/>  
     <property name="caption" value="__definition_default_folder_library"/>  
     <property name="family" value="file"/>  
-    <property name="icon" value="/icons/folder_blue_file_library.gif"/> 
+    <property name="icon" value="/icons/folder_blue_file_library.png"/> 
   </properties>  
   <export-mappings/>
 </definition>

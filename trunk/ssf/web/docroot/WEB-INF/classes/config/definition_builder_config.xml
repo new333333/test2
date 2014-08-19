@@ -2395,7 +2395,7 @@
 				<help>ihelp.other.definition_family</help>
 			</property>
 			<property name="icon" caption="__icons.workspace" type="iconList" 
-				path="icons.workspace" default="/icons/workspace.gif" />
+				path="icons.workspace" default="/icons/workspace.png" />
 		</properties>
 		
 		<options>
@@ -3445,11 +3445,9 @@
 			<property name="states" caption="__select_workflow_process" type="workflowStatesList" />
 		</properties>
 		<options optionCaption="__standard_entry_options">
-			<option_select path="//item[@category='commonEntryViewData']" />
+			<option_select definitionType="1" path="//item[@category='commonEntryViewData']" />
 			<option_select definitionType="1" path="//item[@category='entryViewData']" />
-			<option_select path="//item[@category='generalLayout']" optionCaption="__layout_options" >
-			  <exclude name="mashupCanvas"/>
-			</option_select>
+			<option_select path="//item[@category='generalViewLayout']" optionCaption="__layout_options" />
 			<option_select definitionType="1" path="//item[@category='entryLayout']" />
 		</options>
 		<jsps>
