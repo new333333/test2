@@ -53,6 +53,7 @@ import javax.mail.Session;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMultipart;
+import javax.mail.internet.MimeUtility;
 
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContext;
@@ -489,8 +490,13 @@ public class DefaultEmailPoster  extends CommonDependencyInjection implements Em
 		  		
 				try {
 					// Save the original from.
-					inputData.put(ObjectKeys.INPUT_FIELD_POSTING_FROM, from.toString()); 
-					inputData.put(ObjectKeys.FIELD_ENTITY_TITLE,       title          );
+					try {
+						//Decode the ISO 8859 format address to Unicode - Bug #792016 
+						inputData.put(ObjectKeys.INPUT_FIELD_POSTING_FROM, MimeUtility.decodeText(from.toUnicodeString())); 
+					} catch (UnsupportedEncodingException e) {
+						inputData.put(ObjectKeys.INPUT_FIELD_POSTING_FROM, from.toString()); 
+					}
+					inputData.put(ObjectKeys.FIELD_ENTITY_TITLE, title);
 					if (isReply(folder, title, msgs[i]))						
 					     processReply(folder, from, msgs[i], inputData, fileItems, iCalendars, emailLog);
 					else processEntry(folder, from, msgs[i], inputData, fileItems, iCalendars, emailLog);
@@ -500,7 +506,11 @@ public class DefaultEmailPoster  extends CommonDependencyInjection implements Em
 					if (null == exMsg) {
 						exMsg = ex.getMessage();
 					}
-					emailLog.setComments("Error posting the message from:  '" + from.toString() + "', Error:  " + exMsg);
+					try {
+						emailLog.setComments("Error posting the message from:  '" + MimeUtility.decodeText(from.toUnicodeString()) + "', Error:  " + exMsg);
+					} catch (UnsupportedEncodingException e) {
+						emailLog.setComments("Error posting the message from:  '" + from.toString() + "', Error:  " + exMsg);
+					}
 					emailLog.setStatus(EmailLogStatus.error);
 					throw ex;
 				}
@@ -521,7 +531,11 @@ public class DefaultEmailPoster  extends CommonDependencyInjection implements Em
 				if (null == exMsg) {
 					exMsg = ex.getMessage();
 				}
-				logger.error("Error posting the message from:  '" + from.toString() + "', Error:  " + exMsg);
+				try {
+					logger.error("Error posting the message from:  '" + MimeUtility.decodeText(from.toUnicodeString()) + "', Error:  " + exMsg);
+				} catch (UnsupportedEncodingException e) {
+					logger.error("Error posting the message from:  '" + from.toString() + "', Error:  " + exMsg);
+				}
 				
 				// If it failed and it's from self, don't reply or we
 				// will get it back.   (??? Where is that done???)
