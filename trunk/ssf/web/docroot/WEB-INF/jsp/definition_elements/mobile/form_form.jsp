@@ -88,7 +88,10 @@
 			operation="${operationType}"
 			actionUrl="true" ><ssf:param name="binderId"
 				value="${ssBinder.id}"/><ssf:param name="entryId"
-				value="${ssEntry.id}"/></ssf:url>">
+				value="${ssEntry.id}"/><ssf:param name="entryType"
+				value="${entryType}"/><ssf:param name="_entryOperationType"
+				value="${operationType}"/><ssf:param name="_entryDelayWorkflow"
+				value="${ssEntryDelayWorkflow}"/></ssf:url>">
 	<ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
 	  configElement="<%= item %>" 
 	  configJspStyle="${ssConfigJspStyle}" />
