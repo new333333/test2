@@ -35,6 +35,7 @@ package org.kablink.teaming.module.definition.export;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.kablink.teaming.context.request.RequestContextHolder;
@@ -74,8 +75,15 @@ public class ElementBuilderMashupCanvas extends AbstractElementBuilder {
 					CustomAttribute attr = (CustomAttribute) attrs.get(key);
 					Element newEle = DocumentHelper.createElement("attribute");
 					newEle.addAttribute("name", key);
-					newEle.addAttribute("type", "text");
-					newEle.setText(attr.getValue().toString());
+					Object attrValue = attr.getValue();
+					if (attrValue instanceof Document) {
+						//Output document objects as XML (bug #768475)
+						newEle.addAttribute("type", "xml");
+						newEle.setText(((Document)attrValue).asXML());
+					} else {
+						newEle.addAttribute("type", "text");
+						newEle.setText(attrValue.toString());
+					}
 					parent.add(newEle);
 				}
 			}
