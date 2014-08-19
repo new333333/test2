@@ -42,7 +42,7 @@
     <attribute name="templateDescription" type="description">__template_folder_description</attribute>
     <attribute name="title" type="string">__template_folder</attribute>
     <attribute name="description" type="description"></attribute>
-    <attribute name="iconName" type="string">/icons/folder_blue_discussion.gif</attribute>
+    <attribute name="iconName" type="string">/icons/folder_blue_discussion.png</attribute>
     <property name="library">false</property>
     <property name="mirrored">false</property>
     <property name="uniqueTitle">false</property>
@@ -61,7 +61,7 @@
     <attribute name="templateDescription" type="description">__template_folder_task_description</attribute>
     <attribute name="title" type="string">__template_folder_task</attribute>
     <attribute name="description" type="description"></attribute>
-    <attribute name="iconName" type="string">/icons/folder_blue_task.gif</attribute>
+    <attribute name="iconName" type="string">/icons/folder_blue_task.png</attribute>
     <property name="library">false</property>
     <property name="mirrored">false</property>
     <property name="uniqueTitle">false</property>
@@ -76,7 +76,7 @@
     <attribute name="templateDescription" type="description">__template_folder_library_description</attribute>
     <attribute name="title" type="string">__template_folder_library</attribute>
     <attribute name="description" type="description"></attribute>
-    <attribute name="iconName" type="string">/icons/folder_blue_file_library.gif</attribute>
+    <attribute name="iconName" type="string">/icons/folder_blue_file_library.png</attribute>
     <property name="library">true</property>
     <property name="mirrored">false</property>
     <property name="uniqueTitle">false</property>
@@ -92,7 +92,7 @@
     <attribute name="templateDescription" type="description">__template_folder_calendar_description</attribute>
     <attribute name="title" type="string">__template_folder_calendar</attribute>
     <attribute name="description" type="description"></attribute>
-    <attribute name="iconName" type="string">/icons/folder_blue_calendar.gif</attribute>
+    <attribute name="iconName" type="string">/icons/folder_blue_calendar.png</attribute>
     <property name="library">false</property>
     <property name="mirrored">false</property>
     <property name="uniqueTitle">false</property>
@@ -111,7 +111,7 @@
     <attribute name="templateDescription" type="description">__template_folder_milestone_description</attribute>
     <attribute name="title" type="string">__template_folder_milestone</attribute>
     <attribute name="description" type="description"></attribute>
-    <attribute name="iconName" type="string">/icons/folder_blue_milestone.gif</attribute>
+    <attribute name="iconName" type="string">/icons/folder_blue_milestone.png</attribute>
     <property name="library">false</property>
     <property name="mirrored">false</property>
     <property name="uniqueTitle">true</property>

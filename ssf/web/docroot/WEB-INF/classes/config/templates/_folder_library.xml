@@ -5,7 +5,7 @@
   <attribute name="templateDescription" type="description"><![CDATA[__template_folder_library_description]]></attribute>
   <attribute name="title" type="string"><![CDATA[__template_folder_library]]></attribute>
   <attribute name="description" type="description"><![CDATA[]]></attribute>
-  <attribute name="iconName" type="string">/icons/folder_blue_file_library.gif</attribute>
+  <attribute name="iconName" type="string">/icons/folder_blue_file_library.png</attribute>
   <attribute name="name" type="string">_folder_library</attribute>
   <property name="library">true</property>
   <property name="uniqueTitle">false</property>

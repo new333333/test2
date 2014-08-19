@@ -80,7 +80,7 @@
     <property name="caption" value="__definition_default_folder_guestbook"/>
     <property name="name" value="_guestbookFolder"/>
     <property name="defaultToFileEntries" value="false"/>
-    <property name="icon" value="/icons/folder_blue_guestbook.gif"/>
+    <property name="icon" value="/icons/folder_blue_guestbook.png"/>
   </properties>
   <export-mappings/>
 </definition>
