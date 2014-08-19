@@ -486,9 +486,17 @@ public class MarkupUtil {
 				return WebUrlUtil.getServletRootURL();
 			}
 			public String getFileUrlByName(String fileName) {
-				if (!WebKeys.MARKUP_EXPORT.equals(type)) return WebUrlUtil.getFileUrl(WebUrlUtil.getServletRootURL(httpReq), WebKeys.ACTION_READ_FILE, searchResults, fileName);
-				//need permalink
-				return PermaLinkUtil.getFilePermalink(searchResults, fileName);
+				if (WebKeys.MARKUP_EXPORT.equals(type)) {
+					//need permalink
+					return PermaLinkUtil.getFilePermalink(searchResults, fileName);
+				} else if (WebKeys.MARKUP_RSS.equals(type)) {
+					String entityType = (String)searchResults.get(org.kablink.util.search.Constants.ENTITY_FIELD);
+					String entityId = (String)searchResults.get(org.kablink.util.search.Constants.DOCID_FIELD);
+					return "{{RSSattachmentUrl: entityId=" + String.valueOf(entityId) + 
+							" entityType=" +entityType + " fileName=" + fileName + "}}";
+				} else {
+					return WebUrlUtil.getFileUrl(WebUrlUtil.getServletRootURL(httpReq), WebKeys.ACTION_READ_FILE, searchResults, fileName);
+				}
 			}
 			public String getFileUrlById(String fileId) {
 				Object fileName = searchResults.get(WebUrlUtil.getFileInfoById((String)org.kablink.util.search.Constants.FILENAME_AND_ID_FIELD,fileId));
@@ -825,10 +833,15 @@ public class MarkupUtil {
 				return WebUrlUtil.getServletRootURL();
 			}
 			public String getFileUrlByName(String fileName) {
-				if (!WebKeys.MARKUP_EXPORT.equals(type)) 
+				if (WebKeys.MARKUP_EXPORT.equals(type)) {
+					//need permalink
+					return PermaLinkUtil.getFilePermalink(entity, fileName);
+				} else if (WebKeys.MARKUP_RSS.equals(type)) {
+					return "{{RSSattachmentUrl: entityId=" + String.valueOf(entity.getId()) + 
+							" entityType=" +entity.getEntityType().name() + " fileName=" + fileName + "}}";
+				} else {
 					return WebUrlUtil.getFileUrl(WebUrlUtil.getServletRootURL(httpReq), WebKeys.ACTION_READ_FILE, entity, fileName);
-				//need permalink
-				return PermaLinkUtil.getFilePermalink(entity, fileName);
+				}
 			}
 			public String getFileUrlById(String fileId) {
 				try {

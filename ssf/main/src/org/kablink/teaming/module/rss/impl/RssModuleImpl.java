@@ -44,6 +44,8 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.activation.FileTypeMap;
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -70,13 +72,17 @@ import org.dom4j.Element;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.util.OrderBy;
 import org.kablink.teaming.domain.Binder;
+import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.Description;
+import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.domain.Entry;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.lucene.analyzer.SsfIndexAnalyzer;
 import org.kablink.teaming.lucene.analyzer.SsfQueryAnalyzer;
+import org.kablink.teaming.module.binder.BinderModule;
+import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.impl.CommonDependencyInjection;
 import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.module.rss.RssModule;
@@ -89,13 +95,16 @@ import org.kablink.teaming.util.FilePathUtil;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SimpleProfiler;
+import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.MarkupUtil;
 import org.kablink.teaming.web.util.PermaLinkUtil;
 import org.kablink.teaming.web.util.WebUrlUtil;
+import org.kablink.util.FileUtil;
 import org.kablink.util.LockFile;
 import org.kablink.util.PropertyNotFoundException;
+import org.springframework.mail.javamail.ConfigurableMimeFileTypeMap;
 import org.w3c.tidy.Tidy;
 import org.w3c.tidy.TidyMessage;
 
@@ -114,6 +123,8 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 
 	protected Log logger = LogFactory.getLog(getClass());
 	protected ProfileModule profileModule;
+	protected BinderModule binderModule;
+	protected FolderModule folderModule;
 	
 	private String rssRootDir;
 
@@ -127,11 +138,21 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 	private static final String AUTHOR_ID_PATTERN = "<authorId>([0-9]*)</authorId>\n";
 	private static final String AUTHOR_PATTERN = "<author>(.*)</author>";
 	private static final String AUTHOR_NAME_PATTERN = "<author><name>(.*)</name></author>";
-
+	private static final String RSS_ATTACHMENT_URL_PATTERN = "(\\{\\{RSSattachmentUrl: ([^}]*)\\}\\})";
+	private static final String RSS_ENTITY_ID_PATTERN = " entityId=([0-9]*)";
+	private static final String RSS_ENTITY_TYPE_PATTERN = " entityType=([^\\s]*)";
+	private static final String RSS_FILE_NAME_PATTERN = " fileName=([^\\}]*)";
+	
 	private Pattern pattern = Pattern.compile(SCHEME_HOST_PORT_PATTERN);
 	private Pattern patternAuthorId = Pattern.compile(AUTHOR_ID_PATTERN);
 	private Pattern patternAuthor = Pattern.compile(AUTHOR_PATTERN);
 	private Pattern patternAuthorName = Pattern.compile(AUTHOR_NAME_PATTERN);
+	private Pattern rssAttachmentUrlPattern = Pattern.compile(RSS_ATTACHMENT_URL_PATTERN, Pattern.CASE_INSENSITIVE );
+	private Pattern rssEntityIdPattern = Pattern.compile(RSS_ENTITY_ID_PATTERN, Pattern.CASE_INSENSITIVE );
+	private Pattern rssEntityTypePattern = Pattern.compile(RSS_ENTITY_TYPE_PATTERN, Pattern.CASE_INSENSITIVE );
+	private Pattern rssFileNamePattern = Pattern.compile(RSS_FILE_NAME_PATTERN, Pattern.CASE_INSENSITIVE );
+	
+	private FileTypeMap mimeTypes = new ConfigurableMimeFileTypeMap();
 
 	public RssModuleImpl() {
 
@@ -152,6 +173,19 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 	public String getRssRootDir() {
 		return rssRootDir;
 	}
+	
+	/*
+	 */
+	private BinderModule getBinderModule() {
+		return ((BinderModule) SpringContextUtil.getBean("binderModule"));
+	}
+	
+	/*
+	 */
+	private FolderModule getFolderModule() {
+		return ((FolderModule) SpringContextUtil.getBean("folderModule"));
+	}
+
 
 	public void setRssRootDir(String rssRootDir) {
 		if (rssRootDir.endsWith(Constants.SLASH))
@@ -440,12 +474,24 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 	 * @param binder
 	 * @param user
 	 */
-	public synchronized String filterRss(HttpServletRequest request,
+	public synchronized void filterRss(HttpServletRequest request,
 			HttpServletResponse response, Binder binder) {
 
+		ServletOutputStream out;
+		try {
+			out = response.getOutputStream();
+		} catch (IOException e1) {
+			logger.info("filterRss: " + e1.toString());
+			return;
+		}
 		boolean rssEnabled = SPropsUtil.getBoolean("rss.enable", true);
 		if (!rssEnabled) {
-			return this.getRssDisabledString(request);
+			try {
+				out.print(this.getRssDisabledString(request));
+			} catch (IOException e) {
+				logger.info("filterRss: " + e.toString());
+			}
+			return;
 		}
 		
 		File indexPath = getRssIndexPath(binder);
@@ -491,13 +537,73 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 			indexSearcher.close();
 			rss += addRssFooter();
 
-			return rss;
+			outputRssAttachmentFiles(rss, binder, out);
+			return;
 
 		} catch (Exception e) {
 			logger.info("filterRss: " + e.toString());
-			return "";
+			return;
 		} finally {
 			rfl.releaseLock();
+		}
+	}
+	
+	private void outputRssAttachmentFiles(String text, Binder binder, ServletOutputStream out) {
+		long zoneId = RequestContextHolder.getRequestContext().getZoneId();
+		try {
+	    	Matcher m = rssAttachmentUrlPattern.matcher(text);
+	    	while (m.find()) {
+	    		String urlInfo = m.group(0);
+	    		
+		    	//Now, replace the RSS URL Pattern with either a permalink or a base64 version of an image file
+				String s_id = "";
+				Matcher fieldMatcher = rssEntityIdPattern.matcher(urlInfo);
+				if (fieldMatcher.find() && fieldMatcher.groupCount() >= 1) s_id = fieldMatcher.group(1);
+				String s_entityType = "";
+				fieldMatcher = rssEntityTypePattern.matcher(urlInfo);
+				if (fieldMatcher.find() && fieldMatcher.groupCount() >= 1) s_entityType = fieldMatcher.group(1);
+				String s_fileName = "";
+				fieldMatcher = rssFileNamePattern.matcher(urlInfo);
+				if (fieldMatcher.find() && fieldMatcher.groupCount() >= 1) s_fileName = fieldMatcher.group(1);
+				String startText = text.substring(0, m.start());
+				out.print(startText);
+				
+				//See if this is an image file
+				String mimeType = mimeTypes.getContentType(s_fileName);
+				String url = PermaLinkUtil.getFilePermalink(Long.valueOf(s_id), s_entityType, s_fileName);
+				if (mimeType != null && mimeType.startsWith("image/")) {
+					DefinableEntity entity;
+					if (s_entityType.equals(EntityType.folderEntry.name())) {
+						entity = getFolderModule().getEntry(null, Long.valueOf(s_id));
+						
+					} else {
+						entity = getBinderModule().getBinder(Long.valueOf(s_id));
+					}
+					if (!Utils.outputImageAsDataUrl(entity, s_fileName, mimeType, out)) {
+						//Sending out the file failed, so just output the permalink
+						out.print(url);
+					}
+				} else {
+					out.print(url);
+				}
+				text = text.substring(m.end());
+				m = rssAttachmentUrlPattern.matcher(text);
+	
+	    	}
+	    	//output the remainder of the text
+	    	out.print(text);
+	    	
+		} catch (IOException e) {
+			logger.info("filterRss: " + e.toString());
+		} catch (Exception e) {
+			logger.info("filterRss: " + e.toString());
+			try {
+				//Try to output the remaining text
+				out.print(text);
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				logger.info("filterRss: " + e.toString());
+			}
 		}
 	}
 
@@ -510,12 +616,24 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 	 * @param binder
 	 * @param user
 	 */
-	public synchronized String filterAtom(HttpServletRequest request,
+	public synchronized void filterAtom(HttpServletRequest request,
 			HttpServletResponse response, Binder binder) {
-
+		
+		ServletOutputStream out;
+		try {
+			out = response.getOutputStream();
+		} catch (IOException e1) {
+			logger.info("filterAtom: " + e1.toString());
+			return;
+		}
 		boolean rssEnabled = SPropsUtil.getBoolean("rss.enable", true);
 		if (!rssEnabled) {
-			return this.getRssDisabledString(request);
+			try {
+				out.print(this.getRssDisabledString(request));
+			} catch (IOException e) {
+				logger.info("filterAtom: " + e.toString());
+			}
+			return;
 		}
 		
 		File indexPath = getRssIndexPath(binder);
@@ -561,11 +679,12 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 			indexSearcher.close();
 			atom += addAtomFooter();
 
-			return atom;
+			outputRssAttachmentFiles(atom, binder, out);
+			return;
 
 		} catch (Exception e) {
 			logger.info("filterAtom: " + e.toString());
-			return "";
+			return;
 		} finally {
 			rfl.releaseLock();
 		}
@@ -662,7 +781,8 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 				Field.Store.YES, Field.Index.NOT_ANALYZED);
 		doc.add(atomItemField);
 		// add same acls(folder and entry) as search engine uses
-		EntityIndexUtils.addReadAccess(doc, entry.getParentBinder(), entry, true);
+		EntityIndexUtils.addReadAccess(doc, entry.getParentBinder(), entry, true, true);
+		EntityIndexUtils.addBinderAcls(doc, entry.getParentBinder());
 
 		return doc;
 
@@ -706,7 +826,7 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 		String description = entry.getDescription() == null ? "" : tidyGetXHTML(entry
 				.getDescription());
 		description = MarkupUtil.markupStringReplacement(null, null, null, null,
-				entry, description, WebKeys.MARKUP_EXPORT);
+				entry, description, WebKeys.MARKUP_RSS);
 		description = "<![CDATA[ " + description + "]]>";
 		ret += "<description>" + description + "</description>\n";
 
@@ -807,7 +927,7 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 		String subtitle = entry.getDescription() == null ? "" : tidyGetXHTML(entry
 				.getDescription());
 		subtitle = MarkupUtil.markupStringReplacement(null, null, null, null,
-				entry, subtitle, WebKeys.MARKUP_EXPORT);
+				entry, subtitle, WebKeys.MARKUP_RSS);
 		//subtitle = "<![CDATA[ " + subtitle + "]]>";
 		ret += "<subtitle>" + subtitle + "</subtitle>\n";
 
