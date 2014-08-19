@@ -882,8 +882,13 @@ public class EntityIndexUtils {
 		}
     }
 
-    private static void markEntryAsInheritingAcls(Document doc, Binder binder, Entry entry) {
-    	if(entry instanceof FolderEntry) {
+    private static void markEntryAsInheritingAcls(Document doc, Binder binder, Entry entry, boolean rss) {
+    	if (entry instanceof FolderEntry) {
+    		if (rss) {
+    	    	//Note: if rss=true, we add "entryAcl=all". 
+    			//This is only valid for Vibe. Net folders are not supportted in RSS
+    			doc.add(FieldFactory.createFieldNotStoredNotAnalyzed(Constants.ENTRY_ACL_FIELD, Constants.READ_ACL_ALL));
+    		}
     		long value = binder.getId().longValue(); // parent folder id
     		// Currently only the FAMT resource driver exposes files whose ACLs are not stored in Filr.
     		if(binder.noAclDredgedWithEntries())
@@ -893,7 +898,7 @@ public class EntityIndexUtils {
     }
     
     //Add acl fields for binder for storage in search engine
-    private static void addBinderAcls(Document doc, Binder binder) {
+    public static void addBinderAcls(Document doc, Binder binder) {
     	addBinderAcls(doc, binder, false);
     }
     private static void addBinderAcls(Document doc, Binder binder, boolean includeTitleAcl) {
@@ -1028,8 +1033,15 @@ public class EntityIndexUtils {
    		pIds.append(Constants.READ_ACL_ALL_USERS);      			
    		return pIds.toString();
     }
+    
+	// Add ACL field. We only need to index ACLs for read access.
     public static void addReadAccess(Document doc, Binder binder, DefinableEntity entry, boolean fieldsOnly) {
-		// Add ACL field. We only need to index ACLs for read access.
+    	addReadAccess(doc, binder, entry, fieldsOnly, false);
+    }
+    public static void addReadAccess(Document doc, Binder binder, DefinableEntity entry, boolean fieldsOnly, boolean rss) {
+    	//Note: if rss=true, an old style ACL is returned. This is only valid for Vibe and not for net folders. 
+    	//IMPORTANT: CALLS MADE WITH "rss=true" WILL RENDER ALL NET FOLDER ENTRIES VISIBLE TO SEARCH!!!!!! 
+    	//Only RSS should use this rss mode. Net folders are not supportted in RSS.
     	if (entry instanceof WorkflowSupport) {
     		WorkflowSupport wEntry = (WorkflowSupport)entry;
        		// Add the Entry_ACL field
@@ -1071,7 +1083,7 @@ public class EntityIndexUtils {
 	       				else {
 	       					// This entry is using the folder's external ACL. If user has read access to the 
 	       					// parent folder through its external ACL, then she shall have same access to this entry. 
-			    			markEntryAsInheritingAcls(doc, binder, e);
+			    			markEntryAsInheritingAcls(doc, binder, e, rss);
 	       				}
 	       			}
 	       			else {
@@ -1080,12 +1092,12 @@ public class EntityIndexUtils {
 			       			addEntryAcls(doc, binder, e);
 			       			if(e.isIncludeFolderAcl()) {
 			       				// In addition to entry-level ACL, this entry is also inheriting ACLs from its parent folder.
-				    			markEntryAsInheritingAcls(doc, binder, e);
+				    			markEntryAsInheritingAcls(doc, binder, e, rss);
 			       			}
 			    		} else {
 			    			// The entry has neither workflow ACL nor its own ACL.
 			    			//The entry is using the folder's ACL
-			    			markEntryAsInheritingAcls(doc, binder, e);
+			    			markEntryAsInheritingAcls(doc, binder, e, rss);
 			    		}
 	       			}
 	       		}
