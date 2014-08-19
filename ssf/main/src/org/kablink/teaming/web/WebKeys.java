@@ -204,6 +204,10 @@ public class WebKeys {
     public static final String URL_ENTRY_TITLE="title";
     public static final String URL_ENTRY_TYPE="entryType";
     public static final String URL_ENTRY_UGT="entryUGT";
+    public static final String URL_ENTRY_DELAY_WORKFLOW="_entryDelayWorkflow";
+    public static final String ENTRY_DELAY_WORKFLOW="ssEntryDelayWorkflow";
+    public static final String URL_ENTRY_OPERATION_TYPE="_entryOperationType";
+    public static final String ENTRY_OPERATION_TYPE="ssEntryOperationType";
     public static final String URL_ENTRY_UPLOAD="upload";
     public static final String URL_ENTRY_SOURCE_BINDER_ID="entrySourceBinderId";
     public static final String URL_CLEAR_ENTRY_SOURCE_BINDER_ID="clearEntrySourceBinderId";
@@ -1151,6 +1155,7 @@ public class WebKeys {
     public static final String MARKUP_VIEW="view";
     public static final String MARKUP_VIEW_TEXT="view_text";
     public static final String MARKUP_EXPORT="export";
+    public static final String MARKUP_RSS="rss";
     public static final String MARKUP_EMAIL="email";
     public static final String MASHUP_BACKGROUND_COLOR = "ss_mashupBGColor";
     public static final String MASHUP_BACKGROUND_IMAGE = "ss_mashupBGImg";
@@ -1221,6 +1226,7 @@ public class WebKeys {
     public static final String NOTIFICATION_SCHEDULE="ssNotificationSchedule";
     public static final String NOTIFICATION_SCHEDULE_INFO="ssNotification_ScheduleInfo";
     public static final String OPERATION="ssOperation";
+    public static final String OPERATION2="ssOperation2";
     public static final String OPERATION_MAP="ssOperationMap";
     public static final String OPERATION_TYPE="ssOperationType";
 	public static final String ORIGINAL_BINDER="ssOriginalBinder";
