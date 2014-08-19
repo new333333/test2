@@ -2099,7 +2099,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 			setGlobalWorkareaFunctionMembership(zoneConfig, function, new HashSet());
 		}
 		
-		if (!functionInternalIds.containsKey(ObjectKeys.FUNCTION_ALLOW_ACCESS_NET_FOLDER_INTERNALID)) {
+		if (Utils.checkIfFilr() && !functionInternalIds.containsKey(ObjectKeys.FUNCTION_ALLOW_ACCESS_NET_FOLDER_INTERNALID)) {
 			function = new Function();
 			function.setZoneId(zoneConfig.getZoneId());
 			function.setName(ObjectKeys.ROLE_ALLOW_ACCESS_NET_FOLDER);
@@ -2109,6 +2109,15 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 			//generate functionId
 			getFunctionManager().addFunction(function);
 			setGlobalWorkareaFunctionMembership(zoneConfig, function, new HashSet());
+		} else if (!Utils.checkIfFilr() && functionInternalIds.containsKey(ObjectKeys.FUNCTION_ALLOW_ACCESS_NET_FOLDER_INTERNALID)) {
+			if (!SPropsUtil.getBoolean("keepFilrRolesAndRightsInVibe", false)) {
+				Function f = (Function) functionInternalIds.get(ObjectKeys.FUNCTION_ALLOW_ACCESS_NET_FOLDER_INTERNALID);
+				try {
+					getFunctionManager().deleteFunction(f, true);
+				} catch(Exception e) {
+					logger.warn("Could not delete Filr AllowNetFolderAccess role from Vibe installation");
+				}
+			}
 		}
 
 		if (!functionInternalIds.containsKey(ObjectKeys.FUNCTION_ENABLE_LINK_SHARING_INTERNALID)) {
@@ -2137,23 +2146,6 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 			addViewBinderTitleRole(zoneConfig.getZoneId());
 		}
 		
-		// The next calls should be deleted. These file roles were never shipped
-		//TODO remove these next lines before Filr ships
-		for (Function f : functions) {
-			if (f.getName().equals("__role.FilrFolderRead") || 
-					f.getName().equals("__role.FilrFolderWrite") || 
-					f.getName().equals("__role.FilrFolderOwner") ||
-					f.getName().equals("__role.FilrFileRead") || 
-					f.getName().equals("__role.FilrFileWrite") || 
-					f.getName().equals("__role.FilrFileOwner") ||
-					f.getName().equals("__role.enableChangingAccessControl")) {
-				try{
-					getFunctionManager().deleteFunction(f, true);
-				} catch(Exception e) {
-					logger.warn("Could not delete unused Filr roles");
-				}
-			}
-		}
 		functions = getFunctionManager().findFunctions(zoneConfig.getZoneId());
 		functionInternalIds = new HashMap();
 		for (int i = 0; i < functions.size(); i++) {
