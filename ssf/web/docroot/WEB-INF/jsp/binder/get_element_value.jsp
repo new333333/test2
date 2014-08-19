@@ -114,7 +114,7 @@
 	         <input type="hidden" name="elementValueType${ss_filterTermNumber}" value="${element.value.type}"/>
 	       </c:if>
 	       
-	       <c:if test="${element.value.type == 'user_list'}">
+	       <c:if test="${element.value.type == 'user_list' || element.value.type == 'userListSelectbox'}">
 	         <ssf:nlt tag="filter.users" text="Users"/>: ...
 	       </c:if>
 		</c:if>
