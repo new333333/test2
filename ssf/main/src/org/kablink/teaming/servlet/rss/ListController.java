@@ -32,6 +32,7 @@
  */
 package org.kablink.teaming.servlet.rss;
 
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -117,9 +118,9 @@ public class ListController extends SAbstractController {
 			response.getWriter().write(getRssModule().BinderExistenceError(request, response));
 		} else {
 			if (rss) {
-				response.getWriter().write(getRssModule().filterRss(request, response, binder)); 
+				getRssModule().filterRss(request, response, binder); 
 			} else {
-				response.getWriter().write(getRssModule().filterAtom(request, response, binder));
+				getRssModule().filterAtom(request, response, binder);
 			}
 		}
 		response.flushBuffer();

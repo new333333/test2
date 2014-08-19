@@ -64,7 +64,8 @@
 
 
   <div>
-	<input type="submit" name="okBtn" value="<ssf:nlt tag="userlist.addUser"/>"
+	<input type="hidden" name="_entryOperationType" value="${ssOperationType}" />
+	<input type="submit" name="addUGTBtn" value="<ssf:nlt tag="userlist.addUser"/>"
 	  onClick="ss_setUGT('${ss_form_form_formName}', '${property_name}', 'user');"
 	/>
   </div>

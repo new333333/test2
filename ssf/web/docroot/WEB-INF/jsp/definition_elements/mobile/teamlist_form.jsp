@@ -63,7 +63,8 @@
 </c:forEach>
 
   <div>
-	<input type="submit" name="okBtn" value="<ssf:nlt tag="userlist.addTeam"/>"
+	<input type="hidden" name="_entryOperationType" value="${ssOperationType}" />
+	<input type="submit" name="addUGTBtn" value="<ssf:nlt tag="userlist.addTeam"/>"
 	  onClick="ss_setUGT('${ss_form_form_formName}', '${property_name}', 'team');"
 	/>
   </div>
