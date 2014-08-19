@@ -717,10 +717,16 @@ public class BinderHelper {
 		Map userProperties = (Map) bs.getProfileModule().getUserProperties(user.getId()).getProperties();
 		if (userProperties == null) userProperties = new HashMap();
 		Long binderId = user.getWorkspaceId();
-		if (binderId == null) binderId = bs.getWorkspaceModule().getTopWorkspace().getId();
-		Binder topBinder = bs.getWorkspaceModule().getTopWorkspace();
+		Binder topBinder = null;
+		try {
+			if (binderId == null) binderId = bs.getWorkspaceModule().getTopWorkspace().getId();
+			topBinder = bs.getWorkspaceModule().getTopWorkspace();
+		} catch(Exception e) {}
 		Binder myWorkspaceBinder = bs.getBinderModule().getBinder(user.getWorkspaceId());
-		Binder binder = bs.getBinderModule().getBinder(binderId);
+		Binder binder = null;
+		try {
+			binder = bs.getBinderModule().getBinder(binderId);
+		} catch(Exception e) {}
 		setupStandardBeans(bs, request, response, model, binderId, "ss_mobile");
 		model.put(WebKeys.BINDER, binder);
 		model.put(WebKeys.TOP_WORKSPACE, topBinder);
@@ -745,10 +751,10 @@ public class BinderHelper {
 		model.put(WebKeys.PREV_PAGE, prevPage);
 		model.put(WebKeys.PAGE_ENTRIES_PER_PAGE, (Integer) options.get(ObjectKeys.SEARCH_MAX_HITS));
 
-		if (type.equals(ObjectKeys.MOBILE_WHATS_NEW_VIEW_TRACKED) || 
+		if (topBinder != null && (type.equals(ObjectKeys.MOBILE_WHATS_NEW_VIEW_TRACKED) || 
 				type.equals(ObjectKeys.MOBILE_WHATS_NEW_VIEW_FAVORITES) ||
 				type.equals(ObjectKeys.MOBILE_WHATS_NEW_VIEW_TEAMS) ||
-				type.equals(ObjectKeys.MOBILE_WHATS_NEW_VIEW_SITE)) {
+				type.equals(ObjectKeys.MOBILE_WHATS_NEW_VIEW_SITE))) {
 			setupWhatsNewBinderBeans(bs, myWorkspaceBinder, topBinder.getId(), model, 
 					String.valueOf(pageNumber), Integer.valueOf(pageSize), type);
 		} else if (type.equals(ObjectKeys.MOBILE_WHATS_NEW_VIEW_MICROBLOG)) {
