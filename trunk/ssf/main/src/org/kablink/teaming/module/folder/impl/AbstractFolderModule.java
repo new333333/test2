@@ -33,6 +33,7 @@
 package org.kablink.teaming.module.folder.impl;
 
 import java.io.InputStream;
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -50,10 +51,8 @@ import java.util.TreeSet;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.lucene.document.DateTools;
-
 import org.dom4j.Document;
 import org.dom4j.Element;
-
 import org.kablink.teaming.BinderQuotaException;
 import org.kablink.teaming.DataQuotaException;
 import org.kablink.teaming.FileSizeLimitException;
@@ -406,8 +405,20 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
 		}
 		switch (operation) {
 			case readEntry:
+				AccessUtils.readCheck(entry);   
+				break;
 			case copyEntry:
 				AccessUtils.readCheck(entry);   
+				Document def = entry.getEntryDefDoc();
+				Element familyProperty = (Element) def.getRootElement().selectSingleNode("//properties/property[@name='family']");
+				if (familyProperty != null) {
+					String family = familyProperty.attributeValue("value", "");
+					if (family.equals(Definition.FAMILY_SURVEY)) {
+						//Copying a survey requires modify rights since there is potentially hidden data involved (Bug #876543)
+						AccessUtils.operationCheck(entry, WorkAreaOperation.MODIFY_ENTRIES);   
+					}
+				}
+
 				break;
 			case modifyEntry:
 			case addEntryWorkflow:
