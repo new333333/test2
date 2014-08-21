@@ -220,19 +220,20 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 		if (null != m_shareThisTBI) {
 			m_primaryBucket.add(m_shareThisTBI);
 		}
-		addNestedItemFromUrl(  m_actionsBucket, m_commonActionsTBI, "add_binder",    "add_folder"         );
-		addNestedItemFromUrl(  m_actionsBucket, m_commonActionsTBI, "add_binder",    "add_subFolder"      );
-		addNestedItemFromUrl(  m_actionsBucket, m_commonActionsTBI, "add_binder",    "add_workspace"      );
-		addNestedItemFromUrl(  m_actionsBucket, m_commonActionsTBI, "modify_binder", "modify"             );
-		addNestedItemFromEvent(m_actionsBucket, m_commonActionsTBI, TeamingEvents.INVOKE_RENAME_ENTITY    );
-		addNestedItemFromEvent(m_actionsBucket, m_commonActionsTBI, TeamingEvents.DELETE_SELECTED_ENTITIES);
-		addNestedItemFromEvent(m_actionsBucket, m_commonActionsTBI, TeamingEvents.COPY_SELECTED_ENTITIES  );
-		addNestedItemFromEvent(m_actionsBucket, m_commonActionsTBI, TeamingEvents.MOVE_SELECTED_ENTITIES  );
-		addNestedItemFromEvent(m_actionsBucket, m_commonActionsTBI, TeamingEvents.ZIP_AND_DOWNLOAD_FOLDER );
-		addNestedItemFromUrl(  m_actionsBucket, m_commonActionsTBI, "export_import"                       );
-		addNestedItemFromUrl(  m_actionsBucket, m_commonActionsTBI, "manage_binder_quota"                 );
-		addNestedItemFromUrl(  m_actionsBucket, m_commonActionsTBI, "manage_definitions"                  );
-		addNestedItemFromUrl(  m_actionsBucket, m_commonActionsTBI, "configure_configuration"             );
+		addNestedItemFromUrl(  m_actionsBucket, m_commonActionsTBI, "add_binder",    "add_folder"            );
+		addNestedItemFromUrl(  m_actionsBucket, m_commonActionsTBI, "add_binder",    "add_subFolder"         );
+		addNestedItemFromUrl(  m_actionsBucket, m_commonActionsTBI, "add_binder",    "add_workspace"         );
+		addNestedItemFromUrl(  m_actionsBucket, m_commonActionsTBI, "modify_binder", "modify"                );
+		addNestedItemFromEvent(m_actionsBucket, m_commonActionsTBI, TeamingEvents.INVOKE_RENAME_ENTITY       );
+		addNestedItemFromEvent(m_actionsBucket, m_commonActionsTBI, TeamingEvents.DELETE_SELECTED_ENTITIES   );
+		addNestedItemFromEvent(m_actionsBucket, m_commonActionsTBI, TeamingEvents.COPY_SELECTED_ENTITIES     );
+		addNestedItemFromEvent(m_actionsBucket, m_commonActionsTBI, TeamingEvents.MOVE_SELECTED_ENTITIES     );
+		addNestedItemFromEvent(m_actionsBucket, m_commonActionsTBI, TeamingEvents.ZIP_AND_DOWNLOAD_FOLDER    );
+		addNestedItemFromEvent(m_actionsBucket, m_commonActionsTBI, TeamingEvents.DOWNLOAD_FOLDER_AS_CSV_FILE);
+		addNestedItemFromUrl(  m_actionsBucket, m_commonActionsTBI, "export_import"                          );
+		addNestedItemFromUrl(  m_actionsBucket, m_commonActionsTBI, "manage_binder_quota"                    );
+		addNestedItemFromUrl(  m_actionsBucket, m_commonActionsTBI, "manage_definitions"                     );
+		addNestedItemFromUrl(  m_actionsBucket, m_commonActionsTBI, "configure_configuration"                );
 		
 		// ...then the team section...
 		if ((null != m_tmi) && m_tmi.isTeamManagementEnabled()) {

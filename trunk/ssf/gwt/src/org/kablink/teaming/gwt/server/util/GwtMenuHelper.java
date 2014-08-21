@@ -162,6 +162,7 @@ public class GwtMenuHelper {
 	private final static String COPY_PUBLIC_LINK		= "copyPublicLink";
 	private final static String DELETE					= "delete";
 	private final static String DISPLAY_STYLES			= "display_styles";
+	private final static String DOWNLOAD_AS_CSV_FILE	= "downloadAsCSVFile";
 	private final static String EDIT_IN_PLACE			= "editInPlace";
 	private final static String EDIT_PUBLIC_LINK		= "editPublicLink";
 	private final static String EMAIL					= "email";
@@ -889,6 +890,20 @@ public class GwtMenuHelper {
 		entryToolbar.addNestedItem(detailsTBI);
 	}
 
+	/*
+	 * Constructs a ToolbarItem for download a folder as a CSV file.
+	 */
+	private static void constructEntryDownloadAsCSVFile(ToolbarItem entryToolbar, AllModulesInjected bs, HttpServletRequest request, Folder folder) {
+		boolean canDownload = AdminHelper.getEffectiveDownloadSetting(bs, GwtServerHelper.getCurrentUser());
+		if (canDownload && bs.getBinderModule().testAccess(folder, BinderOperation.readEntries)) {
+			ToolbarItem downloadAsCSVFileTBI = new ToolbarItem("1_downloadAsCSVFile");
+			markTBITitle(         downloadAsCSVFileTBI, "toolbar.menu.downloadFolderAsCSVFile"   );
+			markTBIEvent(         downloadAsCSVFileTBI, TeamingEvents.DOWNLOAD_FOLDER_AS_CSV_FILE);
+			markTBISelectedBinder(downloadAsCSVFileTBI, folder                                   );
+			entryToolbar.addNestedItem(downloadAsCSVFileTBI);
+		}
+	}
+	
 	/*
 	 * Constructs a ToolbarItem for making (or removing) a folder as a favorite.
 	 */
@@ -2031,18 +2046,27 @@ public class GwtMenuHelper {
 			
 			// Is this a folder whose entries can be read by the user?
 			boolean canDownload = AdminHelper.getEffectiveDownloadSetting(bs, user);
-			if (canDownload && isFolder && bm.testAccess(binder, BinderOperation.readEntries) && GwtServerHelper.isFamilyFile(GwtServerHelper.getFolderEntityFamily(bs, binder))) {
-				// Yes!  Add a ToolbarItem for for zipping and
-				// downloading its files.
+			if (canDownload && isFolder && bm.testAccess(binder, BinderOperation.readEntries)) {
+				// Yes!  If it's a file folder...
 				adminMenuCreated  =
 				configMenuCreated = true;
+				if (GwtServerHelper.isFamilyFile(GwtServerHelper.getFolderEntityFamily(bs, binder))) {
+					// ...add a ToolbarItem for for zipping and
+					// ...downloading its files.
+					actionTBI = new ToolbarItem(ZIP_AND_DOWNLOAD);
+					markTBITitle(         actionTBI, "toolbar.menu.zipAndDownloadFolder"  );
+					markTBIEvent(         actionTBI, TeamingEvents.ZIP_AND_DOWNLOAD_FOLDER);
+					markTBIRecursive(     actionTBI, true                                 );
+					markTBISelectedBinder(actionTBI, binder                               );
+					configTBI.addNestedItem(actionTBI);
+				}
 				
-				actionTBI = new ToolbarItem(ZIP_AND_DOWNLOAD);
-				markTBITitle(         actionTBI, "toolbar.menu.zipAndDownloadFolder"  );
-				markTBIEvent(         actionTBI, TeamingEvents.ZIP_AND_DOWNLOAD_FOLDER);
-				markTBIRecursive(     actionTBI, true                                 );
-				markTBISelectedBinder(actionTBI, binder                               );
-				
+				// Add a ToolbarItem for for downloading it as a CSV
+				// file.
+				actionTBI = new ToolbarItem(DOWNLOAD_AS_CSV_FILE);
+				markTBITitle(         actionTBI, "toolbar.menu.downloadFolderAsCSVFile"   );
+				markTBIEvent(         actionTBI, TeamingEvents.DOWNLOAD_FOLDER_AS_CSV_FILE);
+				markTBISelectedBinder(actionTBI, binder                                   );
 				configTBI.addNestedItem(actionTBI);
 			}
 		}
@@ -3211,7 +3235,8 @@ public class GwtMenuHelper {
 						actionToolbar.addNestedItem(ToolbarItem.constructSeparatorTBI());
 					}
 					
-					constructEntryZipAndDownload(actionToolbar, bs, request, folder);
+					constructEntryZipAndDownload(   actionToolbar, bs, request, folder);
+					constructEntryDownloadAsCSVFile(actionToolbar, bs, request, folder);
 					if (!(Utils.checkIfFilr())) {
 						boolean isFavorite = false;
 						List<FavoriteInfo> favorites = GwtServerHelper.getFavorites(bs);

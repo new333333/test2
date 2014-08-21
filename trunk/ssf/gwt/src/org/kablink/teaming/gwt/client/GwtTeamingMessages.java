@@ -390,6 +390,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_GetDateStr();
 	String rpcFailure_GetDesktopAppDownloadInfo();
 	String rpcFailure_GetDownloadFileUrl();
+	String rpcFailure_GetDownloadFolderAsCSVFileUrl();
 	String rpcFailure_GetEmailNotificationInfo();
 	String rpcFailure_GetEntityActionToolbarItems();
 	String rpcFailure_GetEntityPermalink();
@@ -2107,6 +2108,9 @@ public interface GwtTeamingMessages extends Messages
 
 	// Strings used by the zip and download selected files facility.
 	String zipDownloadUrlError();
+	
+	// Strings used by the download a folder as a CSV file facility.
+	String downloadFolderAsCSVFileUrlError();
 	
 	// String used within BinderViewsHelper.
 	String binderViewsHelper_download();

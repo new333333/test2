@@ -34,6 +34,7 @@ package org.kablink.teaming.gwt.server.util;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+
 import java.text.DateFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
@@ -126,6 +127,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.CanAddEntitiesToBindersRpcRespo
 import org.kablink.teaming.gwt.client.rpc.shared.ClickOnTitleActionRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ColumnWidthsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.CreateFolderRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.DownloadFolderAsCSVFileUrlRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.EntityRightsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.EntryTypesRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ClickOnTitleActionRpcResponseData.ClickAction;
@@ -1812,6 +1814,7 @@ public class GwtViewHelper {
 	 * 
 	 * @throws GwtTeamingException
 	 */
+	@SuppressWarnings("unchecked")
 	public static ErrorListRpcResponseData copyEntries(AllModulesInjected bs, HttpServletRequest request, Long targetFolderId, List<EntityId> entityIds) throws GwtTeamingException {
 		try {
 			// Allocate an error list response we can return.
@@ -1846,7 +1849,8 @@ public class GwtViewHelper {
 							}
 						}
 						else {
-							//Bug: 859044 (pmh) - when copying, start the workflow at the same state
+							// Bug: 859044 (pmh) - when copying, start
+							//      the workflow at the same state.
 							Map options = new HashMap();
 							options.put(ObjectKeys.WORKFLOW_START_WORKFLOW, ObjectKeys.WORKFLOW_START_WORKFLOW_COPY);
 							fm.copyEntry(entityId.getBinderId(), entityId.getEntityId(), cmt.getEntryTargetId(), null, options);
@@ -3548,6 +3552,50 @@ public class GwtViewHelper {
 	 */
 	private static CoreDao getCoreDao() {
 		return ((CoreDao) SpringContextUtil.getBean("coreDao"));
+	}
+	
+	/**
+	 * Returns a DownloadFolderAsCSVFileUrlRcpResponseData object
+	 * containing the URL to use to download the listed files or all
+	 * the files from a folder in a zip.
+	 * 
+	 * @param bs
+	 * @param request
+	 * @param folderId
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public static DownloadFolderAsCSVFileUrlRpcResponseData getDownloadFolderAsCSVFileUrl(AllModulesInjected bs, HttpServletRequest request, Long folderId) throws GwtTeamingException {
+		try {
+			// Allocate a DownloadFolderAsCSVFileUrlRpcResponseData to
+			// return the URL to request downloading the folder as a
+			// CSV file.
+			DownloadFolderAsCSVFileUrlRpcResponseData reply = new DownloadFolderAsCSVFileUrlRpcResponseData();
+
+			// Generate a URL to download the folder as a CSV file.
+			String url = WebUrlUtil.getFolderAsCSVFileUrl(request, folderId);
+			
+			// Add whatever URL we built to the reply.
+			reply.setUrl(url);
+			
+			// If we get here, reply refers to the
+			// DownloadFolderAsCSVFileUrlRpcResponseData containing the
+			// URL to download the requested folder as a CSV file.
+			// Return it.
+			return reply;
+		}
+		
+		catch (Exception e) {
+			// Convert the exception to a GwtTeamingException and throw
+			// that.
+			throw
+				GwtLogHelper.getGwtClientException(
+					m_logger,
+					e,
+					"GwtViewHelper.getDownloadFolderAsCSVFileUrl( SOURCE EXCEPTION ):  ");
+		}
 	}
 	
 	/**
