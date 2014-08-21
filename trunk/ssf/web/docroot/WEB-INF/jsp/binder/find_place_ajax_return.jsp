@@ -70,7 +70,7 @@ function ss_saveFolderId(id, type, clickObj) {
     width="140px" 
     binderId="${binderId}"
     searchSubFolders="false"
-    foldersOnly="true"
+    foldersOnly="false"
     singleItem="true"
     clickRoutine="ss_saveFolderId"
     accessibilityText="entry.Folder"

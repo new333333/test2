@@ -81,13 +81,13 @@ var ss_wikiLinkUrl = "<ssf:url
     type="places"
     width="350px" 
     binderId="${ssBinder.id}"
-    searchSubFolders="false"
-    foldersOnly="true"
+    searchSubFolders="false" 
+    foldersOnly="false"
     singleItem="true"
     clickRoutine="ss_loadLinkBinderId"
     accessibilityText="wiki.findFolder"
     /> 
-<input type="hidden" name="searchTitleFolder" id="searchTitleFolder" value="${ssBinder.title}"/>
+<input type="hidden" name="searchTitleFolder" id="searchTitleFolder" value="<ssf:escapeQuotes>${ssBinder.title}</ssf:escapeQuotes>"/>
 </div>
 <p>
 <b><ssf:nlt tag="wiki.link.topage"/></b> <input type="text" name="pageName" id="pageName" size="30"/>
