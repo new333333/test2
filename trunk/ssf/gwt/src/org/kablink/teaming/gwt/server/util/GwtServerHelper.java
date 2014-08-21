@@ -8261,7 +8261,7 @@ public class GwtServerHelper {
 				ZoneConfig zoneConfig = zoneModule.getZoneConfig( RequestContextHolder.getRequestContext().getZoneId() );
 				OpenIDConfig openIdConfig = zoneConfig.getOpenIDConfig();
 				boolean allowOpenIdAuth = zoneConfig.isExternalUserEnabled() && openIdConfig.isAuthenticationEnabled();
-				config.setAllowExternalUsers( allowOpenIdAuth ); 
+				config.setAllowExternalUsersViaOpenID( allowOpenIdAuth ); 
 				config.setAllowExternalUsersSelfReg( openIdConfig.isSelfProvisioningEnabled() );
 			}
 		}
@@ -10789,11 +10789,11 @@ public class GwtServerHelper {
 			
 			// Set 'allow external users to self register'.
 			OpenIDConfig openIdConfig = zoneConfig.getOpenIDConfig();
-			openIdConfig.setAuthenticationEnabled(  config.getAllowExternalUsers()       );
+			openIdConfig.setAuthenticationEnabled(  config.getAllowExternalUsersViaOpenID()       );
 			openIdConfig.setSelfProvisioningEnabled(config.getAllowExternalUsersSelfReg());
 			
 			// Set 'allow external users'.
-			am.setExternalUserEnabled(config.getAllowExternalUsers());
+			am.setExternalUserEnabled(config.getAllowExternalUsersViaOpenID());
 			am.setOpenIDConfig(openIdConfig);
 		}
 		

@@ -151,7 +151,6 @@ public class LoginDlg extends DlgBox
 	private GwtSelfRegistrationInfo m_selfRegInfo = null;
 	private boolean m_requestedLoginInfo = false;
 	private LoginStatus m_loginStatus;
-	private boolean m_useOpenIdAuth = false;
 	private boolean m_initialized = false;
 	private int m_numAttempts = 0;
 	private List<HandlerRegistration> m_registeredEventHandlers;	// Event handlers that are currently registered.
@@ -1146,7 +1145,7 @@ public class LoginDlg extends DlgBox
 	}
 	
 	/**
-	 * Submit the login form using the url of the selecte openid authentication provider.
+	 * Submit the login form using the url of the selected openid authentication provider.
 	 */
 	private void handleOpenIDAuthProviderSelected( GwtOpenIDAuthenticationProvider provider )
 	{
@@ -1974,11 +1973,6 @@ public class LoginDlg extends DlgBox
 	private boolean getUseOpenIDAuthentication()
 	{
 		if ( m_useOpenIdCkbox != null && m_useOpenIdCkbox.isVisible() && m_useOpenIdCkbox.getValue() == true )
-			return true;
-		
-		// m_useOpenIdAuth is used when we are displaying the external user self registration ui
-		// and the user selected to authenticate using an OpenID provider.
-		if ( m_useOpenIdAuth )
 			return true;
 		
 		return false;
