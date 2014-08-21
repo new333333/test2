@@ -50,8 +50,6 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.CheckBox;
@@ -70,7 +68,6 @@ public class ConfigureUserAccessDlg extends DlgBox
 	CheckBox m_allowGuestAccessCkbox;
 	CheckBox m_guestReadOnlyCkbox;
 	CheckBox m_allowSelfRegOfInternalUserAccountCkbox;
-	CheckBox m_allowExternalUserAccessCkbox;
 	CheckBox m_allowSelfRegOfExternalUserAccountCkbox;
 	CheckBox m_disableDownloadCkbox;
 	CheckBox m_disableWebAccessCkbox;
@@ -164,56 +161,6 @@ public class ConfigureUserAccessDlg extends DlgBox
 			panel.add( m_allowSelfRegOfInternalUserAccountCkbox );
 			mainPanel.add( panel );
 		}
-		else
-		{
-			// External users are only available with a licensed version.
-
-			// For Filr 1.0 we don't support self registration by external users.
-			boolean supportExternalSelfReg = false;
-			
-			// Add the "Allow external user access" checkbox
-			{
-				FlowPanel panel;
-				
-				panel = new FlowPanel();
-				panel.addStyleName( supportExternalSelfReg ? "marginbottom1" : "marginbottom2" );
-				m_allowExternalUserAccessCkbox = new CheckBox( messages.configureUserAccessDlg_AllowExternalUserAccessLabel() );
-				panel.add( m_allowExternalUserAccessCkbox );
-				mainPanel.add( panel );
-				
-				m_allowExternalUserAccessCkbox.addClickHandler( new ClickHandler()
-				{
-					@Override
-					public void onClick( ClickEvent event )
-					{
-						Scheduler.ScheduledCommand cmd;
-						
-						cmd = new Scheduler.ScheduledCommand()
-						{
-							@Override
-							public void execute()
-							{
-								danceDlg();
-							}
-						};
-						Scheduler.get().scheduleDeferred( cmd );
-					}
-				} );
-			}
-			
-			// Add the "Allow external user to self register" checkbox
-			if ( supportExternalSelfReg )
-			{
-				FlowPanel panel;
-				
-				panel = new FlowPanel();
-				panel.addStyleName( "marginbottom2" );
-				panel.addStyleName( "marginleft2" );
-				m_allowSelfRegOfExternalUserAccountCkbox = new CheckBox( messages.configureUserAccessDlg_AllowSelfRegExternalUserAccountLabel() );
-				panel.add( m_allowSelfRegOfExternalUserAccountCkbox );
-				mainPanel.add( panel );
-			}
-		}
 		
 		// Add the "Disable Download" checkbox;
 		if ( GwtClientHelper.isLicenseFilr() )
@@ -246,10 +193,6 @@ public class ConfigureUserAccessDlg extends DlgBox
 	 */
 	private void danceDlg()
 	{
-		if ( m_allowExternalUserAccessCkbox != null && m_allowSelfRegOfExternalUserAccountCkbox != null )
-		{
-			m_allowSelfRegOfExternalUserAccountCkbox.setEnabled( m_allowExternalUserAccessCkbox.getValue() );
-		}
 	}
 	
 	/**
@@ -297,20 +240,9 @@ public class ConfigureUserAccessDlg extends DlgBox
 	/**
 	 * 
 	 */
-	private boolean getAllowExternalUsers()
-	{
-		if ( m_allowExternalUserAccessCkbox != null )
-			return m_allowExternalUserAccessCkbox.getValue();
-		
-		return false;
-	}
-	
-	/**
-	 * 
-	 */
 	private boolean getAllowExternalSelfReg()
 	{
-		if ( getAllowExternalUsers() && m_allowSelfRegOfExternalUserAccountCkbox != null )
+		if ( m_allowSelfRegOfExternalUserAccountCkbox != null )
 			return m_allowSelfRegOfExternalUserAccountCkbox.getValue();
 		
 		return false;
@@ -372,7 +304,7 @@ public class ConfigureUserAccessDlg extends DlgBox
 		UserAccessConfig config;
 		
 		config = new UserAccessConfig();
-		config.setAllowExternalUsers( getAllowExternalUsers() );
+		config.setAllowExternalUsersViaOpenID( false );
 		config.setAllowExternalUsersSelfReg( getAllowExternalSelfReg() );
 		config.setAllowGuestAccess( getAllowGuestAccess() );
 		config.setGuestReadOnly( getGuestReadOnly() );
@@ -456,9 +388,6 @@ public class ConfigureUserAccessDlg extends DlgBox
 	 */
 	public void init()
 	{
-		if ( m_allowExternalUserAccessCkbox != null )
-			m_allowExternalUserAccessCkbox.setValue( false );
-		
 		if ( m_allowGuestAccessCkbox != null )
 			m_allowGuestAccessCkbox.setValue( false );
 		
@@ -489,9 +418,6 @@ public class ConfigureUserAccessDlg extends DlgBox
 	 */
 	private void init( UserAccessConfig config )
 	{
-		if ( m_allowExternalUserAccessCkbox != null )
-			m_allowExternalUserAccessCkbox.setValue( config.getAllowExternalUsers() );
-		
 		if ( m_allowGuestAccessCkbox != null )
 			m_allowGuestAccessCkbox.setValue( config.getAllowGuestAccess() );
 		
