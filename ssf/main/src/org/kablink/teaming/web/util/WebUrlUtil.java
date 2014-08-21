@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -44,6 +44,7 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.asmodule.zonecontext.ZoneContextHolder;
 import org.kablink.teaming.context.request.RequestContextHolder;
@@ -110,7 +111,7 @@ public class WebUrlUtil {
 	public static final int FILE_URL_ZIPFOLDER_RECURSIVE_OPERAND	= 7;
 	public static final int FILE_URL_ZIPFOLDER_RECURSIVE			= 8;
 	
-	// Used to parse the URL returned by getFolderZipUrl().
+	// Used to parse the URL returned by getFolderAsCSVFileUrl().
 	public static final int FILE_URL_CSVFOLDER_ARG_LENGTH			= 7;
 	public static final int FILE_URL_CSVFOLDER_FOLDER_CSV			= 6;
 	public static final int FILE_URL_CSVFOLDER_FOLDER_ID			= 5;
@@ -463,6 +464,9 @@ public class WebUrlUtil {
 	public static String getFolderZipUrl(HttpServletRequest req, Long folderId, boolean recursive) {
 		return getFolderZipUrl(WebUrlUtil.getServletRootURL(req), folderId, recursive);
 	}
+	public static String getFolderAsCSVFileUrl(HttpServletRequest req, Long folderId) {
+		return getFolderAsCSVFileUrl(WebUrlUtil.getServletRootURL(req), folderId);
+	}
 	public static String getFileHtmlUrl(HttpServletRequest req, String action, DefinableEntity entity, String fileName) {
 		if (entity == null) return "";
 		FileAttachment fAtt = null;
@@ -735,6 +739,29 @@ public class WebUrlUtil {
 		webUrl.append(Constants.SLASH + "zip");
 		webUrl.append(Constants.SLASH + WebKeys.URL_RECURSIVE);
 		webUrl.append(Constants.SLASH + recursive);
+		return webUrl.toString();
+	}
+
+	/**
+	 * Returns the URL for downloading a folder as a CSV file.
+	 * 
+	 * Note:  The URL constructed must adhere to the count and indexes
+	 * of the various FILE_URL_CSVFOLDER_* definitions. 
+	 * 
+	 * @param webPath
+	 * @param folderId
+	 * 
+	 * @return
+	 */
+	public static String getFolderAsCSVFileUrl(String webPath, Long folderId) {
+		// Construct and return the URL.
+		if (Validator.isNull(webPath)) webPath = WebUrlUtil.getServletRootURL();
+		StringBuffer webUrl = new StringBuffer(webPath + WebKeys.ACTION_READ_FILE);
+		webUrl.append(Constants.SLASH + WebKeys.URL_OPERATION);
+		webUrl.append(Constants.SLASH + WebKeys.OPERATION_READ_FOLDER);
+		webUrl.append(Constants.SLASH + WebKeys.URL_FOLDER_ID);
+		webUrl.append(Constants.SLASH + folderId);
+		webUrl.append(Constants.SLASH + "folderCsv");
 		return webUrl.toString();
 	}
 

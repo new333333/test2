@@ -99,6 +99,7 @@ import org.kablink.teaming.gwt.client.event.DisableSelectedUsersEvent;
 import org.kablink.teaming.gwt.client.event.DisableSelectedUsersAdHocFoldersEvent;
 import org.kablink.teaming.gwt.client.event.DisableSelectedUsersDownloadEvent;
 import org.kablink.teaming.gwt.client.event.DisableSelectedUsersWebAccessEvent;
+import org.kablink.teaming.gwt.client.event.DownloadFolderAsCSVFileEvent;
 import org.kablink.teaming.gwt.client.event.EditPublicLinkSelectedEntitiesEvent;
 import org.kablink.teaming.gwt.client.event.EmailPublicLinkSelectedEntitiesEvent;
 import org.kablink.teaming.gwt.client.event.EnableSelectedUsersEvent;
@@ -236,6 +237,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		DisableSelectedUsersAdHocFoldersEvent.Handler,
 		DisableSelectedUsersDownloadEvent.Handler,
 		DisableSelectedUsersWebAccessEvent.Handler,
+		DownloadFolderAsCSVFileEvent.Handler,
 		EditPublicLinkSelectedEntitiesEvent.Handler,
 		EmailPublicLinkSelectedEntitiesEvent.Handler,
 		EnableSelectedUsersEvent.Handler,
@@ -330,6 +332,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		TeamingEvents.DISABLE_SELECTED_USERS_ADHOC_FOLDERS,
 		TeamingEvents.DISABLE_SELECTED_USERS_DOWNLOAD,
 		TeamingEvents.DISABLE_SELECTED_USERS_WEBACCESS,
+		TeamingEvents.DOWNLOAD_FOLDER_AS_CSV_FILE,
 		TeamingEvents.EDIT_PUBLIC_LINK_SELECTED_ENTITIES,
 		TeamingEvents.EMAIL_PUBLIC_LINK_SELECTED_ENTITIES,
 		TeamingEvents.ENABLE_SELECTED_USERS,
@@ -2436,6 +2439,29 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 			BinderViewsHelper.disableUsersWebAccess(
 				EntityId.getLongsFromEntityIds(selectedEntityIds),
 				new FullUIReloadEvent());
+		}
+	}
+	
+	/**
+	 * Handles DownloadFolderAsCSVFileEvent's received by this class.
+	 * 
+	 * Implements the DownloadFolderAsCSVFileEvent.Handler.onDownloadFolderAsCSVFile() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onDownloadFolderAsCSVFile(DownloadFolderAsCSVFileEvent event) {
+		// Is the event targeted to this folder?
+		Long dlFolderId    = event.getFolderId();
+		Long eventFolderId = event.getHandleByFolderId();
+		if (null == eventFolderId) {
+			eventFolderId = dlFolderId;
+		}
+		if (eventFolderId.equals(getFolderId())) {
+			// Yes!  Invoke the download.
+			BinderViewsHelper.downloadFolderAsCSVFile(
+				getDownloadPanel().getForm(),
+				dlFolderId);
 		}
 	}
 	

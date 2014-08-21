@@ -53,6 +53,7 @@ import org.kablink.teaming.gwt.client.event.DeleteSelectedMobileDevicesEvent;
 import org.kablink.teaming.gwt.client.event.DisableSelectedUsersAdHocFoldersEvent;
 import org.kablink.teaming.gwt.client.event.DisableSelectedUsersDownloadEvent;
 import org.kablink.teaming.gwt.client.event.DisableSelectedUsersWebAccessEvent;
+import org.kablink.teaming.gwt.client.event.DownloadFolderAsCSVFileEvent;
 import org.kablink.teaming.gwt.client.event.EditPublicLinkSelectedEntitiesEvent;
 import org.kablink.teaming.gwt.client.event.EmailPublicLinkSelectedEntitiesEvent;
 import org.kablink.teaming.gwt.client.event.EnableSelectedUsersAdHocFoldersEvent;
@@ -401,6 +402,10 @@ public class ActionMenuCell extends AbstractCell<EntryTitleInfo> {
 							event = new ChangeFavoriteStateEvent(
 								eid.getEntityId(),
 								Boolean.parseBoolean(simpleTBI.getQualifierValue("makeFavorite")));
+							break;
+						
+						case DOWNLOAD_FOLDER_AS_CSV_FILE:
+							event = new DownloadFolderAsCSVFileEvent(eid.getEntityId(), binderId);
 							break;
 						
 						case INVOKE_EDIT_IN_PLACE:

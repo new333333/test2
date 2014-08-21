@@ -57,10 +57,12 @@ import org.kablink.teaming.gwt.client.mainmenu.EmailNotificationDlg.EmailNotific
 import org.kablink.teaming.gwt.client.mainmenu.WhoHasAccessDlg;
 import org.kablink.teaming.gwt.client.mainmenu.WhoHasAccessDlg.WhoHasAccessDlgClient;
 import org.kablink.teaming.gwt.client.rpc.shared.DisableUsersCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.DownloadFolderAsCSVFileUrlRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.EnableUsersCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData.ErrorInfo;
 import org.kablink.teaming.gwt.client.rpc.shared.ForceFilesUnlockCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetDownloadFolderAsCSVFileUrlCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetMailToPublicLinksCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.MailToPublicLinksRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.GetViewFolderEntryUrlCmd;
@@ -858,6 +860,66 @@ public class BinderViewsHelper {
 		disableUsersWebAccess(userId, null);
 	}
 
+	/**
+	 * Downloads a folder as a CSV file.
+	 *
+	 * @param downloadForm
+	 * @param folderId
+	 * @param reloadEvent
+	 */
+	public static void downloadFolderAsCSVFile(final FormPanel downloadForm, Long folderId, final VibeEventBase<?> reloadEvent) {
+		// Show a busy spinner while we build the information for
+		// downloading the folder.
+		final SpinnerPopup busy = new SpinnerPopup();
+		busy.center();
+
+		// Send the request for the download folder as a CSV file URL.
+		GetDownloadFolderAsCSVFileUrlCmd cmd = new GetDownloadFolderAsCSVFileUrlCmd(folderId);
+		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
+			@Override
+			public void onFailure(Throwable caught) {
+				busy.hide();
+				GwtClientHelper.handleGwtRPCFailure(
+					caught,
+					m_messages.rpcFailure_GetDownloadFolderAsCSVFileUrl());
+			}
+
+			@Override
+			public void onSuccess(VibeRpcResponse response) {
+				// If we got any errors creating the URL to download
+				// the folder as a CSV file...
+				busy.hide();
+				DownloadFolderAsCSVFileUrlRpcResponseData	downloadFolderAsCSVFileInfo = ((DownloadFolderAsCSVFileUrlRpcResponseData) response.getResponseData());
+				ErrorListRpcResponseData					errorList                   = downloadFolderAsCSVFileInfo.getErrors();
+				List<ErrorInfo>								errors                      = errorList.getErrorList();
+				int count = ((null == errors) ? 0 : errors.size());
+				boolean hasErrors = (0 < count);
+				if (hasErrors) {
+					// ...tell the user.
+					GwtClientHelper.displayMultipleErrors(m_messages.downloadFolderAsCSVFileUrlError(), errors);
+					hasErrors = (0 < errorList.getErrorCount());	// The error list has errors and warnings.  Did we find any actual errors?
+				}
+
+				// Did we get any actual errors (not just warnings)?
+				if (!hasErrors) {
+					// No!  If we get the URL to download the folder as
+					// a CSV file...
+					String downloadFolderAsCSVFileUrl = downloadFolderAsCSVFileInfo.getUrl();
+					if (GwtClientHelper.hasString(downloadFolderAsCSVFileUrl)) {
+						// ...start it downloading...
+						downloadForm.setAction(downloadFolderAsCSVFileUrl);
+						downloadForm.submit();
+					}
+				}
+			}
+		});
+	}
+	
+	public static void downloadFolderAsCSVFile(FormPanel downloadForm, Long folderId) {
+		// Always use the initial form of the method.
+		downloadFolderAsCSVFile(downloadForm, folderId, null);
+	}
+	
 	/**
 	 * Invokes the appropriate UI to edit the public link of the
 	 * entities based on a List<EntityId> of the entries.

@@ -37,6 +37,7 @@ import java.util.List;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.event.CopySelectedEntitiesEvent;
 import org.kablink.teaming.gwt.client.event.DeleteSelectedEntitiesEvent;
+import org.kablink.teaming.gwt.client.event.DownloadFolderAsCSVFileEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.GotoContentUrlEvent;
 import org.kablink.teaming.gwt.client.event.GotoPermalinkUrlEvent;
@@ -275,6 +276,12 @@ public class ContextMenuItem extends VibeMenuItem {
 				case VIEW_WHATS_NEW_IN_BINDER:
 				case VIEW_WHATS_UNSEEN_IN_BINDER:
 					EventHelper.fireSimpleEvent(m_teamingEvent);
+					break;
+					
+				case DOWNLOAD_FOLDER_AS_CSV_FILE:
+					// Fire the appropriate event.
+					GwtTeaming.fireEvent(new DownloadFolderAsCSVFileEvent(
+						Long.parseLong(ToolbarItem.getQualifierValueFromList("binderId",  m_eventQualifiers))));
 					break;
 					
 				case ZIP_AND_DOWNLOAD_FOLDER:
