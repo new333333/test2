@@ -1059,6 +1059,7 @@ public interface ObjectKeys {
     public final static String CSV_ATTR_CREATION_DATE = "_creationDate";
     public final static String CSV_ATTR_MODIFICATION_DATE = "_modificationDate";
     public final static String CSV_ATTR_WORKFLOW = "_workflow";
+    public final static String CSV_ATTR_ATTACHED_FILES = "_attachedFiles";
     
     public final static String CSV_COL_HEADER = "colHeader";
     public final static String CSV_TYPE = "type";
