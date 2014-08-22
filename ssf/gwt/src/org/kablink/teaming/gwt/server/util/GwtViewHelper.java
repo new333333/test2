@@ -34,7 +34,6 @@ package org.kablink.teaming.gwt.server.util;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-
 import java.text.DateFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
@@ -66,12 +65,10 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.Node;
-
 import org.kablink.teaming.BinderQuotaException;
 import org.kablink.teaming.IllegalCharacterInNameException;
 import org.kablink.teaming.NotSupportedException;
@@ -8997,6 +8994,106 @@ public class GwtViewHelper {
 		return reply;
 	}
 
+	/**
+	 * Marks the contents of a folder as having been read.
+	 * 
+	 * @param bs
+	 * @param request
+	 * @param folderId
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public static BooleanRpcResponseData markFolderContentsRead(AllModulesInjected bs, HttpServletRequest request, Long folderId) throws GwtTeamingException {
+		try {
+			// Mark the contents of the folder as having been read.
+			markFolderContentsReadUnreadImpl(bs, folderId, true);	// true -> Mark as read.
+			
+			// If we get here, we marked the entries has having been
+			// read.  Return true.
+			return new BooleanRpcResponseData(true);
+		}
+		
+		catch (Exception e) {
+			// Convert the exception to a GwtTeamingException and throw
+			// that.
+			throw
+				GwtLogHelper.getGwtClientException(
+					m_logger,
+					e,
+					"GwtViewHelper.markFolderContentsRead( SOURCE EXCEPTION ):  ");
+		}
+	}
+
+	/*
+	 * Implementation method that actually marks the entries of a
+	 * folder as having been read or unread.
+	 */
+	@SuppressWarnings("unchecked")
+	private static void markFolderContentsReadUnreadImpl(AllModulesInjected bs, Long folderId, boolean markRead) {
+		// Can we get any entries from the folder?
+		Map options = new HashMap();
+		Map folderEntries = bs.getFolderModule().getEntries(folderId, options);
+		if (null != folderEntries) {
+			List<Map> feList = ((List) folderEntries.get(ObjectKeys.SEARCH_ENTRIES));
+			if (MiscUtil.hasItems(feList)) {
+				// Yes!  Scan them.
+				List<Long> entryIds = new ArrayList<Long>();
+				for (Map feMap:  feList) {
+					// Can we get this entry's ID?
+					String entryIdStr = ((String) feMap.get(Constants.DOCID_FIELD));
+					if (MiscUtil.hasString(entryIdStr)) {
+						// Yes!  Add it to the entry ID list.
+						entryIds.add(Long.parseLong(entryIdStr));
+					}
+				}
+				
+				// Are we tracking any entry IDs?
+				if (!(entryIds.isEmpty())) {
+					// Yes!  Mark them has having been seen/unseen.
+					ProfileModule	pm     = bs.getProfileModule();
+					Long			userId = GwtServerHelper.getCurrentUserId();
+					if (markRead)
+					     pm.setSeenIds(userId, entryIds);
+					else pm.setUnseen( userId, entryIds);
+				}
+			}
+		}
+	}
+	
+	/**
+	 * Marking the contents of a folder as having been unread.
+	 * 
+	 * @param bs
+	 * @param request
+	 * @param folderId
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public static BooleanRpcResponseData markFolderContentsUnread(AllModulesInjected bs, HttpServletRequest request, Long folderId) throws GwtTeamingException {
+		try {
+			// Mark the contents of the folder as having been unread.
+			markFolderContentsReadUnreadImpl(bs, folderId, false);	// false -> Mark as unread.
+			
+			// If we get here, we marked the entries has having been
+			// unread.  Return true.
+			return new BooleanRpcResponseData(true);
+		}
+		
+		catch (Exception e) {
+			// Convert the exception to a GwtTeamingException and throw
+			// that.
+			throw
+				GwtLogHelper.getGwtClientException(
+					m_logger,
+					e,
+					"GwtViewHelper.markFolderContentsUnread( SOURCE EXCEPTION ):  ");
+		}
+	}
+	
 	/**
 	 * Moves the entries.
 	 * 

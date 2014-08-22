@@ -65,6 +65,8 @@ import org.kablink.teaming.gwt.client.rpc.shared.ForceFilesUnlockCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetDownloadFolderAsCSVFileUrlCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetMailToPublicLinksCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.MailToPublicLinksRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.MarkFolderContentsReadCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.MarkFolderContentsUnreadCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetViewFolderEntryUrlCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetZipDownloadFilesUrlCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetZipDownloadFolderUrlCmd;
@@ -910,6 +912,12 @@ public class BinderViewsHelper {
 						downloadForm.setAction(downloadFolderAsCSVFileUrl);
 						downloadForm.submit();
 					}
+				}
+				
+				// ...and if we have a reload event...
+				if (null != reloadEvent) {
+					// ...fire it.
+					GwtTeaming.fireEventAsync(reloadEvent);
 				}
 			}
 		});
@@ -1827,6 +1835,90 @@ public class BinderViewsHelper {
 
 		// ...and send the email.
 		sendEmail(subject, body.toString());
+	}
+	
+	/**
+	 * Marks the contents of a folder as having been read.
+	 *
+	 * @param folderId
+	 * @param reloadEvent
+	 */
+	public static void markFolderContentsRead(Long folderId, final VibeEventBase<?> reloadEvent) {
+		// Show a busy spinner while we mark the contents of the folder
+		// as having been read.
+		final SpinnerPopup busy = new SpinnerPopup();
+		busy.center();
+
+		// Send the request to mark the folder contents as having been
+		// read.
+		MarkFolderContentsReadCmd cmd = new MarkFolderContentsReadCmd(folderId);
+		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
+			@Override
+			public void onFailure(Throwable caught) {
+				busy.hide();
+				GwtClientHelper.handleGwtRPCFailure(
+					caught,
+					m_messages.rpcFailure_MarkFolderContentsRead());
+			}
+
+			@Override
+			public void onSuccess(VibeRpcResponse response) {
+				// Hide the busy spinner...
+				busy.hide();
+				
+				// ...and fire a reload event.
+				if (null == reloadEvent)
+				     FullUIReloadEvent.fireOneAsync();
+				else GwtTeaming.fireEventAsync(reloadEvent);
+			}
+		});
+	}
+	
+	public static void markFolderContentsRead(Long folderId) {
+		// Always use the initial form of the method.
+		markFolderContentsRead(folderId, null);
+	}
+	
+	/**
+	 * Marks the contents of a folder as having been unread.
+	 *
+	 * @param folderId
+	 * @param reloadEvent
+	 */
+	public static void markFolderContentsUnread(Long folderId, final VibeEventBase<?> reloadEvent) {
+		// Show a busy spinner while we mark the contents of the folder
+		// as having been unread.
+		final SpinnerPopup busy = new SpinnerPopup();
+		busy.center();
+
+		// Send the request to mark the folder contents as having been
+		// unread.
+		MarkFolderContentsUnreadCmd cmd = new MarkFolderContentsUnreadCmd(folderId);
+		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
+			@Override
+			public void onFailure(Throwable caught) {
+				busy.hide();
+				GwtClientHelper.handleGwtRPCFailure(
+					caught,
+					m_messages.rpcFailure_MarkFolderContentsUnread());
+			}
+
+			@Override
+			public void onSuccess(VibeRpcResponse response) {
+				// Hide the busy spinner...
+				busy.hide();
+				
+				// ...and fire a reload event.
+				if (null == reloadEvent)
+				     FullUIReloadEvent.fireOneAsync();
+				else GwtTeaming.fireEventAsync(reloadEvent);
+			}
+		});
+	}
+	
+	public static void markFolderContentsUnread(Long folderId) {
+		// Always use the initial form of the method.
+		markFolderContentsUnread(folderId, null);
 	}
 	
 	/**

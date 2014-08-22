@@ -535,6 +535,8 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_IsPersonTracked();
 	String rpcFailure_LdapGuidNotConfigured();
 	String rpcFailure_LockEntries();
+	String rpcFailure_MarkFolderContentsRead();
+	String rpcFailure_MarkFolderContentsUnread();
 	String rpcFailure_markupStringReplacement();
 	String rpcFailure_ModifyGroup();
 	String rpcFailure_ModifyGroupMembership();

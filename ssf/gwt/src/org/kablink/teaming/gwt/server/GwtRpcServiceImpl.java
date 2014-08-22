@@ -2930,6 +2930,22 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case MARK_FOLDER_CONTENTS_READ:
+		{
+			MarkFolderContentsReadCmd mfcrCmd = ((MarkFolderContentsReadCmd) cmd);
+			BooleanRpcResponseData responseData = GwtViewHelper.markFolderContentsRead( this, getRequest( ri ), mfcrCmd.getFolderId() );
+			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
+		case MARK_FOLDER_CONTENTS_UNREAD:
+		{
+			MarkFolderContentsUnreadCmd mfcurCmd = ((MarkFolderContentsUnreadCmd) cmd);
+			BooleanRpcResponseData responseData = GwtViewHelper.markFolderContentsUnread( this, getRequest( ri ), mfcurCmd.getFolderId() );
+			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
 		case MARKUP_STRING_REPLACEMENT:
 		{
 			MarkupStringReplacementCmd msr = ((MarkupStringReplacementCmd) cmd); 

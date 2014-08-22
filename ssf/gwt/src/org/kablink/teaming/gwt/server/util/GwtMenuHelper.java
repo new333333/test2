@@ -186,6 +186,7 @@ public class GwtMenuHelper {
 	private final static String RENAME					= "rename";
 	private final static String SCHEDULE_SYNC			= "scheduleSync";
 	private final static String SEEN					= "seen";
+	private final static String SEEN_FOLDER				= "seenFolder";
 	private final static String SEND_EMAIL				= "sendEmail";
 	private final static String SHARE					= "share";
 	private final static String SIMPLE_NAMES			= "simpleNames";
@@ -196,6 +197,7 @@ public class GwtMenuHelper {
 	private final static String TRASH					= "trash";
 	private final static String UNLOCK					= "unlock"; 
 	private final static String UNSEEN					= "unseen";
+	private final static String UNSEEN_FOLDER			= "unseenFolder";
 	private final static String VIEW_AS_WEBDAV			= "viewaswebdav";
 	private final static String WEBDAVURL				= "webdavUrl";
 	private final static String WHATS_NEW				= "whatsnew";
@@ -1089,6 +1091,32 @@ public class GwtMenuHelper {
 			markTBITitle(tbi, "toolbar.menu.manageSharesSelected");
 			markTBIEvent(tbi, TeamingEvents.MANAGE_SHARES_SELECTED_ENTITIES);
 			entryToolbar.addNestedItem(tbi);
+		}
+	}
+	
+	/*
+	 * Constructs ToolbarItem's for marking the contents of a folder
+	 * read or unread.
+	 */
+	private static void constructEntryMarkFolderContentsReadAndUnread(ToolbarItem entryToolbar, AllModulesInjected bs, HttpServletRequest request, Folder folder) {
+		// For other than the Guest user...
+		boolean isGuest = GwtServerHelper.getCurrentUser().isShared();
+		if (!isGuest) {
+			// ...add a ToolbarItem for for marking the folder's
+			// ...contents as having been read...
+			ToolbarItem actionTBI = new ToolbarItem(SEEN_FOLDER);
+			markTBITitle(         actionTBI, "toolbar.menu.markFolderContentsRead"  );
+			markTBIEvent(         actionTBI, TeamingEvents.MARK_FOLDER_CONTENTS_READ);
+			markTBISelectedBinder(actionTBI, folder                                 );
+			entryToolbar.addNestedItem(actionTBI);
+			
+			// ...and one for for marking the folder's contents as
+			// ...having been unread.
+			actionTBI = new ToolbarItem(UNSEEN_FOLDER);
+			markTBITitle(         actionTBI, "toolbar.menu.markFolderContentsUnread"  );
+			markTBIEvent(         actionTBI, TeamingEvents.MARK_FOLDER_CONTENTS_UNREAD);
+			markTBISelectedBinder(actionTBI, folder                                   );
+			entryToolbar.addNestedItem(actionTBI);
 		}
 	}
 	
@@ -2000,7 +2028,8 @@ public class GwtMenuHelper {
 		User user = GwtServerHelper.getCurrentUser();
 		if ((isFolder || isWorkspace) && (!isWorkspaceReserved)) {			
 			// Yes!  Can the user potentially copy or move this binder?
-			boolean isFilrGuest   = (isFilr && GwtServerHelper.getCurrentUser().isShared());
+			boolean isGuest       = GwtServerHelper.getCurrentUser().isShared();
+			boolean isFilrGuest   = (isFilr && isGuest);
 			boolean allowCopyMove = (!isFilrGuest);
 			if (allowCopyMove) {
 				if (isWorkspace) {
@@ -2061,11 +2090,33 @@ public class GwtMenuHelper {
 					configTBI.addNestedItem(actionTBI);
 				}
 				
-				// Add a ToolbarItem for for downloading it as a CSV
-				// file.
-				actionTBI = new ToolbarItem(DOWNLOAD_AS_CSV_FILE);
-				markTBITitle(         actionTBI, "toolbar.menu.downloadFolderAsCSVFile"   );
-				markTBIEvent(         actionTBI, TeamingEvents.DOWNLOAD_FOLDER_AS_CSV_FILE);
+				// For folders...
+				if (isFolder) {
+					// ...add a ToolbarItem for for downloading it as a
+					// ...CSV file.
+					actionTBI = new ToolbarItem(DOWNLOAD_AS_CSV_FILE);
+					markTBITitle(         actionTBI, "toolbar.menu.downloadFolderAsCSVFile"   );
+					markTBIEvent(         actionTBI, TeamingEvents.DOWNLOAD_FOLDER_AS_CSV_FILE);
+					markTBISelectedBinder(actionTBI, binder                                   );
+					configTBI.addNestedItem(actionTBI);
+				}
+			}
+
+			// For folders and other than the Guest user...
+			if (isFolder && (!isGuest)) {
+				// ...add a ToolbarItem for for marking the folder's
+				// ...contents as having been read...
+				actionTBI = new ToolbarItem(SEEN_FOLDER);
+				markTBITitle(         actionTBI, "toolbar.menu.markFolderContentsRead"  );
+				markTBIEvent(         actionTBI, TeamingEvents.MARK_FOLDER_CONTENTS_READ);
+				markTBISelectedBinder(actionTBI, binder                                 );
+				configTBI.addNestedItem(actionTBI);
+				
+				// ...and one for for marking the folder's contents as
+				// ...having been unread.
+				actionTBI = new ToolbarItem(UNSEEN_FOLDER);
+				markTBITitle(         actionTBI, "toolbar.menu.markFolderContentsUnread"  );
+				markTBIEvent(         actionTBI, TeamingEvents.MARK_FOLDER_CONTENTS_UNREAD);
 				markTBISelectedBinder(actionTBI, binder                                   );
 				configTBI.addNestedItem(actionTBI);
 			}
@@ -3235,8 +3286,9 @@ public class GwtMenuHelper {
 						actionToolbar.addNestedItem(ToolbarItem.constructSeparatorTBI());
 					}
 					
-					constructEntryZipAndDownload(   actionToolbar, bs, request, folder);
-					constructEntryDownloadAsCSVFile(actionToolbar, bs, request, folder);
+					constructEntryZipAndDownload(                 actionToolbar, bs, request, folder);
+					constructEntryDownloadAsCSVFile(              actionToolbar, bs, request, folder);
+					constructEntryMarkFolderContentsReadAndUnread(actionToolbar, bs, request, folder);
 					if (!(Utils.checkIfFilr())) {
 						boolean isFavorite = false;
 						List<FavoriteInfo> favorites = GwtServerHelper.getFavorites(bs);

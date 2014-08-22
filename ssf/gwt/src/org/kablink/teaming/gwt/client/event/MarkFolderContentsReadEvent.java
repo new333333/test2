@@ -30,6 +30,7 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
+
 package org.kablink.teaming.gwt.client.event;
 
 import com.google.gwt.event.shared.EventHandler;
@@ -37,42 +38,42 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
 import com.google.web.bindery.event.shared.SimpleEventBus;
 
 /**
- * The DownloadFolderAsCSVFileEvent is used to download the contents of
- * a folder as a CSV file.
+ * The MarkFolderContentsReadEvent is used to mark the contents of a
+ * folder as having been read.
  * 
  * @author drfoster@novell.com
  */
-public class DownloadFolderAsCSVFileEvent extends VibeEventBase<DownloadFolderAsCSVFileEvent.Handler> {
-    public static Type<Handler> TYPE = new Type<Handler>();
+public class MarkFolderContentsReadEvent extends VibeEventBase<MarkFolderContentsReadEvent.Handler> {
+	public static Type<Handler> TYPE = new Type<Handler>();
 
-    private Long		m_folderId;			// The ID of the folder whose files are to be downloaded.
-    private Long		m_handleByFolderId;	// The ID of the folder that's to handle this event, if different than m_folderId.
-    
+	private Long	m_folderId;			//
+    private Long	m_handleByFolderId;	// The ID of the folder that's to handle this event, if different than m_folderId.
+
 	/**
 	 * Handler interface for this event.
 	 */
 	public interface Handler extends EventHandler {
-		void onDownloadFolderAsCSVFile(DownloadFolderAsCSVFileEvent event);
+		void onMarkFolderContentsRead(MarkFolderContentsReadEvent event);
 	}
 	
 	/*
-	 * Class constructor.
+	 * Constructor method.
 	 * 
-	 * Zero parameter constructor as per GWT serialization
+	 * Zero parameter constructor method as per GWT serialization
 	 * requirements.
 	 */
-	private DownloadFolderAsCSVFileEvent() {
+	private MarkFolderContentsReadEvent() {
 		// Initialize the super class.
 		super();
 	}
 	
 	/**
-	 * Class constructor.
+	 * Constructor method.
 	 * 
 	 * @param folderId
 	 * @param handleByFolderId
 	 */
-	public DownloadFolderAsCSVFileEvent(Long folderId, Long handleByFolderId) {
+	public MarkFolderContentsReadEvent(Long folderId, Long handleByFolderId) {
 		// Initialize this object...
 		this();
 		
@@ -80,13 +81,13 @@ public class DownloadFolderAsCSVFileEvent extends VibeEventBase<DownloadFolderAs
 		setFolderId(        folderId        );
 		setHandleByFolderId(handleByFolderId);
 	}
-
+	
 	/**
 	 * Class constructor.
 	 * 
 	 * @param folderId
 	 */
-	public DownloadFolderAsCSVFileEvent(Long folderId) {
+	public MarkFolderContentsReadEvent(Long folderId) {
 		// Initialize this object.
 		this(folderId, null);
 	}
@@ -102,11 +103,11 @@ public class DownloadFolderAsCSVFileEvent extends VibeEventBase<DownloadFolderAs
 	/**
 	 * Set'er methods.
 	 * 
-	 * @param
+	 * @return
 	 */
 	public void setFolderId(        Long folderId)         {m_folderId         = folderId;        } 
 	public void setHandleByFolderId(Long handleByFolderId) {m_handleByFolderId = handleByFolderId;} 
-	
+
 	/**
 	 * Dispatches this event when one is triggered.
 	 * 
@@ -114,10 +115,10 @@ public class DownloadFolderAsCSVFileEvent extends VibeEventBase<DownloadFolderAs
 	 * 
 	 * @param handler
 	 */
-    @Override
-    protected void doDispatch(Handler handler) {
-   		handler.onDownloadFolderAsCSVFile(this);
-    }    
+	@Override
+	protected void doDispatch(Handler handler) {
+		handler.onMarkFolderContentsRead(this);
+	}
 	
 	/**
 	 * Returns the GwtEvent.Type of this event.
@@ -126,11 +127,11 @@ public class DownloadFolderAsCSVFileEvent extends VibeEventBase<DownloadFolderAs
 	 * 
 	 * @return
 	 */
-    @Override
-    public Type<Handler> getAssociatedType() {
-        return TYPE;
-    }
-    
+	@Override
+	public Type<Handler> getAssociatedType() {
+		return TYPE;
+	}
+
 	/**
 	 * Returns the TeamingEvents enumeration value corresponding to
 	 * this event.
@@ -141,7 +142,7 @@ public class DownloadFolderAsCSVFileEvent extends VibeEventBase<DownloadFolderAs
 	 */
 	@Override
 	public TeamingEvents getEventEnum() {
-		return TeamingEvents.DOWNLOAD_FOLDER_AS_CSV_FILE;
+		return TeamingEvents.MARK_FOLDER_CONTENTS_READ;
 	}
 		
 	/**
