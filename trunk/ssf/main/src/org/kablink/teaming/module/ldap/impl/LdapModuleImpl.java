@@ -173,10 +173,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	private boolean m_showTiming;
 	private int m_numUsersCreated;
 	private long m_createUsersStartTime;
-	private long m_createUsersStartLapTime;
 	private int m_numUsersModified;
-	private long m_modifyUsersStartTime;
-	private long m_modifyUsersStartLapTime;
 	private long m_createGroupsStartTime;
 	private long m_ldapSyncStartTime;
 
@@ -3076,9 +3073,6 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				m_numUsersCreated = 0;
 				m_numUsersModified = 0;
 				m_createUsersStartTime = now.getTime();
-				m_modifyUsersStartTime = m_createUsersStartTime;
-				m_createUsersStartLapTime = m_createUsersStartTime;
-				m_modifyUsersStartLapTime = m_createUsersStartTime;
 				m_ldapSyncStartTime = m_createUsersStartTime;
 
 				m_showTiming = SPropsUtil.getBoolean( "ldap.sync.show.timings", false );
@@ -5085,7 +5079,18 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				do
 				{
 					NamingEnumeration results;
+					int numUsersProcessed = 0;
+					long startTime = 0;
+					long totalTimeTakenByUserRecord = 0;
 
+					if ( m_showTiming )
+					{
+						Date now;
+
+						now = new Date();
+						startTime = now.getTime();
+					}
+					
 					logger.debug( "\t\tAbout to call ctx.search()" );
 					
 					// Issue an ldap search for users in the given base dn.
@@ -5098,6 +5103,9 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 						String	fixedUpUserName;
 						Attributes lAttrs = null;
 						SearchResult sr;
+						long startRecord = 0;
+						
+						++numUsersProcessed;
 						
 						sr = (SearchResult)results.next();
 						userName = sr.getNameInNamespace();
@@ -5173,6 +5181,14 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 						  		}
 							}
 
+							if ( m_showTiming )
+							{
+								Date now;
+								
+								now = new Date();
+								startRecord = now.getTime();
+							}
+							
 							userCoordinator.record(
 												dn,
 												ssName,
@@ -5180,6 +5196,16 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 												ldapGuidAttribute,
 												domainName,
 												homeDirInfo);
+							
+							if ( m_showTiming )
+							{
+								Date now;
+								long elapsedTime;
+								
+								now = new Date();
+								elapsedTime = now.getTime() - startRecord;
+								totalTimeTakenByUserRecord += elapsedTime;
+							}
 						}
 					}
 	     
@@ -5198,6 +5224,24 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					{
 						cookie = null;
 						logger.error( "Call to PagedResultsControl() threw an exception: " + ex.toString() );
+					}
+					
+					if ( m_showTiming )
+					{
+						long elapsedTimeInSeconds;
+						long minutes;
+						long seconds;
+						long milliSeconds;
+						Date now;
+						
+						now = new Date();
+
+						milliSeconds = now.getTime() - startTime - totalTimeTakenByUserRecord;
+						elapsedTimeInSeconds = milliSeconds / 1000;
+						minutes = elapsedTimeInSeconds / 60;
+						seconds = elapsedTimeInSeconds - (minutes * 60);
+						milliSeconds = milliSeconds - (elapsedTimeInSeconds * 1000);
+						logger.info( "ldap sync timing: ======> Time to read last " + numUsersProcessed + " users from ldap: " + minutes + " minutes " + seconds + " seconds " + milliSeconds + " milliseconds " );
 					}
 
 				} while ( (cookie != null) && (cookie.length != 0) );
@@ -7381,6 +7425,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	   	Map entries;
 	   	Map<Long,String> originalUserNamesMap;
    		ProfileCoreProcessor processor;
+   		long modifyUsersStartTime = 0;
 
 		if ( users.isEmpty() )
 			return;
@@ -7392,6 +7437,14 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			return;
 		}
 		
+		if ( m_showTiming )
+		{
+			Date now;
+			
+			now = new Date();
+			modifyUsersStartTime = now.getTime();
+		}
+
 		pf = getProfileDao().getProfileBinder(zoneId);
 		collections = new ArrayList();
 		collections.add( "customAttributes" );
@@ -7413,7 +7466,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	   	{
 	   		Map changedEntries;
    			List<User> listOfRenamedUsers;
-	   		
+   			
 	   		changedEntries = processor.syncEntries( entries, null, syncResults );
 	   		IndexSynchronizationManager.applyChanges(); //apply now, syncEntries will commit
 
@@ -7427,10 +7480,13 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	   			getCoreDao().evict( foundEntries.get( i ) );
 	   		}
 
-			if ( m_showTiming )
+			if ( m_showTiming && changedEntries != null )
 			{
-				m_numUsersModified += foundEntries.size();
-				if ( (m_numUsersModified % 500) == 0 )
+				int numUsersModifiedInThisBatch;
+				
+				numUsersModifiedInThisBatch = changedEntries.size();
+				m_numUsersModified += numUsersModifiedInThisBatch;
+				if ( numUsersModifiedInThisBatch > 0 )
 				{
 					long elapsedTimeInSeconds;
 					long minutes;
@@ -7439,19 +7495,11 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					
 					now = new Date();
 
-					elapsedTimeInSeconds = now.getTime() - m_modifyUsersStartLapTime;
+					elapsedTimeInSeconds = now.getTime() - modifyUsersStartTime;
 					elapsedTimeInSeconds /= 1000;
 					minutes = elapsedTimeInSeconds / 60;
 					seconds = elapsedTimeInSeconds - (minutes * 60);
-					logger.info( "ldap sync timing: ----------> Time to modify last 500 users: " + minutes + " minutes " + seconds + " seconds" );
-					
-					m_modifyUsersStartLapTime = now.getTime();
-
-					elapsedTimeInSeconds = now.getTime() - m_modifyUsersStartTime;
-					elapsedTimeInSeconds /= 1000;
-					minutes = elapsedTimeInSeconds / 60;
-					seconds = elapsedTimeInSeconds - (minutes * 60);
-					logger.info( "ldap sync timing: ----------> Time taken to modify " + m_numUsersModified + " users: " + minutes + " minutes " + seconds + " seconds" );
+					logger.info( "ldap sync timing: ----------> Time to modify last " + numUsersModifiedInThisBatch + " users: " + minutes + " minutes " + seconds + " seconds" );
 				}
 			}
 	   	}
@@ -8035,6 +8083,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
     {
 		//SimpleProfiler.setProfiler(new SimpleProfiler(false));
 		ProfileCoreProcessor processor;
+		long createUsersStartTime = 0;
 		
 		// Are we in "preview" mode?
 		if ( syncMode == LdapSyncMode.PREVIEW_ONLY && syncResults != null )
@@ -8043,6 +8092,14 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			addPrincipalsToPreviewSyncResults( users, syncResults );
 			
 			return new ArrayList<User>();
+		}
+		
+		if ( m_showTiming )
+		{
+			Date now;
+			
+			now = new Date();
+			createUsersStartTime = now.getTime();
 		}
 		
 		ProfileBinder pf = getProfileDao().getProfileBinder(zoneId);
@@ -8080,7 +8137,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			if ( m_showTiming )
 			{
 				m_numUsersCreated += newUsers.size();
-				if ( (m_numUsersCreated % 500) == 0 )
+				if ( newUsers.size() > 0 )
 				{
 					long elapsedTimeInSeconds;
 					long minutes;
@@ -8089,19 +8146,11 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					
 					now = new Date();
 
-					elapsedTimeInSeconds = now.getTime() - m_createUsersStartLapTime;
+					elapsedTimeInSeconds = now.getTime() - createUsersStartTime;
 					elapsedTimeInSeconds /= 1000;
 					minutes = elapsedTimeInSeconds / 60;
 					seconds = elapsedTimeInSeconds - (minutes * 60);
-					logger.info( "ldap sync timing: ----------> Time to create last 500 users: " + minutes + " minutes " + seconds + " seconds" );
-					
-					m_createUsersStartLapTime = now.getTime();
-
-					elapsedTimeInSeconds = now.getTime() - m_createUsersStartTime;
-					elapsedTimeInSeconds /= 1000;
-					minutes = elapsedTimeInSeconds / 60;
-					seconds = elapsedTimeInSeconds - (minutes * 60);
-					logger.info( "ldap sync timing: ----------> Time taken to create " + m_numUsersCreated + " users: " + minutes + " minutes " + seconds + " seconds" );
+					logger.info( "ldap sync timing: ----------> Time to create last " + newUsers.size() + " users: " + minutes + " minutes " + seconds + " seconds" );
 				}
 			}
 
