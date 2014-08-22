@@ -2946,7 +2946,7 @@ public class GwtViewHelper {
 			else if (colName.equals("location"))             {fc.setColumnSearchKey(Constants.PRE_DELETED_FIELD);                                                                                  }
 			else if (colName.equals("loginId"))              {fc.setColumnSearchKey(Constants.LOGINNAME_FIELD);                                                                                    }
 			else if (colName.equals("netfolder_access"))     {fc.setColumnSearchKey(FolderColumn.COLUMN_NETFOLDER_ACCESS);      fc.setColumnSortable(false);                                       }
-			else if (colName.equals("number"))               {fc.setColumnSearchKey(Constants.DOCNUMBER_FIELD);                 fc.setColumnSortKey(Constants.SORTNUMBER_FIELD);                   }
+			else if (colName.equals("docNum"))               {fc.setColumnSearchKey(Constants.DOCNUMBER_FIELD);                 fc.setColumnSortKey(Constants.SORTNUMBER_FIELD);                   }
 			else if (colName.equals("rating"))               {fc.setColumnSearchKey(Constants.RATING_FIELD);                                                                                       }
 			else if (colName.equals("responsible"))          {fc.setColumnSearchKey(Constants.RESPONSIBLE_FIELD);                                                                                  }
 			else if (colName.equals("size"))                 {fc.setColumnSearchKey(Constants.FILE_SIZE_FIELD);                                                                                    }
@@ -3975,7 +3975,7 @@ public class GwtViewHelper {
 		case MILESTONE:     reply = pruneColumnNames(ft, "title",  "responsible", "tasks",    "status", "dueDate"                  ); break;
 		case MINIBLOG:      reply = pruneColumnNames(ft, "title",  "description"                                                   ); break;
 		case SURVEY:        reply = pruneColumnNames(ft, "title",  "author",      "dueDate"                                        ); break;
-		default:            reply = pruneColumnNames(ft, "number", "title",       "comments", "state",  "author", "date",  "rating"); break;
+		default:            reply = pruneColumnNames(ft, "docNum", "title",       "comments", "state",  "author", "date",  "rating"); break;
 		}
 		return reply;
 	}
@@ -9807,6 +9807,12 @@ public class GwtViewHelper {
 					}
 					fr.setColumnValue(fc, strValue.toString());
 				}
+			}
+			
+			else {
+				// No, we don't have a value or event for this column!
+				// Display blank for it.
+				fr.setColumnValue(fc, "");
 			}
 		}
 		
