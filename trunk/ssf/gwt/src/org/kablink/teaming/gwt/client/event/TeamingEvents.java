@@ -161,6 +161,8 @@ public enum TeamingEvents implements IsSerializable {
 
 	MARK_ENTRY_READ,								// Mark the entry as read.
 	MARK_ENTRY_UNREAD,								// Mark the entry as unread.
+	MARK_FOLDER_CONTENTS_READ,						// Mark the contents of a folder as read.
+	MARK_FOLDER_CONTENTS_UNREAD,					// Mark the contents of a folder as unread.
 	
 	MASTHEAD_HIDE,									// Hides the masthead.
 	MASTHEAD_SHOW,									// Shows the masthead.

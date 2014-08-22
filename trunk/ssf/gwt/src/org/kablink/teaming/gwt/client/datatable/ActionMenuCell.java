@@ -67,6 +67,8 @@ import org.kablink.teaming.gwt.client.event.InvokeUserPropertiesDlgEvent;
 import org.kablink.teaming.gwt.client.event.LockSelectedEntitiesEvent;
 import org.kablink.teaming.gwt.client.event.MailToPublicLinkEntityEvent;
 import org.kablink.teaming.gwt.client.event.ManageSharesSelectedEntitiesEvent;
+import org.kablink.teaming.gwt.client.event.MarkFolderContentsReadEvent;
+import org.kablink.teaming.gwt.client.event.MarkFolderContentsUnreadEvent;
 import org.kablink.teaming.gwt.client.event.MarkReadSelectedEntitiesEvent;
 import org.kablink.teaming.gwt.client.event.MarkUnreadSelectedEntitiesEvent;
 import org.kablink.teaming.gwt.client.event.MoveSelectedEntitiesEvent;
@@ -430,6 +432,14 @@ public class ActionMenuCell extends AbstractCell<EntryTitleInfo> {
 							
 						case INVOKE_USER_PROPERTIES_DLG:
 							event = new InvokeUserPropertiesDlgEvent(eid.getEntityId());
+							break;
+						
+						case MARK_FOLDER_CONTENTS_READ:
+							event = new MarkFolderContentsReadEvent(eid.getEntityId(), binderId);
+							break;
+						
+						case MARK_FOLDER_CONTENTS_UNREAD:
+							event = new MarkFolderContentsUnreadEvent(eid.getEntityId(), binderId);
 							break;
 						
 						case ZIP_AND_DOWNLOAD_FOLDER:

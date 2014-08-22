@@ -1665,6 +1665,24 @@ public class EventHelper {
 				}
 				break;
 
+			case MARK_FOLDER_CONTENTS_READ:
+				// An MarkFolderContentsReadEvent!  Can the event
+				// handler we were given handle that?
+				if (eventHandler instanceof MarkFolderContentsReadEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = MarkFolderContentsReadEvent.registerEvent(eventBus, ((MarkFolderContentsReadEvent.Handler) eventHandler));
+				}
+				break;
+				
+			case MARK_FOLDER_CONTENTS_UNREAD:
+				// An MarkFolderContentsUnreadEvent!  Can the event
+				// handler we were given handle that?
+				if (eventHandler instanceof MarkFolderContentsUnreadEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = MarkFolderContentsUnreadEvent.registerEvent(eventBus, ((MarkFolderContentsUnreadEvent.Handler) eventHandler));
+				}
+				break;
+				
 			case MARK_READ_SELECTED_ENTITIES:
 				// A MarkReadSelectedEntitiesEvent!  Can the event
 				// handler we were given handle that?
@@ -2832,6 +2850,8 @@ public class EventHelper {
 			case MANAGE_SHARES_SELECTED_ENTITIES:              hasHandler = (eventHandler instanceof ManageSharesSelectedEntitiesEvent.Handler);           break;
 			case MARK_ENTRY_READ:                   	       hasHandler = (eventHandler instanceof MarkEntryReadEvent.Handler);                          break;
 			case MARK_ENTRY_UNREAD:                 	       hasHandler = (eventHandler instanceof MarkEntryUnreadEvent.Handler);                        break;
+			case MARK_FOLDER_CONTENTS_READ:                    hasHandler = (eventHandler instanceof MarkFolderContentsReadEvent.Handler);                 break;
+			case MARK_FOLDER_CONTENTS_UNREAD:                  hasHandler = (eventHandler instanceof MarkFolderContentsUnreadEvent.Handler);               break;
 			
 			case NET_FOLDER_CREATED:        			       hasHandler = (eventHandler instanceof NetFolderCreatedEvent.Handler);          	           break;
 			case NET_FOLDER_MODIFIED:        			       hasHandler = (eventHandler instanceof NetFolderModifiedEvent.Handler);         	           break;

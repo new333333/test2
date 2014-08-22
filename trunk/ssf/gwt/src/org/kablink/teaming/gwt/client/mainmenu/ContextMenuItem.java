@@ -43,6 +43,8 @@ import org.kablink.teaming.gwt.client.event.GotoContentUrlEvent;
 import org.kablink.teaming.gwt.client.event.GotoPermalinkUrlEvent;
 import org.kablink.teaming.gwt.client.event.InvokeSendEmailToTeamEvent;
 import org.kablink.teaming.gwt.client.event.InvokeShareBinderEvent;
+import org.kablink.teaming.gwt.client.event.MarkFolderContentsReadEvent;
+import org.kablink.teaming.gwt.client.event.MarkFolderContentsUnreadEvent;
 import org.kablink.teaming.gwt.client.event.MoveSelectedEntitiesEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.event.VibeEventBase;
@@ -281,6 +283,18 @@ public class ContextMenuItem extends VibeMenuItem {
 				case DOWNLOAD_FOLDER_AS_CSV_FILE:
 					// Fire the appropriate event.
 					GwtTeaming.fireEvent(new DownloadFolderAsCSVFileEvent(
+						Long.parseLong(ToolbarItem.getQualifierValueFromList("binderId",  m_eventQualifiers))));
+					break;
+					
+				case MARK_FOLDER_CONTENTS_READ:
+					// Fire the appropriate event.
+					GwtTeaming.fireEvent(new MarkFolderContentsReadEvent(
+						Long.parseLong(ToolbarItem.getQualifierValueFromList("binderId",  m_eventQualifiers))));
+					break;
+					
+				case MARK_FOLDER_CONTENTS_UNREAD:
+					// Fire the appropriate event.
+					GwtTeaming.fireEvent(new MarkFolderContentsUnreadEvent(
 						Long.parseLong(ToolbarItem.getQualifierValueFromList("binderId",  m_eventQualifiers))));
 					break;
 					

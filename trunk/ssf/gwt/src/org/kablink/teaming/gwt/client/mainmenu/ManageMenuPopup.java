@@ -230,6 +230,8 @@ public class ManageMenuPopup extends MenuBarPopupBase {
 		addNestedItemFromEvent(m_actionsBucket, m_commonActionsTBI, TeamingEvents.MOVE_SELECTED_ENTITIES     );
 		addNestedItemFromEvent(m_actionsBucket, m_commonActionsTBI, TeamingEvents.ZIP_AND_DOWNLOAD_FOLDER    );
 		addNestedItemFromEvent(m_actionsBucket, m_commonActionsTBI, TeamingEvents.DOWNLOAD_FOLDER_AS_CSV_FILE);
+		addNestedItemFromEvent(m_actionsBucket, m_commonActionsTBI, TeamingEvents.MARK_FOLDER_CONTENTS_READ  );
+		addNestedItemFromEvent(m_actionsBucket, m_commonActionsTBI, TeamingEvents.MARK_FOLDER_CONTENTS_UNREAD);
 		addNestedItemFromUrl(  m_actionsBucket, m_commonActionsTBI, "export_import"                          );
 		addNestedItemFromUrl(  m_actionsBucket, m_commonActionsTBI, "manage_binder_quota"                    );
 		addNestedItemFromUrl(  m_actionsBucket, m_commonActionsTBI, "manage_definitions"                     );
