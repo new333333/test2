@@ -49,6 +49,7 @@ import javax.activation.FileTypeMap;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.compress.archivers.zip.Zip64Mode;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
 import org.kablink.teaming.ObjectKeys;
@@ -952,6 +953,7 @@ public class ReadFileController extends AbstractReadFileController {
 		response.setHeader("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
 		OutputStream stream = response.getOutputStream();
 		ZipArchiveOutputStream reply = new ZipArchiveOutputStream(stream);
+		reply.setUseZip64(Zip64Mode.Always);
 
 		if (UTF8_ENCODE_ZIPS) {
 			reply.setEncoding("UTF-8");
