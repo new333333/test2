@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -68,6 +68,7 @@ public class FolderColumn implements IsSerializable, VibeRpcResponseData {
 	public final static String COLUMN_DEVICE_USER			= "deviceUser";
 	public final static String COLUMN_DEVICE_WIPE_DATE		= "deviceWipeDate";
 	public final static String COLUMN_DEVICE_WIPE_SCHEDULED	= "deviceWipeScheduled";
+	public final static String COLUMN_DOCNUMBER				= "docNum";
 	public final static String COLUMN_DOWNLOAD				= "download";
 	public final static String COLUMN_DUE_DATE				= "dueDate";
 	public final static String COLUMN_EMAIL_ADDRESS			= "emailAddress";
@@ -79,7 +80,6 @@ public class FolderColumn implements IsSerializable, VibeRpcResponseData {
 	public final static String COLUMN_LOGIN_ID				= "loginId";
 	public final static String COLUMN_MOBILE_DEVICES		= "mobileDevices";
 	public final static String COLUMN_NETFOLDER_ACCESS		= "netfolder_access";
-	public final static String COLUMN_NUMBER				= "number";
 	public final static String COLUMN_RATING				= "rating";
 	public final static String COLUMN_RESPONSIBLE			= "responsible";
 	public final static String COLUMN_SHARE_ACCESS			= "share_access";
