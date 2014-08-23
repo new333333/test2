@@ -37,6 +37,7 @@ import java.io.PrintWriter;
 
 import org.kablink.teaming.exception.NoStackTrace;
 import org.kablink.teaming.exception.UncheckedCodedException;
+import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.util.api.ApiErrorCode;
 
 /**
@@ -56,12 +57,14 @@ public class AccessControlException extends UncheckedCodedException implements N
     //overload to remove stack trace filling log files
     //This is because springs DispatcherPortlet calls the logger.warn method with the exception
     public void printStackTrace(PrintStream s) {
-    	
+    	if(!SPropsUtil.getBoolean("no.stack.trace." + getClass().getName(), true))
+    		super.printStackTrace(s);
     }
     //overload to remove stack trace filling log files
     //This is because springs DispatcherPortlet calls the logger.warn method with the exception
     public void printStackTrace(PrintWriter s) {
-    	
+    	if(!SPropsUtil.getBoolean("no.stack.trace." + getClass().getName(), true))
+    		super.printStackTrace(s);
     }
 
     public int getHttpStatusCode() {
