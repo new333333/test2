@@ -200,11 +200,12 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
 		if(logger.isDebugEnabled()) {
 			double diff = (System.nanoTime() - begin)/1000000.0; // millisecond
 			logger.debug("testOperation: result=" + result + 
-					" operation=" + workAreaOperation.getName() +
-					" time=" + diff + 
 					" user=" + user.getName() +
-					" wa-type=" + workArea.getClass().getSimpleName() +
-					" wa-id=" + workArea.getWorkAreaId());
+					" operation=" + workAreaOperation.getName() +
+					" wa-type=" + workArea.getWorkAreaType() +
+					" wa-id=" + workArea.getWorkAreaId() + 
+					" checkSharing=" + checkSharing +
+					" time=" + diff); 
 		}
 		
 		return result;
@@ -482,8 +483,8 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
         	if (WorkAreaOperation.READ_ENTRIES.equals(workAreaOperation) || 
         			WorkAreaOperation.VIEW_BINDER_TITLE.equals(workAreaOperation)) {
            		//This user shouldn't see anything about this workarea
-        		throw new OperationAccessControlExceptionNoName(user.getName(), 
-            			workAreaOperation.toString());
+        		throw OperationAccessControlExceptionNoName.newInstance(user.getName(), 
+            			workAreaOperation.toString(), workArea);
         	}
         	if (testOperation(user, workArea, WorkAreaOperation.READ_ENTRIES) ||
         			testOperation(user, workArea, WorkAreaOperation.VIEW_BINDER_TITLE)) {
@@ -491,8 +492,8 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
         			workAreaOperation.toString(), workArea.toString());
         	} else {
         		//This user shouldn't see anything about this workarea
-        		throw new OperationAccessControlExceptionNoName(user.getName(), 
-            			workAreaOperation.toString());
+        		throw OperationAccessControlExceptionNoName.newInstance(user.getName(), 
+            			workAreaOperation.toString(), workArea);
         	}
         }
     }

@@ -32,13 +32,26 @@
  */
 package org.kablink.teaming.security.function;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.security.AccessControlException;
 
 public class OperationAccessControlExceptionNoName extends AccessControlException {
+
+	private static final long serialVersionUID = 1L;
+
+	private static final Log logger = LogFactory.getLog(OperationAccessControlExceptionNoName.class);
     
 	private static final String OperationAccessControlException_ErrorCode = "errorcode.operation.denied.noName";
 	
-	public OperationAccessControlExceptionNoName(String username, String operationName) {
+	public static OperationAccessControlExceptionNoName newInstance(String username, String operationName, WorkArea workArea) {
+		OperationAccessControlExceptionNoName exc = new OperationAccessControlExceptionNoName(username, operationName);
+		if(logger.isDebugEnabled())
+			logger.debug("User [" + username + "] is not authorized to perform [" + operationName + "] operation on work area [" + workArea.getWorkAreaType() + ":" + workArea.getWorkAreaId() + "]", exc);
+		return exc;
+	}
+	
+	private OperationAccessControlExceptionNoName(String username, String operationName) {
 		super(OperationAccessControlException_ErrorCode, new Object[] {username, operationName});
 	}
 }
