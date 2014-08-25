@@ -34,6 +34,8 @@ package org.kablink.teaming.security.function;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.kablink.teaming.domain.Folder;
+import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.security.AccessControlException;
 
 public class OperationAccessControlExceptionNoName extends AccessControlException {
@@ -46,8 +48,23 @@ public class OperationAccessControlExceptionNoName extends AccessControlExceptio
 	
 	public static OperationAccessControlExceptionNoName newInstance(String username, String operationName, WorkArea workArea) {
 		OperationAccessControlExceptionNoName exc = new OperationAccessControlExceptionNoName(username, operationName);
-		if(logger.isDebugEnabled())
-			logger.debug("User [" + username + "] is not authorized to perform [" + operationName + "] operation on work area [" + workArea.getWorkAreaType() + ":" + workArea.getWorkAreaId() + "]", exc);
+		if(logger.isDebugEnabled()) {
+			if(workArea instanceof FolderEntry) {
+				FolderEntry folderEntry = (FolderEntry)workArea;
+				Folder folder = folderEntry.getParentFolder();
+				logger.debug("User [" + username + "] is not authorized to perform [" + operationName + "] on work area [" + workArea.getWorkAreaType() + ":" + workArea.getWorkAreaId() + 
+						"] parent folder [" + ((folder==null)? "null":folder.getId()) + "]", exc);
+			}
+			else if (workArea instanceof Folder) {
+				Folder folder = (Folder)workArea;
+				Folder parentFolder = folder.getParentFolder();
+				logger.debug("User [" + username + "] is not authorized to perform [" + operationName + "] on work area [" + workArea.getWorkAreaType() + ":" + workArea.getWorkAreaId() + 
+						"] parent folder [" + ((parentFolder==null)? "null":parentFolder.getId()) + "]", exc);
+			}
+			else if(logger.isTraceEnabled()) {
+				logger.trace("User [" + username + "] is not authorized to perform [" + operationName + "] on work area [" + workArea.getWorkAreaType() + ":" + workArea.getWorkAreaId() + "]", exc);
+			}
+		}
 		return exc;
 	}
 	
