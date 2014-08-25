@@ -772,7 +772,22 @@ public class Utils {
 		if (Utils.checkIfFilr()) {
 			return checkIfFilrDefinition(def);
 		} else {
-			return !checkIfFilrDefinition(def);
+			return checkIfVibeDefinition(def);
+		}
+	}
+
+	/**
+	 * Check if this is a Vibe definition
+	 * Vibe definitions include everything except the two Filr folder and file definitions
+	 * (This works since Filr doesn't allow new definitions to be made.)
+	 * 
+	 */
+	public static boolean checkIfVibeDefinition(Definition def) {
+		if (ObjectKeys.DEFAULT_MIRRORED_FILR_FILE_FOLDER_DEF.equals(def.getInternalId()) ||
+				ObjectKeys.DEFAULT_MIRRORED_FILR_FILE_ENTRY_DEF.equals(def.getInternalId())) {
+			return false;
+		} else {
+			return true;
 		}
 	}
 
@@ -828,7 +843,7 @@ public class Utils {
 		return false;
 	}
 	
-   	//Validate a definition to see if it is allowed to be used
+	//Validate a definition to see if it is allowed to be used
 	public static boolean validateDefinition(Definition def, Binder binder) {
 		List<Definition> binderDefs = new ArrayList<Definition>();
 		if (binder != null) binderDefs = binder.getDefinitions();
