@@ -52,6 +52,8 @@ import java.util.Set;
 import java.util.SortedSet;
 
 import org.apache.lucene.document.Field;
+import org.apache.lucene.document.Fieldable;
+import org.apache.lucene.document.NumericField;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.SortField;
 import org.dom4j.Element;
@@ -149,6 +151,7 @@ import org.kablink.util.search.Constants;
 import org.kablink.util.search.Criteria;
 import org.kablink.util.search.FieldFactory;
 
+import static org.kablink.util.search.Constants.ENTITY_ID_FIELD;
 import static org.kablink.util.search.Restrictions.conjunction;
 import static org.kablink.util.search.Restrictions.disjunction;
 import static org.kablink.util.search.Restrictions.eq;
@@ -2906,9 +2909,38 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 							args.put(DefinitionModule.DEFINITION_ELEMENT, entryElement);
 		                	Field[] fields = FieldBuilderUtil.buildField(entity,
 		                         nameValue, fieldBuilder, args);
-		                	if (fields != null) {
+
+		                	// Did we build any Field's?
+		                	if ((fields != null) && (0 < fields.length)) {
+		                		// Yes!  Are we working with numeric data?
+			                	String  eeType    = entryElement.attributeValue("type");
+			                	boolean isNumeric = ((null != eeType) && eeType.equals("data"));
+			                	if (isNumeric) {
+				                	eeType    = entryElement.attributeValue("dataType");
+				                	isNumeric = ((null != eeType) && eeType.equals("number"));
+			                	}
+			                	
+		                		// Scan the Field's.
 		                		for (int i = 0; i < fields.length; i++) {
-		                			indexDoc.add(fields[i]);
+		                			// If we're indexing a numeric
+		                			// field...
+		                			Field     field      = fields[i];
+		                			Fieldable indexField = field;
+		                			if (isNumeric) {
+		                				// ...and we can map to a
+		                				// ...NumericField equivalent...
+		                				NumericField nf = FieldBuilderUtil.mapBasicFieldToNumericField(field);
+		                				if (null != nf) {
+		                					// ...we'll add that to the
+		                					// ...index instead of the
+		                					// ...basic Field.
+		                					indexField = nf;
+		                				}
+		                			}
+		                			
+		                			// Add the appropriate field to
+		                			// the index document.
+	                				indexDoc.add(indexField);
 		                		}
 		                    }
 	                	}
