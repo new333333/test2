@@ -491,6 +491,8 @@ public interface ObjectKeys {
     public static final String SEARCH_SORT_BY_DATE = "sortByDate";
     public static final String SEARCH_SORT_BY_RATING = "sortByRating";
     public static final String SEARCH_SORT_BY_REPLY_COUNT = "sortByReplyCount";
+    public static final String SEARCH_SORT_FIELD_TYPE = "sortFieldType";
+    public static final String SEARCH_SORT_FIELD_TYPE_SECONDARY = "sortFieldTypeSecondary";
     public static final String SEARCH_START_DATE = "startDate";
     public static final String SEARCH_END_DATE = "endDate";
     public static final String SEARCH_FILTER_AND = "searchFilterAnd";

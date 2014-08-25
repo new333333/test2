@@ -32,6 +32,8 @@
  */
 package org.kablink.teaming.gwt.client.binderviews.folderdata;
 
+import java.util.List;
+
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponseData;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
@@ -280,5 +282,26 @@ public class FolderColumn implements IsSerializable, VibeRpcResponseData {
 			 columnName.equals(FolderColumn.COLUMN_SHARE_DATE)       ||
 			 columnName.equals(FolderColumn.COLUMN_SHARE_EXPIRATION) ||
 			 columnName.equals(FolderColumn.COLUMN_SHARE_MESSAGE));
+	}
+
+	/**
+	 * Returns the FolderColumn from a List<FolderColumn> that matches
+	 * the element name.  If one can't be found, null is returned.
+	 * 
+	 * @param columns
+	 * @param name
+	 * 
+	 * @return
+	 */
+	public static FolderColumn getFolderColumnByEleName(List<FolderColumn> columns, String eleName) {
+		if ((null != columns) && (!(columns.isEmpty())) && (null != eleName) && (0 < eleName.length())) {
+			for (FolderColumn column:  columns) {
+				String cen = column.getColumnEleName();
+				if ((null != cen) && cen.equals(eleName)) {
+					return column;
+				}
+			}
+		}
+		return null;
 	}
 }

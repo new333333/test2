@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -35,14 +35,65 @@ package org.kablink.teaming.module.definition.index;
 import java.util.Map;
 
 import org.apache.lucene.document.Field;
+import org.apache.lucene.document.NumericField;
+
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.util.cache.ClassInstanceCache;
 
+/**
+ * ?
+ * 
+ * @author ?
+ */
 public class FieldBuilderUtil {
-    
+	@SuppressWarnings("unchecked")
 	public static Field[] buildField(DefinableEntity entity, String dataElemName, String fieldBuilderClassName, Map args) {
 		FieldBuilder fieldBuilder = (FieldBuilder) ClassInstanceCache.getInstance(fieldBuilderClassName);
 		return fieldBuilder.buildField(entity, dataElemName, args);
 	}    
-    
+
+	/**
+	 * Given a Field that contains a numeric value, returns a
+	 * NumericField equivalent of it.
+	 * 
+	 * If the mapping can't be performed, null is returned.
+	 * 
+	 * @param field
+	 * 
+	 * @return
+	 */
+	@SuppressWarnings("deprecation")
+	public static NumericField mapBasicFieldToNumericField(Field field) {
+		// Do we have a Field with a value?
+		NumericField reply = null;
+		String fValue = ((null == field) ? null : field.stringValue());
+		if ((null != fValue) && (0 < fValue.length())) {
+			try {
+				// If we can parse the value as a double...
+				Double dValue = Double.parseDouble(fValue);
+				
+				// ...clone it as a NumericField.
+				reply = new NumericField(
+					field.name(),
+					(field.isStored()   ?
+						Field.Store.YES :
+						Field.Store.NO),
+					field.isIndexed());
+				reply.setDoubleValue(dValue.doubleValue());
+				reply.setBoost(field.getBoost());
+				reply.setOmitTermFreqAndPositions(field.getOmitTermFreqAndPositions());
+				reply.setOmitNorms(field.getOmitNorms());
+			}
+			
+			catch (Exception ex) {
+				// Ignored!  If we can't parse the value as a double,
+				// we'll simply return null.
+				reply = null;
+			}
+		}
+		
+		// If we get here, reply contains the NumericField equivalent
+		// of a Field or is null.  Return it.
+		return reply;
+	}
 }

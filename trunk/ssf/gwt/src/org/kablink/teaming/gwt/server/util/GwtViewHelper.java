@@ -65,10 +65,14 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import org.apache.lucene.search.SortField;
+
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.Node;
+
 import org.kablink.teaming.BinderQuotaException;
 import org.kablink.teaming.IllegalCharacterInNameException;
 import org.kablink.teaming.NotSupportedException;
@@ -5221,11 +5225,25 @@ public class GwtViewHelper {
 				else if (isCollection)            searchResults = getCollectionEntries(            bs, request, binder, quickFilter, options, collectionType, shareItems   );
 				else if (isMobileDevicesViewSpec) return GwtMobileDeviceHelper.getMobileDeviceRows(bs, request, binder, quickFilter, options, folderInfo,     folderColumns);
 				else {
-					options.put(ObjectKeys.SEARCH_INCLUDE_NESTED_BINDERS, Boolean.TRUE);
-					options.put(ObjectKeys.SEARCH_SORT_BY,                Constants.ENTITY_FIELD);
-					options.put(ObjectKeys.SEARCH_SORT_DESCEND,           sortDescend           );
-					options.put(ObjectKeys.SEARCH_SORT_BY_SECONDARY,      fdd.getFolderSortBy() );
-					options.put(ObjectKeys.SEARCH_SORT_DESCEND_SECONDARY, sortDescend           );
+					options.put(ObjectKeys.SEARCH_INCLUDE_NESTED_BINDERS, Boolean.TRUE          );	// Include nested folders.
+					options.put(ObjectKeys.SEARCH_SORT_BY,                Constants.ENTITY_FIELD);	// Sort folders separately from entries.
+					options.put(ObjectKeys.SEARCH_SORT_DESCEND,           sortDescend           );	// Sort direction, folders vs. entries.
+					options.put(ObjectKeys.SEARCH_SORT_BY_SECONDARY,      sortBy                );	// After sorting folders from entries, what's sorted by next?
+					options.put(ObjectKeys.SEARCH_SORT_DESCEND_SECONDARY, sortDescend           );	// Same direction for entries as for folders vs. entries.
+
+					// If we're sorting on a custom column...
+					FolderColumn sortColumn = FolderColumn.getFolderColumnByEleName(folderColumns, sortBy);
+					if ((null != sortColumn) && sortColumn.isCustomColumn()) {
+						// ...whose value is a number...
+						String colType = sortColumn.getColumnType();
+						if ((MiscUtil.hasString(colType)) && colType.equals("number")) {
+							// ...we want Lucene to sort it as a
+							// ...double.
+							options.put(
+								ObjectKeys.SEARCH_SORT_FIELD_TYPE_SECONDARY,
+								new Integer(SortField.DOUBLE));
+						}
+					}
 
 					// If we have an authentication GUID for the
 					// folder...
@@ -9759,6 +9777,10 @@ public class GwtViewHelper {
 					    colType.equals("hidden")          ||
 					    colType.equals("number")) {
 					String strValue = DefinitionHelper.getCaptionsFromValues(entryDef, colEleName, colValue.toString());
+					int    strLen   = ((null == strValue) ? 0 : strValue.length());
+					if (colType.equals("number") && (3 <= strLen) && strValue.endsWith(".0")) {	//  3 so we have something before the '.0'.
+						strValue = strValue.substring(0, (strLen - 2));							// -2 to strip off the '.0'.
+					}
 					fr.setColumnValue(fc, strValue);
 				}
 

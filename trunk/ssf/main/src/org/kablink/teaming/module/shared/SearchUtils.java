@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -48,13 +48,16 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.apache.lucene.document.Fieldable;
 import org.apache.lucene.document.DateTools;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.Sort;
 import org.apache.lucene.search.SortField;
+
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
+
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.calendar.AbstractIntervalView;
 import org.kablink.teaming.calendar.TimeZoneHelper;
@@ -202,18 +205,25 @@ public class SearchUtils {
   	public static SortField[] getSortFields(Map options) {
    		String sortBy = Constants.MODIFICATION_DATE_FIELD;   		
     	boolean descend = true;
+    	Integer sortFieldType = null;
     	String sortBySecondary = null;
     	boolean descendSecondary = true;
-    	
+    	Integer sortFieldTypeSecondary = null;
+
     	if (options != null) {    		
     		if (options.containsKey(ObjectKeys.SEARCH_SORT_BY))
     			sortBy = (String) options.get(ObjectKeys.SEARCH_SORT_BY);
     		if (options.containsKey(ObjectKeys.SEARCH_SORT_DESCEND)) 
     			descend = (Boolean) options.get(ObjectKeys.SEARCH_SORT_DESCEND);
+    		if (options.containsKey(ObjectKeys.SEARCH_SORT_FIELD_TYPE))
+    			sortFieldType = (Integer) options.get(ObjectKeys.SEARCH_SORT_FIELD_TYPE);
+    		
     		if (options.containsKey(ObjectKeys.SEARCH_SORT_BY_SECONDARY))
     			sortBySecondary = (String) options.get(ObjectKeys.SEARCH_SORT_BY_SECONDARY);
     		if (options.containsKey(ObjectKeys.SEARCH_SORT_DESCEND_SECONDARY)) 
     			descendSecondary = (Boolean) options.get(ObjectKeys.SEARCH_SORT_DESCEND_SECONDARY);
+    		if (options.containsKey(ObjectKeys.SEARCH_SORT_FIELD_TYPE_SECONDARY))
+    			sortFieldTypeSecondary = (Integer) options.get(ObjectKeys.SEARCH_SORT_FIELD_TYPE_SECONDARY);
     	}
 
     	SortField[] fields;
@@ -222,14 +232,14 @@ public class SearchUtils {
     	else
     		fields = new SortField[1];
 
-    	fields[0] = toSortField(sortBy, descend);
+    	fields[0] = toSortField(sortBy, descend, sortFieldType);
     	if(fields.length > 1)
-    		fields[1] = toSortField(sortBySecondary, descendSecondary);
+    		fields[1] = toSortField(sortBySecondary, descendSecondary, sortFieldTypeSecondary);
     	
     	return fields;
    	}
   	
-  	private static SortField toSortField(String sortBy, boolean descend) {
+  	private static SortField toSortField(String sortBy, boolean descend, Integer sortFieldType) {
   		if(sortBy.equals(ObjectKeys.SEARCH_SORT_BY_RELEVANCE)) {
   			return new SortField(null, SortField.SCORE, descend);
   		}
@@ -249,6 +259,9 @@ public class SearchUtils {
   		else if (isDateField(sortBy)) {
     		return new SortField(sortBy, SortField.STRING, descend);
     	}
+  		else if (null != sortFieldType) {
+  			return new SortField(sortBy, sortFieldType.intValue(), descend);
+  		}
     	else {
 	    	User user = RequestContextHolder.getRequestContext().getUser();
 	    	Locale locale = user.getLocale();
@@ -799,5 +812,4 @@ public class SearchUtils {
 	private static AccessControlManager getAccessControlManager() {
 		return (AccessControlManager) SpringContextUtil.getBean("accessControlManager");
 	}
-	
 }
