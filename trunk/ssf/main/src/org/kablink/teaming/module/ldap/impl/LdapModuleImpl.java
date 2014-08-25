@@ -5243,6 +5243,9 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 						milliSeconds = milliSeconds - (elapsedTimeInSeconds * 1000);
 						logger.info( "ldap sync timing: ======> Time to read last " + numUsersProcessed + " users from ldap: " + minutes + " minutes " + seconds + " seconds " + milliSeconds + " milliseconds " );
 					}
+					
+					// clear cache to prevent thrashing resulted from prolonged use of a single session
+        			getCoreDao().clear();
 
 				} while ( (cookie != null) && (cookie.length != 0) );
 			}
@@ -5997,11 +6000,17 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 						logger.error( "In syncGroups(), call to PagedResultsControl() threw an exception: " + ex.toString() );
 					}
 
+					// clear cache to prevent thrashing resulted from prolonged use of a single session
+        			getCoreDao().clear();
+
 				} while ( (cookie != null) && (cookie.length != 0) );
 				
 				// Do we have any AD groups that we need to sync their membership?
 				if ( syncMembership && listOfADGroupsToSyncMembership != null )
 				{
+					int cnt;
+					
+					cnt = 0;
 					for ( ADGroup nextADGroup : listOfADGroupsToSyncMembership )
 					{
 						Enumeration members;
@@ -6015,7 +6024,16 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 														searchInfo );
 						
 						if ( members != null )
+						{
+							++cnt;
 							groupCoordinator.syncMembership( nextADGroup.getDbId(), members );
+							
+							if ( (cnt % 10) == 0 )
+							{
+								// clear cache to prevent thrashing resulted from prolonged use of a single session
+			        			getCoreDao().clear();
+							}
+						}
 					}
 				}
 			}
@@ -6035,6 +6053,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	{
 		LdapContext ctx = null;
 		Hashtable listOfMembers;
+		long startTime = 0;
 
 		if ( guid == null || zone == null || ldapConfig == null || searchInfo == null )
 			return null;
@@ -6042,6 +6061,14 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		if ( name != null )
 			logger.info( "Reading membership for group: " + name );
 		
+		if ( m_showTiming )
+		{
+			Date now;
+
+			now = new Date();
+			startTime = now.getTime();
+		}
+
 		listOfMembers = new Hashtable();
 		
 		try
@@ -6196,6 +6223,24 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		if ( listOfMembers != null )
 			getPrimaryGroupMembershipFromAD( listOfMembers, zone.getId(), guid, objectSid, ldapConfig );
 		
+		if ( m_showTiming )
+		{
+			long elapsedTimeInSeconds;
+			long minutes;
+			long seconds;
+			long milliSeconds;
+			Date now;
+			
+			now = new Date();
+
+			milliSeconds = now.getTime() - startTime;
+			elapsedTimeInSeconds = milliSeconds / 1000;
+			minutes = elapsedTimeInSeconds / 60;
+			seconds = elapsedTimeInSeconds - (minutes * 60);
+			milliSeconds = milliSeconds - (elapsedTimeInSeconds * 1000);
+			logger.info( "ldap sync timing: ----------> Time to read group membership " + minutes + " minutes " + seconds + " seconds " + milliSeconds + " milliseconds " );
+		}
+
 		return listOfMembers.keys();
 	}
 	
@@ -7708,6 +7753,8 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
     	LdapSyncMode syncMode,
     	PartialLdapSyncResults syncResults )
     {
+		long startTime = 0;
+
     	// Are we in "preview" mode?
     	if ( syncMode == LdapSyncMode.PREVIEW_ONLY )
     	{
@@ -7715,6 +7762,14 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
     		return;
     	}
     	
+		if ( m_showTiming )
+		{
+			Date now;
+
+			now = new Date();
+			startTime = now.getTime();
+		}
+
 		//have a list of users, now compare with what exists already
 		List oldMembers = getProfileDao().getMembership(groupId, RequestContextHolder.getRequestContext().getZoneId());
 		final Set newM = CollectionUtil.differences(newMembers, oldMembers);
@@ -7738,6 +7793,24 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
         	sessionFactory.getCache().evictCollection("org.kablink.teaming.domain.Group.members", groupId);
         }
 		
+		if ( m_showTiming )
+		{
+			long elapsedTimeInSeconds;
+			long minutes;
+			long seconds;
+			long milliSeconds;
+			Date now;
+			
+			now = new Date();
+
+			milliSeconds = now.getTime() - startTime;
+			elapsedTimeInSeconds = milliSeconds / 1000;
+			minutes = elapsedTimeInSeconds / 60;
+			seconds = elapsedTimeInSeconds - (minutes * 60);
+			milliSeconds = milliSeconds - (elapsedTimeInSeconds * 1000);
+			logger.info( "ldap sync timing: ----------> Time to update group membership " + minutes + " minutes " + seconds + " seconds " + milliSeconds + " milliseconds " );
+		}
+
 		ProfileModule profileMod;
 		Object tmp;
 		Group group = null;
@@ -7765,6 +7838,14 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			
 			groupName = group.getName();
 			syncResults.addResult( groupName + " (" + group.getForeignName() + ")" );
+		}
+
+		if ( m_showTiming )
+		{
+			Date now;
+
+			now = new Date();
+			startTime = now.getTime();
 		}
 
 		// Get a list of all the principals that were added or removed from the group.
@@ -7912,6 +7993,24 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				{
 					logError( "In updateMembership(), Utils.reIndexPrincipals() threw an exception: ", ex );
 				}
+			}
+
+			if ( m_showTiming )
+			{
+				long elapsedTimeInSeconds;
+				long minutes;
+				long seconds;
+				long milliSeconds;
+				Date now;
+				
+				now = new Date();
+
+				milliSeconds = now.getTime() - startTime;
+				elapsedTimeInSeconds = milliSeconds / 1000;
+				minutes = elapsedTimeInSeconds / 60;
+				seconds = elapsedTimeInSeconds - (minutes * 60);
+				milliSeconds = milliSeconds - (elapsedTimeInSeconds * 1000);
+				logger.info( "ldap sync timing: ----------> Time to update disk quotas and reindex principals: " + minutes + " minutes " + seconds + " seconds " + milliSeconds + " milliseconds " );
 			}
         }
     }
