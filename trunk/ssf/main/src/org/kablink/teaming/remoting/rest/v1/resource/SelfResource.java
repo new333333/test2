@@ -801,7 +801,7 @@ public class SelfResource extends AbstractFileResource {
             if (homeId!=null) {
                 // If we are listing the home folder, use this API because it could trigger JITS.
                 results = getChildren(homeId, SearchUtils.buildLibraryCriterion(true), folders, entries, files, allowJits,
-                                      offset, maxCount, nextUrl, nextParams, descriptionFormat, ifModifiedSince);
+                                      offset, maxCount, nextUrl, nextParams, descriptionFormat, null);
                 results.setLastModified(lastModified);
             }
         }
