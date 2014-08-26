@@ -247,7 +247,7 @@ abstract public class AbstractBinderResource extends AbstractDefinableEntityReso
         }
         SearchResultList<SearchableObject> children = getChildren(id, SearchUtils.buildLibraryCriterion(true), true, false, true,
                 allowJits, offset, maxCount, getBasePath() + id + "/library_children", nextParams,
-                toDomainFormat(descriptionFormatStr), ifModifiedSince);
+                toDomainFormat(descriptionFormatStr), null);
         return Response.ok(children).lastModified(lastModified).build();
    	}
 

@@ -168,7 +168,7 @@ public class WorkspaceResource extends AbstractBinderResource {
             throw new NotModifiedException();
         }
         SearchResultList<SearchableObject> children = getChildren(id, null, true, false, true, allowJits, offset, maxCount,
-                "/workspaces/" + id + "/children", nextParams, toDomainFormat(descriptionFormatStr), ifModifiedSince);
+                "/workspaces/" + id + "/children", nextParams, toDomainFormat(descriptionFormatStr), null);
         return Response.ok(children).lastModified(lastModified).build();
     }
 
