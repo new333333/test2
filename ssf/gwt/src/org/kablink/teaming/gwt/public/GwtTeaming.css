@@ -2612,7 +2612,7 @@ body, table td, select
 	.folderColumnsDlg_Label             {color: #414648; line-height: 1.1em; margin-right: 5px; padding: 0.2em 0.5em 0.3em; white-space: nowrap;}
 	.folderColumnsDlg_MenuBar           {margin-left: 8px; margin-bottom: 3px; border: 0px; background: transparent;}
 	.folderColumnsDlg_MenuImg           {}
-	.folderColumnsDlg_MenuItem          {white-space: nowrap; color #1f1f1f !important; background-color: transparent !important; padding: 0px !important;}
+	.folderColumnsDlg_MenuItem          {white-space: nowrap; color: #1f1f1f !important; background-color: transparent !important; padding: 0px !important;}
 	.folderColumnsDlg_MenuItem_Order    {padding-right: 5px !important;}
 	.folderColumnsDlg_MoveEnabled       {cursor: pointer;}
 	.folderColumnsDlg_OptionsGrid       {margin: 10px 0px;}
@@ -3165,7 +3165,7 @@ body, table td, select
 	color: #135c8f !important;
     white-space: nowrap !important;
     text-decoration: none !important;
-	font-size: 12px important;
+	font-size: 12px !important;
 	border: 1px solid #81b2bd;
 	background: #cee9ee;
 	border-radius: 5px;
@@ -5699,7 +5699,7 @@ td.datePickerMonth {
  * Styles used in the "Edit Zone Share" dialogs
  */
 
-.editZoneShareRightsDlg_Instructions 	{color: 353838; font-size: 14px; padding-bottom: 10px;}
+.editZoneShareRightsDlg_Instructions 	{color: #353838; font-size: 14px; padding-bottom: 10px;}
 .editZoneShareRightsDlg_RightsCkbox		{display: inline-block; padding-top: 3px;}
 
 .editZoneShareRightsTab_Content              {padding: 5px;}
