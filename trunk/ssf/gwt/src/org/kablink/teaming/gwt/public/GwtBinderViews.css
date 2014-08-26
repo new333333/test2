@@ -434,7 +434,7 @@
 	.vibe-fileConflictsDlg-conflictName    {font-size: 1.1em;}
 	.vibe-fileConflictsDlg-conflicts       {padding: 4px;}
 	.vibe-fileConflictsDlg-folderImg       {}
-	.vibe-fileConflictsDlg-folderName      {font-wieght: bold; font-size: 1.2em;}
+	.vibe-fileConflictsDlg-folderName      {font-weight: bold; font-size: 1.2em;}
 	.vibe-fileConflictsDlg-folderNamePanel {margin-left: 5px;}
 	.vibe-fileConflictsDlg-folderNamePath  {font-size: 14px; color: #888;}
 	.vibe-fileConflictsDlg-folderPanel     {padding-bottom: 10px;}
@@ -607,7 +607,7 @@
 /* Start:  Change entry types dialog styles. */
 	.vibe-changeEntryTypesCurDef     {margin-left: 2px;}
 	.vibe-changeEntryTypesCurLabel   {}
-	.vibe-changeEntryTypesCurPanel   {white-space: none; padding-bottom: 8px;}
+	.vibe-changeEntryTypesCurPanel   {white-space: nowrap; padding-bottom: 8px;}
 	.vibe-changeEntryTypesFooter     {padding-top: 10px;}
 	.vibe-changeEntryTypesNote       {width: 600px; padding-top: 10px;}
 	.vibe-changeEntryTypesNewLabel   {font-weight: bold;}

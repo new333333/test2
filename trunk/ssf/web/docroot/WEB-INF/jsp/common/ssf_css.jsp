@@ -1443,8 +1443,8 @@ li.ss_toolbar_gwtui {
 	display: inline-block;
 	border-radius: 10px;
 	-moz-border-radius: 10px;
-	border-radisu: 10px;
-	-webkit-border-radisu: 10px;
+	border-radius: 10px;
+	-webkit-border-radius: 10px;
 	}
 span.ss_toolbar_inactive {
 	}
