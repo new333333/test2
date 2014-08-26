@@ -941,23 +941,19 @@ public final class MiscUtil
 		
 		url += "/documentation";
 		
-		product = "/vibe33";
+		product = ("/" + SPropsUtil.getString( "release.product", "vibe" ));
 		
 		// Are we running Filr?
 		if ( Utils.checkIfFilr() )
 		{
 			// Yes
-			url += "/novell-filr-1-1";
-			product = "/filr-1-1";
+			url    += ("/" + SPropsUtil.getString( "filr.release.product.novell", "novell-filr" ));
+			product = ("/" + SPropsUtil.getString( "filr.release.product",        "filr"        ));
 		}
 		// Are we running Novell Teaming?
 		else if ( ReleaseInfo.isLicenseRequiredEdition())
-		{
-			// Yes
-			url += "/vibe33";
-		}
-		else
-			url += "/kablinkvibe33";
+		     url += ("/" + SPropsUtil.getString( "release.product",         "vibe"        ));
+		else url += ("/" + SPropsUtil.getString( "release.product.kablink", "kablinkvibe" ));
 		
 		if ( guideName != null && guideName.length() > 0 )
 		{
