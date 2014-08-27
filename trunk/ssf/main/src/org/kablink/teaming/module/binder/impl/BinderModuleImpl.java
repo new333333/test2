@@ -302,11 +302,23 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 			user = RequestContextHolder.getRequestContext().getUser();
 		}
 		if (binder instanceof TemplateBinder) {
-			getAccessControlManager().checkOperation(user, 
-					getCoreDao().loadZoneConfig(
-							RequestContextHolder.getRequestContext()
-									.getZoneId()),
-					WorkAreaOperation.ZONE_ADMINISTRATION);
+			Binder topBinder = binder;
+			while (topBinder instanceof TemplateBinder && topBinder.getParentBinder() != null) {
+				//Find the top TemplateBinder of this template
+				topBinder = topBinder.getParentBinder();
+			}
+			if (((TemplateBinder)topBinder).getTemplateOwningBinderId() != null) {
+				//This is a Local Template. Check that the user has Binder Administration rights to the owning binder of the local template
+				Binder owningBinder = loadBinder(((TemplateBinder)topBinder).getTemplateOwningBinderId());
+				getAccessControlManager().checkOperation(user, owningBinder,
+						WorkAreaOperation.BINDER_ADMINISTRATION);
+			} else {
+				getAccessControlManager().checkOperation(user, 
+						getCoreDao().loadZoneConfig(
+								RequestContextHolder.getRequestContext()
+										.getZoneId()),
+						WorkAreaOperation.ZONE_ADMINISTRATION);
+			}
 		} else {
 			if (user.isShared()) {
 				//See if the user is only allowed "read only" rights
