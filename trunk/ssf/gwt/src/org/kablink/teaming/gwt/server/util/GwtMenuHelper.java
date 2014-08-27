@@ -1818,6 +1818,7 @@ public class GwtMenuHelper {
 
 		// ...if the calendar folder is directly contained by a user...
 		// ...workspace...
+		CalendarShow currentMode = null;
 		Workspace folderWs = BinderHelper.getBinderWorkspace(folder);
 		if (BinderHelper.isBinderUserWorkspace(folderWs)) {
 			// ...add the 'assigned events' item...
@@ -1826,6 +1827,7 @@ public class GwtMenuHelper {
 			markTBIEvent(       tbi, TeamingEvents.CALENDAR_SHOW);
 			markTBICalendarShow(tbi, CalendarShow.VIRTUAL);
 			if (eventType.equals(EventsViewHelper.EVENT_TYPE_VIRTUAL)) {
+				currentMode = CalendarShow.VIRTUAL;
 				markTBISelected(tbi);
 			}
 			viewTBI.addNestedItem(tbi);
@@ -1837,6 +1839,7 @@ public class GwtMenuHelper {
 		markTBIEvent(       tbi, TeamingEvents.CALENDAR_SHOW);
 		markTBICalendarShow(tbi, CalendarShow.PHYSICAL_EVENTS);
 		if (eventType.equals(EventsViewHelper.EVENT_TYPE_EVENT)) {
+			currentMode = CalendarShow.PHYSICAL_EVENTS;
 			markTBISelected(tbi);
 		}
 		viewTBI.addNestedItem(tbi);
@@ -1847,24 +1850,35 @@ public class GwtMenuHelper {
 		markTBIEvent(       tbi, TeamingEvents.CALENDAR_SHOW);
 		markTBICalendarShow(tbi, CalendarShow.PHYSICAL_BY_CREATION);
 		if (eventType.equals(EventsViewHelper.EVENT_TYPE_CREATION)) {
+			currentMode = CalendarShow.PHYSICAL_BY_CREATION;
 			markTBISelected(tbi);
 		}
 		viewTBI.addNestedItem(tbi);
 
-		// ...and add the 'from folder by activity' item.
+		// ...add the 'from folder by activity' item...
 		tbi = new ToolbarItem("1_fromFolderByActivity");
 		markTBITitle(       tbi, "calendar.navi.mode.alt.physical.byActivity");
 		markTBIEvent(       tbi, TeamingEvents.CALENDAR_SHOW);
 		markTBICalendarShow(tbi, CalendarShow.PHYSICAL_BY_ACTIVITY);
 		if (eventType.equals(EventsViewHelper.EVENT_TYPE_ACTIVITY)) {
+			currentMode = CalendarShow.PHYSICAL_BY_ACTIVITY;
 			markTBISelected(tbi);
 		}
 		viewTBI.addNestedItem(tbi);
 
-		// If we added anything to the view toolbar...
-		if (!(viewTBI.getNestedItemsList().isEmpty())) {
-			// ...and the view toolbar to the entry toolbar.
-			entryToolbar.addNestedItem(viewTBI);
+		// ...add the view toolbar to the entry toolbar...
+		entryToolbar.addNestedItem(viewTBI);
+		
+		// ...and finally, if we're not simple show physical events
+		// ...from the folder...
+		if (!(currentMode.equals(CalendarShow.PHYSICAL_EVENTS))) {
+			// ...add an item the user can use to display a hint about
+			// ...the current CalendarShow mode.
+			ToolbarItem hintTBI = new ToolbarItem("2_view");
+			markTBITitle(       hintTBI, ("calendar.navi.chooseMode.hint." + eventType));
+			markTBIEvent(       hintTBI, TeamingEvents.CALENDAR_SHOW_HINT);
+			markTBICalendarShow(hintTBI, currentMode);
+			entryToolbar.addNestedItem(hintTBI);
 		}
 	}
 	

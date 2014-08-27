@@ -85,6 +85,11 @@
 		background: -moz-linear-gradient(center top , #ffffff, #E0E0E0) repeat scroll 0 0;
 		background: linear-gradient(center top , #ffffff, #E0E0E0) repeat scroll 0 0;              */
 	}
+	.vibe-entryMenuBarCalendarShowHint  {}
+	.vibe-entryMenuBarItemImage         {}
+	.vibe-entryMenuBarPin               {}
+	.vibe-entryMenuBarSharedFiles       {}
+	.vibe-entryMenuBarSimpleImageButton {border: none !important; background-color: transparent !important;}
 	
 	.vibe-entryMenuPopup     {white-space: nowrap;}
 	.vibe-entryMenuPopupItem {white-space: nowrap;}

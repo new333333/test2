@@ -69,6 +69,7 @@ public enum TeamingEvents implements IsSerializable {
 	CALENDAR_PREVIOUS_PERIOD,						// Tells the calendar to display the previous time period.
 	CALENDAR_SETTINGS,								// Tells the calendar to invoke its settings dialog.
 	CALENDAR_SHOW,									// Tells the calendar which events to display.
+	CALENDAR_SHOW_HINT,								// Shows a hint regarding the current CalendarShow mode.
 	CALENDAR_VIEW_DAYS,								// Tells the calendar to change is day view.
 	
 	CHANGE_CONTEXT,									// Tells the UI that a context switch is currently taking place.	(I.e., Is happening.      )

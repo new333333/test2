@@ -39,6 +39,7 @@ import org.kablink.teaming.gwt.client.GwtConstants;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.MenuIds;
 import org.kablink.teaming.gwt.client.event.CalendarShowEvent;
+import org.kablink.teaming.gwt.client.event.CalendarShowHintEvent;
 import org.kablink.teaming.gwt.client.event.ChangeContextEvent;
 import org.kablink.teaming.gwt.client.event.ChangeEntryTypeSelectedEntitiesEvent;
 import org.kablink.teaming.gwt.client.event.ClearScheduledWipeSelectedMobileDevicesEvent;
@@ -1082,11 +1083,12 @@ public class EntryMenuPanel extends ToolPanelBase
 
 		// Is this a menu item to view pinned entries?
 		boolean menuTextIsHTML;
+		boolean menuIsSimpleImageButton = false;
 		String  menuText;
 		if ((null != simpleEvent) && TeamingEvents.VIEW_PINNED_ENTRIES.equals(simpleEvent)) {
 			// Yes!  Generate the appropriate HTML for the item.
 			Image pinImg = new Image(m_viewingPinnedEntries ? m_images.orangePin() : m_images.grayPin());
-			pinImg.addStyleName("vibe-entryMenuBarPin");
+			pinImg.addStyleName("vibe-entryMenuBarItemImage vibe-entryMenuBarPin");
 			pinImg.getElement().setAttribute("align", "absmiddle");
 			pinImg.setTitle(
 				m_viewingPinnedEntries                         ?
@@ -1103,7 +1105,7 @@ public class EntryMenuPanel extends ToolPanelBase
 		else if ((null != simpleEvent) && TeamingEvents.TOGGLE_SHARED_VIEW.equals(simpleEvent)) {
 			// Yes!  Generate the appropriate HTML for the item.
 			Image sharedFilesImg = new Image(m_viewingSharedFiles ? m_images.sharedAll() : m_images.sharedFiles());
-			sharedFilesImg.addStyleName("vibe-entryMenuBarSharedFiles");
+			sharedFilesImg.addStyleName("vibe-entryMenuBarItemImage vibe-entryMenuBarSharedFiles");
 			sharedFilesImg.getElement().setAttribute("align", "absmiddle");
 			sharedFilesImg.setTitle(
 				m_viewingSharedFiles                              ?
@@ -1115,8 +1117,23 @@ public class EntryMenuPanel extends ToolPanelBase
 			menuTextIsHTML = true;
 		}
 		
+		// No, this isn't toggle shared view item either!  Is it a
+		// calendar show hint item?
+		else if ((null != simpleEvent) && TeamingEvents.CALENDAR_SHOW_HINT.equals(simpleEvent)) {
+			// Yes!  Generate the appropriate HTML for the item.
+			Image calendarShowHintImg = new Image(m_menuImages.infoButton());
+			calendarShowHintImg.addStyleName("vibe-entryMenuBarItemImage vibe-entryMenuBarCalendarShowHint");
+			calendarShowHintImg.getElement().setAttribute("align", "absmiddle");
+			calendarShowHintImg.setTitle(simpleTitle);
+			VibeFlowPanel html = new VibeFlowPanel();
+			html.add(calendarShowHintImg);
+			menuText                = html.getElement().getInnerHTML();
+			menuTextIsHTML          = true;
+			menuIsSimpleImageButton = true;
+		}
+		
 		else {
-			// No, this isn't a toggle shared view item either!
+			// No, this isn't a calendar show hint item either!
 			// Generate the text to display for the menu item...
 			if (contentsSelectable) {
 				String contentsCheckedS = simpleTBI.getQualifierValue("selected");
@@ -1234,6 +1251,11 @@ public class EntryMenuPanel extends ToolPanelBase
 						event = new CalendarShowEvent(folderId, CalendarShow.getEnum(calendarShow));
 						break;
 
+					case CALENDAR_SHOW_HINT:
+						int calendarShowHint = Integer.parseInt(simpleTBI.getQualifierValue("calendarShow"));
+						event = new CalendarShowHintEvent(folderId, CalendarShow.getEnum(calendarShowHint));
+						break;
+
 					case INVOKE_ADD_NEW_FOLDER:
 						String	folderTemplateId = simpleTBI.getQualifierValue("folderTemplateId");
 						String	folderTargetIdS  = simpleTBI.getQualifierValue("folderTargetId"  );
@@ -1286,6 +1308,9 @@ public class EntryMenuPanel extends ToolPanelBase
 			break;
 		}
 		reply.addStyleName((menuBar == m_entryMenu) ? "vibe-entryMenuBarItem" : "vibe-entryMenuPopupItem");
+		if (menuIsSimpleImageButton) {
+			reply.addStyleName("vibe-entryMenuBarSimpleImageButton");
+		}
 		if (null != menuBar)
 		     menuBar.addItem(      reply);
 		else popupMenu.addMenuItem(reply);

@@ -47,6 +47,7 @@ import org.kablink.teaming.gwt.client.event.CalendarNextPeriodEvent;
 import org.kablink.teaming.gwt.client.event.CalendarPreviousPeriodEvent;
 import org.kablink.teaming.gwt.client.event.CalendarSettingsEvent;
 import org.kablink.teaming.gwt.client.event.CalendarShowEvent;
+import org.kablink.teaming.gwt.client.event.CalendarShowHintEvent;
 import org.kablink.teaming.gwt.client.event.CalendarViewDaysEvent;
 import org.kablink.teaming.gwt.client.event.ChangeEntryTypeSelectedEntitiesEvent;
 import org.kablink.teaming.gwt.client.event.ContributorIdsReplyEvent;
@@ -87,7 +88,9 @@ import org.kablink.teaming.gwt.client.util.CalendarDayView;
 import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.CalendarSettingsDlg;
+import org.kablink.teaming.gwt.client.widgets.AlertDlg.AlertDlgClient;
 import org.kablink.teaming.gwt.client.widgets.CalendarSettingsDlg.CalendarSettingsDlgClient;
+import org.kablink.teaming.gwt.client.widgets.AlertDlg;
 import org.kablink.teaming.gwt.client.widgets.HoverHintPopup;
 import org.kablink.teaming.gwt.client.widgets.VibeCalendar;
 
@@ -132,6 +135,7 @@ public class CalendarFolderView extends FolderViewBase
 		CalendarPreviousPeriodEvent.Handler,
 		CalendarSettingsEvent.Handler,
 		CalendarShowEvent.Handler,
+		CalendarShowHintEvent.Handler,
 		CalendarViewDaysEvent.Handler,
 		ChangeEntryTypeSelectedEntitiesEvent.Handler,
 		CopySelectedEntitiesEvent.Handler,
@@ -149,6 +153,7 @@ public class CalendarFolderView extends FolderViewBase
 		ViewSelectedEntryEvent.Handler,
 		ViewWhoHasAccessEvent.Handler
 {
+	private AlertDlg							m_calendarShowHintDlg;		//
 	private ArrayList<Appointment>				m_appointments;				//
 	private CalendarAppointment					m_selectedEvent;			//
 	private CalendarDisplayDataRpcResponseData	m_calendarDisplayData;		//
@@ -171,6 +176,7 @@ public class CalendarFolderView extends FolderViewBase
 		TeamingEvents.CALENDAR_PREVIOUS_PERIOD,
 		TeamingEvents.CALENDAR_SETTINGS,
 		TeamingEvents.CALENDAR_SHOW,
+		TeamingEvents.CALENDAR_SHOW_HINT,
 		TeamingEvents.CALENDAR_VIEW_DAYS,
 		TeamingEvents.CHANGE_ENTRY_TYPE_SELECTED_ENTITIES,
 		TeamingEvents.CONTRIBUTOR_IDS_REQUEST,
@@ -1040,6 +1046,30 @@ public class CalendarFolderView extends FolderViewBase
 	}
 	
 	/**
+	 * Handles CalendarShowHintEvent's received by this class.
+	 * 
+	 * Implements the CalendarShowHintEvent.Handler.onCalendarShowHint() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onCalendarShowHint(CalendarShowHintEvent event) {
+		// Is the event targeted to this folder?
+		if (event.getFolderId().equals(getFolderId())) {
+			// Yes!  Show the appropriate hint.
+			String hint;
+			switch (event.getShow()) {
+			default:
+			case PHYSICAL_EVENTS:       hint = m_messages.calendarView_Hint_PhysicalEvents();     break;
+			case PHYSICAL_BY_CREATION:  hint = m_messages.calendarView_Hint_PhysicalByCreation(); break;
+			case PHYSICAL_BY_ACTIVITY:  hint = m_messages.calendarView_Hint_PhysicalByActivity(); break;
+			case VIRTUAL:               hint = m_messages.calendarView_Hint_Virtual();            break;
+			}
+			showCalendarShowHintAsync(hint);
+		}
+	}
+	
+	/**
 	 * Handles CalendarViewDaysEvent's received by this class.
 	 * 
 	 * Implements the CalendarViewDaysEvent.Handler.onCalendarViewDays() method.
@@ -1669,6 +1699,66 @@ public class CalendarFolderView extends FolderViewBase
 		}
 	}
 
+	/*
+	 * Asynchronously shows the calendar show hint when requested.
+	 */
+	private void showCalendarShowHintAsync(final String hint) {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
+			@Override
+			public void execute() {
+				showCalendarShowHintNow(hint);
+			}
+		});
+	}
+	
+	/*
+	 * Synchronously shows the calendar show hint when requested.
+	 */
+	private void showCalendarShowHintNow(final String hint) {
+		// Have we created the calendar show hint dialog yet?
+		if (null == m_calendarShowHintDlg) {
+			// No!  Create it now...
+			AlertDlg.createAsync(new AlertDlgClient() {
+				@Override
+				public void onUnavailable() {
+					// Nothing to do.  Error handled in asynchronous
+					// provider.
+				}
+				
+				@Override
+				public void onSuccess(AlertDlg aDlg) {
+					// ...and show it.
+					m_calendarShowHintDlg = aDlg;
+					m_calendarShowHintDlg.addStyleName("vibe-calendarFolderShowHintDlg");
+					showCalendarShowHintImpl(hint);
+				}
+			},
+			true,	// true  -> Auto hide the dialog. 
+			false);	// false -> The dialog is not modal.
+		}
+		
+		else
+		{
+			// Yes, we've already created the calendar show hint
+			// dialog!  Simply show it.
+			showCalendarShowHintImpl(hint);
+		}
+	}
+
+	/*
+	 * Implementation method that shows the calendar show hint dialog.
+	 */
+	private void showCalendarShowHintImpl(final String hint) {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
+			@Override
+			public void execute() {
+				AlertDlg.initAndShow(
+					m_calendarShowHintDlg,
+					hint);
+			}
+		});
+	}
+	
 	/*
 	 * Returns true if the current view mode supports hover hints and
 	 * false otherwise.
