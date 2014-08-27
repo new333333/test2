@@ -1,5 +1,5 @@
 -- drop database sitescape;
-CREATE DATABASE sitescape COLLATE Latin1_General_CI_AS_KS
+CREATE DATABASE sitescape COLLATE Latin1_General_CI_AS_KS_WS
 
 ALTER DATABASE sitescape
 
