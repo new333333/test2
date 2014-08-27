@@ -50,10 +50,8 @@ import org.apache.lucene.document.DateTools;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.NumericField;
-
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
-
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.ProfileDao;
@@ -90,6 +88,7 @@ import org.kablink.teaming.security.function.WorkArea;
 import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.task.TaskHelper;
 import org.kablink.teaming.util.LongIdUtil;
+import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.TagUtil;
 import org.kablink.teaming.util.Utils;
@@ -113,6 +112,8 @@ import static org.kablink.util.search.Constants.*;
 public class EntityIndexUtils {
     // Defines field values
     public static final String DEFAULT_NOTITLE_TITLE = "---";
+    
+    private static final int DEFAULT_MAX_EVENT_DAYS	= 3650;	// (365 * 10) = 3650:  ~10 years.
         
     public static void addTitle(Document doc, DefinableEntity entry, boolean fieldsOnly) {
         // Add the title field
@@ -501,8 +502,9 @@ public class EntityIndexUtils {
 				if (attrEle != null) {
 					// set the event name to event + count
 					Event event = (Event)att.getValue();
-					List recurencesDates = event.getAllRecurrenceDates();
-					List allEventDays = Event.getEventDaysFromRecurrencesDates(recurencesDates);
+					int maxEventDaysToIndex = getMaxEventDaysToIndex();
+					List recurencesDates = event.getAllRecurrenceDatesForIndexing(maxEventDaysToIndex);
+					List allEventDays = Event.getEventDaysFromRecurrencesDatesForIndexing(recurencesDates, maxEventDaysToIndex);
 					entryEventsDates.addAll(allEventDays);
 									
 					if (att.getValue() != null) {
@@ -535,8 +537,19 @@ public class EntityIndexUtils {
     	Field eventCountField = FieldFactory.createFieldStoredNotAnalyzed(EVENT_COUNT_FIELD, Integer.toString(count));
     	doc.add(eventCountField);
     }
-    
-    
+	
+	/*
+	 * Returns the maximum number of days that can contribute to the
+	 * event information added to the index.
+	 */
+	private static int getMaxEventDaysToIndex() {
+		int reply = SPropsUtil.getInt("max.event.days.to.index", DEFAULT_MAX_EVENT_DAYS);
+		if (0 == reply) {
+			reply = Integer.MAX_VALUE;
+		}
+		return reply;
+	}
+
 	private static Field getEntryEventDaysField(String fieldName, Set dates) {
 		StringBuilder sb = new StringBuilder();
 		Iterator datesIt = dates.iterator();

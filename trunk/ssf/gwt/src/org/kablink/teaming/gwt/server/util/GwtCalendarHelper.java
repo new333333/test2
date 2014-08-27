@@ -51,10 +51,12 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.document.DateTools;
+
 import org.dom4j.Document;
 import org.dom4j.Element;
 
 import org.joda.time.DateMidnight;
+
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.calendar.AbstractIntervalView;
 import org.kablink.teaming.calendar.EventsViewHelper;
@@ -114,6 +116,7 @@ import com.bradrydzewski.gwt.calendar.client.Attendee;
  *
  * @author drfoster@novell.com
  */
+@SuppressWarnings("deprecation")
 public class GwtCalendarHelper {
 	protected static Log m_logger = LogFactory.getLog(GwtCalendarHelper.class);
 	
