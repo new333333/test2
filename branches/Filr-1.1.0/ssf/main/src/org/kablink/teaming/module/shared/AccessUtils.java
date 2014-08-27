@@ -1113,6 +1113,9 @@ public class AccessUtils  {
 			}
 			catch(Exception e) {
 				logger.error("Error getting permission name on file '" + netFolderFile.getTitle() + "' in folder [" + parentFolder.getPathName() + "]", e);
+				// (Bug #890315)
+				if(e instanceof org.kablink.teaming.fi.FileNotFoundException)
+					throw e;
 			}
 			if(permissionName == null)
 				return null;
