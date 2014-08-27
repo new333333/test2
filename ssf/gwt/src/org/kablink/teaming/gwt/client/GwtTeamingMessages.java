@@ -2214,6 +2214,10 @@ public interface GwtTeamingMessages extends Messages
 	String calendarNav_Alt_ViewWorkWeek();
 	String calendarNav_Hours_FullDay();
 	String calendarNav_Hours_WorkDay();
+	String calendarView_Hint_PhysicalByActivity();
+	String calendarView_Hint_PhysicalByCreation();
+	String calendarView_Hint_PhysicalEvents();
+	String calendarView_Hint_Virtual();
 	String calendarView_Error_CantAdd();
 	String calendarView_Error_CantClickCreateWhenViewByDate();
 	String calendarView_Error_CantModify();

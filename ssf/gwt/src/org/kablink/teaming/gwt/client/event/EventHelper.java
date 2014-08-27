@@ -481,6 +481,15 @@ public class EventHelper {
 				}
 				break;
 			
+			case CALENDAR_SHOW_HINT:
+				// A CalendarShowHintEvent!  Can the event handler we
+				// were given handle that?
+				if (eventHandler instanceof CalendarShowHintEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = CalendarShowHintEvent.registerEvent(eventBus, ((CalendarShowHintEvent.Handler) eventHandler));
+				}
+				break;
+			
 			case CALENDAR_VIEW_DAYS:
 				// A CalendarViewDaysEvent!  Can the event handler we
 				// were given handle that?
@@ -2742,6 +2751,7 @@ public class EventHelper {
 			case CALENDAR_PREVIOUS_PERIOD:                     hasHandler = (eventHandler instanceof CalendarPreviousPeriodEvent.Handler);                 break;
 			case CALENDAR_SETTINGS:                            hasHandler = (eventHandler instanceof CalendarSettingsEvent.Handler);                       break;
 			case CALENDAR_SHOW:                                hasHandler = (eventHandler instanceof CalendarShowEvent.Handler);                           break;
+			case CALENDAR_SHOW_HINT:                           hasHandler = (eventHandler instanceof CalendarShowHintEvent.Handler);                       break;
 			case CALENDAR_VIEW_DAYS:                           hasHandler = (eventHandler instanceof CalendarViewDaysEvent.Handler);                       break;
 			
 			case CHANGE_CONTEXT:                    	       hasHandler = (eventHandler instanceof ChangeContextEvent.Handler);                          break;

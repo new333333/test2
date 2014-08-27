@@ -248,6 +248,7 @@
 	/* ...Start:  Calendar folder view styles. */
 		.vibe-calendarFolder-appointment {}
 		.vibe-calendarFolder             {}
+		.vibe-calendarFolderShowHintDlg  {z-index: 5001 !important;}
 	/* ...End:  Calendar folder view styles. */
 
 	/* ...Start:  Collection view styles. */
