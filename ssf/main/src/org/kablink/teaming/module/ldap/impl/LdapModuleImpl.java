@@ -261,6 +261,8 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	// Value: ResourceDriverConfig object
 	Map<String, ResourceDriverConfig> m_server_vol_map = new HashMap<String, ResourceDriverConfig>();
 	
+	// Contains a list of principals that need to be re-indexed;
+	Map<Long, Principal> m_principalsToIndex = new HashMap<Long,Principal>();
 	
 
 	/**
@@ -3037,6 +3039,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 
 			m_server_vol_map.clear();
 			m_hostNameMap.clear();
+			m_principalsToIndex.clear();
 			m_zoneSyncInProgressMap.put( zone.getId(), Boolean.TRUE );
 			
 			// Sync guids if called for.
@@ -3077,7 +3080,8 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 
 				m_showTiming = SPropsUtil.getBoolean( "ldap.sync.show.timings", false );
 			}
-			
+
+			logger.info( "\n\n---------->Starting ldap sync...\n" );
 			LdapSchedule info = new LdapSchedule(getSyncObject().getScheduleInfo(zone.getId()));
 	    	UserCoordinator userCoordinator = new UserCoordinator(
 	    													zone,
@@ -3339,14 +3343,26 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				logger.info( "ldap sync timing: ----------> Time taken to sync groups " + minutes + " minutes " + seconds + " seconds" );
 			}
 			
+	   		if ( errorSyncingGroups )
+	   		{
+				logger.error( "An error was encountered syncing groups.  Ldap sync will not continue." );
+				
+				if ( ldapSyncEx != null )
+				{
+					logger.error( "Exception encountered while syncing groups: " );
+					ldapSyncEx.printStackTrace();
+		   			throw ldapSyncEx;
+				}
+
+				logger.error( "Unknown error syncing groups" );
+				return;
+	   		}
+
 	   		try
 	   		{
-		   		if ( errorSyncingGroups == false )
-		   		{
-			   		logger.info( "About to call groupCoordinator.deleteObsoleteGroups()" );
-		   			groupCoordinator.deleteObsoleteGroups();
-			   		logger.info( "Finished groupCoordinator.deleteObsoleteGroups()" );
-		   		}
+		   		logger.info( "About to call groupCoordinator.deleteObsoleteGroups()" );
+	   			groupCoordinator.deleteObsoleteGroups();
+		   		logger.info( "Finished groupCoordinator.deleteObsoleteGroups()" );
 	   		}
 	   		catch( Exception ex )
 	   		{
@@ -3461,6 +3477,11 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	   			throw ldapSyncEx;
 	   		}
 	   		
+   			// Reindex all principals whose group membership changed.
+   			logger.info( "About to call reindexPrincipals()" );
+   			reindexPrincipals();
+   			logger.info( "Back from call reindexPrincipals()" );
+   			
 	   		logger.info( "Finished syncAll() with no exceptions" );
 	   		
 			if ( m_showTiming )
@@ -3485,6 +3506,53 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		}
 	}
 
+	
+	/**
+	 * Users whose group membership changed need to be reindex.
+	 */
+	private void reindexPrincipals()
+	{
+		long startTime = 0;
+		
+		if ( m_showTiming )
+		{
+			Date now;
+
+			now = new Date();
+			startTime = now.getTime();
+		}
+
+		if ( m_principalsToIndex != null && m_principalsToIndex.size() > 0 )
+		{
+			try
+			{
+				Utils.reIndexPrincipals( getProfileModule(), m_principalsToIndex );
+			}
+			catch ( Exception ex )
+			{
+				logger.error( "In reindexPrincipals(), Utils.reIndexPrincipals() threw an exception: " );
+				ex.printStackTrace();
+			}
+		}
+
+		if ( m_showTiming )
+		{
+			long elapsedTimeInSeconds;
+			long minutes;
+			long seconds;
+			long milliSeconds;
+			Date now;
+			
+			now = new Date();
+
+			milliSeconds = now.getTime() - startTime;
+			elapsedTimeInSeconds = milliSeconds / 1000;
+			minutes = elapsedTimeInSeconds / 60;
+			seconds = elapsedTimeInSeconds - (minutes * 60);
+			milliSeconds = milliSeconds - (elapsedTimeInSeconds * 1000);
+			logger.info( "ldap sync timing: ----------> Time to reindex principals: " + minutes + " minutes " + seconds + " seconds " + milliSeconds + " milliseconds " );
+		}
+	}
 	
 	/**
 	 * Execute the given ldap query and return how many users/groups were found
@@ -6008,9 +6076,6 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				// Do we have any AD groups that we need to sync their membership?
 				if ( syncMembership && listOfADGroupsToSyncMembership != null )
 				{
-					int cnt;
-					
-					cnt = 0;
 					for ( ADGroup nextADGroup : listOfADGroupsToSyncMembership )
 					{
 						Enumeration members;
@@ -6025,14 +6090,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 						
 						if ( members != null )
 						{
-							++cnt;
 							groupCoordinator.syncMembership( nextADGroup.getDbId(), members );
-							
-							if ( (cnt % 10) == 0 )
-							{
-								// clear cache to prevent thrashing resulted from prolonged use of a single session
-			        			getCoreDao().clear();
-							}
 						}
 					}
 				}
@@ -7851,14 +7909,10 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		// Get a list of all the principals that were added or removed from the group.
 		if ( (newM != null && newM.isEmpty() == false) || (remM != null && remM.isEmpty() == false) )  
         {
-			Map<Long, Principal> principalsToIndex;
 			ArrayList<Long> usersRemovedFromGroup;
 			ArrayList<Long> groupsRemovedFromGroup;
 			ArrayList<Long> usersAddedToGroup;
 			ArrayList<Long> groupsAddedToGroup;
-			
-			// Create a list of the principals that need to be reindexed.
-			principalsToIndex = new HashMap<Long,Principal>();
 			
 			usersRemovedFromGroup = new ArrayList<Long>();
 			groupsRemovedFromGroup = new ArrayList<Long>();
@@ -7905,7 +7959,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 						if ( nextPrincipal != null )
 						{
 							// Add this principal to the list of principals to be re-indexed.
-							principalsToIndex.put( principalId, nextPrincipal );
+							m_principalsToIndex.put( principalId, nextPrincipal );
 							
 							// Keep track of the principals that were added to this group.
 							if ( (nextPrincipal instanceof UserPrincipal) || (nextPrincipal instanceof User) )
@@ -7957,7 +8011,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 						if ( nextPrincipal != null )
 						{
 							// Add this principal to the list of principals to be re-indexed.
-							principalsToIndex.put( principalId, nextPrincipal );
+							m_principalsToIndex.put( principalId, nextPrincipal );
 							
 							// Keep track of the principals that were removed from this group.
 							if ( (nextPrincipal instanceof UserPrincipal) || (nextPrincipal instanceof User) )
@@ -7982,19 +8036,6 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 						groupsRemovedFromGroup );
 			}
 
-			// Do we have anything to reindex?
-			if ( principalsToIndex.size() > 0 )
-			{
-				try
-				{
-					Utils.reIndexPrincipals( getProfileModule(), principalsToIndex );
-				}
-				catch ( Exception ex )
-				{
-					logError( "In updateMembership(), Utils.reIndexPrincipals() threw an exception: ", ex );
-				}
-			}
-
 			if ( m_showTiming )
 			{
 				long elapsedTimeInSeconds;
@@ -8010,7 +8051,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				minutes = elapsedTimeInSeconds / 60;
 				seconds = elapsedTimeInSeconds - (minutes * 60);
 				milliSeconds = milliSeconds - (elapsedTimeInSeconds * 1000);
-				logger.info( "ldap sync timing: ----------> Time to update disk quotas and reindex principals: " + minutes + " minutes " + seconds + " seconds " + milliSeconds + " milliseconds " );
+				logger.info( "ldap sync timing: ----------> Time to update disk quotas: " + minutes + " minutes " + seconds + " seconds " + milliSeconds + " milliseconds " );
 			}
         }
     }
