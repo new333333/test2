@@ -57,13 +57,11 @@ import javax.mail.SendFailedException;
 import javax.mail.internet.InternetAddress;
 
 import org.apache.velocity.VelocityContext;
-
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.SAXReader;
-
 import org.kablink.teaming.ConfigurationException;
 import org.kablink.teaming.NoObjectByTheIdException;
 import org.kablink.teaming.NotSupportedException;
@@ -114,6 +112,7 @@ import org.kablink.teaming.module.admin.IndexOptimizationSchedule;
 import org.kablink.teaming.module.admin.ManageIndexException;
 import org.kablink.teaming.module.admin.SendMailErrorWrapper;
 import org.kablink.teaming.module.binder.BinderModule;
+import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
 import org.kablink.teaming.module.binder.processor.BinderProcessor;
 import org.kablink.teaming.module.binder.processor.EntryProcessor;
 import org.kablink.teaming.module.dashboard.DashboardModule;
@@ -170,7 +169,6 @@ import org.kablink.util.Html;
 import org.kablink.util.StringUtil;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
-
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.mail.MailAuthenticationException;
@@ -342,7 +340,18 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
    	@Override
 	public void checkAccess(WorkArea workArea, AdminOperation operation) {
    		if (workArea instanceof TemplateBinder) {
-			getAccessControlManager().checkOperation(getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId()), WorkAreaOperation.ZONE_ADMINISTRATION);
+			Binder topBinder = (Binder)workArea;
+			User user = RequestContextHolder.getRequestContext().getUser();
+			while (topBinder instanceof TemplateBinder && topBinder.getParentBinder() != null) {
+				//Find the top TemplateBinder of this template
+				topBinder = topBinder.getParentBinder();
+			}
+			if (((TemplateBinder)topBinder).getTemplateOwningBinderId() != null) {
+				//This is a Local Template. Check that the user has Binder Administration rights to the owning binder of the local template
+				getBinderModule().checkAccess((Binder)workArea, BinderOperation.manageConfiguration);
+			} else {
+				getAccessControlManager().checkOperation(getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId()), WorkAreaOperation.ZONE_ADMINISTRATION);
+			}
    		} else if (workArea instanceof ZoneConfig) {
 			getAccessControlManager().checkOperation(getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId()), WorkAreaOperation.ZONE_ADMINISTRATION);
    		} else {
