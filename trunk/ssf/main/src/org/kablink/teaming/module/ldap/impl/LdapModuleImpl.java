@@ -3503,6 +3503,9 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		finally
 		{
 			m_zoneSyncInProgressMap.put( zone.getId(), Boolean.FALSE );
+			
+			// Because we called getCoreDao().clear() the ldap configurations in the read-only cache are invalid
+			readOnlyCache.clear();
 		}
 	}
 
