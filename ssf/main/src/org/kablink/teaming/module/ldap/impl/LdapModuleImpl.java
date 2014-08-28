@@ -6780,7 +6780,15 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				}
 				else if ( att.size() == 1 )
 				{
-					mods.put( vibeAttrName, val );					
+					if ( val instanceof String )
+					{
+						String strValue;
+
+						strValue = ((String)val).trim();
+						mods.put( vibeAttrName, strValue );					
+					}
+					else
+						mods.put( vibeAttrName, val );					
 				}
 				else
 				{
@@ -6800,6 +6808,9 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 						value = firstValue.toString();
 					}
 	
+					if ( value != null )
+						value = value.trim();
+					
 					mods.put( vibeAttrName, value );
 				}
 			}
