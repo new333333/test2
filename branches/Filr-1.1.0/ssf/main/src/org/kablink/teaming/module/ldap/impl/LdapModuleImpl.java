@@ -3076,6 +3076,8 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				m_ldapSyncStartTime = m_createUsersStartTime;
 
 				m_showTiming = SPropsUtil.getBoolean( "ldap.sync.show.timings", false );
+				
+				logger.info( "\n\n---------> Starting ldap sync <-------------\n\n" );
 			}
 			
 			LdapSchedule info = new LdapSchedule(getSyncObject().getScheduleInfo(zone.getId()));
@@ -3105,7 +3107,8 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		  		{
 	  				errorSyncingUsers = true;
 
-	  				logger.error( "syncUsers() threw an exception: " + ex.toString() );
+	  				logger.error( "syncUsers() threw an exception: " );
+	  				ex.printStackTrace();
 	  				
 	  				if ( ex instanceof NamingException )
 		  			{
@@ -3482,6 +3485,9 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		finally
 		{
 			m_zoneSyncInProgressMap.put( zone.getId(), Boolean.FALSE );
+
+			// Because we called getCoreDao().clear() the ldap configurations in the read-only cache are invalid
+			readOnlyCache.clear();
 		}
 	}
 
@@ -3997,9 +4003,6 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		    	
 		    	IndexSynchronizationManager.applyChanges(); //apply now, syncNewEntries will commit
 		    	
-		    	// flush from cache
-		    	getCoreDao().evict( newGroups );
-		    	
 		    	return (Group) newGroups.get( 0 );		    	
 			}
 			catch ( Exception ex )
@@ -4072,9 +4075,6 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 						try
 						{
 							getProfileModule().deleteEntry( containerInfo.getId(), options, true );
-							
-							// clear cache to prevent thrashing resulted from prolonged use of a single session
-							getCoreDao().clear();
 							
 							++count;
 						}
@@ -5648,8 +5648,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		    	{
 			    	List newGroups = processor.syncNewEntries(pf, groupDef, Group.class, Arrays.asList(new MapInputData[] {groupMods}), null, syncResults, new IdentityInfo(true, true, false, false) );
 			    	IndexSynchronizationManager.applyChanges(); //apply now, syncNewEntries will commit
-			    	//flush from cache
-			    	getCoreDao().evict(newGroups);
+
 			    	return (Group) newGroups.get(0);
 		    	}
 		    	
@@ -7466,10 +7465,10 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	{
 		ProfileBinder pf;
 		List collections;
-	   	List foundEntries;
+	   	List foundEntries = null;
 	   	Map entries;
 	   	Map<Long,String> originalUserNamesMap;
-   		ProfileCoreProcessor processor;
+   		ProfileCoreProcessor processor = null;
    		long modifyUsersStartTime = 0;
 
 		if ( users.isEmpty() )
@@ -7491,39 +7490,34 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		}
 
 		pf = getProfileDao().getProfileBinder(zoneId);
-		collections = new ArrayList();
-		collections.add( "customAttributes" );
-		collections.add( "emailAddresses" );
-	   	foundEntries = getCoreDao().loadObjects( users.keySet(), User.class, zoneId, collections );
 	   	entries = new HashMap();
 	   	originalUserNamesMap = new HashMap<Long,String>();
-	   	for (int i=0; i<foundEntries.size(); ++i)
-	   	{
-	   		User u = (User)foundEntries.get(i);
-	   		entries.put( u, new MapInputData( StringCheckUtil.check( (Map)users.get( u.getId() ) ) ) );
-	   		originalUserNamesMap.put( u.getId(), u.getName() );
-	   	}
 
-   		processor = (ProfileCoreProcessor) getProcessorManager().getProcessor(
-   																		pf, 
-   																		ProfileCoreProcessor.PROCESSOR_KEY);
 	   	try 
 	   	{
 	   		Map changedEntries;
    			List<User> listOfRenamedUsers;
 	   		
+			collections = new ArrayList();
+			collections.add( "customAttributes" );
+			collections.add( "emailAddresses" );
+		   	foundEntries = getCoreDao().loadObjects( users.keySet(), User.class, zoneId, collections );
+		   	for (int i=0; i<foundEntries.size(); ++i)
+		   	{
+		   		User u = (User)foundEntries.get(i);
+		   		entries.put( u, new MapInputData( StringCheckUtil.check( (Map)users.get( u.getId() ) ) ) );
+		   		originalUserNamesMap.put( u.getId(), u.getName() );
+		   	}
+
+   	   		processor = (ProfileCoreProcessor) getProcessorManager().getProcessor(
+   	   																		pf, 
+   	   																		ProfileCoreProcessor.PROCESSOR_KEY);
 	   		changedEntries = processor.syncEntries( entries, null, syncResults );
 	   		IndexSynchronizationManager.applyChanges(); //apply now, syncEntries will commit
 
 	   		// Make the necessary changes to the db tables for each user that was renamed.
 	   		listOfRenamedUsers = getListOfRenamedUsers( originalUserNamesMap, changedEntries );
 	   		handleRenamedUsers( listOfRenamedUsers );
-
-	   		//flush from cache
-	   		for (int i=0; i<foundEntries.size(); ++i)
-	   		{
-	   			getCoreDao().evict( foundEntries.get( i ) );
-	   		}
 
 			if ( m_showTiming && changedEntries != null )
 			{
@@ -7553,7 +7547,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	   		logger.error( "An error happened updating a user in the batch of users: " + ex.toString() );
 	   		
 	   		// Try to update each user in the list
-		   	for (int i=0; i < foundEntries.size(); ++i)
+		   	for (int i=0; i < foundEntries.size() && processor != null; ++i)
 		   	{
 		   		try
 		   		{
@@ -7573,8 +7567,6 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			   		// Make the necessary changes to the db tables for renamed user.
 			   		listOfRenamedUsers = getListOfRenamedUsers( originalUserNamesMap, changedEntries );
 			   		handleRenamedUsers( listOfRenamedUsers );
-
-			   		getCoreDao().evict( user );
 		   		}
 		   		catch ( Exception ex2 )
 		   		{
@@ -7738,8 +7730,6 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
             	pf, ProfileCoreProcessor.PROCESSOR_KEY);
 	    	processor.syncEntries(entries, null, syncResults );
 	    	IndexSynchronizationManager.applyChanges(); //apply now, syncEntries will commit
-	    	//flush from cache
-	    	getCoreDao().evict(g);
 	    } catch (Exception ex) {
 	    	//continue 
 	    	logError("Error updating groups", ex);	   		
@@ -8259,8 +8249,6 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			IndexSynchronizationManager.applyChanges();  //apply now, syncNewEntries will commit
 			//SimpleProfiler.printProfiler();
 		   	//SimpleProfiler.clearProfiler();
-			//flush from cache
-			getCoreDao().evict(newUsers);
 		}
 		catch ( Exception ex )
 		{
@@ -8310,9 +8298,6 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				// user's home directory
 				createHomeDirNetFolderServers( newUsers, homeDirInfoMap );
 			}
-
-			if ( newUsers.size() > 0 )
-				getCoreDao().evict( newUsers );
 		}
 		
 	   	return newUsers;
@@ -8340,8 +8325,6 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
             	pf, ProfileCoreProcessor.PROCESSOR_KEY);
 	    	newGroups = processor.syncNewEntries(pf, groupDef, Group.class, newGroups, null, syncResults, new IdentityInfo(true, true, false, false) );
 	    	IndexSynchronizationManager.applyChanges(); //apply now, syncNewEntries will commit
-	    	//flush from cache
-	    	getCoreDao().evict(newGroups);
 		} catch (Exception ex) {
 			logError("Error adding groups", ex);
 			for (Map.Entry<String, Map> me:groups.entrySet()) {
@@ -8392,7 +8375,6 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
     			{
     				// Yes
         			getProfileModule().deleteEntry(id, options, true);
-        			getCoreDao().clear(); // clear cache to prevent thrashing resulted from prolonged use of a single session
         			
         			count++;
     			}
