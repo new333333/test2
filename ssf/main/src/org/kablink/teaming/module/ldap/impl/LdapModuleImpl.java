@@ -262,7 +262,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	Map<String, ResourceDriverConfig> m_server_vol_map = new HashMap<String, ResourceDriverConfig>();
 	
 	// Contains a list of principals that need to be re-indexed;
-	Map<Long, Principal> m_principalsToIndex = new HashMap<Long,Principal>();
+	Set<Long> m_principalsToIndex = new HashSet<Long>();
 	
 
 	/**
@@ -3528,11 +3528,43 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			startTime = now.getTime();
 		}
 
+		if ( m_principalsToIndex != null )
+			logger.info( "--> Number of principals to reindex: " + m_principalsToIndex.size() );
+		
 		if ( m_principalsToIndex != null && m_principalsToIndex.size() > 0 )
 		{
 			try
 			{
-				Utils.reIndexPrincipals( getProfileModule(), m_principalsToIndex );
+				ProfileModule profileModule;
+				Map<Long,Principal> principalMap;
+				Iterator<Long> iter;
+				
+				profileModule = getProfileModule();
+				
+				principalMap = new HashMap<Long,Principal>();
+				iter = m_principalsToIndex.iterator();
+				
+				while ( iter.hasNext() )
+				{
+					Long principalId;
+					
+					principalId = iter.next();
+					
+					try
+					{
+						Principal principal;
+
+						principal = profileModule.getEntry( principalId );
+						principalMap.put( principalId, principal );
+					}
+					catch ( Exception ex )
+					{
+						logger.info( "In reindexPrincipals(), getProfileModule().getEntry() threw an exception." );
+						ex.printStackTrace();
+					}
+				}
+				
+				Utils.reIndexPrincipals( profileModule, principalMap );
 			}
 			catch ( Exception ex )
 			{
@@ -5693,6 +5725,8 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	     * @return
 	     */
 	    protected Group createGroup(Long zoneId, String ssName, Map groupData ) {
+	    	logger.info( "--> Creating group: " + ssName );
+	    	
 	    	MapInputData groupMods = new MapInputData(StringCheckUtil.check(groupData));
 			ProfileBinder pf = getProfileDao().getProfileBinder(zoneId);
 			//get default definition to use
@@ -7970,7 +8004,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 						if ( nextPrincipal != null )
 						{
 							// Add this principal to the list of principals to be re-indexed.
-							m_principalsToIndex.put( principalId, nextPrincipal );
+							m_principalsToIndex.add( principalId );
 							
 							// Keep track of the principals that were added to this group.
 							if ( (nextPrincipal instanceof UserPrincipal) || (nextPrincipal instanceof User) )
@@ -8022,7 +8056,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 						if ( nextPrincipal != null )
 						{
 							// Add this principal to the list of principals to be re-indexed.
-							m_principalsToIndex.put( principalId, nextPrincipal );
+							m_principalsToIndex.add( principalId );
 							
 							// Keep track of the principals that were removed from this group.
 							if ( (nextPrincipal instanceof UserPrincipal) || (nextPrincipal instanceof User) )
@@ -8426,6 +8460,8 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
     				try {
     					Principal p = (Principal) getProfileModule().getEntry(id);
     					name = p.getName() + " (" + p.getForeignName() + ")";
+    					
+    					logger.info( "--> Deleting: " + p.getName() );
     				}
     				catch(Exception e) {
     					// Don't report problem here. Instead, let the next step - deleteEntry() - report it.
