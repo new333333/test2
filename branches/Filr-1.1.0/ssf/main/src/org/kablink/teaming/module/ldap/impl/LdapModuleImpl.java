@@ -3204,6 +3204,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			catch ( Exception ex )
 			{
 				logger.info( "userCoordinator.wrapUp() threw an exception: " + ex.toString() );
+				ex.printStackTrace();
   				
 	  			//!!! When we re-write the ldap config page in GWT, we need to collect all of these
 	  			//!!! errors and return them instead of just throwing an exception for the first
@@ -3224,6 +3225,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				if ( ldapSyncEx != null )
 				{
 					logger.error( "Exception encountered while syncing users: " + ldapSyncEx.toString() );
+					ldapSyncEx.printStackTrace();
 		   			throw ldapSyncEx;
 				}
 
@@ -5009,6 +5011,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		String ldapGuidAttribute;
 		String domainName = null;
 		LdapDirType dirType;
+		LdapContext ldapContextForReadingHomeDirInfo=null;
 		int pageSize = 1500;
 
 		logger.info( "Starting to sync users, syncUsers()" );
@@ -5046,6 +5049,25 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			domainName = getDomainName( config );
 		}
 		
+		if ( Utils.checkIfFilr() )
+		{
+			try
+			{
+
+				// Create an ldap context that we can use to read the home dir info
+				// from the user object.  We can't use ctx because MS Windows
+				// has a bug where we can't read additional attributes if we are doing paging.
+				ldapContextForReadingHomeDirInfo = getUserContext( zone.getId(), config );
+			}
+			catch ( NamingException ex )
+	  		{
+				logger.error( "In syncUsers(), the call to getUserContext() threw an exception.  Home directory information will NOT be read." );
+				ex.printStackTrace();
+				
+				// It is ok to continue.  We won't try to read the home dir info
+	  		}
+		}
+
 		for(LdapConnectionConfig.SearchInfo searchInfo : config.getUserSearches()) {
 			String filter;
 
@@ -5148,66 +5170,49 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 							continue;
 						}
 						
+						HomeDirInfo homeDirInfo = null;
+						
+						if ( Utils.checkIfFilr() && ldapContextForReadingHomeDirInfo != null )
 						{
-							HomeDirInfo homeDirInfo = null;
-							
-							if ( Utils.checkIfFilr() )
-							{
-								LdapContext tmpLdapContext;
-
-								// Create an ldap context that we can use to read the home dir info
-								// from the user object.  We can't use ctx because MS Windows
-								// has a bug where we can't read additional attributes if we are doing paging.
-								tmpLdapContext = getUserContext( zone.getId(), config );
-								
-								homeDirInfo = getHomeDirInfoFromConfig(
-																	tmpLdapContext,
-																	dirType,
-																	dn,
-																	searchInfo.getHomeDirConfig(),
-																	true );
-
-								try
-								{
-									if ( tmpLdapContext != null )
-									{
-										tmpLdapContext.close();
-										tmpLdapContext = null;
-									}
-								}
-								catch ( NamingException ex )
-						  		{
-									// Nothing to do.
-						  		}
-							}
-
-							if ( m_showTiming )
-							{
-								Date now;
-								
-								now = new Date();
-								startRecord = now.getTime();
-							}
-							
-							userCoordinator.record(
-												dn,
-												ssName,
-												lAttrs,
-												ldapGuidAttribute,
-												domainName,
-												homeDirInfo);
-
-							if ( m_showTiming )
-							{
-								Date now;
-								long elapsedTime;
-								
-								now = new Date();
-								elapsedTime = now.getTime() - startRecord;
-								totalTimeTakenByUserRecord += elapsedTime;
-							}
+							homeDirInfo = getHomeDirInfoFromConfig(
+																ldapContextForReadingHomeDirInfo,
+																dirType,
+																dn,
+																searchInfo.getHomeDirConfig(),
+																true );
 						}
-					}
+
+						if ( m_showTiming )
+						{
+							Date now;
+							
+							now = new Date();
+							startRecord = now.getTime();
+						}
+						
+						userCoordinator.record(
+											dn,
+											ssName,
+											lAttrs,
+											ldapGuidAttribute,
+											domainName,
+											homeDirInfo);
+
+						if ( m_showTiming )
+						{
+							Date now;
+							long elapsedTime;
+							
+							now = new Date();
+							elapsedTime = now.getTime() - startRecord;
+							totalTimeTakenByUserRecord += elapsedTime;
+						}
+						
+						// clear cache to prevent thrashing resulted from prolonged use of a single session
+						if ( (numUsersProcessed % 100) == 0 )
+							getCoreDao().clear();
+						
+					}// end while()
 	     
 					// examine the response controls
 					cookie = parseControls( ctx.getResponseControls() );
@@ -5252,6 +5257,21 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			else
 				logger.warn( "In syncUsers(), a user filter was not specified.  This can result in existing users being disabled or deleted." );
 		}
+
+		try
+		{
+			if ( ldapContextForReadingHomeDirInfo != null )
+			{
+				ldapContextForReadingHomeDirInfo.close();
+				ldapContextForReadingHomeDirInfo = null;
+			}
+		}
+		catch ( Exception ex )
+		{
+			logger.error( "In syncUsers(), closing ldapContextForReadingHomeDirInfo.close() threw an exception." );
+			ex.printStackTrace();
+		}
+
 		logger.info( "Finished syncUsers()" );
 	}
 
@@ -8251,6 +8271,15 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					minutes = elapsedTimeInSeconds / 60;
 					seconds = elapsedTimeInSeconds - (minutes * 60);
 					logger.info( "ldap sync timing: ----------> Time to create last " + newUsers.size() + " users: " + minutes + " minutes " + seconds + " seconds" );
+
+					if ( (m_numUsersCreated % 500) == 0 )
+					{
+						elapsedTimeInSeconds = now.getTime() - m_createUsersStartTime;
+						elapsedTimeInSeconds /= 1000;
+						minutes = elapsedTimeInSeconds / 60;
+						seconds = elapsedTimeInSeconds - (minutes * 60);
+						logger.info( "ldap sync timing: ----------> Time taken to create " + m_numUsersCreated + " users: " + minutes + " minutes " + seconds + " seconds" );
+					}
 				}
 			}
 
