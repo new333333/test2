@@ -907,6 +907,24 @@ public class GwtMenuHelper {
 	}
 	
 	/*
+	 * Constructs a ToolbarItem for downloading a file.
+	 */
+	private static void constructEntryDownloadEntry(ToolbarItem entryToolbar, AllModulesInjected bs, HttpServletRequest request, FolderEntry fe) {
+		boolean canDownload = AdminHelper.getEffectiveDownloadSetting(bs, GwtServerHelper.getCurrentUser());
+		if (canDownload && (null != GwtServerHelper.getFileEntrysFileAttachment(bs, fe, true))) {
+			String downloadFileUrl;
+			try                  {downloadFileUrl = GwtServerHelper.getDownloadFileUrl(request, bs, fe.getId(), fe.getId(), true);}	// true -> Return a permalink URL.
+			catch (Exception ex) {downloadFileUrl = null;}
+			if (MiscUtil.hasString(downloadFileUrl)) {
+				ToolbarItem downloadFileTBI = new ToolbarItem(FILE_DOWNLOAD  );
+				markTBITitle(              downloadFileTBI, "toolbar.downloadFile");
+    			markTBIUrlAsTargetedAnchor(downloadFileTBI, downloadFileUrl       );
+				entryToolbar.addNestedItem(downloadFileTBI);
+			}
+		}
+	}
+	
+	/*
 	 * Constructs a ToolbarItem for making (or removing) a folder as a favorite.
 	 */
 	private static void constructEntryFavoriteItem(ToolbarItem entryToolbar, AllModulesInjected bs, HttpServletRequest request, boolean isFavorite) {
@@ -1933,11 +1951,11 @@ public class GwtMenuHelper {
 	/*
 	 * Constructs a ToolbarItem for zipping and downloading a file.
 	 */
-	private static void constructEntryZipAndDownload(ToolbarItem entryToolbar, AllModulesInjected bs, HttpServletRequest request, FolderEntry fe) {
+	private static void constructEntryZipAndDownloadEntry(ToolbarItem entryToolbar, AllModulesInjected bs, HttpServletRequest request, FolderEntry fe) {
 		boolean canDownload = AdminHelper.getEffectiveDownloadSetting(bs, GwtServerHelper.getCurrentUser());
 		if (canDownload && (null != GwtServerHelper.getFileEntrysFileAttachment(bs, fe, true))) {
 			ToolbarItem zipAndDownloadTBI = new ToolbarItem("1_zipAndDownload"              );
-			markTBITitle(   zipAndDownloadTBI, "toolbar.zipAndDownload"                     );
+			markTBITitle(   zipAndDownloadTBI, "toolbar.zipAndDownloadFile"                 );
 			markTBIEvent(   zipAndDownloadTBI, TeamingEvents.ZIP_AND_DOWNLOAD_SELECTED_FILES);
 			markTBIEntryIds(zipAndDownloadTBI, fe                                           );
 			entryToolbar.addNestedItem(zipAndDownloadTBI);
@@ -1947,7 +1965,7 @@ public class GwtMenuHelper {
 	/*
 	 * Constructs a ToolbarItem for zipping and downloading a folder.
 	 */
-	private static void constructEntryZipAndDownload(ToolbarItem entryToolbar, AllModulesInjected bs, HttpServletRequest request, Folder folder) {
+	private static void constructEntryZipAndDownloadFolder(ToolbarItem entryToolbar, AllModulesInjected bs, HttpServletRequest request, Folder folder) {
 		boolean canDownload = AdminHelper.getEffectiveDownloadSetting(bs, GwtServerHelper.getCurrentUser());
 		if (canDownload && bs.getBinderModule().testAccess(folder, BinderOperation.readEntries) && GwtServerHelper.isFamilyFile(GwtServerHelper.getFolderEntityFamily(bs, folder))) {
 			ToolbarItem zipAndDownloadTBI = new ToolbarItem("1_zipAndDownload");
@@ -3279,12 +3297,13 @@ public class GwtMenuHelper {
 						}
 					}
 					
-					constructEntryZipAndDownload(  actionToolbar, bs, request, fe                    );					
-					constructEntryDetailsItem(     actionToolbar, bs, request, "toolbar.details.view");
-					constructEntryViewHtmlItem(    actionToolbar, bs, request, fe                    );
-					constructEntryViewWhoHasAccess(actionToolbar, bs, request                        );
-					constructEntryRenameFile(      actionToolbar, bs, request, fe                    );
-					constructEntrySubscribeItem(   actionToolbar, bs, request, fe, true              );
+					constructEntryDownloadEntry(      actionToolbar, bs, request, fe                    );					
+					constructEntryZipAndDownloadEntry(actionToolbar, bs, request, fe                    );					
+					constructEntryDetailsItem(        actionToolbar, bs, request, "toolbar.details.view");
+					constructEntryViewHtmlItem(       actionToolbar, bs, request, fe                    );
+					constructEntryViewWhoHasAccess(   actionToolbar, bs, request                        );
+					constructEntryRenameFile(         actionToolbar, bs, request, fe                    );
+					constructEntrySubscribeItem(      actionToolbar, bs, request, fe, true              );
 					
 					if (sharable) {
 						constructEntryManageSharesItem(actionToolbar, bs);
@@ -3300,7 +3319,7 @@ public class GwtMenuHelper {
 						actionToolbar.addNestedItem(ToolbarItem.constructSeparatorTBI());
 					}
 					
-					constructEntryZipAndDownload(                 actionToolbar, bs, request, folder);
+					constructEntryZipAndDownloadFolder(           actionToolbar, bs, request, folder);
 					constructEntryDownloadAsCSVFile(              actionToolbar, bs, request, folder);
 					constructEntryMarkFolderContentsReadAndUnread(actionToolbar, bs, request, folder);
 					if (!(Utils.checkIfFilr())) {
