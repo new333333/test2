@@ -946,4 +946,10 @@ public interface ProfileModule {
      */
     public void savePrincipalDesktopAppsConfig(Long       principalId,  boolean principalIsUser,    PrincipalDesktopAppsConfig config);
     public void savePrincipalDesktopAppsConfig(List<Long> principalIds, boolean principalsAreUsers, PrincipalDesktopAppsConfig config);
+    
+	/**
+	 * Upgrade Vibe Granite external users to full Vibe Hudson external users.
+	 * Vibe Hudson external users are functionally equivalent to Filr 1.1 external users.
+	 */
+	public void upgradeVibeGraniteExternalUsers();
 }
