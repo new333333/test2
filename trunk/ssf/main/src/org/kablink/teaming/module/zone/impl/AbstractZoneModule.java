@@ -700,6 +700,19 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 				getProfileModule().setUserProperty(superU.getId(), ObjectKeys.USER_PROPERTY_UPGRADE_TEMPLATES, "true");
 			}
 		}
+		
+		if(version.intValue() <= 18) { 
+			// Upgrade version 18 is the last version that belongs to Filr 1.1 release, and 19 belongs to Vibe Hudson release
+			if (!Utils.checkIfFilr()) { // This is Vibe
+				if(version.intValue() >= 8) {
+					// Upgrade version 8 is the last version that belongs to Vibe Granite (3.4) release.
+					// Since we added Vibe Granite-style external user support only in Granite release,
+					// there is no reason to bother with the upgrade if user is upgrading from pre-Granite Vibe.
+					// In other word, this process is necessary only if user is upgrading from Granite to Hudson.
+					getProfileModule().upgradeVibeGraniteExternalUsers(); // Upgrade Vibe Granite external users.
+				}
+			}
+		}
   	}
  	
  	private void correctFilrRoles(ZoneConfig zoneConfig) {
