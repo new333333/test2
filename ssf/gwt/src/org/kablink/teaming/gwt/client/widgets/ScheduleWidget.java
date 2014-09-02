@@ -235,7 +235,10 @@ public class ScheduleWidget extends Composite
 					String hourStr;
 					int hour;
 					
-					hour = (i - tzOffsetHour) % 24;
+					hour = i - tzOffsetHour;
+					if ( hour < 0 )
+						hour = 24 + hour;
+					hour = (hour % 24);
 					hourStr = String.valueOf( hour );
 					m_atHoursListbox.addItem( String.valueOf( i ), hourStr );
 				}
