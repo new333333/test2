@@ -5157,7 +5157,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				// has a bug where we can't read additional attributes if we are doing paging.
 				ldapContextForReadingHomeDirInfo = getUserContext( zone.getId(), config );
 			}
-			catch ( NamingException ex )
+			catch ( Exception ex )
 	  		{
 				logger.error( "In syncUsers(), the call to getUserContext() threw an exception.  Home directory information will NOT be read." );
 				ex.printStackTrace();
@@ -6779,7 +6779,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	 * @throws NamingException
 	 */
 	@SuppressWarnings("unchecked")
-	protected static void getUpdates(
+	protected void getUpdates(
 		String []ldapAttrNames,
 		Map mapping,
 		Attributes attrs,
@@ -6847,7 +6847,9 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 						mods.put( vibeAttrName, strValue );					
 					}
 					else
-						mods.put( vibeAttrName, val );					
+					{
+						mods.put( vibeAttrName, val );
+					}
 				}
 				else
 				{
@@ -6868,7 +6870,9 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					}
 	
 					if ( value != null )
+					{
 						value = value.trim();
+					}
 					
 					mods.put( vibeAttrName, value );
 				}
@@ -8467,6 +8471,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
     	LdapSyncMode syncMode,
     	PartialLdapSyncResults syncResults )
      {
+    	 long startTime;
 		Map options = new HashMap();
 		options.put(ObjectKeys.INPUT_OPTION_DELETE_USER_WORKSPACE, Boolean.valueOf(deleteWS));
 		
@@ -8475,6 +8480,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		else
 			options.put( ObjectKeys.INPUT_OPTION_DELETE_MIRRORED_FOLDER_SOURCE, Boolean.TRUE );
 
+		startTime = (new Date()).getTime();
 		int count = 0;
 		for (Iterator iter=ids.iterator(); iter.hasNext();) {
     		Long id = (Long)iter.next();
@@ -8503,6 +8509,32 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
         			getProfileModule().deleteEntry(id, options, true);
         			
         			count++;
+        			
+        			if ( ((count % 100) == 0) )
+        			{
+						// clear cache to prevent thrashing resulted from prolonged use of a single session
+						getCoreDao().clear();
+
+						if ( m_showTiming )
+    					{
+    						long elapsedTimeInSeconds;
+    						long minutes;
+    						long seconds;
+    						long milliSeconds;
+    						Date now;
+    						
+    						now = new Date();
+
+    						milliSeconds = now.getTime() - startTime;
+    						elapsedTimeInSeconds = milliSeconds / 1000;
+    						minutes = elapsedTimeInSeconds / 60;
+    						seconds = elapsedTimeInSeconds - (minutes * 60);
+    						milliSeconds = milliSeconds - (elapsedTimeInSeconds * 1000);
+    						logger.info( "ldap sync timing: ======> Time to delete last 100 users: " + minutes + " minutes " + seconds + " seconds " + milliSeconds + " milliseconds " );
+    						
+    						startTime = now.getTime();
+    					}
+        			}
     			}
     			
     			if ( syncResults != null && name != null )
