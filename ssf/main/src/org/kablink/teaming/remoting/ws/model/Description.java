@@ -70,7 +70,7 @@ public class Description implements Serializable {
 				character = text.charAt(i);
 				if(character <  0x20) {
 					// discard this character
-					logger.info("The char '" + Integer.toHexString(character) + "' is not a valid XML character safe for SOAP. Discarding it.");
+					logger.debug("The char '" + Integer.toHexString(character) + "' is not a valid XML character safe for SOAP. Discarding it.");
 				}
 				else {
 					sb.append(character);
