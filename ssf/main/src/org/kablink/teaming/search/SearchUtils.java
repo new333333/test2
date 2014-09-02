@@ -1145,11 +1145,11 @@ public class SearchUtils {
 		try {
 			// Based on the installed license, what definition
 			// families do we consider as 'file'?
-			String[] fileFamilies;
+			String[] fileEntryFamilies;
 			if (Utils.checkIfFilr())
-			     fileFamilies = new String[]{Definition.FAMILY_FILE};
-			else fileFamilies = null; // !new String[]{Definition.FAMILY_FILE, Definition.FAMILY_PHOTO};
-			boolean hasFileFamilies = ((null != fileFamilies) && (0 < fileFamilies.length));
+			     fileEntryFamilies = new String[]{Definition.FAMILY_FILE};
+			else fileEntryFamilies = null;	// In Vibe, we want ALL entries, not just file entries.
+			boolean hasFileEntryFamilies = ((null != fileEntryFamilies) && (0 < fileEntryFamilies.length));
 			
 			String[] fileFolderFamilies;
 			if (Utils.checkIfFilr())
@@ -1202,8 +1202,8 @@ public class SearchUtils {
 	            root.add(rootConj);
 	            rootConj.add(in(Constants.DOC_TYPE_FIELD,          new String[]{Constants.DOC_TYPE_BINDER}));
 	            rootConj.add(in(Constants.BINDERS_PARENT_ID_FIELD, new String[]{myFilesRootIdS}));
-	            if (hasFileFamilies) {
-	            	rootConj.add(in(Constants.FAMILY_FIELD,        fileFamilies));
+	            if (hasFileEntryFamilies) {
+	            	rootConj.add(in(Constants.FAMILY_FIELD,        fileEntryFamilies));
 	            }
 	            rootConj.add(in(Constants.IS_LIBRARY_FIELD,        new String[]{Constants.TRUE}));
 	
@@ -1258,8 +1258,8 @@ public class SearchUtils {
 	                conj.add(in(Constants.DOC_TYPE_FIELD,    new String[]{Constants.DOC_TYPE_ENTRY}));
 	                conj.add(in(Constants.ENTRY_TYPE_FIELD,  new String[]{Constants.ENTRY_TYPE_ENTRY}));
 	                conj.add(in(Constants.BINDER_ID_FIELD,   new String[]{mfContainerIdS}));
-	                if (hasFileFamilies) {
-	                	conj.add(in(Constants.FAMILY_FIELD,  fileFamilies));
+	                if (hasFileEntryFamilies) {
+	                	conj.add(in(Constants.FAMILY_FIELD,  fileEntryFamilies));
 	                }
 	                root.add(conj);
 	            }
