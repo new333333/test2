@@ -1301,11 +1301,15 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	 * in Vibe then add them to the list.
 	 * @author jwootton
 	 */
+	@SuppressWarnings("rawtypes")
 	@Override
 	public HashSet<Long> getDynamicGroupMembers( String baseDn, String filter, boolean searchSubtree ) throws LdapSyncException
 	{
 		HashSet<Long> listOfMembers;
+		int pageSize = 1500;
 		
+		pageSize = SPropsUtil.getInt( "ldap.sync.dynamic.group.membership.page.size", 1500 );
+
 		listOfMembers = new HashSet<Long>();
 		
 		// Does the membership criteria have a filter?
@@ -1335,23 +1339,22 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			for( LdapConnectionConfig nextLdapConfig : ldapConnectionConfigs )
 			{
 				String ldapGuidAttribute;
-				
+
 				// Does this ldap configuration have the ldap guid defined?
 				ldapGuidAttribute = nextLdapConfig.getLdapGuidAttribute();
 				if ( ldapGuidAttribute != null && ldapGuidAttribute.length() > 0 )
 				{
 			   		LdapContext ldapContext;
-			   		NamingException namingEx;
+					byte[] cookie = null;
 
 					// Yes
-			   		namingEx = null;
 			   		ldapContext = null;
+			   		
 			  		try
 			  		{
-						String[] userAttributeNames = {};
+						String[] ldapAttributesToRead = { ldapGuidAttribute };
 						int scope;
 						SearchControls searchControls;
-						NamingEnumeration searchCtx;
 
 						// Get an ldap context for the given ldap configuration
 						ldapContext = getUserContext( zoneId, nextLdapConfig );
@@ -1361,29 +1364,42 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 						else
 							scope = SearchControls.ONELEVEL_SCOPE;
 						
-						searchControls = new SearchControls( scope, 0, 0, userAttributeNames, false, false );
+						searchControls = new SearchControls( scope, 0, 0, ldapAttributesToRead, false, false );
 
-						// Execute the ldap search using the membership criteria
-						searchCtx = ldapContext.search( baseDn, filter, searchControls );
-						
-						// Go through the list of users/groups found by the search.  If the
-						// user/group already exists in Vibe then add them to the list we
-						// will return.
-						while ( hasMore( searchCtx ) )
+						// Request the paged results control
+						try
 						{
-							try
+							Control[] ctls = new Control[]{ new PagedResultsControl( pageSize, true ) };
+							ldapContext.setRequestControls( ctls );
+						}
+						catch ( IOException ex )
+						{
+							logger.error( "In getDynamicGroupMembers(), call to new PagedResultsControl() threw an exception: " + ex.toString() );
+							ex.printStackTrace();
+							
+							return listOfMembers;
+						}
+
+						do
+						{
+							NamingEnumeration results;
+
+							// Issue an ldap search for users in the given base dn.
+							results = ldapContext.search( baseDn, filter, searchControls );
+							
+							// loop through the results in each page
+							while ( hasMore( results ) )
 							{
-								Binding binding;
+								SearchResult sr;
 								Attributes lAttrs = null;
-								String[] ldapAttributesToRead = { ldapGuidAttribute };
 								String guid;
 								User user;
-	
+								
 								// Get the next user/group in the list.
-								binding = (Binding)searchCtx.next();
+								sr = (SearchResult)results.next();
 	
 								// Read the guid for this user/group from the ldap directory.
-								lAttrs = ldapContext.getAttributes( binding.getNameInNamespace(), ldapAttributesToRead );
+								lAttrs = sr.getAttributes();
 								guid = getLdapGuid( lAttrs, ldapGuidAttribute );
 
 								// Does this user exist in Vibe.
@@ -1394,19 +1410,31 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 									listOfMembers.add( user.getId() );
 								}
 							}
-							catch ( NoUserByTheNameException ex )
+							
+							// examine the response controls
+							cookie = parseControls( ldapContext.getResponseControls() );
+
+							try
 							{
-								// Nothing to do
+								// pass the cookie back to the server for the next page
+								PagedResultsControl prCtrl;
+								
+								prCtrl = new PagedResultsControl( pageSize, cookie, Control.CRITICAL );
+								ldapContext.setRequestControls( new Control[]{ prCtrl } );
 							}
-					  		catch (NamingException ex)
-					  		{
-					  			namingEx = ex;
-					  		}
-						}
+							catch ( IOException ex )
+							{
+								cookie = null;
+								logger.error( "In getDynamicGroupMembers(), call to new PagedResultsControl() threw an exception: " + ex.toString() );
+								ex.printStackTrace();
+							}
+							
+						} while ( (cookie != null) && (cookie.length != 0) );
 					}
-			  		catch (NamingException ex)
+			  		catch ( Exception ex )
 			  		{
-			  			namingEx = ex;
+			  			logger.error( "In getDynamicGroupMembers(), exceptions was thrown: " );
+			  			ex.printStackTrace();
 			  		}
 			  		finally
 			  		{
@@ -1419,12 +1447,11 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 							}
 							catch (NamingException ex)
 					  		{
-								namingEx = ex;
 					  		}
 						}
 					}
 				}
-			}
+			}// end for()
 		}
 
 		return listOfMembers;
@@ -3604,83 +3631,13 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		// Does the membership criteria have a filter?
 		if ( filter != null && filter.length() > 0 )
 		{
-			List<LdapConnectionConfig> ldapConnectionConfigs;
-			Workspace zone;
-			Long zoneId;
-
-			// Yes
-			zone = RequestContextHolder.getRequestContext().getZone();
-			zoneId = zone.getId();
-
-			// Get the list of ldap configurations.
-			ldapConnectionConfigs = getCoreDao().loadLdapConnectionConfigs( zoneId );
+			HashSet<Long> setOfMembers;
 			
-			// Go through each ldap configuration
-			for( LdapConnectionConfig nextLdapConfig : ldapConnectionConfigs )
-			{
-				String ldapGuidAttribute;
-				
-				// Does this ldap configuration have the ldap guid defined?
-				ldapGuidAttribute = nextLdapConfig.getLdapGuidAttribute();
-				if ( ldapGuidAttribute != null && ldapGuidAttribute.length() > 0 )
-				{
-			   		LdapContext ldapContext;
-			   		NamingException namingEx;
-
-					// Yes
-			   		namingEx = null;
-			   		ldapContext = null;
-			  		try
-			  		{
-						String[] userAttributeNames = {};
-						int scope;
-						SearchControls searchControls;
-						NamingEnumeration ctxSearch;
-
-						// Get an ldap context for the given ldap configuration
-						ldapContext = getUserContext( zoneId, nextLdapConfig );
-						
-						if ( searchSubtree )
-							scope = SearchControls.SUBTREE_SCOPE;
-						else
-							scope = SearchControls.ONELEVEL_SCOPE;
-						
-						searchControls = new SearchControls( scope, 0, 0, userAttributeNames, false, false );
-
-						// Execute the ldap search using the membership criteria
-						ctxSearch = ldapContext.search( baseDn, filter, searchControls );
-						
-						// Count the number of users/groups the search found
-						while ( hasMore( ctxSearch ) )
-						{
-							ctxSearch.next();
-
-							++count;
-						}
-					}
-			  		catch (NamingException ex)
-			  		{
-			  			namingEx = ex;
-			  		}
-			  		finally
-			  		{
-						if ( ldapContext != null )
-						{
-							try
-							{
-								// Close the ldap context.
-								ldapContext.close();
-							}
-							catch (NamingException ex)
-					  		{
-								namingEx = ex;
-					  		}
-						}
-					}
-				}
-			}
+			setOfMembers = getDynamicGroupMembers( baseDn, filter,  searchSubtree );
+			if ( setOfMembers != null )
+				count = setOfMembers.size();
 		}
-
+		
 		return new Integer( count );
 	}
 	
@@ -5194,6 +5151,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				catch ( IOException ex )
 				{
 					logger.error( "Call to new PagedResultsControl() threw an exception: " + ex.toString() );
+					ex.printStackTrace();
 				}
 
 				do
