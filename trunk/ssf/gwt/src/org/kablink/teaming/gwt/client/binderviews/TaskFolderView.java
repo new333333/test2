@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -39,6 +39,7 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.binderviews.ViewReady;
 import org.kablink.teaming.gwt.client.binderviews.util.BinderViewsHelper;
 import org.kablink.teaming.gwt.client.event.ContributorIdsRequestEvent;
+import org.kablink.teaming.gwt.client.event.DownloadFolderAsCSVFileEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.InvokeDropBoxEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
@@ -64,8 +65,9 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
  */
 public class TaskFolderView extends FolderViewBase
 	implements
-	// Event handlers implemented by this class.
+		// Event handlers implemented by this class.
 		ContributorIdsRequestEvent.Handler,
+		DownloadFolderAsCSVFileEvent.Handler,
 		InvokeDropBoxEvent.Handler
 {
 	private List<HandlerRegistration>		m_registeredEventHandlers;	// Event handlers that are currently registered.
@@ -77,6 +79,7 @@ public class TaskFolderView extends FolderViewBase
 	// this array is used.
 	private TeamingEvents[] m_registeredEvents = new TeamingEvents[] {
 		TeamingEvents.CONTRIBUTOR_IDS_REQUEST,
+		TeamingEvents.DOWNLOAD_FOLDER_AS_CSV_FILE,
 		TeamingEvents.INVOKE_DROPBOX,
 	};
 	
@@ -309,6 +312,29 @@ public class TaskFolderView extends FolderViewBase
 			BinderViewsHelper.invokeDropBox(
 				getFolderInfo(),
 				getEntryMenuPanel().getAddFilesMenuItem());
+		}
+	}
+	
+	/**
+	 * Handles DownloadFolderAsCSVFileEvent's received by this class.
+	 * 
+	 * Implements the DownloadFolderAsCSVFileEvent.Handler.onDownloadFolderAsCSVFile() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onDownloadFolderAsCSVFile(DownloadFolderAsCSVFileEvent event) {
+		// Is the event targeted to this folder?
+		Long dlFolderId    = event.getFolderId();
+		Long eventFolderId = event.getHandleByFolderId();
+		if (null == eventFolderId) {
+			eventFolderId = dlFolderId;
+		}
+		if (eventFolderId.equals(getFolderId())) {
+			// Yes!  Invoke the download.
+			BinderViewsHelper.downloadFolderAsCSVFile(
+				getDownloadPanel().getForm(),
+				dlFolderId);
 		}
 	}
 	
