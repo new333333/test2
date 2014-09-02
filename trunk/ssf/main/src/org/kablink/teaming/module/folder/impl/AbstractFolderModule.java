@@ -69,6 +69,7 @@ import org.kablink.teaming.domain.AverageRating;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.BinderState;
 import org.kablink.teaming.domain.ChangeLog;
+import org.kablink.teaming.domain.CustomAttribute;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.EntityIdentifier;
@@ -126,6 +127,7 @@ import org.kablink.teaming.module.shared.EmptyInputData;
 import org.kablink.teaming.module.shared.EntityIndexUtils;
 import org.kablink.teaming.module.shared.FolderUtils;
 import org.kablink.teaming.module.shared.InputDataAccessor;
+import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.module.shared.SearchUtils;
 import org.kablink.teaming.module.workflow.WorkflowModule;
 import org.kablink.teaming.module.workflow.WorkflowProcessUtils;
@@ -141,6 +143,8 @@ import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.security.function.OperationAccessControlException;
 import org.kablink.teaming.security.function.WorkArea;
 import org.kablink.teaming.security.function.WorkAreaOperation;
+import org.kablink.teaming.survey.Survey;
+import org.kablink.teaming.survey.SurveyModel;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ReflectHelper;
 import org.kablink.teaming.util.SPropsUtil;
@@ -150,7 +154,9 @@ import org.kablink.teaming.util.SizeMd5Pair;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.TagUtil;
 import org.kablink.teaming.web.util.BinderHelper;
+import org.kablink.teaming.web.util.DefinitionHelper;
 import org.kablink.teaming.web.util.ExportHelper;
+import org.kablink.teaming.web.util.PortletRequestUtils;
 import org.kablink.teaming.web.util.TrashHelper;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
@@ -1466,6 +1472,40 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
 	   	else if (!tag.isOwner(RequestContextHolder.getRequestContext().getUser())) return;
 	   	getCoreDao().delete(tag);
  	    loadProcessor(entry.getParentFolder()).indexEntry(entry);
+	}
+	
+    //inside write transaction    
+	@Override
+	public void deleteAllVotes(Long binderId, Long entryId) 
+			throws AccessControlException, ReservedByAnotherUserException, WriteFilesException, WriteEntryDataException {
+	   	FolderEntry entry = loadEntry(binderId, entryId);
+	   	checkAccess(entry, FolderOperation.deleteEntry);
+	   	
+	   	Document defDoc = entry.getEntryDefDoc();
+	   	Element surveyItem = DefinitionHelper.findDataItem("survey", defDoc);
+	   	if (surveyItem != null) {
+	   		//This entry has a survey element
+	   		String attributeName = DefinitionHelper.getItemProperty(surveyItem, "name");
+			CustomAttribute surveyAttr = entry.getCustomAttribute(attributeName);
+			if (surveyAttr == null || surveyAttr.getValue() == null) {
+				return;
+			}
+			
+			Survey surveyAttrValue = ((Survey)surveyAttr.getValue());
+			SurveyModel survey = surveyAttrValue.getSurveyModel();
+			if (survey == null) {
+				return;
+			}
+			
+			survey.removeAllVotes();
+			survey.setVoteRequest();
+			
+			Map formData = new HashMap(); 
+			formData.put(attributeName, surveyAttrValue.toString());
+			addVote(binderId, entryId, new MapInputData(formData), null);
+
+	 	    loadProcessor(entry.getParentFolder()).indexEntry(entry);
+	   	}
 	}
 	
     //inside write transaction    

@@ -133,17 +133,27 @@ public class Answer {
 		this.jsonObj.put("votesCount", newVotesCount);
 	}
 
+	public void removeAllVotes() {
+		while (this.votedUserIds != null && !this.votedUserIds.isEmpty()) {
+			String userId = (String)this.votedUserIds.get(0);
+			removeVote(userId);
+		}
+	}
+	
 	public void removeVote() {
 		User currentUser = RequestContextHolder.getRequestContext().getUser();
 		if (currentUser.isShared()) {
 			return;
 		}
 		String currentUserId = currentUser.getId().toString();
-		if (this.votedUserIds == null || !this.votedUserIds.contains(currentUserId)) {
+		removeVote(currentUserId);
+	}
+	private void removeVote(String userId) {
+		if (this.votedUserIds == null || !this.votedUserIds.contains(userId)) {
 			return;
 		}
 		
-		this.votedUserIds.remove(currentUserId);
+		this.votedUserIds.remove(userId);
 		
 		this.votesCount--;
 		
@@ -164,8 +174,11 @@ public class Answer {
 	
 	public boolean isAlreadyVotedCurrentUser(String guestEmail) {
 		User currentUser = RequestContextHolder.getRequestContext().getUser();
-		String userId = currentUser.getId().toString();
-		if (currentUser.isShared()) {
+		return isAlreadyVotedUser(currentUser, guestEmail);
+	}
+	private boolean isAlreadyVotedUser(User user, String guestEmail) {
+		String userId = user.getId().toString();
+		if (user.isShared()) {
 			userId = guestEmail;
 		}
 		

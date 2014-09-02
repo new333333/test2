@@ -181,6 +181,9 @@ public class ViewEntryController extends  SAbstractController {
 					response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
 					response.setRenderParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_RELOAD_LISTING);
 				}
+			} else if (op.equals(WebKeys.OPERATION_VOTE_SURVEY_REMOVE_ALL)) {
+				getFolderModule().deleteAllVotes(folderId, entryId);
+				
 			} else if (op.equals(WebKeys.OPERATION_FORCE_UNLOCK_FILE)) {
 				Binder binder = getBinderModule().getBinder(folderId);
 				FolderEntry entry = getFolderModule().getEntry(folderId, entryId);
