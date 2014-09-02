@@ -97,6 +97,7 @@ import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SZoneConfig;
 import org.kablink.teaming.util.SimpleProfiler;
 import org.kablink.teaming.util.SpringContextUtil;
+import org.kablink.teaming.util.Utils;
 import org.kablink.util.Validator;
 import org.kablink.util.VibeRuntimeException;
 import org.kablink.util.api.ApiErrorCode;
@@ -149,16 +150,16 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 	}
 	//called on zone delete
 	public void stopScheduledJobs(Workspace zone) {
-		if (!LicenseChecker.isAuthorizedByLicense(ObjectKeys.LICENSE_OPTION_FILR, true)) {
-			// Filr is not licensed, which implies that this is Vibe.
+		if (!Utils.checkIfFilr()) {
+			// This is Vibe
 			WorkflowTimeout job =getProcessor(zone);
 	   		job.remove(zone.getId());
 		}
 	}
 	//called on zone startup
    public void startScheduledJobs(Workspace zone) {
-	   if (!LicenseChecker.isAuthorizedByLicense(ObjectKeys.LICENSE_OPTION_FILR, true)) {
-			// Filr is not licensed, which implies that this is Vibe.
+	   if (!Utils.checkIfFilr()) {
+			// This is Vibe
 		   if (zone.isDeleted()) return;
 			WorkflowTimeout job =getProcessor(zone);
 		   //make sure a timeout job is scheduled for the zone
