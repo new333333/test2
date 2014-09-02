@@ -880,4 +880,13 @@ public interface FolderModule {
 	public void netFolderContentIndexingJobUnschedule(Long folderId);
 
     public boolean enqueueInitialNetFolderSync(Long folderId);
+    
+	/**
+	 * Delete all survey votes.
+	 * @throws WriteEntryDataException 
+	 * @throws WriteFilesException 
+	 * @throws ReservedByAnotherUserException 
+	 * @throws AccessControlException 
+	 */
+	public void deleteAllVotes(Long binderId, Long entryId) throws AccessControlException, ReservedByAnotherUserException, WriteFilesException, WriteEntryDataException;
 }

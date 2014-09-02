@@ -545,6 +545,11 @@ public class DefinitionHelper {
     	return node;
     }
     
+    public static Element findDataItem(String itemName, Document definitionConfig) {
+    	Element node = (Element)definitionConfig.selectSingleNode("//item[@type='form']//item[@name='entryFormForm' or @name='profileEntryFormForm']//item[@type='data' and @name='"+itemName+"']");
+    	return node;
+    }
+    
     public static String findAttributeType(String attributeName, Document definitionConfig) {
     	Element node = (Element)definitionConfig.selectSingleNode("//item[@type='form']//item[@name='entryFormForm' or @name='profileEntryFormForm']//item[@type='data' and properties/property[@name='name' and @value='"+attributeName.replaceAll("'","")+"']]");
     	if (node == null) return "";

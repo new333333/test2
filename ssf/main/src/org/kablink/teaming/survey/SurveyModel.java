@@ -323,6 +323,18 @@ public class SurveyModel {
 		}
 	}
 	
+	public void removeAllVotes() {
+		if (this.questions == null) {
+			return;
+		}
+		
+		Iterator it = this.questions.iterator();
+		while (it.hasNext()) {
+			Question question = (Question)it.next();
+			question.removeAllVotes();
+		}
+	}
+	
 	public void updateFrom(SurveyModel surveyModel) {
 		Iterator<Question> newQuestionsIt = this.questions.iterator();
 		while (newQuestionsIt.hasNext()) {
