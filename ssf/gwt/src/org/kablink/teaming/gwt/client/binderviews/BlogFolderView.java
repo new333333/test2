@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -47,6 +47,7 @@ import org.kablink.teaming.gwt.client.event.BlogGlobalTagSelectedEvent;
 import org.kablink.teaming.gwt.client.event.BlogPageCreatedEvent;
 import org.kablink.teaming.gwt.client.event.BlogPageSelectedEvent;
 import org.kablink.teaming.gwt.client.event.ContributorIdsReplyEvent;
+import org.kablink.teaming.gwt.client.event.DownloadFolderAsCSVFileEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.InvokeDropBoxEvent;
 import org.kablink.teaming.gwt.client.event.QuickFilterEvent;
@@ -78,8 +79,8 @@ import org.kablink.teaming.gwt.client.widgets.BlogPageCtrl;
 import org.kablink.teaming.gwt.client.widgets.BlogArchiveCtrl.BlogArchiveCtrlClient;
 import org.kablink.teaming.gwt.client.widgets.BlogPageCtrl.BlogPageCtrlClient;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
-
 import org.kablink.teaming.gwt.client.event.ContributorIdsRequestEvent;
+
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
@@ -97,13 +98,14 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
  */
 public class BlogFolderView extends FolderViewBase
 	implements
-	// Event handlers implemented by this class.
+		// Event handlers implemented by this class.
 		BlogArchiveFolderSelectedEvent.Handler,
 		BlogArchiveMonthSelectedEvent.Handler,
 		BlogGlobalTagSelectedEvent.Handler,
 		BlogPageCreatedEvent.Handler,
 		BlogPageSelectedEvent.Handler,
 		ContributorIdsRequestEvent.Handler,
+		DownloadFolderAsCSVFileEvent.Handler,
 		InvokeDropBoxEvent.Handler,
 		QuickFilterEvent.Handler,
 		SetFolderSortEvent.Handler
@@ -129,6 +131,7 @@ public class BlogFolderView extends FolderViewBase
 		TeamingEvents.BLOG_PAGE_CREATED,
 		TeamingEvents.BLOG_PAGE_SELECTED,
 		TeamingEvents.CONTRIBUTOR_IDS_REQUEST,
+		TeamingEvents.DOWNLOAD_FOLDER_AS_CSV_FILE,
 		TeamingEvents.INVOKE_DROPBOX,
 		TeamingEvents.QUICK_FILTER,
 		TeamingEvents.SET_FOLDER_SORT
@@ -394,13 +397,15 @@ public class BlogFolderView extends FolderViewBase
 		// In the blog folder view, we show the following:
 		// 1. Breadcrumb
 		// 2. Description
-		// 3. List of binders control
-		// 4. List of blog entries
-		// 5. Footer
+		// 3. Download
+		// 4. List of binders control
+		// 5. List of blog entries
+		// 6. Footer
 		switch ( folderPanel )
 		{
 		case BREADCRUMB:
 		case DESCRIPTION:
+		case DOWNLOAD:
 		case ENTRY_MENU:
 		case FOOTER:
 			reply = true;
@@ -649,6 +654,32 @@ public class BlogFolderView extends FolderViewBase
 		// handlers.
 		super.onDetach();
 		unregisterEvents();
+	}
+	
+	/**
+	 * Handles DownloadFolderAsCSVFileEvent's received by this class.
+	 * 
+	 * Implements the DownloadFolderAsCSVFileEvent.Handler.onDownloadFolderAsCSVFile() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onDownloadFolderAsCSVFile( DownloadFolderAsCSVFileEvent event )
+	{
+		// Is the event targeted to this folder?
+		Long dlFolderId    = event.getFolderId();
+		Long eventFolderId = event.getHandleByFolderId();
+		if ( null == eventFolderId )
+		{
+			eventFolderId = dlFolderId;
+		}
+		if ( eventFolderId.equals( getFolderId() ) )
+		{
+			// Yes!  Invoke the download.
+			BinderViewsHelper.downloadFolderAsCSVFile(
+				getDownloadPanel().getForm(),
+				dlFolderId );
+		}
 	}
 	
 	/**

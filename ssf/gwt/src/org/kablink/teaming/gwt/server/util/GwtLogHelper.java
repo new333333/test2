@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -415,9 +415,14 @@ public class GwtLogHelper {
 			else traceLogger = m_logger;
 			if (isErrorEnabled(traceLogger)) {
 				// ...log the exception that got us here.
-				if (null != ex)
-				     error(traceLogger, clientLogMsg, ex   );
-				else error(traceLogger, clientLogMsg, reply);
+				if (null != ex) {
+					if (ex instanceof AccessControlException)
+				         error(traceLogger, clientLogMsg + ex);	// Ensures that something gets logged for these since their stack trace is otherwise masked out.
+					else error(traceLogger, clientLogMsg,  ex);
+				}
+				else {
+					error(traceLogger, clientLogMsg, reply);
+				}
 			}
 			
 			break;
@@ -429,9 +434,14 @@ public class GwtLogHelper {
 			else traceLogger = m_logger;
 			if (isDebugEnabled(traceLogger)) {
 				// ...log the exception that got us here.
-				if (null != ex)
-				     debug(traceLogger, clientLogMsg, ex   );
-				else debug(traceLogger, clientLogMsg, reply);
+				if (null != ex) {
+					if (ex instanceof AccessControlException)
+				         debug(traceLogger, clientLogMsg + ex);	// Ensures that something gets logged for these since their stack trace is otherwise masked out.
+					else debug(traceLogger, clientLogMsg,  ex);
+				}
+				else {
+					debug(traceLogger, clientLogMsg, reply);
+				}
 			}
 			
 			break;
@@ -443,9 +453,14 @@ public class GwtLogHelper {
 			else traceLogger = m_logger;
 			if (isFatalEnabled(traceLogger)) {
 				// ...log the exception that got us here.
-				if (null != ex)
-				     fatal(traceLogger, clientLogMsg, ex   );
-				else fatal(traceLogger, clientLogMsg, reply);
+				if (null != ex) {
+					if (ex instanceof AccessControlException)
+				         fatal(traceLogger, clientLogMsg + ex);	// Ensures that something gets logged for these since their stack trace is otherwise masked out.
+					else fatal(traceLogger, clientLogMsg,  ex);
+				}
+				else {
+					fatal(traceLogger, clientLogMsg, reply);
+				}
 			}
 			
 			break;
@@ -457,9 +472,14 @@ public class GwtLogHelper {
 			else traceLogger = m_logger;
 			if (isInfoEnabled(traceLogger)) {
 				// ...log the exception that got us here.
-				if (null != ex)
-				     info(traceLogger, clientLogMsg, ex   );
-				else info(traceLogger, clientLogMsg, reply);
+				if (null != ex) {
+					if (ex instanceof AccessControlException)
+				         info(traceLogger, clientLogMsg + ex);	// Ensures that something gets logged for these since their stack trace is otherwise masked out.
+					else info(traceLogger, clientLogMsg,  ex);
+				}
+				else {
+					info(traceLogger, clientLogMsg, reply);
+				}
 			}
 			
 			break;
@@ -471,9 +491,14 @@ public class GwtLogHelper {
 			else traceLogger = m_logger;
 			if (isTraceEnabled(traceLogger)) {
 				// ...log the exception that got us here.
-				if (null != ex)
-				     trace(traceLogger, clientLogMsg, ex   );
-				else trace(traceLogger, clientLogMsg, reply);
+				if (null != ex) {
+					if (ex instanceof AccessControlException)
+				         trace(traceLogger, clientLogMsg + ex);	// Ensures that something gets logged for these since their stack trace is otherwise masked out.
+					else trace(traceLogger, clientLogMsg,  ex);
+				}
+				else {
+					trace(traceLogger, clientLogMsg, reply);
+				}
 			}
 			
 			break;
@@ -485,9 +510,14 @@ public class GwtLogHelper {
 			else traceLogger = m_logger;
 			if (isWarnEnabled(traceLogger)) {
 				// ...log the exception that got us here.
-				if (null != ex)
-				     warn(traceLogger, clientLogMsg, ex   );
-				else warn(traceLogger, clientLogMsg, reply);
+				if (null != ex) {
+					if (ex instanceof AccessControlException)
+				         warn(traceLogger, clientLogMsg + ex);	// Ensures that something gets logged for these since their stack trace is otherwise masked out.
+					else warn(traceLogger, clientLogMsg,  ex);
+				}
+				else {
+					warn(traceLogger, clientLogMsg, reply);
+				}
 			}
 			
 			break;

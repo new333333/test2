@@ -7492,7 +7492,7 @@ public class GwtViewHelper {
 							Long homeId = GwtServerHelper.getHomeFolderId(bs, user);
 							if (null != homeId) {
 								String			rootPath = null;
-								Folder			home     = bs.getFolderModule().getFolder(homeId);
+								Folder			home     = bs.getFolderModule().getFolderWithoutAccessCheck(homeId);
 								ResourceDriver	rd       = home.getResourceDriver();
 								if (null != rd) {
 									String dc = rd.getClass().getName();

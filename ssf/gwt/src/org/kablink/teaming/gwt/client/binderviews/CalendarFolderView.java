@@ -54,6 +54,7 @@ import org.kablink.teaming.gwt.client.event.ContributorIdsReplyEvent;
 import org.kablink.teaming.gwt.client.event.ContributorIdsRequestEvent;
 import org.kablink.teaming.gwt.client.event.CopySelectedEntitiesEvent;
 import org.kablink.teaming.gwt.client.event.DeleteSelectedEntitiesEvent;
+import org.kablink.teaming.gwt.client.event.DownloadFolderAsCSVFileEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.FullUIReloadEvent;
 import org.kablink.teaming.gwt.client.event.GotoContentUrlEvent;
@@ -108,7 +109,6 @@ import com.bradrydzewski.gwt.calendar.client.event.TimeBlockClickEvent;
 import com.bradrydzewski.gwt.calendar.client.event.TimeBlockClickHandler;
 import com.bradrydzewski.gwt.calendar.client.event.UpdateEvent;
 import com.bradrydzewski.gwt.calendar.client.event.UpdateHandler;
-
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
@@ -141,6 +141,7 @@ public class CalendarFolderView extends FolderViewBase
 		CopySelectedEntitiesEvent.Handler,
 		ContributorIdsRequestEvent.Handler,
 		DeleteSelectedEntitiesEvent.Handler,
+		DownloadFolderAsCSVFileEvent.Handler,
 		InvokeDropBoxEvent.Handler,
 		LockSelectedEntitiesEvent.Handler,
 		MarkReadSelectedEntitiesEvent.Handler,
@@ -182,6 +183,7 @@ public class CalendarFolderView extends FolderViewBase
 		TeamingEvents.CONTRIBUTOR_IDS_REQUEST,
 		TeamingEvents.COPY_SELECTED_ENTITIES,
 		TeamingEvents.DELETE_SELECTED_ENTITIES,
+		TeamingEvents.DOWNLOAD_FOLDER_AS_CSV_FILE,
 		TeamingEvents.INVOKE_DROPBOX,
 		TeamingEvents.LOCK_SELECTED_ENTITIES,
 		TeamingEvents.MARK_READ_SELECTED_ENTITIES,
@@ -1231,6 +1233,29 @@ public class CalendarFolderView extends FolderViewBase
 		// handlers.
 		super.onDetach();
 		unregisterEvents();
+	}
+	
+	/**
+	 * Handles DownloadFolderAsCSVFileEvent's received by this class.
+	 * 
+	 * Implements the DownloadFolderAsCSVFileEvent.Handler.onDownloadFolderAsCSVFile() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onDownloadFolderAsCSVFile(DownloadFolderAsCSVFileEvent event) {
+		// Is the event targeted to this folder?
+		Long dlFolderId    = event.getFolderId();
+		Long eventFolderId = event.getHandleByFolderId();
+		if (null == eventFolderId) {
+			eventFolderId = dlFolderId;
+		}
+		if (eventFolderId.equals(getFolderId())) {
+			// Yes!  Invoke the download.
+			BinderViewsHelper.downloadFolderAsCSVFile(
+				getDownloadPanel().getForm(),
+				dlFolderId);
+		}
 	}
 	
 	/**
