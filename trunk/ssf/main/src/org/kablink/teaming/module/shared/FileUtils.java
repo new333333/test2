@@ -70,6 +70,7 @@ import org.kablink.teaming.util.NoContentMultipartFile;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SimpleMultipartFile;
 import org.kablink.teaming.util.SpringContextUtil;
+import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.util.Validator;
 import org.springframework.web.multipart.MultipartFile;
@@ -117,7 +118,7 @@ public class FileUtils {
     				//If the binder aging was explicitly turned off, then no aging should occur in this binder
     				if (versionAgingEnabled && (va.getAgingEnabled() == null || !va.isAgingEnabled())) {
     					//The current agingEnabled value was wrong, so make it correct.
-    					if (!LicenseChecker.isAuthorizedByLicense(ObjectKeys.LICENSE_OPTION_FILR, true)) {
+    					if (!Utils.checkIfFilr()) {
     						// (Bug #888672) Don't do this if running under Filr license. Filr doesn't support
     						// versioning yet and this logic isn't needed. This to avoid the version record to
     						// be updated in the database unnecessary since it is going to be shortly deleted
