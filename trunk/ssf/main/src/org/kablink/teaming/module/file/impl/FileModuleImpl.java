@@ -2637,7 +2637,9 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
         if (ObjectKeys.FILE_SYNC_AGENT_INTERNALID.equals(user.getInternalId())) {
             // Skip data quota checks for the file sync agent.
         } else {
-            Long fileSize = fui.makeReentrant().getSize();
+            Long fileSize = fui.getCallerSpecifiedContentLength();
+            if(fileSize == null)
+            	fileSize = fui.makeReentrant().getSize();
             if (!ObjectKeys.FI_ADAPTER.equalsIgnoreCase(fui.getRepositoryName())) {
                 //Check that the user is not over the user quota
                 checkQuota(RequestContextHolder.getRequestContext().getUser(),
