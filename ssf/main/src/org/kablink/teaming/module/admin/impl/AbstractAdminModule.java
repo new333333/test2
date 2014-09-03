@@ -2036,8 +2036,14 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 		if (removedAllUsersGroup) {
 			errors.add(0, new SendMailErrorWrapper(NLT.get("errorcode.noSendToAllUsers")));
 		}
-		if (emailSet == null || emailSet.isEmpty()) {
-			//no-one to send to
+
+		// If there are no recipients...
+		Set ccSet  = getEmail(ccIds,  errors);
+		Set bccSet = getEmail(bccIds, errors);
+		if ((!(MiscUtil.hasItems(    emailSet))) &&
+				(!(MiscUtil.hasItems(bccSet  ))) &&
+				(!(MiscUtil.hasItems(ccSet   )))) {
+			// ...return an error.
 			errors.add(0, new SendMailErrorWrapper(NLT.get("errorcode.noRecipients")));
 			return result;			
 		}
@@ -2061,9 +2067,9 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
    		EmailUtil.putText(message, MailModule.TEXT_MSG, (Html.stripHtml(body.getText()) + "\r\n"));
    		
     	message.put(MailModule.SUBJECT, subject);
- 		message.put(MailModule.TO, emailSet);
- 		message.put(MailModule.CC, getEmail(ccIds, errors));
-		message.put(MailModule.BCC, getEmail(bccIds, errors));
+ 		message.put(MailModule.TO,  emailSet);
+ 		message.put(MailModule.CC,  ccSet   );
+		message.put(MailModule.BCC, bccSet  );
 		message.put(MailModule.LOG_TYPE, EmailLogType.sendMail);
  		MailSentStatus results;
  		if (entry != null) {
