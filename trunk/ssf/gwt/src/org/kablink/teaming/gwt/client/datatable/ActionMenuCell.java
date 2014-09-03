@@ -108,7 +108,7 @@ import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Image;
-import com.google.gwt.user.client.ui.InlineLabel;
+import com.google.gwt.user.client.ui.Label;
 
 /**
  * Data table cell that represents an action menu for an entity.
@@ -333,8 +333,8 @@ public class ActionMenuCell extends AbstractCell<EntryTitleInfo> {
 			a.addStyleName("gwt-MenuItem-anchor");
 			a.setTarget(anchorTarget);
 			a.setHref(simpleUrl);
-			InlineLabel il = new InlineLabel(simpleTitle);
-			a.getElement().appendChild(il.getElement());
+			Label l = new Label(simpleTitle);
+			a.getElement().appendChild(l.getElement());
 
 			// ...and use that to create an HTML only menu item.
 			VibeFlowPanel html = new VibeFlowPanel();

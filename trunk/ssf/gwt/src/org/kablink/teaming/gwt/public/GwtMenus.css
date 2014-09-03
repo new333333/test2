@@ -8,7 +8,7 @@
 	.gwt-MenuBar-horizontal .gwt-MenuItem {color: #1f1f1f; padding: 0 6px;}
 	
 	a.gwt-MenuItem-anchor, a.gwt-MenuItem-anchor:visited, a.gwt-MenuItem-anchor:link {color: #fff !important; text-decoration: none;}
-	a.gwt-MenuItem-anchor:hover {color: #81b2bd !important; background-color: #353838; -moz-border-radius: 3px; border-radius: 3px; -webkit-border-radius: 3px;}		
+	a.gwt-MenuItem-anchor:hover {color: #81b2bd !important; background-color: #353838; -moz-border-radius: 3px; border-radius: 3px; -webkit-border-radius: 3px; cursor: default;}		
 /* End:  Generic binder view tools styles. */
 
 /* Start:  Entry menu styles. */
