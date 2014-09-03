@@ -93,10 +93,10 @@
           </div>
         </td>
         <td 
-          <% if (!BrowserSniffer.is_ie(request) && selection.getFileItem().getName().length() <= 80) { %> style="white-space: nowrap;" <% } %>
-		  <% if (BrowserSniffer.is_ie(request) || selection.getFileItem().getName().length() > 80) { %> style="white-space: normal;" <% } %>
+          <% if (!BrowserSniffer.is_ie(request) && selection.getFileItem().getName().length() <= 40) { %> style="white-space: nowrap;" <% } %>
+		  <% if (BrowserSniffer.is_ie(request) || selection.getFileItem().getName().length() > 40) { %> style="white-space: normal;" <% } %>
         >
-	      <div class="ss_entryTitleFile" <% if (BrowserSniffer.is_ie(request) || selection.getFileItem().getName().length() > 80) { %> style="white-space: normal;" <% } %>>
+	      <div class="ss_entryTitleFile" <% if (BrowserSniffer.is_ie(request) || selection.getFileItem().getName().length() > 40) { %> style="white-space: normal;" <% } %>>
             <c:set var="ss_attachedFile" value="${selection}" scope="request" />
             <jsp:include page="/WEB-INF/jsp/definition_elements/view_entry_attachment_title.jsp" />
           </div>

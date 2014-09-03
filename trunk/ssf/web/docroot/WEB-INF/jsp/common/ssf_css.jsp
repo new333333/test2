@@ -429,6 +429,8 @@ div.ss_editorHints {
   font-family: ${ss_style_title_font_family};
   margin-bottom: 3px;
   padding: 0px 6px;
+  min-width:300px;
+  max-width:500px;
   }
 .ss_entryTitleFileVersion {
   font-weight: normal;
