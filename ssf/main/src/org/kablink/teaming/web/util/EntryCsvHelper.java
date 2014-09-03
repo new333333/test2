@@ -164,6 +164,7 @@ public class EntryCsvHelper {
 		//Output the Header row CSV
 		outputHeaderCsv(out, columnTemplate);
 
+		options.put(ObjectKeys.SEARCH_MAX_HITS, ObjectKeys.SEARCH_MAX_HITS_FOLDER_ENTRIES_EXPORT);
 		folderEntries = bs.getFolderModule().getEntries(folderId, options);
 		if (folderEntries != null) {
 			List<Map> folderEntriesList = (List) folderEntries.get(ObjectKeys.SEARCH_ENTRIES);
