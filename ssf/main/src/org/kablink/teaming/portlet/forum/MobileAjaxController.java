@@ -301,13 +301,17 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 			//There is no operation specified. See if this should go to the default home page
 			Long zoneId = getZoneModule().getZoneIdByVirtualHost(ZoneContextHolder.getServerName());
 			HomePageConfig homePageConfig = getZoneModule().getZoneConfig(zoneId).getHomePageConfig();
-			Long binderId = homePageConfig.getDefaultHomePageId();
-			if (WebHelper.isGuestLoggedIn(request) && homePageConfig != null) {
-				binderId = homePageConfig.getDefaultGuestHomePageId();
-				if (binderId == null) binderId = homePageConfig.getDefaultHomePageId();
-			}
-			if (binderId != null) {
-				return ajaxMobileShowWorkspace(this, request, response, binderId, null);
+			if (homePageConfig != null) {
+				Long binderId = homePageConfig.getDefaultHomePageId();
+				if (WebHelper.isGuestLoggedIn(request) && homePageConfig != null) {
+					binderId = homePageConfig.getDefaultGuestHomePageId();
+					if (binderId == null) binderId = homePageConfig.getDefaultHomePageId();
+				}
+				if (binderId != null) {
+					return ajaxMobileShowWorkspace(this, request, response, binderId, null);
+				} else {
+					return ajaxMobileFrontPage(this, request, response);
+				}
 			} else {
 				return ajaxMobileFrontPage(this, request, response);
 			}
