@@ -1246,14 +1246,21 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
     @Override
 	public MailSentStatus sendMail(Binder binder, Map message, String comment) {
   		JavaMailSender mailSender = getMailSender(binder);
-		Collection<InternetAddress> addrs = ((Collection) message.get(MailModule.TO));
+  		
+  		// Start with the TO addresses...
+		Collection<InternetAddress> targetAddresses = ((Collection) message.get(MailModule.TO));
 		
-		// Add in the BCC addresses since we now send everything via
-		// BCC.
+		// ...and add in the CC and BCC addresses since we send
+		// ...everything the same way.
 		if (null != ((Collection) message.get(MailModule.BCC))) {
-			addrs.addAll((Collection) message.get(MailModule.BCC));
+			targetAddresses.addAll((Collection) message.get(MailModule.BCC));
 		}
-		if ((null == addrs) || addrs.isEmpty()) {
+		if (null != ((Collection) message.get(MailModule.CC))) {
+			targetAddresses.addAll((Collection) message.get(MailModule.CC));
+		}
+		
+		// Throw an exception if there are no recipients.
+		if ((null == targetAddresses) || targetAddresses.isEmpty()) {
 			throw new MailPreparationException(NLT.get("errorcode.noRecipients"));
 		}
 
@@ -1261,21 +1268,30 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 		Date now = new Date();
   		InternetAddress from = (InternetAddress)message.get(MailModule.FROM);
   		EmailLogType logType = EmailLogType.sendMail;
-  		EmailLog emailLog = new EmailLog(logType, now, addrs, from, EmailLogStatus.queued);
+  		EmailLog emailLog = new EmailLog(logType, now, targetAddresses, from, EmailLogStatus.sent);
   		emailLog.setSubj((String)message.get(MailModule.SUBJECT));
 
+  		// Setup the message to be sent.
 		MailStatus status = new MailStatus(message);
-		Map currentMessage = new HashMap(message); // Make changeable copy.
- 		currentMessage.remove(MailModule.BCC);  // These are already added to addrs.
- 		currentMessage.remove(MailModule.TO );	// These will be put in the BCC field.
+		Map currentMessage = new HashMap(message);	// Make changeable copy.
+ 		currentMessage.remove(MailModule.BCC);		// These are already added to targetAddresses.
+ 		currentMessage.remove(MailModule.CC );		// These are already added to targetAddresses.
+ 		currentMessage.remove(MailModule.TO );		// These are already added to targetAddresses.
+ 		
+		// Based on the ssf*.properties setting, we use BCC to hide
+		// email addresses from other recipients.
+		boolean notifyAsBCC = SPropsUtil.getBoolean("mail.notifyAsBCC", true);
+		String mailMode;
+		if (notifyAsBCC)
+		     mailMode = MailModule.BCC;
+		else mailMode = MailModule.TO;
+		
 		// Handle large recipient list by breaking into pieces. 
-		ArrayList rcpts = new ArrayList(addrs);
+		ArrayList rcpts = new ArrayList(targetAddresses);
 		for (int i = 0; i < rcpts.size(); i += rcptToLimit) {
-			List subList = rcpts.subList(i, Math.min(rcpts.size(), i + rcptToLimit));
+			List subList = rcpts.subList(i, Math.min(rcpts.size(), (i + rcptToLimit)));
+			currentMessage.put(mailMode, subList);
 			
-			// Always use BCC to hide mail addresses from other
-			// recipients.
-			currentMessage.put(MailModule.BCC, subList);
 	 		MimeMessagePreparator helper = new MimeMapPreparator(currentMessage, logger, sendVTODO);
 	 		try {
 	 			helper.setDefaultFrom(getDefaultFrom(mailSender));		
@@ -1346,12 +1362,23 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
     @Override
 	public MailSentStatus sendMail(Entry entry, Map message, String comment, boolean sendAttachments) {
   		JavaMailSender mailSender = getMailSender(entry.getParentBinder());
-		Collection<InternetAddress> addrs = ((Collection) message.get(MailModule.TO));
+		EmailFormatter processor = ((EmailFormatter) processorManager.getProcessor(entry.getParentBinder(), EmailFormatter.PROCESSOR_KEY));
+		User user = RequestContextHolder.getRequestContext().getUser();
+  		
+  		// Start with the TO addresses...
+		Collection<InternetAddress> targetAddresses = ((Collection) message.get(MailModule.TO));
+		
+		// ...and add in the CC and BCC addresses since we send
+		// ...everything the same way.
 		if (null != ((Collection) message.get(MailModule.BCC))) {
-			// Add in the BCC users. Send all mail as BCC.
-			addrs.addAll((Collection) message.get(MailModule.BCC));
+			targetAddresses.addAll((Collection) message.get(MailModule.BCC));
 		}
-		if ((null == addrs) || addrs.isEmpty()) {
+		if (null != ((Collection) message.get(MailModule.CC))) {
+			targetAddresses.addAll((Collection) message.get(MailModule.CC));
+		}
+		
+		// Throw an exception if there are no recipients.
+		if ((null == targetAddresses) || targetAddresses.isEmpty()) {
 			throw new MailPreparationException(NLT.get("errorcode.noRecipients"));
 		}
 
@@ -1359,7 +1386,7 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 		Date now = new Date();
   		InternetAddress from = (InternetAddress)message.get(MailModule.FROM);
   		EmailLogType logType = EmailLogType.sendMail;
-  		EmailLog emailLog = new EmailLog(logType, now, addrs, from, EmailLogStatus.sent);
+  		EmailLog emailLog = new EmailLog(logType, now, targetAddresses, from, EmailLogStatus.sent);
   		emailLog.setSubj((String)message.get(MailModule.SUBJECT));
   		if (sendAttachments) {
   			SortedSet<FileAttachment> atts = entry.getFileAttachments();
@@ -1370,19 +1397,27 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
   			emailLog.setFileAttachments(fileNames);
   		}
 
+  		// Setup the message to be sent.
   		MailStatus status = new MailStatus(message);
-		EmailFormatter	processor = (EmailFormatter)processorManager.getProcessor(entry.getParentBinder(), EmailFormatter.PROCESSOR_KEY);
+		Map currentMessage = new HashMap(message);	// Make changeable copy.
+ 		currentMessage.remove(MailModule.BCC);		// These are already added to targetAddresses.
+ 		currentMessage.remove(MailModule.CC );		// These are already added to targetAddresses.
+ 		currentMessage.remove(MailModule.TO );		// These are already added to targetAddresses.
 		
-		// Handle large recipient list. 
-		ArrayList rcpts = new ArrayList(addrs);
-		User user = RequestContextHolder.getRequestContext().getUser();
-		Map currentMessage = new HashMap(message);
- 		currentMessage.remove(MailModule.BCC);	// These are already added to addrs.
- 		currentMessage.remove(MailModule.TO );	// These get sent as BCC.
+		// Based on the ssf*.properties setting, we use BCC to hide
+		// email addresses from other recipients.
+		boolean notifyAsBCC = SPropsUtil.getBoolean("mail.notifyAsBCC", true);
+		String mailMode;
+		if (notifyAsBCC)
+		     mailMode = MailModule.BCC;
+		else mailMode = MailModule.TO;
 		
+		// Handle large recipient list by breaking into pieces. 
+		ArrayList rcpts = new ArrayList(targetAddresses);
 		for (int i = 0; i < rcpts.size(); i += rcptToLimit) {
-			List subList = rcpts.subList(i, Math.min(rcpts.size(), i + rcptToLimit));
-			currentMessage.put(MailModule.BCC, subList);
+			List subList = rcpts.subList(i, Math.min(rcpts.size(), (i + rcptToLimit)));
+			currentMessage.put(mailMode, subList);
+			
 			MimeEntryPreparator helper = new MimeEntryPreparator(processor, entry, currentMessage, logger, sendVTODO);
 	 		helper.setDefaultFrom(getDefaultFrom(mailSender));		
 	 		helper.setTimeZone(user.getTimeZone().getID());

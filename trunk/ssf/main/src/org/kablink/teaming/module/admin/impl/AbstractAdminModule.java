@@ -57,11 +57,13 @@ import javax.mail.SendFailedException;
 import javax.mail.internet.InternetAddress;
 
 import org.apache.velocity.VelocityContext;
+
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.SAXReader;
+
 import org.kablink.teaming.ConfigurationException;
 import org.kablink.teaming.NoObjectByTheIdException;
 import org.kablink.teaming.NotSupportedException;
@@ -156,7 +158,6 @@ import org.kablink.teaming.util.ReflectHelper;
 import org.kablink.teaming.util.RuntimeStatistics;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SZoneConfig;
-import org.kablink.teaming.util.SessionUtil;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.StatusTicket;
 import org.kablink.teaming.util.Utils;
@@ -169,6 +170,7 @@ import org.kablink.util.Html;
 import org.kablink.util.StringUtil;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
+
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.mail.MailAuthenticationException;
@@ -183,8 +185,7 @@ import org.springframework.transaction.support.TransactionTemplate;
  * @author Janet McCann
  */
 @SuppressWarnings("unchecked")
-public abstract class AbstractAdminModule extends CommonDependencyInjection implements AdminModule, InitializingBean {
-	
+public abstract class AbstractAdminModule extends CommonDependencyInjection implements AdminModule, InitializingBean {	
 	protected static String INDEX_OPTIMIZATION_JOB = "index.optimization.job"; // properties in xml file need a unique name
 	protected static String FILE_VERSION_AGING_JOB = "file.version.aging.job"; // properties in xml file need a unique name
 	protected static String LOG_TABLE_PURGE_JOB = "log.table.purge.job"; // properties in xml file need a unique name
@@ -341,6 +342,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 	public void checkAccess(WorkArea workArea, AdminOperation operation) {
    		if (workArea instanceof TemplateBinder) {
 			Binder topBinder = (Binder)workArea;
+			@SuppressWarnings("unused")
 			User user = RequestContextHolder.getRequestContext().getUser();
 			while (topBinder instanceof TemplateBinder && topBinder.getParentBinder() != null) {
 				//Find the top TemplateBinder of this template
