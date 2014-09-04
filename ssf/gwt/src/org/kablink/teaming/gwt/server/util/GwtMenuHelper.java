@@ -315,13 +315,13 @@ public class GwtMenuHelper {
 	 * 
 	 * Based on ListFolderHelper.buildFolderToolbars()
 	 */
-	private static void buildFolderMenuItems(AllModulesInjected bs, HttpServletRequest request, Folder folder, List<ToolbarItem> tbiList) {
+	private static void buildFolderMenuItems(AllModulesInjected bs, HttpServletRequest request, Folder folder, boolean isMyFilesStorage, List<ToolbarItem> tbiList) {
 		boolean isFilr = Utils.checkIfFilr();
-		tbiList.add(constructFolderItems(           isFilr, WebKeys.FOLDER_TOOLBAR,             bs, request, folder, EntityType.folder));
-		tbiList.add(constructFolderViewsItems(      isFilr, WebKeys.FOLDER_VIEWS_TOOLBAR,       bs, request, folder                   ));
-		tbiList.add(constructCalendarImportItems(   isFilr, WebKeys.CALENDAR_IMPORT_TOOLBAR,    bs, request, folder                   ));		
-		tbiList.add(constructWhatsNewItems(         isFilr, WebKeys.WHATS_NEW_TOOLBAR,          bs, request, folder, EntityType.folder));
-		tbiList.add(constructEmailSubscriptionItems(isFilr, WebKeys.EMAIL_SUBSCRIPTION_TOOLBAR, bs, request, folder                   ));
+		tbiList.add(constructFolderItems(           isFilr, WebKeys.FOLDER_TOOLBAR,             bs, request, folder, isMyFilesStorage, EntityType.folder));
+		tbiList.add(constructFolderViewsItems(      isFilr, WebKeys.FOLDER_VIEWS_TOOLBAR,       bs, request, folder                                     ));
+		tbiList.add(constructCalendarImportItems(   isFilr, WebKeys.CALENDAR_IMPORT_TOOLBAR,    bs, request, folder                                     ));		
+		tbiList.add(constructWhatsNewItems(         isFilr, WebKeys.WHATS_NEW_TOOLBAR,          bs, request, folder,                   EntityType.folder));
+		tbiList.add(constructEmailSubscriptionItems(isFilr, WebKeys.EMAIL_SUBSCRIPTION_TOOLBAR, bs, request, folder                                     ));
 	}
 	
 	/*
@@ -376,7 +376,7 @@ public class GwtMenuHelper {
 	 * Based on ProfilesBinderHelper.buildViewFolderToolbars()
 	 */
 	private static void buildProfilesMenuItems(AllModulesInjected bs, HttpServletRequest request, ProfileBinder pb, List<ToolbarItem> tbiList) {
-		tbiList.add(constructFolderItems(Utils.checkIfFilr(), WebKeys.FOLDER_TOOLBAR, bs, request, pb, EntityType.profiles));
+		tbiList.add(constructFolderItems(Utils.checkIfFilr(), WebKeys.FOLDER_TOOLBAR, bs, request, pb, false, EntityType.profiles));
 	}
 	
 	/*
@@ -387,8 +387,8 @@ public class GwtMenuHelper {
 	 */
 	private static void buildWorkspaceMenuItems(AllModulesInjected bs, HttpServletRequest request, Workspace ws, List<ToolbarItem> tbiList) {
 		boolean isFilr = Utils.checkIfFilr();
-		tbiList.add(constructFolderItems(  isFilr, WebKeys.FOLDER_TOOLBAR,    bs, request, ws, EntityType.workspace));
-		tbiList.add(constructWhatsNewItems(isFilr, WebKeys.WHATS_NEW_TOOLBAR, bs, request, ws, EntityType.workspace));
+		tbiList.add(constructFolderItems(  isFilr, WebKeys.FOLDER_TOOLBAR,    bs, request, ws, false, EntityType.workspace));
+		tbiList.add(constructWhatsNewItems(isFilr, WebKeys.WHATS_NEW_TOOLBAR, bs, request, ws,        EntityType.workspace));
 	}
 	
 	/*
@@ -1981,7 +1981,7 @@ public class GwtMenuHelper {
 	 * Constructs a ToolbarItem for folders.
 	 */
 	@SuppressWarnings("unused")
-	private static ToolbarItem constructFolderItems(boolean isFilr, String tbKey, AllModulesInjected bs, HttpServletRequest request, Binder binder, EntityType binderType) {
+	private static ToolbarItem constructFolderItems(boolean isFilr, String tbKey, AllModulesInjected bs, HttpServletRequest request, Binder binder, boolean isMyFilesStorage, EntityType binderType) {
 		// Allocate the base ToolbarItem to return.
 		ToolbarItem reply = new ToolbarItem(tbKey);
 
@@ -2015,7 +2015,7 @@ public class GwtMenuHelper {
 		if ((isFolder || isWorkspace) && (!isWorkspaceRoot)) {
 			// Yes!  Does the user have rights add a new folder to this
 			// binder?
-			if ((!isFilr) && bm.testAccess(binder, BinderOperation.addFolder) && (!(BinderHelper.isBinderMyFilesStorage(binder)))) {
+			if ((!isFilr) && (!isMyFilesStorage) && bm.testAccess(binder, BinderOperation.addFolder) && (!(BinderHelper.isBinderMyFilesStorage(binder)))) {
 				// Yes!  Add a ToolbarItem for it.
 				addMenuCreated   =
 				adminMenuCreated = true;
@@ -2062,7 +2062,7 @@ public class GwtMenuHelper {
 			// Yes!  Can the user potentially copy or move this binder?
 			boolean isGuest       = GwtServerHelper.getCurrentUser().isShared();
 			boolean isFilrGuest   = (isFilr && isGuest);
-			boolean allowCopyMove = (!isFilrGuest);
+			boolean allowCopyMove = ((!isFilrGuest));
 			if (allowCopyMove) {
 				if (isWorkspace) {
 					Integer wsDefType = binder.getDefinitionType();
@@ -2076,7 +2076,7 @@ public class GwtMenuHelper {
 			}
 			if (allowCopyMove) {
 				// Yes!  Do they have rights to move it?
-				if (bm.testAccess(binder, BinderOperation.moveBinder)) {
+				if (bm.testAccess(binder, BinderOperation.moveBinder) && (!isMyFilesStorage)) {
 					// Yes!  Add a ToolbarItem for it.
 					adminMenuCreated  =
 					configMenuCreated = true;
@@ -2155,7 +2155,7 @@ public class GwtMenuHelper {
 		}
 		
 		// Does the user have rights modify this binder?
-		if (bm.testAccess(binder, BinderOperation.modifyBinder) || bm.testAccess(binder, BinderOperation.renameBinder)) {
+		if ((!isMyFilesStorage) && (bm.testAccess(binder, BinderOperation.modifyBinder) || bm.testAccess(binder, BinderOperation.renameBinder))) {
 			// Yes!  Add the ToolBarItem's for it.
 			adminMenuCreated  =
 			configMenuCreated = true;
@@ -2229,7 +2229,7 @@ public class GwtMenuHelper {
 
 			// Does the user have rights to manage the definitions on
 			// this binder?
-			if ((isFolder || isWorkspace) && bm.testAccess(binder, BinderOperation.manageConfiguration)) {
+			if ((isFolder || isWorkspace) && (!isMyFilesStorage) && bm.testAccess(binder, BinderOperation.manageConfiguration)) {
 				// Yes!  Add the ToolbarItem for it.
 				adminMenuCreated  =
 				configMenuCreated = true;
@@ -2248,7 +2248,7 @@ public class GwtMenuHelper {
 			
 			// Does the user have rights to manage the templates on
 			// this binder?
-			if ((isFolder || isWorkspace) && bm.testAccess(binder, BinderOperation.manageConfiguration)) {
+			if ((isFolder || isWorkspace) && (!isMyFilesStorage) && bm.testAccess(binder, BinderOperation.manageConfiguration)) {
 				// Yes!  Add the ToolbarItem for it.
 				adminMenuCreated  =
 				configMenuCreated = true;
@@ -2270,7 +2270,7 @@ public class GwtMenuHelper {
 		if ((isFolder || isWorkspace) && (!isWorkspaceReserved)) {
 			// Yes!  Is the binder one the user can't delete, even if
 			// they have rights?
-			if (!(BinderHelper.isBinderDeleteProtected( binder))) {
+			if (!(BinderHelper.isBinderDeleteProtected(binder))) {
 				// Yes!  Is this a binder the user can delete?
 				if (canDeleteEntity(bs, binder) && isBinderTrashEnabled(binder)) {
 					// Yes!  Add the ToolbarItem for it.
@@ -2337,7 +2337,7 @@ public class GwtMenuHelper {
 		}
 		
 		// Does the user have rights to import/export this binder?
-		if ((isFolder || isWorkspace) && (!isFilr) && bm.testAccess(binder, BinderOperation.export)) {
+		if ((isFolder || isWorkspace) && (!isFilr) && (!isMyFilesStorage) && bm.testAccess(binder, BinderOperation.export)) {
 			// Yes!  Add the ToolbarItem for it.
 			adminMenuCreated  =
 			configMenuCreated = true;
@@ -3865,11 +3865,12 @@ public class GwtMenuHelper {
 			// ...the list...
 			Long binderId = Long.parseLong(binderIdS);
 			Binder binder = bs.getBinderModule().getBinder(binderId);
+			boolean isMyFilesStorage = BinderHelper.isBinderMyFilesStorage(binder);
 			EntityType binderType = binder.getEntityType();
 			switch (binderType) {
-			case workspace:  buildWorkspaceMenuItems(bs, request, ((Workspace)     binder), reply); break;
-			case folder:     buildFolderMenuItems(   bs, request, ((Folder)        binder), reply); break;
-			case profiles:   buildProfilesMenuItems( bs, request, ((ProfileBinder) binder), reply); break;
+			case workspace:  buildWorkspaceMenuItems(bs, request, ((Workspace)     binder),                   reply); break;
+			case folder:     buildFolderMenuItems(   bs, request, ((Folder)        binder), isMyFilesStorage, reply); break;
+			case profiles:   buildProfilesMenuItems( bs, request, ((ProfileBinder) binder),                   reply); break;
 			}
 
 			// ...make sure the binder is being tracked for the recent

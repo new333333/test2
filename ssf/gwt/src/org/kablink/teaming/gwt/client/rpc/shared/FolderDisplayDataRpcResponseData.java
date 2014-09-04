@@ -45,6 +45,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * @author drfoster@novell.com
  */
 public class FolderDisplayDataRpcResponseData implements IsSerializable, VibeRpcResponseData {
+	private boolean				m_folderIsMyFilesStorage;	//
 	private boolean				m_folderOwnedByCurrentUser;	//
 	private boolean				m_folderSortDescend;		//
 	private boolean				m_folderSupportsPinning;	//
@@ -69,6 +70,7 @@ public class FolderDisplayDataRpcResponseData implements IsSerializable, VibeRpc
 	/**
 	 * Constructor method.
 	 *
+	 * @param folderIsMyFilesStorage
 	 * @param folderSortBy
 	 * @param folderSortDescend
 	 * @param folderPageSize
@@ -80,11 +82,12 @@ public class FolderDisplayDataRpcResponseData implements IsSerializable, VibeRpc
 	 * @param folderOwnedByCurrentUser
 	 * @param fileLinkAction
 	 */
-	public FolderDisplayDataRpcResponseData(String folderSortBy, boolean folderSortDescend, int folderPageSize, Map<String, String> folderColumnWidths, boolean folderSupportsPinning, boolean showUserList, boolean viewPinnedEntries, boolean viewSharedFiles, boolean folderOwnedByCurrentUser, GwtFileLinkAction fileLinkAction) {
+	public FolderDisplayDataRpcResponseData(boolean folderIsMyFilesStorage, String folderSortBy, boolean folderSortDescend, int folderPageSize, Map<String, String> folderColumnWidths, boolean folderSupportsPinning, boolean showUserList, boolean viewPinnedEntries, boolean viewSharedFiles, boolean folderOwnedByCurrentUser, GwtFileLinkAction fileLinkAction) {
 		// Initialize this object...
 		this();
 		
 		// ...and store the parameters.
+		setFolderIsMyFilesStorage(  folderIsMyFilesStorage  );
 		setFolderSortBy(            folderSortBy            );
 		setFolderSortDescend(       folderSortDescend       );
 		setFolderPageSize(          folderPageSize          );
@@ -102,6 +105,7 @@ public class FolderDisplayDataRpcResponseData implements IsSerializable, VibeRpc
 	 * 
 	 * @return
 	 */
+	public boolean             getFolderIsMyFilesStorage()   {return m_folderIsMyFilesStorage;  }
 	public boolean             getFolderOwnedByCurrentUser() {return m_folderOwnedByCurrentUser;}
 	public boolean             getFolderSortDescend()        {return m_folderSortDescend;       }
 	public boolean             getFolderSupportsPinning()    {return m_folderSupportsPinning;   }
@@ -118,6 +122,7 @@ public class FolderDisplayDataRpcResponseData implements IsSerializable, VibeRpc
 	 * 
 	 * @param
 	 */
+	public void setFolderIsMyFilesStorage(  boolean             folderIsMyFilesStorage)   {m_folderIsMyFilesStorage   = folderIsMyFilesStorage;  }
 	public void setFolderOwnedByCurrentUser(boolean             folderOwnedByCurrentUser) {m_folderOwnedByCurrentUser = folderOwnedByCurrentUser;}
 	public void setFolderSortDescend(       boolean             folderSortDescend)        {m_folderSortDescend        = folderSortDescend;       }
 	public void setFolderSupportsPinning(   boolean             folderSupportsPinning)    {m_folderSupportsPinning    = folderSupportsPinning;   }

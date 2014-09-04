@@ -5445,7 +5445,8 @@ public class BinderHelper {
 			 isBinderProfilesRootWS(  binder) ||	// The root workspace that contains all other workspaces.
 			 isBinderNetFoldersRootWS(binder) ||	// The root workspace that contains all Net Folders.
 			 isBinderHomeFolder(      binder) ||	// Any user's Home folder.
-			 isBinderTopNetFolder(    binder));		// Any top level Net Folder.
+			 isBinderTopNetFolder(    binder) ||	// Any top level Net Folder.
+			 isBinderMyFilesStorage(  binder));		// Any user's My Files Storage folder.
 	}
 	
 	/**

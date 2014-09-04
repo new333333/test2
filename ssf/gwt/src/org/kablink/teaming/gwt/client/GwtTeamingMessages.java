@@ -2345,6 +2345,7 @@ public interface GwtTeamingMessages extends Messages
 	String folders();
 	String mobileDevicesList();
 	String myFiles();
+	String myFilesStorage();
 	String netFolders();
 	String peopleList();
 	String sharedByMe();
@@ -2785,6 +2786,13 @@ public interface GwtTeamingMessages extends Messages
 	String emptyMobileDevices_Info_1_User( String company, String product );
 	String emptyMobileDevices_Info_2( String company, String product );
 	String emptyMobileDevices_SubHead();
+	
+	// Strings used for the empty my files storage view widget.
+	String emptyMyFilesStorage_Info_1();
+	String emptyMyFilesStorage_Info_2();
+	String emptyMyFilesStorage_Info_3( String company, String product );
+	String emptyMyFilesStorage_Info_4( String product );
+	String emptyMyFilesStorage_SubHead();
 	
 	// Strings used for the empty people view widget.
 	String emptyPeople_Info_1( String company, String product );

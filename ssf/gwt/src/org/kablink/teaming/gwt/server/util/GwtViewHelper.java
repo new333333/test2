@@ -297,6 +297,13 @@ import static org.kablink.util.search.Restrictions.like;
 public class GwtViewHelper {
 	protected static Log m_logger = LogFactory.getLog(GwtViewHelper.class);
 	
+	// The following controls whether the My Files Storage folder will
+	// appear in the Vibe UI as a normal folder or will be hidden as
+	// much as possible as it is in Filr.
+	//
+	// See GwtViewHelper.showMyFilesStorageAsFolder() for usage.
+	private static final boolean SHOW_MY_FILES_STORAGE_IN_VIBE	= true;
+	
 	// Attribute names used for items related to milestones.
 	public static final String RESPONSIBLE_GROUPS_MILESTONE_ENTRY_ATTRIBUTE_NAME	= "responsible_groups";
 	public static final String RESPONSIBLE_MILESTONE_ENTRY_ATTRIBUTE_NAME			= "responsible";
@@ -4428,16 +4435,24 @@ public class GwtViewHelper {
 				folderOwnedByCurrentUser = false;
 			}
 			
-			// Is the Binder a Folder with a user list? 
+			// Is the Binder a Folder with a user list or a My Files
+			// Storage folder? 
 			boolean folderHasUserList;
-			if ((null != binder) && (binder instanceof Folder))
-			     folderHasUserList = getFolderHasUserList((Folder) binder);
-			else folderHasUserList = false;
+			boolean folderIsMyFilesStorage;
+			if ((null != binder) && (binder instanceof Folder)) {
+				folderHasUserList = getFolderHasUserList((Folder) binder);
+				folderIsMyFilesStorage = BinderHelper.isBinderMyFilesStorage(binder);
+			}
+			else {
+				folderHasUserList      =
+				folderIsMyFilesStorage = false;
+			}
 
 			// Finally, use the data we obtained to create a
 			// FolderDisplayDataRpcResponseData and return that. 
 			return
 				new FolderDisplayDataRpcResponseData(
+					folderIsMyFilesStorage,
 					sortBy,
 					sortDescend,
 					pageSize,
@@ -8732,7 +8747,7 @@ public class GwtViewHelper {
 		else if (bi.isBinderFolder()) {
 			// Yes!  Is it a 'My Files Storage' folder?
 			Binder binder = bs.getBinderModule().getBinderWithoutAccessCheck(binderId);
-			if ((null != binder) && BinderHelper.isBinderMyFilesStorage(binder)) {
+			if ((null != binder) && BinderHelper.isBinderMyFilesStorage(binder) && (!(showMyFilesStorageAsFolder()))) {
 				// Yes!  Is it the current user's?
 				Binder userWS          = binder.getParentBinder();
 				Long   currentUserWSId = user.getWorkspaceId();
@@ -10007,6 +10022,17 @@ public class GwtViewHelper {
 	public static void saveUserViewSharedFiles(HttpServletRequest request, CollectionType collectionType, boolean viewingSharedFiles) {
 		HttpSession session = WebHelper.getRequiredSession(request);
 		session.setAttribute((CACHED_VIEW_SHARED_FILES_BASE + collectionType.ordinal()), new Boolean(viewingSharedFiles));
+	}
+
+	/**
+	 * Controls whether the My Files Storage folder will appear in the
+	 * UI as a normal folder or will be hidden as much as possible, as
+	 * it is in Filr.
+	 *  
+	 * @return
+	 */
+	public static boolean showMyFilesStorageAsFolder() {
+		return (SHOW_MY_FILES_STORAGE_IN_VIBE && LicenseChecker.showVibeFeatures());
 	}
 	
 	/**
