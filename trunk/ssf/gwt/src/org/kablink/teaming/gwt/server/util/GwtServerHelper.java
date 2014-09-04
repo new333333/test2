@@ -1193,14 +1193,15 @@ public class GwtServerHelper {
 		}
 		
 		gsp = GwtServerProfiler.start(m_logger, "GwtServerHelper.buildChildTIs( PROCESS )");
+		boolean showMFStorage = GwtViewHelper.showMyFilesStorageAsFolder();
 		try {
 			if (null != binders) {
 				for (Long subBinderId:  childBinderList) {
 					long sbi = subBinderId.longValue();
 					for (Binder subBinder:  binders) {
 						if (subBinder.getId().longValue() == sbi) {
-							// Drop any My Files Storage folders.
-							if (findBrowser || (!(BinderHelper.isBinderMyFilesStorage(subBinder)))) {
+							// For Filr, drop any My Files Storage folders.
+							if (findBrowser || showMFStorage || (!(BinderHelper.isBinderMyFilesStorage(subBinder)))) {
 								try {
 									TreeInfo subWsTI = buildTreeInfoFromBinder(request, bs, findBrowser, subBinder, expandedBindersList, false, depth);
 									childTIList.add(subWsTI);
@@ -4103,15 +4104,16 @@ public class GwtServerHelper {
 	public static BinderInfo getBinderInfo(HttpServletRequest request, AllModulesInjected bs, Binder binder) {
 		// Allocate a BinderInfo and store the core binder information.
 		BinderInfo reply = new BinderInfo();
-		                                    reply.setBinderId(       binder.getId()                                 );
-		                                    reply.setBinderTitle(    binder.getTitle()                              );
-		                                    reply.setFolderHome(     binder.isHomeDir()                             );
-		                                    reply.setLibrary(        binder.isLibrary()                             );
-		                                    reply.setEntityType(     getBinderEntityType(                   binder ));
-		                                    reply.setBinderType(     getBinderType(                         binder ));
-		                                    reply.setCloudFolderRoot(CloudFolderHelper.getCloudFolderRoot(  binder ));
-		if      (reply.isBinderFolder())    reply.setFolderType(     getFolderTypeFromViewDef(bs, ((Folder) binder)));
-		else if (reply.isBinderWorkspace()) reply.setWorkspaceType(  getWorkspaceType(                      binder ));
+		                                    reply.setBinderId(            binder.getId()                                 );
+		                                    reply.setBinderTitle(         binder.getTitle()                              );
+		                                    reply.setFolderHome(          binder.isHomeDir()                             );
+		                                    reply.setFolderMyFilesStorage(BinderHelper.isBinderMyFilesStorage(   binder ));
+		                                    reply.setLibrary(             binder.isLibrary()                             );
+		                                    reply.setEntityType(          getBinderEntityType(                   binder ));
+		                                    reply.setBinderType(          getBinderType(                         binder ));
+		                                    reply.setCloudFolderRoot(     CloudFolderHelper.getCloudFolderRoot(  binder ));
+		if      (reply.isBinderFolder())    reply.setFolderType(          getFolderTypeFromViewDef(bs, ((Folder) binder)));
+		else if (reply.isBinderWorkspace()) reply.setWorkspaceType(       getWorkspaceType(                      binder ));
 		try
 		{
 			Binder binderParent = binder.getParentBinder();

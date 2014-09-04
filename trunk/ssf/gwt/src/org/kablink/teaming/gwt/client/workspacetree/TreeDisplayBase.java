@@ -439,7 +439,7 @@ public abstract class TreeDisplayBase {
 		if (null != binderImg) {
 			// Yes!  Does the TreeInfo have the name of an icon to use?
 			String binderIcon = ti.getBinderIcon(iconSize);
-			if ((!(ti.getBinderInfo().isFolderHome())) && GwtClientHelper.hasString(binderIcon)) {
+			if ((!(ti.getBinderInfo().isFolderHome())) && (!(ti.getBinderInfo().isFolderMyFilesStorage())) && GwtClientHelper.hasString(binderIcon)) {
 				// Yes!  Set its URL into the Image.
 				if (binderIcon.startsWith("/"))
 				     binderImg.setUrl(getImagesPath() + binderIcon.substring(1));
