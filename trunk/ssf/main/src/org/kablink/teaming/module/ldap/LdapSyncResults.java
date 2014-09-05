@@ -54,7 +54,7 @@ public class LdapSyncResults
 	}
 	
 	// Define the maximum number of results we can collect for each area.
-	public static final int	MAX_RESULTS				= 400;
+	private static final int MAX_RESULTS = 2000;
 	
 	private PartialLdapSyncResults		m_usersAddedToTeaming;		// List of users added to Teaming
 	private PartialLdapSyncResults		m_usersModified;			// List of users modified in Teaming
