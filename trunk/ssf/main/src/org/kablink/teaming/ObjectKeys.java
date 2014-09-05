@@ -125,11 +125,11 @@ public interface ObjectKeys {
 	public static final String TEAM_ROOT_INTERNALID="402883b90d0de1f3010d0df5582b0009";
 	public static final String GLOBAL_ROOT_INTERNALID="402883b90d0de1f3010d0df5582b000a";
 	public static final String NET_FOLDERS_ROOT_INTERNALID="402883b90d0de1f3010d0df5582b001a";
-	//reserverd internalids for alluser group
+	//reserved internalids for alluser group
 	public static final String ALL_USERS_GROUP_INTERNALID="402883b90d0de1f3010d0df5582b0006";
-	//reserverd internalids for allextuser group
+	//reserved internalids for allextuser group
 	public static final String ALL_EXT_USERS_GROUP_INTERNALID="402883b90d0de1f3010d0df5582b0022";
-	//reserverd internalId user posting agent
+	//reserved internalId user posting agent
 	public static final String ANONYMOUS_POSTING_USER_INTERNALID="402883b90d0de1f3010d0df5582b0008";
 	//super user bypasses all acl and operation checks
 	public static final String SUPER_USER_INTERNALID="402883b90d0de1f3010d0df5582b000b";
@@ -141,7 +141,7 @@ public interface ObjectKeys {
 	public static final String FILE_SYNC_AGENT_INTERNALID="402883b90d0de1f3010d0df5582b001e";
 	//shared guest account
 	public static final String GUEST_USER_INTERNALID="402883b90d0de1f3010d0df5582b0013";
-	//reserverd internalids for allapplication group
+	//reserved internalids for allapplication group
 	public static final String ALL_APPLICATIONS_GROUP_INTERNALID="402883b90d0de1f3010d0df5582b0014";
 	//reserved internaId for _zoneAdministration pseudo role 
 	public static final String FUNCTION_SITE_ADMIN_INTERNALID="402883b90d0de1f3010d0df5582b0015";
@@ -476,6 +476,7 @@ public interface ObjectKeys {
     public static final int SEARCH_MAX_HITS_FOLDER_ENTRIES = 1000;
     public static final int SEARCH_MAX_HITS_FOLDER_ENTRIES_WIKI = 10000;
     public static final int SEARCH_MAX_HITS_FOLDER_ENTRIES_EXPORT = 100000;
+    public static final int SEARCH_MAX_HITS_FOLDER_ENTRIES_READ_UNREAD = 100000;
     public static final int SEARCH_MAX_HITS_ALL_USERS = 1000;
     public static final int SEARCH_MAX_HITS_LIMIT = 1000000;
     public static final int SEARCH_MAX_ZIP_FOLDER_FILES = 1000;
