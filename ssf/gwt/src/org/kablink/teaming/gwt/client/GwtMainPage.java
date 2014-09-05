@@ -4041,13 +4041,14 @@ public class GwtMainPage extends ResizeComposite
 	@Override
 	public void onViewCurrentBinderTeamMembers( ViewCurrentBinderTeamMembersEvent event )
 	{
-		GetBinderPermalinkCmd cmd;
-		
-		cmd = new GetBinderPermalinkCmd( m_mainPageInfo.getBinderInfo().getBinderId() );
+		// To view team members on a binder, we simply navigate to the
+		// binder's permalink with an operation of show_team_members.
+		GetBinderPermalinkCmd cmd = new GetBinderPermalinkCmd( m_mainPageInfo.getBinderInfo().getBinderId() );
 		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
 		{
 			@Override
-			public void onFailure( Throwable t ) {
+			public void onFailure( Throwable t )
+			{
 				GwtClientHelper.handleGwtRPCFailure(
 					t,
 					GwtTeaming.getMessages().rpcFailure_GetBinderPermalink(),
@@ -4057,19 +4058,15 @@ public class GwtMainPage extends ResizeComposite
 			@Override
 			public void onSuccess( VibeRpcResponse response )
 			{
-				String binderUrl;
-				StringRpcResponseData responseData;
-
-				responseData = (StringRpcResponseData) response.getResponseData();
-				binderUrl = responseData.getStringValue();
-				
+				StringRpcResponseData responseData = ((StringRpcResponseData) response.getResponseData());
+				String binderUrl = responseData.getStringValue();
 				OnSelectBinderInfo osbInfo = new OnSelectBinderInfo(
 					m_mainPageInfo.getBinderInfo(),
-					binderUrl,
+					GwtClientHelper.appendUrlParam( binderUrl, "operation", "show_team_members" ),
 					Instigator.VIEW_TEAM_MEMBERS );
 				if ( GwtClientHelper.validateOSBI( osbInfo ) )
 				{
-					GwtTeaming.fireEvent( new ChangeContextEvent( osbInfo ));
+					GwtTeaming.fireEvent( new ChangeContextEvent( osbInfo ) );
 				}
 			}// end onSuccess()
 		});// end AsyncCallback()
