@@ -50,6 +50,8 @@ import org.kablink.teaming.gwt.client.event.ContributorIdsReplyEvent;
 import org.kablink.teaming.gwt.client.event.DownloadFolderAsCSVFileEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.InvokeDropBoxEvent;
+import org.kablink.teaming.gwt.client.event.MarkFolderContentsReadEvent;
+import org.kablink.teaming.gwt.client.event.MarkFolderContentsUnreadEvent;
 import org.kablink.teaming.gwt.client.event.QuickFilterEvent;
 import org.kablink.teaming.gwt.client.event.ResetEntryMenuEvent;
 import org.kablink.teaming.gwt.client.event.SetFolderSortEvent;
@@ -107,6 +109,8 @@ public class BlogFolderView extends FolderViewBase
 		ContributorIdsRequestEvent.Handler,
 		DownloadFolderAsCSVFileEvent.Handler,
 		InvokeDropBoxEvent.Handler,
+		MarkFolderContentsReadEvent.Handler,
+		MarkFolderContentsUnreadEvent.Handler,
 		QuickFilterEvent.Handler,
 		SetFolderSortEvent.Handler
 {
@@ -133,6 +137,8 @@ public class BlogFolderView extends FolderViewBase
 		TeamingEvents.CONTRIBUTOR_IDS_REQUEST,
 		TeamingEvents.DOWNLOAD_FOLDER_AS_CSV_FILE,
 		TeamingEvents.INVOKE_DROPBOX,
+		TeamingEvents.MARK_FOLDER_CONTENTS_READ,
+		TeamingEvents.MARK_FOLDER_CONTENTS_UNREAD,
 		TeamingEvents.QUICK_FILTER,
 		TeamingEvents.SET_FOLDER_SORT
 	};
@@ -700,6 +706,54 @@ public class BlogFolderView extends FolderViewBase
 			BinderViewsHelper.invokeDropBox(
 				getFolderInfo(),
 				getEntryMenuPanel().getAddFilesMenuItem() );
+		}
+	}
+	
+	/**
+	 * Handles MarkFolderContentsReadEvent's received by this class.
+	 * 
+	 * Implements the MarkFolderContentsReadEvent.Handler.onMarkFolderContentsRead() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onMarkFolderContentsRead( MarkFolderContentsReadEvent event )
+	{
+		// Is the event targeted to this folder?
+		Long folderId    = event.getFolderId();
+		Long eventFolderId = event.getHandleByFolderId();
+		if ( null == eventFolderId )
+		{
+			eventFolderId = folderId;
+		}
+		if ( eventFolderId.equals( getFolderId() ) )
+		{
+			// Yes!  Mark the folder contents as having been read.
+			BinderViewsHelper.markFolderContentsRead( folderId );
+		}
+	}
+	
+	/**
+	 * Handles MarkFolderContentsUnreadEvent's received by this class.
+	 * 
+	 * Implements the MarkFolderContentsUnreadEvent.Handler.onMarkFolderContentsUnread() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onMarkFolderContentsUnread( MarkFolderContentsUnreadEvent event )
+	{
+		// Is the event targeted to this folder?
+		Long folderId    = event.getFolderId();
+		Long eventFolderId = event.getHandleByFolderId();
+		if ( null == eventFolderId )
+		{
+			eventFolderId = folderId;
+		}
+		if ( eventFolderId.equals( getFolderId() ) )
+		{
+			// Yes!  Mark the folder contents as having been unread.
+			BinderViewsHelper.markFolderContentsUnread( folderId );
 		}
 	}
 	
