@@ -2155,12 +2155,12 @@ public class GwtMenuHelper {
 		}
 		
 		// Does the user have rights modify this binder?
-		if ((!isMyFilesStorage) && (bm.testAccess(binder, BinderOperation.modifyBinder) || bm.testAccess(binder, BinderOperation.renameBinder))) {
+		if ((bm.testAccess(binder, BinderOperation.modifyBinder) || bm.testAccess(binder, BinderOperation.renameBinder))) {
 			// Yes!  Add the ToolBarItem's for it.
 			adminMenuCreated  =
 			configMenuCreated = true;
 
-			if (bm.testAccess(binder, BinderOperation.renameBinder)) {
+			if ((!isMyFilesStorage) && bm.testAccess(binder, BinderOperation.renameBinder)) {
 				// First, a rename ToolbarItem...
 				actionTBI = new ToolbarItem(RENAME);
 				markTBITitle(actionTBI, (isFolder ? "toolbar.menu.rename_folder" : "toolbar.menu.rename_workspace"));
@@ -2171,19 +2171,21 @@ public class GwtMenuHelper {
 			if (bm.testAccess(binder, BinderOperation.modifyBinder)) {
 				// ...if we're not in Filr mode...
 				if (!isFilr) {
-					// ...then a modify ToolbarItem...
-					url = createActionUrl(request);
-					url.setParameter(WebKeys.ACTION,          WebKeys.ACTION_MODIFY_BINDER);
-					url.setParameter(WebKeys.URL_BINDER_ID,   binderIdS                   );
-					url.setParameter(WebKeys.URL_BINDER_TYPE, binderType.name()           );
-					url.setParameter(WebKeys.URL_OPERATION,   WebKeys.OPERATION_MODIFY    );
-					
-					actionTBI = new ToolbarItem(MODIFY);
-					markTBIPopup(actionTBI                                                                             );
-					markTBITitle(actionTBI, (isFolder ? "toolbar.menu.modify_folder" : "toolbar.menu.modify_workspace"));
-					markTBIUrl(  actionTBI, url                                                                        );
-					
-					configTBI.addNestedItem(actionTBI);
+					if (!isMyFilesStorage) {
+						// ...then a modify ToolbarItem...
+						url = createActionUrl(request);
+						url.setParameter(WebKeys.ACTION,          WebKeys.ACTION_MODIFY_BINDER);
+						url.setParameter(WebKeys.URL_BINDER_ID,   binderIdS                   );
+						url.setParameter(WebKeys.URL_BINDER_TYPE, binderType.name()           );
+						url.setParameter(WebKeys.URL_OPERATION,   WebKeys.OPERATION_MODIFY    );
+						
+						actionTBI = new ToolbarItem(MODIFY);
+						markTBIPopup(actionTBI                                                                             );
+						markTBITitle(actionTBI, (isFolder ? "toolbar.menu.modify_folder" : "toolbar.menu.modify_workspace"));
+						markTBIUrl(  actionTBI, url                                                                        );
+						
+						configTBI.addNestedItem(actionTBI);
+					}
 	
 					// ...then a configure ToolbarItem.
 					url = createActionUrl(request);
@@ -2191,10 +2193,14 @@ public class GwtMenuHelper {
 					url.setParameter(WebKeys.URL_BINDER_ID,   binderIdS                           );
 					url.setParameter(WebKeys.URL_BINDER_TYPE, binderType.name()                   );
 					
+					String configureTitleKey;
+					if (isMyFilesStorage)
+					     configureTitleKey = "toolbar.menu.configuration.myFilesStorage";
+					else configureTitleKey = "toolbar.menu.configuration";
 					actionTBI = new ToolbarItem(CONFIGURE_DEFINITIONS);
-					markTBIPopup(actionTBI                              );
-					markTBITitle(actionTBI, "toolbar.menu.configuration");
-					markTBIUrl(  actionTBI, url                         );
+					markTBIPopup(actionTBI                   );
+					markTBITitle(actionTBI, configureTitleKey);
+					markTBIUrl(  actionTBI, url              );
 					
 					configTBI.addNestedItem(actionTBI);
 				}

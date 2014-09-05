@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -32,8 +32,6 @@
  */
 package org.kablink.teaming.portlet.binder;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -46,7 +44,6 @@ import java.util.regex.Pattern;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
-import javax.portlet.PortletRequest;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
@@ -62,7 +59,6 @@ import org.kablink.teaming.module.admin.AdminModule.AdminOperation;
 import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
 import org.kablink.teaming.module.binder.impl.SimpleNameAlreadyExistsException;
 import org.kablink.teaming.smtp.SMTPManager;
-import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.util.BinderHelper;
@@ -70,16 +66,17 @@ import org.kablink.teaming.web.util.DefinitionHelper;
 import org.kablink.teaming.web.util.FixupFolderDefsException;
 import org.kablink.teaming.web.util.PortletRequestUtils;
 import org.kablink.teaming.web.util.WebHelper;
-import org.kablink.teaming.web.util.WebUrlUtil;
 import org.kablink.util.Validator;
+
 import org.springframework.web.portlet.ModelAndView;
 
-
 /**
- *
+ * ?
+ * 
+ * @author ?
  */
+@SuppressWarnings("unchecked")
 public class ConfigureController extends AbstractBinderController {
-	
 	private SMTPManager smtpService;
 	public void setSmtpService(SMTPManager smtpService) {
 		this.smtpService = smtpService;
@@ -89,6 +86,7 @@ public class ConfigureController extends AbstractBinderController {
 		return smtpService;
 	}
 
+	@Override
 	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) 
 	throws Exception {
 		User user = RequestContextHolder.getRequestContext().getUser();
@@ -248,6 +246,7 @@ public class ConfigureController extends AbstractBinderController {
 		} else
 			response.setRenderParameters(formData);
 	}
+	@Override
 	public ModelAndView handleRenderRequestAfterValidation(RenderRequest request, 
 			RenderResponse response) throws Exception {
 		Map model = new HashMap();
@@ -261,6 +260,16 @@ public class ConfigureController extends AbstractBinderController {
 		if (binderId != null) {
 			Binder binder = getBinderModule().getBinder(binderId);
 			model.put(WebKeys.BINDER, binder);
+			
+			// IS this is a My Files Storage folder?
+			if (BinderHelper.isBinderMyFilesStorage(binder)) {
+				// Yes!  The only configure operation we allow there is
+				// simpleUrls.  Force it to that tab.  The
+				// configure_tabs.jsp will only display that tab when
+				// configuring a My Files Storage folder.
+				op = "simpleUrls";
+				model.put(WebKeys.OPERATION, op);
+			}
 		
 			setupDefinitions(binder, model);
 			//Build the navigation beans
@@ -379,10 +388,6 @@ public class ConfigureController extends AbstractBinderController {
 			//build orders list of workflow definition types
 			model.put(WebKeys.ALL_WORKFLOW_DEFINITIONS, DefinitionHelper.getAvailableDefinitions(binder.getId(),  Definition.WORKFLOW));			
 			model.put(WebKeys.REPLY_DEFINITION_MAP, DefinitionHelper.getReplyDefinitions(binder.getEntryDefinitions()));
-
 		}
-		
 	}
-
-
 }
