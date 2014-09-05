@@ -1787,7 +1787,7 @@ div.ss_box_top_rounded {
 
 .ss_box_title,
 .ss_box_title:visited {
-	color: ${ss_box_title_color} !important;
+	color: ${ss_box_title_color};
 	text-decoration:none;
 	font-size: 14px;
 	font-weight: bold;
@@ -1854,8 +1854,10 @@ a:hover.ss_box_prev {
 	font-size: 15px !important;
 	letter-spacing: .03em;
 	font-weight: bold;
-	padding: 5px;
-	background: transparent url(<html:imagesPath/>pics/dialog_header_tile.png) repeat-x;
+/*	padding: 5px;  */
+	padding-bottom: 1px;
+	border-bottom: 1px solid #e0e0e0;
+/*	background: transparent url(<html:imagesPath/>pics/dialog_header_tile.png) repeat-x;
 	border-top-left-radius: 5px;
 	border-top-right-radius: 5px;
 	-moz-border-radius-topleft: 5px;
@@ -1863,7 +1865,7 @@ a:hover.ss_box_prev {
 	border-top-left-radius: 5px;
 	border-top-right-radius: 5px;
 	-webkit-border-top-left-radius: 5px;
-	-webkit-border-top-right-radius: 5px;
+	-webkit-border-top-right-radius: 5px;  */
 }
 .ss_close_text a {
 	text-decoration: none;
