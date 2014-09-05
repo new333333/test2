@@ -1866,14 +1866,14 @@ body, table td, select
 
 .workspaceTreeControl_blankContent {display: block; margin: 10px; color: #666666; font-size: 1.1em;}
 
-.workspaceTreeControlBody            {padding-top: 10px;}
-.workspaceTreeControlBody_collection {background-color: white !important; padding-top: 10px; padding-bottom: 10px; border-bottom: 1px solid #cccccc;}
+.workspaceTreeControlBody            {padding-top: 2px;}
+.workspaceTreeControlBody_collection {background-color: white !important; padding-top: 8px; padding-bottom: 5px; border-bottom: 1px solid #cccccc;}
 
-.workspaceTreeControlTreeHeader {color: #666; font-size: .8em; margin-top: 0em; padding-top: 6px; padding-bottom: 3px; padding-right: 0px; padding-left: 20px; border-bottom: 0px; text-transform: uppercase; letter-spacing: 2px; white-space: nowrap;}
+.workspaceTreeControlTreeHeader {color: #666; font-size: 10px; margin-top: 0; padding-top: 5px; padding-bottom: 3px; padding-right: 0px; padding-left: 20px; border-bottom: 0px; text-transform: uppercase; letter-spacing: 2px; white-space: nowrap; display: inline-block;}
 
 .workspaceTreeControlHeader .workspaceTreeBinderSelected
 {
-	color: #fff;
+	color: #666; padding-top: 3px;
 }
 .workspaceTreeControlHeader td
 {
@@ -1893,7 +1893,7 @@ body, table td, select
 }
 .workspaceTreeControlHeader_base
 {
-	color: #949494;
+	color: #666;
 	font-weight: normal;
 	padding: 5px;
 }
@@ -1918,10 +1918,10 @@ body, table td, select
 
 .workspaceTreeControlHeader_nav
 {
-	background: #85BCC3 url(images/header_blend_grey_bg.png) repeat-x scroll center bottom;
+	background: transparent;
 	cursor: pointer;
 }
-.workspaceTreeControlRow            {padding: 2px; margin-bottom: 5px;}
+.workspaceTreeControlRow            {padding: 2px !important; margin-bottom: 2px;}
 .workspaceTreeControlRow_collection {margin-left: -10px;}
 
 .workspaceTreeControlRow_configureImg   {padding-top: 1px; cursor: pointer;}
