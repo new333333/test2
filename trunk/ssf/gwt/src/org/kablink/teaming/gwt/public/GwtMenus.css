@@ -4,7 +4,7 @@
 
 
 /* Start:  Generic menu styles. */
-	.gwt-MenuBar-horizontal               {border: 0px solid #BBB !important; background: transparent url(images/main_menu_bg.png);}
+	.gwt-MenuBar-horizontal               {border: 0px solid #BBB !important; background: #ededed;}
 	.gwt-MenuBar-horizontal .gwt-MenuItem {color: #1f1f1f; padding: 0 6px;}
 	
 	a.gwt-MenuItem-anchor, a.gwt-MenuItem-anchor:visited, a.gwt-MenuItem-anchor:link {color: #fff !important; text-decoration: none;}
@@ -176,7 +176,8 @@
 		padding: 0px;
 		position: relative;
 		top: 0;
-		background: transparent url(images/main_menu_bg.png) repeat-x;
+/*		background: transparent url(images/main_menu_bg.png) repeat-x;  */
+		background-color: #ededed;
 		white-space: nowrap;
 		width: 100%;
 		z-index: 300;
@@ -337,12 +338,12 @@
 		font-size: 11px;
 		padding: 1px 0 !important;
 		vertical-align: middle;
-		width: 160px;
+		width: 150px;
 		background-color: transparent;
 		border: 0px;
 	}
-	.vibe-mainMenuSearch_InputBlur  {color: #ffffff;}
-	.vibe-mainMenuSearch_InputFocus {color: #ffffff !important;}
+	.vibe-mainMenuSearch_InputBlur  {color: #b8b8b8;}
+	.vibe-mainMenuSearch_InputFocus {color: #1f1f1f !important;}
 	.vibe-mainMenuSearchOptions_Button
 	{
 		border: 0px !important;
@@ -363,12 +364,12 @@
 		border-left: none;
 		display: block;
 		position: absolute;
-		right: 50px;
+		right: 53px;
 		top: 3px;
 		height: 18px;
 		white-space: nowrap;
-		background: transparent url(images/trans30_black.png) repeat ;
-		border: 1px solid transparent;
+		background: #fff;
+		border: 1px solid #c4c4c4;
 		border-radius: 15px;
 		-moz-border-radius: 15px;
 		-webkit-border-radius: 15px;
