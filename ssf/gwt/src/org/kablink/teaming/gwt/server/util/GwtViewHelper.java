@@ -9067,6 +9067,7 @@ public class GwtViewHelper {
 	private static void markFolderContentsReadUnreadImpl(AllModulesInjected bs, Long folderId, boolean markRead) {
 		// Can we get any entries from the folder?
 		Map options = new HashMap();
+		options.put(ObjectKeys.SEARCH_MAX_HITS, ObjectKeys.SEARCH_MAX_HITS_FOLDER_ENTRIES_READ_UNREAD);
 		Map folderEntries = bs.getFolderModule().getEntries(folderId, options);
 		if (null != folderEntries) {
 			List<Map> feList = ((List) folderEntries.get(ObjectKeys.SEARCH_ENTRIES));
