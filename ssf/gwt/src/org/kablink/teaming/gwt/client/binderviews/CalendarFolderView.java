@@ -60,6 +60,8 @@ import org.kablink.teaming.gwt.client.event.FullUIReloadEvent;
 import org.kablink.teaming.gwt.client.event.GotoContentUrlEvent;
 import org.kablink.teaming.gwt.client.event.InvokeDropBoxEvent;
 import org.kablink.teaming.gwt.client.event.LockSelectedEntitiesEvent;
+import org.kablink.teaming.gwt.client.event.MarkFolderContentsReadEvent;
+import org.kablink.teaming.gwt.client.event.MarkFolderContentsUnreadEvent;
 import org.kablink.teaming.gwt.client.event.MarkReadSelectedEntitiesEvent;
 import org.kablink.teaming.gwt.client.event.MarkUnreadSelectedEntitiesEvent;
 import org.kablink.teaming.gwt.client.event.MoveSelectedEntitiesEvent;
@@ -144,6 +146,8 @@ public class CalendarFolderView extends FolderViewBase
 		DownloadFolderAsCSVFileEvent.Handler,
 		InvokeDropBoxEvent.Handler,
 		LockSelectedEntitiesEvent.Handler,
+		MarkFolderContentsReadEvent.Handler,
+		MarkFolderContentsUnreadEvent.Handler,
 		MarkReadSelectedEntitiesEvent.Handler,
 		MarkUnreadSelectedEntitiesEvent.Handler,
 		MoveSelectedEntitiesEvent.Handler,
@@ -186,6 +190,8 @@ public class CalendarFolderView extends FolderViewBase
 		TeamingEvents.DOWNLOAD_FOLDER_AS_CSV_FILE,
 		TeamingEvents.INVOKE_DROPBOX,
 		TeamingEvents.LOCK_SELECTED_ENTITIES,
+		TeamingEvents.MARK_FOLDER_CONTENTS_READ,
+		TeamingEvents.MARK_FOLDER_CONTENTS_UNREAD,
 		TeamingEvents.MARK_READ_SELECTED_ENTITIES,
 		TeamingEvents.MARK_UNREAD_SELECTED_ENTITIES,
 		TeamingEvents.MOVE_SELECTED_ENTITIES,
@@ -1295,6 +1301,48 @@ public class CalendarFolderView extends FolderViewBase
 				selectedEntityIds = getSelectedEntityIds();
 			}
 			BinderViewsHelper.lockEntries(selectedEntityIds);
+		}
+	}
+	
+	/**
+	 * Handles MarkFolderContentsReadEvent's received by this class.
+	 * 
+	 * Implements the MarkFolderContentsReadEvent.Handler.onMarkFolderContentsRead() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onMarkFolderContentsRead(MarkFolderContentsReadEvent event) {
+		// Is the event targeted to this folder?
+		Long folderId    = event.getFolderId();
+		Long eventFolderId = event.getHandleByFolderId();
+		if (null == eventFolderId) {
+			eventFolderId = folderId;
+		}
+		if (eventFolderId.equals(getFolderId())) {
+			// Yes!  Mark the folder contents as having been read.
+			BinderViewsHelper.markFolderContentsRead(folderId);
+		}
+	}
+	
+	/**
+	 * Handles MarkFolderContentsUnreadEvent's received by this class.
+	 * 
+	 * Implements the MarkFolderContentsUnreadEvent.Handler.onMarkFolderContentsUnread() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onMarkFolderContentsUnread(MarkFolderContentsUnreadEvent event) {
+		// Is the event targeted to this folder?
+		Long folderId    = event.getFolderId();
+		Long eventFolderId = event.getHandleByFolderId();
+		if (null == eventFolderId) {
+			eventFolderId = folderId;
+		}
+		if (eventFolderId.equals(getFolderId())) {
+			// Yes!  Mark the folder contents as having been unread.
+			BinderViewsHelper.markFolderContentsUnread(folderId);
 		}
 	}
 	
