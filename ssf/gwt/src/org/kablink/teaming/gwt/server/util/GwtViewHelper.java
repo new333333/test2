@@ -7637,7 +7637,10 @@ public class GwtViewHelper {
 			// No, it's not an internal user!  Is it the Guest user?
 			if (user.isShared())
 			     reply = UserType.EXTERNAL_GUEST;
-			else reply = UserType.EXTERNAL_OTHERS;
+			else if ( ui.isFromOpenid() && ui.isFromLocal() == false )
+				reply = UserType.EXTERNAL_OPEN_ID;
+			else
+				reply = UserType.EXTERNAL_OTHERS;
 		}
 		
 		// If we get here, reply refers to the UserType of the User.
