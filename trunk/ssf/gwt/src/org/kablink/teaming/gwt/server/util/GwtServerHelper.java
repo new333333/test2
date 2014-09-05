@@ -6917,16 +6917,18 @@ public class GwtServerHelper {
 				try
 				{
 					User user;
+					IdentityInfo identityInfo;
 
-					// Is this an external user that has already been verified?
+					// Is this an external user?
 					user = ((User) ami.getProfileModule().getEntry( gwtUser.getIdLong() ));
-					if ( user.getIdentityInfo().isInternal() == false &&
-						 (user.getExtProvState() == ExtProvState.verified || user.getExtProvState() == ExtProvState.pwdResetRequested) )
+					identityInfo = user.getIdentityInfo();
+					if ( identityInfo.isInternal() == false )
 					{
 						String token;
 						String url;
 						AdaptedPortletURL adapterUrl;
-						Map<String,Object> errorMap;
+						Map<String,Object> errorMap = null;
+						UrlNotificationType notificationType;
 						
 						// Yes
 						// Get a url to the user's workspace.
@@ -6943,12 +6945,33 @@ public class GwtServerHelper {
 						token = ExternalUserUtil.encodeUserToken( user );
 						adapterUrl.setParameter( ExternalUserUtil.QUERY_FIELD_NAME_EXTERNAL_USER_ENCODED_TOKEN, token );
 						url = adapterUrl.toString();
-		
+
+						// Has this external user already self-registered?
+						if ( user.getExtProvState() == ExtProvState.verified || user.getExtProvState() == ExtProvState.pwdResetRequested )
+						{
+							// Yes
+							notificationType = UrlNotificationType.FORGOTTEN_PASSWORD;
+						}
+						else if ( identityInfo.isFromOpenid() && identityInfo.isFromLocal() == false )
+						{
+							notificationType = UrlNotificationType.SELF_REGISTRATION_REQUIRED;
+						}
+						else
+						{
+							String err;
+							
+							err = NLT.get( "request.pwd.reset.invalid.user.state" );
+							responseData.addError( err );
+							return null;
+						}
+						
+
 						errorMap = EmailHelper.sendUrlNotification(
 																ami,
 																url,
-																UrlNotificationType.FORGOTTEN_PASSWORD,
+																notificationType,
 																user.getId() );
+
 						if ( errorMap != null )
 						{
 							List<SendMailErrorWrapper> emailErrors;
@@ -6960,7 +6983,10 @@ public class GwtServerHelper {
 							{
 								// Sending the e-mail worked.  Change the users "external user provisioned state" to
 								// "password reset requested"
-								ExternalUserUtil.markAsPwdResetRequested( user );
+								if ( user.getExtProvState() == ExtProvState.verified || user.getExtProvState() == ExtProvState.pwdResetRequested )
+								{
+									ExternalUserUtil.markAsPwdResetRequested( user );
+								}
 							}
 						}
 					}

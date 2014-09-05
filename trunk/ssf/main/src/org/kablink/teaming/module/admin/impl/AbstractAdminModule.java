@@ -2550,10 +2550,17 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 		// What Velocity template should we use for this URL?
 		String purposeKey;
 		String subjectKey;
+		String urlTextKey = null;
 		String template;
 		switch (urlNotificationType) {
 		case FORGOTTEN_PASSWORD:  template = "forgottenPasswordNotification.vm"; purposeKey = subjectKey = "relevance.mailForgottenPassword"; break;
 		case PASSWORD_RESET_REQUESTED:    template = "passwordChangedNotification.vm";   purposeKey = subjectKey = "relevance.mailPasswordChanged";   break;
+		case SELF_REGISTRATION_REQUIRED:
+			template = "selfRegistrationRequired.vm";
+			purposeKey = "relevance.selfRegistrationRequired.purpose";
+			subjectKey = "relevance.selfRegistrationRequired.subject";
+			urlTextKey = subjectKey;
+			break;
 		default:
 			throw new ConfigurationException(NLT.get("errorcode.sendurlnotification.bogusUrlType", new String[]{urlNotificationType.name()}));
 		}
@@ -2596,7 +2603,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 			StringWriter	writer  = new StringWriter();
 			Notify			notify  = new Notify(NotifyType.summary, locale, targetTZ, now);
            	NotifyVisitor	visitor = new NotifyVisitor(null, notify, null, writer, NotifyVisitor.WriterType.HTML, null);
-		    VelocityContext	ctx     = getUrlNotificationVelocityContext(visitor, url, purposeKey);
+		    VelocityContext	ctx     = getUrlNotificationVelocityContext(visitor, url, purposeKey, urlTextKey );
 			visitor.processTemplate(template, ctx);
 			EmailUtil.putHTML(mailMap, MailModule.HTML_MSG, writer.toString());
 			
@@ -2604,7 +2611,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 			writer  = new StringWriter();
 			notify  = new Notify(NotifyType.summary, locale, targetTZ, now);
            	visitor = new NotifyVisitor(null, notify, null, writer, NotifyVisitor.WriterType.TEXT, null);
-		    ctx     = getUrlNotificationVelocityContext(visitor, url, purposeKey);
+		    ctx     = getUrlNotificationVelocityContext(visitor, url, purposeKey, urlTextKey );
 			visitor.processTemplate(template, ctx);
 			EmailUtil.putText(mailMap, MailModule.TEXT_MSG, writer.toString());
 
@@ -3079,7 +3086,11 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 	/*
 	 * Returns a VelocityContext to use for URL notification emails. 
 	 */
-	private static VelocityContext getUrlNotificationVelocityContext(NotifyVisitor visitor, String url, String purposeKey) {
+	private static VelocityContext getUrlNotificationVelocityContext(
+		NotifyVisitor visitor,
+		String url,
+		String purposeKey,
+		String urlTextKey ) {
 		// Create the context...
 	    VelocityContext	reply = NotifyBuilderUtil.getVelocityContext();
 	    
@@ -3089,6 +3100,11 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 		reply.put("ssUrlPurpose",  NLT.get(purposeKey)				                 );
 		reply.put("ssProduct",     (Utils.checkIfFilr() ? "Filr" : "Vibe")           );
 		reply.put("user",          RequestContextHolder.getRequestContext().getUser());
+		
+		if ( urlTextKey != null )
+		{
+			reply.put( "ssUrlText", NLT.get( urlTextKey ) );
+		}
 		
 		// ...and return it.
 		return reply;
