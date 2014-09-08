@@ -419,7 +419,8 @@ div.ss_inline_menu a {
 	background-image: none;
 	}
 .ss_actions_bar_submenu a, .ss_actions_bar_submenu a:visited {
-	color:${ss_box_title_color};
+/*	color:${ss_box_title_color}; */
+	color: #fff;
 	}
 /* utils bar (dashboard)  */
 div.ss_dashboardContainer {
