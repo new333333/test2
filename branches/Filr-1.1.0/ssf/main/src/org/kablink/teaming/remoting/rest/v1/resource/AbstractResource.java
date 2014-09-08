@@ -1888,25 +1888,31 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         if (maxCount==null) {
             maxCount = -1;
         }
-        Criteria crit = new Criteria();
-        if (filter!=null) {
-            crit.add(filter);
+        Map resultMap;
+        if (binder instanceof Folder && (entries || files)) {
+            resultMap = searchForFolderContents(id, binders, offset, maxCount);
+        } else {
+            Criteria crit = new Criteria();
+            if (filter!=null) {
+                crit.add(filter);
+            }
+            Junction or = Restrictions.disjunction();
+            if (binders) {
+                or.add(SearchUtils.buildBindersCriterion());
+            }
+            if (entries || files) {
+                or.add(SearchUtils.buildEntriesCriterion());
+            }
+        //        if (files) {
+        //            or.add(SearchUtils.buildAttachmentsCriterion());
+        //        }
+            crit.add(or);
+            crit.add(SearchUtils.buildParentBinderCriterion(id));
+            crit.addOrder(new Order(Constants.ENTITY_FIELD, true));
+            crit.addOrder(new Order(Constants.SORT_TITLE_FIELD, true));
+
+            resultMap = getBinderModule().searchFolderOneLevelWithInferredAccess(crit, Constants.SEARCH_MODE_PREAPPROVED_PARENTS, offset, maxCount, binder, allowJits);
         }
-        Junction or = Restrictions.disjunction();
-        if (binders) {
-            or.add(SearchUtils.buildBindersCriterion());
-        }
-        if (entries || files) {
-            or.add(SearchUtils.buildEntriesCriterion());
-        }
-//        if (files) {
-//            or.add(SearchUtils.buildAttachmentsCriterion());
-//        }
-        crit.add(or);
-        crit.add(SearchUtils.buildParentBinderCriterion(id));
-        crit.addOrder(new Order(Constants.ENTITY_FIELD, true));
-        crit.addOrder(new Order(Constants.SORT_TITLE_FIELD, true));
-        Map resultMap = getBinderModule().searchFolderOneLevelWithInferredAccess(crit, Constants.SEARCH_MODE_PREAPPROVED_PARENTS, offset, maxCount, binder, allowJits);
         SearchResultList<SearchableObject> results = new SearchResultList<SearchableObject>(offset, binder.getModificationDate());
         SearchResultBuilderUtil.buildSearchResults(results, new UniversalBuilder(descriptionFormat, files), resultMap, nextUrl, nextParams, offset);
         if (modifiedSince!=null && results.getLastModified()!=null && !modifiedSince.before(results.getLastModified())) {
@@ -1927,6 +1933,20 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         
         return results;
     }
+
+    private Map searchForFolderContents(long folderId, boolean includeSubFolders, int offset, int maxCount) {
+        Map options = new HashMap();
+        options.put(ObjectKeys.SEARCH_INCLUDE_NESTED_BINDERS, includeSubFolders);
+        options.put(ObjectKeys.SEARCH_SORT_BY,                Constants.ENTITY_FIELD);
+        options.put(ObjectKeys.SEARCH_SORT_DESCEND,           Boolean.FALSE);
+        options.put(ObjectKeys.SEARCH_SORT_BY_SECONDARY,      Constants.SORT_TITLE_FIELD);
+        options.put(ObjectKeys.SEARCH_SORT_DESCEND_SECONDARY, Boolean.FALSE);
+        options.put(ObjectKeys.SEARCH_OFFSET, offset);
+        options.put(ObjectKeys.SEARCH_MAX_HITS, maxCount);
+
+        return getFolderModule().getEntries(folderId, options);
+    }
+
 
     protected Binder _getBinder(long id) {
         return _getBinderImpl(id);
