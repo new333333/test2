@@ -3088,7 +3088,7 @@ public interface GwtTeamingMessages extends Messages
 	String forgottenPwdDlg_Hint();
 	String forgottenPwdDlg_HintNote();
 	String forgottenPwdDlg_Instructions();
-	String forgottenPwdDlg_InvalidEmailAddress( String product );
+	String forgottenPwdDlg_InvalidEmailAddress2( String product );
 	String forgottenPwdDlg_ForgottenPwdEmailSent();
 	String forgottenPwdDlg_OnlyForExternalUsers();
 	String forgottenPwdDlg_SelfRegistrationEmailSent();

@@ -309,7 +309,7 @@ public class ForgottenPwdDlg extends DlgBox
 								label.addStyleName( "dlgErrorLabel" );
 								errorPanel.add( label );
 								
-								txt = GwtTeaming.getMessages().forgottenPwdDlg_InvalidEmailAddress( GwtClientHelper.getProductName() );
+								txt = GwtTeaming.getMessages().forgottenPwdDlg_InvalidEmailAddress2( GwtClientHelper.getProductName() );
 								
 								label = new Label( txt );
 								label.addStyleName( "bulletListItem" );
