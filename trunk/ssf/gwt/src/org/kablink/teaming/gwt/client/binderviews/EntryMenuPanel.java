@@ -1096,8 +1096,9 @@ public class EntryMenuPanel extends ToolPanelBase
 					m_messages.vibeEntryMenu_Alt_Pin_ShowPinned());
 			VibeFlowPanel html = new VibeFlowPanel();
 			html.add(pinImg);
-			menuText       = html.getElement().getInnerHTML();
-			menuTextIsHTML = true;
+			menuText                = html.getElement().getInnerHTML();
+			menuTextIsHTML          = true;
+			menuIsSimpleImageButton = true;
 		}
 		
 		// No, this isn't a view pinned entries item!  Is it a toggle
