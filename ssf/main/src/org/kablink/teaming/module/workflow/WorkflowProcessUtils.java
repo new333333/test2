@@ -1038,6 +1038,22 @@ public static void resumeTimers(WorkflowSupport entry) {
 						updateMinimum(minDate,timerDate);
 					}
 					
+				} else if (type.equals("transitionOnDate")) {
+					//The "date" field is milli-secs since 1/1/1970
+					String val = DefinitionUtils.getPropertyValue(condition, "date");
+					try {
+						long endTime = Long.valueOf(val);
+						if (endTime > 0) {
+							Date timerDate = new Date();
+							timerDate.setTime(endTime);
+							if (currentCal.getTime().after(timerDate)) {
+								return toState;
+							} else {
+								updateMinimum(minDate,timerDate);
+							}
+						}
+					} catch(Exception e) {}
+					
 				} else if (type.equals("waitForParallelThread")) {
 					//	get names of threads we are waiting for
 					List threads = DefinitionUtils.getPropertyValueList(condition, "name");
