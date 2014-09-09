@@ -790,7 +790,7 @@ public class ReadFileController extends AbstractReadFileController {
 		// If we have one...
 		if (null != modDate) {
 			// ...set the modification time on the ZipArchiveEntry...
-//			zae.setTime(modDate.getTime());
+//!			zae.setTime(modDate.getTime());
 		}
 
 		// ...and set the various extended time stamps, as necessary.
