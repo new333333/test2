@@ -26,7 +26,7 @@ Colt CERN Colt Library 1.2
 Commons Beanutils 1.7 (from spring distribution)
 Commons Codec 1.6 (required by WSS4J, used by HttpClient)
 Commons Collections 3.2 (from spring distribution)
-Commons Compress 1.4
+Commons Compress 1.8.1
 Commons Digester 1.8
 Commons Discovery 0.2
 Commons DBCP 1.2.2

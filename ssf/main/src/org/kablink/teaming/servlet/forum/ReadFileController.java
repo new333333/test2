@@ -52,6 +52,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.compress.archivers.zip.Zip64Mode;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
+import org.apache.commons.compress.archivers.zip.X5455_ExtendedTimestamp;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Attachment;
@@ -118,7 +119,7 @@ public class ReadFileController extends AbstractReadFileController {
 	// translation of the file.zipFolderDownload.fileName string in the
 	// messages.properties file.
 	private final static String ZIPFOLDER_DEFAULT_FILENAME = "folder.zip";
-
+	
 	/*
 	 * Inner class used to count files and folders added to a zip.
 	 */
@@ -196,9 +197,10 @@ public class ReadFileController extends AbstractReadFileController {
 								zipOut.finish();
 								return null;
 							}
-	
-							zipOut.putArchiveEntry(new ZipArchiveEntry(attName));
+							ZipArchiveEntry zae = new ZipArchiveEntry(attName);
+							zipOut.putArchiveEntry(zae);
 							FileUtil.copy(fileStream, zipOut);
+							setDateTimeOnZipArchiveEntry(zae, attachment);
 							zipOut.closeArchiveEntry();
 						} catch (Exception e) {
 							logger.error("Error reading file", e);
@@ -265,8 +267,8 @@ public class ReadFileController extends AbstractReadFileController {
 							zipOut.finish();
 							return null;
 						}
-
-						zipOut.putArchiveEntry(new ZipArchiveEntry(attName));
+						ZipArchiveEntry zae = new ZipArchiveEntry(attName);
+						zipOut.putArchiveEntry(zae);
 						String loggerText = "Copying an unencrypted file of length ";
 						if (fileAtt.isEncrypted()) {
 							loggerText = "Copying an encrypted file of length ";
@@ -278,6 +280,7 @@ public class ReadFileController extends AbstractReadFileController {
 						logger.info(loggerText + fileAtt.getFileItem().getLengthKB() + 
 								"KB took " + (System.nanoTime()-startTime)/1000000.0 + " ms");
 						*/
+						setDateTimeOnZipArchiveEntry(zae, fileAtt);
 						zipOut.closeArchiveEntry();
 					} catch (Exception e) {
 						logger.error("Error reading file", e);
@@ -774,6 +777,33 @@ public class ReadFileController extends AbstractReadFileController {
 	}
 
 	/*
+	 * Stores the date/time stamp from a FileAttachment on a
+	 * ZipArchiveEntry.
+	 */
+	private static void setDateTimeOnZipArchiveEntry(ZipArchiveEntry zae, Attachment fa) {
+		// Extract the date/time stamps for the ZipArchiveEntry from
+		// the Attachment.
+		Date createDate = ((null == fa.getCreation())     ? null : fa.getCreation().getDate());
+		Date modDate    = ((null == fa.getModification()) ? null : fa.getModification().getDate());
+		Date accessDate = modDate;
+	
+		// If we have one...
+		if (null != modDate) {
+			// ...set the modification time on the ZipArchiveEntry...
+//			zae.setTime(modDate.getTime());
+		}
+
+		// ...and set the various extended time stamps, as necessary.
+		X5455_ExtendedTimestamp ef = new X5455_ExtendedTimestamp();
+		byte efFlags = 0;
+		if (null != createDate) {ef.setCreateJavaTime(createDate); efFlags |= X5455_ExtendedTimestamp.CREATE_TIME_BIT;}
+		if (null != modDate)    {ef.setModifyJavaTime(modDate   ); efFlags |= X5455_ExtendedTimestamp.MODIFY_TIME_BIT;}
+		if (null != accessDate) {ef.setAccessJavaTime(accessDate); efFlags |= X5455_ExtendedTimestamp.ACCESS_TIME_BIT;}
+		if (0 != efFlags)       {ef.setFlags(efFlags);                                                                }
+		zae.addExtraField(ef);
+	}
+	
+	/*
 	 * Adds the primary files from a Collection<FolderEntry> to a zip.
 	 */
 	private void addCollectionFilesToZip(ZipArchiveOutputStream zipOut, String filePath, Collection<FolderEntry> feCollection, boolean singleByte) {
@@ -806,7 +836,8 @@ public class ReadFileController extends AbstractReadFileController {
 					if (MiscUtil.hasString(filePath))
 					     subFilePath = (filePath + "/" + fileName);
 					else subFilePath = fileName;
-					zipOut.putArchiveEntry(new ZipArchiveEntry(subFilePath));
+					ZipArchiveEntry zae = new ZipArchiveEntry(subFilePath);
+					zipOut.putArchiveEntry(zae);
 					long startTime = System.nanoTime();
 					FileUtil.copy(fileStream, zipOut);
 					/*
@@ -818,6 +849,7 @@ public class ReadFileController extends AbstractReadFileController {
 							logger.info(loggerText + fileAtt.getFileItem().getLengthKB() + 
 									"KB took " + (System.nanoTime()-startTime)/1000000.0 + " ms");
 					*/
+					setDateTimeOnZipArchiveEntry(zae, fileAtt);
 					zipOut.closeArchiveEntry();
 				} catch (Exception e) {
 					logger.error("Error reading file", e);
