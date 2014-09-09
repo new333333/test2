@@ -32,23 +32,23 @@
  */
 package org.kablink.teaming.gwt.client.rpc.shared;
 
+import com.google.gwt.user.client.rpc.IsSerializable;
+
 /**
- * This class holds all of the information necessary to execute the
- * 'get root workspace id' command.
+ * This class holds the response data for any command that expects a
+ * Long response.
  * 
  * @author drfoster@novell.com
  */
-public class GetRootWorkspaceIdCmd extends VibeRpcCmd {
-	private Long	m_currentRootBinderId;	//
-	private Long	m_binderId;				//
+public class LongRpcResponseData implements IsSerializable, VibeRpcResponseData {
+	private Long	m_value;	//
 	
 	/*
 	 * Constructor method.
 	 * 
-	 * For GWT serialization, must have a zero parameter constructor
-	 * method.
+	 * Zero parameter constructor method for GWT RPC requirements.
 	 */
-	private GetRootWorkspaceIdCmd() {
+	private LongRpcResponseData() {
 		// Initialize the super class.
 		super();
 	}
@@ -56,16 +56,14 @@ public class GetRootWorkspaceIdCmd extends VibeRpcCmd {
 	/**
 	 * Constructor method.
 	 * 
-	 * @param currentRootBinderId
-	 * @param binderId
+	 * @param value
 	 */
-	public GetRootWorkspaceIdCmd(Long currentRootBinderId, Long binderId) {
+	public LongRpcResponseData(Long value) {
 		// Initialize this object...
 		this();
 		
-		// ...and store the parameters.
-		setCurrentRootBinderId(currentRootBinderId);
-		setBinderId(           binderId           );
+		// ...and store the parameter.
+		setValue(value);
 	}
 	
 	/**
@@ -73,26 +71,12 @@ public class GetRootWorkspaceIdCmd extends VibeRpcCmd {
 	 * 
 	 * @return
 	 */
-	public Long getCurrentRootBinderId() {return m_currentRootBinderId;}
-	public Long getBinderId()            {return m_binderId;           }
+	public Long getValue() {return m_value;}
 	
 	/**
 	 * Set'er methods.
 	 * 
 	 * @param
 	 */
-	public void setCurrentRootBinderId(Long currentRootBinderId) {m_currentRootBinderId = currentRootBinderId;}
-	public void setBinderId(           Long binderId)            {m_binderId            = binderId;           }
-	
-	/**
-	 * Returns the command's enumeration value.
-	 * 
-	 * Implements VibeRpcCmd.getCmdType()
-	 * 
-	 * @return
-	 */
-	@Override
-	public int getCmdType() {
-		return VibeRpcCmdType.GET_ROOT_WORKSPACE_ID.ordinal();
-	}
+	public void setValue(Long value) {m_value = value;}
 }

@@ -2348,13 +2348,9 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		
 		case GET_ROOT_WORKSPACE_ID:
 		{
-			GetRootWorkspaceIdCmd grwiCmd;
-			String result;
-			StringRpcResponseData responseData;
-			
-			grwiCmd = (GetRootWorkspaceIdCmd) cmd;
-			result = getRootWorkspaceId( ri, grwiCmd.getBinderId() );
-			responseData = new StringRpcResponseData( result );
+			GetRootWorkspaceIdCmd grwiCmd = ((GetRootWorkspaceIdCmd) cmd);
+			Long result = getRootWorkspaceId( ri, grwiCmd.getCurrentRootBinderId(), grwiCmd.getBinderId() );
+			LongRpcResponseData responseData = new LongRpcResponseData( result );
 			response = new VibeRpcResponse( responseData );
 			return response;
 		}
@@ -5736,29 +5732,48 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		return reply;
 	}// end getHorizontalNode()
 
-	/**
+	/*
 	 * Returns the ID of the nearest containing workspace of a given
 	 * Binder.
-	 * 
-	 * @param ri
-	 * @param binderId
-	 * 
-	 * @return
 	 */
-	private String getRootWorkspaceId( HttpRequestInfo ri, String binderId )
+	private Long getRootWorkspaceId( HttpRequestInfo ri, Long currentRootBinderId, Long binderId )
 	{
-		String reply;
+		Long reply;
 		
+		// Can we access the target binder?
 		Binder binder = GwtUIHelper.getBinderSafely( getBinderModule(), binderId );
 		if (null != binder)
 		{
-			Workspace binderWS = BinderHelper.getBinderWorkspace( binder );
-			reply = String.valueOf( binderWS.getId() );
+			// Yes!  Is it's workspace other than the current root, if
+			// we were given one?
+			Binder binderWS = BinderHelper.getBinderWorkspace( binder );
+			if ((null != binderWS) && (null != currentRootBinderId) && (!(currentRootBinderId.equals(binderWS.getId())))) {
+				// Yes!  Walk up that workspace's parentage.
+				Binder parent = binderWS;
+				do {
+					// Does this workspace have a parent?
+					parent = parent.getParentBinder();
+					if (null == parent) {
+						// No!  We'll just return the workspace we
+						// already found.
+						break;
+					}
+					
+					// Is this parent the current root?
+					if (currentRootBinderId.equals(parent.getId())) {
+						// Yes!  We'll just return that then (i.e., the
+						// current root.)
+						binderWS = ((Workspace) parent);
+						break;
+					}
+				} while (true);
+			}
+			reply = binderWS.getId();
 		}
 		else
 		{
 			Long topWSId = getWorkspaceModule().getTopWorkspaceId();
-			reply = String.valueOf( topWSId );
+			reply = topWSId;
 		}
 		
 		return reply;
