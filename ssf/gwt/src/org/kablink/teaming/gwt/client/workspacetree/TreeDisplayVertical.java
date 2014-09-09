@@ -58,9 +58,9 @@ import org.kablink.teaming.gwt.client.rpc.shared.GetRootWorkspaceIdCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetVerticalActivityStreamsTreeCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetVerticalNodeCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetVerticalTreeCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.LongRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.PersistNodeCollapseCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.PersistNodeExpandCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo;
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo.ActivityStream;
@@ -1736,7 +1736,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 				// refreshed!  (It may be coming from the bread crumbs
 				// or some other unknown source.)  What's the ID if the
 				// selected Binder's root workspace?
-				GetRootWorkspaceIdCmd cmd = new GetRootWorkspaceIdCmd(binderInfo.getBinderId());
+				GetRootWorkspaceIdCmd cmd = new GetRootWorkspaceIdCmd(getRootTreeInfo().getBinderInfo().getBinderIdAsLong(), binderInfo.getBinderIdAsLong());
 				GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
 					@Override
 					public void onFailure(Throwable t) {
@@ -1751,12 +1751,12 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 					public void onSuccess(VibeRpcResponse response)  {
 						// Asynchronously perform the selection so that
 						// we release the AJAX request ASAP.
-						StringRpcResponseData responseData = ((StringRpcResponseData) response.getResponseData());
+						LongRpcResponseData responseData = ((LongRpcResponseData) response.getResponseData());
 						selectRootWorkspaceIdAsync(
 							binderInfo,
 							forceRefresh,
 							targetTI,
-							responseData.getStringValue());
+							responseData.getValue());
 					}
 				});
 				break;
@@ -1774,7 +1774,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 	/*
 	 * Asynchronously selects a binder and/or re-roots the tree.
 	 */
-	private void selectRootWorkspaceIdAsync(final BinderInfo binderInfo, final boolean forceRefresh, final TreeInfo targetTI, final String rootWorkspaceId) {
+	private void selectRootWorkspaceIdAsync(final BinderInfo binderInfo, final boolean forceRefresh, final TreeInfo targetTI, final Long rootWorkspaceId) {
 		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
@@ -1786,11 +1786,11 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 	/*
 	 * Synchronously selects a binder and/or re-roots the tree.
 	 */
-	private void selectRootWorkspaceIdNow(BinderInfo binderInfo, boolean forceRefresh, TreeInfo targetTI, String rootWorkspaceId) {
+	private void selectRootWorkspaceIdNow(BinderInfo binderInfo, boolean forceRefresh, TreeInfo targetTI, Long rootWorkspaceId) {
 		// If the selected Binder's workspace is different from the
 		// Binder we're currently rooted to, we need to re-root the
 		// tree.  Do we need to re-root?
-		if (rootWorkspaceId.equals(getRootTreeInfo().getBinderInfo().getBinderId())) {
+		if (rootWorkspaceId.equals(getRootTreeInfo().getBinderInfo().getBinderIdAsLong())) {
 			// No!  Simply select the Binder.
 			if (forceRefresh)
 				 refreshTree( m_selectedBinderInfo);
