@@ -1493,6 +1493,20 @@ public class GwtMenuHelper {
 	}
 	
 	/*
+	 * Constructs a ToolbarItem to rename a workspace.
+	 */
+	private static void constructEntryRenameWorkspace(ToolbarItem entryToolbar, AllModulesInjected bs, HttpServletRequest request, Workspace ws) {
+		// Does the user have rights to rename this workspace?
+		if (bs.getBinderModule().testAccess(ws, BinderOperation.renameBinder)) {
+			// Yes!  Add a Rename ToolbarItem.
+			ToolbarItem renameTBI = new ToolbarItem(RENAME);
+			markTBITitle(renameTBI, "toolbar.menu.rename_workspace"   );
+			markTBIEvent(renameTBI, TeamingEvents.INVOKE_RENAME_ENTITY);
+			entryToolbar.addNestedItem(renameTBI);
+		}
+	}
+	
+	/*
 	 * Constructs a ToolbarItem for sharing the selected entries.
 	 */
 	@SuppressWarnings("unused")
@@ -3343,6 +3357,35 @@ public class GwtMenuHelper {
 					constructEntryViewWhoHasAccess(actionToolbar, bs, request              );
 					constructEntryRenameFolder(    actionToolbar, bs, request, folder      );
 					constructEntrySubscribeItem(   actionToolbar, bs, request, folder, true);
+					
+					if (sharable) {
+						constructEntryManageSharesItem(actionToolbar, bs);
+					}
+				}
+				
+				else if (eidType.equals(EntityType.workspace.name())) {
+					Long      wsId     = entityId.getEntityId();
+					Workspace ws       = bs.getWorkspaceModule().getWorkspace(wsId);
+					boolean   sharable = GwtShareHelper.isEntitySharable(bs, ws);
+					if (sharable) {
+						actionToolbar.addNestedItem(constructShareBinderItem(request, ws, "toolbar.shareSelected.workspace"));
+						actionToolbar.addNestedItem(ToolbarItem.constructSeparatorTBI());
+					}
+					
+					if (!(Utils.checkIfFilr())) {
+						boolean isFavorite = false;
+						List<FavoriteInfo> favorites = GwtServerHelper.getFavorites(bs);
+						for (FavoriteInfo favorite:  favorites) {
+							Long favoriteId = Long.parseLong(favorite.getValue());
+							if (favoriteId.equals(wsId)) {
+								isFavorite = true;
+								break;
+							}
+						}
+						constructEntryFavoriteItem(actionToolbar, bs, request, isFavorite);
+					}
+					constructEntryViewWhoHasAccess(actionToolbar, bs, request    );
+					constructEntryRenameWorkspace( actionToolbar, bs, request, ws);
 					
 					if (sharable) {
 						constructEntryManageSharesItem(actionToolbar, bs);
