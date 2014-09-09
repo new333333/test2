@@ -4253,6 +4253,7 @@
 			<option name="transitionOnResponse" />
 			<option name="transitionOnEntryData" />
 			<option name="transitionOnElapsedTime" />
+			<option name="transitionOnDate" />
 			<option name="transitionOnVariable" />
 			<option name="transitionOnCondition" />
 			<option name="waitForParallelThread" />
@@ -4372,6 +4373,15 @@
 				characterMask="^[0-9]*$" characterLength="10" >
 				<help>ihelp.workflow.elapsed_time_sum</help>
 			</property>
+			<property name="toState" caption="__toState" type="itemSelect" path="//item[@name='state']" />
+		</properties>
+		<options>
+			<option name="variable" caption="__workflow_variable_set_on_transition" />
+		</options>
+	</item>
+	<item name="transitionOnDate" caption="__transition_on_date" type="transition" >
+		<properties>
+			<property name="date" caption="" type="transitionOnDate" />
 			<property name="toState" caption="__toState" type="itemSelect" path="//item[@name='state']" />
 		</properties>
 		<options>

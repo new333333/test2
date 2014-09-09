@@ -701,6 +701,23 @@ public class BuildDefinitionDivs extends TagSupport {
 						sb.append("\n<br/>\n");
 						sb.append("<textarea name=\"propertyId_" + propertyId + "\" rows=\"6\" cols=\"45\" "+readonly+">"+Html.formatTo(propertyValue0)+"</textarea>\n<br/>\n");
 					
+					} else if (type.equals("transitionOnDate")) {
+						sb.append(propertyConfigCaption);
+						HttpServletRequest httpReq = (HttpServletRequest) pageContext.getRequest();
+						HttpServletResponse httpRes = (HttpServletResponse) pageContext.getResponse();
+						RequestDispatcher rd = httpReq.getRequestDispatcher("/WEB-INF/jsp/definition_builder/date_select.jsp");
+
+						ServletRequest req = null;
+						req = new DynamicServletRequest(httpReq);
+						req.setAttribute("propertyId", propertyId);
+						req.setAttribute("propertyValue", propertyValue0);
+						
+						StringServletResponse res = new StringServletResponse(httpRes);
+						try {
+							rd.include(req, res);
+							sb.append(res.getString().replaceAll("&", "&amp;"));
+						} catch(Exception e) {}
+						
 					} else if (type.equals("boolean") || type.equals("checkbox")) {
 						String checked = "";
 						if (propertyValue0.equals("")) {
