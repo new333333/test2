@@ -1114,8 +1114,9 @@ public class EntryMenuPanel extends ToolPanelBase
 					m_messages.vibeEntryMenu_Alt_Shared_ShowFiles());
 			VibeFlowPanel html = new VibeFlowPanel();
 			html.add(sharedFilesImg);
-			menuText       = html.getElement().getInnerHTML();
-			menuTextIsHTML = true;
+			menuText                = html.getElement().getInnerHTML();
+			menuTextIsHTML          = true;
+			menuIsSimpleImageButton = true;
 		}
 		
 		// No, this isn't toggle shared view item either!  Is it a
