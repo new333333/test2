@@ -699,7 +699,7 @@ button, input[type="reset"], input[type="button"], input[type="submit"] {
 button:hover, input[type="reset"]:hover, input[type="button"]:hover, input[type="submit"]:hover {	
 	color: #135c8f !important;
     text-align: center !important;
-    font-size: 12px !important;
+    font-size: 11px !important;
     font-family: Arial, sans-serif !important;
     white-space: nowrap !important;
     text-decoration: none !important;
@@ -767,9 +767,7 @@ a.ss_tinyButton:visited {
  	font-family: ${ss_style_folder_view_font_family};
 	color: #1f1f1f !important;
 	margin-right: 5px;
-	background: -webkit-gradient(linear, left top, left bottom, from(#ffffff), to(#E0E0E0));
-	background: -moz-linear-gradient(center top , #ffffff, #E0E0E0) repeat scroll 0 0;
-	background-color: transparent;
+	background-color: #fafafa;
 	border: 1px solid #B8B8B8 !important;
 	font-weight: normal !important;
 	font-size: 11px;
@@ -780,12 +778,14 @@ a.ss_tinyButton:visited {
 	border-radius: 5px;
 	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;
+/*	background: -webkit-gradient(linear, left top, left bottom, from(#ffffff), to(#E0E0E0));
+	background: -moz-linear-gradient(center top , #ffffff, #E0E0E0) repeat scroll 0 0;    */
 	}
 a.ss_tinyButton:focus,
 a.ss_tinyButton:hover {
   	font-family: ${ss_style_folder_view_font_family};
   	font-size: 11px;
-	color: #135c8f !important;
+	color: #036f9f !important;
 	border: 1px solid #81b2bd !important;
 	background-color: #cce9ee;
 	white-space: nowrap;
@@ -838,12 +838,13 @@ div.ss_tag_content {
 
 .ss_muted_cloud_tag {
 	color: ${ss_style_muted_tag_color};
-	background-color: #ededed;
+	background-color: #f4f4f4;
 	font-size: 13px;
 	padding-right: 2px 6px;
 	line-height: 17px;
 	border: 1px solid #b8b8b8;
 	padding: 2px 6px;
+	margin-right: 2px;
 	border-radius: 4px;
 	-moz-border-radius: 4px;
 	-web-border-radius: 4px;
@@ -1790,13 +1791,13 @@ div.ss_box_top_rounded {
 	color: ${ss_box_title_color};
 	text-decoration:none;
 	font-size: 14px;
-	font-weight: bold;
+/*	font-weight: bold;  */
 	letter-spacing: .03em;
 }
 
 .ss_box_title:hover {
 	color: ${ss_box_title_hover_color};
-	font-weight: bold;
+/*	font-weight: bold;  */
 	letter-spacing: .03em;
 }
 
@@ -2264,7 +2265,7 @@ img.ss_accessory_delete {
 }
 
 a:hover img.ss_accessory_delete {
-    background:url(<html:imagesPath/>icons/close_teal16.png) no-repeat left 0px;
+    background:url(<html:imagesPath/>icons/close_gray16.png) no-repeat left 0px;
     width:16px;
     height:16px;
 }
@@ -3969,7 +3970,9 @@ div.ss_teamMembersList, div.ss_clipboardUsersList {
 }
 
 tr.ss_tab_table_columnhead td, tr.ss_tab_table_columnhead th {
-	color: #505354; 
+	color: #505354;
+	font-size: 11px;
+	font-weight: normal !important;
 	padding: 3px 5px 2px 2px; 
 	border-bottom: 1px solid #bbbbb9; 
 	white-space: nowrap;
@@ -4328,7 +4331,7 @@ a.ss_button:hover {
     white-space: nowrap !important;
     text-decoration: none !important;
   	padding: 2px 10px !important;
-	border: 0px solid #81b2bd;
+	border: 1px solid #81b2bd;
 	background-color: #cce9ee;
 	border-radius: 5px;
 	-moz-border-radius: 5px;

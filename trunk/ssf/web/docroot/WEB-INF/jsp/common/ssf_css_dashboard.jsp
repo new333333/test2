@@ -615,20 +615,20 @@ div.item-sub a {
 .ss_link_7, .ss_link_7 span {
 	font-weight: 400;
 	font-family: Arial, Helvetica, sans-serif;
-	color:#5691A6 !important;
+	color:#036f9f !important;
 	font-size:1.3em;
 	}
 .wg-comment .ss_entryContent .ss_link_7 span {
-	color:#135c8f !important;
+	color:#036f9f !important;
 	font-size:15px !important;	
 	}	
 .ss_link_7 a:hover {
 	text-decoration: none;
-	color:#135c8f !important;
+	color:#036f9f !important;
 	}		
 .ss_link_8, .ss_link_8 span{
 	font-family: ${ss_style_folder_view_font_family};
-	color:#5691A6!important;
+	color:#036f9f !important;
 	font-size:${ss_style_font_normalprint};
 	}
 				
