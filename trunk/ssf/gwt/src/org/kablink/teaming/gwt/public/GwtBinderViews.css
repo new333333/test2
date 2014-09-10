@@ -44,7 +44,7 @@
 	/* ...End:  Binder owner avatar panel styles. */
 	
 	/* ...Start:  Calendar navigation panel styles. */
-		.vibe-calNav-date           {color: #505354; font-weight: bold; font-size: 18px; text-shadow: 0 1px 0 white; font-family: Arial, Helvetica, sans-serif;}
+		.vibe-calNav-date           {color: #505354; font-weight: bold; font-size: 16px; font-family: Arial, Helvetica, sans-serif;}
 		.vibe-calNav-dateNavPanel   {padding: 0 10px;}
 		.vibe-calNav-datePanel      {padding: 0 10px;}
 		.vibe-calNav-datePicker     {}
@@ -52,7 +52,7 @@
 		.vibe-calNav-daysSelPanel   {margin: 0px; padding: 0px; padding-left: 8px; vertical-align: middle;}
 		.vibe-calNav-hoursMenu      {vertical-align: middle; background: transparent !important; padding: 0px !important;}
 		.vibe-calNav-hoursMenuPanel {margin: 0px; padding: 0px; vertical-align: middle;}
-		.vibe-calNav-panel          {background-color: #C4C4C4; margin: 0px; padding: 10px; display: table; table-layout: fixed; overflow: hidden; white-space: nowrap; -moz-border-radius: 0px !important; border-radius: 0px !important; -webkit-border-radius: 0px  !important;}
+		.vibe-calNav-panel          {background-color: #ededed; margin: 0px; padding: 10px; display: table; table-layout: fixed; overflow: hidden; white-space: nowrap; -moz-border-radius: 0px !important; border-radius: 0px !important; -webkit-border-radius: 0px  !important;}
 		.vibe-calNav-panelLeft      {}
 		.vibe-calNav-panelLeftHP    {}
 		.vibe-calNav-panelRight     {}
@@ -77,7 +77,7 @@
 		.vibe-entryMenu-configPanel         {vertical-align: top;}
 		.vibe-entryMenu-filterOptions-panel {vertical-align: top;}
 		.vibe-entryMenu-filtersPanel        {vertical-align: top; padding-right: 8px; margin-top: 6px;}
-		.vibe-entryMenu-grid                {padding: 0px !important; background-color: #ededed; display: table; table-layout: fixed;}
+		.vibe-entryMenu-grid                {padding: 0px !important; background-color: #ededed; display: table; table-layout: fixed; border-top-left-radius: 3px; border-top-right-radius: 3px;}
 		.vibe-entryMenu-quickFilters-filter {padding-top: 1px;}
 		.vibe-entryMenu-quickFilters-panel  {vertical-align: top; padding: 0 5px; margin-top: 1px; border-left: none; height: 19px; white-space: nowrap; background-color: #fff; border: 1px solid #b8b8b8; -moz-border-radius: 15px; border-radius: 15px; -webkit-border-radius: 15px;}
 		.vibe-entryMenu-rightPanel          {padding-right: 5px; margin-right: 3px; margin-top: 3px;}
@@ -208,7 +208,7 @@
 		.vibe-dataTableEntry-viewLabel            {}
 		.vibe-dataTableGuest-avatar               {border-width: 1px; border-style: solid; border-color: #ccc; width: 50px; height: 50px;}
 		.vibe-dataTableGuest-avatarHover          {cursor: pointer;}
-		.vibe-dataTableGuest-info                 {display: inline-block; font-size: 10px; color: #333; vertical-align: top; padding-left: 3px;}
+		.vibe-dataTableGuest-info                 {display: inline-block; font-size: 11px; color: #333; vertical-align: top; padding-left: 8px;}
 		.vibe-dataTableGuest-infoEMA              {display: block;}
 		.vibe-dataTableGuest-infoMobileEMA        {display: block;}
 		.vibe-dataTableGuest-infoPhone            {display: block;}

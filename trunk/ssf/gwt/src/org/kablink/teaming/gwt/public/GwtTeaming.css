@@ -165,12 +165,12 @@
 	padding: 3px;
 	vertical-align: middle;
 	width: 100%;
-	-moz-border-radius-bottomleft: 5px;
-	-moz-border-radius-bottomright: 5px;
-	border-bottom-left-radius: 5px;
-	border-bottom-right-radius: 5px;
-	-webkit-border-bottom-left-radius: 5px;
-	-webkit-border-bottom-right-radius: 5px;
+	border-bottom-left-radius: 3px;
+	border-bottom-right-radius: 3px;
+	-moz-border-radius-bottomleft: 3px;
+	-moz-border-radius-bottomright: 3px;
+	-webkit-border-bottom-left-radius: 3px;
+	-webkit-border-bottom-right-radius: 3px;
 }
 
 .activityStreamFooterImages
@@ -1924,7 +1924,7 @@ body, table td, select
 .workspaceTreeControlRow            {padding: 2px !important; margin-bottom: 2px;}
 .workspaceTreeControlRow_collection {margin-left: -10px;}
 
-.workspaceTreeControlRow_configureImg   {padding-top: 1px; cursor: pointer;}
+.workspaceTreeControlRow_configureImg   {padding-top: 0px; cursor: pointer;}
 .workspaceTreeControlRow_configurePanel {display: block; position: absolute;}
 
 .workspaceTreeControlRow:hover            a {color: #036f9f;}
