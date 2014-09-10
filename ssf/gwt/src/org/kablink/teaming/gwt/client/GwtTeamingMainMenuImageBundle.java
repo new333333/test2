@@ -84,7 +84,7 @@ public interface GwtTeamingMainMenuImageBundle extends ClientBundle {
 	public ImageResource help();
 
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/MainMenu/home16.png")
+	@Source("org/kablink/teaming/gwt/public/images/1px_spacer.gif")
 	public ImageResource home16();
 	
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
@@ -92,7 +92,7 @@ public interface GwtTeamingMainMenuImageBundle extends ClientBundle {
 	public ImageResource infoButton();
 
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/menu.png")
+	@Source("org/kablink/teaming/gwt/public/images/menu_gray.png")
 	public ImageResource menuArrow();
 	
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
@@ -100,7 +100,7 @@ public interface GwtTeamingMainMenuImageBundle extends ClientBundle {
 	public ImageResource menuArrowGray();
 	
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/MainMenu/newmenu.png")
+	@Source("org/kablink/teaming/gwt/public/images/1px_spacer.gif")
 	public ImageResource newMenu();
 	
 	@ImageOptions(repeatStyle = RepeatStyle.Both)

@@ -331,6 +331,7 @@
 	.vibe-mainMenuSearch_Image
 	{
 		margin-right: 3px;
+		margin-top: 1px;
 		vertical-align: top;
 	}
 	.vibe-mainMenuSearch_Input
@@ -342,7 +343,7 @@
 		background-color: transparent;
 		border: 0px;
 	}
-	.vibe-mainMenuSearch_InputBlur  {color: #b8b8b8;}
+	.vibe-mainMenuSearch_InputBlur  {color: #949494;}
 	.vibe-mainMenuSearch_InputFocus {color: #1f1f1f !important;}
 	.vibe-mainMenuSearchOptions_Button
 	{

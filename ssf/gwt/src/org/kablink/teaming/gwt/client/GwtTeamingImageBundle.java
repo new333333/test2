@@ -389,7 +389,7 @@ public interface GwtTeamingImageBundle extends ClientBundle
 	public ImageResource mastHeadNovellLogo();
 
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/menu.png")
+	@Source("org/kablink/teaming/gwt/public/images/menu_gray.png")
 	public ImageResource menu();
 
 	@ImageOptions(repeatStyle = RepeatStyle.Both)

@@ -101,7 +101,7 @@
 
 .activityStreamActionsPanel:hover span
 {
-	color: #135c8f !important;
+	color: #036f9f !important;
 }
 
 .activityStreamActionsLabel
@@ -250,7 +250,7 @@
 	-webkit-border-radius: 5px;
 }
 .activityStreamHover span {
-	color: #135c8f;
+	color: #036f9f;
 }
 
 .activityStreamCtrlSearchResultsPanel
@@ -293,7 +293,7 @@
 }
 .activityStreamEntryAuthor:hover
 {
-	color: #135c8f;
+	color: #036f9f;
 }
 
 .activityStreamEntryDate
@@ -1113,7 +1113,7 @@ a, a:visited, a:hover {
 
 .adminActionControlMouseOver
 {
-	color: #135c8f;
+	color: #036f9f;
 	background: #cce9ee;
 	border-radius: 3px;
 	-moz-border-radius: 3px;
@@ -1212,7 +1212,7 @@ a, a:visited, a:hover {
 
 .adminControl_CloseLabel:hover
 {
-    color: #135c8f !important;
+    color: #036f9f !important;
 	cursor: pointer;
 	border: 1px solid #81b2bd;
 	background: #cee9ee;
@@ -1498,7 +1498,7 @@ body, table td, select
 	
 .editBrandingBrowseLink:hover, .editBrandingAdvancedLink:hover, .addAttachmentLink:hover, .colorPickerLink:hover, #forgottenPwdSpan:hover
 {
-	color: #135c8f !important;
+	color: #036f9f !important;
 	border: 1px solid #81b2bd;
 	padding: 2px 5px  !important;
 	background: #cee9ee;
@@ -1838,8 +1838,8 @@ body, table td, select
 .workspaceTreeBinderAnchor            {color: #353838; text-decoration: none; font-family: Arial,Helvetica,sans-serif; font-size: 13px; padding: 3px 0;}
 .workspaceTreeBinderAnchor_collection {font-size: 14px; padding-left: 2px; color: #000;}
 
-.workspaceTreeBinderAnchor:hover            {color: #135c8f;}
-.workspaceTreeBinderAnchor_collection:hover {color: #135c8f;}
+.workspaceTreeBinderAnchor:hover            {color: #036f9f;}
+.workspaceTreeBinderAnchor_collection:hover {color: #036f9f;}
 
 .workspaceTreeBinderExpanderImg            {cursor: pointer; margin-top: 8px; margin-left: 0px;}
 .workspaceTreeBinderExpanderImg_collection {}
@@ -1847,7 +1847,7 @@ body, table td, select
 .workspaceTreeBinderImg            {padding-right: 2px;}
 .workspaceTreeBinderImg_collection {}
 
-.workspaceTreeBinderSelected            {color: #135c8f; padding-left: 2px;}
+.workspaceTreeBinderSelected            {color: #036f9f; padding-left: 2px;}
 .workspaceTreeBinderSelected_collection {font-size: 14px;}
 
 /* Must match the definition of GwtConstants.WORKSPACE_TREE_WIDTH. */
@@ -1927,7 +1927,7 @@ body, table td, select
 .workspaceTreeControlRow_configureImg   {padding-top: 1px; cursor: pointer;}
 .workspaceTreeControlRow_configurePanel {display: block; position: absolute;}
 
-.workspaceTreeControlRow:hover            a {color: #135c8f;}
+.workspaceTreeControlRow:hover            a {color: #036f9f;}
 .workspaceTreeControlRow_collection:hover a {} 
 
 .workspaceTreeControlRowHover            {color: #5691a6; background: #cce9ee; -moz-border-radius: 3px; border-radius: 3px; -webkit-border-radius: 3px;}
@@ -2085,7 +2085,7 @@ body, table td, select
 .lpeEntryName-mouseOver
 {
 	cursor: pointer;
-	color: #135c8f;
+	color: #036f9f;
 }
 
 /* Styles used for the binder name in a "folder" widget */
@@ -2116,7 +2116,7 @@ body, table td, select
 .lpeFolderName-mouseOver
 {
 	cursor: pointer;
-	color: #135c8f;
+	color: #036f9f;
 }
 
 /* Styles used for the graphic name in a "graphic" widget */
@@ -3049,7 +3049,7 @@ body, table td, select
 
 .brandingLink:hover
 {
-	color: #135C8F;
+	color: #036f9f;
 	background: #cce9ee;
 	border-radius: 3px;
     -moz-border-radius: 3px;
@@ -3162,7 +3162,7 @@ body, table td, select
 .teamingDlgBoxFooter .gwt-Button:hover, 
 .workspaceTreeControlHeader_closeButton:hover
 {
-	color: #135c8f !important;
+	color: #036f9f !important;
     white-space: nowrap !important;
     text-decoration: none !important;
 	font-size: 12px !important;
@@ -3428,8 +3428,8 @@ body, table td, select
 }
 .subhead-control-bg1
 {
-	background: url(images/trans10_black_blend.png) repeat;
-	background-position:bottom;
+/*	background: url(images/trans10_black_blend.png) repeat;
+	background-position:bottom;  */
 }
 .subhead-control-bg2, .btn-bg2, .colorPickerLink:hover
 {
@@ -3576,7 +3576,7 @@ a.ss_new_thread {
 	display:block;
 }
 .qView-a:hover {
-	color: #135c8f;
+	color: #036f9f;
 }
 .qView-action  {
 	margin-top:5px;
@@ -3615,7 +3615,7 @@ a.ss_new_thread {
 .qView-action-following:hover {
 	background: #cce9ee;
 	border:1px solid #81b2bd;
-	color:#135c8f;
+	color:#036f9f;
 }
 .qView-action-img {
 	background:url("images/trans50_black_arrowleft.png");
@@ -3811,8 +3811,8 @@ top:100px;
 }
 .gwtTaskTools_WarningAnchor, .gwtTaskTools_WarningAnchor:visited
 {
-	font-size: .9em !important;
-	color: #135c8f;
+	font-size: 12px !important;
+	color: #036f9f;
 }
 .gwtTaskTools_WarningAnchor:hover
 {
@@ -3888,7 +3888,7 @@ top:100px;
 }
 .gwtTaskList_assigneeHover
 {
-	color: #135c8f;
+	color: #036f9f;
 	cursor: pointer;
 	background: #cce9ee;
 	border-radius: 5px;
@@ -4060,11 +4060,11 @@ top:100px;
 .gwtTaskList_objlist2b tr.columnhead td   /* Apply to the column headings row following the menu <tr class="columnhead"> */
 { 
 	color: #666; 
-	font-size: 0.6em; 
+	font-size: 12px; 
 	padding-top: 0.2em; 
 	padding-bottom: 0.2em;
 	padding-left: 0;
-	padding-right: .7em;
+	padding-right: 6px;
 	border-bottom: 1px solid #D2D5D1; 
 	white-space: nowrap;
 	background:url(images/blends/gray_blend8_28.png) repeat-x;
@@ -4079,7 +4079,7 @@ a.sort-column
 }
 a.sort-column:hover
 {
-	color: #135c8f !important;
+	color: #036f9f !important;
 }
 .gwtTaskList_objlist2 tr.regrow td,
 .gwtTaskList_objlist2b tr.regrow td/*Apply to all the content rows <tr class="regrow">  Style will automatically flow to each cell <td>. If a cell is empty, place a &nbsp; (none braking space) in the cell so the line style will continue across all cells in the row. */ 
@@ -4168,7 +4168,7 @@ a.gwtTaskList_task-icon:hover
 }
 .gwtTaskList_task-locationAnchor, .gwtTaskList_task-locationAnchor:visited
 {
-	color: #135c8f !important;
+	color: #036f9f !important;
 }
 .gwtTaskList_task-locationAnchor:hover
 {
@@ -4179,7 +4179,7 @@ a.gwtTaskList_task-icon:hover
 }
 .gwtTaskList_task-nameAnchor, .gwtTaskList_task-nameAnchor:visited
 {
-	color: #135c8f !important;
+	color: #036f9f !important;
 }
 .gwtTaskList_task-nameAnchor:hover
 {
@@ -4217,7 +4217,7 @@ a.gwtTaskList_task-icon:hover
 }
 .gwtTaskList_task-orderAnchor, .gwtTaskList_task-orderAnchor:visited
 {
-	color: #135c8f;
+	color: #036f9f;
 }
 .gwtTaskList_task-orderAnchor:hover
 {
@@ -4324,7 +4324,7 @@ td.datePickerMonth {
 
 /* Start:  Cliboard dialog styles. */
 	.vibe-cbDlg_Anchor          {color: #036f9f; text-decoration: none;}
-	.vibe-cbDlg_Anchor:hover    {color: #135c8f; cursor: pointer; background: #cce9ee; border-radius: 5px; -moz-border-radius: 5px; -webkit-border-radius: 5px;}
+	.vibe-cbDlg_Anchor:hover    {color: #036f9f; cursor: pointer; background: #cce9ee; border-radius: 5px; -moz-border-radius: 5px; -webkit-border-radius: 5px;}
 	.vibe-cbDlg_Checkbox        {margin-left: 5px;}
 	.vibe-cbDlg_ClearAll        {margin-left: 10px;}
 	.vibe-cbDlg_Grid            {margin: 20px 10px 10px 20px;}
@@ -4355,12 +4355,12 @@ td.datePickerMonth {
 	.vibe-emailNotifDlg_ExpanderImg       {}
 	.vibe-emailNotifDlg_FooterCheck       {}
 	.vibe-emailNotifDlg_FooterHelp        {margin-left: 10px;}
-	.vibe-emailNotifDlg_FooterHelp:hover  {color: #135c8f; cursor: pointer; background: #cce9ee; -moz-border-radius: 5px; border-radius: 5px; -webkit-border-radius: 5px;}
+	.vibe-emailNotifDlg_FooterHelp:hover  {color: #036f9f; cursor: pointer; background: #cce9ee; -moz-border-radius: 5px; border-radius: 5px; -webkit-border-radius: 5px;}
 	.vibe-emailNotifDlg_FooterLabel       {}
 	.vibe-emailNotifDlg_FooterPanel       {display: block; white-space: nowrap; margin-top: 15px; margin-bottom: 10px;}
 	.vibe-emailNotifDlg_LastWidget        {margin-bottom: 10px;}
 	.vibe-emailNotifDlg_MsgTypeHelp       {margin-left: 10px;}
-	.vibe-emailNotifDlg_MsgTypeHelp:hover {color: #135c8f; cursor: pointer; background: #cce9ee; -moz-border-radius: 5px; border-radius: 5px; -webkit-border-radius: 5px;}
+	.vibe-emailNotifDlg_MsgTypeHelp:hover {color: #036f9f; cursor: pointer; background: #cce9ee; -moz-border-radius: 5px; border-radius: 5px; -webkit-border-radius: 5px;}
 	.vibe-emailNotifDlg_MsgTypeLabel      {}
 	.vibe-emailNotifDlg_MsgTypePanel      {display: block; white-space: nowrap;}
 	.vibe-emailNotifDlg_ReadingPanel      {}
@@ -4624,7 +4624,7 @@ td.datePickerMonth {
 
 .groupManagementBtn:hover, .manageNetFolderRootsDlg_Btn:hover, .manageNetFoldersDlg_Btn:hover, .shareDlg_Btn:hover, .editLdapConfigDlg_Btn:hover
 {
-	color: #135c8f;
+	color: #036f9f;
 	border: 1px solid #81b2bd;
 	background: #cee9ee;
 
@@ -5353,7 +5353,7 @@ td.datePickerMonth {
 
 .userActionsPopup_ActionPanel:hover
 {
-	color: #135c8f;
+	color: #036f9f;
 	background: #cce9ee;
 	border-radius: 2px;
 }
@@ -5445,7 +5445,7 @@ td.datePickerMonth {
 .userActionsPopup_SignOutLabel:hover
 {
 	border: 1px solid #81B2BD;
-	color: #135C8F;
+	color: #036f9f;
 	cursor: pointer;
 	background-color: #cce9ee;
 /*	background: -moz-linear-gradient(bottom,  #a8d4dd 47%, #d5edf1 53%, #c8e4e9 100%); /* FF3.6+ */
@@ -5483,7 +5483,7 @@ td.datePickerMonth {
 /* Start:  Import profiles dialog styles. */
 	.vibe-importProfilesDlg-content    {text-align: left; width: 100%; margin-bottom: 10px; margin-top: 10px; padding: 3px 10px;}
 	.vibe-importProfilesDlg-hint       {color: #036f9f; text-decoration: none; margin: 8px 0px 8px 0px; font-size: 11px !important; cursor: pointer; margin: 3px 10px; font-size: 1em !important;}
-	.vibe-importProfilesDlg-hint:hover {color: #135c8f; cursor: pointer; background: #cce9ee; -moz-border-radius: 5px; border-radius: 5px; -webkit-border-radius: 5px;}
+	.vibe-importProfilesDlg-hint:hover {color: #036f9f; cursor: pointer; background: #cce9ee; -moz-border-radius: 5px; border-radius: 5px; -webkit-border-radius: 5px;}
 	.vibe-importProfilesDlg-input      {width: 250px;}
 	.vibe-importProfilesDlg-panel      {}
 /* End:  Import profiles dialog styles. */
