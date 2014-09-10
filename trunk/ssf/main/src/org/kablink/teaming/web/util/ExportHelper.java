@@ -53,6 +53,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.SortedSet;
@@ -1086,6 +1087,18 @@ public class ExportHelper {
 		if (binderQuota.getDiskQuota() != null) {
 			binderQuotaEle.addAttribute("binderQuota", binderQuota.getDiskQuota().toString());
 		}
+		
+		// filters
+		Map<String,String> searchFilters = (Map<String,String>)binder.getProperty(ObjectKeys.BINDER_PROPERTY_FILTERS);
+		if (searchFilters != null) {
+			Element filtersEle = settingsEle.addElement("filters");
+			for (Entry<String, String> me : searchFilters.entrySet()) {
+				Element filterEle = filtersEle.addElement("filter");
+				filterEle.addAttribute("name", me.getKey());
+				filterEle.addAttribute("value", me.getValue());
+			}
+		}
+		
 	}
 
 	private static void addAccessControls(WorkArea workArea, Element settingsElement) {
@@ -2814,6 +2827,21 @@ public class ExportHelper {
 				bq.setDiskQuota(Long.valueOf(binderQuota));
 				adminModule.setBinderQuota(binder, bq);
 			}
+		}
+		
+		// filters
+		xPath = "//settings//filters/filter";
+		List<Element> filters = entityDoc.selectNodes(xPath);
+		if (!filters.isEmpty()) {
+			Map searchFiltersG = new HashMap();
+			for (Element filter : filters) {
+				String name = filter.attributeValue("name");
+				String value = filter.attributeValue("value");
+				if (name != null && value != null) {
+					searchFiltersG.put(name, value);
+				}
+			}
+			binderModule.setProperty(binder.getId(), ObjectKeys.BINDER_PROPERTY_FILTERS, searchFiltersG);
 		}
 
 	}
