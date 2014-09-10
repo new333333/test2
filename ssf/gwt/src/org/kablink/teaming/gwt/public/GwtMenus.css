@@ -125,6 +125,7 @@
 	.vibe-mainMenuBar_BoxText
 	{
 		font-size: 11px;
+		font-weight: normal;
 		vertical-align: middle;
 	}
 	.vibe-mainMenuButton
@@ -136,7 +137,7 @@
 		padding: 0px 3px !important;
 		text-align: center;
 		top: 2px;
-		width: 28px;
+		width: 22px;
 		z-index: 310;
 	}
 	.vibe-mainMenuButton_Group
@@ -166,7 +167,16 @@
 		padding-top: 0px;
 	}
 
-	.vibe-binderViewTools .gwt-MenuBar-horizontal                       {background: #ededed url(images/spacer_1px.png); -moz-border-radius-topleft: 5px; -moz-border-radius-topright: 5px; border-top-left-radius: 5px; border-top-right-radius: 5px; -webkit-border-top-left-radius: 5px; -webkit-border-top-right-radius: 5px;}
+	.vibe-binderViewTools .gwt-MenuBar-horizontal
+	{
+		background: #ededed url(images/spacer_1px.png);
+		border-top-left-radius: 5px;
+		border-top-right-radius: 5px;
+		-moz-border-radius-topleft: 5px;
+		-moz-border-radius-topright: 5px;
+		-webkit-border-top-left-radius: 5px;
+		-webkit-border-top-right-radius: 5px;
+	}
 	.vibe-binderViewTools .gwt-MenuBar-horizontal .gwt-MenuBar table td {padding-right: 5px;}	
 
 	.vibe-mainMenuControl
@@ -365,7 +375,7 @@
 		border-left: none;
 		display: block;
 		position: absolute;
-		right: 53px;
+		right: 46px;
 		top: 3px;
 		height: 18px;
 		white-space: nowrap;
