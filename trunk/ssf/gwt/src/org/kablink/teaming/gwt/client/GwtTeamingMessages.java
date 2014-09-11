@@ -1107,6 +1107,7 @@ public interface GwtTeamingMessages extends Messages
 	String treePreviousCollection();
 	String treePreviousFolder();
 	String treeSiteWide();
+	String treeStopFollowing();
 	String treeTrash();
 	String treeWSAndFolders();
 	

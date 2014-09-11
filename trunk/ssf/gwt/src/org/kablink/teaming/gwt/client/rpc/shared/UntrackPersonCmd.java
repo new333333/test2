@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -30,45 +30,70 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-
 package org.kablink.teaming.gwt.client.rpc.shared;
 
-
-
 /**
- * This class holds all of the information necessary to execute the "untrack person" command.
+ * This class holds all of the information necessary to execute the
+ * 'untrack person' command.
  * 
- * @author jwootton
- *
+ * @author drfoster@novell.com
  */
-public class UntrackPersonCmd extends VibeRpcCmd
-{
-	private String m_binderId;
+public class UntrackPersonCmd extends VibeRpcCmd {
+	private Long	m_binderId;	//
+	private Long	m_userId;	//
 	
-	/**
-	 * For GWT serialization, must have a zero param contructor
+	/*
+	 * Constructor method.
+	 * 
+	 * For GWT serialization, must have a zero parameter constructor.
 	 */
-	public UntrackPersonCmd()
-	{
+	private UntrackPersonCmd() {
+		// Initialize the super class.
 		super();
 	}
 	
 	/**
+	 * Constructor method.
 	 * 
+	 * @param binderId
+	 * @param userId
 	 */
-	public UntrackPersonCmd( String binderId )
-	{
+	public UntrackPersonCmd(Long binderId, Long userId) {
+		// Initialize this object...
 		this();
-		m_binderId = binderId;
+
+		// ...and store the parameters.
+		setBinderId(binderId);
+		setUserId(  userId  );
 	}
 	
 	/**
+	 * Constructor method.
 	 * 
+	 * @param binderId
 	 */
-	public String getBinderId()
-	{
-		return m_binderId;
+	public UntrackPersonCmd(Long binderId) {
+		// Initialize this object.
+		this(binderId, null);
 	}
+	
+	/**
+	 * Get'er methods.
+	 * 
+	 * @return
+	 */
+	public boolean hasBinderId() {return (null != m_binderId);}
+	public boolean hasUserId()   {return (null != m_userId);  }
+	public Long    getBinderId() {return          m_binderId; }
+	public Long    getUserId()   {return          m_userId;   }
+	
+	/**
+	 * Set'er methods.
+	 * 
+	 * @param binderId
+	 */
+	public void setBinderId(Long binderId) {m_binderId = binderId;}
+	public void setUserId(  Long userId)   {m_userId   = userId;  }
 	
 	/**
 	 * Returns the command's enumeration value.

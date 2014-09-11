@@ -3987,27 +3987,19 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		}
 		
 		case UNTRACK_BINDER:
-		{
-			UntrackBinderCmd ubCmd;
-			Boolean result;
-			BooleanRpcResponseData responseData;
-			
-			ubCmd = (UntrackBinderCmd) cmd;
-			result = untrackBinder( ri, ubCmd.getBinderId() );
-			responseData = new BooleanRpcResponseData( result );
+		{			
+			UntrackBinderCmd ubCmd = (UntrackBinderCmd) cmd;
+			Boolean result = untrackBinder( ri, ubCmd.getBinderId() );
+			BooleanRpcResponseData responseData = new BooleanRpcResponseData( result );
 			response = new VibeRpcResponse( responseData );
 			return response;
 		}
 		
 		case UNTRACK_PERSON:
 		{
-			UntrackPersonCmd upCmd;
-			Boolean result;
-			BooleanRpcResponseData responseData;
-			
-			upCmd = (UntrackPersonCmd) cmd;
-			result = untrackPerson( ri, upCmd.getBinderId() );
-			responseData = new BooleanRpcResponseData( result );
+			UntrackPersonCmd upCmd = ((UntrackPersonCmd) cmd);
+			Boolean result = untrackPerson( ri, upCmd.getBinderId(), upCmd.getUserId() );
+			BooleanRpcResponseData responseData = new BooleanRpcResponseData( result );
 			response = new VibeRpcResponse( responseData );
 			return response;
 		}
@@ -6563,18 +6555,15 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		return reply;
 	}// endtrackBinder()
 	
-	/**
+	/*
 	 * Called to mark that the current user is no longer tracking the
 	 * specified binder.
-	 * 
-	 * @param ri
-	 * @param binderId
 	 */
-	private Boolean untrackBinder( HttpRequestInfo ri, String binderId )
+	private Boolean untrackBinder( HttpRequestInfo ri, Long binderId )
 	{
 		Boolean reply;
 		try {
-			BinderHelper.trackThisBinder( this, Long.parseLong(binderId), "delete" );
+			BinderHelper.trackThisBinder( this, binderId, "delete" );
 			reply = Boolean.TRUE;
 		}
 		catch (Exception e) {
@@ -6583,19 +6572,24 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		return reply;
 	}//end untrackBinder()
 	
-	/**
+	/*
 	 * Called to mark that the current user is no longer tracking the
-	 * person whose workspace is the specified binder.
-	 * 
-	 * @param ri
-	 * @param binderId
+	 * specified person.  The person can be specified by a binder ID
+	 * (uses the owner of the binder) or a user ID.
 	 */
-	private Boolean untrackPerson( HttpRequestInfo ri, String binderId )
+	private Boolean untrackPerson( HttpRequestInfo ri, Long binderId, Long userId )
 	{
-		Binder binder = getBinderModule().getBinderWithoutAccessCheck( Long.parseLong( binderId ) );
+		// If we weren't giving a user ID...
+		if ( null == userId )
+		{
+			// ...extract it from the binder.
+			Binder binder = getBinderModule().getBinderWithoutAccessCheck( binderId );
+			userId = binder.getOwnerId();
+		}
+		
 		Boolean reply;
 		try {
-			BinderHelper.trackThisBinder( this, binder.getOwnerId(), "deletePerson" );
+			BinderHelper.trackThisBinder( this, userId, "deletePerson" );
 			reply = Boolean.TRUE;
 		}
 		catch (Exception e) {
