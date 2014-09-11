@@ -1073,4 +1073,7 @@ public interface ObjectKeys {
     public final static String CSV_TYPE_EMAIL = "email";
     
     public final static String CSV_OPTIONS_ATTRS_TO_SKIP = "attrsToSkip";
+    
+    //Database 
+    public final static int SELECT_DATABASE_TRANSACTION_RETRY_MAX_COUNT = 4;
 }

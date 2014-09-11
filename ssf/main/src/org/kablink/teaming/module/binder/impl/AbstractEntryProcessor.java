@@ -109,6 +109,7 @@ import org.kablink.util.search.FieldFactory;
 
 import org.springframework.dao.CannotAcquireLockException;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.orm.hibernate3.HibernateOptimisticLockingFailureException;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
@@ -159,7 +160,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         
         	SimpleProfiler.start("addEntry_transactionExecute");
         	// 	The following part requires update database transaction.
-	        int tryMaxCount = 1 + SPropsUtil.getInt("select.database.transaction.retry.max.count", 2);
+	        int tryMaxCount = 1 + SPropsUtil.getInt("select.database.transaction.retry.max.count", ObjectKeys.SELECT_DATABASE_TRANSACTION_RETRY_MAX_COUNT);
 	        int tryCount = 0;
 	        while(true) {
 	        	tryCount++;
@@ -189,13 +190,14 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 	        	catch(LockAcquisitionException | CannotAcquireLockException e) {
 	        		if(tryCount < tryMaxCount) {
 	        			if(logger.isDebugEnabled())
-	        				logger.warn("'add entry' failed due to lock error", e);
+	        				logger.warn("'add entry' failed due to lock error - Retrying in new transaction", e);
 	        			else 
-	        				logger.warn("'add entry' failed due to lock error: " + e.toString());
+	        				logger.warn("'add entry' failed due to lock error - Retrying in new transaction: " + e.toString());
 	        			logger.warn("Retrying 'add entry' in new transaction");
 	        			getCoreDao().refresh(binder);        		
 	        		}
 	        		else {
+        				logger.error("'add entry' failed due to lock error - Aborting", e);	        			
 	        			throw e;
 	        		}
 	        	}
@@ -1063,30 +1065,53 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 		//	may have taken awhile to remove attachments	
 		SimpleProfiler.start("deleteEntry_transactionExecute");
 		getCoreDao().refresh(parentBinder);
-		getTransactionTemplate().execute(new TransactionCallback() {
-    		@Override
-			public Object doInTransaction(TransactionStatus status) {
-    			SimpleProfiler.start("deleteEntry_preDelete");
-    			deleteEntry_preDelete(parentBinder, entry, ctx);
-    			SimpleProfiler.stop("deleteEntry_preDelete");
-        
-    			SimpleProfiler.start("deleteEntry_workflow");
-    			deleteEntry_workflow(parentBinder, entry, ctx);
-    			SimpleProfiler.stop("deleteEntry_workflow");
-                 
-    			SimpleProfiler.start("deleteEntry_delete");
-    			deleteEntry_delete(parentBinder, entry, ctx);
-    			SimpleProfiler.stop("deleteEntry_delete");
-        
-    			SimpleProfiler.start("deleteEntry_postDelete");
-    			deleteEntry_postDelete(parentBinder, entry, ctx);
-    			SimpleProfiler.stop("deleteEntry_postDelete");
-    			for (ChangeLog changeLog:changeLogs) {
-    				ChangeLogUtils.save(changeLog);
-    			}
-        
-    			return null;
-    		}});
+		
+        int tryMaxCount = 1 + SPropsUtil.getInt("select.database.transaction.retry.max.count", ObjectKeys.SELECT_DATABASE_TRANSACTION_RETRY_MAX_COUNT);
+        int tryCount = 0;
+		while (true) {
+			tryCount++;
+			try {
+				getTransactionTemplate().execute(new TransactionCallback() {
+					@Override
+					public Object doInTransaction(TransactionStatus status) {
+						SimpleProfiler.start("deleteEntry_preDelete");
+						deleteEntry_preDelete(parentBinder, entry, ctx);
+						SimpleProfiler.stop("deleteEntry_preDelete");
+
+						SimpleProfiler.start("deleteEntry_workflow");
+						deleteEntry_workflow(parentBinder, entry, ctx);
+						SimpleProfiler.stop("deleteEntry_workflow");
+
+						SimpleProfiler.start("deleteEntry_delete");
+						deleteEntry_delete(parentBinder, entry, ctx);
+						SimpleProfiler.stop("deleteEntry_delete");
+
+						SimpleProfiler.start("deleteEntry_postDelete");
+						deleteEntry_postDelete(parentBinder, entry, ctx);
+						SimpleProfiler.stop("deleteEntry_postDelete");
+						for (ChangeLog changeLog : changeLogs) {
+							ChangeLogUtils.save(changeLog);
+						}
+						return null;
+					}
+				});
+				break; // successful transaction
+			} catch (HibernateOptimisticLockingFailureException e) {
+        		if(tryCount < tryMaxCount) {
+        			if(logger.isDebugEnabled())
+        				logger.warn("'delete entry' failed due to optimistic locking failure - Retrying in new transaction", e);
+        			else 
+        				logger.warn("'delete entry' failed due to optimistic locking failure - Retrying in new transaction: " + e.toString());
+        			getCoreDao().refresh(entry);
+        			getCoreDao().refresh(parentBinder);
+        		}
+        		else {
+    				logger.error("'delete entry' failed due to optimistic locking failure - Aborting", e);
+        			throw e;
+        		}
+			}
+		}			
+
     	SimpleProfiler.stop("deleteEntry_transactionExecute");
     	SimpleProfiler.start("deleteEntry_indexDel");
     	deleteEntry_indexDel(parentBinder, entry, ctx);

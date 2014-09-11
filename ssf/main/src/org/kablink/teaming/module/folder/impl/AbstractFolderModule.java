@@ -749,7 +749,7 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
     	}
     	
     	try {
-	        int tryMaxCount = 1 + SPropsUtil.getInt("select.database.transaction.retry.max.count", 2);
+	        int tryMaxCount = 1 + SPropsUtil.getInt("select.database.transaction.retry.max.count", ObjectKeys.SELECT_DATABASE_TRANSACTION_RETRY_MAX_COUNT);
 	        int tryCount = 0;
 	        while(true) {
 	        	tryCount++;
@@ -763,14 +763,14 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
 		        		if(cause instanceof HibernateOptimisticLockingFailureException) {
 			        		if(tryCount < tryMaxCount) {
 			        			if(logger.isDebugEnabled())
-			        				logger.warn("'modify entry' failed due to optimistic locking failure", cause);
+			        				logger.warn("(" + tryCount + ") 'modify entry' failed due to wrapped optimistic locking failure - Retrying in new transaction", cause);
 			        			else 
-			        				logger.warn("'modify entry' failed due to optimistic locking failure: " + cause.toString());
-			        			logger.warn("Retrying 'modify entry' in new transaction");
+			        				logger.warn("(" + tryCount + ") 'modify entry' failed due to wrapped optimistic locking failure - Retrying in new transaction: " + cause.toString());
 			        			getCoreDao().refresh(folder);
 			        			getCoreDao().refresh(entry);
 			        		}
 			        		else {
+		        				logger.error("(" + tryCount + ") 'modify entry' failed due to wrapped optimistic locking failure - Aborting", cause);
 			        			throw e;
 			        		}
 		        		}
@@ -780,6 +780,20 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
 	        		}
 	        		catch(Exception exc) {
 	        			throw e; // Re-throw the original exception.
+	        		}
+	        	}
+	        	catch(HibernateOptimisticLockingFailureException e) {
+	        		if(tryCount < tryMaxCount) {
+	        			if(logger.isDebugEnabled())
+	        				logger.warn("(" + tryCount + ") 'modify entry' failed due to optimistic locking failure - Retrying in new transaction", e);
+	        			else 
+	        				logger.warn("(" + tryCount + ") 'modify entry' failed due to optimistic locking failure - Retrying in new transaction: " + e.toString());
+	        			getCoreDao().refresh(folder);
+	        			getCoreDao().refresh(entry);
+	        		}
+	        		else {
+        				logger.error("(" + tryCount + ") 'modify entry' failed due to optimistic locking failure - Aborting", e);
+	        			throw e;
 	        		}
 	        	}
 	        }    

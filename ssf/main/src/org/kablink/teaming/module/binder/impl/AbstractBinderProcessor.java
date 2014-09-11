@@ -310,7 +310,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 	        
 	        SimpleProfiler.start("addBinder_transactionExecute");
 	        // The following part requires update database transaction.
-	        int tryMaxCount = 1 + SPropsUtil.getInt("select.database.transaction.retry.max.count", 2);
+	        int tryMaxCount = 1 + SPropsUtil.getInt("select.database.transaction.retry.max.count", ObjectKeys.SELECT_DATABASE_TRANSACTION_RETRY_MAX_COUNT);
 	        int tryCount = 0;
 	        while(true) {
 	        	tryCount++;
@@ -340,13 +340,13 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 	        	catch(LockAcquisitionException | CannotAcquireLockException e) {
 	        		if(tryCount < tryMaxCount) {
 	        			if(logger.isDebugEnabled())
-	        				logger.warn("'add binder' failed due to lock error", e);
+	        				logger.warn("'add binder' failed due to lock error - Retrying in new transaction", e);
 	        			else 
-	        				logger.warn("'add binder' failed due to lock error: " + e.toString());
-	        			logger.warn("Retrying 'add binder' in new transaction");
+	        				logger.warn("'add binder' failed due to lock error - Retrying in new transaction: " + e.toString());
 	        			getCoreDao().refresh(parent);        		
 	        		}
 	        		else {
+	        			logger.error("'add binder' failed due to lock error - Aborting", e);
 	        			throw e;
 	        		}
 	        	}
