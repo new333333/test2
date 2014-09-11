@@ -32,17 +32,29 @@
  */
 package org.kablink.teaming.remoting.rest.provider;
 
+import java.lang.invoke.MethodHandles;
+
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.kablink.teaming.remoting.rest.jersey.filter.ContainerFilter;
 import org.kablink.teaming.rest.v1.model.ErrorInfo;
 import org.kablink.util.VibeRuntimeException;
 
 @Provider
 public class VibeRuntimeMapper implements ExceptionMapper<VibeRuntimeException> {
+	protected static Log logger = LogFactory.getLog(MethodHandles.lookup().lookupClass());
+	
 	public Response toResponse(VibeRuntimeException ex) {
-		return Response.status(ex.getHttpStatusCode()).entity(new ErrorInfo(ex.getApiErrorCode().name(), ex.getLocalizedMessage())).build();
+		int httpStatusCode = ex.getHttpStatusCode();
+		if(httpStatusCode == Response.Status.NOT_FOUND.getStatusCode())
+			logger.warn("An error occurred while processing a REST request (" + ContainerFilter.getCurrentEndpoint() + ")", ex);
+		else
+			logger.error("An error occurred while processing a REST request (" + ContainerFilter.getCurrentEndpoint() + ")", ex);
+		return Response.status(httpStatusCode).entity(new ErrorInfo(ex.getApiErrorCode().name(), ex.getLocalizedMessage())).build();
 	}
 
 }
