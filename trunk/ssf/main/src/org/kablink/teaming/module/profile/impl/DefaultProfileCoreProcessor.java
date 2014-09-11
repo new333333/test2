@@ -698,7 +698,7 @@ protected void modifyEntry_indexAdd(Binder binder, Entry entry,
 	        
         // The following part requires update database transaction.
 	    Boolean changed = null;
-        int tryMaxCount = 1 + SPropsUtil.getInt("select.database.transaction.retry.max.count", 2);
+        int tryMaxCount = 1 + SPropsUtil.getInt("select.database.transaction.retry.max.count", ObjectKeys.SELECT_DATABASE_TRANSACTION_RETRY_MAX_COUNT);
         int tryCount = 0;
         while(true) {
         	tryCount++;
@@ -717,13 +717,13 @@ protected void modifyEntry_indexAdd(Binder binder, Entry entry,
         	catch(HibernateOptimisticLockingFailureException e) {
         		if(tryCount < tryMaxCount) {
         			if(logger.isDebugEnabled())
-        				logger.warn("'sync entry' failed due to optimistic locking failure", e);
+        				logger.warn("'sync entry' failed due to optimistic locking failure - Retrying in new transaction", e);
         			else 
-        				logger.warn("'sync entry' failed due to optimistic locking failure: " + e.toString());
-        			logger.warn("Retrying 'sync entry' in new transaction");
+        				logger.warn("'sync entry' failed due to optimistic locking failure - Retrying in new transaction: " + e.toString());
         			getCoreDao().refresh(entry);        		
         		}
         		else {
+    				logger.error("'sync entry' failed due to optimistic locking failure - Aborting", e);
         			throw e;
         		}
         	}

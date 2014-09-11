@@ -168,6 +168,7 @@ import org.kablink.util.search.Constants;
 import org.kablink.util.search.Criteria;
 
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.orm.hibernate3.HibernateOptimisticLockingFailureException;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -402,7 +403,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 			// The following call also ensures that, even in the situation where
 			// the operation was not entirely successful, we still reflect the
 			// correponding metadata changes back to the database. 
-			writeDeleteChangeLogTransactional(changeLogs);
+			writeDeleteChangeLogTransactional(binder, entry, changeLogs);
 		}
 				
 		return errors;
@@ -1908,19 +1909,40 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	     });	
 	}
 
-	private void writeDeleteChangeLogTransactional(final List<ChangeLog> changeLogs) {
+	private void writeDeleteChangeLogTransactional(Binder binder, DefinableEntity entry, final List<ChangeLog> changeLogs) {
 		// We want to start a transaction even when there is nothing to write
 		// (ie, empty changeLogs), so that any pending updates that the caller
 		// made up to this point can get recorded permanently.
-        getTransactionTemplate().execute(new TransactionCallback() {
-        	@Override
-			public Object doInTransaction(TransactionStatus status) {  
-                for(ChangeLog changeLog : changeLogs) {
-                	ChangeLogUtils.save(changeLog);
-                }
-            	return null;
-        	}
-        });	
+		
+        int tryMaxCount = 1 + SPropsUtil.getInt("select.database.transaction.retry.max.count", ObjectKeys.SELECT_DATABASE_TRANSACTION_RETRY_MAX_COUNT);
+        int tryCount = 0;
+		while (true) {
+			tryCount++;
+			try {
+				getTransactionTemplate().execute(new TransactionCallback() {
+					@Override
+					public Object doInTransaction(TransactionStatus status) {
+						for (ChangeLog changeLog : changeLogs) {
+							ChangeLogUtils.save(changeLog);
+						}
+						return null;
+					}
+				});
+				break; // successful transaction
+			} catch (HibernateOptimisticLockingFailureException e) {
+        		if(tryCount < tryMaxCount) {
+        			if(logger.isDebugEnabled())
+        				logger.warn("'metadata update for file delete' failed due to optimistic locking failure - Retrying in new transaction", e);
+        			else 
+        				logger.warn("'metadata update for file delete' failed due to optimistic locking failure - Retrying in new transaction: " + e.toString());
+        			getCoreDao().refresh(entry);
+        		}
+        		else {
+    				logger.error("'metadata update for file delete' failed due to optimistic locking failure - Aborting", e);
+        			throw e;
+        		}
+			}
+		}					
 	}
 	
 	private void moveFilterFailedFile(Binder binder, FileUploadItem fui) throws IOException {
