@@ -2847,6 +2847,9 @@
 			<property name="name" caption="__selection_data_name" type="text" characterMask="^[\p{L}\p{Nd}][\p{L}\p{Nd}_-]*$">
 				<help>ihelp.designers.selection_data_name</help>
 			</property>
+			<property name="default" caption="__default_selection" type="boolean" default="false">
+				<help>ihelp.designers.selection_default</help>
+			</property>
 		</properties>
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/selectbox_selection_form.jsp" />
