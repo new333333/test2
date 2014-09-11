@@ -36,15 +36,16 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.module.binder.impl.EntryDataErrors;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
-import org.kablink.teaming.module.file.WriteFilesException;
+import org.kablink.teaming.remoting.rest.jersey.filter.ContainerFilter;
 import org.kablink.teaming.rest.v1.model.ErrorInfo;
-import org.kablink.teaming.util.InvokeException;
-import org.kablink.util.VibeRuntimeException;
 import org.kablink.util.api.ApiErrorCode;
 import org.kablink.util.api.ApiErrorCodeSupport;
 
+import java.lang.invoke.MethodHandles;
 import java.util.List;
 
 /**
@@ -53,6 +54,8 @@ import java.util.List;
  */
 @Provider
 public class WriteEntryDataMapper implements ExceptionMapper<WriteEntryDataException> {
+	protected static Log logger = LogFactory.getLog(MethodHandles.lookup().lookupClass());
+
 	public Response toResponse(WriteEntryDataException ex) {
         Throwable root = ex;
         EntryDataErrors errors = ex.getErrors();
@@ -74,6 +77,11 @@ public class WriteEntryDataMapper implements ExceptionMapper<WriteEntryDataExcep
         if (root instanceof ApiErrorCodeSupport) {
             errorCode = ((ApiErrorCodeSupport)root).getApiErrorCode();
         }
-        return Response.status(ex.getHttpStatusCode()).entity(new ErrorInfo(errorCode.name(), root.getMessage())).build();
+		int httpStatusCode = ex.getHttpStatusCode();
+		if(httpStatusCode == Response.Status.NOT_FOUND.getStatusCode())
+			logger.warn("An error occurred while processing a REST request (" + ContainerFilter.getCurrentEndpoint() + "): " + ex.toString());
+		else
+			logger.error("An error occurred while processing a REST request (" + ContainerFilter.getCurrentEndpoint() + "): " + ex.toString());
+        return Response.status(httpStatusCode).entity(new ErrorInfo(errorCode.name(), root.getMessage())).build();
 	}
 }
