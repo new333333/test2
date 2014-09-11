@@ -2588,6 +2588,12 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		    		if (!inputData.isFieldsOnly() || fieldModificationAllowed) 
 		    			entryData.put(nameValue, StringCheckUtil.check(inputData.getSingleValue(nameValue)));
 		    	}
+			} else {
+				if ("true".equals(multiple)) {
+					//There are no selections set, and multiple is allowed. See if the user might be trying to clear the selections
+					if (!inputData.isFieldsOnly() || fieldModificationAllowed) 
+		    			entryData.put(nameValue, null);
+				}
 			}
 			if (userVersionAllowed && inputData.exists(nameValuePerUser)) {
 		    	if ("true".equals(multiple)) {
