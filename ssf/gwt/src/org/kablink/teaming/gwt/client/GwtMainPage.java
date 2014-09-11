@@ -4007,7 +4007,7 @@ public class GwtMainPage extends ResizeComposite
 	{
 		UntrackBinderCmd cmd;
 		
-		cmd = new UntrackBinderCmd( m_mainPageInfo.getBinderInfo().getBinderId() );
+		cmd = new UntrackBinderCmd( m_mainPageInfo.getBinderInfo().getBinderIdAsLong() );
 		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
 		{
 			@Override
@@ -4113,7 +4113,7 @@ public class GwtMainPage extends ResizeComposite
 	{
 		UntrackPersonCmd cmd;
 		
-		cmd = new UntrackPersonCmd( m_mainPageInfo.getBinderInfo().getBinderId() );
+		cmd = new UntrackPersonCmd( m_mainPageInfo.getBinderInfo().getBinderIdAsLong() );
 		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
 		{
 			@Override

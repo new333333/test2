@@ -61,6 +61,9 @@ import org.kablink.teaming.gwt.client.rpc.shared.GetVerticalTreeCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.LongRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.PersistNodeCollapseCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.PersistNodeExpandCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.UntrackBinderCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.UntrackPersonCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo;
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo.ActivityStream;
@@ -80,6 +83,7 @@ import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.MouseEvent;
 import com.google.gwt.event.dom.client.MouseOutEvent;
 import com.google.gwt.event.dom.client.MouseOutHandler;
 import com.google.gwt.event.dom.client.MouseOverEvent;
@@ -126,6 +130,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 	private final static String EXTENSION_ID_SELECTOR_ID			= (EXTENSION_ID_BASE + "SelectorId");
 	private final static String EXTENSION_ID_TRASH_BASE				= (EXTENSION_ID_BASE + "Trash_");
 	private final static String EXTENSION_ID_TRASH_PERMALINK		= (EXTENSION_ID_BASE + "TrashPermalink");
+	private final static String EXTENSION_ID_UNFOLLOW_TAIL			= "_Unfollow";
 
 	// The following controls the grid size and nested offsets for the
 	// WorkspaceTreeControl.
@@ -144,32 +149,32 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 	private final static int CONFIG_TOP_ADJUST_DIV		=    0;
 	private final static int CONFIG_TOP_ADJUST_TABLE	=    6;
 	
+	// The following provide the adjustments used to position the
+	// unfollow button properly over a selected followed item.
+	private final static int UNFOLLOW_LEFT_ADJUST		= (-50);
+	private final static int UNFOLLOW_TOP_ADJUST_DIV	=  (-3);
+	private final static int UNFOLLOW_TOP_ADJUST_TABLE	=    3;
+	
 	/*
 	 * Inner class that implements clicking on the various tree
 	 * expansion widgets.
 	 */
 	private class BinderExpander implements ClickHandler {
-		private FlexTable	m_grid;			//
 		private Image		m_expanderImg;	//
-		private int			m_gridRow;		//
 		private TreeInfo	m_ti;			//
 
 		/**
 		 * Class constructor.
 		 * 
 		 * @param ti
-		 * @param grid
-		 * @param gridRow
 		 * @param expanderImg
 		 */
-		BinderExpander(TreeInfo ti, FlexTable grid, int gridRow, Image expanderImg) {
+		BinderExpander(TreeInfo ti, Image expanderImg) {
 			// Initialize the super class...
 			super();
 			
 			// ...and store the parameters.
 			m_ti          = ti;
-			m_grid        = grid;
-			m_gridRow     = gridRow;
 			m_expanderImg = expanderImg;
 		}
 
@@ -194,7 +199,11 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 				m_ti.clearChildBindersList();
 			}
 			m_ti.setBinderExpanded(false);
-			rerenderRow(m_grid, m_gridRow, m_ti, true);
+			rerenderRow(
+				((FlexTable) m_ti.getRenderedGrid()),
+				m_ti.getRenderedGridRow(),
+				m_ti,
+				true);	// true -> Re-render is because of a collapse.
 			m_expanderImg.setResource(getImages().tree_opener());
 			
 			// ...reset the selector config position in case the
@@ -228,7 +237,11 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 			m_ti.setBinderExpanded(true);
 			m_ti.setChildBindersList(expandedTI.getChildBindersList());
 			if (0 < m_ti.getBinderChildren()) {
-				rerenderRow(m_grid, m_gridRow, m_ti, false);
+				rerenderRow(
+					((FlexTable) m_ti.getRenderedGrid()),
+					m_ti.getRenderedGridRow(),
+					m_ti,
+					false);	// false -> Re-render is not because of a collapse.
 			}
 			m_expanderImg.setResource(getImages().tree_closer());
 			
@@ -378,22 +391,54 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 	/*
 	 * Inner class used to handle mouse events for a Binder selector.  
 	 */
-	private static class BinderSelectorMouseHandler implements MouseOverHandler, MouseOutHandler {
-		private boolean	m_isBinderCollection;	//
-		private String	m_selectorGridId;		//
+	private class BinderSelectorMouseHandler implements MouseOverHandler, MouseOutHandler {
+		private ActivityStream	m_as;					//
+		private boolean			m_isBinderCollection;	//
+		private FlowPanel		m_unfollow;				//
+		private String			m_selectorGridId;		//
+		private TreeInfo		m_ti;					//
 		
 		/**
 		 * Class constructor.
 		 * 
 		 * @param selectorGridId
 		 */
-		BinderSelectorMouseHandler(String selectorGridId, boolean isBinderCollection) {
+		BinderSelectorMouseHandler(String selectorGridId, TreeInfo ti) {
 			// Initialize the super class...
 			super();
 			
-			// ...and store the parameters.
-			m_selectorGridId      = selectorGridId;
-			m_isBinderCollection  = isBinderCollection;
+			// ...store the parameters...
+			m_selectorGridId = selectorGridId;
+			m_ti             = ti;
+			
+			// ...and initialize everything else that requires it.
+			m_isBinderCollection = ti.isBinderCollection();
+			m_as                 = (ti.isActivityStream() ? ti.getActivityStreamInfo().getActivityStream() : ActivityStream.UNKNOWN);
+		}
+
+		/*
+		 * Returns true if the position of the mouse, based on a
+		 * MouseEvent, is over an unfollow widget and false otherwise.
+		 */
+		private boolean isMouseOverUnfollow(MouseEvent<?> me) {
+			// Do we have an unfollow widget?
+			boolean reply = (null != m_unfollow);
+			if (reply) {
+				// Yes!  Is the mouse over it?
+				int mLeft    = me.getClientX();
+				int mTop     = me.getClientY();
+				int ufLeft   =  m_unfollow.getAbsoluteLeft();
+				int ufRight  = (m_unfollow.getOffsetWidth() + ufLeft);
+				int ufTop    =  m_unfollow.getAbsoluteTop();
+				int ufBottom = (m_unfollow.getOffsetHeight() + ufTop);
+				reply =
+					((mLeft >= ufLeft) && (mLeft <= ufRight) &&	// Within left to right...
+					 (mTop >= ufTop)   && (mTop  <= ufBottom));	// ...and top  to bottom.
+			}
+			
+			// If we get here, reply is true if the mouse is over this
+			// node's unfollow widget and false otherwise.  Return it.
+			return reply;
 		}
 		
 		/**
@@ -403,11 +448,20 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		 */
 		@Override
 		public void onMouseOut(MouseOutEvent me) {
-			// Simply remove the hover style.
-			Element selectorPanel_New = Document.get().getElementById(m_selectorGridId);
-			selectorPanel_New.removeClassName("workspaceTreeControlRowHover");
-			if (m_isBinderCollection) {
-				selectorPanel_New.removeClassName("workspaceTreeControlRowHover_collection");
+			// Is the mouse over this node's unfollow widget?
+			if (!(isMouseOverUnfollow(me))) {
+				// No!  Remove the hover styles...
+				Element selectorPanel_New = Document.get().getElementById(m_selectorGridId);
+				selectorPanel_New.removeClassName("workspaceTreeControlRowHover");
+				if (m_isBinderCollection) {
+					selectorPanel_New.removeClassName("workspaceTreeControlRowHover_collection");
+				}
+				
+				// ...and if we have an unfollow widget...
+				if (null != m_unfollow) {
+					// ...hide it.
+					m_unfollow.setVisible(false);
+				}
 			}
 		}
 		
@@ -418,13 +472,110 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		 */
 		@Override
 		public void onMouseOver(MouseOverEvent me) {
-			// Simply add the hover style.
+			// Add the hover styles.
 			Element selectorPanel_New = Document.get().getElementById(m_selectorGridId);
 			selectorPanel_New.addClassName("workspaceTreeControlRowHover");
 			if (m_isBinderCollection) {
 				selectorPanel_New.addClassName("workspaceTreeControlRowHover_collection");
 			}
+			
+			// Is this node a followed person or place activity stream?
+			if (m_as.equals(ActivityStream.FOLLOWED_PERSON) || m_as.equals(ActivityStream.FOLLOWED_PLACE)) {
+				// Yes!  Then we need to display a widget so the user
+				// can unfollow it.  Have we already created the
+				// unfollow widgets for this node?
+				if (null != m_unfollow) {
+					// Yes!  Simply position and show it.
+					positionUnfollow(selectorPanel_New);
+					m_unfollow.setVisible(true);
+					return;
+				}
 
+				// If we get here, we haven't created the unfollow
+				// widgets for this node yes!  Create the widgets to do
+				// the unfollow...
+				final Anchor  unfollowA  = new Anchor();
+				final Element unfollowAE = unfollowA.getElement();
+				unfollowA.setTitle(getMessages().treeStopFollowing());
+				Image unfollowImg = GwtClientHelper.buildImage(getImages().unfollow());
+				unfollowImg.addStyleName("workspaceTreeControlRow_unfollowImg");
+				unfollowAE.appendChild(unfollowImg.getElement());
+				unfollowA.addClickHandler(new ClickHandler() {
+					@Override
+					public void onClick(ClickEvent event) {
+						VibeRpcCmd cmd = null;
+						final Long unfollowId = Long.parseLong(m_ti.getActivityStreamInfo().getBinderIds()[0]);
+						switch (m_as) {
+						case FOLLOWED_PERSON:  cmd = new UntrackPersonCmd(null, unfollowId); break;
+						case FOLLOWED_PLACE:   cmd = new UntrackBinderCmd(      unfollowId); break;
+						}
+						GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
+							@Override
+							public void onFailure(Throwable t) {
+								String rpcError = null;
+								switch (m_as) {
+								case FOLLOWED_PERSON:  rpcError = GwtTeaming.getMessages().rpcFailure_UntrackingPerson(); break;
+								case FOLLOWED_PLACE:   rpcError = GwtTeaming.getMessages().rpcFailure_UntrackingBinder(); break;
+								}
+								GwtClientHelper.handleGwtRPCFailure(t, rpcError, unfollowId);
+							}
+							
+							@Override
+							public void onSuccess(VibeRpcResponse response) {
+								// Detach this node's unfollow widget
+								// from the DOM and forget about it...
+								m_rootPanel.remove(m_unfollow);
+								m_unfollow = null;
+								
+								// ...remove the unfollowed item from
+								// ...its parent TreeInfo...
+								ActivityStream parentASI = null;
+								switch (m_as) {
+								case FOLLOWED_PERSON:  parentASI = ActivityStream.FOLLOWED_PEOPLE; break;
+								case FOLLOWED_PLACE:   parentASI = ActivityStream.FOLLOWED_PLACES; break;
+								}
+								TreeInfo ti = TreeInfo.findFirstActivityStreamTI(getRootTreeInfo(), parentASI);
+								List<TreeInfo> tiChildren = ti.getChildBindersList();
+								tiChildren.remove(m_ti);
+								ti.setBinderChildren(tiChildren.size());
+								
+								// ...and re-render the parent so
+								// ...this item (which is no longer
+								// ...being followed) goes away.
+								rerenderRow(
+									((FlexTable) ti.getRenderedGrid()),
+									ti.getRenderedGridRow(),
+									ti,
+									false);	// false -> Re-render is not because of a collapse.
+							}
+						});
+					}
+				});
+				m_unfollow = new FlowPanel();
+				m_unfollow.addStyleName("workspaceTreeControlRow_unfollowPanel");
+				m_unfollow.getElement().setId(m_selectorGridId + EXTENSION_ID_UNFOLLOW_TAIL);
+				m_unfollow.add(unfollowA);
+				
+				// ...and show it.
+				positionUnfollow(selectorPanel_New);
+				m_rootPanel.add(m_unfollow);
+			}
+		}
+
+		/*
+		 * Positions the unfollow widget based on the current location
+		 * of its selector panel Element.
+		 */
+		private void positionUnfollow(Element selectorPanel) {
+			int configTopAdjust;
+			if (selectorPanel.getTagName().equalsIgnoreCase("table"))
+			     configTopAdjust = UNFOLLOW_TOP_ADJUST_TABLE;
+			else configTopAdjust = UNFOLLOW_TOP_ADJUST_DIV;
+			double top  = (((selectorPanel.getAbsoluteTop() - m_rootPanel.getAbsoluteTop()) + m_rootPanel.getElement().getScrollTop()) + configTopAdjust     );
+			double left = (GwtConstants.SIDEBAR_TREE_WIDTH                                                                             + UNFOLLOW_LEFT_ADJUST);
+			Element ufE = m_unfollow.getElement();
+			ufE.getStyle().setTop( top,  Unit.PX);
+			ufE.getStyle().setLeft(left, Unit.PX);
 		}
 	}
 
@@ -1355,6 +1506,9 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 	 * Called to render an individual row in the WorkspaceTree control.
 	 */
 	private void renderRow(FlexTable grid, int row, TreeInfo ti, int renderDepth, boolean rerenderToCollapse) {
+		// Store the grid and row where we're rendering this TreeInfo.
+		ti.setRenderedGrid(grid, row);
+		
 		// Store the depth at which we're rendering this Binder.
 		setRenderDepth(ti, renderDepth);
 		
@@ -1370,7 +1524,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 			expanderImg.addStyleName(buildElementStyle(ti, "workspaceTreeBinderExpanderImg"));
 			Anchor expanderA = new Anchor();
 			expanderA.getElement().appendChild(expanderImg.getElement());
-			expanderA.addClickHandler(new BinderExpander(ti, grid, row, expanderImg));
+			expanderA.addClickHandler(new BinderExpander(ti, expanderImg));
 			expanderWidget = expanderA;
 		}
 		else {
@@ -1434,7 +1588,7 @@ public class TreeDisplayVertical extends TreeDisplayBase {
 		
 		// Install a mouse handler on the selector Anchor so that we
 		// can manage hover overs on them.
-		BinderSelectorMouseHandler bsmh = new BinderSelectorMouseHandler(selectorGridId, ti.isBinderCollection());
+		BinderSelectorMouseHandler bsmh = new BinderSelectorMouseHandler(selectorGridId, ti);
 		selectorA.addMouseOverHandler(bsmh);
 		selectorA.addMouseOutHandler( bsmh);
 		

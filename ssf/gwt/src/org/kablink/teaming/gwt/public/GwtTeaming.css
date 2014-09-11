@@ -1936,6 +1936,8 @@ body, table td, select
 .workspaceTreeControlRowSelected            {-moz-border-radius: 3px; border-radius: 3px; -webkit-border-radius: 3px; background: #ededed; font-weight: bold;}
 .workspaceTreeControlRowSelected_collection {border-radius: 3px; background: #cce9ee !important;}
 
+.workspaceTreeControlRow_unfollowImg   {padding-top: 0px; cursor: pointer;}
+.workspaceTreeControlRow_unfollowPanel {display: block; position: absolute;}
 
 /* */
 .fontSize75em
