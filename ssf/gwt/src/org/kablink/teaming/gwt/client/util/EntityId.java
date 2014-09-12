@@ -39,28 +39,70 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 
 /**
  * Class used to bundle a binder ID, entity ID and an entity type to
- * uniquely identify an entity with its containing binder for GWT RPC
+ * uniquely identify an entity that can be passed through GWT RPC
  * requests.
  *  
  * @author drfoster@novell.com
  */
 public class EntityId implements IsSerializable {
-	private Long	m_binderId;			//
-	private Long	m_entityId;			//
-	private String	m_entityType;		// folderEntry, folder, mobileDevice, workspace, ...
-	private String	m_mobileDeviceId;	//
-	
-	public final static String FOLDER			= "folder";
-	public final static String FOLDER_ENTRY		= "folderEntry";
-	public final static String MOBILE_DEVICE	= "mobileDevice";
-	public final static String WORKSPACE		= "workspace";
+	private EntityIdType	m_entityType;		// folder, folderEntry, mobileDevice, workspace, ...
+	private Long			m_binderId;			// The entity's binder ID.
+	private Long			m_entityId;			// The entity's ID.
+	private String			m_mobileDeviceId;	// If the entity is a mobile device, its ID as used by the mobile device applications.
+
+	// The string form of the various EntityIdType's.
+	public final static String FOLDER			= EntityIdType.folder.name();
+	public final static String FOLDER_ENTRY		= EntityIdType.folderEntry.name();
+	public final static String MOBILE_DEVICE	= EntityIdType.mobileDevice.name();
+	public final static String WORKSPACE		= EntityIdType.workspace.name();
+
+	// The following is used to separate the parts when constructing
+	// or parsing a string representation of an EntityId.
+	private final static String PART_SEPARATOR	= ":";
 
 	/**
+	 * Enumeration that defines the entity types that can be
+	 * represented by an EntityId. 
+	 */
+	public enum EntityIdType implements IsSerializable {
+		folder,
+		folderEntry,
+		mobileDevice,
+		workspace;
+		
+		/**
+		 * Get'er methods.
+		 * 
+		 * @return
+		 */
+		public boolean isEntry()        {return isFolderEntry();          }
+		public boolean isFolder()       {return this.equals(folder      );}
+		public boolean isFolderEntry()  {return this.equals(folderEntry );}
+		public boolean isMobileDevice() {return this.equals(mobileDevice);}
+		public boolean isWorkspace()    {return this.equals(workspace   );}
+
+		/**
+		 * Parses a string containing an EntityIdType.
+		 * 
+		 * @param entityType
+		 * 
+		 * @return
+		 */
+		public static EntityIdType parseEntityIdType(String entityType) {
+			EntityIdType reply;
+			if ((null == entityType) || (0 == entityType.length()))
+			     reply = null;
+			else reply = EntityIdType.valueOf(entityType);
+			return reply;
+		}
+	}
+
+	/*
 	 * Constructor method.
 	 * 
 	 * No parameters as per GWT serialization requirements.
 	 */
-	public EntityId() {
+	private EntityId() {
 		// Initialize the super class.
 		super();
 	}
@@ -73,15 +115,52 @@ public class EntityId implements IsSerializable {
 	 * @param entityType
 	 * @param mobileDeviceId
 	 */
-	public EntityId(Long binderId, Long entityId, String entityType, String mobileDeviceId) {
+	public EntityId(Long binderId, Long entityId, EntityIdType entityType, String mobileDeviceId) {
 		// Initialize this object...
 		this();
 
 		// ...and store the parameters.
 		setBinderId(      binderId      );
 		setEntityId(      entityId      );
-		setEntityType(    entityType    );
+		setEntityTypeEnum(entityType    );
 		setMobileDeviceId(mobileDeviceId);
+	}
+
+	/**
+	 * Constructor method.
+	 * 
+	 * @param entityId
+	 * @param entityType
+	 * @param mobileDeviceId
+	 */
+	public EntityId(Long entityId, EntityIdType entityType, String mobileDeviceId) {
+		// Initialize this object.
+		this(null, entityId, entityType, mobileDeviceId);
+	}
+
+	/**
+	 * Constructor method.
+	 * 
+	 * @param binderId
+	 * @param entityId
+	 * @param entityType
+	 * @param mobileDeviceId
+	 */
+	public EntityId(Long binderId, Long entityId, String entityType, String mobileDeviceId) {
+		// Initialize this object.
+		this(binderId, entityId, EntityIdType.parseEntityIdType(entityType), mobileDeviceId);
+	}
+
+	/**
+	 * Constructor method.
+	 * 
+	 * @param entityId
+	 * @param entityType
+	 * @param mobileDeviceId
+	 */
+	public EntityId(Long entityId, String entityType, String mobileDeviceId) {
+		// Initialize this object.
+		this(null, entityId, EntityIdType.parseEntityIdType(entityType), mobileDeviceId);
 	}
 
 	/**
@@ -97,24 +176,43 @@ public class EntityId implements IsSerializable {
 	}
 
 	/**
+	 * Constructor method.
+	 * 
+	 * @param entityId
+	 * @param entityType
+	 */
+	public EntityId(Long entityId, String entityType) {
+		// Initialize this object.
+		this(null, entityId, entityType, null);
+	}
+
+	/**
 	 * Get'er methods.
 	 * 
 	 * @return
 	 */
-	public Long   getBinderId()       {return m_binderId;      }
-	public Long   getEntityId()       {return m_entityId;      }
-	public String getEntityType()     {return m_entityType;    }
-	public String getMobileDeviceId() {return m_mobileDeviceId;}
+	public boolean      isBinder()          {return (isFolder() || isWorkspace());                                   }
+	public boolean      isEntry()           {return  isFolderEntry();                                                }
+	public boolean      isFolderEntry()     {return ((null == m_entityType) ? false : m_entityType.isFolderEntry()); }
+	public boolean      isFolder()          {return ((null == m_entityType) ? false : m_entityType.isFolder());      }
+	public boolean      isMobileDevice()    {return ((null == m_entityType) ? false : m_entityType.isMobileDevice());}
+	public boolean      isWorkspace()       {return ((null == m_entityType) ? false : m_entityType.isWorkspace());   }
+	public EntityIdType getEntityTypeEnum() {return m_entityType;                                                    }
+	public Long         getBinderId()       {return m_binderId;                                                      }
+	public Long         getEntityId()       {return m_entityId;                                                      }
+	public String       getEntityType()     {return ((null == m_entityType) ? null : m_entityType.name());           }
+	public String       getMobileDeviceId() {return m_mobileDeviceId;                                                }
 	
 	/**
 	 * Set'er methods.
 	 * 
 	 * @param
 	 */
-	public void setBinderId(      Long   binderId)       {m_binderId       = binderId;      }
-	public void setEntityId(      Long   entityId)       {m_entityId       = entityId;      }
-	public void setEntityType(    String entityType)     {m_entityType     = entityType;    }
-	public void setMobileDeviceId(String mobileDeviceId) {m_mobileDeviceId = mobileDeviceId;}
+	public void setBinderId(      Long         binderId)       {m_binderId       = binderId;                                  }
+	public void setEntityId(      Long         entityId)       {m_entityId       = entityId;                                  }
+	public void setEntityTypeEnum(EntityIdType entityType)     {m_entityType     = entityType;                                }
+	public void setEntityType(    String       entityType)     {m_entityType     = EntityIdType.parseEntityIdType(entityType);}
+	public void setMobileDeviceId(String       mobileDeviceId) {m_mobileDeviceId = mobileDeviceId;                            }
 	
 	/**
 	 * Returns true if a List<EntityId> contains any binder references
@@ -197,7 +295,7 @@ public class EntityId implements IsSerializable {
 		EntityId reply = new EntityId();
 		reply.setBinderId(      m_binderId      );
 		reply.setEntityId(      m_entityId      );
-		reply.setEntityType(    m_entityType    );
+		reply.setEntityTypeEnum(m_entityType    );
 		reply.setMobileDeviceId(m_mobileDeviceId);
 		return reply;
 	}
@@ -291,11 +389,11 @@ public class EntityId implements IsSerializable {
 	 * @return
 	 */
 	public String getEntityIdString() {
-		String reply = (getBinderId() + ":" + getEntityId() + ":" + getEntityType());
+		StringBuffer reply = new StringBuffer(getBinderId() + PART_SEPARATOR + getEntityId() + PART_SEPARATOR + getEntityType());
 		if (isMobileDevice()) {
-			reply += (":" + getMobileDeviceId());
+			reply.append(PART_SEPARATOR + getMobileDeviceId());
 		}
-		return reply;
+		return reply.toString();
 	}
 	
 	/**
@@ -343,39 +441,6 @@ public class EntityId implements IsSerializable {
 	}
 
 	/**
-	 * Returns a string that can be used to pass a List<EntityId> as a
-	 * parameter on a URL.
-	 * 
-	 * @param entityIds
-	 * 
-	 * @return
-	 */
-	public static String getMultipleEntityIdsParam(List<EntityId> entityIds) {
-		StringBuffer reply = new StringBuffer("");
-		boolean firstId  = true;
-		for (EntityId entityId:  entityIds) {
-			if (firstId)
-			     firstId = false;
-			else reply.append(",");
-			reply.append(
-				String.valueOf(entityId.getBinderId()) + ":" +
-				String.valueOf(entityId.getEntityId()) + ":" +
-				               entityId.getEntityType());
-		}
-		return reply.toString();
-	}
-	
-	/**
-	 * Returns true if this entity refers to a binder and false
-	 * otherwise.
-	 * 
-	 * @return
-	 */
-	public boolean isBinder() {
-		return (isFolder() || isWorkspace());
-	}
-
-	/**
 	 * Returns true if a List<EntityId> contains a binder reference to
 	 * the given binder ID and false otherwise.
 	 * 
@@ -406,54 +471,6 @@ public class EntityId implements IsSerializable {
 	}
 	
 	/**
-	 * Returns true if this entity refers to an entry and false
-	 * otherwise.
-	 * 
-	 * @return
-	 */
-	public boolean isEntry() {
-		String entityType = m_entityType;
-		if (null == entityType) entityType = "";
-		return (entityType.equals(EntityId.FOLDER_ENTRY));
-	}
-
-	/**
-	 * Returns true if this entity refers to a folder and false
-	 * otherwise.
-	 * 
-	 * @return
-	 */
-	public boolean isFolder() {
-		String entityType = m_entityType;
-		if (null == entityType) entityType = "";
-		return entityType.equals(EntityId.FOLDER);
-	}
-
-	/**
-	 * Returns true if this entity refers to a mobile device and false
-	 * otherwise.
-	 * 
-	 * @return
-	 */
-	public boolean isMobileDevice() {
-		String entityType = m_entityType;
-		if (null == entityType) entityType = "";
-		return entityType.equals(EntityId.MOBILE_DEVICE);
-	}
-
-	/**
-	 * Returns true if this entity refers to a workspace and false
-	 * otherwise.
-	 * 
-	 * @return
-	 */
-	public boolean isWorkspace() {
-		String entityType = m_entityType;
-		if (null == entityType) entityType = "";
-		return entityType.equals(EntityId.WORKSPACE);
-	}
-
-	/**
 	 * Returns an EntityId constructed from a string returned from
 	 * getEntityIdString().
 	 * 
@@ -462,13 +479,24 @@ public class EntityId implements IsSerializable {
 	 * @return
 	 */
 	public static EntityId parseEntityIdString(String eidString) {
-		String[] parts = eidString.split(":");
-		EntityId reply = new EntityId(
-			Long.parseLong(parts[0]),
-			Long.parseLong(parts[1]),
-			               parts[2]);
-		if (4 == parts.length) {
-			reply.setMobileDeviceId(parts[3]);
+		// String representation of an EntityId will split to either 3
+		// or 4 parts.  Does it split to an appropriate number?
+		String[] parts     = eidString.split(PART_SEPARATOR);
+		int      partCount = ((null == parts) ? 0 : parts.length);
+		EntityId reply;
+		if ((3 == partCount) || (4 == partCount)) {
+			// Yes!  Construct an EntityId from it's parts.
+			reply = new EntityId(
+				Long.parseLong(parts[0]),
+				Long.parseLong(parts[1]),
+				               parts[2]);
+			if (4 == parts.length) {
+				reply.setMobileDeviceId(parts[3]);
+			}
+		}
+		else {
+			// No, we have an invalid part count!  Return null.
+			reply = null;
 		}
 		return reply;
 	}

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -60,7 +60,6 @@ import org.kablink.teaming.gwt.client.GwtTeamingItem;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.GwtUser;
 import org.kablink.teaming.gwt.client.mainmenu.TeamInfo;
-import org.kablink.teaming.gwt.client.rpc.shared.FindUserByEmailAddressCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetDateStrCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetEntryCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetFolderCmd;
@@ -114,7 +113,6 @@ import com.google.gwt.event.dom.client.MouseOutHandler;
 import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.resources.client.ImageResource;
-import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Anchor;
@@ -143,7 +141,7 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
  */
 public class ShareThisDlg extends DlgBox
 	implements EditSuccessfulHandler, EditCanceledHandler,
-	// Event handlers implemented by this class.
+		// Event handlers implemented by this class.
 		SearchFindResultsEvent.Handler,
 		InvokeEditShareRightsDlgEvent.Handler
 {
@@ -1495,7 +1493,7 @@ public class ShareThisDlg extends DlgBox
 			// On IE calling m_cellFormatter.setWidth( row, col, "*" ); throws an exception.
 			// That is why we are calling DOM.setElementAttribute(...) instead.
 			//mainCellFormatter.setWidth( row, 1, "*" );
-			DOM.setElementAttribute( mainCellFormatter.getElement( row, 1 ), "width", "*" );
+			mainCellFormatter.getElement( row, 1 ).setAttribute( "width", "*" );
 			
 			// Add an "add external user" image.
 			{
@@ -1888,10 +1886,10 @@ public class ShareThisDlg extends DlgBox
 					EntityId entityId;
 					
 					gwtFolderEntry = (GwtFolderEntry) selectedItem;
-					entityId = new EntityId();
-					entityId.setEntityId( Long.valueOf( gwtFolderEntry.getEntryId() ) );
-					entityId.setBinderId( gwtFolderEntry.getParentBinderId() );
-					entityId.setEntityType( EntityId.FOLDER_ENTRY );
+					entityId = new EntityId(
+						gwtFolderEntry.getParentBinderId(),
+						Long.valueOf( gwtFolderEntry.getEntryId() ),
+						EntityId.FOLDER_ENTRY );
 
 					listOfEntityIds.add( entityId );
 				}
@@ -1901,9 +1899,9 @@ public class ShareThisDlg extends DlgBox
 					EntityId entityId;
 					
 					gwtFolder = (GwtFolder) selectedItem;
-					entityId = new EntityId();
-					entityId.setEntityId( Long.valueOf( gwtFolder.getFolderId() ) );
-					entityId.setEntityType( EntityId.FOLDER );
+					entityId = new EntityId(
+						Long.valueOf( gwtFolder.getFolderId() ),
+						EntityId.FOLDER );
 
 					listOfEntityIds.add( entityId );
 				}
@@ -2301,6 +2299,7 @@ public class ShareThisDlg extends DlgBox
 	private void handleClickOnAddExternalUser()
 	{
 		final String emailAddress;
+		@SuppressWarnings("unused")
 		AsyncCallback<VibeRpcResponse> findUserCallback;
 
 		// Is sharing with an external user ok to do?
@@ -3661,11 +3660,11 @@ public class ShareThisDlg extends DlgBox
 		else
 			text = messages.shareName();
 		m_shareTable.setText( 0, col, text );
-		DOM.setElementAttribute( m_shareCellFormatter.getElement( 0, col ), "width", "90px" );
+		m_shareCellFormatter.getElement( 0, col ).setAttribute( "width", "90px" );
 		++col;
 		
 		m_shareTable.setText( 0, col, messages.shareRecipientType() );
-		DOM.setElementAttribute( m_shareCellFormatter.getElement( 0, col ), "width", "45px" );
+		m_shareCellFormatter.getElement( 0, col ).setAttribute( "width", "45px" );
 		++col;
 		
 		// Are we in Administrative mode?
@@ -3673,7 +3672,7 @@ public class ShareThisDlg extends DlgBox
 		{
 			// Yes, add a "Shared By" column.
 			m_shareTable.setText( 0, col, messages.shareSharedBy() );
-			DOM.setElementAttribute( m_shareCellFormatter.getElement( 0, col ), "width", "90px" );
+			m_shareCellFormatter.getElement( 0, col ).setAttribute( "width", "90px" );
 			++col;
 		}
 		
@@ -3682,24 +3681,24 @@ public class ShareThisDlg extends DlgBox
 		{
 			// Yes, add the "Item Name" column header
 			m_shareTable.setText( 0, col, messages.shareEntityName() );
-			DOM.setElementAttribute( m_shareCellFormatter.getElement( 0, col ), "width", "80px" );
+			m_shareCellFormatter.getElement( 0, col ).setAttribute( "width", "80px" );
 			++col;
 		}
 		
 		m_shareTable.setText( 0, col, messages.shareAccess() );
-		DOM.setElementAttribute( m_shareCellFormatter.getElement( 0, col ), "width", "85px" );
+		m_shareCellFormatter.getElement( 0, col ).setAttribute( "width", "85px" );
 		++col;
 		
 		m_shareTable.setText( 0, col, messages.shareExpires() );
-		DOM.setElementAttribute( m_shareCellFormatter.getElement( 0, col ), "width", "90px" );
+		m_shareCellFormatter.getElement( 0, col ).setAttribute( "width", "90px" );
 		++col;
 		
 		m_shareTable.setText( 0, col, messages.shareNote() );
-		DOM.setElementAttribute( m_shareCellFormatter.getElement( 0, col ), "width", "100px" );
+		m_shareCellFormatter.getElement( 0, col ).setAttribute( "width", "100px" );
 		++col;
 		
 		m_shareTable.setHTML( 0, col, "&nbsp;" );	// The delete image will go in this column.
-		DOM.setElementAttribute( m_shareCellFormatter.getElement( 0, col ), "width", "14px" );
+		m_shareCellFormatter.getElement( 0, col ).setAttribute( "width", "14px" );
 		++col;
 
 		m_numCols = col;

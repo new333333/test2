@@ -186,25 +186,21 @@ public class GwtShareHelper
 	 */
 	private static EntityId buildEntityIdFromEntityIdentifier( AllModulesInjected bs, EntityIdentifier eid )
 	{
-		EntityId reply = new EntityId();
+		EntityId reply;
 		
 		switch ( eid.getEntityType() )
 		{
 		case folderEntry:
 			FolderEntry entry = bs.getFolderModule().getEntry( null, eid.getEntityId() );
-			reply.setEntityId( eid.getEntityId() );
-			reply.setBinderId( entry.getParentBinder().getId() );
-			reply.setEntityType( EntityId.FOLDER_ENTRY );
+			reply = new EntityId( entry.getParentBinder().getId(), eid.getEntityId(), EntityId.FOLDER_ENTRY );
 			break;
 			
 		case folder:
-			reply.setEntityId( eid.getEntityId() );
-			reply.setEntityType( EntityId.FOLDER );
+			reply = new EntityId( eid.getEntityId(), EntityId.FOLDER );
 			break;
 			
 		case workspace:
-			reply.setEntityId( eid.getEntityId() );
-			reply.setEntityType( EntityId.WORKSPACE );
+			reply = new EntityId( eid.getEntityId(), EntityId.WORKSPACE );
 			break;
 			
 		default:
