@@ -2180,7 +2180,7 @@ public class GwtMainPage extends ResizeComposite
 		if ( entryId == null || entryId.length() == 0 )
 			return;
 		
-		entityId = new EntityId( null, Long.valueOf( entryId ), EntityId.FOLDER_ENTRY );
+		entityId = new EntityId( Long.valueOf( entryId ), EntityId.FOLDER_ENTRY );
 		
 		BinderViewsHelper.shareEntity( entityId );
 	}
