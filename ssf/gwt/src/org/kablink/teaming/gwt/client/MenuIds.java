@@ -40,6 +40,7 @@ package org.kablink.teaming.gwt.client;
 public class MenuIds {
 	// Entry menu bar IDs.
 	public final static String	ENTRY_DEFINED_FILTER		= "ss_entryMenuDefinedFilter";
+	public final static String	ENTRY_COPY_FILTERS			= "ss_entryMenuCopyFilters";
 	public final static String	ENTRY_EDIT_FILTERS			= "ss_entryMenuEditFilters";
 	public final static String	ENTRY_FILTER_COMPOSITE		= "ss_entryMenuFilterComposite";
 	public final static String	ENTRY_FILTER_DIV			= "ss_entryMenuFilterDIV";

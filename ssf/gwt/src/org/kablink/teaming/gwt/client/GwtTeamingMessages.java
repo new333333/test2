@@ -667,6 +667,7 @@ public interface GwtTeamingMessages extends Messages
 	String codeSplitFailure_ConfigureUserMobileAppsDlg();
 	String codeSplitFailure_ConfirmDlg();
 	String codeSplitFailure_ContentControl();
+	String codeSplitFailure_CopyFiltersDlg();
 	String codeSplitFailure_CreateBlogPageDlg();
 	String codeSplitFailure_CopyMoveEntriesDlg();
 	String codeSplitFailure_CopyPublicLinkDlg();
@@ -1844,6 +1845,7 @@ public interface GwtTeamingMessages extends Messages
 	String vibeEntryMenu_Alt_Shared_ShowAll();
 	String vibeEntryMenu_Alt_Shared_ShowFiles();
 	String vibeEntryMenu_ClearFilters();
+	String vibeEntryMenu_CopyFilters();
 	String vibeEntryMenu_GlobalizeFilter(String filterName);
 	String vibeEntryMenu_ManageFilters();
 	String vibeEntryMenu_ManageUsers_EnabledFilter();
@@ -3419,4 +3421,7 @@ public interface GwtTeamingMessages extends Messages
 	String changeLogOperation_startWorkflow();
 	String changeLogRunReport();
 	String changeLogWarning_NoChanges();
+	
+	// String used by the 'Copy Filters' dialog.
+	String copyFiltersDlg_Caption();
 }// end GwtTeamingMessages

@@ -1141,6 +1141,15 @@ public class EventHelper {
 				}
 				break;
 			
+			case INVOKE_COPY_FILTERS_DLG:
+				// An InvokeCopyFiltersDlgEvent!  Can the event handler
+				// we were given handle that?
+				if (eventHandler instanceof InvokeCopyFiltersDlgEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = InvokeCopyFiltersDlgEvent.registerEvent(eventBus, ((InvokeCopyFiltersDlgEvent.Handler) eventHandler));
+				}
+				break;
+				
 			case INVOKE_DOWNLOAD_DESKTOP_APP:
 				// An InvokeDownloadDesktopAppEvent!  Can the event
 				// handler we were given handle that?
@@ -2809,6 +2818,7 @@ public class EventHelper {
 			case INVOKE_CONFIGURE_MOBILE_APPS_DLG:	       	   hasHandler = (eventHandler instanceof InvokeConfigureMobileAppsDlgEvent.Handler);           break;
 			case INVOKE_CONFIGURE_SHARE_SETTINGS_DLG:	       hasHandler = (eventHandler instanceof InvokeConfigureShareSettingsDlgEvent.Handler);        break;
 			case INVOKE_CONFIGURE_USER_ACCESS_DLG:		       hasHandler = (eventHandler instanceof InvokeConfigureUserAccessDlgEvent.Handler);           break;
+			case INVOKE_COPY_FILTERS_DLG:                      hasHandler = (eventHandler instanceof InvokeCopyFiltersDlgEvent.Handler);                   break;
 			case INVOKE_DOWNLOAD_DESKTOP_APP:                  hasHandler = (eventHandler instanceof InvokeDownloadDesktopAppEvent.Handler);               break;
 			case INVOKE_DROPBOX:						       hasHandler = (eventHandler instanceof InvokeDropBoxEvent.Handler);                          break;
 			case INVOKE_EDIT_IN_PLACE:					       hasHandler = (eventHandler instanceof InvokeEditInPlaceEvent.Handler);                      break;

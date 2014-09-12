@@ -41,6 +41,7 @@ import org.kablink.teaming.gwt.client.binderviews.util.BinderViewsHelper;
 import org.kablink.teaming.gwt.client.event.ContributorIdsRequestEvent;
 import org.kablink.teaming.gwt.client.event.DownloadFolderAsCSVFileEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
+import org.kablink.teaming.gwt.client.event.InvokeCopyFiltersDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeDropBoxEvent;
 import org.kablink.teaming.gwt.client.event.MarkFolderContentsReadEvent;
 import org.kablink.teaming.gwt.client.event.MarkFolderContentsUnreadEvent;
@@ -71,6 +72,7 @@ public class TaskFolderView extends FolderViewBase
 		ContributorIdsRequestEvent.Handler,
 		DownloadFolderAsCSVFileEvent.Handler,
 		InvokeDropBoxEvent.Handler,
+		InvokeCopyFiltersDlgEvent.Handler,
 		MarkFolderContentsReadEvent.Handler,
 		MarkFolderContentsUnreadEvent.Handler
 {
@@ -84,6 +86,7 @@ public class TaskFolderView extends FolderViewBase
 	private TeamingEvents[] m_registeredEvents = new TeamingEvents[] {
 		TeamingEvents.CONTRIBUTOR_IDS_REQUEST,
 		TeamingEvents.DOWNLOAD_FOLDER_AS_CSV_FILE,
+		TeamingEvents.INVOKE_COPY_FILTERS_DLG,
 		TeamingEvents.INVOKE_DROPBOX,
 		TeamingEvents.MARK_FOLDER_CONTENTS_READ,
 		TeamingEvents.MARK_FOLDER_CONTENTS_UNREAD,
@@ -302,6 +305,42 @@ public class TaskFolderView extends FolderViewBase
 		unregisterEvents();
 	}
 	
+	/**
+	 * Handles InvokeCopyFiltersDlgEvent's received by this class.
+	 * 
+	 * Implements the InvokeCopyFiltersDlgEvent.Handler.onInvokeCopyFiltersDlg() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onInvokeCopyFiltersDlg(InvokeCopyFiltersDlgEvent event) {
+		// Is the event targeted to this folder?
+		Long eventFolderId = event.getFolderId();
+		if (eventFolderId.equals(getFolderInfo().getBinderIdAsLong())) {
+			// Yes!  Invoke the copy filters dialog on the folder.
+			onInvokeCopyFiltersDlgAsync(eventFolderId);
+		}
+	}
+
+	/*
+	 * Asynchronously invokes the copy filters dialog.
+	 */
+	private void onInvokeCopyFiltersDlgAsync(final Long folderId) {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
+			@Override
+			public void execute() {
+				onInvokeCopyFiltersDlgNow(folderId);
+			}
+		} );
+	}
+	
+	/*
+	 * Synchronously invokes the copy filters dialog.
+	 */
+	private void onInvokeCopyFiltersDlgNow(final Long folderId) {
+		BinderViewsHelper.invokeCopyFiltersDlg(folderId);
+	}
+		
 	/**
 	 * Handles InvokeDropBoxEvent's received by this class.
 	 * 

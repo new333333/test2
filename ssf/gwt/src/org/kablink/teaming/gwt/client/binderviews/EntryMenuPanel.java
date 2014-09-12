@@ -66,6 +66,7 @@ import org.kablink.teaming.gwt.client.event.HideAccessoriesEvent;
 import org.kablink.teaming.gwt.client.event.HideSelectedSharesEvent;
 import org.kablink.teaming.gwt.client.event.InvokeAddNewFolderEvent;
 import org.kablink.teaming.gwt.client.event.InvokeColumnResizerEvent;
+import org.kablink.teaming.gwt.client.event.InvokeCopyFiltersDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeDropBoxEvent;
 import org.kablink.teaming.gwt.client.event.InvokeSignGuestbookEvent;
 import org.kablink.teaming.gwt.client.event.LockSelectedEntitiesEvent;
@@ -119,6 +120,7 @@ import org.kablink.teaming.gwt.client.util.ManageUsersState;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 import org.kablink.teaming.gwt.client.util.SharedViewState;
+import org.kablink.teaming.gwt.client.widgets.CopyFiltersDlg;
 import org.kablink.teaming.gwt.client.widgets.VibeFlexTable;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 
@@ -963,13 +965,29 @@ public class EntryMenuPanel extends ToolPanelBase
 			hasFiltersOffUrl = false;
 		}
 		
-		// Create the filter options menu bar...
+		// Create the filter options menu bar.
 		PopupMenu filterDropdownMenu = constructFilterDropdownMenu(false);	// false -> Items aren't checked.
+
+		VibeMenuItem mi;
+		if (CopyFiltersDlg.SHOW_COPY_FILTERS) {	//! ...temporary until the dialog is finished...
+			// Create a menu option for copying filters.
+			mi = new VibeMenuItem(m_messages.vibeEntryMenu_CopyFilters(), new Command() {
+				@Override
+				public void execute() {
+					GwtTeaming.fireEvent(new InvokeCopyFiltersDlgEvent(m_binderInfo.getBinderIdAsLong()));
+				}
+			});
+			mi.getElement().setId(MenuIds.ENTRY_COPY_FILTERS);
+			filterDropdownMenu.addMenuItem(mi);
+			if ((!hasFilterEditUrl) && (!hasFiltersOffUrl) && (0 < filtersCount)) {
+				filterDropdownMenu.addSeparator();
+			}
+		}
 		
 		// If we have an edit filters URL...
 		if (hasFilterEditUrl) {
 			// ...add a menu item for it.
-			VibeMenuItem mi = new VibeMenuItem(m_messages.vibeEntryMenu_ManageFilters(), new Command() {
+			mi = new VibeMenuItem(m_messages.vibeEntryMenu_ManageFilters(), new Command() {
 				@Override
 				public void execute() {
 					GwtTeaming.fireEvent(new GotoContentUrlEvent(filterEditUrl));
@@ -985,7 +1003,7 @@ public class EntryMenuPanel extends ToolPanelBase
 		// If we have a filters off URL...
 		if (hasFiltersOffUrl) {
 			// ...add a menu item for it.
-			VibeMenuItem mi = new VibeMenuItem(m_messages.vibeEntryMenu_ClearFilters(), new Command() {
+			mi = new VibeMenuItem(m_messages.vibeEntryMenu_ClearFilters(), new Command() {
 				@Override
 				public void execute() {
 					GwtTeaming.fireEvent(new GotoContentUrlEvent(filtersOffUrl));

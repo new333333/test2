@@ -114,6 +114,7 @@ public enum TeamingEvents implements IsSerializable {
 	INVOKE_CONFIGURE_MOBILE_APPS_DLG,				// Invokes the Configure Mobile Apps dialog.
 	INVOKE_CONFIGURE_SHARE_SETTINGS_DLG,			// Invokes the Configure Share Settings dialog.
 	INVOKE_CONFIGURE_USER_ACCESS_DLG,				// Invokes the Configure User Access dialog.
+	INVOKE_COPY_FILTERS_DLG,						// Invokes the 'Copy Filters' dialog.
 	INVOKE_DOWNLOAD_DESKTOP_APP,					// Invokes the desktop application download page.
 	INVOKE_DROPBOX,									// Invokes the files drop box (i.e., the file drag&drop applet.)
 	INVOKE_EDIT_IN_PLACE,							// Invokes the edit-in-place on the specified file.

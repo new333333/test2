@@ -110,6 +110,7 @@ import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.FullUIReloadEvent;
 import org.kablink.teaming.gwt.client.event.HideSelectedSharesEvent;
 import org.kablink.teaming.gwt.client.event.InvokeColumnResizerEvent;
+import org.kablink.teaming.gwt.client.event.InvokeCopyFiltersDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeDropBoxEvent;
 import org.kablink.teaming.gwt.client.event.InvokeEditInPlaceEvent;
 import org.kablink.teaming.gwt.client.event.InvokeSignGuestbookEvent;
@@ -248,6 +249,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		EnableSelectedUsersWebAccessEvent.Handler,
 		HideSelectedSharesEvent.Handler,
 		InvokeColumnResizerEvent.Handler,
+		InvokeCopyFiltersDlgEvent.Handler,
 		InvokeDropBoxEvent.Handler,
 		InvokeEditInPlaceEvent.Handler,
 		InvokeSignGuestbookEvent.Handler,
@@ -345,6 +347,7 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		TeamingEvents.ENABLE_SELECTED_USERS_WEBACCESS,
 		TeamingEvents.HIDE_SELECTED_SHARES,
 		TeamingEvents.INVOKE_COLUMN_RESIZER,
+		TeamingEvents.INVOKE_COPY_FILTERS_DLG,
 		TeamingEvents.INVOKE_DROPBOX,
 		TeamingEvents.INVOKE_EDIT_IN_PLACE,
 		TeamingEvents.INVOKE_SIGN_GUESTBOOK,
@@ -2882,8 +2885,8 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	@Override
 	public void onInvokeColumnResizer(InvokeColumnResizerEvent event) {
 		// Is the event targeted to this folder?
-		BinderInfo evenBinderInfo = event.getBinderInfo();
-		if (evenBinderInfo.isEqual(getFolderInfo())) {
+		BinderInfo eventBinderInfo = event.getBinderInfo();
+		if (eventBinderInfo.isEqual(getFolderInfo())) {
 			// Yes!  Invoke the column sizing dialog on the folder.
 			// Have we instantiated a size columns dialog yet?
 			if (null == m_sizeColumnsDlg) {
@@ -2917,6 +2920,42 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		}
 	}
 	
+	/**
+	 * Handles InvokeCopyFiltersDlgEvent's received by this class.
+	 * 
+	 * Implements the InvokeCopyFiltersDlgEvent.Handler.onInvokeCopyFiltersDlg() method.
+	 * 
+	 * @param event
+	 */
+	@Override
+	public void onInvokeCopyFiltersDlg(InvokeCopyFiltersDlgEvent event) {
+		// Is the event targeted to this folder?
+		Long eventFolderId = event.getFolderId();
+		if (eventFolderId.equals(getFolderInfo().getBinderIdAsLong())) {
+			// Yes!  Invoke the copy filters dialog on the folder.
+			onInvokeCopyFiltersDlgAsync(eventFolderId);
+		}
+	}
+
+	/*
+	 * Asynchronously invokes the copy filters dialog.
+	 */
+	private void onInvokeCopyFiltersDlgAsync(final Long folderId) {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
+			@Override
+			public void execute() {
+				onInvokeCopyFiltersDlgNow(folderId);
+			}
+		} );
+	}
+	
+	/*
+	 * Synchronously invokes the copy filters dialog.
+	 */
+	private void onInvokeCopyFiltersDlgNow(final Long folderId) {
+		BinderViewsHelper.invokeCopyFiltersDlg(folderId);
+	}
+		
 	/**
 	 * Handles InvokeDropBoxEvent's received by this class.
 	 * 

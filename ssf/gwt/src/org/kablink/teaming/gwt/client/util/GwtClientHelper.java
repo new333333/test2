@@ -101,7 +101,7 @@ import com.google.gwt.user.client.ui.Widget;
  * @author drfoster@novell.com
  */
 public class GwtClientHelper {
-	private final static boolean USE_JAVASCRIPT_ALERT	= true;	//! DRF (20131106):  Leave true on checkin until AlertDlg.java is working.
+	private final static boolean USE_JAVASCRIPT_ALERT	= false;	// Controls whether alerts are displayed using a JavaScript alert or our GWT AlertDlg.
 	
 	// Holds an instantiated AlertDlg when one is create.
 	private static AlertDlg	m_alertDlg;
