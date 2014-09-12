@@ -133,6 +133,28 @@ public class BinderInfo implements IsSerializable, VibeRpcResponseData {
 		else reply = Long.parseLong(m_parentBinderId);
 		return reply;
 	}
+
+	/**
+	 * Constructs and returns an EntityId that refers to this binder.
+	 * 
+	 * If the BinderInfo doesn't refer to a specific binder (e.g., it
+	 * refers to a collection, ...), null is returned.
+	 * 
+	 * @return
+	 */
+	public EntityId buildEntityId() {
+		String eidType;
+		switch (getBinderType()) {
+		case FOLDER:     eidType = EntityId.FOLDER;    break;
+		case WORKSPACE:  eidType = EntityId.WORKSPACE; break;
+		default:         eidType = null;               break;
+		}
+		EntityId reply;
+		if (null == eidType)
+		     reply = null;
+		else reply = new EntityId(getParentBinderIdAsLong(), getBinderIdAsLong(), eidType);
+		return reply;
+	}
 	
 	/**
 	 * Returns true of this BinderInfo defines a Collection and false

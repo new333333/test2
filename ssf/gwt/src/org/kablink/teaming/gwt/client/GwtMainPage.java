@@ -2180,9 +2180,7 @@ public class GwtMainPage extends ResizeComposite
 		if ( entryId == null || entryId.length() == 0 )
 			return;
 		
-		entityId = new EntityId();
-		entityId.setEntityId( Long.valueOf( entryId ) );
-		entityId.setEntityType( EntityId.FOLDER_ENTRY );
+		entityId = new EntityId( null, Long.valueOf( entryId ), EntityId.FOLDER_ENTRY );
 		
 		BinderViewsHelper.shareEntity( entityId );
 	}
@@ -3848,18 +3846,7 @@ public class GwtMainPage extends ResizeComposite
 					@Override
 					public void execute()
 					{
-						String eidType;
-						switch ( binderInfo.getBinderType() )
-						{
-						case FOLDER:     eidType = EntityId.FOLDER;    break;
-						case WORKSPACE:  eidType = EntityId.WORKSPACE; break;
-						default:         eidType = "";                 break;
-						}
-						BinderViewsHelper.shareEntity(
-							new EntityId(
-								binderInfo.getParentBinderIdAsLong(),
-								binderInfo.getBinderIdAsLong(),
-								eidType ) );
+						BinderViewsHelper.shareEntity( binderInfo.buildEntityId() );
 					}// end execute()
 				} );
 			}// end onSuccess()

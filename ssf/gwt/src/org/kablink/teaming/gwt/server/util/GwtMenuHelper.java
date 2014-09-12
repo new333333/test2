@@ -290,7 +290,7 @@ public class GwtMenuHelper {
 							reply = new ToolbarItem(EDIT_IN_PLACE);
 							markTBITitle(   reply, "file.editFile"                   );
 							markTBIEvent(   reply, TeamingEvents.INVOKE_EDIT_IN_PLACE);
-							markTBIEntryIds(reply, fe                                );
+							markTBIEntityId(reply, fe                                );
 							markTBIEditInPlace(
 								reply,
 								operatingSystem,
@@ -899,9 +899,9 @@ public class GwtMenuHelper {
 		boolean canDownload = AdminHelper.getEffectiveDownloadSetting(bs, GwtServerHelper.getCurrentUser());
 		if (canDownload && bs.getBinderModule().testAccess(folder, BinderOperation.readEntries)) {
 			ToolbarItem downloadAsCSVFileTBI = new ToolbarItem("1_downloadAsCSVFile");
-			markTBITitle(         downloadAsCSVFileTBI, "toolbar.menu.downloadFolderAsCSVFile"   );
-			markTBIEvent(         downloadAsCSVFileTBI, TeamingEvents.DOWNLOAD_FOLDER_AS_CSV_FILE);
-			markTBISelectedBinder(downloadAsCSVFileTBI, folder                                   );
+			markTBITitle(   downloadAsCSVFileTBI, "toolbar.menu.downloadFolderAsCSVFile"   );
+			markTBIEvent(   downloadAsCSVFileTBI, TeamingEvents.DOWNLOAD_FOLDER_AS_CSV_FILE);
+			markTBIEntityId(downloadAsCSVFileTBI, folder                                   );
 			entryToolbar.addNestedItem(downloadAsCSVFileTBI);
 		}
 	}
@@ -1123,17 +1123,17 @@ public class GwtMenuHelper {
 			// ...add a ToolbarItem for for marking the folder's
 			// ...contents as having been read...
 			ToolbarItem actionTBI = new ToolbarItem(SEEN_FOLDER);
-			markTBITitle(         actionTBI, "toolbar.menu.markFolderContentsRead"  );
-			markTBIEvent(         actionTBI, TeamingEvents.MARK_FOLDER_CONTENTS_READ);
-			markTBISelectedBinder(actionTBI, folder                                 );
+			markTBITitle(   actionTBI, "toolbar.menu.markFolderContentsRead"  );
+			markTBIEvent(   actionTBI, TeamingEvents.MARK_FOLDER_CONTENTS_READ);
+			markTBIEntityId(actionTBI, folder                                 );
 			entryToolbar.addNestedItem(actionTBI);
 			
 			// ...and one for for marking the folder's contents as
 			// ...having been unread.
 			actionTBI = new ToolbarItem(UNSEEN_FOLDER);
-			markTBITitle(         actionTBI, "toolbar.menu.markFolderContentsUnread"  );
-			markTBIEvent(         actionTBI, TeamingEvents.MARK_FOLDER_CONTENTS_UNREAD);
-			markTBISelectedBinder(actionTBI, folder                                   );
+			markTBITitle(   actionTBI, "toolbar.menu.markFolderContentsUnread"  );
+			markTBIEvent(   actionTBI, TeamingEvents.MARK_FOLDER_CONTENTS_UNREAD);
+			markTBIEntityId(actionTBI, folder                                   );
 			entryToolbar.addNestedItem(actionTBI);
 		}
 	}
@@ -1971,7 +1971,7 @@ public class GwtMenuHelper {
 			ToolbarItem zipAndDownloadTBI = new ToolbarItem("1_zipAndDownload"              );
 			markTBITitle(   zipAndDownloadTBI, "toolbar.zipAndDownloadFile"                 );
 			markTBIEvent(   zipAndDownloadTBI, TeamingEvents.ZIP_AND_DOWNLOAD_SELECTED_FILES);
-			markTBIEntryIds(zipAndDownloadTBI, fe                                           );
+			markTBIEntityId(zipAndDownloadTBI, fe                                           );
 			entryToolbar.addNestedItem(zipAndDownloadTBI);
 		}
 	}
@@ -1983,10 +1983,10 @@ public class GwtMenuHelper {
 		boolean canDownload = AdminHelper.getEffectiveDownloadSetting(bs, GwtServerHelper.getCurrentUser());
 		if (canDownload && bs.getBinderModule().testAccess(folder, BinderOperation.readEntries) && GwtServerHelper.isFamilyFile(GwtServerHelper.getFolderEntityFamily(bs, folder))) {
 			ToolbarItem zipAndDownloadTBI = new ToolbarItem("1_zipAndDownload");
-			markTBITitle(         zipAndDownloadTBI, "toolbar.menu.zipAndDownloadFolder"  );
-			markTBIEvent(         zipAndDownloadTBI, TeamingEvents.ZIP_AND_DOWNLOAD_FOLDER);
-			markTBIRecursive(     zipAndDownloadTBI, true                                 );
-			markTBISelectedBinder(zipAndDownloadTBI, folder                               );
+			markTBITitle(    zipAndDownloadTBI, "toolbar.menu.zipAndDownloadFolder"  );
+			markTBIEvent(    zipAndDownloadTBI, TeamingEvents.ZIP_AND_DOWNLOAD_FOLDER);
+			markTBIRecursive(zipAndDownloadTBI, true                                 );
+			markTBIEntityId( zipAndDownloadTBI, folder                               );
 			entryToolbar.addNestedItem(zipAndDownloadTBI);
 		}
 	}
@@ -2097,9 +2097,9 @@ public class GwtMenuHelper {
 					
 					// ...add the move item....
 					actionTBI = new ToolbarItem(MOVE);
-					markTBITitle(         actionTBI, (isFolder ? "toolbar.menu.move_folder" : "toolbar.menu.move_workspace"));
-					markTBIEvent(         actionTBI, TeamingEvents.MOVE_SELECTED_ENTITIES                                   );
-					markTBISelectedBinder(actionTBI, binder                                                                 );
+					markTBITitle(   actionTBI, (isFolder ? "toolbar.menu.move_folder" : "toolbar.menu.move_workspace"));
+					markTBIEvent(   actionTBI, TeamingEvents.MOVE_SELECTED_ENTITIES                                   );
+					markTBIEntityId(actionTBI, binder                                                                 );
 					
 					configTBI.addNestedItem(actionTBI);
 				}
@@ -2111,9 +2111,9 @@ public class GwtMenuHelper {
 					configMenuCreated = true;
 					
 					actionTBI = new ToolbarItem(COPY);
-					markTBITitle(         actionTBI, (isFolder ? "toolbar.menu.copy_folder" : "toolbar.menu.copy_workspace"));
-					markTBIEvent(         actionTBI, TeamingEvents.COPY_SELECTED_ENTITIES                                   );
-					markTBISelectedBinder(actionTBI, binder                                                                 );
+					markTBITitle(   actionTBI, (isFolder ? "toolbar.menu.copy_folder" : "toolbar.menu.copy_workspace"));
+					markTBIEvent(   actionTBI, TeamingEvents.COPY_SELECTED_ENTITIES                                   );
+					markTBIEntityId(actionTBI, binder                                                                 );
 					
 					configTBI.addNestedItem(actionTBI);
 				}
@@ -2129,10 +2129,10 @@ public class GwtMenuHelper {
 					// ...add a ToolbarItem for for zipping and
 					// ...downloading its files.
 					actionTBI = new ToolbarItem(ZIP_AND_DOWNLOAD);
-					markTBITitle(         actionTBI, "toolbar.menu.zipAndDownloadFolder"  );
-					markTBIEvent(         actionTBI, TeamingEvents.ZIP_AND_DOWNLOAD_FOLDER);
-					markTBIRecursive(     actionTBI, true                                 );
-					markTBISelectedBinder(actionTBI, binder                               );
+					markTBITitle(    actionTBI, "toolbar.menu.zipAndDownloadFolder"  );
+					markTBIEvent(    actionTBI, TeamingEvents.ZIP_AND_DOWNLOAD_FOLDER);
+					markTBIRecursive(actionTBI, true                                 );
+					markTBIEntityId( actionTBI, binder                               );
 					configTBI.addNestedItem(actionTBI);
 				}
 				
@@ -2141,9 +2141,9 @@ public class GwtMenuHelper {
 					// ...add a ToolbarItem for for downloading it as a
 					// ...CSV file.
 					actionTBI = new ToolbarItem(DOWNLOAD_AS_CSV_FILE);
-					markTBITitle(         actionTBI, "toolbar.menu.downloadFolderAsCSVFile"   );
-					markTBIEvent(         actionTBI, TeamingEvents.DOWNLOAD_FOLDER_AS_CSV_FILE);
-					markTBISelectedBinder(actionTBI, binder                                   );
+					markTBITitle(   actionTBI, "toolbar.menu.downloadFolderAsCSVFile"   );
+					markTBIEvent(   actionTBI, TeamingEvents.DOWNLOAD_FOLDER_AS_CSV_FILE);
+					markTBIEntityId(actionTBI, binder                                   );
 					configTBI.addNestedItem(actionTBI);
 				}
 			}
@@ -2153,17 +2153,17 @@ public class GwtMenuHelper {
 				// ...add a ToolbarItem for for marking the folder's
 				// ...contents as having been read...
 				actionTBI = new ToolbarItem(SEEN_FOLDER);
-				markTBITitle(         actionTBI, "toolbar.menu.markFolderContentsRead"  );
-				markTBIEvent(         actionTBI, TeamingEvents.MARK_FOLDER_CONTENTS_READ);
-				markTBISelectedBinder(actionTBI, binder                                 );
+				markTBITitle(   actionTBI, "toolbar.menu.markFolderContentsRead"  );
+				markTBIEvent(   actionTBI, TeamingEvents.MARK_FOLDER_CONTENTS_READ);
+				markTBIEntityId(actionTBI, binder                                 );
 				configTBI.addNestedItem(actionTBI);
 				
 				// ...and one for for marking the folder's contents as
 				// ...having been unread.
 				actionTBI = new ToolbarItem(UNSEEN_FOLDER);
-				markTBITitle(         actionTBI, "toolbar.menu.markFolderContentsUnread"  );
-				markTBIEvent(         actionTBI, TeamingEvents.MARK_FOLDER_CONTENTS_UNREAD);
-				markTBISelectedBinder(actionTBI, binder                                   );
+				markTBITitle(   actionTBI, "toolbar.menu.markFolderContentsUnread"  );
+				markTBIEvent(   actionTBI, TeamingEvents.MARK_FOLDER_CONTENTS_UNREAD);
+				markTBIEntityId(actionTBI, binder                                   );
 				configTBI.addNestedItem(actionTBI);
 			}
 		}
@@ -2298,9 +2298,9 @@ public class GwtMenuHelper {
 					configMenuCreated = true;
 		
 					actionTBI = new ToolbarItem(DELETE);
-					markTBITitle(         actionTBI, (isFolder ? "toolbar.menu.delete_folder" : "toolbar.menu.delete_workspace"));
-					markTBIEvent(         actionTBI, TeamingEvents.DELETE_SELECTED_ENTITIES                                     );
-					markTBISelectedBinder(actionTBI, binder                                                                     );
+					markTBITitle(   actionTBI, (isFolder ? "toolbar.menu.delete_folder" : "toolbar.menu.delete_workspace"));
+					markTBIEvent(   actionTBI, TeamingEvents.DELETE_SELECTED_ENTITIES                                     );
+					markTBIEntityId(actionTBI, binder                                                                     );
 					
 					configTBI.addNestedItem(actionTBI);
 				}
@@ -3993,7 +3993,7 @@ public class GwtMenuHelper {
 						actionTBI = new ToolbarItem(SHARE);
 						markTBITitle(   actionTBI, "toolbar.shareSelected." + keyTail);
 						markTBIEvent(   actionTBI, TeamingEvents.SHARE_SELECTED_ENTITIES);
-						markTBIEntryIds(actionTBI, fe);
+						markTBIEntityId(actionTBI, fe);
 						shareItemsTBI.addNestedItem(actionTBI);
 					}
 					
@@ -4007,27 +4007,27 @@ public class GwtMenuHelper {
 							actionTBI = new ToolbarItem(EDIT_PUBLIC_LINK);
 							markTBITitle(   actionTBI, "toolbar.editPublicLinkSelected." + keyTail);
 							markTBIEvent(   actionTBI, TeamingEvents.EDIT_PUBLIC_LINK_SELECTED_ENTITIES);
-							markTBIEntryIds(actionTBI, fe);
+							markTBIEntityId(actionTBI, fe);
 							shareItemsTBI.addNestedItem(actionTBI);
 						}
 						else {
 							actionTBI = new ToolbarItem(COPY_PUBLIC_LINK);
 							markTBITitle(   actionTBI, "toolbar.copyPublicLinkSelected." + keyTail);
 							markTBIEvent(   actionTBI, TeamingEvents.COPY_PUBLIC_LINK_SELECTED_ENTITIES);
-							markTBIEntryIds(actionTBI, fe);
+							markTBIEntityId(actionTBI, fe);
 							shareItemsTBI.addNestedItem(actionTBI);
 						}
 						
 						actionTBI = new ToolbarItem(MAILTO_PUBLIC_LINK);
 						markTBITitle(   actionTBI, "toolbar.mailtoPublicLink." + keyTail);
 						markTBIEvent(   actionTBI, TeamingEvents.MAILTO_PUBLIC_LINK_ENTITY);
-						markTBIEntryIds(actionTBI, fe);
+						markTBIEntityId(actionTBI, fe);
 						shareItemsTBI.addNestedItem(actionTBI);
 						
 						actionTBI = new ToolbarItem(EMAIL_PUBLIC_LINK);
 						markTBITitle(   actionTBI, "toolbar.emailPublicLinkSelected." + keyTail);
 						markTBIEvent(   actionTBI, TeamingEvents.EMAIL_PUBLIC_LINK_SELECTED_ENTITIES);
-						markTBIEntryIds(actionTBI, fe);
+						markTBIEntityId(actionTBI, fe);
 						shareItemsTBI.addNestedItem(actionTBI);
 					}
 					
@@ -4041,7 +4041,7 @@ public class GwtMenuHelper {
 					actionTBI = new ToolbarItem(SHARE);
 					markTBITitle(   actionTBI, "toolbar.shareSelected.entry");
 					markTBIEvent(   actionTBI, TeamingEvents.SHARE_SELECTED_ENTITIES);
-					markTBIEntryIds(actionTBI, fe);
+					markTBIEntityId(actionTBI, fe);
 					reply.add(actionTBI);
 				}
 			}
@@ -4076,7 +4076,7 @@ public class GwtMenuHelper {
 				actionTBI = new ToolbarItem(DELETE);
 				markTBITitle(   actionTBI, "toolbar.delete"                      );
 				markTBIEvent(   actionTBI, TeamingEvents.DELETE_SELECTED_ENTITIES);
-				markTBIEntryIds(actionTBI, fe                                    );
+				markTBIEntityId(actionTBI, fe                                    );
 				reply.add(actionTBI);
 			}
 			
@@ -4099,7 +4099,7 @@ public class GwtMenuHelper {
 					actionTBI = new ToolbarItem(COPY);
 					markTBITitle(   actionTBI, "toolbar.copy"                      );
 					markTBIEvent(   actionTBI, TeamingEvents.COPY_SELECTED_ENTITIES);
-					markTBIEntryIds(actionTBI, fe                                  );
+					markTBIEntityId(actionTBI, fe                                  );
 					dropdownTBI.addNestedItem(actionTBI);
 				}
 				
@@ -4109,7 +4109,7 @@ public class GwtMenuHelper {
 					actionTBI = new ToolbarItem(MOVE);
 					markTBITitle(   actionTBI, "toolbar.move"                      );
 					markTBIEvent(   actionTBI, TeamingEvents.MOVE_SELECTED_ENTITIES);
-					markTBIEntryIds(actionTBI, fe                                  );
+					markTBIEntityId(actionTBI, fe                                  );
 					dropdownTBI.addNestedItem(actionTBI);
 				}
 			}
@@ -4121,7 +4121,7 @@ public class GwtMenuHelper {
 				actionTBI = new ToolbarItem(ZIP_AND_DOWNLOAD                            );
 				markTBITitle(   actionTBI, "toolbar.zipAndDownload"                     );
 				markTBIEvent(   actionTBI, TeamingEvents.ZIP_AND_DOWNLOAD_SELECTED_FILES);
-				markTBIEntryIds(actionTBI, fe                                           );
+				markTBIEntityId(actionTBI, fe                                           );
 				dropdownTBI.addNestedItem(actionTBI);
 			}
 			
@@ -4135,7 +4135,7 @@ public class GwtMenuHelper {
 						actionTBI = new ToolbarItem(LOCK);
 						markTBITitle(   actionTBI, "toolbar.lock.entry"                );
 						markTBIEvent(   actionTBI, TeamingEvents.LOCK_SELECTED_ENTITIES);
-						markTBIEntryIds(actionTBI, fe                                  );
+						markTBIEntityId(actionTBI, fe                                  );
 						dropdownTBI.addNestedItem(actionTBI);
 					}
 					
@@ -4150,7 +4150,7 @@ public class GwtMenuHelper {
 							actionTBI = new ToolbarItem(UNLOCK);
 							markTBITitle(   actionTBI, "toolbar.unlock.entry"                );
 							markTBIEvent(   actionTBI, TeamingEvents.UNLOCK_SELECTED_ENTITIES);
-							markTBIEntryIds(actionTBI, fe                                    );
+							markTBIEntityId(actionTBI, fe                                    );
 							dropdownTBI.addNestedItem(actionTBI);
 						}
 					}
@@ -4167,14 +4167,14 @@ public class GwtMenuHelper {
 					actionTBI = new ToolbarItem(UNSEEN);
 					markTBITitle(   actionTBI, "toolbar.markUnread.entry"                 );
 					markTBIEvent(   actionTBI, TeamingEvents.MARK_UNREAD_SELECTED_ENTITIES);
-					markTBIEntryIds(actionTBI, fe                                         );
+					markTBIEntityId(actionTBI, fe                                         );
 					dropdownTBI.addNestedItem(actionTBI);
 				}
 				else {
 					actionTBI = new ToolbarItem(SEEN);
 					markTBITitle(   actionTBI, "toolbar.markRead.entry"                 );
 					markTBIEvent(   actionTBI, TeamingEvents.MARK_READ_SELECTED_ENTITIES);
-					markTBIEntryIds(actionTBI, fe                                       );
+					markTBIEntityId(actionTBI, fe                                       );
 					dropdownTBI.addNestedItem(actionTBI);
 				}
 			}
@@ -4213,7 +4213,7 @@ public class GwtMenuHelper {
 					actionTBI = new ToolbarItem(CHANGE_ENTRY_TYPE);
 					markTBITitle(   actionTBI, "toolbar.changeEntryType"                        );
 					markTBIEvent(   actionTBI, TeamingEvents.CHANGE_ENTRY_TYPE_SELECTED_ENTITIES);
-					markTBIEntryIds(actionTBI, fe                                               );
+					markTBIEntityId(actionTBI, fe                                               );
 					dropdownTBI.addNestedItem(actionTBI);
 				}
 			}
@@ -4231,7 +4231,7 @@ public class GwtMenuHelper {
 					actionTBI = new ToolbarItem(SUBSCRIBE);
 					markTBITitle(   actionTBI, "toolbar.menu.subscribeToEntrySelected"  );
 					markTBIEvent(   actionTBI, TeamingEvents.SUBSCRIBE_SELECTED_ENTITIES);
-					markTBIEntryIds(actionTBI, fe                                       );
+					markTBIEntityId(actionTBI, fe                                       );
 					dropdownTBI.addNestedItem(actionTBI);
 				}
 
@@ -4339,7 +4339,7 @@ public class GwtMenuHelper {
 				actionTBI = new ToolbarItem(FORCE_FILE_UNLOCK);
 				markTBITitle(   actionTBI, "toolbar.force.file.unlock"     );
 				markTBIEvent(   actionTBI, TeamingEvents.FORCE_FILES_UNLOCK);
-				markTBIEntryIds(actionTBI, fe                              );
+				markTBIEntityId(actionTBI, fe                              );
 				reply.add(actionTBI);
 			}
 			
@@ -4493,24 +4493,19 @@ public class GwtMenuHelper {
 	}
 	
 	/*
-	 * Marks a ToolbarItem with a entry ID.
+	 * Marks a ToolbarItem with an EntityId for a binder.
 	 */
-	private static void markTBIEntryId(ToolbarItem tbi, String entryId) {
-		tbi.addQualifier("entryId", entryId);
+	private static void markTBIEntityId(ToolbarItem tbi, Binder binder) {
+		EntityId binderEID = new EntityId(binder.getParentBinder().getId(), binder.getId(), binder.getEntityType().name());
+		tbi.addEntityId("entityId", binderEID);
 	}
 	
-	private static void markTBIEntryId(ToolbarItem tbi, Long entryId) {
-		// Always use the initial form of the method.
-		markTBIEntryId(tbi, String.valueOf(entryId));
-	}
-
 	/*
-	 * Marks a ToolbarItem with both the entry ID and binder ID from a
-	 * folder entry.
+	 * Marks a ToolbarItem with an EntityId for a folder entry.
 	 */
-	private static void markTBIEntryIds(ToolbarItem tbi, FolderEntry fe) {
-		markTBIEntryId( tbi, fe.getId()                  );
-		markTBIBinderId(tbi, fe.getParentBinder().getId());
+	private static void markTBIEntityId(ToolbarItem tbi, FolderEntry fe) {
+		EntityId feEID = new EntityId(fe.getParentBinder().getId(), fe.getId(), EntityId.FOLDER_ENTRY);
+		tbi.addEntityId("entityId", feEID);
 	}
 	
 	/*
@@ -4582,15 +4577,6 @@ public class GwtMenuHelper {
 	 */
 	private static void markTBISelected(ToolbarItem tbi) {
 		tbi.addQualifier(WebKeys.TOOLBAR_MENU_SELECTED, "true");
-	}
-	
-	/*
-	 * Marks a ToolbarItem as to a binder being selected.
-	 */
-	private static void markTBISelectedBinder(ToolbarItem tbi, Binder binder) {
-		tbi.addQualifier("binderId",       String.valueOf(binder.getId())                  );
-		tbi.addQualifier("binderParentId", String.valueOf(binder.getParentBinder().getId()));
-		tbi.addQualifier("binderType",     binder.getEntityType().name());
 	}
 	
 	/*

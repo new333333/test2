@@ -37,6 +37,7 @@ import java.util.List;
 
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.util.ClientEventParameter;
+import org.kablink.teaming.gwt.client.util.EntityId;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
@@ -47,12 +48,13 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * @author drfoster@novell.com
  */
 public class ToolbarItem implements IsSerializable {
-	private List<NameValuePair>	m_qualifiersAL  = new ArrayList<NameValuePair>();	// Qualifier name/value pairs for this toolbar item.
-	private List<ToolbarItem>	m_nestedItemsAL = new ArrayList<ToolbarItem>();		// Toolbar items nested within this one.
-	private String				m_name;												// The name of this toolbar item.
-	private String				m_title;											// The display name for this toolbar item.
-	private String				m_url;												// The URL to launch for this toolbar item.
-	private TeamingEvents		m_teamingEvent  = TeamingEvents.UNDEFINED;			// If the toolbar item is to fire is an event.
+	private List<NameEntityIdPair>	m_entityIdsAL   = new ArrayList<NameEntityIdPair>();	// Name/entity ID       pairs for this toolbar item.
+	private List<NameValuePair>		m_qualifiersAL  = new ArrayList<NameValuePair>();		// Qualifier name/value pairs for this toolbar item.
+	private List<ToolbarItem>		m_nestedItemsAL = new ArrayList<ToolbarItem>();			// Toolbar items nested within this one.
+	private String					m_name;													// The name of this toolbar item.
+	private String					m_title;												// The display name for this toolbar item.
+	private String					m_url;													// The URL to launch for this toolbar item.
+	private TeamingEvents			m_teamingEvent  = TeamingEvents.UNDEFINED;				// If the toolbar item is to fire is an event.
 	
 	// The Client*Parameter's can only be specified and used
 	// on the client side.
@@ -61,6 +63,55 @@ public class ToolbarItem implements IsSerializable {
 	// The name used for a separator toolbar item.
 	public final static String SEPARATOR_NAME	= "999_separator";
 
+	/**
+	 * Inner class used to track name/entity ID pairs.
+	 */
+	public static class NameEntityIdPair implements IsSerializable {
+		private EntityId	m_entityId;	// The EntityId for this name/entity ID pair.
+		private String		m_name;		// The name  for this name/entity ID pair.
+
+		/**
+		 * Constructor method.
+		 * 
+		 * No parameters as per GWT serialization requirements.
+		 */
+		public NameEntityIdPair() {
+			// Initialize the super class.
+			super();
+		}
+
+		/**
+		 * Constructor method.
+		 * 
+		 * @param name
+		 * @param entityId
+		 */
+		public NameEntityIdPair(String name, EntityId entityId) {
+			// Initialize this object...
+			this();
+			
+			// ...and store the parameters.
+			setName(    name    );
+			setEntityId(entityId);
+		}
+
+		/**
+		 * Get'er methods.
+		 * 
+		 * @return
+		 */
+		public String   getName()     {return m_name;    }
+		public EntityId getEntityId() {return m_entityId;}
+
+		/**
+		 * Set'er methods.
+		 * 
+		 * @param
+		 */
+		public void setName(    String   s)        {m_name     = s;       }
+		public void setEntityId(EntityId entityId) {m_entityId = entityId;}
+	}
+	
 	/**
 	 * Inner class used to track name/value pairs.
 	 */
@@ -134,6 +185,25 @@ public class ToolbarItem implements IsSerializable {
 	}
 
 	/**
+	 * Adds a name/entity ID pair to the entity ID list.
+	 *  
+	 * @param neidP
+	 */
+	public void addEntityId(NameEntityIdPair neidP) {
+		m_entityIdsAL.add(neidP);
+	}
+
+	/**
+	 * Adds a name/entity ID pair to the entity ID list.
+	 *  
+	 * @param name
+	 * @param entityId
+	 */
+	public void addEntityId(String name, EntityId entityId) {
+		addEntityId(new NameEntityIdPair(name, entityId));
+	}
+
+	/**
 	 * Adds a nested toolbar item to this one.
 	 *  
 	 * @param tmi
@@ -181,7 +251,7 @@ public class ToolbarItem implements IsSerializable {
 	}
 
 	/**
-	 * Constructs and returns a separator toobar item.
+	 * Constructs and returns a separator toolbar item.
 	 * 
 	 * @return
 	 */
@@ -189,6 +259,55 @@ public class ToolbarItem implements IsSerializable {
 		return new ToolbarItem(SEPARATOR_NAME);
 	}
 	
+	/*
+	 * Returns the name/entity ID pair for an EntityID based on its
+	 * name.
+	 */
+	private static NameEntityIdPair getEntityId(String name, List<NameEntityIdPair> entityIdsAL) {
+		name = name.toLowerCase();
+		for (NameEntityIdPair nvp:  entityIdsAL) {
+			String neidpName = nvp.getName().toLowerCase();
+			if (neidpName.endsWith(name)) {
+				return nvp;
+			}
+		}
+		return null;
+	}
+	
+	/**
+	 * Returns the EntityId for an entity based on its name.
+	 * 
+	 * @param name
+	 * 
+	 * @return
+	 */
+	public EntityId getEntityIdValue(String name) {
+		NameEntityIdPair neidp = getEntityId(name, m_entityIdsAL);
+		return ((null == neidp) ? null : neidp.getEntityId());
+	}
+	
+	/**
+	 * Returns the EntityID for an entity based on its name.
+	 * 
+	 * @param name
+	 * @param entityIdsAL
+	 * 
+	 * @return
+	 */
+	public static EntityId getEntityIdValueFromList(String name, List<NameEntityIdPair> entityIdsAL) {
+		NameEntityIdPair neidp = getEntityId(name, entityIdsAL);
+		return ((null == neidp) ? null : neidp.getEntityId());
+	}
+	
+	/**
+	 * Returns this toolbar item's EntityID's list.
+	 * 
+	 * @return
+	 */
+	public List<NameEntityIdPair> getEntityIdsList() {
+		return m_entityIdsAL;
+	}
+
 	/**
 	 * Returns the name of the toolbar item.
 	 * 
