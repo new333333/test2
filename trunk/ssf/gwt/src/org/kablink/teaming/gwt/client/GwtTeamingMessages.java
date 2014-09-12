@@ -405,6 +405,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_GetFolderDisplayData();
 	String rpcFailure_GetFolderEntries();
 	String rpcFailure_GetFolderEntryDetails();
+	String rpcFailure_GetFolderEntryTypes();
 	String rpcFailure_GetFolderHasUserList();
 	String rpcFailure_GetFolderRows();
 	String rpcFailure_GetFolderSortSetting();

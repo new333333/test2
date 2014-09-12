@@ -54,6 +54,7 @@ public class GwtShareItem
 	private String m_comments;
 	private EntityId m_entityId;	// Id of the item being shared.
 	private String m_entityName;	// Name of the item being shared.
+	private GwtFolderEntryType m_folderEntryType;	// This will only have a value if the entity being shared is a folder entry.
 	private Long m_recipientId;
 	private String m_recipientName;
 	private GwtRecipientType m_recipientType;
@@ -108,6 +109,7 @@ public class GwtShareItem
 		m_comments = null;
 		m_entityId = null;
 		m_entityName = null;
+		m_folderEntryType = null;
 		m_recipientName = null;
 		m_recipientId = null;
 		m_recipientType = GwtRecipientType.UNKNOWN;
@@ -208,6 +210,14 @@ public class GwtShareItem
 	public String getEntityName()
 	{
 		return m_entityName;
+	}
+	
+	/**
+	 * If the item being shared is a folder entry, return the entry type (blog, discussion, etc)
+	 */
+	public GwtFolderEntryType getFolderEntryType()
+	{
+		return m_folderEntryType;
 	}
 	
 	/**
@@ -389,6 +399,14 @@ public class GwtShareItem
 	public void setEntityName( String name )
 	{
 		m_entityName = name;
+	}
+	
+	/**
+	 * This should only be called if the entity being shared is a folder entry.
+	 */
+	public void setFolderEntryType( GwtFolderEntryType entryType )
+	{
+		m_folderEntryType = entryType;
 	}
 	
 	/**
