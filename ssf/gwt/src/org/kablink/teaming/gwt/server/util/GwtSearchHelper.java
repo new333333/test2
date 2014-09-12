@@ -67,6 +67,7 @@ import org.kablink.teaming.gwt.client.GwtTeamingException;
 import org.kablink.teaming.gwt.client.GwtTeamingItem;
 import org.kablink.teaming.gwt.client.GwtUser;
 import org.kablink.teaming.gwt.client.GwtSearchCriteria.SearchScope;
+import org.kablink.teaming.gwt.client.util.GwtFolderEntryType;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.search.filter.SearchFilter;
@@ -429,6 +430,16 @@ public class GwtSearchHelper
 					folderEntry.setEntryName( entryName );
 					parentBinderName = entry.get( WebKeys.BINDER_PATH_NAME );
 					folderEntry.setParentBinderName( parentBinderName );
+					
+					{
+						GwtFolderEntryType entryType;
+						Long id;
+						
+						id = Long.valueOf( entryId );
+						entryType = GwtFolderEntryTypeHelper.getFolderEntryType( ami, id );
+						folderEntry.setEntryType( entryType );
+					}
+
 					results.add( folderEntry );
 				}
 				searchResults.setResults( results);

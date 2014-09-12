@@ -49,7 +49,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.ProfileDao;
@@ -149,6 +148,7 @@ import org.kablink.teaming.gwt.client.util.CollectionType;
 import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.FolderEntryDetails;
 import org.kablink.teaming.gwt.client.util.FolderSortSetting;
+import org.kablink.teaming.gwt.client.util.GwtFolderEntryType;
 import org.kablink.teaming.gwt.client.util.GwtShareLists;
 import org.kablink.teaming.gwt.client.util.GwtSharingInfo;
 import org.kablink.teaming.gwt.client.util.HistoryInfo;
@@ -185,6 +185,7 @@ import org.kablink.teaming.gwt.server.util.GwtBlogHelper;
 import org.kablink.teaming.gwt.server.util.GwtCalendarHelper;
 import org.kablink.teaming.gwt.server.util.GwtDeleteHelper;
 import org.kablink.teaming.gwt.server.util.GwtEmailHelper;
+import org.kablink.teaming.gwt.server.util.GwtFolderEntryTypeHelper;
 import org.kablink.teaming.gwt.server.util.GwtHistoryHelper;
 import org.kablink.teaming.gwt.server.util.GwtHtml5Helper;
 import org.kablink.teaming.gwt.server.util.GwtLdapHelper;
@@ -1683,6 +1684,21 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			GetFolderEntryDetailsCmd			gfeCmd       = ((GetFolderEntryDetailsCmd) cmd);
 			FolderEntryDetails					fed          = GwtViewHelper.getFolderEntryDetails( this, getRequest( ri ), gfeCmd.getEntityId(), gfeCmd.isMarkRead() );
 			FolderEntryDetailsRpcResponseData	responseData = new FolderEntryDetailsRpcResponseData( fed );
+			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
+		case GET_FOLDER_ENTRY_TYPE:
+		{
+			GetFolderEntryTypeCmd gfetCmd;
+			GetFolderEntryTypeRpcResponseData responseData;
+			HashMap<Long,GwtFolderEntryType> listOfEntryTypes;
+			
+			gfetCmd = (GetFolderEntryTypeCmd) cmd;
+			listOfEntryTypes = GwtFolderEntryTypeHelper.getFolderEntryTypes( this, gfetCmd.getListOfEntryIds() );
+			responseData = new GetFolderEntryTypeRpcResponseData();
+			responseData.setListOfTypes( listOfEntryTypes );
+			
 			response = new VibeRpcResponse( responseData );
 			return response;
 		}
@@ -4373,6 +4389,14 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 				String url;
 				
 				folderEntry.setEntryName( entry.getTitle() );
+				
+				// Get the entry's type
+				{
+					GwtFolderEntryType entryType;
+					
+					entryType = GwtFolderEntryTypeHelper.getFolderEntryType( this, entryIdL );
+					folderEntry.setEntryType( entryType );
+				}
 				
 				// Get the entry's description
 				{
