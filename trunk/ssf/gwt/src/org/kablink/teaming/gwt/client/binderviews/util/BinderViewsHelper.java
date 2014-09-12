@@ -89,6 +89,8 @@ import org.kablink.teaming.gwt.client.util.EntityRights;
 import org.kablink.teaming.gwt.client.util.EntityRights.ShareRight;
 import org.kablink.teaming.gwt.client.util.PublicLinkInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+import org.kablink.teaming.gwt.client.widgets.CopyFiltersDlg;
+import org.kablink.teaming.gwt.client.widgets.CopyFiltersDlg.CopyFiltersDlgClient;
 import org.kablink.teaming.gwt.client.widgets.CopyPublicLinkDlg;
 import org.kablink.teaming.gwt.client.widgets.CopyPublicLinkDlg.CopyPublicLinkDlgClient;
 import org.kablink.teaming.gwt.client.widgets.DeleteSelectedUsersDlg;
@@ -122,6 +124,7 @@ import com.google.gwt.user.client.Window.Navigator;
 public class BinderViewsHelper {
 	private static AddFilesDlg							m_addFilesAppletDlg;					// An instance of the add files (via an applet) dialog.
 	private static AddFilesHtml5Popup					m_addFilesHtml5Popup;					// An instance of the add files (via HTML5)     popup.
+	private static CopyFiltersDlg						m_copyFiltersDlg;						// An instance of a copy filters dialog. 
 	private static ChangeEntryTypesDlg					m_cetDlg;								// An instance of a change entry types dialog. 
 	private static CopyMoveEntriesDlg					m_cmeDlg;								// An instance of a copy/move entries dialog.
 	private static CopyPublicLinkDlg					m_copyPublicLinkDlg;					// An instance of a copy public link dialog.
@@ -1402,6 +1405,38 @@ public class BinderViewsHelper {
 	}
 
 	/**
+	 * Invokes the copy filters dialog on the given folder.
+	 * 
+	 * @param folderId
+	 */
+	public static void invokeCopyFiltersDlg(final Long folderId) {
+		// Have we created a copy filters dialog yet?
+		if (null == m_copyFiltersDlg) {
+			// No!  Create one now...
+			CopyFiltersDlg.createAsync(new CopyFiltersDlgClient() {
+				@Override
+				public void onUnavailable() {
+					// Nothing to do.  Error handled in
+					// asynchronous provider.
+				}
+				
+				@Override
+				public void onSuccess(CopyFiltersDlg cfDlg) {
+					// ...and show it with the given folder ID.
+					m_copyFiltersDlg = cfDlg;
+					showCopyFiltersDlgAsync(folderId);
+				}
+			});
+		}
+		
+		else {
+			// Yes, we've already create a copy filters dialog!  Simply
+			// show it with the given folder ID.
+			showCopyFiltersDlgAsync(folderId);
+		}
+	}
+	
+	/**
 	 * Invokes the 'Add Files' interface.
 	 * 
 	 * For browsers that support it, that will be the HTML5 file upload
@@ -2188,6 +2223,25 @@ public class BinderViewsHelper {
 			reloadEvent);	// Event to fire to reload things after a successful operation.
 	}
 	
+	/*
+	 * Asynchronously shows the copy filters dialog.
+	 */
+	private static void showCopyFiltersDlgAsync(final Long folderId) {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
+			@Override
+			public void execute() {
+				showCopyFiltersDlgNow(folderId);
+			}
+		});
+	}
+	
+	/*
+	 * Synchronously shows the copy filters dialog.
+	 */
+	private static void showCopyFiltersDlgNow(Long folderId) {
+		CopyFiltersDlg.initAndShow(m_copyFiltersDlg, folderId);
+	}
+
 	/*
 	 * Asynchronously shows the copy public link dialog.
 	 */

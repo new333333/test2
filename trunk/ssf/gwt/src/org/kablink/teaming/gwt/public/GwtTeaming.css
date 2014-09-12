@@ -6005,6 +6005,14 @@ td.datePickerMonth {
 	.vibe-promptDlg_Panel      {padding: 10px;}
 /* End:  Prompt dialog styles. */
 
+/* Start:  Copy Filters dialog styles. */
+	.vibe-copyFiltersDlg-contentPanel {margin-top: 10px;}
+	.vibe-copyFiltersDlg-filtersPanel {color: #505354; font-size: 12px;}
+	.vibe-copyFiltersDlg-mainPanel    {margin: 10px 10px 10px 13px;}
+	.vibe-copyFiltersDlg-scrollPanel  {overflow: auto !important; border: 1px solid #C4C4C4;}
+	.vibe-copyFiltersDlg-scrollLimit  {height: 175px;}
+/* End:  Copy Filters dialog styles. */
+
 /* Start:  Copy Public Link dialog styles. */
 	.vibe-copyPublicLinkDlg-contentPanel         {margin-top: 10px;}
 	.vibe-copyPublicLinkDlg-createButton         {}
