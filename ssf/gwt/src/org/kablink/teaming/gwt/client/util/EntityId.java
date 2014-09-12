@@ -45,17 +45,23 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * @author drfoster@novell.com
  */
 public class EntityId implements IsSerializable {
-	private EntityIdType	m_entityType;		// folder, folderEntry, mobileDevice, user, workspace, ...
+	private EntityIdType	m_entityType;		// The folder, folderEntry, mobileDevice, user, workspace, ... this EntityId represents.
 	private Long			m_binderId;			// The entity's binder ID.
 	private Long			m_entityId;			// The entity's ID.
 	private String			m_mobileDeviceId;	// If the entity is a mobile device, its ID as used by the mobile device applications.
 
 	// The string form of the various EntityIdType's.
-	public final static String FOLDER			= EntityIdType.folder.name();
-	public final static String FOLDER_ENTRY		= EntityIdType.folderEntry.name();
-	public final static String MOBILE_DEVICE	= EntityIdType.mobileDevice.name();
-	public final static String USER				= EntityIdType.user.name();
-	public final static String WORKSPACE		= EntityIdType.workspace.name();
+	public final static String APPLICATION			= EntityIdType.application.name();
+	public final static String APPLICATION_GROUP	= EntityIdType.applicationGroup.name();
+	public final static String FOLDER				= EntityIdType.folder.name();
+	public final static String FOLDER_ENTRY			= EntityIdType.folderEntry.name();
+	public final static String GROUP				= EntityIdType.group.name();
+	public final static String MOBILE_DEVICE		= EntityIdType.mobileDevice.name();
+	public final static String NONE					= EntityIdType.none.name();
+	public final static String PROFILES				= EntityIdType.profiles.name();
+	public final static String SHARE_WITH			= EntityIdType.shareWith.name();
+	public final static String USER					= EntityIdType.user.name();
+	public final static String WORKSPACE			= EntityIdType.workspace.name();
 
 	// The following is used to separate the parts when constructing
 	// or parsing a string representation of an EntityId.
@@ -65,13 +71,26 @@ public class EntityId implements IsSerializable {
 	 * Enumeration that defines the entity types that can be
 	 * represented by an EntityId.
 	 * 
+	 * 
+	 * *** WARNING *** WARNING *** WARNING *** WARNING ***
+	 *
 	 * Note that the names used here must match EXACTLY the names used
-	 * in the EntityIdentifier.EntityType class.
+	 *    in the EntityIdentifier.EntityType enumeration. Failure to
+	 *    honor this may result in an exception when parseEntityIdType()
+	 *    tries to convert a string to an EntityIdType.
+	 *
+	 * *** WARNING *** WARNING *** WARNING *** WARNING ***
 	 */
 	public enum EntityIdType implements IsSerializable {
+		application,
+		applicationGroup,
 		folder,
 		folderEntry,
-		mobileDevice,
+		group,
+		mobileDevice,	// Unique to the GWT code.  This doesn't exist in EntityIdentifier.EntityType!
+		none,
+		profiles,
+		shareWith,
 		user,
 		workspace;
 		
@@ -80,15 +99,21 @@ public class EntityId implements IsSerializable {
 		 * 
 		 * @return
 		 */
-		public boolean isEntry()        {return isFolderEntry();          }
-		public boolean isFolder()       {return this.equals(folder      );}
-		public boolean isFolderEntry()  {return this.equals(folderEntry );}
-		public boolean isMobileDevice() {return this.equals(mobileDevice);}
-		public boolean isUser()         {return this.equals(user        );}
-		public boolean isWorkspace()    {return this.equals(workspace   );}
+		public boolean isApplication()      {return this.equals(application     );}
+		public boolean isApplicationGroup() {return this.equals(applicationGroup);}
+		public boolean isEntry()            {return isFolderEntry();              }
+		public boolean isFolder()           {return this.equals(folder          );}
+		public boolean isFolderEntry()      {return this.equals(folderEntry     );}
+		public boolean isGroup()            {return this.equals(group           );}
+		public boolean isMobileDevice()     {return this.equals(mobileDevice    );}
+		public boolean isNone()             {return this.equals(none            );}
+		public boolean isProfiles()         {return this.equals(profiles        );}
+		public boolean isShareWith()        {return this.equals(shareWith       );}
+		public boolean isUser()             {return this.equals(user            );}
+		public boolean isWorkspace()        {return this.equals(workspace       );}
 
 		/**
-		 * Parses a string containing an EntityIdType.
+		 * Parses a string representation of an EntityIdType.
 		 * 
 		 * @param entityType
 		 * 
@@ -197,18 +222,24 @@ public class EntityId implements IsSerializable {
 	 * 
 	 * @return
 	 */
-	public boolean      isBinder()          {return (isFolder() || isWorkspace());                                   }
-	public boolean      isEntry()           {return  isFolderEntry();                                                }
-	public boolean      isFolderEntry()     {return ((null == m_entityType) ? false : m_entityType.isFolderEntry()); }
-	public boolean      isFolder()          {return ((null == m_entityType) ? false : m_entityType.isFolder());      }
-	public boolean      isMobileDevice()    {return ((null == m_entityType) ? false : m_entityType.isMobileDevice());}
-	public boolean      isUser()            {return ((null == m_entityType) ? false : m_entityType.isUser());        }
-	public boolean      isWorkspace()       {return ((null == m_entityType) ? false : m_entityType.isWorkspace());   }
-	public EntityIdType getEntityTypeEnum() {return m_entityType;                                                    }
-	public Long         getBinderId()       {return m_binderId;                                                      }
-	public Long         getEntityId()       {return m_entityId;                                                      }
-	public String       getEntityType()     {return ((null == m_entityType) ? null : m_entityType.name());           }
-	public String       getMobileDeviceId() {return m_mobileDeviceId;                                                }
+	public boolean      isApplication()      {return ((null == m_entityType) ? false : m_entityType.isApplication());      }
+	public boolean      isApplicationGroup() {return ((null == m_entityType) ? false : m_entityType.isApplicationGroup()); }
+	public boolean      isBinder()           {return (isFolder() || isWorkspace() || isProfiles());                        }
+	public boolean      isEntry()            {return  isFolderEntry();                                                     }
+	public boolean      isFolder()           {return ((null == m_entityType) ? false : m_entityType.isFolder());           }
+	public boolean      isFolderEntry()      {return ((null == m_entityType) ? false : m_entityType.isFolderEntry());      }
+	public boolean      isGroup()            {return ((null == m_entityType) ? false : m_entityType.isGroup());            }
+	public boolean      isMobileDevice()     {return ((null == m_entityType) ? false : m_entityType.isMobileDevice());     }
+	public boolean      isNone()             {return ((null == m_entityType) ? false : m_entityType.isNone());             }
+	public boolean      isProfiles()         {return ((null == m_entityType) ? false : m_entityType.isProfiles());         }
+	public boolean      isShareWith()        {return ((null == m_entityType) ? false : m_entityType.isShareWith());        }
+	public boolean      isUser()             {return ((null == m_entityType) ? false : m_entityType.isUser());             }
+	public boolean      isWorkspace()        {return ((null == m_entityType) ? false : m_entityType.isWorkspace());        }
+	public EntityIdType getEntityTypeEnum()  {return m_entityType;                                                         }
+	public Long         getBinderId()        {return m_binderId;                                                           }
+	public Long         getEntityId()        {return m_entityId;                                                           }
+	public String       getEntityType()      {return ((null == m_entityType) ? null : m_entityType.name());                }
+	public String       getMobileDeviceId()  {return m_mobileDeviceId;                                                     }
 	
 	/**
 	 * Set'er methods.
