@@ -45,7 +45,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  * @author drfoster@novell.com
  */
 public class EntityId implements IsSerializable {
-	private EntityIdType	m_entityType;		// folder, folderEntry, mobileDevice, workspace, ...
+	private EntityIdType	m_entityType;		// folder, folderEntry, mobileDevice, user, workspace, ...
 	private Long			m_binderId;			// The entity's binder ID.
 	private Long			m_entityId;			// The entity's ID.
 	private String			m_mobileDeviceId;	// If the entity is a mobile device, its ID as used by the mobile device applications.
@@ -54,6 +54,7 @@ public class EntityId implements IsSerializable {
 	public final static String FOLDER			= EntityIdType.folder.name();
 	public final static String FOLDER_ENTRY		= EntityIdType.folderEntry.name();
 	public final static String MOBILE_DEVICE	= EntityIdType.mobileDevice.name();
+	public final static String USER				= EntityIdType.user.name();
 	public final static String WORKSPACE		= EntityIdType.workspace.name();
 
 	// The following is used to separate the parts when constructing
@@ -62,12 +63,16 @@ public class EntityId implements IsSerializable {
 
 	/**
 	 * Enumeration that defines the entity types that can be
-	 * represented by an EntityId. 
+	 * represented by an EntityId.
+	 * 
+	 * Note that the names used here must match EXACTLY the names used
+	 * in the EntityIdentifier.EntityType class.
 	 */
 	public enum EntityIdType implements IsSerializable {
 		folder,
 		folderEntry,
 		mobileDevice,
+		user,
 		workspace;
 		
 		/**
@@ -79,6 +84,7 @@ public class EntityId implements IsSerializable {
 		public boolean isFolder()       {return this.equals(folder      );}
 		public boolean isFolderEntry()  {return this.equals(folderEntry );}
 		public boolean isMobileDevice() {return this.equals(mobileDevice);}
+		public boolean isUser()         {return this.equals(user        );}
 		public boolean isWorkspace()    {return this.equals(workspace   );}
 
 		/**
@@ -196,6 +202,7 @@ public class EntityId implements IsSerializable {
 	public boolean      isFolderEntry()     {return ((null == m_entityType) ? false : m_entityType.isFolderEntry()); }
 	public boolean      isFolder()          {return ((null == m_entityType) ? false : m_entityType.isFolder());      }
 	public boolean      isMobileDevice()    {return ((null == m_entityType) ? false : m_entityType.isMobileDevice());}
+	public boolean      isUser()            {return ((null == m_entityType) ? false : m_entityType.isUser());        }
 	public boolean      isWorkspace()       {return ((null == m_entityType) ? false : m_entityType.isWorkspace());   }
 	public EntityIdType getEntityTypeEnum() {return m_entityType;                                                    }
 	public Long         getBinderId()       {return m_binderId;                                                      }
