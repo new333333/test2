@@ -196,7 +196,7 @@ public class HelpData
 		
 		url += "/documentation";
 
-		product = "/vibe40";
+		product = "/vibe4";
 		
 		// Are we running Filr?
 		if ( GwtTeaming.m_requestInfo.isLicenseFilr() )
@@ -209,10 +209,10 @@ public class HelpData
 		else if ( GwtMainPage.m_requestInfo.isNovellTeaming() )
 		{
 			// Yes
-			url += "/vibe40";
+			url += "/vibe4";
 		}
 		else
-			url += "/kablinkvibe40";
+			url += "/kablinkvibe4";
 		
 		if ( m_guideName != null && m_guideName.length() > 0 )
 		{
