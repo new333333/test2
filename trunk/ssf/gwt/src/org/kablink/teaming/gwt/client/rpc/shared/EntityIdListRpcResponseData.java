@@ -32,36 +32,56 @@
  */
 package org.kablink.teaming.gwt.client.rpc.shared;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.kablink.teaming.gwt.client.util.EntityId;
+
+import com.google.gwt.user.client.rpc.IsSerializable;
+
 /**
- * This class holds all of the information necessary to execute the
- * 'untrack binder' command.
+ * This class holds the response data for the 'get entity ID' command.
  * 
- * @author drfoster
+ * @author drfoster@novell.com
  */
-public class UntrackBinderCmd extends VibeRpcCmd {
-	private Long	m_binderId;	//
+public class EntityIdListRpcResponseData implements IsSerializable, VibeRpcResponseData {
+	private List<EntityId>	m_entityIdList;	//
 	
-	/*
+	/**
 	 * Constructor method.
 	 * 
-	 * For GWT serialization, must have a zero parameter constructor.
+	 * @param entityIdList
 	 */
-	private UntrackBinderCmd() {
-		// Initialize the super class.
+	public EntityIdListRpcResponseData(List<EntityId> entityIdList) {
+		// Initialize this object...
 		super();
+		
+		// ...and store the parameter.
+		setEntityIdList(entityIdList);
 	}
 	
 	/**
 	 * Constructor method.
 	 * 
-	 * @param binderId
+	 * Zero parameter constructor as per GWT serialization
+	 * requirements.
 	 */
-	public UntrackBinderCmd(Long binderId) {
+	public EntityIdListRpcResponseData() {
+		// Initialize the this object.
+		this(new ArrayList<EntityId>());
+	}
+	
+	/**
+	 * Constructor method.
+	 * 
+	 * @param entityId
+	 */
+	public EntityIdListRpcResponseData(EntityId entityId) {
 		// Initialize this object...
 		this();
-
+		
 		// ...and store the parameter.
-		setBinderId(binderId);
+		addEntityId(entityId);
 	}
 	
 	/**
@@ -69,24 +89,22 @@ public class UntrackBinderCmd extends VibeRpcCmd {
 	 * 
 	 * @return
 	 */
-	public Long getBinderId() {return m_binderId;}
-
+	public int            getEntityIdCount() {return m_entityIdList.size();}
+	public List<EntityId> getEntityIdList()  {return m_entityIdList;       }
+	
 	/**
 	 * Set'er methods.
 	 * 
 	 * @param
 	 */
-	public void setBinderId(Long binderId) {m_binderId = binderId;}
-	
+	public void setEntityIdList(List<EntityId> entityIdList) {m_entityIdList = ((null == entityIdList) ? new ArrayList<EntityId>() : entityIdList);}
+
 	/**
-	 * Returns the command's enumeration value.
+	 * Adds an EntityId to the response list.
 	 * 
-	 * Implements VibeRpcCmd.getCmdType()
-	 * 
-	 * @return
+	 * @param eid
 	 */
-	@Override
-	public int getCmdType() {
-		return VibeRpcCmdType.UNTRACK_BINDER.ordinal();
+	public void addEntityId(EntityId eid) {
+		getEntityIdList().add(eid);
 	}
 }

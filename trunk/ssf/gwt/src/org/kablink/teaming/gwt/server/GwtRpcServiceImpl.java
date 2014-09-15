@@ -1469,6 +1469,22 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case GET_ENTITY_ID:
+		{
+			GetEntityIdCmd geidCmd = ((GetEntityIdCmd) cmd);
+			EntityIdRpcResponseData responseData = GwtServerHelper.getEntityId( this, getRequest( ri ), geidCmd.getBinderId(), geidCmd.getEntityId(), geidCmd.getEntityIdType(), geidCmd.getMobileDeviceId() );
+			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
+		case GET_ENTITY_ID_LIST:
+		{
+			GetEntityIdListCmd geidlCmd = ((GetEntityIdListCmd) cmd);
+			EntityIdListRpcResponseData responseData = GwtServerHelper.getEntityIdList( this, getRequest( ri ), geidlCmd.getEntityIdCmdList() );
+			response = new VibeRpcResponse( responseData );
+			return response;
+		}
+		
 		case GET_ENTITY_PERMALINK:
 		{
 			GetEntityPermalinkCmd gepCmd;
