@@ -6006,11 +6006,44 @@ td.datePickerMonth {
 /* End:  Prompt dialog styles. */
 
 /* Start:  Copy Filters dialog styles. */
-	.vibe-copyFiltersDlg-contentPanel {margin-top: 10px;}
-	.vibe-copyFiltersDlg-filtersPanel {color: #505354; font-size: 12px;}
-	.vibe-copyFiltersDlg-mainPanel    {margin: 10px 10px 10px 13px;}
-	.vibe-copyFiltersDlg-scrollPanel  {overflow: auto !important; border: 1px solid #C4C4C4;}
-	.vibe-copyFiltersDlg-scrollLimit  {height: 175px;}
+	.vibe-copyFiltersDlg_BrowseButton    {
+		cursor: pointer;
+		border: 1px solid #B8B8B8;
+		font-weight: normal !important;
+		font-size: 12px;
+		margin-left: 3px;
+		padding: 2px 5px  !important;
+		text-decoration:none;	
+		white-space: nowrap;
+		text-align: center !important;
+		width: 35px;
+		border-radius: 5px;
+		-moz-border-radius: 5px;
+		-webkit-border-radius: 5px;
+		background: #f6f6f6;
+	}
+	
+	.vibe-copyFiltersDlg_BrowseButton:hover {
+		color: #135c8f !important;
+		border: 1px solid #81b2bd;
+		padding: 2px 5px  !important;
+		background: #cce9ee;
+		border-radius: 5px !important;
+		-moz-border-radius: 5px !important;
+		-webkit-border-radius: 5px !important;
+	}
+
+	.vibe-copyFiltersDlg_BrowseImg          {width: 25px; height: 25px; margin: 0 2px 0 0; border: 0px; vertical-align: middle;}
+	.vibe-copyFiltersDlg-contentPanel       {margin-top: 10px;}
+	.vibe-copyFiltersDlg_filterSectionLabel {font-size: 14px !important; font-weight: bold !important;}
+	.vibe-copyFiltersDlg-filtersPanel       {color: #505354; font-size: 12px;}
+	.vibe-copyFiltersDlg_findLabel          {color: #505354; }
+	.vibe-copyFiltersDlg_findPanel_Inner    {}
+	.vibe-copyFiltersDlg_findPanel_Outer    {padding-top: 15px;}
+	.vibe-copyFiltersDlg_findWidget         {margin-top: 2px; display: inline;}
+	.vibe-copyFiltersDlg-mainPanel          {margin: 10px 10px 10px 13px;}
+	.vibe-copyFiltersDlg-scrollPanel        {overflow: auto !important; border: 1px solid #C4C4C4;}
+	.vibe-copyFiltersDlg-scrollLimit        {height: 175px;}
 /* End:  Copy Filters dialog styles. */
 
 /* Start:  Copy Public Link dialog styles. */

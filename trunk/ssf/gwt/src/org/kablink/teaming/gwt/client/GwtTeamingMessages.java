@@ -406,6 +406,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_GetFolderEntries();
 	String rpcFailure_GetFolderEntryDetails();
 	String rpcFailure_GetFolderEntryTypes();
+	String rpcFailure_GetFolderFilters();
 	String rpcFailure_GetFolderHasUserList();
 	String rpcFailure_GetFolderRows();
 	String rpcFailure_GetFolderSortSetting();
@@ -3424,5 +3425,11 @@ public interface GwtTeamingMessages extends Messages
 	String changeLogWarning_NoChanges();
 	
 	// String used by the 'Copy Filters' dialog.
-	String copyFiltersDlg_Caption();
+	String copyFiltersDlg_Alt_Browse();
+	String copyFiltersDlg_Error_InvalidSearchResult();
+	String copyFiltersDlg_Error_NoFilters();
+	String copyFiltersDlgCaption();
+	String copyFiltersDlgCaptionGlobal();
+	String copyFiltersDlgCaptionPersonal();
+	String copyFiltersDlgSelectSource();
 }// end GwtTeamingMessages

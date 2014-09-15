@@ -57,6 +57,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Random;
 import java.util.Set;
 import java.util.SortedSet;
@@ -88,11 +89,13 @@ import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.document.DateTools;
+
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.Node;
 import org.dom4j.io.OutputFormat;
+
 import org.kablink.teaming.GroupExistsException;
 import org.kablink.teaming.IllegalCharacterInNameException;
 import org.kablink.teaming.ObjectKeys;
@@ -201,6 +204,8 @@ import org.kablink.teaming.gwt.client.rpc.shared.EntityIdListRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.EntityIdRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData.ErrorInfo;
+import org.kablink.teaming.gwt.client.rpc.shared.FolderFilter;
+import org.kablink.teaming.gwt.client.rpc.shared.FolderFiltersRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.GetEntityIdCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetGroupMembershipCmd.MembershipFilter;
 import org.kablink.teaming.gwt.client.rpc.shared.GetSystemBinderPermalinkCmd.SystemBinderType;
@@ -4846,6 +4851,68 @@ public class GwtServerHelper {
 			else reply = NLT.get("reply.re.title", new String[]{getFolderEntryTitle(feParent)});
 		}
 		return reply;
+	}
+
+	/**
+	 * Returns a FolderFiltersRpcResponseData containing information
+	 * about the filters defined on the given folder.
+	 * 
+	 * @param bs
+	 * @param request
+	 * @param gwtFolder
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public static FolderFiltersRpcResponseData getFolderFilters(AllModulesInjected bs, HttpServletRequest request, GwtFolder gwtFolder) throws GwtTeamingException {
+		try {
+			// Allocate a FolderFiltersRpcResponseData to return the
+			// folder's filters in.
+			FolderFiltersRpcResponseData reply = new FolderFiltersRpcResponseData();
+
+			// Access the source folder that we're copying from.
+			Long   folderId = Long.parseLong(gwtFolder.getFolderId());
+			Folder folder   = bs.getFolderModule().getFolder(folderId);
+			
+			// Are there any global filters defined?
+			Map<String, String> searchFilters = ((Map<String, String>) folder.getProperty(ObjectKeys.BINDER_PROPERTY_FILTERS));
+			if (MiscUtil.hasItems(searchFilters)) {
+				// Yes!  Scan them...
+				for (Entry<String, String> mapEntry:  searchFilters.entrySet()) {
+					// ...adding a FolderFilter for each to the reply.
+					FolderFilter globalFilter = new FolderFilter(mapEntry.getKey(), mapEntry.getValue());
+					reply.addGlobalFilter(globalFilter);
+				}
+			}
+			
+			// Are there any personal filters defined?
+			UserProperties userBinderProperties = bs.getProfileModule().getUserProperties(GwtServerHelper.getCurrentUserId(), folderId);
+			searchFilters = ((Map<String, String>) userBinderProperties.getProperty(ObjectKeys.USER_PROPERTY_SEARCH_FILTERS));
+			if (MiscUtil.hasItems(searchFilters)) {
+				// Yes!  Scan them...
+				for (Entry<String, String> mapEntry:  searchFilters.entrySet()) {
+					// ...adding a FolderFilter for each to the reply.
+					FolderFilter personalFilter = new FolderFilter(mapEntry.getKey(), mapEntry.getValue());
+					reply.addPersonalFilter(personalFilter);
+				}
+			}
+
+			// If we get here, reply refers to a
+			// FolderFilterRpcResponse data containing the filters
+			// defined on the specified folder.  Return it.
+			return reply;
+		}
+		
+		catch (Exception e) {
+			// Convert the exception to a GwtTeamingException and throw
+			// that.
+			throw
+				GwtLogHelper.getGwtClientException(
+					m_logger,
+					e,
+					"GwtServerHelper.getFolderFilters( SOURCE EXCEPTION ):  ");
+		}
 	}
 	
 	/**
@@ -9931,6 +9998,7 @@ public class GwtServerHelper {
 		case GET_FOLDER_ENTRIES:
 		case GET_FOLDER_ENTRY_DETAILS:
 		case GET_FOLDER_ENTRY_TYPE:
+		case GET_FOLDER_FILTERS:
 		case GET_FOLDER_HAS_USER_LIST:
 		case GET_FOLDER_ROWS:
 		case GET_FOLDER_SORT_SETTING:
@@ -10574,6 +10642,39 @@ public class GwtServerHelper {
 		}
 	}
 
+	/**
+	 * Returns an ErrorListRpcResponseData containing any errors from saving filters on a folder.
+	 * 
+	 * @param bs
+	 * @param request
+	 * @param folderInfo
+	 * @param globalFilters
+	 * @param personalFilters
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public static ErrorListRpcResponseData saveFolderFilters(AllModulesInjected bs, HttpServletRequest request, BinderInfo folderInfo, List<FolderFilter> globalFilters, List<FolderFilter> personalFilters) throws GwtTeamingException {
+		try {
+			ErrorListRpcResponseData reply = new ErrorListRpcResponseData();
+			
+//!			...this needs to be implemented...
+			
+			return reply;
+		}
+		
+		catch (Exception e) {
+			// Convert the exception to a GwtTeamingException and throw
+			// that.
+			throw
+				GwtLogHelper.getGwtClientException(
+					m_logger,
+					e,
+					"GwtServerHelper.saveFolderFilters( SOURCE EXCEPTION ):  ");
+		}
+	}
+	
 	/**
 	 * Saves the folder sort options on the specified binder.
 	 * 
