@@ -32,21 +32,25 @@
  */
 package org.kablink.teaming.gwt.client.rpc.shared;
 
+import org.kablink.teaming.gwt.client.util.EntityId;
+
+import com.google.gwt.user.client.rpc.IsSerializable;
+
 /**
- * This class holds all of the information necessary to execute the
- * 'untrack binder' command.
+ * This class holds the response data for the 'get entity ID' command.
  * 
- * @author drfoster
+ * @author drfoster@novell.com
  */
-public class UntrackBinderCmd extends VibeRpcCmd {
-	private Long	m_binderId;	//
+public class EntityIdRpcResponseData implements IsSerializable, VibeRpcResponseData {
+	private EntityId	m_entityId;	//
 	
 	/*
 	 * Constructor method.
 	 * 
-	 * For GWT serialization, must have a zero parameter constructor.
+	 * Zero parameter constructor as per GWT serialization
+	 * requirements.
 	 */
-	private UntrackBinderCmd() {
+	private EntityIdRpcResponseData() {
 		// Initialize the super class.
 		super();
 	}
@@ -54,14 +58,14 @@ public class UntrackBinderCmd extends VibeRpcCmd {
 	/**
 	 * Constructor method.
 	 * 
-	 * @param binderId
+	 * @param entityId
 	 */
-	public UntrackBinderCmd(Long binderId) {
+	public EntityIdRpcResponseData(EntityId entityId) {
 		// Initialize this object...
 		this();
-
+		
 		// ...and store the parameter.
-		setBinderId(binderId);
+		setEntityId(entityId);
 	}
 	
 	/**
@@ -69,24 +73,12 @@ public class UntrackBinderCmd extends VibeRpcCmd {
 	 * 
 	 * @return
 	 */
-	public Long getBinderId() {return m_binderId;}
-
+	public EntityId getEntityId() {return m_entityId;}
+	
 	/**
 	 * Set'er methods.
 	 * 
 	 * @param
 	 */
-	public void setBinderId(Long binderId) {m_binderId = binderId;}
-	
-	/**
-	 * Returns the command's enumeration value.
-	 * 
-	 * Implements VibeRpcCmd.getCmdType()
-	 * 
-	 * @return
-	 */
-	@Override
-	public int getCmdType() {
-		return VibeRpcCmdType.UNTRACK_BINDER.ordinal();
-	}
+	public void setEntityId(EntityId entityId) {m_entityId = entityId;}
 }

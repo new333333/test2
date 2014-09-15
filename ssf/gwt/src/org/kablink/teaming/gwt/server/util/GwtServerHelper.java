@@ -88,13 +88,11 @@ import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.document.DateTools;
-
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.Node;
 import org.dom4j.io.OutputFormat;
-
 import org.kablink.teaming.GroupExistsException;
 import org.kablink.teaming.IllegalCharacterInNameException;
 import org.kablink.teaming.ObjectKeys;
@@ -199,8 +197,11 @@ import org.kablink.teaming.gwt.client.rpc.shared.CollectionPointData;
 import org.kablink.teaming.gwt.client.rpc.shared.CreateGroupCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.DesktopAppDownloadInfoRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.DesktopAppDownloadInfoRpcResponseData.FileDownloadInfo;
+import org.kablink.teaming.gwt.client.rpc.shared.EntityIdListRpcResponseData;
+import org.kablink.teaming.gwt.client.rpc.shared.EntityIdRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData.ErrorInfo;
+import org.kablink.teaming.gwt.client.rpc.shared.GetEntityIdCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetGroupMembershipCmd.MembershipFilter;
 import org.kablink.teaming.gwt.client.rpc.shared.GetSystemBinderPermalinkCmd.SystemBinderType;
 import org.kablink.teaming.gwt.client.rpc.shared.GetJspHtmlCmd;
@@ -239,6 +240,7 @@ import org.kablink.teaming.gwt.client.util.BucketInfo;
 import org.kablink.teaming.gwt.client.util.CollectionType;
 import org.kablink.teaming.gwt.client.util.EmailAddressInfo;
 import org.kablink.teaming.gwt.client.util.EntityId;
+import org.kablink.teaming.gwt.client.util.EntityId.EntityIdType;
 import org.kablink.teaming.gwt.client.util.FolderSortSetting;
 import org.kablink.teaming.gwt.client.util.FolderType;
 import org.kablink.teaming.gwt.client.util.GroupType;
@@ -4759,6 +4761,73 @@ public class GwtServerHelper {
 		boolean   userHasWS     = (null != userWS); 
 		boolean   userWSInTrash = (userHasWS && userWS.isPreDeleted());
 		return new EmailAddressInfo(userEMA, userHasWS, userWSInTrash);
+	}
+	
+	/**
+	 * Returns an EntityIdRpcResponseData containing the EntityId based
+	 * on the given parameters.
+	 * 
+	 * @param bs
+	 * @param request
+	 * @param binderId
+	 * @param entityId
+	 * @param eidType
+	 * @param mobileDeviceId
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public static EntityIdRpcResponseData getEntityId(AllModulesInjected bs, HttpServletRequest request, Long binderId, Long entityId, EntityIdType eidType, String mobileDeviceId) throws GwtTeamingException {
+		try {
+			EntityId eid = new EntityId(binderId, entityId, eidType, mobileDeviceId);
+			return new EntityIdRpcResponseData(eid);
+		}
+		
+		catch (Exception e) {
+			// Convert the exception to a GwtTeamingException and throw
+			// that.
+			throw
+				GwtLogHelper.getGwtClientException(
+					m_logger,
+					e,
+					"GwtServerHelper.getEntityId( SOURCE EXCEPTION ):  ");
+		}
+	}
+	
+	/**
+	 * Returns an EntityIdListRpcResponseData containing the EntityId's
+	 * from the given List<GetEntityIdCmd>.
+	 * 
+	 * @param bs
+	 * @param request
+	 * @param eidCmdList
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public static EntityIdListRpcResponseData getEntityIdList(AllModulesInjected bs, HttpServletRequest request, List<GetEntityIdCmd> eidCmdList) throws GwtTeamingException {
+		try {
+			EntityIdListRpcResponseData reply = new EntityIdListRpcResponseData();
+			if (null != eidCmdList) {
+				for (GetEntityIdCmd eidCmd:  eidCmdList) {
+					EntityIdRpcResponseData eid = getEntityId(bs, request, eidCmd.getBinderId(), eidCmd.getEntityId(), eidCmd.getEntityIdType(), eidCmd.getMobileDeviceId());
+					reply.addEntityId(eid.getEntityId());
+				}
+			}
+			return reply;
+		}
+		
+		catch (Exception e) {
+			// Convert the exception to a GwtTeamingException and throw
+			// that.
+			throw
+				GwtLogHelper.getGwtClientException(
+					m_logger,
+					e,
+					"GwtServerHelper.getEntityIdList( SOURCE EXCEPTION ):  ");
+		}
 	}
 	
 	/**
@@ -9840,6 +9909,8 @@ public class GwtServerHelper {
 		case GET_DYNAMIC_MEMBERSHIP_CRITERIA:
 		case GET_EMAIL_NOTIFICATION_INFORMATION:
 		case GET_ENTITY_ACTION_TOOLBAR_ITEMS:
+		case GET_ENTITY_ID:
+		case GET_ENTITY_ID_LIST:
 		case GET_ENTITY_PERMALINK:
 		case GET_ENTITY_RIGHTS:
 		case GET_ENTRY:
