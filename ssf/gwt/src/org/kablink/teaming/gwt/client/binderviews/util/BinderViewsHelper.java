@@ -1407,9 +1407,9 @@ public class BinderViewsHelper {
 	/**
 	 * Invokes the copy filters dialog on the given folder.
 	 * 
-	 * @param folderId
+	 * @param folderInfo
 	 */
-	public static void invokeCopyFiltersDlg(final Long folderId) {
+	public static void invokeCopyFiltersDlg(final BinderInfo folderInfo) {
 		// Have we created a copy filters dialog yet?
 		if (null == m_copyFiltersDlg) {
 			// No!  Create one now...
@@ -1424,7 +1424,7 @@ public class BinderViewsHelper {
 				public void onSuccess(CopyFiltersDlg cfDlg) {
 					// ...and show it with the given folder ID.
 					m_copyFiltersDlg = cfDlg;
-					showCopyFiltersDlgAsync(folderId);
+					showCopyFiltersDlgAsync(folderInfo);
 				}
 			});
 		}
@@ -1432,7 +1432,7 @@ public class BinderViewsHelper {
 		else {
 			// Yes, we've already create a copy filters dialog!  Simply
 			// show it with the given folder ID.
-			showCopyFiltersDlgAsync(folderId);
+			showCopyFiltersDlgAsync(folderInfo);
 		}
 	}
 	
@@ -2226,11 +2226,11 @@ public class BinderViewsHelper {
 	/*
 	 * Asynchronously shows the copy filters dialog.
 	 */
-	private static void showCopyFiltersDlgAsync(final Long folderId) {
+	private static void showCopyFiltersDlgAsync(final BinderInfo folderInfo) {
 		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
-				showCopyFiltersDlgNow(folderId);
+				showCopyFiltersDlgNow(folderInfo);
 			}
 		});
 	}
@@ -2238,8 +2238,8 @@ public class BinderViewsHelper {
 	/*
 	 * Synchronously shows the copy filters dialog.
 	 */
-	private static void showCopyFiltersDlgNow(Long folderId) {
-		CopyFiltersDlg.initAndShow(m_copyFiltersDlg, folderId);
+	private static void showCopyFiltersDlgNow(BinderInfo folderInfo) {
+		CopyFiltersDlg.initAndShow(m_copyFiltersDlg, folderInfo);
 	}
 
 	/*

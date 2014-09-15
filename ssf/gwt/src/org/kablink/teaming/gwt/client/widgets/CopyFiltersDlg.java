@@ -36,6 +36,7 @@ import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
+import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
@@ -60,7 +61,7 @@ public class CopyFiltersDlg extends DlgBox implements EditSuccessfulHandler {
 	
 	private GwtTeamingImageBundle	m_images;			// Access to Vibe's images.
 	private GwtTeamingMessages		m_messages;			// Access to Vibe's messages.
-	private Long					m_folderId;			// ID of the folder filters are to be copied to.
+	private BinderInfo				m_folderInfo;		// BinderInfo of the folder filters are to be copied to.
 	private ScrollPanel				m_filtersScroller;	// The ScrollPanel that contains the filters from the source folder.
 	private VibeFlowPanel			m_contentPanel;		// The panel containing the content of the dialog.
 	private VibeVerticalPanel		m_filtersPanel;		// The panel containing the filters themselves.
@@ -210,11 +211,11 @@ public class CopyFiltersDlg extends DlgBox implements EditSuccessfulHandler {
 	 * Asynchronously runs the given instance of the copy filters
 	 * dialog.
 	 */
-	private static void runDlgAsync(final CopyFiltersDlg cfDlg, final Long folderId) {
+	private static void runDlgAsync(final CopyFiltersDlg cfDlg, final BinderInfo folderInfo) {
 		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
-				cfDlg.runDlgNow(folderId);
+				cfDlg.runDlgNow(folderInfo);
 			}
 		});
 	}
@@ -223,9 +224,9 @@ public class CopyFiltersDlg extends DlgBox implements EditSuccessfulHandler {
 	 * Synchronously runs the given instance of the copy filters
 	 * dialog.
 	 */
-	private void runDlgNow(Long folderId) {
+	private void runDlgNow(BinderInfo folderInfo) {
 		// Store the parameters...
-		m_folderId = folderId;
+		m_folderInfo = folderInfo;
 
 		// ...and populate the dialog.
 		populateDlgAsync();
@@ -256,7 +257,7 @@ public class CopyFiltersDlg extends DlgBox implements EditSuccessfulHandler {
 			
 			// initAndShow parameters,
 			final CopyFiltersDlg	cfDlg,
-			final Long				folderId) {
+			final BinderInfo		folderInfo) {
 		GWT.runAsync(CopyFiltersDlg.class, new RunAsyncCallback() {
 			@Override
 			public void onFailure(Throwable reason) {
@@ -279,7 +280,7 @@ public class CopyFiltersDlg extends DlgBox implements EditSuccessfulHandler {
 					// No, it's not a request to create a dialog!  It
 					// must be a request to run an existing one.  Run
 					// it.
-					runDlgAsync(cfDlg, folderId);
+					runDlgAsync(cfDlg, folderInfo);
 				}
 			}
 		});
@@ -299,9 +300,9 @@ public class CopyFiltersDlg extends DlgBox implements EditSuccessfulHandler {
 	 * Initializes and shows the copy filters dialog.
 	 * 
 	 * @param cfDlg
-	 * @param folderId
+	 * @param folderInfo
 	 */
-	public static void initAndShow(CopyFiltersDlg cfDlg, Long folderId) {
-		doAsyncOperation(null, cfDlg, folderId);
+	public static void initAndShow(CopyFiltersDlg cfDlg, BinderInfo folderInfo) {
+		doAsyncOperation(null, cfDlg, folderInfo);
 	}
 }
