@@ -1277,21 +1277,21 @@ public class CalendarFolderView extends FolderViewBase
 	@Override
 	public void onInvokeCopyFiltersDlg(InvokeCopyFiltersDlgEvent event) {
 		// Is the event targeted to this folder?
-		Long eventFolderId = event.getFolderId();
-		if (eventFolderId.equals(getFolderInfo().getBinderIdAsLong())) {
+		BinderInfo eventFolderInfo = event.getFolderInfo();
+		if (eventFolderInfo.isEqual(getFolderInfo())) {
 			// Yes!  Invoke the copy filters dialog on the folder.
-			onInvokeCopyFiltersDlgAsync(eventFolderId);
+			onInvokeCopyFiltersDlgAsync(eventFolderInfo);
 		}
 	}
 
 	/*
 	 * Asynchronously invokes the copy filters dialog.
 	 */
-	private void onInvokeCopyFiltersDlgAsync(final Long folderId) {
+	private void onInvokeCopyFiltersDlgAsync(final BinderInfo folderInfo) {
 		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
-				onInvokeCopyFiltersDlgNow(folderId);
+				onInvokeCopyFiltersDlgNow(folderInfo);
 			}
 		} );
 	}
@@ -1299,8 +1299,8 @@ public class CalendarFolderView extends FolderViewBase
 	/*
 	 * Synchronously invokes the copy filters dialog.
 	 */
-	private void onInvokeCopyFiltersDlgNow(final Long folderId) {
-		BinderViewsHelper.invokeCopyFiltersDlg(folderId);
+	private void onInvokeCopyFiltersDlgNow(final BinderInfo folderInfo) {
+		BinderViewsHelper.invokeCopyFiltersDlg(folderInfo);
 	}
 		
 	/**

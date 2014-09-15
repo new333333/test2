@@ -974,7 +974,7 @@ public class EntryMenuPanel extends ToolPanelBase
 			mi = new VibeMenuItem(m_messages.vibeEntryMenu_CopyFilters(), new Command() {
 				@Override
 				public void execute() {
-					GwtTeaming.fireEvent(new InvokeCopyFiltersDlgEvent(m_binderInfo.getBinderIdAsLong()));
+					GwtTeaming.fireEvent(new InvokeCopyFiltersDlgEvent(m_binderInfo));
 				}
 			});
 			mi.getElement().setId(MenuIds.ENTRY_COPY_FILTERS);

@@ -32,6 +32,8 @@
  */
 package org.kablink.teaming.gwt.client.event;
 
+import org.kablink.teaming.gwt.client.util.BinderInfo;
+
 import com.google.gwt.event.shared.EventHandler;
 import com.google.web.bindery.event.shared.HandlerRegistration;
 import com.google.web.bindery.event.shared.SimpleEventBus;
@@ -45,7 +47,7 @@ import com.google.web.bindery.event.shared.SimpleEventBus;
 public class InvokeCopyFiltersDlgEvent extends VibeEventBase<InvokeCopyFiltersDlgEvent.Handler> {
 	public static Type<Handler> TYPE = new Type<Handler>();
 
-	private Long m_folderId;	// The ID of the folder filters are being copied to.
+	private BinderInfo m_folderInfo;	// The BinderInfo of the folder filters are being copied to.
 
 	/**
 	 * Handler interface for this event.
@@ -57,14 +59,14 @@ public class InvokeCopyFiltersDlgEvent extends VibeEventBase<InvokeCopyFiltersDl
 	/**
 	 * Constructor methods.
 	 * 
-	 * @param folderId 
+	 * @param folderInfo 
 	 */
-	public InvokeCopyFiltersDlgEvent(Long folderId) {
+	public InvokeCopyFiltersDlgEvent(BinderInfo folderInfo) {
 		// Initialize the super class...
 		super();
 
 		// ...and store the parameters.
-		setFolderId(folderId);
+		setFolderInfo(folderInfo);
 	}
 	
 	/**
@@ -72,14 +74,14 @@ public class InvokeCopyFiltersDlgEvent extends VibeEventBase<InvokeCopyFiltersDl
 	 * 
 	 * @return
 	 */
-	public Long getFolderId() {return m_folderId;}
+	public BinderInfo getFolderInfo() {return m_folderInfo;}
 	
 	/**
 	 * Set'er methods.
 	 * 
 	 * @param
 	 */
-	public void setFolderId(Long folderId) {m_folderId = folderId;}
+	public void setFolderInfo(BinderInfo folderInfo) {m_folderInfo = folderInfo;}
 	
 	/**
 	 * Dispatches this event when one is triggered.
