@@ -1719,6 +1719,14 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case GET_FOLDER_FILTERS:
+		{
+			GetFolderFiltersCmd gffCmd = ((GetFolderFiltersCmd) cmd);
+			FolderFiltersRpcResponseData result = GwtServerHelper.getFolderFilters( this, getRequest( ri ), gffCmd.getFolder() );
+			response = new VibeRpcResponse( result );
+			return response;
+		}
+		
 		case GET_FOLDER_HAS_USER_LIST:
 		{
 			GetFolderHasUserListCmd gfhulCmd = ((GetFolderHasUserListCmd) cmd);
@@ -3367,6 +3375,14 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			SaveFolderEntryDlgPositionCmd sfedpCmd = ((SaveFolderEntryDlgPositionCmd) cmd);
 			GwtViewHelper.saveFolderEntryDlgPosition( this, getRequest( ri ), sfedpCmd.getX(), sfedpCmd.getY(), sfedpCmd.getCX(), sfedpCmd.getCY() );
 			response = new VibeRpcResponse( new BooleanRpcResponseData( true ));
+			return response;
+		}
+		
+		case SAVE_FOLDER_FILTERS:
+		{
+			SaveFolderFiltersCmd sffCmd = ((SaveFolderFiltersCmd) cmd);
+			ErrorListRpcResponseData result = GwtServerHelper.saveFolderFilters( this, getRequest( ri ), sffCmd.getFolderInfo(), sffCmd.getGlobalFilters(), sffCmd.getPersonalFilters() );
+			response = new VibeRpcResponse( result );
 			return response;
 		}
 		
