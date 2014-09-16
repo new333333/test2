@@ -1722,7 +1722,8 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case GET_FOLDER_FILTERS:
 		{
 			GetFolderFiltersCmd gffCmd = ((GetFolderFiltersCmd) cmd);
-			FolderFiltersRpcResponseData result = GwtServerHelper.getFolderFilters( this, getRequest( ri ), gffCmd.getFolder() );
+			GwtFolder gwtFolder = gffCmd.getFolder();
+			FolderFiltersRpcResponseData result = GwtServerHelper.getFolderFilters( this, getRequest( ri ), Long.parseLong( gwtFolder.getFolderId() ) );
 			response = new VibeRpcResponse( result );
 			return response;
 		}

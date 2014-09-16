@@ -80,4 +80,42 @@ public class FolderFiltersRpcResponseData implements IsSerializable, VibeRpcResp
 	 */
 	public void addGlobalFilter(  FolderFilter globalFilter)   {m_globalFilters.add(  globalFilter  );}
 	public void addPersonalFilter(FolderFilter personalFilter) {m_personalFilters.add(personalFilter);}
+
+	/**
+	 * Returns true if a filter by the given name already exists in
+	 * this FolderFilterRpcResponseData and false otherwise.
+	 * 
+	 * @param name
+	 * 
+	 * @return
+	 */
+	public boolean filterExists(String name) {
+		// If we weren't given a name to check...
+		if ((null == name) || (0 == name.length())) {
+			// ...it doesn't exist.  Return false.
+			return false;
+		}
+
+		// Scan the global filters.
+		for (FolderFilter globalFilter:  getGlobalFilters()) {
+			// Is this the one in question?
+			if (globalFilter.getFilterName().equalsIgnoreCase(name)) {
+				// Yes!  Then we're done looking.  Return true.
+				return true;
+			}
+		}
+		
+		// Scan the personal filters.
+		for (FolderFilter personalFilter:  getPersonalFilters()) {
+			// Is this the one in question?
+			if (personalFilter.getFilterName().equalsIgnoreCase(name)) {
+				// Yes!  Then we're done looking.  Return true.
+				return true;
+			}
+		}
+
+		// If we get here, we couldn't find a filter by the given
+		// name.  Return false.
+		return false;
+	}
 }

@@ -43,6 +43,11 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 public class FolderFilter implements IsSerializable {
 	private String	m_data;	//
 	private String	m_name;	//
+	
+	// Used on the client side to connect UI to a FolderFilter
+	// instance.
+	private transient Object	m_uiData;	//
+	
 
 	/*
 	 * Constructor method.
@@ -75,14 +80,16 @@ public class FolderFilter implements IsSerializable {
 	 * 
 	 * @return
 	 */
-	public String getFilterData() {return m_data;}
-	public String getFilterName() {return m_name;}
+	public Object getUiData()     {return m_uiData;}
+	public String getFilterData() {return m_data;  }
+	public String getFilterName() {return m_name;  }
 
 	/**
 	 * Set'er methods.
 	 * 
 	 * @param
 	 */
-	public void setFilterData(String data) {m_data = data;}
-	public void setFilterName(String name) {m_name = name;}
+	public void setUiData(    Object uiData) {m_uiData = uiData;}
+	public void setFilterData(String data)   {m_data   = data;  }
+	public void setFilterName(String name)   {m_name   = name;  }
 }
