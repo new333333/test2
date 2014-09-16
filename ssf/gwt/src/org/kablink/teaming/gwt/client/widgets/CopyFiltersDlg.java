@@ -38,6 +38,7 @@ import java.util.List;
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.FindControlBrowseEvent;
+import org.kablink.teaming.gwt.client.event.FullUIReloadEvent;
 import org.kablink.teaming.gwt.client.event.SearchFindResultsEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.GwtFolder;
@@ -46,9 +47,11 @@ import org.kablink.teaming.gwt.client.GwtTeamingImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingItem;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.GwtSearchCriteria.SearchType;
+import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.FolderFilter;
 import org.kablink.teaming.gwt.client.rpc.shared.FolderFiltersRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.GetFolderFiltersCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.SaveFolderFiltersCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
@@ -66,10 +69,12 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.InlineLabel;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -80,25 +85,23 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
  *  
  * @author drfoster@novell.com
  */
-@SuppressWarnings("unused")
 public class CopyFiltersDlg extends DlgBox
 	implements EditSuccessfulHandler,
 		// Event handlers implemented by this class.
 		FindControlBrowseEvent.Handler,
 		SearchFindResultsEvent.Handler
 {
-	public final static boolean	SHOW_COPY_FILTERS	= false;	//! DRF (20140912):  Leave false on checkin until works!
-	
 	private BinderInfo						m_folderInfo;				// BinderInfo of the folder filters are to be copied to.
 	private Button							m_browseButton;				// Button used to connect a browse widget to the find control.
-	private FindCtrl						m_findControl;				// The search widget for selecting the source folder.
-	private FolderFiltersRpcResponseData	m_folderFilters;			// Filters queried from m_sourceFolder.
-	private GwtFolder						m_sourceFolder;				// The currently selected folder returned by the search widget.
+	private FindCtrl						m_findControl;				// The find control for selecting the source folder.
+	private FolderFiltersRpcResponseData	m_folderFilters;			// The filters queried from m_sourceFolder.
+	private GwtFolder						m_sourceFolder;				// The currently selected folder returned by the find control, if any.
 	private GwtTeamingImageBundle			m_images;					// Access to Vibe's images.
 	private GwtTeamingMessages				m_messages;					// Access to Vibe's messages.
-	private List<HandlerRegistration>		m_registeredEventHandlers;	// Event handlers that are currently registered.
+	private List<HandlerRegistration>		m_registeredEventHandlers;	// Event handlers that are currently registered for this dialog.
 	private ScrollPanel						m_filtersScroller;			// The ScrollPanel that contains the filters from the source folder.
-	private VibeFlowPanel					m_contentPanel;				// The panel containing the content of the dialog.
+	private SpinnerPopup					m_busySpinner;				// Used to display a busy spinner while we're saving the selected filters.
+	private VibeFlowPanel					m_contentPanel;				// The panel containing the main content of the dialog.
 	private VibeVerticalPanel				m_filtersPanel;				// The panel containing the filters themselves.
 	
 	// The following defines the TeamingEvents that are handled by
@@ -175,8 +178,13 @@ public class CopyFiltersDlg extends DlgBox
 		m_filtersPanel.addStyleName("vibe-copyFiltersDlg-filtersPanel");
 		m_filtersScroller.add(m_filtersPanel);
 		
-		// Hide the panel we show the filters in until we have some.
+		// Hide the panel we show the filters in until we have some
+		// filters for the user to select.
 		m_filtersScroller.setVisible(false);
+		
+		// Set the styles that enable scrolling.
+		m_filtersPanel.removeStyleName("vibe-copyFiltersDlg-scrollLimit");	// Limit on the ScrollPanel...
+		m_filtersScroller.addStyleName("vibe-copyFiltersDlg-scrollLimit");	// ...not the VerticalPanel.
 	}
 	
 	/**
@@ -186,14 +194,92 @@ public class CopyFiltersDlg extends DlgBox
 	 * Implements the EditSuccessfulHandler.editSuccessful() interface
 	 * method.
 	 * 
-	 * @param callbackData
+	 * @param unused - callbackData is unused.
 	 * 
 	 * @return
 	 */
 	@Override
-	public boolean editSuccessful(Object callbackData) {
-//!		...this needs to be implemented...
-		return true;
+	public boolean editSuccessful(Object unused) {
+		// If ther's nothing to copy...
+		int count = ((null == m_folderFilters) ? 0 : m_folderFilters.getTotalFiltersCount());
+		if (0 == count) {
+			// ...simply let the dialog close.
+			return true;
+		}
+
+		// Create the GWT RPC command to save the filters to be copied.
+		SaveFolderFiltersCmd saveCmd = new SaveFolderFiltersCmd(m_folderInfo);
+
+		// Add the selected global filters to the save command.
+		count = 0;
+		List<FolderFilter> globalFilters = m_folderFilters.getGlobalFilters();
+		if (!(globalFilters.isEmpty())) {
+			for (FolderFilter globalFilter:  globalFilters) {
+				CheckBox cb = ((CheckBox) globalFilter.getUiData());
+				if (cb.getValue()) {
+					count += 1;
+					saveCmd.addGlobalFilter(globalFilter);
+				}
+			}
+		}
+
+		// Add the selected personal filters to the save command.
+		List<FolderFilter> personalFilters = m_folderFilters.getPersonalFilters();
+		if (!(personalFilters.isEmpty())) {
+			for (FolderFilter personalFilter:  personalFilters) {
+				CheckBox cb = ((CheckBox) personalFilter.getUiData());
+				if (cb.getValue()) {
+					count += 1;
+					saveCmd.addPersonalFilter(personalFilter);
+				}
+			}
+		}
+		
+		// Were any filters selected to be copied?
+		if (0 == count) {
+			// No!  Tell the user and leave the dialog open.
+			GwtClientHelper.deferredAlert(m_messages.copyFiltersDlg_Error_NothingSelected());
+			return false;
+		}
+
+		// Send the GWT RPC request to save the selected filters.
+	    showBusySpinner();
+		GwtClientHelper.executeCommand(saveCmd, new AsyncCallback<VibeRpcResponse>() {
+			@Override
+			public void onFailure(Throwable caught) {
+				hideBusySpinner();
+				GwtClientHelper.handleGwtRPCFailure(
+					caught,
+					GwtTeaming.getMessages().rpcFailure_SaveFolderFilters(),
+					m_folderInfo.getBinderId());
+			}
+
+			@Override
+			public void onSuccess(VibeRpcResponse result) {
+				// Were any errors returned from the save?
+				hideBusySpinner();
+				ErrorListRpcResponseData responseData = ((ErrorListRpcResponseData) result.getResponseData());
+				if (responseData.hasErrors()) {
+					// Yes!  Display them.
+					GwtClientHelper.displayMultipleErrors(
+						m_messages.copyFiltersDlg_Error_SaveErrors(),
+						responseData.getErrorList());
+				}
+
+				// Were any of these actual errors (vs. simply
+				// warnings)?
+				if (0 == responseData.getErrorCount()) {
+					// No!  Hide the dialog and force the UI to
+					// refresh.
+					hide();
+					FullUIReloadEvent.fireOneAsync();
+				}
+			}
+		});
+
+		// Return false the leave the dialog open.  It will be closed
+		// if the copied filters get successfully saved.
+		return false;
 	}
 	
 	/**
@@ -209,6 +295,12 @@ public class CopyFiltersDlg extends DlgBox
 		return "";
 	}
 
+	/*
+	 * Sends a GWT RPC request to the server for the filters defined on
+	 * the selected folder.  Once they're returned, they're used to
+	 * populate the filter list so the user can select which filters
+	 * they want to copy.
+	 */
 	private void getFolderFilters() {
 		GetFolderFiltersCmd cmd = new GetFolderFiltersCmd(m_sourceFolder);
 		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
@@ -222,6 +314,8 @@ public class CopyFiltersDlg extends DlgBox
 
 			@Override
 			public void onSuccess(VibeRpcResponse result) {
+				// Save the filters from the selected folder and use
+				// them to populate the filter list.
 				m_folderFilters = ((FolderFiltersRpcResponseData) result.getResponseData());
 				populateFilterListFromDataAsync();
 			}
@@ -239,6 +333,17 @@ public class CopyFiltersDlg extends DlgBox
 	public FocusWidget getFocusWidget() {
 		// Put the focus in the search widget.
 		return ((null == m_findControl) ? null : m_findControl.getFocusWidget());
+	}
+
+	/*
+	 * If a busy spinner exists, hide it.
+	 */
+	private void hideBusySpinner() {
+		// If we have a busy spinner...
+		if (null != m_busySpinner) {
+			// ...make sure that it's hidden.
+			m_busySpinner.hide();
+		}
 	}
 
 	/*
@@ -266,9 +371,11 @@ public class CopyFiltersDlg extends DlgBox
 			
 			@Override
 			public void onSuccess(FindCtrl findCtrl) {
+				// Save the find control...
 				m_findControl = findCtrl;
 				m_findControl.addStyleName("vibe-copyFiltersDlg_findWidget");
 				
+				// ...and populate the dialog.
 				populateDlgAsync();
 			}
 		});
@@ -336,8 +443,18 @@ public class CopyFiltersDlg extends DlgBox
 		// Is the search result a GwtFolder?
 		GwtTeamingItem obj = event.getSearchResults();
 		if (obj instanceof GwtFolder) {
-			// Yes!  Save it for when the user selects OK.
-			m_sourceFolder = ((GwtFolder) obj);
+			// Yes!  Is it the folder we're copying to?
+			GwtFolder selectedFolder = ((GwtFolder) obj);
+			if (Long.parseLong(selectedFolder.getFolderId()) == m_folderInfo.getBinderIdAsLong().longValue()) {
+				// Yes!  Tell the user to select something else and
+				// bail.
+				GwtClientHelper.deferredAlert(m_messages.copyFiltersDlg_Error_CantCopyFromSelf());
+				return;
+			}
+			
+			// Save the selected folder it and use it to populate the
+			// filters list.
+			m_sourceFolder = selectedFolder;
 			getFolderFilters();
 		}
 		else {
@@ -364,12 +481,15 @@ public class CopyFiltersDlg extends DlgBox
 	 */
 	private void populateDlgNow() {
 		// Clear anything already in the dialog (from a previous
-		// usage, ...)
+		// usage.)
 		m_contentPanel.clear();
 		m_filtersPanel.clear();
-		
-//!		...this needs to be implemented...
-		m_contentPanel.add(new InlineLabel("...this needs to be implemented..."));
+		m_filtersScroller.setVisible(false);
+
+		// Add a hint at the top of the dialog explaining what to do.
+		Label hint = new Label(m_messages.copyFiltersDlg_Hint());
+		hint.addStyleName("vibe-copyFiltersDlg-hint");
+		m_contentPanel.add(hint);
 				
 		// Add the search widget...
 		VibeFlowPanel fp = new VibeFlowPanel();
@@ -384,7 +504,7 @@ public class CopyFiltersDlg extends DlgBox
 		hp.add(m_findControl);
 		fp.add(hp);
 		
-		// ...add a browse button next to the search widget...
+		// ...and add a browse button next to the search widget.
 		Image buttonImg = GwtClientHelper.buildImage(m_images.browseHierarchy(), m_messages.copyFiltersDlg_Alt_Browse());
 		m_browseButton = new Button(GwtClientHelper.getWidgetHTML(buttonImg), new ClickHandler() {
 			@Override
@@ -401,10 +521,6 @@ public class CopyFiltersDlg extends DlgBox
 		if (!(GwtClientHelper.getRequestInfo().hasRootDirAccess())) {
 			m_browseButton.setVisible(false);
 		}
-		
-		// Turn off any scrolling currently in force...
-		m_filtersPanel.addStyleName(      "vibe-copyFiltersDlg-scrollLimit");	// Limit on the VerticalPanel...
-		m_filtersScroller.removeStyleName("vibe-copyFiltersDlg-scrollLimit");	// ...not the ScrollPanel.
 		
 		// ...and show the dialog centered on the screen.
 		center();
@@ -428,28 +544,39 @@ public class CopyFiltersDlg extends DlgBox
 	 * from the server.
 	 */
 	private void populateFilterListFromDataNow() {
+		// We start with an empty filters panel.
+		m_filtersPanel.clear();
+		
 		// Are there any filters that can be copied from the selected
 		// folder?
 		int count = ((null == m_folderFilters) ? 0 : m_folderFilters.getTotalFiltersCount());
 		if (0 == count) {
 			// No!  Tell the user about the problem and bail.
+			m_filtersScroller.setVisible(false);
 			GwtClientHelper.deferredAlert(m_messages.copyFiltersDlg_Error_NoFilters());
 			return;
 		}
+		
+		// We've got something that will need to be shown.
+		m_filtersScroller.setVisible(true);
 
 		// Do we have any global filters that can be copied?
 		List<FolderFilter> globalFilters = m_folderFilters.getGlobalFilters();
 		boolean hasGlobalFilters = (!(globalFilters.isEmpty()));
 		if (hasGlobalFilters) {
 			// Yes!  Add them to the filter list.
-			InlineLabel il = new InlineLabel(m_messages.copyFiltersDlgCaptionGlobal());
+			Label il = new Label(m_messages.copyFiltersDlgCaptionGlobal());
 			il.addStyleName("vibe-copyFiltersDlg_filterSectionLabel");
 			m_filtersPanel.add(il);
 
 			// Scan the global filters...
 			for (FolderFilter globalFilter:  globalFilters) {
 				// ...adding a checkbox selector for each.
-//!				...this needs to be implemented...			
+				CheckBox selectFilterCB = new CheckBox(globalFilter.getFilterName());
+				selectFilterCB.addStyleName("vibe-copyFiltersDlg-filterSelectCB");
+				selectFilterCB.removeStyleName("gwt-CheckBox");
+				m_filtersPanel.add(selectFilterCB);
+				globalFilter.setUiData(selectFilterCB);
 			}
 		}
 		
@@ -457,7 +584,7 @@ public class CopyFiltersDlg extends DlgBox
 		List<FolderFilter> personalFilters = m_folderFilters.getPersonalFilters();
 		if (!(personalFilters.isEmpty())) {
 			// Yes!  Add them to the filter list.
-			InlineLabel il = new InlineLabel(m_messages.copyFiltersDlgCaptionPersonal());
+			Label il = new Label(m_messages.copyFiltersDlgCaptionPersonal());
 			il.addStyleName("vibe-copyFiltersDlg_filterSectionLabel");
 			if (hasGlobalFilters) {
 				il.addStyleName("marginTop10px");
@@ -467,7 +594,11 @@ public class CopyFiltersDlg extends DlgBox
 			// Scan the private filters...
 			for (FolderFilter personalFilter:  personalFilters) {
 				// ...adding a checkbox selector for each.
-//!				...this needs to be implemented...
+				CheckBox selectFilterCB = new CheckBox(personalFilter.getFilterName());
+				selectFilterCB.addStyleName("vibe-copyFiltersDlg-filterSelectCB");
+				selectFilterCB.removeStyleName("gwt-CheckBox");
+				m_filtersPanel.add(selectFilterCB);
+				personalFilter.setUiData(selectFilterCB);
 			}
 		}
 	}
@@ -514,11 +645,29 @@ public class CopyFiltersDlg extends DlgBox
 	private void runDlgNow(BinderInfo folderInfo) {
 		// Store the parameters...
 		m_folderInfo = folderInfo;
+		
+		// ...make sure any previous filter list has been forgotten
+		// ...about... 
+		m_folderFilters = null;
 
 		// ...and populate the dialog.
 		loadPart1Async();
 	}
 
+	/*
+	 * Shows a busy spinner animation while an operation is going on.
+	 */
+	private void showBusySpinner() {
+		// If we haven't created a busy spinner yet...
+		if (null == m_busySpinner) {
+			// ...create one now...
+			m_busySpinner = new SpinnerPopup();
+		}
+
+		// ...and show it.
+		m_busySpinner.center();
+	}
+	
 	/*
 	 * Unregisters any global event handlers that may be registered.
 	 */

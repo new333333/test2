@@ -569,6 +569,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_SaveFileSyncAppConfiguration();
 	String rpcFailure_SaveFolderColumns();
 	String rpcFailure_SaveFolderEntryDlgPosition();
+	String rpcFailure_SaveFolderFilters();
 	String rpcFailure_SaveFolderPinningState();
 	String rpcFailure_SaveFolderSort();
 	String rpcFailure_SaveLdapConfig();
@@ -3426,8 +3427,12 @@ public interface GwtTeamingMessages extends Messages
 	
 	// String used by the 'Copy Filters' dialog.
 	String copyFiltersDlg_Alt_Browse();
+	String copyFiltersDlg_Error_CantCopyFromSelf();
 	String copyFiltersDlg_Error_InvalidSearchResult();
 	String copyFiltersDlg_Error_NoFilters();
+	String copyFiltersDlg_Error_NothingSelected();
+	String copyFiltersDlg_Error_SaveErrors();
+	String copyFiltersDlg_Hint();
 	String copyFiltersDlgCaption();
 	String copyFiltersDlgCaptionGlobal();
 	String copyFiltersDlgCaptionPersonal();

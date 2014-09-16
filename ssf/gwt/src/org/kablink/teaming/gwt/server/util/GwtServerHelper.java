@@ -4859,40 +4859,37 @@ public class GwtServerHelper {
 	 * 
 	 * @param bs
 	 * @param request
-	 * @param gwtFolder
+	 * @param folder
 	 * 
 	 * @return
 	 * 
 	 * @throws GwtTeamingException
 	 */
-	public static FolderFiltersRpcResponseData getFolderFilters(AllModulesInjected bs, HttpServletRequest request, GwtFolder gwtFolder) throws GwtTeamingException {
+	public static FolderFiltersRpcResponseData getFolderFilters(AllModulesInjected bs, HttpServletRequest request, Folder folder) throws GwtTeamingException {
 		try {
 			// Allocate a FolderFiltersRpcResponseData to return the
 			// folder's filters in.
 			FolderFiltersRpcResponseData reply = new FolderFiltersRpcResponseData();
 
-			// Access the source folder that we're copying from.
-			Long   folderId = Long.parseLong(gwtFolder.getFolderId());
-			Folder folder   = bs.getFolderModule().getFolder(folderId);
-			
-			// Are there any global filters defined?
+			// Are there any global filters defined on the folder?
 			Map<String, String> searchFilters = ((Map<String, String>) folder.getProperty(ObjectKeys.BINDER_PROPERTY_FILTERS));
 			if (MiscUtil.hasItems(searchFilters)) {
-				// Yes!  Scan them...
+				// Yes!  Scan them and add a FolderFilter for each to
+				// the reply.
 				for (Entry<String, String> mapEntry:  searchFilters.entrySet()) {
-					// ...adding a FolderFilter for each to the reply.
 					FolderFilter globalFilter = new FolderFilter(mapEntry.getKey(), mapEntry.getValue());
 					reply.addGlobalFilter(globalFilter);
 				}
 			}
 			
-			// Are there any personal filters defined?
-			UserProperties userBinderProperties = bs.getProfileModule().getUserProperties(GwtServerHelper.getCurrentUserId(), folderId);
+			// Are there any personal filters defined in the user's
+			// properties for this folder?
+			UserProperties userBinderProperties = bs.getProfileModule().getUserProperties(GwtServerHelper.getCurrentUserId(), folder.getId());
 			searchFilters = ((Map<String, String>) userBinderProperties.getProperty(ObjectKeys.USER_PROPERTY_SEARCH_FILTERS));
 			if (MiscUtil.hasItems(searchFilters)) {
-				// Yes!  Scan them...
+				// Yes!  Scan them and add a FolderFilter for each to
+				// the reply.
 				for (Entry<String, String> mapEntry:  searchFilters.entrySet()) {
-					// ...adding a FolderFilter for each to the reply.
 					FolderFilter personalFilter = new FolderFilter(mapEntry.getKey(), mapEntry.getValue());
 					reply.addPersonalFilter(personalFilter);
 				}
@@ -4900,8 +4897,27 @@ public class GwtServerHelper {
 
 			// If we get here, reply refers to a
 			// FolderFilterRpcResponse data containing the filters
-			// defined on the specified folder.  Return it.
+			// defined on the given folder.  Return it.
 			return reply;
+		}
+		
+		catch (Exception e) {
+			// Convert the exception to a GwtTeamingException and throw
+			// that.
+			throw
+				GwtLogHelper.getGwtClientException(
+					m_logger,
+					e,
+					"GwtServerHelper.getFolderFiltersImpl( SOURCE EXCEPTION ):  ");
+		}
+	}
+	
+	public static FolderFiltersRpcResponseData getFolderFilters(AllModulesInjected bs, HttpServletRequest request, Long folderId) throws GwtTeamingException {
+		try {
+			// Access the folder and read its filters, using the
+			// initial form of the method.
+			Folder folder = bs.getFolderModule().getFolder(folderId);
+			return getFolderFilters(bs, request, folder);
 		}
 		
 		catch (Exception e) {
@@ -10643,7 +10659,8 @@ public class GwtServerHelper {
 	}
 
 	/**
-	 * Returns an ErrorListRpcResponseData containing any errors from saving filters on a folder.
+	 * Returns an ErrorListRpcResponseData containing any errors from
+	 * saving filters on a folder.
 	 * 
 	 * @param bs
 	 * @param request
@@ -10657,10 +10674,74 @@ public class GwtServerHelper {
 	 */
 	public static ErrorListRpcResponseData saveFolderFilters(AllModulesInjected bs, HttpServletRequest request, BinderInfo folderInfo, List<FolderFilter> globalFilters, List<FolderFilter> personalFilters) throws GwtTeamingException {
 		try {
+			// Access the destination folder that we're saving the
+			// filters to.
+			Long   folderId = folderInfo.getBinderIdAsLong();
+			Folder folder   = bs.getFolderModule().getFolder(folderId);
+
+			// Allocate an ErrorListRpcResponseData that we can return any
+			// errors in.
 			ErrorListRpcResponseData reply = new ErrorListRpcResponseData();
+
+			// Get the current filters from the destination folder.
+			FolderFiltersRpcResponseData currentFilters = getFolderFilters(bs, request, folder);
+
+			// Validate that the names we've got to save will be
+			// unique with those we got from the folder.
+			validateFilterNames(currentFilters, reply, globalFilters  );
+			validateFilterNames(currentFilters, reply, personalFilters);
 			
-//!			...this needs to be implemented...
+			// If we get here, globalFilters and personalFilters now
+			// contain filter names that are unique to this folder.  We
+			// simply need to save them, as appropriate in the folder's
+			// data.
 			
+			// Are there any global filters being saved?
+			if (MiscUtil.hasItems(globalFilters)) {
+				// Yes!  Get the ones already on the folder to merge
+				// them into...
+				Map<String, String> searchFilters = ((Map<String, String>) folder.getProperty(ObjectKeys.BINDER_PROPERTY_FILTERS));
+				if (null == searchFilters) {
+					searchFilters = new HashMap<String, String>();
+				}
+				
+				// ...scan the global filters we need to save and add
+				// ...them to the filter map...
+				for (FolderFilter globalFilter:  globalFilters) {
+					searchFilters.put(globalFilter.getFilterName(), globalFilter.getFilterData());
+				}
+				
+				// ...and write the modified filter map back to the
+				// ...folder.
+				folder.setProperty(ObjectKeys.BINDER_PROPERTY_FILTERS, searchFilters);
+			}
+			
+			// Are there any personal filters being saved?
+			if (MiscUtil.hasItems(personalFilters)) {
+				// Yes!  Get the ones already in the user's properties
+				// to merge them into...
+				Long userId = GwtServerHelper.getCurrentUserId();
+				ProfileModule pm = bs.getProfileModule();
+				UserProperties userBinderProperties = pm.getUserProperties(userId, folderId);
+				Map<String, String> searchFilters = ((Map<String, String>) userBinderProperties.getProperty(ObjectKeys.USER_PROPERTY_SEARCH_FILTERS));
+				if (null == searchFilters) {
+					searchFilters = new HashMap<String, String>();
+				}
+				
+				// ...scan the personal filters we need to save and add
+				// ...them to the filter map...
+				for (FolderFilter personalFilter:  personalFilters) {
+					searchFilters.put(personalFilter.getFilterName(), personalFilter.getFilterData());
+				}
+				
+				// ...and write the modified filter map back to the
+				// ...user's properties for the folder.
+				pm.setUserProperty(userId, folderId, ObjectKeys.USER_PROPERTY_SEARCH_FILTERS, searchFilters);
+			}
+
+			// If we get here, reply refers to the
+			// ErrorListRpcResponseData containing any problems we
+			// found during the save.  Return it.
 			return reply;
 		}
 		
@@ -12155,6 +12236,44 @@ public class GwtServerHelper {
 		}
 		catch (Exception e)
 		{
+		}
+	}
+
+	/*
+	 * Validates that the names of the filters in the
+	 * List<FolderFilter> are unique within the
+	 * FolderFiltersRpcResponseData.
+	 * 
+	 * If they're not, they're made unique, their new name is stored in
+	 * the filter list and a warning added to the
+	 * ErrorListRpcResponseData.
+	 */
+	private static void validateFilterNames(FolderFiltersRpcResponseData currentFilters, ErrorListRpcResponseData reply, List<FolderFilter> filterList) {
+		// Do we have any filters to validate?
+		if (MiscUtil.hasItems(filterList)) {
+			// Yes!  Scan them.
+			for (FolderFilter filter:  filterList) {
+				int    tryCount       = 0;
+				String baseFilterName = filter.getFilterName();
+				String filterName     = baseFilterName;
+				while (true) {
+					tryCount += 1;
+					if (!(currentFilters.filterExists(filterName))) {
+						break;
+					}
+					filterName = (baseFilterName + " (" + tryCount + ")");
+				}
+
+				// Did we have to rename this filter?
+				if (1 < tryCount) {
+					// Yes!  Add a warning to the response so we
+					// can inform the user...
+					reply.addWarning(NLT.get("saveFilters.warning.duplicateRenamed", new String[]{baseFilterName, filterName}));
+					
+					// ...and save the new name.
+					filter.setFilterName(filterName);
+				}
+			}
 		}
 	}
 	

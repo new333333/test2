@@ -120,7 +120,6 @@ import org.kablink.teaming.gwt.client.util.ManageUsersState;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 import org.kablink.teaming.gwt.client.util.SharedViewState;
-import org.kablink.teaming.gwt.client.widgets.CopyFiltersDlg;
 import org.kablink.teaming.gwt.client.widgets.VibeFlexTable;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
 
@@ -968,20 +967,17 @@ public class EntryMenuPanel extends ToolPanelBase
 		// Create the filter options menu bar.
 		PopupMenu filterDropdownMenu = constructFilterDropdownMenu(false);	// false -> Items aren't checked.
 
-		VibeMenuItem mi;
-		if (CopyFiltersDlg.SHOW_COPY_FILTERS) {	//! ...temporary until the dialog is finished...
-			// Create a menu option for copying filters.
-			mi = new VibeMenuItem(m_messages.vibeEntryMenu_CopyFilters(), new Command() {
-				@Override
-				public void execute() {
-					GwtTeaming.fireEvent(new InvokeCopyFiltersDlgEvent(m_binderInfo));
-				}
-			});
-			mi.getElement().setId(MenuIds.ENTRY_COPY_FILTERS);
-			filterDropdownMenu.addMenuItem(mi);
-			if ((!hasFilterEditUrl) && (!hasFiltersOffUrl) && (0 < filtersCount)) {
-				filterDropdownMenu.addSeparator();
+		// Create a menu option for copying filters.
+		VibeMenuItem mi = new VibeMenuItem(m_messages.vibeEntryMenu_CopyFilters(), new Command() {
+			@Override
+			public void execute() {
+				GwtTeaming.fireEvent(new InvokeCopyFiltersDlgEvent(m_binderInfo));
 			}
+		});
+		mi.getElement().setId(MenuIds.ENTRY_COPY_FILTERS);
+		filterDropdownMenu.addMenuItem(mi);
+		if ((!hasFilterEditUrl) && (!hasFiltersOffUrl) && (0 < filtersCount)) {
+			filterDropdownMenu.addSeparator();
 		}
 		
 		// If we have an edit filters URL...

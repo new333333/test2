@@ -6033,17 +6033,19 @@ td.datePickerMonth {
 		-webkit-border-radius: 5px !important;
 	}
 
-	.vibe-copyFiltersDlg_BrowseImg          {width: 25px; height: 25px; margin: 0 2px 0 0; border: 0px; vertical-align: middle;}
-	.vibe-copyFiltersDlg-contentPanel       {margin-top: 10px;}
-	.vibe-copyFiltersDlg_filterSectionLabel {font-size: 14px !important; font-weight: bold !important;}
-	.vibe-copyFiltersDlg-filtersPanel       {color: #505354; font-size: 12px;}
-	.vibe-copyFiltersDlg_findLabel          {color: #505354; }
-	.vibe-copyFiltersDlg_findPanel_Inner    {}
-	.vibe-copyFiltersDlg_findPanel_Outer    {padding-top: 15px;}
-	.vibe-copyFiltersDlg_findWidget         {margin-top: 2px; display: inline;}
-	.vibe-copyFiltersDlg-mainPanel          {margin: 10px 10px 10px 13px;}
-	.vibe-copyFiltersDlg-scrollPanel        {overflow: auto !important; border: 1px solid #C4C4C4;}
-	.vibe-copyFiltersDlg-scrollLimit        {height: 175px;}
+	.vibe-copyFiltersDlg_BrowseImg            {width: 25px; height: 25px; margin: 0 2px 0 0; border: 0px; vertical-align: middle;}
+	.vibe-copyFiltersDlg-contentPanel         {margin-top: 10px;}
+	.vibe-copyFiltersDlg_filterSectionLabel   {font-size: 14px !important; font-weight: bold !important;}
+	.vibe-copyFiltersDlg-filterSelectCB label {font-size: 12px !important; padding-top: 5px; padding-left: 2px; display: inline-block;}
+	.vibe-copyFiltersDlg-filtersPanel         {color: #505354; font-size: 12px;}
+	.vibe-copyFiltersDlg_findLabel            {color: #505354; }
+	.vibe-copyFiltersDlg_findPanel_Inner      {}
+	.vibe-copyFiltersDlg_findPanel_Outer      {padding-top: 15px;}
+	.vibe-copyFiltersDlg_findWidget           {margin-top: 2px; display: inline;}
+	.vibe-copyFiltersDlg-hint                 {white-space: normal; width: 400px; font-size: 14px;}
+	.vibe-copyFiltersDlg-mainPanel            {margin: 10px 10px 10px 13px;}
+	.vibe-copyFiltersDlg-scrollPanel          {overflow: auto !important; border: 1px solid #C4C4C4; margin-top: 10px;}
+	.vibe-copyFiltersDlg-scrollLimit          {height: 175px;}
 /* End:  Copy Filters dialog styles. */
 
 /* Start:  Copy Public Link dialog styles. */
