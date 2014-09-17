@@ -1493,6 +1493,7 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         binder.addAdditionalLink("initial_sync", baseUri + "/initial_sync");
         binder.addAdditionalLink("library_changes", baseUri + "/library_changes");
         binder.addAdditionalLink("library_children", baseUri + "/library_children");
+        binder.addAdditionalLink("library_info", baseUri + "/library_info");
         binder.addAdditionalLink("recent_activity", baseUri + "/recent_activity");
         return binder;
     }
@@ -1517,6 +1518,7 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         binder.addAdditionalLink("child_library_tree", baseUri + "/library_tree");
         binder.addAdditionalLink("library_changes", baseUri + "/library_changes");
         binder.addAdditionalLink("library_children", baseUri + "/library_children");
+        binder.addAdditionalLink("library_info", baseUri + "/library_info");
         binder.addAdditionalLink("recent_activity", baseUri + "/recent_activity");
         return binder;
     }
@@ -1540,6 +1542,7 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         binder.addAdditionalLink("child_library_folders", baseUri + "/library_folders");
         binder.addAdditionalLink("library_changes", baseUri + "/library_changes");
         binder.addAdditionalLink("library_children", baseUri + "/library_children");
+        binder.addAdditionalLink("library_info", baseUri + "/library_info");
         binder.addAdditionalLink("recent_activity", baseUri + "/recent_activity");
         return binder;
     }
@@ -1584,6 +1587,7 @@ public abstract class AbstractResource extends AbstractAllModulesInjected {
         binder.addAdditionalLink("child_library_tree", baseUri + "/library_tree");
         binder.addAdditionalLink("library_changes", baseUri + "/library_changes");
         binder.addAdditionalLink("library_children", baseUri + "/library_children");
+        binder.addAdditionalLink("library_info", baseUri + "/library_info");
         binder.addAdditionalLink("recent_activity", baseUri + "/recent_activity");
         return binder;
     }

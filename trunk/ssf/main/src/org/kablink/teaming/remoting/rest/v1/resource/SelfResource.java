@@ -266,6 +266,13 @@ public class SelfResource extends AbstractFileResource {
     }
 
     @GET
+    @Path("/public_shares/library_info")
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    public LibraryInfo getPublicLibraryInfo() {
+        return getPublicSharesLibraryInfo();
+    }
+
+    @GET
     @Path("/shared_with_me")
    	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
     public BinderBrief getSharedWithMe(@QueryParam("library_info") @DefaultValue("false") boolean libraryModTime) {
@@ -278,10 +285,24 @@ public class SelfResource extends AbstractFileResource {
     }
 
     @GET
+    @Path("/shared_with_me/library_info")
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    public LibraryInfo getSharedWithMeLibraryInfo() {
+        return getSharedWithLibraryInfo(getLoggedInUserId());
+    }
+
+    @GET
     @Path("/shared_by_me")
    	@Produces( { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
     public BinderBrief getSharedByMe() {
         return getFakeSharedByMe();
+    }
+
+    @GET
+    @Path("/shared_by_me/library_info")
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    public LibraryInfo getSharedByMeLibraryInfo() {
+        return getSharedByLibraryInfo(getLoggedInUserId());
     }
 
     @GET
