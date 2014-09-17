@@ -389,8 +389,8 @@
 	left: 0;
 	position: absolute;
 	top: 1px;
-	width: 35px;
-	height: 35px;
+	width: 30px;
+	height: 30px;
 	border-radius: 2px;
 }
 
@@ -417,7 +417,7 @@
 	border-top: 0px solid #d2d5d1;
 	font-size: 13px;
 	line-height: 15px;
-	margin-left: 48px;
+	margin-left: 40px;
 	padding-right: 25px;
 }
 
@@ -438,7 +438,7 @@
 .activityStreamCommentContentPanel
 {
 	font-size: 12px;
-	margin-left: 44px;
+	margin-left: 40px;
 	padding-top: 5px;
 	position: relative;
 	white-space: normal;
@@ -480,6 +480,7 @@
 	color: #036f9f;
 	font-size: 14px;
 	line-height: 15px;
+	text-decoration: none;
 }
 
 .activityStreamTitlePanel
@@ -1429,9 +1430,9 @@ body, table td, select
 	border-style: solid solid solid;
 	border-width: 1px;
 	padding: 5px 10px;
-	margin: 5px;
-	-moz-border-radius: 5px;
+	margin: 10px;
 	border-radius: 5px;
+	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;
 }
 
@@ -1445,8 +1446,8 @@ body, table td, select
 	color: #FFFFFF;
 	font-size: 0.8em;
 	position: absolute;
-	right: 0px;
-	top: 0px;
+	right: 2px;
+	top: -8px;
 	z-index: 1001;
 }
 

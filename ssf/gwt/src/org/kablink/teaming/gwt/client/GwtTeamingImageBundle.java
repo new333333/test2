@@ -437,7 +437,7 @@ public interface GwtTeamingImageBundle extends ClientBundle
 	public ImageResource myWorkspace2();
 
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/Masthead/news_feed.png")
+	@Source("org/kablink/teaming/gwt/public/images/Masthead/news_feed_2.png")
 	public ImageResource newsFeedMenuImg();
 
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
@@ -569,7 +569,7 @@ public interface GwtTeamingImageBundle extends ClientBundle
 	public ImageResource report16();
 	
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/Masthead/resource_library.png")
+	@Source("org/kablink/teaming/gwt/public/images/Masthead/resource_library_2.png")
 	public ImageResource resourceLibMenuImg();
 
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
