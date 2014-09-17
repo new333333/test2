@@ -7,7 +7,7 @@
 	.vibe-binderViewTools
 	{
 		display: block;
-		padding: 5px 5px 0;
+		padding: 0;
 	}
 /* End:  Generic binder view tools styles. */
 
@@ -346,6 +346,7 @@
 	
 	.vibe-discussionWSView_BreadCrumbPanel, .vibe-teamWSView_BreadCrumbPanel, .vibe-genericWSView_BreadCrumbPanel, .vibe-projectManagementWSView_BreadCrumbPanel, .vibe-netFoldersWSView_BreadCrumbPanel, .vibe-homeWSView_BreadCrumbPanel
 	{
+		margin-top: 8px;
 	}
 	
 	.vibe-discussionWSView_DescPanel, .vibe-teamWSView_DescPanel, .vibe-genericWSView_DescPanel, .vibe-homeWSView_DescPanel, .vibe-projectManagementWSView_DescPanel, .vibe-personalWorkspacesView_DescPanel, .vibe-netFoldersWSView_DescPanel
