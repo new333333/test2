@@ -832,7 +832,7 @@ div.ss_tag_content {
   margin-left: 2px;
 }
 .ss_muted_label_small {
-  font-size: 11px;
+  font-size: 10px;
   color: ${ss_style_muted_label_color};
 }
 
@@ -1788,10 +1788,10 @@ div.ss_box_top_rounded {
 
 .ss_box_title,
 .ss_box_title:visited {
-	color: ${ss_box_title_color};
-	text-decoration:none;
-	font-size: 14px;
-/*	font-weight: bold;  */
+	color: ${ss_box_title_color} !important;
+	text-decoration: none;
+	font-size: 13px;
+	font-weight: normal;
 	letter-spacing: .03em;
 }
 
@@ -1879,7 +1879,9 @@ a:hover.ss_box_prev {
 	padding: 5px 8px 0px 0px;
 	}
 .ss_newpage_box_title {
+	display: inline-block;
 	padding-left: 5px;
+	padding-top: 2px;
 	}
 .ss_newpage_box_next_prev {
 	position:relative;
