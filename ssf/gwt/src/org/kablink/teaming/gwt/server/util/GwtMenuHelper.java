@@ -3975,8 +3975,9 @@ public class GwtMenuHelper {
 
 			// Can the user share this entry?
 			SharingModule sm = bs.getSharingModule();
-			boolean canAddShare        = (isTop && sm.testAddShareEntity(fe));
-			boolean canPublicLinkShare = (isTop && sm.testAddShareEntityPublicLinks(fe));
+			boolean canAddShare          = (isTop && sm.testAddShareEntity(fe));
+			boolean canPublicLinkShare   = (isTop && sm.testAddShareEntityPublicLinks(fe));
+			boolean visibleWithoutShares = GwtShareHelper.visibleWithoutShares(bs, user, fe);
 			if ((!isGuest) && sm.isSharingEnabled() && sm.isSharingPublicLinksEnabled() && (canAddShare || canPublicLinkShare)) {
 				// Yes!  Is it a file entry?
 				if (GwtServerHelper.isFamilyFile(GwtServerHelper.getFolderEntityFamily(bs, fe))) {
@@ -4102,9 +4103,9 @@ public class GwtMenuHelper {
 					markTBIEntityId(actionTBI, fe                                  );
 					dropdownTBI.addNestedItem(actionTBI);
 				}
-				
+
 				// Can the user move this entry?
-				if (((!locked) || isLockedByLoggedInUser) && fe.isTop() && fm.testAccess(fe, FolderOperation.moveEntry)) {
+				if (((!locked) || isLockedByLoggedInUser) && fe.isTop() && fm.testAccess(fe, FolderOperation.moveEntry) && visibleWithoutShares) {
 					// Yes!  Add a move toolbar item for it.
 					actionTBI = new ToolbarItem(MOVE);
 					markTBITitle(   actionTBI, "toolbar.move"                      );
@@ -4226,7 +4227,7 @@ public class GwtMenuHelper {
 				
 				// ...and if the user has any email addresses
 				// ...defined...
-				if (GwtEmailHelper.userHasEmailAddress(user) && GwtShareHelper.visibleWithoutShares(bs, user, fe)) {
+				if (GwtEmailHelper.userHasEmailAddress(user) && visibleWithoutShares) {
 					// ...add a subscribe toolbar item.
 					actionTBI = new ToolbarItem(SUBSCRIBE);
 					markTBITitle(   actionTBI, "toolbar.menu.subscribeToEntrySelected"  );
