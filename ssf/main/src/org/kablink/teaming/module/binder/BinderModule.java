@@ -476,6 +476,12 @@ public interface BinderModule {
 	 * @return
 	 */
 	public SortedSet<Principal> getTeamMembers(Binder binder, boolean explodeGroups);
+	
+	/**
+	 * Return a list of team member ids
+	 */
+	public Set<Long> getTeamMemberIds( Binder binder );
+	
 	/**
 	 * Return a list of team member ids
 	 * @param binderId
@@ -484,6 +490,12 @@ public interface BinderModule {
 	 * @throws AccessControlException
 	 */
 	public Set<Long> getTeamMemberIds(Long binderId, boolean explodeGroups) throws AccessControlException;
+
+	/**
+	 * Return a list of team member ids
+	 */
+	public String getTeamMemberString( Binder binder );
+	
 	/**
 	 * Ordered list of binders by title
 	 * @param id

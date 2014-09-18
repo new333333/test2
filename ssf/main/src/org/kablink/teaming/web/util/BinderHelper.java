@@ -3265,7 +3265,7 @@ public class BinderHelper {
 			if (0 < idList.size())       handleEmailRecipients(handledIds, recipients, idList);
 			if (0 < idListGroups.size()) handleEmailRecipients(handledIds, recipients, idListGroups);
 			if (0 < idListTeams.size())  handleTeamRecipients(handledIds,  recipients, idListTeams, bs.getBinderModule());
-			if (!toTeam.equals(""))      handleEmailRecipients(handledIds, recipients, entry.getParentFolder().getTeamMemberIds());
+			if (!toTeam.equals(""))      handleEmailRecipients(handledIds, recipients, bs.getBinderModule().getTeamMemberIds( entry.getParentFolder() ));
 			
 			if (!recipients.isEmpty()) {
 				try {

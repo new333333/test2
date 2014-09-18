@@ -96,7 +96,7 @@ public class TeamController extends AbstractBinderController {
 				WebKeys.URL_BINDER_ID);
 		Binder binder = getBinderModule().getBinder(binderId);
 		model.put(WebKeys.BINDER, binder);
-		Set memberIds = binder.getTeamMemberIds();
+		Set memberIds = getBinderModule().getTeamMemberIds( binder );
 		//split into users/groups
 		model.put(WebKeys.USERS, getProfileModule().getUsers(memberIds));
 		model.put(WebKeys.GROUPS, getProfileModule().getGroups(memberIds));

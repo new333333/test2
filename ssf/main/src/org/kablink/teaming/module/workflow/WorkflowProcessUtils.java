@@ -78,6 +78,7 @@ import org.kablink.teaming.domain.WorkflowState;
 import org.kablink.teaming.domain.WorkflowSupport;
 import org.kablink.teaming.extension.ExtensionCallback;
 import org.kablink.teaming.extension.ZoneClassManager;
+import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.definition.DefinitionUtils;
 import org.kablink.teaming.module.impl.CommonDependencyInjection;
 import org.kablink.teaming.module.shared.ChangeLogUtils;
@@ -107,6 +108,7 @@ public class WorkflowProcessUtils extends CommonDependencyInjection {
 	protected static BusinessCalendar businessCalendar = new BusinessCalendar();
 	private static WorkflowProcessUtils instance; // A singleton instance
 	private ZoneClassManager zoneClassManager;
+	private BinderModule binderModule;
 	public WorkflowProcessUtils() {
 		if(instance != null)
 			throw new SingletonViolationException(WorkflowProcessUtils.class);
@@ -116,7 +118,24 @@ public class WorkflowProcessUtils extends CommonDependencyInjection {
     public static WorkflowProcessUtils getInstance() {
     	return instance;
     }
-	protected ZoneClassManager getZoneClassManager() {
+
+    /**
+     * 
+     */
+    public BinderModule getBinderModule()
+    {
+    	return binderModule;
+    }
+
+	/**
+	 * 
+	 */
+    public void setBinderModule( BinderModule binderModule )
+    {
+    	this.binderModule = binderModule;
+    }
+    
+    protected ZoneClassManager getZoneClassManager() {
 		return zoneClassManager;
 	}
 	public void setZoneClassManager(ZoneClassManager zoneClassManager) {
@@ -178,7 +197,7 @@ public class WorkflowProcessUtils extends CommonDependencyInjection {
 	    		if ("entryCreator".equals(name) &&  GetterUtil.getBoolean(value, false)) {
 	    			ids.add(wfEntry.getOwnerId());
 	 	    	} else if ("team".equals(name) &&  GetterUtil.getBoolean(value, false)) {
-	 	    		ids.addAll(entity.getParentBinder().getTeamMemberIds());
+	 	    		ids.addAll( getInstance().getBinderModule().getTeamMemberIds( entity.getParentBinder() ));
 		    	} else if ("userGroupNotification".equals(name)) {
 		    		ids.addAll(LongIdUtil.getIdsAsLongSet(value));
 		    	} else if ("condition".equals(name)) {
@@ -499,7 +518,7 @@ public class WorkflowProcessUtils extends CommonDependencyInjection {
 			}
 		}
         if (responders.remove(ObjectKeys.OWNER_USER_ID)) responders.add(entry.getOwnerId());
-     	if (responders.remove(ObjectKeys.TEAM_MEMBER_ID)) responders.addAll(((FolderEntry)entry).getParentBinder().getTeamMemberIds());
+     	if (responders.remove(ObjectKeys.TEAM_MEMBER_ID)) responders.addAll( getInstance().getBinderModule().getTeamMemberIds( ((FolderEntry)entry).getParentBinder() ));
 
 		//See if this question allows folder default
 		if (checkIfQuestionRespondersIncludeForumDefault(entry, ws, question)) {
@@ -507,7 +526,7 @@ public class WorkflowProcessUtils extends CommonDependencyInjection {
 			Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
 	        Set modifyEntries = getInstance().getAccessControlManager().getWorkAreaAccessControl((WorkArea) entry, WorkAreaOperation.MODIFY_ENTRIES);
 	        if (modifyEntries.remove(ObjectKeys.OWNER_USER_ID)) modifyEntries.add(entry.getOwnerId());
-	     	if (modifyEntries.remove(ObjectKeys.TEAM_MEMBER_ID)) modifyEntries.addAll(((FolderEntry)entry).getParentBinder().getTeamMemberIds());
+	     	if (modifyEntries.remove(ObjectKeys.TEAM_MEMBER_ID)) modifyEntries.addAll( getInstance().getBinderModule().getTeamMemberIds( ((FolderEntry)entry).getParentBinder() ));
 	   		//See if this includes All Users
 	        if (allUsersId != null && modifyEntries.contains(allUsersId)) {
 	        	modifyEntries.remove(allUsersId);
@@ -1316,7 +1335,7 @@ public static void resumeTimers(WorkflowSupport entry) {
 										for (Long binderId : binderIds) {
 											try {
 												Binder binder =  getInstance().getCoreDao().loadBinder(binderId, user.getZoneId());
-												result.addPrincipalIds(binder.getTeamMemberIds());
+												result.addPrincipalIds( getInstance().getBinderModule().getTeamMemberIds( binder ));
 											} catch(Exception e) {
 												//If the team binder no longer exists, just skip adding it to the acl
 											}

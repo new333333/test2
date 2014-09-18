@@ -162,7 +162,7 @@ public class AddFolderController extends SAbstractController {
 							emailAddress.add(bccEmailAddress.trim());
 						}
 					}
-					Set teamMemberIds = newBinder.getTeamMemberIds();
+					Set teamMemberIds = getBinderModule().getTeamMemberIds( newBinder );
 					if (!teamMemberIds.isEmpty()) {
 						@SuppressWarnings("unused")
 						Map status = getAdminModule().sendMail(teamMemberIds, null, emailAddress, null, null,

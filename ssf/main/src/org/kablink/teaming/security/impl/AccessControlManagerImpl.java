@@ -399,9 +399,9 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
 			if (user.getId().equals(workArea.getOwnerId())) userApplicationLevelMembersToLookup.add(ObjectKeys.OWNER_USER_ID);
 			Set<Long> teamMembers = null;
 			if (workAreaStart instanceof FolderEntry) {
-				teamMembers = ((FolderEntry)workAreaStart).getParentBinder().getTeamMemberIds();
-			} else {
-				teamMembers = workAreaStart.getTeamMemberIds();
+				teamMembers = getBinderModule().getTeamMemberIds( ((FolderEntry)workAreaStart).getParentBinder() );
+			} else if ( workAreaStart instanceof Binder ){
+				teamMembers = getBinderModule().getTeamMemberIds( (Binder)workAreaStart );
 			}
 			if (teamMembers != null && !Collections.disjoint(teamMembers, userApplicationLevelMembersToLookup)) {
 				userApplicationLevelMembersToLookup.add(ObjectKeys.TEAM_MEMBER_ID);
@@ -711,7 +711,7 @@ public class AccessControlManagerImpl implements AccessControlManager, Initializ
     		Set<Long> teamMemberIds;
     		for(Long teamBinderId:teamBinderIds) {
     			binder = getBinderModule().getBinder(teamBinderId);
-    			teamMemberIds = binder.getTeamMemberIds();
+    			teamMemberIds = getBinderModule().getTeamMemberIds( binder );
     	    	if(!Collections.disjoint(teamMemberIds, userMembers))
     	    		return true;
     		}

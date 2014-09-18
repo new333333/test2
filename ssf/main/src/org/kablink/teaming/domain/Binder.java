@@ -56,12 +56,10 @@ import org.kablink.teaming.modelprocessor.InstanceLevelProcessorSupport;
 import org.kablink.teaming.module.definition.DefinitionModule;
 import org.kablink.teaming.security.function.WorkArea;
 import org.kablink.teaming.security.function.WorkAreaOperation;
-import org.kablink.teaming.util.LongIdUtil;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.web.util.DefinitionHelper;
 import org.kablink.teaming.web.util.NetFolderHelper;
 import org.kablink.util.Validator;
-import org.kablink.util.search.Constants;
 
 /**
  * This object represents a container.
@@ -1393,24 +1391,7 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
     public void setTeamMembershipInherited(boolean teamMembershipInherited) {
     	this.teamMembershipInherited = teamMembershipInherited;
     }
-    /**
-     * Return the team member ids
-     * @return
-     */
-    @Override
-	public Set<Long> getTeamMemberIds() {
-    	if (!isRoot() && isTeamMembershipInherited()) return getParentBinder().getTeamMemberIds();
-    	String members = (String)getProperty(ObjectKeys.BINDER_PROPERTY_TEAM_MEMBERS);
-    	return LongIdUtil.getIdsAsLongSet(members);
-    	
-    }
-     @Override
-	public void setTeamMemberIds(Set<Long> memberIds) {
-    	//setting inherited flag handled separate
-    	if ((memberIds == null) || memberIds.isEmpty()) removeProperty(ObjectKeys.BINDER_PROPERTY_TEAM_MEMBERS);
-    	else setProperty(ObjectKeys.BINDER_PROPERTY_TEAM_MEMBERS, LongIdUtil.getIdsAsString(memberIds));
-     }
-     
+    
      @Override
 	public boolean isExtFunctionMembershipInherited() {
      	 if (isRoot()) return false;
@@ -1427,17 +1408,6 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
      
      /*****************End WorkArea interface stuff***********/
     
-     /**
-      * Return acl index string representing team membership
-      * @return
-      */
-     public String getTeamMemberString() {
-     	if (!isRoot() && isTeamMembershipInherited()) return getParentBinder().getTeamMemberString();
-     	String members = (String)getProperty(ObjectKeys.BINDER_PROPERTY_TEAM_MEMBERS);
-     	if (Validator.isNull(members)) return Constants.EMPTY_ACL_FIELD;
-     	return members;
-     	
-     }
     /*****************InstanceLevelProcessorSupport interface stuff***********/
     @Override
 	public String getProcessorClassName(String processorKey) {

@@ -523,6 +523,11 @@ protected void modifyEntry_indexAdd(Binder binder, Entry entry,
         	{
         		entryData.put( ObjectKeys.FIELD_GROUP_LDAP_CONTAINER, inputData.getSingleObject( ObjectKeys.FIELD_GROUP_LDAP_CONTAINER ) );
         	}
+
+        	if ( inputData.exists( ObjectKeys.FIELD_GROUP_TYPE ) && !entryData.containsKey( ObjectKeys.FIELD_GROUP_TYPE ) )
+        	{
+        		entryData.put( ObjectKeys.FIELD_GROUP_TYPE, inputData.getSingleObject( ObjectKeys.FIELD_GROUP_TYPE ) );
+        	}
     	}
     	
     	if(entry instanceof UserPrincipal) {

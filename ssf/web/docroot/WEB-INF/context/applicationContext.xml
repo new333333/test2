@@ -885,6 +885,7 @@
 
 	<bean id="workflowProcessUtils" parent="dependOnCommonServicesTemplate"  class="org.kablink.teaming.module.workflow.WorkflowProcessUtils">
 		<property name="zoneClassManager"><ref bean="zoneClassManager"/></property>
+		<property name="binderModule"><ref bean="binderModule"/></property>
 	</bean>
 
 	<bean id="dashboardModule" parent="moduleTransactionProxy">
@@ -915,6 +916,7 @@
 		<property name="icalModule"><ref bean="icalModule"/></property>
 		<property name="smtpService"><ref bean="smtpService"/></property>
 		<property name="definitionBuilderConfig"><ref bean="definitionBuilderConfig"/></property>		
+		<property name="binderModule"><ref bean="binderModule"/></property>
 
 	</bean>
 	<bean id="notifyBuilderUtil" class="org.kablink.teaming.module.definition.notify.NotifyBuilderUtil">
