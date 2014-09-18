@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -30,29 +30,15 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.spring.beans.factory.config;
+package org.kablink.teaming.util;
 
-import java.io.IOException;
 import java.util.Properties;
 
-import org.kablink.teaming.util.PropertiesClassPathConfigFiles;
+/**
+ * @author jong
+ *
+ */
+public interface PropertiesSource {
 
-public class PropertyPlaceholderConfigurer 
-	extends org.springframework.beans.factory.config.PropertyPlaceholderConfigurer {
-
-	private PropertiesClassPathConfigFiles rawSsfProperties;
-
-	public void setRawSsfProperties(PropertiesClassPathConfigFiles rawSsfProperties) {
-		this.rawSsfProperties = rawSsfProperties;
-	}
-
-	/**
-	 * Overrides super class's method so that it obtains properties from
-	 * the ssf properties file(s) accessed through SSPropsUtil class.
-	 * This effectively means that the properties files (if any) specified by
-	 * <code>setLocation</code> or <code>setLocations</code> method is ignored.
-	 */
-	protected Properties mergeProperties() throws IOException {
-		return rawSsfProperties.getProperties();
-	}
+	Properties getProperties();
 }

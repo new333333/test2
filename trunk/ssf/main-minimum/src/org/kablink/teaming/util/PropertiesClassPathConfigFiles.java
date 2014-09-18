@@ -38,7 +38,7 @@ import java.util.Properties;
 import org.springframework.beans.factory.InitializingBean;
 
 public class PropertiesClassPathConfigFiles extends ClassPathConfigFiles
-	implements InitializingBean {
+	implements PropertiesSource, InitializingBean {
 	
 	private Properties props;
 	
@@ -62,6 +62,7 @@ public class PropertiesClassPathConfigFiles extends ClassPathConfigFiles
         }
     }
 
+    @Override
     public Properties getProperties() {
     	return props;
     }

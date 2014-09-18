@@ -51,20 +51,26 @@ public class PropertyEncrypt extends Properties {
 	// The bottom line: This is NOT a general-purpose properties implementation.
 	private static final long serialVersionUID = 1L;
 
-	// We use "ENC2(" to signal new algorithm
-    private static final String PREFIX = "ENC2(";
-    private static final String SUFFIX = ")";
+	// We use "ENC2(" to signal second generation algorithm
+    private static final String PREFIX_SECOND_GEN = "ENC2(";
+    private static final String SUFFIX_SECOND_GEN = ")";
 
-    private static final String PREFIX_PRE_FILR_1_0 = "ENC(";
-    private static final String SUFFIX_PRE_FILR_1_0 = ")";
+    // We use "ENC(" to signal first generation algorithm
+    // NOTE: Sometimes no prefix is used in conjunction with first generation algorithm as in Hibernate managed encrypted columns.
+    private static final String PREFIX_FIRST_GEN = "ENC(";
+    private static final String SUFFIX_FIRST_GEN = ")";
 
-	private StringEncryptor stringEncryptor;
-	private StringEncryptor stringEncryptor_preFilr1_0;
+    // Current encryptor (may be first or second generation) - Required
+	private ExtendedPBEStringEncryptor stringEncryptor;
+	// First generation encryptor - Optional (may be null)
+	private StringEncryptor stringEncryptor_first_gen;
 	
-	public PropertyEncrypt(Properties props, StringEncryptor stringEncryptor, StringEncryptor stringEncryptor_preFilr1_0) {
+	public PropertyEncrypt(Properties props, ExtendedPBEStringEncryptor stringEncryptor, StringEncryptor stringEncryptor_first_gen) {
 		super(props);
+		if(stringEncryptor == null)
+			throw new IllegalArgumentException("Current encryptor must be supplied");
 		this.stringEncryptor = stringEncryptor;
-		this.stringEncryptor_preFilr1_0 = stringEncryptor_preFilr1_0;
+		this.stringEncryptor_first_gen = stringEncryptor_first_gen;
 	}
 	
 	@Override
@@ -76,7 +82,6 @@ public class PropertyEncrypt extends Properties {
     public String getProperty(String key, String defaultVal) {
         return decode(super.getProperty(key, defaultVal));
     }
-
 	
 	protected synchronized String decode(String encodedVal) {
 		if(encodedVal == null)
@@ -87,13 +92,24 @@ public class PropertyEncrypt extends Properties {
 		if(encodedVal.length() == 0)
 			return encodedVal;
 		
-		if(isEncrypted(encodedVal)) {
+		if(isEncrypted_second_gen(encodedVal)) {
 			// Encrypted using new algorithm
-			return stringEncryptor.decrypt(getBaseEncryptedValue(encodedVal));
+			if(stringEncryptor.getGeneration() == 2)			
+				return stringEncryptor.decrypt(getBaseEncryptedValue_second_gen(encodedVal));
+			else
+				throw new RuntimeException("Cannot decode second generation encoded value using first generation encryptor. System supports encryptor upgrade but not downgrade.");
 		}
-		else if(isEncrypted_preFilr1_0(encodedVal)) {
+		else if(isEncrypted_first_gen(encodedVal)) {
 			// Encrypted using old algorithm
-			return stringEncryptor_preFilr1_0.decrypt(getBaseEncryptedValue_preFilr1_0(encodedVal));			
+			if(stringEncryptor_first_gen != null) {
+				return stringEncryptor_first_gen.decrypt(getBaseEncryptedValue_first_gen(encodedVal));		
+			}
+			else {
+				if(stringEncryptor.getGeneration() == 2)			
+					throw new RuntimeException("Cannot decode first generation encoded value because system is only configured with second generation encryptor.");
+				else
+					return stringEncryptor.decrypt(getBaseEncryptedValue_first_gen(encodedVal));		
+			}
 		}
 		else {
 			// Not encrypted
@@ -105,30 +121,36 @@ public class PropertyEncrypt extends Properties {
     	throw new UnsupportedOperationException("I don't support serialization");
     }
     
-	public static boolean isEncrypted(String propVal) {
+    /// Static Methods ///
+    
+	public static boolean isEncrypted_second_gen(String propVal) {
 		if(propVal == null)
 			return false;
 		propVal = propVal.trim();
-		return (propVal.startsWith(PREFIX) && propVal.endsWith(SUFFIX));
+		return (propVal.startsWith(PREFIX_SECOND_GEN) && propVal.endsWith(SUFFIX_SECOND_GEN));
 	}
 	
-	public static boolean isEncrypted_preFilr1_0(String propVal) {
+	public static boolean isEncrypted_first_gen(String propVal) {
 		if(propVal == null)
 			return false;
 		propVal = propVal.trim();
-		return (propVal.startsWith(PREFIX_PRE_FILR_1_0) && propVal.endsWith(SUFFIX_PRE_FILR_1_0));		
+		return (propVal.startsWith(PREFIX_FIRST_GEN) && propVal.endsWith(SUFFIX_FIRST_GEN));		
 	}
 	
-	public static String getBaseEncryptedValue(String encodedPropVal) {
-        return encodedPropVal.substring(PREFIX.length(), (encodedPropVal.length() - SUFFIX.length()));	
+	public static String getBaseEncryptedValue_second_gen(String encodedPropVal) {
+        return encodedPropVal.substring(PREFIX_SECOND_GEN.length(), (encodedPropVal.length() - SUFFIX_SECOND_GEN.length()));	
 	}
 	
-	public static String getBaseEncryptedValue_preFilr1_0(String encodedPropVal) {
-        return encodedPropVal.substring(PREFIX_PRE_FILR_1_0.length(), (encodedPropVal.length() - SUFFIX_PRE_FILR_1_0.length()));	
+	public static String getBaseEncryptedValue_first_gen(String encodedPropVal) {
+        return encodedPropVal.substring(PREFIX_FIRST_GEN.length(), (encodedPropVal.length() - SUFFIX_FIRST_GEN.length()));	
 	}
 	
-	public static String getDecoratedEncryptedValue(String encVal) {
-		return PREFIX+ encVal + SUFFIX;
+	public static String getDecoratedEncryptedValue_first_gen(String encVal) {
+		return PREFIX_FIRST_GEN + encVal + SUFFIX_FIRST_GEN;
+	}
+	
+	public static String getDecoratedEncryptedValue_second_gen(String encVal) {
+		return PREFIX_SECOND_GEN + encVal + SUFFIX_SECOND_GEN;
 	}
 	
 }
