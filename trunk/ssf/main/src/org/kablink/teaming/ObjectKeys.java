@@ -790,6 +790,7 @@ public interface ObjectKeys {
     public static final String FIELD_GROUP_PRINCIPAL_MEMBERS="members";
     public static final String FIELD_PRINCIPAL_THEME="theme";
     public static final String FIELD_GROUP_LDAP_CONTAINER="ldapContainer";
+    public static final String FIELD_GROUP_TYPE="groupType";
     public static final String TASK_FIELD_ASSIGNMENT="assignment";
     public static final String TASK_FIELD_EVENT="start_end#LogicalEndDate";
     public static final String FIELD_TEMPLATE_TITLE="templateTitle";

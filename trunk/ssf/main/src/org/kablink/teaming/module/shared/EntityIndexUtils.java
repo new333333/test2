@@ -81,6 +81,7 @@ import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.fi.connection.ResourceDriver;
 import org.kablink.teaming.fi.connection.ResourceDriverManager;
+import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.definition.DefinitionUtils;
 import org.kablink.teaming.module.workflow.WorkflowUtils;
 import org.kablink.teaming.search.BasicIndexUtils;
@@ -114,8 +115,21 @@ public class EntityIndexUtils {
     public static final String DEFAULT_NOTITLE_TITLE = "---";
     
     private static final int DEFAULT_MAX_EVENT_DAYS	= 3650;	// (365 * 10) = 3650:  ~10 years.
-        
-    public static void addTitle(Document doc, DefinableEntity entry, boolean fieldsOnly) {
+    
+    private static BinderModule m_binderModule = null;
+    
+    /**
+     * 
+     */
+	private static BinderModule getBinderModule()
+	{
+		if ( m_binderModule == null )
+			m_binderModule = (BinderModule) SpringContextUtil.getBean("binderModule");
+
+		return m_binderModule;
+	}
+
+	public static void addTitle(Document doc, DefinableEntity entry, boolean fieldsOnly) {
         // Add the title field
     	if (entry.getTitle() != null) {
     		String title = entry.getTitle();
@@ -683,7 +697,7 @@ public class EntityIndexUtils {
     }
     public static String getFolderTeamAclString(Binder binder) {
     	Long allUsersId = Utils.getAllUsersGroupId();
-    	Set teamList = binder.getTeamMemberIds();  
+    	Set teamList = getBinderModule().getTeamMemberIds( binder );  
     	//Note: condition acls are not needed here 
     	//  since these get paired with _folderAcl:team which does have any conditions applied
     	if (teamList.contains(allUsersId)) {
@@ -948,8 +962,8 @@ public class EntityIndexUtils {
    		//add Team 
    		//  Don't need to add conditions since this is paired with _folderAcl:team which does have conditions applied
    		acl = parent.addElement(Constants.TEAM_ACL_FIELD);
-   		String tms = binder.getTeamMemberString();
-   		if (binder.getTeamMemberIds().contains(allUsersId)) {
+   		String tms = getBinderModule().getTeamMemberString( binder );
+   		if ( getBinderModule().getTeamMemberIds( binder ).contains(allUsersId)) {
    			tms = tms + " " + Constants.READ_ACL_GLOBAL + " " + Constants.READ_ACL_ALL;
    		}
    		acl.setText(tms);

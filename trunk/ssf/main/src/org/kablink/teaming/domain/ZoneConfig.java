@@ -345,14 +345,6 @@ public void setExtFunctionMembershipInherited(boolean extFunctionMembershipInher
 	public boolean isTeamMembershipInherited() {
     	return false;
     }
-	@Override
-	public Set<Long> getTeamMemberIds() {
-    	return new HashSet();
-    }
-    @Override
-	public void setTeamMemberIds(Set<Long> memberIds) {
-    	
-    }
     @Override
 	public Set<Long> getChildWorkAreas() {
     	return new HashSet();

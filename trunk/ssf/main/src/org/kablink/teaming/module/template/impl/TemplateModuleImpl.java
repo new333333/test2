@@ -722,7 +722,7 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 		XmlUtils.addProperty(element, ObjectKeys.XTAG_BINDER_INHERITTEAMMEMBERS, binder.isTeamMembershipInherited());
 		if (!binder.isTeamMembershipInherited()) {
 			//store as names, not ids
-			Set<Long> ids = binder.getTeamMemberIds();
+			Set<Long> ids = getBinderModule().getTeamMemberIds( binder );
 			List<UserPrincipal> members = getProfileDao().loadUserPrincipals(ids, binder.getZoneId(), true);
 			for (Principal p:members) {
 				XmlUtils.addProperty(element, ObjectKeys.XTAG_BINDER_TEAMMEMBER_NAME, p.getName());	    				 

@@ -2011,9 +2011,10 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 		Set<Long> userIds = new HashSet(ids);
 		//get team members
 		if (teamIds != null && !teamIds.isEmpty()) {
+			BinderModule binderModule = getBinderModule();
 			List<Binder> teams = getCoreDao().loadObjects(teamIds, Binder.class, user.getZoneId());
 			for (Binder t:teams) {
-				userIds.addAll(t.getTeamMemberIds());
+				userIds.addAll( binderModule.getTeamMemberIds( t ) );
 			}
 		}
 		boolean removedAllUsersGroup = checkIfRemovedSendToAllUsers(userIds);

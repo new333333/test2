@@ -1927,7 +1927,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     }
      @Override
 	public void indexTeamMembership(Binder binder, boolean cascade) {
-    	String value = binder.getTeamMemberString();
+    	String value = getBinderModule().getTeamMemberString( binder );
     	if (cascade) {
     		Map params = new HashMap();
     		params.put("functionTest", Boolean.FALSE);
@@ -2695,7 +2695,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     	// Add search document type
         BasicIndexUtils.addDocType(indexDoc, Constants.DOC_TYPE_BINDER, fieldsOnly);
         //used to answer what teams am I a member of
-       	if (!binder.isTeamMembershipInherited()) EntityIndexUtils.addTeamMembership(indexDoc, binder.getTeamMemberIds(), fieldsOnly);
+       	if (!binder.isTeamMembershipInherited()) EntityIndexUtils.addTeamMembership(indexDoc, getBinderModule().getTeamMemberIds( binder ), fieldsOnly);
 
         // Add the events
         EntityIndexUtils.addEvents(indexDoc, binder, fieldsOnly);
@@ -3121,7 +3121,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 			XmlUtils.addProperty(element, ObjectKeys.XTAG_BINDER_INHERITDEFINITIONS, binder.isDefinitionsInherited());
 			XmlUtils.addProperty(element, ObjectKeys.XTAG_BINDER_INHERITTEAMMEMBERS, binder.isTeamMembershipInherited());
 			XmlUtils.addProperty(element, ObjectKeys.XTAG_BINDER_UNIQUETITLES, binder.isUniqueTitles());
-			XmlUtils.addProperty(element, ObjectKeys.XTAG_BINDER_TEAMMEMBERS, LongIdUtil.getIdsAsString(binder.getTeamMemberIds()));
+			XmlUtils.addProperty(element, ObjectKeys.XTAG_BINDER_TEAMMEMBERS, LongIdUtil.getIdsAsString( getBinderModule().getTeamMemberIds( binder )));
 			if (!binder.isFunctionMembershipInherited()) {
 				List<WorkAreaFunctionMembership> wfms = getWorkAreaFunctionMembershipManager().findWorkAreaFunctionMemberships(
 						binder.getZoneId(), binder);
