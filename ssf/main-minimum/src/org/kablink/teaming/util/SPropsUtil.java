@@ -81,7 +81,7 @@ public class SPropsUtil extends PropsUtil implements InitializingBean {
 		instance = this;
 	}
 	
-    public void setConfig(PropertiesClassPathConfigFiles config) {
+    public void setConfig(PropertiesSource config) {
     	setProperties(config.getProperties());
     }
 
