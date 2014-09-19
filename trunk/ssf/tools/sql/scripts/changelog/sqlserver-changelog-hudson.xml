@@ -10,4 +10,13 @@
         </addColumn>
     </changeSet>
 
+    <changeSet author="jong" context="schema" failOnError="true" id="2">
+        <comment>Association with a team group</comment>
+        <addColumn tableName="SS_Forums">
+            <column name="teamGroupId" type="NUMERIC(19,0)">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>

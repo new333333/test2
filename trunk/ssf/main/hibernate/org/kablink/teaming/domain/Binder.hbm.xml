@@ -36,6 +36,7 @@
     <property name="allowDesktopAppToTriggerInitialHomeFolderSync" access="field"/>
     <property name="useInheritedDesktopAppTriggerSetting" access="field"/>
     <property name="resourceHandle" length="128" />
+    <property name="teamGroupId" />
     <many-to-one name="parentBinder">
           <column name="parentBinder" index="owningBinder_Binder"/>
     </many-to-one>
