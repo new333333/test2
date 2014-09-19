@@ -757,6 +757,13 @@ public interface BinderModule {
 		throws AccessControlException;
 	public void setTeamMembershipInherited(Long binderId, boolean inherit, boolean doAccessCheck)
 		throws AccessControlException;
+	
+	/**
+	 * Upgrade the team membership by moving the team membership from being stored in a property
+	 * on a binder to being stored in a "team group".  Do this for all binders.
+	 */
+	public void upgradeTeamMembership();
+	
     /**
      * Sets a binder's My Files indicator
      * @param binderId

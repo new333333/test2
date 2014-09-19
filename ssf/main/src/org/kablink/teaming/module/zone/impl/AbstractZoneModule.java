@@ -711,6 +711,9 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 					// In other word, this process is necessary only if user is upgrading from Granite to Hudson.
 					getProfileModule().upgradeVibeGraniteExternalUsers(); // Upgrade Vibe Granite external users.
 				}
+				
+				// Upgrade team membership.
+				getBinderModule().upgradeTeamMembership();
 			}
 		}
   	}
