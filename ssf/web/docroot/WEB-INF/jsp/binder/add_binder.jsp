@@ -166,7 +166,7 @@ function ss_showAddBinderOptions() {
 			formObj['inheritFromParent'].value = 'yes'
 		}
 		//Turn on/off announce div
-		var ss_teamMembersListEmpty = "${empty ssBinder.teamMemberIds}";
+		var ss_teamMembersListEmpty = "${empty ssBinderTeamMemberIds}";
 		var announceDivObj = document.getElementById('ss_addBinderAnnounceDiv');
 		if (announceDivObj != null) {
 			if (ss_addBinderOperation == 'add_team_workspace' || 

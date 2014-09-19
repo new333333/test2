@@ -2741,7 +2741,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 			return;
 		//See if the guest user is included in the list
 		User guest = getProfileModule().getGuestUser();
-		if (memberIds.contains(guest.getId())) {
+		if ( memberIds != null && memberIds.contains(guest.getId())) {
 			//If adding guest to a team, the user must be allowed to do it from the zone
 			Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
 			ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(zoneId);
