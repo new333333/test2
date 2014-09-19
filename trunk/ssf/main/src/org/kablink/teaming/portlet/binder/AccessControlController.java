@@ -261,6 +261,7 @@ public class AccessControlController extends AbstractBinderController {
 				model.put(WebKeys.ACCESS_CONTROL_CONFIGURE_ALLOWED, configureAccess);
 				model.put(WebKeys.DEFINITION_ENTRY, entry);
 				model.put(WebKeys.BINDER, entry.getParentBinder());
+				model.put( WebKeys.BINDER_TEAM_MEMBER_IDS, getBinderModule().getTeamMemberIds( entry.getParentBinder() ) );
 				
 			} else {
 				Binder binder = getBinderModule().getBinder(workAreaId);			
@@ -268,6 +269,7 @@ public class AccessControlController extends AbstractBinderController {
 				BinderHelper.buildNavigationLinkBeans(this, binder, model);
 				wArea = binder;
 				model.put(WebKeys.BINDER, binder);
+				model.put( WebKeys.BINDER_TEAM_MEMBER_IDS, getBinderModule().getTeamMemberIds( binder ) );
 				model.put(WebKeys.DEFINITION_ENTRY, binder);
 				model.put(WebKeys.ACCESS_SUPER_USER, AccessUtils.getZoneSuperUser(binder.getZoneId()));
 				model.put(WebKeys.ACCESS_CONTROL_CONFIGURE_ALLOWED, 
