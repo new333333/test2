@@ -2463,12 +2463,12 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
     	String desc;
 		HashMap<String, Object> inputMap = new HashMap<String, Object>();
 		Group newGroup = null;
-		short groupType;
+		GroupType groupType;
 		
 		name = binder.getId() + ":teamGroup";
 		title = name;
-		desc = "Holds team membership for binder: " + binder.getId();
-		groupType = GroupType.team.getValue();
+		desc = "Holds team membership for binder: " + binder.getId() + "\n" + binder.getTitle() + "\n(" + binder.getPathName() + ")";
+		groupType = GroupType.team;
 		
 		inputMap.put( ObjectKeys.FIELD_PRINCIPAL_NAME, name );
 		inputMap.put( ObjectKeys.FIELD_ENTITY_TITLE, title );
@@ -2563,10 +2563,12 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
     		return getTeamMemberIds( binder.getParentBinder() );
     	
     	//!!!
-    	boolean useTeamGroups;
-    	useTeamGroups = SPropsUtil.getBoolean( "use.teamGroups", false );
-    	if ( useTeamGroups == false )
-    		return getTeamMemberIdsDeprecated( binder );
+    	{
+	    	boolean useTeamGroups;
+	    	useTeamGroups = SPropsUtil.getBoolean( "use.teamGroups", false );
+	    	if ( useTeamGroups == false )
+	    		return getTeamMemberIdsDeprecated( binder );
+    	}
     	
     	setOfMemberIds = new HashSet<Long>();
 
@@ -2796,12 +2798,15 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		Group teamGroup;
 		SortedSet<Principal> principals;
 
-		boolean useTeamGroups = false;
-		useTeamGroups = SPropsUtil.getBoolean( "use.teamGroups", false );
-		if ( useTeamGroups == false )
+		//!!!
 		{
-			setTeamMembersDeprecated( binder, memberIds );
-			return;
+			boolean useTeamGroups = false;
+			useTeamGroups = SPropsUtil.getBoolean( "use.teamGroups", false );
+			if ( useTeamGroups == false )
+			{
+				setTeamMembersDeprecated( binder, memberIds );
+				return;
+			}
 		}
 		
 		teamGroup = getTeamGroup( binder );
@@ -2845,6 +2850,127 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 				teamGroup = null;
 			}
 		}
+	}
+	
+	/**
+	 * Find all binders that have team membership defined in a property on the binder and the
+	 * team membership is not inherited and there is at least one member defined in the team. 
+	 */
+	private ArrayList<Binder> findAllBindersWithTeamMembershipDeprecated()
+	{
+		ArrayList<Binder> listOfBinders;
+		List<Map> mapOfBinders;
+		
+		listOfBinders = new ArrayList<Binder>();
+		
+		// Find all binders
+		{
+			List<String> fieldNames;
+
+			// We use search engine to get the list of binders.
+			Criteria crit = new Criteria().add(
+											eq( Constants.DOC_TYPE_FIELD, Constants.DOC_TYPE_BINDER ) )
+											.addOrder( new Order( Constants.SORT_TITLE_FIELD, true ) );
+	
+			QueryBuilder qb = new QueryBuilder( true, false );
+			SearchObject so = qb.buildQuery( crit.toQuery() );
+	
+			fieldNames = SearchUtils.fieldNamesList(
+												Constants.DOCID_FIELD,
+												Constants.ENTITY_PATH,
+												Constants.TITLE_FIELD,
+												Constants.ENTITY_FIELD );
+	
+			Hits hits = executeLuceneQueryInternal(
+												so,
+												Constants.SEARCH_MODE_SELF_CONTAINED_ONLY,
+												0,
+												Integer.MAX_VALUE,
+												fieldNames );
+			if ( hits == null )
+				return listOfBinders;
+			
+			mapOfBinders = SearchUtils.getSearchEntries( hits );
+		}
+		
+		// Look for binders that have team membership
+		{
+			Iterator<Map> teamsIter;
+			
+			teamsIter = mapOfBinders.iterator();
+			while ( teamsIter.hasNext() )
+			{
+				Map binderMap;
+				String binderId;
+				Binder binder;
+				Set<Long> membership;
+
+				binderMap = teamsIter.next();
+				binderId = (String) binderMap.get( Constants.DOCID_FIELD );
+				binder = getBinderWithoutAccessCheck( Long.valueOf( binderId ) );
+				
+				// Does this binder have team membership defined?
+				membership = getTeamMemberIdsDeprecated( binder );
+				if ( membership != null && membership.size() > 0 )
+				{
+					// Yes
+					listOfBinders.add( binder );
+				}
+			}
+		}
+		
+		return listOfBinders;
+	}
+	
+	/**
+	 * Copy the team membership that is stored in a property on the given binder and create a
+	 * "team group" and store the team membership in that group.
+	 */
+	private void upgradeTeamMembership( Binder binder )
+	{
+		Set<Long> teamMemberIds;
+		
+		if ( binder == null )
+			return;
+		
+		logger.info( "Upgrading team membership for binder: " + binder.getTitle() + " (" + binder.getPathName() + " )" );
+
+		// Get the team membership that is stored in a property on the binder.
+		teamMemberIds = getTeamMemberIdsDeprecated( binder );
+		
+		if ( teamMemberIds != null && teamMemberIds.size() > 0 )
+			setTeamMembers( binder, teamMemberIds );
+		
+		// Remove the team membership from the property
+		binder.removeProperty( ObjectKeys.BINDER_PROPERTY_TEAM_MEMBERS );
+	}
+	
+	/**
+	 * Find all binders that have team membership defined in a property on the binder
+	 * and copy the team membership into a "team group".
+	 * 
+	 * Delete the team membership that is stored in a property on the binder.
+	 */
+	@Override
+	public void upgradeTeamMembership()
+	{
+		ArrayList<Binder> listOfBinders;
+		
+		logger.info( "Upgrading team membership..." );
+		
+		// Find all binders that are not inheriting team membership and have a least one team member
+		listOfBinders = findAllBindersWithTeamMembershipDeprecated();
+		
+		if ( listOfBinders != null )
+		{
+			for ( Binder nextBinder : listOfBinders )
+			{
+				// Move the team membership into a "team group"
+				upgradeTeamMembership( nextBinder );
+			}
+		}
+		
+		logger.info( "Finished upgrading team membership" );
 	}
 
 	// return binders this user is a team_member of
