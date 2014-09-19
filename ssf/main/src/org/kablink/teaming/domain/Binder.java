@@ -184,6 +184,8 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
     protected Boolean useInheritedIndexContent = Boolean.TRUE;
     protected Boolean useInheritedJitsSettings = Boolean.TRUE;
     protected Boolean useInheritedDesktopAppTriggerSetting = Boolean.TRUE;
+    
+    protected Long teamGroupId;
 
     private ResourceDriver resolvedDriver; // To avoid having to resolve multiple times for same binder instance
     
@@ -1498,4 +1500,12 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
     public boolean supportsCustomFields() {
     	return !this.isAclExternallyControlled();
     }
+    
+	public Long getTeamGroupId() {
+		return teamGroupId;
+	}
+	public void setTeamGroupId(Long teamGroupId) {
+		this.teamGroupId = teamGroupId;
+	}
+    
 }

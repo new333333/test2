@@ -107,6 +107,7 @@ import org.kablink.teaming.module.file.FilterException;
 import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.impl.CommonDependencyInjection;
+import org.kablink.teaming.module.profile.processor.ProfileCoreProcessor;
 import org.kablink.teaming.module.report.ReportModule;
 import org.kablink.teaming.module.rss.RssModule;
 import org.kablink.teaming.module.shared.AccessUtils;
@@ -1261,6 +1262,18 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 	    
     	//remove share items associated with this binder or with any entries within this binder
     	getCoreDao().purgeShares(binder, true);
+    	
+    	// Unlike regular group, team group's life cycle is bound by the binder that owns it.
+    	// Remove team group, if exists, owned by this binder.
+    	if(binder.getTeamGroupId() != null) {
+    		Principal teamGroup = getProfileDao().loadPrincipal(binder.getTeamGroupId(), RequestContextHolder.getRequestContext().getZoneId(), false);
+    		ProfileCoreProcessor profileProcessor = (ProfileCoreProcessor) getProcessorManager().getProcessor(teamGroup.getParentBinder(), ProfileCoreProcessor.PROCESSOR_KEY);
+    		try {
+				profileProcessor.deleteEntry(teamGroup.getParentBinder(), teamGroup, false, null);
+			} catch (WriteFilesException e) {
+				logger.error("Error deleting team group '" + teamGroup.getId() + "' owned by binder '" + binder.getId() + "'", e);
+			}
+    	}
     }
   
     
