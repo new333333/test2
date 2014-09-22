@@ -45,7 +45,10 @@ import java.net.URLDecoder;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.X509Certificate;
+import java.text.Collator;
 import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.RuleBasedCollator;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -89,13 +92,11 @@ import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.document.DateTools;
-
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.Node;
 import org.dom4j.io.OutputFormat;
-
 import org.kablink.teaming.GroupExistsException;
 import org.kablink.teaming.IllegalCharacterInNameException;
 import org.kablink.teaming.ObjectKeys;
@@ -658,7 +659,8 @@ public class GwtServerHelper {
 	 * Inner class used to compare two TreeInfo's.
 	 */
 	private static class TreeInfoComparator implements Comparator<TreeInfo> {
-		private boolean m_ascending;	//
+		private boolean				m_ascending;	//
+		private RuleBasedCollator	m_collator;		//
 
 		/**
 		 * Class constructor.
@@ -667,6 +669,16 @@ public class GwtServerHelper {
 		 */
 		public TreeInfoComparator(boolean ascending) {
 			m_ascending = ascending;
+			
+			Collator baseCollator = Collator.getInstance(RequestContextHolder.getRequestContext().getUser().getLocale());
+			RuleBasedCollator defaultCollator = ((RuleBasedCollator) baseCollator);
+			String rules = defaultCollator.getRules();
+			try {
+				m_collator = new RuleBasedCollator(rules.replaceAll("<'\u005f'", "<' '<'\u005f'"));
+			}
+			catch (ParseException e) {
+				m_collator = defaultCollator;
+			}
 		}
 
 		/**
@@ -689,8 +701,8 @@ public class GwtServerHelper {
 
 			int reply;
 			if (m_ascending)
-			     reply = MiscUtil.safeSColatedCompare(title1, title2);
-			else reply = MiscUtil.safeSColatedCompare(title2, title1);
+			     reply = MiscUtil.safeSColatedCompare(title1, title2, m_collator);
+			else reply = MiscUtil.safeSColatedCompare(title2, title1, m_collator);
 			return reply;
 		}
 	}
