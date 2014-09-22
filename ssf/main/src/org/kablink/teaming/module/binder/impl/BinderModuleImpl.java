@@ -141,6 +141,8 @@ import org.kablink.teaming.module.shared.ObjectBuilder;
 import org.kablink.teaming.module.shared.SearchUtils;
 import org.kablink.teaming.module.sharing.SharingModule;
 import org.kablink.teaming.module.workflow.WorkflowModule;
+import org.kablink.teaming.runas.RunasCallback;
+import org.kablink.teaming.runas.RunasTemplate;
 import org.kablink.teaming.runasync.RunAsyncCallback;
 import org.kablink.teaming.runasync.RunAsyncManager;
 import org.kablink.teaming.search.IndexErrors;
@@ -2456,68 +2458,115 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
     /**
      * Create a "team group" for the given binder.
      */
-    private Group createTeamGroup( Binder binder )
+    private Group createTeamGroup( final Binder binder )
     {
-    	String name;
-    	String title;
-    	String desc;
-		HashMap<String, Object> inputMap = new HashMap<String, Object>();
-		Group newGroup = null;
-		GroupType groupType;
-		
-		name = binder.getId() + ":teamGroup";
-		title = name;
-		desc = "Holds team membership for binder: " + binder.getId() + "\n" + binder.getTitle() + "\n(" + binder.getPathName() + ")";
-		groupType = GroupType.team;
-		
-		inputMap.put( ObjectKeys.FIELD_PRINCIPAL_NAME, name );
-		inputMap.put( ObjectKeys.FIELD_ENTITY_TITLE, title );
-		inputMap.put( ObjectKeys.FIELD_ENTITY_DESCRIPTION, desc );
-		inputMap.put( ObjectKeys.FIELD_ENTITY_DESCRIPTION_FORMAT, String.valueOf( Description.FORMAT_NONE ) );  
-		inputMap.put( ObjectKeys.FIELD_GROUP_DYNAMIC, Boolean.FALSE );
-		inputMap.put( ObjectKeys.FIELD_GROUP_LDAP_QUERY, null );
-		inputMap.put( ObjectKeys.FIELD_GROUP_TYPE, groupType );
+		RunasCallback callback;
+		Object retValue;
 
-		// Add the identity information.
-		IdentityInfo identityInfo = new IdentityInfo();
-		identityInfo.setFromLocal( true );
-		identityInfo.setInternal( false );
-		inputMap.put( ObjectKeys.FIELD_USER_PRINCIPAL_IDENTITY_INFO, identityInfo );
-	
-		MapInputData inputData = new MapInputData(inputMap);
+		callback = new RunasCallback()
+		{
+			@Override
+			public Object doAs()
+			{
+				String name;
+		    	String title;
+		    	String desc;
+				HashMap<String, Object> inputMap = new HashMap<String, Object>();
+				Group newGroup = null;
+				GroupType groupType;
+				
+				name = binder.getId() + ":teamGroup";
+				title = name;
+				desc = "Holds team membership for binder: " + binder.getId() + "\n" + binder.getTitle() + "\n(" + binder.getPathName() + ")";
+				groupType = GroupType.team;
+				
+				inputMap.put( ObjectKeys.FIELD_PRINCIPAL_NAME, name );
+				inputMap.put( ObjectKeys.FIELD_ENTITY_TITLE, title );
+				inputMap.put( ObjectKeys.FIELD_ENTITY_DESCRIPTION, desc );
+				inputMap.put( ObjectKeys.FIELD_ENTITY_DESCRIPTION_FORMAT, String.valueOf( Description.FORMAT_NONE ) );  
+				inputMap.put( ObjectKeys.FIELD_GROUP_DYNAMIC, Boolean.FALSE );
+				inputMap.put( ObjectKeys.FIELD_GROUP_LDAP_QUERY, null );
+				inputMap.put( ObjectKeys.FIELD_GROUP_TYPE, groupType );
 
-		HashMap<String, Object> emptyFileMap = new HashMap<String, Object>();
-		newGroup = null;
-		try
-		{
-			// Create the new group.  Is this a debug request to create multiple groups?
-			ProfileModule pm = getProfileModule();
+				// Add the identity information.
+				IdentityInfo identityInfo = new IdentityInfo();
+				identityInfo.setFromLocal( true );
+				identityInfo.setInternal( false );
+				inputMap.put( ObjectKeys.FIELD_USER_PRINCIPAL_IDENTITY_INFO, identityInfo );
+			
+				MapInputData inputData = new MapInputData(inputMap);
+
+				HashMap<String, Object> emptyFileMap = new HashMap<String, Object>();
+				newGroup = null;
+				try
+				{
+					// Create the new group.  Is this a debug request to create multiple groups?
+					ProfileModule pm = getProfileModule();
+				
+					newGroup = pm.addGroup( null, inputData, emptyFileMap, null );
+					
+					// Update the binder's teamGroupId field with the id of the group we just created.
+					setBinderTeamGroupId( binder, newGroup.getId() );
+				}
+				catch( Exception ex )
+				{
+					ex.printStackTrace();
+				}
+				
+				return newGroup;
+			}
+		};
 		
-			newGroup = pm.addGroup( null, inputData, emptyFileMap, null );
-		}
+		// Do the necessary work as the admin user.
+		retValue = RunasTemplate.runasAdmin(
+										callback,
+										RequestContextHolder.getRequestContext().getZoneName() );
 		
-		catch( Exception ex )
-		{
-			ex.printStackTrace();
-		}
+		if ( retValue != null && retValue instanceof Group )
+			return (Group) retValue;
 		
-		return newGroup;
+		return null;
     }
     
     /**
      * Delete the team group associated with the given binder.
      */
-    private void deleteTeamGroup( Binder binder, Group group )
+    private void deleteTeamGroup( final Binder binder, final Group group )
     {
-    	//!!! Delete the entry from the SS_TeamGroupMap table
-		try
+		RunasCallback callback;
+		Object retValue;
+
+		callback = new RunasCallback()
 		{
-			getProfileModule().deleteEntry( group.getId(), null );
-		}
-		catch ( Exception ex )
-		{
-			ex.printStackTrace();
-		} 
+			@Override
+			public Object doAs()
+			{
+				Boolean retValue;
+				
+				try
+				{
+					getProfileModule().deleteEntry( group.getId(), null );
+					
+					// Set the binder's teamGroupId to null
+					setBinderTeamGroupId( binder, null );
+
+					retValue = Boolean.TRUE;
+				}
+				catch ( Exception ex )
+				{
+					ex.printStackTrace();
+					retValue = Boolean.FALSE;
+				} 
+				
+				return retValue;
+			}
+		};
+
+		// Do the necessary work as the admin user.
+		retValue = RunasTemplate.runasAdmin(
+										callback,
+										RequestContextHolder.getRequestContext().getZoneName() );
+		
     }
     
     /**
@@ -2525,8 +2574,37 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
      */
     private Group getTeamGroup( Binder binder )
     {
-    	//!!!
-    	return null;
+    	Group teamGroup = null;
+    	
+    	if ( binder != null )
+    	{
+    		Long groupId;
+    		
+    		groupId = binder.getTeamGroupId();
+    		if ( groupId != null )
+    		{
+    			try
+    			{
+    				ArrayList<Long> groupIds;
+    				List<Group> groups;
+				    User user = RequestContextHolder.getRequestContext().getUser();
+    				
+    				groupIds = new ArrayList<Long>();
+    				groupIds.add( groupId );
+    				
+   			       	groups = getProfileDao().loadGroups( groupIds, user.getZoneId() );
+
+    				if ( groups != null && groups.size() > 0 )
+    					teamGroup = groups.get( 0 );
+    			}
+    			catch ( Exception ex )
+    			{
+    				ex.printStackTrace();
+    			}
+    		}
+    	}
+    	
+    	return teamGroup;
     }
     
     /**
@@ -2565,7 +2643,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
     	//!!!
     	{
 	    	boolean useTeamGroups;
-	    	useTeamGroups = SPropsUtil.getBoolean( "use.teamGroups", false );
+	    	useTeamGroups = SPropsUtil.getBoolean( "use.teamGroups", true );
 	    	if ( useTeamGroups == false )
 	    		return getTeamMemberIdsDeprecated( binder );
     	}
@@ -2737,8 +2815,11 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		final Binder binder = loadBinder(binderId);
 		
 		checkAccess(binder, BinderOperation.manageTeamMembers);
+
+		// If membership didn't change then bail.
 		if ( getTeamMemberIds( binder ).equals(memberIds) )
 			return;
+
 		//See if the guest user is included in the list
 		User guest = getProfileModule().getGuestUser();
 		if ( memberIds != null && memberIds.contains(guest.getId())) {
@@ -2748,33 +2829,59 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 			getAccessControlManager().checkOperation(zoneConfig, WorkAreaOperation.ADD_GUEST_ACCESS);
 		}
 		
-		final BinderProcessor processor = loadBinderProcessor(binder);
-		Boolean index = (Boolean) getTransactionTemplate().execute(
-				new TransactionCallback() {
+		RunasCallback callback;
+		Object retValue;
+
+		callback = new RunasCallback()
+		{
+			@Override
+			public Object doAs()
+			{
+				final BinderProcessor processor = loadBinderProcessor(binder);
+				TransactionCallback transCallback;
+				
+				transCallback = new TransactionCallback()
+				{
 					@Override
-					public Object doInTransaction(TransactionStatus status) {
+					public Object doInTransaction( TransactionStatus status )
+					{
 						// Modify the group's membership.
 						setTeamMembers( binder, memberIds );
 
-						binder.setTeamMembershipInherited(false);
-						if (!(binder instanceof TemplateBinder)) {
-							User user = RequestContextHolder
-									.getRequestContext().getUser();
+						binder.setTeamMembershipInherited( false );
+					
+						if ( !(binder instanceof TemplateBinder) )
+						{
+							User user = RequestContextHolder.getRequestContext().getUser();
 							binder.incrLogVersion();
 							binder.setModification(new HistoryStamp(user));
-							processor.processChangeLog(binder,
-									ChangeLog.ACCESSMODIFY);
+							processor.processChangeLog(binder, ChangeLog.ACCESSMODIFY);
 							return Boolean.TRUE;
 						}
+						
 						return Boolean.FALSE;
 					}
-				});
-		if (index) {
-			// Always reindex top binder to update the team members field
-			processor.indexBinder(binder, false);
-			// update readAcl on binders and entries
-			processor.indexTeamMembership(binder, true);
-		}
+				};
+				
+				Boolean index = (Boolean) getTransactionTemplate().execute( transCallback );
+				
+				if (index) {
+					// Always reindex top binder to update the team members field
+					processor.indexBinder(binder, false);
+
+					// update readAcl on binders and entries
+					processor.indexTeamMembership(binder, true);
+				}
+				
+				return index;
+			}
+		};
+
+		// Do the necessary work as the admin user.
+		retValue = RunasTemplate.runasAdmin(
+										callback,
+										RequestContextHolder.getRequestContext().getZoneName() );
+		
 	}
 
 	/**
@@ -2792,16 +2899,15 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	/**
 	 * 
 	 */
-	private void setTeamMembers( Binder binder, Collection<Long> memberIds )
+	private void setTeamMembers( Binder binder, final Collection<Long> memberIds )
 	{
-		Map updates;
 		Group teamGroup;
-		SortedSet<Principal> principals;
+		final Group finalTeamGroup;
 
 		//!!!
 		{
 			boolean useTeamGroups = false;
-			useTeamGroups = SPropsUtil.getBoolean( "use.teamGroups", false );
+			useTeamGroups = SPropsUtil.getBoolean( "use.teamGroups", true );
 			if ( useTeamGroups == false )
 			{
 				setTeamMembersDeprecated( binder, memberIds );
@@ -2821,22 +2927,48 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 				// No, create one.
 				teamGroup = createTeamGroup( binder );
 			}
+			
+			finalTeamGroup = teamGroup;
 
-			if ( teamGroup != null )
+			if ( finalTeamGroup != null )
 			{
-				principals = getProfileModule().getPrincipals( memberIds );
+				RunasCallback callback;
+				Object retValue;
 
-				updates = new HashMap();
-				updates.put( ObjectKeys.FIELD_GROUP_PRINCIPAL_MEMBERS, principals );
-				
-				try
+				callback = new RunasCallback()
 				{
-					getProfileModule().modifyEntry( teamGroup.getId(), new MapInputData( updates ) );
-				}
-	   			catch ( Exception ex )
-	   			{
-	   				ex.printStackTrace();
-	   			}
+					@Override
+					public Object doAs()
+					{
+						Map updates;
+						SortedSet<Principal> principals;
+						Boolean retValue;
+
+						principals = getProfileModule().getPrincipals( memberIds );
+
+						updates = new HashMap();
+						updates.put( ObjectKeys.FIELD_GROUP_PRINCIPAL_MEMBERS, principals );
+						
+						try
+						{
+							getProfileModule().modifyEntry( finalTeamGroup.getId(), new MapInputData( updates ) );
+							
+							retValue = Boolean.TRUE;
+						}
+			   			catch ( Exception ex )
+			   			{
+			   				ex.printStackTrace();
+			   				retValue = Boolean.FALSE;
+			   			}
+						
+						return retValue;
+					}
+				};
+
+				// Do the necessary work as the admin user.
+				retValue = RunasTemplate.runasAdmin(
+												callback,
+												RequestContextHolder.getRequestContext().getZoneName() );
 			}
 		}
 		else
@@ -3934,6 +4066,36 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	}
 
 
+	/**
+	 * Set the group id associated with the given binder
+	 */
+	private void setBinderTeamGroupId( final Binder binder, Long groupId )
+	{
+		TransactionCallback callback;
+
+		callback = new TransactionCallback()
+		{
+			@Override
+			public Object doInTransaction( TransactionStatus status )
+			{
+				if ( !(binder instanceof TemplateBinder) )
+				{
+					User user = RequestContextHolder.getRequestContext().getUser();
+					
+					binder.incrLogVersion();
+					binder.setModification( new HistoryStamp( user ) );
+					BinderProcessor processor = loadBinderProcessor( binder );
+					processor.processChangeLog( binder, ChangeLog.ACCESSMODIFY );
+				}
+				
+				return Boolean.TRUE;
+			}
+		};
+
+		binder.setTeamGroupId( groupId );
+		getTransactionTemplate().execute( callback );
+	}
+	
 	// no transaction
 	@Override
 	public void setPostingEnabled(Long binderId, final Boolean postingEnabled)
