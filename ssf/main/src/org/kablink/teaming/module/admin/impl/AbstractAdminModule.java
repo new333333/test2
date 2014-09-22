@@ -999,7 +999,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 					defs.add(newDef.getId());
 					getCoreDao().flush();
 				} catch (Exception ex) {
-					logger.error("Cannot read definition from file: " + file + " " + ex.getMessage());
+					logger.error("Cannot read definition from file: " + file, ex);
 					return; //cannot continue, rollback is enabled
 				} finally {
 					if (in!=null) in.close();
@@ -1057,7 +1057,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 					if (newDef != null) defs.add(newDef.getId());
 					getCoreDao().flush();
 				} catch (Exception ex) {
-					logger.error("Cannot read definition from file: " + file + " " + ex.getMessage());
+					logger.error("Cannot read definition from file: " + file, ex);
 					return; //cannot continue, rollback is enabled
 				} finally {
 					if (in!=null) in.close();
