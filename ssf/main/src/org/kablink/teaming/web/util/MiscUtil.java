@@ -579,16 +579,30 @@ public final class MiscUtil
 	 * 
 	 * @param s1
 	 * @param s2
+	 * @param collator
+	 * 
+	 * @return
+	 */
+	public static int safeSColatedCompare(String s1, String s2, Collator collator) {
+		return
+			collator.compare(
+				((null == s1) ? "" : s1),
+				((null == s2) ? "" : s2) );
+   }
+
+	/**
+	 * Performs a collated compare on two strings without generating any
+	 * exceptions.
+	 * 
+	 * @param s1
+	 * @param s2
 	 * 
 	 * @return
 	 */
 	public static int safeSColatedCompare(String s1, String s2) {
 		Collator collator = Collator.getInstance( RequestContextHolder.getRequestContext().getUser().getLocale());
 		collator.setStrength(Collator.IDENTICAL);
-		return
-			collator.compare(
-				((null == s1) ? "" : s1),
-				((null == s2) ? "" : s2) );
+		return safeSColatedCompare(s1, s2, collator);
    }
 
 	/**
