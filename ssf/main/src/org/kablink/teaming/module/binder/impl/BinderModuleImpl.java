@@ -3048,6 +3048,10 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 					// Yes
 					listOfBinders.add( binder );
 				}
+				else {
+					// No - We won't be needing this binder. Kick it out of the session to keep memory usage from going out of control
+					getCoreDao().evict(binder);
+				}
 			}
 		}
 		
