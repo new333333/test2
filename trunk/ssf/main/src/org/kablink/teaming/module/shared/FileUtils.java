@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -39,12 +39,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import javax.activation.FileTypeMap;
+
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
-import org.kablink.teaming.domain.Attachment;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.DefinableEntity;
-import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.NoFileVersionByTheIdException;
 import org.kablink.teaming.domain.Principal;
@@ -59,7 +59,6 @@ import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.file.FileModule;
 import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.folder.FolderModule;
-import org.kablink.teaming.module.license.LicenseChecker;
 import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.security.AccessControlManager;
@@ -71,11 +70,18 @@ import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SimpleMultipartFile;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.Utils;
-import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.util.Validator;
+
 import org.springframework.web.multipart.MultipartFile;
 
+/**
+ * ?
+ * 
+ * @author ?
+ */
+@SuppressWarnings({"unchecked", "unused"})
 public class FileUtils {
+	public final static String	DEFAULT_MIME_CONTENT_TYPE	= "application/octet-stream";
 
 	public static void setFileVersionAging(DefinableEntity entity) {
 		Binder binder = entity.getParentBinder();
@@ -384,9 +390,26 @@ public class FileUtils {
 		//Protect against XSS attacks if this is an HTML file
 		if (contentType.toLowerCase().contains("text/html")) {
 			if (SPropsUtil.getBoolean("xss.forceDownloadedHtmlFilesToBeSavedToDisk", true)) {
-				contentType = "application/octet-stream";
+				contentType = DEFAULT_MIME_CONTENT_TYPE;
 			}
 		}
 		return contentType;
+	}
+
+	/**
+	 * Returns the mime content type to use for a file name allowing
+	 * for mixed case extensions.
+	 * 
+	 * @param ftm
+	 * @param shortFileName
+	 * 
+	 * @return
+	 */
+	public static String getMimeContentType(FileTypeMap ftm, String shortFileName) {
+		String reply = ftm.getContentType(shortFileName);
+		if ((null != reply) && reply.equalsIgnoreCase(DEFAULT_MIME_CONTENT_TYPE)) {
+			reply = ftm.getContentType(shortFileName.toLowerCase());
+		}
+		return reply;
 	}
 }
