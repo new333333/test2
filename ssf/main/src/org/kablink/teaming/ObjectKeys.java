@@ -521,8 +521,8 @@ public interface ObjectKeys {
     public static final String SEARCH_IS_PERSON = "searchIsPerson";
     public static final String SEARCH_IS_INTERNAL = "searchIsInternal";
     public static final String SEARCH_IS_EXTERNAL = "searchIsExternal";
-    public static final String SEARCH_IS_DISABLED_USERS = "searchIsDisabledUsers";
-    public static final String SEARCH_IS_ENABLED_USERS  = "searchIsEnabledUsers";
+    public static final String SEARCH_IS_DISABLED_PRINCIPALS = "searchIsDisabledUsers";
+    public static final String SEARCH_IS_ENABLED_PRINCIPALS  = "searchIsEnabledUsers";
     
     //Search Result Identifier
     public static final String SEARCH_RESULTS_DISPLAY="ss_searchResultListing";

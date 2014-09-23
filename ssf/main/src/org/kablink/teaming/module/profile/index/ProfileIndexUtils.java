@@ -98,12 +98,12 @@ public class ProfileIndexUtils {
     }
 
     public static void addDisabled(Document doc, Group group) {
-        Field disabledGroupField = FieldFactory.createFieldStoredNotAnalyzed(DISABLED_USER_FIELD, String.valueOf(group.isDisabled()));
+        Field disabledGroupField = FieldFactory.createFieldStoredNotAnalyzed(DISABLED_PRINCIPAL_FIELD, String.valueOf(group.isDisabled()));
         doc.add(disabledGroupField);
     }
 
     public static void addDisabled(Document doc, User user) {
-        Field disabledUserField = FieldFactory.createFieldStoredNotAnalyzed(DISABLED_USER_FIELD, String.valueOf(user.isDisabled()));
+        Field disabledUserField = FieldFactory.createFieldStoredNotAnalyzed(DISABLED_PRINCIPAL_FIELD, String.valueOf(user.isDisabled()));
         doc.add(disabledUserField);
     }
 
