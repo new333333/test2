@@ -463,7 +463,7 @@ public class ReadFileController extends AbstractReadFileController {
 				Folder folder = getFolderModule().getFolder(folderId);
 				if (folder != null) {
 					String shortFileName = folder.getNormalTitle() + ".csv";
-					String contentType = getFileTypeMap().getContentType(shortFileName);
+					String contentType = FileUtils.getMimeContentType(getFileTypeMap(), shortFileName);
 					contentType = FileUtils.validateDownloadContentType(contentType);
 					if (!(contentType.toLowerCase().contains("charset"))) {
 						String encoding = SPropsUtil.getString("web.char.encoding", "UTF-8");
@@ -531,7 +531,7 @@ public class ReadFileController extends AbstractReadFileController {
 											if (fa != null && operation.equals(WebKeys.URL_SHARE_PUBLIC_LINK)) {
 												DefinableEntity entity = fa.getOwner().getEntity();
 												String shortFileName = FileUtil.getShortFileName(fa.getFileItem().getName());	
-												String contentType = getFileTypeMap().getContentType(shortFileName);
+												String contentType = FileUtils.getMimeContentType(getFileTypeMap(), shortFileName);
 												WebUrlUtil.getSharedPublicFileUrl(request, shareItem.getId(), shareItem.getPassKey(), WebKeys.URL_SHARE_PUBLIC_LINK, shortFileName);
 												//Protect against XSS attacks if this is an HTML file
 												contentType = FileUtils.validateDownloadContentType(contentType);
@@ -695,7 +695,7 @@ public class ReadFileController extends AbstractReadFileController {
 					if (canDownload) {
 						// Yes!
 						String shortFileName = FileUtil.getShortFileName(fa.getFileItem().getName());	
-						String contentType = getFileTypeMap().getContentType(shortFileName);
+						String contentType = FileUtils.getMimeContentType(getFileTypeMap(), shortFileName);
 						
 						// Protect against XSS attacks if this is an
 						// HTML file.
@@ -980,7 +980,7 @@ public class ReadFileController extends AbstractReadFileController {
 	 * and fileName.
 	 */
 	private ZipArchiveOutputStream buildZipAndSetupResponse(HttpServletResponse response, String fileName) throws IOException {
-		response.setContentType(mimeTypes.getContentType(fileName));
+		response.setContentType(FileUtils.getMimeContentType(mimeTypes, fileName));
 		response.setHeader("Cache-Control", "private, max-age=0");
 		response.setHeader("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
 		OutputStream stream = response.getOutputStream();
