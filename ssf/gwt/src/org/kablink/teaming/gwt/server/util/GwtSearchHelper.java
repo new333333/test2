@@ -363,6 +363,10 @@ public class GwtSearchHelper
 			// Should we search for ldap containers?
 			if ( searchCriteria.getSearchForLdapContainers() == false )
 				searchTermFilter.addAndLdapContainerFilter( false );
+			
+			// Type to find should only return enabled groups.
+    	    options.put(ObjectKeys.SEARCH_IS_ENABLED_USERS, Boolean.TRUE);
+    	    
 			break;
 			
 		default:
