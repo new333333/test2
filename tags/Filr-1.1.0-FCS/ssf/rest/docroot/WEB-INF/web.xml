@@ -1,0 +1,112 @@
+<?xml version="1.0"?>
+<!DOCTYPE web-app PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN" "http://java.sun.com/dtd/web-app_2_3.dtd">
+
+<web-app>
+    <context-param>
+		<param-name>webAppRootKey</param-name>
+		<param-value>rest.root</param-value>
+	</context-param>
+
+	<context-param>
+		<param-name>contextConfigLocation</param-name>
+		<param-value>/WEB-INF/context/rest-security.xml</param-value>
+	</context-param>
+	
+	<context-param>
+		<param-name>endpointsConfigLocation</param-name>
+		<param-value>/WEB-INF/config/endpoints.json</param-value>
+	</context-param>
+
+	<filter>
+		<filter-name>springSecurityFilterChain</filter-name>
+		<filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+	</filter>
+	
+	<filter-mapping>
+		<filter-name>springSecurityFilterChain</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+
+	<filter>
+		<filter-name>prioritizedRequestFilter</filter-name>
+		<filter-class>org.kablink.teaming.rest.servlet.PrioritizedRequestFilter</filter-class>
+        <init-param>
+            <param-name>max.file.transfers</param-name>
+            <param-value>50</param-value>
+        </init-param>
+	</filter>
+
+	<filter-mapping>
+		<filter-name>prioritizedRequestFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+
+    <filter>
+        <filter-name>openSessionInViewFilter</filter-name>
+        <filter-class>org.kablink.teaming.web.servlet.filter.OpenSessionInViewFilter</filter-class>
+    </filter>
+
+    <filter-mapping>
+        <filter-name>openSessionInViewFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+    <filter>
+        <filter-name>zoneContextFilter</filter-name>
+        <filter-class>org.kablink.teaming.web.servlet.filter.ZoneContextFilter</filter-class>
+    </filter>
+
+    <filter-mapping>
+        <filter-name>zoneContextFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+    <filter>
+        <filter-name>zoneContextEnableFilter</filter-name>
+        <filter-class>org.kablink.teaming.remoting.rest.servlet.filter.ZoneContextEnableFilter</filter-class>
+    </filter>
+
+    <filter-mapping>
+        <filter-name>zoneContextEnableFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+    <filter>
+        <filter-name>gangliaMonitoringFilter</filter-name>
+        <filter-class>org.kablink.teaming.remoting.rest.servlet.filter.GangliaMonitoringFilter</filter-class>
+    </filter>
+
+    <filter-mapping>
+        <filter-name>gangliaMonitoringFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+	<listener>
+		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+	</listener>
+
+    <listener>
+     	<listener-class>org.kablink.teaming.rest.servlet.listener.SessionListener</listener-class>
+    </listener>
+
+	<servlet>
+		<servlet-name>restServlet</servlet-name>
+		<servlet-class>org.kablink.teaming.rest.servlet.RestInvokingServlet</servlet-class>
+        <!-- Context root path for SSF web app. If not specified, defaults to "/ssf". -->
+        <init-param>
+            <param-name>ssfContextPath</param-name>
+            <param-value>/ssf</param-value>
+        </init-param>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	
+	<servlet-mapping>
+		<servlet-name>restServlet</servlet-name>
+		<url-pattern>/*</url-pattern>
+	</servlet-mapping>
+	
+	<session-config>
+		<session-timeout>1</session-timeout>
+	</session-config>
+	
+</web-app>

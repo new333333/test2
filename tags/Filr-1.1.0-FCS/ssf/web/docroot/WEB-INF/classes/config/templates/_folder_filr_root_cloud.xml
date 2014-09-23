@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<template type="5" internalId="402883b90d0de1f3010d0df5582b0050">
+  <attribute name="templateTitle" type="string">__template_folder_filr_root_cloud</attribute>
+  <attribute name="templateDescription" type="description">__template_folder_filr_root_cloud_description</attribute>
+  <attribute name="templateHidden" type="boolean">true</attribute>
+  <attribute name="title" type="string">__template_folder_filr_root_cloud</attribute>
+  <attribute name="description" type="description"></attribute>
+  <attribute name="iconName" type="string">/icons/folder_mirrored.png</attribute>
+  <attribute name="name" type="string">_folder_filr_root</attribute>
+  <property name="library">true</property>
+  <property name="mirrored">true</property>
+  <property name="uniqueTitle">false</property>
+  <property name="inheritFunctionMembership">false</property>
+  <property name="inheritDefinitions">false</property>
+  <property name="inheritTeamMembers">false</property>
+  <workAreaFunctionMembership>
+    <property name="functionName">__role.binderAdmin</property>
+    <property name="members">-1</property>
+  </workAreaFunctionMembership>
+  <workAreaFunctionMembership>
+    <property name="functionName">__role.allowAccessNetFolder</property>
+    <property name="members">-1</property>
+  </workAreaFunctionMembership>
+  <workAreaFunctionMembership>
+    <property name="functionName">__role.viewBinderTitle</property>
+    <property name="members">-1</property>
+  </workAreaFunctionMembership>
+  <definition name="_mirroredFilrFileFolder" internalId="402883a41edab1d5011edac394df0034" databaseId="402883a41edab1d5011edac394df0034"/>
+  <definition name="_mirroredFilrFileEntry" internalId="402883a41edab1d5011edac394df0033" databaseId="402883a41edab1d5011edac394df0033"/>
+</template>
