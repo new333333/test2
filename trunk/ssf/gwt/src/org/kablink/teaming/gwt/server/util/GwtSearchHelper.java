@@ -339,7 +339,7 @@ public class GwtSearchHelper
 				searchTermFilter.addAndLdapContainerFilter( false );
 			
 			// Type to find should only return enabled users.
-    	    options.put(ObjectKeys.SEARCH_IS_ENABLED_USERS, Boolean.TRUE);
+    	    options.put(ObjectKeys.SEARCH_IS_ENABLED_PRINCIPALS, Boolean.TRUE);
     	    
 			break;
 
@@ -365,7 +365,7 @@ public class GwtSearchHelper
 				searchTermFilter.addAndLdapContainerFilter( false );
 			
 			// Type to find should only return enabled groups.
-    	    options.put(ObjectKeys.SEARCH_IS_ENABLED_USERS, Boolean.TRUE);
+    	    options.put(ObjectKeys.SEARCH_IS_ENABLED_PRINCIPALS, Boolean.TRUE);
     	    
 			break;
 			

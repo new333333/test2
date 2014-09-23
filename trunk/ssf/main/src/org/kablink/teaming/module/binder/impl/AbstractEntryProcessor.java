@@ -1635,19 +1635,19 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
                	searchFilter.appendFilter(searchTermFilter.getFilter());
            	}
 
-           	// Handle any enabled/disabled user filtering.
-           	Boolean isDisabledUsers = ((options != null) ? ((Boolean) options.get(ObjectKeys.SEARCH_IS_DISABLED_USERS)) : null);
-           	Boolean isEnabledUsers  = ((options != null) ? ((Boolean) options.get(ObjectKeys.SEARCH_IS_ENABLED_USERS))  : null);
-           	if ((null != isDisabledUsers) && isDisabledUsers) {
-           		// This term will only include disabled users.
+           	// Handle any enabled/disabled principal filtering.
+           	Boolean isDisabledPrincipals = ((options != null) ? ((Boolean) options.get(ObjectKeys.SEARCH_IS_DISABLED_PRINCIPALS)) : null);
+           	Boolean isEnabledPrincipals  = ((options != null) ? ((Boolean) options.get(ObjectKeys.SEARCH_IS_ENABLED_PRINCIPALS))  : null);
+           	if ((null != isDisabledPrincipals) && isDisabledPrincipals) {
+           		// This term will only include disabled principals.
            		SearchFilter searchTermFilter = new SearchFilter();
-           		searchTermFilter.addAndDisabledUserFilter(true);
+           		searchTermFilter.addAndDisabledPrincipalFilter(true);
                	searchFilter.appendFilter(searchTermFilter.getFilter());
            	}
-           	if ((null != isEnabledUsers) && isEnabledUsers) {
-           		// This term will only include enabled users.
+           	if ((null != isEnabledPrincipals) && isEnabledPrincipals) {
+           		// This term will only include enabled principals.
            		SearchFilter searchTermFilter = new SearchFilter();
-           		searchTermFilter.addAndDisabledUserFilter(false);
+           		searchTermFilter.addAndDisabledPrincipalFilter(false);
                	searchFilter.appendFilter(searchTermFilter.getFilter());
            	}
 

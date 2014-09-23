@@ -298,7 +298,7 @@ public class TypeToFindAjaxController extends SAbstractController {
 				model.put(WebKeys.ENTRIES, searchEntries);
 				model.put(WebKeys.SEARCH_TOTAL_HITS, searchHits);
 			} else if (findType.equals(WebKeys.FIND_TYPE_USER)) {
-	    	    options.put(ObjectKeys.SEARCH_IS_ENABLED_USERS, Boolean.TRUE);	// Type to find should only return enabled users.
+	    	    options.put(ObjectKeys.SEARCH_IS_ENABLED_PRINCIPALS, Boolean.TRUE);	// Type to find should only return enabled users.
 	    	    if (!user.isSuper()) {
 	     		   options.put(ObjectKeys.SEARCH_FILTER_AND, SearchUtils.buildExcludeFilter(org.kablink.util.search.Constants.HIDDEN_FROM_FIND_USER_FIELD, "true"));
 	     	    }

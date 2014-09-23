@@ -5161,13 +5161,13 @@ public class GwtViewHelper {
 					
 					// Apply the internal/external filtering...
 					if      (internal && external) /* Default includes both.*/ ;
-					else if (internal)             options.put(ObjectKeys.SEARCH_IS_INTERNAL,       Boolean.TRUE);
-					else if (external)             options.put(ObjectKeys.SEARCH_IS_EXTERNAL,       Boolean.TRUE);
+					else if (internal)             options.put(ObjectKeys.SEARCH_IS_INTERNAL,            Boolean.TRUE);
+					else if (external)             options.put(ObjectKeys.SEARCH_IS_EXTERNAL,            Boolean.TRUE);
 
 					// ...and apply the enabled/disabled filtering.
 					if      (enabled  && disabled) /* Default includes both. */ ;
-					else if (enabled)              options.put(ObjectKeys.SEARCH_IS_ENABLED_USERS,  Boolean.TRUE);
-					else if (disabled)             options.put(ObjectKeys.SEARCH_IS_DISABLED_USERS, Boolean.TRUE);
+					else if (enabled)              options.put(ObjectKeys.SEARCH_IS_ENABLED_PRINCIPALS,  Boolean.TRUE);
+					else if (disabled)             options.put(ObjectKeys.SEARCH_IS_DISABLED_PRINCIPALS, Boolean.TRUE);
 				}
 				
 				else {
@@ -5176,7 +5176,7 @@ public class GwtViewHelper {
 					// non-person, external and disabled users.
 					options.put(ObjectKeys.SEARCH_IS_PERSON,        Boolean.TRUE);
 					options.put(ObjectKeys.SEARCH_IS_INTERNAL,      Boolean.TRUE);
-					options.put(ObjectKeys.SEARCH_IS_ENABLED_USERS, Boolean.TRUE);
+					options.put(ObjectKeys.SEARCH_IS_ENABLED_PRINCIPALS, Boolean.TRUE);
 				}
 			}
 			
