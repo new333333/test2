@@ -35,6 +35,7 @@ package org.kablink.teaming.gwt.server.util;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -201,6 +202,19 @@ public class GwtHtml5Helper {
 		debugTraceBlob(fileBlob, methodName, traceHead, null, lastBlob);
 	}
 
+	/*
+	 * Deletes the temporary file used by the uploader, ignoring any
+	 * errors.
+	 */
+	private static void deleteTempFile(File tempFile) {
+		// If we have a temporary file to delete...
+		if (null != tempFile) {
+			// ...delete it.
+			try {tempFile.delete();}
+			catch (Throwable t) {/* Ignore. */}
+		}
+	}
+	
 	/*
 	 * Use Spring to access a CoreDao object. 
 	 */
@@ -376,8 +390,7 @@ public class GwtHtml5Helper {
 					// to the user.
 					reply = new StringRpcResponseData();
 					reply.setStringValue(NLT.get("binder.add.files.html5.upload.corrupt"));
-					try {tempFile.delete();}
-					catch (Throwable t) {/* Ignored. */}
+					deleteTempFile(tempFile);
 				}
 				else {
 					FileOutputStream fo = null;
@@ -401,17 +414,37 @@ public class GwtHtml5Helper {
 						// Return the error to the user...
 						reply = new StringRpcResponseData();
 						reply.setStringValue(NLT.get("binder.add.files.html5.upload.error", new String[]{e.getLocalizedMessage()}));
-						try {tempFile.delete();}
-						catch (Throwable t) {/* Ignored. */}
 						
-						// ...and log it.
+						// ...close the stream and delete the file...
+						if (null != fo) {
+							try {fo.close();}
+							catch (Throwable t) {/* Ignored. */}
+							fo = null;
+						}
+						deleteTempFile(tempFile);
+						
+						// ...and log the error.
 						GwtLogHelper.error(m_logger, "GwtHtml5Helper.uploadFileBlob( File name:  '" + fileBlob.getFileName() + "', EXCEPTION:1 ):  ", e);
 					}
 					
 					finally {
 						// Ensure we've closed the stream.
 						if (null != fo) {
-							fo.close();
+							try {
+								fo.close();
+							}
+							catch (IOException ioe) {
+								// We may get an IOException here if we
+								// run out of disk space when we close
+								// it.  We need to account for that so
+								// so the user sees something
+								// meaningful.
+								if (null == reply) {
+									reply = new StringRpcResponseData();
+									reply.setStringValue(NLT.get("binder.add.files.html5.upload.error", new String[]{ioe.getLocalizedMessage()}));
+								}
+								deleteTempFile(tempFile);
+							}
 							fo = null;
 						}
 					}
@@ -523,8 +556,7 @@ public class GwtHtml5Helper {
     	    		}
     	    		
     	    		// ...and delete the temporary file.
-    	    		try {tempFile.delete();}
-    	    		catch (Throwable t) {/* Ignore. */}
+					deleteTempFile(tempFile);
     	    	}
 			}
 
