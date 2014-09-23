@@ -33,18 +33,10 @@
 package org.kablink.teaming.gwt.client.widgets;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Set;
 
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
-import org.kablink.teaming.gwt.client.rpc.shared.GetFolderEntryTypeCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.GetFolderEntryTypeRpcResponseData;
-import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
-import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponseData;
-import org.kablink.teaming.gwt.client.util.EntityId;
-import org.kablink.teaming.gwt.client.util.GwtFolderEntryType;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.GwtRecipientType;
 import org.kablink.teaming.gwt.client.util.GwtShareItem;
@@ -58,7 +50,6 @@ import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Composite;
@@ -642,128 +633,11 @@ public class EditShareWidget extends Composite
 	{
 		editSuccessful( Boolean.TRUE );
 	}
-
-	/**
-	 * Go through the list of GwtShareItems and if there are any that are folder entries, issue an rpc
-	 * request to get the folder entry type. 
-	 */
-	public void initCheckForRequiredData(
-		final ArrayList<GwtShareItem> listOfShareItems,
-		final ShareRights highestRightsPossible,
-		final EditSuccessfulHandler editSuccessfulHandler )
-	{
-		ArrayList<Long> listOfIds;
-		
-		listOfIds = new ArrayList<Long>();
-		
-		if ( listOfShareItems != null && listOfShareItems.size() > 0 )
-		{
-			for ( GwtShareItem nextShareItem : listOfShareItems )
-			{
-				EntityId entityId;
-				
-				entityId = nextShareItem.getEntityId();
-				if ( entityId != null && entityId.isEntry() && nextShareItem.getFolderEntryType() == null )
-				{
-					listOfIds.add( entityId.getEntityId() );
-				}
-			}
-		}
-		
-		// Do we have any items being shared that are folder entries?
-		if ( listOfIds.size() > 0 )
-		{
-			AsyncCallback<VibeRpcResponse> getEntryTypeCallback;
-
-			// Yes
-			getEntryTypeCallback = new AsyncCallback<VibeRpcResponse>()
-			{
-				@Override
-				public void onFailure( Throwable caught )
-				{
-					GwtClientHelper.handleGwtRPCFailure(
-													caught,
-													GwtTeaming.getMessages().rpcFailure_GetFolderEntryTypes() );
-				}
-
-				@Override
-				public void onSuccess( final VibeRpcResponse vibeResult )
-				{
-					Scheduler.ScheduledCommand cmd;
-					
-					cmd = new Scheduler.ScheduledCommand()
-					{
-						@Override
-						public void execute()
-						{
-							VibeRpcResponseData responseData;
-							
-							responseData = vibeResult.getResponseData();
-							if ( responseData != null && responseData instanceof GetFolderEntryTypeRpcResponseData )
-							{
-								GetFolderEntryTypeRpcResponseData entryTypeResponseData;
-								HashMap<Long,GwtFolderEntryType> listOfEntryTypes;
-								
-								entryTypeResponseData = (GetFolderEntryTypeRpcResponseData) responseData;
-
-								listOfEntryTypes = entryTypeResponseData.getListOfTypes();
-								
-								if ( listOfEntryTypes != null && listOfEntryTypes.size() > 0 )
-								{
-									Set<Long> keySet;
-									
-									keySet = listOfEntryTypes.keySet();
-									
-									for ( Long nextEntryId : keySet )
-									{
-										// Find this entry id list our list of GwtShareItems
-										for ( GwtShareItem nextShareItem : listOfShareItems )
-										{
-											if ( nextEntryId.equals( nextShareItem.getEntityId().getEntityId() ) )
-											{
-												GwtFolderEntryType entryType;
-												
-												entryType = listOfEntryTypes.get( nextEntryId );
-												nextShareItem.setFolderEntryType( entryType );
-											}
-										}
-									}
-								}
-
-								initFinish( listOfShareItems, highestRightsPossible, editSuccessfulHandler );
-							}
-						}
-					};
-					Scheduler.get().scheduleDeferred( cmd );
-				}				
-			};
-
-			// Issue an ajax request to get the folder entry types
-			GetFolderEntryTypeCmd cmd = new GetFolderEntryTypeCmd( listOfIds );
-			GwtClientHelper.executeCommand( cmd, getEntryTypeCallback );
-		}
-		else
-			initFinish( listOfShareItems, highestRightsPossible, editSuccessfulHandler );
-	}
 	
 	/**
 	 * Initialize the controls in the dialog with the values from the properties
 	 */
 	public void init(
-		ArrayList<GwtShareItem> listOfShareItems,
-		ShareRights highestRightsPossible,
-		EditSuccessfulHandler editSuccessfulHandler )
-	{
-		// Go through the list of share items and if there are any that are folder entries
-		// get the folder entry type.  When initCheckForRequired() data is finished it will call
-		// initFinish().
-		initCheckForRequiredData( listOfShareItems, highestRightsPossible, editSuccessfulHandler );
-	}
-	
-	/**
-	 * Initialize the controls in the dialog with the values from the properties
-	 */
-	private void initFinish(
 		ArrayList<GwtShareItem> listOfShareItems,
 		ShareRights highestRightsPossible,
 		EditSuccessfulHandler editSuccessfulHandler )
@@ -881,7 +755,6 @@ public class EditShareWidget extends Composite
 	{
 		GwtTeamingMessages messages;
 		boolean entityIsBinder;
-		boolean entityIsFileEntry;
 
 		messages = GwtTeaming.getMessages();
 		
@@ -889,22 +762,13 @@ public class EditShareWidget extends Composite
 			highestRightsPossible = new ShareRights();
 		
 		entityIsBinder = true;
-		entityIsFileEntry = true;
 		
 		// See if every entity is a binder
 		for ( GwtShareItem nextShareItem : listOfShareItems )
 		{
-			EntityId entityId;
-			
-			entityId = nextShareItem.getEntityId();
-			
-			if ( entityId.isBinder() == false )
-			{
-				if ( nextShareItem.getFolderEntryType() != GwtFolderEntryType.FILE )
-					entityIsFileEntry = false;
-				
-				entityIsBinder = false;
-			}
+			entityIsBinder = nextShareItem.getEntityId().isBinder();
+			if ( entityIsBinder == false )
+				break;
 		}
 
 		// Add the appropriate options to the "access rights" listbox.
@@ -977,7 +841,7 @@ public class EditShareWidget extends Composite
 
 				// Show/hide the "share public link" listbox depending on whether the user has "share public link" rights.
 				{
-					if ( entityIsBinder == true || entityIsFileEntry == false )
+					if ( entityIsBinder == true )
 						canShare = false;
 					else
 						canShare = highestRightsPossible.getCanSharePublicLink();
@@ -1000,7 +864,6 @@ public class EditShareWidget extends Composite
 	{
 		ShareRights shareRights;
 		boolean entityIsBinder;
-		boolean entityIsFileEntry = false;
 		boolean canShareForward;
 
 		if ( highestRightsPossible == null )
@@ -1008,11 +871,7 @@ public class EditShareWidget extends Composite
 		
 		// Get the share rights from the one share item we are working with.
 		shareRights = shareItem.getShareRights();
-
 		entityIsBinder = shareItem.getEntityId().isBinder();
-
-		if ( shareItem.getEntityId().isEntry() && shareItem.getFolderEntryType() == GwtFolderEntryType.FILE )
-			entityIsFileEntry = true;
 
 		m_viewerRb.setVisible( false );
 		m_editorRb.setVisible( false );
@@ -1080,11 +939,7 @@ public class EditShareWidget extends Composite
 		m_canResharePublicCkbox.setValue( shareRights.getCanShareWithPublic() );
 		
 		// Show/hide the "share public link" checkbox depending on whether the user has "share public link" rights.
-		if ( canShareForward && highestRightsPossible.getCanSharePublicLink() && entityIsBinder == false && entityIsFileEntry == true )
-			m_canResharePublicLinkCkbox.setVisible( true );
-		else
-			m_canResharePublicLinkCkbox.setVisible( false );
-			
+		m_canResharePublicLinkCkbox.setVisible( canShareForward && highestRightsPossible.getCanSharePublicLink() && entityIsBinder == false );
 		m_canResharePublicLinkCkbox.setValue( shareRights.getCanSharePublicLink() );
 	}
 	

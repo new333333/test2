@@ -283,32 +283,8 @@ abstract public class AbstractFileResource extends AbstractResource {
                         RunasTemplate.runasAdmin(
                                 callback,
                                 RequestContextHolder.getRequestContext().getZoneName());
-                        
-                        // If still here, the metadata object cleanup was successful
-                        logger.info("Successfully purged orphaned folder entry '" + entity.getId() + "' for file '" + filename + "'");
+
                     } catch (AccessControlException e1) {
-                    } catch (RuntimeException e2) {
-                    	// Under heavy concurrent load, it's possible for the previous delete/cleanup attempt to fail
-                    	// because the entry object loaded from the database at the beginning of this method is no 
-                    	// longer found in the database (that is, it was already deleted by another client a moment
-                    	// ago). In such case, the underlying data access layer typically throws 
-                    	// HibernateOptimisticLockingFailureException. However, for better reliability and generality,
-                    	// we will explicitly check if the entry object is indeed not in the database, rather than
-                    	// relying on the data access layer implementation specific exception.
-                    	getCoreDao().evict(entity);
-                    	try {
-                    		getFolderModule().getEntry(null, entityId);
-                    		// If still here, it means that the entry object is still in the database, which in turn
-                    		// indicates that the attempt to purge the orphaned entry from the database failed for a 
-                    		// reason other than non-existing entry. Pass it up.
-                    		logger.warn("Failed to purge orphaned file entry '" + entityId + "' for file '" + filename + "'");
-                    		throw e2;
-                    	}
-                    	catch(NoFolderEntryByTheIdException e3) {
-                    		// The entry object is no longer in the database, most likely because some other request
-                    		// deleted it since the last time we loaded it.
-                    		logger.info("The orphaned file entry '" + entityId + "' is no longer found for file '" + filename + "'");
-                    	}
                     }
                 }
                 throw e;

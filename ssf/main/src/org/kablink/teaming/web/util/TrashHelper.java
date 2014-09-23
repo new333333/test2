@@ -75,8 +75,6 @@ import org.kablink.teaming.module.folder.FolderModule.FolderOperation;
 import org.kablink.teaming.module.folder.processor.FolderCoreProcessor;
 import org.kablink.teaming.module.shared.InputDataAccessor;
 import org.kablink.teaming.module.shared.MapInputData;
-import org.kablink.teaming.runas.RunasCallback;
-import org.kablink.teaming.runas.RunasTemplate;
 import org.kablink.teaming.search.SearchUtils;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.util.AllModulesInjected;
@@ -1175,62 +1173,38 @@ public class TrashHelper {
 	/*
 	 * Scans the Binder's and FolderEntry's in an ArrayList of
 	 * DefinableEntity's and re-indexes them.
-	 * 
-	 * Note:  In order to fully fix bug#895999, I added the 'run as'
-	 *    to re-index things as their owner.  The problem was when
-	 *    the recipient of a shared folder tried to trash that folder,
-	 *    they'd get an unexpected AccessControlViolation when it tries
-	 *    to index its parent if they didn't have rights to do so.
-	 *    This change ensures that won't happen since it now indexes
-	 *    the parent binder as the owner of that binder and not the one
-	 *    doing the delete.
 	 */
-	private static void doAdditionalIndexing(final AllModulesInjected bs, final TrashResponse tr, ArrayList<DefinableEntity> indexAL) {
+	private static void doAdditionalIndexing(AllModulesInjected bs, TrashResponse tr, ArrayList<DefinableEntity> indexAL) {
 		// Scan the DefinableEntity's in the ArrayList...
 		int count = ((null == indexAL) ? 0 : indexAL.size());
 		for (int i = 0; i < count; i += 1) {
-			final DefinableEntity de = indexAL.get(i);
-			final Long deId = de.getId();
-			Long ownerId;
-			if (de instanceof FolderEntry)
-			     ownerId = ((FolderEntry) de).getOwnerId();
-			else ownerId = ((Binder)      de).getOwnerId();
-			RunasTemplate.runas(
-				new RunasCallback() {
-					@Override
-					public Object doAs() {
-						try {
-							// ...re-indexing each as the owner of the
-							// ...entry.
-							if (de instanceof Binder) {
-								// Note that we only re-index the
-								// Binder and not its tree since this
-								// case is used to restore the
-								// parentage of something.
-								logger.debug("TrashHelper.doAdditionalIndexing(" + deId + "):  Re-indexing binder (binder only)");
-								bs.getBinderModule().indexBinder(deId);
-								refreshRssFeed(bs, ((Binder) de));
-							}
-							else {
-								logger.debug("TrashHelper.doAdditionalIndexing(" + de.getParentBinder().getId() + ", " + deId + "):  Re-indexing entry");
-								reindexTopEntry(bs, ((FolderEntry) de));
-								refreshRssFeed( bs, ((FolderEntry) de));
-							}
-						}
-						catch (AccessControlException e) {
-							// If we're not already tracking an error
-							// for this operation...
-							if (!(tr.isError())) {
-								// ...track this one.
-								if (de instanceof FolderEntry) tr.setACLViolation(((FolderEntry) de).getParentBinder().getId(), deId);
-								else                           tr.setACLViolation(deId);
-							}
-						}
-						return null;
-					}
-				},
-				RequestContextHolder.getRequestContext().getZoneName(),
-				ownerId);
+			DefinableEntity de = indexAL.get(i);
+			Long deId = de.getId();
+			try {
+				// ...re-indexing each.
+				if (de instanceof Binder) {
+					// Note that we only re-index the Binder and not
+					// its tree since this case is used to restore
+					// the parentage of something.
+					logger.debug("TrashHelper.doAdditionalIndexing(" + deId + "):  Re-indexing binder (binder only)");
+					bs.getBinderModule().indexBinder(deId);
+					refreshRssFeed(bs, ((Binder) de));
+				}
+				else {
+					logger.debug("TrashHelper.doAdditionalIndexing(" + de.getParentBinder().getId() + ", " + deId + "):  Re-indexing entry");
+					reindexTopEntry(bs, ((FolderEntry) de));
+					refreshRssFeed( bs, ((FolderEntry) de));
+				}
+			}
+			catch (AccessControlException e) {
+				// If we're not already tracking an error for this
+				// operation...
+				if (!(tr.isError())) {
+					// ...track this one.
+					if (de instanceof Binder) tr.setACLViolation(((FolderEntry) de).getParentBinder().getId(), deId);
+					else                      tr.setACLViolation(deId);
+				}
+			}
 		}
 	}
 	

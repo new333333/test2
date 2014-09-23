@@ -51,7 +51,7 @@ import org.kablink.teaming.util.Utils;
 public class ZoneConfig extends ZonedObject implements WorkArea {
 	public static final String WORKAREA_TYPE = "zone";
 	
-	public static Integer ZONE_LATEST_VERSION=19;  //This is used to introduce changes and fix things up between releases.
+	public static Integer ZONE_LATEST_VERSION=18;  //This is used to introduce changes and fix things up between releases.
 	private Integer upgradeVersion=ZONE_LATEST_VERSION; 
 	private AuthenticationConfig authenticationConfig;
 	private HomePageConfig homePageConfig;
@@ -344,6 +344,14 @@ public void setExtFunctionMembershipInherited(boolean extFunctionMembershipInher
      @Override
 	public boolean isTeamMembershipInherited() {
     	return false;
+    }
+	@Override
+	public Set<Long> getTeamMemberIds() {
+    	return new HashSet();
+    }
+    @Override
+	public void setTeamMemberIds(Set<Long> memberIds) {
+    	
     }
     @Override
 	public Set<Long> getChildWorkAreas() {

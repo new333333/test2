@@ -37,8 +37,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.StringBufferInputStream;
 import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -64,6 +62,7 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
+
 import org.kablink.teaming.DefinitionExistsException;
 import org.kablink.teaming.NotSupportedException;
 import org.kablink.teaming.ObjectKeys;
@@ -131,8 +130,10 @@ import org.kablink.util.GetterUtil;
 import org.kablink.util.Html;
 import org.kablink.util.StringUtil;
 import org.kablink.util.Validator;
+
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.multipart.MultipartFile;
+
 import org.w3c.tidy.Tidy;
 import org.w3c.tidy.TidyMessage;
 
@@ -1323,20 +1324,6 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 							}
 						}
 					}
-				} else if (type.equals("transitionOnDate")) {
-					String dateStr = (String) inputData.getSingleValue("date_date");
-					String timeStr = (String) inputData.getSingleValue("date_time");
-					SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd hh:mm");
-					try {
-						Date date = formatter.parse(dateStr + " " + timeStr);
-						String value = String.valueOf(date.getTime());
-						Element newPropertyEle = newPropertiesEle.addElement("property");
-						newPropertyEle.addAttribute("name", "date");
-						newPropertyEle.addAttribute("value", value);
-					} catch (ParseException e) {
-						throw new DefinitionInvalidException("definition.error.invalidDateFormat", new Object[] {"\"" + dateStr + " " + timeStr + "\""});
-					}
-					
 				} else if (type.equals("workflowSetEntryDataValue")) {
 					//Workflow conditions and set data values typically have 4 bits of data to capture:
 					//  the definition id, the element name, the operation, and the operand value
@@ -1587,7 +1574,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 						}
 					}
 					
-					if (itemType.equals("transitionOnElapsedTime") || itemType.equals("transitionOnDate") || 
+					if (itemType.equals("transitionOnElapsedTime") || 
 							itemType.equals("transitionOnEntryData")) {
 						//modifying timers. Check to see if any conditions need to be processed
 						Element ele = item.getParent().getParent();
@@ -2588,12 +2575,6 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		    		if (!inputData.isFieldsOnly() || fieldModificationAllowed) 
 		    			entryData.put(nameValue, StringCheckUtil.check(inputData.getSingleValue(nameValue)));
 		    	}
-			} else {
-				if ("true".equals(multiple)) {
-					//There are no selections set, and multiple is allowed. See if the user might be trying to clear the selections
-					if (!inputData.isFieldsOnly() || fieldModificationAllowed) 
-		    			entryData.put(nameValue, null);
-				}
 			}
 			if (userVersionAllowed && inputData.exists(nameValuePerUser)) {
 		    	if ("true".equals(multiple)) {

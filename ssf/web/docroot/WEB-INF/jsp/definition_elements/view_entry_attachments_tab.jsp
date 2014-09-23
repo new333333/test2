@@ -190,7 +190,7 @@ var ss_labelEntryBrowseAddAttachmentHelpText = "<ssf:nlt tag="entry.browseAddAtt
 				<div class="teamingDlgBoxHeader"><ssf:nlt tag="entry.AttachFilesByApplet"/>
 					<div class="closebutton">
 						<a onClick="ss_hideAddAttachmentDropbox('${ssDefinitionEntry.id}', '${ss_attachments_namespace}'); return false;"><img 
-					  	border="0" align="absmiddle" <ssf:alt tag="alt.hide"/> src="<html:imagesPath/>icons/close_gray16.png"/></a>
+					  	border="0" align="absmiddle" <ssf:alt tag="alt.hide"/> src="<html:imagesPath/>icons/close_teal16.png"/></a>
 					</div>	
 				</div>	
 				<iframe style="margin-top: 20px; margin-left: 10px;" 
@@ -215,7 +215,7 @@ var ss_labelEntryBrowseAddAttachmentHelpText = "<ssf:nlt tag="entry.browseAddAtt
 				<div class="teamingDlgBoxHeader"><ssf:nlt tag="entry.AttachFilesByWebBrowse"/>
 					<div class="closebutton">
 						<a onClick="ss_hideAddAttachmentBrowse('${ssDefinitionEntry.id}', '${ss_attachments_namespace}'); return false;"><img 
-						border="0" <ssf:alt tag="alt.hide"/> src="<html:imagesPath/>icons/close_gray16.png"/></a>
+						border="0" <ssf:alt tag="alt.hide"/> src="<html:imagesPath/>icons/close_teal16.png"/></a>
 					</div>
 				</div>		
 				<iframe title="<ssf:nlt tag="entry.AttachFilesByWebBrowse" />" frameborder="0"  

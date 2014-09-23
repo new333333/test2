@@ -2513,7 +2513,7 @@ public class IcalModuleImpl extends CommonDependencyInjection implements IcalMod
 	private void addTeamMembers(ArrayList<Long> attendeeIds, List binders, Long zoneId) {
 		// Add any team members from the binders.
 		for (Object binder:binders) {
-			attendeeIds.addAll( getBinderModule().getTeamMemberIds( ((Binder) binder) ));
+			attendeeIds.addAll(((Binder) binder).getTeamMemberIds());
 		}
 	}
 	

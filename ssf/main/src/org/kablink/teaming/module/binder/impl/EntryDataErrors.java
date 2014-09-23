@@ -82,8 +82,6 @@ public class EntryDataErrors implements Serializable {
 		public static int INVALID_HTML = 1;
 		public static int INVALID_CAPTCHA_RESPONSE = 2;
 		
-		private int type; // required - one of the constants defined above
-		
 		// Message codes corresponding to each problem type.
 		public static String[] typeCodes = {
 			"general.error.anErrorOccurred",
@@ -102,18 +100,16 @@ public class EntryDataErrors implements Serializable {
 		public static int[] httpStatusCodes = {
 			500, // internal server error
 			400, // bad request			
-			400, // bad request			
 		};
 		
+		private int type; // required - one of the constants defined above
+		// at most one of the following two is set.
 		private Exception exception; // may be null
 		
 		public Problem(int type, Exception e) {
 			this.type = type;
 			this.exception = e;
-			if(e != null)
-				logger.error("Entry data error (type=" + type + ")", e);
-			else
-				logger.error("Entry data error (type=" + type + ")");
+			logger.error("Entry data error (type=" + type + ")", e);
 		}
 
 		public Exception getException() {
@@ -140,11 +136,7 @@ public class EntryDataErrors implements Serializable {
 		 */
 		@Override
 		public int getHttpStatusCode() {
-			// Exception has precedence
-			if(exception != null && exception instanceof HttpStatusCodeSupport)
-				return ((HttpStatusCodeSupport) exception).getHttpStatusCode();
-			else 
-				return httpStatusCodes[type];
+			return httpStatusCodes[type];
 		}
 
 		/* (non-Javadoc)
@@ -152,11 +144,7 @@ public class EntryDataErrors implements Serializable {
 		 */
 		@Override
 		public ApiErrorCode getApiErrorCode() {
-			// Exception has precedence
-			if(exception != null && exception instanceof ApiErrorCodeSupport)
-				return ((ApiErrorCodeSupport) exception).getApiErrorCode();
-			else
-				return apiErrorCodes[type];
+			return apiErrorCodes[type];
 		}
 
 	}

@@ -129,7 +129,7 @@
   
 </TR>
 
-<c:if test="${!isFilr || !empty ssBinderTeamMemberIds}">
+<c:if test="${!isFilr || !empty ssBinder.teamMemberIds}">
 <TR>
   <TD class="ss_table_paragraph"></TD>
   <TD colSpan="2" class="ss_table_paragraph"><ssf:nlt tag="access.teamMembers"/></TD>

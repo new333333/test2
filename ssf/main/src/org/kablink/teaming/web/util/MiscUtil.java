@@ -579,30 +579,16 @@ public final class MiscUtil
 	 * 
 	 * @param s1
 	 * @param s2
-	 * @param collator
-	 * 
-	 * @return
-	 */
-	public static int safeSColatedCompare(String s1, String s2, Collator collator) {
-		return
-			collator.compare(
-				((null == s1) ? "" : s1),
-				((null == s2) ? "" : s2) );
-   }
-
-	/**
-	 * Performs a collated compare on two strings without generating any
-	 * exceptions.
-	 * 
-	 * @param s1
-	 * @param s2
 	 * 
 	 * @return
 	 */
 	public static int safeSColatedCompare(String s1, String s2) {
 		Collator collator = Collator.getInstance( RequestContextHolder.getRequestContext().getUser().getLocale());
 		collator.setStrength(Collator.IDENTICAL);
-		return safeSColatedCompare(s1, s2, collator);
+		return
+			collator.compare(
+				((null == s1) ? "" : s1),
+				((null == s2) ? "" : s2) );
    }
 
 	/**
@@ -955,19 +941,23 @@ public final class MiscUtil
 		
 		url += "/documentation";
 		
-		product = ("/" + SPropsUtil.getString( "release.product", "vibe" ));
+		product = "/vibe33";
 		
 		// Are we running Filr?
 		if ( Utils.checkIfFilr() )
 		{
 			// Yes
-			url    += ("/" + SPropsUtil.getString( "filr.release.product.novell", "novell-filr" ));
-			product = ("/" + SPropsUtil.getString( "filr.release.product",        "filr"        ));
+			url += "/novell-filr-1-1";
+			product = "/filr-1-1";
 		}
 		// Are we running Novell Teaming?
 		else if ( ReleaseInfo.isLicenseRequiredEdition())
-		     url += ("/" + SPropsUtil.getString( "release.product",         "vibe"        ));
-		else url += ("/" + SPropsUtil.getString( "release.product.kablink", "kablinkvibe" ));
+		{
+			// Yes
+			url += "/vibe33";
+		}
+		else
+			url += "/kablinkvibe33";
 		
 		if ( guideName != null && guideName.length() > 0 )
 		{

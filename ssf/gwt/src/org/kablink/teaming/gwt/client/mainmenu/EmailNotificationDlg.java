@@ -552,7 +552,7 @@ public class EmailNotificationDlg extends DlgBox implements EditSuccessfulHandle
 	 */
 	private void populateDlgNow() {
 		GetEmailNotificationInfoCmd geniCmd;
-		if      (isBinderSubscription())       geniCmd = new GetEmailNotificationInfoCmd(new EntityId(m_binderId, EntityId.FOLDER));
+		if      (isBinderSubscription())       geniCmd = new GetEmailNotificationInfoCmd(new EntityId(null, m_binderId, EntityId.FOLDER));
 		else if (isSingleEntitySubscription()) geniCmd = new GetEmailNotificationInfoCmd(m_entityIds.get(0));
 		else                                   geniCmd = new GetEmailNotificationInfoCmd();
 		GwtClientHelper.executeCommand(geniCmd, new AsyncCallback<VibeRpcResponse>() {

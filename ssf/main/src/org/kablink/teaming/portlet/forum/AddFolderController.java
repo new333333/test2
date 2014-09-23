@@ -162,7 +162,7 @@ public class AddFolderController extends SAbstractController {
 							emailAddress.add(bccEmailAddress.trim());
 						}
 					}
-					Set teamMemberIds = getBinderModule().getTeamMemberIds( newBinder );
+					Set teamMemberIds = newBinder.getTeamMemberIds();
 					if (!teamMemberIds.isEmpty()) {
 						@SuppressWarnings("unused")
 						Map status = getAdminModule().sendMail(teamMemberIds, null, emailAddress, null, null,
@@ -220,8 +220,7 @@ public class AddFolderController extends SAbstractController {
 		String templateName = PortletRequestUtils.getStringParameter(request, WebKeys.URL_TEMPLATE_NAME, "");				
 		String operation = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
 		Binder binder = getBinderModule().getBinder(binderId);
-		model.put(WebKeys.BINDER, binder);
-		model.put( WebKeys.BINDER_TEAM_MEMBER_IDS, getBinderModule().getTeamMemberIds( binder ) );
+		model.put(WebKeys.BINDER, binder); 
 		model.put(WebKeys.BINDER_TEMPLATE_NAME, templateName);
 		model.put(WebKeys.OPERATION, operation);
 		model.put(WebKeys.USER_PRINCIPAL, user);

@@ -717,16 +717,10 @@ public class BinderHelper {
 		Map userProperties = (Map) bs.getProfileModule().getUserProperties(user.getId()).getProperties();
 		if (userProperties == null) userProperties = new HashMap();
 		Long binderId = user.getWorkspaceId();
-		Binder topBinder = null;
-		try {
-			if (binderId == null) binderId = bs.getWorkspaceModule().getTopWorkspace().getId();
-			topBinder = bs.getWorkspaceModule().getTopWorkspace();
-		} catch(Exception e) {}
+		if (binderId == null) binderId = bs.getWorkspaceModule().getTopWorkspace().getId();
+		Binder topBinder = bs.getWorkspaceModule().getTopWorkspace();
 		Binder myWorkspaceBinder = bs.getBinderModule().getBinder(user.getWorkspaceId());
-		Binder binder = null;
-		try {
-			binder = bs.getBinderModule().getBinder(binderId);
-		} catch(Exception e) {}
+		Binder binder = bs.getBinderModule().getBinder(binderId);
 		setupStandardBeans(bs, request, response, model, binderId, "ss_mobile");
 		model.put(WebKeys.BINDER, binder);
 		model.put(WebKeys.TOP_WORKSPACE, topBinder);
@@ -751,10 +745,10 @@ public class BinderHelper {
 		model.put(WebKeys.PREV_PAGE, prevPage);
 		model.put(WebKeys.PAGE_ENTRIES_PER_PAGE, (Integer) options.get(ObjectKeys.SEARCH_MAX_HITS));
 
-		if (topBinder != null && (type.equals(ObjectKeys.MOBILE_WHATS_NEW_VIEW_TRACKED) || 
+		if (type.equals(ObjectKeys.MOBILE_WHATS_NEW_VIEW_TRACKED) || 
 				type.equals(ObjectKeys.MOBILE_WHATS_NEW_VIEW_FAVORITES) ||
 				type.equals(ObjectKeys.MOBILE_WHATS_NEW_VIEW_TEAMS) ||
-				type.equals(ObjectKeys.MOBILE_WHATS_NEW_VIEW_SITE))) {
+				type.equals(ObjectKeys.MOBILE_WHATS_NEW_VIEW_SITE)) {
 			setupWhatsNewBinderBeans(bs, myWorkspaceBinder, topBinder.getId(), model, 
 					String.valueOf(pageNumber), Integer.valueOf(pageSize), type);
 		} else if (type.equals(ObjectKeys.MOBILE_WHATS_NEW_VIEW_MICROBLOG)) {
@@ -3265,7 +3259,7 @@ public class BinderHelper {
 			if (0 < idList.size())       handleEmailRecipients(handledIds, recipients, idList);
 			if (0 < idListGroups.size()) handleEmailRecipients(handledIds, recipients, idListGroups);
 			if (0 < idListTeams.size())  handleTeamRecipients(handledIds,  recipients, idListTeams, bs.getBinderModule());
-			if (!toTeam.equals(""))      handleEmailRecipients(handledIds, recipients, bs.getBinderModule().getTeamMemberIds( entry.getParentFolder() ));
+			if (!toTeam.equals(""))      handleEmailRecipients(handledIds, recipients, entry.getParentFolder().getTeamMemberIds());
 			
 			if (!recipients.isEmpty()) {
 				try {
@@ -5445,8 +5439,7 @@ public class BinderHelper {
 			 isBinderProfilesRootWS(  binder) ||	// The root workspace that contains all other workspaces.
 			 isBinderNetFoldersRootWS(binder) ||	// The root workspace that contains all Net Folders.
 			 isBinderHomeFolder(      binder) ||	// Any user's Home folder.
-			 isBinderTopNetFolder(    binder) ||	// Any top level Net Folder.
-			 isBinderMyFilesStorage(  binder));		// Any user's My Files Storage folder.
+			 isBinderTopNetFolder(    binder));		// Any top level Net Folder.
 	}
 	
 	/**

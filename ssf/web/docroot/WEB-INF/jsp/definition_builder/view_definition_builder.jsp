@@ -62,9 +62,6 @@
 %>
 <script type="text/javascript">
 	ss_loadJsFile(ss_rootPath, "js/jsp/tag_jsps/find/find.js");
-	dojo.require("dojo.date");
-	dojo.require("dojo.date.locale");
-	dojo.require("dojo.date.stamp");
 	dojo.require("dijit.form.DateTextBox");
 	dojo.require("dijit.form.TimeTextBox");
 </script> 

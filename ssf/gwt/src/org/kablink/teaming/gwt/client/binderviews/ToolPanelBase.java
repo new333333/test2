@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -35,7 +35,6 @@ package org.kablink.teaming.gwt.client.binderviews;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingFilrImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingImageBundle;
-import org.kablink.teaming.gwt.client.GwtTeamingMainMenuImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.EntityId;
@@ -50,17 +49,16 @@ import com.google.gwt.user.client.ui.ResizeComposite;
  * @author drfoster@novell.com
  */
 public abstract class ToolPanelBase extends ResizeComposite {
-	public    final        BinderInfo						m_binderInfo;										// Caches a  BinderInfo for use by this tool panel.
-	public    final        EntityId							m_entityId;											// Caches an EntityId   for use by this tool panel.
-	private   final        RequiresResize					m_containerResizer;									//
-	protected final static GwtTeamingFilrImageBundle		m_filrImages = GwtTeaming.getFilrImageBundle();		// Access to the GWT Filr image resources.
-	protected final static GwtTeamingImageBundle			m_images     = GwtTeaming.getImageBundle();			// Access to the GWT base image resources.
-	protected final static GwtTeamingMainMenuImageBundle	m_menuImages = GwtTeaming.getMainMenuImageBundle();	// Access to the GWT menu image resources.
-	protected final static GwtTeamingMessages				m_messages   = GwtTeaming.getMessages();			// Access to the GWT localized string resources.
-	private                Timer							m_resizeContainerTimer;								// A timer used to control telling the container something's been resized.
+	public    final        BinderInfo					m_binderInfo;									// Caches a  BinderInfo for use by this tool panel.
+	public    final        EntityId						m_entityId;										// Caches an EntityId   for use by this tool panel.
+	private   final        RequiresResize				m_containerResizer;								//
+	protected final static GwtTeamingFilrImageBundle	m_filrImages = GwtTeaming.getFilrImageBundle();	// Access to the GWT Filr image resources.
+	protected final static GwtTeamingImageBundle		m_images     = GwtTeaming.getImageBundle();		// Access to the GWT base image resources.
+	protected final static GwtTeamingMessages			m_messages   = GwtTeaming.getMessages();		// Access to the GWT localized string resources.
+	private                Timer						m_resizeContainerTimer;							// A timer used to control telling the container something's been resized.
 	@SuppressWarnings("unused")
-	private                int								m_droppedResizes;									//
-	private                ToolPanelReady					m_toolPanelReady;									//
+	private                int							m_droppedResizes;								//
+	private                ToolPanelReady				m_toolPanelReady;								//
 
 	// The following defines the amount of time we wait after having
 	// been notified of a resize before passing it on to the container.

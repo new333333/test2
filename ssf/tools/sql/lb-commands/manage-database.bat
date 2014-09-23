@@ -1,7 +1,7 @@
 @echo off
 if "%OS%" == "Windows_NT" setlocal
 
-set CLASSPATH=.\lib\mysql-connector.jar;.\lib\ojdbc7.jar;.\lib\jtds.jar
+set CLASSPATH=.\lib\mysql-connector.jar;.\lib\ojdbc6.jar;.\lib\jtds.jar
 
 rem Set default log level. Valid values are debug, info, warning, severe, off.
 set LOG_LEVEL=info

@@ -5,7 +5,7 @@
   <attribute name="templateDescription" type="description">__template_folder_calendar_description</attribute>
   <attribute name="title" type="string">__template_folder_calendar</attribute>
   <attribute name="description" type="description"></attribute>
-  <attribute name="iconName" type="string">/icons/folder_blue_calendar.png</attribute>
+  <attribute name="iconName" type="string">/icons/folder_blue_calendar.gif</attribute>
   <attribute name="name" type="string">_folder_calendar</attribute>
   <property name="library">false</property>
   <property name="mirrored">false</property>

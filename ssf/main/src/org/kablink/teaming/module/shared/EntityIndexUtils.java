@@ -50,8 +50,10 @@ import org.apache.lucene.document.DateTools;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.NumericField;
+
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
+
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.ProfileDao;
@@ -81,7 +83,6 @@ import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.fi.connection.ResourceDriver;
 import org.kablink.teaming.fi.connection.ResourceDriverManager;
-import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.definition.DefinitionUtils;
 import org.kablink.teaming.module.workflow.WorkflowUtils;
 import org.kablink.teaming.search.BasicIndexUtils;
@@ -89,7 +90,6 @@ import org.kablink.teaming.security.function.WorkArea;
 import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.task.TaskHelper;
 import org.kablink.teaming.util.LongIdUtil;
-import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.TagUtil;
 import org.kablink.teaming.util.Utils;
@@ -113,23 +113,8 @@ import static org.kablink.util.search.Constants.*;
 public class EntityIndexUtils {
     // Defines field values
     public static final String DEFAULT_NOTITLE_TITLE = "---";
-    
-    private static final int DEFAULT_MAX_EVENT_DAYS	= 3650;	// (365 * 10) = 3650:  ~10 years.
-    
-    private static BinderModule m_binderModule = null;
-    
-    /**
-     * 
-     */
-	private static BinderModule getBinderModule()
-	{
-		if ( m_binderModule == null )
-			m_binderModule = (BinderModule) SpringContextUtil.getBean("binderModule");
-
-		return m_binderModule;
-	}
-
-	public static void addTitle(Document doc, DefinableEntity entry, boolean fieldsOnly) {
+        
+    public static void addTitle(Document doc, DefinableEntity entry, boolean fieldsOnly) {
         // Add the title field
     	if (entry.getTitle() != null) {
     		String title = entry.getTitle();
@@ -516,9 +501,8 @@ public class EntityIndexUtils {
 				if (attrEle != null) {
 					// set the event name to event + count
 					Event event = (Event)att.getValue();
-					int maxEventDaysToIndex = getMaxEventDaysToIndex();
-					List recurencesDates = event.getAllRecurrenceDatesForIndexing(maxEventDaysToIndex);
-					List allEventDays = Event.getEventDaysFromRecurrencesDatesForIndexing(recurencesDates, maxEventDaysToIndex);
+					List recurencesDates = event.getAllRecurrenceDates();
+					List allEventDays = Event.getEventDaysFromRecurrencesDates(recurencesDates);
 					entryEventsDates.addAll(allEventDays);
 									
 					if (att.getValue() != null) {
@@ -551,19 +535,8 @@ public class EntityIndexUtils {
     	Field eventCountField = FieldFactory.createFieldStoredNotAnalyzed(EVENT_COUNT_FIELD, Integer.toString(count));
     	doc.add(eventCountField);
     }
-	
-	/*
-	 * Returns the maximum number of days that can contribute to the
-	 * event information added to the index.
-	 */
-	private static int getMaxEventDaysToIndex() {
-		int reply = SPropsUtil.getInt("max.event.days.to.index", DEFAULT_MAX_EVENT_DAYS);
-		if (0 == reply) {
-			reply = Integer.MAX_VALUE;
-		}
-		return reply;
-	}
-
+    
+    
 	private static Field getEntryEventDaysField(String fieldName, Set dates) {
 		StringBuilder sb = new StringBuilder();
 		Iterator datesIt = dates.iterator();
@@ -697,7 +670,7 @@ public class EntityIndexUtils {
     }
     public static String getFolderTeamAclString(Binder binder) {
     	Long allUsersId = Utils.getAllUsersGroupId();
-    	Set teamList = getBinderModule().getTeamMemberIds( binder );  
+    	Set teamList = binder.getTeamMemberIds();  
     	//Note: condition acls are not needed here 
     	//  since these get paired with _folderAcl:team which does have any conditions applied
     	if (teamList.contains(allUsersId)) {
@@ -909,13 +882,8 @@ public class EntityIndexUtils {
 		}
     }
 
-    private static void markEntryAsInheritingAcls(Document doc, Binder binder, Entry entry, boolean rss) {
-    	if (entry instanceof FolderEntry) {
-    		if (rss) {
-    	    	//Note: if rss=true, we add "entryAcl=all". 
-    			//This is only valid for Vibe. Net folders are not supportted in RSS
-    			doc.add(FieldFactory.createFieldNotStoredNotAnalyzed(Constants.ENTRY_ACL_FIELD, Constants.READ_ACL_ALL));
-    		}
+    private static void markEntryAsInheritingAcls(Document doc, Binder binder, Entry entry) {
+    	if(entry instanceof FolderEntry) {
     		long value = binder.getId().longValue(); // parent folder id
     		// Currently only the FAMT resource driver exposes files whose ACLs are not stored in Filr.
     		if(binder.noAclDredgedWithEntries())
@@ -925,7 +893,7 @@ public class EntityIndexUtils {
     }
     
     //Add acl fields for binder for storage in search engine
-    public static void addBinderAcls(Document doc, Binder binder) {
+    private static void addBinderAcls(Document doc, Binder binder) {
     	addBinderAcls(doc, binder, false);
     }
     private static void addBinderAcls(Document doc, Binder binder, boolean includeTitleAcl) {
@@ -962,8 +930,8 @@ public class EntityIndexUtils {
    		//add Team 
    		//  Don't need to add conditions since this is paired with _folderAcl:team which does have conditions applied
    		acl = parent.addElement(Constants.TEAM_ACL_FIELD);
-   		String tms = getBinderModule().getTeamMemberString( binder );
-   		if ( getBinderModule().getTeamMemberIds( binder ).contains(allUsersId)) {
+   		String tms = binder.getTeamMemberString();
+   		if (binder.getTeamMemberIds().contains(allUsersId)) {
    			tms = tms + " " + Constants.READ_ACL_GLOBAL + " " + Constants.READ_ACL_ALL;
    		}
    		acl.setText(tms);
@@ -1060,15 +1028,8 @@ public class EntityIndexUtils {
    		pIds.append(Constants.READ_ACL_ALL_USERS);      			
    		return pIds.toString();
     }
-    
-	// Add ACL field. We only need to index ACLs for read access.
     public static void addReadAccess(Document doc, Binder binder, DefinableEntity entry, boolean fieldsOnly) {
-    	addReadAccess(doc, binder, entry, fieldsOnly, false);
-    }
-    public static void addReadAccess(Document doc, Binder binder, DefinableEntity entry, boolean fieldsOnly, boolean rss) {
-    	//Note: if rss=true, an old style ACL is returned. This is only valid for Vibe and not for net folders. 
-    	//IMPORTANT: CALLS MADE WITH "rss=true" WILL RENDER ALL NET FOLDER ENTRIES VISIBLE TO SEARCH!!!!!! 
-    	//Only RSS should use this rss mode. Net folders are not supportted in RSS.
+		// Add ACL field. We only need to index ACLs for read access.
     	if (entry instanceof WorkflowSupport) {
     		WorkflowSupport wEntry = (WorkflowSupport)entry;
        		// Add the Entry_ACL field
@@ -1110,7 +1071,7 @@ public class EntityIndexUtils {
 	       				else {
 	       					// This entry is using the folder's external ACL. If user has read access to the 
 	       					// parent folder through its external ACL, then she shall have same access to this entry. 
-			    			markEntryAsInheritingAcls(doc, binder, e, rss);
+			    			markEntryAsInheritingAcls(doc, binder, e);
 	       				}
 	       			}
 	       			else {
@@ -1119,12 +1080,12 @@ public class EntityIndexUtils {
 			       			addEntryAcls(doc, binder, e);
 			       			if(e.isIncludeFolderAcl()) {
 			       				// In addition to entry-level ACL, this entry is also inheriting ACLs from its parent folder.
-				    			markEntryAsInheritingAcls(doc, binder, e, rss);
+				    			markEntryAsInheritingAcls(doc, binder, e);
 			       			}
 			    		} else {
 			    			// The entry has neither workflow ACL nor its own ACL.
 			    			//The entry is using the folder's ACL
-			    			markEntryAsInheritingAcls(doc, binder, e, rss);
+			    			markEntryAsInheritingAcls(doc, binder, e);
 			    		}
 	       			}
 	       		}

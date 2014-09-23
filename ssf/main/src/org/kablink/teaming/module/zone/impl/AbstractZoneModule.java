@@ -700,22 +700,6 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 				getProfileModule().setUserProperty(superU.getId(), ObjectKeys.USER_PROPERTY_UPGRADE_TEMPLATES, "true");
 			}
 		}
-		
-		if(version.intValue() <= 18) { 
-			// Upgrade version 18 is the last version that belongs to Filr 1.1 release, and 19 belongs to Vibe Hudson release
-			if (!Utils.checkIfFilr()) { // This is Vibe
-				if(version.intValue() >= 8) {
-					// Upgrade version 8 is the last version that belongs to Vibe Granite (3.4) release.
-					// Since we added Vibe Granite-style external user support only in Granite release,
-					// there is no reason to bother with the upgrade if user is upgrading from pre-Granite Vibe.
-					// In other word, this process is necessary only if user is upgrading from Granite to Hudson.
-					getProfileModule().upgradeVibeGraniteExternalUsers(); // Upgrade Vibe Granite external users.
-				}
-				
-				// Upgrade team membership.
-				getBinderModule().upgradeTeamMembership();
-			}
-		}
   	}
  	
  	private void correctFilrRoles(ZoneConfig zoneConfig) {
@@ -2115,7 +2099,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 			setGlobalWorkareaFunctionMembership(zoneConfig, function, new HashSet());
 		}
 		
-		if (Utils.checkIfFilr() && !functionInternalIds.containsKey(ObjectKeys.FUNCTION_ALLOW_ACCESS_NET_FOLDER_INTERNALID)) {
+		if (!functionInternalIds.containsKey(ObjectKeys.FUNCTION_ALLOW_ACCESS_NET_FOLDER_INTERNALID)) {
 			function = new Function();
 			function.setZoneId(zoneConfig.getZoneId());
 			function.setName(ObjectKeys.ROLE_ALLOW_ACCESS_NET_FOLDER);
@@ -2125,15 +2109,6 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 			//generate functionId
 			getFunctionManager().addFunction(function);
 			setGlobalWorkareaFunctionMembership(zoneConfig, function, new HashSet());
-		} else if (!Utils.checkIfFilr() && functionInternalIds.containsKey(ObjectKeys.FUNCTION_ALLOW_ACCESS_NET_FOLDER_INTERNALID)) {
-			if (!SPropsUtil.getBoolean("keepFilrRolesAndRightsInVibe", false)) {
-				Function f = (Function) functionInternalIds.get(ObjectKeys.FUNCTION_ALLOW_ACCESS_NET_FOLDER_INTERNALID);
-				try {
-					getFunctionManager().deleteFunction(f, true);
-				} catch(Exception e) {
-					logger.warn("Could not delete Filr AllowNetFolderAccess role from Vibe installation");
-				}
-			}
 		}
 
 		if (!functionInternalIds.containsKey(ObjectKeys.FUNCTION_ENABLE_LINK_SHARING_INTERNALID)) {
@@ -2162,6 +2137,23 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 			addViewBinderTitleRole(zoneConfig.getZoneId());
 		}
 		
+		// The next calls should be deleted. These file roles were never shipped
+		//TODO remove these next lines before Filr ships
+		for (Function f : functions) {
+			if (f.getName().equals("__role.FilrFolderRead") || 
+					f.getName().equals("__role.FilrFolderWrite") || 
+					f.getName().equals("__role.FilrFolderOwner") ||
+					f.getName().equals("__role.FilrFileRead") || 
+					f.getName().equals("__role.FilrFileWrite") || 
+					f.getName().equals("__role.FilrFileOwner") ||
+					f.getName().equals("__role.enableChangingAccessControl")) {
+				try{
+					getFunctionManager().deleteFunction(f, true);
+				} catch(Exception e) {
+					logger.warn("Could not delete unused Filr roles");
+				}
+			}
+		}
 		functions = getFunctionManager().findFunctions(zoneConfig.getZoneId());
 		functionInternalIds = new HashMap();
 		for (int i = 0; i < functions.size(); i++) {

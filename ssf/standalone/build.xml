@@ -170,7 +170,7 @@
 		
 		<copy file="${project.dir}/lib/jtds.jar" todir="${tomcat.common.lib.ext}" />
 		<copy file="${project.dir}/lib/mysql-connector.jar" todir="${tomcat.common.lib.ext}" />
-		<copy file="${project.dir}/lib/ojdbc7.jar" todir="${tomcat.common.lib.ext}" />
+		<copy file="${project.dir}/lib/ojdbc6.jar" todir="${tomcat.common.lib.ext}" />
 
 		<copy file="${project.dir}/lib/activation.jar" todir="${tomcat.common.lib.ext}" />
 		<copy file="${project.dir}/lib/mail.jar" todir="${tomcat.common.lib.ext}" />
@@ -212,7 +212,7 @@
 						
 		<copy file="${project.dir}/lib/jtds.jar" todir="${app.server.server.dir}/lib" />
 		<copy file="${project.dir}/lib/mysql-connector.jar" todir="${app.server.server.dir}/lib" />
-		<copy file="${project.dir}/lib/ojdbc7.jar" todir="${app.server.server.dir}/lib" />
+		<copy file="${project.dir}/lib/ojdbc6.jar" todir="${app.server.server.dir}/lib" />
 
 		<!-- 1. JBoss 4.0.2+ classloader does not work properly if the application 
 		     comes with its own log4j archive. (You get the following error -

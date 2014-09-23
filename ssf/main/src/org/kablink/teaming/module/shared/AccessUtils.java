@@ -372,7 +372,7 @@ public class AccessUtils  {
 	        				//For personal entities that allow AllUsers, add in the groups of the binder owner and the team
 	        	        	Set<Long> userGroupIds = getInstance().getProfileDao()
 	        	        		.getAllGroupMembership(entity.getCreation().getPrincipal().getId(), zoneId);
-	        				userGroupIds.addAll( getInstance().getBinderModule().getTeamMemberIds( entity.getParentBinder() ) );
+	        				userGroupIds.addAll(entity.getParentBinder().getTeamMemberIds());
 	        				if (entity instanceof FolderEntry) {
 	        					userGroupIds.addAll(getInstance().getProfileDao()
 	        		    			.getAllGroupMembership(entity.getParentBinder().getOwner().getId(), zoneId));
@@ -412,7 +412,7 @@ public class AccessUtils  {
 		        				//For personal entities that allow AllUsers, add in the groups of the binder owner and the team
 		        	        	Set<Long> userGroupIds = getInstance().getProfileDao()
 		        	        		.getAllGroupMembership(entity.getCreation().getPrincipal().getId(), zoneId);
-		        				userGroupIds.addAll( getInstance().getBinderModule().getTeamMemberIds( entity.getParentBinder() ) );
+		        				userGroupIds.addAll(entity.getParentBinder().getTeamMemberIds());
 		        				if (entity instanceof FolderEntry) {
 		        					userGroupIds.addAll(getInstance().getProfileDao()
 		        		    			.getAllGroupMembership(entity.getParentBinder().getOwner().getId(), zoneId));
@@ -450,7 +450,7 @@ public class AccessUtils  {
         				//For personal entities that allow AllUsers, add in the groups of the binder owner and the team
         	        	Set<Long> userGroupIds = getInstance().getProfileDao()
         	        		.getAllGroupMembership(entity.getCreation().getPrincipal().getId(), zoneId);
-        				userGroupIds.addAll( getInstance().getBinderModule().getTeamMemberIds( entity.getParentBinder() ) );
+        				userGroupIds.addAll(entity.getParentBinder().getTeamMemberIds());
         				if (entity instanceof FolderEntry) {
         					userGroupIds.addAll(getInstance().getProfileDao()
         		    			.getAllGroupMembership(entity.getParentBinder().getOwner().getId(), zoneId));
@@ -607,7 +607,7 @@ public class AccessUtils  {
     private static void checkAccess(User user, Binder binder, WorkflowSupport entry, WfAcl.AccessType type) {
         Set allowedIds = entry.getStateMembers(type);
         if (allowedIds.remove(ObjectKeys.OWNER_USER_ID)) allowedIds.add(entry.getOwnerId());
-     	if (allowedIds.remove(ObjectKeys.TEAM_MEMBER_ID)) allowedIds.addAll( getInstance().getBinderModule().getTeamMemberIds( binder ) );
+     	if (allowedIds.remove(ObjectKeys.TEAM_MEMBER_ID)) allowedIds.addAll(binder.getTeamMemberIds());
         if (testAccess(user, allowedIds)) return;
         throw new AclAccessControlException(user.getName(), type.toString());
     }
@@ -993,7 +993,7 @@ public class AccessUtils  {
  			//check explicit users
  			Set allowedIds = acl.getPrincipalIds();   
  			if (allowedIds.remove(ObjectKeys.OWNER_USER_ID)) allowedIds.add(entry.getOwnerId());
-        	if (allowedIds.remove(ObjectKeys.TEAM_MEMBER_ID)) allowedIds.addAll( getInstance().getBinderModule().getTeamMemberIds( binder ) );
+        	if (allowedIds.remove(ObjectKeys.TEAM_MEMBER_ID)) allowedIds.addAll(binder.getTeamMemberIds());
 			if (testAccess(user, allowedIds)) return;
  			
  			if (acl.isUseDefault()) { 		
@@ -1016,7 +1016,7 @@ public class AccessUtils  {
  			//This basically AND's the binder and entry, since we already passed the binder
 			Set allowedIds = acl.getPrincipalIds();   
  			if (allowedIds.remove(ObjectKeys.OWNER_USER_ID)) allowedIds.add(entry.getOwnerId());
-        	if (allowedIds.remove(ObjectKeys.TEAM_MEMBER_ID)) allowedIds.addAll( getInstance().getBinderModule().getTeamMemberIds( binder ) );
+        	if (allowedIds.remove(ObjectKeys.TEAM_MEMBER_ID)) allowedIds.addAll(binder.getTeamMemberIds());
  			if (testAccess(user, allowedIds)) return;
  			throw new AclAccessControlException(user.getName(), acl.getType().toString());
    		}

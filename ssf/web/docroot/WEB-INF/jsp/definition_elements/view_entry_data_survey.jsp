@@ -69,7 +69,6 @@
 
 <c:set var="hasRightsToVote" value="${ss_accessControlMap[ssDefinitionEntry.id]['addReply']}"/>
 <c:set var="isModerator" value="${ss_accessControlMap[ssDefinitionEntry.id]['modifyEntry']}"/>
-<c:set var="canClearAllVotes" value="${ss_accessControlMap[ssDefinitionEntry.id]['deleteEntry']}"/>
 <c:set var="surveyModel" value="${ssDefinitionEntry.customAttributes[property_name].value.surveyModel}"/>
 
 <c:set var="operationChangeVote" value="${operation=='changeVote'}" />
@@ -225,32 +224,20 @@
 		</c:if>
 		
 		<c:if test="${overdue}">
-		  <div>
 		    <ssf:nlt tag="survey.vote.notAllowed.overdue"/>
-		  </div>
 		</c:if>
 
 		<c:if test="${showResults}">
 			<c:if test="${!overdue && (surveyModel.alreadyVotedCurrentUser || alreadyVotedByGuest) && !operationChangeVote}">
-				<div>
-				    <ssf:nlt tag="survey.vote.status.alreadyVotedStillOpen">
-	    			<ssf:param name="value" useBody="true"><fmt:formatDate value="${dueDate}" 
-					    		 										timeZone="${ssUser.timeZone.ID}" type="both" 
-																	  timeStyle="short" dateStyle="medium"/></ssf:param></ssf:nlt>
-				</div>
+					    <ssf:nlt tag="survey.vote.status.alreadyVotedStillOpen">
+		    	<ssf:param name="value" useBody="true"><fmt:formatDate value="${dueDate}" 
+						    		 										timeZone="${ssUser.timeZone.ID}" type="both" 
+																		  timeStyle="short" dateStyle="medium"/></ssf:param></ssf:nlt>
 			</c:if>
 		</c:if>
 		
 		<c:if test="${!overdue && !surveyModel.alreadyVotedCurrentUser && !hasRightsToVote && (surveyModel.allowedToViewBeforeDueDateCurrentUser || isModerator)}">
 			<ssf:nlt tag="survey.vote.status.noRightsToVoteRightsToViewBefore"/>
-		</c:if>
-
-		<c:if test="${isModerator && canClearAllVotes}">
-		  <div>
-			<a href="<ssf:url adapter="true" portletName="ss_forum" folderId="${ssBinder.id}" 
-					action="view_folder_entry" entryId="${ssEntry.id}" actionUrl="true"><ssf:param name="operation" value="vote_survey_remove_all" 
-			/></ssf:url>"><ssf:nlt tag="survey.title.clearAllVotes"/></a>
-		  </div>
 		</c:if>
 
 		

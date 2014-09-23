@@ -45,7 +45,6 @@ import org.kablink.teaming.InternalException;
 import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
 import org.kablink.teaming.module.folder.FolderModule.FolderOperation;
 import org.kablink.teaming.util.SPropsUtil;
-import org.kablink.teaming.util.Utils;
 
 /**
  * <code>Operation</code> class defines an operation that can be performed
@@ -143,7 +142,8 @@ public class WorkAreaOperation {
     private boolean zoneWide=false;
     private WorkAreaOperation(String name) {
 	    this.name = name;
-    	if (checkIfOperationValid(name)) {
+    	if (!"viewBinderTitle".equals(name) || 
+    			SPropsUtil.getBoolean("accessControl.viewBinderTitle.enabled", false)) {
 		    Instances.put(name, this);
     	}
     }
@@ -151,25 +151,8 @@ public class WorkAreaOperation {
     private WorkAreaOperation(String name, boolean zoneWide) {
         this.name = name;
         this.zoneWide = zoneWide;
-        if (checkIfOperationValid(name)) {
-        	Instances.put(name, this);
-        }
+    	Instances.put(name, this);
     }
-    
-    private boolean checkIfOperationValid(String name) {
-    	if ("viewBinderTitle".equals(name) && 
-    			!SPropsUtil.getBoolean("accessControl.viewBinderTitle.enabled", false)) {
-    		return false;
-    	}
-    	if (!Utils.checkIfFilr() && !SPropsUtil.getBoolean("keepFilrRolesAndRightsInVibe", false)) {
-    		//Remove the Filr specific rights if not Filr (unless a developer wants them preserved)
-        	if ("allowAccessNetFolder".equals(name)) {
-        		return false;
-        	}
-    	}
-    	return true;
-    }
-    
     public String getName() {
         return name;
     }

@@ -201,7 +201,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	font-size: 20px;
 	font-weight: 200;
 	font-family: Arial, Helvetica, sans-serif;
-	color: #036f9f !important;
+	color:#5691A6!important;
 	}
 <%
 /**

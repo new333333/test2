@@ -99,7 +99,6 @@ import org.kablink.teaming.gwt.client.event.DisableSelectedUsersEvent;
 import org.kablink.teaming.gwt.client.event.DisableSelectedUsersAdHocFoldersEvent;
 import org.kablink.teaming.gwt.client.event.DisableSelectedUsersDownloadEvent;
 import org.kablink.teaming.gwt.client.event.DisableSelectedUsersWebAccessEvent;
-import org.kablink.teaming.gwt.client.event.DownloadFolderAsCSVFileEvent;
 import org.kablink.teaming.gwt.client.event.EditPublicLinkSelectedEntitiesEvent;
 import org.kablink.teaming.gwt.client.event.EmailPublicLinkSelectedEntitiesEvent;
 import org.kablink.teaming.gwt.client.event.EnableSelectedUsersEvent;
@@ -110,15 +109,12 @@ import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.FullUIReloadEvent;
 import org.kablink.teaming.gwt.client.event.HideSelectedSharesEvent;
 import org.kablink.teaming.gwt.client.event.InvokeColumnResizerEvent;
-import org.kablink.teaming.gwt.client.event.InvokeCopyFiltersDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeDropBoxEvent;
 import org.kablink.teaming.gwt.client.event.InvokeEditInPlaceEvent;
 import org.kablink.teaming.gwt.client.event.InvokeSignGuestbookEvent;
 import org.kablink.teaming.gwt.client.event.LockSelectedEntitiesEvent;
 import org.kablink.teaming.gwt.client.event.MailToPublicLinkEntityEvent;
 import org.kablink.teaming.gwt.client.event.ManageSharesSelectedEntitiesEvent;
-import org.kablink.teaming.gwt.client.event.MarkFolderContentsReadEvent;
-import org.kablink.teaming.gwt.client.event.MarkFolderContentsUnreadEvent;
 import org.kablink.teaming.gwt.client.event.MarkReadSelectedEntitiesEvent;
 import org.kablink.teaming.gwt.client.event.MarkUnreadSelectedEntitiesEvent;
 import org.kablink.teaming.gwt.client.event.MobileDeviceWipeScheduleStateChangedEvent;
@@ -240,7 +236,6 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		DisableSelectedUsersAdHocFoldersEvent.Handler,
 		DisableSelectedUsersDownloadEvent.Handler,
 		DisableSelectedUsersWebAccessEvent.Handler,
-		DownloadFolderAsCSVFileEvent.Handler,
 		EditPublicLinkSelectedEntitiesEvent.Handler,
 		EmailPublicLinkSelectedEntitiesEvent.Handler,
 		EnableSelectedUsersEvent.Handler,
@@ -249,15 +244,12 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		EnableSelectedUsersWebAccessEvent.Handler,
 		HideSelectedSharesEvent.Handler,
 		InvokeColumnResizerEvent.Handler,
-		InvokeCopyFiltersDlgEvent.Handler,
 		InvokeDropBoxEvent.Handler,
 		InvokeEditInPlaceEvent.Handler,
 		InvokeSignGuestbookEvent.Handler,
 		LockSelectedEntitiesEvent.Handler,
 		MailToPublicLinkEntityEvent.Handler,
 		ManageSharesSelectedEntitiesEvent.Handler,
-		MarkFolderContentsReadEvent.Handler,
-		MarkFolderContentsUnreadEvent.Handler,
 		MarkReadSelectedEntitiesEvent.Handler,
 		MarkUnreadSelectedEntitiesEvent.Handler,
 		MobileDeviceWipeScheduleStateChangedEvent.Handler,
@@ -338,7 +330,6 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		TeamingEvents.DISABLE_SELECTED_USERS_ADHOC_FOLDERS,
 		TeamingEvents.DISABLE_SELECTED_USERS_DOWNLOAD,
 		TeamingEvents.DISABLE_SELECTED_USERS_WEBACCESS,
-		TeamingEvents.DOWNLOAD_FOLDER_AS_CSV_FILE,
 		TeamingEvents.EDIT_PUBLIC_LINK_SELECTED_ENTITIES,
 		TeamingEvents.EMAIL_PUBLIC_LINK_SELECTED_ENTITIES,
 		TeamingEvents.ENABLE_SELECTED_USERS,
@@ -347,15 +338,12 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		TeamingEvents.ENABLE_SELECTED_USERS_WEBACCESS,
 		TeamingEvents.HIDE_SELECTED_SHARES,
 		TeamingEvents.INVOKE_COLUMN_RESIZER,
-		TeamingEvents.INVOKE_COPY_FILTERS_DLG,
 		TeamingEvents.INVOKE_DROPBOX,
 		TeamingEvents.INVOKE_EDIT_IN_PLACE,
 		TeamingEvents.INVOKE_SIGN_GUESTBOOK,
 		TeamingEvents.LOCK_SELECTED_ENTITIES,
 		TeamingEvents.MAILTO_PUBLIC_LINK_ENTITY,
 		TeamingEvents.MANAGE_SHARES_SELECTED_ENTITIES,
-		TeamingEvents.MARK_FOLDER_CONTENTS_READ,
-		TeamingEvents.MARK_FOLDER_CONTENTS_UNREAD,
 		TeamingEvents.MARK_READ_SELECTED_ENTITIES,
 		TeamingEvents.MARK_UNREAD_SELECTED_ENTITIES,
 		TeamingEvents.MOBILE_DEVICE_WIPE_SCHEDULE_CHANGED,
@@ -1389,17 +1377,17 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		m_defaultColumnWidth = new ColumnWidth(20);
 
 		// Add the widths for predefined column names...
-		m_columnWidths.put(FolderColumn.COLUMN_AUTHOR,    new ColumnWidth( 24         ));	// Unless otherwise specified...
-		m_columnWidths.put(FolderColumn.COLUMN_COMMENTS,  new ColumnWidth( 70, Unit.PX));	// ...the widths default to...
-		m_columnWidths.put(FolderColumn.COLUMN_DATE,      new ColumnWidth(160, Unit.PX));	// ...be a percentage value.
-		m_columnWidths.put(FolderColumn.COLUMN_DOCNUMBER, new ColumnWidth( 60, Unit.PX));
-		m_columnWidths.put(FolderColumn.COLUMN_DOWNLOAD,  new ColumnWidth(  8         ));	
-		m_columnWidths.put(FolderColumn.COLUMN_HTML,      new ColumnWidth( 10         ));
-		m_columnWidths.put(FolderColumn.COLUMN_LOCATION,  new ColumnWidth( 30         ));
-		m_columnWidths.put(FolderColumn.COLUMN_RATING,    new ColumnWidth( 10         ));
-		m_columnWidths.put(FolderColumn.COLUMN_SIZE,      new ColumnWidth( 80, Unit.PX));
-		m_columnWidths.put(FolderColumn.COLUMN_STATE,     new ColumnWidth(  8         ));
-	    m_columnWidths.put(FolderColumn.COLUMN_TITLE,     new ColumnWidth(240, Unit.PX));
+		m_columnWidths.put(FolderColumn.COLUMN_AUTHOR,   new ColumnWidth( 24         ));	// Unless otherwise specified...
+		m_columnWidths.put(FolderColumn.COLUMN_COMMENTS, new ColumnWidth( 70, Unit.PX));	// ...the widths default to...
+		m_columnWidths.put(FolderColumn.COLUMN_DATE,     new ColumnWidth(160, Unit.PX));	// ...be a percentage value.
+		m_columnWidths.put(FolderColumn.COLUMN_DOWNLOAD, new ColumnWidth(  8         ));	
+		m_columnWidths.put(FolderColumn.COLUMN_HTML,     new ColumnWidth( 10         ));
+		m_columnWidths.put(FolderColumn.COLUMN_LOCATION, new ColumnWidth( 30         ));
+		m_columnWidths.put(FolderColumn.COLUMN_NUMBER,   new ColumnWidth( 60, Unit.PX));
+		m_columnWidths.put(FolderColumn.COLUMN_RATING,   new ColumnWidth( 10         ));
+		m_columnWidths.put(FolderColumn.COLUMN_SIZE,     new ColumnWidth( 80, Unit.PX));
+		m_columnWidths.put(FolderColumn.COLUMN_STATE,    new ColumnWidth(  8         ));
+	    m_columnWidths.put(FolderColumn.COLUMN_TITLE,    new ColumnWidth(240, Unit.PX));
 
 		// ...and then add the widths for everything else.
 		m_columnWidths.put(FolderColumn.COLUMN_SELECT,   new ColumnWidth( 33, Unit.PX));
@@ -2452,29 +2440,6 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	}
 	
 	/**
-	 * Handles DownloadFolderAsCSVFileEvent's received by this class.
-	 * 
-	 * Implements the DownloadFolderAsCSVFileEvent.Handler.onDownloadFolderAsCSVFile() method.
-	 * 
-	 * @param event
-	 */
-	@Override
-	public void onDownloadFolderAsCSVFile(DownloadFolderAsCSVFileEvent event) {
-		// Is the event targeted to this folder?
-		Long dlFolderId    = event.getFolderId();
-		Long eventFolderId = event.getHandleByFolderId();
-		if (null == eventFolderId) {
-			eventFolderId = dlFolderId;
-		}
-		if (eventFolderId.equals(getFolderId())) {
-			// Yes!  Invoke the download.
-			BinderViewsHelper.downloadFolderAsCSVFile(
-				getDownloadPanel().getForm(),
-				dlFolderId);
-		}
-	}
-	
-	/**
 	 * Handles EditPublicLinkSelectedEntitiesEvent's received by this class.
 	 * 
 	 * Implements the EditPublicLinkSelectedEntitiesEvent.Handler.onEditPublicLinkSelectedEntities() method.
@@ -2885,8 +2850,8 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 	@Override
 	public void onInvokeColumnResizer(InvokeColumnResizerEvent event) {
 		// Is the event targeted to this folder?
-		BinderInfo eventBinderInfo = event.getBinderInfo();
-		if (eventBinderInfo.isEqual(getFolderInfo())) {
+		BinderInfo evenBinderInfo = event.getBinderInfo();
+		if (evenBinderInfo.isEqual(getFolderInfo())) {
 			// Yes!  Invoke the column sizing dialog on the folder.
 			// Have we instantiated a size columns dialog yet?
 			if (null == m_sizeColumnsDlg) {
@@ -2920,42 +2885,6 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 		}
 	}
 	
-	/**
-	 * Handles InvokeCopyFiltersDlgEvent's received by this class.
-	 * 
-	 * Implements the InvokeCopyFiltersDlgEvent.Handler.onInvokeCopyFiltersDlg() method.
-	 * 
-	 * @param event
-	 */
-	@Override
-	public void onInvokeCopyFiltersDlg(InvokeCopyFiltersDlgEvent event) {
-		// Is the event targeted to this folder?
-		BinderInfo eventFolderInfo = event.getFolderInfo();
-		if (eventFolderInfo.isEqual(getFolderInfo())) {
-			// Yes!  Invoke the copy filters dialog on the folder.
-			onInvokeCopyFiltersDlgAsync(eventFolderInfo);
-		}
-	}
-
-	/*
-	 * Asynchronously invokes the copy filters dialog.
-	 */
-	private void onInvokeCopyFiltersDlgAsync(final BinderInfo folderInfo) {
-		GwtClientHelper.deferCommand(new ScheduledCommand() {
-			@Override
-			public void execute() {
-				onInvokeCopyFiltersDlgNow(folderInfo);
-			}
-		} );
-	}
-	
-	/*
-	 * Synchronously invokes the copy filters dialog.
-	 */
-	private void onInvokeCopyFiltersDlgNow(final BinderInfo folderInfo) {
-		BinderViewsHelper.invokeCopyFiltersDlg(folderInfo);
-	}
-		
 	/**
 	 * Handles InvokeDropBoxEvent's received by this class.
 	 * 
@@ -3116,48 +3045,6 @@ public abstract class DataTableFolderViewBase extends FolderViewBase
 					invokeManageSharesDlgSelectedEntities(selectedEntities);
 				}
 			});
-		}
-	}
-	
-	/**
-	 * Handles MarkFolderContentsReadEvent's received by this class.
-	 * 
-	 * Implements the MarkFolderContentsReadEvent.Handler.onMarkFolderContentsRead() method.
-	 * 
-	 * @param event
-	 */
-	@Override
-	public void onMarkFolderContentsRead(MarkFolderContentsReadEvent event) {
-		// Is the event targeted to this folder?
-		Long folderId    = event.getFolderId();
-		Long eventFolderId = event.getHandleByFolderId();
-		if (null == eventFolderId) {
-			eventFolderId = folderId;
-		}
-		if (eventFolderId.equals(getFolderId())) {
-			// Yes!  Mark the folder contents as having been read.
-			BinderViewsHelper.markFolderContentsRead(folderId);
-		}
-	}
-	
-	/**
-	 * Handles MarkFolderContentsUnreadEvent's received by this class.
-	 * 
-	 * Implements the MarkFolderContentsUnreadEvent.Handler.onMarkFolderContentsUnread() method.
-	 * 
-	 * @param event
-	 */
-	@Override
-	public void onMarkFolderContentsUnread(MarkFolderContentsUnreadEvent event) {
-		// Is the event targeted to this folder?
-		Long folderId    = event.getFolderId();
-		Long eventFolderId = event.getHandleByFolderId();
-		if (null == eventFolderId) {
-			eventFolderId = folderId;
-		}
-		if (eventFolderId.equals(getFolderId())) {
-			// Yes!  Mark the folder contents as having been unread.
-			BinderViewsHelper.markFolderContentsUnread(folderId);
 		}
 	}
 	

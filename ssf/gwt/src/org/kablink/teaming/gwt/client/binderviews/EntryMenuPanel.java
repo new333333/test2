@@ -39,7 +39,6 @@ import org.kablink.teaming.gwt.client.GwtConstants;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.MenuIds;
 import org.kablink.teaming.gwt.client.event.CalendarShowEvent;
-import org.kablink.teaming.gwt.client.event.CalendarShowHintEvent;
 import org.kablink.teaming.gwt.client.event.ChangeContextEvent;
 import org.kablink.teaming.gwt.client.event.ChangeEntryTypeSelectedEntitiesEvent;
 import org.kablink.teaming.gwt.client.event.ClearScheduledWipeSelectedMobileDevicesEvent;
@@ -66,7 +65,6 @@ import org.kablink.teaming.gwt.client.event.HideAccessoriesEvent;
 import org.kablink.teaming.gwt.client.event.HideSelectedSharesEvent;
 import org.kablink.teaming.gwt.client.event.InvokeAddNewFolderEvent;
 import org.kablink.teaming.gwt.client.event.InvokeColumnResizerEvent;
-import org.kablink.teaming.gwt.client.event.InvokeCopyFiltersDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeDropBoxEvent;
 import org.kablink.teaming.gwt.client.event.InvokeSignGuestbookEvent;
 import org.kablink.teaming.gwt.client.event.LockSelectedEntitiesEvent;
@@ -964,26 +962,13 @@ public class EntryMenuPanel extends ToolPanelBase
 			hasFiltersOffUrl = false;
 		}
 		
-		// Create the filter options menu bar.
+		// Create the filter options menu bar...
 		PopupMenu filterDropdownMenu = constructFilterDropdownMenu(false);	// false -> Items aren't checked.
-
-		// Create a menu option for copying filters.
-		VibeMenuItem mi = new VibeMenuItem(m_messages.vibeEntryMenu_CopyFilters(), new Command() {
-			@Override
-			public void execute() {
-				GwtTeaming.fireEvent(new InvokeCopyFiltersDlgEvent(m_binderInfo));
-			}
-		});
-		mi.getElement().setId(MenuIds.ENTRY_COPY_FILTERS);
-		filterDropdownMenu.addMenuItem(mi);
-		if ((!hasFilterEditUrl) && (!hasFiltersOffUrl) && (0 < filtersCount)) {
-			filterDropdownMenu.addSeparator();
-		}
 		
 		// If we have an edit filters URL...
 		if (hasFilterEditUrl) {
 			// ...add a menu item for it.
-			mi = new VibeMenuItem(m_messages.vibeEntryMenu_ManageFilters(), new Command() {
+			VibeMenuItem mi = new VibeMenuItem(m_messages.vibeEntryMenu_ManageFilters(), new Command() {
 				@Override
 				public void execute() {
 					GwtTeaming.fireEvent(new GotoContentUrlEvent(filterEditUrl));
@@ -999,7 +984,7 @@ public class EntryMenuPanel extends ToolPanelBase
 		// If we have a filters off URL...
 		if (hasFiltersOffUrl) {
 			// ...add a menu item for it.
-			mi = new VibeMenuItem(m_messages.vibeEntryMenu_ClearFilters(), new Command() {
+			VibeMenuItem mi = new VibeMenuItem(m_messages.vibeEntryMenu_ClearFilters(), new Command() {
 				@Override
 				public void execute() {
 					GwtTeaming.fireEvent(new GotoContentUrlEvent(filtersOffUrl));
@@ -1097,12 +1082,11 @@ public class EntryMenuPanel extends ToolPanelBase
 
 		// Is this a menu item to view pinned entries?
 		boolean menuTextIsHTML;
-		boolean menuIsSimpleImageButton = false;
 		String  menuText;
 		if ((null != simpleEvent) && TeamingEvents.VIEW_PINNED_ENTRIES.equals(simpleEvent)) {
 			// Yes!  Generate the appropriate HTML for the item.
 			Image pinImg = new Image(m_viewingPinnedEntries ? m_images.orangePin() : m_images.grayPin());
-			pinImg.addStyleName("vibe-entryMenuBarItemImage vibe-entryMenuBarPin");
+			pinImg.addStyleName("vibe-entryMenuBarPin");
 			pinImg.getElement().setAttribute("align", "absmiddle");
 			pinImg.setTitle(
 				m_viewingPinnedEntries                         ?
@@ -1110,9 +1094,8 @@ public class EntryMenuPanel extends ToolPanelBase
 					m_messages.vibeEntryMenu_Alt_Pin_ShowPinned());
 			VibeFlowPanel html = new VibeFlowPanel();
 			html.add(pinImg);
-			menuText                = html.getElement().getInnerHTML();
-			menuTextIsHTML          = true;
-			menuIsSimpleImageButton = true;
+			menuText       = html.getElement().getInnerHTML();
+			menuTextIsHTML = true;
 		}
 		
 		// No, this isn't a view pinned entries item!  Is it a toggle
@@ -1120,7 +1103,7 @@ public class EntryMenuPanel extends ToolPanelBase
 		else if ((null != simpleEvent) && TeamingEvents.TOGGLE_SHARED_VIEW.equals(simpleEvent)) {
 			// Yes!  Generate the appropriate HTML for the item.
 			Image sharedFilesImg = new Image(m_viewingSharedFiles ? m_images.sharedAll() : m_images.sharedFiles());
-			sharedFilesImg.addStyleName("vibe-entryMenuBarItemImage vibe-entryMenuBarSharedFiles");
+			sharedFilesImg.addStyleName("vibe-entryMenuBarSharedFiles");
 			sharedFilesImg.getElement().setAttribute("align", "absmiddle");
 			sharedFilesImg.setTitle(
 				m_viewingSharedFiles                              ?
@@ -1128,28 +1111,12 @@ public class EntryMenuPanel extends ToolPanelBase
 					m_messages.vibeEntryMenu_Alt_Shared_ShowFiles());
 			VibeFlowPanel html = new VibeFlowPanel();
 			html.add(sharedFilesImg);
-			menuText                = html.getElement().getInnerHTML();
-			menuTextIsHTML          = true;
-			menuIsSimpleImageButton = true;
-		}
-		
-		// No, this isn't toggle shared view item either!  Is it a
-		// calendar show hint item?
-		else if ((null != simpleEvent) && TeamingEvents.CALENDAR_SHOW_HINT.equals(simpleEvent)) {
-			// Yes!  Generate the appropriate HTML for the item.
-			Image calendarShowHintImg = new Image(m_menuImages.infoButton());
-			calendarShowHintImg.addStyleName("vibe-entryMenuBarItemImage vibe-entryMenuBarCalendarShowHint");
-			calendarShowHintImg.getElement().setAttribute("align", "absmiddle");
-			calendarShowHintImg.setTitle(simpleTitle);
-			VibeFlowPanel html = new VibeFlowPanel();
-			html.add(calendarShowHintImg);
-			menuText                = html.getElement().getInnerHTML();
-			menuTextIsHTML          = true;
-			menuIsSimpleImageButton = true;
+			menuText       = html.getElement().getInnerHTML();
+			menuTextIsHTML = true;
 		}
 		
 		else {
-			// No, this isn't a calendar show hint item either!
+			// No, this isn't a toggle shared view item either!
 			// Generate the text to display for the menu item...
 			if (contentsSelectable) {
 				String contentsCheckedS = simpleTBI.getQualifierValue("selected");
@@ -1267,11 +1234,6 @@ public class EntryMenuPanel extends ToolPanelBase
 						event = new CalendarShowEvent(folderId, CalendarShow.getEnum(calendarShow));
 						break;
 
-					case CALENDAR_SHOW_HINT:
-						int calendarShowHint = Integer.parseInt(simpleTBI.getQualifierValue("calendarShow"));
-						event = new CalendarShowHintEvent(folderId, CalendarShow.getEnum(calendarShowHint));
-						break;
-
 					case INVOKE_ADD_NEW_FOLDER:
 						String	folderTemplateId = simpleTBI.getQualifierValue("folderTemplateId");
 						String	folderTargetIdS  = simpleTBI.getQualifierValue("folderTargetId"  );
@@ -1324,9 +1286,6 @@ public class EntryMenuPanel extends ToolPanelBase
 			break;
 		}
 		reply.addStyleName((menuBar == m_entryMenu) ? "vibe-entryMenuBarItem" : "vibe-entryMenuPopupItem");
-		if (menuIsSimpleImageButton) {
-			reply.addStyleName("vibe-entryMenuBarSimpleImageButton");
-		}
 		if (null != menuBar)
 		     menuBar.addItem(      reply);
 		else popupMenu.addMenuItem(reply);

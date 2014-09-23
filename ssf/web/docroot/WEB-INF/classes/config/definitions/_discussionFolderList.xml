@@ -74,7 +74,7 @@
     <property name="name" value="_discussionFolderList"/>  
     <property name="caption" value="__definition_default_folder_discussion_list"/>  
     <property name="family" value="discussion"/> 
-    <property name="icon" value="/icons/folder_blue_discussion.png"/> 
+    <property name="icon" value="/icons/folder_blue_discussion.gif"/> 
   </properties>  
   <export-mappings/>
 </definition>

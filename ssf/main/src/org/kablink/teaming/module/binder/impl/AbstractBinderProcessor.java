@@ -52,8 +52,6 @@ import java.util.Set;
 import java.util.SortedSet;
 
 import org.apache.lucene.document.Field;
-import org.apache.lucene.document.Fieldable;
-import org.apache.lucene.document.NumericField;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.SortField;
 import org.dom4j.Element;
@@ -107,7 +105,6 @@ import org.kablink.teaming.module.file.FilterException;
 import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.folder.FolderModule;
 import org.kablink.teaming.module.impl.CommonDependencyInjection;
-import org.kablink.teaming.module.profile.processor.ProfileCoreProcessor;
 import org.kablink.teaming.module.report.ReportModule;
 import org.kablink.teaming.module.rss.RssModule;
 import org.kablink.teaming.module.shared.AccessUtils;
@@ -152,7 +149,6 @@ import org.kablink.util.search.Constants;
 import org.kablink.util.search.Criteria;
 import org.kablink.util.search.FieldFactory;
 
-import static org.kablink.util.search.Constants.ENTITY_ID_FIELD;
 import static org.kablink.util.search.Restrictions.conjunction;
 import static org.kablink.util.search.Restrictions.disjunction;
 import static org.kablink.util.search.Restrictions.eq;
@@ -311,7 +307,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 	        
 	        SimpleProfiler.start("addBinder_transactionExecute");
 	        // The following part requires update database transaction.
-	        int tryMaxCount = 1 + SPropsUtil.getInt("select.database.transaction.retry.max.count", ObjectKeys.SELECT_DATABASE_TRANSACTION_RETRY_MAX_COUNT);
+	        int tryMaxCount = 1 + SPropsUtil.getInt("select.database.transaction.retry.max.count", 2);
 	        int tryCount = 0;
 	        while(true) {
 	        	tryCount++;
@@ -341,13 +337,13 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 	        	catch(LockAcquisitionException | CannotAcquireLockException e) {
 	        		if(tryCount < tryMaxCount) {
 	        			if(logger.isDebugEnabled())
-	        				logger.warn("'add binder' failed due to lock error - Retrying in new transaction", e);
+	        				logger.warn("'add binder' failed due to lock error", e);
 	        			else 
-	        				logger.warn("'add binder' failed due to lock error - Retrying in new transaction: " + e.toString());
+	        				logger.warn("'add binder' failed due to lock error: " + e.toString());
+	        			logger.warn("Retrying 'add binder' in new transaction");
 	        			getCoreDao().refresh(parent);        		
 	        		}
 	        		else {
-	        			logger.error("'add binder' failed due to lock error - Aborting", e);
 	        			throw e;
 	        		}
 	        	}
@@ -1262,18 +1258,6 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 	    
     	//remove share items associated with this binder or with any entries within this binder
     	getCoreDao().purgeShares(binder, true);
-    	
-    	// Unlike regular group, team group's life cycle is bound by the binder that owns it.
-    	// Remove team group, if exists, owned by this binder.
-    	if(binder.getTeamGroupId() != null) {
-    		Principal teamGroup = getProfileDao().loadPrincipal(binder.getTeamGroupId(), RequestContextHolder.getRequestContext().getZoneId(), false);
-    		ProfileCoreProcessor profileProcessor = (ProfileCoreProcessor) getProcessorManager().getProcessor(teamGroup.getParentBinder(), ProfileCoreProcessor.PROCESSOR_KEY);
-    		try {
-				profileProcessor.deleteEntry(teamGroup.getParentBinder(), teamGroup, false, null);
-			} catch (WriteFilesException e) {
-				logger.error("Error deleting team group '" + teamGroup.getId() + "' owned by binder '" + binder.getId() + "'", e);
-			}
-    	}
     }
   
     
@@ -1940,7 +1924,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     }
      @Override
 	public void indexTeamMembership(Binder binder, boolean cascade) {
-    	String value = getBinderModule().getTeamMemberString( binder );
+    	String value = binder.getTeamMemberString();
     	if (cascade) {
     		Map params = new HashMap();
     		params.put("functionTest", Boolean.FALSE);
@@ -2708,7 +2692,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     	// Add search document type
         BasicIndexUtils.addDocType(indexDoc, Constants.DOC_TYPE_BINDER, fieldsOnly);
         //used to answer what teams am I a member of
-       	if (!binder.isTeamMembershipInherited()) EntityIndexUtils.addTeamMembership(indexDoc, getBinderModule().getTeamMemberIds( binder ), fieldsOnly);
+       	if (!binder.isTeamMembershipInherited()) EntityIndexUtils.addTeamMembership(indexDoc, binder.getTeamMemberIds(), fieldsOnly);
 
         // Add the events
         EntityIndexUtils.addEvents(indexDoc, binder, fieldsOnly);
@@ -2922,38 +2906,9 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 							args.put(DefinitionModule.DEFINITION_ELEMENT, entryElement);
 		                	Field[] fields = FieldBuilderUtil.buildField(entity,
 		                         nameValue, fieldBuilder, args);
-
-		                	// Did we build any Field's?
-		                	if ((fields != null) && (0 < fields.length)) {
-		                		// Yes!  Are we working with numeric data?
-			                	String  eeType    = entryElement.attributeValue("type");
-			                	boolean isNumeric = ((null != eeType) && eeType.equals("data"));
-			                	if (isNumeric) {
-				                	eeType    = entryElement.attributeValue("dataType");
-				                	isNumeric = ((null != eeType) && eeType.equals("number"));
-			                	}
-			                	
-		                		// Scan the Field's.
+		                	if (fields != null) {
 		                		for (int i = 0; i < fields.length; i++) {
-		                			// If we're indexing a numeric
-		                			// field...
-		                			Field     field      = fields[i];
-		                			Fieldable indexField = field;
-		                			if (isNumeric) {
-		                				// ...and we can map to a
-		                				// ...NumericField equivalent...
-		                				NumericField nf = FieldBuilderUtil.mapBasicFieldToNumericField(field);
-		                				if (null != nf) {
-		                					// ...we'll add that to the
-		                					// ...index instead of the
-		                					// ...basic Field.
-		                					indexField = nf;
-		                				}
-		                			}
-		                			
-		                			// Add the appropriate field to
-		                			// the index document.
-	                				indexDoc.add(indexField);
+		                			indexDoc.add(fields[i]);
 		                		}
 		                    }
 	                	}
@@ -3134,7 +3089,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 			XmlUtils.addProperty(element, ObjectKeys.XTAG_BINDER_INHERITDEFINITIONS, binder.isDefinitionsInherited());
 			XmlUtils.addProperty(element, ObjectKeys.XTAG_BINDER_INHERITTEAMMEMBERS, binder.isTeamMembershipInherited());
 			XmlUtils.addProperty(element, ObjectKeys.XTAG_BINDER_UNIQUETITLES, binder.isUniqueTitles());
-			XmlUtils.addProperty(element, ObjectKeys.XTAG_BINDER_TEAMMEMBERS, LongIdUtil.getIdsAsString( getBinderModule().getTeamMemberIds( binder )));
+			XmlUtils.addProperty(element, ObjectKeys.XTAG_BINDER_TEAMMEMBERS, LongIdUtil.getIdsAsString(binder.getTeamMemberIds()));
 			if (!binder.isFunctionMembershipInherited()) {
 				List<WorkAreaFunctionMembership> wfms = getWorkAreaFunctionMembershipManager().findWorkAreaFunctionMemberships(
 						binder.getZoneId(), binder);

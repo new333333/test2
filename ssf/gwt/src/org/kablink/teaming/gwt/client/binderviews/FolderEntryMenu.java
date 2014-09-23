@@ -217,15 +217,12 @@ public class FolderEntryMenu extends VibeFlowPanel {
 					// by an event!  Most of them contain a
 					// binder ID/entry ID for the entry.  If they're
 					// there, construct an EntityId for them.
-					EntityId eid = simpleTBI.getEntityIdValue("entityId");
-					if (null == eid) {
-						String binderIdS = simpleTBI.getQualifierValue("binderId");
-						String entryIdS  = simpleTBI.getQualifierValue("entryId" );
-						if (GwtClientHelper.hasString(binderIdS) && GwtClientHelper.hasString(entryIdS))
-						     eid = new EntityId(Long.parseLong(binderIdS), Long.parseLong(entryIdS), EntityId.FOLDER_ENTRY);
-						else eid = null;
-						GwtClientHelper.debugAlert("FolderEntryMenu.renderSimpleTBI( Manually created EntityID ):  Should this event pass an EntityId directly?");
-					}
+					String binderIdS = simpleTBI.getQualifierValue("binderId");
+					String entryIdS  = simpleTBI.getQualifierValue("entryId" );
+					EntityId eid;
+					if (GwtClientHelper.hasString(binderIdS) && GwtClientHelper.hasString(entryIdS))
+					     eid = new EntityId(Long.parseLong(binderIdS), Long.parseLong(entryIdS), EntityId.FOLDER_ENTRY);
+					else eid = null;
 
 					// Generate the specific event for this menu item...
 					VibeEventBase<?> event;

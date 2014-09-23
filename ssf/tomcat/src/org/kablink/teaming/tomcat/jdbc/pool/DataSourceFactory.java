@@ -47,7 +47,6 @@ import javax.sql.DataSource;
 import org.apache.commons.codec.binary.Base64;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.jasypt.encryption.pbe.StandardPBEStringEncryptor;
-import org.kablink.util.encrypt.ExtendedPBEStringEncryptor;
 import org.kablink.util.encrypt.PropertyEncrypt;
 
 public class DataSourceFactory extends org.apache.tomcat.jdbc.pool.DataSourceFactory {
@@ -79,9 +78,14 @@ public class DataSourceFactory extends org.apache.tomcat.jdbc.pool.DataSourceFac
 			String key = props.getProperty("kablink.encryption.key");
 			if(key != null && !key.equals("")) {
 				key = new String(Base64.decodeBase64(key.getBytes()), "UTF-8");
-				ExtendedPBEStringEncryptor encryptor = ExtendedPBEStringEncryptor.create(props.getProperty(ExtendedPBEStringEncryptor.SYMMETRIC_ENCRYPTION_ALGORITHM_PROPERTY_NAME), key);
-				ExtendedPBEStringEncryptor encryptor_first_gen = ExtendedPBEStringEncryptor.createFirstGen(key);
-				props = new PropertyEncrypt(props, encryptor, encryptor_first_gen);
+				StandardPBEStringEncryptor encryptor = new StandardPBEStringEncryptor();
+				encryptor.setProvider(new BouncyCastleProvider());
+				encryptor.setAlgorithm("PBEWITHSHA256AND128BITAES-CBC-BC");
+				encryptor.setPassword(key);
+				StandardPBEStringEncryptor encryptor_preFilr1_0 = new StandardPBEStringEncryptor();
+				encryptor_preFilr1_0.setAlgorithm("PBEWithMD5AndDES");
+				encryptor_preFilr1_0.setPassword(key);
+				props = new PropertyEncrypt(props, encryptor, encryptor_preFilr1_0);
 				decryptedPassword = props.getProperty("database.password");
 			}
 	

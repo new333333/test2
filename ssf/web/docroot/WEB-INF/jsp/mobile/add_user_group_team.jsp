@@ -68,9 +68,7 @@ function ss_submitSelectForm${ssElementName}(url) {
 				value="${ssBinder.id}"/><ssf:param name="entryId"
 				value="${ssEntry.id}"/><ssf:param name="type"
 				value="${ss_type}"/><ssf:param name="element"
-				value="${ssElementName}"/><ssf:param name="_entryOperationType"
-				value="${ssEntryOperationType}"/><ssf:param name="_entryDelayWorkflow"
-				value="${ssEntryDelayWorkflow}"/></ssf:url>">
+				value="${ssElementName}"/></ssf:url>">
 		  <label for="searchText">
 		    <c:if test="${ss_type == 'user'}"><span class="ss_bold"><ssf:nlt tag="navigation.findUser"/></span></c:if>
 		    <c:if test="${ss_type == 'group'}"><span class="ss_bold"><ssf:nlt tag="navigation.findGroup"/></span></c:if>
@@ -98,9 +96,7 @@ function ss_submitSelectForm${ssElementName}(url) {
 						value="${user._docId}"/><ssf:param name="type"
 						value="${ss_type}"/><ssf:param name="element"
 						value="${ssElementName}"/><ssf:param name="addUserGroupTeamBtn"
-						value="true"/><ssf:param name="_entryOperationType"
-						value="${ssEntryOperationType}"/><ssf:param name="_entryDelayWorkflow"
-						value="${ssEntryDelayWorkflow}"/></ssf:url>"
+						value="true"/></ssf:url>"
 			  	onClick="ss_submitSelectForm${ssElementName}(this.href);return false;">
 			  	<c:if test="${ss_type == 'user' || ss_type == 'group'}">
 				    <span><ssf:userTitle user="${user._principal}"/></span>
@@ -129,9 +125,7 @@ function ss_submitSelectForm${ssElementName}(url) {
 				value="${ss_type}"/><ssf:param name="element"
 				value="${ssElementName}"/><ssf:param 
 				name="searchText" useBody="true">${ss_searchText}</ssf:param><ssf:param 
-				name="pageNumber" value="${ss_prevPage}"/><ssf:param name="_entryOperationType"
-				value="${ssEntryOperationType}"/><ssf:param name="_entryDelayWorkflow"
-				value="${ssEntryDelayWorkflow}"/></ssf:url>"
+				name="pageNumber" value="${ss_prevPage}"/></ssf:url>"
 		><img border="0" src="<html:rootPath/>images/mobile/nl_left_20.png"/></a>
 	  </c:if>
 	  <c:if test="${empty ss_prevPage}">
@@ -149,9 +143,7 @@ function ss_submitSelectForm${ssElementName}(url) {
 				value="${ss_type}"/><ssf:param name="element"
 				value="${ssElementName}"/><ssf:param 
 				name="searchText" useBody="true">${ss_searchText}</ssf:param><ssf:param 
-				name="pageNumber" value="${ss_nextPage}"/><ssf:param name="_entryOperationType"
-				value="${ssEntryOperationType}"/><ssf:param name="_entryDelayWorkflow"
-				value="${ssEntryDelayWorkflow}"/></ssf:url>"
+				name="pageNumber" value="${ss_nextPage}"/></ssf:url>"
 		><img border="0" src="<html:rootPath/>images/mobile/nl_right_20.png"/></a>
 	  </c:if>
 	  <c:if test="${empty ss_nextPage}">

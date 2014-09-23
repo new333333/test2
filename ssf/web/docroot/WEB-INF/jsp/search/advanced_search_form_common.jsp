@@ -310,9 +310,6 @@
 											<option value="25" <c:if test="${resultsCount == 25}">selected="selected"</c:if>><ssf:nlt tag="searchForm.results.selectItems"><ssf:param name="value" value="25"/></ssf:nlt></option>
 											<option value="50" <c:if test="${resultsCount == 50}">selected="selected"</c:if>><ssf:nlt tag="searchForm.results.selectItems"><ssf:param name="value" value="50"/></ssf:nlt></option>
 											<option value="100" <c:if test="${resultsCount == 100}">selected="selected"</c:if>><ssf:nlt tag="searchForm.results.selectItems"><ssf:param name="value" value="100"/></ssf:nlt></option>
-											<c:if test="${resultsCount != 1 || resultsCount != 5 || resultsCount != 10 || resultsCount != 25 || resultsCount != 50 || resultsCount != 100}">
-												<option value="${resultsCount}" selected="selected"><ssf:nlt tag="searchForm.results.selectItems"><ssf:param name="value" value="${resultsCount}"/></ssf:nlt></option>
-											</c:if>
 										</select>
 									</td>
 								</tr>	

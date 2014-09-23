@@ -81,7 +81,6 @@ import org.kablink.teaming.security.function.WorkAreaFunctionMembership;
 import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.NLT;
-import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SimpleProfiler;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.Utils;
@@ -125,10 +124,7 @@ public class AccessControlController extends AbstractBinderController {
 		response.setRenderParameter(WebKeys.URL_WORKAREA_ID, workArea.getWorkAreaId().toString());
 		response.setRenderParameter(WebKeys.URL_WORKAREA_TYPE, workArea.getWorkAreaType());
 		//The form is only used in Vibe. But we allow it for informational purposes only in Filr (i.e., no changes allowed).
-		if (Utils.checkIfVibe() || SPropsUtil.getBoolean("keepFilrRolesAndRightsInVibe", false)) {
-			//Note: setting "keepFilrRolesAndRightsInVibe" to true in ssf-ext.properties will also allow the Vibe access control form to be 
-			//  used to change access settings. But only if you know the access control page URL. Caution, this means that regular users 
-			//  could then set various sharing rights on their owned folders
+		if (Utils.checkIfVibe()) {
 			//See if the form was submitted
 			if (formData.containsKey("okBtn") && WebHelper.isMethodPost(request)) {
 				if (!(workArea instanceof FolderEntry) || ((FolderEntry)workArea).isTop()) {
@@ -261,7 +257,6 @@ public class AccessControlController extends AbstractBinderController {
 				model.put(WebKeys.ACCESS_CONTROL_CONFIGURE_ALLOWED, configureAccess);
 				model.put(WebKeys.DEFINITION_ENTRY, entry);
 				model.put(WebKeys.BINDER, entry.getParentBinder());
-				model.put( WebKeys.BINDER_TEAM_MEMBER_IDS, getBinderModule().getTeamMemberIds( entry.getParentBinder() ) );
 				
 			} else {
 				Binder binder = getBinderModule().getBinder(workAreaId);			
@@ -269,7 +264,6 @@ public class AccessControlController extends AbstractBinderController {
 				BinderHelper.buildNavigationLinkBeans(this, binder, model);
 				wArea = binder;
 				model.put(WebKeys.BINDER, binder);
-				model.put( WebKeys.BINDER_TEAM_MEMBER_IDS, getBinderModule().getTeamMemberIds( binder ) );
 				model.put(WebKeys.DEFINITION_ENTRY, binder);
 				model.put(WebKeys.ACCESS_SUPER_USER, AccessUtils.getZoneSuperUser(binder.getZoneId()));
 				model.put(WebKeys.ACCESS_CONTROL_CONFIGURE_ALLOWED, 

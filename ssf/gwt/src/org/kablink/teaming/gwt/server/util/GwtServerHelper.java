@@ -35,6 +35,7 @@ package org.kablink.teaming.gwt.server.util;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -45,10 +46,7 @@ import java.net.URLDecoder;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.X509Certificate;
-import java.text.Collator;
 import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.RuleBasedCollator;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -60,7 +58,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Random;
 import java.util.Set;
 import java.util.SortedSet;
@@ -201,13 +198,8 @@ import org.kablink.teaming.gwt.client.rpc.shared.CollectionPointData;
 import org.kablink.teaming.gwt.client.rpc.shared.CreateGroupCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.DesktopAppDownloadInfoRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.DesktopAppDownloadInfoRpcResponseData.FileDownloadInfo;
-import org.kablink.teaming.gwt.client.rpc.shared.EntityIdListRpcResponseData;
-import org.kablink.teaming.gwt.client.rpc.shared.EntityIdRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData.ErrorInfo;
-import org.kablink.teaming.gwt.client.rpc.shared.FolderFilter;
-import org.kablink.teaming.gwt.client.rpc.shared.FolderFiltersRpcResponseData;
-import org.kablink.teaming.gwt.client.rpc.shared.GetEntityIdCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetGroupMembershipCmd.MembershipFilter;
 import org.kablink.teaming.gwt.client.rpc.shared.GetSystemBinderPermalinkCmd.SystemBinderType;
 import org.kablink.teaming.gwt.client.rpc.shared.GetJspHtmlCmd;
@@ -246,7 +238,6 @@ import org.kablink.teaming.gwt.client.util.BucketInfo;
 import org.kablink.teaming.gwt.client.util.CollectionType;
 import org.kablink.teaming.gwt.client.util.EmailAddressInfo;
 import org.kablink.teaming.gwt.client.util.EntityId;
-import org.kablink.teaming.gwt.client.util.EntityId.EntityIdType;
 import org.kablink.teaming.gwt.client.util.FolderSortSetting;
 import org.kablink.teaming.gwt.client.util.FolderType;
 import org.kablink.teaming.gwt.client.util.GroupType;
@@ -318,6 +309,7 @@ import org.kablink.teaming.ssfs.util.SsfsUtil;
 import org.kablink.teaming.task.TaskHelper.FilterType;
 import org.kablink.teaming.util.AbstractAllModulesInjected;
 import org.kablink.teaming.util.AllModulesInjected;
+import org.kablink.teaming.util.FileHelper;
 import org.kablink.teaming.util.FileLinkAction;
 import org.kablink.teaming.util.IconSize;
 import org.kablink.teaming.util.NLT;
@@ -337,7 +329,6 @@ import org.kablink.teaming.web.tree.DomTreeBuilder;
 import org.kablink.teaming.web.tree.WsDomTreeBuilder;
 import org.kablink.teaming.web.util.AdminHelper;
 import org.kablink.teaming.web.util.BinderHelper;
-import org.kablink.teaming.web.util.BrandingUtil;
 import org.kablink.teaming.web.util.Clipboard;
 import org.kablink.teaming.web.util.EmailHelper;
 import org.kablink.teaming.web.util.Favorites;
@@ -359,6 +350,7 @@ import org.kablink.teaming.web.util.WorkspaceTreeHelper.Counter;
 import org.kablink.util.search.Constants;
 import org.kablink.util.search.Criteria;
 import org.kablink.util.servlet.StringServletResponse;
+import org.springframework.util.FileCopyUtils;
 
 /**
  * Helper methods for the GWT UI server code.
@@ -659,8 +651,7 @@ public class GwtServerHelper {
 	 * Inner class used to compare two TreeInfo's.
 	 */
 	private static class TreeInfoComparator implements Comparator<TreeInfo> {
-		private boolean				m_ascending;	//
-		private RuleBasedCollator	m_collator;		//
+		private boolean m_ascending;	//
 
 		/**
 		 * Class constructor.
@@ -669,16 +660,6 @@ public class GwtServerHelper {
 		 */
 		public TreeInfoComparator(boolean ascending) {
 			m_ascending = ascending;
-			
-			Collator baseCollator = Collator.getInstance(RequestContextHolder.getRequestContext().getUser().getLocale());
-			RuleBasedCollator defaultCollator = ((RuleBasedCollator) baseCollator);
-			String rules = defaultCollator.getRules();
-			try {
-				m_collator = new RuleBasedCollator(rules.replaceAll("<'\u005f'", "<' '<'\u005f'"));
-			}
-			catch (ParseException e) {
-				m_collator = defaultCollator;
-			}
 		}
 
 		/**
@@ -701,8 +682,8 @@ public class GwtServerHelper {
 
 			int reply;
 			if (m_ascending)
-			     reply = MiscUtil.safeSColatedCompare(title1, title2, m_collator);
-			else reply = MiscUtil.safeSColatedCompare(title2, title1, m_collator);
+			     reply = MiscUtil.safeSColatedCompare(title1, title2);
+			else reply = MiscUtil.safeSColatedCompare(title2, title1);
 			return reply;
 		}
 	}
@@ -1212,15 +1193,14 @@ public class GwtServerHelper {
 		}
 		
 		gsp = GwtServerProfiler.start(m_logger, "GwtServerHelper.buildChildTIs( PROCESS )");
-		boolean showMFStorage = GwtViewHelper.showMyFilesStorageAsFolder();
 		try {
 			if (null != binders) {
 				for (Long subBinderId:  childBinderList) {
 					long sbi = subBinderId.longValue();
 					for (Binder subBinder:  binders) {
 						if (subBinder.getId().longValue() == sbi) {
-							// For Filr, drop any My Files Storage folders.
-							if (findBrowser || showMFStorage || (!(BinderHelper.isBinderMyFilesStorage(subBinder)))) {
+							// Drop any My Files Storage folders.
+							if (findBrowser || (!(BinderHelper.isBinderMyFilesStorage(subBinder)))) {
 								try {
 									TreeInfo subWsTI = buildTreeInfoFromBinder(request, bs, findBrowser, subBinder, expandedBindersList, false, depth);
 									childTIList.add(subWsTI);
@@ -1855,34 +1835,85 @@ public class GwtServerHelper {
 	 * 
 	 * @throws GwtTeamingException 
 	 */
-	public static Group createGroup(
-		AllModulesInjected bs,
-		String name,
-		String title,
-		String desc,
-		boolean isMembershipDynamic,
-		boolean externalMembersAllowed,
-		GwtDynamicGroupMembershipCriteria membershipCriteria ) throws GwtTeamingException
-	{
-		String ldapQuery=null;
+	public static Group createGroup(AllModulesInjected bs, String name, String title, String desc, boolean isMembershipDynamic, boolean externalMembersAllowed, List<GwtTeamingItem> membership, GwtDynamicGroupMembershipCriteria membershipCriteria) throws GwtTeamingException {
 		HashMap<String, Object> inputMap = new HashMap<String, Object>();
-		
-		if ( isMembershipDynamic && membershipCriteria != null )
-			ldapQuery = membershipCriteria.getAsXml();
-
 		inputMap.put(ObjectKeys.FIELD_PRINCIPAL_NAME, name);
 		inputMap.put(ObjectKeys.FIELD_ENTITY_TITLE, title);
 		inputMap.put(ObjectKeys.FIELD_ENTITY_DESCRIPTION, desc);
 		inputMap.put(ObjectKeys.FIELD_ENTITY_DESCRIPTION_FORMAT, String.valueOf(Description.FORMAT_NONE));  
 		inputMap.put(ObjectKeys.FIELD_GROUP_DYNAMIC, isMembershipDynamic);
-		inputMap.put(ObjectKeys.FIELD_GROUP_LDAP_QUERY, ldapQuery);
-
+		
 		// Add the identity information.
 		IdentityInfo identityInfo = new IdentityInfo();
 		identityInfo.setFromLocal(true);
 		identityInfo.setInternal(!externalMembersAllowed);
 		inputMap.put(ObjectKeys.FIELD_USER_PRINCIPAL_IDENTITY_INFO, identityInfo);
 	
+		// Is group membership dynamic?
+		HashSet<Long> membershipIds = new HashSet<Long>();
+		String ldapQuery = null;
+		if (!isMembershipDynamic) {
+			// No!  Get a list of all the membership IDs.
+			if (null != membership) {
+				for (GwtTeamingItem nextMember:  membership) {
+					Long id = null;
+					if (nextMember instanceof GwtUser) {
+						id = Long.valueOf(((GwtUser) nextMember).getUserId());
+					}
+					else if (nextMember instanceof GwtGroup) {
+						id = Long.valueOf(((GwtGroup) nextMember).getId());
+					}
+								
+					if (null != id) {
+						membershipIds.add(id);
+					}
+				}
+			}
+		}
+		else
+		{
+			// Yes!
+			if (null != membershipCriteria) {
+				// Execute the ldap query and get the list of members from the results.
+				try
+				{
+					HashSet<Long> potentialMemberIds = bs.getLdapModule().getDynamicGroupMembers(
+						membershipCriteria.getBaseDn(),
+						membershipCriteria.getLdapFilterWithoutCRLF(),
+						membershipCriteria.getSearchSubtree());
+
+					// Get the maximum number of users that can be in a group.
+					int maxCount = SPropsUtil.getInt("dynamic.group.membership.limit", 50000); 					
+					
+					// Is the number of potential members greater than the max number of group members?
+					if (potentialMemberIds.size() > maxCount) {
+						// Yes, only take the max number of users.
+						int count = 0;
+						for (Long userId:  potentialMemberIds) {
+							membershipIds.add(userId);
+							count += 1;
+							if (count >= maxCount) {
+								break;
+							}
+						}
+					}
+					else {
+						// No
+						membershipIds = potentialMemberIds;
+					}
+				}
+				catch (Exception ex) {
+					// !!! What to do.
+					membershipIds = new HashSet<Long>();
+				}
+
+				ldapQuery = membershipCriteria.getAsXml();
+			}
+		}
+		
+		SortedSet<Principal> principals = bs.getProfileModule().getPrincipals(membershipIds);
+		inputMap.put(ObjectKeys.FIELD_GROUP_PRINCIPAL_MEMBERS, principals);
+		inputMap.put(ObjectKeys.FIELD_GROUP_LDAP_QUERY, ldapQuery);
 		MapInputData inputData = new MapInputData(inputMap);
 
 		HashMap<String, Object> emptyFileMap = new HashMap<String, Object>();
@@ -1944,6 +1975,18 @@ public class GwtServerHelper {
 				// No, this isn't a debug request to create multiple
 				// groups!  Simply create the single group.
 				newGroup = pm.addGroup(null, inputData, emptyFileMap, null);
+			}
+			
+			// Re-index all the members of this group.
+			if (principals != null) {
+				// Create a list of the members of the group...
+				Map<Long, Principal> principalsToIndex = new HashMap<Long, Principal>();
+				for (Principal principal:  principals) {
+					principalsToIndex.put(principal.getId(), principal);
+				}
+
+				// ...and re-index them.
+				Utils.reIndexPrincipals(pm, principalsToIndex);
 			}
 		}
 		
@@ -3549,15 +3592,90 @@ public class GwtServerHelper {
 	}
 
 	/**
-	 * Return the "raw" branding data for the given binder.  We will not fixup any image urls.
+	 * Copy the given image from the given binder into the /ssf/branding/ directory
+	 * We do this so that all users (including the guest user) can see the images used for branding.
 	 */
-	public static GwtBrandingData getRawBinderBrandingData(
+	private static String copyBrandingImgToBrandingDir(
+		AbstractAllModulesInjected allModules,
+		HttpServletRequest httpReq,
+		ServletContext servletContext,
+		Binder brandingSourceBinder,
+		String imgName,
+		String subDirFSPath,
+		String subDirUrlPath )
+	{
+		String fileUrl = null;
+		
+		try
+		{
+			FileAttachment fa;
+			InputStream in;
+			FileOutputStream out;
+			String realPathToRootDir;
+			String path;
+			String pathToBrandingDir;
+			File dir;
+			File brandingImgFile;
+
+			// Get the image as a FileAttachment.
+			fa = brandingSourceBinder.getFileAttachment( imgName );
+			if ( fa == null )
+				throw new IOException( "Unable to get file attachment for branding image." );
+			
+			// Get the image's input stream
+			in = allModules.getFileModule().readFile( brandingSourceBinder, brandingSourceBinder, fa );
+			if ( in == null )
+				throw new IOException( "Unable to get input stream for branding image." );
+
+			// Find the file system path to /ssf/
+			path = "/";
+			realPathToRootDir = servletContext.getRealPath( path );
+			if ( realPathToRootDir == null || realPathToRootDir.length() == 0 )
+				throw new IOException( "Unable to get real path to static directory." );
+			
+			// Append the sub-directory name
+			pathToBrandingDir = realPathToRootDir + "branding" + File.separator + subDirFSPath;
+			
+			// Create the directory where the branding image will be copied to.
+			dir = new File( pathToBrandingDir );
+			FileHelper.mkdirsIfNecessary( dir );
+			
+			// Create the branding image file.
+			brandingImgFile = new File( dir.getAbsolutePath() + File.separator + imgName );
+			brandingImgFile.createNewFile();
+			out = new FileOutputStream( brandingImgFile );
+			
+			// Copy the branding image from the binder into the given directory
+			FileCopyUtils.copy( in, out );
+			
+			fileUrl = WebUrlUtil.getSSFContextRootURL( httpReq ) + "branding/" + subDirUrlPath + "/" + imgName;
+
+			in.close();
+			out.close();
+		}
+		catch ( IOException ioEx )
+		{
+			m_logger.error( "Error copying branding image: " + imgName + " error: " + ioEx.getMessage() );
+		}
+		catch ( Exception ex )
+		{
+			m_logger.error( "Unknown error copying branding image: " + imgName );
+		}
+
+		return fileUrl;
+	}
+
+	/**
+	 * Return the branding data for the given binder.
+	 */
+	public static GwtBrandingData getBinderBrandingData(
 		AbstractAllModulesInjected allModules,
 		String binderId,
 		HttpServletRequest request,
 		ServletContext servletContext ) throws GwtTeamingException
 	{
 		BinderModule binderModule;
+		Binder binder;
 		Long binderIdL;
 		GwtBrandingData brandingData;
 		
@@ -3575,26 +3693,40 @@ public class GwtServerHelper {
 			{
 				String branding;
 				GwtBrandingDataExt brandingExt;
-				Binder binder;
+				Binder brandingSourceBinder;
+				String brandingSourceBinderId;
 				
 				binder = binderModule.getBinder( binderIdL );
 				
+				// Get the binder where branding comes from.
+				brandingSourceBinder = binder.getBrandingSource();
+				
 				// Does the user have rights to the binder where the branding is coming from?
-				if ( !binderModule.testAccess( binder, BinderOperation.readEntries ) )
+				if ( !binderModule.testAccess( brandingSourceBinder, BinderOperation.readEntries ) )
 				{
-					return brandingData;
+					// No, don't use inherited branding.
+					brandingSourceBinderId = binderId;
+					brandingSourceBinder = binder;
+				}
+				else
+				{
+					brandingSourceBinderId = brandingSourceBinder.getId().toString();
 				}
 				
-				brandingData.setBinderId( binderId );
+				brandingData.setBinderId( brandingSourceBinderId );
 
-				// Get the advanced branding that should be applied for this binder.
-				branding = binder.getBranding();
+				// Get the branding that should be applied for this binder.
+				branding = brandingSourceBinder.getBranding();
 				
 				// For some unknown reason, if there is no branding in the db the string we get back
 				// will contain only a \n.  We don't want that.
 				if ( branding != null && branding.length() == 1 && branding.charAt( 0 ) == '\n' )
 					branding = "";
 				
+				// Parse the branding and replace any markup with the appropriate url.  For example,
+				// replace {{atachmentUrl: somename.png}} with a url that looks like http://somehost/ssf/s/readFile/.../somename.png
+				branding = MarkupUtil.markupStringReplacement( null, null, request, null, brandingSourceBinder, branding, "view" );
+	
 				// Remove mce_src as an attribute from all <img> tags.  See bug 766415.
 				// There was a bug that caused the mce_src attribute to be included in the <img>
 				// tag and written to the db.  We want to remove it.
@@ -3612,7 +3744,7 @@ public class GwtServerHelper {
 					// 	<brandingData fontColor="" brandingImgName="some name" brandingType="image/advanced">
 					// 		<background color="" imgName="" />
 					// 	</brandingData>
-					xmlStr = binder.getBrandingExt();
+					xmlStr = brandingSourceBinder.getBrandingExt();
 					
 					// Is there old-style branding?
 					if ( branding != null && branding.length() > 0 )
@@ -3645,7 +3777,11 @@ public class GwtServerHelper {
 			    			Node node;
 			    			Node attrNode;
 		        			String imgName;
+							String fileUrl;
+							String webPath;
 							
+							webPath = WebUrlUtil.getServletRootURL( request );
+
 							// Parse the xml string into an xml document.
 							doc = DocumentHelper.parseText( xmlStr );
 			    			
@@ -3671,6 +3807,31 @@ public class GwtServerHelper {
 			    				if ( imgName != null && imgName.length() > 0 )
 			    				{
 			    					brandingExt.setBrandingImgName( imgName );
+
+			    					// Is the image name "__no image__" or "__default teaming image__"?
+			    					// These are special names that don't represent a real image file name.
+			    					if ( !imgName.equalsIgnoreCase( "__no image__" ) && !imgName.equalsIgnoreCase( "__default teaming image__" ) )
+			    					{
+			    						String tmpUrl;
+			    						
+			    						// No, Get a url to the file.
+				    					fileUrl = WebUrlUtil.getFileUrl( webPath, WebKeys.ACTION_READ_FILE, brandingSourceBinder, imgName );
+
+			    						// Copy the image file to a location where all users (including guest) can see it.
+				    					tmpUrl = copyBrandingImgToBrandingDir(
+				    													allModules,
+				    													request,
+				    													servletContext,
+				    													brandingSourceBinder,
+				    													imgName,
+				    													"binder" + File.separator + brandingSourceBinder.getId(),
+				    													"binder/" + brandingSourceBinder.getId() );
+				    					
+				    					if ( tmpUrl != null && tmpUrl.length() > 0 )
+				    						fileUrl = tmpUrl;
+			    						
+				    					brandingExt.setBrandingImgUrl( fileUrl );
+			    					}
 			    				}
 			    			}
 			    			
@@ -3683,6 +3844,31 @@ public class GwtServerHelper {
 			    				if ( imgName != null && imgName.length() > 0 )
 			    				{
 			    					brandingExt.setLoginDlgImgName( imgName );
+
+			    					// Is the image name "__no image__" or "__default teaming image__"?
+			    					// These are special names that don't represent a real image file name.
+			    					if ( !imgName.equalsIgnoreCase( "__no image__" ) && !imgName.equalsIgnoreCase( "__default teaming image__" ) )
+			    					{
+			    						String tmpUrl;
+			    						
+			    						// No
+				    					fileUrl = WebUrlUtil.getFileUrl( webPath, WebKeys.ACTION_READ_FILE, brandingSourceBinder, imgName );
+
+			    						// Copy the image file to a location where all users (including guest) can see it.
+				    					tmpUrl = copyBrandingImgToBrandingDir(
+				    													allModules,
+				    													request,
+				    													servletContext,
+				    													brandingSourceBinder,
+				    													imgName,
+				    													"login-dialog",
+				    													"login-dialog" );
+				    					
+				    					if ( tmpUrl != null && tmpUrl.length() > 0 )
+				    						fileUrl = tmpUrl;
+			    						
+				    					brandingExt.setLoginDlgImgUrl( fileUrl );
+			    					}
 			    				}
 			    			}
 			    			
@@ -3739,6 +3925,26 @@ public class GwtServerHelper {
 
 				    				if ( imgName != null && imgName.length() > 0 )
 				    				{
+				    					String tmpUrl;
+				    					
+				    					// Get a url to the file.
+				    					fileUrl = WebUrlUtil.getFileUrl( webPath, WebKeys.ACTION_READ_FILE, brandingSourceBinder, imgName );
+
+			    						// Copy the image file to a location where all users (including guest) can see it.
+				    					tmpUrl = copyBrandingImgToBrandingDir(
+				    													allModules,
+				    													request,
+				    													servletContext,
+				    													brandingSourceBinder,
+				    													imgName,
+				    													"binder" + File.separator + brandingSourceBinder.getId(),
+				    													"binder/" + brandingSourceBinder.getId() );
+				    					
+				    					if ( tmpUrl != null && tmpUrl.length() > 0 )
+				    						fileUrl = tmpUrl;
+			    						
+				    					brandingExt.setBackgroundImgUrl( fileUrl );
+				    					
 				    					brandingExt.setBackgroundImgName( imgName );
 				    				}
 			    				}
@@ -3777,175 +3983,6 @@ public class GwtServerHelper {
 					{
 						// Yes
 						brandingData.setIsSiteBranding( true );
-					}
-				}
-			}
-		}
-		catch (NoBinderByTheIdException nbEx)
-		{
-			// Nothing to do
-		}
-		catch (AccessControlException acEx)
-		{
-			// Nothing to do
-		}
-		catch (Exception e)
-		{
-			// Nothing to do
-		}
-		
-		return brandingData;
-	}
-
-	/**
-	 * Return the branding data for the given binder.
-	 */
-	public static GwtBrandingData getBinderBrandingData(
-		AbstractAllModulesInjected allModules,
-		String binderId,
-		boolean useInheritance,
-		HttpServletRequest request,
-		ServletContext servletContext ) throws GwtTeamingException
-	{
-		BinderModule binderModule;
-		Binder binder;
-		Long binderIdL;
-		GwtBrandingData brandingData;
-		
-		brandingData = new GwtBrandingData();
-		brandingData.setBrandingType( GwtBrandingDataExt.BRANDING_TYPE_IMAGE );
-		
-		try
-		{
-			binderModule = allModules.getBinderModule();
-	
-			binderIdL = new Long( binderId );
-			
-			// Get the binder object.
-			if ( binderIdL != null )
-			{
-				String imgName;
-				String branding;
-				Binder brandingSourceBinder;
-				String brandingSourceBinderId;
-				
-				binder = binderModule.getBinder( binderIdL );
-				
-				// Are we supposed to use inheritance to get the branding?
-				if ( useInheritance )
-				{
-					// Yes
-					// Get the binder where branding comes from.
-					brandingSourceBinder = binder.getBrandingSource();
-					
-					// Does the user have rights to the binder where the branding is coming from?
-					if ( !binderModule.testAccess( brandingSourceBinder, BinderOperation.readEntries ) )
-					{
-						// No, don't use inherited branding.
-						brandingSourceBinderId = binderId;
-						brandingSourceBinder = binder;
-					}
-					else
-					{
-						brandingSourceBinderId = brandingSourceBinder.getId().toString();
-					}
-				}
-				else
-				{
-					// No
-					// Get the branding from the given binder.
-					brandingSourceBinderId = binderId;
-					brandingSourceBinder = binder;
-				}
-				
-				brandingData.setBinderId( brandingSourceBinderId );
-
-				brandingData = GwtServerHelper.getRawBinderBrandingData(
-																	allModules,
-																	brandingSourceBinderId,
-																	request,
-																	servletContext );
-				
-				// Get the advanced branding that should be applied for this binder.
-				branding = brandingSourceBinder.getBranding();
-				
-				// Parse the advanced branding and replace all <img src="{{attachmentUrl: image-name}}" with a url
-				// to the image that is visible to all users (including the guest user).
-				// For example, <img src="http://somehost/ssf/branding/binder/binderId/imgName" />
-				branding = MarkupUtil.fixupImgUrls(
-												allModules,
-												request,
-												servletContext,
-												brandingSourceBinder,
-												branding );
-												
-				// Parse the advanced branding and replace any markup with the appropriate url.  For example,
-				// replace {{atachmentUrl: somename.png}} with a url that looks like http://somehost/ssf/s/readFile/.../somename.png
-				branding = MarkupUtil.markupStringReplacement( null, null, request, null, brandingSourceBinder, branding, "view" );
-	
-				brandingData.setBranding( branding );
-				
-				// Do we have a branding image?
-				imgName = brandingData.getBrandingImageName();
-				if ( imgName != null && imgName.length() > 0 )
-				{
-					// Yes
-					// Is the image name "__no image__" or "__default teaming image__"?
-					// These are special names that don't represent a real image file name.
-					if ( !imgName.equalsIgnoreCase( "__no image__" ) && !imgName.equalsIgnoreCase( "__default teaming image__" ) )
-					{
-						String fileUrl;
-						
-						// No, Get a url to the file.
-						fileUrl = BrandingUtil.getUrlToBinderBrandingImg(
-			    													allModules,
-			    													request,
-			    													servletContext,
-			    													brandingSourceBinder,
-			    													imgName );
-						
-						brandingData.setBrandingImageUrl( fileUrl );
-					}
-				}
-				
-				// Do we have a background image?
-				imgName = brandingData.getBgImageName();
-				if ( imgName != null && imgName.length() > 0 )
-				{
-					String fileUrl;
-					
-					// Yes
-					// Get a url to the file.
-					fileUrl = BrandingUtil.getUrlToBinderBrandingImg(
-		    													allModules,
-		    													request,
-		    													servletContext,
-		    													brandingSourceBinder,
-		    													imgName );
-					
-					brandingData.setBgImageUrl( fileUrl );
-				}
-				
-				// Do we have a branding image for the login dialog?
-				imgName = brandingData.getLoginDlgImageName();
-				if ( imgName != null && imgName.length() > 0 )
-				{
-					// Yes
-					// Is the image name "__no image__" or "__default teaming image__"?
-					// These are special names that don't represent a real image file name.
-					if ( !imgName.equalsIgnoreCase( "__no image__" ) && !imgName.equalsIgnoreCase( "__default teaming image__" ) )
-					{
-						String fileUrl;
-						
-						// No, get a url to the file
-    					fileUrl = BrandingUtil.getUrlToLoginBrandingImg(
-			    													allModules,
-			    													request,
-			    													servletContext,
-			    													brandingSourceBinder,
-			    													imgName );
-
-    					brandingData.setLoginDlgImageUrl( fileUrl );
 					}
 				}
 			}
@@ -4123,16 +4160,15 @@ public class GwtServerHelper {
 	public static BinderInfo getBinderInfo(HttpServletRequest request, AllModulesInjected bs, Binder binder) {
 		// Allocate a BinderInfo and store the core binder information.
 		BinderInfo reply = new BinderInfo();
-		                                    reply.setBinderId(            binder.getId()                                 );
-		                                    reply.setBinderTitle(         binder.getTitle()                              );
-		                                    reply.setFolderHome(          binder.isHomeDir()                             );
-		                                    reply.setFolderMyFilesStorage(BinderHelper.isBinderMyFilesStorage(   binder ));
-		                                    reply.setLibrary(             binder.isLibrary()                             );
-		                                    reply.setEntityType(          getBinderEntityType(                   binder ));
-		                                    reply.setBinderType(          getBinderType(                         binder ));
-		                                    reply.setCloudFolderRoot(     CloudFolderHelper.getCloudFolderRoot(  binder ));
-		if      (reply.isBinderFolder())    reply.setFolderType(          getFolderTypeFromViewDef(bs, ((Folder) binder)));
-		else if (reply.isBinderWorkspace()) reply.setWorkspaceType(       getWorkspaceType(                      binder ));
+		                                    reply.setBinderId(       binder.getId()                                 );
+		                                    reply.setBinderTitle(    binder.getTitle()                              );
+		                                    reply.setFolderHome(     binder.isHomeDir()                             );
+		                                    reply.setLibrary(        binder.isLibrary()                             );
+		                                    reply.setEntityType(     getBinderEntityType(                   binder ));
+		                                    reply.setBinderType(     getBinderType(                         binder ));
+		                                    reply.setCloudFolderRoot(CloudFolderHelper.getCloudFolderRoot(  binder ));
+		if      (reply.isBinderFolder())    reply.setFolderType(     getFolderTypeFromViewDef(bs, ((Folder) binder)));
+		else if (reply.isBinderWorkspace()) reply.setWorkspaceType(  getWorkspaceType(                      binder ));
 		try
 		{
 			Binder binderParent = binder.getParentBinder();
@@ -4781,73 +4817,6 @@ public class GwtServerHelper {
 	}
 	
 	/**
-	 * Returns an EntityIdRpcResponseData containing the EntityId based
-	 * on the given parameters.
-	 * 
-	 * @param bs
-	 * @param request
-	 * @param binderId
-	 * @param entityId
-	 * @param eidType
-	 * @param mobileDeviceId
-	 * 
-	 * @return
-	 * 
-	 * @throws GwtTeamingException
-	 */
-	public static EntityIdRpcResponseData getEntityId(AllModulesInjected bs, HttpServletRequest request, Long binderId, Long entityId, EntityIdType eidType, String mobileDeviceId) throws GwtTeamingException {
-		try {
-			EntityId eid = new EntityId(binderId, entityId, eidType, mobileDeviceId);
-			return new EntityIdRpcResponseData(eid);
-		}
-		
-		catch (Exception e) {
-			// Convert the exception to a GwtTeamingException and throw
-			// that.
-			throw
-				GwtLogHelper.getGwtClientException(
-					m_logger,
-					e,
-					"GwtServerHelper.getEntityId( SOURCE EXCEPTION ):  ");
-		}
-	}
-	
-	/**
-	 * Returns an EntityIdListRpcResponseData containing the EntityId's
-	 * from the given List<GetEntityIdCmd>.
-	 * 
-	 * @param bs
-	 * @param request
-	 * @param eidCmdList
-	 * 
-	 * @return
-	 * 
-	 * @throws GwtTeamingException
-	 */
-	public static EntityIdListRpcResponseData getEntityIdList(AllModulesInjected bs, HttpServletRequest request, List<GetEntityIdCmd> eidCmdList) throws GwtTeamingException {
-		try {
-			EntityIdListRpcResponseData reply = new EntityIdListRpcResponseData();
-			if (null != eidCmdList) {
-				for (GetEntityIdCmd eidCmd:  eidCmdList) {
-					EntityIdRpcResponseData eid = getEntityId(bs, request, eidCmd.getBinderId(), eidCmd.getEntityId(), eidCmd.getEntityIdType(), eidCmd.getMobileDeviceId());
-					reply.addEntityId(eid.getEntityId());
-				}
-			}
-			return reply;
-		}
-		
-		catch (Exception e) {
-			// Convert the exception to a GwtTeamingException and throw
-			// that.
-			throw
-				GwtLogHelper.getGwtClientException(
-					m_logger,
-					e,
-					"GwtServerHelper.getEntityIdList( SOURCE EXCEPTION ):  ");
-		}
-	}
-	
-	/**
 	 * Returns the string to use as the title of a folder entry.
 	 * 
 	 * @param fe
@@ -4863,84 +4832,6 @@ public class GwtServerHelper {
 			else reply = NLT.get("reply.re.title", new String[]{getFolderEntryTitle(feParent)});
 		}
 		return reply;
-	}
-
-	/**
-	 * Returns a FolderFiltersRpcResponseData containing information
-	 * about the filters defined on the given folder.
-	 * 
-	 * @param bs
-	 * @param request
-	 * @param folder
-	 * 
-	 * @return
-	 * 
-	 * @throws GwtTeamingException
-	 */
-	public static FolderFiltersRpcResponseData getFolderFilters(AllModulesInjected bs, HttpServletRequest request, Folder folder) throws GwtTeamingException {
-		try {
-			// Allocate a FolderFiltersRpcResponseData to return the
-			// folder's filters in.
-			FolderFiltersRpcResponseData reply = new FolderFiltersRpcResponseData();
-
-			// Are there any global filters defined on the folder?
-			Map<String, String> searchFilters = ((Map<String, String>) folder.getProperty(ObjectKeys.BINDER_PROPERTY_FILTERS));
-			if (MiscUtil.hasItems(searchFilters)) {
-				// Yes!  Scan them and add a FolderFilter for each to
-				// the reply.
-				for (Entry<String, String> mapEntry:  searchFilters.entrySet()) {
-					FolderFilter globalFilter = new FolderFilter(mapEntry.getKey(), mapEntry.getValue());
-					reply.addGlobalFilter(globalFilter);
-				}
-			}
-			
-			// Are there any personal filters defined in the user's
-			// properties for this folder?
-			UserProperties userBinderProperties = bs.getProfileModule().getUserProperties(GwtServerHelper.getCurrentUserId(), folder.getId());
-			searchFilters = ((Map<String, String>) userBinderProperties.getProperty(ObjectKeys.USER_PROPERTY_SEARCH_FILTERS));
-			if (MiscUtil.hasItems(searchFilters)) {
-				// Yes!  Scan them and add a FolderFilter for each to
-				// the reply.
-				for (Entry<String, String> mapEntry:  searchFilters.entrySet()) {
-					FolderFilter personalFilter = new FolderFilter(mapEntry.getKey(), mapEntry.getValue());
-					reply.addPersonalFilter(personalFilter);
-				}
-			}
-
-			// If we get here, reply refers to a
-			// FolderFilterRpcResponse data containing the filters
-			// defined on the given folder.  Return it.
-			return reply;
-		}
-		
-		catch (Exception e) {
-			// Convert the exception to a GwtTeamingException and throw
-			// that.
-			throw
-				GwtLogHelper.getGwtClientException(
-					m_logger,
-					e,
-					"GwtServerHelper.getFolderFiltersImpl( SOURCE EXCEPTION ):  ");
-		}
-	}
-	
-	public static FolderFiltersRpcResponseData getFolderFilters(AllModulesInjected bs, HttpServletRequest request, Long folderId) throws GwtTeamingException {
-		try {
-			// Access the folder and read its filters, using the
-			// initial form of the method.
-			Folder folder = bs.getFolderModule().getFolder(folderId);
-			return getFolderFilters(bs, request, folder);
-		}
-		
-		catch (Exception e) {
-			// Convert the exception to a GwtTeamingException and throw
-			// that.
-			throw
-				GwtLogHelper.getGwtClientException(
-					m_logger,
-					e,
-					"GwtServerHelper.getFolderFilters( SOURCE EXCEPTION ):  ");
-		}
 	}
 	
 	/**
@@ -5844,13 +5735,10 @@ public class GwtServerHelper {
 		return reply;
 	}
 	
-	/**
+	/*
 	 * Returns the FolderType of a folder based on its current view.
-	 * 
-	 * @param bs
-	 * @param folder
 	 */
-	public static FolderType getFolderTypeFromViewDef(AllModulesInjected bs, Folder folder) {
+	private static FolderType getFolderTypeFromViewDef(AllModulesInjected bs, Folder folder) {
 		// Does the user have a view definition selected for this
 		// folder?
 		Definition def = BinderHelper.getFolderDefinitionFromView(bs, folder);
@@ -7081,18 +6969,16 @@ public class GwtServerHelper {
 				try
 				{
 					User user;
-					IdentityInfo identityInfo;
 
-					// Is this an external user?
+					// Is this an external user that has already been verified?
 					user = ((User) ami.getProfileModule().getEntry( gwtUser.getIdLong() ));
-					identityInfo = user.getIdentityInfo();
-					if ( identityInfo.isInternal() == false )
+					if ( user.getIdentityInfo().isInternal() == false &&
+						 (user.getExtProvState() == ExtProvState.verified || user.getExtProvState() == ExtProvState.pwdResetRequested) )
 					{
 						String token;
 						String url;
 						AdaptedPortletURL adapterUrl;
-						Map<String,Object> errorMap = null;
-						UrlNotificationType notificationType;
+						Map<String,Object> errorMap;
 						
 						// Yes
 						// Get a url to the user's workspace.
@@ -7109,33 +6995,12 @@ public class GwtServerHelper {
 						token = ExternalUserUtil.encodeUserToken( user );
 						adapterUrl.setParameter( ExternalUserUtil.QUERY_FIELD_NAME_EXTERNAL_USER_ENCODED_TOKEN, token );
 						url = adapterUrl.toString();
-
-						// Has this external user already self-registered?
-						if ( user.getExtProvState() == ExtProvState.verified || user.getExtProvState() == ExtProvState.pwdResetRequested )
-						{
-							// Yes
-							notificationType = UrlNotificationType.FORGOTTEN_PASSWORD;
-						}
-						else if ( identityInfo.isFromOpenid() && identityInfo.isFromLocal() == false )
-						{
-							notificationType = UrlNotificationType.SELF_REGISTRATION_REQUIRED;
-						}
-						else
-						{
-							String err;
-							
-							err = NLT.get( "request.pwd.reset.invalid.user.state" );
-							responseData.addError( err );
-							return null;
-						}
-						
-
+		
 						errorMap = EmailHelper.sendUrlNotification(
 																ami,
 																url,
-																notificationType,
+																UrlNotificationType.FORGOTTEN_PASSWORD,
 																user.getId() );
-
 						if ( errorMap != null )
 						{
 							List<SendMailErrorWrapper> emailErrors;
@@ -7147,10 +7012,7 @@ public class GwtServerHelper {
 							{
 								// Sending the e-mail worked.  Change the users "external user provisioned state" to
 								// "password reset requested"
-								if ( user.getExtProvState() == ExtProvState.verified || user.getExtProvState() == ExtProvState.pwdResetRequested )
-								{
-									ExternalUserUtil.markAsPwdResetRequested( user );
-								}
+								ExternalUserUtil.markAsPwdResetRequested( user );
 							}
 						}
 					}
@@ -8453,7 +8315,7 @@ public class GwtServerHelper {
 				ZoneConfig zoneConfig = zoneModule.getZoneConfig( RequestContextHolder.getRequestContext().getZoneId() );
 				OpenIDConfig openIdConfig = zoneConfig.getOpenIDConfig();
 				boolean allowOpenIdAuth = zoneConfig.isExternalUserEnabled() && openIdConfig.isAuthenticationEnabled();
-				config.setAllowExternalUsersViaOpenID( allowOpenIdAuth ); 
+				config.setAllowExternalUsers( allowOpenIdAuth ); 
 				config.setAllowExternalUsersSelfReg( openIdConfig.isSelfProvisioningEnabled() );
 			}
 		}
@@ -9432,116 +9294,10 @@ public class GwtServerHelper {
 		}
 	}
 
-	/*
-	 * Validates that the names of the filters in the
-	 * List<FolderFilter> are unique within the
-	 * FolderFiltersRpcResponseData.  If they're not, they're made
-	 * unique by appending a number to the name until they are.  The
-	 * unique FolderFilter's are then added to the appropriate list in
-	 * currentFilters.
-	 * 
-	 * Returns true if any FolderFilter's are added to the
-	 * currentFilters and false otherwise.
-	 */
-	private static boolean mergeFolderFilters(FolderFiltersRpcResponseData currentFilters, List<FolderFilter> filterList, boolean addToGlobal, ErrorListRpcResponseData errors) {
-		// Do we have any filters to process?
-		boolean reply = MiscUtil.hasItems(filterList);
-		if (reply) {
-			// Yes!  Scan them.
-			for (FolderFilter filter:  filterList) {
-				// What's the unique name for this filter?
-				int    tryCount       = 0;
-				String baseFilterName = filter.getFilterName();
-				String filterName     = baseFilterName;
-				while (true) {
-					tryCount += 1;
-					if (!(currentFilters.filterExists(filterName))) {
-						break;
-					}
-					filterName = (baseFilterName + " (" + tryCount + ")");
-				}
-
-				// Do we have to rename this filter?
-				if (1 < tryCount) {
-					// Yes!  Add a warning to the error list so we can
-					// inform the user...
-					String key = "saveFilters.warning.duplicateRenamed.";
-					if (addToGlobal)
-					     key += "global";
-					else key += "personal";
-					errors.addWarning(NLT.get(key, new String[]{baseFilterName, filterName}));
-					
-					// ...and save its new name.
-					filter.setFilterName(filterName);
-				}
-		
-				// Finally, add the filter to the appropriate list.
-				if (addToGlobal)
-				     currentFilters.addGlobalFilter(  filter);
-				else currentFilters.addPersonalFilter(filter);
-			}
-		}
-		
-		// If we get here, reply is true if we added any filters
-		// currentFilters and false otherwise.  Return it.
-		return reply;
-	}
-	
 	/**
 	 * Modify the given group
 	 */
-	public static void modifyGroup(
-		AllModulesInjected ami,
-		Long groupId,
-		String title,
-		String desc,
-		boolean isMembershipDynamic,
-		GwtDynamicGroupMembershipCriteria membershipCriteria ) throws GwtTeamingException
-	{
-		Principal principal;
-		GwtServerProfiler gsp;
-
-		principal = ami.getProfileModule().getEntry( groupId );
-		if ( principal != null && principal instanceof Group )
-		{
-			Map updates;
-			String ldapQuery = null;
-
-			if ( isMembershipDynamic && membershipCriteria != null )
-				ldapQuery = membershipCriteria.getAsXml();
-
-			updates = new HashMap();
-			updates.put( ObjectKeys.FIELD_ENTITY_TITLE, title );
-			updates.put( ObjectKeys.FIELD_ENTITY_DESCRIPTION, desc );
-			updates.put( ObjectKeys.FIELD_ENTITY_DESCRIPTION_FORMAT, String.valueOf( Description.FORMAT_NONE ) );  
-			updates.put( ObjectKeys.FIELD_GROUP_DYNAMIC, isMembershipDynamic );
-			updates.put( ObjectKeys.FIELD_GROUP_LDAP_QUERY, ldapQuery );
-			
-			gsp = GwtServerProfiler.start( m_logger, "GwtServerHelper.modifyGroup() - getProfileModule().modifyEntry()" );
-			try
-			{
-				ami.getProfileModule().modifyEntry( groupId, new MapInputData( updates ) );
-			}
-   			catch ( Exception ex )
-   			{
-   				throw GwtLogHelper.getGwtClientException(m_logger, ex);
-   			}
-   			finally
-   			{
-   				gsp.stop();
-   			}
-		}
-	}
-
-	/**
-	 * Modify the membership of the given group
-	 */
-	public static void modifyGroupMembership(
-		AllModulesInjected ami,
-		Long groupId,
-		boolean isMembershipDynamic,
-		List<GwtTeamingItem> membership,
-		GwtDynamicGroupMembershipCriteria membershipCriteria ) throws GwtTeamingException
+	public static void modifyGroup( AllModulesInjected ami, Long groupId, String title, String desc, boolean isMembershipDynamic, List<GwtTeamingItem> membership, GwtDynamicGroupMembershipCriteria membershipCriteria ) throws GwtTeamingException
 	{
 		Principal principal;
 		GwtServerProfiler gsp;
@@ -9572,7 +9328,7 @@ public class GwtServerHelper {
 				{
 					currentMembers.add( ami.getProfileModule().getEntry( nextMember.getId() ) );
 				}
-				GwtLogHelper.debug( m_logger, "GwtServerHelper.modifyGroupMembership(), number of members in current group membership: " + String.valueOf( currentMembers.size() ) );
+				GwtLogHelper.debug(m_logger, "GwtServerHelper.modifyGroup(), number of members in current group membership: " + String.valueOf( currentMembers.size() ) );
 			}
 			
 			// Is the group membership dynamic?
@@ -9583,7 +9339,7 @@ public class GwtServerHelper {
 				if ( membershipCriteria != null )
 				{
 					// Execute the ldap query and get the list of members from the results.
-					gsp = GwtServerProfiler.start( m_logger, "GwtServerHelper.modifyGroupMembership() - get list of dynamic group members" );
+					gsp = GwtServerProfiler.start( m_logger, "GwtServerHelper.modifyGroup() - get list of dynamic group members" );
 					try
 					{
 						int maxCount;
@@ -9658,20 +9414,23 @@ public class GwtServerHelper {
 				}
 			}
 
-			// Modify the group's membership.
+			// Modify the group.
 			{
 				Map updates;
 
 				principals = ami.getProfileModule().getPrincipals( membershipIds );
 
-				GwtLogHelper.debug(m_logger, "GwtServerHelper.modifyGroupMembership(), number of members in new group membership: " + String.valueOf( principals.size() ) );
+				GwtLogHelper.debug(m_logger, "GwtServerHelper.modifyGroup(), number of members in new group membership: " + String.valueOf( principals.size() ) );
 			
 				updates = new HashMap();
+				updates.put( ObjectKeys.FIELD_ENTITY_TITLE, title );
+				updates.put( ObjectKeys.FIELD_ENTITY_DESCRIPTION, desc );
+				updates.put( ObjectKeys.FIELD_ENTITY_DESCRIPTION_FORMAT, String.valueOf( Description.FORMAT_NONE ) );  
 				updates.put( ObjectKeys.FIELD_GROUP_DYNAMIC, isMembershipDynamic );
 				updates.put( ObjectKeys.FIELD_GROUP_PRINCIPAL_MEMBERS, principals );
 				updates.put( ObjectKeys.FIELD_GROUP_LDAP_QUERY, ldapQuery );
 				
-				gsp = GwtServerProfiler.start( m_logger, "GwtServerHelper.modifyGroupMembership() - getProfileModule().modifyEntry()" );
+				gsp = GwtServerProfiler.start( m_logger, "GwtServerHelper.modifyGroup() - getProfileModule().modifyEntry()" );
 				try
 				{
 					ami.getProfileModule().modifyEntry( groupId, new MapInputData( updates ) );
@@ -9701,7 +9460,7 @@ public class GwtServerHelper {
 				changes = new HashMap<Long,Principal>();
 
 				// Get a list of the users and groups that were removed from the group.
-				gsp = GwtServerProfiler.start( m_logger, "GwtServerHelper.modifyGroupMembership() - create list of users removed from the group." );
+				gsp = GwtServerProfiler.start( m_logger, "GwtServerHelper.modifyGroup() - create list of users removed from the group." );
 				try
 				{
 					for (Principal p : currentMembers)
@@ -9740,12 +9499,12 @@ public class GwtServerHelper {
 				finally
 				{
 					gsp.stop();
-					GwtLogHelper.debug(m_logger, "GwtServerHelper.modifyGroupMembership(), number of users removed from group: " + String.valueOf( usersRemovedFromGroup.size() ) );
-					GwtLogHelper.debug(m_logger, "GwtServerHelper.modifyGroupMembership(), number of groups removed from group: " + String.valueOf( groupsRemovedFromGroup.size() ) );
+					GwtLogHelper.debug(m_logger, "GwtServerHelper.modifyGroup(), number of users removed from group: " + String.valueOf( usersRemovedFromGroup.size() ) );
+					GwtLogHelper.debug(m_logger, "GwtServerHelper.modifyGroup(), number of groups removed from group: " + String.valueOf( groupsRemovedFromGroup.size() ) );
 				}
 				
 				// Get a list of the users and groups that were added to the group.
-				gsp = GwtServerProfiler.start( m_logger, "GwtServerHelper.modifyGroupMembership() - create list of users added to the group." );
+				gsp = GwtServerProfiler.start( m_logger, "GwtServerHelper.modifyGroup() - create list of users added to the group." );
 				try
 				{
 					for (Principal p : principals)
@@ -9784,11 +9543,11 @@ public class GwtServerHelper {
 				finally
 				{
 					gsp.stop();
-					GwtLogHelper.debug( m_logger, "GwtServerHelper.modifyGroupMembership(), number of users added to group: " + String.valueOf( usersAddedToGroup.size() ) );
-					GwtLogHelper.debug( m_logger, "GwtServerHelper.modifyGroupMembership(), number of groups added to group: " + String.valueOf( groupsAddedToGroup.size() ) );
+					GwtLogHelper.debug( m_logger, "GwtServerHelper.modifyGroup(), number of users added to group: " + String.valueOf( usersAddedToGroup.size() ) );
+					GwtLogHelper.debug( m_logger, "GwtServerHelper.modifyGroup(), number of groups added to group: " + String.valueOf( groupsAddedToGroup.size() ) );
 				}
 
-				GwtLogHelper.debug( m_logger, "GwtServerHelper.modifyGroupMembership(), number of changes to the group: " + String.valueOf( changes.size() ) );
+				GwtLogHelper.debug( m_logger, "GwtServerHelper.modifyGroup(), number of changes to the group: " + String.valueOf( changes.size() ) );
 
 				// Update the disk quotas and file size limits for users that were added
 				// or removed from the group.
@@ -9805,7 +9564,7 @@ public class GwtServerHelper {
 			}
 		}
 	}
-	
+
 	/*
 	 * Opens a URL connection, optionally ignoring any SSL
 	 * certificates.
@@ -10053,14 +9812,11 @@ public class GwtServerHelper {
 		case GET_DESKTOP_APP_DOWNLOAD_INFO:
 		case GET_DOCUMENT_BASE_URL:
 		case GET_DOWNLOAD_FILE_URL:
-		case GET_DOWNLOAD_FOLDER_AS_CSV_FILE_URL:
 		case GET_DOWNLOAD_SETTING:
 		case GET_DISK_USAGE_INFO:
 		case GET_DYNAMIC_MEMBERSHIP_CRITERIA:
 		case GET_EMAIL_NOTIFICATION_INFORMATION:
 		case GET_ENTITY_ACTION_TOOLBAR_ITEMS:
-		case GET_ENTITY_ID:
-		case GET_ENTITY_ID_LIST:
 		case GET_ENTITY_PERMALINK:
 		case GET_ENTITY_RIGHTS:
 		case GET_ENTRY:
@@ -10080,9 +9836,6 @@ public class GwtServerHelper {
 		case GET_FOLDER_DISPLAY_DATA:
 		case GET_FOLDER_ENTRIES:
 		case GET_FOLDER_ENTRY_DETAILS:
-		case GET_FOLDER_ENTRY_TYPE:
-		case GET_FOLDER_FILTERS:
-		case GET_FOLDER_HAS_USER_LIST:
 		case GET_FOLDER_ROWS:
 		case GET_FOLDER_SORT_SETTING:
 		case GET_FOLDER_TOOLBAR_ITEMS:
@@ -10175,7 +9928,6 @@ public class GwtServerHelper {
 		case GET_UPGRADE_INFO:
 		case GET_USER_ACCESS_CONFIG:
 		case GET_USER_AVATAR:
-		case GET_USER_LIST_INFO:
 		case GET_USER_PERMALINK:
 		case GET_USER_PROPERTIES:
 		case GET_USER_SHARING_RIGHTS_INFO:
@@ -10199,9 +9951,6 @@ public class GwtServerHelper {
 		case HIDE_SHARES:
 		case LDAP_AUTHENTICATE_USER:
 		case LOCK_ENTRIES:
-		case MARK_FOLDER_CONTENTS_READ:
-		case MARK_FOLDER_CONTENTS_UNREAD:
-		case MODIFY_GROUP_MEMBERSHIP:
 		case MODIFY_NET_FOLDER:
 		case MODIFY_NET_FOLDER_ROOT:
 		case MOVE_ENTRIES:
@@ -10230,7 +9979,6 @@ public class GwtServerHelper {
 		case SAVE_EMAIL_NOTIFICATION_INFORMATION:
 		case SAVE_FILE_SYNC_APP_CONFIGURATION:
 		case SAVE_FOLDER_ENTRY_DLG_POSITION:
-		case SAVE_FOLDER_FILTERS:
 		case SAVE_FOLDER_PINNING_STATE:
 		case SAVE_FOLDER_SORT:
 		case SAVE_NET_FOLDER_GLOBAL_SETTINGS:
@@ -10727,89 +10475,6 @@ public class GwtServerHelper {
 	}
 
 	/**
-	 * Returns an ErrorListRpcResponseData containing any errors from
-	 * saving filters on a folder.
-	 * 
-	 * @param bs
-	 * @param request
-	 * @param folderInfo
-	 * @param globalFilters
-	 * @param personalFilters
-	 * 
-	 * @return
-	 * 
-	 * @throws GwtTeamingException
-	 */
-	public static ErrorListRpcResponseData saveFolderFilters(AllModulesInjected bs, HttpServletRequest request, BinderInfo folderInfo, List<FolderFilter> globalFilters, List<FolderFilter> personalFilters) throws GwtTeamingException {
-		try {
-			// Access the destination folder that we're saving the
-			// filters to.
-			Long   folderId = folderInfo.getBinderIdAsLong();
-			Folder folder   = bs.getFolderModule().getFolder(folderId);
-
-			// Allocate an ErrorListRpcResponseData that we can return any
-			// errors in.
-			ErrorListRpcResponseData reply = new ErrorListRpcResponseData();
-
-			// Get the current filters from the destination folder.
-			FolderFiltersRpcResponseData currentFilters = getFolderFilters(bs, request, folder);
-
-			// Merge the filters to be saved into the currentFilters
-			// while validating that the names we've got to save will
-			// be unique with those we got from the folder.
-			boolean changedGlobalFilters   = mergeFolderFilters(currentFilters, globalFilters,   true,  reply);
-			boolean changedPersonalFilters = mergeFolderFilters(currentFilters, personalFilters, false, reply);
-			
-			// Do we need to save the global filters?
-			if (changedGlobalFilters) {
-				// Yes!  Add the current global filters to a filter
-				// map...
-				Map<String, String> globalFiltersMap = new HashMap<String, String>();
-				for (FolderFilter globalFilter:  currentFilters.getGlobalFilters()) {
-					globalFiltersMap.put(globalFilter.getFilterName(), globalFilter.getFilterData());
-				}
-				
-				// ...and write it to the folder.
-				folder.setProperty(
-					ObjectKeys.BINDER_PROPERTY_FILTERS,
-					globalFiltersMap);
-			}
-
-			// Do we need to save the personal filters?
-			if (changedPersonalFilters) {
-				// Yes!  Add the current personal filters to a filter
-				// map...
-				Map<String, String> personalFiltersMap = new HashMap<String, String>();
-				for (FolderFilter personalFilter:  currentFilters.getPersonalFilters()) {
-					personalFiltersMap.put(personalFilter.getFilterName(), personalFilter.getFilterData());
-				}
-				
-				// ...and write it to the user's properties for the
-				// ...folder.
-				bs.getProfileModule().setUserProperty(
-					GwtServerHelper.getCurrentUserId(),
-					folderId,
-					ObjectKeys.USER_PROPERTY_SEARCH_FILTERS, personalFiltersMap);
-			}
-
-			// If we get here, reply refers to the
-			// ErrorListRpcResponseData containing any problems we
-			// found during the save.  Return it.
-			return reply;
-		}
-		
-		catch (Exception e) {
-			// Convert the exception to a GwtTeamingException and throw
-			// that.
-			throw
-				GwtLogHelper.getGwtClientException(
-					m_logger,
-					e,
-					"GwtServerHelper.saveFolderFilters( SOURCE EXCEPTION ):  ");
-		}
-	}
-	
-	/**
 	 * Saves the folder sort options on the specified binder.
 	 * 
 	 * @param bs
@@ -11127,11 +10792,11 @@ public class GwtServerHelper {
 			
 			// Set 'allow external users to self register'.
 			OpenIDConfig openIdConfig = zoneConfig.getOpenIDConfig();
-			openIdConfig.setAuthenticationEnabled(  config.getAllowExternalUsersViaOpenID()       );
+			openIdConfig.setAuthenticationEnabled(  config.getAllowExternalUsers()       );
 			openIdConfig.setSelfProvisioningEnabled(config.getAllowExternalUsersSelfReg());
 			
 			// Set 'allow external users'.
-			am.setExternalUserEnabled(config.getAllowExternalUsersViaOpenID());
+			am.setExternalUserEnabled(config.getAllowExternalUsers());
 			am.setOpenIDConfig(openIdConfig);
 		}
 		
@@ -12291,7 +11956,7 @@ public class GwtServerHelper {
 		{
 		}
 	}
-
+	
 	/*
 	 * Validates that the Long's in a Set<Long> are valid principal
 	 * IDs.

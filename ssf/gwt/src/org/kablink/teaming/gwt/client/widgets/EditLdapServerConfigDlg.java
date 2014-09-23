@@ -1004,7 +1004,7 @@ public class EditLdapServerConfigDlg extends DlgBox
 			m_userSearchesTable.addColumn( baseDnCol, messages.editLdapServerConfigDlg_BaseDnCol() );
 		}
 
-		// Add the "Filter" column
+		// Add the "User Filter" column
 		{
 			TextColumn<GwtLdapSearchInfo> filterCol;
 

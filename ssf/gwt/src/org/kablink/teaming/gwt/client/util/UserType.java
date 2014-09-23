@@ -42,8 +42,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
  */
 public enum UserType implements IsSerializable {
 	EXTERNAL_GUEST,			// Guest.
-	EXTERNAL_OPEN_ID,		// External user who has authenticated via OpenID
-	EXTERNAL_OTHERS,		// All other externals
+	EXTERNAL_OTHERS,		// All other externals except guest.
 							//
 	INTERNAL_LDAP,			// Users imported from LDAP.
 	INTERNAL_PERSON_ADMIN,	// System defined admin.
@@ -61,7 +60,6 @@ public enum UserType implements IsSerializable {
 		boolean reply;
 		switch (this) {
 		case EXTERNAL_GUEST:
-		case EXTERNAL_OPEN_ID:
 		case EXTERNAL_OTHERS:  reply = true;  break;
 		default:               reply = false; break;
 		}

@@ -109,12 +109,10 @@ import org.kablink.teaming.gwt.client.rpc.shared.BooleanRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.CanModifyBinderCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ChangeFavoriteStateCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.CollectionPointData;
-import org.kablink.teaming.gwt.client.rpc.shared.GetBinderBrandingCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetBinderPermalinkCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetCollectionPointDataCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetMainPageInfoCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetPersonalPrefsCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.GetSiteBrandingCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetUserWorkspaceInfoCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.MainPageInfoRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.PersistActivityStreamSelectionCmd;
@@ -1557,74 +1555,6 @@ public class GwtMainPage extends ResizeComposite
 		});
 	}// end contextLoaded()
 
-	/**
-	 * Issue an rpc request to get the branding from the given binder and then invoke the
-	 * Edit Branding dialog 
-	 */
-	private void editBinderBranding( String binderId )
-	{
-		AsyncCallback<VibeRpcResponse> getBinderBrandingCallback;
-		GetBinderBrandingCmd cmd;
-
-		if ( binderId == null || binderId.length() == 0 )
-			return;
-		
-		// Create the callback that will be used when we issue an ajax call to get branding for this workspace
-		getBinderBrandingCallback = new AsyncCallback<VibeRpcResponse>()
-		{
-			/**
-			 * 
-			 */
-			@Override
-			public void onFailure( final Throwable t )
-			{
-				Scheduler.ScheduledCommand cmd;
-
-				cmd = new Scheduler.ScheduledCommand()
-				{
-					@Override
-					public void execute()
-					{
-						String[] patches = null;
-
-						GwtClientHelper.handleGwtRPCFailure(
-								t,
-								GwtTeaming.getMessages().rpcFailure_GetBranding(),
-								patches );
-					}
-				};
-				Scheduler.get().scheduleDeferred( cmd );
-			}
-	
-			/**
-			 * 
-			 * @param result
-			 */
-			@Override
-			public void onSuccess( VibeRpcResponse response )
-			{
-				final GwtBrandingData binderBrandingData;
-				Scheduler.ScheduledCommand cmd;
-				
-				binderBrandingData = (GwtBrandingData) response.getResponseData();
-
-				cmd = new Scheduler.ScheduledCommand()
-				{
-					@Override
-					public void execute()
-					{
-						editBranding( binderBrandingData, -1, -1 );
-					}
-				};
-				Scheduler.get().scheduleDeferred( cmd );
-			}
-		};
-		
-		// Issue an ajax request to get the binder branding data.
-		cmd = new GetBinderBrandingCmd( binderId );
-		cmd.setUseInheritance( false );
-		GwtClientHelper.executeCommand( cmd, getBinderBrandingCallback );
-	}
 	/*
 	 * Invoke the "Edit Branding" dialog.
 	 */
@@ -1633,6 +1563,22 @@ public class GwtMainPage extends ResizeComposite
 		String brandingBinderId;
 		int xCalc;
 		int yCalc;
+		
+		// Will the user be editing the site branding?
+		if ( brandingDataIn.isSiteBranding() == false )
+		{
+			GwtBrandingData siteBrandingData;
+
+			// No
+			// If the administrator has set the branding rule to be "site branding only", tell the
+			// user they can't edit the branding.
+			siteBrandingData = m_mastHead.getSiteBrandingData();
+			if ( siteBrandingData.getBrandingRule() == GwtBrandingDataExt.BrandingRule.DISPLAY_SITE_BRANDING_ONLY )
+			{
+				Window.alert( GwtTeaming.getMessages().cantEditBranding() );
+				return;
+			}
+		}
 		
 		// Is the branding data inherited?  Branding is inherited if it came from a binder other than
 		// the binder we are working with.
@@ -1707,8 +1653,19 @@ public class GwtMainPage extends ResizeComposite
 							@Override
 							public void onSuccess( VibeRpcResponse response )
 							{
-								// Tell the masthead to refresh the branding
-								m_mastHead.refreshBranding();
+								// Did we just save site branding?
+								if ( savedBrandingData.isSiteBranding() )
+								{
+									// Yes
+									// Tell the masthead to go get the new site branding.
+									m_mastHead.refreshSiteBranding();
+								}
+								else
+								{
+									// No
+									// Tell the masthead to go get the new binder branding.
+									m_mastHead.refreshBinderBranding();
+								}
 							}
 						};
 					}
@@ -2180,7 +2137,9 @@ public class GwtMainPage extends ResizeComposite
 		if ( entryId == null || entryId.length() == 0 )
 			return;
 		
-		entityId = new EntityId( Long.valueOf( entryId ), EntityId.FOLDER_ENTRY );
+		entityId = new EntityId();
+		entityId.setEntityId( Long.valueOf( entryId ) );
+		entityId.setEntityType( EntityId.FOLDER_ENTRY );
 		
 		BinderViewsHelper.shareEntity( entityId );
 	}
@@ -2887,92 +2846,12 @@ public class GwtMainPage extends ResizeComposite
 	@Override
 	public void onEditCurrentBinderBranding( EditCurrentBinderBrandingEvent event )
 	{
-		Scheduler.ScheduledCommand schedCmd;
+		GwtBrandingData brandingData;
 		
-		schedCmd = new Scheduler.ScheduledCommand()
-		{
-			@Override
-			public void execute()
-			{
-				AsyncCallback<VibeRpcResponse> getSiteBrandingCallback;
-				GetSiteBrandingCmd cmd;
+		// Get the branding data the masthead is currently working with.
+		brandingData = m_mastHead.getBrandingData();
 
-				// Create the callback that will be used when we issue an ajax call to get the site branding
-				getSiteBrandingCallback = new AsyncCallback<VibeRpcResponse>()
-				{
-					/**
-					 * 
-					 */
-					@Override
-					public void onFailure( final Throwable t )
-					{
-						Scheduler.ScheduledCommand cmd;
-
-						cmd = new Scheduler.ScheduledCommand()
-						{
-							@Override
-							public void execute()
-							{
-								String[] patches = null;
-
-								GwtClientHelper.handleGwtRPCFailure(
-										t,
-										GwtTeaming.getMessages().rpcFailure_GetBranding(),
-										patches );
-							}
-						};
-						Scheduler.get().scheduleDeferred( cmd );
-					}
-			
-					/**
-					 * 
-					 * @param result
-					 */
-					@Override
-					public void onSuccess( VibeRpcResponse response )
-					{
-						final GwtBrandingData siteBrandingData;
-						Scheduler.ScheduledCommand cmd;
-						
-						siteBrandingData = (GwtBrandingData) response.getResponseData();
-
-						cmd = new Scheduler.ScheduledCommand()
-						{
-							@Override
-							public void execute()
-							{
-								String currentBinderId;
-								String siteBinderId;
-								
-								currentBinderId = m_contentCtrl.getCurrentBinderInfo().getBinderId();
-								siteBinderId = siteBrandingData.getBinderId();
-								
-								// Will the user be editing the site branding?
-								if ( currentBinderId != null && currentBinderId.equalsIgnoreCase( siteBinderId ) == false )
-								{
-									// No
-									// If the administrator has set the branding rule to be "site branding only", tell the
-									// user they can't edit the branding.
-									if ( siteBrandingData.getBrandingRule() == GwtBrandingDataExt.BrandingRule.DISPLAY_SITE_BRANDING_ONLY )
-									{
-										Window.alert( GwtTeaming.getMessages().cantEditBranding() );
-										return;
-									}
-								}
-
-								editBinderBranding( currentBinderId );
-							}
-						};
-						Scheduler.get().scheduleDeferred( cmd );
-					}
-				};
-				
-				// Issue an ajax request to get the site branding data.
-				cmd = new GetSiteBrandingCmd();
-				GwtClientHelper.executeCommand( cmd, getSiteBrandingCallback );
-			}
-		};
-		Scheduler.get().scheduleDeferred( schedCmd );
+		editBranding( brandingData, -1, -1 );
 	}// end onEditCurrentBinderBranding()
 	
 	/**
@@ -3846,7 +3725,18 @@ public class GwtMainPage extends ResizeComposite
 					@Override
 					public void execute()
 					{
-						BinderViewsHelper.shareEntity( binderInfo.buildEntityId() );
+						String eidType;
+						switch ( binderInfo.getBinderType() )
+						{
+						case FOLDER:     eidType = EntityId.FOLDER;    break;
+						case WORKSPACE:  eidType = EntityId.WORKSPACE; break;
+						default:         eidType = "";                 break;
+						}
+						BinderViewsHelper.shareEntity(
+							new EntityId(
+								binderInfo.getParentBinderIdAsLong(),
+								binderInfo.getBinderIdAsLong(),
+								eidType ) );
 					}// end execute()
 				} );
 			}// end onSuccess()
@@ -3994,7 +3884,7 @@ public class GwtMainPage extends ResizeComposite
 	{
 		UntrackBinderCmd cmd;
 		
-		cmd = new UntrackBinderCmd( m_mainPageInfo.getBinderInfo().getBinderIdAsLong() );
+		cmd = new UntrackBinderCmd( m_mainPageInfo.getBinderInfo().getBinderId() );
 		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
 		{
 			@Override
@@ -4028,14 +3918,13 @@ public class GwtMainPage extends ResizeComposite
 	@Override
 	public void onViewCurrentBinderTeamMembers( ViewCurrentBinderTeamMembersEvent event )
 	{
-		// To view team members on a binder, we simply navigate to the
-		// binder's permalink with an operation of show_team_members.
-		GetBinderPermalinkCmd cmd = new GetBinderPermalinkCmd( m_mainPageInfo.getBinderInfo().getBinderId() );
+		GetBinderPermalinkCmd cmd;
+		
+		cmd = new GetBinderPermalinkCmd( m_mainPageInfo.getBinderInfo().getBinderId() );
 		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
 		{
 			@Override
-			public void onFailure( Throwable t )
-			{
+			public void onFailure( Throwable t ) {
 				GwtClientHelper.handleGwtRPCFailure(
 					t,
 					GwtTeaming.getMessages().rpcFailure_GetBinderPermalink(),
@@ -4045,15 +3934,19 @@ public class GwtMainPage extends ResizeComposite
 			@Override
 			public void onSuccess( VibeRpcResponse response )
 			{
-				StringRpcResponseData responseData = ((StringRpcResponseData) response.getResponseData());
-				String binderUrl = responseData.getStringValue();
+				String binderUrl;
+				StringRpcResponseData responseData;
+
+				responseData = (StringRpcResponseData) response.getResponseData();
+				binderUrl = responseData.getStringValue();
+				
 				OnSelectBinderInfo osbInfo = new OnSelectBinderInfo(
 					m_mainPageInfo.getBinderInfo(),
-					GwtClientHelper.appendUrlParam( binderUrl, "operation", "show_team_members" ),
+					binderUrl,
 					Instigator.VIEW_TEAM_MEMBERS );
 				if ( GwtClientHelper.validateOSBI( osbInfo ) )
 				{
-					GwtTeaming.fireEvent( new ChangeContextEvent( osbInfo ) );
+					GwtTeaming.fireEvent( new ChangeContextEvent( osbInfo ));
 				}
 			}// end onSuccess()
 		});// end AsyncCallback()
@@ -4100,7 +3993,7 @@ public class GwtMainPage extends ResizeComposite
 	{
 		UntrackPersonCmd cmd;
 		
-		cmd = new UntrackPersonCmd( m_mainPageInfo.getBinderInfo().getBinderIdAsLong() );
+		cmd = new UntrackPersonCmd( m_mainPageInfo.getBinderInfo().getBinderId() );
 		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
 		{
 			@Override

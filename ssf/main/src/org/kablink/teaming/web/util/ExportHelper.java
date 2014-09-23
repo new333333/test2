@@ -53,7 +53,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.SortedSet;
@@ -568,57 +567,53 @@ public class ExportHelper {
 		Set fileVersions = attachment.getFileVersions();
 		if (!fileVersions.isEmpty()) {
 			Iterator<VersionAttachment> versionIter = fileVersions.iterator();
-			if (versionIter.hasNext()) {
-				VersionAttachment vAttach = versionIter.next();		//Skip the latest file - it was already output above
-				for (int i = 1; i < fileVersions.size(); i++) {
-					if (versionIter.hasNext()) {
-						vAttach = versionIter.next();
-			
-						int versionNum = fileVersions.size() - i;
-			
-						fileStream = null;
-						try {
-							fileStream = fileModule.readFile(binder, entity,
-									vAttach);
-			
-							// We have to use "/" instead of File.separator so the correct directory structure will be created in the zip file.
-							zipOut.putNextEntry(new ZipEntry(pathName + "/"
-									+ fileName + ".versions" + "/" + versionNum
-									+ "." + fileExt));
-							FileUtil.copy(fileStream, zipOut);
-							zipOut.closeEntry();
-			
-							Integer count = (Integer)reportMap.get(files);
-							reportMap.put(files, ++count);
-						} catch (Exception e) {
-							if (fileStream == null) {
-								//The file must not exist, so just skip it. This really isn't an error condition.
-							} else {
-								logger.error(e);
-								String eMsg = NLT.get("export.error.attachment") + " - " + binder.getPathName().toString() + 
-										", entryId=" + entity.getId().toString() + ", " + fileName;
-								logger.error(eMsg);
-								Integer c = (Integer)reportMap.get(errors);
-								reportMap.put(errors, ++c);
-								((List)reportMap.get(errorList)).add(eMsg);
-				
-								// We have to use "/" instead of File.separator so the correct directory structure will be created in the zip file.
-								zipOut.putNextEntry(new ZipEntry(pathName + "/"
-										+ fileName + ".versions" + "/" + versionNum
-										+ "." + fileExt + ".error_message.txt"));
-								zipOut.write(NLT.get("export.error.attachment",
-										"Error processing this attachment").getBytes());
-								zipOut.closeEntry();
-							}
-						}
-						finally {
-							try {
-								if(fileStream != null)
-									fileStream.close();
-							}
-							catch(IOException ignore) {}
-						}
+			VersionAttachment vAttach = versionIter.next();		//Skip the latest file - it was already output above
+			for (int i = 1; i < fileVersions.size(); i++) {
+				vAttach = versionIter.next();
+	
+				int versionNum = fileVersions.size() - i;
+	
+				fileStream = null;
+				try {
+					fileStream = fileModule.readFile(binder, entity,
+							vAttach);
+	
+					// We have to use "/" instead of File.separator so the correct directory structure will be created in the zip file.
+					zipOut.putNextEntry(new ZipEntry(pathName + "/"
+							+ fileName + ".versions" + "/" + versionNum
+							+ "." + fileExt));
+					FileUtil.copy(fileStream, zipOut);
+					zipOut.closeEntry();
+	
+					Integer count = (Integer)reportMap.get(files);
+					reportMap.put(files, ++count);
+				} catch (Exception e) {
+					if (fileStream == null) {
+						//The file must not exist, so just skip it. This really isn't an error condition.
+					} else {
+						logger.error(e);
+						String eMsg = NLT.get("export.error.attachment") + " - " + binder.getPathName().toString() + 
+								", entryId=" + entity.getId().toString() + ", " + fileName;
+						logger.error(eMsg);
+						Integer c = (Integer)reportMap.get(errors);
+						reportMap.put(errors, ++c);
+						((List)reportMap.get(errorList)).add(eMsg);
+		
+						// We have to use "/" instead of File.separator so the correct directory structure will be created in the zip file.
+						zipOut.putNextEntry(new ZipEntry(pathName + "/"
+								+ fileName + ".versions" + "/" + versionNum
+								+ "." + fileExt + ".error_message.txt"));
+						zipOut.write(NLT.get("export.error.attachment",
+								"Error processing this attachment").getBytes());
+						zipOut.closeEntry();
 					}
+				}
+				finally {
+					try {
+						if(fileStream != null)
+							fileStream.close();
+					}
+					catch(IOException ignore) {}
 				}
 			}
 		}
@@ -1087,18 +1082,6 @@ public class ExportHelper {
 		if (binderQuota.getDiskQuota() != null) {
 			binderQuotaEle.addAttribute("binderQuota", binderQuota.getDiskQuota().toString());
 		}
-		
-		// filters
-		Map<String,String> searchFilters = (Map<String,String>)binder.getProperty(ObjectKeys.BINDER_PROPERTY_FILTERS);
-		if (searchFilters != null) {
-			Element filtersEle = settingsEle.addElement("filters");
-			for (Entry<String, String> me : searchFilters.entrySet()) {
-				Element filterEle = filtersEle.addElement("filter");
-				filterEle.addAttribute("name", me.getKey());
-				filterEle.addAttribute("value", me.getValue());
-			}
-		}
-		
 	}
 
 	private static void addAccessControls(WorkArea workArea, Element settingsElement) {
@@ -2827,21 +2810,6 @@ public class ExportHelper {
 				bq.setDiskQuota(Long.valueOf(binderQuota));
 				adminModule.setBinderQuota(binder, bq);
 			}
-		}
-		
-		// filters
-		xPath = "//settings//filters/filter";
-		List<Element> filters = entityDoc.selectNodes(xPath);
-		if (!filters.isEmpty()) {
-			Map searchFiltersG = new HashMap();
-			for (Element filter : filters) {
-				String name = filter.attributeValue("name");
-				String value = filter.attributeValue("value");
-				if (name != null && value != null) {
-					searchFiltersG.put(name, value);
-				}
-			}
-			binderModule.setProperty(binder.getId(), ObjectKeys.BINDER_PROPERTY_FILTERS, searchFiltersG);
 		}
 
 	}

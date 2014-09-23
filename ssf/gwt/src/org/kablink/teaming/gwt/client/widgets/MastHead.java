@@ -118,6 +118,7 @@ public class MastHead extends Composite
 	private FlowPanel m_browsePanel = null;
 
 	private GwtBrandingData m_siteBrandingData = null;
+	private boolean m_siteBrandingRetrieved = false;
 	private GwtBrandingData m_binderBrandingData = null;
 	
 	// m_rpcGetSiteBrandingCallback is our callback that gets called when the ajax request to get the site branding data completes.
@@ -412,6 +413,7 @@ public class MastHead extends Composite
 				Scheduler.ScheduledCommand cmd;
 				
 				m_siteBrandingData = (GwtBrandingData) response.getResponseData();
+				m_siteBrandingRetrieved = true;
 				
 				cmd = new Scheduler.ScheduledCommand()
 				{
@@ -700,12 +702,19 @@ public class MastHead extends Composite
 			
 			// Yes, Issue an ajax request to get the branding data for the given binder.
 			cmd = new GetBinderBrandingCmd( m_mastheadBinderId );
-			cmd.setUseInheritance( true );
 			GwtClientHelper.executeCommand( cmd, m_rpcGetBinderBrandingCallback );
 		}
 	}// end getBinderBrandingDataFromServer()
 
 
+	/**
+	 * Return whether or not we have retrieved the site branding
+	 */
+	public boolean hasSiteBrandingBeenRetrieved()
+	{
+		return m_siteBrandingRetrieved;
+	}
+	
 	/**
 	 * Return the height of the masthead
 	 */
@@ -732,6 +741,15 @@ public class MastHead extends Composite
 
 		return height;
 	}// end getHeight()
+	
+	
+	/**
+	 * Return the site branding data.
+	 */
+	public GwtBrandingData getSiteBrandingData()
+	{
+		return m_siteBrandingData;
+	}// end getSiteBrandingData()
 	
 	
 	/**
@@ -996,19 +1014,18 @@ public class MastHead extends Composite
 	
 	
 	/**
-	 * Refresh the branding.  We will refresh the site branding first and then refresh the binder
-	 * branding.
+	 * Refresh the binder branding by issuing an ajax request to get the binder branding data . 
 	 */
-	public void refreshBranding()
+	public void refreshBinderBranding()
 	{
-		// refreshSiteBranding() will call refreshBinderBranding() after it gets the site branding.
-		refreshSiteBranding();
-	}
+		getBinderBrandingDataFromServer();
+	}// end refreshBinderBranding()
+
 	
 	/**
 	 * Refresh the site branding by issuing an ajax request to get the site branding data . 
 	 */
-	private void refreshSiteBranding()
+	public void refreshSiteBranding()
 	{
 		getSiteBrandingDataFromServer();
 	}// end refreshSiteBranding()
@@ -1017,7 +1034,7 @@ public class MastHead extends Composite
 	/**
 	 * Set the id of the binder the masthead is dealing with.
 	 */
-	private void setBinderId( String binderId )
+	public void setBinderId( String binderId )
 	{
 		if ( binderId != null && binderId.length() > 0 )
 		{
@@ -1028,7 +1045,7 @@ public class MastHead extends Composite
 				m_mastheadBinderId = binderId;
 				
 				// Issue an ajax request to get the binder branding data for the given binder.
-				refreshBranding();
+				getBinderBrandingDataFromServer();
 			}
 		}
 	}// end setBinderId()

@@ -289,7 +289,7 @@ public class GwtQuickViewDlg extends DlgBox {
 				private void unFollowAction() {
 					UntrackPersonCmd cmd;
 					
-					cmd = new UntrackPersonCmd( Long.parseLong( binderId ) );
+					cmd = new UntrackPersonCmd( binderId );
 					GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
 					{
 						@Override

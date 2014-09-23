@@ -72,10 +72,7 @@ public class UserTypeCell extends AbstractCell<UserType> {
 		String reply;
 		switch (userType) {
 		case EXTERNAL_GUEST:          reply = messages.vibeDataTable_Alt_ExternalUser_Guest();        break;
-		case EXTERNAL_OPEN_ID:
-		case EXTERNAL_OTHERS:
-			reply = messages.vibeDataTable_Alt_ExternalUser_Others();
-			break;
+		case EXTERNAL_OTHERS:         reply = messages.vibeDataTable_Alt_ExternalUser_Others();       break;
 		case INTERNAL_LDAP:           reply = messages.vibeDataTable_Alt_InternalUser_LDAP();         break;
 		case INTERNAL_PERSON_ADMIN:   reply = messages.vibeDataTable_Alt_InternalUser_PersonAdmin();  break;
 		case INTERNAL_PERSON_OTHERS:  reply = messages.vibeDataTable_Alt_InternalUser_PersonOthers(); break;
@@ -97,10 +94,7 @@ public class UserTypeCell extends AbstractCell<UserType> {
 		ImageResource reply;
 		switch (userType) {
 		case EXTERNAL_GUEST:          reply = images.externalUser_Guest();        break;
-		case EXTERNAL_OPEN_ID:
-		case EXTERNAL_OTHERS:
-			reply = images.externalUser_Others();
-			break;
+		case EXTERNAL_OTHERS:         reply = images.externalUser_Others();       break;
 		case INTERNAL_LDAP:           reply = images.internalUser_LDAP();         break;
 		case INTERNAL_PERSON_ADMIN:   reply = images.internalUser_PersonAdmin();  break;
 		case INTERNAL_PERSON_OTHERS:  reply = images.internalUser_PersonOthers(); break;

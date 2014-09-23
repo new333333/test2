@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -42,7 +42,6 @@ import org.kablink.teaming.gwt.client.GwtTeamingWorkspaceTreeImageBundle;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponseData;
 import org.kablink.teaming.gwt.client.util.ActivityStreamInfo;
-import org.kablink.teaming.gwt.client.util.ActivityStreamInfo.ActivityStream;
 import org.kablink.teaming.gwt.client.util.BinderInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 
@@ -90,11 +89,6 @@ public class TreeInfo implements IsSerializable, VibeRpcResponseData {
 	// Binder's original image while it displays a spinning wheel
 	// during a context load.
 	private transient Object m_binderUIImg;
-
-	// Used on the client side only by the sidebar tree to track the
-	// grid and row this TreeInfo is rendered at.
-	private transient Object m_renderedGrid;
-	private transient int    m_renderedGridRow;
 	
 	/**
 	 * Constructor method.
@@ -194,6 +188,12 @@ public class TreeInfo implements IsSerializable, VibeRpcResponseData {
 	 * @return
 	 */
 	public static TreeInfo findActivityStreamTI(TreeInfo ti, ActivityStreamInfo asi) {
+		// If the TreeInfo is not in activity stream mode...
+		if (!(ti.isActivityStream())) {
+			// ...we can never find the activity stream in question.
+			return null;
+		}
+		
 		// Is this an activity stream TreeInfo?
 		if (ti.isActivityStream()) {
 			// Yes!  Is it for the activity stream in question?
@@ -210,47 +210,6 @@ public class TreeInfo implements IsSerializable, VibeRpcResponseData {
 					// ...and if one of them references the activity stream
 					// ...in question...
 					TreeInfo reply = findActivityStreamTI(childTI, asi);
-					if (null != reply) {
-						// ...return it.
-						return reply;
-					}
-				}
-			}
-		}
-
-		// If we get here, the activity stream was nowhere to be found
-		// in the TreeInfo.  Return null.
-		return null;
-	}
-	
-	/**
-	 * Returns the first TreeInfo from another TreeInfo that references
-	 * a specific activity stream type.
-	 * 
-	 * @param ti
-	 * @param as
-	 * 
-	 * @return
-	 */
-	public static TreeInfo findFirstActivityStreamTI(TreeInfo ti, ActivityStream as) {
-		// Is this an activity stream TreeInfo?
-		if (ti.isActivityStream()) {
-			// Yes!  Is it for the activity stream in question?
-			ActivityStreamInfo tiASI = ti.getActivityStreamInfo();
-			ActivityStream     tiAS  = (null == tiASI ? ActivityStream.UNKNOWN : tiASI.getActivityStream());
-			if (as.equals(tiAS)) {
-				// Yes!  Return.
-				return ti;
-			}
-			
-			// Otherwise, if the TreeInfo has child Binder's...
-			List<TreeInfo> childBindersList = ti.getChildBindersList();
-			if ((null != childBindersList) && (0 < childBindersList.size())) {
-				// ...scan them...
-				for (TreeInfo childTI: childBindersList) {
-					// ...and if one of them references the activity stream
-					// ...in question...
-					TreeInfo reply = findFirstActivityStreamTI(childTI, as);
 					if (null != reply) {
 						// ...return it.
 						return reply;
@@ -629,10 +588,6 @@ public class TreeInfo implements IsSerializable, VibeRpcResponseData {
 					reply = filrImages.folderHome();
 				}
 				
-				else if (m_binderInfo.isFolderMyFilesStorage()) {
-					reply = filrImages.myFilesStorage();
-				}
-				
 				else {
 					switch (m_binderInfo.getFolderType()) {
 					case BLOG:         reply = wsTreeImages.folder_comment();   break;
@@ -719,10 +674,6 @@ public class TreeInfo implements IsSerializable, VibeRpcResponseData {
 					reply = filrImages.folderHome_medium();
 				}
 
-				else if (m_binderInfo.isFolderMyFilesStorage()) {
-					reply = filrImages.myFilesStorage_medium();
-				}
-
 				else {
 					switch (m_binderInfo.getFolderType()) {
 					case BLOG:         reply = wsTreeImages.folder_comment_medium();   break;
@@ -807,10 +758,6 @@ public class TreeInfo implements IsSerializable, VibeRpcResponseData {
 			case FOLDER:
 				if (m_binderInfo.isFolderHome()) {
 					reply = filrImages.folderHome_large();
-				}
-
-				else if (m_binderInfo.isFolderMyFilesStorage()) {
-					reply = filrImages.myFilesStorage_large();
 				}
 
 				else {
@@ -1004,28 +951,6 @@ public class TreeInfo implements IsSerializable, VibeRpcResponseData {
 		return reply;
 	}
 
-	/**
-	 * Returns the grid object this TreeInfo was rendered in.
-	 * 
-	 * Note:  This is client side only data!
-	 * 
-	 * @return
-	 */
-	public Object getRenderedGrid() {
-		return m_renderedGrid;
-	}
-
-	/**
-	 * Returns the row within the grid this TreeInfo was rendered in.
-	 * 
-	 * Note:  This is client side only data!
-	 * 
-	 * @return
-	 */
-	public int getRenderedGridRow() {
-		return m_renderedGridRow;
-	}
-	
 	/**
 	 * Returns the initial part to construct a bucket title with.
 	 * 
@@ -1294,19 +1219,6 @@ public class TreeInfo implements IsSerializable, VibeRpcResponseData {
 		updateCollectionsCount();
 	}
 
-	/**
-	 * Stores where a TreeInfo is rendered.
-	 *
-	 * Note:  This is client side only data!
-	 * 
-	 * @param grid
-	 * @param gridRow
-	 */
-	public void setRenderedGrid(Object renderedGrid, int renderedGridRow) {
-		m_renderedGrid    = renderedGrid;
-		m_renderedGridRow = renderedGridRow;
-	}
-	
 	/**
 	 * Stores whether a TreeInfo is a root tail or not.
 	 * 

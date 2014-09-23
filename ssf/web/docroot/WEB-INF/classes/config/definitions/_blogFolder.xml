@@ -64,7 +64,7 @@
     <property name="caption" value="__definition_default_folder_blog"/>  
     <property name="name" value="_blogFolder"/>  
     <property name="family" value="blog"/>  
-    <property name="icon" value="/icons/folder_blue_blog.png"/> 
+    <property name="icon" value="/icons/folder_blue_blog.gif"/> 
   </properties>  
   <export-mappings/>
 </definition>

@@ -29,7 +29,6 @@
 .padding5R  {padding-right:  5px;           }
 .padding15R {padding-right: 15px;           }
 .padding2L  {padding-left:   2px;           }
-.padding10T {padding-top:   10px;           }
 
 .vibe-fullScroll       {overflow:   auto;}
 .vibe-horizontalScroll {overflow-x: auto; overflow-y: hidden;}
@@ -101,7 +100,7 @@
 
 .activityStreamActionsPanel:hover span
 {
-	color: #036f9f !important;
+	color: #135c8f !important;
 }
 
 .activityStreamActionsLabel
@@ -165,12 +164,12 @@
 	padding: 3px;
 	vertical-align: middle;
 	width: 100%;
-	border-bottom-left-radius: 3px;
-	border-bottom-right-radius: 3px;
-	-moz-border-radius-bottomleft: 3px;
-	-moz-border-radius-bottomright: 3px;
-	-webkit-border-bottom-left-radius: 3px;
-	-webkit-border-bottom-right-radius: 3px;
+	-moz-border-radius-bottomleft: 5px;
+	-moz-border-radius-bottomright: 5px;
+	border-bottom-left-radius: 5px;
+	border-bottom-right-radius: 5px;
+	-webkit-border-bottom-left-radius: 5px;
+	-webkit-border-bottom-right-radius: 5px;
 }
 
 .activityStreamFooterImages
@@ -186,7 +185,7 @@
 	font-size: 20px;
 	padding-bottom: 20px;
 	padding-left: 10px;
-	padding-top: 6px;
+	padding-top: 10px;
 }
 
 .activityStreamCtrlHeader2
@@ -250,7 +249,7 @@
 	-webkit-border-radius: 5px;
 }
 .activityStreamHover span {
-	color: #036f9f;
+	color: #135c8f;
 }
 
 .activityStreamCtrlSearchResultsPanel
@@ -293,7 +292,7 @@
 }
 .activityStreamEntryAuthor:hover
 {
-	color: #036f9f;
+	color: #135c8f;
 }
 
 .activityStreamEntryDate
@@ -389,8 +388,8 @@
 	left: 0;
 	position: absolute;
 	top: 1px;
-	width: 30px;
-	height: 30px;
+	width: 35px;
+	height: 35px;
 	border-radius: 2px;
 }
 
@@ -417,7 +416,7 @@
 	border-top: 0px solid #d2d5d1;
 	font-size: 13px;
 	line-height: 15px;
-	margin-left: 40px;
+	margin-left: 48px;
 	padding-right: 25px;
 }
 
@@ -438,7 +437,7 @@
 .activityStreamCommentContentPanel
 {
 	font-size: 12px;
-	margin-left: 40px;
+	margin-left: 44px;
 	padding-top: 5px;
 	position: relative;
 	white-space: normal;
@@ -480,7 +479,6 @@
 	color: #036f9f;
 	font-size: 14px;
 	line-height: 15px;
-	text-decoration: none;
 }
 
 .activityStreamTitlePanel
@@ -1114,7 +1112,7 @@ a, a:visited, a:hover {
 
 .adminActionControlMouseOver
 {
-	color: #036f9f;
+	color: #135c8f;
 	background: #cce9ee;
 	border-radius: 3px;
 	-moz-border-radius: 3px;
@@ -1213,7 +1211,7 @@ a, a:visited, a:hover {
 
 .adminControl_CloseLabel:hover
 {
-    color: #036f9f !important;
+    color: #135c8f !important;
 	cursor: pointer;
 	border: 1px solid #81b2bd;
 	background: #cee9ee;
@@ -1430,9 +1428,9 @@ body, table td, select
 	border-style: solid solid solid;
 	border-width: 1px;
 	padding: 5px 10px;
-	margin: 10px;
-	border-radius: 5px;
+	margin: 5px;
 	-moz-border-radius: 5px;
+	border-radius: 5px;
 	-webkit-border-radius: 5px;
 }
 
@@ -1446,8 +1444,8 @@ body, table td, select
 	color: #FFFFFF;
 	font-size: 0.8em;
 	position: absolute;
-	right: 2px;
-	top: -8px;
+	right: 0px;
+	top: 0px;
 	z-index: 1001;
 }
 
@@ -1499,7 +1497,7 @@ body, table td, select
 	
 .editBrandingBrowseLink:hover, .editBrandingAdvancedLink:hover, .addAttachmentLink:hover, .colorPickerLink:hover, #forgottenPwdSpan:hover
 {
-	color: #036f9f !important;
+	color: #135c8f !important;
 	border: 1px solid #81b2bd;
 	padding: 2px 5px  !important;
 	background: #cee9ee;
@@ -1839,8 +1837,8 @@ body, table td, select
 .workspaceTreeBinderAnchor            {color: #353838; text-decoration: none; font-family: Arial,Helvetica,sans-serif; font-size: 13px; padding: 3px 0;}
 .workspaceTreeBinderAnchor_collection {font-size: 14px; padding-left: 2px; color: #000;}
 
-.workspaceTreeBinderAnchor:hover            {color: #036f9f;}
-.workspaceTreeBinderAnchor_collection:hover {color: #036f9f;}
+.workspaceTreeBinderAnchor:hover            {color: #135c8f;}
+.workspaceTreeBinderAnchor_collection:hover {color: #135c8f;}
 
 .workspaceTreeBinderExpanderImg            {cursor: pointer; margin-top: 8px; margin-left: 0px;}
 .workspaceTreeBinderExpanderImg_collection {}
@@ -1848,7 +1846,7 @@ body, table td, select
 .workspaceTreeBinderImg            {padding-right: 2px;}
 .workspaceTreeBinderImg_collection {}
 
-.workspaceTreeBinderSelected            {color: #036f9f; padding-left: 2px;}
+.workspaceTreeBinderSelected            {color: #135c8f; padding-left: 2px;}
 .workspaceTreeBinderSelected_collection {font-size: 14px;}
 
 /* Must match the definition of GwtConstants.WORKSPACE_TREE_WIDTH. */
@@ -1867,14 +1865,14 @@ body, table td, select
 
 .workspaceTreeControl_blankContent {display: block; margin: 10px; color: #666666; font-size: 1.1em;}
 
-.workspaceTreeControlBody            {padding-top: 2px;}
-.workspaceTreeControlBody_collection {background-color: white !important; padding-top: 8px; padding-bottom: 5px; border-bottom: 1px solid #cccccc;}
+.workspaceTreeControlBody            {padding-top: 10px;}
+.workspaceTreeControlBody_collection {background-color: white !important; padding-top: 10px; padding-bottom: 10px; border-bottom: 1px solid #cccccc;}
 
-.workspaceTreeControlTreeHeader {color: #666; font-size: 10px; margin-top: 0; padding-top: 5px; padding-bottom: 3px; padding-right: 0px; padding-left: 20px; border-bottom: 0px; text-transform: uppercase; letter-spacing: 2px; white-space: nowrap; display: inline-block;}
+.workspaceTreeControlTreeHeader {color: #666; font-size: .8em; margin-top: 0em; padding-top: 6px; padding-bottom: 3px; padding-right: 0px; padding-left: 20px; border-bottom: 0px; text-transform: uppercase; letter-spacing: 2px; white-space: nowrap;}
 
 .workspaceTreeControlHeader .workspaceTreeBinderSelected
 {
-	color: #666; padding-top: 3px;
+	color: #fff;
 }
 .workspaceTreeControlHeader td
 {
@@ -1894,7 +1892,7 @@ body, table td, select
 }
 .workspaceTreeControlHeader_base
 {
-	color: #666;
+	color: #949494;
 	font-weight: normal;
 	padding: 5px;
 }
@@ -1919,16 +1917,16 @@ body, table td, select
 
 .workspaceTreeControlHeader_nav
 {
-	background: transparent;
+	background: #85BCC3 url(images/header_blend_grey_bg.png) repeat-x scroll center bottom;
 	cursor: pointer;
 }
-.workspaceTreeControlRow            {padding: 2px !important; margin-bottom: 2px;}
+.workspaceTreeControlRow            {padding: 2px; margin-bottom: 5px;}
 .workspaceTreeControlRow_collection {margin-left: -10px;}
 
-.workspaceTreeControlRow_configureImg   {padding-top: 0px; cursor: pointer;}
+.workspaceTreeControlRow_configureImg   {padding-top: 1px; cursor: pointer;}
 .workspaceTreeControlRow_configurePanel {display: block; position: absolute;}
 
-.workspaceTreeControlRow:hover            a {color: #036f9f;}
+.workspaceTreeControlRow:hover            a {color: #135c8f;}
 .workspaceTreeControlRow_collection:hover a {} 
 
 .workspaceTreeControlRowHover            {color: #5691a6; background: #cce9ee; -moz-border-radius: 3px; border-radius: 3px; -webkit-border-radius: 3px;}
@@ -1937,8 +1935,6 @@ body, table td, select
 .workspaceTreeControlRowSelected            {-moz-border-radius: 3px; border-radius: 3px; -webkit-border-radius: 3px; background: #ededed; font-weight: bold;}
 .workspaceTreeControlRowSelected_collection {border-radius: 3px; background: #cce9ee !important;}
 
-.workspaceTreeControlRow_unfollowImg   {padding-top: 0px; cursor: pointer;}
-.workspaceTreeControlRow_unfollowPanel {display: block; position: absolute;}
 
 /* */
 .fontSize75em
@@ -2088,7 +2084,7 @@ body, table td, select
 .lpeEntryName-mouseOver
 {
 	cursor: pointer;
-	color: #036f9f;
+	color: #135c8f;
 }
 
 /* Styles used for the binder name in a "folder" widget */
@@ -2119,7 +2115,7 @@ body, table td, select
 .lpeFolderName-mouseOver
 {
 	cursor: pointer;
-	color: #036f9f;
+	color: #135c8f;
 }
 
 /* Styles used for the graphic name in a "graphic" widget */
@@ -2443,7 +2439,7 @@ body, table td, select
 }
 .breadCrumb_ContentBinder
 {
-	margin-top: -5px;
+	margin-top: -8px;
 }
 .breadCrumb_ContentPopup
 {
@@ -2471,7 +2467,7 @@ body, table td, select
 .breadCrumb_ContentNode_Anchor
 {
 	margin-top: 3px;
-	margin-right: 12px;
+	margin-right: 15px;
 }
 .breadCrumb_ContentNode_AnchorBC
 {
@@ -2615,7 +2611,7 @@ body, table td, select
 	.folderColumnsDlg_Label             {color: #414648; line-height: 1.1em; margin-right: 5px; padding: 0.2em 0.5em 0.3em; white-space: nowrap;}
 	.folderColumnsDlg_MenuBar           {margin-left: 8px; margin-bottom: 3px; border: 0px; background: transparent;}
 	.folderColumnsDlg_MenuImg           {}
-	.folderColumnsDlg_MenuItem          {white-space: nowrap; color: #1f1f1f !important; background-color: transparent !important; padding: 0px !important;}
+	.folderColumnsDlg_MenuItem          {white-space: nowrap; color #1f1f1f !important; background-color: transparent !important; padding: 0px !important;}
 	.folderColumnsDlg_MenuItem_Order    {padding-right: 5px !important;}
 	.folderColumnsDlg_MoveEnabled       {cursor: pointer;}
 	.folderColumnsDlg_OptionsGrid       {margin: 10px 0px;}
@@ -3052,7 +3048,7 @@ body, table td, select
 
 .brandingLink:hover
 {
-	color: #036f9f;
+	color: #135C8F;
 	background: #cce9ee;
 	border-radius: 3px;
     -moz-border-radius: 3px;
@@ -3165,10 +3161,10 @@ body, table td, select
 .teamingDlgBoxFooter .gwt-Button:hover, 
 .workspaceTreeControlHeader_closeButton:hover
 {
-	color: #036f9f !important;
+	color: #135c8f !important;
     white-space: nowrap !important;
     text-decoration: none !important;
-	font-size: 12px !important;
+	font-size: 12px important;
 	border: 1px solid #81b2bd;
 	background: #cee9ee;
 	border-radius: 5px;
@@ -3431,8 +3427,8 @@ body, table td, select
 }
 .subhead-control-bg1
 {
-/*	background: url(images/trans10_black_blend.png) repeat;
-	background-position:bottom;  */
+	background: url(images/trans10_black_blend.png) repeat;
+	background-position:bottom;
 }
 .subhead-control-bg2, .btn-bg2, .colorPickerLink:hover
 {
@@ -3579,7 +3575,7 @@ a.ss_new_thread {
 	display:block;
 }
 .qView-a:hover {
-	color: #036f9f;
+	color: #135c8f;
 }
 .qView-action  {
 	margin-top:5px;
@@ -3618,7 +3614,7 @@ a.ss_new_thread {
 .qView-action-following:hover {
 	background: #cce9ee;
 	border:1px solid #81b2bd;
-	color:#036f9f;
+	color:#135c8f;
 }
 .qView-action-img {
 	background:url("images/trans50_black_arrowleft.png");
@@ -3814,8 +3810,8 @@ top:100px;
 }
 .gwtTaskTools_WarningAnchor, .gwtTaskTools_WarningAnchor:visited
 {
-	font-size: 12px !important;
-	color: #036f9f;
+	font-size: .9em !important;
+	color: #135c8f;
 }
 .gwtTaskTools_WarningAnchor:hover
 {
@@ -3891,7 +3887,7 @@ top:100px;
 }
 .gwtTaskList_assigneeHover
 {
-	color: #036f9f;
+	color: #135c8f;
 	cursor: pointer;
 	background: #cce9ee;
 	border-radius: 5px;
@@ -4063,11 +4059,11 @@ top:100px;
 .gwtTaskList_objlist2b tr.columnhead td   /* Apply to the column headings row following the menu <tr class="columnhead"> */
 { 
 	color: #666; 
-	font-size: 12px; 
+	font-size: 0.6em; 
 	padding-top: 0.2em; 
 	padding-bottom: 0.2em;
 	padding-left: 0;
-	padding-right: 6px;
+	padding-right: .7em;
 	border-bottom: 1px solid #D2D5D1; 
 	white-space: nowrap;
 	background:url(images/blends/gray_blend8_28.png) repeat-x;
@@ -4082,7 +4078,7 @@ a.sort-column
 }
 a.sort-column:hover
 {
-	color: #036f9f !important;
+	color: #135c8f !important;
 }
 .gwtTaskList_objlist2 tr.regrow td,
 .gwtTaskList_objlist2b tr.regrow td/*Apply to all the content rows <tr class="regrow">  Style will automatically flow to each cell <td>. If a cell is empty, place a &nbsp; (none braking space) in the cell so the line style will continue across all cells in the row. */ 
@@ -4171,7 +4167,7 @@ a.gwtTaskList_task-icon:hover
 }
 .gwtTaskList_task-locationAnchor, .gwtTaskList_task-locationAnchor:visited
 {
-	color: #036f9f !important;
+	color: #135c8f !important;
 }
 .gwtTaskList_task-locationAnchor:hover
 {
@@ -4182,7 +4178,7 @@ a.gwtTaskList_task-icon:hover
 }
 .gwtTaskList_task-nameAnchor, .gwtTaskList_task-nameAnchor:visited
 {
-	color: #036f9f !important;
+	color: #135c8f !important;
 }
 .gwtTaskList_task-nameAnchor:hover
 {
@@ -4220,7 +4216,7 @@ a.gwtTaskList_task-icon:hover
 }
 .gwtTaskList_task-orderAnchor, .gwtTaskList_task-orderAnchor:visited
 {
-	color: #036f9f;
+	color: #135c8f;
 }
 .gwtTaskList_task-orderAnchor:hover
 {
@@ -4327,7 +4323,7 @@ td.datePickerMonth {
 
 /* Start:  Cliboard dialog styles. */
 	.vibe-cbDlg_Anchor          {color: #036f9f; text-decoration: none;}
-	.vibe-cbDlg_Anchor:hover    {color: #036f9f; cursor: pointer; background: #cce9ee; border-radius: 5px; -moz-border-radius: 5px; -webkit-border-radius: 5px;}
+	.vibe-cbDlg_Anchor:hover    {color: #135c8f; cursor: pointer; background: #cce9ee; border-radius: 5px; -moz-border-radius: 5px; -webkit-border-radius: 5px;}
 	.vibe-cbDlg_Checkbox        {margin-left: 5px;}
 	.vibe-cbDlg_ClearAll        {margin-left: 10px;}
 	.vibe-cbDlg_Grid            {margin: 20px 10px 10px 20px;}
@@ -4358,12 +4354,12 @@ td.datePickerMonth {
 	.vibe-emailNotifDlg_ExpanderImg       {}
 	.vibe-emailNotifDlg_FooterCheck       {}
 	.vibe-emailNotifDlg_FooterHelp        {margin-left: 10px;}
-	.vibe-emailNotifDlg_FooterHelp:hover  {color: #036f9f; cursor: pointer; background: #cce9ee; -moz-border-radius: 5px; border-radius: 5px; -webkit-border-radius: 5px;}
+	.vibe-emailNotifDlg_FooterHelp:hover  {color: #135c8f; cursor: pointer; background: #cce9ee; -moz-border-radius: 5px; border-radius: 5px; -webkit-border-radius: 5px;}
 	.vibe-emailNotifDlg_FooterLabel       {}
 	.vibe-emailNotifDlg_FooterPanel       {display: block; white-space: nowrap; margin-top: 15px; margin-bottom: 10px;}
 	.vibe-emailNotifDlg_LastWidget        {margin-bottom: 10px;}
 	.vibe-emailNotifDlg_MsgTypeHelp       {margin-left: 10px;}
-	.vibe-emailNotifDlg_MsgTypeHelp:hover {color: #036f9f; cursor: pointer; background: #cce9ee; -moz-border-radius: 5px; border-radius: 5px; -webkit-border-radius: 5px;}
+	.vibe-emailNotifDlg_MsgTypeHelp:hover {color: #135c8f; cursor: pointer; background: #cce9ee; -moz-border-radius: 5px; border-radius: 5px; -webkit-border-radius: 5px;}
 	.vibe-emailNotifDlg_MsgTypeLabel      {}
 	.vibe-emailNotifDlg_MsgTypePanel      {display: block; white-space: nowrap;}
 	.vibe-emailNotifDlg_ReadingPanel      {}
@@ -4627,7 +4623,7 @@ td.datePickerMonth {
 
 .groupManagementBtn:hover, .manageNetFolderRootsDlg_Btn:hover, .manageNetFoldersDlg_Btn:hover, .shareDlg_Btn:hover, .editLdapConfigDlg_Btn:hover
 {
-	color: #036f9f;
+	color: #135c8f;
 	border: 1px solid #81b2bd;
 	background: #cee9ee;
 
@@ -5356,7 +5352,7 @@ td.datePickerMonth {
 
 .userActionsPopup_ActionPanel:hover
 {
-	color: #036f9f;
+	color: #135c8f;
 	background: #cce9ee;
 	border-radius: 2px;
 }
@@ -5448,7 +5444,7 @@ td.datePickerMonth {
 .userActionsPopup_SignOutLabel:hover
 {
 	border: 1px solid #81B2BD;
-	color: #036f9f;
+	color: #135C8F;
 	cursor: pointer;
 	background-color: #cce9ee;
 /*	background: -moz-linear-gradient(bottom,  #a8d4dd 47%, #d5edf1 53%, #c8e4e9 100%); /* FF3.6+ */
@@ -5486,7 +5482,7 @@ td.datePickerMonth {
 /* Start:  Import profiles dialog styles. */
 	.vibe-importProfilesDlg-content    {text-align: left; width: 100%; margin-bottom: 10px; margin-top: 10px; padding: 3px 10px;}
 	.vibe-importProfilesDlg-hint       {color: #036f9f; text-decoration: none; margin: 8px 0px 8px 0px; font-size: 11px !important; cursor: pointer; margin: 3px 10px; font-size: 1em !important;}
-	.vibe-importProfilesDlg-hint:hover {color: #036f9f; cursor: pointer; background: #cce9ee; -moz-border-radius: 5px; border-radius: 5px; -webkit-border-radius: 5px;}
+	.vibe-importProfilesDlg-hint:hover {color: #135c8f; cursor: pointer; background: #cce9ee; -moz-border-radius: 5px; border-radius: 5px; -webkit-border-radius: 5px;}
 	.vibe-importProfilesDlg-input      {width: 250px;}
 	.vibe-importProfilesDlg-panel      {}
 /* End:  Import profiles dialog styles. */
@@ -5702,7 +5698,7 @@ td.datePickerMonth {
  * Styles used in the "Edit Zone Share" dialogs
  */
 
-.editZoneShareRightsDlg_Instructions 	{color: #353838; font-size: 14px; padding-bottom: 10px;}
+.editZoneShareRightsDlg_Instructions 	{color: 353838; font-size: 14px; padding-bottom: 10px;}
 .editZoneShareRightsDlg_RightsCkbox		{display: inline-block; padding-top: 3px;}
 
 .editZoneShareRightsTab_Content              {padding: 5px;}
@@ -6005,49 +6001,6 @@ td.datePickerMonth {
 	.vibe-promptDlg_NameLabel  {color: #414648; line-height: 1.1em; margin-right: 8px; white-space: nowrap;}
 	.vibe-promptDlg_Panel      {padding: 10px;}
 /* End:  Prompt dialog styles. */
-
-/* Start:  Copy Filters dialog styles. */
-	.vibe-copyFiltersDlg_BrowseButton    {
-		cursor: pointer;
-		border: 1px solid #B8B8B8;
-		font-weight: normal !important;
-		font-size: 12px;
-		margin-left: 3px;
-		padding: 2px 5px  !important;
-		text-decoration:none;	
-		white-space: nowrap;
-		text-align: center !important;
-		width: 35px;
-		border-radius: 5px;
-		-moz-border-radius: 5px;
-		-webkit-border-radius: 5px;
-		background: #f6f6f6;
-	}
-	
-	.vibe-copyFiltersDlg_BrowseButton:hover {
-		color: #135c8f !important;
-		border: 1px solid #81b2bd;
-		padding: 2px 5px  !important;
-		background: #cce9ee;
-		border-radius: 5px !important;
-		-moz-border-radius: 5px !important;
-		-webkit-border-radius: 5px !important;
-	}
-
-	.vibe-copyFiltersDlg_BrowseImg            {width: 25px; height: 25px; margin: 0 2px 0 0; border: 0px; vertical-align: middle;}
-	.vibe-copyFiltersDlg-contentPanel         {margin-top: 10px;}
-	.vibe-copyFiltersDlg_filterSectionLabel   {font-size: 14px !important; font-weight: bold !important;}
-	.vibe-copyFiltersDlg-filterSelectCB label {font-size: 12px !important; padding-top: 5px; padding-left: 2px; display: inline-block;}
-	.vibe-copyFiltersDlg-filtersPanel         {color: #505354; font-size: 12px;}
-	.vibe-copyFiltersDlg_findLabel            {color: #505354; }
-	.vibe-copyFiltersDlg_findPanel_Inner      {}
-	.vibe-copyFiltersDlg_findPanel_Outer      {padding-top: 15px;}
-	.vibe-copyFiltersDlg_findWidget           {margin-top: 2px; display: inline;}
-	.vibe-copyFiltersDlg-hint                 {white-space: normal; width: 400px; font-size: 14px;}
-	.vibe-copyFiltersDlg-mainPanel            {margin: 10px 10px 10px 13px;}
-	.vibe-copyFiltersDlg-scrollPanel          {overflow: auto !important; border: 1px solid #C4C4C4; margin-top: 10px;}
-	.vibe-copyFiltersDlg-scrollLimit          {height: 175px;}
-/* End:  Copy Filters dialog styles. */
 
 /* Start:  Copy Public Link dialog styles. */
 	.vibe-copyPublicLinkDlg-contentPanel         {margin-top: 10px;}

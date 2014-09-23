@@ -49,6 +49,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.ProfileDao;
@@ -148,7 +149,6 @@ import org.kablink.teaming.gwt.client.util.CollectionType;
 import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.FolderEntryDetails;
 import org.kablink.teaming.gwt.client.util.FolderSortSetting;
-import org.kablink.teaming.gwt.client.util.GwtFolderEntryType;
 import org.kablink.teaming.gwt.client.util.GwtShareLists;
 import org.kablink.teaming.gwt.client.util.GwtSharingInfo;
 import org.kablink.teaming.gwt.client.util.HistoryInfo;
@@ -185,7 +185,6 @@ import org.kablink.teaming.gwt.server.util.GwtBlogHelper;
 import org.kablink.teaming.gwt.server.util.GwtCalendarHelper;
 import org.kablink.teaming.gwt.server.util.GwtDeleteHelper;
 import org.kablink.teaming.gwt.server.util.GwtEmailHelper;
-import org.kablink.teaming.gwt.server.util.GwtFolderEntryTypeHelper;
 import org.kablink.teaming.gwt.server.util.GwtHistoryHelper;
 import org.kablink.teaming.gwt.server.util.GwtHtml5Helper;
 import org.kablink.teaming.gwt.server.util.GwtLdapHelper;
@@ -468,6 +467,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 											cgCmd.getDesc(),
 											cgCmd.getIsMembershipDynamic(),
 											cgCmd.getExternalMembersAllowed(),
+											cgCmd.getMembership(),
 											cgCmd.getMembershipCriteria() );
 			groupInfo = new GroupInfo();
 			if ( group != null )
@@ -1067,15 +1067,8 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case GET_BINDER_BRANDING:
 		{
 			GwtBrandingData brandingData;
-			GetBinderBrandingCmd gbbCmd;
 			
-			gbbCmd = (GetBinderBrandingCmd) cmd;
-			brandingData = GwtServerHelper.getBinderBrandingData(
-																this,
-																gbbCmd.getBinderId(),
-																gbbCmd.getUseInheritance(),
-																req,
-																getServletContext( ri ) );
+			brandingData = GwtServerHelper.getBinderBrandingData( this, ((GetBinderBrandingCmd) cmd).getBinderId(), req, getServletContext( ri ) );
 
 			response = new VibeRpcResponse( brandingData );
 			return response;
@@ -1418,14 +1411,6 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
-		case GET_DOWNLOAD_FOLDER_AS_CSV_FILE_URL:
-		{
-			GetDownloadFolderAsCSVFileUrlCmd gdfacfuCmd = ((GetDownloadFolderAsCSVFileUrlCmd) cmd);
-			DownloadFolderAsCSVFileUrlRpcResponseData result = GwtViewHelper.getDownloadFolderAsCSVFileUrl( this, getRequest( ri ), gdfacfuCmd.getFolderId() );
-			response = new VibeRpcResponse( result );
-			return response;
-		}
-		
 		case GET_DOWNLOAD_SETTING:
 		{
 			GetDownloadSettingCmd gdsCmd = ((GetDownloadSettingCmd) cmd);
@@ -1465,22 +1450,6 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		{
 			GetEntityActionToolbarItemsCmd geatbiCmd = ((GetEntityActionToolbarItemsCmd) cmd);
 			GetToolbarItemsRpcResponseData responseData = GwtMenuHelper.getEntityActionToolbarItems( this, getRequest( ri ), geatbiCmd.getBinderInfo(), geatbiCmd.getEntityId() );
-			response = new VibeRpcResponse( responseData );
-			return response;
-		}
-		
-		case GET_ENTITY_ID:
-		{
-			GetEntityIdCmd geidCmd = ((GetEntityIdCmd) cmd);
-			EntityIdRpcResponseData responseData = GwtServerHelper.getEntityId( this, getRequest( ri ), geidCmd.getBinderId(), geidCmd.getEntityId(), geidCmd.getEntityIdType(), geidCmd.getMobileDeviceId() );
-			response = new VibeRpcResponse( responseData );
-			return response;
-		}
-		
-		case GET_ENTITY_ID_LIST:
-		{
-			GetEntityIdListCmd geidlCmd = ((GetEntityIdListCmd) cmd);
-			EntityIdListRpcResponseData responseData = GwtServerHelper.getEntityIdList( this, getRequest( ri ), geidlCmd.getEntityIdCmdList() );
 			response = new VibeRpcResponse( responseData );
 			return response;
 		}
@@ -1701,38 +1670,6 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			FolderEntryDetails					fed          = GwtViewHelper.getFolderEntryDetails( this, getRequest( ri ), gfeCmd.getEntityId(), gfeCmd.isMarkRead() );
 			FolderEntryDetailsRpcResponseData	responseData = new FolderEntryDetailsRpcResponseData( fed );
 			response = new VibeRpcResponse( responseData );
-			return response;
-		}
-		
-		case GET_FOLDER_ENTRY_TYPE:
-		{
-			GetFolderEntryTypeCmd gfetCmd;
-			GetFolderEntryTypeRpcResponseData responseData;
-			HashMap<Long,GwtFolderEntryType> listOfEntryTypes;
-			
-			gfetCmd = (GetFolderEntryTypeCmd) cmd;
-			listOfEntryTypes = GwtFolderEntryTypeHelper.getFolderEntryTypes( this, gfetCmd.getListOfEntryIds() );
-			responseData = new GetFolderEntryTypeRpcResponseData();
-			responseData.setListOfTypes( listOfEntryTypes );
-			
-			response = new VibeRpcResponse( responseData );
-			return response;
-		}
-		
-		case GET_FOLDER_FILTERS:
-		{
-			GetFolderFiltersCmd gffCmd = ((GetFolderFiltersCmd) cmd);
-			GwtFolder gwtFolder = gffCmd.getFolder();
-			FolderFiltersRpcResponseData result = GwtServerHelper.getFolderFilters( this, getRequest( ri ), Long.parseLong( gwtFolder.getFolderId() ) );
-			response = new VibeRpcResponse( result );
-			return response;
-		}
-		
-		case GET_FOLDER_HAS_USER_LIST:
-		{
-			GetFolderHasUserListCmd gfhulCmd = ((GetFolderHasUserListCmd) cmd);
-			boolean result = GwtViewHelper.getFolderHasUserList( this, getRequest( ri ) , gfhulCmd.getFolderInfo() );
-			response = new VibeRpcResponse( new BooleanRpcResponseData( result ) );
 			return response;
 		}
 		
@@ -2389,9 +2326,13 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		
 		case GET_ROOT_WORKSPACE_ID:
 		{
-			GetRootWorkspaceIdCmd grwiCmd = ((GetRootWorkspaceIdCmd) cmd);
-			Long result = getRootWorkspaceId( ri, grwiCmd.getCurrentRootBinderId(), grwiCmd.getBinderId() );
-			LongRpcResponseData responseData = new LongRpcResponseData( result );
+			GetRootWorkspaceIdCmd grwiCmd;
+			String result;
+			StringRpcResponseData responseData;
+			
+			grwiCmd = (GetRootWorkspaceIdCmd) cmd;
+			result = getRootWorkspaceId( ri, grwiCmd.getBinderId() );
+			responseData = new StringRpcResponseData( result );
 			response = new VibeRpcResponse( responseData );
 			return response;
 		}
@@ -2740,14 +2681,6 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
-		case GET_USER_LIST_INFO:
-		{
-			GetUserListInfoCmd guliCmd = ((GetUserListInfoCmd) cmd);
-			UserListInfoRpcResponseData result = GwtViewHelper.getFolderUserListInfo( this, getRequest( ri ) , guliCmd.getFolderInfo() );
-			response = new VibeRpcResponse( result );
-			return response;
-		}
-		
 		case GET_USER_PERMALINK:
 		{
 			GetUserPermalinkCmd gupCmd;
@@ -2967,22 +2900,6 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
-		case MARK_FOLDER_CONTENTS_READ:
-		{
-			MarkFolderContentsReadCmd mfcrCmd = ((MarkFolderContentsReadCmd) cmd);
-			BooleanRpcResponseData responseData = GwtViewHelper.markFolderContentsRead( this, getRequest( ri ), mfcrCmd.getFolderId() );
-			response = new VibeRpcResponse( responseData );
-			return response;
-		}
-		
-		case MARK_FOLDER_CONTENTS_UNREAD:
-		{
-			MarkFolderContentsUnreadCmd mfcurCmd = ((MarkFolderContentsUnreadCmd) cmd);
-			BooleanRpcResponseData responseData = GwtViewHelper.markFolderContentsUnread( this, getRequest( ri ), mfcurCmd.getFolderId() );
-			response = new VibeRpcResponse( responseData );
-			return response;
-		}
-		
 		case MARKUP_STRING_REPLACEMENT:
 		{
 			MarkupStringReplacementCmd msr = ((MarkupStringReplacementCmd) cmd); 
@@ -3001,29 +2918,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			ModifyGroupCmd mgCmd;
 			
 			mgCmd = (ModifyGroupCmd) cmd;
-			GwtServerHelper.modifyGroup(
-									this,
-									mgCmd.getId(),
-									mgCmd.getTitle(),
-									mgCmd.getDesc(),
-									mgCmd.getIsMembershipDynamic(),
-									mgCmd.getMembershipCriteria() );
-			response = new VibeRpcResponse( new BooleanRpcResponseData( Boolean.TRUE ) );
-			
-			return response;
-		}
-		
-		case MODIFY_GROUP_MEMBERSHIP:
-		{
-			ModifyGroupMembershipCmd mgmCmd;
-			
-			mgmCmd = (ModifyGroupMembershipCmd) cmd;
-			GwtServerHelper.modifyGroupMembership(
-												this,
-												mgmCmd.getId(),
-												mgmCmd.getIsMembershipDynamic(),
-												mgmCmd.getMembership(),
-												mgmCmd.getMembershipCriteria() );
+			GwtServerHelper.modifyGroup( this, mgCmd.getId(), mgCmd.getTitle(), mgCmd.getDesc(), mgCmd.getIsMembershipDynamic(), mgCmd.getMembership(), mgCmd.getMembershipCriteria() );
 			response = new VibeRpcResponse( new BooleanRpcResponseData( Boolean.TRUE ) );
 			
 			return response;
@@ -3376,14 +3271,6 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			SaveFolderEntryDlgPositionCmd sfedpCmd = ((SaveFolderEntryDlgPositionCmd) cmd);
 			GwtViewHelper.saveFolderEntryDlgPosition( this, getRequest( ri ), sfedpCmd.getX(), sfedpCmd.getY(), sfedpCmd.getCX(), sfedpCmd.getCY() );
 			response = new VibeRpcResponse( new BooleanRpcResponseData( true ));
-			return response;
-		}
-		
-		case SAVE_FOLDER_FILTERS:
-		{
-			SaveFolderFiltersCmd sffCmd = ((SaveFolderFiltersCmd) cmd);
-			ErrorListRpcResponseData result = GwtServerHelper.saveFolderFilters( this, getRequest( ri ), sffCmd.getFolderInfo(), sffCmd.getGlobalFilters(), sffCmd.getPersonalFilters() );
-			response = new VibeRpcResponse( result );
 			return response;
 		}
 		
@@ -4036,19 +3923,27 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		}
 		
 		case UNTRACK_BINDER:
-		{			
-			UntrackBinderCmd ubCmd = (UntrackBinderCmd) cmd;
-			Boolean result = untrackBinder( ri, ubCmd.getBinderId() );
-			BooleanRpcResponseData responseData = new BooleanRpcResponseData( result );
+		{
+			UntrackBinderCmd ubCmd;
+			Boolean result;
+			BooleanRpcResponseData responseData;
+			
+			ubCmd = (UntrackBinderCmd) cmd;
+			result = untrackBinder( ri, ubCmd.getBinderId() );
+			responseData = new BooleanRpcResponseData( result );
 			response = new VibeRpcResponse( responseData );
 			return response;
 		}
 		
 		case UNTRACK_PERSON:
 		{
-			UntrackPersonCmd upCmd = ((UntrackPersonCmd) cmd);
-			Boolean result = untrackPerson( ri, upCmd.getBinderId(), upCmd.getUserId() );
-			BooleanRpcResponseData responseData = new BooleanRpcResponseData( result );
+			UntrackPersonCmd upCmd;
+			Boolean result;
+			BooleanRpcResponseData responseData;
+			
+			upCmd = (UntrackPersonCmd) cmd;
+			result = untrackPerson( ri, upCmd.getBinderId() );
+			responseData = new BooleanRpcResponseData( result );
 			response = new VibeRpcResponse( responseData );
 			return response;
 		}
@@ -4422,14 +4317,6 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 				String url;
 				
 				folderEntry.setEntryName( entry.getTitle() );
-				
-				// Get the entry's type
-				{
-					GwtFolderEntryType entryType;
-					
-					entryType = GwtFolderEntryTypeHelper.getFolderEntryType( this, entryIdL );
-					folderEntry.setEntryType( entryType );
-				}
 				
 				// Get the entry's description
 				{
@@ -5075,12 +4962,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 				
 					// Get the branding data from the top workspace.
 					binderId = topWorkspace.getId().toString();
-					siteBrandingData = GwtServerHelper.getBinderBrandingData(
-																			allModules,
-																			binderId,
-																			false,
-																			getRequest( ri ),
-																			getServletContext( ri ) );
+					siteBrandingData = GwtServerHelper.getBinderBrandingData( allModules, binderId, getRequest( ri ), getServletContext( ri ) );
 				}
 				catch (Exception e)
 				{
@@ -5781,48 +5663,29 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		return reply;
 	}// end getHorizontalNode()
 
-	/*
+	/**
 	 * Returns the ID of the nearest containing workspace of a given
 	 * Binder.
+	 * 
+	 * @param ri
+	 * @param binderId
+	 * 
+	 * @return
 	 */
-	private Long getRootWorkspaceId( HttpRequestInfo ri, Long currentRootBinderId, Long binderId )
+	private String getRootWorkspaceId( HttpRequestInfo ri, String binderId )
 	{
-		Long reply;
+		String reply;
 		
-		// Can we access the target binder?
 		Binder binder = GwtUIHelper.getBinderSafely( getBinderModule(), binderId );
 		if (null != binder)
 		{
-			// Yes!  Is it's workspace other than the current root, if
-			// we were given one?
-			Binder binderWS = BinderHelper.getBinderWorkspace( binder );
-			if ((null != binderWS) && (null != currentRootBinderId) && (!(currentRootBinderId.equals(binderWS.getId())))) {
-				// Yes!  Walk up that workspace's parentage.
-				Binder parent = binderWS;
-				do {
-					// Does this workspace have a parent?
-					parent = parent.getParentBinder();
-					if (null == parent) {
-						// No!  We'll just return the workspace we
-						// already found.
-						break;
-					}
-					
-					// Is this parent the current root?
-					if (currentRootBinderId.equals(parent.getId())) {
-						// Yes!  We'll just return that then (i.e., the
-						// current root.)
-						binderWS = ((Workspace) parent);
-						break;
-					}
-				} while (true);
-			}
-			reply = binderWS.getId();
+			Workspace binderWS = BinderHelper.getBinderWorkspace( binder );
+			reply = String.valueOf( binderWS.getId() );
 		}
 		else
 		{
 			Long topWSId = getWorkspaceModule().getTopWorkspaceId();
-			reply = topWSId;
+			reply = String.valueOf( topWSId );
 		}
 		
 		return reply;
@@ -6612,15 +6475,18 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		return reply;
 	}// endtrackBinder()
 	
-	/*
+	/**
 	 * Called to mark that the current user is no longer tracking the
 	 * specified binder.
+	 * 
+	 * @param ri
+	 * @param binderId
 	 */
-	private Boolean untrackBinder( HttpRequestInfo ri, Long binderId )
+	private Boolean untrackBinder( HttpRequestInfo ri, String binderId )
 	{
 		Boolean reply;
 		try {
-			BinderHelper.trackThisBinder( this, binderId, "delete" );
+			BinderHelper.trackThisBinder( this, Long.parseLong(binderId), "delete" );
 			reply = Boolean.TRUE;
 		}
 		catch (Exception e) {
@@ -6629,24 +6495,19 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		return reply;
 	}//end untrackBinder()
 	
-	/*
+	/**
 	 * Called to mark that the current user is no longer tracking the
-	 * specified person.  The person can be specified by a binder ID
-	 * (uses the owner of the binder) or a user ID.
+	 * person whose workspace is the specified binder.
+	 * 
+	 * @param ri
+	 * @param binderId
 	 */
-	private Boolean untrackPerson( HttpRequestInfo ri, Long binderId, Long userId )
+	private Boolean untrackPerson( HttpRequestInfo ri, String binderId )
 	{
-		// If we weren't giving a user ID...
-		if ( null == userId )
-		{
-			// ...extract it from the binder.
-			Binder binder = getBinderModule().getBinderWithoutAccessCheck( binderId );
-			userId = binder.getOwnerId();
-		}
-		
+		Binder binder = getBinderModule().getBinderWithoutAccessCheck( Long.parseLong( binderId ) );
 		Boolean reply;
 		try {
-			BinderHelper.trackThisBinder( this, userId, "deletePerson" );
+			BinderHelper.trackThisBinder( this, binder.getOwnerId(), "deletePerson" );
 			reply = Boolean.TRUE;
 		}
 		catch (Exception e) {
@@ -6741,18 +6602,17 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 				branding = brandingData.getBranding();
 				if ( branding == null )
 					branding = "";
-				
-				// Remove mce_src as an attribute from all <img> tags.  See bug 766415.
-				// There was a bug that caused the mce_src attribute to be included in the <img>
-				// tag and written to the db.  We want to remove it.
-				branding = MarkupUtil.removeMceSrc( branding );
-
 				hashMap.put( "branding", branding );
 
 				// Add the extended branding data to the map.
 				branding = brandingData.getBrandingAsXmlString();
 				if ( branding == null )
 					branding = "";
+
+				// Remove mce_src as an attribute from all <img> tags.  See bug 766415.
+				// There was a bug that caused the mce_src attribute to be included in the <img>
+				// tag and written to the db.  We want to remove it.
+				branding = MarkupUtil.removeMceSrc( branding );
 
 				hashMap.put( "brandingExt", branding );
 				

@@ -105,7 +105,7 @@
   --
   -- BOX
   --
---%><c:set var="ss_box_title_color" value="#505354" scope="request"/><%--
+--%><c:set var="ss_box_title_color" value="#fff" scope="request"/><%--
 --%><c:set var="ss_box_title_hover_color" value="#333333" scope="request"/><%--
 --%><c:set var="ss_box_color" value="#CCCCCC" scope="request"/><%--
 --%><c:set var="ss_box_canvas_color" value="#FFFFAA" scope="request"/><%--

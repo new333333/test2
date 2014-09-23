@@ -69,7 +69,6 @@ public enum TeamingEvents implements IsSerializable {
 	CALENDAR_PREVIOUS_PERIOD,						// Tells the calendar to display the previous time period.
 	CALENDAR_SETTINGS,								// Tells the calendar to invoke its settings dialog.
 	CALENDAR_SHOW,									// Tells the calendar which events to display.
-	CALENDAR_SHOW_HINT,								// Shows a hint regarding the current CalendarShow mode.
 	CALENDAR_VIEW_DAYS,								// Tells the calendar to change is day view.
 	
 	CHANGE_CONTEXT,									// Tells the UI that a context switch is currently taking place.	(I.e., Is happening.      )
@@ -96,9 +95,6 @@ public enum TeamingEvents implements IsSerializable {
 	GOTO_URL,										// Changes the content to the given url.
 
 	GROUP_CREATED,									// Notification that a group was created.
-	GROUP_MEMBERSHIP_MODIFICATION_FAILED,			// Notification that the process of modifying a group's membership has failed.
-	GROUP_MEMBERSHIP_MODIFICATION_STARTED,			// Notification that the process of modifying a group's membership has started.
-	GROUP_MEMBERSHIP_MODIFIED,						// Notification that a group's membership was modified.
 	GROUP_MODIFICATION_FAILED,						// Notification that the process of modifying a group has failed.
 	GROUP_MODIFICATION_STARTED,						// Notification that the process of modifying a group has started.
 	GROUP_MODIFIED,									// Notification that a group was modified.
@@ -114,7 +110,6 @@ public enum TeamingEvents implements IsSerializable {
 	INVOKE_CONFIGURE_MOBILE_APPS_DLG,				// Invokes the Configure Mobile Apps dialog.
 	INVOKE_CONFIGURE_SHARE_SETTINGS_DLG,			// Invokes the Configure Share Settings dialog.
 	INVOKE_CONFIGURE_USER_ACCESS_DLG,				// Invokes the Configure User Access dialog.
-	INVOKE_COPY_FILTERS_DLG,						// Invokes the 'Copy Filters' dialog.
 	INVOKE_DOWNLOAD_DESKTOP_APP,					// Invokes the desktop application download page.
 	INVOKE_DROPBOX,									// Invokes the files drop box (i.e., the file drag&drop applet.)
 	INVOKE_EDIT_IN_PLACE,							// Invokes the edit-in-place on the specified file.
@@ -163,8 +158,6 @@ public enum TeamingEvents implements IsSerializable {
 
 	MARK_ENTRY_READ,								// Mark the entry as read.
 	MARK_ENTRY_UNREAD,								// Mark the entry as unread.
-	MARK_FOLDER_CONTENTS_READ,						// Mark the contents of a folder as read.
-	MARK_FOLDER_CONTENTS_UNREAD,					// Mark the contents of a folder as unread.
 	
 	MASTHEAD_HIDE,									// Hides the masthead.
 	MASTHEAD_SHOW,									// Shows the masthead.
@@ -294,7 +287,6 @@ public enum TeamingEvents implements IsSerializable {
 	DISABLE_SELECTED_USERS_ADHOC_FOLDERS,			// Disables adHoc folders for the Selected Users.
 	DISABLE_SELECTED_USERS_DOWNLOAD,				// Disables downloading of files for the Selected Users.
 	DISABLE_SELECTED_USERS_WEBACCESS,				// Disables web access for the Selected Users.
-	DOWNLOAD_FOLDER_AS_CSV_FILE,					// Downloads then entries in a folder as a CSV file.
 	EDIT_PUBLIC_LINK_SELECTED_ENTITIES,				// Edits the Public Link of the Selected Entities.
 	EMAIL_PUBLIC_LINK_SELECTED_ENTITIES,			// Emails the Public Link of the Selected Entities.
 	ENABLE_SELECTED_USERS,							// Enables the Selected Users.

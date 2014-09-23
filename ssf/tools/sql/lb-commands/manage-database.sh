@@ -45,7 +45,7 @@ echo ""
 echo "Note: Additional parameters are read in from [db type]-liquibase.properties file."
 }
 
-CLASSPATH=./lib/mysql-connector.jar:./lib/ojdbc7.jar:./lib/jtds.jar
+CLASSPATH=./lib/mysql-connector.jar:./lib/ojdbc6.jar:./lib/jtds.jar
 
 # Set default log level. Valid values are debug, info, warning, severe, off.
 LOG_LEVEL=info

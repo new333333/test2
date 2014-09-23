@@ -125,11 +125,11 @@ public interface ObjectKeys {
 	public static final String TEAM_ROOT_INTERNALID="402883b90d0de1f3010d0df5582b0009";
 	public static final String GLOBAL_ROOT_INTERNALID="402883b90d0de1f3010d0df5582b000a";
 	public static final String NET_FOLDERS_ROOT_INTERNALID="402883b90d0de1f3010d0df5582b001a";
-	//reserved internalids for alluser group
+	//reserverd internalids for alluser group
 	public static final String ALL_USERS_GROUP_INTERNALID="402883b90d0de1f3010d0df5582b0006";
-	//reserved internalids for allextuser group
+	//reserverd internalids for allextuser group
 	public static final String ALL_EXT_USERS_GROUP_INTERNALID="402883b90d0de1f3010d0df5582b0022";
-	//reserved internalId user posting agent
+	//reserverd internalId user posting agent
 	public static final String ANONYMOUS_POSTING_USER_INTERNALID="402883b90d0de1f3010d0df5582b0008";
 	//super user bypasses all acl and operation checks
 	public static final String SUPER_USER_INTERNALID="402883b90d0de1f3010d0df5582b000b";
@@ -141,7 +141,7 @@ public interface ObjectKeys {
 	public static final String FILE_SYNC_AGENT_INTERNALID="402883b90d0de1f3010d0df5582b001e";
 	//shared guest account
 	public static final String GUEST_USER_INTERNALID="402883b90d0de1f3010d0df5582b0013";
-	//reserved internalids for allapplication group
+	//reserverd internalids for allapplication group
 	public static final String ALL_APPLICATIONS_GROUP_INTERNALID="402883b90d0de1f3010d0df5582b0014";
 	//reserved internaId for _zoneAdministration pseudo role 
 	public static final String FUNCTION_SITE_ADMIN_INTERNALID="402883b90d0de1f3010d0df5582b0015";
@@ -476,7 +476,6 @@ public interface ObjectKeys {
     public static final int SEARCH_MAX_HITS_FOLDER_ENTRIES = 1000;
     public static final int SEARCH_MAX_HITS_FOLDER_ENTRIES_WIKI = 10000;
     public static final int SEARCH_MAX_HITS_FOLDER_ENTRIES_EXPORT = 100000;
-    public static final int SEARCH_MAX_HITS_FOLDER_ENTRIES_READ_UNREAD = 100000;
     public static final int SEARCH_MAX_HITS_ALL_USERS = 1000;
     public static final int SEARCH_MAX_HITS_LIMIT = 1000000;
     public static final int SEARCH_MAX_ZIP_FOLDER_FILES = 1000;
@@ -492,8 +491,6 @@ public interface ObjectKeys {
     public static final String SEARCH_SORT_BY_DATE = "sortByDate";
     public static final String SEARCH_SORT_BY_RATING = "sortByRating";
     public static final String SEARCH_SORT_BY_REPLY_COUNT = "sortByReplyCount";
-    public static final String SEARCH_SORT_FIELD_TYPE = "sortFieldType";
-    public static final String SEARCH_SORT_FIELD_TYPE_SECONDARY = "sortFieldTypeSecondary";
     public static final String SEARCH_START_DATE = "startDate";
     public static final String SEARCH_END_DATE = "endDate";
     public static final String SEARCH_FILTER_AND = "searchFilterAnd";
@@ -521,8 +518,8 @@ public interface ObjectKeys {
     public static final String SEARCH_IS_PERSON = "searchIsPerson";
     public static final String SEARCH_IS_INTERNAL = "searchIsInternal";
     public static final String SEARCH_IS_EXTERNAL = "searchIsExternal";
-    public static final String SEARCH_IS_DISABLED_PRINCIPALS = "searchIsDisabledUsers";
-    public static final String SEARCH_IS_ENABLED_PRINCIPALS  = "searchIsEnabledUsers";
+    public static final String SEARCH_IS_DISABLED_USERS = "searchIsDisabledUsers";
+    public static final String SEARCH_IS_ENABLED_USERS  = "searchIsEnabledUsers";
     
     //Search Result Identifier
     public static final String SEARCH_RESULTS_DISPLAY="ss_searchResultListing";
@@ -790,7 +787,6 @@ public interface ObjectKeys {
     public static final String FIELD_GROUP_PRINCIPAL_MEMBERS="members";
     public static final String FIELD_PRINCIPAL_THEME="theme";
     public static final String FIELD_GROUP_LDAP_CONTAINER="ldapContainer";
-    public static final String FIELD_GROUP_TYPE="groupType";
     public static final String TASK_FIELD_ASSIGNMENT="assignment";
     public static final String TASK_FIELD_EVENT="start_end#LogicalEndDate";
     public static final String FIELD_TEMPLATE_TITLE="templateTitle";
@@ -1063,7 +1059,6 @@ public interface ObjectKeys {
     public final static String CSV_ATTR_CREATION_DATE = "_creationDate";
     public final static String CSV_ATTR_MODIFICATION_DATE = "_modificationDate";
     public final static String CSV_ATTR_WORKFLOW = "_workflow";
-    public final static String CSV_ATTR_ATTACHED_FILES = "_attachedFiles";
     
     public final static String CSV_COL_HEADER = "colHeader";
     public final static String CSV_TYPE = "type";
@@ -1074,7 +1069,4 @@ public interface ObjectKeys {
     public final static String CSV_TYPE_EMAIL = "email";
     
     public final static String CSV_OPTIONS_ATTRS_TO_SKIP = "attrsToSkip";
-    
-    //Database 
-    public final static int SELECT_DATABASE_TRANSACTION_RETRY_MAX_COUNT = 4;
 }

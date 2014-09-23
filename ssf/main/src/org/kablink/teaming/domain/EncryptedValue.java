@@ -48,7 +48,7 @@ public class EncryptedValue implements Serializable {
     }
     
     public void setValue(String clearValue) {
-		StringEncryptor encryptor = (StringEncryptor) SpringContextUtil.getBean("symmetricStringEncryptor");
+		StringEncryptor encryptor = (StringEncryptor) SpringContextUtil.getBean("encryptor");
 		if (encryptor != null) {
 			value = encryptor.encrypt(clearValue);
 		}
@@ -59,7 +59,7 @@ public class EncryptedValue implements Serializable {
 	}
  
     public String getValue() {
-		StringEncryptor encryptor = (StringEncryptor) SpringContextUtil.getBean("symmetricStringEncryptor");
+		StringEncryptor encryptor = (StringEncryptor) SpringContextUtil.getBean("encryptor");
 		if (encryptor != null) {
 			return encryptor.decrypt(value);
 		}

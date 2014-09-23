@@ -53,60 +53,12 @@ import org.kablink.util.Validator;
  *
  */
 public class Group extends UserPrincipal implements GroupPrincipal {
-
-	/**
-	 * 
-	 */
-	public enum GroupType
-	{
-		/**
-		 * Group that is used to hold team membership
-		 * 
-		 */
-		team( (short)1 );
-		
-		short m_value;
-
-		/**
-		 * 
-		 */
-		GroupType( short value )
-		{
-			m_value = value;
-		}
-
-		/**
-		 * 
-		 */
-		public short getValue()
-		{
-			return m_value;
-		}
-		
-		/**
-		 * 
-		 */
-		public static GroupType valueOf( short value )
-		{
-			switch( value )
-			{
-			case 1:
-				return GroupType.team;
-
-			default:
-				throw new IllegalArgumentException( "Invalid db value " + value + " for enum GroupType" );
-			}
-		}
-	}
-	
-	private List members;  //initialized by hibernate access=field  
+    private List members;  //initialized by hibernate access=field  
     
     private Boolean dynamic = Boolean.FALSE; //initialized by hibernate access=field
     private String ldapQuery;
     
     private Boolean ldapContainer; // false by default
-
-    private Short groupType;
     
     // For use by Hibernate only
 	protected Group() {
@@ -206,26 +158,4 @@ public class Group extends UserPrincipal implements GroupPrincipal {
 		this.ldapContainer = ldapContainer;
 	}
 
-	/**
-	 * 
-	 */
-	public GroupType getGroupType()
-	{
-		if ( groupType == null )
-			return null;
-
-		return GroupType.valueOf( groupType.shortValue() );
-	}
-
-	/**
-	 * 
-	 */
-	public void setGroupType( GroupType groupType )
-	{
-		if ( groupType == null )
-			this.groupType = null;
-		else
-			this.groupType = groupType.getValue();
-	}
-    
 }

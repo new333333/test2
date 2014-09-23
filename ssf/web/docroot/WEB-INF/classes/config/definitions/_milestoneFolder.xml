@@ -72,7 +72,7 @@
     <property name="name" value="_milestoneFolder"/>  
     <property name="caption" value="__definition_default_folder_milestone"/>  
     <property name="family" value="milestone"/>  
-    <property name="icon" value="/icons/folder_blue_milestone.png"/> 
+    <property name="icon" value="/icons/folder_blue_milestone.gif"/> 
   </properties>  
   <export-mappings/>
 </definition>

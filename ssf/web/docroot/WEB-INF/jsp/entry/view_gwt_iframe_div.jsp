@@ -115,7 +115,7 @@
 	        <td valign="top" align="right" nowrap width="4%" >
 	          <span class="ss_newpage_box_close ss_close_text">
 	            <a href="javascript: ;" onClick="ss_popEntryUrl();ss_hideEntryDiv();return false;" title="<ssf:nlt tag="button.close"/>"><ssf:nlt tag="button.close"/>&nbsp;<img 
-					  	border="0" src="<html:imagesPath/>icons/close_gray16.png" align="absmiddle" /></a>
+					  	border="0" src="<html:imagesPath/>icons/close_teal16.png" align="absmiddle" /></a>
 	          </span>
 	        </td>
 	        </tr>

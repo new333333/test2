@@ -56,8 +56,7 @@
 </c:if>
 
 <option value="<c:out value="${property_name}"/>" ${checked}
-  	<c:if test="${(property_default) && empty ssDefinitionEntry.customAttributes[selectboxName].valueSet && 
-  			(ssOperation == 'add_folder_entry' || ssOperation == 'add_folder_reply' || ssOperation == 'add_binder')}">
+  	<c:if test="${(property_default) && empty ssDefinitionEntry.customAttributes[selectboxName].valueSet}">
   		selected="selected"
   	</c:if>
   >

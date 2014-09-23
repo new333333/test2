@@ -1775,10 +1775,10 @@ public class ShareThisDlg2 extends DlgBox
 					EntityId entityId;
 					
 					gwtFolderEntry = (GwtFolderEntry) selectedItem;
-					entityId = new EntityId(
-						gwtFolderEntry.getParentBinderId(),
-						Long.valueOf( gwtFolderEntry.getEntryId() ),
-						EntityId.FOLDER_ENTRY );
+					entityId = new EntityId();
+					entityId.setEntityId( Long.valueOf( gwtFolderEntry.getEntryId() ) );
+					entityId.setBinderId( gwtFolderEntry.getParentBinderId() );
+					entityId.setEntityType( EntityId.FOLDER_ENTRY );
 
 					listOfEntityIds.add( entityId );
 				}
@@ -1788,9 +1788,9 @@ public class ShareThisDlg2 extends DlgBox
 					EntityId entityId;
 					
 					gwtFolder = (GwtFolder) selectedItem;
-					entityId = new EntityId(
-						Long.valueOf( gwtFolder.getFolderId() ),
-						EntityId.FOLDER );
+					entityId = new EntityId();
+					entityId.setEntityId( Long.valueOf( gwtFolder.getFolderId() ) );
+					entityId.setEntityType( EntityId.FOLDER );
 
 					listOfEntityIds.add( entityId );
 				}

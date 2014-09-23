@@ -33,8 +33,6 @@
 package org.kablink.teaming.util.encrypt;
 
 import org.jasypt.encryption.pbe.PBEStringEncryptor;
-import org.kablink.teaming.ConfigurationException;
-import org.kablink.util.encrypt.ExtendedPBEStringEncryptor;
 
 /**
  * This class wraps old and new encryptors and delegate as appropriate to perform
@@ -49,85 +47,63 @@ import org.kablink.util.encrypt.ExtendedPBEStringEncryptor;
  */
 public class HibernateEncryptor implements PBEStringEncryptor {
 
-	// We use "ENC2(" to signal new algorithm (second generation).
-	// The values encrypted with the old first generation algorithm do NOT contain any prefix/suffix, 
-	// and therefore we will simply assume that any encoded value lacking this new prefix is encrypted with
-	// the first generation algorithm. We can make this assumption safely because this wrapper encryptor will
-	// never be invoked to decrypt a value that wasn't previously encrypted.
-    private static final String PREFIX_SECOND_GEN = "ENC2(";
-    private static final String SUFFIX_SECOND_GEN = ")";
+	// We use "ENC2(" to signal new algorithm.
+	// The values encrypted with the old algorithm do NOT contain any prefix/suffix, and therefore
+	// we will simply assume that any encoded value lacking this new prefix is encrypted with the
+	// old algorithm. We can make this assumption safely because this wrapper encryptor will never
+	// be invoked to decrypt a value that wasn't previously encrypted.
+    private static final String PREFIX = "ENC2(";
+    private static final String SUFFIX = ")";
 
-    // Current encryptor (may be first or second generation)
-	private ExtendedPBEStringEncryptor encryptor;
-	// First generation encryptor
-	private ExtendedPBEStringEncryptor encryptor_first_gen;
+	private PBEStringEncryptor encryptor;
+	private PBEStringEncryptor encryptor_preFilr1_0;
 	
-	public HibernateEncryptor(ExtendedPBEStringEncryptor encryptor, ExtendedPBEStringEncryptor encryptor_first_gen) {
+	public HibernateEncryptor(PBEStringEncryptor encryptor, PBEStringEncryptor encryptor_preFilr1_0) {
 		this.encryptor = encryptor;
-		this.encryptor_first_gen = encryptor_first_gen;
+		this.encryptor_preFilr1_0 = encryptor_preFilr1_0;
 	}
 	
 	@Override
 	public String encrypt(String message) {
-		// For encryption, we always use the "current" encryptor.
+		// For encryption, we always use the new algorithm.
 		// Make sure to include the prefix/suffix in the output for storage.
-		if(encryptor.getGeneration() == 2) {
-			return getDecoratedEncryptedValue_second_gen(encryptor.encrypt(message));
-		}
-		else {
-			return getDecoratedEncryptedValue_first_gen(encryptor.encrypt(message));
-		}
+		return getDecoratedEncryptedValue(encryptor.encrypt(message));
 	}
 
 	@Override
 	public String decrypt(String encryptedMessage) {
-		if(isEncryptedWithSecondGenEncryptor(encryptedMessage)) {
-			// This data was encrypted using the second generation encryptor.
-			if(encryptor.getGeneration() == 2) {
-				// Decrypt it using new encryptor. Also we need to strip off prefix
-				// and suffix before decrypting it.
-				return encryptor.decrypt(getBaseEncryptedValue_second_gen(encryptedMessage));
-			}
-			else {
-				throw new ConfigurationException("Cannot decode second generation encoded value using first generation encryptor. System supports encryptor upgrade but not downgrade.");
-			}
+		if(isEncryptedWithNewEncryptor(encryptedMessage)) {
+			// This data was encrypted using the new encryptor.
+			// Decrypt it using new encryptor. Also we need to strip off prefix
+			// and suffix before decrypting it.
+			return encryptor.decrypt(getBaseEncryptedValue(encryptedMessage));
 		}
 		else {
-			// This data was encrypted using first generation encryptor.
-			// Decrypt it using first generation encryptor.
-			return encryptor_first_gen.decrypt(getBaseEncryptedValue_first_gen(encryptedMessage));
+			// This data was encrypted using the old encryptor.
+			// Decrypt it using old encryptor. The decrypted value doesn't contain any prefix/suffix.
+			return encryptor_preFilr1_0.decrypt(encryptedMessage);
 		}
 	}
 
 	@Override
 	public void setPassword(String password) {
 		encryptor.setPassword(password);
-		encryptor_first_gen.setPassword(password);
+		encryptor_preFilr1_0.setPassword(password);
 	}
 	
-	private String getDecoratedEncryptedValue_second_gen(String encVal) {
-		return PREFIX_SECOND_GEN + encVal + SUFFIX_SECOND_GEN;
+	private String getDecoratedEncryptedValue(String encVal) {
+		return PREFIX+ encVal + SUFFIX;
 	}
 
-	private String getDecoratedEncryptedValue_first_gen(String encVal) {
-		// No prefix or suffix when encryping with first generation encryptor
-		return encVal;
-	}
-
-	private boolean isEncryptedWithSecondGenEncryptor(String encryptedVal) {
+	private boolean isEncryptedWithNewEncryptor(String encryptedVal) {
 		if(encryptedVal == null)
 			return false;
 		encryptedVal = encryptedVal.trim();
-		return (encryptedVal.startsWith(PREFIX_SECOND_GEN) && encryptedVal.endsWith(SUFFIX_SECOND_GEN));
+		return (encryptedVal.startsWith(PREFIX) && encryptedVal.endsWith(SUFFIX));
 	}
 
-	private static String getBaseEncryptedValue_second_gen(String encodedVal) {
-        return encodedVal.substring(PREFIX_SECOND_GEN.length(), (encodedVal.length() - SUFFIX_SECOND_GEN.length()));	
-	}
-
-	private static String getBaseEncryptedValue_first_gen(String encodedVal) {
-		// Encoded value encrypted with first generation encryptor doesn't contain prefix or suffix.
-        return encodedVal;
+	private static String getBaseEncryptedValue(String encodedVal) {
+        return encodedVal.substring(PREFIX.length(), (encodedVal.length() - SUFFIX.length()));	
 	}
 
 }

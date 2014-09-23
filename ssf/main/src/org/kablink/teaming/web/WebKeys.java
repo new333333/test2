@@ -204,10 +204,6 @@ public class WebKeys {
     public static final String URL_ENTRY_TITLE="title";
     public static final String URL_ENTRY_TYPE="entryType";
     public static final String URL_ENTRY_UGT="entryUGT";
-    public static final String URL_ENTRY_DELAY_WORKFLOW="_entryDelayWorkflow";
-    public static final String ENTRY_DELAY_WORKFLOW="ssEntryDelayWorkflow";
-    public static final String URL_ENTRY_OPERATION_TYPE="_entryOperationType";
-    public static final String ENTRY_OPERATION_TYPE="ssEntryOperationType";
     public static final String URL_ENTRY_UPLOAD="upload";
     public static final String URL_ENTRY_SOURCE_BINDER_ID="entrySourceBinderId";
     public static final String URL_CLEAR_ENTRY_SOURCE_BINDER_ID="clearEntrySourceBinderId";
@@ -697,7 +693,6 @@ public class WebKeys {
 	public static final String OPERATION_VIEW_PHOTO = "view_photo";
 	public static final String OPERATION_VOTE_SURVEY = "vote_survey";
 	public static final String OPERATION_VOTE_SURVEY_REMOVE = "vote_survey_remove";
-	public static final String OPERATION_VOTE_SURVEY_REMOVE_ALL = "vote_survey_remove_all";
 	public static final String OPERATION_MODIFY_ENTRY="modifyEntry";
 	public static final String OPERATION_MODIFY_FILE_DESCRIPTION="modify_file_description";
 	public static final String OPERATION_MODIFY_FILE_MAJOR_VERSION="modify_file_major_version";
@@ -831,7 +826,6 @@ public class WebKeys {
 	public static final String BINDER_VERSION_AGING_ENABLED = "ss_binder_version_aging_enabled";
 	public static final String BINDER_VERSION_AGING_DAYS = "ss_binder_version_aging_days";
 	public static final String BINDER_VERSIONS_MAX_FILE_SIZE = "ss_binder_versions_max_file_size";
-	public static final String BINDER_TEAM_MEMBER_IDS = "ssBinderTeamMemberIds";
 	public static final String BLOG_ENTRIES="ssBlogEntries"; 
 	public static final String BLOG_PAGES="ssBlogPages"; 
 	public static final String BLOG_SET_BINDER="ssBlogSetBinder"; 
@@ -1157,7 +1151,6 @@ public class WebKeys {
     public static final String MARKUP_VIEW="view";
     public static final String MARKUP_VIEW_TEXT="view_text";
     public static final String MARKUP_EXPORT="export";
-    public static final String MARKUP_RSS="rss";
     public static final String MARKUP_EMAIL="email";
     public static final String MASHUP_BACKGROUND_COLOR = "ss_mashupBGColor";
     public static final String MASHUP_BACKGROUND_IMAGE = "ss_mashupBGImg";
@@ -1228,7 +1221,6 @@ public class WebKeys {
     public static final String NOTIFICATION_SCHEDULE="ssNotificationSchedule";
     public static final String NOTIFICATION_SCHEDULE_INFO="ssNotification_ScheduleInfo";
     public static final String OPERATION="ssOperation";
-    public static final String OPERATION2="ssOperation2";
     public static final String OPERATION_MAP="ssOperationMap";
     public static final String OPERATION_TYPE="ssOperationType";
 	public static final String ORIGINAL_BINDER="ssOriginalBinder";

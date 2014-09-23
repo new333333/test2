@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -30,7 +30,6 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-
 /*
  * Copyright (c) 2000, 2001, 2002, 2004 Columbia University.  All rights
  * reserved.
@@ -87,12 +86,9 @@ import net.fortuna.ical4j.model.property.Transp;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.dom4j.Element;
-
 import org.joda.time.DateTime;
 import org.joda.time.YearMonthDay;
-
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.calendar.EventsViewHelper;
 import org.kablink.teaming.calendar.TimeZoneHelper;
@@ -103,6 +99,7 @@ import org.kablink.teaming.util.NLT;
 import org.kablink.util.cal.CalendarUtil;
 import org.kablink.util.cal.DayAndPosition;
 import org.kablink.util.cal.Duration;
+
 
 /**
  * <code>Recurrence</code> represents a recurring interval of time. It
@@ -123,13 +120,15 @@ import org.kablink.util.cal.Duration;
  * @see <a href="http://www.rfc-editor.org/rfc/rfc3880.txt">RFC 3880 (CPL)</a>
  * @version 1.1
  * @author Jonathan Lennox
- *
+ */
+/**
  * @hibernate.class table="SS_Events" dynamic-update="true" lazy="false"
  * @hibernate.mapping auto-import="false" 
- * need auto-import = false so names don't collide with JBPM.
+ * need auto-import = false so names don't collide with jbpm
  * 
  * This is based on the Recurrence class from edu.columbia.cpl.Recurrence
  * Changed to reduce cloning and persist with hibernate
+ * 
  */
 @SuppressWarnings("deprecation")
 public class Event extends PersistentTimestampObject implements Cloneable, UpdateAttributeSupport {
@@ -320,7 +319,7 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 
 	/**
 	 * Allocate a new Recurrence, with no recurrence frequency, starting 
-	 * at time = 0, duration 0.
+     * at time = 0, duration 0.
 	 */
 	public Event() {
 		this(null, null, new Duration(), NO_RECURRENCE);
@@ -513,8 +512,8 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 	}
 
 	/**
-  	 * @hibernate.property length="64"
-	 * Used to tie event to command fields
+     * @hibernate.property length="64"
+     * Used to tie event to command fields
 	 * @return
 	 */
 	public String getName() {
@@ -544,9 +543,9 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 	}
 
 	/**
-	 * Internal routines for hibernate.  Since all features of calendar are
-	 * not saved in the SQL column, comparisons fail on dirty check.  So,
-	 * use internal setup to persist only fields that can be compared.
+   * Internal routines for hibernate.  Since all features of calendar are
+   * not saved in the sql column, comparisons fail on dirty check.  So,
+   * use internal setup to persist only fields that can be compared.
 	 * @hibernate.property
 	 * @hibernate.column name="dtStart" not-null="true"
 	 */
@@ -596,10 +595,10 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 
 	/**
 	 * Set the start time of the recurrence.
-	 * @param start The start time, as a broken-down time.  (Only the calendar
-	 *              fields are used.  Use {@link #setWeekStart} rather
-	 *              than {@link Calendar#setFirstDayOfWeek} to set the
-	 *              first day of the week.)
+   * @param start The start time, as a broken-down time.  (Only the calendar
+   *              fields are used.  Use {@link #setWeekStart} rather
+   *              than {@link Calendar#setFirstDayOfWeek} to set the
+   *              first day of the week.)
 	 * @see #setWeekStart
 	 */
 	public void setDtStart(Calendar start) {
@@ -626,9 +625,9 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 
 	/**
 	 * Set the start time of the recurrence.
-	 * @param start The start time, as a string.
-	 * @throws IllegalArgumentException If the given string does not describe
-	 *                          a valid Date-Time.
+   * @param start The start time, as a string.
+   * @throws IllegalArgumentException If the given string does not describe
+   *                          a valid Date-Time.
 	 */
 	public void setDtStart(String start) {
 		setDtStart(parseDateTime(start));
@@ -677,7 +676,7 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 
 	/**
 	 * Internal routines for hibernate.  Since all features of calendar are
-	 * not saved in the SQL column, comparisons fail on dirty check.  So,
+	 * not saved in the sql column, comparisons fail on dirty check.  So,
 	 * use internal setup to persist only fields that can be compared.
 	 * 
 	 * @hibernate.property
@@ -758,7 +757,7 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 
 	/**
 	 * Set the end time of the recurrence.
-	 * @param end The end time.
+   * @param end The end time.
 	 */
 	public void setDtEnd(Calendar end) {
 		dtEnd = end;
@@ -773,9 +772,9 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 
 	/**
 	 * Set the end time of the recurrence.
-	 * @param end The end time, as a string.
-	 * @throws IllegalArgumentException If the given string does not describe
-	 *                          a valid Date-Time.
+   * @param end The end time, as a string.
+   * @throws IllegalArgumentException If the given string does not describe
+   *                          a valid Date-Time.
 	 */
 	public void setDtEnd(String end) {
 		setDtEnd(parseDateTime(end));
@@ -786,15 +785,15 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 	}
 
 	/**
-	 * @hibernate.property
-	 * Get the frequency of the recurrence.
-	 * @return The recurrence frequency (one of
-	 *         {@link Recurrence#SECONDLY}, {@link Recurrence#MINUTELY},
-	 *         {@link Recurrence#HOURLY},
-	 *         {@link Recurrence#DAILY}, {@link Recurrence#WEEKLY},
-	 *         {@link Recurrence#MONTHLY}, {@link Recurrence#YEARLY},
-	 *         or {@link Recurrence#NO_RECURRENCE}).
-	*/
+   * @hibernate.property
+   * Get the frequency of the recurrence.
+   * @return The recurrence frequency (one of
+   *         {@link Recurrence#SECONDLY}, {@link Recurrence#MINUTELY},
+   *         {@link Recurrence#HOURLY},
+   *         {@link Recurrence#DAILY}, {@link Recurrence#WEEKLY},
+   *         {@link Recurrence#MONTHLY}, {@link Recurrence#YEARLY},
+   *         or {@link Recurrence#NO_RECURRENCE}).
+   */
 	public int getFrequency() {
 		return frequency;
 	}
@@ -831,14 +830,14 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 
 	/**
 	 * Set the frequency of the recurrence.
-	 * @param freq The recurrence frequency (one of
-	 *         {@link Recurrence#SECONDLY}, {@link Recurrence#MINUTELY},
-	 *         {@link Recurrence#HOURLY},
+   * @param freq The recurrence frequency (one of
+   *         {@link Recurrence#SECONDLY}, {@link Recurrence#MINUTELY},
+   *         {@link Recurrence#HOURLY},
 	 *            {@link Recurrence#DAILY}, {@link Recurrence#WEEKLY},
-	 *         {@link Recurrence#MONTHLY}, {@link Recurrence#YEARLY},
-	 *         or {@link Recurrence#NO_RECURRENCE}).
-	 * @throws IllegalArgumentException if the frequency isn't one of
-	 *         the above values.
+   *         {@link Recurrence#MONTHLY}, {@link Recurrence#YEARLY},
+   *         or {@link Recurrence#NO_RECURRENCE}).
+   * @throws IllegalArgumentException if the frequency isn't one of
+   *         the above values.
 	 */
 	public void setFrequency(int freq) {
     if (frequency != SECONDLY && frequency != MINUTELY &&
@@ -852,12 +851,12 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 
 	/**
 	 * Set the frequency of the recurrence.
-	 * @param freq A string representing the recurrence frequency (one of
-	 *            "SECONDLY", "MINUTELY", "HOURLY", "DAILY", "WEEKLY", "MONTHLY",
-	 *            "YEARLY", or "" or <code>null</code> representing no
-	 *            recurrence).
-	 * @throws IllegalArgumentException if the frequency isn't one of
-	 *         the above values.
+   * @param freq A string representing the recurrence frequency (one of
+   *            "SECONDLY", "MINUTELY", "HOURLY", "DAILY", "WEEKLY", "MONTHLY",
+   *            "YEARLY", or "" or <code>null</code> representing no
+   *            recurrence).
+   * @throws IllegalArgumentException if the frequency isn't one of
+   *         the above values.
 	 */
 	public void setFrequency(String freq) {
 		if (freq == null || freq.length() == 0) {
@@ -887,12 +886,12 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 	    else {
 	      throw new IllegalArgumentException("Invalid frequency \"" + freq + "\"");
 		}
-	}
+  }
 
 	/**
 	 * @hibernate.property
-	 * @hibernate.column name="repeatInterval"
-	 * Get the interval of the recurrence.
+     * @hibernate.column name="repeatInterval"
+     * Get the interval of the recurrence.
 	 * @return The recurrence interval.
 	 */
 	public int getInterval() {
@@ -914,7 +913,7 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 
 	/**
 	 * Set the interval of the recurrence.
-	 * @param intr The recurrence interval.
+   * @param intr The recurrence interval.
 	 */
 	public void setInterval(int intr) {
 		interval = intr;
@@ -923,8 +922,8 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 	/**
 	 * Set the interval of the recurrence, from a string.
 	 * 
-	 * @param intr The recurrence interval, as a string, or <code>null</code>.
-	 * @throws IllegalArgumentException if the argument isn't a valid interval.
+   * @param intr The recurrence interval, as a string, or <code>null</code>.
+   * @throws IllegalArgumentException if the argument isn't a valid interval.
 	 */
   public void setInterval(String intr)
   {
@@ -951,9 +950,9 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 	}
 
 	/**
-	 * Internal routines for hibernate.  Since all features of calendar are
-	 * not saved in the SQL column, comparisons fail on dirty check.  So,
-	 * use internal setup to persist only fields that can be compared.
+   * Internal routines for hibernate.  Since all features of calendar are
+   * not saved in the sql column, comparisons fail on dirty check.  So,
+   * use internal setup to persist only fields that can be compared.
 	 * @hibernate.property
 	 * @hibernate.column name="until"
 	 */
@@ -971,9 +970,9 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 	}
 
 	/**
-	 * Get the upper bound of the recurrence.
-	 * If <code>count</code> has been set, this computes
-	 * <code>until</code> from <code>count</code>.
+   * Get the upper bound of the recurrence.
+   * If <code>count</code> has been set, this computes
+   * <code>until</code> from <code>count</code>.
 	 * @return The upper bound. <code>null</code> if unbounded.
 	 * @see #computeUntilFromCount()
 	 */
@@ -992,11 +991,11 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 	
 	/**
 	 * Get a string representing the upper bound of the recurrence, or the empty
-	 * string if unbounded.
-	 * If <code>count</code> has been set, this computes <code>until</code> from
-	 * <code>count</code>.
-	 * @return A string representation of the upper bound.
-	 * <code>null</code> if unbounded.
+   * string if unbounded.
+   * If <code>count</code> has been set, this computes <code>until</code> from
+   * <code>count</code>.
+   * @return A string representation of the upper bound.
+   * <code>null</code> if unbounded.
 	 */
 	public String getUntilString() {
 		computeUntilFromCount(false);
@@ -1010,9 +1009,9 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 
 	/**
 	 * Set the upper bound of the recurrence.
-	 * @param u The upper bound, or <code>null</code> if unbounded.
-	 * @throws IllegalArgumentException if non-null and <code>count</code>
-	 *                                  is set.
+   * @param u The upper bound, or <code>null</code> if unbounded.
+   * @throws IllegalArgumentException if non-null and <code>count</code>
+   *                                  is set.
 	 */
 	public void setUntil(Calendar u) {
 		if (u == null) {
@@ -1029,12 +1028,12 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 
 	/**
 	 * Set the upper bound of a recurrence, based on a string.
-	 * @param u A string representation of the upper bound, or "" or
+   * @param u A string representation of the upper bound, or "" or
 	 *            <code>null</code> if unbounded.
-	 * @throws IllegalArgumentException if non-""/non-<code>null</code> and
-	 *                          <code>count</code> is set.
-	 * @throws IllegalArgumentException If the given string does not describe
-	 *                          a valid Date-Time.
+   * @throws IllegalArgumentException if non-""/non-<code>null</code> and
+   *                          <code>count</code> is set.
+   * @throws IllegalArgumentException If the given string does not describe
+   *                          a valid Date-Time.
 	 */
 	public void setUntil(String u) {
 		if (u == null || u.length() == 0) {
@@ -1063,8 +1062,8 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 
 	/**
 	 * Get the repeat count of the recurrence.
-	 * @return The repeat count.  0 if it is unset; -1 if it is
-	 *         unknown (because 'until' is set).
+   * @return The repeat count.  0 if it is unset; -1 if it is
+   *         unknown (because 'until' is set).
 	 */
 	public int getCount() {
 		if (count == 0 && until != null) {
@@ -1088,9 +1087,9 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 
 	/**
 	 * Set the repeat count of the recurrence.
-	 * @param c The repeat count, or <code>0</code> if unbounded.
-	 * @throws IllegalArgumentException If a non-computed <code>until</code>
-	 *         has been set.
+   * @param c The repeat count, or <code>0</code> if unbounded.
+   * @throws IllegalArgumentException If a non-computed <code>until</code>
+   *         has been set.
 	 * @see #computeUntilFromCount()
 	 */
 	public void setCount(int c) {
@@ -1104,11 +1103,11 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 	}
 
 	/*
-	 * Set the repeat count of the recurrence.
-	 * @param c The repeat count, or <code>0</code> if unbounded.
-	 * @throws IllegalArgumentException If a non-computed <code>until</code>
-	 *         has been set.
-	 * @throws IllegalArgumentException if the argument isn't a valid interval.
+   * Set the repeat count of the recurrence.
+   * @param c The repeat count, or <code>0</code> if unbounded.
+   * @throws IllegalArgumentException If a non-computed <code>until</code>
+   *         has been set.
+   * @throws IllegalArgumentException if the argument isn't a valid interval.
 	 */
   public void setCount(String c)
   {
@@ -1135,8 +1134,8 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 	}
 
 	/**
-	 * @hibernate.property
-	 * Get the first day of the week for this recurrence.
+   * @hibernate.property
+   * Get the first day of the week for this recurrence.
 	 * 
 	 * @return The day of the week (one of {@link Calendar#SUNDAY},
 	 *         {@link Calendar#MONDAY}, {@link Calendar#TUESDAY},
@@ -1152,8 +1151,8 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 	/**
 	 * Get the first day of the week for this recurrence, as a string.
 	 * 
-	 * @return The first day of the week (one of "SU", "MO", "TU", "WE",
-	 *         "TH", "FR", "SA").
+   * @return The first day of the week (one of "SU", "MO", "TU", "WE",
+   *         "TH", "FR", "SA").
 	 */
 	public String getWeekStartString() {
 		return DayAndPosition.generateDayOfWeek(getWeekStart());
@@ -1162,7 +1161,7 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 	/**
 	 * Set the first day of the week for this recurrence.
 	 * 
-	 * @param weekstart The day of the week (one of {@link Calendar#SUNDAY},
+   * @param weekstart The day of the week (one of {@link Calendar#SUNDAY},
 	 *            {@link Calendar#MONDAY}, {@link Calendar#TUESDAY},
 	 *            {@link Calendar#WEDNESDAY}, {@link Calendar#THURSDAY},
 	 *            {@link Calendar#FRIDAY}, or {@link Calendar#SATURDAY}).
@@ -1176,9 +1175,9 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 	/**
 	 * Set the first day of the week for this recurrence.
 	 * 
-	 * @param weekstart The day of the week, as a string (one of "SU", "MO", "TU"
+   * @param weekstart The day of the week, as a string (one of "SU", "MO", "TU"
 	 *            "WE", "TH", "FR", "SA").
-	 * @throws IllegalArgumentException If the string is not a valid weekday.
+   * @throws IllegalArgumentException If the string is not a valid weekday.
 	 */
 	public void setWeekStart(String weekstart) {
 		if (weekstart == null || weekstart.length() == 0)
@@ -1197,8 +1196,8 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 	/**
 	 * Get the array of seconds-of-the-minute constraints for this recurrence.
 	 * 
-	 * @return The array of seconds of the minute.
-	 *         <code>null</code> if this recurrence has no such constraints.
+   * @return The array of seconds of the minute.
+   *         <code>null</code> if this recurrence has no such constraints.
 	 */
 	public int[] getBySecond() {
     if (bySecond == null) { return null; }
@@ -1210,8 +1209,8 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 	}
 
 	/**
-	 * Get a string representing the seconds-of-the-minute constraints for
-	 * this recurrence.
+   * Get a string representing the seconds-of-the-minute constraints for
+   * this recurrence.
 	 * 
 	 * @return The list of seconds of the minute, comma-separated.
 	 *         <code>null</code> if this recurrence has no such constraints.
@@ -1223,8 +1222,8 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 	/**
 	 * Set the array of seconds-of-the-minute constraints for this recurrence.
 	 * 
-	 * @param b The array of seconds of the minute.
-	 *         <code>null</code> if this recurrence has no such constraints.
+   * @param b The array of seconds of the minute.
+   *         <code>null</code> if this recurrence has no such constraints.
 	 */
 	public void setBySecond(int[] b) {
     if (b == null) { bySecond = null; return; }
@@ -1236,11 +1235,11 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 	/**
 	 * Set the list of seconds-of-the-minute constraints for this recurrence.
 	 * 
-	 * @param b The seconds-of-the-minute constraints, as a comma-separated
-	 *          string.
-	 *         <code>null</code> if this recurrence has no such constraints.
-	 * @throws IllegalArgumentException If the string is malformed, or if a
-	 *         second is outside the range 0 - 60.
+   * @param b The seconds-of-the-minute constraints, as a comma-separated
+   *          string.
+   *         <code>null</code> if this recurrence has no such constraints.
+   * @throws IllegalArgumentException If the string is malformed, or if a
+   *         second is outside the range 0 - 60.
 	 */
 	public void setBySecond(String b) {
 		setBySecond(parseIntSet(b, "second", 0, 60, false));
@@ -1249,8 +1248,8 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 	/**
 	 * Get the array of minutes-of-the-hour constraints for this recurrence.
 	 * 
-	 * @return The array of minutes of the hour.
-	 *         <code>null</code> if this recurrence has no such constraints.
+   * @return The array of minutes of the hour.
+   *         <code>null</code> if this recurrence has no such constraints.
 	 */
 	public int[] getByMinute() {
     if (byMinute == null) { return null; }
@@ -1262,8 +1261,8 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 	}
 
 	/**
-	 * Get a string representing the minutes-of-the-hour constraints for
-	 * this recurrence.
+   * Get a string representing the minutes-of-the-hour constraints for
+   * this recurrence.
 	 * 
 	 * @return The list of minutes of the hour, comma-separated.
 	 *         <code>null</code> if this recurrence has no such constraints.
@@ -1275,8 +1274,8 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 	/**
 	 * Set the array of minutes-of-the-hour constraints for this recurrence.
 	 * 
-	 * @param b The array of minutes of the hour.
-	 *         <code>null</code> if this recurrence has no such constraints.
+   * @param b The array of minutes of the hour.
+   *         <code>null</code> if this recurrence has no such constraints.
 	 */
 	public void setByMinute(int[] b) {
     if (b == null) { byMinute = null; return; }
@@ -1288,10 +1287,10 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 	/**
 	 * Set the list of minutes-of-the-hour constraints for this recurrence.
 	 * 
-	 * @param b The minutes-of-the-hour constraints, as a comma-separated string.
-	 *         <code>null</code> if this recurrence has no such constraints.
-	 * @throws IllegalArgumentException If the string is malformed, or if a
-	 *         minute is outside the range 0 - 59.
+   * @param b The minutes-of-the-hour constraints, as a comma-separated string.
+   *         <code>null</code> if this recurrence has no such constraints.
+   * @throws IllegalArgumentException If the string is malformed, or if a
+   *         minute is outside the range 0 - 59.
 	 */
 	public void setByMinute(String b) {
 		setByMinute(parseIntSet(b, "minute", 0, 59, false));
@@ -1300,8 +1299,8 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 	/**
 	 * Get the array of hours-of-the-day constraints for this recurrence.
 	 * 
-	 * @return The array of hours of the day.
-	 *         <code>null</code> if this recurrence has no such constraints.
+   * @return The array of hours of the day.
+   *         <code>null</code> if this recurrence has no such constraints.
 	 */
 	public int[] getByHour() {
     if (byHour == null) { return null; }
@@ -1313,11 +1312,11 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 	}
 
 	/**
-	 * Get a string representing the hours-of-the-day constraints for
-	 * this recurrence.
+   * Get a string representing the hours-of-the-day constraints for
+   * this recurrence.
 	 * 
-	 * @return The list of hours of the day, comma-separated.
-	 *         <code>null</code> if this recurrence has no such constraints.
+   * @return The list of hours of the day, comma-separated.
+   *         <code>null</code> if this recurrence has no such constraints.
 	 */
 	public String getByHourString() {
 		return generateIntSetString(getByHour());
@@ -1326,8 +1325,8 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 	/**
 	 * Set the array of hours-of-the-day constraints for this recurrence.
 	 * 
-	 * @param b The array of hours of the day.
-	 *         <code>null</code> if this recurrence has no such constraints.
+   * @param b The array of hours of the day.
+   *         <code>null</code> if this recurrence has no such constraints.
 	 */
 	public void setByHour(int[] b) {
     if (b == null) { byHour = null; return; }
@@ -1339,10 +1338,10 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 	/**
 	 * Set the list of hours-of-the-day constraints for this recurrence.
 	 * 
-	 * @param b The hours-of-the-day constraints, as a comma-separated string.
-	 *         <code>null</code> if this recurrence has no such constraints.
-	 * @throws IllegalArgumentException If the string is malformed, or if an hour
-	 *         is outside the range 0 - 23.
+   * @param b The hours-of-the-day constraints, as a comma-separated string.
+   *         <code>null</code> if this recurrence has no such constraints.
+   * @throws IllegalArgumentException If the string is malformed, or if an hour
+   *         is outside the range 0 - 23.
 	 */
 	public void setByHour(String b) {
 		setByHour(parseIntSet(b, "hour", 0, 23, false));
@@ -1352,8 +1351,8 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 	 * Get the array of day-of-the-week and position constraints for this
 	 * recurrence.
 	 * 
-	 * @return The array of days of the week and positions.
-	 *         <code>null</code> if this recurrence has no such constraints.
+   * @return The array of days of the week and positions.
+   *         <code>null</code> if this recurrence has no such constraints.
 	 */
 	public DayAndPosition[] getByDay() {
     if (byDay == null) return null;
@@ -1367,12 +1366,12 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 	}
 
 	/**
-	 * Get a string representing the day-of-the-week and position constraints for
-	 * this recurrence.
+   * Get a string representing the day-of-the-week and position constraints for
+   * this recurrence.
 	 * 
 	 * @return The list of day-of-the-week and position constraints,
-	 *         comma-separated.  <code>null</code> if this recurrence has
-	 *         no such constraints.
+   *         comma-separated.  <code>null</code> if this recurrence has
+   *         no such constraints.
 	 */
 	public String getByDayString() {
 		return generateDaySetString(getByDay());
@@ -1382,8 +1381,8 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 	 * Set the array of day-of-the-week and position constraints for this
 	 * recurrence.
 	 * 
-	 * @param b The array of days of the week and positions.
-	 *         <code>null</code> if this recurrence has no such constraints.
+   * @param b The array of days of the week and positions.
+   *         <code>null</code> if this recurrence has no such constraints.
 	 */
 	public void setByDay(DayAndPosition[] b) {
     if (b == null) { byDay = null; return; }
@@ -1399,12 +1398,12 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 	/**
 	 * Utility function to clone an array of objects. Used by {@link getByDay},
 	 * {@link setByDay}, and {@link clone}.
-	 * @param src the source array
+   * @param src the source array
 	 * @return a copy of the array, with every object cloned.
-	 * @throws CloneNotSupportedException if the array is not an array of
-	 *         primitive types, and any object in the array does not
-	 *         support the <code>Cloneable</code> interface.
-	 * @throws IllegalArgumentException if the passed argument is not an array.
+   * @throws CloneNotSupportedException if the array is not an array of
+   *         primitive types, and any object in the array does not
+   *         support the <code>Cloneable</code> interface.
+   * @throws IllegalArgumentException if the passed argument is not an array.
 	 */
 	@SuppressWarnings("unchecked")
 	private Object arrayclone(Object src) throws CloneNotSupportedException {
@@ -1447,10 +1446,10 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 	 * Set the list of day-of-the-week and position constraints for this
 	 * recurrence.
 	 * 
-	 * @param b The hours-of-the-day constraints, as a comma-separated string.
-	 *         <code>null</code> if this recurrence has no such constraints.
-	 * @throws IllegalArgumentException If the string is malformed, or if a
-	 *         day or position is outside its valid range.
+   * @param b The hours-of-the-day constraints, as a comma-separated string.
+   *         <code>null</code> if this recurrence has no such constraints.
+   * @throws IllegalArgumentException If the string is malformed, or if a
+   *         day or position is outside its valid range.
 	 */
 	public void setByDay(String b) {
 		setByDay(parseDaySet(b));
@@ -1459,8 +1458,8 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 	/**
 	 * Get the array of day-of-the-month constraints for this recurrence.
 	 * 
-	 * @return The array of days of the month.
-	 *         <code>null</code> if this recurrence has no such constraints.
+   * @return The array of days of the month.
+   *         <code>null</code> if this recurrence has no such constraints.
 	 */
 	public int[] getByMonthDay() {
 		if (byMonthDay == null) {
@@ -1474,11 +1473,11 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 	}
 
 	/**
-	 * Get a string representing the day-of-the-month constraints for
-	 * this recurrence.
+   * Get a string representing the day-of-the-month constraints for
+   * this recurrence.
 	 * 
-	 * @return The list of days of the month, comma-separated.
-	 *         <code>null</code> if this recurrence has no such constraints.
+   * @return The list of days of the month, comma-separated.
+   *         <code>null</code> if this recurrence has no such constraints.
 	 */
 	public String getByMonthDayString() {
 		return generateIntSetString(getByMonthDay());
@@ -1487,8 +1486,8 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 	/**
 	 * Set the array of day-of-the-month constraints for this recurrence.
 	 * 
-	 * @param b The array of days of the month.
-	 *         <code>null</code> if this recurrence has no such constraints.
+   * @param b The array of days of the month.
+   *         <code>null</code> if this recurrence has no such constraints.
 	 */
 	public void setByMonthDay(int[] b) {
 		if (b == null) {
@@ -1503,10 +1502,10 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 	/**
 	 * Set the list of day-of-the-month constraints for this recurrence.
 	 * 
-	 * @param b The day-of-the-month constraints, as a comma-separated string.
-	 *         <code>null</code> if this recurrence has no such constraints.
-	 * @throws IllegalArgumentException If the string is malformed, or if a day
-	 *         is outside the range 1 - 31 or -31 to -1.
+   * @param b The day-of-the-month constraints, as a comma-separated string.
+   *         <code>null</code> if this recurrence has no such constraints.
+   * @throws IllegalArgumentException If the string is malformed, or if a day
+   *         is outside the range 1 - 31 or -31 to -1.
 	 */
 	public void setByMonthDay(String b) {
 		setByMonthDay(parseIntSet(b, "monthday", 1, 31, true));
@@ -1515,8 +1514,8 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 	/**
 	 * Get the array of day-of-the-year constraints for this recurrence.
 	 * 
-	 * @return The array of days of the year.
-	 *         <code>null</code> if this recurrence has no such constraints.
+   * @return The array of days of the year.
+   *         <code>null</code> if this recurrence has no such constraints.
 	 */
 	public int[] getByYearDay() {
 		if (byYearDay == null) {
@@ -1530,11 +1529,11 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 	}
 
 	/**
-	 * Get a string representing the day-of-the-year constraints for
-	 * this recurrence.
+   * Get a string representing the day-of-the-year constraints for
+   * this recurrence.
 	 * 
-	 * @return The list of days of the year, comma-separated.
-	 *         <code>null</code> if this recurrence has no such constraints.
+   * @return The list of days of the year, comma-separated.
+   *         <code>null</code> if this recurrence has no such constraints.
 	 */
 	public String getByYearDayString() {
 		return generateIntSetString(getByYearDay());
@@ -1543,8 +1542,8 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 	/**
 	 * Set the array of day-of-the-year constraints for this recurrence.
 	 * 
-	 * @param b The array of days of the year.
-	 *         <code>null</code> if this recurrence has no such constraints.
+   * @param b The array of days of the year.
+   *         <code>null</code> if this recurrence has no such constraints.
 	 */
 	public void setByYearDay(int[] b) {
 		if (b == null) {
@@ -1559,10 +1558,10 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 	/**
 	 * Set the list of day-of-the-year constraints for this recurrence.
 	 * 
-	 * @param b The day-of-the-year constraints, as a comma-separated string.
-	 *         <code>null</code> if this recurrence has no such constraints.
-	 * @throws IllegalArgumentException If the string is malformed, or if a day
-	 *         is outside the range 1 - 366 or -366 to -1.
+   * @param b The day-of-the-year constraints, as a comma-separated string.
+   *         <code>null</code> if this recurrence has no such constraints.
+   * @throws IllegalArgumentException If the string is malformed, or if a day
+   *         is outside the range 1 - 366 or -366 to -1.
 	 */
 	public void setByYearDay(String b) {
 		setByYearDay(parseIntSet(b, "yearday", 1, 366, true));
@@ -1571,8 +1570,8 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 	/**
 	 * Get the array of week-number constraints for this recurrence.
 	 * 
-	 * @return The array of week numbers.
-	 *         <code>null</code> if this recurrence has no such constraints.
+   * @return The array of week numbers.
+   *         <code>null</code> if this recurrence has no such constraints.
 	 */
 	public int[] getByWeekNo() {
 		if (byWeekNo == null) {
@@ -1586,11 +1585,11 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 	}
 
 	/**
-	 * Get a string representing the week-number constraints for
-	 * this recurrence.
+   * Get a string representing the week-number constraints for
+   * this recurrence.
 	 * 
-	 * @return The list of week numbers, comma-separated.
-	 *         <code>null</code> if this recurrence has no such constraints.
+   * @return The list of week numbers, comma-separated.
+   *         <code>null</code> if this recurrence has no such constraints.
 	 */
 	public String getByWeekNoString() {
 		return generateIntSetString(getByWeekNo());
@@ -1599,8 +1598,8 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 	/**
 	 * Set the array of week-number constraints for this recurrence.
 	 * 
-	 * @param b The array of week numbers.
-	 *         <code>null</code> if this recurrence has no such constraints.
+   * @param b The array of week numbers.
+   *         <code>null</code> if this recurrence has no such constraints.
 	 */
 	public void setByWeekNo(int[] b) {
 		if (b == null) {
@@ -1615,10 +1614,10 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 	/**
 	 * Set the list of week-number constraints for this recurrence.
 	 * 
-	 * @param b The week-number constraints, as a comma-separated string.
-	 *         <code>null</code> if this recurrence has no such constraints.
-	 * @throws IllegalArgumentException If the string is malformed, or if a
-	 *         week number is outside the range 1 - 53 or -53 to -1.
+   * @param b The week-number constraints, as a comma-separated string.
+   *         <code>null</code> if this recurrence has no such constraints.
+   * @throws IllegalArgumentException If the string is malformed, or if a
+   *         week number is outside the range 1 - 53 or -53 to -1.
 	 */
 	public void setByWeekNo(String b) {
 		setByWeekNo(parseIntSet(b, "weekno", 1, 53, true));
@@ -1626,11 +1625,11 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 
 	/**
 	 * Get the array of month constraints for this recurrence. Months are
-	 * specified using the constants from {@link java.util.Calendar}
-	 * ({@link Calendar#JANUARY}, etc.).
+   * specified using the constants from {@link java.util.Calendar}
+   * ({@link Calendar#JANUARY}, etc.).
 	 * 
-	 * @return The array of months.
-	 *         <code>null</code> if this recurrence has no such constraints.
+   * @return The array of months.
+   *         <code>null</code> if this recurrence has no such constraints.
 	 * @see java.util.Calendar#JANUARY
 	 * @see java.util.Calendar#FEBRUARY
 	 * @see java.util.Calendar#MARCH
@@ -1659,8 +1658,8 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 	 * Get a string representing the month constraints for this recurrence.
 	 * Months are counted as January = 1.
 	 * 
-	 * @return The list of months, comma-separated.
-	 *         <code>null</code> if this recurrence has no such constraints.
+   * @return The list of months, comma-separated.
+   *         <code>null</code> if this recurrence has no such constraints.
 	 */
 	public String getByMonthString() {
 		int[] b = getByMonth();
@@ -1675,12 +1674,12 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 	}
 
 	/**
-	 * Set the array of month constraints for this recurrence.  Months should
-	 * be specified using the constants from {@link java.util.Calendar}
-	 * ({@link Calendar#JANUARY}, etc.).
+   * Set the array of month constraints for this recurrence.  Months should
+   * be specified using the constants from {@link java.util.Calendar}
+   * ({@link Calendar#JANUARY}, etc.).
 	 * 
-	 * @param b The array of months.
-	 *         <code>null</code> if this recurrence has no such constraints.
+   * @param b The array of months.
+   *         <code>null</code> if this recurrence has no such constraints.
 	 * @see java.util.Calendar#JANUARY
 	 * @see java.util.Calendar#FEBRUARY
 	 * @see java.util.Calendar#MARCH
@@ -1708,10 +1707,10 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 	 * Set the list of month constraints for this recurrence. Months are counted
 	 * as January = 1.
 	 * 
-	 * @param b The month constraints, as a comma-separated string.
-	 *         <code>null</code> if this recurrence has no such constraints.
-	 * @throws IllegalArgumentException If the string is malformed, or if a month
-	 *         is outside the range 1 - 12.
+   * @param b The month constraints, as a comma-separated string.
+   *         <code>null</code> if this recurrence has no such constraints.
+   * @throws IllegalArgumentException If the string is malformed, or if a month
+   *         is outside the range 1 - 12.
 	 */
 	public void setByMonth(String b) {
 		int[] bm = parseIntSet(b, "month", 1, 12, false);
@@ -1725,13 +1724,13 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 	}
 
 	/**
-	 * Test if the specified time falls within a repetition of this
-	 * recurrence.  See
-	 * <a href="../../../algorithm.txt"><tt>algorithm.txt</tt></a> for details
-	 * of how this works. 
+   * Test if the specified time falls within a repetition of this
+   * recurrence.  See
+   * <a href="../../../algorithm.txt"><tt>algorithm.txt</tt></a> for details
+   * of how this works. 
 	 * 
-	 * @param current The "current" time, i.e. the time which is being
-	 *                considered.
+   * @param current The "current" time, i.e. the time which is being
+   *                considered.
 	 * @return Whether it falls within a recurrence.
 	 */
 	public boolean isInRecurrence(Calendar current) {
@@ -1753,9 +1752,9 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 	/**
 	 * Debugging interface to {@link #isInRecurrence(java.util.Calendar)}.
 	 * 
-	 * @param current The "current" time, i.e. the time which is being
-	 *                considered.
-	 * @param debug   Whether to print debugging information.
+   * @param current The "current" time, i.e. the time which is being
+   *                considered.
+   * @param debug   Whether to print debugging information.
 	 * @return Whether it falls within a recurrence.
 	 * @see #isInRecurrence(java.util.Calendar)
 	 */
@@ -1843,11 +1842,11 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 	}
 
 	/**
-	 * Check whether a particular candidate start time falls within a
-	 * repetition of the recurrence.  Support function for
-	 * {@link #isInRecurrence}.
-	 * @param candidate The candidate start time to be checked.
-	 * @param debug     Whether to print debugging information.
+   * Check whether a particular candidate start time falls within a
+   * reptition of the recurrence.  Support function for
+   * {@link #isInRecurrence}.
+   * @param candidate The candidate start time to be checked.
+   * @param debug     Whether to print debugging information.
 	 * @return whether it falls within a recurrence
 	 */
 	protected boolean candidateIsInRecurrence(Calendar candidate, boolean debug) {
@@ -1886,8 +1885,8 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 	}
 
 	/**
-	 * Get the minimum interval for this recurrence, based on 
-	 * the by* parameters and the frequency.
+   * Get the minimum interval for this recurrence, based on 
+   * the by* parameters and the frequency.
 	 * 
 	 * @return One of {@link #SECONDLY}, {@link #MINUTELY}, {@link #HOURLY},
 	 *         {@link #DAILY}, {@link #WEEKLY}, {@link #MONTHLY},
@@ -1922,17 +1921,17 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 	}
 
 	/**
-	 * Get the candidate start time for this recurrence, for a given date.
-	 * The candidate start time is the previous/next repetition of the minimum
-	 * interval, counting from dtStart.  See
-	 * <a href="../../../algorithm.txt"><tt>algorithm.txt</tt></a> for more
-	 * details.
+   * Get the candidate start time for this recurrence, for a given date.
+   * The candidate start time is the previous/next repitition of the minimum
+   * interval, counting from dtStart.  See
+   * <a href="../../../algorithm.txt"><tt>algorithm.txt</tt></a> for more
+   * details.
 	 * 
-	 * @param current    The "current" time, i.e. the time which is being
-	 *                   considered.
-	 * @param is_forward Whether to find the next (true) or previous (false)
-	 *                   candidate start time.
-	 * @param debug      Whether to print debugging information.
+   * @param current    The "current" time, i.e. the time which is being
+   *                   considered.
+   * @param is_forward Whether to find the next (true) or previous (false)
+   *                   candidate start time.
+   * @param debug      Whether to print debugging information.
 	 * 
 	 * @return The candidate start time, or null if there is none.
 	 */
@@ -1950,11 +1949,11 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 	 * Internal version of getCandidateStartTime. Doesn't check various
 	 * parameters.
 	 * 
-	 * @param current    The "current" time, i.e. the time which is being
-	 *                   considered.
-	 * @param is_forward Whether to find the next (true) or previous (false)
-	 *                   candidate start time.
-	 * @param debug      Whether to print debugging information.
+   * @param current    The "current" time, i.e. the time which is being
+   *                   considered.
+   * @param is_forward Whether to find the next (true) or previous (false)
+   *                   candidate start time.
+   * @param debug      Whether to print debugging information.
 	 * 
 	 * @return The candidate start time, or null if there is none.
 	 * 
@@ -2046,12 +2045,12 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 	 * (e.g., {@link Calendar#SECOND}, {@link Calendar#MINUTE},
 	 * {@link Calendar#HOUR_OF_DAY}, or {@link Calendar#DAY_OF_WEEK}).
 	 * 
-	 * @param field The calendar field to reduce.
-	 * @param start The calendar to get the field from
-	 * @param candidate The calendar to adjust
-	 * @param is_forward Whether to adjust the time forward.
-	 * @throws IllegalArgumentException <code>field</code> is not a
-	 *                                  constant-length field
+   * @param field The calendar field to reduce.
+   * @param start The calendar to get the field from
+   * @param candidate The calendar to adjust
+   * @param is_forward Whether to adjust the time forward.
+   * @throws IllegalArgumentException <code>field</code> is not a
+   *                                  constant-length field
 	 */
 	protected static void adjust_constant_length_field(int field,
 			Calendar start, Calendar candidate, boolean is_forward) {
@@ -2087,36 +2086,36 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 
 	/**
 	 * Adjust the time specified by <code>candidate</code> until its day of
-	 * the month equals that of <code>start</code>.  If <code>is_forward</code>,
-	 * increase the time, otherwise reduce it.  Adjust other fields
-	 * appropriately.
+   * the month equals that of <code>start</code>.  If <code>is_forward</code>,
+   * increase the time, otherwise reduce it.  Adjust other fields
+   * appropriately.
 	 * 
-	 * <p>Months can vary in length.  The iCal spec says:
-	 * "If BYxxx rule part values are found which are beyond the available
-	 * scope (ie, BYMONTHDAY=30 in February), they are simply ignored."
-	 * Assume this applies to times derived from DTStart as well,
-	 * and roll back/forward through
-	 * previous months until we find a match.
+   * <p>Months can vary in length.  The iCal spec says:
+   * "If BYxxx rule part values are found which are beyond the available
+   * scope (ie, BYMONTHDAY=30 in February), they are simply ignored."
+   * Assume this applies to times derived from DTStart as well,
+   * and roll back/forward through
+   * previous months until we find a match.
 	 * 
-	 * <p>Example of how this works: consider the current date October 3, and
-	 * the start date January 31.  Assume !is_forward.  start - candidate
-	 * yields 28, which is more than 0, so we subtract the number of days in
-	 * the previous month (September), which is 30.  The resulting value, 1,
-	 * of the month day, is not equal to the start month day (31), so we
-	 * subtract the number of days in the second-previous month (31).  This
-	 * gives us August 31; this agrees, so we stop.
+   * <p>Example of how this works: consider the current date October 3, and
+   * the start date January 31.  Assume !is_forward.  start - candidate
+   * yields 28, which is more than 0, so we subtract the number of days in
+   * the previous month (September), which is 30.  The resulting value, 1,
+   * of the month day, is not equal to the start month day (31), so we
+   * subtract the number of days in the second-previous month (31).  This
+   * gives us August 31; this agrees, so we stop.
 	 * 
-	 * <p>When we roll forward, by contrast, we adjust by the number of days
-	 * in the <i>current</i> month, not the next month.  (What matters is the
-	 * number of days in the month whose end is being crossed.)
+   * <p>When we roll forward, by contrast, we adjust by the number of days
+   * in the <i>current</i> month, not the next month.  (What matters is the
+   * number of days in the month whose end is being crossed.)
 	 * 
-	 * <p>Because there are never two consecutive months with fewer than 31
-	 * days, this algorithm will try at most two months (in the Gregorian
-	 * calendar).
+   * <p>Because there are never two consecutive months with fewer than 31
+   * days, this algorithm will try at most two months (in the Gregorian
+   * calendar).
 	 * 
-	 * @param start The calendar with the target day of the month
-	 * @param candidate The calendar to adjust
-	 * @param is_forward Whether to adjust the time forward.
+   * @param start The calendar with the target day of the month
+   * @param candidate The calendar to adjust
+   * @param is_forward Whether to adjust the time forward.
 	 */
 	protected static void adjust_day_of_month(Calendar start,
 			Calendar candidate, boolean is_forward) {
@@ -2151,18 +2150,18 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 	 * increase the time, otherwise reduce it. Adjust other fields
 	 * appropriately.
 	 * 
-	 * <p>The day of year is calculated based on (month, day) pairs, not
-	 * the numeric day of the year (which is different after February
-	 * in leap years).
+   * <p>The day of year is calculated based on (month, day) pairs, not
+   * the numeric day of the year (which is different after February
+   * in leap years).
 	 * 
-	 * <p>For start dates of February 29, this algorithm will loop through at
-	 * most seven years before it finds a matching year (in the Gregorian
-	 * calendar).  For candidates between 1901 and 2099, it will loop through
-	 * at most three years.  Start dates which do not fall on a leap day will
-	 * not loop at all.
+   * <p>For start dates of February 29, this algorithm will loop through at
+   * most seven years before it finds a matching year (in the Gregorian
+   * calendar).  For candidates between 1901 and 2099, it will loop through
+   * at most three years.  Start dates which do not fall on a leap day will
+   * not loop at all.
 	 * 
-	 * @param start The calendar with the target day of the month
-	 * @param candidate The calendar to adjust
+   * @param start The calendar with the target day of the month
+   * @param candidate The calendar to adjust
 	 */
 	protected static void adjust_day_of_year(Calendar start,
 			Calendar candidate, boolean is_forward) {
@@ -2214,11 +2213,11 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 	 * it's filled its counts, consider it infinite, or throw an exception,
 	 * depending on the value of strict_count_bounds.
 	 * 
-	 * <p>The default value of this parameter is 2000000000000L, or
-	 * Wednesday, May 18, 2033 03:33:20.000 UTC.  This is comfortably less
-	 * than time_t (2^31 - 1), so we don't have to worry about rounding on
-	 * systems which implement java.util.Calendar's support functions on a 
-	 * 32-bit time_t.
+   * <p>The default value of this parameter is 2000000000000L, or
+   * Wednesday, May 18, 2033 03:33:20.000 UTC.  This is comfortably less
+   * than time_t (2^31 - 1), so we don't have to worry about rounding on
+   * systems which implement java.util.Calendar's support functions on a 
+   * 32-bit time_t.
 	 * 
 	 * @see #computeUntilFromCount()
 	 * @see #strict_count_bounds
@@ -2226,13 +2225,13 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 	public static long max_count_time = 2000000000000L;
 
 	/**
-	 * The maximum number of candidate start times we're willing to consider
-	 * for <code>count</code> to resolve it to <code>until</code>.  If a
+   * The maximum number of candidate start times we're willing to consider
+   * for <code>count</code> to resolve it to <code>until</code>.  If a
 	 * recurrence exceeds this instant before it's filled its counts, consider
 	 * it infinite, or throw an exception, depending on the value of
 	 * strict_count_bounds.
 	 * 
-	 * <p>The default value of this parameter is 1000.
+   * <p>The default value of this parameter is 1000.
 	 * 
 	 * @see #computeUntilFromCount()
 	 * @see #strict_count_bounds
@@ -2241,10 +2240,10 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 
 	/**
 	 * Whether to throw an exception if a conversion from <code>count</code>
-	 * to <code>until</code> exceeds its defined boundaries, or simply to
+	 * to <code>until</code> exceeds its defined bounaries, or simply to
 	 * assume the count is effectively infinite.
 	 * 
-	 * <p>The default value of this parameter is false.
+   * <p>The default value of this parameter is false.
 	 * 
 	 * @see #computeUntilFromCount()
 	 * @see #max_count_time
@@ -2254,9 +2253,9 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 
 	/**
 	 * If <code>count</code> is set and <code>until</code> is not, calculate
-	 * <code>until</code> from <code>count</code>.  <code>until</code> will be
-	 * set to one second after the <code>count</code>'th start time of the
-	 * interval.
+   * <code>until</code> from <code>count</code>.  <code>until</code> will be
+   * set to one second after the <code>count</code>'th start time of the
+   * interval.
 	 * 
 	 * If we do not reach <code>count</code> recurrences before we reach
 	 * <code>max_count_time</code>, or before we have tried
@@ -2264,8 +2263,8 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 	 * <code>until</code> to <code>max_count_time</code>, or throw an
 	 * exception, depending on the state of <code>strict_count_bounds</code>.
 	 * 
-	 * @throws IllegalArgumentException If we run off the end, and
-	 *         <code>strict_count_bounds</code> is in effect.
+   * @throws IllegalArgumentException If we run off the end, and
+   *         <code>strict_count_bounds</code> is in effect.
 	 * @see #max_count_time
 	 * @see #max_count_loops
 	 * @see #strict_count_bounds
@@ -2277,8 +2276,8 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 	/**
 	 * Debugging interface to {@link #computeUntilFromCount()}.
 	 * 
-	 * @throws IllegalArgumentException If we run off the end, and
-	 *         <code>strict_count_bounds</code> is in effect.
+   * @throws IllegalArgumentException If we run off the end, and
+   *         <code>strict_count_bounds</code> is in effect.
 	 * @see #computeUntilFromCount()
 	 */
 	public void computeUntilFromCount(boolean debug, boolean useMaxCountLoops) {
@@ -2341,11 +2340,11 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 	}
 
 	/**
-	 * Get the number of instances of the current recurrence frequency
-	 * that have occurred between this recurrence's dtStart, and the
-	 * time specified by <code>candidate</code>.
+   * Get the number of instances of the current recurrence frequency
+   * that have occured between this recurrence's dtStart, and the
+   * time specified by <code>candidate</code>.
 	 * 
-	 * @param candidate The end time of the period
+   * @param candidate The end time of the period
 	 * @return The number of recurrences
 	 */
 	protected long getRecurrenceCount(Calendar candidate) {
@@ -2378,30 +2377,30 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 	}
 
 	/**
-	 * Get the field number corresponding to the date of this calendar
-	 * (field intervals &mdash; seconds, minutes, hours, or days &mdash;
-	 * since the Epoch).
+   * Get the field number corresponding to the date of this calendar
+   * (field intervals &mdash; seconds, minutes, hours, or days &mdash;
+   * since the Epoch).
 	 * 
-	 * @param cal The calendar to calculate.
-	 * @param field The field to calculate - one of {@link #SECONDLY},
+   * @param cal The calendar to calculate.
+   * @param field The field to calculate - one of {@link #SECONDLY},
 	 *            {@link #MINUTELY}, {@link #HOURLY}, or {@link #DAILY}.
 	 * 
 	 * @return The field number.
 	 */
 	protected static long getFieldNumber(Calendar cal, int field) {
 		Calendar tempCal = (Calendar) cal.clone();
-		long multiple = 1000; /* ticks per second */
+		long multiple = 1000; /* ticks per sec */
 
 		// Zero out subfields, so we have an integer.
 		tempCal.set(Calendar.MILLISECOND, 0);
 
 		if (field > SECONDLY) {
 			tempCal.set(Calendar.SECOND, 0);
-			multiple *= 60; /* seconds per minute */
+			multiple *= 60; /* secs per min */
 		}
 		if (field > MINUTELY) {
 			tempCal.set(Calendar.MINUTE, 0);
-			multiple *= 60; /* minutes per hour */
+			multiple *= 60; /* mins per hour */
 		}
 		if (field > HOURLY) {
 			tempCal.set(Calendar.HOUR_OF_DAY, 0);
@@ -2412,11 +2411,11 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 	}
 
 	/**
-	 * Get the week number corresponding to the date of this calendar
-	 * (weeks since the Epoch).  This depends on the calendar's
-	 * current {@link #getWeekStart} setting.
+   * Get the week number corresponding to the date of this calendar
+   * (weeks since the Epoch).  This depends on the calendar's
+   * current {@link #getWeekStart} setting.
 	 * 
-	 * @param cal The calendar to calculate.
+   * @param cal The calendar to calculate.
 	 * @return The week number.
 	 * @see #setWeekStart
 	 * @see Calendar#setFirstDayOfWeek
@@ -2440,7 +2439,7 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 
 		// tempCal now points to the first instant of this week.
 
-		// Calculate the "week epoch" -- the week start day closest to January 1,
+		// Calculate the "week epoch" -- the weekstart day closest to January 1,
 		// 1970 (which was a Thursday)
 
 		long weekEpoch = (tempCal.getFirstDayOfWeek() - Calendar.THURSDAY) * 24
@@ -2451,10 +2450,10 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 	}
 
 	/**
-	 * Get the month number corresponding to the date of this calendar
-	 * (months since the Epoch).
+   * Get the month number corresponding to the date of this calendar
+   * (months since the Epoch).
 	 * 
-	 * @param cal The calendar to calculate.
+   * @param cal The calendar to calculate.
 	 * @return The month number.
 	 */
 	protected static long getMonthNumber(Calendar cal) {
@@ -2465,7 +2464,7 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 	/**
 	 * Determine if <code>candidate</code> matches the recurrence's
 	 * {@link #byDay} rules.
-	 * @param candidate The candidate date to check.
+   * @param candidate The candidate date to check.
 	 * @return Whether it matches.
 	 */
 	protected boolean matchesByDay(Calendar candidate) {
@@ -2488,8 +2487,8 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 	/**
 	 * Determine if <code>candidate</code> matches one individual
 	 * {@link DayAndPosition}.
-	 * @param candidate the candidate date to check
-	 * @param pos the candidate position
+   * @param candidate the candidate date to check
+   * @param pos the candidate position
 	 * @return whether it matches
 	 */
 	protected boolean matchesIndividualByDay(Calendar candidate,
@@ -2536,14 +2535,14 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 	}
 
 	/**
-	 * Determine if field <code>field</code> of <code>candidate</code> matches
-	 * an entry in <code>array</code>
+   * Determine if field <code>field</code> of <code>candidate</code> matches
+   * an entry in <code>array</code>
 	 * 
-	 * @param array The by* array to check
-	 * @param field The Calendar field to check
-	 * @param candidate The Candidate date to check
-	 * @param allowNegative Whether negative numbers should count as
-	 *                      N-from-the-end
+   * @param array The by* array to check
+   * @param field The Calendar field to check
+   * @param candidate The Candidate date to check
+   * @param allowNegative Whether negative numbers should count as
+   *                      N-from-the-end
 	 * @return whether it matches.
 	 */
 	protected static boolean matchesByField(int[] array, int field,
@@ -2575,7 +2574,7 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 	/**
 	 * Determine if <code>candidate</code> matches the recurrence's
 	 * {@link #bySecond} rules.
-	 * @param candidate the Candidate date to check
+   * @param candidate the Candidate date to check
 	 * @return whether it matches.
 	 */
 	protected boolean matchesBySecond(Calendar candidate) {
@@ -2585,7 +2584,7 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 	/**
 	 * Determine if <code>candidate</code> matches the recurrence's
 	 * {@link #byMinute} rules.
-	 * @param candidate the Candidate date to check
+   * @param candidate the Candidate date to check
 	 * @return whether it matches.
 	 */
 	protected boolean matchesByMinute(Calendar candidate) {
@@ -2595,7 +2594,7 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 	/**
 	 * Determine if <code>candidate</code> matches the recurrence's
 	 * {@link #byHour} rules.
-	 * @param candidate the Candidate date to check
+   * @param candidate the Candidate date to check
 	 * @return whether it matches.
 	 */
 	protected boolean matchesByHour(Calendar candidate) {
@@ -2605,7 +2604,7 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 	/**
 	 * Determine if <code>candidate</code> matches the recurrence's
 	 * {@link #byMonthDay} rules.
-	 * @param candidate the Candidate date to check
+   * @param candidate the Candidate date to check
 	 * @return whether it matches.
 	 */
 	protected boolean matchesByMonthDay(Calendar candidate) {
@@ -2615,7 +2614,7 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 	/**
 	 * Determine if <code>candidate</code> matches the recurrence's
 	 * {@link #byYearDay} rules.
-	 * @param candidate the Candidate date to check
+   * @param candidate the Candidate date to check
 	 * @return whether it matches.
 	 */
 	protected boolean matchesByYearDay(Calendar candidate) {
@@ -2625,7 +2624,7 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 	/**
 	 * Determine if <code>candidate</code> matches the recurrence's
 	 * {@link #byWeekNo} rules.
-	 * @param candidate the Candidate date to check
+   * @param candidate the Candidate date to check
 	 * @return whether it matches.
 	 */
 	protected boolean matchesByWeekNo(Calendar candidate) {
@@ -2635,7 +2634,7 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 	/**
 	 * Determine if <code>candidate</code> matches the recurrence's
 	 * {@link #byMonth} rules.
-	 * @param candidate the Candidate date to check
+   * @param candidate the Candidate date to check
 	 * @return whether it matches.
 	 */
 	protected boolean matchesByMonth(Calendar candidate) {
@@ -2644,17 +2643,17 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 
 	/**
 	 * Set the given calendar's week start value to <code>start</code>, and
-	 * set its minimal days in first week to 4.
-	 * Clear its <code>WEEK_OF_MONTH</code> and <code>WEEK_OF_YEAR</code>
-	 * fields &mdash; setting the values doesn't do this, so old values can
-	 * persist.
+   * set its minimal days in first week to 4.
+   * Clear its <code>WEEK_OF_MONTH</code> and <code>WEEK_OF_YEAR</code>
+   * fields &mdash; setting the values doesn't do this, so old values can
+   * persist.
 	 * Note: this works for calendars set by the usual iCalendar/CPL syntax,
-	 * e.g. those created by {@link #parseDateTime}, 
-	 * but can fail if someone actually specified the current time with 
-	 * <code>WEEK_OF_MONTH</code> or <code>WEEK_OF_YEAR</code>.
+   * e.g. those created by {@link #parseDateTime}, 
+   * but can fail if someone actually specified the current time with 
+   * <code>WEEK_OF_MONTH</code> or <code>WEEK_OF_YEAR</code>.
 	 * 
-	 * @param cal The calendar to reset
-	 * @param start The start day of the wee
+   * @param cal The calendar to reset
+   * @param start The start day of the wee
 	 * @see #parseDateTime
 	 */
 	protected static void setCalendarWeekStart(Calendar cal, int start) {
@@ -2666,11 +2665,11 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 
 	/**
 	 * Parse the given Date-Time string into a Calendar object. Internal
-	 * function used as a support function for set*(String). <p>
+   * function used as a support function for set*(String). <p>
 	 * 
 	 * The syntax of a Date-Time is given in RFC 2445 as follows:
 	 * <pre>
-	 *   date-time  = date "T" time ;As specified in the date and time
+   *   date-time  = date "T" time ;As specified in the date and time
 	 *                               ;value definitions
 	 * 
 	 *    date               = date-value
@@ -2687,16 +2686,16 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 	 *    time-hour          = 2DIGIT        ;00-23
 	 *    time-minute        = 2DIGIT        ;00-59
 	 *    time-second        = 2DIGIT        ;00-60
-	 *   ;The "60" value is used to account for "leap" seconds.
+   *   ;The "60" value is used to account for "leap" seconds.
 	 * 
-	 *   time-utc   = "Z"
+   *   time-utc   = "Z"
 	 * </pre>
 	 * 
 	 * 
-	 * @param  str  The string representation of the date-time.
+   * @param  str  The string representation of the date-time.
 	 * @return The date-time
-	 * @throws IllegalArgumentException If the given string does not describe a
-	 *         valid Date-Time
+   * @throws IllegalArgumentException If the given string does not describe a
+   *         valid Date-Time
 	 */
 	public static Calendar parseDateTime(String str) {
 		int y, mo, d, h, m, sec;
@@ -2771,13 +2770,13 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 	}
 
 	/**
-	 * Support function for parseDateTime.  Get a fixed-size integer from
-	 * the given string.  Throw an exception if the string isn't entirely
-	 * numeric.
+   * Support function for parseDateTime.  Get a fixed-size integer from
+   * the given string.  Throw an exception if the string isn't entirely
+   * numeric.
 	 * 
-	 * @param str The string from which to extract the integer
-	 * @param pos The position of the integer
-	 * @param ext The extent of the integer
+   * @param str The string from which to extract the integer
+   * @param pos The position of the integer
+   * @param ext The extent of the integer
 	 */
 	protected static int getFixedSizeInt(String str, int pos, int ext,
 			String fieldname) {
@@ -2790,18 +2789,18 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 	}
 
 	/**
-	 * Parse the given comma-separated list of integers into a int[].
-	 * used as a support function for <code>setByXXX(String)</code>, other
-	 * than {@link #setByDay(String)}.<p>
+   * Parse the given comma-separated list of integers into a int[].
+   * used as a support function for <code>setByXXX(String)</code>, other
+   * than {@link #setByDay(String)}.<p>
 	 * 
-	 * @param  str  The string representation of the integer list.
-	 * @param  name The name of the integer field (for exceptions)
-	 * @param  min  The minimum integer value allowed
-	 * @param  max  The maximum integer value allowed
-	 * @param  neg_ok Whether negative values are allowed
+   * @param  str  The string representation of the integer list.
+   * @param  name The name of the integer field (for exceptions)
+   * @param  min  The minimum integer value allowed
+   * @param  max  The maximum integer value allowed
+   * @param  neg_ok Whether negative values are allowed
 	 * @return The list of integers
-	 * @throws IllegalArgumentException If the given string does not describe
-	 *         a valid list of integers complying with the above requirements
+   * @throws IllegalArgumentException If the given string does not describe
+   *         a valid list of integers complying with the above requirements
 	 */
 	@SuppressWarnings("unchecked")
 	protected static int[] parseIntSet(String str, String name, int min,
@@ -2872,14 +2871,14 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 	}
 
 	/**
-	 * Parse the given comma-separated list of integers into a
-	 * DayAndPosition[].  Used as a support function for
-	 * {@link #setByDay(String)}.
+   * Parse the given comma-separated list of integers into a
+   * DayAndPosition[].  Used as a support function for
+   * {@link #setByDay(String)}.
 	 * 
-	 * @param  str  The string representation of the day list.
+   * @param  str  The string representation of the day list.
 	 * @return The list of day-and-positions
-	 * @throws IllegalArgumentException If the given string does not describe
-	 *         a valid list of day-and-positions
+   * @throws IllegalArgumentException If the given string does not describe
+   *         a valid list of day-and-positions
 	 */
 	@SuppressWarnings("unchecked")
 	protected DayAndPosition[] parseDaySet(String str) {
@@ -2914,7 +2913,7 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 	/**
 	 * Generate a standard Date-Time string for the given calendar.
 	 * 
-	 * @param cal The calendar to generate.
+   * @param cal The calendar to generate.
 	 * @return A string representation of the calendar.
 	 */
 	public String generateDateTimeString(Calendar cal) {
@@ -2947,7 +2946,7 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 	/**
 	 * Generate a comma-separated int-set string (as used in BY* arguments).
 	 * 
-	 * @param set A vector of ints
+   * @param set A vector of ints
 	 * @return A comma-separated list of ints
 	 */
 	protected String generateIntSetString(int[] set) {
@@ -2969,10 +2968,10 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 	}
 
 	/**
-	 * Generate a comma-separated DayAndPosition set string (as used in
-	 * BYDAY arguments).
+   * Generate a comma-separated DayAndPosition set string (as used in
+   * BYDAY arguments).
 	 * 
-	 * @param set A vector of DayAndPositions
+   * @param set A vector of DayAndPositions
 	 * @return A comma-separated list of DayAndPositions
 	 */
 	public String generateDaySetString(DayAndPosition[] set) {
@@ -2994,10 +2993,8 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 
 	/**
 	 * Overrides Cloneable
-	 * 
 	 * @return A clone of this object.
 	 */
-	@Override
 	public Object clone() {
 		try {
 			Event other = (Event) super.clone();
@@ -3032,13 +3029,12 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 	}
 
 	/**
-	 * Return a string representation of this recurrence. This method 
-	 * is intended to be used only for debugging purposes.
-	 * The returned string may be empty but may not be <code>null</code>.
+   * Return a string representation of this recurrence. This method 
+   * is intended to be used only for debugging purposes.
+   * The returned string may be empty but may not be <code>null</code>.
 	 * 
 	 * @return A string representation of this recurrence.
 	 */
-	@Override
 	public String toString() {
 		int i;
 
@@ -3339,7 +3335,6 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 	 * 
 	 * @return
 	 */
-	@Override
 	public boolean update(Object obj) {
 		Event newEvent = ((Event) obj);
 		boolean changed = false;
@@ -3570,12 +3565,12 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 	 * <code>max_count_time</code>, or before we have tried
 	 * <code>max_count_loops</code> candidate start times, set
 	 * <code>until</code> to <code>max_count_time</code>.
-	 *
+
 	 * @return "all" recurrences list. each list element is a 2-element long table, first table element is start date, 
 	 * 				second one is end date
 	 */
 	@SuppressWarnings("unchecked")
-	public List getAllRecurrenceDatesForIndexing(int maxDays) {
+	public List getAllRecurrenceDates() {
 		List result = new ArrayList();
 		if (null == getDtStart()) {
 			return result;
@@ -3654,10 +3649,7 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 				end.setTime(new org.joda.time.DateTime(period.getStart()).plusMinutes(12*60 - 1).toDate());
 			}
 			
-			result.add(new Calendar[] { start, end });
-			if (result.size() > maxDays) {
-				break;
-			}
+			result.add(new Calendar[] { start, end }); 
 		}
 		
 		return result;
@@ -3701,7 +3693,7 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 	}
 
 	@SuppressWarnings("unchecked")
-	private static List getAllDatesBetweenForIndexing(Calendar start, Calendar end, int maxDays) {
+	private static List getAllDatesBetween(Calendar start, Calendar end) {
 		List result = new ArrayList();
 		
 		Calendar date = (Calendar)start.clone();
@@ -3709,12 +3701,9 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 		
 		date.add(Calendar.DAY_OF_MONTH, 1);
 		CalendarUtil.toGTTime(date);
-
+		
 		while (date.getTimeInMillis() <= end.getTimeInMillis()) {
 			result.add(date.clone());
-			if (result.size() > maxDays) {
-				break;
-			}
 			date.add(Calendar.DAY_OF_MONTH, 1);
 		};
 		
@@ -3732,7 +3721,7 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 	}
 
 	@SuppressWarnings("unchecked")
-	public static List getEventDaysFromRecurrencesDatesForIndexing(List recurencesDates, int maxDays) {
+	public static List getEventDaysFromRecurrencesDates(List recurencesDates) {
 		List result = new ArrayList();
 		
 		if (recurencesDates == null) {
@@ -3742,11 +3731,9 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 		Iterator it = recurencesDates.iterator();
 		while (it.hasNext()) {
 			Calendar[] eventDates = (Calendar[]) it.next();
-			int maxDaysRemaining = (maxDays - result.size());
-			if (0 >= maxDaysRemaining) {
-				break;
-			}
-			result.addAll(getAllDatesBetweenForIndexing(eventDates[0], eventDates[1], maxDaysRemaining));
+			result.addAll(getAllDatesBetween(eventDates[0], eventDates[1]));
+			//result.add(eventDates[0]);
+			//result.add(eventDates[1]);
 		}
 		
 		return result;
@@ -3805,7 +3792,6 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 			}
 		}
 		
-		@Override
 		public String toString() {
 			StringBuilder sb = new StringBuilder();
 			if (binderId != null) {

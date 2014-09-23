@@ -155,30 +155,27 @@ li.ss_actions_bar_separator {
 	}
 .ss_actions_bar li a, .ss_actions_bar li a:visited {
 	color: #1f1f1f !important;
-	margin-right: 2px;
+	margin-right: 5px;
 	display:block;
+	background: -webkit-gradient(linear, left top, left bottom, from(#ffffff), to(#E0E0E0));
+	background: -moz-linear-gradient(center top , #ffffff, #E0E0E0) repeat scroll 0 0;
+	background-color: transparent;
 	border: 1px solid #B8B8B8;
 	font-weight: normal !important;
 	font-size: 11px;
 	padding: 2px 6px  !important;
 	text-decoration:none;	
-	background-color: #fafafa;
-	border-radius: 5px;
-	-moz-border-radius: 5px;
-	-webkit-border-radius: 5px;
-/*	background: -webkit-gradient(linear, left top, left bottom, from(#ffffff), to(#E0E0E0));
-	background: -moz-linear-gradient(center top , #ffffff, #E0E0E0) repeat scroll 0 0;       */
+	-moz-border-radius: 15px;
+	border-radius: 15px;
+	-webkit-border-radius: 15px;
 	}
 .ss_actions_bar li span {
 	padding: 2px 5px;
 	}
 .ss_actions_bar li a:hover{
-	color: #036f9f !important;
+	color: #135c8f !important;
 	border: 1px solid #81b2bd;
-	border-radius: 5px;
-	-moz-border-radius: 5px;
-	-webkit-border-radius: 5px;
-/*	background: linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
+	background: linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
 	background: -o-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
 	background: -moz-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
 	background: -webkit-linear-gradient(bottom, #A8D4DD 47%, #D5EDF1 53%, #C8E4E9 100%);
@@ -189,7 +186,10 @@ li.ss_actions_bar_separator {
 		left top,
 		color-stop(0.47, #A8D4DD),
 		color-stop(0.53, #D5EDF1),
-		color-stop(1, #C8E4E9));   */
+		color-stop(1, #C8E4E9));
+	-moz-border-radius: 15px;
+	border-radius: 15px;
+	-webkit-border-radius: 15px;
 	}
 .ss_actions_bar li a.ss_actions_bar_inline, .ss_actions_bar li a.ss_actions_bar_inline:visited  {
 	color:${ss_style_text_color} ;
@@ -419,8 +419,7 @@ div.ss_inline_menu a {
 	background-image: none;
 	}
 .ss_actions_bar_submenu a, .ss_actions_bar_submenu a:visited {
-/*	color:${ss_box_title_color}; */
-	color: #fff;
+	color:${ss_box_title_color};
 	}
 /* utils bar (dashboard)  */
 div.ss_dashboardContainer {

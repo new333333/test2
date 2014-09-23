@@ -99,7 +99,6 @@ import org.kablink.teaming.web.util.ServerTaskLinkage;
 import org.kablink.util.Validator;
 
 import org.springframework.dao.CannotAcquireLockException;
-import org.springframework.orm.hibernate3.HibernateOptimisticLockingFailureException;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
@@ -166,7 +165,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
          	final FolderEntry entry = addReply_create(def, ctx);
          	newEntry = entry;
         	// The following part requires update database transaction.
-	        int tryMaxCount = 1 + SPropsUtil.getInt("select.database.transaction.retry.max.count", ObjectKeys.SELECT_DATABASE_TRANSACTION_RETRY_MAX_COUNT);
+	        int tryMaxCount = 1 + SPropsUtil.getInt("select.database.transaction.retry.max.count", 2);
 	        int tryCount = 0;
 	        while(true) {
 	        	tryCount++;
@@ -186,13 +185,13 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
 	        	catch(LockAcquisitionException | CannotAcquireLockException e) {
 	        		if(tryCount < tryMaxCount) {
 	        			if(logger.isDebugEnabled())
-	        				logger.warn("'add reply' failed due to lock error - Retrying in new transaction", e);
+	        				logger.warn("'add reply' failed due to lock error", e);
 	        			else 
-	        				logger.warn("'add reply' failed due to lock error - Retrying in new transaction: " + e.toString());
+	        				logger.warn("'add reply' failed due to lock error: " + e.toString());
+	        			logger.warn("Retrying 'add reply' in new transaction");
 	        			getCoreDao().refresh(parent.getParentBinder());        		
 	        		}
 	        		else {
-        				logger.error("'add reply' failed due to lock error - Aborting", e);
 	        			throw e;
 	        		}
 	        	}
@@ -220,26 +219,13 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
 	        	catch(LockAcquisitionException | CannotAcquireLockException e) {
 	        		if(tryCount < tryMaxCount) {
 	        			if(logger.isDebugEnabled())
-	        				logger.warn("'update parent mod time' failed due to lock error - Retrying in new transaction", e);
+	        				logger.warn("'update parent mod time' failed due to lock error", e);
 	        			else 
-	        				logger.warn("'update parent mod time' failed due to lock error - Retrying in new transaction: " + e.toString());
+	        				logger.warn("'update parent mod time' failed due to lock error: " + e.toString());
+	        			logger.warn("Retrying 'update parent mod time' in new transaction");
 	        			getCoreDao().refresh(parent.getParentBinder());        		
 	        		}
 	        		else {
-        				logger.error("'update parent mod time' failed due to lock error - Aborting", e);
-	        			throw e;
-	        		}
-	        	}
-	        	catch(HibernateOptimisticLockingFailureException e) {
-	        		if(tryCount < tryMaxCount) {
-	        			if(logger.isDebugEnabled())
-	        				logger.warn("'update parent mod time' failed due to optimistic locking failure - Retrying in new transaction", e);
-	        			else 
-	        				logger.warn("'update parent mod time' failed due to optimistic locking failure - Retrying in new transaction: " + e.toString());
-	        			getCoreDao().refresh(parent.getParentBinder());        		
-	        		}
-	        		else {
-        				logger.error("'update parent mod time' failed due to optimistic locking failure - Aborting", e);
 	        			throw e;
 	        		}
 	        	}

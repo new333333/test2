@@ -78,7 +78,6 @@ import org.kablink.teaming.domain.WorkflowState;
 import org.kablink.teaming.domain.WorkflowSupport;
 import org.kablink.teaming.extension.ExtensionCallback;
 import org.kablink.teaming.extension.ZoneClassManager;
-import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.definition.DefinitionUtils;
 import org.kablink.teaming.module.impl.CommonDependencyInjection;
 import org.kablink.teaming.module.shared.ChangeLogUtils;
@@ -108,7 +107,6 @@ public class WorkflowProcessUtils extends CommonDependencyInjection {
 	protected static BusinessCalendar businessCalendar = new BusinessCalendar();
 	private static WorkflowProcessUtils instance; // A singleton instance
 	private ZoneClassManager zoneClassManager;
-	private BinderModule binderModule;
 	public WorkflowProcessUtils() {
 		if(instance != null)
 			throw new SingletonViolationException(WorkflowProcessUtils.class);
@@ -118,24 +116,7 @@ public class WorkflowProcessUtils extends CommonDependencyInjection {
     public static WorkflowProcessUtils getInstance() {
     	return instance;
     }
-
-    /**
-     * 
-     */
-    public BinderModule getBinderModule()
-    {
-    	return binderModule;
-    }
-
-	/**
-	 * 
-	 */
-    public void setBinderModule( BinderModule binderModule )
-    {
-    	this.binderModule = binderModule;
-    }
-    
-    protected ZoneClassManager getZoneClassManager() {
+	protected ZoneClassManager getZoneClassManager() {
 		return zoneClassManager;
 	}
 	public void setZoneClassManager(ZoneClassManager zoneClassManager) {
@@ -197,7 +178,7 @@ public class WorkflowProcessUtils extends CommonDependencyInjection {
 	    		if ("entryCreator".equals(name) &&  GetterUtil.getBoolean(value, false)) {
 	    			ids.add(wfEntry.getOwnerId());
 	 	    	} else if ("team".equals(name) &&  GetterUtil.getBoolean(value, false)) {
-	 	    		ids.addAll( getInstance().getBinderModule().getTeamMemberIds( entity.getParentBinder() ));
+	 	    		ids.addAll(entity.getParentBinder().getTeamMemberIds());
 		    	} else if ("userGroupNotification".equals(name)) {
 		    		ids.addAll(LongIdUtil.getIdsAsLongSet(value));
 		    	} else if ("condition".equals(name)) {
@@ -518,7 +499,7 @@ public class WorkflowProcessUtils extends CommonDependencyInjection {
 			}
 		}
         if (responders.remove(ObjectKeys.OWNER_USER_ID)) responders.add(entry.getOwnerId());
-     	if (responders.remove(ObjectKeys.TEAM_MEMBER_ID)) responders.addAll( getInstance().getBinderModule().getTeamMemberIds( ((FolderEntry)entry).getParentBinder() ));
+     	if (responders.remove(ObjectKeys.TEAM_MEMBER_ID)) responders.addAll(((FolderEntry)entry).getParentBinder().getTeamMemberIds());
 
 		//See if this question allows folder default
 		if (checkIfQuestionRespondersIncludeForumDefault(entry, ws, question)) {
@@ -526,7 +507,7 @@ public class WorkflowProcessUtils extends CommonDependencyInjection {
 			Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
 	        Set modifyEntries = getInstance().getAccessControlManager().getWorkAreaAccessControl((WorkArea) entry, WorkAreaOperation.MODIFY_ENTRIES);
 	        if (modifyEntries.remove(ObjectKeys.OWNER_USER_ID)) modifyEntries.add(entry.getOwnerId());
-	     	if (modifyEntries.remove(ObjectKeys.TEAM_MEMBER_ID)) modifyEntries.addAll( getInstance().getBinderModule().getTeamMemberIds( ((FolderEntry)entry).getParentBinder() ));
+	     	if (modifyEntries.remove(ObjectKeys.TEAM_MEMBER_ID)) modifyEntries.addAll(((FolderEntry)entry).getParentBinder().getTeamMemberIds());
 	   		//See if this includes All Users
 	        if (allUsersId != null && modifyEntries.contains(allUsersId)) {
 	        	modifyEntries.remove(allUsersId);
@@ -567,13 +548,7 @@ public class WorkflowProcessUtils extends CommonDependencyInjection {
 			Element item = (Element)onEntryList.get(i);
    			String name = item.attributeValue("name","");
    			if ("copyEntry".equals(name)) {
-   				//Now check if the workflow wouldn't be started on a copy (which would be OK)
-   				//Bug 879724 (pmh)
-   				Element startWorkflow = (Element)item.selectSingleNode("./properties/property[@name='startWorkflow']");
-   				if (startWorkflow != null && !"startThisNot".equals(startWorkflow.attributeValue("value"))) {
-   					//Starting this workflow on a copy would be bad
-   					return true;
-   				}
+   				return true;
    			}
 		}
 		//None found
@@ -1057,22 +1032,6 @@ public static void resumeTimers(WorkflowSupport entry) {
 						updateMinimum(minDate,timerDate);
 					}
 					
-				} else if (type.equals("transitionOnDate")) {
-					//The "date" field is milli-secs since 1/1/1970
-					String val = DefinitionUtils.getPropertyValue(condition, "date");
-					try {
-						long endTime = Long.valueOf(val);
-						if (endTime > 0) {
-							Date timerDate = new Date();
-							timerDate.setTime(endTime);
-							if (currentCal.getTime().after(timerDate)) {
-								return toState;
-							} else {
-								updateMinimum(minDate,timerDate);
-							}
-						}
-					} catch(Exception e) {}
-					
 				} else if (type.equals("waitForParallelThread")) {
 					//	get names of threads we are waiting for
 					List threads = DefinitionUtils.getPropertyValueList(condition, "name");
@@ -1335,7 +1294,7 @@ public static void resumeTimers(WorkflowSupport entry) {
 										for (Long binderId : binderIds) {
 											try {
 												Binder binder =  getInstance().getCoreDao().loadBinder(binderId, user.getZoneId());
-												result.addPrincipalIds( getInstance().getBinderModule().getTeamMemberIds( binder ));
+												result.addPrincipalIds(binder.getTeamMemberIds());
 											} catch(Exception e) {
 												//If the team binder no longer exists, just skip adding it to the acl
 											}
