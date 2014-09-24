@@ -408,7 +408,7 @@ div.ss_actions_bar_submenu ul.ss_actions_bar4 {
 	-webkit-border-radius: 3px;
 	}
 .ss_inline_menu {
-	font-weight: bold;
+	font-weight: normal;
 	padding: 3px 5px;
 	}
 div.ss_inline_menu a {

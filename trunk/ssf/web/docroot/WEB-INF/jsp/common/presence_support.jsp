@@ -40,13 +40,13 @@
 // Presence popup support
 var ss_presencePopupGraphics = new Array();
 ss_presencePopupGraphics["pres"] = new Image();
-ss_presencePopupGraphics["pres"].src = '<html:imagesPath/>pics/sym_m_white_dude_14.png';
+ss_presencePopupGraphics["pres"].src = '<html:imagesPath/>pics/presence/unknown_16.png';
 ss_presencePopupGraphics["preson"] = new Image();
-ss_presencePopupGraphics["preson"].src = '<html:imagesPath/>pics/sym_m_green_dude_14.png';
+ss_presencePopupGraphics["preson"].src = '<html:imagesPath/>pics/presence/online_16.png';
 ss_presencePopupGraphics["presoff"] = new Image();
-ss_presencePopupGraphics["presoff"].src = '<html:imagesPath/>pics/sym_m_gray_dude_14.png';
+ss_presencePopupGraphics["presoff"].src = '<html:imagesPath/>pics/presence/offline_16.png';
 ss_presencePopupGraphics["presaway"] = new Image();
-ss_presencePopupGraphics["presaway"].src = '<html:imagesPath/>pics/sym_m_yellow_dude_14.png';
+ss_presencePopupGraphics["presaway"].src = '<html:imagesPath/>pics/presence/away_16.png';
 ss_presencePopupGraphics["imsg"] = new Image();
 ss_presencePopupGraphics["imsg"].src = '<html:imagesPath/>pics/sym_s_message.gif';
 //ss_presencePopupGraphics["imtg"] = new Image();

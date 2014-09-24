@@ -1851,7 +1851,7 @@ a:hover.ss_box_prev {
 	}
 .ss_newpage_box_header {
 	position: relative;
-	color: #fff !important;
+	color: #fff;
 	font-size: 15px !important;
 	letter-spacing: .03em;
 	font-weight: bold;
@@ -1870,7 +1870,7 @@ a:hover.ss_box_prev {
 }
 .ss_close_text a {
 	text-decoration: none;
-	color: #fff !important;
+	color: #fff;
 	font-size: 11px;
 	font-weight: normal;
 	padding-left: 10px;
@@ -2766,16 +2766,16 @@ a.ss_presence_dude {
   </c:if>
 }
 .ss_presence_green_dude {
-    background:url(<html:imagesPath/>pics/sym_s_green_dude_14.png) no-repeat left;
+    background:url(<html:imagesPath/>pics/presence/online_16.png) no-repeat left;
 }
 .ss_presence_gray_dude {
-    background:url(<html:imagesPath/>pics/sym_s_gray_dude_14.png) no-repeat left;
+    background:url(<html:imagesPath/>pics/presence/offline_16.png) no-repeat left;
 }
 .ss_presence_white_dude {
-    background:url(<html:imagesPath/>pics/sym_s_white_dude_14.png) no-repeat left;
+    background:url(<html:imagesPath/>pics/presence/unknown_16.png) no-repeat left;
 }
 .ss_presence_yellow_dude {
-    background:url(<html:imagesPath/>pics/sym_s_yellow_dude_14.png) no-repeat left;
+    background:url(<html:imagesPath/>pics/presence/away_16.png) no-repeat left;
 }
 
 /* Accessible mode styles */
