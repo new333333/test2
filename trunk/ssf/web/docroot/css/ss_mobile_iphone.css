@@ -8,7 +8,7 @@ body {
 	}
 
 a { 
-	color: #1C5894; text-decoration: none; 
+	color: #036f9f; text-decoration: none; 
 	}
 label { 
 	font-weight: bold; font-size: .9em;
@@ -33,7 +33,7 @@ span.pad-left20 {
 	}	
 
 span.pad-left20 select {
-	color: #1C5894;
+	color: #036f9f;
 	}	
 
 .font-red {
@@ -636,7 +636,7 @@ table.ss_mobile_calendar_month td a {
 	padding: 4px 10px;
 	}
 td.ss_mobile_calendar_today span {
-	color: #1C5894;
+	color: #036f9f;
 	}
 td.ss_mobile_calendar_current_day {
 	font-weight: bold;
