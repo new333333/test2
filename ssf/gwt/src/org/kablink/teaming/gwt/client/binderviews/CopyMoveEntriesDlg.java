@@ -92,7 +92,7 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
  */
 public class CopyMoveEntriesDlg extends DlgBox
 	implements EditSuccessfulHandler,
-	// Event handlers implemented by this class.
+		// Event handlers implemented by this class.
 		FindControlBrowseEvent.Handler,
 		SearchFindResultsEvent.Handler
 {
@@ -220,7 +220,8 @@ public class CopyMoveEntriesDlg extends DlgBox
 		// do if we've already been sending chunks or the source list
 		// contains more items then our threshold.)
 		boolean cmdIsChunkList = (cmd.getEntityIds() != sourceEntityIds);
-		if (cmdIsChunkList || ProgressDlg.needsChunking(sourceEntityIds.size())) {
+		boolean showProgress   = (cmdIsChunkList || ProgressDlg.needsChunking(sourceEntityIds.size()));
+		if (showProgress) {
 			// Yes!  If we're not showing the progress bar or panel
 			// yet...
 			if ((!(m_progressPanel.isVisible())) || (!(m_progressBar.isVisible()))) {
@@ -273,10 +274,13 @@ public class CopyMoveEntriesDlg extends DlgBox
 				}
 			}
 		}
-
+		
 		// Do we have any entities to be copied/moved?
 		if (!(cmd.getEntityIds().isEmpty())) {
 			// Yes!  Perform the final move/copy.
+			if (!showProgress) {
+				showDlgBusySpinner();
+			}
 			copyMoveEntriesImpl(
 				cmd,
 				targetFolder,
@@ -305,6 +309,7 @@ public class CopyMoveEntriesDlg extends DlgBox
 				GwtClientHelper.handleGwtRPCFailure(
 					caught,
 					m_strMap.get(StringIds.RPC_FAILURE));
+				hideDlgBusySpinner();
 			}
 
 			@Override
@@ -389,6 +394,7 @@ public class CopyMoveEntriesDlg extends DlgBox
 							// Finally, save the target folder we just
 							// copied/moved to and close the dialog,
 							// we're done!
+							hideDlgBusySpinner();	// Innocuous if it's not showing.
 							m_recentDest = targetFolder;
 							hide();
 						}
@@ -619,6 +625,30 @@ public class CopyMoveEntriesDlg extends DlgBox
 		});
 	}
 	
+    /**
+     * Called after the EditSuccessfulHandler has been called by
+     * DlgBox.
+     * 
+     * Overrides the DlgBox.okBtnProcessingEnded() method.
+     */
+	@Override
+    protected void okBtnProcessingEnded() {
+		// Ignored!  The copy/move dialog is handling enabling and
+		// disabling of the OK button itself.
+    }
+    
+    /**
+     * Called before the EditSuccessfulHandler has been called by
+     * DlgBox.
+     * 
+     * Overrides the DlgBox.okBtnProcessingEnded() method.
+     */
+	@Override
+    protected void okBtnProcessingStarted() {
+		// Ignored!  The copy/move dialog is handling enabling and
+		// disabling of the OK button itself.
+    }
+    
 	/**
 	 * Called when the dialog is attached.
 	 * 
@@ -797,7 +827,7 @@ public class CopyMoveEntriesDlg extends DlgBox
 		// ...the dialog.
 		setCancelEnabled(true);
 		setOkEnabled(    true);
-		show(true);
+		show(            true);
 	}
 	
 	/*
