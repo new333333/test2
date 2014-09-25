@@ -716,6 +716,17 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 				getBinderModule().upgradeTeamMembership();
 			}
 		}
+		
+		if ( version.intValue() <= 19 )
+		{ 
+			// Upgrade version 19 is the last version belongs to Vibe Hudson release
+			if ( !Utils.checkIfFilr() )
+			{
+				// This is Vibe
+				// Upgrade team membership.
+				getBinderModule().upgradeTeamMembership();
+			}
+		}
   	}
  	
  	private void correctFilrRoles(ZoneConfig zoneConfig) {
