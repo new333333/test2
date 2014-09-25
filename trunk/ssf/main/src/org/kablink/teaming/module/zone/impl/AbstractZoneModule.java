@@ -1031,7 +1031,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		try {
 			netFoldersBinder = getCoreDao().loadReservedBinder(ObjectKeys.NET_FOLDERS_ROOT_INTERNALID, zone.getId());
 		} catch(NoBinderByTheNameException e) {}
-		if (netFoldersBinder == null) {
+		if ((Utils.checkIfFilr() || Utils.checkIfFilrAndVibe()) && netFoldersBinder == null) {
 			//The Net Folders workspace doesn't exist, so create it
 			Workspace top = getCoreDao().findTopWorkspace(zone.getName());
 			HistoryStamp stamp = new HistoryStamp(superU);
