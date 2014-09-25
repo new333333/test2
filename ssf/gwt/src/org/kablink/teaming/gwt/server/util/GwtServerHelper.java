@@ -7041,12 +7041,12 @@ public class GwtServerHelper {
 	public static String getPresenceDude(GwtPresenceInfo pi) {
 		String dudeGif;
 		switch (pi.getStatus()) {
-		case PresenceInfo.STATUS_AVAILABLE:  dudeGif = "pics/sym_s_green_dude_14.png";  break;
-		case PresenceInfo.STATUS_AWAY:       dudeGif = "pics/sym_s_yellow_dude_14.png"; break;
-		case PresenceInfo.STATUS_IDLE:       dudeGif = "pics/sym_s_yellow_dude_14.png"; break;
-		case PresenceInfo.STATUS_BUSY:       dudeGif = "pics/sym_s_red_dude_14.png";    break;
-		case PresenceInfo.STATUS_OFFLINE:    dudeGif = "pics/sym_s_gray_dude_14.png";   break;
-		default:                             dudeGif = "pics/sym_s_white_dude_14.png";  break;
+		case PresenceInfo.STATUS_AVAILABLE:  dudeGif = "pics/presence/online_16.png";  break;
+		case PresenceInfo.STATUS_AWAY:       dudeGif = "pics/presence/away_16.png"; break;
+		case PresenceInfo.STATUS_IDLE:       dudeGif = "pics/presence/away_16.png"; break;
+		case PresenceInfo.STATUS_BUSY:       dudeGif = "pics/presence/busy_16.png";    break;
+		case PresenceInfo.STATUS_OFFLINE:    dudeGif = "pics/presence/offline_16.png";   break;
+		default:                             dudeGif = "pics/presence/unknown_16.png";  break;
 		}
 		return dudeGif;
 	}
