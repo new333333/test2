@@ -446,7 +446,6 @@
 
 .activityStreamTopEntryContentPanel
 {
-	font-size: 13px;
 	margin-top: 5px;
 	margin-left: 50px;
 	position: relative;
@@ -511,7 +510,8 @@
 .activityStreamPresencePanel
 {
 	display: none;
-	vertical-align: top;
+	margin-top: -3px;
+	margin-right: 3px;
 }
 
 .activityStreamNumCommentsPanel
@@ -559,11 +559,11 @@
 
 .activityStreamReplyAddACommentPanel
 {
-	color: #CCCCCC;
-	font-size: 0.9em;
-	left: 20px;
+	color: #c4c4c4;
+	font-size: 14px;
+	left: 15px;
 	position: absolute;
-	top: 4px;
+	top: 6px;
 }
 
 .activityStreamReplyTitlePanel, .shareThisDlg_TitlePanel
@@ -3227,7 +3227,7 @@ body, table td, select
 	}
 
 .gwt-TextBox, .gwt-PasswordTextBox, .gwt-DateBox, .gwt-FileUpload, .gwt-TextArea {
-	border: 1px solid #949494;
+	border: 1px solid #b8b8b8;
 	border-radius: 3px;
 	font-size: 13px;
 	padding: 5px;
@@ -3550,7 +3550,7 @@ a.ss_new_thread {
 	display:inline;
 }
 .qViewStatus-anchor{
-	color:#1C5894 !important;
+	color:#036f9f !important;
 	margin-left: 5px;
 }
 .qViewFooter {
