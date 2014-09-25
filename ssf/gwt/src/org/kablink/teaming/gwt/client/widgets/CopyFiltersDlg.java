@@ -100,7 +100,6 @@ public class CopyFiltersDlg extends DlgBox
 	private GwtTeamingMessages				m_messages;					// Access to Vibe's messages.
 	private List<HandlerRegistration>		m_registeredEventHandlers;	// Event handlers that are currently registered for this dialog.
 	private ScrollPanel						m_filtersScroller;			// The ScrollPanel that contains the filters from the source folder.
-	private SpinnerPopup					m_busySpinner;				// Used to display a busy spinner while we're saving the selected filters.
 	private VibeFlowPanel					m_contentPanel;				// The panel containing the main content of the dialog.
 	private VibeVerticalPanel				m_filtersPanel;				// The panel containing the filters themselves.
 	
@@ -239,25 +238,28 @@ public class CopyFiltersDlg extends DlgBox
 		if (0 == count) {
 			// No!  Tell the user and leave the dialog open.
 			GwtClientHelper.deferredAlert(m_messages.copyFiltersDlg_Error_NothingSelected());
+			setOkEnabled(true);
 			return false;
 		}
 
 		// Send the GWT RPC request to save the selected filters.
-	    showBusySpinner();
+		setOkEnabled(false);
+	    showDlgBusySpinner();
 		GwtClientHelper.executeCommand(saveCmd, new AsyncCallback<VibeRpcResponse>() {
 			@Override
 			public void onFailure(Throwable caught) {
-				hideBusySpinner();
+				hideDlgBusySpinner();
 				GwtClientHelper.handleGwtRPCFailure(
 					caught,
 					GwtTeaming.getMessages().rpcFailure_SaveFolderFilters(),
 					m_folderInfo.getBinderId());
+				setOkEnabled(true);
 			}
 
 			@Override
 			public void onSuccess(VibeRpcResponse result) {
 				// Were any errors returned from the save?
-				hideBusySpinner();
+				hideDlgBusySpinner();
 				ErrorListRpcResponseData responseData = ((ErrorListRpcResponseData) result.getResponseData());
 				if (responseData.hasErrors()) {
 					// Yes!  Display them.
@@ -268,6 +270,7 @@ public class CopyFiltersDlg extends DlgBox
 
 				// Were any of these actual errors (vs. simply
 				// warnings)?
+				setOkEnabled(true);
 				if (0 == responseData.getErrorCount()) {
 					// No!  Hide the dialog and force the UI to
 					// refresh.
@@ -336,17 +339,6 @@ public class CopyFiltersDlg extends DlgBox
 	}
 
 	/*
-	 * If a busy spinner exists, hide it.
-	 */
-	private void hideBusySpinner() {
-		// If we have a busy spinner...
-		if (null != m_busySpinner) {
-			// ...make sure that it's hidden.
-			m_busySpinner.hide();
-		}
-	}
-
-	/*
 	 * Asynchronously loads the find control.
 	 */
 	private void loadPart1Async() {
@@ -381,6 +373,30 @@ public class CopyFiltersDlg extends DlgBox
 		});
 	}
 	
+    /**
+     * Called after the EditSuccessfulHandler has been called by
+     * DlgBox.
+     * 
+     * Overrides the DlgBox.okBtnProcessingEnded() method.
+     */
+	@Override
+    protected void okBtnProcessingEnded() {
+		// Ignored!  This dialog is handling enabling and disabling of
+		// the OK button itself.
+    }
+    
+    /**
+     * Called before the EditSuccessfulHandler has been called by
+     * DlgBox.
+     * 
+     * Overrides the DlgBox.okBtnProcessingStarted() method.
+     */
+	@Override
+    protected void okBtnProcessingStarted() {
+		// Ignored!  This dialog is handling enabling and disabling of
+		// the OK button itself.
+    }
+    
 	/**
 	 * Called when the dialog is attached.
 	 * 
@@ -523,6 +539,8 @@ public class CopyFiltersDlg extends DlgBox
 		}
 		
 		// ...and show the dialog centered on the screen.
+		setCancelEnabled(true);
+		setOkEnabled(    true);
 		center();
 	}
 
@@ -654,20 +672,6 @@ public class CopyFiltersDlg extends DlgBox
 		loadPart1Async();
 	}
 
-	/*
-	 * Shows a busy spinner animation while an operation is going on.
-	 */
-	private void showBusySpinner() {
-		// If we haven't created a busy spinner yet...
-		if (null == m_busySpinner) {
-			// ...create one now...
-			m_busySpinner = new SpinnerPopup();
-		}
-
-		// ...and show it.
-		m_busySpinner.center();
-	}
-	
 	/*
 	 * Unregisters any global event handlers that may be registered.
 	 */

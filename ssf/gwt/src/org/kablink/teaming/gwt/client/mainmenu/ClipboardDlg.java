@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -37,7 +37,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMainMenuImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
@@ -56,7 +55,6 @@ import org.kablink.teaming.gwt.client.widgets.DlgBox;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
-import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.InputElement;
@@ -77,13 +75,12 @@ import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
-
 /**
  * Implements Vibe's clipboard dialog.
  *  
  * @author drfoster@novell.com
  */
-public class ClipboardDlg extends DlgBox implements EditSuccessfulHandler {
+public class ClipboardDlg extends DlgBox {
 	private final static String IDBASE		= "clipboard_";	// Base ID for rows in the clipboard Grid.
 	private final static String IDTAIL_CBOX	= "_cb";		// Used for constructing the ID of a row's CheckBox.
 	private final static int    SCROLL_WHEN	= 5;			// Count of items in the ScrollPanel when scroll bars are enabled.
@@ -187,7 +184,7 @@ public class ClipboardDlg extends DlgBox implements EditSuccessfulHandler {
 	private class DoAddPeople implements Command {
 		@Override
 		public void execute() {
-			ScheduledCommand doRequestContributors = new ScheduledCommand() {
+			GwtClientHelper.deferCommand(new ScheduledCommand() {
 				@Override
 				public void execute() {
 					ContributorsHelper.getContributors(m_binderInfo.getBinderIdAsLong(), new ContributorsCallback() {
@@ -204,8 +201,7 @@ public class ClipboardDlg extends DlgBox implements EditSuccessfulHandler {
 						}
 					});
 				}
-			};
-			Scheduler.get().scheduleDeferred(doRequestContributors);
+			});
 		}
 	}
 	
@@ -308,9 +304,9 @@ public class ClipboardDlg extends DlgBox implements EditSuccessfulHandler {
 		// ...and create the dialog's content.
 		createAllDlgContent(
 			m_messages.mainMenuClipboardDlgHeader(),
-			this,						// The dialog's EditSuccessfulHandler.
-			getSimpleCanceledHandler(),	// The dialog's EditCanceledHandler.
-			null);						// Create callback data.  Unused. 
+			getSimpleSuccessfulHandler(),	// The dialog's EditCanceledHandler.
+			getSimpleCanceledHandler(),		// The dialog's EditCanceledHandler.
+			null);							// Create callback data.  Unused. 
 	}
 
 	/*
@@ -433,13 +429,12 @@ public class ClipboardDlg extends DlgBox implements EditSuccessfulHandler {
 	 * Asynchronously checks or unChecks the check boxes.
 	 */
 	private void doSelectAllAsync(final boolean select) {
-		ScheduledCommand doSelect = new ScheduledCommand() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
 				doSelectAllNow(select);
 			}
-		};
-		Scheduler.get().scheduleDeferred(doSelect);
+		});
 	}
 	
 	/*
@@ -462,23 +457,6 @@ public class ClipboardDlg extends DlgBox implements EditSuccessfulHandler {
 		}
 	}
 	
-	/**
-	 * This method gets called when user user presses the OK push
-	 * button.
-	 * 
-	 * Implements the EditSuccessfulHandler.editSuccessful() interface
-	 * method.
-	 * 
-	 * @param callbackData
-	 * 
-	 * @return
-	 */
-	@Override
-	public boolean editSuccessful(Object callbackData) {
-		// Unused.
-		return true;
-	}
-
 	/**
 	 * Unused.
 	 * 
@@ -554,13 +532,12 @@ public class ClipboardDlg extends DlgBox implements EditSuccessfulHandler {
 	 * Asynchronously process the contributor IDs.
 	 */
 	private void processContributorIdsAsync(final List<Long> contributorIds) {
-		ScheduledCommand doHandleContributors = new ScheduledCommand() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
 				processContributorIdsNow(contributorIds);
 			}
-		};
-		Scheduler.get().scheduleDeferred(doHandleContributors);
+		});
 	}
 	
 	/*
@@ -599,13 +576,12 @@ public class ClipboardDlg extends DlgBox implements EditSuccessfulHandler {
 	 * Asynchronously populates the contents of the dialog.
 	 */
 	private void populateDlgAsync() {
-		ScheduledCommand doPopulate = new ScheduledCommand() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
 				populateDlgNow();
 			}
-		};
-		Scheduler.get().scheduleDeferred(doPopulate);
+		});
 	}
 	
 	/*
@@ -641,13 +617,12 @@ public class ClipboardDlg extends DlgBox implements EditSuccessfulHandler {
 	 * global List<ClipboardUser>.
 	 */
 	private void populateFromCBUserListAsync() {
-		ScheduledCommand doPopulate = new ScheduledCommand() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
 				populateFromCBUserListNow();
 			}
-		};
-		Scheduler.get().scheduleDeferred(doPopulate);
+		});
 	}
 	
 	/*
@@ -714,13 +689,12 @@ public class ClipboardDlg extends DlgBox implements EditSuccessfulHandler {
 	 * Asynchronously runs the given instance of the clipboard dialog.
 	 */
 	private static void runDlgAsync(final ClipboardDlg cbDlg, final BinderInfo bi) {
-		ScheduledCommand doRun = new ScheduledCommand() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
 				cbDlg.runDlgNow(bi);
 			}
-		};
-		Scheduler.get().scheduleDeferred(doRun);
+		});
 	}
 	
 	/*
@@ -742,13 +716,12 @@ public class ClipboardDlg extends DlgBox implements EditSuccessfulHandler {
 	 * contents of the clipboard.
 	 */
 	private void saveCBUserListAsync() {
-		ScheduledCommand doSave = new ScheduledCommand() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
 				saveCBUserListNow();
 			}
-		};
-		Scheduler.get().scheduleDeferred(doSave);
+		});
 	}
 	
 	/*

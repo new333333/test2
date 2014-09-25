@@ -36,7 +36,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.kablink.teaming.gwt.client.EditCanceledHandler;
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.TaskPickDateEvent;
@@ -85,10 +84,10 @@ import com.google.gwt.user.datepicker.client.DatePicker;
  * @author drfoster@novell.com
  */
 public class TaskDueDateDlg extends DlgBox
-	implements EditSuccessfulHandler, EditCanceledHandler,
-	// Event handlers implemented by this class.
+	implements EditSuccessfulHandler,
+		// Event handlers implemented by this class.
 		TaskPickDateEvent.Handler
-	{
+{
 	private CheckBox				m_allDayCB;				// The all day checkbox.
 	private DlgLabel				m_bannerLabel;			// The banner at the top of the dialog containing the task's title.
 	private FlexTable				m_taskDueDateTable;		// Once displayed, the table of task due date dialog's widgets.
@@ -192,9 +191,9 @@ public class TaskDueDateDlg extends DlgBox
 		// ...and create the dialog's content.
 		createAllDlgContent(
 			m_messages.taskDueDateDlgHeader(),
-			this,	// The dialog's EditSuccessfulHandler.
-			this,	// The dialog's EditCanceledHandler.
-			null);	// Data passed via global data members.
+			this,						// The dialog's EditSuccessfulHandler.
+			getSimpleCanceledHandler(),	// The dialog's EditCanceledHandler.
+			null);						// Data passed via global data members.
 	}
 
 	/*
@@ -276,6 +275,7 @@ public class TaskDueDateDlg extends DlgBox
 								@Override
 								public void rejected() {
 									// No, they're not sure!
+									setOkEnabled(true);
 								}
 							},
 							m_messages.taskDueDateDlgConfirm_DefaultTo1Day());
@@ -358,6 +358,7 @@ public class TaskDueDateDlg extends DlgBox
 			});
 			
 			// ...and close the dialog.
+			setOkEnabled(true);
 			hide();
 		}
 	}
@@ -416,23 +417,6 @@ public class TaskDueDateDlg extends DlgBox
 		return vp;
 	}
 	
-	
-	/**
-	 * This method gets called when user user presses the Cancel push
-	 * button.
-	 * 
-	 * Implements the EditCanceledHandler.editCanceled() interface
-	 * method.
-	 * 
-	 * @return
-	 */
-	@Override
-	public boolean editCanceled() {
-		// Return true to allow the dialog to close.
-		return true;
-	}
-
-	
 	/**
 	 * This method gets called when user user presses the OK push
 	 * button.
@@ -447,13 +431,13 @@ public class TaskDueDateDlg extends DlgBox
 	@Override
 	public boolean editSuccessful(Object callbackData) {
 		// Apply the change...
+		setOkEnabled(false);
 		applyNewTaskDueDate();
 		
 		// ...and return false.  The apply will close the dialog if we
 		// ...were successful.
 		return false;
 	}
-
 	
 	/**
 	 * Returns the edited List<ToolbarItem>.
@@ -570,6 +554,30 @@ public class TaskDueDateDlg extends DlgBox
 		return getPickerDateOnEntry(taskDate);
 	}
 	
+    /**
+     * Called after the EditSuccessfulHandler has been called by
+     * DlgBox.
+     * 
+     * Overrides the DlgBox.okBtnProcessingEnded() method.
+     */
+	@Override
+    protected void okBtnProcessingEnded() {
+		// Ignored!  This dialog is handling enabling and disabling of
+		// the OK button itself.
+    }
+    
+    /**
+     * Called before the EditSuccessfulHandler has been called by
+     * DlgBox.
+     * 
+     * Overrides the DlgBox.okBtnProcessingStarted() method.
+     */
+	@Override
+    protected void okBtnProcessingStarted() {
+		// Ignored!  This dialog is handling enabling and disabling of
+		// the OK button itself.
+    }
+    
 	/**
 	 * Handles TaskPickDateEvent's received by this class.
 	 * 

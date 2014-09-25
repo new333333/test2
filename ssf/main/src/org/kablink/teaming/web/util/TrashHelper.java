@@ -1191,46 +1191,59 @@ public class TrashHelper {
 		for (int i = 0; i < count; i += 1) {
 			final DefinableEntity de = indexAL.get(i);
 			final Long deId = de.getId();
-			Long ownerId;
-			if (de instanceof FolderEntry)
-			     ownerId = ((FolderEntry) de).getOwnerId();
-			else ownerId = ((Binder)      de).getOwnerId();
-			RunasTemplate.runas(
-				new RunasCallback() {
-					@Override
-					public Object doAs() {
-						try {
-							// ...re-indexing each as the owner of the
-							// ...entry.
-							if (de instanceof Binder) {
-								// Note that we only re-index the
-								// Binder and not its tree since this
-								// case is used to restore the
-								// parentage of something.
-								logger.debug("TrashHelper.doAdditionalIndexing(" + deId + "):  Re-indexing binder (binder only)");
-								bs.getBinderModule().indexBinder(deId);
-								refreshRssFeed(bs, ((Binder) de));
-							}
-							else {
-								logger.debug("TrashHelper.doAdditionalIndexing(" + de.getParentBinder().getId() + ", " + deId + "):  Re-indexing entry");
-								reindexTopEntry(bs, ((FolderEntry) de));
-								refreshRssFeed( bs, ((FolderEntry) de));
-							}
+			User user = RequestContextHolder.getRequestContext().getUser();
+			if (user.isSuper() && user.isPerson()) {
+				// Admin can just do the re-indexing directly.
+				doAdditionalIndexingImpl(bs, de, deId, tr);
+			}
+			else {
+				// Otherwise, we do it as the owner of the thing being
+				// re-indexed.
+				Long indexerId;
+				if (de instanceof FolderEntry)
+				     indexerId = ((FolderEntry) de).getOwnerId();
+				else indexerId = ((Binder)      de).getOwnerId();
+				RunasTemplate.runas(
+					new RunasCallback() {
+						@Override
+						public Object doAs() {
+							doAdditionalIndexingImpl(bs, de, deId, tr);
+							return null;
 						}
-						catch (AccessControlException e) {
-							// If we're not already tracking an error
-							// for this operation...
-							if (!(tr.isError())) {
-								// ...track this one.
-								if (de instanceof FolderEntry) tr.setACLViolation(((FolderEntry) de).getParentBinder().getId(), deId);
-								else                           tr.setACLViolation(deId);
-							}
-						}
-						return null;
-					}
-				},
-				RequestContextHolder.getRequestContext().getZoneName(),
-				ownerId);
+					},
+					RequestContextHolder.getRequestContext().getZoneName(),
+					indexerId);
+			}
+		}
+	}
+	
+	private static void doAdditionalIndexingImpl(AllModulesInjected bs, DefinableEntity de, Long deId, TrashResponse tr) {
+		try {
+			// ...re-indexing each as the owner of the
+			// ...entry.
+			if (de instanceof Binder) {
+				// Note that we only re-index the
+				// Binder and not its tree since this
+				// case is used to restore the
+				// parentage of something.
+				logger.debug("TrashHelper.doAdditionalIndexing(" + deId + "):  Re-indexing binder (binder only)");
+				bs.getBinderModule().indexBinder(deId);
+				refreshRssFeed(bs, ((Binder) de));
+			}
+			else {
+				logger.debug("TrashHelper.doAdditionalIndexing(" + de.getParentBinder().getId() + ", " + deId + "):  Re-indexing entry");
+				reindexTopEntry(bs, ((FolderEntry) de));
+				refreshRssFeed( bs, ((FolderEntry) de));
+			}
+		}
+		catch (AccessControlException e) {
+			// If we're not already tracking an error
+			// for this operation...
+			if (!(tr.isError())) {
+				// ...track this one.
+				if (de instanceof FolderEntry) tr.setACLViolation(((FolderEntry) de).getParentBinder().getId(), deId);
+				else                           tr.setACLViolation(deId);
+			}
 		}
 	}
 	

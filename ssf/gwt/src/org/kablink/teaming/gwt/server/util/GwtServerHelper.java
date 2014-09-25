@@ -8380,10 +8380,13 @@ public class GwtServerHelper {
 		for (int i = 0; i < people; i += 1) {
 			// ...extract the Principal and reference count from this
 			// ...person... 
-			Map person = peopleList.get(i);
-			Principal user     = ((Principal) person.get(WebKeys.USER_PRINCIPAL));
-			Integer   refCount = ((Integer)   person.get(WebKeys.SEARCH_RESULTS_COUNT));
-			String    css      = ((String)    person.get(WebKeys.SEARCH_RESULTS_RATING_CSS));
+			Map       person = peopleList.get(i);
+			Principal user   = ((Principal) person.get(WebKeys.USER_PRINCIPAL));
+			if (null == user) {
+				continue;
+			}
+			Integer refCount = ((Integer) person.get(WebKeys.SEARCH_RESULTS_COUNT     ));
+			String  css      = ((String)  person.get(WebKeys.SEARCH_RESULTS_RATING_CSS));
 			
 			// ...use them to construct a TopRankedInfo object...
 			tri = new TopRankedInfo();
@@ -8401,9 +8404,12 @@ public class GwtServerHelper {
 		for (int i = 0; i < places; i += 1) {
 			// ...extract the Binder and reference count from this
 			// ...place... 
-			Map place = placesList.get(i);
-			Binder  binder   = ((Binder)  place.get(WebKeys.BINDER));
-			Integer refCount = ((Integer) place.get(WebKeys.SEARCH_RESULTS_COUNT));
+			Map    place  = placesList.get(i);
+			Binder binder = ((Binder) place.get(WebKeys.BINDER));
+			if (null == binder) {
+				continue;
+			}
+			Integer refCount = ((Integer) place.get(WebKeys.SEARCH_RESULTS_COUNT     ));
 			String  css      = ((String)  place.get(WebKeys.SEARCH_RESULTS_RATING_CSS));
 
 			// ...use them to construct a TopRankedInfo object...
