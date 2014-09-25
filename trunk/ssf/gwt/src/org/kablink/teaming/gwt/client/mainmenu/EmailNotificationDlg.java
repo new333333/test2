@@ -437,6 +437,7 @@ public class EmailNotificationDlg extends DlgBox implements EditSuccessfulHandle
 		// Start saving the contents of the dialog and return false.
 		// We'll keep the dialog open until the save is successful, at
 		// which point, we'll close it. 
+		setOkEnabled(false);
 		saveEmailNotificationInfoAsync();
 		return false;
 	}
@@ -547,6 +548,30 @@ public class EmailNotificationDlg extends DlgBox implements EditSuccessfulHandle
 		});
 	}
 	
+    /**
+     * Called after the EditSuccessfulHandler has been called by
+     * DlgBox.
+     * 
+     * Overrides the DlgBox.okBtnProcessingEnded() method.
+     */
+	@Override
+    protected void okBtnProcessingEnded() {
+		// Ignored!  This dialog is handling enabling and disabling of
+		// the OK button itself.
+    }
+    
+    /**
+     * Called before the EditSuccessfulHandler has been called by
+     * DlgBox.
+     * 
+     * Overrides the DlgBox.okBtnProcessingStarted() method.
+     */
+	@Override
+    protected void okBtnProcessingStarted() {
+		// Ignored!  This dialog is handling enabling and disabling of
+		// the OK button itself.
+    }
+    
 	/*
 	 * Synchronously populates the contents of the dialog.
 	 */
@@ -692,6 +717,8 @@ public class EmailNotificationDlg extends DlgBox implements EditSuccessfulHandle
 		
 		// Show the dialog so that it can be positioned correctly based
 		// on its new content.
+		setCancelEnabled(true);
+		setOkEnabled(    true);
 		if (null == m_showRelativeTo)
 		     show(                true            );
 		else showRelativeToTarget(m_showRelativeTo);
@@ -769,12 +796,14 @@ public class EmailNotificationDlg extends DlgBox implements EditSuccessfulHandle
 				GwtClientHelper.handleGwtRPCFailure(
 					t,
 					m_messages.rpcFailure_SaveEmailNotificationInfo());
+				setOkEnabled(true);
 			}
 			
 			@Override
 			public void onSuccess(VibeRpcResponse response) {
 				// Yes, the save was successful.  Simply close the
 				// dialog.
+				setOkEnabled(true);
 				hide();
 			}
 		});

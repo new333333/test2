@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -35,7 +35,6 @@ package org.kablink.teaming.gwt.client.tasklisting;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.kablink.teaming.gwt.client.EditCanceledHandler;
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
@@ -43,7 +42,7 @@ import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.TaskListItem;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 
-import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.Label;
@@ -51,14 +50,13 @@ import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
-
 /**
  * Implements a dialog for selecting where a new task should be placed
  * in a task hierarchy.
  *  
  * @author drfoster@novell.com
  */
-public class TaskDispositionDlg extends DlgBox implements EditSuccessfulHandler, EditCanceledHandler {
+public class TaskDispositionDlg extends DlgBox implements EditSuccessfulHandler {
 	private final static String IDBASE			= "taskDisposition_";	// Base ID for rows in the task disposition Grid.
 	private final static String IDTAIL_RADIO	= "_rb";				// Used for constructing the ID of a row's radio button.
 
@@ -121,9 +119,9 @@ public class TaskDispositionDlg extends DlgBox implements EditSuccessfulHandler,
 		// ...and create the dialog's content.
 		createAllDlgContent(
 			m_messages.taskDispositionDlgHeader(),
-			this,	// The dialog's EditSuccessfulHandler.
-			this,	// The dialog's EditCanceledHandler.
-			null);	// Data passed via global data members.
+			this,						// The dialog's EditSuccessfulHandler.
+			getSimpleCanceledHandler(),	// The dialog's EditCanceledHandler.
+			null);						// Data passed via global data members.
 	}
 	
 	/**
@@ -167,22 +165,6 @@ public class TaskDispositionDlg extends DlgBox implements EditSuccessfulHandler,
 		return vp;
 	}
 	
-	
-	/**
-	 * This method gets called when user user presses the Cancel push
-	 * button.
-	 * 
-	 * Implements the EditCanceledHandler.editCanceled() interface
-	 * method.
-	 * 
-	 * @return
-	 */
-	public boolean editCanceled() {
-		// Simply return true to allow the dialog to close.
-		return true;
-	}
-
-	
 	/**
 	 * This method gets called when user user presses the OK push
 	 * button.
@@ -194,6 +176,7 @@ public class TaskDispositionDlg extends DlgBox implements EditSuccessfulHandler,
 	 * 
 	 * @return
 	 */
+	@Override
 	public boolean editSuccessful(Object callbackData) {
 		// What task disposition option did the user select?
 		TaskDisposition rbAction = TaskDisposition.APPEND;
@@ -207,8 +190,7 @@ public class TaskDispositionDlg extends DlgBox implements EditSuccessfulHandler,
 		
 		// Asynchronously put that disposition into affect...
 		final TaskDisposition td = rbAction;
-		Scheduler.ScheduledCommand taskDispositioner;
-		taskDispositioner = new Scheduler.ScheduledCommand() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
 				m_taskTable.applyTaskDisposition(
@@ -216,14 +198,12 @@ public class TaskDispositionDlg extends DlgBox implements EditSuccessfulHandler,
 					m_newTaskId,
 					m_selectedTask.getTask().getTaskId().getEntityId());
 			}
-		};
-		Scheduler.get().scheduleDeferred(taskDispositioner);
+		});
 		
 		// ...and return true to close the dialog.
 		return true;
 	}
 
-	
 	/**
 	 * Returns the edited List<ToolbarItem>.
 	 * 

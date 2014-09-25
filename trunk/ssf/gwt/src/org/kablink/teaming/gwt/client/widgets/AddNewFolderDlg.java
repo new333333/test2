@@ -247,6 +247,30 @@ public class AddNewFolderDlg extends DlgBox implements EditSuccessfulHandler {
 		return m_folderNameInput;
 	}
 
+    /**
+     * Called after the EditSuccessfulHandler has been called by
+     * DlgBox.
+     * 
+     * Overrides the DlgBox.okBtnProcessingEnded() method.
+     */
+	@Override
+    protected void okBtnProcessingEnded() {
+		// Ignored!  This dialog is handling enabling and disabling of
+		// the OK button itself.
+    }
+    
+    /**
+     * Called before the EditSuccessfulHandler has been called by
+     * DlgBox.
+     * 
+     * Overrides the DlgBox.okBtnProcessingStarted() method.
+     */
+	@Override
+    protected void okBtnProcessingStarted() {
+		// Ignored!  This dialog is handling enabling and disabling of
+		// the OK button itself.
+    }
+    
 	/*
 	 * Asynchronously populates the contents of the dialog.
 	 */

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -46,7 +46,6 @@ import org.kablink.teaming.gwt.client.widgets.DlgBox;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
-import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.Window;
@@ -57,7 +56,6 @@ import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.Panel;
-
 
 /**
  * Implements Vibe's calendar settings dialog.
@@ -144,6 +142,7 @@ public class CalendarSettingsDlg extends DlgBox implements EditSuccessfulHandler
 	@Override
 	public boolean editSuccessful(Object callbackData) {
 		// Save the calendar settings.
+		setOkEnabled(false);
 		saveCalendarSettingsAsync();
 		
 		// Always return false to leave the dialog open.  If it's
@@ -177,17 +176,40 @@ public class CalendarSettingsDlg extends DlgBox implements EditSuccessfulHandler
 		return null;
 	}
 
+    /**
+     * Called after the EditSuccessfulHandler has been called by
+     * DlgBox.
+     * 
+     * Overrides the DlgBox.okBtnProcessingEnded() method.
+     */
+	@Override
+    protected void okBtnProcessingEnded() {
+		// Ignored!  This dialog is handling enabling and disabling of
+		// the OK button itself.
+    }
+    
+    /**
+     * Called before the EditSuccessfulHandler has been called by
+     * DlgBox.
+     * 
+     * Overrides the DlgBox.okBtnProcessingStarted() method.
+     */
+	@Override
+    protected void okBtnProcessingStarted() {
+		// Ignored!  This dialog is handling enabling and disabling of
+		// the OK button itself.
+    }
+    
 	/*
 	 * Asynchronously populates the contents of the dialog.
 	 */
 	private void populateDlgAsync() {
-		ScheduledCommand doPopulate = new ScheduledCommand() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
 				populateDlgNow();
 			}
-		};
-		Scheduler.get().scheduleDeferred(doPopulate);
+		});
 	}
 	
 	/*
@@ -242,7 +264,9 @@ public class CalendarSettingsDlg extends DlgBox implements EditSuccessfulHandler
 		
 		// Finally, show the dialog centered on the screen.
 		GwtClientHelper.setFocusDelayed(m_workDayStartList);
-		show(true);
+		setCancelEnabled(true);
+		setOkEnabled(    true);
+		show(            true);
 	}
 	
 	/*
@@ -250,13 +274,12 @@ public class CalendarSettingsDlg extends DlgBox implements EditSuccessfulHandler
 	 * dialog.
 	 */
 	private static void runDlgAsync(final CalendarSettingsDlg csDlg, final Long folderId, final CalendarDisplayDataRpcResponseData calendarDisplayData) {
-		ScheduledCommand doRun = new ScheduledCommand() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
 				csDlg.runDlgNow(folderId, calendarDisplayData);
 			}
-		};
-		Scheduler.get().scheduleDeferred(doRun);
+		});
 	}
 	
 	/*
@@ -276,13 +299,12 @@ public class CalendarSettingsDlg extends DlgBox implements EditSuccessfulHandler
 	 * Asynchronously saves the calendar settings.
 	 */
 	private void saveCalendarSettingsAsync() {
-		ScheduledCommand doSave = new ScheduledCommand() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
 				saveCalendarSettingsNow();
 			}
-		};
-		Scheduler.get().scheduleDeferred(doSave);
+		});
 	}
 	
 	/*
@@ -307,6 +329,7 @@ public class CalendarSettingsDlg extends DlgBox implements EditSuccessfulHandler
 		if (((-1) == weekStart) && ((-1) == workDayStart)) {
 			// No!  Then we don't have to save anything.  SImply hide
 			// the dialog and bail.
+			setOkEnabled(true);
 			hide();
 			return;
 		}
@@ -320,17 +343,20 @@ public class CalendarSettingsDlg extends DlgBox implements EditSuccessfulHandler
 				GwtClientHelper.handleGwtRPCFailure(
 					t,
 					m_messages.rpcFailure_SaveCalendarSettings());
+				setOkEnabled(true);
 			}
 			
 			@Override
 			public void onSuccess(VibeRpcResponse response) {
 				// Yes!  Hide the dialog an put the new calendar
 				// settings into affect...
+				setOkEnabled(true);
 				hide();
 				FullUIReloadEvent.fireOne();
 			}
 		});
 	}
+	
 	
 	/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 	/* The following code is used to load the split point containing */

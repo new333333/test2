@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -53,7 +53,6 @@ import org.kablink.teaming.gwt.client.widgets.VibeVerticalPanel;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
-import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -332,13 +331,12 @@ public class WhoHasAccessDlg extends DlgBox {
 	 * Asynchronously populates the contents of the dialog.
 	 */
 	private void populateDlgAsync() {
-		ScheduledCommand doPopulate = new ScheduledCommand() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
 				populateDlgNow();
 			}
-		};
-		Scheduler.get().scheduleDeferred(doPopulate);
+		});
 	}
 	
 	/*
@@ -371,13 +369,12 @@ public class WhoHasAccessDlg extends DlgBox {
 	 * WhoHasAccessInfoRpcResponseData object.
 	 */
 	private void populateFromWhoHasAccessInfoAsync() {
-		ScheduledCommand doPopulate = new ScheduledCommand() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
 				populateFromWhoHasAccessInfoNow();
 			}
-		};
-		Scheduler.get().scheduleDeferred(doPopulate);
+		});
 	}
 	
 	/*
@@ -512,13 +509,12 @@ public class WhoHasAccessDlg extends DlgBox {
 	 * dialog.
 	 */
 	private static void runDlgAsync(final WhoHasAccessDlg whaDlg, final EntityId entityId) {
-		ScheduledCommand doRun = new ScheduledCommand() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
 				whaDlg.runDlgNow(entityId);
 			}
-		};
-		Scheduler.get().scheduleDeferred(doRun);
+		});
 	}
 	
 	/*

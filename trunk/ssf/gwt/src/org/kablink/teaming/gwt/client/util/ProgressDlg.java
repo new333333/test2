@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -45,7 +45,6 @@ import org.kablink.teaming.gwt.client.widgets.VibeVerticalPanel;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
-import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.Image;
@@ -143,13 +142,12 @@ public class ProgressDlg extends DlgBox implements EditCanceledHandler {
 	private void doDialogReady() {
 		m_dialogReady = true;
 		show(true);
-		ScheduledCommand doReady = new ScheduledCommand() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
 				m_progressCallback.dialogReady();
 			}
-		};
-		Scheduler.get().scheduleDeferred(doReady);
+		});
 	}
 	
 	/**
@@ -191,13 +189,12 @@ public class ProgressDlg extends DlgBox implements EditCanceledHandler {
 						@Override
 						public void accepted() {
 							// Yes!  Tell the caller...
-							ScheduledCommand doCancel = new ScheduledCommand() {
+							GwtClientHelper.deferCommand(new ScheduledCommand() {
 								@Override
 								public void execute() {
 									m_progressCallback.operationCanceled();
 								}
-							};
-							Scheduler.get().scheduleDeferred(doCancel);
+							});
 							
 							// ...and close the dialog.
 							hide();
@@ -258,13 +255,12 @@ public class ProgressDlg extends DlgBox implements EditCanceledHandler {
 	 * Asynchronously populates the contents of the dialog.
 	 */
 	private void populateDlgAsync() {
-		ScheduledCommand doPopulate = new ScheduledCommand() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
 				populateDlgNow();
 			}
-		};
-		Scheduler.get().scheduleDeferred(doPopulate);
+		});
 	}
 	
 	/*
@@ -303,7 +299,7 @@ public class ProgressDlg extends DlgBox implements EditCanceledHandler {
 	 * Asynchronously runs the given instance of the progress dialog.
 	 */
 	private static void runDlgAsync(final ProgressDlg pDlg, final ProgressCallback pCB, final boolean canCancel, final String dlgCaption, final String progressString, final int totalCount) {
-		ScheduledCommand doRun = new ScheduledCommand() {
+		GwtClientHelper.deferCommand(new ScheduledCommand() {
 			@Override
 			public void execute() {
 				pDlg.runDlgNow(
@@ -313,8 +309,7 @@ public class ProgressDlg extends DlgBox implements EditCanceledHandler {
 					progressString,
 					totalCount);
 			}
-		};
-		Scheduler.get().scheduleDeferred(doRun);
+		});
 	}
 	
 	/*
@@ -373,13 +368,12 @@ public class ProgressDlg extends DlgBox implements EditCanceledHandler {
 		if (m_totalDone >= m_totalCount) {
 			// ...hide the dialog and tell the caller we're done.
 			hide();
-			ScheduledCommand doComplete = new ScheduledCommand() {
+			GwtClientHelper.deferCommand(new ScheduledCommand() {
 				@Override
 				public void execute() {
 					m_progressCallback.operationComplete();
 				}
-			};
-			Scheduler.get().scheduleDeferred(doComplete);
+			});
 		}
 		
 		else {
@@ -394,6 +388,7 @@ public class ProgressDlg extends DlgBox implements EditCanceledHandler {
 					}));
 		}
 	}
+
 	
 	/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 	/* The following code is used to load the split point containing */
@@ -440,13 +435,12 @@ public class ProgressDlg extends DlgBox implements EditCanceledHandler {
 					// Yes!  Create it and return it via the callback.
 					final ProgressDlg pDlg = new ProgressDlg();
 					pDlg.hide();
-					ScheduledCommand doSuccess = new ScheduledCommand() {
+					GwtClientHelper.deferCommand(new ScheduledCommand() {
 						@Override
 						public void execute() {
 							pDlgClient.onSuccess(pDlg);
 						}
-					};
-					Scheduler.get().scheduleDeferred(doSuccess);
+					});
 				}
 				
 				// No, it's not a request to create a dialog!  Is it a

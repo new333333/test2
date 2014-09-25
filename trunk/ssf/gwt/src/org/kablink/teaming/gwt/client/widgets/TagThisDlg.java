@@ -96,7 +96,7 @@ import com.google.gwt.user.client.ui.Widget;
 /**
  * Implements a dialog for managing folder and workspace tags.
  *  
- * @author drfoster@novell.com
+ * @author jwootton@novell.com
  */
 public class TagThisDlg extends DlgBox
 	implements EditSuccessfulHandler, EditCanceledHandler, KeyUpHandler,

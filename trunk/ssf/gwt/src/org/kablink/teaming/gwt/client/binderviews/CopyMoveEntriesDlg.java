@@ -279,6 +279,7 @@ public class CopyMoveEntriesDlg extends DlgBox
 		if (!(cmd.getEntityIds().isEmpty())) {
 			// Yes!  Perform the final move/copy.
 			if (!showProgress) {
+				setCancelEnabled(false);	// A simple copy can't be canceled.
 				showDlgBusySpinner();
 			}
 			copyMoveEntriesImpl(
@@ -309,6 +310,8 @@ public class CopyMoveEntriesDlg extends DlgBox
 				GwtClientHelper.handleGwtRPCFailure(
 					caught,
 					m_strMap.get(StringIds.RPC_FAILURE));
+				setCancelEnabled(true);
+				setOkEnabled(    true);
 				hideDlgBusySpinner();
 			}
 
@@ -394,6 +397,8 @@ public class CopyMoveEntriesDlg extends DlgBox
 							// Finally, save the target folder we just
 							// copied/moved to and close the dialog,
 							// we're done!
+							setCancelEnabled(true);
+							setOkEnabled(    true);
 							hideDlgBusySpinner();	// Innocuous if it's not showing.
 							m_recentDest = targetFolder;
 							hide();
@@ -633,20 +638,20 @@ public class CopyMoveEntriesDlg extends DlgBox
      */
 	@Override
     protected void okBtnProcessingEnded() {
-		// Ignored!  The copy/move dialog is handling enabling and
-		// disabling of the OK button itself.
+		// Ignored!  This dialog is handling enabling and disabling of
+		// the OK button itself.
     }
     
     /**
      * Called before the EditSuccessfulHandler has been called by
      * DlgBox.
      * 
-     * Overrides the DlgBox.okBtnProcessingEnded() method.
+     * Overrides the DlgBox.okBtnProcessingStarted() method.
      */
 	@Override
     protected void okBtnProcessingStarted() {
-		// Ignored!  The copy/move dialog is handling enabling and
-		// disabling of the OK button itself.
+		// Ignored!  This dialog is handling enabling and disabling of
+		// the OK button itself.
     }
     
 	/**
