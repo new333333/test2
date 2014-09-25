@@ -699,7 +699,7 @@ button, input[type="reset"], input[type="button"], input[type="submit"] {
 button:hover, input[type="reset"]:hover, input[type="button"]:hover, input[type="submit"]:hover {	
 	color: #135c8f !important;
     text-align: center !important;
-    font-size: 11px !important;
+    font-size: 12px !important;
     font-family: Arial, sans-serif !important;
     white-space: nowrap !important;
     text-decoration: none !important;
