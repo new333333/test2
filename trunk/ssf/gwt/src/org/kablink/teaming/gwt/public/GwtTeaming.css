@@ -328,10 +328,18 @@
 {
 	color: #353838;
 	font-size: 13px;
-
 	/* reduce size for Filr only */
 	height: .2em;
-/*	height: 4em; -- vibe height */
+	margin-top: 4px;
+	margin-left: 1px;
+	overflow: hidden;
+	position: relative;
+}
+.activityStreamTopEntryPartialDesc-vibe
+{
+	color: #353838;
+	font-size: 13px;
+	height: 4em; 
 	margin-top: 4px;
 	margin-left: 1px;
 	overflow: hidden;
