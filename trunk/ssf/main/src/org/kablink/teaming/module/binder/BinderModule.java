@@ -46,6 +46,7 @@ import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.BinderChanges;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.FileAttachment;
+import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.NoBinderByTheIdException;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.SimpleName;
@@ -469,6 +470,12 @@ public interface BinderModule {
 	 * @return 
 	 */
 	public Collection<Tag> getTags(Binder binder);
+	
+	/**
+	 * 
+	 */
+	public String getTeamName( Group group );
+	
 	/**
 	 * Get a list of team members for the given binder
 	 * @param binder

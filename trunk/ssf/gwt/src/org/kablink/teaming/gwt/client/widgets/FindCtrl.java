@@ -1424,6 +1424,14 @@ public class FindCtrl extends Composite
 	}
 	
 	/**
+	 * Should we include team groups in the search
+	 */
+	public void setSearchForTeamGroups( boolean search )
+	{
+		m_searchCriteria.setSearchForTeamGroups( search );
+	}
+	
+	/**
 	 * Sets the search type of the search being done.
 	 * 
 	 * @param searchType

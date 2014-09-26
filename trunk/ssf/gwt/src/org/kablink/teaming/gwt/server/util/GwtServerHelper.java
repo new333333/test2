@@ -3503,6 +3503,7 @@ public class GwtServerHelper {
 		groupSelectSpec.setFilter( filter );
 		groupSelectSpec.setExcludeAllExternalUsersGroup( true );
 		groupSelectSpec.setExcludeAllUsersGroup( true );
+		groupSelectSpec.setExcludeTeamGroups( true );
 		listOfGroups = ami.getProfileModule().getGroups( groupSelectSpec );
 		
 		if ( listOfGroups != null )
