@@ -34,10 +34,10 @@ package org.kablink.teaming.module.profile.index;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
-
 import org.kablink.teaming.domain.Application;
 import org.kablink.teaming.domain.ApplicationGroup;
 import org.kablink.teaming.domain.Group;
+import org.kablink.teaming.domain.Group.GroupType;
 import org.kablink.teaming.domain.IdentityInfo;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.User;
@@ -176,4 +176,30 @@ public class ProfileIndexUtils {
     	fromLdapField = FieldFactory.createFieldStoredNotAnalyzed( IS_GROUP_FROM_LDAP_FIELD, (fromLdap ? Constants.TRUE : Constants.FALSE) );
     	doc.add( fromLdapField );
     }
+
+    /**
+     * 
+     */
+    public static void addIsTeamGroup( Document doc, User user )
+    {
+		Field path = FieldFactory.createFieldStoredNotAnalyzed( IS_TEAM_GROUP_FIELD, Constants.FALSE );
+		doc.add( path );
+    }
+
+    /**
+     * 
+     */
+    public static void addIsTeamGroup( Document doc, Group group )
+    {
+    	String value;
+    	
+    	if ( group.getGroupType() == GroupType.team )
+    		value = Constants.TRUE;
+    	else
+    		value = Constants.FALSE;
+    	
+		Field path = FieldFactory.createFieldStoredNotAnalyzed( IS_TEAM_GROUP_FIELD, value );
+		doc.add( path );
+    }
+
 }

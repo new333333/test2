@@ -585,6 +585,10 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
                 	// Should we exclude the "all external users group?
                 	if ( groupSelectSpec.getExcludeAllExternalUsersGroup() )
                 		crit.add( Restrictions.ne( ObjectKeys.FIELD_PRINCIPAL_NAME, "allextusers" ) );
+
+                	// Should we exclude "team groups"?
+                	if ( groupSelectSpec.getExcludeTeamGroups() )
+                		crit.add( Restrictions.isNull( ObjectKeys.FIELD_GROUP_TYPE ) );
                 	
                 	// Don't include "ldap container" groups.
                 	crit.add( Restrictions.isNull( ObjectKeys.FIELD_GROUP_LDAP_CONTAINER ) );

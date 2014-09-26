@@ -672,6 +672,7 @@ protected void modifyEntry_indexAdd(Binder binder, Entry entry,
 			ProfileIndexUtils.addEmail(indexDoc, user);
 			ProfileIndexUtils.addDisabled(indexDoc, user);
 			ProfileIndexUtils.addIsLdapContainer( indexDoc, (User)entry );
+			ProfileIndexUtils.addIsTeamGroup( indexDoc, (User)entry );
 		} else if(entry instanceof Group) {
 	        ProfileIndexUtils.addName(indexDoc, (Group)entry, false);	
 	        ProfileIndexUtils.addDynamic(indexDoc, (Group)entry, false);	
@@ -679,6 +680,7 @@ protected void modifyEntry_indexAdd(Binder binder, Entry entry,
 			ProfileIndexUtils.addDisabled(indexDoc, (Group)entry);
 			ProfileIndexUtils.addIsLdapContainer( indexDoc, (Group)entry );
 			ProfileIndexUtils.addIsFromLdap( indexDoc, (Group)entry );
+			ProfileIndexUtils.addIsTeamGroup( indexDoc, (Group)entry );
 		} else if(entry instanceof Application) {
 	        ProfileIndexUtils.addName(indexDoc, (Application)entry, false);	
 		} else if(entry instanceof ApplicationGroup) {

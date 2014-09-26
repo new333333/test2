@@ -44,12 +44,13 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Description;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
+import org.kablink.teaming.domain.Group;
+import org.kablink.teaming.domain.Group.GroupType;
 import org.kablink.teaming.domain.IdentityInfo;
 import org.kablink.teaming.domain.NoUserByTheIdException;
 import org.kablink.teaming.domain.NoUserByTheNameException;
@@ -338,6 +339,10 @@ public class GwtSearchHelper
 			if ( searchCriteria.getSearchForLdapContainers() == false )
 				searchTermFilter.addAndLdapContainerFilter( false );
 			
+			// Should "team groups" be included in the search results?
+			if ( searchCriteria.getSearchForTeamGroups() == false )
+				searchTermFilter.addAndTeamGroupFilter( false );
+			
 			// Type to find should only return enabled users.
     	    options.put(ObjectKeys.SEARCH_IS_ENABLED_PRINCIPALS, Boolean.TRUE);
     	    
@@ -363,6 +368,10 @@ public class GwtSearchHelper
 			// Should we search for ldap containers?
 			if ( searchCriteria.getSearchForLdapContainers() == false )
 				searchTermFilter.addAndLdapContainerFilter( false );
+			
+			// Should "team groups" be included in the search results?
+			if ( searchCriteria.getSearchForTeamGroups() == false )
+				searchTermFilter.addAndTeamGroupFilter( false );
 			
 			// Type to find should only return enabled groups.
     	    options.put(ObjectKeys.SEARCH_IS_ENABLED_PRINCIPALS, Boolean.TRUE);
@@ -548,6 +557,8 @@ public class GwtSearchHelper
 								if ( useGroup )
 								{
 									Description desc;
+									String name;
+									String title;
 									
 									// Yes
 									// Create a GwtGroup item for this group.
@@ -557,8 +568,21 @@ public class GwtSearchHelper
 										gwtGroup.setInternal( identityInfo.isInternal() );
 									
 									gwtGroup.setId( id );
-									gwtGroup.setName( group.getName() );
-									gwtGroup.setTitle( group.getTitle() );
+
+									if ( group instanceof Group &&
+										 ((Group)group).getGroupType() == GroupType.team )
+									{
+										name = ami.getBinderModule().getTeamName( (Group) group );
+										title = name;
+									}
+									else
+									{
+										name = group.getName();
+										title = group.getTitle();
+									}
+									
+									gwtGroup.setName( name );
+									gwtGroup.setTitle( title );
 									gwtGroup.setDn( group.getForeignName() );
 									desc = group.getDescription();
 									if ( desc != null )
@@ -839,6 +863,8 @@ public class GwtSearchHelper
 							{
 								GwtGroup gwtGroup;
 								Description desc;
+								String name;
+								String title;
 
 								// Is this group from ldap?
 								if ( identityInfo != null && identityInfo.isFromLdap() )
@@ -861,8 +887,20 @@ public class GwtSearchHelper
 									gwtGroup.setInternal( identityInfo.isInternal() );
 								
 								gwtGroup.setId( principalId );
-								gwtGroup.setName( principal.getName() );
-								gwtGroup.setTitle( principal.getTitle() );
+								if ( principal instanceof Group &&
+									 ((Group)principal).getGroupType() == GroupType.team )
+								{
+									name = ami.getBinderModule().getTeamName( (Group) principal );
+									title = name;
+								}
+								else
+								{
+									name = principal.getName();
+									title = principal.getTitle();
+								}
+									
+								gwtGroup.setName( name );
+								gwtGroup.setTitle( title );
 								gwtGroup.setDn( principal.getForeignName() );
 								desc = principal.getDescription();
 								if ( desc != null )

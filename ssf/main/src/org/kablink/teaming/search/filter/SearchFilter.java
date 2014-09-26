@@ -336,6 +336,29 @@ public class SearchFilter {
 	}
 	
 	/**
+	 * Add a filter for determining if we are working with a "team group"
+	 */
+	public void addAndTeamGroupFilter( boolean teamGroup )
+	{
+		newCurrentFilterTermsBlock();
+		currentFilterTerms.addAttribute( SearchFilterKeys.FilterAnd, "true" );
+		
+		addTeamGroupFilter( teamGroup );
+	}
+	
+	/**
+	 * Add a filter for determining if we are working with a "team group"
+	 */
+	public void addTeamGroupFilter( boolean teamGroup )
+	{
+		addFieldFilter(
+					Constants.IS_TEAM_GROUP_FIELD,
+					SearchFilterKeys.FilterTypeEntryDefinition,
+					String.valueOf( teamGroup ),
+					SearchFilterKeys.FilterValueTypeBoolean );
+	}
+	
+	/**
 	 * Add a filter for the "internal" field
 	 */
 	public void addAndInternalFilter( boolean internalOnly )

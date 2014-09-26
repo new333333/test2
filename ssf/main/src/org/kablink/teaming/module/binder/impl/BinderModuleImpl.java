@@ -2477,7 +2477,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 				
 				name = binder.getId() + ":teamGroup";
 				title = name;
-				desc = "Holds team membership for binder: " + binder.getId() + "\n" + binder.getTitle() + "\n(" + binder.getPathName() + ")";
+				desc = NLT.get( "team.group.desc" ) + binder.getTitle() + "\n(" + binder.getPathName() + ")";
 				groupType = GroupType.team;
 				
 				inputMap.put( ObjectKeys.FIELD_PRINCIPAL_NAME, name );
@@ -2491,7 +2491,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 				// Add the identity information.
 				IdentityInfo identityInfo = new IdentityInfo();
 				identityInfo.setFromLocal( true );
-				identityInfo.setInternal( false );
+				identityInfo.setInternal( true );
 				inputMap.put( ObjectKeys.FIELD_USER_PRINCIPAL_IDENTITY_INFO, identityInfo );
 			
 				MapInputData inputData = new MapInputData(inputMap);
@@ -2570,6 +2570,53 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
     }
     
     /**
+     * For the given binder, return the name of the team.  For now the team name is the name
+     * of the binder.
+     */
+    @Override
+    public String getTeamName( Group group )
+    {
+    	String teamName = null;
+    	
+    	if ( group != null && group.getGroupType() == GroupType.team )
+    	{
+    		String name;
+    		String[] parts;
+    		
+    		// The binder id is part of the group name
+    		name = group.getName();
+    		
+    		parts = name.split( ":" );
+    		
+    		if ( parts != null && parts.length >= 2 )
+    		{
+    			String binderId;
+    			
+    			binderId = parts[0];
+    			if ( binderId != null && binderId.length() > 0 )
+    			{
+    				try
+    				{
+        				Long binderIdL;
+                		Binder binder;
+        				
+    					binderIdL = Long.valueOf( binderId );
+    					binder = loadBinder( binderIdL );
+    					teamName = binder.getTitle();
+    				}
+    				catch ( Exception ex )
+    				{
+    					logger.error( "Invalid binder id found in team group name: " + name );
+    					ex.printStackTrace();
+    				}
+    			}
+    		}
+    	}
+    	
+    	return teamName;
+    }
+    
+    /**
      * Return the "team group" that holds the membership for this binder.
      */
     private Group getTeamGroup( Binder binder )
@@ -2639,14 +2686,6 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
     	
     	if ( !binder.isRoot() && binder.isTeamMembershipInherited() )
     		return getTeamMemberIds( binder.getParentBinder() );
-    	
-    	//!!!
-    	{
-	    	boolean useTeamGroups;
-	    	useTeamGroups = SPropsUtil.getBoolean( "use.teamGroups", true );
-	    	if ( useTeamGroups == false )
-	    		return getTeamMemberIdsDeprecated( binder );
-    	}
     	
     	setOfMemberIds = new HashSet<Long>();
 
@@ -2904,17 +2943,6 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 		Group teamGroup;
 		final Group finalTeamGroup;
 
-		//!!!
-		{
-			boolean useTeamGroups = false;
-			useTeamGroups = SPropsUtil.getBoolean( "use.teamGroups", true );
-			if ( useTeamGroups == false )
-			{
-				setTeamMembersDeprecated( binder, memberIds );
-				return;
-			}
-		}
-		
 		teamGroup = getTeamGroup( binder );
 		
 		// Do we have any group members?
