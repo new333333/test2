@@ -919,6 +919,10 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 	        		//case matters here
 	        		if ((oldTitle == null) || !oldTitle.equals(newTitle)) {
 	        			fixupPath(binder);
+	        			
+	        			// If there is a "team group" associated with this binder, rename the group
+	        			// to match the binder's new name.
+	        			getBinderModule().fixupTeamGroupName( binder );
 	        		}
 	        		if (!binder.isRoot()) {
 	        			getCoreDao().updateFileName(binder.getParentBinder(), binder, oldTitle, newTitle);

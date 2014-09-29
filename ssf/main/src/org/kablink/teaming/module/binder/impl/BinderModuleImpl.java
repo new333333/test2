@@ -2456,6 +2456,51 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
     }
 
     /**
+     * Construct the description for the "team group" associated with the given binder.
+     */
+    private String constructTeamGroupDesc( Binder binder )
+    {
+    	String desc = "";
+    	
+    	if ( binder != null )
+    	{
+    		desc = NLT.get( "team.group.desc" ) + " " + binder.getTitle() + "\n(" + binder.getPathName() + ")";
+    	}
+    	
+    	return desc;
+    }
+    
+    /**
+     * Construct the name of the "team group" associated with the given binder
+     */
+    private String constructTeamGroupName( Binder binder )
+    {
+    	String name = "";
+    	
+    	if ( binder != null )
+    	{
+			name = "team - " + binder.getTitle() + " (" + binder.getId() + ")";
+    	}
+
+    	return name;
+    }
+    
+    /**
+     * Construct the title of the "team group" associated with the given binder.
+     */
+    private String constructTeamGroupTitle( Binder binder )
+    {
+    	String title = "";
+    	
+    	if ( binder != null )
+    	{
+			title = NLT.get( "team.group" ) + " " + binder.getTitle() + " (" + binder.getPathName() + ")";
+    	}
+    	
+    	return title;
+    }
+    
+    /**
      * Create a "team group" for the given binder.
      */
     private Group createTeamGroup( final Binder binder )
@@ -2475,9 +2520,9 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 				Group newGroup = null;
 				GroupType groupType;
 				
-				name = binder.getId() + ":teamGroup";
-				title = name;
-				desc = NLT.get( "team.group.desc" ) + binder.getTitle() + "\n(" + binder.getPathName() + ")";
+				name = constructTeamGroupName( binder );
+				title = constructTeamGroupTitle( binder );
+				desc = constructTeamGroupDesc( binder );
 				groupType = GroupType.team;
 				
 				inputMap.put( ObjectKeys.FIELD_PRINCIPAL_NAME, name );
@@ -2570,50 +2615,69 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
     }
     
     /**
-     * For the given binder, return the name of the team.  For now the team name is the name
-     * of the binder.
+     * If the given binder has a "team group" associated with it, rename the group using the
+     * binder's title.
      */
     @Override
-    public String getTeamName( Group group )
+    public void fixupTeamGroupName( final Binder binder )
     {
-    	String teamName = null;
+    	Long groupId;
     	
-    	if ( group != null && group.getGroupType() == GroupType.team )
+    	// Is there a "team group" associated with this binder?
+    	groupId = binder.getTeamGroupId();
+    	if ( groupId != null )
     	{
-    		String name;
-    		String[] parts;
+    		final Group group;
     		
-    		// The binder id is part of the group name
-    		name = group.getName();
-    		
-    		parts = name.split( ":" );
-    		
-    		if ( parts != null && parts.length >= 2 )
+    		// Yes
+    		group = getTeamGroup( binder );
+    		if ( group != null )
     		{
-    			String binderId;
-    			
-    			binderId = parts[0];
-    			if ( binderId != null && binderId.length() > 0 )
-    			{
-    				try
-    				{
-        				Long binderIdL;
-                		Binder binder;
-        				
-    					binderIdL = Long.valueOf( binderId );
-    					binder = loadBinder( binderIdL );
-    					teamName = binder.getTitle();
-    				}
-    				catch ( Exception ex )
-    				{
-    					logger.error( "Invalid binder id found in team group name: " + name );
-    					ex.printStackTrace();
-    				}
-    			}
+				RunasCallback callback;
+				Object retValue;
+
+				callback = new RunasCallback()
+				{
+					@Override
+					public Object doAs()
+					{
+						Map updates;
+						Boolean retValue;
+						String name;
+						String title;
+						String desc;
+
+						updates = new HashMap();
+						name = constructTeamGroupName( binder );
+						title = constructTeamGroupTitle( binder );
+						desc = constructTeamGroupDesc( binder );
+						updates.put( ObjectKeys.FIELD_PRINCIPAL_NAME, name );
+						updates.put( ObjectKeys.FIELD_ENTITY_TITLE, title );
+						updates.put( ObjectKeys.FIELD_ENTITY_DESCRIPTION, desc );
+						updates.put( ObjectKeys.FIELD_ENTITY_DESCRIPTION_FORMAT, String.valueOf( Description.FORMAT_NONE ) );  
+						
+						try
+						{
+							getProfileModule().modifyEntry( group.getId(), new MapInputData( updates ) );
+							
+							retValue = Boolean.TRUE;
+						}
+			   			catch ( Exception ex )
+			   			{
+			   				ex.printStackTrace();
+			   				retValue = Boolean.FALSE;
+			   			}
+						
+						return retValue;
+					}
+				};
+
+				// Do the necessary work as the admin user.
+				retValue = RunasTemplate.runasAdmin(
+												callback,
+												RequestContextHolder.getRequestContext().getZoneName() );
     		}
     	}
-    	
-    	return teamName;
     }
     
     /**
