@@ -91,20 +91,6 @@ span.pad-left20 {
 	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;	
 	}
-.homelink { 
-	position: relative;
-	top: -4px;
-	left: 5px;
-	font-size: 11px;
-	font-weight: normal; 
-	padding: 2px 6px 0 6px;
-	background-color: #fafafa;
-	border: 1px solid #b8b8b8;
-	white-space:nowrap;
-	border-radius: 5px;	
-	-moz-border-radius: 5px;
-	-webkit-border-radius: 5px;	
-	}
 
 .buttonlink { 
 	padding: 1px 8px 0px 8px;
@@ -120,7 +106,16 @@ span.pad-left20 {
 .lastupdated {
 	font-size: 10px;
 	padding-right: 10px;
-	}	
+	}
+.feedlabel {
+	font-size: 12px;
+	}
+.lastupdated-page {
+	font-size: 10px;
+	padding-right: 10px;
+	padding-left: 15px;
+	}
+
 .action-dialog { 
 	display: none;
 	position: absolute;
@@ -605,8 +600,9 @@ table.ss_mobile_calendar td {
 	padding-bottom: 15px;
 	}
 .pagingbuttons {
+	position: relative;
 	display: inline-block;
-	padding: 2px 5px;
+	top: 5px;
 	}	
 
 .ss_clear {
