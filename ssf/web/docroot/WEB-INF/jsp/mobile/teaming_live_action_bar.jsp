@@ -79,12 +79,12 @@ function ss_logoff_from_sso(s) {
 
 <div id="actions">
   
-  <a class="micro-blog" href="javascript: ;" 
-    onClick="ss_toggleDivVisibility('micro-blog-edit');return false;"><ssf:nlt tag="miniblog"/></a>
+  <span class="buttonlink"><a href="javascript: ;" 
+    onClick="ss_toggleDivVisibility('micro-blog-edit');return false;"><img border="0" src="<html:rootPath/>images/icons/miniblog_20.png"/ alt="<ssf:nlt tag="miniblog"/>" title="<ssf:nlt tag="miniblog"/>"></a></span>
   
   <c:if test="${!empty ss_actions}">
-    <a class="actions-a" href="javascript: ;" 
-      onClick="ss_toggleDivVisibility('actions-menu');return false;"><ssf:nlt tag="mobile.actions"/></a>
+    <span class="buttonlink"><a class="actions-a" href="javascript: ;" 
+      onClick="ss_toggleDivVisibility('actions-menu');return false;"><ssf:nlt tag="mobile.actions"/></a></span>
   </c:if>
 
 </div>

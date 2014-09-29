@@ -190,13 +190,9 @@ ss_createOnLoadObj("initiatePolling", initiatePolling);
 		  action="<ssf:url adapter="true" portletName="ss_forum" 
 		    action="__ajax_mobile" operation="view_teaming_live" actionUrl="true" />"
 		>
-        <table cellspacing="0" cellpadding="0" width="100%">
-        <tr>
-          <td valign="top" width="5%" nowrap>
-          <span><ssf:nlt tag="teaming.live.selectFeed"/></span>
-          </td>
-          <td valign="top" width="5%" nowrap>
-		  <span class="pad-left20">
+          <div class="feedselect">
+		  	<span class="feedlabel"><ssf:nlt tag="teaming.live.feedLabel"/></span>
+
 		    <select size="1" name="whats_new" 
 		      onChange="self.document.getElementById('whatsNewForm').submit();">
 		    
@@ -214,13 +210,8 @@ ss_createOnLoadObj("initiatePolling", initiatePolling);
 		      
 		    </select>
 		    <input type="hidden" name="whatsNewBtn" value="whats_new"/>
-		  </span>
-		  </td>
-		  <td valign="top" align="right" width="90%">
-	  		<table cellspacing="0" cellpadding="0">
-				<tr>
-		  		  <td>
-					<c:if test="${!empty ss_prevPage}">
+			<span class="pagingbuttons">
+				<c:if test="${!empty ss_prevPage}">
 			  		<a href="<ssf:url adapter="true" portletName="ss_forum" 
 						folderId="${ssBinder.id}" 
 						action="__ajax_mobile" 
@@ -231,14 +222,12 @@ ss_createOnLoadObj("initiatePolling", initiatePolling);
 						name="tabId" value="${ss_tab_id}"/><ssf:param 
 						name="pageNumber" value="${ss_pageNumber-1}"/><ssf:param 
 						name="ss_queryName" value="${ss_queryName}" /></ssf:url>"
-			  		><img border="0" src="<html:rootPath/>images/mobile/nl_left_16.gif"/></a>
-					</c:if>
-					<c:if test="${empty ss_prevPage}">
-			  		  <img border="0" src="<html:rootPath/>images/mobile/nl_left_dis_16.gif"/>
-					</c:if>
-		  		  </td>
-		  		  <td style="padding-left:20px;">
-					<c:if test="${!empty ss_nextPage}">
+			  		><img border="0" src="<html:rootPath/>images/pics/nl_left_noborder_20.png"/></a>
+				</c:if>
+				<c:if test="${empty ss_prevPage}">
+			  		  <img border="0" src="<html:rootPath/>images/pics/nl_left_dis_20.png"/>
+				</c:if>
+				<c:if test="${!empty ss_nextPage}">
 			  		<a href="<ssf:url adapter="true" portletName="ss_forum" 
 						folderId="${ssBinder.id}" 
 						action="__ajax_mobile" 
@@ -249,41 +238,33 @@ ss_createOnLoadObj("initiatePolling", initiatePolling);
 						name="tabId" value="${ss_tab_id}"/><ssf:param 
 						name="pageNumber" value="${ss_pageNumber+1}"/><ssf:param 
 						name="ss_queryName" value="${ss_queryName}" /></ssf:url>"
-			  		><img border="0" src="<html:rootPath/>images/mobile/nl_right_16.gif"/></a>
-					</c:if>
-					<c:if test="${empty ss_nextPage}">
-			  		  <img border="0" src="<html:rootPath/>images/mobile/nl_right_dis_16.gif"/>
-					</c:if>
-	      		  </td>
-				</tr>
-				<tr>
-				  <td colspan="2" align="center">
-				    <span class="lastupdated">
-				      <ssf:nlt tag="teaming.live.page">
-				        <ssf:param name="value" useBody="true">${ss_pageNumber+1}</ssf:param>
-				      </ssf:nlt>
-				    </span>
-				  </td>
-				</tr>
-	  		</table>
-		  </td>
-		</tr>
-		</table>
+			  		><img border="0" src="<html:rootPath/>images/pics/nl_right_noborder_20.png"/></a>
+				</c:if>
+				<c:if test="${empty ss_nextPage}">
+			  		  <img border="0" src="<html:rootPath/>images/pics/nl_left_dis_20.png"/>
+				</c:if>
+				</span>
+				<span class="lastupdated">
+				  <ssf:nlt tag="teaming.live.page">
+					<ssf:param name="value" useBody="true">${ss_pageNumber+1}</ssf:param>
+				  </ssf:nlt>
+				</span>
+			</div>	
 		</form>
     </div>
 
   <c:set var="now" value="<%=new java.util.Date()%>" />
-  <div class="folder-content" align="center" width="100%">
-	  <div id="last_updated" 
-	    class="lastupdated" ><ssf:nlt tag="teaming.live.updated"><ssf:param 
-	      name="value" useBody="true"><fmt:formatDate 
-	      timeZone="${ssUser.timeZone.ID}"
-		  value="${now}" type="both" timeStyle="short" 
-		  dateStyle="short" /></ssf:param></ssf:nlt></div>
-      <div class="lastupdated ss_mobile_light">
-        [<ssf:nlt tag="teaming.live.willBeUpdated"/>]
-      </div>
-  </div>
+	  <div class="folder-content" align="center" width="100%">
+		  <span id="last_updated" 
+			class="lastupdated" ><ssf:nlt tag="teaming.live.updated"><ssf:param 
+			  name="value" useBody="true"><fmt:formatDate 
+			  timeZone="${ssUser.timeZone.ID}"
+			  value="${now}" type="time" timeStyle="short" />
+			  </ssf:param></ssf:nlt></span>
+		  <span class="lastupdated ss_mobile_light">
+			[<ssf:nlt tag="teaming.live.willBeUpdated"/>]
+		  </span>
+	  </div>
     
   <div id="teaming_live_data" class="folder-content">
     <%@ include file="/WEB-INF/jsp/mobile/teaming_live_update_data.jsp" %>

@@ -53,98 +53,109 @@ span.pad-left20 {
 	}
 
 .header { 
-	color: white; 
-	font-size: 16px;
+	color: #1f1f1f; 
+	font-size: 18px;
 	text-align: center;
 	padding-top: 10px;
-	background-color: #81b2bd; 
-	font-weight: bold; 
+	background-color: #ededed; 
+	font-weight: normal; 
 	width: 100%; 
 	}
 		
 .search { 
 	position: relative;
-	top: -6px;
-	right: 4px;
-	font-size: .8em;
-	font-weight: bold; 
+	top: -4px;
+	right: 10px;
+	font-size: 11px;
+	font-weight: normal; 
 	padding: 6px;
-	background-color: #5691a6;
-	border: 1px solid #7abcba;
+	background-color: #fafafa;
+	border: 1px solid #b8b8b8;
 	white-space:nowrap;
-	-moz-border-radius: 5px;
 	border-radius: 5px;	
+	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;	
 	}
 
 .homelink { 
 	position: relative;
-	top: -6px;
-	left: 4px;
-	font-size: .8em;
-	font-weight: bold; 
-	padding: 6px;
-	background-color: #5691a6;
-	border: 1px solid #7abcba;
+	top: -4px;
+	left: 10px;
+	font-size: 11px;
+	font-weight: normal; 
+	padding: 2px 6px 0 6px;
+	background-color: #fafafa;
+	border: 1px solid #b8b8b8;
 	white-space:nowrap;
-	-moz-border-radius: 5px;
 	border-radius: 5px;	
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;	
+	}
+.homelink { 
+	position: relative;
+	top: -4px;
+	left: 5px;
+	font-size: 11px;
+	font-weight: normal; 
+	padding: 2px 6px 0 6px;
+	background-color: #fafafa;
+	border: 1px solid #b8b8b8;
+	white-space:nowrap;
+	border-radius: 5px;	
+	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;	
 	}
 
-.backlink { 
-	position: relative;
-	top: -6px;
-	left: 4px;
-	padding: 3px 8px 0px 8px;
+.buttonlink { 
+	padding: 1px 8px 0px 8px;
 	vertical-align: middle;
-	background-color: #5691a6;
-	border: 1px solid #7abcba;
+	background-color: #fafafa;
+	border: 1px solid #b8b8b8;
 	white-space:nowrap;
-	-moz-border-radius: 5px;
 	border-radius: 5px;	
+	display: inline-block;
+	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;	
 	}
 .lastupdated {
-	font-size: .6em;
+	font-size: 10px;
+	padding-right: 10px;
 	}	
 .action-dialog { 
 	display: none;
-	top: 38px; 
+	position: absolute;
+	top: 40px; 
 	left: 0px;
-	padding: 10px;
+	padding: 20px;
 	width: 100%;
-	border-top: 4px solid #1C5894;
-	border-bottom: 4px solid #1C5894;
-	background: #e8e9e6 url(images/mobile/putty_blend3.png) repeat-x;
-	background-position: bottom;
+	border-top: 1px solid #c4c4c4;
+	border-bottom: 1px solid #c4c4c4;
+	background: #fafafa;
 	}
 
 .search	a, .homelink a { 
-	color: #e1eaea;
+	color: #036f9f;
 	}
 	
 #actions { 
-	position: relative; 
-	top: 0px; 
-	left: 0px; 
+	position: absolute; 
+	top: 1px; 
+	left: 45px; 
 	padding: 5px;
-	background-color: #c3c5c0;
-	background-image: url(images/mobile/level_one_pattern4.gif);
-	background-repeat: repeat-x;
-	border-bottom: 1px solid #999;
-	white-space:nowrap;
-	}
-#actions a {
-	font-size: 1em; 
-	font-weight: bold; 
-	padding: 4px;
+	background-color: #ededed;
 	margin-right: 8px;
+	white-space:nowrap;
+	z-index: 100;
 	}
-		
+/*#actions a {
+	font-size: 1em; 
+	font-weight: normal; 
+	padding: 2px 6px 0 6px;
+	}
+*/		
 .dialog-head { 
 	font-size: .95em;
-	font-weight: bold;
+	font-weight: normal;
 	text-transform: uppercase;
 	margin-bottom: .5em;
 	}
@@ -267,20 +278,19 @@ span.pad-left20 {
 /*  folder styles */
 .folders {
 	position: relative;
+	background-color: #ededed;
 	}
 .folder-content {
-	background-color: #fff;
 	}
 	
 .folder-head {
 	clear: both; 
-	color: #fff;
-	font-size: 1em;
+	color: #949494;
+	font-size: 14px;
 	vertical-align: middle;
-	padding: 5px 5px 5px 10px;
-	letter-spacing: .3px;
-	background-image:url(images/mobile/trans30_black.png);
-	background-repeat:repeat;
+	text-align: center;
+	letter-spacing: .2px;
+	background-color: #ededed;
 	}
 .folder-item {
 	font-size: 1.1em;
@@ -310,9 +320,9 @@ span.pad-left20 {
 
 .entry {
 	position: relative;
-	border-bottom: 1px solid #e2e5e1; /* #d2d5d1; */
+	background-color: #fff;
+	border-bottom: 1px solid #e0e0e0; /* #e2e5e1; */
 	padding: 8px 10px 6px 25px;
-	background:url(images/mobile/putty_blend4.png) repeat-x bottom;
 	}
 .entry-title {
 	font-size: 16px;
@@ -321,7 +331,7 @@ span.pad-left20 {
 	}
 .entry-content {
 	font-size: 14px;
-	color: #666;
+	color: #353838;
 	padding-top: 8px;
 	}
 .entry-element {
@@ -356,11 +366,10 @@ span.pad-left20 {
 .entry-type {
 	font-size: 10px;
 	color: #666;
-	padding: 3px;
+	padding: 0px;
 	margin: 0px;
 }
 .entry-type span {
-	background-color: #fef7e4;
 }
 .entry-comment-label {
 	position: absolute;
@@ -595,6 +604,10 @@ table.ss_mobile_calendar td {
 	padding-right: 5px;
 	padding-bottom: 15px;
 	}
+.pagingbuttons {
+	display: inline-block;
+	padding: 2px 5px;
+	}	
 
 .ss_clear {
 	clear: both;

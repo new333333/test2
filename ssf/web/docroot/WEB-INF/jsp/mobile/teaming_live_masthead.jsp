@@ -40,7 +40,7 @@
   <div class="homelink">
 	<a href="<ssf:url adapter="true" portletName="ss_forum" 
 		action="__ajax_mobile" operation="view_teaming_live" actionUrl="false" />"
-	><ssf:nlt tag="general.Refresh"/></a>
+	><img border="0" src="<html:rootPath/>images/icons/refresh_20.png"/ alt="<ssf:nlt tag="general.Refresh"/>" title="<ssf:nlt tag="general.Refresh"/>"</a>
   </div>
 </td>
 <td valign="top" align="center">
