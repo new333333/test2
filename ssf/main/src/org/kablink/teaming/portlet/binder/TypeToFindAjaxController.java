@@ -222,6 +222,12 @@ public class TypeToFindAjaxController extends SAbstractController {
 				searchTermFilter.addTitleFilter(searchText);
 				searchTermFilter.addLoginNameFilter(searchText);
 			}
+			
+			if ( findType.equals( WebKeys.FIND_TYPE_GROUP ) )
+			{
+				// Don't include "team groups" in the search results.
+				searchTermFilter.addAndTeamGroupFilter( false );
+			}
 		}
 
 		try {

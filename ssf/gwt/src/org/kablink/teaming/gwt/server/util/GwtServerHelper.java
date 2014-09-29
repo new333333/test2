@@ -7470,6 +7470,11 @@ public class GwtServerHelper {
 		if (MiscUtil.hasItems(groups)) {
 			// Yes!  Scan them...
 			for (Group myGroup : groups) {
+				
+				// Don't include "team groups" in the results
+				if ( myGroup.getGroupType() == Group.GroupType.team )
+					continue;
+				
 				// ...adding a GroupInfo for each to the reply list.
 				GroupInfo gi = new GroupInfo();
 				gi.setId(myGroup.getId());
