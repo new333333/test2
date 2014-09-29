@@ -61,12 +61,14 @@
 ${exception.class}<br/>
 <%
 	Exception exception = (Exception)request.getAttribute("exception");
-	String message = exception.getLocalizedMessage() == null ? exception.toString() : exception.getLocalizedMessage();
-	if (message != null) {
-		message = org.kablink.teaming.util.stringcheck.StringCheckUtil.check(message);
-	}
+	if (exception != null) {
+		String message = exception.getLocalizedMessage() == null ? exception.toString() : exception.getLocalizedMessage();
+		if (message != null) {
+			message = org.kablink.teaming.util.stringcheck.StringCheckUtil.check(message);
+		}
 %>
-<%= message.toString().replaceAll("<", "&lt;").replaceAll(">", "&gt;") %>
+		<%= message.toString().replaceAll("<", "&lt;").replaceAll(">", "&gt;") %>
+<%  }  %>
 </p>
 
 <jsp:useBean id="ssUser" type="org.kablink.teaming.domain.User" scope="request" />

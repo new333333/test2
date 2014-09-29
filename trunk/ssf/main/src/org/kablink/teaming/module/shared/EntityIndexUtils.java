@@ -929,23 +929,26 @@ public class EntityIndexUtils {
     	addBinderAcls(doc, binder, false);
     }
     private static void addBinderAcls(Document doc, Binder binder, boolean includeTitleAcl) {
-		//get real binder access
-    	String[] acls = StringUtil.split(getFolderAclString(binder, includeTitleAcl), " ");
-    	for(String acl:acls)
-    		doc.add(FieldFactory.createFieldNotStoredNotAnalyzed(Constants.FOLDER_ACL_FIELD, acl));
-		//get team members
-    	acls = StringUtil.split(getFolderTeamAclString(binder), " ");
-    	for(String acl:acls)
-    		doc.add(FieldFactory.createFieldNotStoredNotAnalyzed(Constants.TEAM_ACL_FIELD, acl));
-		//add binder owner
-		Long owner = binder.getOwnerId();
-		String ownerStr = Constants.EMPTY_ACL_FIELD;
-		if (owner != null) ownerStr = owner.toString();  //TODO fix this
-		doc.add(FieldFactory.createFieldNotStoredNotAnalyzed(Constants.BINDER_OWNER_ACL_FIELD, ownerStr));    	
-		//Add sharing acls
-		addSharingIds(doc, binder);
-		//Add the net folder root ACL
-		addRootAcl(doc, binder);
+    	//This set of binder ACLs is only valid for non-net folder binders. Net folders specify their own ACLs exteranlly
+    	if (!binder.isAclExternallyControlled()) {
+			//get real binder access
+	    	String[] acls = StringUtil.split(getFolderAclString(binder, includeTitleAcl), " ");
+	    	for(String acl:acls)
+	    		doc.add(FieldFactory.createFieldNotStoredNotAnalyzed(Constants.FOLDER_ACL_FIELD, acl));
+			//get team members
+	    	acls = StringUtil.split(getFolderTeamAclString(binder), " ");
+	    	for(String acl:acls)
+	    		doc.add(FieldFactory.createFieldNotStoredNotAnalyzed(Constants.TEAM_ACL_FIELD, acl));
+			//add binder owner
+			Long owner = binder.getOwnerId();
+			String ownerStr = Constants.EMPTY_ACL_FIELD;
+			if (owner != null) ownerStr = owner.toString();  //TODO fix this
+			doc.add(FieldFactory.createFieldNotStoredNotAnalyzed(Constants.BINDER_OWNER_ACL_FIELD, ownerStr));    	
+			//Add sharing acls
+			addSharingIds(doc, binder);
+			//Add the net folder root ACL
+			addRootAcl(doc, binder);
+    	}
     }
     //Add acl fields for binder for storage in dom4j documents.
     //In this case replace owner with real owner in _folderAcl
@@ -1078,7 +1081,7 @@ public class EntityIndexUtils {
 	       			doc.add(FieldFactory.createFieldNotStoredNotAnalyzed(Constants.ENTRY_ACL_FIELD, acl));
 	       		}
 	       		//add binder access
-	    		//addBinderAcls(doc, binder);
+	    		addBinderAcls(doc, binder);
        		} else {
 	       		//add entry access. 
 	       		if (entry instanceof FolderEntry && !((FolderEntry)entry).isTop()) {
@@ -1093,7 +1096,7 @@ public class EntityIndexUtils {
 	       				doc.add(FieldFactory.createFieldNotStoredNotAnalyzed(Constants.ENTRY_ACL_FIELD, acl));
 	       			}
 	           		//add binder access
-	        		//addBinderAcls(doc, binder);
+	        		addBinderAcls(doc, binder);
 	       		}
 	       		else {
 	       			Entry e = (Entry)entry;

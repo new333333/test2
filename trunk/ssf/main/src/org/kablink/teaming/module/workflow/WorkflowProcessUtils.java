@@ -518,7 +518,12 @@ public class WorkflowProcessUtils extends CommonDependencyInjection {
 			}
 		}
         if (responders.remove(ObjectKeys.OWNER_USER_ID)) responders.add(entry.getOwnerId());
-     	if (responders.remove(ObjectKeys.TEAM_MEMBER_ID)) responders.addAll( getInstance().getBinderModule().getTeamMemberIds( ((FolderEntry)entry).getParentBinder() ));
+     	if (responders.remove(ObjectKeys.TEAM_MEMBER_ID)) {
+     		Set<Long> teamMemberIds = getInstance().getBinderModule().getTeamMemberIds( ((FolderEntry)entry).getParentBinder() );
+     		teamMemberIds = getInstance().profileDao.explodeGroups(teamMemberIds, 
+ 					RequestContextHolder.getRequestContext().getZoneId(), false);
+     		responders.addAll(teamMemberIds);
+     	}
 
 		//See if this question allows folder default
 		if (checkIfQuestionRespondersIncludeForumDefault(entry, ws, question)) {
