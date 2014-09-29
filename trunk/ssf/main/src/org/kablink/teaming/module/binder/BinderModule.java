@@ -470,11 +470,11 @@ public interface BinderModule {
 	 * @return 
 	 */
 	public Collection<Tag> getTags(Binder binder);
-	
+
 	/**
-	 * 
+	 * If this binder has a "team group" associated with it, rename the group to match the binder's name.
 	 */
-	public String getTeamName( Group group );
+	public void fixupTeamGroupName( Binder binder );
 	
 	/**
 	 * Get a list of team members for the given binder

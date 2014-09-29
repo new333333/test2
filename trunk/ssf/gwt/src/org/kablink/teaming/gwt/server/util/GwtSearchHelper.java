@@ -569,18 +569,16 @@ public class GwtSearchHelper
 									
 									gwtGroup.setId( id );
 
+									name = group.getName();
+									title = group.getTitle();
+									
 									if ( group instanceof Group &&
 										 ((Group)group).getGroupType() == GroupType.team )
 									{
-										name = ami.getBinderModule().getTeamName( (Group) group );
-										title = name;
+										// Use the title of the group instead of the group name for display purposes.
+										name = title;
 									}
-									else
-									{
-										name = group.getName();
-										title = group.getTitle();
-									}
-									
+
 									gwtGroup.setName( name );
 									gwtGroup.setTitle( title );
 									gwtGroup.setDn( group.getForeignName() );
@@ -887,18 +885,17 @@ public class GwtSearchHelper
 									gwtGroup.setInternal( identityInfo.isInternal() );
 								
 								gwtGroup.setId( principalId );
-								if ( principal instanceof Group &&
-									 ((Group)principal).getGroupType() == GroupType.team )
-								{
-									name = ami.getBinderModule().getTeamName( (Group) principal );
-									title = name;
-								}
-								else
-								{
-									name = principal.getName();
-									title = principal.getTitle();
-								}
+
+								name = principal.getName();
+								title = principal.getTitle();
 									
+								if ( principal instanceof Group &&
+										 ((Group)principal).getGroupType() == GroupType.team )
+								{
+									// Use the title of the group instead of the group name for display purposes.
+									name = title;
+								}
+
 								gwtGroup.setName( name );
 								gwtGroup.setTitle( title );
 								gwtGroup.setDn( principal.getForeignName() );
