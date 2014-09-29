@@ -358,7 +358,7 @@ div.ss_global_toolbar_quick input {
   	background-color: #FFFFFF;
   	color: ${ss_form_element_text_color};
   	font-size: ${ss_style_font_size};
-  	font-family: ${ss_style_folder_view_font_family};  
+  	font-family: ${ss_style_folder_view_font_family};
 	}
 div.ss_style textarea {
   	padding: 0px 0px 0px 2px;
@@ -368,6 +368,7 @@ div.ss_style input[type="password"],
  div.ss_style select {
 	border: 1px solid #CCC;
 	padding: 3px;
+	border-radius: 2px; 
 	} 
 .ss_form textarea {
   background-color: ${ss_form_element_color};

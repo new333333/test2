@@ -317,7 +317,7 @@
 
 .activityStreamTopEntryFullDesc
 {
-	color: #353838;
+	color: #000;
 	font-size: 13px;
 	margin-top: 4px;
 	margin-left: 1px;
@@ -326,7 +326,7 @@
 
 .activityStreamTopEntryPartialDesc
 {
-	color: #353838;
+	color: #454545;
 	font-size: 13px;
 	/* reduce size for Filr only */
 	height: .2em;
@@ -337,7 +337,7 @@
 }
 .activityStreamTopEntryPartialDesc-vibe
 {
-	color: #353838;
+	color: #454545;
 	font-size: 13px;
 	height: 4em; 
 	margin-top: 4px;
@@ -352,7 +352,7 @@
 
 .activityStreamCommentFullDesc
 {
-	color: #353838;
+	color: #000;
 	font-size: 13px;
 	line-height: 17px;
 	margin-top: 4px;
@@ -364,7 +364,7 @@
 
 .activityStreamCommentPartialDesc
 {
-	color: #353838;
+	color: #454545;
 	font-size: 13px;
 	line-height: 17px;
 	height: 30px;
