@@ -210,6 +210,11 @@ ss_createOnLoadObj("initiatePolling", initiatePolling);
 		      
 		    </select>
 		    <input type="hidden" name="whatsNewBtn" value="whats_new"/>
+				<span class="lastupdated-page">
+				  <ssf:nlt tag="teaming.live.page">
+					<ssf:param name="value" useBody="true">${ss_pageNumber+1}</ssf:param>
+				  </ssf:nlt>
+				</span>
 			<span class="pagingbuttons">
 				<c:if test="${!empty ss_prevPage}">
 			  		<a href="<ssf:url adapter="true" portletName="ss_forum" 
@@ -244,11 +249,6 @@ ss_createOnLoadObj("initiatePolling", initiatePolling);
 			  		  <img border="0" src="<html:rootPath/>images/pics/nl_left_dis_20.png"/>
 				</c:if>
 				</span>
-				<span class="lastupdated">
-				  <ssf:nlt tag="teaming.live.page">
-					<ssf:param name="value" useBody="true">${ss_pageNumber+1}</ssf:param>
-				  </ssf:nlt>
-				</span>
 			</div>	
 		</form>
     </div>
@@ -262,7 +262,7 @@ ss_createOnLoadObj("initiatePolling", initiatePolling);
 			  value="${now}" type="time" timeStyle="short" />
 			  </ssf:param></ssf:nlt></span>
 		  <span class="lastupdated ss_mobile_light">
-			[<ssf:nlt tag="teaming.live.willBeUpdated"/>]
+			<ssf:nlt tag="teaming.live.willBeUpdated"/>
 		  </span>
 	  </div>
     
