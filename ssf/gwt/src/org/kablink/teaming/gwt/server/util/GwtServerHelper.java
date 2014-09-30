@@ -5942,9 +5942,9 @@ public class GwtServerHelper {
 				}
 				
 				// Get all the members of the group.  We call ResolveIDs.getPrincipals()
-				// because it handles deleted users and users the logged-in user has
+				// because it handles users the logged-in user has
 				// rights to see.
-				memberList = ResolveIds.getPrincipals( membership );
+				memberList = ResolveIds.getPrincipals( membership, false );
 				
 				// Sort the list of users/groups
 				Collections.sort( memberList, new PrincipalComparator( true ) );
@@ -5957,6 +5957,9 @@ public class GwtServerHelper {
 					Principal member;
 	
 					member = (Principal) memberList.get( i );
+					if ( member.isDeleted() == true )
+						continue;
+					
 					if (member instanceof Group)
 					{
 						if ( filter == MembershipFilter.RETRIEVE_ALL_MEMBERS || filter == MembershipFilter.RETRIEVE_GROUPS_ONLY )
