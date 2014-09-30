@@ -38,11 +38,11 @@
 <%@ include file="/WEB-INF/jsp/mobile/masthead_new.jsp" %>
 <%@ include file="/WEB-INF/jsp/mobile/navigation.jsp" %>
 
-<div style="position:relative; background-color: #353838;" class="content">
+<div style="position:relative; background-color: #fff;" class="content">
 <div class="masthead-username">
   <span>${ssUser.title}</span>
 </div>
-<table class="mobile-main" style="background-color: transparent; "  cellpadding="0" cellspacing="3">
+<table class="mobile-main" style="background-color: transparent; "  cellpadding="0" cellspacing="0">
   	<tr>
 		<td class="main-cell">
 			<a id="myworkspace-a" href="<ssf:url adapter="true" portletName="ss_forum" 
