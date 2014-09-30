@@ -7464,7 +7464,12 @@ public class GwtServerHelper {
 	 * 
 	 * @return
 	 */
-	public static List<GroupInfo> getGroups(HttpServletRequest request, AllModulesInjected bs, Long userId) {
+	public static List<GroupInfo> getGroups(
+		HttpServletRequest request,
+		AllModulesInjected bs,
+		Long userId,
+		boolean includeTeamGroups )
+	{
 		// Allocate an List<GroupInfo> to hold the groups.
 		List<GroupInfo> reply = new ArrayList<GroupInfo>();
 		
@@ -7474,8 +7479,8 @@ public class GwtServerHelper {
 			// Yes!  Scan them...
 			for (Group myGroup : groups) {
 				
-				// Don't include "team groups" in the results
-				if ( myGroup.getGroupType() == Group.GroupType.team )
+				// Don't include "team groups" in the results if they are not asked for.
+				if ( myGroup.getGroupType() == Group.GroupType.team && includeTeamGroups == false )
 					continue;
 				
 				// ...adding a GroupInfo for each to the reply list.
@@ -7498,6 +7503,45 @@ public class GwtServerHelper {
 	}
 	
 	/**
+	 * Returns information about the groups of a specific user.
+	 * 
+	 * @param bs
+	 * @param userId 
+	 * 
+	 * @return
+	 */
+	public static List<GroupInfo> getGroups(HttpServletRequest request, AllModulesInjected bs, Long userId ) {
+		return getGroups( request, bs, userId, false );
+	}
+	
+	/**
+	 * Returns information about the of a specific user
+	 * 
+	 * @param bs
+	 * @param userId 
+	 * 
+	 * @return
+	 */
+	public static List<Long> getGroupIds(
+		HttpServletRequest request,
+		AllModulesInjected bs,
+		Long userId,
+		boolean includeTeamGroups )
+	{
+		// Allocate an ArrayList<GroupInfo> to hold the groups.
+		List<Long> reply = new ArrayList<Long>();
+		
+		List<GroupInfo> groups = getGroups(request, bs, userId, includeTeamGroups );
+		for (GroupInfo group:  groups) {
+			reply.add(group.getId());
+		}
+
+		// If we get here, reply refers to the List<Long> of the groups
+		// the user is a member of.  Return it.
+		return reply;
+	}
+	
+	/**
 	 * Returns information about the of a specific user
 	 * 
 	 * @param bs
@@ -7506,17 +7550,7 @@ public class GwtServerHelper {
 	 * @return
 	 */
 	public static List<Long> getGroupIds(HttpServletRequest request, AllModulesInjected bs, Long userId) {
-		// Allocate an ArrayList<GroupInfo> to hold the groups.
-		List<Long> reply = new ArrayList<Long>();
-		
-		List<GroupInfo> groups = getGroups(request, bs, userId);
-		for (GroupInfo group:  groups) {
-			reply.add(group.getId());
-		}
-
-		// If we get here, reply refers to the List<Long> of the groups
-		// the user is a member of.  Return it.
-		return reply;
+		return getGroupIds( request, bs, userId, false );
 	}
 	
 	/**
