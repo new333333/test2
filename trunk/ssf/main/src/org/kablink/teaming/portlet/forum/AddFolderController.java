@@ -125,14 +125,19 @@ public class AddFolderController extends SAbstractController {
 						getBinderModule().setTeamMembershipInherited(newIdCopy, inheritTeamMembership);			
 						return null;
 					}
-				}, new WorkAreaOperation[]{WorkAreaOperation.BINDER_ADMINISTRATION}, null);
+				}, new WorkAreaOperation[]{WorkAreaOperation.BINDER_ADMINISTRATION, WorkAreaOperation.CHANGE_ACCESS_CONTROL}, null);
 				
 				if (!newBinder.isTeamMembershipInherited()) {
-					Set memberIds = new HashSet();
+					final Set memberIds = new HashSet();
 					if (formData.containsKey("users")) memberIds.addAll(LongIdUtil.getIdsAsLongSet(request.getParameterValues("users")));
 					if (formData.containsKey("groups")) memberIds.addAll(LongIdUtil.getIdsAsLongSet(request.getParameterValues("groups")));
 					//Save the team members 
-					getBinderModule().setTeamMembers(newId, memberIds);
+					RunWithTemplate.runWith(new RunWithCallback() {
+						public Object runWith() {
+							getBinderModule().setTeamMembers(newIdCopy, memberIds);
+							return null;
+						}
+					}, new WorkAreaOperation[]{WorkAreaOperation.BINDER_ADMINISTRATION, WorkAreaOperation.CHANGE_ACCESS_CONTROL}, null);
 				}
 				
 				//See if there are any folders to be created
