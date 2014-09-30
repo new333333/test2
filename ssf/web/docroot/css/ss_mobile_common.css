@@ -290,17 +290,14 @@ td .sectionHeading {
 		text-align: center;
 		vertical-align: top;
 		padding: 15px 5px;
-		background-color: #505354;
-		border-top: 1px solid #808080;
-		border-left: 1px solid #808080;
-		border-right: 0px solid #000000;
-		border-bottom: 0px solid #000000;
+		border-top: 1px solid #e0e0e0;
+		border-left: 1px solid #e0e0e0;
+		border-right: 0px solid #e0e0e0;
+		border-bottom: 0px solid #e0e0e0;
 /*		border-right: 1px solid #353838;
 		border-left: 1px solid #949494; */
 		}
 	.main-cell a {
-		color: #f6f6f6;
-		font-size: .85em;
 		}
 	.main-item img { 
 		vertical-align: middle;
