@@ -1377,6 +1377,9 @@ public class GwtShareHelper
 					group = groupPrincipals.first();
 					
 					name = group.getName();
+
+					if ( ((Group) group).getGroupType() == Group.GroupType.team )
+						name = group.getTitle();
 				}
 			}
 			catch ( Exception e )
