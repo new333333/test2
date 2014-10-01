@@ -40,6 +40,7 @@ import org.kablink.teaming.gwt.client.lpe.LinkToEntryConfig;
 import org.kablink.teaming.gwt.client.lpe.LinkToEntryProperties;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Window;
@@ -111,6 +112,7 @@ public class LinkToEntryWidget extends VibeWidget
 		LinkToEntryProperties properties;
 		VibeFlowPanel mainPanel;
 		String title;
+		Scheduler.ScheduledCommand cmd;
 		
 		m_properties = new LinkToEntryProperties();
 		properties = config.getProperties();
@@ -121,18 +123,6 @@ public class LinkToEntryWidget extends VibeWidget
 		mainPanel = new VibeFlowPanel();
 		mainPanel.addStyleName( "landingPageWidgetMainPanel" + m_style );
 		mainPanel.addStyleName( "linkToEntryWidgetMainPanel" + m_style );
-		
-		// Issue an rpc request to get information about the entry.
-		m_properties.getDataFromServer( new GetterCallback<Boolean>()
-		{
-			/**
-			 * 
-			 */
-			public void returnValue( Boolean value )
-			{
-				updateWidget();
-			}
-		} );
 		
 		title = m_properties.getTitle();
 		if ( title == null || title.length() == 0 )
@@ -145,6 +135,33 @@ public class LinkToEntryWidget extends VibeWidget
 		GwtClientHelper.setElementTextColor( m_link.getElement(), widgetStyles.getContentTextColor() );
 		
 		mainPanel.add( m_link );
+		mainPanel.setVisible( false );
+		
+		cmd = new Scheduler.ScheduledCommand()
+		{
+			@Override
+			public void execute()
+			{
+				// Issue an rpc request to get information about the entry.
+				m_properties.getDataFromServer( new GetterCallback<Boolean>()
+				{
+					/**
+					 * 
+					 */
+					@Override
+					public void returnValue( Boolean value )
+					{
+						// Did we successfully get the data from the server?
+						if ( value )
+						{
+							updateWidget();
+							getWidget().setVisible( true );
+						}
+					}
+				} );
+			}
+		};
+		Scheduler.get().scheduleDeferred( cmd );
 		
 		return mainPanel;
 	}
@@ -159,6 +176,7 @@ public class LinkToEntryWidget extends VibeWidget
 			/**
 			 * 
 			 */
+			@Override
 			public void onClick( ClickEvent event )
 			{
 				handleClickOnLink();

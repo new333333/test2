@@ -36,6 +36,8 @@ package org.kablink.teaming.gwt.client.lpe;
 import org.kablink.teaming.gwt.client.GetterCallback;
 import org.kablink.teaming.gwt.client.GwtFolderEntry;
 import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.GwtTeamingException;
+import org.kablink.teaming.gwt.client.GwtTeamingException.ExceptionType;
 import org.kablink.teaming.gwt.client.rpc.shared.GetEntryCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
@@ -80,12 +82,17 @@ public class LinkToEntryProperties
 			/**
 			 * 
 			 */
+			@Override
 			public void onFailure(Throwable t)
 			{
-				GwtClientHelper.handleGwtRPCFailure(
-					t,
-					GwtTeaming.getMessages().rpcFailure_GetFolderEntry(),
-					m_entryId );
+				if ( ((GwtTeamingException) t).getExceptionType() != ExceptionType.ACCESS_CONTROL_EXCEPTION )
+				{
+					// This is not an access control exception.  Tell the user about the problem.
+					GwtClientHelper.handleGwtRPCFailure(
+						t,
+						GwtTeaming.getMessages().rpcFailure_GetFolderEntry(),
+						m_entryId );
+				}
 				
 				if ( m_getterCallback != null )
 					m_getterCallback.returnValue( Boolean.FALSE );
@@ -95,6 +102,7 @@ public class LinkToEntryProperties
 			 * 
 			 * @param result
 			 */
+			@Override
 			public void onSuccess( VibeRpcResponse response )
 			{
 				GwtFolderEntry gwtFolderEntry;
@@ -118,6 +126,7 @@ public class LinkToEntryProperties
 	/**
 	 * 
 	 */
+	@Override
 	public void copy( PropertiesObj props )
 	{
 		if ( props instanceof LinkToEntryProperties )
@@ -147,6 +156,7 @@ public class LinkToEntryProperties
 	/**
 	 * Return the properties as a string that can be stored in the db.
 	 */
+	@Override
 	public String createConfigString()
 	{
 		String str;
