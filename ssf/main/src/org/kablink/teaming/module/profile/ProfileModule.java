@@ -44,6 +44,7 @@ import java.util.Set;
 import java.util.SortedSet;
 
 import org.dom4j.Document;
+
 import org.kablink.teaming.dao.util.GroupSelectSpec;
 import org.kablink.teaming.domain.Application;
 import org.kablink.teaming.domain.ApplicationGroup;
@@ -433,6 +434,8 @@ public interface ProfileModule {
     public LimitedUserView getLimitedUserView(Long userId);
     public User findUserByName(String username) throws NoUserByTheNameException;
     public User getReservedUser(String internalId) throws NoUserByTheNameException;
+    public User getReservedUser(String internalId, Long zoneId) throws NoUserByTheNameException;
+    public Collection<User> getReservedUsers(Collection<String> internalId) throws NoUserByTheNameException;
    
     /**
      * 

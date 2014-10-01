@@ -55,7 +55,6 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.comparator.StringComparator;
 import org.kablink.teaming.context.request.RequestContextHolder;
@@ -69,12 +68,12 @@ import org.kablink.teaming.util.AllModulesInjected;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ReleaseInfo;
 import org.kablink.teaming.util.SPropsUtil;
+import org.kablink.teaming.util.SZoneConfig;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.util.BrowserSniffer;
 import org.kablink.util.HttpHeaders;
-
 import org.springframework.web.multipart.MultipartFile;
 
 /**
@@ -99,6 +98,21 @@ public final class MiscUtil
 	// The following is use as the key into the session cache where we
 	// store whether the user's browser supports NPAPI.
 	private final static String	BROWSER_SUPPORTS_NPAPI	= "browserSupportsNPAPI";
+	
+	// Initialized by the first call to get...Module();
+	private static FolderModule		m_folderModule;		//
+	private static ProfileModule	m_profileModule;	//
+	private static ZoneModule		m_zoneModule;		//
+	
+	private final static Collection<String> RESERVED_USER_IDS = new ArrayList<String>();
+	static {
+		RESERVED_USER_IDS.add( ObjectKeys.SUPER_USER_INTERNALID             );
+		RESERVED_USER_IDS.add( ObjectKeys.ANONYMOUS_POSTING_USER_INTERNALID );
+		RESERVED_USER_IDS.add( ObjectKeys.FILE_SYNC_AGENT_INTERNALID        );
+		RESERVED_USER_IDS.add( ObjectKeys.GUEST_USER_INTERNALID             );
+		RESERVED_USER_IDS.add( ObjectKeys.JOB_PROCESSOR_INTERNALID          );
+		RESERVED_USER_IDS.add( ObjectKeys.SYNCHRONIZATION_AGENT_INTERNALID  );
+	}
 	
 	/*
 	 * Enumeration type to specific the platform the browser is running
@@ -227,10 +241,7 @@ public final class MiscUtil
 	 */
 	public static boolean doesGuestUserHaveAddRightsToProfileBinder( AllModulesInjected bs )
 	{
-		ProfileModule	profileModule;
-
-		profileModule = bs.getProfileModule();
-		return profileModule.doesGuestUserHaveAddRightsToProfileBinder();
+		return getProfileModule().doesGuestUserHaveAddRightsToProfileBinder();
 	}// end doesGuestUserHaveAddRightsToProfileBinder()
 
 	
@@ -291,11 +302,7 @@ public final class MiscUtil
 	
 	/**
 	 * This method will return true if the given name is the name of a
-	 * system user account.
-	 * 
-	 * Currently there are 5 system user accounts: "admin", "guest",
-	 * "_postingAgent", "_jobProcessingAgent", "_synchronizationAgent",
-	 * and "_fileSyncAgent.
+	 * system user account and false otherwise.
 	 * 
 	 * @param name
 	 * 
@@ -303,22 +310,78 @@ public final class MiscUtil
 	 */
 	public static boolean isSystemUserAccount( String name )
 	{
-		if ( name == null)
+		// If we weren't given a name...
+		if ( ! ( hasString( name ) ) )
 		{
+			// ...it can't be a system user account.
 			return false;
 		}
-		
-		if ( name.equalsIgnoreCase( "admin" ) || name.equalsIgnoreCase( "guest" ) ||
-			  name.equalsIgnoreCase( "_postingAgent" ) || name.equalsIgnoreCase( "_jobProcessingAgent" ) ||
-			  name.equalsIgnoreCase("_synchronizationAgent") ||
-			  name.equalsIgnoreCase("_fileSyncAgent"))
+
+		// Load current instances of the various reserved User's.
+		Collection<User> reservedUsers = getProfileModule().getReservedUsers( RESERVED_USER_IDS );
+		if ( MiscUtil.hasItems( reservedUsers ) )
 		{
-			return true;
+			// Scan them.
+			for ( User reservedUser:  reservedUsers )
+			{
+				// Is this User in question?
+				if ( name.equalsIgnoreCase( reservedUser.getName() ) )
+				{
+					// Yes!  Return true.
+					return true;
+				}
+			}
 		}
 		
 		// If we get here the name is not a system user account.
 		return false;
 	}// end isSystemUserAccount()
+
+	/*
+	 * Returns the name of the system user corresponding to the given
+	 * internal ID.
+	 */
+	private static String getSystemUserName( String internalId, String defaultName, Long zoneId )
+	{
+		User systemUser = getProfileModule().getReservedUser( internalId, zoneId );
+		return (( null == systemUser ) ? defaultName : systemUser.getName() );
+	}
+	
+	private static String getZoneDefaultAdminName( Long zoneId )
+	{
+		ZoneInfo zi = getZoneModule().getZoneInfo( zoneId );
+		return SZoneConfig.getZoneDefaultAdminUserName( zi.getZoneName() );
+	}
+	
+	private static String getZoneDefaultGuestUserName( Long zoneId )
+	{
+		ZoneInfo zi = getZoneModule().getZoneInfo( zoneId );
+		return SZoneConfig.getZoneDefaultGuestUserName( zi.getZoneName() );
+	}
+	
+	/**
+	 * Get'er methods for the names of the various built-in system
+	 * users.
+	 * 
+	 * Currently there are 6 system user accounts:  admin, guest, the
+	 * email posting agent, the job processing agent, the
+	 * synchronization agent, and the file sync agent.
+	 * 
+	 * @return
+	 */
+	public static String getAdminName(                Long zoneId ) { return getSystemUserName( ObjectKeys.SUPER_USER_INTERNALID,             getZoneDefaultAdminName(    zoneId ),  zoneId ); }
+	public static String getEmailPostingAgentName(    Long zoneId ) { return getSystemUserName( ObjectKeys.ANONYMOUS_POSTING_USER_INTERNALID, "_postingAgent",                       zoneId ); }
+	public static String getFileSyncAgentName(        Long zoneId ) { return getSystemUserName( ObjectKeys.FILE_SYNC_AGENT_INTERNALID,        "_fileSyncAgent",                      zoneId ); }
+	public static String getGuestUserName(            Long zoneId ) { return getSystemUserName( ObjectKeys.GUEST_USER_INTERNALID,             getZoneDefaultGuestUserName( zoneId ), zoneId ); }
+	public static String getJobProcessingAgentName(   Long zoneId ) { return getSystemUserName( ObjectKeys.JOB_PROCESSOR_INTERNALID,          "_jobProcessingAgent",                 zoneId ); }
+	public static String getSynchronizationAgentName( Long zoneId ) { return getSystemUserName( ObjectKeys.SYNCHRONIZATION_AGENT_INTERNALID,  "_synchronizationAgent",               zoneId ); }
+
+	public static String getAdminName()                { return getAdminName(                RequestContextHolder.getRequestContext().getZoneId() ); }
+	public static String getEmailPostingAgentName()    { return getEmailPostingAgentName(    RequestContextHolder.getRequestContext().getZoneId() ); }
+	public static String getFileSyncAgentName()        { return getFileSyncAgentName(        RequestContextHolder.getRequestContext().getZoneId() ); }
+	public static String getGuestUserName()            { return getGuestUserName(            RequestContextHolder.getRequestContext().getZoneId() ); }
+	public static String getJobProcessingAgentName()   { return getJobProcessingAgentName(   RequestContextHolder.getRequestContext().getZoneId() ); }
+	public static String getSynchronizationAgentName() { return getSynchronizationAgentName( RequestContextHolder.getRequestContext().getZoneId() ); }
 
 	/**
 	 * This method will return true if the given User is a system user
@@ -337,15 +400,10 @@ public final class MiscUtil
 			return false;
 		}
 
-		// If the User is Guest, Admin or not a person...
-		if ( user.isShared() || user.isSuper() || ( ! ( user.isPerson() ) ) )
-		{
-			// ...it's a system user account.
-			return true;
-		}
-		
-		// If we get here the User is not a system user account.
-		return false;
+		// Simply check if the user is a reserved user or not. The
+		// reserved users are the built-in system users (i.e., 'admin',
+		// 'guest', ...)
+		return user.isReserved();
 	}// end isSystemUserAccount()
 
 	/**
@@ -890,8 +948,7 @@ public final class MiscUtil
 		try {
 			Long binderId = Long.parseLong(binderIdS);
 			Long entryId  = Long.parseLong(entryIdS);
-			FolderModule fm = ((FolderModule) SpringContextUtil.getBean("folderModule"));
-			FolderEntry fe = fm.getEntry(binderId, entryId);
+			FolderEntry fe = getFolderModule().getEntry(binderId, entryId);
 			if (null != fe) {
 				HistoryStamp reservation = fe.getReservation();
 				if (null != reservation) {
@@ -1542,13 +1599,47 @@ public final class MiscUtil
 	public static boolean isEntryPreDeleted( Long entryId )
 	{
 		boolean reply = false; 
-		FolderModule fm = ( (FolderModule) SpringContextUtil.getBean( "folderModule" ) );
 		try
 		{
-			FolderEntry fe = fm.getEntry( null, entryId );
+			FolderEntry fe = getFolderModule().getEntry( null, entryId );
 			reply = fe.isPreDeleted();
 		}
 		catch ( Exception e ) {/* Ignore. */}
 		return reply;
+	}
+	
+	/*
+	 * Returns an instance of a FolderModule.
+	 */
+	private static FolderModule getFolderModule() {
+		if ( null == m_folderModule )
+		{
+			m_folderModule = ( (FolderModule) SpringContextUtil.getBean( "folderModule" ));
+		}
+		return m_folderModule;
+	}
+
+	/*
+	 * Returns an instance of a ProfileModule.
+	 */
+	private static ProfileModule getProfileModule()
+	{
+		if ( null == m_profileModule )
+		{
+			m_profileModule = ( (ProfileModule) SpringContextUtil.getBean( "profileModule" ) );
+		}
+		return m_profileModule;
+	}
+
+	/*
+	 * Returns an instance of a ZoneModule.
+	 */
+	private static ZoneModule getZoneModule()
+	{
+		if ( null == m_zoneModule )
+		{
+			m_zoneModule = ( (ZoneModule) SpringContextUtil.getBean( "zoneModule" ) );
+		}
+		return m_zoneModule;
 	}
 }// end MiscUtil
