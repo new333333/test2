@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -33,52 +33,34 @@
 package org.kablink.teaming.portlet.forum;
 
 import static org.kablink.util.search.Restrictions.in;
-import static org.kablink.util.search.Restrictions.eq;
 
 import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.SortedMap;
 import java.util.SortedSet;
-import java.util.TimeZone;
-import java.util.TreeSet;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
-import javax.portlet.PortletSession;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
-import javax.portlet.WindowState;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import net.sf.json.JSONArray;
-
-import org.apache.commons.lang.Validate;
-import org.dom4j.Branch;
 import org.dom4j.Document;
 import org.dom4j.Element;
+
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.asmodule.zonecontext.ZoneContextHolder;
-import org.kablink.teaming.calendar.AbstractIntervalView;
 import org.kablink.teaming.calendar.EventsViewHelper;
-import org.kablink.teaming.calendar.OneDayView;
-import org.kablink.teaming.calendar.OneMonthView;
-import org.kablink.teaming.comparator.BinderComparator;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.CustomAttribute;
@@ -88,77 +70,60 @@ import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.HomePageConfig;
 import org.kablink.teaming.domain.NoBinderByTheIdException;
-import org.kablink.teaming.domain.NoDefinitionByTheIdException;
 import org.kablink.teaming.domain.Principal;
-import org.kablink.teaming.domain.ProfileBinder;
 import org.kablink.teaming.domain.SeenMap;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserProperties;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
-import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
 import org.kablink.teaming.module.definition.DefinitionUtils;
 import org.kablink.teaming.module.folder.FolderModule.FolderOperation;
 import org.kablink.teaming.module.shared.MapInputData;
-import org.kablink.teaming.module.workspace.WorkspaceModule;
 import org.kablink.teaming.portletadapter.AdaptedPortletURL;
-import org.kablink.teaming.portletadapter.MultipartFileSupport;
 import org.kablink.teaming.portletadapter.portlet.HttpServletRequestReachable;
 import org.kablink.teaming.search.SearchUtils;
 import org.kablink.teaming.search.filter.SearchFilter;
-import org.kablink.teaming.search.filter.SearchFilterKeys;
 import org.kablink.teaming.search.filter.SearchFilterRequestParser;
 import org.kablink.teaming.security.AccessControlException;
-import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.ssfs.util.SsfsUtil;
 import org.kablink.teaming.util.AllModulesInjected;
-import org.kablink.teaming.util.CalendarHelper;
-import org.kablink.teaming.util.LongIdUtil;
 import org.kablink.teaming.util.NLT;
-import org.kablink.teaming.util.ReleaseInfo;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.feed.TeamingFeedCache;
 import org.kablink.teaming.util.stringcheck.StringCheckUtil;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.portlet.SAbstractControllerRetry;
-import org.kablink.teaming.web.tree.DomTreeBuilder;
-import org.kablink.teaming.web.tree.FolderConfigHelper;
-import org.kablink.teaming.web.tree.WsDomTreeBuilder;
 import org.kablink.teaming.web.util.BinderHelper;
-import org.kablink.teaming.web.util.Clipboard;
 import org.kablink.teaming.web.util.DashboardHelper;
 import org.kablink.teaming.web.util.DefinitionHelper;
 import org.kablink.teaming.web.util.Favorites;
 import org.kablink.teaming.web.util.ListFolderHelper;
 import org.kablink.teaming.web.util.MiscUtil;
-import org.kablink.teaming.web.util.PermaLinkUtil;
-import org.kablink.teaming.web.util.PortletPreferencesUtil;
 import org.kablink.teaming.web.util.PortletRequestUtils;
-import org.kablink.teaming.web.util.ProfilesBinderHelper;
-import org.kablink.teaming.web.util.RelevanceDashboardHelper;
 import org.kablink.teaming.web.util.Tabs;
 import org.kablink.teaming.web.util.WebHelper;
-import org.kablink.teaming.web.util.WebStatusTicket;
 import org.kablink.teaming.web.util.WebUrlUtil;
-import org.kablink.teaming.web.util.WorkspaceTreeHelper;
 import org.kablink.util.Http;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
 import org.kablink.util.search.Criteria;
 import org.kablink.util.search.Order;
+
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 import org.springframework.web.portlet.ModelAndView;
-import org.springframework.web.portlet.bind.PortletRequestBindingException;
 
 /**
+ * ?
+ * 
  * @author Peter Hurley
- *
  */
+@SuppressWarnings({"deprecation", "unchecked", "unused"})
 public class MobileAjaxController  extends SAbstractControllerRetry {
 	static Pattern replacePtrn = Pattern.compile("([\\p{Punct}&&[^\\*]])");	
 	
 	//caller will retry on OptimisiticLockExceptions
+	@Override
 	public void handleActionRequestWithRetry(ActionRequest request, ActionResponse response) throws Exception {
 		response.setRenderParameters(request.getParameterMap());
 		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
@@ -194,6 +159,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		}
 	}
 	
+	@Override
 	public ModelAndView handleRenderRequestAfterValidation(RenderRequest request, 
 			RenderResponse response) throws Exception {
 		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
@@ -674,7 +640,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		model.put(WebKeys.URL_OPERATION2, op2);
 		model.put(WebKeys.MOBILE_URL, SsfsUtil.getMobileUrl(request));
 		model.put(WebKeys.USER_PRINCIPAL, user);
-		if (user.getName().equals(ObjectKeys.GUEST)) {
+		if (user.isShared()) {
 			model.put(WebKeys.MOBILE_IS_LOGGED_IN, Boolean.FALSE);
 		} else {
 			model.put(WebKeys.MOBILE_IS_LOGGED_IN, Boolean.TRUE);
@@ -2168,5 +2134,4 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 
 		return new ModelAndView(view, model);
 	}
-	
 }

@@ -1835,8 +1835,31 @@ public Map getUsers() {
 	}
 	
 	@Override
+	public User getReservedUser(String internalId, Long zoneId) throws NoUserByTheNameException {
+		return getProfileDao().getReservedUser(internalId, zoneId);
+	}
+	
+	@Override
 	public User getReservedUser(String internalId) throws NoUserByTheNameException {
-		return getProfileDao().getReservedUser(internalId, RequestContextHolder.getRequestContext().getZoneId());
+		return getReservedUser(internalId, RequestContextHolder.getRequestContext().getZoneId());
+	}
+	
+	@Override
+	public Collection<User> getReservedUsers(Collection<String> internalIds) throws NoUserByTheNameException {
+		int c = ((null == internalIds) ? 0 : internalIds.size());
+		Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
+		Collection<User> reply;
+		if (1 == c) {
+			reply = new ArrayList<User>();
+			reply.add(getProfileDao().getReservedUser(internalIds.iterator().next(), zoneId));
+		}
+		else if (1 < c) {
+			reply = getProfileDao().getReservedUsers(internalIds, zoneId);
+		}
+		else {
+			reply = new ArrayList<User>();
+		}
+		return reply;
 	}
 	
 	/**

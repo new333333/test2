@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -41,7 +41,14 @@ import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.shared.InputDataAccessor;
+import org.kablink.teaming.web.util.MiscUtil;
 
+/**
+ * ?
+ * 
+ * @author ?
+ */
+@SuppressWarnings("unchecked")
 public class FolderModuleListener {
 
 	protected Log logger = LogFactory.getLog(getClass());
@@ -143,6 +150,7 @@ public class FolderModuleListener {
 		logger.info("postAddEntry: A new entry is created with ID " + entry.getId());
 		
 		// Figure out who added this entry.
+		@SuppressWarnings("unused")
 		String userName = RequestContextHolder.getRequestContext().getUserName();
 		
 		// Given the user name and the newly added entry, we can do something useful
@@ -207,7 +215,7 @@ public class FolderModuleListener {
 		// the user is trying to reserve is 12, then keep the request from
 		// proceeding by returning false from here. The entry 12 means so much
 		// to me that I do not want anyone but me to be able to reserve it!
-		if(!userName.equals("admin") && entryId.longValue() == 12) {
+		if(!userName.equals(MiscUtil.getAdminName()) && entryId.longValue() == 12) {
 			logger.info("preReserveEntry: No, you can't do this");
 			return false;
 		}
@@ -247,5 +255,4 @@ public class FolderModuleListener {
 	public void afterCompletionReserveEntry(Long folderId, Long entryId, Throwable ex) {
 		logger.info("afterCompletionReserveEntry");
 	}
-
 }

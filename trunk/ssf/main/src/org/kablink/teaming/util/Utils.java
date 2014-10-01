@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -32,7 +32,6 @@
  */
 package org.kablink.teaming.util;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -46,13 +45,13 @@ import java.util.Set;
 
 import javax.servlet.ServletOutputStream;
 
-import org.apache.commons.codec.binary.Base64InputStream;
 import org.apache.commons.codec.binary.Base64OutputStream;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.dom4j.Document;
 import org.dom4j.Element;
+
 import org.kablink.teaming.InternalException;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
@@ -81,7 +80,6 @@ import org.kablink.teaming.security.AccessControlManager;
 import org.kablink.teaming.security.function.WorkArea;
 import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.web.util.MiscUtil;
-import org.kablink.teaming.web.util.PermaLinkUtil;
 import org.kablink.util.FileUtil;
 import org.kablink.util.Validator;
 
@@ -145,16 +143,15 @@ public class Utils {
 		}
 		
 	}
-	
-	//Return the account name of the super user (e.g., "admin")
+
+	//Return the account name of the super user (i.e., 'admin')
 	public static String getAdminName() {
-		String zoneName = RequestContextHolder.getRequestContext().getZoneName();
-		return SZoneConfig.getString(zoneName, "property[@name='adminUser']", ObjectKeys.ADMIN);
+		return SZoneConfig.getAdminUserName(RequestContextHolder.getRequestContext().getZoneName());
 	}
 
+	//Return the account name of the guest user (i.e., 'guest')
 	public static String getGuestName() {
-		String zoneName = RequestContextHolder.getRequestContext().getZoneName();
-		return SZoneConfig.getString(zoneName, "property[@name='guestUser']", ObjectKeys.GUEST);
+		return SZoneConfig.getGuestUserName(RequestContextHolder.getRequestContext().getZoneName());
 	}
 
 	public static String getZoneKey() {
@@ -1027,5 +1024,4 @@ public class Utils {
 		}
 		return result;
 	}
-
 }

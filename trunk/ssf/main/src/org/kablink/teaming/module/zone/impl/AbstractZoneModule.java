@@ -901,7 +901,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		User guest=null;
 		try {
 			Binder parent = superU.getParentBinder();
-			String guestName= SZoneConfig.getString(parent.getRoot().getName(), "property[@name='guestUser']", ObjectKeys.GUEST);
+			String guestName= SZoneConfig.getGuestUserName(zone.getName());
 			guest = getProfileDao().findUserByName(guestName, zone.getId());
 			
 			if(guest !=null ){

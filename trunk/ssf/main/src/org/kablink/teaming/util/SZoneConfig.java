@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -42,8 +42,9 @@ import org.kablink.teaming.ConfigurationException;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.SingletonViolationException;
 import org.kablink.teaming.context.request.RequestContextHolder;
-import org.kablink.util.Validator;
-
+import org.kablink.teaming.domain.NoWorkspaceByTheNameException;
+import org.kablink.teaming.module.zone.ZoneUtil;
+import org.kablink.teaming.web.util.MiscUtil;
 
 /**
  * This class provides unified access to the SSF zone properties loaded from the 
@@ -59,6 +60,7 @@ import org.kablink.util.Validator;
  * @author jong
  *
  */
+@SuppressWarnings({"unchecked", "unused"})
 public class SZoneConfig {
 	// This is a singleton class. 
 	private static SZoneConfig instance; // A singleton instance
@@ -66,10 +68,6 @@ public class SZoneConfig {
 	private Document doc;
 	private Element root;
 	private String defaultZoneName;
-	// Caches super user names for each zone for faster access
-	private ConcurrentHashMap<String,String> adminUsers = new ConcurrentHashMap<String,String>();
-	// Caches default user names for each zone for faster access
-	private ConcurrentHashMap<String,String> guestUsers = new ConcurrentHashMap<String,String>();
 	
 	public SZoneConfig() {
 		if(instance != null)
@@ -164,29 +162,93 @@ public class SZoneConfig {
     private static SZoneConfig getInstance() {
     	return instance;
     }
+
+    /*
+     * Returns the zone ID of a given zone name.
+     * 
+     * Note that this may be called BEFORE the zone exists and hence
+     * a NoWorkspaceByTheNameException would be thrown.  This method
+     * gracefully handles that case.
+     */
+    private static Long getSafeZoneIdByZoneName(String zoneName) {
+    	Long zoneId;
+    	try                                          {zoneId = ZoneUtil.getZoneIdByZoneName(zoneName);}
+    	catch (NoWorkspaceByTheNameException noName) {zoneId = null;                                  }
+    	return zoneId;
+    }
     
+    
+    /* * * * * * * * * * * * * * * * * * */
+    /* API's for admin user name access. */
+    /* * * * * * * * * * * * * * * * * * */
+    
+    /**
+     * Returns the name to use for the 'admin' user in the given zone.
+     * 
+     * @param zoneName
+     * 
+     * @return
+     */
     public static String getAdminUserName(String zoneName) {
     	return getInstance()._getAdminUserName(zoneName);
     }
     
+    protected String _getAdminUserName(String zoneName) {
+    	Long zoneId = getSafeZoneIdByZoneName(zoneName);
+    	String reply;
+    	if (null == zoneId)
+    		 reply = getZoneDefaultAdminUserName(zoneName);
+    	else reply = MiscUtil.getAdminName(zoneId);
+    	return reply;
+    }
+    
+    /**
+     * Returns the default name to use for the 'admin' user in the
+     * given zone.
+     * 
+     * @param zoneName
+     * 
+     * @return
+     */
+    public static String getZoneDefaultAdminUserName(String zoneName) {
+    	return getString(zoneName, "property[@name='adminUser']", ObjectKeys.ADMIN);
+    }
+    
+    
+    /* * * * * * * * * * * * * * * * * * */
+    /* API's for guest user name access. */
+    /* * * * * * * * * * * * * * * * * * */
+    
+    /**
+     * Returns the name to use for the 'Guest' user in the given zone. 
+     * 
+     * @param zoneName
+     * 
+     * @return
+     */
     public static String getGuestUserName(String zoneName) {
     	return getInstance()._getGuestUserName(zoneName);
     }
-    protected String _getAdminUserName(String zoneName) {
-    	String adminUser = adminUsers.get(zoneName);
-    	if(adminUser == null) {
-    		adminUser = SZoneConfig.getString(zoneName, "property[@name='adminUser']", ObjectKeys.ADMIN);
-    		adminUsers.put(zoneName, adminUser);
-    	}
-    	return adminUser;
-    }
     
     protected String _getGuestUserName(String zoneName) {
-    	String guestUser = guestUsers.get(zoneName);
-    	if(guestUser == null) {
-    		guestUser = SZoneConfig.getString(zoneName, "property[@name='guestUser']", ObjectKeys.GUEST);
-    		guestUsers.put(zoneName, guestUser);
-    	}
-    	return guestUser;
+    	Long zoneId = getSafeZoneIdByZoneName(zoneName);
+    	String reply;
+    	if (null == zoneId)
+    		 reply = getZoneDefaultGuestUserName(zoneName);
+    	else reply = MiscUtil.getGuestUserName(zoneId);
+    	return reply;
+
+    }
+    
+    /**
+     * Returns the default name to use for the 'Guest' user in the
+     * given zone.
+     * 
+     * @param zoneName
+     * 
+     * @return
+     */
+    public static String getZoneDefaultGuestUserName(String zoneName) {
+    	return getString(zoneName, "property[@name='guestUser']", ObjectKeys.GUEST);
     }
 }

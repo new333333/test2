@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -39,6 +39,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -57,6 +58,7 @@ import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.engine.SessionFactoryImplementor;
+
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.comparator.LongIdComparator;
 import org.kablink.teaming.context.request.RequestContextHolder;
@@ -110,6 +112,7 @@ import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.util.Validator;
+
 import org.springframework.dao.DataAccessException;
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.orm.hibernate3.HibernateSystemException;
@@ -148,6 +151,25 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
 	protected synchronized Long getReservedId(String internalId, Long zoneId) {
 		String key = internalId + "-" + zoneId;
    		return (Long)reservedIds.get(key);	
+	}
+	protected synchronized Collection<Long> getReservedIds(Collection<String> internalIds, Long zoneId) {
+		int c = ((null == internalIds) ? 0 : internalIds.size());
+		Collection<Long> reply = new ArrayList<Long>();
+		if (0 == c) {
+			return reply;
+		}
+		Iterator<String> ii = internalIds.iterator();
+		while (ii.hasNext()) {
+			Long iid = getReservedId(ii.next(), zoneId);
+			if (null != iid) {
+				reply.add(iid);
+			}
+			else {
+				reply.clear();
+				break;
+			}
+		}
+   		return reply;	
 	}
 	protected synchronized void setReservedId(String internalId, Long zoneId, Long id) {
 		String key = internalId + "-" + zoneId;
@@ -1816,6 +1838,7 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
     		end(begin, "getReservedApplicationGroup(String,Long)");
     	}	        
     }
+    
     @Override
 	public User getReservedUser(String internalId, Long zoneId) {
 		long begin = System.nanoTime();
@@ -1835,7 +1858,44 @@ public class ProfileDaoImpl extends KablinkDao implements ProfileDao {
     	finally {
     		end(begin, "getReservedUser(String,Long)");
     	}	        
-   }
+    }
+    
+    @Override
+	public Collection<User> getReservedUsers(Collection<String> internalIds, Long zoneId) {
+    	int iiCountS = ((null == internalIds) ? 0 : internalIds.size());
+    	if (0 == iiCountS) {
+    		return new ArrayList<User>();
+    	}
+		long begin = System.nanoTime();
+		try {
+	    	Collection<Long> ids = getReservedIds(internalIds, zoneId);
+	    	int iiCountL = ((null == ids) ? 0 : ids.size());
+	    	if (iiCountS == iiCountL) {
+		    	return loadUsers(ids, zoneId);
+	    	}
+	    	else {
+	    		Collection<User> reply = new ArrayList<User>();
+	    		Iterator<String> ii = internalIds.iterator();
+	    		while (ii.hasNext()) {
+	    			String internalId = ii.next();
+		    		List<User>objs = getCoreDao().loadObjects(User.class, new FilterControls(ObjectKeys.FIELD_INTERNALID, internalId), zoneId);
+		    		if ((objs == null) || objs.isEmpty()) {
+		    			continue;
+		    		}
+		    		User u = objs.get(0);
+		    		setReservedId(internalId, zoneId, u.getId());
+		    		if (u.isActive()) {
+		    			reply.add(u);
+		    		}
+	    		}
+	    		return reply;
+	    	}
+    	}
+    	finally {
+    		end(begin, "getReservedUsers(Collection<String>,Long)");
+    	}	        
+    }
+    
     @Override
 	public User getReservedUserDeadOrAlive(String internalId, Long zoneId) {
 		long begin = System.nanoTime();
