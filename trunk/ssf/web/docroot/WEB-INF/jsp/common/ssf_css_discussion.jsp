@@ -669,10 +669,10 @@ td.ss_replies_indent_picture div {
 	font-weight: bold;
     }
 td.ss_non_clipped_signature {
-	width:140px;
+	max-width: 70px;
 	}
 .wg-comment td.ss_clipped_signature div.ss_entrySignatureUser {
-	width: 140px;
+	max-width: 70px;
     overflow: hidden;
     }
 .wg-comment .ss_thumbnail_standalone_signature img {

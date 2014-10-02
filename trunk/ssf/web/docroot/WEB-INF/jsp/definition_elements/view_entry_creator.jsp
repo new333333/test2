@@ -34,14 +34,14 @@
 %>
 <% //Entry creator view %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
-<div class="ss_entryContent ss_entrySignatureUser">
+<div class="ss_entryContent ss_entrySignatureUser ss_wrap">
   <c:out value="${property_caption}" />
 <c:if test="${!empty ssDefinitionEntry.creation.principal}">
     <ssf:showUser user="${ssDefinitionEntry.creation.principal}" showHint="true" />
 
   <c:if test="${!empty ssDefinitionEntry.postedBy}">
-    <span title="<c:out value="${ssDefinitionEntry.postedBy}"/>">
-      (<ssf:nlt tag="entry.postedBy"/>&nbsp;<c:out value="${ssDefinitionEntry.postedBy}"/>)
+    <span style="padding-left:14px;" title="<ssf:escapeQuotes><c:out value='${ssDefinitionEntry.postedBy}'/></ssf:escapeQuotes>">
+      (<ssf:nlt tag="entry.postedBy"/>&nbsp;<ssf:escapeQuotes> <c:out value="${ssDefinitionEntry.postedBy}"/></ssf:escapeQuotes>)
     </span>
   </c:if>
   <c:if test="${!empty ssDefinitionEntry.customAttributes['_guestName'].valueSet}">

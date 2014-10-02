@@ -69,20 +69,27 @@
 			<ssf:ifadapter>
 				<c:if test="${!empty ss_showUserUser.workspaceId && !ss_showUserProfileEntry}">
 				  	<c:if test="${!ss_showUserIsGroup}">
+				  	  <table cellspacing="0" cellpadding="0">
+				  	  <tr>
+				  	  <td>
 					  <a 
 					    <c:if test="${!empty ss_showUserTarget}">target="${ss_showUserTarget}"</c:if>
 				  		href="<ssf:permalink entity="${ss_showUserUser}"/>"
 				  		onclick="ss_openUrlInParentWorkarea(this.href, '${ss_showUserUser.workspaceId}', 'view_ws_listing', '${ss_showUserTarget}', '${ss_showUserClose}');return false;"
 				  		<c:if test="${ss_showUserShowHint}">title="<ssf:escapeJavaScript value="${ss_showUserUser.title}"/></c:if>
 					  >
-			  		</c:if>
+					  </td>
+					  <td>
 					  <span id="${ss_showUserUser.id}" 
 					    class="${ss_showUserTitleStyle} ss_muster_users"><ssf:userTitle user="${ss_showUserUser}"/></span>
-			  	<c:choose>
-				  	<c:when test="${!ss_showUserIsGroup}">
-					  </a>
-			  		</c:when>
-			  		<c:otherwise>
+					  </td>
+					  </tr>
+					  </table>
+			  		</c:if>
+			  		<c:if test="${ss_showUserIsGroup}">
+			  			<span id="${ss_showUserUser.id}" class="${ss_showUserTitleStyle} ss_muster_users"
+			  			><ssf:userTitle user="${ss_showUserUser}"/></span>
+			  		
 				  		<a href="javascript: //"
 				  		  onclick="ss_toggleShowDiv('ss_show_user_${ss_showUserInstanceCount}'); return false;" 
 				  		  class="ss_fineprint"
@@ -94,28 +101,27 @@
 								</c:forEach>
 					  		</ul>
 				  		</div>
-			  		</c:otherwise>
-			  	</c:choose>	
-         	  </c:if>
-         	  <c:if test="${empty ss_showUserUser.workspaceId || ss_showUserProfileEntry}">
-         	    <c:if test="${!empty ss_showUserUser.parentBinder.id && ss_canAccessProfilesBinder}">
-          	      <a href="<ssf:url     
-				    binderId="${ss_showUserUser.parentBinder.id}" 
-				    action="view_profile_entry" 
-				    entryId="${ss_showUserUser.id}"><ssf:param 
-	  				name="newTab" value="1"/><ssf:param name="entryViewStyle" value="full"/></ssf:url>" 
-				  >
-				      <span id="${ss_showUserUser.id}" 
-            	       class="${ss_showUserTitleStyle} ss_muster_users"
-            	       <c:if test="${ss_showUserShowHint}">title="<ssf:escapeJavaScript value="${ss_showUserUser.title}"/></c:if>
-            	      ><ssf:userTitle user="${ss_showUserUser}" /></span>
-            	  </a>
-                </c:if>		  	
-         	    <c:if test="${empty ss_showUserUser.parentBinder.id || !ss_canAccessProfilesBinder}">
-				      <span id="${ss_showUserUser.id}" 
-            	       class="${ss_showUserTitleStyle} ss_muster_users"><ssf:userTitle user="${ss_showUserUser}" /></span>
-                </c:if>		  	
-              </c:if>		  	
+			  		</c:if>
+         	  	</c:if>
+         	  	<c:if test="${empty ss_showUserUser.workspaceId || ss_showUserProfileEntry}">
+	         	    <c:if test="${!empty ss_showUserUser.parentBinder.id && ss_canAccessProfilesBinder}">
+	          	      <a href="<ssf:url     
+					    binderId="${ss_showUserUser.parentBinder.id}" 
+					    action="view_profile_entry" 
+					    entryId="${ss_showUserUser.id}"><ssf:param 
+		  				name="newTab" value="1"/><ssf:param name="entryViewStyle" value="full"/></ssf:url>" 
+					  >
+					      <span id="${ss_showUserUser.id}" 
+	            	       class="${ss_showUserTitleStyle} ss_muster_users"
+	            	       <c:if test="${ss_showUserShowHint}">title="<ssf:escapeJavaScript value="${ss_showUserUser.title}"/></c:if>
+	            	      ><ssf:userTitle user="${ss_showUserUser}" /></span>
+	            	  </a>
+	                </c:if>		  	
+	         	    <c:if test="${empty ss_showUserUser.parentBinder.id || !ss_canAccessProfilesBinder}">
+					      <span id="${ss_showUserUser.id}" 
+	            	       class="${ss_showUserTitleStyle} ss_muster_users"><ssf:userTitle user="${ss_showUserUser}" /></span>
+	                </c:if>		  	
+              	</c:if>		  	
 			</ssf:ifadapter>
 			<ssf:ifnotadapter>
 			  <c:if test="${!empty ss_showUserUser.workspaceId && !ss_showUserProfileEntry}">
