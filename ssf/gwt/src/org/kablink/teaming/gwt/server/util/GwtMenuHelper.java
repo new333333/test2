@@ -158,6 +158,7 @@ public class GwtMenuHelper {
 	private final static String CONFIGURE_COLUMNS		= "configureColumns";
 	private final static String CONFIGURE_DEFINITIONS	= "configureDefinitions";
 	private final static String CONFIGURE_EMAIL			= "configEmail";
+	private final static String CONFIGURE_USER_LIST		= "configureUserList";
 	private final static String COPY					= "copy";
 	private final static String COPY_PUBLIC_LINK		= "copyPublicLink";
 	private final static String DELETE					= "delete";
@@ -799,6 +800,34 @@ public class GwtMenuHelper {
 			markTBITitle(accTBI, titleKey);
 			markTBIEvent(accTBI, event   );
 			configureToolbarItems.add(accTBI);
+		}
+	}
+	
+	/*
+	 * Constructs a ToolbarItem to configure the user list panel.
+	 */
+	private static void constructEntryConfigureUserList(AllModulesInjected bs, HttpServletRequest request, Binder binder, List<ToolbarItem> configureToolbarItems) {
+		// Is the binder a Folder that has user_list items in its
+		// definition?
+		if ((binder instanceof Folder) && GwtViewHelper.getFolderHasUserList((Folder) binder)) {
+			// Yes!  Create a configure user list ToolbarItem.
+			boolean hideUserList;
+			try                 {hideUserList = GwtViewHelper.getUserListStatus(bs, request, binder.getId());}
+			catch (Exception e) {hideUserList = false;}
+			String titleKey;
+			TeamingEvents event;
+			if (hideUserList) {
+				titleKey = "misc.hideUserList";
+				event    = TeamingEvents.HIDE_USER_LIST;
+			}
+			else {
+				titleKey = "misc.showUserList";
+				event    = TeamingEvents.SHOW_USER_LIST;
+			}
+			ToolbarItem ulTBI = new ToolbarItem(CONFIGURE_USER_LIST);
+			markTBITitle(ulTBI, titleKey);
+			markTBIEvent(ulTBI, event   );
+			configureToolbarItems.add(ulTBI);
 		}
 	}
 	
@@ -3449,8 +3478,16 @@ public class GwtMenuHelper {
 			boolean isBinderTrash         = folderInfo.isBinderTrash();
 			if ((!isBinderTrash) && (!isBinderCollection) && (!isBinderMobileDevices) && (!(Utils.checkIfFilr()))) {
 				// Yes!  Add the configure accessories item to the
-				// toolbar.
+				// toolbar...
 				constructEntryConfigureAccessories(
+					bs,
+					request,
+					binder,
+					configureToolbarItems);
+				
+				// ...and add the configure user list item to the
+				// ...toolbar.
+				constructEntryConfigureUserList(
 					bs,
 					request,
 					binder,

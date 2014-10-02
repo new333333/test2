@@ -2765,6 +2765,50 @@ public class GwtViewHelper {
 		return days;
 	}
 	
+	/**
+	 * Return true of the user list panel should be visible on the
+	 * given binder and false otherwise.
+	 * 
+	 * @param bs
+	 * @param request
+	 * @param binderId
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public static Boolean getUserListStatus(AllModulesInjected bs, HttpServletRequest request, Long binderId) throws GwtTeamingException {
+		try {
+			User			user                 = GwtServerHelper.getCurrentUser();
+			UserProperties	userFolderProperties = bs.getProfileModule().getUserProperties(user.getId(), binderId);
+			
+			// Has the user saved the status of the user list panel
+			// on this binder?
+			Boolean userListStatus = ((Boolean) userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_BINDER_SHOW_USER_LIST));
+			if (null == userListStatus) {
+				// No!  Then we default to show it.  Save this status
+				// in the user's properties for this binder.
+				userListStatus = Boolean.TRUE;
+				saveUserListStatus(bs, request, binderId, userListStatus);
+			}
+			
+			// If we get here, userListStatus contains true if we
+			// should show the user list panel and false otherwise.
+			// Return it.
+			return userListStatus;
+		}
+		
+		catch (Exception e) {
+			// Convert the exception to a GwtTeamingException and throw
+			// that.
+			throw
+				GwtLogHelper.getGwtClientException(
+					m_logger,
+					e,
+					"GwtViewHelper.getUserListStatus( SOURCE EXCEPTION ):  ");
+		}
+	}
+	
 	/*
 	 * Fixes up the group assignees in an List<AssignmentInfo>'s.
 	 */
@@ -4437,14 +4481,14 @@ public class GwtViewHelper {
 			
 			// Is the Binder a Folder with a user list or a My Files
 			// Storage folder? 
-			boolean folderHasUserList;
+			boolean showUserList;
 			boolean folderIsMyFilesStorage;
 			if ((null != binder) && (binder instanceof Folder)) {
-				folderHasUserList = getFolderHasUserList((Folder) binder);
+				showUserList           = (getFolderHasUserList((Folder) binder) && getUserListStatus(bs, request, folderId));
 				folderIsMyFilesStorage = BinderHelper.isBinderMyFilesStorage(binder);
 			}
 			else {
-				folderHasUserList      =
+				showUserList           =
 				folderIsMyFilesStorage = false;
 			}
 
@@ -4458,7 +4502,7 @@ public class GwtViewHelper {
 					pageSize,
 					cwData.getColumnWidths(),
 					folderSupportsPinning,
-					folderHasUserList,
+					showUserList,
 					viewPinnedEntries,
 					viewSharedFiles,
 					folderOwnedByCurrentUser,
@@ -9767,6 +9811,43 @@ public class GwtViewHelper {
 		}
 	}
 
+	/**
+	 * Saves whether the user list panel should be visible on the
+	 * given binder.
+	 * 
+	 * @param bs
+	 * @param request
+	 * @param binderId
+	 * @param showUserListPanel
+	 * 
+	 * @return
+	 * 
+	 * @throws GwtTeamingException
+	 */
+	public static Boolean saveUserListStatus(AllModulesInjected bs, HttpServletRequest request, Long binderId, boolean showUserListPanel) throws GwtTeamingException {
+		try {
+			// Save the user list status...
+			bs.getProfileModule().setUserProperty(
+				GwtServerHelper.getCurrentUserId(),
+				binderId,
+				ObjectKeys.USER_PROPERTY_BINDER_SHOW_USER_LIST,
+				new Boolean(showUserListPanel));
+			
+			// ...and return true.
+			return Boolean.TRUE;
+		}
+		
+		catch (Exception e) {
+			// Convert the exception to a GwtTeamingException and throw
+			// that.
+			throw
+				GwtLogHelper.getGwtClientException(
+					m_logger,
+					e,
+					"GwtViewHelper.saveUserListStatus( SOURCE EXCEPTION ):  ");
+		}
+	}
+	
 	/*
 	 * Generates a value for a custom column in a row.
 	 * 

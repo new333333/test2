@@ -3661,6 +3661,18 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 			return response;
 		}
 		
+		case SAVE_USER_LIST_STATUS:
+		{
+			SaveUserListStatusCmd sulsCmd = ((SaveUserListStatusCmd) cmd);
+			Boolean responseData = GwtViewHelper.saveUserListStatus(
+				this,
+				getRequest( ri ),
+				sulsCmd.getBinderId(),
+				sulsCmd.getShowUserListPanel() );
+			response = new VibeRpcResponse( new BooleanRpcResponseData( responseData ) );
+			return response;
+		}
+		
 		case SAVE_USER_STATUS:
 		{
 			SaveUserStatusCmd susCmd;

@@ -69,6 +69,7 @@ import org.kablink.teaming.gwt.client.event.GetCurrentViewInfoEvent.ViewInfoCall
 import org.kablink.teaming.gwt.client.event.GotoContentUrlEvent;
 import org.kablink.teaming.gwt.client.event.GotoMyWorkspaceEvent;
 import org.kablink.teaming.gwt.client.event.GotoPermalinkUrlEvent;
+import org.kablink.teaming.gwt.client.event.HideUserListEvent;
 import org.kablink.teaming.gwt.client.event.InvokeAddNewFolderEvent;
 import org.kablink.teaming.gwt.client.event.InvokeChangePasswordDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeDownloadDesktopAppEvent;
@@ -91,6 +92,7 @@ import org.kablink.teaming.gwt.client.event.SearchTagEvent;
 import org.kablink.teaming.gwt.client.event.SetDesktopDownloadAppControlVisibilityEvent;
 import org.kablink.teaming.gwt.client.event.ShowCollectionEvent;
 import org.kablink.teaming.gwt.client.event.ShowContentControlEvent;
+import org.kablink.teaming.gwt.client.event.ShowUserListEvent;
 import org.kablink.teaming.gwt.client.event.SidebarHideEvent;
 import org.kablink.teaming.gwt.client.event.SidebarShowEvent;
 import org.kablink.teaming.gwt.client.event.SizeChangedEvent;
@@ -120,6 +122,7 @@ import org.kablink.teaming.gwt.client.rpc.shared.MainPageInfoRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.PersistActivityStreamSelectionCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveBrandingCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SavePersonalPrefsCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.SaveUserListStatusCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.TrackBinderCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.UntrackBinderCmd;
@@ -229,6 +232,7 @@ public class GwtMainPage extends ResizeComposite
 		GotoContentUrlEvent.Handler,
 		GotoMyWorkspaceEvent.Handler,
 		GotoPermalinkUrlEvent.Handler,
+		HideUserListEvent.Handler,
 		InvokeAddNewFolderEvent.Handler,
 		InvokeChangePasswordDlgEvent.Handler,
 		InvokeDownloadDesktopAppEvent.Handler,
@@ -249,6 +253,7 @@ public class GwtMainPage extends ResizeComposite
 		SetDesktopDownloadAppControlVisibilityEvent.Handler,
 		ShowCollectionEvent.Handler,
 		ShowContentControlEvent.Handler,
+		ShowUserListEvent.Handler,
 		SidebarHideEvent.Handler,
 		SidebarShowEvent.Handler,
 		SizeChangedEvent.Handler,
@@ -328,6 +333,9 @@ public class GwtMainPage extends ResizeComposite
 		TeamingEvents.EDIT_CURRENT_BINDER_BRANDING,
 		TeamingEvents.EDIT_PERSONAL_PREFERENCES,
 
+		// Hide events.
+		TeamingEvents.HIDE_USER_LIST,
+		
 		// Invoke events.
 		TeamingEvents.INVOKE_ADD_NEW_FOLDER,
 		TeamingEvents.INVOKE_CHANGE_PASSWORD_DLG,
@@ -357,6 +365,7 @@ public class GwtMainPage extends ResizeComposite
 		// Show events.
 		TeamingEvents.SHOW_COLLECTION,
 		TeamingEvents.SHOW_CONTENT_CONTROL,
+		TeamingEvents.SHOW_USER_LIST,
 		
 		// Sidebar events.
 		TeamingEvents.SIDEBAR_HIDE,
@@ -3205,6 +3214,18 @@ public class GwtMainPage extends ResizeComposite
 	}// end onGotoPermalinkUrl()
 	
 	/**
+	 * Handles HideUserListEvent's received by this class.
+	 * 
+	 * Implements the HideUserListEvent.Handler.onHideUserList() method.
+	 * 
+	 */
+	@Override
+	public void onHideUserList( HideUserListEvent event )
+	{
+		saveUserListStatus( event.getBinderId(), false );
+	}
+
+	/**
 	 * Handles LoginEvent's received by this class.
 	 * 
 	 * Implements the LoginEvent.Handler.onLogin() method.
@@ -3897,6 +3918,18 @@ public class GwtMainPage extends ResizeComposite
 	}
 	
 	/**
+	 * Handles ShowUserListEvent's received by this class.
+	 * 
+	 * Implements the ShowUserListEvent.Handler.onShowUserList() method.
+	 * 
+	 */
+	@Override
+	public void onShowUserList( ShowUserListEvent event )
+	{
+		saveUserListStatus( event.getBinderId(), true );
+	}
+
+	/**
 	 * Handles SidebarHideEvent's received by this class.
 	 * 
 	 * Implements the SidebarHideEvent.Handler.onSidebarHide() method.
@@ -4374,6 +4407,31 @@ public class GwtMainPage extends ResizeComposite
 			AdminControl.showControl( m_adminControl, m_headerPanel, fireOnLoad );
 		}
 	}// end showAdminControlImpl()
+
+	/*
+	 * Saves the status of the user list display on the given binder.
+	 */
+	private void saveUserListStatus( final Long binderId, final boolean showUserList )
+	{
+		SaveUserListStatusCmd cmd = new SaveUserListStatusCmd( binderId, showUserList );
+		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
+		{
+			@Override
+			public void onFailure( Throwable t )
+			{
+				GwtClientHelper.handleGwtRPCFailure(
+					t,
+					GwtTeaming.getMessages().rpcFailure_SaveUserListStatus(),
+					binderId );
+			}//end onFailure()
+			
+			@Override
+			public void onSuccess( VibeRpcResponse response )
+			{
+				FullUIReloadEvent.fireOneAsync();
+			}// end onSuccess()
+		});
+	}
 	
 	/*
 	 * Fires a ContextChangingEvent from the JSP based UI.
