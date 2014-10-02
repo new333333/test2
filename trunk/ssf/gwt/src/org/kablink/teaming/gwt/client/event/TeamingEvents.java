@@ -226,7 +226,9 @@ public enum TeamingEvents implements IsSerializable {
 	SHOW_VIEW_PERMALINKS,							// Shows the permaLinks in the current view.
 	
 	HIDE_ACCESSORIES,								// Hides the accessories panel on the given binder.
+	HIDE_USER_LIST,									// Hides the user list panel on the given binder.
 	SHOW_ACCESSORIES,								// Shows the accessories panel on the given binder.
+	SHOW_USER_LIST,									// Shows the user list panel on the given binder.
 	
 	GET_CURRENT_VIEW_INFO,							// Returns the current ViewInfo loaded in the content control.
 	GET_SIDEBAR_COLLECTION,							// Returns the collection currently loaded in the sidebar tree.

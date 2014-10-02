@@ -64,6 +64,7 @@ import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.GotoContentUrlEvent;
 import org.kablink.teaming.gwt.client.event.HideAccessoriesEvent;
 import org.kablink.teaming.gwt.client.event.HideSelectedSharesEvent;
+import org.kablink.teaming.gwt.client.event.HideUserListEvent;
 import org.kablink.teaming.gwt.client.event.InvokeAddNewFolderEvent;
 import org.kablink.teaming.gwt.client.event.InvokeColumnResizerEvent;
 import org.kablink.teaming.gwt.client.event.InvokeCopyFiltersDlgEvent;
@@ -87,6 +88,7 @@ import org.kablink.teaming.gwt.client.event.SharedViewFilterEvent.SharedViewFilt
 import org.kablink.teaming.gwt.client.event.ShowAccessoriesEvent;
 import org.kablink.teaming.gwt.client.event.ShareSelectedEntitiesEvent;
 import org.kablink.teaming.gwt.client.event.ShowSelectedSharesEvent;
+import org.kablink.teaming.gwt.client.event.ShowUserListEvent;
 import org.kablink.teaming.gwt.client.event.SubscribeSelectedEntitiesEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.event.ToggleSharedViewEvent;
@@ -1237,6 +1239,7 @@ public class EntryMenuPanel extends ToolPanelBase
 					case ENABLE_SELECTED_USERS_WEBACCESS:               event = new EnableSelectedUsersWebAccessEvent(           folderId      ); break;
 					case HIDE_ACCESSORIES:                              event = new HideAccessoriesEvent(                        folderId      ); break;
 					case HIDE_SELECTED_SHARES:                          event = new HideSelectedSharesEvent(                     folderId      ); break;
+					case HIDE_USER_LIST:                                event = new HideUserListEvent(                           folderId      ); break;
 					case INVOKE_COLUMN_RESIZER:                         event = new InvokeColumnResizerEvent(                    m_binderInfo  ); break;
 					case INVOKE_DROPBOX:                                event = new InvokeDropBoxEvent(                          folderId      ); break;
 					case INVOKE_SIGN_GUESTBOOK:                         event = new InvokeSignGuestbookEvent(                    folderId      ); break;
@@ -1251,6 +1254,7 @@ public class EntryMenuPanel extends ToolPanelBase
 					case SET_SELECTED_USER_MOBILE_SETTINGS:             event = new SetSelectedUserMobileSettingsEvent(          folderId      ); break;
 					case SET_SELECTED_USER_SHARE_RIGHTS:                event = new SetSelectedUserShareRightsEvent(             folderId      ); break;
 					case SHOW_ACCESSORIES:                              event = new ShowAccessoriesEvent(                        folderId      ); break;
+					case SHOW_USER_LIST:                                event = new ShowUserListEvent(                           folderId      ); break;
 					case SHARE_SELECTED_ENTITIES:                       event = new ShareSelectedEntitiesEvent(                  folderId      ); break;
 					case SHOW_SELECTED_SHARES:                          event = new ShowSelectedSharesEvent(                     folderId      ); break;
 					case SUBSCRIBE_SELECTED_ENTITIES:                   event = new SubscribeSelectedEntitiesEvent(              folderId      ); break;

@@ -1042,6 +1042,15 @@ public class EventHelper {
 				}
 				break;
 			
+			case HIDE_USER_LIST:
+				// A HideUserListEvent!  Can the event handler we were
+				// given handle that?
+				if (eventHandler instanceof HideUserListEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = HideUserListEvent.registerEvent(eventBus, ((HideUserListEvent.Handler) eventHandler) );
+				}
+				break;
+			
 			case INVOKE_ABOUT:
 				// An InvokeAboutEvent!  Can the event handler we were
 				// given handle that?
@@ -2219,6 +2228,15 @@ public class EventHelper {
 				}
 				break;
 			
+			case SHOW_USER_LIST:
+				// A ShowUserListEvent!  Can the event handler we were
+				// given handle that?
+				if (eventHandler instanceof ShowUserListEvent.Handler) {
+					handlerNotDefined = false;
+					registrationHandler = ShowUserListEvent.registerEvent(eventBus, ((ShowUserListEvent.Handler) eventHandler) );
+				}
+				break;
+			
 			case SHOW_VIEW_PERMALINKS:
 				// A ShowViewPermalinksEvent!  Can the event handler we
 				// were given handle that?
@@ -2922,7 +2940,9 @@ public class EventHelper {
 			case SHOW_VIEW_PERMALINKS:						   hasHandler = (eventHandler instanceof ShowViewPermalinksEvent.Handler);		               break;
 			
 			case HIDE_ACCESSORIES:						       hasHandler = (eventHandler instanceof HideAccessoriesEvent.Handler);		   	               break;
+			case HIDE_USER_LIST:						       hasHandler = (eventHandler instanceof HideUserListEvent.Handler);		   	               break;
 			case SHOW_ACCESSORIES:						       hasHandler = (eventHandler instanceof ShowAccessoriesEvent.Handler);		   	               break;
+			case SHOW_USER_LIST:						       hasHandler = (eventHandler instanceof ShowUserListEvent.Handler);		   	               break;
 			
 			case GET_CURRENT_VIEW_INFO:                        hasHandler = (eventHandler instanceof GetCurrentViewInfoEvent.Handler);                     break;
 			case GET_SIDEBAR_COLLECTION:                       hasHandler = (eventHandler instanceof GetSidebarCollectionEvent.Handler);                   break;

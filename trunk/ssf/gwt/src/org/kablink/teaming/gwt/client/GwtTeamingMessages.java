@@ -592,6 +592,7 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_SaveTaskSort();
 	String rpcFailure_SaveTaskStatus();
 	String rpcFailure_SaveUserAccessConfig();
+	String rpcFailure_SaveUserListStatus();
 	String rpcFailure_SaveWhatsNewShowSetting();
 	String rpcFailure_SaveZoneShareRights();
 	String rpcFailure_Search();
