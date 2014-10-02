@@ -38,6 +38,8 @@ import java.util.ArrayList;
 import org.kablink.teaming.gwt.client.GetterCallback;
 import org.kablink.teaming.gwt.client.GwtFolderEntry;
 import org.kablink.teaming.gwt.client.GwtTeaming;
+import org.kablink.teaming.gwt.client.GwtTeamingException;
+import org.kablink.teaming.gwt.client.GwtTeamingException.ExceptionType;
 import org.kablink.teaming.gwt.client.rpc.shared.GetEntryCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
@@ -111,12 +113,16 @@ public class EntryProperties
 			/**
 			 * 
 			 */
+			@Override
 			public void onFailure( Throwable t )
 			{
-				GwtClientHelper.handleGwtRPCFailure(
-					t,
-					GwtTeaming.getMessages().rpcFailure_GetFolderEntry(),
-					m_entryId );
+				if ( ((GwtTeamingException) t).getExceptionType() != ExceptionType.ACCESS_CONTROL_EXCEPTION )
+				{
+					GwtClientHelper.handleGwtRPCFailure(
+						t,
+						GwtTeaming.getMessages().rpcFailure_GetFolderEntry(),
+						m_entryId );
+				}
 				
 				// Inform the callback that the rpc request failed.
 				if ( m_getterCallback != null )
@@ -127,6 +133,7 @@ public class EntryProperties
 			 * 
 			 * @param result
 			 */
+			@Override
 			public void onSuccess( VibeRpcResponse response )
 			{
 				GwtFolderEntry gwtFolderEntry;
@@ -149,6 +156,7 @@ public class EntryProperties
 	/**
 	 * 
 	 */
+	@Override
 	public void copy( PropertiesObj props )
 	{
 		if ( props instanceof EntryProperties )
@@ -192,6 +200,7 @@ public class EntryProperties
 	/**
 	 * Return the properties as a string that can be stored in the db.
 	 */
+	@Override
 	public String createConfigString()
 	{
 		String str;

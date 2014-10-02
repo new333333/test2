@@ -139,6 +139,7 @@ public class EntryWidget extends VibeWidget
 		Unit widthUnits;
 		int height;
 		Unit heightUnits;
+		Scheduler.ScheduledCommand cmd1;
 
 		m_properties = new EntryProperties();
 		m_properties.copy( properties );
@@ -313,28 +314,42 @@ public class EntryWidget extends VibeWidget
 			contentPanel.add( m_repliesPanel );
 		}
 		
-		// Issue an ajax request to get the entry's data.
-		m_properties.getDataFromServer( new GetterCallback<Boolean>()
+		mainPanel.setVisible( false );
+		
+		cmd1 = new Scheduler.ScheduledCommand()
 		{
-			/**
-			 * 
-			 */
 			@Override
-			public void returnValue( Boolean value )
+			public void execute()
 			{
-				Scheduler.ScheduledCommand cmd;
-				
-				cmd = new Scheduler.ScheduledCommand()
+				// Issue an ajax request to get the entry's data.
+				m_properties.getDataFromServer( new GetterCallback<Boolean>()
 				{
+					/**
+					 * 
+					 */
 					@Override
-					public void execute()
+					public void returnValue( final Boolean value )
 					{
-						updateWidget();
+						Scheduler.ScheduledCommand cmd;
+						
+						cmd = new Scheduler.ScheduledCommand()
+						{
+							@Override
+							public void execute()
+							{
+								if ( value )
+								{
+									updateWidget();
+									getWidget().setVisible( true );
+								}
+							}
+						};
+						Scheduler.get().scheduleDeferred( cmd );
 					}
-				};
-				Scheduler.get().scheduleDeferred( cmd );
+				} );
 			}
-		} );
+		};
+		Scheduler.get().scheduleDeferred( cmd1 );
 		
 		return mainPanel;
 	}
