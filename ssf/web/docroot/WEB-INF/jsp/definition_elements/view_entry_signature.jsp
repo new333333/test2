@@ -47,15 +47,15 @@
 <div class="ss_clipped_signature">
 <c:if test="${empty propertyValues_displayType || propertyValues_displayType[0] == 'inline'}">
   <c:if test="${!ss_hideEntrySignature}">
-	<table cellspacing="0" cellpadding="0" class="margintop1">
+	<table cellspacing="0" cellpadding="0" class="margintop1" width="100%">
 		<tr>
-			<td>
-				<span class="ss_entryContent ss_entrySignature"><ssf:nlt tag="entry.createdBy"/></span>
+			<td valign="top">
+				<span class="ss_entryContent ss_entrySignature ss_wrap"><ssf:nlt tag="entry.createdBy"/></span>
 	  		</td>
-			<td class="ss_non_clipped_signature">
+			<td class="ss_non_clipped_signature" valign="top">
 				<%@ include file="/WEB-INF/jsp/definition_elements/view_entry_creator.jsp" %>
 			</td>
-			<td>
+			<td valign="top">
 			  <c:set var="property_caption" value=""/>
 				<%@ include file="/WEB-INF/jsp/definition_elements/view_entry_date.jsp" %>
 			</td>
@@ -64,14 +64,14 @@
     <c:if test="${!empty ssDefinitionEntry.modification.principal && 
       ssDefinitionEntry.modification.date > ssDefinitionEntry.creation.date}">
 	   <tr>
-	    <td>
-		  <div class="ss_entryContent ss_entrySignature" ><ssf:nlt tag="entry.modifiedBy"/></div>
+	    <td valign="top">
+		  <div class="ss_entryContent ss_entrySignature ss_wrap" ><ssf:nlt tag="entry.modifiedBy"/></div>
 	    </td>
-	    <td class="ss_non_clipped_signature">
-		  <div class="ss_entryContent ss_entrySignatureUser"><ssf:showUser user="${ssDefinitionEntry.modification.principal}" showHint="true"/></div>
+	    <td class="ss_non_clipped_signature" valign="top">
+		  <div class="ss_entryContent ss_entrySignatureUser ss_wrap"><ssf:showUser user="${ssDefinitionEntry.modification.principal}" showHint="true"/></div>
 	    </td>
-	    <td>
-		  <div class="ss_entryContent ss_entrySignature">
+	    <td valign="top">
+		  <div class="ss_entryContent ss_entrySignature ss_wrap">
 		  <fmt:formatDate timeZone="${ssUser.timeZone.ID}"
 		     value="${ssDefinitionEntry.modification.date}" type="both" 
 			 timeStyle="short" dateStyle="medium" />
@@ -82,21 +82,21 @@
 
     <c:if test="${!empty ssDefinitionEntry.reservation.principal}">
 	   <tr>
-	    <td>
-		  <div class="ss_entryContent ss_entrySignature margintop3">
+	    <td valign="top">
+		  <div class="ss_entryContent ss_entrySignature ss_wrap margintop3">
 		    <span style="padding-right:5px;">
 		  	  <img style="margin-right: 5px;" <ssf:alt tag="alt.locked"/> align="absmiddle" 
 		  	    src="<html:imagesPath/>pics/sym_s_caution.gif"/><ssf:nlt tag="entry.reservedBy"/></span>
 		  </div>
 	    </td>
-	    <td class="ss_non_clipped_signature">
+	    <td class="ss_non_clipped_signature" valign="top">
 		  <div class="ss_entryContent margintop3">
-		    <div class="ss_entrySignatureUser">
+		    <div class="ss_entrySignatureUser ss_wrap">
 		      <ssf:showUser user="${ssDefinitionEntry.reservation.principal}" showHint="true"/>
 		    </div>
 		  </div>
 	    </td>
-	    <td>
+	    <td valign="top">
 	    </td>
 	   </tr>
     </c:if>
@@ -130,14 +130,14 @@
 			entryId="${ssDefinitionEntry.creation.principal.id}" />
 	</a>
   </c:if>
-		<table cellspacing="0" cellpadding="0" class="margintop1">
+		<table cellspacing="0" cellpadding="0" class="margintop1" width="100%">
 		 <tr>
-		  <td class="ss_non_clipped_signature">
+		  <td class="ss_non_clipped_signature" valign="top">
 			<%@ include file="/WEB-INF/jsp/definition_elements/view_entry_creator.jsp" %>
 		  </td>
 		 </tr>
 		 <tr>
-		  <td style="padding-left: 19px;">
+		  <td style="padding-left: 19px;" valign="top">
 		  <c:set var="property_caption" value=""/>
 			<%@ include file="/WEB-INF/jsp/definition_elements/view_entry_date.jsp" %>
 		  </td>
@@ -145,14 +145,14 @@
 		  <c:if test="${!empty ssDefinitionEntry.modification.principal && 
 			ssDefinitionEntry.modification.date > ssDefinitionEntry.creation.date}">
 		   <tr>
-			<td class="ss_non_clipped_signature">
+			<td class="ss_non_clipped_signature" valign="top">
 				<div class="ss_entryContent margintop2">
 				  <div style="padding-right:8px; font-weight: bold; font-size: 11px;"><ssf:nlt tag="entry.modifiedBy"/></div>
-				  <div class="ss_entrySignatureUser">
+				  <div class="ss_entrySignatureUser ss_wrap">
 				    <ssf:showUser user="${ssDefinitionEntry.modification.principal}" showHint="true"/>
 				  </div>
 				</div>
-				<div class="ss_entryContent ss_entrySignature" style="padding-left: 19px;">
+				<div class="ss_entryContent ss_entrySignature ss_wrap" style="padding-left: 19px;">
 				<fmt:formatDate timeZone="${ssUser.timeZone.ID}"
 					 value="${ssDefinitionEntry.modification.date}" type="both" 
 					 timeStyle="short" dateStyle="medium" />
@@ -163,13 +163,13 @@
 		
 		  <c:if test="${!empty ssDefinitionEntry.reservation.principal}">
 		   <tr>
-			<td class="ss_non_clipped_signature">
+			<td class="ss_non_clipped_signature" valign="top">
 				<div class="ss_entryContent margintop3">
 				  <span style="padding-right:5px;">
 				  	<img style="margin-right: 5px;" <ssf:alt tag="alt.locked"/> align="absmiddle" 
 				  	  src="<html:imagesPath/>pics/sym_s_caution.gif"/><ssf:nlt tag="entry.reservedBy"/>
 				  </span>
-				  <div class="ss_entrySignatureUser">
+				  <div class="ss_entrySignatureUser ss_wrap">
 				    <ssf:showUser user="${ssDefinitionEntry.reservation.principal}" showHint="true"/>
 				  </div>
 				</div>
@@ -199,34 +199,34 @@
 	<td>
 		<table cellspacing="0" cellpadding="0">
 			<tr>
-			  <td>
-				<div class="ss_entrySignature">
+			  <td valign="top">
+				<div class="ss_entrySignature ss_wrap">
 				  <span><c:out value="${property_caption}" /></span>
 				</div>
 				<c:set var="property_caption" value=""/>
 			  </td>
-			  <td>
+			  <td valign="top">
 				  <%@ include file="/WEB-INF/jsp/definition_elements/view_entry_creator.jsp" %>
 			  </td>
-			  <td nowrap>
+			  <td nowrap valign="top">
 				  <%@ include file="/WEB-INF/jsp/definition_elements/view_entry_date.jsp" %>
 			  </td>
 			 </tr>
 			  <c:if test="${!empty ssDefinitionEntry.modification.principal && 
 				ssDefinitionEntry.modification.date > ssDefinitionEntry.creation.date}">
 			   <tr>
-				<td>
-				  <div class="ss_entrySignature">
+				<td valign="top">
+				  <div class="ss_entrySignature ss_wrap">
 					<span><ssf:nlt tag="entry.modifiedBy"/></span>
 				  </div>
 				</td>
-				<td>
-				  <div class="ss_entrySignatureUser">
+				<td valign="top">
+				  <div class="ss_entrySignatureUser ss_wrap">
 					<ssf:showUser user="${ssDefinitionEntry.modification.principal}" showHint="true"/>
 				  </div>
 				</td>
-				<td nowrap>
-				  <div class="ss_entrySignature">
+				<td nowrap valign="top">
+				  <div class="ss_entrySignature ss_wrap">
 					<fmt:formatDate timeZone="${ssUser.timeZone.ID}"
 					value="${ssDefinitionEntry.modification.date}" type="both" 
 					timeStyle="short" dateStyle="medium" />
@@ -238,10 +238,10 @@
 			  <c:if test="${!empty ssDefinitionEntry.reservation.principal}">
 			   <tr>
 				<td colspan="3">
-				  <div class="ss_entrySignature margintop3">
+				  <div class="ss_entrySignature ss_wrap margintop3">
 					<img style="margin-right: 5px;" <ssf:alt tag="alt.locked"/> align="absmiddle" 
 					  src="<html:imagesPath/>pics/sym_s_caution.gif"/><ssf:nlt tag="entry.reservedBy"/>
-					<div class="ss_entrySignatureUser">
+					<div class="ss_entrySignatureUser ss_wrap">
 					  <ssf:showUser user="${ssDefinitionEntry.reservation.principal}" showHint="true"/>
 					</div>
 				  </div>

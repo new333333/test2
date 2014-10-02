@@ -484,6 +484,9 @@ div.ss_entryContent a:hover {
   	white-space: nowrap;
   	color: ${ss_style_metadata_color};
   	}
+.ss_wrap {
+  	white-space: normal !important;
+  	}
 .ss_entryDate {
 	color: #666666;
 	font-size: 10px;
