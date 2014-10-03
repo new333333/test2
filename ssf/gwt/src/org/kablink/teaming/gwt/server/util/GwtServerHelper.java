@@ -6000,6 +6000,7 @@ public class GwtServerHelper {
 							gwtUser.setTitle( Utils.getUserTitle( user ) );
 							gwtUser.setWorkspaceTitle( user.getWSTitle() );
 							gwtUser.setEmail( user.getEmailAddress() );
+							gwtUser.setDisabled( user.isDisabled() );
 		
 							retList.add( gwtUser );
 						}
