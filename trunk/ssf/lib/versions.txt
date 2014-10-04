@@ -138,6 +138,7 @@ POI 2.5-final (for ssfs)
 Portals Bridges 1.0
 Portlet API 2.0 (2.0 refers to specification version, not library version, so we keep in in the file name)
 Quartz 1.8.6 (all)
+RabbitMQ Java client library 3.1.5 (dual-licensed under the MPL and the GPL v2.)
 ridl.jar (from OpenOffice 2.0)
 SAAJ 1.2 DO NOT UPGRADE (V1.2 used the ASL1.1, newer versions are from glassfish project which uses cppl and gpl2.0)
 Saxpath 1.0 (for ssfs)
