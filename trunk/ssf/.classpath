@@ -196,5 +196,7 @@
 	<classpathentry exported="true" kind="lib" path="lib/spring-webmvc.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/httpclient.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/httpcore.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/spring-amqp.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/spring-rabbit.jar"/>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>
 </classpath>
