@@ -156,7 +156,7 @@ if (!window.ssSurvey) {
 		}
 		
 		this.ss_removeQuestion = function(index) {
-			if (usersHaveAlreadyVoted) {
+			if (usersHaveAlreadyVoted && usersHaveAlreadyVoted != "false") {
 				alert(ss_survey_cannotMoveAfterVoting);
 				return;
 			}
@@ -173,7 +173,7 @@ if (!window.ssSurvey) {
 		}
 
 		this.ss_moveQuestion = function(index, directionUp) {
-			if (usersHaveAlreadyVoted) {
+			if (usersHaveAlreadyVoted && usersHaveAlreadyVoted != "false") {
 				alert(ss_survey_cannotMoveAfterVoting);
 				return;
 			}
