@@ -403,6 +403,21 @@ public class AddEntryController extends SAbstractController {
 	        	    	entryNameOnly.put(ObjectKeys.FIELD_ENTITY_TITLE, utf8DecodedFileName);
 	        	    	MapInputData inputData = new MapInputData(entryNameOnly);
 	        	    	try {
+        					// Does the folder being added to require unique titles?
+        					if (folder.isUniqueTitles()) {
+        						// Yes!  Do we have a title for the entry we're
+        						// adding?
+        						String title = inputData.getSingleValue(ObjectKeys.FIELD_ENTITY_TITLE);
+        						if (MiscUtil.hasString(title)) {
+        							// Yes!  Is it already being used in the binder?
+        							if (BinderHelper.isTitleRegistered(folderId, title)) {
+        								// Yes!  Generate an error.
+        								String error = NLT.get("errorcode.title.exists", new Object[]{title});
+        					    		response.setRenderParameter(WebKeys.ENTRY_DATA_PROCESSING_ERRORS, error);
+        					    		return;
+        							}
+        						}
+        					}
 		        	    	entryId = addEntry(request, response, folderId, fileDefId, inputData, oneFileMap, null).getId();
 		    				//Get the entry that was just created
 		    				FolderEntry entry = getFolderModule().getEntry(folderId, entryId);
