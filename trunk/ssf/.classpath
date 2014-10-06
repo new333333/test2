@@ -198,5 +198,6 @@
 	<classpathentry exported="true" kind="lib" path="lib/httpcore.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/spring-amqp.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/spring-rabbit.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/rabbitmq-client.jar"/>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>
 </classpath>
