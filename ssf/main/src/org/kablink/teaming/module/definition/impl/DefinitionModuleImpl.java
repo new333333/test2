@@ -2218,6 +2218,37 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 					processInputDataItem(itemName, nameValue, inputData, entryData,
 				    		fileItems, fileData, entryDataErrors, null, titleGenerated, titleSource);
 				}
+				//See if there are any default settings for select boxes that were missed
+				for (Element nextItem: itItems) {
+					itemName = (String) nextItem.attributeValue("name", "");
+					if (itemName.equals("selectbox")) {
+						//Get the form element name (property name)
+						nameValue = DefinitionUtils.getPropertyValue(nextItem, "name");
+						if (!Validator.isNull(nameValue) && (!entryData.containsKey(nameValue) || entryData.get(nameValue) == null)) {
+							//There is no value for this item. See if it has a default
+							List<Element> defItems = nextItem.selectNodes(".//item[@name='selectboxSelection']/properties/property[@name='default' and @value='true']");
+							if (!defItems.isEmpty()) {
+								//There are some defaults. Go add them to the entryData list
+								List<String> valuesList = new ArrayList();
+								for (Element defItem : defItems) {
+									valuesList.add(DefinitionUtils.getPropertyValue(defItem.getParent().getParent(), "name"));
+								}
+								if (valuesList.size() == 1) {
+									String value = valuesList.get(0);
+									entryData.put(nameValue, value);
+								} else if (valuesList.size() > 1) {
+									String[] values = new String[valuesList.size()];
+									for (int i = 0; i < valuesList.size(); i++) {
+										values[i] = valuesList.get(i);
+									}
+									entryData.put(nameValue, values);
+								}
+							}
+							
+						}
+						
+					}
+				}
 			}
 		}
 
