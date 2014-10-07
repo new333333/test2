@@ -49,6 +49,7 @@ import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.AuditTrail.AuditType;
 import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.portletadapter.AdaptedPortletURL;
+import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.portlet.SAbstractController;
 import org.kablink.teaming.web.util.BinderHelper;
@@ -93,6 +94,10 @@ public class ListProfilesController extends   SAbstractController {
 			Tabs.TabEntry tab = Tabs.getTabs(request).getTab(binderId);
 			Map tabData = tab.getData();
 			Integer recordsPerPage = (Integer) tabData.get(Tabs.RECORDS_IN_PAGE);
+			if (null == recordsPerPage) {
+				recordsPerPage = Integer.valueOf(SPropsUtil.getString("folder.records.listed"));
+				tabData.put(Tabs.RECORDS_IN_PAGE, recordsPerPage);
+			}
 					
 			int intGoToPageIndex = new Integer(pageGoToIndex).intValue();
 			int intRecordsPerPage = recordsPerPage.intValue();
