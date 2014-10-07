@@ -61,6 +61,7 @@ import org.kablink.teaming.portletadapter.support.PortletAdapterUtil;
 import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.util.LongIdUtil;
 import org.kablink.teaming.util.NLT;
+import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.portlet.SAbstractController;
 import org.kablink.teaming.web.util.BinderHelper;
@@ -72,7 +73,6 @@ import org.kablink.teaming.web.util.Tabs;
 import org.kablink.teaming.web.util.TrashHelper;
 import org.kablink.teaming.web.util.WebHelper;
 import org.kablink.teaming.web.util.WorkspaceTreeHelper;
-
 import org.springframework.web.portlet.ModelAndView;
 
 /**
@@ -199,6 +199,10 @@ public class ListFolderController extends  SAbstractController {
 			if (tab != null) {
 				Map tabData = tab.getData();
 				Integer recordsPerPage = (Integer) tabData.get(Tabs.RECORDS_IN_PAGE);
+				if (null == recordsPerPage) {
+					recordsPerPage = Integer.valueOf(SPropsUtil.getString("folder.records.listed"));
+					tabData.put(Tabs.RECORDS_IN_PAGE, recordsPerPage);
+				}
 						
 				int intGoToPageIndex = new Integer(pageGoToIndex).intValue();
 				int intRecordsPerPage = recordsPerPage.intValue();
