@@ -90,10 +90,11 @@
 <script type="text/javascript" src="<html:rootPath/>js/common/ss_tasks.js"></script>
 </c:if>
 
+<c:if test="${empty ssReadOnlyFields[property_name]}">
 <div class="ss_entryContent ${ss_fieldModifyStyle}">
 <div class="ss_labelAbove"><%= caption %><%= required %></div>
 
-<c:if test="${empty ssReadOnlyFields[property_name]}">
+<input type="hidden" name="__selectboxSpecified_${original_property_name}" value="true"/>
 <select ${ss_fieldModifyInputAttribute} 
   name="<%= elementName %>" <%= multiple %> <%= size %>
   <c:if test="${formType == 'task'}">
