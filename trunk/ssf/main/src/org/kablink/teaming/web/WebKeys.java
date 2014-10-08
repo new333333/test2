@@ -832,6 +832,7 @@ public class WebKeys {
 	public static final String BINDER_VERSION_AGING_DAYS = "ss_binder_version_aging_days";
 	public static final String BINDER_VERSIONS_MAX_FILE_SIZE = "ss_binder_versions_max_file_size";
 	public static final String BINDER_TEAM_MEMBER_IDS = "ssBinderTeamMemberIds";
+	public static final String BINDER_HAS_TEAM_MEMBERS = "ssBinderHasTeamMembers";
 	public static final String BLOG_ENTRIES="ssBlogEntries"; 
 	public static final String BLOG_PAGES="ssBlogPages"; 
 	public static final String BLOG_SET_BINDER="ssBlogSetBinder"; 

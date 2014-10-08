@@ -2738,6 +2738,21 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
     	return LongIdUtil.getIdsAsLongSet( members );
     }
     
+	/**
+	 * Return whether the given binder has team members associated with it either directly or through inheritence
+	 */
+    @Override
+	public boolean doesBinderHaveTeamMembers( Binder binder )
+    {
+    	Set<Long> setOfMemberIds;
+    	
+    	setOfMemberIds = getTeamMemberIds( binder );
+    	if ( setOfMemberIds == null || setOfMemberIds.size() == 0 )
+    		return false;
+    	
+    	return true;
+    }
+	
     /**
      * Return the team member ids
      * @return

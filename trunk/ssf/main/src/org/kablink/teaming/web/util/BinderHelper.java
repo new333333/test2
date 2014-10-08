@@ -508,6 +508,10 @@ public class BinderHelper {
 					if (SPropsUtil.getBoolean("accessControl.viewBinderTitle.enabled", false)) {
 						model.put(WebKeys.BINDER_VIEW_BINDER_TITLE, bs.getBinderModule().testAccess(null, binder, BinderOperation.viewBinderTitle, Boolean.TRUE));
 					}
+					
+					// Add information about whether the binder has team members
+					model.put( WebKeys.BINDER_HAS_TEAM_MEMBERS, bs.getBinderModule().doesBinderHaveTeamMembers( binder ) );
+					
 				} catch(Exception e) {
 					logger.debug("BinderHelper.setupStandardBeans(Exception:  '" + MiscUtil.exToString(e) + "')");
 					getBinderAccessibleUrl(bs, null, null, request, response, model);

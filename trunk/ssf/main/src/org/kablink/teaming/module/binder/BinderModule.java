@@ -472,6 +472,11 @@ public interface BinderModule {
 	public Collection<Tag> getTags(Binder binder);
 
 	/**
+	 * Return whether the given binder has team members associated with it either directly or through inheritence
+	 */
+	public boolean doesBinderHaveTeamMembers( Binder binder );
+	
+	/**
 	 * If this binder has a "team group" associated with it, rename the group to match the binder's name.
 	 */
 	public void fixupTeamGroupName( Binder binder );
