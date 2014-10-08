@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -34,7 +34,6 @@ package org.kablink.teaming.web.util;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.kablink.teaming.util.SPropsUtil;
 
 /**
@@ -45,6 +44,10 @@ import org.kablink.teaming.util.SPropsUtil;
 public class Html5Helper {
 	protected static Log m_logger = LogFactory.getLog(Html5Helper.class);
 
+	// Base filename for the temporary file used to upload files
+	// using the HTML5 file uploader.
+	public static final String UPLOAD_FILE_PREFIX	= "uploadFile.";
+	
 	private static final boolean HTML5_UPLOAD_BLOBS_VARIABLE               = SPropsUtil.getString( "html5.upload.blob.mode",                    "variable").equalsIgnoreCase("variable");
 	private static final boolean HTML5_UPLOAD_ENCODE                       = SPropsUtil.getBoolean("html5.upload.encode",                       false     );
 	private static final boolean HTML5_UPLOAD_MD5_HASH_VALIDATE            = SPropsUtil.getBoolean("html5.upload.md5.hash.validate",            false     );
