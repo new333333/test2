@@ -2764,7 +2764,7 @@ public class GwtRpcServiceImpl extends AbstractAllModulesInjected
 		case GET_USER_PROPERTIES:
 		{
 			GetUserPropertiesCmd gmuiCmd = ((GetUserPropertiesCmd) cmd);
-			UserPropertiesRpcResponseData result = GwtViewHelper.getUserProperties( this, getRequest( ri ), gmuiCmd.getUserId() );
+			UserPropertiesRpcResponseData result = GwtViewHelper.getUserProperties( this, getRequest( ri ), gmuiCmd.getUserId(), gmuiCmd.getIncludeLastLogin() );
 			response = new VibeRpcResponse( result );
 			return response;
 		}

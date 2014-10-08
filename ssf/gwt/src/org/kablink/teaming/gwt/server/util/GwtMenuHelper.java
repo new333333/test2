@@ -1007,7 +1007,7 @@ public class GwtMenuHelper {
 		try {
 			// Yes!  Can we determine the user's current adHoc folder
 			// access?
-			upData = GwtViewHelper.getUserProperties(bs, request, userId);
+			upData = GwtViewHelper.getUserProperties(bs, request, userId, false);	// false -> Don't include the last login information.  It's expensive to obtain and for this usage, we don't need it.
 		}
 		catch (Exception ex) {
 			// If we can't access the user properties information,
