@@ -104,9 +104,6 @@ import org.springframework.web.multipart.MultipartFile;
 public class GwtHtml5Helper {
 	protected static Log m_logger = LogFactory.getLog(GwtHtml5Helper.class);
 
-	// Attribute names used to store things in the session cache.
-	private static final String CACHED_UPLOAD_FILE_BASE	= "uploadFile";
-	
 	// Used in various file size calculations, ...
 	private final static long MEGABYTES = (1024l * 1024l);
 	
@@ -260,7 +257,7 @@ public class GwtHtml5Helper {
 	 * in the session cache.
 	 */
 	private static String getUploadFileCacheKey(FileBlob fileBlob) {
-		return (CACHED_UPLOAD_FILE_BASE + "." + String.valueOf(GwtServerHelper.getCurrentUserId()) + "." + String.valueOf(fileBlob.getUploadId()) + ".");
+		return (Html5Helper.UPLOAD_FILE_PREFIX + String.valueOf(GwtServerHelper.getCurrentUserId()) + "." + String.valueOf(fileBlob.getUploadId()) + ".");
 	}
 	
 	/*
@@ -333,7 +330,7 @@ public class GwtHtml5Helper {
 				// Yes!  Create a new temporary file for it and store
 				// the file handle in the session cache.  The format of
 				// the prefix used is:  'uploadFile.<userId>.<timestamp>.'
-				tempFile = TempFileUtil.createTempFile(uploadFName);
+				tempFile = TempFileUtil.createHtml5UploaderTempFile(uploadFName);
 				if (!lastBlob) {
 					session.setAttribute(uploadFName, tempFile.getName());
 				}

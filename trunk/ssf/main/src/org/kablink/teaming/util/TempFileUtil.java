@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -51,12 +51,15 @@ import org.springframework.util.FileCopyUtils;
  * @author ?
  */
 public class TempFileUtil {
-	private final static String OIT_TEMP_SUBDIR	     = "oit";				// Must agree with the path injected by the installer.  See install.tcl for details.
-	private final static String OIT_TEMPDIR_PROPERTY = "tempdir";			// Property in the Oracle Outside-in configuration file that specifies the location of temporary files. 
-	private final static long	A_SECOND             = 1000l;				// One second, in milliseconds.
-	private final static long	A_MINUTE             = (60l * A_SECOND);	// One minute, in milliseconds.
-	private final static long	AN_HOUR              = (60l * A_MINUTE);	// One hour,   in milliseconds.
-	private final static long	A_DAY         	     = (24l * AN_HOUR);		// One day,    in milliseconds.
+	private final static String HTML5_UPLOADER_TEMP_SUBDIR	= "html5.uploader";	// Directory where HTML5 uploader temporary files are stored.
+	
+	private final static String OIT_TEMP_SUBDIR				= "oit";			// Must agree with the path injected by the installer.  See install.tcl for details.
+	private final static String OIT_TEMPDIR_PROPERTY		= "tempdir";		// Property in the Oracle Outside-in configuration file that specifies the location of temporary files.
+	
+	private final static long	A_SECOND					= 1000l;			// One second, in milliseconds.
+	private final static long	A_MINUTE					= (60l * A_SECOND);	// One minute, in milliseconds.
+	private final static long	AN_HOUR						= (60l * A_MINUTE);	// One hour,   in milliseconds.
+	private final static long	A_DAY						= (24l * AN_HOUR);	// One day,    in milliseconds.
 	
 	/**
 	 * Create a temporary file. The created temporary file is set to be deleted
@@ -68,6 +71,19 @@ public class TempFileUtil {
 	 */
 	public static File createTempFile(String prefix) {
 		return createTempFile(prefix, null, getTempFileDir(), true);
+	}
+	
+	/**
+	 * Create a temporary file for the HTML5 uploader. The created
+	 * temporary file is set to be deleted when the virtual machine
+	 * terminates.
+	 * 
+	 * @param	prefix	The prefix string to be used in generating the file's name; must be at least three characters long.
+	 * 
+	 * @return
+	 */
+	public static File createHtml5UploaderTempFile(String fName) throws UncheckedIOException {
+		return createTempFile(fName, null, getHtml5UploaderTempDir(), true);
 	}
 	
 	/**
@@ -218,7 +234,7 @@ public class TempFileUtil {
 	public static File getTempFileDir(String subDirName) {
 		return new File(getTempFileDir(), subDirName);
 	}
-	
+
 	public static void main(String[] args) {
 		System.out.println(new File("").getAbsolutePath());
 	}
@@ -229,6 +245,10 @@ public class TempFileUtil {
 	
 	private static String getTempFileDirPath() {
 		return getTempFileDirPathPerUser(RequestContextHolder.getRequestContext().getUserId());
+	}
+
+	public static File getTempFileRootDir() {
+		return new File(getTempFileDirRootPath());
 	}
 	
 	private static String getTempFileDirRootPath() {
@@ -256,6 +276,37 @@ public class TempFileUtil {
 		}
 	}
 
+	/**
+	 * Returns the appropriate path to use for the HTML5 uploader
+	 * temporary directory.
+	 * 
+	 * @return
+	 */
+	public static String getHtml5UploaderTempDirPath() {
+		return (getTempFileDirRootPath() + File.separator + HTML5_UPLOADER_TEMP_SUBDIR);
+	}
+	
+	/**
+	 * Returns the appropriate Filr to use for the HTML5 uploader
+	 * temporary directory.
+	 *
+	 * @param createIfNecessary
+	 * 
+	 * @return
+	 */
+	public static File getHtml5UploaderTempDir(boolean createIfNecessary) {
+		File reply = new File(getHtml5UploaderTempDirPath());
+		if ((!(reply.exists())) && createIfNecessary) {
+			reply.mkdirs();
+		}
+		return reply;
+	}
+	
+	public static File getHtml5UploaderTempDir() {
+		// Always use the initial form of the method.
+		return getHtml5UploaderTempDir(true);
+	}
+	
 	/**
 	 * Returns the appropriate path to use for the Oracle Outside-in
 	 * temporary directory.

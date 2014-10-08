@@ -1063,6 +1063,10 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		//Turn on the text conversion file purging job
 		ScheduleInfo textConversionFilePurgeSchedInfo = getAdminModule().getTextConversionFilePurgeSchedule();
 		getAdminModule().setTextConversionFilePurgeSchedule(textConversionFilePurgeSchedInfo);
+
+		// Turn on the HTML5 uploader temporary file cleanup job.
+		ScheduleInfo html5UploadTempCleanupSchedInfo = getAdminModule().getHtml5UploadTempCleanupSchedule();
+		getAdminModule().setHtml5UploadTempCleanupSchedule(html5UploadTempCleanupSchedInfo);
  	}
 
  	// Must be running inside a transaction set up by the caller
