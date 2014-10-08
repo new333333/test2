@@ -51,8 +51,10 @@ import java.util.TreeSet;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.lucene.document.DateTools;
+
 import org.dom4j.Document;
 import org.dom4j.Element;
+
 import org.kablink.teaming.BinderQuotaException;
 import org.kablink.teaming.DataQuotaException;
 import org.kablink.teaming.FileSizeLimitException;
@@ -1729,9 +1731,9 @@ public void unreserveEntry(Long folderId, Long entryId)
 public FolderEntry getLibraryFolderEntryByFileName(Folder fileFolder, String title)
 	throws AccessControlException {
        	try {
-    		Long id = getCoreDao().findFileNameEntryId(fileFolder, title);
+    		Long id = getCoreDao().findFileNameEntryId(fileFolder, title);	// Won't throw a NoObjectByTheIdException if title matches a nested folder name.  It simply returns null.
     		//getEntry does read check
-    		return getEntry(fileFolder.getId(), id);
+    		return ((null == id) ? null : getEntry(fileFolder.getId(), id));
     	} catch (NoObjectByTheIdException no) {
     		return null;
     	}
@@ -2073,7 +2075,8 @@ public void modifyWorkflowState(Long folderId, Long entryId, Long stateId, Strin
 		return arCount.get();
 	}
 
-    public FolderEntry refreshFromRepository(FolderEntry fileEntry) {
+    @Override
+	public FolderEntry refreshFromRepository(FolderEntry fileEntry) {
         if (!fileEntry.getParentFolder().isMirrored()) {
             for (Attachment attachment : fileEntry.getAttachments()) {
                 if (attachment instanceof FileAttachment) {

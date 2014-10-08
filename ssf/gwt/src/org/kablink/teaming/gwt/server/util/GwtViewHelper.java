@@ -646,11 +646,11 @@ public class GwtViewHelper {
 			catch (Exception e) {
 				// No!  Add an error to the error list...
 				String messageKey;
-				if      (e instanceof AccessControlException)          messageKey = "addNewFolderError.AccssControlException";
-				else if (e instanceof IllegalCharacterInNameException) messageKey = "addNewFolderError.IllegalCharacterInNameException";
-				else if (e instanceof TitleException)		           messageKey = "addNewFolderError.TitleException";
-				else if (e instanceof WriteFilesException)             messageKey = "addNewFolderError.WriteFilesException";
-				else                                                   messageKey = "addNewFolderError.OtherException";
+				if      (e instanceof AccessControlException)          messageKey =  "addNewFolderError.AccssControlException";
+				else if (e instanceof IllegalCharacterInNameException) messageKey =  "addNewFolderError.IllegalCharacterInNameException";
+				else if (e instanceof TitleException)		           messageKey = ("addNewFolderError.TitleException." + (Utils.checkIfFilr() ? "filr" : "vibe"));
+				else if (e instanceof WriteFilesException)             messageKey =  "addNewFolderError.WriteFilesException";
+				else                                                   messageKey =  "addNewFolderError.OtherException";
 				reply.addError(NLT.get(messageKey, new String[]{folderName}));
 				
 				// ...and log it.

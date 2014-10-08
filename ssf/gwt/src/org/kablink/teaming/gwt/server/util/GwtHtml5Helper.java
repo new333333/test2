@@ -49,13 +49,13 @@ import javax.xml.bind.DatatypeConverter;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.kablink.teaming.BinderQuotaException;
 import org.kablink.teaming.DataQuotaException;
 import org.kablink.teaming.FileSizeLimitException;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.CoreDao;
+import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.Folder;
@@ -92,7 +92,6 @@ import org.kablink.teaming.web.util.Html5Helper;
 import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.WebHelper;
 import org.kablink.util.Validator;
-
 import org.springframework.web.multipart.MultipartFile;
 
 /**
@@ -724,6 +723,15 @@ public class GwtHtml5Helper {
 						if (null != fe) {
 							// Yes!  Track it as a duplicate.
 							reply.addDuplicate(upload);
+							continue;
+						}
+						
+						// Does a folder with this name exist?
+						Binder b = bm.getBinderByParentAndTitle(folderId, uploadFName);
+						if (null != b) {
+							// Yes!  Thats an error and the file can't
+							// be uploaded.
+							reply.addError(NLT.get("validateUploadError.nameExistsAsFolder", new String[]{uploadFName}));
 							continue;
 						}
 					}
