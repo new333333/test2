@@ -33,13 +33,14 @@
 package org.kablink.teaming.jobs;
 
 /**
- * ?
+ * Interface into the job that scans the temporary file directory and
+ * deletes any unused temporary files.
  * 
  * @author drfoster@novell.com
  */
-public interface Html5UploadTempCleanup {
-	public static final String HTML5_UPLOAD_TEMP_CLEANUP_GROUP="html5-upload-temp-cleanup";
-	public static final String HTML5_UPLOAD_TEMP_CLEANUP_DESCRIPTION="Cleanup orphaned HTML5 upload temporary files";
+public interface TempFileCleanup {
+	public static final String TEMP_FILE_CLEANUP_GROUP="temp-file-cleanup";
+	public static final String TEMP_FILE_CLEANUP_DESCRIPTION="Cleanup unused temporary files";
 	
 	public void enable(boolean enable, Long zoneId);
 	

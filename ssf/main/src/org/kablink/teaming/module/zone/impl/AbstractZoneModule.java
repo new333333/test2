@@ -44,9 +44,9 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
+
 import org.kablink.teaming.NoObjectByTheIdException;
 import org.kablink.teaming.ObjectKeys;
-import org.kablink.teaming.cache.impl.HashMapCache;
 import org.kablink.teaming.context.request.RequestContext;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.context.request.RequestContextUtil;
@@ -101,18 +101,22 @@ import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SZoneConfig;
 import org.kablink.teaming.util.SessionUtil;
 import org.kablink.teaming.util.LocaleUtils;
-import org.kablink.teaming.util.TempFileUtil;
 import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.util.cache.DefinitionCache;
 import org.kablink.util.Validator;
+
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
-@SuppressWarnings({ "unchecked", "unused", "deprecation" })
+/**
+ * ?
+ * 
+ * @author ?
+ */
+@SuppressWarnings({"unchecked", "unused", "deprecation"})
 public abstract class AbstractZoneModule extends CommonDependencyInjection implements ZoneModule,InitializingBean {
-	protected TempFileUtil.OITTempCleanupThread m_oitTempCleanupThread;
 	protected DefinitionModule definitionModule;
 	
 	/**
@@ -533,12 +537,6 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 			ScheduleInfo pruneSchedInfo = getAdminModule().getLogTablePurgeSchedule();
 			getAdminModule().setLogTablePurgeSchedule(pruneSchedInfo);
 
-			// Initialize a Thread used to cleanup Oracle Outside-in
-			// temporary files.
-			if (null == m_oitTempCleanupThread) {
-				m_oitTempCleanupThread = TempFileUtil.initOITTempCleanupThread();
-			}
-			
 			//If not configured yet,  check old config
 			if (getCoreDao().loadObjects(LdapConnectionConfig.class, null, top.getId()).isEmpty()) {				
 				LdapSchedule schedule = getLdapModule().getLdapSchedule();
@@ -1015,12 +1013,6 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		ScheduleInfo pruneSchedInfo = getAdminModule().getLogTablePurgeSchedule();
 		getAdminModule().setLogTablePurgeSchedule(pruneSchedInfo);
 
-		// Initialize a Thread used to cleanup Oracle Outside-in
-		// temporary files.
-		if (null == m_oitTempCleanupThread) {
-			m_oitTempCleanupThread = TempFileUtil.initOITTempCleanupThread();
-		}
-		
 		//Enable/Disable access control rights
 		if (!SPropsUtil.getBoolean("accessControl.viewBinderTitle.enabled", false)) {
 			WorkAreaOperation.deleteInstance("viewBinderTitle");
@@ -1060,13 +1052,13 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 			}
 		}
 
-		//Turn on the text conversion file purging job
+		// Turn on the text conversion file purging job.
 		ScheduleInfo textConversionFilePurgeSchedInfo = getAdminModule().getTextConversionFilePurgeSchedule();
 		getAdminModule().setTextConversionFilePurgeSchedule(textConversionFilePurgeSchedInfo);
 
-		// Turn on the HTML5 uploader temporary file cleanup job.
-		ScheduleInfo html5UploadTempCleanupSchedInfo = getAdminModule().getHtml5UploadTempCleanupSchedule();
-		getAdminModule().setHtml5UploadTempCleanupSchedule(html5UploadTempCleanupSchedInfo);
+		// Turn on the temporary file cleanup job.
+		ScheduleInfo tempFileCleanupSchedInfo = getAdminModule().getTempFileCleanupSchedule();
+		getAdminModule().setTempFileCleanupSchedule(tempFileCleanupSchedInfo);
  	}
 
  	// Must be running inside a transaction set up by the caller
@@ -1264,12 +1256,6 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 			//Turn on the database log pruning job
 			ScheduleInfo pruneSchedInfo = getAdminModule().getLogTablePurgeSchedule();
 			getAdminModule().setLogTablePurgeSchedule(pruneSchedInfo);
-			
-			// Initialize a Thread used to cleanup Oracle Outside-in
-			// temporary files.
-			if (null == m_oitTempCleanupThread) {
-				m_oitTempCleanupThread = TempFileUtil.initOITTempCleanupThread();
-			}
 			
 			setupInitialOpenIDProviderList();
 
@@ -2314,5 +2300,4 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 	}
 
 	abstract protected void setupInitialOpenIDProviderList();
-	
 }
