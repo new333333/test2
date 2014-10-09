@@ -302,10 +302,14 @@ td .sectionHeading {
 	.main-item img { 
 		vertical-align: middle;
 		border:0px;
-		width: 60%;
+		width: 45%;
 		}
 	.main-item-label {
 		margin-top: 5px;
+		font-size: 1em;
+		}
+	.main-cell-bottom {
+		border-bottom: 1px solid #e0e0e0;
 		}
 
 .my-item {
