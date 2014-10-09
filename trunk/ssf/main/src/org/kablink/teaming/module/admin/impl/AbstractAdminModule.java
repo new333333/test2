@@ -57,11 +57,13 @@ import javax.mail.SendFailedException;
 import javax.mail.internet.InternetAddress;
 
 import org.apache.velocity.VelocityContext;
+
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.SAXReader;
+
 import org.kablink.teaming.ConfigurationException;
 import org.kablink.teaming.NoObjectByTheIdException;
 import org.kablink.teaming.NotSupportedException;
@@ -103,10 +105,10 @@ import org.kablink.teaming.extuser.ExternalUserUtil;
 import org.kablink.teaming.jobs.EmailNotification;
 import org.kablink.teaming.jobs.EmailPosting;
 import org.kablink.teaming.jobs.FileVersionAging;
-import org.kablink.teaming.jobs.Html5UploadTempCleanup;
 import org.kablink.teaming.jobs.IndexOptimization;
 import org.kablink.teaming.jobs.LogTablePurge;
 import org.kablink.teaming.jobs.ScheduleInfo;
+import org.kablink.teaming.jobs.TempFileCleanup;
 import org.kablink.teaming.jobs.TextConversionFilePurge;
 import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.module.admin.IndexOptimizationSchedule;
@@ -169,6 +171,7 @@ import org.kablink.util.Html;
 import org.kablink.util.StringUtil;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
+
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.mail.MailAuthenticationException;
@@ -188,7 +191,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 	protected static String FILE_VERSION_AGING_JOB = "file.version.aging.job"; // properties in xml file need a unique name
 	protected static String LOG_TABLE_PURGE_JOB = "log.table.purge.job"; // properties in xml file need a unique name
 	protected static String TEXT_CONVERSION_FILE_PURGE_JOB = "text.conversion.file.purge.job"; // properties in xml file need a unique name
-	protected static String HTML5_UPLOAD_TEMP_CLEANUP_JOB = "html5.upload.temp.cleanup.job"; // properties in xml file need a unique name
+	protected static String TEMP_FILE_CLEANUP_JOB = "temp.file.cleanup.job"; // properties in xml file need a unique name
 	
 	protected MailModule mailModule;
 	/**
@@ -3698,47 +3701,48 @@ public List<ChangeLog> getWorkflowChanges(EntityIdentifier entityIdentifier, Str
 	}
 
     @Override
-	public ScheduleInfo getHtml5UploadTempCleanupSchedule() {
-    	ScheduleInfo info =  getHtml5UploadTempCleanupObject().getScheduleInfo(RequestContextHolder.getRequestContext().getZoneId());
-		String hours   = SPropsUtil.getString("html5.upload.temp.cleanup.schedule.hours",   "*");	// Default is every hour...
-		String minutes = SPropsUtil.getString("html5.upload.temp.cleanup.schedule.minutes", "5");	// ...at 5 minutes after the hour.
+	public ScheduleInfo getTempFileCleanupSchedule() {
+    	ScheduleInfo info =  getTempFileCleanupObject().getScheduleInfo(RequestContextHolder.getRequestContext().getZoneId());
+		String hours   = SPropsUtil.getString("temp.file.cleanup.schedule.hours",   "1");	// Default is every day...
+		String minutes = SPropsUtil.getString("temp.file.cleanup.schedule.minutes", "0");	// ...at 1:00 AM.
 		try {
 			int iHours = Integer.valueOf(hours);
 			hours = String.valueOf((iHours + 24) % 24);
-		} catch(Exception e) {
-			//This must be trying to set "*" or some other fancy value, so just leave "hours" as it was
 		}
-		info.getSchedule().setDaily(true);
-		info.getSchedule().setHours(hours);
+		catch(Exception e) {
+			// This must be trying to set '*' or some other fancy
+			// value, so just leave 'hours' as it was.
+		}
+		info.getSchedule().setDaily(  true   );
+		info.getSchedule().setHours(  hours  );
 		info.getSchedule().setMinutes(minutes);
     	return info;
     }
     
     @Override
-	public void setHtml5UploadTempCleanupSchedule(ScheduleInfo info) {
+	public void setTempFileCleanupSchedule(ScheduleInfo info) {
   	   	checkAccess(AdminOperation.manageIndex);
-  	   	Html5UploadTempCleanup obj = getHtml5UploadTempCleanupObject();
+  	   	TempFileCleanup obj = getTempFileCleanupObject();
     	obj.setScheduleInfo(info);
     	obj.enable(true, RequestContextHolder.getRequestContext().getZoneId());
     }
 
-    private Html5UploadTempCleanup getHtml5UploadTempCleanupObject() {
+    private TempFileCleanup getTempFileCleanupObject() {
     	String zoneName = RequestContextHolder.getRequestContext().getZoneName();
-		String jobClass = getHtml5UploadTempCleanupProperty(zoneName, HTML5_UPLOAD_TEMP_CLEANUP_JOB);
+		String jobClass = getTempFileCleanupProperty(zoneName, TEMP_FILE_CLEANUP_JOB);
     	if (Validator.isNotNull(jobClass)) {
 		   try {
-			   return  (Html5UploadTempCleanup)ReflectHelper.getInstance(jobClass);
+			   return  (TempFileCleanup)ReflectHelper.getInstance(jobClass);
 		   } catch (Exception ex) {
-			   logger.error("Cannot instantiate Html5UploadTempCleanup custom class", ex);
+			   logger.error("Cannot instantiate TempFileCleanup custom class", ex);
 		   }
    		}
-   		return (Html5UploadTempCleanup)ReflectHelper.getInstance(
-   				org.kablink.teaming.jobs.DefaultHtml5UploadTempCleanup.class);
+   		return ((TempFileCleanup) ReflectHelper.getInstance(org.kablink.teaming.jobs.DefaultTempFileCleanup.class));
     }
     
 	// See if there is a custom scheduling job being specified.
-    protected String getHtml5UploadTempCleanupProperty(String zoneName, String name) {
-		return SZoneConfig.getString(zoneName, "html5UploadTempCleanupConfiguration/property[@name='" + name + "']");
+    protected String getTempFileCleanupProperty(String zoneName, String name) {
+		return SZoneConfig.getString(zoneName, "tempFileCleanupConfiguration/property[@name='" + name + "']");
 	}
 
     @Override

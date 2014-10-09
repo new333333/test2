@@ -516,8 +516,8 @@ public interface AdminModule {
     public ScheduleInfo getTextConversionFilePurgeSchedule();
     public void setTextConversionFilePurgeSchedule(ScheduleInfo info);
     
-    public ScheduleInfo getHtml5UploadTempCleanupSchedule();
-    public void setHtml5UploadTempCleanupSchedule(ScheduleInfo info);
+    public ScheduleInfo getTempFileCleanupSchedule();
+    public void setTempFileCleanupSchedule(ScheduleInfo info);
     
     public MobileAppsConfig getMobileAppsConfig();
     public MobileOpenInWhiteLists getMobileOpenInWhiteLists();
