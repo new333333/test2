@@ -57,20 +57,27 @@
 		 <% try { %><c:set var="f_name" value='<%= favorite.get("name") %>'/><% } catch(Exception e) {} %>
 		 <% try { %><c:set var="f_value" value='<%= favorite.get("value") %>'/><% } catch(Exception e) {} %>
 		 <c:if test="${f_eletype == 'favorite'}">
-		  <div class="folder-item">
-              <img class="margin5r" src="<html:rootPath/>images/mobile/Favorite_star_16.png" align="absmiddle" />
 			<c:if test="${f_type == 'binder' && (f_action == 'view_folder_listing' || f_action == 'view_profile_listing')}">
-			  <a href="<ssf:url adapter="true" portletName="ss_forum" folderId="${f_value}" 
+			  	<a href="<ssf:url adapter="true" portletName="ss_forum" folderId="${f_value}" 
 							action="__ajax_mobile" actionUrl="false" 
-							operation="mobile_show_folder" />"><span>${f_name}</span></a>
+							operation="mobile_show_folder" />">
+					<div class="folder-item">
+	             		<img class="margin5r" src="<html:rootPath/>images/mobile/favorite_25.png" align="absmiddle" />
+						<span>${f_name}</span>
+					</div>
+				</a>
 			</c:if>
 			<c:if test="${f_type == 'binder' && empty f_action}">
-			  <a href="<ssf:url adapter="true" portletName="ss_forum" 
+				<a href="<ssf:url adapter="true" portletName="ss_forum" 
 			    			folderId="${f_value}" 
 							action="__ajax_mobile" actionUrl="false" 
-							operation="mobile_show_workspace" />"><span>${f_name}</span></a>
+							operation="mobile_show_workspace" />">
+					<div class="folder-item">
+	             		<img class="margin5r" src="<html:rootPath/>images/mobile/favorite_25.png" align="absmiddle" />
+						<span>${f_name}</span>
+					</div>	
+				</a>
 			</c:if>
-		  </div>
 		 </c:if>
 	  </c:forEach>
 	  <c:if test="${empty ss_mobileFavoritesList}">
