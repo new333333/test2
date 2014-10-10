@@ -230,15 +230,15 @@ public class DefaultTempFileCleanup extends SSCronTriggerJob implements TempFile
 					File[] subEntries = entry.listFiles();
 					int    subCount   = ((null == subEntries) ? 0 : subEntries.length);
 					if (0 == subCount) {
-						String dName = entry.getName();
+						String dPath = entry.getPath();
 						try {
 							// ...delete it...
 							entry.delete();
-							m_logger.debug("...deleted subdirectory '" + dName + "'.");
+							m_logger.debug("...deleted subdirectory '" + dPath + "'.");
 							counters.incrDeletedDirCount();
 						}
 						catch (Exception ex) {
-							m_logger.debug("...could not delete subdirecotry'" + dName + "':  ", ex);
+							m_logger.debug("...could not delete subdirecotry'" + dPath + "':  ", ex);
 							counters.incrErrorDirCount();
 						}
 					}
@@ -256,15 +256,15 @@ public class DefaultTempFileCleanup extends SSCronTriggerJob implements TempFile
 				counters.incrTotalFileCount();
 				long lastMod = entry.lastModified();
 				if (lastMod < fileAgeCheck) {
-					String fName = entry.getName();
+					String fPath = entry.getPath();
 					try {
 						// ...delete it...
 						entry.delete();
-						m_logger.debug("...deleted file '" + fName + "'.");
+						m_logger.debug("...deleted file '" + fPath + "'.");
 						counters.incrDeletedFileCount();
 					}
 					catch (Exception ex) {
-						m_logger.debug("...could not delete file '" + fName + "':  ", ex);
+						m_logger.debug("...could not delete file '" + fPath + "':  ", ex);
 						counters.incrErrorFileCount();
 					}
 				}
