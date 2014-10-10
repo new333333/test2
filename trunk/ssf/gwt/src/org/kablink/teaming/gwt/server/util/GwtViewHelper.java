@@ -323,6 +323,11 @@ public class GwtViewHelper {
 	private final static boolean PROFILE_PER_COLUMN	= SPropsUtil.getBoolean("gwt.profile.listview.per.column", false);
 	private final static boolean PROFILE_PER_USER	= SPropsUtil.getBoolean("gwt.profile.listview.per.user",   false);
 	
+	// The following controls whether the 'last login' is displayed in
+	// the user properties dialog in the administration console.  By
+	// default, it is (the value defaults to true.)
+	private final static boolean SHOW_LAST_LOGIN_IN_USER_PROPERTIES	= SPropsUtil.getBoolean("show.last.login.in.user.properties", true);
+	
 	/*
 	 * Inner class used to compare two AccessInfo's.
 	 * 
@@ -7413,7 +7418,8 @@ public class GwtViewHelper {
 			}
 
 			// ...if we need to include the last login information...
-			if (includeLastLogin) {
+			ai.setShowLastLogin(includeLastLogin && SHOW_LAST_LOGIN_IN_USER_PROPERTIES);
+			if (ai.isShowLastLogin()) {
 				SimpleProfiler.start("GwtViewHelper.getUserProperties(Get last login)");
 				try {
 					// ...and if we can determine the last time the
