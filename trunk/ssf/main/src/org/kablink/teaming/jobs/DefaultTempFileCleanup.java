@@ -54,17 +54,23 @@ import org.quartz.JobExecutionException;
  * @author drfoster@novell.com
  */
 public class DefaultTempFileCleanup extends SSCronTriggerJob implements TempFileCleanup {
-	private static final Log m_logger = LogFactory.getLog(DefaultTempFileCleanup.class);
+	private static final Log		m_logger			= LogFactory.getLog(DefaultTempFileCleanup.class);
+	
+	private static final boolean	DELETE_EMPTY_DIRS	= SPropsUtil.getBoolean("temp.file.cleanup.empty.directories", false);
+	private static final long		FILE_AGE_IN_MINUTES	= SPropsUtil.getLong(   "temp.file.cleanup.age.minutes",       1440 );
 
 	/*
 	 * Inner class used to count temporary items processed.
 	 */
 	private static class TempCounters {
-		private long	m_deletedFileCount;		// Counts files that got deleted.
-		private long	m_errorFileCount;		// Counts files that could not be deleted.
-		private long	m_ignoredFileCount;		// Counts files that were ignore because they weren't old enough.
-		private long	m_totalDirectoryCount;	// Counts the total number of directories that were looked at.
-		private long	m_totalFileCount;		// Counts the total number of files       that were looked at.
+		private long	m_deletedDirCount;	// Counts directories that got deleted.
+		private long	m_deletedFileCount;	// Counts files       that got deleted.
+		private long	m_errorDirCount;	// Counts directories that could not be deleted.
+		private long	m_errorFileCount;	// Counts files       that could not be deleted.
+		private long	m_ignoredDirCount;	// Counts directories that were ignore because they weren't empty.
+		private long	m_ignoredFileCount;	// Counts files       that were ignore because they weren't old enough.
+		private long	m_totalDirCount;	// Counts the total number of directories that were looked at.
+		private long	m_totalFileCount;	// Counts the total number of files       that were looked at.
 		
 		/**
 		 * Constructor method.
@@ -78,38 +84,50 @@ public class DefaultTempFileCleanup extends SSCronTriggerJob implements TempFile
 		 * 
 		 * @return
 		 */
-		public long getDeletedFileCount()    {return m_deletedFileCount;   }
-		public long getErrorFileCount()      {return m_errorFileCount;     }
-		public long getIgnoredFileCount()    {return m_ignoredFileCount;   }
-		public long getTotalDirectoryCount() {return m_totalDirectoryCount;}
-		public long getTotalFileCount()      {return m_totalFileCount;     }
+		public long getDeletedDirCount()  {return m_deletedDirCount; }
+		public long getDeletedFileCount() {return m_deletedFileCount;}
+		public long getErrorDirCount()    {return m_errorDirCount;   }
+		public long getErrorFileCount()   {return m_errorFileCount;  }
+		public long getIgnoredDirCount()  {return m_ignoredDirCount; }
+		public long getIgnoredFileCount() {return m_ignoredFileCount;}
+		public long getTotalDirCount()    {return m_totalDirCount;   }
+		public long getTotalFileCount()   {return m_totalFileCount;  }
 		
 		/**
 		 * Set'er methods.
 		 * 
 		 * @param
 		 */
-		public void incrDeletedFileCount()    {m_deletedFileCount    += 1;}
-		public void incrErrorFileCount()      {m_errorFileCount      += 1;}
-		public void incrIgnoredFileCount()    {m_ignoredFileCount    += 1;}
-		public void incrTotalDirectoryCount() {m_totalDirectoryCount += 1;}
-		public void incrTotalFileCount()      {m_totalFileCount      += 1;}
+		public void incrDeletedDirCount()  {m_deletedDirCount  += 1;}
+		public void incrDeletedFileCount() {m_deletedFileCount += 1;}
+		public void incrErrorDirCount()    {m_errorDirCount    += 1;}
+		public void incrErrorFileCount()   {m_errorFileCount   += 1;}
+		public void incrIgnoredDirCount()  {m_ignoredDirCount  += 1;}
+		public void incrIgnoredFileCount() {m_ignoredFileCount += 1;}
+		public void incrTotalDirCount()    {m_totalDirCount    += 1;}
+		public void incrTotalFileCount()   {m_totalFileCount   += 1;}
 
 		/**
 		 * If debugging is enabled, write the counts to the log. 
 		 */
 		public void logCounts() {
 			if (m_logger.isDebugEnabled()) {
-				long totalDirs  = getTotalDirectoryCount();
-				long totalFiles = getTotalFileCount();
-				if (0l == totalFiles) {
+				long    totalDirs  = getTotalDirCount();
+				long    totalFiles = getTotalFileCount();
+				boolean logDetails = ((0l != totalFiles) || (DELETE_EMPTY_DIRS && (1 < totalDirs)));
+				if (!logDetails) {
 					m_logger.debug("...no temporary files were found scanning " + totalDirs + " temporary directories.");
 				}
 				else {
 					m_logger.debug("...processed " + getTotalFileCount()   + " total temporary files from " + totalDirs + " temporary directories...");
 					m_logger.debug("......"        + getIgnoredFileCount() + " files were ignored because they weren't old enough..."                );
 					m_logger.debug("......"        + getDeletedFileCount() + " files were deleted..."                                                );
-					m_logger.debug("......"        + getErrorFileCount()   + " files could not be deleted."                                          );
+					m_logger.debug("......"        + getErrorFileCount()   + " files could not be deleted." + (DELETE_EMPTY_DIRS ? ".." : "")        );
+					if (DELETE_EMPTY_DIRS) {
+						m_logger.debug("......"    + getIgnoredDirCount()  + " subdirectories were ignored because they weren't empty..."            );
+						m_logger.debug("......"    + getDeletedDirCount()  + " subdirectories were deleted..."                                       );
+						m_logger.debug("......"    + getErrorDirCount()    + " subdirectories could not be deleted."                                 );
+					}
 				}
 			}
 		}
@@ -128,13 +146,14 @@ public class DefaultTempFileCleanup extends SSCronTriggerJob implements TempFile
 			m_logger.debug("DefaultTempFileCleanup.doExecute():  Cleaning unused temporary files...");
 	
 			// How old does a file have to be to be considered unused?
-			final long ageInMinutes = SPropsUtil.getLong("temp.file.cleanup.age.minutes", 1440);
-			final long ageCheck     = (new Date().getTime() - (ageInMinutes * TempFileUtil.A_MINUTE));	// Age to check against.  If last modified is before this, the file is deleted.
+			// If a file's last modified time stamp is before this, the
+			// file is deleted.
+			final long fileAgeCheck = (new Date().getTime() - (FILE_AGE_IN_MINUTES * TempFileUtil.A_MINUTE));  
 	
 			// Process the files starting in the root temporary
 			// directory...
 			final TempCounters counters = new TempCounters();
-			processTempFiles(TempFileUtil.getTempFileRootDir(), counters, ageCheck);
+			processTempFiles(TempFileUtil.getTempFileRootDir(), counters, fileAgeCheck);
 	
 			// ...and log what we did.
 			counters.logCounts();
@@ -173,7 +192,7 @@ public class DefaultTempFileCleanup extends SSCronTriggerJob implements TempFile
 	 * Recursively called to process the files in a temporary directory
 	 * looking for unused files to delete.
 	 */
-	private void processTempFiles(File directory, TempCounters counters, long ageCheck) {
+	private void processTempFiles(File directory, TempCounters counters, long fileAgeCheck) {
 		// If we weren't given a directory, or it doesn't exist or it's
 		// not really a directory...
 		if ((null == directory) || (!(directory.exists())) || (!(directory.isDirectory()))) {
@@ -182,7 +201,7 @@ public class DefaultTempFileCleanup extends SSCronTriggerJob implements TempFile
 		}
 		
 		// Count this directory.
-		counters.incrTotalDirectoryCount();
+		counters.incrTotalDirCount();
 
 		// If there's nothing in this directory...
 		File[] contents = directory.listFiles();
@@ -202,18 +221,44 @@ public class DefaultTempFileCleanup extends SSCronTriggerJob implements TempFile
 			// If this entry is a directory...
 			if (entry.isDirectory()) {
 				// ...process it recursively...
-				processTempFiles(entry, counters, ageCheck);
+				processTempFiles(entry, counters, fileAgeCheck);
+				
+				// ...and if we supposed to delete empty
+				// ...sub-directories...
+				if (DELETE_EMPTY_DIRS) {
+					// ...and this one is empty...
+					File[] subEntries = entry.listFiles();
+					int    subCount   = ((null == subEntries) ? 0 : subEntries.length);
+					if (0 == subCount) {
+						String dName = entry.getName();
+						try {
+							// ...delete it...
+							entry.delete();
+							m_logger.debug("...deleted subdirectory '" + dName + "'.");
+							counters.incrDeletedDirCount();
+						}
+						catch (Exception ex) {
+							m_logger.debug("...could not delete subdirecotry'" + dName + "':  ", ex);
+							counters.incrErrorDirCount();
+						}
+					}
+					
+					else {
+						// ...otherwise, ignore it...
+						counters.incrIgnoredDirCount();
+					}
+				}
 			}
 
-			// ...if this entry is a file...
+			// ...or if this entry is a file...
 			else if (entry.isFile()) {
-				// ...and it's older than the ageCheck...
+				// ...and it's older than the fileAgeCheck...
 				counters.incrTotalFileCount();
 				long lastMod = entry.lastModified();
-				if (lastMod < ageCheck) {
+				if (lastMod < fileAgeCheck) {
 					String fName = entry.getName();
 					try {
-						// ...delete it.
+						// ...delete it...
 						entry.delete();
 						m_logger.debug("...deleted file '" + fName + "'.");
 						counters.incrDeletedFileCount();

@@ -138,7 +138,7 @@ public class GwtHtml5Helper {
 				try {
 					// ...and if we can access the temporary file for
 					// ...it...
-					File tempFile = TempFileUtil.getTempFileByName(fileName);
+					File tempFile = TempFileUtil.getHtml5UploaderTempFileByName(fileName);
 					if (null != tempFile) {
 						// ...delete that.
 						tempFile.delete();
@@ -344,7 +344,7 @@ public class GwtHtml5Helper {
 				// in the session cache.
 				String tempFName = ((String) session.getAttribute(uploadFName));
 				boolean hasTempFName = MiscUtil.hasString(tempFName);
-				tempFile = (hasTempFName ? TempFileUtil.getTempFileByName(tempFName) : null);
+				tempFile = (hasTempFName ? TempFileUtil.getHtml5UploaderTempFileByName(tempFName) : null);
 				if (null == tempFile) {
 					// No!  Generate an error to that affect.
 					reply = new StringRpcResponseData();

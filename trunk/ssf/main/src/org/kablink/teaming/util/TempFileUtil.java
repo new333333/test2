@@ -220,6 +220,21 @@ public class TempFileUtil {
 	}
 
 	/**
+	 * Returns a File object on a previously created HTML5 uploader
+	 * temporary file.
+	 * 
+	 * @param fileHandle The name of the file as returned by File.getName().
+	 * 
+	 * @return
+	 */
+	public static File getHtml5UploaderTempFileByName(String fileHandle) {
+		File junk = new File(fileHandle);
+		fileHandle = junk.getName();
+
+		return new File(getHtml5UploaderTempDirPath(), fileHandle);
+	}
+
+	/**
 	 * This method differs from the rest of the public methods in this class in that
 	 * this method returns a sub-directory within the temp area rather than returning
 	 * a temporary file. The purpose is to give the caller a temporary area to work in. 
