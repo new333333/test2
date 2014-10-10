@@ -135,7 +135,7 @@
 		<td class="main-cell main-cell-bottom">
 				<a class="hierarchy-a" href="javascript: ;" onClick="ss_mobileLogoff();return false;"/>
 					<div class="main-item logout-a">
-					  <div><img src="<html:rootPath/>images/mobile/main_logout_128.png"/></div>
+					  <div><img src="<html:rootPath/>images/mobile/main_logout_128b.png"/></div>
 					  <div class="main-item-label"><ssf:nlt tag="logout"/></div>
 					</div>
 				</a>
