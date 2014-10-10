@@ -41,7 +41,7 @@
 								operation="mobile_show_user" />">
 			<div class="folder-item folder-item-profile">
 				<div>
-			  		<img class="margin5r" src="<html:rootPath/>images/mobile/vibe_profile_16.png" align="absmiddle" border="0" />
+			  		<img class="margin5r" src="<html:rootPath/>images/mobile/profile_25.png" align="absmiddle" border="0" />
 			  		<ssf:nlt tag="binder.profile.view"/>
 				</div>
 			</div>    
@@ -75,7 +75,7 @@
 				folderId="${folder.id}" 
 				action="__ajax_mobile" operation="mobile_show_folder" actionUrl="false" />">
 	      <div class="folder-item">
-            <img class="margin5r" src="<html:rootPath/>images/mobile/folder.png" align="absmiddle" border="0" />
+            <img class="margin5r" src="<html:rootPath/>images/mobile/folder_25.png" align="absmiddle" border="0" />
 		  <c:if test="${empty folder.title}">
 		    (<ssf:nlt tag="folder.noTitle"/>)
 		  </c:if>

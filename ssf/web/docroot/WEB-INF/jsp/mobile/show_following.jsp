@@ -45,12 +45,14 @@
 <div class="content">
 	<c:forEach var="following" items="${mobileFollowingPeople}">
 		<jsp:useBean id="following" type="java.util.Map" />
-		<div class="folder-item">
-	        <img class="margin5r" src="<html:rootPath/>images/mobile/User_16.png" align="absmiddle" />
-			<a href="<ssf:url adapter="true" portletName="ss_forum" entryId="${following.id}" 
-							action="__ajax_mobile" actionUrl="false" 
-							operation="mobile_show_user" />"><span>${following.name}</span></a>
-		</div>
+		<a href="<ssf:url adapter="true" portletName="ss_forum" entryId="${following.id}" 
+						action="__ajax_mobile" actionUrl="false" 
+						operation="mobile_show_user" />">
+			<div class="folder-item">
+				<img class="margin5r" src="<html:rootPath/>images/mobile/user_25.png" align="absmiddle" />
+				<span>${following.name}</span>
+			</div>
+		</a>	
 	</c:forEach>
 	<c:if test="${empty mobileFollowingPeople}">
 	    <div class="entry-content margintop2"><ssf:nlt tag="mobile.noFollowing"/></div>
