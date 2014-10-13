@@ -7,7 +7,7 @@
 	.vibe-binderViewTools
 	{
 		display: block;
-		padding: 0;
+		padding: 5px 5px 0;
 	}
 /* End:  Generic binder view tools styles. */
 
@@ -44,7 +44,7 @@
 	/* ...End:  Binder owner avatar panel styles. */
 	
 	/* ...Start:  Calendar navigation panel styles. */
-		.vibe-calNav-date           {color: #505354; font-weight: bold; font-size: 16px; font-family: Arial, Helvetica, sans-serif;}
+		.vibe-calNav-date           {color: #505354; font-weight: bold; font-size: 18px; text-shadow: 0 1px 0 white; font-family: Arial, Helvetica, sans-serif;}
 		.vibe-calNav-dateNavPanel   {padding: 0 10px;}
 		.vibe-calNav-datePanel      {padding: 0 10px;}
 		.vibe-calNav-datePicker     {}
@@ -52,7 +52,7 @@
 		.vibe-calNav-daysSelPanel   {margin: 0px; padding: 0px; padding-left: 8px; vertical-align: middle;}
 		.vibe-calNav-hoursMenu      {vertical-align: middle; background: transparent !important; padding: 0px !important;}
 		.vibe-calNav-hoursMenuPanel {margin: 0px; padding: 0px; vertical-align: middle;}
-		.vibe-calNav-panel          {background-color: #ededed; margin: 0px; padding: 10px; display: table; table-layout: fixed; overflow: hidden; white-space: nowrap; -moz-border-radius: 0px !important; border-radius: 0px !important; -webkit-border-radius: 0px  !important;}
+		.vibe-calNav-panel          {background-color: #C4C4C4; margin: 0px; padding: 10px; display: table; table-layout: fixed; overflow: hidden; white-space: nowrap; -moz-border-radius: 0px !important; border-radius: 0px !important; -webkit-border-radius: 0px  !important;}
 		.vibe-calNav-panelLeft      {}
 		.vibe-calNav-panelLeftHP    {}
 		.vibe-calNav-panelRight     {}
@@ -77,11 +77,11 @@
 		.vibe-entryMenu-configPanel         {vertical-align: top;}
 		.vibe-entryMenu-filterOptions-panel {vertical-align: top;}
 		.vibe-entryMenu-filtersPanel        {vertical-align: top; padding-right: 8px; margin-top: 6px;}
-		.vibe-entryMenu-grid                {padding: 0px !important; background-color: #ededed; display: table; table-layout: fixed; border-top-left-radius: 3px; border-top-right-radius: 3px;}
+		.vibe-entryMenu-grid                {padding: 0px !important; background-color: #ededed; display: table; table-layout: fixed;}
 		.vibe-entryMenu-quickFilters-filter {padding-top: 1px;}
 		.vibe-entryMenu-quickFilters-panel  {vertical-align: top; padding: 0 5px; margin-top: 1px; border-left: none; height: 19px; white-space: nowrap; background-color: #fff; border: 1px solid #b8b8b8; -moz-border-radius: 15px; border-radius: 15px; -webkit-border-radius: 15px;}
 		.vibe-entryMenu-rightPanel          {padding-right: 5px; margin-right: 3px; margin-top: 3px;}
-	/* ...End:  Entry menu panel styles. */
+/* ...End:  Entry menu panel styles. */
 	
 	/* ...Start:  Filter panel styles. */
 		.vibe-filterAnchor                 {cursor: pointer;}
@@ -126,18 +126,6 @@
 		.vibe-footerDataPanel                   {background-color: #eaebe8; padding: 10px; margin: 20px; display: block; -moz-border-radius: 5px; border-radius: 5px; -webkit-border-radius: 5px;}
 	/* ...End:  Footer panel styles. */
 	
-	/* ...Start:  User list panel styles. */
-		.vibe-userListPanel                    {padding-left: 10px;}
-		.vibe-userListPerUserLabel             {font-weight: bold; font-size: 12px; display: inline-block; padding-right: 5px; padding-top: 10px;}
-		.vibe-userListPerUserPanel             {margin: 0px; font-style: normal !important;}
-		.vibe-userListPerUserPrincipalPanel    {cursor: pointer;}
-		.vibe-userListPerUserPresence-control  {vertical-align: text-bottom;}
-		.vibe-userListPerUserPresence-image    {width: 25px; height: 25px; border-radius: 2px; margin-right: 3px;}
-		.vibe-userListPerUserPresence-label    {display: inline; font-size: 12px; font-weight: bold; padding-left: 2px !important;}
-		.vibe-userListPerUserPresence-disabled {color: #c4c4c4;}
-		.vibe-userListPerUserPresence-enabled  {color: #353838;}
-	/* ...End:  User list panel styles. */
-	
 	/* ...Start:  Generic folder view styles. */
 		.vibe-folderViewBase               {border: 8px solid transparent;}
 		.vibe-folderViewBase-dndHint       {position: absolute !important; top: 8px; left: 25%; right: 25%; color: black; font-size: 1em; font-weight: bold; text-align: center; padding: 10px; -moz-border-radius: 5px; border-radius: 5px; -webkit-border-radius: 5px; background: #09f;}
@@ -168,8 +156,8 @@
 		.vibe-dataTableAssignment-control         {vertical-align:text-bottom;}
 		.vibe-dataTableAssignment-disabled        {color: #c4c4c4;}
 		.vibe-dataTableAssignment-enabled         {color: #353838;}
-		.vibe-dataTableAssignment-image           {height: 20px; width: 20px; border-radius: 2px; margin-right: 3px;}
-		.vibe-dataTableAssignment-label           {display: inline; padding-left: 2px !important;}
+		.vibe-dataTableAssignment-image           {height: 25px; width: 25px; border-radius: 2px; margin-right: 3px;}
+		.vibe-dataTableAssignment-label           {display: inline; font-weight: bold; padding-left: 2px !important;}
 		.vibe-dataTableAssignment-labelEllipsis   {display: inline-block !important; overflow: hidden; text-overflow: ellipsis;}
 		.vibe-dataTableAssignment-labelIE         {vertical-align: -5px;}
 		.vibe-dataTableAssignment-list            {}
@@ -208,7 +196,7 @@
 		.vibe-dataTableEntry-viewLabel            {}
 		.vibe-dataTableGuest-avatar               {border-width: 1px; border-style: solid; border-color: #ccc; width: 50px; height: 50px;}
 		.vibe-dataTableGuest-avatarHover          {cursor: pointer;}
-		.vibe-dataTableGuest-info                 {display: inline-block; font-size: 11px; color: #333; vertical-align: top; padding-left: 8px;}
+		.vibe-dataTableGuest-info                 {display: inline-block; font-size: 10px; color: #333; vertical-align: top; padding-left: 3px;}
 		.vibe-dataTableGuest-infoEMA              {display: block;}
 		.vibe-dataTableGuest-infoMobileEMA        {display: block;}
 		.vibe-dataTableGuest-infoPhone            {display: block;}
@@ -243,12 +231,11 @@
 		.vibe-dataTableGroupType-image            {}
 		.vibe-dataTableUserType-panel             {text-align: center; display: block;}
 		.vibe-dataTableGroupType-panel            {text-align: center; display: block;}
-	/* ...End:  Data table cell styles. */
+/* ...End:  Data table cell styles. */
 
 	/* ...Start:  Calendar folder view styles. */
 		.vibe-calendarFolder-appointment {}
 		.vibe-calendarFolder             {}
-		.vibe-calendarFolderShowHintDlg  {z-index: 5001 !important;}
 	/* ...End:  Calendar folder view styles. */
 
 	/* ...Start:  Collection view styles. */
@@ -337,7 +324,10 @@
 		.vibe-blogFolderVerticalPanel {}
 		.vibe-blogFolderView          {}
 	/* ...End:  Task folder view styles. */
+	
 /* End:  GWT folder view styles. */
+
+
 
 /* Start:  GWT workspace view styles. */
 	.vibe-discussionWSView_AccessoriesPanel, .vibe-teamWSView_AccessoriesPanel, .vibe-genericWSView_AccessoriesPanel, .vibe-projectManagementWSView_AccessoriesPanel, .vibe-personalWorkspacesView_AccessoriesPanel, .vibe-netFoldersWSView_AccessoriesPanel
@@ -346,7 +336,6 @@
 	
 	.vibe-discussionWSView_BreadCrumbPanel, .vibe-teamWSView_BreadCrumbPanel, .vibe-genericWSView_BreadCrumbPanel, .vibe-projectManagementWSView_BreadCrumbPanel, .vibe-netFoldersWSView_BreadCrumbPanel, .vibe-homeWSView_BreadCrumbPanel
 	{
-		margin-top: 8px;
 	}
 	
 	.vibe-discussionWSView_DescPanel, .vibe-teamWSView_DescPanel, .vibe-genericWSView_DescPanel, .vibe-homeWSView_DescPanel, .vibe-projectManagementWSView_DescPanel, .vibe-personalWorkspacesView_DescPanel, .vibe-netFoldersWSView_DescPanel
@@ -436,7 +425,7 @@
 	.vibe-fileConflictsDlg-conflictName    {font-size: 1.1em;}
 	.vibe-fileConflictsDlg-conflicts       {padding: 4px;}
 	.vibe-fileConflictsDlg-folderImg       {}
-	.vibe-fileConflictsDlg-folderName      {font-weight: bold; font-size: 1.2em;}
+	.vibe-fileConflictsDlg-folderName      {font-wieght: bold; font-size: 1.2em;}
 	.vibe-fileConflictsDlg-folderNamePanel {margin-left: 5px;}
 	.vibe-fileConflictsDlg-folderNamePath  {font-size: 14px; color: #888;}
 	.vibe-fileConflictsDlg-folderPanel     {padding-bottom: 10px;}
@@ -609,7 +598,7 @@
 /* Start:  Change entry types dialog styles. */
 	.vibe-changeEntryTypesCurDef     {margin-left: 2px;}
 	.vibe-changeEntryTypesCurLabel   {}
-	.vibe-changeEntryTypesCurPanel   {white-space: nowrap; padding-bottom: 8px;}
+	.vibe-changeEntryTypesCurPanel   {white-space: none; padding-bottom: 8px;}
 	.vibe-changeEntryTypesFooter     {padding-top: 10px;}
 	.vibe-changeEntryTypesNote       {width: 600px; padding-top: 10px;}
 	.vibe-changeEntryTypesNewLabel   {font-weight: bold;}

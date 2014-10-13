@@ -49,9 +49,6 @@ import org.kablink.teaming.gwt.client.datatable.VibeCellTable;
 import org.kablink.teaming.gwt.client.datatable.VibeDataTableConstants;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.GroupCreatedEvent;
-import org.kablink.teaming.gwt.client.event.GroupMembershipModificationFailedEvent;
-import org.kablink.teaming.gwt.client.event.GroupMembershipModificationStartedEvent;
-import org.kablink.teaming.gwt.client.event.GroupMembershipModifiedEvent;
 import org.kablink.teaming.gwt.client.event.GroupModificationFailedEvent;
 import org.kablink.teaming.gwt.client.event.GroupModificationStartedEvent;
 import org.kablink.teaming.gwt.client.event.GroupModifiedEvent;
@@ -106,9 +103,6 @@ import com.google.gwt.view.client.MultiSelectionModel;
  */
 public class ManageGroupsDlg extends DlgBox implements
 		GroupCreatedEvent.Handler,
-		GroupMembershipModificationFailedEvent.Handler,
-		GroupMembershipModificationStartedEvent.Handler,
-		GroupMembershipModifiedEvent.Handler,
 		GroupModificationFailedEvent.Handler,
 		GroupModificationStartedEvent.Handler,
 		GroupModifiedEvent.Handler,
@@ -131,9 +125,6 @@ public class ManageGroupsDlg extends DlgBox implements
 	private TeamingEvents[] m_registeredEvents = new TeamingEvents[]
 	{
 		TeamingEvents.GROUP_CREATED,
-		TeamingEvents.GROUP_MEMBERSHIP_MODIFICATION_FAILED,
-		TeamingEvents.GROUP_MEMBERSHIP_MODIFICATION_STARTED,
-		TeamingEvents.GROUP_MEMBERSHIP_MODIFIED,
 		TeamingEvents.GROUP_MODIFICATION_FAILED,
 		TeamingEvents.GROUP_MODIFICATION_STARTED,
 		TeamingEvents.GROUP_MODIFIED,
@@ -157,11 +148,7 @@ public class ManageGroupsDlg extends DlgBox implements
 	 * The different statuses of a group
 	 */
 	public enum GroupModificationStatus {
-		GROUP_CREATION_IN_PROGRESS,
-		GROUP_DELETION_IN_PROGRESS,
-		GROUP_MODIFICATION_IN_PROGRESS,
-		GROUP_MEMBERSHIP_MODIFICATION_IN_PROGRESS,
-		READY;
+		GROUP_CREATION_IN_PROGRESS, GROUP_DELETION_IN_PROGRESS, GROUP_MODIFICATION_IN_PROGRESS, READY;
 		
 		/**
 		 * Get'er methods.
@@ -171,7 +158,6 @@ public class ManageGroupsDlg extends DlgBox implements
 		public boolean isBeingCreated()  {return GROUP_CREATION_IN_PROGRESS.equals(    this);}
 		public boolean isBeingDeleted()  {return GROUP_DELETION_IN_PROGRESS.equals(    this);}
 		public boolean isBeingModified() {return GROUP_MODIFICATION_IN_PROGRESS.equals(this);}
-		public boolean isMembershipBeingModified() { return GROUP_MEMBERSHIP_MODIFICATION_IN_PROGRESS.equals( this ); }
 		public boolean isReady()         {return READY.equals(                         this);}
 	}
 
@@ -990,106 +976,6 @@ public class ManageGroupsDlg extends DlgBox implements
 
 			// Tell the table how many groups we have.
 			m_groupsTable.setRowCount(m_listOfGroups.size(), true);
-		}
-	}
-
-	/**
-	 * Handles the GroupMembershipModificationFailedEvent received by this class
-	 */
-	@Override
-	public void onGroupMembershipModificationFailed( GroupMembershipModificationFailedEvent event )
-	{
-		GroupInfo groupInfo;
-
-		// Get the GroupInfo passed in the event.
-		groupInfo = event.getGroupInfo();
-
-		if ( groupInfo != null )
-		{
-			GroupInfoPlus groupInfoPlus;
-			Long id;
-
-			// Tell the user about the error
-			GwtClientHelper.handleGwtRPCFailure(
-											event.getException(),
-											GwtTeaming.getMessages().rpcFailure_ModifyGroupMembership() );
-
-			// Find this group in our list of groups.
-			id = groupInfo.getId();
-			groupInfoPlus = findGroupById( id );
-
-			if ( groupInfoPlus != null )
-			{
-				// Set the group's modification state to ready
-				groupInfoPlus.setStatus( GroupModificationStatus.READY );
-
-				// Update the table to reflect the fact that this group's status changed
-				m_dataProvider.refresh();
-			}
-		}
-	}
-
-	/**
-	 * Handles the GroupMembershipModificationStartedEvent received by this class
-	 */
-	@Override
-	public void onGroupMembershipModificationStarted( GroupMembershipModificationStartedEvent event )
-	{
-		GroupInfo groupInfo;
-
-		// Get the GroupInfo passed in the event.
-		groupInfo = event.getGroupInfo();
-
-		if ( groupInfo != null )
-		{
-			GroupInfoPlus groupInfoPlus;
-			Long id;
-
-			// Find this group in our list of groups.
-			id = groupInfo.getId();
-			groupInfoPlus = findGroupById(id);
-
-			if ( groupInfoPlus != null )
-			{
-				// Set the group's modification state to group membership modification in progress
-				groupInfoPlus.setStatus( GroupModificationStatus.GROUP_MEMBERSHIP_MODIFICATION_IN_PROGRESS );
-
-				// Update the table to reflect the fact that this group is being modified.
-				m_dataProvider.refresh();
-			}
-		}
-	}
-
-	/**
-	 * Handles the GroupMembershipModifiedEvent received by this class
-	 */
-	@Override
-	public void onGroupMembershipModified( GroupMembershipModifiedEvent event )
-	{
-		GroupInfo modifiedGroup;
-
-		// Get the GroupInfo passed in the event.
-		modifiedGroup = event.getGroupInfo();
-
-		if ( modifiedGroup != null )
-		{
-			GroupInfoPlus groupInfoPlus;
-
-			// Find this group in our list of groups.
-			groupInfoPlus = findGroupById( modifiedGroup.getId() );
-
-			if ( groupInfoPlus != null )
-			{
-				GroupInfo groupInfo;
-
-				groupInfo = groupInfoPlus.getGroupInfo();
-
-				// Update the status of the group.
-				groupInfoPlus.setStatus( GroupModificationStatus.READY );
-
-				// Update the table to reflect the fact that a group was modified.
-				m_dataProvider.refresh();
-			}
 		}
 	}
 

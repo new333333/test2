@@ -44,7 +44,6 @@ public class GroupSelectSpec {
 	private String m_filter;
 	private boolean m_excludeAllUsersGroup;
 	private boolean m_excludeAllExternalUsersGroup;
-	private boolean m_excludeTeamGroups;
 	
 	/**
 	 * 
@@ -54,7 +53,6 @@ public class GroupSelectSpec {
 		m_filter = null;
 		m_excludeAllExternalUsersGroup = false;
 		m_excludeAllUsersGroup = false;
-		m_excludeTeamGroups = true;
 	}
 	
 	/**
@@ -71,14 +69,6 @@ public class GroupSelectSpec {
 	public void setExcludeAllUsersGroup( boolean exclude )
 	{
 		m_excludeAllUsersGroup = exclude;
-	}
-	
-	/**
-	 * 
-	 */
-	public void setExcludeTeamGroups( boolean exclude )
-	{
-		m_excludeTeamGroups = exclude;
 	}
 	
 	/**
@@ -103,14 +93,6 @@ public class GroupSelectSpec {
 	public boolean getExcludeAllUsersGroup()
 	{
 		return m_excludeAllUsersGroup;
-	}
-	
-	/**
-	 * 
-	 */
-	public boolean getExcludeTeamGroups()
-	{
-		return m_excludeTeamGroups;
 	}
 	
 	/**

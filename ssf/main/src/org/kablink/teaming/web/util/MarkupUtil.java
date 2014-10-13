@@ -50,7 +50,6 @@ import java.util.regex.Pattern;
 import javax.portlet.PortletURL;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
-import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -61,7 +60,6 @@ import org.apache.lucene.document.DateTools;
 import org.dom4j.Element;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.ProfileDao;
-import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.CustomAttribute;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.Definition;
@@ -81,7 +79,6 @@ import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.portletadapter.AdaptedPortletURL;
 import org.kablink.teaming.repository.RepositoryUtil;
 import org.kablink.teaming.search.BasicIndexUtils;
-import org.kablink.teaming.util.AbstractAllModulesInjected;
 import org.kablink.teaming.util.FileUploadItem;
 import org.kablink.teaming.util.LongIdUtil;
 import org.kablink.teaming.util.NLT;
@@ -137,9 +134,6 @@ public class MarkupUtil {
 	protected final static Pattern permaLinkEntryTitlePattern = Pattern.compile("/title/([^\\s/]*)", Pattern.CASE_INSENSITIVE );
 	protected final static Pattern permaLinkBinderIdPattern = Pattern.compile("/binderId/([0-9]*)", Pattern.CASE_INSENSITIVE );
 	protected final static Pattern permaLinkZoneUUIDPattern = Pattern.compile("/zoneUUID/([^\\s\"'/]*)", Pattern.CASE_INSENSITIVE );
-
-	protected final static Pattern m_imgAttachmentUrlPattern = Pattern.compile( "((<img[^>]*)(src=\"\\{\\{attachmentUrl: ([^}]*)\\}\\})([^>]*>))", Pattern.CASE_INSENSITIVE );
-	protected final static Pattern m_dataMceSrcPattern = Pattern.compile( "((data-mce-src=\")([^\"]*))", Pattern.CASE_INSENSITIVE );
 
 	protected final static Pattern attachmentUrlPattern = Pattern.compile("(\\{\\{attachmentUrl: ([^}]*)\\}\\})", Pattern.CASE_INSENSITIVE );
 	protected final static Pattern v1AttachmentFileIdPattern = Pattern.compile("(\\{\\{attachmentFileId: ([^}]*)\\}\\})", Pattern.CASE_INSENSITIVE );
@@ -219,9 +213,7 @@ public class MarkupUtil {
         			fileName = uri.getRawPath();
         		} catch (Exception ex) {};
         		img = m3.replaceFirst(" src=\"{{attachmentUrl: " + fileName.replace("$", "\\$") + "}}\"");
-        		
-       			img = img.replaceAll(uploadImageViewTypePattern, "");
-        		
+        		img = img.replaceAll(uploadImageViewTypePattern, "");
         		description.setText(m.replaceFirst(img.replace("$", "\\$"))); //remove special chars from replacement string
         		m = uploadImagePattern.matcher(description.getText());
         	}
@@ -257,56 +249,32 @@ public class MarkupUtil {
 	    	}
     	}
 
-     	// Replace all instances of:
-     	// <img class=" ss_addimage_att " src="some-file-name" alt=" " data-mce-src="http://jwootton3.provo.novell.com:8080/ssf/s/readFile/workspace/1/-/1407854576062/last/some-file-name">
-     	// with:
-     	// <img class=" ss_addimage_att " src="{{attachmentUrl: some-file-name}}" alt=" " data-mce-src="http://jwootton3.provo.novell.com:8080/ssf/s/readFile/workspace/1/-/1407854576062/last/some-file-name">
-     	{
-     		StringBuffer outputBuff;
-     		
-     		outputBuff = new StringBuffer( description.getText());
-     		
-	    	m = readFileImagePattern.matcher( outputBuff.toString() );
-	    	loopDetector = 0;
-	    	if ( m.find() )
-	    	{
-	    		outputBuff = new StringBuffer();
-	    		
-	    		do
-		    	{
-		    		if (loopDetector++ > 2000) {
-			        	logger.error("Error processing markup [2.1]: " + description.getText());
-		    			break;
-		    		}
-		    		String url = "";
-		    		String img = m.group(0);
-		        	Matcher m2 = readFilePathPattern.matcher(img);
-		        	
-		        	if (m2.find())
-		        		url = m2.group().trim();
-		    		
-		        	String[] args = url.split(org.kablink.teaming.util.Constants.SLASH);
-		 
-			    	if (args.length == 8) {
-				    	//Now, replace the url with special markup version
-				    	Matcher m1 = urlSrcPattern.matcher(img);
-			        	if (m1.find()) {
-			        		String imgReplacement;
-			        		String fileName = args[WebUrlUtil.FILE_URL_NAME];
-			 
-			        		img = m1.replaceFirst(" src=\"{{attachmentUrl: " + fileName.replace("$", "\\$") + "}}\"");
-			        		imgReplacement = img.replace("$", "\\$");
-			        		m.appendReplacement( outputBuff, imgReplacement );
-			        	}
-			    	}
-		    	}
-	    		while ( m.find() );
-	    		
-	    		m.appendTail( outputBuff );
+    	m = readFileImagePattern.matcher(description.getText());
+    	loopDetector = 0;
+    	while (m.find()) {
+    		if (loopDetector++ > 2000) {
+	        	logger.error("Error processing markup [2.1]: " + description.getText());
+    			break;
+    		}
+    		String url = "";
+    		String img = m.group(0);
+        	Matcher m2 = readFilePathPattern.matcher(img);
+        	
+        	if (m2.find()) url = m2.group().trim();
+    		String[] args = url.split(org.kablink.teaming.util.Constants.SLASH);
+ 
+	    	if (args.length == 8) {
+		    	//Now, replace the url with special markup version
+		    	Matcher m1 = urlSrcPattern.matcher(img);
+	        	if (m1.find()) {
+	        		String fileName = args[WebUrlUtil.FILE_URL_NAME];
+	 
+	        		img = m1.replaceFirst(" src=\"{{attachmentUrl: " + fileName.replace("$", "\\$") + "}}\"");
+	        		description.setText(m.replaceFirst(img.replace("$", "\\$")));  //remove regex special char
+	        		m = readFileImagePattern.matcher(description.getText());
+	        	}
 	    	}
-	    	
-	    	description.setText( outputBuff.toString() );
-     	}
+    	}
 
     	m = attachedImagePattern.matcher(description.getText());
     	loopDetector = 0;
@@ -486,17 +454,9 @@ public class MarkupUtil {
 				return WebUrlUtil.getServletRootURL();
 			}
 			public String getFileUrlByName(String fileName) {
-				if (WebKeys.MARKUP_EXPORT.equals(type)) {
-					//need permalink
-					return PermaLinkUtil.getFilePermalink(searchResults, fileName);
-				} else if (WebKeys.MARKUP_RSS.equals(type)) {
-					String entityType = (String)searchResults.get(org.kablink.util.search.Constants.ENTITY_FIELD);
-					String entityId = (String)searchResults.get(org.kablink.util.search.Constants.DOCID_FIELD);
-					return "{{RSSattachmentUrl: entityId=" + String.valueOf(entityId) + 
-							" entityType=" +entityType + " fileName=" + fileName + "}}";
-				} else {
-					return WebUrlUtil.getFileUrl(WebUrlUtil.getServletRootURL(httpReq), WebKeys.ACTION_READ_FILE, searchResults, fileName);
-				}
+				if (!WebKeys.MARKUP_EXPORT.equals(type)) return WebUrlUtil.getFileUrl(WebUrlUtil.getServletRootURL(httpReq), WebKeys.ACTION_READ_FILE, searchResults, fileName);
+				//need permalink
+				return PermaLinkUtil.getFilePermalink(searchResults, fileName);
 			}
 			public String getFileUrlById(String fileId) {
 				Object fileName = searchResults.get(WebUrlUtil.getFileInfoById((String)org.kablink.util.search.Constants.FILENAME_AND_ID_FIELD,fileId));
@@ -833,15 +793,10 @@ public class MarkupUtil {
 				return WebUrlUtil.getServletRootURL();
 			}
 			public String getFileUrlByName(String fileName) {
-				if (WebKeys.MARKUP_EXPORT.equals(type)) {
-					//need permalink
-					return PermaLinkUtil.getFilePermalink(entity, fileName);
-				} else if (WebKeys.MARKUP_RSS.equals(type)) {
-					return "{{RSSattachmentUrl: entityId=" + String.valueOf(entity.getId()) + 
-							" entityType=" +entity.getEntityType().name() + " fileName=" + fileName + "}}";
-				} else {
+				if (!WebKeys.MARKUP_EXPORT.equals(type)) 
 					return WebUrlUtil.getFileUrl(WebUrlUtil.getServletRootURL(httpReq), WebKeys.ACTION_READ_FILE, entity, fileName);
-				}
+				//need permalink
+				return PermaLinkUtil.getFilePermalink(entity, fileName);
 			}
 			public String getFileUrlById(String fileId) {
 				try {
@@ -1943,149 +1898,5 @@ public class MarkupUtil {
 		}
 		
 		return retValue;
-	}
-	
-	
-	/**
-	 * Parse the branding and replace all <img src="{{attachmentUrl: image-name}}" with a url
-	 * to the image that is visible to all users (including the guest user).
-	 * For example, <img src="http://somehost/ssf/branding/binder/binderId/imgName" />
-	 */
-	public static String fixupImgUrls(
-		AbstractAllModulesInjected allModules,
-		HttpServletRequest httpReq,
-		ServletContext servletContext,
-		Binder brandingSourceBinder,
-		String branding )
-	{
-		StringBuffer outputBuf;
-		Matcher matcher;
-
-		if ( branding == null || branding.length() == 0 )
-			return null;
-		
-		outputBuf = new StringBuffer( branding );
-		matcher = m_imgAttachmentUrlPattern.matcher( outputBuf.toString() );
-
-		// Replace the markup {{attachmentUrl: imageName}} inside an <img> tag with the url to the image.
-		if ( matcher.find() )
-		{
-	    	int loopDetector = 0;
-
-	    	loopDetector = 0;
-			outputBuf = new StringBuffer();
-			do
-			{
-				if ( loopDetector++ > 2000 )
-				{
-					logger.error( "Error processing markup in fixupImgUrls(): " + branding );
-					return branding;
-				}
-				
-				if ( matcher.groupCount() >= 5 )
-				{
-					String fileName;
-					
-					// Get the file name of the image.
-					fileName = matcher.group( 4 );
-
-					// Get the url to this image
-					if ( fileName != null && fileName.length() > 0 )
-					{
-						String imgUrl;
-						
-						// Remove escaping that timyMce for html escaping - get here if someone typed {{att.. }}themselves
-						fileName = StringEscapeUtils.unescapeHtml(fileName);
-						
-						imgUrl = BrandingUtil.getUrlToBinderBrandingImg(
-																	allModules,
-																	httpReq,
-																	servletContext,
-																	brandingSourceBinder,
-																	fileName );
-						
-						if ( imgUrl != null && imgUrl.length() > 0 )
-						{
-							String replacement;
-							String remainder;
-
-							// Replace src="{{attachmentUrl: imgName}} with src="some url"
-							imgUrl = Matcher.quoteReplacement( imgUrl );
-							
-							// Get the rest of the string after "src={{attachmentUrl: imgName}}"
-							remainder = matcher.group( 5 );
-							remainder = MarkupUtil.fixupDataMceSrc(
-																httpReq,
-																brandingSourceBinder,
-																fileName,
-																remainder );
-							
-							replacement = "$2 src=\"" + imgUrl + remainder;
-							matcher.appendReplacement(outputBuf, replacement );
-						}
-					}
-				}
-				
-			} while ( matcher.find() );
-			
-			matcher.appendTail( outputBuf );
-    	}
-    	
-		return outputBuf.toString();
-	}
-	
-	/**
-	 * Replace the url found in the data-mce-src attribute with a "readFile" url.
-	 */
-	private static String fixupDataMceSrc(
-		HttpServletRequest httpReq,
-		Binder brandingSourceBinder,
-		String fileName,
-		String txt )
-	{
-		String readFileUrl = null;
-		StringBuffer outputBuf;
-
-		if ( txt == null || txt.length() == 0 )
-			return txt;
-		
-		outputBuf = new StringBuffer( txt );
-
-		// Get the "readFile" url to the image
-		{
-			String webPath;
-
-			webPath = WebUrlUtil.getServletRootURL( httpReq );
-
-			// Get a "readFile" url to the image
-			readFileUrl = WebUrlUtil.getFileUrl(
-											webPath,
-											WebKeys.ACTION_READ_FILE,
-											brandingSourceBinder,
-											fileName );
-		}
-		
-		if ( readFileUrl != null && readFileUrl.length() > 0 )
-		{
-			Matcher dataMceSrcMatcher;
-			
-			dataMceSrcMatcher = m_dataMceSrcPattern.matcher( txt );
-		
-			// Replace the url found in the data-mce-src url with the
-			// "readFile" url.
-			if ( dataMceSrcMatcher.find() )
-			{
-				String replacement;
-				String remainder;
-
-				outputBuf = new StringBuffer();
-			
-				replacement = "data-mce-src=\"" + readFileUrl;
-				dataMceSrcMatcher.appendReplacement( outputBuf, replacement );
-				dataMceSrcMatcher.appendTail( outputBuf );
-			}
-		}
-		
-		return outputBuf.toString();
 	}
 }

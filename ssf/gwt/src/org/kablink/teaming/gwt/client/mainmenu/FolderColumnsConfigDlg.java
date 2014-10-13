@@ -459,14 +459,12 @@ public class FolderColumnsConfigDlg extends DlgBox implements EditSuccessfulHand
 		List<FolderColumn> fcList = ((List<FolderColumn>) callbackData);
 		Boolean isDefault = ((null != m_folderDefaultCheckBox) && m_folderDefaultCheckBox.getValue());
 		SaveFolderColumnsCmd cmd = new SaveFolderColumnsCmd(m_binderInfo.getBinderId(), fcList, isDefault);
-		setOkEnabled(false);
 		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
 			@Override
 			public void onFailure(Throwable t) {
 				GwtClientHelper.handleGwtRPCFailure(
 					t,
 					GwtTeaming.getMessages().rpcFailure_SaveFolderColumns());
-				setOkEnabled(true);
 			}
 			
 			@Override
@@ -479,7 +477,6 @@ public class FolderColumnsConfigDlg extends DlgBox implements EditSuccessfulHand
 							t,
 							GwtTeaming.getMessages().rpcFailure_GetBinderPermalink(),
 							m_binderInfo.getBinderId());
-						setOkEnabled(true);
 					}
 					
 					@Override
@@ -491,7 +488,6 @@ public class FolderColumnsConfigDlg extends DlgBox implements EditSuccessfulHand
 							GwtTeaming.fireEvent(new ChangeContextEvent(osbInfo));
 						}
 						
-						setOkEnabled(true);
 						hide();
 					}
 				});
@@ -602,30 +598,6 @@ public class FolderColumnsConfigDlg extends DlgBox implements EditSuccessfulHand
 		return rb.isChecked();
 	}
 	
-    /**
-     * Called after the EditSuccessfulHandler has been called by
-     * DlgBox.
-     * 
-     * Overrides the DlgBox.okBtnProcessingEnded() method.
-     */
-	@Override
-    protected void okBtnProcessingEnded() {
-		// Ignored!  This dialog is handling enabling and disabling of
-		// the OK button itself.
-    }
-    
-    /**
-     * Called before the EditSuccessfulHandler has been called by
-     * DlgBox.
-     * 
-     * Overrides the DlgBox.okBtnProcessingStarted() method.
-     */
-	@Override
-    protected void okBtnProcessingStarted() {
-		// Ignored!  This dialog is handling enabling and disabling of
-		// the OK button itself.
-    }
-    
 	/*
 	 * Check a row's radio button. 
 	 */
@@ -758,9 +730,7 @@ public class FolderColumnsConfigDlg extends DlgBox implements EditSuccessfulHand
 		createContentImpl();
 		
 		// ...and show the dialog.
-		setCancelEnabled(true);
-		setOkEnabled(    true);
-		show(            true);	// true -> Display the dialog centered on the screen.
+		show(true);	// true -> Display the dialog centered on the screen.
 	}
 
 	/*

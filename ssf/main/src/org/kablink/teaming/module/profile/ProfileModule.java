@@ -44,7 +44,6 @@ import java.util.Set;
 import java.util.SortedSet;
 
 import org.dom4j.Document;
-
 import org.kablink.teaming.dao.util.GroupSelectSpec;
 import org.kablink.teaming.domain.Application;
 import org.kablink.teaming.domain.ApplicationGroup;
@@ -434,8 +433,6 @@ public interface ProfileModule {
     public LimitedUserView getLimitedUserView(Long userId);
     public User findUserByName(String username) throws NoUserByTheNameException;
     public User getReservedUser(String internalId) throws NoUserByTheNameException;
-    public User getReservedUser(String internalId, Long zoneId) throws NoUserByTheNameException;
-    public Collection<User> getReservedUsers(Collection<String> internalId) throws NoUserByTheNameException;
    
     /**
      * 
@@ -949,10 +946,4 @@ public interface ProfileModule {
      */
     public void savePrincipalDesktopAppsConfig(Long       principalId,  boolean principalIsUser,    PrincipalDesktopAppsConfig config);
     public void savePrincipalDesktopAppsConfig(List<Long> principalIds, boolean principalsAreUsers, PrincipalDesktopAppsConfig config);
-    
-	/**
-	 * Upgrade Vibe Granite external users to full Vibe Hudson external users.
-	 * Vibe Hudson external users are functionally equivalent to Filr 1.1 external users.
-	 */
-	public void upgradeVibeGraniteExternalUsers();
 }

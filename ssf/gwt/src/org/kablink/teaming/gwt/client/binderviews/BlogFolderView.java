@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -47,12 +47,8 @@ import org.kablink.teaming.gwt.client.event.BlogGlobalTagSelectedEvent;
 import org.kablink.teaming.gwt.client.event.BlogPageCreatedEvent;
 import org.kablink.teaming.gwt.client.event.BlogPageSelectedEvent;
 import org.kablink.teaming.gwt.client.event.ContributorIdsReplyEvent;
-import org.kablink.teaming.gwt.client.event.DownloadFolderAsCSVFileEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
-import org.kablink.teaming.gwt.client.event.InvokeCopyFiltersDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeDropBoxEvent;
-import org.kablink.teaming.gwt.client.event.MarkFolderContentsReadEvent;
-import org.kablink.teaming.gwt.client.event.MarkFolderContentsUnreadEvent;
 import org.kablink.teaming.gwt.client.event.QuickFilterEvent;
 import org.kablink.teaming.gwt.client.event.ResetEntryMenuEvent;
 import org.kablink.teaming.gwt.client.event.SetFolderSortEvent;
@@ -82,8 +78,8 @@ import org.kablink.teaming.gwt.client.widgets.BlogPageCtrl;
 import org.kablink.teaming.gwt.client.widgets.BlogArchiveCtrl.BlogArchiveCtrlClient;
 import org.kablink.teaming.gwt.client.widgets.BlogPageCtrl.BlogPageCtrlClient;
 import org.kablink.teaming.gwt.client.widgets.VibeFlowPanel;
-import org.kablink.teaming.gwt.client.event.ContributorIdsRequestEvent;
 
+import org.kablink.teaming.gwt.client.event.ContributorIdsRequestEvent;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
@@ -101,18 +97,14 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
  */
 public class BlogFolderView extends FolderViewBase
 	implements
-		// Event handlers implemented by this class.
+	// Event handlers implemented by this class.
 		BlogArchiveFolderSelectedEvent.Handler,
 		BlogArchiveMonthSelectedEvent.Handler,
 		BlogGlobalTagSelectedEvent.Handler,
 		BlogPageCreatedEvent.Handler,
 		BlogPageSelectedEvent.Handler,
 		ContributorIdsRequestEvent.Handler,
-		DownloadFolderAsCSVFileEvent.Handler,
-		InvokeCopyFiltersDlgEvent.Handler,
 		InvokeDropBoxEvent.Handler,
-		MarkFolderContentsReadEvent.Handler,
-		MarkFolderContentsUnreadEvent.Handler,
 		QuickFilterEvent.Handler,
 		SetFolderSortEvent.Handler
 {
@@ -137,11 +129,7 @@ public class BlogFolderView extends FolderViewBase
 		TeamingEvents.BLOG_PAGE_CREATED,
 		TeamingEvents.BLOG_PAGE_SELECTED,
 		TeamingEvents.CONTRIBUTOR_IDS_REQUEST,
-		TeamingEvents.DOWNLOAD_FOLDER_AS_CSV_FILE,
-		TeamingEvents.INVOKE_COPY_FILTERS_DLG,
 		TeamingEvents.INVOKE_DROPBOX,
-		TeamingEvents.MARK_FOLDER_CONTENTS_READ,
-		TeamingEvents.MARK_FOLDER_CONTENTS_UNREAD,
 		TeamingEvents.QUICK_FILTER,
 		TeamingEvents.SET_FOLDER_SORT
 	};
@@ -406,15 +394,13 @@ public class BlogFolderView extends FolderViewBase
 		// In the blog folder view, we show the following:
 		// 1. Breadcrumb
 		// 2. Description
-		// 3. Download
-		// 4. List of binders control
-		// 5. List of blog entries
-		// 6. Footer
+		// 3. List of binders control
+		// 4. List of blog entries
+		// 5. Footer
 		switch ( folderPanel )
 		{
 		case BREADCRUMB:
 		case DESCRIPTION:
-		case DOWNLOAD:
 		case ENTRY_MENU:
 		case FOOTER:
 			reply = true;
@@ -666,68 +652,6 @@ public class BlogFolderView extends FolderViewBase
 	}
 	
 	/**
-	 * Handles DownloadFolderAsCSVFileEvent's received by this class.
-	 * 
-	 * Implements the DownloadFolderAsCSVFileEvent.Handler.onDownloadFolderAsCSVFile() method.
-	 * 
-	 * @param event
-	 */
-	@Override
-	public void onDownloadFolderAsCSVFile( DownloadFolderAsCSVFileEvent event )
-	{
-		// Is the event targeted to this folder?
-		Long dlFolderId    = event.getFolderId();
-		Long eventFolderId = event.getHandleByFolderId();
-		if ( null == eventFolderId )
-		{
-			eventFolderId = dlFolderId;
-		}
-		if ( eventFolderId.equals( getFolderId() ) )
-		{
-			// Yes!  Invoke the download.
-			BinderViewsHelper.downloadFolderAsCSVFile(
-				getDownloadPanel().getForm(),
-				dlFolderId );
-		}
-	}
-	
-	/**
-	 * Handles InvokeCopyFiltersDlgEvent's received by this class.
-	 * 
-	 * Implements the InvokeCopyFiltersDlgEvent.Handler.onInvokeCopyFiltersDlg() method.
-	 * 
-	 * @param event
-	 */
-	@Override
-	public void onInvokeCopyFiltersDlg(InvokeCopyFiltersDlgEvent event) {
-		// Is the event targeted to this folder?
-		BinderInfo eventFolderInfo = event.getFolderInfo();
-		if (eventFolderInfo.isEqual(getFolderInfo())) {
-			// Yes!  Invoke the copy filters dialog on the folder.
-			onInvokeCopyFiltersDlgAsync(eventFolderInfo);
-		}
-	}
-
-	/*
-	 * Asynchronously invokes the copy filters dialog.
-	 */
-	private void onInvokeCopyFiltersDlgAsync(final BinderInfo folderInfo) {
-		GwtClientHelper.deferCommand(new ScheduledCommand() {
-			@Override
-			public void execute() {
-				onInvokeCopyFiltersDlgNow(folderInfo);
-			}
-		} );
-	}
-	
-	/*
-	 * Synchronously invokes the copy filters dialog.
-	 */
-	private void onInvokeCopyFiltersDlgNow(final BinderInfo folderInfo) {
-		BinderViewsHelper.invokeCopyFiltersDlg(folderInfo);
-	}
-		
-	/**
 	 * Handles InvokeDropBoxEvent's received by this class.
 	 * 
 	 * Implements the InvokeDropBoxEvent.Handler.onInvokeDropBox() method.
@@ -745,54 +669,6 @@ public class BlogFolderView extends FolderViewBase
 			BinderViewsHelper.invokeDropBox(
 				getFolderInfo(),
 				getEntryMenuPanel().getAddFilesMenuItem() );
-		}
-	}
-	
-	/**
-	 * Handles MarkFolderContentsReadEvent's received by this class.
-	 * 
-	 * Implements the MarkFolderContentsReadEvent.Handler.onMarkFolderContentsRead() method.
-	 * 
-	 * @param event
-	 */
-	@Override
-	public void onMarkFolderContentsRead( MarkFolderContentsReadEvent event )
-	{
-		// Is the event targeted to this folder?
-		Long folderId    = event.getFolderId();
-		Long eventFolderId = event.getHandleByFolderId();
-		if ( null == eventFolderId )
-		{
-			eventFolderId = folderId;
-		}
-		if ( eventFolderId.equals( getFolderId() ) )
-		{
-			// Yes!  Mark the folder contents as having been read.
-			BinderViewsHelper.markFolderContentsRead( folderId );
-		}
-	}
-	
-	/**
-	 * Handles MarkFolderContentsUnreadEvent's received by this class.
-	 * 
-	 * Implements the MarkFolderContentsUnreadEvent.Handler.onMarkFolderContentsUnread() method.
-	 * 
-	 * @param event
-	 */
-	@Override
-	public void onMarkFolderContentsUnread( MarkFolderContentsUnreadEvent event )
-	{
-		// Is the event targeted to this folder?
-		Long folderId    = event.getFolderId();
-		Long eventFolderId = event.getHandleByFolderId();
-		if ( null == eventFolderId )
-		{
-			eventFolderId = folderId;
-		}
-		if ( eventFolderId.equals( getFolderId() ) )
-		{
-			// Yes!  Mark the folder contents as having been unread.
-			BinderViewsHelper.markFolderContentsUnread( folderId );
 		}
 	}
 	

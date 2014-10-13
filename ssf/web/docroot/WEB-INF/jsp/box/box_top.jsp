@@ -108,7 +108,9 @@ if (Validator.isNotNull(title) || (showCloseIcon == true)) {
 	  </c:if>
 	  <col width="8"/>
 	  <tr>
-	  <td class="ss_title_bar"></td>
+	  <td class="ss_title_bar">
+	    <img border="0" src="<html:imagesPath/>roundcorners3/corner1.png" style="background:#fff;">
+	  </td>
 	  <c:if test="<%= showResizeIcon %>">
 		<td class="ss_title_bar" align="left">
 			<div style="display:inline; width:40px; 
@@ -143,11 +145,13 @@ if (Validator.isNotNull(title) || (showCloseIcon == true)) {
 			 href="javascript: ;" onClick="<%= showCloseRoutine %>;return false;"><ssf:nlt tag="button.close"/>&nbsp;<img align="absmiddle" border="0" <ssf:alt/>
 			 height="16" hspace="0" 
 			 name="p_${renderResponse.namespace}_close" 
-			 src="<html:imagesPath/>icons/close_gray16.png" 
+			 src="<html:imagesPath/>icons/close_teal16.png" 
 			 title="<ssf:nlt tag="icon.close" text="Close" />" 
 			 vspace="0" width="16" ></a></span></td>
 	  </c:if>
-	  <td class="ss_title_bar"></td>
+	  <td class="ss_title_bar">
+	    <img <ssf:alt/> border="0" src="<html:imagesPath/>roundcorners3/corner2.png" style="background:#fff;">
+	  </td>
 	  </tr>
 	  
 	  <tr>

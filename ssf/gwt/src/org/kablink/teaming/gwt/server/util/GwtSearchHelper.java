@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -37,6 +37,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -49,8 +50,6 @@ import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Description;
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
-import org.kablink.teaming.domain.Group;
-import org.kablink.teaming.domain.Group.GroupType;
 import org.kablink.teaming.domain.IdentityInfo;
 import org.kablink.teaming.domain.NoUserByTheIdException;
 import org.kablink.teaming.domain.NoUserByTheNameException;
@@ -68,7 +67,6 @@ import org.kablink.teaming.gwt.client.GwtTeamingException;
 import org.kablink.teaming.gwt.client.GwtTeamingItem;
 import org.kablink.teaming.gwt.client.GwtUser;
 import org.kablink.teaming.gwt.client.GwtSearchCriteria.SearchScope;
-import org.kablink.teaming.gwt.client.util.GwtFolderEntryType;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.search.filter.SearchFilter;
@@ -338,14 +336,6 @@ public class GwtSearchHelper
 			// Should we search for ldap containers?
 			if ( searchCriteria.getSearchForLdapContainers() == false )
 				searchTermFilter.addAndLdapContainerFilter( false );
-			
-			// Should "team groups" be included in the search results?
-			if ( searchCriteria.getSearchForTeamGroups() == false )
-				searchTermFilter.addAndTeamGroupFilter( false );
-			
-			// Type to find should only return enabled users.
-    	    options.put(ObjectKeys.SEARCH_IS_ENABLED_PRINCIPALS, Boolean.TRUE);
-    	    
 			break;
 
 		case GROUP:
@@ -368,14 +358,6 @@ public class GwtSearchHelper
 			// Should we search for ldap containers?
 			if ( searchCriteria.getSearchForLdapContainers() == false )
 				searchTermFilter.addAndLdapContainerFilter( false );
-			
-			// Should "team groups" be included in the search results?
-			if ( searchCriteria.getSearchForTeamGroups() == false )
-				searchTermFilter.addAndTeamGroupFilter( false );
-			
-			// Type to find should only return enabled groups.
-    	    options.put(ObjectKeys.SEARCH_IS_ENABLED_PRINCIPALS, Boolean.TRUE);
-    	    
 			break;
 			
 		default:
@@ -447,16 +429,6 @@ public class GwtSearchHelper
 					folderEntry.setEntryName( entryName );
 					parentBinderName = entry.get( WebKeys.BINDER_PATH_NAME );
 					folderEntry.setParentBinderName( parentBinderName );
-					
-					{
-						GwtFolderEntryType entryType;
-						Long id;
-						
-						id = Long.valueOf( entryId );
-						entryType = GwtFolderEntryTypeHelper.getFolderEntryType( ami, id );
-						folderEntry.setEntryType( entryType );
-					}
-
 					results.add( folderEntry );
 				}
 				searchResults.setResults( results);
@@ -557,8 +529,6 @@ public class GwtSearchHelper
 								if ( useGroup )
 								{
 									Description desc;
-									String name;
-									String title;
 									
 									// Yes
 									// Create a GwtGroup item for this group.
@@ -568,19 +538,8 @@ public class GwtSearchHelper
 										gwtGroup.setInternal( identityInfo.isInternal() );
 									
 									gwtGroup.setId( id );
-
-									name = group.getName();
-									title = group.getTitle();
-									
-									if ( group instanceof Group &&
-										 ((Group)group).getGroupType() == GroupType.team )
-									{
-										// Use the title of the group instead of the group name for display purposes.
-										name = title;
-									}
-
-									gwtGroup.setName( name );
-									gwtGroup.setTitle( title );
+									gwtGroup.setName( group.getName() );
+									gwtGroup.setTitle( group.getTitle() );
 									gwtGroup.setDn( group.getForeignName() );
 									desc = group.getDescription();
 									if ( desc != null )
@@ -861,8 +820,6 @@ public class GwtSearchHelper
 							{
 								GwtGroup gwtGroup;
 								Description desc;
-								String name;
-								String title;
 
 								// Is this group from ldap?
 								if ( identityInfo != null && identityInfo.isFromLdap() )
@@ -885,19 +842,8 @@ public class GwtSearchHelper
 									gwtGroup.setInternal( identityInfo.isInternal() );
 								
 								gwtGroup.setId( principalId );
-
-								name = principal.getName();
-								title = principal.getTitle();
-									
-								if ( principal instanceof Group &&
-										 ((Group)principal).getGroupType() == GroupType.team )
-								{
-									// Use the title of the group instead of the group name for display purposes.
-									name = title;
-								}
-
-								gwtGroup.setName( name );
-								gwtGroup.setTitle( title );
+								gwtGroup.setName( principal.getName() );
+								gwtGroup.setTitle( principal.getTitle() );
 								gwtGroup.setDn( principal.getForeignName() );
 								desc = principal.getDescription();
 								if ( desc != null )

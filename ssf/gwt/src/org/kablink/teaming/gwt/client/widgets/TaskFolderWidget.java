@@ -46,7 +46,6 @@ import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 import org.kablink.teaming.gwt.client.util.TaskListItem;
 
 import com.google.gwt.core.client.Scheduler;
-import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -95,66 +94,6 @@ public class TaskFolderWidget extends VibeWidget
 			m_tasksWidget.addTasksFromTaskListItems( tasks );
 		}
 	}
-
-	/**
-	 * 
-	 */
-	private void getTasksFromFolder(
-		String zoneId,
-		Long folderId )
-	{
-		GetTaskListCmd cmd;
-
-		// Issue an rpc request to get the last n tasks from the folder.
-		cmd = new GetTaskListCmd( zoneId, folderId, "ALL", "PHYSICAL" );
-		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
-		{
-			/**
-			 * 
-			 */
-			@Override
-			public void onFailure( Throwable t )
-			{
-				GwtClientHelper.handleGwtRPCFailure(
-					t,
-					GwtTeaming.getMessages().rpcFailure_GetTaskList() );
-			}
-	
-			/**
-			 * 
-			 * @param result
-			 */
-			@Override
-			public void onSuccess( VibeRpcResponse response )
-			{
-				TaskListItemListRpcResponseData tlilResponse;
-				
-				tlilResponse = (TaskListItemListRpcResponseData) response.getResponseData();
-				
-				if ( tlilResponse != null )
-				{
-					final List<TaskListItem> tasks;
-					
-					tasks = tlilResponse.getTaskList();
-					if ( tasks != null )
-					{
-						Scheduler.ScheduledCommand cmd;
-
-						cmd = new Scheduler.ScheduledCommand()
-						{
-							@Override
-							public void execute()
-							{
-								// Add the tasks to this widget
-								addTasks( tasks );
-							}
-						};
-						Scheduler.get().scheduleDeferred( cmd );
-					}
-				}
-			}
-		} );
-	}
 	
 	/**
 	 * When the user clicks on the folder's title, fire the ChangeContextEvent event
@@ -172,14 +111,13 @@ public class TaskFolderWidget extends VibeWidget
 	{
 		VibeFlowPanel mainPanel;
 		VibeFlowPanel contentPanel;
-		final int numTasks;
+		int numTasks;
 		InlineLabel label;
 		VibeFlowPanel titlePanel;
 		int width;
 		Unit widthUnits;
 		int height;
 		Unit heightUnits;
-		ScheduledCommand cmd;
 		
 		m_properties = new TaskFolderProperties();
 		m_properties.copy( properties );
@@ -246,6 +184,35 @@ public class TaskFolderWidget extends VibeWidget
 			mainPanel.add( titlePanel );
 		}
 		
+		// Issue an rpc request to get information about the folder.
+		m_properties.getDataFromServer( new GetterCallback<Boolean>()
+		{
+			/**
+			 * 
+			 */
+			@Override
+			public void returnValue( Boolean value )
+			{
+				Scheduler.ScheduledCommand cmd;
+
+				// Did we successfully get the folder information?
+				if ( value )
+				{
+					// Yes
+					cmd = new Scheduler.ScheduledCommand()
+					{
+						@Override
+						public void execute()
+						{
+							// Update this widget with the folder information
+							updateWidget();
+						}
+					};
+					Scheduler.get().scheduleDeferred( cmd );
+				}
+			}
+		} );
+
 		// Create a panel where all the content will live.
 		{
 			contentPanel = new VibeFlowPanel();
@@ -263,6 +230,7 @@ public class TaskFolderWidget extends VibeWidget
 		numTasks = m_properties.getNumTasksToBeShownValue();
 		if ( numTasks > 0 )
 		{
+			GetTaskListCmd cmd;
 			VibeFlowPanel tasksPanel;
 			
 			// Yes, create a panel for the tasks to live in.
@@ -273,54 +241,57 @@ public class TaskFolderWidget extends VibeWidget
 			// Create a tasks widget that will hold the tasks
 			m_tasksWidget = new SimpleListOfTasksWidget( numTasks, widgetStyles, m_style );
 			tasksPanel.add( m_tasksWidget );
-		}
 
-		cmd = new Scheduler.ScheduledCommand()
-		{
-			@Override
-			public void execute()
+			// Issue an rpc request to get the last n tasks from the folder.
+			cmd = new GetTaskListCmd( m_properties.getZoneUUID(), m_properties.getFolderIdL(), "ALL", "PHYSICAL" );
+			GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
 			{
-				// Issue an rpc request to get information about the folder.
-				m_properties.getDataFromServer( new GetterCallback<Boolean>()
+				/**
+				 * 
+				 */
+				@Override
+				public void onFailure( Throwable t )
 				{
-					/**
-					 * 
-					 */
-					@Override
-					public void returnValue( Boolean value )
+					GwtClientHelper.handleGwtRPCFailure(
+						t,
+						GwtTeaming.getMessages().rpcFailure_GetTaskList() );
+				}
+		
+				/**
+				 * 
+				 * @param result
+				 */
+				@Override
+				public void onSuccess( VibeRpcResponse response )
+				{
+					TaskListItemListRpcResponseData tlilResponse;
+					
+					tlilResponse = (TaskListItemListRpcResponseData) response.getResponseData();
+					
+					if ( tlilResponse != null )
 					{
-						Scheduler.ScheduledCommand cmd2;
-
-						// Did we successfully get the folder information?
-						if ( value )
+						final List<TaskListItem> tasks;
+						
+						tasks = tlilResponse.getTaskList();
+						if ( tasks != null )
 						{
-							// Yes
-							cmd2 = new Scheduler.ScheduledCommand()
+							Scheduler.ScheduledCommand cmd;
+	
+							cmd = new Scheduler.ScheduledCommand()
 							{
 								@Override
 								public void execute()
 								{
-									// Update this widget with the folder information
-									updateWidget();
-
-									if ( numTasks > 0 )
-									{
-										// Issue an rpc request to get the last n tasks from the folder.
-										getTasksFromFolder( m_properties.getZoneUUID(), m_properties.getFolderIdL() );
-									}
-									
-									getWidget().setVisible( true );
+									// Add the tasks to this widget
+									addTasks( tasks );
 								}
 							};
-							Scheduler.get().scheduleDeferred( cmd2 );
+							Scheduler.get().scheduleDeferred( cmd );
 						}
 					}
-				} );
-			}
-		};
-		Scheduler.get().scheduleDeferred( cmd );
-
-		mainPanel.setVisible( false );
+				}
+			} );
+		}
 		
 		return mainPanel;
 	}

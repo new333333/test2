@@ -6,19 +6,19 @@
     xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
     http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
     http://www.springframework.org/schema/aop http://www.springframework.org/schema/context/spring-aop-3.0.xsd
-    http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.2.xsd">
+    http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.1.xsd">
 
 	<!-- =========================== Basic Infrastructural Beans ========================== -->
 
-	<!-- Configurer that replaces ${...} placeholders with the raw values from ssf 
-	     properties file(s) that are accessed through rawSsfProperties bean. -->
+	<!-- Configurer that replaces ${...} placeholders with values from ssf 
+	     properties file(s) that are accessed through sPropsUtil bean. -->
 	<bean id="propertyPlaceholderConfigurer" 
-		class="org.kablink.teaming.spring.beans.factory.config.PropertyPlaceholderConfigurer">	
-		<property name="rawSsfProperties"><ref bean="rawSsfProperties"/></property>
+		class="org.kablink.teaming.spring.beans.factory.config.PropertyPlaceholderConfigurer" 
+		depends-on="sPropsUtil">	
 		<!-- As explained above, this custom configurer gets properties values
-		     from rawSsfProperties bean, NOT from the properties file specified below.
+		     from SpropsUtil, NOT from the properties file specified below.
 		     In other words, the following 'location' property is ignored,
-		     but is nevertheless present here to satisfy initialization requirement. -->
+		     but nevertheless present here to satisfy initialization requirement. -->
 		<property name="location"><value>config/ssf.properties</value></property>								
 	</bean>
 
@@ -290,31 +290,29 @@
 		<property name="definitionBuilderConfig"><ref bean="definitionBuilderConfig"/></property>		
 	</bean>
 	
-	<!-- Current encryptor implementing latest algorithm required by the current version of product.
-	     NOTE: The requirement is different between Filr and Vibe. Consequently the current version
-	           of each product may use different encryptor and they each may or may not be using 
-	           different algorithm from the first generation encryptor.
-	     NOTE: This bean is made dependent upon the internal rawSsfProperties bean rather than the public 
-	           sPropsUtil bean because making this dependent upon sPropsUtil results in circular dependency.
-	           For the same reason we cannot use ${} substitution to pass property values of this bean
-	           since sPropsUtil is not in service yet. Instead, we pass the name of property to the bean
-	           and have the bean retrieve the value from the properties files. -->
-	<bean id="symmetricStringEncryptor" class="org.kablink.util.encrypt.ExtendedPBEStringEncryptor" depends-on="rawSsfProperties">
-    	<property name="algorithm"><value>${symmetric.string.encryptor.algorithm}</value></property>
+	<!-- This is the current encryptor implementing new algorithm required as of Filr 1.0 and Vibe 4.0. -->
+	<bean id="encryptor" class="org.jasypt.encryption.pbe.StandardPBEStringEncryptor">
+	    <property name="provider">
+	      <bean class="org.bouncycastle.jce.provider.BouncyCastleProvider"/>
+	    </property>
+    	<property name="algorithm">
+      	  <value>PBEWITHSHA256AND128BITAES-CBC-BC</value>
+    	</property>
   	</bean>
   	
-  	<!--  This is old encryptor implementing old algorithm. This encryptor is used in all versions of Vibe including Hudson.
-  	      Also Filr code prior to 1.0 release (that is, during development) also used this encryptor. -->
-	<bean id="symmetricStringEncryptor_firstGen" class="org.kablink.util.encrypt.ExtendedPBEStringEncryptor" depends-on="rawSsfProperties">
-    	<property name="algorithm"><value>PBEWithMD5AndDES</value></property>
+  	<!--  This is the old encryptor implementing old algorithm used prior to Filr 1.0 and Vibe 4.0. -->
+	<bean id="encryptor_preFilr1_0" class="org.jasypt.encryption.pbe.StandardPBEStringEncryptor">
+    	<property name="algorithm">
+      	  <value>PBEWithMD5AndDES</value>
+    	</property>
   	</bean>
   	
   	<!-- This encryptor simply wraps both new and old encryptors and used to encrypt/decrypt values
   	     stored in the database declaratively through Hibernate mapping files.
   	     NOTE: The Filr user passwords are NOT encrypted through this wrapper. -->
   	<bean id="encryptorWrapperForHibernate" class="org.kablink.teaming.util.encrypt.HibernateEncryptor">
-  	    <constructor-arg><ref bean="symmetricStringEncryptor"/></constructor-arg>
-  	    <constructor-arg><ref bean="symmetricStringEncryptor_firstGen"/></constructor-arg>
+  	    <constructor-arg><ref bean="encryptor"/></constructor-arg>
+  	    <constructor-arg><ref bean="encryptor_preFilr1_0"/></constructor-arg>
   	</bean>
   	
 	<bean id="hibernateStringEncryptor"
@@ -326,29 +324,21 @@
   	      <ref bean="encryptorWrapperForHibernate" />
   	  </property>
  	 </bean>
- 	 
- 	 <!-- This bean deals with the ssf properties files at the base raw level and doesn't know or care
- 	      anything about how to encrypt or decrypt values. -->
- 	 <bean id="rawSsfProperties" class="org.kablink.teaming.util.PropertiesClassPathConfigFiles">
-		<property name="configFiles">
-			<list>
-				<value>config/ssf.properties</value>
-				<value>config/ssf-additional.properties</value>
-				<value>optional:config/ssf-ext.properties</value>
-			</list>		
-		</property>
- 	 </bean>
 
-	<!-- This bean is the main one that applications interact with in order to retrieve values from the ssf
-	     properties files through convenience methods. This bean knows how to encrypt or decrypt values as necessary. -->
-	<bean id="sPropsUtil" class="org.kablink.teaming.util.SPropsUtil">
+	<!-- sets password for encryptor -->
+	<bean id="sPropsUtil" class="org.kablink.teaming.util.SPropsUtil" depends-on="encryptor">
 		<property name="config">
-			<!-- This private bean wraps "rawSsfProperties" bean with the ability to handle data encryption and decryption. -->
 			<bean class="org.kablink.teaming.util.encrypt.EncryptedClassPathConfigFiles">
-				<property name="propertiesClassPathConfigFiles"><ref bean="rawSsfProperties"/></property>
+				<property name="configFiles">
+					<list>
+						<value>config/ssf.properties</value>
+						<value>config/ssf-additional.properties</value>
+						<value>optional:config/ssf-ext.properties</value>
+					</list>		
+				</property>
 				<property name="encryptConfigFile"><value>optional:config/ssf-ext.properties</value></property>
-				<property name="encryptor"><ref bean="symmetricStringEncryptor"/></property>
-				<property name="encryptor_first_gen"><ref bean="symmetricStringEncryptor_firstGen"/></property>
+				<property name="encryptor"><ref bean="encryptor"/></property>
+				<property name="encryptor_preFilr1_0"><ref bean="encryptor_preFilr1_0"/></property>
 			</bean>
 		</property>
 	</bean>
@@ -885,7 +875,6 @@
 
 	<bean id="workflowProcessUtils" parent="dependOnCommonServicesTemplate"  class="org.kablink.teaming.module.workflow.WorkflowProcessUtils">
 		<property name="zoneClassManager"><ref bean="zoneClassManager"/></property>
-		<property name="binderModule"><ref bean="binderModule"/></property>
 	</bean>
 
 	<bean id="dashboardModule" parent="moduleTransactionProxy">
@@ -916,7 +905,6 @@
 		<property name="icalModule"><ref bean="icalModule"/></property>
 		<property name="smtpService"><ref bean="smtpService"/></property>
 		<property name="definitionBuilderConfig"><ref bean="definitionBuilderConfig"/></property>		
-		<property name="binderModule"><ref bean="binderModule"/></property>
 
 	</bean>
 	<bean id="notifyBuilderUtil" class="org.kablink.teaming.module.definition.notify.NotifyBuilderUtil">

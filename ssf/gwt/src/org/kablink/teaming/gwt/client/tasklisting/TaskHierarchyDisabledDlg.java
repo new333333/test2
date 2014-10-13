@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -34,6 +34,8 @@ package org.kablink.teaming.gwt.client.tasklisting;
 
 import java.util.List;
 
+import org.kablink.teaming.gwt.client.EditCanceledHandler;
+import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
@@ -46,13 +48,14 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
+
 /**
  * Implements a dialog for telling the user the reasons why task
  * hierarchy manipulation is disabled.
  *  
  * @author drfoster@novell.com
  */
-public class TaskHierarchyDisabledDlg extends DlgBox {
+public class TaskHierarchyDisabledDlg extends DlgBox implements EditSuccessfulHandler, EditCanceledHandler {
 	private GwtTeamingMessages	m_messages;					// Access to the GWT UI messages.
 	private VerticalPanel		m_taskHierarchyDisabledVP;	// Once displayed, the table of reasons task hierarchy manipulation is disabled.
 	private List<String>		m_reasons;					// The reasons why task hierarchy manipulation is disabled.
@@ -92,9 +95,9 @@ public class TaskHierarchyDisabledDlg extends DlgBox {
 		// ...and create the dialog's content.
 		createAllDlgContent(
 			m_messages.taskHierarchyDisabledDlgHeader(),
-			getSimpleSuccessfulHandler(),	// The dialog's EditSuccessfulHandler.
-			getSimpleCanceledHandler(),		// The dialog's EditCanceledHandler.
-			null);							// Data passed via global data members.
+			this,	// The dialog's EditSuccessfulHandler.
+			this,	// The dialog's EditCanceledHandler.
+			null);	// Data passed via global data members.
 	}
 	
 	/**
@@ -130,6 +133,39 @@ public class TaskHierarchyDisabledDlg extends DlgBox {
 		// ...contents.
 		return m_taskHierarchyDisabledVP;
 	}
+	
+	
+	/**
+	 * This method gets called when user user presses the Cancel push
+	 * button.
+	 * 
+	 * Implements the EditCanceledHandler.editCanceled() interface
+	 * method.
+	 * 
+	 * @return
+	 */
+	public boolean editCanceled() {
+		// Simply return true to allow the dialog to close.
+		return true;
+	}
+
+	
+	/**
+	 * This method gets called when user user presses the OK push
+	 * button.
+	 * 
+	 * Implements the EditSuccessfulHandler.editSuccessful() interface
+	 * method.
+	 * 
+	 * @param callbackData
+	 * 
+	 * @return
+	 */
+	public boolean editSuccessful(Object callbackData) {
+		// Simply return true to close the dialog.
+		return true;
+	}
+
 	
 	/**
 	 * Returns the edited List<ToolbarItem>.

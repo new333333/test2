@@ -180,22 +180,6 @@ public interface GwtTeamingFilrImageBundle extends ClientBundle {
 	public ImageResource myFiles_transparent_72();
 	
 	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/Filr/myfiles_storage.png")
-	public ImageResource myFilesStorage();
-	
-	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/Filr/myfiles_storage_36.png")
-	public ImageResource myFilesStorage_medium();
-	
-	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/Filr/myfiles_storage_48.png")
-	public ImageResource myFilesStorage_large();
-	
-	@ImageOptions(repeatStyle = RepeatStyle.Both)
-	@Source("org/kablink/teaming/gwt/public/images/Filr/myfiles_storage_transparent_72.png")
-	public ImageResource myFilesStorage_transparent_72();
-	
-	@ImageOptions(repeatStyle = RepeatStyle.Both)
 	@Source("org/kablink/teaming/gwt/public/images/Filr/netfolder.png")
 	public ImageResource netFolder();
 	

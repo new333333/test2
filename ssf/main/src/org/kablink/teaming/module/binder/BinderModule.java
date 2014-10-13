@@ -46,7 +46,6 @@ import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.BinderChanges;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.FileAttachment;
-import org.kablink.teaming.domain.Group;
 import org.kablink.teaming.domain.NoBinderByTheIdException;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.SimpleName;
@@ -470,17 +469,6 @@ public interface BinderModule {
 	 * @return 
 	 */
 	public Collection<Tag> getTags(Binder binder);
-
-	/**
-	 * Return whether the given binder has team members associated with it either directly or through inheritence
-	 */
-	public boolean doesBinderHaveTeamMembers( Binder binder );
-	
-	/**
-	 * If this binder has a "team group" associated with it, rename the group to match the binder's name.
-	 */
-	public void fixupTeamGroupName( Binder binder );
-	
 	/**
 	 * Get a list of team members for the given binder
 	 * @param binder
@@ -488,12 +476,6 @@ public interface BinderModule {
 	 * @return
 	 */
 	public SortedSet<Principal> getTeamMembers(Binder binder, boolean explodeGroups);
-	
-	/**
-	 * Return a list of team member ids
-	 */
-	public Set<Long> getTeamMemberIds( Binder binder );
-	
 	/**
 	 * Return a list of team member ids
 	 * @param binderId
@@ -502,12 +484,6 @@ public interface BinderModule {
 	 * @throws AccessControlException
 	 */
 	public Set<Long> getTeamMemberIds(Long binderId, boolean explodeGroups) throws AccessControlException;
-
-	/**
-	 * Return a list of team member ids
-	 */
-	public String getTeamMemberString( Binder binder );
-	
 	/**
 	 * Ordered list of binders by title
 	 * @param id
@@ -769,13 +745,6 @@ public interface BinderModule {
 		throws AccessControlException;
 	public void setTeamMembershipInherited(Long binderId, boolean inherit, boolean doAccessCheck)
 		throws AccessControlException;
-	
-	/**
-	 * Upgrade the team membership by moving the team membership from being stored in a property
-	 * on a binder to being stored in a "team group".  Do this for all binders.
-	 */
-	public void upgradeTeamMembership();
-	
     /**
      * Sets a binder's My Files indicator
      * @param binderId

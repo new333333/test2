@@ -125,19 +125,14 @@ public class AddFolderController extends SAbstractController {
 						getBinderModule().setTeamMembershipInherited(newIdCopy, inheritTeamMembership);			
 						return null;
 					}
-				}, new WorkAreaOperation[]{WorkAreaOperation.BINDER_ADMINISTRATION, WorkAreaOperation.CHANGE_ACCESS_CONTROL}, null);
+				}, new WorkAreaOperation[]{WorkAreaOperation.BINDER_ADMINISTRATION}, null);
 				
 				if (!newBinder.isTeamMembershipInherited()) {
-					final Set memberIds = new HashSet();
+					Set memberIds = new HashSet();
 					if (formData.containsKey("users")) memberIds.addAll(LongIdUtil.getIdsAsLongSet(request.getParameterValues("users")));
 					if (formData.containsKey("groups")) memberIds.addAll(LongIdUtil.getIdsAsLongSet(request.getParameterValues("groups")));
 					//Save the team members 
-					RunWithTemplate.runWith(new RunWithCallback() {
-						public Object runWith() {
-							getBinderModule().setTeamMembers(newIdCopy, memberIds);
-							return null;
-						}
-					}, new WorkAreaOperation[]{WorkAreaOperation.BINDER_ADMINISTRATION, WorkAreaOperation.CHANGE_ACCESS_CONTROL}, null);
+					getBinderModule().setTeamMembers(newId, memberIds);
 				}
 				
 				//See if there are any folders to be created
@@ -167,7 +162,7 @@ public class AddFolderController extends SAbstractController {
 							emailAddress.add(bccEmailAddress.trim());
 						}
 					}
-					Set teamMemberIds = getBinderModule().getTeamMemberIds( newBinder );
+					Set teamMemberIds = newBinder.getTeamMemberIds();
 					if (!teamMemberIds.isEmpty()) {
 						@SuppressWarnings("unused")
 						Map status = getAdminModule().sendMail(teamMemberIds, null, emailAddress, null, null,
@@ -225,8 +220,7 @@ public class AddFolderController extends SAbstractController {
 		String templateName = PortletRequestUtils.getStringParameter(request, WebKeys.URL_TEMPLATE_NAME, "");				
 		String operation = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
 		Binder binder = getBinderModule().getBinder(binderId);
-		model.put(WebKeys.BINDER, binder);
-		model.put( WebKeys.BINDER_TEAM_MEMBER_IDS, getBinderModule().getTeamMemberIds( binder ) );
+		model.put(WebKeys.BINDER, binder); 
 		model.put(WebKeys.BINDER_TEMPLATE_NAME, templateName);
 		model.put(WebKeys.OPERATION, operation);
 		model.put(WebKeys.USER_PRINCIPAL, user);

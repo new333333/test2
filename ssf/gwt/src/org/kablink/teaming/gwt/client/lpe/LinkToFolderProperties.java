@@ -36,8 +36,6 @@ package org.kablink.teaming.gwt.client.lpe;
 import org.kablink.teaming.gwt.client.GetterCallback;
 import org.kablink.teaming.gwt.client.GwtFolder;
 import org.kablink.teaming.gwt.client.GwtTeaming;
-import org.kablink.teaming.gwt.client.GwtTeamingException;
-import org.kablink.teaming.gwt.client.GwtTeamingException.ExceptionType;
 import org.kablink.teaming.gwt.client.rpc.shared.GetFolderCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
@@ -82,16 +80,12 @@ public class LinkToFolderProperties
 			/**
 			 * 
 			 */
-			@Override
 			public void onFailure(Throwable t)
 			{
-				if ( ((GwtTeamingException) t).getExceptionType() != ExceptionType.ACCESS_CONTROL_EXCEPTION )
-				{
-					GwtClientHelper.handleGwtRPCFailure(
-						t,
-						GwtTeaming.getMessages().rpcFailure_GetFolder(),
-						m_folderId );
-				}
+				GwtClientHelper.handleGwtRPCFailure(
+					t,
+					GwtTeaming.getMessages().rpcFailure_GetFolder(),
+					m_folderId );
 				
 				// Inform the callback that the rpc request failed.
 				if ( m_getterCallback != null )
@@ -102,7 +96,6 @@ public class LinkToFolderProperties
 			 * 
 			 * @param result
 			 */
-			@Override
 			public void onSuccess( VibeRpcResponse response )
 			{
 				GwtFolder gwtFolder;
@@ -126,7 +119,6 @@ public class LinkToFolderProperties
 	/**
 	 * 
 	 */
-	@Override
 	public void copy( PropertiesObj props )
 	{
 		if ( props instanceof LinkToFolderProperties )
@@ -156,7 +148,6 @@ public class LinkToFolderProperties
 	/**
 	 * Return the properties as a string that can be stored in the db.
 	 */
-	@Override
 	public String createConfigString()
 	{
 		String str;

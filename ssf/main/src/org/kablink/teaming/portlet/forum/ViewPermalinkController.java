@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -45,7 +45,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.dom4j.Document;
-
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.asmodule.zonecontext.ZoneContextHolder;
 import org.kablink.teaming.context.request.RequestContextHolder;
@@ -86,7 +85,6 @@ import org.kablink.teaming.web.util.WebUrlUtil;
 import org.kablink.util.BrowserSniffer;
 import org.kablink.util.Http;
 import org.kablink.util.Validator;
-
 import org.springframework.web.portlet.ModelAndView;
 
 /**
@@ -94,13 +92,7 @@ import org.springframework.web.portlet.ModelAndView;
  * 
  * @author Peter Hurley
  */
-@SuppressWarnings({"unchecked", "unused"})
 public class ViewPermalinkController  extends SAbstractController {
-	private final static String KEY_ACCESS_EXCEPTION				= "accessException";
-	private final static String KEY_NO_BINDER_BY_THE_ID_EXCEPTION	= "noBinderByIdException";
-	private final static String KEY_NOT_IMPORTED_EXCEPTION			= "notImportedException";
-	private final static String EXCEPTION_FLAG						= "true";
-	
 	@Override
 	public void handleActionRequestAfterValidation(final ActionRequest request, final ActionResponse response) throws Exception {
 		User user = null;
@@ -231,7 +223,7 @@ public class ViewPermalinkController  extends SAbstractController {
 
 			//User must log in to see this
 			response.setRenderParameters(request.getParameterMap());
-			response.setRenderParameter(KEY_ACCESS_EXCEPTION, EXCEPTION_FLAG);
+			response.setRenderParameter("accessException", "true");
 			
 			refererUrl = Http.getCompleteURL( WebHelper.getHttpServletRequest( request ) );
 			refererUrl = StringCheckUtil.checkForQuotes(refererUrl, false);		//Prevent XSS attacks
@@ -241,7 +233,7 @@ public class ViewPermalinkController  extends SAbstractController {
 		} catch (NoBinderByTheIdException nb) {
 			logger.debug("ViewPermalinkController.handleActionRequestAfterValidation(NoBinderByTheIdException):  Exception rendered to response.");
 			response.setRenderParameters(request.getParameterMap());
-			response.setRenderParameter(KEY_NO_BINDER_BY_THE_ID_EXCEPTION, EXCEPTION_FLAG);
+			response.setRenderParameter("noBinderByIdException", "true");
 		}
 	}
 
@@ -341,7 +333,7 @@ public class ViewPermalinkController  extends SAbstractController {
 				//entries move so the binderId may not be valid
 				Long targetEntryId = getFolderModule().getZoneEntryId(Long.valueOf(entryId), zoneUUID);
 				if (targetEntryId == null) {
-					response.setRenderParameter(KEY_NOT_IMPORTED_EXCEPTION, EXCEPTION_FLAG);
+					response.setRenderParameter("notImportedException", "true");
 					return null;
 				} else {
 					entryId = targetEntryId.toString();
@@ -356,11 +348,11 @@ public class ViewPermalinkController  extends SAbstractController {
 				if (Validator.isNotNull(entryId)) {
 					Long targetEntryId = getFolderModule().getZoneEntryId(Long.valueOf(entryId), zoneUUID);
 					if (targetEntryId == null) {
-						response.setRenderParameter(KEY_NOT_IMPORTED_EXCEPTION, EXCEPTION_FLAG);
+						response.setRenderParameter("notImportedException", "true");
 						return null;
 					} else {
-						entryId = String.valueOf(targetEntryId);
-						entity = getProcessEntry(response, entryId);
+						entryId = targetEntryId.toString();
+						entity = GwtUIHelper.getEntrySafely2(getFolderModule(), entryId);
 						String entityBinderId =
 							((null == entity)                      ?
 								GwtUIHelper.getTopWSIdSafely(this) :
@@ -371,18 +363,20 @@ public class ViewPermalinkController  extends SAbstractController {
 				} else {
 					Long targetBinderId = getBinderModule().getZoneBinderId(Long.valueOf(binderId), zoneUUID, entityType.name());
 					if (targetBinderId == null) {
-						response.setRenderParameter(KEY_NOT_IMPORTED_EXCEPTION, EXCEPTION_FLAG);
+						response.setRenderParameter("notImportedException", "true");
 						return null;
 					} else {
 						binderId = String.valueOf(targetBinderId);
-						entity = getProcessBinder(response, binderId);
+						entity = GwtUIHelper.getBinderSafely2(getBinderModule(), binderId);
 						url.setParameter(WebKeys.URL_BINDER_ID, binderId);
 						url.setParameter(WebKeys.URL_ENTRY_TITLE, entryTitle);
 					}
 				}
 				
+				@SuppressWarnings("unused")
 				boolean accessible_simple_ui = SPropsUtil.getBoolean("accessibility.simple_ui", false);
 				User user = RequestContextHolder.getRequestContext().getUser();
+				@SuppressWarnings("unused")
 				String displayStyle = user.getDisplayStyle();
 				url.setParameter(WebKeys.URL_ACTION, "view_folder_listing");
 				url.setParameter(WebKeys.URL_ENTRY_VIEW_STYLE, WebKeys.URL_ENTRY_VIEW_STYLE_FULL);
@@ -418,7 +412,7 @@ public class ViewPermalinkController  extends SAbstractController {
 			} else {
 				if (targetBinderId != null) {
 					binderId = String.valueOf(targetBinderId);
-					entity = getProcessBinder(response, binderId);
+					entity = GwtUIHelper.getBinderSafely2(getBinderModule(), binderId);
 				}
 				if (null != entity) {
 					if      (entity instanceof Workspace) binderPreDeleted = ((Workspace) entity).isPreDeleted();
@@ -534,48 +528,6 @@ public class ViewPermalinkController  extends SAbstractController {
 		if (MiscUtil.hasString(invokeSubscribe)) url.setParameter(WebKeys.URL_INVOKE_SUBSCRIBE, invokeSubscribe);
 				
     	return url;
-	}
-	
-	/*
-	 * Safely obtains a DefinableEntity for a Binder, setting an
-	 * exception flag in the response for the exceptions that we care
-	 * about.
-	 * 
-	 * Returns the DefinableEntry if the Binder can be accessed and
-	 * null if it can't.
-	 */
-	private DefinableEntity getProcessBinder(ActionResponse response, String binderId) {
-		DefinableEntity reply;
-		try {
-			reply = GwtUIHelper.getBinderSafely2(getBinderModule(), binderId);
-		}
-		catch (Exception ex) {
-			if      (ex instanceof AccessControlException)   response.setRenderParameter(KEY_ACCESS_EXCEPTION,              EXCEPTION_FLAG);
-			else if (ex instanceof NoBinderByTheIdException) response.setRenderParameter(KEY_NO_BINDER_BY_THE_ID_EXCEPTION, EXCEPTION_FLAG);
-			reply = null;
-		}
-		return reply;
-	}
-	
-	/*
-	 * Safely obtains a DefinableEntity for a FolderEntry, setting an
-	 * exception flag in the response for the exceptions that we care
-	 * about.
-	 * 
-	 * Returns the DefinableEntry if the FolderEntry can be accessed
-	 * and null if it can't.
-	 */
-	private DefinableEntity getProcessEntry(ActionResponse response, String entryId) {
-		DefinableEntity reply;
-		try {
-			reply = GwtUIHelper.getEntrySafely2(getFolderModule(), entryId);
-		}
-		catch (Exception ex) {
-			if      (ex instanceof AccessControlException)   response.setRenderParameter(KEY_ACCESS_EXCEPTION,              EXCEPTION_FLAG);
-			else if (ex instanceof NoBinderByTheIdException) response.setRenderParameter(KEY_NO_BINDER_BY_THE_ID_EXCEPTION, EXCEPTION_FLAG);
-			reply = null;
-		}
-		return reply;
 	}
 	
 	protected String getFileUrlById(ActionRequest request, EntityType entityType, String binderId, String entryId, String fileId) {
@@ -706,7 +658,7 @@ public class ViewPermalinkController  extends SAbstractController {
 				}
 
 				// Get the flag that tells us if the user has rights to this permalink.
-				accessException = PortletRequestUtils.getStringParameter( request, KEY_ACCESS_EXCEPTION );
+				accessException = PortletRequestUtils.getStringParameter( request, "accessException" );
 
 				// Is a user logged in?
 				if ( WebHelper.isGuestLoggedIn( request ) )
@@ -746,7 +698,7 @@ public class ViewPermalinkController  extends SAbstractController {
 					// login if the guest user did not have rights.  We now prompt for login all the time.
 					
 					// Does Guest have rights to view the permalink?
-					if ( accessException != null && accessException.equalsIgnoreCase( EXCEPTION_FLAG ) )
+					if ( accessException != null && accessException.equalsIgnoreCase( "true" ) )
 					{
 						// No, add a flag that tells us to prompt for login.
 						model.put( "promptForLogin", "true" );
@@ -768,7 +720,7 @@ public class ViewPermalinkController  extends SAbstractController {
 					model.put( "userFullName", Utils.getUserTitle( user ) );
 
 					// Does this user have rights to view the permalink?
-					if ( accessException != null && accessException.equalsIgnoreCase( EXCEPTION_FLAG ) )
+					if ( accessException != null && accessException.equalsIgnoreCase( "true" ) )
 					{
 						String errMsg;
 						
@@ -812,11 +764,13 @@ public class ViewPermalinkController  extends SAbstractController {
 							
 							if ( configDocument != null )
 							{
+								@SuppressWarnings("rawtypes")
 								List nodes;
 								
 						    	nodes = configDocument.selectNodes( "//item[@type='form']//item[@type='data' and @name='mashupCanvas']/properties/property[@name='name']/@value" );
 						    	if ( nodes != null )
 						    	{
+						        	@SuppressWarnings("rawtypes")
 									Iterator it;
 
 						        	it = nodes.iterator();
@@ -844,9 +798,9 @@ public class ViewPermalinkController  extends SAbstractController {
 			}
 		}
 		
-		if (    !EXCEPTION_FLAG.equals(PortletRequestUtils.getStringParameter(request, KEY_ACCESS_EXCEPTION             )) &&
-				!EXCEPTION_FLAG.equals(PortletRequestUtils.getStringParameter(request, KEY_NO_BINDER_BY_THE_ID_EXCEPTION)) &&
-				!EXCEPTION_FLAG.equals(PortletRequestUtils.getStringParameter(request, KEY_NOT_IMPORTED_EXCEPTION       ))) {
+		if (!"true".equals(PortletRequestUtils.getStringParameter(request, "accessException")) &&
+				!"true".equals(PortletRequestUtils.getStringParameter(request, "noBinderByIdException")) &&
+				!"true".equals(PortletRequestUtils.getStringParameter(request, "notImportedException"))) {
 			return new ModelAndView(WebKeys.VIEW_LOGIN_RETURN, model);
 		}
 		
@@ -856,16 +810,18 @@ public class ViewPermalinkController  extends SAbstractController {
 			BinderHelper.setupStandardBeans(this, request, response, model);
 			return new ModelAndView(WebKeys.VIEW_LOGIN_PLEASE, model);
 		} else {
+	        user = RequestContextHolder.getRequestContext().getUser();
+	 		
 			//Set up the standard beans
 			BinderHelper.setupStandardBeans(this, request, response, model);
-	        user = RequestContextHolder.getRequestContext().getUser();
-			if (WebHelper.isUserLoggedIn(request) && !ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
-				//Access is not allowed
-				if (EXCEPTION_FLAG.equals(PortletRequestUtils.getStringParameter(request, KEY_NO_BINDER_BY_THE_ID_EXCEPTION))) {
+			if (WebHelper.isUserLoggedIn(request) && 
+						!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
+					//Access is not allowed
+				if ("true".equals(PortletRequestUtils.getStringParameter(request, "noBinderByIdException"))) {
 					model.put(WebKeys.ERROR_MESSAGE, NLT.get("errorcode.no.folder.by.the.id", new String[] {binderId}));
 					return new ModelAndView(WebKeys.VIEW_ERROR_RETURN, model);
 				}
-				if (EXCEPTION_FLAG.equals(PortletRequestUtils.getStringParameter(request, KEY_NOT_IMPORTED_EXCEPTION))) {
+				if ("true".equals(PortletRequestUtils.getStringParameter(request, "notImportedException"))) {
 					model.put(WebKeys.ERROR_MESSAGE, NLT.get("errorcode.entry.not.imported", new String[] {binderId}));
 					return new ModelAndView(WebKeys.VIEW_ERROR_RETURN, model);
 				}
@@ -882,6 +838,7 @@ public class ViewPermalinkController  extends SAbstractController {
 	 * Generate an error message for the GWT UI to display if an entry
 	 * ID is invalid.
 	 */
+	@SuppressWarnings("unchecked")
 	private static void validateBinderId(boolean isGuest, BinderModule bm, String binderId, Map model) {
 		// If we don't have an ID to check or we've already got an
 		// error message pending, we don't do anything.
@@ -926,6 +883,7 @@ public class ViewPermalinkController  extends SAbstractController {
 	 * Generate an error message for the GWT UI to display if an entry
 	 * ID is invalid.
 	 */
+	@SuppressWarnings("unchecked")
 	private static void validateFolderEntryId(boolean isGuest, FolderModule fm, String entityType, String feId, Map model) {
 		// If we don't have an ID to check or we've already got an
 		// error message pending, we don't do anything.

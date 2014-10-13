@@ -151,8 +151,6 @@ public class GroupTitleCell extends AbstractCell<GroupInfoPlus>
 					statusMsg = GwtTeaming.getMessages().manageGroupsDlgDeletingGroup();
 				else if ( status == GroupModificationStatus.GROUP_MODIFICATION_IN_PROGRESS )
 					statusMsg = GwtTeaming.getMessages().manageGroupsDlgModifyingGroup();
-				else if ( status == GroupModificationStatus.GROUP_MEMBERSHIP_MODIFICATION_IN_PROGRESS )
-					statusMsg = GwtTeaming.getMessages().manageGroupsDlgUpdatingMembership();
 				else
 					statusMsg = GwtTeaming.getMessages().manageGroupsDlgUnknownStatus();
 					

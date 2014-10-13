@@ -186,21 +186,25 @@ public class GwtShareHelper
 	 */
 	private static EntityId buildEntityIdFromEntityIdentifier( AllModulesInjected bs, EntityIdentifier eid )
 	{
-		EntityId reply;
+		EntityId reply = new EntityId();
 		
 		switch ( eid.getEntityType() )
 		{
 		case folderEntry:
 			FolderEntry entry = bs.getFolderModule().getEntry( null, eid.getEntityId() );
-			reply = new EntityId( entry.getParentBinder().getId(), eid.getEntityId(), EntityId.FOLDER_ENTRY );
+			reply.setEntityId( eid.getEntityId() );
+			reply.setBinderId( entry.getParentBinder().getId() );
+			reply.setEntityType( EntityId.FOLDER_ENTRY );
 			break;
 			
 		case folder:
-			reply = new EntityId( eid.getEntityId(), EntityId.FOLDER );
+			reply.setEntityId( eid.getEntityId() );
+			reply.setEntityType( EntityId.FOLDER );
 			break;
 			
 		case workspace:
-			reply = new EntityId( eid.getEntityId(), EntityId.WORKSPACE );
+			reply.setEntityId( eid.getEntityId() );
+			reply.setEntityType( EntityId.WORKSPACE );
 			break;
 			
 		default:
@@ -1377,9 +1381,6 @@ public class GwtShareHelper
 					group = groupPrincipals.first();
 					
 					name = group.getName();
-
-					if ( ((Group) group).getGroupType() == Group.GroupType.team )
-						name = group.getTitle();
 				}
 			}
 			catch ( Exception e )

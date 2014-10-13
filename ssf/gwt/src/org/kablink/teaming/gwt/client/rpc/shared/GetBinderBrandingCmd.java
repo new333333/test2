@@ -43,7 +43,6 @@ package org.kablink.teaming.gwt.client.rpc.shared;
 public class GetBinderBrandingCmd extends VibeRpcCmd
 {
 	private String m_binderId;
-	private boolean m_useInheritance;
 	
 	/**
 	 * For GWT serialization, must have a zero param contructor
@@ -51,8 +50,6 @@ public class GetBinderBrandingCmd extends VibeRpcCmd
 	public GetBinderBrandingCmd()
 	{
 		super();
-		m_binderId = null;
-		m_useInheritance = true;
 	}
 	
 	/**
@@ -82,21 +79,5 @@ public class GetBinderBrandingCmd extends VibeRpcCmd
 	@Override
 	public int getCmdType() {
 		return VibeRpcCmdType.GET_BINDER_BRANDING.ordinal();
-	}
-	
-	/**
-	 * 
-	 */
-	public boolean getUseInheritance()
-	{
-		return m_useInheritance;
-	}
-	
-	/**
-	 * 
-	 */
-	public void setUseInheritance( boolean useInheritance )
-	{
-		m_useInheritance = useInheritance;
 	}
 }

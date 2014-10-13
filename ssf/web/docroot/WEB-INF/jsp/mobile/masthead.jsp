@@ -41,7 +41,7 @@
 		  <div class="homelink">
 			<a href="<ssf:url adapter="true" portletName="ss_forum" 
 				action="__ajax_mobile" operation="mobile_show_front_page" actionUrl="false" />"
-			><img src="<html:rootPath/>images/icons/home_20.png" border="0"></a>
+			><img src="<html:rootPath/>css/images/mobile/home_but.png" border="0"></a>
 		  </div>
 		</td>
 		<td valign="center" align="center">
@@ -63,7 +63,7 @@
 		<td valign="top" align="right" width="1%">
 		  <div class="search">
 			<a href="javascript: ;" 
-			  onClick="ss_toggleDivVisibility('search-dialog');return false;"><img src="<html:rootPath/>images/icons/search_20.png" border="0"></a>
+			  onClick="ss_toggleDivVisibility('search-dialog');return false;"><img src="<html:rootPath/>css/images/mobile/search_but.png" border="0"></a>
 		  </div>
 		</td>
 	</tr>

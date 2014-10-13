@@ -641,11 +641,6 @@ public class User extends UserPrincipal implements IndividualPrincipal {
     	return false;
     }
     
-    public boolean isAdmin() {
-    	if (ObjectKeys.SUPER_USER_INTERNALID.equals(internalId)) return true;
-    	return false;
-    }
-    
 	/**
 	 * Returns true if user is a person and false otherwise.
 	 * 

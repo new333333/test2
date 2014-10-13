@@ -52,7 +52,6 @@ import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.CustomAttribute;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.Entry;
-import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.domain.Principal;
@@ -140,12 +139,6 @@ public class EntryCsvHelper {
 		colMap.put(ObjectKeys.CSV_COL_HEADER, NLT.get("csv.description"));
 		colMap.put(ObjectKeys.CSV_ATTR, ObjectKeys.CSV_ATTR_DESCRITION);
 		columnTemplate.add(colMap);		//Description
-		
-		colMap = new HashMap<String,Object>();
-		colMap.put(ObjectKeys.CSV_TYPE, ObjectKeys.CSV_TYPE_TEXT);
-		colMap.put(ObjectKeys.CSV_COL_HEADER, NLT.get("csv.attachedFiles"));
-		colMap.put(ObjectKeys.CSV_ATTR, ObjectKeys.CSV_ATTR_ATTACHED_FILES);
-		columnTemplate.add(colMap);		//Attached files
 
 		//Now add the elements from each definition
 		for (Definition def : entryDefList) {
@@ -164,7 +157,6 @@ public class EntryCsvHelper {
 		//Output the Header row CSV
 		outputHeaderCsv(out, columnTemplate);
 
-		options.put(ObjectKeys.SEARCH_MAX_HITS, ObjectKeys.SEARCH_MAX_HITS_FOLDER_ENTRIES_EXPORT);
 		folderEntries = bs.getFolderModule().getEntries(folderId, options);
 		if (folderEntries != null) {
 			List<Map> folderEntriesList = (List) folderEntries.get(ObjectKeys.SEARCH_ENTRIES);
@@ -302,8 +294,6 @@ public class EntryCsvHelper {
 						}
 					} else if (attrName.equals(ObjectKeys.CSV_ATTR_DESCRITION)) {
 						out.write(CsvHelper.checkText(entry.getDescription().getText()).getBytes("UTF-8"));
-					} else if (attrName.equals(ObjectKeys.CSV_ATTR_ATTACHED_FILES)) {
-						out.write(CsvHelper.checkText(getAttachedFileNames(entry)).getBytes("UTF-8"));
 					} else if (attrName.equals(ObjectKeys.CSV_ATTR_WORKFLOW)) {
 						out.write(CsvHelper.checkText(getWorkflowCsvText(entry)).getBytes("UTF-8"));
 					} else {
@@ -326,21 +316,6 @@ public class EntryCsvHelper {
 		} catch(Exception e) {
 			//An error occurred trying to output the EOL. This must mean that the output stream is closed.
 		}
-	}
-	
-	private static String getAttachedFileNames(FolderEntry entry) {
-		StringBuffer buf = new StringBuffer();
-		Set<FileAttachment> atts = entry.getFileAttachments();
-		boolean isFirst = true;
-		for (FileAttachment fa : atts) {
-			if (!isFirst) {
-				buf.append(", ");
-			}
-			isFirst = false;
-			String fileName = fa.getFileItem().getName();
-			buf.append(fileName);
-		}
-		return buf.toString();
 	}
 	
 	private static String getWorkflowCsvText(FolderEntry entry) {

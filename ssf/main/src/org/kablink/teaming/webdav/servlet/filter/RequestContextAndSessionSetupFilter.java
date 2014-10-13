@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -44,7 +44,6 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.kablink.teaming.asmodule.zonecontext.ZoneContextHolder;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.context.request.RequestContextUtil;
@@ -52,12 +51,10 @@ import org.kablink.teaming.module.zone.ZoneModule;
 import org.kablink.teaming.util.SessionUtil;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.WindowsUtil;
-import org.kablink.teaming.web.util.BuiltInUsersHelper;
 
 /**
- * ?
- * 
  * @author jong
+ *
  */
 public class RequestContextAndSessionSetupFilter implements Filter {
 
@@ -65,15 +62,12 @@ public class RequestContextAndSessionSetupFilter implements Filter {
 	
 	private static final String OPTIONS_METHOD = "OPTIONS";
 
-	@Override
 	public void init(FilterConfig filterConfig) throws ServletException {
 	}
 
-	@Override
 	public void destroy() {
 	}
 
-	@Override
 	public void doFilter(ServletRequest request, ServletResponse response, 
 			FilterChain chain) throws IOException, ServletException {
 		HttpServletRequest req = (HttpServletRequest) request;
@@ -84,7 +78,7 @@ public class RequestContextAndSessionSetupFilter implements Filter {
 				// The client is not authenticated. This is allowed for OPTIONS method. 
 				// Execute the request in the context of admin user in this case. This
 				// should be safe since OPTIONS method can not do any harm to the system.
-				doSetupAndExecute(request, response, chain, BuiltInUsersHelper.getAdminName());
+				doSetupAndExecute(request, response, chain, "admin");
 			}
 			else {
 				// The client is authenticated. Proceed as normal.
@@ -164,4 +158,5 @@ public class RequestContextAndSessionSetupFilter implements Filter {
 	private ZoneModule getZoneModule() {
 		return (ZoneModule) SpringContextUtil.getBean("zoneModule");
 	}
+
 }

@@ -33,6 +33,7 @@
 package org.kablink.teaming.util.encrypt;
 
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.Properties;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -46,55 +47,36 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.io.Resource;
 import org.kablink.util.FileUtil;
 import org.kablink.util.Validator;
-import org.kablink.util.encrypt.ExtendedPBEStringEncryptor;
 import org.kablink.util.encrypt.PropertyEncrypt;
 import org.kablink.teaming.ConfigurationException;
 import org.kablink.teaming.util.PropertiesClassPathConfigFiles;
-import org.kablink.teaming.util.PropertiesSource;
 import org.apache.commons.codec.binary.Base64;
-
-/**
- * This class delegates to PropertiesClassPathConfigFiles rather than subclasses it
- * in order to avoid circular dependency between the encryptor bean and the ssf
- * configuration properties bean.
- * 
- * @author jong
- *
- */
-public class EncryptedClassPathConfigFiles
-	implements PropertiesSource, InitializingBean {
+public class EncryptedClassPathConfigFiles extends PropertiesClassPathConfigFiles
+	implements InitializingBean {
 	
-	// delegatee
-	PropertiesClassPathConfigFiles propertiesClassPathConfigFiles; 
-	// Current encryptor (which may be first or second generation one).
-	protected ExtendedPBEStringEncryptor encryptor=null;
-	// First generation encryptor
-	protected PBEStringEncryptor encryptor_first_gen=null;
+	protected PBEStringEncryptor encryptor=null;
+	protected PBEStringEncryptor encryptor_preFilr1_0=null;
 	private Properties props;
 	protected String eConfigFile;
 	protected Resource eResource=null;
 	    	
-	public void setEncryptor(ExtendedPBEStringEncryptor encryptor) {
+	public void setEncryptor(PBEStringEncryptor encryptor) {
 		this.encryptor = encryptor;
 	}
 	
-	public void setEncryptor_first_gen(PBEStringEncryptor encryptor_first_gen) {
-		this.encryptor_first_gen = encryptor_first_gen;
+	public void setEncryptor_preFilr1_0(PBEStringEncryptor encryptor_preFilr1_0) {
+		this.encryptor_preFilr1_0 = encryptor_preFilr1_0;
 	}
 	
-	public void setPropertiesClassPathConfigFiles(PropertiesClassPathConfigFiles propertiesClassPathConfigFiles) {
-		this.propertiesClassPathConfigFiles = propertiesClassPathConfigFiles;
-	}
-	
-	@Override
     public void afterPropertiesSet() throws Exception {
-    	props = propertiesClassPathConfigFiles.getProperties();
+    	super.afterPropertiesSet();
+    	props = super.getProperties();
     	String key = props.getProperty("kablink.encryption.key"); //this will get the last definition of the key 
     	if (Validator.isNull(key)) throw new ConfigurationException("Missing encryption key");
     	key = new String(Base64.decodeBase64(key.getBytes()), "UTF-8");
     	//set key for encryption
     	encryptor.setPassword(key);
-    	encryptor_first_gen.setPassword(key);
+    	encryptor_preFilr1_0.setPassword(key);
     	if (eResource != null) {
     	   	Properties tempProps = new Properties();
     	   	InputStream is = eResource.getInputStream();
@@ -110,48 +92,30 @@ public class EncryptedClassPathConfigFiles
 	        		for (int i=0; i<eProps.length; ++i) {
 	        			String val = tempProps.getProperty(eProps[i].trim());
 	        			if (Validator.isNull(val)) continue;//not supplied
-	        			if(PropertyEncrypt.isEncrypted_first_gen(val)) {
-	        				// The property is encrypted using first generation encryptor.
-	        				if(encryptor.getGeneration() == 2) {
-		        				// We need to re-encrypt this value using new algorithm (second generation)
-		        				String baseEncryptedValue = PropertyEncrypt.getBaseEncryptedValue_first_gen(val);
-		        				// Decrypt using old algorithm
-		        				String decryptedValue = encryptor_first_gen.decrypt(baseEncryptedValue);
-		        				// Encrypt using new algorithm
-		        				String encVal = encryptor.encrypt(decryptedValue);
-		        				int beginIndex = origStr.indexOf(eProps[i]+"=");
-		        				int index = origStr.indexOf("=", beginIndex+eProps[i].length());
-		        				index = origStr.indexOf(val, index+1);
-		        				String strToReplace = origStr.substring(beginIndex, index+val.length());
-		        				String strToReplaceWith = eProps[i] + "=" + PropertyEncrypt.getDecoratedEncryptedValue_second_gen(encVal);
-		        				origStr = origStr.replace(strToReplace, strToReplaceWith);
-		        				needUpdate = true;
-	        				}
-	        				else {
-	        					// No need to re-encrypt the value. Good as is.
-	        				}
+	        			if(PropertyEncrypt.isEncrypted_preFilr1_0(val)) {
+	        				// The property is encrypted using old encryption algorithm (pre Filr 1.0 and Vibe 4.0)
+	        				// We need to re-encrypt this value using new algorithm.
+	        				String baseEncryptedValue = PropertyEncrypt.getBaseEncryptedValue_preFilr1_0(val);
+	        				// Decrypt using old algorithm
+	        				String decryptedValue = encryptor_preFilr1_0.decrypt(baseEncryptedValue);
+	        				// Encrypt using new algorithm
+	        				String encVal = encryptor.encrypt(decryptedValue);
+	        				int beginIndex = origStr.indexOf(eProps[i]+"=");
+	        				int index = origStr.indexOf("=", beginIndex+eProps[i].length());
+	        				index = origStr.indexOf(val, index+1);
+	        				String strToReplace = origStr.substring(beginIndex, index+val.length());
+	        				String strToReplaceWith = eProps[i] + "=" + PropertyEncrypt.getDecoratedEncryptedValue(encVal);
+	        				origStr = origStr.replace(strToReplace, strToReplaceWith);
+	        				needUpdate = true;
 	        			}
-	        			else if (PropertyEncrypt.isEncrypted_second_gen(val)) {
-	        				// The property is encrypted using second generation encryptor
-	        				if(encryptor.getGeneration() == 2) {
-	        					// No need to do anything. Good as is.
-	        				}
-	        				else {
-	        					throw new ConfigurationException("Cannot decode second generation encoded value using first generation encryptor. System supports encryptor upgrade but not downgrade.");
-	        				}
-	        			}
-	        			else {
+	        			else if (!PropertyEncrypt.isEncrypted(val)) {
 	        				// This property is not encrypted at all.
 	        				String encVal = encryptor.encrypt(val);
 	        				int beginIndex = origStr.indexOf(eProps[i]+"=");
 	        				int index = origStr.indexOf("=", beginIndex+eProps[i].length());
 	        				index = origStr.indexOf(val, index+1);
 	        				String strToReplace = origStr.substring(beginIndex, index+val.length());
-	        				String strToReplaceWith;
-	        				if(encryptor.getGeneration() == 2)
-	        					strToReplaceWith = eProps[i] + "=" + PropertyEncrypt.getDecoratedEncryptedValue_second_gen(encVal);
-	        				else
-	        					strToReplaceWith = eProps[i] + "=" + PropertyEncrypt.getDecoratedEncryptedValue_first_gen(encVal);
+	        				String strToReplaceWith = eProps[i] + "=" + PropertyEncrypt.getDecoratedEncryptedValue(encVal);
 	        				origStr = origStr.replace(strToReplace, strToReplaceWith);
 	        				needUpdate = true;
 	        			}
@@ -169,24 +133,23 @@ public class EncryptedClassPathConfigFiles
         	props.putAll(tempProps);
     	}
     	
-    	props = new PropertyEncrypt(props, encryptor, encryptor_first_gen);
+    	props = new PropertyEncrypt(props, encryptor, encryptor_preFilr1_0);
     }
     
-    @Override
+    //overload
     public Properties getProperties() {
     	return props;
     }
-    
     //this file should be included in original list of files also
      public void setEncryptConfigFile(String eFile) {
    		Resource resource = null;
    		if(eFile.startsWith("optional:")) {
     		eFile = eFile.substring(9);
-    		resource = propertiesClassPathConfigFiles.toResource(eFile);
+    		resource = toResource(eFile);
        		// The optional resource does not exist. Proceed.
        		if(!resource.exists()) return;
    		} else {
-   			resource = propertiesClassPathConfigFiles.toResource(eFile);
+   			resource = toResource(eFile);
    		}
    		eConfigFile = eFile;
    		eResource = resource;

@@ -452,6 +452,13 @@ public class ShareResource extends AbstractResource {
     }
 
     @GET
+    @Path("/with_user/{id}/library_info")
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    public LibraryInfo getLibraryModTime(@PathParam("id") Long userId) {
+        return getSharedWithLibraryInfo(userId);
+    }
+
+    @GET
     @Path("/with_user/{id}/library_children")
     public Response getLibraryChildrenSharedWithUser(@PathParam("id") Long userId,
                                                      @QueryParam("hidden") @DefaultValue("false") boolean showHidden,

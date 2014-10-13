@@ -108,7 +108,6 @@ import org.kablink.teaming.domain.ZoneConfig;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
 import org.kablink.teaming.domain.FileAttachment.FileLock;
 import org.kablink.teaming.domain.FileAttachment.FileStatus;
-import org.kablink.teaming.exception.NoStackTrace;
 import org.kablink.teaming.fi.connection.ResourceDriverManager;
 import org.kablink.teaming.lucene.Hits;
 import org.kablink.teaming.module.admin.AdminModule;
@@ -168,7 +167,6 @@ import org.kablink.util.search.Constants;
 import org.kablink.util.search.Criteria;
 
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.orm.hibernate3.HibernateOptimisticLockingFailureException;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -403,7 +401,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 			// The following call also ensures that, even in the situation where
 			// the operation was not entirely successful, we still reflect the
 			// correponding metadata changes back to the database. 
-			writeDeleteChangeLogTransactional(binder, entry, changeLogs);
+			writeDeleteChangeLogTransactional(changeLogs);
 		}
 				
 		return errors;
@@ -638,10 +636,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
         				try {
         					deleteVersion(binder, entry, va);
         				} catch(Exception e) {
-        					if(e instanceof NoStackTrace)
-        						logger.error("Error pruning file version: " + e);
-        					else 
-        						logger.error("Error pruning file version", e);
+        					logger.error("Error pruning file version", e);
         				}
         			}
         			minorVersionsSeen++;
@@ -1909,40 +1904,19 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 	     });	
 	}
 
-	private void writeDeleteChangeLogTransactional(Binder binder, DefinableEntity entry, final List<ChangeLog> changeLogs) {
+	private void writeDeleteChangeLogTransactional(final List<ChangeLog> changeLogs) {
 		// We want to start a transaction even when there is nothing to write
 		// (ie, empty changeLogs), so that any pending updates that the caller
 		// made up to this point can get recorded permanently.
-		
-        int tryMaxCount = 1 + SPropsUtil.getInt("select.database.transaction.retry.max.count", ObjectKeys.SELECT_DATABASE_TRANSACTION_RETRY_MAX_COUNT);
-        int tryCount = 0;
-		while (true) {
-			tryCount++;
-			try {
-				getTransactionTemplate().execute(new TransactionCallback() {
-					@Override
-					public Object doInTransaction(TransactionStatus status) {
-						for (ChangeLog changeLog : changeLogs) {
-							ChangeLogUtils.save(changeLog);
-						}
-						return null;
-					}
-				});
-				break; // successful transaction
-			} catch (HibernateOptimisticLockingFailureException e) {
-        		if(tryCount < tryMaxCount) {
-        			if(logger.isDebugEnabled())
-        				logger.warn("'metadata update for file delete' failed due to optimistic locking failure - Retrying in new transaction", e);
-        			else 
-        				logger.warn("'metadata update for file delete' failed due to optimistic locking failure - Retrying in new transaction: " + e.toString());
-        			getCoreDao().refresh(entry);
-        		}
-        		else {
-    				logger.error("'metadata update for file delete' failed due to optimistic locking failure - Aborting", e);
-        			throw e;
-        		}
-			}
-		}					
+        getTransactionTemplate().execute(new TransactionCallback() {
+        	@Override
+			public Object doInTransaction(TransactionStatus status) {  
+                for(ChangeLog changeLog : changeLogs) {
+                	ChangeLogUtils.save(changeLog);
+                }
+            	return null;
+        	}
+        });	
 	}
 	
 	private void moveFilterFailedFile(Binder binder, FileUploadItem fui) throws IOException {
@@ -2659,9 +2633,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
         if (ObjectKeys.FILE_SYNC_AGENT_INTERNALID.equals(user.getInternalId())) {
             // Skip data quota checks for the file sync agent.
         } else {
-            Long fileSize = fui.getCallerSpecifiedContentLength();
-            if(fileSize == null)
-            	fileSize = fui.makeReentrant().getSize();
+            Long fileSize = fui.makeReentrant().getSize();
             if (!ObjectKeys.FI_ADAPTER.equalsIgnoreCase(fui.getRepositoryName())) {
                 //Check that the user is not over the user quota
                 checkQuota(RequestContextHolder.getRequestContext().getUser(),

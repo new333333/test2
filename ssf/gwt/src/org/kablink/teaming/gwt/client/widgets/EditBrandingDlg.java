@@ -114,7 +114,6 @@ public class EditBrandingDlg extends DlgBox
 	private RadioButton m_ruleSiteBrandingOnlyRb = null;
 	private RadioButton m_ruleBothSiteAndBinderBrandingRb = null;
 	private RadioButton m_ruleBinderOverridesRb = null;
-	private CaptionPanel m_loginDlgCaptionPanel;
 	private VibeTour m_siteBrandingTour;
 	private String m_productName;
 	private boolean m_siteBranding;
@@ -198,10 +197,7 @@ public class EditBrandingDlg extends DlgBox
 		m_advancedBranding = null;
 		m_brandingImgListbox.setSelectedIndex( -1 );
 		m_backgroundImgListbox.setSelectedIndex( -1 );
-		
-		if ( m_loginDlgCaptionPanel.isVisible() )
-			m_loginDlgImgListbox.setSelectedIndex( -1 );
-		
+		m_loginDlgImgListbox.setSelectedIndex( -1 );
 		m_backgroundColorTextbox.setText( "" );
 		m_textColorTextbox.setText( "" );
 	}// end clearBranding()
@@ -656,16 +652,17 @@ public class EditBrandingDlg extends DlgBox
 		// Add a GroupBox to hold the controls needed to select the image used in the login dialog.
 		{
 			FlowPanel captionPanelMainPanel;
+			CaptionPanel captionPanel;
 			FlexTable captionTable;
 			Label hint;
 			
-			m_loginDlgCaptionPanel = new CaptionPanel( m_messages.editBrandingDlg_LoginDialogCaption() );
-			m_loginDlgCaptionPanel.addStyleName( "editBrandingDlg_LoginDialogCaptionPanel" );
+			captionPanel = new CaptionPanel( m_messages.editBrandingDlg_LoginDialogCaption() );
+			captionPanel.addStyleName( "editBrandingDlg_LoginDialogCaptionPanel" );
 			
-			addTourStep( Placement.TOP, m_loginDlgCaptionPanel, m_messages.editBrandingDlg_Tour_loginDlgImage( m_productName ) );
+			addTourStep( Placement.TOP, captionPanel, m_messages.editBrandingDlg_Tour_loginDlgImage( m_productName ) );
 			
 			captionPanelMainPanel = new FlowPanel();
-			m_loginDlgCaptionPanel.add( captionPanelMainPanel );
+			captionPanel.add( captionPanelMainPanel );
 
 			hint = new Label( m_messages.editBrandingDlg_LoginDialogImgHint() );
 			hint.addStyleName( "editBrandingDlg_LoginDialogHint" );
@@ -741,7 +738,7 @@ public class EditBrandingDlg extends DlgBox
 
 			captionPanelMainPanel.add( captionTable );
 			
-			mainPanel.add( m_loginDlgCaptionPanel );
+			mainPanel.add( captionPanel );
 		}
 
 		// Add a link the user can click on to clear all branding information
@@ -906,7 +903,6 @@ public class EditBrandingDlg extends DlgBox
 			brandingData.setIsSiteBranding( true );
 		
 			// Save the login dialog image
-			if ( m_loginDlgCaptionPanel.isVisible() )
 			{
 				// Is something selected in the "login dialog image" listbox?
 				imgName = "";
@@ -1019,60 +1015,41 @@ public class EditBrandingDlg extends DlgBox
 		updateSampleTextColor();
 		
 		// Are we dealing with site branding?
-		if ( brandingData.isSiteBranding() )
+		if ( brandingData.isSiteBranding() && GwtTeaming.m_requestInfo.isLicenseFilr() == false )
 		{
 			BrandingRule brandingRule;
 
-			// Yes
-			// Show the login dialog branding controls
-			m_loginDlgCaptionPanel.setVisible( true );
-			
-			// Are we running Filr?
-			if ( GwtTeaming.m_requestInfo.isLicenseFilr() == false )
-			{
-				// No
-				// Show the panel that holds the branding rules.
-				m_rulesPanel.setVisible( true );
+			// Yes, show the panel that holds the branding rules.
+			m_rulesPanel.setVisible( true );
 
-				// Select the appropriate radio button.
-				brandingRule = brandingData.getBrandingRule(); 
-				switch( brandingRule )
-				{
-				case DISPLAY_SITE_BRANDING_ONLY:
-					m_ruleSiteBrandingOnlyRb.setValue( true );
-					break;
-					
-				case DISPLAY_BOTH_SITE_AND_BINDER_BRANDING:
-					m_ruleBothSiteAndBinderBrandingRb.setValue( true );
-					break;
-					
-				case BINDER_BRANDING_OVERRIDES_SITE_BRANDING:
-					m_ruleBinderOverridesRb.setValue( true );
-					break;
-
-				default:
-					m_ruleSiteBrandingOnlyRb.setValue( false );
-					m_ruleBothSiteAndBinderBrandingRb.setValue( false );
-					m_ruleBinderOverridesRb.setValue( false );
-					break;
-				}// end switch()
-			}
-			else
+			// Select the appropriate radio button.
+			brandingRule = brandingData.getBrandingRule(); 
+			switch( brandingRule )
 			{
-				// No, hide the panel that holds the branding rules.
-				m_rulesPanel.setVisible( false );
-			}
+			case DISPLAY_SITE_BRANDING_ONLY:
+				m_ruleSiteBrandingOnlyRb.setValue( true );
+				break;
+				
+			case DISPLAY_BOTH_SITE_AND_BINDER_BRANDING:
+				m_ruleBothSiteAndBinderBrandingRb.setValue( true );
+				break;
+				
+			case BINDER_BRANDING_OVERRIDES_SITE_BRANDING:
+				m_ruleBinderOverridesRb.setValue( true );
+				break;
+
+			default:
+				m_ruleSiteBrandingOnlyRb.setValue( false );
+				m_ruleBothSiteAndBinderBrandingRb.setValue( false );
+				m_ruleBinderOverridesRb.setValue( false );
+				break;
+			}// end switch()
 		}
 		else
 		{
-			// No
-			// Hide the panel that holds the branding rules.
+			// No, hide the panel that holds the branding rules.
 			m_rulesPanel.setVisible( false );
-			
-			// Hide the login dialog branding controls
-			m_loginDlgCaptionPanel.setVisible( false );
 		}
-		
 	}// end init()
 	
 
@@ -1482,8 +1459,7 @@ public class EditBrandingDlg extends DlgBox
 		// Empty the "branding image" and "background image" listboxes.
 		m_brandingImgListbox.clear();
 		m_backgroundImgListbox.clear();
-		if ( m_loginDlgCaptionPanel.isVisible() )
-			m_loginDlgImgListbox.clear();
+		m_loginDlgImgListbox.clear();
 		
 		// Add an entry called "None" to the branding listbox.  The user can select "None" if
 		// they don't want to use a branding image.
@@ -1491,8 +1467,7 @@ public class EditBrandingDlg extends DlgBox
 		
 		// Add an entry called "None" to the login dialog image listbox.  The user can select "None" if
 		// they don't want to use an image in the login dialog.
-		if ( m_loginDlgCaptionPanel.isVisible() )
-			m_loginDlgImgListbox.addItem( m_messages.imgNone(), BrandingPanel.NO_IMAGE );
+		m_loginDlgImgListbox.addItem( m_messages.imgNone(), BrandingPanel.NO_IMAGE );
 		
 		// Add a Novell Teaming or a Kablink Teaming entry to the branding listbox depending on
 		// whether we are running Novell or Kablink Teaming.  The user can select this entry if
@@ -1500,20 +1475,17 @@ public class EditBrandingDlg extends DlgBox
 		if ( GwtTeaming.m_requestInfo.isLicenseFilr() )
 		{
 			m_brandingImgListbox.addItem( m_messages.novellFilr(), BrandingPanel.DEFAULT_TEAMING_IMAGE );
-			if ( m_loginDlgCaptionPanel.isVisible() )
-				m_loginDlgImgListbox.addItem( m_messages.novellFilr(), BrandingPanel.DEFAULT_TEAMING_IMAGE );
+			m_loginDlgImgListbox.addItem( m_messages.novellFilr(), BrandingPanel.DEFAULT_TEAMING_IMAGE );
 		}
 		else if ( GwtMainPage.m_novellTeaming )
 		{
 			m_brandingImgListbox.addItem( m_messages.novellTeaming(), BrandingPanel.DEFAULT_TEAMING_IMAGE );
-			if ( m_loginDlgCaptionPanel.isVisible() )
-				m_loginDlgImgListbox.addItem( m_messages.novellTeaming(), BrandingPanel.DEFAULT_TEAMING_IMAGE );
+			m_loginDlgImgListbox.addItem( m_messages.novellTeaming(), BrandingPanel.DEFAULT_TEAMING_IMAGE );
 		}
 		else
 		{
 			m_brandingImgListbox.addItem( m_messages.kablinkTeaming(), BrandingPanel.DEFAULT_TEAMING_IMAGE );
-			if ( m_loginDlgCaptionPanel.isVisible() )
-				m_loginDlgImgListbox.addItem( m_messages.kablinkTeaming(), BrandingPanel.DEFAULT_TEAMING_IMAGE );
+			m_loginDlgImgListbox.addItem( m_messages.kablinkTeaming(), BrandingPanel.DEFAULT_TEAMING_IMAGE );
 		}
 
 		// Do we have any file attachments?
@@ -1532,8 +1504,7 @@ public class EditBrandingDlg extends DlgBox
 				fileName = listOfFileAttachments.get( i );
 				m_brandingImgListbox.addItem( fileName, fileName );
 				m_backgroundImgListbox.addItem( fileName, fileName );
-				if ( m_loginDlgCaptionPanel.isVisible() )
-					m_loginDlgImgListbox.addItem( fileName, fileName );
+				m_loginDlgImgListbox.addItem( fileName, fileName );
 			}
 		}
 		else
@@ -1550,8 +1521,7 @@ public class EditBrandingDlg extends DlgBox
 		selectImageInListbox( m_backgroundImgListbox, m_origBrandingData.getBgImageName() );
 
 		// Select the login dialog image file in the listbox that is defined in the original branding data.
-		if ( m_loginDlgCaptionPanel.isVisible() )
-			selectImageInListbox( m_loginDlgImgListbox, m_origBrandingData.getLoginDlgImageName() );
+		selectImageInListbox( m_loginDlgImgListbox, m_origBrandingData.getLoginDlgImageName() );
 		
 	}// end updateListOfFileAttachments()
 	

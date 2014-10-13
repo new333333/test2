@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -35,6 +35,7 @@ package org.kablink.teaming.gwt.client.mainmenu;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.kablink.teaming.gwt.client.EditCanceledHandler;
 import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
@@ -62,15 +63,15 @@ import com.google.gwt.user.client.ui.VerticalPanel;
  *  
  * @author drfoster@novell.com
  */
-public class EditFavoritesDlg extends DlgBox implements EditSuccessfulHandler {
+public class EditFavoritesDlg extends DlgBox implements EditSuccessfulHandler, EditCanceledHandler {
 	private final static String IDBASE		= "favorite_";	// Base ID for rows in the favorites Grid.
 	private final static String IDTAIL_CBOX	= "_cb";		// Used for constructing the ID of a row's CheckBox.
 
-	private Grid				m_favoritesGrid;		// Once displayed, the table of favorites being edited.
-	private GwtTeamingMessages	m_messages;				// Access to the GWT UI messages.
-	private int					m_favoritesGridCount;	// Count of rows  in m_favoritesGrid. 
-	private int					m_favoritesListCount;	// Count of items in m_favoritesList.
-	private List<FavoriteInfo>	m_favoritesList;		// List of FavoriteInfo's to be edited.
+	private Grid m_favoritesGrid;					// Once displayed, the table of favorites being edited.
+	private GwtTeamingMessages m_messages;			// Access to the GWT UI messages.
+	private int m_favoritesGridCount;				// Count of rows  in m_favoritesGrid. 
+	private int m_favoritesListCount;				// Count of items in m_favoritesList.
+	private List<FavoriteInfo> m_favoritesList;		// List of FavoriteInfo's to be edited.
 
 	/*
 	 * Inner class that wraps items displayed in the dialog's content.
@@ -102,7 +103,6 @@ public class EditFavoritesDlg extends DlgBox implements EditSuccessfulHandler {
 	 * Inner class that implements the delete command.
 	 */
 	private class DoDelete implements Command {
-		@Override
 		public void execute() {
 			// If the table is empty...
 			if (0 == m_favoritesGridCount) {
@@ -131,7 +131,6 @@ public class EditFavoritesDlg extends DlgBox implements EditSuccessfulHandler {
 	 * Inner class that implements the move down command.
 	 */
 	private class DoMoveDown implements Command {
-		@Override
 		public void execute() {
 			// If the table is empty...
 			if (0 == m_favoritesGridCount) {
@@ -161,7 +160,6 @@ public class EditFavoritesDlg extends DlgBox implements EditSuccessfulHandler {
 	 * Inner class that implements the move up command.
 	 */
 	private class DoMoveUp implements Command {
-		@Override
 		public void execute() {
 			// If the table is empty...
 			if (0 == m_favoritesGridCount) {
@@ -206,8 +204,8 @@ public class EditFavoritesDlg extends DlgBox implements EditSuccessfulHandler {
 		// ...and create the dialog's content.
 		createAllDlgContent(
 			m_messages.mainMenuFavoritesEditDlgHeader(),
-			this,						// The dialog's EditSuccessfulHandler.
-			getSimpleCanceledHandler(),	// The dialog's EditCanceledHandler.
+			this,	// The dialog's EditSuccessfulHandler.
+			this,	// The dialog's EditCanceledHandler.
 			favoritesList); 
 	}
 	
@@ -255,12 +253,25 @@ public class EditFavoritesDlg extends DlgBox implements EditSuccessfulHandler {
 		}
 		vp.add(m_favoritesGrid);
 		
-		setCancelEnabled(true);
-		setOkEnabled(    true);
-		
 		// And return the Panel the with the dialog's contents.
 		return vp;
 	}
+	
+	
+	/**
+	 * This method gets called when user user presses the Cancel push
+	 * button.
+	 * 
+	 * Implements the EditCanceledHandler.editCanceled() interface
+	 * method.
+	 * 
+	 * @return
+	 */
+	public boolean editCanceled() {
+		// Simply return true to allow the dialog to close.
+		return true;
+	}
+
 	
 	/**
 	 * This method gets called when user user presses the OK push
@@ -273,27 +284,21 @@ public class EditFavoritesDlg extends DlgBox implements EditSuccessfulHandler {
 	 * 
 	 * @return
 	 */
-	@Override
 	@SuppressWarnings({ "unchecked" })
 	public boolean editSuccessful(Object callbackData) {
 		UpdateFavoritesCmd cmd;
 		
 		// Update the favorites.
-		setOkEnabled(false);
 		List<FavoriteInfo> favoritesList = ((List<FavoriteInfo>) callbackData);
 		cmd = new UpdateFavoritesCmd( favoritesList );
 		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
-			@Override
 			public void onFailure(Throwable t) {
 				GwtClientHelper.handleGwtRPCFailure(
 					t,
 					m_messages.rpcFailure_UpdateFavorites());
-				setOkEnabled(true);
 			}
 			
-			@Override
 			public void onSuccess(VibeRpcResponse response) {
-				setOkEnabled(true);
 				hide();
 			}
 		});
@@ -380,30 +385,6 @@ public class EditFavoritesDlg extends DlgBox implements EditSuccessfulHandler {
 		return cb.isChecked();
 	}
 	
-    /**
-     * Called after the EditSuccessfulHandler has been called by
-     * DlgBox.
-     * 
-     * Overrides the DlgBox.okBtnProcessingEnded() method.
-     */
-	@Override
-    protected void okBtnProcessingEnded() {
-		// Ignored!  This dialog is handling enabling and disabling of
-		// the OK button itself.
-    }
-    
-    /**
-     * Called before the EditSuccessfulHandler has been called by
-     * DlgBox.
-     * 
-     * Overrides the DlgBox.okBtnProcessingStarted() method.
-     */
-	@Override
-    protected void okBtnProcessingStarted() {
-		// Ignored!  This dialog is handling enabling and disabling of
-		// the OK button itself.
-    }
-    
 	/*
 	 * Renders a FavoriteInfo as a row in a Grid.
 	 */

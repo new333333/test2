@@ -55,17 +55,13 @@ var noProfileErrorText = "<ssf:nlt tag="errorcode.noProfileQuickView"/>";
 	<portlet:defineObjects />
 </ssf:ifnotadapter>
 
-<table cellspacing="0" cellpadding="0">
-<tr>
 <c:if test="${empty ss_presence_user}">
-  <td valign="top">
 	<a href="javascript: ;"
 		onClick="ss_popupPresenceMenu(this, '', '', '-1', '', '', '', '', '', '', '${ss_presence_component_id}', '${ss_presence_zonBridge}', '', '');return false;"><img
 		border="0" align="absmiddle"
 		style="height:14px !important; width:14px !important; line-height:14px !important;" 
 		src="<html:imagesPath/>pics/<c:out value="${ss_presence_dude}"/>"
 		alt="<c:out value="${presenceAltText}"/>" /></a>
-  </td>
 </c:if>
 
 <c:if test="${!empty ss_presence_user}">
@@ -124,7 +120,6 @@ var noProfileErrorText = "<ssf:nlt tag="errorcode.noProfileQuickView"/>";
 	<c:if test="${ssUser.zonName == ss_presence_user.zonName}">
 		<c:set var="current" value="current" />
 	</c:if>
-	<td valign="top">
 	<a href="javascript: ;" title="<c:out value="${presenceAltText}"/>"
 		class="ss_presence_dude"
 		onClick="ss_launchSimpleProfile( this,'${ss_presence_user.workspaceId}','<ssf:escapeJavaScript>${presence_user_title}</ssf:escapeJavaScript>', noProfileErrorText);return false;"><img
@@ -132,10 +127,8 @@ var noProfileErrorText = "<ssf:nlt tag="errorcode.noProfileQuickView"/>";
 		style="height:14px !important; width:14px !important; line-height:14px !important;" 
 		src="<html:imagesPath/>pics/<c:out value="${ss_presence_dude}"/>"
 		alt="<c:out value="${presenceAltText}"/>" /></a>
-	</td>
 	<c:if test="${ss_presence_show_title}">
 		<ssf:ifadapter>
-		  <td valign="top">
 			<c:if test="${ss_presence_workspace_predeleted}">
 				<span id="${ss_presence_user.id}"
 					class="${ss_presence_title_style} ss_muster_users"><ssf:userTitle
@@ -174,10 +167,8 @@ var noProfileErrorText = "<ssf:nlt tag="errorcode.noProfileQuickView"/>";
 					</c:if>
 				</c:if>
 			</c:if>
-		  </td>
 		</ssf:ifadapter>
 		<ssf:ifnotadapter>
-		  <td valign="top">
 			<c:if test="${!empty ss_presence_user.workspaceId}">
 				<a
 					href="<ssf:url windowState="maximized"><ssf:param 
@@ -194,12 +185,8 @@ var noProfileErrorText = "<ssf:nlt tag="errorcode.noProfileQuickView"/>";
 					class="${ss_presence_title_style} ss_muster_users"><ssf:userTitle
 					user="${ss_presence_user}" /></span>
 			</c:if>
-		  </td>
 		</ssf:ifnotadapter>
 
 	</c:if>
 
 </c:if>
-</tr>
-</table>
-

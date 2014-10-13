@@ -158,12 +158,9 @@ public class UserPropertiesDlg extends DlgBox
 		int row = getSectionRow(grid, rf, addSectionHeader);
 		addLabeledText(grid, row, m_messages.userPropertiesDlgLabel_UserId(), account.getLoginId());
 		
-		// ...if we supposed to show the last login...
-		if (account.isShowLastLogin()) {
-			// ...add the last login date/time stamp...
-			row = grid.getRowCount();
-			addLabeledText(grid, row, m_messages.userPropertiesDlgLabel_LastLogin(), account.getLastLogin(), true);
-		}
+		// ...add the last login date/time stamp...
+		row = grid.getRowCount();
+		addLabeledText(grid, row, m_messages.userPropertiesDlgLabel_LastLogin(), account.getLastLogin(), true);
 
 		// ...add the type of account...
 		row = grid.getRowCount();

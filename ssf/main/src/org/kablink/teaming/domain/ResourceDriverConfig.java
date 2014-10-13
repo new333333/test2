@@ -534,6 +534,15 @@ public class ResourceDriverConfig extends ZonedObject implements WorkArea {
 	}
 
 	@Override
+	public Set<Long> getTeamMemberIds() {
+		return null;
+	}
+
+	@Override
+	public void setTeamMemberIds(Set<Long> memberIds) {
+	}
+
+	@Override
 	public Set<Long> getChildWorkAreas() {
 		return null;
 	}

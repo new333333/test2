@@ -68,7 +68,6 @@ import org.kablink.teaming.domain.Subscription;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.WorkflowControlledEntry;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
-import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.definition.DefinitionConfigurationBuilder;
 import org.kablink.teaming.module.definition.DefinitionModule;
 import org.kablink.teaming.module.definition.DefinitionUtils;
@@ -100,7 +99,6 @@ public class DefaultEmailFormatter extends CommonDependencyInjection implements 
 	public static Log logger = LogFactory.getLog(DefaultEmailFormatter.class);
     protected DefinitionModule definitionModule;
     protected MailModule mailModule;
-	private BinderModule binderModule;
 	protected Map transformers = new HashMap();
     public DefaultEmailFormatter () {
 	}
@@ -140,22 +138,6 @@ public class DefaultEmailFormatter extends CommonDependencyInjection implements 
 		return smtpService;
 	}
 
-    /**
-     * 
-     */
-    public BinderModule getBinderModule()
-    {
-    	return binderModule;
-    }
-
-	/**
-	 * 
-	 */
-    public void setBinderModule( BinderModule binderModule )
-    {
-    	this.binderModule = binderModule;
-    }
-    
    /**
 	 * Determine which users have access to the entry.
 	 * Return a map from locale to a collection of email Addresses
@@ -301,7 +283,7 @@ public class DefaultEmailFormatter extends CommonDependencyInjection implements 
 				}
 			}
 			if (folder.getNotificationDef().isTeamOn()) {
-				Set teamIds = getBinderModule().getTeamMemberIds( folder );
+				Set teamIds = folder.getTeamMemberIds();
 				List team = getProfileDao().loadUserPrincipals(teamIds, folder.getZoneId(), true);
 				for (Iterator iter=team.iterator(); iter.hasNext();) {
 					Principal p = (Principal)iter.next();

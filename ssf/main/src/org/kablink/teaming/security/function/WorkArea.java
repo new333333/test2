@@ -91,6 +91,12 @@ public interface WorkArea {
      */
     public boolean isTeamMembershipInherited();
     /**
+     * Return the team members ids
+     * @return
+     */
+    public Set<Long> getTeamMemberIds();
+    public void setTeamMemberIds(Set<Long> memberIds);
+    /**
      * Return the ids of child workAreas
      * @return
      */

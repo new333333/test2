@@ -90,7 +90,6 @@ public class EmailHelper {
 	public enum UrlNotificationType {
 		FORGOTTEN_PASSWORD,
 		PASSWORD_RESET_REQUESTED,
-		SELF_REGISTRATION_REQUIRED
 	}
 	
 	/**

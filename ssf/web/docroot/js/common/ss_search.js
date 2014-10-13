@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2009 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -30,6 +30,7 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
+
 
 var ss_optionsArray;
 if (typeof ss_optionsArray == "undefined") {
@@ -80,7 +81,7 @@ function ss_addInitializedWorkflow(wfIdValue, wfTitle, stepsValue, stepTitles) {
 }
 
 function ss_addInitializedEntry(entryId, fieldName, value, valueLabel, valueType, fieldNameTitle, entryType, entryTypeTitle) {
-	ss_debug("ss_addInitializedEntry: " + entryType + ", " + entryTypeTitle + ', ' + value + ', ' + valueLabel)
+	ss_debug("ss_addInitializedEntry: " + entryType + ", " + entryTypeTitle)
 	if (typeof fieldNameTitle == "undefined") {
 		fieldNameTitle = fieldName;
 	}
@@ -475,7 +476,7 @@ function ss_addEntry(orderNo, entryId, fieldName, value, valueLabel, valueType, 
 							dateValue = new Date(value);
 						}
 						addDateTimeField(orderNo, fieldValueDiv, fieldValue2Div, currentFieldId, fieldName, dateValue);
-					} else if (fieldType == "user_list" || fieldType == "userListSelectbox") {
+					} else if (fieldType == "user_list") {
 						var idToSet = false;
 						var labelToSet = false;
 						if (entryId && fieldName && entryTypeId == entryId && fieldName == currentFieldId) {
@@ -953,10 +954,10 @@ function ss_addDate(orderNo, type, startDate, endDate) {
 	if (type == 'creation')	document.getElementById('ss_creationDates_options').appendChild(div);
 	else document.getElementById('ss_modificationDates_options').appendChild(div);
 	if (!startDate)
-		startDate = null; 
+		startDate = ''; 
 
 	if (!endDate)
-		endDate = null;
+		endDate = '';
 	
 	var startDateWidget = new dijit.form.DateTextBox({value: ss_parseSimpleDate(startDate), 
 								weekStartsOn: ss_weekStartsOn,
@@ -1219,3 +1220,5 @@ function ss_parseSimpleDate(date) {
 	var d = date.substr(8, 2) * 1;
 	return new Date(y, m, d);
 }
+
+

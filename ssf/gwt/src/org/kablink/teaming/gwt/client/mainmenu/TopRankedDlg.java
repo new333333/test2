@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -35,6 +35,8 @@ package org.kablink.teaming.gwt.client.mainmenu;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.kablink.teaming.gwt.client.EditCanceledHandler;
+import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMainMenuImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
@@ -45,7 +47,7 @@ import org.kablink.teaming.gwt.client.widgets.DlgBox;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.dom.client.Element;
+import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.Grid;
@@ -56,12 +58,13 @@ import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.HTMLTable.CellFormatter;
 
+
 /**
  * Implements a dialog for selecting a top ranked item.
  *  
  * @author drfoster@novell.com
  */
-public class TopRankedDlg extends DlgBox {
+public class TopRankedDlg extends DlgBox implements EditSuccessfulHandler, EditCanceledHandler {
 	private Grid							m_triGrid;			// Once displayed, the table of top ranked items.
 	private GwtTeamingMainMenuImageBundle	m_images;			// Access to the GWT UI menu images.
 	private GwtTeamingMessages				m_messages;			// Access to the GWT UI messages.
@@ -103,9 +106,9 @@ public class TopRankedDlg extends DlgBox {
 		// ...and create the dialog's content.
 		createAllDlgContent(
 			m_messages.mainMenuTopRankedDlgHeader(),
-			getSimpleSuccessfulHandler(),	// The dialog's EditSuccessfulHandler.
-			getSimpleCanceledHandler(),		// The dialog's EditCanceledHandler.
-			null);							// Data passed via global data members. 
+			this,	// The dialog's EditSuccessfulHandler.
+			this,	// The dialog's EditCanceledHandler.
+			null);	// Data passed via global data members. 
 	}
 	
 	/*
@@ -195,6 +198,38 @@ public class TopRankedDlg extends DlgBox {
 		return vp;
 	}
 	
+	
+	/**
+	 * This method gets called when user user presses the Cancel push
+	 * button.
+	 * 
+	 * Implements the EditCanceledHandler.editCanceled() interface
+	 * method.
+	 * 
+	 * @return
+	 */
+	public boolean editCanceled() {
+		// Simply return true to allow the dialog to close.
+		return true;
+	}
+
+	
+	/**
+	 * This method gets called when user user presses the OK push
+	 * button.
+	 * 
+	 * Implements the EditSuccessfulHandler.editSuccessful() interface
+	 * method.
+	 * 
+	 * @param callbackData
+	 * 
+	 * @return
+	 */
+	public boolean editSuccessful(Object callbackData) {
+		// Nothing to do.  Return true to close the dialog.
+		return true;
+	}
+
 	/**
 	 * Returns the edited List<ToolbarItem>.
 	 * 
@@ -249,7 +284,6 @@ public class TopRankedDlg extends DlgBox {
 			triAnchor.setTitle(hover);
 		}
 		triAnchor.addClickHandler(new ClickHandler() {
-			@Override
 			public void onClick(ClickEvent event) {
 				// Hide the dialog and go to the top ranked item's
 				// permalink.

@@ -196,15 +196,12 @@ public class Question {
 				
 		return answers;
 	}
-
+	
 	public void removeVote() {
 		User currentUser = RequestContextHolder.getRequestContext().getUser();
 		if (currentUser.isShared()) {
 			return;
 		}
-		removeVote(currentUser);
-	}
-	private void removeVote(User user) {
 		boolean hasVoted = false;
 		Iterator<Answer> it = answers.iterator();
 		while (it.hasNext()) {
@@ -223,16 +220,6 @@ public class Question {
 		if (hasVoted) {
 			setTotalResponses(--this.totalResponses);
 		}
-	}
-
-	public void removeAllVotes() {
-		Iterator<Answer> it = answers.iterator();
-		while (it.hasNext()) {
-			Answer answer = (Answer)it.next();
-			answer.removeAllVotes();
-		}
-
-		setTotalResponses(0);
 	}
 
 	private Answer addInputAnswer(String txt, String guestEmail) {
@@ -278,14 +265,6 @@ public class Question {
 			if (filteredAnswers.length() > 0) {
 				jsonObj.put("answers", filteredAnswers);
 			}
-		} catch (JSONException e) { 
-			// input has no answers
-		}
-	}
-
-	private void removeInputAnswerAll() {
-		try {
-			jsonObj.remove("answers");
 		} catch (JSONException e) { 
 			// input has no answers
 		}

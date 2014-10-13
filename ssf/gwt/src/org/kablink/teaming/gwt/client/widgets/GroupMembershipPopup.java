@@ -303,13 +303,6 @@ public class GroupMembershipPopup extends TeamingPopupPanel
 		String type;
 		int row;
 		
-		// Don't add disabled users to the list.
-		if ( member instanceof GwtUser )
-		{
-			if ( ((GwtUser)member).isDisabled() )
-				return;
-		}
-		
 		row = m_membersTable.getRowCount();
 		
 		// Do we have any members in the table?

@@ -34,8 +34,6 @@ package org.kablink.teaming.remoting.rest.provider;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.hibernate.ObjectNotFoundException;
-import org.hibernate.UnresolvableObjectException;
 import org.kablink.teaming.remoting.rest.jersey.filter.ContainerFilter;
 import org.kablink.teaming.rest.v1.model.ErrorInfo;
 import org.kablink.util.api.ApiErrorCode;
@@ -54,13 +52,7 @@ public class RuntimeMapper implements ExceptionMapper<RuntimeException> {
     protected static Log logger = LogFactory.getLog(RuntimeMapper.class);
 
 	public Response toResponse(RuntimeException ex) {
-		if(ex instanceof ObjectNotFoundException || ex instanceof UnresolvableObjectException) {
-	        logger.warn("An error occurred while processing a REST request (" + ContainerFilter.getCurrentEndpoint() + ")", ex);
-			return Response.status(Response.Status.NOT_FOUND).entity(new ErrorInfo(ApiErrorCode.NOT_FOUND.name(), ex.getMessage())).build();
-		}
-		else {
-	        logger.error("An error occurred while processing a REST request (" + ContainerFilter.getCurrentEndpoint() + ")", ex);
-			return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new ErrorInfo(ApiErrorCode.SERVER_ERROR.name(), ex.getMessage())).build();
-		}
+        logger.error("An error occurred while processing a REST request (" + ContainerFilter.getCurrentEndpoint() + ")", ex);
+		return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(new ErrorInfo(ApiErrorCode.SERVER_ERROR.name(), ex.getMessage())).build();
 	}
 }

@@ -60,7 +60,7 @@
 		<c:forEach var="externalUserItem" items="<%= externalUserListSet %>">
 			<div style="margin-left:2em"><img
 				border="0"
-				src="<html:imagesPath/>pics/presence/unknown_16.png"
+				src="<html:imagesPath/>pics/sym_s_white_dude.gif"
 				alt="<ssf:nlt tag="presence.none"/>"/> ${externalUserItem}</div>
 		</c:forEach>
 	</div>

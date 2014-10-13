@@ -35,7 +35,6 @@ package org.kablink.teaming.gwt.server.util;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -49,13 +48,13 @@ import javax.xml.bind.DatatypeConverter;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.kablink.teaming.BinderQuotaException;
 import org.kablink.teaming.DataQuotaException;
 import org.kablink.teaming.FileSizeLimitException;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.dao.CoreDao;
-import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.Folder;
@@ -92,6 +91,7 @@ import org.kablink.teaming.web.util.Html5Helper;
 import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.WebHelper;
 import org.kablink.util.Validator;
+
 import org.springframework.web.multipart.MultipartFile;
 
 /**
@@ -103,6 +103,9 @@ import org.springframework.web.multipart.MultipartFile;
 public class GwtHtml5Helper {
 	protected static Log m_logger = LogFactory.getLog(GwtHtml5Helper.class);
 
+	// Attribute names used to store things in the session cache.
+	private static final String CACHED_UPLOAD_FILE_BASE	= "uploadFile";
+	
 	// Used in various file size calculations, ...
 	private final static long MEGABYTES = (1024l * 1024l);
 	
@@ -138,7 +141,7 @@ public class GwtHtml5Helper {
 				try {
 					// ...and if we can access the temporary file for
 					// ...it...
-					File tempFile = TempFileUtil.getHtml5UploaderTempFileByName(fileName);
+					File tempFile = TempFileUtil.getTempFileByName(fileName);
 					if (null != tempFile) {
 						// ...delete that.
 						tempFile.delete();
@@ -199,19 +202,6 @@ public class GwtHtml5Helper {
 	}
 
 	/*
-	 * Deletes the temporary file used by the uploader, ignoring any
-	 * errors.
-	 */
-	private static void deleteTempFile(File tempFile) {
-		// If we have a temporary file to delete...
-		if (null != tempFile) {
-			// ...delete it.
-			try {tempFile.delete();}
-			catch (Throwable t) {/* Ignore. */}
-		}
-	}
-	
-	/*
 	 * Use Spring to access a CoreDao object. 
 	 */
 	private static CoreDao getCoreDao() {
@@ -256,7 +246,7 @@ public class GwtHtml5Helper {
 	 * in the session cache.
 	 */
 	private static String getUploadFileCacheKey(FileBlob fileBlob) {
-		return (Html5Helper.UPLOAD_FILE_PREFIX + String.valueOf(GwtServerHelper.getCurrentUserId()) + "." + String.valueOf(fileBlob.getUploadId()) + ".");
+		return (CACHED_UPLOAD_FILE_BASE + "." + String.valueOf(GwtServerHelper.getCurrentUserId()) + "." + String.valueOf(fileBlob.getUploadId()) + ".");
 	}
 	
 	/*
@@ -320,7 +310,6 @@ public class GwtHtml5Helper {
 			debugTraceBlob(fileBlob, "uploadFileBlob", "Uploaded", lastBlob);
 
 			// Is this the first blob of a file?
-			StringRpcResponseData reply = null;
 			HttpSession session = WebHelper.getRequiredSession(request);
 			boolean firstBlob = (0l == fileBlob.getBlobStart());
 			File tempFile;
@@ -329,7 +318,7 @@ public class GwtHtml5Helper {
 				// Yes!  Create a new temporary file for it and store
 				// the file handle in the session cache.  The format of
 				// the prefix used is:  'uploadFile.<userId>.<timestamp>.'
-				tempFile = TempFileUtil.createHtml5UploaderTempFile(uploadFName);
+				tempFile = TempFileUtil.createTempFile(uploadFName);
 				if (!lastBlob) {
 					session.setAttribute(uploadFName, tempFile.getName());
 				}
@@ -339,110 +328,81 @@ public class GwtHtml5Helper {
 			}
 			
 			else {
-				// No, this isn't the first blob of a file!  Can we
-				// access the temporary file from the handle stored
-				// in the session cache.
-				String tempFName = ((String) session.getAttribute(uploadFName));
-				boolean hasTempFName = MiscUtil.hasString(tempFName);
-				tempFile = (hasTempFName ? TempFileUtil.getHtml5UploaderTempFileByName(tempFName) : null);
-				if (null == tempFile) {
-					// No!  Generate an error to that affect.
-					reply = new StringRpcResponseData();
-					reply.setStringValue(NLT.get("binder.add.files.html5.upload.noTempAccess", new String[]{fileBlob.getFileName()}));
-					lastBlob = true;	// Set true so things get properly cleaned up.
-				}
-				if (lastBlob && hasTempFName) {
+				// No, this isn't the first blob of a file!  Access the
+				// temporary file from the handle stored in the session
+				// cache.
+				tempFile = TempFileUtil.getTempFileByName((String) session.getAttribute(uploadFName));
+				if (lastBlob) {
 					session.removeAttribute(uploadFName);
 				}
 			}
 
-			// Have we generated an error yet?
-			if (null == reply) {
-				// No!  Get the data for the blob as a byte[].
-				String blobDataString;
-				byte[] blobDataBytes;
-				ReadType blobReadType = fileBlob.getReadType();
-				if (blobReadType.isArrayBuffer()) {
-					blobDataString = null;
-					blobDataBytes  = fileBlob.getBlobDataBytes();
-				}
-				else {
-					blobDataString = fileBlob.getBlobDataString();
-					if      (null == blobDataString)   blobDataString = "";
-					else if (blobReadType.isDataUrl()) blobDataString = FileBlob.fixDataUrlString(blobDataString);
-					blobDataBytes = blobDataString.getBytes();
+			// Get the data for the blob as a byte[].
+			String blobDataString;
+			byte[] blobDataBytes;
+			ReadType blobReadType = fileBlob.getReadType();
+			if (blobReadType.isArrayBuffer()) {
+				blobDataString = null;
+				blobDataBytes  = fileBlob.getBlobDataBytes();
+			}
+			else {
+				blobDataString = fileBlob.getBlobDataString();
+				if      (null == blobDataString)   blobDataString = "";
+				else if (blobReadType.isDataUrl()) blobDataString = FileBlob.fixDataUrlString(blobDataString);
+				blobDataBytes = blobDataString.getBytes();
+			}
+			
+			// Does the MD5 hash calculated on the blob we just
+			// received match the MD5 hash that came with it? 
+			StringRpcResponseData reply = null;
+			String blobHashReceived = fileBlob.getBlobMD5Hash();
+			boolean blobHashValid = (null == blobHashReceived);
+			if (!blobHashValid) {
+				String blobHashCalculated = MiscUtil.getMD5Hash(blobDataBytes);
+				blobHashValid = blobHashCalculated.equals(blobHashReceived);
+			}
+			if (!blobHashValid) {
+				// No!  Then the data is corrupt.  Return the error to
+				// the user.
+				reply = new StringRpcResponseData();
+				reply.setStringValue(NLT.get("binder.add.files.html5.upload.corrupt"));
+				try {tempFile.delete();}
+				catch (Throwable t) {/* Ignored. */}
+			}
+			else {
+				FileOutputStream fo = null;
+				try {
+					// Yes!  The MD5 hashes match!  If the data is
+					// base64 encoded...
+					if (fileBlob.isBlobBase64()) {
+						// ...decode it...
+						if (null == blobDataString) {
+							blobDataString = new String(blobDataBytes);
+						}
+						blobDataBytes = DatatypeConverter.parseBase64Binary(blobDataString);
+					}
+					
+					// ...and write it to the file.
+					fo = new FileOutputStream(tempFile, (!firstBlob));
+					fo.write(blobDataBytes);
 				}
 				
-				// Does the MD5 hash calculated on the blob we just
-				// received match the MD5 hash that came with it? 
-				String blobHashReceived = fileBlob.getBlobMD5Hash();
-				boolean blobHashValid = (null == blobHashReceived);
-				if (!blobHashValid) {
-					String blobHashCalculated = MiscUtil.getMD5Hash(blobDataBytes);
-					blobHashValid = blobHashCalculated.equals(blobHashReceived);
-				}
-				if (!blobHashValid) {
-					// No!  Then the data is corrupt.  Return the error
-					// to the user.
+				catch (Exception e) {
+					// Return the error to the user...
 					reply = new StringRpcResponseData();
-					reply.setStringValue(NLT.get("binder.add.files.html5.upload.corrupt"));
-					deleteTempFile(tempFile);
+					reply.setStringValue(NLT.get("binder.add.files.html5.upload.error", new String[]{e.getLocalizedMessage()}));
+					try {tempFile.delete();}
+					catch (Throwable t) {/* Ignored. */}
+					
+					// ...and log it.
+					GwtLogHelper.error(m_logger, "GwtHtml5Helper.uploadFileBlob( File name:  '" + fileBlob.getFileName() + "', EXCEPTION:1 ):  ", e);
 				}
-				else {
-					FileOutputStream fo = null;
-					try {
-						// Yes!  The MD5 hashes match!  If the data is
-						// base64 encoded...
-						if (fileBlob.isBlobBase64()) {
-							// ...decode it...
-							if (null == blobDataString) {
-								blobDataString = new String(blobDataBytes);
-							}
-							blobDataBytes = DatatypeConverter.parseBase64Binary(blobDataString);
-						}
-						
-						// ...and write it to the file.
-						fo = new FileOutputStream(tempFile, (!firstBlob));
-						fo.write(blobDataBytes);
-					}
-					
-					catch (Exception e) {
-						// Return the error to the user...
-						reply = new StringRpcResponseData();
-						reply.setStringValue(NLT.get("binder.add.files.html5.upload.error", new String[]{e.getLocalizedMessage()}));
-						
-						// ...close the stream and delete the file...
-						if (null != fo) {
-							try {fo.close();}
-							catch (Throwable t) {/* Ignored. */}
-							fo = null;
-						}
-						deleteTempFile(tempFile);
-						
-						// ...and log the error.
-						GwtLogHelper.error(m_logger, "GwtHtml5Helper.uploadFileBlob( File name:  '" + fileBlob.getFileName() + "', EXCEPTION:1 ):  ", e);
-					}
-					
-					finally {
-						// Ensure we've closed the stream.
-						if (null != fo) {
-							try {
-								fo.close();
-							}
-							catch (IOException ioe) {
-								// We may get an IOException here if we
-								// run out of disk space when we close
-								// it.  We need to account for that so
-								// so the user sees something
-								// meaningful.
-								if (null == reply) {
-									reply = new StringRpcResponseData();
-									reply.setStringValue(NLT.get("binder.add.files.html5.upload.error", new String[]{ioe.getLocalizedMessage()}));
-								}
-								deleteTempFile(tempFile);
-							}
-							fo = null;
-						}
+				
+				finally {
+					// Ensure we've closed the stream.
+					if (null != fo) {
+						fo.close();
+						fo = null;
 					}
 				}
 			}
@@ -552,7 +512,8 @@ public class GwtHtml5Helper {
     	    		}
     	    		
     	    		// ...and delete the temporary file.
-					deleteTempFile(tempFile);
+    	    		try {tempFile.delete();}
+    	    		catch (Throwable t) {/* Ignore. */}
     	    	}
 			}
 
@@ -723,15 +684,6 @@ public class GwtHtml5Helper {
 						if (null != fe) {
 							// Yes!  Track it as a duplicate.
 							reply.addDuplicate(upload);
-							continue;
-						}
-						
-						// Does a folder with this name exist?
-						Binder b = bm.getBinderByParentAndTitle(folderId, uploadFName);
-						if (null != b) {
-							// Yes!  Thats an error and the file can't
-							// be uploaded.
-							reply.addError(NLT.get("validateUploadError.nameExistsAsFolder", new String[]{uploadFName}));
 							continue;
 						}
 					}

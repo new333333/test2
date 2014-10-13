@@ -68,7 +68,6 @@ import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.context.request.RequestContextUtil;
 import org.kablink.teaming.context.request.SessionContext;
 import org.kablink.teaming.dao.ProfileDao;
-import org.kablink.teaming.dao.util.FilterControls;
 import org.kablink.teaming.dao.util.GroupSelectSpec;
 import org.kablink.teaming.domain.Application;
 import org.kablink.teaming.domain.ApplicationGroup;
@@ -145,7 +144,6 @@ import org.kablink.teaming.util.encrypt.EncryptUtil;
 import org.kablink.teaming.web.util.DateHelper;
 import org.kablink.teaming.web.util.DefinitionHelper;
 import org.kablink.teaming.web.util.EventHelper;
-import org.kablink.teaming.web.util.BuiltInUsersHelper;
 import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.PermaLinkUtil;
 import org.kablink.util.StringUtil;
@@ -1836,31 +1834,8 @@ public Map getUsers() {
 	}
 	
 	@Override
-	public User getReservedUser(String internalId, Long zoneId) throws NoUserByTheNameException {
-		return getProfileDao().getReservedUser(internalId, zoneId);
-	}
-	
-	@Override
 	public User getReservedUser(String internalId) throws NoUserByTheNameException {
-		return getReservedUser(internalId, RequestContextHolder.getRequestContext().getZoneId());
-	}
-	
-	@Override
-	public Collection<User> getReservedUsers(Collection<String> internalIds) throws NoUserByTheNameException {
-		int c = ((null == internalIds) ? 0 : internalIds.size());
-		Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
-		Collection<User> reply;
-		if (1 == c) {
-			reply = new ArrayList<User>();
-			reply.add(getProfileDao().getReservedUser(internalIds.iterator().next(), zoneId));
-		}
-		else if (1 < c) {
-			reply = getProfileDao().getReservedUsers(internalIds, zoneId);
-		}
-		else {
-			reply = new ArrayList<User>();
-		}
-		return reply;
+		return getProfileDao().getReservedUser(internalId, RequestContextHolder.getRequestContext().getZoneId());
 	}
 	
 	/**
@@ -3182,66 +3157,4 @@ public String[] getUsernameAndDecryptedPassword(String username) {
     		savePrincipalDesktopAppsConfig(principalIds, principalIsUser, config);
     	}
     }
-
-    @Override
-	public void upgradeVibeGraniteExternalUsers() {
-    	String vibeGraniteExternalUserPropertyName = "externalUser";
-    	FilterControls filter = new FilterControls();
-    	filter.add("deleted", Boolean.FALSE);
-    	filter.add("identityInfo.internal", Boolean.TRUE);
-    	filter.add("identityInfo.fromLocal", Boolean.TRUE);
-		List<User> localUsers = getCoreDao().loadObjects(User.class, filter, RequestContextHolder.getRequestContext().getZoneId());
-		// Internal hidden setting affecting implementation
-		boolean evictUnaffectedUser = SPropsUtil.getBoolean("upgrade.vibe.granite.external.users.evict.unaffected.users", true); 
-		int count = 0;
-		List<Principal> usersToReindex = new ArrayList<Principal>();
-		
-		logger.info("Upgrading Vibe Granite external user accounts - Found " + localUsers.size() + " local user accounts to consider.");
-		
-		for(User user:localUsers) {
-			boolean vibeGraniteExternal = false;
-			UserProperties userProperties = getUserProperties(user.getId(), false);
-			if ( userProperties != null ) {
-				String value = (String) userProperties.getProperty(vibeGraniteExternalUserPropertyName);
-				if ( value != null && value.equalsIgnoreCase( "true" ) )
-					vibeGraniteExternal = true;
-			}
-
-			if(vibeGraniteExternal) { // This is Vibe Granite-style external user.	
-				logger.info("User '" + user.getName() + "' (id=" + user.getId() + ") is Vibe Granite external user - Upgrading to full Vibe Hudson external user.");
-				user.getIdentityInfo().setInternal(false); // Mark the user as "external" in Vibe Hudson style
-				userProperties.setProperty(vibeGraniteExternalUserPropertyName, null); // Remove the Vibe Granite-specific property
-				usersToReindex.add(user);
-				count++;
-			}
-			else { // This is not a Vibe Granite-style external user.	
-				if(logger.isDebugEnabled())
-					logger.debug("User '" + user.getName() + "' (id=" + user.getId() + ") is not Vibe Granite external user - Skipping.");
-				if(evictUnaffectedUser) {
-					if(BuiltInUsersHelper.isSystemUserAccount(user)) {
-						// This is a system user account. There is possibility that this system user account has already been
-						// associated with the current Hibernate session and that its state has perhaps been modified during
-						// this thread of execution (e.g. during server startup, etc.). We don't want to run the risk of losing
-						// the changes by kicking the object out of the session. So, do nothing.
-					}
-					else {
-						// This is a regular user account (i.e., non system user). In this case, we evict the object from the
-						// Hibernate session cache since we don't plan on modifying it and we don't want to incur at the tx
-						// commit time the cost of unnecessary dirty checking on large number of objects loaded and unchanged.
-						// Also it helps keep the memory size under control since we don't have to hold onto all of the user
-						// properties objects loaded until the end of the processing.
-						getCoreDao().evict(user);
-						if(userProperties != null)
-							getCoreDao().evict(userProperties);
-					}
-				}
-			}
-		}
-		
-		// Reindex upgraded user objects
-		if(usersToReindex.size() > 0)
-			this.indexEntries(usersToReindex);
-		
-		logger.info("Total of " + count + " Vibe Granite external user accounts successfully upgraded.");
-	}
 }

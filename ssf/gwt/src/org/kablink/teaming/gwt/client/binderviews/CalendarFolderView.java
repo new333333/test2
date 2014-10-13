@@ -47,22 +47,17 @@ import org.kablink.teaming.gwt.client.event.CalendarNextPeriodEvent;
 import org.kablink.teaming.gwt.client.event.CalendarPreviousPeriodEvent;
 import org.kablink.teaming.gwt.client.event.CalendarSettingsEvent;
 import org.kablink.teaming.gwt.client.event.CalendarShowEvent;
-import org.kablink.teaming.gwt.client.event.CalendarShowHintEvent;
 import org.kablink.teaming.gwt.client.event.CalendarViewDaysEvent;
 import org.kablink.teaming.gwt.client.event.ChangeEntryTypeSelectedEntitiesEvent;
 import org.kablink.teaming.gwt.client.event.ContributorIdsReplyEvent;
 import org.kablink.teaming.gwt.client.event.ContributorIdsRequestEvent;
 import org.kablink.teaming.gwt.client.event.CopySelectedEntitiesEvent;
 import org.kablink.teaming.gwt.client.event.DeleteSelectedEntitiesEvent;
-import org.kablink.teaming.gwt.client.event.DownloadFolderAsCSVFileEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.FullUIReloadEvent;
 import org.kablink.teaming.gwt.client.event.GotoContentUrlEvent;
-import org.kablink.teaming.gwt.client.event.InvokeCopyFiltersDlgEvent;
 import org.kablink.teaming.gwt.client.event.InvokeDropBoxEvent;
 import org.kablink.teaming.gwt.client.event.LockSelectedEntitiesEvent;
-import org.kablink.teaming.gwt.client.event.MarkFolderContentsReadEvent;
-import org.kablink.teaming.gwt.client.event.MarkFolderContentsUnreadEvent;
 import org.kablink.teaming.gwt.client.event.MarkReadSelectedEntitiesEvent;
 import org.kablink.teaming.gwt.client.event.MarkUnreadSelectedEntitiesEvent;
 import org.kablink.teaming.gwt.client.event.MoveSelectedEntitiesEvent;
@@ -92,9 +87,7 @@ import org.kablink.teaming.gwt.client.util.CalendarDayView;
 import org.kablink.teaming.gwt.client.util.EntityId;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.widgets.CalendarSettingsDlg;
-import org.kablink.teaming.gwt.client.widgets.AlertDlg.AlertDlgClient;
 import org.kablink.teaming.gwt.client.widgets.CalendarSettingsDlg.CalendarSettingsDlgClient;
-import org.kablink.teaming.gwt.client.widgets.AlertDlg;
 import org.kablink.teaming.gwt.client.widgets.HoverHintPopup;
 import org.kablink.teaming.gwt.client.widgets.VibeCalendar;
 
@@ -112,6 +105,7 @@ import com.bradrydzewski.gwt.calendar.client.event.TimeBlockClickEvent;
 import com.bradrydzewski.gwt.calendar.client.event.TimeBlockClickHandler;
 import com.bradrydzewski.gwt.calendar.client.event.UpdateEvent;
 import com.bradrydzewski.gwt.calendar.client.event.UpdateHandler;
+
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
@@ -138,18 +132,13 @@ public class CalendarFolderView extends FolderViewBase
 		CalendarPreviousPeriodEvent.Handler,
 		CalendarSettingsEvent.Handler,
 		CalendarShowEvent.Handler,
-		CalendarShowHintEvent.Handler,
 		CalendarViewDaysEvent.Handler,
 		ChangeEntryTypeSelectedEntitiesEvent.Handler,
 		CopySelectedEntitiesEvent.Handler,
 		ContributorIdsRequestEvent.Handler,
 		DeleteSelectedEntitiesEvent.Handler,
-		DownloadFolderAsCSVFileEvent.Handler,
-		InvokeCopyFiltersDlgEvent.Handler,
 		InvokeDropBoxEvent.Handler,
 		LockSelectedEntitiesEvent.Handler,
-		MarkFolderContentsReadEvent.Handler,
-		MarkFolderContentsUnreadEvent.Handler,
 		MarkReadSelectedEntitiesEvent.Handler,
 		MarkUnreadSelectedEntitiesEvent.Handler,
 		MoveSelectedEntitiesEvent.Handler,
@@ -160,7 +149,6 @@ public class CalendarFolderView extends FolderViewBase
 		ViewSelectedEntryEvent.Handler,
 		ViewWhoHasAccessEvent.Handler
 {
-	private AlertDlg							m_calendarShowHintDlg;		//
 	private ArrayList<Appointment>				m_appointments;				//
 	private CalendarAppointment					m_selectedEvent;			//
 	private CalendarDisplayDataRpcResponseData	m_calendarDisplayData;		//
@@ -183,18 +171,13 @@ public class CalendarFolderView extends FolderViewBase
 		TeamingEvents.CALENDAR_PREVIOUS_PERIOD,
 		TeamingEvents.CALENDAR_SETTINGS,
 		TeamingEvents.CALENDAR_SHOW,
-		TeamingEvents.CALENDAR_SHOW_HINT,
 		TeamingEvents.CALENDAR_VIEW_DAYS,
 		TeamingEvents.CHANGE_ENTRY_TYPE_SELECTED_ENTITIES,
 		TeamingEvents.CONTRIBUTOR_IDS_REQUEST,
 		TeamingEvents.COPY_SELECTED_ENTITIES,
 		TeamingEvents.DELETE_SELECTED_ENTITIES,
-		TeamingEvents.DOWNLOAD_FOLDER_AS_CSV_FILE,
-		TeamingEvents.INVOKE_COPY_FILTERS_DLG,
 		TeamingEvents.INVOKE_DROPBOX,
 		TeamingEvents.LOCK_SELECTED_ENTITIES,
-		TeamingEvents.MARK_FOLDER_CONTENTS_READ,
-		TeamingEvents.MARK_FOLDER_CONTENTS_UNREAD,
 		TeamingEvents.MARK_READ_SELECTED_ENTITIES,
 		TeamingEvents.MARK_UNREAD_SELECTED_ENTITIES,
 		TeamingEvents.MOVE_SELECTED_ENTITIES,
@@ -1057,30 +1040,6 @@ public class CalendarFolderView extends FolderViewBase
 	}
 	
 	/**
-	 * Handles CalendarShowHintEvent's received by this class.
-	 * 
-	 * Implements the CalendarShowHintEvent.Handler.onCalendarShowHint() method.
-	 * 
-	 * @param event
-	 */
-	@Override
-	public void onCalendarShowHint(CalendarShowHintEvent event) {
-		// Is the event targeted to this folder?
-		if (event.getFolderId().equals(getFolderId())) {
-			// Yes!  Show the appropriate hint.
-			String hint;
-			switch (event.getShow()) {
-			default:
-			case PHYSICAL_EVENTS:       hint = m_messages.calendarView_Hint_PhysicalEvents();     break;
-			case PHYSICAL_BY_CREATION:  hint = m_messages.calendarView_Hint_PhysicalByCreation(); break;
-			case PHYSICAL_BY_ACTIVITY:  hint = m_messages.calendarView_Hint_PhysicalByActivity(); break;
-			case VIRTUAL:               hint = m_messages.calendarView_Hint_Virtual();            break;
-			}
-			showCalendarShowHintAsync(hint);
-		}
-	}
-	
-	/**
 	 * Handles CalendarViewDaysEvent's received by this class.
 	 * 
 	 * Implements the CalendarViewDaysEvent.Handler.onCalendarViewDays() method.
@@ -1245,65 +1204,6 @@ public class CalendarFolderView extends FolderViewBase
 	}
 	
 	/**
-	 * Handles DownloadFolderAsCSVFileEvent's received by this class.
-	 * 
-	 * Implements the DownloadFolderAsCSVFileEvent.Handler.onDownloadFolderAsCSVFile() method.
-	 * 
-	 * @param event
-	 */
-	@Override
-	public void onDownloadFolderAsCSVFile(DownloadFolderAsCSVFileEvent event) {
-		// Is the event targeted to this folder?
-		Long dlFolderId    = event.getFolderId();
-		Long eventFolderId = event.getHandleByFolderId();
-		if (null == eventFolderId) {
-			eventFolderId = dlFolderId;
-		}
-		if (eventFolderId.equals(getFolderId())) {
-			// Yes!  Invoke the download.
-			BinderViewsHelper.downloadFolderAsCSVFile(
-				getDownloadPanel().getForm(),
-				dlFolderId);
-		}
-	}
-	
-	/**
-	 * Handles InvokeCopyFiltersDlgEvent's received by this class.
-	 * 
-	 * Implements the InvokeCopyFiltersDlgEvent.Handler.onInvokeCopyFiltersDlg() method.
-	 * 
-	 * @param event
-	 */
-	@Override
-	public void onInvokeCopyFiltersDlg(InvokeCopyFiltersDlgEvent event) {
-		// Is the event targeted to this folder?
-		BinderInfo eventFolderInfo = event.getFolderInfo();
-		if (eventFolderInfo.isEqual(getFolderInfo())) {
-			// Yes!  Invoke the copy filters dialog on the folder.
-			onInvokeCopyFiltersDlgAsync(eventFolderInfo);
-		}
-	}
-
-	/*
-	 * Asynchronously invokes the copy filters dialog.
-	 */
-	private void onInvokeCopyFiltersDlgAsync(final BinderInfo folderInfo) {
-		GwtClientHelper.deferCommand(new ScheduledCommand() {
-			@Override
-			public void execute() {
-				onInvokeCopyFiltersDlgNow(folderInfo);
-			}
-		} );
-	}
-	
-	/*
-	 * Synchronously invokes the copy filters dialog.
-	 */
-	private void onInvokeCopyFiltersDlgNow(final BinderInfo folderInfo) {
-		BinderViewsHelper.invokeCopyFiltersDlg(folderInfo);
-	}
-		
-	/**
 	 * Handles InvokeDropBoxEvent's received by this class.
 	 * 
 	 * Implements the InvokeDropBoxEvent.Handler.onInvokeDropBox() method.
@@ -1340,48 +1240,6 @@ public class CalendarFolderView extends FolderViewBase
 				selectedEntityIds = getSelectedEntityIds();
 			}
 			BinderViewsHelper.lockEntries(selectedEntityIds);
-		}
-	}
-	
-	/**
-	 * Handles MarkFolderContentsReadEvent's received by this class.
-	 * 
-	 * Implements the MarkFolderContentsReadEvent.Handler.onMarkFolderContentsRead() method.
-	 * 
-	 * @param event
-	 */
-	@Override
-	public void onMarkFolderContentsRead(MarkFolderContentsReadEvent event) {
-		// Is the event targeted to this folder?
-		Long folderId    = event.getFolderId();
-		Long eventFolderId = event.getHandleByFolderId();
-		if (null == eventFolderId) {
-			eventFolderId = folderId;
-		}
-		if (eventFolderId.equals(getFolderId())) {
-			// Yes!  Mark the folder contents as having been read.
-			BinderViewsHelper.markFolderContentsRead(folderId);
-		}
-	}
-	
-	/**
-	 * Handles MarkFolderContentsUnreadEvent's received by this class.
-	 * 
-	 * Implements the MarkFolderContentsUnreadEvent.Handler.onMarkFolderContentsUnread() method.
-	 * 
-	 * @param event
-	 */
-	@Override
-	public void onMarkFolderContentsUnread(MarkFolderContentsUnreadEvent event) {
-		// Is the event targeted to this folder?
-		Long folderId    = event.getFolderId();
-		Long eventFolderId = event.getHandleByFolderId();
-		if (null == eventFolderId) {
-			eventFolderId = folderId;
-		}
-		if (eventFolderId.equals(getFolderId())) {
-			// Yes!  Mark the folder contents as having been unread.
-			BinderViewsHelper.markFolderContentsUnread(folderId);
 		}
 	}
 	
@@ -1811,66 +1669,6 @@ public class CalendarFolderView extends FolderViewBase
 		}
 	}
 
-	/*
-	 * Asynchronously shows the calendar show hint when requested.
-	 */
-	private void showCalendarShowHintAsync(final String hint) {
-		GwtClientHelper.deferCommand(new ScheduledCommand() {
-			@Override
-			public void execute() {
-				showCalendarShowHintNow(hint);
-			}
-		});
-	}
-	
-	/*
-	 * Synchronously shows the calendar show hint when requested.
-	 */
-	private void showCalendarShowHintNow(final String hint) {
-		// Have we created the calendar show hint dialog yet?
-		if (null == m_calendarShowHintDlg) {
-			// No!  Create it now...
-			AlertDlg.createAsync(new AlertDlgClient() {
-				@Override
-				public void onUnavailable() {
-					// Nothing to do.  Error handled in asynchronous
-					// provider.
-				}
-				
-				@Override
-				public void onSuccess(AlertDlg aDlg) {
-					// ...and show it.
-					m_calendarShowHintDlg = aDlg;
-					m_calendarShowHintDlg.addStyleName("vibe-calendarFolderShowHintDlg");
-					showCalendarShowHintImpl(hint);
-				}
-			},
-			true,	// true  -> Auto hide the dialog. 
-			false);	// false -> The dialog is not modal.
-		}
-		
-		else
-		{
-			// Yes, we've already created the calendar show hint
-			// dialog!  Simply show it.
-			showCalendarShowHintImpl(hint);
-		}
-	}
-
-	/*
-	 * Implementation method that shows the calendar show hint dialog.
-	 */
-	private void showCalendarShowHintImpl(final String hint) {
-		GwtClientHelper.deferCommand(new ScheduledCommand() {
-			@Override
-			public void execute() {
-				AlertDlg.initAndShow(
-					m_calendarShowHintDlg,
-					hint);
-			}
-		});
-	}
-	
 	/*
 	 * Returns true if the current view mode supports hover hints and
 	 * false otherwise.

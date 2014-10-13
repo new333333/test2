@@ -2395,7 +2395,7 @@
 				<help>ihelp.other.definition_family</help>
 			</property>
 			<property name="icon" caption="__icons.workspace" type="iconList" 
-				path="icons.workspace" default="/icons/workspace.png" />
+				path="icons.workspace" default="/icons/workspace.gif" />
 		</properties>
 		
 		<options>
@@ -2846,9 +2846,6 @@
 			</property>			
 			<property name="name" caption="__selection_data_name" type="text" characterMask="^[\p{L}\p{Nd}][\p{L}\p{Nd}_-]*$">
 				<help>ihelp.designers.selection_data_name</help>
-			</property>
-			<property name="default" caption="__default_selection" type="boolean" default="false">
-				<help>ihelp.designers.selection_default</help>
 			</property>
 		</properties>
 		<jsps>
@@ -3448,9 +3445,11 @@
 			<property name="states" caption="__select_workflow_process" type="workflowStatesList" />
 		</properties>
 		<options optionCaption="__standard_entry_options">
-			<option_select definitionType="1" path="//item[@category='commonEntryViewData']" />
+			<option_select path="//item[@category='commonEntryViewData']" />
 			<option_select definitionType="1" path="//item[@category='entryViewData']" />
-			<option_select path="//item[@category='generalViewLayout']" optionCaption="__layout_options" />
+			<option_select path="//item[@category='generalLayout']" optionCaption="__layout_options" >
+			  <exclude name="mashupCanvas"/>
+			</option_select>
 			<option_select definitionType="1" path="//item[@category='entryLayout']" />
 		</options>
 		<jsps>
@@ -4256,7 +4255,6 @@
 			<option name="transitionOnResponse" />
 			<option name="transitionOnEntryData" />
 			<option name="transitionOnElapsedTime" />
-			<option name="transitionOnDate" />
 			<option name="transitionOnVariable" />
 			<option name="transitionOnCondition" />
 			<option name="waitForParallelThread" />
@@ -4376,15 +4374,6 @@
 				characterMask="^[0-9]*$" characterLength="10" >
 				<help>ihelp.workflow.elapsed_time_sum</help>
 			</property>
-			<property name="toState" caption="__toState" type="itemSelect" path="//item[@name='state']" />
-		</properties>
-		<options>
-			<option name="variable" caption="__workflow_variable_set_on_transition" />
-		</options>
-	</item>
-	<item name="transitionOnDate" caption="__transition_on_date" type="transition" >
-		<properties>
-			<property name="date" caption="" type="transitionOnDate" />
 			<property name="toState" caption="__toState" type="itemSelect" path="//item[@name='state']" />
 		</properties>
 		<options>
