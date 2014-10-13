@@ -141,10 +141,16 @@ public class DefaultTempFileCleanup extends SSCronTriggerJob implements TempFile
 	 */
 	@Override
 	protected void doExecute(JobExecutionContext context) throws JobExecutionException {
+		// If the age is configured as 0...
+		if (0l == FILE_AGE_IN_MINUTES) {
+			// ...no cleanup is performed.
+			return;
+		}
+		
 		long begin = System.nanoTime();
 		try {
 			m_logger.debug("DefaultTempFileCleanup.doExecute():  Cleaning unused temporary files...");
-	
+			
 			// How old does a file have to be to be considered unused?
 			// If a file's last modified time stamp is before this, the
 			// file is deleted.
