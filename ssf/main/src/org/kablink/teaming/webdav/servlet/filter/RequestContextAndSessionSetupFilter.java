@@ -52,7 +52,7 @@ import org.kablink.teaming.module.zone.ZoneModule;
 import org.kablink.teaming.util.SessionUtil;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.WindowsUtil;
-import org.kablink.teaming.web.util.MiscUtil;
+import org.kablink.teaming.web.util.BuiltInUsersHelper;
 
 /**
  * ?
@@ -84,7 +84,7 @@ public class RequestContextAndSessionSetupFilter implements Filter {
 				// The client is not authenticated. This is allowed for OPTIONS method. 
 				// Execute the request in the context of admin user in this case. This
 				// should be safe since OPTIONS method can not do any harm to the system.
-				doSetupAndExecute(request, response, chain, MiscUtil.getAdminName());
+				doSetupAndExecute(request, response, chain, BuiltInUsersHelper.getAdminName());
 			}
 			else {
 				// The client is authenticated. Proceed as normal.

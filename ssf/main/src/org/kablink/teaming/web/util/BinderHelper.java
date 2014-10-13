@@ -698,7 +698,7 @@ public class BinderHelper {
 	public static String setupMobileFrontPageBeans(AllModulesInjected bs, RenderRequest request, 
 			RenderResponse response, Map model, String view) {
         User user = RequestContextHolder.getRequestContext().getUser();
-		if (!WebHelper.isUserLoggedIn(request) || ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
+		if (!WebHelper.isUserLoggedIn(request) || user.isShared()) {
 	        HttpSession session = ((HttpServletRequestReachable) request).getHttpServletRequest().getSession();
 	    	AuthenticationException ex = (AuthenticationException) session.getAttribute(AbstractAuthenticationProcessingFilter.SPRING_SECURITY_LAST_EXCEPTION_KEY);
 	    	if(ex != null) {
@@ -872,7 +872,7 @@ public class BinderHelper {
 	public static String setupTeamingLiveBeans(AllModulesInjected bs, RenderRequest request, 
 			RenderResponse response, Map model, String view) throws AccessControlException {
         User user = RequestContextHolder.getRequestContext().getUser();
-		if (!WebHelper.isUserLoggedIn(request) || ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
+		if (!WebHelper.isUserLoggedIn(request) || user.isShared()) {
 			AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
 			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_MOBILE_AJAX);
 			adapterUrl.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_VIEW_TEAMING_LIVE);
@@ -1177,7 +1177,7 @@ public class BinderHelper {
 			catch(AccessControlException e) {
 				//Set up the standard beans
 				setupStandardBeans(bs, request, response, model, binderId);
-				if (WebHelper.isUserLoggedIn(request) && !ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
+				if (WebHelper.isUserLoggedIn(request) && !user.isShared()) {
 					//Access is not allowed
 					String refererUrl = (String)request.getAttribute(WebKeys.REFERER_URL);
 					model.put(WebKeys.URL, refererUrl);
@@ -1454,7 +1454,7 @@ public class BinderHelper {
 		String displayStyle = user.getDisplayStyle();
 		if (displayStyle == null || displayStyle.equals("") || 
 				(displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE) &&
-				ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId()))) {
+				user.isShared())) {
 			displayStyle = ObjectKeys.USER_DISPLAY_STYLE_DEFAULT;
 		}
 		model.put(WebKeys.DISPLAY_STYLE, displayStyle);
@@ -1469,7 +1469,7 @@ public class BinderHelper {
 			if (entryId != null) url.setParameter(WebKeys.URL_ENTRY_ID, entryId.toString());
 			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SET_DISPLAY_STYLE);
 			if (displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE) || 
-					ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
+					user.isShared()) {
 				url.setParameter(WebKeys.URL_VALUE, ObjectKeys.USER_DISPLAY_STYLE_DEFAULT);
 			} else {
 				url.setParameter(WebKeys.URL_VALUE, ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE);
@@ -2921,7 +2921,7 @@ public class BinderHelper {
 			Integer pageSize, String type) {		
         User user = RequestContextHolder.getRequestContext().getUser();
         //What's new is not available to the guest user
-        if (ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) return new ArrayList<Long>() ;
+        if (user.isShared()) return new ArrayList<Long>() ;
 
         //Get the documents bean for the documents just created or modified
 		Map options = new HashMap();
@@ -3030,7 +3030,7 @@ public class BinderHelper {
 		//Get a list of unseen entries in this binder tree
         User user = RequestContextHolder.getRequestContext().getUser();
         //What's unread is not available to the guest user
-        if (ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) return;
+        if (user.isShared()) return;
 
 		Map options = new HashMap();
 		if (page == null || page.equals("")) page = "0";

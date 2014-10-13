@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -30,8 +30,8 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-
 package org.kablink.teaming.module.ldap.impl;
+
 import java.io.IOException;
 import java.net.InetAddress;
 import java.text.ParseException;
@@ -71,11 +71,14 @@ import javax.naming.ldap.PagedResultsResponseControl;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.Node;
+
 import org.hibernate.SessionFactory;
+
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.asmodule.zonecontext.ZoneContextHolder;
 import org.kablink.teaming.context.request.RequestContextHolder;
@@ -130,11 +133,12 @@ import org.kablink.teaming.util.SZoneConfig;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.util.stringcheck.StringCheckUtil;
-import org.kablink.teaming.web.util.MiscUtil;
+import org.kablink.teaming.web.util.BuiltInUsersHelper;
 import org.kablink.teaming.web.util.NetFolderHelper;
 import org.kablink.util.GetterUtil;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
+
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -156,8 +160,8 @@ import org.springframework.transaction.support.TransactionTemplate;
  * is discouraged for obvious performance/scalability reasons.  
  *   
  * @author Janet McCann
- *
  */
+@SuppressWarnings({"unchecked", "unused"})
 public class LdapModuleImpl extends CommonDependencyInjection implements LdapModule {
 	protected Log logger = LogFactory.getLog(getClass());
 
@@ -1020,7 +1024,6 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	/**
 	 * Read the information from the given Server dn
 	 */
-	@SuppressWarnings("rawtypes")
 	private void readServerInfoFromLdap(
 		LdapContext ldapContext,
 		LdapDirType dirType,
@@ -1301,7 +1304,6 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	 * in Vibe then add them to the list.
 	 * @author jwootton
 	 */
-	@SuppressWarnings("rawtypes")
 	@Override
 	public HashSet<Long> getDynamicGroupMembers( String baseDn, String filter, boolean searchSubtree ) throws LdapSyncException
 	{
@@ -1785,7 +1787,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 						// Is the name of this user a name that is used for a Teaming system user account?
 						// Currently there are 5 system user accounts named, "admin", "guest", "_postingAgent",
 						// "_jobProcessingAgent", "_synchronizationAgent" and "_fileSyncAgent".
-						if ( MiscUtil.isSystemUserAccount( teamingName ) )
+						if ( BuiltInUsersHelper.isSystemUserAccount( teamingName ) )
 						{
 							// Yes, skip this user.
 							continue;
@@ -1909,7 +1911,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 						// Is the name of this group a name that is used for a Teaming system user account?
 						// Currently there are 5 system user accounts named, "admin", "guest", "_postingAgent",
 						// "_jobProcessingAgent", "_synchronizationAgent", and "_fileSyncAgent.
-						if ( MiscUtil.isSystemUserAccount( fullDN ) )
+						if ( BuiltInUsersHelper.isSystemUserAccount( fullDN ) )
 						{
 							// Yes, skip this user.
 							continue;
@@ -2000,7 +2002,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			attributeValues = (Object[]) userList.get( i );
 			
 			// If this user is not one of the system users, add the user to the map.
-			if ( (Validator.isNull( (String)attributeValues[this.PRINCIPAL_INTERNALID])) )
+			if ( (Validator.isNull( (String)attributeValues[PRINCIPAL_INTERNALID])) )
 			{
 				String name;
 
@@ -4000,7 +4002,6 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		/**
 		 * Create a new "container group" with the given dn.
 		 */
-		@SuppressWarnings("unchecked")
 		private Group createContainerGroup( String dn )
 		{
 			Map inputMap;
@@ -4098,7 +4099,6 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		/**
 		 * Delete containers that are no longer being referenced.
 		 */
-		@SuppressWarnings({ "rawtypes", "unchecked" })
 		private void deleteObsoleteContainers()
 		{
 			// Are we in "preview" mode?
@@ -4233,7 +4233,6 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		/**
 		 * 
 		 */
-		@SuppressWarnings({ "rawtypes", "unchecked" })
 		public void updateExistingContainers()
 		{
 			// Are we in "preview" mode?
@@ -5206,7 +5205,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 						// Is the name of this user a name that is used for a Teaming system user account?
 						// Currently there are 5 system user accounts named, "admin", "guest", "_postingAgent",
 						// "_jobProcessingAgent", "_synchronizationAgent", and "_fileSyncAgent.
-						if ( MiscUtil.isSystemUserAccount( ssName ) )
+						if ( BuiltInUsersHelper.isSystemUserAccount( ssName ) )
 						{
 							// Yes, skip this user.  System user accounts cannot be sync'd from ldap.
 							continue;
@@ -6736,7 +6735,6 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	 * @param ldapGuidAttribute
 	 * @throws NamingException
 	 */
-	@SuppressWarnings("unchecked")
 	protected void getUpdates(
 		String []ldapAttrNames,
 		Map mapping,
@@ -7350,7 +7348,8 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	 * @param name
 	 * @return
 	 */
-    public String getDefaultLocaleId()
+    @Override
+	public String getDefaultLocaleId()
 	{
 		String			defaultLocaleId;
 		Workspace		topWorkspace;
@@ -7381,6 +7380,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	 * @param name
 	 * @return
 	 */
+	@Override
 	public String getDefaultTimeZone()
 	{
 		String			defaultTimeZone;
@@ -7404,7 +7404,8 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
      * Set the default locale setting.  This setting is used to set the locale  on a user when
      * the user is created from an ldap sync.
      */
-    public void setDefaultLocale(String localeId)
+    @Override
+	public void setDefaultLocale(String localeId)
     {
         Workspace	topWorkspace;
 
@@ -7424,7 +7425,8 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
      * Set the default time zone setting.  This setting is used to set the time zone on a user when
      * the user is created from an ldap sync.
      */
-    public void setDefaultTimeZone(String timeZoneId)
+    @Override
+	public void setDefaultTimeZone(String timeZoneId)
     {
         Workspace	topWorkspace;
 
@@ -7438,7 +7440,8 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
         topWorkspace.setProperty( ObjectKeys.GLOBAL_PROPERTY_DEFAULT_TIME_ZONE, timeZoneId );
     }
 
-    public void updateHomeDirectoryIfNecessary(User user, String userName, boolean logErrors) {
+    @Override
+	public void updateHomeDirectoryIfNecessary(User user, String userName, boolean logErrors) {
         if (user.getIdentityInfo().isFromLdap()) {
             try {
                 // Does this user have a home directory attribute in ldap?
@@ -7831,7 +7834,8 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
     }// end updateGroup()
 
 
-    protected void updateMembership(
+    @SuppressWarnings("deprecation")
+	protected void updateMembership(
     	final Long groupId,
     	Collection newMembers,
     	LdapSyncMode syncMode,
@@ -8546,5 +8550,4 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
         workspaceModule = (WorkspaceModule) SpringContextUtil.getBean("workspaceModule");
         return workspaceModule;
     }
-
 }
