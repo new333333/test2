@@ -1257,9 +1257,10 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 					.getSingleValue(ObjectKeys.FIELD_BINDER_LIBRARY));
 			if (oldLibrary != newLibrary) {
 				// wrap in a transaction
-				getTransactionTemplate().execute(new TransactionCallback() {
+				Boolean successful = (Boolean)getTransactionTemplate().execute(new TransactionCallback() {
 					@Override
 					public Object doInTransaction(TransactionStatus status) {
+						boolean successful = true;
 						// remove old reserved names
 						getCoreDao().clearFileNames(binder);
 						if (newLibrary) {
@@ -1288,22 +1289,27 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 									le.setEntityId((Long) result[1]);
 									getCoreDao().save(le);
 								}
-							} catch (HibernateSystemException he) {
-								if (he.contains(NonUniqueObjectException.class)) {
-									throw new ConfigurationException(
-											"errorcode.cannot.make.library",
-											(Object[]) null);
-								}
+							} catch (Exception e) {
+								successful = false;
 							} finally {
 								query.close();
 							}
 						}
 						// Unnecessary since the new value was stored into the binder during modifyBinder() call
 						//binder.setLibrary(newLibrary);
-						return null;
+						return successful;
 					}
 				});
-
+				
+				if (newLibrary && !successful) {
+					//The change to a library folder didn't happen, so we have to turn off the library flag
+					Map tempData = new HashMap();
+					tempData.put(ObjectKeys.FIELD_BINDER_LIBRARY, Boolean.FALSE);
+					loadBinderProcessor(binder).modifyBinder(binder, new MapInputData(tempData), new HashMap(),
+							new HashSet(), null);
+					
+					throw new ConfigurationException("errorcode.cannot.make.library", (Object[]) null);
+				}
 			}
 		}
 		if (inputData.exists(ObjectKeys.FIELD_BINDER_UNIQUETITLES)) {
