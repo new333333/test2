@@ -38,13 +38,14 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.dom4j.Document;
 import org.dom4j.Element;
+
 import org.kablink.teaming.ConfigurationException;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.SingletonViolationException;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.NoWorkspaceByTheNameException;
 import org.kablink.teaming.module.zone.ZoneUtil;
-import org.kablink.teaming.web.util.MiscUtil;
+import org.kablink.teaming.web.util.BuiltInUsersHelper;
 
 /**
  * This class provides unified access to the SSF zone properties loaded from the 
@@ -58,7 +59,6 @@ import org.kablink.teaming.web.util.MiscUtil;
  * such properties files to be chained.
  * 
  * @author jong
- *
  */
 @SuppressWarnings({"unchecked", "unused"})
 public class SZoneConfig {
@@ -198,7 +198,7 @@ public class SZoneConfig {
     	String reply;
     	if (null == zoneId)
     		 reply = getZoneDefaultAdminUserName(zoneName);
-    	else reply = MiscUtil.getAdminName(zoneId);
+    	else reply = BuiltInUsersHelper.getAdminName(zoneId);
     	return reply;
     }
     
@@ -235,7 +235,7 @@ public class SZoneConfig {
     	String reply;
     	if (null == zoneId)
     		 reply = getZoneDefaultGuestUserName(zoneName);
-    	else reply = MiscUtil.getGuestUserName(zoneId);
+    	else reply = BuiltInUsersHelper.getGuestUserName(zoneId);
     	return reply;
 
     }

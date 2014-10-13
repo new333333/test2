@@ -92,11 +92,13 @@ import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.document.DateTools;
+
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.Node;
 import org.dom4j.io.OutputFormat;
+
 import org.kablink.teaming.GroupExistsException;
 import org.kablink.teaming.IllegalCharacterInNameException;
 import org.kablink.teaming.ObjectKeys;
@@ -337,6 +339,7 @@ import org.kablink.teaming.web.tree.DomTreeBuilder;
 import org.kablink.teaming.web.tree.WsDomTreeBuilder;
 import org.kablink.teaming.web.util.AdminHelper;
 import org.kablink.teaming.web.util.BinderHelper;
+import org.kablink.teaming.web.util.BuiltInUsersHelper;
 import org.kablink.teaming.web.util.BrandingUtil;
 import org.kablink.teaming.web.util.Clipboard;
 import org.kablink.teaming.web.util.EmailHelper;
@@ -11920,7 +11923,7 @@ public class GwtServerHelper {
 		user = getCurrentUser();
 		
 		// Don't set the time zone for the guest user or admin user
-		if ( MiscUtil.isSystemUserAccount( user ) )
+		if ( BuiltInUsersHelper.isSystemUserAccount( user ) )
 			return;
 
 		nowDate = new Date();

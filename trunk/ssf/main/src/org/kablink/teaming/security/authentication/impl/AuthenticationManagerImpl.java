@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -31,6 +31,7 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 package org.kablink.teaming.security.authentication.impl;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -38,6 +39,7 @@ import javax.naming.NamingException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.kablink.teaming.InternalException;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
@@ -85,9 +87,10 @@ import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.util.encrypt.EncryptUtil;
 import org.kablink.teaming.util.stringcheck.StringCheckUtil;
 import org.kablink.teaming.web.util.AdminHelper;
-import org.kablink.teaming.web.util.MiscUtil;
+import org.kablink.teaming.web.util.BuiltInUsersHelper;
 import org.kablink.teaming.web.util.NetFolderHelper;
 import org.kablink.util.api.ApiErrorCode;
+
 import org.springframework.beans.factory.InitializingBean;
 
 import com.liferay.util.Validator;
@@ -337,7 +340,7 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 			// If still here, a matching user account has been found.
 			
 			//Make sure this user account hasn't been disabled
-			if (!user.isActive() && !MiscUtil.isSystemUserAccount( userName )) {
+			if (!user.isActive() && !BuiltInUsersHelper.isSystemUserAccount( userName )) {
 				//This account is not active
 				throw new UserAccountNotActiveException(NLT.get("error.accountNotActive"));
 			}
@@ -358,7 +361,7 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 	   				// We don't want to sync ldap attributes if the user is one of the 5
 	   				// system user accounts, "admin", "guest", "_postingAgent", "_jobProcessingAgent", "_synchronizationAgent", and "_fileSyncAgent.
 	   				// Is the user a system user account?
-	   				if ( !MiscUtil.isSystemUserAccount( userName ) )
+	   				if ( !BuiltInUsersHelper.isSystemUserAccount( userName ) )
 	   				{
 	   					// No
 	   					syncUser = true;
@@ -608,7 +611,7 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 	   				// We don't want to sync the password if the user is one of the 5
 	   				// system user accounts, "admin", "guest", "_postingAgent", "_jobProcessingAgent", "_synchronizationAgent", and "_fileSyncAgent.
 	   				// Is the user a system user account?
-	   				if ( !MiscUtil.isSystemUserAccount( username ) )
+	   				if ( !BuiltInUsersHelper.isSystemUserAccount( username ) )
 	   				{
 	   					// No
 		   				// Change the user's password to the value passed in. 

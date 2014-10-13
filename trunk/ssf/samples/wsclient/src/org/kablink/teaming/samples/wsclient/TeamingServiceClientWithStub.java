@@ -54,7 +54,7 @@ import org.kablink.teaming.client.ws.WebServiceClientUtil;
 import org.kablink.teaming.client.ws.TeamingServiceSoapBindingStub;
 import org.kablink.teaming.client.ws.TeamingServiceSoapServiceLocator;
 import org.kablink.teaming.client.ws.model.*;
-import org.kablink.teaming.web.util.MiscUtil;
+import org.kablink.teaming.web.util.BuiltInUsersHelper;
 import org.kablink.util.search.Constants;
 import org.kablink.util.search.Criteria;
 
@@ -192,7 +192,7 @@ public class TeamingServiceClientWithStub {
 	public static void addMicroBlog_OldWay_ThisDoesNotWork() throws Exception {
 		TeamingServiceSoapBindingStub stub = getStubBasic();
 
-		User admin = stub.profile_getUserByName(null, MiscUtil.getAdminName(), false);
+		User admin = stub.profile_getUserByName(null, BuiltInUsersHelper.getAdminName(), false);
 		DefinitionBrief db = stub.definition_getDefinitionByName(null, "_miniblog_entry");
 		FolderEntry entry = new FolderEntry();
 		entry.setDefinitionId(db.getId());
@@ -1098,7 +1098,7 @@ public class TeamingServiceClientWithStub {
 		locator.setTeamingServiceEndpointAddress(TEAMING_SERVICE_ADDRESS_BASIC);
 		TeamingServiceSoapBindingStub stub = (TeamingServiceSoapBindingStub) locator.getTeamingService();
 		stub._setProperty(org.apache.axis.AxisEngine.PROP_DOMULTIREFS, Boolean.FALSE);
-		WebServiceClientUtil.setUserCredentialBasicAuth(stub, MiscUtil.getAdminName(), PASSWORD);
+		WebServiceClientUtil.setUserCredentialBasicAuth(stub, BuiltInUsersHelper.getAdminName(), PASSWORD);
 		return stub;
 	}
 	
@@ -1108,7 +1108,7 @@ public class TeamingServiceClientWithStub {
 		locator.setTeamingServiceEndpointAddress(TEAMING_SERVICE_ADDRESS_WSS);
 		TeamingServiceSoapBindingStub stub = (TeamingServiceSoapBindingStub) locator.getTeamingService();
 		stub._setProperty(org.apache.axis.AxisEngine.PROP_DOMULTIREFS, Boolean.FALSE);
-		WebServiceClientUtil.setUserCredentialWSSecurity(stub, MiscUtil.getAdminName(), PASSWORD, true);
+		WebServiceClientUtil.setUserCredentialWSSecurity(stub, BuiltInUsersHelper.getAdminName(), PASSWORD, true);
 		return stub;
 	}
 	

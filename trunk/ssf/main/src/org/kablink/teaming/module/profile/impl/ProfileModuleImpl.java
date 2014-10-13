@@ -145,6 +145,7 @@ import org.kablink.teaming.util.encrypt.EncryptUtil;
 import org.kablink.teaming.web.util.DateHelper;
 import org.kablink.teaming.web.util.DefinitionHelper;
 import org.kablink.teaming.web.util.EventHelper;
+import org.kablink.teaming.web.util.BuiltInUsersHelper;
 import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.PermaLinkUtil;
 import org.kablink.util.StringUtil;
@@ -3217,7 +3218,7 @@ public String[] getUsernameAndDecryptedPassword(String username) {
 				if(logger.isDebugEnabled())
 					logger.debug("User '" + user.getName() + "' (id=" + user.getId() + ") is not Vibe Granite external user - Skipping.");
 				if(evictUnaffectedUser) {
-					if(MiscUtil.isSystemUserAccount(user)) {
+					if(BuiltInUsersHelper.isSystemUserAccount(user)) {
 						// This is a system user account. There is possibility that this system user account has already been
 						// associated with the current Hibernate session and that its state has perhaps been modified during
 						// this thread of execution (e.g. during server startup, etc.). We don't want to run the risk of losing

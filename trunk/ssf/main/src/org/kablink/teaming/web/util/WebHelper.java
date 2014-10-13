@@ -54,6 +54,7 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.kablink.teaming.UncheckedIOException;
 import org.kablink.teaming.context.request.HttpSessionContext;
 import org.kablink.teaming.context.request.RequestContext;
@@ -85,6 +86,7 @@ import org.kablink.teaming.web.portlet.ParamsWrappedActionRequest;
 import org.kablink.util.BrowserSniffer;
 import org.kablink.util.Html;
 import org.kablink.util.PortalDetector;
+
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.openid.OpenIDAuthenticationToken;
@@ -301,7 +303,7 @@ public class WebHelper {
 			
 			// Are we dealing with the guest user?
 			Long zoneId = getZoneIdByVirtualHost( request );
-			if ( username != null && username.equalsIgnoreCase( MiscUtil.getGuestUserName( zoneId ) ) == false )
+			if ( username != null && username.equalsIgnoreCase( BuiltInUsersHelper.getGuestUserName( zoneId ) ) == false )
 			{
 				// Read this user's ldap guid from the ldap directory.
 				ldapModule = getLdapModule();

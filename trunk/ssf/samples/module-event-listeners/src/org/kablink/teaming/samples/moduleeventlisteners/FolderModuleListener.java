@@ -36,12 +36,13 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.domain.FolderEntry;
 import org.kablink.teaming.module.binder.impl.WriteEntryDataException;
 import org.kablink.teaming.module.file.WriteFilesException;
 import org.kablink.teaming.module.shared.InputDataAccessor;
-import org.kablink.teaming.web.util.MiscUtil;
+import org.kablink.teaming.web.util.BuiltInUsersHelper;
 
 /**
  * ?
@@ -215,7 +216,7 @@ public class FolderModuleListener {
 		// the user is trying to reserve is 12, then keep the request from
 		// proceeding by returning false from here. The entry 12 means so much
 		// to me that I do not want anyone but me to be able to reserve it!
-		if(!userName.equals(MiscUtil.getAdminName()) && entryId.longValue() == 12) {
+		if(!userName.equals(BuiltInUsersHelper.getAdminName()) && entryId.longValue() == 12) {
 			logger.info("preReserveEntry: No, you can't do this");
 			return false;
 		}
