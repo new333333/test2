@@ -1,6 +1,6 @@
 <%
 /**
- * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -16,10 +16,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -32,17 +32,12 @@
  * Kablink logos are trademarks of Novell, Inc.
  */
 %>
-<%@ page import="org.kablink.teaming.web.util.BinderHelper" %>
 <jsp:useBean id="ssBinder" type="org.kablink.teaming.domain.Binder" scope="request" />
-<%
-	boolean isMyFilesStorage = BinderHelper.isBinderMyFilesStorage(ssBinder);
-%>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 		<div style="text-align: left; margin: 0px 15px 0px 0px; border: 0pt none;" 
 		  class="wg-tabs margintop3 marginbottom2">
 		  <table>
 		    <tr>
-		      <% if (!isMyFilesStorage) { %>
 			  <td>
 				  <div class="wg-tab roundcornerSM ${ss_tab_definitions}">
 					  <a href="<ssf:url action="configure_definitions" actionUrl="true"><ssf:param 
@@ -58,7 +53,6 @@
 					  </a>
 				  </div>
 			  </td>
-			  <% } %>
 			  <% if (!(ssBinder instanceof org.kablink.teaming.domain.TemplateBinder)) { %>
 			  <td>
 				  <div class="wg-tab roundcornerSM ${ss_tab_simpleUrls}">
@@ -70,7 +64,6 @@
 				  </div>
 			  </td>
 			  <% } %>
-		      <% if (!isMyFilesStorage) { %>
 			  <c:if test="${ssBinder.entityType == 'folder'}">
 			  <% if (!(ssBinder instanceof org.kablink.teaming.domain.TemplateBinder)) { %>
 			  <td>
@@ -97,7 +90,6 @@
 					  ><ssf:nlt tag="folder.manageFolderVersionControls"/></a>
 				  </div>
 			  </td>
-			  <% } %>
 		    </tr>
 		  </table>
 		</div>

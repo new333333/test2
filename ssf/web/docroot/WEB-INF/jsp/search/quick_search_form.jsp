@@ -87,7 +87,6 @@
 								<ssf:nlt tag="search.scope.myFiles"/>
 							  </td>
 							</tr>
-							<ssf:ifFilr>
 						    <tr>
 						      <td width="20">
 								<input type="radio" name="scope" value="netFolders" 
@@ -98,7 +97,6 @@
 								<ssf:nlt tag="search.scope.netFolders"/>
 							  </td>
 							</tr>
-							</ssf:ifFilr>
 						    <tr>
 						      <td width="20">
 								<input type="radio" name="scope" value="sharedWithMe" 

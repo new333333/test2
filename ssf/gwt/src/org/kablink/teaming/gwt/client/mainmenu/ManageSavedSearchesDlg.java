@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -35,6 +35,8 @@ package org.kablink.teaming.gwt.client.mainmenu;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.kablink.teaming.gwt.client.EditCanceledHandler;
+import org.kablink.teaming.gwt.client.EditSuccessfulHandler;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingMainMenuImageBundle;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
@@ -43,13 +45,14 @@ import org.kablink.teaming.gwt.client.rpc.shared.RemoveSavedSearchCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveSearchCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
+import org.kablink.teaming.gwt.client.util.HttpRequestInfo;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
-import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Anchor;
@@ -63,23 +66,24 @@ import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
+
 /**
  * Implements a dialog for managing saved searches.
  *  
  * @author drfoster@novell.com
  */
-public class ManageSavedSearchesDlg extends DlgBox {
+public class ManageSavedSearchesDlg extends DlgBox implements EditSuccessfulHandler, EditCanceledHandler {
 	private final static String IDBASE				= "savedSearch_";		// Base ID for rows in the Grid.
 	private final static int	MAX_NAME_LENGTH		= Integer.MAX_VALUE;	// Is there a maximum?
 	private final static String SECTION_HEADER_ID	= "sectionHeader";		// The ID used for section headers in the dialog.
 	private final static int	VISIBLE_NAME_LENGTH	= 20;					// Any better guesses?
 
-	private Grid							m_ssGrid;		// Once displayed, the Grid with the dialog's contents.
-	private GwtTeamingMainMenuImageBundle	m_images;		// Access to the GWT main menu images.
-	private GwtTeamingMessages				m_messages;		// Access to the GWT UI messages.
-	private int								m_ssListCount;	// Count of SavedSearchInfo's in m_ssList.
-	private List<SavedSearchInfo>			m_ssList;		// The saved searches currently defined.
-	private String							m_searchTabId;	// If were on a search results page (i.e., the search can be saved), the tab ID of the search that can be saved.
+	private Grid m_ssGrid;							// Once displayed, the Grid with the dialog's contents.
+	private GwtTeamingMainMenuImageBundle m_images;	// Access to the GWT main menu images.
+	private GwtTeamingMessages m_messages;			// Access to the GWT UI messages.
+	private int m_ssListCount;						// Count of SavedSearchInfo's in m_ssList.
+	private List<SavedSearchInfo> m_ssList;			// The saved searches currently defined.
+	private String m_searchTabId;					// If were on a search results page (i.e., the search can be saved), the tab ID of the search that can be saved.
 
 	/*
 	 * Inner class that wraps labels displayed in the dialog's content.
@@ -115,9 +119,9 @@ public class ManageSavedSearchesDlg extends DlgBox {
 		// ...and create the dialog's content.
 		createAllDlgContent(
 			m_messages.mainMenuManageSavedSearchesDlgHeader(),
-			getSimpleSuccessfulHandler(),	// The dialog's EditSuccessfulHandler.
-			getSimpleCanceledHandler(),		// The dialog's EditCanceledHandler.
-			null);							// Data accessed via global data members. 
+			this,	// The dialog's EditSuccessfulHandler.
+			this,	// The dialog's EditCanceledHandler.
+			null);	// Data accessed via global data members. 
 	}
 	
 	/*
@@ -193,6 +197,39 @@ public class ManageSavedSearchesDlg extends DlgBox {
 		// ...and return the panel.
 		return vp;
 	}
+	
+	
+	/**
+	 * This method gets called when user user presses the Cancel push
+	 * button.
+	 * 
+	 * Implements the EditCanceledHandler.editCanceled() interface
+	 * method.
+	 * 
+	 * @return
+	 */
+	public boolean editCanceled() {
+		// Simply return true to allow the dialog to close.
+		return true;
+	}
+
+	
+	/**
+	 * This method gets called when user user presses the OK push
+	 * button.
+	 * 
+	 * Implements the EditSuccessfulHandler.editSuccessful() interface
+	 * method.
+	 * 
+	 * @param ignoreThis
+	 * 
+	 * @return
+	 */
+	public boolean editSuccessful(Object ignoreThis) {
+		// Nothing to do.  Return true to close the dialog.
+		return true;
+	}
+
 	
 	/**
 	 * Returns the edited List<ToolbarItem>.
@@ -277,7 +314,6 @@ public class ManageSavedSearchesDlg extends DlgBox {
 		
 		// ...and create the save push button.
 		Button saveButton = new Button(m_messages.mainMenuManageSavedSearchesDlgSave(), new ClickHandler() {
-			@Override
 			public void onClick(ClickEvent event) {
 				SaveSearchCmd cmd;
 				
@@ -296,14 +332,12 @@ public class ManageSavedSearchesDlg extends DlgBox {
 				// Can we save it?
 				cmd = new SaveSearchCmd( m_searchTabId, ssi );
 				GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
-					@Override
 					public void onFailure(Throwable t) {
 						GwtClientHelper.handleGwtRPCFailure(
 							t,
 							m_messages.rpcFailure_SaveSearch(),
 							searchName);
 					}
-					@Override
 					public void onSuccess(VibeRpcResponse response) {
 						SavedSearchInfo savedSSI = null;
 						
@@ -348,20 +382,17 @@ public class ManageSavedSearchesDlg extends DlgBox {
 		deleteAnchor.addStyleName("manageSavedSearchesDlg_DeleteAnchor");
 		deleteAnchor.getElement().appendChild(deleteImg.getElement());
 		deleteAnchor.addClickHandler(new ClickHandler() {
-			@Override
 			public void onClick(ClickEvent event) {
 				RemoveSavedSearchCmd cmd;
 				
 				cmd = new RemoveSavedSearchCmd( ssi );
 				GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>() {
-					@Override
 					public void onFailure(Throwable t) {
 						GwtClientHelper.handleGwtRPCFailure(
 							t,
 							m_messages.rpcFailure_RemoveSavedSearch(),
 							ssi.getName());
 					}
-					@Override
 					public void onSuccess(VibeRpcResponse response) {
 						// Remove the deleted SavedSearchInfo from the
 						// list...
@@ -420,7 +451,6 @@ public class ManageSavedSearchesDlg extends DlgBox {
 			/*
 			 * Called when the user clicks on the link's Anchor.
 			 */
-			@Override
 			public void onClick(ClickEvent event) {
 				// Hide the dialog and perform the saved search.
 				hide();

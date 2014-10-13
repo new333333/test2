@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -44,11 +44,9 @@ import java.util.regex.Pattern;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.document.DateTools;
-
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
-
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.SearchWildCardException;
 import org.kablink.teaming.context.request.RequestContextHolder;
@@ -83,14 +81,9 @@ import org.kablink.teaming.web.util.AdminHelper;
 import org.kablink.teaming.web.util.BinderHelper;
 import org.kablink.teaming.web.util.ListUtil;
 import org.kablink.teaming.web.util.MiscUtil;
-import org.kablink.util.search.Constants;
-import org.kablink.util.search.Criteria;
-import org.kablink.util.search.Criterion;
-import org.kablink.util.search.Junction;
+import org.kablink.util.search.*;
 import org.kablink.util.search.Junction.Conjunction;
 import org.kablink.util.search.Junction.Disjunction;
-import org.kablink.util.search.Order;
-import org.kablink.util.search.Restrictions;
 
 import static org.kablink.util.search.Constants.*;
 import static org.kablink.util.search.Restrictions.*;
@@ -752,7 +745,7 @@ public class SearchUtils {
     public static Criterion buildUsersCriterion(boolean allowExternal) {
         Junction crit = Restrictions.conjunction()
                 .add(Restrictions.eq(Constants.PERSONFLAG_FIELD, Boolean.TRUE.toString()))
-                .add(Restrictions.eq(Constants.DISABLED_PRINCIPAL_FIELD, Boolean.FALSE.toString()))
+                .add(Restrictions.eq(Constants.DISABLED_USER_FIELD, Boolean.FALSE.toString()))
                 .add(Restrictions.eq(Constants.DOC_TYPE_FIELD, Constants.DOC_TYPE_ENTRY))
                 .add(Restrictions.eq(Constants.ENTRY_TYPE_FIELD, Constants.ENTRY_TYPE_USER));
         if (!allowExternal) {
@@ -1145,17 +1138,10 @@ public class SearchUtils {
 		try {
 			// Based on the installed license, what definition
 			// families do we consider as 'file'?
-			String[] fileEntryFamilies;
+			String[] fileFamilies;
 			if (Utils.checkIfFilr())
-			     fileEntryFamilies = new String[]{Definition.FAMILY_FILE};
-			else fileEntryFamilies = null;	// In Vibe, we want ALL entries, not just file entries.
-			boolean hasFileEntryFamilies = ((null != fileEntryFamilies) && (0 < fileEntryFamilies.length));
-			
-			String[] fileFolderFamilies;
-			if (Utils.checkIfFilr())
-			     fileFolderFamilies = new String[]{Definition.FAMILY_FILE};
-			else fileFolderFamilies = new String[]{Definition.FAMILY_FILE, Definition.FAMILY_PHOTO};
-			boolean hasFileFolderFamilies = ((null != fileFolderFamilies) && (0 < fileFolderFamilies.length));
+			     fileFamilies = new String[]{Definition.FAMILY_FILE};
+			else fileFamilies = new String[]{Definition.FAMILY_FILE, Definition.FAMILY_PHOTO};
 	
 	        Long	mfRootId;
 	        boolean	usingHomeAsMF = useHomeAsMyFiles(bs);
@@ -1202,9 +1188,7 @@ public class SearchUtils {
 	            root.add(rootConj);
 	            rootConj.add(in(Constants.DOC_TYPE_FIELD,          new String[]{Constants.DOC_TYPE_BINDER}));
 	            rootConj.add(in(Constants.BINDERS_PARENT_ID_FIELD, new String[]{myFilesRootIdS}));
-	            if (hasFileEntryFamilies) {
-	            	rootConj.add(in(Constants.FAMILY_FIELD,        fileEntryFamilies));
-	            }
+	            rootConj.add(in(Constants.FAMILY_FIELD,            fileFamilies));
 	            rootConj.add(in(Constants.IS_LIBRARY_FIELD,        new String[]{Constants.TRUE}));
 	
 	            // ...if we have a non-Home My Files containers...
@@ -1244,9 +1228,7 @@ public class SearchUtils {
 	                Conjunction conj = conjunction();
 	                conj.add(in(Constants.DOC_TYPE_FIELD,          new String[]{Constants.DOC_TYPE_BINDER}));
 	                conj.add(in(Constants.BINDERS_PARENT_ID_FIELD, new String[]{mfContainerIdS}));
-	                if (hasFileFolderFamilies) {
-	                	conj.add(in(Constants.FAMILY_FIELD,        fileFolderFamilies));
-	                }
+	                conj.add(in(Constants.FAMILY_FIELD,            fileFamilies));
 	                conj.add(in(Constants.IS_LIBRARY_FIELD,        new String[]{Constants.TRUE}));
 	                root.add(conj);
 	            }
@@ -1257,10 +1239,8 @@ public class SearchUtils {
 	                Conjunction conj = conjunction();
 	                conj.add(in(Constants.DOC_TYPE_FIELD,    new String[]{Constants.DOC_TYPE_ENTRY}));
 	                conj.add(in(Constants.ENTRY_TYPE_FIELD,  new String[]{Constants.ENTRY_TYPE_ENTRY}));
-	                conj.add(in(Constants.BINDER_ID_FIELD,   new String[]{mfContainerIdS}));
-	                if (hasFileEntryFamilies) {
-	                	conj.add(in(Constants.FAMILY_FIELD,  fileEntryFamilies));
-	                }
+	                conj.add(in(Constants.BINDER_ID_FIELD, new String[]{mfContainerIdS}));
+	                conj.add(in(Constants.FAMILY_FIELD,      fileFamilies));
 	                root.add(conj);
 	            }
 	            if (replies) {
@@ -1268,13 +1248,13 @@ public class SearchUtils {
 	                Conjunction conj = conjunction();
 	                conj.add(in(Constants.DOC_TYPE_FIELD,    new String[]{Constants.DOC_TYPE_ENTRY}));
 	                conj.add(in(Constants.ENTRY_TYPE_FIELD,  new String[]{Constants.ENTRY_TYPE_REPLY}));
-	                conj.add(in(Constants.BINDER_ID_FIELD,   new String[]{mfContainerIdS}));
+	                conj.add(in(Constants.BINDER_ID_FIELD, new String[]{mfContainerIdS}));
 	                root.add(conj);
 	            }
 	            if (attachments) {
 	                Conjunction conj = conjunction();
 	                conj.add(in(Constants.DOC_TYPE_FIELD,    new String[]{Constants.DOC_TYPE_ATTACHMENT}));
-	                conj.add(in(Constants.BINDER_ID_FIELD,   new String[]{mfContainerIdS}));
+	                conj.add(in(Constants.BINDER_ID_FIELD, new String[]{mfContainerIdS}));
 	                conj.add(in(Constants.IS_LIBRARY_FIELD,  new String[]{Constants.TRUE}));
 	                root.add(conj);
 	            }

@@ -108,14 +108,12 @@ import org.kablink.teaming.jobs.FileVersionAging;
 import org.kablink.teaming.jobs.IndexOptimization;
 import org.kablink.teaming.jobs.LogTablePurge;
 import org.kablink.teaming.jobs.ScheduleInfo;
-import org.kablink.teaming.jobs.TempFileCleanup;
 import org.kablink.teaming.jobs.TextConversionFilePurge;
 import org.kablink.teaming.module.admin.AdminModule;
 import org.kablink.teaming.module.admin.IndexOptimizationSchedule;
 import org.kablink.teaming.module.admin.ManageIndexException;
 import org.kablink.teaming.module.admin.SendMailErrorWrapper;
 import org.kablink.teaming.module.binder.BinderModule;
-import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
 import org.kablink.teaming.module.binder.processor.BinderProcessor;
 import org.kablink.teaming.module.binder.processor.EntryProcessor;
 import org.kablink.teaming.module.dashboard.DashboardModule;
@@ -159,6 +157,7 @@ import org.kablink.teaming.util.ReflectHelper;
 import org.kablink.teaming.util.RuntimeStatistics;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SZoneConfig;
+import org.kablink.teaming.util.SessionUtil;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.StatusTicket;
 import org.kablink.teaming.util.Utils;
@@ -186,12 +185,12 @@ import org.springframework.transaction.support.TransactionTemplate;
  * @author Janet McCann
  */
 @SuppressWarnings("unchecked")
-public abstract class AbstractAdminModule extends CommonDependencyInjection implements AdminModule, InitializingBean {	
+public abstract class AbstractAdminModule extends CommonDependencyInjection implements AdminModule, InitializingBean {
+	
 	protected static String INDEX_OPTIMIZATION_JOB = "index.optimization.job"; // properties in xml file need a unique name
 	protected static String FILE_VERSION_AGING_JOB = "file.version.aging.job"; // properties in xml file need a unique name
 	protected static String LOG_TABLE_PURGE_JOB = "log.table.purge.job"; // properties in xml file need a unique name
 	protected static String TEXT_CONVERSION_FILE_PURGE_JOB = "text.conversion.file.purge.job"; // properties in xml file need a unique name
-	protected static String TEMP_FILE_CLEANUP_JOB = "temp.file.cleanup.job"; // properties in xml file need a unique name
 	
 	protected MailModule mailModule;
 	/**
@@ -343,19 +342,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
    	@Override
 	public void checkAccess(WorkArea workArea, AdminOperation operation) {
    		if (workArea instanceof TemplateBinder) {
-			Binder topBinder = (Binder)workArea;
-			@SuppressWarnings("unused")
-			User user = RequestContextHolder.getRequestContext().getUser();
-			while (topBinder instanceof TemplateBinder && topBinder.getParentBinder() != null) {
-				//Find the top TemplateBinder of this template
-				topBinder = topBinder.getParentBinder();
-			}
-			if (((TemplateBinder)topBinder).getTemplateOwningBinderId() != null) {
-				//This is a Local Template. Check that the user has Binder Administration rights to the owning binder of the local template
-				getBinderModule().checkAccess((Binder)workArea, BinderOperation.manageConfiguration);
-			} else {
-				getAccessControlManager().checkOperation(getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId()), WorkAreaOperation.ZONE_ADMINISTRATION);
-			}
+			getAccessControlManager().checkOperation(getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId()), WorkAreaOperation.ZONE_ADMINISTRATION);
    		} else if (workArea instanceof ZoneConfig) {
 			getAccessControlManager().checkOperation(getCoreDao().loadZoneConfig(RequestContextHolder.getRequestContext().getZoneId()), WorkAreaOperation.ZONE_ADMINISTRATION);
    		} else {
@@ -1001,7 +988,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 					defs.add(newDef.getId());
 					getCoreDao().flush();
 				} catch (Exception ex) {
-					logger.error("Cannot read definition from file: " + file, ex);
+					logger.error("Cannot read definition from file: " + file + " " + ex.getMessage());
 					return; //cannot continue, rollback is enabled
 				} finally {
 					if (in!=null) in.close();
@@ -1059,7 +1046,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 					if (newDef != null) defs.add(newDef.getId());
 					getCoreDao().flush();
 				} catch (Exception ex) {
-					logger.error("Cannot read definition from file: " + file, ex);
+					logger.error("Cannot read definition from file: " + file + " " + ex.getMessage());
 					return; //cannot continue, rollback is enabled
 				} finally {
 					if (in!=null) in.close();
@@ -2013,10 +2000,9 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 		Set<Long> userIds = new HashSet(ids);
 		//get team members
 		if (teamIds != null && !teamIds.isEmpty()) {
-			BinderModule binderModule = getBinderModule();
 			List<Binder> teams = getCoreDao().loadObjects(teamIds, Binder.class, user.getZoneId());
 			for (Binder t:teams) {
-				userIds.addAll( binderModule.getTeamMemberIds( t ) );
+				userIds.addAll(t.getTeamMemberIds());
 			}
 		}
 		boolean removedAllUsersGroup = checkIfRemovedSendToAllUsers(userIds);
@@ -2039,14 +2025,8 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 		if (removedAllUsersGroup) {
 			errors.add(0, new SendMailErrorWrapper(NLT.get("errorcode.noSendToAllUsers")));
 		}
-
-		// If there are no recipients...
-		Set ccSet  = getEmail(ccIds,  errors);
-		Set bccSet = getEmail(bccIds, errors);
-		if ((!(MiscUtil.hasItems(    emailSet))) &&
-				(!(MiscUtil.hasItems(bccSet  ))) &&
-				(!(MiscUtil.hasItems(ccSet   )))) {
-			// ...return an error.
+		if (emailSet == null || emailSet.isEmpty()) {
+			//no-one to send to
 			errors.add(0, new SendMailErrorWrapper(NLT.get("errorcode.noRecipients")));
 			return result;			
 		}
@@ -2070,9 +2050,9 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
    		EmailUtil.putText(message, MailModule.TEXT_MSG, (Html.stripHtml(body.getText()) + "\r\n"));
    		
     	message.put(MailModule.SUBJECT, subject);
- 		message.put(MailModule.TO,  emailSet);
- 		message.put(MailModule.CC,  ccSet   );
-		message.put(MailModule.BCC, bccSet  );
+ 		message.put(MailModule.TO, emailSet);
+ 		message.put(MailModule.CC, getEmail(ccIds, errors));
+		message.put(MailModule.BCC, getEmail(bccIds, errors));
 		message.put(MailModule.LOG_TYPE, EmailLogType.sendMail);
  		MailSentStatus results;
  		if (entry != null) {
@@ -2553,17 +2533,10 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 		// What Velocity template should we use for this URL?
 		String purposeKey;
 		String subjectKey;
-		String urlTextKey = null;
 		String template;
 		switch (urlNotificationType) {
 		case FORGOTTEN_PASSWORD:  template = "forgottenPasswordNotification.vm"; purposeKey = subjectKey = "relevance.mailForgottenPassword"; break;
 		case PASSWORD_RESET_REQUESTED:    template = "passwordChangedNotification.vm";   purposeKey = subjectKey = "relevance.mailPasswordChanged";   break;
-		case SELF_REGISTRATION_REQUIRED:
-			template = "selfRegistrationRequired.vm";
-			purposeKey = "relevance.selfRegistrationRequired.purpose";
-			subjectKey = "relevance.selfRegistrationRequired.subject";
-			urlTextKey = subjectKey;
-			break;
 		default:
 			throw new ConfigurationException(NLT.get("errorcode.sendurlnotification.bogusUrlType", new String[]{urlNotificationType.name()}));
 		}
@@ -2606,7 +2579,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 			StringWriter	writer  = new StringWriter();
 			Notify			notify  = new Notify(NotifyType.summary, locale, targetTZ, now);
            	NotifyVisitor	visitor = new NotifyVisitor(null, notify, null, writer, NotifyVisitor.WriterType.HTML, null);
-		    VelocityContext	ctx     = getUrlNotificationVelocityContext(visitor, url, purposeKey, urlTextKey );
+		    VelocityContext	ctx     = getUrlNotificationVelocityContext(visitor, url, purposeKey);
 			visitor.processTemplate(template, ctx);
 			EmailUtil.putHTML(mailMap, MailModule.HTML_MSG, writer.toString());
 			
@@ -2614,7 +2587,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 			writer  = new StringWriter();
 			notify  = new Notify(NotifyType.summary, locale, targetTZ, now);
            	visitor = new NotifyVisitor(null, notify, null, writer, NotifyVisitor.WriterType.TEXT, null);
-		    ctx     = getUrlNotificationVelocityContext(visitor, url, purposeKey, urlTextKey );
+		    ctx     = getUrlNotificationVelocityContext(visitor, url, purposeKey);
 			visitor.processTemplate(template, ctx);
 			EmailUtil.putText(mailMap, MailModule.TEXT_MSG, writer.toString());
 
@@ -3089,11 +3062,7 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 	/*
 	 * Returns a VelocityContext to use for URL notification emails. 
 	 */
-	private static VelocityContext getUrlNotificationVelocityContext(
-		NotifyVisitor visitor,
-		String url,
-		String purposeKey,
-		String urlTextKey ) {
+	private static VelocityContext getUrlNotificationVelocityContext(NotifyVisitor visitor, String url, String purposeKey) {
 		// Create the context...
 	    VelocityContext	reply = NotifyBuilderUtil.getVelocityContext();
 	    
@@ -3103,11 +3072,6 @@ public abstract class AbstractAdminModule extends CommonDependencyInjection impl
 		reply.put("ssUrlPurpose",  NLT.get(purposeKey)				                 );
 		reply.put("ssProduct",     (Utils.checkIfFilr() ? "Filr" : "Vibe")           );
 		reply.put("user",          RequestContextHolder.getRequestContext().getUser());
-		
-		if ( urlTextKey != null )
-		{
-			reply.put( "ssUrlText", NLT.get( urlTextKey ) );
-		}
 		
 		// ...and return it.
 		return reply;
@@ -3698,51 +3662,6 @@ public List<ChangeLog> getWorkflowChanges(EntityIdentifier entityIdentifier, Str
 	//See if there is a custom scheduling job being specified
     protected String getLogTablePurgeProperty(String zoneName, String name) {
 		return SZoneConfig.getString(zoneName, "logTablePurgeConfiguration/property[@name='" + name + "']");
-	}
-
-    @Override
-	public ScheduleInfo getTempFileCleanupSchedule() {
-    	ScheduleInfo info =  getTempFileCleanupObject().getScheduleInfo(RequestContextHolder.getRequestContext().getZoneId());
-		String hours   = SPropsUtil.getString("temp.file.cleanup.schedule.hours",   "1");	// Default is every day...
-		String minutes = SPropsUtil.getString("temp.file.cleanup.schedule.minutes", "0");	// ...at 1:00 AM.
-		try {
-			int iHours = Integer.valueOf(hours);
-			hours = String.valueOf((iHours + 24) % 24);
-		}
-		catch(Exception e) {
-			// This must be trying to set '*' or some other fancy
-			// value, so just leave 'hours' as it was.
-		}
-		info.getSchedule().setDaily(  true   );
-		info.getSchedule().setHours(  hours  );
-		info.getSchedule().setMinutes(minutes);
-    	return info;
-    }
-    
-    @Override
-	public void setTempFileCleanupSchedule(ScheduleInfo info) {
-  	   	checkAccess(AdminOperation.manageIndex);
-  	   	TempFileCleanup obj = getTempFileCleanupObject();
-    	obj.setScheduleInfo(info);
-    	obj.enable(true, RequestContextHolder.getRequestContext().getZoneId());
-    }
-
-    private TempFileCleanup getTempFileCleanupObject() {
-    	String zoneName = RequestContextHolder.getRequestContext().getZoneName();
-		String jobClass = getTempFileCleanupProperty(zoneName, TEMP_FILE_CLEANUP_JOB);
-    	if (Validator.isNotNull(jobClass)) {
-		   try {
-			   return  (TempFileCleanup)ReflectHelper.getInstance(jobClass);
-		   } catch (Exception ex) {
-			   logger.error("Cannot instantiate TempFileCleanup custom class", ex);
-		   }
-   		}
-   		return ((TempFileCleanup) ReflectHelper.getInstance(org.kablink.teaming.jobs.DefaultTempFileCleanup.class));
-    }
-    
-	// See if there is a custom scheduling job being specified.
-    protected String getTempFileCleanupProperty(String zoneName, String name) {
-		return SZoneConfig.getString(zoneName, "tempFileCleanupConfiguration/property[@name='" + name + "']");
 	}
 
     @Override

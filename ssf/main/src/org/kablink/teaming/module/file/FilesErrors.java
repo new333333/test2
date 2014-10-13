@@ -162,7 +162,8 @@ public class FilesErrors implements Serializable {
 			this(fileName, type);
 			// Don't include repository name in the error any longer. It has no meaning to end users.
 			//this.repositoryName = repositoryName;
-			logger.error("Error (type=" + type + ") on file '" + fileName + "'");
+			if(logger.isDebugEnabled())
+				logger.error("Error (type=" + type + ") on file '" + fileName + "'");
 		}
 		
 		public Problem(String repositoryName, String fileName, 
@@ -171,10 +172,8 @@ public class FilesErrors implements Serializable {
 			// Don't include repository name in the error any longer. It has no meaning to end users.
 			//this.repositoryName = repositoryName;
 			this.exception = exception;		
-			if(exception != null)
+			if(logger.isDebugEnabled())
 				logger.error("Error (type=" + type + ") on file '" + fileName + "'", exception);
-			else 
-				logger.error("Error (type=" + type + ") on file '" + fileName + "'");
 		}
 		
 		private Problem(String fileName, int type) {

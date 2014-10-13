@@ -100,11 +100,6 @@ public final class MiscUtil
 	// store whether the user's browser supports NPAPI.
 	private final static String	BROWSER_SUPPORTS_NPAPI	= "browserSupportsNPAPI";
 	
-	// Initialized by the first call to get...Module();
-	private static FolderModule		m_folderModule;		//
-	private static ProfileModule	m_profileModule;	//
-	private static ZoneModule		m_zoneModule;		//
-	
 	/*
 	 * Enumeration type to specific the platform the browser is running
 	 * on.
@@ -232,7 +227,10 @@ public final class MiscUtil
 	 */
 	public static boolean doesGuestUserHaveAddRightsToProfileBinder( AllModulesInjected bs )
 	{
-		return getProfileModule().doesGuestUserHaveAddRightsToProfileBinder();
+		ProfileModule	profileModule;
+
+		profileModule = bs.getProfileModule();
+		return profileModule.doesGuestUserHaveAddRightsToProfileBinder();
 	}// end doesGuestUserHaveAddRightsToProfileBinder()
 
 	
@@ -291,6 +289,65 @@ public final class MiscUtil
 	}
 	
 	
+	/**
+	 * This method will return true if the given name is the name of a
+	 * system user account.
+	 * 
+	 * Currently there are 5 system user accounts: "admin", "guest",
+	 * "_postingAgent", "_jobProcessingAgent", "_synchronizationAgent",
+	 * and "_fileSyncAgent.
+	 * 
+	 * @param name
+	 * 
+	 * @return
+	 */
+	public static boolean isSystemUserAccount( String name )
+	{
+		if ( name == null)
+		{
+			return false;
+		}
+		
+		if ( name.equalsIgnoreCase( "admin" ) || name.equalsIgnoreCase( "guest" ) ||
+			  name.equalsIgnoreCase( "_postingAgent" ) || name.equalsIgnoreCase( "_jobProcessingAgent" ) ||
+			  name.equalsIgnoreCase("_synchronizationAgent") ||
+			  name.equalsIgnoreCase("_fileSyncAgent"))
+		{
+			return true;
+		}
+		
+		// If we get here the name is not a system user account.
+		return false;
+	}// end isSystemUserAccount()
+
+	/**
+	 * This method will return true if the given User is a system user
+	 * account.
+	 * 
+	 * @param user
+	 * 
+	 * @return
+	 */
+	public static boolean isSystemUserAccount( User user )
+	{
+		// If we don't have a User...
+		if ( user == null)
+		{
+			// ...it can't be a system user account.
+			return false;
+		}
+
+		// If the User is Guest, Admin or not a person...
+		if ( user.isShared() || user.isSuper() || ( ! ( user.isPerson() ) ) )
+		{
+			// ...it's a system user account.
+			return true;
+		}
+		
+		// If we get here the User is not a system user account.
+		return false;
+	}// end isSystemUserAccount()
+
 	/**
 	 * Splits the String(s) in a RenderRequest property into their
 	 * constituent Long values.
@@ -522,30 +579,16 @@ public final class MiscUtil
 	 * 
 	 * @param s1
 	 * @param s2
-	 * @param collator
-	 * 
-	 * @return
-	 */
-	public static int safeSColatedCompare(String s1, String s2, Collator collator) {
-		return
-			collator.compare(
-				((null == s1) ? "" : s1),
-				((null == s2) ? "" : s2) );
-   }
-
-	/**
-	 * Performs a collated compare on two strings without generating any
-	 * exceptions.
-	 * 
-	 * @param s1
-	 * @param s2
 	 * 
 	 * @return
 	 */
 	public static int safeSColatedCompare(String s1, String s2) {
 		Collator collator = Collator.getInstance( RequestContextHolder.getRequestContext().getUser().getLocale());
 		collator.setStrength(Collator.IDENTICAL);
-		return safeSColatedCompare(s1, s2, collator);
+		return
+			collator.compare(
+				((null == s1) ? "" : s1),
+				((null == s2) ? "" : s2) );
    }
 
 	/**
@@ -572,7 +615,8 @@ public final class MiscUtil
 	 */
 	public static ZoneInfo getCurrentZone()
 	{
-		return getZoneModule().getZoneInfo( RequestContextHolder.getRequestContext().getZoneId() );
+		ZoneModule zm = ((ZoneModule) SpringContextUtil.getBean( "zoneModule" ));
+		return zm.getZoneInfo( RequestContextHolder.getRequestContext().getZoneId() );
 	}//end getCurrentZone()
 	
 	/**
@@ -832,7 +876,8 @@ public final class MiscUtil
 		try {
 			Long binderId = Long.parseLong(binderIdS);
 			Long entryId  = Long.parseLong(entryIdS);
-			FolderEntry fe = getFolderModule().getEntry(binderId, entryId);
+			FolderModule fm = ((FolderModule) SpringContextUtil.getBean("folderModule"));
+			FolderEntry fe = fm.getEntry(binderId, entryId);
 			if (null != fe) {
 				HistoryStamp reservation = fe.getReservation();
 				if (null != reservation) {
@@ -896,19 +941,23 @@ public final class MiscUtil
 		
 		url += "/documentation";
 		
-		product = ("/" + SPropsUtil.getString( "release.product", "vibe" ));
+		product = "/vibe33";
 		
 		// Are we running Filr?
 		if ( Utils.checkIfFilr() )
 		{
 			// Yes
-			url    += ("/" + SPropsUtil.getString( "filr.release.product.novell", "novell-filr" ));
-			product = ("/" + SPropsUtil.getString( "filr.release.product",        "filr"        ));
+			url += "/novell-filr-1-1";
+			product = "/filr-1-1";
 		}
 		// Are we running Novell Teaming?
 		else if ( ReleaseInfo.isLicenseRequiredEdition())
-		     url += ("/" + SPropsUtil.getString( "release.product",         "vibe"        ));
-		else url += ("/" + SPropsUtil.getString( "release.product.kablink", "kablinkvibe" ));
+		{
+			// Yes
+			url += "/vibe33";
+		}
+		else
+			url += "/kablinkvibe33";
 		
 		if ( guideName != null && guideName.length() > 0 )
 		{
@@ -1483,53 +1532,13 @@ public final class MiscUtil
 	public static boolean isEntryPreDeleted( Long entryId )
 	{
 		boolean reply = false; 
+		FolderModule fm = ( (FolderModule) SpringContextUtil.getBean( "folderModule" ) );
 		try
 		{
-			FolderEntry fe = getFolderModule().getEntry( null, entryId );
+			FolderEntry fe = fm.getEntry( null, entryId );
 			reply = fe.isPreDeleted();
 		}
 		catch ( Exception e ) {/* Ignore. */}
 		return reply;
-	}
-	
-	/**
-	 * Returns an instance of a FolderModule.
-	 * 
-	 * @return
-	 */
-	public static FolderModule getFolderModule() {
-		if ( null == m_folderModule )
-		{
-			m_folderModule = ( (FolderModule) SpringContextUtil.getBean( "folderModule" ));
-		}
-		return m_folderModule;
-	}
-
-	/**
-	 * Returns an instance of a ProfileModule.
-	 * 
-	 * @return
-	 */
-	public static ProfileModule getProfileModule()
-	{
-		if ( null == m_profileModule )
-		{
-			m_profileModule = ( (ProfileModule) SpringContextUtil.getBean( "profileModule" ) );
-		}
-		return m_profileModule;
-	}
-
-	/**
-	 * Returns an instance of a ZoneModule.
-	 * 
-	 * @return
-	 */
-	public static ZoneModule getZoneModule()
-	{
-		if ( null == m_zoneModule )
-		{
-			m_zoneModule = ( (ZoneModule) SpringContextUtil.getBean( "zoneModule" ) );
-		}
-		return m_zoneModule;
 	}
 }// end MiscUtil

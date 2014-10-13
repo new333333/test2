@@ -45,6 +45,7 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
+
 import org.kablink.teaming.ConfigurationException;
 import org.kablink.teaming.NoObjectByTheIdException;
 import org.kablink.teaming.NotSupportedException;
@@ -64,7 +65,6 @@ import org.kablink.teaming.domain.NoBinderByTheNameException;
 import org.kablink.teaming.domain.NoDefinitionByTheIdException;
 import org.kablink.teaming.domain.Principal;
 import org.kablink.teaming.domain.TemplateBinder;
-import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.UserPrincipal;
 import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
@@ -100,6 +100,7 @@ import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.web.util.DashboardHelper;
 import org.kablink.util.GetterUtil;
 import org.kablink.util.Validator;
+
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -324,12 +325,7 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 	//add template
 	 @Override
 	public TemplateBinder addTemplate(Binder localBinderParent, int type, Map updates) {
-		if (localBinderParent != null) {
-			//This is a request to create a local template. Check that the user has binder administration rights
-			getBinderModule().checkAccess(localBinderParent, BinderOperation.manageConfiguration);
-		} else {
-			checkAccess(TemplateOperation.manageTemplate);
-		}
+	    checkAccess(TemplateOperation.manageTemplate);
 		TemplateBinder template = new TemplateBinder();
 		String name = (String)updates.get(ObjectKeys.FIELD_BINDER_NAME);
 		//only top level needs a name
@@ -347,7 +343,6 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 		if (localBinderParent != null) {
 			//This is a local template. Store the parent binder id
 			template.setTemplateOwningBinderId(localBinderParent.getId());
-			template.setOwner(RequestContextHolder.getRequestContext().getUser());
 		}
 		template.setName(name);
 		if (!validateTemplateName(null, name)) throw new NotSupportedException("errorcode.notsupported.duplicateTemplateName", new Object[]{name});
@@ -500,13 +495,7 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 	 //clone a top level template as a child of another template
 	 @Override
 	public TemplateBinder addTemplate(Long parentId, Long srcConfigId) {
-		if (parentId != null) {
-			//This is a request to create a local template. Check that the user has binder administration rights
-			TemplateBinder parentConfig = (TemplateBinder)getCoreDao().loadBinder(parentId, RequestContextHolder.getRequestContext().getZoneId());
-			getBinderModule().checkAccess(parentConfig, BinderOperation.manageConfiguration);
-		} else {
-			checkAccess(TemplateOperation.manageTemplate);
-		}
+		 checkAccess(TemplateOperation.manageTemplate);
 	    TemplateBinder parentConfig = (TemplateBinder)getCoreDao().loadBinder(parentId, RequestContextHolder.getRequestContext().getZoneId());
 	    TemplateBinder srcConfig = (TemplateBinder)getCoreDao().loadBinder(srcConfigId, RequestContextHolder.getRequestContext().getZoneId());
 	    return addTemplate(parentConfig, srcConfig);
@@ -580,12 +569,7 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 	 }
 	   @Override
 	public TemplateBinder addTemplateFromBinder(Binder localParentBinder, Long binderId) throws AccessControlException, WriteFilesException {
-			if (localParentBinder != null) {
-				//This is a request to create a local template. Check that the user has binder administration rights
-				getBinderModule().checkAccess(localParentBinder, BinderOperation.manageConfiguration);
-			} else {
-				checkAccess(TemplateOperation.manageTemplate);
-			}
+		   checkAccess(TemplateOperation.manageTemplate);
 		   Long zoneId =  RequestContextHolder.getRequestContext().getZoneId();
 		   Binder binder = (Binder)getCoreDao().loadBinder(binderId, zoneId);
 		   TemplateBinder config = templateFromBinder(localParentBinder, null, binder);
@@ -646,21 +630,8 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 	}
 	@Override
 	public void modifyTemplate(Long id, Map updates) {
-		User user = RequestContextHolder.getRequestContext().getUser();
+		checkAccess(TemplateOperation.manageTemplate);
 		TemplateBinder config = getCoreDao().loadTemplate(id, RequestContextHolder.getRequestContext().getZoneId());
-		Binder topBinder = config;
-		while (topBinder instanceof TemplateBinder && topBinder.getParentBinder() != null) {
-			//Find the top TemplateBinder of this template
-			topBinder = topBinder.getParentBinder();
-		}
-		if (((TemplateBinder)topBinder).getTemplateOwningBinderId() != null) {
-			//This is a Local Template. Check that the user has Binder Administration rights to the owning binder of the local template
-			Binder owningBinder = getBinderModule().getBinder(((TemplateBinder)topBinder).getTemplateOwningBinderId());
-			getBinderModule().checkAccess(owningBinder, BinderOperation.manageConfiguration);
-		} else {
-			checkAccess(TemplateOperation.manageTemplate);
-		}
-
 		if (config.isRoot() && updates.containsKey(ObjectKeys.FIELD_BINDER_NAME)) { //ignore name for others
 			String name = (String)updates.get(ObjectKeys.FIELD_BINDER_NAME);
 			if (Validator.isNull(name)) {
@@ -722,7 +693,7 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 		XmlUtils.addProperty(element, ObjectKeys.XTAG_BINDER_INHERITTEAMMEMBERS, binder.isTeamMembershipInherited());
 		if (!binder.isTeamMembershipInherited()) {
 			//store as names, not ids
-			Set<Long> ids = getBinderModule().getTeamMemberIds( binder );
+			Set<Long> ids = binder.getTeamMemberIds();
 			List<UserPrincipal> members = getProfileDao().loadUserPrincipals(ids, binder.getZoneId(), true);
 			for (Principal p:members) {
 				XmlUtils.addProperty(element, ObjectKeys.XTAG_BINDER_TEAMMEMBER_NAME, p.getName());	    				 

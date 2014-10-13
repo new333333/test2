@@ -45,7 +45,7 @@ public class UserAccessConfig
 	private boolean m_allowGuestAccess;
 	private boolean m_guestReadOnly;
 	private boolean m_allowSelfReg;
-	private boolean m_allowExternalUsersViaOpenID;
+	private boolean m_allowExternalUsers;
 	private boolean m_allowExternalUsersSelfReg;
 	private boolean m_allowDownload;
 	private boolean m_allowWebAccess;
@@ -60,7 +60,7 @@ public class UserAccessConfig
 		// Initialize the super class.
 		super();
 		
-		m_allowExternalUsersViaOpenID = false;
+		m_allowExternalUsers = false;
 		m_allowExternalUsersSelfReg = false;
 		m_allowGuestAccess = false;
 		m_allowSelfReg = false;
@@ -71,9 +71,9 @@ public class UserAccessConfig
 	/**
 	 * 
 	 */
-	public boolean getAllowExternalUsersViaOpenID()
+	public boolean getAllowExternalUsers()
 	{
-		return m_allowExternalUsersViaOpenID;
+		return m_allowExternalUsers;
 	}
 
 	/**
@@ -127,9 +127,9 @@ public class UserAccessConfig
 	/**
 	 * 
 	 */
-	public void setAllowExternalUsersViaOpenID( boolean allow )
+	public void setAllowExternalUsers( boolean allow )
 	{
-		m_allowExternalUsersViaOpenID = allow;
+		m_allowExternalUsers = allow;
 	}
 
 	/**

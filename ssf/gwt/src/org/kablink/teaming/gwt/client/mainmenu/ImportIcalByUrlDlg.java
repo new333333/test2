@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -49,7 +49,9 @@ import org.kablink.teaming.gwt.client.widgets.DlgBox;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FocusWidget;
@@ -57,6 +59,7 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
+
 
 /**
  * Implements Vibe's import iCal by URL dialog.
@@ -158,7 +161,6 @@ public class ImportIcalByUrlDlg extends DlgBox implements EditSuccessfulHandler 
 		}
 		if (GwtClientHelper.hasString(url)) {
 			// Yes!  Invoke the import method with it.
-			setOkEnabled(false);
 			importIcalUrlAsync(url);
 		}
 		else {
@@ -201,12 +203,13 @@ public class ImportIcalByUrlDlg extends DlgBox implements EditSuccessfulHandler 
 	 * Asynchronously imports the given iCal URL.
 	 */
 	private void importIcalUrlAsync(final String url) {
-		GwtClientHelper.deferCommand(new ScheduledCommand() {
+		ScheduledCommand doImport = new ScheduledCommand() {
 			@Override
 			public void execute() {
 				importIcalUrlNow(url);
 			}
-		});
+		};
+		Scheduler.get().scheduleDeferred(doImport);
 	}
 	
 	/*
@@ -221,7 +224,6 @@ public class ImportIcalByUrlDlg extends DlgBox implements EditSuccessfulHandler 
 				GwtClientHelper.handleGwtRPCFailure(
 					t,
 					m_messages.rpcFailure_ImportIcalByUrl());
-				setOkEnabled(true);
 			}
 			
 			@Override
@@ -249,7 +251,7 @@ public class ImportIcalByUrlDlg extends DlgBox implements EditSuccessfulHandler 
 						}
 						msgs.append(msg);
 					}
-					GwtClientHelper.deferredAlert(msgs.toString());
+					Window.alert(msgs.toString());
 				}
 				
 				else {
@@ -268,48 +270,30 @@ public class ImportIcalByUrlDlg extends DlgBox implements EditSuccessfulHandler 
 					// ...and if anything changed...
 					if (0 < (added + modified)) {
 						// ...force the UI to reload.
-						FullUIReloadEvent.fireOneAsync();
+						ScheduledCommand doReload = new ScheduledCommand() {
+							@Override
+							public void execute() {
+								FullUIReloadEvent.fireOne();
+							}
+						};
+						Scheduler.get().scheduleDeferred(doReload);
 					}
 				}
-				setOkEnabled(true);
 			}
 		});
 	}
 	
-    /**
-     * Called after the EditSuccessfulHandler has been called by
-     * DlgBox.
-     * 
-     * Overrides the DlgBox.okBtnProcessingEnded() method.
-     */
-	@Override
-    protected void okBtnProcessingEnded() {
-		// Ignored!  This dialog is handling enabling and disabling of
-		// the OK button itself.
-    }
-    
-    /**
-     * Called before the EditSuccessfulHandler has been called by
-     * DlgBox.
-     * 
-     * Overrides the DlgBox.okBtnProcessingStarted() method.
-     */
-	@Override
-    protected void okBtnProcessingStarted() {
-		// Ignored!  This dialog is handling enabling and disabling of
-		// the OK button itself.
-    }
-    
 	/*
 	 * Asynchronously populates the contents of the dialog.
 	 */
 	private void populateDlgAsync() {
-		GwtClientHelper.deferCommand(new ScheduledCommand() {
+		ScheduledCommand doPopulate = new ScheduledCommand() {
 			@Override
 			public void execute() {
 				populateDlgNow();
 			}
-		});
+		};
+		Scheduler.get().scheduleDeferred(doPopulate);
 	}
 	
 	/*
@@ -350,12 +334,13 @@ public class ImportIcalByUrlDlg extends DlgBox implements EditSuccessfulHandler 
 	 * dialog.
 	 */
 	private static void runDlgAsync(final ImportIcalByUrlDlg iiUrlDlg, final BinderInfo fi) {
-		GwtClientHelper.deferCommand(new ScheduledCommand() {
+		ScheduledCommand doRun = new ScheduledCommand() {
 			@Override
 			public void execute() {
 				iiUrlDlg.runDlgNow(fi);
 			}
-		});
+		};
+		Scheduler.get().scheduleDeferred(doRun);
 	}
 	
 	/*
@@ -369,17 +354,15 @@ public class ImportIcalByUrlDlg extends DlgBox implements EditSuccessfulHandler 
 		// ...and display a reading message, start populating the
 		// ...dialog and show it.
 		populateDlgAsync();
-		setCancelEnabled(true);
-		setOkEnabled(    true);
-		show(            true);
+		show(true);
 	}
-	
 
 	/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 	/* The following code is used to load the split point containing */
 	/* the import iCal by URL dialog and perform some operation on   */
 	/* it.                                                           */
 	/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+	
 	
 	/**
 	 * Callback interface to interact with the import iCal by URL
@@ -404,7 +387,7 @@ public class ImportIcalByUrlDlg extends DlgBox implements EditSuccessfulHandler 
 		GWT.runAsync(ImportIcalByUrlDlg.class, new RunAsyncCallback() {
 			@Override
 			public void onFailure(Throwable reason) {
-				GwtClientHelper.deferredAlert(GwtTeaming.getMessages().codeSplitFailure_ImportIcalByUrlDlg());
+				Window.alert(GwtTeaming.getMessages().codeSplitFailure_ImportIcalByUrlDlg());
 				if (null != iiUrlDlgClient) {
 					iiUrlDlgClient.onUnavailable();
 				}

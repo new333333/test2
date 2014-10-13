@@ -41,7 +41,6 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.event.DialogClosedEvent;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
 import org.kablink.teaming.gwt.client.util.HelpData;
-import org.kablink.teaming.gwt.client.widgets.SpinnerPopup;
 
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Element;
@@ -77,7 +76,6 @@ public abstract class DlgBox extends TeamingPopupPanel
 	private boolean					m_draggable;						// Set true once the dialog has been made draggable.
 	private boolean					m_superHide;						// true while performing a super.hide().
 	private boolean					m_superShow;						// true while performing a super.center() or super.show().
-	private boolean					m_okManagedBySubclass;				// true -> Subclass has called setOkEnabled(...) and the okBtnProcessing...() methods becomes no-opts.  false -> Subclass hasn't called it (yet) and the okBtnProcessing...() continue doing their thing.
 	private EditSuccessfulHandler	m_editSuccessfulHandler;			// Handler to call when the user presses Ok.
 	private EditCanceledHandler		m_editCanceledHandler;				// Handler to call when the user presses Cancel.
 	private DlgButtonMode			m_dlgBtnMode;						//
@@ -86,7 +84,6 @@ public abstract class DlgBox extends TeamingPopupPanel
 	private Button					m_cancelBtn;						//
 	private HelpData				m_helpData;							//
 	private FlowPanel 				m_closePanel;						//
-	private boolean					m_closeXEnabled = true;				// true -> If the 'X' in the upper right corner of the dialog is enabled and clicking it should be honored.  false -> It's disabled and clicking it should be ignored.
 	private Image 					m_closeImg;							//
 	private Image					m_tourButton;						//
 	protected FocusWidget 			m_focusWidget;						// Widget that should receive the focus when this dialog is shown.
@@ -107,7 +104,6 @@ public abstract class DlgBox extends TeamingPopupPanel
 	private boolean					m_fixedSize;						//
 	private Integer					m_height;							//
 	private boolean					m_useOverflowAutoOnContent = true;	//
-	private SpinnerPopup			m_dlgBusySpinner;					// A spinner that can be shown while an operation is in progress.
     	
 	private static int				m_uniqueId       = 100;						//
 	private static List<DlgBox>		m_visibleDialogs = new ArrayList<DlgBox>();	//
@@ -795,17 +791,6 @@ public abstract class DlgBox extends TeamingPopupPanel
 		m_superHide = wasSuperHide;
 	}// end hide()
 
-	/**
-	 * If a busy spinner exists, hide it.
-	 */
-	public void hideDlgBusySpinner() {
-		// If we have a busy spinner...
-		if (null != m_dlgBusySpinner) {
-			// ...make sure that it's hidden.
-			m_dlgBusySpinner.hide();
-		}
-	}
-
 	/*
 	 * 
 	 */
@@ -915,20 +900,6 @@ public abstract class DlgBox extends TeamingPopupPanel
 	}
 	
 	/**
-	 * Shows a busy spinner animation while an operation is going on.
-	 */
-	public void showDlgBusySpinner() {
-		// If we haven't created a busy spinner yet...
-		if (null == m_dlgBusySpinner) {
-			// ...create one now...
-			m_dlgBusySpinner = new SpinnerPopup();
-		}
-
-		// ...and show it.
-		m_dlgBusySpinner.center();
-	}
-	
-	/**
 	 * Returns true if the error panel is visible and false otherwise.
 	 * 
 	 * @return
@@ -1021,15 +992,8 @@ public abstract class DlgBox extends TeamingPopupPanel
      */
     protected void okBtnProcessingEnded()
     {
-    	// If the subclass isn't managing the OK button state...
-    	if ( ! m_okManagedBySubclass )
-    	{
-	    	// ...enable the OK button.
-	    	if ( m_okBtn != null )
-	    	{
-	    		m_okBtn.setEnabled( true );
-	    	}
-    	}
+    	if ( m_okBtn != null )
+    		m_okBtn.setEnabled( true );
     }
     
     /**
@@ -1037,15 +1001,9 @@ public abstract class DlgBox extends TeamingPopupPanel
      */
     protected void okBtnProcessingStarted()
     {
-    	// If the subclass isn't managing the OK button state...
-    	if ( ! m_okManagedBySubclass )
-    	{
-	    	// ...disable the OK button.
-	    	if ( m_okBtn != null )
-	    	{
-	    		m_okBtn.setEnabled( false );
-	    	}
-    	}
+    	// Disable the ok button
+    	if ( m_okBtn != null )
+    		m_okBtn.setEnabled( false );
     }
     
     /*
@@ -1074,7 +1032,7 @@ public abstract class DlgBox extends TeamingPopupPanel
 		}
 		
 		// Did the user click on cancel?
-		if ( source == m_cancelBtn || ( ( source == m_closeImg ) && m_closeXEnabled ) )
+		if ( source == m_cancelBtn || source == m_closeImg )
 		{
 			// Yes
 			// Do we have a handler we need to call?
@@ -1100,7 +1058,6 @@ public abstract class DlgBox extends TeamingPopupPanel
 		{
 			m_cancelBtn.setEnabled(enabled);
 		}
-		m_closeXEnabled = enabled;
 	}// end setCancelEnabled()
 	
 	/**
@@ -1139,7 +1096,6 @@ public abstract class DlgBox extends TeamingPopupPanel
 		{
 			m_okBtn.setEnabled(enabled);
 		}
-		m_okManagedBySubclass = true;
 	}// end setOkEnabled()
 	
 	/**

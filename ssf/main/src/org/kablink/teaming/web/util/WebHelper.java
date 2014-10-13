@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -54,7 +54,7 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
+import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.UncheckedIOException;
 import org.kablink.teaming.context.request.HttpSessionContext;
 import org.kablink.teaming.context.request.RequestContext;
@@ -66,6 +66,7 @@ import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.NoUserByTheNameException;
 import org.kablink.teaming.domain.User;
 import org.kablink.teaming.domain.Workspace;
+import org.kablink.teaming.extuser.ExternalUserUtil;
 import org.kablink.teaming.module.binder.BinderModule;
 import org.kablink.teaming.module.ldap.LdapModule;
 import org.kablink.teaming.module.zone.ZoneModule;
@@ -86,19 +87,14 @@ import org.kablink.teaming.web.portlet.ParamsWrappedActionRequest;
 import org.kablink.util.BrowserSniffer;
 import org.kablink.util.Html;
 import org.kablink.util.PortalDetector;
-
+import org.kablink.util.Validator;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.openid.OpenIDAuthenticationToken;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-/**
- * ?
- * 
- * @author ?
- */
-@SuppressWarnings({"unchecked", "unused"})
 public class WebHelper {
 	protected static Log logger = LogFactory.getLog(WebHelper.class);
 	protected static Pattern htmlEscapes = Pattern.compile("(\\&[^;]*;)"); //can be shared
@@ -302,12 +298,11 @@ public class WebHelper {
 			}
 			
 			// Are we dealing with the guest user?
-			Long zoneId = getZoneIdByVirtualHost( request );
-			if ( username != null && username.equalsIgnoreCase( BuiltInUsersHelper.getGuestUserName( zoneId ) ) == false )
+			if ( username != null && username.equalsIgnoreCase( ObjectKeys.GUEST ) == false )
 			{
 				// Read this user's ldap guid from the ldap directory.
 				ldapModule = getLdapModule();
-				ldapGuid = ldapModule.readLdapGuidFromDirectory( username, zoneId );
+				ldapGuid = ldapModule.readLdapGuidFromDirectory( username, getZoneIdByVirtualHost( request ) );
 			}
 			
 			// Did we find an ldap guid for this user?
@@ -317,7 +312,7 @@ public class WebHelper {
 				try
 				{
 					// Try to find the user in Teaming by their ldap guid.
-					tmpUser = getProfileDao().findUserByLdapGuid( ldapGuid, zoneId );
+					tmpUser = getProfileDao().findUserByLdapGuid( ldapGuid, getZoneIdByVirtualHost( request ) );
 				}
 				catch (NoUserByTheNameException ex)
 				{
@@ -329,7 +324,7 @@ public class WebHelper {
 			if ( tmpUser == null )
 			{
 				// No, try to find the user by their name.
-				tmpUser = getProfileDao().findUserByName( username, zoneId );
+				tmpUser = getProfileDao().findUserByName(username, getZoneIdByVirtualHost(request));
 			}
 			
 			// put the context into the existing session
@@ -341,7 +336,6 @@ public class WebHelper {
 				final HttpSession session = ses;
 				// Make sure to run it in the user's context.			
 				RunasTemplate.runas(new RunasCallback() {
-					@Override
 					public Object doAs() {
 						String infoId = getAccessTokenManager().createTokenInfoSession(user.getId(), ses.getId());
 						session.setAttribute(WebKeys.TOKEN_INFO_ID, infoId);

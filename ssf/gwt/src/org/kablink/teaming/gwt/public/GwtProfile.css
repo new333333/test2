@@ -82,7 +82,7 @@ letter-spacing: 0.02em;
 }
 
 .profile.a  {
-color:#036f9f!important;
+color:#1C5894!important;
 text-decoration:none;
 }
 
@@ -236,13 +236,13 @@ padding-bottom: 10px;
 	margin-top: 7px;
 	}	
 .profile-anchor {
-	color:#036f9f !important;
-	display: inline-block;
-	}
+color:#1C5894 !important;
+display: inline-block;
+}
 	
 .marginleft1  {
 	margin-left:1em;
-	}
+}
 
 .clearStatus {
 	font-size: 11px;
@@ -271,12 +271,12 @@ margin-right:13px;
 }
 .user_status {
 	clear: both;
-	width: 510px;
+	width: 550px;
 	}
 .user_status_text {
 	margin: 0;
 	font-size: 13px;
-	width: 510px;
+	width: 550px;
 	display: inline;
 	}
 .user_status_time  {
@@ -295,15 +295,15 @@ textarea.user_status_input {
 	}
 .user_status_info {
 margin-top: 2px;
-width: 500px;
+width: 520px;
 }
 .user_status_update {
 	color: #999;
 	border: 0px;
-	background-color: #ededed;
+	background-color: #ecedec;
 	padding: 2px 4px 4px 8px;
 	width: 500px;
-	margin-top: 10px;
+	margin-top: 4px;
 	-moz-border-radius: 5px;
 	border-radius: 5px;
 	-webkit-border-radius: 5px;
@@ -389,7 +389,7 @@ top: 0px;
 }
 * html .profile-action a {width:100%;}
 .profile-workspace-link {
-color:#036f9f !important;
+color:#1C5894 !important;
 font-size: 0.9em !important;
 font-style: normal !important;
 font-weight: normal !important;

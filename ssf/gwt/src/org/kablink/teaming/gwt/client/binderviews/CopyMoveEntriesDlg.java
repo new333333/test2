@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -92,7 +92,7 @@ import com.google.web.bindery.event.shared.HandlerRegistration;
  */
 public class CopyMoveEntriesDlg extends DlgBox
 	implements EditSuccessfulHandler,
-		// Event handlers implemented by this class.
+	// Event handlers implemented by this class.
 		FindControlBrowseEvent.Handler,
 		SearchFindResultsEvent.Handler
 {
@@ -180,7 +180,7 @@ public class CopyMoveEntriesDlg extends DlgBox
 	private List<EntityId> cloneEntityIds(List<EntityId> entityIds) {
 		List<EntityId> reply = new ArrayList<EntityId>();
 		for (EntityId entityId:  entityIds) {
-			reply.add(entityId.copyEntityId());
+			reply.add(new EntityId(entityId.getBinderId(), entityId.getEntityId(), entityId.getEntityType()));
 		}
 		return reply;
 	}
@@ -220,8 +220,7 @@ public class CopyMoveEntriesDlg extends DlgBox
 		// do if we've already been sending chunks or the source list
 		// contains more items then our threshold.)
 		boolean cmdIsChunkList = (cmd.getEntityIds() != sourceEntityIds);
-		boolean showProgress   = (cmdIsChunkList || ProgressDlg.needsChunking(sourceEntityIds.size()));
-		if (showProgress) {
+		if (cmdIsChunkList || ProgressDlg.needsChunking(sourceEntityIds.size())) {
 			// Yes!  If we're not showing the progress bar or panel
 			// yet...
 			if ((!(m_progressPanel.isVisible())) || (!(m_progressBar.isVisible()))) {
@@ -274,14 +273,10 @@ public class CopyMoveEntriesDlg extends DlgBox
 				}
 			}
 		}
-		
+
 		// Do we have any entities to be copied/moved?
 		if (!(cmd.getEntityIds().isEmpty())) {
 			// Yes!  Perform the final move/copy.
-			if (!showProgress) {
-				setCancelEnabled(false);	// A simple copy can't be canceled.
-				showDlgBusySpinner();
-			}
 			copyMoveEntriesImpl(
 				cmd,
 				targetFolder,
@@ -310,9 +305,6 @@ public class CopyMoveEntriesDlg extends DlgBox
 				GwtClientHelper.handleGwtRPCFailure(
 					caught,
 					m_strMap.get(StringIds.RPC_FAILURE));
-				setCancelEnabled(true);
-				setOkEnabled(    true);
-				hideDlgBusySpinner();
 			}
 
 			@Override
@@ -397,9 +389,6 @@ public class CopyMoveEntriesDlg extends DlgBox
 							// Finally, save the target folder we just
 							// copied/moved to and close the dialog,
 							// we're done!
-							setCancelEnabled(true);
-							setOkEnabled(    true);
-							hideDlgBusySpinner();	// Innocuous if it's not showing.
 							m_recentDest = targetFolder;
 							hide();
 						}
@@ -630,30 +619,6 @@ public class CopyMoveEntriesDlg extends DlgBox
 		});
 	}
 	
-    /**
-     * Called after the EditSuccessfulHandler has been called by
-     * DlgBox.
-     * 
-     * Overrides the DlgBox.okBtnProcessingEnded() method.
-     */
-	@Override
-    protected void okBtnProcessingEnded() {
-		// Ignored!  This dialog is handling enabling and disabling of
-		// the OK button itself.
-    }
-    
-    /**
-     * Called before the EditSuccessfulHandler has been called by
-     * DlgBox.
-     * 
-     * Overrides the DlgBox.okBtnProcessingStarted() method.
-     */
-	@Override
-    protected void okBtnProcessingStarted() {
-		// Ignored!  This dialog is handling enabling and disabling of
-		// the OK button itself.
-    }
-    
 	/**
 	 * Called when the dialog is attached.
 	 * 
@@ -832,7 +797,7 @@ public class CopyMoveEntriesDlg extends DlgBox
 		// ...the dialog.
 		setCancelEnabled(true);
 		setOkEnabled(    true);
-		show(            true);
+		show(true);
 	}
 	
 	/*

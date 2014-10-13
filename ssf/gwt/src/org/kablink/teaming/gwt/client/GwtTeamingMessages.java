@@ -390,7 +390,6 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_GetDateStr();
 	String rpcFailure_GetDesktopAppDownloadInfo();
 	String rpcFailure_GetDownloadFileUrl();
-	String rpcFailure_GetDownloadFolderAsCSVFileUrl();
 	String rpcFailure_GetEmailNotificationInfo();
 	String rpcFailure_GetEntityActionToolbarItems();
 	String rpcFailure_GetEntityPermalink();
@@ -405,9 +404,6 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_GetFolderDisplayData();
 	String rpcFailure_GetFolderEntries();
 	String rpcFailure_GetFolderEntryDetails();
-	String rpcFailure_GetFolderEntryTypes();
-	String rpcFailure_GetFolderFilters();
-	String rpcFailure_GetFolderHasUserList();
 	String rpcFailure_GetFolderRows();
 	String rpcFailure_GetFolderSortSetting();
 	String rpcFailure_GetFolderToolbarItems();
@@ -516,7 +512,6 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_GetUserAccessInfo();
 	String rpcFailure_GetUserAvatar();
 	String rpcFailure_GetUserFileSyncAppConfig();
-	String rpcFailure_GetUserListInfo();
 	String rpcFailure_GetUserMobileAppsConfiguration();
 	String rpcFailure_GetUserPermalink();
 	String rpcFailure_GetUserProperties();
@@ -537,11 +532,8 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_IsPersonTracked();
 	String rpcFailure_LdapGuidNotConfigured();
 	String rpcFailure_LockEntries();
-	String rpcFailure_MarkFolderContentsRead();
-	String rpcFailure_MarkFolderContentsUnread();
 	String rpcFailure_markupStringReplacement();
 	String rpcFailure_ModifyGroup();
-	String rpcFailure_ModifyGroupMembership();
 	String rpcFailure_MoveEntries();
 	String rpcFailure_PersistActivityStreamSelection();
 	String rpcFailure_PersistExpansionState();
@@ -569,7 +561,6 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_SaveFileSyncAppConfiguration();
 	String rpcFailure_SaveFolderColumns();
 	String rpcFailure_SaveFolderEntryDlgPosition();
-	String rpcFailure_SaveFolderFilters();
 	String rpcFailure_SaveFolderPinningState();
 	String rpcFailure_SaveFolderSort();
 	String rpcFailure_SaveLdapConfig();
@@ -592,7 +583,6 @@ public interface GwtTeamingMessages extends Messages
 	String rpcFailure_SaveTaskSort();
 	String rpcFailure_SaveTaskStatus();
 	String rpcFailure_SaveUserAccessConfig();
-	String rpcFailure_SaveUserListStatus();
 	String rpcFailure_SaveWhatsNewShowSetting();
 	String rpcFailure_SaveZoneShareRights();
 	String rpcFailure_Search();
@@ -671,7 +661,6 @@ public interface GwtTeamingMessages extends Messages
 	String codeSplitFailure_ConfigureUserMobileAppsDlg();
 	String codeSplitFailure_ConfirmDlg();
 	String codeSplitFailure_ContentControl();
-	String codeSplitFailure_CopyFiltersDlg();
 	String codeSplitFailure_CreateBlogPageDlg();
 	String codeSplitFailure_CopyMoveEntriesDlg();
 	String codeSplitFailure_CopyPublicLinkDlg();
@@ -776,7 +765,6 @@ public interface GwtTeamingMessages extends Messages
 	String codeSplitFailure_TinyMCEDlg();
 	String codeSplitFailure_TrashView();
 	String codeSplitFailure_UserPropertiesDlg();
-	String codeSplitFailure_UserListPanel();
 	String codeSplitFailure_UserShareRightsDlg();
 	String codeSplitFailure_UserStatusControl();
 	String codeSplitFailure_ViewsMenuPopup();
@@ -1112,7 +1100,6 @@ public interface GwtTeamingMessages extends Messages
 	String treePreviousCollection();
 	String treePreviousFolder();
 	String treeSiteWide();
-	String treeStopFollowing();
 	String treeTrash();
 	String treeWSAndFolders();
 	
@@ -1849,7 +1836,6 @@ public interface GwtTeamingMessages extends Messages
 	String vibeEntryMenu_Alt_Shared_ShowAll();
 	String vibeEntryMenu_Alt_Shared_ShowFiles();
 	String vibeEntryMenu_ClearFilters();
-	String vibeEntryMenu_CopyFilters();
 	String vibeEntryMenu_GlobalizeFilter(String filterName);
 	String vibeEntryMenu_ManageFilters();
 	String vibeEntryMenu_ManageUsers_EnabledFilter();
@@ -2118,9 +2104,6 @@ public interface GwtTeamingMessages extends Messages
 	// Strings used by the zip and download selected files facility.
 	String zipDownloadUrlError();
 	
-	// Strings used by the download a folder as a CSV file facility.
-	String downloadFolderAsCSVFileUrlError();
-	
 	// String used within BinderViewsHelper.
 	String binderViewsHelper_download();
 	String binderViewsHelper_failureMailToPublicLink(String cause);
@@ -2221,10 +2204,6 @@ public interface GwtTeamingMessages extends Messages
 	String calendarNav_Alt_ViewWorkWeek();
 	String calendarNav_Hours_FullDay();
 	String calendarNav_Hours_WorkDay();
-	String calendarView_Hint_PhysicalByActivity();
-	String calendarView_Hint_PhysicalByCreation();
-	String calendarView_Hint_PhysicalEvents();
-	String calendarView_Hint_Virtual();
 	String calendarView_Error_CantAdd();
 	String calendarView_Error_CantClickCreateWhenViewByDate();
 	String calendarView_Error_CantModify();
@@ -2277,7 +2256,6 @@ public interface GwtTeamingMessages extends Messages
 	String manageGroupsDlgTitleCol();
 	String manageGroupsDlgTypeCol();
 	String manageGroupsDlgUnknownStatus();
-	String manageGroupsDlgUpdatingMembership();
 	String manageGroupsDlgWebAccess_Clear();
 	String manageGroupsDlgWebAccess_Disable();
 	String manageGroupsDlgWebAccess_Enable();
@@ -2352,7 +2330,6 @@ public interface GwtTeamingMessages extends Messages
 	String folders();
 	String mobileDevicesList();
 	String myFiles();
-	String myFilesStorage();
 	String netFolders();
 	String peopleList();
 	String sharedByMe();
@@ -2794,13 +2771,6 @@ public interface GwtTeamingMessages extends Messages
 	String emptyMobileDevices_Info_2( String company, String product );
 	String emptyMobileDevices_SubHead();
 	
-	// Strings used for the empty my files storage view widget.
-	String emptyMyFilesStorage_Info_1();
-	String emptyMyFilesStorage_Info_2();
-	String emptyMyFilesStorage_Info_3( String company, String product );
-	String emptyMyFilesStorage_Info_4( String product );
-	String emptyMyFilesStorage_SubHead();
-	
 	// Strings used for the empty people view widget.
 	String emptyPeople_Info_1( String company, String product );
 	String emptyPeople_Info_2( String company, String product );
@@ -3095,10 +3065,9 @@ public interface GwtTeamingMessages extends Messages
 	String forgottenPwdDlg_Hint();
 	String forgottenPwdDlg_HintNote();
 	String forgottenPwdDlg_Instructions();
-	String forgottenPwdDlg_InvalidEmailAddress2( String product );
+	String forgottenPwdDlg_InvalidEmailAddress();
 	String forgottenPwdDlg_ForgottenPwdEmailSent();
 	String forgottenPwdDlg_OnlyForExternalUsers();
-	String forgottenPwdDlg_SelfRegistrationEmailSent();
 	String forgottenPwdDlg_sendingEmail();
 	
 	// String used in the main content control.
@@ -3425,17 +3394,4 @@ public interface GwtTeamingMessages extends Messages
 	String changeLogOperation_startWorkflow();
 	String changeLogRunReport();
 	String changeLogWarning_NoChanges();
-	
-	// String used by the 'Copy Filters' dialog.
-	String copyFiltersDlg_Alt_Browse();
-	String copyFiltersDlg_Error_CantCopyFromSelf();
-	String copyFiltersDlg_Error_InvalidSearchResult();
-	String copyFiltersDlg_Error_NoFilters();
-	String copyFiltersDlg_Error_NothingSelected();
-	String copyFiltersDlg_Error_SaveErrors();
-	String copyFiltersDlg_Hint();
-	String copyFiltersDlgCaption();
-	String copyFiltersDlgCaptionGlobal();
-	String copyFiltersDlgCaptionPersonal();
-	String copyFiltersDlgSelectSource();
 }// end GwtTeamingMessages

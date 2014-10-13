@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -32,9 +32,6 @@
  */
 package org.kablink.teaming.util;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -43,15 +40,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.servlet.ServletOutputStream;
-
-import org.apache.commons.codec.binary.Base64OutputStream;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.dom4j.Document;
 import org.dom4j.Element;
-
 import org.kablink.teaming.InternalException;
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.context.request.RequestContextHolder;
@@ -73,14 +65,12 @@ import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.ZoneConfig;
 import org.kablink.teaming.domain.ZoneInfo;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
-import org.kablink.teaming.module.file.FileModule;
 import org.kablink.teaming.module.license.LicenseChecker;
 import org.kablink.teaming.module.profile.ProfileModule;
 import org.kablink.teaming.security.AccessControlManager;
 import org.kablink.teaming.security.function.WorkArea;
 import org.kablink.teaming.security.function.WorkAreaOperation;
 import org.kablink.teaming.web.util.MiscUtil;
-import org.kablink.util.FileUtil;
 import org.kablink.util.Validator;
 
 /**
@@ -143,15 +133,16 @@ public class Utils {
 		}
 		
 	}
-
-	//Return the account name of the super user (i.e., 'admin')
+	
+	//Return the account name of the super user (e.g., "admin")
 	public static String getAdminName() {
-		return SZoneConfig.getAdminUserName(RequestContextHolder.getRequestContext().getZoneName());
+		String zoneName = RequestContextHolder.getRequestContext().getZoneName();
+		return SZoneConfig.getString(zoneName, "property[@name='adminUser']", ObjectKeys.ADMIN);
 	}
 
-	//Return the account name of the guest user (i.e., 'guest')
 	public static String getGuestName() {
-		return SZoneConfig.getGuestUserName(RequestContextHolder.getRequestContext().getZoneName());
+		String zoneName = RequestContextHolder.getRequestContext().getZoneName();
+		return SZoneConfig.getString(zoneName, "property[@name='guestUser']", ObjectKeys.GUEST);
 	}
 
 	public static String getZoneKey() {
@@ -762,33 +753,6 @@ public class Utils {
 	}
 	
 	/**
-	 * Check if this is a valid definition for this license
-	 * 
-	 */
-	public static boolean checkIfValidDefinition(Definition def) {
-		if (Utils.checkIfFilr()) {
-			return checkIfFilrDefinition(def);
-		} else {
-			return checkIfVibeDefinition(def);
-		}
-	}
-
-	/**
-	 * Check if this is a Vibe definition
-	 * Vibe definitions include everything except the two Filr folder and file definitions
-	 * (This works since Filr doesn't allow new definitions to be made.)
-	 * 
-	 */
-	public static boolean checkIfVibeDefinition(Definition def) {
-		if (ObjectKeys.DEFAULT_MIRRORED_FILR_FILE_FOLDER_DEF.equals(def.getInternalId()) ||
-				ObjectKeys.DEFAULT_MIRRORED_FILR_FILE_ENTRY_DEF.equals(def.getInternalId())) {
-			return false;
-		} else {
-			return true;
-		}
-	}
-
-	/**
 	 * Check if this is Filr definition
 	 * 
 	 */
@@ -840,13 +804,15 @@ public class Utils {
 		return false;
 	}
 	
-	//Validate a definition to see if it is allowed to be used
+   	//Validate a definition to see if it is allowed to be used
 	public static boolean validateDefinition(Definition def, Binder binder) {
+		if (!Utils.checkIfFilr()) return true;
+		
 		List<Definition> binderDefs = new ArrayList<Definition>();
 		if (binder != null) binderDefs = binder.getDefinitions();
 		
-		//Check if def allowed 
-		if (binderDefs.contains(def) || checkIfValidDefinition(def)) {
+		//Check if def allowed
+		if (binderDefs.contains(def) || checkIfFilrDefinition(def)) {
 			//This template is allowed
 			return true;
 		} else {
@@ -856,10 +822,15 @@ public class Utils {
 		
    	//Validate which definitions are allowed to be used
 	public static List<Definition> validateDefinitions(List<Definition> defs, Binder binder) {
+		if (!Utils.checkIfFilr()) return defs;
+		
+		List<Definition> binderDefs = new ArrayList<Definition>();
+		if (binder != null) binderDefs = binder.getDefinitions();
+		
 		//Filter out any definitions that are not allowed
 		List<Definition> filteredList = new ArrayList<Definition>();
 		for (Definition def : defs) {
-			if (validateDefinition(def, binder)) {
+			if (binderDefs.contains(def) || checkIfFilrDefinition(def)) {
 				//This template is allowed
 				filteredList.add(def);
 			}
@@ -869,6 +840,8 @@ public class Utils {
 		
    	//Validate which definitions by family type are allowed to be used
 	public static List<Definition> validateDefinitions(List<Definition> defs, Binder binder, List<String> familyTypes) {
+		if (!Utils.checkIfFilr()) return defs;
+		
 		List<Definition> binderDefs = new ArrayList<Definition>();
 		if (binder != null) binderDefs = binder.getDefinitions();
 		
@@ -885,7 +858,7 @@ public class Utils {
 				Element familyProperty = (Element) doc.getRootElement().selectSingleNode("//properties/property[@name='family']");
 				if (familyProperty != null) {
 					String family = familyProperty.attributeValue("value", "");
-					if (familyTypes.contains(family) && checkIfValidDefinition(def)) {
+					if (familyTypes.contains(family) && checkIfFilrDefinition(def)) {
 						//This template is allowed
 						filteredList.add(def);
 					}
@@ -906,6 +879,8 @@ public class Utils {
 		for (TemplateBinder t : binders) {
 			if (includeHiddenTemplates || !t.isTemplateHidden()) filteredList.add(t);
 		}
+		if (!Utils.checkIfFilr()) return filteredList;
+		
 		//Filter out any templates that are not allowed
 		List<TemplateBinder> finalList = new ArrayList<TemplateBinder>();
 		for (TemplateBinder binder : filteredList) {
@@ -920,21 +895,23 @@ public class Utils {
    	//Validate that a template is allowed to be used
 	public static TemplateBinder validateTemplateBinder(TemplateBinder binder) {
 		if (binder == null) return null;
-		List<Definition> defs = binder.getDefinitions();
+		if (!Utils.checkIfFilr()) return binder;
 		
-		//Make sure the template is allowed
+		//We are using Filr, so make sure the template is allowed
 		//First, check the definitions used by the template
+		List<Definition> defs = binder.getDefinitions();
 		if (defs.isEmpty() || binder.isDefinitionsInherited()) {
 			Definition def = binder.getEntryDef();
 			if (def != null) {
-				if (!checkIfValidDefinition(def)) return null;
+				if (!Utils.checkIfFilrDefinition(def)) return null;
 			}
 			
 		} else {
 			for (Definition def:defs) {
-				if (!checkIfValidDefinition(def)) return null;
+				if (!Utils.checkIfFilrDefinition(def)) return null;
 			}
 		}
+
 		return binder;
 	}
 	
@@ -993,35 +970,5 @@ public class Utils {
 		} else {
 			return name;
 		}
-	}
-	
-	public static boolean outputImageAsDataUrl(DefinableEntity entity, String fileName, String mimeType, ServletOutputStream out) {
-		boolean result = true;
-		FileAttachment fa = (FileAttachment) entity.getFileAttachment(fileName);
-		if (fa == null) {
-			result = false;
-		} else {
-			InputStream in = null;
-			OutputStream out64 = null;
-			try {
-				out.print("data:" + mimeType + ";base64,");
-				FileModule fileModule = (FileModule) SpringContextUtil.getBean("fileModule");
-				in = fileModule.readFile(entity.getParentBinder(), entity, fa);
-				out64 = new Base64OutputStream(out);
-				FileUtil.copy(in, out64);
-			} catch (IOException e) {
-				m_logger.info("Utils.outputImageAsDataUrl error: " + e.getMessage());
-				result = false;
-			} finally {
-				if (in != null) {
-					try {
-						in.close();
-					} catch (IOException e) {
-						m_logger.info("Utils.outputImageAsDataUrl error: " + e.getMessage());
-					}
-				}
-			}
-		}
-		return result;
 	}
 }

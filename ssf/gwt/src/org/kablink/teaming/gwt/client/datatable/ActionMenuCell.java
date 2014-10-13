@@ -53,7 +53,6 @@ import org.kablink.teaming.gwt.client.event.DeleteSelectedMobileDevicesEvent;
 import org.kablink.teaming.gwt.client.event.DisableSelectedUsersAdHocFoldersEvent;
 import org.kablink.teaming.gwt.client.event.DisableSelectedUsersDownloadEvent;
 import org.kablink.teaming.gwt.client.event.DisableSelectedUsersWebAccessEvent;
-import org.kablink.teaming.gwt.client.event.DownloadFolderAsCSVFileEvent;
 import org.kablink.teaming.gwt.client.event.EditPublicLinkSelectedEntitiesEvent;
 import org.kablink.teaming.gwt.client.event.EmailPublicLinkSelectedEntitiesEvent;
 import org.kablink.teaming.gwt.client.event.EnableSelectedUsersAdHocFoldersEvent;
@@ -67,8 +66,6 @@ import org.kablink.teaming.gwt.client.event.InvokeUserPropertiesDlgEvent;
 import org.kablink.teaming.gwt.client.event.LockSelectedEntitiesEvent;
 import org.kablink.teaming.gwt.client.event.MailToPublicLinkEntityEvent;
 import org.kablink.teaming.gwt.client.event.ManageSharesSelectedEntitiesEvent;
-import org.kablink.teaming.gwt.client.event.MarkFolderContentsReadEvent;
-import org.kablink.teaming.gwt.client.event.MarkFolderContentsUnreadEvent;
 import org.kablink.teaming.gwt.client.event.MarkReadSelectedEntitiesEvent;
 import org.kablink.teaming.gwt.client.event.MarkUnreadSelectedEntitiesEvent;
 import org.kablink.teaming.gwt.client.event.MoveSelectedEntitiesEvent;
@@ -108,7 +105,7 @@ import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Image;
-import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.InlineLabel;
 
 /**
  * Data table cell that represents an action menu for an entity.
@@ -333,8 +330,8 @@ public class ActionMenuCell extends AbstractCell<EntryTitleInfo> {
 			a.addStyleName("gwt-MenuItem-anchor");
 			a.setTarget(anchorTarget);
 			a.setHref(simpleUrl);
-			Label l = new Label(simpleTitle);
-			a.getElement().appendChild(l.getElement());
+			InlineLabel il = new InlineLabel(simpleTitle);
+			a.getElement().appendChild(il.getElement());
 
 			// ...and use that to create an HTML only menu item.
 			VibeFlowPanel html = new VibeFlowPanel();
@@ -406,10 +403,6 @@ public class ActionMenuCell extends AbstractCell<EntryTitleInfo> {
 								Boolean.parseBoolean(simpleTBI.getQualifierValue("makeFavorite")));
 							break;
 						
-						case DOWNLOAD_FOLDER_AS_CSV_FILE:
-							event = new DownloadFolderAsCSVFileEvent(eid.getEntityId(), binderId);
-							break;
-						
 						case INVOKE_EDIT_IN_PLACE:
 							event = new InvokeEditInPlaceEvent(
 								binderId,
@@ -432,14 +425,6 @@ public class ActionMenuCell extends AbstractCell<EntryTitleInfo> {
 							
 						case INVOKE_USER_PROPERTIES_DLG:
 							event = new InvokeUserPropertiesDlgEvent(eid.getEntityId());
-							break;
-						
-						case MARK_FOLDER_CONTENTS_READ:
-							event = new MarkFolderContentsReadEvent(eid.getEntityId(), binderId);
-							break;
-						
-						case MARK_FOLDER_CONTENTS_UNREAD:
-							event = new MarkFolderContentsUnreadEvent(eid.getEntityId(), binderId);
 							break;
 						
 						case ZIP_AND_DOWNLOAD_FOLDER:

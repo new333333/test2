@@ -33,7 +33,6 @@
 package org.kablink.teaming.module.folder.impl;
 
 import java.io.InputStream;
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -71,7 +70,6 @@ import org.kablink.teaming.domain.AverageRating;
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.BinderState;
 import org.kablink.teaming.domain.ChangeLog;
-import org.kablink.teaming.domain.CustomAttribute;
 import org.kablink.teaming.domain.DefinableEntity;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.EntityIdentifier;
@@ -129,7 +127,6 @@ import org.kablink.teaming.module.shared.EmptyInputData;
 import org.kablink.teaming.module.shared.EntityIndexUtils;
 import org.kablink.teaming.module.shared.FolderUtils;
 import org.kablink.teaming.module.shared.InputDataAccessor;
-import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.module.shared.SearchUtils;
 import org.kablink.teaming.module.workflow.WorkflowModule;
 import org.kablink.teaming.module.workflow.WorkflowProcessUtils;
@@ -145,8 +142,6 @@ import org.kablink.teaming.security.AccessControlException;
 import org.kablink.teaming.security.function.OperationAccessControlException;
 import org.kablink.teaming.security.function.WorkArea;
 import org.kablink.teaming.security.function.WorkAreaOperation;
-import org.kablink.teaming.survey.Survey;
-import org.kablink.teaming.survey.SurveyModel;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.util.ReflectHelper;
 import org.kablink.teaming.util.SPropsUtil;
@@ -156,9 +151,7 @@ import org.kablink.teaming.util.SizeMd5Pair;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.TagUtil;
 import org.kablink.teaming.web.util.BinderHelper;
-import org.kablink.teaming.web.util.DefinitionHelper;
 import org.kablink.teaming.web.util.ExportHelper;
-import org.kablink.teaming.web.util.PortletRequestUtils;
 import org.kablink.teaming.web.util.TrashHelper;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
@@ -413,20 +406,8 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
 		}
 		switch (operation) {
 			case readEntry:
-				AccessUtils.readCheck(entry);   
-				break;
 			case copyEntry:
 				AccessUtils.readCheck(entry);   
-				Document def = entry.getEntryDefDoc();
-				Element familyProperty = (Element) def.getRootElement().selectSingleNode("//properties/property[@name='family']");
-				if (familyProperty != null) {
-					String family = familyProperty.attributeValue("value", "");
-					if (family.equals(Definition.FAMILY_SURVEY)) {
-						//Copying a survey requires modify rights since there is potentially hidden data involved (Bug #876543)
-						AccessUtils.operationCheck(entry, WorkAreaOperation.MODIFY_ENTRIES);   
-					}
-				}
-
 				break;
 			case modifyEntry:
 			case addEntryWorkflow:
@@ -751,7 +732,7 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
     	}
     	
     	try {
-	        int tryMaxCount = 1 + SPropsUtil.getInt("select.database.transaction.retry.max.count", ObjectKeys.SELECT_DATABASE_TRANSACTION_RETRY_MAX_COUNT);
+	        int tryMaxCount = 1 + SPropsUtil.getInt("select.database.transaction.retry.max.count", 2);
 	        int tryCount = 0;
 	        while(true) {
 	        	tryCount++;
@@ -765,14 +746,14 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
 		        		if(cause instanceof HibernateOptimisticLockingFailureException) {
 			        		if(tryCount < tryMaxCount) {
 			        			if(logger.isDebugEnabled())
-			        				logger.warn("(" + tryCount + ") 'modify entry' failed due to wrapped optimistic locking failure - Retrying in new transaction", cause);
+			        				logger.warn("'modify entry' failed due to optimistic locking failure", cause);
 			        			else 
-			        				logger.warn("(" + tryCount + ") 'modify entry' failed due to wrapped optimistic locking failure - Retrying in new transaction: " + cause.toString());
+			        				logger.warn("'modify entry' failed due to optimistic locking failure: " + cause.toString());
+			        			logger.warn("Retrying 'modify entry' in new transaction");
 			        			getCoreDao().refresh(folder);
 			        			getCoreDao().refresh(entry);
 			        		}
 			        		else {
-		        				logger.error("(" + tryCount + ") 'modify entry' failed due to wrapped optimistic locking failure - Aborting", cause);
 			        			throw e;
 			        		}
 		        		}
@@ -782,20 +763,6 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
 	        		}
 	        		catch(Exception exc) {
 	        			throw e; // Re-throw the original exception.
-	        		}
-	        	}
-	        	catch(HibernateOptimisticLockingFailureException e) {
-	        		if(tryCount < tryMaxCount) {
-	        			if(logger.isDebugEnabled())
-	        				logger.warn("(" + tryCount + ") 'modify entry' failed due to optimistic locking failure - Retrying in new transaction", e);
-	        			else 
-	        				logger.warn("(" + tryCount + ") 'modify entry' failed due to optimistic locking failure - Retrying in new transaction: " + e.toString());
-	        			getCoreDao().refresh(folder);
-	        			getCoreDao().refresh(entry);
-	        		}
-	        		else {
-        				logger.error("(" + tryCount + ") 'modify entry' failed due to optimistic locking failure - Aborting", e);
-	        			throw e;
 	        		}
 	        	}
 	        }    
@@ -1492,40 +1459,6 @@ public abstract class AbstractFolderModule extends CommonDependencyInjection
 	
     //inside write transaction    
 	@Override
-	public void deleteAllVotes(Long binderId, Long entryId) 
-			throws AccessControlException, ReservedByAnotherUserException, WriteFilesException, WriteEntryDataException {
-	   	FolderEntry entry = loadEntry(binderId, entryId);
-	   	checkAccess(entry, FolderOperation.deleteEntry);
-	   	
-	   	Document defDoc = entry.getEntryDefDoc();
-	   	Element surveyItem = DefinitionHelper.findDataItem("survey", defDoc);
-	   	if (surveyItem != null) {
-	   		//This entry has a survey element
-	   		String attributeName = DefinitionHelper.getItemProperty(surveyItem, "name");
-			CustomAttribute surveyAttr = entry.getCustomAttribute(attributeName);
-			if (surveyAttr == null || surveyAttr.getValue() == null) {
-				return;
-			}
-			
-			Survey surveyAttrValue = ((Survey)surveyAttr.getValue());
-			SurveyModel survey = surveyAttrValue.getSurveyModel();
-			if (survey == null) {
-				return;
-			}
-			
-			survey.removeAllVotes();
-			survey.setVoteRequest();
-			
-			Map formData = new HashMap(); 
-			formData.put(attributeName, surveyAttrValue.toString());
-			addVote(binderId, entryId, new MapInputData(formData), null);
-
-	 	    loadProcessor(entry.getParentFolder()).indexEntry(entry);
-	   	}
-	}
-	
-    //inside write transaction    
-	@Override
 	public void setEntryDef(Long folderId, Long entryId, String entryDef) {
 		FolderEntry entry = getEntry(folderId, entryId);
 		entry.setEntryDef(definitionModule.getDefinition(entryDef));
@@ -1731,9 +1664,9 @@ public void unreserveEntry(Long folderId, Long entryId)
 public FolderEntry getLibraryFolderEntryByFileName(Folder fileFolder, String title)
 	throws AccessControlException {
        	try {
-    		Long id = getCoreDao().findFileNameEntryId(fileFolder, title);	// Won't throw a NoObjectByTheIdException if title matches a nested folder name.  It simply returns null.
+    		Long id = getCoreDao().findFileNameEntryId(fileFolder, title);
     		//getEntry does read check
-    		return ((null == id) ? null : getEntry(fileFolder.getId(), id));
+    		return getEntry(fileFolder.getId(), id);
     	} catch (NoObjectByTheIdException no) {
     		return null;
     	}
@@ -2075,8 +2008,7 @@ public void modifyWorkflowState(Long folderId, Long entryId, Long stateId, Strin
 		return arCount.get();
 	}
 
-    @Override
-	public FolderEntry refreshFromRepository(FolderEntry fileEntry) {
+    public FolderEntry refreshFromRepository(FolderEntry fileEntry) {
         if (!fileEntry.getParentFolder().isMirrored()) {
             for (Attachment attachment : fileEntry.getAttachments()) {
                 if (attachment instanceof FileAttachment) {

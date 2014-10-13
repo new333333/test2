@@ -48,7 +48,6 @@ import org.kablink.teaming.gwt.client.rpc.shared.SendForgottenPwdEmailCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponseData;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
-import org.kablink.teaming.gwt.client.util.UserType;
 import org.kablink.teaming.gwt.client.widgets.DlgBox;
 
 import com.google.gwt.core.client.GWT;
@@ -235,7 +234,6 @@ public class ForgottenPwdDlg extends DlgBox
 						{
 							final GwtUser gwtUser;
 							VibeRpcResponseData responseData;
-							boolean sendEmail = false;
 							
 							responseData = vibeResult.getResponseData();
 							if ( responseData != null && responseData instanceof FindUserByEmailAddressRpcResponseData )
@@ -254,47 +252,26 @@ public class ForgottenPwdDlg extends DlgBox
 							else
 								gwtUser = null;
 							
-							
-							// Did we get a user?
-							if ( gwtUser != null )
+							// Did we find an external user with the given email address?
+							if ( gwtUser != null &&
+								 gwtUser.isInternal() == false &&
+								 (gwtUser.getExtUserProvState() == ExtUserProvState.VERIFIED || gwtUser.getExtUserProvState() == ExtUserProvState.PWD_RESET_REQUESTED)  )
 							{
-								UserType userType;
-
-								// Yes
-								userType = gwtUser.getUserType();
-								if ( userType == UserType.EXTERNAL_OTHERS ) 
-								{
-									ExtUserProvState extUserProvState;
-
-									extUserProvState = gwtUser.getExtUserProvState();
-									if ( extUserProvState == ExtUserProvState.VERIFIED ||
-										 extUserProvState == ExtUserProvState.PWD_RESET_REQUESTED )
-									{
-										sendEmail = true;
-									}
-								}
-								else if ( userType == UserType.EXTERNAL_OPEN_ID )
-									sendEmail = true;
+								Scheduler.ScheduledCommand cmd;
 								
-								if ( sendEmail )
+								// Yes, issue an rpc request that will send an email to the user telling
+								// them how to reset their password.
+								cmd = new Scheduler.ScheduledCommand()
 								{
-									Scheduler.ScheduledCommand cmd;
-
-									// Issue an rpc request that will send an email to the user telling
-									// them how to reset their password.
-									cmd = new Scheduler.ScheduledCommand()
+									@Override
+									public void execute()
 									{
-										@Override
-										public void execute()
-										{
-											sendForgottenPwdEmail( gwtUser, emailAddress );
-										}
-									};
-									Scheduler.get().scheduleDeferred( cmd );
-								}
+										sendForgottenPwdEmail( gwtUser, emailAddress );
+									}
+								};
+								Scheduler.get().scheduleDeferred( cmd );
 							}
-							
-							if ( sendEmail == false )
+							else
 							{
 								FlowPanel errorPanel;
 								Label label;
@@ -309,7 +286,9 @@ public class ForgottenPwdDlg extends DlgBox
 								label.addStyleName( "dlgErrorLabel" );
 								errorPanel.add( label );
 								
-								txt = GwtTeaming.getMessages().forgottenPwdDlg_InvalidEmailAddress2( GwtClientHelper.getProductName() );
+								txt = GwtTeaming.getMessages().forgottenPwdDlg_InvalidEmailAddress();
+								if ( gwtUser != null && gwtUser.isInternal() == true )
+									txt = GwtTeaming.getMessages().forgottenPwdDlg_OnlyForExternalUsers();
 								
 								label = new Label( txt );
 								label.addStyleName( "bulletListItem" );
@@ -369,7 +348,7 @@ public class ForgottenPwdDlg extends DlgBox
 	 * Issue an rpc request to send an email to the user with instructions on how to reset their
 	 * password. 
 	 */
-	private void sendForgottenPwdEmail( final GwtUser user, String emailAddress )
+	private void sendForgottenPwdEmail( GwtUser user, String emailAddress )
 	{
 		AsyncCallback<VibeRpcResponse> callback;
 		SendForgottenPwdEmailCmd cmd;
@@ -436,15 +415,8 @@ public class ForgottenPwdDlg extends DlgBox
 							}
 							else
 							{
-								String msg;
-								
-								if ( user.getUserType() == UserType.EXTERNAL_OPEN_ID )
-									msg = GwtTeaming.getMessages().forgottenPwdDlg_SelfRegistrationEmailSent();
-								else
-									msg = GwtTeaming.getMessages().forgottenPwdDlg_ForgottenPwdEmailSent();
-								
 								// No, tell the user an email has been sent.
-								Window.alert( msg );
+								Window.alert( GwtTeaming.getMessages().forgottenPwdDlg_ForgottenPwdEmailSent() );
 								
 								// Hide this dialog.
 								hide();

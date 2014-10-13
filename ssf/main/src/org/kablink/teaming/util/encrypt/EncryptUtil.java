@@ -45,7 +45,6 @@ import org.kablink.teaming.domain.User;
 import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.util.PasswordHashEncryptor;
-import org.kablink.util.encrypt.ExtendedPBEStringEncryptor;
 
 public class EncryptUtil {
 	
@@ -58,6 +57,14 @@ public class EncryptUtil {
     // We support three different asymmetric encryption algorithms.
     private static final String[] ASYMMETRIC_ENCRYPTION_ALGORITHMS = new String[] {"SHA", "SHA-256", "MD5"};
     
+    // We support only one symmetric encryption algorithm.
+    
+    // Symmetric encryption algorithm used beginning with Filr 1.0 release.
+    private static final String SYMMETRIC_ENCRYPTION_ALGORITHM = "PBEWITHSHA256AND128BITAES-CBC-BC";
+
+    // Symmetric encryption algorithm used before Filr 1.0 (that is, up to Vibe 3.3/Granite release)
+    private static final String SYMMETRIC_ENCRYPTION_ALGORITHM_PRE_FILR_1_0 = "PBEWithMD5AndDES";
+
     private static HashMapCache<Long, String> passwordCache = new HashMapCache<Long, String>(SPropsUtil.getLong("cache.decrypted.passwords", 60));
 
 	public static String encryptSHA1(String... input) {
@@ -131,20 +138,20 @@ public class EncryptUtil {
 
         String decryptedPassword = passwordCache.get(user.getId());
         if (decryptedPassword==null) {
-            if(alg.equals(ExtendedPBEStringEncryptor.SYMMETRIC_ENCRYPTION_ALGORITHM_SECOND_GEN)) {
+            if(alg.equals(SYMMETRIC_ENCRYPTION_ALGORITHM)) {
                 // New symmetric encryption algorithm
                 if(logger.isTraceEnabled())
                     logger.trace("Checking password for user '" + user.getName() + "' using symmetric algorithm '" + alg + "'");
                 // Since encryption of the same password value doesn't necessarily result in the same encrypted value,
                 // we must decrypt the user's stored password and compare it with the user entered value.
-                decryptedPassword = getStringEncryptor_second_gen().decrypt(user.getPassword());
+                decryptedPassword = getStringEncryptor().decrypt(user.getPassword());
                 passwordCache.put(user.getId(), decryptedPassword);
             }
-            else if(alg.equals(ExtendedPBEStringEncryptor.SYMMETRIC_ENCRYPTION_ALGORITHM_FIRST_GEN)) {
+            else if(alg.equals(SYMMETRIC_ENCRYPTION_ALGORITHM_PRE_FILR_1_0)) {
                 // Old symmetric encryption algorithm
                 if(logger.isTraceEnabled())
                     logger.trace("Checking password for user '" + user.getName() + "' using symmetric algorithm '" + alg + "'");
-                decryptedPassword = getStringEncryptor_first_gen().decrypt(user.getPassword());
+                decryptedPassword = getStringEncryptor_PreFilr1_0().decrypt(user.getPassword());
                 passwordCache.put(user.getId(), decryptedPassword);
             }
             else {
@@ -211,15 +218,15 @@ public class EncryptUtil {
 		String result = passwordCache.get(user.getId());
         if (result==null) {
             String alg = passwordEncryptionAlgorithmForMatching(user);
-            if(alg.equals(ExtendedPBEStringEncryptor.SYMMETRIC_ENCRYPTION_ALGORITHM_SECOND_GEN)) {
+            if(alg.equals(SYMMETRIC_ENCRYPTION_ALGORITHM)) {
                 if(logger.isTraceEnabled())
                     logger.trace("Decrypting password for user '" + user.getName() + "' using symmetric algorithm '" + alg + "'");
-                result = getStringEncryptor_second_gen().decrypt(user.getPassword());
+                result = getStringEncryptor().decrypt(user.getPassword());
             }
-            else if(alg.equals(ExtendedPBEStringEncryptor.SYMMETRIC_ENCRYPTION_ALGORITHM_FIRST_GEN)) {
+            else if(alg.equals(SYMMETRIC_ENCRYPTION_ALGORITHM_PRE_FILR_1_0)) {
                 if(logger.isTraceEnabled())
                     logger.trace("Decrypting password for user '" + user.getName() + "' using symmetric algorithm '" + alg + "'");
-                result = getStringEncryptor_first_gen().decrypt(user.getPassword());
+                result = getStringEncryptor_PreFilr1_0().decrypt(user.getPassword());
             }
             else {
                 if(logger.isTraceEnabled())
@@ -246,15 +253,15 @@ public class EncryptUtil {
 	}
 	
 	static String encryptPassword(String alg, String password, String username) {
-		if(alg.equals(ExtendedPBEStringEncryptor.SYMMETRIC_ENCRYPTION_ALGORITHM_SECOND_GEN)) {
+		if(alg.equals(SYMMETRIC_ENCRYPTION_ALGORITHM)) {
 			if(logger.isTraceEnabled())
 				logger.trace("Encrypting password for user '" + username + "' using symmetric algorithm '" + alg + "'");
-			return getStringEncryptor_second_gen().encrypt(password);
+			return getStringEncryptor().encrypt(password);
 		}
-		else if(alg.equals(ExtendedPBEStringEncryptor.SYMMETRIC_ENCRYPTION_ALGORITHM_FIRST_GEN)) {
+		else if(alg.equals(SYMMETRIC_ENCRYPTION_ALGORITHM_PRE_FILR_1_0)) {
 			if(logger.isTraceEnabled())
 				logger.trace("Encrypting password for user '" + username + "' using symmetric algorithm '" + alg + "'");
-			return getStringEncryptor_first_gen().encrypt(password);
+			return getStringEncryptor_PreFilr1_0().encrypt(password);
 		}
 		else {
 			for(String asymAlg : ASYMMETRIC_ENCRYPTION_ALGORITHMS) {
@@ -268,16 +275,12 @@ public class EncryptUtil {
 		}
 	}
 	
-	static StringEncryptor getStringEncryptor_second_gen() {
-		ExtendedPBEStringEncryptor encryptor = (ExtendedPBEStringEncryptor) SpringContextUtil.getBean("symmetricStringEncryptor");
-		if(encryptor.getGeneration() == 2)
-			return encryptor;
-		else
-			throw new ConfigurationException("Second generation encryptor is not configured with the system");
+	static StringEncryptor getStringEncryptor() {
+		return (StringEncryptor) SpringContextUtil.getBean("encryptor");
 	}
 
-	static StringEncryptor getStringEncryptor_first_gen() {
-		return (StringEncryptor) SpringContextUtil.getBean("symmetricStringEncryptor_firstGen");
+	static StringEncryptor getStringEncryptor_PreFilr1_0() {
+		return (StringEncryptor) SpringContextUtil.getBean("encryptor_preFilr1_0");
 	}
 
 	private static void end(long beginInNanoseconds, String message) {

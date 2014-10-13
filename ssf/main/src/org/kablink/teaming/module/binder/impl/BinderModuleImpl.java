@@ -57,18 +57,18 @@ import org.apache.lucene.document.DateTools;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.SortField;
+
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
+
 import org.hibernate.NonUniqueObjectException;
+
 import org.kablink.teaming.ConfigurationException;
-import org.kablink.teaming.GroupExistsException;
-import org.kablink.teaming.IllegalCharacterInNameException;
 import org.kablink.teaming.InternalException;
 import org.kablink.teaming.NoObjectByTheIdException;
 import org.kablink.teaming.NotSupportedException;
 import org.kablink.teaming.ObjectKeys;
-import org.kablink.teaming.UserExistsException;
 import org.kablink.teaming.comparator.BinderComparator;
 import org.kablink.teaming.comparator.PrincipalComparator;
 import org.kablink.teaming.context.request.RequestContext;
@@ -91,11 +91,8 @@ import org.kablink.teaming.domain.Entry;
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.domain.Folder;
 import org.kablink.teaming.domain.FolderEntry;
-import org.kablink.teaming.domain.Group;
-import org.kablink.teaming.domain.Group.GroupType;
 import org.kablink.teaming.domain.HKey;
 import org.kablink.teaming.domain.HistoryStamp;
-import org.kablink.teaming.domain.IdentityInfo;
 import org.kablink.teaming.domain.LibraryEntry;
 import org.kablink.teaming.domain.NoBinderByTheIdException;
 import org.kablink.teaming.domain.NoDefinitionByTheIdException;
@@ -108,7 +105,6 @@ import org.kablink.teaming.domain.Subscription;
 import org.kablink.teaming.domain.Tag;
 import org.kablink.teaming.domain.TemplateBinder;
 import org.kablink.teaming.domain.User;
-import org.kablink.teaming.domain.UserPrincipal;
 import org.kablink.teaming.domain.VersionAttachment;
 import org.kablink.teaming.domain.WorkflowControlledEntry;
 import org.kablink.teaming.domain.WorkflowSupport;
@@ -136,13 +132,10 @@ import org.kablink.teaming.module.shared.EmptyInputData;
 import org.kablink.teaming.module.shared.EntityIndexUtils;
 import org.kablink.teaming.module.shared.FolderUtils;
 import org.kablink.teaming.module.shared.InputDataAccessor;
-import org.kablink.teaming.module.shared.MapInputData;
 import org.kablink.teaming.module.shared.ObjectBuilder;
 import org.kablink.teaming.module.shared.SearchUtils;
 import org.kablink.teaming.module.sharing.SharingModule;
 import org.kablink.teaming.module.workflow.WorkflowModule;
-import org.kablink.teaming.runas.RunasCallback;
-import org.kablink.teaming.runas.RunasTemplate;
 import org.kablink.teaming.runasync.RunAsyncCallback;
 import org.kablink.teaming.runasync.RunAsyncManager;
 import org.kablink.teaming.search.IndexErrors;
@@ -309,23 +302,11 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 			user = RequestContextHolder.getRequestContext().getUser();
 		}
 		if (binder instanceof TemplateBinder) {
-			Binder topBinder = binder;
-			while (topBinder instanceof TemplateBinder && topBinder.getParentBinder() != null) {
-				//Find the top TemplateBinder of this template
-				topBinder = topBinder.getParentBinder();
-			}
-			if (((TemplateBinder)topBinder).getTemplateOwningBinderId() != null) {
-				//This is a Local Template. Check that the user has Binder Administration rights to the owning binder of the local template
-				Binder owningBinder = loadBinder(((TemplateBinder)topBinder).getTemplateOwningBinderId());
-				getAccessControlManager().checkOperation(user, owningBinder,
-						WorkAreaOperation.BINDER_ADMINISTRATION);
-			} else {
-				getAccessControlManager().checkOperation(user, 
-						getCoreDao().loadZoneConfig(
-								RequestContextHolder.getRequestContext()
-										.getZoneId()),
-						WorkAreaOperation.ZONE_ADMINISTRATION);
-			}
+			getAccessControlManager().checkOperation(user, 
+					getCoreDao().loadZoneConfig(
+							RequestContextHolder.getRequestContext()
+									.getZoneId()),
+					WorkAreaOperation.ZONE_ADMINISTRATION);
 		} else {
 			if (user.isShared()) {
 				//See if the user is only allowed "read only" rights
@@ -1257,10 +1238,9 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 					.getSingleValue(ObjectKeys.FIELD_BINDER_LIBRARY));
 			if (oldLibrary != newLibrary) {
 				// wrap in a transaction
-				Boolean successful = (Boolean)getTransactionTemplate().execute(new TransactionCallback() {
+				getTransactionTemplate().execute(new TransactionCallback() {
 					@Override
 					public Object doInTransaction(TransactionStatus status) {
-						boolean successful = true;
 						// remove old reserved names
 						getCoreDao().clearFileNames(binder);
 						if (newLibrary) {
@@ -1289,27 +1269,22 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 									le.setEntityId((Long) result[1]);
 									getCoreDao().save(le);
 								}
-							} catch (Exception e) {
-								successful = false;
+							} catch (HibernateSystemException he) {
+								if (he.contains(NonUniqueObjectException.class)) {
+									throw new ConfigurationException(
+											"errorcode.cannot.make.library",
+											(Object[]) null);
+								}
 							} finally {
 								query.close();
 							}
 						}
 						// Unnecessary since the new value was stored into the binder during modifyBinder() call
 						//binder.setLibrary(newLibrary);
-						return successful;
+						return null;
 					}
 				});
-				
-				if (newLibrary && !successful) {
-					//The change to a library folder didn't happen, so we have to turn off the library flag
-					Map tempData = new HashMap();
-					tempData.put(ObjectKeys.FIELD_BINDER_LIBRARY, Boolean.FALSE);
-					loadBinderProcessor(binder).modifyBinder(binder, new MapInputData(tempData), new HashMap(),
-							new HashSet(), null);
-					
-					throw new ConfigurationException("errorcode.cannot.make.library", (Object[]) null);
-				}
+
 			}
 		}
 		if (inputData.exists(ObjectKeys.FIELD_BINDER_UNIQUETITLES)) {
@@ -2461,418 +2436,41 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
         return binder;
     }
 
-    /**
-     * Construct the description for the "team group" associated with the given binder.
-     */
-    private String constructTeamGroupDesc( Binder binder )
-    {
-    	String desc = "";
-    	
-    	if ( binder != null )
-    	{
-    		desc = NLT.get( "team.group.desc" ) + " " + binder.getTitle() + "\n(" + binder.getPathName() + ")";
-    	}
-    	
-    	return desc;
-    }
-    
-    /**
-     * Construct the name of the "team group" associated with the given binder
-     */
-    private String constructTeamGroupName( Binder binder )
-    {
-    	String name = "";
-    	
-    	if ( binder != null )
-    	{
-			name = "team - " + binder.getTitle() + " (" + binder.getId() + ")";
-    	}
-
-    	return name;
-    }
-    
-    /**
-     * Construct the title of the "team group" associated with the given binder.
-     */
-    private String constructTeamGroupTitle( Binder binder )
-    {
-    	String title = "";
-    	
-    	if ( binder != null )
-    	{
-			title = NLT.get( "team.group" ) + " " + binder.getTitle() + " (" + binder.getPathName() + ")";
-    	}
-    	
-    	return title;
-    }
-    
-    /**
-     * Create a "team group" for the given binder.
-     */
-    private Group createTeamGroup( final Binder binder )
-    {
-		RunasCallback callback;
-		Object retValue;
-
-		callback = new RunasCallback()
-		{
-			@Override
-			public Object doAs()
-			{
-				String name;
-		    	String title;
-		    	String desc;
-				HashMap<String, Object> inputMap = new HashMap<String, Object>();
-				Group newGroup = null;
-				GroupType groupType;
-				
-				name = constructTeamGroupName( binder );
-				title = constructTeamGroupTitle( binder );
-				desc = constructTeamGroupDesc( binder );
-				groupType = GroupType.team;
-				
-				inputMap.put( ObjectKeys.FIELD_PRINCIPAL_NAME, name );
-				inputMap.put( ObjectKeys.FIELD_ENTITY_TITLE, title );
-				inputMap.put( ObjectKeys.FIELD_ENTITY_DESCRIPTION, desc );
-				inputMap.put( ObjectKeys.FIELD_ENTITY_DESCRIPTION_FORMAT, String.valueOf( Description.FORMAT_NONE ) );  
-				inputMap.put( ObjectKeys.FIELD_GROUP_DYNAMIC, Boolean.FALSE );
-				inputMap.put( ObjectKeys.FIELD_GROUP_LDAP_QUERY, null );
-				inputMap.put( ObjectKeys.FIELD_GROUP_TYPE, groupType );
-
-				// Add the identity information.
-				IdentityInfo identityInfo = new IdentityInfo();
-				identityInfo.setFromLocal( true );
-				identityInfo.setInternal( true );
-				inputMap.put( ObjectKeys.FIELD_USER_PRINCIPAL_IDENTITY_INFO, identityInfo );
-			
-				MapInputData inputData = new MapInputData(inputMap);
-
-				HashMap<String, Object> emptyFileMap = new HashMap<String, Object>();
-				newGroup = null;
-				try
-				{
-					// Create the new group.  Is this a debug request to create multiple groups?
-					ProfileModule pm = getProfileModule();
-				
-					newGroup = pm.addGroup( null, inputData, emptyFileMap, null );
-					
-					// Update the binder's teamGroupId field with the id of the group we just created.
-					setBinderTeamGroupId( binder, newGroup.getId() );
-				}
-				catch( Exception ex )
-				{
-					ex.printStackTrace();
-				}
-				
-				return newGroup;
-			}
-		};
-		
-		// Do the necessary work as the admin user.
-		retValue = RunasTemplate.runasAdmin(
-										callback,
-										RequestContextHolder.getRequestContext().getZoneName() );
-		
-		if ( retValue != null && retValue instanceof Group )
-			return (Group) retValue;
-		
-		return null;
-    }
-    
-    /**
-     * Delete the team group associated with the given binder.
-     */
-    private void deleteTeamGroup( final Binder binder, final Group group )
-    {
-		RunasCallback callback;
-		Object retValue;
-
-		callback = new RunasCallback()
-		{
-			@Override
-			public Object doAs()
-			{
-				Boolean retValue;
-				
-				try
-				{
-					getProfileModule().deleteEntry( group.getId(), null );
-					
-					// Set the binder's teamGroupId to null
-					setBinderTeamGroupId( binder, null );
-
-					retValue = Boolean.TRUE;
-				}
-				catch ( Exception ex )
-				{
-					ex.printStackTrace();
-					retValue = Boolean.FALSE;
-				} 
-				
-				return retValue;
-			}
-		};
-
-		// Do the necessary work as the admin user.
-		retValue = RunasTemplate.runasAdmin(
-										callback,
-										RequestContextHolder.getRequestContext().getZoneName() );
-		
-    }
-    
-    /**
-     * If the given binder has a "team group" associated with it, rename the group using the
-     * binder's title.
-     */
     @Override
-    public void fixupTeamGroupName( final Binder binder )
-    {
-    	Long groupId;
-    	
-    	// Is there a "team group" associated with this binder?
-    	groupId = binder.getTeamGroupId();
-    	if ( groupId != null )
-    	{
-    		final Group group;
-    		
-    		// Yes
-    		group = getTeamGroup( binder );
-    		if ( group != null )
-    		{
-				RunasCallback callback;
-				Object retValue;
-
-				callback = new RunasCallback()
-				{
-					@Override
-					public Object doAs()
-					{
-						Map updates;
-						Boolean retValue;
-						String name;
-						String title;
-						String desc;
-
-						updates = new HashMap();
-						name = constructTeamGroupName( binder );
-						title = constructTeamGroupTitle( binder );
-						desc = constructTeamGroupDesc( binder );
-						updates.put( ObjectKeys.FIELD_PRINCIPAL_NAME, name );
-						updates.put( ObjectKeys.FIELD_ENTITY_TITLE, title );
-						updates.put( ObjectKeys.FIELD_ENTITY_DESCRIPTION, desc );
-						updates.put( ObjectKeys.FIELD_ENTITY_DESCRIPTION_FORMAT, String.valueOf( Description.FORMAT_NONE ) );  
-						
-						try
-						{
-							getProfileModule().modifyEntry( group.getId(), new MapInputData( updates ) );
-							
-							retValue = Boolean.TRUE;
-						}
-			   			catch ( Exception ex )
-			   			{
-			   				ex.printStackTrace();
-			   				retValue = Boolean.FALSE;
-			   			}
-						
-						return retValue;
-					}
-				};
-
-				// Do the necessary work as the admin user.
-				retValue = RunasTemplate.runasAdmin(
-												callback,
-												RequestContextHolder.getRequestContext().getZoneName() );
-    		}
-    	}
-    }
-    
-    /**
-     * Return the "team group" that holds the membership for this binder.
-     */
-    private Group getTeamGroup( Binder binder )
-    {
-    	Group teamGroup = null;
-    	
-    	if ( binder != null )
-    	{
-    		Long groupId;
-    		
-    		groupId = binder.getTeamGroupId();
-    		if ( groupId != null )
-    		{
-    			try
-    			{
-    				ArrayList<Long> groupIds;
-    				List<Group> groups;
-				    User user = RequestContextHolder.getRequestContext().getUser();
-    				
-    				groupIds = new ArrayList<Long>();
-    				groupIds.add( groupId );
-    				
-   			       	groups = getProfileDao().loadGroups( groupIds, user.getZoneId() );
-
-    				if ( groups != null && groups.size() > 0 )
-    					teamGroup = groups.get( 0 );
-    			}
-    			catch ( Exception ex )
-    			{
-    				ex.printStackTrace();
-    			}
-    		}
-    	}
-    	
-    	return teamGroup;
-    }
-    
-    /**
-     * Return the team member ids from the property stored on the Binder object.
-     * This is how we used to store team membership until we switched over and started using a
-     * "team group" to store group membership.
-     * 
-     * This method will only read team membership if membership is not inherited.
-     * 
-     * The code that converts team membership from being stored in a property to being stored in
-     * a "team group" needs this method.
-     */
-    public Set<Long> getTeamMemberIdsDeprecated( Binder binder )
-    {
-    	String members = null;
-
-    	if ( binder.isTeamMembershipInherited() == false )
-    		members = (String)binder.getProperty( ObjectKeys.BINDER_PROPERTY_TEAM_MEMBERS );
-    	
-    	return LongIdUtil.getIdsAsLongSet( members );
-    }
-    
-	/**
-	 * Return whether the given binder has team members associated with it either directly or through inheritence
-	 */
-    @Override
-	public boolean doesBinderHaveTeamMembers( Binder binder )
-    {
-    	Set<Long> setOfMemberIds;
-    	
-    	setOfMemberIds = getTeamMemberIds( binder );
-    	if ( setOfMemberIds == null || setOfMemberIds.size() == 0 )
-    		return false;
-    	
-    	return true;
-    }
-	
-    /**
-     * Return the team member ids
-     * @return
-     */
-    @Override
-	public Set<Long> getTeamMemberIds( Binder binder )
-	{
-    	Group teamGroup;
-    	HashSet<Long> setOfMemberIds;
-    	
-    	if ( !binder.isRoot() && binder.isTeamMembershipInherited() )
-    		return getTeamMemberIds( binder.getParentBinder() );
-    	
-    	setOfMemberIds = new HashSet<Long>();
-
-    	teamGroup = getTeamGroup( binder );
-    	if ( teamGroup != null )
-    	{
-    		List<Principal> listOfMembers;
-    		
-    		listOfMembers = teamGroup.getMembers();
-    		if ( listOfMembers != null && listOfMembers.size() > 0 )
-    		{
-    			for ( Principal nextGroupMember : listOfMembers )
-    			{
-    				setOfMemberIds.add( nextGroupMember.getId() );
-    			}
-    		}
-    	}
-
-    	return setOfMemberIds;
-    }
-    
-    
-    /**
-     * 
-     */
-	@Override
-	public Set<Long> getTeamMemberIds( Long binderId, boolean explodeGroups )
-	{
-		// getBinder does read check
-		Binder binder = getBinder( binderId );
-		
-		Set ids = getTeamMemberIds( binder );
-		
-		// explode groups
-		if ( explodeGroups )
-			return getProfileDao().explodeGroups( ids, binder.getZoneId() );
-		
-		return ids;
-	}
-
-    /**
-     * Return acl index string representing team membership
-     * @return
-     */
-	@Override
-    public String getTeamMemberString( Binder binder )
-	{
-		Set<Long> setOfMemberIds;
-		
-    	if ( !binder.isRoot() && binder.isTeamMembershipInherited() )
-    		return getTeamMemberString( binder.getParentBinder() );
-    	
-    	setOfMemberIds = getTeamMemberIds( binder );
-    	if ( setOfMemberIds != null && setOfMemberIds.size() > 0 )
-    		return LongIdUtil.getIdsAsString( setOfMemberIds );
-
-   		return Constants.EMPTY_ACL_FIELD;
-    }
-
-    /**
-     * 
-     */
-    @Override
-	public SortedSet<Principal> getTeamMembers(
-		Binder binder,
-		boolean explodeGroups )
-	{
-    	Set<Long> ids;
-    	
+	public SortedSet<Principal> getTeamMembers(Binder binder,
+			boolean explodeGroups) {
 		// If have binder , can read so no more access checking is needed
-    	ids = getTeamMemberIds( binder );
-    	
+		Set ids = binder.getTeamMemberIds();
 		// explode groups
-		if ( explodeGroups )
-			ids = getProfileDao().explodeGroups( ids, binder.getZoneId() );
-		
+		if (explodeGroups)
+			ids = getProfileDao().explodeGroups(ids, binder.getZoneId());
 		// turn ids into real Principals
 		User user = RequestContextHolder.getRequestContext().getUser();
 		Comparator c = new PrincipalComparator(user.getLocale());
-
 		TreeSet<Principal> result = new TreeSet<Principal>(c);
-		
-		if ( explodeGroups )
-		{
-			List<User> listOfUsers;
-			
+		if (explodeGroups) {
 			// empty teams can end up in the list of ids, this will prune them
-			listOfUsers = getProfileDao().loadUsers( ids, RequestContextHolder.getRequestContext().getZoneId() );
-			result.addAll( listOfUsers );
+			result.addAll(getProfileDao().loadUsers(ids,
+					RequestContextHolder.getRequestContext().getZoneId()));
+		} else {
+			result
+					.addAll(getProfileDao().loadUserPrincipals(
+							ids,
+							RequestContextHolder.getRequestContext()
+									.getZoneId(), true));
 		}
-		else
-		{
-			List<UserPrincipal> listOfUserPrincipals;
-			
-			listOfUserPrincipals = getProfileDao().loadUserPrincipals(
-																	ids,
-																	RequestContextHolder.getRequestContext().getZoneId(),
-																	true ); 
-			result.addAll( listOfUserPrincipals );
-		}
-		
 		return result;
+	}
+
+	@Override
+	public Set<Long> getTeamMemberIds(Long binderId, boolean explodeGroups) {
+		// getBinder does read check
+		Binder binder = getBinder(binderId);
+		Set ids = binder.getTeamMemberIds();
+		// explode groups
+		if (explodeGroups)
+			return getProfileDao().explodeGroups(ids, binder.getZoneId());
+		return ids;
 	}
 
 	// no transaction
@@ -2890,14 +2488,14 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 				new TransactionCallback() {
 					@Override
 					public Object doInTransaction(TransactionStatus status) {
-						Set oldMbrs = getTeamMemberIds( binder );
+						Set oldMbrs = binder.getTeamMemberIds();
 						if (inherit) {
-							setTeamMembers( binder.getId(), null );
+							binder.setTeamMemberIds(null);
 						} else if (binder.isTeamMembershipInherited()) {
 							// going from was inheriting to not inheriting =>
 							// copy
-							Set ids = new HashSet( getTeamMemberIds( binder ) );
-							setTeamMembers( binder.getId(), ids );
+							Set ids = new HashSet(binder.getTeamMemberIds());
+							binder.setTeamMemberIds(ids);
 						}
 						// see if there is a real change
 						if (binder.isTeamMembershipInherited() != inherit) {
@@ -2918,7 +2516,8 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 								// if changed from inherit to not, acls remains
 								// the same
 								if (inherit
-										&& !oldMbrs.equals( getTeamMemberIds( binder )))
+										&& !oldMbrs.equals(binder
+												.getTeamMemberIds()))
 									return Boolean.TRUE;
 							}
 						}
@@ -2937,289 +2536,42 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	public void setTeamMembers(Long binderId, final Collection<Long> memberIds)
 			throws AccessControlException {
 		final Binder binder = loadBinder(binderId);
-		
 		checkAccess(binder, BinderOperation.manageTeamMembers);
-
-		// If membership didn't change then bail.
-		if ( getTeamMemberIds( binder ).equals(memberIds) )
+		if (binder.getTeamMemberIds().equals(memberIds))
 			return;
-
 		//See if the guest user is included in the list
 		User guest = getProfileModule().getGuestUser();
-		if ( memberIds != null && memberIds.contains(guest.getId())) {
+		if (memberIds.contains(guest.getId())) {
 			//If adding guest to a team, the user must be allowed to do it from the zone
 			Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
 			ZoneConfig zoneConfig = getCoreDao().loadZoneConfig(zoneId);
 			getAccessControlManager().checkOperation(zoneConfig, WorkAreaOperation.ADD_GUEST_ACCESS);
 		}
-		
-		RunasCallback callback;
-		Object retValue;
-
-		callback = new RunasCallback()
-		{
-			@Override
-			public Object doAs()
-			{
-				final BinderProcessor processor = loadBinderProcessor(binder);
-				TransactionCallback transCallback;
-				
-				transCallback = new TransactionCallback()
-				{
+		final BinderProcessor processor = loadBinderProcessor(binder);
+		Boolean index = (Boolean) getTransactionTemplate().execute(
+				new TransactionCallback() {
 					@Override
-					public Object doInTransaction( TransactionStatus status )
-					{
-						// Modify the group's membership.
-						setTeamMembers( binder, memberIds );
-
-						binder.setTeamMembershipInherited( false );
-					
-						if ( !(binder instanceof TemplateBinder) )
-						{
-							User user = RequestContextHolder.getRequestContext().getUser();
+					public Object doInTransaction(TransactionStatus status) {
+						binder.setTeamMemberIds(new HashSet(memberIds));
+						binder.setTeamMembershipInherited(false);
+						if (!(binder instanceof TemplateBinder)) {
+							User user = RequestContextHolder
+									.getRequestContext().getUser();
 							binder.incrLogVersion();
 							binder.setModification(new HistoryStamp(user));
-							processor.processChangeLog(binder, ChangeLog.ACCESSMODIFY);
+							processor.processChangeLog(binder,
+									ChangeLog.ACCESSMODIFY);
 							return Boolean.TRUE;
 						}
-						
 						return Boolean.FALSE;
 					}
-				};
-				
-				Boolean index = (Boolean) getTransactionTemplate().execute( transCallback );
-				
-				if (index) {
-					// Always reindex top binder to update the team members field
-					processor.indexBinder(binder, false);
-
-					// update readAcl on binders and entries
-					processor.indexTeamMembership(binder, true);
-				}
-				
-				return index;
-			}
-		};
-
-		// Do the necessary work as the admin user.
-		retValue = RunasTemplate.runasAdmin(
-										callback,
-										RequestContextHolder.getRequestContext().getZoneName() );
-		
-	}
-
-	/**
-	 * This should be removed after we get the team membership stored in a "team group" working 
-	 */
-	public void setTeamMembersDeprecated( Binder binder, Collection<Long> memberIds)
-	{
-    	//setting inherited flag handled separate
-    	if ( (memberIds == null) || memberIds.isEmpty() )
-    		binder.removeProperty( ObjectKeys.BINDER_PROPERTY_TEAM_MEMBERS );
-    	else
-    		binder.setProperty( ObjectKeys.BINDER_PROPERTY_TEAM_MEMBERS, LongIdUtil.getIdsAsString( memberIds ) );
-     }
-	
-	/**
-	 * 
-	 */
-	private void setTeamMembers( Binder binder, final Collection<Long> memberIds )
-	{
-		Group teamGroup;
-		final Group finalTeamGroup;
-
-		teamGroup = getTeamGroup( binder );
-		
-		// Do we have any group members?
-		if ( memberIds != null && memberIds.size() > 0 )
-		{
-			// Yes
-			// Do we have a team group?
-			if ( teamGroup == null )
-			{
-				// No, create one.
-				teamGroup = createTeamGroup( binder );
-			}
-			
-			finalTeamGroup = teamGroup;
-
-			if ( finalTeamGroup != null )
-			{
-				RunasCallback callback;
-				Object retValue;
-
-				callback = new RunasCallback()
-				{
-					@Override
-					public Object doAs()
-					{
-						Map updates;
-						SortedSet<Principal> principals;
-						Boolean retValue;
-
-						principals = getProfileModule().getPrincipals( memberIds );
-
-						updates = new HashMap();
-						updates.put( ObjectKeys.FIELD_GROUP_PRINCIPAL_MEMBERS, principals );
-						
-						try
-						{
-							getProfileModule().modifyEntry( finalTeamGroup.getId(), new MapInputData( updates ) );
-							
-							retValue = Boolean.TRUE;
-						}
-			   			catch ( Exception ex )
-			   			{
-			   				ex.printStackTrace();
-			   				retValue = Boolean.FALSE;
-			   			}
-						
-						return retValue;
-					}
-				};
-
-				// Do the necessary work as the admin user.
-				retValue = RunasTemplate.runasAdmin(
-												callback,
-												RequestContextHolder.getRequestContext().getZoneName() );
-			}
+				});
+		if (index) {
+			// Always reindex top binder to update the team members field
+			processor.indexBinder(binder, false);
+			// update readAcl on binders and entries
+			processor.indexTeamMembership(binder, true);
 		}
-		else
-		{
-			// No members
-			// Do we have a team group?
-			if ( teamGroup != null )
-			{
-				// Yes, because there are no members we don't need the group.  Delete the team group
-				deleteTeamGroup( binder, teamGroup );
-				teamGroup = null;
-			}
-		}
-	}
-	
-	/**
-	 * Find all binders that have team membership defined in a property on the binder and the
-	 * team membership is not inherited and there is at least one member defined in the team. 
-	 */
-	private ArrayList<Binder> findAllBindersWithTeamMembershipDeprecated()
-	{
-		ArrayList<Binder> listOfBinders;
-		List<Map> mapOfBinders;
-		
-		listOfBinders = new ArrayList<Binder>();
-		
-		// Find all binders
-		{
-			List<String> fieldNames;
-
-			// We use search engine to get the list of binders.
-			Criteria crit = new Criteria().add(
-											eq( Constants.DOC_TYPE_FIELD, Constants.DOC_TYPE_BINDER ) )
-											.addOrder( new Order( Constants.SORT_TITLE_FIELD, true ) );
-	
-			QueryBuilder qb = new QueryBuilder( true, false );
-			SearchObject so = qb.buildQuery( crit.toQuery() );
-	
-			fieldNames = SearchUtils.fieldNamesList(
-												Constants.DOCID_FIELD,
-												Constants.ENTITY_PATH,
-												Constants.TITLE_FIELD,
-												Constants.ENTITY_FIELD );
-	
-			Hits hits = executeLuceneQueryInternal(
-												so,
-												Constants.SEARCH_MODE_SELF_CONTAINED_ONLY,
-												0,
-												Integer.MAX_VALUE,
-												fieldNames );
-			if ( hits == null )
-				return listOfBinders;
-			
-			mapOfBinders = SearchUtils.getSearchEntries( hits );
-		}
-		
-		// Look for binders that have team membership
-		{
-			Iterator<Map> teamsIter;
-			
-			teamsIter = mapOfBinders.iterator();
-			while ( teamsIter.hasNext() )
-			{
-				Map binderMap;
-				String binderId;
-				Binder binder;
-				Set<Long> membership;
-
-				binderMap = teamsIter.next();
-				binderId = (String) binderMap.get( Constants.DOCID_FIELD );
-				binder = getBinderWithoutAccessCheck( Long.valueOf( binderId ) );
-				
-				// Does this binder have team membership defined?
-				membership = getTeamMemberIdsDeprecated( binder );
-				if ( membership != null && membership.size() > 0 )
-				{
-					// Yes
-					listOfBinders.add( binder );
-				}
-				else {
-					// No - We won't be needing this binder. Kick it out of the session to keep memory usage from going out of control
-					getCoreDao().evict(binder);
-				}
-			}
-		}
-		
-		return listOfBinders;
-	}
-	
-	/**
-	 * Copy the team membership that is stored in a property on the given binder and create a
-	 * "team group" and store the team membership in that group.
-	 */
-	private void upgradeTeamMembership( Binder binder )
-	{
-		Set<Long> teamMemberIds;
-		
-		if ( binder == null )
-			return;
-		
-		logger.info( "Upgrading team membership for binder: " + binder.getTitle() + " (" + binder.getPathName() + " )" );
-
-		// Get the team membership that is stored in a property on the binder.
-		teamMemberIds = getTeamMemberIdsDeprecated( binder );
-		
-		if ( teamMemberIds != null && teamMemberIds.size() > 0 )
-			setTeamMembers( binder, teamMemberIds );
-		
-		// Remove the team membership from the property
-		binder.removeProperty( ObjectKeys.BINDER_PROPERTY_TEAM_MEMBERS );
-	}
-	
-	/**
-	 * Find all binders that have team membership defined in a property on the binder
-	 * and copy the team membership into a "team group".
-	 * 
-	 * Delete the team membership that is stored in a property on the binder.
-	 */
-	@Override
-	public void upgradeTeamMembership()
-	{
-		ArrayList<Binder> listOfBinders;
-		
-		logger.info( "Upgrading team membership..." );
-		
-		// Find all binders that are not inheriting team membership and have a least one team member
-		listOfBinders = findAllBindersWithTeamMembershipDeprecated();
-		
-		if ( listOfBinders != null )
-		{
-			for ( Binder nextBinder : listOfBinders )
-			{
-				// Move the team membership into a "team group"
-				upgradeTeamMembership( nextBinder );
-			}
-		}
-		
-		logger.info( "Finished upgrading team membership" );
 	}
 
 	// return binders this user is a team_member of
@@ -4183,36 +3535,6 @@ public class BinderModuleImpl extends CommonDependencyInjection implements
 	}
 
 
-	/**
-	 * Set the group id associated with the given binder
-	 */
-	private void setBinderTeamGroupId( final Binder binder, Long groupId )
-	{
-		TransactionCallback callback;
-
-		callback = new TransactionCallback()
-		{
-			@Override
-			public Object doInTransaction( TransactionStatus status )
-			{
-				if ( !(binder instanceof TemplateBinder) )
-				{
-					User user = RequestContextHolder.getRequestContext().getUser();
-					
-					binder.incrLogVersion();
-					binder.setModification( new HistoryStamp( user ) );
-					BinderProcessor processor = loadBinderProcessor( binder );
-					processor.processChangeLog( binder, ChangeLog.ACCESSMODIFY );
-				}
-				
-				return Boolean.TRUE;
-			}
-		};
-
-		binder.setTeamGroupId( groupId );
-		getTransactionTemplate().execute( callback );
-	}
-	
 	// no transaction
 	@Override
 	public void setPostingEnabled(Long binderId, final Boolean postingEnabled)

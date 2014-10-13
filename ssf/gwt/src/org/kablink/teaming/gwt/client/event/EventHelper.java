@@ -481,15 +481,6 @@ public class EventHelper {
 				}
 				break;
 			
-			case CALENDAR_SHOW_HINT:
-				// A CalendarShowHintEvent!  Can the event handler we
-				// were given handle that?
-				if (eventHandler instanceof CalendarShowHintEvent.Handler) {
-					handlerNotDefined = false;
-					registrationHandler = CalendarShowHintEvent.registerEvent(eventBus, ((CalendarShowHintEvent.Handler) eventHandler));
-				}
-				break;
-			
 			case CALENDAR_VIEW_DAYS:
 				// A CalendarViewDaysEvent!  Can the event handler we
 				// were given handle that?
@@ -742,15 +733,6 @@ public class EventHelper {
 				}
 				break;
 			
-			case DOWNLOAD_FOLDER_AS_CSV_FILE:
-				// A DownloadFolderAsCSVFileEvent!  Can the event
-				// handler we were given handle that?
-				if (eventHandler instanceof DownloadFolderAsCSVFileEvent.Handler) {
-					handlerNotDefined = false;
-					registrationHandler = DownloadFolderAsCSVFileEvent.registerEvent(eventBus, ((DownloadFolderAsCSVFileEvent.Handler) eventHandler));
-				}
-				break;
-			
 			case EDIT_PUBLIC_LINK_SELECTED_ENTITIES:
 				// A EditPublicLinkSelectedEntitiesEvent!  Can the
 				// event handler we were given handle that?
@@ -951,39 +933,6 @@ public class EventHelper {
 				}
 				break;
 				
-			case GROUP_MEMBERSHIP_MODIFICATION_FAILED:
-				// A GroupMembershipModificationFailedEvent  Can the event handler we  were given handle that?
-				if ( eventHandler instanceof GroupMembershipModificationFailedEvent.Handler )
-				{
-					handlerNotDefined = false;
-					registrationHandler = GroupMembershipModificationFailedEvent.registerEvent(
-																			eventBus,
-																			((GroupMembershipModificationFailedEvent.Handler) eventHandler ) );
-				}
-				break;
-				
-			case GROUP_MEMBERSHIP_MODIFICATION_STARTED:
-				// A GroupMembershipModificationStartedEvent  Can the event handler we  were given handle that?
-				if ( eventHandler instanceof GroupMembershipModificationStartedEvent.Handler )
-				{
-					handlerNotDefined = false;
-					registrationHandler = GroupMembershipModificationStartedEvent.registerEvent(
-																			eventBus,
-																			((GroupMembershipModificationStartedEvent.Handler) eventHandler ) );
-				}
-				break;
-				
-			case GROUP_MEMBERSHIP_MODIFIED:
-				// A GroupMembershipModifiedEvent  Can the event handler we  were given handle that?
-				if ( eventHandler instanceof GroupMembershipModifiedEvent.Handler )
-				{
-					handlerNotDefined = false;
-					registrationHandler = GroupMembershipModifiedEvent.registerEvent(
-																			eventBus,
-																			((GroupMembershipModifiedEvent.Handler) eventHandler ) );
-				}
-				break;
-				
 			case GROUP_MODIFICATION_FAILED:
 				// A GroupModificationFailedEvent  Can the event handler we  were given handle that?
 				if ( eventHandler instanceof GroupModificationFailedEvent.Handler )
@@ -1039,15 +988,6 @@ public class EventHelper {
 				if (eventHandler instanceof HideSelectedSharesEvent.Handler) {
 					handlerNotDefined = false;
 					registrationHandler = HideSelectedSharesEvent.registerEvent(eventBus, ((HideSelectedSharesEvent.Handler) eventHandler));
-				}
-				break;
-			
-			case HIDE_USER_LIST:
-				// A HideUserListEvent!  Can the event handler we were
-				// given handle that?
-				if (eventHandler instanceof HideUserListEvent.Handler) {
-					handlerNotDefined = false;
-					registrationHandler = HideUserListEvent.registerEvent(eventBus, ((HideUserListEvent.Handler) eventHandler) );
 				}
 				break;
 			
@@ -1150,15 +1090,6 @@ public class EventHelper {
 				}
 				break;
 			
-			case INVOKE_COPY_FILTERS_DLG:
-				// An InvokeCopyFiltersDlgEvent!  Can the event handler
-				// we were given handle that?
-				if (eventHandler instanceof InvokeCopyFiltersDlgEvent.Handler) {
-					handlerNotDefined = false;
-					registrationHandler = InvokeCopyFiltersDlgEvent.registerEvent(eventBus, ((InvokeCopyFiltersDlgEvent.Handler) eventHandler));
-				}
-				break;
-				
 			case INVOKE_DOWNLOAD_DESKTOP_APP:
 				// An InvokeDownloadDesktopAppEvent!  Can the event
 				// handler we were given handle that?
@@ -1692,24 +1623,6 @@ public class EventHelper {
 				}
 				break;
 
-			case MARK_FOLDER_CONTENTS_READ:
-				// An MarkFolderContentsReadEvent!  Can the event
-				// handler we were given handle that?
-				if (eventHandler instanceof MarkFolderContentsReadEvent.Handler) {
-					handlerNotDefined = false;
-					registrationHandler = MarkFolderContentsReadEvent.registerEvent(eventBus, ((MarkFolderContentsReadEvent.Handler) eventHandler));
-				}
-				break;
-				
-			case MARK_FOLDER_CONTENTS_UNREAD:
-				// An MarkFolderContentsUnreadEvent!  Can the event
-				// handler we were given handle that?
-				if (eventHandler instanceof MarkFolderContentsUnreadEvent.Handler) {
-					handlerNotDefined = false;
-					registrationHandler = MarkFolderContentsUnreadEvent.registerEvent(eventBus, ((MarkFolderContentsUnreadEvent.Handler) eventHandler));
-				}
-				break;
-				
 			case MARK_READ_SELECTED_ENTITIES:
 				// A MarkReadSelectedEntitiesEvent!  Can the event
 				// handler we were given handle that?
@@ -2225,15 +2138,6 @@ public class EventHelper {
 				if (eventHandler instanceof ShowTrashEvent.Handler) {
 					handlerNotDefined = false;
 					registrationHandler = ShowTrashEvent.registerEvent(eventBus, ((ShowTrashEvent.Handler) eventHandler));
-				}
-				break;
-			
-			case SHOW_USER_LIST:
-				// A ShowUserListEvent!  Can the event handler we were
-				// given handle that?
-				if (eventHandler instanceof ShowUserListEvent.Handler) {
-					handlerNotDefined = false;
-					registrationHandler = ShowUserListEvent.registerEvent(eventBus, ((ShowUserListEvent.Handler) eventHandler) );
 				}
 				break;
 			
@@ -2778,7 +2682,6 @@ public class EventHelper {
 			case CALENDAR_PREVIOUS_PERIOD:                     hasHandler = (eventHandler instanceof CalendarPreviousPeriodEvent.Handler);                 break;
 			case CALENDAR_SETTINGS:                            hasHandler = (eventHandler instanceof CalendarSettingsEvent.Handler);                       break;
 			case CALENDAR_SHOW:                                hasHandler = (eventHandler instanceof CalendarShowEvent.Handler);                           break;
-			case CALENDAR_SHOW_HINT:                           hasHandler = (eventHandler instanceof CalendarShowHintEvent.Handler);                       break;
 			case CALENDAR_VIEW_DAYS:                           hasHandler = (eventHandler instanceof CalendarViewDaysEvent.Handler);                       break;
 			
 			case CHANGE_CONTEXT:                    	       hasHandler = (eventHandler instanceof ChangeContextEvent.Handler);                          break;
@@ -2818,9 +2721,6 @@ public class EventHelper {
 			case GOTO_URL:                  			       hasHandler = (eventHandler instanceof GotoUrlEvent.Handler);                	               break;
 						
 			case GROUP_CREATED:                			       hasHandler = (eventHandler instanceof GroupCreatedEvent.Handler);             	           break;
-			case GROUP_MEMBERSHIP_MODIFICATION_FAILED:	       hasHandler = (eventHandler instanceof GroupMembershipModificationFailedEvent.Handler);      break;
-			case GROUP_MEMBERSHIP_MODIFICATION_STARTED:	       hasHandler = (eventHandler instanceof GroupMembershipModificationStartedEvent.Handler);     break;
-			case GROUP_MEMBERSHIP_MODIFIED:	       			   hasHandler = (eventHandler instanceof GroupMembershipModifiedEvent.Handler);     		   break;
 			case GROUP_MODIFICATION_FAILED:       		       hasHandler = (eventHandler instanceof GroupModificationFailedEvent.Handler);                break;
 			case GROUP_MODIFICATION_STARTED:       		       hasHandler = (eventHandler instanceof GroupModificationStartedEvent.Handler);               break;
 			case GROUP_MODIFIED:                		       hasHandler = (eventHandler instanceof GroupModifiedEvent.Handler);             	           break;
@@ -2836,7 +2736,6 @@ public class EventHelper {
 			case INVOKE_CONFIGURE_MOBILE_APPS_DLG:	       	   hasHandler = (eventHandler instanceof InvokeConfigureMobileAppsDlgEvent.Handler);           break;
 			case INVOKE_CONFIGURE_SHARE_SETTINGS_DLG:	       hasHandler = (eventHandler instanceof InvokeConfigureShareSettingsDlgEvent.Handler);        break;
 			case INVOKE_CONFIGURE_USER_ACCESS_DLG:		       hasHandler = (eventHandler instanceof InvokeConfigureUserAccessDlgEvent.Handler);           break;
-			case INVOKE_COPY_FILTERS_DLG:                      hasHandler = (eventHandler instanceof InvokeCopyFiltersDlgEvent.Handler);                   break;
 			case INVOKE_DOWNLOAD_DESKTOP_APP:                  hasHandler = (eventHandler instanceof InvokeDownloadDesktopAppEvent.Handler);               break;
 			case INVOKE_DROPBOX:						       hasHandler = (eventHandler instanceof InvokeDropBoxEvent.Handler);                          break;
 			case INVOKE_EDIT_IN_PLACE:					       hasHandler = (eventHandler instanceof InvokeEditInPlaceEvent.Handler);                      break;
@@ -2850,7 +2749,7 @@ public class EventHelper {
 			case INVOKE_IMPORT_ICAL_FILE:           	       hasHandler = (eventHandler instanceof InvokeImportIcalFileEvent.Handler);                   break;
 			case INVOKE_IMPORT_ICAL_URL:            	       hasHandler = (eventHandler instanceof InvokeImportIcalUrlEvent.Handler);                    break;
 			case INVOKE_IMPORT_PROFILES_DLG:				   hasHandler = (eventHandler instanceof InvokeImportProfilesDlgEvent.Handler);		           break;
-			case INVOKE_NET_FOLDER_GLOBAL_SETTINGS_DLG:		   hasHandler = (eventHandler instanceof InvokeNetFolderGlobalSettingsDlgEvent.Handler); 	   break;
+			case INVOKE_NET_FOLDER_GLOBAL_SETTINGS_DLG:			       hasHandler = (eventHandler instanceof InvokeNetFolderGlobalSettingsDlgEvent.Handler); 	           break;
 			case INVOKE_LDAP_SYNC_RESULTS_DLG:			       hasHandler = (eventHandler instanceof InvokeLdapSyncResultsDlgEvent.Handler); 	           break;
 			case INVOKE_MANAGE_DATABASE_PRUNE_DLG:			   hasHandler = (eventHandler instanceof InvokeManageDatabasePruneDlgEvent.Handler); 	       break;
 			case INVOKE_MANAGE_NET_FOLDERS_DLG:			       hasHandler = (eventHandler instanceof InvokeManageNetFoldersDlgEvent.Handler); 	           break;
@@ -2888,8 +2787,6 @@ public class EventHelper {
 			case MANAGE_SHARES_SELECTED_ENTITIES:              hasHandler = (eventHandler instanceof ManageSharesSelectedEntitiesEvent.Handler);           break;
 			case MARK_ENTRY_READ:                   	       hasHandler = (eventHandler instanceof MarkEntryReadEvent.Handler);                          break;
 			case MARK_ENTRY_UNREAD:                 	       hasHandler = (eventHandler instanceof MarkEntryUnreadEvent.Handler);                        break;
-			case MARK_FOLDER_CONTENTS_READ:                    hasHandler = (eventHandler instanceof MarkFolderContentsReadEvent.Handler);                 break;
-			case MARK_FOLDER_CONTENTS_UNREAD:                  hasHandler = (eventHandler instanceof MarkFolderContentsUnreadEvent.Handler);               break;
 			
 			case NET_FOLDER_CREATED:        			       hasHandler = (eventHandler instanceof NetFolderCreatedEvent.Handler);          	           break;
 			case NET_FOLDER_MODIFIED:        			       hasHandler = (eventHandler instanceof NetFolderModifiedEvent.Handler);         	           break;
@@ -2940,9 +2837,7 @@ public class EventHelper {
 			case SHOW_VIEW_PERMALINKS:						   hasHandler = (eventHandler instanceof ShowViewPermalinksEvent.Handler);		               break;
 			
 			case HIDE_ACCESSORIES:						       hasHandler = (eventHandler instanceof HideAccessoriesEvent.Handler);		   	               break;
-			case HIDE_USER_LIST:						       hasHandler = (eventHandler instanceof HideUserListEvent.Handler);		   	               break;
 			case SHOW_ACCESSORIES:						       hasHandler = (eventHandler instanceof ShowAccessoriesEvent.Handler);		   	               break;
-			case SHOW_USER_LIST:						       hasHandler = (eventHandler instanceof ShowUserListEvent.Handler);		   	               break;
 			
 			case GET_CURRENT_VIEW_INFO:                        hasHandler = (eventHandler instanceof GetCurrentViewInfoEvent.Handler);                     break;
 			case GET_SIDEBAR_COLLECTION:                       hasHandler = (eventHandler instanceof GetSidebarCollectionEvent.Handler);                   break;
@@ -3010,7 +2905,6 @@ public class EventHelper {
 			case DISABLE_SELECTED_USERS_ADHOC_FOLDERS:         hasHandler = (eventHandler instanceof DisableSelectedUsersAdHocFoldersEvent.Handler);       break;
 			case DISABLE_SELECTED_USERS_DOWNLOAD:              hasHandler = (eventHandler instanceof DisableSelectedUsersDownloadEvent.Handler);           break;
 			case DISABLE_SELECTED_USERS_WEBACCESS:             hasHandler = (eventHandler instanceof DisableSelectedUsersWebAccessEvent.Handler);          break;
-			case DOWNLOAD_FOLDER_AS_CSV_FILE:                  hasHandler = (eventHandler instanceof DownloadFolderAsCSVFileEvent.Handler);                break;
 			case EDIT_PUBLIC_LINK_SELECTED_ENTITIES:           hasHandler = (eventHandler instanceof EditPublicLinkSelectedEntitiesEvent.Handler);         break;
 			case EMAIL_PUBLIC_LINK_SELECTED_ENTITIES:          hasHandler = (eventHandler instanceof EmailPublicLinkSelectedEntitiesEvent.Handler);        break;
 			case ENABLE_SELECTED_USERS:                        hasHandler = (eventHandler instanceof EnableSelectedUsersEvent.Handler);                    break;

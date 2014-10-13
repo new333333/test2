@@ -69,7 +69,7 @@
 </div>
 
 <% /* Local team selection. */ %>
-<c:if test="${ssBinderHasTeamMembers}">  
+<c:if test="${!empty ssFolder.teamMemberIds}">
   <div class="ss_entryContent">
   <input type="checkbox" name="_sendMail_toTeam" />
   <span class="ss_labelAfter"><label for="_sendMail_toTeam">

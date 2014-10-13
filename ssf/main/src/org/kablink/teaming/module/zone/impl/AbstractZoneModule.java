@@ -44,9 +44,9 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
-
 import org.kablink.teaming.NoObjectByTheIdException;
 import org.kablink.teaming.ObjectKeys;
+import org.kablink.teaming.cache.impl.HashMapCache;
 import org.kablink.teaming.context.request.RequestContext;
 import org.kablink.teaming.context.request.RequestContextHolder;
 import org.kablink.teaming.context.request.RequestContextUtil;
@@ -101,22 +101,18 @@ import org.kablink.teaming.util.SPropsUtil;
 import org.kablink.teaming.util.SZoneConfig;
 import org.kablink.teaming.util.SessionUtil;
 import org.kablink.teaming.util.LocaleUtils;
+import org.kablink.teaming.util.TempFileUtil;
 import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.util.cache.DefinitionCache;
 import org.kablink.util.Validator;
-
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
-/**
- * ?
- * 
- * @author ?
- */
-@SuppressWarnings({"unchecked", "unused", "deprecation"})
+@SuppressWarnings({ "unchecked", "unused", "deprecation" })
 public abstract class AbstractZoneModule extends CommonDependencyInjection implements ZoneModule,InitializingBean {
+	protected TempFileUtil.OITTempCleanupThread m_oitTempCleanupThread;
 	protected DefinitionModule definitionModule;
 	
 	/**
@@ -537,6 +533,12 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 			ScheduleInfo pruneSchedInfo = getAdminModule().getLogTablePurgeSchedule();
 			getAdminModule().setLogTablePurgeSchedule(pruneSchedInfo);
 
+			// Initialize a Thread used to cleanup Oracle Outside-in
+			// temporary files.
+			if (null == m_oitTempCleanupThread) {
+				m_oitTempCleanupThread = TempFileUtil.initOITTempCleanupThread();
+			}
+			
 			//If not configured yet,  check old config
 			if (getCoreDao().loadObjects(LdapConnectionConfig.class, null, top.getId()).isEmpty()) {				
 				LdapSchedule schedule = getLdapModule().getLdapSchedule();
@@ -696,33 +698,6 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 				getTemplateModule().updateDefaultTemplates(top.getId(), true);
 				getProfileModule().setUserProperty(superU.getId(), ObjectKeys.USER_PROPERTY_UPGRADE_DEFINITIONS, "true");
 				getProfileModule().setUserProperty(superU.getId(), ObjectKeys.USER_PROPERTY_UPGRADE_TEMPLATES, "true");
-			}
-		}
-		
-		if(version.intValue() <= 18) { 
-			// Upgrade version 18 is the last version that belongs to Filr 1.1 release, and 19 belongs to Vibe Hudson release
-			if (!Utils.checkIfFilr()) { // This is Vibe
-				if(version.intValue() >= 8) {
-					// Upgrade version 8 is the last version that belongs to Vibe Granite (3.4) release.
-					// Since we added Vibe Granite-style external user support only in Granite release,
-					// there is no reason to bother with the upgrade if user is upgrading from pre-Granite Vibe.
-					// In other word, this process is necessary only if user is upgrading from Granite to Hudson.
-					getProfileModule().upgradeVibeGraniteExternalUsers(); // Upgrade Vibe Granite external users.
-				}
-				
-				// Upgrade team membership.
-				getBinderModule().upgradeTeamMembership();
-			}
-		}
-		
-		if ( version.intValue() <= 19 )
-		{ 
-			// Upgrade version 19 is the last version belongs to Vibe Hudson release
-			if ( !Utils.checkIfFilr() )
-			{
-				// This is Vibe
-				// Upgrade team membership.
-				getBinderModule().upgradeTeamMembership();
 			}
 		}
   	}
@@ -899,7 +874,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		User guest=null;
 		try {
 			Binder parent = superU.getParentBinder();
-			String guestName= SZoneConfig.getGuestUserName(zone.getName());
+			String guestName= SZoneConfig.getString(parent.getRoot().getName(), "property[@name='guestUser']", ObjectKeys.GUEST);
 			guest = getProfileDao().findUserByName(guestName, zone.getId());
 			
 			if(guest !=null ){
@@ -1013,6 +988,12 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		ScheduleInfo pruneSchedInfo = getAdminModule().getLogTablePurgeSchedule();
 		getAdminModule().setLogTablePurgeSchedule(pruneSchedInfo);
 
+		// Initialize a Thread used to cleanup Oracle Outside-in
+		// temporary files.
+		if (null == m_oitTempCleanupThread) {
+			m_oitTempCleanupThread = TempFileUtil.initOITTempCleanupThread();
+		}
+		
 		//Enable/Disable access control rights
 		if (!SPropsUtil.getBoolean("accessControl.viewBinderTitle.enabled", false)) {
 			WorkAreaOperation.deleteInstance("viewBinderTitle");
@@ -1023,7 +1004,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		try {
 			netFoldersBinder = getCoreDao().loadReservedBinder(ObjectKeys.NET_FOLDERS_ROOT_INTERNALID, zone.getId());
 		} catch(NoBinderByTheNameException e) {}
-		if ((Utils.checkIfFilr() || Utils.checkIfFilrAndVibe()) && netFoldersBinder == null) {
+		if (netFoldersBinder == null) {
 			//The Net Folders workspace doesn't exist, so create it
 			Workspace top = getCoreDao().findTopWorkspace(zone.getName());
 			HistoryStamp stamp = new HistoryStamp(superU);
@@ -1052,13 +1033,9 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 			}
 		}
 
-		// Turn on the text conversion file purging job.
+		//Turn on the text conversion file purging job
 		ScheduleInfo textConversionFilePurgeSchedInfo = getAdminModule().getTextConversionFilePurgeSchedule();
 		getAdminModule().setTextConversionFilePurgeSchedule(textConversionFilePurgeSchedInfo);
-
-		// Turn on the temporary file cleanup job.
-		ScheduleInfo tempFileCleanupSchedInfo = getAdminModule().getTempFileCleanupSchedule();
-		getAdminModule().setTempFileCleanupSchedule(tempFileCleanupSchedInfo);
  	}
 
  	// Must be running inside a transaction set up by the caller
@@ -1256,6 +1233,12 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 			//Turn on the database log pruning job
 			ScheduleInfo pruneSchedInfo = getAdminModule().getLogTablePurgeSchedule();
 			getAdminModule().setLogTablePurgeSchedule(pruneSchedInfo);
+			
+			// Initialize a Thread used to cleanup Oracle Outside-in
+			// temporary files.
+			if (null == m_oitTempCleanupThread) {
+				m_oitTempCleanupThread = TempFileUtil.initOITTempCleanupThread();
+			}
 			
 			setupInitialOpenIDProviderList();
 
@@ -2116,7 +2099,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 			setGlobalWorkareaFunctionMembership(zoneConfig, function, new HashSet());
 		}
 		
-		if (Utils.checkIfFilr() && !functionInternalIds.containsKey(ObjectKeys.FUNCTION_ALLOW_ACCESS_NET_FOLDER_INTERNALID)) {
+		if (!functionInternalIds.containsKey(ObjectKeys.FUNCTION_ALLOW_ACCESS_NET_FOLDER_INTERNALID)) {
 			function = new Function();
 			function.setZoneId(zoneConfig.getZoneId());
 			function.setName(ObjectKeys.ROLE_ALLOW_ACCESS_NET_FOLDER);
@@ -2126,15 +2109,6 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 			//generate functionId
 			getFunctionManager().addFunction(function);
 			setGlobalWorkareaFunctionMembership(zoneConfig, function, new HashSet());
-		} else if (!Utils.checkIfFilr() && functionInternalIds.containsKey(ObjectKeys.FUNCTION_ALLOW_ACCESS_NET_FOLDER_INTERNALID)) {
-			if (!SPropsUtil.getBoolean("keepFilrRolesAndRightsInVibe", false)) {
-				Function f = (Function) functionInternalIds.get(ObjectKeys.FUNCTION_ALLOW_ACCESS_NET_FOLDER_INTERNALID);
-				try {
-					getFunctionManager().deleteFunction(f, true);
-				} catch(Exception e) {
-					logger.warn("Could not delete Filr AllowNetFolderAccess role from Vibe installation");
-				}
-			}
 		}
 
 		if (!functionInternalIds.containsKey(ObjectKeys.FUNCTION_ENABLE_LINK_SHARING_INTERNALID)) {
@@ -2163,6 +2137,23 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 			addViewBinderTitleRole(zoneConfig.getZoneId());
 		}
 		
+		// The next calls should be deleted. These file roles were never shipped
+		//TODO remove these next lines before Filr ships
+		for (Function f : functions) {
+			if (f.getName().equals("__role.FilrFolderRead") || 
+					f.getName().equals("__role.FilrFolderWrite") || 
+					f.getName().equals("__role.FilrFolderOwner") ||
+					f.getName().equals("__role.FilrFileRead") || 
+					f.getName().equals("__role.FilrFileWrite") || 
+					f.getName().equals("__role.FilrFileOwner") ||
+					f.getName().equals("__role.enableChangingAccessControl")) {
+				try{
+					getFunctionManager().deleteFunction(f, true);
+				} catch(Exception e) {
+					logger.warn("Could not delete unused Filr roles");
+				}
+			}
+		}
 		functions = getFunctionManager().findFunctions(zoneConfig.getZoneId());
 		functionInternalIds = new HashMap();
 		for (int i = 0; i < functions.size(); i++) {
@@ -2300,4 +2291,5 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 	}
 
 	abstract protected void setupInitialOpenIDProviderList();
+	
 }

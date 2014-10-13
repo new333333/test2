@@ -35,16 +35,11 @@ package org.kablink.teaming.spring.beans.factory.config;
 import java.io.IOException;
 import java.util.Properties;
 
-import org.kablink.teaming.util.PropertiesClassPathConfigFiles;
+import org.kablink.teaming.util.SPropsUtil;
+
 
 public class PropertyPlaceholderConfigurer 
 	extends org.springframework.beans.factory.config.PropertyPlaceholderConfigurer {
-
-	private PropertiesClassPathConfigFiles rawSsfProperties;
-
-	public void setRawSsfProperties(PropertiesClassPathConfigFiles rawSsfProperties) {
-		this.rawSsfProperties = rawSsfProperties;
-	}
 
 	/**
 	 * Overrides super class's method so that it obtains properties from
@@ -53,6 +48,6 @@ public class PropertyPlaceholderConfigurer
 	 * <code>setLocation</code> or <code>setLocations</code> method is ignored.
 	 */
 	protected Properties mergeProperties() throws IOException {
-		return rawSsfProperties.getProperties();
+		return SPropsUtil.getProperties();
 	}
 }

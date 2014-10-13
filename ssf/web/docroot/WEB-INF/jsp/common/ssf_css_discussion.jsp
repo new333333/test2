@@ -201,7 +201,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	font-size: 20px;
 	font-weight: 200;
 	font-family: Arial, Helvetica, sans-serif;
-	color: #036f9f !important;
+	color:#5691A6!important;
 	}
 <%
 /**
@@ -469,7 +469,7 @@ a.ss_new_thread {
 /******* PAGINATION STYLES *************/
 .ss_pagination {
 	font-size: ${ss_style_font_fineprint} !important;
-	background-color: #ededed !important;
+	background-color: #ccc !important;
 /*	height:38px !important;		*/
 	margin-bottom: 0px;
 	width: 100%;
@@ -603,6 +603,7 @@ a.ss_new_thread {
 	line-height: 10px;
 	font-size: ${ss_style_font_finestprint} !important;
 	width: 32px;
+	border-top-width: 0.8px !important;
 	border-right-width: 0.4px;
 	border-bottom-width: 0.4px;
 	border-left-width: 0.4px !important;
@@ -610,8 +611,10 @@ a.ss_new_thread {
 	border-right-style: none;
 	border-bottom-style: none;
 	border-left-style: solid !important;
+	border-top-color: #698F8E !important;
 	border-right-color: #698F8E;
 	border-bottom-color: #698F8E;
+	border-left-color: #698F8E !important;
 	padding-top: 1px;
 	margin-top: 2px;
 	margin-left: 5px;
@@ -669,10 +672,10 @@ td.ss_replies_indent_picture div {
 	font-weight: bold;
     }
 td.ss_non_clipped_signature {
-	max-width: 70px;
+	width:140px;
 	}
 .wg-comment td.ss_clipped_signature div.ss_entrySignatureUser {
-	max-width: 70px;
+	width: 140px;
     overflow: hidden;
     }
 .wg-comment .ss_thumbnail_standalone_signature img {

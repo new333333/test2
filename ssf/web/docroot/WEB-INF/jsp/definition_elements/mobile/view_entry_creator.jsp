@@ -45,7 +45,7 @@
   </span>
   <c:if test="${!empty ssDefinitionEntry.postedBy}">
     <span class="entry-author" style="padding-left:4px;">
-      (<ssf:nlt tag="entry.postedBy"/>&nbsp;<ssf:escapeQuotes>${ssDefinitionEntry.postedBy}</ssf:escapeQuotes>)
+      (<ssf:nlt tag="entry.postedBy"/>&nbsp;<c:out value="${ssDefinitionEntry.postedBy}"/>)
     </span>
   </c:if>
 </c:if>

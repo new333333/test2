@@ -55,8 +55,7 @@
 	       <c:if test="${element.value.type == 'title' || element.value.type == 'event' || 
 	                     element.value.type == 'text'  || element.value.type == 'selectbox' || 
 	                     element.value.type == 'radio' || element.value.type == 'checkbox' || 
-	       				 element.value.type == 'date'  || element.value.type == 'user_list' ||
-	       				 element.value.type == 'userListSelectbox'}">
+	       				 element.value.type == 'date'  || element.value.type == 'user_list'}">
 	         <option value="<c:out value="${element.key}"/>"><c:out value="${element.value.caption}"/></option>
 	       </c:if>
 	     </c:forEach>

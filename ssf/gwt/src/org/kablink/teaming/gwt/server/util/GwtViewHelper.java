@@ -40,7 +40,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -66,12 +65,9 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.apache.lucene.search.SortField;
-
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
-import org.dom4j.Node;
 
 import org.kablink.teaming.BinderQuotaException;
 import org.kablink.teaming.IllegalCharacterInNameException;
@@ -128,7 +124,6 @@ import org.kablink.teaming.gwt.client.rpc.shared.CanAddEntitiesToBindersRpcRespo
 import org.kablink.teaming.gwt.client.rpc.shared.ClickOnTitleActionRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ColumnWidthsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.CreateFolderRpcResponseData;
-import org.kablink.teaming.gwt.client.rpc.shared.DownloadFolderAsCSVFileUrlRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.EntityRightsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.EntryTypesRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ClickOnTitleActionRpcResponseData.ClickAction;
@@ -146,8 +141,6 @@ import org.kablink.teaming.gwt.client.rpc.shared.JspHtmlRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ProfileEntryInfoRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.SharedViewStateRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.StringRpcResponseData;
-import org.kablink.teaming.gwt.client.rpc.shared.UserListInfoRpcResponseData;
-import org.kablink.teaming.gwt.client.rpc.shared.UserListInfoRpcResponseData.UserListInfo;
 import org.kablink.teaming.gwt.client.rpc.shared.UserPropertiesRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.UserPropertiesRpcResponseData.AccountInfo;
 import org.kablink.teaming.gwt.client.rpc.shared.UserPropertiesRpcResponseData.HomeInfo;
@@ -297,13 +290,6 @@ import static org.kablink.util.search.Restrictions.like;
 public class GwtViewHelper {
 	protected static Log m_logger = LogFactory.getLog(GwtViewHelper.class);
 	
-	// The following controls whether the My Files Storage folder will
-	// appear in the Vibe UI as a normal folder or will be hidden as
-	// much as possible as it is in Filr.
-	//
-	// See GwtViewHelper.showMyFilesStorageAsFolder() for usage.
-	private static final boolean SHOW_MY_FILES_STORAGE_IN_VIBE	= true;
-	
 	// Attribute names used for items related to milestones.
 	public static final String RESPONSIBLE_GROUPS_MILESTONE_ENTRY_ATTRIBUTE_NAME	= "responsible_groups";
 	public static final String RESPONSIBLE_MILESTONE_ENTRY_ATTRIBUTE_NAME			= "responsible";
@@ -322,11 +308,6 @@ public class GwtViewHelper {
 	private final static boolean PROFILE_PER_ROW	= SPropsUtil.getBoolean("gwt.profile.listview.per.row",    false);
 	private final static boolean PROFILE_PER_COLUMN	= SPropsUtil.getBoolean("gwt.profile.listview.per.column", false);
 	private final static boolean PROFILE_PER_USER	= SPropsUtil.getBoolean("gwt.profile.listview.per.user",   false);
-	
-	// The following controls whether the 'last login' is displayed in
-	// the user properties dialog in the administration console.  By
-	// default, it is (the value defaults to true.)
-	private final static boolean SHOW_LAST_LOGIN_IN_USER_PROPERTIES	= SPropsUtil.getBoolean("show.last.login.in.user.properties", true);
 	
 	/*
 	 * Inner class used to compare two AccessInfo's.
@@ -371,12 +352,10 @@ public class GwtViewHelper {
 	 * should be targeted to the contained 'My Files Storage' folder.
 	 */
 	private static class CopyMoveTarget {
-		private boolean	m_targetIsUserWorkspace;			// true -> The target is a user's workspace.                false -> It isn't.
-		private boolean	m_targetIsMyFilesStorage;			// true -> The target is a user's My Files Storage folder.  false -> It isn't.
-		private boolean m_targetMyFilesStorageDisabled;		// true -> The target is a My Files Storage folder where there user doesn't have personal storage.  false -> That's not the case.
-		private boolean m_targetUserWorkspaceUnavailable;	// true -> The target is a user workspace that's unavailable for use as a target.                   false -> It's not or user workspace or it's available for use.
-		private Long	m_binderTargetId;					// Target binder ID for binders being copied/moved.
-		private Long	m_entryTargetId;					// Target binder ID for entries being copied/moved.
+		private boolean	m_targetIsMyFilesStorage;		// true -> The target is a user's My Files Storage folder.  false -> It isn't.
+		private boolean m_targetMyFilesStorageDisabled;	// true -> The target is a My Files Storage folder where there user doesn't have personal storage.  false -> That's not the case.
+		private Long	m_binderTargetId;				// Target binder ID for binders being copied/moved.
+		private Long	m_entryTargetId;				// Target binder ID for entries being copied/moved.
 
 		/**
 		 * Constructor method.
@@ -412,9 +391,7 @@ public class GwtViewHelper {
 			else if (BinderHelper.isBinderUserWorkspace(targetBinder)) {
 				// Yes!  Can we find any 'My Files Storage' folders
 				// within that?
-				setTargetIsUserWorkspace(true);
-				User wsUser = getWorkspaceUser(bs, targetBinderId);
-				Long mfId = SearchUtils.getMyFilesFolderId(bs, wsUser, false);	// false -> Don't create if not there.
+				Long mfId = SearchUtils.getMyFilesFolderId(bs, getWorkspaceUser(bs, targetBinderId), false);	// false -> Don't create if not there.
 				if (null != mfId) {
 					// Yes!  Use it for the target for entries.
 					setEntryTargetId(mfId);
@@ -424,15 +401,6 @@ public class GwtViewHelper {
 							((Folder) bs.getBinderModule().getBinderWithoutAccessCheck(
 								mfId))));
 				}
-				
-				// This user workspace is unavailable as a target if... 
-				boolean targetUserWorkspaceUnavailable = (
-					(!(AdminHelper.getEffectiveAdhocFolderSetting(bs, wsUser))) ||	// ...adHoc storage is disabled for this user or...
-					(Utils.checkIfFilr() &&											// ...we're running as Filr and...
-						(   wsUser.isShared()                       ||				// ......this is the Guest user or...
-						(!( wsUser.getIdentityInfo().isInternal())) ||				// ......this is an external user or...
-						(!( wsUser.isPerson())))));									// ......this user is not a person.
-				setTargetUserWorkspaceUnavailable(targetUserWorkspaceUnavailable);
 			}
 		}
 
@@ -441,24 +409,20 @@ public class GwtViewHelper {
 		 * 
 		 * @return
 		 */
-		public boolean isTargetMyFilesStorage()           {return m_targetIsMyFilesStorage;        }
-		public boolean isTargetMyFilesStorageDisabled()   {return m_targetMyFilesStorageDisabled;  }
-		public boolean isTargetUserWorkspace()            {return m_targetIsUserWorkspace;         }
-		public boolean isTargetUserWorkspaceUnavailable() {return m_targetUserWorkspaceUnavailable;}
-		public Long    getBinderTargetId()                {return m_binderTargetId;                }
-		public Long    getEntryTargetId()                 {return m_entryTargetId;                 }
+		public boolean isTargetMyFilesStorage()         {return m_targetIsMyFilesStorage;      }
+		public boolean isTargetMyFilesStorageDisabled() {return m_targetMyFilesStorageDisabled;}
+		public Long    getBinderTargetId()              {return m_binderTargetId;              }
+		public Long    getEntryTargetId()               {return m_entryTargetId;               }
 		
 		/**
 		 * Set'er methods.
 		 * 
 		 * @param
 		 */
-		public void setTargetIsMyFilesStorage(        boolean targetIsMyFilesStorage)         {m_targetIsMyFilesStorage         = targetIsMyFilesStorage;        }
-		public void setTargetMyFilesStorageDisabled(  boolean targetMyFilesStorageDisabled)   {m_targetMyFilesStorageDisabled   = targetMyFilesStorageDisabled;  }
-		public void setTargetIsUserWorkspace(         boolean targetIsUserWorkspace)          {m_targetIsUserWorkspace          = targetIsUserWorkspace;         }
-		public void setTargetUserWorkspaceUnavailable(boolean targetUserWorkspaceUnavailable) {m_targetUserWorkspaceUnavailable = targetUserWorkspaceUnavailable;}
-		public void setBinderTargetId(                Long    binderTargetId)                 {m_binderTargetId                 = binderTargetId;                }
-		public void setEntryTargetId(                 Long    entryTargetId)                  {m_entryTargetId                  = entryTargetId;                 }
+		public void setTargetIsMyFilesStorage(      boolean targetIsMyFilesStorage)       {m_targetIsMyFilesStorage       = targetIsMyFilesStorage;      }
+		public void setTargetMyFilesStorageDisabled(boolean targetMyFilesStorageDisabled) {m_targetMyFilesStorageDisabled = targetMyFilesStorageDisabled;}
+		public void setBinderTargetId(              Long    binderTargetId)               {m_binderTargetId               = binderTargetId;              }
+		public void setEntryTargetId(               Long    entryTargetId)                {m_entryTargetId                = entryTargetId;               }
 	}
 
 	/*
@@ -651,11 +615,11 @@ public class GwtViewHelper {
 			catch (Exception e) {
 				// No!  Add an error to the error list...
 				String messageKey;
-				if      (e instanceof AccessControlException)          messageKey =  "addNewFolderError.AccssControlException";
-				else if (e instanceof IllegalCharacterInNameException) messageKey =  "addNewFolderError.IllegalCharacterInNameException";
-				else if (e instanceof TitleException)		           messageKey = ("addNewFolderError.TitleException." + (Utils.checkIfFilr() ? "filr" : "vibe"));
-				else if (e instanceof WriteFilesException)             messageKey =  "addNewFolderError.WriteFilesException";
-				else                                                   messageKey =  "addNewFolderError.OtherException";
+				if      (e instanceof AccessControlException)          messageKey = "addNewFolderError.AccssControlException";
+				else if (e instanceof IllegalCharacterInNameException) messageKey = "addNewFolderError.IllegalCharacterInNameException";
+				else if (e instanceof TitleException)		           messageKey = "addNewFolderError.TitleException";
+				else if (e instanceof WriteFilesException)             messageKey = "addNewFolderError.WriteFilesException";
+				else                                                   messageKey = "addNewFolderError.OtherException";
 				reply.addError(NLT.get(messageKey, new String[]{folderName}));
 				
 				// ...and log it.
@@ -1827,7 +1791,6 @@ public class GwtViewHelper {
 	 * 
 	 * @throws GwtTeamingException
 	 */
-	@SuppressWarnings("unchecked")
 	public static ErrorListRpcResponseData copyEntries(AllModulesInjected bs, HttpServletRequest request, Long targetFolderId, List<EntityId> entityIds) throws GwtTeamingException {
 		try {
 			// Allocate an error list response we can return.
@@ -1849,11 +1812,7 @@ public class GwtViewHelper {
 					try {
 						// Can we copy this entity?
 						if (entityId.isBinder()) {
-							if (cmt.isTargetUserWorkspace() && cmt.isTargetUserWorkspaceUnavailable()) {
-								String entryTitle = GwtServerHelper.getEntityTitle(bs, entityId);
-								reply.addError(NLT.get("copyEntryError.cantTargetUserWS", new String[]{entryTitle}));
-							}
-							else if (BinderHelper.isBinderHomeFolder(bm.getBinder(entityId.getEntityId()))) {
+							if (BinderHelper.isBinderHomeFolder(bm.getBinder(entityId.getEntityId()))) {
 								String entryTitle = GwtServerHelper.getEntityTitle(bs, entityId);
 								reply.addError(NLT.get("copyEntryError.cantCopyHome", new String[]{entryTitle}));
 							}
@@ -1862,11 +1821,7 @@ public class GwtViewHelper {
 							}
 						}
 						else {
-							// Bug: 859044 (pmh) - when copying, start
-							//      the workflow at the same state.
-							Map options = new HashMap();
-							options.put(ObjectKeys.WORKFLOW_START_WORKFLOW, ObjectKeys.WORKFLOW_START_WORKFLOW_COPY);
-							fm.copyEntry(entityId.getBinderId(), entityId.getEntityId(), cmt.getEntryTargetId(), null, options);
+							fm.copyEntry(entityId.getBinderId(), entityId.getEntityId(), cmt.getEntryTargetId(), null, null);
 						}
 					}
 
@@ -2770,50 +2725,6 @@ public class GwtViewHelper {
 		return days;
 	}
 	
-	/**
-	 * Return true of the user list panel should be visible on the
-	 * given binder and false otherwise.
-	 * 
-	 * @param bs
-	 * @param request
-	 * @param binderId
-	 * 
-	 * @return
-	 * 
-	 * @throws GwtTeamingException
-	 */
-	public static Boolean getUserListStatus(AllModulesInjected bs, HttpServletRequest request, Long binderId) throws GwtTeamingException {
-		try {
-			User			user                 = GwtServerHelper.getCurrentUser();
-			UserProperties	userFolderProperties = bs.getProfileModule().getUserProperties(user.getId(), binderId);
-			
-			// Has the user saved the status of the user list panel
-			// on this binder?
-			Boolean userListStatus = ((Boolean) userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_BINDER_SHOW_USER_LIST));
-			if (null == userListStatus) {
-				// No!  Then we default to show it.  Save this status
-				// in the user's properties for this binder.
-				userListStatus = Boolean.TRUE;
-				saveUserListStatus(bs, request, binderId, userListStatus);
-			}
-			
-			// If we get here, userListStatus contains true if we
-			// should show the user list panel and false otherwise.
-			// Return it.
-			return userListStatus;
-		}
-		
-		catch (Exception e) {
-			// Convert the exception to a GwtTeamingException and throw
-			// that.
-			throw
-				GwtLogHelper.getGwtClientException(
-					m_logger,
-					e,
-					"GwtViewHelper.getUserListStatus( SOURCE EXCEPTION ):  ");
-		}
-	}
-	
 	/*
 	 * Fixes up the group assignees in an List<AssignmentInfo>'s.
 	 */
@@ -3003,7 +2914,7 @@ public class GwtViewHelper {
 			else if (colName.equals("location"))             {fc.setColumnSearchKey(Constants.PRE_DELETED_FIELD);                                                                                  }
 			else if (colName.equals("loginId"))              {fc.setColumnSearchKey(Constants.LOGINNAME_FIELD);                                                                                    }
 			else if (colName.equals("netfolder_access"))     {fc.setColumnSearchKey(FolderColumn.COLUMN_NETFOLDER_ACCESS);      fc.setColumnSortable(false);                                       }
-			else if (colName.equals("docNum"))               {fc.setColumnSearchKey(Constants.DOCNUMBER_FIELD);                 fc.setColumnSortKey(Constants.SORTNUMBER_FIELD);                   }
+			else if (colName.equals("number"))               {fc.setColumnSearchKey(Constants.DOCNUMBER_FIELD);                 fc.setColumnSortKey(Constants.SORTNUMBER_FIELD);                   }
 			else if (colName.equals("rating"))               {fc.setColumnSearchKey(Constants.RATING_FIELD);                                                                                       }
 			else if (colName.equals("responsible"))          {fc.setColumnSearchKey(Constants.RESPONSIBLE_FIELD);                                                                                  }
 			else if (colName.equals("size"))                 {fc.setColumnSearchKey(Constants.FILE_SIZE_FIELD);                                                                                    }
@@ -3612,50 +3523,6 @@ public class GwtViewHelper {
 	}
 	
 	/**
-	 * Returns a DownloadFolderAsCSVFileUrlRcpResponseData object
-	 * containing the URL to use to download the listed files or all
-	 * the files from a folder in a zip.
-	 * 
-	 * @param bs
-	 * @param request
-	 * @param folderId
-	 * 
-	 * @return
-	 * 
-	 * @throws GwtTeamingException
-	 */
-	public static DownloadFolderAsCSVFileUrlRpcResponseData getDownloadFolderAsCSVFileUrl(AllModulesInjected bs, HttpServletRequest request, Long folderId) throws GwtTeamingException {
-		try {
-			// Allocate a DownloadFolderAsCSVFileUrlRpcResponseData to
-			// return the URL to request downloading the folder as a
-			// CSV file.
-			DownloadFolderAsCSVFileUrlRpcResponseData reply = new DownloadFolderAsCSVFileUrlRpcResponseData();
-
-			// Generate a URL to download the folder as a CSV file.
-			String url = WebUrlUtil.getFolderAsCSVFileUrl(request, folderId);
-			
-			// Add whatever URL we built to the reply.
-			reply.setUrl(url);
-			
-			// If we get here, reply refers to the
-			// DownloadFolderAsCSVFileUrlRpcResponseData containing the
-			// URL to download the requested folder as a CSV file.
-			// Return it.
-			return reply;
-		}
-		
-		catch (Exception e) {
-			// Convert the exception to a GwtTeamingException and throw
-			// that.
-			throw
-				GwtLogHelper.getGwtClientException(
-					m_logger,
-					e,
-					"GwtViewHelper.getDownloadFolderAsCSVFileUrl( SOURCE EXCEPTION ):  ");
-		}
-	}
-	
-	/**
 	 * Returns a Map<String, EntityRights> of the current users rights
 	 * to the specified entities.
 	 * 
@@ -4032,7 +3899,7 @@ public class GwtViewHelper {
 		case MILESTONE:     reply = pruneColumnNames(ft, "title",  "responsible", "tasks",    "status", "dueDate"                  ); break;
 		case MINIBLOG:      reply = pruneColumnNames(ft, "title",  "description"                                                   ); break;
 		case SURVEY:        reply = pruneColumnNames(ft, "title",  "author",      "dueDate"                                        ); break;
-		default:            reply = pruneColumnNames(ft, "docNum", "title",       "comments", "state",  "author", "date",  "rating"); break;
+		default:            reply = pruneColumnNames(ft, "number", "title",       "comments", "state",  "author", "date",  "rating"); break;
 		}
 		return reply;
 	}
@@ -4471,43 +4338,26 @@ public class GwtViewHelper {
 			case SHARED_PUBLIC:  viewSharedFiles = getUserViewSharedFiles(request, collectionType); break;
 			default:             viewSharedFiles = false;                                           break;
 			}
-			
-			// Does the current user own this Binder?
+
+			// Does the current user own this folder?
 			boolean folderOwnedByCurrentUser; 
-			Binder binder;
 			try {
-				binder = bs.getBinderModule().getBinder(folderId);
+				Binder binder = bs.getBinderModule().getBinder(folderId);
 				folderOwnedByCurrentUser = binder.getOwnerId().equals(userId);
 			}
 			catch (Exception ex) {
-				binder = null;
 				folderOwnedByCurrentUser = false;
-			}
-			
-			// Is the Binder a Folder with a user list or a My Files
-			// Storage folder? 
-			boolean showUserList;
-			boolean folderIsMyFilesStorage;
-			if ((null != binder) && (binder instanceof Folder)) {
-				showUserList           = (getFolderHasUserList((Folder) binder) && getUserListStatus(bs, request, folderId));
-				folderIsMyFilesStorage = BinderHelper.isBinderMyFilesStorage(binder);
-			}
-			else {
-				showUserList           =
-				folderIsMyFilesStorage = false;
 			}
 
 			// Finally, use the data we obtained to create a
 			// FolderDisplayDataRpcResponseData and return that. 
 			return
 				new FolderDisplayDataRpcResponseData(
-					folderIsMyFilesStorage,
 					sortBy,
 					sortDescend,
 					pageSize,
 					cwData.getColumnWidths(),
 					folderSupportsPinning,
-					showUserList,
 					viewPinnedEntries,
 					viewSharedFiles,
 					folderOwnedByCurrentUser,
@@ -4968,157 +4818,6 @@ public class GwtViewHelper {
 	}
 
 	/**
-	 * Returns true if a folder's view definition has user_list
-	 * <item>'s and false otherwise.
-	 * 
-	 * @param bs
-	 * @param request
-	 * @param folderInfo
-	 * 
-	 * @return
-	 */
-	public static boolean getFolderHasUserList(AllModulesInjected bs, HttpServletRequest request, BinderInfo folderInfo) {
-		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtViewHelper.getFolderHasUserList(1)");
-		try {
-			// Does the folder have any user_list <item>'s?
-			Folder folder = bs.getFolderModule().getFolder(folderInfo.getBinderIdAsLong());
-			return getFolderHasUserList(folder);
-		}
-		
-		catch (Exception e) {
-			// Log the error and assume there are no user_list's.
-			GwtLogHelper.error(m_logger, "GwtViewHelper.getFolderHasUserList( 1: SOURCE EXCEPTION ):  ", e);
-			return false;
-		}
-		
-		finally {
-			gsp.stop();
-		}
-	}
-	
-	public static boolean getFolderHasUserList(Folder folder) {
-		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtViewHelper.getFolderHasUserList(2)");
-		try {
-			// Does the folder have any user_list <item>'s?
-			List<Node> userListNodes = getFolderUserListNodes(folder);
-			return MiscUtil.hasItems(userListNodes);
-		}
-		
-		catch (Exception e) {
-			// Log the error and assume there are no user_list's.
-			GwtLogHelper.error(m_logger, "GwtViewHelper.getFolderHasUserList( 2: SOURCE EXCEPTION ):  ", e);
-			return false;
-		}
-		
-		finally {
-			gsp.stop();
-		}
-	}
-	
-	/**
-	 * Returns a UserListInfoRpcResponseData corresponding to the
-	 * user_list <item>'s from a folder view definition.
-	 * 
-	 * @param bs
-	 * @param request
-	 * @param folderInfo
-	 * 
-	 * @return
-	 * 
-	 * @throws GwtTeamingException
-	 */
-	public static UserListInfoRpcResponseData getFolderUserListInfo(AllModulesInjected bs, HttpServletRequest request, BinderInfo folderInfo) throws GwtTeamingException {
-		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtViewHelper.getFolderUserListInfo()");
-		try {
-			// Allocate a UserListInfoRpcResponseData we can fill in
-			// and return.
-			UserListInfoRpcResponseData reply = new UserListInfoRpcResponseData();
-
-			// Does the folder have any user_list <item>'s?
-			Folder folder = bs.getFolderModule().getFolder(folderInfo.getBinderIdAsLong());
-			List<Node> userListNodes = getFolderUserListNodes(folder);
-			int userListCount = ((null == userListNodes) ? 0 : userListNodes.size());
-			if (0 < userListCount) {
-				// Yes!  Scan them.
-				for (Node userListNode:  userListNodes) {
-					// Determine this <item>'s caption.
-					Node captionNode = userListNode.selectSingleNode("properties/property[@name='caption']");
-					String caption;
-					if (null == captionNode) {
-						caption = NLT.get("__user_list");
-						int count = reply.getUserListInfoListCount();
-						if (0 < count) {
-							caption += ("_" + (count + 1));
-						}
-					}
-					else {
-						caption = ((Element) captionNode).attributeValue("value");
-					}
-
-					// Does this <item> have a data name?
-					Node dataNameNode = userListNode.selectSingleNode("properties/property[@name='name']");;
-					if (null != dataNameNode) {
-						// Yes!  Create a UserListInfo for it...
-						String dataName = ((Element) dataNameNode).attributeValue("value");
-						UserListInfo userListInfo = new UserListInfo(caption, dataName);
-						reply.addUserListInfo(userListInfo);
-						
-						// ...look for this <item>'s user IDs...
-						CustomAttribute ca = folder.getCustomAttribute(dataName);
-						Set<Long> userIds = ((null == ca) ? null : LongIdUtil.getIdsAsLongSet(ca.getValue().toString(), ","));
-						
-						// ...and if we find any...
-						if (MiscUtil.hasItems(userIds)) {
-							// ...add PrincipalInfo's for them to the
-							// ...UserListInfo.
-							getUserInfoFromPIds(bs, request, userListInfo.getUsers(), null ,userIds);
-						}
-					}
-				}
-			}
-			
-			return reply;
-		}
-		
-		catch (Exception e) {
-			// Convert the exception to a GwtTeamingException and throw
-			// that.
-			throw
-				GwtLogHelper.getGwtClientException(
-					m_logger,
-					e,
-					"GwtViewHelper.getFolderUserListInfo( SOURCE EXCEPTION ):  ");
-		}
-		
-		finally {
-			gsp.stop();
-		}
-	}
-	
-	/*
-	 * Returns a List<Node> of the user_list <item>'s from a folder's
-	 * view definition.
-	 */
-	@SuppressWarnings("unchecked")
-	private static List<Node> getFolderUserListNodes(Folder folder) {
-		// Do we have a Folder?
-		List<Node> reply = null;
-		if (null != folder) {
-			// Yes!  Can we access it's view definition document?
-			Definition viewDef    = folder.getDefaultViewDef();
-			Document   viewDefDoc = ((null == viewDef) ? null : viewDef.getDefinition());
-			if (null != viewDefDoc) {
-				// Yes!  Does it contain any user_list <item>'s?
-		  		reply = viewDefDoc.selectNodes("//item[@type='form']//item[@name='user_list']");
-			}
-		}
-		
-		// If we get here, reply refers to a List<Node> of the folder's
-		// user_list <item>'s or is null.  Return it.
-		return reply;
-	}
-	
-	/**
 	 * Reads the row data from a folder and returns it as a
 	 * FolderRowsRpcResponseData.
 	 * 
@@ -5210,13 +4909,13 @@ public class GwtViewHelper {
 					
 					// Apply the internal/external filtering...
 					if      (internal && external) /* Default includes both.*/ ;
-					else if (internal)             options.put(ObjectKeys.SEARCH_IS_INTERNAL,            Boolean.TRUE);
-					else if (external)             options.put(ObjectKeys.SEARCH_IS_EXTERNAL,            Boolean.TRUE);
+					else if (internal)             options.put(ObjectKeys.SEARCH_IS_INTERNAL,       Boolean.TRUE);
+					else if (external)             options.put(ObjectKeys.SEARCH_IS_EXTERNAL,       Boolean.TRUE);
 
 					// ...and apply the enabled/disabled filtering.
 					if      (enabled  && disabled) /* Default includes both. */ ;
-					else if (enabled)              options.put(ObjectKeys.SEARCH_IS_ENABLED_PRINCIPALS,  Boolean.TRUE);
-					else if (disabled)             options.put(ObjectKeys.SEARCH_IS_DISABLED_PRINCIPALS, Boolean.TRUE);
+					else if (enabled)              options.put(ObjectKeys.SEARCH_IS_ENABLED_USERS,  Boolean.TRUE);
+					else if (disabled)             options.put(ObjectKeys.SEARCH_IS_DISABLED_USERS, Boolean.TRUE);
 				}
 				
 				else {
@@ -5225,7 +4924,7 @@ public class GwtViewHelper {
 					// non-person, external and disabled users.
 					options.put(ObjectKeys.SEARCH_IS_PERSON,        Boolean.TRUE);
 					options.put(ObjectKeys.SEARCH_IS_INTERNAL,      Boolean.TRUE);
-					options.put(ObjectKeys.SEARCH_IS_ENABLED_PRINCIPALS, Boolean.TRUE);
+					options.put(ObjectKeys.SEARCH_IS_ENABLED_USERS, Boolean.TRUE);
 				}
 			}
 			
@@ -5289,25 +4988,11 @@ public class GwtViewHelper {
 				else if (isCollection)            searchResults = getCollectionEntries(            bs, request, binder, quickFilter, options, collectionType, shareItems   );
 				else if (isMobileDevicesViewSpec) return GwtMobileDeviceHelper.getMobileDeviceRows(bs, request, binder, quickFilter, options, folderInfo,     folderColumns);
 				else {
-					options.put(ObjectKeys.SEARCH_INCLUDE_NESTED_BINDERS, Boolean.TRUE          );	// Include nested folders.
-					options.put(ObjectKeys.SEARCH_SORT_BY,                Constants.ENTITY_FIELD);	// Sort folders separately from entries.
-					options.put(ObjectKeys.SEARCH_SORT_DESCEND,           sortDescend           );	// Sort direction, folders vs. entries.
-					options.put(ObjectKeys.SEARCH_SORT_BY_SECONDARY,      sortBy                );	// After sorting folders from entries, what's sorted by next?
-					options.put(ObjectKeys.SEARCH_SORT_DESCEND_SECONDARY, sortDescend           );	// Same direction for entries as for folders vs. entries.
-
-					// If we're sorting on a custom column...
-					FolderColumn sortColumn = FolderColumn.getFolderColumnByEleName(folderColumns, sortBy);
-					if ((null != sortColumn) && sortColumn.isCustomColumn()) {
-						// ...whose value is a number...
-						String colType = sortColumn.getColumnType();
-						if ((MiscUtil.hasString(colType)) && colType.equals("number")) {
-							// ...we want Lucene to sort it as a
-							// ...double.
-							options.put(
-								ObjectKeys.SEARCH_SORT_FIELD_TYPE_SECONDARY,
-								new Integer(SortField.DOUBLE));
-						}
-					}
+					options.put(ObjectKeys.SEARCH_INCLUDE_NESTED_BINDERS, Boolean.TRUE);
+					options.put(ObjectKeys.SEARCH_SORT_BY,                Constants.ENTITY_FIELD);
+					options.put(ObjectKeys.SEARCH_SORT_DESCEND,           sortDescend           );
+					options.put(ObjectKeys.SEARCH_SORT_BY_SECONDARY,      fdd.getFolderSortBy() );
+					options.put(ObjectKeys.SEARCH_SORT_DESCEND_SECONDARY, sortDescend           );
 
 					// If we have an authentication GUID for the
 					// folder...
@@ -5995,18 +5680,8 @@ public class GwtViewHelper {
 	 * Returns true if a folder supports pinning and folder otherwise.
 	 */
 	private static boolean getFolderSupportsPinning(BinderInfo folderInfo) {
-		return getFolderTypeSupportsPinning(folderInfo.getFolderType());
-	}
-	
-	/**
-	 * Returns true if a FolderType is one that supports pinning and
-	 * false otherwise.
-	 * 
-	 * @param ft
-	 */
-	public static boolean getFolderTypeSupportsPinning(FolderType ft) {
 		boolean reply;
-		switch (ft) {
+		switch (folderInfo.getFolderType()) {
 		default:          reply = false; break;
 		case DISCUSSION:  reply = true;  break;
 		}
@@ -6259,23 +5934,16 @@ public class GwtViewHelper {
 	 * Returns a date/time stamp of the last time the user logged in or
 	 * null if it can't be determined.
 	 */
-	private static Date getLastUserLogin(AllModulesInjected bs, User user) {
+	private static Date getLastUserLogin(AllModulesInjected bs, Long userId) {
 		Date reply = null;
 		
 		try {
-			// Has this user ever logged in?
-			Set<Long> memberIds = new HashSet<Long>();
-			memberIds.add(user.getId());
-			Date start = user.getFirstLoginDate();
-			if (null == start) {
-				// No!  Then they can't have a last login.
-				return null;
-			}
-			
 			// Can we get a login report for this user?
+			Set<Long> memberIds = new HashSet<Long>();
+			memberIds.add(userId);
 			List<Map<String, Object>> loginReport = bs.getReportModule().generateLoginReport(
-				start,		// Start the report with their first login...
-				new Date(),	// ...and end it at the current time.
+				new Date(0),	// Report start.
+				new Date(),		// Report end.
 				WebKeys.URL_REPORT_OPTION_TYPE_SHORT,
 				ReportModule.LAST_LOGIN_SORT,
 				ReportModule.LOGIN_DATE_SORT,
@@ -6481,7 +6149,7 @@ public class GwtViewHelper {
 	 * Given a List<Long> of principal IDs read from entry maps,
 	 * returns an equivalent List<PrincipalInfo> object.
 	 */
-	private static void getUserInfoFromPIds(AllModulesInjected bs, HttpServletRequest request, List<PrincipalInfo> piList, List<MobileDevicesInfo> mdList, Collection<Long> principalIds) {
+	private static void getUserInfoFromPIds(AllModulesInjected bs, HttpServletRequest request, List<PrincipalInfo> piList, List<MobileDevicesInfo> mdList, List<Long> principalIds) {
 		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtViewHelper.getUserInfoFromPIds()");
 		try {
 			// Can we map the List<Long> of principal IDs to any
@@ -7151,11 +6819,8 @@ public class GwtViewHelper {
 	
 			// ...get ID's of the groups and teams the user is a member
 			// ...of...
-			List<Long>	groups = GwtServerHelper.getGroupIds(request, bs, userId, true );
-			
-			// We don't need to get team ids because team membership is now stored in a "team group"
-			List<Long> teams = new ArrayList<Long>();
-			//!!!List<Long>	teams  = GwtServerHelper.getTeamIds( request, bs, userId);
+			List<Long>	groups = GwtServerHelper.getGroupIds(request, bs, userId);
+			List<Long>	teams  = GwtServerHelper.getTeamIds( request, bs, userId);
 			
 			// ...get the List<ShareItem> of those things shared with
 			// ...the user...
@@ -7354,7 +7019,7 @@ public class GwtViewHelper {
 	}
 	
 	/**
-	 * Returns a UserPropertiesRpcResponseData containing information
+	 * Returns a UserPropertiesRpcRequestData containing information
 	 * managing a user.
 	 * 
 	 * @param bs
@@ -7366,7 +7031,7 @@ public class GwtViewHelper {
 	 * @throws GwtTeamingException
 	 */
 	@SuppressWarnings("unchecked")
-	public static UserPropertiesRpcResponseData getUserProperties(final AllModulesInjected bs, final HttpServletRequest request, final Long userId, boolean includeLastLogin) throws GwtTeamingException {
+	public static UserPropertiesRpcResponseData getUserProperties(final AllModulesInjected bs, final HttpServletRequest request, final Long userId) throws GwtTeamingException {
 		SimpleProfiler.start("GwtViewHelper.getUserProperties()");
 		try {
 			SimpleProfiler.start("GwtViewHelper.getUserProperties(Get profile information)");
@@ -7417,22 +7082,18 @@ public class GwtViewHelper {
 				}
 			}
 
-			// ...if we need to include the last login information...
-			ai.setShowLastLogin(includeLastLogin && SHOW_LAST_LOGIN_IN_USER_PROPERTIES);
-			if (ai.isShowLastLogin()) {
-				SimpleProfiler.start("GwtViewHelper.getUserProperties(Get last login)");
-				try {
-					// ...and if we can determine the last time the
-					// ...user logged in...
-					Date lastLogin = getLastUserLogin(bs, user);
-					if (null != lastLogin) {
-						// ...add that to the reply.
-						ai.setLastLogin(GwtServerHelper.getDateTimeString(lastLogin));
-					}
+			SimpleProfiler.start("GwtViewHelper.getUserProperties(Get last login)");
+			try {
+				// ...if we can determine the last time the user logged
+				// ...in...
+				Date lastLogin = getLastUserLogin(bs, userId);
+				if (null != lastLogin) {
+					// ...add that to the reply.
+					ai.setLastLogin(GwtServerHelper.getDateTimeString(lastLogin));
 				}
-				finally {
-					SimpleProfiler.stop("GwtViewHelper.getUserProperties(Get last login)");
-				}
+			}
+			finally {
+				SimpleProfiler.stop("GwtViewHelper.getUserProperties(Get last login)");
 			}
 
 			SimpleProfiler.start("GwtViewHelper.getUserProperties(Get adHoc setting)");
@@ -7570,7 +7231,7 @@ public class GwtViewHelper {
 							Long homeId = GwtServerHelper.getHomeFolderId(bs, user);
 							if (null != homeId) {
 								String			rootPath = null;
-								Folder			home     = bs.getFolderModule().getFolderWithoutAccessCheck(homeId);
+								Folder			home     = bs.getFolderModule().getFolder(homeId);
 								ResourceDriver	rd       = home.getResourceDriver();
 								if (null != rd) {
 									String dc = rd.getClass().getName();
@@ -7700,10 +7361,7 @@ public class GwtViewHelper {
 			// No, it's not an internal user!  Is it the Guest user?
 			if (user.isShared())
 			     reply = UserType.EXTERNAL_GUEST;
-			else if ( ui.isFromOpenid() && ui.isFromLocal() == false )
-				reply = UserType.EXTERNAL_OPEN_ID;
-			else
-				reply = UserType.EXTERNAL_OTHERS;
+			else reply = UserType.EXTERNAL_OTHERS;
 		}
 		
 		// If we get here, reply refers to the UserType of the User.
@@ -7776,7 +7434,7 @@ public class GwtViewHelper {
 	 * List<UserWorkspacePair> of the User/Workspace pairs for the IDs.
 	 */
 	@SuppressWarnings("unchecked")
-	private static List<UserWorkspacePair> getUserWorkspacePairs(Collection <Long> principalIds, boolean resolveWorkspaces) {
+	private static List<UserWorkspacePair> getUserWorkspacePairs(List<Long> principalIds, boolean resolveWorkspaces) {
 		GwtServerProfiler gsp = GwtServerProfiler.start(m_logger, "GwtViewHelper.getUserWorkspacePairs()");
 		try {
 			SimpleProfiler.start("GwtViewHelper.getUserWorkspacePairs(Resolve users)");
@@ -8813,7 +8471,7 @@ public class GwtViewHelper {
 		else if (bi.isBinderFolder()) {
 			// Yes!  Is it a 'My Files Storage' folder?
 			Binder binder = bs.getBinderModule().getBinderWithoutAccessCheck(binderId);
-			if ((null != binder) && BinderHelper.isBinderMyFilesStorage(binder) && (!(showMyFilesStorageAsFolder()))) {
+			if ((null != binder) && BinderHelper.isBinderMyFilesStorage(binder)) {
 				// Yes!  Is it the current user's?
 				Binder userWS          = binder.getParentBinder();
 				Long   currentUserWSId = user.getWorkspaceId();
@@ -9094,107 +8752,6 @@ public class GwtViewHelper {
 	}
 
 	/**
-	 * Marks the contents of a folder as having been read.
-	 * 
-	 * @param bs
-	 * @param request
-	 * @param folderId
-	 * 
-	 * @return
-	 * 
-	 * @throws GwtTeamingException
-	 */
-	public static BooleanRpcResponseData markFolderContentsRead(AllModulesInjected bs, HttpServletRequest request, Long folderId) throws GwtTeamingException {
-		try {
-			// Mark the contents of the folder as having been read.
-			markFolderContentsReadUnreadImpl(bs, folderId, true);	// true -> Mark as read.
-			
-			// If we get here, we marked the entries has having been
-			// read.  Return true.
-			return new BooleanRpcResponseData(true);
-		}
-		
-		catch (Exception e) {
-			// Convert the exception to a GwtTeamingException and throw
-			// that.
-			throw
-				GwtLogHelper.getGwtClientException(
-					m_logger,
-					e,
-					"GwtViewHelper.markFolderContentsRead( SOURCE EXCEPTION ):  ");
-		}
-	}
-
-	/*
-	 * Implementation method that actually marks the entries of a
-	 * folder as having been read or unread.
-	 */
-	@SuppressWarnings("unchecked")
-	private static void markFolderContentsReadUnreadImpl(AllModulesInjected bs, Long folderId, boolean markRead) {
-		// Can we get any entries from the folder?
-		Map options = new HashMap();
-		options.put(ObjectKeys.SEARCH_MAX_HITS, ObjectKeys.SEARCH_MAX_HITS_FOLDER_ENTRIES_READ_UNREAD);
-		Map folderEntries = bs.getFolderModule().getEntries(folderId, options);
-		if (null != folderEntries) {
-			List<Map> feList = ((List) folderEntries.get(ObjectKeys.SEARCH_ENTRIES));
-			if (MiscUtil.hasItems(feList)) {
-				// Yes!  Scan them.
-				List<Long> entryIds = new ArrayList<Long>();
-				for (Map feMap:  feList) {
-					// Can we get this entry's ID?
-					String entryIdStr = ((String) feMap.get(Constants.DOCID_FIELD));
-					if (MiscUtil.hasString(entryIdStr)) {
-						// Yes!  Add it to the entry ID list.
-						entryIds.add(Long.parseLong(entryIdStr));
-					}
-				}
-				
-				// Are we tracking any entry IDs?
-				if (!(entryIds.isEmpty())) {
-					// Yes!  Mark them has having been seen/unseen.
-					ProfileModule	pm     = bs.getProfileModule();
-					Long			userId = GwtServerHelper.getCurrentUserId();
-					if (markRead)
-					     pm.setSeenIds(userId, entryIds);
-					else pm.setUnseen( userId, entryIds);
-				}
-			}
-		}
-	}
-	
-	/**
-	 * Marking the contents of a folder as having been unread.
-	 * 
-	 * @param bs
-	 * @param request
-	 * @param folderId
-	 * 
-	 * @return
-	 * 
-	 * @throws GwtTeamingException
-	 */
-	public static BooleanRpcResponseData markFolderContentsUnread(AllModulesInjected bs, HttpServletRequest request, Long folderId) throws GwtTeamingException {
-		try {
-			// Mark the contents of the folder as having been unread.
-			markFolderContentsReadUnreadImpl(bs, folderId, false);	// false -> Mark as unread.
-			
-			// If we get here, we marked the entries has having been
-			// unread.  Return true.
-			return new BooleanRpcResponseData(true);
-		}
-		
-		catch (Exception e) {
-			// Convert the exception to a GwtTeamingException and throw
-			// that.
-			throw
-				GwtLogHelper.getGwtClientException(
-					m_logger,
-					e,
-					"GwtViewHelper.markFolderContentsUnread( SOURCE EXCEPTION ):  ");
-		}
-	}
-	
-	/**
 	 * Moves the entries.
 	 * 
 	 * @param bs
@@ -9228,11 +8785,7 @@ public class GwtViewHelper {
 					try {
 						// Can we move this entity?
 						if (entityId.isBinder()) {
-							if (cmt.isTargetUserWorkspace() && cmt.isTargetUserWorkspaceUnavailable()) {
-								String entryTitle = GwtServerHelper.getEntityTitle(bs, entityId);
-								reply.addError(NLT.get("moveEntryError.cantTargetUserWS", new String[]{entryTitle}));
-							}
-							else if (BinderHelper.isBinderHomeFolder(bm.getBinder(entityId.getEntityId()))) {
+							if (BinderHelper.isBinderHomeFolder(bm.getBinder(entityId.getEntityId()))) {
 								String entryTitle = GwtServerHelper.getEntityTitle(bs, entityId);
 								reply.addError(NLT.get("moveEntryError.cantMoveHome", new String[]{entryTitle}));
 							}
@@ -9827,43 +9380,6 @@ public class GwtViewHelper {
 		}
 	}
 
-	/**
-	 * Saves whether the user list panel should be visible on the
-	 * given binder.
-	 * 
-	 * @param bs
-	 * @param request
-	 * @param binderId
-	 * @param showUserListPanel
-	 * 
-	 * @return
-	 * 
-	 * @throws GwtTeamingException
-	 */
-	public static Boolean saveUserListStatus(AllModulesInjected bs, HttpServletRequest request, Long binderId, boolean showUserListPanel) throws GwtTeamingException {
-		try {
-			// Save the user list status...
-			bs.getProfileModule().setUserProperty(
-				GwtServerHelper.getCurrentUserId(),
-				binderId,
-				ObjectKeys.USER_PROPERTY_BINDER_SHOW_USER_LIST,
-				new Boolean(showUserListPanel));
-			
-			// ...and return true.
-			return Boolean.TRUE;
-		}
-		
-		catch (Exception e) {
-			// Convert the exception to a GwtTeamingException and throw
-			// that.
-			throw
-				GwtLogHelper.getGwtClientException(
-					m_logger,
-					e,
-					"GwtViewHelper.saveUserListStatus( SOURCE EXCEPTION ):  ");
-		}
-	}
-	
 	/*
 	 * Generates a value for a custom column in a row.
 	 * 
@@ -9896,10 +9412,6 @@ public class GwtViewHelper {
 					    colType.equals("hidden")          ||
 					    colType.equals("number")) {
 					String strValue = DefinitionHelper.getCaptionsFromValues(entryDef, colEleName, colValue.toString());
-					int    strLen   = ((null == strValue) ? 0 : strValue.length());
-					if (colType.equals("number") && (3 <= strLen) && strValue.endsWith(".0")) {	//  3 so we have something before the '.0'.
-						strValue = strValue.substring(0, (strLen - 2));							// -2 to strip off the '.0'.
-					}
 					fr.setColumnValue(fc, strValue);
 				}
 
@@ -10046,12 +9558,6 @@ public class GwtViewHelper {
 					fr.setColumnValue(fc, strValue.toString());
 				}
 			}
-			
-			else {
-				// No, we don't have a value or event for this column!
-				// Display blank for it.
-				fr.setColumnValue(fc, "");
-			}
 		}
 		
 		catch (Exception ex) {
@@ -10126,17 +9632,6 @@ public class GwtViewHelper {
 	public static void saveUserViewSharedFiles(HttpServletRequest request, CollectionType collectionType, boolean viewingSharedFiles) {
 		HttpSession session = WebHelper.getRequiredSession(request);
 		session.setAttribute((CACHED_VIEW_SHARED_FILES_BASE + collectionType.ordinal()), new Boolean(viewingSharedFiles));
-	}
-
-	/**
-	 * Controls whether the My Files Storage folder will appear in the
-	 * UI as a normal folder or will be hidden as much as possible, as
-	 * it is in Filr.
-	 *  
-	 * @return
-	 */
-	public static boolean showMyFilesStorageAsFolder() {
-		return (SHOW_MY_FILES_STORAGE_IN_VIBE && LicenseChecker.showVibeFeatures());
 	}
 	
 	/**

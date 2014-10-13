@@ -57,16 +57,12 @@ import org.kablink.teaming.gwt.client.mainmenu.EmailNotificationDlg.EmailNotific
 import org.kablink.teaming.gwt.client.mainmenu.WhoHasAccessDlg;
 import org.kablink.teaming.gwt.client.mainmenu.WhoHasAccessDlg.WhoHasAccessDlgClient;
 import org.kablink.teaming.gwt.client.rpc.shared.DisableUsersCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.DownloadFolderAsCSVFileUrlRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.EnableUsersCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.ErrorListRpcResponseData.ErrorInfo;
 import org.kablink.teaming.gwt.client.rpc.shared.ForceFilesUnlockCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.GetDownloadFolderAsCSVFileUrlCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetMailToPublicLinksCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.MailToPublicLinksRpcResponseData;
-import org.kablink.teaming.gwt.client.rpc.shared.MarkFolderContentsReadCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.MarkFolderContentsUnreadCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetViewFolderEntryUrlCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetZipDownloadFilesUrlCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetZipDownloadFolderUrlCmd;
@@ -89,8 +85,6 @@ import org.kablink.teaming.gwt.client.util.EntityRights;
 import org.kablink.teaming.gwt.client.util.EntityRights.ShareRight;
 import org.kablink.teaming.gwt.client.util.PublicLinkInfo;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
-import org.kablink.teaming.gwt.client.widgets.CopyFiltersDlg;
-import org.kablink.teaming.gwt.client.widgets.CopyFiltersDlg.CopyFiltersDlgClient;
 import org.kablink.teaming.gwt.client.widgets.CopyPublicLinkDlg;
 import org.kablink.teaming.gwt.client.widgets.CopyPublicLinkDlg.CopyPublicLinkDlgClient;
 import org.kablink.teaming.gwt.client.widgets.DeleteSelectedUsersDlg;
@@ -124,7 +118,6 @@ import com.google.gwt.user.client.Window.Navigator;
 public class BinderViewsHelper {
 	private static AddFilesDlg							m_addFilesAppletDlg;					// An instance of the add files (via an applet) dialog.
 	private static AddFilesHtml5Popup					m_addFilesHtml5Popup;					// An instance of the add files (via HTML5)     popup.
-	private static CopyFiltersDlg						m_copyFiltersDlg;						// An instance of a copy filters dialog. 
 	private static ChangeEntryTypesDlg					m_cetDlg;								// An instance of a change entry types dialog. 
 	private static CopyMoveEntriesDlg					m_cmeDlg;								// An instance of a copy/move entries dialog.
 	private static CopyPublicLinkDlg					m_copyPublicLinkDlg;					// An instance of a copy public link dialog.
@@ -866,72 +859,6 @@ public class BinderViewsHelper {
 	}
 
 	/**
-	 * Downloads a folder as a CSV file.
-	 *
-	 * @param downloadForm
-	 * @param folderId
-	 * @param reloadEvent
-	 */
-	public static void downloadFolderAsCSVFile(final FormPanel downloadForm, Long folderId, final VibeEventBase<?> reloadEvent) {
-		// Show a busy spinner while we build the information for
-		// downloading the folder.
-		final SpinnerPopup busy = new SpinnerPopup();
-		busy.center();
-
-		// Send the request for the download folder as a CSV file URL.
-		GetDownloadFolderAsCSVFileUrlCmd cmd = new GetDownloadFolderAsCSVFileUrlCmd(folderId);
-		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
-			@Override
-			public void onFailure(Throwable caught) {
-				busy.hide();
-				GwtClientHelper.handleGwtRPCFailure(
-					caught,
-					m_messages.rpcFailure_GetDownloadFolderAsCSVFileUrl());
-			}
-
-			@Override
-			public void onSuccess(VibeRpcResponse response) {
-				// If we got any errors creating the URL to download
-				// the folder as a CSV file...
-				busy.hide();
-				DownloadFolderAsCSVFileUrlRpcResponseData	downloadFolderAsCSVFileInfo = ((DownloadFolderAsCSVFileUrlRpcResponseData) response.getResponseData());
-				ErrorListRpcResponseData					errorList                   = downloadFolderAsCSVFileInfo.getErrors();
-				List<ErrorInfo>								errors                      = errorList.getErrorList();
-				int count = ((null == errors) ? 0 : errors.size());
-				boolean hasErrors = (0 < count);
-				if (hasErrors) {
-					// ...tell the user.
-					GwtClientHelper.displayMultipleErrors(m_messages.downloadFolderAsCSVFileUrlError(), errors);
-					hasErrors = (0 < errorList.getErrorCount());	// The error list has errors and warnings.  Did we find any actual errors?
-				}
-
-				// Did we get any actual errors (not just warnings)?
-				if (!hasErrors) {
-					// No!  If we get the URL to download the folder as
-					// a CSV file...
-					String downloadFolderAsCSVFileUrl = downloadFolderAsCSVFileInfo.getUrl();
-					if (GwtClientHelper.hasString(downloadFolderAsCSVFileUrl)) {
-						// ...start it downloading...
-						downloadForm.setAction(downloadFolderAsCSVFileUrl);
-						downloadForm.submit();
-					}
-				}
-				
-				// ...and if we have a reload event...
-				if (null != reloadEvent) {
-					// ...fire it.
-					GwtTeaming.fireEventAsync(reloadEvent);
-				}
-			}
-		});
-	}
-	
-	public static void downloadFolderAsCSVFile(FormPanel downloadForm, Long folderId) {
-		// Always use the initial form of the method.
-		downloadFolderAsCSVFile(downloadForm, folderId, null);
-	}
-	
-	/**
 	 * Invokes the appropriate UI to edit the public link of the
 	 * entities based on a List<EntityId> of the entries.
 	 *
@@ -1405,38 +1332,6 @@ public class BinderViewsHelper {
 	}
 
 	/**
-	 * Invokes the copy filters dialog on the given folder.
-	 * 
-	 * @param folderInfo
-	 */
-	public static void invokeCopyFiltersDlg(final BinderInfo folderInfo) {
-		// Have we created a copy filters dialog yet?
-		if (null == m_copyFiltersDlg) {
-			// No!  Create one now...
-			CopyFiltersDlg.createAsync(new CopyFiltersDlgClient() {
-				@Override
-				public void onUnavailable() {
-					// Nothing to do.  Error handled in
-					// asynchronous provider.
-				}
-				
-				@Override
-				public void onSuccess(CopyFiltersDlg cfDlg) {
-					// ...and show it with the given folder ID.
-					m_copyFiltersDlg = cfDlg;
-					showCopyFiltersDlgAsync(folderInfo);
-				}
-			});
-		}
-		
-		else {
-			// Yes, we've already create a copy filters dialog!  Simply
-			// show it with the given folder ID.
-			showCopyFiltersDlgAsync(folderInfo);
-		}
-	}
-	
-	/**
 	 * Invokes the 'Add Files' interface.
 	 * 
 	 * For browsers that support it, that will be the HTML5 file upload
@@ -1873,90 +1768,6 @@ public class BinderViewsHelper {
 	}
 	
 	/**
-	 * Marks the contents of a folder as having been read.
-	 *
-	 * @param folderId
-	 * @param reloadEvent
-	 */
-	public static void markFolderContentsRead(Long folderId, final VibeEventBase<?> reloadEvent) {
-		// Show a busy spinner while we mark the contents of the folder
-		// as having been read.
-		final SpinnerPopup busy = new SpinnerPopup();
-		busy.center();
-
-		// Send the request to mark the folder contents as having been
-		// read.
-		MarkFolderContentsReadCmd cmd = new MarkFolderContentsReadCmd(folderId);
-		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
-			@Override
-			public void onFailure(Throwable caught) {
-				busy.hide();
-				GwtClientHelper.handleGwtRPCFailure(
-					caught,
-					m_messages.rpcFailure_MarkFolderContentsRead());
-			}
-
-			@Override
-			public void onSuccess(VibeRpcResponse response) {
-				// Hide the busy spinner...
-				busy.hide();
-				
-				// ...and fire a reload event.
-				if (null == reloadEvent)
-				     FullUIReloadEvent.fireOneAsync();
-				else GwtTeaming.fireEventAsync(reloadEvent);
-			}
-		});
-	}
-	
-	public static void markFolderContentsRead(Long folderId) {
-		// Always use the initial form of the method.
-		markFolderContentsRead(folderId, null);
-	}
-	
-	/**
-	 * Marks the contents of a folder as having been unread.
-	 *
-	 * @param folderId
-	 * @param reloadEvent
-	 */
-	public static void markFolderContentsUnread(Long folderId, final VibeEventBase<?> reloadEvent) {
-		// Show a busy spinner while we mark the contents of the folder
-		// as having been unread.
-		final SpinnerPopup busy = new SpinnerPopup();
-		busy.center();
-
-		// Send the request to mark the folder contents as having been
-		// unread.
-		MarkFolderContentsUnreadCmd cmd = new MarkFolderContentsUnreadCmd(folderId);
-		GwtClientHelper.executeCommand(cmd, new AsyncCallback<VibeRpcResponse>() {
-			@Override
-			public void onFailure(Throwable caught) {
-				busy.hide();
-				GwtClientHelper.handleGwtRPCFailure(
-					caught,
-					m_messages.rpcFailure_MarkFolderContentsUnread());
-			}
-
-			@Override
-			public void onSuccess(VibeRpcResponse response) {
-				// Hide the busy spinner...
-				busy.hide();
-				
-				// ...and fire a reload event.
-				if (null == reloadEvent)
-				     FullUIReloadEvent.fireOneAsync();
-				else GwtTeaming.fireEventAsync(reloadEvent);
-			}
-		});
-	}
-	
-	public static void markFolderContentsUnread(Long folderId) {
-		// Always use the initial form of the method.
-		markFolderContentsUnread(folderId, null);
-	}
-	
-	/**
 	 * Marks the entries read based on a List<Long> of their entity
 	 * IDs.
 	 *
@@ -2223,25 +2034,6 @@ public class BinderViewsHelper {
 			reloadEvent);	// Event to fire to reload things after a successful operation.
 	}
 	
-	/*
-	 * Asynchronously shows the copy filters dialog.
-	 */
-	private static void showCopyFiltersDlgAsync(final BinderInfo folderInfo) {
-		GwtClientHelper.deferCommand(new ScheduledCommand() {
-			@Override
-			public void execute() {
-				showCopyFiltersDlgNow(folderInfo);
-			}
-		});
-	}
-	
-	/*
-	 * Synchronously shows the copy filters dialog.
-	 */
-	private static void showCopyFiltersDlgNow(BinderInfo folderInfo) {
-		CopyFiltersDlg.initAndShow(m_copyFiltersDlg, folderInfo);
-	}
-
 	/*
 	 * Asynchronously shows the copy public link dialog.
 	 */

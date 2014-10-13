@@ -109,7 +109,6 @@ import org.kablink.util.search.FieldFactory;
 
 import org.springframework.dao.CannotAcquireLockException;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.orm.hibernate3.HibernateOptimisticLockingFailureException;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
@@ -160,7 +159,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         
         	SimpleProfiler.start("addEntry_transactionExecute");
         	// 	The following part requires update database transaction.
-	        int tryMaxCount = 1 + SPropsUtil.getInt("select.database.transaction.retry.max.count", ObjectKeys.SELECT_DATABASE_TRANSACTION_RETRY_MAX_COUNT);
+	        int tryMaxCount = 1 + SPropsUtil.getInt("select.database.transaction.retry.max.count", 2);
 	        int tryCount = 0;
 	        while(true) {
 	        	tryCount++;
@@ -190,14 +189,13 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 	        	catch(LockAcquisitionException | CannotAcquireLockException e) {
 	        		if(tryCount < tryMaxCount) {
 	        			if(logger.isDebugEnabled())
-	        				logger.warn("'add entry' failed due to lock error - Retrying in new transaction", e);
+	        				logger.warn("'add entry' failed due to lock error", e);
 	        			else 
-	        				logger.warn("'add entry' failed due to lock error - Retrying in new transaction: " + e.toString());
+	        				logger.warn("'add entry' failed due to lock error: " + e.toString());
 	        			logger.warn("Retrying 'add entry' in new transaction");
 	        			getCoreDao().refresh(binder);        		
 	        		}
 	        		else {
-        				logger.error("'add entry' failed due to lock error - Aborting", e);	        			
 	        			throw e;
 	        		}
 	        	}
@@ -246,12 +244,9 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         		@Override
 				public Object doInTransaction(TransactionStatus status) {
                     //After the entry is successfully added, start up any associated workflows
-        			if (!ctx.containsKey(ObjectKeys.INPUT_OPTION_DELAY_WORKFLOW) || 
-        					!"true".equals(ctx.get(ObjectKeys.INPUT_OPTION_DELAY_WORKFLOW))) {
-	        			SimpleProfiler.start("addEntry_startWorkflow");
-	                	addEntry_startWorkflow(entry, ctx);
-	                	SimpleProfiler.stop("addEntry_startWorkflow");
-        			}
+        			SimpleProfiler.start("addEntry_startWorkflow");
+                	addEntry_startWorkflow(entry, ctx);
+                	SimpleProfiler.stop("addEntry_startWorkflow");
        			return null;
         		}
         	});
@@ -712,34 +707,16 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 	    	SimpleProfiler.stop("modifyEntry_indexRemoveFiles");
 
 	    	//After all parts of the modification process has finished, see if there is a workflow to be added or changed.
-	    	if (ctx.containsKey(ObjectKeys.INPUT_OPTION_DO_WORKFLOW) && !ctx.get(ObjectKeys.INPUT_OPTION_DO_WORKFLOW).equals("")) {
-	        	// 	Starting the initial workflow was delayed. So do it now.
-	        	getTransactionTemplate().execute(new TransactionCallback() {
-	        		@Override
-					public Object doInTransaction(TransactionStatus status) {
-	                    //After the entry is successfully added, start up any associated workflows
-	        			if (!ctx.containsKey(ObjectKeys.INPUT_OPTION_DELAY_WORKFLOW) || 
-	        					!"true".equals(ctx.get(ObjectKeys.INPUT_OPTION_DELAY_WORKFLOW))) {
-		        			SimpleProfiler.start("addEntry_startWorkflow");
-		                	addEntry_startWorkflow(entry, ctx);
-		                	SimpleProfiler.stop("addEntry_startWorkflow");
-	        			}
-	       			return null;
-	        		}
-	        	});
-	        	
-	    	} else {
-		    	SimpleProfiler.start("modifyEntry_transactionExecute3");
-		    	getTransactionTemplate().execute(new TransactionCallback() {
-		    		@Override
-					public Object doInTransaction(TransactionStatus status) {
-		    			SimpleProfiler.start("modifyEntry_startWorkflow");
-		    			modifyEntry_startWorkflow(entry, ctx);
-		    			SimpleProfiler.stop("modifyEntry_startWorkflow");
-		    			return null;
-		    		}});
-		    	SimpleProfiler.stop("modifyEntry_transactionExecute3");
-	    	}
+	    	SimpleProfiler.start("modifyEntry_transactionExecute3");
+	    	getTransactionTemplate().execute(new TransactionCallback() {
+	    		@Override
+				public Object doInTransaction(TransactionStatus status) {
+	    			SimpleProfiler.start("modifyEntry_startWorkflow");
+	    			modifyEntry_startWorkflow(entry, ctx);
+	    			SimpleProfiler.stop("modifyEntry_startWorkflow");
+	    			return null;
+	    		}});
+	    	SimpleProfiler.stop("modifyEntry_transactionExecute3");
 
 	    	// Can the entry be running a workflow?
 	    	if (entry instanceof WorkflowSupport) {
@@ -1065,53 +1042,30 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 		//	may have taken awhile to remove attachments	
 		SimpleProfiler.start("deleteEntry_transactionExecute");
 		getCoreDao().refresh(parentBinder);
-		
-        int tryMaxCount = 1 + SPropsUtil.getInt("select.database.transaction.retry.max.count", ObjectKeys.SELECT_DATABASE_TRANSACTION_RETRY_MAX_COUNT);
-        int tryCount = 0;
-		while (true) {
-			tryCount++;
-			try {
-				getTransactionTemplate().execute(new TransactionCallback() {
-					@Override
-					public Object doInTransaction(TransactionStatus status) {
-						SimpleProfiler.start("deleteEntry_preDelete");
-						deleteEntry_preDelete(parentBinder, entry, ctx);
-						SimpleProfiler.stop("deleteEntry_preDelete");
-
-						SimpleProfiler.start("deleteEntry_workflow");
-						deleteEntry_workflow(parentBinder, entry, ctx);
-						SimpleProfiler.stop("deleteEntry_workflow");
-
-						SimpleProfiler.start("deleteEntry_delete");
-						deleteEntry_delete(parentBinder, entry, ctx);
-						SimpleProfiler.stop("deleteEntry_delete");
-
-						SimpleProfiler.start("deleteEntry_postDelete");
-						deleteEntry_postDelete(parentBinder, entry, ctx);
-						SimpleProfiler.stop("deleteEntry_postDelete");
-						for (ChangeLog changeLog : changeLogs) {
-							ChangeLogUtils.save(changeLog);
-						}
-						return null;
-					}
-				});
-				break; // successful transaction
-			} catch (HibernateOptimisticLockingFailureException e) {
-        		if(tryCount < tryMaxCount) {
-        			if(logger.isDebugEnabled())
-        				logger.warn("'delete entry' failed due to optimistic locking failure - Retrying in new transaction", e);
-        			else 
-        				logger.warn("'delete entry' failed due to optimistic locking failure - Retrying in new transaction: " + e.toString());
-        			getCoreDao().refresh(entry);
-        			getCoreDao().refresh(parentBinder);
-        		}
-        		else {
-    				logger.error("'delete entry' failed due to optimistic locking failure - Aborting", e);
-        			throw e;
-        		}
-			}
-		}			
-
+		getTransactionTemplate().execute(new TransactionCallback() {
+    		@Override
+			public Object doInTransaction(TransactionStatus status) {
+    			SimpleProfiler.start("deleteEntry_preDelete");
+    			deleteEntry_preDelete(parentBinder, entry, ctx);
+    			SimpleProfiler.stop("deleteEntry_preDelete");
+        
+    			SimpleProfiler.start("deleteEntry_workflow");
+    			deleteEntry_workflow(parentBinder, entry, ctx);
+    			SimpleProfiler.stop("deleteEntry_workflow");
+                 
+    			SimpleProfiler.start("deleteEntry_delete");
+    			deleteEntry_delete(parentBinder, entry, ctx);
+    			SimpleProfiler.stop("deleteEntry_delete");
+        
+    			SimpleProfiler.start("deleteEntry_postDelete");
+    			deleteEntry_postDelete(parentBinder, entry, ctx);
+    			SimpleProfiler.stop("deleteEntry_postDelete");
+    			for (ChangeLog changeLog:changeLogs) {
+    				ChangeLogUtils.save(changeLog);
+    			}
+        
+    			return null;
+    		}});
     	SimpleProfiler.stop("deleteEntry_transactionExecute");
     	SimpleProfiler.start("deleteEntry_indexDel");
     	deleteEntry_indexDel(parentBinder, entry, ctx);
@@ -1635,19 +1589,19 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
                	searchFilter.appendFilter(searchTermFilter.getFilter());
            	}
 
-           	// Handle any enabled/disabled principal filtering.
-           	Boolean isDisabledPrincipals = ((options != null) ? ((Boolean) options.get(ObjectKeys.SEARCH_IS_DISABLED_PRINCIPALS)) : null);
-           	Boolean isEnabledPrincipals  = ((options != null) ? ((Boolean) options.get(ObjectKeys.SEARCH_IS_ENABLED_PRINCIPALS))  : null);
-           	if ((null != isDisabledPrincipals) && isDisabledPrincipals) {
-           		// This term will only include disabled principals.
+           	// Handle any enabled/disabled user filtering.
+           	Boolean isDisabledUsers = ((options != null) ? ((Boolean) options.get(ObjectKeys.SEARCH_IS_DISABLED_USERS)) : null);
+           	Boolean isEnabledUsers  = ((options != null) ? ((Boolean) options.get(ObjectKeys.SEARCH_IS_ENABLED_USERS))  : null);
+           	if ((null != isDisabledUsers) && isDisabledUsers) {
+           		// This term will only include disabled users.
            		SearchFilter searchTermFilter = new SearchFilter();
-           		searchTermFilter.addAndDisabledPrincipalFilter(true);
+           		searchTermFilter.addAndDisabledUserFilter(true);
                	searchFilter.appendFilter(searchTermFilter.getFilter());
            	}
-           	if ((null != isEnabledPrincipals) && isEnabledPrincipals) {
-           		// This term will only include enabled principals.
+           	if ((null != isEnabledUsers) && isEnabledUsers) {
+           		// This term will only include enabled users.
            		SearchFilter searchTermFilter = new SearchFilter();
-           		searchTermFilter.addAndDisabledPrincipalFilter(false);
+           		searchTermFilter.addAndDisabledUserFilter(false);
                	searchFilter.appendFilter(searchTermFilter.getFilter());
            	}
 

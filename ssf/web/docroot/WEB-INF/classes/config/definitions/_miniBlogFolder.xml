@@ -38,7 +38,7 @@
     <property name="name" value="_miniBlogFolder"/>
     <property name="family" value="miniblog"/>
     <property name="defaultToFileEntries" value="true"/>
-    <property name="icon" value="/icons/folder_blue_miniblog.png"/>
+    <property name="icon" value="/icons/folder_blue_miniblog.gif"/>
   </properties>
   <export-mappings/>
 </definition>

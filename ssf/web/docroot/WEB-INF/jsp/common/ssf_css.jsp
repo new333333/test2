@@ -358,7 +358,7 @@ div.ss_global_toolbar_quick input {
   	background-color: #FFFFFF;
   	color: ${ss_form_element_text_color};
   	font-size: ${ss_style_font_size};
-  	font-family: ${ss_style_folder_view_font_family};
+  	font-family: ${ss_style_folder_view_font_family};  
 	}
 div.ss_style textarea {
   	padding: 0px 0px 0px 2px;
@@ -368,7 +368,6 @@ div.ss_style input[type="password"],
  div.ss_style select {
 	border: 1px solid #CCC;
 	padding: 3px;
-	border-radius: 2px; 
 	} 
 .ss_form textarea {
   background-color: ${ss_form_element_color};
@@ -430,8 +429,6 @@ div.ss_editorHints {
   font-family: ${ss_style_title_font_family};
   margin-bottom: 3px;
   padding: 0px 6px;
-  min-width:300px;
-  max-width:500px;
   }
 .ss_entryTitleFileVersion {
   font-weight: normal;
@@ -483,9 +480,6 @@ div.ss_entryContent a:hover {
   	padding-right: 5px;
   	white-space: nowrap;
   	color: ${ss_style_metadata_color};
-  	}
-.ss_wrap {
-  	white-space: normal !important;
   	}
 .ss_entryDate {
 	color: #666666;
@@ -771,7 +765,9 @@ a.ss_tinyButton:visited {
  	font-family: ${ss_style_folder_view_font_family};
 	color: #1f1f1f !important;
 	margin-right: 5px;
-	background-color: #fafafa;
+	background: -webkit-gradient(linear, left top, left bottom, from(#ffffff), to(#E0E0E0));
+	background: -moz-linear-gradient(center top , #ffffff, #E0E0E0) repeat scroll 0 0;
+	background-color: transparent;
 	border: 1px solid #B8B8B8 !important;
 	font-weight: normal !important;
 	font-size: 11px;
@@ -782,14 +778,12 @@ a.ss_tinyButton:visited {
 	border-radius: 5px;
 	-moz-border-radius: 5px;
 	-webkit-border-radius: 5px;
-/*	background: -webkit-gradient(linear, left top, left bottom, from(#ffffff), to(#E0E0E0));
-	background: -moz-linear-gradient(center top , #ffffff, #E0E0E0) repeat scroll 0 0;    */
 	}
 a.ss_tinyButton:focus,
 a.ss_tinyButton:hover {
   	font-family: ${ss_style_folder_view_font_family};
   	font-size: 11px;
-	color: #036f9f !important;
+	color: #135c8f !important;
 	border: 1px solid #81b2bd !important;
 	background-color: #cce9ee;
 	white-space: nowrap;
@@ -836,19 +830,18 @@ div.ss_tag_content {
   margin-left: 2px;
 }
 .ss_muted_label_small {
-  font-size: 10px;
+  font-size: 11px;
   color: ${ss_style_muted_label_color};
 }
 
 .ss_muted_cloud_tag {
 	color: ${ss_style_muted_tag_color};
-	background-color: #f4f4f4;
+	background-color: #ededed;
 	font-size: 13px;
 	padding-right: 2px 6px;
 	line-height: 17px;
 	border: 1px solid #b8b8b8;
 	padding: 2px 6px;
-	margin-right: 2px;
 	border-radius: 4px;
 	-moz-border-radius: 4px;
 	-web-border-radius: 4px;
@@ -1450,8 +1443,8 @@ li.ss_toolbar_gwtui {
 	display: inline-block;
 	border-radius: 10px;
 	-moz-border-radius: 10px;
-	border-radius: 10px;
-	-webkit-border-radius: 10px;
+	border-radisu: 10px;
+	-webkit-border-radisu: 10px;
 	}
 span.ss_toolbar_inactive {
 	}
@@ -1793,15 +1786,15 @@ div.ss_box_top_rounded {
 .ss_box_title,
 .ss_box_title:visited {
 	color: ${ss_box_title_color} !important;
-	text-decoration: none;
-	font-size: 13px;
-	font-weight: normal;
+	text-decoration:none;
+	font-size: 14px;
+	font-weight: bold;
 	letter-spacing: .03em;
 }
 
 .ss_box_title:hover {
 	color: ${ss_box_title_hover_color};
-/*	font-weight: bold;  */
+	font-weight: bold;
 	letter-spacing: .03em;
 }
 
@@ -1855,14 +1848,12 @@ a:hover.ss_box_prev {
 	}
 .ss_newpage_box_header {
 	position: relative;
-	color: #fff;
+	color: #fff !important;
 	font-size: 15px !important;
 	letter-spacing: .03em;
 	font-weight: bold;
-/*	padding: 5px;  */
-	padding-bottom: 1px;
-	border-bottom: 1px solid #e0e0e0;
-/*	background: transparent url(<html:imagesPath/>pics/dialog_header_tile.png) repeat-x;
+	padding: 5px;
+	background: transparent url(<html:imagesPath/>pics/dialog_header_tile.png) repeat-x;
 	border-top-left-radius: 5px;
 	border-top-right-radius: 5px;
 	-moz-border-radius-topleft: 5px;
@@ -1870,11 +1861,11 @@ a:hover.ss_box_prev {
 	border-top-left-radius: 5px;
 	border-top-right-radius: 5px;
 	-webkit-border-top-left-radius: 5px;
-	-webkit-border-top-right-radius: 5px;  */
+	-webkit-border-top-right-radius: 5px;
 }
 .ss_close_text a {
 	text-decoration: none;
-	color: #fff;
+	color: #fff !important;
 	font-size: 11px;
 	font-weight: normal;
 	padding-left: 10px;
@@ -1883,9 +1874,7 @@ a:hover.ss_box_prev {
 	padding: 5px 8px 0px 0px;
 	}
 .ss_newpage_box_title {
-	display: inline-block;
 	padding-left: 5px;
-	padding-top: 2px;
 	}
 .ss_newpage_box_next_prev {
 	position:relative;
@@ -2271,7 +2260,7 @@ img.ss_accessory_delete {
 }
 
 a:hover img.ss_accessory_delete {
-    background:url(<html:imagesPath/>icons/close_gray16.png) no-repeat left 0px;
+    background:url(<html:imagesPath/>icons/close_teal16.png) no-repeat left 0px;
     width:16px;
     height:16px;
 }
@@ -2770,16 +2759,16 @@ a.ss_presence_dude {
   </c:if>
 }
 .ss_presence_green_dude {
-    background:url(<html:imagesPath/>pics/presence/online_16.png) no-repeat left;
+    background:url(<html:imagesPath/>pics/sym_s_green_dude_14.png) no-repeat left;
 }
 .ss_presence_gray_dude {
-    background:url(<html:imagesPath/>pics/presence/offline_16.png) no-repeat left;
+    background:url(<html:imagesPath/>pics/sym_s_gray_dude_14.png) no-repeat left;
 }
 .ss_presence_white_dude {
-    background:url(<html:imagesPath/>pics/presence/unknown_16.png) no-repeat left;
+    background:url(<html:imagesPath/>pics/sym_s_white_dude_14.png) no-repeat left;
 }
 .ss_presence_yellow_dude {
-    background:url(<html:imagesPath/>pics/presence/away_16.png) no-repeat left;
+    background:url(<html:imagesPath/>pics/sym_s_yellow_dude_14.png) no-repeat left;
 }
 
 /* Accessible mode styles */
@@ -3976,9 +3965,7 @@ div.ss_teamMembersList, div.ss_clipboardUsersList {
 }
 
 tr.ss_tab_table_columnhead td, tr.ss_tab_table_columnhead th {
-	color: #505354;
-	font-size: 11px;
-	font-weight: normal !important;
+	color: #505354; 
 	padding: 3px 5px 2px 2px; 
 	border-bottom: 1px solid #bbbbb9; 
 	white-space: nowrap;
@@ -4337,7 +4324,7 @@ a.ss_button:hover {
     white-space: nowrap !important;
     text-decoration: none !important;
   	padding: 2px 10px !important;
-	border: 1px solid #81b2bd;
+	border: 0px solid #81b2bd;
 	background-color: #cce9ee;
 	border-radius: 5px;
 	-moz-border-radius: 5px;

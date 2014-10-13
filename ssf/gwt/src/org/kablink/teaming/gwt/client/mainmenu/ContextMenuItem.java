@@ -37,19 +37,15 @@ import java.util.List;
 import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.event.CopySelectedEntitiesEvent;
 import org.kablink.teaming.gwt.client.event.DeleteSelectedEntitiesEvent;
-import org.kablink.teaming.gwt.client.event.DownloadFolderAsCSVFileEvent;
 import org.kablink.teaming.gwt.client.event.EventHelper;
 import org.kablink.teaming.gwt.client.event.GotoContentUrlEvent;
 import org.kablink.teaming.gwt.client.event.GotoPermalinkUrlEvent;
 import org.kablink.teaming.gwt.client.event.InvokeSendEmailToTeamEvent;
 import org.kablink.teaming.gwt.client.event.InvokeShareBinderEvent;
-import org.kablink.teaming.gwt.client.event.MarkFolderContentsReadEvent;
-import org.kablink.teaming.gwt.client.event.MarkFolderContentsUnreadEvent;
 import org.kablink.teaming.gwt.client.event.MoveSelectedEntitiesEvent;
 import org.kablink.teaming.gwt.client.event.TeamingEvents;
 import org.kablink.teaming.gwt.client.event.VibeEventBase;
 import org.kablink.teaming.gwt.client.event.ZipAndDownloadFolderEvent;
-import org.kablink.teaming.gwt.client.mainmenu.ToolbarItem.NameEntityIdPair;
 import org.kablink.teaming.gwt.client.mainmenu.ToolbarItem.NameValuePair;
 import org.kablink.teaming.gwt.client.util.ClientEventParameter;
 import org.kablink.teaming.gwt.client.util.EntityId;
@@ -95,7 +91,6 @@ public class ContextMenuItem extends VibeMenuItem {
 		private FormPanel 				m_fp;							//
 		private int						m_popupHeight;					//
 		private int						m_popupWidth;					//
-		private List<NameEntityIdPair>	m_eventEntityIds;				//
 		private List<NameValuePair>		m_eventQualifiers;				//
 		private String					m_onClickJS;					//
 		private String					m_url;							//
@@ -181,11 +176,10 @@ public class ContextMenuItem extends VibeMenuItem {
 		 * @param hideEntryView
 		 * @param url
 		 * @param teamingEvent
-		 * @param eventEntityIds
 		 * @param eventQualifiers
 		 * @param clientEventParameter
 		 */
-		ContextItemCommand(boolean hideEntryView, String url, TeamingEvents teamingEvent, List<NameEntityIdPair> eventEntityIds, List<NameValuePair> eventQualifiers, ClientEventParameter clientEventParameter) {
+		ContextItemCommand(boolean hideEntryView, String url, TeamingEvents teamingEvent, List<NameValuePair> eventQualifiers, ClientEventParameter clientEventParameter) {
 			// Store the type of command...
 			super();
 			m_type = CommandType.TEAMING_EVENT;
@@ -194,7 +188,6 @@ public class ContextMenuItem extends VibeMenuItem {
 			m_hideEntryView        = hideEntryView;
 			m_url                  = url;
 			m_teamingEvent         = teamingEvent;
-			m_eventEntityIds       = eventEntityIds;
 			m_eventQualifiers      = eventQualifiers;
 			m_clientEventParameter = clientEventParameter;
 		}
@@ -205,12 +198,11 @@ public class ContextMenuItem extends VibeMenuItem {
 		 * @param hideEntryView
 		 * @param url
 		 * @param teamingEvent
-		 * @param eventEntityIds
 		 * @param eventQualifiers
 		 */
-		ContextItemCommand(boolean hideEntryView, String url, TeamingEvents teamingEvent, List<NameEntityIdPair> eventEntityIds, List<NameValuePair> eventQualifiers) {
+		ContextItemCommand(boolean hideEntryView, String url, TeamingEvents teamingEvent, List<NameValuePair> eventQualifiers) {
 			// Always use one of the initial forms of the constructor.
-			this(hideEntryView, url, teamingEvent, eventEntityIds, eventQualifiers, null);
+			this(hideEntryView, url, teamingEvent, eventQualifiers, null);
 		}
 		
 		/**
@@ -234,18 +226,20 @@ public class ContextMenuItem extends VibeMenuItem {
 				break;
 				
 			case TEAMING_EVENT:
-				EntityId eventEID;
 				switch (m_teamingEvent) {
 				case COPY_SELECTED_ENTITIES:
 				case DELETE_SELECTED_ENTITIES:
 				case MOVE_SELECTED_ENTITIES:
 					// Create the appropriate selected entries event...
-					EntityId         eid      = ToolbarItem.getEntityIdValueFromList("entityId", m_eventEntityIds);
-					VibeEventBase<?> selEvent = null;
+					Long				binderId       = Long.parseLong(ToolbarItem.getQualifierValueFromList("binderId",       m_eventQualifiers));
+					Long				binderParentId = Long.parseLong(ToolbarItem.getQualifierValueFromList("binderParentId", m_eventQualifiers));
+					String				binderType     =                ToolbarItem.getQualifierValueFromList("binderType",     m_eventQualifiers );
+					EntityId			eid            = new EntityId(binderParentId, binderId, binderType);
+					VibeEventBase<?>	selEvent = null;
 					switch (m_teamingEvent) {
-					case COPY_SELECTED_ENTITIES:    selEvent = new CopySelectedEntitiesEvent(  eid.getEntityId(), eid); break;
-					case DELETE_SELECTED_ENTITIES:  selEvent = new DeleteSelectedEntitiesEvent(eid.getEntityId(), eid); break;
-					case MOVE_SELECTED_ENTITIES:    selEvent = new MoveSelectedEntitiesEvent(  eid.getEntityId(), eid); break;
+					case COPY_SELECTED_ENTITIES:    selEvent = new CopySelectedEntitiesEvent(  binderId, eid); break;
+					case DELETE_SELECTED_ENTITIES:  selEvent = new DeleteSelectedEntitiesEvent(binderId, eid); break;
+					case MOVE_SELECTED_ENTITIES:    selEvent = new MoveSelectedEntitiesEvent(  binderId, eid); break;
 					}
 					
 					// ...and fire it.
@@ -283,29 +277,10 @@ public class ContextMenuItem extends VibeMenuItem {
 					EventHelper.fireSimpleEvent(m_teamingEvent);
 					break;
 					
-				case DOWNLOAD_FOLDER_AS_CSV_FILE:
-					// Fire the appropriate event.
-					eventEID = ToolbarItem.getEntityIdValueFromList("entityId",  m_eventEntityIds);
-					GwtTeaming.fireEvent(new DownloadFolderAsCSVFileEvent(eventEID.getEntityId()));
-					break;
-					
-				case MARK_FOLDER_CONTENTS_READ:
-					// Fire the appropriate event.
-					eventEID = ToolbarItem.getEntityIdValueFromList("entityId",  m_eventEntityIds);
-					GwtTeaming.fireEvent(new MarkFolderContentsReadEvent(eventEID.getEntityId()));
-					break;
-					
-				case MARK_FOLDER_CONTENTS_UNREAD:
-					// Fire the appropriate event.
-					eventEID = ToolbarItem.getEntityIdValueFromList("entityId",  m_eventEntityIds);
-					GwtTeaming.fireEvent(new MarkFolderContentsUnreadEvent(eventEID.getEntityId()));
-					break;
-					
 				case ZIP_AND_DOWNLOAD_FOLDER:
 					// Fire the appropriate event.
-					eventEID = ToolbarItem.getEntityIdValueFromList("entityId",  m_eventEntityIds);
 					GwtTeaming.fireEvent(new ZipAndDownloadFolderEvent(
-						eventEID.getEntityId(),
+						Long.parseLong(      ToolbarItem.getQualifierValueFromList("binderId",  m_eventQualifiers)),
 						Boolean.parseBoolean(ToolbarItem.getQualifierValueFromList("recursive", m_eventQualifiers))));
 					break;
 					
@@ -397,7 +372,6 @@ public class ContextMenuItem extends VibeMenuItem {
 				hideEntryView,
 				url,
 				te,
-				tbi.getEntityIdsList(),
 				tbi.getQualifiersList(),
 				cep);
 		}

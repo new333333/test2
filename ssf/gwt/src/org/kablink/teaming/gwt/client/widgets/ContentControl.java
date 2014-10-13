@@ -1119,13 +1119,8 @@ public class ContentControl extends Composite
 						{
 							// ...tell the user and navigate to their
 							// ...workspace instead.
-							// We don't want to prompt the user if the login dialog is going to be visible
-							RequestInfo ri = GwtClientHelper.getRequestInfo();
-							if ( ri.isUserLoggedIn() || ri.promptForLogin() == false )
-							{
-								GwtClientHelper.alertViaDlg( GwtTeaming.getMessages().cantAccessFolder() );
-								GwtTeaming.fireEventAsync(  new GotoMyWorkspaceEvent() );
-							}
+							GwtClientHelper.alertViaDlg( GwtTeaming.getMessages().cantAccessFolder() );
+							GwtTeaming.fireEventAsync(  new GotoMyWorkspaceEvent() );
 							return;
 						}
 

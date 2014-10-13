@@ -1080,11 +1080,15 @@ public class MainMenuControl extends Composite
 		String   originalName = event.getOriginalName(); 
 		if (null == eid) {
 			// No!  Construct one using the currently loaded binder.
-			eid = m_contextBinder.buildEntityId();
-			if (null == eid) {
+			String eidType;
+			switch (m_contextBinder.getBinderType()) {
+			case FOLDER:     eidType = EntityId.FOLDER;    break;
+			case WORKSPACE:  eidType = EntityId.WORKSPACE; break;
+			default:
 				GwtClientHelper.deferredAlert(m_messages.mainMenuRenameBinderDlgErrorBogusBinder(m_contextBinder.getBinderType().name()));
 				return;
 			}
+			eid          = new EntityId(m_contextBinder.getParentBinderIdAsLong(), m_contextBinder.getBinderIdAsLong(), eidType);
 			originalName = m_contextBinder.getBinderTitle();
 		}
 		final EntityId finalEid          = eid;

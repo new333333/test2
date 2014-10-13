@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2013 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2013 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -48,7 +48,6 @@ public class BinderInfo implements IsSerializable, VibeRpcResponseData {
 	private boolean       			m_binderDescExpanded       = true;								//
 	private boolean       			m_binderDescHTML;												//
 	private boolean       			m_folderHome;													//
-	private boolean       			m_folderMyFilesStorage;											//
 	private boolean       			m_library;														//
 	private boolean       			m_mirroredDriverConfigured;										//
 	private CollectionType			m_collectionType           = CollectionType.NOT_A_COLLECTION;	//
@@ -92,7 +91,6 @@ public class BinderInfo implements IsSerializable, VibeRpcResponseData {
 		reply.setBinderType(              m_binderType              );
 		reply.setCollectionType(          m_collectionType          );
 		reply.setFolderHome(              m_folderHome              );
-		reply.setFolderMyFilesStorage(    m_folderMyFilesStorage    );
 		reply.setFolderType(              m_folderType              );
 		reply.setLibrary(                 m_library                 );
 		reply.setWorkspaceType(           m_wsType                  );
@@ -111,7 +109,6 @@ public class BinderInfo implements IsSerializable, VibeRpcResponseData {
 	public boolean               isBinderDescExpanded()       {return                            m_binderDescExpanded;      }
 	public boolean               isBinderDescHTML()           {return                            m_binderDescHTML;          }
 	public boolean               isFolderHome()               {return                            m_folderHome;              }
-	public boolean               isFolderMyFilesStorage()     {return                            m_folderMyFilesStorage;    }
 	public boolean               isLibrary()                  {return                            m_library;                 }
 	public boolean               isMirroredDriverConfigured() {return                            m_mirroredDriverConfigured;}
 	public CollectionType        getCollectionType()          {return                            m_collectionType;          }
@@ -131,28 +128,6 @@ public class BinderInfo implements IsSerializable, VibeRpcResponseData {
 		if ((null == m_parentBinderId) || (0 == m_parentBinderId.length()))
 		     reply = null;
 		else reply = Long.parseLong(m_parentBinderId);
-		return reply;
-	}
-
-	/**
-	 * Constructs and returns an EntityId that refers to this binder.
-	 * 
-	 * If the BinderInfo doesn't refer to a specific binder (e.g., it
-	 * refers to a collection, ...), null is returned.
-	 * 
-	 * @return
-	 */
-	public EntityId buildEntityId() {
-		String eidType;
-		switch (getBinderType()) {
-		case FOLDER:     eidType = EntityId.FOLDER;    break;
-		case WORKSPACE:  eidType = EntityId.WORKSPACE; break;
-		default:         eidType = null;               break;
-		}
-		EntityId reply;
-		if (null == eidType)
-		     reply = null;
-		else reply = new EntityId(getParentBinderIdAsLong(), getBinderIdAsLong(), eidType);
 		return reply;
 	}
 	
@@ -440,15 +415,6 @@ public class BinderInfo implements IsSerializable, VibeRpcResponseData {
 	 */
 	public void setFolderHome(boolean folderHome) {
 		m_folderHome = folderHome;
-	}
-
-	/**
-	 * Stores whether the given binder is a My Files Storage folder.
-	 * 
-	 * @param folderMyFilesStorage
-	 */
-	public void setFolderMyFilesStorage(boolean folderMyFilesStorage) {
-		m_folderMyFilesStorage = folderMyFilesStorage;
 	}
 
 	/**

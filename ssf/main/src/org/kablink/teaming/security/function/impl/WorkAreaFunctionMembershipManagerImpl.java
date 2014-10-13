@@ -83,7 +83,7 @@ public class WorkAreaFunctionMembershipManagerImpl implements WorkAreaFunctionMe
 						//See if this function has externally defined operations
 						boolean copyThisFunction = true;
 						//If source and extSource are the same, then copy all function memberships
-						if (source != null && extSource != null && !source.equals(extSource)) {
+						if (!source.equals(extSource)) {
 							Set<WorkAreaOperation> functionWaos = f.getOperations();
 							for (WorkAreaOperation wao : functionWaos) {
 								if (extWaos.contains(wao)) {
@@ -108,7 +108,7 @@ public class WorkAreaFunctionMembershipManagerImpl implements WorkAreaFunctionMe
 			}
 		}
 		//Now do the functions for the external source (if different)
-		if (source != null && extSource != null && !source.equals(extSource)) {
+		if (!source.equals(extSource)) {
 			wfms = findWorkAreaFunctionMemberships(zoneId, extSource);
 			for (WorkAreaFunctionMembership fm: wfms) {
 				Function f = getFunction(zoneId, fm.getFunctionId());

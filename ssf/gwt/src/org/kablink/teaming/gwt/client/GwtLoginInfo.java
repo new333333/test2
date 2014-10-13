@@ -72,9 +72,7 @@ public class GwtLoginInfo
 	 */
 	public boolean getAllowOpenIdAuthentication()
 	{
-		// We are dropping support for OpenID authentication
-		return false;
-		//return m_allowOpenIdAuthentication;
+		return m_allowOpenIdAuthentication;
 	}
 	
 	/**

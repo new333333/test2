@@ -1546,8 +1546,8 @@ public class GwtUIHelper {
 		}
 		SimpleDateFormat sdfDate = ((SimpleDateFormat) DateFormat.getDateInstance(DateFormat.SHORT, locale));
 		SimpleDateFormat sdfTime = ((SimpleDateFormat) DateFormat.getTimeInstance(DateFormat.SHORT, locale));
-		model.put("shortDatePattern", sdfDate.toPattern());
-		model.put("shortTimePattern", sdfTime.toPattern());
+		model.put( "shortDatePattern", sdfDate.toPattern() );
+		model.put("shortTimePattern", sdfTime.toLocalizedPattern());
 		
 		// Put out the user's locale and language.
 		model.put("ssUserLocale",         locale.toString()   );

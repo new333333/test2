@@ -36,7 +36,6 @@ package org.kablink.teaming.gwt.client;
 import java.util.ArrayList;
 
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponseData;
-import org.kablink.teaming.gwt.client.util.GwtFolderEntryType;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 
@@ -49,7 +48,6 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 public class GwtFolderEntry extends GwtTeamingItem
 	implements IsSerializable, VibeRpcResponseData
 {
-	private GwtFolderEntryType m_entryType;
 	private String m_entryId;
 	private String m_entryName;
 	private String m_entryDesc;
@@ -84,7 +82,6 @@ public class GwtFolderEntry extends GwtTeamingItem
 		m_replyIds = null;
 		m_fileAttachments = null;
 		m_fileImgUrl = null;
-		m_entryType = null;
 	}// end GwtFolderEntry()
 	
 	/**
@@ -156,14 +153,6 @@ public class GwtFolderEntry extends GwtTeamingItem
 	{
 		return m_entryName;
 	}// end getEntryName()
-	
-	/**
-	 * 
-	 */
-	public GwtFolderEntryType getEntryType()
-	{
-		return m_entryType;
-	}
 	
 	/**
 	 * Return the list of file attachments for this entry
@@ -325,14 +314,6 @@ public class GwtFolderEntry extends GwtTeamingItem
 	{
 		m_entryName = entryName;
 	}// end setEntryName()
-	
-	/**
-	 * 
-	 */
-	public void setEntryType( GwtFolderEntryType entryType )
-	{
-		m_entryType = entryType;
-	}
 	
 	/**
 	 * Set the url that points to the image that corresponds to file type

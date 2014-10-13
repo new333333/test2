@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2009 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2009 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2009 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -30,8 +30,8 @@
  * NOVELL and the Novell logo are registered trademarks and Kablink and the
  * Kablink logos are trademarks of Novell, Inc.
  */
-package org.kablink.teaming.module.ldap.impl;
 
+package org.kablink.teaming.module.ldap.impl;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.text.ParseException;
@@ -71,14 +71,11 @@ import javax.naming.ldap.PagedResultsResponseControl;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.Node;
-
 import org.hibernate.SessionFactory;
-
 import org.kablink.teaming.ObjectKeys;
 import org.kablink.teaming.asmodule.zonecontext.ZoneContextHolder;
 import org.kablink.teaming.context.request.RequestContextHolder;
@@ -133,12 +130,11 @@ import org.kablink.teaming.util.SZoneConfig;
 import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.util.Utils;
 import org.kablink.teaming.util.stringcheck.StringCheckUtil;
-import org.kablink.teaming.web.util.BuiltInUsersHelper;
+import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.NetFolderHelper;
 import org.kablink.util.GetterUtil;
 import org.kablink.util.Validator;
 import org.kablink.util.search.Constants;
-
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -160,8 +156,8 @@ import org.springframework.transaction.support.TransactionTemplate;
  * is discouraged for obvious performance/scalability reasons.  
  *   
  * @author Janet McCann
+ *
  */
-@SuppressWarnings({"unchecked", "unused"})
 public class LdapModuleImpl extends CommonDependencyInjection implements LdapModule {
 	protected Log logger = LogFactory.getLog(getClass());
 
@@ -173,7 +169,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		AD,
 		UNKNOWN
 	}
-	
+
 	private boolean m_showTiming;
 	private int m_numUsersCreated;
 	private long m_createUsersStartTime;
@@ -265,8 +261,6 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	// Value: ResourceDriverConfig object
 	Map<String, ResourceDriverConfig> m_server_vol_map = new HashMap<String, ResourceDriverConfig>();
 	
-	// Contains a list of principals that need to be re-indexed;
-	Set<Long> m_principalsToIndex = new HashSet<Long>();
 	
 
 	/**
@@ -1024,6 +1018,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	/**
 	 * Read the information from the given Server dn
 	 */
+	@SuppressWarnings("rawtypes")
 	private void readServerInfoFromLdap(
 		LdapContext ldapContext,
 		LdapDirType dirType,
@@ -1308,10 +1303,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	public HashSet<Long> getDynamicGroupMembers( String baseDn, String filter, boolean searchSubtree ) throws LdapSyncException
 	{
 		HashSet<Long> listOfMembers;
-		int pageSize = 1500;
 		
-		pageSize = SPropsUtil.getInt( "ldap.sync.dynamic.group.membership.page.size", 1500 );
-
 		listOfMembers = new HashSet<Long>();
 		
 		// Does the membership criteria have a filter?
@@ -1341,22 +1333,23 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			for( LdapConnectionConfig nextLdapConfig : ldapConnectionConfigs )
 			{
 				String ldapGuidAttribute;
-
+				
 				// Does this ldap configuration have the ldap guid defined?
 				ldapGuidAttribute = nextLdapConfig.getLdapGuidAttribute();
 				if ( ldapGuidAttribute != null && ldapGuidAttribute.length() > 0 )
 				{
 			   		LdapContext ldapContext;
-					byte[] cookie = null;
+			   		NamingException namingEx;
 
 					// Yes
+			   		namingEx = null;
 			   		ldapContext = null;
-			   		
 			  		try
 			  		{
-						String[] ldapAttributesToRead = { ldapGuidAttribute };
+						String[] userAttributeNames = {};
 						int scope;
 						SearchControls searchControls;
+						NamingEnumeration searchCtx;
 
 						// Get an ldap context for the given ldap configuration
 						ldapContext = getUserContext( zoneId, nextLdapConfig );
@@ -1366,42 +1359,29 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 						else
 							scope = SearchControls.ONELEVEL_SCOPE;
 						
-						searchControls = new SearchControls( scope, 0, 0, ldapAttributesToRead, false, false );
+						searchControls = new SearchControls( scope, 0, 0, userAttributeNames, false, false );
 
-						// Request the paged results control
-						try
+						// Execute the ldap search using the membership criteria
+						searchCtx = ldapContext.search( baseDn, filter, searchControls );
+						
+						// Go through the list of users/groups found by the search.  If the
+						// user/group already exists in Vibe then add them to the list we
+						// will return.
+						while ( hasMore( searchCtx ) )
 						{
-							Control[] ctls = new Control[]{ new PagedResultsControl( pageSize, true ) };
-							ldapContext.setRequestControls( ctls );
-						}
-						catch ( IOException ex )
-						{
-							logger.error( "In getDynamicGroupMembers(), call to new PagedResultsControl() threw an exception: " + ex.toString() );
-							ex.printStackTrace();
-							
-							return listOfMembers;
-						}
-
-						do
-						{
-							NamingEnumeration results;
-
-							// Issue an ldap search for users in the given base dn.
-							results = ldapContext.search( baseDn, filter, searchControls );
-							
-							// loop through the results in each page
-							while ( hasMore( results ) )
+							try
 							{
-								SearchResult sr;
+								Binding binding;
 								Attributes lAttrs = null;
+								String[] ldapAttributesToRead = { ldapGuidAttribute };
 								String guid;
 								User user;
-								
+	
 								// Get the next user/group in the list.
-								sr = (SearchResult)results.next();
+								binding = (Binding)searchCtx.next();
 	
 								// Read the guid for this user/group from the ldap directory.
-								lAttrs = sr.getAttributes();
+								lAttrs = ldapContext.getAttributes( binding.getNameInNamespace(), ldapAttributesToRead );
 								guid = getLdapGuid( lAttrs, ldapGuidAttribute );
 
 								// Does this user exist in Vibe.
@@ -1412,31 +1392,19 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 									listOfMembers.add( user.getId() );
 								}
 							}
-							
-							// examine the response controls
-							cookie = parseControls( ldapContext.getResponseControls() );
-
-							try
+							catch ( NoUserByTheNameException ex )
 							{
-								// pass the cookie back to the server for the next page
-								PagedResultsControl prCtrl;
-								
-								prCtrl = new PagedResultsControl( pageSize, cookie, Control.CRITICAL );
-								ldapContext.setRequestControls( new Control[]{ prCtrl } );
+								// Nothing to do
 							}
-							catch ( IOException ex )
-							{
-								cookie = null;
-								logger.error( "In getDynamicGroupMembers(), call to new PagedResultsControl() threw an exception: " + ex.toString() );
-								ex.printStackTrace();
-							}
-							
-						} while ( (cookie != null) && (cookie.length != 0) );
+					  		catch (NamingException ex)
+					  		{
+					  			namingEx = ex;
+					  		}
+						}
 					}
-			  		catch ( Exception ex )
+			  		catch (NamingException ex)
 			  		{
-			  			logger.error( "In getDynamicGroupMembers(), exceptions was thrown: " );
-			  			ex.printStackTrace();
+			  			namingEx = ex;
 			  		}
 			  		finally
 			  		{
@@ -1449,11 +1417,12 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 							}
 							catch (NamingException ex)
 					  		{
+								namingEx = ex;
 					  		}
 						}
 					}
 				}
-			}// end for()
+			}
 		}
 
 		return listOfMembers;
@@ -1787,7 +1756,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 						// Is the name of this user a name that is used for a Teaming system user account?
 						// Currently there are 5 system user accounts named, "admin", "guest", "_postingAgent",
 						// "_jobProcessingAgent", "_synchronizationAgent" and "_fileSyncAgent".
-						if ( BuiltInUsersHelper.isSystemUserAccount( teamingName ) )
+						if ( MiscUtil.isSystemUserAccount( teamingName ) )
 						{
 							// Yes, skip this user.
 							continue;
@@ -1911,7 +1880,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 						// Is the name of this group a name that is used for a Teaming system user account?
 						// Currently there are 5 system user accounts named, "admin", "guest", "_postingAgent",
 						// "_jobProcessingAgent", "_synchronizationAgent", and "_fileSyncAgent.
-						if ( BuiltInUsersHelper.isSystemUserAccount( fullDN ) )
+						if ( MiscUtil.isSystemUserAccount( fullDN ) )
 						{
 							// Yes, skip this user.
 							continue;
@@ -2002,7 +1971,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			attributeValues = (Object[]) userList.get( i );
 			
 			// If this user is not one of the system users, add the user to the map.
-			if ( (Validator.isNull( (String)attributeValues[PRINCIPAL_INTERNALID])) )
+			if ( (Validator.isNull( (String)attributeValues[this.PRINCIPAL_INTERNALID])) )
 			{
 				String name;
 
@@ -3068,7 +3037,6 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 
 			m_server_vol_map.clear();
 			m_hostNameMap.clear();
-			m_principalsToIndex.clear();
 			m_zoneSyncInProgressMap.put( zone.getId(), Boolean.TRUE );
 			
 			// Sync guids if called for.
@@ -3108,9 +3076,10 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				m_ldapSyncStartTime = m_createUsersStartTime;
 
 				m_showTiming = SPropsUtil.getBoolean( "ldap.sync.show.timings", false );
+				
+				logger.info( "\n\n---------> Starting ldap sync <-------------\n\n" );
 			}
-
-			logger.info( "\n\n---------->Starting ldap sync...\n" );
+			
 			LdapSchedule info = new LdapSchedule(getSyncObject().getScheduleInfo(zone.getId()));
 	    	UserCoordinator userCoordinator = new UserCoordinator(
 	    													zone,
@@ -3138,7 +3107,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		  		{
 	  				errorSyncingUsers = true;
 
-	  				logger.error( "syncUsers() threw an exception: " + ex.toString() );
+	  				logger.error( "syncUsers() threw an exception: " );
 	  				ex.printStackTrace();
 	  				
 	  				if ( ex instanceof NamingException )
@@ -3375,26 +3344,14 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				logger.info( "ldap sync timing: ----------> Time taken to sync groups " + minutes + " minutes " + seconds + " seconds" );
 			}
 			
-	   		if ( errorSyncingGroups )
-	   		{
-				logger.error( "An error was encountered syncing groups.  Ldap sync will not continue." );
-				
-				if ( ldapSyncEx != null )
-				{
-					logger.error( "Exception encountered while syncing groups: " );
-					ldapSyncEx.printStackTrace();
-		   			throw ldapSyncEx;
-				}
-
-				logger.error( "Unknown error syncing groups" );
-				return;
-	   		}
-
 	   		try
 	   		{
-		   		logger.info( "About to call groupCoordinator.deleteObsoleteGroups()" );
-	   			groupCoordinator.deleteObsoleteGroups();
-		   		logger.info( "Finished groupCoordinator.deleteObsoleteGroups()" );
+		   		if ( errorSyncingGroups == false )
+		   		{
+			   		logger.info( "About to call groupCoordinator.deleteObsoleteGroups()" );
+		   			groupCoordinator.deleteObsoleteGroups();
+			   		logger.info( "Finished groupCoordinator.deleteObsoleteGroups()" );
+		   		}
 	   		}
 	   		catch( Exception ex )
 	   		{
@@ -3509,11 +3466,6 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	   			throw ldapSyncEx;
 	   		}
 	   		
-   			// Reindex all principals whose group membership changed.
-   			logger.info( "About to call reindexPrincipals()" );
-   			reindexPrincipals();
-   			logger.info( "Back from call reindexPrincipals()" );
-   			
 	   		logger.info( "Finished syncAll() with no exceptions" );
 	   		
 			if ( m_showTiming )
@@ -3535,91 +3487,12 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		finally
 		{
 			m_zoneSyncInProgressMap.put( zone.getId(), Boolean.FALSE );
-			
+
 			// Because we called getCoreDao().clear() the ldap configurations in the read-only cache are invalid
 			readOnlyCache.clear();
 		}
 	}
 
-	
-	/**
-	 * Users whose group membership changed need to be reindex.
-	 */
-	private void reindexPrincipals()
-	{
-		long startTime = 0;
-		
-		if ( m_showTiming )
-		{
-			Date now;
-
-			now = new Date();
-			startTime = now.getTime();
-		}
-
-		if ( m_principalsToIndex != null )
-			logger.info( "--> Number of principals to reindex: " + m_principalsToIndex.size() );
-		
-		if ( m_principalsToIndex != null && m_principalsToIndex.size() > 0 )
-		{
-			try
-			{
-				ProfileModule profileModule;
-				Map<Long,Principal> principalMap;
-				Iterator<Long> iter;
-				
-				profileModule = getProfileModule();
-				
-				principalMap = new HashMap<Long,Principal>();
-				iter = m_principalsToIndex.iterator();
-				
-				while ( iter.hasNext() )
-				{
-					Long principalId;
-					
-					principalId = iter.next();
-					
-					try
-					{
-						Principal principal;
-
-						principal = profileModule.getEntry( principalId );
-						principalMap.put( principalId, principal );
-					}
-					catch ( Exception ex )
-					{
-						logger.info( "In reindexPrincipals(), getProfileModule().getEntry() threw an exception." );
-						ex.printStackTrace();
-					}
-				}
-				
-				Utils.reIndexPrincipals( profileModule, principalMap );
-			}
-			catch ( Exception ex )
-			{
-				logger.error( "In reindexPrincipals(), Utils.reIndexPrincipals() threw an exception: " );
-				ex.printStackTrace();
-			}
-		}
-
-		if ( m_showTiming )
-		{
-			long elapsedTimeInSeconds;
-			long minutes;
-			long seconds;
-			long milliSeconds;
-			Date now;
-			
-			now = new Date();
-
-			milliSeconds = now.getTime() - startTime;
-			elapsedTimeInSeconds = milliSeconds / 1000;
-			minutes = elapsedTimeInSeconds / 60;
-			seconds = elapsedTimeInSeconds - (minutes * 60);
-			milliSeconds = milliSeconds - (elapsedTimeInSeconds * 1000);
-			logger.info( "ldap sync timing: ----------> Time to reindex principals: " + minutes + " minutes " + seconds + " seconds " + milliSeconds + " milliseconds " );
-		}
-	}
 	
 	/**
 	 * Execute the given ldap query and return how many users/groups were found
@@ -3633,13 +3506,83 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		// Does the membership criteria have a filter?
 		if ( filter != null && filter.length() > 0 )
 		{
-			HashSet<Long> setOfMembers;
+			List<LdapConnectionConfig> ldapConnectionConfigs;
+			Workspace zone;
+			Long zoneId;
+
+			// Yes
+			zone = RequestContextHolder.getRequestContext().getZone();
+			zoneId = zone.getId();
+
+			// Get the list of ldap configurations.
+			ldapConnectionConfigs = getCoreDao().loadLdapConnectionConfigs( zoneId );
 			
-			setOfMembers = getDynamicGroupMembers( baseDn, filter,  searchSubtree );
-			if ( setOfMembers != null )
-				count = setOfMembers.size();
+			// Go through each ldap configuration
+			for( LdapConnectionConfig nextLdapConfig : ldapConnectionConfigs )
+			{
+				String ldapGuidAttribute;
+				
+				// Does this ldap configuration have the ldap guid defined?
+				ldapGuidAttribute = nextLdapConfig.getLdapGuidAttribute();
+				if ( ldapGuidAttribute != null && ldapGuidAttribute.length() > 0 )
+				{
+			   		LdapContext ldapContext;
+			   		NamingException namingEx;
+
+					// Yes
+			   		namingEx = null;
+			   		ldapContext = null;
+			  		try
+			  		{
+						String[] userAttributeNames = {};
+						int scope;
+						SearchControls searchControls;
+						NamingEnumeration ctxSearch;
+
+						// Get an ldap context for the given ldap configuration
+						ldapContext = getUserContext( zoneId, nextLdapConfig );
+						
+						if ( searchSubtree )
+							scope = SearchControls.SUBTREE_SCOPE;
+						else
+							scope = SearchControls.ONELEVEL_SCOPE;
+						
+						searchControls = new SearchControls( scope, 0, 0, userAttributeNames, false, false );
+
+						// Execute the ldap search using the membership criteria
+						ctxSearch = ldapContext.search( baseDn, filter, searchControls );
+						
+						// Count the number of users/groups the search found
+						while ( hasMore( ctxSearch ) )
+						{
+							ctxSearch.next();
+
+							++count;
+						}
+					}
+			  		catch (NamingException ex)
+			  		{
+			  			namingEx = ex;
+			  		}
+			  		finally
+			  		{
+						if ( ldapContext != null )
+						{
+							try
+							{
+								// Close the ldap context.
+								ldapContext.close();
+							}
+							catch (NamingException ex)
+					  		{
+								namingEx = ex;
+					  		}
+						}
+					}
+				}
+			}
 		}
-		
+
 		return new Integer( count );
 	}
 	
@@ -4002,6 +3945,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		/**
 		 * Create a new "container group" with the given dn.
 		 */
+		@SuppressWarnings("unchecked")
 		private Group createContainerGroup( String dn )
 		{
 			Map inputMap;
@@ -4099,6 +4043,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		/**
 		 * Delete containers that are no longer being referenced.
 		 */
+		@SuppressWarnings({ "rawtypes", "unchecked" })
 		private void deleteObsoleteContainers()
 		{
 			// Are we in "preview" mode?
@@ -4233,6 +4178,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		/**
 		 * 
 		 */
+		@SuppressWarnings({ "rawtypes", "unchecked" })
 		public void updateExistingContainers()
 		{
 			// Are we in "preview" mode?
@@ -5150,7 +5096,6 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				catch ( IOException ex )
 				{
 					logger.error( "Call to new PagedResultsControl() threw an exception: " + ex.toString() );
-					ex.printStackTrace();
 				}
 
 				do
@@ -5183,7 +5128,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 						long startRecord = 0;
 						
 						++numUsersProcessed;
-						
+
 						sr = (SearchResult)results.next();
 						userName = sr.getNameInNamespace();
 						
@@ -5205,7 +5150,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 						// Is the name of this user a name that is used for a Teaming system user account?
 						// Currently there are 5 system user accounts named, "admin", "guest", "_postingAgent",
 						// "_jobProcessingAgent", "_synchronizationAgent", and "_fileSyncAgent.
-						if ( BuiltInUsersHelper.isSystemUserAccount( ssName ) )
+						if ( MiscUtil.isSystemUserAccount( ssName ) )
 						{
 							// Yes, skip this user.  System user accounts cannot be sync'd from ldap.
 							continue;
@@ -5252,7 +5197,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 											ldapGuidAttribute,
 											domainName,
 											homeDirInfo);
-						
+
 						if ( m_showTiming )
 						{
 							Date now;
@@ -5285,7 +5230,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 						cookie = null;
 						logger.error( "Call to PagedResultsControl() threw an exception: " + ex.toString() );
 					}
-					
+
 					if ( m_showTiming )
 					{
 						long elapsedTimeInSeconds;
@@ -5303,7 +5248,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 						milliSeconds = milliSeconds - (elapsedTimeInSeconds * 1000);
 						logger.info( "ldap sync timing: ======> Time to read last " + numUsersProcessed + " users from ldap: " + minutes + " minutes " + seconds + " seconds " + milliSeconds + " milliseconds " );
 					}
-					
+
 					// clear cache to prevent thrashing resulted from prolonged use of a single session
         			getCoreDao().clear();
 
@@ -5700,8 +5645,6 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	     * @return
 	     */
 	    protected Group createGroup(Long zoneId, String ssName, Map groupData ) {
-	    	logger.info( "--> Creating group: " + ssName );
-	    	
 	    	MapInputData groupMods = new MapInputData(StringCheckUtil.check(groupData));
 			ProfileBinder pf = getProfileDao().getProfileBinder(zoneId);
 			//get default definition to use
@@ -6102,7 +6045,6 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 						if ( members != null )
 						{
 							++cnt;
-
 							groupCoordinator.syncMembership( nextADGroup.getDbId(), members );
 							
 							if ( (cnt % 10) == 0 )
@@ -6735,6 +6677,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	 * @param ldapGuidAttribute
 	 * @throws NamingException
 	 */
+	@SuppressWarnings("unchecked")
 	protected void getUpdates(
 		String []ldapAttrNames,
 		Map mapping,
@@ -6748,7 +6691,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				String vibeAttrName;
 				
 				vibeAttrName = (String) mapping.get( ldapAttrNames[i] );
-				
+
 				Attribute att = attrs.get(ldapAttrNames[i]);
 				if ( att == null )
 				{
@@ -7348,8 +7291,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	 * @param name
 	 * @return
 	 */
-    @Override
-	public String getDefaultLocaleId()
+    public String getDefaultLocaleId()
 	{
 		String			defaultLocaleId;
 		Workspace		topWorkspace;
@@ -7380,7 +7322,6 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	 * @param name
 	 * @return
 	 */
-	@Override
 	public String getDefaultTimeZone()
 	{
 		String			defaultTimeZone;
@@ -7404,8 +7345,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
      * Set the default locale setting.  This setting is used to set the locale  on a user when
      * the user is created from an ldap sync.
      */
-    @Override
-	public void setDefaultLocale(String localeId)
+    public void setDefaultLocale(String localeId)
     {
         Workspace	topWorkspace;
 
@@ -7425,8 +7365,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
      * Set the default time zone setting.  This setting is used to set the time zone on a user when
      * the user is created from an ldap sync.
      */
-    @Override
-	public void setDefaultTimeZone(String timeZoneId)
+    public void setDefaultTimeZone(String timeZoneId)
     {
         Workspace	topWorkspace;
 
@@ -7440,8 +7379,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
         topWorkspace.setProperty( ObjectKeys.GLOBAL_PROPERTY_DEFAULT_TIME_ZONE, timeZoneId );
     }
 
-    @Override
-	public void updateHomeDirectoryIfNecessary(User user, String userName, boolean logErrors) {
+    public void updateHomeDirectoryIfNecessary(User user, String userName, boolean logErrors) {
         if (user.getIdentityInfo().isFromLdap()) {
             try {
                 // Does this user have a home directory attribute in ldap?
@@ -7594,7 +7532,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	   	{
 	   		Map changedEntries;
    			List<User> listOfRenamedUsers;
-   			
+	   		
 			collections = new ArrayList();
 			collections.add( "customAttributes" );
 			collections.add( "emailAddresses" );
@@ -7834,8 +7772,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
     }// end updateGroup()
 
 
-    @SuppressWarnings("deprecation")
-	protected void updateMembership(
+    protected void updateMembership(
     	final Long groupId,
     	Collection newMembers,
     	LdapSyncMode syncMode,
@@ -7843,7 +7780,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
     {
 		long startTime = 0;
 
-    	// Are we in "preview" mode?
+		// Are we in "preview" mode?
     	if ( syncMode == LdapSyncMode.PREVIEW_ONLY )
     	{
     		// Yes, nothing to do.
@@ -7939,10 +7876,14 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		// Get a list of all the principals that were added or removed from the group.
 		if ( (newM != null && newM.isEmpty() == false) || (remM != null && remM.isEmpty() == false) )  
         {
+			Map<Long, Principal> principalsToIndex;
 			ArrayList<Long> usersRemovedFromGroup;
 			ArrayList<Long> groupsRemovedFromGroup;
 			ArrayList<Long> usersAddedToGroup;
 			ArrayList<Long> groupsAddedToGroup;
+			
+			// Create a list of the principals that need to be reindexed.
+			principalsToIndex = new HashMap<Long,Principal>();
 			
 			usersRemovedFromGroup = new ArrayList<Long>();
 			groupsRemovedFromGroup = new ArrayList<Long>();
@@ -7989,7 +7930,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 						if ( nextPrincipal != null )
 						{
 							// Add this principal to the list of principals to be re-indexed.
-							m_principalsToIndex.add( principalId );
+							principalsToIndex.put( principalId, nextPrincipal );
 							
 							// Keep track of the principals that were added to this group.
 							if ( (nextPrincipal instanceof UserPrincipal) || (nextPrincipal instanceof User) )
@@ -8041,7 +7982,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 						if ( nextPrincipal != null )
 						{
 							// Add this principal to the list of principals to be re-indexed.
-							m_principalsToIndex.add( principalId );
+							principalsToIndex.put( principalId, nextPrincipal );
 							
 							// Keep track of the principals that were removed from this group.
 							if ( (nextPrincipal instanceof UserPrincipal) || (nextPrincipal instanceof User) )
@@ -8066,6 +8007,19 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 						groupsRemovedFromGroup );
 			}
 
+			// Do we have anything to reindex?
+			if ( principalsToIndex.size() > 0 )
+			{
+				try
+				{
+					Utils.reIndexPrincipals( getProfileModule(), principalsToIndex );
+				}
+				catch ( Exception ex )
+				{
+					logError( "In updateMembership(), Utils.reIndexPrincipals() threw an exception: ", ex );
+				}
+			}
+
 			if ( m_showTiming )
 			{
 				long elapsedTimeInSeconds;
@@ -8081,7 +8035,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				minutes = elapsedTimeInSeconds / 60;
 				seconds = elapsedTimeInSeconds - (minutes * 60);
 				milliSeconds = milliSeconds - (elapsedTimeInSeconds * 1000);
-				logger.info( "ldap sync timing: ----------> Time to update disk quotas: " + minutes + " minutes " + seconds + " seconds " + milliSeconds + " milliseconds " );
+				logger.info( "ldap sync timing: ----------> Time to update disk quotas and reindex principals: " + minutes + " minutes " + seconds + " seconds " + milliSeconds + " milliseconds " );
 			}
         }
     }
@@ -8271,7 +8225,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			now = new Date();
 			createUsersStartTime = now.getTime();
 		}
-		
+
 		ProfileBinder pf = getProfileDao().getProfileBinder(zoneId);
 		List newUsers = new ArrayList();
 		for (Iterator i=users.values().iterator(); i.hasNext();) {
@@ -8321,7 +8275,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					minutes = elapsedTimeInSeconds / 60;
 					seconds = elapsedTimeInSeconds - (minutes * 60);
 					logger.info( "ldap sync timing: ----------> Time to create last " + newUsers.size() + " users: " + minutes + " minutes " + seconds + " seconds" );
-					
+
 					if ( (m_numUsersCreated % 500) == 0 )
 					{
 						elapsedTimeInSeconds = now.getTime() - m_createUsersStartTime;
@@ -8456,8 +8410,6 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
     				try {
     					Principal p = (Principal) getProfileModule().getEntry(id);
     					name = p.getName() + " (" + p.getForeignName() + ")";
-    					
-    					logger.info( "--> Deleting: " + p.getName() );
     				}
     				catch(Exception e) {
     					// Don't report problem here. Instead, let the next step - deleteEntry() - report it.
@@ -8550,4 +8502,5 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
         workspaceModule = (WorkspaceModule) SpringContextUtil.getBean("workspaceModule");
         return workspaceModule;
     }
+
 }

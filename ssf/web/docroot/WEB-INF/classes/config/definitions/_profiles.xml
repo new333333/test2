@@ -57,7 +57,7 @@
   <properties> 
     <property name="name" value="_profiles"/>  
     <property name="caption" value="__definition_default_profiles"/>  
-    <property name="icon" value="/icons/profile_list.png"/> 
+    <property name="icon" value="/icons/profiles.gif"/> 
   </properties>  
   <export-mappings/>
 </definition>

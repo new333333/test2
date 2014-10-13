@@ -83,7 +83,6 @@ import org.kablink.teaming.gwt.client.rpc.shared.GetAdminActionsCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetDatabasePruneConfigurationCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetFileSyncAppConfigurationCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetNetFolderCmd;
-import org.kablink.teaming.gwt.client.rpc.shared.GetSiteBrandingCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetUpgradeInfoCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SaveBrandingCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
@@ -115,7 +114,6 @@ import org.kablink.teaming.gwt.client.widgets.ShareThisDlg2.ShareThisDlg2Client;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
-import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.Style;
@@ -1249,7 +1247,7 @@ public class AdminControl extends TeamingPopupPanel
 										
 										// Tell the masthead to go get the new site branding.
 										if ( mastHead != null )
-											mastHead.refreshBranding();
+											mastHead.refreshSiteBranding();
 									}
 								} );
 							}
@@ -1771,63 +1769,16 @@ public class AdminControl extends TeamingPopupPanel
 			@Override
 			public void execute()
 			{
-				AsyncCallback<VibeRpcResponse> getSiteBrandingCallback;
-				GetSiteBrandingCmd cmd;
-
-				// Create the callback that will be used when we issue an ajax call to get the site branding
-				getSiteBrandingCallback = new AsyncCallback<VibeRpcResponse>()
-				{
-					/**
-					 * 
-					 */
-					@Override
-					public void onFailure( final Throwable t )
-					{
-						Scheduler.ScheduledCommand cmd;
-
-						cmd = new Scheduler.ScheduledCommand()
-						{
-							@Override
-							public void execute()
-							{
-								String[] patches = null;
-
-								GwtClientHelper.handleGwtRPCFailure(
-										t,
-										GwtTeaming.getMessages().rpcFailure_GetBranding(),
-										patches );
-							}
-						};
-						Scheduler.get().scheduleDeferred( cmd );
-					}
-			
-					/**
-					 * 
-					 * @param result
-					 */
-					@Override
-					public void onSuccess( VibeRpcResponse response )
-					{
-						final GwtBrandingData siteBrandingData;
-						Scheduler.ScheduledCommand cmd;
-						
-						siteBrandingData = (GwtBrandingData) response.getResponseData();
-
-						cmd = new Scheduler.ScheduledCommand()
-						{
-							@Override
-							public void execute()
-							{
-								invokeEditSiteBrandingDlg( siteBrandingData );
-							}
-						};
-						Scheduler.get().scheduleDeferred( cmd );
-					}
-				};
+				MastHead mastHead;
 				
-				// Issue an ajax request to get the site branding data.
-				cmd = new GetSiteBrandingCmd();
-				GwtClientHelper.executeCommand( cmd, getSiteBrandingCallback );
+				mastHead = GwtTeaming.getMainPage().getMastHead();
+				if ( mastHead != null )
+				{
+					GwtBrandingData siteBrandingData;
+					
+					siteBrandingData = mastHead.getSiteBrandingData();
+					invokeEditSiteBrandingDlg( siteBrandingData );
+				}
 			}
 		} );
 	}

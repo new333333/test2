@@ -38,11 +38,11 @@
 <%@ include file="/WEB-INF/jsp/mobile/masthead_new.jsp" %>
 <%@ include file="/WEB-INF/jsp/mobile/navigation.jsp" %>
 
-<div style="position:relative; background-color: #fff;" class="content">
+<div style="position:relative; background-color: #353838;" class="content">
 <div class="masthead-username">
   <span>${ssUser.title}</span>
 </div>
-<table class="mobile-main" style="background-color: transparent; "  cellpadding="0" cellspacing="0">
+<table class="mobile-main" style="background-color: transparent; "  cellpadding="0" cellspacing="3">
   	<tr>
 		<td class="main-cell">
 			<a id="myworkspace-a" href="<ssf:url adapter="true" portletName="ss_forum" 
@@ -50,7 +50,7 @@
 								binderId="${ssBinder.id}"
 								operation="mobile_show_workspace" />">
 				<div class="main-item myws-a">
-				  <div><img src="<html:rootPath/>images/mobile/main_home_128b.png"/></div>
+				  <div><img src="<html:rootPath/>images/mobile/main_home_128.png"/></div>
 				  <div class="main-item-label"><ssf:nlt tag="navigation.myWorkspace"/></div>
 				</div>    
 			</a>
@@ -61,7 +61,7 @@
 									binderId="${ssBinder.id}"
 									operation="mobile_show_favorites" />">
 				<div class="main-item myteams-a">
-				  <div><img src="<html:rootPath/>images/mobile/main_favorites_128b.png"/></div>
+				  <div><img src="<html:rootPath/>images/mobile/main_favorites_128.png"/></div>
 				  <div class="main-item-label"><ssf:nlt tag="navigation.myFavorites"/></div>
 				</div>    
 			</a>
@@ -72,7 +72,7 @@
 									binderId="${ssBinder.id}"
 									operation="mobile_show_teams" />">
 				<div class="main-item myteams-a">
-				  <div><img src="<html:rootPath/>images/mobile/main_team_128b.png"/></div>
+				  <div><img src="<html:rootPath/>images/mobile/main_team_128.png"/></div>
 				  <div class="main-item-label"><ssf:nlt tag="navigation.myTeams"/></div>
 				</div>    
 			</a>
@@ -84,7 +84,7 @@
 									action="__ajax_mobile" actionUrl="false" 
 									operation="mobile_whats_new" />">
 				<div class="main-item myteams-a">
-				  <div><img src="<html:rootPath/>images/mobile/main_whatsnew_128b.png"/></div>
+				  <div><img src="<html:rootPath/>images/mobile/main_whatsnew_128.png"/></div>
 				  <div class="main-item-label"><ssf:nlt tag="mobile.whatsNew"/></div>
 				</div>    
 			</a>
@@ -95,7 +95,7 @@
 									binderId="${ssBinder.id}"
 									operation="mobile_show_following" />">
 				<div class="main-item myfavorites-a">
-				  <div><img src="<html:rootPath/>images/mobile/main_follow_128b.png"/></div>
+				  <div><img src="<html:rootPath/>images/mobile/main_follow_128.png"/></div>
 				  <div class="main-item-label"><ssf:nlt tag="navigation.following"/></div>
 				</div>
 			</a>
@@ -106,36 +106,36 @@
 									binderId="${ssBinder.id}"
 									operation="mobile_show_recent_places" />">
 				<div class="main-item myws-a">
-				  <div><img src="<html:rootPath/>images/mobile/main_recent_128b.png"/></div>
+				  <div><img src="<html:rootPath/>images/mobile/main_recent_128.png"/></div>
 				  <div class="main-item-label"><ssf:nlt tag="navigation.recentPlaces"/></div>
 				</div>    
 			</a>  
 		</td>  
 	</tr>  	
 	<tr>  
-		<td class="main-cell main-cell-bottom">
+		<td class="main-cell">
 			<a id="myprofile-a" href="<ssf:url adapter="true" portletName="ss_forum" 
 									action="__ajax_mobile" actionUrl="false" 
 									entryId="${ssUser.id}"
 									operation="mobile_show_user" />">
 				<div class="main-item myws-a">
-				  <div><img src="<html:rootPath/>images/mobile/main_profile_128b.png"/></div>
+				  <div><img src="<html:rootPath/>images/mobile/main_profile_128.png"/></div>
 				  <div class="main-item-label"><ssf:nlt tag="navigation.myProfile"/></div>
 				</div>    
 			</a>
 		</td>  
-		<td class="main-cell main-cell-bottom">
+		<td class="main-cell">
 				<a class="hierarchy-a" href="javascript: ;" onClick="ss_toggleDivVisibility('hierarchy-dialog');window.scroll(0,0);return false;"/>
 					<div class="main-item navigation-a">
-					  <div><img src="<html:rootPath/>images/mobile/main_hierarchy_128b.png"/></div>
+					  <div><img src="<html:rootPath/>images/mobile/main_hierarchy_128.png"/></div>
 					  <div class="main-item-label"><ssf:nlt tag="navigation.hierarchy"/></div>
 					</div>
 				</a>
 		</td>  
-		<td class="main-cell main-cell-bottom">
+		<td class="main-cell">
 				<a class="hierarchy-a" href="javascript: ;" onClick="ss_mobileLogoff();return false;"/>
 					<div class="main-item logout-a">
-					  <div><img src="<html:rootPath/>images/mobile/main_logout_128b.png"/></div>
+					  <div><img src="<html:rootPath/>images/mobile/main_logout_128.png"/></div>
 					  <div class="main-item-label"><ssf:nlt tag="logout"/></div>
 					</div>
 				</a>

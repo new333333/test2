@@ -53,7 +53,6 @@ import org.kablink.teaming.gwt.client.util.SimpleProfileParams;
 import org.kablink.teaming.gwt.client.util.OnSelectBinderInfo.Instigator;
 
 import com.google.gwt.core.client.Scheduler;
-import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -322,73 +321,6 @@ public class FolderWidget extends VibeWidget
 	}
 	
 	/**
-	 * 
-	 */
-	private void getFolderEntries(
-		String zoneId,
-		String folderId,
-		int numEntries,
-		int numRepliesToShow )
-	{
-		GetFolderEntriesCmd cmd;
-
-		// Issue an rpc request to get the last n entries from the folder.
-		cmd = new GetFolderEntriesCmd(
-								zoneId,
-								folderId,
-								numEntries,
-								numRepliesToShow );
-		GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
-		{
-			/**
-			 * 
-			 */
-			@Override
-			public void onFailure( Throwable t )
-			{
-				GwtClientHelper.handleGwtRPCFailure(
-					t,
-					GwtTeaming.getMessages().rpcFailure_GetFolderEntries(),
-					m_properties.getFolderId() );
-			}
-	
-			/**
-			 * 
-			 * @param result
-			 */
-			@Override
-			public void onSuccess( VibeRpcResponse response )
-			{
-				GetFolderEntriesRpcResponseData gfeResponse;
-				
-				gfeResponse = (GetFolderEntriesRpcResponseData) response.getResponseData();
-				
-				if ( gfeResponse != null )
-				{
-					final ArrayList<GwtFolderEntry> entries;
-					
-					entries = gfeResponse.getEntries();
-					if ( entries != null )
-					{
-						Scheduler.ScheduledCommand cmd;
-
-						cmd = new Scheduler.ScheduledCommand()
-						{
-							@Override
-							public void execute()
-							{
-								// Add the entries to this widget
-								addEntries( entries );
-							}
-						};
-						Scheduler.get().scheduleDeferred( cmd );
-					}
-				}
-			}
-		} );
-	}
-	
-	/**
 	 * When the user clicks on the folder's title, fire the ChangeContextEvent event
 	 */
 	private void handleClickOnFolderTitle()
@@ -404,12 +336,11 @@ public class FolderWidget extends VibeWidget
 	{
 		VibeFlowPanel mainPanel;
 		VibeFlowPanel contentPanel;
-		final int numEntries;
+		int numEntries;
 		int width;
 		Unit widthUnits;
 		int height;
 		Unit heightUnits;
-		ScheduledCommand cmd2;
 		
 		m_properties = new FolderProperties();
 		m_properties.copy( properties );
@@ -515,63 +446,97 @@ public class FolderWidget extends VibeWidget
 			contentPanel.add( descPanel );
 		}
 		
+		// Issue an rpc request to get information about the folder.
+		m_properties.getDataFromServer( new GetterCallback<Boolean>()
+		{
+			/**
+			 * 
+			 */
+			@Override
+			public void returnValue( Boolean value )
+			{
+				Scheduler.ScheduledCommand cmd;
+
+				// Did we successfully get the folder information?
+				if ( value )
+				{
+					// Yes
+					cmd = new Scheduler.ScheduledCommand()
+					{
+						@Override
+						public void execute()
+						{
+							// Update this widget with the folder information
+							updateWidget();
+						}
+					};
+					Scheduler.get().scheduleDeferred( cmd );
+				}
+			}
+		} );
+		
 		// Are we supposed to show entries from this folder?
 		numEntries = m_properties.getNumEntriesToBeShownValue();
 		if ( numEntries > 0 )
 		{
+			GetFolderEntriesCmd cmd;
+			
+			// Yes, create a panel for the entries to live in.
 			m_listOfEntriesPanel = new VibeFlowPanel();
 			m_listOfEntriesPanel.addStyleName( "folderWidgetListOfEntriesPanel" + m_style );
 			contentPanel.add( m_listOfEntriesPanel );
-		}
 
-		mainPanel.setVisible( false );
-		
-		cmd2 = new Scheduler.ScheduledCommand()
-		{
-			@Override
-			public void execute()
+			// Issue an rpc request to get the last n entries from the folder.
+			cmd = new GetFolderEntriesCmd( m_properties.getZoneUUID(), m_properties.getFolderId(), numEntries, m_properties.getNumRepliesToShow() );
+			GwtClientHelper.executeCommand( cmd, new AsyncCallback<VibeRpcResponse>()
 			{
-				// Issue an rpc request to get information about the folder.
-				m_properties.getDataFromServer( new GetterCallback<Boolean>()
+				/**
+				 * 
+				 */
+				@Override
+				public void onFailure( Throwable t )
 				{
-					/**
-					 * 
-					 */
-					@Override
-					public void returnValue( Boolean value )
+					GwtClientHelper.handleGwtRPCFailure(
+						t,
+						GwtTeaming.getMessages().rpcFailure_GetFolderEntries(),
+						m_properties.getFolderId() );
+				}
+		
+				/**
+				 * 
+				 * @param result
+				 */
+				@Override
+				public void onSuccess( VibeRpcResponse response )
+				{
+					GetFolderEntriesRpcResponseData gfeResponse;
+					
+					gfeResponse = (GetFolderEntriesRpcResponseData) response.getResponseData();
+					
+					if ( gfeResponse != null )
 					{
-						// Did we successfully get the folder information?
-						if ( value )
+						final ArrayList<GwtFolderEntry> entries;
+						
+						entries = gfeResponse.getEntries();
+						if ( entries != null )
 						{
 							Scheduler.ScheduledCommand cmd;
-
-							// Yes
+	
 							cmd = new Scheduler.ScheduledCommand()
 							{
 								@Override
 								public void execute()
 								{
-									// Update this widget with the folder information
-									if ( numEntries > 0 )
-									{
-										getFolderEntries(
-														m_properties.getZoneUUID(),
-														m_properties.getFolderId(),
-														numEntries,
-														m_properties.getNumRepliesToShow() );
-									}
-									
-									updateWidget();
-									getWidget().setVisible( true );
+									// Add the entries to this widget
+									addEntries( entries );
 								}
 							};
 							Scheduler.get().scheduleDeferred( cmd );
 						}
 					}
-				} );
-			}
-		};
-		Scheduler.get().scheduleDeferred( cmd2 );
+				}
+			} );
+		}
 		
 		return mainPanel;
 	}

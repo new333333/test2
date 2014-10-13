@@ -5,7 +5,7 @@
   <attribute name="templateDescription" type="description"><![CDATA[__template_folder_wiki_description]]></attribute>
   <attribute name="title" type="string"><![CDATA[__template_folder_wiki]]></attribute>
   <attribute name="description" type="description"><![CDATA[]]></attribute>
-  <attribute name="iconName" type="string">/icons/folder_blue_wiki.png</attribute>
+  <attribute name="iconName" type="string">/icons/folder_blue_wiki.gif</attribute>
   <attribute name="name" type="string">_folder_wiki</attribute>
   <property name="library">false</property>
   <property name="uniqueTitle">true</property>

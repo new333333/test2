@@ -62,10 +62,13 @@ import org.kablink.teaming.gwt.client.GwtTeaming;
 import org.kablink.teaming.gwt.client.GwtTeamingItem;
 import org.kablink.teaming.gwt.client.GwtTeamingMessages;
 import org.kablink.teaming.gwt.client.GwtUser;
+import org.kablink.teaming.gwt.client.mainmenu.TeamInfo;
 import org.kablink.teaming.gwt.client.rpc.shared.FindUserByEmailAddressCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.FindUserByEmailAddressRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.GetEntryCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.GetFolderCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetMyTeamsCmd;
+import org.kablink.teaming.gwt.client.rpc.shared.GetMyTeamsRpcResponseData;
 import org.kablink.teaming.gwt.client.rpc.shared.GetSharingInfoCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.SendShareNotificationEmailCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.ValidateEmailAddressCmd;
@@ -93,6 +96,7 @@ import org.kablink.teaming.gwt.client.widgets.AlertDlg.AlertDlgClient;
 import org.kablink.teaming.gwt.client.widgets.FindCtrl.FindCtrlClient;
 import org.kablink.teaming.gwt.client.widgets.PromptForExternalUsersEmailAddressDlg.PromptForExternalUsersEmailAddressDlgClient;
 import org.kablink.teaming.gwt.client.widgets.ShareSendToWidget.SendToValue;
+import org.kablink.teaming.gwt.client.widgets.ShareWithTeamsDlg.ShareWithTeamsDlgClient;
 
 import com.google.gwt.cell.client.Cell;
 import com.google.gwt.cell.client.CheckboxCell;
@@ -175,6 +179,7 @@ public class ShareThisDlg2 extends DlgBox
 	private Label m_noShareItemsFoundHint;
 	private FlowPanel m_menuPanel;
 	private FlexTable m_addShareTable;
+	private InlineLabel m_shareWithTeamsLabel;
 	private InlineLabel m_manageSharesFindCtrlLabel;
 	private FlowPanel m_notifyPanel;
 	private ShareSendToWidget m_sendToWidget;
@@ -184,14 +189,18 @@ public class ShareThisDlg2 extends DlgBox
 	private ListBox m_findByListbox;
 	private List<EntityId> m_entityIds;
 	private GwtSharingInfo m_sharingInfo;		// Holds all of the sharing info for the entities we are working with.
+	private List<TeamInfo> m_listOfTeams;
 	private List<HandlerRegistration> m_registeredEventHandlers;
+	private AsyncCallback<VibeRpcResponse> m_readTeamsCallback;
 	private AsyncCallback<VibeRpcResponse> m_shareEntryCallback;
 	private AsyncCallback<VibeRpcResponse> m_getSharingInfoCallback;
 	private AsyncCallback<VibeRpcResponse> m_sendNotificationEmailCallback;
 	private ShareExpirationValue m_defaultShareExpirationValue;
+	private ShareWithTeamsDlg m_shareWithTeamsDlg;
 	private PromptForExternalUsersEmailAddressDlg m_promptForExternalUsersEmailAddressDlg;
 	private EditShareWidget m_editShareWidget;
 	private EditSuccessfulHandler m_editShareHandler;
+	private EditSuccessfulHandler m_editShareWithTeamsHandler;
 	private EditSuccessfulHandler m_promptForExternalUsersEmailAddressEditSuccessfulHandler;
 	
 	private static final String FIND_SHARES_BY_USER = "by-user";
@@ -930,6 +939,42 @@ public class ShareThisDlg2 extends DlgBox
 				findCellFormatter = findTable.getFlexCellFormatter();
 				findCellFormatter.getElement( 0, col ).getStyle().setPaddingTop( 8, Unit.PX );
 				++col;
+			}
+			
+			// Add a "Share with teams" link
+			{
+				// Are we running Filr?
+				if ( GwtClientHelper.getRequestInfo().isLicenseFilr() == false )
+				{
+					ClickHandler clickHandler;
+					
+					// No, add a link the user can click on to invoke the "Share with teams" dialog
+					m_shareWithTeamsLabel = new InlineLabel( messages.shareWithTeams() );
+					m_shareWithTeamsLabel.addStyleName( "shareThisDlg_shareWithTeamsLink" );
+
+					// Add a click handler to the "share with teams" label.
+					clickHandler = new ClickHandler()
+					{
+						@Override
+						public void onClick( ClickEvent clickEvent )
+						{
+							ScheduledCommand cmd = new ScheduledCommand()
+							{
+								@Override
+								public void execute()
+								{
+									// Invoke the "Share with teams" dialog.
+									invokeShareWithTeamsDlg();
+								}
+							};
+							Scheduler.get().scheduleDeferred( cmd );
+						}
+					};
+					m_shareWithTeamsLabel.addClickHandler( clickHandler );
+
+					findTable.setWidget( 0, col, m_shareWithTeamsLabel );
+					++col;
+				}
 			}
 		}
 		
@@ -1730,10 +1775,10 @@ public class ShareThisDlg2 extends DlgBox
 					EntityId entityId;
 					
 					gwtFolderEntry = (GwtFolderEntry) selectedItem;
-					entityId = new EntityId(
-						gwtFolderEntry.getParentBinderId(),
-						Long.valueOf( gwtFolderEntry.getEntryId() ),
-						EntityId.FOLDER_ENTRY );
+					entityId = new EntityId();
+					entityId.setEntityId( Long.valueOf( gwtFolderEntry.getEntryId() ) );
+					entityId.setBinderId( gwtFolderEntry.getParentBinderId() );
+					entityId.setEntityType( EntityId.FOLDER_ENTRY );
 
 					listOfEntityIds.add( entityId );
 				}
@@ -1743,9 +1788,9 @@ public class ShareThisDlg2 extends DlgBox
 					EntityId entityId;
 					
 					gwtFolder = (GwtFolder) selectedItem;
-					entityId = new EntityId(
-						Long.valueOf( gwtFolder.getFolderId() ),
-						EntityId.FOLDER );
+					entityId = new EntityId();
+					entityId.setEntityId( Long.valueOf( gwtFolder.getFolderId() ) );
+					entityId.setEntityType( EntityId.FOLDER );
 
 					listOfEntityIds.add( entityId );
 				}
@@ -2042,6 +2087,61 @@ public class ShareThisDlg2 extends DlgBox
 	}
 	
 	/**
+	 * Return a list of teams that have not been shared with.
+	 */
+	private List<TeamInfo> getListOfTeamsNotSharedWith()
+	{
+		ArrayList<TeamInfo> listOfTeams;
+		
+		listOfTeams = new ArrayList<TeamInfo>();
+		
+		// Do we have any teams?
+		if ( m_listOfTeams != null && m_listOfTeams.size() > 0 )
+		{
+			GwtShareItem shareItem;
+
+			shareItem = new GwtShareItem();
+			shareItem.setRecipientType( GwtRecipientType.TEAM );
+			shareItem.setRecipientUserType( UserType.UNKNOWN );
+
+			// Yes
+			// Go through each team and see if the entities have already been shared with that team.
+			for ( TeamInfo nextTeamInfo : m_listOfTeams )
+			{
+				boolean alreadySharedWithTeam;
+				
+				shareItem.setRecipientName( nextTeamInfo.getTitle() );
+				shareItem.setRecipientId( Long.valueOf( nextTeamInfo.getBinderId() ) );
+				alreadySharedWithTeam = true;
+				
+				for ( EntityId nextEntityId : m_entityIds )
+				{
+					shareItem.setEntityId( nextEntityId );
+					shareItem.setEntityName( getEntityName( nextEntityId ) );
+					
+					// Has this entity already been shared with this team?
+					if ( findShareItem( shareItem ) == null )
+					{
+						// No
+						alreadySharedWithTeam = false;
+						break;
+					}
+				}
+				
+				// Have the entities already been shared with this team?
+				if ( alreadySharedWithTeam == false )
+				{
+					// No
+					listOfTeams.add( nextTeamInfo );
+				}
+			}
+		}
+		
+		return listOfTeams;
+	}
+	
+
+	/**
 	 * Return the default share access rights
 	 */
 	private ShareRights.AccessRights getDefaultShareAccessRights()
@@ -2336,6 +2436,7 @@ public class ShareThisDlg2 extends DlgBox
 		ShareThisDlgMode mode )
 	{
 		GetSharingInfoCmd rpcCmd1 = null;
+		GetMyTeamsCmd rpcCmd2 = null;
 		
 		// Set the caption...
 		setCaption( caption );
@@ -2414,6 +2515,52 @@ public class ShareThisDlg2 extends DlgBox
 			m_addShareTable.setVisible( true );
 		}
 		
+		if ( GwtClientHelper.getRequestInfo().isLicenseFilr() == false )
+		{
+			if ( m_readTeamsCallback == null )
+			{
+				// Create a callback that will be used when we read the teams the user is a member of
+				m_readTeamsCallback = new AsyncCallback<VibeRpcResponse>()
+				{
+					/**
+					 * 
+					 */
+					@Override
+					public void onFailure( Throwable t )
+					{
+						GwtClientHelper.handleGwtRPCFailure(
+								t,
+								GwtTeaming.getMessages().rpcFailure_GetMyTeams() );
+					}
+					
+					/**
+					 * 
+					 */
+					@Override
+					public void onSuccess( VibeRpcResponse response )
+					{
+						GetMyTeamsRpcResponseData responseData;
+						
+						responseData = (GetMyTeamsRpcResponseData) response.getResponseData();
+						m_listOfTeams = responseData.getTeams();
+						if ( m_shareWithTeamsLabel != null )
+						{
+							if ( m_listOfTeams == null || m_listOfTeams.size() == 0 )
+							{
+								// Hide the "share with my teams" link.
+								m_shareWithTeamsLabel.setVisible( false );
+							}
+							else
+							{
+								// Show the "share with my teams" link
+								m_shareWithTeamsLabel.setVisible( true );
+							}
+						}
+					}
+				};
+			}
+		}
+		
 		if ( m_getSharingInfoCallback == null )
 		{
 			// Create a callback that will be used when we read the sharing information.
@@ -2484,6 +2631,13 @@ public class ShareThisDlg2 extends DlgBox
 	
 			// Issue an rpc request to get the share information for the entities we are working with.
 			GwtClientHelper.executeCommand( rpcCmd1, m_getSharingInfoCallback );
+		}
+		
+		// Issue an rpc request to get the teams this user is a member of.
+		if ( GwtClientHelper.getRequestInfo().isLicenseFilr() == false )
+		{
+			rpcCmd2 = new GetMyTeamsCmd();
+			GwtClientHelper.executeCommand( rpcCmd2, m_readTeamsCallback );
 		}
 	}
 	
@@ -2713,6 +2867,114 @@ public class ShareThisDlg2 extends DlgBox
 		m_editShareWidget.setVisible( true );
 	}
 	
+	/**
+	 * Invoke the "Share with teams" dialog
+	 */
+	private void invokeShareWithTeamsDlg()
+	{
+		if ( m_editShareWithTeamsHandler == null )
+		{
+			m_editShareWithTeamsHandler = new EditSuccessfulHandler()
+			{
+				@SuppressWarnings("unchecked")
+				@Override
+				public boolean editSuccessful( Object obj )
+				{
+					if ( obj != null && obj instanceof List )
+					{
+						Scheduler.ScheduledCommand cmd;
+						final List<TeamInfo> listOfSelectedTeams;
+						
+						listOfSelectedTeams = (List<TeamInfo>) obj;
+						
+						cmd = new Scheduler.ScheduledCommand()
+						{
+							@Override
+							public void execute()
+							{
+								for ( TeamInfo nextTeamInfo : listOfSelectedTeams )
+								{
+									// Create a GwtShareItem for every entity we are sharing with.
+									for ( EntityId nextEntityId : m_entityIds )
+									{
+										GwtShareItem shareItem;
+
+										shareItem = new GwtShareItem();
+										shareItem.setEntityId( nextEntityId );
+										shareItem.setEntityName( getEntityName( nextEntityId ) );
+										shareItem.setRecipientId( Long.valueOf( nextTeamInfo.getBinderId() ) );
+										shareItem.setRecipientName( nextTeamInfo.getTitle() );
+										shareItem.setRecipientType( GwtRecipientType.TEAM );
+										shareItem.setRecipientUserType( UserType.UNKNOWN );
+										shareItem.setShareRights( getDefaultShareRights() );
+										shareItem.setShareExpirationValue( m_defaultShareExpirationValue );
+										
+										// Is this external user already in the list?
+										if ( findShareItem( shareItem ) == null )
+										{
+											// No, add it
+											addShare( shareItem, true );
+										}
+										else
+										{
+											// Tell the user the item has already been shared with the team.
+											Window.alert( GwtTeaming.getMessages().shareDlg_alreadySharedWithSelectedRecipient( nextTeamInfo.getTitle() ) );
+										}
+									}
+								}
+							}
+						};
+						Scheduler.get().scheduleDeferred( cmd );
+					}
+					
+					return true;
+				}
+			};
+		}
+
+		if ( m_shareWithTeamsDlg == null )
+		{
+			
+			ShareWithTeamsDlg.createAsync(
+										true,
+										true,
+										m_editShareWithTeamsHandler,
+										new ShareWithTeamsDlgClient()
+			{
+				@Override
+				public void onUnavailable() 
+				{
+					// Nothing to do.  Error handled in asynchronous provider.
+				}
+				
+				@Override
+				public void onSuccess( ShareWithTeamsDlg swtDlg )
+				{
+					m_shareWithTeamsDlg = swtDlg;
+					invokeShareWithTeamsDlg();
+				}
+			} );
+		}
+		else
+		{
+			List<TeamInfo> listOfTeams;
+			
+			// Get the list of teams that have not been shared with.
+			listOfTeams = getListOfTeamsNotSharedWith();
+			
+			if ( listOfTeams == null || listOfTeams.size() == 0 )
+			{
+				Window.alert( GwtTeaming.getMessages().shareDlg_noTeamsToShareWith() );
+			}
+			else
+			{
+				// Invoke the "share with teams" dialog.
+				m_shareWithTeamsDlg.init( listOfTeams );
+				m_shareWithTeamsDlg.show( true );
+			}
+		}
+	}
+
 	/**
 	 * 
 	 */
@@ -3099,9 +3361,6 @@ public class ShareThisDlg2 extends DlgBox
 			
 			// Is sharing with ldap groups available?
 			m_findCtrl.setSearchForLdapGroups( sharingInfo.getCanShareWithLdapGroups() );
-			
-			// We want to be able to share with teams.
-			m_findCtrl.setSearchForTeamGroups( true );
 
 			listOfShareItems = sharingInfo.getListOfShareItems();
 			if ( listOfShareItems == null )

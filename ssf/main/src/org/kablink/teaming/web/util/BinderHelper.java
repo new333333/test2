@@ -508,10 +508,6 @@ public class BinderHelper {
 					if (SPropsUtil.getBoolean("accessControl.viewBinderTitle.enabled", false)) {
 						model.put(WebKeys.BINDER_VIEW_BINDER_TITLE, bs.getBinderModule().testAccess(null, binder, BinderOperation.viewBinderTitle, Boolean.TRUE));
 					}
-					
-					// Add information about whether the binder has team members
-					model.put( WebKeys.BINDER_HAS_TEAM_MEMBERS, bs.getBinderModule().doesBinderHaveTeamMembers( binder ) );
-					
 				} catch(Exception e) {
 					logger.debug("BinderHelper.setupStandardBeans(Exception:  '" + MiscUtil.exToString(e) + "')");
 					getBinderAccessibleUrl(bs, null, null, request, response, model);
@@ -698,7 +694,7 @@ public class BinderHelper {
 	public static String setupMobileFrontPageBeans(AllModulesInjected bs, RenderRequest request, 
 			RenderResponse response, Map model, String view) {
         User user = RequestContextHolder.getRequestContext().getUser();
-		if (!WebHelper.isUserLoggedIn(request) || user.isShared()) {
+		if (!WebHelper.isUserLoggedIn(request) || ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
 	        HttpSession session = ((HttpServletRequestReachable) request).getHttpServletRequest().getSession();
 	    	AuthenticationException ex = (AuthenticationException) session.getAttribute(AbstractAuthenticationProcessingFilter.SPRING_SECURITY_LAST_EXCEPTION_KEY);
 	    	if(ex != null) {
@@ -721,16 +717,10 @@ public class BinderHelper {
 		Map userProperties = (Map) bs.getProfileModule().getUserProperties(user.getId()).getProperties();
 		if (userProperties == null) userProperties = new HashMap();
 		Long binderId = user.getWorkspaceId();
-		Binder topBinder = null;
-		try {
-			if (binderId == null) binderId = bs.getWorkspaceModule().getTopWorkspace().getId();
-			topBinder = bs.getWorkspaceModule().getTopWorkspace();
-		} catch(Exception e) {}
+		if (binderId == null) binderId = bs.getWorkspaceModule().getTopWorkspace().getId();
+		Binder topBinder = bs.getWorkspaceModule().getTopWorkspace();
 		Binder myWorkspaceBinder = bs.getBinderModule().getBinder(user.getWorkspaceId());
-		Binder binder = null;
-		try {
-			binder = bs.getBinderModule().getBinder(binderId);
-		} catch(Exception e) {}
+		Binder binder = bs.getBinderModule().getBinder(binderId);
 		setupStandardBeans(bs, request, response, model, binderId, "ss_mobile");
 		model.put(WebKeys.BINDER, binder);
 		model.put(WebKeys.TOP_WORKSPACE, topBinder);
@@ -755,10 +745,10 @@ public class BinderHelper {
 		model.put(WebKeys.PREV_PAGE, prevPage);
 		model.put(WebKeys.PAGE_ENTRIES_PER_PAGE, (Integer) options.get(ObjectKeys.SEARCH_MAX_HITS));
 
-		if (topBinder != null && (type.equals(ObjectKeys.MOBILE_WHATS_NEW_VIEW_TRACKED) || 
+		if (type.equals(ObjectKeys.MOBILE_WHATS_NEW_VIEW_TRACKED) || 
 				type.equals(ObjectKeys.MOBILE_WHATS_NEW_VIEW_FAVORITES) ||
 				type.equals(ObjectKeys.MOBILE_WHATS_NEW_VIEW_TEAMS) ||
-				type.equals(ObjectKeys.MOBILE_WHATS_NEW_VIEW_SITE))) {
+				type.equals(ObjectKeys.MOBILE_WHATS_NEW_VIEW_SITE)) {
 			setupWhatsNewBinderBeans(bs, myWorkspaceBinder, topBinder.getId(), model, 
 					String.valueOf(pageNumber), Integer.valueOf(pageSize), type);
 		} else if (type.equals(ObjectKeys.MOBILE_WHATS_NEW_VIEW_MICROBLOG)) {
@@ -872,7 +862,7 @@ public class BinderHelper {
 	public static String setupTeamingLiveBeans(AllModulesInjected bs, RenderRequest request, 
 			RenderResponse response, Map model, String view) throws AccessControlException {
         User user = RequestContextHolder.getRequestContext().getUser();
-		if (!WebHelper.isUserLoggedIn(request) || user.isShared()) {
+		if (!WebHelper.isUserLoggedIn(request) || ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
 			AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
 			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_MOBILE_AJAX);
 			adapterUrl.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_VIEW_TEAMING_LIVE);
@@ -1177,7 +1167,7 @@ public class BinderHelper {
 			catch(AccessControlException e) {
 				//Set up the standard beans
 				setupStandardBeans(bs, request, response, model, binderId);
-				if (WebHelper.isUserLoggedIn(request) && !user.isShared()) {
+				if (WebHelper.isUserLoggedIn(request) && !ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
 					//Access is not allowed
 					String refererUrl = (String)request.getAttribute(WebKeys.REFERER_URL);
 					model.put(WebKeys.URL, refererUrl);
@@ -1454,7 +1444,7 @@ public class BinderHelper {
 		String displayStyle = user.getDisplayStyle();
 		if (displayStyle == null || displayStyle.equals("") || 
 				(displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE) &&
-				user.isShared())) {
+				ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId()))) {
 			displayStyle = ObjectKeys.USER_DISPLAY_STYLE_DEFAULT;
 		}
 		model.put(WebKeys.DISPLAY_STYLE, displayStyle);
@@ -1469,7 +1459,7 @@ public class BinderHelper {
 			if (entryId != null) url.setParameter(WebKeys.URL_ENTRY_ID, entryId.toString());
 			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SET_DISPLAY_STYLE);
 			if (displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE) || 
-					user.isShared()) {
+					ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
 				url.setParameter(WebKeys.URL_VALUE, ObjectKeys.USER_DISPLAY_STYLE_DEFAULT);
 			} else {
 				url.setParameter(WebKeys.URL_VALUE, ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE);
@@ -2921,7 +2911,7 @@ public class BinderHelper {
 			Integer pageSize, String type) {		
         User user = RequestContextHolder.getRequestContext().getUser();
         //What's new is not available to the guest user
-        if (user.isShared()) return new ArrayList<Long>() ;
+        if (ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) return new ArrayList<Long>() ;
 
         //Get the documents bean for the documents just created or modified
 		Map options = new HashMap();
@@ -3030,7 +3020,7 @@ public class BinderHelper {
 		//Get a list of unseen entries in this binder tree
         User user = RequestContextHolder.getRequestContext().getUser();
         //What's unread is not available to the guest user
-        if (user.isShared()) return;
+        if (ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) return;
 
 		Map options = new HashMap();
 		if (page == null || page.equals("")) page = "0";
@@ -3269,7 +3259,7 @@ public class BinderHelper {
 			if (0 < idList.size())       handleEmailRecipients(handledIds, recipients, idList);
 			if (0 < idListGroups.size()) handleEmailRecipients(handledIds, recipients, idListGroups);
 			if (0 < idListTeams.size())  handleTeamRecipients(handledIds,  recipients, idListTeams, bs.getBinderModule());
-			if (!toTeam.equals(""))      handleEmailRecipients(handledIds, recipients, bs.getBinderModule().getTeamMemberIds( entry.getParentFolder() ));
+			if (!toTeam.equals(""))      handleEmailRecipients(handledIds, recipients, entry.getParentFolder().getTeamMemberIds());
 			
 			if (!recipients.isEmpty()) {
 				try {
@@ -5449,8 +5439,7 @@ public class BinderHelper {
 			 isBinderProfilesRootWS(  binder) ||	// The root workspace that contains all other workspaces.
 			 isBinderNetFoldersRootWS(binder) ||	// The root workspace that contains all Net Folders.
 			 isBinderHomeFolder(      binder) ||	// Any user's Home folder.
-			 isBinderTopNetFolder(    binder) ||	// Any top level Net Folder.
-			 isBinderMyFilesStorage(  binder));		// Any user's My Files Storage folder.
+			 isBinderTopNetFolder(    binder));		// Any top level Net Folder.
 	}
 	
 	/**

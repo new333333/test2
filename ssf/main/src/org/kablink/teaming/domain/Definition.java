@@ -104,7 +104,6 @@ public class Definition extends PersistentTimestampObject  {
 	public static final String FAMILY_MILESTONE="milestone"; 
 	public static final String FAMILY_MINIBLOG="miniblog"; 
 	public static final String FAMILY_PHOTO="photo"; 
-	public static final String FAMILY_SURVEY="survey"; 
 	public static final String FAMILY_TASK="task"; 
 	public static final String FAMILY_WIKI="wiki"; 
 	public static final String FAMILY_WORKSPACE="workspace"; 

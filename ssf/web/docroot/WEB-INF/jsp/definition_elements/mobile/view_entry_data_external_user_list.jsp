@@ -60,7 +60,7 @@
 				<div class="entry-element">
 				  <img
 					border="0"
-					src="<html:imagesPath/>pics/presence/unknown_16.png"
+					src="<html:imagesPath/>pics/sym_s_white_dude_14.png"
 					alt="<ssf:nlt tag="presence.none"/>"/> <c:out value="${selection}" />
 				</div>
 			</c:forEach>

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2011 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2011 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -44,31 +44,24 @@ import net.fortuna.ical4j.model.Component;
 import net.fortuna.ical4j.util.Calendars;
 
 import org.apache.commons.logging.Log;
-
 import org.kablink.teaming.domain.FileAttachment;
 import org.kablink.teaming.ical.util.ICalUtils;
 import org.kablink.teaming.util.NLT;
 import org.kablink.teaming.web.util.MiscUtil;
-
 import org.springframework.mail.javamail.MimeMessageHelper;
 
-/**
- * ?
- * 
- * @author ?
- */
-@SuppressWarnings("unchecked")
 public class MimeMapPreparator extends AbstractMailPreparator {
+	@SuppressWarnings("unchecked")
 	Map details;
 	boolean sendVTODO;
 	
+	@SuppressWarnings("unchecked")
 	public MimeMapPreparator(Map details, Log logger, boolean sendVTODO) {
 		super(logger);
 		this.details = details;
 		this.sendVTODO = sendVTODO;
 	}
-	
-	@Override
+	@SuppressWarnings("unchecked")
 	public void prepare(MimeMessage mimeMessage) throws MessagingException {
 		//make sure nothing saved yet
 		message = null;
@@ -93,8 +86,8 @@ public class MimeMapPreparator extends AbstractMailPreparator {
 		Collection<InternetAddress> addrsTo = (Collection)details.get(MailModule.TO);
 		Collection<InternetAddress> addrsCc = (Collection)details.get(MailModule.CC);
 		Collection<InternetAddress> addrsBcc = (Collection)details.get(MailModule.BCC);
-		Collection<InternetAddress> validAddrs;
-		if ((addrsTo == null || addrsTo.isEmpty()) && (addrsCc == null || addrsCc.isEmpty()) && (addrsBcc == null || addrsBcc.isEmpty())) {
+		Collection<InternetAddress> validAddrs;;
+		if ((addrsTo == null || addrsTo.isEmpty()) && (addrsBcc == null || addrsBcc.isEmpty())) {
 			if (details.containsKey(MailModule.FROM)) 
 				helper.setTo((InternetAddress)details.get(MailModule.FROM));
 			else
@@ -151,13 +144,14 @@ public class MimeMapPreparator extends AbstractMailPreparator {
 				c++;
 			}
 			if (margedCalendars != null) {
-				// Add to alternative text, attachments handled
-				// already.
+				//add to alternative text, attachments handled already
 				prepareICalendar(margedCalendars, ICalUtils.getSummary(margedCalendars) + MailModule.ICAL_FILE_EXTENSION, getICalComponentType(margedCalendars), false, true, helper);
 			}
 		}
 
-		// Save message in case cannot connect and need to re-send.
+		//save message incase cannot connect and need to resend;
 		message = mimeMessage;
 	}
+
 }
+

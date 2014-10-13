@@ -238,7 +238,7 @@ public class FolderResource extends AbstractBinderResource {
             throw new NotModifiedException();
         }
         SearchResultList<SearchableObject> children = getChildren(id, null, true, false, true, allowJits, offset, maxCount,
-                "/folders/" + id + "/children", nextParams, toDomainFormat(descriptionFormatStr), null);
+                "/folders/" + id + "/children", nextParams, toDomainFormat(descriptionFormatStr), ifModifiedSince);
         return Response.ok(children).lastModified(lastModified).build();
     }
 

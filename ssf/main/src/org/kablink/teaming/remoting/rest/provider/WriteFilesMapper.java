@@ -32,16 +32,11 @@
  */
 package org.kablink.teaming.remoting.rest.provider;
 
-import java.lang.invoke.MethodHandles;
-
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.kablink.teaming.module.file.WriteFilesException;
-import org.kablink.teaming.remoting.rest.jersey.filter.ContainerFilter;
 import org.kablink.teaming.rest.v1.model.ErrorInfo;
 
 /**
@@ -50,14 +45,7 @@ import org.kablink.teaming.rest.v1.model.ErrorInfo;
  */
 @Provider
 public class WriteFilesMapper implements ExceptionMapper<WriteFilesException> {
-	protected static Log logger = LogFactory.getLog(MethodHandles.lookup().lookupClass());
-
 	public Response toResponse(WriteFilesException ex) {
-		int httpStatusCode = ex.getHttpStatusCode();
-		if(httpStatusCode == Response.Status.NOT_FOUND.getStatusCode())
-			logger.warn("An error occurred while processing a REST request (" + ContainerFilter.getCurrentEndpoint() + "): " + ex.toString());
-		else
-			logger.error("An error occurred while processing a REST request (" + ContainerFilter.getCurrentEndpoint() + "): " + ex.toString());
-		return Response.status(httpStatusCode).entity(new ErrorInfo(ex.getApiErrorCode().name(), ex.getMessage())).build();
+		return Response.status(ex.getHttpStatusCode()).entity(new ErrorInfo(ex.getApiErrorCode().name(), ex.getMessage())).build();
 	}
 }

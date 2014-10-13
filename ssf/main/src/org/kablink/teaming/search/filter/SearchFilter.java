@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2012 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2012 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -42,11 +42,9 @@ import org.dom4j.Attribute;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
-
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
-
 import org.kablink.teaming.domain.EntityIdentifier;
 import org.kablink.teaming.task.TaskHelper;
 import org.kablink.teaming.web.util.DateHelper;
@@ -336,29 +334,6 @@ public class SearchFilter {
 	}
 	
 	/**
-	 * Add a filter for determining if we are working with a "team group"
-	 */
-	public void addAndTeamGroupFilter( boolean teamGroup )
-	{
-		newCurrentFilterTermsBlock();
-		currentFilterTerms.addAttribute( SearchFilterKeys.FilterAnd, "true" );
-		
-		addTeamGroupFilter( teamGroup );
-	}
-	
-	/**
-	 * Add a filter for determining if we are working with a "team group"
-	 */
-	public void addTeamGroupFilter( boolean teamGroup )
-	{
-		addFieldFilter(
-					Constants.IS_TEAM_GROUP_FIELD,
-					SearchFilterKeys.FilterTypeEntryDefinition,
-					String.valueOf( teamGroup ),
-					SearchFilterKeys.FilterValueTypeBoolean );
-	}
-	
-	/**
 	 * Add a filter for the "internal" field
 	 */
 	public void addAndInternalFilter( boolean internalOnly )
@@ -424,16 +399,16 @@ public class SearchFilter {
 			SearchFilterKeys.FilterValueTypeBoolean);
 	}
 	
-	public void addAndDisabledPrincipalFilter(boolean disabled) {
+	public void addAndDisabledUserFilter(boolean disabled) {
 		newCurrentFilterTermsBlock();
 		currentFilterTerms.addAttribute(SearchFilterKeys.FilterAnd, "true");
 
-		addDisabledPrincipalFilter(disabled);
+		addDisabledUserFilter(disabled);
 	}
 	
-	public void addDisabledPrincipalFilter(boolean disabled) {
+	public void addDisabledUserFilter(boolean disabled) {
 		addFieldFilter(
-			Constants.DISABLED_PRINCIPAL_FIELD,
+			Constants.DISABLED_USER_FIELD,
 			SearchFilterKeys.FilterTypeEntryDefinition,
 			String.valueOf(disabled),
 			SearchFilterKeys.FilterValueTypeBoolean);

@@ -42,19 +42,16 @@ import java.util.List;
 import javax.xml.rpc.ServiceException;
 
 import org.apache.axis.EngineConfiguration;
-
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.XMLWriter;
-
 import org.kablink.teaming.client.ws.WebServiceClientUtil;
 import org.kablink.teaming.client.ws.TeamingServiceSoapBindingStub;
 import org.kablink.teaming.client.ws.TeamingServiceSoapServiceLocator;
 import org.kablink.teaming.client.ws.model.*;
-import org.kablink.teaming.web.util.BuiltInUsersHelper;
 import org.kablink.util.search.Constants;
 import org.kablink.util.search.Criteria;
 
@@ -72,8 +69,9 @@ public class TeamingServiceClientWithStub {
 	private static final String TEAMING_SERVICE_ADDRESS_BASIC 	= "http://localhost:8080/ssr/secure/ws/TeamingServiceV1";
 	private static final String TEAMING_SERVICE_ADDRESS_TOKEN   = "http://localhost:8080/ssr/token/ws/TeamingServiceV1";
 
-	  private static final String USERNAME = "admin";
-	  private static final String PASSWORD = "admin";
+	
+	private static final String USERNAME = "admin";
+	private static final String PASSWORD = "admin";
 	//private static final String USERNAME = "synchagent";
 	//private static final String PASSWORD = "test";
 	
@@ -192,7 +190,7 @@ public class TeamingServiceClientWithStub {
 	public static void addMicroBlog_OldWay_ThisDoesNotWork() throws Exception {
 		TeamingServiceSoapBindingStub stub = getStubBasic();
 
-		User admin = stub.profile_getUserByName(null, USERNAME, false);
+		User admin = stub.profile_getUserByName(null, "admin", false);
 		DefinitionBrief db = stub.definition_getDefinitionByName(null, "_miniblog_entry");
 		FolderEntry entry = new FolderEntry();
 		entry.setDefinitionId(db.getId());

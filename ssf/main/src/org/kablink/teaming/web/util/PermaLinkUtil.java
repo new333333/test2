@@ -263,16 +263,6 @@ public class PermaLinkUtil {
 		adapterUrl.setParameter(WebKeys.URL_FILE_NAME, WebUrlUtil.urlEncodeFilename(fileName));
 		return adapterUrl.toString();	
 	}
-	public static String getFilePermalink(Long entityId, String entityType, String fileName) {
-		EntityType type = null;
-		if (EntityType.folder.name().equals(entityType)) type = EntityType.folder;
-		if (EntityType.workspace.name().equals(entityType)) type = EntityType.workspace;
-		if (EntityType.folderEntry.name().equals(entityType)) type = EntityType.folderEntry;
-		AdaptedPortletURL adapterUrl = AdaptedPortletURL.createAdaptedPortletURLOutOfWebContext("ss_forum", true);
-		getPermalinkURL(adapterUrl, entityId, type);
-		adapterUrl.setParameter(WebKeys.URL_FILE_NAME, WebUrlUtil.urlEncodeFilename(fileName));
-		return adapterUrl.toString();	
-	}
 	@SuppressWarnings("unchecked")
 	public static String getFilePermalink(Map searchResults, String fileName) {
 		AdaptedPortletURL adapterUrl = AdaptedPortletURL.createAdaptedPortletURLOutOfWebContext("ss_forum", true);

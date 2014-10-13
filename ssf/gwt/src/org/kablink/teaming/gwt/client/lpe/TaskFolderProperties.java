@@ -36,8 +36,6 @@ package org.kablink.teaming.gwt.client.lpe;
 import org.kablink.teaming.gwt.client.GetterCallback;
 import org.kablink.teaming.gwt.client.GwtFolder;
 import org.kablink.teaming.gwt.client.GwtTeaming;
-import org.kablink.teaming.gwt.client.GwtTeamingException;
-import org.kablink.teaming.gwt.client.GwtTeamingException.ExceptionType;
 import org.kablink.teaming.gwt.client.rpc.shared.GetFolderCmd;
 import org.kablink.teaming.gwt.client.rpc.shared.VibeRpcResponse;
 import org.kablink.teaming.gwt.client.util.GwtClientHelper;
@@ -95,16 +93,12 @@ public class TaskFolderProperties
 			/**
 			 * 
 			 */
-			@Override
 			public void onFailure( Throwable t )
 			{
-				if ( ((GwtTeamingException) t).getExceptionType() != ExceptionType.ACCESS_CONTROL_EXCEPTION )
-				{
-					GwtClientHelper.handleGwtRPCFailure(
-						t,
-						GwtTeaming.getMessages().rpcFailure_GetFolder(),
-						m_folderId );
-				}
+				GwtClientHelper.handleGwtRPCFailure(
+					t,
+					GwtTeaming.getMessages().rpcFailure_GetFolder(),
+					m_folderId );
 
 				// Inform the callback that the rpc request failed.
 				if ( m_getterCallback != null )
@@ -115,7 +109,6 @@ public class TaskFolderProperties
 			 * 
 			 * @param result
 			 */
-			@Override
 			public void onSuccess( VibeRpcResponse response )
 			{
 				GwtFolder gwtFolder;
@@ -139,7 +132,6 @@ public class TaskFolderProperties
 	/**
 	 * 
 	 */
-	@Override
 	public void copy( PropertiesObj props )
 	{
 		if ( props instanceof TaskFolderProperties )
@@ -175,7 +167,6 @@ public class TaskFolderProperties
 	 * We do not need to create a config string.  This class is used to support the
 	 * "display a task folder" option in the enhanced view widget.
 	 */
-	@Override
 	public String createConfigString()
 	{
 		return null;
