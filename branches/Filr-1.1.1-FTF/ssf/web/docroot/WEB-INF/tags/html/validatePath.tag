@@ -1,0 +1,1 @@
+<%@ tag isELIgnored="false" body-content="empty" %>${pageContext.request.contextPath}/<%= org.kablink.teaming.ObjectKeys.VALIDATE_DIR %>/

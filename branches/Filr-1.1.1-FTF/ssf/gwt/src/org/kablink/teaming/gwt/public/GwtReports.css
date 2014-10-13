@@ -1,0 +1,133 @@
+/* */
+
+/* ########################################################################################################### */
+
+
+/* Start:  GWT reports styles. */
+	/* Start:  Change log report composite styles. */
+		.vibe-changeLogReportComposite- {}
+	/* End:  Change log report composite styles. */
+	
+	/* Start:  Email report composite styles. */
+		.vibe-emailReportComposite-datesPanel                    {display: block; white-space: nowrap; margin-top: 5px;}
+		.vibe-emailReportComposite-reportPanel                   {display: block; border: 1px solid #ccc; -moz-border-radius: 3px; border-radius: 3px; -webkit-border-radius: 3px; margin-top: 10px;}
+		.vibe-emailReportComposite-reportTable                   {}
+		.vibe-emailReportComposite-reportTableCell               {vertical-align: top; padding-right: 15px; font-size: 12px;}
+		.vibe-emailReportComposite-reportTableCell-attachedFiles {white-space: nowrap;}
+		.vibe-emailReportComposite-reportTableCell-errors        {}
+		.vibe-emailReportComposite-reportTableCell-fromAddress   {white-space: nowrap;}
+		.vibe-emailReportComposite-reportTableCell-sendDate      {white-space: nowrap;}
+		.vibe-emailReportComposite-reportTableCell-status        {white-space: nowrap;}
+		.vibe-emailReportComposite-reportTableCell-subject       {}
+		.vibe-emailReportComposite-reportTableCell-toAddresses   {}
+		.vibe-emailReportComposite-reportTableCell-type          { white-space: nowrap;}
+		.vibe-emailReportComposite-reportTableHeaderCell         {font-size: 11px;}
+		.vibe-emailReportComposite-reportTableHeaderRow          {font-family: arial, sans-serif; color: #949494; font-size: 0.6em; padding-top: 0.2em; padding-bottom: 0.2em; padding-left: 0; padding-right: .7em; border-bottom: 1px solid #c4c4c4; white-space: nowrap; background: #fff; border-collapse: separate; border-spacing: 0px; background-color: transparent;}
+		.vibe-emailReportComposite-typesPanel                    {display: block; white-space: nowrap; margin-top: 5px;}
+		.vibe-emailReportComposite-typeRadio                     {white-space: nowrap; margin-right: 10px;}
+	/* End:  Email report composite styles. */
+	
+	/* Start:  License report composite styles. */
+		.vibe-licenseReportComposite-datesPanel        {display: block; white-space: nowrap; margin-top: 5px;}
+		.vibe-licenseReportComposite-reportDataCaption {font-weight: bold;}
+		.vibe-licenseReportComposite-reportDataCurLic  {}
+		.vibe-licenseReportComposite-reportDataStats   {}
+		.vibe-licenseReportComposite-reportDataStatsHC {padding-right: 5px;}
+		.vibe-licenseReportComposite-reportDataStatsHR {font-size: 11px; font-family: arial, sans-serif; font-weight: bold;}
+		.vibe-licenseReportComposite-reportPanel       {display: block; border: 1px solid #ccc; -moz-border-radius: 3px; border-radius: 3px; -webkit-border-radius: 3px; margin-top: 10px; padding: 5px; font-size: 12px; font-family: arial, sans-serif; }
+	/* End:  License report composite styles. */
+	
+	/* Start:  Login report composite styles. */
+		.vibe-loginReportComposite-datesPanel   {display: block; white-space: nowrap; margin-top: 5px;}
+		.vibe-loginReportComposite-peopleFind   {width: 250px;}
+		.vibe-loginReportComposite-peopleLabel  {margin-right: 5px;}
+		.vibe-loginReportComposite-peopleList   {width: 260px; background-color: white;}
+		.vibe-loginReportComposite-peoplePanel  {margin-top: 15px; margin-bottom: 15px;}
+		.vibe-loginReportComposite-peopleRemove {margin-left: 0.5em;}
+		.vibe-loginReportComposite-sortCap      {margin-right: 5px; font-size: 12px;}
+		.vibe-loginReportComposite-sortList     {background-color: white;}
+		.vibe-loginReportComposite-sortPanel    {margin-left: 35px; white-space: nowrap;}
+		.vibe-loginReportComposite-typeRadio    {white-space: nowrap; margin-top: 15px;}
+	/* End:  Login report composite styles. */
+	
+	/* Start:  Base report composite styles. */
+		.vibe-reportCompositeBase-andSeparator {white-space: nowrap; margin-left: 8px; margin-right: 10px;}
+		.vibe-reportCompositeBase-caption      {font-weight: bold; font-size: 13px; margin-top: 10px; white-space: nowrap;}
+		.vibe-reportCompositeBase-rootPanel    {margin-top: 20px;}
+		.vibe-reportCompositeBase-runButton    {margin-right:3px; margin-top: 20px; margin-left: 0.5em; margin-bottom: 10px;}
+		.vibe-reportCompositeBase-textEntry    {}
+		.vibe-reportCompositeBase-widgetsPanel {display: block; margin-top: 10px; -moz-border-radius: 3px; border-radius: 3px; -webkit-border-radius: 3px; border: 1px solid #cccccc; padding: 5px; background-color: #ededed;}
+		.vibe-reportCompositeBase-buttonBase   {
+			color:#1f1f1f;
+		    font-family: Arial, sans-serif !important;
+			font-size: 12px;
+			font-weight: normal !important;
+			text-decoration:none;	
+			cursor: pointer;
+			white-space: nowrap;
+			padding: 2px 10px;
+		    text-align: center !important;
+	   		border: 1px solid #B8B8B8;
+			border-radius: 5px;
+			-moz-border-radius: 5px;
+			-webkit-border-radius: 5px;
+			background-color: #fff;
+/*			background: -webkit-gradient(linear, left top, left bottom, from(#ffffff), to(#E0E0E0));
+			background: -moz-linear-gradient(center top , #ffffff, #E0E0E0) repeat scroll 0 0;
+			background: linear-gradient(center top , #ffffff, #E0E0E0) repeat scroll 0 0;    */
+		}
+	/* End:  Base report composite styles. */
+	
+	/* Start:  Run a report dialog styles. */
+		.vibe-runAReportDlg                    {}
+		.vibe-runAReportDlg-chooseLabel        {font-weight: bold;}
+		.vibe-runAReportDlg-chooseSelect       {margin-left: 10px; padding-left: 5px;}
+		.vibe-runAReportDlg-reportHtmltPanel   {}
+		.vibe-runAReportDlg-reportMaxSizePanel {margin-top: 6px; font-size: 8px; font-style: italic;}
+		.vibe-runAReportDlg-reportScrollPanel  {border-top: 1px solid #cccccc; margin-top: 10px;}
+		.vibe-runAReportDlg-rootPanel          {background-color: white; padding: 10px;}
+		.vibe-runAReportDlg-systemLogsLink     {}
+	/* End:  Run a report dialog styles. */
+	
+	/* Start:  System error log report composite styles. */
+		.vibe-systemErrorLogReportComposite- {}
+	/* End:  System error log report composite styles. */
+	
+	/* Start:  User access report composite styles. */
+		.vibe-userAccessReportComposite-label                      {font-size: 13px;}
+		.vibe-userAccessReportComposite-reportPanel                {display: block; border: 1px solid #ccc; -moz-border-radius: 3px; border-radius: 3px; -webkit-border-radius: 3px; margin-top: 10px;}
+		.vibe-userAccessReportComposite-reportTable                {margin-top: 10px;}
+		.vibe-userAccessReportComposite-reportTableCell            {vertical-align: top; padding-right: 15px; font-size: 12px;}
+		.vibe-userAccessReportComposite-reportTableCell-link       {white-space: nowrap; cursor: pointer; text-decoration: none;}
+		.vibe-userAccessReportComposite-reportTableCell-link:hover {color: #135c8f; cursor: pointer; background: url(images/blends/teal_slice.png) repeat-x; background-position:center; -moz-border-radius: 5px; border-radius: 5px; -webkit-border-radius: 5px;}
+		.vibe-userAccessReportComposite-reportTableCell-name       {white-space: nowrap;}
+		.vibe-userAccessReportComposite-reportTableCell-type       {white-space: nowrap;}
+		.vibe-userAccessReportComposite-reportTableHeaderCell      {font-size: 11px;}
+		.vibe-userAccessReportComposite-reportTableHeaderRow       {font-family: arial, sans-serif; color: #666; font-size: 0.6em; padding-top: 0.2em; padding-bottom: 0.2em; padding-left: 0; padding-right: .7em; border-bottom: 1px solid #D2D5D1; white-space: nowrap; background:url(images/blends/gray_blend8_28.png) repeat-x; background-position:bottom; border-collapse: separate; border-spacing: 0px; color: #333; background-color: transparent;}
+		.vibe-userAccessReportComposite-rootPanel                  {display: block; margin-top: 18px;}
+		.vibe-userAccessReportComposite-userFind                   {width: 250px;}
+		.vibe-userAccessReportComposite-userPanel                  {margin-top: 10px; margin-bottom: 10px;}
+	/* End:  User access report composite styles. */
+	
+	/* Start:  User activity report composite styles. */
+		.vibe-userActivityReportComposite-datesPanel   {display: block; white-space: nowrap; margin-top: 5px;}
+		.vibe-userActivityReportComposite-peopleFind   {width: 250px;}
+		.vibe-userActivityReportComposite-peopleLabel  {margin-right: 5px;}
+		.vibe-userActivityReportComposite-peopleList   {width: 260px; background-color: white;}
+		.vibe-userActivityReportComposite-peoplePanel  {margin-top: 15px; margin-bottom: 15px;}
+		.vibe-userActivityReportComposite-peopleRemove {margin-left: 0.5em;}
+		.vibe-userActivityReportComposite-typePanel    {}
+		.vibe-userActivityReportComposite-typeRadio    {white-space: nowrap; margin-top: 15px;}
+	/* End:  User activity report composite styles. */
+	
+	/* Start:  Change modification log report composite styles. */
+		.vibe-changeLogReportComposite-binderFind     {}
+		.vibe-changeLogReportComposite-entityFind     {}
+		.vibe-changeLogReportComposite-entityTypeList {background-color: white;}
+		.vibe-changeLogReportComposite-label          {font-size: 13px;}
+		.vibe-changeLogReportComposite-operationList  {background-color: white;}
+		.vibe-changeLogReportComposite-reportPanel    {width: 99%; display: block; border: 1px solid #ccc; -moz-border-radius: 3px; border-radius: 3px; -webkit-border-radius: 3px; margin-top: 10px;}
+		.vibe-changeLogReportComposite-reportTable    {border: 0 none; width: 100%;}
+		.vibe-changeLogReportComposite-widgetsPanel   {margin-top: 15px !important;}
+	/* End:  Change modification log report composite styles. */
+/* End:  GWT reports styles. */
