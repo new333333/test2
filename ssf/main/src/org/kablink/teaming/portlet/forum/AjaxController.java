@@ -2558,11 +2558,15 @@ public class AjaxController  extends SAbstractControllerRetry {
 		WorkArea workArea = null;
 		Long workAreaId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_WORKAREA_ID));				
 		String type = PortletRequestUtils.getStringParameter(request, WebKeys.URL_WORKAREA_TYPE);	
-		if (EntityIdentifier.EntityType.valueOf(type).isBinder()) {
-			workArea = getBinderModule().getBinder(workAreaId);
-		} else {
-			workArea = getZoneModule().getZoneConfig(workAreaId);
-
+		try {
+			if (EntityIdentifier.EntityType.valueOf(type).isBinder()) {
+				workArea = getBinderModule().getBinder(workAreaId);
+			} else {
+				workArea = getZoneModule().getZoneConfig(workAreaId);
+	
+			}
+		} catch(Exception e) {
+			model.put(WebKeys.ERROR_MESSAGE, e.getMessage());
 		}
 		model.put(WebKeys.WORKAREA, workArea);
 			

@@ -44,8 +44,15 @@
 	<taconite-replace contextNodeID="ss_accessControlOwner${ss_namespace}" 
 	parseInBrowser="true">
 	<span id="ss_accessControlOwner${ss_namespace}"
-	  class="ss_bold"><ssf:userTitle user="${ssWorkArea.owner}"/> 
-	  <span class="ss_normal ss_smallprint ss_italic">(<ssf:userName user="${ssWorkArea.owner}"/>)</span></span>
+	  class="ss_bold">
+	  <c:if test="${!empty ssWorkArea}">
+		  <ssf:userTitle user="${ssWorkArea.owner}"/> 
+		  <span class="ss_normal ss_smallprint ss_italic">(<ssf:userName user="${ssWorkArea.owner}"/>)</span>
+	  </c:if>
+	  <c:if test="${empty ssWorkArea}">
+	  	<span class="ss_bold ss_smallprint ss_italic"><ssf:nlt tag="access.noLonger"/></span>
+	  </c:if>
+	</span>
 	</taconite-replace>
 
 </c:if>
