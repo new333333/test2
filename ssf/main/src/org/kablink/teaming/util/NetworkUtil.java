@@ -45,6 +45,15 @@ public class NetworkUtil {
 	private static String localHostIPv4Address; // cached value
 	
 	/**
+	 * This constructor is here only to allow Spring context to access this service as a bean.
+	 */
+	public NetworkUtil() {}
+	
+	public String getNodeAddress() {
+		return getLocalHostIPv4Address();
+	}
+	
+	/**
 	 * Returns textual presentation of the IP address of the local host in IPv4 format.
 	 * It will return <code>null<code> if no such information could be obtained.
 	 * 
@@ -71,4 +80,6 @@ public class NetworkUtil {
 			return address;
 		}
 	}
+	
+
 }

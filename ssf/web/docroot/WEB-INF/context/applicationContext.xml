@@ -328,7 +328,8 @@
  	 </bean>
  	 
  	 <!-- This bean deals with the ssf properties files at the base raw level and doesn't know or care
- 	      anything about how to encrypt or decrypt values. -->
+ 	      anything about how to encrypt or decrypt values. If called, it will return raw value that
+ 	      may be encrypted and hence unusable by the caller. -->
  	 <bean id="rawSsfProperties" class="org.kablink.teaming.util.PropertiesClassPathConfigFiles">
 		<property name="configFiles">
 			<list>
@@ -1576,5 +1577,8 @@ text/calendar											  ics
           
 	<!-- =============================== Ganglia Monitoring Support ============================== -->
 	<bean id="gangliaMonitoring" class="org.kablink.teaming.util.GangliaMonitoring" depends-on="sPropsUtil"/>
+	
+	<!-- ================= To make server/node address available to bean context declaratively during context initialization =============== -->
+	<bean id="nodeAddress" class="org.kablink.teaming.util.NetworkUtil"/>
 	
 </beans>
