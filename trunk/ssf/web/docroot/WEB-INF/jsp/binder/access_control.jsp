@@ -349,6 +349,8 @@ var ss_operationFailed = "<ssf:nlt tag="general.request.failed" text="Request fa
   <br/></label>
   <input type="submit" value="<ssf:nlt tag="button.ok"/>"
   onClick="ss_accessSelectOwner${renderResponse.namespace}(this);return false;"/>
+  <br/>
+  <span class="ss_smallprint ss_italic"><ssf:nlt tag="access.noLongerCaution"/></span>
   </div>
 </div>
 <c:if test="${!ssWorkArea.functionMembershipInherited}">
