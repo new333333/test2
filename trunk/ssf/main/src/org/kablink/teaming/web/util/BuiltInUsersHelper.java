@@ -34,41 +34,87 @@ package org.kablink.teaming.web.util;
 
 import java.util.ArrayList;
 import java.util.Collection;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.kablink.teaming.ObjectKeys;
+import org.kablink.teaming.context.request.RequestContext;
 import org.kablink.teaming.context.request.RequestContextHolder;
-import org.kablink.teaming.domain.*;
+import org.kablink.teaming.domain.User;
+import org.kablink.teaming.domain.ZoneInfo;
 import org.kablink.teaming.util.SZoneConfig;
 
 /**
  * This class contains a collection of methods for dealing with
  * built-in user accounts.
+ *
+ * --- *WARNING* --- *WARNING* --- *WARNING* --- *WARNING* ---
+ * 
+ * The implementation contained here is NOT designed for the built-in
+ * user account names to be changed dynamically.  If/when the feature
+ * is implemented that allows them to change dynamically, the server(s)
+ * MUST be restarted to pick up the change for these methods to work.
+ * 
+ * See Bugzilla bug#899531, specifically comment#1 for a detailed
+ * discussion of the issue.  The current implementation in this module
+ * is based on option#1 from that comment.
+ *  
+ * --- *WARNING* --- *WARNING* --- *WARNING* --- *WARNING* ---
  * 
  * @author drfoster@novell.com
  */
 public final class BuiltInUsersHelper {
-	protected static Log m_logger = LogFactory.getLog(BuiltInUsersHelper.class);
-	
-	private final static Collection<String> RESERVED_USER_IDS = new ArrayList<String>();
+	// The following contains a List<String> of the internal IDs of
+	// those users we recognize as system users.
+	private final static List<String> INTERNAL_SYSTEM_USER_IDS = new ArrayList<String>();
 	static {
-		RESERVED_USER_IDS.add(ObjectKeys.SUPER_USER_INTERNALID            );
-		RESERVED_USER_IDS.add(ObjectKeys.ANONYMOUS_POSTING_USER_INTERNALID);
-		RESERVED_USER_IDS.add(ObjectKeys.FILE_SYNC_AGENT_INTERNALID       );
-		RESERVED_USER_IDS.add(ObjectKeys.GUEST_USER_INTERNALID            );
-		RESERVED_USER_IDS.add(ObjectKeys.JOB_PROCESSOR_INTERNALID         );
-		RESERVED_USER_IDS.add(ObjectKeys.SYNCHRONIZATION_AGENT_INTERNALID );
+		INTERNAL_SYSTEM_USER_IDS.add(ObjectKeys.SUPER_USER_INTERNALID            );
+		INTERNAL_SYSTEM_USER_IDS.add(ObjectKeys.ANONYMOUS_POSTING_USER_INTERNALID);
+		INTERNAL_SYSTEM_USER_IDS.add(ObjectKeys.FILE_SYNC_AGENT_INTERNALID       );
+		INTERNAL_SYSTEM_USER_IDS.add(ObjectKeys.GUEST_USER_INTERNALID            );
+		INTERNAL_SYSTEM_USER_IDS.add(ObjectKeys.JOB_PROCESSOR_INTERNALID         );
+		INTERNAL_SYSTEM_USER_IDS.add(ObjectKeys.SYNCHRONIZATION_AGENT_INTERNALID );
 	}
+
+	// The first time they're required, this Map<String, String> will
+	// be populated with a mapping of the various internal user IDs of
+	// the system user accounts with their current names.
+	private static Map<String, String> m_builtInUserNameCache = new HashMap<String, String>();
 	
 	/*
 	 * Returns the name of the system user corresponding to the given
 	 * internal ID.
 	 */
 	private static String getSystemUserName(String internalId, String defaultName, Long zoneId) {
-		User systemUser = MiscUtil.getProfileModule().getReservedUser(internalId, zoneId);
-		return ((null == systemUser) ? defaultName : systemUser.getName());
+		// Validate that the built-in user name cache has been
+		// populated.  Note that this may be called BEFORE these users
+		// have actually been created (e.g., for a new install.)
+		// That's fine and the code is designed to handle that
+		// situation.
+		validateBuiltInUserNameCache();
+		
+		// If we haven't cached the built-in user names yes...
+		String reply;
+		if (m_builtInUserNameCache.isEmpty()) {
+			// ...try loading the User object and pulling the name from
+			// ...that.
+			User systemUser = MiscUtil.getProfileModule().getReservedUser(internalId, zoneId);
+			reply = ((null == systemUser) ? defaultName : systemUser.getName());
+		}
+		
+		else {
+			// ...otherwise, extract the name from the built-in user
+			// ...name cache.
+			reply = m_builtInUserNameCache.get(internalId);
+			reply = ((null == reply) ? defaultName : reply);
+		}
+		
+		// If we get here, reply refers to the system user name
+		// requested or the supplied default if the requested name
+		// could not be found.  Return it.
+		return reply;
 	}
 	
 	private static String getZoneDefaultAdminName(Long zoneId) {
@@ -120,16 +166,19 @@ public final class BuiltInUsersHelper {
 			return false;
 		}
 
-		// Load current instances of the various reserved User's.
-		Collection<User> reservedUsers = MiscUtil.getProfileModule().getReservedUsers(RESERVED_USER_IDS);
-		if (MiscUtil.hasItems(reservedUsers)) {
-			// Scan them.
-			for (User reservedUser:  reservedUsers) {
-				// Is this User in question?
-				if (name.equalsIgnoreCase(reservedUser.getName())) {
-					// Yes!  Return true.
-					return true;
-				}
+		// Validate that the built-in user name cache has been
+		// populated...
+		validateBuiltInUserNameCache();
+
+		// ...and scan the names in the cache.
+		Set<String> biuKeys = m_builtInUserNameCache.keySet();
+		for (String biuKey:  biuKeys) {
+			// Is this the name in question?
+			String biuName = m_builtInUserNameCache.get(biuKey);
+			if (biuName.equalsIgnoreCase(name)) {
+				// Yes!  It must be a system user account.  Return
+				// true.
+				return true;
 			}
 		}
 		
@@ -156,5 +205,32 @@ public final class BuiltInUsersHelper {
 		// reserved users are the built-in system users (i.e., 'admin',
 		// 'guest', ...)
 		return user.isReserved();
+	}
+
+	/*
+	 * If it hasn't been populated yet, populates the built-in user
+	 * name cache.
+	 */
+	private static void validateBuiltInUserNameCache() {
+		// Have we cached the built in user names yet?
+		if (m_builtInUserNameCache.isEmpty()) {
+			// No!  Are we far enough along in the initialization
+			// process to have a request and know our zone yet?
+			RequestContext rc = RequestContextHolder.getRequestContext();
+			Long zoneId = ((null == rc) ? null : rc.getZoneId());
+			if (null != zoneId) {
+				// Yes!  Load current instances of the various reserved
+				// User's.
+				Collection<User> reservedUsers = MiscUtil.getProfileModule().getReservedUsers(INTERNAL_SYSTEM_USER_IDS);
+				if (MiscUtil.hasItems(reservedUsers)) {
+					// Scan them...
+					for (User reservedUser:  reservedUsers) {
+						// ...and add the name's to the cache, indexed by their
+						// ...internal ID.
+						m_builtInUserNameCache.put(reservedUser.getInternalId(), reservedUser.getName());
+					}
+				}
+			}
+		}
 	}
 }
