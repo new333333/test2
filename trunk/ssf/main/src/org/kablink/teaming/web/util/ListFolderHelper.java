@@ -34,6 +34,7 @@ package org.kablink.teaming.web.util;
 
 import static org.kablink.util.search.Restrictions.in;
 
+import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -93,6 +94,7 @@ import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.ZoneConfig;
 import org.kablink.teaming.domain.AuditTrail.AuditType;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
+import org.kablink.teaming.gwt.server.util.GwtServerHelper;
 import org.kablink.teaming.lucene.util.SearchFieldResult;
 import org.kablink.teaming.module.admin.AdminModule.AdminOperation;
 import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
@@ -1157,6 +1159,7 @@ public class ListFolderHelper {
 	//Routine to build the beans for the blog archives list
 	public static void buildBlogBeans(AllModulesInjected bs, RenderResponse response, 
 			Folder folder, Map options, Map model, Map folderEntries, String viewType) {
+        User user = RequestContextHolder.getRequestContext().getUser();
 		//Get the pages bean
 		buildBlogPageBeans(bs, response, folder, model, viewType);
 		
@@ -1203,11 +1206,16 @@ public class ListFolderHelper {
 		Map folderHits = new HashMap();
 		Map monthTitles = new HashMap();
 		Map monthUrls = new HashMap();
+		DateFormat df = DateFormat.getInstance();
+    	SimpleDateFormat sf = (SimpleDateFormat)df;
+		sf.setTimeZone(user.getTimeZone());
+    	sf.applyPattern("yyyyMM");
 		Iterator itEntries = entries.iterator();
 		while (itEntries.hasNext()) {
 			Map entry = (Map)itEntries.next();
-			if (entry.containsKey(Constants.CREATION_YEAR_MONTH_FIELD)) {
-				String yearMonth = (String) entry.get(Constants.CREATION_YEAR_MONTH_FIELD);
+			if (entry.containsKey(Constants.CREATION_DATE_FIELD)) {
+				Date creationDate = (Date) entry.get(Constants.CREATION_DATE_FIELD);
+				String yearMonth = sf.format(creationDate);
 				if (!monthHits.containsKey(yearMonth)) {
 					monthHits.put(yearMonth, new Integer(0));
 					String year = yearMonth.substring(0, 4);

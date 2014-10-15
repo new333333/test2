@@ -32,22 +32,27 @@
  */
 package org.kablink.teaming.gwt.server.util;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
+import java.util.TimeZone;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
+import org.apache.lucene.document.DateTools;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
-
 import org.kablink.teaming.domain.Binder;
 import org.kablink.teaming.domain.Definition;
 import org.kablink.teaming.domain.EntityIdentifier;
@@ -166,19 +171,26 @@ public class GwtBlogHelper
 			monthHits = new LinkedHashMap<String,BlogArchiveMonth>();
 			folderHits = new HashMap<String,BlogArchiveFolder>();
 			itEntries = entries.iterator();
+			DateFormat df = DateFormat.getInstance();
+	    	SimpleDateFormat sf = (SimpleDateFormat)df;
+			sf.setTimeZone(GwtServerHelper.getCurrentUser().getTimeZone());
+	    	sf.applyPattern("yyyyMM");
+
 			while ( itEntries.hasNext() )
 			{
 				Map entry;
 
 				entry = (Map)itEntries.next();
-				if ( entry.containsKey( Constants.CREATION_YEAR_MONTH_FIELD ) )
+				if ( entry.containsKey( Constants.CREATION_DATE_FIELD ) )
 				{
+					Date creationDate;
 					String yearMonth;
 					String entryBinderId;
 					BlogArchiveMonth archiveMonth;
 
 					// Have we already found this year/month?
-					yearMonth = (String) entry.get( Constants.CREATION_YEAR_MONTH_FIELD );
+					creationDate = (Date)entry.get( Constants.CREATION_DATE_FIELD );
+					yearMonth = sf.format(creationDate);
 					if ( !monthHits.containsKey( yearMonth ) )
 					{
 						String year;
