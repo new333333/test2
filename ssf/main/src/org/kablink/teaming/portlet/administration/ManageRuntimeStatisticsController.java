@@ -55,6 +55,7 @@ import org.kablink.teaming.util.SpringContextUtil;
 import org.kablink.teaming.web.WebKeys;
 import org.kablink.teaming.web.portlet.SAbstractController;
 import org.kablink.teaming.web.util.PortletRequestUtils;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.web.portlet.ModelAndView;
 
 public class ManageRuntimeStatisticsController extends SAbstractController {
@@ -93,6 +94,10 @@ public class ManageRuntimeStatisticsController extends SAbstractController {
 					PortletRequestUtils.getStringParameter(request, "query", ""),
 					PortletRequestUtils.getIntParameter(request, "offset", 0),
 					PortletRequestUtils.getIntParameter(request, "max", 25));
+		}
+		else if(WebKeys.MRS_OPERATION_BROADCAST.equals(op)) {
+			doBroadcast(response,
+					PortletRequestUtils.getStringParameter(request, "message", ""));
 		}
 		else if(WebKeys.MRS_OPERATION_DUMP_FILE_SYNC_STATS.equals(op)) {
 			String data = getAdminModule().dumpFileSyncStatsAsString();
@@ -174,6 +179,13 @@ public class ManageRuntimeStatisticsController extends SAbstractController {
 		sb.append("<p>Total time is ").append(elapsedTimeInMs(totalStartTime)).append(" ms").
 		append("</body></html>");
 		response.getWriter().write(sb.toString());
+	}
+	
+	protected void doBroadcast(RenderResponse response, String message) throws IOException {
+		RabbitTemplate rabbitTemplate = (RabbitTemplate) SpringContextUtil.getBean("rabbitTemplate");
+		rabbitTemplate.convertAndSend("broadcast_exchange", "", message);
+		String reply = "<html><head></head><body>Successfully dropped the message in the broadcast exchange</body></html>";
+		response.getWriter().write(reply);
 	}
 	
 	protected Document getDocument(String xml) {
