@@ -173,7 +173,7 @@ public class GwtBlogHelper
 			itEntries = entries.iterator();
 			DateFormat df = DateFormat.getInstance();
 	    	SimpleDateFormat sf = (SimpleDateFormat)df;
-			sf.setTimeZone(GwtServerHelper.getCurrentUser().getTimeZone());
+			//sf.setTimeZone(GwtServerHelper.getCurrentUser().getTimeZone());
 	    	sf.applyPattern("yyyyMM");
 
 			while ( itEntries.hasNext() )
