@@ -939,25 +939,30 @@ public class LandingPageEditor extends Composite
 		eventSender = event.getSource();
 		if ( eventSender instanceof PaletteItem )
 		{
-			Scheduler.ScheduledCommand cmd;
-			final PaletteItem paletteItem;
-			final int x;
-			final int y;
-			
 			// Yes
-			paletteItem = (PaletteItem) eventSender;
-			x = event.getClientX();
-			y = event.getClientY();
-			
-			cmd = new Scheduler.ScheduledCommand()
+			// Is the user already dragging a palette item?
+			if ( m_paletteItemDragInProgress == false )
 			{
-				@Override
-				public void execute()
+				Scheduler.ScheduledCommand cmd;
+				final PaletteItem paletteItem;
+				final int x;
+				final int y;
+				
+				// No
+				paletteItem = (PaletteItem) eventSender;
+				x = event.getClientX();
+				y = event.getClientY();
+				
+				cmd = new Scheduler.ScheduledCommand()
 				{
-					startDragPaletteItem( paletteItem, x, y );
-				}
-			};
-			Scheduler.get().scheduleDeferred( cmd );
+					@Override
+					public void execute()
+					{
+						startDragPaletteItem( paletteItem, x, y );
+					}
+				};
+				Scheduler.get().scheduleDeferred( cmd );
+			}
 			
 			// Kill this mouse-down event so text on the page does not get highlighted when the user moves the mouse.
 			event.getNativeEvent().preventDefault();
