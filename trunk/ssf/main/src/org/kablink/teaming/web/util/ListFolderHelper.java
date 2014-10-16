@@ -94,7 +94,6 @@ import org.kablink.teaming.domain.Workspace;
 import org.kablink.teaming.domain.ZoneConfig;
 import org.kablink.teaming.domain.AuditTrail.AuditType;
 import org.kablink.teaming.domain.EntityIdentifier.EntityType;
-import org.kablink.teaming.gwt.server.util.GwtServerHelper;
 import org.kablink.teaming.lucene.util.SearchFieldResult;
 import org.kablink.teaming.module.admin.AdminModule.AdminOperation;
 import org.kablink.teaming.module.binder.BinderModule.BinderOperation;
