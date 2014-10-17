@@ -688,6 +688,7 @@ public interface GwtTeamingMessages extends Messages
 	String codeSplitFailure_EditLdapSearchDlg();
 	String codeSplitFailure_EditLdapServerConfigDlg();
 	String codeSplitFailure_EditNetFolderRightsDlg();
+	String codeSplitFailure_EditPasswordPolicyComposite();
 	String codeSplitFailure_EditPublicLinkDlg();
 	String codeSplitFailure_EditShareDlg();
 	String codeSplitFailure_EditShareNoteDlg();
