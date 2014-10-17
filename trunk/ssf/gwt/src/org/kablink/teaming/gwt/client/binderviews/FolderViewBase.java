@@ -409,7 +409,7 @@ public abstract class FolderViewBase extends ViewBase
 		// dragging over it.  We always add this because although the
 		// view itself may not be a drop target, one of its nested
 		// folders might be, in which case, it will show it.
-		m_dndHint = new Label(m_messages.addFilesHtml5PopupDnDHint());
+		m_dndHint = new Label(m_messages.addFilesHtml5PopupDnDHint(GwtClientHelper.getProductName()));
 		m_dndHint.addStyleName("vibe-folderViewBase-dndHint");
 		m_dndHint.setVisible(false);
 		m_rootPanel.add(m_dndHint);
