@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -15,10 +15,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -55,14 +55,16 @@ import org.kablink.teaming.web.util.GwtUIHelper;
 import org.kablink.teaming.web.util.MiscUtil;
 import org.kablink.teaming.web.util.PortletRequestUtils;
 import org.kablink.teaming.web.util.WorkspaceTreeHelper;
+
 import org.springframework.web.portlet.ModelAndView;
 
-
 /**
+ * ?
+ * 
  * @author Peter Hurley
- *
  */
 public class WorkspaceTreeController extends SAbstractController  {
+	@Override
 	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) throws Exception {
 		response.setRenderParameters(request.getParameterMap());
 		try {
@@ -92,6 +94,7 @@ public class WorkspaceTreeController extends SAbstractController  {
 			getProfileModule().setSeenIds(null, ids);
 		}
 	}
+	@Override
 	public ModelAndView handleRenderRequestAfterValidation(RenderRequest request, 
 			RenderResponse response) throws Exception {
 		
@@ -99,26 +102,17 @@ public class WorkspaceTreeController extends SAbstractController  {
 		boolean accessible_simple_ui = SPropsUtil.getBoolean("accessibility.simple_ui", false);
         if (user != null && ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId()) && 
         		accessible_simple_ui && 
-        		ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE.equals(user.getDisplayStyle())) {
+        		ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE.equals(user.getCurrentDisplayStyle())) {
 			Map<String,Object> updates = new HashMap<String,Object>();
-			updates.put(ObjectKeys.USER_PROPERTY_DISPLAY_STYLE, ObjectKeys.USER_DISPLAY_STYLE_DEFAULT);
+			updates.put(ObjectKeys.USER_PROPERTY_DISPLAY_STYLE, BinderHelper.getDefaultViewDisplayStyle());
         	MapInputData  inputData = new MapInputData (updates);
-        	updates.put(ObjectKeys.FIELD_USER_DISPLAYSTYLE, ObjectKeys.USER_DISPLAY_STYLE_DEFAULT);
-			try {
-				getProfileModule().modifyEntry(user.getId(), inputData);
-			} catch(WriteEntryDataException e) {
-			}
-        } else if (user != null && !ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId()) && 
-        		(user.getDisplayStyle() == null || user.getDisplayStyle().equals(""))) {
-			Map<String,Object> updates = new HashMap<String,Object>();
-			updates.put(ObjectKeys.USER_PROPERTY_DISPLAY_STYLE, ObjectKeys.USER_DISPLAY_STYLE_DEFAULT);
-        	MapInputData  inputData = new MapInputData (updates);
-        	updates.put(ObjectKeys.FIELD_USER_DISPLAYSTYLE, ObjectKeys.USER_DISPLAY_STYLE_DEFAULT);
+        	updates.put(ObjectKeys.FIELD_USER_DISPLAYSTYLE, BinderHelper.getDefaultViewDisplayStyle());
 			try {
 				getProfileModule().modifyEntry(user.getId(), inputData);
 			} catch(WriteEntryDataException e) {
 			}
         }
+
 		Long binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
 		if (binderId == null) return prepBeans(request, BinderHelper.CommonPortletDispatch(this, request, response));
 		

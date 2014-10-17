@@ -235,7 +235,7 @@ function ss_getUserDisplayStyle() {
 	}
 	ss_lastUserDisplayStyle = ss_userDisplayStyle;
 	if (typeof ss_userDisplayStyle == "undefined" || ss_userDisplayStyle == "") {
-		ss_userDisplayStyle = "newpage";
+		ss_userDisplayStyle = ss_defaultViewDisplayStyle;
 	}
 	return ss_userDisplayStyle;
 }

@@ -1,6 +1,6 @@
 <%
 /**
- * Copyright (c) 1998-2010 Novell, Inc. and its licensors. All rights reserved.
+ * Copyright (c) 1998-2014 Novell, Inc. and its licensors. All rights reserved.
  * 
  * This work is governed by the Common Public Attribution License Version 1.0 (the
  * "CPAL"); you may not use this file except in compliance with the CPAL. You may
@@ -16,10 +16,10 @@
  * 
  * The Original Code is ICEcore, now called Kablink. The Original Developer is
  * Novell, Inc. All portions of the code written by Novell, Inc. are Copyright
- * (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * 
  * Attribution Information:
- * Attribution Copyright Notice: Copyright (c) 1998-2010 Novell, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: Copyright (c) 1998-2014 Novell, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by Kablink]
  * Attribution URL: [www.kablink.org]
  * Graphic Image as provided in the Covered Code
@@ -64,7 +64,7 @@
 <div id="ss_showentrydiv${renderResponse.namespace}" 
   onMouseover="if (self.ss_clearMouseOverInfo) {ss_clearMouseOverInfo(null);}"
   style="position:absolute; visibility:hidden; display:none; background-color:#fff;">
-  <c:if test="${ssUser.displayStyle != 'newpage' && ssUser.displayStyle != 'accessible'}}">
+  <c:if test="${ssUser.currentDisplayStyle != 'newpage' && ssUser.currentDisplayStyle != 'accessible'}}">
 	  <ssf:box>
 	    <ssf:param name="box_id" value="ss_iframe_box_div${renderResponse.namespace}" />
 	    <ssf:param name="box_title_id" value="ss_showEntryDivTitle" />
@@ -97,7 +97,7 @@
 	  </div>
 	  </ssf:box>
   </c:if>
-  <c:if test="${ssUser.displayStyle == 'newpage' || ssUser.displayStyle == 'accessible'}}">
+  <c:if test="${ssUser.currentDisplayStyle == 'newpage' || ssUser.currentDisplayStyle == 'accessible'}}">
 	  <div class="ss_newpage_box" id="ss_iframe_box_div">
 	    <div id="ss_iframe_holder_div${renderResponse.namespace}" style="background-color:#fff;">
 	      <div class="ss_newpage_box_header" style="width:100%;">

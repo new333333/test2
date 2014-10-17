@@ -34,6 +34,7 @@
  
 %>
 <%@ page import="org.kablink.teaming.ObjectKeys" %>
+<%@ page import="org.kablink.teaming.web.util.BinderHelper" %>
 <%@ page import="org.kablink.teaming.web.util.GwtUIHelper" %>
 <%@ page import="org.kablink.teaming.util.ReleaseInfo" %><%--
 
@@ -124,17 +125,18 @@ var ss_baseBinderUrlNoWS = ss_baseBinderUrlNoWS${renderResponse.namespace};
 
 var ss_baseRootPathUrl = '<html:rootPath/>';
 
-var ss_userDisplayStyle = "${ssUser.displayStyle}";
-<c:if test="${empty ssUser.displayStyle || ssUser.displayStyle == ''}">
-  ss_userDisplayStyle = "<%= ObjectKeys.USER_DISPLAY_STYLE_DEFAULT %>";	
-</c:if>
-<c:if test="${!empty ssUser.displayStyle && ssUser.displayStyle == 'accessible'}">
+<%
+	String defaultViewDisplayStyle = BinderHelper.getDefaultViewDisplayStyle();
+%>
+var ss_defaultViewDisplayStyle = "<%= defaultViewDisplayStyle %>";
+var ss_userDisplayStyle = "${ssUser.currentDisplayStyle}";
+<c:if test="${!empty ssUser.currentDisplayStyle && ssUser.currentDisplayStyle == 'accessible'}">
 <% if (!accessible_simple_ui) { %>
-	ss_userDisplayStyle = "<%= ObjectKeys.USER_DISPLAY_STYLE_DEFAULT %>";	
+	ss_userDisplayStyle = "<%= defaultViewDisplayStyle %>";	
 <% } %>
 </c:if>
-<c:if test="${!empty ssUser.displayStyle && ssUser.displayStyle == 'popup'}">
-	ss_userDisplayStyle = "<%= ObjectKeys.USER_DISPLAY_STYLE_DEFAULT %>";
+<c:if test="${!empty ssUser.currentDisplayStyle && ssUser.currentDisplayStyle == 'popup'}">
+	ss_userDisplayStyle = "<%= defaultViewDisplayStyle %>";
 </c:if>
 var ss_entryViewStyle = "${ss_entryViewStyle}";
 

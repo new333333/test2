@@ -181,12 +181,21 @@ import org.springframework.web.portlet.ModelAndView;
  */
 @SuppressWarnings({"unchecked", "unused"})
 public class BinderHelper {
+	protected static final Log logger = LogFactory.getLog(Binder.class);
+	
 	// The following control aspects of code in Vibe that has been
 	// added to assist in debugging.
 	public static final boolean BINDER_DEBUG_ENABLED = SPropsUtil.getBoolean("binders.debug.enabled", false);
 	public static final String  BINDER_MAGIC_TITLE   = "create.binders.";
-	
-	protected static final Log logger = LogFactory.getLog(Binder.class);
+
+	// The following controls the default view entry style to use.
+	private static final String DEFAULT_VDS_PROP	= (Utils.checkIfFilr() ? ObjectKeys.USER_DISPLAY_STYLE_DEFAULT : SPropsUtil.getString("vibe.default.view.display.style", ObjectKeys.USER_DISPLAY_STYLE_DEFAULT));
+	private static final String DEFAULT_VDS;
+	static {
+		if ((!(DEFAULT_VDS_PROP.equals(ObjectKeys.USER_DISPLAY_STYLE_NEWPAGE))) && (!(DEFAULT_VDS_PROP.equals(ObjectKeys.USER_DISPLAY_STYLE_IFRAME))))
+		     DEFAULT_VDS = ObjectKeys.USER_DISPLAY_STYLE_DEFAULT;
+		else DEFAULT_VDS = DEFAULT_VDS_PROP;
+	}
 	
 	public static final String RELEVANCE_DASHBOARD_PORTLET="ss_relevance_dashboard";
 	public static final String BLOG_SUMMARY_PORTLET="ss_blog";
@@ -1339,7 +1348,7 @@ public class BinderHelper {
 		User user = RequestContextHolder.getRequestContext().getUser();
 		String displayStyle = user.getDisplayStyle();
 		if (displayStyle == null || displayStyle.equals("")) {
-			displayStyle = ObjectKeys.USER_DISPLAY_STYLE_DEFAULT;
+			displayStyle = getDefaultViewDisplayStyle();
 		}
 		String viewListingJspName;
 		boolean accessible_simple_ui = SPropsUtil.getBoolean("accessibility.simple_ui", false);
@@ -1455,7 +1464,7 @@ public class BinderHelper {
 		if (displayStyle == null || displayStyle.equals("") || 
 				(displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE) &&
 				user.isShared())) {
-			displayStyle = ObjectKeys.USER_DISPLAY_STYLE_DEFAULT;
+			displayStyle = getDefaultViewDisplayStyle();
 		}
 		model.put(WebKeys.DISPLAY_STYLE, displayStyle);
 		
@@ -1470,7 +1479,7 @@ public class BinderHelper {
 			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SET_DISPLAY_STYLE);
 			if (displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE) || 
 					user.isShared()) {
-				url.setParameter(WebKeys.URL_VALUE, ObjectKeys.USER_DISPLAY_STYLE_DEFAULT);
+				url.setParameter(WebKeys.URL_VALUE, getDefaultViewDisplayStyle());
 			} else {
 				url.setParameter(WebKeys.URL_VALUE, ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE);
 			}
@@ -4295,7 +4304,7 @@ public class BinderHelper {
 			RenderResponse response, Toolbar folderActionsToolbar, String forumId) {
         User user = RequestContextHolder.getRequestContext().getUser();
         String userDisplayStyle = user.getDisplayStyle();
-        if (userDisplayStyle == null) userDisplayStyle = ObjectKeys.USER_DISPLAY_STYLE_DEFAULT;
+        if (userDisplayStyle == null) userDisplayStyle = getDefaultViewDisplayStyle();
         
 		Map qualifiers;
 		PortletURL url;
@@ -5806,5 +5815,14 @@ public class BinderHelper {
  						new String[] {binder.getPathName(), destination.getPathName()});			   
  		   }
  	   }
+    }
+
+    /**
+     * Returns the default view display style currently in effect.
+     * 
+     * @return
+     */
+    public static String getDefaultViewDisplayStyle() {
+    	return DEFAULT_VDS;
     }
 }

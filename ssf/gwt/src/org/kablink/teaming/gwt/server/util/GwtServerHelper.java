@@ -7749,18 +7749,14 @@ public class GwtServerHelper {
 	public static GwtPersonalPreferences getPersonalPreferences(AllModulesInjected bs, HttpServletRequest request) {
 		GwtPersonalPreferences personalPrefs = new GwtPersonalPreferences();
 		try {
-			// Are we dealing with the guest user?
+			// Store the user's display style preference.
 			User user = getCurrentUser();
-			if (!(ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId()))) {
-				// No!  Get the user's display style preference.
-				String displayStyle;
-				if (Utils.checkIfFilr())
-				     displayStyle = ObjectKeys.USER_DISPLAY_STYLE_DEFAULT;
-				else displayStyle = user.getDisplayStyle();
-				personalPrefs.setDisplayStyle(displayStyle);
-				
-				// Get the number of entries per page that should be
-				// displayed when a folder is selected.
+			personalPrefs.setDisplayStyle(user.getCurrentDisplayStyle());
+			
+			// Are we dealing with the guest user?
+			if (!(user.isShared())) {
+				// No!  Get the number of entries per page that should
+				// be displayed when a folder is selected.
 				Integer numEntriesPerPage = Integer.valueOf(SPropsUtil.getString("folder.records.listed"));
 				UserProperties userProperties = bs.getProfileModule().getUserProperties(user.getId());
 				String value = ((String) userProperties.getProperty(ObjectKeys.PAGE_ENTRIES_PER_PAGE));
@@ -7796,7 +7792,6 @@ public class GwtServerHelper {
 			}
 			
 			else {
-				personalPrefs.setDisplayStyle(ObjectKeys.USER_DISPLAY_STYLE_DEFAULT);
 				GwtLogHelper.warn(m_logger, "GwtServerHelper.getPersonalPreferences():  User is guest.");
 			}
 		}
